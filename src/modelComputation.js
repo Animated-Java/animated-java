@@ -1,6 +1,13 @@
 // import translate
 import path from 'path'
-import { store, translate, cloneObject, size, roundToN } from './util'
+import {
+	store,
+	translate,
+	cloneObject,
+	size,
+	roundToN,
+	resourcepack,
+} from './util'
 import { settings } from './settings'
 import './overrides/overrides'
 import { CustomError } from './util/CustomError'
@@ -294,10 +301,9 @@ function getTexturesOnGroup(group) {
 			for (const [faceName, face] of Object.entries(cube.faces)) {
 				const texture = getTextureByUUID(face.texture)
 				if (texture) {
-					if (!textures[`#${texture.id}`]) {
-						textures[`#${texture.id}`] = getTexturePath(
-							texture.path
-						)
+					if (!textures[`${texture.id}`]) {
+						textures[`${texture.id}`] =
+							resourcepack.getTexturePath(texture)
 					}
 				} else {
 					console.log(`Unable to find texture ${face.texture}`)
@@ -374,7 +380,7 @@ export async function computeVariantModels(models, variantOverrides) {
 					parent: getModelMCPath(
 						path.join(
 							settings.animatedJava.rigModelsExportFolder,
-							`${modelName}.json`
+							modelName
 						)
 					),
 					textures: thisModelOverrides.textures,
@@ -452,50 +458,42 @@ export function computeBones(models, animations) {
 	return bones
 }
 
-function getTexturePath(raw) {
-	let list = raw.split(path.sep)
-	console.log(list)
-	const index = list.indexOf('assets')
-	list = list.slice(index + 1, list.length)
-	return `${list[0]}:${list.slice(2).join('/')}`
-}
-
 export function computeVariantTextureOverrides(models) {
 	console.groupCollapsed('Compute Variant Model Overrides')
 
-	const states = store.get('states')
-	const state_models = {}
+	const variants = store.get('states')
+	const variantModels = {}
 
-	for (const [state_name, state] of Object.entries(states).sort()) {
-		const this_state = {}
+	for (const [variantName, variant] of Object.entries(variants).sort()) {
+		const thisVariant = {}
 		// console.log('State:', state)
 		//* If this state replaces any textures
-		if (Object.keys(state).length > 0) {
+		if (Object.keys(variant).length > 0) {
 			// For every model in models
-			for (const [model_name, model] of Object.entries(models).sort()) {
+			for (const [modelName, model] of Object.entries(models).sort()) {
 				// console.log('Model:', model)
 				//* If this model has any of the textures this state replaces
-				for (const uuid in state) {
+				for (const uuid in variant) {
 					const texture = getTextureByUUID(uuid)
-					const replace_texture = getTextureByUUID(state[uuid])
+					const replaceTexture = getTextureByUUID(variant[uuid])
 					if (hasTexture(model, texture)) {
 						//* Create texture override based on state
-						if (replace_texture) {
-							if (!this_state[model_name])
-								this_state[model_name] = { textures: {} }
-							console.log(replace_texture)
-							this_state[model_name].textures[`#${texture.id}`] =
-								getTexturePath(replace_texture.path)
+						if (replaceTexture) {
+							if (!thisVariant[modelName])
+								thisVariant[modelName] = { textures: {} }
+							console.log(replaceTexture)
+							thisVariant[modelName].textures[`${texture.id}`] =
+								resourcepack.getTexturePath(replaceTexture)
 						}
 					}
 				}
 			}
 		}
-		state_models[state_name] = this_state
+		variantModels[variantName] = thisVariant
 	}
 
-	console.log('Variant Overrides', state_models)
+	console.log('Variant Overrides', variantModels)
 	console.groupEnd('Compute Variant Model Overrides')
 
-	return state_models
+	return variantModels
 }

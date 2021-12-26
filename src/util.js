@@ -10,9 +10,11 @@ export * from './util/intl'
 export * from './util/store'
 export * from './util/hashAnim'
 export * from './util/treeGen'
-export * from './util/Minecraft'
 export * from './util/size'
 export * from './util/ezfs'
+
+export * as resourcepack from './util/minecraft/resourcepack'
+export * from './util/minecraft/jsonText'
 
 export function cloneObject(obj) {
 	return JSON.parse(JSON.stringify(obj))
