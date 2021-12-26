@@ -3,7 +3,7 @@ en:
     animatedJava.title: Animated Java
     animatedJava.menubar.export.name: Export Model
 
-    panel.states: Model Varients
+    panel.states: Model Variants
 
     animatedJava.popup.quickMessage.noExporterSelected: No Exporter Selected!
 
