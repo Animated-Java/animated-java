@@ -4,7 +4,7 @@ import { settings } from './settings'
 import { mkdir } from './util'
 import { CustomError } from './util/CustomError'
 import { translate } from './util/intl'
-import { safeFunctionName } from './util/replace'
+// import { safeFunctionName } from './util'
 import transparent from './assets/transparent.png'
 
 // Exports the model.json rig files
