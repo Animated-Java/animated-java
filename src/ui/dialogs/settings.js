@@ -349,7 +349,7 @@ function DropDown({ children, onClick, visible, name, intl }) {
 				<i className="material-icons">
 					{visible ? 'expand_more' : 'navigate_next'}
 				</i>
-				{translate(intl || `${name}.title`)}
+				{translate(intl || `${name}`)}
 			</h3>
 			{visible && children}
 		</>

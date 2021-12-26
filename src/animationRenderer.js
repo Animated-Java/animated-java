@@ -328,10 +328,12 @@ export async function renderAnimation(options) {
 		// unfix_scene_rotation();
 
 		static_animation?.remove()
+		Canvas.updateAllBones()
 		return animations
 	} catch (error) {
 		// unfix_scene_rotation();
 		static_animation?.remove()
+		Canvas.updateAllBones()
 		throw error
 	}
 }

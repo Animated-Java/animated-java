@@ -35,21 +35,6 @@ function resetPredicateData() {
 	globalPredicateId = 0
 	globalPredicateCount = 0
 	console.log('Reset predicate IDs')
-	// if (settings.animatedJava.rig_models_export_folder !== '') {
-	// 	root_predicate_path = settings.animatedJava.rig_models_export_folder
-	// } else {
-	// 	throw new CustomError({
-	// 		title: translate('error.missing_predicate_file_path.title'),
-	// 		lines: [
-	// 			`<p>${translate(
-	// 				'error.missing_predicate_file_path.body1'
-	// 			)}</p>`,
-	// 			`<p>${translate(
-	// 				'error.missing_predicate_file_path.body2'
-	// 			)}</p>`,
-	// 		],
-	// 	})
-	// }
 }
 
 function getTextureByUUID(uuid) {
@@ -105,10 +90,9 @@ export function computeElements() {
 		if (s.parent === 'root') {
 			throw new CustomError({
 				title: translate('error.top_level_cubes.title'),
-				lines: [
-					`<p>${translate('error.top_level_cubes.body1')}</p>`,
-					`<p>${translate('error.top_level_cubes.body2')}</p>`,
-				],
+				lines: translate('error.top_level_cubes.body')
+					.split('\n')
+					.map((line) => `<p>${line}</p>`),
 			})
 		}
 		var element = { uuid: s.uuid }
@@ -503,14 +487,11 @@ export function computeVariantTextureOverrides(models) {
 									title: translate(
 										'animatedJava.popup.error.transparentTexturePathNotFound.title'
 									),
-									lines: [
-										`<p>${translate(
-											'animatedJava.popup.error.transparentTexturePathNotFound.body1'
-										)}</p>`,
-										`<p>${translate(
-											'animatedJava.popup.error.transparentTexturePathNotFound.body2'
-										)}</p>`,
-									],
+									lines: translate(
+										'animatedJava.popup.error.transparentTexturePathNotFound.body'
+									)
+										.split('\n')
+										.map((line) => `<p>${line}</p>`),
 									onConfirm() {
 										d.hide()
 									},

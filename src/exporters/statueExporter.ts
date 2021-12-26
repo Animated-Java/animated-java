@@ -327,7 +327,7 @@ async function statueExport(data: any) {
 		data.bones,
 		data.animations,
 		data.settings.animatedJava,
-		data.settings.animatedJava.exporter.statueExporter,
+		data.settings['animatedJava_exporter_statueExporter'],
 		data.variantModels,
 		data.variantTextureOverrides,
 		data.variantTouchedModels
@@ -336,7 +336,7 @@ async function statueExport(data: any) {
 	console.log('mcFile:', mcFile)
 	// @ts-ignore
 	Blockbench.writeFile(
-		data.settings.animatedJava.exporter.statueExporter.mcbFilePath,
+		data.settings.animatedJava_exporter_statueExporter.mcbFilePath,
 		// @ts-ignore
 		{
 			content: mcFile,
@@ -363,7 +363,7 @@ interface statueExporterSettings {
 }
 
 const Exporter = (AJ: any) => {
-	AJ.settings.registerPluginSettings('animatedJava.exporter.statueExporter', {
+	AJ.settings.registerPluginSettings('animatedJava_exporter_statueExporter', {
 		rootEntityType: {
 			type: 'text',
 			default: 'minecraft:marker',
@@ -380,9 +380,9 @@ const Exporter = (AJ: any) => {
 		// 	default: 'aecStack',
 		// 	options: {
 		// 		aecStack:
-		// 			'animatedJava.exporter.statueExporter.setting.boneType.aecStack.name',
+		// 			'animatedJava_exporter_statueExporter.setting.boneType.aecStack.name',
 		// 		armorStand:
-		// 			'animatedJava.exporter.statueExporter.setting.boneType.armorStand.name',
+		// 			'animatedJava_exporter_statueExporter.setting.boneType.armorStand.name',
 		// 	},
 		// 	populate() {
 		// 		return 'area_effect_cloud'
@@ -471,8 +471,8 @@ const Exporter = (AJ: any) => {
 			default: 'mcb',
 			options: {
 				vanilla:
-					'animatedJava.exporter.statueExporter.setting.exportMode.vanilla.name',
-				mcb: 'animatedJava.exporter.statueExporter.setting.exportMode.mcb.name',
+					'animatedJava_exporter_statueExporter.setting.exportMode.vanilla.name',
+				mcb: 'animatedJava_exporter_statueExporter.setting.exportMode.mcb.name',
 			},
 			populate() {
 				return 'mcb'
@@ -500,11 +500,11 @@ const Exporter = (AJ: any) => {
 			},
 			isVisible(settings: any) {
 				return (
-					settings.animatedJava.exporter.statueExporter.exportMode ===
+					settings.animatedJava_exporter_statueExporter.exportMode ===
 					'mcb'
 				)
 			},
-			dependencies: ['animatedJava.exporter.statueExporter.exportMode'],
+			dependencies: ['animatedJava_exporter_statueExporter.exportMode'],
 		},
 		dataPackPath: {
 			type: 'filepath',
@@ -524,14 +524,14 @@ const Exporter = (AJ: any) => {
 			},
 			isVisible(settings: any) {
 				return (
-					settings.animatedJava.exporter.statueExporter.exportMode ===
+					settings.animatedJava_exporter_statueExporter.exportMode ===
 					'vanilla'
 				)
 			},
-			dependencies: ['animatedJava.exporter.statueExporter.exportMode'],
+			dependencies: ['animatedJava_exporter_statueExporter.exportMode'],
 		},
 	})
-	AJ.registerExportFunc('statue_exporter', function () {
+	AJ.registerExportFunc('statueExporter', function () {
 		AJ.build(
 			(data: any) => {
 				console.log('Input Data:', data)

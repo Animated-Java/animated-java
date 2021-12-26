@@ -22,7 +22,7 @@ export const DefaultSettings = {
 				return Object.fromEntries(
 					[...store.getStore('exporters').keys()].map((v) => [
 						v,
-						`animatedJava.exporter.${v}`,
+						`animatedJava_exporter_${v}`,
 					])
 				)
 			},

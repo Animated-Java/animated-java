@@ -20,7 +20,7 @@ function animationExport(data: any) {
 		data.bones,
 		data.animations,
 		data.settings.animatedJava,
-		data.settings.animatedJava.exporter.statueExporter,
+		data.settings.animatedJava_exporter_statueExporter,
 		data.variantModels,
 		data.variantTextureOverrides,
 		data.variantTouchedModels
@@ -44,7 +44,7 @@ interface animationExporterSettings {
 }
 
 const Exporter = (AJ: any) => {
-	AJ.settings.registerPluginSettings('animatedJava.exporter.animationExporter', {
+	AJ.settings.registerPluginSettings('animatedJava_exporter_animationExporter', {
 		rootEntityType: {
 			type: 'text',
 			default: 'minecraft:marker',
@@ -61,9 +61,9 @@ const Exporter = (AJ: any) => {
 			default: 'aecStack',
 			options: {
 				aecStack:
-					'animatedJava.exporter.animationExporter.setting.boneType.aecStack.name',
+					'animatedJava_exporter_animationExporter.setting.boneType.aecStack.name',
 				armorStand:
-					'animatedJava.exporter.animationExporter.setting.boneType.armorStand.name',
+					'animatedJava_exporter_animationExporter.setting.boneType.armorStand.name',
 			},
 			populate() {
 				return 'area_effect_cloud'
@@ -152,8 +152,8 @@ const Exporter = (AJ: any) => {
 			default: 'mcb',
 			options: {
 				vanilla:
-					'animatedJava.exporter.animationExporter.setting.exportMode.vanilla.name',
-				mcb: 'animatedJava.exporter.animationExporter.setting.exportMode.mcb.name',
+					'animatedJava_exporter_animationExporter.setting.exportMode.vanilla.name',
+				mcb: 'animatedJava_exporter_animationExporter.setting.exportMode.mcb.name',
 			},
 			populate() {
 				return 'mcb'
@@ -181,11 +181,11 @@ const Exporter = (AJ: any) => {
 			},
 			isVisible(settings: any) {
 				return (
-					settings.animatedJava.exporter.animationExporter.exportMode ===
+					settings.animatedJava_exporter_animationExporter.exportMode ===
 					'mcb'
 				)
 			},
-			dependencies: ['animatedJava.exporter.animationExporter.exportMode'],
+			dependencies: ['animatedJava_exporter_animationExporter.exportMode'],
 		},
 		dataPackPath: {
 			type: 'filepath',
@@ -205,14 +205,14 @@ const Exporter = (AJ: any) => {
 			},
 			isVisible(settings: any) {
 				return (
-					settings.animatedJava.exporter.animationExporter.exportMode ===
+					settings.animatedJava_exporter_animationExporter.exportMode ===
 					'vanilla'
 				)
 			},
-			dependencies: ['animatedJava.exporter.animationExporter.exportMode'],
+			dependencies: ['animatedJava_exporter_animationExporter.exportMode'],
 		},
 	})
-	AJ.registerExportFunc('animation_exporter', function () {
+	AJ.registerExportFunc('animationExporter', function () {
 		AJ.build(
 			(data: any) => {
 				console.log('Input Data:', data)

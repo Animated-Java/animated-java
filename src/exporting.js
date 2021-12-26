@@ -21,14 +21,11 @@ export async function exportRigModels(models, variantModels) {
 				title: translate(
 					'animatedJava.popup.warning.rigFolderUnused.title'
 				),
-				lines: [
-					`<p>${translate(
-						'animatedJava.popup.warning.rigFolderUnused.body1'
-					)}</p>`,
-					`<p>${translate(
-						'animatedJava.popup.warning.rigFolderUnused.body2'
-					)}</p>`,
-				],
+				lines: translate(
+					'animatedJava.popup.warning.rigFolderUnused.body'
+				)
+					.split('\n')
+					.map((line) => `<p>${line}</p>`),
 				onConfirm() {
 					d.hide()
 					Blockbench.writeFile(metaPath, {
@@ -48,14 +45,11 @@ export async function exportRigModels(models, variantModels) {
 				title: translate(
 					'animatedJava.popup.error.rigFolderAlreadyUsedByOther.title'
 				),
-				lines: [
-					`<p>${translate(
-						'animatedJava.popup.error.rigFolderAlreadyUsedByOther.body1'
-					)}</p>`,
-					`<p>${translate(
-						'animatedJava.popup.error.rigFolderAlreadyUsedByOther.body2'
-					)}</p>`,
-				],
+				lines: translate(
+					'animatedJava.popup.error.rigFolderAlreadyUsedByOther.body'
+				)
+					.split('\n')
+					.map((line) => `<p>${line}</p>`),
 				onConfirm() {
 					d.hide()
 					Blockbench.writeFile(metaPath, {
