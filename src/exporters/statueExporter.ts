@@ -239,8 +239,7 @@ async function createMCFile(
 	for (const [variantName, variant] of Object.entries(
 		variantModels as Record<string, any>
 	)) {
-
-		const thisVariantTouchedModels = {...variantTouchedModels, ...variant}
+		const thisVariantTouchedModels = { ...variantTouchedModels, ...variant }
 		const thisVariantCommands = Object.entries(
 			thisVariantTouchedModels as Record<string, any>
 		).map(([k, v]) =>
