@@ -1,11 +1,5 @@
 import nbtlint from '../dependencies/nbtlint/docs/nbt-lint'
-import {
-	safeFunctionName,
-	format,
-	fix_indent,
-	store,
-	JsonText,
-} from '../util'
+import { safeFunctionName, format, fix_indent, store, JsonText } from '../util'
 
 interface MCBConfig {
 	dev: boolean
@@ -31,7 +25,7 @@ async function createMCFile(
 	const projectName = safeFunctionName(ajSettings.projectName)
 
 	const staticAnimationUuid = store.get('static_animation_uuid')
-	const staticFrame = animations[staticAnimationUuid][0].bones
+	const staticFrame = animations[staticAnimationUuid].frames[0].bones
 
 	const rootExeErrorJsonText = new JsonText([
 		'',
@@ -68,14 +62,14 @@ async function createMCFile(
 	interface entityTypes {
 		bone: string
 		root: string
-		bone_root: string
-		bone_display?: string
+		boneRoot: string
+		boneDisplay?: string
 	}
 	const entityTypes: any = {
 		bone: `#${projectName}:bone_entities`,
 		root: 'minecraft:marker',
-		bone_root: 'minecraft:area_effect_cloud',
-		bone_display: 'minecraft:armor_stand',
+		boneRoot: 'minecraft:area_effect_cloud',
+		boneDisplay: 'minecraft:armor_stand',
 	}
 	// switch (statueExporterSettings.boneType) {
 	// 	case 'aecStack':
@@ -138,17 +132,10 @@ async function createMCFile(
 	}
 	`)
 
-	interface BoneObject {
-		position: { x: number; y: number; z: number }
-		rotation: { x: number; y: number; z: number }
-		can_manipulate_arms: boolean
-		nbt: string
-	}
-
 	//? Summon dir
 	const summons: string[] = []
 	for (const [boneName, boneFrame] of Object.entries(
-		staticFrame as BoneObject
+		staticFrame as Record<string, any>
 	)) {
 		if (!boneFrame.exported) continue
 
@@ -244,21 +231,28 @@ async function createMCFile(
 	}
 	`)
 
-	const variants: any = {}
-	const variantBoneModifier = `data modify entity @s[tag=${tags.individualBone},distance=..10] ArmorItems[-1].tag.CustomModelData set value %customModelData`
-
-	console.log('Variants:', variants)
+	const variantBoneModifier = `data modify entity @s[tag=${tags.individualBone}] ArmorItems[-1].tag.CustomModelData set value %customModelData`
 
 	FILE.push(`dir set_variant {`)
-	for (const [variantName, variant] of Object.entries(variants)) {
+	for (const [variantName, variant] of Object.entries(
+		variantModels as Record<string, any>
+	)) {
+		const thisVariantCommands = Object.entries(
+			variant as Record<string, any>
+		).map(([k, v]) =>
+			format(variantBoneModifier, {
+				customModelData: v.aj.customModelData,
+				boneName: k,
+			})
+		)
 		FILE.push(`
 			function ${variantName} {
 				execute (if entity @s[tag=${tags.root}] at @s) {
 					scoreboard players operation .this aj.id = @s aj.id
-					execute as @e[type=${entityTypes.bone_display},tag=${
+					execute as @e[type=${entityTypes.boneDisplay},tag=${
 			tags.all_bones
-		}] if score @s aj.id = .this aj.id run {
-						${''}
+		},distance=..10] if score @s aj.id = .this aj.id run {
+						${thisVariantCommands.join('\n')}
 					}
 				} else {
 					tellraw @s ${rootExeErrorJsonText.replace(

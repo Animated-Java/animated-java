@@ -245,6 +245,7 @@ export async function renderAnimation(options) {
 	unselectAll()
 	Timeline.unselect()
 	let static_animation
+	let avalue
 
 	if (options.generate_static_animation) {
 		static_animation = new Animation({
@@ -299,7 +300,7 @@ export async function renderAnimation(options) {
 						scripts: effects,
 					}
 					let fdist = -Infinity
-					for (const bone of frame.bones) {
+					for (const bone of Object.values(frame.bones)) {
 						fdist = Math.max(
 							fdist,
 							Math.sqrt(
@@ -312,7 +313,7 @@ export async function renderAnimation(options) {
 					distance = Math.max(distance, fdist)
 					frames.push(frame)
 				}
-				let avalue = { frames, distance }
+				avalue = { frames, distance }
 				animation.computedDistance = distance
 				animations[animation.uuid] = avalue
 				Cache.update(animation, frames)

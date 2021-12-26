@@ -432,7 +432,7 @@ export function computeBones(models, animations) {
 	}
 
 	for (const [animUuid, anim] of Object.entries(animations)) {
-		for (const frame of anim) {
+		for (const frame of anim.frames) {
 			for (const [boneName, bone] of Object.entries(frame.bones)) {
 				if (bones[boneName]) {
 					// Create an object for each bone if it doesn't already exist
