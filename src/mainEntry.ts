@@ -8,6 +8,8 @@ import './ui/dialogs/settings'
 import EVENTS from './constants/events'
 import { renderAnimation } from './animationRenderer'
 
+import * as aj from './animatedJava'
+
 import {
 	exportPredicate,
 	exportRigModels,
@@ -21,7 +23,7 @@ import {
 	computeBones,
 	computeVariantModels,
 } from './modelComputation'
-
+// @ts-ignore
 import lang from './lang.yaml'
 import { intl } from './util/intl'
 import { makeArmorStandModel } from './makeArmorStandModel'
@@ -31,7 +33,7 @@ for (const name in lang) {
 }
 
 let F_IS_BUILDING = false
-export const BuildModel = (callback, options) => {
+export const BuildModel = (callback: any, options: any) => {
 	if (!F_IS_BUILDING) {
 		F_IS_BUILDING = true
 		computeAnimationData(callback, options)
@@ -68,29 +70,34 @@ export const BuildModel = (callback, options) => {
 	}
 }
 
-async function computeAnimationData(callback, options) {
+async function computeAnimationData(callback: (data: any) => any, options: any) {
 	console.groupCollapsed('Compute Animation Data')
 
-	const animations = await renderAnimation(options)
-	const cubeData = computeElements()
-	const models = await computeModels(cubeData)
-	const variantTextureOverrides = computeVariantTextureOverrides(models)
-	const bones = computeBones(models, animations)
+	const animations = await renderAnimation(options) as aj.Animations
+	const cubeData: aj.CubeData = computeElements()
+	const models: aj.ModelObject = await computeModels(cubeData)
+	const variantTextureOverrides = computeVariantTextureOverrides(models) as aj.VariantTextureOverrides
+	const bones = computeBones(models, animations) as aj.BoneObject
 	// const [variantModels, variantTouchedModels] = await computeVariantModels(models, variantTextureOverrides)
-	const variants = await computeVariantModels(models, variantTextureOverrides)
+	const variants = await computeVariantModels(models, variantTextureOverrides) as {
+		variantModels: aj.VariantModels
+		variantTouchedModels: aj.variantTouchedModels
+	}
 
 	// const flatVariantModels = {}
 	// Object.values(variantModels).forEach(variant => Object.entries(variant).forEach(([k,v]) => flatVariantModels[k] = v))
 	// console.log('Flat Variant Models:', flatVariantModels)
 
 	await exportRigModels(models, variants.variantModels)
+	// @ts-ignore
 	await exportPredicate(models, variants.variantModels, settings.animatedJava)
+	// @ts-ignore
 	if (settings.animatedJava.transparentTexturePath) {
 		await exportTransparentTexture()
 	}
 
 	const data = {
-		settings: settings.toObject(),
+		settings: settings.toObject() as aj.Settings,
 		cubeData,
 		bones,
 		models,
@@ -100,18 +107,19 @@ async function computeAnimationData(callback, options) {
 		// flatVariantModels,
 		animations,
 	}
-	console.groupEnd('Compute Animation Data')
+	console.groupEnd()
 	console.groupCollapsed('Exporter Output')
 	await callback(data)
-	console.groupEnd('Exporter Output')
+	console.groupEnd()
 }
 
 import './pluginDefinitions'
 import { show_settings } from './ui/dialogs/settings'
 
-const menu = new BarMenu('animated_java', [], () => Format.id === format.id)
+const menu: any = new BarMenu('animated_java', [], () => Format.id === format.id)
 menu.label.style.display = 'none'
 document.querySelector('#menu_bar').appendChild(menu.label)
+// @ts-ignore
 Blockbench.on('select_project', () => {
 	queueMicrotask(() => {
 		console.log('selected', Format.id !== format.id)
@@ -119,6 +127,7 @@ Blockbench.on('select_project', () => {
 			Format.id !== format.id ? 'none' : 'inline-block'
 	})
 })
+// @ts-ignore
 Blockbench.on('unselect_project', () => {
 	menu.label.style.display = 'none'
 })
@@ -138,12 +147,14 @@ MenuBar.addAction(
 )
 MenuBar.addAction(
 	{
+		// @ts-ignore
 		name: translate('animatedJava.menubar.export.name'),
 		id: 'animatedJava_export',
 		icon: 'insert_drive_file',
 		condition: () => format.id === Format.id,
 		click: () => {
 			// Call the selected exporter.
+			// @ts-ignore
 			const exporter = settings.animatedJava.exporter
 			if (exporter) {
 				store.getStore('exporters').get(exporter)()
@@ -167,7 +178,9 @@ const cb = () => {
 Blockbench.on('new_project', cb)
 bus.on(EVENTS.LIFECYCLE.CLEANUP, () => {
 	menu.label.remove()
+	// @ts-ignore
 	Blockbench.removeListener('new_project', cb)
 })
 
+// @ts-ignore
 window.makeArmorStandModel = makeArmorStandModel

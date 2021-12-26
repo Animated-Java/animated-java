@@ -3,7 +3,7 @@
 	"compilerOptions": {
 		"outDir": "dist",
 		"declaration": true,
-		"types": ["blockbench-types"],
+		"types": ["blockbench-types", "node"],
 		"lib": ["DOM", "ESNext"],
 		"target": "ESNext"
 	}
