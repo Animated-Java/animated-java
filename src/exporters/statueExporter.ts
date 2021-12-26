@@ -327,7 +327,7 @@ async function statueExport(data: any) {
 		data.bones,
 		data.animations,
 		data.settings.animatedJava,
-		data.settings['animatedJava_exporter_statueExporter'],
+		data.settings.animatedJava_exporter_statueExporter,
 		data.variantModels,
 		data.variantTextureOverrides,
 		data.variantTouchedModels

@@ -42,3 +42,127 @@ import './exporters/animationExporter'
 Blockbench.dispatchEvent('animated-java-ready', ANIMATED_JAVA)
 // @ts-ignore
 Blockbench.events['animated-java-ready'].length = 0
+
+// WOOO TYPING, YAAAAAAY
+
+export interface Settings {
+	animatedJava: {
+		projectName: string
+		exporter: string
+		useCache: boolean
+		cacheMode: 'memory' | 'disk'
+		rigItem: string
+		predicateFilePath: string
+		rigModelsExportFolder: string
+		transparentTexturePath: string
+		boundingBoxRenderMode: 'single' | 'multiple' | 'disabled'
+	}
+	[index: string]: any
+}
+
+type Bone = {
+	nbt: string
+	can_manipulate_arms: boolean
+	customModelData: number
+} & Cube
+
+export interface BoneObject {
+	[index: string]: Bone
+}
+
+type AnimationFrameBone = {
+	exported: boolean
+	pos: { x: number; y: number; z: number }
+	rot: { x: number; y: number; z: number }
+	scale: { x: number; y: number; z: number }
+}
+
+type Frame = {
+	bones: AnimationFrameBone[]
+	scripts: any
+}
+
+type Animation = {
+	frames: Frame[]
+	maxDistance: number
+}
+
+export interface Animations {
+	[index: string]: Animation
+}
+
+type ModelFace = {
+	texture: `#${number}`
+	uv: [number, number, number, number]
+}
+
+type ModelElement = {
+	faces: {
+		north?: ModelFace
+		south?: ModelFace
+		east?: ModelFace
+		west?: ModelFace
+		up?: ModelFace
+		down?: ModelFace
+	}
+	rotation: {
+		angle: number
+		axis: 'x' | 'y' | 'z'
+		origin: [number, number, number]
+	}
+	to: [number, number, number]
+	from: [number, number, number]
+	uuid?: string
+}
+
+type TextureObject = {
+	[index: number]: string
+	[index: `${number}`]: string
+}
+
+type Model = {
+	aj: {
+		customModelData: number
+	}
+	parent: string
+	display: any
+	elements: ModelElement[]
+	textures: TextureObject
+}
+
+export interface ModelObject {
+	[index: string]: Model
+}
+
+export interface CubeData {
+	clear_elements: ModelElement[]
+	element_index_lut: number[]
+	invalid_rot_elements: Bone[]
+	textures_used: Texture[]
+}
+
+type VariantModel = {
+	aj: {
+		customModelData: number
+	}
+	parent: string
+	textures: TextureObject
+}
+
+export interface VariantModels {
+	[index: string]: {
+		[index: string]: VariantModel
+	}
+}
+
+export interface VariantTextureOverrides {
+	[index: string]: {
+		[index: string]: {
+			textures: TextureObject
+		}
+	}
+}
+
+export interface variantTouchedModels {
+	[index: string]: Model
+}

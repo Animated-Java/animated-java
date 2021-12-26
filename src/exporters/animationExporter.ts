@@ -1,32 +1,4 @@
-
-async function createMCFile(
-	bones: any,
-	animations: any,
-	ajSettings: any,
-	statueExporterSettings: animationExporterSettings,
-	variantModels: any,
-	variantTextureOverrides: any,
-	variantTouchedModels: any
-): Promise<string> {
-	const FILE: string[] = []
-
-	return FILE.join('\n')
-}
-
-
-function animationExport(data: any) {
-
-	const mcFile = createMCFile(
-		data.bones,
-		data.animations,
-		data.settings.animatedJava,
-		data.settings.animatedJava_exporter_statueExporter,
-		data.variantModels,
-		data.variantTextureOverrides,
-		data.variantTouchedModels
-	)
-
-}
+import * as aj from '../animatedJava'
 
 interface animationExporterSettings {
 	modelTag: string
@@ -41,6 +13,38 @@ interface animationExporterSettings {
 	mcbFilePath: string | undefined
 	dataPackFilePath: string | undefined
 	markerArmorStands: boolean
+}
+
+async function createMCFile(
+	bones: aj.BoneObject,
+	models: aj.ModelObject,
+	animations: aj.Animations,
+	settings: aj.Settings,
+	variantModels: aj.VariantModels,
+	variantTextureOverrides: aj.VariantTextureOverrides,
+	variantTouchedModels: aj.variantTouchedModels
+): Promise<string> {
+	const ajSettings = settings.animatedJava
+	const exporterSettings: animationExporterSettings = settings.animatedJava_exporter_animationExporter
+
+	const FILE: string[] = []
+
+	return FILE.join('\n')
+}
+
+
+function animationExport(data: any) {
+
+	const mcFile = createMCFile(
+		data.bones,
+		data.models,
+		data.animations,
+		data.settings,
+		data.variantModels,
+		data.variantTextureOverrides,
+		data.variantTouchedModels
+	)
+
 }
 
 const Exporter = (AJ: any) => {
