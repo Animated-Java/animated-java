@@ -66,45 +66,87 @@ en:
     settings.global: (global)
 
     #? Statue Exporter
-    animatedJava_BUILTIN_statueExporter.title: Statue Exporter
     animatedJava.exporter.statue_exporter: Statue Exporter
 
-    animatedJava_BUILTIN_statueExporter.setting.rootEntityType.name: Root Entity Type
-    animatedJava_BUILTIN_statueExporter.setting.rootEntityType.description: The entity type to use as the root entity for the statue. Should probably be a stationary entity.
+    animatedJava.exporter.statueExporter.setting.rootEntityType.name: Root Entity Type
+    animatedJava.exporter.statueExporter.setting.rootEntityType.description: The entity type to use as the root entity for the statue. Should probably be a stationary entity.
 
-    # animatedJava_BUILTIN_statueExporter.setting.boneType.name: Bone Type
-    # animatedJava_BUILTIN_statueExporter.setting.boneType.description: AEC Stack provides more precise positional movement at the cost of doubling the amount of entities per bone.
-    # animatedJava_BUILTIN_statueExporter.setting.boneType.aecStack.name: AEC Stack
-    # animatedJava_BUILTIN_statueExporter.setting.boneType.armorStand.name: Armor Stand
+    # animatedJava.exporter.statueExporter.setting.boneType.name: Bone Type
+    # animatedJava.exporter.statueExporter.setting.boneType.description: AEC Stack provides more precise positional movement at the cost of doubling the amount of entities per bone.
+    # animatedJava.exporter.statueExporter.setting.boneType.aecStack.name: AEC Stack
+    # animatedJava.exporter.statueExporter.setting.boneType.armorStand.name: Armor Stand
 
-    animatedJava_BUILTIN_statueExporter.setting.markerArmorStands.name: Marker Armor Stands
-    animatedJava_BUILTIN_statueExporter.setting.markerArmorStands.description: When enabled all armor_stands used to display the rig will have no hitbox or collision.
+    animatedJava.exporter.statueExporter.setting.markerArmorStands.name: Marker Armor Stands
+    animatedJava.exporter.statueExporter.setting.markerArmorStands.description: When enabled all armor_stands used to display the rig will have no hitbox or collision.
 
-    animatedJava_BUILTIN_statueExporter.setting.modelTag.name: Model Tag
-    animatedJava_BUILTIN_statueExporter.setting.modelTag.description: The tag used to select the model
+    animatedJava.exporter.statueExporter.setting.modelTag.name: Model Tag
+    animatedJava.exporter.statueExporter.setting.modelTag.description: The tag used to select the model
 
-    animatedJava_BUILTIN_statueExporter.setting.rootTag.name: Root Tag
-    animatedJava_BUILTIN_statueExporter.setting.rootTag.description: The tag used to select the statue's root entity
+    animatedJava.exporter.statueExporter.setting.rootTag.name: Root Tag
+    animatedJava.exporter.statueExporter.setting.rootTag.description: The tag used to select the statue's root entity
 
-    animatedJava_BUILTIN_statueExporter.setting.allBonesTag.name: All Bones Tag
-    animatedJava_BUILTIN_statueExporter.setting.allBonesTag.description: The tag used to select any or all of the statue's bones
+    animatedJava.exporter.statueExporter.setting.allBonesTag.name: All Bones Tag
+    animatedJava.exporter.statueExporter.setting.allBonesTag.description: The tag used to select any or all of the statue's bones
 
-    animatedJava_BUILTIN_statueExporter.setting.individualBoneTag.name: Individual Bone Tag
-    animatedJava_BUILTIN_statueExporter.setting.individualBoneTag.description: The tag used to select a specific bone by name
+    animatedJava.exporter.statueExporter.setting.individualBoneTag.name: Individual Bone Tag
+    animatedJava.exporter.statueExporter.setting.individualBoneTag.description: The tag used to select a specific bone by name
 
-    animatedJava_BUILTIN_statueExporter.setting.internalScoreboardObjective.name: Internal Scoreboard
-    animatedJava_BUILTIN_statueExporter.setting.internalScoreboardObjective.description: The name of the scoreboard objective used for internal calculations
+    animatedJava.exporter.statueExporter.setting.internalScoreboardObjective.name: Internal Scoreboard
+    animatedJava.exporter.statueExporter.setting.internalScoreboardObjective.description: The name of the scoreboard objective used for internal calculations
 
-    animatedJava_BUILTIN_statueExporter.setting.idScoreboardObjective.name: Model ID scoreboard objective
-    animatedJava_BUILTIN_statueExporter.setting.idScoreboardObjective.description: The name of the scoreboard objective used to identify which entities belong to which model instance
+    animatedJava.exporter.statueExporter.setting.idScoreboardObjective.name: Model ID scoreboard objective
+    animatedJava.exporter.statueExporter.setting.idScoreboardObjective.description: The name of the scoreboard objective used to identify which entities belong to which model instance
 
-    animatedJava_BUILTIN_statueExporter.setting.exportMode.name: Export Mode
-    animatedJava_BUILTIN_statueExporter.setting.exportMode.description: What kind of format to export to. Vanilla will export a normal Data Pack and Resource Pack. MCB will export a Resource Pack and .mc file for the lang-mc compiler
-    animatedJava_BUILTIN_statueExporter.setting.exportMode.vanilla.name: Vanilla
-    animatedJava_BUILTIN_statueExporter.setting.exportMode.mcb.name: MCB
+    animatedJava.exporter.statueExporter.setting.exportMode.name: Export Mode
+    animatedJava.exporter.statueExporter.setting.exportMode.description: What kind of format to export to. Vanilla will export a normal Data Pack and Resource Pack. MCB will export a Resource Pack and .mc file for the lang-mc compiler
+    animatedJava.exporter.statueExporter.setting.exportMode.vanilla.name: Vanilla
+    animatedJava.exporter.statueExporter.setting.exportMode.mcb.name: MCB
 
-    animatedJava_BUILTIN_statueExporter.setting.mcbFilePath.name: Lang-mc file
-    animatedJava_BUILTIN_statueExporter.setting.mcbFilePath.description: The path to export the .mc file to
+    animatedJava.exporter.statueExporter.setting.mcbFilePath.name: Lang-mc file
+    animatedJava.exporter.statueExporter.setting.mcbFilePath.description: The path to export the .mc file to
 
-    animatedJava_BUILTIN_statueExporter.setting.dataPackPath.name: Data Pack (Unsupported in current version)
-    animatedJava_BUILTIN_statueExporter.setting.dataPackPath.description: The path to export the generated Data Pack to. (Coming soon!)
+    animatedJava.exporter.statueExporter.setting.dataPackPath.name: Data Pack (Unsupported in current version)
+    animatedJava.exporter.statueExporter.setting.dataPackPath.description: The path to export the generated Data Pack to. (Coming soon!)
+
+    #? Statue Exporter
+    animatedJava.exporter.animation_exporter: Animation Exporter
+
+    animatedJava.exporter.animationExporter.setting.rootEntityType.name: Root Entity Type
+    animatedJava.exporter.animationExporter.setting.rootEntityType.description: The entity type to use as the root entity for the rig
+
+    animatedJava.exporter.animationExporter.setting.boneType.name: Bone Type
+    animatedJava.exporter.animationExporter.setting.boneType.description: AEC Stack provides more precise positional movement at the cost of doubling the amount of entities per bone.
+    animatedJava.exporter.animationExporter.setting.boneType.aecStack.name: AEC Stack
+    animatedJava.exporter.animationExporter.setting.boneType.armorStand.name: Armor Stand
+
+    animatedJava.exporter.animationExporter.setting.markerArmorStands.name: Marker Armor Stands
+    animatedJava.exporter.animationExporter.setting.markerArmorStands.description: When enabled all armor_stands used to display the rig will have no hitbox or collision.
+
+    animatedJava.exporter.animationExporter.setting.modelTag.name: Model Tag
+    animatedJava.exporter.animationExporter.setting.modelTag.description: The tag used to select the model
+
+    animatedJava.exporter.animationExporter.setting.rootTag.name: Root Tag
+    animatedJava.exporter.animationExporter.setting.rootTag.description: The tag used to select the rig's root entity
+
+    animatedJava.exporter.animationExporter.setting.allBonesTag.name: All Bones Tag
+    animatedJava.exporter.animationExporter.setting.allBonesTag.description: The tag used to select any or all of the rig's bones
+
+    animatedJava.exporter.animationExporter.setting.individualBoneTag.name: Individual Bone Tag
+    animatedJava.exporter.animationExporter.setting.individualBoneTag.description: The tag used to select a specific bone by name
+
+    animatedJava.exporter.animationExporter.setting.internalScoreboardObjective.name: Internal Scoreboard
+    animatedJava.exporter.animationExporter.setting.internalScoreboardObjective.description: The name of the scoreboard objective used for internal calculations
+
+    animatedJava.exporter.animationExporter.setting.idScoreboardObjective.name: Model ID scoreboard objective
+    animatedJava.exporter.animationExporter.setting.idScoreboardObjective.description: The name of the scoreboard objective used to identify which entities belong to which model instance
+
+    animatedJava.exporter.animationExporter.setting.exportMode.name: Export Mode
+    animatedJava.exporter.animationExporter.setting.exportMode.description: What kind of format to export to. Vanilla will export a normal Data Pack and Resource Pack. MCB will export a Resource Pack and .mc file for the lang-mc compiler
+    animatedJava.exporter.animationExporter.setting.exportMode.vanilla.name: Vanilla
+    animatedJava.exporter.animationExporter.setting.exportMode.mcb.name: MCB
+
+    animatedJava.exporter.animationExporter.setting.mcbFilePath.name: Lang-mc file
+    animatedJava.exporter.animationExporter.setting.mcbFilePath.description: The path to export the .mc file to
+
+    animatedJava.exporter.animationExporter.setting.dataPackPath.name: Data Pack (Unsupported in current version)
+    animatedJava.exporter.animationExporter.setting.dataPackPath.description: The path to export the generated Data Pack to. (Coming soon!)

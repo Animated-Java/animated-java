@@ -37,6 +37,7 @@ util.bus.on(events.LIFECYCLE.CLEANUP, () => {
 })
 
 import './exporters/statueExporter'
+import './exporters/animationExporter'
 // @ts-ignore
 Blockbench.dispatchEvent('animated-java-ready', ANIMATED_JAVA)
 // @ts-ignore
