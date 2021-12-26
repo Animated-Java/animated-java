@@ -1,0 +1,10 @@
+{
+	"include": ["*"],
+	"compilerOptions": {
+		"outDir": "dist",
+		"declaration": true,
+		"types": ["blockbench-types"],
+		"lib": ["DOM", "ESNext"],
+		"target": "ESNext"
+	}
+}

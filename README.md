@@ -1,2 +1,1 @@
-# animated-java
-The repo for release versions of the animated java blockbench plugin
+A blockbench plugin to export bedrock models to java armor_stand animations.
