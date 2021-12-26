@@ -4,6 +4,8 @@ en:
 
     panel.states: Model Varients
 
+    animatedJava.popup.quickMessage.noExporterSelected: No Exporter Selected!
+
     animatedJava.popup.warning.rigFolderUnused.title: Unused rig folder
     animatedJava.popup.warning.rigFolderUnused.body1: This folder does not contain any existing rigs.
     animatedJava.popup.warning.rigFolderUnused.body2: Are you sure you want to use this folder?
@@ -15,10 +17,12 @@ en:
     #? AJ Settings
     animatedJava.menubar.dropdown.name: Animated Java
     animatedJava.menubar.settings.name: Settings
-    animatedJava.menubar.exporterList.name: Export
 
     animatedJava.setting.projectName.name: Project Name
     animatedJava.setting.projectName.description: The name of your model.
+
+    animatedJava.setting.exporter.name: Exporter
+    animatedJava.setting.exporter.description: Which export format to use for this project
 
     animatedJava.setting.rigItem.name: Rig Item
     animatedJava.setting.rigItem.description: The item that will be used to display the models on the armor_stands
@@ -53,7 +57,7 @@ en:
     settings.global: (global)
 
     #? Statue Exporter
-    animatedJava_BUILTIN_statueExporter.title: Statue Exporter
+    animatedJava.exporter.statue_exporter: Statue Exporter
 
     animatedJava_BUILTIN_statueExporter.setting.rootEntityType.name: Root Entity Type
     animatedJava_BUILTIN_statueExporter.setting.rootEntityType.description: The entity type to use as the root entity for the statue. Should probably be a stationary entity.

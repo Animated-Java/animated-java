@@ -116,11 +116,13 @@ export async function exportRigModels(models, textures) {
 				textures_JSON[id] = getTexturePath(texture)
 			}
 		}
+
 		// Export the model
 		const modelJSON = {
-			__credit: 'Animated Java',
+			__credit: 'Generated using Animated Java (https://animated-java.dev/)',
 			textures: textures_JSON,
 			...model,
+			aj: undefined
 		}
 		Blockbench.writeFile(model_file_path, {
 			content: autoStringify(modelJSON),

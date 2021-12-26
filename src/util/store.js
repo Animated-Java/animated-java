@@ -1,5 +1,5 @@
 import { bus } from './bus'
-import { EventSystem } from './EventSystem'
+import { EventSystem } from './eventSystem'
 
 const StoreRef_UpdateReceiver = Symbol.for('StoreRef.UpdateReceiver')
 const StoreRef_Target = Symbol.for('StoreRef.Target')

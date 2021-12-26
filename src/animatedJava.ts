@@ -4,7 +4,7 @@ import * as util from './util'
 import events from './constants/events'
 import { format } from './modelFormat'
 import { registerSettingRenderer } from './ui/dialogs/settings'
-import './ui/mods/bone_config'
+import './ui/mods/boneConfig'
 import './compileLangMC'
 const ANIMATED_JAVA = {
 	build(callback: Function, configuration: Record<any, any>) {
@@ -16,11 +16,8 @@ const ANIMATED_JAVA = {
 			Object.assign(default_configuration, configuration)
 		)
 	},
-	addExportAction(action: any) {
-		// @ts-ignore
-		MenuBar.addAction(action, 'animated_java.export')
-		// @ts-ignore
-		MenuBar.update()
+	registerExportFunc(name: string, exportFunc: () => void) {
+		util.store.getStore('exporters').set(name, exportFunc)
 	},
 	settings,
 	util,

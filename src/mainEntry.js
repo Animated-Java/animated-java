@@ -122,11 +122,19 @@ MenuBar.addAction(
 )
 MenuBar.addAction(
 	{
-		name: translate('animatedJava.menubar.exporterList.name'),
-		id: 'export',
+		name: translate('animatedJava.menubar.export.name'),
+		id: 'animatedJava_export',
 		icon: 'insert_drive_file',
-		children: ['_'],
-		condition: () => format.id === Format.id,
+		condition: () => (format.id === Format.id),
+		click: () => {
+			// Call the selected exporter.
+			const exporter = settings.animatedJava.exporter
+			if (exporter) {
+				store.getStore('exporters').get(exporter)()
+			} else {
+				Blockbench.showQuickMessage(translate('animatedJava.popup.quickMessage.noExporterSelected'))
+			}
+		}
 	},
 	'animated_java'
 )

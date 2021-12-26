@@ -1,4 +1,4 @@
-import { EventSystem } from './EventSystem'
+import { EventSystem } from './eventSystem'
 export const bus = new EventSystem('bus')
 
 // 													.,,,,,,,,

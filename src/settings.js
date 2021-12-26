@@ -14,7 +14,19 @@ export const DefaultSettings = {
 					return value === safe_function_name(value)
 				else return false
 			},
-			// Returns a string file path. If not populated prompt the user for a path
+		},
+		exporter: {
+			type: 'select',
+			default: undefined,
+			get options() {
+				return Object.fromEntries([...store.getStore('exporters').keys()].map(v => [v,`animatedJava.exporter.${v}`]))
+			},
+			populate() {
+				return [...store.getStore('exporters').keys()][0]
+			},
+			isValid(value) {
+				return [...store.getStore('exporters').keys()].includes(value)
+			},
 		},
 		rigItem: {
 			type: 'text',

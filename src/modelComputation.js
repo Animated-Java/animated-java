@@ -262,7 +262,7 @@ export async function computeModels(cube_data) {
 	function recurse(group) {
 		console.log(group)
 		if (group instanceof Group && group.name !== 'SCENE') {
-			models[group.name] = {}
+			models[group.name] = {aj:{}}
 			models[group.name].elements = group.children
 				.filter((c) => c instanceof Cube)
 				.map((current) =>
@@ -283,21 +283,24 @@ export async function computeModels(cube_data) {
 
 	console.log('Unscaled Models', models)
 
-	const scaled_models = await scaleModels(models)
+	const scaledModels = await scaleModels(models)
 
-	console.log('Scaled Models', scaled_models)
+	console.log('Scaled Models', scaledModels)
 	console.groupEnd('Compute Models')
-	return scaled_models
+	return scaledModels
 }
 
-export async function computeVariantModels(models) {
-	const variants = await store.get('states')
+export async function computeVariantModels(models, variantOverrides) {
+	const variants = store.get('states')
 
+	for (const [variantName, variant] of Object.entries(variants)) {
 
+	}
 
+	return
 }
 
-export function computeBones(models, animations, state_overrides) {
+export function computeBones(models, animations, variantOverrides) {
 	console.groupCollapsed('Compute Bones')
 	resetPredicateData()
 
@@ -314,7 +317,9 @@ export function computeBones(models, animations, state_overrides) {
 				typeof models[parentMesh.name].id !== 'number'
 			) {
 				console.log('Parent Bone:', parentMesh.name, value.parent)
-				value.parent.customModelData = getPredicateId()
+				const predicateId = getPredicateId()
+				models[parentMesh.name].aj.customModelData = predicateId
+				value.parent.customModelData = predicateId
 				value.parent.scales = {}
 				value.parent.can_manipulate_arms =
 					parentMesh.can_manipulate_arms
