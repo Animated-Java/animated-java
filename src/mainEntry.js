@@ -7,7 +7,20 @@ import './ui/panels/states'
 import './ui/dialogs/settings'
 import EVENTS from './constants/events'
 import { renderAnimation } from './animationRenderer'
-import { exportPredicate, exportRigModels } from './exporting'
+
+import {
+	exportPredicate,
+	exportRigModels,
+	exportTransparentTexture,
+} from './exporting'
+
+import {
+	computeElements,
+	computeModels,
+	computeVariantTextureOverrides,
+	computeBones,
+	computeVariantModels,
+} from './modelComputation'
 
 import lang from './lang.yaml'
 import { intl } from './util/intl'
@@ -55,13 +68,6 @@ export const BuildModel = (callback, options) => {
 	}
 }
 
-import {
-	computeElements,
-	computeModels,
-	computeVariantTextureOverrides,
-	computeBones,
-	computeVariantModels,
-} from './modelComputation'
 async function computeAnimationData(callback, options) {
 	console.groupCollapsed('Compute Animation Data')
 
@@ -70,14 +76,18 @@ async function computeAnimationData(callback, options) {
 	const models = await computeModels(cubeData)
 	const variantTextureOverrides = computeVariantTextureOverrides(models)
 	const bones = computeBones(models, animations)
-	const variantModels = await computeVariantModels(models, variantTextureOverrides)
+	// const [variantModels, variantTouchedModels] = await computeVariantModels(models, variantTextureOverrides)
+	const variants = await computeVariantModels(models, variantTextureOverrides)
 
 	// const flatVariantModels = {}
 	// Object.values(variantModels).forEach(variant => Object.entries(variant).forEach(([k,v]) => flatVariantModels[k] = v))
 	// console.log('Flat Variant Models:', flatVariantModels)
 
-	await exportRigModels(models, variantModels)
-	await exportPredicate(models, variantModels, settings.animatedJava)
+	await exportRigModels(models, variants.variantModels)
+	await exportPredicate(models, variants.variantModels, settings.animatedJava)
+	if (settings.animatedJava.transparentTexturePath) {
+		await exportTransparentTexture()
+	}
 
 	const data = {
 		settings: settings.toObject(),
@@ -85,7 +95,8 @@ async function computeAnimationData(callback, options) {
 		bones,
 		models,
 		variantTextureOverrides,
-		variantModels,
+		variantModels: variants.variantModels,
+		variantTouchedModels: variants.variantTouchedModels,
 		// flatVariantModels,
 		animations,
 	}
@@ -130,16 +141,20 @@ MenuBar.addAction(
 		name: translate('animatedJava.menubar.export.name'),
 		id: 'animatedJava_export',
 		icon: 'insert_drive_file',
-		condition: () => (format.id === Format.id),
+		condition: () => format.id === Format.id,
 		click: () => {
 			// Call the selected exporter.
 			const exporter = settings.animatedJava.exporter
 			if (exporter) {
 				store.getStore('exporters').get(exporter)()
 			} else {
-				Blockbench.showQuickMessage(translate('animatedJava.popup.quickMessage.noExporterSelected'))
+				Blockbench.showQuickMessage(
+					translate(
+						'animatedJava.popup.quickMessage.noExporterSelected'
+					)
+				)
 			}
-		}
+		},
 	},
 	'animated_java'
 )

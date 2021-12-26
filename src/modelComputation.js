@@ -361,9 +361,10 @@ export async function computeModels(cubeData) {
 }
 
 export async function computeVariantModels(models, variantOverrides) {
-	console.group('Compute Variant Models')
+	console.groupCollapsed('Compute Variant Models')
 	const variants = store.get('states')
 	const variantModels = {}
+	const variantTouchedModels = {}
 
 	for (const [variantName, variant] of Object.entries(variants)) {
 		variantModels[variantName] = {}
@@ -373,6 +374,7 @@ export async function computeVariantModels(models, variantOverrides) {
 			const thisModelOverrides = thisVariantOverrides[modelName]
 
 			if (thisModelOverrides && size(thisModelOverrides.textures)) {
+				variantTouchedModels[modelName] = model
 				const newVariantModel = {
 					aj: {
 						customModelData: getPredicateId(),
@@ -391,7 +393,7 @@ export async function computeVariantModels(models, variantOverrides) {
 	}
 
 	console.groupEnd('Compute Variant Models')
-	return variantModels
+	return { variantModels, variantTouchedModels }
 }
 
 export function computeBones(models, animations) {
@@ -435,11 +437,6 @@ export function computeBones(models, animations) {
 		for (const frame of anim.frames) {
 			for (const [boneName, bone] of Object.entries(frame.bones)) {
 				if (bones[boneName]) {
-					// Create an object for each bone if it doesn't already exist
-					// if (!bones[boneName].scales) {
-					// 	console.log('new scale obj')
-					// 	bones[boneName].scales = {}
-					// }
 					// Save this scale to the bone's scale object
 					const rounded = roundScale(bone.scale, 1000)
 					const vecStr = `${rounded.x},${rounded.y},${rounded.z}`
@@ -464,6 +461,13 @@ export function computeVariantTextureOverrides(models) {
 	const variants = store.get('states')
 	const variantModels = {}
 
+	let transparentTexturePath
+	if (settings.animatedJava.transparentTexturePath) {
+		transparentTexturePath = resourcepack.getTexturePath({
+			path: settings.animatedJava.transparentTexturePath,
+		})
+	}
+
 	for (const [variantName, variant] of Object.entries(variants).sort()) {
 		const thisVariant = {}
 		// console.log('State:', state)
@@ -479,11 +483,42 @@ export function computeVariantTextureOverrides(models) {
 					if (hasTexture(model, texture)) {
 						//* Create texture override based on state
 						if (replaceTexture) {
-							if (!thisVariant[modelName])
+							if (!thisVariant[modelName]) {
 								thisVariant[modelName] = { textures: {} }
-							console.log(replaceTexture)
+							}
+							console.log(texture, '->', replaceTexture)
 							thisVariant[modelName].textures[`${texture.id}`] =
 								resourcepack.getTexturePath(replaceTexture)
+
+						} else if (variant[uuid] === 'transparent') {
+							if (transparentTexturePath) {
+								if (!thisVariant[modelName]) {
+									thisVariant[modelName] = { textures: {} }
+								}
+								console.log(texture, '-> transparent')
+								thisVariant[modelName].textures[`${texture.id}`] = transparentTexturePath
+							} else {
+								let d = new Dialog({
+									title: translate(
+										'animatedJava.popup.error.transparentTexturePathNotFound.title'
+									),
+									lines: [
+										`<p>${translate(
+											'animatedJava.popup.error.transparentTexturePathNotFound.body1'
+										)}</p>`,
+										`<p>${translate(
+											'animatedJava.popup.error.transparentTexturePathNotFound.body2'
+										)}</p>`,
+									],
+									onConfirm() {
+										d.hide()
+									},
+									onCancel() {
+										d.hide()
+									},
+								}).show()
+								throw new CustomError({ silent: true })
+							}
 						}
 					}
 				}

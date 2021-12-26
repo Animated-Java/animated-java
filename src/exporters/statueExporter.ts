@@ -19,7 +19,8 @@ async function createMCFile(
 	ajSettings: any,
 	statueExporterSettings: statueExporterSettings,
 	variantModels: any,
-	variantTextureOverrides: any
+	variantTextureOverrides: any,
+	variantTouchedModels: any
 ): Promise<string> {
 	const FILE: string[] = []
 	const projectName = safeFunctionName(ajSettings.projectName)
@@ -51,7 +52,7 @@ async function createMCFile(
 		root: format(statueExporterSettings.rootTag, {
 			modelName: projectName,
 		}),
-		all_bones: format(statueExporterSettings.allBonesTag, {
+		allBones: format(statueExporterSettings.allBonesTag, {
 			modelName: projectName,
 		}),
 		individualBone: format(statueExporterSettings.individualBoneTag, {
@@ -145,6 +146,7 @@ async function createMCFile(
 		if (!nbt.map.Tags) nbt.add('Tags', new nbtlint.TagList())
 		nbt.map.Tags.push(new nbtlint.TagString('new'))
 		nbt.map.Tags.push(new nbtlint.TagString(tags.model))
+		nbt.map.Tags.push(new nbtlint.TagString(tags.allBones))
 		nbt.map.Tags.push(
 			new nbtlint.TagString(
 				format(tags.individualBone, { boneName: boneName })
@@ -237,20 +239,23 @@ async function createMCFile(
 	for (const [variantName, variant] of Object.entries(
 		variantModels as Record<string, any>
 	)) {
+
+		const thisVariantTouchedModels = {...variantTouchedModels, ...variant}
 		const thisVariantCommands = Object.entries(
-			variant as Record<string, any>
+			thisVariantTouchedModels as Record<string, any>
 		).map(([k, v]) =>
 			format(variantBoneModifier, {
 				customModelData: v.aj.customModelData,
 				boneName: k,
 			})
 		)
+
 		FILE.push(`
 			function ${variantName} {
 				execute (if entity @s[tag=${tags.root}] at @s) {
 					scoreboard players operation .this aj.id = @s aj.id
 					execute as @e[type=${entityTypes.boneDisplay},tag=${
-			tags.all_bones
+			tags.allBones
 		},distance=..10] if score @s aj.id = .this aj.id run {
 						${thisVariantCommands.join('\n')}
 					}
@@ -275,7 +280,8 @@ async function statueExport(data: any) {
 		data.settings.animatedJava,
 		data.settings.animatedJava_BUILTIN_statueExporter,
 		data.variantModels,
-		data.variantTextureOverrides
+		data.variantTextureOverrides,
+		data.variantTouchedModels
 	)
 
 	console.log('mcFile:', mcFile)

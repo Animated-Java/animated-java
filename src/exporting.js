@@ -5,6 +5,7 @@ import { mkdir } from './util'
 import { CustomError } from './util/CustomError'
 import { translate } from './util/intl'
 import { safeFunctionName } from './util/replace'
+import transparent from './assets/transparent.png'
 
 // Exports the model.json rig files
 export async function exportRigModels(models, variantModels) {
@@ -168,4 +169,11 @@ export async function exportPredicate(models, variantModels, ajSettings) {
 		content: autoStringify(predicateJSON),
 	})
 	console.groupEnd('Export Predicate Model')
+}
+
+export async function exportTransparentTexture() {
+	console.log(transparent)
+	Blockbench.writeFile(settings.animatedJava.transparentTexturePath, {
+		content: Buffer.from(String(transparent).replace('data:image/png;base64,',''), 'base64'),
+	})
 }

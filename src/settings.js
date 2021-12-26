@@ -73,6 +73,24 @@ export const DefaultSettings = {
 				return true
 			},
 		},
+		transparentTexturePath: {
+			type: 'filepath',
+			default: '',
+			props: {
+				target: 'file',
+				dialogOpts: {
+					defaultPath: '',
+					promptToCreate: true,
+					properties: ['openFile'],
+				},
+			},
+			populate() {
+				return ''
+			},
+			isValid(value) {
+				return true
+			},
+		},
 		useCache: {
 			type: 'checkbox',
 			default: true,

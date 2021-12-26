@@ -136,20 +136,23 @@ const vec3 = StructTypes.Object({
 	y: StructTypes.Float,
 	z: StructTypes.Float,
 })
-const struct = StructTypes.ArrayOf(
-	StructTypes.Object({
-		bones: StructTypes.ObjectOf(
-			StructTypes.String,
-			StructTypes.Object({
-				pos: vec3,
-				rot: StructTypes.ArrayOf(StructTypes.Float),
-				scale: vec3,
-				exported: StructTypes.Boolean,
-			})
-		),
-		scripts: StructTypes.Object({}),
-	})
-)
+const struct = StructTypes.Object({
+	frames: StructTypes.ArrayOf(
+		StructTypes.Object({
+			bones: StructTypes.ObjectOf(
+				StructTypes.String,
+				StructTypes.Object({
+					pos: vec3,
+					rot: StructTypes.ArrayOf(StructTypes.Float),
+					scale: vec3,
+					exported: StructTypes.Boolean,
+				})
+			),
+			scripts: StructTypes.Object({}),
+		})
+	),
+	maxDistance: StructTypes.Double,
+})
 
 const packer = StructPacker.create(struct)
 packer.defaultPreReadHandlers = [(buf) => gunzipSync(buf)]
@@ -267,7 +270,7 @@ export async function renderAnimation(options) {
 		for (const animation of Animator.animations.sort()) {
 			const value = Cache.hit(animation)
 			if (!value) {
-				let distance = -Infinity
+				let maxDistance = -Infinity
 				const frames = []
 				animation.select()
 
@@ -310,15 +313,14 @@ export async function renderAnimation(options) {
 							)
 						)
 					}
-					distance = Math.max(distance, fdist)
+					maxDistance = Math.max(maxDistance, fdist)
 					frames.push(frame)
 				}
-				avalue = { frames, distance }
-				animation.computedDistance = distance
+				avalue = { frames, maxDistance }
 				animations[animation.uuid] = avalue
-				Cache.update(animation, frames)
+				Cache.update(animation, avalue)
 			} else {
-				animations[animation.uuid] = avalue
+				animations[animation.uuid] = value
 			}
 		}
 

@@ -14,9 +14,14 @@ en:
     animatedJava.popup.error.rigFolderAlreadyUsedByOther.body1: This folder already contains a rig for another model.
     animatedJava.popup.error.rigFolderAlreadyUsedByOther.body2: Are you sure you want to overwrite the existing rig?
 
+    animatedJava.popup.error.transparentTexturePathNotFound.title: Transparent Texture Path Not Defined
+    animatedJava.popup.error.transparentTexturePathNotFound.body1: Looks like you're trying to use variants with transparent textures without defining a texture path!
+    animatedJava.popup.error.transparentTexturePathNotFound.body2: You'll need to configure the transparent texture path in the settings before you can export.
+
     #? AJ Settings
     animatedJava.menubar.dropdown.name: Animated Java
     animatedJava.menubar.settings.name: Settings
+    animatedJava.menubar.exporterList.name: Exporters
 
     animatedJava.setting.projectName.name: Project Name
     animatedJava.setting.projectName.description: The name of your model.
@@ -32,6 +37,9 @@ en:
 
     animatedJava.setting.predicateFilePath.name: Rig Item File
     animatedJava.setting.predicateFilePath.description: The item model file of the rig item
+
+    animatedJava.setting.transparentTexturePath.name: Transparent Texture Path
+    animatedJava.setting.transparentTexturePath.description: A transparent texture for adding transparency to variants. Only needed if you're using transparency in your variants.
 
     animatedJava.setting.useCache.name: Use Animation Cache
     animatedJava.setting.useCache.description: Only re-render changed animations
@@ -57,6 +65,7 @@ en:
     settings.global: (global)
 
     #? Statue Exporter
+    animatedJava_BUILTIN_statueExporter.title: Statue Exporter
     animatedJava.exporter.statue_exporter: Statue Exporter
 
     animatedJava_BUILTIN_statueExporter.setting.rootEntityType.name: Root Entity Type
