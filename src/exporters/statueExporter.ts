@@ -1,5 +1,12 @@
 import nbtlint from '../dependencies/nbtlint/docs/nbt-lint'
-import { safeFunctionName, format, fix_indent, store, JsonText } from '../util'
+import {
+	safeFunctionName,
+	format,
+	fix_indent,
+	store,
+	JsonText,
+	cloneObject,
+} from '../util'
 
 interface MCBConfig {
 	dev: boolean
@@ -186,8 +193,8 @@ async function createMCFile(
 						id: new nbtlint.TagString(ajSettings.rigItem),
 						Count: new nbtlint.TagByte(1),
 						tag: new nbtlint.TagCompound({
-							CustomModelData: new nbtlint.TagInteger(
-								bone.customModelData
+							CustomModelData: new nbtlint.TagString(
+								'%customModelData'
 							),
 						}),
 					}),
@@ -209,6 +216,7 @@ async function createMCFile(
 		summons.push({
 			boneName,
 			nbt,
+			customModelData: bone.customModelData,
 			command: `summon armor_stand ^${boneFrame.pos.x} ^${boneFrame.pos.y + HEAD_Y_OFFSET} ^${boneFrame.pos.z}`,
 		})
 	}
@@ -239,22 +247,18 @@ async function createMCFile(
 	for (const [variantName, variant] of Object.entries(
 		variantModels as Record<string, any>
 	)) {
-		console.log(variant)
+		const thisSummons = []
 		for (const summon of summons) {
 			if (Object.keys(variant).includes(summon.boneName)) {
-				console.log('included in variant')
-				summon.nbt.map.ArmorItems.list[3] = new nbtlint.TagCompound({
-					id: new nbtlint.TagString(ajSettings.rigItem),
-					Count: new nbtlint.TagByte(1),
-					tag: new nbtlint.TagCompound({
-						CustomModelData: new nbtlint.TagInteger(
-							variant[summon.boneName].aj.customModelData
-						),
-					}),
+				console.log('Included in variant')
+				thisSummons.push({
+					...summon,
+					customModelData:
+						variant[summon.boneName].aj.customModelData,
 				})
 			}
 		}
-		console.log(summons)
+
 		// prettier-ignore
 		FILE.push(`
 		function ${variantName} {
@@ -262,7 +266,9 @@ async function createMCFile(
 			execute as @e[type=${entityTypes.root},tag=${tags.root},tag=new,distance=..1,limit=1] at @s rotated ~ 0 run {
 				execute store result score @s aj.id run scoreboard players add .aj.last_id aj.i 1
 
-				${summons.map(v => `${v.command} ${nbtlint.stringify(v.nbt, '', {deflate: true})}`).join('\n')}
+				${summons.map(v => {
+					return `${v.command} ${nbtlint.stringify(v.nbt, '', {deflate: true})}`.replace('"%customModelData"', v.customModelData)
+				}).join('\n')}
 
 				execute as @e[type=${entityTypes.bone},tag=${tags.model},tag=new,distance=..10] positioned as @s run {
 					scoreboard players operation @s aj.id = .aj.last_id aj.i
@@ -391,7 +397,7 @@ const Exporter = (AJ: any) => {
 			populate() {
 				return true
 			},
-			isValid(value) {
+			isValid(value: any) {
 				return typeof value === 'boolean'
 			},
 		},
