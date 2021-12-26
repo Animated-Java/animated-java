@@ -34,6 +34,7 @@ async function createMCFile(
 
 	const staticAnimationUuid = store.get('static_animation_uuid')
 	const staticFrame = animations[staticAnimationUuid].frames[0].bones
+	const staticDistance = animations[staticAnimationUuid].maxDistance
 
 	const rootExeErrorJsonText = new JsonText([
 		'',
@@ -126,7 +127,7 @@ async function createMCFile(
 				scoreboard players operation # ${scoreboards.id} = @s ${scoreboards.id}
 				execute as @e[type=${entityTypes.bone},tag=${
 		tags.model
-	},distance=..10] if score @s ${scoreboards.id} = # ${
+	},distance=..${staticDistance}] if score @s ${scoreboards.id} = # ${
 		scoreboards.id
 	} run kill @s
 				kill @s
@@ -232,7 +233,7 @@ async function createMCFile(
 
 	// 			${summons.join('\n')}
 
-	// 			execute as @e[type=${entityTypes.bone},tag=${tags.model},tag=new,distance=..10] positioned as @s run {
+	// 			execute as @e[type=${entityTypes.bone},tag=${tags.model},tag=new,distance=..${staticDistance}] positioned as @s run {
 	// 				scoreboard players operation @s aj.id = .aj.last_id aj.i
 	// 				tp @s ~ ~ ~ ~ ~
 	// 				tag @s remove new
@@ -270,7 +271,7 @@ async function createMCFile(
 					return `${v.command} ${nbtlint.stringify(v.nbt, '', {deflate: true})}`.replace('"%customModelData"', v.customModelData)
 				}).join('\n')}
 
-				execute as @e[type=${entityTypes.bone},tag=${tags.model},tag=new,distance=..10] positioned as @s run {
+				execute as @e[type=${entityTypes.bone},tag=${tags.model},tag=new,distance=..${staticDistance}] positioned as @s run {
 					scoreboard players operation @s aj.id = .aj.last_id aj.i
 					tp @s ~ ~ ~ ~ ~
 					tag @s remove new
@@ -304,7 +305,7 @@ async function createMCFile(
 					scoreboard players operation .this aj.id = @s aj.id
 					execute as @e[type=${entityTypes.boneDisplay},tag=${
 			tags.allBones
-		},distance=..10] if score @s aj.id = .this aj.id run {
+		},distance=..${staticDistance}] if score @s aj.id = .this aj.id run {
 						${thisVariantCommands.join('\n')}
 					}
 				} else {
