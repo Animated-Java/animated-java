@@ -1,6 +1,6 @@
 import path from 'path'
 import { settings } from './settings'
-import { Async, bus } from './util'
+import { Async, bus, roundToN} from './util'
 import { hashAnim } from './util/hashAnim'
 import { store } from './util/store'
 import os from 'os'
@@ -9,10 +9,6 @@ import { StructTypes, StructPacker } from 'struct-packer'
 import { gunzipSync, gzipSync } from 'zlib'
 import events from './constants/events'
 store.set('static_animation_uuid', '138747e7-2de0-4130-b900-9275ca0e6333')
-
-function roundToN(v, n) {
-	return Math.round(v * n) / n
-}
 
 function setAnimatorTime(time) {
 	Timeline.setTime(time)

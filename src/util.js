@@ -12,3 +12,12 @@ export * from './util/hashAnim'
 export * from './util/treeGen'
 export * from './util/Minecraft'
 export * from './util/size'
+export * from './util/ezfs'
+
+export function cloneObject(obj) {
+	return JSON.parse(JSON.stringify(obj))
+}
+
+export function roundToN(v, n) {
+	return Math.round(v * n) / n
+}

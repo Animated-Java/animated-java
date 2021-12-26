@@ -1,9 +1,10 @@
 import fs from 'fs'
 import path, { resolve } from 'path'
 import { settings } from './settings'
+import { mkdir } from './util'
 import { CustomError } from './util/CustomError'
 import { translate } from './util/intl'
-import { safe_function_name } from './util/replace'
+import { safeFunctionName } from './util/replace'
 
 function getTexturePath(texture) {
 	const parts = texture.path.split(path.sep)
@@ -24,14 +25,14 @@ function getTexturePath(texture) {
 }
 
 // Exports the model.json rig files
-export async function exportRigModels(models, textures) {
+export async function exportRigModels(models, variantModels) {
 	console.groupCollapsed('Export Rig Models')
-	const meta_path = path.join(
+	const metaPath = path.join(
 		settings.animatedJava.rigModelsExportFolder,
 		'.aj_meta'
 	)
 
-	if (!fs.existsSync(meta_path)) {
+	if (!fs.existsSync(metaPath)) {
 		await new Promise((resolve, reject) => {
 			let d = new Dialog({
 				title: translate(
@@ -47,7 +48,7 @@ export async function exportRigModels(models, textures) {
 				],
 				onConfirm() {
 					d.hide()
-					Blockbench.writeFile(meta_path, {
+					Blockbench.writeFile(metaPath, {
 						content: Project.UUID,
 					})
 					resolve()
@@ -58,7 +59,7 @@ export async function exportRigModels(models, textures) {
 				},
 			}).show()
 		})
-	} else if (fs.readFileSync(meta_path, 'utf-8') !== Project.UUID) {
+	} else if (fs.readFileSync(metaPath, 'utf-8') !== Project.UUID) {
 		await new Promise((resolve, reject) => {
 			let d = new Dialog({
 				title: translate(
@@ -74,7 +75,7 @@ export async function exportRigModels(models, textures) {
 				],
 				onConfirm() {
 					d.hide()
-					Blockbench.writeFile(meta_path, {
+					Blockbench.writeFile(metaPath, {
 						content: Project.UUID,
 					})
 					resolve()
@@ -87,47 +88,60 @@ export async function exportRigModels(models, textures) {
 		})
 	}
 
-	console.log('Exported Models:', models)
-	console.log('Textures Used:', textures)
-	// For every model
+	console.log('Export Models:', models)
+	console.group('Details')
+
 	for (const [name, model] of Object.entries(models)) {
 		// Get the model's file path
-		const model_file_path = path.join(
+		const modelFilePath = path.join(
 			settings.animatedJava.rigModelsExportFolder,
 			name + '.json'
 		)
-		console.log('Exporting Model', model_file_path, model.elements)
-
-		// Figure out what textures this model is using, and add them to the model_textures set
-		const model_textures = new Set()
-		for (const element of model.elements) {
-			delete element.uuid // Delete unused element UUID
-			for (const [name, face] of Object.entries(element.faces)) {
-				model_textures.add(face.texture)
-			}
-		}
-		console.log('Model Textures:', model_textures)
-
-		// Create the texture JSON for the exported model based on the model_textures object
-		const textures_JSON = {}
-		for (const texture of textures) {
-			const id = `${texture.id}`
-			if (model_textures.has('#' + id)) {
-				textures_JSON[id] = getTexturePath(texture)
-			}
-		}
-
+		console.log('Exporting Model', modelFilePath, model.elements)
 		// Export the model
 		const modelJSON = {
-			__credit: 'Generated using Animated Java (https://animated-java.dev/)',
-			textures: textures_JSON,
+			__credit:
+				'Generated using Animated Java (https://animated-java.dev/)',
 			...model,
-			aj: undefined
+			aj: undefined,
 		}
-		Blockbench.writeFile(model_file_path, {
+		Blockbench.writeFile(modelFilePath, {
 			content: autoStringify(modelJSON),
 		})
 	}
+	console.groupEnd('Details')
+
+	console.log('Export Variant Models:', variantModels)
+	console.group('Details')
+
+	for (const [variantName, variant] of Object.entries(variantModels)) {
+		const variantFolderPath = path.join(
+			settings.animatedJava.rigModelsExportFolder,
+			variantName
+		)
+		mkdir(variantFolderPath, {recursive: true})
+
+		for (const [modelName, model] of Object.entries(variant)) {
+			// Get the model's file path
+			const modelFilePath = path.join(
+				variantFolderPath,
+				`${modelName}.json`
+			)
+			console.log('Exporting Model', modelFilePath, model.elements)
+			// Export the model
+			const modelJSON = {
+				__credit:
+					'Generated using Animated Java (https://animated-java.dev/)',
+				...model,
+				aj: undefined,
+			}
+			Blockbench.writeFile(modelFilePath, {
+				content: autoStringify(modelJSON),
+			})
+		}
+	}
+	console.groupEnd('Details')
+
 	console.groupEnd('Export Rig Models')
 }
 
@@ -139,28 +153,37 @@ function getMCPath(raw) {
 	return `${list[0]}:${list.slice(2).join('/')}`
 }
 
-export async function exportPredicate(bones, aj_settings) {
+export async function exportPredicate(models, variantModels, ajSettings) {
 	console.groupCollapsed('Export Predicate Model')
-	const project_name = safe_function_name(aj_settings.projectName)
-	const predicate_JSON = {
+	// const projectName = safeFunctionName(aj_settings.projectName)
+	const predicateJSON = {
 		parent: 'item/generated',
 		textures: {
-			layer0: `item/${aj_settings.rigItem.replace('minecraft:', '')}`,
+			layer0: `item/${ajSettings.rigItem.replace('minecraft:', '')}`,
 		},
 		overrides: [],
 	}
 
-	const model_path = getMCPath(aj_settings.rigModelsExportFolder)
-	console.log(model_path)
-	for (const [name, bone] of Object.entries(bones)) {
-		predicate_JSON.overrides.push({
-			predicate: { custom_model_data: bone.customModelData },
-			model: model_path + '/' + name,
+	const modelPath = getMCPath(ajSettings.rigModelsExportFolder)
+	console.log(modelPath)
+	for (const [modelName, model] of Object.entries(models)) {
+		predicateJSON.overrides.push({
+			predicate: { custom_model_data: model.aj.customModelData },
+			model: modelPath + '/' + modelName,
 		})
 	}
 
-	Blockbench.writeFile(aj_settings.predicateFilePath, {
-		content: autoStringify(predicate_JSON),
+	for (const [variantName, variant] of Object.entries(variantModels))
+	for (const [modelName, model] of Object.entries(variant)) {
+		predicateJSON.overrides.push({
+			predicate: { custom_model_data: model.aj.customModelData },
+			model: [modelPath, variantName, `${modelName}`].join('/'),
+		})
+	}
+
+
+	Blockbench.writeFile(ajSettings.predicateFilePath, {
+		content: autoStringify(predicateJSON),
 	})
 	console.groupEnd('Export Predicate Model')
 }

@@ -58,7 +58,7 @@ export const BuildModel = (callback, options) => {
 import {
 	computeElements,
 	computeModels,
-	computeVariantOverrides,
+	computeVariantTextureOverrides,
 	computeBones,
 	computeVariantModels,
 } from './modelComputation'
@@ -68,20 +68,25 @@ async function computeAnimationData(callback, options) {
 	const animations = await renderAnimation(options)
 	const cubeData = computeElements()
 	const models = await computeModels(cubeData)
-	const variantOverrides = computeVariantOverrides(models)
-	const bones = computeBones(models, animations, variantOverrides, options)
-	const variantModels = computeVariantModels(models, variantOverrides)
+	const variantTextureOverrides = computeVariantTextureOverrides(models)
+	const bones = computeBones(models, animations)
+	const variantModels = await computeVariantModels(models, variantTextureOverrides)
 
-	await exportRigModels(models, cubeData.textures_used)
-	await exportPredicate(bones, settings.animatedJava)
+	// const flatVariantModels = {}
+	// Object.values(variantModels).forEach(variant => Object.entries(variant).forEach(([k,v]) => flatVariantModels[k] = v))
+	// console.log('Flat Variant Models:', flatVariantModels)
+
+	await exportRigModels(models, variantModels)
+	await exportPredicate(models, variantModels, settings.animatedJava)
 
 	const data = {
 		settings: settings.toObject(),
 		cubeData,
 		bones,
 		models,
-		variantOverrides,
+		variantTextureOverrides,
 		variantModels,
+		// flatVariantModels,
 		animations,
 	}
 	console.groupEnd('Compute Animation Data')

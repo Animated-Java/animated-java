@@ -1,5 +1,5 @@
 import path from 'path'
-import { format, fix_indent, safe_function_name } from '../util/replace'
+import { format, fix_indent, safeFunctionName } from '../util/replace'
 import { store } from '../util/store'
 import { Entity, JsonText } from '../util/Minecraft'
 import nbtlint from '../dependencies/nbtlint/docs/nbt-lint'
@@ -14,7 +14,7 @@ async function exportDatapack(
 	const staticAnimationUuid = store.get('static_animation_uuid')
 	console.log(staticAnimationUuid, animations)
 	const animationBones = animations[staticAnimationUuid][0].bones
-	const projectName = safe_function_name(ajSettings.project_name)
+	const projectName = safeFunctionName(ajSettings.project_name)
 
 	const tags = {
 		root_entity: `aj.${projectName}.root`,

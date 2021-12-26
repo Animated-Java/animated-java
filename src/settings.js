@@ -1,4 +1,4 @@
-import { store, size, safe_function_name } from './util'
+import { store, size, safeFunctionName } from './util'
 const UNASSIGNED = Symbol('UNASSIGNED_CACHE')
 export const DefaultSettings = {
 	animatedJava: {
@@ -6,12 +6,12 @@ export const DefaultSettings = {
 			type: 'text',
 			default: 'unnamed_project',
 			populate(value) {
-				if (typeof value === 'string') return safe_function_name(value)
+				if (typeof value === 'string') return safeFunctionName(value)
 				else return 'undefined_project'
 			},
 			isValid(value) {
 				if (typeof value === 'string')
-					return value === safe_function_name(value)
+					return value === safeFunctionName(value)
 				else return false
 			},
 		},

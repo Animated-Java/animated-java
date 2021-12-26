@@ -5,7 +5,7 @@ export function format(str: string, dict = {}) {
 	return str
 }
 
-export function safe_function_name(s: string) {
+export function safeFunctionName(s: string) {
 	return s.toLowerCase().replace(/[^a-z0-9\._]/g, '_')
 }
 

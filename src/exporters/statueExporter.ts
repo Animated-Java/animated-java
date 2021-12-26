@@ -1,6 +1,6 @@
 import nbtlint from '../dependencies/nbtlint/docs/nbt-lint'
 import {
-	safe_function_name,
+	safeFunctionName,
 	format,
 	fix_indent,
 	store,
@@ -24,10 +24,11 @@ async function createMCFile(
 	animations: any,
 	ajSettings: any,
 	statueExporterSettings: statueExporterSettings,
-	stateOverrides: any
+	variantModels: any,
+	variantTextureOverrides: any
 ): Promise<string> {
 	const FILE: string[] = []
-	const projectName = safe_function_name(ajSettings.projectName)
+	const projectName = safeFunctionName(ajSettings.projectName)
 
 	const staticAnimationUuid = store.get('static_animation_uuid')
 	const staticFrame = animations[staticAnimationUuid][0].bones
@@ -279,7 +280,8 @@ async function statueExport(data: any) {
 		data.animations,
 		data.settings.animatedJava,
 		data.settings.animatedJava_BUILTIN_statueExporter,
-		data.state_overrides
+		data.variantModels,
+		data.variantTextureOverrides
 	)
 
 	console.log('mcFile:', mcFile)

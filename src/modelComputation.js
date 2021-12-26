@@ -1,6 +1,6 @@
 // import translate
 import path from 'path'
-import { store, translate } from './util'
+import { store, translate, cloneObject, size, roundToN } from './util'
 import { settings } from './settings'
 import './overrides/overrides'
 import { CustomError } from './util/CustomError'
@@ -13,35 +13,48 @@ function getMCPath(raw) {
 	return `${list[0]}:${list.slice(2).join('/')}`
 }
 
-let global_predicate_id = 0
-let global_predicate_count = 0
-let root_predicate_path
+let globalPredicateId = 0
+let globalPredicateCount = 0
+// let rootPredicatePath
 
 function getPredicateId() {
-	global_predicate_id += 1
-	global_predicate_count += 1
-	return global_predicate_id
+	globalPredicateId += 1
+	globalPredicateCount += 1
+	console.log(`new PID: ${globalPredicateId}`)
+	return globalPredicateId
 }
 
 function resetPredicateData() {
-	global_predicate_id = 0
-	global_predicate_count = 0
-	if (settings.animatedJava.rig_models_export_folder !== '') {
-		root_predicate_path = settings.animatedJava.rig_models_export_folder
-	} else {
-		throw new CustomError({
-			title: translate('error.missing_predicate_file_path.title'),
-			lines: [
-				`<p>${translate(
-					'error.missing_predicate_file_path.body1'
-				)}</p>`,
-				`<p>${translate(
-					'error.missing_predicate_file_path.body2'
-				)}</p>`,
-			],
-		})
-	}
+	globalPredicateId = 0
+	globalPredicateCount = 0
+	console.log('Reset predicate IDs')
+	// if (settings.animatedJava.rig_models_export_folder !== '') {
+	// 	root_predicate_path = settings.animatedJava.rig_models_export_folder
+	// } else {
+	// 	throw new CustomError({
+	// 		title: translate('error.missing_predicate_file_path.title'),
+	// 		lines: [
+	// 			`<p>${translate(
+	// 				'error.missing_predicate_file_path.body1'
+	// 			)}</p>`,
+	// 			`<p>${translate(
+	// 				'error.missing_predicate_file_path.body2'
+	// 			)}</p>`,
+	// 		],
+	// 	})
+	// }
 }
+
+function getTextureByUUID(uuid) {
+	return Texture.all.find((t) => t.uuid === uuid)
+}
+
+function hasTexture(model, texture) {
+	return model.elements.find((e) =>
+		Object.values(e.faces).find((f) => f.texture === `#${texture.id}`)
+	)
+}
+
 function hasSceneAsParent(self) {
 	if (self.parent) {
 		if (self.parent.name != 'SCENE') {
@@ -53,6 +66,25 @@ function hasSceneAsParent(self) {
 		return false
 	}
 }
+
+function getModelMCPath(modelPath) {
+	const parts = modelPath.split(path.sep)
+	const assetsIndex = parts.indexOf('assets')
+	if (assetsIndex) {
+		const relative = parts.slice(assetsIndex + 1) // Remove 'assets' and everything before it from the path
+		const namespace = relative.shift() // Remove the namespace from the path and store it
+		relative.push(relative.pop().replace('.png', '')) // Remove file type (.png)
+		const modelIndex = relative.indexOf('models') // Locate 'model' in the path
+		if (modelIndex > -1) {
+			relative.splice(modelIndex, 1) // Remove 'model' from the path
+			return `${namespace}:${relative.join('/')}` // Generate model path
+		}
+	}
+	throw new CustomError({
+		message: `Unable to generate model path for ${modelPath}`,
+	})
+}
+
 export function computeElements() {
 	console.groupCollapsed('Compute Elements')
 	var clear_elements = []
@@ -254,22 +286,54 @@ function computeDisplay() {
 	}
 }
 
-export async function computeModels(cube_data) {
+function getTexturesOnGroup(group) {
+	const textures = {}
+	group.children
+		.filter((c) => c instanceof Cube)
+		.forEach((cube) => {
+			for (const [faceName, face] of Object.entries(cube.faces)) {
+				const texture = getTextureByUUID(face.texture)
+				if (texture) {
+					if (!textures[`#${texture.id}`]) {
+						textures[`#${texture.id}`] = getTexturePath(
+							texture.path
+						)
+					}
+				} else {
+					console.log(`Unable to find texture ${face.texture}`)
+				}
+			}
+		})
+	return textures
+}
+
+export async function computeModels(cubeData) {
 	console.groupCollapsed('Compute Models')
+	resetPredicateData()
 
 	const models = {}
 
 	function recurse(group) {
 		console.log(group)
-		if (group instanceof Group && group.name !== 'SCENE') {
-			models[group.name] = {aj:{}}
-			models[group.name].elements = group.children
-				.filter((c) => c instanceof Cube)
-				.map((current) =>
-					cube_data.clear_elements.find(
-						(other) => current.uuid === other.uuid
-					)
+		const cubeChildren = group.children
+			.filter((c) => c instanceof Cube)
+			.map((current) =>
+				cubeData.clear_elements.find(
+					(other) => current.uuid === other.uuid
 				)
+			)
+
+		if (group instanceof Group && group.name !== 'SCENE' && group.export) {
+			if (cubeChildren.length) {
+				const cleanedCubes = cloneObject(cubeChildren)
+				cleanedCubes.forEach((cube) => (cube.uuid = undefined))
+
+				models[group.name] = {
+					aj: { customModelData: getPredicateId() },
+					elements: cleanedCubes,
+					textures: getTexturesOnGroup(group),
+				}
+			}
 
 			group.children
 				.filter((item) => item instanceof Group)
@@ -291,18 +355,41 @@ export async function computeModels(cube_data) {
 }
 
 export async function computeVariantModels(models, variantOverrides) {
+	console.group('Compute Variant Models')
 	const variants = store.get('states')
+	const variantModels = {}
 
 	for (const [variantName, variant] of Object.entries(variants)) {
+		variantModels[variantName] = {}
+		const thisVariantOverrides = variantOverrides[variantName]
 
+		for (const [modelName, model] of Object.entries(models)) {
+			const thisModelOverrides = thisVariantOverrides[modelName]
+
+			if (thisModelOverrides && size(thisModelOverrides.textures)) {
+				const newVariantModel = {
+					aj: {
+						customModelData: getPredicateId(),
+					},
+					parent: getModelMCPath(
+						path.join(
+							settings.animatedJava.rigModelsExportFolder,
+							`${modelName}.json`
+						)
+					),
+					textures: thisModelOverrides.textures,
+				}
+				variantModels[variantName][modelName] = newVariantModel
+			}
+		}
 	}
 
-	return
+	console.groupEnd('Compute Variant Models')
+	return variantModels
 }
 
-export function computeBones(models, animations, variantOverrides) {
+export function computeBones(models, animations) {
 	console.groupCollapsed('Compute Bones')
-	resetPredicateData()
 
 	const bones = {}
 
@@ -317,10 +404,11 @@ export function computeBones(models, animations, variantOverrides) {
 				typeof models[parentMesh.name].id !== 'number'
 			) {
 				console.log('Parent Bone:', parentMesh.name, value.parent)
-				const predicateId = getPredicateId()
-				models[parentMesh.name].aj.customModelData = predicateId
-				value.parent.customModelData = predicateId
-				value.parent.scales = {}
+				value.parent.customModelData =
+					models[parentMesh.name].aj.customModelData
+				value.parent.scales = {
+					'1,1,1': models[parentMesh.name].aj.customModelData,
+				}
 				value.parent.can_manipulate_arms =
 					parentMesh.can_manipulate_arms
 				value.parent.nbt = parentMesh.nbt
@@ -329,17 +417,28 @@ export function computeBones(models, animations, variantOverrides) {
 		}
 	}
 
+	function roundScale(scale) {
+		return {
+			x: roundToN(scale.x, 1000),
+			y: roundToN(scale.y, 1000),
+			z: roundToN(scale.z, 1000),
+		}
+	}
+
 	for (const [animUuid, anim] of Object.entries(animations)) {
 		for (const frame of anim) {
 			for (const [boneName, bone] of Object.entries(frame.bones)) {
 				if (bones[boneName]) {
 					// Create an object for each bone if it doesn't already exist
-					if (!bones[boneName].scales) {
-						bones[boneName].scales = {}
-					}
+					// if (!bones[boneName].scales) {
+					// 	console.log('new scale obj')
+					// 	bones[boneName].scales = {}
+					// }
 					// Save this scale to the bone's scale object
-					const vecStr = bone.scale.toString()
+					const rounded = roundScale(bone.scale, 1000)
+					const vecStr = `${rounded.x},${rounded.y},${rounded.z}`
 					if (bone.scale && !bones[boneName].scales[vecStr]) {
+						console.log('New Scale:', vecStr)
 						bones[boneName].scales[vecStr] = getPredicateId(bone)
 					}
 				}
@@ -353,20 +452,6 @@ export function computeBones(models, animations, variantOverrides) {
 	return bones
 }
 
-// State helper functions
-function texFromStrId(id) {
-	return Texture.all.find((t) => `#${t.id}` === id)
-}
-function texFromUuid(uuid) {
-	return Texture.all.find((t) => t.uuid === uuid)
-}
-
-function hasTexture(model, texture) {
-	return model.elements.find((e) =>
-		Object.values(e.faces).find((f) => f.texture === `#${texture.id}`)
-	)
-}
-
 function getTexturePath(raw) {
 	let list = raw.split(path.sep)
 	console.log(list)
@@ -375,8 +460,8 @@ function getTexturePath(raw) {
 	return `${list[0]}:${list.slice(2).join('/')}`
 }
 
-export function computeVariantOverrides(models) {
-	console.groupCollapsed('Compute State Model Overrides')
+export function computeVariantTextureOverrides(models) {
+	console.groupCollapsed('Compute Variant Model Overrides')
 
 	const states = store.get('states')
 	const state_models = {}
@@ -391,8 +476,8 @@ export function computeVariantOverrides(models) {
 				// console.log('Model:', model)
 				//* If this model has any of the textures this state replaces
 				for (const uuid in state) {
-					const texture = texFromUuid(uuid)
-					const replace_texture = texFromUuid(state[uuid])
+					const texture = getTextureByUUID(uuid)
+					const replace_texture = getTextureByUUID(state[uuid])
 					if (hasTexture(model, texture)) {
 						//* Create texture override based on state
 						if (replace_texture) {
@@ -409,8 +494,8 @@ export function computeVariantOverrides(models) {
 		state_models[state_name] = this_state
 	}
 
-	console.log('State Overrides', state_models)
-	console.groupEnd('Compute State Model Overrides')
+	console.log('Variant Overrides', state_models)
+	console.groupEnd('Compute Variant Model Overrides')
 
 	return state_models
 }
