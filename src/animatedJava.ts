@@ -39,7 +39,7 @@ util.bus.on(events.LIFECYCLE.CLEANUP, () => {
 	delete window.ANIMATED_JAVA
 })
 
-import './exporters/statue_exporter'
+import './exporters/statueExporter'
 // @ts-ignore
 Blockbench.dispatchEvent('animated-java-ready', ANIMATED_JAVA)
 // @ts-ignore

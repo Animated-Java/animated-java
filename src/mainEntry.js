@@ -90,7 +90,7 @@ async function computeAnimationData(callback, options) {
 	console.groupEnd('Exporter Output')
 }
 
-import './plugin_definitions'
+import './pluginDefinitions'
 import { show_settings } from './ui/dialogs/settings'
 
 const menu = new BarMenu('animated_java', [], () => Format.id === format.id)
