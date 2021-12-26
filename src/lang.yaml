@@ -1,6 +1,7 @@
 en:
     #? AJ
     animatedJava.title: Animated Java
+    animatedJava.menubar.export.name: Export Model
 
     panel.states: Model Varients
 

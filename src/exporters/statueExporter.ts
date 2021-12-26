@@ -134,7 +134,7 @@ async function createMCFile(
 	`)
 
 	//? Summon dir
-	const summons: string[] = []
+	const summons: any[] = []
 	for (const [boneName, boneFrame] of Object.entries(
 		staticFrame as Record<string, any>
 	)) {
@@ -204,23 +204,65 @@ async function createMCFile(
 		nbt.add('Invisible', new nbtlint.TagByte(1))
 		nbt.add('DisabledSlots', new nbtlint.TagInteger(4144959))
 
-		// console.log('nbt:', nbt)
+		console.log('nbt:', nbt)
 		// prettier-ignore
-		summons.push(`summon armor_stand ^${boneFrame.pos.x} ^${boneFrame.pos.y + HEAD_Y_OFFSET} ^${boneFrame.pos.z} ${
-			nbtlint.stringify(nbt, '', {deflate: true})
-		}`)
+		summons.push({
+			boneName,
+			nbt,
+			command: `summon armor_stand ^${boneFrame.pos.x} ^${boneFrame.pos.y + HEAD_Y_OFFSET} ^${boneFrame.pos.z}`,
+		})
 	}
 
 	// `summon minecraft:area_effect_cloud ^ ^ ^ {Tags:['aj.example', 'aj.example.bone', 'aj.example.boneA', 'new'],Passengers:[{id:"minecraft:armor_stand",Tags:['aj.example', 'aj.example.bone_model', 'new']}],Age:-2147483648,Duration:-1,WaitTime:-2147483648}`
 	// prettier-ignore
-	FILE.push(`
-	dir summon {
-		function default {
+	// FILE.push(`
+	// dir summon {
+	// 	function default {
+	// 		summon ${entityTypes.root} ~ ~ ~ {Tags:['${tags.model}', '${tags.root}', 'new']}
+	// 		execute as @e[type=${entityTypes.root},tag=${tags.root},tag=new,distance=..1,limit=1] at @s rotated ~ 0 run {
+	// 			execute store result score @s aj.id run scoreboard players add .aj.last_id aj.i 1
+
+	// 			${summons.join('\n')}
+
+	// 			execute as @e[type=${entityTypes.bone},tag=${tags.model},tag=new,distance=..10] positioned as @s run {
+	// 				scoreboard players operation @s aj.id = .aj.last_id aj.i
+	// 				tp @s ~ ~ ~ ~ ~
+	// 				tag @s remove new
+	// 			}
+	// 			tag @s remove new
+	// 		}
+	// 	}
+	// }
+	// `)
+
+	FILE.push(`dir summon {`)
+	for (const [variantName, variant] of Object.entries(
+		variantModels as Record<string, any>
+	)) {
+		console.log(variant)
+		for (const summon of summons) {
+			if (Object.keys(variant).includes(summon.boneName)) {
+				console.log('included in variant')
+				summon.nbt.map.ArmorItems.list[3] = new nbtlint.TagCompound({
+					id: new nbtlint.TagString(ajSettings.rigItem),
+					Count: new nbtlint.TagByte(1),
+					tag: new nbtlint.TagCompound({
+						CustomModelData: new nbtlint.TagInteger(
+							variant[summon.boneName].aj.customModelData
+						),
+					}),
+				})
+			}
+		}
+		console.log(summons)
+		// prettier-ignore
+		FILE.push(`
+		function ${variantName} {
 			summon ${entityTypes.root} ~ ~ ~ {Tags:['${tags.model}', '${tags.root}', 'new']}
 			execute as @e[type=${entityTypes.root},tag=${tags.root},tag=new,distance=..1,limit=1] at @s rotated ~ 0 run {
 				execute store result score @s aj.id run scoreboard players add .aj.last_id aj.i 1
 
-				${summons.join('\n')}
+				${summons.map(v => `${v.command} ${nbtlint.stringify(v.nbt, '', {deflate: true})}`).join('\n')}
 
 				execute as @e[type=${entityTypes.bone},tag=${tags.model},tag=new,distance=..10] positioned as @s run {
 					scoreboard players operation @s aj.id = .aj.last_id aj.i
@@ -230,8 +272,9 @@ async function createMCFile(
 				tag @s remove new
 			}
 		}
+		`)
 	}
-	`)
+	FILE.push('}')
 
 	const variantBoneModifier = `data modify entity @s[tag=${tags.individualBone}] ArmorItems[-1].tag.CustomModelData set value %customModelData`
 
