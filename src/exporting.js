@@ -102,7 +102,7 @@ export async function exportRigModels(models, variantModels) {
 			settings.animatedJava.rigModelsExportFolder,
 			variantName
 		)
-		mkdir(variantFolderPath, {recursive: true})
+		mkdir(variantFolderPath, { recursive: true })
 
 		for (const [modelName, model] of Object.entries(variant)) {
 			// Get the model's file path
@@ -157,13 +157,12 @@ export async function exportPredicate(models, variantModels, ajSettings) {
 	}
 
 	for (const [variantName, variant] of Object.entries(variantModels))
-	for (const [modelName, model] of Object.entries(variant)) {
-		predicateJSON.overrides.push({
-			predicate: { custom_model_data: model.aj.customModelData },
-			model: [modelPath, variantName, `${modelName}`].join('/'),
-		})
-	}
-
+		for (const [modelName, model] of Object.entries(variant)) {
+			predicateJSON.overrides.push({
+				predicate: { custom_model_data: model.aj.customModelData },
+				model: [modelPath, variantName, `${modelName}`].join('/'),
+			})
+		}
 
 	Blockbench.writeFile(ajSettings.predicateFilePath, {
 		content: autoStringify(predicateJSON),
@@ -174,6 +173,9 @@ export async function exportPredicate(models, variantModels, ajSettings) {
 export async function exportTransparentTexture() {
 	console.log(transparent)
 	Blockbench.writeFile(settings.animatedJava.transparentTexturePath, {
-		content: Buffer.from(String(transparent).replace('data:image/png;base64,',''), 'base64'),
+		content: Buffer.from(
+			String(transparent).replace('data:image/png;base64,', ''),
+			'base64'
+		),
 	})
 }

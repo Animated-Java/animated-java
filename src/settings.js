@@ -19,7 +19,12 @@ export const DefaultSettings = {
 			type: 'select',
 			default: undefined,
 			get options() {
-				return Object.fromEntries([...store.getStore('exporters').keys()].map(v => [v,`animatedJava.exporter.${v}`]))
+				return Object.fromEntries(
+					[...store.getStore('exporters').keys()].map((v) => [
+						v,
+						`animatedJava.exporter.${v}`,
+					])
+				)
 			},
 			populate() {
 				return [...store.getStore('exporters').keys()][0]

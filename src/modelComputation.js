@@ -489,14 +489,15 @@ export function computeVariantTextureOverrides(models) {
 							console.log(texture, '->', replaceTexture)
 							thisVariant[modelName].textures[`${texture.id}`] =
 								resourcepack.getTexturePath(replaceTexture)
-
 						} else if (variant[uuid] === 'transparent') {
 							if (transparentTexturePath) {
 								if (!thisVariant[modelName]) {
 									thisVariant[modelName] = { textures: {} }
 								}
 								console.log(texture, '-> transparent')
-								thisVariant[modelName].textures[`${texture.id}`] = transparentTexturePath
+								thisVariant[modelName].textures[
+									`${texture.id}`
+								] = transparentTexturePath
 							} else {
 								let d = new Dialog({
 									title: translate(
