@@ -1,6 +1,6 @@
 import path from 'path'
 import { settings } from './settings'
-import { Async, bus, roundToN} from './util'
+import { Async, bus, roundToN } from './util'
 import { hashAnim } from './util/hashAnim'
 import { store } from './util/store'
 import os from 'os'
@@ -266,6 +266,7 @@ export async function renderAnimation(options) {
 		for (const animation of Animator.animations.sort()) {
 			const value = Cache.hit(animation)
 			if (!value) {
+				let distance = -Infinity
 				const frames = []
 				animation.select()
 
@@ -297,13 +298,26 @@ export async function renderAnimation(options) {
 						bones: getData(animation, Groups),
 						scripts: effects,
 					}
+					let fdist = -Infinity
+					for (const bone of frame.bones) {
+						fdist = Math.max(
+							fdist,
+							Math.sqrt(
+								bone.pos.x * bone.pos.x +
+									bone.pos.y * bone.pos.y +
+									bone.pos.z * bone.pos.z
+							)
+						)
+					}
+					distance = Math.max(distance, fdist)
 					frames.push(frame)
 				}
-
-				animations[animation.uuid] = frames
+				let avalue = { frames, distance }
+				animation.computedDistance = distance
+				animations[animation.uuid] = avalue
 				Cache.update(animation, frames)
 			} else {
-				animations[animation.uuid] = value
+				animations[animation.uuid] = avalue
 			}
 		}
 
