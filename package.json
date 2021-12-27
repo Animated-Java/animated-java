@@ -30,7 +30,6 @@
 		"axios": "^0.21.0",
 		"babel-preset-env": "^1.7.0",
 		"babel-preset-latest": "^6.24.1",
-		"blockbench-types": "^4.0.0",
 		"chalk": "^4.1.0",
 		"compare-versions": "^3.6.0",
 		"exists-command": "^0.1.2",
@@ -48,6 +47,7 @@
 	},
 	"devDependencies": {
 		"@types/node": "^17.0.5",
+		"blockbench-types": "^4.0.0",
 		"js-yaml": "^4.1.0",
 		"prettier": "^2.4.1",
 		"rollup-plugin-typescript2": "^0.30.0",

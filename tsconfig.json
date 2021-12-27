@@ -1,5 +1,5 @@
 {
-	"include": ["*"],
+	// "include": ["*"],
 	"compilerOptions": {
 		"outDir": "dist",
 		"declaration": true,

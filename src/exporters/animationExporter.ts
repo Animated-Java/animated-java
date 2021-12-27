@@ -130,7 +130,17 @@ async function createMCFile(
 		}
 	`)
 
-	
+	FILE.push(`dir summon {`)
+
+
+
+	// FILE.push(`
+	// 	function ${variantName} {
+
+	// 	}
+	// `)
+
+	FILE.push(`}`)
 
 
 	return fixIndent(FILE)
@@ -373,7 +383,7 @@ const Exporter = (AJ: any) => {
 				animationExport(data)
 			},
 			{
-				generate_static_animation: false,
+				generate_static_animation: true,
 			}
 		)
 	})
