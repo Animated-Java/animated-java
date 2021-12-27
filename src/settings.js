@@ -17,7 +17,7 @@ export const DefaultSettings = {
 		},
 		exporter: {
 			type: 'select',
-			default: undefined,
+			default: '',
 			get options() {
 				return Object.fromEntries(
 					[...store.getStore('exporters').keys()].map((v) => [
