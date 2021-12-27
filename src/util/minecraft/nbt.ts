@@ -92,7 +92,7 @@ export class NBT<T> {
 	public static Compound(value: NBTCompound['value'] = {}) {
 		const nbtInstance = new NBT({
 			type: NBTType.COMPOUND,
-			value: {},
+			value: value,
 		})
 		return nbtInstance
 	}

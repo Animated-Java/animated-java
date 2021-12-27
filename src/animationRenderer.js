@@ -265,6 +265,7 @@ export async function renderAnimation(options) {
 		const animations = {}
 		const Groups = Group.all.filter(
 			(group) =>
+				group.export &&
 				group.name != 'SCENE' &&
 				group.children.find((child) => child instanceof Cube)
 		)

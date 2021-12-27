@@ -396,23 +396,6 @@ const Exporter = (AJ: any) => {
 			},
 			isResetable: true,
 		},
-		// boneType: {
-		// 	type: 'select',
-		// 	default: 'aecStack',
-		// 	options: {
-		// 		aecStack:
-		// 			'animatedJava_exporter_statueExporter.setting.boneType.aecStack.name',
-		// 		armorStand:
-		// 			'animatedJava_exporter_statueExporter.setting.boneType.armorStand.name',
-		// 	},
-		// 	populate() {
-		// 		return 'area_effect_cloud'
-		// 	},
-		// 	isValid(value: any) {
-		// 		return value != ''
-		// 	},
-		// 	isResetable: true,
-		// },
 		markerArmorStands: {
 			type: 'checkbox',
 			default: true,
@@ -507,7 +490,6 @@ const Exporter = (AJ: any) => {
 			default: '',
 			props: {
 				dialogOpts: {
-					// @ts-ignore
 					defaultPath: Project.name + '.mc',
 					promptToCreate: true,
 					properties: ['openFile'],
@@ -567,7 +549,6 @@ const Exporter = (AJ: any) => {
 if (Reflect.has(window, 'ANIMATED_JAVA')) {
 	Exporter(window['ANIMATED_JAVA'])
 } else {
-	// there is absolutly shit we can do about this
 	// @ts-ignore
 	Blockbench.on('animated-java-ready', Exporter)
 }

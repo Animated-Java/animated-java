@@ -64,6 +64,7 @@ export type Bone = {
 	nbt: string
 	can_manipulate_arms: boolean
 	customModelData: number
+	exported: boolean
 } & Cube
 
 export interface BoneObject {

@@ -45,6 +45,8 @@ interface entityTypes {
 	boneDisplay?: string
 }
 
+const HEAD_Y_OFFSET = -1.813
+
 async function createMCFile(
 	bones: aj.BoneObject,
 	models: aj.ModelObject,
@@ -128,37 +130,95 @@ async function createMCFile(
 		}
 	`)
 
+	//? Remove Dir
+	// prettier-ignore
+	FILE.push(`
+		dir remove {
+			function all {
+				kill @e[type=${entityTypes.root},tag=${tags.model}]
+				kill @e[type=${entityTypes.bone},tag=${tags.model}]
+			}
+			function this {
+				execute (if entity @s[tag=${tags.root}] at @s) {
+					scoreboard players operation # ${scoreboards.id} = @s ${scoreboards.id}
+					execute as @e[type=${entityTypes.bone},tag=${tags.model},distance=..${staticDistance}] if score @s ${scoreboards.id} = # ${scoreboards.id} run kill @s
+					kill @s
+				} else {
+					tellraw @s ${rootExeErrorJsonText.replace('%functionName', `${projectName}:remove/all`)}
+				}
+			}
+		}
+	`)
+
+	//? Summon Dir
 	class Summon {
 		boneName: string
 		bone: aj.AnimationFrameBone
-		nbt: any
-		constructor(boneName: string, bone: aj.AnimationFrameBone) {}
-		toString() {
-			// prettier-ignore
-			const nbt = NBT.Compound({})
-				.Int('Age', -2147483648)
-				.Int('Duration', -1)
-				.Int('WaitTime', -2147483648)
-				.ListOf('Tags', NBTType.STRING, [
-					'new',
-					tags.model,
-					tags.allBones,
-					tags.individualBone,
-				])
-				.ListOf('Passengers', NBTType.COMPOUND, [
-					NBT.Compound({})
-						.String('id', entityTypes.boneDisplay)
-						.ListOf('Tags', NBTType.STRING, [
-							'new',
-							tags.model,
-							tags.allBones,
-							tags.individualBone,
-						])
-				])
+		model: aj.Model
+		customModelData: number
+		constructor(boneName: string, bone: aj.AnimationFrameBone) {
+			this.boneName = boneName
+			this.bone = bone
+			this.model = models[boneName]
+			this.resetCustomModelData()
+			console.log(this)
+			console.log(this.nbt)
+			console.log(this.nbt.toString())
+		}
 
-			console.log(nbt)
-			console.log(nbt.toString())
-			return `summon ${entityTypes.boneRoot} ^ ^ ^`
+		resetCustomModelData() {
+			this.customModelData = this.model.aj.customModelData
+		}
+
+		get nbt(): NBT<NBTType.COMPOUND> {
+			// prettier-ignore
+			return NBT.Compound()
+			.Int('Age', -2147483648)
+			.Int('Duration', -1)
+			.Int('WaitTime', -2147483648)
+			.ListOf('Tags', NBTType.STRING, [
+				'new',
+				tags.model,
+				tags.allBones,
+				tags.individualBone.replace('%boneName', this.boneName),
+			])
+			.ListOf('Passengers', NBTType.COMPOUND, [
+				NBT.Compound()
+					.String('id', entityTypes.boneDisplay)
+					.ListOf('Tags', NBTType.STRING, [
+						'new',
+						tags.model,
+						tags.allBones,
+						tags.individualBone.replace('%boneName', this.boneName),
+					])
+					.ListOf('ArmorItems', NBTType.COMPOUND, [
+						{}, {}, {},
+						NBT.Compound()
+							.String('id', ajSettings.rigItem)
+							.Byte('Count', 1)
+							.Compound('tag', {
+								CustomModelData: NBT.Int(this.customModelData)
+							})
+					])
+					.Byte('Invisible', 1)
+					.Byte('Marker', Number(exporterSettings.markerArmorStands))
+					.Byte('NoGravity', 1)
+			])
+		}
+
+		get pos() {
+			return {
+				x: this.bone.pos.x,
+				y: this.bone.pos.y + HEAD_Y_OFFSET,
+				z: this.bone.pos.z,
+			}
+		}
+
+		toString() {
+			const pos = Object.values(this.pos)
+				.map((v) => `^${v}`)
+				.join(' ')
+			return `summon ${entityTypes.boneRoot} ${pos} ${this.nbt}`
 		}
 	}
 
@@ -166,16 +226,37 @@ async function createMCFile(
 
 	const summons = []
 	for (const [boneName, bone] of Object.entries(staticFrame)) {
+		if (!bone.exported) continue
+		console.log(boneName)
 		const summon = new Summon(boneName, bone)
 		summons.push(summon)
 	}
-	console.log(summons[0].toString())
 
-	FILE.push(`
-		function default {
-
+	for (const [variantName, variant] of Object.entries(variantModels)) {
+		for (const summon of summons) {
+			if (variant[summon.boneName]) {
+				summon.customModelData = variant[summon.boneName].aj.customModelData
+			} else {
+				summon.resetCustomModelData()
+			}
 		}
-	`)
+		// prettier-ignore
+		FILE.push(`
+			function ${variantName} {
+				summon minecraft:marker ~ ~ ~ {Tags:['new', ${tags.model}, ${tags.root}]}
+				execute as @e[type=minecraft:marker,tag=${tags.root},tag=new,distance=..1,limit=1] at @s rotated ~ 0 run {
+					execute store result score @s ${scoreboards.id} run scoreboard players add .aj.last_id ${scoreboards.internal} 1
+					${summons.map(v => v.toString()).join('\n')}
+					execute as @e[type=${entityTypes.bone},tag=${tags.model},tag=new,distance=..${staticDistance}] positioned as @s run {
+						scoreboard players operation @s ${scoreboards.id} = .aj.last_id ${scoreboards.internal}
+						tp @s ~ ~ ~ ~ ~
+						tag @s remove new
+					}
+					tag @s remove new
+				}
+			}
+		`)
+	}
 
 	FILE.push(`}`)
 
@@ -356,7 +437,6 @@ const Exporter = (AJ: any) => {
 				default: '',
 				props: {
 					dialogOpts: {
-						// @ts-ignore
 						defaultPath: Project.name + '.mc',
 						promptToCreate: true,
 						properties: ['openFile'],
@@ -421,7 +501,6 @@ const Exporter = (AJ: any) => {
 if (Reflect.has(window, 'ANIMATED_JAVA')) {
 	Exporter(window['ANIMATED_JAVA'])
 } else {
-	// there is absolutly shit we can do about this
 	// @ts-ignore
 	Blockbench.on('animated-java-ready', Exporter)
 }

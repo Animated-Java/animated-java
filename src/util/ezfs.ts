@@ -1,4 +1,3 @@
-// @ts-ignore
 import * as fs from 'fs'
 
 export function mkdir(path: string, options: fs.MakeDirectoryOptions) {

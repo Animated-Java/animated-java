@@ -89,9 +89,7 @@ async function computeAnimationData(callback: (data: any) => any, options: any) 
 	// console.log('Flat Variant Models:', flatVariantModels)
 
 	await exportRigModels(models, variants.variantModels)
-	// @ts-ignore
 	await exportPredicate(models, variants.variantModels, settings.animatedJava)
-	// @ts-ignore
 	if (settings.animatedJava.transparentTexturePath) {
 		await exportTransparentTexture()
 	}
