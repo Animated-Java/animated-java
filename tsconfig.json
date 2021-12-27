@@ -2,7 +2,7 @@
 	// "include": ["*"],
 	"compilerOptions": {
 		"outDir": "dist",
-		"declaration": true,
+		"declaration": false,
 		"types": ["blockbench-types", "node"],
 		"lib": ["DOM", "ESNext"],
 		"target": "ESNext"
