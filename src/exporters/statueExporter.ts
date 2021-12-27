@@ -286,36 +286,37 @@ async function createMCFile(
 	}
 	FILE.push('}')
 
-	const variantBoneModifier = `data modify entity @s[tag=${tags.individualBone}] ArmorItems[-1].tag.CustomModelData set value %customModelData`
-
-	FILE.push(`dir set_variant {`)
-	for (const [variantName, variant] of Object.entries(
-		variantModels as Record<string, any>
-	)) {
-		const thisVariantTouchedModels = { ...variantTouchedModels, ...variant }
-		const thisVariantCommands = Object.entries(
-			thisVariantTouchedModels as Record<string, any>
-		).map(([k, v]) =>
-			format(variantBoneModifier, {
-				customModelData: v.aj.customModelData,
-				boneName: k,
-			})
-		)
-		// prettier-ignore
-		FILE.push(`
-			function ${variantName} {
-				execute (if entity @s[tag=${tags.root}] at @s) {
-					scoreboard players operation .this aj.id = @s aj.id
-					execute as @e[type=${entityTypes.boneDisplay},tag=${tags.allBones},distance=..${staticDistance}] if score @s aj.id = .this aj.id run {
-						${thisVariantCommands.join('\n')}
+	if (Object.keys(variantModels).length > 0 && Object.keys(variantTouchedModels).length > 0) {
+		const variantBoneModifier = `data modify entity @s[tag=${tags.individualBone}] ArmorItems[-1].tag.CustomModelData set value %customModelData`
+		FILE.push(`dir set_variant {`)
+		for (const [variantName, variant] of Object.entries(
+			variantModels as Record<string, any>
+		)) {
+			const thisVariantTouchedModels = { ...variantTouchedModels, ...variant }
+			const thisVariantCommands = Object.entries(
+				thisVariantTouchedModels as Record<string, any>
+			).map(([k, v]) =>
+				format(variantBoneModifier, {
+					customModelData: v.aj.customModelData,
+					boneName: k,
+				})
+			)
+			// prettier-ignore
+			FILE.push(`
+				function ${variantName} {
+					execute (if entity @s[tag=${tags.root}] at @s) {
+						scoreboard players operation .this aj.id = @s aj.id
+						execute as @e[type=${entityTypes.boneDisplay},tag=${tags.allBones},distance=..${staticDistance}] if score @s aj.id = .this aj.id run {
+							${thisVariantCommands.join('\n')}
+						}
+					} else {
+						tellraw @s ${rootExeErrorJsonText.replace('%functionName',`${projectName}:set_variant/${variantName}`)}
 					}
-				} else {
-					tellraw @s ${rootExeErrorJsonText.replace('%functionName',`${projectName}:set_variant/${variantName}`)}
 				}
-			}
-		`)
+			`)
+		}
+		FILE.push('}')
 	}
-	FILE.push('}')
 
 	return fixIndent(FILE)
 }
