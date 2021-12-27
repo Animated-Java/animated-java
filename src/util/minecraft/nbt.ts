@@ -195,23 +195,23 @@ export class NBT<T> {
 		return this
 	}
 	public ListOf(key: string, type: NBTType, values: any[]) {
-		const nbtList = values.map(
-			(value) =>
-				new NBT({
-					type,
-					value,
-				})
-		)
-		this.setValueIfCompoundOrThrow(key, NBT.List(nbtList))
+		const nbtList = NBT.ListOf(type, values)
+		this.setValueIfCompoundOrThrow(key, nbtList)
 		return this
 	}
 	public static ListOf(type: NBTType, values: any[]) {
 		const nbtList = values.map(
-			(value) =>
-				new NBT({
-					type,
-					value,
-				})
+			(value) => {
+				if (value.type in NBTType) {
+					if (value.type !== type) throw new Error(`Invalid type ${value.type} inside of list of type ${type}`)
+					return value
+				} else {
+					return new NBT({
+						type,
+						value,
+					})
+				}
+			}
 		)
 		return NBT.List(nbtList)
 	}
@@ -280,6 +280,9 @@ export class NBT<T> {
 			case NBTType.BOOL:
 				return new nbtlint.TagByte(this.data ? 1 : 0, true)
 		}
+	}
+	public toString() {
+		return nbtlint.stringify(this.toNbtLintTree(), '', {deflate: true})
 	}
 }
 

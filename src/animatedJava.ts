@@ -60,7 +60,7 @@ export interface Settings {
 	[index: string]: any
 }
 
-type Bone = {
+export type Bone = {
 	nbt: string
 	can_manipulate_arms: boolean
 	customModelData: number
@@ -70,19 +70,19 @@ export interface BoneObject {
 	[index: string]: Bone
 }
 
-type AnimationFrameBone = {
+export type AnimationFrameBone = {
 	exported: boolean
 	pos: { x: number; y: number; z: number }
 	rot: { x: number; y: number; z: number }
 	scale: { x: number; y: number; z: number }
 }
 
-type Frame = {
+export type Frame = {
 	bones: AnimationFrameBone[]
 	scripts: any
 }
 
-type Animation = {
+export type Animation = {
 	frames: Frame[]
 	maxDistance: number
 }
@@ -91,12 +91,12 @@ export interface Animations {
 	[index: string]: Animation
 }
 
-type ModelFace = {
+export type ModelFace = {
 	texture: `#${number}`
 	uv: [number, number, number, number]
 }
 
-type ModelElement = {
+export type ModelElement = {
 	faces: {
 		north?: ModelFace
 		south?: ModelFace
@@ -115,12 +115,12 @@ type ModelElement = {
 	uuid?: string
 }
 
-type TextureObject = {
+export type TextureObject = {
 	[index: number]: string
 	[index: `${number}`]: string
 }
 
-type Model = {
+export type Model = {
 	aj: {
 		customModelData: number
 	}
@@ -141,7 +141,7 @@ export interface CubeData {
 	textures_used: Texture[]
 }
 
-type VariantModel = {
+export type VariantModel = {
 	aj: {
 		customModelData: number
 	}

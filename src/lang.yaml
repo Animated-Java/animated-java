@@ -97,6 +97,9 @@ en:
     animatedJava_exporter_statueExporter.setting.individualBoneTag.name: Individual Bone Tag
     animatedJava_exporter_statueExporter.setting.individualBoneTag.description: The tag used to select a specific bone by name
 
+    animatedJava_exporter_statueExporter.setting.boneModelDisplayTag.name: Bone Model Display Tag
+    animatedJava_exporter_statueExporter.setting.boneModelDisplayTag.description: The tag used to select the entity that the item model is displayed on.
+
     animatedJava_exporter_statueExporter.setting.internalScoreboardObjective.name: Internal Scoreboard
     animatedJava_exporter_statueExporter.setting.internalScoreboardObjective.description: The name of the scoreboard objective used for internal calculations
 
