@@ -2,10 +2,12 @@ import nbtlint from '../dependencies/nbtlint/docs/nbt-lint'
 import {
 	safeFunctionName,
 	format,
-	fix_indent,
+	fixIndent,
 	store,
 	JsonText,
 	cloneObject,
+	CustomError,
+	translate,
 } from '../util'
 
 interface MCBConfig {
@@ -319,7 +321,7 @@ async function createMCFile(
 	}
 	FILE.push('}')
 
-	return fix_indent(FILE)
+	return fixIndent(FILE)
 }
 
 async function statueExport(data: any) {
@@ -333,18 +335,37 @@ async function statueExport(data: any) {
 		data.variantTouchedModels
 	)
 
+	if (!data.settings.animatedJava_exporter_statueExporter.mcbFilePath) {
+		let d = new Dialog({
+			title: translate(
+				'animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.title'
+			),
+			id: '',
+			lines: translate(
+				'animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.body'
+			)
+				.split('\n')
+				.map((line: string) => `<p>${line}</p>`),
+			onConfirm() {
+				d.hide()
+			},
+			onCancel() {
+				d.hide()
+			},
+		}).show()
+		throw new CustomError({ silent: true })
+	}
+
 	console.log('mcFile:', mcFile)
-	// @ts-ignore
 	Blockbench.writeFile(
 		data.settings.animatedJava_exporter_statueExporter.mcbFilePath,
-		// @ts-ignore
 		{
 			content: mcFile,
+			custom_writer: null
 		}
 	)
 
-	// @ts-ignore
-	Blockbench.showQuickMessage('Statue export successful!')
+	Blockbench.showQuickMessage('Model Exported Successfully')
 }
 
 interface statueExporterSettings {

@@ -74,6 +74,9 @@ en:
     animatedJava_exporter_statueExporter.setting.rootEntityType.name: Root Entity Type
     animatedJava_exporter_statueExporter.setting.rootEntityType.description: The entity type to use as the root entity for the statue. Should probably be a stationary entity.
 
+    animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.title: MCB file path not defined
+    animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.body: You must define a path for the MCB file in the Statue Exporter settings before exporting!
+
     # animatedJava_exporter_statueExporter.setting.boneType.name: Bone Type
     # animatedJava_exporter_statueExporter.setting.boneType.description: AEC Stack provides more precise positional movement at the cost of doubling the amount of entities per bone.
     # animatedJava_exporter_statueExporter.setting.boneType.aecStack.name: AEC Stack
@@ -113,6 +116,9 @@ en:
 
     #? Statue Exporter
     animatedJava_exporter_animationExporter: Animation Exporter
+
+    animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.title: MCB file path not defined
+    animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.body: You must define a path for the MCB file in the Animation Exporter settings before exporting!
 
     animatedJava_exporter_animationExporter.setting.rootEntityType.name: Root Entity Type
     animatedJava_exporter_animationExporter.setting.rootEntityType.description: The entity type to use as the root entity for the rig

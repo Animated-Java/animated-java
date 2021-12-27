@@ -1,5 +1,5 @@
 import * as aj from '../animatedJava'
-import { format, JsonText, safeFunctionName } from '../util'
+import { CustomError, fixIndent, format, JsonText, safeFunctionName, translate } from '../util'
 
 interface animationExporterSettings {
 	modelTag: string
@@ -116,13 +116,12 @@ async function createMCFile(
 	`)
 
 
-	return FILE.join('\n')
+	return fixIndent(FILE)
 }
 
 
-function animationExport(data: any) {
-
-	const mcFile = createMCFile(
+async function animationExport(data: any) {
+	const mcFile = await createMCFile(
 		data.bones,
 		data.models,
 		data.animations,
@@ -131,6 +130,38 @@ function animationExport(data: any) {
 		data.variantTextureOverrides,
 		data.variantTouchedModels
 	)
+
+	if (!data.settings.animatedJava_exporter_animationExporter.mcbFilePath) {
+		let d = new Dialog({
+			title: translate(
+				'animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.title'
+			),
+			id: '',
+			lines: translate(
+				'animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.body'
+			)
+				.split('\n')
+				.map((line: string) => `<p>${line}</p>`),
+			onConfirm() {
+				d.hide()
+			},
+			onCancel() {
+				d.hide()
+			},
+		}).show()
+		throw new CustomError({ silent: true })
+	}
+
+	console.log('mcFile:', mcFile)
+	Blockbench.writeFile(
+		data.settings.animatedJava_exporter_animationExporter.mcbFilePath,
+		{
+			content: mcFile,
+			custom_writer: null
+		}
+	)
+
+	Blockbench.showQuickMessage('Model Exported Successfully')
 
 }
 

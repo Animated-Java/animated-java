@@ -9,7 +9,7 @@ export function safeFunctionName(s: string) {
 	return s.toLowerCase().replace(/[^a-z0-9\._]/g, '_')
 }
 
-export function fix_indent(str: string[]) {
+export function fixIndent(str: string[]) {
 	let indent = 0
 	return str
 		.join('\n')
