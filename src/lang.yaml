@@ -9,18 +9,18 @@ en:
 
     animatedJava.popup.warning.rigFolderUnused.title: Unused rig folder
     animatedJava.popup.warning.rigFolderUnused.body: |-
-      This folder does not contain any existing rigs.
-      Are you sure you want to use this folder?
+        This folder does not contain any existing rigs.
+        Are you sure you want to use this folder?
 
     animatedJava.popup.error.rigFolderAlreadyUsedByOther.title: Chosen rig folder already in use
     animatedJava.popup.error.rigFolderAlreadyUsedByOther.body: |-
-      This folder already contains a rig for another model.
-      Are you sure you want to overwrite the existing rig?
+        This folder already contains a rig for another model.
+        Are you sure you want to overwrite the existing rig?
 
     animatedJava.popup.error.transparentTexturePathNotFound.title: Transparent Texture Path Not Defined
     animatedJava.popup.error.transparentTexturePathNotFound.body: |-
-      Looks like you're trying to use variants with transparent textures without defining a texture path!
-      You'll need to configure the transparent texture path in the settings before you can export.
+        Looks like you're trying to use variants with transparent textures without defining a texture path!
+        You'll need to configure the transparent texture path in the settings before you can export.
 
     #? AJ Settings
     animatedJava.menubar.dropdown.name: Animated Java
@@ -97,13 +97,10 @@ en:
     animatedJava_exporter_statueExporter.setting.individualBoneTag.name: Individual Bone Tag
     animatedJava_exporter_statueExporter.setting.individualBoneTag.description: The tag used to select a specific bone by name
 
-    animatedJava_exporter_statueExporter.setting.boneModelDisplayTag.name: Bone Model Display Tag
-    animatedJava_exporter_statueExporter.setting.boneModelDisplayTag.description: The tag used to select the entity that the item model is displayed on.
-
     animatedJava_exporter_statueExporter.setting.internalScoreboardObjective.name: Internal Scoreboard
     animatedJava_exporter_statueExporter.setting.internalScoreboardObjective.description: The name of the scoreboard objective used for internal calculations
 
-    animatedJava_exporter_statueExporter.setting.idScoreboardObjective.name: Model ID scoreboard objective
+    animatedJava_exporter_statueExporter.setting.idScoreboardObjective.name: Model ID Scoreboard
     animatedJava_exporter_statueExporter.setting.idScoreboardObjective.description: The name of the scoreboard objective used to identify which entities belong to which model instance
 
     animatedJava_exporter_statueExporter.setting.exportMode.name: Export Mode
@@ -143,6 +140,9 @@ en:
     animatedJava_exporter_animationExporter.setting.allBonesTag.name: All Bones Tag
     animatedJava_exporter_animationExporter.setting.allBonesTag.description: The tag used to select any or all of the rig's bones
 
+    animatedJava_exporter_animationExporter.setting.boneModelDisplayTag.name: Bone Model Display Tag
+    animatedJava_exporter_animationExporter.setting.boneModelDisplayTag.description: The tag used to select the entity that the item model is displayed on.
+
     animatedJava_exporter_animationExporter.setting.individualBoneTag.name: Individual Bone Tag
     animatedJava_exporter_animationExporter.setting.individualBoneTag.description: The tag used to select a specific bone by name
 
@@ -151,6 +151,12 @@ en:
 
     animatedJava_exporter_animationExporter.setting.idScoreboardObjective.name: Model ID scoreboard objective
     animatedJava_exporter_animationExporter.setting.idScoreboardObjective.description: The name of the scoreboard objective used to identify which entities belong to which model instance
+
+    animatedJava_exporter_animationExporter.setting.frameScoreboardObjective.name: Frame Scoreboard
+    animatedJava_exporter_animationExporter.setting.frameScoreboardObjective.description: The name of the scoreboard objective used to track which frame of an animation should be played next
+
+    animatedJava_exporter_animationExporter.setting.animatingFlagScoreboardObjective.name: Animation Flag Scoreboard
+    animatedJava_exporter_animationExporter.setting.animatingFlagScoreboardObjective.description: The name of the scoreboard objective used to query if a rig is actively animating
 
     animatedJava_exporter_animationExporter.setting.exportMode.name: Export Mode
     animatedJava_exporter_animationExporter.setting.exportMode.description: What kind of format to export to. Vanilla will export a normal Data Pack and Resource Pack. MCB will export a Resource Pack and .mc file for the lang-mc compiler

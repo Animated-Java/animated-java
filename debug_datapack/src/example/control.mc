@@ -12,7 +12,7 @@ entities bone_entities {
 	minecraft:area_effect_cloud
 }
 
-# Resets the model to it's initial summon state
+# Resets the model to it's initial summon position/rotation
 function reset_model {
 	# Make sure this function has been ran as the root entity
 	execute(if entity @s[tag=aj.example.root]) {

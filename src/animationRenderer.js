@@ -10,7 +10,6 @@ import { gunzipSync, gzipSync } from 'zlib'
 import events from './constants/events'
 store.set('static_animation_uuid', '138747e7-2de0-4130-b900-9275ca0e6333')
 
-
 function setAnimatorTime(time) {
 	Timeline.setTime(time)
 }
@@ -153,6 +152,7 @@ const struct = StructTypes.Object({
 		})
 	),
 	maxDistance: StructTypes.Double,
+	name: StructTypes.String,
 })
 
 const packer = StructPacker.create(struct)
@@ -318,7 +318,7 @@ export async function renderAnimation(options) {
 					maxDistance = Math.max(maxDistance, fdist)
 					frames.push(frame)
 				}
-				avalue = { frames, maxDistance }
+				avalue = { frames, maxDistance, name: animation.name }
 				animations[animation.uuid] = avalue
 				Cache.update(animation, avalue)
 			} else {

@@ -23,3 +23,11 @@ export function cloneObject(obj) {
 export function roundToN(v, n) {
 	return Math.round(v * n) / n
 }
+
+export function removeKeyGently(key, obj) {
+	const ret = {}
+	Object.entries(obj).forEach(([k, v]) => {
+		if (k !== key) ret[k] = v
+	})
+	return ret
+}

@@ -86,6 +86,7 @@ export type Frame = {
 export type Animation = {
 	frames: Frame[]
 	maxDistance: number
+	name: string
 }
 
 export interface Animations {

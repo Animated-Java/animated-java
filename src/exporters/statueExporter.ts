@@ -20,8 +20,6 @@ interface MCBConfig {
 	[index: string]: any
 }
 
-const HEAD_Y_OFFSET = -1.4365
-
 async function createMCFile(
 	bones: any,
 	animations: any,
@@ -33,6 +31,9 @@ async function createMCFile(
 ): Promise<string> {
 	const FILE: string[] = []
 	const projectName = safeFunctionName(ajSettings.projectName)
+
+	const HEAD_Y_OFFSET = -1.813
+	if (!statueExporterSettings) HEAD_Y_OFFSET + 0.4
 
 	const staticAnimationUuid = store.get('static_animation_uuid')
 	const staticFrame = animations[staticAnimationUuid].frames[0].bones
@@ -300,21 +301,16 @@ async function createMCFile(
 				boneName: k,
 			})
 		)
-
+		// prettier-ignore
 		FILE.push(`
 			function ${variantName} {
 				execute (if entity @s[tag=${tags.root}] at @s) {
 					scoreboard players operation .this aj.id = @s aj.id
-					execute as @e[type=${entityTypes.boneDisplay},tag=${
-			tags.allBones
-		},distance=..${staticDistance}] if score @s aj.id = .this aj.id run {
+					execute as @e[type=${entityTypes.boneDisplay},tag=${tags.allBones},distance=..${staticDistance}] if score @s aj.id = .this aj.id run {
 						${thisVariantCommands.join('\n')}
 					}
 				} else {
-					tellraw @s ${rootExeErrorJsonText.replace(
-						'%functionName',
-						`${projectName}:set_variant/`
-					)}
+					tellraw @s ${rootExeErrorJsonText.replace('%functionName',`${projectName}:set_variant/${variantName}`)}
 				}
 			}
 		`)
@@ -361,7 +357,7 @@ async function statueExport(data: any) {
 		data.settings.animatedJava_exporter_statueExporter.mcbFilePath,
 		{
 			content: mcFile,
-			custom_writer: null
+			custom_writer: null,
 		}
 	)
 

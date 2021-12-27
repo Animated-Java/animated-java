@@ -200,19 +200,20 @@ export class NBT<T> {
 		return this
 	}
 	public static ListOf(type: NBTType, values: any[]) {
-		const nbtList = values.map(
-			(value) => {
-				if (value.type in NBTType) {
-					if (value.type !== type) throw new Error(`Invalid type ${value.type} inside of list of type ${type}`)
-					return value
-				} else {
-					return new NBT({
-						type,
-						value,
-					})
-				}
+		const nbtList = values.map((value) => {
+			if (value.type in NBTType) {
+				if (value.type !== type)
+					throw new Error(
+						`Invalid type ${value.type} inside of list of type ${type}`
+					)
+				return value
+			} else {
+				return new NBT({
+					type,
+					value,
+				})
 			}
-		)
+		})
 		return NBT.List(nbtList)
 	}
 
@@ -282,7 +283,7 @@ export class NBT<T> {
 		}
 	}
 	public toString() {
-		return nbtlint.stringify(this.toNbtLintTree(), '', {deflate: true})
+		return nbtlint.stringify(this.toNbtLintTree(), '', { deflate: true })
 	}
 }
 

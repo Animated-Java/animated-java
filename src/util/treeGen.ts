@@ -1,4 +1,4 @@
-export function generateTree(items) {
+export function generateTree(items: any[]): any {
 	const depth = () => Math.floor(Math.log(items.length) / Math.log(8))
 	const dat = [...items]
 	let idx = 0

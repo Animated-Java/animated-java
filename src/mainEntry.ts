@@ -70,16 +70,24 @@ export const BuildModel = (callback: any, options: any) => {
 	}
 }
 
-async function computeAnimationData(callback: (data: any) => any, options: any) {
+async function computeAnimationData(
+	callback: (data: any) => any,
+	options: any
+) {
 	console.groupCollapsed('Compute Animation Data')
 
-	const animations = await renderAnimation(options) as aj.Animations
+	const animations = (await renderAnimation(options)) as aj.Animations
 	const cubeData: aj.CubeData = computeElements()
 	const models: aj.ModelObject = await computeModels(cubeData)
-	const variantTextureOverrides = computeVariantTextureOverrides(models) as aj.VariantTextureOverrides
+	const variantTextureOverrides = computeVariantTextureOverrides(
+		models
+	) as aj.VariantTextureOverrides
 	const bones = computeBones(models, animations) as aj.BoneObject
 	// const [variantModels, variantTouchedModels] = await computeVariantModels(models, variantTextureOverrides)
-	const variants = await computeVariantModels(models, variantTextureOverrides) as {
+	const variants = (await computeVariantModels(
+		models,
+		variantTextureOverrides
+	)) as {
 		variantModels: aj.VariantModels
 		variantTouchedModels: aj.variantTouchedModels
 	}
@@ -114,7 +122,11 @@ async function computeAnimationData(callback: (data: any) => any, options: any) 
 import './pluginDefinitions'
 import { show_settings } from './ui/dialogs/settings'
 
-const menu: any = new BarMenu('animated_java', [], () => Format.id === format.id)
+const menu: any = new BarMenu(
+	'animated_java',
+	[],
+	() => Format.id === format.id
+)
 menu.label.style.display = 'none'
 document.querySelector('#menu_bar').appendChild(menu.label)
 // @ts-ignore
