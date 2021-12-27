@@ -158,6 +158,9 @@ en:
     animatedJava_exporter_animationExporter.setting.animatingFlagScoreboardObjective.name: Animation Flag Scoreboard
     animatedJava_exporter_animationExporter.setting.animatingFlagScoreboardObjective.description: The name of the scoreboard objective used to query if a rig is actively animating
 
+    animatedJava_exporter_animationExporter.setting.animationLoopModeScoreboardObjective.name: Animation Loop Mode Scoreboard
+    animatedJava_exporter_animationExporter.setting.animationLoopModeScoreboardObjective.description: The name of the scoreboard objective used to control the looping behaviour of each animation
+
     animatedJava_exporter_animationExporter.setting.exportMode.name: Export Mode
     animatedJava_exporter_animationExporter.setting.exportMode.description: What kind of format to export to. Vanilla will export a normal Data Pack and Resource Pack. MCB will export a Resource Pack and .mc file for the lang-mc compiler
     animatedJava_exporter_animationExporter.setting.exportMode.vanilla.name: Vanilla

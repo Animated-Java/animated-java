@@ -16,20 +16,22 @@ import {
 import { NBT, NBTType } from '../util/minecraft/nbt'
 
 interface animationExporterSettings {
-	modelTag: string
-	rootTag: string
 	allBonesTag: string
-	individualBoneTag: string
-	rootEntityType: string
-	boneType: 'aecStack' | 'armorStand'
-	internalScoreboardObjective: string
-	idScoreboardObjective: string
-	frameScoreboardObjective: string
-	exportMode: 'datapack' | 'mcb'
-	mcbFilePath: string | undefined
-	dataPackFilePath: string | undefined
-	markerArmorStands: boolean
 	animatingFlagScoreboardObjective: string
+	animationLoopModeScoreboardObjective: string
+	boneModelDisplayTag: string
+	boneType: 'aecStack' | 'armorStand'
+	dataPackFilePath: string | undefined
+	exportMode: 'datapack' | 'mcb'
+	frameScoreboardObjective: string
+	idScoreboardObjective: string
+	individualBoneTag: string
+	internalScoreboardObjective: string
+	markerArmorStands: boolean
+	mcbFilePath: string | undefined
+	modelTag: string
+	rootEntityType: string
+	rootTag: string
 }
 
 interface MCBConfig {
@@ -42,11 +44,27 @@ interface MCBConfig {
 	[index: string]: any
 }
 
-interface entityTypes {
+interface EntityTypes {
 	bone: string
 	root: string
 	boneRoot: string
 	boneDisplay?: string
+}
+
+interface Tags {
+	model: string
+	root: string
+	allBones: string
+	individualBone: string
+	boneDisplay: string
+}
+
+interface Scoreboards {
+	id: string
+	internal: string
+	frame: string
+	animatingFlag: string
+	animationLoopMode: string
 }
 
 async function createMCFile(
@@ -86,8 +104,8 @@ async function createMCFile(
 	const rootExeErrorJsonText = new JsonText([
 		'',
 		{ text: 'AJ', color: 'green' },
-		{ text: ' ? ', color: 'light_purple' },
-		{ text: 'Error \u{2620}', color: 'red' },
+		{ text: ' → ', color: 'light_purple' },
+		{ text: 'Error ☠', color: 'red' },
 		'\n',
 		{ text: '%functionName', color: 'blue' },
 		' ',
@@ -101,30 +119,26 @@ async function createMCFile(
 			internal: exporterSettings.internalScoreboardObjective,
 			frame: exporterSettings.frameScoreboardObjective,
 			animatingFlag: exporterSettings.animatingFlagScoreboardObjective,
+			animationLoopMode: exporterSettings.animationLoopModeScoreboardObjective
 		}).map(([k, v]) => [
 			k,
 			format(v, {
 				projectName,
 			}),
 		])
-	)
+	) as Scoreboards
 
-	const tags = {
-		model: format(exporterSettings.modelTag, {
-			modelName: projectName,
-		}),
-		root: format(exporterSettings.rootTag, {
-			modelName: projectName,
-		}),
-		allBones: format(exporterSettings.allBonesTag, {
-			modelName: projectName,
-		}),
-		individualBone: format(exporterSettings.individualBoneTag, {
-			modelName: projectName,
-		}),
-	}
+	const tags = Object.fromEntries(
+		Object.entries({
+			model: exporterSettings.modelTag,
+			root: exporterSettings.rootTag,
+			allBones: exporterSettings.allBonesTag,
+			individualBone: exporterSettings.individualBoneTag,
+			boneDisplay: exporterSettings.boneModelDisplayTag,
+		}).map(([k, v]) => [k, format(v, { projectName })])
+	) as Tags
 
-	const entityTypes: entityTypes = {
+	const entityTypes: EntityTypes = {
 		bone: `#${projectName}:bone_entities`,
 		root: 'minecraft:marker',
 		boneRoot: 'minecraft:area_effect_cloud',
@@ -174,115 +188,125 @@ async function createMCFile(
 		}
 	`)
 
-	//? Summon Dir
-	class Summon {
-		boneName: string
-		bone: aj.AnimationFrameBone
-		model: aj.Model
-		customModelData: number
-		constructor(boneName: string, bone: aj.AnimationFrameBone) {
-			this.boneName = boneName
-			this.bone = bone
-			this.model = models[boneName]
-			this.resetCustomModelData()
-			console.log(this)
-			console.log(this.nbt)
-			console.log(this.nbt.toString())
-		}
-
-		resetCustomModelData() {
-			this.customModelData = this.model.aj.customModelData
-		}
-
-		get nbt(): NBT<NBTType.COMPOUND> {
-			// prettier-ignore
-			return NBT.Compound()
-			.Int('Age', -2147483648)
-			.Int('Duration', -1)
-			.Int('WaitTime', -2147483648)
-			.ListOf('Tags', NBTType.STRING, [
-				'new',
-				tags.model,
-				tags.allBones,
-				tags.individualBone.replace('%boneName', this.boneName),
-			])
-			.ListOf('Passengers', NBTType.COMPOUND, [
-				NBT.Compound()
-					.String('id', entityTypes.boneDisplay)
-					.ListOf('Tags', NBTType.STRING, [
-						'new',
-						tags.model,
-						tags.allBones,
-						tags.individualBone.replace('%boneName', this.boneName),
-					])
-					.ListOf('ArmorItems', NBTType.COMPOUND, [
-						{}, {}, {},
-						NBT.Compound()
-							.String('id', ajSettings.rigItem)
-							.Byte('Count', 1)
-							.Compound('tag', {
-								CustomModelData: NBT.Int(this.customModelData)
-							})
-					])
-					.Byte('Invisible', 1)
-					.Byte('Marker', Number(exporterSettings.markerArmorStands))
-					.Byte('NoGravity', 1)
-			])
-		}
-
-		get pos() {
-			return {
-				x: this.bone.pos.x,
-				y: this.bone.pos.y + HEAD_Y_OFFSET,
-				z: this.bone.pos.z,
+	{
+		//? Summon Dir
+		class Summon {
+			boneName: string
+			bone: aj.AnimationFrameBone
+			model: aj.Model
+			customModelData: number
+			constructor(boneName: string, bone: aj.AnimationFrameBone) {
+				this.boneName = boneName
+				this.bone = bone
+				this.model = models[boneName]
+				this.resetCustomModelData()
+				console.log(this)
+				console.log(this.nbt)
+				console.log(this.nbt.toString())
 			}
-		}
 
-		toString() {
-			const pos = Object.values(this.pos)
-				.map((v) => `^${v}`)
-				.join(' ')
-			return `summon ${entityTypes.boneRoot} ${pos} ${this.nbt}`
-		}
-	}
-
-	FILE.push(`dir summon {`)
-
-	const summons = []
-	for (const [boneName, bone] of Object.entries(staticFrame)) {
-		if (!bone.exported) continue
-		console.log(boneName)
-		const summon = new Summon(boneName, bone)
-		summons.push(summon)
-	}
-
-	for (const [variantName, variant] of Object.entries(variantModels)) {
-		for (const summon of summons) {
-			if (variant[summon.boneName]) {
-				summon.customModelData =
-					variant[summon.boneName].aj.customModelData
-			} else {
-				summon.resetCustomModelData()
+			resetCustomModelData() {
+				this.customModelData = this.model.aj.customModelData
 			}
-		}
-		// prettier-ignore
-		FILE.push(`
-			function ${variantName} {
-				summon minecraft:marker ~ ~ ~ {Tags:['new', ${tags.model}, ${tags.root}]}
-				execute as @e[type=minecraft:marker,tag=${tags.root},tag=new,distance=..1,limit=1] at @s rotated ~ 0 run {
-					execute store result score @s ${scoreboards.id} run scoreboard players add .aj.last_id ${scoreboards.internal} 1
-					${summons.map(v => v.toString()).join('\n')}
-					execute as @e[type=${entityTypes.bone},tag=${tags.model},tag=new,distance=..${staticDistance}] positioned as @s run {
-						scoreboard players operation @s ${scoreboards.id} = .aj.last_id ${scoreboards.internal}
-						tp @s ~ ~ ~ ~ ~
-						tag @s remove new
-					}
-					tag @s remove new
+
+			get nbt(): NBT<NBTType.COMPOUND> {
+				// prettier-ignore
+				return NBT.Compound()
+				.Int('Age', -2147483648)
+				.Int('Duration', -1)
+				.Int('WaitTime', -2147483648)
+				.ListOf('Tags', NBTType.STRING, [
+					'new',
+					tags.model,
+					tags.allBones,
+					tags.individualBone.replace('%boneName', this.boneName),
+				])
+				.ListOf('Passengers', NBTType.COMPOUND, [
+					NBT.Compound()
+						.String('id', entityTypes.boneDisplay)
+						.ListOf('Tags', NBTType.STRING, [
+							'new',
+							tags.model,
+							tags.allBones,
+							tags.individualBone.replace('%boneName', this.boneName),
+							tags.boneDisplay
+						])
+						.ListOf('ArmorItems', NBTType.COMPOUND, [
+							{}, {}, {},
+							NBT.Compound()
+								.String('id', ajSettings.rigItem)
+								.Byte('Count', 1)
+								.Compound('tag', {
+									CustomModelData: NBT.Int(this.customModelData)
+								})
+						])
+						.Byte('Invisible', 1)
+						.Byte('Marker', Number(exporterSettings.markerArmorStands))
+						.Byte('NoGravity', 1)
+						.Compound('Pose', {
+							Head: NBT.ListOf(NBTType.FLOAT, [
+								this.bone.rot.x,
+								this.bone.rot.y,
+								this.bone.rot.z
+							])
+						})
+				])
+			}
+
+			get pos(): { x: number; y: number; z: number } {
+				return {
+					x: this.bone.pos.x,
+					y: this.bone.pos.y + HEAD_Y_OFFSET,
+					z: this.bone.pos.z,
 				}
 			}
-		`)
+
+			toString() {
+				const pos = Object.values(this.pos)
+					.map((v) => `^${v}`)
+					.join(' ')
+				return `summon ${entityTypes.boneRoot} ${pos} ${this.nbt}`
+			}
+		}
+
+		FILE.push(`dir summon {`)
+
+		const summons = []
+		for (const [boneName, bone] of Object.entries(staticFrame)) {
+			if (!bone.exported) continue
+			console.log(boneName)
+			const summon = new Summon(boneName, bone)
+			summons.push(summon)
+		}
+
+		for (const [variantName, variant] of Object.entries(variantModels)) {
+			for (const summon of summons) {
+				if (variant[summon.boneName]) {
+					summon.customModelData =
+						variant[summon.boneName].aj.customModelData
+				} else {
+					summon.resetCustomModelData()
+				}
+			}
+			// prettier-ignore
+			FILE.push(`
+				function ${variantName} {
+					summon minecraft:marker ~ ~ ~ {Tags:['new', ${tags.model}, ${tags.root}]}
+					execute as @e[type=minecraft:marker,tag=${tags.root},tag=new,distance=..1,limit=1] at @s rotated ~ 0 run {
+						execute store result score @s ${scoreboards.id} run scoreboard players add .aj.last_id ${scoreboards.internal} 1
+						${summons.map(v => v.toString()).join('\n')}
+						execute as @e[type=${entityTypes.bone},tag=${tags.model},tag=new,distance=..${staticDistance}] positioned as @s run {
+							scoreboard players operation @s ${scoreboards.id} = .aj.last_id ${scoreboards.internal}
+							tp @s ~ ~ ~ ~ ~
+							tag @s remove new
+						}
+						tag @s remove new
+					}
+				}
+			`)
+		}
+		FILE.push(`}`)
 	}
-	FILE.push(`}`)
 
 	//? Set Variant Dir
 	const variantBoneModifier = `data modify entity @s[tag=${tags.individualBone}] ArmorItems[-1].tag.CustomModelData set value %customModelData`
@@ -344,7 +368,7 @@ async function createMCFile(
 			# Resets the model to it's initial summon position/rotation and stops all active animations
 			function reset {
 				# Make sure this function has been ran as the root entity
-				execute(if entity @s[tag=${tags.root}]) {
+				execute(if entity @s[tag=${tags.root}] at @s) {
 					# Remove all animation tags
 					${'tag @s remove aj.example.anim.example_1'}
 					# Reset animation time
@@ -367,34 +391,151 @@ async function createMCFile(
 	}
 
 	{
-		//? Animation Dir
-		FILE.push(`dir animations {`)
+		//? Animation Loop function
 		const animationRunCommand = `execute if entity @s[tag=aj.${projectName}.anim.%animationName] run function ${projectName}:animations/%animationName/next_frame`
 		const animationRunCommands = Object.values(animations).map((v) =>
 			format(animationRunCommand, { animationName: v.name })
 		)
 		// prettier-ignore
 		FILE.push(`
-			function loop {
+			function animation_loop {
 				# Schedule clock
-				schedule function ${projectName}:animations/loop 1t
+				schedule function ${projectName}:animation_loop 1t
 				# Set anim_loop active flag to true
 				scoreboard players set .aj.anim ${scoreboards.animatingFlag} 1
 				# Reset animating flag (Used internally to check if any animations have ticked during this tick)
-				scoreboard players set #animating ${scoreboards.animatingFlag} 0
+				scoreboard players set .aj.animation ${scoreboards.animatingFlag} 0
 				# Run animations that are active on the entity
 				execute as @e[type=${entityTypes.root},tag=${tags.root}] run{
 					${animationRunCommands.join('\n')}
 				}
 				# Stop the anim_loop clock if no models are animating
-				execute if score #animating ${scoreboards.animatingFlag} matches 0 run {
+				execute if score .aj.animation ${scoreboards.animatingFlag} matches 0 run {
 					# Stop anim_loop shedule clock
-					schedule clear ${projectName}:animations/loop
+					schedule clear ${projectName}:animation_loop
 					# Set anim_loop active flag to false
 					scoreboard players set .aj.anim ${scoreboards.animatingFlag} 0
 				}
-			}`
-		)
+			}
+		`)
+	}
+
+	{
+		//? Animation Dir
+		FILE.push(`dir animations {`)
+
+		for (const animation of Object.values(animations)) {
+			const thisAnimationLoopMode = format(scoreboards.animationLoopMode, {
+				animationName: animation.name
+			})
+			FILE.push(`dir ${animation.name} {`)
+			// prettier-ignore
+			FILE.push(`# Starts the animation from the first frame
+				function play {
+					# Make sure this function has been ran as the root entity
+					execute(if entity @s[tag=${tags.root}] at @s) {
+						# Add animation tag
+						tag @s add aj.${projectName}.anim.${animation.name}
+						# Reset animation time
+						scoreboard players set @s ${scoreboards.frame} 0
+						# Start the animation loop if not running
+						execute if score .aj.animation ${scoreboards.animatingFlag} matches 0 run function ${projectName}:animation_loop
+					# If this entity is not the root
+					} else {
+						tellraw @s ${rootExeErrorJsonText.replace('%functionName',`${projectName}:animations/${animation.name}/play`)}
+					}
+				}`
+			)
+			// prettier-ignore
+			FILE.push(`# Stops the animation and resets to first frame
+				function stop {
+					# Make sure this function has been ran as the root entity
+					execute(if entity @s[tag=${tags.root}] at @s) {
+						# Add animation tag
+						tag @s remove aj.${projectName}.anim.${animation.name}
+						# Reset animation time
+						scoreboard players set @s ${scoreboards.frame} 0
+						# load initial animation frame
+						function ${projectName}:animations/${animation.name}/next_frame
+						# Reset animation time
+						scoreboard players set @s ${scoreboards.frame} 0
+					# If this entity is not the root
+					} else {
+						tellraw @s ${rootExeErrorJsonText.replace('%functionName',`${projectName}:animations/${animation.name}/stop`)}
+					}
+				}`
+			)
+
+			// prettier-ignore
+			FILE.push(`# Pauses the animation on the current frame
+				function pause {
+					# Make sure this function has been ran as the root entity
+					execute(if entity @s[tag=${tags.root}] at @s) {
+						# Remove animation tag
+						tag @s remove aj.${projectName}.anim.${animation.name}
+					# If this entity is not the root
+					} else {
+						tellraw @s ${rootExeErrorJsonText.replace('%functionName',`${projectName}:animations/${animation.name}/pause`)}
+					}
+				}`
+			)
+
+			// prettier-ignore
+			FILE.push(`# Resumes the animation from the current frame
+				function resume {
+					# Make sure this function has been ran as the root entity
+					execute(if entity @s[tag=${tags.root}]) {
+						# Remove animation tag
+						tag @s add aj.${projectName}.anim.${animation.name}
+						# Start the animation loop
+						execute if score .aj.animation ${scoreboards.animatingFlag} matches 0 run function ${projectName}:animation_loop
+					# If this entity is not the root
+					} else {
+						tellraw @s ${rootExeErrorJsonText.replace('%functionName',`${projectName}:animations/${animation.name}/resume`)}
+					}
+				}`
+			)
+
+			// prettier-ignore
+			FILE.push(`# Plays the next frame in the animation
+				function next_frame {
+					scoreboard players operation .this ${scoreboards.id} = @s ${scoreboards.id}
+					execute as @e[type=${entityTypes.boneRoot},tag=${tags.allBones},distance=..${maxDistance}] if score @s ${scoreboards.id} = .this ${scoreboards.id} run {
+
+						${'say Animation tree goes here'}
+						# execute if entity @s[tag=aj.example.head] run say Animation tree goes here
+
+						execute store result entity @s Air short 1 run scoreboard players get @s ${scoreboards.frame}
+					}
+
+					# Increment frame
+					scoreboard players add @s ${scoreboards.frame} 1
+					# Let the anim_loop know we're still running
+					scoreboard players set .aj.animation ${scoreboards.animatingFlag} 1
+				}`
+			)
+
+			// prettier-ignore
+			FILE.push(`# Performs a loop mode action depending on what the animation's configured loop mode is
+				function end {
+					# Play Once
+					execute if score @s ${thisAnimationLoopMode} matches 0 run {
+						function ${projectName}:animations/${animation.name}/stop
+					}
+					# Hold on last frame
+					execute if score @s ${thisAnimationLoopMode} matches 1 run {
+						function ${projectName}:animations/${animation.name}/pause
+					}
+					# loop
+					execute if score @s ${thisAnimationLoopMode} matches 2 run {
+						scoreboard players set @s ${scoreboards.frame} 0
+					}
+				}
+			`)
+
+			FILE.push(`}`)
+		}
+
 		FILE.push(`}`)
 	}
 
@@ -472,9 +613,9 @@ const Exporter = (AJ: any) => {
 			},
 			modelTag: {
 				type: 'text',
-				default: 'aj.%modelName',
+				default: 'aj.%projectName',
 				populate() {
-					return 'aj.%modelName'
+					return 'aj.%projectName'
 				},
 				isValid(value: any) {
 					return value != ''
@@ -483,9 +624,9 @@ const Exporter = (AJ: any) => {
 			},
 			rootTag: {
 				type: 'text',
-				default: 'aj.%modelName.root',
+				default: 'aj.%projectName.root',
 				populate() {
-					return 'aj.%modelName.root'
+					return 'aj.%projectName.root'
 				},
 				isValid(value: any) {
 					return value != ''
@@ -494,9 +635,9 @@ const Exporter = (AJ: any) => {
 			},
 			allBonesTag: {
 				type: 'text',
-				default: 'aj.%modelName.bone',
+				default: 'aj.%projectName.bone',
 				populate() {
-					return 'aj.%modelName.bone'
+					return 'aj.%projectName.bone'
 				},
 				isValid(value: any) {
 					return value != ''
@@ -505,9 +646,9 @@ const Exporter = (AJ: any) => {
 			},
 			boneModelDisplayTag: {
 				type: 'text',
-				default: 'aj.%modelName.bone_display',
+				default: 'aj.%projectName.bone_display',
 				populate() {
-					return 'aj.%modelName.bone_display'
+					return 'aj.%projectName.bone_display'
 				},
 				isValid(value: any) {
 					return value != ''
@@ -516,9 +657,9 @@ const Exporter = (AJ: any) => {
 			},
 			individualBoneTag: {
 				type: 'text',
-				default: 'aj.%modelName.%boneName',
+				default: 'aj.%projectName.bone.%boneName',
 				populate() {
-					return 'aj.%modelName.%boneName'
+					return 'aj.%projectName.bone.%boneName'
 				},
 				isValid(value: any) {
 					return value != ''
@@ -557,12 +698,22 @@ const Exporter = (AJ: any) => {
 			},
 			animatingFlagScoreboardObjective: {
 				type: 'text',
-				default: undefined,
+				default: 'aj.%projectName.animating',
 				populate() {
-					return `aj.%projectName.animating`
+					return 'aj.%projectName.animating'
 				},
 				isValid(value: any) {
-					return typeof value === 'string' && value != ''
+					return value != ''
+				},
+			},
+			animationLoopModeScoreboardObjective: {
+				type: 'text',
+				default: 'aj.%projectName.%animationName.loopMode',
+				populate() {
+					return 'aj.%projectName.%animationName.loopMode'
+				},
+				isValid(value: any) {
+					return value != ''
 				},
 			},
 			exportMode: {

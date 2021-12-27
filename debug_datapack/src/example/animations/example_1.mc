@@ -73,5 +73,21 @@ function next_frame {
 	scoreboard players add @s aj.frame 1
 	# Let the anim_loop know we're still running
 	scoreboard players set #animating aj.i 1
+	# If (the next frame is the end of the animation) perform the necessary actions for the loop mode of the animation
+	execute if score @s aj.frame matches 10.. run function example:animations/example_1/end_animation
 }
-
+# Performs a loop mode action depending on what the animation's configured loop mode is
+function end_animation {
+	# Play Once
+	execute if score @s aj.example.example_1.loopMode matches 0 run {
+		function example:animations/example_1/stop
+	}
+	# Hold on last frame
+	execute if score @s aj.example.example_1.loopMode matches 1 run {
+		function example:animations/example_1/pause
+	}
+	# loop
+	execute if score @s aj.example.example_1.loopMode matches 2 run {
+		scoreboard players set @s aj.frame 0
+	}
+}

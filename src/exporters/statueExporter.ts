@@ -58,16 +58,16 @@ async function createMCFile(
 
 	const tags = {
 		model: format(statueExporterSettings.modelTag, {
-			modelName: projectName,
+			projectName: projectName,
 		}),
 		root: format(statueExporterSettings.rootTag, {
-			modelName: projectName,
+			projectName: projectName,
 		}),
 		allBones: format(statueExporterSettings.allBonesTag, {
-			modelName: projectName,
+			projectName: projectName,
 		}),
 		individualBone: format(statueExporterSettings.individualBoneTag, {
-			modelName: projectName,
+			projectName: projectName,
 		}),
 	}
 
@@ -404,9 +404,9 @@ const Exporter = (AJ: any) => {
 		},
 		modelTag: {
 			type: 'text',
-			default: 'aj.%modelName',
+			default: 'aj.%projectName',
 			populate() {
-				return 'aj.%modelName'
+				return 'aj.%projectName'
 			},
 			isValid(value: any) {
 				return value != ''
@@ -415,9 +415,9 @@ const Exporter = (AJ: any) => {
 		},
 		rootTag: {
 			type: 'text',
-			default: 'aj.%modelName.root',
+			default: 'aj.%projectName.root',
 			populate() {
-				return 'aj.%modelName.root'
+				return 'aj.%projectName.root'
 			},
 			isValid(value: any) {
 				return value != ''
@@ -426,9 +426,9 @@ const Exporter = (AJ: any) => {
 		},
 		allBonesTag: {
 			type: 'text',
-			default: 'aj.%modelName.bone',
+			default: 'aj.%projectName.bone',
 			populate() {
-				return 'aj.%modelName.bone'
+				return 'aj.%projectName.bone'
 			},
 			isValid(value: any) {
 				return value != ''
@@ -437,9 +437,9 @@ const Exporter = (AJ: any) => {
 		},
 		individualBoneTag: {
 			type: 'text',
-			default: 'aj.%modelName.%boneName',
+			default: 'aj.%projectName.bone.%boneName',
 			populate() {
-				return 'aj.%modelName.%boneName'
+				return 'aj.%projectName.bone.%boneName'
 			},
 			isValid(value: any) {
 				return value != ''
