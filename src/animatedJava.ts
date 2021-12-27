@@ -87,6 +87,7 @@ export type Animation = {
 	frames: Frame[]
 	maxDistance: number
 	name: string
+	loopMode: 'loop' | 'hold' | 'once'
 }
 
 export interface Animations {

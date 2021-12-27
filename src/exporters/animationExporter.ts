@@ -67,6 +67,17 @@ interface Scoreboards {
 	animationLoopMode: string
 }
 
+function loopModeToInt(loopMode: 'once' | 'hold' | 'loop') {
+	switch (loopMode) {
+		case 'once':
+			return 0
+		case 'hold':
+			return 1
+		case 'loop':
+			return 2
+	}
+}
+
 async function createMCFile(
 	bones: aj.BoneObject,
 	models: aj.ModelObject,
@@ -81,19 +92,20 @@ async function createMCFile(
 		settings.animatedJava_exporter_animationExporter
 	const projectName = safeFunctionName(ajSettings.projectName)
 
-	const HEAD_Y_OFFSET = -1.813
-	if (!exporterSettings.markerArmorStands) HEAD_Y_OFFSET + 0.4
+	let headYOffset = -1.813
+	if (!exporterSettings.markerArmorStands) headYOffset += -0.1
+	console.log(headYOffset)
 
 	const staticAnimationUuid = store.get('static_animation_uuid')
 	const staticFrame = animations[staticAnimationUuid].frames[0].bones
 	const staticDistance = roundToN(
-		animations[staticAnimationUuid].maxDistance + -HEAD_Y_OFFSET,
+		animations[staticAnimationUuid].maxDistance + -headYOffset,
 		1000
 	)
 	const maxDistance = roundToN(
 		Object.values(animations).reduce((o, n) => {
 			return Math.max(o, n.maxDistance)
-		}, -Infinity) + -HEAD_Y_OFFSET,
+		}, -Infinity) + -headYOffset,
 		1000
 	)
 	animations = removeKeyGently(staticAnimationUuid, animations)
@@ -119,7 +131,8 @@ async function createMCFile(
 			internal: exporterSettings.internalScoreboardObjective,
 			frame: exporterSettings.frameScoreboardObjective,
 			animatingFlag: exporterSettings.animatingFlagScoreboardObjective,
-			animationLoopMode: exporterSettings.animationLoopModeScoreboardObjective
+			animationLoopMode:
+				exporterSettings.animationLoopModeScoreboardObjective,
 		}).map(([k, v]) => [
 			k,
 			format(v, {
@@ -154,9 +167,17 @@ async function createMCFile(
 
 	FILE.push(`
 		function install {
-			${Object.entries(scoreboards)
-				.map(([k, v]) => `scoreboard objectives add ${v}`)
-				.join('\n')}
+			scoreboard objectives add ${scoreboards.internal} dummy
+			scoreboard objectives add ${scoreboards.id} dummy
+			scoreboard objectives add ${scoreboards.frame} dummy
+			scoreboard objectives add ${scoreboards.animatingFlag} dummy
+			${Object.values(animations).map(v => `scoreboard objectives add ${scoreboards.animationLoopMode} dummy`.replace('%animationName', v.name)).join('\n')}
+			scoreboard players add .aj.animation ${scoreboards.animatingFlag} 0
+			scoreboard players add .aj.anim_loop ${scoreboards.animatingFlag} 0
+		}
+		function load {
+			scoreboard players add .aj.animation ${scoreboards.animatingFlag} 0
+			scoreboard players add .aj.anim_loop ${scoreboards.animatingFlag} 0
 		}
 	`)
 
@@ -256,7 +277,7 @@ async function createMCFile(
 			get pos(): { x: number; y: number; z: number } {
 				return {
 					x: this.bone.pos.x,
-					y: this.bone.pos.y + HEAD_Y_OFFSET,
+					y: this.bone.pos.y + headYOffset,
 					z: this.bone.pos.z,
 				}
 			}
@@ -301,43 +322,53 @@ async function createMCFile(
 							tag @s remove new
 						}
 						tag @s remove new
+						${Object.values(animations).map(
+							v => `scoreboard players set @s ${scoreboards.animationLoopMode.replace('%animationName',v.name)} ${loopModeToInt(v.loopMode)}`
+						).join('\n')}
 					}
+					scoreboard players add .aj.animation ${scoreboards.animatingFlag} 0
+					scoreboard players add .aj.anim_loop ${scoreboards.animatingFlag} 0
 				}
 			`)
 		}
 		FILE.push(`}`)
 	}
 
-	//? Set Variant Dir
-	const variantBoneModifier = `data modify entity @s[tag=${tags.individualBone}] ArmorItems[-1].tag.CustomModelData set value %customModelData`
+	if (Object.keys(variantTouchedModels).length > 0) {
+		//? Set Variant Dir
+		const variantBoneModifier = `data modify entity @s[tag=${tags.individualBone}] ArmorItems[-1].tag.CustomModelData set value %customModelData`
 
-	FILE.push(`dir set_variant {`)
-	for (const [variantName, variant] of Object.entries(variantModels)) {
-		const thisVariantTouchedModels = { ...variantTouchedModels, ...variant }
-		const commands = Object.entries(thisVariantTouchedModels).map(
-			([k, v]) =>
-				format(variantBoneModifier, {
-					customModelData: v.aj.customModelData,
-					boneName: k,
-				})
-		)
-
-		// prettier-ignore
-		FILE.push(`
-			function ${variantName} {
-				execute (if entity @s[tag=${tags.root}] at @s) {
-					scoreboard players operation .this aj.id = @s aj.id
-					execute as @e[type=${entityTypes.boneDisplay},tag=${tags.allBones},distance=..${maxDistance}] if score @s aj.id = .this aj.id run {
-						${commands.join('\n')}
-					}
-				} else {
-					tellraw @s ${rootExeErrorJsonText.replace('%functionName',`${projectName}:set_variant/${variantName}`)}
-				}
+		FILE.push(`dir set_variant {`)
+		for (const [variantName, variant] of Object.entries(variantModels)) {
+			const thisVariantTouchedModels = {
+				...variantTouchedModels,
+				...variant,
 			}
-		`)
-	}
+			const commands = Object.entries(thisVariantTouchedModels).map(
+				([k, v]) =>
+					format(variantBoneModifier, {
+						customModelData: v.aj.customModelData,
+						boneName: k,
+					})
+			)
 
-	FILE.push(`}`)
+			// prettier-ignore
+			FILE.push(`
+				function ${variantName} {
+					execute (if entity @s[tag=${tags.root}] at @s) {
+						scoreboard players operation .this aj.id = @s aj.id
+						execute as @e[type=${entityTypes.boneDisplay},tag=${tags.allBones},distance=..${maxDistance}] if score @s aj.id = .this aj.id run {
+							${commands.join('\n')}
+						}
+					} else {
+						tellraw @s ${rootExeErrorJsonText.replace('%functionName',`${projectName}:set_variant/${variantName}`)}
+					}
+				}
+			`)
+		}
+
+		FILE.push(`}`)
+	}
 
 	{
 		//? Reset function
@@ -350,7 +381,7 @@ async function createMCFile(
 			const baseModifier = format(boneBaseModifier, {
 				boneName,
 				x: bone.pos.x,
-				y: bone.pos.y + HEAD_Y_OFFSET,
+				y: bone.pos.y + headYOffset,
 				z: bone.pos.z,
 			})
 			const displayModifier = format(boneDisplayModifier, {
@@ -392,7 +423,7 @@ async function createMCFile(
 
 	{
 		//? Animation Loop function
-		const animationRunCommand = `execute if entity @s[tag=aj.${projectName}.anim.%animationName] run function ${projectName}:animations/%animationName/next_frame`
+		const animationRunCommand = `execute if entity @s[tag=aj.${projectName}.anim.%animationName] at @s run function ${projectName}:animations/%animationName/next_frame`
 		const animationRunCommands = Object.values(animations).map((v) =>
 			format(animationRunCommand, { animationName: v.name })
 		)
@@ -402,7 +433,7 @@ async function createMCFile(
 				# Schedule clock
 				schedule function ${projectName}:animation_loop 1t
 				# Set anim_loop active flag to true
-				scoreboard players set .aj.anim ${scoreboards.animatingFlag} 1
+				scoreboard players set .aj.anim_loop ${scoreboards.animatingFlag} 1
 				# Reset animating flag (Used internally to check if any animations have ticked during this tick)
 				scoreboard players set .aj.animation ${scoreboards.animatingFlag} 0
 				# Run animations that are active on the entity
@@ -414,7 +445,7 @@ async function createMCFile(
 					# Stop anim_loop shedule clock
 					schedule clear ${projectName}:animation_loop
 					# Set anim_loop active flag to false
-					scoreboard players set .aj.anim ${scoreboards.animatingFlag} 0
+					scoreboard players set .aj.anim_loop ${scoreboards.animatingFlag} 0
 				}
 			}
 		`)
@@ -425,9 +456,69 @@ async function createMCFile(
 		FILE.push(`dir animations {`)
 
 		for (const animation of Object.values(animations)) {
-			const thisAnimationLoopMode = format(scoreboards.animationLoopMode, {
-				animationName: animation.name
-			})
+			const thisAnimationLoopMode = format(
+				scoreboards.animationLoopMode,
+				{
+					animationName: animation.name,
+				}
+			)
+
+			const touchedBones = Object.keys(animation.frames[0].bones)
+
+			console.log('Animation:', animation)
+			const animationTree = generateTree(animation.frames)
+			console.log('Animation Tree:', animationTree)
+
+			function collectBoneTree(boneName: string, animationTreeItem: any) {
+				if (animationTreeItem.type === 'layer') {
+					return {
+						type: 'branch',
+						branches: animationTreeItem.items.map((v: any) =>
+							collectBoneTree(boneName, v)
+						),
+						min: animationTreeItem.min,
+						max: animationTreeItem.max,
+					}
+				} else {
+					return {
+						type: 'leaf',
+						index: animationTreeItem.index,
+						frame: animationTreeItem.item.bones[boneName],
+					}
+				}
+			}
+
+			const boneTrees = {}
+			for (const [boneName, bone] of Object.entries(bones)) {
+				if (!touchedBones.includes(boneName)) continue
+				const tree = collectBoneTree(boneName, animationTree)
+				console.log('Bone Tree:', tree)
+				function generateBaseTree(tree: any): {base: string, display: string} {
+					if (tree.type === 'branch') {
+						let retBase: string[] = []
+						let retDisplay: string[] = []
+						// prettier-ignore
+						tree.branches.forEach((v: any)=> {
+							if (v.type === 'branch') {
+								const t = generateBaseTree(v)
+								retBase.push(`execute if score .this ${scoreboards.frame} matches ${v.min}..${v.max-1} run {\n${t.base}\n}`)
+								retDisplay.push(`execute if score .this ${scoreboards.frame} matches ${v.min}..${v.max-1} run {\n${t.display}\n}`)
+							} else {
+								let pos = v.frame.pos
+								let rot = v.frame.rot
+								// prettier-ignore
+								retBase.push(`execute if score .this ${scoreboards.frame} matches ${v.index} run tp @s ^${pos.x} ^${pos.y + headYOffset} ^${pos.z} ~ ~`)
+								retDisplay.push(`execute if score .this ${scoreboards.frame} matches ${v.index} run data modify entity @s Pose.Head set value [${rot.x}f,${rot.y}f,${rot.z}f]`)
+							}
+						})
+						return {base: retBase.join('\n'), display: retDisplay.join('\n')}
+					}
+				}
+				boneTrees[boneName] = generateBaseTree(tree)
+			}
+			console.log('Collected Bone Trees:', boneTrees)
+			// boneTrees is used in the next_frame function
+
 			FILE.push(`dir ${animation.name} {`)
 			// prettier-ignore
 			FILE.push(`# Starts the animation from the first frame
@@ -439,7 +530,7 @@ async function createMCFile(
 						# Reset animation time
 						scoreboard players set @s ${scoreboards.frame} 0
 						# Start the animation loop if not running
-						execute if score .aj.animation ${scoreboards.animatingFlag} matches 0 run function ${projectName}:animation_loop
+						execute if score .aj.anim_loop ${scoreboards.animatingFlag} matches 0 run function ${projectName}:animation_loop
 					# If this entity is not the root
 					} else {
 						tellraw @s ${rootExeErrorJsonText.replace('%functionName',`${projectName}:animations/${animation.name}/play`)}
@@ -488,7 +579,7 @@ async function createMCFile(
 						# Remove animation tag
 						tag @s add aj.${projectName}.anim.${animation.name}
 						# Start the animation loop
-						execute if score .aj.animation ${scoreboards.animatingFlag} matches 0 run function ${projectName}:animation_loop
+						execute if score .aj.anim_loop ${scoreboards.animatingFlag} matches 0 run function ${projectName}:animation_loop
 					# If this entity is not the root
 					} else {
 						tellraw @s ${rootExeErrorJsonText.replace('%functionName',`${projectName}:animations/${animation.name}/resume`)}
@@ -500,18 +591,28 @@ async function createMCFile(
 			FILE.push(`# Plays the next frame in the animation
 				function next_frame {
 					scoreboard players operation .this ${scoreboards.id} = @s ${scoreboards.id}
-					execute as @e[type=${entityTypes.boneRoot},tag=${tags.allBones},distance=..${maxDistance}] if score @s ${scoreboards.id} = .this ${scoreboards.id} run {
-
-						${'say Animation tree goes here'}
-						# execute if entity @s[tag=aj.example.head] run say Animation tree goes here
-
-						execute store result entity @s Air short 1 run scoreboard players get @s ${scoreboards.frame}
+					scoreboard players operation .this ${scoreboards.frame} = @s ${scoreboards.frame}
+					execute as @e[type=${entityTypes.bone},tag=${tags.allBones},distance=..${maxDistance}] if score @s ${scoreboards.id} = .this ${scoreboards.id} run {
+						# Split by type
+						execute if entity @s[type=${entityTypes.boneRoot}] run {
+							${(Object.entries(boneTrees) as Record<string, any>).map(([boneName,tree]) => {
+								return `execute if entity @s[tag=${tags.individualBone.replace('%boneName', boneName)}] run {\n${tree.base}\n}`
+							}).join('\n\n')}
+							execute store result entity @s Air short 1 run scoreboard players get .this ${scoreboards.frame}
+						}
+						# Split by type
+						execute if entity @s[type=${entityTypes.boneDisplay}] run {
+							${(Object.entries(boneTrees) as Record<string, any>).map(([boneName,tree]) => {
+								return `execute if entity @s[tag=${tags.individualBone.replace('%boneName', boneName)}] run {\n${tree.display}\n}`
+							}).join('\n\n')}
+						}
 					}
-
 					# Increment frame
 					scoreboard players add @s ${scoreboards.frame} 1
 					# Let the anim_loop know we're still running
 					scoreboard players set .aj.animation ${scoreboards.animatingFlag} 1
+					# If (the next frame is the end of the animation) perform the necessary actions for the loop mode of the animation
+					execute if score @s ${scoreboards.frame} matches ${animation.frames.length}.. run function ${projectName}:animations/${animation.name}/end
 				}`
 			)
 

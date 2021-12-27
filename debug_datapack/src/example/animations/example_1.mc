@@ -61,12 +61,64 @@ function resume {
 # Plays the next frame in the animation
 function next_frame {
 
-	scoreboard players operation # aj.id = @s aj.id
-	execute as @e[type=area_effect_cloud,tag=aj.example,distance=..10] if score @s aj.id = # aj.id run {
-		execute if entity @s[tag=aj.example.head] run say Animation tree goes here
-		execute if entity @s[tag=aj.example.core] run say Animation tree goes here
-
-		execute store result entity @s Air short 1 run scoreboard players get @s aj.frame
+	scoreboard players operation .this aj.frame = @s aj.frame
+	scoreboard players operation .this aj.id = @s aj.id
+	execute as @e[type=#example:bone_entities,tag=aj.example,distance=..10] if score @s aj.id = .this aj.id run {
+		# Split by type
+		execute if entity @s[type=minecraft:area_effect_cloud] run {
+			# Split by bone
+			execute if entity @s[tag=aj.example.head] run {
+				# Split by frame
+				execute if score .this aj.frame matches 0..7 run {
+					execute if score .this aj.frame matches 0 run tp @s ^ ^ ^ ~ ~
+					execute if score .this aj.frame matches 1 run tp @s ^ ^ ^ ~ ~
+					execute if score .this aj.frame matches 2 run tp @s ^ ^ ^ ~ ~
+					execute if score .this aj.frame matches 3 run tp @s ^ ^ ^ ~ ~
+					execute if score .this aj.frame matches 4 run tp @s ^ ^ ^ ~ ~
+					execute if score .this aj.frame matches 5 run tp @s ^ ^ ^ ~ ~
+					execute if score .this aj.frame matches 6 run tp @s ^ ^ ^ ~ ~
+					execute if score .this aj.frame matches 7 run tp @s ^ ^ ^ ~ ~
+				}
+				execute if score .this aj.frame matches 8..15 run {
+					execute if score .this aj.frame matches 8 run tp @s ^ ^ ^ ~ ~
+					execute if score .this aj.frame matches 9 run tp @s ^ ^ ^ ~ ~
+					execute if score .this aj.frame matches 10 run tp @s ^ ^ ^ ~ ~
+					execute if score .this aj.frame matches 11 run tp @s ^ ^ ^ ~ ~
+					execute if score .this aj.frame matches 12 run tp @s ^ ^ ^ ~ ~
+					execute if score .this aj.frame matches 13 run tp @s ^ ^ ^ ~ ~
+					execute if score .this aj.frame matches 14 run tp @s ^ ^ ^ ~ ~
+					execute if score .this aj.frame matches 15 run tp @s ^ ^ ^ ~ ~
+				}
+			}
+			execute store result entity @s Air short 1 run scoreboard players get @s aj.frame
+		}
+		# Split by type
+		execute if entity @s[type=minecraft:armor_stand] run {
+			# Split by bone
+			execute if entity @s[tag=aj.example.head] run {
+				# Split by frame
+				execute if score .this aj.frame matches 0..7 run {
+					execute if score .this aj.frame matches 0 run data modify entity @s Pose.Head set value [0f,0f,0f]
+					execute if score .this aj.frame matches 1 run data modify entity @s Pose.Head set value [0f,0f,0f]
+					execute if score .this aj.frame matches 2 run data modify entity @s Pose.Head set value [0f,0f,0f]
+					execute if score .this aj.frame matches 3 run data modify entity @s Pose.Head set value [0f,0f,0f]
+					execute if score .this aj.frame matches 4 run data modify entity @s Pose.Head set value [0f,0f,0f]
+					execute if score .this aj.frame matches 5 run data modify entity @s Pose.Head set value [0f,0f,0f]
+					execute if score .this aj.frame matches 6 run data modify entity @s Pose.Head set value [0f,0f,0f]
+					execute if score .this aj.frame matches 7 run data modify entity @s Pose.Head set value [0f,0f,0f]
+				}
+				execute if score .this aj.frame matches 8..15 run {
+					execute if score .this aj.frame matches 8 run data modify entity @s Pose.Head set value [0f,0f,0f]
+					execute if score .this aj.frame matches 9 run data modify entity @s Pose.Head set value [0f,0f,0f]
+					execute if score .this aj.frame matches 10 run data modify entity @s Pose.Head set value [0f,0f,0f]
+					execute if score .this aj.frame matches 11 run data modify entity @s Pose.Head set value [0f,0f,0f]
+					execute if score .this aj.frame matches 12 run data modify entity @s Pose.Head set value [0f,0f,0f]
+					execute if score .this aj.frame matches 13 run data modify entity @s Pose.Head set value [0f,0f,0f]
+					execute if score .this aj.frame matches 14 run data modify entity @s Pose.Head set value [0f,0f,0f]
+					execute if score .this aj.frame matches 15 run data modify entity @s Pose.Head set value [0f,0f,0f]
+				}
+			}
+		}
 	}
 
 	# Increment frame

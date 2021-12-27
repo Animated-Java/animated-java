@@ -286,7 +286,7 @@ async function createMCFile(
 	}
 	FILE.push('}')
 
-	if (Object.keys(variantModels).length > 0 && Object.keys(variantTouchedModels).length > 0) {
+	if (Object.keys(variantTouchedModels).length > 0) {
 		const variantBoneModifier = `data modify entity @s[tag=${tags.individualBone}] ArmorItems[-1].tag.CustomModelData set value %customModelData`
 		FILE.push(`dir set_variant {`)
 		for (const [variantName, variant] of Object.entries(

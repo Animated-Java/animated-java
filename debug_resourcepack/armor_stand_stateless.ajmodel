@@ -1,7 +1,7 @@
 {
   "meta": {
     "format_version": "0.0",
-    "creation_time": 1640642604,
+    "creation_time": 1640644931,
     "model_format": "animated_java/ajmodel",
     "box_uv": false,
     "settings": {
@@ -28,7 +28,7 @@
       },
       "animatedJava_exporter_animationExporter": {
         "rootEntityType": "minecraft:marker",
-        "markerArmorStands": false,
+        "markerArmorStands": true,
         "modelTag": "aj.%projectName",
         "rootTag": "aj.%projectName.root",
         "allBonesTag": "aj.%projectName.bone",
@@ -45,16 +45,7 @@
       }
     },
     "variants": {
-      "red": {
-        "29f44b0b-5027-de28-9958-e95a32a0cf4c": "52d3d034-24bc-3a1c-49d8-98899a3aa5bd"
-      },
-      "blue": {},
-      "green": {
-        "29f44b0b-5027-de28-9958-e95a32a0cf4c": "f422a623-6d8c-1bd1-4da1-c61940601aaf"
-      },
-      "all_blue": {
-        "9aa33630-8f09-269e-1ff8-4006c170cc10": "29f44b0b-5027-de28-9958-e95a32a0cf4c"
-      }
+      "blue": {}
     },
     "uuid": "6315712c-d94e-91d8-dc54-eb2877b25239"
   },
@@ -407,7 +398,7 @@
       "locked": false,
       "from": [
         -2.9,
-        0,
+        6,
         -1
       ],
       "to": [
@@ -433,7 +424,7 @@
             44,
             18,
             42,
-            29
+            23
           ],
           "texture": 0
         },
@@ -442,7 +433,7 @@
             48,
             18,
             46,
-            29
+            23
           ],
           "texture": 0
         },
@@ -451,7 +442,7 @@
             46,
             18,
             44,
-            29
+            23
           ],
           "texture": 0
         },
@@ -460,7 +451,7 @@
             42,
             18,
             40,
-            29
+            23
           ],
           "texture": 0
         },
@@ -491,7 +482,7 @@
       "locked": false,
       "from": [
         1.05,
-        0,
+        6,
         -1
       ],
       "to": [
@@ -516,7 +507,7 @@
             10,
             2,
             12,
-            13
+            7
           ],
           "texture": 0
         },
@@ -525,7 +516,7 @@
             8,
             2,
             10,
-            13
+            7
           ],
           "texture": 0
         },
@@ -534,7 +525,7 @@
             14,
             2,
             16,
-            13
+            7
           ],
           "texture": 0
         },
@@ -543,7 +534,7 @@
             12,
             2,
             14,
-            13
+            7
           ],
           "texture": 0
         },
@@ -818,6 +809,173 @@
       "uuid": "7b9ccbf8-4217-ad4c-0cb9-c4d1b7fa7e68"
     },
     {
+      "name": "right_leg",
+      "rescale": false,
+      "locked": false,
+      "from": [
+        1.05,
+        0,
+        -1
+      ],
+      "to": [
+        3.05,
+        6,
+        1
+      ],
+      "autouv": 0,
+      "color": 4,
+      "origin": [
+        0,
+        -1,
+        0
+      ],
+      "uv_offset": [
+        8,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            10,
+            7,
+            12,
+            13
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            8,
+            7,
+            10,
+            13
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            14,
+            7,
+            16,
+            13
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            12,
+            7,
+            14,
+            13
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            12,
+            2,
+            10,
+            0
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            14,
+            0,
+            12,
+            2
+          ],
+          "texture": 0
+        }
+      },
+      "uuid": "1fc0d4b0-646f-0065-75d1-a47d133188d6"
+    },
+    {
+      "name": "left_leg",
+      "rescale": false,
+      "locked": false,
+      "from": [
+        -2.9,
+        0,
+        -1
+      ],
+      "to": [
+        -0.8999999999999999,
+        6,
+        1
+      ],
+      "autouv": 0,
+      "color": 0,
+      "shade": false,
+      "origin": [
+        0,
+        -1,
+        0
+      ],
+      "uv_offset": [
+        40,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            44,
+            23,
+            42,
+            29
+          ],
+          "texture": 0
+        },
+        "east": {
+          "uv": [
+            48,
+            23,
+            46,
+            29
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            46,
+            23,
+            44,
+            29
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            42,
+            23,
+            40,
+            29
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            42,
+            18,
+            44,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            44,
+            16,
+            46,
+            18
+          ],
+          "texture": 0
+        }
+      },
+      "uuid": "f11653bc-8b5e-077a-aedd-37130e33e77e"
+    },
+    {
       "name": "cube",
       "rescale": false,
       "locked": false,
@@ -1029,9 +1187,9 @@
                 0
               ],
               "rotation": [
-                0,
+                -15,
                 -1.987846675914698e-16,
-                0
+                -12.5
               ],
               "color": 0,
               "nbt": "{}",
@@ -1044,7 +1202,27 @@
               "visibility": true,
               "autouv": 0,
               "children": [
-                "7fae6617-94cc-761b-0a08-f9dc2fb46595"
+                "7fae6617-94cc-761b-0a08-f9dc2fb46595",
+                {
+                  "name": "lower_left_leg",
+                  "origin": [
+                    -2.15,
+                    6,
+                    -1
+                  ],
+                  "color": 0,
+                  "nbt": "{}",
+                  "can_manipulate_arms": false,
+                  "uuid": "4b1a6796-1dc0-68fd-611f-f63dc7d5e9ca",
+                  "export": true,
+                  "isOpen": true,
+                  "locked": false,
+                  "visibility": true,
+                  "autouv": 0,
+                  "children": [
+                    "f11653bc-8b5e-077a-aedd-37130e33e77e"
+                  ]
+                }
               ]
             },
             {
@@ -1053,6 +1231,11 @@
                 2.15,
                 11,
                 0
+              ],
+              "rotation": [
+                7.4863659093898605,
+                -0.646856058911979,
+                2.414917191768027
               ],
               "color": 0,
               "nbt": "{}",
@@ -1064,7 +1247,27 @@
               "visibility": true,
               "autouv": 0,
               "children": [
-                "e6925d8a-9195-67c0-ad2d-524005c6ef7e"
+                "e6925d8a-9195-67c0-ad2d-524005c6ef7e",
+                {
+                  "name": "lower_right_leg",
+                  "origin": [
+                    2.15,
+                    6,
+                    -1
+                  ],
+                  "color": 0,
+                  "nbt": "{}",
+                  "can_manipulate_arms": false,
+                  "uuid": "6137ff10-ba75-8f4c-5f16-c5523460a510",
+                  "export": true,
+                  "isOpen": true,
+                  "locked": false,
+                  "visibility": true,
+                  "autouv": 0,
+                  "children": [
+                    "1fc0d4b0-646f-0065-75d1-a47d133188d6"
+                  ]
+                }
               ]
             },
             {
@@ -1095,6 +1298,11 @@
                     22,
                     0
                   ],
+                  "rotation": [
+                    5.042923270466488,
+                    -7.4712970489209845,
+                    -0.6573984636520873
+                  ],
                   "color": 0,
                   "nbt": "{Tags:['test']}",
                   "can_manipulate_arms": false,
@@ -1116,6 +1324,11 @@
                     21,
                     0
                   ],
+                  "rotation": [
+                    -150.37834812480432,
+                    4.980925321928884,
+                    -8.68220390104616
+                  ],
                   "color": 0,
                   "nbt": "{}",
                   "can_manipulate_arms": false,
@@ -1136,6 +1349,11 @@
                     5,
                     21,
                     0
+                  ],
+                  "rotation": [
+                    35.46340639289428,
+                    -6.068092250952073,
+                    22.07723154321041
                   ],
                   "color": 0,
                   "nbt": "{}",
@@ -1185,34 +1403,6 @@
       "saved": true,
       "uuid": "29f44b0b-5027-de28-9958-e95a32a0cf4c",
       "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAN5JREFUOE+FU20WwyAIE8/TdT1p1xPLXuSlgtKtv+oHISRRXu9LVbXMn4j0LZzh39+pVUprti/b/lF/GUVzAde8B2wHcKpILdhMiAQG1rmhxU24M+Aq65yNYfcMSPbj6gCkxAKOkq09W4GI/4ooYMZQtv3UWmtn4AXEvNAEVKFRHGXoEDTwtKmLty+zto/gvaZAo2srZEgAn5mFwThEUOpto7FbrQ4MZjFz8SLwAjD7PsS06M7aBBvzCFNxuGQAHugRYM7/kys9icxAKewS5/z1Wpe3wJf2FGUDs0bQ5wvg6d+0OCF3GAAAAABJRU5ErkJggg=="
-    },
-    {
-      "path": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\minecraft\\textures\\block\\lime_concrete.png",
-      "name": "lime_concrete.png",
-      "folder": "",
-      "namespace": "",
-      "id": "2",
-      "particle": false,
-      "render_mode": "normal",
-      "visible": true,
-      "mode": "bitmap",
-      "saved": true,
-      "uuid": "f422a623-6d8c-1bd1-4da1-c61940601aaf",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAVpJREFUOE9dk1tWw0AIhoHZRDyureru1O5xwPNxSRPTh7bMAP8t+vg5wkyFT/CJEAkRURFVFR5qlLPOkdV3/v74PbrMRZouh2ri28UWHSHucZ6H9xIQ0ETBlorvkLVMPPxEQG02DxLuBgM/n2+hQsO+IQA+9e1boMjDoIFf9PRFwXQBMvmqmgSQLlqMDucwb1SP7yMQLCE2lRKwNGFIUgNuXiq60NzuhYBCQsOAbBiZI3lWrWl43CnNgHNibi8KNwQt5Aw6NUkK4+2JoLYhIzB5lpVG07jWSuHThfHX2NxpoRkrQbHsbmueuYuZiWYOWpxr8krUEg/ly51XMjOhaDcIxp60a1LWcZ4gpQ2ktQVPt+ZdyHegt+b0CIESGsD/f9DqzjmgVB/INOy9c1OiaZHzHDc6JyzQr+d7ENeWISWEDtznyf8d49Gh7iNi2zhTB9rEeIZNSkF1HfIHRl/99iYyuoMAAAAASUVORK5CYII="
-    },
-    {
-      "path": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\minecraft\\textures\\block\\red_concrete.png",
-      "name": "red_concrete.png",
-      "folder": "",
-      "namespace": "",
-      "id": "3",
-      "particle": false,
-      "render_mode": "normal",
-      "visible": true,
-      "mode": "bitmap",
-      "saved": true,
-      "uuid": "52d3d034-24bc-3a1c-49d8-98899a3aa5bd",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAASpJREFUOE9tUwGOwyAMS+Aj3fbdaX1xyckmphk7pKoCEcd2jJ+PR0SEhZk5PnfTvrVmYwxreeatWYzBO1zu5p/jCBXhPyIIBEAAGMBxpuIE1R1/H0f0gqzL6CxGaMbzbABgMCEJMGC3jebkeC8wEBvJXQCix4NN5+6PJRDAbgCYgk96ZVIaBbpiueT0zvuuKchIXkgD6Tg64kyaUyoc6JiCTCSlZIFJAAQX6kjXCCvbauJOT4CSJnaZAk7Fz9cLg/6XZpVFO6AbUjBOBKy13yARCWG5ru9AaaLZbLE9n88gWu8WKErTxOqum2mscrDnFOpslTgUKtY1GzhD6PhfAIpqyfs0Zb6Dumoe0PjOQS3edcI84F3XerUCnRIycaSdz/eraz4ksVGIsP8DXb8WGNLgxqwAAAAASUVORK5CYII="
     }
   ],
   "animations": [
@@ -1224,7 +1414,7 @@
       "length": 2.1,
       "snapping": 10,
       "selected": false,
-      "saved": false,
+      "saved": true,
       "path": "",
       "anim_time_update": "",
       "blend_weight": "",
@@ -1373,6 +1563,46 @@
                 }
               ],
               "uuid": "958c6ead-c2a7-e5fc-3487-b3993cceb625",
+              "time": 0,
+              "color": -1,
+              "interpolation": "linear"
+            }
+          ]
+        },
+        "6137ff10-ba75-8f4c-5f16-c5523460a510": {
+          "name": "lower_right_leg",
+          "type": "bone",
+          "keyframes": [
+            {
+              "channel": "rotation",
+              "data_points": [
+                {
+                  "x": "Math.clamp(Math.sin(8+query.anim_time * 512) * 64,0,64)",
+                  "y": "0",
+                  "z": "0"
+                }
+              ],
+              "uuid": "70fa94b4-20f2-0608-b996-aafd627e0988",
+              "time": 0,
+              "color": -1,
+              "interpolation": "linear"
+            }
+          ]
+        },
+        "4b1a6796-1dc0-68fd-611f-f63dc7d5e9ca": {
+          "name": "lower_left_leg",
+          "type": "bone",
+          "keyframes": [
+            {
+              "channel": "rotation",
+              "data_points": [
+                {
+                  "x": "Math.clamp(-Math.sin(8+query.anim_time * 512) * 64,0,64)",
+                  "y": "0",
+                  "z": "0"
+                }
+              ],
+              "uuid": "ecb7cce1-c13f-7861-c0da-75f048e9f38b",
               "time": 0,
               "color": -1,
               "interpolation": "linear"
@@ -1681,6 +1911,26 @@
             }
           ]
         },
+        "4b1a6796-1dc0-68fd-611f-f63dc7d5e9ca": {
+          "name": "lower_left_leg",
+          "type": "bone",
+          "keyframes": [
+            {
+              "channel": "rotation",
+              "data_points": [
+                {
+                  "x": "Math.cos(256+16+query.anim_time * 512) * 32 + 32",
+                  "y": "0",
+                  "z": "0"
+                }
+              ],
+              "uuid": "effcad10-446e-5635-1041-cc4796ac4550",
+              "time": 0,
+              "color": -1,
+              "interpolation": "linear"
+            }
+          ]
+        },
         "0237edc1-3823-5494-7d32-e881620d58f4": {
           "name": "right_leg",
           "type": "bone",
@@ -1695,6 +1945,26 @@
                 }
               ],
               "uuid": "bdc95a05-87a0-9672-2923-76f2ce559860",
+              "time": 0,
+              "color": -1,
+              "interpolation": "linear"
+            }
+          ]
+        },
+        "6137ff10-ba75-8f4c-5f16-c5523460a510": {
+          "name": "lower_right_leg",
+          "type": "bone",
+          "keyframes": [
+            {
+              "channel": "rotation",
+              "data_points": [
+                {
+                  "x": "-Math.cos(256+16+query.anim_time * 512) * 32 + 32",
+                  "y": "0",
+                  "z": "0"
+                }
+              ],
+              "uuid": "e87dc1e1-25b2-2871-ac62-d7004de0a7d8",
               "time": 0,
               "color": -1,
               "interpolation": "linear"

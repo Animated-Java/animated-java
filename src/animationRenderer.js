@@ -153,6 +153,7 @@ const struct = StructTypes.Object({
 	),
 	maxDistance: StructTypes.Double,
 	name: StructTypes.String,
+	loopMode: StructTypes.String,
 })
 
 const packer = StructPacker.create(struct)
@@ -318,7 +319,7 @@ export async function renderAnimation(options) {
 					maxDistance = Math.max(maxDistance, fdist)
 					frames.push(frame)
 				}
-				avalue = { frames, maxDistance, name: animation.name }
+				avalue = { frames, maxDistance, name: animation.name, loopMode: animation.loop}
 				animations[animation.uuid] = avalue
 				Cache.update(animation, avalue)
 			} else {
