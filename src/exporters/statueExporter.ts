@@ -76,7 +76,7 @@ async function createMCFile(
 		boneRoot: string
 		boneDisplay?: string
 	}
-	const entityTypes: any = {
+	const entityTypes: entityTypes = {
 		bone: `#${projectName}:bone_entities`,
 		root: 'minecraft:marker',
 		boneRoot: 'minecraft:area_effect_cloud',
@@ -111,10 +111,10 @@ async function createMCFile(
 
 	//? Bone Entity Type
 	FILE.push(`
-	entities bone_entities {
-		minecraft:area_effect_cloud
-		minecraft:armor_stand
-	}
+		entities bone_entities {
+			${entityTypes.boneRoot}
+			${entityTypes.boneDisplay}
+		}
 	`)
 
 	//? Remove dir

@@ -1,5 +1,12 @@
 import * as aj from '../animatedJava'
-import { CustomError, fixIndent, format, JsonText, safeFunctionName, translate } from '../util'
+import {
+	CustomError,
+	fixIndent,
+	format,
+	JsonText,
+	safeFunctionName,
+	translate,
+} from '../util'
 
 interface animationExporterSettings {
 	modelTag: string
@@ -14,7 +21,7 @@ interface animationExporterSettings {
 	exportMode: 'datapack' | 'mcb'
 	mcbFilePath: string | undefined
 	dataPackFilePath: string | undefined
-	markerArmorStands: boolean,
+	markerArmorStands: boolean
 }
 
 interface MCBConfig {
@@ -34,7 +41,6 @@ interface entityTypes {
 	boneDisplay?: string
 }
 
-
 async function createMCFile(
 	bones: aj.BoneObject,
 	models: aj.ModelObject,
@@ -45,7 +51,8 @@ async function createMCFile(
 	variantTouchedModels: aj.variantTouchedModels
 ): Promise<string> {
 	const ajSettings = settings.animatedJava
-	const exporterSettings: animationExporterSettings = settings.animatedJava_exporter_animationExporter
+	const exporterSettings: animationExporterSettings =
+		settings.animatedJava_exporter_animationExporter
 	const projectName = safeFunctionName(ajSettings.projectName)
 
 	const FILE: string[] = []
@@ -65,7 +72,7 @@ async function createMCFile(
 	const scoreboards = {
 		id: exporterSettings.idScoreboardObjective,
 		internal: exporterSettings.internalScoreboardObjective,
-		frame: exporterSettings.frameScoreboardObjective
+		frame: exporterSettings.frameScoreboardObjective,
 	}
 
 	const tags = {
@@ -83,7 +90,7 @@ async function createMCFile(
 		}),
 	}
 
-	const entityTypes: any = {
+	const entityTypes: entityTypes = {
 		bone: `#${projectName}:bone_entities`,
 		root: 'minecraft:marker',
 		boneRoot: 'minecraft:area_effect_cloud',
@@ -115,10 +122,19 @@ async function createMCFile(
 		}
 	`)
 
+	//? Bone Entity Type
+	FILE.push(`
+		entities bone_entities {
+			${entityTypes.boneRoot}
+			${entityTypes.boneDisplay}
+		}
+	`)
+
+	
+
 
 	return fixIndent(FILE)
 }
-
 
 async function animationExport(data: any) {
 	const mcFile = await createMCFile(
@@ -157,193 +173,199 @@ async function animationExport(data: any) {
 		data.settings.animatedJava_exporter_animationExporter.mcbFilePath,
 		{
 			content: mcFile,
-			custom_writer: null
+			custom_writer: null,
 		}
 	)
 
 	Blockbench.showQuickMessage('Model Exported Successfully')
-
 }
 
 const Exporter = (AJ: any) => {
-	AJ.settings.registerPluginSettings('animatedJava_exporter_animationExporter', {
-		rootEntityType: {
-			type: 'text',
-			default: 'minecraft:marker',
-			populate() {
-				return 'minecraft:marker'
+	AJ.settings.registerPluginSettings(
+		'animatedJava_exporter_animationExporter',
+		{
+			rootEntityType: {
+				type: 'text',
+				default: 'minecraft:marker',
+				populate() {
+					return 'minecraft:marker'
+				},
+				isValid(value: any) {
+					return value != ''
+				},
+				isResetable: true,
 			},
-			isValid(value: any) {
-				return value != ''
+			boneType: {
+				type: 'select',
+				default: 'aecStack',
+				options: {
+					aecStack:
+						'animatedJava_exporter_animationExporter.setting.boneType.aecStack.name',
+					armorStand:
+						'animatedJava_exporter_animationExporter.setting.boneType.armorStand.name',
+				},
+				populate() {
+					return 'area_effect_cloud'
+				},
+				isValid(value: any) {
+					return value != ''
+				},
+				isResetable: true,
 			},
-			isResetable: true,
-		},
-		boneType: {
-			type: 'select',
-			default: 'aecStack',
-			options: {
-				aecStack:
-					'animatedJava_exporter_animationExporter.setting.boneType.aecStack.name',
-				armorStand:
-					'animatedJava_exporter_animationExporter.setting.boneType.armorStand.name',
-			},
-			populate() {
-				return 'area_effect_cloud'
-			},
-			isValid(value: any) {
-				return value != ''
-			},
-			isResetable: true,
-		},
-		markerArmorStands: {
-			type: 'checkbox',
-			default: true,
-			populate() {
-				return true
-			},
-			isValid(value: any) {
-				return typeof value === 'boolean'
-			},
-		},
-		modelTag: {
-			type: 'text',
-			default: 'aj.%modelName',
-			populate() {
-				return 'aj.%modelName'
-			},
-			isValid(value: any) {
-				return value != ''
-			},
-			isResetable: true,
-		},
-		rootTag: {
-			type: 'text',
-			default: 'aj.%modelName.root',
-			populate() {
-				return 'aj.%modelName.root'
-			},
-			isValid(value: any) {
-				return value != ''
-			},
-			isResetable: true,
-		},
-		allBonesTag: {
-			type: 'text',
-			default: 'aj.%modelName.bone',
-			populate() {
-				return 'aj.%modelName.bone'
-			},
-			isValid(value: any) {
-				return value != ''
-			},
-			isResetable: true,
-		},
-		individualBoneTag: {
-			type: 'text',
-			default: 'aj.%modelName.%boneName',
-			populate() {
-				return 'aj.%modelName.%boneName'
-			},
-			isValid(value: any) {
-				return value != ''
-			},
-			isResetable: true,
-		},
-		internalScoreboardObjective: {
-			type: 'text',
-			default: 'aj.i',
-			populate() {
-				return 'aj.i'
-			},
-			isValid(value: any) {
-				return value != ''
-			},
-		},
-		idScoreboardObjective: {
-			type: 'text',
-			default: 'aj.id',
-			populate() {
-				return 'aj.id'
-			},
-			isValid(value: any) {
-				return value != ''
-			},
-		},
-		frameScoreboardObjective: {
-			type: 'text',
-			default: 'aj.frame',
-			populate() {
-				return 'aj.frame'
-			},
-			isValid(value: any) {
-				return value != ''
-			},
-		},
-		exportMode: {
-			type: 'select',
-			default: 'mcb',
-			options: {
-				vanilla:
-					'animatedJava_exporter_animationExporter.setting.exportMode.vanilla.name',
-				mcb: 'animatedJava_exporter_animationExporter.setting.exportMode.mcb.name',
-			},
-			populate() {
-				return 'mcb'
-			},
-			isValid(value: any) {
-				return value != ''
-			},
-		},
-		mcbFilePath: {
-			type: 'filepath',
-			default: '',
-			props: {
-				dialogOpts: {
-					// @ts-ignore
-					defaultPath: Project.name + '.mc',
-					promptToCreate: true,
-					properties: ['openFile'],
+			markerArmorStands: {
+				type: 'checkbox',
+				default: true,
+				populate() {
+					return true
+				},
+				isValid(value: any) {
+					return typeof value === 'boolean'
 				},
 			},
-			populate() {
-				return ''
+			modelTag: {
+				type: 'text',
+				default: 'aj.%modelName',
+				populate() {
+					return 'aj.%modelName'
+				},
+				isValid(value: any) {
+					return value != ''
+				},
+				isResetable: true,
 			},
-			isValid(value: any) {
-				return true
+			rootTag: {
+				type: 'text',
+				default: 'aj.%modelName.root',
+				populate() {
+					return 'aj.%modelName.root'
+				},
+				isValid(value: any) {
+					return value != ''
+				},
+				isResetable: true,
 			},
-			isVisible(settings: any) {
-				return (
-					settings.animatedJava_exporter_animationExporter.exportMode ===
-					'mcb'
-				)
+			allBonesTag: {
+				type: 'text',
+				default: 'aj.%modelName.bone',
+				populate() {
+					return 'aj.%modelName.bone'
+				},
+				isValid(value: any) {
+					return value != ''
+				},
+				isResetable: true,
 			},
-			dependencies: ['animatedJava_exporter_animationExporter.exportMode'],
-		},
-		dataPackPath: {
-			type: 'filepath',
-			default: '',
-			props: {
-				target: 'folder',
-				dialogOpts: {
-					promptToCreate: true,
-					properties: ['openDirectory'],
+			individualBoneTag: {
+				type: 'text',
+				default: 'aj.%modelName.%boneName',
+				populate() {
+					return 'aj.%modelName.%boneName'
+				},
+				isValid(value: any) {
+					return value != ''
+				},
+				isResetable: true,
+			},
+			internalScoreboardObjective: {
+				type: 'text',
+				default: 'aj.i',
+				populate() {
+					return 'aj.i'
+				},
+				isValid(value: any) {
+					return value != ''
 				},
 			},
-			populate() {
-				return ''
+			idScoreboardObjective: {
+				type: 'text',
+				default: 'aj.id',
+				populate() {
+					return 'aj.id'
+				},
+				isValid(value: any) {
+					return value != ''
+				},
 			},
-			isValid(value: any) {
-				return true
+			frameScoreboardObjective: {
+				type: 'text',
+				default: 'aj.frame',
+				populate() {
+					return 'aj.frame'
+				},
+				isValid(value: any) {
+					return value != ''
+				},
 			},
-			isVisible(settings: any) {
-				return (
-					settings.animatedJava_exporter_animationExporter.exportMode ===
-					'vanilla'
-				)
+			exportMode: {
+				type: 'select',
+				default: 'mcb',
+				options: {
+					vanilla:
+						'animatedJava_exporter_animationExporter.setting.exportMode.vanilla.name',
+					mcb: 'animatedJava_exporter_animationExporter.setting.exportMode.mcb.name',
+				},
+				populate() {
+					return 'mcb'
+				},
+				isValid(value: any) {
+					return value != ''
+				},
 			},
-			dependencies: ['animatedJava_exporter_animationExporter.exportMode'],
-		},
-	})
+			mcbFilePath: {
+				type: 'filepath',
+				default: '',
+				props: {
+					dialogOpts: {
+						// @ts-ignore
+						defaultPath: Project.name + '.mc',
+						promptToCreate: true,
+						properties: ['openFile'],
+					},
+				},
+				populate() {
+					return ''
+				},
+				isValid(value: any) {
+					return true
+				},
+				isVisible(settings: any) {
+					return (
+						settings.animatedJava_exporter_animationExporter
+							.exportMode === 'mcb'
+					)
+				},
+				dependencies: [
+					'animatedJava_exporter_animationExporter.exportMode',
+				],
+			},
+			dataPackPath: {
+				type: 'filepath',
+				default: '',
+				props: {
+					target: 'folder',
+					dialogOpts: {
+						promptToCreate: true,
+						properties: ['openDirectory'],
+					},
+				},
+				populate() {
+					return ''
+				},
+				isValid(value: any) {
+					return true
+				},
+				isVisible(settings: any) {
+					return (
+						settings.animatedJava_exporter_animationExporter
+							.exportMode === 'vanilla'
+					)
+				},
+				dependencies: [
+					'animatedJava_exporter_animationExporter.exportMode',
+				],
+			},
+		}
+	)
 	AJ.registerExportFunc('animationExporter', function () {
 		AJ.build(
 			(data: any) => {

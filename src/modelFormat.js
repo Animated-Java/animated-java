@@ -79,6 +79,9 @@ const codec = new Codec('ajmodel', {
 			width: Project.texture_width || 16,
 			height: Project.texture_height || 16,
 		}
+		if (Interface.Panels.variable_placeholders.inside_vue._data.text) {
+			model.animation_variable_placeholders = Interface.Panels.variable_placeholders.inside_vue._data.text
+		}
 		if (options.flag) {
 			model.flag = options.flag
 		}
@@ -168,6 +171,9 @@ const codec = new Codec('ajmodel', {
 		}
 		if (!model.meta.format_version) {
 			model.meta.format_version = model.meta.format
+		}
+		if (model.animation_variable_placeholders) {
+			Interface.Panels.variable_placeholders.inside_vue._data.text = model.animation_variable_placeholders
 		}
 		if (model.meta.settings) {
 			settings.update(model.meta.settings)
