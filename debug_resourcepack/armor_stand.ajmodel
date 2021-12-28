@@ -1,7 +1,7 @@
 {
   "meta": {
     "format_version": "0.0",
-    "creation_time": 1640642604,
+    "creation_time": 1640649986,
     "model_format": "animated_java/ajmodel",
     "box_uv": false,
     "settings": {
@@ -53,7 +53,16 @@
         "29f44b0b-5027-de28-9958-e95a32a0cf4c": "f422a623-6d8c-1bd1-4da1-c61940601aaf"
       },
       "all_blue": {
-        "9aa33630-8f09-269e-1ff8-4006c170cc10": "29f44b0b-5027-de28-9958-e95a32a0cf4c"
+        "9aa33630-8f09-269e-1ff8-4006c170cc10": "29f44b0b-5027-de28-9958-e95a32a0cf4c",
+        "dfa38dd5-689f-f447-7d28-63645345c25d": "transparent"
+      },
+      "all_red": {
+        "9aa33630-8f09-269e-1ff8-4006c170cc10": "52d3d034-24bc-3a1c-49d8-98899a3aa5bd",
+        "29f44b0b-5027-de28-9958-e95a32a0cf4c": "52d3d034-24bc-3a1c-49d8-98899a3aa5bd"
+      },
+      "all_green": {
+        "9aa33630-8f09-269e-1ff8-4006c170cc10": "f422a623-6d8c-1bd1-4da1-c61940601aaf",
+        "29f44b0b-5027-de28-9958-e95a32a0cf4c": "transparent"
       }
     },
     "uuid": "6315712c-d94e-91d8-dc54-eb2877b25239"
@@ -818,7 +827,7 @@
       "uuid": "7b9ccbf8-4217-ad4c-0cb9-c4d1b7fa7e68"
     },
     {
-      "name": "cube",
+      "name": "dream_head",
       "rescale": false,
       "locked": false,
       "from": [
@@ -831,7 +840,7 @@
         32,
         4
       ],
-      "autouv": 1,
+      "autouv": 0,
       "color": 1,
       "origin": [
         0,
@@ -841,57 +850,57 @@
       "faces": {
         "north": {
           "uv": [
-            0,
-            0,
             8,
-            8
+            8,
+            16,
+            16
           ],
-          "texture": 1
+          "texture": 4
         },
         "east": {
           "uv": [
             0,
-            0,
             8,
-            8
+            8,
+            16
           ],
-          "texture": 1
+          "texture": 4
         },
         "south": {
           "uv": [
-            0,
-            0,
+            24,
             8,
-            8
+            32,
+            16
           ],
-          "texture": 1
+          "texture": 4
         },
         "west": {
           "uv": [
-            0,
-            0,
+            16,
             8,
-            8
+            24,
+            16
           ],
-          "texture": 1
+          "texture": 4
         },
         "up": {
           "uv": [
-            0,
-            0,
             8,
+            0,
+            16,
             8
           ],
-          "texture": 1
+          "texture": 4
         },
         "down": {
           "uv": [
+            16,
             0,
-            0,
-            8,
+            24,
             8
           ],
-          "texture": 1
+          "texture": 4
         }
       },
       "uuid": "47d6f5bc-f24f-537a-7c78-dd44596ca730"
@@ -983,6 +992,85 @@
         }
       },
       "uuid": "237e0473-bf4a-a445-5b23-493769cf4512"
+    },
+    {
+      "name": "cube",
+      "rescale": false,
+      "locked": false,
+      "from": [
+        -4,
+        24,
+        -4
+      ],
+      "to": [
+        4,
+        32,
+        4
+      ],
+      "autouv": 0,
+      "color": 1,
+      "origin": [
+        0,
+        22,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            8,
+            8
+          ],
+          "texture": 1
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            8,
+            8
+          ],
+          "texture": 1
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            8,
+            8
+          ],
+          "texture": 1
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            8,
+            8
+          ],
+          "texture": 1
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            8,
+            8
+          ],
+          "texture": 1
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            8,
+            8
+          ],
+          "texture": 1
+        }
+      },
+      "uuid": "45afee2e-1834-ddff-e5d1-53413339198d"
     }
   ],
   "outliner": [
@@ -1106,7 +1194,8 @@
                   "autouv": 0,
                   "children": [
                     "2a1ac749-2109-32cf-1fd2-0e082359b528",
-                    "47d6f5bc-f24f-537a-7c78-dd44596ca730"
+                    "47d6f5bc-f24f-537a-7c78-dd44596ca730",
+                    "45afee2e-1834-ddff-e5d1-53413339198d"
                   ]
                 },
                 {
@@ -1213,6 +1302,20 @@
       "saved": true,
       "uuid": "52d3d034-24bc-3a1c-49d8-98899a3aa5bd",
       "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAASpJREFUOE9tUwGOwyAMS+Aj3fbdaX1xyckmphk7pKoCEcd2jJ+PR0SEhZk5PnfTvrVmYwxreeatWYzBO1zu5p/jCBXhPyIIBEAAGMBxpuIE1R1/H0f0gqzL6CxGaMbzbABgMCEJMGC3jebkeC8wEBvJXQCix4NN5+6PJRDAbgCYgk96ZVIaBbpiueT0zvuuKchIXkgD6Tg64kyaUyoc6JiCTCSlZIFJAAQX6kjXCCvbauJOT4CSJnaZAk7Fz9cLg/6XZpVFO6AbUjBOBKy13yARCWG5ru9AaaLZbLE9n88gWu8WKErTxOqum2mscrDnFOpslTgUKtY1GzhD6PhfAIpqyfs0Zb6Dumoe0PjOQS3edcI84F3XerUCnRIycaSdz/eraz4ksVGIsP8DXb8WGNLgxqwAAAAASUVORK5CYII="
+    },
+    {
+      "path": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\minecraft\\textures\\block\\dream.png",
+      "name": "dream.png",
+      "folder": "",
+      "namespace": "",
+      "id": "4",
+      "particle": false,
+      "render_mode": "normal",
+      "visible": true,
+      "mode": "bitmap",
+      "saved": true,
+      "uuid": "dfa38dd5-689f-f447-7d28-63645345c25d",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAdhJREFUeF7tW8tOwzAQrJHgCsmlX8UvlG+DX+CruCTttUgNsoSrZnEyrh+KWU9v7Wbb3dnZ8cZOzQ68DufnCV2zZv94OpkU/9K+MDgCQAawBagBKUKkXgQ/9w+r+IzjCIU2BeBUXxgcWgX+PQAowVSEkf/WLWIIQOI6jyqM7GTAxqMyW4AaQA3wz/pofZfi9vp1QXrntW8ugihq2SIoYNRSyP/eeNz1sd979ySIfogAAE1BAJIBkVt0scD+mQOk+Mm7OURx6z8MgzeNvu93sWLp+8L3x+Ps47fvl+v7UEC8ANwmYIyZ6QQCQAYlA78NEtF9ye6KJIFuAoA1hhGAFlrAMcDqCVtAiARboIYWKL0MVi+C6CYqdQ6oHoDSc8DSDGDloBkNsMn6ps3qAcg1CmedBGPHUS1+cD9AS6JLeRAA7RVG+ZEBCCHtdjJAe4VRfmQAQki7nQzQXmGUHxmAENJuJwO0VxjlV5QBvmM0dGa3dPSG/FCim90O53rAggAUepyuaAtY2jXHgK7rZv8vQOcAchs9dOM0V0tkZ8A0TVcAQpLxnSOE+BGATJpQJQOsdiAWqGWAO/dvFgA3sBAA8ESZ2hYgA34RYAu03AKo+pYkajUgJPmcAPwAciEHX1ewr0oAAAAASUVORK5CYII="
     }
   ],
   "animations": [

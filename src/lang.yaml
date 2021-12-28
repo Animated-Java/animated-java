@@ -28,7 +28,7 @@ en:
     animatedJava.menubar.exporterList.name: Exporters
 
     animatedJava.setting.projectName.name: Project Name
-    animatedJava.setting.projectName.description: The name of your model.
+    animatedJava.setting.projectName.description: The unique ID of your project. Make sure you set this!
 
     animatedJava.setting.exporter.name: Exporter
     animatedJava.setting.exporter.description: Which export format to use for this project
