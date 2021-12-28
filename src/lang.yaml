@@ -1,6 +1,6 @@
 en:
     #? AJ
-    animatedJava.title: Animated Java
+    animatedJava: Animated Java
     animatedJava.menubar.export.name: Export Model
 
     panel.states: Model Variants
@@ -171,3 +171,4 @@ en:
 
     animatedJava_exporter_animationExporter.setting.dataPackPath.name: Data Pack (Unsupported in current version)
     animatedJava_exporter_animationExporter.setting.dataPackPath.description: The path to export the generated Data Pack to. (Coming soon!)
+    animatedJava_exporter_animationExporter.setting.dataPackPath.invalidPopup.text: Invalid Data Pack Path! The path must end on a folder named '%projectName'

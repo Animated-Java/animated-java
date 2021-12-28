@@ -12,6 +12,7 @@ export * from './util/hashAnim'
 export * from './util/treeGen'
 export * from './util/size'
 export * from './util/ezfs'
+export * from './util/path'
 
 export * as resourcepack from './util/minecraft/resourcepack'
 export * from './util/minecraft/jsonText'
@@ -30,4 +31,10 @@ export function removeKeyGently(key, obj) {
 		if (k !== key) ret[k] = v
 	})
 	return ret
+}
+
+export function removeNamespace(str) {
+	const split = str.split(':')
+
+	return split.pop()
 }

@@ -228,9 +228,11 @@ const Settings = () => {
 			className="dialog paddinged ui-resizable"
 			style={{
 				display: 'block',
-				left: '128px',
-				maxHeight: '1024px',
-				width: 'calc(100vw - 50rem)',
+				left: '0%',
+				top: '128px',
+				// maxHeight: '1024px',
+				height: '79.2%',
+				width: '50%',
 			}}
 		>
 			<div className="dialog_handle tl" style={{ cursor: 'default' }}>
@@ -245,7 +247,7 @@ const Settings = () => {
 			</div>
 			<div className="tab_content">
 				<ul
-					style={{ height: '75vh', overflowY: 'scroll' }}
+					style={{ 'max-height': '75vh', overflowY: 'scroll' }}
 					className="WHYCSSWHY-or-settings"
 				>
 					<li>

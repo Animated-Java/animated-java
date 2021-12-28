@@ -1,4 +1,4 @@
-import { store, size, safeFunctionName } from './util'
+import { store, size, safeFunctionName, Path, removeNamespace } from './util'
 const UNASSIGNED = Symbol('UNASSIGNED_CACHE')
 export const DefaultSettings = {
 	animatedJava: {
@@ -42,6 +42,10 @@ export const DefaultSettings = {
 			isValid(value) {
 				return true
 			},
+			isVisible(settings) {
+				return false
+			},
+			dependencies: ['animatedJava.predicateFilePath'],
 		},
 		rigModelsExportFolder: {
 			type: 'filepath',
@@ -66,10 +70,24 @@ export const DefaultSettings = {
 			props: {
 				target: 'file',
 				dialogOpts: {
-					defaultPath: '',
+					get defaultPath() {
+						// console.log(store.get('settings.project'))
+						return `${removeNamespace(ANIMATED_JAVA.settings.animatedJava.rigItem)}.json`
+					},
 					promptToCreate: true,
 					properties: ['openFile'],
 				},
+			},
+			onUpdate(value) {
+				if (value != '') {
+					const p = new Path(value)
+					const b = p.parse()
+					const rigItem = removeNamespace(ANIMATED_JAVA.settings.animatedJava.rigItem)
+					if (rigItem !== b.name) {
+						ANIMATED_JAVA.settings.animatedJava.rigItem = `minecraft:${b.name}`
+					}
+				}
+				return value
 			},
 			populate() {
 				return ''
@@ -150,11 +168,14 @@ function evaluateSetting(namespace, name, value) {
 	if (setting) {
 		if (setting.isValid) {
 			if (setting.isValid(value)) {
+				if (setting.onUpdate) return setting.onUpdate(value)
 				return value
 			} else {
+				if (setting.onUpdate) return setting.onUpdate(setting.populate(value))
 				return setting.populate(value)
 			}
 		} else {
+			if (setting.onUpdate) return setting.onUpdate(value)
 			return value
 		}
 	} else {

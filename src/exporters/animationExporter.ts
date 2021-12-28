@@ -12,6 +12,7 @@ import {
 	roundToN,
 	generateTree,
 	removeKeyGently,
+	Path,
 } from '../util'
 import { NBT, NBTType } from '../util/minecraft/nbt'
 
@@ -868,7 +869,9 @@ const Exporter = (AJ: any) => {
 				default: '',
 				props: {
 					dialogOpts: {
-						defaultPath: Project.name + '.mc',
+						get defaultPath() {
+							return `${AJ.settings.animatedJava.projectName}.mc`
+						},
 						promptToCreate: true,
 						properties: ['openFile'],
 					},
@@ -895,6 +898,9 @@ const Exporter = (AJ: any) => {
 				props: {
 					target: 'folder',
 					dialogOpts: {
+						get defaultPath() {
+							return AJ.settings.animatedJava.projectName
+						},
 						promptToCreate: true,
 						properties: ['openDirectory'],
 					},
@@ -903,6 +909,29 @@ const Exporter = (AJ: any) => {
 					return ''
 				},
 				isValid(value: any) {
+					const p = new Path(value)
+					const b = p.parse()
+					if (
+						AJ.settings.animatedJava_exporter_animationExporter.exportMode === 'vanilla' &&
+						(value === '' ||
+							b.name === AJ.settings.animatedJava.projectName)
+					) {
+						// @ts-ignore
+						Blockbench.showToastNotification({
+							text: format(
+								translate(
+									'animatedJava_exporter_animationExporter.setting.dataPackPath.invalidPopup.text'
+								),
+								{
+									projectName:
+										AJ.settings.animatedJava.projectName,
+								}
+							),
+							color: '#b80e02',
+							expire: 60000,
+						})
+						return false
+					}
 					return true
 				},
 				isVisible(settings: any) {

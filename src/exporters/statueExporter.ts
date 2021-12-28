@@ -487,7 +487,7 @@ const Exporter = (AJ: any) => {
 			default: '',
 			props: {
 				dialogOpts: {
-					defaultPath: Project.name + '.mc',
+					get defaultPath() {return `${AJ.settings.animatedJava.projectName}.mc`},
 					promptToCreate: true,
 					properties: ['openFile'],
 				},
@@ -512,6 +512,7 @@ const Exporter = (AJ: any) => {
 			props: {
 				target: 'folder',
 				dialogOpts: {
+					get defaultPath() {return AJ.settings.animatedJava.projectName},
 					promptToCreate: true,
 					properties: ['openDirectory'],
 				},
@@ -549,23 +550,3 @@ if (Reflect.has(window, 'ANIMATED_JAVA')) {
 	// @ts-ignore
 	Blockbench.on('animated-java-ready', Exporter)
 }
-
-// {
-// 	icon: 'info',
-// 	category: 'animated_java.statue_exporter',
-// 	name: 'Statue Exporter',
-// 	id: 'statue_exporter',
-// 	// @ts-ignore
-// 	condition: () => AJ.format.id === Format.id,
-// 	click: function () {
-// 		AJ.build(
-// 			(data: any) => {
-// 				console.log('Input Data:', data)
-// 				statueExport(data)
-// 			},
-// 			{
-// 				generate_static_animation: true,
-// 			}
-// 		)
-// 	},
-// }
