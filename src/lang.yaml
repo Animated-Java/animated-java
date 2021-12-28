@@ -168,7 +168,7 @@ en:
 
     animatedJava_exporter_animationExporter.setting.mcbFilePath.name: Lang-mc file
     animatedJava_exporter_animationExporter.setting.mcbFilePath.description: The path to export the .mc file to
+    animatedJava_exporter_animationExporter.setting.mcbFilePath.invalidPopup.text: Invalid MCB File Path! The MCB file must be called %projectName.mc (project_name.mc)
 
     animatedJava_exporter_animationExporter.setting.dataPackPath.name: Data Pack (Unsupported in current version)
     animatedJava_exporter_animationExporter.setting.dataPackPath.description: The path to export the generated Data Pack to. (Coming soon!)
-    animatedJava_exporter_animationExporter.setting.dataPackPath.invalidPopup.text: Invalid Data Pack Path! The path must end on a folder named '%projectName'

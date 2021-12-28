@@ -880,6 +880,29 @@ const Exporter = (AJ: any) => {
 					return ''
 				},
 				isValid(value: any) {
+					const p = new Path(value)
+					const b = p.parse()
+					if (
+						AJ.settings.animatedJava_exporter_animationExporter.exportMode === 'mcb' &&
+						(value === '' ||
+							b.base !== `${AJ.settings.animatedJava.projectName}.mc`)
+					) {
+						// @ts-ignore
+						Blockbench.showToastNotification({
+							text: format(
+								translate(
+									'animatedJava_exporter_animationExporter.setting.mcbFilePath.invalidPopup.text'
+								),
+								{
+									projectName:
+										AJ.settings.animatedJava.projectName,
+								}
+							),
+							color: '#b80e02',
+							expire: 10000,
+						})
+						return false
+					}
 					return true
 				},
 				isVisible(settings: any) {
@@ -909,29 +932,6 @@ const Exporter = (AJ: any) => {
 					return ''
 				},
 				isValid(value: any) {
-					const p = new Path(value)
-					const b = p.parse()
-					if (
-						AJ.settings.animatedJava_exporter_animationExporter.exportMode === 'vanilla' &&
-						(value === '' ||
-							b.name === AJ.settings.animatedJava.projectName)
-					) {
-						// @ts-ignore
-						Blockbench.showToastNotification({
-							text: format(
-								translate(
-									'animatedJava_exporter_animationExporter.setting.dataPackPath.invalidPopup.text'
-								),
-								{
-									projectName:
-										AJ.settings.animatedJava.projectName,
-								}
-							),
-							color: '#b80e02',
-							expire: 60000,
-						})
-						return false
-					}
 					return true
 				},
 				isVisible(settings: any) {
