@@ -171,7 +171,14 @@ async function createMCFile(
 			scoreboard objectives add ${scoreboards.id} dummy
 			scoreboard objectives add ${scoreboards.frame} dummy
 			scoreboard objectives add ${scoreboards.animatingFlag} dummy
-			${Object.values(animations).map(v => `scoreboard objectives add ${scoreboards.animationLoopMode} dummy`.replace('%animationName', v.name)).join('\n')}
+			${Object.values(animations)
+				.map((v) =>
+					`scoreboard objectives add ${scoreboards.animationLoopMode} dummy`.replace(
+						'%animationName',
+						v.name
+					)
+				)
+				.join('\n')}
 			scoreboard players add .aj.animation ${scoreboards.animatingFlag} 0
 			scoreboard players add .aj.anim_loop ${scoreboards.animatingFlag} 0
 		}
@@ -469,6 +476,20 @@ async function createMCFile(
 			const animationTree = generateTree(animation.frames)
 			console.log('Animation Tree:', animationTree)
 
+			const animationScripts: string[] = []
+			for (const frame of animation.frames) {
+				if (Object.keys(frame.scripts).length > 0) {
+					animationScripts.push(
+						`execute if score .this ${
+							scoreboards.frame
+						} matches ${animation.frames.indexOf(frame)} run {\n${
+							frame.scripts.script[0]
+						}\n}`
+					)
+				}
+			}
+			console.log(animationScripts)
+
 			function collectBoneTree(boneName: string, animationTreeItem: any) {
 				if (animationTreeItem.type === 'layer') {
 					return {
@@ -493,7 +514,10 @@ async function createMCFile(
 				if (!touchedBones.includes(boneName)) continue
 				const tree = collectBoneTree(boneName, animationTree)
 				console.log('Bone Tree:', tree)
-				function generateBaseTree(tree: any): {base: string, display: string} {
+				function generateBaseTree(tree: any): {
+					base: string
+					display: string
+				} {
 					if (tree.type === 'branch') {
 						let retBase: string[] = []
 						let retDisplay: string[] = []
@@ -511,7 +535,10 @@ async function createMCFile(
 								retDisplay.push(`execute if score .this ${scoreboards.frame} matches ${v.index} run data modify entity @s Pose.Head set value [${rot.x}f,${rot.y}f,${rot.z}f]`)
 							}
 						})
-						return {base: retBase.join('\n'), display: retDisplay.join('\n')}
+						return {
+							base: retBase.join('\n'),
+							display: retDisplay.join('\n'),
+						}
 					}
 				}
 				boneTrees[boneName] = generateBaseTree(tree)
@@ -607,6 +634,10 @@ async function createMCFile(
 							}).join('\n\n')}
 						}
 					}
+
+					# Play scripts as root entity
+					${animationScripts.length > 0 ? animationScripts.join('\n') : ''}
+
 					# Increment frame
 					scoreboard players add @s ${scoreboards.frame} 1
 					# Let the anim_loop know we're still running
