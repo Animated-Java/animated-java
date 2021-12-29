@@ -1,7 +1,5 @@
-import { bus } from '../util/bus'
 import { store } from '../util/store'
-import * as obj3dOverrides from './Object3d'
-import EVENTS from '../constants/events'
+import * as obj3dOverrides from './Object3d/index'
 
 /******************************\
 |                              |
@@ -11,7 +9,7 @@ import EVENTS from '../constants/events'
 
 const globals = store.getStore('global')
 
-function merge(Obj, overrides) {
+function merge(Obj: any, overrides: any) {
 	const keys = Object.keys(overrides)
 	if (!globals.has(Obj))
 		for (let i = 0; i < keys.length; i++) {
@@ -21,5 +19,5 @@ function merge(Obj, overrides) {
 			Object.defineProperty(Obj.prototype, name, value)
 		}
 }
-
+// @ts-ignore
 merge(THREE.Object3D, obj3dOverrides)

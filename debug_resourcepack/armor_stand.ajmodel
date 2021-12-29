@@ -1,7 +1,7 @@
 {
   "meta": {
     "format_version": "0.0",
-    "creation_time": 1640761877,
+    "creation_time": 1640762226,
     "model_format": "animated_java/ajmodel",
     "box_uv": false,
     "settings": {
@@ -28,7 +28,7 @@
         "dataPackPath": ""
       },
       "animatedJava_exporter_animationExporter": {
-        "rootEntityType": "minecraft:villager",
+        "rootEntityType": "minecraft:husk",
         "rootEntityNbt": "{ActiveEffects:[{Id:14b,Amplifier:0b,Duration:1000000,ShowParticles:0b}]}",
         "markerArmorStands": false,
         "modelTag": "aj.%projectName",
