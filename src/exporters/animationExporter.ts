@@ -28,6 +28,7 @@ interface animationExporterSettings {
 	modelTag: string
 	rootEntityType: string
 	rootTag: string
+	rootEntityNbt: string
 }
 
 interface MCBConfig {
@@ -352,6 +353,14 @@ async function createMCFile(
 			summons.push(summon)
 		}
 
+		const rootEntityNbt = SNBT.parse(exporterSettings.rootEntityNbt)
+		rootEntityNbt.assert('Tags', SNBTTagType.LIST)
+		rootEntityNbt.get('Tags').push(
+			SNBT.String('new'),
+			SNBT.String(tags.model),
+			SNBT.String(tags.root)
+		)
+
 		for (const [variantName, variant] of Object.entries(variantModels)) {
 			for (const summon of summons) {
 				if (variant[summon.boneName]) {
@@ -364,7 +373,7 @@ async function createMCFile(
 			// prettier-ignore
 			FILE.push(`
 				function ${variantName} {
-					summon ${entityTypes.root} ~ ~ ~ {Tags:['new', ${tags.model}, ${tags.root}]}
+					summon ${entityTypes.root} ~ ~ ~ ${rootEntityNbt}
 					execute as @e[type=${entityTypes.root},tag=${tags.root},tag=new,distance=..1,limit=1] at @s rotated ~ 0 run {
 						execute store result score @s ${scoreboards.id} run scoreboard players add .aj.last_id ${scoreboards.internal} 1
 						${summons.map(v => v.toString()).join('\n')}
@@ -785,8 +794,17 @@ const Exporter = (AJ: any) => {
 				},
 				isValid(value: any) {
 					return value != ''
+				}
+			},
+			rootEntityNbt: {
+				type: 'text',
+				default: '{}',
+				populate() {
+					return '{}'
 				},
-				isResetable: true,
+				isValid(value: any) {
+					return value != ''
+				}
 			},
 			markerArmorStands: {
 				type: 'checkbox',
