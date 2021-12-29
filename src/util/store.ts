@@ -10,6 +10,7 @@ const StoreRef_Watchers = Symbol.for('StoreRef.Watchers')
 const Store_IO = Symbol.for('Store.IO')
 
 class StoreRef {
+	unreference: () => void
 	[StoreRef_Watchers] = [];
 	[StoreRef_UpdateReceiver] = (event) => {
 		this[StoreRef_Current] = event.value
@@ -36,7 +37,7 @@ class StoreRef {
 		this[StoreRef_Current] = null
 		this.unreference()
 	}
-	watch(cb) {
+	watch(cb: (value: any) => void) {
 		this[StoreRef_Watchers].push(cb)
 		return () =>
 			this[StoreRef_Watchers].slice(
@@ -47,14 +48,15 @@ class StoreRef {
 }
 
 export class Store extends Map {
-	constructor(values, name) {
+	constructor(values: any, name: string) {
+		// @ts-ignore
 		super(values)
 		this[Store_IO] = new EventSystem(name)
 	}
-	getRefName(id) {
-		return `ref:${id.toString(16)}`
+	getRefName(id: string) {
+		return `ref:${id.toString()}`
 	}
-	updateRefsFor(id) {
+	updateRefsFor(id: string) {
 		this[Store_IO].dispatch('update:' + this.getRefName(id), {
 			value: super.get(id),
 		})
@@ -62,36 +64,37 @@ export class Store extends Map {
 			value: super.get(id),
 		})
 	}
-	has(name) {
+	has(name: string) {
 		const hash = this.hash(name)
 		return super.has(hash)
 	}
-	get(name) {
+	get(name: string) {
 		const hash = this.hash(name)
 		return super.get(hash)
 	}
-	set(name, value) {
+	set(name: string, value: any) {
 		const hash = this.hash(name)
 		let result = super.set(hash, value)
 		this.updateRefsFor(hash)
 		return result
 	}
-	delete(name) {
+	delete(name: string) {
 		const hash = this.hash(name)
 		return super.delete(hash)
 	}
-	hash(str) {
+	hash(str: string) {
 		return str
 		// return str + "@" + hashstr(str);
 	}
-	ref(target) {
+	ref(target: string) {
 		return new StoreRef({
 			parent: this,
 			target: this.hash(target),
 			value: this.get(target),
+			name: undefined
 		})
 	}
-	getStore(name) {
+	getStore(name: string) {
 		if (this.has(name)) {
 			return this.get(name)
 		} else {
@@ -100,21 +103,21 @@ export class Store extends Map {
 			return storage
 		}
 	}
-	load(obj) {
-		if (typeof obj === 'string') {
-			return this.load(JSON.parse(obj))
-		}
-		const values = obj.value
-		for (const [key, value] in values) {
-			if (typeof value === 'string' && value.type === 'Store') {
-				const store = new Store([], 'main_store')
-				store.load(value)
-				super.set(key, store)
-			} else {
-				super.set(key, value)
-			}
-		}
-	}
+	// load(obj: string | {value: [string, any][]}) {
+	// 	if (typeof obj === 'string') {
+	// 		return this.load(JSON.parse(obj))
+	// 	}
+	// 	const values = obj.value
+	// 	for (const [key, value] in values) {
+	// 		if (typeof value === 'string' && value.type === 'Store') {
+	// 			const store = new Store([], 'main_store')
+	// 			store.load(value)
+	// 			super.set(key, store)
+	// 		} else {
+	// 			super.set(key, value)
+	// 		}
+	// 	}
+	// }
 	serialize() {
 		return this.toJSON()
 	}
@@ -124,11 +127,13 @@ export class Store extends Map {
 			type: 'Store',
 		})
 	}
-	watch(cb) {
+	watch(cb: (value: any) => void) {
 		return this[Store_IO].on('update', cb)
 	}
 }
-
+// @ts-ignore
 window.ANIMATED_JAVA_DATA_STORE =
+	// @ts-ignore
 	window.ANIMATED_JAVA_DATA_STORE || new Store([], 'DATA_STORE')
+// @ts-ignore
 export const store = window.ANIMATED_JAVA_DATA_STORE

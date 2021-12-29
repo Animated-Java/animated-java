@@ -53,7 +53,17 @@ const RenderTemplates = {
 									DefaultSettings[namespace][name].default)
 							}
 						>
-							<i className="fas fa-trash"></i>
+							<span
+								class="material-icons"
+								style={{
+									position: 'relative',
+									top: '2px',
+									right: '7px',
+									fontSize: '28px',
+								}}
+							>
+								delete_forever
+							</span>
 						</button>
 					</div>
 					<div
@@ -89,7 +99,14 @@ const RenderTemplates = {
 								})
 							}}
 						>
-							<i className="material-icons icon">
+							<i
+								className="material-icons icon"
+								style={{
+									position: 'relative',
+									fontSize: '24px',
+									right: '2px',
+								}}
+							>
 								create_new_folder
 							</i>
 						</button>
@@ -191,6 +208,31 @@ const SettingInput = ({ namespace, name, template }) => {
 			className="setting_label"
 		>
 			<div className="setting_name">
+				{!isValid && (
+					<span
+						style={{
+							display: 'inline-block',
+							opacity: 1,
+							color: 'red',
+							height: '0px',
+							textAlign: 'center',
+						}}
+						title={translate(
+							'animatedJava.settings.invalidSetting.generic'
+						)}
+					>
+						<span
+							class="material-icons"
+							style={{
+								position: 'relative',
+								top: '5px',
+								lineHeight: '0em',
+							}}
+						>
+							clear
+						</span>
+					</span>
+				)}
 				{translate(`${namespace}.setting.${name}.name`)}
 				{DefaultSettings[namespace][name].global && (
 					<span
@@ -200,19 +242,6 @@ const SettingInput = ({ namespace, name, template }) => {
 						}}
 					>
 						{translate('animatedJava.settings.global')}
-					</span>
-				)}
-				{!isValid && (
-					<span
-						style={{
-							opacity: 0.8,
-							marginLeft: '1em',
-							color: 'red',
-						}}
-					>
-						{translate(
-							'animatedJava.settings.invalidSetting.generic'
-						)}
 					</span>
 				)}
 			</div>

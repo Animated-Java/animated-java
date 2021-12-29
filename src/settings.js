@@ -14,9 +14,10 @@ export const DefaultSettings = {
 				else return 'undefined_project'
 			},
 			isValid(value) {
-				if (typeof value === 'string')
-					return value === safeFunctionName(value)
-				else return false
+				if (typeof value === 'string') {
+					if (value != '') return value === safeFunctionName(value)
+				}
+				return false
 			},
 		},
 		exporter: {
@@ -65,7 +66,7 @@ export const DefaultSettings = {
 				return ''
 			},
 			isValid(value) {
-				return true
+				return value != ''
 			},
 		},
 		predicateFilePath: {
@@ -101,7 +102,7 @@ export const DefaultSettings = {
 				return ''
 			},
 			isValid(value) {
-				return true
+				return value != ''
 			},
 		},
 		transparentTexturePath: {
@@ -119,7 +120,7 @@ export const DefaultSettings = {
 				return ''
 			},
 			isValid(value) {
-				return true
+				return value != ''
 			},
 		},
 		useCache: {

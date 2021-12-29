@@ -934,13 +934,7 @@ const Exporter = (AJ: any) => {
 				isValid(value: any) {
 					const p = new Path(value)
 					const b = p.parse()
-					return (
-						AJ.settings.animatedJava_exporter_animationExporter
-							.exportMode === 'mcb' &&
-						(value === '' ||
-							b.base !==
-								`${AJ.settings.animatedJava.projectName}.mc`)
-					)
+					return b.base === `${AJ.settings.animatedJava.projectName}.mc`
 				},
 				isVisible(settings: any) {
 					return (
@@ -971,13 +965,7 @@ const Exporter = (AJ: any) => {
 				isValid(value: any) {
 					const p = new Path(value)
 					const b = p.parse()
-					return (
-						AJ.settings.animatedJava_exporter_animationExporter
-							.exportMode === 'vanilla' &&
-						(value === '' ||
-							b.base !==
-								`${AJ.settings.animatedJava.projectName}`)
-					)
+					return b.base === `${AJ.settings.animatedJava.projectName}`
 				},
 				isVisible(settings: any) {
 					return (
