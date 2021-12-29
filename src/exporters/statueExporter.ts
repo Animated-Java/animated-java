@@ -110,7 +110,12 @@ async function createMCFile(
 	FILE.push(`
 	function install {
 		${Object.entries(scoreboards)
-			.map(([k, v]) => `scoreboard objectives add ${v}`)
+			.map(([k, v]) => `scoreboard objectives add ${v} dummy`)
+			.join('\n')}
+	}
+	function uninstall {
+		${Object.entries(scoreboards)
+			.map(([k, v]) => `scoreboard objectives remove ${v}`)
 			.join('\n')}
 	}
 	`)

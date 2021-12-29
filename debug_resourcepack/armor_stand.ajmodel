@@ -1,13 +1,13 @@
 {
   "meta": {
     "format_version": "0.0",
-    "creation_time": 1640741989,
+    "creation_time": 1640747877,
     "model_format": "animated_java/ajmodel",
     "box_uv": false,
     "settings": {
       "animatedJava": {
         "projectName": "armor_stand",
-        "exporter": "statueExporter",
+        "exporter": "animationExporter",
         "rigItem": "minecraft:white_dye",
         "rigModelsExportFolder": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\animated_java\\models\\rigs\\armor_stand",
         "predicateFilePath": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\minecraft\\models\\item\\white_dye.json",

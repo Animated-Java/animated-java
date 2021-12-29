@@ -179,6 +179,23 @@ async function createMCFile(
 		}
 	`)
 
+	FILE.push(`
+		function uninstall {
+			scoreboard objectives remove ${scoreboards.internal}
+			scoreboard objectives remove ${scoreboards.id}
+			scoreboard objectives remove ${scoreboards.frame}
+			scoreboard objectives remove ${scoreboards.animatingFlag}
+			${Object.values(animations)
+				.map((v) =>
+					`scoreboard objectives remove ${scoreboards.animationLoopMode}`.replace(
+						'%animationName',
+						v.name
+					)
+				)
+				.join('\n')}
+		}
+	`)
+
 	//? Bone Entity Type
 	FILE.push(`
 		entities bone_entities {
@@ -410,15 +427,15 @@ async function createMCFile(
 		for (const [boneName, bone] of Object.entries(staticFrame)) {
 			const baseModifier = format(boneBaseModifier, {
 				boneName,
-				x: bone.pos.x,
-				y: bone.pos.y + headYOffset,
-				z: bone.pos.z,
+				x: roundToN(bone.pos.x, 1000),
+				y: roundToN(bone.pos.y + headYOffset, 1000),
+				z: roundToN(bone.pos.z, 1000),
 			})
 			const displayModifier = format(boneDisplayModifier, {
 				boneName,
-				x: bone.rot.x,
-				y: bone.rot.y,
-				z: bone.rot.z,
+				x: roundToN(bone.rot.x, 1000),
+				y: roundToN(bone.rot.y, 1000),
+				z: roundToN(bone.rot.z, 1000),
 			})
 			baseModifiers.push(baseModifier)
 			displayModifiers.push(displayModifier)
