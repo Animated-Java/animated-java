@@ -74,11 +74,16 @@ const evaluate = (line, token) => {
 		throw new CompilerError(e.message, token.line)
 	}
 }
-
+// let logged = false
 class Token {
-	constructor(line, token) {
+	constructor(line, token, log) {
 		this.line = line
 		this.token = token
+		// if (!log && !logged) {
+		// 	logged = true
+		// 	console.trace(this)
+		// 	debugger
+		// }
 	}
 	[Symbol.toStringTag]() {
 		return this.token
@@ -93,15 +98,15 @@ const tokenize = (str) => {
 		if (inML || n[0] === '#' || !n) return p
 		if (n[0] === '\\' && n[1] == '#') n = n.slice(1)
 		if (n[0] === '}') {
-			p.push(new Token(index, '}'))
+			p.push(new Token(index, '}', true))
 			n = n.slice(1)
 		}
 		if (n[n.length - 1] === '{') {
 			const v = n.slice(0, n.length - 1).trim()
-			if (v) p.push(new Token(index, v))
-			p.push(new Token(index, '{'))
+			if (v) p.push(new Token(index, v, true))
+			p.push(new Token(index, '{', true))
 		} else if (n) {
-			p.push(new Token(index, n))
+			p.push(new Token(index, n, true))
 		}
 		return p
 	}, [])
@@ -485,7 +490,6 @@ consumer.Generic = list({
 					let count = 1
 					if (lastInLine && lastInLine.token === '{') {
 						let tok = shift_t(tokens)
-						let last_line = tok.line
 						temp.push(tok)
 						while (
 							(tokens.length && count) ||
@@ -506,38 +510,23 @@ consumer.Generic = list({
 					copy = copy_token(_token, _token.args)
 					tokens.unshift(copy)
 					copy.token = '{'
-				}
-				const innerFunc = consumer.Block(
-					file,
-					tokens,
-					'execute',
-					{
-						dummy: true,
-					},
-					useAltParent ? parent : func,
-					useAltParent ? functionalparent : func
-				)
-				if (innerFunc.functions.length > 1) {
+					LB_TOTAL += 3
+					const innerFunc = consumer.Block(
+						file,
+						tokens,
+						'execute',
+						{
+							dummy: true,
+						},
+						useAltParent ? parent : func,
+						useAltParent ? functionalparent : func
+					)
 					innerFunc.confirm(file)
 					func.addCommand(
 						execute + ' function ' + innerFunc.getReference()
 					)
 				} else {
-					if (innerFunc.functions.length == 0) {
-						const { line } = shift_t(tokens)
-						throw new CompilerError(`Empty run block`, line - 1)
-					}
-					if (
-						innerFunc.functions[0]?.indexOf('$block') != -1 &&
-						!isCommand
-					) {
-						innerFunc.confirm(file)
-						func.addCommand(
-							execute + ' function ' + innerFunc.getReference()
-						)
-					} else {
-						func.addCommand(token)
-					}
+					func.addCommand(token)
 				}
 			},
 		},
@@ -807,36 +796,7 @@ consumer.Generic = list({
 	def(file, tokens, func, parent, functionalparent) {
 		const _token = shift_t(tokens)
 		const { token } = _token
-		const [name, ...args] = token.split(' ')
-		let _Macros = Macros
-		if (MacroCache[_token.file])
-			_Macros = MacroCache[_token.file].importedMacros
-		if (!_Macros[name] && MacroCache[_token.file])
-			_Macros = MacroCache[_token.file].macros
-		if (token.startsWith('execute')) {
-			const local_token = token.replace(/ run execute/g, '') //nope.
-			const startOfCommand = local_token.indexOf(' run')
-			const command = local_token.substr(startOfCommand + 5)
-			const [name] = command.split(' ')
-			if ((_Macros[name] || name === 'macro') && !_token.args) {
-				let item = copy_token(_token, _token.args)
-				item.token = '}'
-				tokens.unshift(item)
-				item = copy_token(_token, _token.args)
-				item.token = command
-				tokens.unshift(item)
-				item = copy_token(_token, _token.args)
-				item.token = '{'
-				tokens.unshift(item)
-				item = copy_token(_token, _token.args)
-				item.token = local_token.substr(0, startOfCommand + 4)
-				tokens.unshift(item)
-			} else {
-				func.addCommand(token)
-			}
-		} else {
-			func.addCommand(token)
-		}
+		func.addCommand(token)
 	},
 })
 
@@ -956,7 +916,8 @@ function copy_token(_, args) {
 }
 const TickTag = new io.MultiFileTag('./data/minecraft/tags/functions/tick.json')
 const LoadTag = new io.MultiFileTag('./data/minecraft/tags/functions/load.json')
-function MC_LANG_HANDLER(file_contents, namespace, config) {
+
+function MC_LANG_HANDLER(file_contents, namespace, config, info) {
 	Object.assign(CONFIG, config)
 	//? entry point of the whole thing; `file` is the filepath to a source file (one that ends with .mc)
 	let file = 'dummy'
@@ -966,6 +927,9 @@ function MC_LANG_HANDLER(file_contents, namespace, config) {
 	Macros = {}
 	included_file_list = []
 	namespaceStack = [namespace]
+	if (Array.isArray(info)) {
+		namespaceStack.push(...info)
+	}
 	if (CONFIG.defaultNamespace) {
 		namespaceStack.unshift(CONFIG.defaultNamespace)
 	}
