@@ -155,7 +155,20 @@ async function createMCFile(
 		internalScoreboard: scoreboards.internal,
 		generatedDirectory: 'zzz',
 	}
-
+	// prettier-ignore
+	FILE.push(`
+		function load {
+			scoreboard players add .aj.animation ${scoreboards.animatingFlag} 0
+			scoreboard players add .aj.anim_loop ${scoreboards.animatingFlag} 0
+		}
+	`)
+	FILE.push(`
+		function reset_animation_flags {
+			scoreboard players set .aj.animation ${scoreboards.animatingFlag} 0
+			scoreboard players set .aj.anim_loop ${scoreboards.animatingFlag} 0
+		}
+	`)
+	// prettier-ignore
 	FILE.push(`
 		function install {
 			scoreboard objectives add ${scoreboards.internal} dummy
@@ -173,12 +186,8 @@ async function createMCFile(
 			scoreboard players add .aj.animation ${scoreboards.animatingFlag} 0
 			scoreboard players add .aj.anim_loop ${scoreboards.animatingFlag} 0
 		}
-		function load {
-			scoreboard players add .aj.animation ${scoreboards.animatingFlag} 0
-			scoreboard players add .aj.anim_loop ${scoreboards.animatingFlag} 0
-		}
 	`)
-
+	// prettier-ignore
 	FILE.push(`
 		function uninstall {
 			scoreboard objectives remove ${scoreboards.internal}
@@ -448,13 +457,15 @@ async function createMCFile(
 				# Make sure this function has been ran as the root entity
 				execute(if entity @s[tag=${tags.root}] at @s) {
 					# Remove all animation tags
-					${'tag @s remove aj.example.anim.example_1'}
+					${Object.values(animations).map(v => `tag @s remove aj.${projectName}.anim.${v.name}`).join('\n')}
 					# Reset animation time
 					scoreboard players set @s ${scoreboards.frame} 0
 
 					scoreboard players operation .this ${scoreboards.id} = @s ${scoreboards.id}
 					execute as @e[type=${entityTypes.boneRoot},tag=${tags.allBones},distance=..${maxDistance}] if score @s ${scoreboards.id} = .this ${scoreboards.id} run {
 						${baseModifiers.join('\n')}
+						execute store result score .calc ${scoreboards.internal} run data get entity @s Air
+						execute store result entity @s Air short 1 run scoreboard players add .calc ${scoreboards.internal} 1
 					}
 					execute as @e[type=${entityTypes.boneDisplay},tag=${tags.allBones},distance=..${maxDistance}] if score @s ${scoreboards.id} = .this ${scoreboards.id} run {
 						${displayModifiers.join('\n')}
