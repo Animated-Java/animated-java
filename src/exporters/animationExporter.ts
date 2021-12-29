@@ -140,7 +140,7 @@ async function createMCFile(
 
 	const entityTypes: EntityTypes = {
 		bone: `#${projectName}:bone_entities`,
-		root: 'minecraft:marker',
+		root: exporterSettings.rootEntityType,
 		boneRoot: 'minecraft:area_effect_cloud',
 		boneDisplay: 'minecraft:armor_stand',
 	}
@@ -364,8 +364,8 @@ async function createMCFile(
 			// prettier-ignore
 			FILE.push(`
 				function ${variantName} {
-					summon minecraft:marker ~ ~ ~ {Tags:['new', ${tags.model}, ${tags.root}]}
-					execute as @e[type=minecraft:marker,tag=${tags.root},tag=new,distance=..1,limit=1] at @s rotated ~ 0 run {
+					summon ${entityTypes.root} ~ ~ ~ {Tags:['new', ${tags.model}, ${tags.root}]}
+					execute as @e[type=${entityTypes.root},tag=${tags.root},tag=new,distance=..1,limit=1] at @s rotated ~ 0 run {
 						execute store result score @s ${scoreboards.id} run scoreboard players add .aj.last_id ${scoreboards.internal} 1
 						${summons.map(v => v.toString()).join('\n')}
 						execute as @e[type=${entityTypes.bone},tag=${tags.model},tag=new,distance=..${staticDistance}] positioned as @s run {
@@ -451,7 +451,7 @@ async function createMCFile(
 			# Resets the model to it's initial summon position/rotation and stops all active animations
 			function reset {
 				# Make sure this function has been ran as the root entity
-				execute(if entity @s[tag=${tags.root}] at @s) {
+				execute(if entity @s[tag=${tags.root}] at @s rotated ~ 0) {
 					# Remove all animation tags
 					${Object.values(animations).map(v => `tag @s remove aj.${projectName}.anim.${v.name}`).join('\n')}
 					# Reset animation time
@@ -465,6 +465,7 @@ async function createMCFile(
 					}
 					execute as @e[type=${entityTypes.boneDisplay},tag=${tags.allBones},distance=..${maxDistance}] if score @s ${scoreboards.id} = .this ${scoreboards.id} run {
 						${displayModifiers.join('\n')}
+						tp @s ~ ~ ~ ~ ~
 					}
 
 				# If this entity is not the root
@@ -668,7 +669,7 @@ async function createMCFile(
 				function next_frame {
 					scoreboard players operation .this ${scoreboards.id} = @s ${scoreboards.id}
 					scoreboard players operation .this ${scoreboards.frame} = @s ${scoreboards.frame}
-					execute as @e[type=${entityTypes.bone},tag=${tags.allBones},distance=..${maxDistance}] if score @s ${scoreboards.id} = .this ${scoreboards.id} run {
+					execute rotated ~ 0 as @e[type=${entityTypes.bone},tag=${tags.allBones},distance=..${maxDistance}] if score @s ${scoreboards.id} = .this ${scoreboards.id} run {
 						# Split by type
 						execute if entity @s[type=${entityTypes.boneRoot}] run {
 							${(Object.entries(boneTrees) as Record<string, any>).map(([boneName,tree]) => {
@@ -681,6 +682,7 @@ async function createMCFile(
 							${(Object.entries(boneTrees) as Record<string, any>).map(([boneName,tree]) => {
 								return `execute if entity @s[tag=${tags.individualBone.replace('%boneName', boneName)}] run {\n${tree.display}\n}`
 							}).join('\n\n')}
+							tp @s ~ ~ ~ ~ ~
 						}
 					}
 

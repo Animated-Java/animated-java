@@ -80,7 +80,7 @@ async function createMCFile(
 	}
 	const entityTypes: entityTypes = {
 		bone: `#${projectName}:bone_entities`,
-		root: 'minecraft:marker',
+		root: exporterSettings.rootEntityType,
 		boneRoot: 'minecraft:armor_stand',
 		boneDisplay: 'minecraft:armor_stand',
 	}
@@ -273,8 +273,8 @@ async function createMCFile(
 			// prettier-ignore
 			FILE.push(`
 				function ${variantName} {
-					summon minecraft:marker ~ ~ ~ {Tags:['new', ${tags.model}, ${tags.root}]}
-					execute as @e[type=minecraft:marker,tag=${tags.root},tag=new,distance=..1,limit=1] at @s rotated ~ 0 run {
+					summon ${entityTypes.root} ~ ~ ~ {Tags:['new', ${tags.model}, ${tags.root}]}
+					execute as @e[type=${entityTypes.root},tag=${tags.root},tag=new,distance=..1,limit=1] at @s rotated ~ 0 run {
 						execute store result score @s ${scoreboards.id} run scoreboard players add .aj.last_id ${scoreboards.internal} 1
 						${summons.map(v => v.toString()).join('\n')}
 						execute as @e[type=${entityTypes.bone},tag=${tags.model},tag=new,distance=..${staticDistance}] positioned as @s run {

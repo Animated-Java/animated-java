@@ -1,7 +1,7 @@
 {
   "meta": {
     "format_version": "0.0",
-    "creation_time": 1640755412,
+    "creation_time": 1640760411,
     "model_format": "animated_java/ajmodel",
     "box_uv": false,
     "settings": {
@@ -27,7 +27,7 @@
         "dataPackPath": ""
       },
       "animatedJava_exporter_animationExporter": {
-        "rootEntityType": "minecraft:marker",
+        "rootEntityType": "minecraft:villager",
         "markerArmorStands": false,
         "modelTag": "aj.%projectName",
         "rootTag": "aj.%projectName.root",
@@ -1326,7 +1326,7 @@
       "override": false,
       "length": 2.1,
       "snapping": 10,
-      "selected": false,
+      "selected": true,
       "saved": false,
       "path": "",
       "anim_time_update": "",
@@ -1343,8 +1343,8 @@
               "data_points": [
                 {
                   "x": -7.5,
-                  "y": "-Math.sin(query.anim_time * 512) * 5\n",
-                  "z": "0"
+                  "y": "0",
+                  "z": "Math.sin(query.anim_time * 512) * 3"
                 }
               ],
               "uuid": "7ebe98c6-7d08-313d-6f8a-64663888d144",
@@ -1363,8 +1363,8 @@
               "data_points": [
                 {
                   "x": "0",
-                  "y": "0",
-                  "z": "-Math.sin(query.anim_time * 512) * 5"
+                  "y": "-Math.sin(query.anim_time * 512) * 7",
+                  "z": "-Math.sin(query.anim_time * 512) * 7"
                 }
               ],
               "uuid": "9663fc15-9978-3eb7-cd26-94c88dc8613f",
@@ -1505,7 +1505,7 @@
               "data_points": [
                 {
                   "x": "0",
-                  "y": "Math.sin(query.anim_time * 1024) * 0.5 + 0.5\n",
+                  "y": "Math.sin(query.anim_time * 1024) * 0.8 + 0.8\n",
                   "z": "0"
                 }
               ],
