@@ -26,9 +26,17 @@ Blockbench.on('update_selection', () => {
 		} else {
 			Format.rotation_limit = true
 		}
-		Interface.Panels.element.toolbars.element_rotation.update(true)
 	}
 })
+const _condition = BarItems.rescale_toggle.condition
+BarItems.rescale_toggle.condition = function () {
+	if (Format.id === format.id) {
+		return true
+	} else {
+		return _condition.apply(this)
+	}
+}
+
 bus.on(EVENTS.LIFECYCLE.LOAD, () => {
 	const frame = () => {
 		if (format.id === Format.id) {
@@ -120,5 +128,6 @@ bus.on(EVENTS.LIFECYCLE.LOAD, () => {
 	requestAnimationFrame(frame)
 	bus.on(EVENTS.LIFECYCLE.CLEANUP, () => {
 		cancelAnimationFrame(frame)
+		BarItems.rescale_toggle.condition = _condition
 	})
 })
