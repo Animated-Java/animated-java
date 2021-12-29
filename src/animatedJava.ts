@@ -26,10 +26,11 @@ const ANIMATED_JAVA = {
 	registerSettingRenderer,
 }
 delete window['ANIMATED_JAVA']
-Object.defineProperty(window, 'ANIMATED_JAVA', {
-	value: ANIMATED_JAVA,
-})
-// window.ANIMATED_JAVA = ANIMATED_JAVA
+// Object.defineProperty(window., 'ANIMATED_JAVA', {
+// 	value: ANIMATED_JAVA,
+// })
+// @ts-ignore
+window.ANIMATED_JAVA = ANIMATED_JAVA
 bus.on(events.LIFECYCLE.CLEANUP, () => {
 	console.log('CLEANUP')
 	// @ts-ignore

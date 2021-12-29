@@ -17,9 +17,9 @@ watcher.on('event', (event) => {
 				shouldTransform = false
 				console.log(chalk.green('transforming...'))
 				fs.writeFileSync(
-					'./dist/animated-java.js',
+					'./dist/animated_java.js',
 					`(()=>{\n${fixup(
-						fs.readFileSync('./dist/animated-java.js', 'utf-8'),
+						fs.readFileSync('./dist/animated_java.js', 'utf-8'),
 						{
 							BUILD_ID:
 								'dbb29fae73ce8a216b2d4f4e0da42a36fd348983cae2e96587463def059fee9a',

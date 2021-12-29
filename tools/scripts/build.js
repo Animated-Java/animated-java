@@ -28,7 +28,7 @@ import fixup from '../fixup'
 				.update(chunk.code)
 				.digest('hex')
 			fs.writeFileSync(
-				'./dist/animated-java.js',
+				'./dist/animated_java.js',
 				[
 					'\n\n\n',
 					makeBanner(
