@@ -10,7 +10,7 @@ import typescript from 'rollup-plugin-typescript2'
 export default {
 	input: 'src/animatedJava.ts',
 	output: {
-		file: 'dist/animated-java.js',
+		file: 'dist/animated_java.js',
 		format: 'cjs',
 	},
 	plugins: [

@@ -1,14 +1,17 @@
 import { format } from './modelFormat'
 import { bus } from './util/bus'
 
-Plugin.register('animated-java', {
-	name: 'mcmodel',
+Plugin.register('animated_java', {
+	name: 'ajmodel',
 	title: 'Animated Java',
 	author: 'FetchBot & SnaveSutit',
 	description: process.env.PLUGIN_DESCRIPTION,
+	about: process.env.PLUGIN_ABOUT,
 	icon: 'icon-format_bedrock_legacy',
 	version: process.env.PLUGIN_VERSION,
-	variant: 'both',
+	min_version: '4.1.0',
+	variant: 'desktop',
+	tags: ['Minecraft: Java Edition', 'Animation', 'Armor Stand'],
 	format,
 	onload: function onload(event) {
 		bus.dispatch('plugin:load', {})

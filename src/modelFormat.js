@@ -7,7 +7,7 @@ import events from './constants/events'
 const FORMATV = '0.0'
 const codec = new Codec('ajmodel', {
 	load_filter: {
-		extensions: ['mcmodel', 'ajmodel'],
+		extensions: ['ajmodel'],
 		type: 'json',
 	},
 	extension: 'ajmodel',
