@@ -143,8 +143,9 @@ export function registerSettingRenderer(type, renderer) {
 		RenderTemplates[type] = renderer(React)
 	}
 }
-const SettingInput = ({ namespace, name, template, children }) => {
+const SettingInput = ({ namespace, name, template }) => {
 	const [value, setValue] = useState(settings[namespace][name])
+	const [isValid, setIsValid] = useState(true)
 	const [isVisible, setIsVisible] = useState(true)
 
 	useEffect(() => {
@@ -181,6 +182,48 @@ const SettingInput = ({ namespace, name, template, children }) => {
 		}
 		return () => watchers.forEach((cb) => cb())
 	}, [])
+	useEffect(() => {
+		debugger
+		setIsValid(DefaultSettings[namespace][name].isValid(value))
+	}, [value])
+	const children = (
+		<label
+			htmlFor={`aj.setting.${namespace}.${name}`}
+			className="setting_label"
+		>
+			<div className="setting_name">
+				{translate(`${namespace}.setting.${name}.name`)}
+				{DefaultSettings[namespace][name].global && (
+					<span
+						style={{
+							opacity: 0.8,
+							marginLeft: '1em',
+						}}
+					>
+						{translate('settings.global')}
+					</span>
+				)}
+				{!isValid && (
+					<span
+						style={{
+							opacity: 0.8,
+							marginLeft: '1em',
+							color: 'red',
+						}}
+					>
+						{translate('settings.invalid')}
+					</span>
+				)}
+			</div>
+			<div className="setting_description">
+				{translate(`${namespace}.setting.${name}.description`)
+					.split('\n')
+					.map((line, i) => (
+						<p key={i}>{line}</p>
+					))}
+			</div>
+		</label>
+	)
 	if (isVisible) {
 		if (Reflect.has(RenderTemplates, template.type)) {
 			const Type = RenderTemplates[template.type]
@@ -188,7 +231,14 @@ const SettingInput = ({ namespace, name, template, children }) => {
 				<>
 					<Type
 						value={value}
-						setValue={setValue}
+						setValue={(v) => {
+							if (DefaultSettings[namespace][name].isValid(v)) {
+								setIsValid(true)
+							} else {
+								setIsValid(false)
+							}
+							setValue(v)
+						}}
 						namespace={namespace}
 						name={name}
 						definition={DefaultSettings[namespace][name]}
@@ -247,7 +297,7 @@ const Settings = () => {
 			</div>
 			<div className="tab_content">
 				<ul
-					style={{ 'maxHeight': '75vh', overflowY: 'scroll' }}
+					style={{ maxHeight: '75vh', overflowY: 'scroll' }}
 					className="WHYCSSWHY-or-settings"
 				>
 					<li>
@@ -303,35 +353,7 @@ function SettingsPanel({ childrenSettings, name, visible }) {
 							namespace={name}
 							name={child}
 							template={DefaultSettings[name][child]}
-						>
-							<label
-								htmlFor={`aj.setting.${name}.${child}`}
-								className="setting_label"
-							>
-								<div className="setting_name">
-									{translate(`${name}.setting.${child}.name`)}
-									{DefaultSettings[name][child].global && (
-										<span
-											style={{
-												opacity: 0.8,
-												marginLeft: '1em',
-											}}
-										>
-											{translate('settings.global')}
-										</span>
-									)}
-								</div>
-								<div className="setting_description">
-									{translate(
-										`${name}.setting.${child}.description`
-									)
-										.split('\n')
-										.map((line, i) => (
-											<p key={i}>{line}</p>
-										))}
-								</div>
-							</label>
-						</SettingInput>
+						></SettingInput>
 					</li>
 				))}
 			</ul>
