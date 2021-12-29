@@ -26,6 +26,14 @@ en:
         Looks like you're trying to use variants with transparent textures without defining a texture path!
         You'll need to configure the transparent texture path in the settings before you can export.
 
+    animatedJava.popup.error.predicateFilePathUndefined.title: Predicate File Path Undefined
+    animatedJava.popup.error.predicateFilePathUndefined.body: |-
+      You must define a predicate file path in the settings before you can export.
+
+    animatedJava.popup.error.rigModelsExportFolder.title: Rig Model Folder Undefined
+    animatedJava.popup.error.rigModelsExportFolder.body: |-
+      You must define a rig model folder path in settings before you can export.
+
     #? AJ Settings
     animatedJava.menubar.dropdown.name: Animated Java
     animatedJava.menubar.settings.name: Settings

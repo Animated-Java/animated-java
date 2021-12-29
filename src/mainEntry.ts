@@ -1,14 +1,16 @@
+import * as aj from './animatedJava'
+
 import './lifecycle'
 import './rotationSnap'
 import { format } from './modelFormat'
-import { DefaultSettings, settings } from './settings'
-import { action as CustomAction, bus, translate, store, ERROR } from './util'
+import { DefaultSettings, settings} from './settings'
+import { action as CustomAction, bus, translate, store, ERROR, CustomError } from './util'
 import './ui/panels/states'
 import './ui/dialogs/settings'
 import EVENTS from './constants/events'
 import { renderAnimation } from './animationRenderer'
 
-import * as aj from './animatedJava'
+// declare var settings: aj.Settings
 
 import {
 	exportPredicate,
@@ -75,6 +77,47 @@ async function computeAnimationData(
 	options: any
 ) {
 	console.groupCollapsed('Compute Animation Data')
+
+	if (!settings.animatedJava.predicateFilePath) {
+		let d = new Dialog({
+			title: translate(
+				'animatedJava.popup.error.predicateFilePathUndefined.title'
+			),
+			id: '',
+			lines: translate(
+				'animatedJava.popup.error.predicateFilePathUndefined.body'
+			)
+				.split('\n')
+				.map((line: string) => `<p>${line}</p>`),
+			onConfirm() {
+				d.hide()
+			},
+			onCancel() {
+				d.hide()
+			},
+		}).show()
+		throw new CustomError({ silent: true })
+	}
+	if (!settings.animatedJava.rigModelsExportFolder) {
+		let d = new Dialog({
+			title: translate(
+				'animatedJava.popup.error.rigModelsExportFolder.title'
+			),
+			id: '',
+			lines: translate(
+				'animatedJava.popup.error.rigModelsExportFolder.body'
+			)
+				.split('\n')
+				.map((line: string) => `<p>${line}</p>`),
+			onConfirm() {
+				d.hide()
+			},
+			onCancel() {
+				d.hide()
+			},
+		}).show()
+		throw new CustomError({ silent: true })
+	}
 
 	const animations = (await renderAnimation(options)) as aj.Animations
 	const cubeData: aj.CubeData = computeElements()
