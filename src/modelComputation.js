@@ -401,8 +401,8 @@ export function computeBones(models, animations) {
 				value.parent.scales = {
 					'1,1,1': models[parentMesh.name].aj.customModelData,
 				}
-				value.parent.can_manipulate_arms =
-					parentMesh.can_manipulate_arms
+				value.parent.armAnimationEnabled =
+					parentMesh.armAnimationEnabled
 				value.parent.nbt = parentMesh.nbt
 				bones[parentMesh.name] = value.parent
 			}

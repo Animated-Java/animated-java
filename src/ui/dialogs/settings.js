@@ -247,7 +247,7 @@ const Settings = () => {
 			</div>
 			<div className="tab_content">
 				<ul
-					style={{ 'max-height': '75vh', overflowY: 'scroll' }}
+					style={{ 'maxHeight': '75vh', overflowY: 'scroll' }}
 					className="WHYCSSWHY-or-settings"
 				>
 					<li>

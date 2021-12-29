@@ -2,11 +2,11 @@ import { action, translate } from '../../util'
 
 type AJGroup = {
 	nbt: string
-	can_manipulate_arms: boolean
+	armAnimationEnabled: boolean
 } & Group
 
-const open_bone_config = action({
-	id: 'animated_java_bone_config',
+const openBoneConfig = action({
+	id: 'animatedJava.BoneConfig',
 	name: 'Bone Config',
 	icon: 'settings',
 	category: 'edit',
@@ -15,35 +15,35 @@ const open_bone_config = action({
 		console.log('Opened bone config')
 		const selected = Group.selected as AJGroup
 		const dialog = new Dialog({
-			title: translate('animatedJava.bone_config.title'),
-			id: 'bone_config',
+			title: translate('animatedJava.boneConfig.title'),
+			id: 'boneConfig',
 			form: {
 				nbt: {
-					type: 'text',
-					label: translate('animatedJava.bone_config.bone_nbt'),
-					value: '',
+					type: 'textarea',
+					label: translate('animatedJava.boneConfig.boneNbt'),
+					value: selected.nbt,
 				},
-				can_manipulate_arms: {
+				armAnimationEnabled: {
 					type: 'checkbox',
 					label: translate(
-						'animated_java.bone_config.can_manipulate_arms'
+						'animatedJava.boneConfig.armAnimationEnabled'
 					),
 					value: false,
 				},
 			},
-			onConfirm: (form_data: any) => {
-				console.log(form_data)
-				selected.nbt = form_data.nbt
-				selected.can_manipulate_arms = form_data.can_manipulate_arms
+			onConfirm: (formData: any) => {
+				console.log(formData)
+				selected.nbt = formData.nbt
+				selected.armAnimationEnabled = formData.armAnimationEnabled
 				dialog.hide()
 			},
 		}).show()
 		// @ts-ignore
 		document.querySelector('#nbt').value = selected.nbt
-		// console.log(selected.can_manipulate_arms)
+		// console.log(selected.armAnimationEnabled)
 		// @ts-ignore
-		document.querySelector('#can_manipulate_arms').checked =
-			selected.can_manipulate_arms
+		document.querySelector('#armAnimationEnabled').checked =
+			selected.armAnimationEnabled
 	},
 })
 
@@ -52,12 +52,12 @@ new Property(Group, 'string', 'nbt', {
 	exposed: true,
 })
 
-new Property(Group, 'string', 'can_manipulate_arms', {
+new Property(Group, 'string', 'armAnimationEnabled', {
 	default: () => false,
 	exposed: true,
 })
 
 // @ts-ignore
-Group.prototype.menu.structure.splice(3, 0, open_bone_config)
+Group.prototype.menu.structure.splice(3, 0, openBoneConfig)
 // @ts-ignore
-open_bone_config.menus.push({ menu: Group.prototype.menu, path: '' })
+openBoneConfig.menus.push({ menu: Group.prototype.menu, path: '' })

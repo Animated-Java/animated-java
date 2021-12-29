@@ -13,6 +13,7 @@ export * from './util/treeGen'
 export * from './util/size'
 export * from './util/ezfs'
 export * from './util/path'
+export * from './util/SNBT'
 
 export * as resourcepack from './util/minecraft/resourcepack'
 export * from './util/minecraft/jsonText'

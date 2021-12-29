@@ -1,5 +1,4 @@
 import * as aj from '../animatedJava'
-import nbtlint from '../dependencies/nbtlint/docs/nbt-lint'
 
 import {
 	CustomError,
@@ -14,7 +13,7 @@ import {
 	removeKeyGently,
 	Path,
 } from '../util'
-import { NBT, NBTType } from '../util/minecraft/nbt'
+import { SNBT, SNBTTag, SNBTTagType } from '../util/SNBT'
 
 interface animationExporterSettings {
 	allBonesTag: string
@@ -68,16 +67,7 @@ interface Scoreboards {
 	animationLoopMode: string
 }
 
-function loopModeToInt(loopMode: 'once' | 'hold' | 'loop') {
-	switch (loopMode) {
-		case 'once':
-			return 0
-		case 'hold':
-			return 1
-		case 'loop':
-			return 2
-	}
-}
+const loopModeIDs = ['once', 'hold', 'loop']
 
 async function createMCFile(
 	bones: aj.BoneObject,
@@ -238,55 +228,87 @@ async function createMCFile(
 				this.customModelData = this.model.aj.customModelData
 			}
 
-			get nbt(): NBT<NBTType.COMPOUND> {
-				// prettier-ignore
-				return NBT.Compound()
-				.Int('Age', -2147483648)
-				.Int('Duration', -1)
-				.Int('WaitTime', -2147483648)
-				.ListOf('Tags', NBTType.STRING, [
-					'new',
-					tags.model,
-					tags.allBones,
-					tags.individualBone.replace('%boneName', this.boneName),
-				])
-				.ListOf('Passengers', NBTType.COMPOUND, [
-					NBT.Compound()
-						.String('id', entityTypes.boneDisplay)
-						.ListOf('Tags', NBTType.STRING, [
-							'new',
-							tags.model,
-							tags.allBones,
-							tags.individualBone.replace('%boneName', this.boneName),
-							tags.boneDisplay
-						])
-						.ListOf('ArmorItems', NBTType.COMPOUND, [
-							{}, {}, {},
-							NBT.Compound()
-								.String('id', ajSettings.rigItem)
-								.Byte('Count', 1)
-								.Compound('tag', {
-									CustomModelData: NBT.Int(this.customModelData)
-								})
-						])
-						.Byte('Invisible', 1)
-						.Byte('Marker', Number(exporterSettings.markerArmorStands))
-						.Byte('NoGravity', 1)
-						.Compound('Pose', {
-							Head: NBT.ListOf(NBTType.FLOAT, [
-								this.bone.rot.x,
-								this.bone.rot.y,
-								this.bone.rot.z
-							])
+			get nbt(): SNBTTag {
+				const passengerNbt = SNBT.parse(bones[this.boneName].nbt)
+				passengerNbt._merge(
+					SNBT.Compound({
+						id: SNBT.String(entityTypes.boneDisplay),
+						Invisible: SNBT.Boolean(true),
+						Marker: SNBT.Boolean(
+							exporterSettings.markerArmorStands
+						),
+						NoGravity: SNBT.Boolean(true),
+						DisabledSlots: SNBT.Int(4144959),
+					})
+				)
+				passengerNbt.assert('Tags', SNBTTagType.LIST)
+				passengerNbt.get('Tags').push(
+					SNBT.String('new'),
+					SNBT.String(tags.model),
+					SNBT.String(tags.allBones),
+					SNBT.String(
+						format(tags.individualBone, {
+							boneName: this.boneName,
 						})
-				])
+					),
+					SNBT.String(tags.boneDisplay)
+				)
+				passengerNbt.assert('ArmorItems', SNBTTagType.LIST)
+				const armorItems = passengerNbt.get('ArmorItems')
+				while (armorItems.value.length < 4) {
+					armorItems.push(SNBT.Compound())
+				}
+				armorItems.value[3]._merge(
+					SNBT.Compound({
+						id: SNBT.String(ajSettings.rigItem),
+						Count: SNBT.Byte(1),
+						tag: SNBT.Compound({
+							CustomModelData: SNBT.Int(this.customModelData),
+						}),
+					})
+				)
+				passengerNbt.assert('Pose', SNBTTagType.COMPOUND)
+				const rot = this.rot
+				passengerNbt.set(
+					'Pose.Head',
+					SNBT.List([
+						SNBT.Float(rot.x),
+						SNBT.Float(rot.y),
+						SNBT.Float(rot.z),
+					])
+				)
+
+				return SNBT.Compound({
+					Age: SNBT.Int(-2147483648),
+					Duration: SNBT.Int(-1),
+					WaitTime: SNBT.Int(-2147483648),
+					Tags: SNBT.List([
+						SNBT.String('new'),
+						SNBT.String(tags.model),
+						SNBT.String(tags.allBones),
+						SNBT.String(
+							format(tags.individualBone, {
+								boneName: this.boneName,
+							})
+						),
+					]),
+					Passengers: SNBT.List([passengerNbt]),
+				})
+			}
+
+			get rot(): { x: number; y: number; z: number } {
+				return {
+					x: roundToN(this.bone.rot.x, 1000),
+					y: roundToN(this.bone.rot.y, 1000),
+					z: roundToN(this.bone.rot.z, 1000),
+				}
 			}
 
 			get pos(): { x: number; y: number; z: number } {
 				return {
-					x: this.bone.pos.x,
-					y: this.bone.pos.y + headYOffset,
-					z: this.bone.pos.z,
+					x: roundToN(this.bone.pos.x, 100000),
+					y: roundToN(this.bone.pos.y + headYOffset, 100000),
+					z: roundToN(this.bone.pos.z, 100000),
 				}
 			}
 
@@ -331,7 +353,7 @@ async function createMCFile(
 						}
 						tag @s remove new
 						${Object.values(animations).map(
-							v => `scoreboard players set @s ${scoreboards.animationLoopMode.replace('%animationName',v.name)} ${loopModeToInt(v.loopMode)}`
+							v => `scoreboard players set @s ${scoreboards.animationLoopMode.replace('%animationName',v.name)} ${loopModeIDs.indexOf(v.loopMode)}`
 						).join('\n')}
 					}
 					scoreboard players add .aj.animation ${scoreboards.animatingFlag} 0
@@ -574,8 +596,10 @@ async function createMCFile(
 						tag @s remove aj.${projectName}.anim.${animation.name}
 						# Reset animation time
 						scoreboard players set @s ${scoreboards.frame} 0
-						# load initial animation frame
+						# load initial animation frame without running scripts
+						scoreboard players set .noScripts ${scoreboards.internal} 1
 						function ${projectName}:animations/${animation.name}/next_frame
+						scoreboard players set .noScripts ${scoreboards.internal} 0
 						# Reset animation time
 						scoreboard players set @s ${scoreboards.frame} 0
 					# If this entity is not the root
@@ -636,8 +660,12 @@ async function createMCFile(
 						}
 					}
 
-					# Play scripts as root entity
-					${animationScripts.length > 0 ? animationScripts.join('\n') : ''}
+					${animationScripts.length > 0 ? `
+						# Play scripts as root entity if scripts enabled
+						execute if score .noScripts ${scoreboards.internal} matches 0 run {
+							${animationScripts.join('\n')}
+						}
+					` : ''}
 
 					# Increment frame
 					scoreboard players add @s ${scoreboards.frame} 1
@@ -883,9 +911,11 @@ const Exporter = (AJ: any) => {
 					const p = new Path(value)
 					const b = p.parse()
 					if (
-						AJ.settings.animatedJava_exporter_animationExporter.exportMode === 'mcb' &&
+						AJ.settings.animatedJava_exporter_animationExporter
+							.exportMode === 'mcb' &&
 						(value === '' ||
-							b.base !== `${AJ.settings.animatedJava.projectName}.mc`)
+							b.base !==
+								`${AJ.settings.animatedJava.projectName}.mc`)
 					) {
 						// @ts-ignore
 						Blockbench.showToastNotification({

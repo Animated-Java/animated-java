@@ -5,6 +5,10 @@ en:
 
     panel.states: Model Variants
 
+    animatedJava.boneConfig.title: Bone Config
+    animatedJava.boneConfig.boneNbt: Bone NBT
+    animatedJava.boneConfig.armAnimationEnabled: Enable Arm Animation
+
     animatedJava.popup.quickMessage.noExporterSelected: No Exporter Selected!
 
     animatedJava.popup.warning.rigFolderUnused.title: Unused rig folder

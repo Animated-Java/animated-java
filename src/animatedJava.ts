@@ -62,7 +62,7 @@ export interface Settings {
 
 export type Bone = {
 	nbt: string
-	can_manipulate_arms: boolean
+	armAnimationEnabled: boolean
 	customModelData: number
 	exported: boolean
 } & Cube
