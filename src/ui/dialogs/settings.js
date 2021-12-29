@@ -183,7 +183,6 @@ const SettingInput = ({ namespace, name, template }) => {
 		return () => watchers.forEach((cb) => cb())
 	}, [])
 	useEffect(() => {
-		debugger
 		setIsValid(DefaultSettings[namespace][name].isValid(value))
 	}, [value])
 	const children = (
@@ -304,13 +303,23 @@ const Settings = () => {
 						<h2 className="tl i_b" style={{ marginLeft: '1em' }}>
 							Animated Java Settings
 						</h2>
-						<SettingsPanel
-							visible={true}
-							name="animatedJava"
-							childrenSettings={Object.keys(
-								DefaultSettings.animatedJava
+						<ul style={{ marginLeft: '2em' }}>
+							{Object.keys(DefaultSettings.animatedJava).map(
+								(child, id) => (
+									<li key={child}>
+										<SettingInput
+											namespace={'animatedJava'}
+											name={child}
+											template={
+												DefaultSettings.animatedJava[
+													child
+												]
+											}
+										></SettingInput>
+									</li>
+								)
 							)}
-						/>
+						</ul>
 					</li>
 					<li>
 						<ul>
