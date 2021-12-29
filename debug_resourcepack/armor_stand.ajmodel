@@ -1,7 +1,7 @@
 {
   "meta": {
     "format_version": "0.0",
-    "creation_time": 1640760411,
+    "creation_time": 1640761877,
     "model_format": "animated_java/ajmodel",
     "box_uv": false,
     "settings": {
@@ -15,6 +15,7 @@
       },
       "animatedJava_exporter_statueExporter": {
         "rootEntityType": "minecraft:marker",
+        "rootEntityNbt": "{}",
         "markerArmorStands": true,
         "modelTag": "aj.%projectName",
         "rootTag": "aj.%projectName.root",
@@ -28,6 +29,7 @@
       },
       "animatedJava_exporter_animationExporter": {
         "rootEntityType": "minecraft:villager",
+        "rootEntityNbt": "{ActiveEffects:[{Id:14b,Amplifier:0b,Duration:1000000,ShowParticles:0b}]}",
         "markerArmorStands": false,
         "modelTag": "aj.%projectName",
         "rootTag": "aj.%projectName.root",
@@ -1184,7 +1186,7 @@
                     0
                   ],
                   "color": 0,
-                  "nbt": "{Tags:['test'],ArmorItems:[{},{},{},{tag:{Enchantments:[{}]}}]}",
+                  "nbt": "{Tags:['test'],ArmorItems:[{},{},{},{tag:{Enchantments:[{}]}}],CustomName:'{\"text\":\"bob\"}',CustomNameVisible:1b}",
                   "armAnimationEnabled": false,
                   "uuid": "cb964881-91e1-bd1c-6502-b1236f581c6a",
                   "export": true,
@@ -1326,7 +1328,7 @@
       "override": false,
       "length": 2.1,
       "snapping": 10,
-      "selected": true,
+      "selected": false,
       "saved": false,
       "path": "",
       "anim_time_update": "",
