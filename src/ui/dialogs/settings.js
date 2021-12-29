@@ -1,6 +1,6 @@
 import { bus } from '../../util/bus'
 import events from '../../constants/events'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import ReactDom from 'react-dom'
 import { DefaultSettings, settings } from '../../settings'
 import { translate } from '../../util/intl'
@@ -54,7 +54,7 @@ const RenderTemplates = {
 							}
 						>
 							<span
-								class="material-icons"
+								className="material-icons"
 								style={{
 									position: 'relative',
 									top: '2px',
@@ -222,7 +222,7 @@ const SettingInput = ({ namespace, name, template }) => {
 						)}
 					>
 						<span
-							class="material-icons"
+							className="material-icons"
 							style={{
 								position: 'relative',
 								top: '5px',
@@ -303,82 +303,113 @@ const SettingInput = ({ namespace, name, template }) => {
 	}
 }
 const Settings = () => {
+	const ref = useRef()
+	useEffect(() => {
+		if (ref.current) {
+			let o = $(ref.current)
+			o.draggable({
+				handle: '.dialog_handle',
+				containment: '#page_wrapper',
+			})
+			o.css('position', 'absolute')
+		}
+	}, [ref])
 	return (
-		<dialog
-			className="dialog paddinged ui-resizable"
-			style={{
-				display: 'block',
-				left: '0%',
-				top: '128px',
-				// maxHeight: '1024px',
-				height: '79.2%',
-				width: '50%',
-			}}
-		>
-			<div className="dialog_handle tl" style={{ cursor: 'default' }}>
-				Settings
+		<>
+			<div
+				style={{
+					height: 'calc(100% - 26px)',
+					width: '100%',
+					zIndex: 10000,
+					position: 'absolute',
+					left: '0px',
+					top: '26px',
+				}}
+				onClick={hide_settings}
+			></div>
+			<dialog
+				ref={ref}
+				className="dialog paddinged ui-resizable ui-draggable draggable"
+				style={{
+					display: 'block',
+					left: '0%',
+					top: '128px',
+					// maxHeight: '1024px',
+					height: '79.2%',
+					width: '50%',
+					zIndex: 10001,
+				}}
+			>
 				<div
-					className="dialog_close_button"
-					style={{ top: '0', right: '0' }}
-					onClick={hide_settings}
+					className="dialog_handle tl ui-draggable-handle"
+					style={{ cursor: 'default' }}
 				>
-					<i className="material-icons">clear</i>
+					{translate('animatedJava.menubar.settings.name')}
+					<div
+						className="dialog_close_button"
+						style={{ top: '0', right: '0' }}
+						onClick={hide_settings}
+					>
+						<i className="material-icons">clear</i>
+					</div>
 				</div>
-			</div>
-			<div className="tab_content">
-				<ul
-					style={{ maxHeight: '75vh', overflowY: 'scroll' }}
-					className="WHYCSSWHY-or-settings"
-				>
-					<li>
-						<h2 className="tl i_b" style={{ marginLeft: '1em' }}>
-							Animated Java Settings
-						</h2>
-						<ul style={{ marginLeft: '2em' }}>
-							{Object.keys(DefaultSettings.animatedJava).map(
-								(child, id) => (
-									<li key={child}>
-										<SettingInput
-											namespace={'animatedJava'}
-											name={child}
-											template={
-												DefaultSettings.animatedJava[
-													child
-												]
-											}
-										></SettingInput>
-									</li>
-								)
-							)}
-						</ul>
-					</li>
-					<li>
-						<ul>
-							<h2 style={{ marginLeft: '1em' }}>
-								{translate(
-									'animatedJava.menubar.exporterList.name'
-								)}
+				<div className="tab_content">
+					<ul
+						style={{ maxHeight: '75vh', overflowY: 'scroll' }}
+						className="WHYCSSWHY-or-settings"
+					>
+						<li>
+							<h2
+								className="tl i_b"
+								style={{ marginLeft: '1em' }}
+							>
+								Animated Java Settings
 							</h2>
-							{Object.keys(DefaultSettings)
-								.filter((key) => key !== 'animatedJava')
-								.map((key, index) => {
-									const children = Object.keys(
-										DefaultSettings[key]
+							<ul style={{ marginLeft: '2em' }}>
+								{Object.keys(DefaultSettings.animatedJava).map(
+									(child, id) => (
+										<li key={child}>
+											<SettingInput
+												namespace={'animatedJava'}
+												name={child}
+												template={
+													DefaultSettings
+														.animatedJava[child]
+												}
+											></SettingInput>
+										</li>
 									)
-									return (
-										// SettingsPanel(key, setRevealedIndex, index, revealedIndex, children)
-										<SettingsPanel
-											key={key}
-											name={key}
-											childrenSettings={children}
-										/>
-									)
-								})}
-						</ul>
-					</li>
-				</ul>
-			</div>
-		</dialog>
+								)}
+							</ul>
+						</li>
+						<li>
+							<ul>
+								<h2 style={{ marginLeft: '1em' }}>
+									{translate(
+										'animatedJava.menubar.exporterList.name'
+									)}
+								</h2>
+								{Object.keys(DefaultSettings)
+									.filter((key) => key !== 'animatedJava')
+									.map((key, index) => {
+										const children = Object.keys(
+											DefaultSettings[key]
+										)
+										return (
+											// SettingsPanel(key, setRevealedIndex, index, revealedIndex, children)
+											<SettingsPanel
+												key={key}
+												name={key}
+												childrenSettings={children}
+											/>
+										)
+									})}
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</dialog>
+		</>
 	)
 }
 
@@ -419,19 +450,23 @@ function DropDown({ children, onClick, visible, name, intl }) {
 		</>
 	)
 }
-function find(query) {
-	return new Promise((resolve) => {
-		const id = setInterval(() => {
-			let el
-			if ((el = document.querySelector(query))) {
-				clearInterval(id)
-				resolve(el)
-			}
-		}, 50)
+const el = document.createElement('div')
+el.id = 'aj-settings'
+el.hidden = true
+document.body.appendChild(el)
+function hide_settings() {
+	el.hidden = true
+}
+let mouseUpYet = false
+export function show_settings() {
+	mouseUpYet = true
+	console.log('show settings')
+	el.hidden = false
+	Array.from(el.children).forEach((child) => {
+		child.style.display = 'unset'
 	})
 }
-find('#test').then((el) => {
-	// el.previousElementSibling.innerHTML = intl.translate("panel.states");
+queueMicrotask(() => {
 	ReactDom.render(<Settings></Settings>, el)
 	const s = document.createElement('style')
 	el.appendChild(s)
@@ -446,21 +481,8 @@ find('#test').then((el) => {
 			)
 		})
 		.join('')
-	bus.on(events.LIFECYCLE.CLEANUP, () => el.remove())
-})
-
-const d = document.createElement('div')
-d.id = 'test'
-d.hidden = true
-document.body.appendChild(d)
-
-const hide_settings = () => {
-	d.hidden = true
-}
-
-export const show_settings = () => {
-	d.hidden = false
-	Array.from(d.children).forEach((child) => {
-		child.style.display = 'unset'
+	bus.on(events.LIFECYCLE.CLEANUP, () => {
+		el.remove()
+		s.remove()
 	})
-}
+})

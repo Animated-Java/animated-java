@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react'
 // const { useEffect, useState } = React;
 import ReactDom from 'react-dom'
 import events, { LIFECYCLE } from '../../constants/events'
-import { intl } from '../../util/intl'
+import { intl, translate } from '../../util/intl'
 import { store } from '../../util/store'
 import { bus } from '../../util/bus'
 import { format } from '../../modelFormat'
@@ -114,7 +114,7 @@ function StatePanel() {
 			>
 				<div style={{ width: '50%', display: 'inline-block' }}>
 					<button onClick={() => setOverlayVisible(false)}>
-						back
+						{translate('varients.ui.back')}
 					</button>
 					<ul
 						style={{ height: height + 'px', overflowY: 'scroll' }}
@@ -235,11 +235,14 @@ function StatePanel() {
 									className="tooltip"
 									style={{ marginLeft: '0px' }}
 								>
+									{intl.translate('varients.ui.addVarient')}
 									<div
 										className="tooltip_description"
 										style={{ marginLeft: '-5px' }}
 									>
-										{intl.translate('state.ui.add_state')}
+										{intl.translate(
+											'varients.ui.addVarient.description'
+										)}
 									</div>
 								</div>
 								<i className="fa_big fa fa-plus-circle"></i>
@@ -389,7 +392,8 @@ function find(query) {
 	})
 }
 find('#java-animator-states').then((el) => {
-	el.previousElementSibling.innerHTML = intl.translate('panel.states')
+	el.previousElementSibling.children[0].innerHTML =
+		intl.translate('panel.states')
 	ReactDom.render(<StatePanel></StatePanel>, el)
 	bus.on(events.LIFECYCLE.CLEANUP, () => el.remove())
 })

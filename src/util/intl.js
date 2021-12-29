@@ -11,7 +11,9 @@ class Intl {
 	}
 	translate(key) {
 		this.tokens.add(key)
-		return this.dict[this.lang]?.[key] ? this.dict[this.lang][key] : key
+		let v = this.dict[this.lang]?.[key] ? this.dict[this.lang][key] : key
+		if (v === key) debugger
+		return v
 	}
 	register(name, dict) {
 		this.dict[name] = dict

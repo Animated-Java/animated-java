@@ -33,11 +33,11 @@ import {
 // @ts-ignore
 import lang from './lang.yaml'
 import { intl } from './util/intl'
-import { makeArmorStandModel } from './makeArmorStandModel'
 for (const name in lang) {
 	console.log('loading language ', name, lang[name])
 	intl.register(name, lang[name])
 }
+import { makeArmorStandModel } from './makeArmorStandModel'
 
 let F_IS_BUILDING = false
 export const BuildModel = (callback: any, options: any) => {

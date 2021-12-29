@@ -19,14 +19,19 @@ let last = null
 let last_mult = null
 let Selected = null
 let mode
+Blockbench.on('update_selection', () => {
+	if (format.id === Format.id) {
+		if (Group.selected || Mode.selected.name === 'Animate') {
+			Format.rotation_limit = false
+		} else {
+			Format.rotation_limit = true
+		}
+		Interface.Panels.element.toolbars.element_rotation.update(true)
+	}
+})
 bus.on(EVENTS.LIFECYCLE.LOAD, () => {
 	const frame = () => {
 		if (format.id === Format.id) {
-			if (Group.selected || Mode.selected.name === 'Animate') {
-				Format.rotation_limit = false
-			} else {
-				Format.rotation_limit = true
-			}
 			const viewmode = settings.animatedJava.boundingBoxRenderMode
 			if (viewmode !== mode) {
 				mode = viewmode

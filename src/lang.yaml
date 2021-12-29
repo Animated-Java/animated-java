@@ -191,3 +191,8 @@ en:
 
     animatedJava_exporter_animationExporter.setting.dataPackPath.name: Data Pack (Unsupported in current version)
     animatedJava_exporter_animationExporter.setting.dataPackPath.description: The path to export the generated Data Pack to. (Coming soon!)
+
+    #? varients panel
+    varients.ui.addVarient: Add Varient
+    varients.ui.addVarient.description: Adds a new Varient to the model
+    varients.ui.back: Back
