@@ -284,11 +284,13 @@ async function createMCFile(
 
 		const rootEntityNbt = SNBT.parse(exporterSettings.rootEntityNbt)
 		rootEntityNbt.assert('Tags', SNBTTagType.LIST)
-		rootEntityNbt.get('Tags').push(
-			SNBT.String('new'),
-			SNBT.String(tags.model),
-			SNBT.String(tags.root)
-		)
+		rootEntityNbt
+			.get('Tags')
+			.push(
+				SNBT.String('new'),
+				SNBT.String(tags.model),
+				SNBT.String(tags.root)
+			)
 
 		for (const [variantName, variant] of Object.entries(variantModels)) {
 			for (const summon of summons) {
@@ -532,6 +534,33 @@ const Exporter = (AJ: any) => {
 					(value === '' ||
 						b.base !== `${AJ.settings.animatedJava.projectName}.mc`)
 				)
+			},
+			isVisible(settings: any) {
+				return (
+					settings.animatedJava_exporter_statueExporter.exportMode ===
+					'mcb'
+				)
+			},
+			dependencies: ['animatedJava_exporter_statueExporter.exportMode'],
+		},
+		mcbConfigPath: {
+			type: 'filepath',
+			default: '',
+			optional: true,
+			props: {
+				dialogOpts: {
+					get defaultPath() {
+						return 'config.json'
+					},
+					promptToCreate: true,
+					properties: ['openFile'],
+				},
+			},
+			populate() {
+				return ''
+			},
+			isValid(value: string) {
+				return value == '' || value.endsWith('config.json')
 			},
 			isVisible(settings: any) {
 				return (

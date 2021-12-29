@@ -1,5 +1,5 @@
 import LangMCWorkerURI from './dependencies/lang-mc-worker/lang-mc.worker.wjs'
-export function compileMC(namespace, contents, onLog = console.log) {
+export function compileMC(namespace, contents, config, onLog = console.log) {
 	return new Promise((resolve, reject) => {
 		const w = new Worker(LangMCWorkerURI)
 		w.onmessage = (e) => {
@@ -13,6 +13,7 @@ export function compileMC(namespace, contents, onLog = console.log) {
 		w.postMessage({
 			namespace,
 			contents,
+			config
 		})
 		w.onerror = (e) => {
 			w.terminate()

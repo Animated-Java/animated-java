@@ -956,7 +956,8 @@ function copy_token(_, args) {
 }
 const TickTag = new io.MultiFileTag('./data/minecraft/tags/functions/tick.json')
 const LoadTag = new io.MultiFileTag('./data/minecraft/tags/functions/load.json')
-function MC_LANG_HANDLER(file_contents, namespace) {
+function MC_LANG_HANDLER(file_contents, namespace, config) {
+	Object.assign(CONFIG, config)
 	//? entry point of the whole thing; `file` is the filepath to a source file (one that ends with .mc)
 	let file = 'dummy'
 	MC_LANG_EVENTS.emit('start')

@@ -244,6 +244,16 @@ const SettingInput = ({ namespace, name, template }) => {
 						{translate('animatedJava.settings.global')}
 					</span>
 				)}
+				{DefaultSettings[namespace][name].optional && (
+					<span
+						style={{
+							opacity: 0.8,
+							marginLeft: '1em',
+						}}
+					>
+						{translate('animatedJava.settings.optional')}
+					</span>
+				)}
 			</div>
 			<div className="setting_description">
 				{translate(`${namespace}.setting.${name}.description`)

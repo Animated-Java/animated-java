@@ -6,6 +6,7 @@ en:
     panel.states: Model Variants
 
     animatedJava.settings.global: '(Global)'
+    animatedJava.settings.optional: '(Optional)'
     animatedJava.settings.invalidSetting.generic: 'Setting value invalid'
 
     animatedJava.boneConfig.title: Bone Config
@@ -36,6 +37,11 @@ en:
     animatedJava.popup.error.rigModelsExportFolder.title: Rig Model Folder Undefined
     animatedJava.popup.error.rigModelsExportFolder.body: |-
         You must define a rig model folder path in settings before you can export.
+
+    #? varients panel
+    varients.ui.addVarient: Add Varient
+    varients.ui.addVarient.description: Adds a new Varient to the model
+    varients.ui.back: Back
 
     #? AJ Settings
     animatedJava.menubar.dropdown.name: Animated Java
@@ -129,6 +135,9 @@ en:
 
     animatedJava_exporter_statueExporter.setting.dataPackPath.name: Data Pack (Unsupported in current version)
     animatedJava_exporter_statueExporter.setting.dataPackPath.description: The path to export the generated Data Pack to. (Coming soon!)
+    animatedJava_exporter_statueExporter.popup.error.dataPackPathNotDefined.title: Data Pack file path undefined
+    animatedJava_exporter_statueExporter.popup.error.dataPackPathNotDefined.body: You must define a data pack path in settings before you can export.
+
 
     #? Statue Exporter
     animatedJava_exporter_animationExporter: Animation Exporter
@@ -185,14 +194,17 @@ en:
     animatedJava_exporter_animationExporter.setting.exportMode.vanilla.name: Vanilla
     animatedJava_exporter_animationExporter.setting.exportMode.mcb.name: MCB
 
-    animatedJava_exporter_animationExporter.setting.mcbFilePath.name: Lang-mc file
+    animatedJava_exporter_animationExporter.setting.mcbFilePath.name: Lang-mc File Path
     animatedJava_exporter_animationExporter.setting.mcbFilePath.description: The path to export the .mc file to
     animatedJava_exporter_animationExporter.setting.mcbFilePath.invalidPopup.text: Invalid MCB File Path! The MCB file must be called %projectName.mc (project_name.mc)
 
+    animatedJava_exporter_animationExporter.setting.mcbConfigPath.name: Lang-mc config.json Path
+    animatedJava_exporter_animationExporter.setting.mcbConfigPath.description: |-
+      Exports the default MCB config for Animated Java
+      WARNING! Will overwrite existing config.json
+
     animatedJava_exporter_animationExporter.setting.dataPackPath.name: Data Pack (Unsupported in current version)
     animatedJava_exporter_animationExporter.setting.dataPackPath.description: The path to export the generated Data Pack to. (Coming soon!)
+    animatedJava_exporter_animationExporter.popup.error.dataPackPathNotDefined.title: Data Pack file path undefined
+    animatedJava_exporter_animationExporter.popup.error.dataPackPathNotDefined.body: You must define a data pack path in settings before you can export.
 
-    #? varients panel
-    varients.ui.addVarient: Add Varient
-    varients.ui.addVarient.description: Adds a new Varient to the model
-    varients.ui.back: Back
