@@ -3,8 +3,13 @@ import * as aj from './animatedJava'
 import './lifecycle'
 import './rotationSnap'
 import { format } from './modelFormat'
-import { DefaultSettings, settings} from './settings'
-import { action as CustomAction, bus, translate, store, ERROR, CustomError } from './util'
+import { DefaultSettings, settings } from './settings'
+import { CustomError } from './util/customError'
+import { ERROR } from './util/errors'
+import { store } from './util/store'
+import { translate } from './util/intl'
+import { bus } from './util/bus'
+import { CustomAction } from './util/customAction'
 import './ui/panels/states'
 import './ui/dialogs/settings'
 import EVENTS from './constants/events'
@@ -186,11 +191,10 @@ Blockbench.on('unselect_project', () => {
 })
 menu.label.innerHTML = translate('animatedJava.menubar.dropdown.name')
 MenuBar.addAction(
-	CustomAction({
+	CustomAction('animated_java_settings', {
 		icon: 'settings',
 		category: 'animated_java',
 		name: translate('animatedJava.menubar.settings.name'),
-		id: 'animated_java_settings',
 		condition: () => format.id === Format.id,
 		click: function () {
 			show_settings()

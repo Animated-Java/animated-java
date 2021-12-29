@@ -1,5 +1,6 @@
 export class CustomError extends Error {
-	constructor(options) {
+	options: any
+	constructor(options: any) {
 		super()
 		this.options = options
 	}

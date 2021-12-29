@@ -1,12 +1,12 @@
-import { action, translate } from '../../util'
+import { CustomAction } from '../../util/customAction'
+import { translate } from '../../util/intl'
 
 type AJGroup = {
 	nbt: string
 	armAnimationEnabled: boolean
 } & Group
 
-const openBoneConfig = action({
-	id: 'animatedJava.BoneConfig',
+const openBoneConfig = CustomAction('animatedJava.BoneConfig', {
 	name: 'Bone Config',
 	icon: 'settings',
 	category: 'edit',

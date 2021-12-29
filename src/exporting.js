@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path, { resolve } from 'path'
 import { settings } from './settings'
-import { mkdir } from './util'
+import { mkdir } from './util/ezfs'
 import { CustomError } from './util/CustomError'
 import { translate } from './util/intl'
 // import { safeFunctionName } from './util'

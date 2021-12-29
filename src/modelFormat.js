@@ -1,5 +1,7 @@
 import { DefaultSettings, settings, settingsByUUID } from './settings'
-import { action as CustomAction, bus, store } from './util'
+import { CustomAction } from './util/customAction'
+import { bus } from './util/bus'
+import { store } from './util/store'
 import events from './constants/events'
 
 const FORMATV = '0.0'

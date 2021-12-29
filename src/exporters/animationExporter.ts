@@ -1,19 +1,15 @@
 import * as aj from '../animatedJava'
 
-import {
-	CustomError,
-	fixIndent,
-	format,
-	JsonText,
-	safeFunctionName,
-	translate,
-	store,
-	roundToN,
-	generateTree,
-	removeKeyGently,
-	Path,
-} from '../util'
+import { CustomError } from '../util/customError'
+import { JsonText } from '../util/minecraft/jsonText'
+import { Path } from '../util/path'
+import { removeKeyGently } from '../util/misc'
+import { roundToN } from '../util/misc'
+import { safeFunctionName, format, fixIndent } from '../util/replace'
 import { SNBT, SNBTTag, SNBTTagType } from '../util/SNBT'
+import { store } from '../util/store'
+import { translate } from '../util/intl'
+import { generateTree } from '../util/treeGen'
 
 interface animationExporterSettings {
 	allBonesTag: string
@@ -130,7 +126,7 @@ async function createMCFile(
 				projectName,
 			}),
 		])
-	) as Scoreboards
+	) as unknown as Scoreboards
 
 	const tags = Object.fromEntries(
 		Object.entries({
@@ -140,7 +136,7 @@ async function createMCFile(
 			individualBone: exporterSettings.individualBoneTag,
 			boneDisplay: exporterSettings.boneModelDisplayTag,
 		}).map(([k, v]) => [k, format(v, { projectName })])
-	) as Tags
+	) as unknown as Tags
 
 	const entityTypes: EntityTypes = {
 		bone: `#${projectName}:bone_entities`,
@@ -938,30 +934,13 @@ const Exporter = (AJ: any) => {
 				isValid(value: any) {
 					const p = new Path(value)
 					const b = p.parse()
-					if (
+					return (
 						AJ.settings.animatedJava_exporter_animationExporter
 							.exportMode === 'mcb' &&
 						(value === '' ||
 							b.base !==
 								`${AJ.settings.animatedJava.projectName}.mc`)
-					) {
-						// @ts-ignore
-						Blockbench.showToastNotification({
-							text: format(
-								translate(
-									'animatedJava_exporter_animationExporter.setting.mcbFilePath.invalidPopup.text'
-								),
-								{
-									projectName:
-										AJ.settings.animatedJava.projectName,
-								}
-							),
-							color: '#b80e02',
-							expire: 10000,
-						})
-						return false
-					}
-					return true
+					)
 				},
 				isVisible(settings: any) {
 					return (
@@ -990,7 +969,15 @@ const Exporter = (AJ: any) => {
 					return ''
 				},
 				isValid(value: any) {
-					return true
+					const p = new Path(value)
+					const b = p.parse()
+					return (
+						AJ.settings.animatedJava_exporter_animationExporter
+							.exportMode === 'vanilla' &&
+						(value === '' ||
+							b.base !==
+								`${AJ.settings.animatedJava.projectName}`)
+					)
 				},
 				isVisible(settings: any) {
 					return (

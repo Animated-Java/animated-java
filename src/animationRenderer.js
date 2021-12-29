@@ -1,6 +1,8 @@
 import path from 'path'
 import { settings } from './settings'
-import { Async, bus, roundToN } from './util'
+import { Async } from './util/async'
+import { bus } from './util/bus'
+import { roundToN } from './util/misc'
 import { hashAnim } from './util/hashAnim'
 import { store } from './util/store'
 import os from 'os'
@@ -319,7 +321,12 @@ export async function renderAnimation(options) {
 					maxDistance = Math.max(maxDistance, fdist)
 					frames.push(frame)
 				}
-				avalue = { frames, maxDistance, name: animation.name, loopMode: animation.loop}
+				avalue = {
+					frames,
+					maxDistance,
+					name: animation.name,
+					loopMode: animation.loop,
+				}
 				animations[animation.uuid] = avalue
 				Cache.update(animation, avalue)
 			} else {

@@ -1,4 +1,5 @@
-import { bus, store } from '../util'
+import { bus } from '../util/bus'
+import { store } from '../util/store'
 import * as obj3dOverrides from './Object3d'
 import EVENTS from '../constants/events'
 

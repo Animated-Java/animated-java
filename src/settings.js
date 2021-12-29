@@ -1,4 +1,8 @@
-import { store, size, safeFunctionName, Path, removeNamespace } from './util'
+import { store } from './util/store'
+import { size, removeNamespace } from './util/misc'
+import { safeFunctionName } from './util/replace'
+import { Path } from './util/path'
+
 const UNASSIGNED = Symbol('UNASSIGNED_CACHE')
 export const DefaultSettings = {
 	animatedJava: {
@@ -72,7 +76,9 @@ export const DefaultSettings = {
 				dialogOpts: {
 					get defaultPath() {
 						// console.log(store.get('settings.project'))
-						return `${removeNamespace(ANIMATED_JAVA.settings.animatedJava.rigItem)}.json`
+						return `${removeNamespace(
+							ANIMATED_JAVA.settings.animatedJava.rigItem
+						)}.json`
 					},
 					promptToCreate: true,
 					properties: ['openFile'],
@@ -82,7 +88,9 @@ export const DefaultSettings = {
 				if (value != '') {
 					const p = new Path(value)
 					const b = p.parse()
-					const rigItem = removeNamespace(ANIMATED_JAVA.settings.animatedJava.rigItem)
+					const rigItem = removeNamespace(
+						ANIMATED_JAVA.settings.animatedJava.rigItem
+					)
 					if (rigItem !== b.name) {
 						ANIMATED_JAVA.settings.animatedJava.rigItem = `minecraft:${b.name}`
 					}
@@ -171,7 +179,8 @@ function evaluateSetting(namespace, name, value) {
 				if (setting.onUpdate) return setting.onUpdate(value)
 				return value
 			} else {
-				if (setting.onUpdate) return setting.onUpdate(setting.populate(value))
+				if (setting.onUpdate)
+					return setting.onUpdate(setting.populate(value))
 				return setting.populate(value)
 			}
 		} else {

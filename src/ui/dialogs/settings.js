@@ -1,9 +1,9 @@
-import { bus } from '../../util'
+import { bus } from '../../util/bus'
 import events from '../../constants/events'
 import React, { useEffect, useState } from 'react'
 import ReactDom from 'react-dom'
 import { DefaultSettings, settings } from '../../settings'
-import { translate } from '../../util'
+import { translate } from '../../util/intl'
 import { ERROR } from '../../util/errors'
 const dialog = electron.dialog
 const RenderTemplates = {
@@ -199,7 +199,7 @@ const SettingInput = ({ namespace, name, template }) => {
 							marginLeft: '1em',
 						}}
 					>
-						{translate('settings.global')}
+						{translate('animatedJava.settings.global')}
 					</span>
 				)}
 				{!isValid && (
@@ -210,7 +210,9 @@ const SettingInput = ({ namespace, name, template }) => {
 							color: 'red',
 						}}
 					>
-						{translate('settings.invalid')}
+						{translate(
+							'animatedJava.settings.invalidSetting.generic'
+						)}
 					</span>
 				)}
 			</div>

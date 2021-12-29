@@ -1,6 +1,7 @@
 import EVENTS from './constants/events'
 import { format } from './modelFormat'
-import { bus, size } from './util'
+import { bus } from './util/bus'
+
 import { settings } from './settings'
 function createBox() {
 	const a = new THREE.BoxBufferGeometry(16 * 7, 16 * 7, 16 * 7)

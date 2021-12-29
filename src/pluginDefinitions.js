@@ -1,5 +1,5 @@
 import { format } from './modelFormat'
-import { bus } from './util'
+import { bus } from './util/bus'
 
 setImmediate(() => {
 	Plugin.register('animated-java', {

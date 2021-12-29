@@ -33,51 +33,83 @@ enum SNBTStringifyFlags {
 
 function typeToConstructor(type: SNBTTagType) {
 	switch (type) {
-		case (SNBTTagType.BOOLEAN): return SNBT.Boolean
-		case (SNBTTagType.BYTE): return SNBT.Byte
-		case (SNBTTagType.BYTE_ARRAY): return SNBT.Byte_Array
-		case (SNBTTagType.COMPOUND): return SNBT.Compound
-		case (SNBTTagType.DOUBLE): return SNBT.Double
-		case (SNBTTagType.END): throw 'SNBTTagType.END should never be used in a SNBT construct'
-		case (SNBTTagType.FLOAT): return SNBT.Float
-		case (SNBTTagType.INT): return SNBT.Int
-		case (SNBTTagType.INT_ARRAY): return SNBT.Int_Array
-		case (SNBTTagType.LIST): return SNBT.List
-		case (SNBTTagType.LONG): return SNBT.Long
-		case (SNBTTagType.LONG_ARRAY): return SNBT.Long_Array
-		case (SNBTTagType.SHORT): return SNBT.Short
-		case (SNBTTagType.STRING): return SNBT.String
-		default: throw `Unknown SNBTTagType ${type}`
+		case SNBTTagType.BOOLEAN:
+			return SNBT.Boolean
+		case SNBTTagType.BYTE:
+			return SNBT.Byte
+		case SNBTTagType.BYTE_ARRAY:
+			return SNBT.Byte_Array
+		case SNBTTagType.COMPOUND:
+			return SNBT.Compound
+		case SNBTTagType.DOUBLE:
+			return SNBT.Double
+		case SNBTTagType.END:
+			throw 'SNBTTagType.END should never be used in a SNBT construct'
+		case SNBTTagType.FLOAT:
+			return SNBT.Float
+		case SNBTTagType.INT:
+			return SNBT.Int
+		case SNBTTagType.INT_ARRAY:
+			return SNBT.Int_Array
+		case SNBTTagType.LIST:
+			return SNBT.List
+		case SNBTTagType.LONG:
+			return SNBT.Long
+		case SNBTTagType.LONG_ARRAY:
+			return SNBT.Long_Array
+		case SNBTTagType.SHORT:
+			return SNBT.Short
+		case SNBTTagType.STRING:
+			return SNBT.String
+		default:
+			throw `Unknown SNBTTagType ${type}`
 	}
 }
 
 export class SNBTTag {
-	assert(path:string, type: SNBTTagType) {
+	assert(path: string, type: SNBTTagType) {
 		const gotten = this.get(path)
 		if (!gotten) {
 			this.set(path, typeToConstructor(type)())
 		} else if (!(type === gotten.type)) {
-			throw `NBT type at ${path} is not of type ${SNBTTagType[type]}. Instead found: ${SNBTTagType[gotten.type]}`
+			throw `NBT type at ${path} is not of type ${
+				SNBTTagType[type]
+			}. Instead found: ${SNBTTagType[gotten.type]}`
 		}
 	}
 	push(...values: SNBTTag[]) {
 		for (const value of values) {
 			switch (this.type) {
-				case (SNBTTagType.LIST):
+				case SNBTTagType.LIST:
 					this.value.push(value)
-				break
-				case (SNBTTagType.BYTE_ARRAY):
-					assert(value.type === SNBTTagType.BYTE, `Expected BYTE to push to BYTE_ARRAY. Got ${SNBTTagType[value.type]}`)
+					break
+				case SNBTTagType.BYTE_ARRAY:
+					assert(
+						value.type === SNBTTagType.BYTE,
+						`Expected BYTE to push to BYTE_ARRAY. Got ${
+							SNBTTagType[value.type]
+						}`
+					)
 					this.value.push(value)
-				break
-				case (SNBTTagType.INT_ARRAY):
-					assert(value.type === SNBTTagType.INT, `Expected INT to push to INT_ARRAY. Got ${SNBTTagType[value.type]}`)
+					break
+				case SNBTTagType.INT_ARRAY:
+					assert(
+						value.type === SNBTTagType.INT,
+						`Expected INT to push to INT_ARRAY. Got ${
+							SNBTTagType[value.type]
+						}`
+					)
 					this.value.push(value)
-				break
-				case (SNBTTagType.LONG_ARRAY):
-					assert(value.type === SNBTTagType.LONG, `Expected LONG to push to LONG_ARRAY. Got ${SNBTTagType[value.type]}`)
+					break
+				case SNBTTagType.LONG_ARRAY:
+					assert(
+						value.type === SNBTTagType.LONG,
+						`Expected LONG to push to LONG_ARRAY. Got ${
+							SNBTTagType[value.type]
+						}`
+					)
 					this.value.push(value)
-				break
+					break
 				default:
 					throw `Unable to perform push on ${SNBTTagType[this.type]}`
 			}
@@ -791,4 +823,4 @@ export const SNBT = {
 	},
 }
 
-Object.defineProperty(window, 'SNBT', {value:SNBT})
+Object.defineProperty(window, 'SNBT', { value: SNBT })

@@ -1,7 +1,8 @@
+import events from './constants/events'
 import { BuildModel } from './mainEntry'
 import { settings } from './settings'
-import * as util from './util'
-import events from './constants/events'
+import { store } from './util/store'
+import { bus } from './util/bus'
 import { format } from './modelFormat'
 import { registerSettingRenderer } from './ui/dialogs/settings'
 import './ui/mods/boneConfig'
@@ -17,11 +18,10 @@ const ANIMATED_JAVA = {
 		)
 	},
 	registerExportFunc(name: string, exportFunc: () => void) {
-		util.store.getStore('exporters').set(name, exportFunc)
+		store.getStore('exporters').set(name, exportFunc)
 	},
 	settings,
-	util,
-	store: util.store,
+	store: store,
 	format: format,
 	registerSettingRenderer,
 }
@@ -30,7 +30,7 @@ Object.defineProperty(window, 'ANIMATED_JAVA', {
 	value: ANIMATED_JAVA,
 })
 // window.ANIMATED_JAVA = ANIMATED_JAVA
-util.bus.on(events.LIFECYCLE.CLEANUP, () => {
+bus.on(events.LIFECYCLE.CLEANUP, () => {
 	console.log('CLEANUP')
 	// @ts-ignore
 	delete window.ANIMATED_JAVA

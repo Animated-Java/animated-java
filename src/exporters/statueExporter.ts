@@ -1,17 +1,13 @@
-import nbtlint from '../dependencies/nbtlint/docs/nbt-lint'
 import * as aj from '../animatedJava'
-import {
-	safeFunctionName,
-	format,
-	fixIndent,
-	store,
-	JsonText,
-	cloneObject,
-	CustomError,
-	roundToN,
-	translate,
-} from '../util'
+
+import { translate } from '../util/intl'
+import { roundToN } from '../util/misc'
+import { CustomError } from '../util/customError'
+import { JsonText } from '../util/minecraft/jsonText'
+import { store } from '../util/store'
+import { safeFunctionName, format, fixIndent } from '../util/replace'
 import { SNBT, SNBTTag, SNBTTagType } from '../util/SNBT'
+import { Path } from '../util/path'
 
 interface MCBConfig {
 	dev: boolean
@@ -171,9 +167,12 @@ async function createMCFile(
 				console.log(this.nbt.toString())
 			}
 
-			updateModelFromVariant(variant: {[index: string]: aj.VariantModel}) {
+			updateModelFromVariant(variant: {
+				[index: string]: aj.VariantModel
+			}) {
 				if (variant[this.boneName]) {
-					this.customModelData = variant[this.boneName].aj.customModelData
+					this.customModelData =
+						variant[this.boneName].aj.customModelData
 				} else {
 					this.resetCustomModelData()
 				}
@@ -506,7 +505,14 @@ const Exporter = (AJ: any) => {
 				return ''
 			},
 			isValid(value: any) {
-				return true
+				const p = new Path(value)
+				const b = p.parse()
+				return (
+					AJ.settings.animatedJava_exporter_statueExporter
+						.exportMode === 'mcb' &&
+					(value === '' ||
+						b.base !== `${AJ.settings.animatedJava.projectName}.mc`)
+				)
 			},
 			isVisible(settings: any) {
 				return (
@@ -533,7 +539,14 @@ const Exporter = (AJ: any) => {
 				return ''
 			},
 			isValid(value: any) {
-				return true
+				const p = new Path(value)
+				const b = p.parse()
+				return (
+					AJ.settings.animatedJava_exporter_statueExporter
+						.exportMode === 'vanilla' &&
+					(value === '' ||
+						b.base !== `${AJ.settings.animatedJava.projectName}`)
+				)
 			},
 			isVisible(settings: any) {
 				return (

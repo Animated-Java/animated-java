@@ -1,13 +1,12 @@
 // import translate
 import path from 'path'
-import {
-	store,
-	translate,
-	cloneObject,
-	size,
-	roundToN,
-	resourcepack,
-} from './util'
+import { store } from './util/store'
+import { translate } from './util/intl'
+import { cloneObject } from './util/misc'
+import { size } from './util/misc'
+import { roundToN } from './util/misc'
+import * as resourcepack from './util/minecraft/resourcepack'
+
 import { settings } from './settings'
 import './overrides/overrides'
 import { CustomError } from './util/CustomError'

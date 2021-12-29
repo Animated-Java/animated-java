@@ -5,6 +5,9 @@ en:
 
     panel.states: Model Variants
 
+    animatedJava.settings.global: '(Global)'
+    animatedJava.settings.invalidSetting.generic: 'Setting value invalid'
+
     animatedJava.boneConfig.title: Bone Config
     animatedJava.boneConfig.boneNbt: Bone NBT
     animatedJava.boneConfig.armAnimationEnabled: Enable Arm Animation
@@ -28,11 +31,11 @@ en:
 
     animatedJava.popup.error.predicateFilePathUndefined.title: Predicate File Path Undefined
     animatedJava.popup.error.predicateFilePathUndefined.body: |-
-      You must define a predicate file path in the settings before you can export.
+        You must define a predicate file path in the settings before you can export.
 
     animatedJava.popup.error.rigModelsExportFolder.title: Rig Model Folder Undefined
     animatedJava.popup.error.rigModelsExportFolder.body: |-
-      You must define a rig model folder path in settings before you can export.
+        You must define a rig model folder path in settings before you can export.
 
     #? AJ Settings
     animatedJava.menubar.dropdown.name: Animated Java
@@ -77,8 +80,6 @@ en:
     animatedJava.setting.boundingBoxRenderMode.single.name: Single
     animatedJava.setting.boundingBoxRenderMode.many.name: Multiple
     animatedJava.setting.boundingBoxRenderMode.none.name: Disabled
-
-    settings.global: (global)
 
     #? Statue Exporter
     animatedJava_exporter_statueExporter: Statue Exporter
