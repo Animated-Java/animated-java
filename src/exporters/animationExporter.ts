@@ -378,13 +378,16 @@ async function createMCFile(
 			FILE.push(`
 				function ${variantName} {
 					summon ${entityTypes.root} ~ ~ ~ ${rootEntityNbt}
-					execute as @e[type=${entityTypes.root},tag=${tags.root},tag=new,distance=..1,limit=1] at @s rotated ~ 0 run {
-						execute store result score @s ${scoreboards.id} run scoreboard players add .aj.last_id ${scoreboards.internal} 1
-						${summons.map(v => v.toString()).join('\n')}
-						execute as @e[type=${entityTypes.bone},tag=${tags.model},tag=new,distance=..${staticDistance}] positioned as @s run {
-							scoreboard players operation @s ${scoreboards.id} = .aj.last_id ${scoreboards.internal}
-							tp @s ~ ~ ~ ~ ~
-							tag @s remove new
+					execute as @e[type=${entityTypes.root},tag=${tags.root},tag=new,distance=..1,limit=1] run {
+						tp @s ~ ~ ~ ~ ~
+						execute at @s rotated ~ 0 run {
+							execute store result score @s ${scoreboards.id} run scoreboard players add .aj.last_id ${scoreboards.internal} 1
+							${summons.map(v => v.toString()).join('\n')}
+							execute as @e[type=${entityTypes.bone},tag=${tags.model},tag=new,distance=..${staticDistance}] positioned as @s run {
+								scoreboard players operation @s ${scoreboards.id} = .aj.last_id ${scoreboards.internal}
+								tp @s ~ ~ ~ ~ ~
+								tag @s remove new
+							}
 						}
 						tag @s remove new
 						${Object.values(animations).map(
