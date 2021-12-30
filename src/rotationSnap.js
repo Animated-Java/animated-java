@@ -11,6 +11,7 @@ function createBox() {
 		new THREE.LineBasicMaterial({ color: 0xff0000 })
 	)
 	c.position.y = 8
+	console.log(c)
 	return c
 }
 
@@ -71,8 +72,11 @@ bus.on(EVENTS.LIFECYCLE.LOAD, () => {
 							visboxs = []
 						}
 						if (parent && parent.name !== 'SCENE') {
+							debugger
 							const b = createBox()
 							parent.mesh.add(b)
+							parent.mesh.remove(b)
+							Canvas.outlines.add(b)
 							visboxs.push(b)
 						}
 						last = parent
@@ -91,16 +95,18 @@ bus.on(EVENTS.LIFECYCLE.LOAD, () => {
 					const old = Array.from(last_mult || [])
 					items.forEach((item) => {
 						if (!last_mult || !last_mult.has(item)) {
+							debugger
 							item.visbox = createBox()
 							visboxs.push(item.visbox)
 							item.mesh.add(item.visbox)
+							Canvas.outlines.attach(item.visbox)
 							console.log(`add ${item.name}`)
 						}
 					})
 					old.forEach((item) => {
 						if (!Selected.has(item)) {
 							if (item.visbox) {
-								item.mesh.remove(item.visbox)
+								Canvas.outlines.remove(item.visbox)
 								console.log(`remove ${item.name}`)
 								visboxs.splice(visboxs.indexOf(item.visbox), 1)
 								delete item.visbox
