@@ -344,12 +344,16 @@ export async function renderAnimation(options) {
 		static_animation?.remove()
 		Canvas.updateAllBones()
 		clearInterval(progressUpdaterID)
+		Blockbench.setStatusBarText()
+		Blockbench.setProgress(0, 0)
 		return animations
 	} catch (error) {
 		// unfix_scene_rotation();
 		static_animation?.remove()
 		Canvas.updateAllBones()
 		clearInterval(progressUpdaterID)
+		Blockbench.setStatusBarText()
+		Blockbench.setProgress(0, 0)
 		throw error
 	}
 }
