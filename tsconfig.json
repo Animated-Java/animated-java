@@ -5,6 +5,7 @@
 		"declaration": false,
 		"types": ["blockbench-types", "node"],
 		"lib": ["DOM", "ESNext"],
-		"target": "ESNext"
+		"target": "ESNext",
+		"moduleResolution": "node",
 	}
 }

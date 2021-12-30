@@ -84,7 +84,7 @@ export type Frame = {
 	scripts: any
 }
 
-export type Animation = {
+export type RenderedAnimation = {
 	frames: Frame[]
 	maxDistance: number
 	name: string
@@ -92,7 +92,7 @@ export type Animation = {
 }
 
 export interface Animations {
-	[index: string]: Animation
+	[index: string]: RenderedAnimation
 }
 
 export type ModelFace = {

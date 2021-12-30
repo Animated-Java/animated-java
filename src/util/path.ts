@@ -4,6 +4,7 @@ import * as fs from 'fs'
 export class Path {
 	path: string
 	parts: Array<string>
+	private parsed?: pathjs.ParsedPath
 
 	constructor(...paths: Array<string> | Array<Path>) {
 		this.path = pathjs.normalize(
@@ -40,12 +41,13 @@ export class Path {
 	}
 
 	parse(): pathjs.ParsedPath {
-		return pathjs.parse(this.path)
+		if (!this.parsed) this.parsed = pathjs.parse(this.path)
+		return this.parsed
 	}
 
 	mkdir(options?: fs.MakeDirectoryOptions & { recursive?: true }) {
 		try {
-			fs.mkdirSync(this.path, options)
+			fs.mkdirSync(this.parse().dir, options)
 		} catch (e) {
 			console.error(e.message)
 		}

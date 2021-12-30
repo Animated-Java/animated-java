@@ -11,6 +11,7 @@ import { store } from '../util/store'
 import { translate } from '../util/intl'
 import { generateTree } from '../util/treeGen'
 import { compileMC } from '../compileLangMC'
+import * as fs from 'fs'
 
 interface animationExporterSettings {
 	allBonesTag: string
@@ -64,6 +65,11 @@ interface Scoreboards {
 	frame: string
 	animatingFlag: string
 	animationLoopMode: string
+}
+
+interface GeneratedDataPackFile {
+	path: string
+	contents: string
 }
 
 const loopModeIDs = ['once', 'hold', 'loop']
@@ -517,7 +523,29 @@ async function createMCFile(
 		//? Animation Dir
 		FILE.push(`dir animations {`)
 
+		// TODO: Add animation name to popup window body
 		for (const animation of Object.values(animations)) {
+			if (animation.frames.length <= 1) {
+				let d = new Dialog({
+					id: 'animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation',
+					title: translate(
+						'animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.title'
+					),
+					lines: translate(
+						'animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.body'
+					)
+						.split('\n')
+						.map((line: string) => `<p>${line}</p>`),
+					onConfirm() {
+						d.hide()
+					},
+					onCancel() {
+						d.hide()
+					},
+				}).show()
+				throw new CustomError({ silent: true })
+			}
+
 			const thisAnimationLoopMode = format(
 				scoreboards.animationLoopMode,
 				{
@@ -809,8 +837,105 @@ async function exportDataPack(
 			custom_writer: null,
 		})
 	}
-	const dataPack = await compileMC(ajSettings.animatedJava.projectName, generated.mcFile, generated.mcbConfig)
-	console.log(dataPack)
+
+	function onMessage(message: {
+		type: 'progress' | 'EVT' | 'ERR' | 'INF' | 'TSK'
+		msg?: string
+		total?: number
+		current?: number
+		percent?: number
+		token?: any
+	}) {
+		if (message.type === 'progress') {
+			Blockbench.setProgress(message.percent, 50)
+			Blockbench.setStatusBarText(
+				format(
+					translate(
+						'animatedJava_exporter_animationExporter.exportingDataPackProgress'
+					),
+					{
+						progress: (message.percent * 100).toPrecision(4),
+					}
+				)
+			)
+		}
+	}
+
+	const dataPack: GeneratedDataPackFile[] = await compileMC(
+		ajSettings.animatedJava.projectName,
+		generated.mcFile,
+		generated.mcbConfig,
+		onMessage
+	)
+	let fileQueue = []
+
+	Blockbench.setProgress(0, 0)
+	Blockbench.setStatusBarText()
+
+	dataPack.push({
+		path: 'pack.mcmeta',
+		contents: JSON.stringify({
+			pack: {
+				description: `Animated Java Rig generated data pack. Project Name: ${ajSettings.animatedJava.projectName}`,
+				pack_format: 8,
+			},
+		}),
+	})
+
+	const dataPackPath = exporterSettings.dataPackPath
+	const totalFiles = dataPack.length
+	const translatedMessage = translate('animatedJava_exporter_animationExporter.writingDataPackProgress')
+	const createdPaths = new Set()
+
+	let timeOut = false
+
+	function setProgress(cur: number, max: number, fileName: string) {
+		if (!timeOut) {
+			Blockbench.setProgress((cur / max), 50)
+			Blockbench.setStatusBarText(format(translatedMessage, {
+				progress: ((cur / max) * 100).toPrecision(4),
+				fileName
+			}))
+			timeOut = true
+			setTimeout(() => timeOut = false, 50)
+		}
+	}
+
+	function newWriteFilePromise(
+		file: GeneratedDataPackFile,
+		que: Promise<unknown>[],
+	) {
+		const filePath = new Path(dataPackPath, file.path)
+
+		if (!createdPaths.has(filePath.parse().dir)) {
+			filePath.mkdir({ recursive: true })
+			createdPaths.add(filePath.parse().dir)
+		}
+		const p = fs.promises
+			.writeFile(filePath.path, file.contents)
+			.then(() => {
+				que.splice(que.indexOf(p), 1)
+				setProgress(totalFiles - dataPack.length, totalFiles, file.path)
+			})
+		que.push(p)
+	}
+
+	const threadPoolSize = 16
+	while (dataPack.length) {
+		const file = dataPack.pop()
+		if (fileQueue.length < threadPoolSize) {
+			newWriteFilePromise(file, fileQueue)
+		} else {
+			await Promise.race(fileQueue)
+			newWriteFilePromise(file, fileQueue)
+		}
+	}
+
+	await Promise.all(fileQueue)
+
+	Blockbench.setProgress(0, 0)
+	Blockbench.setStatusBarText()
+
 }
 
 async function animationExport(data: any) {

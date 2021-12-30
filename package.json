@@ -47,6 +47,7 @@
 	},
 	"devDependencies": {
 		"@types/node": "^17.0.5",
+		"@types/three": "^0.135.0",
 		"blockbench-types": "^4.0.0",
 		"js-yaml": "^4.1.0",
 		"prettier": "^2.4.1",

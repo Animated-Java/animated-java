@@ -1,60 +1,41 @@
-import path from 'path'
+import * as path from 'path'
 import { settings } from './settings'
 import { Async } from './util/async'
 import { bus } from './util/bus'
 import { roundToN } from './util/misc'
 import { hashAnim } from './util/hashAnim'
 import { store } from './util/store'
-import os from 'os'
+import * as os from 'os'
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'fs'
 import { StructTypes, StructPacker } from 'struct-packer'
 import { gunzipSync, gzipSync } from 'zlib'
 import events from './constants/events'
+import { translate } from './util/intl'
+import { format } from './util/replace'
+
 store.set('static_animation_uuid', '138747e7-2de0-4130-b900-9275ca0e6333')
 
 function setAnimatorTime(time) {
-	Timeline.setTime(time)
+	Timeline.setTime(time, false)
 }
 
-function getTimelineSavePoint() {
-	return {
-		time: Timeline.time,
-		cubes: [...selected],
-		animation: Animator.selected,
-		keyframes: [...Timeline.selected],
-	}
-}
-
-function applyTimelineSavePoint(point) {
-	point.animation?.select()
-	selected = point.cubes
-	Timeline.selected = point.keyframes
-	setAnimatorTime(point.time)
-}
-
-// function addSceneRot(v) {
-// 	return [
-// 		v[0] + Math.radToDeg(scene.rotation.x),
-// 		v[1] + Math.radToDeg(scene.rotation.y),
-// 		v[2] + Math.radToDeg(scene.rotation.z)
-// 	]
+// function getTimelineSavePoint() {
+// 	return {
+// 		time: Timeline.time,
+// 		cubes: [...Cube.selected],
+// 		animation: Animator.selected,
+// 		keyframes: [...Timeline.selected],
+// 	}
 // }
 
-function fixSceneRotation() {
-	scene.rotation.setFromDegreeArray([0, 180, 0])
-	// scene.position.x = 8;
-	// scene.position.z = 8;
-}
-
-function unfixSceneRotation() {
-	scene.rotation.setFromDegreeArray([0, 0, 0])
-	// scene.position.x = -8;
-	// scene.position.z = -8;
-}
-
+// function applyTimelineSavePoint(point) {
+// 	point.animation?.select()
+// 	selected = point.cubes
+// 	Timeline.selected = point.keyframes
+// 	setAnimatorTime(point.time)
+// }
 function getRotations(animation) {
 	const bones = {}
-
 	Group.all.forEach((group) => {
 		bones[group.name] = animation
 			.getBoneAnimator(group)
@@ -158,9 +139,9 @@ const struct = StructTypes.Object({
 	loopMode: StructTypes.String,
 })
 
+StructPacker.defaultPreReadHandlers = [(buf) => gunzipSync(buf)]
+StructPacker.defaultPostWriteHandlers = [(buf) => gzipSync(buf)]
 const packer = StructPacker.create(struct)
-packer.defaultPreReadHandlers = [(buf) => gunzipSync(buf)]
-packer.defaultPostWriteHandlers = [(buf) => gzipSync(buf)]
 function animToWriteable(animData) {
 	return packer.write(animData)
 }
@@ -209,6 +190,7 @@ const Cache = new (class {
 					const data = readFileSync(
 						path.join(this.tmp, anim.uuid + '.anim_data')
 					)
+
 					data._isBuffer = true
 					return writtenAnimToReadable(data)
 				}
@@ -236,6 +218,7 @@ const Cache = new (class {
 		this.cache = new Map()
 	}
 })()
+
 window.ANIM_CACHE = Cache
 
 // clear the animation cache if the origin or rotation of a group changes
@@ -263,6 +246,20 @@ export async function renderAnimation(options) {
 		static_animation.uuid = store.get('static_animation_uuid')
 	}
 
+	const totalAnimationLength = Animator.animations.reduce((a,v) => a+v.length,0)
+	// Accumulated animation length
+	let accAnimationLength = 0
+	const translatedMessage = translate('animatedJava.progress.animationRendering.text')
+	const progressUpdaterID = setInterval(() => {
+		console.log(accAnimationLength, totalAnimationLength)
+		Blockbench.setStatusBarText(format(translatedMessage, {
+			current: accAnimationLength.toFixed(2),
+			total: totalAnimationLength.toFixed(2)
+		}))
+		Blockbench.setProgress(accAnimationLength / totalAnimationLength, 50)
+	}, 50)
+	console.log(progressUpdaterID)
+
 	try {
 		// fix_scene_rotation();
 		const animations = {}
@@ -272,6 +269,7 @@ export async function renderAnimation(options) {
 				group.name != 'SCENE' &&
 				group.children.find((child) => child instanceof Cube)
 		)
+
 		for (const animation of Animator.animations.sort()) {
 			const value = Cache.hit(animation)
 			if (!value) {
@@ -280,6 +278,7 @@ export async function renderAnimation(options) {
 				animation.select()
 
 				for (let i = 0; i <= animation.length; i += 0.05) {
+					accAnimationLength += 0.05
 					await Async.wait_if_overflow()
 					setAnimatorTime(i)
 					const effects = {}
@@ -339,11 +338,14 @@ export async function renderAnimation(options) {
 
 		static_animation?.remove()
 		Canvas.updateAllBones()
+		clearInterval(progressUpdaterID)
 		return animations
 	} catch (error) {
 		// unfix_scene_rotation();
 		static_animation?.remove()
 		Canvas.updateAllBones()
+		clearInterval(progressUpdaterID)
 		throw error
 	}
+
 }
