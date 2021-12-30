@@ -364,6 +364,8 @@ bus.on(events.LIFECYCLE.CLEANUP, () => {
 		delete Action.prototype._trigger
 		for (const i of Object.values(BarItems)) if (i.patches) delete i.patches
 	}
+	format.delete()
+	StartScreen.vue.$forceUpdate()
 })
 BarItems['save_project'].patch('save_aj_project')
 BarItems['export_over'].patch('save_aj_project')
