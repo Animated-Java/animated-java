@@ -4,6 +4,10 @@ animatedJava.menubar.export.name: Export Model
 
 panel.states: Model Variants
 
+animatedJava.progress.animationRendering.text: Rendering Animations... %currents/%totals
+animatedJava.dialog.animation_properties.animationCompleteCommand.label: End Of Anim Command
+
+#? Settings
 animatedJava.settings.global: '(Global)'
 animatedJava.settings.optional: '(Optional)'
 animatedJava.settings.invalidSetting.generic: 'Setting value invalid'
@@ -14,6 +18,7 @@ animatedJava.boneConfig.armAnimationEnabled: Enable Arm Animation
 
 animatedJava.popup.quickMessage.noExporterSelected: No Exporter Selected!
 
+#? Errors/Warnings
 animatedJava.popup.warning.rigFolderUnused.title: Unused rig folder
 animatedJava.popup.warning.rigFolderUnused.body: |-
     This folder does not contain any existing rigs.
@@ -36,8 +41,6 @@ animatedJava.popup.error.predicateFilePathUndefined.body: |-
 animatedJava.popup.error.rigModelsExportFolder.title: Rig Model Folder Undefined
 animatedJava.popup.error.rigModelsExportFolder.body: |-
     You must define a rig model folder path in settings before you can export.
-
-animatedJava.progress.animationRendering.text: Rendering Animations... %currents/%totals
 
 #? varients panel
 varients.ui.addVarient: Add Varient

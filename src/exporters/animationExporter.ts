@@ -377,12 +377,19 @@ async function createMCFile(
 			// prettier-ignore
 			FILE.push(`
 				function ${variantName} {
+					# Summon Root Entity
 					summon ${entityTypes.root} ~ ~ ~ ${rootEntityNbt}
+					# Execute as summoned root
 					execute as @e[type=${entityTypes.root},tag=${tags.root},tag=new,distance=..1,limit=1] rotated ~ 0 run {
+						# Copy the execution position and rotation onto the root
 						tp @s ~ ~ ~ ~ ~
+						# Get an ID for this rig
+						execute store result score @s ${scoreboards.id} run scoreboard players add .aj.last_id ${scoreboards.internal} 1
+						# Execute at updated location
 						execute at @s run {
-							execute store result score @s ${scoreboards.id} run scoreboard players add .aj.last_id ${scoreboards.internal} 1
+							# Summon all bone entities
 							${summons.map(v => v.toString()).join('\n')}
+							# Update rotation and ID of bone entities to match the root entity
 							execute as @e[type=${entityTypes.bone},tag=${tags.model},tag=new,distance=..${staticDistance}] positioned as @s run {
 								scoreboard players operation @s ${scoreboards.id} = .aj.last_id ${scoreboards.internal}
 								tp @s ~ ~ ~ ~ ~
@@ -390,10 +397,13 @@ async function createMCFile(
 							}
 						}
 						tag @s remove new
+						# Set all animation modes to configured default
 						${Object.values(animations).map(
 							v => `scoreboard players set @s ${scoreboards.animationLoopMode.replace('%animationName',v.name)} ${loopModeIDs.indexOf(v.loopMode)}`
 						).join('\n')}
 					}
+					# Assert animation flags
+					scoreboard players set @s ${scoreboards.animatingFlag} 0
 					scoreboard players add .aj.animation ${scoreboards.animatingFlag} 0
 					scoreboard players add .aj.anim_loop ${scoreboards.animatingFlag} 0
 				}
@@ -510,6 +520,7 @@ async function createMCFile(
 				# Run animations that are active on the entity
 				execute as @e[type=${entityTypes.root},tag=${tags.root}] run{
 					${animationRunCommands.join('\n')}
+					scoreboard players operation @s ${scoreboards.animatingFlag} = .aj.animation ${scoreboards.animatingFlag}
 				}
 				# Stop the anim_loop clock if no models are animating
 				execute if score .aj.animation ${scoreboards.animatingFlag} matches 0 run {
@@ -526,7 +537,6 @@ async function createMCFile(
 		//? Animation Dir
 		FILE.push(`dir animations {`)
 
-		// TODO: Add animation name to popup window body
 		for (const animation of Object.values(animations)) {
 			if (animation.frames.length <= 1) {
 				let d = new Dialog({
