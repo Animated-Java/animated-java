@@ -378,9 +378,9 @@ async function createMCFile(
 			FILE.push(`
 				function ${variantName} {
 					summon ${entityTypes.root} ~ ~ ~ ${rootEntityNbt}
-					execute as @e[type=${entityTypes.root},tag=${tags.root},tag=new,distance=..1,limit=1] run {
+					execute as @e[type=${entityTypes.root},tag=${tags.root},tag=new,distance=..1,limit=1] rotated ~ 0 run {
 						tp @s ~ ~ ~ ~ ~
-						execute at @s rotated ~ 0 run {
+						execute at @s run {
 							execute store result score @s ${scoreboards.id} run scoreboard players add .aj.last_id ${scoreboards.internal} 1
 							${summons.map(v => v.toString()).join('\n')}
 							execute as @e[type=${entityTypes.bone},tag=${tags.model},tag=new,distance=..${staticDistance}] positioned as @s run {
@@ -534,9 +534,11 @@ async function createMCFile(
 					title: translate(
 						'animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.title'
 					),
-					lines: translate(
+					lines: format(translate(
 						'animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.body'
-					)
+					), {
+						animationName: animation.name
+					})
 						.split('\n')
 						.map((line: string) => `<p>${line}</p>`),
 					onConfirm() {

@@ -29,6 +29,7 @@ import {
 	computeVariantTextureOverrides,
 	computeBones,
 	computeVariantModels,
+	computeScaleModelOverrides
 } from './modelComputation'
 
 import { intl } from './util/intl'
@@ -176,6 +177,7 @@ async function computeAnimationData(
 		variantModels: aj.VariantModels
 		variantTouchedModels: aj.variantTouchedModels
 	}
+	const scaleModelOverrides = computeScaleModelOverrides(models, bones, animations)
 
 	// const flatVariantModels = {}
 	// Object.values(variantModels).forEach(variant => Object.entries(variant).forEach(([k,v]) => flatVariantModels[k] = v))

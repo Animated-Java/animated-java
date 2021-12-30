@@ -6,7 +6,6 @@ import { cloneObject } from './util/misc'
 import { size } from './util/misc'
 import { roundToN } from './util/misc'
 import * as resourcepack from './util/minecraft/resourcepack'
-
 import { settings } from './settings'
 import './overrides/overrides'
 import { CustomError } from './util/CustomError'
@@ -233,49 +232,6 @@ export function computeElements() {
 	return ret
 }
 
-//FIXME This code block should be moved to model_computation.js and it's variables should be passed to AJ by the exporter
-//START
-const displayScale = 1.6
-const displayScaleModifier = 4
-const elementScaleModifier = displayScaleModifier / displayScale
-
-async function scaleModels(models) {
-	for (const [name, model] of Object.entries(models)) {
-		model.display = computeDisplay()
-		for (const element of model.elements) {
-			element.to = [
-				element.to[0] / elementScaleModifier + 8, // Center the x pos in the model
-				element.to[1] / elementScaleModifier + 5, // Center the y pos in the model
-				element.to[2] / elementScaleModifier + 8, // Center the z pos in the model
-			]
-
-			element.from = [
-				element.from[0] / elementScaleModifier + 8,
-				element.from[1] / elementScaleModifier + 5,
-				element.from[2] / elementScaleModifier + 8,
-			]
-
-			element.rotation.origin = [
-				element.rotation.origin[0] / elementScaleModifier + 8,
-				element.rotation.origin[1] / elementScaleModifier + 5,
-				element.rotation.origin[2] / elementScaleModifier + 8,
-			]
-		}
-	}
-	return models
-}
-//END
-
-function computeDisplay() {
-	return {
-		head: {
-			translation: [0, 5.6, 0],
-			scale: [0, 0, 0].map((_) => displayScaleModifier),
-			rotation: [0, 0, 0],
-		},
-	}
-}
-
 function getTexturesOnGroup(group) {
 	const textures = {}
 	group.children
@@ -408,34 +364,92 @@ export function computeBones(models, animations) {
 		}
 	}
 
-	function roundScale(scale) {
-		return {
-			x: roundToN(scale.x, 1000),
-			y: roundToN(scale.y, 1000),
-			z: roundToN(scale.z, 1000),
-		}
-	}
+	// function roundScale(scale) {
+	// 	return {
+	// 		x: roundToN(scale.x, 1000),
+	// 		y: roundToN(scale.y, 1000),
+	// 		z: roundToN(scale.z, 1000),
+	// 	}
+	// }
 
-	for (const [animUuid, anim] of Object.entries(animations)) {
-		for (const frame of anim.frames) {
-			for (const [boneName, bone] of Object.entries(frame.bones)) {
-				if (bones[boneName]) {
-					// Save this scale to the bone's scale object
-					const rounded = roundScale(bone.scale, 1000)
-					const vecStr = `${rounded.x},${rounded.y},${rounded.z}`
-					if (bone.scale && !bones[boneName].scales[vecStr]) {
-						console.log('New Scale:', vecStr)
-						bones[boneName].scales[vecStr] = getPredicateId(bone)
-					}
-				}
-			}
-		}
-	}
+	// for (const [animUuid, anim] of Object.entries(animations)) {
+	// 	for (const frame of anim.frames) {
+	// 		for (const [boneName, bone] of Object.entries(frame.bones)) {
+	// 			if (bones[boneName]) {
+	// 				// Save this scale to the bone's scale object
+	// 				const rounded = roundScale(bone.scale, 1000)
+	// 				const vecStr = `${rounded.x},${rounded.y},${rounded.z}`
+	// 				if (bone.scale && !bones[boneName].scales[vecStr]) {
+	// 					console.log('New Scale:', vecStr)
+	// 					bones[boneName].scales[vecStr] = getPredicateId(bone)
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	console.log('Bones', bones)
 	console.groupEnd('Compute Bones')
 
 	return bones
+}
+
+//FIXME This code block should be moved to model_computation.js and it's variables should be passed to AJ by the exporter
+//START
+const displayScale = 1.6
+const displayScaleModifier = 4
+const elementScaleModifier = displayScaleModifier / displayScale
+
+async function scaleModels(models) {
+	for (const [name, model] of Object.entries(models)) {
+		model.display = computeDisplay()
+		for (const element of model.elements) {
+			element.to = [
+				element.to[0] / elementScaleModifier + 8, // Center the x pos in the model
+				element.to[1] / elementScaleModifier + 5, // Center the y pos in the model
+				element.to[2] / elementScaleModifier + 8, // Center the z pos in the model
+			]
+
+			element.from = [
+				element.from[0] / elementScaleModifier + 8,
+				element.from[1] / elementScaleModifier + 5,
+				element.from[2] / elementScaleModifier + 8,
+			]
+
+			element.rotation.origin = [
+				element.rotation.origin[0] / elementScaleModifier + 8,
+				element.rotation.origin[1] / elementScaleModifier + 5,
+				element.rotation.origin[2] / elementScaleModifier + 8,
+			]
+		}
+	}
+	return models
+}
+//END
+
+function computeDisplay() {
+	return {
+		head: {
+			translation: [0, 5.6, 0],
+			scale: [0, 0, 0].map((_) => displayScaleModifier),
+			rotation: [0, 0, 0],
+		},
+	}
+}
+
+export function computeScaleModelOverrides(models, bones, animations) {
+	const scaleModels = {}
+
+	for (const [animUuid, anim] of Object.entries(animations)) {
+		for (const frame of anim.frames) {
+			for (const [modelName, model] of Object.entries(models)) {
+				const boneFrame = frame.bones[modelName]
+				if (boneFrame) {
+					const thisScale = {}
+				}
+			}
+		}
+	}
 }
 
 export function computeVariantTextureOverrides(models) {
