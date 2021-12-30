@@ -275,6 +275,3 @@ bus.on(EVENTS.LIFECYCLE.CLEANUP, () => {
 	// @ts-ignore
 	Blockbench.removeListener('new_project', cb)
 })
-
-// @ts-ignore
-window.makeArmorStandModel = makeArmorStandModel

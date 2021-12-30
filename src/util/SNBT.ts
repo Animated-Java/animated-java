@@ -822,5 +822,3 @@ export const SNBT = {
 		return workingCopy
 	},
 }
-
-Object.defineProperty(window, 'SNBT', { value: SNBT })

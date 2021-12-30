@@ -219,8 +219,6 @@ const Cache = new (class {
 	}
 })()
 
-window.ANIM_CACHE = Cache
-
 // clear the animation cache if the origin or rotation of a group changes
 const $original_func = NodePreviewController.prototype.updateTransform
 NodePreviewController.prototype.updateTransform = function (el) {
@@ -246,16 +244,23 @@ export async function renderAnimation(options) {
 		static_animation.uuid = store.get('static_animation_uuid')
 	}
 
-	const totalAnimationLength = Animator.animations.reduce((a,v) => a+v.length,0)
+	const totalAnimationLength = Animator.animations.reduce(
+		(a, v) => a + v.length,
+		0
+	)
 	// Accumulated animation length
 	let accAnimationLength = 0
-	const translatedMessage = translate('animatedJava.progress.animationRendering.text')
+	const translatedMessage = translate(
+		'animatedJava.progress.animationRendering.text'
+	)
 	const progressUpdaterID = setInterval(() => {
 		console.log(accAnimationLength, totalAnimationLength)
-		Blockbench.setStatusBarText(format(translatedMessage, {
-			current: accAnimationLength.toFixed(2),
-			total: totalAnimationLength.toFixed(2)
-		}))
+		Blockbench.setStatusBarText(
+			format(translatedMessage, {
+				current: accAnimationLength.toFixed(2),
+				total: totalAnimationLength.toFixed(2),
+			})
+		)
 		Blockbench.setProgress(accAnimationLength / totalAnimationLength, 50)
 	}, 50)
 	console.log(progressUpdaterID)
@@ -347,5 +352,4 @@ export async function renderAnimation(options) {
 		clearInterval(progressUpdaterID)
 		throw error
 	}
-
 }

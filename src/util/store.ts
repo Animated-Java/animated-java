@@ -10,7 +10,7 @@ const StoreRef_Watchers = Symbol.for('StoreRef.Watchers')
 const Store_IO = Symbol.for('Store.IO')
 
 class StoreRef {
-	unreference: () => void
+	unreference: () => void;
 	[StoreRef_Watchers] = [];
 	[StoreRef_UpdateReceiver] = (event) => {
 		this[StoreRef_Current] = event.value
@@ -91,7 +91,7 @@ export class Store extends Map {
 			parent: this,
 			target: this.hash(target),
 			value: this.get(target),
-			name: undefined
+			name: undefined,
 		})
 	}
 	getStore(name: string) {
@@ -132,8 +132,4 @@ export class Store extends Map {
 	}
 }
 // @ts-ignore
-window.ANIMATED_JAVA_DATA_STORE =
-	// @ts-ignore
-	window.ANIMATED_JAVA_DATA_STORE || new Store([], 'DATA_STORE')
-// @ts-ignore
-export const store = window.ANIMATED_JAVA_DATA_STORE
+export const store = new Store([], 'DATA_STORE')
