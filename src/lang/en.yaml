@@ -18,6 +18,19 @@ animatedJava.boneConfig.armAnimationEnabled: Enable Arm Animation
 
 animatedJava.popup.quickMessage.noExporterSelected: No Exporter Selected!
 
+animatedJava.dialog.miscError.title: "An Unknown Error has Occured in Animated Java"
+animatedJava.dialog.miscError.body: |-
+    <p>%errorMessage</p>
+    <hr/>
+    <textarea style="height: 256px">
+      %errorMessage
+      %errorStack
+
+      Build ID: %buildID
+    </textarea>
+    <p>Please report this error on <a href="https://github.com/Animated-Java/animated-java">Animated Java's github</a> with information on how to reproduce it and a copy of the error above. Thank you!</p>
+
+
 #? Errors/Warnings
 animatedJava.popup.warning.rigFolderUnused.title: Unused rig folder
 animatedJava.popup.warning.rigFolderUnused.body: |-

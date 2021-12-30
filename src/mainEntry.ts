@@ -2,7 +2,8 @@ import * as aj from './animatedJava'
 
 import './lifecycle'
 import './rotationSnap'
-import { format } from './modelFormat'
+import { format as modelFormat } from './modelFormat'
+import { format } from './util/replace'
 import { DefaultSettings, settings } from './settings'
 import { CustomError } from './util/customError'
 import { ERROR } from './util/errors'
@@ -29,7 +30,7 @@ import {
 	computeVariantTextureOverrides,
 	computeBones,
 	computeVariantModels,
-	computeScaleModelOverrides
+	computeScaleModelOverrides,
 } from './modelComputation'
 
 import { intl } from './util/intl'
@@ -88,20 +89,30 @@ export const BuildModel = (callback: any, options: any) => {
 			.catch((e) => {
 				if (e.options && !e.options.silent) {
 					new Dialog(
-						e.options || {
-							title: 'An Error Occurred',
-							lines: [
-								`<p>An error has occurred, see below for more info.</p>`,
-								`<p>build:${process.env.BUILD_ID}</p>`,
-								`<hr/>`,
-								`<p>please send the error log below to the devs alongside the model file in its current state if possible.</p>`,
-								`<textarea>` +
-									`BUILD: ${process.env.BUILD_ID}\n` +
-									`ERROR:\n` +
-									e.stack +
-									`</textarea>`,
-							],
-						}
+						Object.assign(
+							{
+								id: 'animatedJava.dialog.miscError',
+								title: translate(
+									'animatedJava.dialog.miscError.title'
+								),
+								width: 1024,
+								height: 512,
+								cancelEnabled: false,
+								lines: [
+									format(
+										translate(
+											'animatedJava.dialog.miscError.body'
+										),
+										{
+											buildID: process.env.BUILD_ID,
+											errorMessage: e.options.message,
+											errorStack: e.stack,
+										}
+									),
+								],
+							},
+							e.options
+						)
 					).show()
 				}
 
@@ -177,7 +188,11 @@ async function computeAnimationData(
 		variantModels: aj.VariantModels
 		variantTouchedModels: aj.variantTouchedModels
 	}
-	const scaleModelOverrides = computeScaleModelOverrides(models, bones, animations)
+	const scaleModelOverrides = computeScaleModelOverrides(
+		models,
+		bones,
+		animations
+	)
 
 	// const flatVariantModels = {}
 	// Object.values(variantModels).forEach(variant => Object.entries(variant).forEach(([k,v]) => flatVariantModels[k] = v))
@@ -212,16 +227,16 @@ import { show_settings } from './ui/dialogs/settings'
 const menu: any = new BarMenu(
 	'animated_java',
 	[],
-	() => Format.id === format.id
+	() => Format.id === modelFormat.id
 )
 menu.label.style.display = 'none'
 document.querySelector('#menu_bar').appendChild(menu.label)
 // @ts-ignore
 Blockbench.on('select_project', () => {
 	queueMicrotask(() => {
-		console.log('selected', Format.id !== format.id)
+		console.log('selected', Format.id !== modelFormat.id)
 		menu.label.style.display =
-			Format.id !== format.id ? 'none' : 'inline-block'
+			Format.id !== modelFormat.id ? 'none' : 'inline-block'
 	})
 })
 // @ts-ignore
@@ -234,7 +249,7 @@ MenuBar.addAction(
 		icon: 'settings',
 		category: 'animated_java',
 		name: translate('animatedJava.menubar.settings.name'),
-		condition: () => format.id === Format.id,
+		condition: () => modelFormat.id === Format.id,
 		click: function () {
 			show_settings()
 		},
@@ -247,7 +262,7 @@ MenuBar.addAction(
 		name: translate('animatedJava.menubar.export.name'),
 		id: 'animatedJava_export',
 		icon: 'insert_drive_file',
-		condition: () => format.id === Format.id,
+		condition: () => modelFormat.id === Format.id,
 		click: () => {
 			// Call the selected exporter.
 			// @ts-ignore

@@ -23,27 +23,29 @@ const openBoneConfig = CustomAction('animatedJava.BoneConfig', {
 					label: translate('animatedJava.boneConfig.boneNbt'),
 					value: selected.nbt,
 				},
-				armAnimationEnabled: {
-					type: 'checkbox',
-					label: translate(
-						'animatedJava.boneConfig.armAnimationEnabled'
-					),
-					value: false,
-				},
+				// armAnimationEnabled: {
+				// 	type: 'checkbox',
+				// 	label: translate(
+				// 		'animatedJava.boneConfig.armAnimationEnabled'
+				// 	),
+				// 	value: false,
+				// },
 			},
 			onConfirm: (formData: any) => {
 				console.log(formData)
 				selected.nbt = formData.nbt
-				selected.armAnimationEnabled = formData.armAnimationEnabled
+				// selected.armAnimationEnabled = formData.armAnimationEnabled
 				dialog.hide()
 			},
 		}).show()
 		// @ts-ignore
 		document.querySelector('#nbt').value = selected.nbt
 		// console.log(selected.armAnimationEnabled)
+		// TODO Add armor_stand arm animation
 		// @ts-ignore
-		document.querySelector('#armAnimationEnabled').checked =
-			selected.armAnimationEnabled
+		// document.querySelector('#armAnimationEnabled').checked =
+		// 	selected.armAnimationEnabled
+		selected.armAnimationEnabled = false
 	},
 })
 
