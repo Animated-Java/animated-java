@@ -72,7 +72,6 @@ bus.on(EVENTS.LIFECYCLE.LOAD, () => {
 							visboxs = []
 						}
 						if (parent && parent.name !== 'SCENE') {
-							debugger
 							const b = createBox()
 							parent.mesh.add(b)
 							parent.mesh.remove(b)
@@ -95,7 +94,6 @@ bus.on(EVENTS.LIFECYCLE.LOAD, () => {
 					const old = Array.from(last_mult || [])
 					items.forEach((item) => {
 						if (!last_mult || !last_mult.has(item)) {
-							debugger
 							item.visbox = createBox()
 							visboxs.push(item.visbox)
 							item.mesh.add(item.visbox)

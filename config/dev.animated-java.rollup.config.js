@@ -7,6 +7,8 @@ import ReactIs from 'react-is'
 import url from '@rollup/plugin-url'
 import yaml from '@rollup/plugin-yaml'
 import typescript from 'rollup-plugin-typescript2'
+import replace from 'rollup-plugin-replace'
+
 export default {
 	input: 'src/animatedJava.ts',
 	output: {
@@ -14,6 +16,9 @@ export default {
 		format: 'cjs',
 	},
 	plugins: [
+		replace({
+			'process.env.NODE_ENV': JSON.stringify('developement'),
+		}),
 		typescript(),
 		yaml(),
 		url({

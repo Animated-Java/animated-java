@@ -1,7 +1,8 @@
 import * as THREE from 'three'
 declare global {
 	var AJ: any
-	var THREE: typeof import("d:/Dropbox/Projects/github-repos/animated-java/node_modules/@types/three/index")
+	var THREE: typeof import('d:/Dropbox/Projects/github-repos/animated-java/node_modules/@types/three/index')
+	var konsole: Console
 	// var NodePreviewController: any
 }
 export { AJ, THREE }

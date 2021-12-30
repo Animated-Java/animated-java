@@ -24,6 +24,7 @@ const ANIMATED_JAVA = {
 	store: store,
 	format: format,
 	registerSettingRenderer,
+	logging: false, //enable logging in production
 }
 delete window['ANIMATED_JAVA']
 // Object.defineProperty(window., 'ANIMATED_JAVA', {
