@@ -30,5 +30,12 @@ export function hashAnim(a) {
 			kf(i.timeline)
 		}
 	})
+	hash.update('loop;' + a.loop)
+	hash.update('len;' + a.length)
+	hash.update('loopdel;' + a.loop_delay)
+	hash.update('startdel;' + a.start_delay)
+	hash.update('blndw;' + a.blend_weight)
+	hash.update('snp;' + a.snapping)
+	hash.update('animtup;' + a.anim_time_update)
 	return hash.digest('hex')
 }
