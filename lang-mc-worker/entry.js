@@ -465,6 +465,7 @@ consumer.Generic = list({
 			match: ({ token }) =>
 				token.startsWith('execute') && token.indexOf('run') != -1,
 			exec(file, tokens, func, parent, functionalparent) {
+				debugger
 				const _token = shift_t(tokens)
 				const { token } = _token
 				const command = token
@@ -474,9 +475,7 @@ consumer.Generic = list({
 					.substr(0, token.lastIndexOf('run') + 3)
 					.trim()
 				let useAltParent = true
-				let isCommand = true
-				if (command) {
-					if (command === '{') isCommand = false
+				if (!command) {
 					useAltParent = false
 					let lastInLine = _token
 					for (let i = 0; i < tokens.length; i++) {
@@ -487,6 +486,7 @@ consumer.Generic = list({
 						}
 					}
 					const temp = []
+					let inner_count = 0
 					let count = 1
 					if (lastInLine && lastInLine.token === '{') {
 						let tok = shift_t(tokens)
@@ -495,22 +495,27 @@ consumer.Generic = list({
 							(tokens.length && count) ||
 							tok.line == tokens[0].line
 						) {
-							if (tokens[0].token === '{') count++
 							if (tokens[0].token === '}') count--
+							if (tokens[0].token === '{') count++
+							else if (count > 0) inner_count++
 							tok = shift_t(tokens)
 							temp.push(tok)
 						}
 					}
-					let copy = copy_token(_token, _token.args)
-					tokens.unshift(...temp, copy)
-					copy.token = '}'
-					copy = copy_token(_token, _token.args)
-					tokens.unshift(copy)
-					copy.token = command
-					copy = copy_token(_token, _token.args)
-					tokens.unshift(copy)
-					copy.token = '{'
-					LB_TOTAL += 3
+					if (inner_count === 1) {
+						func.addCommand(execute + ' ' + temp[1].token)
+						return
+					}
+					// let copy = copy_token(_token, _token.args)
+					// copy.token = '}'
+					// copy = copy_token(_token, _token.args)
+					// tokens.unshift(copy)
+					// copy.token = command
+					// copy = copy_token(_token, _token.args)
+					// tokens.unshift(copy)
+					// copy.token = '{'
+					tokens.unshift(...temp)
+					LB_TOTAL += temp.length
 					const innerFunc = consumer.Block(
 						file,
 						tokens,
