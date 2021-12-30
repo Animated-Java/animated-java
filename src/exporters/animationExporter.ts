@@ -961,7 +961,7 @@ async function animationExport(data: any) {
 			break
 	}
 
-	Blockbench.showQuickMessage('Model Exported Successfully')
+	Blockbench.showQuickMessage(translate('animatedJava_exporter_animationExporter.successfullyExported'))
 }
 
 const Exporter = (AJ: any) => {
