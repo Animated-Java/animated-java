@@ -148,7 +148,7 @@ animatedJava_exporter_animationExporter.successfullyExported: Export Successful!
 animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.title: Zero Length Animation
 animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.body:
     |-
-    One of your animations is too short! Animations must be at least 0.05 seconds long (1 game tick)
+    The animation %animationName is too short! Animations must be at least 0.05 seconds (or 1 game tick) long
 
 animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.title: MCB file path not defined
 animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.body: You must define a path for the MCB file in the Animation Exporter settings before exporting!

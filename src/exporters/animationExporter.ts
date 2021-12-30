@@ -534,9 +534,11 @@ async function createMCFile(
 					title: translate(
 						'animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.title'
 					),
-					lines: translate(
+					lines: format(translate(
 						'animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.body'
-					)
+					), {
+						animationName: animation.name
+					})
 						.split('\n')
 						.map((line: string) => `<p>${line}</p>`),
 					onConfirm() {
