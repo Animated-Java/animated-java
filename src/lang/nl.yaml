@@ -2,217 +2,220 @@
 animatedJava: Animated Java
 animatedJava.menubar.export.name: Export Model
 
-panel.states: Model Variants
+panel.states: Modelvarianten
 
-animatedJava.settings.global: '(Global)'
-animatedJava.settings.optional: '(Optional)'
-animatedJava.settings.invalidSetting.generic: 'Setting value invalid'
+animatedJava.settings.global: '(Globaal)'
+animatedJava.settings.optional: '(Optioneel)'
+animatedJava.settings.invalidSetting.generic: 'Instellingswaarde is ongeldig'
 
-animatedJava.boneConfig.title: Bone Config
-animatedJava.boneConfig.boneNbt: Bone NBT
-animatedJava.boneConfig.armAnimationEnabled: Enable Arm Animation
+animatedJava.boneConfig.title: Bot Configuratie
+animatedJava.boneConfig.boneNbt: Bot NBT
+animatedJava.boneConfig.armAnimationEnabled: Schakel Armanimatie in
 
-animatedJava.popup.quickMessage.noExporterSelected: No Exporter Selected!
+animatedJava.popup.quickMessage.noExporterSelected: Geen Exporter geselecteerd!
 
-animatedJava.popup.warning.rigFolderUnused.title: Unused rig folder
+animatedJava.popup.warning.rigFolderUnused.title: Ongebruikte animatie rigmap!
 animatedJava.popup.warning.rigFolderUnused.body: |-
-    This folder does not contain any existing rigs.
-    Are you sure you want to use this folder?
+    Deze map bevat geen rigs.
+    Weet je zeker dat je deze map wilt gebruiken?
 
-animatedJava.popup.error.rigFolderAlreadyUsedByOther.title: Chosen rig folder already in use
+animatedJava.popup.error.rigFolderAlreadyUsedByOther.title: Gekozen rigmap is al in gebruik
 animatedJava.popup.error.rigFolderAlreadyUsedByOther.body: |-
-    This folder already contains a rig for another model.
-    Are you sure you want to overwrite the existing rig?
+    Deze map bevat al een rig for een ander model.
+    Weet je zeker dat je de bestaande rig in de map over wilt schrijven?
 
-animatedJava.popup.error.transparentTexturePathNotFound.title: Transparent Texture Path Not Defined
+animatedJava.popup.error.transparentTexturePathNotFound.title: Transparente Texture pad is niet gedefinieerd
 animatedJava.popup.error.transparentTexturePathNotFound.body: |-
-    Looks like you're trying to use variants with transparent textures without defining a texture path!
-    You'll need to configure the transparent texture path in the settings before you can export.
+    Het lijkt erop dat je modelvarianten wilt gebruiken met transparente textures zonder een texture pad te definiëren!
+    Je moet de transparente texture pad in de instellingen configureren voordat je kunt exporteren.
 
-animatedJava.popup.error.predicateFilePathUndefined.title: Predicate File Path Undefined
+animatedJava.popup.error.predicateFilePathUndefined.title: Predicate bestandspad is niet gedefinieerd
 animatedJava.popup.error.predicateFilePathUndefined.body: |-
-    You must define a predicate file path in the settings before you can export.
+    Je moet een predicate bestandspad in de instellingen definiëren voordat je kunt exporteren.
 
-animatedJava.popup.error.rigModelsExportFolder.title: Rig Model Folder Undefined
+animatedJava.popup.error.rigModelsExportFolder.title: Rig Model Map is niet gedefinieerd
 animatedJava.popup.error.rigModelsExportFolder.body: |-
+    Je moet een bestandspad in de instellingen configureren voor de rig model map voordat je kunt exporteren.
     You must define a rig model folder path in settings before you can export.
 
-animatedJava.progress.animationRendering.text: Rendering Animations... %currents/%totals
+animatedJava.progress.animationRendering.text: Animaties aan het renderen... %currents/%totals
 
 #? varients panel
-varients.ui.addVarient: Add Varient
-varients.ui.addVarient.description: Adds a new Varient to the model
-varients.ui.back: Back
+varients.ui.addVarient: Voeg modelvariant toe
+varients.ui.addVarient.description: Voegt een nieuwe modelvariant voor de huidige model toe
+varients.ui.back: Terug
 
 #? AJ Settings
 animatedJava.menubar.dropdown.name: Animated Java
-animatedJava.menubar.settings.name: Settings
+animatedJava.menubar.settings.name: Instellingen
 animatedJava.menubar.exporterList.name: Exporters
 
-animatedJava.setting.projectName.name: Project Name
-animatedJava.setting.projectName.description: The unique ID of your project. Make sure you set this!
+animatedJava.setting.projectName.name: Project Naam
+animatedJava.setting.projectName.description: De unieke naam van jouw project. Vergeet dit niet te zetten!
 
-animatedJava.setting.exporter.name: Exporter
-animatedJava.setting.exporter.description: Which export format to use for this project
+animatedJava.setting.exporter.name: Exporteerder
+animatedJava.setting.exporter.description: Welk exportformaat wil je gebruiken voor het huidige project?
 
-animatedJava.setting.rigItem.name: Rig Item
-animatedJava.setting.rigItem.description: The item that will be used to display the models on the armor_stands
+animatedJava.setting.rigItem.name: Rig Voorwerp
+animatedJava.setting.rigItem.description: Het voorwerp dat als display op de armor stands wordt gebruikt.
 
-animatedJava.setting.rigModelsExportFolder.name: Rig Models Export Folder
-animatedJava.setting.rigModelsExportFolder.description: The folder that all of the rig's models will be dumped into
+animatedJava.setting.rigModelsExportFolder.name: Map voor geëxporteerde rig modellen
+animatedJava.setting.rigModelsExportFolder.description: De map die alle rig modellen van het huidige project zal bevatten
 
-animatedJava.setting.predicateFilePath.name: Rig Item File
-animatedJava.setting.predicateFilePath.description: The item model file of the rig item
+animatedJava.setting.predicateFilePath.name: Rig Voorwerpsbestand
+animatedJava.setting.predicateFilePath.description: Het bestand voor het rig voorwerp
 
-animatedJava.setting.transparentTexturePath.name: Transparent Texture Path
-animatedJava.setting.transparentTexturePath.description: A transparent texture for adding transparency to variants. Only needed if you're using transparency in your variants.
+animatedJava.setting.transparentTexturePath.name: Bestandspad voor Transparente Texture
+animatedJava.setting.transparentTexturePath.description: Een transparente texture, die gebruikt wordt om transparantie toe te voegen aan modelvarianten; wordt alleen maar gebruikt als je transparantie gebruikt in je modelvarianten.
 
-animatedJava.setting.useCache.name: Use Animation Cache
-animatedJava.setting.useCache.description: Only re-render changed animations
+animatedJava.setting.useCache.name: Gebruik Animatie Cache
+animatedJava.setting.useCache.description: Render alleen de veranderde animaties opnieuw
 
-animatedJava.setting.cacheMode.name: Animation Cache Mode
+animatedJava.setting.cacheMode.name: Animatie Cache Modus
 animatedJava.setting.cacheMode.description: |-
-    The Animation Cache lets us only re-render animations that have been changed since the last export. Making repeated exports much faster, especially on larger models.
-    - Memory mode is faster but uses more Memory to store the cache.
-    - Disk mode is slower but saves the cache to disk to save on Memory usage.
-animatedJava.setting.cacheMode.memory.name: Memory Mode
-animatedJava.setting.cacheMode.file.name: Disk Mode
+    The Animatie Cache zorgt ervoor dat Animated Java slechts animaties die veranderd zijn sinds de laatste export opnieuw rendert. Dit zorgt voor snellere exporttijden, vooral bij grotere modellen.
+    - Geheugenmodus is sneller, maar gebruikt meer geheugen om de cache op te slaan.
+    - Diskmodus is langzamer, maar slaat de cache op de disk waardoor er minder geheugen verbruikt wordt.
+animatedJava.setting.cacheMode.memory.name: Geheugenmodus
+animatedJava.setting.cacheMode.file.name: Diskmodus
 
-animatedJava.setting.boundingBoxRenderMode.name: Bone Size Limit Box
+animatedJava.setting.boundingBoxRenderMode.name: Box voor de maximumgrootte van een bot
 animatedJava.setting.boundingBoxRenderMode.description: |-
-    Configure or disable the bone size limit box(es).
-    - Single will only display one box at a time.
-    - Multiple will display a box for every bone you've selected.
-    - Disabled will disable it entirely.
-animatedJava.setting.boundingBoxRenderMode.single.name: Single
-animatedJava.setting.boundingBoxRenderMode.many.name: Multiple
-animatedJava.setting.boundingBoxRenderMode.none.name: Disabled
+    Configureer or schakel de box(en) voor de maximumgrootte van een bot uit
+    - 'Enkel' toont één box tegelijk.
+    - 'Meerdere' toont voor elke geselecteerde bot een box.
+    - 'Uitgeschakeld' toont geen box.
+animatedJava.setting.boundingBoxRenderMode.single.name: Enkel
+animatedJava.setting.boundingBoxRenderMode.many.name: Meerdere
+animatedJava.setting.boundingBoxRenderMode.none.name: Uitgeschakeld
 
 #? Statue Exporter
-animatedJava_exporter_statueExporter: Statue Exporter
-animatedJava_exporter_statueExporter.exportingDataPackProgress: Generating Data Pack... %progress%
-animatedJava_exporter_statueExporter.writingDataPackProgress: Writing Data Pack to disk... %progress% | Writing %fileName
+animatedJava_exporter_statueExporter: Standbeeld Exporteerder
+animatedJava_exporter_statueExporter.exportingDataPackProgress: Data Pack aan het genereren... %progress%
+animatedJava_exporter_statueExporter.writingDataPackProgress: Data Pack naar de disk aan het schrijven... %progress% | %fileName aan het schrijven
 
-animatedJava_exporter_statueExporter.setting.rootEntityType.name: Root Entity Type
-animatedJava_exporter_statueExporter.setting.rootEntityType.description: The entity type to use as the root entity for the statue. Should probably be a stationary entity.
+animatedJava_exporter_statueExporter.setting.rootEntityType.name: Type voor de basisentiteit
+animatedJava_exporter_statueExporter.setting.rootEntityType.description: De type voor de basisentiteit van het standbeeld; werkt het beste met een stilstaande entiteit.
 
-animatedJava_exporter_statueExporter.setting.rootEntityNbt.name: Root Entity NBT
-animatedJava_exporter_statueExporter.setting.rootEntityNbt.description: The NBT data of the root entity
+animatedJava_exporter_statueExporter.setting.rootEntityNbt.name: Basisentiteit NBT
+animatedJava_exporter_statueExporter.setting.rootEntityNbt.description: De NBT voor de basisentiteit
 
-animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.title: MCB file path not defined
-animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.body: You must define a path for the MCB file in the Statue Exporter settings before exporting!
+animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.title: MCB bestandspad is niet gedefinieerd
+animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.body: Je moet een bestandspad in de instellingen van de Standbeeld Exporteerder definiëren voor het MCB bestand voordat je exporteert!
 
 # animatedJava_exporter_statueExporter.setting.boneType.name: Bone Type
 # animatedJava_exporter_statueExporter.setting.boneType.description: AEC Stack provides more precise positional movement at the cost of doubling the amount of entities per bone.
 # animatedJava_exporter_statueExporter.setting.boneType.aecStack.name: AEC Stack
 # animatedJava_exporter_statueExporter.setting.boneType.armorStand.name: Armor Stand
 
-animatedJava_exporter_statueExporter.setting.markerArmorStands.name: Marker Armor Stands
-animatedJava_exporter_statueExporter.setting.markerArmorStands.description: When enabled all armor_stands used to display the rig will have no hitbox or collision.
+animatedJava_exporter_statueExporter.setting.markerArmorStands.name: Marker instelling voor armor stands
+animatedJava_exporter_statueExporter.setting.markerArmorStands.description: Wanneer deze instelling ingeschakeld is, zullen alle armor stands van de rig geen hitbox of collision hebben.
 
 animatedJava_exporter_statueExporter.setting.modelTag.name: Model Tag
-animatedJava_exporter_statueExporter.setting.modelTag.description: The tag used to select the model
+animatedJava_exporter_statueExporter.setting.modelTag.description: The tag die gebruikt wordt om het model te selecteren
 
 animatedJava_exporter_statueExporter.setting.rootTag.name: Root Tag
-animatedJava_exporter_statueExporter.setting.rootTag.description: The tag used to select the statue's root entity
+animatedJava_exporter_statueExporter.setting.rootTag.description: The tag die gebruikt wordt om de basisentiteit van het standbeeld te selecteren
 
-animatedJava_exporter_statueExporter.setting.allBonesTag.name: All Bones Tag
-animatedJava_exporter_statueExporter.setting.allBonesTag.description: The tag used to select any or all of the statue's bones
+animatedJava_exporter_statueExporter.setting.allBonesTag.name: Alle botten Tag
+animatedJava_exporter_statueExporter.setting.allBonesTag.description: The tag die gebruikt wordt om alle botten van het standbeeld te selecteren
 
-animatedJava_exporter_statueExporter.setting.individualBoneTag.name: Individual Bone Tag
-animatedJava_exporter_statueExporter.setting.individualBoneTag.description: The tag used to select a specific bone by name
+animatedJava_exporter_statueExporter.setting.individualBoneTag.name: Individuele Bot Tag
+animatedJava_exporter_statueExporter.setting.individualBoneTag.description: The tag die gebruikt wordt om specifieke botten van het standbeeld te selecteren
 
-animatedJava_exporter_statueExporter.setting.internalScoreboardObjective.name: Internal Scoreboard
-animatedJava_exporter_statueExporter.setting.internalScoreboardObjective.description: The name of the scoreboard objective used for internal calculations
+animatedJava_exporter_statueExporter.setting.internalScoreboardObjective.name: Interne scoreboard
+animatedJava_exporter_statueExporter.setting.internalScoreboardObjective.description: De naam van de scoreboard objective die gebruikt wordt voor interne berekeningen
 
 animatedJava_exporter_statueExporter.setting.idScoreboardObjective.name: Model ID Scoreboard
-animatedJava_exporter_statueExporter.setting.idScoreboardObjective.description: The name of the scoreboard objective used to identify which entities belong to which model instance
+animatedJava_exporter_statueExporter.setting.idScoreboardObjective.description: De naam van de scoreboard objective die gebruikt wordt voor om entiteiten van verschillende instanties van hetzelfde model te onderscheiden
 
-animatedJava_exporter_statueExporter.setting.exportMode.name: Export Mode
-animatedJava_exporter_statueExporter.setting.exportMode.description: What kind of format to export to. Vanilla will export a normal Data Pack and Resource Pack. MCB will export a Resource Pack and .mc file for the lang-mc compiler
+animatedJava_exporter_statueExporter.setting.exportMode.name: Exporteer Modus
+animatedJava_exporter_statueExporter.setting.exportMode.description: In welk formaat je exporteert. Vanilla zal een normale Data Pack en Resource Pack exporteren. MCB zal een resource pack exporteren en een .mc bestand voor de lang-mc compiler
 animatedJava_exporter_statueExporter.setting.exportMode.vanilla.name: Vanilla
 animatedJava_exporter_statueExporter.setting.exportMode.mcb.name: MCB
 
-animatedJava_exporter_statueExporter.setting.mcbFilePath.name: Lang-mc file
-animatedJava_exporter_statueExporter.setting.mcbFilePath.description: The path to export the .mc file to
+animatedJava_exporter_statueExporter.setting.mcbFilePath.name: Lang-mc bestand
+animatedJava_exporter_statueExporter.setting.mcbFilePath.description: Het bestandspad waar het .mc bestand naar geëxporteerd wordt
 
 animatedJava_exporter_statueExporter.setting.dataPackPath.name: Data Pack
-animatedJava_exporter_statueExporter.setting.dataPackPath.description: The path to export the generated Data Pack to.
-animatedJava_exporter_statueExporter.popup.error.dataPackPathNotDefined.title: Data Pack file path undefined
-animatedJava_exporter_statueExporter.popup.error.dataPackPathNotDefined.body: You must define a data pack path in settings before you can export.
+animatedJava_exporter_statueExporter.setting.dataPackPath.description: Het bestandspad waar de gegenereerde Data Pack naar geëxporteerd wordt.
+animatedJava_exporter_statueExporter.popup.error.dataPackPathNotDefined.title: Data Pack bestandspad is niet gedefinieerd
+animatedJava_exporter_statueExporter.popup.error.dataPackPathNotDefined.body: Je moet een bestandspad voor de data pack definiëren in de instellingen voordat je exporteert.
 
 #? Animation Exporter
-animatedJava_exporter_animationExporter: Animation Exporter
-animatedJava_exporter_animationExporter.exportingDataPackProgress: Generating Data Pack... %progress%
-animatedJava_exporter_animationExporter.writingDataPackProgress: Writing Data Pack to disk... %progress% | Writing %fileName
+animatedJava_exporter_animationExporter: Animatie Exporteerder
+animatedJava_exporter_animationExporter.exportingDataPackProgress: Data Pack aan het genereren... %progress%
+animatedJava_exporter_animationExporter.writingDataPackProgress: Data Pack naar de disk aan het schrijven... %progress% | %fileName aan het schrijven
 
-animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.title: Zero Length Animation
+animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.title: Animatie met te korte duur
 animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.body:
     |-
-    One of your animations is too short! Animations must be at least 0.05 seconds long (1 game tick)
+    Een van je animaties is te kort! Animaties moeten minimaal 0.05 secondes lang zijn (1 game tick)
 
-animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.title: MCB file path not defined
-animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.body: You must define a path for the MCB file in the Animation Exporter settings before exporting!
+animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.title: MCB bestandspad is niet gedefinieerd
+animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.body: Je moet een bestandspad voor het MCB bestand definiëren in de instellingen van de Animatie Exporteerder voordat je exporteert!
 
-animatedJava_exporter_animationExporter.setting.rootEntityType.name: Root Entity Type
-animatedJava_exporter_animationExporter.setting.rootEntityType.description: The entity type to use as the root entity for the rig
+animatedJava_exporter_animationExporter.setting.rootEntityType.name: Type voor de basisentiteit
+animatedJava_exporter_animationExporter.setting.rootEntityType.description: De type voor de basisentiteit van de rig
 
-animatedJava_exporter_animationExporter.setting.rootEntityNbt.name: Root Entity NBT
-animatedJava_exporter_animationExporter.setting.rootEntityNbt.description: The NBT data of the root entity
+animatedJava_exporter_animationExporter.setting.rootEntityNbt.name: Basisentiteit NBT
+animatedJava_exporter_animationExporter.setting.rootEntityNbt.description: De NBT voor de basisentiteit
 
-animatedJava_exporter_animationExporter.setting.boneType.name: Bone Type
-animatedJava_exporter_animationExporter.setting.boneType.description: AEC Stack provides more precise positional movement at the cost of doubling the amount of entities per bone.
+animatedJava_exporter_animationExporter.setting.boneType.name: Bot Type
+animatedJava_exporter_animationExporter.setting.boneType.description: AEC Stack biedt preciezere positiebeweging aan ten koste van het verdubbelen van het aantal entiteiten per bot.
 animatedJava_exporter_animationExporter.setting.boneType.aecStack.name: AEC Stack
 animatedJava_exporter_animationExporter.setting.boneType.armorStand.name: Armor Stand
 
-animatedJava_exporter_animationExporter.setting.markerArmorStands.name: Marker Armor Stands
-animatedJava_exporter_animationExporter.setting.markerArmorStands.description: When enabled all armor_stands used to display the rig will have no hitbox or collision.
+animatedJava_exporter_animationExporter.setting.markerArmorStands.name: Marker instelling voor armor stands
+animatedJava_exporter_animationExporter.setting.markerArmorStands.description: Wanneer deze instelling ingeschakeld is, zullen alle armor stands van de rig geen hitbox of collision hebben.
 
 animatedJava_exporter_animationExporter.setting.modelTag.name: Model Tag
-animatedJava_exporter_animationExporter.setting.modelTag.description: The tag used to select the model
+animatedJava_exporter_animationExporter.setting.modelTag.description: The tag die gebruikt wordt om het model te selecteren
 
 animatedJava_exporter_animationExporter.setting.rootTag.name: Root Tag
-animatedJava_exporter_animationExporter.setting.rootTag.description: The tag used to select the rig's root entity
+animatedJava_exporter_animationExporter.setting.rootTag.description: The tag die gebruikt wordt om de basisentiteit van het standbeeld te selecteren
 
-animatedJava_exporter_animationExporter.setting.allBonesTag.name: All Bones Tag
-animatedJava_exporter_animationExporter.setting.allBonesTag.description: The tag used to select any or all of the rig's bones
+animatedJava_exporter_animationExporter.setting.allBonesTag.name: Alle botten Tag
+animatedJava_exporter_animationExporter.setting.allBonesTag.description: The tag die gebruikt wordt om alle botten van het standbeeld te selecteren
 
-animatedJava_exporter_animationExporter.setting.boneModelDisplayTag.name: Bone Model Display Tag
-animatedJava_exporter_animationExporter.setting.boneModelDisplayTag.description: The tag used to select the entity that the item model is displayed on.
+animatedJava_exporter_animationExporter.setting.boneModelDisplayTag.name: Bot Model Display Tag
+animatedJava_exporter_animationExporter.setting.boneModelDisplayTag.description: The tag die gebruikt wordt om de entiteit te selecteren waar het voorwerpmodel op wordt getoond.
 
-animatedJava_exporter_animationExporter.setting.individualBoneTag.name: Individual Bone Tag
-animatedJava_exporter_animationExporter.setting.individualBoneTag.description: The tag used to select a specific bone by name
+animatedJava_exporter_animationExporter.setting.individualBoneTag.name: Individuele Bot Tag
+animatedJava_exporter_animationExporter.setting.individualBoneTag.description: The tag die gebruikt wordt om specifieke botten van het standbeeld te selecteren
 
-animatedJava_exporter_animationExporter.setting.internalScoreboardObjective.name: Internal Scoreboard
-animatedJava_exporter_animationExporter.setting.internalScoreboardObjective.description: The name of the scoreboard objective used for internal calculations
+animatedJava_exporter_animationExporter.setting.internalScoreboardObjective.name: Interne scoreboard
+animatedJava_exporter_animationExporter.setting.internalScoreboardObjective.description: De naam van de scoreboard objective die gebruikt wordt voor interne berekeningen
 
-animatedJava_exporter_animationExporter.setting.idScoreboardObjective.name: Model ID scoreboard objective
-animatedJava_exporter_animationExporter.setting.idScoreboardObjective.description: The name of the scoreboard objective used to identify which entities belong to which model instance
+animatedJava_exporter_animationExporter.setting.idScoreboardObjective.name: Model ID Scoreboard
+animatedJava_exporter_animationExporter.setting.idScoreboardObjective.description: De naam van de scoreboard objective die gebruikt wordt voor om entiteiten van verschillende instanties van hetzelfde model te onderscheiden
 
 animatedJava_exporter_animationExporter.setting.frameScoreboardObjective.name: Frame Scoreboard
-animatedJava_exporter_animationExporter.setting.frameScoreboardObjective.description: The name of the scoreboard objective used to track which frame of an animation should be played next
+animatedJava_exporter_animationExporter.setting.frameScoreboardObjective.description: De naam van de scoreboard objective die gebruikt wordt om bij te houden welke frame als volgt komt
 
-animatedJava_exporter_animationExporter.setting.animatingFlagScoreboardObjective.name: Animation Flag Scoreboard
-animatedJava_exporter_animationExporter.setting.animatingFlagScoreboardObjective.description: The name of the scoreboard objective used to query if a rig is actively animating
+animatedJava_exporter_animationExporter.setting.animatingFlagScoreboardObjective.name: Animatie Vlag Scoreboard
+animatedJava_exporter_animationExporter.setting.animatingFlagScoreboardObjective.description: De naam van de scoreboard objective die gebruikt wordt om bij te houden of een rig momenteel geanimeerd is.
 
-animatedJava_exporter_animationExporter.setting.animationLoopModeScoreboardObjective.name: Animation Loop Mode Scoreboard
-animatedJava_exporter_animationExporter.setting.animationLoopModeScoreboardObjective.description: The name of the scoreboard objective used to control the looping behaviour of each animation
+animatedJava_exporter_animationExporter.setting.animationLoopModeScoreboardObjective.name: AnimatieLoop Modus Scoreboard
+animatedJava_exporter_animationExporter.setting.animationLoopModeScoreboardObjective.description: De naam van de scoreboard objective die gebruikt wordt om de het loopgedrag van elke animatie controlleert
 
-animatedJava_exporter_animationExporter.setting.exportMode.name: Export Mode
-animatedJava_exporter_animationExporter.setting.exportMode.description: What kind of format to export to. Vanilla will export a normal Data Pack and Resource Pack. MCB will export a Resource Pack and .mc file for the lang-mc compiler
+animatedJava_exporter_animationExporter.setting.exportMode.name: Exporteer Modus
+animatedJava_exporter_animationExporter.setting.exportMode.description: In welk formaat je exporteert. Vanilla zal een normale Data Pack en Resource Pack exporteren. MCB zal een resource pack exporteren en een .mc bestand voor de lang-mc compiler
 animatedJava_exporter_animationExporter.setting.exportMode.vanilla.name: Vanilla
 animatedJava_exporter_animationExporter.setting.exportMode.mcb.name: MCB
 
-animatedJava_exporter_animationExporter.setting.mcbFilePath.name: Lang-mc File Path
-animatedJava_exporter_animationExporter.setting.mcbFilePath.description: The path to export the .mc file to
-animatedJava_exporter_animationExporter.setting.mcbFilePath.invalidPopup.text: Invalid MCB File Path! The MCB file must be called %projectName.mc (project_name.mc)
+animatedJava_exporter_animationExporter.setting.mcbFilePath.name: Lang-mc bestand
+animatedJava_exporter_animationExporter.setting.mcbFilePath.description: Het bestandspad waar het .mc bestand naar geëxporteerd wordt
+animatedJava_exporter_animationExporter.setting.mcbFilePath.invalidPopup.text: Ongeldig MCB bestandspad! Het MCB bestand moet %projectName.mc (project_name.mc) genoemd worden!
 
-animatedJava_exporter_animationExporter.setting.mcbConfigPath.name: Lang-mc config.json Path
+animatedJava_exporter_animationExporter.setting.mcbConfigPath.name: Lang-mc config.json bestandspad
 animatedJava_exporter_animationExporter.setting.mcbConfigPath.description: |-
-    Exports the default MCB config for Animated Java
-    WARNING! Will overwrite existing config.json
+    Exporteert de standaard MCB config voor Animated Java
+    WAARSCHUWING! Dit zal de huidige config.json overschrijven
 
 animatedJava_exporter_animationExporter.setting.dataPackPath.name: Data Pack
-animatedJava_exporter_animationExporter.setting.dataPackPath.description: The path to export the generated Data Pack to.
-animatedJava_exporter_animationExporter.popup.error.dataPackPathNotDefined.title: Data Pack file path undefined
-animatedJava_exporter_animationExporter.popup.error.dataPackPathNotDefined.body: You must define a data pack path in settings before you can export.
+animatedJava_exporter_animationExporter.setting.dataPackPath.description: Het bestandspad waar de gegenereerde Data Pack naar geëxporteerd wordt.
+animatedJava_exporter_animationExporter.popup.error.dataPackPathNotDefined.title: Data Pack bestandspad is niet gedefinieerd
+animatedJava_exporter_animationExporter.popup.error.dataPackPathNotDefined.body: Je moet een bestandspad voor de data pack definiëren in de instellingen voordat je exporteert.
+
+blablabla: 'blablabla'

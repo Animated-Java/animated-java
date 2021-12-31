@@ -18,7 +18,7 @@ watcher.on('event', (event) => {
 				console.log(chalk.green('transforming...'))
 				fs.writeFileSync(
 					'./dist/animated_java.js',
-					`(()=>{\n${fixup(
+					`(()=>{\nconst PromiseWrapper=(p)=>p.catch((e)=>{globalThis.ANIMATED_JAVA&&globalThis.ANIMATED_JAVA.asyncError(e);return e});\n${fixup(
 						fs.readFileSync('./dist/animated_java.js', 'utf-8'),
 						{
 							BUILD_ID:
@@ -37,7 +37,9 @@ watcher.on('event', (event) => {
 			break
 		case 'ERROR':
 			// console.log(chalk.gray(event.error.stack));
+			console.log(event.error)
 			console.log(chalk.red(event.error.message))
+			console.log(event.error.frame)
 			break
 	}
 })

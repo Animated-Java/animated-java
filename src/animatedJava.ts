@@ -34,6 +34,9 @@ const ANIMATED_JAVA = {
 	asyncError(e: Error) {
 		console.error('CUSTOM ERROR HANDLING', e)
 	},
+	logIntlDifferences(showDefaultValues: boolean) {
+		intl.diff(showDefaultValues)
+	},
 }
 delete window['ANIMATED_JAVA']
 // Object.defineProperty(window., 'ANIMATED_JAVA', {
@@ -49,6 +52,7 @@ bus.on(events.LIFECYCLE.CLEANUP, () => {
 
 import './exporters/statueExporter'
 import './exporters/animationExporter'
+import { intl } from './util/intl'
 // @ts-ignore
 Blockbench.dispatchEvent('animated-java-ready', ANIMATED_JAVA)
 // @ts-ignore

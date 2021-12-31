@@ -23,6 +23,29 @@ class Intl {
 	register(name: string, dict: any) {
 		this.dict[name] = dict
 	}
+	diff(showDefaultValues: boolean) {
+		let root = this.dict.en
+		let diff = []
+		for (let lang in this.dict) {
+			if (lang === 'en') continue
+			diff.push(lang + ':')
+			for (let key in this.dict[lang]) {
+				if (key in root) continue
+				diff.push(
+					`	+ ${key} ${
+						showDefaultValues ? '(' + this.dict.en[key] + ')' : ''
+					}`
+				)
+			}
+			for (let key in root) {
+				if (key in this.dict[lang]) continue
+				diff.push(
+					`	- ${key} ${showDefaultValues ? '(' + root[key] + ')' : ''}`
+				)
+			}
+		}
+		console.log(diff.join('\n'))
+	}
 }
 
 export const intl = new Intl('en')
