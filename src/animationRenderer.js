@@ -179,6 +179,7 @@ const Cache = new (class {
 		}
 	}
 	hit(anim) {
+		if (!settings.animatedJava.useCache) return null
 		if (this.cache.has(anim.uuid)) {
 			const old_hash = this.cache.get(anim.uuid)
 			const new_hash = hashAnim(anim)
@@ -203,6 +204,7 @@ const Cache = new (class {
 		}
 	}
 	update(anim, value) {
+		if (!settings.animatedJava.useCache) return
 		if (settings.animatedJava.cacheMode === 'memory') {
 			this.data.set(anim.uuid, value)
 		} else {
