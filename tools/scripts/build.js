@@ -39,7 +39,8 @@ import fixup from '../fixup'
 					makeBanner(header.split('\n').map((_) => _.trim())),
 					'\n\n\n',
 					`console.log("hello from Animated Java!");
-const konsole=new Proxy(console,{apply(a,b,c){(globalThis?.ANIMATED_JAVA?.logging??true)&&a(...c)},get(a,b){return typeof a[b]==="function"?function(...args){(globalThis?.ANIMATED_JAVA?.logging??true)&&a[b](...args)}:a[b]}});`,
+const konsole=new Proxy(console,{apply(a,b,c){(globalThis?.ANIMATED_JAVA?.logging??true)&&a(...c)},get(a,b){return typeof a[b]==="function"?function(...args){(globalThis?.ANIMATED_JAVA?.logging??true)&&a[b](...args)}:a[b]}});
+const PromiseWrapper=(p)=>p.catch((e)=>{globalThis.ANIMATED_JAVA&&globalThis.ANIMATED_JAVA.asyncError(e);return e});`,
 					'\n\n\n',
 					fixup(chunk.code, { BUILD_ID: id }),
 					'})();',

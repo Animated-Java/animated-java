@@ -252,7 +252,7 @@ function getTexturesOnGroup(group) {
 	return textures
 }
 
-export async function computeModels(cubeData) {
+async function computeModels(cubeData) {
 	console.groupCollapsed('Compute Models')
 	resetPredicateData()
 
@@ -527,3 +527,4 @@ export function computeVariantTextureOverrides(models) {
 
 	return variantModels
 }
+export { computeModels }

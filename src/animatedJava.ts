@@ -25,6 +25,15 @@ const ANIMATED_JAVA = {
 	format: format,
 	registerSettingRenderer,
 	logging: false, //enable logging in production
+	PromiseWrapper<T>(promise: Promise<T>): Promise<T> {
+		return promise.catch((e) => {
+			ANIMATED_JAVA.asyncError(e)
+			return e
+		})
+	},
+	asyncError(e: Error) {
+		console.error('CUSTOM ERROR HANDLING', e)
+	},
 }
 delete window['ANIMATED_JAVA']
 // Object.defineProperty(window., 'ANIMATED_JAVA', {

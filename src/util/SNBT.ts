@@ -44,7 +44,9 @@ function typeToConstructor(type: SNBTTagType) {
 		case SNBTTagType.DOUBLE:
 			return SNBT.Double
 		case SNBTTagType.END:
-			throw 'SNBTTagType.END should never be used in a SNBT construct'
+			throw new Error(
+				'SNBTTagType.END should never be used in a SNBT construct'
+			)
 		case SNBTTagType.FLOAT:
 			return SNBT.Float
 		case SNBTTagType.INT:
@@ -226,7 +228,7 @@ export class SNBTTag {
 		const exclude_type = flags & SNBTStringifyFlags.EXCLUDE_TYPE
 		switch (this.type) {
 			case SNBTTagType.END:
-				throw 'Cannot convert END tag to string'
+				throw new Error('Cannot convert END tag to string')
 			case SNBTTagType.BYTE:
 				return this.value.toString() + (exclude_type ? '' : 'b')
 			case SNBTTagType.SHORT:
@@ -313,7 +315,7 @@ const SNBTUtil = {
 		if (str[0] === '"' && str[str.length - 1] === '"') {
 			return SNBTUtil.unescape(str.slice(1, str.length - 1))
 		}
-		throw 'Invalid string'
+		throw new Error('Invalid string')
 	},
 	stringify(str: string) {
 		const hasSingleQuote = str.indexOf("'") !== -1
@@ -383,13 +385,16 @@ class StringReader {
 	read(length: number) {
 		const result = this.str.substr(this.cursor, length)
 		this.cursor += length
+		if (this.cursor > this.str.length) {
+			throw new Error('Unexpected end of string')
+		}
 		return result
 	}
 	readUntil(char: string) {
 		const result = this.str.substr(this.cursor)
 		const index = result.indexOf(char)
 		if (index === -1) {
-			throw 'Unexpected end of string'
+			throw new Error('Unexpected end of string')
 		}
 		this.cursor += index + 1
 		return result.substr(0, index)
@@ -408,11 +413,14 @@ class StringReader {
 	}
 	skip(length: number) {
 		this.cursor += length
+		if (this.cursor > this.str.length) {
+			throw new Error('Unexpected end of string')
+		}
 	}
 	skipUntil(char: string) {
 		const index = this.str.indexOf(char, this.cursor)
 		if (index === -1) {
-			throw 'Unexpected end of string'
+			throw new Error('Unexpected end of string')
 		}
 		this.cursor += index + 1
 	}
@@ -472,7 +480,7 @@ class StringReader {
 			this.skip(1)
 		}
 		const end = this.cursor
-		this.skip(1)
+		if (!this.isEnd()) this.skip(1)
 		return this.str.substr(start, end - start)
 	}
 	readUntilAnyOf(chars: string[]) {

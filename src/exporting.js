@@ -8,7 +8,7 @@ import { translate } from './util/intl'
 import transparent from './assets/transparent.png'
 
 // Exports the model.json rig files
-export async function exportRigModels(models, variantModels) {
+async function exportRigModels(models, variantModels) {
 	console.groupCollapsed('Export Rig Models')
 	const metaPath = path.join(
 		settings.animatedJava.rigModelsExportFolder,
@@ -121,7 +121,6 @@ export async function exportRigModels(models, variantModels) {
 
 	console.groupEnd('Export Rig Models')
 }
-
 function getMCPath(raw) {
 	let list = raw.split(path.sep)
 	console.log(list)
@@ -130,7 +129,7 @@ function getMCPath(raw) {
 	return `${list[0]}:${list.slice(2).join('/')}`
 }
 
-export async function exportPredicate(models, variantModels, ajSettings) {
+async function exportPredicate(models, variantModels, ajSettings) {
 	console.groupCollapsed('Export Predicate Model')
 	// const projectName = safeFunctionName(aj_settings.projectName)
 	const predicateJSON = {
@@ -164,7 +163,7 @@ export async function exportPredicate(models, variantModels, ajSettings) {
 	console.groupEnd('Export Predicate Model')
 }
 
-export async function exportTransparentTexture() {
+async function exportTransparentTexture() {
 	console.log(transparent)
 	Blockbench.writeFile(settings.animatedJava.transparentTexturePath, {
 		content: Buffer.from(
@@ -173,3 +172,5 @@ export async function exportTransparentTexture() {
 		),
 	})
 }
+
+export { exportRigModels, exportPredicate, exportTransparentTexture }

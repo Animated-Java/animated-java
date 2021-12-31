@@ -228,7 +228,7 @@ NodePreviewController.prototype.updateTransform = function (el) {
 bus.on(events.LIFECYCLE.CLEANUP, () => {
 	NodePreviewController.prototype.updateTransform = $original_func
 })
-export async function renderAnimation(options) {
+async function renderAnimation(options) {
 	// const timeline_save = get_timeline_save_point();
 	unselectAll()
 	Timeline.unselect()
@@ -357,3 +357,4 @@ export async function renderAnimation(options) {
 		throw error
 	}
 }
+export { renderAnimation }

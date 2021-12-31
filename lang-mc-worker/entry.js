@@ -465,7 +465,6 @@ consumer.Generic = list({
 			match: ({ token }) =>
 				token.startsWith('execute') && token.indexOf('run') != -1,
 			exec(file, tokens, func, parent, functionalparent) {
-				debugger
 				const _token = shift_t(tokens)
 				const { token } = _token
 				const command = token

@@ -114,6 +114,33 @@ export const BuildModel = (callback: any, options: any) => {
 							e.options
 						)
 					).show()
+				} else {
+					new Dialog(
+						Object.assign(
+							{
+								id: 'animatedJava.dialog.miscError',
+								title: translate(
+									'animatedJava.dialog.miscError.title'
+								),
+								width: 1024,
+								height: 512,
+								cancelEnabled: false,
+								lines: [
+									format(
+										translate(
+											'animatedJava.dialog.miscError.body'
+										),
+										{
+											buildID: process.env.BUILD_ID,
+											errorMessage: e.message,
+											errorStack: e.stack,
+										}
+									),
+								],
+							},
+							e.options
+						)
+					).show()
 				}
 
 				F_IS_BUILDING = false

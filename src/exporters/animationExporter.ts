@@ -544,11 +544,14 @@ async function createMCFile(
 					title: translate(
 						'animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.title'
 					),
-					lines: format(translate(
-						'animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.body'
-					), {
-						animationName: animation.name
-					})
+					lines: format(
+						translate(
+							'animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.body'
+						),
+						{
+							animationName: animation.name,
+						}
+					)
 						.split('\n')
 						.map((line: string) => `<p>${line}</p>`),
 					onConfirm() {
@@ -899,26 +902,30 @@ async function exportDataPack(
 
 	const dataPackPath = exporterSettings.dataPackPath
 	const totalFiles = dataPack.length
-	const translatedMessage = translate('animatedJava_exporter_animationExporter.writingDataPackProgress')
+	const translatedMessage = translate(
+		'animatedJava_exporter_animationExporter.writingDataPackProgress'
+	)
 	const createdPaths = new Set()
 
 	let timeOut = false
 
 	function setProgress(cur: number, max: number, fileName: string) {
 		if (!timeOut) {
-			Blockbench.setProgress((cur / max), 50)
-			Blockbench.setStatusBarText(format(translatedMessage, {
-				progress: ((cur / max) * 100).toPrecision(4),
-				fileName
-			}))
+			Blockbench.setProgress(cur / max, 50)
+			Blockbench.setStatusBarText(
+				format(translatedMessage, {
+					progress: ((cur / max) * 100).toPrecision(4),
+					fileName,
+				})
+			)
 			timeOut = true
-			setTimeout(() => timeOut = false, 50)
+			setTimeout(() => (timeOut = false), 50)
 		}
 	}
 
 	function newWriteFilePromise(
 		file: GeneratedDataPackFile,
-		que: Promise<unknown>[],
+		que: Promise<unknown>[]
 	) {
 		const filePath = new Path(dataPackPath, file.path)
 
@@ -950,7 +957,6 @@ async function exportDataPack(
 
 	Blockbench.setProgress(0, 0)
 	Blockbench.setStatusBarText()
-
 }
 
 async function animationExport(data: any) {
@@ -976,7 +982,11 @@ async function animationExport(data: any) {
 			break
 	}
 
-	Blockbench.showQuickMessage(translate('animatedJava_exporter_animationExporter.successfullyExported'))
+	Blockbench.showQuickMessage(
+		translate(
+			'animatedJava_exporter_animationExporter.successfullyExported'
+		)
+	)
 }
 
 const Exporter = (AJ: any) => {

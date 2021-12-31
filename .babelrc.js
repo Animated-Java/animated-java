@@ -1,3 +1,4 @@
+const AnimatedJavaBabelTransformPlugin = require('./tools/babelTransform')
 module.exports = {
 	presets: [
 		[
@@ -10,5 +11,8 @@ module.exports = {
 		],
 		['@babel/preset-react'],
 	],
-	plugins: ['@babel/plugin-proposal-class-properties'],
+	plugins: [
+		'@babel/plugin-proposal-class-properties',
+		AnimatedJavaBabelTransformPlugin,
+	],
 }
