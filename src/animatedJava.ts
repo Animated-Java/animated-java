@@ -3,10 +3,39 @@ import { BuildModel } from './mainEntry'
 import { settings } from './settings'
 import { store } from './util/store'
 import { bus } from './util/bus'
-import { format } from './modelFormat'
+import { format as modelFormat } from './modelFormat'
+import { tl } from './util/intl'
 import { registerSettingRenderer } from './ui/dialogs/settings'
 import './ui/mods/boneConfig'
 import './compileLangMC'
+import './exporters/statueExporter'
+import './exporters/animationExporter'
+import { intl } from './util/intl'
+import { CustomError } from './util/customError'
+import { format } from './util/replace'
+
+function showUnknownErrorDialog(e: CustomError | any) {
+	new Dialog(
+		Object.assign(
+			{
+				id: 'animatedJava.dialog.miscError',
+				title: tl('animatedJava.dialog.miscError.title'),
+				width: 1024,
+				height: 512,
+				cancelEnabled: false,
+				lines: [
+					format(tl('animatedJava.dialog.miscError.body'), {
+						buildID: process.env.BUILD_ID,
+						errorMessage: e.options ? e.options.message : e.message,
+						errorStack: e.stack,
+					}),
+				],
+			},
+			e.options?.dialog || {}
+		)
+	).show()
+}
+
 const ANIMATED_JAVA = {
 	build(callback: Function, configuration: Record<any, any>) {
 		const default_configuration = {
@@ -22,7 +51,7 @@ const ANIMATED_JAVA = {
 	},
 	settings,
 	store: store,
-	format: format,
+	format: modelFormat,
 	registerSettingRenderer,
 	logging: false, //enable logging in production
 	PromiseWrapper<T>(promise: Promise<T>): Promise<T> {
@@ -32,7 +61,9 @@ const ANIMATED_JAVA = {
 		})
 	},
 	asyncError(e: Error) {
-		console.error('CUSTOM ERROR HANDLING', e)
+		showUnknownErrorDialog(e)
+		// throw e
+		// console.error('CUSTOM ERROR HANDLING', e)
 	},
 	logIntlDifferences(showDefaultValues: boolean) {
 		intl.diff(showDefaultValues)
@@ -50,9 +81,6 @@ bus.on(events.LIFECYCLE.CLEANUP, () => {
 	delete window.ANIMATED_JAVA
 })
 
-import './exporters/statueExporter'
-import './exporters/animationExporter'
-import { intl } from './util/intl'
 // @ts-ignore
 Blockbench.dispatchEvent('animated-java-ready', ANIMATED_JAVA)
 // @ts-ignore

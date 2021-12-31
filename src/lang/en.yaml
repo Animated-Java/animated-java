@@ -39,6 +39,11 @@ animatedJava.dialog.miscError.body: |-
 
 animatedJava.customErrorReport.titleUndefined: Unknown Error
 
+animatedJava.popup.error.unsavedTexture.title: Unsaved Texture
+animatedJava.popup.error.unsavedTexture.body: |-
+  The texture '%textureName' is not saved to disk!
+  Please make sure it is saved into a valid resource pack location.
+
 animatedJava.popup.warning.rigFolderUnused.title: Unused rig folder
 animatedJava.popup.warning.rigFolderUnused.body: |-
     This folder does not contain any existing rigs.

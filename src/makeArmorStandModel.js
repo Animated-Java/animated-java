@@ -294,9 +294,9 @@ export function makeArmorStandModel() {
 		)
 		if (s.origin) {
 			mesh.position.set(s.origin[0], s.origin[1], s.origin[2])
-			mesh.geometry.translate(-s.origin[0], -s.origin[1], -s.origin[2])
+			mesh.geometry.tl(-s.origin[0], -s.origin[1], -s.origin[2])
 		}
-		mesh.geometry.translate(s.pos[0], s.pos[1], s.pos[2])
+		mesh.geometry.tl(s.pos[0], s.pos[1], s.pos[2])
 		if (s.rotation) {
 			mesh.rotation.setFromDegreeArray(s.rotation)
 		}

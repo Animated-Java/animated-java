@@ -1,12 +1,12 @@
-import { translate } from '../../util/intl'
+import { tl } from '../../util/intl'
 import { format } from '../../util/replace'
 
 export function show_about() {
 	const dialog = new Dialog({
 		id: 'animatedJava.about',
 		width: 1024,
-		title: translate('animatedJava.dialog.about.title'),
-		// lines: [format(translate('animatedJava.dialog.about.body'), {
+		title: tl('animatedJava.dialog.about.title'),
+		// lines: [format(tl('animatedJava.dialog.about.body'), {
 		// 	version: process.env.PLUGIN_VERSION,
 		// 	buildID: process.env.BUILD_ID
 		// })],

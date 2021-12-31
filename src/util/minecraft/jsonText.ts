@@ -57,7 +57,7 @@ type JsonTextComponent =
 							tag?: string
 					  }
 			}
-			translate?: string
+			tl?: string
 			with?: JsonTextArray
 			score?: {
 				name: selectorString

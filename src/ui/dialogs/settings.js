@@ -3,7 +3,7 @@ import events from '../../constants/events'
 import React, { useEffect, useRef, useState } from 'react'
 import ReactDom from 'react-dom'
 import { DefaultSettings, settings } from '../../settings'
-import { translate } from '../../util/intl'
+import { tl } from '../../util/intl'
 import { ERROR } from '../../util/errors'
 const dialog = electron.dialog
 const RenderTemplates = {
@@ -164,7 +164,7 @@ const RenderTemplates = {
 						{Object.entries(definition.options).map(
 							([key, value]) => (
 								<option value={key} key={key}>
-									{translate(value)}
+									{tl(value)}
 								</option>
 							)
 						)}
@@ -238,7 +238,7 @@ const SettingInput = ({ namespace, name, template }) => {
 							height: '0px',
 							textAlign: 'center',
 						}}
-						title={translate(
+						title={tl(
 							'animatedJava.settings.invalidSetting.generic'
 						)}
 					>
@@ -254,7 +254,7 @@ const SettingInput = ({ namespace, name, template }) => {
 						</span>
 					</span>
 				)}
-				{translate(`${namespace}.setting.${name}.name`)}
+				{tl(`${namespace}.setting.${name}.name`)}
 				{DefaultSettings[namespace][name].global && (
 					<span
 						style={{
@@ -262,7 +262,7 @@ const SettingInput = ({ namespace, name, template }) => {
 							marginLeft: '1em',
 						}}
 					>
-						{translate('animatedJava.settings.global')}
+						{tl('animatedJava.settings.global')}
 					</span>
 				)}
 				{DefaultSettings[namespace][name].optional && (
@@ -272,12 +272,12 @@ const SettingInput = ({ namespace, name, template }) => {
 							marginLeft: '1em',
 						}}
 					>
-						{translate('animatedJava.settings.optional')}
+						{tl('animatedJava.settings.optional')}
 					</span>
 				)}
 			</div>
 			<div className="setting_description">
-				{translate(`${namespace}.setting.${name}.description`)
+				{tl(`${namespace}.setting.${name}.description`)
 					.split('\n')
 					.map((line, i) => (
 						<p key={i}>{line}</p>
@@ -375,7 +375,7 @@ const Settings = () => {
 					className="dialog_handle tl ui-draggable-handle"
 					style={{ cursor: 'default' }}
 				>
-					{translate('animatedJava.menubar.settings.name')}
+					{tl('animatedJava.menubar.settings.name')}
 					<div
 						className="dialog_close_button"
 						style={{ top: '0', right: '0' }}
@@ -416,7 +416,7 @@ const Settings = () => {
 						<li>
 							<ul>
 								<h2 style={{ marginLeft: '1em' }}>
-									{translate(
+									{tl(
 										'animatedJava.menubar.exporterList.name'
 									)}
 								</h2>
@@ -475,7 +475,7 @@ function DropDown({ children, onClick, visible, name, intl }) {
 				<i className="material-icons">
 					{visible ? 'expand_more' : 'navigate_next'}
 				</i>
-				{translate(intl || `${name}`)}
+				{tl(intl || `${name}`)}
 			</h3>
 			{visible && children}
 		</>

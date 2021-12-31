@@ -1,6 +1,6 @@
 import * as aj from '../animatedJava'
 
-import { translate } from '../util/intl'
+import { tl } from '../util/intl'
 import { roundToN } from '../util/misc'
 import { CustomError } from '../util/customError'
 import { JsonText } from '../util/minecraft/jsonText'
@@ -369,11 +369,11 @@ async function exportMCFile(
 ) {
 	if (!exporterSettings.mcbFilePath) {
 		let d = new Dialog({
-			title: translate(
+			title: tl(
 				'animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.title'
 			),
 			id: '',
-			lines: translate(
+			lines: tl(
 				'animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.body'
 			)
 				.split('\n')
@@ -386,7 +386,7 @@ async function exportMCFile(
 			},
 		}).show()
 		throw new CustomError(
-			translate(
+			tl(
 				'animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.title'
 			),
 			{ silent: true }
@@ -407,11 +407,11 @@ async function exportDataPack(
 	if (!exporterSettings.dataPackPath) {
 		console.log(exporterSettings.dataPackPath)
 		let d = new Dialog({
-			title: translate(
+			title: tl(
 				'animatedJava_exporter_statueExporter.popup.error.dataPackFilePathNotDefined.title'
 			),
 			id: '',
-			lines: translate(
+			lines: tl(
 				'animatedJava_exporter_statueExporter.popup.error.dataPackFilePathNotDefined.body'
 			)
 				.split('\n')
@@ -424,7 +424,7 @@ async function exportDataPack(
 			},
 		}).show()
 		throw new CustomError(
-			translate(
+			tl(
 				'animatedJava_exporter_statueExporter.popup.error.dataPackFilePathNotDefined.title'
 			),
 			{ silent: true }
@@ -451,7 +451,7 @@ async function exportDataPack(
 			Blockbench.setProgress(message.percent, 50)
 			Blockbench.setStatusBarText(
 				format(
-					translate(
+					tl(
 						'animatedJava_exporter_statueExporter.exportingDataPackProgress'
 					),
 					{
@@ -485,7 +485,7 @@ async function exportDataPack(
 
 	const dataPackPath = exporterSettings.dataPackPath
 	const totalFiles = dataPack.length
-	const translatedMessage = translate(
+	const tldMessage = tl(
 		'animatedJava_exporter_statueExporter.writingDataPackProgress'
 	)
 	const createdPaths = new Set()
@@ -496,7 +496,7 @@ async function exportDataPack(
 		if (!timeOut) {
 			Blockbench.setProgress(cur / max, 50)
 			Blockbench.setStatusBarText(
-				format(translatedMessage, {
+				format(tldMessage, {
 					progress: ((cur / max) * 100).toPrecision(4),
 					fileName,
 				})
@@ -566,7 +566,7 @@ async function statueExport(data: any) {
 	}
 
 	Blockbench.showQuickMessage(
-		translate('animatedJava_exporter_statueExporter.successfullyExported')
+		tl('animatedJava_exporter_statueExporter.successfullyExported')
 	)
 }
 

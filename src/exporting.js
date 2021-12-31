@@ -3,7 +3,7 @@ import path, { resolve } from 'path'
 import { settings } from './settings'
 import { mkdir } from './util/ezfs'
 import { CustomError } from './util/CustomError'
-import { translate } from './util/intl'
+import { tl } from './util/intl'
 // import { safeFunctionName } from './util'
 import transparent from './assets/transparent.png'
 
@@ -18,10 +18,10 @@ async function exportRigModels(models, variantModels) {
 	if (!fs.existsSync(metaPath)) {
 		await new Promise((resolve, reject) => {
 			let d = new Dialog({
-				title: translate(
+				title: tl(
 					'animatedJava.popup.warning.rigFolderUnused.title'
 				),
-				lines: translate(
+				lines: tl(
 					'animatedJava.popup.warning.rigFolderUnused.body'
 				)
 					.split('\n')
@@ -42,10 +42,10 @@ async function exportRigModels(models, variantModels) {
 	} else if (fs.readFileSync(metaPath, 'utf-8') !== Project.UUID) {
 		await new Promise((resolve, reject) => {
 			let d = new Dialog({
-				title: translate(
+				title: tl(
 					'animatedJava.popup.error.rigFolderAlreadyUsedByOther.title'
 				),
-				lines: translate(
+				lines: tl(
 					'animatedJava.popup.error.rigFolderAlreadyUsedByOther.body'
 				)
 					.split('\n')

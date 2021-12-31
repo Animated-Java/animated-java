@@ -8,7 +8,7 @@ import { roundToN } from '../util/misc'
 import { safeFunctionName, format, fixIndent } from '../util/replace'
 import { SNBT, SNBTTag, SNBTTagType } from '../util/SNBT'
 import { store } from '../util/store'
-import { translate } from '../util/intl'
+import { tl } from '../util/intl'
 import { generateTree } from '../util/treeGen'
 import { compileMC } from '../compileLangMC'
 import * as fs from 'fs'
@@ -541,11 +541,11 @@ async function createMCFile(
 			if (animation.frames.length <= 1) {
 				let d = new Dialog({
 					id: 'animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation',
-					title: translate(
+					title: tl(
 						'animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.title'
 					),
 					lines: format(
-						translate(
+						tl(
 							'animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.body'
 						),
 						{
@@ -562,7 +562,7 @@ async function createMCFile(
 					},
 				}).show()
 				throw new CustomError(
-					translate(
+					tl(
 						'animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.title'
 					),
 					{ silent: true }
@@ -801,11 +801,11 @@ async function exportMCFile(
 ) {
 	if (!exporterSettings.mcbFilePath) {
 		let d = new Dialog({
-			title: translate(
+			title: tl(
 				'animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.title'
 			),
 			id: '',
-			lines: translate(
+			lines: tl(
 				'animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.body'
 			)
 				.split('\n')
@@ -818,7 +818,7 @@ async function exportMCFile(
 			},
 		}).show()
 		throw new CustomError(
-			translate(
+			tl(
 				'animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.title'
 			),
 			{ silent: true }
@@ -839,11 +839,11 @@ async function exportDataPack(
 	if (!exporterSettings.dataPackPath) {
 		console.log(exporterSettings.dataPackPath)
 		let d = new Dialog({
-			title: translate(
+			title: tl(
 				'animatedJava_exporter_animationExporter.popup.error.dataPackFilePathNotDefined.title'
 			),
 			id: '',
-			lines: translate(
+			lines: tl(
 				'animatedJava_exporter_animationExporter.popup.error.dataPackFilePathNotDefined.body'
 			)
 				.split('\n')
@@ -856,7 +856,7 @@ async function exportDataPack(
 			},
 		}).show()
 		throw new CustomError(
-			translate(
+			tl(
 				'animatedJava_exporter_animationExporter.popup.error.dataPackFilePathNotDefined.title'
 			),
 			{ silent: true }
@@ -883,7 +883,7 @@ async function exportDataPack(
 			Blockbench.setProgress(message.percent, 50)
 			Blockbench.setStatusBarText(
 				format(
-					translate(
+					tl(
 						'animatedJava_exporter_animationExporter.exportingDataPackProgress'
 					),
 					{
@@ -917,7 +917,7 @@ async function exportDataPack(
 
 	const dataPackPath = exporterSettings.dataPackPath
 	const totalFiles = dataPack.length
-	const translatedMessage = translate(
+	const tldMessage = tl(
 		'animatedJava_exporter_animationExporter.writingDataPackProgress'
 	)
 	const createdPaths = new Set()
@@ -928,7 +928,7 @@ async function exportDataPack(
 		if (!timeOut) {
 			Blockbench.setProgress(cur / max, 50)
 			Blockbench.setStatusBarText(
-				format(translatedMessage, {
+				format(tldMessage, {
 					progress: ((cur / max) * 100).toPrecision(4),
 					fileName,
 				})
@@ -998,7 +998,7 @@ async function animationExport(data: any) {
 	}
 
 	Blockbench.showQuickMessage(
-		translate(
+		tl(
 			'animatedJava_exporter_animationExporter.successfullyExported'
 		)
 	)

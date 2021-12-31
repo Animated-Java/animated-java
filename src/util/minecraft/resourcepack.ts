@@ -1,8 +1,28 @@
 //@ts-ignore
 import * as path from 'path'
 import { CustomError } from '../customError'
+import { tl } from '../intl'
+import { format } from '../replace'
 
 export function getTexturePath(texture: any) {
+	if (!texture.path) {
+		throw new CustomError(tl(`animatedJava.popup.error.unsavedTexture.title`), {
+			dialog: {
+				title: tl(
+					'animatedJava.popup.error.unsavedTexture.title'
+				),
+				lines: format(
+					tl('animatedJava.popup.error.unsavedTexture.body'),
+					{
+						textureName: texture.name,
+					}
+				)
+					.split('\n')
+					.map((line: string) => `<p>${line}</p>`),
+				width: 512,
+			},
+		})
+	}
 	const parts = texture.path.split(path.sep)
 	const assetsIndex = parts.indexOf('assets')
 	if (assetsIndex) {

@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react'
 // const { useEffect, useState } = React;
 import ReactDom from 'react-dom'
 import events, { LIFECYCLE } from '../../constants/events'
-import { intl, translate } from '../../util/intl'
+import { intl, tl } from '../../util/intl'
 import { store } from '../../util/store'
 import { bus } from '../../util/bus'
 import { format } from '../../modelFormat'
@@ -107,14 +107,14 @@ function StatePanel() {
 			<div
 				style={{
 					width: '200%',
-					transform: `translateX(${-50 * !overlayVisible}%)`,
+					transform: `tlX(${-50 * !overlayVisible}%)`,
 					transition: '0.5s',
 					display: 'flex',
 				}}
 			>
 				<div style={{ width: '50%', display: 'inline-block' }}>
 					<button onClick={() => setOverlayVisible(false)}>
-						{translate('varients.ui.back')}
+						{tl('varients.ui.back')}
 					</button>
 					<ul
 						style={{ height: height + 'px', overflowY: 'scroll' }}
@@ -235,12 +235,12 @@ function StatePanel() {
 									className="tooltip"
 									style={{ marginLeft: '0px' }}
 								>
-									{intl.translate('varients.ui.addVarient')}
+									{intl.tl('varients.ui.addVarient')}
 									<div
 										className="tooltip_description"
 										style={{ marginLeft: '-5px' }}
 									>
-										{intl.translate(
+										{intl.tl(
 											'varients.ui.addVarient.description'
 										)}
 									</div>
@@ -393,7 +393,7 @@ function find(query) {
 }
 find('#java-animator-states').then((el) => {
 	el.previousElementSibling.children[0].innerHTML =
-		intl.translate('panel.states')
+		intl.tl('panel.states')
 	ReactDom.render(<StatePanel></StatePanel>, el)
 	bus.on(events.LIFECYCLE.CLEANUP, () => el.remove())
 })

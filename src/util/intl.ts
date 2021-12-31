@@ -14,7 +14,7 @@ class Intl {
 	setLanguage(lang: string) {
 		this.lang = lang
 	}
-	translate(key: string) {
+	tl(key: string) {
 		this.tokens.add(key)
 		let v = this.dict[this.lang]?.[key] ? this.dict[this.lang][key] : key
 		// if (v === key) debugger
@@ -49,4 +49,4 @@ class Intl {
 }
 
 export const intl = new Intl('en')
-export const translate = (key: string) => intl.translate(key)
+export const tl = (key: string) => intl.tl(key)

@@ -8,7 +8,7 @@ import { DefaultSettings, settings } from './settings'
 import { CustomError } from './util/customError'
 import { ERROR } from './util/errors'
 import { store } from './util/store'
-import { translate } from './util/intl'
+import { tl } from './util/intl'
 import { bus } from './util/bus'
 import { CustomAction } from './util/customAction'
 import './ui/panel/states'
@@ -87,68 +87,17 @@ export const BuildModel = (callback: any, options: any) => {
 				F_IS_BUILDING = false
 			})
 			.catch((e) => {
-				if (e.options && !e.options.silent) {
-					new Dialog(
-						Object.assign(
-							{
-								id: 'animatedJava.dialog.miscError',
-								title: translate(
-									'animatedJava.dialog.miscError.title'
-								),
-								width: 1024,
-								height: 512,
-								cancelEnabled: false,
-								lines: [
-									format(
-										translate(
-											'animatedJava.dialog.miscError.body'
-										),
-										{
-											buildID: process.env.BUILD_ID,
-											errorMessage: e.options.message,
-											errorStack: e.stack,
-										}
-									),
-								],
-							},
-							e.options
-						)
-					).show()
-				} else {
-					new Dialog(
-						Object.assign(
-							{
-								id: 'animatedJava.dialog.miscError',
-								title: translate(
-									'animatedJava.dialog.miscError.title'
-								),
-								width: 1024,
-								height: 512,
-								cancelEnabled: false,
-								lines: [
-									format(
-										translate(
-											'animatedJava.dialog.miscError.body'
-										),
-										{
-											buildID: process.env.BUILD_ID,
-											errorMessage: e.message,
-											errorStack: e.stack,
-										}
-									),
-								],
-							},
-							e.options
-						)
-					).show()
-				}
-
 				F_IS_BUILDING = false
 				Blockbench.setProgress(0)
-				throw e
+				if (e instanceof CustomError && e.options.silent) {
+					console.log('Silent Error (Probably intentional)')
+					console.error(e)
+				} else {
+					throw e
+				}
 			})
 	} else {
-		Blockbench.showQuickMessage(translate('error.build_in_progress'))
+		Blockbench.showQuickMessage(tl('error.build_in_progress'))
 		ERROR.ANIMATED_JAVA_BUSY()
 	}
 }
@@ -161,11 +110,11 @@ async function computeAnimationData(
 
 	if (!settings.animatedJava.predicateFilePath) {
 		let d = new Dialog({
-			title: translate(
+			title: tl(
 				'animatedJava.popup.error.predicateFilePathUndefined.title'
 			),
 			id: '',
-			lines: translate(
+			lines: tl(
 				'animatedJava.popup.error.predicateFilePathUndefined.body'
 			)
 				.split('\n')
@@ -178,7 +127,7 @@ async function computeAnimationData(
 			},
 		}).show()
 		throw new CustomError(
-			translate(
+			tl(
 				'animatedJava.popup.error.predicateFilePathUndefined.title'
 			),
 			{ silent: true }
@@ -186,11 +135,11 @@ async function computeAnimationData(
 	}
 	if (!settings.animatedJava.rigModelsExportFolder) {
 		let d = new Dialog({
-			title: translate(
+			title: tl(
 				'animatedJava.popup.error.rigModelsExportFolder.title'
 			),
 			id: '',
-			lines: translate(
+			lines: tl(
 				'animatedJava.popup.error.rigModelsExportFolder.body'
 			)
 				.split('\n')
@@ -203,7 +152,7 @@ async function computeAnimationData(
 			},
 		}).show()
 		throw new CustomError(
-			translate('animatedJava.popup.error.rigModelsExportFolder.title'),
+			tl('animatedJava.popup.error.rigModelsExportFolder.title'),
 			{ silent: true }
 		)
 	}
@@ -279,12 +228,12 @@ Blockbench.on('select_project', () => {
 Blockbench.on('unselect_project', () => {
 	menu.label.style.display = 'none'
 })
-menu.label.innerHTML = translate('animatedJava.menubar.dropdown.name')
+menu.label.innerHTML = tl('animatedJava.menubar.dropdown.name')
 MenuBar.addAction(
 	CustomAction('animated_java_about', {
 		icon: 'help',
 		category: 'animated_java',
-		name: translate('animatedJava.menubar.about.name'),
+		name: tl('animatedJava.menubar.about.name'),
 		condition: () => modelFormat.id === Format.id,
 		click: function () {
 			show_about()
@@ -296,7 +245,7 @@ MenuBar.addAction(
 	CustomAction('animated_java_settings', {
 		icon: 'settings',
 		category: 'animated_java',
-		name: translate('animatedJava.menubar.settings.name'),
+		name: tl('animatedJava.menubar.settings.name'),
 		condition: () => modelFormat.id === Format.id,
 		click: function () {
 			show_settings()
@@ -307,7 +256,7 @@ MenuBar.addAction(
 MenuBar.addAction(
 	{
 		// @ts-ignore
-		name: translate('animatedJava.menubar.export.name'),
+		name: tl('animatedJava.menubar.export.name'),
 		id: 'animatedJava_export',
 		icon: 'insert_drive_file',
 		condition: () => modelFormat.id === Format.id,
@@ -319,7 +268,7 @@ MenuBar.addAction(
 				store.getStore('exporters').get(exporter)()
 			} else {
 				Blockbench.showQuickMessage(
-					translate(
+					tl(
 						'animatedJava.popup.quickMessage.noExporterSelected'
 					)
 				)
