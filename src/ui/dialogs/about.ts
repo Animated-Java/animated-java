@@ -20,11 +20,11 @@ export function show_about() {
 				<h5>Honourable Mentions</h5>
 				<ul>
 					<li style="color:var(--color-text)">
-						•	Ancientkingg
+						Ancientkingg
 						<span style="color:var(--color-accent)">#0420</span>
 					</li>
 					<li style="color:var(--color-text)">
-						•	_JeffWooden
+						_JeffWooden
 						<span style="color:var(--color-accent)">#0895</span>
 					</li>
 				</ul>
