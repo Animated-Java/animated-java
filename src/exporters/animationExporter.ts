@@ -561,7 +561,12 @@ async function createMCFile(
 						d.hide()
 					},
 				}).show()
-				throw new CustomError({ silent: true })
+				throw new CustomError(
+					translate(
+						'animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.title'
+					),
+					{ silent: true }
+				)
 			}
 
 			const thisAnimationLoopMode = format(
@@ -812,7 +817,12 @@ async function exportMCFile(
 				d.hide()
 			},
 		}).show()
-		throw new CustomError({ silent: true })
+		throw new CustomError(
+			translate(
+				'animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.title'
+			),
+			{ silent: true }
+		)
 	}
 
 	Blockbench.writeFile(exporterSettings.mcbFilePath, {
@@ -845,7 +855,12 @@ async function exportDataPack(
 				d.hide()
 			},
 		}).show()
-		throw new CustomError({ silent: true })
+		throw new CustomError(
+			translate(
+				'animatedJava_exporter_animationExporter.popup.error.dataPackFilePathNotDefined.title'
+			),
+			{ silent: true }
+		)
 	}
 	console.log('mcFile:', generated.mcFile)
 	console.log('mcbConfig:', generated.mcbConfig)

@@ -1,11 +1,16 @@
 #? AJ
 animatedJava: Animated Java
+animatedJava.menubar.about.name: About...
 animatedJava.menubar.export.name: Export Model
 
 panel.states: Model Variants
 
 animatedJava.progress.animationRendering.text: Rendering Animations... %currents/%totals
 animatedJava.dialog.animation_properties.animationCompleteCommand.label: End Of Anim Command
+
+animatedJava.dialog.about.title: About Animated Java
+animatedJava.version: Version
+animatedJava.creators: Creators
 
 #? Settings
 animatedJava.settings.global: '(Global)'
@@ -31,6 +36,9 @@ animatedJava.dialog.miscError.body: |-
     <p>Please report this error on <a href="https://github.com/Animated-Java/animated-java">Animated Java's github</a> with information on how to reproduce it and a copy of the error above. Thank you!</p>
 
 #? Errors/Warnings
+
+animatedJava.customErrorReport.titleUndefined: Unknown Error
+
 animatedJava.popup.warning.rigFolderUnused.title: Unused rig folder
 animatedJava.popup.warning.rigFolderUnused.body: |-
     This folder does not contain any existing rigs.

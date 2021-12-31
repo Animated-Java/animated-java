@@ -1,7 +1,11 @@
 export class CustomError extends Error {
 	options: any
-	constructor(options: any) {
+	constructor(message: string, options?: any) {
 		super()
-		this.options = options
+		this.message = message
+		if (options) {
+			options.message = message
+			this.options = options
+		}
 	}
 }

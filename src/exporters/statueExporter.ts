@@ -385,7 +385,12 @@ async function exportMCFile(
 				d.hide()
 			},
 		}).show()
-		throw new CustomError({ silent: true })
+		throw new CustomError(
+			translate(
+				'animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.title'
+			),
+			{ silent: true }
+		)
 	}
 
 	Blockbench.writeFile(exporterSettings.mcbFilePath, {
@@ -418,7 +423,12 @@ async function exportDataPack(
 				d.hide()
 			},
 		}).show()
-		throw new CustomError({ silent: true })
+		throw new CustomError(
+			translate(
+				'animatedJava_exporter_statueExporter.popup.error.dataPackFilePathNotDefined.title'
+			),
+			{ silent: true }
+		)
 	}
 	console.log('mcFile:', generated.mcFile)
 	console.log('mcbConfig:', generated.mcbConfig)
@@ -555,7 +565,9 @@ async function statueExport(data: any) {
 			break
 	}
 
-	Blockbench.showQuickMessage(translate('animatedJava_exporter_statueExporter.successfullyExported'))
+	Blockbench.showQuickMessage(
+		translate('animatedJava_exporter_statueExporter.successfullyExported')
+	)
 }
 
 const Exporter = (AJ: any) => {

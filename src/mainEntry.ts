@@ -177,7 +177,12 @@ async function computeAnimationData(
 				d.hide()
 			},
 		}).show()
-		throw new CustomError({ silent: true })
+		throw new CustomError(
+			translate(
+				'animatedJava.popup.error.predicateFilePathUndefined.title'
+			),
+			{ silent: true }
+		)
 	}
 	if (!settings.animatedJava.rigModelsExportFolder) {
 		let d = new Dialog({
@@ -197,7 +202,10 @@ async function computeAnimationData(
 				d.hide()
 			},
 		}).show()
-		throw new CustomError({ silent: true })
+		throw new CustomError(
+			translate('animatedJava.popup.error.rigModelsExportFolder.title'),
+			{ silent: true }
+		)
 	}
 
 	const animations = (await renderAnimation(options)) as aj.Animations
@@ -250,6 +258,7 @@ async function computeAnimationData(
 
 import './pluginDefinitions'
 import { show_settings } from './ui/dialogs/settings'
+import { show_about } from './ui/dialogs/about'
 
 const menu: any = new BarMenu(
 	'animated_java',
@@ -271,6 +280,18 @@ Blockbench.on('unselect_project', () => {
 	menu.label.style.display = 'none'
 })
 menu.label.innerHTML = translate('animatedJava.menubar.dropdown.name')
+MenuBar.addAction(
+	CustomAction('animated_java_about', {
+		icon: 'help',
+		category: 'animated_java',
+		name: translate('animatedJava.menubar.about.name'),
+		condition: () => modelFormat.id === Format.id,
+		click: function () {
+			show_about()
+		},
+	}),
+	'animated_java'
+)
 MenuBar.addAction(
 	CustomAction('animated_java_settings', {
 		icon: 'settings',

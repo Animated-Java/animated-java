@@ -15,7 +15,5 @@ export function getTexturePath(texture: any) {
 			return `${namespace}:${relative.join('/')}` // Generate texture path
 		}
 	}
-	throw new CustomError({
-		message: `Unable to generate texture path for ${texture.name}`,
-	})
+	throw new CustomError(`Unable to generate texture path for ${texture.name}`)
 }

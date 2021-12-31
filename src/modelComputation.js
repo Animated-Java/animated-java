@@ -269,14 +269,27 @@ async function computeModels(cubeData) {
 			)
 
 		if (group instanceof Group && group.name !== 'SCENE' && group.export) {
+			console.log('group.children:', group.children)
+			console.log('cubeChildren:', cubeChildren)
 			if (cubeChildren.length) {
-				const cleanedCubes = cloneObject(cubeChildren)
-				cleanedCubes.forEach((cube) => (cube.uuid = undefined))
+				const elements = []
+
+				cubeChildren.forEach((cube) => {
+					if (!cube) {
+						throw new CustomError(`Unexpected undefined in ${group.name}.children`)
+					}
+					elements.push({
+						origin: cube.origin,
+						faces: cube.faces,
+						to: cube.to,
+						from: cube.from,
+					})
+				})
 
 				models[group.name] = {
 					aj: { customModelData: getPredicateId() },
-					elements: cleanedCubes,
 					textures: getTexturesOnGroup(group),
+					elements,
 				}
 			}
 
@@ -401,7 +414,7 @@ const displayScaleModifier = 4
 const elementScaleModifier = displayScaleModifier / displayScale
 
 async function scaleModels(models) {
-	for (const [name, model] of Object.entries(models)) {
+	for (const [modelName, model] of Object.entries(models)) {
 		model.display = computeDisplay()
 		for (const element of model.elements) {
 			element.to = [
