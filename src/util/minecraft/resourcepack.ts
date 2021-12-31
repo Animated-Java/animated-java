@@ -28,12 +28,31 @@ export function getTexturePath(texture: any) {
 	if (assetsIndex) {
 		const relative = parts.slice(assetsIndex + 1) // Remove 'assets' and everything before it from the path
 		const namespace = relative.shift() // Remove the namespace from the path and store it
-		relative.push(relative.pop().replace(/.png$/, '')) // Remove file type (.png)
-		const textureIndex = relative.indexOf('textures') // Locate 'texture' in the path
-		if (textureIndex > -1) {
-			relative.splice(textureIndex, 1) // Remove 'texture' from the path
-			return `${namespace}:${relative.join('/')}` // Generate texture path
+		if (namespace && relative.length) {
+			relative.push(relative.pop().replace(/.png$/, '')) // Remove file type (.png)
+			if (relative) {
+				const textureIndex = relative.indexOf('textures') // Locate 'texture' in the path
+				if (textureIndex > -1) {
+					relative.splice(textureIndex, 1) // Remove 'texture' from the path
+					return `${namespace}:${relative.join('/')}` // Generate texture path
+				}
+			}
 		}
 	}
-	throw new CustomError(`Unable to generate texture path for ${texture.name}`)
+	throw new CustomError(tl(`animatedJava.popup.error.unableToGenerateTexturePath.title`), {
+		dialog: {
+			title: tl(
+				'animatedJava.popup.error.unableToGenerateTexturePath.title'
+			),
+			lines: format(
+				tl('animatedJava.popup.error.unableToGenerateTexturePath.body'),
+				{
+					textureName: texture.name,
+				}
+			)
+				.split('\n')
+				.map((line: string) => `<p>${line}</p>`),
+			width: 512,
+		},
+	})
 }

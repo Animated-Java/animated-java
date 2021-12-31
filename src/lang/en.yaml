@@ -39,6 +39,11 @@ animatedJava.dialog.miscError.body: |-
 
 animatedJava.customErrorReport.titleUndefined: Unknown Error
 
+animatedJava.popup.error.unableToGenerateTexturePath.title: Invalid texture path
+animatedJava.popup.error.unableToGenerateTexturePath.body: |-
+  The texture '%textureName' has an invalid location inside a resource pack
+  Please make sure it is properly saved inside of a valid resource pack in a sub folder of 'assets/namespace/textures/'
+
 animatedJava.popup.error.unsavedTexture.title: Unsaved Texture
 animatedJava.popup.error.unsavedTexture.body: |-
   The texture '%textureName' is not saved to disk!
