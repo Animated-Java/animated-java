@@ -3,9 +3,7 @@ export class CustomError extends Error {
 	constructor(message: string, options?: any) {
 		super()
 		this.message = message
-		if (options) {
-			options.message = message
-			this.options = options
-		}
+		this.options = options || {}
+		this.options.message = message
 	}
 }

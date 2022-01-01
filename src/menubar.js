@@ -1,16 +1,16 @@
-import { bus, translate } from './util'
+import { bus, tl } from './util'
 import EVENTS from './constants/events'
 
 bus.on(EVENTS.LIFECYCLE.LOAD, () => {
 	const menu = new BarMenu('JavaAnimation', [], () => Format.id === format.id)
 	document.querySelector('#menu_bar').appendChild(menu.label)
-	menu.label.innerHTML = translate('menubar.dropdown.lable')
+	menu.label.innerHTML = tl('menubar.dropdown.lable')
 	MenuBar.addAction(build_model, 'JavaAnimation')
 	MenuBar.addAction(
 		CustomAction({
 			icon: 'info',
 			category: 'AnimatedJava',
-			name: translate('menubar.dropdown.name'),
+			name: tl('menubar.dropdown.name'),
 			id: 'java_plugin_about',
 			condition: () => format.id === Format.id,
 			click: function () {

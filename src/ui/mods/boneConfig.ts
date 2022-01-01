@@ -1,5 +1,5 @@
 import { CustomAction } from '../../util/customAction'
-import { translate } from '../../util/intl'
+import { tl } from '../../util/intl'
 
 type AJGroup = {
 	nbt: string
@@ -15,17 +15,17 @@ const openBoneConfig = CustomAction('animatedJava.BoneConfig', {
 		console.log('Opened bone config')
 		const selected = Group.selected as AJGroup
 		const dialog = new Dialog({
-			title: translate('animatedJava.boneConfig.title'),
+			title: tl('animatedJava.boneConfig.title'),
 			id: 'boneConfig',
 			form: {
 				nbt: {
 					type: 'textarea',
-					label: translate('animatedJava.boneConfig.boneNbt'),
+					label: tl('animatedJava.boneConfig.boneNbt'),
 					value: selected.nbt,
 				},
 				// armAnimationEnabled: {
 				// 	type: 'checkbox',
-				// 	label: translate(
+				// 	label: tl(
 				// 		'animatedJava.boneConfig.armAnimationEnabled'
 				// 	),
 				// 	value: false,

@@ -217,5 +217,3 @@ animatedJava_exporter_animationExporter.setting.dataPackPath.name: Data Pack
 animatedJava_exporter_animationExporter.setting.dataPackPath.description: Het bestandspad waar de gegenereerde Data Pack naar geëxporteerd wordt.
 animatedJava_exporter_animationExporter.popup.error.dataPackPathNotDefined.title: Data Pack bestandspad is niet gedefinieerd
 animatedJava_exporter_animationExporter.popup.error.dataPackPathNotDefined.body: Je moet een bestandspad voor de data pack definiëren in de instellingen voordat je exporteert.
-
-blablabla: 'blablabla'

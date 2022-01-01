@@ -10,7 +10,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'fs'
 import { StructTypes, StructPacker } from 'struct-packer'
 import { gunzipSync, gzipSync } from 'zlib'
 import events from './constants/events'
-import { translate } from './util/intl'
+import { tl } from './util/intl'
 import { format } from './util/replace'
 
 store.set('static_animation_uuid', '138747e7-2de0-4130-b900-9275ca0e6333')
@@ -252,13 +252,13 @@ async function renderAnimation(options) {
 	)
 	// Accumulated animation length
 	let accAnimationLength = 0
-	const translatedMessage = translate(
+	const tldMessage = tl(
 		'animatedJava.progress.animationRendering.text'
 	)
 	const progressUpdaterID = setInterval(() => {
 		console.log(accAnimationLength, totalAnimationLength)
 		Blockbench.setStatusBarText(
-			format(translatedMessage, {
+			format(tldMessage, {
 				current: accAnimationLength.toFixed(2),
 				total: totalAnimationLength.toFixed(2),
 			})

@@ -1,7 +1,7 @@
-// import translate
+// import tl
 import path from 'path'
 import { store } from './util/store'
-import { translate } from './util/intl'
+import { tl } from './util/intl'
 import { cloneObject } from './util/misc'
 import { size } from './util/misc'
 import { roundToN } from './util/misc'
@@ -87,8 +87,8 @@ export function computeElements() {
 		if (s.export == false) return
 		if (s.parent === 'root') {
 			throw new CustomError({
-				title: translate('error.top_level_cubes.title'),
-				lines: translate('error.top_level_cubes.body')
+				title: tl('error.top_level_cubes.title'),
+				lines: tl('error.top_level_cubes.body')
 					.split('\n')
 					.map((line) => `<p>${line}</p>`),
 			})
@@ -283,6 +283,7 @@ async function computeModels(cubeData) {
 						faces: cube.faces,
 						to: cube.to,
 						from: cube.from,
+						rotation: cube.rotation
 					})
 				})
 
@@ -510,10 +511,10 @@ export function computeVariantTextureOverrides(models) {
 								] = transparentTexturePath
 							} else {
 								let d = new Dialog({
-									title: translate(
+									title: tl(
 										'animatedJava.popup.error.transparentTexturePathNotFound.title'
 									),
-									lines: translate(
+									lines: tl(
 										'animatedJava.popup.error.transparentTexturePathNotFound.body'
 									)
 										.split('\n')

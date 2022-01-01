@@ -167,7 +167,7 @@ const codec = new Codec('ajmodel', {
 
 		if (!model.meta) {
 			Blockbench.showMessageBox({
-				translateKey: 'invalid_model',
+				tlKey: 'invalid_model',
 				icon: 'error',
 			})
 			return

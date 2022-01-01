@@ -39,6 +39,16 @@ animatedJava.dialog.miscError.body: |-
 
 animatedJava.customErrorReport.titleUndefined: Unknown Error
 
+animatedJava.popup.error.unableToGenerateTexturePath.title: Invalid texture path
+animatedJava.popup.error.unableToGenerateTexturePath.body: |-
+  The texture '%textureName' has an invalid location inside a resource pack
+  Please make sure it is properly saved inside of a valid resource pack in a sub folder of 'assets/namespace/textures/'
+
+animatedJava.popup.error.unsavedTexture.title: Unsaved Texture
+animatedJava.popup.error.unsavedTexture.body: |-
+  The texture '%textureName' is not saved to disk!
+  Please make sure it is saved into a valid resource pack location.
+
 animatedJava.popup.warning.rigFolderUnused.title: Unused rig folder
 animatedJava.popup.warning.rigFolderUnused.body: |-
     This folder does not contain any existing rigs.
@@ -182,10 +192,10 @@ animatedJava_exporter_animationExporter.setting.rootEntityType.description: The 
 animatedJava_exporter_animationExporter.setting.rootEntityNbt.name: Root Entity NBT
 animatedJava_exporter_animationExporter.setting.rootEntityNbt.description: The NBT data of the root entity
 
-animatedJava_exporter_animationExporter.setting.boneType.name: Bone Type
-animatedJava_exporter_animationExporter.setting.boneType.description: AEC Stack provides more precise positional movement at the cost of doubling the amount of entities per bone.
-animatedJava_exporter_animationExporter.setting.boneType.aecStack.name: AEC Stack
-animatedJava_exporter_animationExporter.setting.boneType.armorStand.name: Armor Stand
+# animatedJava_exporter_animationExporter.setting.boneType.name: Bone Type
+# animatedJava_exporter_animationExporter.setting.boneType.description: AEC Stack provides more precise positional movement at the cost of doubling the amount of entities per bone.
+# animatedJava_exporter_animationExporter.setting.boneType.aecStack.name: AEC Stack
+# animatedJava_exporter_animationExporter.setting.boneType.armorStand.name: Armor Stand
 
 animatedJava_exporter_animationExporter.setting.markerArmorStands.name: Marker Armor Stands
 animatedJava_exporter_animationExporter.setting.markerArmorStands.description: When enabled all armor_stands used to display the rig will have no hitbox or collision.
