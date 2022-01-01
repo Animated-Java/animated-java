@@ -90,9 +90,10 @@ export const BuildModel = (callback: any, options: any) => {
 				F_IS_BUILDING = false
 				Blockbench.setProgress(0)
 				if (e instanceof CustomError && e.options.silent) {
-					console.log('Silent Error (Probably intentional)')
+					console.log('Silenced Error (Probably caused intentionally)')
 					console.error(e)
 				} else {
+					console.log('Throwing Unknown Error')
 					throw e
 				}
 			})

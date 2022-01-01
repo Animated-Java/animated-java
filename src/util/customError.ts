@@ -1,9 +1,16 @@
+type CustomErrorOptions = {
+	message?: string
+	dialog?: DialogOptions
+	silent?: boolean
+}
+
 export class CustomError extends Error {
-	options: any
+	message: string
+	options: CustomErrorOptions
 	constructor(message: string, options?: any) {
-		super()
-		this.message = message
+		console.log(message)
+		super(message)
 		this.options = options || {}
-		this.options.message = message
+		this.options.message = this.message
 	}
 }

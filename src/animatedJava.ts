@@ -20,9 +20,6 @@ function showUnknownErrorDialog(e: CustomError | any) {
 			{
 				id: 'animatedJava.dialog.miscError',
 				title: tl('animatedJava.dialog.miscError.title'),
-				width: 1024,
-				height: 512,
-				cancelEnabled: false,
 				lines: [
 					format(tl('animatedJava.dialog.miscError.body'), {
 						buildID: process.env.BUILD_ID,
@@ -30,6 +27,9 @@ function showUnknownErrorDialog(e: CustomError | any) {
 						errorStack: e.stack,
 					}),
 				],
+				width: 1024,
+				height: 512,
+				singleButton: true
 			},
 			e.options?.dialog || {}
 		)

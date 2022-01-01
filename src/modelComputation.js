@@ -8,7 +8,8 @@ import { roundToN } from './util/misc'
 import * as resourcepack from './util/minecraft/resourcepack'
 import { settings } from './settings'
 import './overrides/overrides'
-import { CustomError } from './util/CustomError'
+import { CustomError } from './util/customError'
+import { format } from './util/replace'
 
 function getMCPath(raw) {
 	let list = raw.split(path.sep)
@@ -220,6 +221,23 @@ export function computeElements() {
 	}
 	iterate(Outliner.root)
 
+	if (invalid_rot_elements.length) {
+		throw new CustomError('Invalid Element Rotations',
+			{
+				dialog: {
+					title: tl(
+						'animatedJava.popup.error.invalidCubeRotations.title'
+					),
+					lines: tl(
+						'animatedJava.popup.error.invalidCubeRotations.body'
+					)
+						.split('\n')
+						.map((line) => `<p>${line}</p>`),
+					width: 512,
+				},
+			}
+		)
+	}
 	const ret = {
 		invalid_rot_elements,
 		clear_elements,
@@ -276,14 +294,16 @@ async function computeModels(cubeData) {
 
 				cubeChildren.forEach((cube) => {
 					if (!cube) {
-						throw new CustomError(`Unexpected undefined in ${group.name}.children`)
+						throw new CustomError(
+							`Unexpected undefined in ${group.name}.children`
+						)
 					}
 					elements.push({
 						origin: cube.origin,
 						faces: cube.faces,
 						to: cube.to,
 						from: cube.from,
-						rotation: cube.rotation
+						rotation: cube.rotation,
 					})
 				})
 

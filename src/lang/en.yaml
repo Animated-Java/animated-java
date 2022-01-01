@@ -44,6 +44,11 @@ animatedJava.popup.error.unableToGenerateTexturePath.body: |-
   The texture '%textureName' has an invalid location inside a resource pack
   Please make sure it is properly saved inside of a valid resource pack in a sub folder of 'assets/namespace/textures/'
 
+animatedJava.popup.error.invalidCubeRotations.title: Invalid Element Rotations
+animatedJava.popup.error.invalidCubeRotations.body: |-
+  The rotations of some cubes are invalid for the java model format.
+  Please all invalid rotations before exporting
+
 animatedJava.popup.error.unsavedTexture.title: Unsaved Texture
 animatedJava.popup.error.unsavedTexture.body: |-
   The texture '%textureName' is not saved to disk!
