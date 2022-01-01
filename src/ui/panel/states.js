@@ -54,9 +54,67 @@ function updateDisplay(state) {
 		}
 	}
 }
+function Dialog({ children, onRequestHide }) {
+	const ref = useRef()
+	function hide() {
+		onRequestHide()
+	}
+	useEffect(() => {
+		if (ref.current) {
+			let o = $(ref.current)
+			o.draggable({
+				handle: '.dialog_handle',
+				containment: '#page_wrapper',
+			})
+			o.css('position', 'absolute')
+		}
+	}, [ref])
+	return (
+		<>
+			<div
+				style={{
+					height: 'calc(100% - 26px)',
+					width: '100%',
+					zIndex: 10000,
+					position: 'absolute',
+					left: '0px',
+					top: '26px',
+				}}
+				onClick={hide}
+			></div>
+			<dialog
+				ref={ref}
+				className="dialog paddinged ui-resizable ui-draggable draggable"
+				style={{
+					display: 'block',
+					left: '0%',
+					top: '128px',
+					maxHeight: '50%',
+					zIndex: 10001,
+				}}
+			>
+				<div
+					className="dialog_handle tl ui-draggable-handle"
+					style={{ cursor: 'default' }}
+				>
+					{tl('panel.varients.dialog.name')}
+					<div
+						className="dialog_close_button"
+						style={{ top: '0', right: '0' }}
+						onClick={hide}
+					>
+						<i className="material-icons">clear</i>
+					</div>
+				</div>
+				<div className="tab_content">{children}</div>
+			</dialog>
+		</>
+	)
+}
 function StatePanel() {
 	const [editState, setEditState] = useState({})
 	const [height, setHeight] = useState(0)
+	const [dialogVisible, setDialogVisible] = useState(false)
 	const List = useRef()
 	const [states, setStates] = useState(
 		store.get('states') || {
@@ -94,7 +152,7 @@ function StatePanel() {
 			setStates(store.get('states'))
 			updateStateViewOnChange()
 		})
-	}, [selectedIndex])
+	}, [])
 
 	return (
 		<div
@@ -106,115 +164,139 @@ function StatePanel() {
 		>
 			<div
 				style={{
-					width: '200%',
-					transform: `tlX(${-50 * !overlayVisible}%)`,
+					width: '100%',
 					transition: '0.5s',
 					display: 'flex',
 				}}
 			>
-				<div style={{ width: '50%', display: 'inline-block' }}>
-					<button onClick={() => setOverlayVisible(false)}>
-						{tl('varients.ui.back')}
-					</button>
-					<ul
-						style={{ height: height + 'px', overflowY: 'scroll' }}
-						ref={List}
+				{dialogVisible && (
+					<Dialog
+						onRequestHide={() => {
+							setDialogVisible(false)
+						}}
 					>
-						{overlayVisible &&
-							Texture.all.map((t1, i) => {
-								return (
-									<li
-										key={i}
-										style={{
-											marginTop: '10px',
-											borderTop:
-												'1px solid var(--color-border)',
-										}}
-									>
-										<img
-											src={t1.source}
-											width={30}
-											height={30}
-										></img>
-										<div
-											style={{
-												display: 'inline-block',
-												verticalAlign: 'text-bottom',
-												height: '30px',
-												paddingLeft: '10px',
-											}}
-										>
-											{t1.name}
-										</div>
-										<Dropdown
-											placeholder={'Default'}
-											value={editState[t1.uuid]}
-											options={[
-												{
-													id: 0,
-													name: 'Default',
-													value: 'Default',
-													label: 'Default',
-												},
-												{
-													id: 0,
-													name: 'transparent',
-													value: 'transparent',
-													label: 'transparent',
-												},
-												...Texture.all
-													.sort((a, b) => a === t1)
-													.map((t2, i) => ({
-														id: i + 2,
-														name: t2.uuid,
-														value: t2.uuid,
-														label: (
-															<React.Fragment
-																key={i}
-															>
-																<img
-																	src={
-																		t2.source
-																	}
-																	width={30}
-																	height={30}
-																></img>
-																<div
-																	style={{
-																		display:
-																			'inline-block',
-																		verticalAlign:
-																			'text-bottom',
-																		height: '30px',
-																		paddingLeft:
-																			'10px',
-																	}}
-																>
-																	{t2.name}
-																</div>
-															</React.Fragment>
-														),
-													})),
-											]}
-											onChange={(v) => {
-												if (
-													t1.uuid === v.value ||
-													v.value === 'Default'
-												) {
-													delete editState[t1.uuid]
-												} else {
-													editState[t1.uuid] = v.value
-												}
-												updateDisplay(editState)
-												console.log(editState)
-											}}
-										/>
-									</li>
-								)
-							})}
-					</ul>
-				</div>
-				<div style={{ width: '50%', display: 'inline-block' }}>
+						<div style={{ width: '100%', display: 'inline-block' }}>
+							<ul
+								style={
+									{
+										// height: height + 'px',
+										// overflowY: 'scroll',
+									}
+								}
+								ref={List}
+							>
+								{overlayVisible &&
+									Texture.all.map((t1, i) => {
+										return (
+											<li
+												key={i}
+												style={{
+													marginTop: '10px',
+													borderTop:
+														'1px solid var(--color-border)',
+												}}
+											>
+												<img
+													src={t1.source}
+													width={30}
+													height={30}
+												></img>
+												<div
+													style={{
+														display: 'inline-block',
+														verticalAlign:
+															'text-bottom',
+														height: '30px',
+														paddingLeft: '10px',
+													}}
+												>
+													{t1.name}
+												</div>
+												<Dropdown
+													placeholder={'Default'}
+													value={editState[t1.uuid]}
+													options={[
+														{
+															id: 0,
+															name: 'Default',
+															value: 'Default',
+															label: 'Default',
+														},
+														{
+															id: 0,
+															name: 'transparent',
+															value: 'transparent',
+															label: 'transparent',
+														},
+														...Texture.all
+															.sort(
+																(a, b) =>
+																	a === t1
+															)
+															.map((t2, i) => ({
+																id: i + 2,
+																name: t2.uuid,
+																value: t2.uuid,
+																label: (
+																	<React.Fragment
+																		key={i}
+																	>
+																		<img
+																			src={
+																				t2.source
+																			}
+																			width={
+																				30
+																			}
+																			height={
+																				30
+																			}
+																		></img>
+																		<div
+																			style={{
+																				display:
+																					'inline-block',
+																				verticalAlign:
+																					'text-bottom',
+																				height: '30px',
+																				paddingLeft:
+																					'10px',
+																			}}
+																		>
+																			{
+																				t2.name
+																			}
+																		</div>
+																	</React.Fragment>
+																),
+															})),
+													]}
+													onChange={(v) => {
+														if (
+															t1.uuid ===
+																v.value ||
+															v.value ===
+																'Default'
+														) {
+															delete editState[
+																t1.uuid
+															]
+														} else {
+															editState[t1.uuid] =
+																v.value
+														}
+														updateDisplay(editState)
+														console.log(editState)
+													}}
+												/>
+											</li>
+										)
+									})}
+							</ul>
+						</div>
+					</Dialog>
+				)}
+				<div style={{ width: '100%', display: 'inline-block' }}>
 					<div className="toolbar-wrapper">
 						<div className="content">
 							<div
@@ -347,6 +429,7 @@ function StatePanel() {
 														)
 														setSelectedIndex(index)
 														setOverlayVisible(state)
+														setDialogVisible(true)
 													}}
 												>
 													<i className="material-icons">
@@ -392,8 +475,7 @@ function find(query) {
 	})
 }
 find('#java-animator-states').then((el) => {
-	el.previousElementSibling.children[0].innerHTML =
-		intl.tl('panel.states')
+	el.previousElementSibling.children[0].innerHTML = intl.tl('panel.states')
 	ReactDom.render(<StatePanel></StatePanel>, el)
 	bus.on(events.LIFECYCLE.CLEANUP, () => el.remove())
 })
