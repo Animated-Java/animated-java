@@ -1,5 +1,6 @@
 const AnimatedJavaBabelTransformPlugin = require('./tools/babelTransform')
 module.exports = {
+	include: '*',
 	presets: [
 		[
 			'@babel/preset-env',

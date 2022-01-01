@@ -49,7 +49,7 @@ export default {
 			jsnext: true,
 		}),
 		babel({
-			extensions: ['.js', '.ts', '.tsx'],
+			extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.ts', '.tsx'],
 		}),
 		terser(),
 	],
