@@ -4,7 +4,7 @@ import { format } from '../../util/replace'
 export function show_about() {
 	const dialog = new Dialog({
 		id: 'animatedJava.about',
-		width: 1024,
+		// width: 1024,
 		title: tl('animatedJava.dialog.about.title'),
 		// lines: [format(tl('animatedJava.dialog.about.body'), {
 		// 	version: process.env.PLUGIN_VERSION,

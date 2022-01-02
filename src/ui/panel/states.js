@@ -67,6 +67,8 @@ function Dialog({ children, onRequestHide }) {
 				containment: '#page_wrapper',
 			})
 			o.css('position', 'absolute')
+			let x = Math.clamp((window.innerWidth - 256) / 2, 0, 2000)
+			o.css('left', x + 'px')
 		}
 	}, [ref])
 	return (
@@ -75,10 +77,12 @@ function Dialog({ children, onRequestHide }) {
 				style={{
 					height: 'calc(100% - 26px)',
 					width: '100%',
-					zIndex: 10000,
 					position: 'absolute',
 					left: '0px',
 					top: '26px',
+					zIndex: 19,
+					backgroundColor: 'var(--color-dark)',
+					opacity: 0.6,
 				}}
 				onClick={hide}
 			></div>
@@ -90,6 +94,7 @@ function Dialog({ children, onRequestHide }) {
 					left: '0%',
 					top: '128px',
 					maxHeight: '50%',
+					width: '256px',
 					zIndex: 10001,
 				}}
 			>
@@ -97,7 +102,9 @@ function Dialog({ children, onRequestHide }) {
 					className="dialog_handle tl ui-draggable-handle"
 					style={{ cursor: 'default' }}
 				>
-					{tl('panel.varients.dialog.name')}
+					<div className="dialog_title">
+						{tl('panel.varients.dialog.name')}
+					</div>
 					<div
 						className="dialog_close_button"
 						style={{ top: '0', right: '0' }}
@@ -106,7 +113,15 @@ function Dialog({ children, onRequestHide }) {
 						<i className="material-icons">clear</i>
 					</div>
 				</div>
-				<div className="tab_content">{children}</div>
+				<div
+					className="tab_content"
+					style={{
+						paddingLeft: '1em',
+						paddingRight: '1em',
+					}}
+				>
+					{children}
+				</div>
 			</dialog>
 		</>
 	)

@@ -343,6 +343,8 @@ const Settings = () => {
 				containment: '#page_wrapper',
 			})
 			o.css('position', 'absolute')
+			let x = Math.clamp((window.innerWidth - 768) / 2, 0, 2000)
+			o.css('left', x + 'px')
 		}
 	}, [ref])
 	return (
@@ -351,7 +353,9 @@ const Settings = () => {
 				style={{
 					height: 'calc(100% - 26px)',
 					width: '100%',
-					zIndex: 10000,
+					zIndex: 19,
+					backgroundColor: 'var(--color-dark)',
+					opacity: 0.6,
 					position: 'absolute',
 					left: '0px',
 					top: '26px',
@@ -367,7 +371,7 @@ const Settings = () => {
 					top: '128px',
 					// maxHeight: '1024px',
 					height: '79.2%',
-					width: '50%',
+					width: '768px',
 					zIndex: 10001,
 				}}
 			>
@@ -375,7 +379,9 @@ const Settings = () => {
 					className="dialog_handle tl ui-draggable-handle"
 					style={{ cursor: 'default' }}
 				>
-					{tl('animatedJava.menubar.settings.name')}
+					<div className="dialog_title">
+						{tl('animatedJava.menubar.settings.name')}
+					</div>
 					<div
 						className="dialog_close_button"
 						style={{ top: '0', right: '0' }}
