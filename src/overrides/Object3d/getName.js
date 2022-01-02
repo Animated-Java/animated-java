@@ -3,7 +3,7 @@ export const getName = {
 		return Project.groups.find((group) => group.mesh === this).name
 	},
 }
-export const getMesh = {
+export const getGroup = {
 	value() {
 		return Project.groups.find((group) => group.mesh === this)
 	},

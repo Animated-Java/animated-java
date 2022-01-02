@@ -14,6 +14,7 @@ async function exportRigModels(models, variantModels) {
 		settings.animatedJava.rigModelsExportFolder,
 		'.aj_meta'
 	)
+	let _continue = true
 
 	if (!fs.existsSync(metaPath)) {
 		await new Promise((resolve, reject) => {
@@ -35,7 +36,7 @@ async function exportRigModels(models, variantModels) {
 				},
 				onCancel() {
 					d.hide()
-					reject(new CustomError({ silent: true }))
+					reject(new CustomError('Rig Folder Unused -> User Cancelled Export Process', { intentional: true, silent: true}))
 				},
 			}).show()
 		})
@@ -59,7 +60,7 @@ async function exportRigModels(models, variantModels) {
 				},
 				onCancel() {
 					d.hide()
-					reject(new CustomError({ silent: true }))
+					reject(new CustomError('Rig Folder Already Occupied -> User Cancelled Export Process', { intentional: true, silent: true}))
 				},
 			}).show()
 		})

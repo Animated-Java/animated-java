@@ -9,8 +9,8 @@ import * as resourcepack from './util/minecraft/resourcepack'
 import { settings } from './settings'
 import './overrides/overrides'
 import { CustomError } from './util/customError'
-import { format } from './util/replace'
-import { hasSceneAsParent } from './util/hasSceneAsParent'
+import { format, safeFunctionName } from './util/replace'
+import { isSceneBased } from './util/hasSceneAsParent'
 
 function getMCPath(raw) {
 	let list = raw.split(path.sep)
@@ -183,7 +183,7 @@ export function computeElements() {
 		function inVd(n) {
 			return n < -16 || n > 32
 		}
-		if (!hasSceneAsParent(s)) {
+		if (!isSceneBased(s)) {
 			if (
 				element.rotation &&
 				![-45, -22.5, 0, 22.5, 45].includes(element.rotation.angle)
@@ -275,7 +275,7 @@ async function computeModels(cubeData) {
 			group instanceof Group &&
 			group.name !== 'SCENE' &&
 			group.export &&
-			!hasSceneAsParent(group)
+			!isSceneBased(group)
 		) {
 			console.log('group.children:', group.children)
 			console.log('cubeChildren:', cubeChildren)
@@ -296,8 +296,8 @@ async function computeModels(cubeData) {
 						rotation: cube.rotation,
 					})
 				})
-
-				models[group.name] = {
+				const modelName = safeFunctionName(group.name)
+				models[modelName] = {
 					aj: { customModelData: getPredicateId() },
 					textures: getTexturesOnGroup(group),
 					elements,
@@ -367,24 +367,26 @@ export function computeBones(models, animations) {
 	for (const value of Project.elements.map((_) => _.mesh)) {
 		// const value = Project.groups[name];
 		if (value.parent) {
-			const parentMesh = value.parent.getMesh()
+			const parentGroup = value.parent.getGroup()
+			if (!parentGroup.export) continue
+			const parentName = safeFunctionName(parentGroup.name)
 			if (
-				!hasSceneAsParent(parentMesh) &&
-				!bones[parentMesh.name] && // Unless this bone already exists in the bones list
-				models[parentMesh.name] && // If this bone exists in models.
-				models[parentMesh.name].elements.length && // If this bone has elements
-				typeof models[parentMesh.name].id !== 'number'
+				!isSceneBased(parentGroup) &&
+				!bones[parentName] && // Unless this bone already exists in the bones list
+				models[parentName] && // If this bone exists in models.
+				models[parentName].elements.length && // If this bone has elements
+				typeof models[parentName].id !== 'number'
 			) {
-				console.log('Parent Bone:', parentMesh.name, value.parent)
+				console.log('Parent Bone:', parentName, '| group:', parentGroup, '| mesh:', value.parent)
 				value.parent.customModelData =
-					models[parentMesh.name].aj.customModelData
+					models[parentName].aj.customModelData
 				value.parent.scales = {
-					'1,1,1': models[parentMesh.name].aj.customModelData,
+					'1,1,1': models[parentName].aj.customModelData,
 				}
 				value.parent.armAnimationEnabled =
-					parentMesh.armAnimationEnabled
-				value.parent.nbt = parentMesh.nbt
-				bones[parentMesh.name] = value.parent
+					parentGroup.armAnimationEnabled
+				value.parent.nbt = parentGroup.nbt
+				bones[parentName] = value.parent
 			}
 		}
 	}
@@ -537,7 +539,7 @@ export function computeVariantTextureOverrides(models) {
 										d.hide()
 									},
 								}).show()
-								throw new CustomError({ silent: true })
+								throw new CustomError({ intentional: true })
 							}
 						}
 					}

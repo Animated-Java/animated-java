@@ -89,13 +89,15 @@ export const BuildModel = (callback: any, options: any) => {
 			.catch((e) => {
 				F_IS_BUILDING = false
 				Blockbench.setProgress(0)
-				if (e instanceof CustomError && e.options.silent) {
+				if (e instanceof CustomError && (e.options.intentional && e.options.silent)) {
+					// @ts-ignore
+					Blockbench.showQuickMessage(tl('animatedJava.exportCancelled'))
 					console.log(
-						'Silenced Error (Probably caused intentionally)'
+						'Intentional Error:', e.message
 					)
-					console.error(e)
+					throw e
 				} else {
-					console.log('Throwing Unknown Error')
+					console.log('Unknown Error:')
 					throw e
 				}
 			})
@@ -112,46 +114,34 @@ async function computeAnimationData(
 	console.groupCollapsed('Compute Animation Data')
 
 	if (!settings.animatedJava.predicateFilePath) {
-		let d = new Dialog({
-			title: tl(
-				'animatedJava.popup.error.predicateFilePathUndefined.title'
-			),
-			id: '',
-			lines: tl(
-				'animatedJava.popup.error.predicateFilePathUndefined.body'
-			)
-				.split('\n')
-				.map((line: string) => `<p>${line}</p>`),
-			onConfirm() {
-				d.hide()
+		throw new CustomError('Predicate File Path Undefined Error', {
+			intentional: true,
+			dialog: {
+				title: tl(
+					'animatedJava.popup.error.predicateFilePathUndefined.title'
+				),
+				id: '',
+				lines: tl(
+					'animatedJava.popup.error.predicateFilePathUndefined.body'
+				)
+					.split('\n')
+					.map((line: string) => `<p>${line}</p>`),
 			},
-			onCancel() {
-				d.hide()
-			},
-		}).show()
-		throw new CustomError(
-			tl('animatedJava.popup.error.predicateFilePathUndefined.title'),
-			{ silent: true }
-		)
+		})
 	}
 	if (!settings.animatedJava.rigModelsExportFolder) {
-		let d = new Dialog({
-			title: tl('animatedJava.popup.error.rigModelsExportFolder.title'),
-			id: '',
-			lines: tl('animatedJava.popup.error.rigModelsExportFolder.body')
-				.split('\n')
-				.map((line: string) => `<p>${line}</p>`),
-			onConfirm() {
-				d.hide()
+		throw new CustomError('Rig Model Exporter Folder Undefined', {
+			intentional: true,
+			dialog: {
+				title: tl(
+					'animatedJava.popup.error.rigModelsExportFolderUndefined.title'
+				),
+				id: '',
+				lines: tl('animatedJava.popup.error.rigModelsExportFolderUndefined.body')
+					.split('\n')
+					.map((line: string) => `<p>${line}</p>`),
 			},
-			onCancel() {
-				d.hide()
-			},
-		}).show()
-		throw new CustomError(
-			tl('animatedJava.popup.error.rigModelsExportFolder.title'),
-			{ silent: true }
-		)
+		})
 	}
 
 	const animations = (await renderAnimation(options)) as aj.Animations

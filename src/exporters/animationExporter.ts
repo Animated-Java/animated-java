@@ -349,7 +349,7 @@ async function createMCFile(
 
 		const summons = []
 		for (const [boneName, bone] of Object.entries(staticFrame)) {
-			if (!bone.exported) continue
+			// if (!bone.export) continue
 			console.log(boneName)
 			const summon = new Summon(boneName, bone)
 			summons.push(summon)
@@ -539,34 +539,25 @@ async function createMCFile(
 
 		for (const animation of Object.values(animations)) {
 			if (animation.frames.length <= 1) {
-				let d = new Dialog({
-					id: 'animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation',
-					title: tl(
-						'animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.title'
-					),
-					lines: format(
-						tl(
-							'animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.body'
+				throw new CustomError('Zero Length Animation Error', {
+					intentional: true,
+					dialog: {
+						id: 'animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation',
+						title: tl(
+							'animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.title'
 						),
-						{
-							animationName: animation.name,
-						}
-					)
-						.split('\n')
-						.map((line: string) => `<p>${line}</p>`),
-					onConfirm() {
-						d.hide()
+						lines: format(
+							tl(
+								'animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.body'
+							),
+							{
+								animationName: animation.name,
+							}
+						)
+							.split('\n')
+							.map((line: string) => `<p>${line}</p>`),
 					},
-					onCancel() {
-						d.hide()
-					},
-				}).show()
-				throw new CustomError(
-					tl(
-						'animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.title'
-					),
-					{ silent: true }
-				)
+				})
 			}
 
 			const thisAnimationLoopMode = format(
@@ -800,28 +791,22 @@ async function exportMCFile(
 	exporterSettings: animationExporterSettings
 ) {
 	if (!exporterSettings.mcbFilePath) {
-		let d = new Dialog({
-			title: tl(
-				'animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.title'
-			),
-			id: '',
-			lines: tl(
-				'animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.body'
-			)
-				.split('\n')
-				.map((line: string) => `<p>${line}</p>`),
-			onConfirm() {
-				d.hide()
-			},
-			onCancel() {
-				d.hide()
-			},
-		}).show()
 		throw new CustomError(
-			tl(
-				'animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.title'
-			),
-			{ silent: true }
+			'animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.title',
+			{
+				intentional: true,
+				dialog: {
+					title: tl(
+						'animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.title'
+					),
+					id: '',
+					lines: tl(
+						'animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.body'
+					)
+						.split('\n')
+						.map((line: string) => `<p>${line}</p>`),
+				},
+			}
 		)
 	}
 
@@ -838,28 +823,22 @@ async function exportDataPack(
 ) {
 	if (!exporterSettings.dataPackPath) {
 		console.log(exporterSettings.dataPackPath)
-		let d = new Dialog({
-			title: tl(
-				'animatedJava_exporter_animationExporter.popup.error.dataPackFilePathNotDefined.title'
-			),
-			id: '',
-			lines: tl(
-				'animatedJava_exporter_animationExporter.popup.error.dataPackFilePathNotDefined.body'
-			)
-				.split('\n')
-				.map((line: string) => `<p>${line}</p>`),
-			onConfirm() {
-				d.hide()
-			},
-			onCancel() {
-				d.hide()
-			},
-		}).show()
 		throw new CustomError(
-			tl(
-				'animatedJava_exporter_animationExporter.popup.error.dataPackFilePathNotDefined.title'
-			),
-			{ silent: true }
+			'animatedJava_exporter_animationExporter.popup.error.dataPackFilePathNotDefined.title',
+			{
+				intentional: true,
+				dialog: {
+					title: tl(
+						'animatedJava_exporter_animationExporter.popup.error.dataPackFilePathNotDefined.title'
+					),
+					id: '',
+					lines: tl(
+						'animatedJava_exporter_animationExporter.popup.error.dataPackFilePathNotDefined.body'
+					)
+						.split('\n')
+						.map((line: string) => `<p>${line}</p>`),
+				},
+			}
 		)
 	}
 	console.log('mcFile:', generated.mcFile)
@@ -998,9 +977,7 @@ async function animationExport(data: any) {
 	}
 
 	Blockbench.showQuickMessage(
-		tl(
-			'animatedJava_exporter_animationExporter.successfullyExported'
-		)
+		tl('animatedJava_exporter_animationExporter.successfullyExported')
 	)
 }
 

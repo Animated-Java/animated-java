@@ -17,6 +17,11 @@ import { CustomError } from './util/customError'
 import { format } from './util/replace'
 
 function showUnknownErrorDialog(e: CustomError | any) {
+	// console.log(e.options)
+	if (e.options?.silent) {
+		console.log(e.options.message)
+		return
+	}
 	new Dialog(
 		Object.assign(
 			{
@@ -64,7 +69,7 @@ const ANIMATED_JAVA = {
 	},
 	asyncError(e: Error) {
 		showUnknownErrorDialog(e)
-		// throw e
+		throw e
 		// console.error('CUSTOM ERROR HANDLING', e)
 	},
 	logIntlDifferences(showDefaultValues: boolean) {
@@ -109,7 +114,7 @@ export type Bone = {
 	nbt: string
 	armAnimationEnabled: boolean
 	customModelData: number
-	exported: boolean
+	export: boolean
 } & Cube
 
 export interface BoneObject {
@@ -117,7 +122,7 @@ export interface BoneObject {
 }
 
 export type AnimationFrameBone = {
-	exported: boolean
+	export: boolean
 	pos: { x: number; y: number; z: number }
 	rot: { x: number; y: number; z: number }
 	scale: { x: number; y: number; z: number }

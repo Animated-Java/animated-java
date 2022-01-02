@@ -210,14 +210,17 @@ function StatePanel() {
 												key={i}
 												style={{
 													marginTop: '10px',
-													borderTop:
-														'1px solid var(--color-border)',
+													// borderTop:'1px solid var(--color-border)',
 												}}
 											>
+												<hr/>
 												<img
 													src={t1.source}
 													width={30}
 													height={30}
+													style={{
+														marginLeft: '11px'
+													}}
 												></img>
 												<div
 													style={{

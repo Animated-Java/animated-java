@@ -11,8 +11,8 @@ import { StructTypes, StructPacker } from 'struct-packer'
 import { gunzipSync, gzipSync } from 'zlib'
 import events from './constants/events'
 import { tl } from './util/intl'
-import { format } from './util/replace'
-import { hasSceneAsParent } from './util/hasSceneAsParent'
+import { format, safeFunctionName } from './util/replace'
+import { isSceneBased } from './util/hasSceneAsParent'
 store.set('static_animation_uuid', '138747e7-2de0-4130-b900-9275ca0e6333')
 
 function setAnimatorTime(time) {
@@ -87,7 +87,7 @@ function getScales() {
 	return result
 }
 
-function getData(animation, exported, renderedGroups) {
+function getData(animation, renderedGroups) {
 	Animator.preview(false)
 	const pos = getPositions()
 	const rot = getRotations(animation)
@@ -96,7 +96,8 @@ function getData(animation, exported, renderedGroups) {
 	renderedGroups.forEach((group) => {
 		const thisPos = pos[group.name]
 		const thisRot = rot[group.name]
-		res[group.name] = {
+		const groupName = safeFunctionName(group.name)
+		res[groupName] = {
 			pos: {
 				x: -thisPos.x,
 				y: thisPos.y,
@@ -107,8 +108,7 @@ function getData(animation, exported, renderedGroups) {
 				y: -thisRot[1],
 				z: thisRot[2],
 			},
-			scale: scl[group.name],
-			exported: exported.includes(group),
+			scale: scl[groupName],
 		}
 	})
 	return res
@@ -128,7 +128,6 @@ const struct = StructTypes.Object({
 					pos: vec3,
 					rot: StructTypes.ArrayOf(StructTypes.Float),
 					scale: vec3,
-					exported: StructTypes.Boolean,
 				})
 			),
 			scripts: StructTypes.Object({}),
@@ -231,6 +230,7 @@ bus.on(events.LIFECYCLE.CLEANUP, () => {
 	NodePreviewController.prototype.updateTransform = $original_func
 })
 async function renderAnimation(options) {
+	console.groupCollapsed('Render Animations')
 	// const timeline_save = get_timeline_save_point();
 	unselectAll()
 	Timeline.unselect()
@@ -263,20 +263,15 @@ async function renderAnimation(options) {
 		)
 		Blockbench.setProgress(accAnimationLength / totalAnimationLength, 50)
 	}, 50)
-	console.log(progressUpdaterID)
 
 	try {
 		// fix_scene_rotation();
 		const animations = {}
-		const Groups = Group.all.filter(
-			(group) =>
-				group.export &&
-				!hasSceneAsParent(group) &&
-				group.children.find((child) => child instanceof Cube)
-		)
 		const renderedGroups = Group.all.filter(
-			(group) => !hasSceneAsParent(group)
+			(group) => !isSceneBased(group) && group.children.find((child) => child instanceof Cube)
 		)
+		console.log('All Groups:', Group.all)
+		console.log('Rendered Groups:', renderedGroups)
 
 		for (const animation of Animator.animations.sort()) {
 			const value = Cache.hit(animation)
@@ -311,7 +306,7 @@ async function renderAnimation(options) {
 							})
 					}
 					const frame = {
-						bones: getData(animation, Groups, renderedGroups),
+						bones: getData(animation, renderedGroups),
 						scripts: effects,
 					}
 					let fdist = -Infinity
@@ -349,6 +344,7 @@ async function renderAnimation(options) {
 		clearInterval(progressUpdaterID)
 		Blockbench.setStatusBarText()
 		Blockbench.setProgress(0, 0)
+		console.groupEnd()
 		return animations
 	} catch (error) {
 		// unfix_scene_rotation();
@@ -357,6 +353,7 @@ async function renderAnimation(options) {
 		clearInterval(progressUpdaterID)
 		Blockbench.setStatusBarText()
 		Blockbench.setProgress(0, 0)
+		console.groupEnd()
 		throw error
 	}
 }

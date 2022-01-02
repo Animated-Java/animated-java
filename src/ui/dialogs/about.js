@@ -208,9 +208,14 @@ function About() {
 							marginRight: 'auto',
 						}}
 					></img>
-					<p style={{ textAlign: 'center', fontSize: '2em' }}>
-						Fetchbot
-					</p>
+					<div style={{textAlign: 'center'}}>
+						<a
+							href="https://twitter.com/FetchBot1"
+							style={{ fontSize: '2em' }}
+						>
+							FetchBot
+						</a>
+					</div>
 					<p style={{ textAlign: 'center', fontSize: '1em' }}>
 						{tl('about.fetchbot.quote')}
 					</p>
@@ -230,9 +235,14 @@ function About() {
 							marginRight: 'auto',
 						}}
 					></img>
-					<p style={{ textAlign: 'center', fontSize: '2em' }}>
-						SnaveSutit
-					</p>
+					<div style={{textAlign: 'center'}}>
+						<a
+							href="https://twitter.com/SnaveSutit"
+							style={{ fontSize: '2em' }}
+						>
+							SnaveSutit
+						</a>
+					</div>
 					<p style={{ textAlign: 'center', fontSize: '1em' }}>
 						{tl('about.snavesutit.quote')}
 					</p>

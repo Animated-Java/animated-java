@@ -277,7 +277,7 @@ async function createMCFile(
 
 		const summons = []
 		for (const [boneName, bone] of Object.entries(staticFrame)) {
-			if (!bone.exported) continue
+			// if (!bone.export) continue
 			console.log(boneName)
 			const summon = new Summon(boneName, bone)
 			summons.push(summon)
@@ -368,29 +368,20 @@ async function exportMCFile(
 	exporterSettings: statueExporterSettings
 ) {
 	if (!exporterSettings.mcbFilePath) {
-		let d = new Dialog({
-			title: tl(
-				'animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.title'
-			),
-			id: '',
-			lines: tl(
-				'animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.body'
-			)
-				.split('\n')
-				.map((line: string) => `<p>${line}</p>`),
-			onConfirm() {
-				d.hide()
+		throw new CustomError('MCB File Path Undefined', {
+			intentional: true,
+			dialog: {
+				title: tl(
+					'animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.title'
+				),
+				id: '',
+				lines: tl(
+					'animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.body'
+				)
+					.split('\n')
+					.map((line: string) => `<p>${line}</p>`),
 			},
-			onCancel() {
-				d.hide()
-			},
-		}).show()
-		throw new CustomError(
-			tl(
-				'animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.title'
-			),
-			{ silent: true }
-		)
+		})
 	}
 
 	Blockbench.writeFile(exporterSettings.mcbFilePath, {
@@ -406,29 +397,20 @@ async function exportDataPack(
 ) {
 	if (!exporterSettings.dataPackPath) {
 		console.log(exporterSettings.dataPackPath)
-		let d = new Dialog({
-			title: tl(
-				'animatedJava_exporter_statueExporter.popup.error.dataPackFilePathNotDefined.title'
-			),
-			id: '',
-			lines: tl(
-				'animatedJava_exporter_statueExporter.popup.error.dataPackFilePathNotDefined.body'
-			)
-				.split('\n')
-				.map((line: string) => `<p>${line}</p>`),
-			onConfirm() {
-				d.hide()
+		throw new CustomError('Data Pack Folder Undefined', {
+			intentional: true,
+			dialog: {
+				title: tl(
+					'animatedJava_exporter_statueExporter.popup.error.dataPackFilePathNotDefined.title'
+				),
+				id: '',
+				lines: tl(
+					'animatedJava_exporter_statueExporter.popup.error.dataPackFilePathNotDefined.body'
+				)
+					.split('\n')
+					.map((line: string) => `<p>${line}</p>`),
 			},
-			onCancel() {
-				d.hide()
-			},
-		}).show()
-		throw new CustomError(
-			tl(
-				'animatedJava_exporter_statueExporter.popup.error.dataPackFilePathNotDefined.title'
-			),
-			{ silent: true }
-		)
+		})
 	}
 	console.log('mcFile:', generated.mcFile)
 	console.log('mcbConfig:', generated.mcbConfig)

@@ -7,8 +7,7 @@ panel.variants.title: Model Variants
 
 dialog.varients.title: Model Variants
 dialog.variants.body: |-
-  You have been given a curse by reading this text.
-  In 3 days you will drop your keys into a drain.
+  Variants allow your model to have different "skins" that can be swapped out during runtime.
 
 animatedJava.progress.animationRendering.text: Rendering Animations... %currents/%totals
 animatedJava.dialog.animation_properties.animationCompleteCommand.label: End Of Anim Command
@@ -57,6 +56,8 @@ animatedJava.dialog.miscError.body: |-
 
 #? Errors/Warnings
 
+animatedJava.exportCancelled: Export Cancelled
+
 animatedJava.customErrorReport.titleUndefined: Unknown Error
 
 animatedJava.popup.error.unableToGenerateTexturePath.title: Invalid texture path
@@ -93,8 +94,8 @@ animatedJava.popup.error.predicateFilePathUndefined.title: Predicate File Path U
 animatedJava.popup.error.predicateFilePathUndefined.body: |-
     You must define a predicate file path in the settings before you can export.
 
-animatedJava.popup.error.rigModelsExportFolder.title: Rig Model Folder Undefined
-animatedJava.popup.error.rigModelsExportFolder.body: |-
+animatedJava.popup.error.rigModelsExportFolderUndefined.title: Rig Model Folder Undefined
+animatedJava.popup.error.rigModelsExportFolderUndefined.body: |-
     You must define a rig model folder path in settings before you can export.
 
 #? varients panel
