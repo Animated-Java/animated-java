@@ -275,9 +275,9 @@ MenuBar.addAction(
 				)
 			}
 		},
-		keybind: {
-			key: 'f9'
-		}
+		keybind: new Keybind({
+			key: 120 // f9
+		})
 	},
 	'animated_java'
 )
