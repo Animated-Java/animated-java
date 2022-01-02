@@ -3,6 +3,7 @@ import { BuildModel } from './mainEntry'
 import { settings } from './settings'
 import { store } from './util/store'
 import { bus } from './util/bus'
+import './bbmods/patchAction'
 import { format as modelFormat } from './modelFormat'
 import { tl } from './util/intl'
 import { registerSettingRenderer } from './ui/dialogs/settings'
@@ -30,7 +31,7 @@ function showUnknownErrorDialog(e: CustomError | any) {
 				],
 				width: 1024,
 				height: 512,
-				singleButton: true
+				singleButton: true,
 			},
 			e.options?.dialog || {}
 		)
