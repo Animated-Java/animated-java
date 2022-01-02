@@ -275,6 +275,9 @@ MenuBar.addAction(
 				)
 			}
 		},
+		keybind: {
+			key: 'f9'
+		}
 	},
 	'animated_java'
 )

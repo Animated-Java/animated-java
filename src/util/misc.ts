@@ -28,3 +28,7 @@ export function size(item: any) {
 		'unable to get size of item, please check your dev tools or see the log above this error for more info'
 	)
 }
+
+export function wrapNumber(num: number, min: number, max: number): number {
+	return ((((num - min) % (max - min)) + (max - min)) % (max - min)) + min
+}

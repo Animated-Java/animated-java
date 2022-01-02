@@ -316,6 +316,8 @@ const format = new ModelFormat({
 		settingsByUUID.set(Project.uuid, settings.toObject())
 	},
 })
+
+
 codec.format = format
 codec.export_action = CustomAction('save_aj_project', {
 	icon: 'save',
