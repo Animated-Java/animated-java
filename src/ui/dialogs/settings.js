@@ -5,6 +5,7 @@ import ReactDom from 'react-dom'
 import { DefaultSettings, settings } from '../../settings'
 import { tl } from '../../util/intl'
 import { ERROR } from '../../util/errors'
+import { Dialog } from '../Dialog'
 const dialog = electron.dialog
 const RenderTemplates = {
 	checkbox({ value, setValue, namespace, name, children }) {
@@ -333,114 +334,124 @@ const SettingInput = ({ namespace, name, template }) => {
 		return null
 	}
 }
+let showSettings
 const Settings = () => {
-	const ref = useRef()
-	useEffect(() => {
-		if (ref.current) {
-			let o = $(ref.current)
-			o.draggable({
-				handle: '.dialog_handle',
-				containment: '#page_wrapper',
-			})
-			o.css('position', 'absolute')
-		}
-	}, [ref])
+	// const ref = useRef()
+	// useEffect(() => {
+	// 	if (ref.current) {
+	// 		let o = $(ref.current)
+	// 		o.draggable({
+	// 			handle: '.dialog_handle',
+	// 			containment: '#page_wrapper',
+	// 		})
+	// 		o.css('position', 'absolute')
+	// 	}
+	// }, [ref])
+	const [visible, setVisible] = useState(false)
+	useEffect(() => (showSettings = () => setVisible(true)), [])
 	return (
-		<>
-			<div
-				style={{
-					height: 'calc(100% - 26px)',
-					width: '100%',
-					zIndex: 10000,
-					position: 'absolute',
-					left: '0px',
-					top: '26px',
+		visible && (
+			<Dialog
+				onRequestHide={() => {
+					setVisible(false)
 				}}
-				onClick={hide_settings}
-			></div>
-			<dialog
-				ref={ref}
-				className="dialog paddinged ui-resizable ui-draggable draggable"
-				style={{
-					display: 'block',
-					left: '0%',
-					top: '128px',
-					// maxHeight: '1024px',
-					height: '79.2%',
-					width: '50%',
-					zIndex: 10001,
-				}}
+				title={tl('animatedJava.menubar.settings.name')}
+				width={'50%'}
 			>
-				<div
-					className="dialog_handle tl ui-draggable-handle"
-					style={{ cursor: 'default' }}
+				<ul
+					style={{
+						maxHeight: '75vh',
+						overflowY: 'scroll',
+					}}
+					className="WHYCSSWHY-or-settings"
 				>
-					{tl('animatedJava.menubar.settings.name')}
-					<div
-						className="dialog_close_button"
-						style={{ top: '0', right: '0' }}
-						onClick={hide_settings}
-					>
-						<i className="material-icons">clear</i>
-					</div>
-				</div>
-				<div className="tab_content">
-					<ul
-						style={{ maxHeight: '75vh', overflowY: 'scroll' }}
-						className="WHYCSSWHY-or-settings"
-					>
-						<li>
-							<h2
-								className="tl i_b"
-								style={{ marginLeft: '1em' }}
-							>
-								Animated Java Settings
+					<li>
+						<h2 className="tl i_b">Animated Java Settings</h2>
+						<ul>
+							{Object.keys(DefaultSettings.animatedJava).map(
+								(child, id) => (
+									<li key={child}>
+										<SettingInput
+											namespace={'animatedJava'}
+											name={child}
+											template={
+												DefaultSettings.animatedJava[
+													child
+												]
+											}
+										></SettingInput>
+									</li>
+								)
+							)}
+						</ul>
+					</li>
+					<li>
+						<ul>
+							<h2 style={{ marginLeft: '1em' }}>
+								{tl('animatedJava.menubar.exporterList.name')}
 							</h2>
-							<ul style={{ marginLeft: '2em' }}>
-								{Object.keys(DefaultSettings.animatedJava).map(
-									(child, id) => (
-										<li key={child}>
-											<SettingInput
-												namespace={'animatedJava'}
-												name={child}
-												template={
-													DefaultSettings
-														.animatedJava[child]
-												}
-											></SettingInput>
-										</li>
+							{Object.keys(DefaultSettings)
+								.filter((key) => key !== 'animatedJava')
+								.map((key, index) => {
+									const children = Object.keys(
+										DefaultSettings[key]
 									)
-								)}
-							</ul>
-						</li>
-						<li>
-							<ul>
-								<h2 style={{ marginLeft: '1em' }}>
-									{tl(
-										'animatedJava.menubar.exporterList.name'
-									)}
-								</h2>
-								{Object.keys(DefaultSettings)
-									.filter((key) => key !== 'animatedJava')
-									.map((key, index) => {
-										const children = Object.keys(
-											DefaultSettings[key]
-										)
-										return (
-											// SettingsPanel(key, setRevealedIndex, index, revealedIndex, children)
-											<SettingsPanel
-												key={key}
-												name={key}
-												childrenSettings={children}
-											/>
-										)
-									})}
-							</ul>
-						</li>
-					</ul>
-				</div>
-			</dialog>
-		</>
+									return (
+										// SettingsPanel(key, setRevealedIndex, index, revealedIndex, children)
+										<SettingsPanel
+											key={key}
+											name={key}
+											childrenSettings={children}
+										/>
+									)
+								})}
+						</ul>
+					</li>
+				</ul>
+			</Dialog>
+		)
+		// <>
+		// 	<div
+		// 		style={{
+		// 			height: 'calc(100% - 26px)',
+		// 			width: '100%',
+		// 			zIndex: 10000,
+		// 			position: 'absolute',
+		// 			left: '0px',
+		// 			top: '26px',
+		// 		}}
+		// 		onClick={hide_settings}
+		// 	></div>
+		// 	<dialog
+		// 		ref={ref}
+		// 		className="dialog paddinged ui-resizable ui-draggable draggable"
+		// 		style={{
+		// 			display: 'block',
+		// 			left: '0%',
+		// 			top: '128px',
+		// 			// maxHeight: '1024px',
+		// 			height: '79.2%',
+		// 			width: '50%',
+		// 			zIndex: 10001,
+		// 		}}
+		// 	>
+		// 		<div
+		// 			className="dialog_handle tl ui-draggable-handle"
+		// 			style={{ cursor: 'default' }}
+		// 		>
+		// 			{tl('animatedJava.menubar.settings.name')}
+		// 			<div
+		// 				className="dialog_close_button"
+		// 				style={{ top: '0', right: '0' }}
+		// 				onClick={hide_settings}
+		// 			>
+		// 				<i className="material-icons">clear</i>
+		// 			</div>
+		// 		</div>
+		// 		<div className="tab_content">
+		// 		</div>
+		// 	</dialog>
+		// </>
 	)
 }
 
@@ -496,6 +507,7 @@ export function show_settings() {
 	Array.from(el.children).forEach((child) => {
 		child.style.display = 'unset'
 	})
+	showSettings()
 }
 queueMicrotask(() => {
 	ReactDom.render(<Settings></Settings>, el)
