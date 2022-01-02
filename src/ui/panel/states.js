@@ -94,6 +94,7 @@ function Dialog({ children, onRequestHide }) {
 					left: '0%',
 					top: '128px',
 					maxHeight: '50%',
+					overflowY: 'scroll',
 					width: '256px',
 					zIndex: 10001,
 				}}
@@ -213,25 +214,37 @@ function StatePanel() {
 													// borderTop:'1px solid var(--color-border)',
 												}}
 											>
-												<hr/>
+												<hr />
 												<img
 													src={t1.source}
 													width={30}
 													height={30}
 													style={{
-														marginLeft: '11px'
+														marginLeft: '11px',
 													}}
 												></img>
 												<div
 													style={{
-														display: 'inline-block',
-														verticalAlign:
-															'text-bottom',
-														height: '30px',
-														paddingLeft: '10px',
+														display: 'flex',
 													}}
 												>
-													{t1.name}
+													<img
+														src={t1.source}
+														width={30}
+														height={30}
+													></img>
+													<div
+														style={{
+															display:
+																'inline-block',
+															verticalAlign:
+																'text-bottom',
+															height: '30px',
+															paddingLeft: '10px',
+														}}
+													>
+														{t1.name}
+													</div>
 												</div>
 												<Dropdown
 													placeholder={'Default'}
@@ -259,8 +272,12 @@ function StatePanel() {
 																name: t2.uuid,
 																value: t2.uuid,
 																label: (
-																	<React.Fragment
+																	<div
 																		key={i}
+																		style={{
+																			display:
+																				'flex',
+																		}}
 																	>
 																		<img
 																			src={
@@ -282,13 +299,15 @@ function StatePanel() {
 																				height: '30px',
 																				paddingLeft:
 																					'10px',
+																				paddingTop:
+																					'2px',
 																			}}
 																		>
 																			{
 																				t2.name
 																			}
 																		</div>
-																	</React.Fragment>
+																	</div>
 																),
 															})),
 													]}
@@ -496,7 +515,9 @@ function find(query) {
 	})
 }
 find('#java-animator-states').then((el) => {
-	el.previousElementSibling.children[0].innerHTML = intl.tl('panel.variants.title')
+	el.previousElementSibling.children[0].innerHTML = intl.tl(
+		'panel.variants.title'
+	)
 	ReactDom.render(<StatePanel></StatePanel>, el)
 	bus.on(events.LIFECYCLE.CLEANUP, () => el.remove())
 })
