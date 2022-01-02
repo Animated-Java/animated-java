@@ -93,6 +93,7 @@ const people = [
 	{ roles: [Reasons.BetaTester], name: 'CommandWitchery' },
 	{ roles: [Reasons.BetaTester], name: 'Eriol_Eandur' },
 	{ roles: [Reasons.BetaTester], name: 'Kyle10BC' },
+	{ roles: [Reasons.BetaTester], name: 'destruc7i0n' },
 	{ roles: [Reasons.BetaTester], name: 'MrMakistein' },
 	{ roles: [Reasons.BetaTester], name: 'Sprunkles' },
 	{ roles: [Reasons.BetaTester], name: 'Suso' },
