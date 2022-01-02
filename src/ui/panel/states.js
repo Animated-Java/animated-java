@@ -2,14 +2,13 @@ import React, { useRef, useEffect, useState } from 'react'
 // const { useEffect, useState } = React;
 import ReactDom from 'react-dom'
 import events, { LIFECYCLE } from '../../constants/events'
-import { intl } from '../../util/intl'
+import { intl, tl } from '../../util/intl'
 import { store } from '../../util/store'
 import { bus } from '../../util/bus'
 import { format } from '../../modelFormat'
 import Dropdown from 'react-dropdown/dist/index'
 import transparent from '../../assets/transparent.png'
 import css from '../../dependencies/react-dropdown/style.css'
-import { Dialog } from '../Dialog'
 
 const style = document.createElement('style')
 fetch(css)
@@ -54,6 +53,63 @@ function updateDisplay(state) {
 			Project.materials[from].map.needsUpdate = true
 		}
 	}
+}
+function Dialog({ children, onRequestHide }) {
+	const ref = useRef()
+	function hide() {
+		onRequestHide()
+	}
+	useEffect(() => {
+		if (ref.current) {
+			let o = $(ref.current)
+			o.draggable({
+				handle: '.dialog_handle',
+				containment: '#page_wrapper',
+			})
+			o.css('position', 'absolute')
+		}
+	}, [ref])
+	return (
+		<>
+			<div
+				style={{
+					height: 'calc(100% - 26px)',
+					width: '100%',
+					zIndex: 10000,
+					position: 'absolute',
+					left: '0px',
+					top: '26px',
+				}}
+				onClick={hide}
+			></div>
+			<dialog
+				ref={ref}
+				className="dialog paddinged ui-resizable ui-draggable draggable"
+				style={{
+					display: 'block',
+					left: '0%',
+					top: '128px',
+					maxHeight: '50%',
+					zIndex: 10001,
+				}}
+			>
+				<div
+					className="dialog_handle tl ui-draggable-handle"
+					style={{ cursor: 'default' }}
+				>
+					{tl('panel.varients.dialog.name')}
+					<div
+						className="dialog_close_button"
+						style={{ top: '0', right: '0' }}
+						onClick={hide}
+					>
+						<i className="material-icons">clear</i>
+					</div>
+				</div>
+				<div className="tab_content">{children}</div>
+			</dialog>
+		</>
+	)
 }
 function StatePanel() {
 	const [editState, setEditState] = useState({})
@@ -118,7 +174,6 @@ function StatePanel() {
 						onRequestHide={() => {
 							setDialogVisible(false)
 						}}
-						height={4324423}
 					>
 						<div style={{ width: '100%', display: 'inline-block' }}>
 							<ul
