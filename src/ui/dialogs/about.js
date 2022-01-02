@@ -28,6 +28,13 @@ const roles = {
 		color: '#00aced',
 		textColor: 'red',
 	},
+	[Reasons.SpecialPerson]: {
+		get content() {
+			return tl('about.YokaiS.content')
+		},
+		color: '#deadbe',
+		textColor: 'red',
+	},
 }
 function Role({ role }) {
 	return (
@@ -67,7 +74,10 @@ function Person({ person }) {
 
 const people = [
 	{ roles: [Reasons.BetaTester, Reasons.Moderator], name: 'Ersatz' },
-	{ roles: [Reasons.BetaTester, Reasons.Moderator], name: 'YokaiS' },
+	{
+		roles: [Reasons.BetaTester, Reasons.Moderator, Reasons.SpecialPerson],
+		name: 'YokaiS',
+	},
 	{ roles: [Reasons.BetaTester, Reasons.Moderator], name: 'Ancientkingg' },
 	{ roles: [Reasons.BetaTester, Reasons.Moderator], name: 'dragonmaster95' },
 	{ roles: [Reasons.BetaTester], name: 'CommanderRedstone' },
