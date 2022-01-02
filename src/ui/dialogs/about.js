@@ -1,10 +1,12 @@
 import { tl } from '../../util/intl'
 import ReactDOM from 'react-dom'
 import React from 'react'
+import logo from '../../assets/Animated_Java_2022.svg'
 const Reasons = {
 	BetaTester: 0,
 	Moderator: 1,
 	Dev: 2,
+	BrandingArtist: 3,
 }
 const roles = {
 	[Reasons.BetaTester]: {
@@ -28,9 +30,9 @@ const roles = {
 		color: '#00aced',
 		textColor: 'red',
 	},
-	[Reasons.SpecialPerson]: {
+	[Reasons.BrandingArtist]: {
 		get content() {
-			return tl('about.YokaiS.content')
+			return tl('about.brandingArtist.content')
 		},
 		color: '#deadbe',
 		textColor: 'red',
@@ -62,12 +64,20 @@ function Person({ person }) {
 				padding: '10px',
 			}}
 		>
-			<p>{person.name}</p>
-			<span>
-				{person.roles.map((role) => (
-					<Role key={role} role={role}></Role>
+			<p
+				style={{
+					textAlign: 'center',
+				}}
+			>
+				{person.name}
+			</p>
+			<ul>
+				{person.roles.map((role, i) => (
+					<li key={i}>
+						<Role role={role}></Role>
+					</li>
 				))}
-			</span>
+			</ul>
 		</div>
 	)
 }
@@ -75,7 +85,7 @@ function Person({ person }) {
 const people = [
 	{ roles: [Reasons.BetaTester, Reasons.Moderator], name: 'Ersatz' },
 	{
-		roles: [Reasons.BetaTester, Reasons.Moderator, Reasons.SpecialPerson],
+		roles: [Reasons.BetaTester, Reasons.Moderator, Reasons.BrandingArtist],
 		name: 'YokaiS',
 	},
 	{ roles: [Reasons.BetaTester, Reasons.Moderator], name: 'Ancientkingg' },
@@ -103,15 +113,42 @@ const people = [
 	{ roles: [Reasons.BetaTester], name: 'VelVoxelRaptor' },
 	{ roles: [Reasons.BetaTester], name: 'Violet' },
 ]
+function Center({ children }) {
+	return (
+		<div
+			style={{
+				display: 'flex',
+				justifyContent: 'center',
+			}}
+		>
+			{children}
+		</div>
+	)
+}
 function About() {
 	return (
 		<div>
-			<h1>{tl('animatedJava')}</h1>
-			<p>
-				<b>Version:</b> {process.env.PLUGIN_VERSION}
-			</p>
-
-			<h3>Developers</h3>
+			<Center>
+				<img
+					src={logo}
+					width={256}
+					height={256}
+					style={{
+						borderRadius: '128px',
+					}}
+				></img>
+			</Center>
+			<Center>
+				<h1>{tl('animatedJava')}</h1>
+			</Center>
+			<Center>
+				<p style={{ marginBottom: '1em' }}>
+					<b>Version:</b> {process.env.PLUGIN_VERSION}
+				</p>
+			</Center>
+			<Center>
+				<h3>Developers</h3>
+			</Center>
 			<div
 				style={{
 					display: 'flex',
@@ -132,7 +169,9 @@ function About() {
 					}}
 				></Person>
 			</div>
-			<h4>Honourable Mentions</h4>
+			<Center>
+				<h4>Honourable Mentions</h4>
+			</Center>
 			<div
 				style={{
 					display: 'flex',
