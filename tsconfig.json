@@ -7,5 +7,6 @@
 		"lib": ["DOM", "ESNext"],
 		"target": "ESNext",
 		"moduleResolution": "node",
+		"jsx": "react"
 	}
 }

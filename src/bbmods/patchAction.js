@@ -1,4 +1,5 @@
 import events from '../constants/events'
+import { codec, format } from '../modelFormat'
 import { bus } from '../util/bus'
 
 const save_aj_project = {
@@ -39,6 +40,7 @@ Action.prototype.trigger = function (...args) {
 	}
 	return this._trigger(...args)
 }
+
 bus.on(events.LIFECYCLE.CLEANUP, () => {
 	if (Action.prototype.patch) {
 		delete Action.prototype.patch

@@ -11,6 +11,10 @@ animatedJava.dialog.animation_properties.animationCompleteCommand.label: End Of 
 animatedJava.dialog.about.title: About Animated Java
 animatedJava.version: Version
 animatedJava.creators: Creators
+#! about page tags
+about.closedBeta.content: Closed Beta Tester
+about.moderator.content: Discord Moderator
+about.dev.content: Developer
 
 #? Settings
 animatedJava.settings.global: '(Global)'
@@ -41,18 +45,18 @@ animatedJava.customErrorReport.titleUndefined: Unknown Error
 
 animatedJava.popup.error.unableToGenerateTexturePath.title: Invalid texture path
 animatedJava.popup.error.unableToGenerateTexturePath.body: |-
-  The texture '%textureName' has an invalid location inside a resource pack
-  Please make sure it is properly saved inside of a valid resource pack in a sub folder of 'assets/namespace/textures/'
+    The texture '%textureName' has an invalid location inside a resource pack
+    Please make sure it is properly saved inside of a valid resource pack in a sub folder of 'assets/namespace/textures/'
 
 animatedJava.popup.error.invalidCubeRotations.title: Invalid Element Rotations
 animatedJava.popup.error.invalidCubeRotations.body: |-
-  The rotations of some cubes are invalid for the java model format.
-  Please all invalid rotations before exporting
+    The rotations of some cubes are invalid for the java model format.
+    Please all invalid rotations before exporting
 
 animatedJava.popup.error.unsavedTexture.title: Unsaved Texture
 animatedJava.popup.error.unsavedTexture.body: |-
-  The texture '%textureName' is not saved to disk!
-  Please make sure it is saved into a valid resource pack location.
+    The texture '%textureName' is not saved to disk!
+    Please make sure it is saved into a valid resource pack location.
 
 animatedJava.popup.warning.rigFolderUnused.title: Unused rig folder
 animatedJava.popup.warning.rigFolderUnused.body: |-
