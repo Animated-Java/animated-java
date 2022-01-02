@@ -12,7 +12,7 @@ import { gunzipSync, gzipSync } from 'zlib'
 import events from './constants/events'
 import { tl } from './util/intl'
 import { format } from './util/replace'
-
+import { hasSceneAsParent } from './util/hasSceneAsParent'
 store.set('static_animation_uuid', '138747e7-2de0-4130-b900-9275ca0e6333')
 
 function setAnimatorTime(time) {
@@ -87,13 +87,13 @@ function getScales() {
 	return result
 }
 
-function getData(animation, exported) {
+function getData(animation, exported, renderedGroups) {
 	Animator.preview(false)
 	const pos = getPositions()
 	const rot = getRotations(animation)
 	const scl = getScales()
 	const res = {}
-	Group.all.forEach((group) => {
+	renderedGroups.forEach((group) => {
 		const thisPos = pos[group.name]
 		const thisRot = rot[group.name]
 		res[group.name] = {
@@ -252,9 +252,7 @@ async function renderAnimation(options) {
 	)
 	// Accumulated animation length
 	let accAnimationLength = 0
-	const tldMessage = tl(
-		'animatedJava.progress.animationRendering.text'
-	)
+	const tldMessage = tl('animatedJava.progress.animationRendering.text')
 	const progressUpdaterID = setInterval(() => {
 		console.log(accAnimationLength, totalAnimationLength)
 		Blockbench.setStatusBarText(
@@ -273,8 +271,11 @@ async function renderAnimation(options) {
 		const Groups = Group.all.filter(
 			(group) =>
 				group.export &&
-				group.name != 'SCENE' &&
+				!hasSceneAsParent(group) &&
 				group.children.find((child) => child instanceof Cube)
+		)
+		const renderedGroups = Group.all.filter(
+			(group) => !hasSceneAsParent(group)
 		)
 
 		for (const animation of Animator.animations.sort()) {
@@ -310,7 +311,7 @@ async function renderAnimation(options) {
 							})
 					}
 					const frame = {
-						bones: getData(animation, Groups),
+						bones: getData(animation, Groups, renderedGroups),
 						scripts: effects,
 					}
 					let fdist = -Infinity
