@@ -14,7 +14,6 @@ export default {
 	output: {
 		file: 'dist/animated_java.js',
 		format: 'cjs',
-		compact: true,
 	},
 	plugins: [
 		typescript(),
@@ -37,6 +36,7 @@ export default {
 		}),
 		commonjs({
 			include: ['node_modules/**'],
+			extensions: ['.ts', '.js'],
 			ignoreGlobal: false,
 			sourceMap: false,
 			namedExports: {
