@@ -90,7 +90,9 @@ export const BuildModel = (callback: any, options: any) => {
 				F_IS_BUILDING = false
 				Blockbench.setProgress(0)
 				if (e instanceof CustomError && e.options.silent) {
-					console.log('Silenced Error (Probably caused intentionally)')
+					console.log(
+						'Silenced Error (Probably caused intentionally)'
+					)
 					console.error(e)
 				} else {
 					console.log('Throwing Unknown Error')
@@ -128,21 +130,15 @@ async function computeAnimationData(
 			},
 		}).show()
 		throw new CustomError(
-			tl(
-				'animatedJava.popup.error.predicateFilePathUndefined.title'
-			),
+			tl('animatedJava.popup.error.predicateFilePathUndefined.title'),
 			{ silent: true }
 		)
 	}
 	if (!settings.animatedJava.rigModelsExportFolder) {
 		let d = new Dialog({
-			title: tl(
-				'animatedJava.popup.error.rigModelsExportFolder.title'
-			),
+			title: tl('animatedJava.popup.error.rigModelsExportFolder.title'),
 			id: '',
-			lines: tl(
-				'animatedJava.popup.error.rigModelsExportFolder.body'
-			)
+			lines: tl('animatedJava.popup.error.rigModelsExportFolder.body')
 				.split('\n')
 				.map((line: string) => `<p>${line}</p>`),
 			onConfirm() {
@@ -229,19 +225,18 @@ Blockbench.on('select_project', () => {
 Blockbench.on('unselect_project', () => {
 	menu.label.style.display = 'none'
 })
+// @ts-ignore
+import logo from './assets/Animated_Java_2022.svg'
 menu.label.innerHTML = tl('animatedJava.menubar.dropdown.name')
-MenuBar.addAction(
-	CustomAction('animated_java_about', {
-		icon: 'help',
-		category: 'animated_java',
-		name: tl('animatedJava.menubar.about.name'),
-		condition: () => modelFormat.id === Format.id,
-		click: function () {
-			show_about()
-		},
-	}),
-	'animated_java'
-)
+let img = document.createElement('img')
+img.src = logo
+img.width = 16
+img.height = 16
+img.style.position = 'relative'
+img.style.top = '2px'
+img.style.borderRadius = '8px'
+img.style.marginRight = '5px'
+menu.label.prepend(img)
 MenuBar.addAction(
 	CustomAction('animated_java_settings', {
 		icon: 'settings',
@@ -269,16 +264,26 @@ MenuBar.addAction(
 				store.getStore('exporters').get(exporter)()
 			} else {
 				Blockbench.showQuickMessage(
-					tl(
-						'animatedJava.popup.quickMessage.noExporterSelected'
-					)
+					tl('animatedJava.popup.quickMessage.noExporterSelected')
 				)
 			}
 		},
 		keybind: new Keybind({
-			key: 120 // f9
-		})
+			key: 120, // f9
+		}),
 	},
+	'animated_java'
+)
+MenuBar.addAction(
+	CustomAction('animated_java_about', {
+		icon: 'help',
+		category: 'animated_java',
+		name: tl('animatedJava.menubar.about.name'),
+		condition: () => modelFormat.id === Format.id,
+		click: function () {
+			show_about()
+		},
+	}),
 	'animated_java'
 )
 MenuBar.update()
