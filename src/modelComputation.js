@@ -10,6 +10,7 @@ import { settings } from './settings'
 import './overrides/overrides'
 import { CustomError } from './util/customError'
 import { format } from './util/replace'
+import { hasSceneAsParent } from './util/hasSceneAsParent'
 
 function getMCPath(raw) {
 	let list = raw.split(path.sep)
@@ -44,18 +45,6 @@ function hasTexture(model, texture) {
 	return model.elements.find((e) =>
 		Object.values(e.faces).find((f) => f.texture === `#${texture.id}`)
 	)
-}
-
-function hasSceneAsParent(self) {
-	if (self.parent) {
-		if (self.parent.name != 'SCENE') {
-			return hasSceneAsParent(self.parent)
-		} else {
-			return true
-		}
-	} else {
-		return false
-	}
 }
 
 function getModelMCPath(modelPath) {
@@ -222,21 +211,17 @@ export function computeElements() {
 	iterate(Outliner.root)
 
 	if (invalid_rot_elements.length) {
-		throw new CustomError('Invalid Element Rotations',
-			{
-				dialog: {
-					title: tl(
-						'animatedJava.popup.error.invalidCubeRotations.title'
-					),
-					lines: tl(
-						'animatedJava.popup.error.invalidCubeRotations.body'
-					)
-						.split('\n')
-						.map((line) => `<p>${line}</p>`),
-					width: 512,
-				},
-			}
-		)
+		throw new CustomError('Invalid Element Rotations', {
+			dialog: {
+				title: tl(
+					'animatedJava.popup.error.invalidCubeRotations.title'
+				),
+				lines: tl('animatedJava.popup.error.invalidCubeRotations.body')
+					.split('\n')
+					.map((line) => `<p>${line}</p>`),
+				width: 512,
+			},
+		})
 	}
 	const ret = {
 		invalid_rot_elements,
@@ -286,7 +271,12 @@ async function computeModels(cubeData) {
 				)
 			)
 
-		if (group instanceof Group && group.name !== 'SCENE' && group.export) {
+		if (
+			group instanceof Group &&
+			group.name !== 'SCENE' &&
+			group.export &&
+			!hasSceneAsParent(group)
+		) {
 			console.log('group.children:', group.children)
 			console.log('cubeChildren:', cubeChildren)
 			if (cubeChildren.length) {
@@ -379,6 +369,7 @@ export function computeBones(models, animations) {
 		if (value.parent) {
 			const parentMesh = value.parent.getMesh()
 			if (
+				!hasSceneAsParent(parentMesh) &&
 				!bones[parentMesh.name] && // Unless this bone already exists in the bones list
 				models[parentMesh.name] && // If this bone exists in models.
 				models[parentMesh.name].elements.length && // If this bone has elements
