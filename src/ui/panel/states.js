@@ -19,7 +19,7 @@ bus.on(events.LIFECYCLE.UNLOAD, () => {
 	style.remove()
 })
 
-Interface.Panels.ja_states = new Panel({
+Interface.Panels.aj_states = new Panel({
 	id: 'states',
 	icon: 'movie',
 	condition: { modes: ['edit'], formats: [format.id] },
@@ -27,13 +27,13 @@ Interface.Panels.ja_states = new Panel({
 		head: Toolbars.texturelist,
 	},
 	component: {
-		name: 'panel-ja-states',
+		name: 'panel-aj-variant',
 		template: `<div id="java-animator-states"></div>`,
 	},
 })
 bus.on(events.LIFECYCLE.CLEANUP, () => {
-	Interface.Panels?.ja_states?.delete()
-	delete Interface.Panels.ja_states
+	Interface.Panels?.aj_states?.delete()
+	delete Interface.Panels.aj_states
 })
 
 function updateDisplay(state) {
@@ -103,7 +103,7 @@ function Dialog({ children, onRequestHide }) {
 					style={{ cursor: 'default' }}
 				>
 					<div className="dialog_title">
-						{tl('panel.varients.dialog.name')}
+						{tl('dialog.varients.title')}
 					</div>
 					<div
 						className="dialog_close_button"
@@ -190,6 +190,9 @@ function StatePanel() {
 							setDialogVisible(false)
 						}}
 					>
+						<div>
+							<p>{tl('dialog.variants.body')}</p>
+						</div>
 						<div style={{ width: '100%', display: 'inline-block' }}>
 							<ul
 								style={
@@ -490,7 +493,7 @@ function find(query) {
 	})
 }
 find('#java-animator-states').then((el) => {
-	el.previousElementSibling.children[0].innerHTML = intl.tl('panel.states')
+	el.previousElementSibling.children[0].innerHTML = intl.tl('panel.variants.title')
 	ReactDom.render(<StatePanel></StatePanel>, el)
 	bus.on(events.LIFECYCLE.CLEANUP, () => el.remove())
 })

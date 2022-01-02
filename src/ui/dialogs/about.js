@@ -2,49 +2,60 @@ import { tl } from '../../util/intl'
 import ReactDOM from 'react-dom'
 import React from 'react'
 import logo from '../../assets/Animated_Java_2022.svg'
+import snavesutitpfp from '../../assets/YokaiS_Snave.png'
+import fetchbotpfp from '../../assets/YokaiS_Fetchbot.png'
 const Reasons = {
 	BetaTester: 0,
 	Moderator: 1,
 	Dev: 2,
 	BrandingArtist: 3,
+	Youtuber: 4,
 }
 const roles = {
 	[Reasons.BetaTester]: {
 		get content() {
 			return tl('about.closedBeta.content')
 		},
-		color: 'rgb(113,54,138)',
-		textColor: 'red',
+		color: '#9B59B6',
+		textColor: 'black',
 	},
 	[Reasons.Moderator]: {
 		get content() {
 			return tl('about.moderator.content')
 		},
 		color: '#ffb11f',
-		textColor: 'red',
+		textColor: 'black',
 	},
 	[Reasons.Dev]: {
 		get content() {
 			return tl('about.dev.content')
 		},
 		color: '#00aced',
-		textColor: 'red',
+		textColor: 'black',
 	},
 	[Reasons.BrandingArtist]: {
 		get content() {
 			return tl('about.brandingArtist.content')
 		},
-		color: '#deadbe',
-		textColor: 'red',
+		color: '#00aced',
+		textColor: 'black',
+	},
+	[Reasons.Youtuber]: {
+		get content() {
+			return tl('about.youtuber.content')
+		},
+		color: '#FF0000',
+		textColor: 'white',
 	},
 }
-function Role({ role }) {
+function Role({ role, fontSize }) {
 	return (
 		<span
 			style={{
 				padding: '0px 4px',
 				borderRadius: '2px',
-				margin: '0px 4px',
+				margin: '4px 4px',
+				fontSize,
 				backgroundColor: roles[role].color,
 				color: roles[role].textColor,
 			}}
@@ -54,12 +65,13 @@ function Role({ role }) {
 	)
 }
 function Person({ person }) {
+	const fontSize = person.fontSize || '1.1em'
 	return (
 		<div
 			style={{
-				backgroundColor: 'var(--color-dark)',
+				backgroundColor: 'var(--color-back)',
 				borderRadius: '4px',
-				border: '1px solid var(--color-border)',
+				border: '4px solid var(--color-border)',
 				marginBottom: '20px',
 				padding: '10px',
 			}}
@@ -67,14 +79,21 @@ function Person({ person }) {
 			<p
 				style={{
 					textAlign: 'center',
+					fontSize,
 				}}
 			>
 				{person.name}
 			</p>
 			<ul>
 				{person.roles.map((role, i) => (
-					<li key={i}>
-						<Role role={role}></Role>
+					<li
+						style={{
+							display: 'flex',
+							justifyContent: 'center',
+						}}
+						key={i}
+					>
+						<Role role={role} fontSize={fontSize}></Role>
 					</li>
 				))}
 			</ul>
@@ -83,35 +102,35 @@ function Person({ person }) {
 }
 
 const people = [
+	{ roles: [Reasons.BetaTester, Reasons.Moderator], name: 'Ancientkingg' },
+	{ roles: [Reasons.BetaTester, Reasons.Moderator], name: 'dragonmaster95' },
 	{ roles: [Reasons.BetaTester, Reasons.Moderator], name: 'Ersatz' },
 	{
 		roles: [Reasons.BetaTester, Reasons.Moderator, Reasons.BrandingArtist],
 		name: 'YokaiS',
 	},
-	{ roles: [Reasons.BetaTester, Reasons.Moderator], name: 'Ancientkingg' },
-	{ roles: [Reasons.BetaTester, Reasons.Moderator], name: 'dragonmaster95' },
-	{ roles: [Reasons.BetaTester], name: 'CommanderRedstone' },
-	{ roles: [Reasons.BetaTester], name: 'Flubberschnub' },
-	{ roles: [Reasons.BetaTester], name: 'Matt/Arwen' },
+	{ roles: [Reasons.BetaTester, Reasons.Youtuber], name: 'CommandWitchery' },
+	{ roles: [Reasons.BetaTester, Reasons.Youtuber], name: 'MrMakistein' },
+	{ roles: [Reasons.BetaTester, Reasons.Youtuber], name: 'Flubberschnub' },
+	{ roles: [Reasons.BetaTester, Reasons.Youtuber], name: 'legitimoose' },
+	{ roles: [Reasons.BetaTester, Reasons.Youtuber], name: 'VelVoxelRaptor' },
+	{ roles: [Reasons.BetaTester], name: '_JeffWooden' },
+	{ roles: [Reasons.BetaTester], name: 'destruc7i0n' },
+	{ roles: [Reasons.BetaTester], name: 'Eriol_Eandur' },
 	{ roles: [Reasons.BetaTester], name: 'gibbs' },
 	{ roles: [Reasons.BetaTester], name: 'JayPeaSize' },
 	{ roles: [Reasons.BetaTester], name: 'Kastle' },
-	{ roles: [Reasons.BetaTester], name: 'legitimoose' },
+	{ roles: [Reasons.BetaTester], name: 'Kyle10BC' },
+	{ roles: [Reasons.BetaTester], name: 'Matt/Arwen' },
 	{ roles: [Reasons.BetaTester], name: 'Nerdrope' },
 	{ roles: [Reasons.BetaTester], name: 'Onnowhere' },
-	{ roles: [Reasons.BetaTester], name: '_JeffWooden' },
-	{ roles: [Reasons.BetaTester], name: 'CommandWitchery' },
-	{ roles: [Reasons.BetaTester], name: 'Eriol_Eandur' },
-	{ roles: [Reasons.BetaTester], name: 'Kyle10BC' },
-	{ roles: [Reasons.BetaTester], name: 'destruc7i0n' },
-	{ roles: [Reasons.BetaTester], name: 'MrMakistein' },
 	{ roles: [Reasons.BetaTester], name: 'Sprunkles' },
 	{ roles: [Reasons.BetaTester], name: 'Suso' },
-	{ roles: [Reasons.BetaTester], name: 'TheRedstoneer' },
 	{ roles: [Reasons.BetaTester], name: 'taj' },
+	{ roles: [Reasons.BetaTester], name: 'TheRedstoneer' },
 	{ roles: [Reasons.BetaTester], name: 'Totigonzales' },
-	{ roles: [Reasons.BetaTester], name: 'VelVoxelRaptor' },
 	{ roles: [Reasons.BetaTester], name: 'Violet' },
+	{ roles: [Reasons.BetaTester], name: 'CommanderRedstone' },
 ]
 function Center({ children }) {
 	return (
@@ -135,42 +154,94 @@ function About() {
 					height={256}
 					style={{
 						borderRadius: '128px',
+						border: '4px solid var(--color-border)',
 					}}
 				></img>
 			</Center>
 			<Center>
-				<h1>{tl('animatedJava')}</h1>
+				<h1 style={{ fontSize: '3em' }}>{tl('animatedJava')}</h1>
 			</Center>
 			<Center>
-				<p style={{ marginBottom: '1em' }}>
-					<b>Version:</b> {process.env.PLUGIN_VERSION}
+				<p style={{ marginTop: '0.1em' }}>
+					v{process.env.PLUGIN_VERSION}
 				</p>
 			</Center>
+			<hr />
 			<Center>
-				<h3>Developers</h3>
+				<div
+					style={{
+						whiteSpace: 'pre',
+					}}
+				>
+					{tl('about.description')}
+				</div>
+			</Center>
+			<hr />
+			<Center>
+				<h1 style={{ marginTop: '1em', marginBottom: '0.3em' }}>
+					{tl('about.developers')}
+				</h1>
 			</Center>
 			<div
 				style={{
 					display: 'flex',
 					flexWrap: 'wrap',
-					justifyContent: 'space-evenly',
+					margin: '20px 14%',
+					justifyContent: 'space-between',
+					backgroundColor: 'var(--color-back)',
+					borderRadius: '4px',
+					padding: '3% 3%',
+					border: '4px solid var(--color-border)',
 				}}
 			>
-				<Person
-					person={{
-						name: 'FetchBot',
-						roles: [Reasons.Dev],
-					}}
-				></Person>
-				<Person
-					person={{
-						name: 'SnaveSutit',
-						roles: [Reasons.Dev],
-					}}
-				></Person>
+				<div>
+					<img
+						src={fetchbotpfp}
+						width={128}
+						height={128}
+						style={{
+							borderRadius: '128px',
+							backgroundColor: 'var(--color-ui)',
+							border: '4px solid var(--color-border)',
+							display: 'block',
+							marginLeft: 'auto',
+							marginRight: 'auto',
+						}}
+					></img>
+					<p style={{ textAlign: 'center', fontSize: '2em' }}>
+						Fetchbot
+					</p>
+					<p style={{ textAlign: 'center', fontSize: '1em' }}>
+						{tl('about.fetchbot.quote')}
+					</p>
+				</div>
+				<div>
+					<img
+						src={snavesutitpfp}
+						width={128}
+						height={128}
+						style={{
+							borderRadius: '128px',
+							backgroundColor: 'var(--color-ui)',
+							border: '4px solid var(--color-border)',
+							justifyContent: 'center',
+							display: 'block',
+							marginLeft: 'auto',
+							marginRight: 'auto',
+						}}
+					></img>
+					<p style={{ textAlign: 'center', fontSize: '2em' }}>
+						SnaveSutit
+					</p>
+					<p style={{ textAlign: 'center', fontSize: '1em' }}>
+						{tl('about.snavesutit.quote')}
+					</p>
+				</div>
 			</div>
 			<Center>
-				<h4>Honourable Mentions</h4>
+				<h1 style={{ marginTop: '1em', marginBottom: '0.8em' }}>
+					{tl('about.honourableMentions')}
+				</h1>
 			</Center>
 			<div
 				style={{
@@ -184,7 +255,7 @@ function About() {
 				))}
 			</div>
 			<p>
-				<b>Build ID:</b> {process.env.BUILD_ID}
+				<b>{tl('about.buildID')}</b> {process.env.BUILD_ID}
 			</p>
 		</div>
 	)
@@ -200,7 +271,7 @@ export function show_about() {
 		// })],
 		lines: [`<div id="animated_java_about"></div>`],
 		//@ts-ignore
-		width: 768,
+		width: 900,
 		buttons: [],
 		// component: {
 		// 	template: `

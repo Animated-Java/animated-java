@@ -3,7 +3,12 @@ animatedJava: Animated Java
 animatedJava.menubar.about.name: About...
 animatedJava.menubar.export.name: Export Model
 
-panel.states: Model Variants
+panel.variants.title: Model Variants
+
+dialog.varients.title: Model Variants
+dialog.variants.body: |-
+  You have been given a curse by reading this text.
+  In 3 days you will drop your keys into a drain.
 
 animatedJava.progress.animationRendering.text: Rendering Animations... %currents/%totals
 animatedJava.dialog.animation_properties.animationCompleteCommand.label: End Of Anim Command
@@ -11,11 +16,21 @@ animatedJava.dialog.animation_properties.animationCompleteCommand.label: End Of 
 animatedJava.dialog.about.title: About Animated Java
 animatedJava.version: Version
 animatedJava.creators: Creators
-#! about page tags
-about.closedBeta.content: Closed Beta Tester
+
+#? About
+about.developers: Developers
+about.honourableMentions: Honourable Mentions
+about.buildID: Build ID
+
+about.youtuber.content: Youtuber
 about.moderator.content: Discord Moderator
-about.dev.content: Developer
+about.closedBeta.content: Closed Beta Tester
 about.brandingArtist.content: Branding Artist
+
+about.description: |-
+    A tool for mapmakers to create smooth, and detailed animations for Minecraft Java Edition.
+about.fetchbot.quote: '"Let the java mobs dance too!"'
+about.snavesutit.quote: '"armor_stand is life, armor_stand is love."'
 
 #? Settings
 animatedJava.settings.global: '(Global)'
