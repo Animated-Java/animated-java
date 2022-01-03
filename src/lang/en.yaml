@@ -56,7 +56,9 @@ animatedJava.dialog.miscError.body: |-
 
       Build ID: %buildID
     </textarea>
-    <p>Please report this error on <a href="https://github.com/Animated-Java/animated-java">Animated Java's github</a> with information on how to reproduce it and a copy of the error above. Thank you!</p>
+    <p>Please report this error on <a href="%githubLink">Animated Java's github</a> with information on how to reproduce it and a copy of the error above.</p>
+    <p>You can also join our <a href="%discordLink">Discord Server</a> and ask questions in the #animated-java-support channel.</p>
+    <p>Thank you!</p>
 
 #? Errors/Warnings
 

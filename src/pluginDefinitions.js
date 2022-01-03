@@ -7,7 +7,7 @@ Plugin.register('animated_java', {
 	author: 'FetchBot & SnaveSutit',
 	description: process.env.PLUGIN_DESCRIPTION,
 	about: process.env.PLUGIN_ABOUT,
-	icon: 'icon-format_bedrock_legacy',
+	icon: 'icon-armor_stand',
 	version: process.env.PLUGIN_VERSION,
 	min_version: '4.1.0',
 	variant: 'desktop',

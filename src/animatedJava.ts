@@ -32,6 +32,8 @@ function showUnknownErrorDialog(e: CustomError | any) {
 						buildID: process.env.BUILD_ID,
 						errorMessage: e.options ? e.options.message : e.message,
 						errorStack: e.stack,
+						discordLink: process.env.DISCORD_LINK,
+						githubLink: process.env.GITHUB_ISSUES_LINK,
 					}),
 				],
 				width: 1024,
