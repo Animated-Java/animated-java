@@ -1,7 +1,7 @@
 {
   "meta": {
     "format_version": "0.0",
-    "creation_time": 1641214095,
+    "creation_time": 1641222034,
     "model_format": "animated_java/ajmodel",
     "box_uv": false,
     "settings": {
@@ -1851,7 +1851,7 @@
       "override": false,
       "length": 1,
       "snapping": 20,
-      "selected": false,
+      "selected": true,
       "saved": false,
       "path": "",
       "anim_time_update": "",
@@ -1867,7 +1867,7 @@
               "channel": "timeline",
               "data_points": [
                 {
-                  "script": "particle minecraft:block_marker gold_block ^ ^1 ^1\n"
+                  "script": "particle minecraft:block_marker gold_block ^ ^1 ^1\nparticle minecraft:block_marker gold_block ^ ^1 ^-1\n"
                 }
               ],
               "uuid": "3442d4bf-2c05-9ede-e48a-a14a35e8215f",
