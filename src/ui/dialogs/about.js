@@ -135,6 +135,20 @@ const people = [
 	{ roles: [Reasons.BetaTester], name: 'Violet' },
 	{ roles: [Reasons.BetaTester], name: 'CommanderRedstone' },
 ]
+function Link({ href, children, ...props }) {
+	return (
+		<a
+			href={'#'}
+			{...props}
+			onClick={(e) => {
+				e.preventDefault()
+				shell.openExternal(href)
+			}}
+		>
+			{children}
+		</a>
+	)
+}
 function Center({ children }) {
 	return (
 		<div
@@ -170,10 +184,10 @@ function About() {
 				</p>
 			</Center>
 			<Center>
-				<a
+				<Link
 					className="open-in-browser"
 					href={process.env.DISCORD_LINK}
-					target='_blank'
+					target="_blank"
 					style={{
 						margin: '0.5em',
 						fontSize: '2em',
@@ -182,11 +196,11 @@ function About() {
 					title={tl('about.discordServer')}
 				>
 					<i className="fab fa-discord"></i>
-				</a>
-				<a
+				</Link>
+				<Link
 					className="open-in-browser"
 					href={process.env.GITHUB_LINK}
-					target='_blank'
+					target="_blank"
 					style={{
 						margin: '0.5em',
 						fontSize: '2em',
@@ -195,11 +209,11 @@ function About() {
 					title={tl('about.githubRepo')}
 				>
 					<i className="fab fa-github"></i>
-				</a>
-				<a
+				</Link>
+				<Link
 					className="open-in-browser"
 					href={process.env.PATREON_LINK}
-					target='_blank'
+					target="_blank"
 					style={{
 						margin: '0.5em',
 						fontSize: '2em',
@@ -208,7 +222,7 @@ function About() {
 					title={tl('about.patreon')}
 				>
 					<i className="fab fa-patreon"></i>
-				</a>
+				</Link>
 			</Center>
 			<hr />
 			<Center>
