@@ -4,11 +4,10 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"setup": "yarn && yarn build:scripts",
-		"go": "yarn setup && yarn build:worker && yarn watch",
+		"setup": "yarn && yarn build:scripts && yarm build:worker",
+		"go": "yarn setup && yarn build:worker && yarn dev",
 		"build:scripts": "rollup --config ./config/tools.rollup.config.js",
 		"rollup": "rollup --config ./config/dev.animated-java.rollup.config.js",
-		"watch": "node dist/tools/scripts/watch.js",
 		"dev": "node dist/tools/scripts/watch.js",
 		"build:app": "node dist/tools/scripts/build.js",
 		"build:worker": "rollup --config ./lang-mc-worker/rollup.config.js",
