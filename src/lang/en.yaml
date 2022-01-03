@@ -17,6 +17,9 @@ animatedJava.version: Version
 animatedJava.creators: Creators
 
 #? About
+about.discordServer: Join our discord server!
+about.githubRepo: Source
+about.patreon: Patreon
 about.developers: Developers
 about.honourableMentions: Honourable Mentions
 about.buildID: Build ID

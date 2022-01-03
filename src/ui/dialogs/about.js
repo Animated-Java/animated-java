@@ -169,6 +169,47 @@ function About() {
 					{process.env.PLUGIN_VERSION}
 				</p>
 			</Center>
+			<Center>
+				<a
+					className="open-in-browser"
+					href={process.env.DISCORD_LINK}
+					target='_blank'
+					style={{
+						margin: '0.5em',
+						fontSize: '2em',
+						color: '#5865F2',
+					}}
+					title={tl('about.discordServer')}
+				>
+					<i className="fab fa-discord"></i>
+				</a>
+				<a
+					className="open-in-browser"
+					href={process.env.GITHUB_LINK}
+					target='_blank'
+					style={{
+						margin: '0.5em',
+						fontSize: '2em',
+						color: '#FFFFFF',
+					}}
+					title={tl('about.githubRepo')}
+				>
+					<i className="fab fa-github"></i>
+				</a>
+				<a
+					className="open-in-browser"
+					href={process.env.PATREON_LINK}
+					target='_blank'
+					style={{
+						margin: '0.5em',
+						fontSize: '2em',
+						color: '#FF424D',
+					}}
+					title={tl('about.patreon')}
+				>
+					<i className="fab fa-patreon"></i>
+				</a>
+			</Center>
 			<hr />
 			<Center>
 				<div
