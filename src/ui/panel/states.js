@@ -1,5 +1,4 @@
 import React, { useRef, useEffect, useState } from 'react'
-// const { useEffect, useState } = React;
 import ReactDom from 'react-dom'
 import events, { LIFECYCLE } from '../../constants/events'
 import { intl, tl } from '../../util/intl'
@@ -9,7 +8,6 @@ import { format } from '../../modelFormat'
 import Dropdown from 'react-dropdown/dist/index'
 import transparent from '../../assets/transparent.png'
 import css from '../../dependencies/react-dropdown/style.css'
-// import Select from 'react-select'
 
 const style = document.createElement('style')
 fetch(css)
@@ -327,90 +325,6 @@ function StatePanel() {
 														console.log(editState)
 													}}
 												/>
-												{/* <Select
-													defaultValue={
-														editState[t1.uuid]
-													}
-													onChange={(v) => {
-														if (
-															t1.uuid ===
-																v.value ||
-															v.value ===
-																'Default'
-														) {
-															delete editState[
-																t1.uuid
-															]
-														} else {
-															editState[t1.uuid] =
-																v.value
-														}
-														updateDisplay(editState)
-														console.log(editState)
-													}}
-													options={[
-														{
-															id: 0,
-															name: 'Default',
-															value: 'Default',
-															label: 'Default',
-														},
-														{
-															id: 0,
-															name: 'transparent',
-															value: 'transparent',
-															label: 'transparent',
-														},
-														...Texture.all
-															.sort(
-																(a, b) =>
-																	a === t1
-															)
-															.map((t2, i) => ({
-																id: i + 2,
-																name: t2.uuid,
-																value: t2.uuid,
-																label: (
-																	<div
-																		key={i}
-																		style={{
-																			display:
-																				'flex',
-																		}}
-																	>
-																		<img
-																			src={
-																				t2.source
-																			}
-																			width={
-																				30
-																			}
-																			height={
-																				30
-																			}
-																		></img>
-																		<div
-																			style={{
-																				display:
-																					'inline-block',
-																				verticalAlign:
-																					'text-bottom',
-																				height: '30px',
-																				paddingLeft:
-																					'10px',
-																				paddingTop:
-																					'2px',
-																			}}
-																		>
-																			{
-																				t2.name
-																			}
-																		</div>
-																	</div>
-																),
-															})),
-													]}
-												/> */}
 											</li>
 										)
 									})}
