@@ -1,26 +1,29 @@
-# Animated Java
+<p align="center"><img src="https://user-images.githubusercontent.com/48780301/147949112-1929eeeb-e8e6-412d-886e-5b3d6615886f.png" width="256" alt="Animated Java Logo"></img></p>
+<h1 align="center">Animated Java<br>
+  <a href="https://discord.gg/jFgY4PXZfp"><img src="https://img.shields.io/discord/785339959518953482?color=5865f2&label=Discord&style=flat" alt="Discord"></a>
+  <a href="https://www.patreon.com/animatedjava"><img src="https://img.shields.io/badge/Supporters-0-ff5733" alt="Patreon"></a>
+</h1>
 
-## Setting up Animated Java for local development
+Welcome to Animated Java, A tool for mapmakers to create smooth, and detailed animations for Minecraft Java Edition.
 
-### Requirements
+# Installing
+- Open Blockbench and navigate to the plugin list
+- Click on the "Available" tab, then search for `Animated Java`
+- Click `install`
+- Congratulations! You've installed Animated Java!
 
--   nodejs
--   yarn
+# Contributing to Animated Java
 
-### Setup
+### Setting up a Development Enviornment
+You will need to install `nodejs` and `yarn` before you get started.
 
-1. Clone or download this repo.
-2. Run `yarn setup` to do the one time setup.
-3. Run `yarn dev` to build animated java and watch for changes
+1. Clone the repo
+2. Run `yarn setup` to setup the yarn env and build the development tools.
+3. Run `yarn dev` to build automatically on file changes.
 
-### Making a production build
+To make a production build, run `yarn build` inside your development enviornment.
 
-1. If you have not follow the setup instructions.
-2. run `yarn build`
-
-## Adding Localizations.
-
-### For a new language.
+### Adding Localizations
 
 1. Fork the animated-java repo.
 2. copy `src/lang/en.yaml` and rename it to the language you're translating. If a language file with that name already exists you should overwrite it.
