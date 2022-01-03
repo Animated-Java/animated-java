@@ -2,49 +2,35 @@
 
 ## Setting up Animated Java for local development
 
-### requirements
+### Requirements
 
 -   nodejs
 -   yarn
 
-### setup
+### Setup
 
-1. clone or download this repo.
-2. run `yarn setup` to do the one time setup.
-3. run `yarn dev` to build animated java and watch for changes
+1. Clone or download this repo.
+2. Run `yarn setup` to do the one time setup.
+3. Run `yarn dev` to build animated java and watch for changes
 
-### making a production build
+### Making a production build
 
-1. if you have not follow the setup instructions.
+1. If you have not follow the setup instructions.
 2. run `yarn build`
 
 ## Adding Localizations.
 
-### For a untranslated language.
+### For a new language.
 
-1. fork the animated-java repo.
-2. copy `src/lang/en.yaml` and rename it to your desired language prefix overwriting the preexisting file if it does not exist already we will not accept a translation for it.
+1. Fork the animated-java repo.
+2. copy `src/lang/en.yaml` and rename it to the language you're translating. If a language file with that name already exists you should overwrite it.
 3. translate!
-4. make a pull request against the animated java repo.
-5. let us know you made a pr and we will review it, we may ask another person to look it over and if everything looks good we will merge it.
+4. Make a pull request with your translations against the animated java repo.
+5. We'll look over the PR ASAP and provide feedback if nessessary, or merge it.
 
-### For an already translated language (modifying existing keys)
-
-1. fork the animated-java repo.
-2. make changes.
-3. make a pull request against the animated java repo.
-4. let us know you made a pr and we will review it, we may ask another person to look it over and if everything looks good we will merge it.
-
-### For an already translated language (adding new keys)
-
-1. fork the animated-java repo.
-2. to see what keys are different you can run the following in the blockbench dev tools
-
+To edit an existing language follow the above steps; but instead of overwriting the file just edit it as is.
+You can check what translation keys are missing using the following code inside of blockbench's dev tools (Opened with Ctrl+shift+i)
 ```js
 ANIMATED_JAVA.logging = true
 ANIMATED_JAVA.logIntlDifferences()
 ```
-
-3. make changes refering to `src/lang/en.yaml` for reference.
-4. make a pull request against the animated java repo.
-5. let us know you made a pr and we will review it, we may ask another person to look it over and if everything looks good we will merge it.
