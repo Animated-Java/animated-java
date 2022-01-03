@@ -382,13 +382,13 @@ const Settings = () => {
 					<div className="dialog_title">
 						{tl('animatedJava.menubar.settings.name')}
 					</div>
-					<div
-						className="dialog_close_button"
-						style={{ top: '0', right: '0' }}
-						onClick={hide_settings}
-					>
-						<i className="material-icons">clear</i>
-					</div>
+				</div>
+				<div
+					className="dialog_close_button"
+					style={{ top: '0', right: '0', position: 'absolute' }}
+					onClick={hide_settings}
+				>
+					<i className="material-icons">clear</i>
 				</div>
 				<div className="tab_content">
 					<ul

@@ -9,6 +9,7 @@ import { format } from '../../modelFormat'
 import Dropdown from 'react-dropdown/dist/index'
 import transparent from '../../assets/transparent.png'
 import css from '../../dependencies/react-dropdown/style.css'
+// import Select from 'react-select'
 
 const style = document.createElement('style')
 fetch(css)
@@ -56,7 +57,8 @@ function updateDisplay(state) {
 }
 function Dialog({ children, onRequestHide }) {
 	const ref = useRef()
-	function hide() {
+	function hide(e) {
+		e.preventDefault()
 		onRequestHide()
 	}
 	useEffect(() => {
@@ -93,8 +95,7 @@ function Dialog({ children, onRequestHide }) {
 					display: 'block',
 					left: '0%',
 					top: '128px',
-					maxHeight: '50%',
-					overflowY: 'scroll',
+					maxHeight: '580px',
 					width: '256px',
 					zIndex: 10001,
 				}}
@@ -106,19 +107,21 @@ function Dialog({ children, onRequestHide }) {
 					<div className="dialog_title">
 						{tl('dialog.varients.title')}
 					</div>
-					<div
-						className="dialog_close_button"
-						style={{ top: '0', right: '0' }}
-						onClick={hide}
-					>
-						<i className="material-icons">clear</i>
-					</div>
+				</div>
+				<div
+					className="dialog_close_button"
+					style={{ top: '0', right: '0', position: 'absolute' }}
+					onClick={hide}
+				>
+					<i className="material-icons">clear</i>
 				</div>
 				<div
 					className="tab_content"
 					style={{
 						paddingLeft: '1em',
 						paddingRight: '1em',
+						overflowY: 'scroll',
+						height: '550px',
 					}}
 				>
 					{children}
@@ -215,14 +218,6 @@ function StatePanel() {
 												}}
 											>
 												<hr />
-												<img
-													src={t1.source}
-													width={30}
-													height={30}
-													style={{
-														marginLeft: '11px',
-													}}
-												></img>
 												<div
 													style={{
 														display: 'flex',
@@ -232,6 +227,9 @@ function StatePanel() {
 														src={t1.source}
 														width={30}
 														height={30}
+														style={{
+															marginLeft: '11px',
+														}}
 													></img>
 													<div
 														style={{
@@ -329,6 +327,90 @@ function StatePanel() {
 														console.log(editState)
 													}}
 												/>
+												{/* <Select
+													defaultValue={
+														editState[t1.uuid]
+													}
+													onChange={(v) => {
+														if (
+															t1.uuid ===
+																v.value ||
+															v.value ===
+																'Default'
+														) {
+															delete editState[
+																t1.uuid
+															]
+														} else {
+															editState[t1.uuid] =
+																v.value
+														}
+														updateDisplay(editState)
+														console.log(editState)
+													}}
+													options={[
+														{
+															id: 0,
+															name: 'Default',
+															value: 'Default',
+															label: 'Default',
+														},
+														{
+															id: 0,
+															name: 'transparent',
+															value: 'transparent',
+															label: 'transparent',
+														},
+														...Texture.all
+															.sort(
+																(a, b) =>
+																	a === t1
+															)
+															.map((t2, i) => ({
+																id: i + 2,
+																name: t2.uuid,
+																value: t2.uuid,
+																label: (
+																	<div
+																		key={i}
+																		style={{
+																			display:
+																				'flex',
+																		}}
+																	>
+																		<img
+																			src={
+																				t2.source
+																			}
+																			width={
+																				30
+																			}
+																			height={
+																				30
+																			}
+																		></img>
+																		<div
+																			style={{
+																				display:
+																					'inline-block',
+																				verticalAlign:
+																					'text-bottom',
+																				height: '30px',
+																				paddingLeft:
+																					'10px',
+																				paddingTop:
+																					'2px',
+																			}}
+																		>
+																			{
+																				t2.name
+																			}
+																		</div>
+																	</div>
+																),
+															})),
+													]}
+												/> */}
 											</li>
 										)
 									})}
