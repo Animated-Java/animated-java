@@ -227,6 +227,7 @@ function StatePanel() {
 														height={30}
 														style={{
 															marginLeft: '11px',
+															marginBottom: '12px'
 														}}
 													></img>
 													<div
@@ -237,6 +238,7 @@ function StatePanel() {
 																'text-bottom',
 															height: '30px',
 															paddingLeft: '10px',
+															paddingTop: '3px',
 														}}
 													>
 														{t1.name}
@@ -296,7 +298,7 @@ function StatePanel() {
 																				paddingLeft:
 																					'10px',
 																				paddingTop:
-																					'2px',
+																					'3px',
 																			}}
 																		>
 																			{

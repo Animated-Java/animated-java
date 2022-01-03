@@ -7,7 +7,7 @@ panel.variants.title: Model Variants
 
 dialog.varients.title: Model Variants
 dialog.variants.body: |-
-    Variants allow your model to have different "skins" that can be swapped out during runtime.
+    Variants allow your model to have different "skins" that can be swapped out during runtime using a function.
 
 animatedJava.progress.animationRendering.text: Rendering Animations... %currents/%totals
 animatedJava.dialog.animation_properties.animationCompleteCommand.label: End Of Anim Command
