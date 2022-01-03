@@ -1,9 +1,38 @@
 #? AJ
 animatedJava: Animated Java
+animatedJava.menubar.about.name: About...
 animatedJava.menubar.export.name: Export Model
 
-panel.states: Model Variants
+panel.variants.title: Model Variants
 
+dialog.varients.title: Model Variants
+dialog.variants.body: |-
+    Variants allow your model to have different "skins" that can be swapped out during runtime using a function.
+
+animatedJava.progress.animationRendering.text: Rendering Animations... %currents/%totals
+animatedJava.dialog.animation_properties.animationCompleteCommand.label: End Of Anim Command
+
+animatedJava.dialog.about.title: About Animated Java
+animatedJava.version: Version
+animatedJava.creators: Creators
+
+#? About
+about.developers: Developers
+about.honourableMentions: Honourable Mentions
+about.buildID: Build ID
+
+about.contributor.content: Contributor
+about.youtuber.content: Youtuber
+about.moderator.content: Discord Moderator
+about.closedBeta.content: Closed Beta Tester
+about.brandingArtist.content: Branding Artist
+
+about.description: |-
+    A tool for mapmakers to create smooth, and detailed animations for Minecraft Java Edition.
+about.fetchbot.quote: '"Let the java mobs dance too!"'
+about.snavesutit.quote: '"armor_stand is love, armor_stand is life."'
+
+#? Settings
 animatedJava.settings.global: '(Global)'
 animatedJava.settings.optional: '(Optional)'
 animatedJava.settings.invalidSetting.generic: 'Setting value invalid'
@@ -13,6 +42,39 @@ animatedJava.boneConfig.boneNbt: Bone NBT
 animatedJava.boneConfig.armAnimationEnabled: Enable Arm Animation
 
 animatedJava.popup.quickMessage.noExporterSelected: No Exporter Selected!
+
+animatedJava.dialog.miscError.title: An Unknown Error has Occured in Animated Java
+animatedJava.dialog.miscError.body: |-
+    <p>%errorMessage</p>
+    <hr/>
+    <textarea style="height: 256px">
+      %errorMessage
+      %errorStack
+
+      Build ID: %buildID
+    </textarea>
+    <p>Please report this error on <a href="https://github.com/Animated-Java/animated-java">Animated Java's github</a> with information on how to reproduce it and a copy of the error above. Thank you!</p>
+
+#? Errors/Warnings
+
+animatedJava.exportCancelled: Export Cancelled
+
+animatedJava.customErrorReport.titleUndefined: Unknown Error
+
+animatedJava.popup.error.unableToGenerateTexturePath.title: Invalid texture path
+animatedJava.popup.error.unableToGenerateTexturePath.body: |-
+    The texture '%textureName' has an invalid location inside a resource pack
+    Please make sure it is properly saved inside of a valid resource pack in a sub folder of 'assets/namespace/textures/'
+
+animatedJava.popup.error.invalidCubeRotations.title: Invalid Element Rotations
+animatedJava.popup.error.invalidCubeRotations.body: |-
+    The rotations of some cubes are invalid for the java model format.
+    Please all invalid rotations before exporting
+
+animatedJava.popup.error.unsavedTexture.title: Unsaved Texture
+animatedJava.popup.error.unsavedTexture.body: |-
+    The texture '%textureName' is not saved to disk!
+    Please make sure it is saved into a valid resource pack location.
 
 animatedJava.popup.warning.rigFolderUnused.title: Unused rig folder
 animatedJava.popup.warning.rigFolderUnused.body: |-
@@ -33,11 +95,9 @@ animatedJava.popup.error.predicateFilePathUndefined.title: Predicate File Path U
 animatedJava.popup.error.predicateFilePathUndefined.body: |-
     You must define a predicate file path in the settings before you can export.
 
-animatedJava.popup.error.rigModelsExportFolder.title: Rig Model Folder Undefined
-animatedJava.popup.error.rigModelsExportFolder.body: |-
+animatedJava.popup.error.rigModelsExportFolderUndefined.title: Rig Model Folder Undefined
+animatedJava.popup.error.rigModelsExportFolderUndefined.body: |-
     You must define a rig model folder path in settings before you can export.
-
-animatedJava.progress.animationRendering.text: Rendering Animations... %currents/%totals
 
 #? varients panel
 varients.ui.addVarient: Add Varient
@@ -93,6 +153,8 @@ animatedJava_exporter_statueExporter: Statue Exporter
 animatedJava_exporter_statueExporter.exportingDataPackProgress: Generating Data Pack... %progress%
 animatedJava_exporter_statueExporter.writingDataPackProgress: Writing Data Pack to disk... %progress% | Writing %fileName
 
+animatedJava_exporter_statueExporter.successfullyExported: Export Successful!
+
 animatedJava_exporter_statueExporter.setting.rootEntityType.name: Root Entity Type
 animatedJava_exporter_statueExporter.setting.rootEntityType.description: The entity type to use as the root entity for the statue. Should probably be a stationary entity.
 
@@ -101,11 +163,6 @@ animatedJava_exporter_statueExporter.setting.rootEntityNbt.description: The NBT 
 
 animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.title: MCB file path not defined
 animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.body: You must define a path for the MCB file in the Statue Exporter settings before exporting!
-
-# animatedJava_exporter_statueExporter.setting.boneType.name: Bone Type
-# animatedJava_exporter_statueExporter.setting.boneType.description: AEC Stack provides more precise positional movement at the cost of doubling the amount of entities per bone.
-# animatedJava_exporter_statueExporter.setting.boneType.aecStack.name: AEC Stack
-# animatedJava_exporter_statueExporter.setting.boneType.armorStand.name: Armor Stand
 
 animatedJava_exporter_statueExporter.setting.markerArmorStands.name: Marker Armor Stands
 animatedJava_exporter_statueExporter.setting.markerArmorStands.description: When enabled all armor_stands used to display the rig will have no hitbox or collision.
@@ -146,10 +203,12 @@ animatedJava_exporter_animationExporter: Animation Exporter
 animatedJava_exporter_animationExporter.exportingDataPackProgress: Generating Data Pack... %progress%
 animatedJava_exporter_animationExporter.writingDataPackProgress: Writing Data Pack to disk... %progress% | Writing %fileName
 
+animatedJava_exporter_animationExporter.successfullyExported: Export Successful!
+
 animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.title: Zero Length Animation
 animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.body:
     |-
-    One of your animations is too short! Animations must be at least 0.05 seconds long (1 game tick)
+    The animation %animationName is too short! Animations must be at least 0.05 seconds (or 1 game tick) long
 
 animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.title: MCB file path not defined
 animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.body: You must define a path for the MCB file in the Animation Exporter settings before exporting!
@@ -159,11 +218,6 @@ animatedJava_exporter_animationExporter.setting.rootEntityType.description: The 
 
 animatedJava_exporter_animationExporter.setting.rootEntityNbt.name: Root Entity NBT
 animatedJava_exporter_animationExporter.setting.rootEntityNbt.description: The NBT data of the root entity
-
-animatedJava_exporter_animationExporter.setting.boneType.name: Bone Type
-animatedJava_exporter_animationExporter.setting.boneType.description: AEC Stack provides more precise positional movement at the cost of doubling the amount of entities per bone.
-animatedJava_exporter_animationExporter.setting.boneType.aecStack.name: AEC Stack
-animatedJava_exporter_animationExporter.setting.boneType.armorStand.name: Armor Stand
 
 animatedJava_exporter_animationExporter.setting.markerArmorStands.name: Marker Armor Stands
 animatedJava_exporter_animationExporter.setting.markerArmorStands.description: When enabled all armor_stands used to display the rig will have no hitbox or collision.

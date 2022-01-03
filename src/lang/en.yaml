@@ -17,6 +17,9 @@ animatedJava.version: Version
 animatedJava.creators: Creators
 
 #? About
+about.discordServer: Join our discord server!
+about.githubRepo: Source
+about.patreon: Patreon
 about.developers: Developers
 about.honourableMentions: Honourable Mentions
 about.buildID: Build ID
@@ -53,7 +56,9 @@ animatedJava.dialog.miscError.body: |-
 
       Build ID: %buildID
     </textarea>
-    <p>Please report this error on <a href="https://github.com/Animated-Java/animated-java">Animated Java's github</a> with information on how to reproduce it and a copy of the error above. Thank you!</p>
+    <p>Please report this error on <a href="%githubLink">Animated Java's github</a> with information on how to reproduce it and a copy of the error above.</p>
+    <p>You can also join our <a href="%discordLink">Discord Server</a> and ask questions in the #animated-java-support channel.</p>
+    <p>Thank you!</p>
 
 #? Errors/Warnings
 
@@ -139,14 +144,14 @@ animatedJava.setting.cacheMode.memory.name: Memory Mode
 animatedJava.setting.cacheMode.file.name: Disk Mode
 
 animatedJava.setting.boundingBoxRenderMode.name: Bone Size Limit Box
+animatedJava.setting.boundingBoxRenderMode.single.name: Single
+animatedJava.setting.boundingBoxRenderMode.many.name: Multiple
+animatedJava.setting.boundingBoxRenderMode.none.name: Disabled
 animatedJava.setting.boundingBoxRenderMode.description: |-
     Configure or disable the bone size limit box(es).
     - Single will only display one box at a time.
     - Multiple will display a box for every bone you've selected.
     - Disabled will disable it entirely.
-animatedJava.setting.boundingBoxRenderMode.single.name: Single
-animatedJava.setting.boundingBoxRenderMode.many.name: Multiple
-animatedJava.setting.boundingBoxRenderMode.none.name: Disabled
 
 #? Statue Exporter
 animatedJava_exporter_statueExporter: Statue Exporter
@@ -218,11 +223,6 @@ animatedJava_exporter_animationExporter.setting.rootEntityType.description: The 
 
 animatedJava_exporter_animationExporter.setting.rootEntityNbt.name: Root Entity NBT
 animatedJava_exporter_animationExporter.setting.rootEntityNbt.description: The NBT data of the root entity
-
-# animatedJava_exporter_animationExporter.setting.boneType.name: Bone Type
-# animatedJava_exporter_animationExporter.setting.boneType.description: AEC Stack provides more precise positional movement at the cost of doubling the amount of entities per bone.
-# animatedJava_exporter_animationExporter.setting.boneType.aecStack.name: AEC Stack
-# animatedJava_exporter_animationExporter.setting.boneType.armorStand.name: Armor Stand
 
 animatedJava_exporter_animationExporter.setting.markerArmorStands.name: Marker Armor Stands
 animatedJava_exporter_animationExporter.setting.markerArmorStands.description: When enabled all armor_stands used to display the rig will have no hitbox or collision.
