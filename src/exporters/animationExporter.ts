@@ -575,7 +575,7 @@ async function createMCFile(
 
 			const animationScripts: string[] = []
 			for (const frame of animation.frames) {
-				if (Object.keys(frame.scripts).length > 0) {
+				if (frame.scripts?.script) {
 					animationScripts.push(
 						`execute if score .this ${
 							scoreboards.frame
