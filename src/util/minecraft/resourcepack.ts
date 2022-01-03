@@ -8,9 +8,7 @@ export function getTexturePath(texture: any) {
 	if (!texture.path) {
 		throw new CustomError('Unsaved texture', {
 			dialog: {
-				title: tl(
-					'animatedJava.popup.error.unsavedTexture.title'
-				),
+				title: tl('animatedJava.popup.error.unsavedTexture.title'),
 				lines: format(
 					tl('animatedJava.popup.error.unsavedTexture.body'),
 					{
