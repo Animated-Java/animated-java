@@ -4,9 +4,8 @@ import { bus } from './util/bus'
 Plugin.register('animated_java', {
 	name: 'ajmodel',
 	title: 'Animated Java',
-	author: 'FetchBot & SnaveSutit',
+	author: 'SnaveSutit & FetchBot',
 	description: process.env.PLUGIN_DESCRIPTION,
-	about: process.env.PLUGIN_ABOUT,
 	icon: 'icon-armor_stand',
 	version: process.env.PLUGIN_VERSION,
 	min_version: '4.1.0',
