@@ -198,6 +198,11 @@ animatedJava_exporter_statueExporter.setting.exportMode.mcb.name: MCB
 animatedJava_exporter_statueExporter.setting.mcbFilePath.name: Lang-mc file
 animatedJava_exporter_statueExporter.setting.mcbFilePath.description: The path to export the .mc file to
 
+animatedJava_exporter_statueExporter.setting.mcbConfigPath.name: Lang-mc config.json Path
+animatedJava_exporter_statueExporter.setting.mcbConfigPath.description: |-
+    Exports the default MCB config for Animated Java
+    WARNING! Will overwrite existing config.json
+
 animatedJava_exporter_statueExporter.setting.dataPackPath.name: Data Pack
 animatedJava_exporter_statueExporter.setting.dataPackPath.description: The path to export the generated Data Pack to.
 animatedJava_exporter_statueExporter.popup.error.dataPackPathNotDefined.title: Data Pack file path undefined
