@@ -138,7 +138,7 @@ const people = [
 function Link({ href, children, ...props }) {
 	return (
 		<a
-			href={'#'}
+			href={href}
 			{...props}
 			onClick={(e) => {
 				e.preventDefault()

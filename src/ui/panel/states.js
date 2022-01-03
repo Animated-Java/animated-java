@@ -71,6 +71,13 @@ function Dialog({ children, onRequestHide }) {
 			o.css('left', x + 'px')
 		}
 	}, [ref])
+	useEffect(() => {
+		const handler = (key) => {
+			if (key.code === 'Escape') onRequestHide()
+		}
+		window.addEventListener('keydown', handler)
+		return () => window.removeEventListener('keydown', handler)
+	})
 	return (
 		<>
 			<div
@@ -227,7 +234,8 @@ function StatePanel() {
 														height={30}
 														style={{
 															marginLeft: '11px',
-															marginBottom: '12px'
+															marginBottom:
+																'12px',
 														}}
 													></img>
 													<div

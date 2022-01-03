@@ -491,14 +491,16 @@ const el = document.createElement('div')
 el.id = 'aj-settings'
 el.hidden = true
 document.body.appendChild(el)
+let visible = false
 function hide_settings() {
 	el.hidden = true
+	visible = false
 }
-let mouseUpYet = false
 export function show_settings() {
 	mouseUpYet = true
 	console.log('show settings')
 	el.hidden = false
+	visible = true
 	Array.from(el.children).forEach((child) => {
 		child.style.display = 'unset'
 	})
@@ -521,5 +523,12 @@ queueMicrotask(() => {
 	bus.on(events.LIFECYCLE.CLEANUP, () => {
 		el.remove()
 		s.remove()
+	})
+	const _handler = (key) => {
+		if (key.code === 'Escape' && visible) hide_settings()
+	}
+	window.addEventListener('keydown', _handler)
+	bus.on(events.LIFECYCLE.UNLOAD, () => {
+		window.removeEventListener('keydown', _handler)
 	})
 })
