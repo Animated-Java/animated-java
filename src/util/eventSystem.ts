@@ -50,7 +50,7 @@ class EventSystem {
 		})
 		return this._unregisterEventHandler.bind(this, name, handler)
 	}
-	once(name: string, handler: (event: any) => void): () => void  {
+	once(name: string, handler: (event: any) => void): () => void {
 		const list = this._getEventListForType(name)
 		list.push({
 			handler,

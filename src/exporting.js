@@ -19,12 +19,8 @@ async function exportRigModels(models, variantModels) {
 	if (!fs.existsSync(metaPath)) {
 		await new Promise((resolve, reject) => {
 			let d = new Dialog({
-				title: tl(
-					'animatedJava.popup.warning.rigFolderUnused.title'
-				),
-				lines: tl(
-					'animatedJava.popup.warning.rigFolderUnused.body'
-				)
+				title: tl('animatedJava.popup.warning.rigFolderUnused.title'),
+				lines: tl('animatedJava.popup.warning.rigFolderUnused.body')
 					.split('\n')
 					.map((line) => `<p>${line}</p>`),
 				onConfirm() {
@@ -36,7 +32,12 @@ async function exportRigModels(models, variantModels) {
 				},
 				onCancel() {
 					d.hide()
-					reject(new CustomError('Rig Folder Unused -> User Cancelled Export Process', { intentional: true, silent: true}))
+					reject(
+						new CustomError(
+							'Rig Folder Unused -> User Cancelled Export Process',
+							{ intentional: true, silent: true }
+						)
+					)
 				},
 			}).show()
 		})
@@ -60,7 +61,12 @@ async function exportRigModels(models, variantModels) {
 				},
 				onCancel() {
 					d.hide()
-					reject(new CustomError('Rig Folder Already Occupied -> User Cancelled Export Process', { intentional: true, silent: true}))
+					reject(
+						new CustomError(
+							'Rig Folder Already Occupied -> User Cancelled Export Process',
+							{ intentional: true, silent: true }
+						)
+					)
 				},
 			}).show()
 		})

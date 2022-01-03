@@ -626,9 +626,19 @@ async function createMCFile(
 								retDisplay.push(`execute if score .this ${scoreboards.frame} matches ${v.min}..${v.max-1} run {\n${t.display}\n}`)
 							} else {
 								let pos = v.frame.pos
+								pos = {
+									x: roundToN(pos.x, 10000),
+									y: roundToN(pos.y + headYOffset, 10000),
+									z: roundToN(pos.z, 10000)
+								}
 								let rot = v.frame.rot
+								rot = {
+									x: roundToN(rot.x, 10000),
+									y: roundToN(rot.y, 10000),
+									z: roundToN(rot.z, 10000)
+								}
 								// prettier-ignore
-								retBase.push(`execute if score .this ${scoreboards.frame} matches ${v.index} run tp @s ^${pos.x} ^${pos.y + headYOffset} ^${pos.z} ~ ~`)
+								retBase.push(`execute if score .this ${scoreboards.frame} matches ${v.index} run tp @s ^${pos.x} ^${pos.y} ^${pos.z} ~ ~`)
 								retDisplay.push(`execute if score .this ${scoreboards.frame} matches ${v.index} run data modify entity @s Pose.Head set value [${rot.x}f,${rot.y}f,${rot.z}f]`)
 							}
 						})

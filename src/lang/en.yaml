@@ -7,7 +7,7 @@ panel.variants.title: Model Variants
 
 dialog.varients.title: Model Variants
 dialog.variants.body: |-
-  Variants allow your model to have different "skins" that can be swapped out during runtime.
+    Variants allow your model to have different "skins" that can be swapped out during runtime.
 
 animatedJava.progress.animationRendering.text: Rendering Animations... %currents/%totals
 animatedJava.dialog.animation_properties.animationCompleteCommand.label: End Of Anim Command
@@ -21,6 +21,7 @@ about.developers: Developers
 about.honourableMentions: Honourable Mentions
 about.buildID: Build ID
 
+about.contributor.content: Contributor
 about.youtuber.content: Youtuber
 about.moderator.content: Discord Moderator
 about.closedBeta.content: Closed Beta Tester
@@ -29,7 +30,7 @@ about.brandingArtist.content: Branding Artist
 about.description: |-
     A tool for mapmakers to create smooth, and detailed animations for Minecraft Java Edition.
 about.fetchbot.quote: '"Let the java mobs dance too!"'
-about.snavesutit.quote: '"armor_stand is life, armor_stand is love."'
+about.snavesutit.quote: '"armor_stand is love, armor_stand is life."'
 
 #? Settings
 animatedJava.settings.global: '(Global)'

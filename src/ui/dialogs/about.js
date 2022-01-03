@@ -7,7 +7,7 @@ import fetchbotpfp from '../../assets/YokaiS_Fetchbot.png'
 const Reasons = {
 	BetaTester: 0,
 	Moderator: 1,
-	Dev: 2,
+	Contributor: 2,
 	BrandingArtist: 3,
 	Youtuber: 4,
 }
@@ -26,9 +26,9 @@ const roles = {
 		color: '#ffb11f',
 		textColor: 'black',
 	},
-	[Reasons.Dev]: {
+	[Reasons.Contributor]: {
 		get content() {
-			return tl('about.dev.content')
+			return tl('about.contributor.content')
 		},
 		color: '#00aced',
 		textColor: 'black',
@@ -102,7 +102,10 @@ function Person({ person }) {
 }
 
 const people = [
-	{ roles: [Reasons.BetaTester, Reasons.Moderator], name: 'Ancientkingg' },
+	{
+		roles: [Reasons.BetaTester, Reasons.Moderator, Reasons.Contributor],
+		name: 'Ancientkingg',
+	},
 	{ roles: [Reasons.BetaTester, Reasons.Moderator], name: 'dragonmaster95' },
 	{ roles: [Reasons.BetaTester, Reasons.Moderator], name: 'Ersatz' },
 	{
@@ -163,7 +166,7 @@ function About() {
 			</Center>
 			<Center>
 				<p style={{ marginTop: '0.1em' }}>
-					v{process.env.PLUGIN_VERSION}
+					{process.env.PLUGIN_VERSION}
 				</p>
 			</Center>
 			<hr />
@@ -208,7 +211,7 @@ function About() {
 							marginRight: 'auto',
 						}}
 					></img>
-					<div style={{textAlign: 'center'}}>
+					<div style={{ textAlign: 'center' }}>
 						<a
 							href="https://twitter.com/FetchBot1"
 							style={{ fontSize: '2em' }}
@@ -235,7 +238,7 @@ function About() {
 							marginRight: 'auto',
 						}}
 					></img>
-					<div style={{textAlign: 'center'}}>
+					<div style={{ textAlign: 'center' }}>
 						<a
 							href="https://twitter.com/SnaveSutit"
 							style={{ fontSize: '2em' }}

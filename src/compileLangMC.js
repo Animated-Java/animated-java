@@ -13,7 +13,7 @@ export function compileMC(namespace, contents, config, onLog = console.log) {
 		w.postMessage({
 			namespace,
 			contents,
-			config
+			config,
 		})
 		w.onerror = (e) => {
 			w.terminate()

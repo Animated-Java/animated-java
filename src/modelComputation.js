@@ -377,7 +377,14 @@ export function computeBones(models, animations) {
 				models[parentName].elements.length && // If this bone has elements
 				typeof models[parentName].id !== 'number'
 			) {
-				console.log('Parent Bone:', parentName, '| group:', parentGroup, '| mesh:', value.parent)
+				console.log(
+					'Parent Bone:',
+					parentName,
+					'| group:',
+					parentGroup,
+					'| mesh:',
+					value.parent
+				)
 				value.parent.customModelData =
 					models[parentName].aj.customModelData
 				value.parent.scales = {

@@ -89,12 +89,16 @@ export const BuildModel = (callback: any, options: any) => {
 			.catch((e) => {
 				F_IS_BUILDING = false
 				Blockbench.setProgress(0)
-				if (e instanceof CustomError && (e.options.intentional && e.options.silent)) {
+				if (
+					e instanceof CustomError &&
+					e.options.intentional &&
+					e.options.silent
+				) {
 					// @ts-ignore
-					Blockbench.showQuickMessage(tl('animatedJava.exportCancelled'))
-					console.log(
-						'Intentional Error:', e.message
+					Blockbench.showQuickMessage(
+						tl('animatedJava.exportCancelled')
 					)
+					console.log('Intentional Error:', e.message)
 					throw e
 				} else {
 					console.log('Unknown Error:')
@@ -137,7 +141,9 @@ async function computeAnimationData(
 					'animatedJava.popup.error.rigModelsExportFolderUndefined.title'
 				),
 				id: '',
-				lines: tl('animatedJava.popup.error.rigModelsExportFolderUndefined.body')
+				lines: tl(
+					'animatedJava.popup.error.rigModelsExportFolderUndefined.body'
+				)
 					.split('\n')
 					.map((line: string) => `<p>${line}</p>`),
 			},

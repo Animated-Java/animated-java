@@ -268,7 +268,9 @@ async function renderAnimation(options) {
 		// fix_scene_rotation();
 		const animations = {}
 		const renderedGroups = Group.all.filter(
-			(group) => !isSceneBased(group) && group.children.find((child) => child instanceof Cube)
+			(group) =>
+				!isSceneBased(group) &&
+				group.children.find((child) => child instanceof Cube)
 		)
 		console.log('All Groups:', Group.all)
 		console.log('Rendered Groups:', renderedGroups)
