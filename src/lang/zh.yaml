@@ -22,13 +22,13 @@ about.githubRepo: 源码
 about.patreon: Patreon
 about.developers: 开发者
 about.honourableMentions: 特别鸣谢
-about.buildID: 构建ID
+about.buildID: 构建版本ID
 
 about.contributor.content: 贡献者
 about.youtuber.content: Youtuber
-about.moderator.content: Discord主持人
-about.closedBeta.content: 内测测试员
-about.brandingArtist.content: 美工艺术
+about.moderator.content: Discord管理员
+about.closedBeta.content: 内测成员
+about.brandingArtist.content: 美工
 
 about.description: |-
     一个帮助Minecraft Java版地图创作者们制作丝滑、丰富的动画的工具
@@ -54,7 +54,7 @@ animatedJava.dialog.miscError.body: |-
       %errorMessage
       %errorStack
 
-      构建ID: %buildID
+      构建版本ID: %buildID
     </textarea>
     <p>请在<a href="%githubLink">Animated Java's github</a>上报告这个错误，附带上重现方式及上方的错误信息</p>
     <p>你也可以加入我们的<a href="%discordLink">Discord服务器</a>并在#animated-java-support频道上询问此问题</p>
