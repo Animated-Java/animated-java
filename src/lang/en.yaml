@@ -81,6 +81,7 @@ animatedJava_exporter_animationExporter.popup.warning.invalidSnappingValue.title
 animatedJava_exporter_animationExporter.popup.warning.invalidSnappingValue.body: |-
     The animation '%animationName' has a snapping value of %snapping!
     Due to how fast Minecraft ticks, Animated Java only supports a snapping value of 20.
+    Please update your animations to reflect this limitation before you export.
 
 animatedJava.popup.error.unsavedTexture.title: Unsaved Texture
 animatedJava.popup.error.unsavedTexture.body: |-

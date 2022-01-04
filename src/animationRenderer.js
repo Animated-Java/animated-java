@@ -13,6 +13,7 @@ import events from './constants/events'
 import { tl } from './util/intl'
 import { format, safeFunctionName } from './util/replace'
 import { isSceneBased } from './util/hasSceneAsParent'
+import { CustomError } from './util/customError'
 store.set('static_animation_uuid', '138747e7-2de0-4130-b900-9275ca0e6333')
 
 function setAnimatorTime(time) {
