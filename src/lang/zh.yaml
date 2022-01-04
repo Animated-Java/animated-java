@@ -7,17 +7,17 @@ panel.variants.title: 模型变体
 
 dialog.varients.title: 模型变体
 dialog.variants.body: |-
-    模型变体允许你的模型拥有不同“皮肤”，可以在运行中用一个函数来切换皮肤。
+    模型变体允许你的模型拥有不同“皮肤”，可以在运行中通过执行函数来切换皮肤。
 
 animatedJava.progress.animationRendering.text: 渲染动画中... %currents/%totals
-animatedJava.dialog.animation_properties.animationCompleteCommand.label: 动画指令结束
+animatedJava.dialog.animation_properties.animationCompleteCommand.label: 动画结束后执行的指令
 
-animatedJava.dialog.about.title: 关于Animated Java
+animatedJava.dialog.about.title: 关于 Animated Java
 animatedJava.version: 版本
 animatedJava.creators: 作者
 
 #? About
-about.discordServer: 加入我们的discord服务器!
+about.discordServer: 加入我们的 Discord 服务器!
 about.githubRepo: 源码
 about.patreon: Patreon
 about.developers: 开发者
@@ -31,7 +31,7 @@ about.closedBeta.content: 内测成员
 about.brandingArtist.content: 美工
 
 about.description: |-
-    一个帮助Minecraft Java版地图创作者们制作丝滑、丰富的动画的工具
+    一个为帮助 Minecraft Java 版地图创作者们制作丝滑、丰富的动画而准备的工具
 about.fetchbot.quote: '"让Java版怪物也舞动起来！"'
 about.snavesutit.quote: '"盔甲架是爱，亦是生活。"'
 
@@ -46,7 +46,7 @@ animatedJava.boneConfig.armAnimationEnabled: 启用手臂动画
 
 animatedJava.popup.quickMessage.noExporterSelected: 未选择导出器！
 
-animatedJava.dialog.miscError.title: Animated Java出现了一个未知错误
+animatedJava.dialog.miscError.title: Animated Java 出现了一个未知错误
 animatedJava.dialog.miscError.body: |-
     <p>%errorMessage</p>
     <hr/>
@@ -91,10 +91,10 @@ animatedJava.popup.error.rigFolderAlreadyUsedByOther.body: |-
     此文件夹已存在其他骨骼模型。
     确定覆盖已存在的骨骼吗？
 
-animatedJava.popup.error.transparentTexturePathNotFound.title: 未定义透明贴图路径
+animatedJava.popup.error.transparentTexturePathNotFound.title: 未定义透明纹理路径
 animatedJava.popup.error.transparentTexturePathNotFound.body: |-
-    在使用的变体带有未定义路径的透明贴图吗？
-    导出前需要在配置中设置透明贴图的路径。
+    在使用的变体带有未定义路径的透明纹理吗？
+    导出前需要在配置中设置透明纹理的路径。
 
 animatedJava.popup.error.predicateFilePathUndefined.title: 未定义 Predicate 文件路径
 animatedJava.popup.error.predicateFilePathUndefined.body: |-
@@ -106,7 +106,7 @@ animatedJava.popup.error.rigModelsExportFolderUndefined.body: |-
 
 #? varients panel
 varients.ui.addVarient: 添加变体
-varients.ui.addVarient.description: 为模型添加新的贴图变体
+varients.ui.addVarient.description: 为模型添加新的纹理变体
 varients.ui.back: 返回
 
 #? AJ Settings
@@ -129,8 +129,8 @@ animatedJava.setting.rigModelsExportFolder.description: 所有骨骼模型导出
 animatedJava.setting.predicateFilePath.name: 骨骼物品文件
 animatedJava.setting.predicateFilePath.description: 骨骼物品的物品模型文件
 
-animatedJava.setting.transparentTexturePath.name: 透明贴图路径
-animatedJava.setting.transparentTexturePath.description: 为变体添加透明贴图。仅在变体需要透明贴图时使用
+animatedJava.setting.transparentTexturePath.name: 透明纹理路径
+animatedJava.setting.transparentTexturePath.description: 为变体添加透明纹理。仅在变体需要透明纹理时使用
 
 animatedJava.setting.useCache.name: 使用动画缓存
 animatedJava.setting.useCache.description: 仅在动画改变时重新渲染
@@ -176,7 +176,7 @@ animatedJava_exporter_statueExporter.setting.modelTag.name: 模型标签
 animatedJava_exporter_statueExporter.setting.modelTag.description: 选择此模型时所使用的标签
 
 animatedJava_exporter_statueExporter.setting.rootTag.name: 根标签
-animatedJava_exporter_statueExporter.setting.rootTag.description: 选择此静态模型根模型时所使用的标签
+animatedJava_exporter_statueExporter.setting.rootTag.description: 选择此静态模型根实体时所使用的标签
 
 animatedJava_exporter_statueExporter.setting.allBonesTag.name: 所有骨骼标签
 animatedJava_exporter_statueExporter.setting.allBonesTag.description: 选择此静态模型任意骨骼时所使用的标签
@@ -188,7 +188,7 @@ animatedJava_exporter_statueExporter.setting.internalScoreboardObjective.name: �
 animatedJava_exporter_statueExporter.setting.internalScoreboardObjective.description: 用于内部计算的记分板目标名称
 
 animatedJava_exporter_statueExporter.setting.idScoreboardObjective.name: 模型 ID 记分板
-animatedJava_exporter_statueExporter.setting.idScoreboardObjective.description: 用于标识不同实体和模型实例的记分板目标名称
+animatedJava_exporter_statueExporter.setting.idScoreboardObjective.description: 用于识别实体属于哪个模型实例的记分板目标名称。
 
 animatedJava_exporter_statueExporter.setting.exportMode.name: 导出模式
 animatedJava_exporter_statueExporter.setting.exportMode.description: 导出的格式。原版导出数据包和资源包。MCB则导出资源包和用于 lang-mc compiler 的 .mc 文件
@@ -236,7 +236,7 @@ animatedJava_exporter_animationExporter.setting.modelTag.name: 模型标签
 animatedJava_exporter_animationExporter.setting.modelTag.description: 选择此模型时所使用的标签
 
 animatedJava_exporter_animationExporter.setting.rootTag.name: 根标签
-animatedJava_exporter_animationExporter.setting.rootTag.description: 选择此骨骼根实体时所使用的标签
+animatedJava_exporter_animationExporter.setting.rootTag.description: 选择骨骼根实体的标签
 
 animatedJava_exporter_animationExporter.setting.allBonesTag.name: 所有骨骼标签
 animatedJava_exporter_animationExporter.setting.allBonesTag.description: 选择此模型任意骨骼时所使用的标签
