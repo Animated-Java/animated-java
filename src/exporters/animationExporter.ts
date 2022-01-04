@@ -184,6 +184,7 @@ async function createMCFile(
 				.join('\n')}
 			scoreboard players add .aj.animation ${scoreboards.animatingFlag} 0
 			scoreboard players add .aj.anim_loop ${scoreboards.animatingFlag} 0
+			scoreboard players set .noScripts ${scoreboards.internal} 0
 		}
 	`)
 	// prettier-ignore
@@ -534,6 +535,24 @@ async function createMCFile(
 	}
 
 	{
+		if (!Object.keys(animations).length) {
+			throw new CustomError('No Animations Error', {
+				intentional: true,
+				dialog: {
+					id: 'animatedJava_exporter_animationExporter.popup.warning.noAnimations',
+					title: tl(
+						'animatedJava_exporter_animationExporter.popup.warning.noAnimations.title'
+					),
+					lines:
+						tl(
+							'animatedJava_exporter_animationExporter.popup.warning.noAnimations.body'
+						)
+						.split('\n')
+						.map((line: string) => `<p>${line}</p>`),
+				},
+			})
+		}
+
 		//? Animation Dir
 		FILE.push(`dir animations {`)
 
@@ -681,9 +700,10 @@ async function createMCFile(
 						# Reset animation time
 						scoreboard players set @s ${scoreboards.frame} 0
 						# load initial animation frame without running scripts
+						scoreboard players operation .oldValue ${scoreboards.internal} = .noScripts ${scoreboards.internal}
 						scoreboard players set .noScripts ${scoreboards.internal} 1
 						function ${projectName}:animations/${animation.name}/next_frame
-						scoreboard players set .noScripts ${scoreboards.internal} 0
+						scoreboard players operation .noScripts ${scoreboards.internal} = .oldValue ${scoreboards.internal}
 						# Reset animation time
 						scoreboard players set @s ${scoreboards.frame} 0
 					# If this entity is not the root
