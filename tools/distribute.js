@@ -1,7 +1,7 @@
 const { initializeApp } = require('firebase/app')
 const { getStorage, ref, uploadString } = require('firebase/storage')
 const { getInput } = require('@actions/core')
-console.log(getInput('STORAGE_BUCKET'))
+console.log('test', getInput('STORAGE_BUCKET'))
 const app = initializeApp({
 	apiKey: getInput('API_KEY'),
 	authDomain: getInput('AUTH_DOMAIN'),
