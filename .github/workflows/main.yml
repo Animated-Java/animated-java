@@ -28,12 +28,12 @@ jobs:
               run: yarn build
             - name: create distribution
               run: node ./tools/distribute.js ${{ github.ref_name }} ${{ secrets.API_KEY }} ${{ secrets.SECRET_KEY }} ${{ secrets.AUTH_DOMAIN }} ${{ secrets.MEASUREMENT_ID }} ${{ secrets.MESSAGE_SENDER_ID }} ${{ secrets.PROJECT_ID }} ${{ secrets.STORAGE_BUCKET }}
-#               with:
-#                   API_KEY: ${{ secrets.API_KEY }}
-#                   APP_ID: ${{ secrets.SECRET_KEY }}
-#                   AUTH_DOMAIN: ${{ secrets.AUTH_DOMAIN }}
-#                   MEASUREMENT_ID: ${{ secrets.MEASUREMENT_ID }}
-#                   MESSAGE_SENDER_ID: ${{ secrets.MESSAGE_SENDER_ID }}
-#                   PROJECT_ID: ${{ secrets.PROJECT_ID }}
-#                   STORAGE_BUCKET: ${{ secrets.STORAGE_BUCKET }}
-#                   GITHUB_REF: ${{ github.ref_name }}
+              env:
+                  API_KEY: ${{ secrets.API_KEY }}
+                  APP_ID: ${{ secrets.SECRET_KEY }}
+                  AUTH_DOMAIN: ${{ secrets.AUTH_DOMAIN }}
+                  MEASUREMENT_ID: ${{ secrets.MEASUREMENT_ID }}
+                  MESSAGE_SENDER_ID: ${{ secrets.MESSAGE_SENDER_ID }}
+                  PROJECT_ID: ${{ secrets.PROJECT_ID }}
+                  STORAGE_BUCKET: ${{ secrets.STORAGE_BUCKET }}
+                  GITHUB_REF: ${{ github.ref_name }}
