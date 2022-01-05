@@ -16,7 +16,7 @@ const l = [
 const getInput = (a) => {
 	return process.argv[l.indexOf(a)]
 }
-console.log('test', core.getInput('STORAGE_BUCKET'))
+console.log(Object.keys(process.env))
 const app = initializeApp({
 	apiKey: core.getInput('API_KEY'),
 	authDomain: core.getInput('AUTH_DOMAIN'),
