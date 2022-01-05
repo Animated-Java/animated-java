@@ -18,7 +18,7 @@ uploadString(build, fs.readFileSync('./dist/animated_java.js', 'utf8')).then(
 	(snapshot) => {
 		console.log(
 			'Uploaded animated java to ',
-			`builds/${getInput('GITHUB_REF')}/animated_java.js`
+			`builds/${process.argv[2]}/animated_java.js`
 		)
 	}
 )

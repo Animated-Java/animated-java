@@ -27,13 +27,13 @@ jobs:
             - name: build release
               run: yarn build
             - name: create distribution
-              run: ./tools/distribute.js
-              with:
-                  API_KEY: ${{ secrets.API_KEY }}
-                  APP_ID: ${{ secrets.SECRET_KEY }}
-                  AUTH_DOMAIN: ${{ secrets.AUTH_DOMAIN }}
-                  MEASUREMENT_ID: ${{ secrets.MEASUREMENT_ID }}
-                  MESSAGE_SENDER_ID: ${{ secrets.MESSAGE_SENDER_ID }}
-                  PROJECT_ID: ${{ secrets.PROJECT_ID }}
-                  STORAGE_BUCKET: ${{ secrets.STORAGE_BUCKET }}
-                  GITHUB_REF: ${{ github.ref_name }}
+              run: node ./tools/distribute.js ${{ github.ref_name }}
+              # with:
+              #     API_KEY: ${{ secrets.API_KEY }}
+              #     APP_ID: ${{ secrets.SECRET_KEY }}
+              #     AUTH_DOMAIN: ${{ secrets.AUTH_DOMAIN }}
+              #     MEASUREMENT_ID: ${{ secrets.MEASUREMENT_ID }}
+              #     MESSAGE_SENDER_ID: ${{ secrets.MESSAGE_SENDER_ID }}
+              #     PROJECT_ID: ${{ secrets.PROJECT_ID }}
+              #     STORAGE_BUCKET: ${{ secrets.STORAGE_BUCKET }}
+              #     GITHUB_REF: ${{ github.ref_name }}
