@@ -1,6 +1,6 @@
 const { initializeApp } = require('firebase/app')
 const { getStorage, ref, uploadString } = require('firebase/storage')
-// const { getInput } = require('@actions/core')
+const core = require('@actions/core')
 const l = [
 	,
 	,
@@ -16,18 +16,21 @@ const l = [
 const getInput = (a) => {
 	return process.argv[l.indexOf(a)]
 }
-console.log('test', getInput('STORAGE_BUCKET'))
+console.log('test', core.getInput('STORAGE_BUCKET'))
 const app = initializeApp({
-	apiKey: getInput('API_KEY'),
-	authDomain: getInput('AUTH_DOMAIN'),
-	projectId: getInput('PROJECT_ID'),
-	storageBucket: getInput('STORAGE_BUCKET'),
-	messagingSenderId: getInput('MESSAGE_SENDER_ID'),
-	appId: getInput('APP_ID'),
-	measurementId: getInput('MEASUREMENT_ID'),
+	apiKey: core.getInput('API_KEY'),
+	authDomain: core.getInput('AUTH_DOMAIN'),
+	projectId: core.getInput('PROJECT_ID'),
+	storageBucket: core.getInput('STORAGE_BUCKET'),
+	messagingSenderId: core.getInput('MESSAGE_SENDER_ID'),
+	appId: core.getInput('APP_ID'),
+	measurementId: core.getInput('MEASUREMENT_ID'),
 })
 const store = getStorage(app)
-const build = ref(store, `builds/${getInput('GITHUB_REF')}/animated_java.js`)
+const build = ref(
+	store,
+	`builds/${core.getInput('GITHUB_REF')}/animated_java.js`
+)
 
 const fs = require('fs')
 uploadString(build, fs.readFileSync('./dist/animated_java.js', 'utf8')).then(
