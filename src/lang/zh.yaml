@@ -69,17 +69,17 @@ animatedJava.customErrorReport.titleUndefined: 未知错误
 animatedJava.popup.error.unableToGenerateTexturePath.title: 纹理路径无效
 animatedJava.popup.error.unableToGenerateTexturePath.body: |-
     纹理'%textureName'在资源包中的路径无效
-    请确保纹理正确地保存在资源包的'assets/namespace/textures/'路径下
+    请确保纹理正确地保存在资源包的'assets/namespace/textures/'路径下。
 
 animatedJava.popup.error.invalidCubeRotations.title: 元素旋转无效
 animatedJava.popup.error.invalidCubeRotations.body: |-
-    某些元素的旋转值在Java模型中无效
-    导出前需要删除所有无效的旋转
+    某些元素的旋转值在Java模型中无效。
+    导出前需要删除所有无效的旋转。
 
 animatedJava.popup.error.unsavedTexture.title: 未保存纹理
 animatedJava.popup.error.unsavedTexture.body: |-
     纹理'%textureName'未保存！
-    请确保纹理已经在本地保存。
+    请确保纹理已保存在资源包内。
 
 animatedJava.popup.warning.rigFolderUnused.title: 文件夹不存在骨骼
 animatedJava.popup.warning.rigFolderUnused.body: |-
@@ -102,7 +102,7 @@ animatedJava.popup.error.predicateFilePathUndefined.body: |-
 
 animatedJava.popup.error.rigModelsExportFolderUndefined.title: 骨骼模型文件夹未定义
 animatedJava.popup.error.rigModelsExportFolderUndefined.body: |-
-    导出前需要在设置中指定此骨骼模型的文件夹路径
+    导出前需要在设置中指定此骨骼模型的文件夹路径。
 
 #? varients panel
 varients.ui.addVarient: 添加变体
