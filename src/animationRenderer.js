@@ -13,6 +13,7 @@ import events from './constants/events'
 import { tl } from './util/intl'
 import { format, safeFunctionName } from './util/replace'
 import { isSceneBased } from './util/hasSceneAsParent'
+import { CustomError } from './util/customError'
 store.set('static_animation_uuid', '138747e7-2de0-4130-b900-9275ca0e6333')
 
 function setAnimatorTime(time) {
@@ -276,6 +277,29 @@ async function renderAnimation(options) {
 		console.log('Rendered Groups:', renderedGroups)
 
 		for (const animation of Animator.animations.sort()) {
+			if (animation.snapping != 20) {
+				throw new CustomError('Invalid Snapping Value Error', {
+					intentional: true,
+					dialog: {
+						id: 'animatedJava_exporter_animationExporter.popup.warning.invalidSnappingValue',
+						title: tl(
+							'animatedJava_exporter_animationExporter.popup.warning.invalidSnappingValue.title'
+						),
+						lines: format(
+							tl(
+								'animatedJava_exporter_animationExporter.popup.warning.invalidSnappingValue.body'
+							),
+							{
+								animationName: animation.name,
+								snapping: animation.snapping
+							}
+						)
+							.split('\n')
+							.map((line) => `<p>${line}</p>`),
+					},
+				})
+			}
+
 			const value = Cache.hit(animation)
 			if (!value) {
 				let maxDistance = -Infinity

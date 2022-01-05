@@ -686,7 +686,7 @@ const Exporter = (AJ: any) => {
 					AJ.settings.animatedJava_exporter_statueExporter
 						.exportMode === 'mcb' &&
 					(value === '' ||
-						b.base !== `${AJ.settings.animatedJava.projectName}.mc`)
+						b.base === `${AJ.settings.animatedJava.projectName}.mc`)
 				)
 			},
 			isVisible(settings: any) {

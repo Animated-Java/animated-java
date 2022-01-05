@@ -4,7 +4,7 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"setup": "yarn && yarn build:scripts && yarm build:worker",
+		"setup": "yarn && yarn build:scripts && yarn build:worker",
 		"go": "yarn setup && yarn build:worker && yarn dev",
 		"build:scripts": "rollup --config ./config/tools.rollup.config.js",
 		"rollup": "rollup --config ./config/dev.animated-java.rollup.config.js",

@@ -128,27 +128,6 @@ const RenderTemplates = {
 			</>
 		)
 	},
-	// textarea({ value, setValue, namespace, name, children }) {
-	// 	return (
-	// 		<>
-	// 			<div>{children}</div>
-	// 			<div style={{ display: 'inline-block' }}>
-	// 				<textarea
-	// 					id={`aj.setting.${namespace}.${name}`}
-	// 					value={value || ''}
-	// 					onChange={(e) => {
-	// 						setValue(e.target.value)
-	// 					}}
-	// 					onBlur={(e) => {
-	// 						settings[namespace][name] = e.target.value
-	// 					}}
-	// 					className="dark_bordered"
-	// 					style={{ width: '389%' }}
-	// 				/>
-	// 			</div>
-	// 		</>
-	// 	)
-	// },
 	select({ value, setValue, namespace, name, children, definition }) {
 		return (
 			<>

@@ -68,13 +68,20 @@ animatedJava.customErrorReport.titleUndefined: Unknown Error
 
 animatedJava.popup.error.unableToGenerateTexturePath.title: Invalid texture path
 animatedJava.popup.error.unableToGenerateTexturePath.body: |-
-    The texture '%textureName' has an invalid location inside a resource pack
-    Please make sure it is properly saved inside of a valid resource pack in a sub folder of 'assets/namespace/textures/'
+    The texture '%textureName' has an invalid location inside a Resource Pack
+    Please make sure it is properly saved inside of a valid Resource Pack in a sub folder of 'assets/namespace/textures/'
+    eg. 'resources/assets/minecraft/textures/item/diamond.png'
 
 animatedJava.popup.error.invalidCubeRotations.title: Invalid Element Rotations
 animatedJava.popup.error.invalidCubeRotations.body: |-
     The rotations of some cubes are invalid for the java model format.
-    Please all invalid rotations before exporting
+    Please fix all invalid rotations before exporting.
+
+animatedJava_exporter_animationExporter.popup.warning.invalidSnappingValue.title: Invalid Animation Snapping Value
+animatedJava_exporter_animationExporter.popup.warning.invalidSnappingValue.body: |-
+    The animation '%animationName' has a snapping value of %snapping!
+    Due to how fast Minecraft ticks, Animated Java only supports a snapping value of 20.
+    Please update your animations to reflect this limitation before you export.
 
 animatedJava.popup.error.unsavedTexture.title: Unsaved Texture
 animatedJava.popup.error.unsavedTexture.body: |-
@@ -84,7 +91,7 @@ animatedJava.popup.error.unsavedTexture.body: |-
 animatedJava.popup.warning.rigFolderUnused.title: Unused rig folder
 animatedJava.popup.warning.rigFolderUnused.body: |-
     This folder does not contain any existing rigs.
-    Are you sure you want to use this folder?
+    Are you sure you want to overwrite this folder?
 
 animatedJava.popup.error.rigFolderAlreadyUsedByOther.title: Chosen rig folder already in use
 animatedJava.popup.error.rigFolderAlreadyUsedByOther.body: |-
@@ -131,6 +138,7 @@ animatedJava.setting.predicateFilePath.description: The item model file of the r
 
 animatedJava.setting.transparentTexturePath.name: Transparent Texture Path
 animatedJava.setting.transparentTexturePath.description: A transparent texture for adding transparency to variants. Only needed if you're using transparency in your variants.
+animatedJava.setting.transparentTexturePath.error.invalidPath: Transparent texture path must be defined if your are using the transparency feature of variants
 
 animatedJava.setting.useCache.name: Use Animation Cache
 animatedJava.setting.useCache.description: Only re-render changed animations
@@ -196,7 +204,7 @@ animatedJava_exporter_statueExporter.setting.exportMode.vanilla.name: Vanilla
 animatedJava_exporter_statueExporter.setting.exportMode.mcb.name: MCB
 
 animatedJava_exporter_statueExporter.setting.mcbFilePath.name: Lang-mc file
-animatedJava_exporter_statueExporter.setting.mcbFilePath.description: The path to export the .mc file to
+animatedJava_exporter_statueExporter.setting.mcbFilePath.description: The path to export the .mc file to\nYou will need to install mc-extra into your MCB workspace in order to build the exported data pack
 
 animatedJava_exporter_statueExporter.setting.mcbConfigPath.name: Lang-mc config.json Path
 animatedJava_exporter_statueExporter.setting.mcbConfigPath.description: |-
@@ -231,6 +239,20 @@ animatedJava_exporter_animationExporter.setting.rootEntityNbt.description: The N
 
 animatedJava_exporter_animationExporter.setting.markerArmorStands.name: Marker Armor Stands
 animatedJava_exporter_animationExporter.setting.markerArmorStands.description: When enabled all armor_stands used to display the rig will have no hitbox or collision.
+
+animatedJava_exporter_animationExporter.setting.autoDistance.name: Auto Distance
+animatedJava_exporter_animationExporter.setting.autoDistance.description: |-
+  Automatically calculate the maximum distance required to animate all bones in the rig based on the rendered animations.
+
+animatedJava_exporter_animationExporter.setting.autoDistanceMovementThreshold.name: Auto Distance Movement Threshold
+animatedJava_exporter_animationExporter.setting.autoDistanceMovementThreshold.description: |-
+  How much distance to add to the calculated animation distance.
+  The more distance you add the farther you can move the rig in a single tick without dropping bones
+
+animatedJava_exporter_animationExporter.setting.manualDistance.name: Manual Animation Distance
+animatedJava_exporter_animationExporter.setting.manualDistance.description: |-
+  How far away a bone can be from the root entity before it stops animating.
+  This setting is intended for advanced users.
 
 animatedJava_exporter_animationExporter.setting.modelTag.name: Model Tag
 animatedJava_exporter_animationExporter.setting.modelTag.description: The tag used to select the model
@@ -268,13 +290,18 @@ animatedJava_exporter_animationExporter.setting.exportMode.vanilla.name: Vanilla
 animatedJava_exporter_animationExporter.setting.exportMode.mcb.name: MCB
 
 animatedJava_exporter_animationExporter.setting.mcbFilePath.name: Lang-mc File Path
-animatedJava_exporter_animationExporter.setting.mcbFilePath.description: The path to export the .mc file to
+animatedJava_exporter_animationExporter.setting.mcbFilePath.description: The path to export the .mc file to\nYou will need to install mc-extra into your MCB workspace in order to build the exported data pack
 animatedJava_exporter_animationExporter.setting.mcbFilePath.invalidPopup.text: Invalid MCB File Path! The MCB file must be called %projectName.mc (project_name.mc)
 
 animatedJava_exporter_animationExporter.setting.mcbConfigPath.name: Lang-mc config.json Path
 animatedJava_exporter_animationExporter.setting.mcbConfigPath.description: |-
     Exports the default MCB config for Animated Java
     WARNING! Will overwrite existing config.json
+
+animatedJava_exporter_animationExporter.popup.warning.noAnimations.title: No Animations
+animatedJava_exporter_animationExporter.popup.warning.noAnimations.body: |-
+  You haven't made any animations!
+  You'll need to create some animations in the animation tab before you can export using the animation exporter.
 
 animatedJava_exporter_animationExporter.setting.dataPackPath.name: Data Pack
 animatedJava_exporter_animationExporter.setting.dataPackPath.description: The path to export the generated Data Pack to.

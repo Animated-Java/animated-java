@@ -5,7 +5,7 @@ import { tl } from '../intl'
 import { format } from '../replace'
 
 export function getTexturePath(texture: any) {
-	if (!texture.path) {
+	if (!texture.path || !texture.saved) {
 		throw new CustomError('Unsaved texture', {
 			dialog: {
 				title: tl('animatedJava.popup.error.unsavedTexture.title'),

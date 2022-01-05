@@ -32,6 +32,9 @@ interface animationExporterSettings {
 	rootTag: string
 	rootEntityNbt: string
 	mcbConfigPath: string
+	autoDistance: number
+	autoDistanceMovementThreshold: number
+	manualDistance: number
 }
 
 interface MCBConfig {
@@ -94,16 +97,27 @@ async function createMCFile(
 
 	const staticAnimationUuid = store.get('static_animation_uuid')
 	const staticFrame = animations[staticAnimationUuid].frames[0].bones
-	const staticDistance = roundToN(
-		animations[staticAnimationUuid].maxDistance + -headYOffset,
-		1000
-	)
-	const maxDistance = roundToN(
-		Object.values(animations).reduce((o, n) => {
-			return Math.max(o, n.maxDistance)
-		}, -Infinity) + -headYOffset,
-		1000
-	)
+	// let staticDistance = 10
+	let maxDistance = 10
+	if (exporterSettings.autoDistance) {
+		// staticDistance = roundToN(
+		// 	animations[staticAnimationUuid].maxDistance + -headYOffset,
+		// 	1000
+		// )
+
+		maxDistance = roundToN(
+			Object.values(animations).reduce((o, n) => {
+				return Math.max(o, n.maxDistance)
+			}, -Infinity) +
+				exporterSettings.autoDistanceMovementThreshold +
+				-headYOffset,
+			1000
+		)
+	} else {
+		// staticDistance = exporterSettings.manualDistance
+		maxDistance = exporterSettings.manualDistance
+	}
+
 	animations = removeKeyGently(staticAnimationUuid, animations)
 	console.log(animations)
 
@@ -184,6 +198,7 @@ async function createMCFile(
 				.join('\n')}
 			scoreboard players add .aj.animation ${scoreboards.animatingFlag} 0
 			scoreboard players add .aj.anim_loop ${scoreboards.animatingFlag} 0
+			scoreboard players set .noScripts ${scoreboards.internal} 0
 		}
 	`)
 	// prettier-ignore
@@ -223,7 +238,7 @@ async function createMCFile(
 			function this {
 				execute (if entity @s[tag=${tags.root}] at @s) {
 					scoreboard players operation # ${scoreboards.id} = @s ${scoreboards.id}
-					execute as @e[type=${entityTypes.bone},tag=${tags.model},distance=..${staticDistance}] if score @s ${scoreboards.id} = # ${scoreboards.id} run kill @s
+					execute as @e[type=${entityTypes.bone},tag=${tags.model},distance=..${maxDistance}] if score @s ${scoreboards.id} = # ${scoreboards.id} run kill @s
 					kill @s
 				} else {
 					tellraw @s ${rootExeErrorJsonText.replace('%functionName', `${projectName}:remove/all`)}
@@ -390,7 +405,7 @@ async function createMCFile(
 							# Summon all bone entities
 							${summons.map(v => v.toString()).join('\n')}
 							# Update rotation and ID of bone entities to match the root entity
-							execute as @e[type=${entityTypes.bone},tag=${tags.model},tag=new,distance=..${staticDistance}] positioned as @s run {
+							execute as @e[type=${entityTypes.bone},tag=${tags.model},tag=new,distance=..${maxDistance}] positioned as @s run {
 								scoreboard players operation @s ${scoreboards.id} = .aj.last_id ${scoreboards.internal}
 								tp @s ~ ~ ~ ~ ~
 								tag @s remove new
@@ -534,6 +549,23 @@ async function createMCFile(
 	}
 
 	{
+		if (!Object.keys(animations).length) {
+			throw new CustomError('No Animations Error', {
+				intentional: true,
+				dialog: {
+					id: 'animatedJava_exporter_animationExporter.popup.warning.noAnimations',
+					title: tl(
+						'animatedJava_exporter_animationExporter.popup.warning.noAnimations.title'
+					),
+					lines: tl(
+						'animatedJava_exporter_animationExporter.popup.warning.noAnimations.body'
+					)
+						.split('\n')
+						.map((line: string) => `<p>${line}</p>`),
+				},
+			})
+		}
+
 		//? Animation Dir
 		FILE.push(`dir animations {`)
 
@@ -681,9 +713,10 @@ async function createMCFile(
 						# Reset animation time
 						scoreboard players set @s ${scoreboards.frame} 0
 						# load initial animation frame without running scripts
+						scoreboard players operation .oldValue ${scoreboards.internal} = .noScripts ${scoreboards.internal}
 						scoreboard players set .noScripts ${scoreboards.internal} 1
 						function ${projectName}:animations/${animation.name}/next_frame
-						scoreboard players set .noScripts ${scoreboards.internal} 0
+						scoreboard players operation .noScripts ${scoreboards.internal} = .oldValue ${scoreboards.internal}
 						# Reset animation time
 						scoreboard players set @s ${scoreboards.frame} 0
 					# If this entity is not the root
@@ -1024,6 +1057,56 @@ const Exporter = (AJ: any) => {
 				isValid(value: any) {
 					return typeof value === 'boolean'
 				},
+			},
+			autoDistance: {
+				type: 'checkbox',
+				default: true,
+				populate() {
+					return true
+				},
+				isValid(value: any) {
+					return typeof value === 'boolean'
+				},
+			},
+			autoDistanceMovementThreshold: {
+				type: 'number',
+				default: 1,
+				populate() {
+					return 1
+				},
+				isValid(value: any) {
+					return !isNaN(value) && value >= 0
+				},
+				onUpdate(value: any) {
+					return Number(value)
+				},
+				isVisible(settings: any) {
+					return settings.animatedJava_exporter_animationExporter
+						.autoDistance
+				},
+				dependencies: [
+					'animatedJava_exporter_animationExporter.autoDistance',
+				],
+			},
+			manualDistance: {
+				type: 'number',
+				default: 10,
+				populate() {
+					return 10
+				},
+				isValid(value: any) {
+					return !isNaN(value) && value >= 0
+				},
+				onUpdate(value: any) {
+					return Number(value)
+				},
+				isVisible(settings: any) {
+					return !settings.animatedJava_exporter_animationExporter
+						.autoDistance
+				},
+				dependencies: [
+					'animatedJava_exporter_animationExporter.autoDistance',
+				],
 			},
 			modelTag: {
 				type: 'text',
