@@ -63,7 +63,7 @@ const ANIMATED_JAVA = {
 	format: modelFormat,
 	registerSettingRenderer,
 	get variants() {
-		return store.get('variants')
+		return store.get('states')
 	},
 	logging: false, //enable logging in production
 	PromiseWrapper<T>(promise: Promise<T>): Promise<T> {

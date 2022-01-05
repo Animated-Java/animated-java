@@ -91,7 +91,7 @@ animatedJava.popup.error.unsavedTexture.body: |-
 animatedJava.popup.warning.rigFolderUnused.title: Unused rig folder
 animatedJava.popup.warning.rigFolderUnused.body: |-
     This folder does not contain any existing rigs.
-    Are you sure you want to use this folder?
+    Are you sure you want to overwrite this folder?
 
 animatedJava.popup.error.rigFolderAlreadyUsedByOther.title: Chosen rig folder already in use
 animatedJava.popup.error.rigFolderAlreadyUsedByOther.body: |-
@@ -138,6 +138,7 @@ animatedJava.setting.predicateFilePath.description: The item model file of the r
 
 animatedJava.setting.transparentTexturePath.name: Transparent Texture Path
 animatedJava.setting.transparentTexturePath.description: A transparent texture for adding transparency to variants. Only needed if you're using transparency in your variants.
+animatedJava.setting.transparentTexturePath.error.invalidPath: Transparent texture path must be defined if your are using the transparency feature of variants
 
 animatedJava.setting.useCache.name: Use Animation Cache
 animatedJava.setting.useCache.description: Only re-render changed animations
@@ -238,6 +239,20 @@ animatedJava_exporter_animationExporter.setting.rootEntityNbt.description: The N
 
 animatedJava_exporter_animationExporter.setting.markerArmorStands.name: Marker Armor Stands
 animatedJava_exporter_animationExporter.setting.markerArmorStands.description: When enabled all armor_stands used to display the rig will have no hitbox or collision.
+
+animatedJava_exporter_animationExporter.setting.autoDistance.name: Auto Distance
+animatedJava_exporter_animationExporter.setting.autoDistance.description: |-
+  Automatically calculate the maximum distance required to animate all bones in the rig based on the rendered animations.
+
+animatedJava_exporter_animationExporter.setting.autoDistanceMovementThreshold.name: Auto Distance Movement Threshold
+animatedJava_exporter_animationExporter.setting.autoDistanceMovementThreshold.description: |-
+  How much distance to add to the calculated animation distance.
+  The more distance you add the farther you can move the rig in a single tick without dropping bones
+
+animatedJava_exporter_animationExporter.setting.manualDistance.name: Manual Animation Distance
+animatedJava_exporter_animationExporter.setting.manualDistance.description: |-
+  How far away a bone can be from the root entity before it stops animating.
+  This setting is intended for advanced users.
 
 animatedJava_exporter_animationExporter.setting.modelTag.name: Model Tag
 animatedJava_exporter_animationExporter.setting.modelTag.description: The tag used to select the model

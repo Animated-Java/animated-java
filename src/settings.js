@@ -172,7 +172,7 @@ export const DefaultSettings = {
 	},
 }
 
-function evaluateSetting(namespace, name, value) {
+function evaluateSetting(event, namespace, name, value) {
 	const setting = DefaultSettings[namespace]?.[name]
 	if (setting) {
 		if (setting.isValid) {
@@ -240,6 +240,7 @@ class Settings {
 			Object.defineProperty(value, settings[i], {
 				get: () => {
 					return evaluateSetting(
+						'get',
 						namespace,
 						settings[i],
 						this.get(namespace + '.' + settings[i])
@@ -247,6 +248,7 @@ class Settings {
 				},
 				set: (value) => {
 					const validatedValue = evaluateSetting(
+						'set',
 						namespace,
 						settings[i],
 						value
@@ -294,6 +296,7 @@ class Settings {
 										? DefaultSettings[namespace][name]
 												.default
 										: evaluateSetting(
+												'update',
 												namespace,
 												name,
 												settings[namespace][name]
@@ -410,6 +413,7 @@ class Settings {
 								get() {
 									if (_cached2 != UNASSIGNED) return _cached2
 									_cached2 = evaluateSetting(
+										'get',
 										key,
 										key2,
 										value2

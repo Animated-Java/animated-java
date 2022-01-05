@@ -60,7 +60,7 @@ class EventSystem {
 	}
 	dispatch(type: string, payload: any) {
 		const eventFrame = this.createNewEventFrame()
-		console.log(`[event (${this.id}): dispatch] `, type)
+		// console.log(`[event (${this.id}): dispatch] `, type)
 		Object.freeze(payload)
 		const recipients = this._getEventListForType(type)
 		const errors = []
