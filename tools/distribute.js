@@ -1,21 +1,6 @@
 const { initializeApp } = require('firebase/app')
 const { getStorage, ref, uploadString } = require('firebase/storage')
 const core = require('@actions/core')
-const l = [
-	,
-	,
-	,
-	'API_KEY',
-	'SECRET_KEY',
-	'AUTH_DOMAIN',
-	'MEASUREMENT_ID',
-	'MESSAGE_SENDER_ID',
-	'PROJECT_ID',
-	'STORAGE_BUCKET',
-]
-const getInput = (a) => {
-	return process.argv[l.indexOf(a)]
-}
 console.log(Object.keys(process.env))
 const app = initializeApp({
 	apiKey: core.getInput('API_KEY'),
