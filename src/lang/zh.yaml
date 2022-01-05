@@ -1,18 +1,85 @@
 #? AJ
 animatedJava: Animated Java
+animatedJava.menubar.about.name: 关于...
 animatedJava.menubar.export.name: 导出模型
 
-panel.states: 模型变体
+panel.variants.title: 模型变体
 
-animatedJava.settings.global: '（全局）'
-animatedJava.settings.optional: '（可选）'
-animatedJava.settings.invalidSetting.generic: '设定的值无效'
+dialog.varients.title: 模型变体
+dialog.variants.body: |-
+    模型变体允许你的模型拥有不同“皮肤”，可以在运行中通过执行函数来切换皮肤。
+
+animatedJava.progress.animationRendering.text: 渲染动画中... %currents/%totals
+animatedJava.dialog.animation_properties.animationCompleteCommand.label: 动画结束后执行的指令
+
+animatedJava.dialog.about.title: 关于 Animated Java
+animatedJava.version: 版本
+animatedJava.creators: 作者
+
+#? About
+about.discordServer: 加入我们的 Discord 服务器!
+about.githubRepo: 源码
+about.patreon: Patreon
+about.developers: 开发者
+about.honourableMentions: 特别鸣谢
+about.buildID: 构建版本ID
+
+about.contributor.content: 贡献者
+about.youtuber.content: Youtuber
+about.moderator.content: Discord管理员
+about.closedBeta.content: 内测成员
+about.brandingArtist.content: 美工
+
+about.description: |-
+    一个为帮助 Minecraft Java 版地图创作者们制作丝滑、丰富的动画而准备的工具
+about.fetchbot.quote: '"让Java版怪物也舞动起来！"'
+about.snavesutit.quote: '"盔甲架是爱，亦是生活。"'
+
+#? Settings
+animatedJava.settings.global: '(全局)'
+animatedJava.settings.optional: '(可选)'
+animatedJava.settings.invalidSetting.generic: '设置值无效'
 
 animatedJava.boneConfig.title: 骨骼配置
 animatedJava.boneConfig.boneNbt: 骨骼NBT
 animatedJava.boneConfig.armAnimationEnabled: 启用手臂动画
 
 animatedJava.popup.quickMessage.noExporterSelected: 未选择导出器！
+
+animatedJava.dialog.miscError.title: Animated Java 出现了一个未知错误
+animatedJava.dialog.miscError.body: |-
+    <p>%errorMessage</p>
+    <hr/>
+    <textarea style="height: 256px">
+      %errorMessage
+      %errorStack
+
+      构建版本ID: %buildID
+    </textarea>
+    <p>请在<a href="%githubLink">Animated Java's github</a>上报告这个错误，附带上重现方式及上方的错误信息</p>
+    <p>你也可以加入我们的<a href="%discordLink">Discord服务器</a>并在#animated-java-support频道上询问此问题</p>
+    <p>感谢!</p>
+
+#? Errors/Warnings
+
+animatedJava.exportCancelled: 取消导出
+
+animatedJava.customErrorReport.titleUndefined: 未知错误
+
+animatedJava.popup.error.unableToGenerateTexturePath.title: 纹理路径无效
+animatedJava.popup.error.unableToGenerateTexturePath.body: |-
+    纹理'%textureName'在资源包中的路径无效
+    请确保纹理正确地保存在资源包的'assets/namespace/textures/'路径下。
+
+animatedJava.popup.error.invalidCubeRotations.title: 元素旋转无效
+animatedJava.popup.error.invalidCubeRotations.body: |-
+    某些元素的旋转值在Java模型中无效。
+    导出前需要删除所有无效的旋转。
+
+animatedJava.popup.error.unsavedTexture.title: 未保存纹理
+animatedJava.popup.error.unsavedTexture.body: |-
+    纹理'%textureName'未保存！
+    请确保纹理已保存在资源包内。
 
 animatedJava.popup.warning.rigFolderUnused.title: 文件夹不存在骨骼
 animatedJava.popup.warning.rigFolderUnused.body: |-
@@ -24,24 +91,22 @@ animatedJava.popup.error.rigFolderAlreadyUsedByOther.body: |-
     此文件夹已存在其他骨骼模型。
     确定覆盖已存在的骨骼吗？
 
-animatedJava.popup.error.transparentTexturePathNotFound.title: 未定义透明贴图路径
+animatedJava.popup.error.transparentTexturePathNotFound.title: 未定义透明纹理路径
 animatedJava.popup.error.transparentTexturePathNotFound.body: |-
-    在使用的变体带有未定义路径的透明贴图吗？
-    导出前需要在配置中设置透明贴图的路径。
+    在使用的变体带有未定义路径的透明纹理吗？
+    导出前需要在配置中设置透明纹理的路径。
 
 animatedJava.popup.error.predicateFilePathUndefined.title: 未定义 Predicate 文件路径
 animatedJava.popup.error.predicateFilePathUndefined.body: |-
     导出前需要在设置中设置 predicate 文件的路径。
 
-animatedJava.popup.error.rigModelsExportFolder.title: 骨骼模型文件夹未定义
-animatedJava.popup.error.rigModelsExportFolder.body: |-
-    导出前需要在设置中指定此骨骼模型的文件夹路径
-
-animatedJava.progress.animationRendering.text: 渲染动画中... %currents/%totals
+animatedJava.popup.error.rigModelsExportFolderUndefined.title: 骨骼模型文件夹未定义
+animatedJava.popup.error.rigModelsExportFolderUndefined.body: |-
+    导出前需要在设置中指定此骨骼模型的文件夹路径。
 
 #? varients panel
 varients.ui.addVarient: 添加变体
-varients.ui.addVarient.description: 为模型添加新的贴图变体
+varients.ui.addVarient.description: 为模型添加新的纹理变体
 varients.ui.back: 返回
 
 #? AJ Settings
@@ -64,8 +129,8 @@ animatedJava.setting.rigModelsExportFolder.description: 所有骨骼模型导出
 animatedJava.setting.predicateFilePath.name: 骨骼物品文件
 animatedJava.setting.predicateFilePath.description: 骨骼物品的物品模型文件
 
-animatedJava.setting.transparentTexturePath.name: 透明贴图路径
-animatedJava.setting.transparentTexturePath.description: 为变体添加透明贴图。仅在变体需要透明贴图时使用
+animatedJava.setting.transparentTexturePath.name: 透明纹理路径
+animatedJava.setting.transparentTexturePath.description: 为变体添加透明纹理。仅在变体需要透明纹理时使用
 
 animatedJava.setting.useCache.name: 使用动画缓存
 animatedJava.setting.useCache.description: 仅在动画改变时重新渲染
@@ -79,19 +144,21 @@ animatedJava.setting.cacheMode.memory.name: 内存模式
 animatedJava.setting.cacheMode.file.name: 磁盘模式
 
 animatedJava.setting.boundingBoxRenderMode.name: 骨骼大小限制框
+animatedJava.setting.boundingBoxRenderMode.single.name: 单个
+animatedJava.setting.boundingBoxRenderMode.many.name: 复数
+animatedJava.setting.boundingBoxRenderMode.none.name: 禁用
 animatedJava.setting.boundingBoxRenderMode.description: |-
     配置或禁用骨骼大小限制框。
     - 单个，仅会显示一个限制框。
     - 复数，会显示所选骨骼的限制框。
     - 禁用，不显示限制框。
-animatedJava.setting.boundingBoxRenderMode.single.name: 单个
-animatedJava.setting.boundingBoxRenderMode.many.name: 复数
-animatedJava.setting.boundingBoxRenderMode.none.name: 禁用
 
 #? Statue Exporter
 animatedJava_exporter_statueExporter: 静态导出器
 animatedJava_exporter_statueExporter.exportingDataPackProgress: 生成数据包中... %progress%
 animatedJava_exporter_statueExporter.writingDataPackProgress: 数据包写入到磁盘中... %progress% | 写入到 %fileName
+
+animatedJava_exporter_statueExporter.successfullyExported: 导出成功！
 
 animatedJava_exporter_statueExporter.setting.rootEntityType.name: 根实体类型
 animatedJava_exporter_statueExporter.setting.rootEntityType.description: 静态模型所使用的实体类型。应设置为非动态实体。
@@ -100,12 +167,7 @@ animatedJava_exporter_statueExporter.setting.rootEntityNbt.name: 根实体 NBT
 animatedJava_exporter_statueExporter.setting.rootEntityNbt.description: 根实体的 NBT 数据
 
 animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.title: 未定义 MCB 文件路径
-animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.body: 导出前需要在静态导出器设置中定义 MC-Build 文件路径！
-
-# animatedJava_exporter_statueExporter.setting.boneType.name: 骨骼类型
-# animatedJava_exporter_statueExporter.setting.boneType.description: AEC堆，以各骨骼实体翻倍为代价提供更精确的位置移动。
-# animatedJava_exporter_statueExporter.setting.boneType.aecStack.name: AEC堆
-# animatedJava_exporter_statueExporter.setting.boneType.armorStand.name: 盔甲架
+animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.body: 导出前需要在静态导出器设置中定义 MCB 文件的路径！
 
 animatedJava_exporter_statueExporter.setting.markerArmorStands.name: 盔甲架 Marker
 animatedJava_exporter_statueExporter.setting.markerArmorStands.description: 启用时所有用于显示骨骼的盔甲架将没有碰撞箱。
@@ -114,19 +176,19 @@ animatedJava_exporter_statueExporter.setting.modelTag.name: 模型标签
 animatedJava_exporter_statueExporter.setting.modelTag.description: 选择此模型时所使用的标签
 
 animatedJava_exporter_statueExporter.setting.rootTag.name: 根标签
-animatedJava_exporter_statueExporter.setting.rootTag.description: 选择此静态模型根模型时所使用的标签
+animatedJava_exporter_statueExporter.setting.rootTag.description: 选择此静态模型根实体时所使用的标签
 
 animatedJava_exporter_statueExporter.setting.allBonesTag.name: 所有骨骼标签
 animatedJava_exporter_statueExporter.setting.allBonesTag.description: 选择此静态模型任意骨骼时所使用的标签
 
 animatedJava_exporter_statueExporter.setting.individualBoneTag.name: 特定骨骼标签
-animatedJava_exporter_statueExporter.setting.individualBoneTag.description: The tag used to select a specific bone by name
-#animatedJava_exporter_statueExporter.setting.individualBoneTag.description: 选择指定名称的骨骼时所使用的标签
+animatedJava_exporter_statueExporter.setting.individualBoneTag.description: 选择指定名称的骨骼时所使用的标签
+
 animatedJava_exporter_statueExporter.setting.internalScoreboardObjective.name: 内部记分板
 animatedJava_exporter_statueExporter.setting.internalScoreboardObjective.description: 用于内部计算的记分板目标名称
 
 animatedJava_exporter_statueExporter.setting.idScoreboardObjective.name: 模型 ID 记分板
-animatedJava_exporter_statueExporter.setting.idScoreboardObjective.description: 用于标识不同实体和模型实例的记分板目标名称
+animatedJava_exporter_statueExporter.setting.idScoreboardObjective.description: 用于识别实体属于哪个模型实例的记分板目标名称。
 
 animatedJava_exporter_statueExporter.setting.exportMode.name: 导出模式
 animatedJava_exporter_statueExporter.setting.exportMode.description: 导出的格式。原版导出数据包和资源包。MCB则导出资源包和用于 lang-mc compiler 的 .mc 文件
@@ -135,6 +197,11 @@ animatedJava_exporter_statueExporter.setting.exportMode.mcb.name: MCB
 
 animatedJava_exporter_statueExporter.setting.mcbFilePath.name: Lang-mc 文件
 animatedJava_exporter_statueExporter.setting.mcbFilePath.description: .mc 文件的导出路径
+
+animatedJava_exporter_statueExporter.setting.mcbConfigPath.name: Lang-mc config.json 路径
+animatedJava_exporter_statueExporter.setting.mcbConfigPath.description: |-
+    导出Animated Java使用的默认 MCB 配置
+    警告！将覆盖已有的 config.json
 
 animatedJava_exporter_statueExporter.setting.dataPackPath.name: 数据包
 animatedJava_exporter_statueExporter.setting.dataPackPath.description: 所生成数据包的导出路径。
@@ -145,6 +212,8 @@ animatedJava_exporter_statueExporter.popup.error.dataPackPathNotDefined.body: �
 animatedJava_exporter_animationExporter: 动画导出器
 animatedJava_exporter_animationExporter.exportingDataPackProgress: 生成数据包中... %progress%
 animatedJava_exporter_animationExporter.writingDataPackProgress: 数据包写入到磁盘中... %progress% | 写入到 %fileName
+
+animatedJava_exporter_animationExporter.successfullyExported: 导出成功!
 
 animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.title: 零长度动画
 animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.body:
@@ -160,11 +229,6 @@ animatedJava_exporter_animationExporter.setting.rootEntityType.description: 骨�
 animatedJava_exporter_animationExporter.setting.rootEntityNbt.name: 根实体 NBT
 animatedJava_exporter_animationExporter.setting.rootEntityNbt.description: 根实体的 NBT 数据
 
-animatedJava_exporter_animationExporter.setting.boneType.name: 骨骼类型
-animatedJava_exporter_animationExporter.setting.boneType.description: AEC堆，以各骨骼实体翻倍为代价提供更精确的位置移动。
-animatedJava_exporter_animationExporter.setting.boneType.aecStack.name: AEC堆
-animatedJava_exporter_animationExporter.setting.boneType.armorStand.name: 盔甲架
-
 animatedJava_exporter_animationExporter.setting.markerArmorStands.name: 盔甲架 Marker
 animatedJava_exporter_animationExporter.setting.markerArmorStands.description: 启用时所有用于显示骨骼的盔甲架将没有碰撞箱。
 
@@ -172,7 +236,7 @@ animatedJava_exporter_animationExporter.setting.modelTag.name: 模型标签
 animatedJava_exporter_animationExporter.setting.modelTag.description: 选择此模型时所使用的标签
 
 animatedJava_exporter_animationExporter.setting.rootTag.name: 根标签
-animatedJava_exporter_animationExporter.setting.rootTag.description: 选择此骨骼根实体时所使用的标签
+animatedJava_exporter_animationExporter.setting.rootTag.description: 选择骨骼根实体的标签
 
 animatedJava_exporter_animationExporter.setting.allBonesTag.name: 所有骨骼标签
 animatedJava_exporter_animationExporter.setting.allBonesTag.description: 选择此模型任意骨骼时所使用的标签
@@ -181,8 +245,8 @@ animatedJava_exporter_animationExporter.setting.boneModelDisplayTag.name: 骨骼
 animatedJava_exporter_animationExporter.setting.boneModelDisplayTag.description: 选择显示模型的实体所使用的标签
 
 animatedJava_exporter_animationExporter.setting.individualBoneTag.name: 特定骨骼标签
-animatedJava_exporter_animationExporter.setting.individualBoneTag.description: The tag used to select a specific bone by name
-#animatedJava_exporter_animationExporter.setting.individualBoneTag.description: 选择指定名称的骨骼时所使用的标签
+animatedJava_exporter_animationExporter.setting.individualBoneTag.description: 选择指定名称的骨骼时所使用的标签
+
 animatedJava_exporter_animationExporter.setting.internalScoreboardObjective.name: 内部记分板
 animatedJava_exporter_animationExporter.setting.internalScoreboardObjective.description: 用于内部计算的记分板目标名称
 
