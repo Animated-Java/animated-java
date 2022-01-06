@@ -1,7 +1,7 @@
 const { initializeApp } = require('firebase/app')
 const { getStorage, ref, uploadString } = require('firebase/storage')
 const core = require('@actions/core')
-console.log(Object.keys(process.env))
+console.log(process.argv[2].split(/\/|\\/))
 console.log(process.env.STORAGE_BUCKET.length)
 const app = initializeApp({
 	apiKey: process.env.API_KEY,
