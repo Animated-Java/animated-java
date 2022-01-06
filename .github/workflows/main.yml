@@ -36,4 +36,4 @@ jobs:
                   MESSAGE_SENDER_ID: ${{ deploy.secrets.MESSAGE_SENDER_ID }}
                   PROJECT_ID: ${{ deploy.secrets.PROJECT_ID }}
                   STORAGE_BUCKET: ${{ deploy.secrets.STORAGE_BUCKET }}
-                  GITHUB_REF: ${{ deploy.github.ref_name }}
+                  GITHUB_REF: ${{ github.ref_name }}
