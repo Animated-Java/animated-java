@@ -1,7 +1,7 @@
 const { initializeApp } = require('firebase/app')
 const { getStorage, ref, uploadString } = require('firebase/storage')
 const core = require('@actions/core')
-console.log(process.argv[2].split(/\/|\\/))
+console.log(process.argv[2])
 console.log(process.env.STORAGE_BUCKET.length)
 const app = initializeApp({
 	apiKey: process.env.API_KEY,
@@ -20,7 +20,7 @@ uploadString(build, fs.readFileSync('./dist/animated_java.js', 'utf8')).then(
 	(snapshot) => {
 		console.log(
 			'Uploaded animated java to ',
-			`builds/${process.argv[2].split(/\/|\\/).pop()}/animated_java.js`
+			`builds/${process.argv[2]}/animated_java.js`
 		)
 	}
 )
