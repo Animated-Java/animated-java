@@ -17,7 +17,7 @@ animatedJava.version: 版本
 animatedJava.creators: 作者
 
 #? About
-about.discordServer: 加入我们的 Discord 服务器!
+about.discordServer: 加入我们的 Discord 服务器！
 about.githubRepo: 源码
 about.patreon: Patreon
 about.developers: 开发者
@@ -56,8 +56,8 @@ animatedJava.dialog.miscError.body: |-
 
       构建版本ID: %buildID
     </textarea>
-    <p>请在<a href="%githubLink">Animated Java's github</a>上报告这个错误，附带上重现方式及上方的错误信息</p>
-    <p>你也可以加入我们的<a href="%discordLink">Discord服务器</a>并在#animated-java-support频道上询问此问题</p>
+    <p>请在<a href="%githubLink">Animated Java的GitHub</a>上报告这个错误，描述重现方式及上述错误信息</p>
+    <p>你也可以加入我们的 <a href="%discordLink">Discord 服务器</a> 并在 #animated-java-support 频道上寻求帮助</p>
     <p>感谢!</p>
 
 #? Errors/Warnings
@@ -69,12 +69,19 @@ animatedJava.customErrorReport.titleUndefined: 未知错误
 animatedJava.popup.error.unableToGenerateTexturePath.title: 纹理路径无效
 animatedJava.popup.error.unableToGenerateTexturePath.body: |-
     纹理'%textureName'在资源包中的路径无效
-    请确保纹理正确地保存在资源包的'assets/namespace/textures/'路径下。
+    请确保纹理正确地保存在资源包的'assets/namespace/textures/'路径下
+    例：'resources/assets/minecraft/textures/item/diamond.png'
 
-animatedJava.popup.error.invalidCubeRotations.title: 元素旋转无效
+animatedJava.popup.error.invalidCubeRotations.title: 无效的旋转块
 animatedJava.popup.error.invalidCubeRotations.body: |-
-    某些元素的旋转值在Java模型中无效。
-    导出前需要删除所有无效的旋转。
+    某些块的旋转值在Java模型中无效。
+    导出前需要移除所有块中的无效旋转值。
+
+animatedJava_exporter_animationExporter.popup.warning.invalidSnappingValue.title: 无效的动画吸附值
+animatedJava_exporter_animationExporter.popup.warning.invalidSnappingValue.body: |-
+    '%animationName' 动画的吸附值为 %snapping ！
+    Animated Jave仅支持和使用与Minecraft游戏刻相同的吸附值（20）。
+    请在导出前更新该动画为此值。
 
 animatedJava.popup.error.unsavedTexture.title: 未保存纹理
 animatedJava.popup.error.unsavedTexture.body: |-
@@ -84,7 +91,7 @@ animatedJava.popup.error.unsavedTexture.body: |-
 animatedJava.popup.warning.rigFolderUnused.title: 文件夹不存在骨骼
 animatedJava.popup.warning.rigFolderUnused.body: |-
     此文件夹不存在任何骨骼。
-    确定使用该文件夹吗？
+    确定覆写到该文件夹吗？
 
 animatedJava.popup.error.rigFolderAlreadyUsedByOther.title: 骨骼文件夹已在使用中
 animatedJava.popup.error.rigFolderAlreadyUsedByOther.body: |-
@@ -98,11 +105,11 @@ animatedJava.popup.error.transparentTexturePathNotFound.body: |-
 
 animatedJava.popup.error.predicateFilePathUndefined.title: 未定义 Predicate 文件路径
 animatedJava.popup.error.predicateFilePathUndefined.body: |-
-    导出前需要在设置中设置 predicate 文件的路径。
+    导出前需要在设置中指定 predicate 文件的路径。
 
-animatedJava.popup.error.rigModelsExportFolderUndefined.title: 骨骼模型文件夹未定义
+animatedJava.popup.error.rigModelsExportFolderUndefined.title: 未定义骨骼模型文件夹
 animatedJava.popup.error.rigModelsExportFolderUndefined.body: |-
-    导出前需要在设置中指定此骨骼模型的文件夹路径。
+    导出前需要在设置中指定骨骼模型的文件夹路径。
 
 #? varients panel
 varients.ui.addVarient: 添加变体
@@ -131,6 +138,7 @@ animatedJava.setting.predicateFilePath.description: 骨骼物品的物品模型�
 
 animatedJava.setting.transparentTexturePath.name: 透明纹理路径
 animatedJava.setting.transparentTexturePath.description: 为变体添加透明纹理。仅在变体需要透明纹理时使用
+animatedJava.setting.transparentTexturePath.error.invalidPath: 存在使用透明纹理的变体时必须定义该纹理的路径
 
 animatedJava.setting.useCache.name: 使用动画缓存
 animatedJava.setting.useCache.description: 仅在动画改变时重新渲染
@@ -179,7 +187,7 @@ animatedJava_exporter_statueExporter.setting.rootTag.name: 根标签
 animatedJava_exporter_statueExporter.setting.rootTag.description: 选择此静态模型根实体时所使用的标签
 
 animatedJava_exporter_statueExporter.setting.allBonesTag.name: 所有骨骼标签
-animatedJava_exporter_statueExporter.setting.allBonesTag.description: 选择此静态模型任意骨骼时所使用的标签
+animatedJava_exporter_statueExporter.setting.allBonesTag.description: 选择此静态模型任意/所有骨骼时所使用的标签
 
 animatedJava_exporter_statueExporter.setting.individualBoneTag.name: 特定骨骼标签
 animatedJava_exporter_statueExporter.setting.individualBoneTag.description: 选择指定名称的骨骼时所使用的标签
@@ -196,11 +204,11 @@ animatedJava_exporter_statueExporter.setting.exportMode.vanilla.name: 原版
 animatedJava_exporter_statueExporter.setting.exportMode.mcb.name: MCB
 
 animatedJava_exporter_statueExporter.setting.mcbFilePath.name: Lang-mc 文件
-animatedJava_exporter_statueExporter.setting.mcbFilePath.description: .mc 文件的导出路径
+animatedJava_exporter_statueExporter.setting.mcbFilePath.description: .mc 文件的导出路径\n需要先安装 mc-extra 到你的 MCB 工作区才能构建导出的资源包
 
 animatedJava_exporter_statueExporter.setting.mcbConfigPath.name: Lang-mc config.json 路径
 animatedJava_exporter_statueExporter.setting.mcbConfigPath.description: |-
-    导出Animated Java使用的默认 MCB 配置
+    导出 Animated Java 使用的默认 MCB 配置
     警告！将覆盖已有的 config.json
 
 animatedJava_exporter_statueExporter.setting.dataPackPath.name: 数据包
@@ -213,7 +221,7 @@ animatedJava_exporter_animationExporter: 动画导出器
 animatedJava_exporter_animationExporter.exportingDataPackProgress: 生成数据包中... %progress%
 animatedJava_exporter_animationExporter.writingDataPackProgress: 数据包写入到磁盘中... %progress% | 写入到 %fileName
 
-animatedJava_exporter_animationExporter.successfullyExported: 导出成功!
+animatedJava_exporter_animationExporter.successfullyExported: 导出成功！
 
 animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.title: 零长度动画
 animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.body:
@@ -230,13 +238,27 @@ animatedJava_exporter_animationExporter.setting.rootEntityNbt.name: 根实体 NB
 animatedJava_exporter_animationExporter.setting.rootEntityNbt.description: 根实体的 NBT 数据
 
 animatedJava_exporter_animationExporter.setting.markerArmorStands.name: 盔甲架 Marker
-animatedJava_exporter_animationExporter.setting.markerArmorStands.description: 启用时所有用于显示骨骼的盔甲架将没有碰撞箱。
+animatedJava_exporter_animationExporter.setting.markerArmorStands.description: 启用时将移除所有用于显示骨骼的盔甲架的碰撞箱。
+
+animatedJava_exporter_animationExporter.setting.autoDistance.name: 自动设置动画距离
+animatedJava_exporter_animationExporter.setting.autoDistance.description: |-
+  基于已渲染的动画自动计算动态化所有骨骼所需的最大距离。
+
+animatedJava_exporter_animationExporter.setting.autoDistanceMovementThreshold.name: 自动距离移动阈值
+animatedJava_exporter_animationExporter.setting.autoDistanceMovementThreshold.description: |-
+  为已计算的动画所添加的距离。
+  越高的距离能使骨骼在单刻移动得更远时不出现骨骼丢失的情况
+
+animatedJava_exporter_animationExporter.setting.manualDistance.name: 手动设置动画距离
+animatedJava_exporter_animationExporter.setting.manualDistance.description: |-
+  骨骼在停止动画前离根实体所允许的最远距离。
+  此设置适用于进阶用户。
 
 animatedJava_exporter_animationExporter.setting.modelTag.name: 模型标签
 animatedJava_exporter_animationExporter.setting.modelTag.description: 选择此模型时所使用的标签
 
 animatedJava_exporter_animationExporter.setting.rootTag.name: 根标签
-animatedJava_exporter_animationExporter.setting.rootTag.description: 选择骨骼根实体的标签
+animatedJava_exporter_animationExporter.setting.rootTag.description: 选择此骨骼根实体的标签
 
 animatedJava_exporter_animationExporter.setting.allBonesTag.name: 所有骨骼标签
 animatedJava_exporter_animationExporter.setting.allBonesTag.description: 选择此模型任意骨骼时所使用的标签
@@ -263,12 +285,12 @@ animatedJava_exporter_animationExporter.setting.animationLoopModeScoreboardObjec
 animatedJava_exporter_animationExporter.setting.animationLoopModeScoreboardObjective.description: 用于控制各动画循环行为的记分板目标名称
 
 animatedJava_exporter_animationExporter.setting.exportMode.name: 导出模式
-animatedJava_exporter_animationExporter.setting.exportMode.description: 导出的格式。原版导出数据包和资源包。MCB则导出资源包和用于 lang-mc compiler 的 .mc 文件
+animatedJava_exporter_animationExporter.setting.exportMode.description: 导出的格式。原版导出数据包和资源包。MC-Build(MCB)则导出资源包和用于 lang-mc 编译器的 .mc 文件
 animatedJava_exporter_animationExporter.setting.exportMode.vanilla.name: 原版
 animatedJava_exporter_animationExporter.setting.exportMode.mcb.name: MCB
 
 animatedJava_exporter_animationExporter.setting.mcbFilePath.name: Lang-mc 文件路径
-animatedJava_exporter_animationExporter.setting.mcbFilePath.description: .mc 文件的导出路径
+animatedJava_exporter_animationExporter.setting.mcbFilePath.description: .mc 文件的导出路径\n需要先安装 mc-extra 到你的 MCB 工作区才能构建导出的资源包
 animatedJava_exporter_animationExporter.setting.mcbFilePath.invalidPopup.text: 无效的 MCB 文件路径！MCB 文件必须命名为 %projectName.mc（project_name.mc）
 
 animatedJava_exporter_animationExporter.setting.mcbConfigPath.name: Lang-mc config.json 路径
@@ -276,7 +298,12 @@ animatedJava_exporter_animationExporter.setting.mcbConfigPath.description: |-
     导出用于 Animated Java 的默认 MCB 配置
     警告！该操作会覆盖现有的 config.json
 
+animatedJava_exporter_animationExporter.popup.warning.noAnimations.title: 缺少动画
+animatedJava_exporter_animationExporter.popup.warning.noAnimations.body: |-
+  未发现任何动画！
+  使用动画导出器前需要在动画模式中创建动画。
+
 animatedJava_exporter_animationExporter.setting.dataPackPath.name: 数据包
-animatedJava_exporter_animationExporter.setting.dataPackPath.description: 所生成数据包的导出路径。
+animatedJava_exporter_animationExporter.setting.dataPackPath.description: 已生成数据包的导出路径。
 animatedJava_exporter_animationExporter.popup.error.dataPackPathNotDefined.title: 未定义数据包文件路径
 animatedJava_exporter_animationExporter.popup.error.dataPackPathNotDefined.body: 导出前需要在设置中定义数据包的路径。
