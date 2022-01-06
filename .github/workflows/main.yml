@@ -27,7 +27,7 @@ jobs:
             - name: build release
               run: yarn build
             - name: create distribution
-              run: node ./tools/distribute.js ${{ github.ref_name.split("/").pop() }}
+              run: node ./tools/distribute.js ${{ github.ref_name }}
               env:
                   API_KEY: ${{ secrets.API_KEY }}
                   APP_ID: ${{ secrets.SECRET_KEY }}
