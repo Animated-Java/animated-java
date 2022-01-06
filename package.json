@@ -12,7 +12,8 @@
 		"build:app": "node dist/tools/scripts/build.js",
 		"build:worker": "rollup --config ./lang-mc-worker/rollup.config.js",
 		"build": "yarn build:scripts && yarn build:worker && yarn build:app",
-		"lint": "prettier --write ."
+		"lint": "prettier --write .",
+		"ci:upload": "node ./tools/distribute.js"
 	},
 	"keywords": [],
 	"author": "",
@@ -45,9 +46,11 @@
 		"struct-packer": "^1.0.6"
 	},
 	"devDependencies": {
+		"@actions/core": "^1.6.0",
 		"@types/node": "^17.0.5",
 		"@types/three": "^0.135.0",
 		"blockbench-types": "^4.0.0",
+		"firebase": "^9.6.1",
 		"js-yaml": "^4.1.0",
 		"prettier": "^2.4.1",
 		"rollup-plugin-typescript2": "^0.30.0",
