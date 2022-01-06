@@ -74,6 +74,12 @@ animatedJava.popup.error.unableToGenerateTexturePath.body: |-
     Please make sure it is properly saved inside of a valid Resource Pack in a sub folder of 'assets/namespace/textures/'
     eg. 'resources/assets/minecraft/textures/item/diamond.png'
 
+animatedJava.popup.error.unableToGenerateModelPath.title: Invalid texture path
+animatedJava.popup.error.unableToGenerateModelPath.body: |-
+    The model '%modelName' has an invalid location inside a Resource Pack
+    Please make sure it is properly saved inside of a valid Resource Pack in a sub folder of 'assets/namespace/models/'
+    eg. 'resources/assets/minecraft/models/item/diamond.json'
+
 animatedJava.popup.error.invalidCubeRotations.title: Invalid Element Rotations
 animatedJava.popup.error.invalidCubeRotations.body: |-
     The rotations of some cubes are invalid for the java model format.

@@ -4,6 +4,7 @@ import { settings } from './settings'
 import { mkdir } from './util/ezfs'
 import { CustomError } from './util/customError'
 import { tl } from './util/intl'
+import { getModelPath } from './util/minecraft/resourcepack'
 // import { safeFunctionName } from './util'
 import transparent from './assets/transparent.png'
 
@@ -131,13 +132,6 @@ async function exportRigModels(models, variantModels) {
 
 	console.groupEnd('Export Rig Models')
 }
-function getMCPath(raw) {
-	let list = raw.split(path.sep)
-	console.log(list)
-	const index = list.indexOf('assets')
-	list = list.slice(index + 1, list.length)
-	return `${list[0]}:${list.slice(2).join('/')}`
-}
 
 async function exportPredicate(models, variantModels, ajSettings) {
 	console.groupCollapsed('Export Predicate Model')
@@ -150,12 +144,10 @@ async function exportPredicate(models, variantModels, ajSettings) {
 		overrides: [],
 	}
 
-	const modelPath = getMCPath(ajSettings.rigModelsExportFolder)
-	console.log(modelPath)
 	for (const [modelName, model] of Object.entries(models)) {
 		predicateJSON.overrides.push({
 			predicate: { custom_model_data: model.aj.customModelData },
-			model: modelPath + '/' + modelName,
+			model: getModelPath(path.join(ajSettings.rigModelsExportFolder, modelName)),
 		})
 	}
 
@@ -163,7 +155,7 @@ async function exportPredicate(models, variantModels, ajSettings) {
 		for (const [modelName, model] of Object.entries(variant)) {
 			predicateJSON.overrides.push({
 				predicate: { custom_model_data: model.aj.customModelData },
-				model: [modelPath, variantName, `${modelName}`].join('/'),
+				model: getModelPath(path.join(modelPath, variantName, modelName), modelName),
 			})
 		}
 
