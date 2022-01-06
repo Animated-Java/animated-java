@@ -103,6 +103,9 @@ async function exportRigModels(models, variantModels) {
 			settings.animatedJava.rigModelsExportFolder,
 			variantName
 		)
+		// Don't export empty variants
+		if (Object.entries(variant).length < 1) continue
+
 		mkdir(variantFolderPath, { recursive: true })
 
 		for (const [modelName, model] of Object.entries(variant)) {

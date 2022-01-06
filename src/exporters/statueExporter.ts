@@ -741,14 +741,7 @@ const Exporter = (AJ: any) => {
 				return ''
 			},
 			isValid(value: any) {
-				const p = new Path(value)
-				const b = p.parse()
-				return (
-					AJ.settings.animatedJava_exporter_statueExporter
-						.exportMode === 'vanilla' &&
-					(value === '' ||
-						b.base !== `${AJ.settings.animatedJava.projectName}`)
-				)
+				return value != ''
 			},
 			isVisible(settings: any) {
 				return (
