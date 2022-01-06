@@ -64,6 +64,8 @@ animatedJava.dialog.miscError.body: |-
 
 animatedJava.exportCancelled: Export Cancelled
 
+animatedJava.error.exportInProgress: Export in Progress
+
 animatedJava.customErrorReport.titleUndefined: Unknown Error
 
 animatedJava.popup.error.unableToGenerateTexturePath.title: Invalid texture path

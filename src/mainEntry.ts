@@ -78,16 +78,15 @@ import lang_zh_tw from './lang/zh_tw.yaml'
 intl.register('zh_tw', lang_zh_tw)
 import { makeArmorStandModel } from './makeArmorStandModel'
 
-let F_IS_BUILDING = false
 export const BuildModel = (callback: any, options: any) => {
-	if (!F_IS_BUILDING) {
-		F_IS_BUILDING = true
+	if (!ANIMATED_JAVA.exportInProgress) {
+		ANIMATED_JAVA.exportInProgress = true
 		computeAnimationData(callback, options)
 			.then(() => {
-				F_IS_BUILDING = false
+				ANIMATED_JAVA.exportInProgress = false
 			})
 			.catch((e) => {
-				F_IS_BUILDING = false
+				ANIMATED_JAVA.exportInProgress = false
 				Blockbench.setProgress(0)
 				if (
 					e instanceof CustomError &&
@@ -106,7 +105,7 @@ export const BuildModel = (callback: any, options: any) => {
 				}
 			})
 	} else {
-		Blockbench.showQuickMessage(tl('error.build_in_progress'))
+		Blockbench.showQuickMessage(tl('animatedJava.error.exportInProgress'))
 		ERROR.ANIMATED_JAVA_BUSY()
 	}
 }
