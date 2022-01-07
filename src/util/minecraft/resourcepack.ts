@@ -5,7 +5,7 @@ import { tl } from '../intl'
 import { format } from '../replace'
 
 export function getTexturePath(texture: any) {
-	if (!texture.path) {
+	if (!texture.path || !texture.saved) {
 		throw new CustomError('Unsaved texture', {
 			dialog: {
 				title: tl('animatedJava.popup.error.unsavedTexture.title'),
@@ -32,7 +32,8 @@ export function getTexturePath(texture: any) {
 				const textureIndex = relative.indexOf('textures') // Locate 'texture' in the path
 				if (textureIndex > -1) {
 					relative.splice(textureIndex, 1) // Remove 'texture' from the path
-					return `${namespace}:${relative.join('/')}` // Generate texture path
+					console.log('Texture Path', `${namespace}:${path.join(...relative)}`)
+					return `${namespace}:${path.join(...relative)}` // Generate texture path
 				}
 			}
 		}
@@ -46,6 +47,43 @@ export function getTexturePath(texture: any) {
 				tl('animatedJava.popup.error.unableToGenerateTexturePath.body'),
 				{
 					textureName: texture.name,
+				}
+			)
+				.split('\n')
+				.map((line: string) => `<p>${line}</p>`),
+			width: 512,
+		},
+	})
+}
+
+export function getModelPath(modelPath: string, modelName: string) {
+	console.log(modelPath)
+	const parts = modelPath.split(path.sep)
+	const assetsIndex = parts.indexOf('assets')
+	if (assetsIndex) {
+		const relative = parts.slice(assetsIndex + 1) // Remove 'assets' and everything before it from the path
+		const namespace = relative.shift() // Remove the namespace from the path and store it
+		if (namespace && relative.length) {
+			relative.push(relative.pop().replace(/.png$/, '')) // Remove file type (.png)
+			if (relative) {
+				const modelsIndex = relative.indexOf('models') // Locate 'texture' in the path
+				if (modelsIndex > -1) {
+					relative.splice(modelsIndex, 1) // Remove 'texture' from the path
+					console.log('Model Path', `${namespace}:${path.join(...relative)}`)
+					return `${namespace}:${path.join(...relative)}` // Generate texture path
+				}
+			}
+		}
+	}
+	throw new CustomError('Unable to generate model path', {
+		dialog: {
+			title: tl(
+				'animatedJava.popup.error.unableToGenerateModelPath.title'
+			),
+			lines: format(
+				tl('animatedJava.popup.error.unableToGenerateModelPath.body'),
+				{
+					modelName
 				}
 			)
 				.split('\n')

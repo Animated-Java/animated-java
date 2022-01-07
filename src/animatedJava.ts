@@ -62,8 +62,9 @@ const ANIMATED_JAVA = {
 	store: store,
 	format: modelFormat,
 	registerSettingRenderer,
+	exportInProgress: false,
 	get variants() {
-		return store.get('variants')
+		return store.get('states')
 	},
 	logging: false, //enable logging in production
 	PromiseWrapper<T>(promise: Promise<T>): Promise<T> {
@@ -74,6 +75,7 @@ const ANIMATED_JAVA = {
 	},
 	asyncError(e: Error) {
 		showUnknownErrorDialog(e)
+		ANIMATED_JAVA.exportInProgress = false
 		throw e
 		// console.error('CUSTOM ERROR HANDLING', e)
 	},

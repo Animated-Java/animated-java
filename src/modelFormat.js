@@ -309,6 +309,7 @@ const format = new ModelFormat({
 	uv_rotation: true,
 	centered_grid: true,
 	animation_files: true,
+	animated_textures: true,
 	icon: 'fa-cube',
 	codec,
 	onDeactivation() {

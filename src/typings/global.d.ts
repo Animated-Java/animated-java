@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 declare global {
 	var AJ: any
+	const ANIMATED_JAVA: any
 	var THREE: typeof import('three')
 	var konsole: Console
 	// var NodePreviewController: any

@@ -20,7 +20,7 @@ interface statueExporterSettings {
 	boneType: 'aecStack' | 'armorStand'
 	internalScoreboardObjective: string
 	idScoreboardObjective: string
-	exportMode: 'datapack' | 'mcb'
+	exportMode: 'vanilla' | 'mcb'
 	mcbFilePath: string | undefined
 	dataPackPath: string | undefined
 	markerArmorStands: boolean
@@ -421,6 +421,10 @@ async function exportDataPack(
 		})
 	}
 
+	const translatedCompilationText = tl(
+		'animatedJava_exporter_statueExporter.exportingDataPackProgress'
+	)
+
 	function onMessage(message: {
 		type: 'progress' | 'EVT' | 'ERR' | 'INF' | 'TSK'
 		msg?: string
@@ -432,14 +436,9 @@ async function exportDataPack(
 		if (message.type === 'progress') {
 			Blockbench.setProgress(message.percent, 50)
 			Blockbench.setStatusBarText(
-				format(
-					tl(
-						'animatedJava_exporter_statueExporter.exportingDataPackProgress'
-					),
-					{
-						progress: (message.percent * 100).toPrecision(4),
-					}
-				)
+				format(translatedCompilationText, {
+					progress: (message.percent * 100).toPrecision(4),
+				})
 			)
 		}
 	}
@@ -451,6 +450,7 @@ async function exportDataPack(
 		onMessage
 	)
 	let fileQueue = []
+	console.log('Vanilla Data Pack:', dataPack)
 
 	Blockbench.setProgress(0, 0)
 	Blockbench.setStatusBarText()
@@ -467,7 +467,7 @@ async function exportDataPack(
 
 	const dataPackPath = exporterSettings.dataPackPath
 	const totalFiles = dataPack.length
-	const tldMessage = tl(
+	const translatedWritingText = tl(
 		'animatedJava_exporter_statueExporter.writingDataPackProgress'
 	)
 	const createdPaths = new Set()
@@ -478,7 +478,7 @@ async function exportDataPack(
 		if (!timeOut) {
 			Blockbench.setProgress(cur / max, 50)
 			Blockbench.setStatusBarText(
-				format(tldMessage, {
+				format(translatedWritingText, {
 					progress: ((cur / max) * 100).toPrecision(4),
 					fileName,
 				})
@@ -542,7 +542,7 @@ async function statueExport(data: any) {
 		case 'mcb':
 			await exportMCFile(generated, data.settings, exporterSettings)
 			break
-		case 'datapack':
+		case 'vanilla':
 			await exportDataPack(generated, data.settings, exporterSettings)
 			break
 	}
@@ -741,14 +741,7 @@ const Exporter = (AJ: any) => {
 				return ''
 			},
 			isValid(value: any) {
-				const p = new Path(value)
-				const b = p.parse()
-				return (
-					AJ.settings.animatedJava_exporter_statueExporter
-						.exportMode === 'vanilla' &&
-					(value === '' ||
-						b.base !== `${AJ.settings.animatedJava.projectName}`)
-				)
+				return value != ''
 			},
 			isVisible(settings: any) {
 				return (

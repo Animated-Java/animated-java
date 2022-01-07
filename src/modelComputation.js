@@ -289,7 +289,6 @@ async function computeModels(cubeData) {
 						)
 					}
 					elements.push({
-						origin: cube.origin,
 						faces: cube.faces,
 						to: cube.to,
 						from: cube.from,
@@ -450,11 +449,13 @@ async function scaleModels(models) {
 				element.from[2] / elementScaleModifier + 8,
 			]
 
-			element.rotation.origin = [
-				element.rotation.origin[0] / elementScaleModifier + 8,
-				element.rotation.origin[1] / elementScaleModifier + 5,
-				element.rotation.origin[2] / elementScaleModifier + 8,
-			]
+			if (element.rotation) {
+				element.rotation.origin = [
+					element.rotation.origin[0] / elementScaleModifier + 8,
+					element.rotation.origin[1] / elementScaleModifier + 5,
+					element.rotation.origin[2] / elementScaleModifier + 8,
+				]
+			}
 		}
 	}
 	return models
