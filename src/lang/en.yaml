@@ -22,6 +22,7 @@ about.githubRepo: Source
 about.patreon: Patreon
 about.developers: Developers
 about.honourableMentions: Honourable Mentions
+
 about.buildID: Build ID
 
 about.contributor.content: Contributor
@@ -29,6 +30,7 @@ about.youtuber.content: Youtuber
 about.moderator.content: Discord Moderator
 about.closedBeta.content: Closed Beta Tester
 about.brandingArtist.content: Branding Artist
+about.translator.content: Translator
 
 about.description: |-
     A tool for mapmakers to create smooth, and detailed animations for Minecraft Java Edition.

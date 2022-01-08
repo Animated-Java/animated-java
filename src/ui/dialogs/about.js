@@ -10,8 +10,16 @@ const Reasons = {
 	Contributor: 2,
 	BrandingArtist: 3,
 	Youtuber: 4,
+	Translator: 5,
 }
 const roles = {
+	[Reasons.Translator]: {
+		get content() {
+			return tl('about.translator.content')
+		},
+		color: '#E67E22',
+		textColor: 'black',
+	},
 	[Reasons.BetaTester]: {
 		get content() {
 			return tl('about.closedBeta.content')
@@ -23,7 +31,7 @@ const roles = {
 		get content() {
 			return tl('about.moderator.content')
 		},
-		color: '#ffb11f',
+		color: '#19B395',
 		textColor: 'black',
 	},
 	[Reasons.Contributor]: {
@@ -56,6 +64,7 @@ function Role({ role, fontSize }) {
 				borderRadius: '2px',
 				margin: '4px 4px',
 				fontSize,
+				fontWeight: '600',
 				backgroundColor: roles[role].color,
 				color: roles[role].textColor,
 			}}
@@ -80,6 +89,7 @@ function Person({ person }) {
 				style={{
 					textAlign: 'center',
 					fontSize,
+					fontWeight: '600',
 				}}
 			>
 				{person.name}
@@ -103,7 +113,7 @@ function Person({ person }) {
 
 const people = [
 	{
-		roles: [Reasons.BetaTester, Reasons.Moderator, Reasons.Contributor],
+		roles: [Reasons.BetaTester, Reasons.Moderator, Reasons.Contributor, Reasons.Translator],
 		name: 'Ancientkingg',
 	},
 	{ roles: [Reasons.BetaTester, Reasons.Moderator], name: 'dragonmaster95' },
@@ -134,6 +144,8 @@ const people = [
 	{ roles: [Reasons.BetaTester], name: 'Totigonzales' },
 	{ roles: [Reasons.BetaTester], name: 'Violet' },
 	{ roles: [Reasons.BetaTester], name: 'CommanderRedstone' },
+	{ roles: [Reasons.Translator], name: 'brooke-zb' },
+	{ roles: [Reasons.Translator], name: 'ououn' },
 ]
 function Link({ href, children, ...props }) {
 	return (
