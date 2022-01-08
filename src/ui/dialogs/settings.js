@@ -6,6 +6,10 @@ import { DefaultSettings, settings } from '../../settings'
 import { tl } from '../../util/intl'
 import { ERROR } from '../../util/errors'
 const dialog = electron.dialog
+let updateSettingsUiActions = {}
+let forceUpdateSettingsUi = () => {
+	Object.values(updateSettingsUiActions).forEach((action) => action())
+}
 const RenderTemplates = {
 	checkbox({ value, setValue, namespace, name, children, forceRerender }) {
 		return (
@@ -53,10 +57,12 @@ const RenderTemplates = {
 								minWidth: 'unset',
 								paddingLeft: '9px',
 							}}
-							onClick={() =>
-								(settings[namespace][name] =
-									DefaultSettings[namespace][name].default)
-							}
+							onClick={() => {
+								settings.set(
+									`${namespace}.${name}`,
+									DefaultSettings[namespace][name].default
+								)
+							}}
 						>
 							<span
 								className="material-icons"
@@ -190,6 +196,8 @@ const SettingInput = ({ namespace, name, template }) => {
 	const [isValid, setIsValid] = useState(true)
 	const [isVisible, setIsVisible] = useState(true)
 	const [rerender, setRerender] = useState(0)
+	updateSettingsUiActions[`${namespace}.${name}`] = () =>
+		setRerender(Math.random())
 	useEffect(() => {
 		// setValue(settings[namespace][name])
 		return settings.watch(namespace + '.' + name, (v) => {
@@ -354,10 +362,9 @@ const SettingInput = ({ namespace, name, template }) => {
 		return null
 	}
 }
-let forceUpdateSettingsUi = () => {}
 const Settings = () => {
 	const [, forceRerender] = useState(0)
-	forceUpdateSettingsUi = () => forceRerender(Math.random())
+	updateSettingsUiActions.main = () => forceRerender(Math.random())
 	const ref = useRef()
 	useEffect(() => {
 		if (ref.current) {
