@@ -2,6 +2,7 @@
 import * as path from 'path'
 import { CustomError } from '../customError'
 import { tl } from '../intl'
+import { normalizePath } from '../misc'
 import { format } from '../replace'
 
 export function getTexturePath(texture: any) {
@@ -32,8 +33,11 @@ export function getTexturePath(texture: any) {
 				const textureIndex = relative.indexOf('textures') // Locate 'texture' in the path
 				if (textureIndex > -1) {
 					relative.splice(textureIndex, 1) // Remove 'texture' from the path
-					console.log('Texture Path', `${namespace}:${path.join(...relative)}`)
-					return `${namespace}:${path.join(...relative)}` // Generate texture path
+					const textureReference = `${namespace}:${normalizePath(
+						path.join(...relative)
+					)}` // Generate texture path
+					console.log('Texture Reference:', textureReference)
+					return textureReference
 				}
 			}
 		}
@@ -69,8 +73,11 @@ export function getModelPath(modelPath: string, modelName: string) {
 				const modelsIndex = relative.indexOf('models') // Locate 'texture' in the path
 				if (modelsIndex > -1) {
 					relative.splice(modelsIndex, 1) // Remove 'texture' from the path
-					console.log('Model Path', `${namespace}:${path.join(...relative)}`)
-					return `${namespace}:${path.join(...relative)}` // Generate texture path
+					const modelReference = `${namespace}:${normalizePath(
+						path.join(...relative)
+					)}` // Generate texture path
+					console.log('Model Reference:', modelReference)
+					return modelReference
 				}
 			}
 		}
@@ -83,7 +90,7 @@ export function getModelPath(modelPath: string, modelName: string) {
 			lines: format(
 				tl('animatedJava.popup.error.unableToGenerateModelPath.body'),
 				{
-					modelName
+					modelName,
 				}
 			)
 				.split('\n')
