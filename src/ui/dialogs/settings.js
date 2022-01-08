@@ -354,7 +354,10 @@ const SettingInput = ({ namespace, name, template }) => {
 		return null
 	}
 }
+let forceUpdateSettingsUi = () => {}
 const Settings = () => {
+	const [, forceRerender] = useState(0)
+	forceUpdateSettingsUi = () => forceRerender(Math.random())
 	const ref = useRef()
 	useEffect(() => {
 		if (ref.current) {
@@ -522,6 +525,7 @@ export function show_settings() {
 	console.log('show settings')
 	el.hidden = false
 	visible = true
+	forceUpdateSettingsUi()
 	Array.from(el.children).forEach((child) => {
 		child.style.display = 'unset'
 	})
