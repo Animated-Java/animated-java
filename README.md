@@ -1,7 +1,7 @@
 <p align="center"><img src="https://user-images.githubusercontent.com/48780301/147949112-1929eeeb-e8e6-412d-886e-5b3d6615886f.png" width="256" alt="Animated Java Logo"></img></p>
 <h1 align="center">Animated Java<br>
   <a href="https://discord.gg/jFgY4PXZfp"><img src="https://img.shields.io/discord/785339959518953482?color=5865f2&label=Discord&style=flat" alt="Discord"></a>
-  <a href="https://www.patreon.com/animatedjava"><img src="https://img.shields.io/badge/Supporters-0-ff5733" alt="Patreon"></a>
+  <a href="https://www.patreon.com/animatedjava"><img src="https://img.shields.io/badge/Supporters-1-ff5733" alt="Patreon"></a>
 </h1>
 
 Welcome to Animated Java, A tool for mapmakers to create smooth, and detailed animations for Minecraft Java Edition.
