@@ -1,16 +1,17 @@
 {
   "meta": {
     "format_version": "0.0",
-    "creation_time": 1641638350,
+    "creation_time": 1641650938,
     "model_format": "animated_java/ajmodel",
     "box_uv": false,
     "settings": {
       "animatedJava": {
         "projectName": "armor_stand",
         "exporter": "animationExporter",
-        "rigItem": "minecraft:white_dye",
+        "verbose": false,
+        "rigItem": "minecraft:leather_horse_armor",
         "rigModelsExportFolder": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\animated_java\\models\\rigs\\armor_stand",
-        "predicateFilePath": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\minecraft\\models\\item\\white_dye.json",
+        "predicateFilePath": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\minecraft\\models\\item\\leather_horse_armor.json",
         "transparentTexturePath": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\minecraft\\textures\\transparent.png"
       },
       "animatedJava_exporter_statueExporter": {
@@ -29,8 +30,8 @@
         "dataPackPath": ""
       },
       "animatedJava_exporter_animationExporter": {
-        "rootEntityType": "minecraft:husk",
-        "rootEntityNbt": "{Silent:true,ActiveEffects:[{Id:14b,Amplifier:0b,Duration:11111111,ShowParticles:0b}]}",
+        "rootEntityType": "minecraft:marker",
+        "rootEntityNbt": "{}",
         "markerArmorStands": false,
         "autoDistance": true,
         "autoDistanceMovementThreshold": 1,
@@ -200,6 +201,7 @@
             15,
             32
           ],
+          "tint": 0,
           "texture": 0
         },
         "east": {
@@ -209,6 +211,7 @@
             3,
             32
           ],
+          "tint": 0,
           "texture": 0
         },
         "south": {
@@ -218,6 +221,7 @@
             30,
             32
           ],
+          "tint": 0,
           "texture": 0
         },
         "west": {
@@ -227,6 +231,7 @@
             18,
             32
           ],
+          "tint": 0,
           "texture": 0
         },
         "up": {
@@ -236,6 +241,7 @@
             3,
             26
           ],
+          "tint": 0,
           "texture": 0
         },
         "down": {
@@ -245,6 +251,7 @@
             15,
             29
           ],
+          "tint": 0,
           "texture": 0
         }
       },
@@ -617,6 +624,7 @@
             52,
             25
           ],
+          "tint": 0,
           "texture": 0
         },
         "east": {
@@ -626,6 +634,7 @@
             50,
             25
           ],
+          "tint": 0,
           "texture": 0
         },
         "south": {
@@ -635,6 +644,7 @@
             56,
             25
           ],
+          "tint": 0,
           "texture": 0
         },
         "west": {
@@ -644,6 +654,7 @@
             54,
             25
           ],
+          "tint": 0,
           "texture": 0
         },
         "up": {
@@ -653,6 +664,7 @@
             50,
             16
           ],
+          "tint": 0,
           "texture": 0
         },
         "down": {
@@ -662,6 +674,7 @@
             52,
             18
           ],
+          "tint": 0,
           "texture": 0
         }
       },
@@ -700,6 +713,7 @@
             20,
             9
           ],
+          "tint": 0,
           "texture": 0
         },
         "east": {
@@ -709,6 +723,7 @@
             18,
             9
           ],
+          "tint": 0,
           "texture": 0
         },
         "south": {
@@ -718,6 +733,7 @@
             24,
             9
           ],
+          "tint": 0,
           "texture": 0
         },
         "west": {
@@ -727,6 +743,7 @@
             22,
             9
           ],
+          "tint": 0,
           "texture": 0
         },
         "up": {
@@ -736,6 +753,7 @@
             18,
             0
           ],
+          "tint": 0,
           "texture": 0
         },
         "down": {
@@ -745,6 +763,7 @@
             20,
             2
           ],
+          "tint": 0,
           "texture": 0
         }
       },
@@ -950,6 +969,7 @@
             13,
             32
           ],
+          "tint": 0,
           "texture": 0
         },
         "east": {
@@ -959,6 +979,7 @@
             3,
             32
           ],
+          "tint": 0,
           "texture": 0
         },
         "south": {
@@ -968,6 +989,7 @@
             28,
             32
           ],
+          "tint": 0,
           "texture": 0
         },
         "west": {
@@ -977,6 +999,7 @@
             18,
             32
           ],
+          "tint": 0,
           "texture": 0
         },
         "up": {
@@ -986,6 +1009,7 @@
             5,
             26
           ],
+          "tint": 0,
           "texture": 0
         },
         "down": {
@@ -995,6 +1019,7 @@
             17,
             29
           ],
+          "tint": 0,
           "texture": 0
         }
       },
@@ -1170,7 +1195,7 @@
                 0
               ],
               "color": 0,
-              "nbt": "{}",
+              "nbt": "{ArmorItems:[{},{},{},{tag:{display:{color:16711680}}}]}",
               "armAnimationEnabled": false,
               "uuid": "fdba905d-125a-46b9-bada-bbc88aedd04a",
               "export": true,

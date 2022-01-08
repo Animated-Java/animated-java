@@ -46,6 +46,14 @@ animatedJava.boneConfig.armAnimationEnabled: Enable Arm Animation
 
 animatedJava.popup.quickMessage.noExporterSelected: No Exporter Selected!
 
+#? Errors/Warnings
+
+animatedJava.exportCancelled: Export Cancelled
+
+animatedJava.error.exportInProgress: Export in Progress
+
+animatedJava.customErrorReport.titleUndefined: Unknown Error (Not good)
+
 animatedJava.dialog.miscError.title: An Unknown Error has Occured in Animated Java
 animatedJava.dialog.miscError.body: |-
     <p>%errorMessage</p>
@@ -59,14 +67,6 @@ animatedJava.dialog.miscError.body: |-
     <p>Please report this error on <a href="%githubLink">Animated Java's github</a> with information on how to reproduce it and a copy of the error above.</p>
     <p>You can also join our <a href="%discordLink">Discord Server</a> and ask questions in the #animated-java-support channel.</p>
     <p>Thank you!</p>
-
-#? Errors/Warnings
-
-animatedJava.exportCancelled: Export Cancelled
-
-animatedJava.error.exportInProgress: Export in Progress
-
-animatedJava.customErrorReport.titleUndefined: Unknown Error
 
 animatedJava.popup.error.unableToGenerateTexturePath.title: Invalid texture path
 animatedJava.popup.error.unableToGenerateTexturePath.body: |-
@@ -134,6 +134,11 @@ animatedJava.setting.projectName.description: The unique ID of your project. Mak
 
 animatedJava.setting.exporter.name: Exporter
 animatedJava.setting.exporter.description: Which export format to use for this project
+
+animatedJava.setting.verbose.name: Verbose
+animatedJava.setting.verbose.description: |-
+  Indicates to the selected exporter whether or not to export extra debug/error messages.
+  Only really effects the Statue and Animation exporters.
 
 animatedJava.setting.rigItem.name: Rig Item
 animatedJava.setting.rigItem.description: The item that will be used to display the models on the armor_stands

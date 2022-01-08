@@ -12,6 +12,7 @@ import './compileLangMC'
 import './exporters/statueExporter'
 import './exporters/animationExporter'
 import './bbmods/modelFormatMod'
+import './bbmods/faceTint'
 import { intl } from './util/intl'
 import { CustomError } from './util/customError'
 import { format } from './util/replace'
@@ -113,6 +114,7 @@ export interface Settings {
 		rigModelsExportFolder: string
 		transparentTexturePath: string
 		boundingBoxRenderMode: 'single' | 'multiple' | 'disabled'
+		verbose: boolean
 	}
 	[index: string]: any
 }

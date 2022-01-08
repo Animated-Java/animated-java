@@ -38,6 +38,16 @@ export const DefaultSettings = {
 				return [...store.getStore('exporters').keys()].includes(value)
 			},
 		},
+		verbose: {
+			type: 'checkbox',
+			default: true,
+			populate() {
+				return true
+			},
+			isValid(value) {
+				return typeof value === 'boolean'
+			}
+		},
 		rigItem: {
 			type: 'text',
 			default: 'minecraft:white_dye',

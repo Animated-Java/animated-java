@@ -57,3 +57,12 @@ export function normalizePath(path: string, stripTrailing?: boolean) {
 	}
 	return prefix + segs.join('/')
 }
+
+export function promiseWhen(condition: any, timeout: number) {
+	return new Promise<void>((resolve, reject) =>
+		(function wait() {
+			if (condition()) resolve()
+			setTimeout(wait, timeout)
+		})()
+	)
+}

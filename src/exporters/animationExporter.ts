@@ -123,18 +123,6 @@ async function createMCFile(
 
 	const FILE: string[] = []
 
-	const rootExeErrorJsonText = new JsonText([
-		'',
-		{ text: 'AJ', color: 'green' },
-		{ text: ' → ', color: 'light_purple' },
-		{ text: 'Error ☠', color: 'red' },
-		'\n',
-		{ text: '%functionName', color: 'blue' },
-		' ',
-		{ text: 'must be executed as ', color: 'gray' },
-		{ text: `aj.${projectName}.root`, color: 'light_purple' },
-	]).toString()
-
 	const scoreboards = Object.fromEntries(
 		Object.entries({
 			id: exporterSettings.idScoreboardObjective,
@@ -168,56 +156,277 @@ async function createMCFile(
 		boneDisplay: 'minecraft:armor_stand',
 	}
 
+	const errorPrefixJsonText = new JsonText([
+		'',
+		{ text: '[ ', color: 'dark_gray' },
+		{ text: 'AJ', color: 'green' },
+		{ text: ' → ', color: 'light_purple' },
+		{ text: 'Error ☠', color: 'red' },
+		{ text: ' ]', color: 'dark_gray' },
+		'\n',
+	])
+
+	const rootExeErrorJsonText = new JsonText([
+		errorPrefixJsonText.toJSON(),
+		{ text: '→ ', color: 'red' },
+		{ text: 'The function ', color: 'gray' },
+		{ text: '%functionName ', color: 'yellow' },
+		{ text: 'must be', color: 'gray' },
+		'\n',
+		{ text: `executed as @e[tag=${tags.root}]`, color: 'light_purple' },
+	]).toString()
+
 	// prettier-ignore
-	FILE.push(`
-		function load {
-			scoreboard players add .aj.animation ${scoreboards.animatingFlag} 0
-			scoreboard players add .aj.anim_loop ${scoreboards.animatingFlag} 0
-		}
-	`)
 	FILE.push(`
 		function reset_animation_flags {
 			scoreboard players set .aj.animation ${scoreboards.animatingFlag} 0
 			scoreboard players set .aj.anim_loop ${scoreboards.animatingFlag} 0
-		}
-	`)
-	// prettier-ignore
-	FILE.push(`
-		function install {
-			scoreboard objectives add ${scoreboards.internal} dummy
-			scoreboard objectives add ${scoreboards.id} dummy
-			scoreboard objectives add ${scoreboards.frame} dummy
-			scoreboard objectives add ${scoreboards.animatingFlag} dummy
-			${Object.values(animations)
-				.map((v) =>
-					`scoreboard objectives add ${scoreboards.animationLoopMode} dummy`.replace(
-						'%animationName',
-						v.name
-					)
-				)
-				.join('\n')}
-			scoreboard players add .aj.animation ${scoreboards.animatingFlag} 0
-			scoreboard players add .aj.anim_loop ${scoreboards.animatingFlag} 0
 			scoreboard players set .noScripts ${scoreboards.internal} 0
 		}
 	`)
+
 	// prettier-ignore
 	FILE.push(`
-		function uninstall {
-			scoreboard objectives remove ${scoreboards.internal}
-			scoreboard objectives remove ${scoreboards.id}
-			scoreboard objectives remove ${scoreboards.frame}
-			scoreboard objectives remove ${scoreboards.animatingFlag}
-			${Object.values(animations)
-				.map((v) =>
-					`scoreboard objectives remove ${scoreboards.animationLoopMode}`.replace(
-						'%animationName',
-						v.name
-					)
-				)
-				.join('\n')}
+		function assert_animation_flags {
+			scoreboard players add .aj.animation ${scoreboards.animatingFlag} 0
+			scoreboard players add .aj.anim_loop ${scoreboards.animatingFlag} 0
+			scoreboard players add .noScripts ${scoreboards.internal} 0
 		}
 	`)
+
+	{
+		//? Install function
+		const installJsonText = new JsonText([
+			{ text: '[ ', color: 'dark_gray' },
+			{ text: 'AJ', color: 'aqua' },
+			{ text: ' → ', color: 'gray' },
+			{ text: 'Install ⊻', color: 'green' },
+			{ text: ' ]', color: 'dark_gray' },
+			'\n',
+			{ text: 'Installed ', color: 'gray' },
+			{ text: 'armor_stand', color: 'gold' },
+			{ text: ' rig.', color: 'gray' },
+			'\n',
+			{ text: '◘ ', color: 'gray' },
+			{ text: 'Included Scoreboard Objectives:', color: 'green' },
+			'\n',
+			{ text: '   ◘ ', color: 'gray' },
+			{ text: scoreboards.internal, color: 'aqua' },
+			{ text: ' (Internal)', color: 'dark_gray' },
+			'\n',
+			{ text: '   ◘ ', color: 'gray' },
+			{ text: scoreboards.id, color: 'aqua' },
+			{ text: ' (ID)', color: 'dark_gray' },
+			'\n',
+			{ text: '   ◘ ', color: 'gray' },
+			{ text: scoreboards.frame, color: 'aqua' },
+			{ text: ' (Frame)', color: 'dark_gray' },
+			'\n',
+			{ text: '   ◘ ', color: 'gray' },
+			{ text: scoreboards.animatingFlag, color: 'aqua' },
+			{ text: ' (Animation Flag)', color: 'dark_gray' },
+			Object.entries(animations).map(([_, animation]) => {
+				return [
+					'\n',
+					{ text: '   ◘ ', color: 'gray' },
+					{
+						text: `aj.${projectName}.${animation.name}.loopMode`,
+						color: 'aqua',
+					},
+					{ text: ' (Loop Mode)', color: 'dark_gray' },
+				]
+			}),
+		])
+
+		// prettier-ignore
+		if (ajSettings.verbose) {
+			FILE.push(`
+				function install {
+					scoreboard objectives add ${scoreboards.internal} dummy
+					scoreboard objectives add ${scoreboards.id} dummy
+					scoreboard objectives add ${scoreboards.frame} dummy
+					scoreboard objectives add ${scoreboards.animatingFlag} dummy
+					${Object.values(animations)
+						.map((v) =>
+							`scoreboard objectives add ${scoreboards.animationLoopMode} dummy`.replace(
+								'%animationName',
+								v.name
+							)
+						)
+						.join('\n')}
+					function ${projectName}:reset_animation_flags
+					scoreboard players set #uninstall ${scoreboards.internal} 0
+					tellraw @a ${installJsonText}
+				}
+			`)
+		} else {
+			FILE.push(`
+				function install {
+					scoreboard objectives add ${scoreboards.internal} dummy
+					scoreboard objectives add ${scoreboards.id} dummy
+					scoreboard objectives add ${scoreboards.frame} dummy
+					scoreboard objectives add ${scoreboards.animatingFlag} dummy
+					${Object.values(animations)
+						.map((v) =>
+							`scoreboard objectives add ${scoreboards.animationLoopMode} dummy`.replace(
+								'%animationName',
+								v.name
+							)
+						)
+						.join('\n')}
+					function ${projectName}:reset_animation_flags
+				}
+			`)
+		}
+	}
+
+	{
+		//? Uninstall Function
+		const uninstallJsonText = new JsonText([
+			{ text: '[ ', color: 'dark_gray' },
+			{ text: 'AJ', color: 'aqua' },
+			{ text: ' → ', color: 'gray' },
+			{ text: 'Uninstall ⊽', color: 'red' },
+			{ text: ' ]', color: 'dark_gray' },
+			'\n',
+			{ text: 'Uninstalled ', color: 'gray' },
+			{ text: 'armor_stand', color: 'gold' },
+			{ text: ' rig specific scoreboards', color: 'gray' },
+			'\n',
+			{ text: '◘ ', color: 'gray' },
+			{ text: 'Included Scoreboard Objectives:', color: 'green' },
+			'\n',
+			{ text: '   ◘ ', color: 'gray' },
+			{ text: scoreboards.animatingFlag, color: 'aqua' },
+			{ text: ' (Animation Flag)', color: 'dark_gray' },
+			Object.entries(animations).map(([_, animation]) => {
+				return [
+					'\n',
+					{ text: '   ◘ ', color: 'gray' },
+					{
+						text: `aj.${projectName}.${animation.name}.loopMode`,
+						color: 'aqua',
+					},
+					{ text: ' (Loop Mode)', color: 'dark_gray' },
+				]
+			}),
+			'\n',
+			'\n',
+			{ text: '◘ ', color: 'gray' },
+			{
+				text: 'Do you wish to uninstall all AJ related scoreboard objectives added by this rig?',
+				color: 'green',
+			},
+			'\n',
+			{
+				text: '[Yes]',
+				color: 'green',
+				clickEvent: {
+					action: 'run_command',
+					value: `/function ${projectName}:uninstall/remove_aj_related`,
+				},
+			},
+			{
+				text: ' [No]',
+				color: 'red',
+				clickEvent: {
+					action: 'run_command',
+					value: `/function ${projectName}:uninstall/keep_aj_related`,
+				},
+			},
+		])
+
+		const uninstallAJRelated = new JsonText([
+			{
+				text: 'Removed AJ specific scoreboard objectives:',
+				color: 'green',
+			},
+			'\n',
+			{ text: '   ◘ ', color: 'gray' },
+			{ text: scoreboards.internal, color: 'aqua' },
+			{ text: ' (Internal)', color: 'dark_gray' },
+			'\n',
+			{ text: '   ◘ ', color: 'gray' },
+			{ text: scoreboards.id, color: 'aqua' },
+			{ text: ' (ID)', color: 'dark_gray' },
+			'\n',
+			{ text: '   ◘ ', color: 'gray' },
+			{ text: scoreboards.frame, color: 'aqua' },
+			{ text: ' (Frame)', color: 'dark_gray' },
+		])
+
+		const keepAjRelated = new JsonText([
+			{
+				text: 'Keeping AJ specific scoreboard objectives.',
+				color: 'green',
+			},
+		])
+
+		const uninstallNotInProgress = new JsonText([
+			errorPrefixJsonText.toJSON(),
+			{ text: 'Uninstall not in-progress. Please run', color: 'gray' },
+			'\n',
+			{ text: ` function ${projectName}:uninstall`, color: 'red' },
+			'\n',
+			{ text: ' to start the uninstallation process.', color: 'gray' },
+		])
+
+		if (ajSettings.verbose) {
+			// prettier-ignore
+			FILE.push(`
+				function uninstall {
+					scoreboard objectives remove ${scoreboards.animatingFlag}
+					${Object.values(animations)
+						.map((v) =>
+							`scoreboard objectives remove ${scoreboards.animationLoopMode}`.replace(
+								'%animationName',
+								v.name
+							)
+						)
+						.join('\n')}
+					scoreboard players set #uninstall ${scoreboards.internal} 1
+					tellraw @a ${uninstallJsonText}
+				}
+				dir uninstall {
+					function keep_aj_related {
+						execute if score #uninstall ${scoreboards.internal} matches 0 run tellraw @a ${uninstallNotInProgress}
+						execute if score #uninstall ${scoreboards.internal} matches 1 run {
+							scoreboard players set #uninstall ${scoreboards.internal} 0
+							tellraw @a ${keepAjRelated}
+						}
+					}
+					function remove_aj_related {
+						execute if score #uninstall ${scoreboards.internal} matches 0 run tellraw @a ${uninstallNotInProgress}
+						execute if score #uninstall ${scoreboards.internal} matches 1 run {
+							scoreboard players set #uninstall ${scoreboards.internal} 0
+							scoreboard objectives remove ${scoreboards.internal}
+							scoreboard objectives remove ${scoreboards.id}
+							scoreboard objectives remove ${scoreboards.frame}
+							tellraw @a ${uninstallAJRelated}
+						}
+					}
+				}
+			`)
+		} else {
+			// prettier-ignore
+			FILE.push(`
+				function uninstall {
+					scoreboard objectives remove ${scoreboards.animatingFlag}
+					${Object.values(animations)
+						.map((v) =>
+							`scoreboard objectives remove ${scoreboards.animationLoopMode}`.replace(
+								'%animationName',
+								v.name
+							)
+						)
+						.join('\n')}
+					scoreboard objectives remove ${scoreboards.internal}
+					scoreboard objectives remove ${scoreboards.id}
+					scoreboard objectives remove ${scoreboards.frame}
+				}
+			`)
+		}
+	}
 
 	//? Bone Entity Type
 	FILE.push(`
@@ -419,8 +628,7 @@ async function createMCFile(
 					}
 					# Assert animation flags
 					scoreboard players set @s ${scoreboards.animatingFlag} 0
-					scoreboard players add .aj.animation ${scoreboards.animatingFlag} 0
-					scoreboard players add .aj.anim_loop ${scoreboards.animatingFlag} 0
+					function ${projectName}:assert_animation_flags
 				}
 			`)
 		}
@@ -695,6 +903,8 @@ async function createMCFile(
 						tag @s add aj.${projectName}.anim.${animation.name}
 						# Reset animation time
 						scoreboard players set @s ${scoreboards.frame} 0
+						# Assert that .noScripts is tracked properly
+						scoreboard players add .noScripts ${scoreboards.internal} 0
 						# Start the animation loop if not running
 						execute if score .aj.anim_loop ${scoreboards.animatingFlag} matches 0 run function ${projectName}:animation_loop
 					# If this entity is not the root

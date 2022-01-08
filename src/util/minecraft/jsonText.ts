@@ -84,4 +84,8 @@ export class JsonText {
 	toString() {
 		return JSON.stringify(this.text)
 	}
+
+	toJSON() {
+		return this.text
+	}
 }
