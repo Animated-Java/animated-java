@@ -4,6 +4,7 @@ import { settings } from './settings'
 import { mkdir } from './util/ezfs'
 import { CustomError } from './util/customError'
 import { tl } from './util/intl'
+import { format } from './util/replace'
 import { getModelPath } from './util/minecraft/resourcepack'
 // import { safeFunctionName } from './util'
 import transparent from './assets/transparent.png'
@@ -15,44 +16,75 @@ async function exportRigModels(models, variantModels) {
 		settings.animatedJava.rigModelsExportFolder,
 		'.aj_meta'
 	)
-	let _continue = true
 
 	if (!fs.existsSync(metaPath)) {
-		await new Promise((resolve, reject) => {
-			let d = new Dialog({
-				title: tl('animatedJava.popup.warning.rigFolderUnused.title'),
-				lines: tl('animatedJava.popup.warning.rigFolderUnused.body')
-					.split('\n')
-					.map((line) => `<p>${line}</p>`),
-				onConfirm() {
-					d.hide()
-					Blockbench.writeFile(metaPath, {
-						content: Project.UUID,
-					})
-					resolve()
-				},
-				onCancel() {
-					d.hide()
-					reject(
-						new CustomError(
-							'Rig Folder Unused -> User Cancelled Export Process',
-							{ intentional: true, silent: true }
-						)
+		const files = fs.readdirSync(settings.animatedJava.rigModelsExportFolder)
+		// If the meta folder is empty, just write the meta and export models. However it there are other files/folder in there, show a warning.
+		if (files.length > 0) {
+			await new Promise((resolve, reject) => {
+				let d = new Dialog({
+					title: tl('animatedJava.popup.warning.rigFolderHasUnknownContent.title'),
+					lines: format(
+						tl('animatedJava.popup.warning.rigFolderHasUnknownContent.body'),
+						{
+							path: settings.animatedJava.rigModelsExportFolder,
+							files: files.join(', ')
+						}
 					)
-				},
-			}).show()
-		})
+						.split('\n')
+						.map((line) => `<p>${line}</p>`),
+					width: 512 + 128,
+					buttons: [
+						'Overwrite',
+						'Cancel'
+					],
+					confirmIndex: 0,
+					cancelIndex: 1,
+					onConfirm() {
+						d.hide()
+						Blockbench.writeFile(metaPath, {
+							content: Project.UUID,
+						})
+						resolve()
+					},
+					onCancel() {
+						d.hide()
+						reject(
+							new CustomError(
+								'Rig Folder Unused -> User Cancelled Export Process',
+								{ intentional: true, silent: true }
+							)
+						)
+					},
+				}).show()
+			})
+		} else {
+			Blockbench.writeFile(metaPath, {
+				content: Project.UUID,
+			})
+		}
 	} else if (fs.readFileSync(metaPath, 'utf-8') !== Project.UUID) {
+		const files = fs.readdirSync(settings.animatedJava.rigModelsExportFolder)
 		await new Promise((resolve, reject) => {
 			let d = new Dialog({
 				title: tl(
 					'animatedJava.popup.error.rigFolderAlreadyUsedByOther.title'
 				),
-				lines: tl(
+				lines: format(tl(
 					'animatedJava.popup.error.rigFolderAlreadyUsedByOther.body'
-				)
+				), {
+					path: settings.animatedJava.rigModelsExportFolder,
+					files: files.join(', ')
+				})
 					.split('\n')
 					.map((line) => `<p>${line}</p>`),
+				width: 512 + 128,
+				buttons: [
+					'Overwrite',
+					'Cancel'
+				],
+				confirmIndex: 0,
+				cancelIndex: 1,
 				onConfirm() {
 					d.hide()
 					Blockbench.writeFile(metaPath, {
@@ -147,7 +179,9 @@ async function exportPredicate(models, variantModels, ajSettings) {
 	for (const [modelName, model] of Object.entries(models)) {
 		predicateJSON.overrides.push({
 			predicate: { custom_model_data: model.aj.customModelData },
-			model: getModelPath(path.join(ajSettings.rigModelsExportFolder, modelName)),
+			model: getModelPath(
+				path.join(ajSettings.rigModelsExportFolder, modelName)
+			),
 		})
 	}
 
@@ -155,7 +189,14 @@ async function exportPredicate(models, variantModels, ajSettings) {
 		for (const [modelName, model] of Object.entries(variant)) {
 			predicateJSON.overrides.push({
 				predicate: { custom_model_data: model.aj.customModelData },
-				model: getModelPath(path.join(ajSettings.rigModelsExportFolder, variantName, modelName), modelName),
+				model: getModelPath(
+					path.join(
+						ajSettings.rigModelsExportFolder,
+						variantName,
+						modelName
+					),
+					modelName
+				),
 			})
 		}
 

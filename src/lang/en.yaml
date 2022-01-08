@@ -91,22 +91,31 @@ animatedJava_exporter_animationExporter.popup.warning.invalidSnappingValue.title
 animatedJava_exporter_animationExporter.popup.warning.invalidSnappingValue.body: |-
     The animation '%animationName' has a snapping value of %snapping!
     Due to how fast Minecraft ticks, Animated Java only supports a snapping value of 20.
-    Please update your animations to reflect this limitation before you export.
+    Please update your animations and keyframes to reflect this limitation before you export.
+    (You may have to wiggle your keyframes on the timeline a bit to update their snapped time)
 
 animatedJava.popup.error.unsavedTexture.title: Unsaved Texture
 animatedJava.popup.error.unsavedTexture.body: |-
     The texture '%textureName' is not saved to disk!
     Please make sure it is saved into a valid resource pack location.
 
-animatedJava.popup.warning.rigFolderUnused.title: Unused rig folder
-animatedJava.popup.warning.rigFolderUnused.body: |-
-    This folder does not contain any existing rigs.
-    Are you sure you want to overwrite this folder?
+animatedJava.popup.warning.rigFolderHasUnknownContent.title: Unused rig folder
+animatedJava.popup.warning.rigFolderHasUnknownContent.body: |-
+    The folder you have chosen as your rig model folder has unknown files in it.
+    Are you sure you want to overwrite the contents of this folder with your rig?
+    Chosen folder:
+    <textarea>%path</textarea>
+    Unknown Files:
+    <textarea>%files</textarea>
 
 animatedJava.popup.error.rigFolderAlreadyUsedByOther.title: Chosen rig folder already in use
 animatedJava.popup.error.rigFolderAlreadyUsedByOther.body: |-
-    This folder already contains a rig for another model.
-    Are you sure you want to overwrite the existing rig?
+    The folder you have chosen as your rig model folder already has a different rig's models inside of it.
+    Are you sure you want to overwrite the contents of this folder with your rig?
+    Chosen folder:
+    <textarea>%path</textarea>
+    Files:
+    <textarea>%files</textarea>
 
 animatedJava.popup.error.transparentTexturePathNotFound.title: Transparent Texture Path Not Defined
 animatedJava.popup.error.transparentTexturePathNotFound.body: |-
@@ -239,8 +248,7 @@ animatedJava_exporter_animationExporter.writingDataPackProgress: Writing Data Pa
 animatedJava_exporter_animationExporter.successfullyExported: Export Successful!
 
 animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.title: Zero Length Animation
-animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.body:
-    |-
+animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.body: |-
     The animation %animationName is too short! Animations must be at least 0.05 seconds (or 1 game tick) long
 
 animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.title: MCB file path not defined

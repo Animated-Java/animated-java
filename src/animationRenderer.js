@@ -306,7 +306,7 @@ async function renderAnimation(options) {
 				const frames = []
 				animation.select()
 
-				for (let i = 0; i <= animation.length; i += 0.05) {
+				for (let i = 0; i <= animation.length + 0.05; i += 0.05) {
 					accAnimationLength += 0.05
 					await Async.wait_if_overflow()
 					setAnimatorTime(i)
