@@ -181,7 +181,7 @@ async function computeAnimationData(
 	}
 
 	const data = {
-		settings: settings.toObject() as aj.Settings,
+		settings: settings.toObject() as aj.GlobalSettings,
 		cubeData,
 		bones,
 		models,

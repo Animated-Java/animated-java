@@ -104,18 +104,20 @@ Blockbench.events['animated-java-ready'].length = 0
 // WOOO TYPING, YAAAAAAY
 
 export interface Settings {
-	animatedJava: {
-		projectName: string
-		exporter: string
-		useCache: boolean
-		cacheMode: 'memory' | 'disk'
-		rigItem: string
-		predicateFilePath: string
-		rigModelsExportFolder: string
-		transparentTexturePath: string
-		boundingBoxRenderMode: 'single' | 'multiple' | 'disabled'
-		verbose: boolean
-	}
+	projectName: string
+	exporter: string
+	useCache: boolean
+	cacheMode: 'memory' | 'disk'
+	rigItem: string
+	predicateFilePath: string
+	rigModelsExportFolder: string
+	transparentTexturePath: string
+	boundingBoxRenderMode: 'single' | 'multiple' | 'disabled'
+	verbose: boolean
+}
+
+export interface GlobalSettings {
+	animatedJava: Settings
 	[index: string]: any
 }
 

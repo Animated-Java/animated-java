@@ -81,7 +81,7 @@ async function createMCFile(
 	bones: aj.BoneObject,
 	models: aj.ModelObject,
 	animations: aj.Animations,
-	settings: aj.Settings,
+	settings: aj.GlobalSettings,
 	variantModels: aj.VariantModels,
 	variantTextureOverrides: aj.VariantTextureOverrides,
 	variantTouchedModels: aj.variantTouchedModels
@@ -1040,7 +1040,7 @@ async function createMCFile(
 
 async function exportMCFile(
 	generated: { mcFile: string; mcbConfig: MCBConfig },
-	ajSettings: aj.Settings,
+	ajSettings: aj.GlobalSettings,
 	exporterSettings: animationExporterSettings
 ) {
 	if (!exporterSettings.mcbFilePath) {
@@ -1071,7 +1071,7 @@ async function exportMCFile(
 
 async function exportDataPack(
 	generated: { mcFile: string; mcbConfig: MCBConfig },
-	ajSettings: aj.Settings,
+	ajSettings: aj.GlobalSettings,
 	exporterSettings: animationExporterSettings
 ) {
 	if (!exporterSettings.dataPackPath) {

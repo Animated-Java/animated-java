@@ -1,16 +1,20 @@
-import fs from 'fs'
-import path, { resolve } from 'path'
+import * as fs from 'fs'
+import * as path from 'path'
 import { settings } from './settings'
 import { mkdir } from './util/ezfs'
 import { CustomError } from './util/customError'
 import { tl } from './util/intl'
-import { format } from './util/replace'
+import { format, safeFunctionName } from './util/replace'
 import { getModelPath } from './util/minecraft/resourcepack'
-// import { safeFunctionName } from './util'
+import * as aj from './animatedJava'
+// @ts-ignore
 import transparent from './assets/transparent.png'
 
 // Exports the model.json rig files
-async function exportRigModels(models, variantModels) {
+async function exportRigModels(
+	models: aj.ModelObject,
+	variantModels: aj.VariantModels
+) {
 	console.groupCollapsed('Export Rig Models')
 	const metaPath = path.join(
 		settings.animatedJava.rigModelsExportFolder,
@@ -18,32 +22,39 @@ async function exportRigModels(models, variantModels) {
 	)
 
 	if (!fs.existsSync(metaPath)) {
-		const files = fs.readdirSync(settings.animatedJava.rigModelsExportFolder)
+		const files = fs.readdirSync(
+			settings.animatedJava.rigModelsExportFolder
+		)
 		// If the meta folder is empty, just write the meta and export models. However it there are other files/folder in there, show a warning.
 		if (files.length > 0) {
-			await new Promise((resolve, reject) => {
+			await new Promise<void>((resolve, reject) => {
 				let d = new Dialog({
-					title: tl('animatedJava.popup.warning.rigFolderHasUnknownContent.title'),
+					id: 'animatedJava.rigFolderHasUnknownContent',
+					title: tl(
+						'animatedJava.popup.warning.rigFolderHasUnknownContent.title'
+					),
 					lines: format(
-						tl('animatedJava.popup.warning.rigFolderHasUnknownContent.body'),
+						tl(
+							'animatedJava.popup.warning.rigFolderHasUnknownContent.body'
+						),
 						{
 							path: settings.animatedJava.rigModelsExportFolder,
-							files: files.join(', ')
+							files: files.join(', '),
 						}
 					)
 						.split('\n')
 						.map((line) => `<p>${line}</p>`),
+					// @ts-ignore
 					width: 512 + 128,
-					buttons: [
-						'Overwrite',
-						'Cancel'
-					],
+					buttons: ['Overwrite', 'Cancel'],
 					confirmIndex: 0,
 					cancelIndex: 1,
 					onConfirm() {
 						d.hide()
 						Blockbench.writeFile(metaPath, {
+							// @ts-ignore
 							content: Project.UUID,
+							custom_writer: null,
 						})
 						resolve()
 					},
@@ -60,35 +71,44 @@ async function exportRigModels(models, variantModels) {
 			})
 		} else {
 			Blockbench.writeFile(metaPath, {
+				// @ts-ignore
 				content: Project.UUID,
+				custom_writer: null,
 			})
 		}
+		// @ts-ignore
 	} else if (fs.readFileSync(metaPath, 'utf-8') !== Project.UUID) {
-		const files = fs.readdirSync(settings.animatedJava.rigModelsExportFolder)
-		await new Promise((resolve, reject) => {
+		const files = fs.readdirSync(
+			settings.animatedJava.rigModelsExportFolder
+		)
+		await new Promise<void>((resolve, reject) => {
 			let d = new Dialog({
+				id: 'animatedJava.rigFolderAlreadyUsedByOther',
 				title: tl(
 					'animatedJava.popup.error.rigFolderAlreadyUsedByOther.title'
 				),
-				lines: format(tl(
-					'animatedJava.popup.error.rigFolderAlreadyUsedByOther.body'
-				), {
-					path: settings.animatedJava.rigModelsExportFolder,
-					files: files.join(', ')
-				})
+				lines: format(
+					tl(
+						'animatedJava.popup.error.rigFolderAlreadyUsedByOther.body'
+					),
+					{
+						path: settings.animatedJava.rigModelsExportFolder,
+						files: files.join(', '),
+					}
+				)
 					.split('\n')
 					.map((line) => `<p>${line}</p>`),
+				// @ts-ignore
 				width: 512 + 128,
-				buttons: [
-					'Overwrite',
-					'Cancel'
-				],
+				buttons: ['Overwrite', 'Cancel'],
 				confirmIndex: 0,
 				cancelIndex: 1,
 				onConfirm() {
 					d.hide()
 					Blockbench.writeFile(metaPath, {
+						// @ts-ignore
 						content: Project.UUID,
+						custom_writer: null,
 					})
 					resolve()
 				},
@@ -124,9 +144,10 @@ async function exportRigModels(models, variantModels) {
 		}
 		Blockbench.writeFile(modelFilePath, {
 			content: autoStringify(modelJSON),
+			custom_writer: null,
 		})
 	}
-	console.groupEnd('Details')
+	console.groupEnd()
 
 	console.log('Export Variant Models:', variantModels)
 	console.group('Details')
@@ -147,7 +168,7 @@ async function exportRigModels(models, variantModels) {
 				variantFolderPath,
 				`${modelName}.json`
 			)
-			console.log('Exporting Model', modelFilePath, model.elements)
+			console.log('Exporting Model', modelFilePath)
 			// Export the model
 			const modelJSON = {
 				__credit:
@@ -157,17 +178,49 @@ async function exportRigModels(models, variantModels) {
 			}
 			Blockbench.writeFile(modelFilePath, {
 				content: autoStringify(modelJSON),
+				custom_writer: null,
 			})
 		}
 	}
-	console.groupEnd('Details')
+	console.groupEnd()
 
-	console.groupEnd('Export Rig Models')
+	console.groupEnd()
 }
 
-async function exportPredicate(models, variantModels, ajSettings) {
+interface Override {
+	predicate: {
+		custom_model_data: number
+	}
+	model: string
+}
+
+interface PredicateModel {
+	parent: string
+	textures: {
+		layer0: string
+	}
+	overrides: Override[]
+}
+
+let predicateIDMap = {}
+
+async function exportPredicate(
+	models: aj.ModelObject,
+	variantModels: aj.VariantModels,
+	ajSettings: aj.Settings
+) {
 	console.groupCollapsed('Export Predicate Model')
-	// const projectName = safeFunctionName(aj_settings.projectName)
+	const projectName = safeFunctionName(ajSettings.projectName)
+
+	if (fs.existsSync(ajSettings.predicateFilePath)) {
+		const oldPredicate: PredicateModel = JSON.parse(
+			await fs.promises.readFile(ajSettings.predicateFilePath, {
+				encoding: 'utf-8',
+			})
+		)
+		console.log(oldPredicate)
+	}
+
 	const predicateJSON = {
 		parent: 'item/generated',
 		textures: {
@@ -180,7 +233,8 @@ async function exportPredicate(models, variantModels, ajSettings) {
 		predicateJSON.overrides.push({
 			predicate: { custom_model_data: model.aj.customModelData },
 			model: getModelPath(
-				path.join(ajSettings.rigModelsExportFolder, modelName)
+				path.join(ajSettings.rigModelsExportFolder, modelName),
+				modelName
 			),
 		})
 	}
@@ -202,8 +256,9 @@ async function exportPredicate(models, variantModels, ajSettings) {
 
 	Blockbench.writeFile(ajSettings.predicateFilePath, {
 		content: autoStringify(predicateJSON),
+		custom_writer: null,
 	})
-	console.groupEnd('Export Predicate Model')
+	console.groupEnd()
 }
 
 async function exportTransparentTexture() {
@@ -213,6 +268,7 @@ async function exportTransparentTexture() {
 			String(transparent).replace('data:image/png;base64,', ''),
 			'base64'
 		),
+		custom_writer: null,
 	})
 }
 

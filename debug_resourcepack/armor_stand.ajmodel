@@ -1,14 +1,14 @@
 {
   "meta": {
     "format_version": "0.0",
-    "creation_time": 1641654993,
+    "creation_time": 1641669797,
     "model_format": "animated_java/ajmodel",
     "box_uv": false,
     "settings": {
       "animatedJava": {
         "projectName": "armor_stand",
         "exporter": "animationExporter",
-        "verbose": false,
+        "verbose": true,
         "rigItem": "minecraft:leather_horse_armor",
         "rigModelsExportFolder": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\animated_java\\models\\rigs\\armor_stand",
         "predicateFilePath": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\minecraft\\models\\item\\leather_horse_armor.json",
@@ -53,25 +53,7 @@
       }
     },
     "variants": {
-      "red": {
-        "29f44b0b-5027-de28-9958-e95a32a0cf4c": "52d3d034-24bc-3a1c-49d8-98899a3aa5bd"
-      },
-      "blue": {},
-      "green": {
-        "29f44b0b-5027-de28-9958-e95a32a0cf4c": "f422a623-6d8c-1bd1-4da1-c61940601aaf"
-      },
-      "all_blue": {
-        "dfa38dd5-689f-f447-7d28-63645345c25d": "transparent",
-        "9aa33630-8f09-269e-1ff8-4006c170cc10": "29f44b0b-5027-de28-9958-e95a32a0cf4c"
-      },
-      "all_red": {
-        "9aa33630-8f09-269e-1ff8-4006c170cc10": "52d3d034-24bc-3a1c-49d8-98899a3aa5bd",
-        "29f44b0b-5027-de28-9958-e95a32a0cf4c": "52d3d034-24bc-3a1c-49d8-98899a3aa5bd"
-      },
-      "all_green": {
-        "9aa33630-8f09-269e-1ff8-4006c170cc10": "f422a623-6d8c-1bd1-4da1-c61940601aaf",
-        "29f44b0b-5027-de28-9958-e95a32a0cf4c": "transparent"
-      }
+      "default": {}
     },
     "uuid": "6315712c-d94e-91d8-dc54-eb2877b25239"
   },
