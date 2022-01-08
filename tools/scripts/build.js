@@ -3,6 +3,9 @@ import options from '../../config/prod.animated-java.rollup.config'
 import fs from 'fs'
 import crypto from 'crypto'
 import fixup from '../fixup'
+const flavor = process.env.FLAVOR?.split('/').pop()
+	? 'git-' + process.env.FLAVOR?.split('/').pop()
+	: `local`
 ;(async () => {
 	const bundle = await rollup.rollup(options)
 	function makeBanner(lines) {
@@ -23,10 +26,10 @@ import fixup from '../fixup'
 	const licence = fs.readFileSync('./LICENSE', 'utf-8')
 	for (const chunk of output) {
 		if (chunk.fileName.endsWith('.js')) {
-			const id = crypto
-				.createHash('sha256')
-				.update(chunk.code)
-				.digest('hex')
+			const id =
+				flavor +
+				'-' +
+				crypto.createHash('sha256').update(chunk.code).digest('hex')
 			fs.writeFileSync(
 				'./dist/animated_java.js',
 				[
