@@ -26,6 +26,8 @@ jobs:
               run: yarn
             - name: build release
               run: yarn build
+              env:
+                  FLAVOR: ${{ github.ref_name }}
             - name: create distribution
               run: node ./tools/distribute.js ${{ github.ref_name }}
               env:
@@ -37,4 +39,3 @@ jobs:
                   PROJECT_ID: ${{ secrets.PROJECT_ID }}
                   STORAGE_BUCKET: ${{ secrets.STORAGE_BUCKET }}
                   GITHUB_REF: ${{ github.ref_name }}
-                  FLAVOR: ${{ github.ref_name }}
