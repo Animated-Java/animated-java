@@ -496,7 +496,9 @@ export function computeVariantTextureOverrides(models) {
 	let transparentTexturePath
 	if (settings.animatedJava.transparentTexturePath) {
 		transparentTexturePath = resourcepack.getTexturePath({
+			name: 'Transparent Texture',
 			path: settings.animatedJava.transparentTexturePath,
+			saved: true,
 		})
 	}
 

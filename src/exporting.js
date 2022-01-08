@@ -155,7 +155,7 @@ async function exportPredicate(models, variantModels, ajSettings) {
 		for (const [modelName, model] of Object.entries(variant)) {
 			predicateJSON.overrides.push({
 				predicate: { custom_model_data: model.aj.customModelData },
-				model: getModelPath(path.join(modelPath, variantName, modelName), modelName),
+				model: getModelPath(path.join(ajSettings.rigModelsExportFolder, variantName, modelName), modelName),
 			})
 		}
 

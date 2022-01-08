@@ -1,7 +1,7 @@
 {
   "meta": {
     "format_version": "0.0",
-    "creation_time": 1641222034,
+    "creation_time": 1641638350,
     "model_format": "animated_java/ajmodel",
     "box_uv": false,
     "settings": {
@@ -32,6 +32,9 @@
         "rootEntityType": "minecraft:husk",
         "rootEntityNbt": "{Silent:true,ActiveEffects:[{Id:14b,Amplifier:0b,Duration:11111111,ShowParticles:0b}]}",
         "markerArmorStands": false,
+        "autoDistance": true,
+        "autoDistanceMovementThreshold": 1,
+        "manualDistance": 10,
         "modelTag": "aj.%projectName",
         "rootTag": "aj.%projectName.root",
         "allBonesTag": "aj.%projectName.bone",
@@ -42,7 +45,7 @@
         "frameScoreboardObjective": "aj.frame",
         "animatingFlagScoreboardObjective": "aj.%projectName.animating",
         "animationLoopModeScoreboardObjective": "aj.%projectName.%animationName.loopMode",
-        "exportMode": "vanilla",
+        "exportMode": "mcb",
         "mcbFilePath": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\saves\\Animated Java Dev\\datapacks\\Animated Java Development\\src\\armor_stand.mc",
         "mcbConfigPath": "",
         "dataPackPath": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\saves\\Animated Java Dev\\datapacks\\armor_stand"
@@ -1252,7 +1255,7 @@
   ],
   "textures": [
     {
-      "path": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\versions\\20w46a\\assets\\minecraft\\textures\\entity\\armorstand\\wood.png",
+      "path": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\minecraft\\textures\\wood.png",
       "name": "wood.png",
       "folder": "entity/armorstand",
       "namespace": "minecraft",
@@ -1261,9 +1264,9 @@
       "render_mode": "normal",
       "visible": true,
       "mode": "bitmap",
-      "saved": false,
+      "saved": true,
       "uuid": "9aa33630-8f09-269e-1ff8-4006c170cc10",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAHXElEQVR4Xu1bW2hcVRQ9Y/NsHg0JjTaGYpoPDVZbH1StYBHy0Q+L6YdYVHzUj0KxUVEkAR/xAemHoBIp9MOq4GPED5X64UdAFCwxiBK1GMEaDYnVaOLQNM3bK+uM63bPyb1z7s2dzNzBnp97Hvs89jp773P2PjMJ9V868cYBB9mp1LSuue2RdxJsw/fz1/Y7p07/qVo3bVT4PvDk8dDtv4z/rZYvWtJj3PLgsYz+cq585t1F2AB47N6bnNt3tamPPvtB4WsyYGv/+OW7nJn5f9TgyV89++eTaTlX4pNX79M7jzS7eE6lZubc9rqqCp0/Pf6XqqyrVihXlq5320GP8vrKdVoqsLMymXXnZpf1HEiYZ1Ndvdr90JsFlYTEBy/d4UimsTgyjjwYJKMmQKQlKGxHf4w5mzrrAsexJECg3/vo+4UF4Mjjt2oJ+H3qnPpjasZd38X1VeqS+vO7LdvRhgT6G69v0XlKB3eYkrPlss0ZEsPdZ6VpS/KtCgkYN0wK8dSLTk2tEOVsYv328UHdTFAAmgmmbEde0hz98PvCSgBsAJjmLlIdoJ9IQcQaNoAgUgIaamuybiYAx7wFlwDYAOo59ZZiK3Wf3MAgSrEmSNI4SuDYj3aBX02TOqsOvvhpYSXgQMdWrQJ+Os96P7Fuv/lKrT7SusutlwZV6j8kLBYSYDM6UJFsYi1tAI2mn0FFPZI0tgW3AUEAII3XPcF2jNHIYgzeCyAxtBuFvhFa9c92T7AB8PoLexxpUGlvCKqtv22DorZbAbDdE2xGjDdNr0sUFl/wUyAqgrb+AJA2AQZV6j/6xt4G2Bgs9narChQ7g7b1ZwAAg2XrkK09ij4HiTdkiyfY+vutOzYARI0n2PrHFgBetBhXMBc6eWbajUF4+SVb29LeqJmC+hraG8QFJVcJQRFMHjTQIY9JrMEMvkhHzbxDkBb9Vutr5BQA3u/DRHrojMnbpnTOBr4a0U1+7vbuXW0Zeye92SC+hhsPyIUUMAIUBgDeE8CFly+xt/0699osnS662/BFpMOGccL4GgU/BqEC2WKKAJNuudxq2gMZh1yNr6EBeHr/DU7LlkY9PnWYujfy84Sul+0o08hwUaADDb7PHfsyMLBSBfyMXDZ3G/NH8TUSZB6DcCfIDAen5+bFOCcHYKsBgXcPv5ji0E9pAy3jFdLdhoogrdbXCLxTuTolzHFkQIZ2QDJ4954d2o3mBnET9ImRmtJRpSi+xorXHS4wSJyftCXrStWPY7+py5ub1NLyokIZiXWk23n/0RWA0waQMTP4gnsAEkNuZvwyyu0T42YsCK9DYID6TfEmA5icdTIQyt3wowctQPEDIJuRkzFEqSaMX9rccZvkrgCAHeTucVflLpsDB5EYr+gPLmLZjBzuAfIdwrQHkQGQ7wK11RVahJGod0tLi6qkJC3SkICN1elwd21NhZYUtMsyjRHo2E/2RR0kgmB4BWWlDVjreEHG2yAWRqYGvz2lrrlqc8Y9/JvvRt060J6ZnnOZNPvuuLpVAwOGAQr67rz2Cg0YwCt0LJASnJAuMK+yaITo8dmLxLJO0qI9bN+gvoJNh6O2hz4Ge3t7nfn5+Yx5y8vLdTkX9d3d3aHXFAWE0JMBgJaWFlVRkX46N9Pk5KSqqko/ng4PDyuAE4a+p6cn9JryDkBjY6MqKyvT8y4sLOh8aWnaUCIBnLm5OTUykvbkwtAXhQS0tbVpBplmZmZcQORujI2N6WIY+qIBAIxNT6dvaUg1NStfgwcGBtSGDRs0AEHpDx8+HG8V6OnpcVpbWzNEfnFx0S0jT9WYmJjQhjEMfVFIAI0aJcDcfaoHbUAY+tgD0NXV5Wzfvt0Vfbn70ggiDxVACkMfexXAMdjc3Bzo5KERDEMfewkAADBqEH+IPs99ngQ8DnEUjo6OKtSHoe/s7Iy3EeRFCCJAgydPAeg/6ykBsAFB6WMvATgFpPyD4aamJr3T8irsdz220ecdgGQyqRmSuykZ5E3PPO8h+g0NDVoVzFug7C/vCrIefQAar82cH/VQH/OEQZlrkadOR0dHJJWJ1DmQJYw50QUAYr5Ba748VwIYm5OBT+YZ7WFE1lxVmKewNeco5AQXAOAfJRgM7f/ipMKvP5FknrF+G11cYn1BBcENilLcT3w9rIOXSMx7qYUfXdSHiqALzxXdhVPAC0k8mJp/ngjz4pur3cnHOJ4SQLuABUDnvf4llo/F5WMOTwDk73uxiCA/NcnHYtdiDk8A5L9IOGmxGbegYHkCIG0AHyb/VzYgKHp5oov061XbGikBnARlOeFqyrY5w7Y7quEZNf7Ws7rfpfecz7OML9rRxrxsM+s4FuqlCoBxMhzlG5ZBG70z9K5S2x7uc+mGXjnkWWa935cDyP5FAYDalFT9T+1T7c8nNQ/II5ll1nm1g5ZjyHa/nSZY8VCB5n69nuTBdrXvSL/75SLN+qBlqoCXznsBw/moKmbZrLeJdtB2p++JNOmh94b0t+/ObW5f1KGc7cs+Xv3/BR2fHXykDREGAAAAAElFTkSuQmCC"
+      "source": "data:image/png;base64,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"
     },
     {
       "path": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\minecraft\\textures\\block\\blue_concrete.png",
@@ -1329,7 +1332,7 @@
       "loop": "loop",
       "override": false,
       "length": 2.1,
-      "snapping": 10,
+      "snapping": 20,
       "selected": false,
       "saved": false,
       "path": "",
@@ -1528,9 +1531,9 @@
       "loop": "loop",
       "override": false,
       "length": 5.6,
-      "snapping": 10,
+      "snapping": 20,
       "selected": false,
-      "saved": true,
+      "saved": false,
       "path": "",
       "anim_time_update": "",
       "blend_weight": "",
@@ -1699,9 +1702,9 @@
       "loop": "loop",
       "override": false,
       "length": 2.8,
-      "snapping": 10,
+      "snapping": 20,
       "selected": false,
-      "saved": true,
+      "saved": false,
       "path": "",
       "anim_time_update": "",
       "blend_weight": "",
@@ -1851,7 +1854,7 @@
       "override": false,
       "length": 1,
       "snapping": 20,
-      "selected": true,
+      "selected": false,
       "saved": false,
       "path": "",
       "anim_time_update": "",

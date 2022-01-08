@@ -7,6 +7,7 @@ import { format } from '../replace'
 
 export function getTexturePath(texture: any) {
 	if (!texture.path || !texture.saved) {
+		console.log('Unsaved texture:', texture)
 		throw new CustomError('Unsaved texture', {
 			dialog: {
 				title: tl('animatedJava.popup.error.unsavedTexture.title'),
@@ -42,6 +43,7 @@ export function getTexturePath(texture: any) {
 			}
 		}
 	}
+	console.log('Failed to generate path for:', texture)
 	throw new CustomError('Unable to generate texture path', {
 		dialog: {
 			title: tl(
