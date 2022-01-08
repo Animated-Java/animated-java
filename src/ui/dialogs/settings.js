@@ -7,7 +7,7 @@ import { tl } from '../../util/intl'
 import { ERROR } from '../../util/errors'
 const dialog = electron.dialog
 const RenderTemplates = {
-	checkbox({ value, setValue, namespace, name, children }) {
+	checkbox({ value, setValue, namespace, name, children, forceRerender }) {
 		return (
 			<>
 				<div className="setting_element">
@@ -16,7 +16,11 @@ const RenderTemplates = {
 						id={`aj.setting.${namespace}.${name}`}
 						checked={value}
 						onChange={(e) => {
-							settings[namespace][name] = e.target.checked
+							try {
+								settings[namespace][name] = e.target.checked
+							} catch (e) {
+								forceRerender()
+							}
 						}}
 					/>
 				</div>
@@ -32,6 +36,7 @@ const RenderTemplates = {
 		children,
 		target = 'file',
 		dialogOpts = {},
+		forceRerender,
 	}) {
 		return (
 			<>
@@ -93,7 +98,11 @@ const RenderTemplates = {
 										if (target === 'file') fp = res.filePath
 										else [fp] = res.filePaths
 										if (fp != value) {
-											settings[namespace][name] = fp
+											try {
+												settings[namespace][name] = fp
+											} catch (e) {
+												forceRerender()
+											}
 										}
 									}
 								})
@@ -119,7 +128,11 @@ const RenderTemplates = {
 							setValue(e.target.value)
 						}}
 						onBlur={(e) => {
-							settings[namespace][name] = e.target.value
+							try {
+								settings[namespace][name] = e.target.value
+							} catch (e) {
+								forceRerender()
+							}
 						}}
 						className="dark_bordered"
 						style={{ width: 'calc(100% - 118px)' }}
@@ -128,7 +141,15 @@ const RenderTemplates = {
 			</>
 		)
 	},
-	select({ value, setValue, namespace, name, children, definition }) {
+	select({
+		value,
+		setValue,
+		namespace,
+		name,
+		children,
+		definition,
+		forceRerender,
+	}) {
 		return (
 			<>
 				{children}
@@ -137,7 +158,11 @@ const RenderTemplates = {
 						id={`aj.setting.${namespace}.${name}`}
 						value={value}
 						onChange={(e) => {
-							settings[namespace][name] = e.target.value
+							try {
+								settings[namespace][name] = e.target.value
+							} catch (e) {
+								forceRerender()
+							}
 						}}
 					>
 						{Object.entries(definition.options).map(
@@ -164,11 +189,13 @@ const SettingInput = ({ namespace, name, template }) => {
 	const [value, setValue] = useState(settings[namespace][name])
 	const [isValid, setIsValid] = useState(true)
 	const [isVisible, setIsVisible] = useState(true)
-
+	const [rerender, setRerender] = useState(0)
 	useEffect(() => {
 		// setValue(settings[namespace][name])
 		return settings.watch(namespace + '.' + name, (v) => {
-			setValue(v)
+			queueMicrotask(() => {
+				setValue(() => v)
+			})
 		})
 	}, [])
 	// useEffect(() => {
@@ -200,8 +227,9 @@ const SettingInput = ({ namespace, name, template }) => {
 		return () => watchers.forEach((cb) => cb())
 	}, [])
 	useEffect(() => {
-		setIsValid(DefaultSettings[namespace][name].isValid(value))
+		setIsValid(settings.getUpdateDescriptor(namespace, name, value).isValid)
 	}, [value])
+	let error = settings.getUpdateDescriptor(namespace, name, value).error
 	const children = (
 		<label
 			htmlFor={`aj.setting.${namespace}.${name}`}
@@ -217,9 +245,10 @@ const SettingInput = ({ namespace, name, template }) => {
 							height: '0px',
 							textAlign: 'center',
 						}}
-						title={tl(
-							'animatedJava.settings.invalidSetting.generic'
-						)}
+						title={
+							error ||
+							tl('animatedJava.settings.invalidSetting.generic')
+						}
 					>
 						<span
 							className="material-icons"
@@ -255,6 +284,13 @@ const SettingInput = ({ namespace, name, template }) => {
 					</span>
 				)}
 			</div>
+			{!isValid && error && (
+				<div>
+					<p>
+						<strong style={{ color: 'red' }}>{error}</strong>
+					</p>
+				</div>
+			)}
 			<div className="setting_description">
 				{tl(`${namespace}.setting.${name}.description`)
 					.split('\n')
@@ -272,16 +308,16 @@ const SettingInput = ({ namespace, name, template }) => {
 					<Type
 						value={value}
 						setValue={(v) => {
-							if (DefaultSettings[namespace][name].isValid(v)) {
-								setIsValid(true)
-							} else {
-								setIsValid(false)
-							}
+							setIsValid(
+								settings.getUpdateDescriptor(namespace, name, v)
+									.isValid
+							)
 							setValue(v)
 						}}
 						namespace={namespace}
 						name={name}
 						definition={DefaultSettings[namespace][name]}
+						forceRerender={() => setRerender(Math.random())}
 						{...(template.props || {})}
 					>
 						{children}
@@ -300,7 +336,13 @@ const SettingInput = ({ namespace, name, template }) => {
 							setValue(e.target.value)
 						}}
 						onBlur={(e) => {
-							settings[namespace][name] = e.target.value
+							debugger
+							try {
+								settings[namespace][name] = e.target.value
+							} catch (e) {
+								// setValue(e.target.value)
+								setRerender(Math.random())
+							}
 						}}
 						className="dark_bordered"
 						style={{ width: 'calc(100% - 18px)' }}

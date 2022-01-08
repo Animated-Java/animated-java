@@ -46,7 +46,7 @@ export const DefaultSettings = {
 			},
 			isValid(value) {
 				return typeof value === 'boolean'
-			}
+			},
 		},
 		rigItem: {
 			type: 'text',
@@ -81,7 +81,6 @@ export const DefaultSettings = {
 		},
 		predicateFilePath: {
 			type: 'filepath',
-			default: '',
 			props: {
 				target: 'file',
 				dialogOpts: {
@@ -95,9 +94,10 @@ export const DefaultSettings = {
 					properties: ['openFile'],
 				},
 			},
-			onUpdate(value) {
-				if (value != '') {
-					const p = new Path(value)
+			default: '',
+			onUpdate(descriptor) {
+				if (descriptor.value != '') {
+					const p = new Path(descriptor.value)
 					const b = p.parse()
 					const rigItem = removeNamespace(
 						ANIMATED_JAVA.settings.animatedJava.rigItem
@@ -105,14 +105,11 @@ export const DefaultSettings = {
 					if (rigItem !== b.name) {
 						ANIMATED_JAVA.settings.animatedJava.rigItem = `minecraft:${b.name}`
 					}
+				} else {
+					descriptor.isValid = false
+					descriptor.error = 'Predicate file path cannot be empty'
 				}
-				return value
-			},
-			populate() {
-				return ''
-			},
-			isValid(value) {
-				return value != ''
+				return descriptor
 			},
 		},
 		transparentTexturePath: {
@@ -181,23 +178,40 @@ export const DefaultSettings = {
 		},
 	},
 }
-
+function createUpdateDescriptor(setting, value, event) {
+	return {
+		get value() {
+			return value
+		},
+		set value(v) {
+			throw new Error(
+				'The value property on an UpdateDescriptor is not writable'
+			)
+		},
+		isValid: true,
+		error: null,
+		setting,
+		event,
+	}
+}
+function handleUpdateDescriptor(descriptor) {
+	const { setting, isValid, value, error } = descriptor
+	setting.isValid = isValid
+	if (!isValid) {
+		setting.error = error
+	} else {
+		setting.error = null
+	}
+	return value
+}
 function evaluateSetting(event, namespace, name, value) {
 	const setting = DefaultSettings[namespace]?.[name]
 	if (setting) {
-		if (setting.isValid) {
-			if (setting.isValid(value)) {
-				if (setting.onUpdate) return setting.onUpdate(value)
-				return value
-			} else {
-				if (setting.onUpdate)
-					return setting.onUpdate(setting.populate(value))
-				return setting.populate(value)
-			}
-		} else {
-			if (setting.onUpdate) return setting.onUpdate(value)
-			return value
-		}
+		if (setting.onUpdate)
+			return handleUpdateDescriptor(
+				setting.onUpdate(createUpdateDescriptor(setting, value, event))
+			)
+		return value
 	} else {
 		throw new Error('Invalid setting path', `${namespace}.${name}`)
 	}
@@ -243,6 +257,15 @@ class Settings {
 			console.error(e.message)
 		}
 	}
+	getUpdateDescriptor(namespace, name, value) {
+		const setting = DefaultSettings[namespace]?.[name]
+		if (setting && typeof setting.onUpdate === 'function') {
+			return setting.onUpdate(
+				createUpdateDescriptor(setting, value, 'dummy')
+			)
+		}
+		return createUpdateDescriptor(setting, value, 'dummy')
+	}
 	assign(namespace, settings) {
 		delete this[namespace]
 		const value = {}
@@ -263,6 +286,11 @@ class Settings {
 						settings[i],
 						value
 					)
+					if (!DefaultSettings[namespace][settings[i]].isValid) {
+						throw new Error(
+							`Invalid setting value for ${namespace}.${settings[i]}: ${value}`
+						)
+					}
 					return this.set(
 						namespace + '.' + settings[i],
 						validatedValue
@@ -284,9 +312,6 @@ class Settings {
 						DefaultSettings[namespace] &&
 						DefaultSettings[namespace][name]
 					) {
-						const target = DefaultSettings[namespace][name].global
-							? valGlobal
-							: val
 						try {
 							if (
 								global ||
