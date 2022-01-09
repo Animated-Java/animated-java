@@ -1,4 +1,4 @@
-import * as aj from './animatedJava'
+import type * as aj from './animatedJava'
 
 import { tl, intl } from './util/intl'
 // @ts-ignore
@@ -46,17 +46,17 @@ intl.register('zh_tw', lang_zh_tw)
 
 import './lifecycle'
 import './rotationSnap'
-import { DefaultSettings, settings } from './settings'
-import { format as modelFormat } from './modelFormat'
-import { CustomError } from './util/customError'
-import { ERROR } from './util/errors'
-import { store } from './util/store'
-import { bus } from './util/bus'
-import { CustomAction } from './util/customAction'
 import './ui/panel/states'
 import './ui/dialogs/settings'
+import { bus } from './util/bus'
+import { store } from './util/store'
+import { ERROR } from './util/errors'
 import EVENTS from './constants/events'
+import { CustomError } from './util/customError'
+import { CustomAction } from './util/customAction'
+import { format as modelFormat } from './modelFormat'
 import { renderAnimation } from './animationRenderer'
+import { DefaultSettings, settings } from './settings'
 // import { makeArmorStandModel } from './makeArmorStandModel'
 
 import {

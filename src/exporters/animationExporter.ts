@@ -1,20 +1,20 @@
-import * as aj from '../animatedJava'
+import type * as aj from '../animatedJava'
 
+import * as fs from 'fs'
+import { tl } from '../util/intl'
+import { Path } from '../util/path'
+import { store } from '../util/store'
+import { roundToN } from '../util/misc'
+import { compileMC } from '../compileLangMC'
+import { removeKeyGently } from '../util/misc'
+import { generateTree } from '../util/treeGen'
 import { CustomError } from '../util/customError'
 import { JsonText } from '../util/minecraft/jsonText'
-import { Path } from '../util/path'
-import { removeKeyGently } from '../util/misc'
-import { roundToN } from '../util/misc'
-import { safeFunctionName, format, fixIndent } from '../util/replace'
-import { SNBT, SNBTTag, SNBTTagType } from '../util/SNBT'
-import { store } from '../util/store'
-import { tl } from '../util/intl'
-import { generateTree } from '../util/treeGen'
-import { compileMC } from '../compileLangMC'
-import * as fs from 'fs'
 import { Entities } from '../util/minecraft/entities'
+import { SNBT, SNBTTag, SNBTTagType } from '../util/SNBT'
+import { safeFunctionName, format, fixIndent } from '../util/replace'
 
-interface animationExporterSettings {
+interface vanillaAnimationExporterSettings {
 	allBonesTag: string
 	animatingFlagScoreboardObjective: string
 	animationLoopModeScoreboardObjective: string
@@ -88,7 +88,7 @@ async function createMCFile(
 	variantTouchedModels: aj.variantTouchedModels
 ): Promise<{ mcFile: string; mcbConfig: MCBConfig }> {
 	const ajSettings = settings.animatedJava
-	const exporterSettings: animationExporterSettings =
+	const exporterSettings: vanillaAnimationExporterSettings =
 		settings.vanillaAnimationExporter
 	const projectName = safeFunctionName(ajSettings.projectName)
 
@@ -762,13 +762,13 @@ async function createMCFile(
 			throw new CustomError('No Animations Error', {
 				intentional: true,
 				dialog: {
-					id: 'animatedJava.exporters.animation.dialogs.errors.noAnimations',
+					id: 'animatedJava.exporters.vanillaAnimation.dialogs.errors.noAnimations',
 					title: tl(
-						'animatedJava.exporters.animation.dialogs.errors.noAnimations.title'
+						'animatedJava.exporters.vanillaAnimation.dialogs.errors.noAnimations.title'
 					),
 					lines: [
 						tl(
-							'animatedJava.exporters.animation.dialogs.errors.noAnimations.body'
+							'animatedJava.exporters.vanillaAnimation.dialogs.errors.noAnimations.body'
 						),
 					],
 					width: 512 + 128,
@@ -785,13 +785,13 @@ async function createMCFile(
 				throw new CustomError('Zero Length Animation Error', {
 					intentional: true,
 					dialog: {
-						id: 'animatedJava.exporters.animation.dialogs.errors.zeroLengthAnimation',
+						id: 'animatedJava.exporters.vanillaAnimation.dialogs.errors.zeroLengthAnimation',
 						title: tl(
-							'animatedJava.exporters.animation.dialogs.errors.zeroLengthAnimation.title'
+							'animatedJava.exporters.vanillaAnimation.dialogs.errors.zeroLengthAnimation.title'
 						),
 						lines: [
 							tl(
-								'animatedJava.exporters.animation.dialogs.errors.zeroLengthAnimation.body',
+								'animatedJava.exporters.vanillaAnimation.dialogs.errors.zeroLengthAnimation.body',
 								{
 									animationName: animation.name,
 								}
@@ -1044,7 +1044,7 @@ async function createMCFile(
 async function exportMCFile(
 	generated: { mcFile: string; mcbConfig: MCBConfig },
 	ajSettings: aj.GlobalSettings,
-	exporterSettings: animationExporterSettings
+	exporterSettings: vanillaAnimationExporterSettings
 ) {
 	if (!exporterSettings.mcbFilePath) {
 		throw new CustomError(
@@ -1077,7 +1077,7 @@ async function exportMCFile(
 async function exportDataPack(
 	generated: { mcFile: string; mcbConfig: MCBConfig },
 	ajSettings: aj.GlobalSettings,
-	exporterSettings: animationExporterSettings
+	exporterSettings: vanillaAnimationExporterSettings
 ) {
 	if (!exporterSettings.dataPackPath) {
 		console.log(exporterSettings.dataPackPath)
@@ -1212,7 +1212,7 @@ async function exportDataPack(
 }
 
 async function animationExport(data: any) {
-	const exporterSettings: animationExporterSettings =
+	const exporterSettings: vanillaAnimationExporterSettings =
 		data.settings.vanillaAnimationExporter
 	const generated = await createMCFile(
 		data.bones,
@@ -1268,8 +1268,8 @@ function validateFormattedStringSetting(required: string[]) {
 
 const Exporter = (AJ: any) => {
 	AJ.settings.registerPluginSettings(
-		'animatedJava.exporters.animation', // Plugin ID
-		'vanillaAnimationExporter', // Plugin Settings Key
+		'animatedJava.exporters.vanillaAnimation', // Exporter ID
+		'vanillaAnimationExporter', // Exporter Settings Key
 		{
 			rootEntityType: {
 				title: tl(
@@ -1337,10 +1337,10 @@ const Exporter = (AJ: any) => {
 			},
 			autoDistance: {
 				title: tl(
-					'animatedJava.exporters.animation.settings.autoDistance.title'
+					'animatedJava.exporters.vanillaAnimation.settings.autoDistance.title'
 				),
 				description: tl(
-					'animatedJava.exporters.animation.settings.autoDistance.description'
+					'animatedJava.exporters.vanillaAnimation.settings.autoDistance.description'
 				),
 				type: 'checkbox',
 				default: true,
@@ -1350,10 +1350,10 @@ const Exporter = (AJ: any) => {
 			},
 			autoDistanceMovementThreshold: {
 				title: tl(
-					'animatedJava.exporters.animation.settings.autoDistanceMovementThreshold.title'
+					'animatedJava.exporters.vanillaAnimation.settings.autoDistanceMovementThreshold.title'
 				),
 				description: tl(
-					'animatedJava.exporters.animation.settings.autoDistanceMovementThreshold.description'
+					'animatedJava.exporters.vanillaAnimation.settings.autoDistanceMovementThreshold.description'
 				),
 				type: 'number',
 				default: 1,
@@ -1376,10 +1376,10 @@ const Exporter = (AJ: any) => {
 			},
 			manualDistance: {
 				title: tl(
-					'animatedJava.exporters.animation.settings.manualDistance.title'
+					'animatedJava.exporters.vanillaAnimation.settings.manualDistance.title'
 				),
 				description: tl(
-					'animatedJava.exporters.animation.settings.manualDistance.description'
+					'animatedJava.exporters.vanillaAnimation.settings.manualDistance.description'
 				),
 				type: 'number',
 				default: 10,
@@ -1493,10 +1493,10 @@ const Exporter = (AJ: any) => {
 			},
 			frameScoreboardObjective: {
 				title: tl(
-					'animatedJava.exporters.animation.settings.frameScoreboardObjective.title'
+					'animatedJava.exporters.vanillaAnimation.settings.frameScoreboardObjective.title'
 				),
 				description: tl(
-					'animatedJava.exporters.animation.settings.frameScoreboardObjective.description'
+					'animatedJava.exporters.vanillaAnimation.settings.frameScoreboardObjective.description'
 				),
 				type: 'text',
 				default: 'aj.frame',
@@ -1504,10 +1504,10 @@ const Exporter = (AJ: any) => {
 			},
 			animatingFlagScoreboardObjective: {
 				title: tl(
-					'animatedJava.exporters.animation.settings.animatingFlagScoreboardObjective.title'
+					'animatedJava.exporters.vanillaAnimation.settings.animatingFlagScoreboardObjective.title'
 				),
 				description: tl(
-					'animatedJava.exporters.animation.settings.animatingFlagScoreboardObjective.description'
+					'animatedJava.exporters.vanillaAnimation.settings.animatingFlagScoreboardObjective.description'
 				),
 				type: 'text',
 				default: 'aj.%projectName.animating',
@@ -1515,10 +1515,10 @@ const Exporter = (AJ: any) => {
 			},
 			animationLoopModeScoreboardObjective: {
 				title: tl(
-					'animatedJava.exporters.animation.settings.animationLoopModeScoreboardObjective.title'
+					'animatedJava.exporters.vanillaAnimation.settings.animationLoopModeScoreboardObjective.title'
 				),
 				description: tl(
-					'animatedJava.exporters.animation.settings.animationLoopModeScoreboardObjective.description'
+					'animatedJava.exporters.vanillaAnimation.settings.animationLoopModeScoreboardObjective.description'
 				),
 				type: 'text',
 				default: 'aj.%projectName.%animationName.loopMode',

@@ -524,7 +524,7 @@ class Settings {
 
 	registerPluginSettings(exporterId, exporterSettingsKey, settings) {
 		DefaultSettings[exporterSettingsKey] = settings
-		ForeignSettingTranslationKeys[exporterSettingsKey] = exporterId
+		ForeignSettingTranslationKeys[exporterSettingsKey] = `${exporterId}.title`
 		this.update(
 			{
 				[exporterSettingsKey]: settings,

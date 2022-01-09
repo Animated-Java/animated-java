@@ -1,14 +1,11 @@
-import { bus } from '../../util/bus'
-import events from '../../constants/events'
-import React, { useEffect, useRef, useState } from 'react'
 import ReactDom from 'react-dom'
-import {
-	DefaultSettings,
-	ForeignSettingTranslationKeys,
-	settings,
-} from '../../settings'
+import { bus } from '../../util/bus'
 import { tl } from '../../util/intl'
 import { ERROR } from '../../util/errors'
+import events from '../../constants/events'
+import React, { useEffect, useRef, useState } from 'react'
+import { DefaultSettings, settings, ForeignSettingTranslationKeys } from '../../settings'
+
 const dialog = electron.dialog
 let updateSettingsUiActions = {}
 let forceUpdateSettingsUi = () => {
