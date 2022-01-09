@@ -10,7 +10,11 @@ export function format(str: string, dict: FormatObject = {}) {
 }
 
 export function safeFunctionName(s: string) {
-	return s.toLowerCase().replace(/[^a-z0-9\._]/g, '_')
+	return s.toLowerCase().replace(/[^\w\d\._]+/g, '_')
+}
+
+export function safeEntityTag(s: string) {
+	return s.replace(/[^\w\.\-+]+/g, '_')
 }
 
 export function fixIndent(str: string[]) {

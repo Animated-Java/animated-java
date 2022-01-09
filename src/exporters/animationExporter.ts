@@ -12,7 +12,12 @@ import { CustomError } from '../util/customError'
 import { JsonText } from '../util/minecraft/jsonText'
 import { Entities } from '../util/minecraft/entities'
 import { SNBT, SNBTTag, SNBTTagType } from '../util/SNBT'
-import { safeFunctionName, format, fixIndent } from '../util/replace'
+import {
+	safeFunctionName,
+	format,
+	fixIndent,
+	safeEntityTag,
+} from '../util/replace'
 
 interface vanillaAnimationExporterSettings {
 	allBonesTag: string
@@ -1260,7 +1265,13 @@ function validateFormattedStringSetting(required: string[]) {
 						notFound,
 					}
 				)
+				return d
 			}
+		}
+		const formattedValue = format(d.value, Object.fromEntries(required.map(v => [v.replace('%', ''),'replaced'])))
+		if (formattedValue !== safeEntityTag(formattedValue)) {
+			d.isValid = false
+			d.error = tl('animatedJava.settings.generic.errors.invalidEntityTag')
 		}
 		return d
 	}
@@ -1361,18 +1372,15 @@ const Exporter = (AJ: any) => {
 					if (!(d.value >= 0)) {
 						d.isValid = false
 						d.error = tl(
-							'animatedJava.exporters.generic.settings.autoDistanceThreshold.errors.valueOutOfRange'
+							'animatedJava.exporters.vanillaAnimation.settings.autoDistanceMovementThreshold.errors.valueOutOfRange'
 						)
 					}
 					return d
 				},
 				isVisible(settings: any) {
-					return settings.vanillaAnimationExporter
-						.autoDistance
+					return settings.vanillaAnimationExporter.autoDistance
 				},
-				dependencies: [
-					'vanillaAnimationExporter.autoDistance',
-				],
+				dependencies: ['vanillaAnimationExporter.autoDistance'],
 			},
 			manualDistance: {
 				title: tl(
@@ -1387,18 +1395,15 @@ const Exporter = (AJ: any) => {
 					if (!(d.value >= 0)) {
 						d.isValid = false
 						d.error = tl(
-							'animatedJava.exporters.generic.settings.manualDistance.errors.valueOutOfRange'
+							'animatedJava.exporters.vanillaAnimation.settings.manualDistance.errors.valueOutOfRange'
 						)
 					}
 					return d
 				},
 				isVisible(settings: any) {
-					return !settings.vanillaAnimationExporter
-						.autoDistance
+					return !settings.vanillaAnimationExporter.autoDistance
 				},
-				dependencies: [
-					'vanillaAnimationExporter.autoDistance',
-				],
+				dependencies: ['vanillaAnimationExporter.autoDistance'],
 			},
 			modelTag: {
 				title: tl(
@@ -1587,8 +1592,7 @@ const Exporter = (AJ: any) => {
 				},
 				isVisible(settings: any) {
 					return (
-						settings.vanillaAnimationExporter
-							.exportMode === 'mcb'
+						settings.vanillaAnimationExporter.exportMode === 'mcb'
 					)
 				},
 				dependencies: [
@@ -1623,13 +1627,10 @@ const Exporter = (AJ: any) => {
 				},
 				isVisible(settings: any) {
 					return (
-						settings.vanillaAnimationExporter
-							.exportMode === 'mcb'
+						settings.vanillaAnimationExporter.exportMode === 'mcb'
 					)
 				},
-				dependencies: [
-					'vanillaAnimationExporter.exportMode',
-				],
+				dependencies: ['vanillaAnimationExporter.exportMode'],
 			},
 			dataPackPath: {
 				title: tl(
@@ -1659,17 +1660,15 @@ const Exporter = (AJ: any) => {
 				},
 				isVisible(settings: any) {
 					return (
-						settings.vanillaAnimationExporter
-							.exportMode === 'vanilla'
+						settings.vanillaAnimationExporter.exportMode ===
+						'vanilla'
 					)
 				},
-				dependencies: [
-					'vanillaAnimationExporter.exportMode',
-				],
+				dependencies: ['vanillaAnimationExporter.exportMode'],
 			},
 		}
 	)
-	AJ.registerExportFunc('animationExporter', function () {
+	AJ.registerExportFunc('vanillaAnimationExporter', function () {
 		AJ.build(
 			(data: any) => {
 				console.log('Input Data:', data)

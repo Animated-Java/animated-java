@@ -1,13 +1,13 @@
 {
   "meta": {
     "format_version": "0.0",
-    "creation_time": 1641766217,
+    "creation_time": 1641769747,
     "model_format": "animated_java/ajmodel",
     "box_uv": false,
     "settings": {
       "animatedJava": {
         "projectName": "armor_stand",
-        "exporter": "animationExporter",
+        "exporter": "vanillaAnimationExporter",
         "verbose": true,
         "rigItem": "minecraft:leather_horse_armor",
         "rigModelsExportFolder": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\animated_java\\models\\rigs\\armor_stand",
@@ -33,7 +33,7 @@
       "vanillaAnimationExporter": {
         "rootEntityType": "minecraft:marker",
         "rootEntityNbt": "{}",
-        "markerArmorStands": true,
+        "markerArmorStands": false,
         "autoDistance": true,
         "autoDistanceMovementThreshold": 1,
         "manualDistance": 10,
