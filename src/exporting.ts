@@ -198,7 +198,15 @@ interface PredicateModel {
 		layer0: string
 	}
 	overrides: Override[]
-	ajMeta: Record<string, (number | [number, number])[]>
+	aj: {
+		includedRigs: Record<
+			string,
+			{
+				usedIDs: (number | [number, number])[]
+				name: string
+			}
+		>
+	}
 }
 
 let predicateIDMap = {}
@@ -217,7 +225,9 @@ async function exportPredicate(
 			layer0: `item/${ajSettings.rigItem.replace('minecraft:', '')}`,
 		},
 		overrides: [],
-		ajMeta: {},
+		aj: {
+			includedRigs: {},
+		},
 	}
 	let usedIDs = []
 	function* idGen() {
@@ -235,8 +245,9 @@ async function exportPredicate(
 		)
 		console.log(oldPredicate)
 		// @ts-ignore
-		const data = oldPredicate?.ajMeta || {}
-		Object.entries(data).forEach(([id, ids]) => {
+		const data = oldPredicate?.aj?.includedRigs || {}
+		Object.entries(data).forEach(([id, dat]) => {
+			let ids = dat.usedIDs
 			// @ts-ignore
 			if (id !== Project.UUID) {
 				for (let i = 0; i < ids.length; i++) {
@@ -252,7 +263,7 @@ async function exportPredicate(
 		})
 		// @ts-ignore
 		delete data[Project.UUID]
-		predicateJSON.ajMeta = data
+		predicateJSON.aj.includedRigs = data
 		predicateJSON.overrides = oldPredicate.overrides.filter((override) => {
 			return usedIDs.includes(override.predicate.custom_model_data)
 		})
@@ -288,15 +299,39 @@ async function exportPredicate(
 				),
 			})
 		}
+
 	//@ts-ignore
-	predicateJSON.ajMeta[Project.UUID] = myMeta
+	predicateJSON.aj.includedRigs[Project.UUID] = {
+		name: settings.animatedJava.projectName,
+		usedIDs: packArr(myMeta),
+	}
 	Blockbench.writeFile(ajSettings.predicateFilePath, {
 		content: autoStringify(predicateJSON),
 		custom_writer: null,
 	})
 	console.groupEnd()
 }
-
+function packArr(arr) {
+	//take an array of numbers and return an array of ranges of consecutive numbers and if a number is not consecutive it is put in its the resulting array
+	let result = []
+	let currentRange = [arr[0]]
+	for (let i = 1; i < arr.length; i++) {
+		if (arr[i] - arr[i - 1] === 1) {
+			currentRange.push(arr[i])
+		} else {
+			result.push(currentRange)
+			currentRange = [arr[i]]
+		}
+	}
+	result.push(currentRange)
+	return result.map((range) => {
+		if (range.length === 1) {
+			return range[0]
+		} else {
+			return [range[0], range[range.length - 1]]
+		}
+	})
+}
 async function exportTransparentTexture() {
 	console.log(transparent)
 	Blockbench.writeFile(settings.animatedJava.transparentTexturePath, {
