@@ -15,15 +15,23 @@ class Intl {
 		this.lang = lang
 	}
 	tl(key: string) {
-		this.tokens.add(key)
-		let v = this.dict[this.lang]?.[key] ? this.dict[this.lang][key] : key
-		// if (v === key) debugger
-		return v
+		let segments = key.split('.')
+		let dict = this.dict[this.lang]
+		for (let i = 0; i < segments.length; i++) {
+			if (dict[segments[i]]) {
+				dict = dict[segments[i]]
+			} else {
+				this.tokens.add(key)
+				return key
+			}
+		}
+		return typeof dict === 'string' ? dict : key
 	}
 	register(name: string, dict: any) {
 		this.dict[name] = dict
 	}
 	diff(showDefaultValues: boolean) {
+		throw new Error('Not implemented')
 		let root = this.dict.en
 		let diff = []
 		for (let lang in this.dict) {
