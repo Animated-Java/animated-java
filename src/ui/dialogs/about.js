@@ -11,6 +11,10 @@ const Reasons = {
 	BrandingArtist: 3,
 	Youtuber: 4,
 	Translator: 5,
+	PatreonT1: 6,
+	PatreonT2: 7,
+	PatreonT3: 8,
+	CurrentPatreon: 9,
 }
 const roles = {
 	[Reasons.Translator]: {
@@ -55,6 +59,27 @@ const roles = {
 		color: '#FF0000',
 		textColor: 'white',
 	},
+	[Reasons.PatreonT1]: {
+		get content() {
+			return tl('about.patreonTier1.content')
+		},
+		color: 'rgb(241, 196, 15)',
+		textColor: 'white',
+	},
+	[Reasons.PatreonT2]: {
+		get content() {
+			return tl('about.patreonTier2.content')
+		},
+		color: 'rgb(241, 196, 15)',
+		textColor: 'white',
+	},
+	[Reasons.PatreonT3]: {
+		get content() {
+			return tl('about.patreonTier3.content')
+		},
+		color: 'rgb(241, 196, 15)',
+		textColor: 'white',
+	},
 }
 function Role({ role, fontSize }) {
 	return (
@@ -92,6 +117,12 @@ function Person({ person }) {
 					fontWeight: '600',
 				}}
 			>
+				{person.active && (
+					<i
+						className="fas fa-check"
+						style={{ marginRight: '8px' }}
+					></i>
+				)}
 				{person.name}
 			</p>
 			<ul>
@@ -113,7 +144,12 @@ function Person({ person }) {
 
 const people = [
 	{
-		roles: [Reasons.BetaTester, Reasons.Moderator, Reasons.Contributor, Reasons.Translator],
+		roles: [
+			Reasons.BetaTester,
+			Reasons.Moderator,
+			Reasons.Contributor,
+			Reasons.Translator,
+		],
 		name: 'Ancientkingg',
 	},
 	{ roles: [Reasons.BetaTester, Reasons.Moderator], name: 'dragonmaster95' },
@@ -128,7 +164,13 @@ const people = [
 	{ roles: [Reasons.BetaTester, Reasons.Youtuber], name: 'legitimoose' },
 	{ roles: [Reasons.BetaTester, Reasons.Youtuber], name: 'VelVoxelRaptor' },
 	{ roles: [Reasons.BetaTester], name: '_JeffWooden' },
+	{
+		roles: [Reasons.BetaTester, Reasons.PatreonT3],
+		name: 'CubeDeveloper',
+		active: true,
+	},
 	{ roles: [Reasons.BetaTester], name: 'destruc7i0n' },
+	{ roles: [Reasons.PatreonT3], name: 'DoubleFelix', active: true },
 	{ roles: [Reasons.BetaTester], name: 'Eriol_Eandur' },
 	{ roles: [Reasons.BetaTester], name: 'gibbs' },
 	{ roles: [Reasons.BetaTester], name: 'JayPeaSize' },
@@ -320,6 +362,31 @@ function About() {
 			</div>
 			<Center>
 				<h1 style={{ marginTop: '1em', marginBottom: '0.8em' }}>
+					{tl('about.patreons')}
+				</h1>
+			</Center>
+			<div
+				style={{
+					display: 'flex',
+					flexWrap: 'wrap',
+					justifyContent: 'space-evenly',
+				}}
+			>
+				{people
+					.filter((person) => {
+						return (
+							person.roles.includes(Reasons.PatreonT1) ||
+							person.roles.includes(Reasons.PatreonT2) ||
+							person.roles.includes(Reasons.PatreonT3)
+						)
+					})
+					.map((person) => (
+						<Person key={person.name} person={person} />
+					))}
+			</div>
+
+			<Center>
+				<h1 style={{ marginTop: '1em', marginBottom: '0.8em' }}>
 					{tl('about.honourableMentions')}
 				</h1>
 			</Center>
@@ -330,9 +397,17 @@ function About() {
 					justifyContent: 'space-evenly',
 				}}
 			>
-				{people.map((person) => (
-					<Person key={person.name} person={person} />
-				))}
+				{people
+					.filter((person) => {
+						return !(
+							person.roles.includes(Reasons.PatreonT1) ||
+							person.roles.includes(Reasons.PatreonT2) ||
+							person.roles.includes(Reasons.PatreonT3)
+						)
+					})
+					.map((person) => (
+						<Person key={person.name} person={person} />
+					))}
 			</div>
 			<p>
 				<b>{tl('about.buildID')}</b> {process.env.BUILD_ID}
