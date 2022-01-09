@@ -197,6 +197,7 @@ interface PredicateModel {
 		layer0: string
 	}
 	overrides: Override[]
+	ajMeta: Record<string, (number | [number, number])[]>
 }
 
 let predicateIDMap = {}
@@ -209,6 +210,22 @@ async function exportPredicate(
 	console.groupCollapsed('Export Predicate Model')
 	const projectName = safeFunctionName(ajSettings.projectName)
 
+	const predicateJSON = {
+		parent: 'item/generated',
+		textures: {
+			layer0: `item/${ajSettings.rigItem.replace('minecraft:', '')}`,
+		},
+		overrides: [],
+		ajMeta: {},
+	}
+	let usedIDs = []
+	function* idGen() {
+		let id = 1
+		while (true) {
+			if (!usedIDs.includes(id)) yield id
+			id++
+		}
+	}
 	if (fs.existsSync(ajSettings.predicateFilePath)) {
 		const oldPredicate: PredicateModel = JSON.parse(
 			await fs.promises.readFile(ajSettings.predicateFilePath, {
@@ -216,17 +233,34 @@ async function exportPredicate(
 			})
 		)
 		console.log(oldPredicate)
+		// @ts-ignore
+		const data = oldPredicate?.ajMeta || {}
+		Object.entries(data).forEach(([id, ids]) => {
+			// @ts-ignore
+			if (id !== Project.UUID) {
+				for (let i = 0; i < ids.length; i++) {
+					if (Array.isArray(ids[i])) {
+						for (let k = ids[i][0]; k <= ids[i][1]; k++) {
+							usedIDs.push(k)
+						}
+					} else {
+						usedIDs.push(ids[i])
+					}
+				}
+			}
+		})
+		// @ts-ignore
+		delete data[Project.UUID]
+		predicateJSON.ajMeta = data
+		predicateJSON.overrides = oldPredicate.overrides.filter((override) => {
+			return usedIDs.includes(override.predicate.custom_model_data)
+		})
 	}
-
-	const predicateJSON = {
-		parent: 'item/generated',
-		textures: {
-			layer0: `item/${ajSettings.rigItem.replace('minecraft:', '')}`,
-		},
-		overrides: [],
-	}
-
+	const idGenerator = idGen()
+	let myMeta = []
 	for (const [modelName, model] of Object.entries(models)) {
+		// this will always be a number as the generator is infinite.
+		model.aj.customModelData = idGenerator.next().value as number
 		predicateJSON.overrides.push({
 			predicate: { custom_model_data: model.aj.customModelData },
 			model: getModelPath(
@@ -234,10 +268,13 @@ async function exportPredicate(
 				modelName
 			),
 		})
+		myMeta.push(model.aj.customModelData)
 	}
 
 	for (const [variantName, variant] of Object.entries(variantModels))
 		for (const [modelName, model] of Object.entries(variant)) {
+			model.aj.customModelData = idGenerator.next().value as number
+			myMeta.push(model.aj.customModelData)
 			predicateJSON.overrides.push({
 				predicate: { custom_model_data: model.aj.customModelData },
 				model: getModelPath(
@@ -250,7 +287,8 @@ async function exportPredicate(
 				),
 			})
 		}
-
+	//@ts-ignore
+	predicateJSON.ajMeta[Project.UUID] = myMeta
 	Blockbench.writeFile(ajSettings.predicateFilePath, {
 		content: autoStringify(predicateJSON),
 		custom_writer: null,
