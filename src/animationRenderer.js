@@ -109,7 +109,7 @@ function getData(animation, renderedGroups) {
 				y: -thisRot[1],
 				z: thisRot[2],
 			},
-			scale: scl[groupName],
+			scale: scl[group.name],
 		}
 	})
 	return res
@@ -304,7 +304,7 @@ async function renderAnimation(options) {
 							),
 						],
 						width: 512 + 256,
-						singleButton: true
+						singleButton: true,
 					},
 				})
 			}
