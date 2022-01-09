@@ -31,19 +31,18 @@ async function exportRigModels(
 				let d = new Dialog({
 					id: 'animatedJava.rigFolderHasUnknownContent',
 					title: tl(
-						'animatedJava.popup.warning.rigFolderHasUnknownContent.title'
+						'animatedJava.dialogs.errors.rigFolderHasUnknownContent.title'
 					),
-					lines: format(
+					lines: [
 						tl(
-							'animatedJava.popup.warning.rigFolderHasUnknownContent.body'
+							'animatedJava.dialogs.errors.rigFolderHasUnknownContent.body',
+							{
+								path: settings.animatedJava
+									.rigModelsExportFolder,
+								files: files.join(', '),
+							}
 						),
-						{
-							path: settings.animatedJava.rigModelsExportFolder,
-							files: files.join(', '),
-						}
-					)
-						.split('\n')
-						.map((line) => `<p>${line}</p>`),
+					],
 					// @ts-ignore
 					width: 512 + 128,
 					buttons: ['Overwrite', 'Cancel'],
@@ -85,19 +84,17 @@ async function exportRigModels(
 			let d = new Dialog({
 				id: 'animatedJava.rigFolderAlreadyUsedByOther',
 				title: tl(
-					'animatedJava.popup.error.rigFolderAlreadyUsedByOther.title'
+					'animatedJava.dialogs.errors.rigFolderAlreadyUsedByOther.title'
 				),
-				lines: format(
+				lines: [
 					tl(
-						'animatedJava.popup.error.rigFolderAlreadyUsedByOther.body'
+						'animatedJava.dialogs.errors.rigFolderAlreadyUsedByOther.body',
+						{
+							path: settings.animatedJava.rigModelsExportFolder,
+							files: files.join(', '),
+						}
 					),
-					{
-						path: settings.animatedJava.rigModelsExportFolder,
-						files: files.join(', '),
-					}
-				)
-					.split('\n')
-					.map((line) => `<p>${line}</p>`),
+				],
 				// @ts-ignore
 				width: 512 + 128,
 				buttons: ['Overwrite', 'Cancel'],

@@ -10,82 +10,101 @@ animatedJava:
     export: Export Model
     about: About...
 
-  panel:
+  panels:
     variants:
       title: Model Variants
-      addVarient:
-        title: Add Varient
-        description: Adds a new Varient to the model
+      addVariant:
+        title: Add Variant
+        description: Adds a new Variant to the model
       back: Back
 
-  popup:
+  popups:
     exportCancelled: Export Cancelled!
     exportInProgress: Export in Progress!
     noExporterSelected: No Exporter Selected!
     successfullyExported: Export Successful!
 
   progress:
-    animationRendering:
-      text: Rendering Animations... %currents/%totals
+    animationRendering: Rendering Animations... %currents/%totals
 
   settings:
     header: Animated Java Settings
     isGlobal: '(Global)'
     isOptional: '(Optional)'
 
+    generic:
+      errors:
+        invalid: If you're seeing this message Animated Java broke. (Uh Oh)
+        emptyValue: Setting cannot be empty
+        mustBeBoolean: Setting value must be a boolean
+        mustBeString: Setting value must be a string
+        missingFormatString: Setting value missing required %notFound formatting string
+
     projectName:
-      name: Project Name
+      title: Project Name
       description:
         - The unique ID of your project. Make sure you set this!
+      errors:
+        invalidFunctionName: TL:animatedJava.settings.projectName.errors.invalidFunctionName
 
     exporter:
-      name: Exporter
+      title: Exporter
       description:
         - Which export format to use for this project
+      errors:
+        mustBeValidExporter: TL:animatedJava.settings.exporter.errors.mustBeValidExporter
 
     verbose:
-      name: Verbose
+      title: Verbose
       description:
         - Indicates to the selected exporter whether or not to export extra debug/error messages.
         - Only really effects the Statue and Animation exporters.
 
     rigItem:
-      name: Rig Item
+      title: Rig Item
       description:
         - The item that will be used to display the models on the armor_stands
+      errors:
+        invalidMinecraftItem: TL:animatedJava.settings.rigItem.errors.invalidItem
 
     rigModelsExportFolder:
-      name: Rig Models Export Folder
+      title: Rig Models Export Folder
       description:
         - The folder that all of the rig's models will be dumped into
+      errors:
+        invalidPath: TL:animatedJava.settings.rigModelsExportFolder.errors.invalidPath
 
     predicateFilePath:
-      name: Rig Item Predicate Model
+      title: Rig Item Predicate Model
       description:
         - The item model file of the rig item
+      errors:
+        notEqualToRigItem: TL:animatedJava.settings.predicateFilePath.errors.notEqualToRigItem
 
     transparentTexturePath:
-      name: Transparent Texture Path
+      title: Transparent Texture Path
       description:
         - A transparent texture for adding transparency to variants. Only needed if you're using transparency in your variants.
+      errors:
+        undefinedWhenNeeded: TL:animatedJava.settings.transparentTexturePath.errors.undefinedWhenNeeded
 
     useCache:
-      name: Use Animation Cache
+      title: Use Animation Cache
       description:
         - Only re-render changed animations
 
     cacheMode:
-      name: Animation Cache Mode
+      title: Animation Cache Mode
       description:
         - The Animation Cache lets us only re-render animations that have been changed since the last export. Making repeated exports much faster, especially on larger models.
         - "- Memory mode is faster but uses more Memory to store the cache."
         - "- Disk mode is slower but saves the cache to disk to save on Memory usage."
       options:
         memory: Memory Mode
-        file: Disk Mode
+        disk: Disk Mode
 
     boundingBoxRenderMode:
-      name: Bone Size Limit Box
+      title: Bone Size Limit Box
       description:
         - "Configure or disable the bone size limit box(es)."
         - "- Single will only display one box at a time."
@@ -96,15 +115,15 @@ animatedJava:
         many: Multiple
         none: Disabled
 
-  dialog:
+  dialogs:
     boneConfig:
       title: Bone Config
       boneNbt: Bone NBT
       armAnimationEnabled: Enable Arm Animation
 
-    varients:
+    variants:
       title: Model Variants
-      body:
+      description:
         - Variants allow your model to have different "skins" that can be swapped out during runtime using a function.
 
     about:
@@ -118,26 +137,50 @@ animatedJava:
       creators: Creators
       discordServer: Join our discord server!
       githubRepo: Source
-      patreon: Patreon
       developers: Developers
+      patrons: Patrons
       honourableMentions: Honourable Mentions
 
-      fetchbot.quote: '"Let the java mobs dance too!"'
-      snavesutit.quote: '"armor_stand is love, armor_stand is life."'
+      fetchbotQuote: '"Let the java mobs dance too!"'
+      snavesutitQuote: '"armor_stand is love, armor_stand is life."'
 
-      youtuber.content: Youtuber
-      translator.content: Translator
-      contributor.content: Contributor
-      moderator.content: Discord Moderator
-      closedBeta.content: Closed Beta Tester
-      brandingArtist.content: Branding Artist
+      youtuber: Youtuber
+      translator: Translator
+      contributor: Contributor
+      moderator: Discord Moderator
+      closedBeta: Closed Beta Tester
+      brandingArtist: Branding Artist
+      patronTier1: Teir 1 Patron
+      patronTier2: Teir 2 Patron
+      patronTier3: Teir 3 Patron
 
-    animation_properties:
+    animationProperties:
       animationCompleteCommand:
         label: End Of Anim Command
 
-    warnings:
-      invalidSnappingValue:
+    errors:
+      misc:
+        title: An Unknown Error has Occured in Animated Java
+        body:
+        - |-
+          <textarea style="height: 256px" readonly="readonly">
+          ------ Error ------
+          %errorMessage  //  "%randomErrorMessage"
+          ------ Stack ------
+          %errorStack
+
+          Build ID: %buildID
+          </textarea>
+        - <p>Please report this error on <a href="%githubLink">Animated Java's github</a> with information on how to reproduce it and a copy of the error above.</p>
+        - <p>You can also join our <a href="%discordLink">Discord Server</a> and ask questions in the animated-java-support channel.</p>
+        - <p>Thank you!</p>
+
+      topLevelCubes:
+        title: Model has top-level cubes
+        body:
+          - All cubes must be inside of a group.
+
+      invalidAnimationSnappingValue:
         title: Invalid Animation Snapping Value
         body:
           - The animation '%animationName' has a snapping value of %snapping!
@@ -155,23 +198,15 @@ animatedJava:
           - "Unknown Files:"
           - <textarea>%files</textarea>
 
-    errors:
-      misc.title: An Unknown Error has Occured in Animated Java
-      misc.body:
-        - <p><b>%randomErrorMessage</b></p>
-        - <p></p>
-        - <p>%errorMessage</p>
-        - <hr/>
-        - |-
-          "<textarea style="height: 256px">"
-          %errorMessage
-          %errorStack
-
-          Build ID: %buildID
-          </textarea>
-        - <p>Please report this error on <a href="%githubLink">Animated Java's github</a> with information on how to reproduce it and a copy of the error above.</p>
-        - <p>You can also join our <a href="%discordLink">Discord Server</a> and ask questions in the \#animated-java-support channel.</p>
-        - <p>Thank you!</p>
+      rigFolderAlreadyUsedByOther:
+        title: The chosen rig model folder is already in use
+        body:
+          - The folder you have chosen as your rig model folder already has a different rig's models inside of it.
+          - Are you sure you want to overwrite the contents of this folder with your rig?
+          - "Chosen folder:"
+          - <textarea>%path</textarea>
+          - "Files:"
+          - <textarea>%files</textarea>
 
       unableToGenerateTexturePath:
         title: Invalid texture path
@@ -181,7 +216,7 @@ animatedJava:
           - eg. 'resources/assets/minecraft/textures/item/diamond.png'
 
       unableToGenerateModelPath:
-        title: Invalid texture path
+        title: Invalid model path
         body:
           - The model '%modelName' has an invalid location inside a Resource Pack
           - Please make sure it is properly saved inside of a valid Resource Pack in a sub folder of 'assets/namespace/models/'
@@ -198,16 +233,6 @@ animatedJava:
         body:
           - The texture '%textureName' is not saved to disk!
           - Please make sure it is saved into a valid resource pack location.
-
-      rigFolderAlreadyUsedByOther:
-        title: Chosen rig folder already in use
-        body:
-          - The folder you have chosen as your rig model folder already has a different rig's models inside of it.
-          - Are you sure you want to overwrite the contents of this folder with your rig?
-          - "Chosen folder:"
-          - <textarea>%path</textarea>
-          - "Files:"
-          - <textarea>%files</textarea>
 
       transparentTexturePathNotFound:
         title: Transparent Texture Path Not Defined
@@ -232,8 +257,8 @@ animatedJava:
         writingDataPack: Writing Data Pack to disk... %progress% | Writing %fileName
         exportingDataPack: Generating Data Pack... %progress%
 
-      dialog:
-        error:
+      dialogs:
+        errors:
           mcbFilePathNotDefined:
             title: MCB file path not defined
             body:
@@ -244,76 +269,88 @@ animatedJava:
             body:
               - You must define a data pack path in settings before you can export.
 
-    setting:
-      rootEntityType:
-        name: Root Entity Type
-        description:
-          - The entity type to use as the root entity for the statue. Should probably be a stationary entity.
+      settings:
+        rootEntityType:
+          title: Root Entity Type
+          description:
+            - The entity type to use as the root entity for the model
+          errors:
+            invalidEntity: TL:animatedJava.exporters.generic.settings.rootEntityType.errors.invalidEntity
 
-      rootEntityNbt:
-        name: Root Entity NBT
-        description:
-          - The NBT data of the root entity
+        rootEntityNbt:
+          title: Root Entity NBT
+          description:
+            - The NBT data of the root entity
+          errors:
+            invalidNbt: TL:animatedJava.exporters.generic.settings.rootEntityType.errors.invalidNbt
 
-      markerArmorStands:
-        name: Marker Armor Stands
-        description:
-          - When enabled all armor_stands used to display the rig will have no hitbox or collision.
+        markerArmorStands:
+          title: Marker Armor Stands
+          description:
+            - When enabled all armor_stands used to display the rig will have no hitbox or collision.
 
-      modelTag:
-        name: Model Tag
-        description:
-          - The tag used to select the model
+        modelTag:
+          title: Model Tag
+          description:
+            - The tag used to select the model
 
-      rootTag:
-        name: Root Tag
-        description:
-          - The tag used to select the statue's root entity
+        rootTag:
+          title: Root Tag
+          description:
+            - The tag used to select the statue's root entity
 
-      allBonesTag:
-        name: All Bones Tag
-        description:
-          - The tag used to select any or all of the statue's bones
+        allBonesTag:
+          title: All Bones Tag
+          description:
+            - The tag used to select any or all of the statue's bones
 
-      individualBoneTag:
-        name: Individual Bone Tag
-        description:
-          - The tag used to select a specific bone by name
+        boneModelDisplayTag:
+          title: Bone Model Display Tag
+          description:
+            - The tag used to select the model display entities (armor_stands with items on their heads)
 
-      internalScoreboardObjective:
-        name: Internal Scoreboard
-        description:
-          - The name of the scoreboard objective used for internal calculations
+        individualBoneTag:
+          title: Individual Bone Tag
+          description:
+            - The tag used to select a specific bone by name
 
-      idScoreboardObjective:
-        name: Model ID Scoreboard
-        description:
-          - The name of the scoreboard objective used to identify which entities belong to which model instance
+        internalScoreboardObjective:
+          title: Internal Scoreboard
+          description:
+            - The name of the scoreboard objective used for internal calculations
 
-      exportMode:
-        name: Export Mode
-        description:
-          - What kind of format to export to. Vanilla will export a normal Data Pack and Resource Pack.
-          - MCB will export a Resource Pack and .mc file for the lang-mc compiler
-        options:
-          mcb: MCB
-          vanilla: Vanilla
+        idScoreboardObjective:
+          title: Model ID Scoreboard
+          description:
+            - The name of the scoreboard objective used to identify which entities belong to which model instance
 
-      mcbFilePath:
-        name: Lang-mc file
-        description:
-          - The path to export the .mc file to\nYou will need to install mc-extra into your MCB workspace in order to build the exported data pack
+        exportMode:
+          title: Export Mode
+          description:
+            - What kind of format to export to. Vanilla will export a normal Data Pack and Resource Pack.
+            - MCB will export a Resource Pack and .mc file for the lang-mc compiler
+          options:
+            mcb: MCB
+            vanilla: Vanilla
 
-      mcbConfigPath:
-        name: Lang-mc config.json Path
-        description:
-          - Exports the default MCB config for Animated Java
-          - WARNING! Will overwrite existing config.json
+        mcbFilePath:
+          title: Lang-mc file
+          description:
+            - The path to export the .mc file to
+            - You will need to install mc-extra into your MCB workspace in order to build the exported data pack
 
-      dataPackPath:
-        name: Data Pack
-        description:
-          - The path to export the generated Data Pack to.
+        mcbConfigPath:
+          title: Lang-mc config.json Path
+          description:
+            - Exports the default MCB config for Animated Java
+            - WARNING! Will overwrite existing config.json
+          errors:
+            mustBeNamedAfterProject: TL:animatedJava.exporters.generic.settings.mcbFilePath.errors.mustBeNamedAfterProject
+
+        dataPackPath:
+          title: Data Pack
+          description:
+            - The path to export the generated Data Pack to.
 
     #? Statue Exporter
     statue:
@@ -322,47 +359,52 @@ animatedJava:
     #? Animation Exporter
     animation:
       title: Animation Exporter
-      dialog:
-        error:
+      dialogs:
+        errors:
           zeroLengthAnimation:
             title: Zero Length Animation
             body:
               - The animation %animationName is too short! Animations must be at least 0.05 seconds (or 1 game tick) long
 
-          noAnimations.title: No Animations
-          noAnimations.body:
-            - You haven't made any animations!
-            - You'll need to create some animations in the animation tab before you can export using the animation exporter.
+          noAnimations:
+            title: No Animations
+            body:
+              - You haven't made any animations!
+              - You'll need to create some animations in the animation tab before you can export using the animation exporter.
 
-        settings:
-          autoDistance:
-            name: Auto Distance
-            description:
-              - Automatically calculate the maximum distance required to animate all bones in the rig based on the rendered animations.
+      settings:
+        autoDistance:
+          title: Auto Distance
+          description:
+            - Automatically calculate the maximum distance required to animate all bones in the rig based on the rendered animations.
 
-          autoDistanceMovementThreshold:
-            name: Auto Distance Movement Threshold
-            description:
-              - How much distance to add to the calculated animation distance.
-              - The more distance you add the farther you can move the rig in a single tick without dropping bones
+        autoDistanceMovementThreshold:
+          title: Auto Distance Movement Threshold
+          description:
+            - How much distance to add to the calculated animation distance.
+            - The more distance you add the farther you can move the rig in a single tick without dropping bones
+          errors:
+            valueOutOfRange: TL:animatedJava.exporters.generic.settings.autoDistanceThreshold.errors.valueOutOfRange
 
-          manualDistance:
-            name: Manual Animation Distance
-            description:
-              - How far away a bone can be from the root entity before it stops animating.
-              - This setting is intended for advanced users.
+        manualDistance:
+          title: Manual Animation Distance
+          description:
+            - How far away a bone can be from the root entity before it stops animating.
+            - This setting is intended for advanced users.
+          errors:
+            valueOutOfRange: TL:animatedJava.exporters.generic.settings.manualDistance.errors.valueOutOfRange
 
-          frameScoreboardObjective:
-            name: Frame Scoreboard
-            description:
-              - The name of the scoreboard objective used to track which frame of an animation should be played next
+        frameScoreboardObjective:
+          title: Frame Scoreboard
+          description:
+            - The name of the scoreboard objective used to track which frame of an animation should be played next
 
-          animatingFlagScoreboardObjective:
-            name: Animation Flag Scoreboard
-            description:
-              - The name of the scoreboard objective used to query if a rig is actively animating
+        animatingFlagScoreboardObjective:
+          title: Animation Flag Scoreboard
+          description:
+            - The name of the scoreboard objective used to query if a rig is actively animating
 
-          animationLoopModeScoreboardObjective:
-            name: Animation Loop Mode Scoreboard
-            description:
-              - The name of the scoreboard objective used to control the looping behaviour of each animation
+        animationLoopModeScoreboardObjective:
+          title: Animation Loop Mode Scoreboard
+          description:
+            - The name of the scoreboard objective used to control the looping behaviour of each animation

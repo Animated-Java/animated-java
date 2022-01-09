@@ -61,7 +61,7 @@ async function createMCFile(
 
 	let headYOffset = -1.4365
 
-	const staticAnimationUuid = store.get('static_animation_uuid')
+	const staticAnimationUuid = store.get('staticAnimationUuid')
 	const staticFrame = animations[staticAnimationUuid].frames[0].bones
 	const staticDistance = animations[staticAnimationUuid].maxDistance
 
@@ -372,13 +372,15 @@ async function exportMCFile(
 		throw new CustomError('MCB File Path Undefined', {
 			intentional: true,
 			dialog: {
+				id: 'animatedJava.exporters.generic.dialogs.errors.mcbFilePathNotDefined',
 				title: tl(
-					'animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.title'
+					'animatedJava.exporters.generic.dialogs.errors.mcbFilePathNotDefined.title'
 				),
-				id: '',
-				lines: tl(
-					'animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.body'
-				)
+				lines: [tl(
+					'animatedJava.exporters.generic.dialogs.errors.mcbFilePathNotDefined.body'
+				)],
+				width: 512,
+				singleButton: true
 			},
 		})
 	}
@@ -399,13 +401,15 @@ async function exportDataPack(
 		throw new CustomError('Data Pack Folder Undefined', {
 			intentional: true,
 			dialog: {
+				id: 'animatedJava.exporters.generic.dialogs.errors.dataPackPathNotDefined',
 				title: tl(
-					'animatedJava_exporter_statueExporter.popup.error.dataPackFilePathNotDefined.title'
+					'animatedJava.exporters.generic.dialogs.errors.dataPackPathNotDefined.title'
 				),
-				id: '',
-				lines: tl(
-					'animatedJava_exporter_statueExporter.popup.error.dataPackFilePathNotDefined.body'
-				)
+				lines: [tl(
+					'animatedJava.exporters.generic.dialogs.errors.dataPackPathNotDefined.body'
+				)],
+				width: 512,
+				singleButton: true
 			},
 		})
 	}
@@ -419,7 +423,7 @@ async function exportDataPack(
 	}
 
 	const translatedCompilationText = tl(
-		'animatedJava_exporter_statueExporter.exportingDataPackProgress'
+		'animatedJava.exporters.generic.progress.exportingDataPack'
 	)
 
 	function onMessage(message: {
@@ -465,7 +469,7 @@ async function exportDataPack(
 	const dataPackPath = exporterSettings.dataPackPath
 	const totalFiles = dataPack.length
 	const translatedWritingText = tl(
-		'animatedJava_exporter_statueExporter.writingDataPackProgress'
+		'animatedJava.exporters.generic.progress.writingDataPack'
 	)
 	const createdPaths = new Set()
 
@@ -544,13 +548,11 @@ async function statueExport(data: any) {
 			break
 	}
 
-	Blockbench.showQuickMessage(
-		tl('animatedJava_exporter_statueExporter.successfullyExported')
-	)
+	Blockbench.showQuickMessage(tl('animatedJava.popups.successfullyExported'))
 }
 
 const genericEmptySettingText = tl(
-	'animatedJava_exporter_statueExporter.generic.error.empty'
+	'animatedJava.settings.generic.errors.emptyValue'
 )
 
 function validateFormattedStringSetting(required: string[]) {
@@ -566,7 +568,7 @@ function validateFormattedStringSetting(required: string[]) {
 				d.isValid = false
 				d.error = format(
 					tl(
-						'animatedJava_exporter_statueExporter.generic.error.missingFormatString'
+						'animatedJava.settings.generic.errors.missingFormatString'
 					),
 					{
 						notFound,
@@ -581,6 +583,12 @@ function validateFormattedStringSetting(required: string[]) {
 const Exporter = (AJ: any) => {
 	AJ.settings.registerPluginSettings('animatedJava_exporter_statueExporter', {
 		rootEntityType: {
+			title: tl(
+				'animatedJava.exporters.generic.settings.rootEntityType.title'
+			),
+			description: tl(
+				'animatedJava.exporters.generic.settings.rootEntityType.description'
+			),
 			type: 'text',
 			default: 'minecraft:marker',
 			onUpdate(d: aj.SettingDescriptor) {
@@ -588,7 +596,7 @@ const Exporter = (AJ: any) => {
 					if (!Entities.isEntity(d.value)) {
 						d.isValid = false
 						d.error = tl(
-							'animatedJava_exporter_statueExporter.setting.rootEntityType.error.invalidEntity'
+							'animatedJava.exporters.generic.settings.rootEntityType.errors.invalidEntity'
 						)
 					}
 				} else {
@@ -600,7 +608,9 @@ const Exporter = (AJ: any) => {
 			},
 		},
 		rootEntityNbt: {
-			type: 'text',
+			title: tl('animatedJava.exporters.generic.settings.rootEntityNbt.title'),
+			description: tl('animatedJava.exporters.generic.settings.rootEntityNbt.description'),
+		type: 'text',
 			default: '{}',
 			onUpdate(d: aj.SettingDescriptor) {
 				if (d.value != '') {
@@ -609,7 +619,7 @@ const Exporter = (AJ: any) => {
 					} catch (e) {
 						d.isValid = false
 						d.error = tl(
-							'animatedJava_exporter_statueExporter.setting.rootEntityNbt.error.invalidNbt'
+							'animatedJava.exporters.generic.settings.rootEntityType.errors.invalidNbt'
 						)
 					}
 				} else {
@@ -620,37 +630,49 @@ const Exporter = (AJ: any) => {
 			},
 		},
 		markerArmorStands: {
-			type: 'checkbox',
+			title: tl('animatedJava.exporters.generic.settings.markerArmorStands.title'),
+			description: tl('animatedJava.exporters.generic.settings.markerArmorStands.description'),
+		type: 'checkbox',
 			default: true,
 			onUpdate(d: aj.SettingDescriptor) {
 				return d
 			},
 		},
 		modelTag: {
-			type: 'text',
+			title: tl('animatedJava.exporters.generic.settings.modelTag.title'),
+			description: tl('animatedJava.exporters.generic.settings.modelTag.description'),
+		type: 'text',
 			default: 'aj.%projectName',
 			onUpdate: validateFormattedStringSetting(['%projectName']),
 			isResetable: true,
 		},
 		rootTag: {
-			type: 'text',
+			title: tl('animatedJava.exporters.generic.settings.rootTag.title'),
+			description: tl('animatedJava.exporters.generic.settings.rootTag.description'),
+		type: 'text',
 			default: 'aj.%projectName.root',
 			onUpdate: validateFormattedStringSetting(['%projectName']),
 			isResetable: true,
 		},
 		allBonesTag: {
+			title: tl('animatedJava.exporters.generic.settings.allBonesTag.title'),
+			description: tl('animatedJava.exporters.generic.settings.allBonesTag.description'),
 			type: 'text',
 			default: 'aj.%projectName.bone',
 			onUpdate: validateFormattedStringSetting(['%projectName']),
 			isResetable: true,
 		},
 		boneModelDisplayTag: {
+			title: tl('animatedJava.exporters.generic.settings.boneModelDisplayTag.title'),
+			description: tl('animatedJava.exporters.generic.settings.boneModelDisplayTag.description'),
 			type: 'text',
 			default: 'aj.%projectName.bone_display',
 			onUpdate: validateFormattedStringSetting(['%projectName']),
 			isResetable: true,
 		},
 		individualBoneTag: {
+			title: tl('animatedJava.exporters.generic.settings.individualBoneTag.title'),
+			description: tl('animatedJava.exporters.generic.settings.individualBoneTag.description'),
 			type: 'text',
 			default: 'aj.%projectName.bone.%boneName',
 			onUpdate: validateFormattedStringSetting([
@@ -660,6 +682,8 @@ const Exporter = (AJ: any) => {
 			isResetable: true,
 		},
 		internalScoreboardObjective: {
+			title: tl('animatedJava.exporters.generic.settings.internalScoreboardObjective.title'),
+			description: tl('animatedJava.exporters.generic.settings.internalScoreboardObjective.description'),
 			type: 'text',
 			default: 'aj.i',
 			onUpdate(d: aj.SettingDescriptor) {
@@ -671,20 +695,26 @@ const Exporter = (AJ: any) => {
 			},
 		},
 		idScoreboardObjective: {
+			title: tl('animatedJava.exporters.generic.settings.idScoreboardObjective.title'),
+			description: tl('animatedJava.exporters.generic.settings.idScoreboardObjective.description'),
 			type: 'text',
 			default: 'aj.id',
 			onUpdate: validateFormattedStringSetting([]),
 		},
 		exportMode: {
+			title: tl('animatedJava.exporters.generic.settings.exportMode.title'),
+			description: tl('animatedJava.exporters.generic.settings.exportMode.description'),
 			type: 'select',
 			default: 'mcb',
 			options: {
 				vanilla:
-					'animatedJava_exporter_statueExporter.setting.exportMode.vanilla.name',
-				mcb: 'animatedJava_exporter_statueExporter.setting.exportMode.mcb.name',
+					'animatedJava.exporters.generic.settings.exportMode.options.vanilla',
+				mcb: 'animatedJava.exporters.generic.settings.exportMode.options.mcb',
 			},
 		},
 		mcbFilePath: {
+			title: tl('animatedJava.exporters.generic.settings.mcbFilePath.title'),
+			description: tl('animatedJava.exporters.generic.settings.mcbFilePath.description'),
 			type: 'filepath',
 			default: '',
 			props: {
@@ -706,7 +736,7 @@ const Exporter = (AJ: any) => {
 						d.isValid = false
 						d.error = format(
 							tl(
-								'animatedJava_exporter_statueExporter.setting.mcbFilePath.error.mustBeNamedAfterProject'
+								'animatedJava.exporters.generic.settings.mcbFilePath.errors.mustBeNamedAfterProject'
 							),
 							{
 								projectName:
@@ -732,6 +762,8 @@ const Exporter = (AJ: any) => {
 			],
 		},
 		mcbConfigPath: {
+			title: tl('animatedJava.exporters.generic.settings.mcbConfigPath.title'),
+			description: tl('animatedJava.exporters.generic.settings.mcbConfigPath.description'),
 			type: 'filepath',
 			default: '',
 			optional: true,
@@ -759,6 +791,8 @@ const Exporter = (AJ: any) => {
 			dependencies: ['animatedJava_exporter_statueExporter.exportMode'],
 		},
 		dataPackPath: {
+			title: tl('animatedJava.exporters.generic.settings.dataPackPath.title'),
+			description: tl('animatedJava.exporters.generic.settings.dataPackPath.description'),
 			type: 'filepath',
 			default: '',
 			props: {

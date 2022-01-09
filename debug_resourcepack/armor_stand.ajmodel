@@ -1,7 +1,7 @@
 {
   "meta": {
     "format_version": "0.0",
-    "creation_time": 1641692475,
+    "creation_time": 1641758303,
     "model_format": "animated_java/ajmodel",
     "box_uv": false,
     "settings": {
@@ -25,10 +25,10 @@
         "individualBoneTag": "aj.%projectName.bone.%boneName",
         "internalScoreboardObjective": "aj.i",
         "idScoreboardObjective": "aj.id",
-        "exportMode": "mcb",
-        "mcbFilePath": "",
+        "exportMode": "vanilla",
+        "mcbFilePath": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\saves\\Animated Java Dev\\datapacks\\Animated Java Development\\src\\armor_stand.mc",
         "mcbConfigPath": "",
-        "dataPackPath": ""
+        "dataPackPath": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\saves\\Animated Java Dev\\datapacks\\armor_stand"
       },
       "animatedJava_exporter_animationExporter": {
         "rootEntityType": "minecraft:marker",
@@ -50,7 +50,7 @@
         "exportMode": "mcb",
         "mcbFilePath": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\saves\\Animated Java Dev\\datapacks\\Animated Java Development\\src\\armor_stand.mc",
         "mcbConfigPath": "",
-        "dataPackPath": ""
+        "dataPackPath": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\saves\\Animated Java Dev\\datapacks\\armor_stand"
       }
     },
     "variants": {

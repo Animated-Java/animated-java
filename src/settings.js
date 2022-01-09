@@ -5,11 +5,22 @@ import { Path } from './util/path'
 import * as pathjs from 'path'
 import { getModelPath } from './util/minecraft/resourcepack'
 import { Items } from './util/minecraft/items'
+import { tl } from './util/intl'
+
+const genericEmptyErrorText = tl(
+	'animatedJava.settings.generic.errors.emptyValue'
+)
 
 const UNASSIGNED = Symbol('UNASSIGNED_CACHE')
 export const DefaultSettings = {
 	animatedJava: {
 		projectName: {
+			get title() {
+				return tl('animatedJava.settings.projectName.title')
+			},
+			get description() {
+				return tl('animatedJava.settings.projectName.description')
+			},
 			type: 'text',
 			default: 'unnamed_project',
 			onUpdate(d) {
@@ -17,17 +28,23 @@ export const DefaultSettings = {
 					if (d.value !== safeFunctionName(d.value)) {
 						d.isValid = false
 						d.error = tl(
-							'animatedJava.setting.projectName.error.invalidFunctionName'
+							'animatedJava.settings.projectName.errors.invalidFunctionName'
 						)
 					}
 				} else {
 					d.isValid = false
-					d.error = tl('animatedJava.setting.projectName.error.empty')
+					d.error = genericEmptyErrorText
 				}
 				return d
 			},
 		},
 		exporter: {
+			get title() {
+				return tl('animatedJava.settings.exporter.title')
+			},
+			get description() {
+				return tl('animatedJava.settings.exporter.description')
+			},
 			type: 'select',
 			default: '',
 			get options() {
@@ -44,26 +61,38 @@ export const DefaultSettings = {
 				) {
 					d.isValid = false
 					d.error = tl(
-						'animatedJava.setting.exporter.error.mustBeValidExporter'
+						'animatedJava.settings.exporter.errors.mustBeValidExporter'
 					)
 				}
 				return d
 			},
 		},
 		verbose: {
+			get title() {
+				return tl('animatedJava.settings.verbose.title')
+			},
+			get description() {
+				return tl('animatedJava.settings.verbose.description')
+			},
 			type: 'checkbox',
 			default: true,
 			onUpdate(d) {
 				if (!(typeof d.value === 'boolean')) {
 					d.isValid = false
 					d.error = tl(
-						'animatedJava.setting.verbose.error.mustBeBoolean'
+						'animatedJava.settings.generic.errors.mustBeBoolean'
 					)
 				}
 				return d
 			},
 		},
 		rigItem: {
+			get title() {
+				return tl('animatedJava.settings.rigItem.title')
+			},
+			get description() {
+				return tl('animatedJava.settings.rigItem.description')
+			},
 			type: 'text',
 			default: 'minecraft:white_dye',
 			onUpdate(d) {
@@ -71,18 +100,26 @@ export const DefaultSettings = {
 					if (!Items.isItem(d.value)) {
 						d.isValid = false
 						d.error = tl(
-							'animatedJava.setting.rigItem.error.invalidItem'
+							'animatedJava.settings.rigItem.errors.invalidItem'
 						)
 					}
 				} else {
 					d.isValid = false
-					d.error = tl('animatedJava.setting.rigItem.error.empty')
+					d.error = tl('animatedJava.settings.generic.emptyValue')
 				}
 				return d
 			},
 			dependencies: ['animatedJava.predicateFilePath'],
 		},
 		rigModelsExportFolder: {
+			get title() {
+				return tl('animatedJava.settings.rigModelsExportFolder.title')
+			},
+			get description() {
+				return tl(
+					'animatedJava.settings.rigModelsExportFolder.description'
+				)
+			},
 			type: 'filepath',
 			default: '',
 			props: {
@@ -104,19 +141,25 @@ export const DefaultSettings = {
 						console.error(e)
 						d.isValid = false
 						d.error = tl(
-							'animatedJava.setting.rigModelsExportFolder.error.invalidPath'
+							'animatedJava.settings.rigModelsExportFolder.errors.invalidPath'
 						)
 					}
 				} else {
 					d.isValid = false
 					d.error = tl(
-						'animatedJava.setting.rigModelsExportFolder.error.empty'
+						'animatedJava.settings.generic.errors.emptyValue'
 					)
 				}
 				return d
 			},
 		},
 		predicateFilePath: {
+			get title() {
+				return tl('animatedJava.settings.predicateFilePath.title')
+			},
+			get description() {
+				return tl('animatedJava.settings.predicateFilePath.description')
+			},
 			type: 'filepath',
 			props: {
 				target: 'file',
@@ -142,19 +185,27 @@ export const DefaultSettings = {
 					if (`${rigItem}.json` !== b.base) {
 						d.isValid = false
 						d.error = tl(
-							'animatedJava.setting.predicateFilePath.error.notEqualToRigItem'
+							'animatedJava.settings.predicateFilePath.errors.notEqualToRigItem'
 						)
 					}
 				} else {
 					d.isValid = false
 					d.error = tl(
-						'animatedJava.setting.predicateFilePath.error.empty'
+						'animatedJava.settings.generic.errors.emptyValue'
 					)
 				}
 				return d
 			},
 		},
 		transparentTexturePath: {
+			get title() {
+				return tl('animatedJava.settings.transparentTexturePath.title')
+			},
+			get description() {
+				return tl(
+					'animatedJava.settings.transparentTexturePath.description'
+				)
+			},
 			type: 'filepath',
 			default: '',
 			props: {
@@ -176,7 +227,7 @@ export const DefaultSettings = {
 					) {
 						d.isValid = false
 						d.error = tl(
-							'animatedJava.setting.transparentTexturePath.error.undefinedWhenNeeded'
+							'animatedJava.settings.transparentTexturePath.errors.undefinedWhenNeeded'
 						)
 					}
 				}
@@ -184,6 +235,12 @@ export const DefaultSettings = {
 			},
 		},
 		useCache: {
+			get title() {
+				return tl('animatedJava.settings.useCache.title')
+			},
+			get description() {
+				return tl('animatedJava.settings.useCache.description')
+			},
 			type: 'checkbox',
 			default: true,
 			onUpdate(d) {
@@ -192,11 +249,17 @@ export const DefaultSettings = {
 			global: true,
 		},
 		cacheMode: {
+			get title() {
+				return tl('animatedJava.settings.cacheMode.title')
+			},
+			get description() {
+				return tl('animatedJava.settings.cacheMode.description')
+			},
 			type: 'select',
 			default: 'memory',
 			options: {
-				memory: 'animatedJava.setting.cacheMode.memory.name',
-				file: 'animatedJava.setting.cacheMode.file.name',
+				memory: 'animatedJava.settings.cacheMode.options.memory',
+				file: 'animatedJava.settings.cacheMode.options.disk',
 			},
 			onUpdate(d) {
 				d.isValid = Boolean(this.options[d.value])
@@ -209,21 +272,20 @@ export const DefaultSettings = {
 			global: true,
 		},
 		boundingBoxRenderMode: {
+			get title() {
+				return tl('animatedJava.settings.boundingBoxRenderMode.title')
+			},
+			get description() {
+				return tl(
+					'animatedJava.settings.boundingBoxRenderMode.description'
+				)
+			},
 			type: 'select',
 			default: 'single',
 			options: {
-				single: 'animatedJava.setting.boundingBoxRenderMode.single.name',
-				many: 'animatedJava.setting.boundingBoxRenderMode.many.name',
-				none: 'animatedJava.setting.boundingBoxRenderMode.none.name',
-			},
-			onUpdate(d) {
-				if (!this.options[d.value]) {
-					d.isValid = false
-					d.error = tl(
-						'animatedJava.setting.boundingBoxRenderMode.error.invalidOption'
-					)
-				}
-				return d
+				single: 'animatedJava.settings.boundingBoxRenderMode.options.single',
+				many: 'animatedJava.settings.boundingBoxRenderMode.options.many',
+				none: 'animatedJava.settings.boundingBoxRenderMode.options.none',
 			},
 			global: true,
 		},

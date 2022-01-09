@@ -76,11 +76,19 @@ export function computeElements() {
 	function computeCube(s) {
 		// if (s.export == false || s.visibility == false) return
 		if (s.parent === 'root') {
-			throw new CustomError({
-				title: tl('error.top_level_cubes.title'),
-				lines: tl('error.top_level_cubes.body')
-					.split('\n')
-					.map((line) => `<p>${line}</p>`),
+			throw new CustomError('Top Level Cubes Found in model', {
+				intentional: true,
+				dialog: {
+					id: 'animatedJava.dialogs.errors.topLevelCubes',
+					title: tl(
+						'animatedJava.dialogs.errors.topLevelCubes.title'
+					),
+					lines: [
+						tl('animatedJava.dialogs.errors.topLevelCubes.body'),
+					],
+					width: 128,
+					singleButton: true,
+				},
 			})
 		}
 		var element = { uuid: s.uuid }
@@ -214,11 +222,11 @@ export function computeElements() {
 		throw new CustomError('Invalid Element Rotations', {
 			dialog: {
 				title: tl(
-					'animatedJava.popup.error.invalidCubeRotations.title'
+					'animatedJava.dialogs.errors.invalidCubeRotations.title'
 				),
-				lines: tl('animatedJava.popup.error.invalidCubeRotations.body')
-					.split('\n')
-					.map((line) => `<p>${line}</p>`),
+				lines: [
+					tl('animatedJava.dialogs.errors.invalidCubeRotations.body'),
+				],
 				width: 512,
 			},
 		})
@@ -534,23 +542,25 @@ export function computeVariantTextureOverrides(models) {
 									`${texture.id}`
 								] = transparentTexturePath
 							} else {
-								let d = new Dialog({
-									title: tl(
-										'animatedJava.popup.error.transparentTexturePathNotFound.title'
-									),
-									lines: tl(
-										'animatedJava.popup.error.transparentTexturePathNotFound.body'
-									)
-										.split('\n')
-										.map((line) => `<p>${line}</p>`),
-									onConfirm() {
-										d.hide()
-									},
-									onCancel() {
-										d.hide()
-									},
-								}).show()
-								throw new CustomError({ intentional: true })
+								throw new CustomError(
+									'Transparent Texture Path Not Found',
+									{
+										intentional: true,
+										dialog: {
+											id: 'animatedJava.dialogs.errors.transparentTexturePathNotFound',
+											title: tl(
+												'animatedJava.dialogs.errors.transparentTexturePathNotFound.title'
+											),
+											lines: [
+												tl(
+													'animatedJava.dialogs.errors.transparentTexturePathNotFound.body'
+												),
+											],
+											width: 512,
+											singleButton: true,
+										},
+									}
+								)
 							}
 						}
 					}

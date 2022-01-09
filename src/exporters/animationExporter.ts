@@ -96,7 +96,7 @@ async function createMCFile(
 	if (!exporterSettings.markerArmorStands) headYOffset += -0.1
 	console.log(headYOffset)
 
-	const staticAnimationUuid = store.get('static_animation_uuid')
+	const staticAnimationUuid = store.get('staticAnimationUuid')
 	const staticFrame = animations[staticAnimationUuid].frames[0].bones
 	// let staticDistance = 10
 	let maxDistance = 10
@@ -762,14 +762,17 @@ async function createMCFile(
 			throw new CustomError('No Animations Error', {
 				intentional: true,
 				dialog: {
-					id: 'animatedJava_exporter_animationExporter.popup.warning.noAnimations',
+					id: 'animatedJava.exporters.animation.dialogs.errors.noAnimations',
 					title: tl(
-						'animatedJava_exporter_animationExporter.popup.warning.noAnimations.title'
+						'animatedJava.exporters.animation.dialogs.errors.noAnimations.title'
 					),
-					lines: tl(
-						'animatedJava_exporter_animationExporter.popup.warning.noAnimations.body'
-					)
-
+					lines: [
+						tl(
+							'animatedJava.exporters.animation.dialogs.errors.noAnimations.body'
+						),
+					],
+					width: 512 + 128,
+					singleButton: true,
 				},
 			})
 		}
@@ -782,18 +785,20 @@ async function createMCFile(
 				throw new CustomError('Zero Length Animation Error', {
 					intentional: true,
 					dialog: {
-						id: 'animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation',
+						id: 'animatedJava.exporters.animation.dialogs.errors.zeroLengthAnimation',
 						title: tl(
-							'animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.title'
+							'animatedJava.exporters.animation.dialogs.errors.zeroLengthAnimation.title'
 						),
-						lines: format(
+						lines: [
 							tl(
-								'animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.body'
+								'animatedJava.exporters.animation.dialogs.errors.zeroLengthAnimation.body',
+								{
+									animationName: animation.name,
+								}
 							),
-							{
-								animationName: animation.name,
-							}
-						)
+						],
+						width: 512,
+						singleButton: true
 					},
 				})
 			}
@@ -1043,18 +1048,21 @@ async function exportMCFile(
 ) {
 	if (!exporterSettings.mcbFilePath) {
 		throw new CustomError(
-			'animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.title',
+			'animatedJava.exporters.generic.dialogs.errors.mcbFilePathNotDefined',
 			{
 				intentional: true,
 				dialog: {
+					id: 'animatedJava.exporters.generic.dialogs.errors.mcbFilePathNotDefined',
 					title: tl(
-						'animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.title'
+						'animatedJava.exporters.generic.dialogs.errors.mcbFilePathNotDefined.title'
 					),
-					id: '',
-					lines: tl(
-						'animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.body'
-					)
-
+					lines: [
+						tl(
+							'animatedJava.exporters.generic.dialogs.errors.mcbFilePathNotDefined.body'
+						),
+					],
+					width: 512,
+					singleButton: true,
 				},
 			}
 		)
@@ -1074,18 +1082,21 @@ async function exportDataPack(
 	if (!exporterSettings.dataPackPath) {
 		console.log(exporterSettings.dataPackPath)
 		throw new CustomError(
-			'animatedJava_exporter_animationExporter.popup.error.dataPackFilePathNotDefined.title',
+			'animatedJava.exporters.generic.dialogs.errors.dataPackPathNotDefined.title',
 			{
 				intentional: true,
 				dialog: {
+					id: 'animatedJava.exporters.generic.dialogs.errors.dataPackPathNotDefined',
 					title: tl(
-						'animatedJava_exporter_animationExporter.popup.error.dataPackFilePathNotDefined.title'
+						'animatedJava.exporters.generic.dialogs.errors.dataPackPathNotDefined.title'
 					),
-					id: '',
-					lines: tl(
-						'animatedJava_exporter_animationExporter.popup.error.dataPackFilePathNotDefined.body'
-					)
-
+					lines: [
+						tl(
+							'animatedJava.exporters.generic.dialogs.errors.dataPackPathNotDefined.body'
+						),
+					],
+					width: 512,
+					singleButton: true,
 				},
 			}
 		)
@@ -1112,7 +1123,7 @@ async function exportDataPack(
 			Blockbench.setStatusBarText(
 				format(
 					tl(
-						'animatedJava_exporter_animationExporter.exportingDataPackProgress'
+						'animatedJava.exporters.generic.progress.exportingDataPack'
 					),
 					{
 						progress: (message.percent * 100).toPrecision(4),
@@ -1145,9 +1156,7 @@ async function exportDataPack(
 
 	const dataPackPath = exporterSettings.dataPackPath
 	const totalFiles = dataPack.length
-	const tldMessage = tl(
-		'animatedJava_exporter_animationExporter.writingDataPackProgress'
-	)
+	const tldMessage = tl('animatedJava.exporters.generic.writingDataPack')
 	const createdPaths = new Set()
 
 	let timeOut = false
@@ -1225,13 +1234,11 @@ async function animationExport(data: any) {
 			break
 	}
 
-	Blockbench.showQuickMessage(
-		tl('animatedJava_exporter_animationExporter.successfullyExported')
-	)
+	Blockbench.showQuickMessage(tl('animatedJava.popups.successfullyExported'))
 }
 
 const genericEmptySettingText = tl(
-	'animatedJava_exporter_animationExporter.generic.error.empty'
+	'animatedJava.settings.generic.errors.emptyValue'
 )
 
 function validateFormattedStringSetting(required: string[]) {
@@ -1247,7 +1254,7 @@ function validateFormattedStringSetting(required: string[]) {
 				d.isValid = false
 				d.error = format(
 					tl(
-						'animatedJava_exporter_animationExporter.generic.error.missingFormatString'
+						'animatedJava.settings.generic.errors.missingFormatString'
 					),
 					{
 						notFound,
@@ -1264,8 +1271,12 @@ const Exporter = (AJ: any) => {
 		'animatedJava_exporter_animationExporter',
 		{
 			rootEntityType: {
-				title: tl('animatedJava.exporter.generic.setting.rootEntityType.name'),
-				description: tl(''),
+				title: tl(
+					'animatedJava.exporters.generic.settings.rootEntityType.title'
+				),
+				description: tl(
+					'animatedJava.exporters.generic.settings.rootEntityType.description'
+				),
 				type: 'text',
 				default: 'minecraft:marker',
 				onUpdate(d: aj.SettingDescriptor) {
@@ -1273,7 +1284,7 @@ const Exporter = (AJ: any) => {
 						if (!Entities.isEntity(d.value)) {
 							d.isValid = false
 							d.error = tl(
-								'animatedJava_exporter_animationExporter.setting.rootEntityType.error.invalidEntity'
+								'animatedJava.exporters.generic.settings.rootEntityType.errors.invalidEntity'
 							)
 						}
 					} else {
@@ -1285,6 +1296,12 @@ const Exporter = (AJ: any) => {
 				},
 			},
 			rootEntityNbt: {
+				title: tl(
+					'animatedJava.exporters.generic.settings.rootEntityNbt.title'
+				),
+				description: tl(
+					'animatedJava.exporters.generic.settings.rootEntityNbt.description'
+				),
 				type: 'text',
 				default: '{}',
 				onUpdate(d: aj.SettingDescriptor) {
@@ -1294,7 +1311,7 @@ const Exporter = (AJ: any) => {
 						} catch (e) {
 							d.isValid = false
 							d.error = tl(
-								'animatedJava_exporter_animationExporter.setting.rootEntityNbt.error.invalidNbt'
+								'animatedJava.exporters.generic.settings.rootEntityNbt.errors.invalidNBT'
 							)
 						}
 					} else {
@@ -1305,6 +1322,12 @@ const Exporter = (AJ: any) => {
 				},
 			},
 			markerArmorStands: {
+				title: tl(
+					'animatedJava.exporters.generic.settings.markerArmorStands.title'
+				),
+				description: tl(
+					'animatedJava.exporters.generic.settings.markerArmorStands.description'
+				),
 				type: 'checkbox',
 				default: true,
 				onUpdate(d: aj.SettingDescriptor) {
@@ -1312,6 +1335,12 @@ const Exporter = (AJ: any) => {
 				},
 			},
 			autoDistance: {
+				title: tl(
+					'animatedJava.exporters.animation.settings.autoDistance.title'
+				),
+				description: tl(
+					'animatedJava.exporters.animation.settings.autoDistance.description'
+				),
 				type: 'checkbox',
 				default: true,
 				onUpdate(d: aj.SettingDescriptor) {
@@ -1319,13 +1348,19 @@ const Exporter = (AJ: any) => {
 				},
 			},
 			autoDistanceMovementThreshold: {
+				title: tl(
+					'animatedJava.exporters.animation.settings.autoDistanceMovementThreshold.title'
+				),
+				description: tl(
+					'animatedJava.exporters.animation.settings.autoDistanceMovementThreshold.description'
+				),
 				type: 'number',
 				default: 1,
 				onUpdate(d: aj.SettingDescriptor) {
 					if (!(d.value >= 0)) {
 						d.isValid = false
 						d.error = tl(
-							'animatedJava_exporter_animationExporter.setting.autoDistanceMovementThreshold.error.valueOutOfRange'
+							'animatedJava.exporters.generic.settings.autoDistanceThreshold.errors.valueOutOfRange'
 						)
 					}
 					return d
@@ -1339,13 +1374,19 @@ const Exporter = (AJ: any) => {
 				],
 			},
 			manualDistance: {
+				title: tl(
+					'animatedJava.exporters.animation.settings.manualDistance.title'
+				),
+				description: tl(
+					'animatedJava.exporters.animation.settings.manualDistance.description'
+				),
 				type: 'number',
 				default: 10,
 				onUpdate(d: aj.SettingDescriptor) {
 					if (!(d.value >= 0)) {
 						d.isValid = false
 						d.error = tl(
-							'animatedJava_exporter_animationExporter.setting.manualDistance.error.valueOutOfRange'
+							'animatedJava.exporters.generic.settings.manualDistance.errors.valueOutOfRange'
 						)
 					}
 					return d
@@ -1359,30 +1400,60 @@ const Exporter = (AJ: any) => {
 				],
 			},
 			modelTag: {
+				title: tl(
+					'animatedJava.exporters.generic.settings.modelTag.title'
+				),
+				description: tl(
+					'animatedJava.exporters.generic.settings.modelTag.description'
+				),
 				type: 'text',
 				default: 'aj.%projectName',
 				onUpdate: validateFormattedStringSetting(['%projectName']),
 				isResetable: true,
 			},
 			rootTag: {
+				title: tl(
+					'animatedJava.exporters.generic.settings.rootTag.title'
+				),
+				description: tl(
+					'animatedJava.exporters.generic.settings.rootTag.description'
+				),
 				type: 'text',
 				default: 'aj.%projectName.root',
 				onUpdate: validateFormattedStringSetting(['%projectName']),
 				isResetable: true,
 			},
 			allBonesTag: {
+				title: tl(
+					'animatedJava.exporters.generic.settings.allBonesTag.title'
+				),
+				description: tl(
+					'animatedJava.exporters.generic.settings.allBonesTag.description'
+				),
 				type: 'text',
 				default: 'aj.%projectName.bone',
 				onUpdate: validateFormattedStringSetting(['%projectName']),
 				isResetable: true,
 			},
 			boneModelDisplayTag: {
+				title: tl(
+					'animatedJava.exporters.generic.settings.boneModelDisplayTag.title'
+				),
+				description: tl(
+					'animatedJava.exporters.generic.settings.boneModelDisplayTag.description'
+				),
 				type: 'text',
 				default: 'aj.%projectName.bone_display',
 				onUpdate: validateFormattedStringSetting(['%projectName']),
 				isResetable: true,
 			},
 			individualBoneTag: {
+				title: tl(
+					'animatedJava.exporters.generic.settings.individualBoneTag.title'
+				),
+				description: tl(
+					'animatedJava.exporters.generic.settings.individualBoneTag.description'
+				),
 				type: 'text',
 				default: 'aj.%projectName.bone.%boneName',
 				onUpdate: validateFormattedStringSetting([
@@ -1392,6 +1463,12 @@ const Exporter = (AJ: any) => {
 				isResetable: true,
 			},
 			internalScoreboardObjective: {
+				title: tl(
+					'animatedJava.exporters.generic.settings.internalScoreboardObjective.title'
+				),
+				description: tl(
+					'animatedJava.exporters.generic.settings.internalScoreboardObjective.description'
+				),
 				type: 'text',
 				default: 'aj.i',
 				onUpdate(d: aj.SettingDescriptor) {
@@ -1403,21 +1480,45 @@ const Exporter = (AJ: any) => {
 				},
 			},
 			idScoreboardObjective: {
+				title: tl(
+					'animatedJava.exporters.generic.settings.idScoreboardObjective.title'
+				),
+				description: tl(
+					'animatedJava.exporters.generic.settings.idScoreboardObjective.description'
+				),
 				type: 'text',
 				default: 'aj.id',
 				onUpdate: validateFormattedStringSetting([]),
 			},
 			frameScoreboardObjective: {
+				title: tl(
+					'animatedJava.exporters.animation.settings.frameScoreboardObjective.title'
+				),
+				description: tl(
+					'animatedJava.exporters.animation.settings.frameScoreboardObjective.description'
+				),
 				type: 'text',
 				default: 'aj.frame',
 				onUpdate: validateFormattedStringSetting([]),
 			},
 			animatingFlagScoreboardObjective: {
+				title: tl(
+					'animatedJava.exporters.animation.settings.animatingFlagScoreboardObjective.title'
+				),
+				description: tl(
+					'animatedJava.exporters.animation.settings.animatingFlagScoreboardObjective.description'
+				),
 				type: 'text',
 				default: 'aj.%projectName.animating',
 				onUpdate: validateFormattedStringSetting(['%projectName']),
 			},
 			animationLoopModeScoreboardObjective: {
+				title: tl(
+					'animatedJava.exporters.animation.settings.animationLoopModeScoreboardObjective.title'
+				),
+				description: tl(
+					'animatedJava.exporters.animation.settings.animationLoopModeScoreboardObjective.description'
+				),
 				type: 'text',
 				default: 'aj.%projectName.%animationName.loopMode',
 				onUpdate: validateFormattedStringSetting([
@@ -1426,15 +1527,27 @@ const Exporter = (AJ: any) => {
 				]),
 			},
 			exportMode: {
+				title: tl(
+					'animatedJava.exporters.generic.settings.exportMode.title'
+				),
+				description: tl(
+					'animatedJava.exporters.generic.settings.exportMode.description'
+				),
 				type: 'select',
 				default: 'mcb',
 				options: {
 					vanilla:
-						'animatedJava_exporter_animationExporter.setting.exportMode.vanilla.name',
-					mcb: 'animatedJava_exporter_animationExporter.setting.exportMode.mcb.name',
+						'animatedJava.exporters.generic.settings.exportMode.options.vanilla',
+					mcb: 'animatedJava.exporters.generic.settings.exportMode.options.mcb',
 				},
 			},
 			mcbFilePath: {
+				title: tl(
+					'animatedJava.exporters.generic.settings.mcbFilePath.title'
+				),
+				description: tl(
+					'animatedJava.exporters.generic.settings.mcbFilePath.description'
+				),
 				type: 'filepath',
 				default: '',
 				props: {
@@ -1457,7 +1570,7 @@ const Exporter = (AJ: any) => {
 							d.isValid = false
 							d.error = format(
 								tl(
-									'animatedJava_exporter_animationExporter.setting.mcbFilePath.error.mustBeNamedAfterProject'
+									'animatedJava.exporters.generic.settings.mcbFilePath.errors.mustBeNamedAfterProject'
 								),
 								{
 									projectName:
@@ -1483,8 +1596,12 @@ const Exporter = (AJ: any) => {
 				],
 			},
 			mcbConfigPath: {
-				title: tl('setting.mcbConfigPath.title'),
-				description: tl('setting.mcbConfigPath.description'),
+				title: tl(
+					'animatedJava.exporters.generic.settings.mcbConfigPath.title'
+				),
+				description: tl(
+					'animatedJava.exporters.generic.settings.mcbConfigPath.description'
+				),
 				type: 'filepath',
 				default: '',
 				optional: true,
@@ -1514,6 +1631,12 @@ const Exporter = (AJ: any) => {
 				],
 			},
 			dataPackPath: {
+				title: tl(
+					'animatedJava.exporters.generic.settings.dataPackPath.title'
+				),
+				description: tl(
+					'animatedJava.exporters.generic.settings.dataPackPath.description'
+				),
 				type: 'filepath',
 				default: '',
 				props: {

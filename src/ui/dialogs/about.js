@@ -19,66 +19,66 @@ const Reasons = {
 const roles = {
 	[Reasons.Translator]: {
 		get content() {
-			return tl('about.translator.content')
+			return tl('animatedJava.dialogs.about.translator')
 		},
 		color: '#E67E22',
 		textColor: 'black',
 	},
 	[Reasons.BetaTester]: {
 		get content() {
-			return tl('about.closedBeta.content')
+			return tl('animatedJava.dialogs.about.closedBeta')
 		},
 		color: '#9B59B6',
 		textColor: 'black',
 	},
 	[Reasons.Moderator]: {
 		get content() {
-			return tl('about.moderator.content')
+			return tl('animatedJava.dialogs.about.moderator')
 		},
 		color: '#19B395',
 		textColor: 'black',
 	},
 	[Reasons.Contributor]: {
 		get content() {
-			return tl('about.contributor.content')
+			return tl('animatedJava.dialogs.about.contributor')
 		},
 		color: '#00aced',
 		textColor: 'black',
 	},
 	[Reasons.BrandingArtist]: {
 		get content() {
-			return tl('about.brandingArtist.content')
+			return tl('animatedJava.dialogs.about.brandingArtist')
 		},
 		color: '#00aced',
 		textColor: 'black',
 	},
 	[Reasons.Youtuber]: {
 		get content() {
-			return tl('about.youtuber.content')
+			return tl('animatedJava.dialogs.about.youtuber')
 		},
 		color: '#FF0000',
 		textColor: 'white',
 	},
 	[Reasons.PatreonT1]: {
 		get content() {
-			return tl('about.patreonTier1.content')
+			return tl('animatedJava.dialogs.about.patronTier1')
 		},
 		color: 'rgb(241, 196, 15)',
-		textColor: 'white',
+		textColor: 'black',
 	},
 	[Reasons.PatreonT2]: {
 		get content() {
-			return tl('about.patreonTier2.content')
+			return tl('animatedJava.dialogs.about.patronTier2')
 		},
 		color: 'rgb(241, 196, 15)',
-		textColor: 'white',
+		textColor: 'black',
 	},
 	[Reasons.PatreonT3]: {
 		get content() {
-			return tl('about.patreonTier3.content')
+			return tl('animatedJava.dialogs.about.patronTier3')
 		},
 		color: 'rgb(241, 196, 15)',
-		textColor: 'white',
+		textColor: 'black',
 	},
 }
 function Role({ role, fontSize }) {
@@ -117,12 +117,12 @@ function Person({ person }) {
 					fontWeight: '600',
 				}}
 			>
-				{person.active && (
+				{/* {person.active && (
 					<i
 						className="fas fa-check"
 						style={{ marginRight: '8px' }}
 					></i>
-				)}
+				)} */}
 				{person.name}
 			</p>
 			<ul>
@@ -247,7 +247,7 @@ function About() {
 						fontSize: '2em',
 						color: '#5865F2',
 					}}
-					title={tl('about.discordServer')}
+					title={tl('animatedJava.dialogs.about.discordServer')}
 				>
 					<i className="fab fa-discord"></i>
 				</Link>
@@ -260,7 +260,7 @@ function About() {
 						fontSize: '2em',
 						color: '#FFFFFF',
 					}}
-					title={tl('about.githubRepo')}
+					title={tl('animatedJava.dialogs.about.githubRepo')}
 				>
 					<i className="fab fa-github"></i>
 				</Link>
@@ -273,9 +273,9 @@ function About() {
 						fontSize: '2em',
 						color: '#FF424D',
 					}}
-					title={tl('about.patreon')}
+					title={tl('animatedJava.dialogs.about.patron')}
 				>
-					<i className="fab fa-patreon"></i>
+					<i className="fab fa-patron"></i>
 				</Link>
 			</Center>
 			<hr />
@@ -285,13 +285,13 @@ function About() {
 						whiteSpace: 'pre',
 					}}
 				>
-					{tl('about.description')}
+					{tl('animatedJava.dialogs.about.description')}
 				</div>
 			</Center>
 			<hr />
 			<Center>
 				<h1 style={{ marginTop: '1em', marginBottom: '0.3em' }}>
-					{tl('about.developers')}
+					{tl('animatedJava.dialogs.about.developers')}
 				</h1>
 			</Center>
 			<div
@@ -329,7 +329,7 @@ function About() {
 						</a>
 					</div>
 					<p style={{ textAlign: 'center', fontSize: '1em' }}>
-						{tl('about.fetchbot.quote')}
+						{tl('animatedJava.dialogs.about.fetchbotQuote')}
 					</p>
 				</div>
 				<div>
@@ -356,13 +356,13 @@ function About() {
 						</a>
 					</div>
 					<p style={{ textAlign: 'center', fontSize: '1em' }}>
-						{tl('about.snavesutit.quote')}
+						{tl('animatedJava.dialogs.about.snavesutitQuote')}
 					</p>
 				</div>
 			</div>
 			<Center>
 				<h1 style={{ marginTop: '1em', marginBottom: '0.8em' }}>
-					{tl('about.patreons')}
+					{tl('animatedJava.dialogs.about.patrons')}
 				</h1>
 			</Center>
 			<div
@@ -387,7 +387,7 @@ function About() {
 
 			<Center>
 				<h1 style={{ marginTop: '1em', marginBottom: '0.8em' }}>
-					{tl('about.honourableMentions')}
+					{tl('animatedJava.dialogs.about.honourableMentions')}
 				</h1>
 			</Center>
 			<div
@@ -410,7 +410,7 @@ function About() {
 					))}
 			</div>
 			<p>
-				<b>{tl('about.buildID')}</b> {process.env.BUILD_ID}
+				<b>{tl('animatedJava.dialogs.about.buildID')}</b> {process.env.BUILD_ID}
 			</p>
 		</div>
 	)
@@ -419,8 +419,8 @@ export function show_about() {
 	new Dialog({
 		id: 'animatedJava.about',
 		// width: 1024,
-		title: tl('animatedJava.dialog.about.title'),
-		// lines: [format(tl('animatedJava.dialog.about.body'), {
+		title: tl('animatedJava.dialogs.about.title'),
+		// lines: [format(tl('animatedJava.dialogs.about.body'), {
 		// 	version: process.env.PLUGIN_VERSION,
 		// 	buildID: process.env.BUILD_ID
 		// })],

@@ -14,7 +14,7 @@ import { tl } from './util/intl'
 import { format, safeFunctionName } from './util/replace'
 import { isSceneBased } from './util/hasSceneAsParent'
 import { CustomError } from './util/customError'
-store.set('static_animation_uuid', '138747e7-2de0-4130-b900-9275ca0e6333')
+store.set('staticAnimationUuid', '138747e7-2de0-4130-b900-9275ca0e6333')
 
 function setAnimatorTime(time) {
 	Timeline.setTime(time, false)
@@ -159,7 +159,7 @@ const Cache = new (class {
 		settings.watch('animatedJava.cacheMode', () => {
 			this.initDiskCache()
 		})
-		settings.watch('animatedJava.use_cache', () => {
+		settings.watch('animatedJava.useCache', () => {
 			this.clear()
 		})
 		this.initDiskCache()
@@ -242,11 +242,11 @@ async function renderAnimation(options) {
 
 	if (options.generate_static_animation) {
 		static_animation = new Animation({
-			name: 'animatedJava.static_animation',
+			name: 'animatedJava.staticSnimation',
 			snapping: 20,
 			length: 0,
 		}).add(false)
-		static_animation.uuid = store.get('static_animation_uuid')
+		static_animation.uuid = store.get('staticAnimationUuid')
 	}
 
 	const totalAnimationLength = Animator.animations.reduce(
@@ -255,7 +255,7 @@ async function renderAnimation(options) {
 	)
 	// Accumulated animation length
 	let accAnimationLength = 0
-	const tldMessage = tl('animatedJava.progress.animationRendering.text')
+	const tldMessage = tl('animatedJava.progress.animationRendering')
 	const progressUpdaterID = setInterval(() => {
 		console.log(accAnimationLength, totalAnimationLength)
 		Blockbench.setStatusBarText(
@@ -290,21 +290,21 @@ async function renderAnimation(options) {
 				throw new CustomError('Invalid Snapping Value Error', {
 					intentional: true,
 					dialog: {
-						id: 'animatedJava_exporter_animationExporter.popup.warning.invalidSnappingValue',
+						id: 'animatedJava.invalidAnimationSnappingValue',
 						title: tl(
-							'animatedJava_exporter_animationExporter.popup.warning.invalidSnappingValue.title'
+							'animatedJava.dialogs.errors.invalidAnimationSnappingValue.title'
 						),
-						lines: format(
+						lines: [
 							tl(
-								'animatedJava_exporter_animationExporter.popup.warning.invalidSnappingValue.body'
+								'animatedJava.dialogs.errors.invalidAnimationSnappingValue.body',
+								{
+									animationName: animation.name,
+									snapping: animation.snapping,
+								}
 							),
-							{
-								animationName: animation.name,
-								snapping: animation.snapping
-							}
-						)
-							.split('\n')
-							.map((line) => `<p>${line}</p>`),
+						],
+						width: 512 + 256,
+						singleButton: true
 					},
 				})
 			}
@@ -314,7 +314,10 @@ async function renderAnimation(options) {
 				let maxDistance = -Infinity
 				const frames = []
 				animation.select()
-				const animLength = animation.loop === 'loop' ? animation.length : animation.length + 0.05
+				const animLength =
+					animation.loop === 'loop'
+						? animation.length
+						: animation.length + 0.05
 
 				for (let i = 0; i <= animLength; i += 0.05) {
 					accAnimationLength += 0.05

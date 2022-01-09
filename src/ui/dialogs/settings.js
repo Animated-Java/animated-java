@@ -256,7 +256,7 @@ const SettingInput = ({ namespace, name, template }) => {
 						}}
 						title={
 							error ||
-							tl('animatedJava.settings.invalidSetting.generic')
+							tl('animatedJava.settings.generic.errors.invalid')
 						}
 					>
 						<span
@@ -271,7 +271,7 @@ const SettingInput = ({ namespace, name, template }) => {
 						</span>
 					</span>
 				)}
-				{SettingDef.name}
+				{SettingDef.title}
 				{SettingDef.global && (
 					<span
 						style={{
@@ -279,7 +279,7 @@ const SettingInput = ({ namespace, name, template }) => {
 							marginLeft: '1em',
 						}}
 					>
-						{tl('animatedJava.settings.global')}
+						{tl('animatedJava.settings.isGlobal')}
 					</span>
 				)}
 				{SettingDef.optional && (
@@ -289,7 +289,7 @@ const SettingInput = ({ namespace, name, template }) => {
 							marginLeft: '1em',
 						}}
 					>
-						{tl('animatedJava.settings.optional')}
+						{tl('animatedJava.settings.isOptional')}
 					</span>
 				)}
 			</div>
@@ -300,9 +300,10 @@ const SettingInput = ({ namespace, name, template }) => {
 					</p>
 				</div>
 			)}
-			<div className="setting_description">
-				{SettingDef.description}
-			</div>
+			<div
+				className="setting_description"
+				dangerouslySetInnerHTML={{ __html: SettingDef.description }}
+			></div>
 		</label>
 	)
 	if (isVisible) {
@@ -407,7 +408,7 @@ const Settings = () => {
 					style={{ cursor: 'default' }}
 				>
 					<div className="dialog_title">
-						{tl('animatedJava.menubar.settings.name')}
+						{tl('animatedJava.menubar.settings')}
 					</div>
 				</div>
 				<div
@@ -449,9 +450,7 @@ const Settings = () => {
 						<li>
 							<ul>
 								<h2 style={{ marginLeft: '1em' }}>
-									{tl(
-										'animatedJava.menubar.exporterList.name'
-									)}
+									{tl('animatedJava.menubar.export')}
 								</h2>
 								{Object.keys(DefaultSettings)
 									.filter((key) => key !== 'animatedJava')

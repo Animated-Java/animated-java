@@ -1,11 +1,11 @@
 import events from './constants/events'
 import { BuildModel } from './mainEntry'
-import { settings } from './settings'
 import { store } from './util/store'
 import { bus } from './util/bus'
 import './bbmods/patchAction'
 import { format as modelFormat } from './modelFormat'
 import { tl } from './util/intl'
+import { settings } from './settings'
 import { registerSettingRenderer } from './ui/dialogs/settings'
 import './ui/mods/boneConfig'
 import './compileLangMC'
@@ -17,7 +17,18 @@ import './util/minecraft/items'
 import './util/minecraft/entities'
 import { intl } from './util/intl'
 import { CustomError } from './util/customError'
-import { format } from './util/replace'
+
+const errorMessages = [
+	"Uh oh!",
+	"Time to fire up the ol' debugger!",
+	"Your armor stands are sad :(",
+	"Ok, who pushed the big red button?",
+]
+
+function getRandomErrorMessage() {
+	const index = Math.round(Math.random() * (errorMessages.length-1))
+	return errorMessages[index]
+}
 
 function showUnknownErrorDialog(e: CustomError | any) {
 	// console.log(e.options)
@@ -28,16 +39,17 @@ function showUnknownErrorDialog(e: CustomError | any) {
 	new Dialog(
 		Object.assign(
 			{
-				id: 'animatedJava.dialog.miscError',
-				title: tl('animatedJava.dialog.miscError.title'),
+				id: 'animatedJava.dialogs.miscError',
+				title: tl('animatedJava.dialogs.errors.misc.title'),
 				lines: [
-					format(tl('animatedJava.dialog.miscError.body'), {
+					tl('animatedJava.dialogs.errors.misc.body', {
 						buildID: process.env.BUILD_ID,
 						errorMessage: e.options ? e.options.message : e.message,
+						randomErrorMessage: getRandomErrorMessage(),
 						errorStack: e.stack,
 						discordLink: process.env.DISCORD_LINK,
 						githubLink: process.env.GITHUB_ISSUES_LINK,
-					}),
+					}, true),
 				],
 				width: 1024,
 				height: 512,
