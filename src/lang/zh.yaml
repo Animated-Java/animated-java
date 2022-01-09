@@ -22,6 +22,7 @@ about.githubRepo: 源码
 about.patreon: Patreon
 about.developers: 开发者
 about.honourableMentions: 特别鸣谢
+
 about.buildID: 构建版本ID
 
 about.contributor.content: 贡献者
@@ -29,6 +30,7 @@ about.youtuber.content: Youtuber
 about.moderator.content: Discord管理员
 about.closedBeta.content: 内测成员
 about.brandingArtist.content: 美工
+about.translator.content: 翻译员
 
 about.description: |-
     一个为帮助 Minecraft Java 版地图创作者们制作丝滑、丰富的动画而准备的工具
@@ -46,6 +48,14 @@ animatedJava.boneConfig.armAnimationEnabled: 启用手臂动画
 
 animatedJava.popup.quickMessage.noExporterSelected: 未选择导出器！
 
+#? Errors/Warnings
+
+animatedJava.exportCancelled: 导出已取消
+
+animatedJava.error.exportInProgress: 导出中
+
+animatedJava.customErrorReport.titleUndefined: 未知错误（不妙）
+
 animatedJava.dialog.miscError.title: Animated Java 出现了一个未知错误
 animatedJava.dialog.miscError.body: |-
     <p>%errorMessage</p>
@@ -60,17 +70,17 @@ animatedJava.dialog.miscError.body: |-
     <p>你也可以加入我们的 <a href="%discordLink">Discord 服务器</a> 并在 #animated-java-support 频道上寻求帮助</p>
     <p>感谢!</p>
 
-#? Errors/Warnings
-
-animatedJava.exportCancelled: 取消导出
-
-animatedJava.customErrorReport.titleUndefined: 未知错误
-
 animatedJava.popup.error.unableToGenerateTexturePath.title: 纹理路径无效
 animatedJava.popup.error.unableToGenerateTexturePath.body: |-
-    纹理'%textureName'在资源包中的路径无效
-    请确保纹理正确地保存在资源包的'assets/namespace/textures/'路径下
+    纹理 '%textureName' 在资源包中的路径无效
+    请确保纹理正确地保存在资源包的 'assets/namespace/textures/' 路径下
     例：'resources/assets/minecraft/textures/item/diamond.png'
+
+animatedJava.popup.error.unableToGenerateModelPath.title: 模型路径无效
+animatedJava.popup.error.unableToGenerateModelPath.body: |-
+    模型 '%modelName' 在资源包中的路径无效
+    请确保模型正确地保存在资源包的 'assets/namespace/models/' 路径下
+    例：'resources/assets/minecraft/models/item/diamond.json'
 
 animatedJava.popup.error.invalidCubeRotations.title: 无效的旋转块
 animatedJava.popup.error.invalidCubeRotations.body: |-
@@ -126,6 +136,11 @@ animatedJava.setting.projectName.description: 此项目的唯一ID。必填！
 
 animatedJava.setting.exporter.name: 导出器
 animatedJava.setting.exporter.description: 此项目所使用的导出格式
+
+animatedJava.setting.verbose.name: Verbose
+animatedJava.setting.verbose.description: |-
+  所选的导出器是否导出额外的调试/错误信息。
+  仅影响静态和动画导出器。
 
 animatedJava.setting.rigItem.name: 骨骼物品
 animatedJava.setting.rigItem.description: 盔甲架上展示模型时所使用的物品
