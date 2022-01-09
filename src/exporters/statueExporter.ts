@@ -379,8 +379,6 @@ async function exportMCFile(
 				lines: tl(
 					'animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.body'
 				)
-					.split('\n')
-					.map((line: string) => `<p>${line}</p>`),
 			},
 		})
 	}
@@ -408,8 +406,6 @@ async function exportDataPack(
 				lines: tl(
 					'animatedJava_exporter_statueExporter.popup.error.dataPackFilePathNotDefined.body'
 				)
-					.split('\n')
-					.map((line: string) => `<p>${line}</p>`),
 			},
 		})
 	}

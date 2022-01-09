@@ -127,8 +127,6 @@ async function computeAnimationData(
 				lines: tl(
 					'animatedJava.popup.error.predicateFilePathUndefined.body'
 				)
-					.split('\n')
-					.map((line: string) => `<p>${line}</p>`),
 			},
 		})
 	}
@@ -143,8 +141,6 @@ async function computeAnimationData(
 				lines: tl(
 					'animatedJava.popup.error.rigModelsExportFolderUndefined.body'
 				)
-					.split('\n')
-					.map((line: string) => `<p>${line}</p>`),
 			},
 		})
 	}

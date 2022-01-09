@@ -16,9 +16,7 @@ export function getTexturePath(texture: any) {
 					{
 						textureName: texture.name,
 					}
-				)
-					.split('\n')
-					.map((line: string) => `<p>${line}</p>`),
+				),
 				width: 512,
 			},
 		})
@@ -54,9 +52,7 @@ export function getTexturePath(texture: any) {
 				{
 					textureName: texture.name,
 				}
-			)
-				.split('\n')
-				.map((line: string) => `<p>${line}</p>`),
+			),
 			width: 512,
 		},
 	})
@@ -94,9 +90,7 @@ export function getModelPath(modelPath: string, modelName: string) {
 				{
 					modelName,
 				}
-			)
-				.split('\n')
-				.map((line: string) => `<p>${line}</p>`),
+			),
 			width: 512,
 		},
 	})

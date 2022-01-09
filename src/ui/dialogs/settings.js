@@ -301,9 +301,7 @@ const SettingInput = ({ namespace, name, template }) => {
 				</div>
 			)}
 			<div className="setting_description">
-				{SettingDef.description.split('\n').map((line, i) => (
-					<p key={i}>{line}</p>
-				))}
+				{SettingDef.description}
 			</div>
 		</label>
 	)

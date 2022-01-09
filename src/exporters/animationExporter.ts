@@ -769,8 +769,7 @@ async function createMCFile(
 					lines: tl(
 						'animatedJava_exporter_animationExporter.popup.warning.noAnimations.body'
 					)
-						.split('\n')
-						.map((line: string) => `<p>${line}</p>`),
+
 				},
 			})
 		}
@@ -795,8 +794,6 @@ async function createMCFile(
 								animationName: animation.name,
 							}
 						)
-							.split('\n')
-							.map((line: string) => `<p>${line}</p>`),
 					},
 				})
 			}
@@ -1057,8 +1054,7 @@ async function exportMCFile(
 					lines: tl(
 						'animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.body'
 					)
-						.split('\n')
-						.map((line: string) => `<p>${line}</p>`),
+
 				},
 			}
 		)
@@ -1089,8 +1085,7 @@ async function exportDataPack(
 					lines: tl(
 						'animatedJava_exporter_animationExporter.popup.error.dataPackFilePathNotDefined.body'
 					)
-						.split('\n')
-						.map((line: string) => `<p>${line}</p>`),
+
 				},
 			}
 		)
@@ -1269,6 +1264,8 @@ const Exporter = (AJ: any) => {
 		'animatedJava_exporter_animationExporter',
 		{
 			rootEntityType: {
+				title: tl('animatedJava.exporter.generic.setting.rootEntityType.name'),
+				description: tl(''),
 				type: 'text',
 				default: 'minecraft:marker',
 				onUpdate(d: aj.SettingDescriptor) {
@@ -1486,6 +1483,8 @@ const Exporter = (AJ: any) => {
 				],
 			},
 			mcbConfigPath: {
+				title: tl('setting.mcbConfigPath.title'),
+				description: tl('setting.mcbConfigPath.description'),
 				type: 'filepath',
 				default: '',
 				optional: true,
