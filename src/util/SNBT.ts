@@ -1,9 +1,9 @@
 function assert(condition: any, message?: string) {
 	if (!condition) {
-		throw message || 'Assertion failed'
+		throw new Error(message || 'Assertion failed')
 	}
 }
-function every(v: number[], arg1: (x: any) => boolean): any {
+function every<T>(v: T[], arg1: (x: T) => boolean): any {
 	assert(Array.isArray(v), 'expected an array')
 	return !v.find((x) => !arg1(x))
 }
@@ -443,8 +443,15 @@ class StringReader {
 	readString() {
 		const start = this.cursor
 		if (this.peek(1) === '"') this.skip(1)
-		while (this.peek(1) !== '"' && this.peekReversed(1) !== '\\') {
+		while (
+			this.peek(1) !== '"' &&
+			this.peekReversed(1) !== '\\' &&
+			!this.isEnd()
+		) {
 			this.skip(1)
+		}
+		if (this.isEnd()) {
+			throw new Error('Unexpected end of string')
 		}
 		this.skip(1)
 		const end = this.cursor
@@ -453,8 +460,15 @@ class StringReader {
 	readSingleQuotedString() {
 		const start = this.cursor
 		if (this.peek(1) === "'") this.skip(1)
-		while (this.peek(1) !== "'" && this.peekReversed(1) !== '\\') {
+		while (
+			this.peek(1) !== "'" &&
+			this.peekReversed(1) !== '\\' &&
+			!this.isEnd()
+		) {
 			this.skip(1)
+		}
+		if (this.isEnd()) {
+			throw new Error('Unexpected end of string')
 		}
 		this.skip(1)
 		const end = this.cursor
@@ -466,6 +480,7 @@ class StringReader {
 		this.skip(count)
 		let inString: '"' | "'" | null = null
 		while (count > 0) {
+			if (this.isEnd()) throw new Error('Unmatched Brackets')
 			if (inString !== null) {
 				if (this.peek(1) === inString) inString = null
 			} else if (this.peek(1) === '"') {
@@ -480,7 +495,7 @@ class StringReader {
 			this.skip(1)
 		}
 		const end = this.cursor
-		if (!this.isEnd()) this.skip(1)
+		// if (!this.isEnd()) this.skip(1)
 		return this.str.substr(start, end - start)
 	}
 	readUntilAnyOf(chars: string[]) {
@@ -515,6 +530,7 @@ class StringReader {
 	}
 	readNumber() {
 		const start = this.cursor
+		if (this.peek(1) === '-') this.skip(1)
 		while (this.peek(1) >= '0' && this.peek(1) <= '9') {
 			this.skip(1)
 		}
@@ -553,8 +569,14 @@ class SNBTParser {
 			this.reader.peek(5) === 'false'
 		) {
 			result = this.parseBoolean()
-		} else {
+		} else if (
+			this.reader.peek(1) === '-' ||
+			this.reader.peek(1) === '.' ||
+			(this.reader.peek(1) >= '0' && this.reader.peek(1) <= '9')
+		) {
 			result = this.parseNumber()
+		} else {
+			throw new Error('Unexpected character ' + this.reader.peek(1))
 		}
 		return result
 	}
@@ -734,7 +756,12 @@ export function removeSpacesAndNewlines(str: string): string {
 }
 export const SNBT = {
 	parse(str: string): SNBTTag {
-		return new SNBTParser(removeSpacesAndNewlines(str)).parse()
+		let parser = new SNBTParser(removeSpacesAndNewlines(str.trim()))
+		let result = parser.parse()
+		if (!parser.reader.isEnd()) {
+			throw new Error('finished reading before end of string.')
+		}
+		return result
 	},
 	// type creations
 	Byte(v: number = 0) {
