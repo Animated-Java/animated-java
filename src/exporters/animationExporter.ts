@@ -12,6 +12,7 @@ import { tl } from '../util/intl'
 import { generateTree } from '../util/treeGen'
 import { compileMC } from '../compileLangMC'
 import * as fs from 'fs'
+import { Entities } from '../util/minecraft/entities'
 
 interface animationExporterSettings {
 	allBonesTag: string
@@ -1234,6 +1235,35 @@ async function animationExport(data: any) {
 	)
 }
 
+const genericEmptySettingText = tl(
+	'animatedJava_exporter_animationExporter.generic.error.empty'
+)
+
+function validateFormattedStringSetting(required: string[]) {
+	return (d: aj.SettingDescriptor) => {
+		if (d.value === '') {
+			d.isValid = false
+			d.error = genericEmptySettingText
+			return d
+		}
+		if (required.length) {
+			const notFound = required.find((v: string) => !d.value.includes(v))
+			if (notFound) {
+				d.isValid = false
+				d.error = format(
+					tl(
+						'animatedJava_exporter_animationExporter.generic.error.missingFormatString'
+					),
+					{
+						notFound,
+					}
+				)
+			}
+		}
+		return d
+	}
+}
+
 const Exporter = (AJ: any) => {
 	AJ.settings.registerPluginSettings(
 		'animatedJava_exporter_animationExporter',
@@ -1241,54 +1271,67 @@ const Exporter = (AJ: any) => {
 			rootEntityType: {
 				type: 'text',
 				default: 'minecraft:marker',
-				populate() {
-					return 'minecraft:marker'
-				},
-				isValid(value: any) {
-					return value != ''
+				onUpdate(d: aj.SettingDescriptor) {
+					if (d.value != '') {
+						if (!Entities.isEntity(d.value)) {
+							d.isValid = false
+							d.error = tl(
+								'animatedJava_exporter_animationExporter.setting.rootEntityType.error.invalidEntity'
+							)
+						}
+					} else {
+						d.isValid = false
+						d.error = genericEmptySettingText
+					}
+
+					return d
 				},
 			},
 			rootEntityNbt: {
 				type: 'text',
 				default: '{}',
-				populate() {
-					return '{}'
-				},
-				isValid(value: any) {
-					return value != ''
+				onUpdate(d: aj.SettingDescriptor) {
+					if (d.value != '') {
+						try {
+							SNBT.parse(d.value)
+						} catch (e) {
+							d.isValid = false
+							d.error = tl(
+								'animatedJava_exporter_animationExporter.setting.rootEntityNbt.error.invalidNbt'
+							)
+						}
+					} else {
+						d.isValid = false
+						d.error = genericEmptySettingText
+					}
+					return d
 				},
 			},
 			markerArmorStands: {
 				type: 'checkbox',
 				default: true,
-				populate() {
-					return true
-				},
-				isValid(value: any) {
-					return typeof value === 'boolean'
+				onUpdate(d: aj.SettingDescriptor) {
+					return d
 				},
 			},
 			autoDistance: {
 				type: 'checkbox',
 				default: true,
-				populate() {
-					return true
-				},
-				isValid(value: any) {
-					return typeof value === 'boolean'
+				onUpdate(d: aj.SettingDescriptor) {
+					return d
 				},
 			},
 			autoDistanceMovementThreshold: {
 				type: 'number',
 				default: 1,
-				populate() {
-					return 1
-				},
-				isValid(value: any) {
-					return !isNaN(value) && value >= 0
-				},
-				onUpdate(value: any) {
-					return Number(value)
+				onUpdate(d: aj.SettingDescriptor) {
+					if (!(d.value >= 0)) {
+						d.isValid = false
+						d.error = tl(
+							'animatedJava_exporter_animationExporter.setting.autoDistanceMovementThreshold.error.valueOutOfRange'
+						)
+					}
+					return d
 				},
 				isVisible(settings: any) {
 					return settings.animatedJava_exporter_animationExporter
@@ -1301,14 +1344,14 @@ const Exporter = (AJ: any) => {
 			manualDistance: {
 				type: 'number',
 				default: 10,
-				populate() {
-					return 10
-				},
-				isValid(value: any) {
-					return !isNaN(value) && value >= 0
-				},
-				onUpdate(value: any) {
-					return Number(value)
+				onUpdate(d: aj.SettingDescriptor) {
+					if (!(d.value >= 0)) {
+						d.isValid = false
+						d.error = tl(
+							'animatedJava_exporter_animationExporter.setting.manualDistance.error.valueOutOfRange'
+						)
+					}
+					return d
 				},
 				isVisible(settings: any) {
 					return !settings.animatedJava_exporter_animationExporter
@@ -1321,107 +1364,69 @@ const Exporter = (AJ: any) => {
 			modelTag: {
 				type: 'text',
 				default: 'aj.%projectName',
-				populate() {
-					return 'aj.%projectName'
-				},
-				isValid(value: any) {
-					return value != ''
-				},
+				onUpdate: validateFormattedStringSetting(['%projectName']),
 				isResetable: true,
 			},
 			rootTag: {
 				type: 'text',
 				default: 'aj.%projectName.root',
-				populate() {
-					return 'aj.%projectName.root'
-				},
-				isValid(value: any) {
-					return value != ''
-				},
+				onUpdate: validateFormattedStringSetting(['%projectName']),
 				isResetable: true,
 			},
 			allBonesTag: {
 				type: 'text',
 				default: 'aj.%projectName.bone',
-				populate() {
-					return 'aj.%projectName.bone'
-				},
-				isValid(value: any) {
-					return value != ''
-				},
+				onUpdate: validateFormattedStringSetting(['%projectName']),
 				isResetable: true,
 			},
 			boneModelDisplayTag: {
 				type: 'text',
 				default: 'aj.%projectName.bone_display',
-				populate() {
-					return 'aj.%projectName.bone_display'
-				},
-				isValid(value: any) {
-					return value != ''
-				},
+				onUpdate: validateFormattedStringSetting(['%projectName']),
 				isResetable: true,
 			},
 			individualBoneTag: {
 				type: 'text',
 				default: 'aj.%projectName.bone.%boneName',
-				populate() {
-					return 'aj.%projectName.bone.%boneName'
-				},
-				isValid(value: any) {
-					return value != ''
-				},
+				onUpdate: validateFormattedStringSetting([
+					'%projectName',
+					'%boneName',
+				]),
 				isResetable: true,
 			},
 			internalScoreboardObjective: {
 				type: 'text',
 				default: 'aj.i',
-				populate() {
-					return 'aj.i'
-				},
-				isValid(value: any) {
-					return value != ''
+				onUpdate(d: aj.SettingDescriptor) {
+					if (d.value === '') {
+						d.isValid = false
+						d.error = genericEmptySettingText
+					}
+					return d
 				},
 			},
 			idScoreboardObjective: {
 				type: 'text',
 				default: 'aj.id',
-				populate() {
-					return 'aj.id'
-				},
-				isValid(value: any) {
-					return value != ''
-				},
+				onUpdate: validateFormattedStringSetting([]),
 			},
 			frameScoreboardObjective: {
 				type: 'text',
 				default: 'aj.frame',
-				populate() {
-					return 'aj.frame'
-				},
-				isValid(value: any) {
-					return value != ''
-				},
+				onUpdate: validateFormattedStringSetting([]),
 			},
 			animatingFlagScoreboardObjective: {
 				type: 'text',
 				default: 'aj.%projectName.animating',
-				populate() {
-					return 'aj.%projectName.animating'
-				},
-				isValid(value: any) {
-					return value != ''
-				},
+				onUpdate: validateFormattedStringSetting(['%projectName']),
 			},
 			animationLoopModeScoreboardObjective: {
 				type: 'text',
 				default: 'aj.%projectName.%animationName.loopMode',
-				populate() {
-					return 'aj.%projectName.%animationName.loopMode'
-				},
-				isValid(value: string) {
-					return value != ''
-				},
+				onUpdate: validateFormattedStringSetting([
+					'%projectName',
+					'%animationName',
+				]),
 			},
 			exportMode: {
 				type: 'select',
@@ -1430,12 +1435,6 @@ const Exporter = (AJ: any) => {
 					vanilla:
 						'animatedJava_exporter_animationExporter.setting.exportMode.vanilla.name',
 					mcb: 'animatedJava_exporter_animationExporter.setting.exportMode.mcb.name',
-				},
-				populate() {
-					return 'mcb'
-				},
-				isValid(value: string) {
-					return value != ''
 				},
 			},
 			mcbFilePath: {
@@ -1450,15 +1449,30 @@ const Exporter = (AJ: any) => {
 						properties: ['openFile'],
 					},
 				},
-				populate() {
-					return ''
-				},
-				isValid(value: string) {
-					const p = new Path(value)
-					const b = p.parse()
-					return (
-						b.base === `${AJ.settings.animatedJava.projectName}.mc`
-					)
+				onUpdate(d: aj.SettingDescriptor) {
+					if (d.value != '') {
+						const p = new Path(d.value)
+						const b = p.parse()
+						if (
+							b.base !==
+							`${AJ.settings.animatedJava.projectName}.mc`
+						) {
+							d.isValid
+							d.error = format(
+								tl(
+									'animatedJava_exporter_animationExporter.setting.mcbFilePath.error.mustBeNamedAfterProject'
+								),
+								{
+									projectName:
+										AJ.settings.animatedJava.projectName,
+								}
+							)
+						}
+					} else {
+						d.isValid = false
+						d.error = genericEmptySettingText
+					}
+					return d
 				},
 				isVisible(settings: any) {
 					return (
@@ -1468,6 +1482,7 @@ const Exporter = (AJ: any) => {
 				},
 				dependencies: [
 					'animatedJava_exporter_animationExporter.exportMode',
+					'animatedJava.projectName',
 				],
 			},
 			mcbConfigPath: {
@@ -1512,11 +1527,12 @@ const Exporter = (AJ: any) => {
 						properties: ['openDirectory'],
 					},
 				},
-				populate() {
-					return ''
-				},
-				isValid(value: string) {
-					return value != ''
+				onUpdate(d: aj.SettingDescriptor) {
+					if (d.value === '') {
+						d.isValid = false
+						d.error = genericEmptySettingText
+					}
+					return d
 				},
 				isVisible(settings: any) {
 					return (

@@ -3,7 +3,7 @@ import { settings } from './settings'
 import { Async } from './util/async'
 import { bus } from './util/bus'
 import { roundToN } from './util/misc'
-import { hashAnim } from './util/hashAnim'
+import * as hash from './util/hash'
 import { store } from './util/store'
 import * as os from 'os'
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'fs'
@@ -127,7 +127,7 @@ const struct = StructTypes.Object({
 				StructTypes.String,
 				StructTypes.Object({
 					pos: vec3,
-					rot: StructTypes.ArrayOf(StructTypes.Float),
+					rot: vec3,
 					scale: vec3,
 				})
 			),
@@ -182,7 +182,7 @@ const Cache = new (class {
 		if (!settings.animatedJava.useCache) return null
 		if (this.cache.has(anim.uuid)) {
 			const old_hash = this.cache.get(anim.uuid)
-			const new_hash = hashAnim(anim)
+			const new_hash = hash.animation(anim)
 			const hit = old_hash !== new_hash
 			if (!hit) {
 				if (settings.animatedJava.cacheMode === 'memory') {
@@ -198,8 +198,7 @@ const Cache = new (class {
 			}
 			return null
 		} else {
-			const hash = hashAnim(anim)
-			this.cache.set(anim.uuid, hash)
+			this.cache.set(anim.uuid, hash.animation(anim))
 			return null
 		}
 	}
@@ -213,7 +212,7 @@ const Cache = new (class {
 				animToWriteable(value)
 			)
 		}
-		this.cache.set(anim.uuid, hashAnim(anim))
+		this.cache.set(anim.uuid, hash.animation(anim))
 	}
 	clear() {
 		this.data = new Map()
@@ -222,14 +221,17 @@ const Cache = new (class {
 })()
 
 // clear the animation cache if the origin or rotation of a group changes
-const $original_func = NodePreviewController.prototype.updateTransform
-NodePreviewController.prototype.updateTransform = function (el) {
-	if (Group.selected) Cache.clear()
-	return $original_func.bind(this)(el)
-}
-bus.on(events.LIFECYCLE.CLEANUP, () => {
-	NodePreviewController.prototype.updateTransform = $original_func
-})
+// const $original_func = NodePreviewController.prototype.updateTransform
+// NodePreviewController.prototype.updateTransform = function (el) {
+// 	if (Group.selected) Cache.clear()
+// 	return $original_func.bind(this)(el)
+// }
+// bus.on(events.LIFECYCLE.CLEANUP, () => {
+// 	NodePreviewController.prototype.updateTransform = $original_func
+// })
+
+let boneStructureHash
+
 async function renderAnimation(options) {
 	console.groupCollapsed('Render Animations')
 	// const timeline_save = get_timeline_save_point();
@@ -271,10 +273,17 @@ async function renderAnimation(options) {
 		const renderedGroups = Group.all.filter(
 			(group) =>
 				!isSceneBased(group) &&
+				group.visibility &&
 				group.children.find((child) => child instanceof Cube)
 		)
 		console.log('All Groups:', Group.all)
 		console.log('Rendered Groups:', renderedGroups)
+
+		const newBoneStructureHash = hash.boneStructure()
+		if (boneStructureHash !== newBoneStructureHash) {
+			boneStructureHash = newBoneStructureHash
+			Cache.clear()
+		}
 
 		for (const animation of Animator.animations.sort()) {
 			if (animation.snapping != 20) {

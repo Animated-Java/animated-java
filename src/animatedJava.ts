@@ -13,6 +13,8 @@ import './exporters/statueExporter'
 import './exporters/animationExporter'
 import './bbmods/modelFormatMod'
 import './bbmods/faceTint'
+import './util/minecraft/items'
+import './util/minecraft/entities'
 import { intl } from './util/intl'
 import { CustomError } from './util/customError'
 import { format } from './util/replace'
@@ -102,6 +104,14 @@ Blockbench.dispatchEvent('animated-java-ready', ANIMATED_JAVA)
 Blockbench.events['animated-java-ready'].length = 0
 
 // WOOO TYPING, YAAAAAAY
+
+export interface SettingDescriptor {
+	readonly value: any
+	error?: string
+	isValid?: boolean
+	setting: any
+	event: 'get' | 'set' | 'update' | 'dummy'
+}
 
 export interface Settings {
 	projectName: string

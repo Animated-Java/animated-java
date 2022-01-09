@@ -1,5 +1,5 @@
 import crypto from 'crypto'
-export function hashAnim(a) {
+export function animation(a) {
 	const hash = crypto.createHash('sha512')
 	function kf(k) {
 		k.forEach((v) => {
@@ -30,6 +30,7 @@ export function hashAnim(a) {
 			kf(i.timeline)
 		}
 	})
+	hash.update(`name;${a.name}`)
 	hash.update('loop;' + a.loop)
 	hash.update('len;' + a.length)
 	hash.update('loopdel;' + a.loop_delay)
@@ -37,5 +38,29 @@ export function hashAnim(a) {
 	hash.update('blndw;' + a.blend_weight)
 	hash.update('snp;' + a.snapping)
 	hash.update('animtup;' + a.anim_time_update)
+	return hash.digest('hex')
+}
+
+export function boneStructure() {
+	const hash = crypto.createHash('sha512')
+
+	function processGroup(group) {
+		hash.update(`uuid;${group.uuid}`)
+		hash.update(`name;${group.name}`)
+		hash.update(`pos;(${group.origin.join(',')})`)
+		hash.update(`rot;(${group.rotation.join(',')})`)
+		hash.update(`vis;${group.visibility}`)
+	}
+
+	function recurse(children) {
+		children.forEach(c => {
+			if (c instanceof Group) {
+				processGroup(c)
+				recurse(c.children)
+			}
+		})
+	}
+
+	recurse(Outliner.root)
 	return hash.digest('hex')
 }

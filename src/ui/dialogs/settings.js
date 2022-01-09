@@ -344,7 +344,6 @@ const SettingInput = ({ namespace, name, template }) => {
 							setValue(e.target.value)
 						}}
 						onBlur={(e) => {
-							debugger
 							try {
 								settings[namespace][name] = e.target.value
 							} catch (e) {

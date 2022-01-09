@@ -2,6 +2,9 @@ import { store } from './util/store'
 import { size, removeNamespace } from './util/misc'
 import { safeFunctionName } from './util/replace'
 import { Path } from './util/path'
+import * as pathjs from 'path'
+import { getModelPath } from './util/minecraft/resourcepack'
+import { Items } from './util/minecraft/items'
 
 const UNASSIGNED = Symbol('UNASSIGNED_CACHE')
 export const DefaultSettings = {
@@ -9,15 +12,19 @@ export const DefaultSettings = {
 		projectName: {
 			type: 'text',
 			default: 'unnamed_project',
-			populate(value) {
-				if (typeof value === 'string') return safeFunctionName(value)
-				else return 'undefined_project'
-			},
-			isValid(value) {
-				if (typeof value === 'string') {
-					if (value != '') return value === safeFunctionName(value)
+			onUpdate(d) {
+				if (d.value !== '') {
+					if (d.value !== safeFunctionName(d.value)) {
+						d.isValid = false
+						d.error = tl(
+							'animatedJava.setting.projectName.error.invalidFunctionName'
+						)
+					}
+				} else {
+					d.isValid = false
+					d.error = tl('animatedJava.setting.projectName.error.empty')
 				}
-				return false
+				return d
 			},
 		},
 		exporter: {
@@ -31,34 +38,47 @@ export const DefaultSettings = {
 					])
 				)
 			},
-			populate() {
-				return [...store.getStore('exporters').keys()][0]
-			},
-			isValid(value) {
-				return [...store.getStore('exporters').keys()].includes(value)
+			onUpdate(d) {
+				if (
+					![...store.getStore('exporters').keys()].includes(d.value)
+				) {
+					d.isValid = false
+					d.error = tl(
+						'animatedJava.setting.exporter.error.mustBeValidExporter'
+					)
+				}
+				return d
 			},
 		},
 		verbose: {
 			type: 'checkbox',
 			default: true,
-			populate() {
-				return true
-			},
-			isValid(value) {
-				return typeof value === 'boolean'
+			onUpdate(d) {
+				if (!(typeof d.value === 'boolean')) {
+					d.isValid = false
+					d.error = tl(
+						'animatedJava.setting.verbose.error.mustBeBoolean'
+					)
+				}
+				return d
 			},
 		},
 		rigItem: {
 			type: 'text',
 			default: 'minecraft:white_dye',
-			populate() {
-				return 'minecraft:white_dye'
-			},
-			isValid(value) {
-				return true
-			},
-			isVisible(settings) {
-				return false
+			onUpdate(d) {
+				if (d.value != '') {
+					if (!Items.isItem(d.value)) {
+						d.isValid = false
+						d.error = tl(
+							'animatedJava.setting.rigItem.error.invalidItem'
+						)
+					}
+				} else {
+					d.isValid = false
+					d.error = tl('animatedJava.setting.rigItem.error.empty')
+				}
+				return d
 			},
 			dependencies: ['animatedJava.predicateFilePath'],
 		},
@@ -72,11 +92,28 @@ export const DefaultSettings = {
 					properties: ['openDirectory'],
 				},
 			},
-			populate() {
-				return ''
-			},
-			isValid(value) {
-				return value != ''
+			onUpdate(d) {
+				if (d.value != '') {
+					let modelPath
+					try {
+						modelPath = getModelPath(
+							pathjs.join(d.value, 'fakemodel.json')
+						)
+					} catch (e) {
+						console.log(d.value)
+						console.error(e)
+						d.isValid = false
+						d.error = tl(
+							'animatedJava.setting.rigModelsExportFolder.error.invalidPath'
+						)
+					}
+				} else {
+					d.isValid = false
+					d.error = tl(
+						'animatedJava.setting.rigModelsExportFolder.error.empty'
+					)
+				}
+				return d
 			},
 		},
 		predicateFilePath: {
@@ -95,21 +132,26 @@ export const DefaultSettings = {
 				},
 			},
 			default: '',
-			onUpdate(descriptor) {
-				if (descriptor.value != '') {
-					const p = new Path(descriptor.value)
+			onUpdate(d) {
+				if (d.value != '') {
+					const p = new Path(d.value)
 					const b = p.parse()
 					const rigItem = removeNamespace(
 						ANIMATED_JAVA.settings.animatedJava.rigItem
 					)
-					if (rigItem !== b.name) {
-						ANIMATED_JAVA.settings.animatedJava.rigItem = `minecraft:${b.name}`
+					if (`${rigItem}.json` !== b.base) {
+						d.isValid = false
+						d.error = tl(
+							'animatedJava.setting.predicateFilePath.error.notEqualToRigItem'
+						)
 					}
 				} else {
-					descriptor.isValid = false
-					descriptor.error = 'Predicate file path cannot be empty'
+					d.isValid = false
+					d.error = tl(
+						'animatedJava.setting.predicateFilePath.error.empty'
+					)
 				}
-				return descriptor
+				return d
 			},
 		},
 		transparentTexturePath: {
@@ -123,21 +165,29 @@ export const DefaultSettings = {
 					properties: ['openFile'],
 				},
 			},
-			populate() {
-				return ''
-			},
-			isValid(value) {
-				return value != ''
+			onUpdate(d) {
+				if (d.value === '') {
+					const variants = ANIMATED_JAVA.variants
+					if (
+						variants &&
+						Object.values(variants).find((v) =>
+							Object.values(v).find((t) => t === 'transparent')
+						)
+					) {
+						d.isValid = false
+						d.error = tl(
+							'animatedJava.setting.transparentTexturePath.error.undefinedWhenNeeded'
+						)
+					}
+				}
+				return d
 			},
 		},
 		useCache: {
 			type: 'checkbox',
 			default: true,
-			populate() {
-				return true
-			},
-			isValid(value) {
-				return typeof value === 'boolean'
+			onUpdate(d) {
+				return d
 			},
 			global: true,
 		},
@@ -148,11 +198,9 @@ export const DefaultSettings = {
 				memory: 'animatedJava.setting.cacheMode.memory.name',
 				file: 'animatedJava.setting.cacheMode.file.name',
 			},
-			populate() {
-				return 'memory'
-			},
-			isValid(value) {
-				return this.options[value]
+			onUpdate(d) {
+				d.isValid = Boolean(this.options[d.value])
+				return d
 			},
 			isVisible(settings) {
 				return settings.animatedJava.useCache
@@ -168,11 +216,12 @@ export const DefaultSettings = {
 				many: 'animatedJava.setting.boundingBoxRenderMode.many.name',
 				none: 'animatedJava.setting.boundingBoxRenderMode.none.name',
 			},
-			populate() {
-				return 'single'
-			},
-			isValid(value) {
-				return this.options[value]
+			onUpdate(d) {
+				if (!this.options[d.value]) {
+					d.isValid = false
+					d.error = tl('animatedJava.setting.boundingBoxRenderMode.error.invalidOption')
+				}
+				return d
 			},
 			global: true,
 		},
@@ -184,7 +233,7 @@ function createUpdateDescriptor(setting, value, event) {
 			return value
 		},
 		set value(v) {
-			throw new Error(
+			throw new CustomError(
 				'The value property on an UpdateDescriptor is not writable'
 			)
 		},
@@ -213,7 +262,7 @@ function evaluateSetting(event, namespace, name, value) {
 			)
 		return value
 	} else {
-		throw new Error('Invalid setting path', `${namespace}.${name}`)
+		throw new CustomError('Invalid setting path', `${namespace}.${name}`)
 	}
 }
 class Settings {
@@ -287,7 +336,7 @@ class Settings {
 						value
 					)
 					if (!DefaultSettings[namespace][settings[i]].isValid) {
-						throw new Error(
+						throw new CustomError(
 							`Invalid setting value for ${namespace}.${settings[i]}: ${value}`
 						)
 					}

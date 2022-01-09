@@ -74,9 +74,11 @@ export class SNBTTag {
 		if (!gotten) {
 			this.set(path, typeToConstructor(type)())
 		} else if (!(type === gotten.type)) {
-			throw `NBT type at ${path} is not of type ${
-				SNBTTagType[type]
-			}. Instead found: ${SNBTTagType[gotten.type]}`
+			throw Error(
+				`NBT type at ${path} is not of type ${
+					SNBTTagType[type]
+				}. Instead found: ${SNBTTagType[gotten.type]}`
+			)
 		}
 	}
 	push(...values: SNBTTag[]) {
