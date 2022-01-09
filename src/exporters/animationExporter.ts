@@ -89,7 +89,7 @@ async function createMCFile(
 ): Promise<{ mcFile: string; mcbConfig: MCBConfig }> {
 	const ajSettings = settings.animatedJava
 	const exporterSettings: animationExporterSettings =
-		settings.animatedJava_exporter_animationExporter
+		settings.vanillaAnimationExporter
 	const projectName = safeFunctionName(ajSettings.projectName)
 
 	let headYOffset = -1.813
@@ -798,7 +798,7 @@ async function createMCFile(
 							),
 						],
 						width: 512,
-						singleButton: true
+						singleButton: true,
 					},
 				})
 			}
@@ -1213,7 +1213,7 @@ async function exportDataPack(
 
 async function animationExport(data: any) {
 	const exporterSettings: animationExporterSettings =
-		data.settings.animatedJava_exporter_animationExporter
+		data.settings.vanillaAnimationExporter
 	const generated = await createMCFile(
 		data.bones,
 		data.models,
@@ -1268,7 +1268,8 @@ function validateFormattedStringSetting(required: string[]) {
 
 const Exporter = (AJ: any) => {
 	AJ.settings.registerPluginSettings(
-		'animatedJava_exporter_animationExporter',
+		'animatedJava.exporters.animation', // Plugin ID
+		'vanillaAnimationExporter', // Plugin Settings Key
 		{
 			rootEntityType: {
 				title: tl(
@@ -1366,11 +1367,11 @@ const Exporter = (AJ: any) => {
 					return d
 				},
 				isVisible(settings: any) {
-					return settings.animatedJava_exporter_animationExporter
+					return settings.vanillaAnimationExporter
 						.autoDistance
 				},
 				dependencies: [
-					'animatedJava_exporter_animationExporter.autoDistance',
+					'vanillaAnimationExporter.autoDistance',
 				],
 			},
 			manualDistance: {
@@ -1392,11 +1393,11 @@ const Exporter = (AJ: any) => {
 					return d
 				},
 				isVisible(settings: any) {
-					return !settings.animatedJava_exporter_animationExporter
+					return !settings.vanillaAnimationExporter
 						.autoDistance
 				},
 				dependencies: [
-					'animatedJava_exporter_animationExporter.autoDistance',
+					'vanillaAnimationExporter.autoDistance',
 				],
 			},
 			modelTag: {
@@ -1586,12 +1587,12 @@ const Exporter = (AJ: any) => {
 				},
 				isVisible(settings: any) {
 					return (
-						settings.animatedJava_exporter_animationExporter
+						settings.vanillaAnimationExporter
 							.exportMode === 'mcb'
 					)
 				},
 				dependencies: [
-					'animatedJava_exporter_animationExporter.exportMode',
+					'vanillaAnimationExporter.exportMode',
 					'animatedJava.projectName',
 				],
 			},
@@ -1622,12 +1623,12 @@ const Exporter = (AJ: any) => {
 				},
 				isVisible(settings: any) {
 					return (
-						settings.animatedJava_exporter_animationExporter
+						settings.vanillaAnimationExporter
 							.exportMode === 'mcb'
 					)
 				},
 				dependencies: [
-					'animatedJava_exporter_animationExporter.exportMode',
+					'vanillaAnimationExporter.exportMode',
 				],
 			},
 			dataPackPath: {
@@ -1658,12 +1659,12 @@ const Exporter = (AJ: any) => {
 				},
 				isVisible(settings: any) {
 					return (
-						settings.animatedJava_exporter_animationExporter
+						settings.vanillaAnimationExporter
 							.exportMode === 'vanilla'
 					)
 				},
 				dependencies: [
-					'animatedJava_exporter_animationExporter.exportMode',
+					'vanillaAnimationExporter.exportMode',
 				],
 			},
 		}

@@ -5,6 +5,7 @@ class Intl {
 	lang: string
 	languages: string[]
 	tokens: Set<any>
+	static translationCache: {[index: string]: string} = {}
 
 	constructor(lang: string) {
 		this.dict = {}
@@ -18,11 +19,13 @@ class Intl {
 		this.lang = lang
 	}
 	tl(tlPath: string, raw?: boolean) {
+		if (Object.prototype.hasOwnProperty.call(Intl.translationCache, tlPath)) {
+			return Intl.translationCache[tlPath]
+		}
+
 		let lang = this.dict[this.lang]
-		// let logging = tlPath === 'animatedJava.settings.projectName.title'
 		function recurse(_keyPath: string[], obj: object) {
 			const key = _keyPath.pop()
-			// if (logging) console.log(key)
 			if (Object.prototype.hasOwnProperty.call(obj, key)) {
 				const value = obj[key]
 				switch (typeof value) {
@@ -36,12 +39,12 @@ class Intl {
 						return recurse(_keyPath, value)
 				}
 			}
-			console.log(tlPath, _keyPath, obj)
 			return tlPath
 		}
-		// if (logging) console.log(lang)
 		if (!lang) return tlPath
-		return recurse(tlPath.split('.').reverse(), lang)
+		const translatedString = recurse(tlPath.split('.').reverse(), lang)
+		Intl.translationCache[tlPath] = translatedString
+		return translatedString
 	}
 	// tl(key: string) {
 	// 	let segments = key.split('.')

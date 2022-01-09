@@ -352,11 +352,11 @@ animatedJava:
           description:
             - The path to export the generated Data Pack to.
 
-    #? Statue Exporter
+    #? Vanilla Statue Exporter
     statue:
       title: Statue Exporter
 
-    #? Animation Exporter
+    #? Vanilla Animation Exporter
     animation:
       title: Animation Exporter
       dialogs:
