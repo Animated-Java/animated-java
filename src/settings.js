@@ -219,7 +219,9 @@ export const DefaultSettings = {
 			onUpdate(d) {
 				if (!this.options[d.value]) {
 					d.isValid = false
-					d.error = tl('animatedJava.setting.boundingBoxRenderMode.error.invalidOption')
+					d.error = tl(
+						'animatedJava.setting.boundingBoxRenderMode.error.invalidOption'
+					)
 				}
 				return d
 			},
@@ -260,6 +262,8 @@ function evaluateSetting(event, namespace, name, value) {
 			return handleUpdateDescriptor(
 				setting.onUpdate(createUpdateDescriptor(setting, value, event))
 			)
+		DefaultSettings[namespace][name].isValid = true
+		DefaultSettings[namespace][name].error = null
 		return value
 	} else {
 		throw new CustomError('Invalid setting path', `${namespace}.${name}`)

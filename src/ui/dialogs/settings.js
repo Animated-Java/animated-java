@@ -164,6 +164,7 @@ const RenderTemplates = {
 						id={`aj.setting.${namespace}.${name}`}
 						value={value}
 						onChange={(e) => {
+							setValue(e.target.value)
 							try {
 								settings[namespace][name] = e.target.value
 							} catch (e) {
