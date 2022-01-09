@@ -4,7 +4,7 @@ import { tl } from '../../util/intl'
 import { ERROR } from '../../util/errors'
 import events from '../../constants/events'
 import React, { useEffect, useRef, useState } from 'react'
-import { DefaultSettings, settings } from '../../settings'
+import { DefaultSettings, settings, ForeignSettingTranslationKeys } from '../../settings'
 
 const dialog = electron.dialog
 let updateSettingsUiActions = {}

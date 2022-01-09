@@ -353,11 +353,11 @@ animatedJava:
             - The path to export the generated Data Pack to.
 
     #? Vanilla Statue Exporter
-    statue:
+    vanillaStatue:
       title: Statue Exporter
 
     #? Vanilla Animation Exporter
-    animation:
+    vanillaAnimation:
       title: Animation Exporter
       dialogs:
         errors:

@@ -762,13 +762,13 @@ async function createMCFile(
 			throw new CustomError('No Animations Error', {
 				intentional: true,
 				dialog: {
-					id: 'animatedJava.exporters.animation.dialogs.errors.noAnimations',
+					id: 'animatedJava.exporters.vanillaAnimation.dialogs.errors.noAnimations',
 					title: tl(
-						'animatedJava.exporters.animation.dialogs.errors.noAnimations.title'
+						'animatedJava.exporters.vanillaAnimation.dialogs.errors.noAnimations.title'
 					),
 					lines: [
 						tl(
-							'animatedJava.exporters.animation.dialogs.errors.noAnimations.body'
+							'animatedJava.exporters.vanillaAnimation.dialogs.errors.noAnimations.body'
 						),
 					],
 					width: 512 + 128,
@@ -785,13 +785,13 @@ async function createMCFile(
 				throw new CustomError('Zero Length Animation Error', {
 					intentional: true,
 					dialog: {
-						id: 'animatedJava.exporters.animation.dialogs.errors.zeroLengthAnimation',
+						id: 'animatedJava.exporters.vanillaAnimation.dialogs.errors.zeroLengthAnimation',
 						title: tl(
-							'animatedJava.exporters.animation.dialogs.errors.zeroLengthAnimation.title'
+							'animatedJava.exporters.vanillaAnimation.dialogs.errors.zeroLengthAnimation.title'
 						),
 						lines: [
 							tl(
-								'animatedJava.exporters.animation.dialogs.errors.zeroLengthAnimation.body',
+								'animatedJava.exporters.vanillaAnimation.dialogs.errors.zeroLengthAnimation.body',
 								{
 									animationName: animation.name,
 								}
@@ -1337,10 +1337,10 @@ const Exporter = (AJ: any) => {
 			},
 			autoDistance: {
 				title: tl(
-					'animatedJava.exporters.animation.settings.autoDistance.title'
+					'animatedJava.exporters.vanillaAnimation.settings.autoDistance.title'
 				),
 				description: tl(
-					'animatedJava.exporters.animation.settings.autoDistance.description'
+					'animatedJava.exporters.vanillaAnimation.settings.autoDistance.description'
 				),
 				type: 'checkbox',
 				default: true,
@@ -1350,10 +1350,10 @@ const Exporter = (AJ: any) => {
 			},
 			autoDistanceMovementThreshold: {
 				title: tl(
-					'animatedJava.exporters.animation.settings.autoDistanceMovementThreshold.title'
+					'animatedJava.exporters.vanillaAnimation.settings.autoDistanceMovementThreshold.title'
 				),
 				description: tl(
-					'animatedJava.exporters.animation.settings.autoDistanceMovementThreshold.description'
+					'animatedJava.exporters.vanillaAnimation.settings.autoDistanceMovementThreshold.description'
 				),
 				type: 'number',
 				default: 1,
@@ -1376,10 +1376,10 @@ const Exporter = (AJ: any) => {
 			},
 			manualDistance: {
 				title: tl(
-					'animatedJava.exporters.animation.settings.manualDistance.title'
+					'animatedJava.exporters.vanillaAnimation.settings.manualDistance.title'
 				),
 				description: tl(
-					'animatedJava.exporters.animation.settings.manualDistance.description'
+					'animatedJava.exporters.vanillaAnimation.settings.manualDistance.description'
 				),
 				type: 'number',
 				default: 10,
@@ -1493,10 +1493,10 @@ const Exporter = (AJ: any) => {
 			},
 			frameScoreboardObjective: {
 				title: tl(
-					'animatedJava.exporters.animation.settings.frameScoreboardObjective.title'
+					'animatedJava.exporters.vanillaAnimation.settings.frameScoreboardObjective.title'
 				),
 				description: tl(
-					'animatedJava.exporters.animation.settings.frameScoreboardObjective.description'
+					'animatedJava.exporters.vanillaAnimation.settings.frameScoreboardObjective.description'
 				),
 				type: 'text',
 				default: 'aj.frame',
@@ -1504,10 +1504,10 @@ const Exporter = (AJ: any) => {
 			},
 			animatingFlagScoreboardObjective: {
 				title: tl(
-					'animatedJava.exporters.animation.settings.animatingFlagScoreboardObjective.title'
+					'animatedJava.exporters.vanillaAnimation.settings.animatingFlagScoreboardObjective.title'
 				),
 				description: tl(
-					'animatedJava.exporters.animation.settings.animatingFlagScoreboardObjective.description'
+					'animatedJava.exporters.vanillaAnimation.settings.animatingFlagScoreboardObjective.description'
 				),
 				type: 'text',
 				default: 'aj.%projectName.animating',
@@ -1515,10 +1515,10 @@ const Exporter = (AJ: any) => {
 			},
 			animationLoopModeScoreboardObjective: {
 				title: tl(
-					'animatedJava.exporters.animation.settings.animationLoopModeScoreboardObjective.title'
+					'animatedJava.exporters.vanillaAnimation.settings.animationLoopModeScoreboardObjective.title'
 				),
 				description: tl(
-					'animatedJava.exporters.animation.settings.animationLoopModeScoreboardObjective.description'
+					'animatedJava.exporters.vanillaAnimation.settings.animationLoopModeScoreboardObjective.description'
 				),
 				type: 'text',
 				default: 'aj.%projectName.%animationName.loopMode',
