@@ -271,8 +271,8 @@ const SettingInput = ({ namespace, name, template }) => {
 						</span>
 					</span>
 				)}
-				{tl(`${namespace}.setting.${name}.name`)}
-				{DefaultSettings[namespace][name].global && (
+				{SettingDef.name}
+				{SettingDef.global && (
 					<span
 						style={{
 							opacity: 0.8,
@@ -282,7 +282,7 @@ const SettingInput = ({ namespace, name, template }) => {
 						{tl('animatedJava.settings.global')}
 					</span>
 				)}
-				{DefaultSettings[namespace][name].optional && (
+				{SettingDef.optional && (
 					<span
 						style={{
 							opacity: 0.8,
@@ -301,11 +301,9 @@ const SettingInput = ({ namespace, name, template }) => {
 				</div>
 			)}
 			<div className="setting_description">
-				{tl(`${namespace}.setting.${name}.description`)
-					.split('\n')
-					.map((line, i) => (
-						<p key={i}>{line}</p>
-					))}
+				{SettingDef.description.split('\n').map((line, i) => (
+					<p key={i}>{line}</p>
+				))}
 			</div>
 		</label>
 	)
@@ -325,7 +323,7 @@ const SettingInput = ({ namespace, name, template }) => {
 						}}
 						namespace={namespace}
 						name={name}
-						definition={DefaultSettings[namespace][name]}
+						definition={SettingDef}
 						forceRerender={() => setRerender(Math.random())}
 						{...(template.props || {})}
 					>
