@@ -29,6 +29,7 @@ animatedJava:
       text: Rendering Animations... %currents/%totals
 
   settings:
+    header: Animated Java Settings
     isGlobal: '(Global)'
     isOptional: '(Optional)'
 

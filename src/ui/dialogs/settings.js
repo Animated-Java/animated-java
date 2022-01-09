@@ -427,7 +427,7 @@ const Settings = () => {
 								className="tl i_b"
 								style={{ marginLeft: '1em' }}
 							>
-								Animated Java Settings
+								{tl('animatedJava.settings.header')}
 							</h2>
 							<ul style={{ marginLeft: '2em' }}>
 								{Object.keys(DefaultSettings.animatedJava).map(
