@@ -1457,7 +1457,7 @@ const Exporter = (AJ: any) => {
 							b.base !==
 							`${AJ.settings.animatedJava.projectName}.mc`
 						) {
-							d.isValid
+							d.isValid = false
 							d.error = format(
 								tl(
 									'animatedJava_exporter_animationExporter.setting.mcbFilePath.error.mustBeNamedAfterProject'
