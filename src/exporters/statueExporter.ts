@@ -886,7 +886,7 @@ const Exporter = (AJ: any) => {
 			},
 		}
 	)
-	AJ.registerExportFunc('statueExporter', function () {
+	AJ.registerExportFunc('vanillaStatueExporter', function () {
 		AJ.build(
 			(data: any) => {
 				console.log('Input Data:', data)

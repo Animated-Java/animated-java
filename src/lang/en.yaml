@@ -35,24 +35,25 @@ animatedJava:
     generic:
       errors:
         invalid: If you're seeing this message Animated Java broke. (Uh Oh)
-        emptyValue: Setting cannot be empty
-        mustBeBoolean: Setting value must be a boolean
-        mustBeString: Setting value must be a string
-        missingFormatString: Setting value missing required %notFound formatting string
+        emptyValue: Value cannot be empty
+        mustBeBoolean: Value must be a boolean
+        mustBeString: Value must be a string
+        missingFormatString: Value missing required %notFound formatting string
+        invalidEntityTag: Value is not a valid entity tag
 
     projectName:
       title: Project Name
       description:
         - The unique ID of your project. Make sure you set this!
       errors:
-        invalidFunctionName: TL:animatedJava.settings.projectName.errors.invalidFunctionName
+        invalidFunctionName: Project name must be a valid function name!
 
     exporter:
       title: Exporter
       description:
         - Which export format to use for this project
       errors:
-        mustBeValidExporter: TL:animatedJava.settings.exporter.errors.mustBeValidExporter
+        mustBeValidExporter: Selected exporter does not exist in the registered exporters!
 
     verbose:
       title: Verbose
@@ -65,28 +66,28 @@ animatedJava:
       description:
         - The item that will be used to display the models on the armor_stands
       errors:
-        invalidMinecraftItem: TL:animatedJava.settings.rigItem.errors.invalidItem
+        invalidMinecraftItem: Chosen item does not exist!
 
     rigModelsExportFolder:
       title: Rig Models Export Folder
       description:
         - The folder that all of the rig's models will be dumped into
       errors:
-        invalidPath: TL:animatedJava.settings.rigModelsExportFolder.errors.invalidPath
+        invalidPath: Chosen path is not a valid location to export models to!
 
     predicateFilePath:
       title: Rig Item Predicate Model
       description:
         - The item model file of the rig item
       errors:
-        notEqualToRigItem: TL:animatedJava.settings.predicateFilePath.errors.notEqualToRigItem
+        notEqualToRigItem: Path must end on a file named %rigItem.json
 
     transparentTexturePath:
       title: Transparent Texture Path
       description:
         - A transparent texture for adding transparency to variants. Only needed if you're using transparency in your variants.
       errors:
-        undefinedWhenNeeded: TL:animatedJava.settings.transparentTexturePath.errors.undefinedWhenNeeded
+        undefinedWhenNeeded: Path must be defined if you're using the transparency feature of variants!
 
     useCache:
       title: Use Animation Cache
@@ -275,14 +276,14 @@ animatedJava:
           description:
             - The entity type to use as the root entity for the model
           errors:
-            invalidEntity: TL:animatedJava.exporters.generic.settings.rootEntityType.errors.invalidEntity
+            invalidEntity: Chosen entity does not exist!
 
         rootEntityNbt:
           title: Root Entity NBT
           description:
             - The NBT data of the root entity
           errors:
-            invalidNbt: TL:animatedJava.exporters.generic.settings.rootEntityType.errors.invalidNbt
+            invalidNbt: Invalid NBT!
 
         markerArmorStands:
           title: Marker Armor Stands
@@ -345,7 +346,7 @@ animatedJava:
             - Exports the default MCB config for Animated Java
             - WARNING! Will overwrite existing config.json
           errors:
-            mustBeNamedAfterProject: TL:animatedJava.exporters.generic.settings.mcbFilePath.errors.mustBeNamedAfterProject
+            mustBeNamedAfterProject: Path must end on a file named %projectName.mc!
 
         dataPackPath:
           title: Data Pack
@@ -384,7 +385,7 @@ animatedJava:
             - How much distance to add to the calculated animation distance.
             - The more distance you add the farther you can move the rig in a single tick without dropping bones
           errors:
-            valueOutOfRange: TL:animatedJava.exporters.generic.settings.autoDistanceThreshold.errors.valueOutOfRange
+            valueOutOfRange: Setting value must be at least 0
 
         manualDistance:
           title: Manual Animation Distance
@@ -392,7 +393,7 @@ animatedJava:
             - How far away a bone can be from the root entity before it stops animating.
             - This setting is intended for advanced users.
           errors:
-            valueOutOfRange: TL:animatedJava.exporters.generic.settings.manualDistance.errors.valueOutOfRange
+            valueOutOfRange: Setting value must be at least 0
 
         frameScoreboardObjective:
           title: Frame Scoreboard

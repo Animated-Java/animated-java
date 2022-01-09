@@ -51,7 +51,7 @@ export const DefaultSettings = {
 				return Object.fromEntries(
 					[...store.getStore('exporters').keys()].map((v) => [
 						v,
-						`animatedJava.exporters.${v}.title`,
+						ForeignSettingTranslationKeys[v],
 					])
 				)
 			},
@@ -185,7 +185,9 @@ export const DefaultSettings = {
 					if (`${rigItem}.json` !== b.base) {
 						d.isValid = false
 						d.error = tl(
-							'animatedJava.settings.predicateFilePath.errors.notEqualToRigItem'
+							'animatedJava.settings.predicateFilePath.errors.notEqualToRigItem',{
+								rigItem
+							}
 						)
 					}
 				} else {
