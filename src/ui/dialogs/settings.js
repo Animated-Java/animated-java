@@ -2,7 +2,11 @@ import { bus } from '../../util/bus'
 import events from '../../constants/events'
 import React, { useEffect, useRef, useState } from 'react'
 import ReactDom from 'react-dom'
-import { DefaultSettings, settings } from '../../settings'
+import {
+	DefaultSettings,
+	ForeignSettingTranslationKeys,
+	settings,
+} from '../../settings'
 import { tl } from '../../util/intl'
 import { ERROR } from '../../util/errors'
 const dialog = electron.dialog
@@ -462,7 +466,12 @@ const Settings = () => {
 											// SettingsPanel(key, setRevealedIndex, index, revealedIndex, children)
 											<SettingsPanel
 												key={key}
-												name={key}
+												name={
+													ForeignSettingTranslationKeys[
+														key
+													] || key
+												}
+												id={key}
 												childrenSettings={children}
 											/>
 										)
@@ -476,17 +485,17 @@ const Settings = () => {
 	)
 }
 
-function SettingsPanel({ childrenSettings, name, visible }) {
+function SettingsPanel({ childrenSettings, name, visible, id }) {
 	const [shown, setShown] = useState(visible)
 	return (
 		<DropDown visible={shown} onClick={() => setShown(!shown)} name={name}>
 			<ul style={{ marginLeft: '2em' }}>
-				{childrenSettings.map((child, id) => (
+				{childrenSettings.map((child) => (
 					<li key={child}>
 						<SettingInput
-							namespace={name}
+							namespace={id}
 							name={child}
-							template={DefaultSettings[name][child]}
+							template={DefaultSettings[id][child]}
 						></SettingInput>
 					</li>
 				))}

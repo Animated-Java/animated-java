@@ -19,14 +19,14 @@ import { intl } from './util/intl'
 import { CustomError } from './util/customError'
 
 const errorMessages = [
-	"Uh oh!",
+	'Uh oh!',
 	"Time to fire up the ol' debugger!",
-	"Your armor stands are sad :(",
-	"Ok, who pushed the big red button?",
+	'Your armor stands are sad :(',
+	'Ok, who pushed the big red button?',
 ]
 
 function getRandomErrorMessage() {
-	const index = Math.round(Math.random() * (errorMessages.length-1))
+	const index = Math.round(Math.random() * (errorMessages.length - 1))
 	return errorMessages[index]
 }
 
@@ -42,14 +42,20 @@ function showUnknownErrorDialog(e: CustomError | any) {
 				id: 'animatedJava.dialogs.miscError',
 				title: tl('animatedJava.dialogs.errors.misc.title'),
 				lines: [
-					tl('animatedJava.dialogs.errors.misc.body', {
-						buildID: process.env.BUILD_ID,
-						errorMessage: e.options ? e.options.message : e.message,
-						randomErrorMessage: getRandomErrorMessage(),
-						errorStack: e.stack,
-						discordLink: process.env.DISCORD_LINK,
-						githubLink: process.env.GITHUB_ISSUES_LINK,
-					}, true),
+					tl(
+						'animatedJava.dialogs.errors.misc.body',
+						{
+							buildID: process.env.BUILD_ID,
+							errorMessage: e.options
+								? e.options.message
+								: e.message,
+							randomErrorMessage: getRandomErrorMessage(),
+							errorStack: e.stack,
+							discordLink: process.env.DISCORD_LINK,
+							githubLink: process.env.GITHUB_ISSUES_LINK,
+						},
+						true
+					),
 				],
 				width: 1024,
 				height: 512,

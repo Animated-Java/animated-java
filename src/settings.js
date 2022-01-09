@@ -10,7 +10,7 @@ import { tl } from './util/intl'
 const genericEmptyErrorText = tl(
 	'animatedJava.settings.generic.errors.emptyValue'
 )
-
+export let ForeignSettingTranslationKeys = {}
 const UNASSIGNED = Symbol('UNASSIGNED_CACHE')
 export const DefaultSettings = {
 	animatedJava: {
@@ -522,15 +522,16 @@ class Settings {
 		return res
 	}
 
-	registerPluginSettings(pluginName, settings) {
-		DefaultSettings[pluginName] = settings
+	registerPluginSettings(exporterId, exporterSettingsKey, settings) {
+		DefaultSettings[exporterSettingsKey] = settings
+		ForeignSettingTranslationKeys[exporterSettingsKey] = exporterId
 		this.update(
 			{
-				[pluginName]: settings,
+				[exporterSettingsKey]: settings,
 			},
 			true
 		)
-		this.assign(pluginName, Object.keys(settings))
+		this.assign(exporterSettingsKey, Object.keys(settings))
 	}
 
 	toConsumable(target = 'all') {
