@@ -1,12 +1,13 @@
+import type * as aj from './animatedJava'
+
 import * as fs from 'fs'
 import * as path from 'path'
-import { settings } from './settings'
-import { mkdir } from './util/ezfs'
-import { CustomError } from './util/customError'
 import { tl } from './util/intl'
+import { mkdir } from './util/ezfs'
+import { settings } from './settings'
+import { CustomError } from './util/customError'
 import { format, safeFunctionName } from './util/replace'
 import { getModelPath } from './util/minecraft/resourcepack'
-import * as aj from './animatedJava'
 // @ts-ignore
 import transparent from './assets/transparent.png'
 

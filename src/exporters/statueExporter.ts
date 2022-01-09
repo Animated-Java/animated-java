@@ -1,18 +1,18 @@
-import * as aj from '../animatedJava'
+import type * as aj from '../animatedJava'
 
+import * as fs from 'fs'
 import { tl } from '../util/intl'
+import { Path } from '../util/path'
+import { store } from '../util/store'
 import { roundToN } from '../util/misc'
+import { compileMC } from '../compileLangMC'
 import { CustomError } from '../util/customError'
 import { JsonText } from '../util/minecraft/jsonText'
-import { store } from '../util/store'
-import { safeFunctionName, format, fixIndent } from '../util/replace'
-import { SNBT, SNBTTag, SNBTTagType } from '../util/SNBT'
-import { Path } from '../util/path'
-import { compileMC } from '../compileLangMC'
-import * as fs from 'fs'
 import { Entities } from '../util/minecraft/entities'
+import { SNBT, SNBTTag, SNBTTagType } from '../util/SNBT'
+import { safeFunctionName, format, fixIndent } from '../util/replace'
 
-interface statueExporterSettings {
+interface vanillaStatueExporterSettings {
 	modelTag: string
 	rootTag: string
 	allBonesTag: string
@@ -55,7 +55,7 @@ async function createMCFile(
 ): Promise<{ mcFile: string; mcbConfig: MCBConfig }> {
 	const FILE: string[] = []
 	const ajSettings = settings.animatedJava
-	const exporterSettings: statueExporterSettings =
+	const exporterSettings: vanillaStatueExporterSettings =
 		settings.vanillaStatueExporter
 	const projectName = safeFunctionName(ajSettings.projectName)
 
@@ -366,7 +366,7 @@ async function createMCFile(
 async function exportMCFile(
 	generated: { mcFile: string; mcbConfig: MCBConfig },
 	ajSettings: aj.GlobalSettings,
-	exporterSettings: statueExporterSettings
+	exporterSettings: vanillaStatueExporterSettings
 ) {
 	if (!exporterSettings.mcbFilePath) {
 		throw new CustomError('MCB File Path Undefined', {
@@ -396,7 +396,7 @@ async function exportMCFile(
 async function exportDataPack(
 	generated: { mcFile: string; mcbConfig: MCBConfig },
 	ajSettings: aj.GlobalSettings,
-	exporterSettings: statueExporterSettings
+	exporterSettings: vanillaStatueExporterSettings
 ) {
 	if (!exporterSettings.dataPackPath) {
 		console.log(exporterSettings.dataPackPath)
@@ -530,7 +530,7 @@ async function exportDataPack(
 }
 
 async function statueExport(data: any) {
-	const exporterSettings: statueExporterSettings =
+	const exporterSettings: vanillaStatueExporterSettings =
 		data.settings.vanillaStatueExporter
 	const generated = await createMCFile(
 		data.bones,
@@ -586,8 +586,8 @@ function validateFormattedStringSetting(required: string[]) {
 
 const Exporter = (AJ: any) => {
 	AJ.settings.registerPluginSettings(
-		'animatedJava.exporters.statue', // Plugin ID
-		'vanillaStatueExporter', // Plugin Settings Key
+		'animatedJava.exporters.vanillaStatue', // Exporter ID
+		'vanillaStatueExporter', // Exporter Settings Key
 		{
 			rootEntityType: {
 				title: tl(

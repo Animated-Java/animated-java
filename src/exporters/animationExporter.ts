@@ -1,20 +1,20 @@
-import * as aj from '../animatedJava'
+import type * as aj from '../animatedJava'
 
+import * as fs from 'fs'
+import { tl } from '../util/intl'
+import { Path } from '../util/path'
+import { store } from '../util/store'
+import { roundToN } from '../util/misc'
+import { compileMC } from '../compileLangMC'
+import { removeKeyGently } from '../util/misc'
+import { generateTree } from '../util/treeGen'
 import { CustomError } from '../util/customError'
 import { JsonText } from '../util/minecraft/jsonText'
-import { Path } from '../util/path'
-import { removeKeyGently } from '../util/misc'
-import { roundToN } from '../util/misc'
-import { safeFunctionName, format, fixIndent } from '../util/replace'
-import { SNBT, SNBTTag, SNBTTagType } from '../util/SNBT'
-import { store } from '../util/store'
-import { tl } from '../util/intl'
-import { generateTree } from '../util/treeGen'
-import { compileMC } from '../compileLangMC'
-import * as fs from 'fs'
 import { Entities } from '../util/minecraft/entities'
+import { SNBT, SNBTTag, SNBTTagType } from '../util/SNBT'
+import { safeFunctionName, format, fixIndent } from '../util/replace'
 
-interface animationExporterSettings {
+interface vanillaAnimationExporterSettings {
 	allBonesTag: string
 	animatingFlagScoreboardObjective: string
 	animationLoopModeScoreboardObjective: string
@@ -88,7 +88,7 @@ async function createMCFile(
 	variantTouchedModels: aj.variantTouchedModels
 ): Promise<{ mcFile: string; mcbConfig: MCBConfig }> {
 	const ajSettings = settings.animatedJava
-	const exporterSettings: animationExporterSettings =
+	const exporterSettings: vanillaAnimationExporterSettings =
 		settings.vanillaAnimationExporter
 	const projectName = safeFunctionName(ajSettings.projectName)
 
@@ -1044,7 +1044,7 @@ async function createMCFile(
 async function exportMCFile(
 	generated: { mcFile: string; mcbConfig: MCBConfig },
 	ajSettings: aj.GlobalSettings,
-	exporterSettings: animationExporterSettings
+	exporterSettings: vanillaAnimationExporterSettings
 ) {
 	if (!exporterSettings.mcbFilePath) {
 		throw new CustomError(
@@ -1077,7 +1077,7 @@ async function exportMCFile(
 async function exportDataPack(
 	generated: { mcFile: string; mcbConfig: MCBConfig },
 	ajSettings: aj.GlobalSettings,
-	exporterSettings: animationExporterSettings
+	exporterSettings: vanillaAnimationExporterSettings
 ) {
 	if (!exporterSettings.dataPackPath) {
 		console.log(exporterSettings.dataPackPath)
@@ -1212,7 +1212,7 @@ async function exportDataPack(
 }
 
 async function animationExport(data: any) {
-	const exporterSettings: animationExporterSettings =
+	const exporterSettings: vanillaAnimationExporterSettings =
 		data.settings.vanillaAnimationExporter
 	const generated = await createMCFile(
 		data.bones,
@@ -1268,8 +1268,8 @@ function validateFormattedStringSetting(required: string[]) {
 
 const Exporter = (AJ: any) => {
 	AJ.settings.registerPluginSettings(
-		'animatedJava.exporters.animation', // Plugin ID
-		'vanillaAnimationExporter', // Plugin Settings Key
+		'animatedJava.exporters.vanillaAnimation', // Exporter ID
+		'vanillaAnimationExporter', // Exporter Settings Key
 		{
 			rootEntityType: {
 				title: tl(
