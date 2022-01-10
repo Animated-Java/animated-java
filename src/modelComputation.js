@@ -74,13 +74,21 @@ export function computeElements() {
 	var invalid_rot_elements = []
 
 	function computeCube(s) {
-		if (s.export == false) return
+		// if (s.export == false || s.visibility == false) return
 		if (s.parent === 'root') {
-			throw new CustomError({
-				title: tl('error.top_level_cubes.title'),
-				lines: tl('error.top_level_cubes.body')
-					.split('\n')
-					.map((line) => `<p>${line}</p>`),
+			throw new CustomError('Top Level Cubes Found in model', {
+				intentional: true,
+				dialog: {
+					id: 'animatedJava.dialogs.errors.topLevelCubes',
+					title: tl(
+						'animatedJava.dialogs.errors.topLevelCubes.title'
+					),
+					lines: [
+						tl('animatedJava.dialogs.errors.topLevelCubes.body'),
+					],
+					width: 128,
+					singleButton: true,
+				},
 			})
 		}
 		var element = { uuid: s.uuid }
@@ -214,11 +222,11 @@ export function computeElements() {
 		throw new CustomError('Invalid Element Rotations', {
 			dialog: {
 				title: tl(
-					'animatedJava.popup.error.invalidCubeRotations.title'
+					'animatedJava.dialogs.errors.invalidCubeRotations.title'
 				),
-				lines: tl('animatedJava.popup.error.invalidCubeRotations.body')
-					.split('\n')
-					.map((line) => `<p>${line}</p>`),
+				lines: [
+					tl('animatedJava.dialogs.errors.invalidCubeRotations.body'),
+				],
 				width: 512,
 			},
 		})
@@ -264,7 +272,7 @@ async function computeModels(cubeData) {
 	function recurse(group) {
 		console.log(group)
 		const cubeChildren = group.children
-			.filter((c) => c instanceof Cube)
+			.filter((c) => c instanceof Cube && c.visibility)
 			.map((current) =>
 				cubeData.clear_elements.find(
 					(other) => current.uuid === other.uuid
@@ -273,6 +281,7 @@ async function computeModels(cubeData) {
 
 		if (
 			group instanceof Group &&
+			group.visibility &&
 			group.name !== 'SCENE' &&
 			group.export &&
 			!isSceneBased(group)
@@ -367,7 +376,7 @@ export function computeBones(models, animations) {
 		// const value = Project.groups[name];
 		if (value.parent) {
 			const parentGroup = value.parent.getGroup()
-			if (!parentGroup.export) continue
+			if (!parentGroup.export && parentGroup.visibility) continue
 			const parentName = safeFunctionName(parentGroup.name)
 			if (
 				!isSceneBased(parentGroup) &&
@@ -533,23 +542,25 @@ export function computeVariantTextureOverrides(models) {
 									`${texture.id}`
 								] = transparentTexturePath
 							} else {
-								let d = new Dialog({
-									title: tl(
-										'animatedJava.popup.error.transparentTexturePathNotFound.title'
-									),
-									lines: tl(
-										'animatedJava.popup.error.transparentTexturePathNotFound.body'
-									)
-										.split('\n')
-										.map((line) => `<p>${line}</p>`),
-									onConfirm() {
-										d.hide()
-									},
-									onCancel() {
-										d.hide()
-									},
-								}).show()
-								throw new CustomError({ intentional: true })
+								throw new CustomError(
+									'Transparent Texture Path Not Found',
+									{
+										intentional: true,
+										dialog: {
+											id: 'animatedJava.dialogs.errors.transparentTexturePathNotFound',
+											title: tl(
+												'animatedJava.dialogs.errors.transparentTexturePathNotFound.title'
+											),
+											lines: [
+												tl(
+													'animatedJava.dialogs.errors.transparentTexturePathNotFound.body'
+												),
+											],
+											width: 512,
+											singleButton: true,
+										},
+									}
+								)
 							}
 						}
 					}
