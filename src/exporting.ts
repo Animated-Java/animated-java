@@ -246,21 +246,33 @@ async function exportPredicate(
 		console.log(oldPredicate)
 		// @ts-ignore
 		const data = oldPredicate?.aj?.includedRigs || {}
-		Object.entries(data).forEach(([id, dat]) => {
-			let ids = dat.usedIDs
-			// @ts-ignore
-			if (id !== Project.UUID) {
-				for (let i = 0; i < ids.length; i++) {
-					if (Array.isArray(ids[i])) {
-						for (let k = ids[i][0]; k <= ids[i][1]; k++) {
-							usedIDs.push(k)
+		if (!oldPredicate?.aj?.includedRigs) {
+			data.preExistingIds = {
+				name: 'preExistingIds',
+				usedIDs: packArr(
+					oldPredicate.overrides.map((override) => {
+						usedIDs.push(override.predicate.custom_model_data)
+						return override.predicate.custom_model_data
+					})
+				),
+			}
+		} else {
+			Object.entries(data).forEach(([id, dat]) => {
+				let ids = dat.usedIDs
+				// @ts-ignore
+				if (id !== Project.UUID) {
+					for (let i = 0; i < ids.length; i++) {
+						if (Array.isArray(ids[i])) {
+							for (let k = ids[i][0]; k <= ids[i][1]; k++) {
+								usedIDs.push(k)
+							}
+						} else {
+							usedIDs.push(ids[i])
 						}
-					} else {
-						usedIDs.push(ids[i])
 					}
 				}
-			}
-		})
+			})
+		}
 		// @ts-ignore
 		delete data[Project.UUID]
 		predicateJSON.aj.includedRigs = data
