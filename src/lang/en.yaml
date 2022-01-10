@@ -181,6 +181,16 @@ animatedJava:
         body:
           - All cubes must be inside of a group.
 
+      predicateMergeFailed:
+        title: Predicate Failed to Merge
+        body:
+          - "%reason"
+          - Animated Java only supports merging into Animated Java controlled predicate models.
+          - Please make sure you are attempting to merge your predicate item model with a valid pre-existing Animated Java predicate item model.
+        reasons:
+          overridesMissing: Model overrides list missing.
+          ajMetaMissing: Model file to merge into is not an Animated Java predicate file.
+
       invalidAnimationSnappingValue:
         title: Invalid Animation Snapping Value
         body:

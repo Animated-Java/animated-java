@@ -209,7 +209,27 @@ interface PredicateModel {
 	}
 }
 
-let predicateIDMap = {}
+function throwPredicateMergingError(reason: string) {
+	throw new CustomError('Predicate Missing Overrides List', {
+		intentional: true,
+		dialog: {
+			id: 'animatedJava.predicateMergeFailed',
+			title: tl(
+				'animatedJava.dialogs.errors.predicateMergeFailed.title',
+				{
+					reason,
+				}
+			),
+			lines: [
+				tl('animatedJava.dialogs.errors.predicateMergeFailed.body', {
+					reason,
+				}),
+			],
+			width: 512 + 256,
+			singleButton: true,
+		},
+	})
+}
 
 async function exportPredicate(
 	models: aj.ModelObject,
@@ -245,6 +265,21 @@ async function exportPredicate(
 		)
 		console.log(oldPredicate)
 		// @ts-ignore
+		if (oldPredicate) {
+			if (!oldPredicate?.aj) {
+				throwPredicateMergingError(
+					tl(
+						'animatedJava.dialogs.errors.predicateMergeFailed.reasons.ajMetaMissing'
+					)
+				)
+			} else if (!oldPredicate.overrides) {
+				throwPredicateMergingError(
+					tl(
+						'animatedJava.dialogs.errors.predicateMergeFailed.reasons.overridesMissing'
+					)
+				)
+			}
+		}
 		const data = oldPredicate?.aj?.includedRigs || {}
 		if (!oldPredicate?.aj?.includedRigs) {
 			data.preExistingIds = {
