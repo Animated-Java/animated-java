@@ -1,17 +1,18 @@
-import * as aj from '../animatedJava'
+import type * as aj from '../animatedJava'
 
+import * as fs from 'fs'
 import { tl } from '../util/intl'
+import { Path } from '../util/path'
+import { store } from '../util/store'
 import { roundToN } from '../util/misc'
+import { compileMC } from '../compileLangMC'
 import { CustomError } from '../util/customError'
 import { JsonText } from '../util/minecraft/jsonText'
-import { store } from '../util/store'
-import { safeFunctionName, format, fixIndent } from '../util/replace'
+import { Entities } from '../util/minecraft/entities'
 import { SNBT, SNBTTag, SNBTTagType } from '../util/SNBT'
-import { Path } from '../util/path'
-import { compileMC } from '../compileLangMC'
-import * as fs from 'fs'
+import { safeFunctionName, format, fixIndent } from '../util/replace'
 
-interface statueExporterSettings {
+interface vanillaStatueExporterSettings {
 	modelTag: string
 	rootTag: string
 	allBonesTag: string
@@ -47,20 +48,20 @@ async function createMCFile(
 	bones: aj.BoneObject,
 	models: aj.ModelObject,
 	animations: aj.Animations,
-	settings: aj.Settings,
+	settings: aj.GlobalSettings,
 	variantModels: aj.VariantModels,
 	variantTextureOverrides: aj.VariantTextureOverrides,
 	variantTouchedModels: aj.variantTouchedModels
 ): Promise<{ mcFile: string; mcbConfig: MCBConfig }> {
 	const FILE: string[] = []
 	const ajSettings = settings.animatedJava
-	const exporterSettings: statueExporterSettings =
-		settings.animatedJava_exporter_statueExporter
+	const exporterSettings: vanillaStatueExporterSettings =
+		settings.vanillaStatueExporter
 	const projectName = safeFunctionName(ajSettings.projectName)
 
 	let headYOffset = -1.4365
 
-	const staticAnimationUuid = store.get('static_animation_uuid')
+	const staticAnimationUuid = store.get('staticAnimationUuid')
 	const staticFrame = animations[staticAnimationUuid].frames[0].bones
 	const staticDistance = animations[staticAnimationUuid].maxDistance
 
@@ -364,22 +365,24 @@ async function createMCFile(
 
 async function exportMCFile(
 	generated: { mcFile: string; mcbConfig: MCBConfig },
-	ajSettings: aj.Settings,
-	exporterSettings: statueExporterSettings
+	ajSettings: aj.GlobalSettings,
+	exporterSettings: vanillaStatueExporterSettings
 ) {
 	if (!exporterSettings.mcbFilePath) {
 		throw new CustomError('MCB File Path Undefined', {
 			intentional: true,
 			dialog: {
+				id: 'animatedJava.exporters.generic.dialogs.errors.mcbFilePathNotDefined',
 				title: tl(
-					'animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.title'
+					'animatedJava.exporters.generic.dialogs.errors.mcbFilePathNotDefined.title'
 				),
-				id: '',
-				lines: tl(
-					'animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.body'
-				)
-					.split('\n')
-					.map((line: string) => `<p>${line}</p>`),
+				lines: [
+					tl(
+						'animatedJava.exporters.generic.dialogs.errors.mcbFilePathNotDefined.body'
+					),
+				],
+				width: 512,
+				singleButton: true,
 			},
 		})
 	}
@@ -392,23 +395,25 @@ async function exportMCFile(
 
 async function exportDataPack(
 	generated: { mcFile: string; mcbConfig: MCBConfig },
-	ajSettings: aj.Settings,
-	exporterSettings: statueExporterSettings
+	ajSettings: aj.GlobalSettings,
+	exporterSettings: vanillaStatueExporterSettings
 ) {
 	if (!exporterSettings.dataPackPath) {
 		console.log(exporterSettings.dataPackPath)
 		throw new CustomError('Data Pack Folder Undefined', {
 			intentional: true,
 			dialog: {
+				id: 'animatedJava.exporters.generic.dialogs.errors.dataPackPathNotDefined',
 				title: tl(
-					'animatedJava_exporter_statueExporter.popup.error.dataPackFilePathNotDefined.title'
+					'animatedJava.exporters.generic.dialogs.errors.dataPackPathNotDefined.title'
 				),
-				id: '',
-				lines: tl(
-					'animatedJava_exporter_statueExporter.popup.error.dataPackFilePathNotDefined.body'
-				)
-					.split('\n')
-					.map((line: string) => `<p>${line}</p>`),
+				lines: [
+					tl(
+						'animatedJava.exporters.generic.dialogs.errors.dataPackPathNotDefined.body'
+					),
+				],
+				width: 512,
+				singleButton: true,
 			},
 		})
 	}
@@ -422,7 +427,7 @@ async function exportDataPack(
 	}
 
 	const translatedCompilationText = tl(
-		'animatedJava_exporter_statueExporter.exportingDataPackProgress'
+		'animatedJava.exporters.generic.progress.exportingDataPack'
 	)
 
 	function onMessage(message: {
@@ -468,7 +473,7 @@ async function exportDataPack(
 	const dataPackPath = exporterSettings.dataPackPath
 	const totalFiles = dataPack.length
 	const translatedWritingText = tl(
-		'animatedJava_exporter_statueExporter.writingDataPackProgress'
+		'animatedJava.exporters.generic.progress.writingDataPack'
 	)
 	const createdPaths = new Set()
 
@@ -525,8 +530,8 @@ async function exportDataPack(
 }
 
 async function statueExport(data: any) {
-	const exporterSettings: statueExporterSettings =
-		data.settings.animatedJava_exporter_statueExporter
+	const exporterSettings: vanillaStatueExporterSettings =
+		data.settings.vanillaStatueExporter
 	const generated = await createMCFile(
 		data.bones,
 		data.models,
@@ -547,212 +552,341 @@ async function statueExport(data: any) {
 			break
 	}
 
-	Blockbench.showQuickMessage(
-		tl('animatedJava_exporter_statueExporter.successfullyExported')
-	)
+	Blockbench.showQuickMessage(tl('animatedJava.popups.successfullyExported'))
+}
+
+const genericEmptySettingText = tl(
+	'animatedJava.settings.generic.errors.emptyValue'
+)
+
+function validateFormattedStringSetting(required: string[]) {
+	return (d: aj.SettingDescriptor) => {
+		if (d.value === '') {
+			d.isValid = false
+			d.error = genericEmptySettingText
+			return d
+		}
+		if (required.length) {
+			const notFound = required.find((v: string) => !d.value.includes(v))
+			if (notFound) {
+				d.isValid = false
+				d.error = format(
+					tl(
+						'animatedJava.settings.generic.errors.missingFormatString'
+					),
+					{
+						notFound,
+					}
+				)
+			}
+		}
+		return d
+	}
 }
 
 const Exporter = (AJ: any) => {
-	AJ.settings.registerPluginSettings('animatedJava_exporter_statueExporter', {
-		rootEntityType: {
-			type: 'text',
-			default: 'minecraft:marker',
-			populate() {
-				return 'minecraft:marker'
-			},
-			isValid(value: any) {
-				return value != ''
-			},
-			isResetable: true,
-		},
-		rootEntityNbt: {
-			type: 'text',
-			default: '{}',
-			populate() {
-				return '{}'
-			},
-			isValid(value: any) {
-				return value != ''
-			},
-		},
-		markerArmorStands: {
-			type: 'checkbox',
-			default: true,
-			populate() {
-				return true
-			},
-			isValid(value: any) {
-				return typeof value === 'boolean'
-			},
-		},
-		modelTag: {
-			type: 'text',
-			default: 'aj.%projectName',
-			populate() {
-				return 'aj.%projectName'
-			},
-			isValid(value: any) {
-				return value != ''
-			},
-			isResetable: true,
-		},
-		rootTag: {
-			type: 'text',
-			default: 'aj.%projectName.root',
-			populate() {
-				return 'aj.%projectName.root'
-			},
-			isValid(value: any) {
-				return value != ''
-			},
-			isResetable: true,
-		},
-		allBonesTag: {
-			type: 'text',
-			default: 'aj.%projectName.bone',
-			populate() {
-				return 'aj.%projectName.bone'
-			},
-			isValid(value: any) {
-				return value != ''
-			},
-			isResetable: true,
-		},
-		individualBoneTag: {
-			type: 'text',
-			default: 'aj.%projectName.bone.%boneName',
-			populate() {
-				return 'aj.%projectName.bone.%boneName'
-			},
-			isValid(value: any) {
-				return value != ''
-			},
-			isResetable: true,
-		},
-		internalScoreboardObjective: {
-			type: 'text',
-			default: 'aj.i',
-			populate() {
-				return 'aj.i'
-			},
-			isValid(value: any) {
-				return value != ''
-			},
-		},
-		idScoreboardObjective: {
-			type: 'text',
-			default: 'aj.id',
-			populate() {
-				return 'aj.id'
-			},
-			isValid(value: any) {
-				return value != ''
-			},
-		},
-		exportMode: {
-			type: 'select',
-			default: 'mcb',
-			options: {
-				vanilla:
-					'animatedJava_exporter_statueExporter.setting.exportMode.vanilla.name',
-				mcb: 'animatedJava_exporter_statueExporter.setting.exportMode.mcb.name',
-			},
-			populate() {
-				return 'mcb'
-			},
-			isValid(value: any) {
-				return value != ''
-			},
-		},
-		mcbFilePath: {
-			type: 'filepath',
-			default: '',
-			props: {
-				dialogOpts: {
-					get defaultPath() {
-						return `${AJ.settings.animatedJava.projectName}.mc`
-					},
-					promptToCreate: true,
-					properties: ['openFile'],
+	AJ.settings.registerPluginSettings(
+		'animatedJava.exporters.vanillaStatue', // Exporter ID
+		'vanillaStatueExporter', // Exporter Settings Key
+		{
+			rootEntityType: {
+				title: tl(
+					'animatedJava.exporters.generic.settings.rootEntityType.title'
+				),
+				description: tl(
+					'animatedJava.exporters.generic.settings.rootEntityType.description'
+				),
+				type: 'text',
+				default: 'minecraft:marker',
+				onUpdate(d: aj.SettingDescriptor) {
+					if (d.value != '') {
+						if (!Entities.isEntity(d.value)) {
+							d.isValid = false
+							d.error = tl(
+								'animatedJava.exporters.generic.settings.rootEntityType.errors.invalidEntity'
+							)
+						}
+					} else {
+						d.isValid = false
+						d.error = genericEmptySettingText
+					}
+
+					return d
 				},
 			},
-			populate() {
-				return ''
-			},
-			isValid(value: any) {
-				const p = new Path(value)
-				const b = p.parse()
-				return (
-					AJ.settings.animatedJava_exporter_statueExporter
-						.exportMode === 'mcb' &&
-					(value === '' ||
-						b.base === `${AJ.settings.animatedJava.projectName}.mc`)
-				)
-			},
-			isVisible(settings: any) {
-				return (
-					settings.animatedJava_exporter_statueExporter.exportMode ===
-					'mcb'
-				)
-			},
-			dependencies: ['animatedJava_exporter_statueExporter.exportMode'],
-		},
-		mcbConfigPath: {
-			type: 'filepath',
-			default: '',
-			optional: true,
-			props: {
-				dialogOpts: {
-					get defaultPath() {
-						return 'config.json'
-					},
-					promptToCreate: true,
-					properties: ['openFile'],
+			rootEntityNbt: {
+				title: tl(
+					'animatedJava.exporters.generic.settings.rootEntityNbt.title'
+				),
+				description: tl(
+					'animatedJava.exporters.generic.settings.rootEntityNbt.description'
+				),
+				type: 'text',
+				default: '{}',
+				onUpdate(d: aj.SettingDescriptor) {
+					if (d.value != '') {
+						try {
+							SNBT.parse(d.value)
+						} catch (e) {
+							d.isValid = false
+							d.error = tl(
+								'animatedJava.exporters.generic.settings.rootEntityType.errors.invalidNbt'
+							)
+						}
+					} else {
+						d.isValid = false
+						d.error = genericEmptySettingText
+					}
+					return d
 				},
 			},
-			populate() {
-				return ''
-			},
-			isValid(value: string) {
-				return value == '' || value.endsWith('config.json')
-			},
-			isVisible(settings: any) {
-				return (
-					settings.animatedJava_exporter_statueExporter.exportMode ===
-					'mcb'
-				)
-			},
-			dependencies: ['animatedJava_exporter_statueExporter.exportMode'],
-		},
-		dataPackPath: {
-			type: 'filepath',
-			default: '',
-			props: {
-				target: 'folder',
-				dialogOpts: {
-					get defaultPath() {
-						return AJ.settings.animatedJava.projectName
-					},
-					promptToCreate: true,
-					properties: ['openDirectory'],
+			markerArmorStands: {
+				title: tl(
+					'animatedJava.exporters.generic.settings.markerArmorStands.title'
+				),
+				description: tl(
+					'animatedJava.exporters.generic.settings.markerArmorStands.description'
+				),
+				type: 'checkbox',
+				default: true,
+				onUpdate(d: aj.SettingDescriptor) {
+					return d
 				},
 			},
-			populate() {
-				return ''
+			modelTag: {
+				title: tl(
+					'animatedJava.exporters.generic.settings.modelTag.title'
+				),
+				description: tl(
+					'animatedJava.exporters.generic.settings.modelTag.description'
+				),
+				type: 'text',
+				default: 'aj.%projectName',
+				onUpdate: validateFormattedStringSetting(['%projectName']),
+				isResetable: true,
 			},
-			isValid(value: any) {
-				return value != ''
+			rootTag: {
+				title: tl(
+					'animatedJava.exporters.generic.settings.rootTag.title'
+				),
+				description: tl(
+					'animatedJava.exporters.generic.settings.rootTag.description'
+				),
+				type: 'text',
+				default: 'aj.%projectName.root',
+				onUpdate: validateFormattedStringSetting(['%projectName']),
+				isResetable: true,
 			},
-			isVisible(settings: any) {
-				return (
-					settings.animatedJava_exporter_statueExporter.exportMode ===
-					'vanilla'
-				)
+			allBonesTag: {
+				title: tl(
+					'animatedJava.exporters.generic.settings.allBonesTag.title'
+				),
+				description: tl(
+					'animatedJava.exporters.generic.settings.allBonesTag.description'
+				),
+				type: 'text',
+				default: 'aj.%projectName.bone',
+				onUpdate: validateFormattedStringSetting(['%projectName']),
+				isResetable: true,
 			},
-			dependencies: ['animatedJava_exporter_statueExporter.exportMode'],
-		},
-	})
-	AJ.registerExportFunc('statueExporter', function () {
+			boneModelDisplayTag: {
+				title: tl(
+					'animatedJava.exporters.generic.settings.boneModelDisplayTag.title'
+				),
+				description: tl(
+					'animatedJava.exporters.generic.settings.boneModelDisplayTag.description'
+				),
+				type: 'text',
+				default: 'aj.%projectName.bone_display',
+				onUpdate: validateFormattedStringSetting(['%projectName']),
+				isResetable: true,
+			},
+			individualBoneTag: {
+				title: tl(
+					'animatedJava.exporters.generic.settings.individualBoneTag.title'
+				),
+				description: tl(
+					'animatedJava.exporters.generic.settings.individualBoneTag.description'
+				),
+				type: 'text',
+				default: 'aj.%projectName.bone.%boneName',
+				onUpdate: validateFormattedStringSetting([
+					'%projectName',
+					'%boneName',
+				]),
+				isResetable: true,
+			},
+			internalScoreboardObjective: {
+				title: tl(
+					'animatedJava.exporters.generic.settings.internalScoreboardObjective.title'
+				),
+				description: tl(
+					'animatedJava.exporters.generic.settings.internalScoreboardObjective.description'
+				),
+				type: 'text',
+				default: 'aj.i',
+				onUpdate(d: aj.SettingDescriptor) {
+					if (d.value === '') {
+						d.isValid = false
+						d.error = genericEmptySettingText
+					}
+					return d
+				},
+			},
+			idScoreboardObjective: {
+				title: tl(
+					'animatedJava.exporters.generic.settings.idScoreboardObjective.title'
+				),
+				description: tl(
+					'animatedJava.exporters.generic.settings.idScoreboardObjective.description'
+				),
+				type: 'text',
+				default: 'aj.id',
+				onUpdate: validateFormattedStringSetting([]),
+			},
+			exportMode: {
+				title: tl(
+					'animatedJava.exporters.generic.settings.exportMode.title'
+				),
+				description: tl(
+					'animatedJava.exporters.generic.settings.exportMode.description'
+				),
+				type: 'select',
+				default: 'mcb',
+				options: {
+					vanilla:
+						'animatedJava.exporters.generic.settings.exportMode.options.vanilla',
+					mcb: 'animatedJava.exporters.generic.settings.exportMode.options.mcb',
+				},
+			},
+			mcbFilePath: {
+				title: tl(
+					'animatedJava.exporters.generic.settings.mcbFilePath.title'
+				),
+				description: tl(
+					'animatedJava.exporters.generic.settings.mcbFilePath.description'
+				),
+				type: 'filepath',
+				default: '',
+				props: {
+					dialogOpts: {
+						get defaultPath() {
+							return `${AJ.settings.animatedJava.projectName}.mc`
+						},
+						promptToCreate: true,
+						properties: ['openFile'],
+					},
+				},
+				onUpdate(d: aj.SettingDescriptor) {
+					if (d.value != '') {
+						const p = new Path(d.value)
+						const b = p.parse()
+						if (
+							b.base !==
+							`${AJ.settings.animatedJava.projectName}.mc`
+						) {
+							d.isValid = false
+							d.error = format(
+								tl(
+									'animatedJava.exporters.generic.settings.mcbFilePath.errors.mustBeNamedAfterProject'
+								),
+								{
+									projectName:
+										AJ.settings.animatedJava.projectName,
+								}
+							)
+						}
+					} else {
+						d.isValid = false
+						d.error = genericEmptySettingText
+					}
+					return d
+				},
+				isVisible(settings: any) {
+					return (
+						settings.vanillaStatueExporter
+							.exportMode === 'mcb'
+					)
+				},
+				dependencies: [
+					'vanillaStatueExporter.exportMode',
+					'animatedJava.projectName',
+				],
+			},
+			mcbConfigPath: {
+				title: tl(
+					'animatedJava.exporters.generic.settings.mcbConfigPath.title'
+				),
+				description: tl(
+					'animatedJava.exporters.generic.settings.mcbConfigPath.description'
+				),
+				type: 'filepath',
+				default: '',
+				optional: true,
+				props: {
+					dialogOpts: {
+						get defaultPath() {
+							return 'config.json'
+						},
+						promptToCreate: true,
+						properties: ['openFile'],
+					},
+				},
+				populate() {
+					return ''
+				},
+				isValid(value: string) {
+					return value == '' || value.endsWith('config.json')
+				},
+				isVisible(settings: any) {
+					return (
+						settings.vanillaStatueExporter
+							.exportMode === 'mcb'
+					)
+				},
+				dependencies: [
+					'vanillaStatueExporter.exportMode',
+				],
+			},
+			dataPackPath: {
+				title: tl(
+					'animatedJava.exporters.generic.settings.dataPackPath.title'
+				),
+				description: tl(
+					'animatedJava.exporters.generic.settings.dataPackPath.description'
+				),
+				type: 'filepath',
+				default: '',
+				props: {
+					target: 'folder',
+					dialogOpts: {
+						get defaultPath() {
+							return AJ.settings.animatedJava.projectName
+						},
+						promptToCreate: true,
+						properties: ['openDirectory'],
+					},
+				},
+				onUpdate(d: aj.SettingDescriptor) {
+					if (d.value === '') {
+						d.isValid = false
+						d.error = genericEmptySettingText
+					}
+					return d
+				},
+				isVisible(settings: any) {
+					return (
+						settings.vanillaStatueExporter
+							.exportMode === 'vanilla'
+					)
+				},
+				dependencies: [
+					'vanillaStatueExporter.exportMode',
+				],
+			},
+		}
+	)
+	AJ.registerExportFunc('vanillaStatueExporter', function () {
 		AJ.build(
 			(data: any) => {
 				console.log('Input Data:', data)

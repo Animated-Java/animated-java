@@ -1,4 +1,8 @@
-export function format(str: string, dict = {}) {
+export interface FormatObject {
+	[index: string]: any
+}
+
+export function format(str: string, dict: FormatObject = {}) {
 	const keys = Object.keys(dict).sort((a, b) => b.length - a.length)
 	for (const target of keys)
 		str = str.replace(new RegExp('%' + target, 'g'), dict[target])
@@ -6,7 +10,11 @@ export function format(str: string, dict = {}) {
 }
 
 export function safeFunctionName(s: string) {
-	return s.toLowerCase().replace(/[^a-z0-9\._]/g, '_')
+	return s.toLowerCase().replace(/[^\w\d\._]+/g, '_')
+}
+
+export function safeEntityTag(s: string) {
+	return s.replace(/[^\w\.\-+]+/g, '_')
 }
 
 export function fixIndent(str: string[]) {
