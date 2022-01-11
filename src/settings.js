@@ -7,9 +7,9 @@ import { getModelPath } from './util/minecraft/resourcepack'
 import { Items } from './util/minecraft/items'
 import { tl } from './util/intl'
 
-const genericEmptyErrorText = tl(
-	'animatedJava.settings.generic.errors.emptyValue'
-)
+function genericEmptyErrorText() {
+	return tl('animatedJava.settings.generic.errors.emptyValue')
+}
 export let ForeignSettingTranslationKeys = {}
 const UNASSIGNED = Symbol('UNASSIGNED_CACHE')
 export const DefaultSettings = {
@@ -33,7 +33,7 @@ export const DefaultSettings = {
 					}
 				} else {
 					d.isValid = false
-					d.error = genericEmptyErrorText
+					d.error = genericEmptyErrorText()
 				}
 				return d
 			},
@@ -105,7 +105,7 @@ export const DefaultSettings = {
 					}
 				} else {
 					d.isValid = false
-					d.error = tl('animatedJava.settings.generic.emptyValue')
+					d.error = genericEmptyErrorText()
 				}
 				return d
 			},
@@ -146,9 +146,7 @@ export const DefaultSettings = {
 					}
 				} else {
 					d.isValid = false
-					d.error = tl(
-						'animatedJava.settings.generic.errors.emptyValue'
-					)
+					d.error = genericEmptyErrorText()
 				}
 				return d
 			},
@@ -185,16 +183,15 @@ export const DefaultSettings = {
 					if (`${rigItem}.json` !== b.base) {
 						d.isValid = false
 						d.error = tl(
-							'animatedJava.settings.predicateFilePath.errors.notEqualToRigItem',{
-								rigItem
+							'animatedJava.settings.predicateFilePath.errors.notEqualToRigItem',
+							{
+								rigItem,
 							}
 						)
 					}
 				} else {
 					d.isValid = false
-					d.error = tl(
-						'animatedJava.settings.generic.errors.emptyValue'
-					)
+					d.error = genericEmptyErrorText()
 				}
 				return d
 			},
@@ -526,7 +523,9 @@ class Settings {
 
 	registerPluginSettings(exporterId, exporterSettingsKey, settings) {
 		DefaultSettings[exporterSettingsKey] = settings
-		ForeignSettingTranslationKeys[exporterSettingsKey] = `${exporterId}.title`
+		ForeignSettingTranslationKeys[
+			exporterSettingsKey
+		] = `${exporterId}.title`
 		this.update(
 			{
 				[exporterSettingsKey]: settings,
