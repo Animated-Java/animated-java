@@ -46,7 +46,9 @@ export const DefaultSettings = {
 				return tl('animatedJava.settings.exporter.description')
 			},
 			type: 'select',
-			default: '',
+			get default() {
+				return [...store.getStore('exporters').keys()][0]
+			},
 			get options() {
 				return Object.fromEntries(
 					[...store.getStore('exporters').keys()].map((v) => [
@@ -56,6 +58,8 @@ export const DefaultSettings = {
 				)
 			},
 			onUpdate(d) {
+				console.log(d)
+				console.log([...store.getStore('exporters').keys()])
 				if (
 					![...store.getStore('exporters').keys()].includes(d.value)
 				) {
