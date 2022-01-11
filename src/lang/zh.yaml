@@ -202,220 +202,220 @@ animatedJava:
       rigFolderHasUnknownContent:
         title: 未使用的骨骼文件夹
         body:
-          - The folder you have chosen as your rig model folder has unknown files in it.
-          - Are you sure you want to overwrite the contents of this folder with your rig?
+          - 所选的骨骼模型文件夹存在未知文件。
+          - 确定让骨骼文件内容覆盖到此文件夹？
           - "所选文件夹："
           - <textarea>%path</textarea>
           - "未知文件："
           - <textarea>%files</textarea>
 
       rigFolderAlreadyUsedByOther:
-        title: 所选骨骼模型文件夹已在使用中
+        title: 已在使用的骨骼文件夹
         body:
-          - The folder you have chosen as your rig model folder already has a different rig's models inside of it.
-          - Are you sure you want to overwrite the contents of this folder with your rig?
-          - "Chosen folder:"
+          - 所选的骨骼模型文件夹已存在其他骨骼模型。
+          - 确定让骨骼文件内容覆盖已存在的内容？
+          - "所选文件夹："
           - <textarea>%path</textarea>
-          - "Files:"
+          - "文件："
           - <textarea>%files</textarea>
 
       unableToGenerateTexturePath:
-        title: Invalid texture path
+        title: 无效的纹理路径
         body:
-          - The texture '%textureName' has an invalid location inside a Resource Pack
-          - Please make sure it is properly saved inside of a valid Resource Pack in a sub folder of 'assets/namespace/textures/'
-          - eg. 'resources/assets/minecraft/textures/item/diamond.png'
+          - 纹理 '%textureName' 在资源包中的路径无效
+          - 请确保纹理正确地保存在资源包的 'assets/namespace/textures/' 路径下
+          - 例：'resources/assets/minecraft/textures/item/diamond.png'
 
       unableToGenerateModelPath:
-        title: Invalid model path
+        title: 无效的模型路径
         body:
-          - The model '%modelName' has an invalid location inside a Resource Pack
-          - Please make sure it is properly saved inside of a valid Resource Pack in a sub folder of 'assets/namespace/models/'
-          - eg. 'resources/assets/minecraft/models/item/diamond.json'
+          - 模型 '%modelName' 在资源包中的路径无效
+          - 请确保模型正确地保存在资源包的 'assets/namespace/models/' 路径下
+          - 例：'resources/assets/minecraft/models/item/diamond.json'
 
       invalidCubeRotations:
-        title: Invalid Element Rotations
+        title: 无效的旋转块
         body:
-          - The rotations of some cubes are invalid for the java model format.
-          - Please fix all invalid rotations before exporting.
+          - 某些块的旋转值在Java模型格式中无效。
+          - 导出前需要移除所有块中的无效旋转值。
 
       unsavedTexture:
-        title: Unsaved Texture
+        title: 未保存的纹理
         body:
-          - The texture '%textureName' is not saved to disk!
-          - Please make sure it is saved into a valid resource pack location.
+          - 纹理 '%textureName' 未保存！
+          - 请确保纹理已正确地保存在资源包内。
 
       transparentTexturePathNotFound:
-        title: Transparent Texture Path Not Defined
+        title: 未定义透明纹理路径
         body:
-          - Looks like you're trying to use variants with transparent textures without defining a texture path!
-          - You'll need to configure the transparent texture path in the settings before you can export.
+          - 在使用的变体带有未定义路径的透明纹理吗？
+          - 导出前需要在配置中设置透明纹理的路径。
 
       predicateFilePathUndefined:
-        title: Predicate File Path Undefined
+        title: 未定义 Predicate 文件路径
         body:
-          - You must define a predicate file path in the settings before you can export.
+          - 导出前需要在设置中指定 predicate 文件的路径。
 
       rigModelsExportFolderUndefined:
-        title: Rig Model Folder Undefined
+        title: 未定义骨骼模型文件夹
         body:
-          - You must define a rig model folder path in settings before you can export.
+          - 导出前需要在设置中指定骨骼模型的文件夹路径。
 
   exporters:
     #? Generic Exporter Strings
     generic:
       progress:
-        writingDataPack: Writing Data Pack to disk... %progress% | Writing %fileName
-        exportingDataPack: Generating Data Pack... %progress%
+        writingDataPack: 数据包写入到磁盘中... %progress% | %fileName 写入中
+        exportingDataPack: 生成数据包中... %progress%
 
       dialogs:
         errors:
           mcbFilePathNotDefined:
-            title: MCB file path not defined
+            title: 未定义 MCB 文件路径
             body:
-              - You must define a path for the MCB file in the Statue Exporter settings before exporting!
+              - 导出前需要在静态导出器设置中定义 MCB 文件的路径！
 
           dataPackPathNotDefined:
-            title: Data Pack file path undefined
+            title: 未定义数据包文件路径
             body:
-              - You must define a data pack path in settings before you can export.
+              - 导出前需要在设置中定义数据包的路径。
 
       settings:
         rootEntityType:
-          title: Root Entity Type
+          title: 根实体类型
           description:
-            - The entity type to use as the root entity for the model
+            - 根实体所使用的实体类型
           errors:
-            invalidEntity: Chosen entity does not exist!
+            invalidEntity: 所选实体不存在！
 
         rootEntityNbt:
-          title: Root Entity NBT
+          title: 根实体 NBT
           description:
-            - The NBT data of the root entity
+            - 根实体的 NBT 数据
           errors:
-            invalidNbt: Invalid NBT!
+            invalidNbt: 无效的 NBT！
 
         markerArmorStands:
-          title: Marker Armor Stands
+          title: 盔甲架 Marker
           description:
-            - When enabled all armor_stands used to display the rig will have no hitbox or collision.
+            - 启用时将移除所有用于显示骨骼的盔甲架的碰撞箱。
 
         modelTag:
-          title: Model Tag
+          title: 模型标签
           description:
-            - The tag used to select the model
+            - 选择此模型时所使用的标签
 
         rootTag:
-          title: Root Tag
+          title: 根标签
           description:
-            - The tag used to select the statue's root entity
+            - 选择此静态根实体时所使用的标签
 
         allBonesTag:
-          title: All Bones Tag
+          title: 所有骨骼标签
           description:
-            - The tag used to select any or all of the statue's bones
+            - 选择此静态模型任意/所有骨骼时所使用的标签
 
         boneModelDisplayTag:
-          title: Bone Model Display Tag
+          title: 骨骼模型显示标签
           description:
-            - The tag used to select the model display entities (armor_stands with items on their heads)
+            - 选择显示模型的实体所使用的标签（头戴物品的 armor_stands）
 
         individualBoneTag:
-          title: Individual Bone Tag
+          title: 特定骨骼标签
           description:
-            - The tag used to select a specific bone by name
+            - 选择指定名称的骨骼时所使用的标签
 
         internalScoreboardObjective:
-          title: Internal Scoreboard
+          title: 内部记分板
           description:
-            - The name of the scoreboard objective used for internal calculations
+            - 用于内部计算的记分板目标名称
 
         idScoreboardObjective:
-          title: Model ID Scoreboard
+          title: 模型 ID 记分板
           description:
-            - The name of the scoreboard objective used to identify which entities belong to which model instance
+            - 用于标识不同实体和模型实例的记分板目标名称
 
         exportMode:
-          title: Export Mode
+          title: 导出模式
           description:
-            - What kind of format to export to. Vanilla will export a normal Data Pack and Resource Pack.
-            - MCB will export a Resource Pack and .mc file for the lang-mc compiler
+            - 导出的格式。原版导出数据包和资源包。
+            - MC-Build（MCB）则导出资源包和用于 lang-mc 编译器的 .mc 文件
           options:
             mcb: MCB
-            vanilla: Vanilla
+            vanilla: 原版
 
         mcbFilePath:
-          title: Lang-mc file
+          title: Lang-mc 文件路径
           description:
-            - The path to export the .mc file to
-            - You will need to install mc-extra into your MCB workspace in order to build the exported data pack
+            - .mc 文件的导出路径
+            - 需要先安装 mc-extra 到你的 MCB 工作区才能构建导出的资源包
 
         mcbConfigPath:
-          title: Lang-mc config.json Path
+          title: Lang-mc config.json 路径
           description:
-            - Exports the default MCB config for Animated Java
-            - WARNING! Will overwrite existing config.json
+            - 导出用于 Animated Java 的默认 MCB 配置
+            - 警告！该操作会覆盖现有的 config.json
           errors:
-            mustBeNamedAfterProject: Path must end on a file named %projectName.mc!
+            mustBeNamedAfterProject: 路径必须指向名为 %projectName.mc 的文件！
 
         dataPackPath:
-          title: Data Pack
+          title: 数据包
           description:
-            - The path to export the generated Data Pack to.
+            - 已生成数据包的导出路径。
 
     #? Vanilla Statue Exporter
     vanillaStatue:
-      title: Statue Exporter
+      title: 静态导出器
 
     #? Vanilla Animation Exporter
     vanillaAnimation:
-      title: Animation Exporter
+      title: 动画导出器
       dialogs:
         errors:
           zeroLengthAnimation:
-            title: Zero Length Animation
+            title: 零长度动画
             body:
-              - The animation %animationName is too short! Animations must be at least 0.05 seconds (or 1 game tick) long
+              - 动画 %animationName 的长度过短！最短动画长度应至少为0.05秒（1游戏刻）
 
           noAnimations:
-            title: No Animations
+            title: 缺少动画
             body:
-              - You haven't made any animations!
-              - You'll need to create some animations in the animation tab before you can export using the animation exporter.
+              - 未发现任何动画！
+              - 使用动画导出器前需要在动画模式中创建动画。
 
       settings:
         autoDistance:
-          title: Auto Distance
+          title: 自动设置动画距离
           description:
-            - Automatically calculate the maximum distance required to animate all bones in the rig based on the rendered animations.
+            - 基于已渲染的动画自动计算动态化所有骨骼所需的最大距离。
 
         autoDistanceMovementThreshold:
-          title: Auto Distance Movement Threshold
+          title: 自动距离移动阈值
           description:
-            - How much distance to add to the calculated animation distance.
-            - The more distance you add the farther you can move the rig in a single tick without dropping bones
+            - 为已计算的动画所添加的距离。
+            - 越高的距离能使骨骼在单刻移动得更远时不出现骨骼丢失的情况
           errors:
-            valueOutOfRange: Setting value must be at least 0
+            valueOutOfRange: 设置的值必须至少为 0
 
         manualDistance:
-          title: Manual Animation Distance
+          title: 手动设置动画距离
           description:
-            - How far away a bone can be from the root entity before it stops animating.
-            - This setting is intended for advanced users.
+            - 骨骼在停止动画前离根实体所允许的最远距离。
+            - 此设置适用于进阶用户。
           errors:
-            valueOutOfRange: Setting value must be at least 0
+            valueOutOfRange: 设置的值必须至少为 0
 
         frameScoreboardObjective:
-          title: Frame Scoreboard
+          title: 帧 记分板
           description:
-            - The name of the scoreboard objective used to track which frame of an animation should be played next
+            - 用于跟踪动画下一帧的记分板目标名称
 
         animatingFlagScoreboardObjective:
-          title: Animation Flag Scoreboard
+          title: 动画标记 记分板
           description:
-            - The name of the scoreboard objective used to query if a rig is actively animating
+            - 用于查询骨骼动画是否播放中的记分板目标名称
 
         animationLoopModeScoreboardObjective:
-          title: Animation Loop Mode Scoreboard
+          title: 动画循环模式 记分板
           description:
-            - The name of the scoreboard objective used to control the looping behaviour of each animation
+            - 用于控制各动画循环行为的记分板目标名称
