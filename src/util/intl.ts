@@ -1,8 +1,12 @@
+import { format, FormatObject } from './replace'
+
 class Intl {
 	dict: any
 	lang: string
 	languages: string[]
 	tokens: Set<any>
+	static translationCache: {[index: string]: string} = {}
+
 	constructor(lang: string) {
 		this.dict = {}
 		// @ts-ignore
@@ -14,16 +18,52 @@ class Intl {
 	setLanguage(lang: string) {
 		this.lang = lang
 	}
-	tl(key: string) {
-		this.tokens.add(key)
-		let v = this.dict[this.lang]?.[key] ? this.dict[this.lang][key] : key
-		// if (v === key) debugger
-		return v
+	tl(tlPath: string, raw?: boolean) {
+		if (Object.prototype.hasOwnProperty.call(Intl.translationCache, tlPath)) {
+			return Intl.translationCache[tlPath]
+		}
+
+		let lang = this.dict[this.lang]
+		function recurse(_keyPath: string[], obj: object) {
+			const key = _keyPath.pop()
+			if (Object.prototype.hasOwnProperty.call(obj, key)) {
+				const value = obj[key]
+				switch (typeof value) {
+					case 'string':
+						return value
+					case 'object':
+						if (Array.isArray(value)) {
+							if (raw) return value.join('')
+							return value.join('<br/>')
+						}
+						return recurse(_keyPath, value)
+				}
+			}
+			return tlPath
+		}
+		if (!lang) return tlPath
+		const translatedString = recurse(tlPath.split('.').reverse(), lang)
+		Intl.translationCache[tlPath] = translatedString
+		return translatedString
 	}
+	// tl(key: string) {
+	// 	let segments = key.split('.')
+	// 	let dict = this.dict[this.lang]
+	// 	for (let i = 0; i < segments.length; i++) {
+	// 		if (dict[segments[i]]) {
+	// 			dict = dict[segments[i]]
+	// 		} else {
+	// 			this.tokens.add(key)
+	// 			return key
+	// 		}
+	// 	}
+	// 	return typeof dict === 'string' ? dict : key
+	// }
 	register(name: string, dict: any) {
 		this.dict[name] = dict
 	}
 	diff(showDefaultValues: boolean) {
+		throw new Error('Not implemented')
 		let root = this.dict.en
 		let diff = []
 		for (let lang in this.dict) {
@@ -49,4 +89,10 @@ class Intl {
 }
 
 export const intl = new Intl('en')
-export const tl = (key: string) => intl.tl(key)
+export const tl = (key: string, formatObj?: FormatObject, raw?: boolean) => {
+	let ret = intl.tl(key, raw)
+	if (formatObj) {
+		return format(ret, formatObj)
+	}
+	return ret
+}

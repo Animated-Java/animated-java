@@ -2,67 +2,124 @@ import { store } from './util/store'
 import { size, removeNamespace } from './util/misc'
 import { safeFunctionName } from './util/replace'
 import { Path } from './util/path'
+import * as pathjs from 'path'
+import { getModelPath } from './util/minecraft/resourcepack'
+import { Items } from './util/minecraft/items'
+import { tl } from './util/intl'
 
+const genericEmptyErrorText = tl(
+	'animatedJava.settings.generic.errors.emptyValue'
+)
+export let ForeignSettingTranslationKeys = {}
 const UNASSIGNED = Symbol('UNASSIGNED_CACHE')
 export const DefaultSettings = {
 	animatedJava: {
 		projectName: {
+			get title() {
+				return tl('animatedJava.settings.projectName.title')
+			},
+			get description() {
+				return tl('animatedJava.settings.projectName.description')
+			},
 			type: 'text',
 			default: 'unnamed_project',
-			populate(value) {
-				if (typeof value === 'string') return safeFunctionName(value)
-				else return 'undefined_project'
-			},
-			isValid(value) {
-				if (typeof value === 'string') {
-					if (value != '') return value === safeFunctionName(value)
+			onUpdate(d) {
+				if (d.value !== '') {
+					if (d.value !== safeFunctionName(d.value)) {
+						d.isValid = false
+						d.error = tl(
+							'animatedJava.settings.projectName.errors.invalidFunctionName'
+						)
+					}
+				} else {
+					d.isValid = false
+					d.error = genericEmptyErrorText
 				}
-				return false
+				return d
 			},
 		},
 		exporter: {
+			get title() {
+				return tl('animatedJava.settings.exporter.title')
+			},
+			get description() {
+				return tl('animatedJava.settings.exporter.description')
+			},
 			type: 'select',
 			default: '',
 			get options() {
 				return Object.fromEntries(
 					[...store.getStore('exporters').keys()].map((v) => [
 						v,
-						`animatedJava_exporter_${v}`,
+						ForeignSettingTranslationKeys[v],
 					])
 				)
 			},
-			populate() {
-				return [...store.getStore('exporters').keys()][0]
-			},
-			isValid(value) {
-				return [...store.getStore('exporters').keys()].includes(value)
+			onUpdate(d) {
+				if (
+					![...store.getStore('exporters').keys()].includes(d.value)
+				) {
+					d.isValid = false
+					d.error = tl(
+						'animatedJava.settings.exporter.errors.mustBeValidExporter'
+					)
+				}
+				return d
 			},
 		},
 		verbose: {
+			get title() {
+				return tl('animatedJava.settings.verbose.title')
+			},
+			get description() {
+				return tl('animatedJava.settings.verbose.description')
+			},
 			type: 'checkbox',
 			default: true,
-			populate() {
-				return true
+			onUpdate(d) {
+				if (!(typeof d.value === 'boolean')) {
+					d.isValid = false
+					d.error = tl(
+						'animatedJava.settings.generic.errors.mustBeBoolean'
+					)
+				}
+				return d
 			},
-			isValid(value) {
-				return typeof value === 'boolean'
-			}
 		},
 		rigItem: {
+			get title() {
+				return tl('animatedJava.settings.rigItem.title')
+			},
+			get description() {
+				return tl('animatedJava.settings.rigItem.description')
+			},
 			type: 'text',
 			default: 'minecraft:white_dye',
-			populate() {
-				return 'minecraft:white_dye'
-			},
-			isValid(value) {
-				return true
-			},
-			isVisible(settings) {
-				return false
+			onUpdate(d) {
+				if (d.value != '') {
+					if (!Items.isItem(d.value)) {
+						d.isValid = false
+						d.error = tl(
+							'animatedJava.settings.rigItem.errors.invalidItem'
+						)
+					}
+				} else {
+					d.isValid = false
+					d.error = tl('animatedJava.settings.generic.emptyValue')
+				}
+				return d
 			},
 			dependencies: ['animatedJava.predicateFilePath'],
 		},
 		rigModelsExportFolder: {
+			get title() {
+				return tl('animatedJava.settings.rigModelsExportFolder.title')
+			},
+			get description() {
+				return tl(
+					'animatedJava.settings.rigModelsExportFolder.description'
+				)
+			},
 			type: 'filepath',
 			default: '',
 			props: {
@@ -72,16 +129,38 @@ export const DefaultSettings = {
 					properties: ['openDirectory'],
 				},
 			},
-			populate() {
-				return ''
-			},
-			isValid(value) {
-				return value != ''
+			onUpdate(d) {
+				if (d.value != '') {
+					let modelPath
+					try {
+						modelPath = getModelPath(
+							pathjs.join(d.value, 'fakemodel.json')
+						)
+					} catch (e) {
+						console.log(d.value)
+						console.error(e)
+						d.isValid = false
+						d.error = tl(
+							'animatedJava.settings.rigModelsExportFolder.errors.invalidPath'
+						)
+					}
+				} else {
+					d.isValid = false
+					d.error = tl(
+						'animatedJava.settings.generic.errors.emptyValue'
+					)
+				}
+				return d
 			},
 		},
 		predicateFilePath: {
+			get title() {
+				return tl('animatedJava.settings.predicateFilePath.title')
+			},
+			get description() {
+				return tl('animatedJava.settings.predicateFilePath.description')
+			},
 			type: 'filepath',
-			default: '',
 			props: {
 				target: 'file',
 				dialogOpts: {
@@ -95,27 +174,40 @@ export const DefaultSettings = {
 					properties: ['openFile'],
 				},
 			},
-			onUpdate(value) {
-				if (value != '') {
-					const p = new Path(value)
+			default: '',
+			onUpdate(d) {
+				if (d.value != '') {
+					const p = new Path(d.value)
 					const b = p.parse()
 					const rigItem = removeNamespace(
 						ANIMATED_JAVA.settings.animatedJava.rigItem
 					)
-					if (rigItem !== b.name) {
-						ANIMATED_JAVA.settings.animatedJava.rigItem = `minecraft:${b.name}`
+					if (`${rigItem}.json` !== b.base) {
+						d.isValid = false
+						d.error = tl(
+							'animatedJava.settings.predicateFilePath.errors.notEqualToRigItem',{
+								rigItem
+							}
+						)
 					}
+				} else {
+					d.isValid = false
+					d.error = tl(
+						'animatedJava.settings.generic.errors.emptyValue'
+					)
 				}
-				return value
-			},
-			populate() {
-				return ''
-			},
-			isValid(value) {
-				return value != ''
+				return d
 			},
 		},
 		transparentTexturePath: {
+			get title() {
+				return tl('animatedJava.settings.transparentTexturePath.title')
+			},
+			get description() {
+				return tl(
+					'animatedJava.settings.transparentTexturePath.description'
+				)
+			},
 			type: 'filepath',
 			default: '',
 			props: {
@@ -126,36 +218,54 @@ export const DefaultSettings = {
 					properties: ['openFile'],
 				},
 			},
-			populate() {
-				return ''
-			},
-			isValid(value) {
-				return value != ''
+			onUpdate(d) {
+				if (d.value === '') {
+					const variants = ANIMATED_JAVA.variants
+					if (
+						variants &&
+						Object.values(variants).find((v) =>
+							Object.values(v).find((t) => t === 'transparent')
+						)
+					) {
+						d.isValid = false
+						d.error = tl(
+							'animatedJava.settings.transparentTexturePath.errors.undefinedWhenNeeded'
+						)
+					}
+				}
+				return d
 			},
 		},
 		useCache: {
+			get title() {
+				return tl('animatedJava.settings.useCache.title')
+			},
+			get description() {
+				return tl('animatedJava.settings.useCache.description')
+			},
 			type: 'checkbox',
 			default: true,
-			populate() {
-				return true
-			},
-			isValid(value) {
-				return typeof value === 'boolean'
+			onUpdate(d) {
+				return d
 			},
 			global: true,
 		},
 		cacheMode: {
+			get title() {
+				return tl('animatedJava.settings.cacheMode.title')
+			},
+			get description() {
+				return tl('animatedJava.settings.cacheMode.description')
+			},
 			type: 'select',
 			default: 'memory',
 			options: {
-				memory: 'animatedJava.setting.cacheMode.memory.name',
-				file: 'animatedJava.setting.cacheMode.file.name',
+				memory: 'animatedJava.settings.cacheMode.options.memory',
+				file: 'animatedJava.settings.cacheMode.options.disk',
 			},
-			populate() {
-				return 'memory'
-			},
-			isValid(value) {
-				return this.options[value]
+			onUpdate(d) {
+				d.isValid = Boolean(this.options[d.value])
+				return d
 			},
 			isVisible(settings) {
 				return settings.animatedJava.useCache
@@ -164,42 +274,63 @@ export const DefaultSettings = {
 			global: true,
 		},
 		boundingBoxRenderMode: {
+			get title() {
+				return tl('animatedJava.settings.boundingBoxRenderMode.title')
+			},
+			get description() {
+				return tl(
+					'animatedJava.settings.boundingBoxRenderMode.description'
+				)
+			},
 			type: 'select',
 			default: 'single',
 			options: {
-				single: 'animatedJava.setting.boundingBoxRenderMode.single.name',
-				many: 'animatedJava.setting.boundingBoxRenderMode.many.name',
-				none: 'animatedJava.setting.boundingBoxRenderMode.none.name',
-			},
-			populate() {
-				return 'single'
-			},
-			isValid(value) {
-				return this.options[value]
+				single: 'animatedJava.settings.boundingBoxRenderMode.options.single',
+				many: 'animatedJava.settings.boundingBoxRenderMode.options.many',
+				none: 'animatedJava.settings.boundingBoxRenderMode.options.none',
 			},
 			global: true,
 		},
 	},
 }
-
+function createUpdateDescriptor(setting, value, event) {
+	return {
+		get value() {
+			return value
+		},
+		set value(v) {
+			throw new CustomError(
+				'The value property on an UpdateDescriptor is not writable'
+			)
+		},
+		isValid: true,
+		error: null,
+		setting,
+		event,
+	}
+}
+function handleUpdateDescriptor(descriptor) {
+	const { setting, isValid, value, error } = descriptor
+	setting.isValid = isValid
+	if (!isValid) {
+		setting.error = error
+	} else {
+		setting.error = null
+	}
+	return value
+}
 function evaluateSetting(event, namespace, name, value) {
 	const setting = DefaultSettings[namespace]?.[name]
 	if (setting) {
-		if (setting.isValid) {
-			if (setting.isValid(value)) {
-				if (setting.onUpdate) return setting.onUpdate(value)
-				return value
-			} else {
-				if (setting.onUpdate)
-					return setting.onUpdate(setting.populate(value))
-				return setting.populate(value)
-			}
-		} else {
-			if (setting.onUpdate) return setting.onUpdate(value)
-			return value
-		}
+		if (setting.onUpdate)
+			return handleUpdateDescriptor(
+				setting.onUpdate(createUpdateDescriptor(setting, value, event))
+			)
+		DefaultSettings[namespace][name].isValid = true
+		DefaultSettings[namespace][name].error = null
+		return value
 	} else {
-		throw new Error('Invalid setting path', `${namespace}.${name}`)
+		throw new CustomError('Invalid setting path', `${namespace}.${name}`)
 	}
 }
 class Settings {
@@ -243,6 +374,15 @@ class Settings {
 			console.error(e.message)
 		}
 	}
+	getUpdateDescriptor(namespace, name, value) {
+		const setting = DefaultSettings[namespace]?.[name]
+		if (setting && typeof setting.onUpdate === 'function') {
+			return setting.onUpdate(
+				createUpdateDescriptor(setting, value, 'dummy')
+			)
+		}
+		return createUpdateDescriptor(setting, value, 'dummy')
+	}
 	assign(namespace, settings) {
 		delete this[namespace]
 		const value = {}
@@ -263,6 +403,11 @@ class Settings {
 						settings[i],
 						value
 					)
+					if (!DefaultSettings[namespace][settings[i]].isValid) {
+						throw new CustomError(
+							`Invalid setting value for ${namespace}.${settings[i]}: ${value}`
+						)
+					}
 					return this.set(
 						namespace + '.' + settings[i],
 						validatedValue
@@ -284,9 +429,6 @@ class Settings {
 						DefaultSettings[namespace] &&
 						DefaultSettings[namespace][name]
 					) {
-						const target = DefaultSettings[namespace][name].global
-							? valGlobal
-							: val
 						try {
 							if (
 								global ||
@@ -382,15 +524,16 @@ class Settings {
 		return res
 	}
 
-	registerPluginSettings(pluginName, settings) {
-		DefaultSettings[pluginName] = settings
+	registerPluginSettings(exporterId, exporterSettingsKey, settings) {
+		DefaultSettings[exporterSettingsKey] = settings
+		ForeignSettingTranslationKeys[exporterSettingsKey] = `${exporterId}.title`
 		this.update(
 			{
-				[pluginName]: settings,
+				[exporterSettingsKey]: settings,
 			},
 			true
 		)
-		this.assign(pluginName, Object.keys(settings))
+		this.assign(exporterSettingsKey, Object.keys(settings))
 	}
 
 	toConsumable(target = 'all') {

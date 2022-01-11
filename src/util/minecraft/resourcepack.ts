@@ -10,16 +10,15 @@ export function getTexturePath(texture: any) {
 		console.log('Unsaved texture:', texture)
 		throw new CustomError('Unsaved texture', {
 			dialog: {
-				title: tl('animatedJava.popup.error.unsavedTexture.title'),
-				lines: format(
-					tl('animatedJava.popup.error.unsavedTexture.body'),
-					{
+				id: 'animatedJava.dialogs.errors.unsavedTexture',
+				title: tl('animatedJava.dialogs.errors.unsavedTexture.title'),
+				lines: [
+					tl('animatedJava.dialogs.errors.unsavedTexture.body', {
 						textureName: texture.name,
-					}
-				)
-					.split('\n')
-					.map((line: string) => `<p>${line}</p>`),
+					}),
+				],
 				width: 512,
+				singleButton: true,
 			},
 		})
 	}
@@ -46,18 +45,20 @@ export function getTexturePath(texture: any) {
 	console.log('Failed to generate path for:', texture)
 	throw new CustomError('Unable to generate texture path', {
 		dialog: {
+			id: 'animatedJava.dialogs.errors.unableToGenerateTexturePath',
 			title: tl(
-				'animatedJava.popup.error.unableToGenerateTexturePath.title'
+				'animatedJava.dialogs.errors.unableToGenerateTexturePath.title'
 			),
-			lines: format(
-				tl('animatedJava.popup.error.unableToGenerateTexturePath.body'),
-				{
-					textureName: texture.name,
-				}
-			)
-				.split('\n')
-				.map((line: string) => `<p>${line}</p>`),
+			lines: [
+				tl(
+					'animatedJava.dialogs.errors.unableToGenerateTexturePath.body',
+					{
+						textureName: texture.name,
+					}
+				),
+			],
 			width: 512,
+			singleButton: true,
 		},
 	})
 }
@@ -86,18 +87,20 @@ export function getModelPath(modelPath: string, modelName: string) {
 	}
 	throw new CustomError('Unable to generate model path', {
 		dialog: {
+			id: 'animatedJava.dialogs.errors.unableToGenerateModelPath',
 			title: tl(
-				'animatedJava.popup.error.unableToGenerateModelPath.title'
+				'animatedJava.dialogs.errors.unableToGenerateModelPath.title'
 			),
-			lines: format(
-				tl('animatedJava.popup.error.unableToGenerateModelPath.body'),
-				{
-					modelName,
-				}
-			)
-				.split('\n')
-				.map((line: string) => `<p>${line}</p>`),
+			lines: [
+				tl(
+					'animatedJava.dialogs.errors.unableToGenerateModelPath.body',
+					{
+						modelName,
+					}
+				),
+			],
 			width: 512,
+			singleButton: true,
 		},
 	})
 }

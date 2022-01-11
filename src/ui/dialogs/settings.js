@@ -1,13 +1,18 @@
-import { bus } from '../../util/bus'
-import events from '../../constants/events'
-import React, { useEffect, useRef, useState } from 'react'
 import ReactDom from 'react-dom'
-import { DefaultSettings, settings } from '../../settings'
+import { bus } from '../../util/bus'
 import { tl } from '../../util/intl'
 import { ERROR } from '../../util/errors'
+import events from '../../constants/events'
+import React, { useEffect, useRef, useState } from 'react'
+import { DefaultSettings, settings, ForeignSettingTranslationKeys } from '../../settings'
+
 const dialog = electron.dialog
+let updateSettingsUiActions = {}
+let forceUpdateSettingsUi = () => {
+	Object.values(updateSettingsUiActions).forEach((action) => action())
+}
 const RenderTemplates = {
-	checkbox({ value, setValue, namespace, name, children }) {
+	checkbox({ value, setValue, namespace, name, children, forceRerender }) {
 		return (
 			<>
 				<div className="setting_element">
@@ -16,7 +21,11 @@ const RenderTemplates = {
 						id={`aj.setting.${namespace}.${name}`}
 						checked={value}
 						onChange={(e) => {
-							settings[namespace][name] = e.target.checked
+							try {
+								settings[namespace][name] = e.target.checked
+							} catch (e) {
+								forceRerender()
+							}
 						}}
 					/>
 				</div>
@@ -32,6 +41,7 @@ const RenderTemplates = {
 		children,
 		target = 'file',
 		dialogOpts = {},
+		forceRerender,
 	}) {
 		return (
 			<>
@@ -48,10 +58,12 @@ const RenderTemplates = {
 								minWidth: 'unset',
 								paddingLeft: '9px',
 							}}
-							onClick={() =>
-								(settings[namespace][name] =
-									DefaultSettings[namespace][name].default)
-							}
+							onClick={() => {
+								settings.set(
+									`${namespace}.${name}`,
+									DefaultSettings[namespace][name].default
+								)
+							}}
 						>
 							<span
 								className="material-icons"
@@ -93,7 +105,11 @@ const RenderTemplates = {
 										if (target === 'file') fp = res.filePath
 										else [fp] = res.filePaths
 										if (fp != value) {
-											settings[namespace][name] = fp
+											try {
+												settings[namespace][name] = fp
+											} catch (e) {
+												forceRerender()
+											}
 										}
 									}
 								})
@@ -119,7 +135,11 @@ const RenderTemplates = {
 							setValue(e.target.value)
 						}}
 						onBlur={(e) => {
-							settings[namespace][name] = e.target.value
+							try {
+								settings[namespace][name] = e.target.value
+							} catch (e) {
+								forceRerender()
+							}
 						}}
 						className="dark_bordered"
 						style={{ width: 'calc(100% - 118px)' }}
@@ -128,7 +148,15 @@ const RenderTemplates = {
 			</>
 		)
 	},
-	select({ value, setValue, namespace, name, children, definition }) {
+	select({
+		value,
+		setValue,
+		namespace,
+		name,
+		children,
+		definition,
+		forceRerender,
+	}) {
 		return (
 			<>
 				{children}
@@ -137,7 +165,12 @@ const RenderTemplates = {
 						id={`aj.setting.${namespace}.${name}`}
 						value={value}
 						onChange={(e) => {
-							settings[namespace][name] = e.target.value
+							setValue(e.target.value)
+							try {
+								settings[namespace][name] = e.target.value
+							} catch (e) {
+								forceRerender()
+							}
 						}}
 					>
 						{Object.entries(definition.options).map(
@@ -164,11 +197,15 @@ const SettingInput = ({ namespace, name, template }) => {
 	const [value, setValue] = useState(settings[namespace][name])
 	const [isValid, setIsValid] = useState(true)
 	const [isVisible, setIsVisible] = useState(true)
-
+	const [rerender, setRerender] = useState(0)
+	updateSettingsUiActions[`${namespace}.${name}`] = () =>
+		setRerender(Math.random())
 	useEffect(() => {
 		// setValue(settings[namespace][name])
 		return settings.watch(namespace + '.' + name, (v) => {
-			setValue(v)
+			queueMicrotask(() => {
+				setValue(() => v)
+			})
 		})
 	}, [])
 	// useEffect(() => {
@@ -200,8 +237,9 @@ const SettingInput = ({ namespace, name, template }) => {
 		return () => watchers.forEach((cb) => cb())
 	}, [])
 	useEffect(() => {
-		setIsValid(DefaultSettings[namespace][name].isValid(value))
+		setIsValid(settings.getUpdateDescriptor(namespace, name, value).isValid)
 	}, [value])
+	let error = settings.getUpdateDescriptor(namespace, name, value).error
 	const children = (
 		<label
 			htmlFor={`aj.setting.${namespace}.${name}`}
@@ -217,9 +255,10 @@ const SettingInput = ({ namespace, name, template }) => {
 							height: '0px',
 							textAlign: 'center',
 						}}
-						title={tl(
-							'animatedJava.settings.invalidSetting.generic'
-						)}
+						title={
+							error ||
+							tl('animatedJava.settings.generic.errors.invalid')
+						}
 					>
 						<span
 							className="material-icons"
@@ -233,35 +272,39 @@ const SettingInput = ({ namespace, name, template }) => {
 						</span>
 					</span>
 				)}
-				{tl(`${namespace}.setting.${name}.name`)}
-				{DefaultSettings[namespace][name].global && (
+				{SettingDef.title}
+				{SettingDef.global && (
 					<span
 						style={{
 							opacity: 0.8,
 							marginLeft: '1em',
 						}}
 					>
-						{tl('animatedJava.settings.global')}
+						{tl('animatedJava.settings.isGlobal')}
 					</span>
 				)}
-				{DefaultSettings[namespace][name].optional && (
+				{SettingDef.optional && (
 					<span
 						style={{
 							opacity: 0.8,
 							marginLeft: '1em',
 						}}
 					>
-						{tl('animatedJava.settings.optional')}
+						{tl('animatedJava.settings.isOptional')}
 					</span>
 				)}
 			</div>
-			<div className="setting_description">
-				{tl(`${namespace}.setting.${name}.description`)
-					.split('\n')
-					.map((line, i) => (
-						<p key={i}>{line}</p>
-					))}
-			</div>
+			{!isValid && error && (
+				<div>
+					<p>
+						<strong style={{ color: 'red' }}>{error}</strong>
+					</p>
+				</div>
+			)}
+			<div
+				className="setting_description"
+				dangerouslySetInnerHTML={{ __html: SettingDef.description }}
+			></div>
 		</label>
 	)
 	if (isVisible) {
@@ -272,16 +315,16 @@ const SettingInput = ({ namespace, name, template }) => {
 					<Type
 						value={value}
 						setValue={(v) => {
-							if (DefaultSettings[namespace][name].isValid(v)) {
-								setIsValid(true)
-							} else {
-								setIsValid(false)
-							}
+							setIsValid(
+								settings.getUpdateDescriptor(namespace, name, v)
+									.isValid
+							)
 							setValue(v)
 						}}
 						namespace={namespace}
 						name={name}
-						definition={DefaultSettings[namespace][name]}
+						definition={SettingDef}
+						forceRerender={() => setRerender(Math.random())}
 						{...(template.props || {})}
 					>
 						{children}
@@ -300,7 +343,12 @@ const SettingInput = ({ namespace, name, template }) => {
 							setValue(e.target.value)
 						}}
 						onBlur={(e) => {
-							settings[namespace][name] = e.target.value
+							try {
+								settings[namespace][name] = e.target.value
+							} catch (e) {
+								// setValue(e.target.value)
+								setRerender(Math.random())
+							}
 						}}
 						className="dark_bordered"
 						style={{ width: 'calc(100% - 18px)' }}
@@ -313,6 +361,8 @@ const SettingInput = ({ namespace, name, template }) => {
 	}
 }
 const Settings = () => {
+	const [, forceRerender] = useState(0)
+	updateSettingsUiActions.main = () => forceRerender(Math.random())
 	const ref = useRef()
 	useEffect(() => {
 		if (ref.current) {
@@ -359,7 +409,7 @@ const Settings = () => {
 					style={{ cursor: 'default' }}
 				>
 					<div className="dialog_title">
-						{tl('animatedJava.menubar.settings.name')}
+						{tl('animatedJava.menubar.settings')}
 					</div>
 				</div>
 				<div
@@ -379,7 +429,7 @@ const Settings = () => {
 								className="tl i_b"
 								style={{ marginLeft: '1em' }}
 							>
-								Animated Java Settings
+								{tl('animatedJava.settings.header')}
 							</h2>
 							<ul style={{ marginLeft: '2em' }}>
 								{Object.keys(DefaultSettings.animatedJava).map(
@@ -401,9 +451,7 @@ const Settings = () => {
 						<li>
 							<ul>
 								<h2 style={{ marginLeft: '1em' }}>
-									{tl(
-										'animatedJava.menubar.exporterList.name'
-									)}
+									{tl('animatedJava.menubar.export')}
 								</h2>
 								{Object.keys(DefaultSettings)
 									.filter((key) => key !== 'animatedJava')
@@ -415,7 +463,12 @@ const Settings = () => {
 											// SettingsPanel(key, setRevealedIndex, index, revealedIndex, children)
 											<SettingsPanel
 												key={key}
-												name={key}
+												name={
+													ForeignSettingTranslationKeys[
+														key
+													] || key
+												}
+												id={key}
 												childrenSettings={children}
 											/>
 										)
@@ -429,17 +482,17 @@ const Settings = () => {
 	)
 }
 
-function SettingsPanel({ childrenSettings, name, visible }) {
+function SettingsPanel({ childrenSettings, name, visible, id }) {
 	const [shown, setShown] = useState(visible)
 	return (
 		<DropDown visible={shown} onClick={() => setShown(!shown)} name={name}>
 			<ul style={{ marginLeft: '2em' }}>
-				{childrenSettings.map((child, id) => (
+				{childrenSettings.map((child) => (
 					<li key={child}>
 						<SettingInput
-							namespace={name}
+							namespace={id}
 							name={child}
-							template={DefaultSettings[name][child]}
+							template={DefaultSettings[id][child]}
 						></SettingInput>
 					</li>
 				))}
@@ -480,6 +533,7 @@ export function show_settings() {
 	console.log('show settings')
 	el.hidden = false
 	visible = true
+	forceUpdateSettingsUi()
 	Array.from(el.children).forEach((child) => {
 		child.style.display = 'unset'
 	})

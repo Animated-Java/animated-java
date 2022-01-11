@@ -1,39 +1,6 @@
-import * as aj from './animatedJava'
+import type * as aj from './animatedJava'
 
-import './lifecycle'
-import './rotationSnap'
-import { format as modelFormat } from './modelFormat'
-import { format } from './util/replace'
-import { DefaultSettings, settings } from './settings'
-import { CustomError } from './util/customError'
-import { ERROR } from './util/errors'
-import { store } from './util/store'
-import { tl } from './util/intl'
-import { bus } from './util/bus'
-import { CustomAction } from './util/customAction'
-import './ui/panel/states'
-import './ui/dialogs/settings'
-import EVENTS from './constants/events'
-import { renderAnimation } from './animationRenderer'
-
-// declare var settings: aj.Settings
-
-import {
-	exportPredicate,
-	exportRigModels,
-	exportTransparentTexture,
-} from './exporting'
-
-import {
-	computeElements,
-	computeModels,
-	computeVariantTextureOverrides,
-	computeBones,
-	computeVariantModels,
-	computeScaleModelOverrides,
-} from './modelComputation'
-
-import { intl } from './util/intl'
+import { tl, intl } from './util/intl'
 // @ts-ignore
 import lang_cz from './lang/cz.yaml'
 intl.register('cz', lang_cz)
@@ -76,7 +43,36 @@ intl.register('zh', lang_zh)
 // @ts-ignore
 import lang_zh_tw from './lang/zh_tw.yaml'
 intl.register('zh_tw', lang_zh_tw)
-import { makeArmorStandModel } from './makeArmorStandModel'
+
+import './lifecycle'
+import './rotationSnap'
+import './ui/panel/states'
+import './ui/dialogs/settings'
+import { bus } from './util/bus'
+import { store } from './util/store'
+import { ERROR } from './util/errors'
+import EVENTS from './constants/events'
+import { CustomError } from './util/customError'
+import { CustomAction } from './util/customAction'
+import { format as modelFormat } from './modelFormat'
+import { renderAnimation } from './animationRenderer'
+import { DefaultSettings, settings } from './settings'
+// import { makeArmorStandModel } from './makeArmorStandModel'
+
+import {
+	exportPredicate,
+	exportRigModels,
+	exportTransparentTexture,
+} from './exporting'
+
+import {
+	computeElements,
+	computeModels,
+	computeVariantTextureOverrides,
+	computeBones,
+	computeVariantModels,
+	computeScaleModelOverrides,
+} from './modelComputation'
 
 export const BuildModel = (callback: any, options: any) => {
 	if (!ANIMATED_JAVA.exportInProgress) {
@@ -95,7 +91,7 @@ export const BuildModel = (callback: any, options: any) => {
 				) {
 					// @ts-ignore
 					Blockbench.showQuickMessage(
-						tl('animatedJava.exportCancelled')
+						tl('animatedJava.popups.exportCancelled')
 					)
 					console.log('Intentional Error:', e.message)
 					throw e
@@ -105,7 +101,7 @@ export const BuildModel = (callback: any, options: any) => {
 				}
 			})
 	} else {
-		Blockbench.showQuickMessage(tl('animatedJava.error.exportInProgress'))
+		Blockbench.showQuickMessage(tl('animatedJava.popups.exportInProgress'))
 		ERROR.ANIMATED_JAVA_BUSY()
 	}
 }
@@ -120,15 +116,16 @@ async function computeAnimationData(
 		throw new CustomError('Predicate File Path Undefined Error', {
 			intentional: true,
 			dialog: {
+				id: 'animatedJava.dialogs.errors.predicateFilePathUndefined',
 				title: tl(
-					'animatedJava.popup.error.predicateFilePathUndefined.title'
+					'animatedJava.dialogs.errors.predicateFilePathUndefined.title'
 				),
-				id: '',
-				lines: tl(
-					'animatedJava.popup.error.predicateFilePathUndefined.body'
-				)
-					.split('\n')
-					.map((line: string) => `<p>${line}</p>`),
+				lines: [
+					tl(
+						'animatedJava.dialogs.errors.predicateFilePathUndefined.body'
+					),
+				],
+				width: 256
 			},
 		})
 	}
@@ -136,15 +133,14 @@ async function computeAnimationData(
 		throw new CustomError('Rig Model Exporter Folder Undefined', {
 			intentional: true,
 			dialog: {
+				id: 'animatedJava.dialogs.errors.rigModelsExportFolderUndefined',
 				title: tl(
-					'animatedJava.popup.error.rigModelsExportFolderUndefined.title'
+					'animatedJava.dialogs.errors.rigModelsExportFolderUndefined.title'
 				),
-				id: '',
-				lines: tl(
-					'animatedJava.popup.error.rigModelsExportFolderUndefined.body'
-				)
-					.split('\n')
-					.map((line: string) => `<p>${line}</p>`),
+				lines: [tl(
+					'animatedJava.dialogs.errors.rigModelsExportFolderUndefined.body'
+				)],
+				width: 256
 			},
 		})
 	}
@@ -181,14 +177,13 @@ async function computeAnimationData(
 	}
 
 	const data = {
-		settings: settings.toObject() as aj.Settings,
+		settings: settings.toObject() as aj.GlobalSettings,
 		cubeData,
 		bones,
 		models,
 		variantTextureOverrides,
 		variantModels: variants.variantModels,
 		variantTouchedModels: variants.variantTouchedModels,
-		// flatVariantModels,
 		animations,
 	}
 	console.groupEnd()
@@ -222,7 +217,7 @@ Blockbench.on('unselect_project', () => {
 })
 // @ts-ignore
 import logo from './assets/Animated_Java_2022.svg'
-menu.label.innerHTML = tl('animatedJava.menubar.dropdown.name')
+menu.label.innerHTML = tl('animatedJava.menubar.dropdown')
 let img = document.createElement('img')
 img.src = logo
 img.width = 16
@@ -236,7 +231,7 @@ MenuBar.addAction(
 	CustomAction('animated_java_settings', {
 		icon: 'settings',
 		category: 'animated_java',
-		name: tl('animatedJava.menubar.settings.name'),
+		name: tl('animatedJava.menubar.settings'),
 		condition: () => modelFormat.id === Format.id,
 		click: function () {
 			show_settings()
@@ -247,8 +242,8 @@ MenuBar.addAction(
 MenuBar.addAction(
 	{
 		// @ts-ignore
-		name: tl('animatedJava.menubar.export.name'),
-		id: 'animatedJava_export',
+		name: tl('animatedJava.menubar.export'),
+		id: 'animatedJava.export',
 		icon: 'insert_drive_file',
 		condition: () => modelFormat.id === Format.id,
 		click: () => {
@@ -259,7 +254,7 @@ MenuBar.addAction(
 				store.getStore('exporters').get(exporter)()
 			} else {
 				Blockbench.showQuickMessage(
-					tl('animatedJava.popup.quickMessage.noExporterSelected')
+					tl('animatedJava.popups.noExporterSelected')
 				)
 			}
 		},
@@ -273,7 +268,7 @@ MenuBar.addAction(
 	CustomAction('animated_java_about', {
 		icon: 'help',
 		category: 'animated_java',
-		name: tl('animatedJava.menubar.about.name'),
+		name: tl('animatedJava.menubar.about'),
 		condition: () => modelFormat.id === Format.id,
 		click: function () {
 			show_about()

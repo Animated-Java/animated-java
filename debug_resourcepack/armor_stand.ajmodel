@@ -1,26 +1,27 @@
 {
   "meta": {
     "format_version": "0.0",
-    "creation_time": 1641650938,
+    "creation_time": 1641769747,
     "model_format": "animated_java/ajmodel",
     "box_uv": false,
     "settings": {
       "animatedJava": {
         "projectName": "armor_stand",
-        "exporter": "animationExporter",
-        "verbose": false,
+        "exporter": "vanillaAnimationExporter",
+        "verbose": true,
         "rigItem": "minecraft:leather_horse_armor",
         "rigModelsExportFolder": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\animated_java\\models\\rigs\\armor_stand",
         "predicateFilePath": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\minecraft\\models\\item\\leather_horse_armor.json",
         "transparentTexturePath": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\minecraft\\textures\\transparent.png"
       },
-      "animatedJava_exporter_statueExporter": {
+      "vanillaStatueExporter": {
         "rootEntityType": "minecraft:marker",
         "rootEntityNbt": "{}",
         "markerArmorStands": true,
         "modelTag": "aj.%projectName",
         "rootTag": "aj.%projectName.root",
         "allBonesTag": "aj.%projectName.bone",
+        "boneModelDisplayTag": "aj.%projectName.bone_display",
         "individualBoneTag": "aj.%projectName.bone.%boneName",
         "internalScoreboardObjective": "aj.i",
         "idScoreboardObjective": "aj.id",
@@ -29,7 +30,7 @@
         "mcbConfigPath": "",
         "dataPackPath": ""
       },
-      "animatedJava_exporter_animationExporter": {
+      "vanillaAnimationExporter": {
         "rootEntityType": "minecraft:marker",
         "rootEntityNbt": "{}",
         "markerArmorStands": false,
@@ -49,7 +50,7 @@
         "exportMode": "mcb",
         "mcbFilePath": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\saves\\Animated Java Dev\\datapacks\\Animated Java Development\\src\\armor_stand.mc",
         "mcbConfigPath": "",
-        "dataPackPath": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\saves\\Animated Java Dev\\datapacks\\armor_stand"
+        "dataPackPath": ""
       }
     },
     "variants": {
@@ -71,6 +72,10 @@
       "all_green": {
         "9aa33630-8f09-269e-1ff8-4006c170cc10": "f422a623-6d8c-1bd1-4da1-c61940601aaf",
         "29f44b0b-5027-de28-9958-e95a32a0cf4c": "transparent"
+      },
+      "no_head": {
+        "29f44b0b-5027-de28-9958-e95a32a0cf4c": "transparent",
+        "dfa38dd5-689f-f447-7d28-63645345c25d": "transparent"
       }
     },
     "uuid": "6315712c-d94e-91d8-dc54-eb2877b25239"
@@ -947,6 +952,7 @@
       ],
       "autouv": 0,
       "color": 1,
+      "visibility": false,
       "rotation": [
         -45,
         0,
