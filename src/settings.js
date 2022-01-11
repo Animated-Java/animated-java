@@ -104,7 +104,7 @@ export const DefaultSettings = {
 					if (!Items.isItem(d.value)) {
 						d.isValid = false
 						d.error = tl(
-							'animatedJava.settings.rigItem.errors.invalidItem'
+							'animatedJava.settings.rigItem.errors.invalidMinecraftItem'
 						)
 					}
 				} else {
