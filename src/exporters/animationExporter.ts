@@ -456,7 +456,7 @@ async function createMCFile(
 					execute as @e[type=${entityTypes.bone},tag=${tags.model},distance=..${maxDistance}] if score @s ${scoreboards.id} = # ${scoreboards.id} run kill @s
 					kill @s
 				} else {
-					tellraw @s ${rootExeErrorJsonText.replace('%functionName', `${projectName}:remove/all`)}
+					tellraw @s ${rootExeErrorJsonText.replace('%functionName', `${projectName}:remove/this`)}
 				}
 			}
 		}
