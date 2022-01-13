@@ -5,8 +5,6 @@ name: Build and push to site
 on:
     push:
         branches: [main, experimental]
-    pull_request:
-        branches: [main, experimental]
 
     workflow_dispatch:
 
