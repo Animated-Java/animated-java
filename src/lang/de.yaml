@@ -207,7 +207,7 @@ animatedJava:
           - (You may have to wiggle your keyframes on the timeline a bit to update their snapped time)
 
       rigFolderHasUnknownContent:
-        title: Unused rig folder
+        title: Unbenutzter rig-Ornder
         body:
           - The folder you have chosen as your rig model folder has unknown files in it.
           - Are you sure you want to overwrite the contents of this folder with your rig?
