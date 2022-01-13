@@ -21,41 +21,41 @@ animatedJava:
       back: Zurrück
 
   popups:
-    exportCancelled: Export Cancelled!
-    exportInProgress: Export in Progress!
-    noExporterSelected: No Exporter Selected!
-    successfullyExported: Export Successful!
+    exportCancelled: Export abgebrochen!
+    exportInProgress: Export im Vorgang!
+    noExporterSelected: Keine Exportmethode ausgewählt!
+    successfullyExported: Export erfolgreich!
 
   progress:
-    animationRendering: Rendering Animations... %currents/%totals
+    animationRendering: Animationen werden berechnet... %currents/%totals
 
   settings:
-    header: Animated Java Settings
+    header: Animated Java Einstellungen
     isGlobal: '(Global)'
     isOptional: '(Optional)'
 
     generic:
       errors:
         invalid: If you're seeing this message Animated Java broke. (Uh Oh)
-        emptyValue: Value cannot be empty
-        mustBeBoolean: Value must be a boolean
-        mustBeString: Value must be a string
-        missingFormatString: Value missing required %notFound formatting string
-        invalidEntityTag: Value is not a valid entity tag
+        emptyValue: Wert kann nicht leer sein
+        mustBeBoolean: Wert muss ein Boolean sein
+        mustBeString: Wert muss ein String sein
+        missingFormatString: Wert fehlt ein Formattierungs-String: %notFound
+        invalidEntityTag: Wert ist kein zulässiges Entitäten-Tag
 
     projectName:
-      title: Project Name
+      title: Name des Projekts
       description:
-        - The unique ID of your project. Make sure you set this!
+        - Die einzigartige ID deinses Projektes. Stelle sicher du gibst sie an!
       errors:
-        invalidFunctionName: Project name must be a valid function name!
+        invalidFunctionName: Projektname muss ein zulässiger Funktionsname sein!
 
     exporter:
-      title: Exporter
+      title: Exportmethode
       description:
-        - Which export format to use for this project
+        - Welches Exportformat für das Projekt benutzt werden soll
       errors:
-        mustBeValidExporter: Selected exporter does not exist in the registered exporters!
+        mustBeValidExporter: Ausgewählte Exportmethode existiert nicht unter den registrerten Exportmethoden
 
     verbose:
       title: Verbose
