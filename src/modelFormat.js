@@ -310,7 +310,7 @@ const format = new ModelFormat({
 	centered_grid: true,
 	animation_files: true,
 	animated_textures: true,
-	icon: 'fa-cube',
+	icon: 'icon-armor_stand',
 	codec,
 	onDeactivation() {
 		settingsByUUID.set(Project.uuid, settings.toObject())
