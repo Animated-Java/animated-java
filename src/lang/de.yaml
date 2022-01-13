@@ -93,20 +93,20 @@ animatedJava:
     useCache:
       title: Benutze den Animations-Cache
       description:
-        - Only re-render changed animations
+        - Nur zum Neuberechnen von geänderten Animationen
 
     cacheMode:
-      title: Animation Cache Mode
+      title: Animations-Cache Modus
       description:
-        - The Animation Cache lets us only re-render animations that have been changed since the last export. Making repeated exports much faster, especially on larger models.
-        - "- Memory mode is faster but uses more Memory to store the cache."
-        - "- Disk mode is slower but saves the cache to disk to save on Memory usage."
+        - Der Animations-Cache erlaubt es uns nur Animationen die sich seit dem letzten Export geändert haben neuzuberechnen. Das machte wiederholte Exporte viel schneller, vorallem mit größeren Modellen.
+        - "- Der Kurzspeichermodus ist schneller, benutzt aber mehr RAM und den Cache zu speichern"
+        - "- Der Speichermodus is langsamer, aber speichert den Cache auf deinem Speicher um RAM-Nutzung zu minimieren"
       options:
-        memory: Memory Mode
-        disk: Disk Mode
+        memory: Kurzspeichermodus
+        disk: Speichermodus
 
     boundingBoxRenderMode:
-      title: Bone Size Limit Box
+      title: Bone
       description:
         - "Configure or disable the bone size limit box(es)."
         - "- Single will only display one box at a time."
