@@ -58,22 +58,23 @@ animatedJava:
         mustBeValidExporter: Ausgewählte Exportmethode existiert nicht unter den registrerten Exportmethoden
 
     verbose:
-      title: Verbose
+      title: Wortreiche Logs
       description:
-        - Indicates to the selected exporter whether or not to export extra debug/error messages.
-        - Only really effects the Statue and Animation exporters.
+        - Sagt der ausgewählten Exportmethode ob extra Debug-/Fehlermeldungen angezeigt werden sollen
+        - Hat nur einen merkbaren Effekt auf Statuen- und Animationsexporte
 
     rigItem:
       title: Rig Item
       description:
-        - The item that will be used to display the models on the armor_stands
+        - Das Item das genutzt wird um die Modelle auf den Rüstungsständern darzustellen
       errors:
-        invalidMinecraftItem: Chosen item does not exist!
+        invalidMinecraftItem: Das ausgewählte Item existiert nicht!
 
     rigModelsExportFolder:
-      title: Rig Models Export Folder
+      title: Rig Modells Export Ordner
       description:
         - The folder that all of the rig's models will be dumped into
+        Der Ornder in den all die Modelle des rigs gespeichert werden
       errors:
         invalidPath: Chosen path is not a valid location to export models to!
 
@@ -130,32 +131,32 @@ animatedJava:
         - Variants allow your model to have different "skins" that can be swapped out during runtime using a function.
 
     about:
-      title: About Animated Java
+      title: Über Animated Java
       description:
-        - A tool for mapmakers to create smooth, and detailed animations for Minecraft Java Edition.
+        - Ein Werkzeug um glatte und detailierte Animation für die Minecaft Java Edition zu erstellen.
 
       version: Version
       buildID: Build ID
 
-      creators: Creators
-      discordServer: Join our discord server!
-      githubRepo: Source
-      developers: Developers
-      patrons: Patrons
-      honourableMentions: Honourable Mentions
+      creators: Erschaffer
+      discordServer: Trete unserem Discord Server bei!
+      githubRepo: Quelle
+      developers: Entwickler
+      patrons: Patreons
+      honourableMentions: Ehrwürdige Erwähnungen
 
       fetchbotQuote: '"Let the java mobs dance too!"'
       snavesutitQuote: '"armor_stand is love, armor_stand is life."'
 
       youtuber: Youtuber
-      translator: Translator
-      contributor: Contributor
+      translator: Übersetzer
+      contributor: Contributer
       moderator: Discord Moderator
       closedBeta: Closed Beta Tester
       brandingArtist: Branding Artist
-      patronTier1: Teir 1 Patron
-      patronTier2: Teir 2 Patron
-      patronTier3: Teir 3 Patron
+      patronTier1: Tier 1 Patreon
+      patronTier2: Tier 2 Patreon
+      patronTier3: Tier 3 Patreon
 
     animationProperties:
       animationCompleteCommand:
