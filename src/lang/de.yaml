@@ -79,7 +79,7 @@ animatedJava:
     predicateFilePath:
       title: Rig Item Predicate Model
       description:
-        - Die Item-Modell Datei des rig Items
+        - Die Item-Modell Datei des rig-Items
       errors:
         notEqualToRigItem: Pfad muss auf einer Datei enden die %rigItem.json heißt
 
@@ -169,19 +169,19 @@ animatedJava:
 
     errors:
       misc:
-        title: An Unknown Error has Occured in Animated Java
+        title: Ein unbekannter Fehler ist in Animated Java aufgetreten
         body:
         - |-
           <textarea style="height: 256px" readonly="readonly">
-          ------ Error ------
+          ------ Fehler ------
           %errorMessage  //  "%randomErrorMessage"
           ------ Stack ------
           %errorStack
           Build ID: %buildID
           </textarea>
-        - <p>Please report this error on <a href="%githubLink">Animated Java's github</a> with information on how to reproduce it and a copy of the error above.</p>
-        - <p>You can also join our <a href="%discordLink">Discord Server</a> and ask questions in the animated-java-support channel.</p>
-        - <p>Thank you!</p>
+        - <p>Bitte dokumentiere den Fehler auf <a href="%githubLink">Animated Java's Github</a> mit einer Kopie des Fehlers und wie dieser aufgetreten ist/nachzustellen ist.</p>
+        - <p>Du kannst auch unserem <a href="%discordLink">Discord Server</a> beitreten und Fragen im Support-Channel stelen.</p>
+        - <p>Dankeschön!</p>
 
       topLevelCubes:
         title: Model has top-level cubes
