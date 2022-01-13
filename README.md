@@ -37,3 +37,4 @@ You can check what translation keys are missing using the following code inside 
 ANIMATED_JAVA.logging = true
 ANIMATED_JAVA.logIntlDifferences()
 ```
+This is  a test
