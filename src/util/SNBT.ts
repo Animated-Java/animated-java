@@ -600,6 +600,8 @@ class SNBTParser {
 				dict[name] = value
 				if (reader.peek(1) === ',') reader.skip(1)
 				reader.skipWhitespace()
+			} else {
+				throw new Error('Expected ":" in compound contents')
 			}
 		} while (!reader.isEnd())
 		return SNBT.Compound(dict)
@@ -859,3 +861,4 @@ export const SNBT = {
 		return workingCopy
 	},
 }
+globalThis.SNBT = SNBT
