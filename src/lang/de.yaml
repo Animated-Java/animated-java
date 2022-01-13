@@ -199,31 +199,31 @@ animatedJava:
           ajMetaMissing: Die Modelldatei zum Zusammenführen ist keine Animated Java predicate Datei.
 
       invalidAnimationSnappingValue:
-        title: Invalid Animation Snapping Value
+        title: Ungültiger Snapping-Wert
         body:
-          - The animation '%animationName' has a snapping value of %snapping!
-          - Due to how fast Minecraft ticks, Animated Java only supports a snapping value of 20.
-          - Please update your animations and keyframes to reflect this limitation before you export.
-          - (You may have to wiggle your keyframes on the timeline a bit to update their snapped time)
+          - Die Animation '%animationName' hat einen Snapping-Wert von %snapping!
+          - Da Minecraft so schnell tickt, unterstützt Animated Java nur einen Snapping-Wert von 20.
+          - Bitte aktualisieren Sie Ihre Animationen und Keyframes, um diese Einschränkung zu berücksichtigen, bevor Sie exportieren.
+          - (Möglicherweise müssen Sie Ihre Keyframes auf der Zeitachse ein wenig verschieben, um ihr Snapping zu aktualisieren)
 
       rigFolderHasUnknownContent:
         title: Unbenutzter rig-Ornder
         body:
-          - The folder you have chosen as your rig model folder has unknown files in it.
-          - Are you sure you want to overwrite the contents of this folder with your rig?
-          - "Chosen folder:"
+          - Der Ordner, den Sie als Rig-Modell-Ordner gewählt haben, enthält unbekannte Dateien.
+          - Sind Sie sicher, dass Sie den Inhalt dieses Ordners mit Ihrem Rig überschreiben wollen?
+          - "Ausgewählter Ordner:"
           - <textarea>%path</textarea>
-          - "Unknown Files:"
+          - "Unbekannte Dateien:"
           - <textarea>%files</textarea>
 
       rigFolderAlreadyUsedByOther:
-        title: The chosen rig model folder is already in use
+        title: Der gewählte Rig-Modell-Ordner ist bereits in Gebrauch
         body:
-          - The folder you have chosen as your rig model folder already has a different rig's models inside of it.
-          - Are you sure you want to overwrite the contents of this folder with your rig?
-          - "Chosen folder:"
+           -Der Ordner, den Sie als Rig-Modell-Ordner gewählt haben, enthält bereits die Modelle eines anderen Rigs.
+          - Sind Sie sicher, dass Sie den Inhalt dieses Ordners mit Ihrem Rig überschreiben wollen?
+          - "Ausgewählter Ordner:"
           - <textarea>%path</textarea>
-          - "Files:"
+          - "Dateien:"
           - <textarea>%files</textarea>
 
       unableToGenerateTexturePath:
@@ -234,29 +234,29 @@ animatedJava:
           - eg. 'resources/assets/minecraft/textures/item/diamond.png'
 
       unableToGenerateModelPath:
-        title: Invalid model path
+        title: Ungültiger Texturpfad
         body:
-          - The model '%modelName' has an invalid location inside a Resource Pack
-          - Please make sure it is properly saved inside of a valid Resource Pack in a sub folder of 'assets/namespace/models/'
-          - eg. 'resources/assets/minecraft/models/item/diamond.json'
+          - Das Modell '%modelName' hat einen ungültigen Speicherort innerhalb eines Resource Packs
+          - Bitte vergewissern Sie sich, dass es in einem gültigen Resource Pack in einem Unterordner von 'assets/namespace/models/' gespeichert ist.
+          - z.B. 'resources/assets/minecraft/models/item/diamond.json'
 
       invalidCubeRotations:
-        title: Invalid Element Rotations
+        title: Ungültige Element-Drehungen
         body:
-          - The rotations of some cubes are invalid for the java model format.
-          - Please fix all invalid rotations before exporting.
+          - Die Drehungen einiger Würfel sind für das Java-Modellformat ungültig.
+          - Bitte korrigieren Sie alle ungültigen Drehungen vor dem Exportieren.
 
       unsavedTexture:
-        title: Unsaved Texture
+        title: Nicht gespeicherte Textur
         body:
-          - The texture '%textureName' is not saved to disk!
-          - Please make sure it is saved into a valid resource pack location.
+          - Die Textur '%textureName' ist nicht auf der Festplatte gespeichert!
+          - Vergewissern Sie sich, dass es an einem gültigen Speicherort für Ressourcenpakete gespeichert ist.
 
       transparentTexturePathNotFound:
-        title: Transparent Texture Path Not Defined
+        title: Transparenter Texturpfad nicht definiert
         body:
-          - Looks like you're trying to use variants with transparent textures without defining a texture path!
-          - You'll need to configure the transparent texture path in the settings before you can export.
+          - Sieht aus, als ob Sie versuchen, Varianten mit transparenten Texturen zu verwenden, ohne einen Texturpfad zu definieren!
+          - Bevor Sie exportieren können, müssen Sie den Pfad für die transparente Textur in den Einstellungen konfigurieren.
 
       predicateFilePathUndefined:
         title: Predicate File Path Undefined
