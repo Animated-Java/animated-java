@@ -59,7 +59,7 @@ animatedJava:
       title: 추가 정보
       description:
         - 추가적인 디버그 메세지나 오류 메세지를 포함하여 내보낼지 결정합니다.
-        - '모형'과 '애니메이션' 내보내기 마법사에만 적용됩니다.
+        - "'모형'과 '애니메이션' 내보내기 마법사에만 적용됩니다."
 
     rigItem:
       title: 리그 아이템
@@ -112,7 +112,7 @@ animatedJava:
         - "- 여러개 표시: 선택한 모든 뼈에 대한 상자가 표시됩니다."
         - "- 표시 안함: 상자를 아예 표시하지 않습니다."
       options:
-        single: 하나만 ㅍ시
+        single: 하나만 표시
         many: 여러개 표시
         none: 표시 안함
 
@@ -125,7 +125,7 @@ animatedJava:
     variants:
       title: 모델 변형
       description:
-        - '변형'은 모델이 스킨을 교체할 수 있도록 하는 기능입니다. 게임 내에서 함수를 이용하여 변경할 수 있습니다.
+        - "'변형'은 모델이 스킨을 교체할 수 있도록 하는 기능입니다. 게임 내에서 함수를 이용하여 변경할 수 있습니다."
 
     about:
       title: Animated Java 소개
@@ -194,7 +194,7 @@ animatedJava:
       invalidAnimationSnappingValue:
         title: 애니메이션 스냅 값이 올바르지 않음
         body:
-          - '%animationName' 애니메이션의 스냅 값이 %snapping입니다!
+          - "'%animationName' 애니메이션의 스냅 값이 %snapping입니다!"
           - 마인크래프트 틱 속도의 제한으로 인해, Animated Java를 이용하기 위해서는 스냅이 20이어야 합니다.
           - 내보내기 전에, 애니메이션이 이런 제한 사항을 충족하도록 수정해주세요.
           - (변경된 스냅 시간에 맞춰 일부 키프레임을 조정해야 할 수 있습니다)
@@ -214,25 +214,25 @@ animatedJava:
         body:
           - 지정된 리그 모델 폴더에 이미 다른 리그의 모델이 들어 있습니다.
           - 정말로 이 파일들을 삭제하고 대신 이 리그의 모델로 덮어쓰시겠습니까?
-          - "지정된 리그 폴더":"
+          - "지정된 리그 폴더:"
           - <textarea>%path</textarea>
-          - "파일":"
+          - "파일:"
           - <textarea>%files</textarea>
 
       unableToGenerateTexturePath:
         title: 텍스쳐 경로가 올바르지 않음
         body:
           - 
-          - '%textureName' 텍스쳐가 리소스 팩에서 올바르지 않은 경로에 위치해 있습니다.
-          - 올바른 리소스 팩의 'assets/namespace/textures' 폴더 하위에 제대로 저장되어 있는지 확인해주세요.
-          - 예) '리소스팩/assets/minecraft/textures/item/diamond.png'
+          - "'%textureName' 텍스쳐가 리소스 팩에서 올바르지 않은 경로에 위치해 있습니다."
+          - "올바른 리소스 팩의 'assets/namespace/textures' 폴더 하위에 제대로 저장되어 있는지 확인해주세요."
+          - "예) '리소스팩/assets/minecraft/textures/item/diamond.png'"
 
       unableToGenerateModelPath:
         title: 모델 경로가 올바르지 않음
         body:
-          - '%modelName' 모델이 리소스 팩에서 올바르지 않은 경로에 위치해 있습니다.
-          - 올바른 리소스 팩의 'assets/namespace/models' 폴더 하위에 제대로 저장되어 있는지 확인해주세요.
-          - 예. '리소스팩/assets/minecraft/models/item/diamond.json'
+          - "'%modelName' 모델이 리소스 팩에서 올바르지 않은 경로에 위치해 있습니다."
+          - "올바른 리소스 팩의 'assets/namespace/models' 폴더 하위에 제대로 저장되어 있는지 확인해주세요."
+          - "예) '리소스팩/assets/minecraft/models/item/diamond.json'"
 
       invalidCubeRotations:
         title: 회전 각도가 올바르지 않음
@@ -243,7 +243,7 @@ animatedJava:
       unsavedTexture:
         title: 텍스쳐가 저장되지 않음
         body:
-          - '%textureName' 텍스쳐가 저장되지 않았습니다!
+          - "'%textureName' 텍스쳐가 저장되지 않았습니다!"
           - 올바른 리소스 팩 경로 하위에 저장되었는지 확인해주세요.
 
       transparentTexturePathNotFound:
@@ -376,7 +376,7 @@ animatedJava:
           zeroLengthAnimation:
             title: 애니메이션의 길이가 0임
             body:
-              - %animationName 애니메이션이 너무 짧습니다! 애니메이션 길이가 0.05초(1틱) 이상이여야 합니다.
+              - "%animationName 애니메이션이 너무 짧습니다! 애니메이션 길이가 0.05초(1틱) 이상이여야 합니다."
 
           noAnimations:
             title: 애니메이션이 없음
