@@ -106,27 +106,34 @@ animatedJava:
         disk: Speichermodus
 
     boundingBoxRenderMode:
-      title: Bone
+      title: Knochengrößenlimitierung
       description:
         - "Configure or disable the bone size limit box(es)."
         - "- Single will only display one box at a time."
         - "- Multiple will display a box for every bone you've selected."
         - "- Disabled will disable it entirely."
+        
+        - "Konfiguriere oder schalte die Knochengrößenlimitierungs Box(en) aus."
+        - "- Einzeln wird nur eine Box darstellen."
+        - "- Mehrere wird eine Box für jeden ausgewählten Knochen anzeigen."
+        - "- Aus wird das Feature komplett deaktivieren"
+        
+        
       options:
-        single: Single
-        many: Multiple
-        none: Disabled
+        single: Einzeln
+        many: Mehrere
+        none: Deaktiviert
 
   dialogs:
     boneConfig:
-      title: Bone Config
-      boneNbt: Bone NBT
-      armAnimationEnabled: Enable Arm Animation
+      title: Knochenkonfiguration
+      boneNbt: Knochen NBT
+      armAnimationEnabled: Aktiviere die Arm Animation
 
     variants:
-      title: Model Variants
+      title: Modellvarianten
       description:
-        - Variants allow your model to have different "skins" that can be swapped out during runtime using a function.
+        - Varianten erlauben es deinem Modell mehrere "skins" zu haben, die ausgetauscht werden können im Spiel.
 
     about:
       title: Über Animated Java
@@ -150,7 +157,7 @@ animatedJava:
       translator: Übersetzer
       contributor: Contributer
       moderator: Discord Moderator
-      closedBeta: Closed Beta Tester
+      closedBeta: Geschlossene Beta Tester
       brandingArtist: Branding Artist
       patronTier1: Tier 1 Patreon
       patronTier2: Tier 2 Patreon
@@ -158,7 +165,7 @@ animatedJava:
 
     animationProperties:
       animationCompleteCommand:
-        label: End Of Anim Command
+        label: Ende des Anim Befehls
 
     errors:
       misc:
