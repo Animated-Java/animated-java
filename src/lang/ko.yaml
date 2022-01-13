@@ -69,7 +69,7 @@ animatedJava:
         invalidMinecraftItem: 해당 아이템은 존재하지 않습니다!
 
     rigModelsExportFolder:
-      title: 리그 모델 내보내기 폴더
+      title: 리그 모델 폴더
       description:
         - 리그의 모든 모델들이 저장될 폴더입니다
       errors:
@@ -125,7 +125,7 @@ animatedJava:
     variants:
       title: 모델 변형
       description:
-        - "'변형'은 모델이 스킨을 교체할 수 있도록 하는 기능입니다. 게임 내에서 함수를 이용하여 변경할 수 있습니다."
+        - "'변형'은 모델의 스킨을 간단하게 교체할 수 있는 기능입니다. 게임 내에서 함수를 이용하여 교체할 수 있습니다."
 
     about:
       title: Animated Java 소개
@@ -137,9 +137,9 @@ animatedJava:
 
       creators: 제작자
       discordServer: 디스코드 서버에 초대합니다!
-      githubRepo: 소스
+      githubRepo: 소스 (깃허브)
       developers: 개발자
-      patrons: 패트론
+      patrons: 패트론 (후원)
       honourableMentions: 도움을 주신 분들
 
       fetchbotQuote: '"Let the java mobs dance too!"'
@@ -165,12 +165,12 @@ animatedJava:
         body:
         - |-
           <textarea style="height: 256px" readonly="readonly">
-          ------ 에러 Error ------
+          ------ 에러 / Error ------
           %errorMessage  //  "%randomErrorMessage"
-          ------ 스택 Stack ------
+          ------ 스택 / Stack ------
           %errorStack
 
-          빌드 ID: %buildID
+          빌드 ID / Build ID: %buildID
           </textarea>
         - <p>이 오류가 어떻게 발생했는지를 위에 표시된 사항과 함께 <a href="%githubLink">Animated Java 깃허브</a>에 신고해주세요.</p>
         - <p>또는 저희 <a href="%discordLink">디스코드 서버</a>의 animated-java-support 채널에서 도움을 받을 수도 있습니다.</p>
@@ -197,7 +197,7 @@ animatedJava:
           - "'%animationName' 애니메이션의 스냅 값이 %snapping입니다!"
           - 마인크래프트 틱 속도의 제한으로 인해, Animated Java를 이용하기 위해서는 스냅이 20이어야 합니다.
           - 내보내기 전에, 애니메이션이 이런 제한 사항을 충족하도록 수정해주세요.
-          - (변경된 스냅 시간에 맞춰 일부 키프레임을 조정해야 할 수 있습니다)
+          - (변경된 스냅 시간에 맞춰 일부 키프레임을 조정해야 할 수도 있습니다)
 
       rigFolderHasUnknownContent:
         title: 리그 폴더가 사용된 적이 없음
@@ -222,7 +222,6 @@ animatedJava:
       unableToGenerateTexturePath:
         title: 텍스쳐 경로가 올바르지 않음
         body:
-          - 
           - "'%textureName' 텍스쳐가 리소스 팩에서 올바르지 않은 경로에 위치해 있습니다."
           - "올바른 리소스 팩의 'assets/namespace/textures' 폴더 하위에 제대로 저장되어 있는지 확인해주세요."
           - "예) '리소스팩/assets/minecraft/textures/item/diamond.png'"
@@ -274,7 +273,7 @@ animatedJava:
           mcbFilePathNotDefined:
             title: MCB 파일이 지정되지 않음
             body:
-              - 내보내기 전에, 모형 내보내기 마법사의 설정에서 MCB 파일을 지정해야 합니다!
+              - 내보내기 전에, 모형 내보내기 마법사 설정에서 MCB 파일을 지정해야 합니다!
 
           dataPackPathNotDefined:
             title: 데이터 팩의 경로가 지정되지 않음
