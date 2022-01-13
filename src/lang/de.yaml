@@ -9,15 +9,15 @@ animatedJava:
   menubar:
     dropdown: Animated Java
     settings: Einstellungen
-    export: Model exportieren
+    export: Modell exportieren
     about: Über...
 
   panels:
     variants:
-      title: Model Varianten
+      title: Modellvarianten
       addVariant:
         title: Variante hinzufügen
-        description: Fügt eine neue Variante zum Model hinzu
+        description: Fügt eine neue Variante zum Modell hinzu
       back: Zurrück
 
   popups:
@@ -36,7 +36,7 @@ animatedJava:
 
     generic:
       errors:
-        invalid: If you're seeing this message Animated Java broke. (Uh Oh)
+        invalid: Wenn du das siehst, ist Animated Java abgestürzt. (Uh Oh)
         emptyValue: Wert kann nicht leer sein
         mustBeBoolean: Wert muss ein Boolean sein
         mustBeString: Wert muss ein String sein
@@ -71,29 +71,27 @@ animatedJava:
         invalidMinecraftItem: Das ausgewählte Item existiert nicht!
 
     rigModelsExportFolder:
-      title: Rig Modells Export Ordner
+      title: Modell Rig Export Ordner
       description:
-        - The folder that all of the rig's models will be dumped into
-        Der Ornder in den all die Modelle des rigs gespeichert werden
+        - Der Ornder in den all die Modelle des rigs gespeichert werden sollen
       errors:
-        invalidPath: Chosen path is not a valid location to export models to!
-
+        invalidPath: Der ausgewählte Pfad ist keine zulässige Position um Modelle dorthin zu exportieren!
     predicateFilePath:
       title: Rig Item Predicate Model
       description:
-        - The item model file of the rig item
+        - Die Item-Modell Datei des rig Items
       errors:
-        notEqualToRigItem: Path must end on a file named %rigItem.json
+        notEqualToRigItem: Pfad muss auf einer Datei enden die %rigItem.json heißt
 
     transparentTexturePath:
-      title: Transparent Texture Path
+      title: Pfad der transparenten Textur
       description:
-        - A transparent texture for adding transparency to variants. Only needed if you're using transparency in your variants.
+        - Eine transparente Textur um Transparenz auf Varianten anzuwenden. Wird nur benötigt wenn du Transparenz in deinen Varianten benutzt.
       errors:
-        undefinedWhenNeeded: Path must be defined if you're using the transparency feature of variants!
+        undefinedWhenNeeded: Pfad muss festgelegt sein wenn du das Transparenzfeature von Varianten nutzen willst!
 
     useCache:
-      title: Use Animation Cache
+      title: Benutze den Animations-Cache
       description:
         - Only re-render changed animations
 
