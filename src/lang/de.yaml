@@ -184,19 +184,19 @@ animatedJava:
         - <p>Dankeschön!</p>
 
       topLevelCubes:
-        title: Model has top-level cubes
+        title: Das Modell hat top-level Würfel
         body:
-          - All cubes must be inside of a group.
+          - All Würfel müssen in einer Kategorie sein.
 
       predicateMergeFailed:
-        title: Predicate Failed to Merge
+        title: Predicate's konnten nicht zusammengeführt werden 
         body:
           - "%reason"
-          - Animated Java only supports merging into Animated Java controlled predicate models.
-          - Please make sure you are attempting to merge your predicate item model with a valid pre-existing Animated Java predicate item model.
+          - Animated Java ünterstützt nur das zusammenführen zu Animated Java kontrollierten predicate Modellen
+          - Bitte stelle sicher, dass du versuchst dein predicate Modell mit einem zulässigen bereits existierendem Animated Java predicate Item Modell zusammenzuführen
         reasons:
-          overridesMissing: Model overrides list missing.
-          ajMetaMissing: Model file to merge into is not an Animated Java predicate file.
+          overridesMissing: Modell's 'overrides' Liste fehlt.
+          ajMetaMissing: Die Modelldatei zum Zusammenführen ist keine Animated Java predicate Datei.
 
       invalidAnimationSnappingValue:
         title: Invalid Animation Snapping Value
