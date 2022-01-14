@@ -104,7 +104,7 @@ export function parse(str: string) {
 
 				skipWhitespace()
 				// @ts-ignore
-				if (iter.item === ',' || iter.item === '}') continue
+				if (iter.item === '}') continue
 				//
 			} else if (iter.item === '}') {
 				console.log('return compound')
