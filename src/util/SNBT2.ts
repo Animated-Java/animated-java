@@ -101,9 +101,9 @@ export function parse(str: string) {
 				iter.next()
 				const value = parseCompoundValue()
 				compound.set(key, value)
+				console.log('New tag:', key, value)
 
 				skipWhitespace()
-				console.log(key, value)
 				// @ts-ignore
 				if (iter.item === '}') continue
 				//
