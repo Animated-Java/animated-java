@@ -103,11 +103,13 @@ export function parse(str: string) {
 				compound.set(key, value)
 
 				skipWhitespace()
+				console.log(key, value)
 				// @ts-ignore
 				if (iter.item === '}') continue
 				//
 			} else if (iter.item === '}') {
 				console.log('return compound')
+				iter.next() // Skip end bracket
 				return compound
 				//
 			} else {
