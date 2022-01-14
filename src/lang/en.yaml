@@ -293,7 +293,7 @@ animatedJava:
           description:
             - The NBT data of the root entity
           errors:
-            invalidNbt: Invalid NBT!
+            invalidNbt: Invalid NBT! %error
 
         markerArmorStands:
           title: Marker Armor Stands

@@ -584,10 +584,12 @@ class SNBTParser {
 	}
 	parseCompound(): any {
 		this.reader.skipWhitespace()
+		// if (this.reader.peek(2) === '{}') return SNBTUtil.TAG_Compound({})
 		let contents = this.reader
 			.readUntilMatchingBracket('{', '}')
 			.trim()
 			.substring(1)
+		console.log(contents)
 		contents = contents.substring(0, contents.length - 1)
 		const reader = new StringReader(contents)
 		let dict: Record<string, SNBTTag> = {}

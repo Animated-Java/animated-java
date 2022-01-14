@@ -17,6 +17,7 @@ import './util/minecraft/items'
 import './util/minecraft/entities'
 import { intl } from './util/intl'
 import { CustomError } from './util/customError'
+import * as nbt from './util/SNBT2'
 
 const errorMessages = [
 	'Uh oh!',
@@ -79,6 +80,7 @@ const ANIMATED_JAVA = {
 	registerExportFunc(name: string, exportFunc: () => void) {
 		store.getStore('exporters').set(name, exportFunc)
 	},
+	parse: nbt.parse,
 	settings,
 	store: store,
 	format: modelFormat,
