@@ -24,6 +24,7 @@ You will need to install `nodejs` and `yarn` before you get started.
 To make a production build, run `yarn build` inside your development enviornment.
 
 ### Adding Localizations
+Note: Translations should use formal language
 
 1. Fork the animated-java repo.
 2. copy `src/lang/en.yaml` and rename it to the language you're translating. If a language file with that name already exists you should overwrite it.
