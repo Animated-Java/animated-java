@@ -347,6 +347,9 @@ async function exportPredicate(
 			})
 		}
 
+	predicateJSON.overrides.sort((a: any,b: any) => {
+		return (a.predicate.custom_model_data - b.predicate.custom_model_data)
+	})
 	//@ts-ignore
 	predicateJSON.aj.includedRigs[Project.UUID] = {
 		name: settings.animatedJava.projectName,
