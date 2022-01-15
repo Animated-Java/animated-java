@@ -428,10 +428,11 @@ class StringReader {
 	}
 	skipWhitespace() {
 		while (
-			this.peek(1) === ' ' ||
-			this.peek(1) === '\n' ||
-			this.peek(1) === '\r' ||
-			this.peek(1) === '\t'
+			(this.peek(1) === ' ' ||
+				this.peek(1) === '\n' ||
+				this.peek(1) === '\r' ||
+				this.peek(1) === '\t') &&
+			this.remaining() > 0
 		) {
 			this.skip(1)
 		}
@@ -502,7 +503,7 @@ class StringReader {
 	}
 	readUntilAnyOf(chars: string[]) {
 		const start = this.cursor
-		while (!chars.some((char) => this.peek(1) === char)) {
+		while (!chars.some((char) => this.peek(1) === char) && !this.isEnd()) {
 			this.skip(1)
 		}
 		const end = this.cursor
@@ -533,7 +534,11 @@ class StringReader {
 	readNumber() {
 		const start = this.cursor
 		if (this.peek(1) === '-') this.skip(1)
-		while (this.peek(1) >= '0' && this.peek(1) <= '9') {
+		while (
+			this.peek(1) >= '0' &&
+			this.peek(1) <= '9' &&
+			this.remaining() > 0
+		) {
 			this.skip(1)
 		}
 		const end = this.cursor
@@ -554,11 +559,11 @@ class SNBTParser {
 		let result
 		if (this.reader.peek(1) === '{') {
 			result = this.parseCompound()
-		} else if (this.reader.peek(1) === '[B;') {
+		} else if (this.reader.peek(3) === '[B;') {
 			result = this.parseByteArray()
-		} else if (this.reader.peek(1) === '[I;') {
+		} else if (this.reader.peek(3) === '[I;') {
 			result = this.parseIntArray()
-		} else if (this.reader.peek(1) === '[L;') {
+		} else if (this.reader.peek(3) === '[L;') {
 			result = this.parseLongArray()
 		} else if (this.reader.peek(1) === '[') {
 			result = this.parseList()
@@ -612,7 +617,7 @@ class SNBTParser {
 		const contents = this.reader.readUntilMatchingBracket('[', ']')
 		const reader = new StringReader(contents)
 		const result = []
-		while (reader.hasCharInRest('b')) {
+		while (reader.hasCharInRest('b') && reader.remaining() > 0) {
 			result.push(parseInt(reader.readUntil('b')))
 			if (reader.peek(1) === ',') {
 				reader.skip(1)
@@ -625,7 +630,7 @@ class SNBTParser {
 		const contents = this.reader.readUntilMatchingBracket('[', ']')
 		const reader = new StringReader(contents)
 		const result = []
-		while (reader.hasCharInRest(',')) {
+		while (reader.hasCharInRest(',') && reader.remaining() > 0) {
 			result.push(parseInt(reader.readUntil(',')))
 		}
 		return SNBT.Int_Array(result)
@@ -635,7 +640,7 @@ class SNBTParser {
 		const contents = this.reader.readUntilMatchingBracket('[', ']')
 		const reader = new StringReader(contents)
 		const result = []
-		while (reader.hasCharInRest('l')) {
+		while (reader.hasCharInRest('l') && reader.remaining() > 0) {
 			result.push(parseInt(reader.readUntil('l')))
 			if (reader.peek(1) === ',') {
 				reader.skip(1)
