@@ -589,11 +589,10 @@ class SNBTParser {
 			.readUntilMatchingBracket('{', '}')
 			.trim()
 			.substring(1)
-		console.log(contents)
 		contents = contents.substring(0, contents.length - 1)
 		const reader = new StringReader(contents)
 		let dict: Record<string, SNBTTag> = {}
-		do {
+		while (!reader.isEnd()) {
 			if (reader.hasCharInRest(':')) {
 				const name = reader.readUntil(':')
 				const value = new SNBTParser(
@@ -605,7 +604,7 @@ class SNBTParser {
 			} else {
 				throw new Error('Expected ":" in compound contents')
 			}
-		} while (!reader.isEnd())
+		}
 		return SNBT.Compound(dict)
 	}
 	parseByteArray(): any {
