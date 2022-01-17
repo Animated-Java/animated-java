@@ -152,12 +152,17 @@ const people = [
 		],
 		name: 'Ancientkingg',
 	},
-	{ roles: [Reasons.BetaTester, Reasons.Moderator], name: 'dragonmaster95' },
-	{ roles: [Reasons.BetaTester, Reasons.Moderator], name: 'Ersatz' },
 	{
-		roles: [Reasons.BetaTester, Reasons.Moderator, Reasons.BrandingArtist],
+		roles: [
+			Reasons.BetaTester,
+			Reasons.Moderator,
+			Reasons.BrandingArtist,
+			Reasons.Translator,
+		],
 		name: 'YokaiS',
 	},
+	{ roles: [Reasons.BetaTester, Reasons.Moderator], name: 'dragonmaster95' },
+	{ roles: [Reasons.BetaTester, Reasons.Moderator], name: 'Ersatz' },
 	{ roles: [Reasons.BetaTester, Reasons.Youtuber], name: 'CommandWitchery' },
 	{ roles: [Reasons.BetaTester, Reasons.Youtuber], name: 'MrMakistein' },
 	{ roles: [Reasons.BetaTester, Reasons.Youtuber], name: 'Flubberschnub' },
@@ -410,7 +415,8 @@ function About() {
 					))}
 			</div>
 			<p>
-				<b>{tl('animatedJava.dialogs.about.buildID')}</b> {process.env.BUILD_ID}
+				<b>{tl('animatedJava.dialogs.about.buildID')}</b>{' '}
+				{process.env.BUILD_ID}
 			</p>
 		</div>
 	)
