@@ -196,7 +196,7 @@ animatedJava:
       invalidAnimationSnappingValue:
         title: 無効なアニメーションスナッピングヴァリュー
         body:
-          - '%animationName'のアニメーションのスナッピングヴァリューが%snappingです!
+          - "'%animationName'のアニメーションのスナッピングヴァリューが%snappingです!"
           - マインクラフトのティックのスピードのせいでスナッピングヴァリューが20ではないと行けません。
           - エクスポートする前にアニメーションのキーフレームをアップデートして下さい。
           - (キーフレームを少し動かせるので治せるかもしれません)
@@ -224,16 +224,16 @@ animatedJava:
       unableToGenerateTexturePath:
         title: テクスチャーパス
         body:
-          - '%textureName'のテクスチャーがちゃんとリソースパックの中に入っていません。
-          - テクスチャーが'assets/namespace/textures/'のサブフォルダーにあるのを確認して下さい。
-          - eg. 'resources/assets/minecraft/textures/item/diamond.png'
+          - "'%textureName'のテクスチャーがちゃんとリソースパックの中に入っていません。"
+          - "テクスチャーが'assets/namespace/textures/'のサブフォルダーにあるのを確認して下さい。"
+          - "eg. 'resources/assets/minecraft/textures/item/diamond.png'"
 
       unableToGenerateModelPath:
         title: モデルパス
         body:
-          - '%modelName'のモデルがちゃんとリソースパックの中に入っていません。
-          - モデルが'assets/namespace/models/'のサブフォルダーにあるのを確認して下さい。
-          - eg. 'resources/assets/minecraft/models/item/diamond.json'
+          - "'%modelName'のモデルがちゃんとリソースパックの中に入っていません。"
+          - "モデルが'assets/namespace/models/'のサブフォルダーにあるのを確認して下さい。"
+          - "eg. 'resources/assets/minecraft/models/item/diamond.json'"
 
       invalidCubeRotations:
         title: エレメントロテーション
@@ -243,7 +243,7 @@ animatedJava:
       unsavedTexture:
         title: セーブされていないテクスチャー
         body:
-          - '%textureName'がディスクにセーブされていないです!
+          - "'%textureName'がディスクにセーブされていないです!"
           - リソースパックの中にセーブされているのを確認して下さい。
 
       transparentTexturePathNotFound:
@@ -417,3 +417,4 @@ animatedJava:
           title: アニメーションループモード　スコアボード
           description:
             - ループアニメーションをコントロールするためのスコアボードの名前
+delete: me
