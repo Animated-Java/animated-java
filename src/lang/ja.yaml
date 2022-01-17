@@ -1,216 +1,418 @@
+---
 #? AJ
-animatedJava: アニメーテッド　ジャバ
-animatedJava.menubar.export.name: モデルをエクスポート
+animatedJava:
+  plugin:
+    title: アニメーテッド ジャバ
 
-panel.states: モデルバリアント
+  menubar:
+    dropdown: アニメーテッド ジャバ
+    settings: 設定
+    export: モデルをエクスポート
+    about: アニメーテッドジャバの事
 
-animatedJava.settings.global: '(グローバル)'
-animatedJava.settings.optional: '(オプショナル)'
-animatedJava.settings.invalidSetting.generic: '設定を直してください'
+  panels:
+    variants:
+      title: モデルバリアント
+      addVariant:
+        title: バリアントを足す
+        description: モデルに新しいバリアントを足す
+      back: 戻る
 
-animatedJava.boneConfig.title: ボーンコンフィグ
-animatedJava.boneConfig.boneNbt: ボーン NBT
-animatedJava.boneConfig.armAnimationEnabled: 腕のアニメーションをエネーブル
+  popups:
+    exportCancelled: エクスポートがキャンセルされました!
+    exportInProgress: エクスポート中!
+    noExporterSelected: エクスポーターを選んでください。
+    successfullyExported: エクスポートを出来ました!
 
-animatedJava.popup.quickMessage.noExporterSelected: エクスポーターを選んでください
+  progress:
+    animationRendering: アニメーションをレンダー中... %currents/%totals
 
-animatedJava.popup.warning.rigFolderUnused.title: 使われていないリグのフォルダー
-animatedJava.popup.warning.rigFolderUnused.body: |-
-    フォルダーにはリグがありません。
-    このフォルダーを使うのでよろしいですか？
+  settings:
+    header: アニメーテッド ジャバ 設定
+    isGlobal: '(グローバル)'
+    isOptional: '(オプショナル)'
 
-animatedJava.popup.error.rigFolderAlreadyUsedByOther.title: 使われているリグのフォルダー
-animatedJava.popup.error.rigFolderAlreadyUsedByOther.body: |-
-    このフォルダーにはもう他のリグがあります。　
-    前のリグをオーバーライトしますか？
+    generic:
+      errors:
+        invalid: このメッセージを見えるのはアニメーテッドジャバが壊れたと言うことです。（。＿。）
+        emptyValue: このヴァリューを入れるのは必要です
+        mustBeBoolean: このヴァリューがブーリアンであるのが必要です
+        mustBeString: このヴァリューがストリングであるのが必要です
+        missingFormatString: Value missing required %notFound formatting string
+        invalidEntityTag: このヴァリューはエンティティタグではありません。
 
-animatedJava.popup.error.transparentTexturePathNotFound.title: 透明のテクスチャーが定義されてません
-animatedJava.popup.error.transparentTexturePathNotFound.body: |-
-    透明のテクスチャーの場所がセットされていません。　エクスポートする前に、透明のテクスチャーの場所を選ぶのが必要です。
+    projectName:
+      title: プロジェクトの名前
+      description:
+        - プロジェクトのためのID。セットするの忘れないで下さい！
+      errors:
+        invalidFunctionName: プロジェクトの名前を使えるファンクションの名前にしてください。
 
-animatedJava.popup.error.predicateFilePathUndefined.title: 定義されていない　プレディケット ファイルパス
-animatedJava.popup.error.predicateFilePathUndefined.body: |-
-    エクスポートする前にプレディケットの場所をセットしてください。
+    exporter:
+      title: エクスポーター
+      description:
+        - プロジェクトに使うエクスポーターのフォーマット
+      errors:
+        mustBeValidExporter: 選んだエクスポーターは登録されていません。
 
-animatedJava.popup.error.rigModelsExportFolder.title: リグモデル　フォルダー
-animatedJava.popup.error.rigModelsExportFolder.body: |-
-    エクスポートする前に、リグモデルのフォルダーをセットしてください。
+    verbose:
+      title: ヴァーボス
+      description:
+        - 選んだエクスポーターでディバグ／エラーメッセージをエクスポートするかを示します。
+        - スタチューとアニメーションのエクスポーターだけに影響します。
 
-animatedJava.progress.animationRendering.text: アニメーションレンダー中... %currents/%totals
+    rigItem:
+      title: リグアイテム
+      description:
+        - このアイテムはarmor_standsにモデルをディスプレーするために使われます。
+      errors:
+        invalidMinecraftItem: 選んだアイテムは存在しません！
 
-#? varients panel
-varients.ui.addVarient:　バリアントを足す
-varients.ui.addVarient.description: モデルに新しいバリアントを足す
-varients.ui.back: 戻る
+    rigModelsExportFolder:
+      title: リグモデルのエクスポートフォルダー
+      description:
+        - 全てのリグのモデルはこのフォルダーに入れられます。
+      errors:
+        invalidPath: 選んだ場所にはモデルをエクスポート出来ません！
 
-#? AJ Settings
-animatedJava.menubar.dropdown.name: アニメーテッド　ジャバ
-animatedJava.menubar.settings.name: 設定
-animatedJava.menubar.exporterList.name: エクスポーター
+    predicateFilePath:
+      title: リグアイテムのファイル
+      description:
+        - グアイテムのためのモデルファイル
+      errors:
+        notEqualToRigItem: 場所は　%rigItem.json　と名前にしてください。
 
-animatedJava.setting.projectName.name: プロジェクトの名前
-animatedJava.setting.projectName.description: プロジェクトのためのID。セットするの忘れないで下さい！
+    transparentTexturePath:
+      title: 透明テクスチャーパス
+      description:
+        - バリアントに透明性を入れるためのテクスチャー。 バリアントで透明度を使っている場合にのみ必要です。
+      errors:
+        undefinedWhenNeeded: 透明のテクスチャーの場所がセットされていません。　エクスポートする前に、透明のテクスチャーの場所を選ぶのが必要です。
 
-animatedJava.setting.exporter.name: エクスポーター
-animatedJava.setting.exporter.description: プロジェクトに使うエクスポーターのフォーマット
+    useCache:
+      title: アニメーションカッシュを使う
+      description:
+        - 替えられたアニメーションだけレンダーする
 
-animatedJava.setting.rigItem.name: リグアイテム
-animatedJava.setting.rigItem.description: このアイテムはarmor_standsにモデルをディスプレーするために使われます。
 
-animatedJava.setting.rigModelsExportFolder.name: リグモデルのエクスポートフォルダー
-animatedJava.setting.rigModelsExportFolder.description: 全てのリグのモデルはこのフォルダーに入れられます。
+    cacheMode:
+      title: アニメーションカッシュ　モード
+      description:
+        - アニメーションカッシュでは替えられたアニメーションだけレンダーする事が出来ます。　何回もエクスポートする前に早くて役に立ちます。
+        - "- メモリーモードはもっと早ですが、カッシュをストアするためにもっとメモリーを使います。"
+        - "- ディスクモードはもっと遅いですが、使われるメモリーを少なくするためにディスクにカッシュをセーブ出来ます。"
+      options:
+        memory: メモリー
+        disk: ディスク
 
-animatedJava.setting.predicateFilePath.name: リグアイテムのファイル
-animatedJava.setting.predicateFilePath.description: リグアイテムのためのモデルファイル
+    boundingBoxRenderMode:
+      title: ボーンサイズ制限ボックス
+      description:
+        - "ボーンサイズ制限ボックスを変えるのか消すのを出来ます。"
+        - "- シングルはボックスを一個づつだけディスプレーします。"
+        - "- マルチプルはセレクトされているボーンに全部ボックスをディスプレーします。"
+        - "- ディセーブルは制限ボックスを完全に消します。"
+      options:
+        single: シングル
+        many: マルチプル
+        none: ディセーブル
 
-animatedJava.setting.transparentTexturePath.name: 透明テクスチャーパス
-animatedJava.setting.transparentTexturePath.description: バリアントに透明性を入れるためのテクスチャー。 バリアントで透明度を使っている場合にのみ必要です。
-animatedJava.setting.useCache.name: アニメーションカッシュを使う
-animatedJava.setting.useCache.description: 替えられたアニメーションだけレンダーする
+  dialogs:
+    boneConfig:
+      title: ボーンコンフィグ
+      boneNbt: ボーン NBT
+      armAnimationEnabled: 腕のアニメーションをエネーブル
 
-animatedJava.setting.cacheMode.name: アニメーションカッシュ　モード
-animatedJava.setting.cacheMode.description: |-
-    アニメーションカッシュでは替えられたアニメーションだけレンダーする事が出来ます。　何回もエクスポートする前に早くて役に立ちます。
-    - メモリーモードはもっと早ですが、カッシュをストアするためにもっとメモリーを使います。
-    - メモリーモードはもっと遅いですが、使われるメモリーを少なくするためにディスクにカッシュをセーブ出来ます。
-animatedJava.setting.cacheMode.memory.name: メモリー
-animatedJava.setting.cacheMode.file.name: ディスク
+    variants:
+      title: モデルバリアント
+      description:
+        - バリアントでは色んな「スキン」を使えて、アニメーションの途中で帰られます。
 
-animatedJava.setting.boundingBoxRenderMode.name: ボーンサイズ制限ボックス
-animatedJava.setting.boundingBoxRenderMode.description: |-
-    ボーンサイズ制限ボックスを変えるのか消すのを出来ます。
-    - シングルはボックスを一個づつだけディスプレーします。
-    - マルチプルはセレクトされているボーンに全部ボックスをディスプレーします。
-    - ディセーブルは制限ボックスを完全に消します。
-animatedJava.setting.boundingBoxRenderMode.single.name: シングル
-animatedJava.setting.boundingBoxRenderMode.many.name: マルチプル
-animatedJava.setting.boundingBoxRenderMode.none.name: ディセーブル
+    about:
+      title: アニメーテッドジャバの事
+      description:
+        - マップメーカが綺麗で詳細なアニメーションをMinecraft Java Editionの為に作るツール。
 
-#? Statue Exporter
-animatedJava_exporter_statueExporter: スタチューエクスポーター
-animatedJava_exporter_statueExporter.exportingDataPackProgress: データパック作り中... %progress%
-animatedJava_exporter_statueExporter.writingDataPackProgress: データパックをディスクに書き中... %progress% | %fileName　を書いています
+      version: Version
+      buildID: Build ID
 
-animatedJava_exporter_statueExporter.setting.rootEntityType.name: ルートエンティティ
-animatedJava_exporter_statueExporter.setting.rootEntityType.description: ルートエンティティとして使うエンティティ。　このためには動かないエンティティが必要です。
+      creators: クリエイター
+      discordServer: ディスコードのサーバーに入って下さい！
+      githubRepo: ソース
+      developers: デヴェロパー
+      patrons: パトロン
+      honourableMentions: 佳作
 
-animatedJava_exporter_statueExporter.setting.rootEntityNbt.name: ルートエンティティ NBT
-animatedJava_exporter_statueExporter.setting.rootEntityNbt.description: ルートエンティティのNBTデータ
+      fetchbotQuote: '"ジャバのモブにも踊らせてあげよう！"'
+      snavesutitQuote: '"armor_standはラブ、armor_standはライフ。"'
 
-animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.title: 定義されていないMCBファイルパス
-animatedJava_exporter_statueExporter.popup.error.mcbFilePathNotDefined.body: エクスポートする前に、MCBファイルの場所を定義してください。
+      youtuber: ユーチューバー
+      translator: トランスレーター
+      contributor: 寄稿者
+      moderator: ディスコード　モデレーター
+      closedBeta: クローズド　ベータテスター
+      brandingArtist: ブランディング　アーティスト
+      patronTier1: ティア 1 パトロン
+      patronTier2: ティア 2 パトロン
+      patronTier3: ティア 3 パトロン
 
-# animatedJava_exporter_statueExporter.setting.boneType.name: Bone Type
-# animatedJava_exporter_statueExporter.setting.boneType.description: AEC Stack provides more precise positional movement at the cost of doubling the amount of entities per bone.
-# animatedJava_exporter_statueExporter.setting.boneType.aecStack.name: AEC Stack
-# animatedJava_exporter_statueExporter.setting.boneType.armorStand.name: Armor Stand
+    animationProperties:
+      animationCompleteCommand:
+        label: End Of Anim Command
 
-animatedJava_exporter_statueExporter.setting.markerArmorStands.name: マーカー　アーマースタンド
-animatedJava_exporter_statueExporter.setting.markerArmorStands.description: エネーブルされているとき、ディスプレーするためのarmor_standsはヒットボックスもコリジョンもないです。
+    errors:
+      misc:
+        title: アニメーテッドジャバで不明なエラーが発生しました
+        body:
+        - |-
+          <textarea style="height: 256px" readonly="readonly">
+          ------ Error ------
+          %errorMessage  //  "%randomErrorMessage"
+          ------ Stack ------
+          %errorStack
 
-animatedJava_exporter_statueExporter.setting.modelTag.name: モデル　タグ
-animatedJava_exporter_statueExporter.setting.modelTag.description: モデルを選ぶためのタグ
+          Build ID: %buildID
+          </textarea>
+        - <p>このエラーを<a href="%githubLink">アニメーテッドジャバのギットハブ</a>にこのエラーの作り方を教えて下さい。</p>
+        - <p>質問があれば、私たちの<a href="%discordLink">ディスコードサーバー</a>でanimated-java-supportチャンネルで聞いて下さい。</p>
+        - <p>ありがとうございます！</p>
 
-animatedJava_exporter_statueExporter.setting.rootTag.name: ルート　タグ
-animatedJava_exporter_statueExporter.setting.rootTag.description: スタチューのルートエンティティを選ぶためのタグ
+      topLevelCubes:
+        title: モデルにトップレベルキューブがあります
+        body:
+          - 全てキューブをグループの中に入れて下さい。
 
-animatedJava_exporter_statueExporter.setting.allBonesTag.name: 全てのボーンのタグ
-animatedJava_exporter_statueExporter.setting.allBonesTag.description: スタチューのボーンを選ぶためのタグ
+      predicateMergeFailed:
+        title: プレディケットがマージするのを失敗しました。
+        body:
+          - "%reason"
+          - アニメーテッドジャバはアニメーテッドジャバにコントロールされているプレディケットモデルしか使えません。
+          - 存在しているアニメーテッドジャバプレディケットアイテムにあなたのプレディケットアイテムをマージしているのを確認して下さい。
+        reasons:
+          overridesMissing: モデルオーバーライトリストがありません。
+          ajMetaMissing: 選んだモデルファイルはアニメーテッドジャバプレディケットファイルではありません。
 
-animatedJava_exporter_statueExporter.setting.individualBoneTag.name: 一つづつのボーンタグ
-animatedJava_exporter_statueExporter.setting.individualBoneTag.description: 名前で一つづつボーンお選べるためのタグ
+      invalidAnimationSnappingValue:
+        title: 無効なアニメーションスナッピングヴァリュー
+        body:
+          - '%animationName'のアニメーションのスナッピングヴァリューが%snappingです!
+          - マインクラフトのティックのスピードのせいでスナッピングヴァリューが20ではないと行けません。
+          - エクスポートする前にアニメーションのキーフレームをアップデートして下さい。
+          - (キーフレームを少し動かせるので治せるかもしれません)
 
-animatedJava_exporter_statueExporter.setting.internalScoreboardObjective.name: インターナルスコアボード
-animatedJava_exporter_statueExporter.setting.internalScoreboardObjective.description: 計算するためのスコアボードの名前
+      rigFolderHasUnknownContent:
+        title: 使われていないリグのフォルダー
+        body:
+          - 選んだフォルダーには不明なファイルがあります。
+          - リグのためにフォルダーの中のファイルをオーバーライトしますか？
+          - "選んだフォルダー:"
+          - <textarea>%path</textarea>
+          - "不明なファイル:"
+          - <textarea>%files</textarea>
 
-animatedJava_exporter_statueExporter.setting.idScoreboardObjective.name: モデル ID スコアボード
-animatedJava_exporter_statueExporter.setting.idScoreboardObjective.description: どのエンティティにどのモデルかセットするためのスコアボードの名前
+      rigFolderAlreadyUsedByOther:
+        title: 選んだリグモデルのフォルダーは使われています
+        body:
+          - 選んだリグモデルのフォルダーは他のリグモデルがあります。
+          - 前のリグをオーバーライトするのでよろしいですか？
+          - "選んだフォルダー:"
+          - <textarea>%path</textarea>
+          - "ファイル:"
+          - <textarea>%files</textarea>
 
-animatedJava_exporter_statueExporter.setting.exportMode.name: エクスポートモード
-animatedJava_exporter_statueExporter.setting.exportMode.description: どのフォーマットでエクスポートするのを選んでください。　’Vanilla’は普通のデータパックとリソースパックをエクスポートします。MCBはリソースパックとlang-mcコンパイラーのための.mcファイルをエクスポートします。
-animatedJava_exporter_statueExporter.setting.exportMode.vanilla.name: Vanilla
-animatedJava_exporter_statueExporter.setting.exportMode.mcb.name: MCB
+      unableToGenerateTexturePath:
+        title: テクスチャーパス
+        body:
+          - '%textureName'のテクスチャーがちゃんとリソースパックの中に入っていません。
+          - テクスチャーが'assets/namespace/textures/'のサブフォルダーにあるのを確認して下さい。
+          - eg. 'resources/assets/minecraft/textures/item/diamond.png'
 
-animatedJava_exporter_statueExporter.setting.mcbFilePath.name: Lang-mc ファイル
-animatedJava_exporter_statueExporter.setting.mcbFilePath.description: .mcをエクスポートする場所
+      unableToGenerateModelPath:
+        title: モデルパス
+        body:
+          - '%modelName'のモデルがちゃんとリソースパックの中に入っていません。
+          - モデルが'assets/namespace/models/'のサブフォルダーにあるのを確認して下さい。
+          - eg. 'resources/assets/minecraft/models/item/diamond.json'
 
-animatedJava_exporter_statueExporter.setting.dataPackPath.name: データパック
-animatedJava_exporter_statueExporter.setting.dataPackPath.description: データパックをエクスポートする場所。
-animatedJava_exporter_statueExporter.popup.error.dataPackPathNotDefined.title: データパックをエクスポートする場所が設定されていません。
-animatedJava_exporter_statueExporter.popup.error.dataPackPathNotDefined.body: エクスポートする前に、データパックをエクスポートする場所をせっとしてください。
+      invalidCubeRotations:
+        title: エレメントロテーション
+        body:
+          - キューブのロテーションをエクスポートする前に直して下さい。
 
-#? Animation Exporter
-animatedJava_exporter_animationExporter: アニメーションエクスポーター
-animatedJava_exporter_animationExporter.exportingDataPackProgress: データパック作り中... %progress%
-animatedJava_exporter_animationExporter.writingDataPackProgress: データパックをディスクに書き中... %progress% | %fileName　を書いています
+      unsavedTexture:
+        title: セーブされていないテクスチャー
+        body:
+          - '%textureName'がディスクにセーブされていないです!
+          - リソースパックの中にセーブされているのを確認して下さい。
 
-animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.title: ゼロレングスアニメーション
-animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.body:
-    |-
-    短すぎるアニメーションがあります。　アニメーションは0.05秒はないといけません。（１ティック）
+      transparentTexturePathNotFound:
+        title: 透明テクスチャーパスがセットせらていません
+        body:
+          - 透明のテクスチャーがあるヴァリアントがあります。
+          - 透明のテクスチャーを設定でコンフィギュアして下さい。
 
-animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.title: 定義されていないMCBファイルパス
-animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.body: エクスポートする前に、MCBファイルの場所を定義してください。
+      predicateFilePathUndefined:
+        title: プレディケットファイルパスがセットされていません
+        body:
+          - エクスポートする前にプレディケットの場所をセットしてください。
 
-animatedJava_exporter_animationExporter.setting.rootEntityType.name: ルートエンティティ
-animatedJava_exporter_animationExporter.setting.rootEntityType.description: ルートエンティティとして使うエンティティ。　このためには動かないエンティティが必要です。
+      rigModelsExportFolderUndefined:
+        title: リグモデルフォルダー
+        body:
+          - エクスポートする前に、リグモデルのフォルダーをセットしてください。
 
-animatedJava_exporter_animationExporter.setting.rootEntityNbt.name: ルートエンティティ NBT
-animatedJava_exporter_animationExporter.setting.rootEntityNbt.description: ルートエンティティのNBTデータ
+  exporters:
+    #? Generic Exporter Strings
+    generic:
+      progress:
+        writingDataPack: データパックをディスクに書き中... %progress% | %fileName　を書いています
+        exportingDataPack: データパック作り中... %progress%
 
-animatedJava_exporter_animationExporter.setting.boneType.name: ボーン　タイプ
-animatedJava_exporter_animationExporter.setting.boneType.description: AECスタックは、ボーンあたりのエンティティの量を2倍にするという犠牲を払って、より正確な位置の動きを提供します。
-animatedJava_exporter_animationExporter.setting.boneType.aecStack.name: AEC スタック
-animatedJava_exporter_animationExporter.setting.boneType.armorStand.name: アーマースタンド
+      dialogs:
+        errors:
+          mcbFilePathNotDefined:
+            title: MCB ファイルパスがセットされていません
+            body:
+              - エクスポートする前に、MCBファイルの場所をセットしてください。
 
-animatedJava_exporter_animationExporter.setting.markerArmorStands.name: マーカー　アーマースタンド
-animatedJava_exporter_animationExporter.setting.markerArmorStands.description: エネーブルされているとき、ディスプレーするためのarmor_standsはヒットボックスもコリジョンもないです。
+          dataPackPathNotDefined:
+            title: データパックファイルパスがセットされていません
+            body:
+              - エクスポートする前に、データパックの場所をセットしてください。
 
-animatedJava_exporter_animationExporter.setting.modelTag.name: モデル　タグ
-animatedJava_exporter_animationExporter.setting.modelTag.description: モデルを選ぶためのタグ
+      settings:
+        rootEntityType:
+          title: ルートエンティティ
+          description:
+            - ルートエンティティとして使うエンティティ。このためには動かないエンティティが必要です。
+          errors:
+            invalidEntity: 選んだエンティティは存在しません！
 
-animatedJava_exporter_animationExporter.setting.rootTag.name: ルートタグ
-animatedJava_exporter_animationExporter.setting.rootTag.description: リグのルートエンティティを選ぶためのタグ
+        rootEntityNbt:
+          title: ルートエンティティ NBT
+          description:
+            - ルートエンティティのNBTデータ
+          errors:
+            invalidNbt: 無効なNBTです。
 
-animatedJava_exporter_animationExporter.setting.allBonesTag.name: 全てのボーンのタグ
-animatedJava_exporter_animationExporter.setting.allBonesTag.description: スタチューのボーンを選ぶためのタグ
+        markerArmorStands:
+          title: マーカーアーマースタンド
+          description:
+            - エネーブルされているとき、ディスプレーするためのarmor_standsはヒットボックスもコリジョンもないです。
 
-animatedJava_exporter_animationExporter.setting.boneModelDisplayTag.name: ボーンモデルのディスプレータグ
-animatedJava_exporter_animationExporter.setting.boneModelDisplayTag.description: どのエンティティがどのモデルを見せてるのを分かるなめのタグ。
+        modelTag:
+          title: モデルタグ
+          description:
+            - モデルを選ぶためのタグ
 
-animatedJava_exporter_animationExporter.setting.individualBoneTag.name: 一つづつのボーンのタグ
-animatedJava_exporter_animationExporter.setting.individualBoneTag.description: 名前で一つづつボーンお選べるためのタグ
+        rootTag:
+          title: ルートタグ
+          description:
+            - ルートエンティティを選ぶためのタグ
 
-animatedJava_exporter_animationExporter.setting.internalScoreboardObjective.name: インターナル　スコアボード
-animatedJava_exporter_animationExporter.setting.internalScoreboardObjective.description: 計算するためのスコアボードの名前
+        allBonesTag:
+          title: 全てのボーンのタグ
+          description:
+            - スタチューのボーンを選ぶためのタグ
 
-animatedJava_exporter_animationExporter.setting.idScoreboardObjective.name: モデル ID スコアボード
-animatedJava_exporter_animationExporter.setting.idScoreboardObjective.description: どのエンティティにどのモデルかセットするためのスコアボードの名前
+        boneModelDisplayTag:
+          title: ボーンモデルのディスプレータグ
+          description:
+            - どのエンティティがどのモデルを見せてるのを分かるなめのタグ。
 
-animatedJava_exporter_animationExporter.setting.frameScoreboardObjective.name: フレーム　スコアボード
-animatedJava_exporter_animationExporter.setting.frameScoreboardObjective.description: アニメーションのためにどのフレームをプレイするのをセットするためのスコアボードの名前
+        individualBoneTag:
+          title: 一つづつのボーンのタグ
+          description:
+            - 名前で一つづつボーンお選べるためのタグ
 
-animatedJava_exporter_animationExporter.setting.animatingFlagScoreboardObjective.name: アニメーションフラグ　スコアボード
-animatedJava_exporter_animationExporter.setting.animatingFlagScoreboardObjective.description: 計算するためのスコアボードの名前
+        internalScoreboardObjective:
+          title: インターナルスコアボード
+          description:
+            - 計算するためのスコアボードの名前
 
-animatedJava_exporter_animationExporter.setting.animationLoopModeScoreboardObjective.name: アニメーションループモード　スコアボード
-animatedJava_exporter_animationExporter.setting.animationLoopModeScoreboardObjective.description: ループアニメーションをコントロールするためのスコアボードの名前
+        idScoreboardObjective:
+          title: モデル ID スコアボード
+          description:
+            - どのエンティティにどのモデルかセットするためのスコアボードの名前
 
-animatedJava_exporter_animationExporter.setting.exportMode.name: エクスポートモード
-animatedJava_exporter_animationExporter.setting.exportMode.description: どのフォーマットでエクスポートするのを選んでください。　’Vanilla’は普通のデータパックとリソースパックをエクスポートします。MCBはリソースパックとlang-mcコンパイラーのための.mcファイルをエクスポートします。
-animatedJava_exporter_animationExporter.setting.exportMode.vanilla.name: Vanilla
-animatedJava_exporter_animationExporter.setting.exportMode.mcb.name: MCB
+        exportMode:
+          title: エクスポートモード
+          description:
+            - どのフォーマットでエクスポートするのを選んでください。バニラは普通のデータパックとリソースパックをエクスポートします。
+            - MCBはリソースパックとlang-mcコンパイラーのための.mcファイルをエクスポートします。
+          options:
+            mcb: MCB
+            vanilla: バニラ
 
-animatedJava_exporter_animationExporter.setting.mcbFilePath.name: Lang-mc ファイルパス
-animatedJava_exporter_animationExporter.setting.mcbFilePath.description: .mc ファイルをエクスポートする場所
-animatedJava_exporter_animationExporter.setting.mcbFilePath.invalidPopup.text: このMCBファイルパスは使えません! MCB　fileは%projectName.mc (project_name.mc)と言うのが必要です。
+        mcbFilePath:
+          title: Lang-mc ファイル
+          description:
+            - .mcをエクスポートする場所
+            - MCBのワークスペースの中にmc-extraを入れるのが必要です。（mcb add lang mc-extra）
 
-animatedJava_exporter_animationExporter.setting.mcbConfigPath.name: Lang-mc config.json パス
-animatedJava_exporter_animationExporter.setting.mcbConfigPath.description: |-
-    アニメーテッドジャバのためにMCB configをエクスポートします。
-    WARNING! config.jsonをオーバーライトします。
+        mcbConfigPath:
+          title: Lang-mc config.json パス
+          description:
+            - アニメーテッドジャバのためにMCB configをエクスポートします。
+            - WARNING! config.jsonをオーバーライトします。
+          errors:
+            mustBeNamedAfterProject: パスは%projectName.mc!で終わるのが必要です！
 
-animatedJava_exporter_animationExporter.setting.dataPackPath.name: データパック
-animatedJava_exporter_animationExporter.setting.dataPackPath.description: データパックをエクスポートする場所。
-animatedJava_exporter_animationExporter.popup.error.dataPackPathNotDefined.title: データパックをエクスポートする場所が設定されていません。
-animatedJava_exporter_animationExporter.popup.error.dataPackPathNotDefined.body: エクスポートする前に、データパックをエクスポートする場所をせっとしてください。
+        dataPackPath:
+          title: データパック
+          description:
+            - データパックをエクスポートする場所。
+
+    #? Vanilla Statue Exporter
+    vanillaStatue:
+      title: スタチューエクスポーター
+
+    #? Vanilla Animation Exporter
+    vanillaAnimation:
+      title: アニメーションエクスポーター
+      dialogs:
+        errors:
+          zeroLengthAnimation:
+            title: ゼロレングスアニメーション
+            body:
+              - 短すぎるアニメーションがあります。アニメーションは0.05秒はないといけません。（１ティック）
+
+          noAnimations:
+            title: アニメーションがありません。
+            body:
+              - エクスポートする前にアニメーションを作って下さい。
+
+      settings:
+        autoDistance:
+          title: オートディスタンス
+          description:
+            - レンダリングされたアニメーションに基づいて、リグ内のすべてのボーンをアニメートするために必要な最大距離を計算します。
+
+        autoDistanceMovementThreshold:
+          title: オートディスタンス　ムーブメントスレスホルド
+          description:
+            - 計算されたアニメーション距離に追加する距離。
+          errors:
+            valueOutOfRange: 設定値は0以上であるのが必要です。
+
+        manualDistance:
+          title: マニュアル　アニメーションディスタンス
+          description:
+            - ボーンがアニメートを停止する前に、ルートエンティティからどれだけ離れられるかセットできます。
+          errors:
+            valueOutOfRange: 設定値は0以上であるのが必要です。
+
+        frameScoreboardObjective:
+          title: フレーム　スコアボード
+          description:
+            - アニメーションのためにどのフレームをプレイするのをセットするためのスコアボードの名前
+
+        animatingFlagScoreboardObjective:
+          title: アニメーションフラグ　スコアボード
+          description:
+            - 計算するためのスコアボードの名前
+
+        animationLoopModeScoreboardObjective:
+          title: アニメーションループモード　スコアボード
+          description:
+            - ループアニメーションをコントロールするためのスコアボードの名前
