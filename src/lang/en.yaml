@@ -1,423 +1,423 @@
 ---
 #? AJ
 animatedJava:
-    plugin:
-        title: Animated Java
+  plugin:
+    title: Animated Java
 
-    menubar:
-        dropdown: Animated Java
-        settings: Settings
-        export: Export Model
-        about: About...
+  menubar:
+    dropdown: Animated Java
+    settings: Settings
+    export: Export Model
+    about: About...
 
-    panels:
-        variants:
-            title: Model Variants
-            addVariant:
-                title: Add Variant
-                description: Adds a new Variant to the model
-            back: Back
+  panels:
+    variants:
+      title: Model Variants
+      addVariant:
+        title: Add Variant
+        description: Adds a new Variant to the model
+      back: Back
+  boneConfig:
+    title: Bone Config
+    boneNbt: NBT
+  popups:
+    exportCancelled: Export Cancelled!
+    exportInProgress: Export in Progress!
+    noExporterSelected: No Exporter Selected!
+    successfullyExported: Export Successful!
+
+  progress:
+    animationRendering: Rendering Animations... %currents/%totals
+
+  settings:
+    header: Animated Java Settings
+    isGlobal: '(Global)'
+    isOptional: '(Optional)'
+
+    generic:
+      errors:
+        invalid: If you're seeing this message Animated Java broke. (Uh Oh)
+        emptyValue: Value cannot be empty
+        mustBeBoolean: Value must be a boolean
+        mustBeString: Value must be a string
+        missingFormatString: Value missing required %notFound formatting string
+        invalidEntityTag: Value is not a valid entity tag
+
+    projectName:
+      title: Project Name
+      description:
+        - The unique ID of your project. Make sure you set this!
+      errors:
+        invalidFunctionName: Project name must be a valid function name!
+
+    exporter:
+      title: Exporter
+      description:
+        - Which export format to use for this project
+      errors:
+        mustBeValidExporter: Selected exporter does not exist in the registered exporters!
+
+    verbose:
+      title: Verbose
+      description:
+        - Indicates to the selected exporter whether or not to export extra debug/error messages.
+        - Only really effects the Statue and Animation exporters.
+
+    rigItem:
+      title: Rig Item
+      description:
+        - The item that will be used to display the models on the armor_stands
+      errors:
+        invalidMinecraftItem: Chosen item does not exist!
+
+    rigModelsExportFolder:
+      title: Rig Models Export Folder
+      description:
+        - The folder that all of the rig's models will be dumped into
+      errors:
+        invalidPath: Chosen path is not a valid location to export models to!
+
+    predicateFilePath:
+      title: Rig Item Predicate Model
+      description:
+        - The item model file of the rig item
+      errors:
+        notEqualToRigItem: Path must end on a file named %rigItem.json
+
+    transparentTexturePath:
+      title: Transparent Texture Path
+      description:
+        - A transparent texture for adding transparency to variants. Only needed if you're using transparency in your variants.
+      errors:
+        undefinedWhenNeeded: Path must be defined if you're using the transparency feature of variants!
+
+    useCache:
+      title: Use Animation Cache
+      description:
+        - Only re-render changed animations
+
+    cacheMode:
+      title: Animation Cache Mode
+      description:
+        - The Animation Cache lets us only re-render animations that have been changed since the last export. Making repeated exports much faster, especially on larger models.
+        - '- Memory mode is faster but uses more Memory to store the cache.'
+        - '- Disk mode is slower but saves the cache to disk to save on Memory usage.'
+      options:
+        memory: Memory Mode
+        disk: Disk Mode
+
+    boundingBoxRenderMode:
+      title: Bone Size Limit Box
+      description:
+        - 'Configure or disable the bone size limit box(es).'
+        - '- Single will only display one box at a time.'
+        - "- Multiple will display a box for every bone you've selected."
+        - '- Disabled will disable it entirely.'
+      options:
+        single: Single
+        many: Multiple
+        none: Disabled
+
+  dialogs:
     boneConfig:
-        title: Bone Config
-        boneNbt: NBT
-    popups:
-        exportCancelled: Export Cancelled!
-        exportInProgress: Export in Progress!
-        noExporterSelected: No Exporter Selected!
-        successfullyExported: Export Successful!
+      title: Bone Config
+      boneNbt: Bone NBT
+      armAnimationEnabled: Enable Arm Animation
 
-    progress:
-        animationRendering: Rendering Animations... %currents/%totals
+    variants:
+      title: Model Variants
+      description:
+        - Variants allow your model to have different "skins" that can be swapped out during runtime using a function.
 
-    settings:
-        header: Animated Java Settings
-        isGlobal: '(Global)'
-        isOptional: '(Optional)'
+    about:
+      title: About Animated Java
+      description:
+        - A tool for mapmakers to create smooth, and detailed animations for Minecraft Java Edition.
 
-        generic:
-            errors:
-                invalid: If you're seeing this message Animated Java broke. (Uh Oh)
-                emptyValue: Value cannot be empty
-                mustBeBoolean: Value must be a boolean
-                mustBeString: Value must be a string
-                missingFormatString: Value missing required %notFound formatting string
-                invalidEntityTag: Value is not a valid entity tag
+      version: Version
+      buildID: Build ID
 
-        projectName:
-            title: Project Name
-            description:
-                - The unique ID of your project. Make sure you set this!
-            errors:
-                invalidFunctionName: Project name must be a valid function name!
+      creators: Creators
+      discordServer: Join our discord server!
+      githubRepo: Source
+      developers: Developers
+      patrons: Patrons
+      honourableMentions: Honourable Mentions
 
-        exporter:
-            title: Exporter
-            description:
-                - Which export format to use for this project
-            errors:
-                mustBeValidExporter: Selected exporter does not exist in the registered exporters!
+      fetchbotQuote: '"Let the java mobs dance too!"'
+      snavesutitQuote: '"armor_stand is love, armor_stand is life."'
 
-        verbose:
-            title: Verbose
-            description:
-                - Indicates to the selected exporter whether or not to export extra debug/error messages.
-                - Only really effects the Statue and Animation exporters.
+      youtuber: Youtuber
+      translator: Translator
+      contributor: Contributor
+      moderator: Discord Moderator
+      closedBeta: Closed Beta Tester
+      brandingArtist: Branding Artist
+      patronTier1: Teir 1 Patron
+      patronTier2: Teir 2 Patron
+      patronTier3: Teir 3 Patron
 
-        rigItem:
-            title: Rig Item
-            description:
-                - The item that will be used to display the models on the armor_stands
-            errors:
-                invalidMinecraftItem: Chosen item does not exist!
+    animationProperties:
+      animationCompleteCommand:
+        label: End Of Anim Command
 
-        rigModelsExportFolder:
-            title: Rig Models Export Folder
-            description:
-                - The folder that all of the rig's models will be dumped into
-            errors:
-                invalidPath: Chosen path is not a valid location to export models to!
+    errors:
+      misc:
+        title: An Unknown Error has Occured in Animated Java
+        body:
+          - |-
+            <textarea style="height: 256px" readonly="readonly">
+            ------ Error ------
+            %errorMessage  //  "%randomErrorMessage"
+            ------ Stack ------
+            %errorStack
 
-        predicateFilePath:
-            title: Rig Item Predicate Model
-            description:
-                - The item model file of the rig item
-            errors:
-                notEqualToRigItem: Path must end on a file named %rigItem.json
+            Build ID: %buildID
+            </textarea>
+          - <p>Please report this error on <a href="%githubLink">Animated Java's github</a> with information on how to reproduce it and a copy of the error above.</p>
+          - <p>You can also join our <a href="%discordLink">Discord Server</a> and ask questions in the animated-java-support channel.</p>
+          - <p>Thank you!</p>
 
-        transparentTexturePath:
-            title: Transparent Texture Path
-            description:
-                - A transparent texture for adding transparency to variants. Only needed if you're using transparency in your variants.
-            errors:
-                undefinedWhenNeeded: Path must be defined if you're using the transparency feature of variants!
+      topLevelCubes:
+        title: Model has top-level cubes
+        body:
+          - All cubes must be inside of a group.
 
-        useCache:
-            title: Use Animation Cache
-            description:
-                - Only re-render changed animations
+      predicateMergeFailed:
+        title: Predicate Failed to Merge
+        body:
+          - '%reason'
+          - Animated Java only supports merging into Animated Java controlled predicate models.
+          - Please make sure you are attempting to merge your predicate item model with a valid pre-existing Animated Java predicate item model.
+        reasons:
+          overridesMissing: Model overrides list missing.
+          ajMetaMissing: Model file to merge into is not an Animated Java predicate file.
 
-        cacheMode:
-            title: Animation Cache Mode
-            description:
-                - The Animation Cache lets us only re-render animations that have been changed since the last export. Making repeated exports much faster, especially on larger models.
-                - '- Memory mode is faster but uses more Memory to store the cache.'
-                - '- Disk mode is slower but saves the cache to disk to save on Memory usage.'
-            options:
-                memory: Memory Mode
-                disk: Disk Mode
+      invalidAnimationSnappingValue:
+        title: Invalid Animation Snapping Value
+        body:
+          - The animation '%animationName' has a snapping value of %snapping!
+          - Due to how fast Minecraft ticks, Animated Java only supports a snapping value of 20.
+          - Please update your animations and keyframes to reflect this limitation before you export.
+          - (You may have to wiggle your keyframes on the timeline a bit to update their snapped time)
 
-        boundingBoxRenderMode:
-            title: Bone Size Limit Box
-            description:
-                - 'Configure or disable the bone size limit box(es).'
-                - '- Single will only display one box at a time.'
-                - "- Multiple will display a box for every bone you've selected."
-                - '- Disabled will disable it entirely.'
-            options:
-                single: Single
-                many: Multiple
-                none: Disabled
+      rigFolderHasUnknownContent:
+        title: Unused rig folder
+        body:
+          - The folder you have chosen as your rig model folder has unknown files in it.
+          - Are you sure you want to overwrite the contents of this folder with your rig?
+          - 'Chosen folder:'
+          - <textarea>%path</textarea>
+          - 'Unknown Files:'
+          - <textarea>%files</textarea>
 
-    dialogs:
-        boneConfig:
-            title: Bone Config
-            boneNbt: Bone NBT
-            armAnimationEnabled: Enable Arm Animation
+      rigFolderAlreadyUsedByOther:
+        title: The chosen rig model folder is already in use
+        body:
+          - The folder you have chosen as your rig model folder already has a different rig's models inside of it.
+          - Are you sure you want to overwrite the contents of this folder with your rig?
+          - 'Chosen folder:'
+          - <textarea>%path</textarea>
+          - 'Files:'
+          - <textarea>%files</textarea>
 
-        variants:
-            title: Model Variants
-            description:
-                - Variants allow your model to have different "skins" that can be swapped out during runtime using a function.
+      unableToGenerateTexturePath:
+        title: Invalid texture path
+        body:
+          - The texture '%textureName' has an invalid location inside a Resource Pack
+          - Please make sure it is properly saved inside of a valid Resource Pack in a sub folder of 'assets/namespace/textures/'
+          - eg. 'resources/assets/minecraft/textures/item/diamond.png'
 
-        about:
-            title: About Animated Java
-            description:
-                - A tool for mapmakers to create smooth, and detailed animations for Minecraft Java Edition.
+      unableToGenerateModelPath:
+        title: Invalid model path
+        body:
+          - The model '%modelName' has an invalid location inside a Resource Pack
+          - Please make sure it is properly saved inside of a valid Resource Pack in a sub folder of 'assets/namespace/models/'
+          - eg. 'resources/assets/minecraft/models/item/diamond.json'
 
-            version: Version
-            buildID: Build ID
+      invalidCubeRotations:
+        title: Invalid Element Rotations
+        body:
+          - The rotations of some cubes are invalid for the java model format.
+          - Please fix all invalid rotations before exporting.
 
-            creators: Creators
-            discordServer: Join our discord server!
-            githubRepo: Source
-            developers: Developers
-            patrons: Patrons
-            honourableMentions: Honourable Mentions
+      unsavedTexture:
+        title: Unsaved Texture
+        body:
+          - The texture '%textureName' is not saved to disk!
+          - Please make sure it is saved into a valid resource pack location.
 
-            fetchbotQuote: '"Let the java mobs dance too!"'
-            snavesutitQuote: '"armor_stand is love, armor_stand is life."'
+      transparentTexturePathNotFound:
+        title: Transparent Texture Path Not Defined
+        body:
+          - Looks like you're trying to use variants with transparent textures without defining a texture path!
+          - You'll need to configure the transparent texture path in the settings before you can export.
 
-            youtuber: Youtuber
-            translator: Translator
-            contributor: Contributor
-            moderator: Discord Moderator
-            closedBeta: Closed Beta Tester
-            brandingArtist: Branding Artist
-            patronTier1: Teir 1 Patron
-            patronTier2: Teir 2 Patron
-            patronTier3: Teir 3 Patron
+      predicateFilePathUndefined:
+        title: Predicate File Path Undefined
+        body:
+          - You must define a predicate file path in the settings before you can export.
 
-        animationProperties:
-            animationCompleteCommand:
-                label: End Of Anim Command
+      rigModelsExportFolderUndefined:
+        title: Rig Model Folder Undefined
+        body:
+          - You must define a rig model folder path in settings before you can export.
 
+  exporters:
+    #? Generic Exporter Strings
+    generic:
+      progress:
+        writingDataPack: Writing Data Pack to disk... %progress% | Writing %fileName
+        exportingDataPack: Generating Data Pack... %progress%
+
+      dialogs:
         errors:
-            misc:
-                title: An Unknown Error has Occured in Animated Java
-                body:
-                    - |-
-                        <textarea style="height: 256px" readonly="readonly">
-                        ------ Error ------
-                        %errorMessage  //  "%randomErrorMessage"
-                        ------ Stack ------
-                        %errorStack
+          mcbFilePathNotDefined:
+            title: MCB file path not defined
+            body:
+              - You must define a path for the MCB file in the Statue Exporter settings before exporting!
 
-                        Build ID: %buildID
-                        </textarea>
-                    - <p>Please report this error on <a href="%githubLink">Animated Java's github</a> with information on how to reproduce it and a copy of the error above.</p>
-                    - <p>You can also join our <a href="%discordLink">Discord Server</a> and ask questions in the animated-java-support channel.</p>
-                    - <p>Thank you!</p>
+          dataPackPathNotDefined:
+            title: Data Pack file path undefined
+            body:
+              - You must define a data pack path in settings before you can export.
 
-            topLevelCubes:
-                title: Model has top-level cubes
-                body:
-                    - All cubes must be inside of a group.
+      settings:
+        rootEntityType:
+          title: Root Entity Type
+          description:
+            - The entity type to use as the root entity for the model
+          errors:
+            invalidEntity: Chosen entity does not exist!
 
-            predicateMergeFailed:
-                title: Predicate Failed to Merge
-                body:
-                    - '%reason'
-                    - Animated Java only supports merging into Animated Java controlled predicate models.
-                    - Please make sure you are attempting to merge your predicate item model with a valid pre-existing Animated Java predicate item model.
-                reasons:
-                    overridesMissing: Model overrides list missing.
-                    ajMetaMissing: Model file to merge into is not an Animated Java predicate file.
+        rootEntityNbt:
+          title: Root Entity NBT
+          description:
+            - The NBT data of the root entity
+          errors:
+            invalidNbt: Invalid NBT! %error
 
-            invalidAnimationSnappingValue:
-                title: Invalid Animation Snapping Value
-                body:
-                    - The animation '%animationName' has a snapping value of %snapping!
-                    - Due to how fast Minecraft ticks, Animated Java only supports a snapping value of 20.
-                    - Please update your animations and keyframes to reflect this limitation before you export.
-                    - (You may have to wiggle your keyframes on the timeline a bit to update their snapped time)
+        markerArmorStands:
+          title: Marker Armor Stands
+          description:
+            - When enabled all armor_stands used to display the rig will have no hitbox or collision.
 
-            rigFolderHasUnknownContent:
-                title: Unused rig folder
-                body:
-                    - The folder you have chosen as your rig model folder has unknown files in it.
-                    - Are you sure you want to overwrite the contents of this folder with your rig?
-                    - 'Chosen folder:'
-                    - <textarea>%path</textarea>
-                    - 'Unknown Files:'
-                    - <textarea>%files</textarea>
+        modelTag:
+          title: Model Tag
+          description:
+            - The tag used to select the model
 
-            rigFolderAlreadyUsedByOther:
-                title: The chosen rig model folder is already in use
-                body:
-                    - The folder you have chosen as your rig model folder already has a different rig's models inside of it.
-                    - Are you sure you want to overwrite the contents of this folder with your rig?
-                    - 'Chosen folder:'
-                    - <textarea>%path</textarea>
-                    - 'Files:'
-                    - <textarea>%files</textarea>
+        rootTag:
+          title: Root Tag
+          description:
+            - The tag used to select the statue's root entity
 
-            unableToGenerateTexturePath:
-                title: Invalid texture path
-                body:
-                    - The texture '%textureName' has an invalid location inside a Resource Pack
-                    - Please make sure it is properly saved inside of a valid Resource Pack in a sub folder of 'assets/namespace/textures/'
-                    - eg. 'resources/assets/minecraft/textures/item/diamond.png'
+        allBonesTag:
+          title: All Bones Tag
+          description:
+            - The tag used to select any or all of the statue's bones
 
-            unableToGenerateModelPath:
-                title: Invalid model path
-                body:
-                    - The model '%modelName' has an invalid location inside a Resource Pack
-                    - Please make sure it is properly saved inside of a valid Resource Pack in a sub folder of 'assets/namespace/models/'
-                    - eg. 'resources/assets/minecraft/models/item/diamond.json'
+        boneModelDisplayTag:
+          title: Bone Model Display Tag
+          description:
+            - The tag used to select the model display entities (armor_stands with items on their heads)
 
-            invalidCubeRotations:
-                title: Invalid Element Rotations
-                body:
-                    - The rotations of some cubes are invalid for the java model format.
-                    - Please fix all invalid rotations before exporting.
+        individualBoneTag:
+          title: Individual Bone Tag
+          description:
+            - The tag used to select a specific bone by name
 
-            unsavedTexture:
-                title: Unsaved Texture
-                body:
-                    - The texture '%textureName' is not saved to disk!
-                    - Please make sure it is saved into a valid resource pack location.
+        internalScoreboardObjective:
+          title: Internal Scoreboard
+          description:
+            - The name of the scoreboard objective used for internal calculations
 
-            transparentTexturePathNotFound:
-                title: Transparent Texture Path Not Defined
-                body:
-                    - Looks like you're trying to use variants with transparent textures without defining a texture path!
-                    - You'll need to configure the transparent texture path in the settings before you can export.
+        idScoreboardObjective:
+          title: Model ID Scoreboard
+          description:
+            - The name of the scoreboard objective used to identify which entities belong to which model instance
 
-            predicateFilePathUndefined:
-                title: Predicate File Path Undefined
-                body:
-                    - You must define a predicate file path in the settings before you can export.
+        exportMode:
+          title: Export Mode
+          description:
+            - What kind of format to export to. Vanilla will export a normal Data Pack and Resource Pack.
+            - MCB will export a Resource Pack and .mc file for the lang-mc compiler
+          options:
+            mcb: MCB
+            vanilla: Vanilla
 
-            rigModelsExportFolderUndefined:
-                title: Rig Model Folder Undefined
-                body:
-                    - You must define a rig model folder path in settings before you can export.
+        mcbFilePath:
+          title: Lang-mc file
+          description:
+            - The path to export the .mc file to
+            - You will need to install mc-extra into your MCB workspace in order to build the exported data pack
 
-    exporters:
-        #? Generic Exporter Strings
-        generic:
-            progress:
-                writingDataPack: Writing Data Pack to disk... %progress% | Writing %fileName
-                exportingDataPack: Generating Data Pack... %progress%
+        mcbConfigPath:
+          title: Lang-mc config.json Path
+          description:
+            - Exports the default MCB config for Animated Java
+            - WARNING! Will overwrite existing config.json
+          errors:
+            mustBeNamedAfterProject: Path must end on a file named %projectName.mc!
 
-            dialogs:
-                errors:
-                    mcbFilePathNotDefined:
-                        title: MCB file path not defined
-                        body:
-                            - You must define a path for the MCB file in the Statue Exporter settings before exporting!
+        dataPackPath:
+          title: Data Pack
+          description:
+            - The path to export the generated Data Pack to.
 
-                    dataPackPathNotDefined:
-                        title: Data Pack file path undefined
-                        body:
-                            - You must define a data pack path in settings before you can export.
+    #? Vanilla Statue Exporter
+    vanillaStatue:
+      title: Statue Exporter
 
-            settings:
-                rootEntityType:
-                    title: Root Entity Type
-                    description:
-                        - The entity type to use as the root entity for the model
-                    errors:
-                        invalidEntity: Chosen entity does not exist!
+    #? Vanilla Animation Exporter
+    vanillaAnimation:
+      title: Animation Exporter
+      dialogs:
+        errors:
+          zeroLengthAnimation:
+            title: Zero Length Animation
+            body:
+              - The animation %animationName is too short! Animations must be at least 0.05 seconds (or 1 game tick) long
 
-                rootEntityNbt:
-                    title: Root Entity NBT
-                    description:
-                        - The NBT data of the root entity
-                    errors:
-                        invalidNbt: Invalid NBT! %error
+          noAnimations:
+            title: No Animations
+            body:
+              - You haven't made any animations!
+              - You'll need to create some animations in the animation tab before you can export using the animation exporter.
 
-                markerArmorStands:
-                    title: Marker Armor Stands
-                    description:
-                        - When enabled all armor_stands used to display the rig will have no hitbox or collision.
+      settings:
+        autoDistance:
+          title: Auto Distance
+          description:
+            - Automatically calculate the maximum distance required to animate all bones in the rig based on the rendered animations.
 
-                modelTag:
-                    title: Model Tag
-                    description:
-                        - The tag used to select the model
+        autoDistanceMovementThreshold:
+          title: Auto Distance Movement Threshold
+          description:
+            - How much distance to add to the calculated animation distance.
+            - The more distance you add the farther you can move the rig in a single tick without dropping bones
+          errors:
+            valueOutOfRange: Setting value must be at least 0
 
-                rootTag:
-                    title: Root Tag
-                    description:
-                        - The tag used to select the statue's root entity
+        manualDistance:
+          title: Manual Animation Distance
+          description:
+            - How far away a bone can be from the root entity before it stops animating.
+            - This setting is intended for advanced users.
+          errors:
+            valueOutOfRange: Setting value must be at least 0
 
-                allBonesTag:
-                    title: All Bones Tag
-                    description:
-                        - The tag used to select any or all of the statue's bones
+        frameScoreboardObjective:
+          title: Frame Scoreboard
+          description:
+            - The name of the scoreboard objective used to track which frame of an animation should be played next
 
-                boneModelDisplayTag:
-                    title: Bone Model Display Tag
-                    description:
-                        - The tag used to select the model display entities (armor_stands with items on their heads)
+        animatingFlagScoreboardObjective:
+          title: Animation Flag Scoreboard
+          description:
+            - The name of the scoreboard objective used to query if a rig is actively animating
 
-                individualBoneTag:
-                    title: Individual Bone Tag
-                    description:
-                        - The tag used to select a specific bone by name
-
-                internalScoreboardObjective:
-                    title: Internal Scoreboard
-                    description:
-                        - The name of the scoreboard objective used for internal calculations
-
-                idScoreboardObjective:
-                    title: Model ID Scoreboard
-                    description:
-                        - The name of the scoreboard objective used to identify which entities belong to which model instance
-
-                exportMode:
-                    title: Export Mode
-                    description:
-                        - What kind of format to export to. Vanilla will export a normal Data Pack and Resource Pack.
-                        - MCB will export a Resource Pack and .mc file for the lang-mc compiler
-                    options:
-                        mcb: MCB
-                        vanilla: Vanilla
-
-                mcbFilePath:
-                    title: Lang-mc file
-                    description:
-                        - The path to export the .mc file to
-                        - You will need to install mc-extra into your MCB workspace in order to build the exported data pack
-
-                mcbConfigPath:
-                    title: Lang-mc config.json Path
-                    description:
-                        - Exports the default MCB config for Animated Java
-                        - WARNING! Will overwrite existing config.json
-                    errors:
-                        mustBeNamedAfterProject: Path must end on a file named %projectName.mc!
-
-                dataPackPath:
-                    title: Data Pack
-                    description:
-                        - The path to export the generated Data Pack to.
-
-        #? Vanilla Statue Exporter
-        vanillaStatue:
-            title: Statue Exporter
-
-        #? Vanilla Animation Exporter
-        vanillaAnimation:
-            title: Animation Exporter
-            dialogs:
-                errors:
-                    zeroLengthAnimation:
-                        title: Zero Length Animation
-                        body:
-                            - The animation %animationName is too short! Animations must be at least 0.05 seconds (or 1 game tick) long
-
-                    noAnimations:
-                        title: No Animations
-                        body:
-                            - You haven't made any animations!
-                            - You'll need to create some animations in the animation tab before you can export using the animation exporter.
-
-            settings:
-                autoDistance:
-                    title: Auto Distance
-                    description:
-                        - Automatically calculate the maximum distance required to animate all bones in the rig based on the rendered animations.
-
-                autoDistanceMovementThreshold:
-                    title: Auto Distance Movement Threshold
-                    description:
-                        - How much distance to add to the calculated animation distance.
-                        - The more distance you add the farther you can move the rig in a single tick without dropping bones
-                    errors:
-                        valueOutOfRange: Setting value must be at least 0
-
-                manualDistance:
-                    title: Manual Animation Distance
-                    description:
-                        - How far away a bone can be from the root entity before it stops animating.
-                        - This setting is intended for advanced users.
-                    errors:
-                        valueOutOfRange: Setting value must be at least 0
-
-                frameScoreboardObjective:
-                    title: Frame Scoreboard
-                    description:
-                        - The name of the scoreboard objective used to track which frame of an animation should be played next
-
-                animatingFlagScoreboardObjective:
-                    title: Animation Flag Scoreboard
-                    description:
-                        - The name of the scoreboard objective used to query if a rig is actively animating
-
-                animationLoopModeScoreboardObjective:
-                    title: Animation Loop Mode Scoreboard
-                    description:
-                        - The name of the scoreboard objective used to control the looping behaviour of each animation
+        animationLoopModeScoreboardObjective:
+          title: Animation Loop Mode Scoreboard
+          description:
+            - The name of the scoreboard objective used to control the looping behaviour of each animation
