@@ -17,9 +17,6 @@ animatedJava:
         title: Add Variant
         description: Adds a new Variant to the model
       back: Back
-  boneConfig:
-    title: Bone Config
-    boneNbt: Bone NBT
   popups:
     exportCancelled: Export Cancelled!
     exportInProgress: Export in Progress!

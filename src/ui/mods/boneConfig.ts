@@ -15,12 +15,12 @@ const openBoneConfig = CustomAction('animatedJava.BoneConfig', {
 		console.log('Opened bone config')
 		const selected = Group.selected as AJGroup
 		const dialog = new Dialog({
-			title: tl('animatedJava.boneConfig.title'),
+			title: tl('animatedJava.dialogs.boneConfig.title'),
 			id: 'boneConfig',
 			form: {
 				nbt: {
 					type: 'textarea',
-					label: tl('animatedJava.boneConfig.boneNbt'),
+					label: tl('animatedJava.dialogs.boneConfig.boneNbt'),
 					value: selected.nbt,
 				},
 				// armAnimationEnabled: {
