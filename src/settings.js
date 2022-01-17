@@ -7,9 +7,9 @@ import { getModelPath } from './util/minecraft/resourcepack'
 import { Items } from './util/minecraft/items'
 import { tl } from './util/intl'
 
-const genericEmptyErrorText = tl(
-	'animatedJava.settings.generic.errors.emptyValue'
-)
+function genericEmptyErrorText() {
+	return tl('animatedJava.settings.generic.errors.emptyValue')
+}
 export let ForeignSettingTranslationKeys = {}
 const UNASSIGNED = Symbol('UNASSIGNED_CACHE')
 export const DefaultSettings = {
@@ -33,7 +33,7 @@ export const DefaultSettings = {
 					}
 				} else {
 					d.isValid = false
-					d.error = genericEmptyErrorText
+					d.error = genericEmptyErrorText()
 				}
 				return d
 			},
@@ -46,7 +46,9 @@ export const DefaultSettings = {
 				return tl('animatedJava.settings.exporter.description')
 			},
 			type: 'select',
-			default: '',
+			get default() {
+				return [...store.getStore('exporters').keys()][0]
+			},
 			get options() {
 				return Object.fromEntries(
 					[...store.getStore('exporters').keys()].map((v) => [
@@ -56,6 +58,8 @@ export const DefaultSettings = {
 				)
 			},
 			onUpdate(d) {
+				console.log(d)
+				console.log([...store.getStore('exporters').keys()])
 				if (
 					![...store.getStore('exporters').keys()].includes(d.value)
 				) {
@@ -100,12 +104,12 @@ export const DefaultSettings = {
 					if (!Items.isItem(d.value)) {
 						d.isValid = false
 						d.error = tl(
-							'animatedJava.settings.rigItem.errors.invalidItem'
+							'animatedJava.settings.rigItem.errors.invalidMinecraftItem'
 						)
 					}
 				} else {
 					d.isValid = false
-					d.error = tl('animatedJava.settings.generic.emptyValue')
+					d.error = genericEmptyErrorText()
 				}
 				return d
 			},
@@ -146,9 +150,7 @@ export const DefaultSettings = {
 					}
 				} else {
 					d.isValid = false
-					d.error = tl(
-						'animatedJava.settings.generic.errors.emptyValue'
-					)
+					d.error = genericEmptyErrorText()
 				}
 				return d
 			},
@@ -185,16 +187,15 @@ export const DefaultSettings = {
 					if (`${rigItem}.json` !== b.base) {
 						d.isValid = false
 						d.error = tl(
-							'animatedJava.settings.predicateFilePath.errors.notEqualToRigItem',{
-								rigItem
+							'animatedJava.settings.predicateFilePath.errors.notEqualToRigItem',
+							{
+								rigItem,
 							}
 						)
 					}
 				} else {
 					d.isValid = false
-					d.error = tl(
-						'animatedJava.settings.generic.errors.emptyValue'
-					)
+					d.error = genericEmptyErrorText()
 				}
 				return d
 			},
@@ -526,7 +527,9 @@ class Settings {
 
 	registerPluginSettings(exporterId, exporterSettingsKey, settings) {
 		DefaultSettings[exporterSettingsKey] = settings
-		ForeignSettingTranslationKeys[exporterSettingsKey] = `${exporterId}.title`
+		ForeignSettingTranslationKeys[
+			exporterSettingsKey
+		] = `${exporterId}.title`
 		this.update(
 			{
 				[exporterSettingsKey]: settings,
