@@ -19,7 +19,7 @@ animatedJava:
       back: Back
   boneConfig:
     title: Bone Config
-    boneNbt: NBT
+    boneNbt: Bone NBT
   popups:
     exportCancelled: Export Cancelled!
     exportInProgress: Export in Progress!
