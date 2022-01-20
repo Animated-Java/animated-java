@@ -242,18 +242,21 @@ export class SNBTTag {
 			case SNBTTagType.FLOAT:
 				return this.value.toString() + (exclude_type ? '' : 'f')
 			case SNBTTagType.DOUBLE:
-				return this.value.toString()
-			case SNBTTagType.BYTE_ARRAY:
-				return '[' + this.value.join(',') + ']'
+				return this.value.toString() + Number.isInteger(this.value)
+					? '.0'
+					: ''
 			case SNBTTagType.STRING:
 				return SNBTUtil.stringify(this.value)
+
+			case SNBTTagType.LONG_ARRAY:
+			case SNBTTagType.BYTE_ARRAY:
 			case SNBTTagType.LIST:
 				return '[' + this.value.join(',') + ']'
 			case SNBTTagType.COMPOUND:
 				return (
 					'{' +
 					Object.entries(this.value as Record<any, SNBTTag>)
-						.map(([key, value]) => `${key}:${value}`)
+						.map(([key, value]) => `${key}:${value.toString()}`)
 						.join(',') +
 					'}'
 				)
@@ -267,8 +270,71 @@ export class SNBTTag {
 						.join(',') +
 					']'
 				)
-			case SNBTTagType.LONG_ARRAY:
-				return '[' + this.value.join(',') + ']'
+			case SNBTTagType.BOOLEAN:
+				return this.value ? 'true' : 'false'
+		}
+	}
+	toPrettyString(exclude_type?: true) {
+		switch (this.type) {
+			case SNBTTagType.END:
+				throw new Error('Cannot convert END tag to string')
+			case SNBTTagType.BYTE:
+				return this.value.toString() + (exclude_type ? '' : 'b')
+			case SNBTTagType.SHORT:
+				return this.value.toString() + (exclude_type ? '' : 's')
+			case SNBTTagType.INT:
+				return this.value.toString()
+			case SNBTTagType.LONG:
+				return this.value.toString()
+			case SNBTTagType.FLOAT:
+				return this.value.toString()
+			case SNBTTagType.DOUBLE:
+				return this.value.toString() + Number.isInteger(this.value)
+					? '.0'
+					: ''
+			case SNBTTagType.STRING:
+				return SNBTUtil.stringify(this.value)
+			case SNBTTagType.COMPOUND:
+				return (
+					'{\n' +
+					Object.entries(this.value as Record<any, SNBTTag>)
+						.map(([key, value]) =>
+							`${key}:${value.toPrettyString()}`
+								.split('\n')
+								.map((_) => `  ${_}`)
+								.join('\n')
+						)
+						.join(',\n') +
+					'\n}'
+				)
+			case SNBTTagType.INT_ARRAY: {
+				let items = this.value.map((item) => item.toPrettyString())
+				let combined = items.join(',')
+				let isIndented = items.indexOf('\n') > -1
+				if (combined.length > 16) isIndented = true
+				if (isIndented) {
+					return `[I;\n${items.map((_) => `  ${_}`).join(',\n')}\n]`
+				}
+				return '[I;' + combined + ']'
+			}
+			case SNBTTagType.BYTE_ARRAY:
+			case SNBTTagType.LIST:
+			case SNBTTagType.LONG_ARRAY: {
+				let items = this.value.map((item) => item.toPrettyString())
+				let combined = items.join(', ')
+				let isIndented = combined.indexOf('\n') > -1
+				if (combined.length > 16) isIndented = true
+				if (isIndented) {
+					return `[\n${items
+						.map((_) =>
+							_.split('\n')
+								.map((i) => `  ${i}`)
+								.join('\n')
+						)
+						.join(',\n')}\n]`
+				}
+				return '[' + combined + ']'
+			}
 			case SNBTTagType.BOOLEAN:
 				return this.value ? 'true' : 'false'
 		}
@@ -599,7 +665,10 @@ class SNBTParser {
 		let dict: Record<string, SNBTTag> = {}
 		while (!reader.isEnd()) {
 			if (reader.hasCharInRest(':')) {
-				const name = reader.readUntil(':')
+				let name = reader.readUntil(':')
+				if (name.startsWith('"') && name.endsWith('"')) {
+					name = name.substring(1, name.length - 1)
+				}
 				const value = new SNBTParser(
 					reader.readUntilNextLogicalBreakOrEnd()
 				).parse()
@@ -612,41 +681,35 @@ class SNBTParser {
 		}
 		return SNBT.Compound(dict)
 	}
-	parseByteArray(): any {
-		this.reader.skip(3)
+	parseTypedArray(readerFn: (value: string) => any) {
 		const contents = this.reader.readUntilMatchingBracket('[', ']')
-		const reader = new StringReader(contents)
-		const result = []
-		while (reader.hasCharInRest('b') && reader.remaining() > 0) {
-			result.push(parseInt(reader.readUntil('b')))
-			if (reader.peek(1) === ',') {
-				reader.skip(1)
-			}
-		}
-		return SNBT.Byte_Array(result)
-	}
-	parseIntArray(): any {
-		this.reader.skip(3)
-		const contents = this.reader.readUntilMatchingBracket('[', ']')
-		const reader = new StringReader(contents)
+		const reader = new StringReader(
+			contents.substring(3, contents.length - 1)
+		)
 		const result = []
 		while (reader.hasCharInRest(',') && reader.remaining() > 0) {
-			result.push(parseInt(reader.readUntil(',')))
+			result.push(readerFn(reader.readUntil(',')))
 		}
-		return SNBT.Int_Array(result)
+		if (reader.remaining() > 0)
+			result.push(readerFn(reader.read(reader.remaining())))
+		return result
+	}
+	parseByteArray(): any {
+		return SNBT.Byte_Array(
+			this.parseTypedArray((v) =>
+				parseInt(v.endsWith('b') ? v.substring(0, v.length - 1) : v)
+			)
+		)
+	}
+	parseIntArray(): any {
+		return SNBT.Int_Array(this.parseTypedArray(parseInt))
 	}
 	parseLongArray(): any {
-		this.reader.skip(3)
-		const contents = this.reader.readUntilMatchingBracket('[', ']')
-		const reader = new StringReader(contents)
-		const result = []
-		while (reader.hasCharInRest('l') && reader.remaining() > 0) {
-			result.push(parseInt(reader.readUntil('l')))
-			if (reader.peek(1) === ',') {
-				reader.skip(1)
-			}
-		}
-		return SNBT.Long_Array(result)
+		return SNBT.Long_Array(
+			this.parseTypedArray((v) =>
+				parseInt(v.endsWith('l') ? v.substring(0, v.length - 1) : v)
+			)
+		)
 	}
 	parseList(): any {
 		let contents = this.reader
@@ -708,33 +771,33 @@ class SNBTParser {
 	parseNumber(): any {
 		let int = this.reader.readNumber()
 		let dec
-		if (this.reader.peek(1) === '.') {
+		if (this.reader.peek(1).toLowerCase() === '.') {
 			this.reader.skip(1)
 			dec = this.reader.readNumber()
 		}
-		if (this.reader.peek(1) === 'f') {
+		if (this.reader.peek(1).toLowerCase() === 'f') {
 			this.reader.skip(1)
 			return SNBT.Float(parseFloat(int + '.' + dec))
 		}
-		if (this.reader.peek(1) === 'd') {
+		if (this.reader.peek(1).toLowerCase() === 'd') {
 			this.reader.skip(1)
 			return SNBT.Double(parseFloat(int + '.' + dec))
 		}
-		if (this.reader.peek(1) === 'l') {
+		if (this.reader.peek(1).toLowerCase() === 'l') {
 			this.reader.skip(1)
 			return SNBT.Long(parseInt(int + '.' + dec))
 		}
-		if (this.reader.peek(1) === 's') {
+		if (this.reader.peek(1).toLowerCase() === 's') {
 			this.reader.skip(1)
 			return SNBT.Short(parseInt(int + '.' + dec))
 		}
-		if (this.reader.peek(1) === 'b') {
+		if (this.reader.peek(1).toLowerCase() === 'b') {
 			this.reader.skip(1)
 			return SNBT.Byte(parseInt(int + '.' + dec))
 		}
-		if (this.reader.peek(1) === 'i') {
+		if (this.reader.peek(1).toLowerCase() === 'i') {
 			this.reader.skip(1)
-			return SNBT.Int(parseInt(int + '.' + dec))
+			return SNBT.Int(parseInt(int))
 		}
 		if (!dec) {
 			return SNBT.Int(parseInt(int))
@@ -867,4 +930,3 @@ export const SNBT = {
 		return workingCopy
 	},
 }
-globalThis.SNBT = SNBT
