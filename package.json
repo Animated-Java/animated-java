@@ -27,7 +27,6 @@
 		"@rollup/plugin-node-resolve": "^9.0.0",
 		"@rollup/plugin-url": "^5.0.1",
 		"@rollup/plugin-yaml": "^3.0.0",
-		"axios": "^0.21.0",
 		"babel-preset-env": "^1.7.0",
 		"babel-preset-latest": "^6.24.1",
 		"chalk": "^4.1.0",
