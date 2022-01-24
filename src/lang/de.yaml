@@ -282,64 +282,64 @@ animatedJava:
 
       settings:
         rootEntityType:
-          title: Root Entity Type
+          title: Ursprung-Entitätstyp
           description:
-            - The entity type to use as the root entity for the model
+            - Der Entitätstyp, der als Ursprungentität für das Modell verwendet werden soll
           errors:
-            invalidEntity: Chosen entity does not exist!
+            invalidEntity: Auserwählte Entität existiert nicht!
 
         rootEntityNbt:
-          title: Root Entity NBT
+          title: Ursprungsentität NBT
           description:
-            - The NBT data of the root entity
+            - Die NBT Daten der Ursprungsentität
           errors:
-            invalidNbt: Invalid NBT!
+            invalidNbt: Ungültige NBT!
 
         markerArmorStands:
-          title: Marker Armor Stands
+          title: Marker Rüstungsständer
           description:
-            - When enabled all armor_stands used to display the rig will have no hitbox or collision.
+            - Wenn diese Option aktiviert ist, haben alle Rüstungsständer, die zur Anzeige des Rigs verwendet werden, keine Hitbox oder Kollisionen.
 
         modelTag:
-          title: Model Tag
+          title: Modell-Tag
           description:
-            - The tag used to select the model
+            - Das zur Auswahl des Modells verwendete Tag
 
         rootTag:
-          title: Root Tag
+          title: Ursprungs-Tag
           description:
-            - The tag used to select the statue's root entity
+            - Der Tag, mit dem das Stammobjekt der Statue ausgewählt wird
 
         allBonesTag:
-          title: All Bones Tag
+          title: Knochen Tag
           description:
-            - The tag used to select any or all of the statue's bones
+            - Der Tag, mit dem ein oder alle Knochen der Statue ausgewählt werden
 
         boneModelDisplayTag:
-          title: Bone Model Display Tag
+          title: Knochenmodell Display-Tag
           description:
-            - The tag used to select the model display entities (armor_stands with items on their heads)
+            - Das Tag, das zur Auswahl der Modellanzeige-Entitäten verwendet wird (Rüstungsständer mit Gegenständen auf dem Kopf)
 
         individualBoneTag:
-          title: Individual Bone Tag
+          title: Individuelles Knochentag
           description:
-            - The tag used to select a specific bone by name
+            - Das Tag, mit dem ein bestimmter Bone nach seinem Namen ausgewählt wird
 
         internalScoreboardObjective:
-          title: Internal Scoreboard
+          title: Internes Scoreboard
           description:
-            - The name of the scoreboard objective used for internal calculations
+            - Der Name des für interne Berechnungen verwendeten Scoreboards
 
         idScoreboardObjective:
-          title: Model ID Scoreboard
+          title: Modell ID Scoreboard
           description:
-            - The name of the scoreboard objective used to identify which entities belong to which model instance
+            - Der Name des Scoreboards, das verwendet wird, um festzustellen, welche Entitäten zu welcher Modellinstanz gehören
 
         exportMode:
-          title: Export Mode
+          title: Exportmodus
           description:
-            - What kind of format to export to. Vanilla will export a normal Data Pack and Resource Pack.
-            - MCB will export a Resource Pack and .mc file for the lang-mc compiler
+            - In welches Format soll exportiert werden. Vanilla exportiert ein normales Daten- und Resourcenpaket
+            - MCB exportiert ein Resource Pack und eine .mc Datei für den lang-mc Compiler
           options:
             mcb: MCB
             vanilla: Vanilla
@@ -347,75 +347,75 @@ animatedJava:
         mcbFilePath:
           title: Lang-mc file
           description:
-            - The path to export the .mc file to
-            - You will need to install mc-extra into your MCB workspace in order to build the exported data pack
+            - Der Pfad, in den die .mc-Datei exportiert werden soll
+            - Sie müssen mc-extra in Ihrem MCB-Arbeitsbereich installieren, um das exportierte Datenpaket erstellen zu können
 
         mcbConfigPath:
-          title: Lang-mc config.json Path
+          title: Lang-mc config.json Pfad
           description:
-            - Exports the default MCB config for Animated Java
-            - WARNING! Will overwrite existing config.json
+            - Exportiert die Standard-MCB-Konfiguration für Animated Java
+            - WARNUNG! Überschreibt die vorhandene config.json
           errors:
-            mustBeNamedAfterProject: Path must end on a file named %projectName.mc!
+            mustBeNamedAfterProject: Der Pfad muss auf eine Datei namens %projectName.mc enden!
 
         dataPackPath:
-          title: Data Pack
+          title: Datenpaket
           description:
-            - The path to export the generated Data Pack to.
+            - Der Pfad, in den das generierte Datenpaket exportiert werden soll.
 
     #? Vanilla Statue Exporter
     vanillaStatue:
-      title: Statue Exporter
+      title: Statuen-Export
 
     #? Vanilla Animation Exporter
     vanillaAnimation:
-      title: Animation Exporter
+      title: Animations-Export
       dialogs:
         errors:
           zeroLengthAnimation:
-            title: Zero Length Animation
+            title: Länge 0 ANimation
             body:
-              - The animation %animationName is too short! Animations must be at least 0.05 seconds (or 1 game tick) long
+              - Die Animation %animationName ist zu kurz! Animationen müssen mindestens 0,05 Sekunden (oder 1 Spieltick) lang sein
 
           noAnimations:
-            title: No Animations
+            title: Keine Animationen
             body:
-              - You haven't made any animations!
-              - You'll need to create some animations in the animation tab before you can export using the animation exporter.
+              - Sie haben keine Animationen gemacht!
+              - Bevor Sie mit dem Animationsexporter exportieren können, müssen Sie einige Animationen auf der Registerkarte Animation erstellen.
 
       settings:
         autoDistance:
-          title: Auto Distance
+          title: Auto-Abstand
           description:
-            - Automatically calculate the maximum distance required to animate all bones in the rig based on the rendered animations.
+            - Berechnen Sie automatisch den maximalen Abstand, der erforderlich ist, um alle Bones im Rig zu animieren, basierend auf den gerenderten Animationen.
 
         autoDistanceMovementThreshold:
-          title: Auto Distance Movement Threshold
+          title: Schwellenwert für den automatischen Abstand
           description:
-            - How much distance to add to the calculated animation distance.
-            - The more distance you add the farther you can move the rig in a single tick without dropping bones
+            - Wie viel Abstand zum berechneten Animationsabstand hinzugefügt werden soll.
+            - Je mehr Abstand Sie hinzufügen, desto weiter können Sie das Rig in einem einzigen Tick bewegen, ohne dass die Knochen herunterfallen.
           errors:
-            valueOutOfRange: Setting value must be at least 0
+            valueOutOfRange: Der Einstellwert muss mindestens 0 sein.
 
         manualDistance:
-          title: Manual Animation Distance
+          title: Manueller Animationsabstand
           description:
-            - How far away a bone can be from the root entity before it stops animating.
-            - This setting is intended for advanced users.
+            - Wie weit ein Knochen von der Ursprungs-Entität entfernt sein kann, bevor er aufhört animieren zu werden.
+            - Diese Einstellung ist für fortgeschrittene Benutzer gedacht.
           errors:
-            valueOutOfRange: Setting value must be at least 0
+            valueOutOfRange: Der Einstellwert muss mindestens 0 sein.
 
         frameScoreboardObjective:
           title: Frame Scoreboard
           description:
-            - The name of the scoreboard objective used to track which frame of an animation should be played next
+            - Der Name des Scoreboards, das verwendet wird, um festzustellen, welcher Frame einer Animation als nächstes abgespielt werden soll
 
         animatingFlagScoreboardObjective:
           title: Animation Flag Scoreboard
           description:
-            - The name of the scoreboard objective used to query if a rig is actively animating
+            - Der Name des Scoreboards, mit dem abgefragt wird, ob ein Rig aktiv animiert wird
 
         animationLoopModeScoreboardObjective:
-          title: Animation Loop Mode Scoreboard
+          title: Animations-Schleifenmodus Scoreboard
           description:
-            - The name of the scoreboard objective used to control the looping behaviour of each animation
+            - Der Name des Scoreboards, mit dem das Schleifenverhalten der einzelnen Animationen gesteuert wird
