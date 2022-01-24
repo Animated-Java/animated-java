@@ -1,5 +1,3 @@
-# please copy the contents of en.yaml to this file before you translate it.
-
 ---
 #? AJ
 animatedJava:
@@ -17,17 +15,17 @@ animatedJava:
       title: Modellvarianten
       addVariant:
         title: Variante hinzufügen
-        description: Fügt eine neue Variante zum Modell hinzu
+        description: Fügt dem Modell eine neue Variante hinzu
       back: Zurrück
 
   popups:
     exportCancelled: Export abgebrochen!
-    exportInProgress: Export im Vorgang!
+    exportInProgress: Export läuft!
     noExporterSelected: Keine Exportmethode ausgewählt!
     successfullyExported: Export erfolgreich!
 
   progress:
-    animationRendering: Animationen werden berechnet... %currents/%totals
+    animationRendering: Animationen rendern... %currents/%totals
 
   settings:
     header: Animated Java Einstellungen
@@ -36,89 +34,83 @@ animatedJava:
 
     generic:
       errors:
-        invalid: Wenn du das siehst, ist Animated Java abgestürzt. (Uh Oh)
-        emptyValue: Wert kann nicht leer sein
-        mustBeBoolean: Wert muss ein Boolean sein
+        invalid: Wenn Sie diese Meldung sehen, ist Animated Java abgestürzt. (Uh Oh)
+        emptyValue: Wert darf nicht leer sein
+        mustBeBoolean: Wert muss ein boolescher Wert sein
         mustBeString: Wert muss ein String sein
-        missingFormatString: Wert fehlt ein Formattierungs-String: %notFound
-        invalidEntityTag: Wert ist kein zulässiges Entitäten-Tag
+        missingFormatString: Wert fehlt erforderlicher Formatierungsstring %notFound
+        invalidEntityTag: Wert ist kein gültiges Entitätskennzeichen
 
     projectName:
       title: Name des Projekts
       description:
-        - Die einzigartige ID deinses Projektes. Stelle sicher du gibst sie an!
+        - Die eindeutige ID Ihres Projekts. Stellen Sie sicher, dass Sie diese festlegen!
       errors:
-        invalidFunctionName: Projektname muss ein zulässiger Funktionsname sein!
+        invalidFunctionName: Der Projektname muss ein gültiger Funktionsname sein!
 
     exporter:
       title: Exportmethode
       description:
-        - Welches Exportformat für das Projekt benutzt werden soll
+        - Welches Exportformat soll für dieses Projekt verwendet werden?
       errors:
-        mustBeValidExporter: Ausgewählte Exportmethode existiert nicht unter den registrerten Exportmethoden
+        mustBeValidExporter: Die gewählte Exportmethode existiert nicht in der Liste der registrierten Exportmethoden!
 
     verbose:
-      title: Wortreiche Logs
+      title: Ausführliche Informationen
       description:
-        - Sagt der ausgewählten Exportmethode ob extra Debug-/Fehlermeldungen angezeigt werden sollen
-        - Hat nur einen merkbaren Effekt auf Statuen- und Animationsexporte
+        - Gibt der ausgewählten Exportmethode an, ob zusätzliche Debug-/Fehlermeldungen exportiert werden sollen oder nicht.
+        - Dies betrifft eigentlich nur die Statuen- und Animationsexporte
 
     rigItem:
       title: Rig Item
       description:
-        - Das Item das genutzt wird um die Modelle auf den Rüstungsständern darzustellen
+        - Das Element, das für die Anzeige der Modelle auf den Rüstungsständern verwendet wird
       errors:
-        invalidMinecraftItem: Das ausgewählte Item existiert nicht!
+        invalidMinecraftItem: Ausgewähltes Item existiert nicht!
 
     rigModelsExportFolder:
-      title: Modell Rig Export Ordner
+      title: Exportordner für Rig-Modelle
       description:
-        - Der Ornder in den all die Modelle des rigs gespeichert werden sollen
+        - Der Ordner, in dem alle Modelle des Rigs abgelegt werden sollen
       errors:
-        invalidPath: Der ausgewählte Pfad ist keine zulässige Position um Modelle dorthin zu exportieren!
+        invalidPath: Der gewählte Pfad ist kein gültiger Speicherort für den Export von Modellen!
+
     predicateFilePath:
-      title: Rig Item Predicate Model
+      title: Rig Item Predicate Modell
       description:
-        - Die Item-Modell Datei des rig-Items
+        - Die Item-Modell Datei des Rig-Items
       errors:
-        notEqualToRigItem: Pfad muss auf einer Datei enden die %rigItem.json heißt
+        notEqualToRigItem: Der Pfad muss auf eine Datei namens %rigItem.json enden
 
     transparentTexturePath:
-      title: Pfad der transparenten Textur
+      title: Pfad der Transparenztextur
       description:
-        - Eine transparente Textur um Transparenz auf Varianten anzuwenden. Wird nur benötigt wenn du Transparenz in deinen Varianten benutzt.
+        - Eine transparente Textur zum Hinzufügen von Transparenz zu Varianten. Nur erforderlich, wenn Sie Transparenz in Ihren Varianten verwenden.
       errors:
-        undefinedWhenNeeded: Pfad muss festgelegt sein wenn du das Transparenzfeature von Varianten nutzen willst!
+        undefinedWhenNeeded: Pfad muss definiert werden, wenn Sie die Transparenzfunktion von Varianten verwenden!
 
     useCache:
-      title: Benutze den Animations-Cache
+      title: Animations-Cache verwenden
       description:
-        - Nur zum Neuberechnen von geänderten Animationen
+        - Nur geänderte Animationen neu rendern
 
     cacheMode:
-      title: Animations-Cache Modus
+      title: Animations-Cache-Modus
       description:
-        - Der Animations-Cache erlaubt es uns nur Animationen die sich seit dem letzten Export geändert haben neuzuberechnen. Das machte wiederholte Exporte viel schneller, vorallem mit größeren Modellen.
-        - "- Der Kurzspeichermodus ist schneller, benutzt aber mehr RAM und den Cache zu speichern"
-        - "- Der Speichermodus is langsamer, aber speichert den Cache auf deinem Speicher um RAM-Nutzung zu minimieren"
+        - Mit dem Animations-Cache werden nur die Animationen neu gerendert, die seit dem letzten Export geändert wurden. Das macht wiederholte Exporte viel schneller, besonders bei größeren Modellen.
+        - "- Der Kurzspeichermodus ist schneller, benötigt aber mehr Kurzspeicher für den Cache."
+        - "- Der Festplattenmodus ist langsamer, speichert aber den Cache auf der Festplatte, um Kurzspeicherplatz zu sparen."
       options:
         memory: Kurzspeichermodus
-        disk: Speichermodus
+        disk: Festplattenmodus
 
     boundingBoxRenderMode:
-      title: Knochengrößenlimitierung
+      title: Knochengrößen-Grenzwert-Box
       description:
-        - "Configure or disable the bone size limit box(es)."
-        - "- Single will only display one box at a time."
-        - "- Multiple will display a box for every bone you've selected."
-        - "- Disabled will disable it entirely."
-        
-        - "Konfiguriere oder schalte die Knochengrößenlimitierungs Box(en) aus."
-        - "- Einzeln wird nur eine Box darstellen."
-        - "- Mehrere wird eine Box für jeden ausgewählten Knochen anzeigen."
-        - "- Aus wird das Feature komplett deaktivieren"
-        
-        
+        - "Konfigurieren oder deaktivieren Sie die Begrenzungsbox(en) zur Begrenzung der Knochengröße."
+        - "- 'Einzeln' zeigt immer nur eine Box auf einmal an."
+        - "- 'Mehrere' zeigt für jeden ausgewählten Knochen eine Box an."
+        - "- 'Deaktiviert' wird die Funktion vollständig deaktivieren."
       options:
         single: Einzeln
         many: Mehrere
@@ -126,50 +118,50 @@ animatedJava:
 
   dialogs:
     boneConfig:
-      title: Knochenkonfiguration
+      title: Knochen-Konfiguration
       boneNbt: Knochen NBT
-      armAnimationEnabled: Aktiviere die Arm Animation
+      armAnimationEnabled: Arm-Animation einschalten
 
     variants:
       title: Modellvarianten
       description:
-        - Varianten erlauben es deinem Modell mehrere "skins" zu haben, die ausgetauscht werden können im Spiel.
+        - Varianten ermöglichen es Ihrem Modell, verschiedene "skins" zu haben, die zur Laufzeit mit Hilfe einer Funktion ausgetauscht werden können.
 
     about:
       title: Über Animated Java
       description:
-        - Ein Werkzeug um glatte und detailierte Animation für die Minecaft Java Edition zu erstellen.
+        - Ein Tool für Mapmaker, um flüssige und detaillierte Animationen für Minecraft Java Edition zu erstellen.
 
       version: Version
       buildID: Build ID
 
-      creators: Erschaffer
-      discordServer: Trete unserem Discord Server bei!
+      creators: Schöpfer
+      discordServer: Treten Sie unserem Discord-Server bei!
       githubRepo: Quelle
       developers: Entwickler
-      patrons: Patreons
-      honourableMentions: Ehrwürdige Erwähnungen
+      patrons: Patrons
+      honourableMentions: Ehrenvolle Erwähnungen
 
       fetchbotQuote: '"Let the java mobs dance too!"'
       snavesutitQuote: '"armor_stand is love, armor_stand is life."'
 
       youtuber: Youtuber
       translator: Übersetzer
-      contributor: Contributer
-      moderator: Discord Moderator
-      closedBeta: Geschlossene Beta Tester
-      brandingArtist: Branding Artist
-      patronTier1: Tier 1 Patreon
-      patronTier2: Tier 2 Patreon
-      patronTier3: Tier 3 Patreon
+      contributor: Mitwirkende
+      moderator: Discord Moderatoren
+      closedBeta: Geschlossener Beta-Tester
+      brandingArtist: Branding-Künstler
+      patronTier1: Teir 1 Patron
+      patronTier2: Teir 2 Patron
+      patronTier3: Teir 3 Patron
 
     animationProperties:
       animationCompleteCommand:
-        label: Ende des Anim Befehls
+        label: Ende des Anim-Befehls
 
     errors:
       misc:
-        title: Ein unbekannter Fehler ist in Animated Java aufgetreten
+        title: In Animated Java ist ein unbekannter Fehler aufgetreten
         body:
         - |-
           <textarea style="height: 256px" readonly="readonly">
@@ -177,64 +169,65 @@ animatedJava:
           %errorMessage  //  "%randomErrorMessage"
           ------ Stack ------
           %errorStack
+
           Build ID: %buildID
           </textarea>
-        - <p>Bitte dokumentiere den Fehler auf <a href="%githubLink">Animated Java's Github</a> mit einer Kopie des Fehlers und wie dieser aufgetreten ist/nachzustellen ist.</p>
-        - <p>Du kannst auch unserem <a href="%discordLink">Discord Server</a> beitreten und Fragen im Support-Channel stelen.</p>
-        - <p>Dankeschön!</p>
+        - <p>Bitte melden Sie diesen Fehler auf <a href="%githubLink">Animated Java's github</a> mit Informationen, wie er reproduziert werden kann und einer Kopie des obigen Fehlers.</p>
+        - <p>Sie können auch unserem <a href="%discordLink">Discord Server</a> beitreten und Fragen im animated-java-support channel stellen.</p>
+        - <p>Vielen Dank!</p>
 
       topLevelCubes:
-        title: Das Modell hat top-level Würfel
+        title: Modell hat Top-Level-Würfel
         body:
-          - All Würfel müssen in einer Kategorie sein.
+          - Alle Würfel müssen sich innerhalb einer Gruppe befinden.
 
       predicateMergeFailed:
-        title: Predicate's konnten nicht zusammengeführt werden 
+        title: Predicate Failed to Merge
         body:
           - "%reason"
-          - Animated Java ünterstützt nur das zusammenführen zu Animated Java kontrollierten predicate Modellen
-          - Bitte stelle sicher, dass du versuchst dein predicate Modell mit einem zulässigen bereits existierendem Animated Java predicate Item Modell zusammenzuführen
+          - Animated Java unterstützt nur das Zusammenführen in Animated Java kontrollierte Predicate-Modelle.
+          - Bitte vergewissern Sie sich, dass Sie versuchen, Ihr Predicate-Modell mit einem gültigen, bereits existierenden Animated Java Predicate-Modell zusammenzuführen.
         reasons:
-          overridesMissing: Modell's 'overrides' Liste fehlt.
-          ajMetaMissing: Die Modelldatei zum Zusammenführen ist keine Animated Java predicate Datei.
+          overridesMissing: Liste der Modellüberschreibungen fehlt.
+          ajMetaMissing: Die Modelldatei, in die zusammengeführt werden soll, ist keine Animated Java Predicate-Datei.
 
       invalidAnimationSnappingValue:
-        title: Ungültiger Snapping-Wert
+        title: Ungültiger Animations-Einrastwert(Snapping-Wert)
         body:
-          - Die Animation '%animationName' hat einen Snapping-Wert von %snapping!
-          - Da Minecraft so schnell tickt, unterstützt Animated Java nur einen Snapping-Wert von 20.
+          - TDie Animation '%animationName' hat einen Einrastwert von %snapping!
+          - Da Minecraft so schnell tickt, unterstützt Animated Java nur einen Einrastwert von 20.
           - Bitte aktualisieren Sie Ihre Animationen und Keyframes, um diese Einschränkung zu berücksichtigen, bevor Sie exportieren.
-          - (Möglicherweise müssen Sie Ihre Keyframes auf der Zeitachse ein wenig verschieben, um ihr Snapping zu aktualisieren)
+          - (Möglicherweise müssen Sie Ihre Keyframes auf der Zeitachse ein wenig verschieben, um ihre Einrastzeit zu aktualisieren)
 
       rigFolderHasUnknownContent:
-        title: Unbenutzter rig-Ornder
+        title: Unbenutzter Rig-Ordner
         body:
           - Der Ordner, den Sie als Rig-Modell-Ordner gewählt haben, enthält unbekannte Dateien.
           - Sind Sie sicher, dass Sie den Inhalt dieses Ordners mit Ihrem Rig überschreiben wollen?
           - "Ausgewählter Ordner:"
           - <textarea>%path</textarea>
-          - "Unbekannte Dateien:"
+          - "Unbekannte Datei(en):"
           - <textarea>%files</textarea>
 
       rigFolderAlreadyUsedByOther:
         title: Der gewählte Rig-Modell-Ordner ist bereits in Gebrauch
         body:
-           -Der Ordner, den Sie als Rig-Modell-Ordner gewählt haben, enthält bereits die Modelle eines anderen Rigs.
+          - Der Ordner, den Sie als Rig-Modell-Ordner gewählt haben, enthält bereits die Modelle eines anderen Rigs.
           - Sind Sie sicher, dass Sie den Inhalt dieses Ordners mit Ihrem Rig überschreiben wollen?
           - "Ausgewählter Ordner:"
           - <textarea>%path</textarea>
-          - "Dateien:"
+          - "Datei(en):"
           - <textarea>%files</textarea>
 
       unableToGenerateTexturePath:
-        title: Invalid texture path
+        title: Ungültiger Texturpfad
         body:
-          - The texture '%textureName' has an invalid location inside a Resource Pack
-          - Please make sure it is properly saved inside of a valid Resource Pack in a sub folder of 'assets/namespace/textures/'
-          - eg. 'resources/assets/minecraft/textures/item/diamond.png'
+          - Die Textur '%textureName' hat einen ungültigen Speicherort innerhalb eines Resource Packs
+          - Bitte vergewissern Sie sich, dass es in einem gültigen Resource Pack in einem Unterordner von 'assets/namespace/textures/' gespeichert ist.
+          - z.B. 'resources/assets/minecraft/textures/item/diamond.png'
 
       unableToGenerateModelPath:
-        title: Ungültiger Texturpfad
+        title: Ungültiger Modellpfad
         body:
           - Das Modell '%modelName' hat einen ungültigen Speicherort innerhalb eines Resource Packs
           - Bitte vergewissern Sie sich, dass es in einem gültigen Resource Pack in einem Unterordner von 'assets/namespace/models/' gespeichert ist.
@@ -259,33 +252,33 @@ animatedJava:
           - Bevor Sie exportieren können, müssen Sie den Pfad für die transparente Textur in den Einstellungen konfigurieren.
 
       predicateFilePathUndefined:
-        title: Predicate File Path Undefined
+        title: Predicate Dateipfad Undefiniert
         body:
-          - You must define a predicate file path in the settings before you can export.
+          - Bevor Sie exportieren können, müssen Sie in den Einstellungen einen Dateipfad für das Predicate festlegen.
 
       rigModelsExportFolderUndefined:
-        title: Rig Model Folder Undefined
+        title: Rig-Modell-Ordner Undefiniert
         body:
-          - You must define a rig model folder path in settings before you can export.
+          - Sie müssen in den Einstellungen einen Ordnerpfad für das Rig-Modell festlegen, bevor Sie exportieren können.
 
   exporters:
     #? Generic Exporter Strings
     generic:
       progress:
-        writingDataPack: Writing Data Pack to disk... %progress% | Writing %fileName
-        exportingDataPack: Generating Data Pack... %progress%
+        writingDataPack: Datenpaket auf die Festplatte schreiben... %progress% | Writing %fileName
+        exportingDataPack: Datenpaket generieren... %progress%
 
       dialogs:
         errors:
           mcbFilePathNotDefined:
-            title: MCB file path not defined
+            title: MCB-Dateipfad nicht definiert
             body:
-              - You must define a path for the MCB file in the Statue Exporter settings before exporting!
+              - Sie müssen vor dem Exportieren einen Pfad für die MCB-Datei in den Statue Exporter-Einstellungen festlegen!
 
           dataPackPathNotDefined:
-            title: Data Pack file path undefined
+            title: Datenpaket-Dateipfad undefiniert
             body:
-              - You must define a data pack path in settings before you can export.
+              - Bevor Sie exportieren können, müssen Sie in den Einstellungen einen Datenpaketpfad festlegen.
 
       settings:
         rootEntityType:
