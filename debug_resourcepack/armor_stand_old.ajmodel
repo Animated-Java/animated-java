@@ -1,16 +1,16 @@
 {
   "meta": {
     "format_version": "0.0",
-    "creation_time": 1642986152,
+    "creation_time": 1642985151,
     "model_format": "animated_java/ajmodel",
     "box_uv": false,
     "settings": {
       "animatedJava": {
-        "projectName": "armor_stand",
+        "projectName": "armor_stand_old",
         "exporter": "vanillaAnimationExporter",
         "verbose": true,
         "rigItem": "minecraft:leather_horse_armor",
-        "rigModelsExportFolder": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\animated_java\\models\\rigs\\armor_stand",
+        "rigModelsExportFolder": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\animated_java\\models\\rigs\\armor_stand_old",
         "predicateFilePath": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\minecraft\\models\\item\\leather_horse_armor.json",
         "transparentTexturePath": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\minecraft\\textures\\transparent.png"
       },
@@ -48,7 +48,7 @@
         "animatingFlagScoreboardObjective": "aj.%projectName.animating",
         "animationLoopModeScoreboardObjective": "aj.%projectName.%animationName.loopMode",
         "exportMode": "mcb",
-        "mcbFilePath": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\saves\\Performance Tool 2_0\\datapacks\\performance_tool_2.0\\src\\armor_stand.mc",
+        "mcbFilePath": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\saves\\Performance Tool 2_0\\datapacks\\performance_tool_2.0\\src\\armor_stand_old.mc",
         "mcbConfigPath": "",
         "dataPackPath": ""
       }
@@ -952,6 +952,7 @@
       ],
       "autouv": 0,
       "color": 1,
+      "visibility": false,
       "rotation": [
         -45,
         0,
@@ -1900,7 +1901,7 @@
               "channel": "timeline",
               "data_points": [
                 {
-                  "script": "particle minecraft:crit ^ ^1 ^1\n"
+                  "script": "particle minecraft:block_marker gold_block ^ ^1 ^1\nparticle minecraft:block_marker gold_block ^ ^1 ^-1\n"
                 }
               ],
               "uuid": "3442d4bf-2c05-9ede-e48a-a14a35e8215f",
@@ -1912,59 +1913,11 @@
               "channel": "timeline",
               "data_points": [
                 {
-                  "script": "particle minecraft:crit ^ ^1 ^-1\n"
+                  "script": "particle minecraft:block_marker poppy ~ ~ ~"
                 }
               ],
               "uuid": "bc034856-e213-abc6-8ad0-3f921d754d0b",
               "time": 0.5,
-              "color": -1,
-              "interpolation": "linear"
-            }
-          ]
-        },
-        "cb964881-91e1-bd1c-6502-b1236f581c6a": {
-          "name": "head",
-          "type": "bone",
-          "keyframes": [
-            {
-              "channel": "position",
-              "data_points": [
-                {
-                  "x": "0",
-                  "y": "0",
-                  "z": -10
-                }
-              ],
-              "uuid": "21c1ddf9-afb1-a7ed-f5b4-c3dae6e497be",
-              "time": 0,
-              "color": -1,
-              "interpolation": "linear"
-            },
-            {
-              "channel": "position",
-              "data_points": [
-                {
-                  "x": 0,
-                  "y": 0,
-                  "z": 10
-                }
-              ],
-              "uuid": "3bfa88c0-2391-191b-fd72-1a8dbee04147",
-              "time": 0.5,
-              "color": -1,
-              "interpolation": "linear"
-            },
-            {
-              "channel": "position",
-              "data_points": [
-                {
-                  "x": "0",
-                  "y": "0",
-                  "z": -10
-                }
-              ],
-              "uuid": "ae830504-795f-b487-80dd-9b3bb4d88d22",
-              "time": 1,
               "color": -1,
               "interpolation": "linear"
             }

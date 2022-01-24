@@ -7,7 +7,7 @@ import { store } from '../util/store'
 import { roundToN } from '../util/misc'
 import { compileMC } from '../compileLangMC'
 import { removeKeyGently } from '../util/misc'
-import { generateTree } from '../util/treeGen'
+import { generateTree, TreeBranch, TreeLeaf } from '../util/treeGen'
 import { CustomError } from '../util/customError'
 import { JsonText } from '../util/minecraft/jsonText'
 import { Entities } from '../util/minecraft/entities'
@@ -463,6 +463,7 @@ async function createMCFile(
 	`)
 
 	{
+		console.groupCollapsed('Summon')
 		//? Summon Dir
 		class Summon {
 			boneName: string
@@ -639,6 +640,7 @@ async function createMCFile(
 			`)
 		}
 		FILE.push(`}`)
+		console.groupEnd()
 	}
 
 	if (Object.keys(variantTouchedModels).length > 0) {
@@ -781,7 +783,7 @@ async function createMCFile(
 				},
 			})
 		}
-
+		console.groupCollapsed('Animations')
 		//? Animation Dir
 		FILE.push(`dir animations {`)
 
@@ -815,11 +817,9 @@ async function createMCFile(
 				}
 			)
 
-			const touchedBones = Object.keys(animation.frames[0].bones)
-
 			console.log('Animation:', animation)
-			const animationTree = generateTree(animation.frames)
-			console.log('Animation Tree:', animationTree)
+			const touchedBones = Object.keys(animation.frames[0].bones)
+			console.log('Touched Bones:', animation)
 
 			const animationScripts: string[] = []
 			for (const frame of animation.frames) {
@@ -833,73 +833,74 @@ async function createMCFile(
 					)
 				}
 			}
-			console.log(animationScripts)
+			console.log('Animation Scripts:', animationScripts)
 
-			function collectBoneTree(boneName: string, animationTreeItem: any) {
-				if (animationTreeItem.type === 'layer') {
-					return {
-						type: 'branch',
-						branches: animationTreeItem.items.map((v: any) =>
-							collectBoneTree(boneName, v)
-						),
-						min: animationTreeItem.min,
-						max: animationTreeItem.max,
+			function generateLeaf(leaf: TreeLeaf) {
+				const ret = []
+				for (const [boneName, bone] of Object.entries(bones)) {
+					if (boneName === 'head') {
+						console.log(boneName)
+						console.log(bone)
+						console.log(leaf.item.bones[boneName])
 					}
-				} else {
-					return {
-						type: 'leaf',
-						index: animationTreeItem.index,
-						frame: animationTreeItem.item.bones[boneName],
+					let pos = leaf.item.bones[boneName].pos
+					pos = {
+						x: roundToN(pos.x, 1000),
+						y: roundToN(pos.y + headYOffset, 1000),
+						z: roundToN(pos.z, 1000),
 					}
+					let rot = leaf.item.bones[boneName].rot
+					rot = {
+						x: roundToN(rot.x, 10000),
+						y: roundToN(rot.y, 10000),
+						z: roundToN(rot.z, 10000),
+					}
+					// prettier-ignore
+					ret.push(`execute if entity @s[tag=${format(tags.individualBone, {boneName})}] positioned ^${pos.x} ^${pos.y} ^${pos.z} run {
+						name frame/${boneName}/${leaf.index}
+						execute if entity @s[type=${entityTypes.boneDisplay}] run data modify entity @s Pose.Head set value [${rot.x}f,${rot.y}f,${rot.z}f]
+						tp @s ~ ~ ~ ~ ~
+					}`)
 				}
+				return ret.join('\n')
 			}
 
-			const boneTrees = {}
-			for (const [boneName, bone] of Object.entries(bones)) {
-				if (!touchedBones.includes(boneName)) continue
-				const tree = collectBoneTree(boneName, animationTree)
-				console.log('Bone Tree:', tree)
-				function generateBaseTree(tree: any): {
-					base: string
-					display: string
-				} {
-					if (tree.type === 'branch') {
-						let retBase: string[] = []
-						let retDisplay: string[] = []
-						// prettier-ignore
-						tree.branches.forEach((v: any)=> {
-							if (v.type === 'branch') {
-								const t = generateBaseTree(v)
-								retBase.push(`execute if score .this ${scoreboards.frame} matches ${v.min}..${v.max-1} run {\n${t.base}\n}`)
-								retDisplay.push(`execute if score .this ${scoreboards.frame} matches ${v.min}..${v.max-1} run {\n${t.display}\n}`)
-							} else {
-								let pos = v.frame.pos
-								pos = {
-									x: roundToN(pos.x, 10000),
-									y: roundToN(pos.y + headYOffset, 10000),
-									z: roundToN(pos.z, 10000)
-								}
-								let rot = v.frame.rot
-								rot = {
-									x: roundToN(rot.x, 10000),
-									y: roundToN(rot.y, 10000),
-									z: roundToN(rot.z, 10000)
-								}
-								// prettier-ignore
-								retBase.push(`execute if score .this ${scoreboards.frame} matches ${v.index} run tp @s ^${pos.x} ^${pos.y} ^${pos.z} ~ ~`)
-								retDisplay.push(`execute if score .this ${scoreboards.frame} matches ${v.index} run data modify entity @s Pose.Head set value [${rot.x}f,${rot.y}f,${rot.z}f]`)
-							}
-						})
-						return {
-							base: retBase.join('\n'),
-							display: retDisplay.join('\n'),
-						}
+			function generateBoneTree() {
+				const animationTree = generateTree(animation.frames)
+				console.log('Animation Tree:', animationTree)
+
+				function recurse(item: TreeLeaf | TreeBranch) {
+					switch (item.type) {
+						case 'branch':
+							const innerTree = item.items
+								.map((v: any) => recurse(v))
+								.join('\n')
+							// prettier-ignore
+							return `execute if score .this ${scoreboards.frame} matches ${item.min}..${item.max-1} run {
+								name branch/${item.min}-${item.max-1}
+								${innerTree}
+							}`
+						case 'leaf':
+							// prettier-ignore
+							return `execute if score .this ${scoreboards.frame} matches ${item.index} run {
+								name leaf/${item.index}
+								${generateLeaf(item)}
+							}`
 					}
 				}
-				boneTrees[boneName] = generateBaseTree(tree)
+				if (animationTree.type === 'leaf')
+					throw new Error(
+						`Invalid top-level TreeLeaf for animation ${animation.name}`
+					)
+				return animationTree.items
+					.map((v: any) => recurse(v))
+					.join('\n')
 			}
-			console.log('Collected Bone Trees:', boneTrees)
-			// boneTrees is used in the next_frame function
+
+			const boneTree = generateBoneTree()
+			console.groupCollapsed('Bone Tree')
+			console.log(boneTree)
+			console.groupEnd()
 
 			FILE.push(`dir ${animation.name} {`)
 			// prettier-ignore
@@ -980,20 +981,10 @@ async function createMCFile(
 					scoreboard players operation .this ${scoreboards.id} = @s ${scoreboards.id}
 					scoreboard players operation .this ${scoreboards.frame} = @s ${scoreboards.frame}
 					execute rotated ~ 0 as @e[type=${entityTypes.bone},tag=${tags.allBones},distance=..${maxDistance}] if score @s ${scoreboards.id} = .this ${scoreboards.id} run {
-						# Split by type
-						execute if entity @s[type=${entityTypes.boneRoot}] run {
-							${(Object.entries(boneTrees) as Record<string, any>).map(([boneName,tree]) => {
-								return `execute if entity @s[tag=${tags.individualBone.replace('%boneName', boneName)}] run {\n${tree.base}\n}`
-							}).join('\n\n')}
-							execute store result entity @s Air short 1 run scoreboard players get .this ${scoreboards.frame}
-						}
-						# Split by type
-						execute if entity @s[type=${entityTypes.boneDisplay}] run {
-							${(Object.entries(boneTrees) as Record<string, any>).map(([boneName,tree]) => {
-								return `execute if entity @s[tag=${tags.individualBone.replace('%boneName', boneName)}] run {\n${tree.display}\n}`
-							}).join('\n\n')}
-							tp @s ~ ~ ~ ~ ~
-						}
+						name branch/top
+						${boneTree}
+
+						execute if entity @s[type=${entityTypes.boneRoot}] store result entity @s Air short 1 run scoreboard players get .this ${scoreboards.frame}
 					}
 
 					${animationScripts.length > 0 ? `
@@ -1034,6 +1025,7 @@ async function createMCFile(
 		}
 
 		FILE.push(`}`)
+		console.groupEnd()
 	}
 
 	const mcbConfig: MCBConfig = {
@@ -1073,6 +1065,12 @@ async function exportMCFile(
 		)
 	}
 
+	if (exporterSettings.mcbConfigPath) {
+		Blockbench.writeFile(exporterSettings.mcbConfigPath, {
+			content: JSON.stringify(generated.mcbConfig),
+			custom_writer: null,
+		})
+	}
 	Blockbench.writeFile(exporterSettings.mcbFilePath, {
 		content: generated.mcFile,
 		custom_writer: null,
@@ -1268,10 +1266,17 @@ function validateFormattedStringSetting(required: string[]) {
 				return d
 			}
 		}
-		const formattedValue = format(d.value, Object.fromEntries(required.map(v => [v.replace('%', ''),'replaced'])))
+		const formattedValue = format(
+			d.value,
+			Object.fromEntries(
+				required.map((v) => [v.replace('%', ''), 'replaced'])
+			)
+		)
 		if (formattedValue !== safeEntityTag(formattedValue)) {
 			d.isValid = false
-			d.error = tl('animatedJava.settings.generic.errors.invalidEntityTag')
+			d.error = tl(
+				'animatedJava.settings.generic.errors.invalidEntityTag'
+			)
 		}
 		return d
 	}
@@ -1323,7 +1328,10 @@ const Exporter = (AJ: any) => {
 						} catch (e) {
 							d.isValid = false
 							d.error = tl(
-								'animatedJava.exporters.generic.settings.rootEntityNbt.errors.invalidNBT'
+								'animatedJava.exporters.generic.settings.rootEntityNbt.errors.invalidNbt',
+								{
+									error: e.message,
+								}
 							)
 						}
 					} else {
