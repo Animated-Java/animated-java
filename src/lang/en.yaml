@@ -348,14 +348,14 @@ animatedJava:
           description:
             - The path to export the .mc file to
             - You will need to install mc-extra into your MCB workspace in order to build the exported data pack
+          errors:
+            mustBeNamedAfterProject: Path must end on a file named %projectName.mc!
 
         mcbConfigPath:
           title: Lang-mc config.json Path
           description:
             - Exports the default MCB config for Animated Java
             - WARNING! Will overwrite existing config.json
-          errors:
-            mustBeNamedAfterProject: Path must end on a file named %projectName.mc!
 
         dataPackPath:
           title: Data Pack

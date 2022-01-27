@@ -23,6 +23,9 @@ intl.register('it', lang_it)
 import lang_ja from './lang/ja.yaml'
 intl.register('ja', lang_ja)
 // @ts-ignore
+import lang_ko from './lang/ko.yaml'
+intl.register('ko', lang_ko)
+// @ts-ignore
 import lang_nl from './lang/nl.yaml'
 intl.register('nl', lang_nl)
 // @ts-ignore

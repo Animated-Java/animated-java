@@ -192,6 +192,8 @@ const people = [
 	{ roles: [Reasons.BetaTester], name: 'Violet' },
 	{ roles: [Reasons.BetaTester], name: 'CommanderRedstone' },
 	{ roles: [Reasons.Translator], name: 'brooke-zb' },
+	{ roles: [Reasons.Translator], name: 'FabulousCodingFox' },
+	{ roles: [Reasons.Translator], name: 'HURDOO' },
 	{ roles: [Reasons.Translator], name: 'ououn' },
 ]
 function Link({ href, children, ...props }) {
