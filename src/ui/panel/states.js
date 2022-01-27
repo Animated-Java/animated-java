@@ -200,7 +200,11 @@ function StatePanel() {
 						}}
 					>
 						<div>
-							<p>{tl('animatedJava.dialogs.variants.description')}</p>
+							<p>
+								{tl(
+									'animatedJava.dialogs.variants.description'
+								)}
+							</p>
 						</div>
 						<div style={{ width: '100%', display: 'inline-block' }}>
 							<ul
@@ -269,6 +273,11 @@ function StatePanel() {
 															label: 'transparent',
 														},
 														...Texture.all
+															.filter(
+																(_) =>
+																	_.uuid !==
+																	t1.uuid
+															)
 															.sort(
 																(a, b) =>
 																	a === t1
@@ -363,7 +372,9 @@ function StatePanel() {
 									className="tooltip"
 									style={{ marginLeft: '0px' }}
 								>
-									{intl.tl('animatedJava.panels.variants.addVariant.title')}
+									{intl.tl(
+										'animatedJava.panels.variants.addVariant.title'
+									)}
 									<div
 										className="tooltip_description"
 										style={{ marginLeft: '-5px' }}
