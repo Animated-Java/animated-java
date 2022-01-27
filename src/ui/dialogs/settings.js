@@ -4,7 +4,11 @@ import { tl } from '../../util/intl'
 import { ERROR } from '../../util/errors'
 import events from '../../constants/events'
 import React, { useEffect, useRef, useState } from 'react'
-import { DefaultSettings, settings, ForeignSettingTranslationKeys } from '../../settings'
+import {
+	DefaultSettings,
+	settings,
+	ForeignSettingTranslationKeys,
+} from '../../settings'
 
 const dialog = electron.dialog
 let updateSettingsUiActions = {}
@@ -182,6 +186,33 @@ const RenderTemplates = {
 						)}
 					</select>
 				</div>
+			</>
+		)
+	},
+	number({ value, setValue, namespace, name, children, forceRerender }) {
+		return (
+			<>
+				{children}
+				<input
+					type="number"
+					id={`aj.setting.${namespace}.${name}`}
+					value={value}
+					onChange={(e) => {
+						setValue(e.target.value)
+					}}
+					onBlur={(e) => {
+						try {
+							let value = Number(e.target.value)
+							settings[namespace][name] = !Number.isNaN(value)
+								? value
+								: undefined
+						} catch (e) {
+							forceRerender()
+						}
+					}}
+					className="dark_bordered"
+					style={{ width: 'calc(100% - 18px)' }}
+				/>
 			</>
 		)
 	},

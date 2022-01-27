@@ -339,6 +339,112 @@ export class SNBTTag {
 				return this.value ? 'true' : 'false'
 		}
 	}
+	toHighlightString(
+		highlighters: Record<string, (string) => string>,
+		exclude_type?: true
+	) {
+		function NO_SYNTAX_HIGHLIGHTER(s) {
+			return s
+		}
+		function getFormatter(name) {
+			return name in highlighters
+				? highlighters[name]
+				: NO_SYNTAX_HIGHLIGHTER
+		}
+		const STRING_FORMATTER = getFormatter('string')
+		const NUMBER_FORMATTER = getFormatter('number')
+		const BOOLEAN_FORMATTER = getFormatter('boolean')
+		const BRACKET_FORMATTER = getFormatter('brackets')
+		const ARRAY_FORMATTER = getFormatter('list')
+		const TYPE_BYTE = getFormatter('type_byte')
+		const TYPE_SHORT = getFormatter('type_short')
+		const TYPE_INT = getFormatter('type_int_list')
+		switch (this.type) {
+			case SNBTTagType.END:
+				throw new Error('Cannot convert END tag to string')
+			case SNBTTagType.BYTE:
+				return (
+					NUMBER_FORMATTER(this.value.toString()) +
+					TYPE_BYTE(exclude_type ? '' : 'b')
+				)
+			case SNBTTagType.SHORT:
+				return (
+					NUMBER_FORMATTER(this.value.toString()) +
+					TYPE_SHORT(exclude_type ? '' : 's')
+				)
+			case SNBTTagType.INT:
+				return NUMBER_FORMATTER(this.value.toString())
+			case SNBTTagType.LONG:
+				return NUMBER_FORMATTER(this.value.toString())
+			case SNBTTagType.FLOAT:
+				return NUMBER_FORMATTER(this.value.toString())
+			case SNBTTagType.DOUBLE:
+				return NUMBER_FORMATTER(
+					this.value.toString() + Number.isInteger(this.value)
+						? '.0'
+						: ''
+				)
+			case SNBTTagType.STRING:
+				return STRING_FORMATTER(SNBTUtil.stringify(this.value))
+			case SNBTTagType.COMPOUND:
+				let entries = Object.entries(this.value as Record<any, SNBTTag>)
+				if (!entries.length) return BRACKET_FORMATTER(`{}`)
+				return (
+					BRACKET_FORMATTER('{') +
+					'\n' +
+					entries
+						.map(([key, value]) =>
+							`${key}:${value.toHighlightString(highlighters)}`
+								.split('\n')
+								.map((_) => `  ${_}`)
+								.join('\n')
+						)
+						.join(',\n') +
+					'\n' +
+					BRACKET_FORMATTER('}')
+				)
+			case SNBTTagType.INT_ARRAY: {
+				let items = this.value.map((item) =>
+					item.toHighlightString(highlighters)
+				)
+				let combined = items.join(',')
+				let isIndented = items.indexOf('\n') > -1
+				if (combined.length > 16) isIndented = true
+				if (isIndented) {
+					return `${ARRAY_FORMATTER('[')}${TYPE_INT('I')};\n${items
+						.map((_) => `  ${_}`)
+						.join(',\n')}\n${ARRAY_FORMATTER(']')}`
+				}
+				return (
+					`${ARRAY_FORMATTER('[')}${TYPE_INT('I')};` +
+					combined +
+					ARRAY_FORMATTER(']')
+				)
+			}
+			case SNBTTagType.BYTE_ARRAY:
+			case SNBTTagType.LIST:
+			case SNBTTagType.LONG_ARRAY: {
+				let items = this.value.map((item) =>
+					item.toHighlightString(highlighters)
+				)
+				let combined = items.join(', ')
+				let isIndented = combined.indexOf('\n') > -1
+				if (combined.length > 16) isIndented = true
+				if (isIndented) {
+					return `${ARRAY_FORMATTER('[')}\n${items
+						.map((_) =>
+							_.split('\n')
+								.map((i) => `  ${i}`)
+								.join('\n')
+						)
+						.join(',\n')}\n${ARRAY_FORMATTER(']')}`
+				}
+				return ARRAY_FORMATTER('[') + combined + ARRAY_FORMATTER(']')
+			}
+			case SNBTTagType.BOOLEAN:
+				return BOOLEAN_FORMATTER(this.value ? 'true' : 'false')
+		}
+	}
 	// clone the tag taking into account the type
 	// the LIST, INT_ARRAY, BYTE_ARRAY, and LONG_ARRAY clone each item into a new list,
 	// the COMPOUND copies each entry and makes a new compound
