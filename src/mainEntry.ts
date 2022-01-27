@@ -125,7 +125,7 @@ async function computeAnimationData(
 						'animatedJava.dialogs.errors.predicateFilePathUndefined.body'
 					),
 				],
-				width: 256
+				width: 256,
 			},
 		})
 	}
@@ -137,10 +137,12 @@ async function computeAnimationData(
 				title: tl(
 					'animatedJava.dialogs.errors.rigModelsExportFolderUndefined.title'
 				),
-				lines: [tl(
-					'animatedJava.dialogs.errors.rigModelsExportFolderUndefined.body'
-				)],
-				width: 256
+				lines: [
+					tl(
+						'animatedJava.dialogs.errors.rigModelsExportFolderUndefined.body'
+					),
+				],
+				width: 256,
 			},
 		})
 	}
@@ -280,6 +282,8 @@ MenuBar.update()
 const cb = () => {
 	store.set('states', { default: {} })
 	settings.update(DefaultSettings, true)
+	//@ts-ignore;
+	Project.UUID = globalThis.guid()
 	bus.dispatch(EVENTS.LIFECYCLE.LOAD_MODEL, {})
 }
 Blockbench.on('new_project', cb)
