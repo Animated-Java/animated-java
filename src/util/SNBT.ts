@@ -359,6 +359,8 @@ export class SNBTTag {
 		const TYPE_BYTE = getFormatter('type_byte')
 		const TYPE_SHORT = getFormatter('type_short')
 		const TYPE_INT = getFormatter('type_int_list')
+		const SNYTAX = getFormatter('syntax')
+		const COMPOUND_NAME_FORMATTER = getFormatter('compound_name')
 		switch (this.type) {
 			case SNBTTagType.END:
 				throw new Error('Cannot convert END tag to string')
@@ -394,12 +396,14 @@ export class SNBTTag {
 					'\n' +
 					entries
 						.map(([key, value]) =>
-							`${key}:${value.toHighlightString(highlighters)}`
+							`${COMPOUND_NAME_FORMATTER(key)}${SNYTAX(
+								':'
+							)}${value.toHighlightString(highlighters)}`
 								.split('\n')
 								.map((_) => `  ${_}`)
 								.join('\n')
 						)
-						.join(',\n') +
+						.join(SNYTAX(',') + '\n') +
 					'\n' +
 					BRACKET_FORMATTER('}')
 				)
@@ -407,13 +411,13 @@ export class SNBTTag {
 				let items = this.value.map((item) =>
 					item.toHighlightString(highlighters)
 				)
-				let combined = items.join(',')
+				let combined = items.join(SNYTAX(','))
 				let isIndented = items.indexOf('\n') > -1
-				if (combined.length > 16) isIndented = true
+				if (this.value.join(',').length > 16) isIndented = true
 				if (isIndented) {
 					return `${ARRAY_FORMATTER('[')}${TYPE_INT('I')};\n${items
 						.map((_) => `  ${_}`)
-						.join(',\n')}\n${ARRAY_FORMATTER(']')}`
+						.join(SNYTAX(',') + '\n')}\n${ARRAY_FORMATTER(']')}`
 				}
 				return (
 					`${ARRAY_FORMATTER('[')}${TYPE_INT('I')};` +
@@ -437,7 +441,7 @@ export class SNBTTag {
 								.map((i) => `  ${i}`)
 								.join('\n')
 						)
-						.join(',\n')}\n${ARRAY_FORMATTER(']')}`
+						.join(SNYTAX(',') + '\n')}\n${ARRAY_FORMATTER(']')}`
 				}
 				return ARRAY_FORMATTER('[') + combined + ARRAY_FORMATTER(']')
 			}
