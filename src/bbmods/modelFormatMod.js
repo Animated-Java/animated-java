@@ -1,5 +1,5 @@
 import * as EVENTS from '../constants/events'
-import { format as modelFormat } from '../modelFormat'
+import { format, format as modelFormat } from '../modelFormat'
 import { bus } from '../util/bus'
 import { wrapNumber } from '../util/misc'
 
@@ -14,7 +14,9 @@ ModelFormat.prototype.convertTo = function convertTo() {
 	var old_format = Format
 	this.select()
 	Modes.options.edit.select()
-
+	if (Format.id === format.id) {
+		Project.UUID = guid()
+	}
 	// Box UV
 	if (!this.optional_box_uv) Project.box_uv = this.box_uv
 
