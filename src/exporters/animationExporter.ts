@@ -103,14 +103,9 @@ async function createMCFile(
 
 	const staticAnimationUuid = store.get('staticAnimationUuid')
 	const staticFrame = animations[staticAnimationUuid].frames[0].bones
-	// let staticDistance = 10
+
 	let maxDistance = 10
 	if (exporterSettings.autoDistance) {
-		// staticDistance = roundToN(
-		// 	animations[staticAnimationUuid].maxDistance + -headYOffset,
-		// 	1000
-		// )
-
 		maxDistance = roundToN(
 			Object.values(animations).reduce((o, n) => {
 				return Math.max(o, n.maxDistance)
@@ -856,11 +851,12 @@ async function createMCFile(
 						z: roundToN(rot.z, 10000),
 					}
 					// prettier-ignore
-					ret.push(`execute if entity @s[tag=${format(tags.individualBone, {boneName})}] positioned ^${pos.x} ^${pos.y} ^${pos.z} run {
-						name frame/${boneName}/${leaf.index}
-						execute if entity @s[type=${entityTypes.boneDisplay}] run data modify entity @s Pose.Head set value [${rot.x}f,${rot.y}f,${rot.z}f]
-						tp @s ~ ~ ~ ~ ~
-					}`)
+					ret.push('say a')
+					// ret.push(`execute if entity @s[tag=${format(tags.individualBone, {boneName})}] positioned ^${pos.x} ^${pos.y} ^${pos.z} run {
+					// 	name frame/${boneName}/${leaf.index}
+					// 	execute if entity @s[type=${entityTypes.boneDisplay}] run data modify entity @s Pose.Head set value [${rot.x}f,${rot.y}f,${rot.z}f]
+					// 	tp @s ~ ~ ~ ~ ~
+					// }`)
 				}
 				return ret.join('\n')
 			}
