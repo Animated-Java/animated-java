@@ -515,16 +515,63 @@ const Settings = () => {
 
 function SettingsPanel({ childrenSettings, name, visible, id }) {
 	const [shown, setShown] = useState(visible)
+	const [childShown, setChildShown] = useState({})
+	const order = []
+	childrenSettings.forEach((setting) => {
+		let template = DefaultSettings[id][setting]
+		if (template.group) {
+			let g = order.find((group) => group.name === template.group) || {
+				type: 'group',
+				name: template.group,
+				settings: [],
+				translatableName: template.groupName,
+			}
+			if (!order.includes(g)) order.push(g)
+			g.settings.push(setting)
+		} else {
+			order.push({
+				type: 'setting',
+				name: setting,
+			})
+		}
+	})
 	return (
 		<DropDown visible={shown} onClick={() => setShown(!shown)} name={name}>
 			<ul style={{ marginLeft: '2em' }}>
-				{childrenSettings.map((child) => (
-					<li key={child}>
-						<SettingInput
-							namespace={id}
-							name={child}
-							template={DefaultSettings[id][child]}
-						></SettingInput>
+				{order.map((child) => (
+					<li key={child.name}>
+						{child.type === 'group' ? (
+							<DropDown
+								visible={childShown[child.name]}
+								name={child.translatableName}
+								onClick={() => {
+									setChildShown({
+										...childShown,
+										[child.name]: !childShown[child.name],
+									})
+								}}
+							>
+								<ul style={{ marginLeft: '2em' }}>
+									{child.settings.map((setting) => (
+										<li key={setting}>
+											<SettingInput
+												namespace={id}
+												name={setting}
+												template={
+													DefaultSettings[id][setting]
+												}
+											></SettingInput>
+										</li>
+									))}
+								</ul>
+							</DropDown>
+						) : (
+							<SettingInput
+								namespace={id}
+								name={child.name}
+								template={DefaultSettings[id][child.name]}
+							></SettingInput>
+						)}
 					</li>
 				))}
 			</ul>
