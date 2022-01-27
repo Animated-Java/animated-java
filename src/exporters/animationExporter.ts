@@ -830,72 +830,79 @@ async function createMCFile(
 			}
 			console.log('Animation Scripts:', animationScripts)
 
-			function generateLeaf(leaf: TreeLeaf) {
-				const ret = []
-				for (const [boneName, bone] of Object.entries(bones)) {
-					if (boneName === 'head') {
-						console.log(boneName)
-						console.log(bone)
-						console.log(leaf.item.bones[boneName])
-					}
-					let pos = leaf.item.bones[boneName].pos
-					pos = {
-						x: roundToN(pos.x, 1000),
-						y: roundToN(pos.y + headYOffset, 1000),
-						z: roundToN(pos.z, 1000),
-					}
-					let rot = leaf.item.bones[boneName].rot
-					rot = {
-						x: roundToN(rot.x, 10000),
-						y: roundToN(rot.y, 10000),
-						z: roundToN(rot.z, 10000),
-					}
-					// prettier-ignore
-					ret.push('say a')
-					// ret.push(`execute if entity @s[tag=${format(tags.individualBone, {boneName})}] positioned ^${pos.x} ^${pos.y} ^${pos.z} run {
-					// 	name frame/${boneName}/${leaf.index}
-					// 	execute if entity @s[type=${entityTypes.boneDisplay}] run data modify entity @s Pose.Head set value [${rot.x}f,${rot.y}f,${rot.z}f]
-					// 	tp @s ~ ~ ~ ~ ~
-					// }`)
+			function getPos(boneName: string, leaf: TreeLeaf) {
+				let pos = leaf.item.bones[boneName].pos
+				return {
+					x: roundToN(pos.x, 1000),
+					y: roundToN(pos.y + headYOffset, 1000),
+					z: roundToN(pos.z, 1000),
 				}
-				return ret.join('\n')
 			}
 
-			function generateBoneTree() {
-				const animationTree = generateTree(animation.frames)
-				console.log('Animation Tree:', animationTree)
-
-				function recurse(item: TreeLeaf | TreeBranch) {
-					switch (item.type) {
-						case 'branch':
-							const innerTree = item.items
-								.map((v: any) => recurse(v))
-								.join('\n')
-							// prettier-ignore
-							return `execute if score .this ${scoreboards.frame} matches ${item.min}..${item.max-1} run {
-								name branch/${item.min}-${item.max-1}
-								${innerTree}
-							}`
-						case 'leaf':
-							// prettier-ignore
-							return `execute if score .this ${scoreboards.frame} matches ${item.index} run {
-								name leaf/${item.index}
-								${generateLeaf(item)}
-							}`
-					}
+			function getRot(boneName: string, leaf: TreeLeaf) {
+				let rot = leaf.item.bones[boneName].rot
+				return {
+					x: roundToN(rot.x, 10000),
+					y: roundToN(rot.y, 10000),
+					z: roundToN(rot.z, 10000),
 				}
+			}
+
+			function generateBoneTrees() {
+				const animationTree = generateTree(animation.frames)
 				if (animationTree.type === 'leaf')
 					throw new Error(
 						`Invalid top-level TreeLeaf for animation ${animation.name}`
 					)
-				return animationTree.items
-					.map((v: any) => recurse(v))
-					.join('\n')
+				const boneTrees = Object.fromEntries(
+					Object.keys(bones).map((v) => [
+						v,
+						{ root: '', display: '' },
+					])
+				)
+
+				for (const boneName of Object.keys(bones)) {
+					function createRootTree(item: TreeBranch | TreeLeaf) {
+						switch (item.type) {
+							case 'branch':
+								// prettier-ignore
+								return `execute if score .this ${scoreboards.frame} matches ${item.min}..${item.max - 1} run {
+									name tree/${boneName}_root_${item.min}-${item.max - 1}
+									${item.items.map((v: any) => createRootTree(v)).join('\n')}
+								}`
+							case 'leaf':
+								const pos = getPos(boneName, item)
+								return `execute if score .this ${scoreboards.frame} matches ${item.index} run tp @s ^${pos.x} ^${pos.y} ^${pos.z} ~ ~`
+						}
+					}
+
+					function createDisplayTree(item: TreeBranch | TreeLeaf) {
+						switch (item.type) {
+							case 'branch':
+								// prettier-ignore
+								return `execute if score .this ${scoreboards.frame} matches ${item.min}..${item.max - 1} run {
+									name tree/${boneName}_display_${item.min}-${item.max - 1}
+									${item.items.map((v: any) => createDisplayTree(v)).join('\n')}
+								}`
+							case 'leaf':
+								const rot = getRot(boneName, item)
+								return `execute if score .this ${scoreboards.frame} matches ${item.index} run data modify entity @s Pose.Head set value [${rot.x}f,${rot.y}f,${rot.z}f]`
+							}
+					}
+
+					boneTrees[boneName].root = animationTree.items
+						.map((v: any) => createRootTree(v))
+						.join('\n')
+					boneTrees[boneName].display = animationTree.items
+						.map((v: any) => createDisplayTree(v))
+						.join('\n')
+				}
+				return boneTrees
 			}
 
-			const boneTree = generateBoneTree()
+			const boneTrees = generateBoneTrees()
 			console.groupCollapsed('Bone Tree')
-			console.log(boneTree)
+			console.log(boneTrees)
 			console.groupEnd()
 
 			FILE.push(`dir ${animation.name} {`)
@@ -977,10 +984,30 @@ async function createMCFile(
 					scoreboard players operation .this ${scoreboards.id} = @s ${scoreboards.id}
 					scoreboard players operation .this ${scoreboards.frame} = @s ${scoreboards.frame}
 					execute rotated ~ 0 as @e[type=${entityTypes.bone},tag=${tags.allBones},distance=..${maxDistance}] if score @s ${scoreboards.id} = .this ${scoreboards.id} run {
-						name branch/top
-						${boneTree}
-
-						execute if entity @s[type=${entityTypes.boneRoot}] store result entity @s Air short 1 run scoreboard players get .this ${scoreboards.frame}
+						name tree/trunk
+						# Bone Roots
+						execute if entity @s[type=${entityTypes.boneRoot}] run {
+							name tree/root_bone_name
+							${Object.entries(boneTrees).map(([boneName,trees]) =>
+								`execute if entity @s[tag=${format(tags.individualBone, {boneName})}] run {
+									name tree/${boneName}_root_top
+									${trees.root}
+								}`
+							).join('\n')}
+							execute store result entity @s Air short 1 run scoreboard players get .this ${scoreboards.frame}
+						}
+						# Bone Displays
+						execute if entity @s[type=${entityTypes.boneDisplay}] run {
+							name tree/display_bone_name
+							${Object.entries(boneTrees).map(([boneName,trees]) =>
+								`execute if entity @s[tag=${format(tags.individualBone, {boneName})}] run {
+									name tree/${boneName}_display_top
+									${trees.display}
+								}`
+							).join('\n')}
+							# Make sure rotation stays aligned with root entity
+							execute positioned as @s run tp @s ~ ~ ~ ~ ~
+						}
 					}
 
 					${animationScripts.length > 0 ? `
