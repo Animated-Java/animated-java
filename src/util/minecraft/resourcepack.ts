@@ -3,7 +3,6 @@ import * as path from 'path'
 import { CustomError } from '../customError'
 import { tl } from '../intl'
 import { normalizePath } from '../misc'
-import { format } from '../replace'
 
 export function getTexturePath(texture: any) {
 	if (!texture.path || !texture.saved) {

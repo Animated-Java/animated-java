@@ -190,6 +190,7 @@ animatedJava:
         reasons:
           overridesMissing: Model overrides list missing.
           ajMetaMissing: Model file to merge into is not an Animated Java predicate file.
+          invalidJson: Model file to merge into does not contain valid JSON
 
       invalidAnimationSnappingValue:
         title: Invalid Animation Snapping Value

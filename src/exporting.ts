@@ -237,7 +237,6 @@ async function exportPredicate(
 	ajSettings: aj.Settings
 ) {
 	console.groupCollapsed('Export Predicate Model')
-	const projectName = safeFunctionName(ajSettings.projectName)
 
 	const predicateJSON = {
 		parent: 'item/generated',
@@ -249,6 +248,7 @@ async function exportPredicate(
 			includedRigs: {},
 		},
 	}
+
 	let usedIDs = []
 	function* idGen() {
 		let id = 1
@@ -257,12 +257,24 @@ async function exportPredicate(
 			id++
 		}
 	}
+
 	if (fs.existsSync(ajSettings.predicateFilePath)) {
-		const oldPredicate: PredicateModel = JSON.parse(
-			await fs.promises.readFile(ajSettings.predicateFilePath, {
+		const stringContent = await fs.promises.readFile(
+			ajSettings.predicateFilePath,
+			{
 				encoding: 'utf-8',
-			})
+			}
 		)
+		let oldPredicate: PredicateModel
+		try {
+			oldPredicate = JSON.parse(stringContent)
+		} catch (err) {
+			throwPredicateMergingError(
+				tl(
+					'animatedJava.dialogs.errors.predicateMergeFailed.reasons.invalidJson'
+				)
+			)
+		}
 		console.log(oldPredicate)
 		// @ts-ignore
 		if (oldPredicate) {
@@ -347,8 +359,8 @@ async function exportPredicate(
 			})
 		}
 
-	predicateJSON.overrides.sort((a: any,b: any) => {
-		return (a.predicate.custom_model_data - b.predicate.custom_model_data)
+	predicateJSON.overrides.sort((a: any, b: any) => {
+		return a.predicate.custom_model_data - b.predicate.custom_model_data
 	})
 	//@ts-ignore
 	predicateJSON.aj.includedRigs[Project.UUID] = {
