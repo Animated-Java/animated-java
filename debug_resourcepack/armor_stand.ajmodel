@@ -1,7 +1,7 @@
 {
   "meta": {
     "format_version": "0.0",
-    "creation_time": 1643569055,
+    "creation_time": 1643569419,
     "model_format": "animated_java/ajmodel",
     "box_uv": false,
     "settings": {
@@ -33,7 +33,7 @@
       "vanillaAnimationExporter": {
         "rootEntityType": "minecraft:marker",
         "rootEntityNbt": "{}",
-        "markerArmorStands": true,
+        "markerArmorStands": false,
         "autoDistance": true,
         "autoDistanceMovementThreshold": 1,
         "manualDistance": 10,
