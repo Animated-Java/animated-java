@@ -1032,7 +1032,7 @@ async function createMCFile(
 							: { v: createRootTree(animationTree), trimmed: false }
 					// prettier-ignore
 					boneTrees[boneName].display =
-						exporterSettings.deduplicatePositionFrames
+						exporterSettings.deduplicateRotationFrames
 							? createDeduplicatedDisplayTree(animationTree)
 							: { v: createDisplayTree(animationTree), trimmed: false }
 				}
