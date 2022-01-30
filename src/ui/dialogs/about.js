@@ -238,7 +238,9 @@ function About() {
 				></img>
 			</Center>
 			<Center>
-				<h1 style={{ fontSize: '3em' }}>{tl('animatedJava')}</h1>
+				<h1 style={{ fontSize: '3em' }}>
+					{tl('animatedJava.plugin.title')}
+				</h1>
 			</Center>
 			<Center>
 				<p style={{ marginTop: '0.1em' }}>
