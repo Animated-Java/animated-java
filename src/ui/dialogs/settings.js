@@ -585,7 +585,7 @@ function DropDown({ children, onClick, visible, name, intl }) {
 				onClick={onClick}
 				style={{
 					display: 'flex',
-					alignItems: 'center',
+					alignItems: 'center'
 				}}
 			>
 				<i className="material-icons">

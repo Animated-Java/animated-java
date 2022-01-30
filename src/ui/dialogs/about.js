@@ -176,6 +176,7 @@ const people = [
 	},
 	{ roles: [Reasons.BetaTester], name: 'destruc7i0n' },
 	{ roles: [Reasons.PatreonT3], name: 'DoubleFelix', active: true },
+	{ roles: [Reasons.PatreonT2], name: '__SK__', active: true },
 	{ roles: [Reasons.BetaTester], name: 'Eriol_Eandur' },
 	{ roles: [Reasons.BetaTester], name: 'gibbs' },
 	{ roles: [Reasons.BetaTester], name: 'JayPeaSize' },

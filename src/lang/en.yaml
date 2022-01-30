@@ -279,6 +279,13 @@ animatedJava:
             body:
               - You must define a data pack path in settings before you can export.
 
+      settingGroups:
+        entityTags:
+          title: Entity Tags
+
+        scoreboardObjectives:
+          title: Scoreboard Objectives
+
       settings:
         rootEntityType:
           title: Root Entity Type

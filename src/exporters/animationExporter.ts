@@ -889,7 +889,7 @@ async function createMCFile(
 							case 'leaf':
 								const rot = getRot(boneName, item)
 								return `execute if score .this ${scoreboards.frame} matches ${item.index} run data modify entity @s Pose.Head set value [${rot.x}f,${rot.y}f,${rot.z}f]`
-							}
+						}
 					}
 
 					boneTrees[boneName].root = animationTree.items
@@ -1449,6 +1449,9 @@ const Exporter = (AJ: any) => {
 				default: 'aj.%projectName',
 				onUpdate: validateFormattedStringSetting(['%projectName']),
 				isResetable: true,
+				groupName:
+					'animatedJava.exporters.generic.settingGroups.entityTags.title',
+				group: 'entityTags',
 			},
 			rootTag: {
 				title: tl(
@@ -1461,6 +1464,7 @@ const Exporter = (AJ: any) => {
 				default: 'aj.%projectName.root',
 				onUpdate: validateFormattedStringSetting(['%projectName']),
 				isResetable: true,
+				group: 'entityTags',
 			},
 			allBonesTag: {
 				title: tl(
@@ -1473,6 +1477,7 @@ const Exporter = (AJ: any) => {
 				default: 'aj.%projectName.bone',
 				onUpdate: validateFormattedStringSetting(['%projectName']),
 				isResetable: true,
+				group: 'entityTags',
 			},
 			boneModelDisplayTag: {
 				title: tl(
@@ -1485,6 +1490,7 @@ const Exporter = (AJ: any) => {
 				default: 'aj.%projectName.bone_display',
 				onUpdate: validateFormattedStringSetting(['%projectName']),
 				isResetable: true,
+				group: 'entityTags',
 			},
 			individualBoneTag: {
 				title: tl(
@@ -1500,6 +1506,7 @@ const Exporter = (AJ: any) => {
 					'%boneName',
 				]),
 				isResetable: true,
+				group: 'entityTags',
 			},
 			internalScoreboardObjective: {
 				title: tl(
@@ -1517,6 +1524,9 @@ const Exporter = (AJ: any) => {
 					}
 					return d
 				},
+				groupName:
+					'animatedJava.exporters.generic.settingGroups.scoreboardObjectives.title',
+				group: 'scoreboardObjectives',
 			},
 			idScoreboardObjective: {
 				title: tl(
@@ -1528,6 +1538,7 @@ const Exporter = (AJ: any) => {
 				type: 'text',
 				default: 'aj.id',
 				onUpdate: validateFormattedStringSetting([]),
+				group: 'scoreboardObjectives',
 			},
 			frameScoreboardObjective: {
 				title: tl(
@@ -1539,6 +1550,7 @@ const Exporter = (AJ: any) => {
 				type: 'text',
 				default: 'aj.frame',
 				onUpdate: validateFormattedStringSetting([]),
+				group: 'scoreboardObjectives',
 			},
 			animatingFlagScoreboardObjective: {
 				title: tl(
@@ -1550,6 +1562,7 @@ const Exporter = (AJ: any) => {
 				type: 'text',
 				default: 'aj.%projectName.animating',
 				onUpdate: validateFormattedStringSetting(['%projectName']),
+				group: 'scoreboardObjectives',
 			},
 			animationLoopModeScoreboardObjective: {
 				title: tl(
@@ -1564,6 +1577,7 @@ const Exporter = (AJ: any) => {
 					'%projectName',
 					'%animationName',
 				]),
+				group: 'scoreboardObjectives',
 			},
 			exportMode: {
 				title: tl(
