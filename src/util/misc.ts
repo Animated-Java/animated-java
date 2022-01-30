@@ -66,3 +66,13 @@ export function promiseWhen(condition: any, timeout: number) {
 		})()
 	)
 }
+
+interface SimpleVector3 {
+	x: number
+	y: number
+	z: number
+}
+
+export function isEqualVector(a: SimpleVector3, b:SimpleVector3) {
+	return a.x == b.x && a.y == b.y && a.z == b.z
+}

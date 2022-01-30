@@ -1,7 +1,7 @@
 {
   "meta": {
     "format_version": "0.0",
-    "creation_time": 1643556769,
+    "creation_time": 1643566436,
     "model_format": "animated_java/ajmodel",
     "box_uv": false,
     "settings": {
@@ -37,6 +37,8 @@
         "autoDistance": true,
         "autoDistanceMovementThreshold": 1,
         "manualDistance": 10,
+        "deduplicatePositionFrames": false,
+        "deduplicateRotationFrames": true,
         "modelTag": "aj.%projectName",
         "rootTag": "aj.%projectName.root",
         "allBonesTag": "aj.%projectName.bone",

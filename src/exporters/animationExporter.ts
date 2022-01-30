@@ -4,7 +4,7 @@ import * as fs from 'fs'
 import { tl } from '../util/intl'
 import { Path } from '../util/path'
 import { store } from '../util/store'
-import { roundToN } from '../util/misc'
+import { isEqualVector, roundToN } from '../util/misc'
 import { compileMC } from '../compileLangMC'
 import { removeKeyGently } from '../util/misc'
 import { generateTree, TreeBranch, TreeLeaf } from '../util/treeGen'
@@ -41,6 +41,8 @@ interface vanillaAnimationExporterSettings {
 	autoDistance: number
 	autoDistanceMovementThreshold: number
 	manualDistance: number
+	deduplicatePositionFrames: boolean
+	deduplicateRotationFrames: boolean
 }
 
 interface MCBConfig {
@@ -908,11 +910,19 @@ async function createMCFile(
 				const boneTrees = Object.fromEntries(
 					Object.keys(bones).map((v) => [
 						v,
-						{ root: '', display: '' },
+						{
+							root: { v: '', trimmed: false },
+							display: { v: '', trimmed: false },
+						},
 					])
 				)
 
 				for (const boneName of Object.keys(bones)) {
+					interface TreeReturn {
+						v: string
+						trimmed: boolean
+					}
+
 					function createRootTree(item: TreeBranch | TreeLeaf) {
 						switch (item.type) {
 							case 'branch':
@@ -924,6 +934,43 @@ async function createMCFile(
 							case 'leaf':
 								const pos = getPos(boneName, item)
 								return `execute if score .this ${scoreboards.frame} matches ${item.index} run tp @s ^${pos.x} ^${pos.y} ^${pos.z} ~ ~`
+						}
+					}
+
+					let lastPos = { x: NaN, y: NaN, z: NaN }
+					function createDeduplicatedRootTree(
+						item: TreeBranch | TreeLeaf
+					): TreeReturn {
+						switch (item.type) {
+							case 'branch':
+								const inside: TreeReturn[] = item.items
+									.map((v: any) =>
+										createDeduplicatedRootTree(v)
+									)
+									.filter((v) => !v.trimmed)
+								if (inside.length == 0) {
+									return { v: '', trimmed: true }
+								} else if (inside.length == 1) {
+									return inside[0]
+								}
+								// prettier-ignore
+								return {
+									v: `execute if score .this ${scoreboards.frame} matches ${item.min}..${item.max - 1} run {
+										name tree/${boneName}_root_${item.min}-${item.max - 1}
+										${inside.reduce((p, c) => p + (c.v ? c.v+'\n' : ''), '')}
+									}`,
+									trimmed: false
+								}
+							case 'leaf':
+								const pos = getRot(boneName, item)
+								if (isEqualVector(pos, lastPos)) {
+									return { v: '', trimmed: true }
+								}
+								lastPos = pos
+								return {
+									v: `execute if score .this ${scoreboards.frame} matches ${item.index} run tp @s ^${pos.x} ^${pos.y} ^${pos.z} ~ ~`,
+									trimmed: false,
+								}
 						}
 					}
 
@@ -941,12 +988,53 @@ async function createMCFile(
 						}
 					}
 
-					boneTrees[boneName].root = animationTree.items
-						.map((v: any) => createRootTree(v))
-						.join('\n')
-					boneTrees[boneName].display = animationTree.items
-						.map((v: any) => createDisplayTree(v))
-						.join('\n')
+					let lastRot = { x: NaN, y: NaN, z: NaN }
+					function createDeduplicatedDisplayTree(
+						item: TreeBranch | TreeLeaf
+					): TreeReturn {
+						switch (item.type) {
+							case 'branch':
+								const inside: TreeReturn[] = item.items
+									.map((v: any) =>
+										createDeduplicatedDisplayTree(v)
+									)
+									.filter((v) => !v.trimmed)
+								if (inside.length == 0) {
+									return { v: '', trimmed: true }
+								} else if (inside.length == 1) {
+									return inside[0]
+								}
+								// prettier-ignore
+								return {
+									v: `execute if score .this ${scoreboards.frame} matches ${item.min}..${item.max - 1} run {
+										name tree/${boneName}_display_${item.min}-${item.max - 1}
+										${inside.reduce((p, c) => p + (c.v ? c.v+'\n' : ''), '')}
+									}`,
+									trimmed: false
+								}
+							case 'leaf':
+								const rot = getRot(boneName, item)
+								if (isEqualVector(rot, lastRot)) {
+									return { v: '', trimmed: true }
+								}
+								lastRot = rot
+								return {
+									v: `execute if score .this ${scoreboards.frame} matches ${item.index} run data modify entity @s Pose.Head set value [${rot.x}f,${rot.y}f,${rot.z}f]`,
+									trimmed: false,
+								}
+						}
+					}
+
+					// prettier-ignore
+					boneTrees[boneName].root =
+						exporterSettings.deduplicatePositionFrames
+							? createDeduplicatedRootTree(animationTree)
+							: { v: createRootTree(animationTree), trimmed: false }
+					// prettier-ignore
+					boneTrees[boneName].display =
+						exporterSettings.deduplicatePositionFrames
+							? createDeduplicatedDisplayTree(animationTree)
+							: { v: createDisplayTree(animationTree), trimmed: false }
 				}
 				return boneTrees
 			}
@@ -1039,22 +1127,28 @@ async function createMCFile(
 						# Bone Roots
 						execute if entity @s[type=${entityTypes.boneRoot}] run {
 							name tree/root_bone_name
-							${Object.entries(boneTrees).map(([boneName,trees]) =>
-								`execute if entity @s[tag=${format(tags.individualBone, {boneName})}] run {
+							${Object.entries(boneTrees).map(([boneName,trees]) => {
+								// Remove trimmed bone trees (Though there will never be any)
+								if (trees.root.trimmed) return ''
+								return `execute if entity @s[tag=${format(tags.individualBone, {boneName})}] run {
 									name tree/${boneName}_root_top
-									${trees.root}
+									${trees.root.v}
 								}`
+							}
 							).join('\n')}
 							execute store result entity @s Air short 1 run scoreboard players get .this ${scoreboards.frame}
 						}
 						# Bone Displays
 						execute if entity @s[type=${entityTypes.boneDisplay}] run {
 							name tree/display_bone_name
-							${Object.entries(boneTrees).map(([boneName,trees]) =>
-								`execute if entity @s[tag=${format(tags.individualBone, {boneName})}] run {
+							${Object.entries(boneTrees).map(([boneName,trees]) => {
+								// Remove trimmed bone trees (Though there will never be any)
+								if (trees.display.trimmed) return ''
+								return `execute if entity @s[tag=${format(tags.individualBone, {boneName})}] run {
 									name tree/${boneName}_display_top
-									${trees.display}
+									${trees.display.v}
 								}`
+							}
 							).join('\n')}
 							# Make sure rotation stays aligned with root entity
 							execute positioned as @s run tp @s ~ ~ ~ ~ ~
@@ -1486,6 +1580,32 @@ const Exporter = (AJ: any) => {
 					return !settings.vanillaAnimationExporter.autoDistance
 				},
 				dependencies: ['vanillaAnimationExporter.autoDistance'],
+			},
+			deduplicatePositionFrames: {
+				title: tl(
+					'animatedJava.exporters.vanillaAnimation.settings.deduplicatePositionFrames.title'
+				),
+				description: tl(
+					'animatedJava.exporters.vanillaAnimation.settings.deduplicatePositionFrames.description'
+				),
+				type: 'checkbox',
+				default: false,
+				onUpdate(d: aj.SettingDescriptor) {
+					return d
+				},
+			},
+			deduplicateRotationFrames: {
+				title: tl(
+					'animatedJava.exporters.vanillaAnimation.settings.deduplicateRotationFrames.title'
+				),
+				description: tl(
+					'animatedJava.exporters.vanillaAnimation.settings.deduplicateRotationFrames.description'
+				),
+				type: 'checkbox',
+				default: true,
+				onUpdate(d: aj.SettingDescriptor) {
+					return d
+				},
 			},
 			modelTag: {
 				title: tl(

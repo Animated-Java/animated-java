@@ -413,6 +413,19 @@ animatedJava:
           errors:
             valueOutOfRange: Setting value must be at least 0
 
+        deduplicatePositionFrames:
+          title: Deduplicate Position Frames
+          description:
+            - Removes repeating position values from the exported animation.
+            - Can greatly reduce file size and function count.
+            - WARNING! This will make your model drop bones if you attempt to move it. Only enable this setting if you want a stationary model.
+
+        deduplicateRotationFrames:
+          title: Deduplicate Rotation Frames
+          description:
+            - Removes repeating rotation values from the exported animation.
+            - Can greatly reduce file size and function count.
+
         frameScoreboardObjective:
           title: Frame Scoreboard
           description:
