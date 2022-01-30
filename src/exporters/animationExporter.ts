@@ -734,10 +734,6 @@ async function createMCFile(
 
 	{
 		//? Animation Loop function
-		const animationRunCommand = `execute if entity @s[tag=aj.${projectName}.anim.%animationName] at @s run function ${projectName}:animations/%animationName/next_frame`
-		const animationRunCommands = Object.values(animations).map((v) =>
-			format(animationRunCommand, { animationName: v.name })
-		)
 		// prettier-ignore
 		FILE.push(`
 			function animation_loop {
@@ -749,7 +745,11 @@ async function createMCFile(
 				scoreboard players set .aj.animation ${scoreboards.animatingFlag} 0
 				# Run animations that are active on the entity
 				execute as @e[type=${entityTypes.root},tag=${tags.root}] run{
-					${animationRunCommands.join('\n')}
+
+					${Object.values(animations).map((animation) =>
+						`execute if entity @s[tag=aj.${projectName}.anim.${animation.name}] at @s run function ${projectName}:animations/${animation.name}/next_frame`
+					).join('\n')}
+
 					scoreboard players operation @s ${scoreboards.animatingFlag} = .aj.animation ${scoreboards.animatingFlag}
 				}
 				# Stop the anim_loop clock if no models are animating
@@ -764,6 +764,31 @@ async function createMCFile(
 	}
 
 	{
+		// Move Function
+		FILE.push(`function move {
+			# Make sure this function has been ran as the root entity
+			execute(if entity @s[tag=${tags.root}] at @s rotated ~ 0) {
+				tp @e[type=${entityTypes.boneRoot}] ~ ~ ~ ~ ~
+
+				scoreboard players set # aj.i 0
+				${Object.values(animations).map(animation => `execute if entity @s[tag=aj.${projectName}.anim.${animation.name}] run {
+					function ${projectName}:animations/${animation.name}/next_frame
+					scoreboard players set # aj.i 1
+				}`).join('\n')}
+				execute if score # aj.i matches 0 run function ${projectName}:reset
+
+			# If this entity is not the root
+			} else {
+				tellraw @s ${rootExeErrorJsonText.replace(
+					'%functionName',
+					`${projectName}:move`
+				)}
+			}
+		}`)
+	}
+
+	{
+		//? Animations
 		if (!Object.keys(animations).length) {
 			throw new CustomError('No Animations Error', {
 				intentional: true,
@@ -783,9 +808,10 @@ async function createMCFile(
 			})
 		}
 		console.groupCollapsed('Animations')
-		//? Animation Dir
+
 		FILE.push(`dir animations {`)
 
+		// TODO Frame deduplication
 		for (const animation of Object.values(animations)) {
 			if (animation.frames.length <= 1) {
 				throw new CustomError('Zero Length Animation Error', {
