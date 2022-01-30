@@ -717,7 +717,7 @@ async function createMCFile(
 					execute as @e[type=${entityTypes.boneRoot},tag=${tags.allBones},distance=..${maxDistance}] if score @s ${scoreboards.id} = .this ${scoreboards.id} run {
 						${baseModifiers.join('\n')}
 						execute store result score .calc ${scoreboards.internal} run data get entity @s Air
-						execute store result entity @s Air short 1 run scoreboard players add .calc ${scoreboards.internal} 1
+						execute store result entity @s Air short 1 run scoreboard players add .calc ${scoreboards.internal} 2
 					}
 					execute as @e[type=${entityTypes.boneDisplay},tag=${tags.allBones},distance=..${maxDistance}] if score @s ${scoreboards.id} = .this ${scoreboards.id} run {
 						${displayModifiers.join('\n')}
@@ -730,6 +730,44 @@ async function createMCFile(
 				}
 			}
 		`)
+	}
+
+	{
+		//? Move Function
+		// prettier-ignore
+		FILE.push(`function move {
+			# Make sure this function has been ran as the root entity
+			execute(if entity @s[tag=${tags.root}] rotated ~ 0) {
+				tp @s ~ ~ ~ ~ ~
+				scoreboard players operation .this ${scoreboards.id} = @s ${scoreboards.id}
+				scoreboard players operation .this ${scoreboards.frame} = @s ${scoreboards.frame}
+
+				# Split based on animation name
+				scoreboard players set # ${scoreboards.internal} 0
+				${Object.values(animations).map(animation => `execute if entity @s[tag=aj.${projectName}.anim.${animation.name}] run {
+					scoreboard players set # ${scoreboards.internal} 1
+					# Select bone entities
+					execute at @s as @e[type=${entityTypes.bone},tag=${tags.allBones}] if score @s ${scoreboards.id} = .this ${scoreboards.id} run {
+						# Split based on bone entity type
+						execute if entity @s[type=${entityTypes.boneRoot}] run {
+							# Run root animation frame tree
+							function ${projectName}:animations/${animation.name}/tree/root_bone_name
+							execute store result score .calc ${scoreboards.internal} run data get entity @s Air
+							execute store result entity @s Air short 1 run scoreboard players add .calc ${scoreboards.internal} 2
+						}
+						execute if entity @s[type=${entityTypes.boneDisplay}] run tp @s ~ ~ ~ ~ ~
+					}
+				}`).join('\n')}
+				execute if score # ${scoreboards.internal} matches 0 run {
+					execute at @s as @e[type=${entityTypes.boneRoot},tag=${tags.allBones}] if score @s ${scoreboards.id} = .this ${scoreboards.id} run tp @s ~ ~ ~
+					function ${projectName}:reset
+				}
+
+			# If this entity is not the root
+			} else {
+				tellraw @s ${rootExeErrorJsonText.replace('%functionName',`${projectName}:move`)}
+			}
+		}`)
 	}
 
 	{
@@ -761,30 +799,6 @@ async function createMCFile(
 				}
 			}
 		`)
-	}
-
-	{
-		// Move Function
-		FILE.push(`function move {
-			# Make sure this function has been ran as the root entity
-			execute(if entity @s[tag=${tags.root}] at @s rotated ~ 0) {
-				tp @e[type=${entityTypes.boneRoot}] ~ ~ ~ ~ ~
-
-				scoreboard players set # aj.i 0
-				${Object.values(animations).map(animation => `execute if entity @s[tag=aj.${projectName}.anim.${animation.name}] run {
-					function ${projectName}:animations/${animation.name}/next_frame
-					scoreboard players set # aj.i 1
-				}`).join('\n')}
-				execute if score # aj.i matches 0 run function ${projectName}:reset
-
-			# If this entity is not the root
-			} else {
-				tellraw @s ${rootExeErrorJsonText.replace(
-					'%functionName',
-					`${projectName}:move`
-				)}
-			}
-		}`)
 	}
 
 	{
