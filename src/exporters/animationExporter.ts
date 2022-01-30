@@ -983,7 +983,10 @@ async function createMCFile(
 								}
 							case 'leaf':
 								const pos = getPos(boneName, item)
+								const nextFrame = getFrame(boneName, item.index+1)
 								if (isEqualVector(pos, lastPos)) {
+									// Ignore deduplication if next frame is different value
+									if (nextFrame && isEqualVector(pos, nextFrame.pos))
 									return { v: '', trimmed: true }
 								}
 								lastPos = pos
