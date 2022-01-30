@@ -482,7 +482,9 @@ const Settings = () => {
 						<li>
 							<ul>
 								<h2 style={{ marginLeft: '1em' }}>
-									{tl('animatedJava.settings.exporterSettings')}
+									{tl(
+										'animatedJava.settings.exporterSettings'
+									)}
 								</h2>
 								{Object.keys(DefaultSettings)
 									.filter((key) => key !== 'animatedJava')
@@ -550,6 +552,7 @@ function SettingsPanel({ childrenSettings, name, visible, id }) {
 										[child.name]: !childShown[child.name],
 									})
 								}}
+								dontIndent={true}
 							>
 								<ul style={{ marginLeft: '2em' }}>
 									{child.settings.map((setting) => (
@@ -578,14 +581,15 @@ function SettingsPanel({ childrenSettings, name, visible, id }) {
 		</DropDown>
 	)
 }
-function DropDown({ children, onClick, visible, name, intl }) {
+function DropDown({ children, onClick, visible, name, intl, dontIndent }) {
 	return (
 		<>
 			<h3
 				onClick={onClick}
 				style={{
 					display: 'flex',
-					alignItems: 'center'
+					alignItems: 'center',
+					marginLeft: dontIndent ? 0 : undefined,
 				}}
 			>
 				<i className="material-icons">
