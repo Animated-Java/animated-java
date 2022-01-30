@@ -481,7 +481,7 @@ async function createMCFile(
 			}
 
 			get nbt(): SNBTTag {
-				const passengerNbt = SNBT.parse(bones[this.boneName].nbt)
+				const passengerNbt = SNBT.parse(bones[this.boneName].nbt || '{}')
 				passengerNbt._merge(
 					SNBT.Compound({
 						id: SNBT.String(entityTypes.boneDisplay),

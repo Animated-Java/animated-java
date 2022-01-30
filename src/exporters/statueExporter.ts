@@ -200,7 +200,7 @@ async function createMCFile(
 			}
 
 			get nbt(): SNBTTag {
-				const nbt = SNBT.parse(bones[this.boneName].nbt)
+				const nbt = SNBT.parse(bones[this.boneName].nbt || '{}')
 				nbt._merge(
 					SNBT.Compound({
 						Invisible: SNBT.Boolean(true),
@@ -610,7 +610,6 @@ const Exporter = (AJ: any) => {
 						d.isValid = false
 						d.error = genericEmptySettingText
 					}
-
 					return d
 				},
 			},
@@ -664,6 +663,9 @@ const Exporter = (AJ: any) => {
 				default: 'aj.%projectName',
 				onUpdate: validateFormattedStringSetting(['%projectName']),
 				isResetable: true,
+				groupName:
+					'animatedJava.exporters.generic.settingGroups.entityTags.title',
+				group: 'entityTags',
 			},
 			rootTag: {
 				title: tl(
@@ -676,6 +678,7 @@ const Exporter = (AJ: any) => {
 				default: 'aj.%projectName.root',
 				onUpdate: validateFormattedStringSetting(['%projectName']),
 				isResetable: true,
+				group: 'entityTags',
 			},
 			allBonesTag: {
 				title: tl(
@@ -688,6 +691,7 @@ const Exporter = (AJ: any) => {
 				default: 'aj.%projectName.bone',
 				onUpdate: validateFormattedStringSetting(['%projectName']),
 				isResetable: true,
+				group: 'entityTags',
 			},
 			boneModelDisplayTag: {
 				title: tl(
@@ -700,6 +704,7 @@ const Exporter = (AJ: any) => {
 				default: 'aj.%projectName.bone_display',
 				onUpdate: validateFormattedStringSetting(['%projectName']),
 				isResetable: true,
+				group: 'entityTags',
 			},
 			individualBoneTag: {
 				title: tl(
@@ -715,6 +720,7 @@ const Exporter = (AJ: any) => {
 					'%boneName',
 				]),
 				isResetable: true,
+				group: 'entityTags',
 			},
 			internalScoreboardObjective: {
 				title: tl(
@@ -732,6 +738,9 @@ const Exporter = (AJ: any) => {
 					}
 					return d
 				},
+				groupName:
+					'animatedJava.exporters.generic.settingGroups.scoreboardObjectives.title',
+				group: 'scoreboardObjectives',
 			},
 			idScoreboardObjective: {
 				title: tl(
@@ -743,6 +752,7 @@ const Exporter = (AJ: any) => {
 				type: 'text',
 				default: 'aj.id',
 				onUpdate: validateFormattedStringSetting([]),
+				group: 'scoreboardObjectives',
 			},
 			exportMode: {
 				title: tl(

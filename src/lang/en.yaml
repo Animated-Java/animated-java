@@ -28,6 +28,7 @@ animatedJava:
 
   settings:
     header: Animated Java Settings
+    exporterSettings: Exporter Settings
     isGlobal: '(Global)'
     isOptional: '(Optional)'
 
@@ -398,8 +399,8 @@ animatedJava:
         autoDistanceMovementThreshold:
           title: Auto Distance Movement Threshold
           description:
-            - How much distance to add to the calculated animation distance.
-            - The more distance you add the farther you can move the rig in a single tick without dropping bones
+            - How much distance to add to the calculated animation area.
+            - The more distance you add the farther you can move the rig while animating without dropping bones
           errors:
             valueOutOfRange: Setting value must be at least 0
 

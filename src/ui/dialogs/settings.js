@@ -482,7 +482,7 @@ const Settings = () => {
 						<li>
 							<ul>
 								<h2 style={{ marginLeft: '1em' }}>
-									{tl('animatedJava.menubar.export')}
+									{tl('animatedJava.settings.exporterSettings')}
 								</h2>
 								{Object.keys(DefaultSettings)
 									.filter((key) => key !== 'animatedJava')
