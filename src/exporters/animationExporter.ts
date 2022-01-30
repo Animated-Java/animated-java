@@ -901,6 +901,26 @@ async function createMCFile(
 				}
 			}
 
+			function getFrame(boneName: string, index: number) {
+				const frame = animation.frames[index]
+				if (!frame) return
+				let pos = frame.bones[boneName].pos
+				pos = {
+					x: roundToN(pos.x, 1000),
+					y: roundToN(pos.y + headYOffset, 1000),
+					z: roundToN(pos.z, 1000),
+				}
+
+				let rot = frame.bones[boneName].rot
+				rot = {
+					x: roundToN(rot.x, 1000),
+					y: roundToN(rot.y, 1000),
+					z: roundToN(rot.z, 1000),
+				}
+
+				return { pos, rot } as aj.AnimationFrameBone
+			}
+
 			function generateBoneTrees() {
 				const animationTree = generateTree(animation.frames)
 				if (animationTree.type === 'leaf')
@@ -1014,7 +1034,10 @@ async function createMCFile(
 								}
 							case 'leaf':
 								const rot = getRot(boneName, item)
+								const nextFrame = getFrame(boneName, item.index+1)
 								if (isEqualVector(rot, lastRot)) {
+									// Ignore deduplication if next frame is different value
+									if (nextFrame && isEqualVector(rot, nextFrame.rot))
 									return { v: '', trimmed: true }
 								}
 								lastRot = rot
@@ -1053,7 +1076,8 @@ async function createMCFile(
 						# Add animation tag
 						tag @s add aj.${projectName}.anim.${animation.name}
 						# Reset animation time
-						scoreboard players set @s ${scoreboards.frame} 0
+						execute if score .aj.${projectName}.framerate aj.i matches ..-1 run scoreboard players set @s ${scoreboards.frame} ${animation.frames.length}
+						execute if score .aj.${projectName}.framerate aj.i matches 1.. run scoreboard players set @s ${scoreboards.frame} 0
 						# Assert that .noScripts is tracked properly
 						scoreboard players add .noScripts ${scoreboards.internal} 0
 						# Start the animation loop if not running
@@ -1167,7 +1191,7 @@ async function createMCFile(
 					# Let the anim_loop know we're still running
 					scoreboard players set .aj.animation ${scoreboards.animatingFlag} 1
 					# If (the next frame is the end of the animation) perform the necessary actions for the loop mode of the animation
-					execute unless score @s ${scoreboards.frame} matches 1..${animation.frames.length} run function ${projectName}:animations/${animation.name}/edge
+					execute unless score @s ${scoreboards.frame} matches 0..${animation.frames.length} run function ${projectName}:animations/${animation.name}/edge
 				}`
 			)
 
