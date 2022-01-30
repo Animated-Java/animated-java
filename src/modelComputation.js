@@ -74,7 +74,6 @@ export function computeElements() {
 	var invalid_rot_elements = []
 
 	function computeCube(s) {
-		// if (s.export == false || s.visibility == false) return
 		if (s.parent === 'root') {
 			throw new CustomError('Top Level Cubes Found in model', {
 				intentional: true,
@@ -272,7 +271,7 @@ async function computeModels(cubeData) {
 	function recurse(group) {
 		console.log(group)
 		const cubeChildren = group.children
-			.filter((c) => c instanceof Cube && c.visibility)
+			.filter((c) => c instanceof Cube && c.export)
 			.map((current) =>
 				cubeData.clear_elements.find(
 					(other) => current.uuid === other.uuid
@@ -281,7 +280,6 @@ async function computeModels(cubeData) {
 
 		if (
 			group instanceof Group &&
-			group.visibility &&
 			group.name !== 'SCENE' &&
 			group.export &&
 			!isSceneBased(group)
@@ -376,7 +374,7 @@ export function computeBones(models, animations) {
 		// const value = Project.groups[name];
 		if (value.parent) {
 			const parentGroup = value.parent.getGroup()
-			if (!parentGroup.export && parentGroup.visibility) continue
+			if (!parentGroup.export) continue
 			const parentName = safeFunctionName(parentGroup.name)
 			if (
 				!isSceneBased(parentGroup) &&

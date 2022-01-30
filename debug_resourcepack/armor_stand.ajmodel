@@ -1,7 +1,7 @@
 {
   "meta": {
     "format_version": "0.0",
-    "creation_time": 1643569419,
+    "creation_time": 1643572705,
     "model_format": "animated_java/ajmodel",
     "box_uv": false,
     "settings": {
@@ -531,6 +531,7 @@
       ],
       "autouv": 0,
       "color": 4,
+      "export": false,
       "origin": [
         0,
         -1,
@@ -1185,7 +1186,7 @@
               "nbt": "{}",
               "armAnimationEnabled": false,
               "uuid": "0237edc1-3823-5494-7d32-e881620d58f4",
-              "export": true,
+              "export": false,
               "isOpen": true,
               "locked": false,
               "visibility": true,

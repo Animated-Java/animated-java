@@ -273,7 +273,7 @@ async function renderAnimation(options) {
 		const renderedGroups = Group.all.filter(
 			(group) =>
 				!isSceneBased(group) &&
-				group.visibility &&
+				group.export &&
 				group.children.find((child) => child instanceof Cube)
 		)
 		console.log('All Groups:', Group.all)

@@ -49,7 +49,7 @@ export function boneStructure() {
 		hash.update(`name;${group.name}`)
 		hash.update(`pos;(${group.origin.join(',')})`)
 		hash.update(`rot;(${group.rotation.join(',')})`)
-		hash.update(`vis;${group.visibility}`)
+		hash.update(`exp;${group.export}`)
 	}
 
 	function recurse(children) {
