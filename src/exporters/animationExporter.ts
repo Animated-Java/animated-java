@@ -257,6 +257,7 @@ async function createMCFile(
 						.join('\n')}
 					function ${projectName}:reset_animation_flags
 					scoreboard players set #uninstall ${scoreboards.internal} 0
+					scoreboard players set .aj.${projectName}.framerate ${scoreboards.internal} 1
 					tellraw @a ${installJsonText}
 				}
 			`)
@@ -627,9 +628,10 @@ async function createMCFile(
 						${Object.values(animations).map(
 							v => `scoreboard players set @s ${scoreboards.animationLoopMode.replace('%animationName',v.name)} ${loopModeIDs.indexOf(v.loopMode)}`
 						).join('\n')}
+						scoreboard players set @s ${scoreboards.frame} 0
+						scoreboard players set @s ${scoreboards.animatingFlag} 0
 					}
 					# Assert animation flags
-					scoreboard players set @s ${scoreboards.animatingFlag} 0
 					function ${projectName}:assert_animation_flags
 				}
 			`)
@@ -1018,28 +1020,28 @@ async function createMCFile(
 					` : ''}
 
 					# Increment frame
-					scoreboard players add @s ${scoreboards.frame} 1
+					scoreboard players operation @s ${scoreboards.frame} += .aj.${projectName}.framerate ${scoreboards.internal}
 					# Let the anim_loop know we're still running
 					scoreboard players set .aj.animation ${scoreboards.animatingFlag} 1
 					# If (the next frame is the end of the animation) perform the necessary actions for the loop mode of the animation
-					execute if score @s ${scoreboards.frame} matches ${animation.frames.length}.. run function ${projectName}:animations/${animation.name}/end
+					execute unless score @s ${scoreboards.frame} matches 1..${animation.frames.length} run function ${projectName}:animations/${animation.name}/edge
 				}`
 			)
 
 			// prettier-ignore
 			FILE.push(`# Performs a loop mode action depending on what the animation's configured loop mode is
-				function end {
+				function edge {
 					# Play Once
-					execute if score @s ${thisAnimationLoopMode} matches 0 run {
-						function ${projectName}:animations/${animation.name}/stop
-					}
+					execute if score @s ${thisAnimationLoopMode} matches 0 run function ${projectName}:animations/${animation.name}/stop
 					# Hold on last frame
-					execute if score @s ${thisAnimationLoopMode} matches 1 run {
-						function ${projectName}:animations/${animation.name}/pause
-					}
+					execute if score @s ${thisAnimationLoopMode} matches 1 run function ${projectName}:animations/${animation.name}/pause
 					# loop
 					execute if score @s ${thisAnimationLoopMode} matches 2 run {
-						scoreboard players set @s ${scoreboards.frame} 0
+						execute (if score @s ${scoreboards.frame} matches ..1) {
+							scoreboard players set @s ${scoreboards.frame} ${animation.frames.length}
+						} else {
+							scoreboard players set @s ${scoreboards.frame} 0
+						}
 					}
 				}
 			`)
