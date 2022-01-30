@@ -481,7 +481,9 @@ async function createMCFile(
 			}
 
 			get nbt(): SNBTTag {
-				const passengerNbt = SNBT.parse(bones[this.boneName].nbt || '{}')
+				const passengerNbt = SNBT.parse(
+					bones[this.boneName].nbt || '{}'
+				)
 				passengerNbt._merge(
 					SNBT.Compound({
 						id: SNBT.String(entityTypes.boneDisplay),
@@ -807,6 +809,13 @@ async function createMCFile(
 				})
 			}
 
+			let thisMaxDistance = animation.maxDistance
+			if (exporterSettings.autoDistance)
+				thisMaxDistance +=
+					exporterSettings.autoDistanceMovementThreshold
+			else thisMaxDistance = exporterSettings.manualDistance
+			thisMaxDistance = roundToN(thisMaxDistance, 1000) + 0.1
+
 			const thisAnimationLoopMode = format(
 				scoreboards.animationLoopMode,
 				{
@@ -985,7 +994,7 @@ async function createMCFile(
 				function next_frame {
 					scoreboard players operation .this ${scoreboards.id} = @s ${scoreboards.id}
 					scoreboard players operation .this ${scoreboards.frame} = @s ${scoreboards.frame}
-					execute rotated ~ 0 as @e[type=${entityTypes.bone},tag=${tags.allBones},distance=..${maxDistance}] if score @s ${scoreboards.id} = .this ${scoreboards.id} run {
+					execute rotated ~ 0 as @e[type=${entityTypes.bone},tag=${tags.allBones},distance=..${thisMaxDistance}] if score @s ${scoreboards.id} = .this ${scoreboards.id} run {
 						name tree/trunk
 						# Bone Roots
 						execute if entity @s[type=${entityTypes.boneRoot}] run {
