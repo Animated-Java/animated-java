@@ -962,7 +962,7 @@ async function createMCFile(
 									trimmed: false
 								}
 							case 'leaf':
-								const pos = getRot(boneName, item)
+								const pos = getPos(boneName, item)
 								if (isEqualVector(pos, lastPos)) {
 									return { v: '', trimmed: true }
 								}
