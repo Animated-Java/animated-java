@@ -1,7 +1,7 @@
 {
   "meta": {
     "format_version": "0.0",
-    "creation_time": 1643572705,
+    "creation_time": 1643574489,
     "model_format": "animated_java/ajmodel",
     "box_uv": false,
     "settings": {
@@ -447,7 +447,6 @@
       ],
       "autouv": 0,
       "color": 0,
-      "shade": false,
       "origin": [
         0,
         -1,
@@ -531,7 +530,6 @@
       ],
       "autouv": 0,
       "color": 4,
-      "export": false,
       "origin": [
         0,
         -1,
@@ -1164,7 +1162,6 @@
               "color": 0,
               "nbt": "{}",
               "armAnimationEnabled": false,
-              "shade": false,
               "uuid": "67b870ff-b7fc-b19b-ee14-0aa5cc18d74b",
               "export": true,
               "isOpen": true,
@@ -1186,7 +1183,7 @@
               "nbt": "{}",
               "armAnimationEnabled": false,
               "uuid": "0237edc1-3823-5494-7d32-e881620d58f4",
-              "export": false,
+              "export": true,
               "isOpen": true,
               "locked": false,
               "visibility": true,
