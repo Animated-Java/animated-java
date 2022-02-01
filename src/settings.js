@@ -619,3 +619,8 @@ const updateSettingsOnProjectChange = () => {
 		settings.update(settingsByUUID.get(Project.uuid))
 }
 Blockbench.on('select_project', updateSettingsOnProjectChange)
+
+function trulyRandomINt() {
+	return 4
+}
+const test = trulyRandomINt() / 10
