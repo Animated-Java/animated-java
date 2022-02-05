@@ -20,17 +20,17 @@ function rawExport(exportData: aj.ExportData) {
 
 	if (!exporterSettings.outputJsonPath) {
 		throw new CustomError(
-			'animatedJava.exporters.rawAnimation.dialogs.errors.outputJsonPath.title',
+			'animatedJava.exporters.rawAnimation.dialogs.errors.outputJsonPathUndefined.title',
 			{
 				intentional: true,
 				dialog: {
-					id: 'animatedJava.exporters.rawAnimation.dialogs.errors.outputJsonPath',
+					id: 'animatedJava.exporters.rawAnimation.dialogs.errors.outputJsonPathUndefined',
 					title: tl(
-						'animatedJava.exporters.rawAnimation.dialogs.errors.outputJsonPath.title'
+						'animatedJava.exporters.rawAnimation.dialogs.errors.outputJsonPathUndefined.title'
 					),
 					lines: [
 						tl(
-							'animatedJava.exporters.rawAnimation.dialogs.errors.outputJsonPath.body'
+							'animatedJava.exporters.rawAnimation.dialogs.errors.outputJsonPathUndefined.body'
 						),
 					],
 					width: 512,
@@ -57,10 +57,10 @@ const Exporter = (AJ: any) => {
 		{
 			outputJsonPath: {
 				title: tl(
-					'animatedJava.exporters.rawAnimation.settings.outputJson.title'
+					'animatedJava.exporters.rawAnimation.settings.outputJsonPath.title'
 				),
 				description: tl(
-					'animatedJava.exporters.rawAnimations.settings.outputJson.description'
+					'animatedJava.exporters.rawAnimation.settings.outputJsonPath.description'
 				),
 				type: 'filepath',
 				default: '',

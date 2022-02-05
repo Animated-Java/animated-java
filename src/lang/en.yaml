@@ -375,6 +375,22 @@ animatedJava:
         vanillaStatue:
             title: Statue Exporter
 
+        rawAnimation:
+            title: Raw Animation
+
+            dialogs:
+                errors:
+                    outputJsonPathUndefined:
+                        title: Output JSON Path Undefined
+                        body:
+                            - You must define an output JSON path in settings before you can export.
+
+            settings:
+                outputJsonPath:
+                    title: Output JSON
+                    description:
+                        - Path to exported data file
+
         #? Vanilla Animation Exporter
         vanillaAnimation:
             title: Animation Exporter
