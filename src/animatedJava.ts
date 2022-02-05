@@ -106,6 +106,8 @@ const ANIMATED_JAVA = {
 	logIntlDifferences(showDefaultValues: boolean) {
 		intl.diff(showDefaultValues)
 	},
+	intl,
+	tl,
 }
 delete window['ANIMATED_JAVA']
 // Object.defineProperty(window., 'ANIMATED_JAVA', {
