@@ -10,12 +10,12 @@ export class Items {
 
 const gotten = localStorage.getItem('animated-java<minecraftItemList>')
 
-let lsItem = {values:[]}
+let lsItem = { values: [] }
 try {
 	lsItem = JSON.parse(gotten)
 	Items.items = lsItem.values
 } catch (e) {
-	lsItem = {values:[]}
+	lsItem = { values: [] }
 }
 
 const maxFails = 2

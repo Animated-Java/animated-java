@@ -190,7 +190,7 @@ async function computeAnimationData(
 		variantModels: variants.variantModels,
 		variantTouchedModels: variants.variantTouchedModels,
 		animations,
-	}
+	} as aj.ExportData
 	console.groupEnd()
 	console.groupCollapsed('Exporter Output')
 	await callback(data)

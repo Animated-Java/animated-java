@@ -73,6 +73,6 @@ interface SimpleVector3 {
 	z: number
 }
 
-export function isEqualVector(a: SimpleVector3, b:SimpleVector3) {
+export function isEqualVector(a: SimpleVector3, b: SimpleVector3) {
 	return a.x == b.x && a.y == b.y && a.z == b.z
 }

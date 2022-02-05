@@ -154,10 +154,10 @@ ModelFormat.prototype.convertTo = function convertTo() {
 	Canvas.updateAllBones()
 	Canvas.updateAllFaces()
 	updateSelection()
-	
+
 	// Mark the project as unsaved, so the user can save it and preserve the conversion
-	Project.saved = false;
-	
+	Project.saved = false
+
 	// Hacky method to refresh the top bar and make the custom tab menu appear without reopening the project
 	Interface.tab_bar.openNewTab()
 	ModelProject.all[0].select()

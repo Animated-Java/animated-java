@@ -813,10 +813,7 @@ const Exporter = (AJ: any) => {
 					return d
 				},
 				isVisible(settings: any) {
-					return (
-						settings.vanillaStatueExporter
-							.exportMode === 'mcb'
-					)
+					return settings.vanillaStatueExporter.exportMode === 'mcb'
 				},
 				dependencies: [
 					'vanillaStatueExporter.exportMode',
@@ -849,14 +846,9 @@ const Exporter = (AJ: any) => {
 					return value == '' || value.endsWith('config.json')
 				},
 				isVisible(settings: any) {
-					return (
-						settings.vanillaStatueExporter
-							.exportMode === 'mcb'
-					)
+					return settings.vanillaStatueExporter.exportMode === 'mcb'
 				},
-				dependencies: [
-					'vanillaStatueExporter.exportMode',
-				],
+				dependencies: ['vanillaStatueExporter.exportMode'],
 			},
 			dataPackPath: {
 				title: tl(
@@ -886,13 +878,10 @@ const Exporter = (AJ: any) => {
 				},
 				isVisible(settings: any) {
 					return (
-						settings.vanillaStatueExporter
-							.exportMode === 'vanilla'
+						settings.vanillaStatueExporter.exportMode === 'vanilla'
 					)
 				},
-				dependencies: [
-					'vanillaStatueExporter.exportMode',
-				],
+				dependencies: ['vanillaStatueExporter.exportMode'],
 			},
 		}
 	)

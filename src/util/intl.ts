@@ -5,7 +5,7 @@ class Intl {
 	lang: string
 	languages: string[]
 	tokens: Set<any>
-	static translationCache: {[index: string]: string} = {}
+	static translationCache: { [index: string]: string } = {}
 
 	constructor(lang: string) {
 		this.dict = {}
@@ -19,7 +19,9 @@ class Intl {
 		this.lang = lang
 	}
 	tl(tlPath: string, raw?: boolean) {
-		if (Object.prototype.hasOwnProperty.call(Intl.translationCache, tlPath)) {
+		if (
+			Object.prototype.hasOwnProperty.call(Intl.translationCache, tlPath)
+		) {
 			return Intl.translationCache[tlPath]
 		}
 

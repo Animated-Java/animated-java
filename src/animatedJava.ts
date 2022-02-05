@@ -9,8 +9,9 @@ import { settings } from './settings'
 import { registerSettingRenderer } from './ui/dialogs/settings'
 import './ui/mods/boneConfig'
 import './compileLangMC'
-import './exporters/statueExporter'
-import './exporters/animationExporter'
+import './exporters/vanillaStatue'
+import './exporters/vanillaAnimation'
+import './exporters/rawAnimation'
 import './bbmods/modelFormatMod'
 import './bbmods/faceTint'
 import './util/minecraft/items'
@@ -144,6 +145,17 @@ export interface Settings {
 	transparentTexturePath: string
 	boundingBoxRenderMode: 'single' | 'multiple' | 'disabled'
 	verbose: boolean
+}
+
+export interface ExportData {
+	settings: GlobalSettings
+	cubeData: CubeData
+	bones: BoneObject
+	models: ModelObject
+	variantTextureOverrides: VariantTextureOverrides
+	variantModels: VariantModels
+	variantTouchedModels: variantTouchedModels
+	animations: Animations
 }
 
 export interface GlobalSettings {
