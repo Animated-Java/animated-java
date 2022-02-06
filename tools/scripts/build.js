@@ -5,7 +5,7 @@ import crypto from 'crypto'
 import fixup from '../fixup'
 const flavor = process.env.FLAVOR?.split('/').pop()
 	? 'git-' + process.env.FLAVOR?.split('/').pop()
-	: `local`
+	: process.argv[2] || `local`
 ;(async () => {
 	const bundle = await rollup.rollup(options)
 	function makeBanner(lines) {
