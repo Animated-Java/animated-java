@@ -279,6 +279,7 @@ async function createMCFile(
 						)
 						.join('\n')}
 					function ${projectName}:reset_animation_flags
+					scoreboard players set .aj.${projectName}.framerate ${scoreboards.internal} 1
 				}
 			`)
 		}
