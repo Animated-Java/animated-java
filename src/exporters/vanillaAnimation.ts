@@ -921,14 +921,14 @@ async function createMCFile(
 				return { pos, rot } as aj.AnimationFrameBone
 			}
 
-			function generateBoneTrees(boneObject: aj.BoneObject) {
+			function generateBoneTrees() {
 				const animationTree = generateTree(animation.frames)
 				if (animationTree.type === 'leaf')
 					throw new Error(
 						`Invalid top-level TreeLeaf for animation ${animation.name}`
 					)
 				const boneTrees = Object.fromEntries(
-					Object.keys(boneObject).map((v) => [
+					Object.keys(bones).map((v) => [
 						v,
 						{
 							root: { v: '', trimmed: false },
@@ -937,7 +937,7 @@ async function createMCFile(
 					])
 				)
 
-				for (const boneName of Object.keys(boneObject)) {
+				for (const boneName of Object.keys(bones)) {
 					interface TreeReturn {
 						v: string
 						trimmed: boolean
@@ -1077,7 +1077,7 @@ async function createMCFile(
 				return boneTrees
 			}
 
-			const boneTrees = generateBoneTrees(bones)
+			const boneTrees = generateBoneTrees()
 			console.groupCollapsed('Bone Tree')
 			console.log(boneTrees)
 			console.groupEnd()
