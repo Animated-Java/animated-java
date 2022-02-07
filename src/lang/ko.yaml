@@ -17,7 +17,6 @@ animatedJava:
                 title: 변형 추가
                 description: 모델에 새로운 변형을 추가합니다
             back: 이전으로
-
     popups:
         exportCancelled: 내보내기가 취소되었습니다!
         exportInProgress: 내보내기가 진행중입니다!
@@ -29,6 +28,7 @@ animatedJava:
 
     settings:
         header: Animated Java 설정
+        exporterSettings: 내보내기 마법사 설정
         isGlobal: '(모든 프로젝트에 적용)'
         isOptional: '(선택)'
 
@@ -190,6 +190,7 @@ animatedJava:
                 reasons:
                     overridesMissing: 모델 덮어쓰기 목록이 존재하지 않습니다.
                     ajMetaMissing: 대상 모델 파일이 Animated Java 술어 파일이 아닙니다.
+                    invalidJson: 대상 모델 파일은 올바르지 않은 JSON 형식을 포함하고 있습니다.
 
             invalidAnimationSnappingValue:
                 title: 애니메이션 스냅 값이 올바르지 않음
@@ -279,6 +280,12 @@ animatedJava:
                         title: 데이터 팩의 경로가 지정되지 않음
                         body:
                             - 내보내기 전에, 설정에서 데이터 팩 경로를 지정해야 합니다.
+            settingGroups:
+                entityTags:
+                    title: 엔티티 태그
+                
+                scoreboardObjectives:
+                    title: 점수판 목표
 
             settings:
                 rootEntityType:
@@ -293,7 +300,7 @@ animatedJava:
                     description:
                         - 뿌리 엔티티의 NBT 데이터
                     errors:
-                        invalidNbt: 올바르지 않은 NBT입니다!
+                        invalidNbt: 올바르지 않은 NBT입니다! %error
 
                 markerArmorStands:
                     title: 갑옷 거치대의 마커 태그 활성화
@@ -366,6 +373,22 @@ animatedJava:
         #? Vanilla Statue Exporter
         vanillaStatue:
             title: 모형 내보내기 마법사
+        
+        rawAnimation:
+            title: 애니메이션 파일로 내보내기
+
+            dialogs:
+                errors:
+                    outputJsonPathUndefined:
+                        title: 대상 파일 경로가 지정되지 않음
+                        body:
+                            - 내보내기 전에, 설정에서 JSON 파일을 내보내기할 경로를 지정해주세요.
+
+            settings:
+                outputJsonPath:
+                    title: JSON 파일을 내보내기할 경로
+                    description:
+                        - 내보내기한 데이터가 저장될 경로입니다.
 
         #? Vanilla Animation Exporter
         vanillaAnimation:
@@ -392,8 +415,8 @@ animatedJava:
                 autoDistanceMovementThreshold:
                     title: 자동 거리 조정 한도
                     description:
-                        - 자동으로 계산된 애니메이션 거리에 수동으로 일정 거리를 더합니다.
-                        - 거리가 길수록 한 틱에 뼈가 이탈하지 않고 리그가 음직일 수 있는 거리가 늘어납니다
+                        - 자동으로 계산된 애니메이션 범위에 수동으로 일정 거리를 더합니다.
+                        - 거리가 길수록 뼈가 이탈하지 않고 리그가 음직일 수 있는 거리가 늘어납니다
                     errors:
                         valueOutOfRange: 한도값은 0 이상이어야 합니다
 
@@ -404,6 +427,19 @@ animatedJava:
                         - 숙련된 사용자들을 위한 기능입니다.
                     errors:
                         valueOutOfRange: 거리는 0 이상이어야 합니다
+                
+                deduplicatePositionFrames:
+                    title: 중복 위치 프레임 제거
+                    description:
+                        - 반복되는 위치 값을 제거합니다.
+                        - 파일 크기와 함수 수를 대폭 감소시킬 수 있습니다.
+                        - 경고! 이 기능을 사용하고 뼈를 수동으로 음직이면 모델에서 뼈가 이탈합니다. 정지해 있는 모델을 만드는 경우에만 이 설정을 적용하세요.
+
+                deduplicateRotationFrames:
+                    title: 중복 회전 프레임 제거
+                    description:
+                        - 반복되는 회전 각도 값을 제거합니다.
+                        - 파일 크기와 함수 수를 대폭 감소시킬 수 있습니다.
 
                 frameScoreboardObjective:
                     title: 프레임 점수판
