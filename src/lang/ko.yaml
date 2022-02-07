@@ -375,7 +375,7 @@ animatedJava:
             title: 모형 내보내기 마법사
         
         rawAnimation:
-            title: 애니메이션 파일로 내보내기
+            title: 단순 애니메이션 파일
 
             dialogs:
                 errors:
