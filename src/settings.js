@@ -27,13 +27,13 @@ export const DefaultSettings = {
 				if (d.value !== '') {
 					if (d.value !== safeFunctionName(d.value)) {
 						d.isValid = false
-						d.error = tl(
+						d.errors = tl(
 							'animatedJava.settings.projectName.errors.invalidFunctionName'
 						)
 					}
 				} else {
 					d.isValid = false
-					d.error = genericEmptyErrorText()
+					d.errors = genericEmptyErrorText()
 				}
 				return d
 			},
@@ -64,7 +64,7 @@ export const DefaultSettings = {
 					![...store.getStore('exporters').keys()].includes(d.value)
 				) {
 					d.isValid = false
-					d.error = tl(
+					d.errors = tl(
 						'animatedJava.settings.exporter.errors.mustBeValidExporter'
 					)
 				}
@@ -110,7 +110,7 @@ export const DefaultSettings = {
 			onUpdate(d) {
 				if (!(typeof d.value === 'boolean')) {
 					d.isValid = false
-					d.error = tl(
+					d.errors = tl(
 						'animatedJava.settings.generic.errors.mustBeBoolean'
 					)
 				}
@@ -130,13 +130,20 @@ export const DefaultSettings = {
 				if (d.value != '') {
 					if (!Items.isItem(d.value)) {
 						d.isValid = false
-						d.error = tl(
-							'animatedJava.settings.rigItem.errors.invalidMinecraftItem'
-						)
+						d.warnings = [
+							{
+								title: tl(
+									'animatedJava.settings.rigItem.warnings.invalidMinecraftItem.title'
+								),
+								notice: tl(
+									'animatedJava.settings.rigItem.warnings.invalidMinecraftItem.notice'
+								),
+							},
+						]
 					}
 				} else {
 					d.isValid = false
-					d.error = genericEmptyErrorText()
+					d.errors = genericEmptyErrorText()
 				}
 				return d
 			},
@@ -171,13 +178,13 @@ export const DefaultSettings = {
 						console.log(d.value)
 						console.error(e)
 						d.isValid = false
-						d.error = tl(
+						d.errors = tl(
 							'animatedJava.settings.rigModelsExportFolder.errors.invalidPath'
 						)
 					}
 				} else {
 					d.isValid = false
-					d.error = genericEmptyErrorText()
+					d.errors = genericEmptyErrorText()
 				}
 				return d
 			},
@@ -213,7 +220,7 @@ export const DefaultSettings = {
 					)
 					if (`${rigItem}.json` !== b.base) {
 						d.isValid = false
-						d.error = tl(
+						d.errors = tl(
 							'animatedJava.settings.predicateFilePath.errors.notEqualToRigItem',
 							{
 								rigItem,
@@ -222,7 +229,7 @@ export const DefaultSettings = {
 					}
 				} else {
 					d.isValid = false
-					d.error = genericEmptyErrorText()
+					d.errors = genericEmptyErrorText()
 				}
 				return d
 			},
@@ -256,7 +263,7 @@ export const DefaultSettings = {
 						)
 					) {
 						d.isValid = false
-						d.error = tl(
+						d.errors = tl(
 							'animatedJava.settings.transparentTexturePath.errors.undefinedWhenNeeded'
 						)
 					}
@@ -333,17 +340,20 @@ function createUpdateDescriptor(setting, value, event) {
 		},
 		isValid: true,
 		error: null,
+		warnings: [],
 		setting,
 		event,
 	}
 }
 function handleUpdateDescriptor(descriptor) {
-	const { setting, isValid, value, error } = descriptor
+	const { setting, isValid, value, errors, warnings } = descriptor
 	setting.isValid = isValid
 	if (!isValid) {
-		setting.error = error
+		setting.warnings = warnings
+		setting.errors = errors && Array.isArray(errors) ? errors : [errors]
 	} else {
-		setting.error = null
+		setting.warnings = []
+		setting.errors = null
 	}
 	return value
 }

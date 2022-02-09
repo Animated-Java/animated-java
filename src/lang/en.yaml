@@ -74,8 +74,10 @@ animatedJava:
             title: Rig Item
             description:
                 - The item that will be used to display the models on the armor_stands
-            errors:
-                invalidMinecraftItem: Chosen item does not exist!
+            warnings:
+                invalidMinecraftItem:
+                    title: Chosen item does not exist in vanilla minecraft!
+                    notice: The item you picked does not exist in vanilla minecraft, if you are using a modded item feel free to disregard this.
 
         rigModelsExportFolder:
             title: Rig Models Export Folder

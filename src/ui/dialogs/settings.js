@@ -224,12 +224,36 @@ export function registerSettingRenderer(type, renderer) {
 		RenderTemplates[type] = renderer(React)
 	}
 }
+function arrayify(obj) {
+	if (Array.isArray(obj)) return obj
+	else return [obj]
+}
+const Warning = ({ warning }) => {
+	if (typeof warning === 'string') {
+		warning = { title: warning }
+	}
+	return (
+		<div title={warning.notice}>
+			<strong style={{ color: 'orange' }}>{warning.title}</strong>
+		</div>
+	)
+}
+const Error = ({ error }) => {
+	if (typeof error === 'string') {
+		error = { title: error }
+	}
+	return (
+		<div title={error.notice}>
+			<strong style={{ color: 'red' }}>{error.title}</strong>
+		</div>
+	)
+}
 const SettingInput = (p) => {
 	const { namespace, name, template } = p
 	const [value, setValue] = useState(settings[namespace][name])
 	const [isValid, setIsValid] = useState(true)
 	const [isVisible, setIsVisible] = useState(true)
-	const [rerender, setRerender] = useState(0)
+	const [, setRerender] = useState(0)
 	useEffect(() => {
 		updateSettingsUiActions[`${namespace}.${name}`] = () =>
 			setRerender(Math.random())
@@ -275,7 +299,8 @@ const SettingInput = (p) => {
 	useEffect(() => {
 		setIsValid(settings.getUpdateDescriptor(namespace, name, value).isValid)
 	}, [value])
-	let error = settings.getUpdateDescriptor(namespace, name, value).error
+	const descriptor = settings.getUpdateDescriptor(namespace, name, value)
+	let { warnings, errors } = descriptor
 	const children = (
 		<label
 			htmlFor={`aj.setting.${namespace}.${name}`}
@@ -283,30 +308,53 @@ const SettingInput = (p) => {
 		>
 			<div className="setting_name">
 				{!isValid && (
-					<span
-						style={{
-							display: 'inline-block',
-							opacity: 1,
-							color: 'red',
-							height: '0px',
-							textAlign: 'center',
-						}}
-						title={
-							error ||
-							tl('animatedJava.settings.generic.errors.invalid')
-						}
-					>
-						<span
-							className="material-icons"
-							style={{
-								position: 'relative',
-								top: '5px',
-								lineHeight: '0em',
-							}}
-						>
-							clear
-						</span>
-					</span>
+					<>
+						{errors ? (
+							<span
+								style={{
+									display: 'inline-block',
+									opacity: 1,
+									color: 'red',
+									height: '0px',
+									textAlign: 'center',
+									marginRight: '5px',
+								}}
+							>
+								<span
+									className="material-icons"
+									style={{
+										position: 'relative',
+										top: '5px',
+										lineHeight: '0em',
+									}}
+								>
+									error_outline
+								</span>
+							</span>
+						) : (
+							<span
+								style={{
+									display: 'inline-block',
+									opacity: 1,
+									color: 'orange',
+									height: '0px',
+									textAlign: 'center',
+									marginRight: '5px',
+								}}
+							>
+								<span
+									className="material-icons"
+									style={{
+										position: 'relative',
+										top: '5px',
+										lineHeight: '0em',
+									}}
+								>
+									warning_amber
+								</span>
+							</span>
+						)}
+					</>
 				)}
 				{SettingDef.title}
 				{SettingDef.global && (
@@ -330,11 +378,18 @@ const SettingInput = (p) => {
 					</span>
 				)}
 			</div>
-			{!isValid && error && (
+			{!isValid && errors && (
 				<div>
-					<p>
-						<strong style={{ color: 'red' }}>{error}</strong>
-					</p>
+					{arrayify(errors).map((err, i) => (
+						<Error key={i} error={err}></Error>
+					))}
+				</div>
+			)}
+			{!isValid && warnings && (
+				<div>
+					{arrayify(warnings).map((warning, i) => (
+						<Warning key={i} warning={warning}></Warning>
+					))}
 				</div>
 			)}
 			<div
