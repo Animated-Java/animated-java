@@ -329,7 +329,7 @@ async function computeModels(cubeData) {
 	return scaledModels
 }
 
-export async function computeVariantModels(models, variantOverrides) {
+export async function computeVariantModels(models, scaleModels, variantOverrides) {
 	console.groupCollapsed('Compute Variant Models')
 	const variants = store.get('states')
 	const variantModels = {}
@@ -357,6 +357,20 @@ export async function computeVariantModels(models, variantOverrides) {
 					textures: thisModelOverrides.textures,
 				}
 				variantModels[variantName][modelName] = newVariantModel
+
+				if (!scaleModels[modelName]) continue
+				for (const [vecStr, model] of Object.entries(scaleModels[modelName])) {
+					const clone = cloneObject(model)
+					clone.parent = getModelMCPath(
+						path.join(
+							settings.animatedJava.rigModelsExportFolder,
+							variantName,
+							modelName
+						)
+					)
+					variantModels[variantName][`${modelName}_${vecStr}`] = clone
+				}
+
 			}
 		}
 	}
@@ -394,7 +408,7 @@ export function computeBones(models, animations) {
 				value.parent.customModelData =
 					models[parentName].aj.customModelData
 				value.parent.scales = {
-					'1,1,1': models[parentName].aj.customModelData,
+					'1-1-1': models[parentName].aj.customModelData,
 				}
 				value.parent.armAnimationEnabled =
 					parentGroup.armAnimationEnabled
@@ -404,29 +418,27 @@ export function computeBones(models, animations) {
 		}
 	}
 
-	// function roundScale(scale) {
-	// 	return {
-	// 		x: roundToN(scale.x, 1000),
-	// 		y: roundToN(scale.y, 1000),
-	// 		z: roundToN(scale.z, 1000),
-	// 	}
-	// }
+	function roundScale(scale) {
+		return {
+			x: roundToN(scale.x, 1000),
+			y: roundToN(scale.y, 1000),
+			z: roundToN(scale.z, 1000),
+		}
+	}
 
-	// for (const [animUuid, anim] of Object.entries(animations)) {
-	// 	for (const frame of anim.frames) {
-	// 		for (const [boneName, bone] of Object.entries(frame.bones)) {
-	// 			if (bones[boneName]) {
-	// 				// Save this scale to the bone's scale object
-	// 				const rounded = roundScale(bone.scale, 1000)
-	// 				const vecStr = `${rounded.x},${rounded.y},${rounded.z}`
-	// 				if (bone.scale && !bones[boneName].scales[vecStr]) {
-	// 					console.log('New Scale:', vecStr)
-	// 					bones[boneName].scales[vecStr] = getPredicateId(bone)
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// }
+	for (const [_, animation] of Object.entries(animations)) {
+		for (const frame of animation.frames) {
+			for (const [boneName, bone] of Object.entries(frame.bones)) {
+				if (!bones[boneName]) continue
+				const scale = roundScale(bone.scale)
+				const vecStr = `${scale.x}-${scale.y}-${scale.z}`
+				if (bone.scale && !bones[boneName].scales[vecStr]) {
+					console.log('New scale', vecStr)
+					bones[boneName].scales[vecStr] = getPredicateId()
+				}
+			}
+		}
+	}
 
 	console.log('Bones', bones)
 	console.groupEnd('Compute Bones')
@@ -434,15 +446,19 @@ export function computeBones(models, animations) {
 	return bones
 }
 
-//FIXME This code block should be moved to model_computation.js and it's variables should be passed to AJ by the exporter
-//START
 const displayScale = 1.6
 const displayScaleModifier = 4
 const elementScaleModifier = displayScaleModifier / displayScale
 
 async function scaleModels(models) {
 	for (const [modelName, model] of Object.entries(models)) {
-		model.display = computeDisplay()
+		model.display = {
+			head: {
+				translation: [0, 5.6, 0],
+				scale: [0, 0, 0].map(() => displayScaleModifier),
+				rotation: [0, 0, 0],
+			},
+		}
 		for (const element of model.elements) {
 			element.to = [
 				element.to[0] / elementScaleModifier + 8, // Center the x pos in the model
@@ -467,31 +483,42 @@ async function scaleModels(models) {
 	}
 	return models
 }
-//END
 
-function computeDisplay() {
-	return {
-		head: {
-			translation: [0, 5.6, 0],
-			scale: [0, 0, 0].map((_) => displayScaleModifier),
-			rotation: [0, 0, 0],
-		},
-	}
+function vecStrToArray(vecStr) {
+	return vecStr.split('-').map((v) => Number(v))
 }
 
-export function computeScaleModelOverrides(models, bones, animations) {
+export function computeScaleModels(bones) {
 	const scaleModels = {}
 
-	for (const [animUuid, anim] of Object.entries(animations)) {
-		for (const frame of anim.frames) {
-			for (const [modelName, model] of Object.entries(models)) {
-				const boneFrame = frame.bones[modelName]
-				if (boneFrame) {
-					const thisScale = {}
-				}
+	for (const [boneName, bone] of Object.entries(bones)) {
+		// Skip bones without scaling
+		if (Object.keys(bone.scales).length <= 1) continue
+		scaleModels[boneName] = {}
+
+		for (const [vecStr, customModelData] of Object.entries(bone.scales)) {
+			const scale = vecStrToArray(vecStr)
+			const model = {
+				parent: getModelMCPath(
+					path.join(
+						settings.animatedJava.rigModelsExportFolder,
+						boneName
+					)
+				),
+				display: {
+					head: {
+						translation: [0, 5.6, 0],
+						scale: scale.map((v) => v * displayScaleModifier),
+						rotation: [0, 0, 0],
+					},
+				},
+				aj: { customModelData },
 			}
+			scaleModels[boneName][vecStr] = model
 		}
 	}
+
+	return scaleModels
 }
 
 export function computeVariantTextureOverrides(models) {

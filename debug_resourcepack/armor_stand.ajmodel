@@ -1,7 +1,7 @@
 {
   "meta": {
     "format_version": "0.0",
-    "creation_time": 1644441284,
+    "creation_time": 1644443780,
     "model_format": "animated_java/ajmodel",
     "box_uv": false,
     "settings": {
@@ -10,9 +10,9 @@
         "exporter": "vanillaAnimationExporter",
         "verbose": true,
         "rigItem": "minecraft:leather_horse_armor",
-        "rigModelsExportFolder": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\animated_java\\models\\rigs\\armor_stand",
-        "predicateFilePath": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\minecraft\\models\\item\\leather_horse_armor.json",
-        "transparentTexturePath": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\minecraft\\textures\\transparent.png"
+        "rigModelsExportFolder": "D:\\github-repos\\mcworld-aj-dev\\resources\\assets\\animated_java\\models\\rigs\\armor_stand",
+        "predicateFilePath": "D:\\github-repos\\mcworld-aj-dev\\resources\\assets\\minecraft\\models\\item\\leather_horse_armor.json",
+        "transparentTexturePath": "D:\\github-repos\\mcworld-aj-dev\\resources\\assets\\animated_java\\textures\\transparent.png"
       },
       "vanillaStatueExporter": {
         "rootEntityType": "minecraft:marker",
@@ -26,7 +26,7 @@
         "internalScoreboardObjective": "aj.i",
         "idScoreboardObjective": "aj.id",
         "exportMode": "mcb",
-        "mcbFilePath": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\saves\\Animated Java Dev\\datapacks\\Animated Java Development\\src\\armor_stand.mc",
+        "mcbFilePath": "",
         "mcbConfigPath": "",
         "dataPackPath": ""
       },
@@ -50,7 +50,7 @@
         "animatingFlagScoreboardObjective": "aj.%projectName.animating",
         "animationLoopModeScoreboardObjective": "aj.%projectName.%animationName.loopMode",
         "exportMode": "mcb",
-        "mcbFilePath": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\saves\\Performance Tool 2_0\\datapacks\\performance_tool_2.0\\src\\armor_stand.mc",
+        "mcbFilePath": "D:\\github-repos\\mcworld-aj-dev\\datapack\\src\\armor_stand.mc",
         "mcbConfigPath": "",
         "dataPackPath": ""
       },
@@ -1288,7 +1288,7 @@
   ],
   "textures": [
     {
-      "path": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\minecraft\\textures\\wood.png",
+      "path": "D:\\github-repos\\mcworld-aj-dev\\resources\\assets\\animated_java\\textures\\wood.png",
       "name": "wood.png",
       "folder": "entity/armorstand",
       "namespace": "minecraft",
@@ -1297,12 +1297,12 @@
       "render_mode": "normal",
       "visible": true,
       "mode": "bitmap",
-      "saved": false,
+      "saved": true,
       "uuid": "9aa33630-8f09-269e-1ff8-4006c170cc10",
       "source": "data:image/png;base64,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"
     },
     {
-      "path": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\minecraft\\textures\\block\\blue_concrete.png",
+      "path": "D:\\github-repos\\mcworld-aj-dev\\resources\\assets\\animated_java\\textures\\blue_concrete.png",
       "name": "blue_concrete.png",
       "folder": "",
       "namespace": "",
@@ -1311,12 +1311,12 @@
       "render_mode": "normal",
       "visible": true,
       "mode": "bitmap",
-      "saved": false,
+      "saved": true,
       "uuid": "29f44b0b-5027-de28-9958-e95a32a0cf4c",
       "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAN5JREFUOE+FU20WwyAIE8/TdT1p1xPLXuSlgtKtv+oHISRRXu9LVbXMn4j0LZzh39+pVUprti/b/lF/GUVzAde8B2wHcKpILdhMiAQG1rmhxU24M+Aq65yNYfcMSPbj6gCkxAKOkq09W4GI/4ooYMZQtv3UWmtn4AXEvNAEVKFRHGXoEDTwtKmLty+zto/gvaZAo2srZEgAn5mFwThEUOpto7FbrQ4MZjFz8SLwAjD7PsS06M7aBBvzCFNxuGQAHugRYM7/kys9icxAKewS5/z1Wpe3wJf2FGUDs0bQ5wvg6d+0OCF3GAAAAABJRU5ErkJggg=="
     },
     {
-      "path": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\minecraft\\textures\\block\\lime_concrete.png",
+      "path": "D:\\github-repos\\mcworld-aj-dev\\resources\\assets\\animated_java\\textures\\lime_concrete.png",
       "name": "lime_concrete.png",
       "folder": "",
       "namespace": "",
@@ -1325,12 +1325,12 @@
       "render_mode": "normal",
       "visible": true,
       "mode": "bitmap",
-      "saved": false,
+      "saved": true,
       "uuid": "f422a623-6d8c-1bd1-4da1-c61940601aaf",
       "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAVpJREFUOE9dk1tWw0AIhoHZRDyureru1O5xwPNxSRPTh7bMAP8t+vg5wkyFT/CJEAkRURFVFR5qlLPOkdV3/v74PbrMRZouh2ri28UWHSHucZ6H9xIQ0ETBlorvkLVMPPxEQG02DxLuBgM/n2+hQsO+IQA+9e1boMjDoIFf9PRFwXQBMvmqmgSQLlqMDucwb1SP7yMQLCE2lRKwNGFIUgNuXiq60NzuhYBCQsOAbBiZI3lWrWl43CnNgHNibi8KNwQt5Aw6NUkK4+2JoLYhIzB5lpVG07jWSuHThfHX2NxpoRkrQbHsbmueuYuZiWYOWpxr8krUEg/ly51XMjOhaDcIxp60a1LWcZ4gpQ2ktQVPt+ZdyHegt+b0CIESGsD/f9DqzjmgVB/INOy9c1OiaZHzHDc6JyzQr+d7ENeWISWEDtznyf8d49Gh7iNi2zhTB9rEeIZNSkF1HfIHRl/99iYyuoMAAAAASUVORK5CYII="
     },
     {
-      "path": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\minecraft\\textures\\block\\red_concrete.png",
+      "path": "D:\\github-repos\\mcworld-aj-dev\\resources\\assets\\animated_java\\textures\\red_concrete.png",
       "name": "red_concrete.png",
       "folder": "",
       "namespace": "",
@@ -1339,12 +1339,12 @@
       "render_mode": "normal",
       "visible": true,
       "mode": "bitmap",
-      "saved": false,
+      "saved": true,
       "uuid": "52d3d034-24bc-3a1c-49d8-98899a3aa5bd",
       "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAASpJREFUOE9tUwGOwyAMS+Aj3fbdaX1xyckmphk7pKoCEcd2jJ+PR0SEhZk5PnfTvrVmYwxreeatWYzBO1zu5p/jCBXhPyIIBEAAGMBxpuIE1R1/H0f0gqzL6CxGaMbzbABgMCEJMGC3jebkeC8wEBvJXQCix4NN5+6PJRDAbgCYgk96ZVIaBbpiueT0zvuuKchIXkgD6Tg64kyaUyoc6JiCTCSlZIFJAAQX6kjXCCvbauJOT4CSJnaZAk7Fz9cLg/6XZpVFO6AbUjBOBKy13yARCWG5ru9AaaLZbLE9n88gWu8WKErTxOqum2mscrDnFOpslTgUKtY1GzhD6PhfAIpqyfs0Zb6Dumoe0PjOQS3edcI84F3XerUCnRIycaSdz/eraz4ksVGIsP8DXb8WGNLgxqwAAAAASUVORK5CYII="
     },
     {
-      "path": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\minecraft\\textures\\block\\dream.png",
+      "path": "D:\\github-repos\\mcworld-aj-dev\\resources\\assets\\animated_java\\textures\\dream.png",
       "name": "dream.png",
       "folder": "",
       "namespace": "",
@@ -1353,7 +1353,7 @@
       "render_mode": "normal",
       "visible": true,
       "mode": "bitmap",
-      "saved": false,
+      "saved": true,
       "uuid": "dfa38dd5-689f-f447-7d28-63645345c25d",
       "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAdhJREFUeF7tW8tOwzAQrJHgCsmlX8UvlG+DX+CruCTttUgNsoSrZnEyrh+KWU9v7Wbb3dnZ8cZOzQ68DufnCV2zZv94OpkU/9K+MDgCQAawBagBKUKkXgQ/9w+r+IzjCIU2BeBUXxgcWgX+PQAowVSEkf/WLWIIQOI6jyqM7GTAxqMyW4AaQA3wz/pofZfi9vp1QXrntW8ugihq2SIoYNRSyP/eeNz1sd979ySIfogAAE1BAJIBkVt0scD+mQOk+Mm7OURx6z8MgzeNvu93sWLp+8L3x+Ps47fvl+v7UEC8ANwmYIyZ6QQCQAYlA78NEtF9ye6KJIFuAoA1hhGAFlrAMcDqCVtAiARboIYWKL0MVi+C6CYqdQ6oHoDSc8DSDGDloBkNsMn6ps3qAcg1CmedBGPHUS1+cD9AS6JLeRAA7RVG+ZEBCCHtdjJAe4VRfmQAQki7nQzQXmGUHxmAENJuJwO0VxjlV5QBvmM0dGa3dPSG/FCim90O53rAggAUepyuaAtY2jXHgK7rZv8vQOcAchs9dOM0V0tkZ8A0TVcAQpLxnSOE+BGATJpQJQOsdiAWqGWAO/dvFgA3sBAA8ESZ2hYgA34RYAu03AKo+pYkajUgJPmcAPwAciEHX1ewr0oAAAAASUVORK5CYII="
     }
@@ -2191,6 +2191,72 @@
               ],
               "uuid": "b6973120-3a1b-0ca0-a2fc-4485b8df912d",
               "time": 3,
+              "color": -1,
+              "interpolation": "linear"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "uuid": "aa9d0af9-d439-90dd-b787-66725a5a6b55",
+      "name": "scale_test",
+      "loop": "loop",
+      "override": false,
+      "length": 1,
+      "snapping": 20,
+      "selected": true,
+      "saved": false,
+      "path": "",
+      "anim_time_update": "",
+      "blend_weight": "",
+      "start_delay": "",
+      "loop_delay": "",
+      "animators": {
+        "cb964881-91e1-bd1c-6502-b1236f581c6a": {
+          "name": "head",
+          "type": "bone",
+          "keyframes": [
+            {
+              "channel": "scale",
+              "data_points": [
+                {
+                  "x": "1",
+                  "y": "1",
+                  "z": "1"
+                }
+              ],
+              "uuid": "34748471-25c4-5b68-3d10-7c5962523c74",
+              "time": 0,
+              "color": -1,
+              "interpolation": "linear"
+            },
+            {
+              "channel": "scale",
+              "data_points": [
+                {
+                  "x": "2",
+                  "y": "2",
+                  "z": "2"
+                }
+              ],
+              "uuid": "03f8796b-55cc-bc4b-2bde-06ce986099b8",
+              "time": 0.5,
+              "color": -1,
+              "uniform": false,
+              "interpolation": "catmullrom"
+            },
+            {
+              "channel": "scale",
+              "data_points": [
+                {
+                  "x": 1,
+                  "y": 1,
+                  "z": 1
+                }
+              ],
+              "uuid": "2557f379-26c7-a8db-b625-9a41b90823aa",
+              "time": 1,
               "color": -1,
               "interpolation": "linear"
             }

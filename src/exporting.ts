@@ -14,7 +14,8 @@ import transparent from './assets/transparent.png'
 // Exports the model.json rig files
 async function exportRigModels(
 	models: aj.ModelObject,
-	variantModels: aj.VariantModels
+	variantModels: aj.VariantModels,
+	scaleModels: aj.ScaleModels
 ) {
 	console.groupCollapsed('Export Rig Models')
 	const metaPath = path.join(
@@ -125,15 +126,14 @@ async function exportRigModels(
 
 	console.log('Export Models:', models)
 	console.group('Details')
-
 	for (const [name, model] of Object.entries(models)) {
 		// Get the model's file path
 		const modelFilePath = path.join(
 			settings.animatedJava.rigModelsExportFolder,
 			name + '.json'
 		)
-		console.log('Exporting Model', modelFilePath, model.elements)
 		// Export the model
+		console.log('Exporting Model', modelFilePath, model.elements)
 		const modelJSON = {
 			__credit:
 				'Generated using Animated Java (https://animated-java.dev/)',
@@ -147,9 +147,35 @@ async function exportRigModels(
 	}
 	console.groupEnd()
 
+	console.log('Export Scale Models:', scaleModels)
+	console.group('Details')
+	for (const [modelName, scales] of Object.entries(scaleModels)) {
+		// Export the models
+		for (const [scale, model] of Object.entries(scales)) {
+			// Get the model's file path
+			const modelFilePath = path.join(
+				settings.animatedJava.rigModelsExportFolder,
+				`${modelName}_${scale}.json`
+			)
+
+			console.log('Exporting Model', scale, modelFilePath)
+			const modelJSON = {
+				__credit:
+					'Generated using Animated Java (https://animated-java.dev/)',
+				...model,
+				aj: undefined,
+			}
+
+			Blockbench.writeFile(modelFilePath, {
+				content: autoStringify(modelJSON),
+				custom_writer: null,
+			})
+		}
+	}
+	console.groupEnd()
+
 	console.log('Export Variant Models:', variantModels)
 	console.group('Details')
-
 	for (const [variantName, variant] of Object.entries(variantModels)) {
 		const variantFolderPath = path.join(
 			settings.animatedJava.rigModelsExportFolder,
@@ -234,6 +260,7 @@ function throwPredicateMergingError(reason: string) {
 async function exportPredicate(
 	models: aj.ModelObject,
 	variantModels: aj.VariantModels,
+	scaleModels: aj.ScaleModels,
 	ajSettings: aj.Settings
 ) {
 	console.groupCollapsed('Export Predicate Model')

@@ -73,7 +73,7 @@ import {
 	computeVariantTextureOverrides,
 	computeBones,
 	computeVariantModels,
-	computeScaleModelOverrides,
+	computeScaleModels,
 } from './modelComputation'
 
 export const BuildModel = (callback: any, options: any) => {
@@ -157,25 +157,27 @@ async function computeAnimationData(
 	) as aj.VariantTextureOverrides
 	const bones = computeBones(models, animations) as aj.BoneObject
 	// const [variantModels, variantTouchedModels] = await computeVariantModels(models, variantTextureOverrides)
+	const scaleModels = computeScaleModels(bones)
 	const variants = (await computeVariantModels(
 		models,
+		scaleModels,
 		variantTextureOverrides
 	)) as {
 		variantModels: aj.VariantModels
 		variantTouchedModels: aj.variantTouchedModels
 	}
-	const scaleModelOverrides = computeScaleModelOverrides(
-		models,
-		bones,
-		animations
-	)
 
 	// const flatVariantModels = {}
 	// Object.values(variantModels).forEach(variant => Object.entries(variant).forEach(([k,v]) => flatVariantModels[k] = v))
 	// console.log('Flat Variant Models:', flatVariantModels)
 
-	await exportRigModels(models, variants.variantModels)
-	await exportPredicate(models, variants.variantModels, settings.animatedJava)
+	await exportRigModels(models, variants.variantModels, scaleModels)
+	await exportPredicate(
+		models,
+		variants.variantModels,
+		scaleModels,
+		settings.animatedJava
+	)
 	if (settings.animatedJava.transparentTexturePath) {
 		await exportTransparentTexture()
 	}
@@ -185,6 +187,7 @@ async function computeAnimationData(
 		cubeData,
 		bones,
 		models,
+		scaleModels,
 		variantTextureOverrides,
 		variantModels: variants.variantModels,
 		variantTouchedModels: variants.variantTouchedModels,
