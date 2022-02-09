@@ -138,9 +138,7 @@ ModelFormat.prototype.convertTo = function convertTo() {
 	) {
 		Cube.all.forEach((cube) => {
 			if (!cube.rotation.allEqual(0)) {
-				var axis =
-					(cube.rotation_axis && getAxisNumber(cube.rotation_axis)) ||
-					0
+				vvar axis = cube.rotationAxis() ? getAxisNumber(cube.rotationAxis()) : 0;
 				var angle = limitNumber(
 					Math.round(cube.rotation[axis] / 22.5) * 22.5,
 					-45,
