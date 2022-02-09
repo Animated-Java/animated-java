@@ -17,7 +17,6 @@ animatedJava:
                 title: 添加变体
                 description: 为模型添加变体
             back: 返回
-
     popups:
         exportCancelled: 导出已取消！
         exportInProgress: 导出中！
@@ -29,6 +28,7 @@ animatedJava:
 
     settings:
         header: Animated Java 设置
+        exporterSettings: 导出器设置
         isGlobal: '(全局)'
         isOptional: '(可选)'
 
@@ -190,6 +190,7 @@ animatedJava:
                 reasons:
                     overridesMissing: 模型缺少 overrides 列表。
                     ajMetaMissing: 所合并到的物品模型并非 Animated Java predicate 文件。
+                    invalidJson: 所合并到的文件并非合法的 JSON 格式文件
 
             invalidAnimationSnappingValue:
                 title: 无效的动画吸附值
@@ -280,6 +281,13 @@ animatedJava:
                         body:
                             - 导出前需要在设置中定义数据包的路径。
 
+            settingGroups:
+                entityTags:
+                    title: 实体标签
+                    
+                scoreboardObjectives:
+                    title: 记分项
+
             settings:
                 rootEntityType:
                     title: 根实体类型
@@ -328,12 +336,12 @@ animatedJava:
                 internalScoreboardObjective:
                     title: 内部记分板
                     description:
-                        - 用于内部计算的记分板目标名称
+                        - 用于内部计算的记分项名称
 
                 idScoreboardObjective:
                     title: 模型 ID 记分板
                     description:
-                        - 用于标识不同实体和模型实例的记分板目标名称
+                        - 用于标识不同实体和模型实例的记分项名称
 
                 exportMode:
                     title: 导出模式
@@ -349,14 +357,14 @@ animatedJava:
                     description:
                         - .mc 文件的导出路径
                         - 需要先安装 mc-extra 到你的 MCB 工作区才能构建导出的资源包
+                    errors:
+                        mustBeNamedAfterProject: 路径必须结束于名为 %projectName.mc 的文件！
 
                 mcbConfigPath:
                     title: Lang-mc config.json 路径
                     description:
                         - 导出用于 Animated Java 的默认 MCB 配置
                         - 警告！该操作会覆盖现有的 config.json
-                    errors:
-                        mustBeNamedAfterProject: 路径必须指向名为 %projectName.mc 的文件！
 
                 dataPackPath:
                     title: 数据包
@@ -366,6 +374,22 @@ animatedJava:
         #? Vanilla Statue Exporter
         vanillaStatue:
             title: 静态导出器
+
+        rawAnimation:
+            title: 原始动画
+            
+            dialogs:
+                errors:
+                    outputJsonPathUndefined:
+                        title: 未定义 JSON 输出路径
+                        body:
+                            - 导出前需要在设置中定义 JSON 的输出路径。
+
+            settings:
+                outputJsonPath:
+                    title: 输出 JSON
+                    description:
+                        - 导出的数据文件路径
 
         #? Vanilla Animation Exporter
         vanillaAnimation:
@@ -405,17 +429,30 @@ animatedJava:
                     errors:
                         valueOutOfRange: 设置的值必须至少为 0
 
+                deduplicatePositionFrames:
+                    title: 优化重复位置帧
+                    description:
+                        - 移除导出动画中重复的位置值。
+                        - 可大大减少文件大小与函数量。
+                        - 警告！会导致你尝试移动模型时丢失骨骼。仅在你需要静态模型时启用。
+
+                deduplicateRotationFrames:
+                    title: 优化重复旋转帧
+                    description:
+                        - 移除导出动画中重复的旋转值。
+                        - 可大大减少文件大小与函数量。
+
                 frameScoreboardObjective:
                     title: 帧 记分板
                     description:
-                        - 用于跟踪动画下一帧的记分板目标名称
+                        - 用于跟踪动画下一帧的记分项名称
 
                 animatingFlagScoreboardObjective:
                     title: 动画标记 记分板
                     description:
-                        - 用于查询骨骼动画是否播放中的记分板目标名称
+                        - 用于查询骨骼动画是否播放中的记分项名称
 
                 animationLoopModeScoreboardObjective:
                     title: 动画循环模式 记分板
                     description:
-                        - 用于控制各动画循环行为的记分板目标名称
+                        - 用于控制各动画循环行为的记分项名称
