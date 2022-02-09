@@ -3,6 +3,7 @@ import { format, format as modelFormat } from '../modelFormat'
 import { bus } from '../util/bus'
 import { wrapNumber } from '../util/misc'
 import * as path from "path/posix"
+import { settings } from '../settings'
 
 const oldConvertFunc = ModelFormat.prototype.convertTo
 
@@ -18,6 +19,10 @@ ModelFormat.prototype.convertTo = function convertTo() {
 	if (Format.id === format.id) {
 		Project.UUID = guid()
 	}
+	
+	// Set the current projectName
+	settings.animatedJava.projectName = Project.name
+	
 	// Box UV
 	if (!this.optional_box_uv) Project.box_uv = this.box_uv
 
