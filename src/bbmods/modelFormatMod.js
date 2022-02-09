@@ -1,7 +1,10 @@
 import * as EVENTS from '../constants/events'
 import { format, format as modelFormat } from '../modelFormat'
+import { settings } from '../settings'
 import { bus } from '../util/bus'
-import { wrapNumber } from '../util/misc'
+import { safeFunctionName } from '../util/replace'
+import * as pathjs from 'path'
+import { normalizePath } from '../util/misc'
 
 const oldConvertFunc = ModelFormat.prototype.convertTo
 
@@ -17,6 +20,9 @@ ModelFormat.prototype.convertTo = function convertTo() {
 	if (Format.id === format.id) {
 		Project.UUID = guid()
 	}
+	// Set project name
+	settings.animatedJava.projectName = safeFunctionName(Project.name)
+
 	// Box UV
 	if (!this.optional_box_uv) Project.box_uv = this.box_uv
 
@@ -133,7 +139,8 @@ ModelFormat.prototype.convertTo = function convertTo() {
 		Cube.all.forEach((cube) => {
 			if (!cube.rotation.allEqual(0)) {
 				var axis =
-					(cube.rotation_axis && getAxisNumber(cube.rotation_axis)) ||
+					(cube.rotationAxis() &&
+						getAxisNumber(cube.rotation_axis)) ||
 					0
 				var angle = limitNumber(
 					Math.round(cube.rotation[axis] / 22.5) * 22.5,
@@ -150,6 +157,14 @@ ModelFormat.prototype.convertTo = function convertTo() {
 	if (!Format.animation_mode && old_format.animation_mode) {
 		Animator.animations.length = 0
 	}
+
+	Project.saved = false
+	hideDialog()
+
+	let file = pathjs.parse(Project.save_path)
+	Project.export_path = normalizePath(`${file.dir}.${Project.format.codec.extension}`)
+	// Project.format.codec.export()
+
 	Canvas.updateAllPositions()
 	Canvas.updateAllBones()
 	Canvas.updateAllFaces()
