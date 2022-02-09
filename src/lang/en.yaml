@@ -176,6 +176,12 @@ animatedJava:
                     - <p>You can also join our <a href="%discordLink">Discord Server</a> and ask questions in the animated-java-support channel.</p>
                     - <p>Thank you!</p>
 
+            invalidResourcePath:
+                title: Invalid Resource Path
+                body:
+                    - The resource %path is invalid.
+                    - Resource packs do not allow capatal letters in file paths. Please remove the capatal letters before exporting.
+
             topLevelCubes:
                 title: Model has top-level cubes
                 body:

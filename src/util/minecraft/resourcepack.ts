@@ -4,9 +4,34 @@ import { CustomError } from '../customError'
 import { tl } from '../intl'
 import { normalizePath } from '../misc'
 
-export function getTexturePath(texture: any) {
-	if (!texture.path || !texture.saved) {
-		console.log('Unsaved texture:', texture)
+function capatalizeFirst(str: string) {
+	return str[0].toUpperCase() + str[1].toLowerCase()
+}
+
+function throwFailedToGeneratePath(name: string, item: any) {
+	const capName = capatalizeFirst(name)
+	throw new CustomError(`Unable to generate ${name} path`, {
+		dialog: {
+			id: `animatedJava.dialogs.errors.unableToGenerate${capName}Path`,
+			title: tl(
+				`animatedJava.dialogs.errors.unableToGenerate${capName}Path.title`
+			),
+			lines: [
+				tl(
+					`animatedJava.dialogs.errors.unableToGenerate${capName}Path.body`,
+					{
+						[`${name}Name`]: item.name,
+					}
+				),
+			],
+			width: 512,
+			singleButton: true,
+		},
+	})
+}
+
+function throwIfUnsavedTexture(texture: any) {
+	if (!texture.path || !texture.saved)
 		throw new CustomError('Unsaved texture', {
 			dialog: {
 				id: 'animatedJava.dialogs.errors.unsavedTexture',
@@ -20,7 +45,27 @@ export function getTexturePath(texture: any) {
 				singleButton: true,
 			},
 		})
-	}
+}
+
+function throwIfInvalidPath(referencePath: string) {
+	if (referencePath.match(/[A-Z]/))
+	throw new CustomError('Invalid Resource Path', {
+		dialog: {
+			id: 'animatedJava.dialogs.errors.invalidResourcePath',
+			title: tl('animatedJava.dialogs.errors.invalidResourcePath.title'),
+			lines: [
+				tl('animatedJava.dialogs.errors.invalidResourcePath.body', {
+					path: referencePath,
+				}),
+			],
+			width: 512,
+			singleButton: true,
+		},
+	})
+}
+
+export function getTexturePath(texture: any) {
+	throwIfUnsavedTexture(texture)
 	const parts = texture.path.split(path.sep)
 	const assetsIndex = parts.indexOf('assets')
 	if (assetsIndex) {
@@ -36,30 +81,13 @@ export function getTexturePath(texture: any) {
 						path.join(...relative)
 					)}` // Generate texture path
 					console.log('Texture Reference:', textureReference)
+					throwIfInvalidPath(textureReference)
 					return textureReference
 				}
 			}
 		}
 	}
-	console.log('Failed to generate path for:', texture)
-	throw new CustomError('Unable to generate texture path', {
-		dialog: {
-			id: 'animatedJava.dialogs.errors.unableToGenerateTexturePath',
-			title: tl(
-				'animatedJava.dialogs.errors.unableToGenerateTexturePath.title'
-			),
-			lines: [
-				tl(
-					'animatedJava.dialogs.errors.unableToGenerateTexturePath.body',
-					{
-						textureName: texture.name,
-					}
-				),
-			],
-			width: 512,
-			singleButton: true,
-		},
-	})
+	throwFailedToGeneratePath('texture', texture)
 }
 
 export function getModelPath(modelPath: string, modelName: string) {
@@ -79,27 +107,11 @@ export function getModelPath(modelPath: string, modelName: string) {
 						path.join(...relative)
 					)}` // Generate texture path
 					console.log('Model Reference:', modelReference)
+					throwIfInvalidPath(modelReference)
 					return modelReference
 				}
 			}
 		}
 	}
-	throw new CustomError('Unable to generate model path', {
-		dialog: {
-			id: 'animatedJava.dialogs.errors.unableToGenerateModelPath',
-			title: tl(
-				'animatedJava.dialogs.errors.unableToGenerateModelPath.title'
-			),
-			lines: [
-				tl(
-					'animatedJava.dialogs.errors.unableToGenerateModelPath.body',
-					{
-						modelName,
-					}
-				),
-			],
-			width: 512,
-			singleButton: true,
-		},
-	})
+	throwFailedToGeneratePath('model', {name: modelName})
 }
