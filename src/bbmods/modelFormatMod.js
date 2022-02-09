@@ -2,6 +2,7 @@ import * as EVENTS from '../constants/events'
 import { format, format as modelFormat } from '../modelFormat'
 import { bus } from '../util/bus'
 import { wrapNumber } from '../util/misc'
+import * as path from "path/posix"
 
 const oldConvertFunc = ModelFormat.prototype.convertTo
 
@@ -155,10 +156,20 @@ ModelFormat.prototype.convertTo = function convertTo() {
 	Canvas.updateAllFaces()
 	updateSelection()
 
-	// Mark the project as unsaved, so the user can save it and preserve the conversion
-	Project.saved = false
+	// Hides the conversion dialog
+	hideDialog();
 
-	// Hacky method to refresh the top bar and make the custom tab menu appear without reopening the project
+	// Saves the new converted file
+	let fileName = Project.save_path.replace(/\\/g, '/').split('/').pop()
+    	let dirPath = Project.save_path.slice(0, -fileName.length)
+	dirPath = path.normalize(dirPath)
+	Project.export_path = dirPath + Project.name + "." + Project.format.codec.extension
+	Project.format.codec.export()
+
+	// Updates the current project view save_path variable to be equal to the just saved one
+	Project.save_path = Project.export_path
+
+	// Hacky trick to show the ItemsAdder menu on top
 	Interface.tab_bar.openNewTab()
 	ModelProject.all[0].select()
 }
