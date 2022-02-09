@@ -55,6 +55,15 @@ animatedJava:
             errors:
                 mustBeValidExporter: Selected exporter does not exist in the registered exporters!
 
+        modelScalingMode:
+            title: Model Scaling Mode
+            description:
+                - Max Model size provides 7x7x7 block wide models but limits scaling to shrinking only.
+                - Max Scaling range provides shrinking and growing up to 3.125x in size, but limits the maximum model size to 3x3x3 blocks
+            options:
+                3x3x3: Max Scaling
+                7x7x7: Max Model Size
+
         verbose:
             title: Verbose
             description:
@@ -176,11 +185,18 @@ animatedJava:
                     - <p>You can also join our <a href="%discordLink">Discord Server</a> and ask questions in the animated-java-support channel.</p>
                     - <p>Thank you!</p>
 
+            scaleOutOfBounds:
+                title: Scale out of bounds
+                body:
+                    - "The bone '%boneName' has an invalid scaling during one of your animations:"
+                    - "%displayString"
+
             invalidResourcePath:
                 title: Invalid Resource Path
                 body:
                     - The resource %path is invalid.
-                    - Resource packs do not allow capatal letters in file paths. Please remove the capatal letters before exporting.
+                    - Resource packs do not allow capatal letters in file paths.
+                    - Please remove the capatal letters from your resource pack folders and files before exporting.
 
             topLevelCubes:
                 title: Model has top-level cubes

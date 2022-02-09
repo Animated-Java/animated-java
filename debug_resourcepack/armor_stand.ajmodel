@@ -1,13 +1,14 @@
 {
   "meta": {
     "format_version": "0.0",
-    "creation_time": 1644443780,
+    "creation_time": 1644450359,
     "model_format": "animated_java/ajmodel",
     "box_uv": false,
     "settings": {
       "animatedJava": {
         "projectName": "armor_stand",
         "exporter": "vanillaAnimationExporter",
+        "modelScalingMode": "7x7x7",
         "verbose": true,
         "rigItem": "minecraft:leather_horse_armor",
         "rigModelsExportFolder": "D:\\github-repos\\mcworld-aj-dev\\resources\\assets\\animated_java\\models\\rigs\\armor_stand",
@@ -2205,7 +2206,7 @@
       "override": false,
       "length": 1,
       "snapping": 20,
-      "selected": true,
+      "selected": false,
       "saved": false,
       "path": "",
       "anim_time_update": "",

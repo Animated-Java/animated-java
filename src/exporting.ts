@@ -367,6 +367,20 @@ async function exportPredicate(
 			),
 		})
 		myMeta.push(model.aj.customModelData)
+
+		if (!scaleModels[modelName]) continue
+		for (const [vecStr, scaleModel] of Object.entries(scaleModels[modelName])) {
+			model.aj.customModelData = idGenerator.next().value as number
+
+			predicateJSON.overrides.push({
+				predicate: { custom_model_data: scaleModel.aj.customModelData },
+				model: getModelPath(
+					path.join(ajSettings.rigModelsExportFolder, `${modelName}_${vecStr}.json`),
+					`${modelName}_${vecStr}.json`
+				),
+			})
+			myMeta.push(scaleModel.aj.customModelData)
+		}
 	}
 
 	for (const [variantName, variant] of Object.entries(variantModels))

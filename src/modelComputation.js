@@ -329,7 +329,11 @@ async function computeModels(cubeData) {
 	return scaledModels
 }
 
-export async function computeVariantModels(models, scaleModels, variantOverrides) {
+export async function computeVariantModels(
+	models,
+	scaleModels,
+	variantOverrides
+) {
 	console.groupCollapsed('Compute Variant Models')
 	const variants = store.get('states')
 	const variantModels = {}
@@ -359,7 +363,9 @@ export async function computeVariantModels(models, scaleModels, variantOverrides
 				variantModels[variantName][modelName] = newVariantModel
 
 				if (!scaleModels[modelName]) continue
-				for (const [vecStr, model] of Object.entries(scaleModels[modelName])) {
+				for (const [vecStr, model] of Object.entries(
+					scaleModels[modelName]
+				)) {
 					const clone = cloneObject(model)
 					clone.parent = getModelMCPath(
 						path.join(
@@ -370,7 +376,6 @@ export async function computeVariantModels(models, scaleModels, variantOverrides
 					)
 					variantModels[variantName][`${modelName}_${vecStr}`] = clone
 				}
-
 			}
 		}
 	}
@@ -447,10 +452,17 @@ export function computeBones(models, animations) {
 }
 
 const displayScale = 1.6
-const displayScaleModifier = 4
-const elementScaleModifier = displayScaleModifier / displayScale
+let displayScaleModifier = 1
+let elementScaleModifier = displayScaleModifier / displayScale
+
+function computeScaleModifiers() {
+	displayScaleModifier =
+		settings.animatedJava.modelScalingMode === '3x3x3' ? 1 : 4
+	elementScaleModifier = displayScaleModifier / displayScale
+}
 
 async function scaleModels(models) {
+	computeScaleModifiers()
 	for (const [modelName, model] of Object.entries(models)) {
 		model.display = {
 			head: {
@@ -488,7 +500,47 @@ function vecStrToArray(vecStr) {
 	return vecStr.split('-').map((v) => Number(v))
 }
 
+function throwIfScaleOutOfBounds(scale, boneName) {
+	if (
+		scale[0] > 4 ||
+		scale[1] > 4 ||
+		scale[2] > 4
+	) {
+		throw new CustomError('Scaling out of bounds', {
+			dialog: {
+				title: tl('animatedJava.dialogs.errors.scaleOutOfBounds.title'),
+				lines: [
+					tl('animatedJava.dialogs.errors.scaleOutOfBounds.body', {
+						boneName,
+						displayString: `${boneName}: [${scale.join(', ')}] > maximum: [3.125, 3.125, 3.125]`
+					}),
+				],
+				width: 512,
+			},
+		})
+	}
+	if (
+		scale[0] < -4 ||
+		scale[1] < -4 ||
+		scale[2] < -4
+	) {
+		throw new CustomError('Scaling out of bounds', {
+			dialog: {
+				title: tl('animatedJava.dialogs.errors.scaleOutOfBounds.title'),
+				lines: [
+					tl('animatedJava.dialogs.errors.scaleOutOfBounds.body', {
+						boneName,
+						displayString: `${boneName}: [${scale.join(', ')}] < minimum: [-3.125, -3.125, -3.125]`
+					}),
+				],
+				width: 512,
+			},
+		})
+	}
+}
+
 export function computeScaleModels(bones) {
+	computeScaleModifiers()
 	const scaleModels = {}
 
 	for (const [boneName, bone] of Object.entries(bones)) {
@@ -498,6 +550,9 @@ export function computeScaleModels(bones) {
 
 		for (const [vecStr, customModelData] of Object.entries(bone.scales)) {
 			const scale = vecStrToArray(vecStr)
+			const mappedScale = scale.map((v) => v * displayScaleModifier)
+			throwIfScaleOutOfBounds(mappedScale, boneName)
+
 			const model = {
 				parent: getModelMCPath(
 					path.join(
@@ -508,7 +563,7 @@ export function computeScaleModels(bones) {
 				display: {
 					head: {
 						translation: [0, 5.6, 0],
-						scale: scale.map((v) => v * displayScaleModifier),
+						scale: mappedScale,
 						rotation: [0, 0, 0],
 					},
 				},

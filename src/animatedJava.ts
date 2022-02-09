@@ -148,6 +148,7 @@ export interface Settings {
 	transparentTexturePath: string
 	boundingBoxRenderMode: 'single' | 'multiple' | 'disabled'
 	verbose: boolean
+	modelScalingMode: '3x3x3' | '7x7x7'
 }
 
 export interface ExportData {

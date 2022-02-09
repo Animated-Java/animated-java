@@ -71,6 +71,33 @@ export const DefaultSettings = {
 				return d
 			},
 		},
+		modelScalingMode: {
+			get title() {
+				return tl('animatedJava.settings.modelScalingMode.title')
+			},
+			get description() {
+				return tl('animatedJava.settings.modelScalingMode.description')
+			},
+			type: 'select',
+			default: '3x3x3',
+			get options() {
+				return {
+					'3x3x3': tl(
+						'animatedJava.settings.modelScalingMode.options.3x3x3'
+					),
+					'7x7x7': tl(
+						'animatedJava.settings.modelScalingMode.options.7x7x7'
+					),
+				}
+			},
+			onUpdate(d) {
+				if (!d.value) {
+					d.isValid = false
+					d.error = genericEmptyErrorText()
+				}
+				return d
+			},
+		},
 		verbose: {
 			get title() {
 				return tl('animatedJava.settings.verbose.title')
