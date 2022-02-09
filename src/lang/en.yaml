@@ -151,9 +151,9 @@ animatedJava:
             moderator: Discord Moderator
             closedBeta: Closed Beta Tester
             brandingArtist: Branding Artist
-            patronTier1: Teir 1 Patron
-            patronTier2: Teir 2 Patron
-            patronTier3: Teir 3 Patron
+            patronTier1: Tier 1 Patron
+            patronTier2: Tier 2 Patron
+            patronTier3: Tier 3 Patron
 
         animationProperties:
             animationCompleteCommand:
@@ -161,7 +161,7 @@ animatedJava:
 
         errors:
             misc:
-                title: An Unknown Error has Occured in Animated Java
+                title: An Unknown Error has occurred in Animated Java
                 body:
                     - |-
                         <textarea style="height: 256px" readonly="readonly">
