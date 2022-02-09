@@ -128,7 +128,7 @@ export function computeElements() {
 			} else {
 				element.rotation = new oneLiner({
 					angle: 0,
-					axis: s.rotation_axis || 'y',
+					axis: s.rotationAxis() || 'y',
 					origin: s.origin,
 					rescale: true,
 				})
