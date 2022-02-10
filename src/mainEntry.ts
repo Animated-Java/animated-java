@@ -108,11 +108,29 @@ export const BuildModel = (callback: any, options: any) => {
 	}
 }
 
+function throwSkillIssue() {
+	throw new CustomError('Skill Issue', {
+		intentional: true,
+		dialog: {
+			id: 'animatedJava.dialogs.errors.skillIssue',
+			title: 'Smells like, Skill Issue',
+			lines: [
+				'You have a skill issue. Too bad!'
+			],
+			width: 128,
+			singleButton: true,
+		},
+	})
+}
+
 async function computeAnimationData(
 	callback: (data: any) => any,
 	options: any
 ) {
 	console.groupCollapsed('Compute Animation Data')
+
+	// throwSkillIssue()
+	// throw new Error('test error')
 
 	if (!settings.animatedJava.predicateFilePath) {
 		throw new CustomError('Predicate File Path Undefined Error', {
