@@ -285,7 +285,7 @@ function About() {
 					}}
 					title={tl('animatedJava.dialogs.about.patron')}
 				>
-					<i className="fab fa-patron"></i>
+					<i className="fab fa-patreon"></i>
 				</Link>
 			</Center>
 			<hr />
