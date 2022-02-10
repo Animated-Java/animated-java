@@ -949,7 +949,7 @@ async function createMCFile(
 					Object.keys(bones).map((v) => [
 						v,
 						{
-							pos: { v: '', trimmed: false, depth: 0},
+							pos: { v: '', trimmed: false, depth: 0 },
 							rot: { v: '', trimmed: false, depth: 0 },
 							scale: { v: '', trimmed: false, depth: 0 },
 						},
@@ -1001,11 +1001,13 @@ async function createMCFile(
 								// prettier-ignore
 								posDepth++
 								return {
-									v: `execute if score .this ${scoreboards.frame} matches ${item.min}..${item.max - 1} run {
+									v: `execute if score .this ${
+										scoreboards.frame
+									} matches ${item.min}..${item.max - 1} run {
 										name tree/${boneName}_pos_${item.min}-${item.max - 1}
-										${inside.reduce((p, c) => p + (c.v ? c.v+'\n' : ''), '')}
+										${inside.reduce((p, c) => p + (c.v ? c.v + '\n' : ''), '')}
 									}`,
-									trimmed: false
+									trimmed: false,
 								}
 							case 'leaf':
 								const pos = getPos(boneName, item)
@@ -1064,11 +1066,13 @@ async function createMCFile(
 								// prettier-ignore
 								rotDepth++
 								return {
-									v: `execute if score .this ${scoreboards.frame} matches ${item.min}..${item.max - 1} run {
+									v: `execute if score .this ${
+										scoreboards.frame
+									} matches ${item.min}..${item.max - 1} run {
 										name tree/${boneName}_rot_${item.min}-${item.max - 1}
-										${inside.reduce((p, c) => p + (c.v ? c.v+'\n' : ''), '')}
+										${inside.reduce((p, c) => p + (c.v ? c.v + '\n' : ''), '')}
 									}`,
-									trimmed: false
+									trimmed: false,
 								}
 							case 'leaf':
 								const rot = getRot(boneName, item)
@@ -1094,13 +1098,14 @@ async function createMCFile(
 
 					let lastScale = { x: NaN, y: NaN, z: NaN }
 					function createDeduplicatedScaleTree(
-						item: TreeBranch | TreeLeaf
+						item: TreeBranch | TreeLeaf,
+						variant: aj.ScaleModels
 					): TreeReturn {
 						switch (item.type) {
 							case 'branch':
 								const inside: TreeReturn[] = item.items
 									.map((v: any) =>
-										createDeduplicatedScaleTree(v)
+										createDeduplicatedScaleTree(v, variant)
 									)
 									.filter((v) => !v.trimmed)
 								if (inside.length == 0) {
@@ -1112,11 +1117,13 @@ async function createMCFile(
 								// prettier-ignore
 								scaleDepth++
 								return {
-									v: `execute if score .this ${scoreboards.frame} matches ${item.min}..${item.max - 1} run {
+									v: `execute if score .this ${
+										scoreboards.frame
+									} matches ${item.min}..${item.max - 1} run {
 										name tree/${boneName}_scale_${item.min}-${item.max - 1}
-										${inside.reduce((p, c) => p + (c.v ? c.v+'\n' : ''), '')}
+										${inside.reduce((p, c) => p + (c.v ? c.v + '\n' : ''), '')}
 									}`,
-									trimmed: false
+									trimmed: false,
 								}
 							case 'leaf':
 								const scale = getScale(boneName, item)
@@ -1135,9 +1142,7 @@ async function createMCFile(
 								lastScale = scale
 
 								const vecStr = `${scale.x}-${scale.y}-${scale.z}`
-								const customModelData =
-									scaleModels[boneName][vecStr].aj
-										.customModelData
+								const customModelData = scaleModels[boneName][vecStr].aj.customModelData
 								// TODO Add support for variants to scaling
 								return {
 									v: `execute if score .this ${scoreboards.frame} matches ${item.index} run data modify entity @s ArmorItems[-1].tag.CustomModelData set value ${customModelData}`,
@@ -1159,7 +1164,7 @@ async function createMCFile(
 					// prettier-ignore
 					if (scaleModels[boneName])
 						boneTrees[boneName].scale =
-							{...createDeduplicatedScaleTree(animationTree), depth: scaleDepth }
+							{...createDeduplicatedScaleTree(animationTree, scaleModels), depth: scaleDepth }
 				}
 				return boneTrees
 			}
