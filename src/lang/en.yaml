@@ -174,6 +174,7 @@ animatedJava:
             misc:
                 title: An Unknown Error has occurred in Animated Java
                 body:
+                    # This block of text should not be translated as it is used to debug by the developers.
                     - |-
                         <textarea style="height: 256px" readonly="readonly">
                         ------ Error ------
@@ -183,6 +184,7 @@ animatedJava:
 
                         Build ID: %buildID
                         </textarea>
+                    # You can translate this though
                     - <p>Please report this error on <a href="%githubLink">Animated Java's github</a> with information on how to reproduce it and a copy of the error above.</p>
                     - <p>You can also join our <a href="%discordLink">Discord Server</a> and ask questions in the animated-java-support channel.</p>
                     - <p>Thank you!</p>
