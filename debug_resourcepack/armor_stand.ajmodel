@@ -1,14 +1,14 @@
 {
   "meta": {
     "format_version": "0.0",
-    "creation_time": 1644456007,
+    "creation_time": 1644460724,
     "model_format": "animated_java/ajmodel",
     "box_uv": false,
     "settings": {
       "animatedJava": {
         "projectName": "armor_stand",
         "exporter": "vanillaAnimationExporter",
-        "modelScalingMode": "7x7x7",
+        "modelScalingMode": "3x3x3",
         "verbose": true,
         "rigItem": "minecraft:leather_horse_armor",
         "rigModelsExportFolder": "D:\\github-repos\\mcworld-aj-dev\\resources\\assets\\animated_java\\models\\rigs\\armor_stand",
@@ -2204,9 +2204,9 @@
       "name": "scale_test",
       "loop": "loop",
       "override": false,
-      "length": 1,
+      "length": 4.5,
       "snapping": 20,
-      "selected": false,
+      "selected": true,
       "saved": false,
       "path": "",
       "anim_time_update": "",
@@ -2219,6 +2219,76 @@
           "type": "bone",
           "keyframes": [
             {
+              "channel": "rotation",
+              "data_points": [
+                {
+                  "x": "0",
+                  "y": "0",
+                  "z": "0"
+                }
+              ],
+              "uuid": "bff1d302-5498-f518-2e0f-695006abc34a",
+              "time": 0,
+              "color": -1,
+              "interpolation": "linear"
+            },
+            {
+              "channel": "rotation",
+              "data_points": [
+                {
+                  "x": "0",
+                  "y": "360 * 2\n",
+                  "z": "0"
+                }
+              ],
+              "uuid": "8baf6f49-b65f-68f9-cfd6-9439613f73f7",
+              "time": 2,
+              "color": -1,
+              "interpolation": "catmullrom"
+            },
+            {
+              "channel": "rotation",
+              "data_points": [
+                {
+                  "x": 0,
+                  "y": 540,
+                  "z": 0
+                }
+              ],
+              "uuid": "0085b6a8-32b5-3532-f3a0-f666c99d2a29",
+              "time": 1,
+              "color": -1,
+              "interpolation": "catmullrom"
+            },
+            {
+              "channel": "rotation",
+              "data_points": [
+                {
+                  "x": 0,
+                  "y": 540,
+                  "z": 0
+                }
+              ],
+              "uuid": "24e1f35e-7d4d-d779-c03d-19e1d8777475",
+              "time": 3,
+              "color": -1,
+              "interpolation": "catmullrom"
+            },
+            {
+              "channel": "rotation",
+              "data_points": [
+                {
+                  "x": "0",
+                  "y": "0",
+                  "z": "0"
+                }
+              ],
+              "uuid": "4dde0dd8-9ec8-22ce-ea6c-f47a784044f8",
+              "time": 4,
+              "color": -1,
+              "interpolation": "linear"
+            },
+            {
               "channel": "scale",
               "data_points": [
                 {
@@ -2228,7 +2298,7 @@
                 }
               ],
               "uuid": "34748471-25c4-5b68-3d10-7c5962523c74",
-              "time": 0,
+              "time": 1,
               "color": -1,
               "interpolation": "linear"
             },
@@ -2236,13 +2306,13 @@
               "channel": "scale",
               "data_points": [
                 {
-                  "x": "2",
-                  "y": "2",
-                  "z": "2"
+                  "x": "3",
+                  "y": "3",
+                  "z": "3"
                 }
               ],
               "uuid": "03f8796b-55cc-bc4b-2bde-06ce986099b8",
-              "time": 0.5,
+              "time": 1.5,
               "color": -1,
               "uniform": false,
               "interpolation": "catmullrom"
@@ -2251,13 +2321,57 @@
               "channel": "scale",
               "data_points": [
                 {
-                  "x": 1,
-                  "y": 1,
-                  "z": 1
+                  "x": "3",
+                  "y": "3",
+                  "z": "3"
                 }
               ],
-              "uuid": "2557f379-26c7-a8db-b625-9a41b90823aa",
-              "time": 1,
+              "uuid": "b5443185-0d7d-0106-927b-d1ee6ff345c2",
+              "time": 2.5,
+              "color": -1,
+              "uniform": false,
+              "interpolation": "linear"
+            },
+            {
+              "channel": "scale",
+              "data_points": [
+                {
+                  "x": "1",
+                  "y": "1",
+                  "z": "1"
+                }
+              ],
+              "uuid": "0cf82256-e340-6ce3-6656-76e5b8368cd1",
+              "time": 3,
+              "color": -1,
+              "interpolation": "catmullrom"
+            },
+            {
+              "channel": "scale",
+              "data_points": [
+                {
+                  "x": "3",
+                  "y": "3",
+                  "z": "3"
+                }
+              ],
+              "uuid": "a3cab057-9d76-0523-d89f-8940aa9a66bf",
+              "time": 2,
+              "color": -1,
+              "uniform": false,
+              "interpolation": "linear"
+            },
+            {
+              "channel": "scale",
+              "data_points": [
+                {
+                  "x": "1",
+                  "y": "1",
+                  "z": "1"
+                }
+              ],
+              "uuid": "29a601b8-aaeb-610c-28ef-8e011fdd6498",
+              "time": 3.5,
               "color": -1,
               "interpolation": "linear"
             }

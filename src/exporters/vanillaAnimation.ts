@@ -90,6 +90,7 @@ async function createMCFile(
 	models: aj.ModelObject,
 	animations: aj.Animations,
 	settings: aj.GlobalSettings,
+	scaleModels: aj.ScaleModels,
 	variantModels: aj.VariantModels,
 	variantTextureOverrides: aj.VariantTextureOverrides,
 	variantTouchedModels: aj.variantTouchedModels
@@ -902,6 +903,15 @@ async function createMCFile(
 				}
 			}
 
+			function getScale(boneName: string, leaf: TreeLeaf) {
+				let scale = leaf.item.bones[boneName].scale
+				return {
+					x: roundToN(scale.x, 1000),
+					y: roundToN(scale.y, 1000),
+					z: roundToN(scale.z, 1000),
+				}
+			}
+
 			function getFrame(boneName: string, index: number) {
 				const frame = animation.frames[index]
 				if (!frame) return
@@ -914,12 +924,19 @@ async function createMCFile(
 
 				let rot = frame.bones[boneName].rot
 				rot = {
-					x: roundToN(rot.x, 1000),
-					y: roundToN(rot.y, 1000),
-					z: roundToN(rot.z, 1000),
+					x: roundToN(rot.x, 10000),
+					y: roundToN(rot.y, 10000),
+					z: roundToN(rot.z, 10000),
 				}
 
-				return { pos, rot } as aj.AnimationFrameBone
+				let scale = frame.bones[boneName].scale
+				scale = {
+					x: roundToN(scale.x, 1000),
+					y: roundToN(scale.y, 1000),
+					z: roundToN(scale.z, 1000),
+				}
+
+				return { pos, rot, scale } as aj.AnimationFrameBone
 			}
 
 			function generateBoneTrees() {
@@ -932,8 +949,9 @@ async function createMCFile(
 					Object.keys(bones).map((v) => [
 						v,
 						{
-							root: { v: '', trimmed: false },
-							display: { v: '', trimmed: false },
+							pos: { v: '', trimmed: false, depth: 0},
+							rot: { v: '', trimmed: false, depth: 0 },
+							scale: { v: '', trimmed: false, depth: 0 },
 						},
 					])
 				)
@@ -944,13 +962,18 @@ async function createMCFile(
 						trimmed: boolean
 					}
 
-					function createRootTree(item: TreeBranch | TreeLeaf) {
+					let posDepth = 0
+					let rotDepth = 0
+					let scaleDepth = 0
+
+					function createPosTree(item: TreeBranch | TreeLeaf) {
 						switch (item.type) {
 							case 'branch':
+								posDepth++
 								// prettier-ignore
 								return `execute if score .this ${scoreboards.frame} matches ${item.min}..${item.max - 1} run {
-									name tree/${boneName}_root_${item.min}-${item.max - 1}
-									${item.items.map((v: any) => createRootTree(v)).join('\n')}
+									name tree/${boneName}_pos_${item.min}-${item.max - 1}
+									${item.items.map((v: any) => createPosTree(v)).join('\n')}
 								}`
 							case 'leaf':
 								const pos = getPos(boneName, item)
@@ -959,25 +982,27 @@ async function createMCFile(
 					}
 
 					let lastPos = { x: NaN, y: NaN, z: NaN }
-					function createDeduplicatedRootTree(
+					function createDeduplicatedPosTree(
 						item: TreeBranch | TreeLeaf
 					): TreeReturn {
 						switch (item.type) {
 							case 'branch':
 								const inside: TreeReturn[] = item.items
 									.map((v: any) =>
-										createDeduplicatedRootTree(v)
+										createDeduplicatedPosTree(v)
 									)
 									.filter((v) => !v.trimmed)
 								if (inside.length == 0) {
 									return { v: '', trimmed: true }
 								} else if (inside.length == 1) {
+									posDepth++
 									return inside[0]
 								}
 								// prettier-ignore
+								posDepth++
 								return {
 									v: `execute if score .this ${scoreboards.frame} matches ${item.min}..${item.max - 1} run {
-										name tree/${boneName}_root_${item.min}-${item.max - 1}
+										name tree/${boneName}_pos_${item.min}-${item.max - 1}
 										${inside.reduce((p, c) => p + (c.v ? c.v+'\n' : ''), '')}
 									}`,
 									trimmed: false
@@ -1004,13 +1029,14 @@ async function createMCFile(
 						}
 					}
 
-					function createDisplayTree(item: TreeBranch | TreeLeaf) {
+					function createRotTree(item: TreeBranch | TreeLeaf) {
 						switch (item.type) {
 							case 'branch':
+								rotDepth++
 								// prettier-ignore
 								return `execute if score .this ${scoreboards.frame} matches ${item.min}..${item.max - 1} run {
-									name tree/${boneName}_display_${item.min}-${item.max - 1}
-									${item.items.map((v: any) => createDisplayTree(v)).join('\n')}
+									name tree/${boneName}_rot_${item.min}-${item.max - 1}
+									${item.items.map((v: any) => createRotTree(v)).join('\n')}
 								}`
 							case 'leaf':
 								const rot = getRot(boneName, item)
@@ -1019,25 +1045,27 @@ async function createMCFile(
 					}
 
 					let lastRot = { x: NaN, y: NaN, z: NaN }
-					function createDeduplicatedDisplayTree(
+					function createDeduplicatedRotTree(
 						item: TreeBranch | TreeLeaf
 					): TreeReturn {
 						switch (item.type) {
 							case 'branch':
 								const inside: TreeReturn[] = item.items
 									.map((v: any) =>
-										createDeduplicatedDisplayTree(v)
+										createDeduplicatedRotTree(v)
 									)
 									.filter((v) => !v.trimmed)
 								if (inside.length == 0) {
 									return { v: '', trimmed: true }
 								} else if (inside.length == 1) {
+									rotDepth++
 									return inside[0]
 								}
 								// prettier-ignore
+								rotDepth++
 								return {
 									v: `execute if score .this ${scoreboards.frame} matches ${item.min}..${item.max - 1} run {
-										name tree/${boneName}_display_${item.min}-${item.max - 1}
+										name tree/${boneName}_rot_${item.min}-${item.max - 1}
 										${inside.reduce((p, c) => p + (c.v ? c.v+'\n' : ''), '')}
 									}`,
 									trimmed: false
@@ -1064,16 +1092,74 @@ async function createMCFile(
 						}
 					}
 
+					let lastScale = { x: NaN, y: NaN, z: NaN }
+					function createDeduplicatedScaleTree(
+						item: TreeBranch | TreeLeaf
+					): TreeReturn {
+						switch (item.type) {
+							case 'branch':
+								const inside: TreeReturn[] = item.items
+									.map((v: any) =>
+										createDeduplicatedScaleTree(v)
+									)
+									.filter((v) => !v.trimmed)
+								if (inside.length == 0) {
+									return { v: '', trimmed: true }
+								} else if (inside.length == 1) {
+									scaleDepth++
+									return inside[0]
+								}
+								// prettier-ignore
+								scaleDepth++
+								return {
+									v: `execute if score .this ${scoreboards.frame} matches ${item.min}..${item.max - 1} run {
+										name tree/${boneName}_scale_${item.min}-${item.max - 1}
+										${inside.reduce((p, c) => p + (c.v ? c.v+'\n' : ''), '')}
+									}`,
+									trimmed: false
+								}
+							case 'leaf':
+								const scale = getScale(boneName, item)
+								const nextFrame = getFrame(
+									boneName,
+									item.index + 1
+								)
+								if (isEqualVector(scale, lastScale)) {
+									// Ignore deduplication if next frame is different value
+									if (
+										nextFrame &&
+										isEqualVector(scale, nextFrame.scale)
+									)
+										return { v: '', trimmed: true }
+								}
+								lastScale = scale
+
+								const vecStr = `${scale.x}-${scale.y}-${scale.z}`
+								const customModelData =
+									scaleModels[boneName][vecStr].aj
+										.customModelData
+								// TODO Add support for variants to scaling
+								return {
+									v: `execute if score .this ${scoreboards.frame} matches ${item.index} run data modify entity @s ArmorItems[-1].tag.CustomModelData set value ${customModelData}`,
+									trimmed: false,
+								}
+						}
+					}
+
 					// prettier-ignore
-					boneTrees[boneName].root =
+					boneTrees[boneName].pos =
 						exporterSettings.deduplicatePositionFrames
-							? createDeduplicatedRootTree(animationTree)
-							: { v: createRootTree(animationTree), trimmed: false }
+							? {...createDeduplicatedPosTree(animationTree), depth: posDepth }
+							: { v: createPosTree(animationTree), trimmed: false, depth: posDepth }
 					// prettier-ignore
-					boneTrees[boneName].display =
+					boneTrees[boneName].rot =
 						exporterSettings.deduplicateRotationFrames
-							? createDeduplicatedDisplayTree(animationTree)
-							: { v: createDisplayTree(animationTree), trimmed: false }
+							? {...createDeduplicatedRotTree(animationTree), depth: rotDepth }
+							: { v: createRotTree(animationTree), trimmed: false, depth: rotDepth }
+					// prettier-ignore
+					if (scaleModels[boneName])
+						boneTrees[boneName].scale =
+							{...createDeduplicatedScaleTree(animationTree), depth: scaleDepth }
 				}
 				return boneTrees
 			}
@@ -1167,12 +1253,13 @@ async function createMCFile(
 						# Bone Roots
 						execute if entity @s[type=${entityTypes.boneRoot}] run {
 							name tree/root_bone_name
+							# Position
 							${Object.entries(boneTrees).map(([boneName,trees]) => {
-								// Remove trimmed bone trees (Though there will never be any)
-								if (trees.root.trimmed) return ''
+								// Remove trimmed bone trees
+								if (trees.pos.trimmed || !trees.pos.depth) return ''
 								return `execute if entity @s[tag=${format(tags.individualBone, {boneName})}] run {
-									name tree/${boneName}_root_top
-									${trees.root.v}
+									name tree/${boneName}_pos_top
+									${trees.pos.v}
 								}`
 							}
 							).join('\n')}
@@ -1181,15 +1268,24 @@ async function createMCFile(
 						# Bone Displays
 						execute if entity @s[type=${entityTypes.boneDisplay}] run {
 							name tree/display_bone_name
+							# Rotation
 							${Object.entries(boneTrees).map(([boneName,trees]) => {
-								// Remove trimmed bone trees (Though there will never be any)
-								if (trees.display.trimmed) return ''
+								// Remove trimmed bone trees
+								if (trees.rot.trimmed || !trees.rot.depth) return ''
 								return `execute if entity @s[tag=${format(tags.individualBone, {boneName})}] run {
-									name tree/${boneName}_display_top
-									${trees.display.v}
+									name tree/${boneName}_rot_top
+									${trees.rot.v}
 								}`
-							}
-							).join('\n')}
+							}).join('\n')}
+							# Scaling
+							${Object.entries(boneTrees).map(([boneName,trees]) => {
+								// Remove trimmed bone trees
+								if (trees.scale.trimmed || !trees.scale.depth) return ''
+								return `execute if entity @s[tag=${format(tags.individualBone, {boneName})}] run {
+									name tree/${boneName}_scale_top
+									${trees.scale.v}
+								}`
+							}).join('\n')}
 							# Make sure rotation stays aligned with root entity
 							execute positioned as @s run tp @s ~ ~ ~ ~ ~
 						}
@@ -1430,6 +1526,7 @@ async function animationExport(data: any) {
 		data.models,
 		data.animations,
 		data.settings,
+		data.scaleModels,
 		data.variantModels,
 		data.variantTextureOverrides,
 		data.variantTouchedModels

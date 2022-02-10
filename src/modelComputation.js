@@ -454,11 +454,15 @@ export function computeBones(models, animations) {
 const displayScale = 1.6
 let displayScaleModifier = 1
 let elementScaleModifier = displayScaleModifier / displayScale
+let yTranslation = 5.6
 
 function computeScaleModifiers() {
 	displayScaleModifier =
 		settings.animatedJava.modelScalingMode === '3x3x3' ? 1 : 4
 	elementScaleModifier = displayScaleModifier / displayScale
+	// I love magic numbers 😢
+	yTranslation =
+		settings.animatedJava.modelScalingMode === '3x3x3' ? -3.2 : 5.6
 }
 
 async function scaleModels(models) {
@@ -466,11 +470,12 @@ async function scaleModels(models) {
 	for (const [modelName, model] of Object.entries(models)) {
 		model.display = {
 			head: {
-				translation: [0, 5.6, 0],
-				scale: [0, 0, 0].map(() => displayScaleModifier),
+				translation: [0, yTranslation, 0],
+				scale: [1, 1, 1].map((v) => displayScaleModifier),
 				rotation: [0, 0, 0],
 			},
 		}
+
 		for (const element of model.elements) {
 			element.to = [
 				element.to[0] / elementScaleModifier + 8, // Center the x pos in the model
@@ -501,36 +506,32 @@ function vecStrToArray(vecStr) {
 }
 
 function throwIfScaleOutOfBounds(scale, boneName) {
-	if (
-		scale[0] > 4 ||
-		scale[1] > 4 ||
-		scale[2] > 4
-	) {
+	if (scale[0] > 4 || scale[1] > 4 || scale[2] > 4) {
 		throw new CustomError('Scaling out of bounds', {
 			dialog: {
 				title: tl('animatedJava.dialogs.errors.scaleOutOfBounds.title'),
 				lines: [
 					tl('animatedJava.dialogs.errors.scaleOutOfBounds.body', {
 						boneName,
-						displayString: `${boneName}: [${scale.join(', ')}] > maximum: [3.125, 3.125, 3.125]`
+						displayString: `${boneName}: [${scale.join(
+							', '
+						)}] > maximum: [3.125, 3.125, 3.125]`,
 					}),
 				],
 				width: 512,
 			},
 		})
 	}
-	if (
-		scale[0] < -4 ||
-		scale[1] < -4 ||
-		scale[2] < -4
-	) {
+	if (scale[0] < -4 || scale[1] < -4 || scale[2] < -4) {
 		throw new CustomError('Scaling out of bounds', {
 			dialog: {
 				title: tl('animatedJava.dialogs.errors.scaleOutOfBounds.title'),
 				lines: [
 					tl('animatedJava.dialogs.errors.scaleOutOfBounds.body', {
 						boneName,
-						displayString: `${boneName}: [${scale.join(', ')}] < minimum: [-3.125, -3.125, -3.125]`
+						displayString: `${boneName}: [${scale.join(
+							', '
+						)}] < minimum: [-3.125, -3.125, -3.125]`,
 					}),
 				],
 				width: 512,
@@ -562,8 +563,12 @@ export function computeScaleModels(bones) {
 				),
 				display: {
 					head: {
-						translation: [0, 5.6, 0],
-						scale: mappedScale,
+						translation: [
+							0,
+							yTranslation + -yTranslation * (scale[1] - 1),
+							0,
+						],
+						scale: scale.map((v) => v * displayScaleModifier || 1),
 						rotation: [0, 0, 0],
 					},
 				},
