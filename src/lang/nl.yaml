@@ -108,7 +108,7 @@ animatedJava:
       title: Box voor de maximumgrootte van een bot
       description:
         - 'Configureer or schakel de box(en) voor de maximumgrootte van een bot uit'
-        - '- \'Enkel\' toont één box tegelijk.'
+        - "- 'Enkel' toont één box tegelijk."
         - "- 'Meerdere' toont voor elke geselecteerde bot een box."
         - '- \'Uitgeschakeld\' toont geen box..'
       options:
