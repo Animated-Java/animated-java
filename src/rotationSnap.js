@@ -5,7 +5,7 @@ import { bus } from './util/bus'
 import { settings } from './settings'
 function createBox() {
 	const size = settings.animatedJava.modelScalingMode === '3x3x3' ? 3 : 7
-	const a = new THREE.BoxBufferGeometry(16 * size, 16 * size, 16 * size)
+	const a = new THREE.BoxGeometry(16 * size, 16 * size, 16 * size)
 	const b = new THREE.EdgesGeometry(a)
 	const c = new THREE.LineSegments(
 		b,
@@ -75,7 +75,6 @@ bus.on(EVENTS.LIFECYCLE.LOAD, () => {
 				Array.from(last_mult || []).forEach((item) => {
 					if (item.visbox) {
 						item.mesh.remove(item.visbox)
-						console.log(`remove ${item.name}`)
 						delete item.visbox
 					}
 				})
@@ -124,7 +123,6 @@ bus.on(EVENTS.LIFECYCLE.LOAD, () => {
 							item.visbox = createBox()
 							visboxs.push(item.visbox)
 							item.mesh.add(item.visbox)
-							console.log(`add ${item.name}`)
 						}
 					})
 					old.forEach((item) => {
@@ -132,7 +130,6 @@ bus.on(EVENTS.LIFECYCLE.LOAD, () => {
 							if (item.visbox) {
 								try {
 									item.mesh.remove(item.visbox)
-									console.log(`remove ${item.name}`)
 									visboxs.splice(
 										visboxs.indexOf(item.visbox),
 										1
@@ -148,7 +145,6 @@ bus.on(EVENTS.LIFECYCLE.LOAD, () => {
 				Array.from(last_mult || []).forEach((item) => {
 					if (item.visbox) {
 						item.mesh.remove(item.visbox)
-						console.log(`remove ${item.name}`)
 						delete item.visbox
 					}
 				})
