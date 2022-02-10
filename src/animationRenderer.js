@@ -314,12 +314,12 @@ async function renderAnimation(options) {
 				let maxDistance = -Infinity
 				const frames = []
 				animation.select()
-				const animLength =
-					animation.loop === 'loop'
-						? animation.length
-						: animation.length + 0.05
+				// const animLength =
+				// 	animation.loop === 'loop'
+				// 		? animation.length
+				// 		: animation.length + 0.05
 
-				for (let i = 0; i <= animLength; i += 0.05) {
+				for (let i = 0; i <= animation.length + 0.05; i += 0.05) {
 					accAnimationLength += 0.05
 					await Async.wait_if_overflow()
 					setAnimatorTime(i)

@@ -176,10 +176,10 @@ animatedJava:
                 body:
                     # This block of text should not be translated as it is used to debug by the developers.
                     - |-
-                        <textarea style="height: 256px" readonly="readonly">
-                        ------ Error ------
-                        %errorMessage  //  "%randomErrorMessage"
-                        ------ Stack ------
+                        <p>%randomErrorMessage</p>
+                        <code>%boneName</code>
+                        <h1 style="font-size:20px">Error Summary</h1>
+                        <textarea style="height: 512px; font-family:monospace; font-size:14px" readonly="readonly">
                         %errorStack
 
                         Build ID: %buildID
@@ -192,7 +192,7 @@ animatedJava:
             scaleOutOfBounds:
                 title: Scale out of bounds
                 body:
-                    - "The bone '%boneName' has an invalid scaling during one of your animations:"
+                    - "The bone <code>%boneName</code> has an invalid scaling during one of your animations:"
                     - "%displayString"
 
             invalidResourcePath:

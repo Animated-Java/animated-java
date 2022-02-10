@@ -792,6 +792,9 @@ async function createMCFile(
 						`execute if entity @s[tag=aj.${projectName}.anim.${animation.name}] at @s run function ${projectName}:animations/${animation.name}/next_frame`
 					).join('\n')}
 
+					# Increment frame
+					execute if score .aj.animation ${scoreboards.animatingFlag} matches 1 run scoreboard players operation @s ${scoreboards.frame} += .aj.${projectName}.framerate ${scoreboards.internal}
+
 					scoreboard players operation @s ${scoreboards.animatingFlag} = .aj.animation ${scoreboards.animatingFlag}
 				}
 				# Stop the anim_loop clock if no models are animating
@@ -1304,11 +1307,13 @@ async function createMCFile(
 					` : ''}
 
 					# Increment frame
-					scoreboard players operation @s ${scoreboards.frame} += .aj.${projectName}.framerate ${scoreboards.internal}
+					# scoreboard players operation @s ${scoreboards.frame} += .aj.${projectName}.framerate ${scoreboards.internal}
 					# Let the anim_loop know we're still running
 					scoreboard players set .aj.animation ${scoreboards.animatingFlag} 1
 					# If (the next frame is the end of the animation) perform the necessary actions for the loop mode of the animation
-					execute unless score @s ${scoreboards.frame} matches 0..${animation.frames.length} run function ${projectName}:animations/${animation.name}/edge
+					execute if score .aj.${projectName}.framerate aj.i matches 1.. if score @s ${scoreboards.frame} matches ${animation.frames.length-1}.. run function ${projectName}:animations/${animation.name}/edge
+					execute if score .aj.${projectName}.framerate aj.i matches ..0 if score @s ${scoreboards.frame} matches ..0 run function ${projectName}:animations/${animation.name}/edge
+					# execute unless score @s ${scoreboards.frame} matches 0..${animation.frames.length-1} run function ${projectName}:animations/${animation.name}/edge
 				}`
 			)
 
@@ -1324,7 +1329,7 @@ async function createMCFile(
 						execute (if score @s ${scoreboards.frame} matches ..1) {
 							scoreboard players set @s ${scoreboards.frame} ${animation.frames.length}
 						} else {
-							scoreboard players set @s ${scoreboards.frame} 0
+							scoreboard players set @s ${scoreboards.frame} -1
 						}
 					}
 				}
