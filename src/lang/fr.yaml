@@ -1,4 +1,20 @@
 ---
+# Notes de traduction :
+# J'ai parfois choisi de laisser tel quel certains mots pour refléter l'usage. Typiquement, on entend couramment "item" et "Data Pack" et non "objet" et "pack de données".
+# Voici donc une liste des mots les plus importants avec la traduction choisie :
+# Model => Modèle
+# Item -> Item
+# Rig -> Ossature
+# Bone -> Os
+# Frame -> Image
+# Keyframe -> Image clé
+# Exporter -> Exportateur
+# Tag -> Tag
+# Predicate -> Prédicat
+# Snapping Value -> Valeur d'accrochage
+# Root Entity -> Entité racine
+# Scoreboard -> Scoreboard
+
 #? AJ
 animatedJava:
     plugin:
