@@ -1,7 +1,7 @@
 {
   "meta": {
     "format_version": "0.0",
-    "creation_time": 1644528540,
+    "creation_time": 1644535038,
     "model_format": "animated_java/ajmodel",
     "box_uv": false,
     "settings": {
@@ -47,7 +47,7 @@
         "individualBoneTag": "aj.%projectName.bone.%boneName",
         "internalScoreboardObjective": "aj.i",
         "idScoreboardObjective": "aj.id",
-        "frameScoreboardObjective": "aj.frame",
+        "frameScoreboardObjective": "aj.%projectName.%animationName.frame",
         "animatingFlagScoreboardObjective": "aj.%projectName.animating",
         "animationLoopModeScoreboardObjective": "aj.%projectName.%animationName.loopMode",
         "exportMode": "mcb",
@@ -1888,7 +1888,7 @@
       "override": false,
       "length": 1,
       "snapping": 20,
-      "selected": true,
+      "selected": false,
       "saved": false,
       "path": "",
       "anim_time_update": "",

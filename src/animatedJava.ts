@@ -58,8 +58,6 @@ const errorMessages = [
 	`https://youtu.be/dQw4w9WgXcQ`,
 	`<img src="https://i.kym-cdn.com/photos/images/original/000/296/199/9ff.gif" alt="roflcopter">`,
 	`Failed to find global "pandemic"`,
-	``,
-	``,
 ]
 
 function getRandomErrorMessage() {

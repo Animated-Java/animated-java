@@ -73,7 +73,7 @@ interface Tags {
 interface Scoreboards {
 	id: string
 	internal: string
-	frame: string
+	animationFrame: string
 	animatingFlag: string
 	animationLoopMode: string
 }
@@ -131,7 +131,7 @@ async function createMCFile(
 		Object.entries({
 			id: exporterSettings.idScoreboardObjective,
 			internal: exporterSettings.internalScoreboardObjective,
-			frame: exporterSettings.frameScoreboardObjective,
+			animationFrame: exporterSettings.frameScoreboardObjective,
 			animatingFlag: exporterSettings.animatingFlagScoreboardObjective,
 			animationLoopMode:
 				exporterSettings.animationLoopModeScoreboardObjective,
@@ -223,10 +223,6 @@ async function createMCFile(
 			{ text: ' (ID)', color: 'dark_gray' },
 			'\n',
 			{ text: '   ◘ ', color: 'gray' },
-			{ text: scoreboards.frame, color: 'aqua' },
-			{ text: ' (Frame)', color: 'dark_gray' },
-			'\n',
-			{ text: '   ◘ ', color: 'gray' },
 			{ text: scoreboards.animatingFlag, color: 'aqua' },
 			{ text: ' (Animation Flag)', color: 'dark_gray' },
 			Object.entries(animations).map(([_, animation]) => {
@@ -234,10 +230,21 @@ async function createMCFile(
 					'\n',
 					{ text: '   ◘ ', color: 'gray' },
 					{
-						text: `aj.${projectName}.${animation.name}.loopMode`,
+						text: format(scoreboards.animationLoopMode, {
+							animationName: animation.name,
+						}),
 						color: 'aqua',
 					},
 					{ text: ' (Loop Mode)', color: 'dark_gray' },
+					'\n',
+					{ text: '   ◘ ', color: 'gray' },
+					{
+						text: format(scoreboards.animationFrame, {
+							animationName: animation.name,
+						}),
+						color: 'aqua',
+					},
+					{ text: ' (Frame)', color: 'dark_gray' },
 				]
 			}),
 		])
@@ -248,15 +255,12 @@ async function createMCFile(
 				function install {
 					scoreboard objectives add ${scoreboards.internal} dummy
 					scoreboard objectives add ${scoreboards.id} dummy
-					scoreboard objectives add ${scoreboards.frame} dummy
 					scoreboard objectives add ${scoreboards.animatingFlag} dummy
 					${Object.values(animations)
-						.map((v) =>
-							`scoreboard objectives add ${scoreboards.animationLoopMode} dummy`.replace(
-								'%animationName',
-								v.name
-							)
-						)
+						.map((v) => format(`
+							scoreboard objectives add ${scoreboards.animationLoopMode} dummy
+							scoreboard objectives add ${scoreboards.animationFrame} dummy
+							`, { animationName: v.name }))
 						.join('\n')}
 					function ${projectName}:reset_animation_flags
 					scoreboard players set #uninstall ${scoreboards.internal} 0
@@ -269,15 +273,12 @@ async function createMCFile(
 				function install {
 					scoreboard objectives add ${scoreboards.internal} dummy
 					scoreboard objectives add ${scoreboards.id} dummy
-					scoreboard objectives add ${scoreboards.frame} dummy
 					scoreboard objectives add ${scoreboards.animatingFlag} dummy
 					${Object.values(animations)
-						.map((v) =>
-							`scoreboard objectives add ${scoreboards.animationLoopMode} dummy`.replace(
-								'%animationName',
-								v.name
-							)
-						)
+						.map((v) => format(`
+							scoreboard objectives add ${scoreboards.animationLoopMode} dummy
+							scoreboard objectives add ${scoreboards.animationFrame} dummy
+							`, { animationName: v.name }))
 						.join('\n')}
 					function ${projectName}:reset_animation_flags
 					scoreboard players set .aj.${projectName}.framerate ${scoreboards.internal} 1
@@ -310,17 +311,28 @@ async function createMCFile(
 					'\n',
 					{ text: '   ◘ ', color: 'gray' },
 					{
-						text: `aj.${projectName}.${animation.name}.loopMode`,
+						text: format(scoreboards.animationLoopMode, {
+							animationName: animation.name,
+						}),
 						color: 'aqua',
 					},
 					{ text: ' (Loop Mode)', color: 'dark_gray' },
+					'\n',
+					{ text: '   ◘ ', color: 'gray' },
+					{
+						text: format(scoreboards.animationFrame, {
+							animationName: animation.name,
+						}),
+						color: 'aqua',
+					},
+					{ text: ' (Frame)', color: 'dark_gray' },
 				]
 			}),
 			'\n',
 			'\n',
 			{ text: '◘ ', color: 'gray' },
 			{
-				text: 'Do you wish to uninstall all AJ related scoreboard objectives added by this rig?',
+				text: 'Would you like to uninstall all AJ scoreboard objectives unrelated to this rig as well?',
 				color: 'green',
 			},
 			'\n',
@@ -355,10 +367,6 @@ async function createMCFile(
 			{ text: '   ◘ ', color: 'gray' },
 			{ text: scoreboards.id, color: 'aqua' },
 			{ text: ' (ID)', color: 'dark_gray' },
-			'\n',
-			{ text: '   ◘ ', color: 'gray' },
-			{ text: scoreboards.frame, color: 'aqua' },
-			{ text: ' (Frame)', color: 'dark_gray' },
 		])
 
 		const keepAjRelated = new JsonText([
@@ -383,12 +391,10 @@ async function createMCFile(
 				function uninstall {
 					scoreboard objectives remove ${scoreboards.animatingFlag}
 					${Object.values(animations)
-						.map((v) =>
-							`scoreboard objectives remove ${scoreboards.animationLoopMode}`.replace(
-								'%animationName',
-								v.name
-							)
-						)
+						.map((v) => format(`
+							scoreboard objectives remove ${scoreboards.animationLoopMode}
+							scoreboard objectives remove ${scoreboards.animationFrame}
+							`, { animationName: v.name }))
 						.join('\n')}
 					scoreboard players set #uninstall ${scoreboards.internal} 1
 					tellraw @a ${uninstallJsonText}
@@ -407,7 +413,6 @@ async function createMCFile(
 							scoreboard players set #uninstall ${scoreboards.internal} 0
 							scoreboard objectives remove ${scoreboards.internal}
 							scoreboard objectives remove ${scoreboards.id}
-							scoreboard objectives remove ${scoreboards.frame}
 							tellraw @a ${uninstallAJRelated}
 						}
 					}
@@ -418,17 +423,14 @@ async function createMCFile(
 			FILE.push(`
 				function uninstall {
 					scoreboard objectives remove ${scoreboards.animatingFlag}
-					${Object.values(animations)
-						.map((v) =>
-							`scoreboard objectives remove ${scoreboards.animationLoopMode}`.replace(
-								'%animationName',
-								v.name
-							)
-						)
-						.join('\n')}
 					scoreboard objectives remove ${scoreboards.internal}
 					scoreboard objectives remove ${scoreboards.id}
-					scoreboard objectives remove ${scoreboards.frame}
+					${Object.values(animations)
+						.map((v) => format(`
+							scoreboard objectives remove ${scoreboards.animationLoopMode}
+							scoreboard objectives remove ${scoreboards.animationFrame}
+							`, { animationName: v.name }))
+						.join('\n')}
 				}
 			`)
 		}
@@ -631,10 +633,11 @@ async function createMCFile(
 						}
 						tag @s remove new
 						# Set all animation modes to configured default
-						${Object.values(animations).map(
-							v => `scoreboard players set @s ${scoreboards.animationLoopMode.replace('%animationName',v.name)} ${loopModeIDs.indexOf(v.loopMode)}`
-						).join('\n')}
-						scoreboard players set @s ${scoreboards.frame} 0
+						${Object.values(animations).map(animation => format(`
+							scoreboard players set @s ${scoreboards.animationFrame} 0
+							scoreboard players set @s ${scoreboards.animationLoopMode} ${loopModeIDs.indexOf(animation.loopMode)}
+						`, { animationName: animation.name }
+						)).join('\n')}
 						scoreboard players set @s ${scoreboards.animatingFlag} 0
 					}
 					# Assert animation flags
@@ -712,10 +715,12 @@ async function createMCFile(
 			function reset {
 				# Make sure this function has been ran as the root entity
 				execute(if entity @s[tag=${tags.root}] at @s rotated ~ 0) {
-					# Remove all animation tags
-					${Object.values(animations).map(v => `tag @s remove aj.${projectName}.anim.${v.name}`).join('\n')}
-					# Reset animation time
-					scoreboard players set @s ${scoreboards.frame} 0
+					# Remove all animation tags and reset animation time
+					${Object.values(animations).map(animation => format(`
+						tag @s remove aj.${projectName}.anim.${animation.name}
+						scoreboard players set @s ${scoreboards.animationLoopMode} 0
+					`, { animationName: animation.name }
+					)).join('\n')}
 
 					scoreboard players operation .this ${scoreboards.id} = @s ${scoreboards.id}
 					execute as @e[type=${entityTypes.boneRoot},tag=${tags.allBones},distance=..${maxDistance}] if score @s ${scoreboards.id} = .this ${scoreboards.id} run {
@@ -744,7 +749,10 @@ async function createMCFile(
 			execute(if entity @s[tag=${tags.root}] rotated ~ 0) {
 				tp @s ~ ~ ~ ~ ~
 				scoreboard players operation .this ${scoreboards.id} = @s ${scoreboards.id}
-				scoreboard players operation .this ${scoreboards.frame} = @s ${scoreboards.frame}
+				${Object.values(animations).map(animation => format(`
+					scoreboard players operation .this ${scoreboards.animationFrame} = @s ${scoreboards.animationFrame}
+				`, { animationName: animation.name }
+				)).join('\n')}
 
 				# Split based on animation name
 				scoreboard players set # ${scoreboards.internal} 0
@@ -792,9 +800,6 @@ async function createMCFile(
 						`execute if entity @s[tag=aj.${projectName}.anim.${animation.name}] at @s run function ${projectName}:animations/${animation.name}/next_frame`
 					).join('\n')}
 
-					# Increment frame
-					execute if score .aj.animation ${scoreboards.animatingFlag} matches 1 run scoreboard players operation @s ${scoreboards.frame} += .aj.${projectName}.framerate ${scoreboards.internal}
-
 					scoreboard players operation @s ${scoreboards.animatingFlag} = .aj.animation ${scoreboards.animatingFlag}
 				}
 				# Stop the anim_loop clock if no models are animating
@@ -834,6 +839,9 @@ async function createMCFile(
 
 		// TODO Frame deduplication
 		for (const animation of Object.values(animations)) {
+			const thisFrameObjective = format(scoreboards.animationFrame, {
+				animationName: animation.name,
+			})
 			if (animation.frames.length <= 1) {
 				throw new CustomError('Zero Length Animation Error', {
 					intentional: true,
@@ -872,17 +880,15 @@ async function createMCFile(
 
 			console.log('Animation:', animation)
 			const touchedBones = Object.keys(animation.frames[0].bones)
-			console.log('Touched Bones:', animation)
+			console.log('Touched Bones:', touchedBones)
 
 			const animationScripts: string[] = []
 			for (const frame of animation.frames) {
 				if (frame.scripts?.script) {
 					animationScripts.push(
-						`execute if score .this ${
-							scoreboards.frame
-						} matches ${animation.frames.indexOf(frame)} run {\n${
-							frame.scripts.script[0]
-						}\n}`
+						`execute if score .this ${thisFrameObjective} matches ${animation.frames.indexOf(
+							frame
+						)} run {\n${frame.scripts.script[0]}\n}`
 					)
 				}
 			}
@@ -974,13 +980,13 @@ async function createMCFile(
 							case 'branch':
 								posDepth++
 								// prettier-ignore
-								return `execute if score .this ${scoreboards.frame} matches ${item.min}..${item.max - 1} run {
+								return `execute if score .this ${thisFrameObjective} matches ${item.min}..${item.max - 1} run {
 									name tree/${boneName}_pos_${item.min}-${item.max - 1}
 									${item.items.map((v: any) => createPosTree(v)).join('\n')}
 								}`
 							case 'leaf':
 								const pos = getPos(boneName, item)
-								return `execute if score .this ${scoreboards.frame} matches ${item.index} run tp @s ^${pos.x} ^${pos.y} ^${pos.z} ~ ~`
+								return `execute if score .this ${thisFrameObjective} matches ${item.index} run tp @s ^${pos.x} ^${pos.y} ^${pos.z} ~ ~`
 						}
 					}
 
@@ -1005,7 +1011,7 @@ async function createMCFile(
 								posDepth++
 								return {
 									v: `execute if score .this ${
-										scoreboards.frame
+										thisFrameObjective
 									} matches ${item.min}..${item.max - 1} run {
 										name tree/${boneName}_pos_${item.min}-${item.max - 1}
 										${inside.reduce((p, c) => p + (c.v ? c.v + '\n' : ''), '')}
@@ -1028,7 +1034,7 @@ async function createMCFile(
 								}
 								lastPos = pos
 								return {
-									v: `execute if score .this ${scoreboards.frame} matches ${item.index} run tp @s ^${pos.x} ^${pos.y} ^${pos.z} ~ ~`,
+									v: `execute if score .this ${thisFrameObjective} matches ${item.index} run tp @s ^${pos.x} ^${pos.y} ^${pos.z} ~ ~`,
 									trimmed: false,
 								}
 						}
@@ -1039,13 +1045,13 @@ async function createMCFile(
 							case 'branch':
 								rotDepth++
 								// prettier-ignore
-								return `execute if score .this ${scoreboards.frame} matches ${item.min}..${item.max - 1} run {
+								return `execute if score .this ${thisFrameObjective} matches ${item.min}..${item.max - 1} run {
 									name tree/${boneName}_rot_${item.min}-${item.max - 1}
 									${item.items.map((v: any) => createRotTree(v)).join('\n')}
 								}`
 							case 'leaf':
 								const rot = getRot(boneName, item)
-								return `execute if score .this ${scoreboards.frame} matches ${item.index} run data modify entity @s Pose.Head set value [${rot.x}f,${rot.y}f,${rot.z}f]`
+								return `execute if score .this ${thisFrameObjective} matches ${item.index} run data modify entity @s Pose.Head set value [${rot.x}f,${rot.y}f,${rot.z}f]`
 						}
 					}
 
@@ -1070,7 +1076,7 @@ async function createMCFile(
 								rotDepth++
 								return {
 									v: `execute if score .this ${
-										scoreboards.frame
+										thisFrameObjective
 									} matches ${item.min}..${item.max - 1} run {
 										name tree/${boneName}_rot_${item.min}-${item.max - 1}
 										${inside.reduce((p, c) => p + (c.v ? c.v + '\n' : ''), '')}
@@ -1093,7 +1099,7 @@ async function createMCFile(
 								}
 								lastRot = rot
 								return {
-									v: `execute if score .this ${scoreboards.frame} matches ${item.index} run data modify entity @s Pose.Head set value [${rot.x}f,${rot.y}f,${rot.z}f]`,
+									v: `execute if score .this ${thisFrameObjective} matches ${item.index} run data modify entity @s Pose.Head set value [${rot.x}f,${rot.y}f,${rot.z}f]`,
 									trimmed: false,
 								}
 						}
@@ -1121,7 +1127,7 @@ async function createMCFile(
 								scaleDepth++
 								return {
 									v: `execute if score .this ${
-										scoreboards.frame
+										thisFrameObjective
 									} matches ${item.min}..${item.max - 1} run {
 										name tree/${boneName}_scale_${item.min}-${item.max - 1}
 										${inside.reduce((p, c) => p + (c.v ? c.v + '\n' : ''), '')}
@@ -1145,10 +1151,12 @@ async function createMCFile(
 								lastScale = scale
 
 								const vecStr = `${scale.x}-${scale.y}-${scale.z}`
-								const customModelData = scaleModels[boneName][vecStr].aj.customModelData
+								const customModelData =
+									scaleModels[boneName][vecStr].aj
+										.customModelData
 								// TODO Add support for variants to scaling
 								return {
-									v: `execute if score .this ${scoreboards.frame} matches ${item.index} run data modify entity @s ArmorItems[-1].tag.CustomModelData set value ${customModelData}`,
+									v: `execute if score .this ${thisFrameObjective} matches ${item.index} run data modify entity @s ArmorItems[-1].tag.CustomModelData set value ${customModelData}`,
 									trimmed: false,
 								}
 						}
@@ -1186,8 +1194,8 @@ async function createMCFile(
 						# Add animation tag
 						tag @s add aj.${projectName}.anim.${animation.name}
 						# Reset animation time
-						execute if score .aj.${projectName}.framerate aj.i matches ..-1 run scoreboard players set @s ${scoreboards.frame} ${animation.frames.length}
-						execute if score .aj.${projectName}.framerate aj.i matches 1.. run scoreboard players set @s ${scoreboards.frame} 0
+						execute if score .aj.${projectName}.framerate aj.i matches ..-1 run scoreboard players set @s ${thisFrameObjective} ${animation.frames.length}
+						execute if score .aj.${projectName}.framerate aj.i matches 1.. run scoreboard players set @s ${thisFrameObjective} 0
 						# Assert that .noScripts is tracked properly
 						scoreboard players add .noScripts ${scoreboards.internal} 0
 						# Start the animation loop if not running
@@ -1206,14 +1214,14 @@ async function createMCFile(
 						# Add animation tag
 						tag @s remove aj.${projectName}.anim.${animation.name}
 						# Reset animation time
-						scoreboard players set @s ${scoreboards.frame} 0
+						scoreboard players set @s ${thisFrameObjective} 0
 						# load initial animation frame without running scripts
 						scoreboard players operation .oldValue ${scoreboards.internal} = .noScripts ${scoreboards.internal}
 						scoreboard players set .noScripts ${scoreboards.internal} 1
 						function ${projectName}:animations/${animation.name}/next_frame
 						scoreboard players operation .noScripts ${scoreboards.internal} = .oldValue ${scoreboards.internal}
 						# Reset animation time
-						scoreboard players set @s ${scoreboards.frame} 0
+						scoreboard players set @s ${thisFrameObjective} 0
 					# If this entity is not the root
 					} else {
 						tellraw @s ${rootExeErrorJsonText.replace('%functionName',`${projectName}:animations/${animation.name}/stop`)}
@@ -1255,7 +1263,7 @@ async function createMCFile(
 			FILE.push(`# Plays the next frame in the animation
 				function next_frame {
 					scoreboard players operation .this ${scoreboards.id} = @s ${scoreboards.id}
-					scoreboard players operation .this ${scoreboards.frame} = @s ${scoreboards.frame}
+					scoreboard players operation .this ${thisFrameObjective} = @s ${thisFrameObjective}
 					execute rotated ~ 0 as @e[type=${entityTypes.bone},tag=${tags.allBones},distance=..${thisMaxDistance}] if score @s ${scoreboards.id} = .this ${scoreboards.id} run {
 						name tree/trunk
 						# Bone Roots
@@ -1271,7 +1279,7 @@ async function createMCFile(
 								}`
 							}
 							).join('\n')}
-							execute store result entity @s Air short 1 run scoreboard players get .this ${scoreboards.frame}
+							execute store result entity @s Air short 1 run scoreboard players get .this ${thisFrameObjective}
 						}
 						# Bone Displays
 						execute if entity @s[type=${entityTypes.boneDisplay}] run {
@@ -1307,13 +1315,13 @@ async function createMCFile(
 					` : ''}
 
 					# Increment frame
-					# scoreboard players operation @s ${scoreboards.frame} += .aj.${projectName}.framerate ${scoreboards.internal}
+					scoreboard players operation @s ${thisFrameObjective} += .aj.${projectName}.framerate ${scoreboards.internal}
 					# Let the anim_loop know we're still running
 					scoreboard players set .aj.animation ${scoreboards.animatingFlag} 1
 					# If (the next frame is the end of the animation) perform the necessary actions for the loop mode of the animation
-					execute if score .aj.${projectName}.framerate aj.i matches 1.. if score @s ${scoreboards.frame} matches ${animation.frames.length-1}.. run function ${projectName}:animations/${animation.name}/edge
-					execute if score .aj.${projectName}.framerate aj.i matches ..0 if score @s ${scoreboards.frame} matches ..0 run function ${projectName}:animations/${animation.name}/edge
-					# execute unless score @s ${scoreboards.frame} matches 0..${animation.frames.length-1} run function ${projectName}:animations/${animation.name}/edge
+					execute if score .aj.${projectName}.framerate aj.i matches 1.. if score @s ${thisFrameObjective} matches ${animation.frames.length}.. run function ${projectName}:animations/${animation.name}/edge
+					execute if score .aj.${projectName}.framerate aj.i matches ..0 if score @s ${thisFrameObjective} matches ..-1 run function ${projectName}:animations/${animation.name}/edge
+					# execute unless score @s ${thisFrameObjective} matches 0..${animation.frames.length-1} run function ${projectName}:animations/${animation.name}/edge
 				}`
 			)
 
@@ -1326,10 +1334,10 @@ async function createMCFile(
 					execute if score @s ${thisAnimationLoopMode} matches 1 run function ${projectName}:animations/${animation.name}/pause
 					# loop
 					execute if score @s ${thisAnimationLoopMode} matches 2 run {
-						execute (if score @s ${scoreboards.frame} matches ..1) {
-							scoreboard players set @s ${scoreboards.frame} ${animation.frames.length}
+						execute (if score @s ${thisFrameObjective} matches ..1) {
+							scoreboard players set @s ${thisFrameObjective} ${animation.frames.length}
 						} else {
-							scoreboard players set @s ${scoreboards.frame} -1
+							scoreboard players set @s ${thisFrameObjective} 0
 						}
 					}
 				}
@@ -1864,8 +1872,8 @@ const Exporter = (AJ: any) => {
 					'animatedJava.exporters.vanillaAnimation.settings.frameScoreboardObjective.description'
 				),
 				type: 'text',
-				default: 'aj.frame',
-				onUpdate: validateFormattedStringSetting([]),
+				default: 'aj.%projectName.%animationName.frame',
+				onUpdate: validateFormattedStringSetting(['%projectName', '%animationName']),
 				group: 'scoreboardObjectives',
 			},
 			animatingFlagScoreboardObjective: {
