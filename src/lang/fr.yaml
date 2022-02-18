@@ -140,7 +140,7 @@ animatedJava:
         variants:
             title: Variantes du modèle
             description:
-                - "Les variantes permettent à votre modèle d'avoir différents "skins" qui peuvent être échangés pendant l'exécution à l'aide d'une fonction."
+                - "Les variantes permettent à votre modèle d'avoir différents 'skins' qui peuvent être échangés pendant l'exécution à l'aide d'une fonction."
 
         about:
             title: "À propos d'Animated Java"
@@ -217,13 +217,12 @@ animatedJava:
             rigFolderHasUnknownContent:
                 title: Dossier des ossatures non utilisées
                 body:
-                    - "Le dossier que vous avez choisi comme dossier de modèle d'ossatures contient des fichiers inconnus.z
+                    - "Le dossier que vous avez choisi comme dossier de modèle d'ossatures contient des fichiers inconnus."
                     - Voulez-vous vraiment écraser le contenu de ce dossier avec votre ossature ?
                     - 'Dossier choisi :'
                     - <textarea>%path</textarea>
                     - 'Fichiers inconnus :'
                     - <textarea>%files</textarea>
-
             rigFolderAlreadyUsedByOther:
                 title: "Le dossier de modèle d'ossatures choisi est déjà utilisé"
                 body:
