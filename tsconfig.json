@@ -5,7 +5,7 @@
 		"declaration": false,
 		"types": ["node", "blockbench-types"],
 		"lib": ["DOM", "ESNext"],
-		"target": "ESNext",
+		"target": "ES2021",
 		"moduleResolution": "node",
 		"jsx": "react"
 	}

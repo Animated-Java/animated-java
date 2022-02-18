@@ -1,5 +1,3 @@
-import type * as aj from './animatedJava'
-
 import { tl, intl } from './util/intl'
 // @ts-ignore
 import lang_cz from './lang/cz.yaml'
@@ -46,6 +44,7 @@ intl.register('zh', lang_zh)
 // @ts-ignore
 import lang_zh_tw from './lang/zh_tw.yaml'
 intl.register('zh_tw', lang_zh_tw)
+import type * as aj from './animatedJava'
 
 import './lifecycle'
 import './rotationSnap'
@@ -190,7 +189,7 @@ async function computeAnimationData(
 		variantModels: variants.variantModels,
 		variantTouchedModels: variants.variantTouchedModels,
 		animations,
-	}
+	} as aj.ExportData
 	console.groupEnd()
 	console.groupCollapsed('Exporter Output')
 	await callback(data)

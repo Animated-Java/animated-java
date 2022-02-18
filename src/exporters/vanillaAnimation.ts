@@ -279,6 +279,7 @@ async function createMCFile(
 						)
 						.join('\n')}
 					function ${projectName}:reset_animation_flags
+					scoreboard players set .aj.${projectName}.framerate ${scoreboards.internal} 1
 				}
 			`)
 		}
@@ -983,11 +984,17 @@ async function createMCFile(
 								}
 							case 'leaf':
 								const pos = getPos(boneName, item)
-								const nextFrame = getFrame(boneName, item.index+1)
+								const nextFrame = getFrame(
+									boneName,
+									item.index + 1
+								)
 								if (isEqualVector(pos, lastPos)) {
 									// Ignore deduplication if next frame is different value
-									if (nextFrame && isEqualVector(pos, nextFrame.pos))
-									return { v: '', trimmed: true }
+									if (
+										nextFrame &&
+										isEqualVector(pos, nextFrame.pos)
+									)
+										return { v: '', trimmed: true }
 								}
 								lastPos = pos
 								return {
@@ -1037,11 +1044,17 @@ async function createMCFile(
 								}
 							case 'leaf':
 								const rot = getRot(boneName, item)
-								const nextFrame = getFrame(boneName, item.index+1)
+								const nextFrame = getFrame(
+									boneName,
+									item.index + 1
+								)
 								if (isEqualVector(rot, lastRot)) {
 									// Ignore deduplication if next frame is different value
-									if (nextFrame && isEqualVector(rot, nextFrame.rot))
-									return { v: '', trimmed: true }
+									if (
+										nextFrame &&
+										isEqualVector(rot, nextFrame.rot)
+									)
+										return { v: '', trimmed: true }
 								}
 								lastRot = rot
 								return {

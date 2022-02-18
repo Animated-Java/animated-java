@@ -24,7 +24,11 @@ export function generateTree(items: any[]): TreeBranch | TreeLeaf {
 			if (myDepth < depth() && dat.length >= 8 - i) {
 				res.push(recurse(myDepth + 1))
 			} else {
-				res.push({ type: 'leaf', item: dat.shift(), index: idx } as TreeLeaf)
+				res.push({
+					type: 'leaf',
+					item: dat.shift(),
+					index: idx,
+				} as TreeLeaf)
 				idx++
 			}
 		}

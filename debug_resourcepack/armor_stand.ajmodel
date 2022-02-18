@@ -1,13 +1,13 @@
 {
   "meta": {
     "format_version": "0.0",
-    "creation_time": 1643574489,
+    "creation_time": 1644081457,
     "model_format": "animated_java/ajmodel",
     "box_uv": false,
     "settings": {
       "animatedJava": {
         "projectName": "armor_stand",
-        "exporter": "vanillaAnimationExporter",
+        "exporter": "rawAnimationExporter",
         "verbose": true,
         "rigItem": "minecraft:leather_horse_armor",
         "rigModelsExportFolder": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\resourcepacks\\Animated Java Testing\\assets\\animated_java\\models\\rigs\\armor_stand",
@@ -53,6 +53,9 @@
         "mcbFilePath": "C:\\Users\\Snave\\AppData\\Roaming\\.minecraft\\saves\\Performance Tool 2_0\\datapacks\\performance_tool_2.0\\src\\armor_stand.mc",
         "mcbConfigPath": "",
         "dataPackPath": ""
+      },
+      "rawAnimationExporter": {
+        "outputJsonPath": "C:\\Users\\Snave\\Downloads\\output.json"
       }
     },
     "variants": {

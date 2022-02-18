@@ -53,7 +53,7 @@ export function boneStructure() {
 	}
 
 	function recurse(children) {
-		children.forEach(c => {
+		children.forEach((c) => {
 			if (c instanceof Group) {
 				processGroup(c)
 				recurse(c.children)

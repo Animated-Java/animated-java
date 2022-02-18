@@ -1,421 +1,457 @@
 ---
 #? AJ
 animatedJava:
-  plugin:
-    title: Animated Java
+    plugin:
+        title: Animated Java
 
-  menubar:
-    dropdown: Animated Java
-    settings: 설정
-    export: 모델 내보내기
-    about: 도움말...
+    menubar:
+        dropdown: Animated Java
+        settings: 설정
+        export: 모델 내보내기
+        about: 도움말...
 
-  panels:
-    variants:
-      title: 모델 변형
-      addVariant:
-        title: 변형 추가
-        description: 모델에 새로운 변형을 추가합니다
-      back: 이전으로
+    panels:
+        variants:
+            title: 모델 변형
+            addVariant:
+                title: 변형 추가
+                description: 모델에 새로운 변형을 추가합니다
+            back: 이전으로
+    popups:
+        exportCancelled: 내보내기가 취소되었습니다!
+        exportInProgress: 내보내기가 진행중입니다!
+        noExporterSelected: 내보내기 마법사가 선택되지 않았습니다!
+        successfullyExported: 내보내기가 완료되었습니다!
 
-  popups:
-    exportCancelled: 내보내기가 취소되었습니다!
-    exportInProgress: 내보내기가 진행중입니다!
-    noExporterSelected: 내보내기 마법사가 선택되지 않았습니다!
-    successfullyExported: 내보내기가 완료되었습니다!
+    progress:
+        animationRendering: 애니메이션 렌더링 중... %currents/%totals
 
-  progress:
-    animationRendering: 애니메이션 렌더링 중... %currents/%totals
+    settings:
+        header: Animated Java 설정
+        exporterSettings: 내보내기 마법사 설정
+        isGlobal: '(모든 프로젝트에 적용)'
+        isOptional: '(선택)'
 
-  settings:
-    header: Animated Java 설정
-    isGlobal: '(모든 프로젝트에 적용)'
-    isOptional: '(선택)'
+        generic:
+            errors:
+                invalid: 이 창이 보인다면, Animated Java가 고장난 것입니다. (이런...)
+                emptyValue: 값이 입력되지 않았습니다
+                mustBeBoolean: 값은 참 또는 거짓이여야 합니다
+                mustBeString: 값은 문자열이여야 합니다
+                missingFormatString: 값은 %notFound 형식의 문자열이어야 합니다
+                invalidEntityTag: 올바른 엔티티 태그가 아닙니다
 
-    generic:
-      errors:
-        invalid: 이 창이 보인다면, Animated Java가 고장난 것입니다. (이런...)
-        emptyValue: 값이 입력되지 않았습니다
-        mustBeBoolean: 값은 참 또는 거짓이여야 합니다
-        mustBeString: 값은 문자열이여야 합니다
-        missingFormatString: 값은 %notFound 형식의 문자열이어야 합니다
-        invalidEntityTag: 올바른 엔티티 태그가 아닙니다
+        projectName:
+            title: 프로젝트 제목
+            description:
+                - 이 프로젝트의 고유 ID입니다. 필수로 설정해주세요!
+            errors:
+                invalidFunctionName: 프로젝트 이름은 유효한 함수 이름이어야 합니다!
 
-    projectName:
-      title: 프로젝트 제목
-      description:
-        - 이 프로젝트의 고유 ID입니다. 필수로 설정해주세요!
-      errors:
-        invalidFunctionName: 프로젝트 이름은 유효한 함수 이름이어야 합니다!
+        exporter:
+            title: 내보내기 마법사
+            description:
+                - 이 프로젝트를 내보낼 때 사용될 마법사입니다.
+            errors:
+                mustBeValidExporter: 해당 내보내기 마법사는 등록되지 않은 마법사입니다!
 
-    exporter:
-      title: 내보내기 마법사
-      description:
-        - 이 프로젝트를 내보낼 때 사용될 마법사입니다.
-      errors:
-        mustBeValidExporter: 해당 내보내기 마법사는 등록되지 않은 마법사입니다!
+        verbose:
+            title: 추가 정보
+            description:
+                - 추가적인 디버그 메세지나 오류 메세지를 포함하여 내보낼지 결정합니다.
+                - "'모형'과 '애니메이션' 내보내기 마법사에만 적용됩니다."
 
-    verbose:
-      title: 추가 정보
-      description:
-        - 추가적인 디버그 메세지나 오류 메세지를 포함하여 내보낼지 결정합니다.
-        - "'모형'과 '애니메이션' 내보내기 마법사에만 적용됩니다."
+        rigItem:
+            title: 리그 아이템
+            description:
+                - 갑옷 거치대에 착용되어 모델을 보여주는 아이템입니다
+            errors:
+                invalidMinecraftItem: 해당 아이템은 존재하지 않습니다!
 
-    rigItem:
-      title: 리그 아이템
-      description:
-        - 갑옷 거치대에 착용되어 모델을 보여주는 아이템입니다
-      errors:
-        invalidMinecraftItem: 해당 아이템은 존재하지 않습니다!
+        rigModelsExportFolder:
+            title: 리그 모델 폴더
+            description:
+                - 리그의 모든 모델들이 저장될 폴더입니다
+            errors:
+                invalidPath: 해당 경로는 모델을 내보내기에 적절하지 않은 경로입니다!
 
-    rigModelsExportFolder:
-      title: 리그 모델 폴더
-      description:
-        - 리그의 모든 모델들이 저장될 폴더입니다
-      errors:
-        invalidPath: 해당 경로는 모델을 내보내기에 적절하지 않은 경로입니다!
+        predicateFilePath:
+            title: 리그 아이템 술어 모델
+            description:
+                - 리그 아이템의 모델 파일입니다
+            errors:
+                notEqualToRigItem: 파일 이름은 %rigItem.json 이여야 합니다
 
-    predicateFilePath:
-      title: 리그 아이템 술어 모델
-      description:
-        - 리그 아이템의 모델 파일입니다
-      errors:
-        notEqualToRigItem: 파일 이름은 %rigItem.json 이여야 합니다
+        transparentTexturePath:
+            title: 투명 텍스쳐 파일
+            description:
+                - 변형에서 투명을 사용할 때 사용될 텍스쳐입니다. 투명을 사용하는 변형이 있을 때에만 필요합니다.
+            errors:
+                undefinedWhenNeeded: 변형에서 투명 기능을 사용하기 위해 반드시 필요한 파일입니다!
 
-    transparentTexturePath:
-      title: 투명 텍스쳐 파일
-      description:
-        - 변형에서 투명을 사용할 때 사용될 텍스쳐입니다. 투명을 사용하는 변형이 있을 때에만 필요합니다.
-      errors:
-        undefinedWhenNeeded: 변형에서 투명 기능을 사용하기 위해 반드시 필요한 파일입니다!
+        useCache:
+            title: 애니메이션 캐시 사용
+            description:
+                - 변경 사항이 있는 애니메이션만 다시 렌더링합니다
 
-    useCache:
-      title: 애니메이션 캐시 사용
-      description:
-        - 변경 사항이 있는 애니메이션만 다시 렌더링합니다
+        cacheMode:
+            title: 애니메이션 캐시 모드
+            description:
+                - 애니메이션 캐시가 있으면, 마지막 내보내기 이후 변경 사항이 있는 애니메이션만 다시 렌더링하게 됩니다. 반복성 있는 내보내기 작업이 더욱 빨라지며, 큰 모델에 훨씬 적합합니다.
+                - '- 메모리 모드: 더 빠르지만, 캐시를 저장할 램 용량을 필요로 합니다.'
+                - '- 디스크 모드: 더 느리지만, 대신 저장 공간을 사용하므로 램 용량을 절약할 수 있습니다.'
+            options:
+                memory: 메모리 모드
+                disk: 디스크 모드
 
-    cacheMode:
-      title: 애니메이션 캐시 모드
-      description:
-        - 애니메이션 캐시가 있으면, 마지막 내보내기 이후 변경 사항이 있는 애니메이션만 다시 렌더링하게 됩니다. 반복성 있는 내보내기 작업이 더욱 빨라지며, 큰 모델에 훨씬 적합합니다.
-        - "- 메모리 모드: 더 빠르지만, 캐시를 저장할 램 용량을 필요로 합니다."
-        - "- 디스크 모드: 더 느리지만, 대신 저장 공간을 사용하므로 램 용량을 절약할 수 있습니다."
-      options:
-        memory: 메모리 모드
-        disk: 디스크 모드
+        boundingBoxRenderMode:
+            title: 뼈 크기 제한 표시 상자
+            description:
+                - '뼈 크기 제한을 나타내주는 상자를 표시할지 설정합니다.'
+                - '- 하나만 표시: 한번에 한 상자만 표시됩니다.'
+                - '- 여러개 표시: 선택한 모든 뼈에 대한 상자가 표시됩니다.'
+                - '- 표시 안함: 상자를 아예 표시하지 않습니다.'
+            options:
+                single: 하나만 표시
+                many: 여러개 표시
+                none: 표시 안함
 
-    boundingBoxRenderMode:
-      title: 뼈 크기 제한 표시 상자
-      description:
-        - "뼈 크기 제한을 나타내주는 상자를 표시할지 설정합니다."
-        - "- 하나만 표시: 한번에 한 상자만 표시됩니다."
-        - "- 여러개 표시: 선택한 모든 뼈에 대한 상자가 표시됩니다."
-        - "- 표시 안함: 상자를 아예 표시하지 않습니다."
-      options:
-        single: 하나만 표시
-        many: 여러개 표시
-        none: 표시 안함
+    dialogs:
+        boneConfig:
+            title: 뼈 설정
+            boneNbt: 뼈 NBT
+            armAnimationEnabled: 팔 애니메이션 활성화
 
-  dialogs:
-    boneConfig:
-      title: 뼈 설정
-      boneNbt: 뼈 NBT
-      armAnimationEnabled: 팔 애니메이션 활성화
+        variants:
+            title: 모델 변형
+            description:
+                - "'변형'은 모델의 스킨을 간단하게 교체할 수 있는 기능입니다. 게임 내에서 함수를 이용하여 교체할 수 있습니다."
 
-    variants:
-      title: 모델 변형
-      description:
-        - "'변형'은 모델의 스킨을 간단하게 교체할 수 있는 기능입니다. 게임 내에서 함수를 이용하여 교체할 수 있습니다."
+        about:
+            title: Animated Java 소개
+            description:
+                - 자바 에디션의 맵 창작자들을 위한, 부드럽고 정교한 애니메이션 제작 도구입니다.
 
-    about:
-      title: Animated Java 소개
-      description:
-        - 자바 에디션의 맵 창작자들을 위한, 부드럽고 정교한 애니메이션 제작 도구입니다.
+            version: 버전
+            buildID: 빌드 ID
 
-      version: 버전
-      buildID: 빌드 ID
+            creators: 제작자
+            discordServer: 디스코드 서버에 초대합니다!
+            githubRepo: 소스 (깃허브)
+            developers: 개발자
+            patrons: 패트론 (후원)
+            honourableMentions: 도움을 주신 분들
 
-      creators: 제작자
-      discordServer: 디스코드 서버에 초대합니다!
-      githubRepo: 소스 (깃허브)
-      developers: 개발자
-      patrons: 패트론 (후원)
-      honourableMentions: 도움을 주신 분들
+            fetchbotQuote: '"Let the java mobs dance too!"'
+            snavesutitQuote: '"armor_stand is love, armor_stand is life."'
 
-      fetchbotQuote: '"Let the java mobs dance too!"'
-      snavesutitQuote: '"armor_stand is love, armor_stand is life."'
+            youtuber: 유튜버
+            translator: 번역가
+            contributor: 기여자
+            moderator: 디스코드 서버 관리자
+            closedBeta: 비공개 베타 테스터
+            brandingArtist: 브랜딩 아티스트
+            patronTier1: 패트론 티어 1
+            patronTier2: 패트론 티어 2
+            patronTier3: 패트론 티어 3
 
-      youtuber: 유튜버
-      translator: 번역가
-      contributor: 기여자
-      moderator: 디스코드 서버 관리자
-      closedBeta: 비공개 베타 테스터
-      brandingArtist: 브랜딩 아티스트
-      patronTier1: 패트론 티어 1
-      patronTier2: 패트론 티어 2
-      patronTier3: 패트론 티어 3
+        animationProperties:
+            animationCompleteCommand:
+                label: 애니메이션 커맨드 완료
 
-    animationProperties:
-      animationCompleteCommand:
-        label: 애니메이션 커맨드 완료
-
-    errors:
-      misc:
-        title: Animated Java에서 알 수 없는 오류가 발생했습니다
-        body:
-        - |-
-          <textarea style="height: 256px" readonly="readonly">
-          ------ 에러 / Error ------
-          %errorMessage  //  "%randomErrorMessage"
-          ------ 스택 / Stack ------
-          %errorStack
-
-          빌드 ID / Build ID: %buildID
-          </textarea>
-        - <p>이 오류가 어떻게 발생했는지를 위에 표시된 사항과 함께 <a href="%githubLink">Animated Java 깃허브</a>에 신고해주세요.</p>
-        - <p>또는 저희 <a href="%discordLink">디스코드 서버</a>의 animated-java-support 채널에서 도움을 받을 수도 있습니다.</p>
-        - <p>감사합니다!</p>
-
-      topLevelCubes:
-        title: 모델에 최상위 큐브가 있음
-        body:
-          - 모든 큐브는 그룹 안에 포함되어 있어야 합니다.
-
-      predicateMergeFailed:
-        title: 술어 합치기 실패
-        body:
-          - "%reason"
-          - Animated Java의 술어 모델에만 합칠 수 있습니다.
-          - 술어 아이템 모델을 유효한 Animated Java 술어 모델에 합치려던 것이 맞는지 확인해주세요.
-        reasons:
-          overridesMissing: 모델 덮어쓰기 목록이 존재하지 않습니다.
-          ajMetaMissing: 대상 모델 파일이 Animated Java 술어 파일이 아닙니다.
-
-      invalidAnimationSnappingValue:
-        title: 애니메이션 스냅 값이 올바르지 않음
-        body:
-          - "'%animationName' 애니메이션의 스냅 값이 %snapping입니다!"
-          - 마인크래프트 틱 속도의 제한으로 인해, Animated Java를 이용하기 위해서는 스냅이 20이어야 합니다.
-          - 내보내기 전에, 애니메이션이 이런 제한 사항을 충족하도록 수정해주세요.
-          - (변경된 스냅 시간에 맞춰 일부 키프레임을 조정해야 할 수도 있습니다)
-
-      rigFolderHasUnknownContent:
-        title: 리그 폴더가 사용된 적이 없음
-        body:
-          - 지정된 리그 폴더 안에 알 수 없는 파일이 들어 있습니다.
-          - 정말로 폴더 내의 모든 파일을 삭제하고 대신 리그로 덮어쓰시겠습니까?
-          - "지정된 리그 폴더:"
-          - <textarea>%path</textarea>
-          - "알 수 없는 파일:"
-          - <textarea>%files</textarea>
-
-      rigFolderAlreadyUsedByOther:
-        title: 리그 폴더가 이미 사용중임
-        body:
-          - 지정된 리그 모델 폴더에 이미 다른 리그의 모델이 들어 있습니다.
-          - 정말로 이 파일들을 삭제하고 대신 이 리그의 모델로 덮어쓰시겠습니까?
-          - "지정된 리그 폴더:"
-          - <textarea>%path</textarea>
-          - "파일:"
-          - <textarea>%files</textarea>
-
-      unableToGenerateTexturePath:
-        title: 텍스쳐 경로가 올바르지 않음
-        body:
-          - "'%textureName' 텍스쳐가 리소스 팩에서 올바르지 않은 경로에 위치해 있습니다."
-          - "올바른 리소스 팩의 'assets/namespace/textures' 폴더 하위에 제대로 저장되어 있는지 확인해주세요."
-          - "예) '리소스팩/assets/minecraft/textures/item/diamond.png'"
-
-      unableToGenerateModelPath:
-        title: 모델 경로가 올바르지 않음
-        body:
-          - "'%modelName' 모델이 리소스 팩에서 올바르지 않은 경로에 위치해 있습니다."
-          - "올바른 리소스 팩의 'assets/namespace/models' 폴더 하위에 제대로 저장되어 있는지 확인해주세요."
-          - "예) '리소스팩/assets/minecraft/models/item/diamond.json'"
-
-      invalidCubeRotations:
-        title: 회전 각도가 올바르지 않음
-        body:
-          - 일부 큐브의 회전 각도가 자바 에디션 모델 형식에 맞지 않습니다.
-          - 내보내기 전에, 모든 부적절한 각도를 수정해주세요.
-
-      unsavedTexture:
-        title: 텍스쳐가 저장되지 않음
-        body:
-          - "'%textureName' 텍스쳐가 저장되지 않았습니다!"
-          - 올바른 리소스 팩 경로 하위에 저장되었는지 확인해주세요.
-
-      transparentTexturePathNotFound:
-        title: 투명 텍스쳐가 지정되지 않음
-        body:
-          - 투명 텍스쳐가 지정되지 않았지만, 변형 중 투명 텍스쳐가 사용되었습니다!
-          - 내보내기 전에, 설정에서 투명 텍스쳐의 경로를 먼저 지정해주세요.
-
-      predicateFilePathUndefined:
-        title: 술어 파일 경로가 지정되지 않음
-        body:
-          - 내보내기 전에, 설정에서 술어 파일 경로를 먼저 지정해주세요.
-
-      rigModelsExportFolderUndefined:
-        title: 리그 모델 폴더가 지정되지 않음
-        body:
-          - 내보내기 전에, 설정에서 리그 모델 폴더를 먼저 지정해주세요.
-
-  exporters:
-    #? Generic Exporter Strings
-    generic:
-      progress:
-        writingDataPack: 데이터 팩을 저장하는 중... %progress% | %fileName 저장 중
-        exportingDataPack: 데이터 팩을 생성하는 중... %progress%
-
-      dialogs:
         errors:
-          mcbFilePathNotDefined:
-            title: MCB 파일이 지정되지 않음
-            body:
-              - 내보내기 전에, 모형 내보내기 마법사 설정에서 MCB 파일을 지정해야 합니다!
+            misc:
+                title: Animated Java에서 알 수 없는 오류가 발생했습니다
+                body:
+                    - |-
+                        <textarea style="height: 256px" readonly="readonly">
+                        ------ 에러 / Error ------
+                        %errorMessage  //  "%randomErrorMessage"
+                        ------ 스택 / Stack ------
+                        %errorStack
 
-          dataPackPathNotDefined:
-            title: 데이터 팩의 경로가 지정되지 않음
-            body:
-              - 내보내기 전에, 설정에서 데이터 팩 경로를 지정해야 합니다.
+                        빌드 ID / Build ID: %buildID
+                        </textarea>
+                    - <p>이 오류가 어떻게 발생했는지를 위에 표시된 사항과 함께 <a href="%githubLink">Animated Java 깃허브</a>에 신고해주세요.</p>
+                    - <p>또는 저희 <a href="%discordLink">디스코드 서버</a>의 animated-java-support 채널에서 도움을 받을 수도 있습니다.</p>
+                    - <p>감사합니다!</p>
 
-      settings:
-        rootEntityType:
-          title: 뿌리 엔티티 종류
-          description:
-            - 이 모형의 축으로써 사용될 뿌리 엔티티의 종류입니다
-          errors:
-            invalidEntity: 해당 엔티티는 존재하지 않습니다!
+            topLevelCubes:
+                title: 모델에 최상위 큐브가 있음
+                body:
+                    - 모든 큐브는 그룹 안에 포함되어 있어야 합니다.
 
-        rootEntityNbt:
-          title: 뿌리 엔티티 NBT
-          description:
-            - 뿌리 엔티티의 NBT 데이터
-          errors:
-            invalidNbt: 올바르지 않은 NBT입니다!
+            predicateMergeFailed:
+                title: 술어 합치기 실패
+                body:
+                    - '%reason'
+                    - Animated Java의 술어 모델에만 합칠 수 있습니다.
+                    - 술어 아이템 모델을 유효한 Animated Java 술어 모델에 합치려던 것이 맞는지 확인해주세요.
+                reasons:
+                    overridesMissing: 모델 덮어쓰기 목록이 존재하지 않습니다.
+                    ajMetaMissing: 대상 모델 파일이 Animated Java 술어 파일이 아닙니다.
+                    invalidJson: 대상 모델 파일은 올바르지 않은 JSON 형식을 포함하고 있습니다.
 
-        markerArmorStands:
-          title: 갑옷 거치대의 마커 태그 활성화
-          description:
-            - 리그를 보여주는 갑옷 거치대의 히트박스가 사라지고 상호작용이 불가능해집니다.
+            invalidAnimationSnappingValue:
+                title: 애니메이션 스냅 값이 올바르지 않음
+                body:
+                    - "'%animationName' 애니메이션의 스냅 값이 %snapping입니다!"
+                    - 마인크래프트 틱 속도의 제한으로 인해, Animated Java를 이용하기 위해서는 스냅이 20이어야 합니다.
+                    - 내보내기 전에, 애니메이션이 이런 제한 사항을 충족하도록 수정해주세요.
+                    - (변경된 스냅 시간에 맞춰 일부 키프레임을 조정해야 할 수도 있습니다)
 
-        modelTag:
-          title: 모델 태그
-          description:
-            - 모델을 선택하는 데 사용되는 태그입니다
+            rigFolderHasUnknownContent:
+                title: 리그 폴더가 사용된 적이 없음
+                body:
+                    - 지정된 리그 폴더 안에 알 수 없는 파일이 들어 있습니다.
+                    - 정말로 폴더 내의 모든 파일을 삭제하고 대신 리그로 덮어쓰시겠습니까?
+                    - '지정된 리그 폴더:'
+                    - <textarea>%path</textarea>
+                    - '알 수 없는 파일:'
+                    - <textarea>%files</textarea>
 
-        rootTag:
-          title: 뿌리 태그
-          description:
-            - 모형의 뿌리 엔티티를 선택하는 데 사용되는 태그입니다
+            rigFolderAlreadyUsedByOther:
+                title: 리그 폴더가 이미 사용중임
+                body:
+                    - 지정된 리그 모델 폴더에 이미 다른 리그의 모델이 들어 있습니다.
+                    - 정말로 이 파일들을 삭제하고 대신 이 리그의 모델로 덮어쓰시겠습니까?
+                    - '지정된 리그 폴더:'
+                    - <textarea>%path</textarea>
+                    - '파일:'
+                    - <textarea>%files</textarea>
 
-        allBonesTag:
-          title: 모든 뼈 태그
-          description:
-            - 모형의 뼈를 선택하는 데 사용되는 태그입니다
+            unableToGenerateTexturePath:
+                title: 텍스쳐 경로가 올바르지 않음
+                body:
+                    - "'%textureName' 텍스쳐가 리소스 팩에서 올바르지 않은 경로에 위치해 있습니다."
+                    - "올바른 리소스 팩의 'assets/namespace/textures' 폴더 하위에 제대로 저장되어 있는지 확인해주세요."
+                    - "예) '리소스팩/assets/minecraft/textures/item/diamond.png'"
 
-        boneModelDisplayTag:
-          title: 모델 뼈 표시 태그
-          description:
-            - 모델을 보여주는 엔티티를 선택하는 데 사용되는 태그입니다 (머리에 아이템을 착용한 갑옷 거치대)
+            unableToGenerateModelPath:
+                title: 모델 경로가 올바르지 않음
+                body:
+                    - "'%modelName' 모델이 리소스 팩에서 올바르지 않은 경로에 위치해 있습니다."
+                    - "올바른 리소스 팩의 'assets/namespace/models' 폴더 하위에 제대로 저장되어 있는지 확인해주세요."
+                    - "예) '리소스팩/assets/minecraft/models/item/diamond.json'"
 
-        individualBoneTag:
-          title: 개별 뼈 태그
-          description:
-            - 특정 뼈에 이름을 붙여 선택하는 데 사용되는 태그입니다
+            invalidCubeRotations:
+                title: 회전 각도가 올바르지 않음
+                body:
+                    - 일부 큐브의 회전 각도가 자바 에디션 모델 형식에 맞지 않습니다.
+                    - 내보내기 전에, 모든 부적절한 각도를 수정해주세요.
 
-        internalScoreboardObjective:
-          title: 내부 점수판
-          description:
-            - 시스템 내부 연산에 사용되는 점수판 목표 이름입니다
+            unsavedTexture:
+                title: 텍스쳐가 저장되지 않음
+                body:
+                    - "'%textureName' 텍스쳐가 저장되지 않았습니다!"
+                    - 올바른 리소스 팩 경로 하위에 저장되었는지 확인해주세요.
 
-        idScoreboardObjective:
-          title: 모델 ID 점수판
-          description:
-            - 엔티티가 어느 모델에 연결되는지 인식하기 위해 사용되는 점수판 목표입니다
+            transparentTexturePathNotFound:
+                title: 투명 텍스쳐가 지정되지 않음
+                body:
+                    - 투명 텍스쳐가 지정되지 않았지만, 변형 중 투명 텍스쳐가 사용되었습니다!
+                    - 내보내기 전에, 설정에서 투명 텍스쳐의 경로를 먼저 지정해주세요.
 
-        exportMode:
-          title: 내보내기 모드
-          description:
-            - 내보내기 결과물의 형식을 지정합니다. 바닐라 모드는 리소스 팩과 데이터 팩을 생성합니다.
-            - MCB 모드는 리소스 팩과 lang-mc 컴파일러용 .mc 파일을 생성합니다.
-          options:
-            mcb: MCB 모드
-            vanilla: 바닐라 모드
+            predicateFilePathUndefined:
+                title: 술어 파일 경로가 지정되지 않음
+                body:
+                    - 내보내기 전에, 설정에서 술어 파일 경로를 먼저 지정해주세요.
 
-        mcbFilePath:
-          title: Lang-mc 파일 경로
-          description:
-            - .mc 파일이 내보내기 후 저장될 경로를 지정해주세요.
-            - 이 파일을 데이터 팩으로 변환하기 위해서는 MCB 워크스페이스에 mc-extra가 설치되어 있어야 합니다
-          errors:
-            mustBeNamedAfterProject: 이름이 %projectName.mc인 파일이 지정되어야 합니다!
+            rigModelsExportFolderUndefined:
+                title: 리그 모델 폴더가 지정되지 않음
+                body:
+                    - 내보내기 전에, 설정에서 리그 모델 폴더를 먼저 지정해주세요.
 
-        mcbConfigPath:
-          title: Lang-mc용 config.json 파일 경로
-          description:
-            - Animated Java의 기본 MCB config를 함께 내보냅니다.
-            - 경고! config.json 파일이 이미 있다면 파일을 지우고 대신 덮어씁니다.
+    exporters:
+        #? Generic Exporter Strings
+        generic:
+            progress:
+                writingDataPack: 데이터 팩을 저장하는 중... %progress% | %fileName 저장 중
+                exportingDataPack: 데이터 팩을 생성하는 중... %progress%
 
-        dataPackPath:
-          title: 데이터 팩 경로
-          description:
-            - 데이터 팩을 내보내기할 경로를 지정해주세요.
+            dialogs:
+                errors:
+                    mcbFilePathNotDefined:
+                        title: MCB 파일이 지정되지 않음
+                        body:
+                            - 내보내기 전에, 모형 내보내기 마법사 설정에서 MCB 파일을 지정해야 합니다!
 
-    #? Vanilla Statue Exporter
-    vanillaStatue:
-      title: 모형 내보내기 마법사
+                    dataPackPathNotDefined:
+                        title: 데이터 팩의 경로가 지정되지 않음
+                        body:
+                            - 내보내기 전에, 설정에서 데이터 팩 경로를 지정해야 합니다.
+            settingGroups:
+                entityTags:
+                    title: 엔티티 태그
+                
+                scoreboardObjectives:
+                    title: 점수판 목표
 
-    #? Vanilla Animation Exporter
-    vanillaAnimation:
-      title: 애니메이션 내보내기 마법사
-      dialogs:
-        errors:
-          zeroLengthAnimation:
-            title: 애니메이션의 길이가 0임
-            body:
-              - "%animationName 애니메이션이 너무 짧습니다! 애니메이션 길이가 0.05초(1틱) 이상이여야 합니다."
+            settings:
+                rootEntityType:
+                    title: 뿌리 엔티티 종류
+                    description:
+                        - 이 모형의 축으로써 사용될 뿌리 엔티티의 종류입니다
+                    errors:
+                        invalidEntity: 해당 엔티티는 존재하지 않습니다!
 
-          noAnimations:
-            title: 애니메이션이 없음
-            body:
-              - 애니메이션이 존재하지 않습니다!
-              - 애니메이션 내보내기 마법사로 내보내기 전에, 먼저 애니메이션 탭에서 애니메이션을 만들어야 합니다.
+                rootEntityNbt:
+                    title: 뿌리 엔티티 NBT
+                    description:
+                        - 뿌리 엔티티의 NBT 데이터
+                    errors:
+                        invalidNbt: 올바르지 않은 NBT입니다! %error
 
-      settings:
-        autoDistance:
-          title: 자동 거리 조정
-          description:
-            - 렌더링된 애니메이션에 맞춰, 리그의 모든 뼈들이 음직이는 최소 거리를 자동으로 계산합니다.
+                markerArmorStands:
+                    title: 갑옷 거치대의 마커 태그 활성화
+                    description:
+                        - 리그를 보여주는 갑옷 거치대의 히트박스가 사라지고 상호작용이 불가능해집니다.
 
-        autoDistanceMovementThreshold:
-          title: 자동 거리 조정 한도
-          description:
-            - 자동으로 계산된 애니메이션 거리에 수동으로 일정 거리를 더합니다.
-            - 거리가 길수록 한 틱에 뼈가 이탈하지 않고 리그가 음직일 수 있는 거리가 늘어납니다
-          errors:
-            valueOutOfRange: 한도값은 0 이상이어야 합니다
+                modelTag:
+                    title: 모델 태그
+                    description:
+                        - 모델을 선택하는 데 사용되는 태그입니다
 
-        manualDistance:
-          title: 수동 거리 조정
-          description:
-            - 뼈가 뿌리 엔티티로부터 일정 거리 이상 멀어지면 애니메이션이 멈추도록 수동으로 설정합니다.
-            - 숙련된 사용자들을 위한 기능입니다.
-          errors:
-            valueOutOfRange: 거리는 0 이상이어야 합니다
+                rootTag:
+                    title: 뿌리 태그
+                    description:
+                        - 모형의 뿌리 엔티티를 선택하는 데 사용되는 태그입니다
 
-        frameScoreboardObjective:
-          title: 프레임 점수판
-          description:
-            - 다음에 재생할 프레임을 저장하는 데 사용되는 점수판 목표의 이름입니다
+                allBonesTag:
+                    title: 모든 뼈 태그
+                    description:
+                        - 모형의 뼈를 선택하는 데 사용되는 태그입니다
 
-        animatingFlagScoreboardObjective:
-          title: 애니메이션 표시 점수판
-          description:
-            - 리그의 애니메이션이 재생되고 있는지를 저장하는 데 사용되는 점수판 목표입니다
+                boneModelDisplayTag:
+                    title: 모델 뼈 표시 태그
+                    description:
+                        - 모델을 보여주는 엔티티를 선택하는 데 사용되는 태그입니다 (머리에 아이템을 착용한 갑옷 거치대)
 
-        animationLoopModeScoreboardObjective:
-          title: 애니메이션 반복 모드 점수판
-          description:
-            - 각 애니메이션의 반복 재생을 조정하는 데 사용되는 점수판 목표입니다
+                individualBoneTag:
+                    title: 개별 뼈 태그
+                    description:
+                        - 특정 뼈에 이름을 붙여 선택하는 데 사용되는 태그입니다
+
+                internalScoreboardObjective:
+                    title: 내부 점수판
+                    description:
+                        - 시스템 내부 연산에 사용되는 점수판 목표 이름입니다
+
+                idScoreboardObjective:
+                    title: 모델 ID 점수판
+                    description:
+                        - 엔티티가 어느 모델에 연결되는지 인식하기 위해 사용되는 점수판 목표입니다
+
+                exportMode:
+                    title: 내보내기 모드
+                    description:
+                        - 내보내기 결과물의 형식을 지정합니다. 바닐라 모드는 리소스 팩과 데이터 팩을 생성합니다.
+                        - MCB 모드는 리소스 팩과 lang-mc 컴파일러용 .mc 파일을 생성합니다.
+                    options:
+                        mcb: MCB 모드
+                        vanilla: 바닐라 모드
+
+                mcbFilePath:
+                    title: Lang-mc 파일 경로
+                    description:
+                        - .mc 파일이 내보내기 후 저장될 경로를 지정해주세요.
+                        - 이 파일을 데이터 팩으로 변환하기 위해서는 MCB 워크스페이스에 mc-extra가 설치되어 있어야 합니다
+                    errors:
+                        mustBeNamedAfterProject: 이름이 %projectName.mc인 파일이 지정되어야 합니다!
+
+                mcbConfigPath:
+                    title: Lang-mc용 config.json 파일 경로
+                    description:
+                        - Animated Java의 기본 MCB config를 함께 내보냅니다.
+                        - 경고! config.json 파일이 이미 있다면 파일을 지우고 대신 덮어씁니다.
+
+                dataPackPath:
+                    title: 데이터 팩 경로
+                    description:
+                        - 데이터 팩을 내보내기할 경로를 지정해주세요.
+
+        #? Vanilla Statue Exporter
+        vanillaStatue:
+            title: 모형 내보내기 마법사
+        
+        rawAnimation:
+            title: 단순 애니메이션 파일
+
+            dialogs:
+                errors:
+                    outputJsonPathUndefined:
+                        title: 대상 파일 경로가 지정되지 않음
+                        body:
+                            - 내보내기 전에, 설정에서 JSON 파일을 내보내기할 경로를 지정해주세요.
+
+            settings:
+                outputJsonPath:
+                    title: JSON 파일을 내보내기할 경로
+                    description:
+                        - 내보내기한 데이터가 저장될 경로입니다.
+
+        #? Vanilla Animation Exporter
+        vanillaAnimation:
+            title: 애니메이션 내보내기 마법사
+            dialogs:
+                errors:
+                    zeroLengthAnimation:
+                        title: 애니메이션의 길이가 0임
+                        body:
+                            - '%animationName 애니메이션이 너무 짧습니다! 애니메이션 길이가 0.05초(1틱) 이상이여야 합니다.'
+
+                    noAnimations:
+                        title: 애니메이션이 없음
+                        body:
+                            - 애니메이션이 존재하지 않습니다!
+                            - 애니메이션 내보내기 마법사로 내보내기 전에, 먼저 애니메이션 탭에서 애니메이션을 만들어야 합니다.
+
+            settings:
+                autoDistance:
+                    title: 자동 거리 조정
+                    description:
+                        - 렌더링된 애니메이션에 맞춰, 리그의 모든 뼈들이 음직이는 최소 거리를 자동으로 계산합니다.
+
+                autoDistanceMovementThreshold:
+                    title: 자동 거리 조정 한도
+                    description:
+                        - 자동으로 계산된 애니메이션 범위에 수동으로 일정 거리를 더합니다.
+                        - 거리가 길수록 뼈가 이탈하지 않고 리그가 음직일 수 있는 거리가 늘어납니다
+                    errors:
+                        valueOutOfRange: 한도값은 0 이상이어야 합니다
+
+                manualDistance:
+                    title: 수동 거리 조정
+                    description:
+                        - 뼈가 뿌리 엔티티로부터 일정 거리 이상 멀어지면 애니메이션이 멈추도록 수동으로 설정합니다.
+                        - 숙련된 사용자들을 위한 기능입니다.
+                    errors:
+                        valueOutOfRange: 거리는 0 이상이어야 합니다
+                
+                deduplicatePositionFrames:
+                    title: 중복 위치 프레임 제거
+                    description:
+                        - 반복되는 위치 값을 제거합니다.
+                        - 파일 크기와 함수 수를 대폭 감소시킬 수 있습니다.
+                        - 경고! 이 기능을 사용하고 뼈를 수동으로 음직이면 모델에서 뼈가 이탈합니다. 정지해 있는 모델을 만드는 경우에만 이 설정을 적용하세요.
+
+                deduplicateRotationFrames:
+                    title: 중복 회전 프레임 제거
+                    description:
+                        - 반복되는 회전 각도 값을 제거합니다.
+                        - 파일 크기와 함수 수를 대폭 감소시킬 수 있습니다.
+
+                frameScoreboardObjective:
+                    title: 프레임 점수판
+                    description:
+                        - 다음에 재생할 프레임을 저장하는 데 사용되는 점수판 목표의 이름입니다
+
+                animatingFlagScoreboardObjective:
+                    title: 애니메이션 표시 점수판
+                    description:
+                        - 리그의 애니메이션이 재생되고 있는지를 저장하는 데 사용되는 점수판 목표입니다
+
+                animationLoopModeScoreboardObjective:
+                    title: 애니메이션 반복 모드 점수판
+                    description:
+                        - 각 애니메이션의 반복 재생을 조정하는 데 사용되는 점수판 목표입니다

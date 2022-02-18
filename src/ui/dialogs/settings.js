@@ -224,13 +224,18 @@ export function registerSettingRenderer(type, renderer) {
 		RenderTemplates[type] = renderer(React)
 	}
 }
-const SettingInput = ({ namespace, name, template }) => {
+const SettingInput = (p) => {
+	const { namespace, name, template } = p
 	const [value, setValue] = useState(settings[namespace][name])
 	const [isValid, setIsValid] = useState(true)
 	const [isVisible, setIsVisible] = useState(true)
 	const [rerender, setRerender] = useState(0)
-	updateSettingsUiActions[`${namespace}.${name}`] = () =>
-		setRerender(Math.random())
+	useEffect(() => {
+		updateSettingsUiActions[`${namespace}.${name}`] = () =>
+			setRerender(Math.random())
+		return () =>
+			(updateSettingsUiActions[`${namespace}.${name}`] = () => {})
+	}, [])
 	useEffect(() => {
 		// setValue(settings[namespace][name])
 		return settings.watch(namespace + '.' + name, (v) => {
