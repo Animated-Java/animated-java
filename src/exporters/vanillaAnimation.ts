@@ -558,9 +558,9 @@ async function createMCFile(
 
 			get rot(): { x: number; y: number; z: number } {
 				return {
-					x: roundToN(this.bone.rot.x, 1000),
-					y: roundToN(this.bone.rot.y, 1000),
-					z: roundToN(this.bone.rot.z, 1000),
+					x: roundToN(this.bone.rot.x, 10000),
+					y: roundToN(this.bone.rot.y, 10000),
+					z: roundToN(this.bone.rot.z, 10000),
 				}
 			}
 
@@ -695,15 +695,15 @@ async function createMCFile(
 		for (const [boneName, bone] of Object.entries(staticFrame)) {
 			const baseModifier = format(boneBaseModifier, {
 				boneName,
-				x: roundToN(bone.pos.x, 1000),
-				y: roundToN(bone.pos.y + headYOffset, 1000),
-				z: roundToN(bone.pos.z, 1000),
+				x: roundToN(bone.pos.x, 100000),
+				y: roundToN(bone.pos.y + headYOffset, 100000),
+				z: roundToN(bone.pos.z, 100000),
 			})
 			const displayModifier = format(boneDisplayModifier, {
 				boneName,
-				x: roundToN(bone.rot.x, 1000),
-				y: roundToN(bone.rot.y, 1000),
-				z: roundToN(bone.rot.z, 1000),
+				x: roundToN(bone.rot.x, 10000),
+				y: roundToN(bone.rot.y, 10000),
+				z: roundToN(bone.rot.z, 10000),
 			})
 			baseModifiers.push(baseModifier)
 			displayModifiers.push(displayModifier)
@@ -718,7 +718,7 @@ async function createMCFile(
 					# Remove all animation tags and reset animation time
 					${Object.values(animations).map(animation => format(`
 						tag @s remove aj.${projectName}.anim.${animation.name}
-						scoreboard players set @s ${scoreboards.animationLoopMode} 0
+						scoreboard players set @s ${scoreboards.animationLoopMode} ${loopModeIDs.indexOf(animation.loopMode)}
 					`, { animationName: animation.name }
 					)).join('\n')}
 
@@ -897,9 +897,9 @@ async function createMCFile(
 			function getPos(boneName: string, leaf: TreeLeaf) {
 				let pos = leaf.item.bones[boneName].pos
 				return {
-					x: roundToN(pos.x, 1000),
-					y: roundToN(pos.y + headYOffset, 1000),
-					z: roundToN(pos.z, 1000),
+					x: roundToN(pos.x, 100000),
+					y: roundToN(pos.y + headYOffset, 100000),
+					z: roundToN(pos.z, 100000),
 				}
 			}
 
@@ -926,9 +926,9 @@ async function createMCFile(
 				if (!frame) return
 				let pos = frame.bones[boneName].pos
 				pos = {
-					x: roundToN(pos.x, 1000),
-					y: roundToN(pos.y + headYOffset, 1000),
-					z: roundToN(pos.z, 1000),
+					x: roundToN(pos.x, 100000),
+					y: roundToN(pos.y + headYOffset, 100000),
+					z: roundToN(pos.z, 100000),
 				}
 
 				let rot = frame.bones[boneName].rot

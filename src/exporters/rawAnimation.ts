@@ -45,6 +45,8 @@ function rawExport(exportData: aj.ExportData) {
 		content: JSON.stringify(FILE, null, '\t'),
 		custom_writer: null,
 	})
+
+	Blockbench.showQuickMessage(tl('animatedJava.popups.successfullyExported'))
 }
 
 const genericEmptySettingText = tl(

@@ -283,7 +283,7 @@ function About() {
 						fontSize: '2em',
 						color: '#FF424D',
 					}}
-					title={tl('animatedJava.dialogs.about.patron')}
+					title={tl('animatedJava.dialogs.about.patreon')}
 				>
 					<i className="fab fa-patreon"></i>
 				</Link>
