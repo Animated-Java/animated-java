@@ -3,16 +3,15 @@ import { format } from './modelFormat'
 import { bus } from './util/bus'
 
 import { settings } from './settings'
-function createBox() {
+import { isSceneBased } from './util/hasSceneAsParent'
+function createBox(group) {
 	const size = settings.animatedJava.modelScalingMode === '3x3x3' ? 3 : 7
-	const a = new THREE.BoxGeometry(16 * size, 16 * size, 16 * size)
-	const b = new THREE.EdgesGeometry(a)
-	const c = new THREE.LineSegments(
-		b,
-		new THREE.LineBasicMaterial({ color: 0xff0000 })
-	)
-	c.position.y = 8
-	return c
+	const boxGeometry = new THREE.BoxGeometry(16 * size, 16 * size, 16 * size)
+	const edgeGeomemetry = new THREE.EdgesGeometry(boxGeometry)
+	const material = new THREE.LineBasicMaterial({ color: 0xff0000 })
+	const mesh = new THREE.LineSegments(edgeGeomemetry, material)
+	mesh.position.y = 8
+	return { mesh, material, size, group }
 }
 let visboxs = []
 let last = null
@@ -39,9 +38,9 @@ settings.watch('animatedJava.modelScalingMode', () => {
 		visboxs = []
 		for (let item of Selected) {
 			if (item.visbox) {
-				item.mesh.remove(item.visbox)
-				item.visbox = createBox()
-				item.mesh.add(item.visbox)
+				item.mesh.remove(item.visbox.mesh)
+				item.visbox = createBox(item)
+				item.mesh.add(item.visbox.mesh)
 				visboxs.push(item.visbox)
 			}
 		}
@@ -71,10 +70,10 @@ bus.on(EVENTS.LIFECYCLE.LOAD, () => {
 			const viewmode = settings.animatedJava.boundingBoxRenderMode
 			if (viewmode !== mode) {
 				mode = viewmode
-				visboxs.forEach((v) => v.parent.remove(v))
+				visboxs.forEach((v) => v.mesh.parent.remove(v.mesh))
 				Array.from(last_mult || []).forEach((item) => {
 					if (item.visbox) {
-						item.mesh.remove(item.visbox)
+						item.mesh.remove(item.visbox.mesh)
 						delete item.visbox
 					}
 				})
@@ -95,13 +94,15 @@ bus.on(EVENTS.LIFECYCLE.LOAD, () => {
 					if (parent !== last) {
 						if (visboxs.length) {
 							try {
-								visboxs.forEach((v) => v.parent.remove(v))
+								visboxs.forEach((v) =>
+									v.mesh.parent.remove(v.mesh)
+								)
 							} catch (e) {}
 							visboxs = []
 						}
-						if (parent && parent.name !== 'SCENE') {
-							const b = createBox()
-							parent.mesh.add(b)
+						if (parent && !isSceneBased(parent)) {
+							const b = createBox(parent)
+							parent.mesh.add(b.mesh)
 							visboxs.push(b)
 						}
 						last = parent
@@ -116,20 +117,22 @@ bus.on(EVENTS.LIFECYCLE.LOAD, () => {
 							Selected.add(cube.parent)
 						})
 					}
-					const items = Array.from(Selected)
+					const items = Array.from(Selected).filter(
+						(group) => !isSceneBased(group)
+					)
 					const old = Array.from(last_mult || [])
 					items.forEach((item) => {
 						if (!last_mult || !last_mult.has(item)) {
-							item.visbox = createBox()
+							item.visbox = createBox(item)
 							visboxs.push(item.visbox)
-							item.mesh.add(item.visbox)
+							item.mesh.add(item.visbox.mesh)
 						}
 					})
 					old.forEach((item) => {
 						if (!Selected.has(item)) {
 							if (item.visbox) {
 								try {
-									item.mesh.remove(item.visbox)
+									item.mesh.remove(item.visbox.mesh)
 									visboxs.splice(
 										visboxs.indexOf(item.visbox),
 										1
@@ -144,7 +147,7 @@ bus.on(EVENTS.LIFECYCLE.LOAD, () => {
 				visboxs.forEach((v) => v.parent.remove(v))
 				Array.from(last_mult || []).forEach((item) => {
 					if (item.visbox) {
-						item.mesh.remove(item.visbox)
+						item.mesh.remove(item.visbox.mesh)
 						delete item.visbox
 					}
 				})
