@@ -1,3 +1,5 @@
+import { size } from './misc'
+
 function assert(condition: any, message?: string) {
 	if (!condition) {
 		throw new Error(message || 'Assertion failed')
@@ -295,6 +297,7 @@ export class SNBTTag {
 			case SNBTTagType.STRING:
 				return SNBTUtil.stringify(this.value)
 			case SNBTTagType.COMPOUND:
+				if (size(this.value) === 0) return '{}'
 				return (
 					'{\n' +
 					Object.entries(this.value as Record<any, SNBTTag>)

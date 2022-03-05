@@ -31,7 +31,7 @@ const openBoneConfig = CustomAction('animatedJava.BoneConfig', {
 				template: `
 					<div>
 						<h3>${tl('animatedJava.dialogs.boneConfig.boneNbt')}</h3>
-						<vue-prism-editor id="code-view-output" v-model="nbt" language="snbt" style="height: 10em;" :line-numbers="true" />
+						<vue-prism-editor id="code-view-output" v-model="nbt" language="snbt" :line-numbers="true" />
 					</div>
 				`,
 			},
