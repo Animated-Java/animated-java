@@ -17,29 +17,34 @@ const openBoneConfig = CustomAction('animatedJava.BoneConfig', {
 		const dialog = new Dialog({
 			title: tl('animatedJava.dialogs.boneConfig.title'),
 			id: 'boneConfig',
-			form: {
-				nbt: {
-					type: 'textarea',
-					label: tl('animatedJava.dialogs.boneConfig.boneNbt'),
-					value: selected.nbt,
+			// @ts-ignore
+			width: 650,
+			component: {
+				// @ts-ignore
+				components: { VuePrismEditor },
+				data: {
+					nbt: selected.nbt,
 				},
-				// armAnimationEnabled: {
-				// 	type: 'checkbox',
-				// 	label: tl(
-				// 		'animatedJava.boneConfig.armAnimationEnabled'
-				// 	),
-				// 	value: false,
-				// },
+				methods: {},
+				template: `
+					<div>
+						<h3>${tl('animatedJava.dialogs.boneConfig.boneNbt')}</h3>
+						<vue-prism-editor id="code-view-output" v-model="nbt" language="snbt" style="height: 10em;" :line-numbers="true" />
+					</div>
+				`,
 			},
-			onConfirm: (formData: any) => {
-				console.log(formData)
-				selected.nbt = formData.nbt
-				// selected.armAnimationEnabled = formData.armAnimationEnabled
-				dialog.hide()
+			onConfirm() {
+				debugger
+				selected.nbt = this.component.data.nbt
 			},
 		}).show()
-		// @ts-ignore
-		document.querySelector('#nbt').value = selected.nbt
+		// //@ts-ignore
+		// dialog.object.children[1].children[1].remove()
+		// //@ts-ignore
+		// const mount = dialog.object.children[1].children[0]
+		// console.log(mount)
+		// // @ts-ignore
+		// document.querySelector('#nbt').value = selected.nbt
 		// console.log(selected.armAnimationEnabled)
 		// TODO Add armor_stand arm animation
 		// @ts-ignore
@@ -63,3 +68,13 @@ new Property(Group, 'string', 'armAnimationEnabled', {
 Group.prototype.menu.structure.splice(3, 0, openBoneConfig)
 // @ts-ignore
 openBoneConfig.menus.push({ menu: Group.prototype.menu, path: '' })
+;(function (Prism) {
+	Prism.languages.snbt = {
+		boolean: /\b(?:true|false)\b/,
+		number: /-?\d+\.?\d*(e[+-]?\d+[IiBbFfSs]*)?/i,
+		operator: /:/,
+		property: { pattern: /(?:\\.|[^\{\\"\r\n])*(?=\s*:)/g, greedy: true },
+		punctuation: /[{}[\],]/,
+		string: { pattern: /"(?:\\.|[^\\"\r\n])*"(?!\s*:)/g, greedy: true },
+	}
+})(globalThis.Prism)
