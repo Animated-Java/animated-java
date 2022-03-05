@@ -1,5 +1,6 @@
 import { CustomAction } from '../../util/customAction'
 import { tl } from '../../util/intl'
+import { SNBT } from '../../util/SNBT'
 
 type AJGroup = {
 	nbt: string
@@ -19,6 +20,7 @@ const openBoneConfig = CustomAction('animatedJava.BoneConfig', {
 			id: 'boneConfig',
 			// @ts-ignore
 			width: 650,
+			buttons: ['format', 'confirm', 'cancel'],
 			component: {
 				// @ts-ignore
 				components: { VuePrismEditor },
@@ -33,9 +35,15 @@ const openBoneConfig = CustomAction('animatedJava.BoneConfig', {
 					</div>
 				`,
 			},
-			onConfirm() {
-				debugger
-				selected.nbt = this.component.data.nbt
+			onButton(index) {
+				if (index === 0) {
+					this.component.data.nbt = SNBT.parse(
+						this.component.data.nbt
+					).toPrettyString()
+					return false
+				} else if (index === 1) {
+					selected.nbt = this.component.data.nbt
+				}
 			},
 		}).show()
 		// //@ts-ignore
@@ -73,8 +81,11 @@ openBoneConfig.menus.push({ menu: Group.prototype.menu, path: '' })
 		boolean: /\b(?:true|false)\b/,
 		number: /-?\d+\.?\d*(e[+-]?\d+[IiBbFfSs]*)?/i,
 		operator: /:/,
-		property: { pattern: /(?:\\.|[^\{\\"\r\n])*(?=\s*:)/g, greedy: true },
+		property: { pattern: /(?:\\.|[^\{\\"\r\n])*(?=\s*:)/g },
 		punctuation: /[{}[\],]/,
-		string: { pattern: /"(?:\\.|[^\\"\r\n])*"(?!\s*:)/g, greedy: true },
+		string: {
+			pattern: /("|')(?:\\(?:\r\n|[\s\S])|(?!\1)[^\\\r\n])*\1/,
+			greedy: true,
+		},
 	}
 })(globalThis.Prism)
