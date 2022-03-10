@@ -182,6 +182,13 @@ async function createMCFile(
 
 	// prettier-ignore
 	FILE.push(`
+		function load {
+			schedule function ${projectName}:animation_loop 5t
+		}
+	`)
+
+	// prettier-ignore
+	FILE.push(`
 		function reset_animation_flags {
 			scoreboard players set .aj.animation ${scoreboards.animatingFlag} 0
 			scoreboard players set .aj.anim_loop ${scoreboards.animatingFlag} 0
