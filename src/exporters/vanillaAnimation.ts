@@ -1017,9 +1017,9 @@ async function createMCFile(
 								// prettier-ignore
 								posDepth++
 								return {
-									v: `execute if score .this ${
-										thisFrameObjective
-									} matches ${item.min}..${item.max - 1} run {
+									v: `execute if score .this ${thisFrameObjective} matches ${
+										item.min
+									}..${item.max - 1} run {
 										name tree/${boneName}_pos_${item.min}-${item.max - 1}
 										${inside.reduce((p, c) => p + (c.v ? c.v + '\n' : ''), '')}
 									}`,
@@ -1082,9 +1082,9 @@ async function createMCFile(
 								// prettier-ignore
 								rotDepth++
 								return {
-									v: `execute if score .this ${
-										thisFrameObjective
-									} matches ${item.min}..${item.max - 1} run {
+									v: `execute if score .this ${thisFrameObjective} matches ${
+										item.min
+									}..${item.max - 1} run {
 										name tree/${boneName}_rot_${item.min}-${item.max - 1}
 										${inside.reduce((p, c) => p + (c.v ? c.v + '\n' : ''), '')}
 									}`,
@@ -1133,9 +1133,9 @@ async function createMCFile(
 								// prettier-ignore
 								scaleDepth++
 								return {
-									v: `execute if score .this ${
-										thisFrameObjective
-									} matches ${item.min}..${item.max - 1} run {
+									v: `execute if score .this ${thisFrameObjective} matches ${
+										item.min
+									}..${item.max - 1} run {
 										name tree/${boneName}_scale_${item.min}-${item.max - 1}
 										${inside.reduce((p, c) => p + (c.v ? c.v + '\n' : ''), '')}
 									}`,
@@ -1880,7 +1880,10 @@ const Exporter = (AJ: any) => {
 				),
 				type: 'text',
 				default: 'aj.%projectName.%animationName.frame',
-				onUpdate: validateFormattedStringSetting(['%projectName', '%animationName']),
+				onUpdate: validateFormattedStringSetting([
+					'%projectName',
+					'%animationName',
+				]),
 				group: 'scoreboardObjectives',
 			},
 			animatingFlagScoreboardObjective: {
