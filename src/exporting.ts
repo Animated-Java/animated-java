@@ -369,13 +369,18 @@ async function exportPredicate(
 		myMeta.push(model.aj.customModelData)
 
 		if (!scaleModels[modelName]) continue
-		for (const [vecStr, scaleModel] of Object.entries(scaleModels[modelName])) {
+		for (const [vecStr, scaleModel] of Object.entries(
+			scaleModels[modelName]
+		)) {
 			scaleModel.aj.customModelData = idGenerator.next().value as number
 
 			predicateJSON.overrides.push({
 				predicate: { custom_model_data: scaleModel.aj.customModelData },
 				model: getModelPath(
-					path.join(ajSettings.rigModelsExportFolder, `${modelName}_${vecStr}`),
+					path.join(
+						ajSettings.rigModelsExportFolder,
+						`${modelName}_${vecStr}`
+					),
 					`${modelName}_${vecStr}`
 				),
 			})

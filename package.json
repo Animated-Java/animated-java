@@ -14,12 +14,8 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
-		"chalk": "^4.1.0",
-		"compare-versions": "^3.6.0",
 		"esbuild": "^0.14.27",
 		"esbuild-plugin-yaml": "^0.0.1",
-		"exists-command": "^0.1.2",
-		"rc-tooltip": "^5.0.1",
 		"react": "^17.0.1",
 		"react-dom": "^17.0.1",
 		"react-dropdown": "^1.9.2",

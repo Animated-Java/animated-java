@@ -283,7 +283,7 @@ animatedJava:
             settingGroups:
                 entityTags:
                     title: 엔티티 태그
-                
+
                 scoreboardObjectives:
                     title: 점수판 목표
 
@@ -373,7 +373,7 @@ animatedJava:
         #? Vanilla Statue Exporter
         vanillaStatue:
             title: 모형 내보내기 마법사
-        
+
         rawAnimation:
             title: 단순 애니메이션 파일
 
@@ -427,7 +427,7 @@ animatedJava:
                         - 숙련된 사용자들을 위한 기능입니다.
                     errors:
                         valueOutOfRange: 거리는 0 이상이어야 합니다
-                
+
                 deduplicatePositionFrames:
                     title: 중복 위치 프레임 제거
                     description:

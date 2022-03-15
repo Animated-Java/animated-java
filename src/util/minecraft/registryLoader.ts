@@ -114,13 +114,17 @@ export class RegistryLoader {
 		const now = Date.now()
 		if (lastTime && now - lastTime >= twoDays) {
 			localStorage.setItem(`${this.key}.lastTime`, String(now))
-			console.log(`Local registry for ${this.key} out of date, Updating...`)
+			console.log(
+				`Local registry for ${this.key} out of date, Updating...`
+			)
 			return await this.fetch()
 		}
 
 		const local = this.localValue
 		if (!local) {
-			console.log(`No local registry found for ${this.key}. Collecting...`)
+			console.log(
+				`No local registry found for ${this.key}. Collecting...`
+			)
 			return await this.fetch()
 		}
 		console.log(`Local registry for ${this.key} found. Loading...`)

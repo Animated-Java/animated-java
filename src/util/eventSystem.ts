@@ -71,7 +71,7 @@ class EventSystem {
 					recipient.handler(payload)
 				} else {
 					console.log(
-						'[event (${this.id}): dispatch] not running handler as its already been run during this dispatch cycle'
+						`[event (${this.id}): dispatch] not running handler as its already been run during this dispatch cycle`
 					)
 				}
 			} catch (e) {

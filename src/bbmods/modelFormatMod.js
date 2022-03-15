@@ -162,7 +162,9 @@ ModelFormat.prototype.convertTo = function convertTo() {
 	hideDialog()
 
 	let file = pathjs.parse(Project.save_path)
-	Project.export_path = normalizePath(`${file.dir}.${Project.format.codec.extension}`)
+	Project.export_path = normalizePath(
+		`${file.dir}.${Project.format.codec.extension}`
+	)
 	// Project.format.codec.export()
 
 	Canvas.updateAllPositions()

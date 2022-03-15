@@ -49,19 +49,21 @@ function throwIfUnsavedTexture(texture: any) {
 
 function throwIfInvalidPath(referencePath: string) {
 	if (referencePath.match(/[A-Z]/))
-	throw new CustomError('Invalid Resource Path', {
-		dialog: {
-			id: 'animatedJava.dialogs.errors.invalidResourcePath',
-			title: tl('animatedJava.dialogs.errors.invalidResourcePath.title'),
-			lines: [
-				tl('animatedJava.dialogs.errors.invalidResourcePath.body', {
-					path: referencePath,
-				}),
-			],
-			width: 512,
-			singleButton: true,
-		},
-	})
+		throw new CustomError('Invalid Resource Path', {
+			dialog: {
+				id: 'animatedJava.dialogs.errors.invalidResourcePath',
+				title: tl(
+					'animatedJava.dialogs.errors.invalidResourcePath.title'
+				),
+				lines: [
+					tl('animatedJava.dialogs.errors.invalidResourcePath.body', {
+						path: referencePath,
+					}),
+				],
+				width: 512,
+				singleButton: true,
+			},
+		})
 }
 
 export function getTexturePath(texture: any) {
@@ -113,5 +115,5 @@ export function getModelPath(modelPath: string, modelName: string) {
 			}
 		}
 	}
-	throwFailedToGeneratePath('model', {name: modelName})
+	throwFailedToGeneratePath('model', { name: modelName })
 }

@@ -109,6 +109,7 @@ const esbuild = require('esbuild')
 			watch: dev,
 			incremental: dev,
 			charset: 'ascii',
+			drop: dev ? [] : ['console', 'debugger'],
 		})
 		.then((res) => {
 			const end = Date.now()
