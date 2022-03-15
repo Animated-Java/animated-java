@@ -98,3 +98,49 @@ export const tl = (key: string, formatObj?: FormatObject, raw?: boolean) => {
 	}
 	return ret
 }
+
+// @ts-ignore
+import lang_cz from '../lang/cz.yaml'
+intl.register('cz', lang_cz)
+// @ts-ignore
+import lang_de from '../lang/de.yaml'
+intl.register('de', lang_de)
+// @ts-ignore
+import lang_en from '../lang/en.yaml'
+intl.register('en', lang_en)
+// @ts-ignore
+import lang_es from '../lang/es.yaml'
+intl.register('es', lang_es)
+// @ts-ignore
+import lang_fr from '../lang/fr.yaml'
+intl.register('fr', lang_fr)
+// @ts-ignore
+import lang_it from '../lang/it.yaml'
+intl.register('it', lang_it)
+// @ts-ignore
+import lang_ja from '../lang/ja.yaml'
+intl.register('ja', lang_ja)
+// @ts-ignore
+import lang_ko from '../lang/ko.yaml'
+intl.register('ko', lang_ko)
+// @ts-ignore
+import lang_nl from '../lang/nl.yaml'
+intl.register('nl', lang_nl)
+// @ts-ignore
+import lang_pl from '../lang/pl.yaml'
+intl.register('pl', lang_pl)
+// @ts-ignore
+import lang_pt from '../lang/pt.yaml'
+intl.register('pt', lang_pt)
+// @ts-ignore
+import lang_ru from '../lang/ru.yaml'
+intl.register('ru', lang_ru)
+// @ts-ignore
+import lang_sv from '../lang/sv.yaml'
+intl.register('sv', lang_sv)
+// @ts-ignore
+import lang_zh from '../lang/zh.yaml'
+intl.register('zh', lang_zh)
+// @ts-ignore
+import lang_zh_tw from '../lang/zh_tw.yaml'
+intl.register('zh_tw', lang_zh_tw)

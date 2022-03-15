@@ -9,6 +9,8 @@ import ReactIs from 'react-is'
 import url from '@rollup/plugin-url'
 import yaml from '@rollup/plugin-yaml'
 import typescript from 'rollup-plugin-typescript2'
+import styles from 'rollup-plugin-styles'
+import crypto from 'crypto'
 export default {
 	input: 'src/animatedJava.ts',
 	output: {
@@ -18,6 +20,28 @@ export default {
 	plugins: [
 		typescript(),
 		yaml(),
+		styles({
+			autoModules: /\.module\.\S+$/,
+			mode: [
+				'inject',
+				(varname, id) => {
+					const variable = `deletable_${crypto
+						.createHash('sha256')
+						.update(id)
+						.digest('hex')}`
+					return `const clean_${variable} = () => ANIMATED_JAVA.css(${varname});
+if (Reflect.has(window, 'ANIMATED_JAVA')) {
+	clean_${variable}();
+} else {
+	// there is absolutly shit we can do about this
+	// @ts-ignore
+	Blockbench.on('animated-java-ready', clean_${variable});
+}`
+				},
+			],
+			minimize: true,
+			compress: true,
+		}),
 		url({
 			include: [
 				'**/*.svg',
@@ -25,7 +49,6 @@ export default {
 				'**/*.jpg',
 				'**/*.gif',
 				'**/*.obj',
-				'**/*.css',
 				'**/*.wjs',
 			],
 			limit: Infinity,

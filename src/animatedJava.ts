@@ -8,6 +8,7 @@ import { tl } from './util/intl'
 import { settings } from './settings'
 import { registerSettingRenderer } from './ui/dialogs/settings'
 import './ui/mods/boneConfig'
+import './ui/variants'
 import './compileLangMC'
 import './exporters/vanillaStatue'
 import './exporters/vanillaAnimation'
@@ -20,6 +21,7 @@ import './util/minecraft/items'
 import { intl } from './util/intl'
 import { CustomError } from './util/customError'
 import * as nbt from './util/SNBT'
+import * as EVENTS from './constants/events'
 
 const errorMessages = [
 	`Uh oh!`,
@@ -29,8 +31,8 @@ const errorMessages = [
 	`Skill Issue.`,
 	`Too bad, So Sad`,
 	`You have how many elements!?`,
-	`I'll export successfully some day!` ,
-	`When I grow up, I wanna be just like Blender!` ,
+	`I'll export successfully some day!`,
+	`When I grow up, I wanna be just like Blender!`,
 	`Wow, Epic fail.`,
 	`Should'a seen that one comming...`,
 	`It's all Jannis' fault! :(`,
@@ -287,10 +289,10 @@ type Vector3 = [number, number, number]
 
 export type ModelDisplay = {
 	head: {
-		translation: Vector3,
-		rotation: Vector3,
-		scale: Vector3,
-	},
+		translation: Vector3
+		rotation: Vector3
+		scale: Vector3
+	}
 }
 
 export type ScaleModel = {

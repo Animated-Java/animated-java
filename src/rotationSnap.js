@@ -144,7 +144,7 @@ bus.on(EVENTS.LIFECYCLE.LOAD, () => {
 					})
 				}
 			} else if (last || last_mult) {
-				visboxs.forEach((v) => v.parent.remove(v))
+				visboxs.forEach((v) => v.parent?.remove(v))
 				Array.from(last_mult || []).forEach((item) => {
 					if (item.visbox) {
 						item.mesh.remove(item.visbox.mesh)

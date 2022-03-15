@@ -26,6 +26,9 @@ animatedJava:
     progress:
         animationRendering: Rendering Animations... %currents/%totals
 
+    modes:
+        variants:
+            name: Variants
     settings:
         header: Animated Java Settings
         exporterSettings: Exporter Settings
@@ -193,8 +196,8 @@ animatedJava:
             scaleOutOfBounds:
                 title: Scale out of bounds
                 body:
-                    - "The bone <code>%boneName</code> has an invalid scaling during one of your animations:"
-                    - "%displayString"
+                    - 'The bone <code>%boneName</code> has an invalid scaling during one of your animations:'
+                    - '%displayString'
 
             invalidResourcePath:
                 title: Invalid Resource Path
