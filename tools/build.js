@@ -56,7 +56,7 @@ const esbuild = require('esbuild')
 								.update(content)
 								.digest('hex')
 							const id = flavor + '-' + hash
-							console.log('TEST')
+							console.log('BUILD ID:', id)
 							fs.writeFileSync(
 								'./dist/animated_java.js',
 								content.replace(
@@ -111,9 +111,8 @@ const esbuild = require('esbuild')
 			charset: 'ascii',
 		})
 		.then((res) => {
-			console.log(JSON.stringify(res.metafile))
 			const end = Date.now()
-			console.log(end - start)
+			console.log(end - start + 'ms')
 		})
 		.catch(() => process.exit(1))
 })()
