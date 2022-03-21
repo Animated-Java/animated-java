@@ -41,6 +41,7 @@ animatedJava:
                 emptyValue: Value cannot be empty
                 mustBeBoolean: Value must be a boolean
                 mustBeString: Value must be a string
+                mustBeNumber: Value must be a number
                 missingFormatString: Value missing required %notFound formatting string
                 invalidEntityTag: Value is not a valid entity tag
 
@@ -72,6 +73,12 @@ animatedJava:
             description:
                 - Indicates to the selected exporter whether or not to export extra debug/error messages.
                 - Only really effects the Statue and Animation exporters.
+
+        animatorPreviewFps:
+            title: Animator Preview FPS
+            description:
+                - How many fps to render the animator preview.
+                - It is recommended to leave this as 20fps so you get an accurate preview, as it does not effect the in-game result. It will always render as 20fps in-game.
 
         rigItem:
             title: Rig Item
