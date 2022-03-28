@@ -1,7 +1,7 @@
 import { format } from './modelFormat'
 import { bus } from './util/bus'
 
-Plugin.register('animated_java', {
+BBPlugin.register('animated_java', {
 	name: 'ajmodel',
 	title: 'Animated Java',
 	author: 'SnaveSutit & FetchBot',

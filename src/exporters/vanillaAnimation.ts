@@ -678,8 +678,8 @@ async function createMCFile(
 			FILE.push(`
 				function ${variantName} {
 					execute (if entity @s[tag=${tags.root}] at @s) {
-						scoreboard players operation .this aj.id = @s aj.id
-						execute as @e[type=${entityTypes.boneDisplay},tag=${tags.allBones},distance=..${maxDistance}] if score @s aj.id = .this aj.id run {
+						scoreboard players operation .this ${scoreboards.id} = @s ${scoreboards.id}
+						execute as @e[type=${entityTypes.boneDisplay},tag=${tags.allBones},distance=..${maxDistance}] if score @s ${scoreboards.id} = .this ${scoreboards.id} run {
 							${commands.join('\n')}
 						}
 					} else {
