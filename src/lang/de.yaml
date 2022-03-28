@@ -373,7 +373,7 @@ animatedJava:
             dialogs:
                 errors:
                     zeroLengthAnimation:
-                        title: Länge 0 ANimation
+                        title: Animation hat die Länge 0
                         body:
                             - Die Animation %animationName ist zu kurz! Animationen müssen mindestens 0,05 Sekunden (oder 1 Spieltick) lang sein
 
