@@ -25,7 +25,7 @@ animatedJava:
         successfullyExported: Export erfolgreich!
 
     progress:
-        animationRendering: Animationen rendern... %currents/%totals
+        animationRendering: Animationen berechnen... %currents/%totals
 
     settings:
         header: Animated Java Einstellungen
@@ -98,7 +98,7 @@ animatedJava:
             title: Animations-Cache-Modus
             description:
                 - Mit dem Animations-Cache werden nur die Animationen neu gerendert, die seit dem letzten Export geändert wurden. Das macht wiederholte Exporte viel schneller, besonders bei größeren Modellen.
-                - '- Der Kurzspeichermodus ist schneller, benötigt aber mehr Kurzspeicher für den Cache.'
+                - '- Der Kurzspeichermodus ist schneller, benötigt aber mehr RAM für den Cache.'
                 - '- Der Festplattenmodus ist langsamer, speichert aber den Cache auf der Festplatte, um Kurzspeicherplatz zu sparen.'
             options:
                 memory: Kurzspeichermodus
@@ -172,8 +172,8 @@ animatedJava:
 
                         Build ID: %buildID
                         </textarea>
-                    - <p>Bitte melden Sie diesen Fehler auf <a href="%githubLink">Animated Java's github</a> mit Informationen, wie er reproduziert werden kann und einer Kopie des obigen Fehlers.</p>
-                    - <p>Sie können auch unserem <a href="%discordLink">Discord Server</a> beitreten und Fragen im animated-java-support channel stellen.</p>
+                    - <p>Bitte melden Sie diesen Fehler auf <a href="%githubLink">Animated Java's Github</a> mit Informationen wie er reproduziert werden kann und einer Kopie des obigen Fehlers.</p>
+                    - <p>Sie können auch unserem <a href="%discordLink">Discord Server</a> bei Fragen beitreten.</p>
                     - <p>Vielen Dank!</p>
 
             topLevelCubes:
@@ -194,8 +194,8 @@ animatedJava:
             invalidAnimationSnappingValue:
                 title: Ungültiger Animations-Einrastwert(Snapping-Wert)
                 body:
-                    - TDie Animation '%animationName' hat einen Einrastwert von %snapping!
-                    - Da Minecraft so schnell tickt, unterstützt Animated Java nur einen Einrastwert von 20.
+                    - Die Animation '%animationName' hat einen Einrastwert von %snapping!
+                    - Aufgrund von Minecrafts Tickrate, unterstützt Animated Java nur einen Einrastwert von 20.
                     - Bitte aktualisieren Sie Ihre Animationen und Keyframes, um diese Einschränkung zu berücksichtigen, bevor Sie exportieren.
                     - (Möglicherweise müssen Sie Ihre Keyframes auf der Zeitachse ein wenig verschieben, um ihre Einrastzeit zu aktualisieren)
 
@@ -373,7 +373,7 @@ animatedJava:
             dialogs:
                 errors:
                     zeroLengthAnimation:
-                        title: Länge 0 ANimation
+                        title: Animation hat die Länge 0
                         body:
                             - Die Animation %animationName ist zu kurz! Animationen müssen mindestens 0,05 Sekunden (oder 1 Spieltick) lang sein
 
