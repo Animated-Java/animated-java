@@ -113,7 +113,7 @@ animatedJava:
             title: "Mode cache d'animation"
             description:
                 - "Le cache d'animation nous permet uniquement de refaire le rendu des animations qui ont été modifiées depuis la dernière exportation. Rend les exportations répétées beaucoup plus rapides, en particulier sur les modèles plus grands."
-                - "- Le mode mémoire est plus rapide mais utilise plus de mémoire pour stocker le cache."
+                - '- Le mode mémoire est plus rapide mais utilise plus de mémoire pour stocker le cache.'
                 - "- Le mode disque est plus lent mais enregistre le cache sur le disque pour économiser sur l'utilisation de la mémoire."
             options:
                 memory: Mode mémoire
@@ -122,10 +122,10 @@ animatedJava:
         boundingBoxRenderMode:
             title: Boîte limite de la taille des os
             description:
-                - "Configure ou désactive les boîtes limites de la taille des os."
+                - 'Configure ou désactive les boîtes limites de la taille des os.'
                 - "- Unique n'affichera qu'une case à la fois."
-                - "- Multiple affichera une boîte pour chaque os que vous avez sélectionné."
-                - "- Désactivé le désactivera entièrement."
+                - '- Multiple affichera une boîte pour chaque os que vous avez sélectionné.'
+                - '- Désactivé le désactivera entièrement.'
             options:
                 single: Unique
                 many: Multiple

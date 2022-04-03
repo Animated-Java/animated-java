@@ -122,7 +122,9 @@ export const DefaultSettings = {
 				return tl('animatedJava.settings.animatorPreviewFps.title')
 			},
 			get description() {
-				return tl('animatedJava.settings.animatorPreviewFps.description')
+				return tl(
+					'animatedJava.settings.animatorPreviewFps.description'
+				)
 			},
 			type: 'number',
 			default: 20,
@@ -134,7 +136,7 @@ export const DefaultSettings = {
 					)
 				}
 				return d
-			}
+			},
 		},
 		rigItem: {
 			get title() {
