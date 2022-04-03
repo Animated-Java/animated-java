@@ -2,7 +2,35 @@ import { DefaultSettings, settings, settingsByUUID } from './settings'
 import { bus } from './util/bus'
 import { store } from './util/store'
 import events from './constants/events'
-
+let has_performed_update_check = false
+let is_up_to_date = fetch(
+	'https://api.github.com/repos/animated-java/animated-java/releases/latest'
+)
+	.then((res) => res.json())
+	.then((res) =>
+		compareVersions(
+			res.tag_name.replace(/^v/g, ''),
+			process.env.PLUGIN_VERSION
+		)
+	)
+async function performUpdateCheck() {
+	if (has_performed_update_check) return
+	if (is_up_to_date === false) {
+		// notify user
+		Blockbench.showMessageBox({
+			title: 'Update available',
+			message: 'GO UPDATE ANIMATED JAVA.',
+			buttons: ['YES'],
+		})
+		has_performed_update_check = true
+	} else if (is_up_to_date instanceof Promise) {
+		is_up_to_date = await is_up_to_date
+		performUpdateCheck()
+	} else {
+		has_performed_update_check = true
+	}
+	// else: up to date
+}
 const FORMATV = '0.0'
 const codec = new Codec('ajmodel', {
 	load_filter: {
@@ -39,6 +67,7 @@ const codec = new Codec('ajmodel', {
 		)
 	},
 	load(model, file) {
+		performUpdateCheck()
 		newProject(model.meta.type || 'free')
 		var name = pathToName(file.path, true)
 		if (file.path && isApp && !file.no_file) {
