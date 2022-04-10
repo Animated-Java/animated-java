@@ -491,10 +491,10 @@ const SNBTUtil = {
 
 	parseString(str: string): string {
 		if (str[0] === "'" && str[str.length - 1] === "'") {
-			return SNBTUtil.unescape(str.slice(1, str.length - 1))
+			return str.slice(1, str.length - 1)
 		}
 		if (str[0] === '"' && str[str.length - 1] === '"') {
-			return SNBTUtil.unescape(str.slice(1, str.length - 1))
+			return str.slice(1, str.length - 1)
 		}
 		throw new Error('Invalid string')
 	},
