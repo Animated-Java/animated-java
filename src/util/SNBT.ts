@@ -626,8 +626,8 @@ class StringReader {
 		const start = this.cursor
 		if (this.peek(1) === '"') this.skip(1)
 		while (
-			this.peek(1) !== '"' &&
-			this.peekReversed(1) !== '\\' &&
+			(this.peek(1) !== '"' ||
+				(this.peekReversed(1) === '\\' && this.peek(1) === '"')) &&
 			!this.isEnd()
 		) {
 			this.skip(1)
@@ -643,8 +643,8 @@ class StringReader {
 		const start = this.cursor
 		if (this.peek(1) === "'") this.skip(1)
 		while (
-			this.peek(1) !== "'" &&
-			this.peekReversed(1) !== '\\' &&
+			(this.peek(1) !== "'" ||
+				(this.peekReversed(1) === '\\' && this.peek(1) === "'")) &&
 			!this.isEnd()
 		) {
 			this.skip(1)
