@@ -22,9 +22,6 @@ Interface.Panels.aj_states = new Panel({
 	id: 'states',
 	icon: 'movie',
 	condition: { modes: ['edit'], formats: [format.id] },
-	toolbars: {
-		head: Toolbars.texturelist,
-	},
 	component: {
 		name: 'panel-aj-variant',
 		template: `<div id="java-animator-states"></div>`,
