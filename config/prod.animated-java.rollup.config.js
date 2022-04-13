@@ -51,15 +51,15 @@ export default {
 		babel({
 			extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.ts', '.tsx'],
 		}),
-		terser({
-			mangle: false,
-			compress: {
-				passes: 20,
-				dead_code: true,
-				sequences: false,
-				conditionals: false,
-				drop_console: false,
-			},
-		}),
+		// terser({
+		// 	mangle: false,
+		// 	compress: {
+		// 		passes: 20,
+		// 		dead_code: true,
+		// 		sequences: false,
+		// 		conditionals: false,
+		// 		drop_console: false,
+		// 	},
+		// }),
 	],
 }
