@@ -553,12 +553,12 @@ function VariantsDataBrowser() {
 	return <h1>hi, configuration goes here?</h1>
 }
 
-const div = renderToDOM(VariantsDataBrowser)
-div.id = 'animated-java-variants-data-browser'
-div.classList.add('center_window')
-div.classList.add(styles.root)
-document.getElementById('center').appendChild(div)
-bus.on(LIFECYCLE.UNLOAD, () => {
-	div.remove()
-	Texture.prototype.remove = $original
-})
+// const div = renderToDOM(VariantsDataBrowser)
+// div.id = 'animated-java-variants-data-browser'
+// div.classList.add('center_window')
+// div.classList.add(styles.root)
+// document.getElementById('center').appendChild(div)
+// bus.on(LIFECYCLE.UNLOAD, () => {
+// 	div.remove()
+// 	Texture.prototype.remove = $original
+// })
