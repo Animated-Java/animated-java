@@ -12,12 +12,7 @@ import { CustomError } from '../util/customError'
 import { JsonText } from '../util/minecraft/jsonText'
 import { Entities } from '../util/minecraft/entities'
 import { SNBT, SNBTTag, SNBTTagType } from '../util/SNBT'
-import {
-	safeFunctionName,
-	format,
-	fixIndent,
-	safeEntityTag,
-} from '../util/replace'
+import { safeFunctionName, format, fixIndent, safeEntityTag } from '../util/replace'
 
 interface vanillaAnimationExporterSettings {
 	allBonesTag: string
@@ -41,8 +36,6 @@ interface vanillaAnimationExporterSettings {
 	autoDistance: number
 	autoDistanceMovementThreshold: number
 	manualDistance: number
-	deduplicatePositionFrames: boolean
-	deduplicateRotationFrames: boolean
 }
 
 interface MCBConfig {
@@ -96,8 +89,7 @@ async function createMCFile(
 	variantTouchedModels: aj.variantTouchedModels
 ): Promise<{ mcFile: string; mcbConfig: MCBConfig }> {
 	const ajSettings = settings.animatedJava
-	const exporterSettings: vanillaAnimationExporterSettings =
-		settings.vanillaAnimationExporter
+	const exporterSettings: vanillaAnimationExporterSettings = settings.vanillaAnimationExporter
 	const projectName = safeFunctionName(ajSettings.projectName)
 
 	let headYOffset = -1.813
@@ -133,8 +125,7 @@ async function createMCFile(
 			internal: exporterSettings.internalScoreboardObjective,
 			animationFrame: exporterSettings.frameScoreboardObjective,
 			animatingFlag: exporterSettings.animatingFlagScoreboardObjective,
-			animationLoopMode:
-				exporterSettings.animationLoopModeScoreboardObjective,
+			animationLoopMode: exporterSettings.animationLoopModeScoreboardObjective,
 		}).map(([k, v]) => [
 			k,
 			format(v, {
@@ -494,16 +485,12 @@ async function createMCFile(
 			}
 
 			get nbt(): SNBTTag {
-				const passengerNbt = SNBT.parse(
-					bones[this.boneName].nbt || '{}'
-				)
+				const passengerNbt = SNBT.parse(bones[this.boneName].nbt || '{}')
 				passengerNbt._merge(
 					SNBT.Compound({
 						id: SNBT.String(entityTypes.boneDisplay),
 						Invisible: SNBT.Boolean(true),
-						Marker: SNBT.Boolean(
-							exporterSettings.markerArmorStands
-						),
+						Marker: SNBT.Boolean(exporterSettings.markerArmorStands),
 						NoGravity: SNBT.Boolean(true),
 						DisabledSlots: SNBT.Int(4144959),
 					})
@@ -538,11 +525,7 @@ async function createMCFile(
 				const rot = this.rot
 				passengerNbt.set(
 					'Pose.Head',
-					SNBT.List([
-						SNBT.Float(rot.x),
-						SNBT.Float(rot.y),
-						SNBT.Float(rot.z),
-					])
+					SNBT.List([SNBT.Float(rot.x), SNBT.Float(rot.y), SNBT.Float(rot.z)])
 				)
 
 				return SNBT.Compound({
@@ -581,7 +564,7 @@ async function createMCFile(
 
 			toString() {
 				const pos = Object.values(this.pos)
-					.map((v) => `^${v}`)
+					.map(v => `^${v}`)
 					.join(' ')
 				return `summon ${entityTypes.boneRoot} ${pos} ${this.nbt}`
 			}
@@ -601,17 +584,12 @@ async function createMCFile(
 		rootEntityNbt.assert('Tags', SNBTTagType.LIST)
 		rootEntityNbt
 			.get('Tags')
-			.push(
-				SNBT.String('new'),
-				SNBT.String(tags.model),
-				SNBT.String(tags.root)
-			)
+			.push(SNBT.String('new'), SNBT.String(tags.model), SNBT.String(tags.root))
 
 		for (const [variantName, variant] of Object.entries(variantModels)) {
 			for (const summon of summons) {
 				if (variant[summon.boneName]) {
-					summon.customModelData =
-						variant[summon.boneName].aj.customModelData
+					summon.customModelData = variant[summon.boneName].aj.customModelData
 				} else {
 					summon.resetCustomModelData()
 				}
@@ -666,12 +644,11 @@ async function createMCFile(
 				...variantTouchedModels,
 				...variant,
 			}
-			const commands = Object.entries(thisVariantTouchedModels).map(
-				([k, v]) =>
-					format(variantBoneModifier, {
-						customModelData: v.aj.customModelData,
-						boneName: k,
-					})
+			const commands = Object.entries(thisVariantTouchedModels).map(([k, v]) =>
+				format(variantBoneModifier, {
+					customModelData: v.aj.customModelData,
+					boneName: k,
+				})
 			)
 
 			// prettier-ignore
@@ -873,17 +850,13 @@ async function createMCFile(
 
 			let thisMaxDistance = animation.maxDistance
 			if (exporterSettings.autoDistance)
-				thisMaxDistance +=
-					exporterSettings.autoDistanceMovementThreshold
+				thisMaxDistance += exporterSettings.autoDistanceMovementThreshold
 			else thisMaxDistance = exporterSettings.manualDistance
 			thisMaxDistance = roundToN(thisMaxDistance, 1000) + 0.1
 
-			const thisAnimationLoopMode = format(
-				scoreboards.animationLoopMode,
-				{
-					animationName: animation.name,
-				}
-			)
+			const thisAnimationLoopMode = format(scoreboards.animationLoopMode, {
+				animationName: animation.name,
+			})
 
 			console.log('Animation:', animation)
 			const touchedBones = Object.keys(animation.frames[0].bones)
@@ -958,11 +931,9 @@ async function createMCFile(
 			function generateBoneTrees() {
 				const animationTree = generateTree(animation.frames)
 				if (animationTree.type === 'leaf')
-					throw new Error(
-						`Invalid top-level TreeLeaf for animation ${animation.name}`
-					)
+					throw new Error(`Invalid top-level TreeLeaf for animation ${animation.name}`)
 				const boneTrees = Object.fromEntries(
-					Object.keys(bones).map((v) => [
+					Object.keys(bones).map(v => [
 						v,
 						{
 							pos: { v: '', trimmed: false, depth: 0 },
@@ -982,32 +953,28 @@ async function createMCFile(
 					let rotDepth = 0
 					let scaleDepth = 0
 
-					function createPosTree(item: TreeBranch | TreeLeaf) {
-						switch (item.type) {
-							case 'branch':
-								posDepth++
-								// prettier-ignore
-								return `execute if score .this ${thisFrameObjective} matches ${item.min}..${item.max - 1} run {
-									name tree/${boneName}_pos_${item.min}-${item.max - 1}
-									${item.items.map((v: any) => createPosTree(v)).join('\n')}
-								}`
-							case 'leaf':
-								const pos = getPos(boneName, item)
-								return `execute if score .this ${thisFrameObjective} matches ${item.index} run tp @s ^${pos.x} ^${pos.y} ^${pos.z} ~ ~`
-						}
-					}
+					// function createPosTree(item: TreeBranch | TreeLeaf) {
+					// 	switch (item.type) {
+					// 		case 'branch':
+					// 			posDepth++
+					// 			// prettier-ignore
+					// 			return `execute if score .this ${thisFrameObjective} matches ${item.min}..${item.max - 1} run {
+					// 				name tree/${boneName}_pos_${item.min}-${item.max - 1}
+					// 				${item.items.map((v: any) => createPosTree(v)).join('\n')}
+					// 			}`
+					// 		case 'leaf':
+					// 			const pos = getPos(boneName, item)
+					// 			return `execute if score .this ${thisFrameObjective} matches ${item.index} run tp @s ^${pos.x} ^${pos.y} ^${pos.z} ~ ~`
+					// 	}
+					// }
 
-					let lastPos = { x: NaN, y: NaN, z: NaN }
-					function createDeduplicatedPosTree(
-						item: TreeBranch | TreeLeaf
-					): TreeReturn {
+					let lastPos = { x: NaN, y: NaN, z: NaN, start: 0 }
+					function createDeduplicatedPosTree(item: TreeBranch | TreeLeaf): TreeReturn {
 						switch (item.type) {
 							case 'branch':
 								const inside: TreeReturn[] = item.items
-									.map((v: any) =>
-										createDeduplicatedPosTree(v)
-									)
-									.filter((v) => !v.trimmed)
+									.map((v: any) => createDeduplicatedPosTree(v))
+									.filter(v => !v.trimmed)
 								if (inside.length == 0) {
 									return { v: '', trimmed: true }
 								} else if (inside.length == 1) {
@@ -1027,19 +994,22 @@ async function createMCFile(
 								}
 							case 'leaf':
 								const pos = getPos(boneName, item)
-								const nextFrame = getFrame(
-									boneName,
-									item.index + 1
-								)
+								const nextFrame = getFrame(boneName, item.index + 1)
 								if (isEqualVector(pos, lastPos)) {
+									// if (lastPos.start+1 < item.index) lastPos.start = item.index
 									// Ignore deduplication if next frame is different value
-									if (
-										nextFrame &&
-										isEqualVector(pos, nextFrame.pos)
-									)
+									if (nextFrame && isEqualVector(pos, nextFrame.pos))
 										return { v: '', trimmed: true }
+									return {
+										v: `execute if score .this ${thisFrameObjective} matches ${
+											lastPos.start + 1
+										}..${item.index} run tp @s ^${pos.x} ^${pos.y} ^${
+											pos.z
+										} ~ ~`,
+										trimmed: false,
+									}
 								}
-								lastPos = pos
+								lastPos = { ...pos, start: item.index }
 								return {
 									v: `execute if score .this ${thisFrameObjective} matches ${item.index} run tp @s ^${pos.x} ^${pos.y} ^${pos.z} ~ ~`,
 									trimmed: false,
@@ -1047,32 +1017,28 @@ async function createMCFile(
 						}
 					}
 
-					function createRotTree(item: TreeBranch | TreeLeaf) {
-						switch (item.type) {
-							case 'branch':
-								rotDepth++
-								// prettier-ignore
-								return `execute if score .this ${thisFrameObjective} matches ${item.min}..${item.max - 1} run {
-									name tree/${boneName}_rot_${item.min}-${item.max - 1}
-									${item.items.map((v: any) => createRotTree(v)).join('\n')}
-								}`
-							case 'leaf':
-								const rot = getRot(boneName, item)
-								return `execute if score .this ${thisFrameObjective} matches ${item.index} run data modify entity @s Pose.Head set value [${rot.x}f,${rot.y}f,${rot.z}f]`
-						}
-					}
+					// function createRotTree(item: TreeBranch | TreeLeaf) {
+					// 	switch (item.type) {
+					// 		case 'branch':
+					// 			rotDepth++
+					// 			// prettier-ignore
+					// 			return `execute if score .this ${thisFrameObjective} matches ${item.min}..${item.max - 1} run {
+					// 				name tree/${boneName}_rot_${item.min}-${item.max - 1}
+					// 				${item.items.map((v: any) => createRotTree(v)).join('\n')}
+					// 			}`
+					// 		case 'leaf':
+					// 			const rot = getRot(boneName, item)
+					// 			return `execute if score .this ${thisFrameObjective} matches ${item.index} run data modify entity @s Pose.Head set value [${rot.x}f,${rot.y}f,${rot.z}f]`
+					// 	}
+					// }
 
 					let lastRot = { x: NaN, y: NaN, z: NaN }
-					function createDeduplicatedRotTree(
-						item: TreeBranch | TreeLeaf
-					): TreeReturn {
+					function createDeduplicatedRotTree(item: TreeBranch | TreeLeaf): TreeReturn {
 						switch (item.type) {
 							case 'branch':
 								const inside: TreeReturn[] = item.items
-									.map((v: any) =>
-										createDeduplicatedRotTree(v)
-									)
-									.filter((v) => !v.trimmed)
+									.map((v: any) => createDeduplicatedRotTree(v))
+									.filter(v => !v.trimmed)
 								if (inside.length == 0) {
 									return { v: '', trimmed: true }
 								} else if (inside.length == 1) {
@@ -1092,16 +1058,10 @@ async function createMCFile(
 								}
 							case 'leaf':
 								const rot = getRot(boneName, item)
-								const nextFrame = getFrame(
-									boneName,
-									item.index + 1
-								)
+								const nextFrame = getFrame(boneName, item.index + 1)
 								if (isEqualVector(rot, lastRot)) {
 									// Ignore deduplication if next frame is different value
-									if (
-										nextFrame &&
-										isEqualVector(rot, nextFrame.rot)
-									)
+									if (nextFrame && isEqualVector(rot, nextFrame.rot))
 										return { v: '', trimmed: true }
 								}
 								lastRot = rot
@@ -1120,10 +1080,8 @@ async function createMCFile(
 						switch (item.type) {
 							case 'branch':
 								const inside: TreeReturn[] = item.items
-									.map((v: any) =>
-										createDeduplicatedScaleTree(v, variant)
-									)
-									.filter((v) => !v.trimmed)
+									.map((v: any) => createDeduplicatedScaleTree(v, variant))
+									.filter(v => !v.trimmed)
 								if (inside.length == 0) {
 									return { v: '', trimmed: true }
 								} else if (inside.length == 1) {
@@ -1143,24 +1101,17 @@ async function createMCFile(
 								}
 							case 'leaf':
 								const scale = getScale(boneName, item)
-								const nextFrame = getFrame(
-									boneName,
-									item.index + 1
-								)
+								const nextFrame = getFrame(boneName, item.index + 1)
 								if (isEqualVector(scale, lastScale)) {
 									// Ignore deduplication if next frame is different value
-									if (
-										nextFrame &&
-										isEqualVector(scale, nextFrame.scale)
-									)
+									if (nextFrame && isEqualVector(scale, nextFrame.scale))
 										return { v: '', trimmed: true }
 								}
 								lastScale = scale
 
 								const vecStr = `${scale.x}-${scale.y}-${scale.z}`
 								const customModelData =
-									scaleModels[boneName][vecStr].aj
-										.customModelData
+									scaleModels[boneName][vecStr].aj.customModelData
 								// TODO Add support for variants to scaling
 								return {
 									v: `execute if score .this ${thisFrameObjective} matches ${item.index} run data modify entity @s ArmorItems[-1].tag.CustomModelData set value ${customModelData}`,
@@ -1169,20 +1120,19 @@ async function createMCFile(
 						}
 					}
 
-					// prettier-ignore
-					boneTrees[boneName].pos =
-						exporterSettings.deduplicatePositionFrames
-							? {...createDeduplicatedPosTree(animationTree), depth: posDepth }
-							: { v: createPosTree(animationTree), trimmed: false, depth: posDepth }
-					// prettier-ignore
-					boneTrees[boneName].rot =
-						exporterSettings.deduplicateRotationFrames
-							? {...createDeduplicatedRotTree(animationTree), depth: rotDepth }
-							: { v: createRotTree(animationTree), trimmed: false, depth: rotDepth }
-					// prettier-ignore
+					boneTrees[boneName].pos = {
+						...createDeduplicatedPosTree(animationTree),
+						depth: posDepth,
+					}
+					boneTrees[boneName].rot = {
+						...createDeduplicatedRotTree(animationTree),
+						depth: rotDepth,
+					}
 					if (scaleModels[boneName])
-						boneTrees[boneName].scale =
-							{...createDeduplicatedScaleTree(animationTree, scaleModels), depth: scaleDepth }
+						boneTrees[boneName].scale = {
+							...createDeduplicatedScaleTree(animationTree, scaleModels),
+							depth: scaleDepth,
+						}
 				}
 				return boneTrees
 			}
@@ -1453,14 +1403,9 @@ async function exportDataPack(
 		if (message.type === 'progress') {
 			Blockbench.setProgress(message.percent, 50)
 			Blockbench.setStatusBarText(
-				format(
-					tl(
-						'animatedJava.exporters.generic.progress.exportingDataPack'
-					),
-					{
-						progress: (message.percent * 100).toPrecision(4),
-					}
-				)
+				format(tl('animatedJava.exporters.generic.progress.exportingDataPack'), {
+					progress: (message.percent * 100).toPrecision(4),
+				})
 			)
 		}
 	}
@@ -1507,22 +1452,17 @@ async function exportDataPack(
 		}
 	}
 
-	function newWriteFilePromise(
-		file: GeneratedDataPackFile,
-		que: Promise<unknown>[]
-	) {
+	function newWriteFilePromise(file: GeneratedDataPackFile, que: Promise<unknown>[]) {
 		const filePath = new Path(dataPackPath, file.path)
 
 		if (!createdPaths.has(filePath.parse().dir)) {
 			filePath.mkdir({ recursive: true })
 			createdPaths.add(filePath.parse().dir)
 		}
-		const p = fs.promises
-			.writeFile(filePath.path, file.contents)
-			.then(() => {
-				que.splice(que.indexOf(p), 1)
-				setProgress(totalFiles - dataPack.length, totalFiles, file.path)
-			})
+		const p = fs.promises.writeFile(filePath.path, file.contents).then(() => {
+			que.splice(que.indexOf(p), 1)
+			setProgress(totalFiles - dataPack.length, totalFiles, file.path)
+		})
 		que.push(p)
 	}
 
@@ -1570,9 +1510,7 @@ async function animationExport(data: any) {
 	Blockbench.showQuickMessage(tl('animatedJava.popups.successfullyExported'))
 }
 
-const genericEmptySettingText = tl(
-	'animatedJava.settings.generic.errors.emptyValue'
-)
+const genericEmptySettingText = tl('animatedJava.settings.generic.errors.emptyValue')
 
 function validateFormattedStringSetting(required: string[]) {
 	return (d: aj.SettingDescriptor) => {
@@ -1585,28 +1523,19 @@ function validateFormattedStringSetting(required: string[]) {
 			const notFound = required.find((v: string) => !d.value.includes(v))
 			if (notFound) {
 				d.isValid = false
-				d.error = format(
-					tl(
-						'animatedJava.settings.generic.errors.missingFormatString'
-					),
-					{
-						notFound,
-					}
-				)
+				d.error = format(tl('animatedJava.settings.generic.errors.missingFormatString'), {
+					notFound,
+				})
 				return d
 			}
 		}
 		const formattedValue = format(
 			d.value,
-			Object.fromEntries(
-				required.map((v) => [v.replace('%', ''), 'replaced'])
-			)
+			Object.fromEntries(required.map(v => [v.replace('%', ''), 'replaced']))
 		)
 		if (formattedValue !== safeEntityTag(formattedValue)) {
 			d.isValid = false
-			d.error = tl(
-				'animatedJava.settings.generic.errors.invalidEntityTag'
-			)
+			d.error = tl('animatedJava.settings.generic.errors.invalidEntityTag')
 		}
 		return d
 	}
@@ -1618,9 +1547,7 @@ const Exporter = (AJ: any) => {
 		'vanillaAnimationExporter', // Exporter Settings Key
 		{
 			rootEntityType: {
-				title: tl(
-					'animatedJava.exporters.generic.settings.rootEntityType.title'
-				),
+				title: tl('animatedJava.exporters.generic.settings.rootEntityType.title'),
 				description: tl(
 					'animatedJava.exporters.generic.settings.rootEntityType.description'
 				),
@@ -1643,9 +1570,7 @@ const Exporter = (AJ: any) => {
 				},
 			},
 			rootEntityNbt: {
-				title: tl(
-					'animatedJava.exporters.generic.settings.rootEntityNbt.title'
-				),
+				title: tl('animatedJava.exporters.generic.settings.rootEntityNbt.title'),
 				description: tl(
 					'animatedJava.exporters.generic.settings.rootEntityNbt.description'
 				),
@@ -1672,9 +1597,7 @@ const Exporter = (AJ: any) => {
 				},
 			},
 			markerArmorStands: {
-				title: tl(
-					'animatedJava.exporters.generic.settings.markerArmorStands.title'
-				),
+				title: tl('animatedJava.exporters.generic.settings.markerArmorStands.title'),
 				description: tl(
 					'animatedJava.exporters.generic.settings.markerArmorStands.description'
 				),
@@ -1685,9 +1608,7 @@ const Exporter = (AJ: any) => {
 				},
 			},
 			autoDistance: {
-				title: tl(
-					'animatedJava.exporters.vanillaAnimation.settings.autoDistance.title'
-				),
+				title: tl('animatedJava.exporters.vanillaAnimation.settings.autoDistance.title'),
 				description: tl(
 					'animatedJava.exporters.vanillaAnimation.settings.autoDistance.description'
 				),
@@ -1721,9 +1642,7 @@ const Exporter = (AJ: any) => {
 				dependencies: ['vanillaAnimationExporter.autoDistance'],
 			},
 			manualDistance: {
-				title: tl(
-					'animatedJava.exporters.vanillaAnimation.settings.manualDistance.title'
-				),
+				title: tl('animatedJava.exporters.vanillaAnimation.settings.manualDistance.title'),
 				description: tl(
 					'animatedJava.exporters.vanillaAnimation.settings.manualDistance.description'
 				),
@@ -1743,54 +1662,19 @@ const Exporter = (AJ: any) => {
 				},
 				dependencies: ['vanillaAnimationExporter.autoDistance'],
 			},
-			deduplicatePositionFrames: {
-				title: tl(
-					'animatedJava.exporters.vanillaAnimation.settings.deduplicatePositionFrames.title'
-				),
-				description: tl(
-					'animatedJava.exporters.vanillaAnimation.settings.deduplicatePositionFrames.description'
-				),
-				type: 'checkbox',
-				default: false,
-				onUpdate(d: aj.SettingDescriptor) {
-					return d
-				},
-			},
-			deduplicateRotationFrames: {
-				title: tl(
-					'animatedJava.exporters.vanillaAnimation.settings.deduplicateRotationFrames.title'
-				),
-				description: tl(
-					'animatedJava.exporters.vanillaAnimation.settings.deduplicateRotationFrames.description'
-				),
-				type: 'checkbox',
-				default: true,
-				onUpdate(d: aj.SettingDescriptor) {
-					return d
-				},
-			},
 			modelTag: {
-				title: tl(
-					'animatedJava.exporters.generic.settings.modelTag.title'
-				),
-				description: tl(
-					'animatedJava.exporters.generic.settings.modelTag.description'
-				),
+				title: tl('animatedJava.exporters.generic.settings.modelTag.title'),
+				description: tl('animatedJava.exporters.generic.settings.modelTag.description'),
 				type: 'text',
 				default: 'aj.%projectName',
 				onUpdate: validateFormattedStringSetting(['%projectName']),
 				isResetable: true,
-				groupName:
-					'animatedJava.exporters.generic.settingGroups.entityTags.title',
+				groupName: 'animatedJava.exporters.generic.settingGroups.entityTags.title',
 				group: 'entityTags',
 			},
 			rootTag: {
-				title: tl(
-					'animatedJava.exporters.generic.settings.rootTag.title'
-				),
-				description: tl(
-					'animatedJava.exporters.generic.settings.rootTag.description'
-				),
+				title: tl('animatedJava.exporters.generic.settings.rootTag.title'),
+				description: tl('animatedJava.exporters.generic.settings.rootTag.description'),
 				type: 'text',
 				default: 'aj.%projectName.root',
 				onUpdate: validateFormattedStringSetting(['%projectName']),
@@ -1798,12 +1682,8 @@ const Exporter = (AJ: any) => {
 				group: 'entityTags',
 			},
 			allBonesTag: {
-				title: tl(
-					'animatedJava.exporters.generic.settings.allBonesTag.title'
-				),
-				description: tl(
-					'animatedJava.exporters.generic.settings.allBonesTag.description'
-				),
+				title: tl('animatedJava.exporters.generic.settings.allBonesTag.title'),
+				description: tl('animatedJava.exporters.generic.settings.allBonesTag.description'),
 				type: 'text',
 				default: 'aj.%projectName.bone',
 				onUpdate: validateFormattedStringSetting(['%projectName']),
@@ -1811,9 +1691,7 @@ const Exporter = (AJ: any) => {
 				group: 'entityTags',
 			},
 			boneModelDisplayTag: {
-				title: tl(
-					'animatedJava.exporters.generic.settings.boneModelDisplayTag.title'
-				),
+				title: tl('animatedJava.exporters.generic.settings.boneModelDisplayTag.title'),
 				description: tl(
 					'animatedJava.exporters.generic.settings.boneModelDisplayTag.description'
 				),
@@ -1824,18 +1702,13 @@ const Exporter = (AJ: any) => {
 				group: 'entityTags',
 			},
 			individualBoneTag: {
-				title: tl(
-					'animatedJava.exporters.generic.settings.individualBoneTag.title'
-				),
+				title: tl('animatedJava.exporters.generic.settings.individualBoneTag.title'),
 				description: tl(
 					'animatedJava.exporters.generic.settings.individualBoneTag.description'
 				),
 				type: 'text',
 				default: 'aj.%projectName.bone.%boneName',
-				onUpdate: validateFormattedStringSetting([
-					'%projectName',
-					'%boneName',
-				]),
+				onUpdate: validateFormattedStringSetting(['%projectName', '%boneName']),
 				isResetable: true,
 				group: 'entityTags',
 			},
@@ -1860,9 +1733,7 @@ const Exporter = (AJ: any) => {
 				group: 'scoreboardObjectives',
 			},
 			idScoreboardObjective: {
-				title: tl(
-					'animatedJava.exporters.generic.settings.idScoreboardObjective.title'
-				),
+				title: tl('animatedJava.exporters.generic.settings.idScoreboardObjective.title'),
 				description: tl(
 					'animatedJava.exporters.generic.settings.idScoreboardObjective.description'
 				),
@@ -1880,10 +1751,7 @@ const Exporter = (AJ: any) => {
 				),
 				type: 'text',
 				default: 'aj.%projectName.%animationName.frame',
-				onUpdate: validateFormattedStringSetting([
-					'%projectName',
-					'%animationName',
-				]),
+				onUpdate: validateFormattedStringSetting(['%projectName', '%animationName']),
 				group: 'scoreboardObjectives',
 			},
 			animatingFlagScoreboardObjective: {
@@ -1907,34 +1775,22 @@ const Exporter = (AJ: any) => {
 				),
 				type: 'text',
 				default: 'aj.%projectName.%animationName.loopMode',
-				onUpdate: validateFormattedStringSetting([
-					'%projectName',
-					'%animationName',
-				]),
+				onUpdate: validateFormattedStringSetting(['%projectName', '%animationName']),
 				group: 'scoreboardObjectives',
 			},
 			exportMode: {
-				title: tl(
-					'animatedJava.exporters.generic.settings.exportMode.title'
-				),
-				description: tl(
-					'animatedJava.exporters.generic.settings.exportMode.description'
-				),
+				title: tl('animatedJava.exporters.generic.settings.exportMode.title'),
+				description: tl('animatedJava.exporters.generic.settings.exportMode.description'),
 				type: 'select',
 				default: 'mcb',
 				options: {
-					vanilla:
-						'animatedJava.exporters.generic.settings.exportMode.options.vanilla',
+					vanilla: 'animatedJava.exporters.generic.settings.exportMode.options.vanilla',
 					mcb: 'animatedJava.exporters.generic.settings.exportMode.options.mcb',
 				},
 			},
 			mcbFilePath: {
-				title: tl(
-					'animatedJava.exporters.generic.settings.mcbFilePath.title'
-				),
-				description: tl(
-					'animatedJava.exporters.generic.settings.mcbFilePath.description'
-				),
+				title: tl('animatedJava.exporters.generic.settings.mcbFilePath.title'),
+				description: tl('animatedJava.exporters.generic.settings.mcbFilePath.description'),
 				type: 'filepath',
 				default: '',
 				props: {
@@ -1950,18 +1806,14 @@ const Exporter = (AJ: any) => {
 					if (d.value != '') {
 						const p = new Path(d.value)
 						const b = p.parse()
-						if (
-							b.base !==
-							`${AJ.settings.animatedJava.projectName}.mc`
-						) {
+						if (b.base !== `${AJ.settings.animatedJava.projectName}.mc`) {
 							d.isValid = false
 							d.error = format(
 								tl(
 									'animatedJava.exporters.generic.settings.mcbFilePath.errors.mustBeNamedAfterProject'
 								),
 								{
-									projectName:
-										AJ.settings.animatedJava.projectName,
+									projectName: AJ.settings.animatedJava.projectName,
 								}
 							)
 						}
@@ -1972,19 +1824,12 @@ const Exporter = (AJ: any) => {
 					return d
 				},
 				isVisible(settings: any) {
-					return (
-						settings.vanillaAnimationExporter.exportMode === 'mcb'
-					)
+					return settings.vanillaAnimationExporter.exportMode === 'mcb'
 				},
-				dependencies: [
-					'vanillaAnimationExporter.exportMode',
-					'animatedJava.projectName',
-				],
+				dependencies: ['vanillaAnimationExporter.exportMode', 'animatedJava.projectName'],
 			},
 			mcbConfigPath: {
-				title: tl(
-					'animatedJava.exporters.generic.settings.mcbConfigPath.title'
-				),
+				title: tl('animatedJava.exporters.generic.settings.mcbConfigPath.title'),
 				description: tl(
 					'animatedJava.exporters.generic.settings.mcbConfigPath.description'
 				),
@@ -2007,19 +1852,13 @@ const Exporter = (AJ: any) => {
 					return value == '' || value.endsWith('config.json')
 				},
 				isVisible(settings: any) {
-					return (
-						settings.vanillaAnimationExporter.exportMode === 'mcb'
-					)
+					return settings.vanillaAnimationExporter.exportMode === 'mcb'
 				},
 				dependencies: ['vanillaAnimationExporter.exportMode'],
 			},
 			dataPackPath: {
-				title: tl(
-					'animatedJava.exporters.generic.settings.dataPackPath.title'
-				),
-				description: tl(
-					'animatedJava.exporters.generic.settings.dataPackPath.description'
-				),
+				title: tl('animatedJava.exporters.generic.settings.dataPackPath.title'),
+				description: tl('animatedJava.exporters.generic.settings.dataPackPath.description'),
 				type: 'filepath',
 				default: '',
 				props: {
@@ -2040,10 +1879,7 @@ const Exporter = (AJ: any) => {
 					return d
 				},
 				isVisible(settings: any) {
-					return (
-						settings.vanillaAnimationExporter.exportMode ===
-						'vanilla'
-					)
+					return settings.vanillaAnimationExporter.exportMode === 'vanilla'
 				},
 				dependencies: ['vanillaAnimationExporter.exportMode'],
 			},

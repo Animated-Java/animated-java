@@ -21,16 +21,16 @@ let mode
 let $originalCanvasHideGizmos = Canvas.withoutGizmos
 bus.on(EVENTS.LIFECYCLE.CLEANUP, () => {
 	Canvas.withoutGizmos = $originalCanvasHideGizmos
-	visboxs.forEach((box) => {
+	visboxs.forEach(box => {
 		if (box?.parent) box.parent.remove(box)
 	})
 	visboxs = []
 })
 bus.on(EVENTS.LIFECYCLE.LOAD, () => {
 	Canvas.withoutGizmos = (...args) => {
-		visboxs.forEach((v) => (v.visible = false))
+		visboxs.forEach(v => (v.visible = false))
 		$originalCanvasHideGizmos.apply(Canvas, args)
-		visboxs.forEach((v) => (v.visible = true))
+		visboxs.forEach(v => (v.visible = true))
 	}
 })
 settings.watch('animatedJava.modelScalingMode', () => {
@@ -70,8 +70,8 @@ bus.on(EVENTS.LIFECYCLE.LOAD, () => {
 			const viewmode = settings.animatedJava.boundingBoxRenderMode
 			if (viewmode !== mode) {
 				mode = viewmode
-				visboxs.forEach((v) => v.mesh.parent.remove(v.mesh))
-				Array.from(last_mult || []).forEach((item) => {
+				visboxs.forEach(v => v.mesh.parent.remove(v.mesh))
+				Array.from(last_mult || []).forEach(item => {
 					if (item.visbox) {
 						item.mesh.remove(item.visbox.mesh)
 						delete item.visbox
@@ -88,15 +88,12 @@ bus.on(EVENTS.LIFECYCLE.LOAD, () => {
 					if (Group.selected && Group.selected.name !== 'SCENE') {
 						parent = Group.selected
 					} else if (Cube.selected.length) {
-						if (Cube.selected[0].parent !== 'root')
-							parent = Cube.selected[0].parent
+						if (Cube.selected[0].parent !== 'root') parent = Cube.selected[0].parent
 					}
 					if (parent !== last) {
 						if (visboxs.length) {
 							try {
-								visboxs.forEach((v) =>
-									v.mesh.parent.remove(v.mesh)
-								)
+								visboxs.forEach(v => v.mesh.parent.remove(v.mesh))
 							} catch (e) {}
 							visboxs = []
 						}
@@ -113,30 +110,25 @@ bus.on(EVENTS.LIFECYCLE.LOAD, () => {
 					Selected = new Set()
 					if (Group.selected) Selected.add(Group.selected)
 					if (Cube.selected.length) {
-						Cube.selected.forEach((cube) => {
+						Cube.selected.forEach(cube => {
 							Selected.add(cube.parent)
 						})
 					}
-					const items = Array.from(Selected).filter(
-						(group) => !isSceneBased(group)
-					)
+					const items = Array.from(Selected).filter(group => !isSceneBased(group))
 					const old = Array.from(last_mult || [])
-					items.forEach((item) => {
+					items.forEach(item => {
 						if (!last_mult || !last_mult.has(item)) {
 							item.visbox = createBox(item)
 							visboxs.push(item.visbox)
 							item.mesh.add(item.visbox.mesh)
 						}
 					})
-					old.forEach((item) => {
+					old.forEach(item => {
 						if (!Selected.has(item)) {
 							if (item.visbox) {
 								try {
 									item.mesh.remove(item.visbox.mesh)
-									visboxs.splice(
-										visboxs.indexOf(item.visbox),
-										1
-									)
+									visboxs.splice(visboxs.indexOf(item.visbox), 1)
 								} catch (e) {}
 								delete item.visbox
 							}
@@ -144,8 +136,8 @@ bus.on(EVENTS.LIFECYCLE.LOAD, () => {
 					})
 				}
 			} else if (last || last_mult) {
-				visboxs.forEach((v) => v.parent?.remove(v))
-				Array.from(last_mult || []).forEach((item) => {
+				visboxs.forEach(v => v.parent?.remove(v))
+				Array.from(last_mult || []).forEach(item => {
 					if (item.visbox) {
 						item.mesh.remove(item.visbox.mesh)
 						delete item.visbox

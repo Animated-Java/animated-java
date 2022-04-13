@@ -28,20 +28,20 @@ ModelFormat.prototype.convertTo = function convertTo() {
 
 	//Bone Rig
 	if (!Format.bone_rig && old_format.bone_rig) {
-		Group.all.forEach((group) => {
+		Group.all.forEach(group => {
 			group.rotation.V3_set(0, 0, 0)
 		})
 	}
 	if (Format.bone_rig && !old_format.bone_rig) {
 		var loose_stuff = []
-		Outliner.root.forEach((el) => {
+		Outliner.root.forEach(el => {
 			if (el instanceof Group == false) {
 				loose_stuff.push(el)
 			}
 		})
 		if (loose_stuff.length) {
 			var root_group = new Group().init().addTo()
-			loose_stuff.forEach((el) => {
+			loose_stuff.forEach(el => {
 				el.addTo(root_group)
 			})
 		}
@@ -50,58 +50,50 @@ ModelFormat.prototype.convertTo = function convertTo() {
 		}
 	}
 	if (Format.bone_rig) {
-		Group.all.forEach((group) => {
+		Group.all.forEach(group => {
 			group.createUniqueName()
 		})
 	}
 
-	if (
-		!Format.single_texture &&
-		old_format.single_texture &&
-		Texture.all.length
-	) {
+	if (!Format.single_texture && old_format.single_texture && Texture.all.length) {
 		let texture = Texture.getDefault()
 		Outliner.elements
-			.filter((el) => el.applyTexture)
-			.forEach((el) => {
+			.filter(el => el.applyTexture)
+			.forEach(el => {
 				el.applyTexture(texture, true)
 			})
 	}
 
 	//Rotate Cubes
 	if (!Format.rotate_cubes && old_format.rotate_cubes) {
-		Cube.all.forEach((cube) => {
+		Cube.all.forEach(cube => {
 			cube.rotation.V3_set(0, 0, 0)
 		})
 	}
 
 	//Meshes
 	if (!Format.meshes && old_format.meshes) {
-		Mesh.all.slice().forEach((mesh) => {
+		Mesh.all.slice().forEach(mesh => {
 			mesh.remove()
 		})
 	}
 
 	//Locators
 	if (!Format.locators && old_format.locators) {
-		Locator.all.slice().forEach((locator) => {
+		Locator.all.slice().forEach(locator => {
 			locator.remove()
 		})
 	}
 
 	//Texture Meshes
 	if (!Format.texture_meshes && old_format.texture_meshes) {
-		TextureMesh.all.slice().forEach((tm) => {
+		TextureMesh.all.slice().forEach(tm => {
 			tm.remove()
 		})
 	}
 
 	//Canvas Limit
-	if (
-		Format.canvas_limit &&
-		!old_format.canvas_limit &&
-		!settings.deactivate_size_limit.value
-	) {
+	if (Format.canvas_limit && !old_format.canvas_limit && !settings.deactivate_size_limit.value) {
 		Cube.all.forEach(function (s, i) {
 			//Push elements into 3x3 block box
 			;[0, 1, 2].forEach(function (ax) {
@@ -132,21 +124,12 @@ ModelFormat.prototype.convertTo = function convertTo() {
 	//Rotation Limit
 	if (
 		(Format.id === modelFormat.id && !old_format.rotation_limit) ||
-		(Format.rotation_limit &&
-			!old_format.rotation_limit &&
-			Format.rotate_cubes)
+		(Format.rotation_limit && !old_format.rotation_limit && Format.rotate_cubes)
 	) {
-		Cube.all.forEach((cube) => {
+		Cube.all.forEach(cube => {
 			if (!cube.rotation.allEqual(0)) {
-				var axis =
-					(cube.rotationAxis() &&
-						getAxisNumber(cube.rotation_axis)) ||
-					0
-				var angle = limitNumber(
-					Math.round(cube.rotation[axis] / 22.5) * 22.5,
-					-45,
-					45
-				)
+				var axis = (cube.rotationAxis() && getAxisNumber(cube.rotation_axis)) || 0
+				var angle = limitNumber(Math.round(cube.rotation[axis] / 22.5) * 22.5, -45, 45)
 				cube.rotation.V3_set(0, 0, 0)
 				cube.rotation[axis] = angle
 			}
@@ -162,9 +145,7 @@ ModelFormat.prototype.convertTo = function convertTo() {
 	hideDialog()
 
 	let file = pathjs.parse(Project.save_path)
-	Project.export_path = normalizePath(
-		`${file.dir}.${Project.format.codec.extension}`
-	)
+	Project.export_path = normalizePath(`${file.dir}.${Project.format.codec.extension}`)
 	// Project.format.codec.export()
 
 	Canvas.updateAllPositions()

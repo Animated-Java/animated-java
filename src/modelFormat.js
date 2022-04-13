@@ -6,13 +6,8 @@ let has_performed_update_check = false
 let is_up_to_date = fetch(
 	'https://api.github.com/repos/animated-java/animated-java/releases/latest'
 )
-	.then((res) => res.json())
-	.then((res) =>
-		compareVersions(
-			res.tag_name.replace(/^v/g, ''),
-			process.env.PLUGIN_VERSION
-		)
-	)
+	.then(res => res.json())
+	.then(res => compareVersions(res.tag_name.replace(/^v/g, ''), process.env.PLUGIN_VERSION))
 async function performUpdateCheck() {
 	if (has_performed_update_check) return
 	if (is_up_to_date === false) {
@@ -41,8 +36,7 @@ const codec = new Codec('ajmodel', {
 	remember: true,
 	id: 'animated_java/ajmodel',
 	name: 'Animated Java Model',
-	description:
-		'Model format that exports to animated java edition armor_stand animations',
+	description: 'Model format that exports to animated java edition armor_stand animations',
 	show_on_start_screen: true,
 	bone_rig: true,
 	animation_mode: true,
@@ -63,11 +57,11 @@ const codec = new Codec('ajmodel', {
 				content: scope.compile(),
 				custom_writer: isApp ? (a, b) => scope.write(a, b) : null,
 			},
-			(path) => scope.afterDownload(path)
+			path => scope.afterDownload(path)
 		)
 	},
 	load(model, file) {
-		performUpdateCheck()
+		// performUpdateCheck()
 		newProject(model.meta.type || 'free')
 		var name = pathToName(file.path, true)
 		if (file.path && isApp && !file.no_file) {
@@ -117,14 +111,14 @@ const codec = new Codec('ajmodel', {
 			model.flag = options.flag
 		}
 		model.elements = []
-		elements.forEach((el) => {
+		elements.forEach(el => {
 			var obj = el.getSaveCopy(model.meta)
 			model.elements.push(obj)
 		})
 		model.outliner = compileGroups(true)
 
 		model.textures = []
-		Texture.all.forEach((tex) => {
+		Texture.all.forEach(tex => {
 			var t = tex.getUndoCopy()
 			delete t.selected
 			if (options.bitmaps != false) {
@@ -136,7 +130,7 @@ const codec = new Codec('ajmodel', {
 
 		if (Animator.animations.length) {
 			model.animations = []
-			Animator.animations.forEach((a) => {
+			Animator.animations.forEach(a => {
 				model.animations.push(a.getUndoCopy({ bone_names: true }, true))
 			})
 		}
@@ -146,11 +140,7 @@ const codec = new Codec('ajmodel', {
 			var entries = 0
 			for (var i in DisplayMode.slots) {
 				var key = DisplayMode.slots[i]
-				if (
-					DisplayMode.slots.hasOwnProperty(i) &&
-					display[key] &&
-					display[key].export
-				) {
+				if (DisplayMode.slots.hasOwnProperty(i) && display[key] && display[key].export) {
 					new_display[key] = display[key].export()
 					entries++
 				}
@@ -162,7 +152,7 @@ const codec = new Codec('ajmodel', {
 
 		if (options.history) {
 			model.history = []
-			Undo.history.forEach((h) => {
+			Undo.history.forEach(h => {
 				var e = {
 					before: omitKeys(h.before, ['aspects']),
 					post: omitKeys(h.post, ['aspects']),
@@ -253,14 +243,9 @@ const codec = new Codec('ajmodel', {
 		}
 
 		if (model.textures) {
-			model.textures.forEach((tex) => {
+			model.textures.forEach(tex => {
 				var tex_copy = new Texture(tex, tex.uuid).add(false)
-				if (
-					isApp &&
-					tex.path &&
-					fs.existsSync(tex.path) &&
-					!model.meta.backup
-				) {
+				if (isApp && tex.path && fs.existsSync(tex.path) && !model.meta.backup) {
 					tex_copy.fromPath(tex.path)
 				} else if (tex.source && tex.source.substr(0, 5) == 'data:') {
 					tex_copy.fromDataURL(tex.source)
@@ -302,7 +287,7 @@ const codec = new Codec('ajmodel', {
 			}
 		}
 		if (model.animations) {
-			model.animations.forEach((ani) => {
+			model.animations.forEach(ani => {
 				var base_ani = new Animation()
 				base_ani.uuid = ani.uuid
 				base_ani.extend(ani).add()
@@ -327,8 +312,7 @@ const codec = new Codec('ajmodel', {
 const format = new ModelFormat({
 	id: 'animated_java/ajmodel',
 	name: 'Animated Java Model',
-	description:
-		'Model format that exports to animated java edition armor_stand animations',
+	description: 'Model format that exports to animated java edition armor_stand animations',
 	show_on_start_screen: true,
 	bone_rig: true,
 	animation_mode: true,

@@ -20,10 +20,7 @@ const process = {
 }
 const evaluate = (line, token) => {
 	try {
-		return mc.transpiler.evaluators.code.evaluateCodeWithEnv(
-			`return ${line}`,
-			mc.getEnv()
-		)
+		return mc.transpiler.evaluators.code.evaluateCodeWithEnv(`return ${line}`, mc.getEnv())
 	} catch (e) {
 		return true
 	}
@@ -52,19 +49,13 @@ function targetedJSONAction(trigger, getPath) {
 	}
 }
 const tagConsumer = mc.transpiler.list({
-	getToken: (list) => list[0],
+	getToken: list => list[0],
 	actions: [
 		{
 			match: ({ token }) => /^LOOP/.test(token),
 			exec(file, tokens, tag) {
 				const { token } = tokens.shift()
-				mc.transpiler.consumer.Loop(
-					file,
-					token,
-					tokens,
-					tag,
-					tagConsumer
-				)
+				mc.transpiler.consumer.Loop(file, token, tokens, tag, tagConsumer)
 			},
 		},
 		{
@@ -133,16 +124,12 @@ GenericConsumer.addAction({
 				state.tags[name].values.add(mc.transpiler.evaluate_str(value))
 				break
 			default:
-				throw new CompilerError(
-					`invalid tag action '${action}'`,
-					_token.line
-				)
+				throw new CompilerError(`invalid tag action '${action}'`, _token.line)
 		}
 	},
 })
 EntryConsumer.addAction({
-	match: ({ token }) =>
-		/^(blocks|entities|fluids|functions|items)/.test(token),
+	match: ({ token }) => /^(blocks|entities|fluids|functions|items)/.test(token),
 	exec(file, tokens) {
 		const { token } = tokens.shift()
 		const [type, name, replace] = token.split(/\s+/)
@@ -160,7 +147,7 @@ EntryConsumer.addAction({
 	},
 })
 EntryConsumer.addAction(
-	targetedJSONAction('loot', (name) => {
+	targetedJSONAction('loot', name => {
 		const namespace = mc.getNamespace()
 		return path.resolve(
 			'data',
@@ -171,7 +158,7 @@ EntryConsumer.addAction(
 	})
 )
 EntryConsumer.addAction(
-	targetedJSONAction('predicate', (name) => {
+	targetedJSONAction('predicate', name => {
 		const namespace = mc.getNamespace()
 		return path.resolve(
 			process.cwd(),
@@ -183,7 +170,7 @@ EntryConsumer.addAction(
 	})
 )
 EntryConsumer.addAction(
-	targetedJSONAction('modifier', (name) => {
+	targetedJSONAction('modifier', name => {
 		const namespace = mc.getNamespace()
 		return path.resolve(
 			process.cwd(),
@@ -195,7 +182,7 @@ EntryConsumer.addAction(
 	})
 )
 EntryConsumer.addAction(
-	targetedJSONAction('recipe', (name) => {
+	targetedJSONAction('recipe', name => {
 		const namespace = mc.getNamespace()
 		return path.resolve(
 			process.cwd(),
@@ -207,7 +194,7 @@ EntryConsumer.addAction(
 	})
 )
 EntryConsumer.addAction(
-	targetedJSONAction('advancement', (name) => {
+	targetedJSONAction('advancement', name => {
 		const namespace = mc.getNamespace()
 		return path.resolve(
 			process.cwd(),
@@ -218,12 +205,12 @@ EntryConsumer.addAction(
 		)
 	})
 )
-mc.on('start', (e) => {
+mc.on('start', e => {
 	state = {
 		tags: {},
 	}
 })
-mc.on('end', (e) => {
+mc.on('end', e => {
 	for (const name in state.tags) {
 		const tag = state.tags[name]
 		const file = new File()

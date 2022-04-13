@@ -82,9 +82,7 @@ export class NBT<T> {
 
 	private setValueIfCompoundOrThrow<U>(key: string, value: NBT<U>) {
 		if (this.type !== NBTType.COMPOUND) {
-			throw new Error(
-				'unable to add keyed values to a non compound value'
-			)
+			throw new Error('unable to add keyed values to a non compound value')
 		}
 		this.data[key] = value
 	}
@@ -171,9 +169,7 @@ export class NBT<T> {
 
 	public static List<U>(values: NBT<U>[]) {
 		if (values.length === 0) {
-			throw new Error(
-				'Unable to make List of length 0, lists require atleast 1 element.'
-			)
+			throw new Error('Unable to make List of length 0, lists require atleast 1 element.')
 		}
 		for (let i = 1; i < values.length; i++) {
 			if (values[i].type !== values[0].type) {
@@ -200,12 +196,10 @@ export class NBT<T> {
 		return this
 	}
 	public static ListOf(type: NBTType, values: any[]) {
-		const nbtList = values.map((value) => {
+		const nbtList = values.map(value => {
 			if (value.type in NBTType) {
 				if (value.type !== type)
-					throw new Error(
-						`Invalid type ${value.type} inside of list of type ${type}`
-					)
+					throw new Error(`Invalid type ${value.type} inside of list of type ${type}`)
 				return value
 			} else {
 				return new NBT({
@@ -233,9 +227,7 @@ export class NBT<T> {
 		switch (this.type) {
 			case NBTType.UNKNOWN:
 				console.log(`Unknown nbt tag type for tag`, this)
-				throw new Error(
-					`Unknown nbt tag. See above message for more info. `
-				)
+				throw new Error(`Unknown nbt tag. See above message for more info. `)
 
 			case NBTType.LIST:
 				values = []
@@ -259,9 +251,7 @@ export class NBT<T> {
 
 			case NBTType.COMPOUND:
 				values = {}
-				Object.entries(this.data).forEach(
-					([k, v]: any) => (values[k] = v.toNbtLintTree())
-				)
+				Object.entries(this.data).forEach(([k, v]: any) => (values[k] = v.toNbtLintTree()))
 				return new nbtlint.TagCompound(values)
 
 			case NBTType.STRING:

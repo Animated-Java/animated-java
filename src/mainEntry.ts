@@ -16,11 +16,7 @@ import { renderAnimation } from './animationRenderer'
 import { DefaultSettings, settings } from './settings'
 // import { makeArmorStandModel } from './makeArmorStandModel'
 
-import {
-	exportPredicate,
-	exportRigModels,
-	exportTransparentTexture,
-} from './exporting'
+import { exportPredicate, exportRigModels, exportTransparentTexture } from './exporting'
 
 import {
 	computeElements,
@@ -31,32 +27,109 @@ import {
 	computeScaleModels,
 } from './modelComputation'
 
+const errorMessages = [
+	`Uh oh!`,
+	`Time to fire up the ol' debugger!`,
+	`Your armor stands are sad :(`,
+	`Ok, who pushed the big red button?`,
+	`Skill Issue.`,
+	`Too bad, So Sad`,
+	`You have how many elements!?`,
+	`I'll export successfully some day!`,
+	`When I grow up, I wanna be just like Blender!`,
+	`Wow, Epic fail.`,
+	`Should'a seen that one comming...`,
+	`It's all Jannis' fault! :(`,
+	`Snaviewavie did an oopsie poopsie xD`,
+	`We to a little trolling`,
+	`execute run execute run execute run execute run say This is fine.`,
+	`This is why we can't have nice things. :(`,
+	`Have you tried turning it off and on again?`,
+	`What if I put my command block next to yours? Haha just kidding... Unless?`,
+	`If at first you don't succeed, Try, try again!`,
+	`B:01010111 01100101 00100000 01100100 01101111 00100000 01100001 00100000 01101100 01101001 01110100 01110100 01101100 01100101 00100000 01110100 01110010 01101111 01101100 01101100 01101001 01101110 01100111`,
+	`FetchBot would like to know your location: [Allow] [Deny]`,
+	`I've decided to stop working for today. Try again tomorrow!`,
+	`Every time you see this error message, a developer vanishes in a puff of binary.`,
+	`Maybe we shouldn't press that button...`,
+	`Not to cause any alarm, but you may have just launched all the nukes...`,
+	`"Flavor Text"? I've never tasted text before...`,
+	`<Access Denied>`,
+	`( ͡° ͜ʖ ͡°)`,
+	`.;,,,;.`,
+	`That's a nice model you have there, it'd be a shame if something happend to it...`,
+	`Some day you'll learn. But until then, I control the cheese`,
+	`Please deposit 5 coins!`,
+	`errorMessages[-1] >>> undefined`,
+	`<a href="https://youtu.be/dQw4w9WgXcQ">Click here to find a solution!</a>`,
+	`<img src="https://i.kym-cdn.com/photos/images/original/000/296/199/9ff.gif" alt="roflcopter">`,
+	`Failed to find global 'pandemic'`,
+]
+
+function getRandomErrorMessage() {
+	const index = Math.round(Math.random() * (errorMessages.length - 1))
+	return errorMessages[index]
+}
+
+function showUnknownErrorDialog(e: CustomError | any) {
+	// console.log(e.options)
+	if (e.options?.silent) {
+		console.log(e.options.message)
+		return
+	}
+	new Dialog(
+		Object.assign(
+			{
+				id: 'animatedJava.dialogs.miscError',
+				title: tl('animatedJava.dialogs.errors.misc.title'),
+				lines: [
+					tl(
+						'animatedJava.dialogs.errors.misc.body',
+						{
+							buildID: process.env.BUILD_ID,
+							errorMessage: e.options ? e.options.message : e.message,
+							randomErrorMessage: getRandomErrorMessage(),
+							errorStack: e.stack,
+							discordLink: process.env.DISCORD_LINK,
+							githubLink: process.env.GITHUB_ISSUES_LINK,
+							pluginVersion: process.env.PLUGIN_VERSION,
+						},
+						true
+					),
+				],
+				width: 1024,
+				singleButton: true,
+			},
+			e.options?.dialog || {}
+		)
+	).show()
+}
+
+function onBuildError(e: any) {
+	ANIMATED_JAVA.exportInProgress = false
+	Blockbench.setProgress(0)
+	if (e instanceof CustomError && e.options.intentional && e.options.silent) {
+		// @ts-ignore
+		Blockbench.showQuickMessage(tl('animatedJava.popups.exportCancelled'))
+		console.log('Intentional Error:', e.message)
+		throw e
+	} else {
+		console.log('Unknown Error:')
+		showUnknownErrorDialog(e)
+	}
+}
+
 export const BuildModel = (callback: any, options: any) => {
 	if (!ANIMATED_JAVA.exportInProgress) {
 		ANIMATED_JAVA.exportInProgress = true
 		computeAnimationData(callback, options)
-			.then(() => {
-				ANIMATED_JAVA.exportInProgress = false
-			})
-			.catch((e) => {
-				ANIMATED_JAVA.exportInProgress = false
-				Blockbench.setProgress(0)
-				if (
-					e instanceof CustomError &&
-					e.options.intentional &&
-					e.options.silent
-				) {
-					// @ts-ignore
-					Blockbench.showQuickMessage(
-						tl('animatedJava.popups.exportCancelled')
-					)
-					console.log('Intentional Error:', e.message)
-					throw e
-				} else {
-					console.log('Unknown Error:')
-					throw e
-				}
-			})
+			.then(
+				() => {
+					ANIMATED_JAVA.exportInProgress = false
+				},
+				e => onBuildError(e)
+			)
+			.catch(e => onBuildError(e))
 	} else {
 		Blockbench.showQuickMessage(tl('animatedJava.popups.exportInProgress'))
 		ERROR.ANIMATED_JAVA_BUSY()
@@ -76,10 +149,7 @@ function throwSkillIssue() {
 	})
 }
 
-async function computeAnimationData(
-	callback: (data: any) => any,
-	options: any
-) {
+async function computeAnimationData(callback: (data: any) => any, options: any) {
 	console.groupCollapsed('Compute Animation Data')
 
 	// throwSkillIssue()
@@ -90,14 +160,8 @@ async function computeAnimationData(
 			intentional: true,
 			dialog: {
 				id: 'animatedJava.dialogs.errors.predicateFilePathUndefined',
-				title: tl(
-					'animatedJava.dialogs.errors.predicateFilePathUndefined.title'
-				),
-				lines: [
-					tl(
-						'animatedJava.dialogs.errors.predicateFilePathUndefined.body'
-					),
-				],
+				title: tl('animatedJava.dialogs.errors.predicateFilePathUndefined.title'),
+				lines: [tl('animatedJava.dialogs.errors.predicateFilePathUndefined.body')],
 				width: 256,
 			},
 		})
@@ -107,14 +171,8 @@ async function computeAnimationData(
 			intentional: true,
 			dialog: {
 				id: 'animatedJava.dialogs.errors.rigModelsExportFolderUndefined',
-				title: tl(
-					'animatedJava.dialogs.errors.rigModelsExportFolderUndefined.title'
-				),
-				lines: [
-					tl(
-						'animatedJava.dialogs.errors.rigModelsExportFolderUndefined.body'
-					),
-				],
+				title: tl('animatedJava.dialogs.errors.rigModelsExportFolderUndefined.title'),
+				lines: [tl('animatedJava.dialogs.errors.rigModelsExportFolderUndefined.body')],
 				width: 256,
 			},
 		})
@@ -129,11 +187,7 @@ async function computeAnimationData(
 	const bones = computeBones(models, animations) as aj.BoneObject
 	// const [variantModels, variantTouchedModels] = await computeVariantModels(models, variantTextureOverrides)
 	const scaleModels = computeScaleModels(bones)
-	const variants = (await computeVariantModels(
-		models,
-		scaleModels,
-		variantTextureOverrides
-	)) as {
+	const variants = (await computeVariantModels(models, scaleModels, variantTextureOverrides)) as {
 		variantModels: aj.VariantModels
 		variantTouchedModels: aj.variantTouchedModels
 	}
@@ -143,12 +197,7 @@ async function computeAnimationData(
 	// console.log('Flat Variant Models:', flatVariantModels)
 
 	await exportRigModels(models, variants.variantModels, scaleModels)
-	await exportPredicate(
-		models,
-		variants.variantModels,
-		scaleModels,
-		settings.animatedJava
-	)
+	await exportPredicate(models, variants.variantModels, scaleModels, settings.animatedJava)
 	if (settings.animatedJava.transparentTexturePath) {
 		await exportTransparentTexture()
 	}
@@ -174,19 +223,14 @@ import './pluginDefinitions'
 import { show_settings } from './ui/dialogs/settings'
 import { show_about } from './ui/dialogs/about'
 
-const menu: any = new BarMenu(
-	'animated_java',
-	[],
-	() => Format.id === modelFormat.id
-)
+const menu: any = new BarMenu('animated_java', [], () => Format.id === modelFormat.id)
 menu.label.style.display = 'none'
 document.querySelector('#menu_bar').appendChild(menu.label)
 // @ts-ignore
 Blockbench.on('select_project', () => {
 	queueMicrotask(() => {
 		console.log('selected', Format.id !== modelFormat.id)
-		menu.label.style.display =
-			Format.id !== modelFormat.id ? 'none' : 'inline-block'
+		menu.label.style.display = Format.id !== modelFormat.id ? 'none' : 'inline-block'
 	})
 })
 // @ts-ignore
@@ -231,9 +275,7 @@ MenuBar.addAction(
 			if (exporter) {
 				store.getStore('exporters').get(exporter)()
 			} else {
-				Blockbench.showQuickMessage(
-					tl('animatedJava.popups.noExporterSelected')
-				)
+				Blockbench.showQuickMessage(tl('animatedJava.popups.noExporterSelected'))
 			}
 		},
 		keybind: new Keybind({

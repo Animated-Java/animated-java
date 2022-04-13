@@ -176,6 +176,7 @@ animatedJava:
             patronTier1: Tier 1 Patron
             patronTier2: Tier 2 Patron
             patronTier3: Tier 3 Patron
+            previousPatron: Donator
 
         animationProperties:
             animationCompleteCommand:
@@ -188,11 +189,11 @@ animatedJava:
                     # This block of text should not be translated as it is used to debug by the developers.
                     - |-
                         <p>%randomErrorMessage</p>
-                        <code>%boneName</code>
                         <h1 style="font-size:20px">Error Summary</h1>
                         <textarea style="height: 512px; font-family:monospace; font-size:14px" readonly="readonly">
                         %errorStack
 
+                        Version: %pluginVersion
                         Build ID: %buildID
                         </textarea>
                     # You can translate this though

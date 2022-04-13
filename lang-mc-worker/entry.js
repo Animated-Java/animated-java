@@ -67,7 +67,7 @@ const evaluate = (line, token) => {
 			...env,
 			args: token.args,
 			storage: MacroStorage[token.file || 'mc'],
-			type: (index) => token.args[index].type,
+			type: index => token.args[index].type,
 		})
 		// return new Function("type", "return " + line).bind(env)((index, type) => token.args[index].type === type);
 	} catch (e) {
@@ -90,7 +90,7 @@ class Token {
 	}
 }
 
-const tokenize = (str) => {
+const tokenize = str => {
 	let inML = false
 	return str.split('\n').reduce((p, n, index) => {
 		n = n.trim()
@@ -124,7 +124,7 @@ function validate_next_destructive(tokens, expect) {
 function list({ getToken, actions, def }) {
 	const invoker = (file, tokens, ...args) => {
 		const token = invoker.getToken(tokens)
-		const action = invoker.actions.find((action) => action.match(token))
+		const action = invoker.actions.find(action => action.match(token))
 		if (!action) {
 			return invoker.def(file, tokens, ...args)
 		} else {
@@ -139,19 +139,14 @@ function list({ getToken, actions, def }) {
 	invoker.getToken = getToken
 	invoker.addAction = (action, priority = invoker.actions.length) => {
 		action.priority = priority
-		invoker.actions = [action, ...invoker.actions].sort(
-			(a, b) => a.priority - b.priority
-		)
+		invoker.actions = [action, ...invoker.actions].sort((a, b) => a.priority - b.priority)
 	}
 	return invoker
 }
 consumer.Namespace = (file, token, tokens) => {
 	const name = evaluate_str(token.substr('dir '.length))
 	if (/[^a-z0-9_\.]/.test(name)) {
-		throw new CompilerError(
-			"invalid directory name '" + name + "'",
-			token.line
-		)
+		throw new CompilerError("invalid directory name '" + name + "'", token.line)
 	}
 	namespaceStack.push(name.trim())
 	validate_next_destructive(tokens, '{')
@@ -162,7 +157,7 @@ consumer.Namespace = (file, token, tokens) => {
 	namespaceStack.pop()
 }
 consumer.EntryOp = list({
-	getToken: (tokenlist) => tokenlist[0],
+	getToken: tokenlist => tokenlist[0],
 	actions: [
 		{
 			match: ({ token }) => /dir .+/.test(token),
@@ -270,10 +265,7 @@ consumer.Function = (file, tokens, opts = {}) => {
 	let name = definition.token.substr(9)
 	name = evaluate_str(name)
 	if (/[^a-z0-9_\.]/.test(name)) {
-		throw new CompilerError(
-			"invalid function name '" + name + "'",
-			definition.line
-		)
+		throw new CompilerError("invalid function name '" + name + "'", definition.line)
 	}
 	const func = new MCFunction(undefined, undefined, name)
 	func.namespace = namespaceStack[0]
@@ -292,20 +284,13 @@ consumer.Function = (file, tokens, opts = {}) => {
 	return func
 }
 consumer.Generic = list({
-	getToken: (list) => list[0],
+	getToken: list => list[0],
 	actions: [
 		{
 			match: ({ token }) => token === 'load',
 			exec(file, tokens) {
 				shift_t(tokens)
-				const contents = consumer.Block(
-					file,
-					tokens,
-					'load',
-					{ dummy: true },
-					null,
-					null
-				)
+				const contents = consumer.Block(file, tokens, 'load', { dummy: true }, null, null)
 				for (let i = 0; i < contents.functions.length; i++) {
 					LoadFunction.addCommand(contents.functions[i])
 				}
@@ -315,14 +300,7 @@ consumer.Generic = list({
 			match: ({ token }) => token === 'tick',
 			exec(file, tokens) {
 				shift_t(tokens)
-				const contents = consumer.Block(
-					file,
-					tokens,
-					'tick',
-					{ dummy: true },
-					null,
-					null
-				)
+				const contents = consumer.Block(file, tokens, 'tick', { dummy: true }, null, null)
 				for (let i = 0; i < contents.functions.length; i++) {
 					TickFunction.addCommand(contents.functions[i])
 				}
@@ -347,13 +325,8 @@ consumer.Generic = list({
 			match: ({ token }) => /^execute\s*\(/.test(token),
 			exec(file, tokens, func, parent, functionalparent) {
 				let { token } = shift_t(tokens)
-				let condition = token.substring(
-					token.indexOf('(') + 1,
-					token.length - 1
-				)
-				func.addCommand(
-					`scoreboard players set #execute ${CONFIG.internalScoreboard} 0`
-				)
+				let condition = token.substring(token.indexOf('(') + 1, token.length - 1)
+				func.addCommand(`scoreboard players set #execute ${CONFIG.internalScoreboard} 0`)
 				func.addCommand(
 					`execute ${condition} run ${consumer.Block(
 						file,
@@ -370,10 +343,7 @@ consumer.Generic = list({
 				)
 				while (/^else execute\s*\(/.test(tokens[0].token)) {
 					token = shift_t(tokens).token
-					condition = token.substring(
-						token.indexOf('(') + 1,
-						token.length - 1
-					)
+					condition = token.substring(token.indexOf('(') + 1, token.length - 1)
 					func.addCommand(
 						`execute if score #execute ${
 							CONFIG.internalScoreboard
@@ -456,23 +426,16 @@ consumer.Generic = list({
 			match: ({ token }) => /^block|^{/.test(token),
 			exec(file, tokens, func, parent) {
 				if (tokens[0].token === 'block') shift_t(tokens)
-				func.addCommand(
-					consumer.Block(file, tokens, 'block', {}, parent, null)
-				)
+				func.addCommand(consumer.Block(file, tokens, 'block', {}, parent, null))
 			},
 		},
 		{
-			match: ({ token }) =>
-				token.startsWith('execute') && token.indexOf('run') != -1,
+			match: ({ token }) => token.startsWith('execute') && token.indexOf('run') != -1,
 			exec(file, tokens, func, parent, functionalparent) {
 				const _token = shift_t(tokens)
 				const { token } = _token
-				const command = token
-					.substr(token.lastIndexOf('run') + 3)
-					.trim()
-				const execute = token
-					.substr(0, token.lastIndexOf('run') + 3)
-					.trim()
+				const command = token.substr(token.lastIndexOf('run') + 3).trim()
+				const execute = token.substr(0, token.lastIndexOf('run') + 3).trim()
 				let useAltParent = true
 				if (!command) {
 					useAltParent = false
@@ -490,10 +453,7 @@ consumer.Generic = list({
 					if (lastInLine && lastInLine.token === '{') {
 						let tok = shift_t(tokens)
 						temp.push(tok)
-						while (
-							(tokens.length && count) ||
-							tok.line == tokens[0].line
-						) {
+						while ((tokens.length && count) || tok.line == tokens[0].line) {
 							if (tokens[0].token === '}') count--
 							if (tokens[0].token === '{') count++
 							else if (count > 0) inner_count++
@@ -526,9 +486,7 @@ consumer.Generic = list({
 						useAltParent ? functionalparent : func
 					)
 					innerFunc.confirm(file)
-					func.addCommand(
-						execute + ' function ' + innerFunc.getReference()
-					)
+					func.addCommand(execute + ' function ' + innerFunc.getReference())
 				} else {
 					func.addCommand(token)
 				}
@@ -538,15 +496,7 @@ consumer.Generic = list({
 			match: ({ token }) => /^LOOP/.test(token),
 			exec(file, tokens, func) {
 				const { token } = shift_t(tokens)
-				consumer.Loop(
-					file,
-					token,
-					tokens,
-					func,
-					consumer.Generic,
-					null,
-					null
-				)
+				consumer.Loop(file, token, tokens, func, consumer.Generic, null, null)
 			},
 		},
 		{
@@ -575,9 +525,7 @@ consumer.Generic = list({
 					'/until/' +
 					(id.until = (id.until == undefined ? -1 : id.until) + 1)
 				untilFunc.namespace = namespaceStack[0]
-				untilFunc.setPath(
-					namespaceStack.slice(1).concat(name).join('/')
-				)
+				untilFunc.setPath(namespaceStack.slice(1).concat(name).join('/'))
 				untilFunc.addCommand(
 					`scoreboard players set #until_${_id} ${CONFIG.internalScoreboard} 0`
 				)
@@ -604,9 +552,7 @@ consumer.Generic = list({
 					(id.while = (id.while == undefined ? -1 : id.while) + 1)
 
 				whileFunc.namespace = namespaceStack[0]
-				whileFunc.setPath(
-					namespaceStack.slice(1).concat(name).join('/')
-				)
+				whileFunc.setPath(namespaceStack.slice(1).concat(name).join('/'))
 				const whileAction = consumer.Block(
 					file,
 					tokens,
@@ -627,14 +573,7 @@ consumer.Generic = list({
 
 				if (/^finally$/.test(tokens[0].token)) {
 					token = shift_t(tokens).token
-					const whileFinally = consumer.Block(
-						file,
-						tokens,
-						'while',
-						{},
-						whileFunc,
-						func
-					)
+					const whileFinally = consumer.Block(file, tokens, 'while', {}, whileFunc, func)
 					whileFunc.addCommand(
 						`execute if score #WHILE_${_id} ${CONFIG.internalScoreboard} matches 0 run ${whileFinally}`
 					)
@@ -658,9 +597,7 @@ consumer.Generic = list({
 
 				const _id = getUniqueScoreId(file)
 				whileFunc.namespace = namespaceStack[0]
-				whileFunc.setPath(
-					namespaceStack.slice(1).concat(name).join('/')
-				)
+				whileFunc.setPath(namespaceStack.slice(1).concat(name).join('/'))
 				const whileAction = consumer.Block(
 					file,
 					tokens,
@@ -681,14 +618,7 @@ consumer.Generic = list({
 
 				if (/^finally$/.test(tokens[0].token)) {
 					token = shift_t(tokens).token
-					const whileFinally = consumer.Block(
-						file,
-						tokens,
-						'while',
-						{},
-						whileFunc,
-						func
-					)
+					const whileFinally = consumer.Block(file, tokens, 'while', {}, whileFunc, func)
 					whileFunc.addCommand(
 						`execute if score #WHILE_${_id} ${CONFIG.internalScoreboard} matches 0 run ${whileFinally}`
 					)
@@ -700,9 +630,7 @@ consumer.Generic = list({
 		},
 		{
 			match: ({ token }) =>
-				/^schedule\s?((\d|\.)+(d|t|s)|<%.+)\s?(append|replace){0,1}$/.test(
-					token
-				),
+				/^schedule\s?((\d|\.)+(d|t|s)|<%.+)\s?(append|replace){0,1}$/.test(token),
 			exec(file, tokens, func, parent, functionalparent) {
 				const { token } = shift_t(tokens)
 				const inner_func = consumer.Block(
@@ -729,7 +657,7 @@ consumer.Generic = list({
 					null,
 					null
 				)
-				const timeToTicks = (time) => {
+				const timeToTicks = time => {
 					let val = +time.substr(0, time.length - 1)
 					let type = time[time.length - 1]
 					switch (type) {
@@ -759,25 +687,17 @@ consumer.Generic = list({
 				}
 				for (let time in commands) {
 					if (time == 0) {
-						for (const command of commands[time])
-							func.addCommand(command)
+						for (const command of commands[time]) func.addCommand(command)
 					} else {
 						const subfunc = new MCFunction()
 						const name =
 							CONFIG.generatedDirectory +
 							'/sequence/' +
-							(id.sequence =
-								(id.sequence == undefined ? -1 : id.sequence) +
-								1)
+							(id.sequence = (id.sequence == undefined ? -1 : id.sequence) + 1)
 						subfunc.namespace = namespaceStack[0]
-						subfunc.setPath(
-							namespaceStack.slice(1).concat(name).join('/')
-						)
-						for (const command of commands[time])
-							subfunc.addCommand(command)
-						func.addCommand(
-							`schedule ${subfunc.toString()} ${time}t replace`
-						)
+						subfunc.setPath(namespaceStack.slice(1).concat(name).join('/'))
+						for (const command of commands[time]) subfunc.addCommand(command)
+						func.addCommand(`schedule ${subfunc.toString()} ${time}t replace`)
 						subfunc.confirm()
 					}
 				}
@@ -804,14 +724,7 @@ consumer.Generic = list({
 	},
 })
 
-consumer.Block = (
-	file,
-	tokens,
-	reason,
-	opts = {},
-	parent,
-	functionalparent
-) => {
+consumer.Block = (file, tokens, reason, opts = {}, parent, functionalparent) => {
 	validate_next_destructive(tokens, '{')
 	if (!reason) reason = 'none'
 	// just a clever way to only allocate a number if the namespace is used, allows me to define more namespaces as time goes on
@@ -863,23 +776,13 @@ consumer.Block = (
 	}
 }
 
-consumer.Loop = (
-	file,
-	token,
-	tokens,
-	func,
-	type = consumer.Generic,
-	parent,
-	functionalparent
-) => {
+consumer.Loop = (file, token, tokens, func, type = consumer.Generic, parent, functionalparent) => {
 	let [count, name] = token
 		.substring(token.indexOf('(') + 1, token.length - 1)
 		.split(',')
-		.map((_) => _.trim())
+		.map(_ => _.trim())
 	if (token.indexOf('[') != -1) {
-		const parts = token
-			.substring(token.indexOf('(') + 1, token.length - 1)
-			.split(',')
+		const parts = token.substring(token.indexOf('(') + 1, token.length - 1).split(',')
 		name = parts.pop()
 		count = parts.join(',')
 	}
@@ -969,9 +872,7 @@ function MC_LANG_HANDLER(file_contents, namespace, config, info) {
 		LB_TOTAL = tokens.length
 		consumer.Entry(file, tokens)
 		if (LoadFunction.functions.length > 0) {
-			LoadFunction.functions = Array.from(
-				new Set(LoadFunction.functions).keys()
-			)
+			LoadFunction.functions = Array.from(new Set(LoadFunction.functions).keys())
 			LoadFunction.confirm(file)
 		}
 		if (TickFunction.functions.length > 0) {

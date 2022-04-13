@@ -55,8 +55,7 @@ async function createMCFile(
 ): Promise<{ mcFile: string; mcbConfig: MCBConfig }> {
 	const FILE: string[] = []
 	const ajSettings = settings.animatedJava
-	const exporterSettings: vanillaStatueExporterSettings =
-		settings.vanillaStatueExporter
+	const exporterSettings: vanillaStatueExporterSettings = settings.vanillaStatueExporter
 	const projectName = safeFunctionName(ajSettings.projectName)
 
 	let headYOffset = -1.4365
@@ -154,15 +153,10 @@ async function createMCFile(
 				scoreboard players operation # ${scoreboards.id} = @s ${scoreboards.id}
 				execute as @e[type=${entityTypes.bone},tag=${
 		tags.model
-	},distance=..${staticDistance}] if score @s ${scoreboards.id} = # ${
-		scoreboards.id
-	} run kill @s
+	},distance=..${staticDistance}] if score @s ${scoreboards.id} = # ${scoreboards.id} run kill @s
 				kill @s
 			} else {
-				tellraw @s ${rootExeErrorJsonText.replace(
-					'%functionName',
-					`${projectName}:remove/all`
-				)}
+				tellraw @s ${rootExeErrorJsonText.replace('%functionName', `${projectName}:remove/all`)}
 			}
 		}
 	}
@@ -185,12 +179,9 @@ async function createMCFile(
 				console.log(this.nbt.toString())
 			}
 
-			updateModelFromVariant(variant: {
-				[index: string]: aj.VariantModel
-			}) {
+			updateModelFromVariant(variant: { [index: string]: aj.VariantModel }) {
 				if (variant[this.boneName]) {
-					this.customModelData =
-						variant[this.boneName].aj.customModelData
+					this.customModelData = variant[this.boneName].aj.customModelData
 				} else {
 					this.resetCustomModelData()
 				}
@@ -204,9 +195,7 @@ async function createMCFile(
 				nbt._merge(
 					SNBT.Compound({
 						Invisible: SNBT.Boolean(true),
-						Marker: SNBT.Boolean(
-							exporterSettings.markerArmorStands
-						),
+						Marker: SNBT.Boolean(exporterSettings.markerArmorStands),
 						NoGravity: SNBT.Boolean(true),
 						DisabledSlots: SNBT.Int(4144959),
 					})
@@ -240,11 +229,7 @@ async function createMCFile(
 				const rot = this.rot
 				nbt.set(
 					'Pose.Head',
-					SNBT.List([
-						SNBT.Float(rot.x),
-						SNBT.Float(rot.y),
-						SNBT.Float(rot.z),
-					])
+					SNBT.List([SNBT.Float(rot.x), SNBT.Float(rot.y), SNBT.Float(rot.z)])
 				)
 
 				return nbt
@@ -268,7 +253,7 @@ async function createMCFile(
 
 			toString() {
 				const pos = Object.values(this.pos)
-					.map((v) => `^${v}`)
+					.map(v => `^${v}`)
 					.join(' ')
 				return `summon ${entityTypes.boneRoot} ${pos} ${this.nbt}`
 			}
@@ -288,11 +273,7 @@ async function createMCFile(
 		rootEntityNbt.assert('Tags', SNBTTagType.LIST)
 		rootEntityNbt
 			.get('Tags')
-			.push(
-				SNBT.String('new'),
-				SNBT.String(tags.model),
-				SNBT.String(tags.root)
-			)
+			.push(SNBT.String('new'), SNBT.String(tags.model), SNBT.String(tags.root))
 
 		for (const [variantName, variant] of Object.entries(variantModels)) {
 			for (const summon of summons) {
@@ -321,9 +302,7 @@ async function createMCFile(
 	if (Object.keys(variantTouchedModels).length > 0) {
 		const variantBoneModifier = `data modify entity @s[tag=${tags.individualBone}] ArmorItems[-1].tag.CustomModelData set value %customModelData`
 		FILE.push(`dir set_variant {`)
-		for (const [variantName, variant] of Object.entries(
-			variantModels as Record<string, any>
-		)) {
+		for (const [variantName, variant] of Object.entries(variantModels as Record<string, any>)) {
 			const thisVariantTouchedModels = {
 				...variantTouchedModels,
 				...variant,
@@ -377,9 +356,7 @@ async function exportMCFile(
 					'animatedJava.exporters.generic.dialogs.errors.mcbFilePathNotDefined.title'
 				),
 				lines: [
-					tl(
-						'animatedJava.exporters.generic.dialogs.errors.mcbFilePathNotDefined.body'
-					),
+					tl('animatedJava.exporters.generic.dialogs.errors.mcbFilePathNotDefined.body'),
 				],
 				width: 512,
 				singleButton: true,
@@ -408,9 +385,7 @@ async function exportDataPack(
 					'animatedJava.exporters.generic.dialogs.errors.dataPackPathNotDefined.title'
 				),
 				lines: [
-					tl(
-						'animatedJava.exporters.generic.dialogs.errors.dataPackPathNotDefined.body'
-					),
+					tl('animatedJava.exporters.generic.dialogs.errors.dataPackPathNotDefined.body'),
 				],
 				width: 512,
 				singleButton: true,
@@ -472,9 +447,7 @@ async function exportDataPack(
 
 	const dataPackPath = exporterSettings.dataPackPath
 	const totalFiles = dataPack.length
-	const translatedWritingText = tl(
-		'animatedJava.exporters.generic.progress.writingDataPack'
-	)
+	const translatedWritingText = tl('animatedJava.exporters.generic.progress.writingDataPack')
 	const createdPaths = new Set()
 
 	let timeOut = false
@@ -493,22 +466,17 @@ async function exportDataPack(
 		}
 	}
 
-	function newWriteFilePromise(
-		file: GeneratedDataPackFile,
-		que: Promise<unknown>[]
-	) {
+	function newWriteFilePromise(file: GeneratedDataPackFile, que: Promise<unknown>[]) {
 		const filePath = new Path(dataPackPath, file.path)
 
 		if (!createdPaths.has(filePath.parse().dir)) {
 			filePath.mkdir({ recursive: true })
 			createdPaths.add(filePath.parse().dir)
 		}
-		const p = fs.promises
-			.writeFile(filePath.path, file.contents)
-			.then(() => {
-				que.splice(que.indexOf(p), 1)
-				setProgress(totalFiles - dataPack.length, totalFiles, file.path)
-			})
+		const p = fs.promises.writeFile(filePath.path, file.contents).then(() => {
+			que.splice(que.indexOf(p), 1)
+			setProgress(totalFiles - dataPack.length, totalFiles, file.path)
+		})
 		que.push(p)
 	}
 
@@ -530,8 +498,7 @@ async function exportDataPack(
 }
 
 async function statueExport(data: any) {
-	const exporterSettings: vanillaStatueExporterSettings =
-		data.settings.vanillaStatueExporter
+	const exporterSettings: vanillaStatueExporterSettings = data.settings.vanillaStatueExporter
 	const generated = await createMCFile(
 		data.bones,
 		data.models,
@@ -555,9 +522,7 @@ async function statueExport(data: any) {
 	Blockbench.showQuickMessage(tl('animatedJava.popups.successfullyExported'))
 }
 
-const genericEmptySettingText = tl(
-	'animatedJava.settings.generic.errors.emptyValue'
-)
+const genericEmptySettingText = tl('animatedJava.settings.generic.errors.emptyValue')
 
 function validateFormattedStringSetting(required: string[]) {
 	return (d: aj.SettingDescriptor) => {
@@ -570,14 +535,9 @@ function validateFormattedStringSetting(required: string[]) {
 			const notFound = required.find((v: string) => !d.value.includes(v))
 			if (notFound) {
 				d.isValid = false
-				d.error = format(
-					tl(
-						'animatedJava.settings.generic.errors.missingFormatString'
-					),
-					{
-						notFound,
-					}
-				)
+				d.error = format(tl('animatedJava.settings.generic.errors.missingFormatString'), {
+					notFound,
+				})
 			}
 		}
 		return d
@@ -590,9 +550,7 @@ const Exporter = (AJ: any) => {
 		'vanillaStatueExporter', // Exporter Settings Key
 		{
 			rootEntityType: {
-				title: tl(
-					'animatedJava.exporters.generic.settings.rootEntityType.title'
-				),
+				title: tl('animatedJava.exporters.generic.settings.rootEntityType.title'),
 				description: tl(
 					'animatedJava.exporters.generic.settings.rootEntityType.description'
 				),
@@ -614,9 +572,7 @@ const Exporter = (AJ: any) => {
 				},
 			},
 			rootEntityNbt: {
-				title: tl(
-					'animatedJava.exporters.generic.settings.rootEntityNbt.title'
-				),
+				title: tl('animatedJava.exporters.generic.settings.rootEntityNbt.title'),
 				description: tl(
 					'animatedJava.exporters.generic.settings.rootEntityNbt.description'
 				),
@@ -640,9 +596,7 @@ const Exporter = (AJ: any) => {
 				},
 			},
 			markerArmorStands: {
-				title: tl(
-					'animatedJava.exporters.generic.settings.markerArmorStands.title'
-				),
+				title: tl('animatedJava.exporters.generic.settings.markerArmorStands.title'),
 				description: tl(
 					'animatedJava.exporters.generic.settings.markerArmorStands.description'
 				),
@@ -653,27 +607,18 @@ const Exporter = (AJ: any) => {
 				},
 			},
 			modelTag: {
-				title: tl(
-					'animatedJava.exporters.generic.settings.modelTag.title'
-				),
-				description: tl(
-					'animatedJava.exporters.generic.settings.modelTag.description'
-				),
+				title: tl('animatedJava.exporters.generic.settings.modelTag.title'),
+				description: tl('animatedJava.exporters.generic.settings.modelTag.description'),
 				type: 'text',
 				default: 'aj.%projectName',
 				onUpdate: validateFormattedStringSetting(['%projectName']),
 				isResetable: true,
-				groupName:
-					'animatedJava.exporters.generic.settingGroups.entityTags.title',
+				groupName: 'animatedJava.exporters.generic.settingGroups.entityTags.title',
 				group: 'entityTags',
 			},
 			rootTag: {
-				title: tl(
-					'animatedJava.exporters.generic.settings.rootTag.title'
-				),
-				description: tl(
-					'animatedJava.exporters.generic.settings.rootTag.description'
-				),
+				title: tl('animatedJava.exporters.generic.settings.rootTag.title'),
+				description: tl('animatedJava.exporters.generic.settings.rootTag.description'),
 				type: 'text',
 				default: 'aj.%projectName.root',
 				onUpdate: validateFormattedStringSetting(['%projectName']),
@@ -681,12 +626,8 @@ const Exporter = (AJ: any) => {
 				group: 'entityTags',
 			},
 			allBonesTag: {
-				title: tl(
-					'animatedJava.exporters.generic.settings.allBonesTag.title'
-				),
-				description: tl(
-					'animatedJava.exporters.generic.settings.allBonesTag.description'
-				),
+				title: tl('animatedJava.exporters.generic.settings.allBonesTag.title'),
+				description: tl('animatedJava.exporters.generic.settings.allBonesTag.description'),
 				type: 'text',
 				default: 'aj.%projectName.bone',
 				onUpdate: validateFormattedStringSetting(['%projectName']),
@@ -694,9 +635,7 @@ const Exporter = (AJ: any) => {
 				group: 'entityTags',
 			},
 			boneModelDisplayTag: {
-				title: tl(
-					'animatedJava.exporters.generic.settings.boneModelDisplayTag.title'
-				),
+				title: tl('animatedJava.exporters.generic.settings.boneModelDisplayTag.title'),
 				description: tl(
 					'animatedJava.exporters.generic.settings.boneModelDisplayTag.description'
 				),
@@ -707,18 +646,13 @@ const Exporter = (AJ: any) => {
 				group: 'entityTags',
 			},
 			individualBoneTag: {
-				title: tl(
-					'animatedJava.exporters.generic.settings.individualBoneTag.title'
-				),
+				title: tl('animatedJava.exporters.generic.settings.individualBoneTag.title'),
 				description: tl(
 					'animatedJava.exporters.generic.settings.individualBoneTag.description'
 				),
 				type: 'text',
 				default: 'aj.%projectName.bone.%boneName',
-				onUpdate: validateFormattedStringSetting([
-					'%projectName',
-					'%boneName',
-				]),
+				onUpdate: validateFormattedStringSetting(['%projectName', '%boneName']),
 				isResetable: true,
 				group: 'entityTags',
 			},
@@ -743,9 +677,7 @@ const Exporter = (AJ: any) => {
 				group: 'scoreboardObjectives',
 			},
 			idScoreboardObjective: {
-				title: tl(
-					'animatedJava.exporters.generic.settings.idScoreboardObjective.title'
-				),
+				title: tl('animatedJava.exporters.generic.settings.idScoreboardObjective.title'),
 				description: tl(
 					'animatedJava.exporters.generic.settings.idScoreboardObjective.description'
 				),
@@ -755,27 +687,18 @@ const Exporter = (AJ: any) => {
 				group: 'scoreboardObjectives',
 			},
 			exportMode: {
-				title: tl(
-					'animatedJava.exporters.generic.settings.exportMode.title'
-				),
-				description: tl(
-					'animatedJava.exporters.generic.settings.exportMode.description'
-				),
+				title: tl('animatedJava.exporters.generic.settings.exportMode.title'),
+				description: tl('animatedJava.exporters.generic.settings.exportMode.description'),
 				type: 'select',
 				default: 'mcb',
 				options: {
-					vanilla:
-						'animatedJava.exporters.generic.settings.exportMode.options.vanilla',
+					vanilla: 'animatedJava.exporters.generic.settings.exportMode.options.vanilla',
 					mcb: 'animatedJava.exporters.generic.settings.exportMode.options.mcb',
 				},
 			},
 			mcbFilePath: {
-				title: tl(
-					'animatedJava.exporters.generic.settings.mcbFilePath.title'
-				),
-				description: tl(
-					'animatedJava.exporters.generic.settings.mcbFilePath.description'
-				),
+				title: tl('animatedJava.exporters.generic.settings.mcbFilePath.title'),
+				description: tl('animatedJava.exporters.generic.settings.mcbFilePath.description'),
 				type: 'filepath',
 				default: '',
 				props: {
@@ -791,18 +714,14 @@ const Exporter = (AJ: any) => {
 					if (d.value != '') {
 						const p = new Path(d.value)
 						const b = p.parse()
-						if (
-							b.base !==
-							`${AJ.settings.animatedJava.projectName}.mc`
-						) {
+						if (b.base !== `${AJ.settings.animatedJava.projectName}.mc`) {
 							d.isValid = false
 							d.error = format(
 								tl(
 									'animatedJava.exporters.generic.settings.mcbFilePath.errors.mustBeNamedAfterProject'
 								),
 								{
-									projectName:
-										AJ.settings.animatedJava.projectName,
+									projectName: AJ.settings.animatedJava.projectName,
 								}
 							)
 						}
@@ -815,15 +734,10 @@ const Exporter = (AJ: any) => {
 				isVisible(settings: any) {
 					return settings.vanillaStatueExporter.exportMode === 'mcb'
 				},
-				dependencies: [
-					'vanillaStatueExporter.exportMode',
-					'animatedJava.projectName',
-				],
+				dependencies: ['vanillaStatueExporter.exportMode', 'animatedJava.projectName'],
 			},
 			mcbConfigPath: {
-				title: tl(
-					'animatedJava.exporters.generic.settings.mcbConfigPath.title'
-				),
+				title: tl('animatedJava.exporters.generic.settings.mcbConfigPath.title'),
 				description: tl(
 					'animatedJava.exporters.generic.settings.mcbConfigPath.description'
 				),
@@ -851,12 +765,8 @@ const Exporter = (AJ: any) => {
 				dependencies: ['vanillaStatueExporter.exportMode'],
 			},
 			dataPackPath: {
-				title: tl(
-					'animatedJava.exporters.generic.settings.dataPackPath.title'
-				),
-				description: tl(
-					'animatedJava.exporters.generic.settings.dataPackPath.description'
-				),
+				title: tl('animatedJava.exporters.generic.settings.dataPackPath.title'),
+				description: tl('animatedJava.exporters.generic.settings.dataPackPath.description'),
 				type: 'filepath',
 				default: '',
 				props: {
@@ -877,9 +787,7 @@ const Exporter = (AJ: any) => {
 					return d
 				},
 				isVisible(settings: any) {
-					return (
-						settings.vanillaStatueExporter.exportMode === 'vanilla'
-					)
+					return settings.vanillaStatueExporter.exportMode === 'vanilla'
 				},
 				dependencies: ['vanillaStatueExporter.exportMode'],
 			},

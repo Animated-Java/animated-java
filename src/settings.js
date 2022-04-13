@@ -51,7 +51,7 @@ export const DefaultSettings = {
 			},
 			get options() {
 				return Object.fromEntries(
-					[...store.getStore('exporters').keys()].map((v) => [
+					[...store.getStore('exporters').keys()].map(v => [
 						v,
 						ForeignSettingTranslationKeys[v],
 					])
@@ -60,13 +60,9 @@ export const DefaultSettings = {
 			onUpdate(d) {
 				console.log(d)
 				console.log([...store.getStore('exporters').keys()])
-				if (
-					![...store.getStore('exporters').keys()].includes(d.value)
-				) {
+				if (![...store.getStore('exporters').keys()].includes(d.value)) {
 					d.isValid = false
-					d.errors = tl(
-						'animatedJava.settings.exporter.errors.mustBeValidExporter'
-					)
+					d.errors = tl('animatedJava.settings.exporter.errors.mustBeValidExporter')
 				}
 				return d
 			},
@@ -82,12 +78,8 @@ export const DefaultSettings = {
 			default: '3x3x3',
 			get options() {
 				return {
-					'3x3x3': tl(
-						'animatedJava.settings.modelScalingMode.options.3x3x3'
-					),
-					'7x7x7': tl(
-						'animatedJava.settings.modelScalingMode.options.7x7x7'
-					),
+					'3x3x3': tl('animatedJava.settings.modelScalingMode.options.3x3x3'),
+					'7x7x7': tl('animatedJava.settings.modelScalingMode.options.7x7x7'),
 				}
 			},
 			onUpdate(d) {
@@ -110,9 +102,7 @@ export const DefaultSettings = {
 			onUpdate(d) {
 				if (!(typeof d.value === 'boolean')) {
 					d.isValid = false
-					d.errors = tl(
-						'animatedJava.settings.generic.errors.mustBeBoolean'
-					)
+					d.errors = tl('animatedJava.settings.generic.errors.mustBeBoolean')
 				}
 				return d
 			},
@@ -122,18 +112,14 @@ export const DefaultSettings = {
 				return tl('animatedJava.settings.animatorPreviewFps.title')
 			},
 			get description() {
-				return tl(
-					'animatedJava.settings.animatorPreviewFps.description'
-				)
+				return tl('animatedJava.settings.animatorPreviewFps.description')
 			},
 			type: 'number',
 			default: 20,
 			onUpdate(d) {
 				if (!(typeof d.value === 'number')) {
 					d.isValid = false
-					d.errors = tl(
-						'animatedJava.settings.generic.errors.mustBeNumber'
-					)
+					d.errors = tl('animatedJava.settings.generic.errors.mustBeNumber')
 				}
 				return d
 			},
@@ -175,9 +161,7 @@ export const DefaultSettings = {
 				return tl('animatedJava.settings.rigModelsExportFolder.title')
 			},
 			get description() {
-				return tl(
-					'animatedJava.settings.rigModelsExportFolder.description'
-				)
+				return tl('animatedJava.settings.rigModelsExportFolder.description')
 			},
 			type: 'filepath',
 			default: '',
@@ -192,9 +176,7 @@ export const DefaultSettings = {
 				if (d.value != '') {
 					let modelPath
 					try {
-						modelPath = getModelPath(
-							pathjs.join(d.value, 'fakemodel.json')
-						)
+						modelPath = getModelPath(pathjs.join(d.value, 'fakemodel.json'))
 					} catch (e) {
 						console.log(d.value)
 						console.error(e)
@@ -236,9 +218,7 @@ export const DefaultSettings = {
 				if (d.value != '') {
 					const p = new Path(d.value)
 					const b = p.parse()
-					const rigItem = removeNamespace(
-						ANIMATED_JAVA.settings.animatedJava.rigItem
-					)
+					const rigItem = removeNamespace(ANIMATED_JAVA.settings.animatedJava.rigItem)
 					if (`${rigItem}.json` !== b.base) {
 						d.isValid = false
 						d.errors = tl(
@@ -260,9 +240,7 @@ export const DefaultSettings = {
 				return tl('animatedJava.settings.transparentTexturePath.title')
 			},
 			get description() {
-				return tl(
-					'animatedJava.settings.transparentTexturePath.description'
-				)
+				return tl('animatedJava.settings.transparentTexturePath.description')
 			},
 			type: 'filepath',
 			default: '',
@@ -279,8 +257,8 @@ export const DefaultSettings = {
 					const variants = ANIMATED_JAVA.variants
 					if (
 						variants &&
-						Object.values(variants).find((v) =>
-							Object.values(v).find((t) => t === 'transparent')
+						Object.values(variants).find(v =>
+							Object.values(v).find(t => t === 'transparent')
 						)
 					) {
 						d.isValid = false
@@ -334,9 +312,7 @@ export const DefaultSettings = {
 				return tl('animatedJava.settings.boundingBoxRenderMode.title')
 			},
 			get description() {
-				return tl(
-					'animatedJava.settings.boundingBoxRenderMode.description'
-				)
+				return tl('animatedJava.settings.boundingBoxRenderMode.description')
 			},
 			type: 'select',
 			default: 'single',
@@ -355,9 +331,7 @@ function createUpdateDescriptor(setting, value, event) {
 			return value
 		},
 		set value(v) {
-			throw new CustomError(
-				'The value property on an UpdateDescriptor is not writable'
-			)
+			throw new CustomError('The value property on an UpdateDescriptor is not writable')
 		},
 		isValid: true,
 		error: null,
@@ -408,9 +382,7 @@ class Settings {
 						this.watch(`${keys[i]}.${setting}`, () => {
 							localStorage.setItem(
 								process.env.GLOBAL_SETTINGS_KEY,
-								JSON.stringify(
-									Array.from(this.globalStorage.entries())
-								)
+								JSON.stringify(Array.from(this.globalStorage.entries()))
 							)
 						})
 					}
@@ -419,9 +391,7 @@ class Settings {
 		}
 
 		try {
-			let global_data = JSON.parse(
-				localStorage.getItem(process.env.GLOBAL_SETTINGS_KEY)
-			)
+			let global_data = JSON.parse(localStorage.getItem(process.env.GLOBAL_SETTINGS_KEY))
 			for (const [namespace, value] of global_data) {
 				for (const key in value) {
 					this.set(`${namespace}.${key}`, value[key])
@@ -436,9 +406,7 @@ class Settings {
 	getUpdateDescriptor(namespace, name, value) {
 		const setting = DefaultSettings[namespace]?.[name]
 		if (setting && typeof setting.onUpdate === 'function') {
-			return setting.onUpdate(
-				createUpdateDescriptor(setting, value, 'dummy')
-			)
+			return setting.onUpdate(createUpdateDescriptor(setting, value, 'dummy'))
 		}
 		return createUpdateDescriptor(setting, value, 'dummy')
 	}
@@ -455,22 +423,14 @@ class Settings {
 						this.get(namespace + '.' + settings[i])
 					)
 				},
-				set: (value) => {
-					const validatedValue = evaluateSetting(
-						'set',
-						namespace,
-						settings[i],
-						value
-					)
+				set: value => {
+					const validatedValue = evaluateSetting('set', namespace, settings[i], value)
 					if (!DefaultSettings[namespace][settings[i]].isValid) {
 						throw new CustomError(
 							`Invalid setting value for ${namespace}.${settings[i]}: ${value}`
 						)
 					}
-					return this.set(
-						namespace + '.' + settings[i],
-						validatedValue
-					)
+					return this.set(namespace + '.' + settings[i], validatedValue)
 				},
 			})
 		}
@@ -478,21 +438,15 @@ class Settings {
 	}
 	update(settings, use_default = false, global = false) {
 		if (settings === DefaultSettings) use_default = true
-		Object.keys(settings).forEach((namespace) => {
+		Object.keys(settings).forEach(namespace => {
 			if (typeof settings[namespace] === 'object') {
 				let updated = false
 				const val = this.storage.get(namespace) || {}
 				const valGlobal = this.globalStorage.get(namespace) || {}
-				Object.keys(settings[namespace]).forEach((name) => {
-					if (
-						DefaultSettings[namespace] &&
-						DefaultSettings[namespace][name]
-					) {
+				Object.keys(settings[namespace]).forEach(name => {
+					if (DefaultSettings[namespace] && DefaultSettings[namespace][name]) {
 						try {
-							if (
-								global ||
-								!DefaultSettings[namespace][name].global
-							) {
+							if (global || !DefaultSettings[namespace][name].global) {
 								// target[name] = evaluateSetting(
 								// 	namespace,
 								// 	name,
@@ -504,8 +458,7 @@ class Settings {
 								this.set(
 									namespace + '.' + name,
 									use_default
-										? DefaultSettings[namespace][name]
-												.default
+										? DefaultSettings[namespace][name].default
 										: evaluateSetting(
 												'update',
 												namespace,
@@ -578,16 +531,14 @@ class Settings {
 		store.set(major, store.get(major))
 		let toUpdate = this.watchers.get(path)
 		if (toUpdate) {
-			toUpdate.forEach((callback) => callback(value))
+			toUpdate.forEach(callback => callback(value))
 		}
 		return res
 	}
 
 	registerPluginSettings(exporterId, exporterSettingsKey, settings) {
 		DefaultSettings[exporterSettingsKey] = settings
-		ForeignSettingTranslationKeys[
-			exporterSettingsKey
-		] = `${exporterId}.title`
+		ForeignSettingTranslationKeys[exporterSettingsKey] = `${exporterId}.title`
 		this.update(
 			{
 				[exporterSettingsKey]: settings,
@@ -609,10 +560,8 @@ class Settings {
 				}
 			})
 		}
-		if (target === 'project' || target === 'all')
-			merge(this.storage.entries())
-		if (target === 'global' || target === 'all')
-			merge(this.globalStorage.entries())
+		if (target === 'project' || target === 'all') merge(this.storage.entries())
+		if (target === 'global' || target === 'all') merge(this.globalStorage.entries())
 		const result = {}
 		Array.from(merged.entries()).forEach(([key, value]) => {
 			let _cached = null
@@ -620,23 +569,16 @@ class Settings {
 				get() {
 					if (_cached) return _cached
 					_cached = {}
-					Array.from(Object.entries(value)).forEach(
-						([key2, value2]) => {
-							let _cached2 = UNASSIGNED
-							Object.defineProperty(_cached, key2, {
-								get() {
-									if (_cached2 != UNASSIGNED) return _cached2
-									_cached2 = evaluateSetting(
-										'get',
-										key,
-										key2,
-										value2
-									)
-									return _cached2
-								},
-							})
-						}
-					)
+					Array.from(Object.entries(value)).forEach(([key2, value2]) => {
+						let _cached2 = UNASSIGNED
+						Object.defineProperty(_cached, key2, {
+							get() {
+								if (_cached2 != UNASSIGNED) return _cached2
+								_cached2 = evaluateSetting('get', key, key2, value2)
+								return _cached2
+							},
+						})
+					})
 					return _cached
 				},
 			})
@@ -653,8 +595,7 @@ class Settings {
 			for (let j = 0; j < subk.length; j++) {
 				const name = subk[j]
 				if (
-					!!DefaultSettings[namespace][name].global ===
-						(target === 'global') ||
+					!!DefaultSettings[namespace][name].global === (target === 'global') ||
 					target === 'all'
 				)
 					sub[name] = this.get(namespace + '.' + name)
@@ -673,7 +614,6 @@ class Settings {
 export var settings = new Settings()
 export const settingsByUUID = new Map()
 const updateSettingsOnProjectChange = () => {
-	if (settingsByUUID.has(Project.uuid))
-		settings.update(settingsByUUID.get(Project.uuid))
+	if (settingsByUUID.has(Project.uuid)) settings.update(settingsByUUID.get(Project.uuid))
 }
 Blockbench.on('select_project', updateSettingsOnProjectChange)

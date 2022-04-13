@@ -19,9 +19,7 @@ class Intl {
 		this.lang = lang
 	}
 	tl(tlPath: string, raw?: boolean) {
-		if (
-			Object.prototype.hasOwnProperty.call(Intl.translationCache, tlPath)
-		) {
+		if (Object.prototype.hasOwnProperty.call(Intl.translationCache, tlPath)) {
 			return Intl.translationCache[tlPath]
 		}
 
@@ -73,17 +71,11 @@ class Intl {
 			diff.push(lang + ':')
 			for (let key in this.dict[lang]) {
 				if (key in root) continue
-				diff.push(
-					`	+ ${key} ${
-						showDefaultValues ? '(' + this.dict.en[key] + ')' : ''
-					}`
-				)
+				diff.push(`	+ ${key} ${showDefaultValues ? '(' + this.dict.en[key] + ')' : ''}`)
 			}
 			for (let key in root) {
 				if (key in this.dict[lang]) continue
-				diff.push(
-					`	- ${key} ${showDefaultValues ? '(' + root[key] + ')' : ''}`
-				)
+				diff.push(`	- ${key} ${showDefaultValues ? '(' + root[key] + ')' : ''}`)
 			}
 		}
 		console.log(diff.join('\n'))

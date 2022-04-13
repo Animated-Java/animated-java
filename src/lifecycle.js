@@ -3,7 +3,7 @@ import EVENTS from './constants/events'
 const log = console.log.bind(console, '[java-animations@redirect]')
 const redirect = (from, to) => {
 	log(`redirect: ${from} -> ${to}`)
-	bus.on(from, (e) => {
+	bus.on(from, e => {
 		bus.dispatch(to, e)
 	})
 }

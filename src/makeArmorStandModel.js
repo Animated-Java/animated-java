@@ -288,10 +288,7 @@ export function makeArmorStandModel() {
 		alphaTest: 0.05,
 	})
 	elements.forEach(function (s) {
-		var mesh = new THREE.Mesh(
-			new THREE.BoxGeometry(s.size[0], s.size[1], s.size[2]),
-			mat
-		)
+		var mesh = new THREE.Mesh(new THREE.BoxGeometry(s.size[0], s.size[1], s.size[2]), mat)
 		if (s.origin) {
 			mesh.position.set(s.origin[0], s.origin[1], s.origin[2])
 			mesh.geometry.tl(-s.origin[0], -s.origin[1], -s.origin[2])
@@ -347,22 +344,10 @@ export function makeArmorStandModel() {
 						break
 				}
 				let uv_array = getUVArray(s[face])
-				mesh.geometry.attributes.uv.array.set(
-					uv_array[0],
-					fIndex * 4 + 0
-				) // 0,1
-				mesh.geometry.attributes.uv.array.set(
-					uv_array[1],
-					fIndex * 4 + 2
-				) // 1,1
-				mesh.geometry.attributes.uv.array.set(
-					uv_array[2],
-					fIndex * 4 + 4
-				) // 0,0
-				mesh.geometry.attributes.uv.array.set(
-					uv_array[3],
-					fIndex * 4 + 6
-				) // 1,0
+				mesh.geometry.attributes.uv.array.set(uv_array[0], fIndex * 4 + 0) // 0,1
+				mesh.geometry.attributes.uv.array.set(uv_array[1], fIndex * 4 + 2) // 1,1
+				mesh.geometry.attributes.uv.array.set(uv_array[2], fIndex * 4 + 4) // 0,0
+				mesh.geometry.attributes.uv.array.set(uv_array[3], fIndex * 4 + 6) // 1,0
 				mesh.geometry.attributes.uv.needsUpdate = true
 			}
 		}

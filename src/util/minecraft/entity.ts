@@ -6,11 +6,7 @@ export class Entity {
 	public pos: position
 	public nbt?: NBT<NBTType.COMPOUND>
 
-	constructor(
-		_type: namespacedID,
-		pos: position,
-		nbt?: NBT<NBTType.COMPOUND>
-	) {
+	constructor(_type: namespacedID, pos: position, nbt?: NBT<NBTType.COMPOUND>) {
 		this.type = _type
 		this.pos = pos
 		this.nbt = nbt
@@ -18,9 +14,6 @@ export class Entity {
 
 	toString() {
 		const nbt = this.nbt ? ` ${this.nbt}` : ''
-		return (
-			`summon ${this.type} ${this.pos.x} ${this.pos.y} ${this.pos.z}` +
-			nbt
-		)
+		return `summon ${this.type} ${this.pos.x} ${this.pos.y} ${this.pos.z}` + nbt
 	}
 }

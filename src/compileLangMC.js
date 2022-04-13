@@ -2,7 +2,7 @@ import LangMCWorkerURI from './dependencies/lang-mc-worker/lang-mc.worker.wjs'
 export function compileMC(namespace, contents, config, onLog = console.log) {
 	return new Promise((resolve, reject) => {
 		const w = new Worker(LangMCWorkerURI)
-		w.onmessage = (e) => {
+		w.onmessage = e => {
 			if (Array.isArray(e.data)) {
 				resolve(e.data)
 				w.terminate()
@@ -15,7 +15,7 @@ export function compileMC(namespace, contents, config, onLog = console.log) {
 			contents,
 			config,
 		})
-		w.onerror = (e) => {
+		w.onerror = e => {
 			w.terminate()
 			reject(e)
 		}
@@ -25,14 +25,13 @@ export function compileMCThreaded(namespace, contents, onLog) {
 	return new Promise(async (resolve, reject) => {
 		const segments = contents
 			.split('#BUNDLED_THREAD_BREAK')
-			.filter((v) => {
+			.filter(v => {
 				if (!v.length) return false
 				let trimmed = v.trim()
-				if (trimmed.startsWith('#BUNDLED_THREAD_MODE ignore'))
-					return false
+				if (trimmed.startsWith('#BUNDLED_THREAD_MODE ignore')) return false
 				return true
 			})
-			.map((s) => {
+			.map(s => {
 				let code = s.trim()
 				const v = {
 					code,
@@ -50,7 +49,7 @@ export function compileMCThreaded(namespace, contents, onLog) {
 		function populateWorker(segment) {
 			return new Promise((resolve, reject) => {
 				const w = new Worker(LangMCWorkerURI)
-				w.onmessage = (e) => {
+				w.onmessage = e => {
 					if (Array.isArray(e.data)) {
 						resolve({
 							data: e.data,
@@ -66,7 +65,7 @@ export function compileMCThreaded(namespace, contents, onLog) {
 					contents: segment.code,
 					info: segment.info,
 				})
-				w.onerror = (e) => {
+				w.onerror = e => {
 					w.terminate()
 					reject(e)
 				}
@@ -76,7 +75,7 @@ export function compileMCThreaded(namespace, contents, onLog) {
 		let count = Math.min(2, segments.length)
 		let p = []
 		for (let i = 0; i < count; i++) {
-			let w = populateWorker(segments.shift()).then((v) => {
+			let w = populateWorker(segments.shift()).then(v => {
 				finData.push(v.data)
 				if (segments.length) {
 					populateWorker(segments.shift())

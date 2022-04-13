@@ -17,9 +17,7 @@ export type tagSelector =
 	| 'nbt'
 	| 'advancements'
 	| 'predicate'
-export type selectorString = `@${'s' | 'e' | 'p' | 'a' | 'r'}${
-	| ''
-	| `[${tagSelector}=${string}]`}`
+export type selectorString = `@${'s' | 'e' | 'p' | 'a' | 'r'}${'' | `[${tagSelector}=${string}]`}`
 // const test2:selectorString = "@a[x=3,distance=2]";
 export type command = string
 export type position = {

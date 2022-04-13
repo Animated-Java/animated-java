@@ -16,7 +16,7 @@ function interpolate(animator, channel, allow_expression, axis) {
 			Animator._last_values[channel][axis] = result
 			return result
 		} else {
-			return ['x', 'y', 'z'].map((axis) => {
+			return ['x', 'y', 'z'].map(axis => {
 				let result = cb(axis)
 				Animator._last_values[channel][axis] = result
 				return result
@@ -60,26 +60,15 @@ function interpolate(animator, channel, allow_expression, axis) {
 			if (no_interpolations) {
 				alpha = Math.round(alpha)
 			}
-			return mapAxes((axis) =>
-				before.getLerp(after, axis, alpha, allow_expression)
-			)
+			return mapAxes(axis => before.getLerp(after, axis, alpha, allow_expression))
 		} else {
-			let sorted = animator[channel]
-				.slice()
-				.sort((kf1, kf2) => kf1.time - kf2.time)
+			let sorted = animator[channel].slice().sort((kf1, kf2) => kf1.time - kf2.time)
 			let before_index = sorted.indexOf(before)
 			let before_plus = sorted[before_index - 1]
 			let after_plus = sorted[before_index + 2]
 
-			return mapAxes((axis) =>
-				before.getCatmullromLerp(
-					before_plus,
-					before,
-					after,
-					after_plus,
-					axis,
-					alpha
-				)
+			return mapAxes(axis =>
+				before.getCatmullromLerp(before_plus, before, after, after_plus, axis, alpha)
 			)
 		}
 	}
@@ -91,45 +80,41 @@ function interpolate(animator, channel, allow_expression, axis) {
 				? 0
 				: keyframe.data_points.length - 1
 
-		return mapAxes((axis) => keyframe[method](axis, dp_index))
+		return mapAxes(axis => keyframe[method](axis, dp_index))
 	}
 	return false
 }
-
+// TODO - Make this work exactly like it does in-game.
 const originalDisplayFrame = BoneAnimator.prototype.displayFrame
-BoneAnimator.prototype.displayFrame = (animator, multiplier = 1) => {
-	if (!animator.doRender) return
-	animator.getGroup()
+// BoneAnimator.prototype.displayFrame = (animator, multiplier = 1) => {
+// 	if (!animator.doRender) return
+// 	animator.getGroup()
 
-	let time = Timeline.time
-	if (Timeline.playing) {
-		Timeline.time = roundToN(
-			time,
-			ANIMATED_JAVA.settings.animatedJava.animatorPreviewFps
-		)
-	}
-	if (!animator.muted.rotation)
-		animator.displayRotation(interpolate(animator, 'rotation'), multiplier)
-	if (!animator.muted.scale)
-		animator.displayScale(interpolate(animator, 'scale'), multiplier)
-	if (Timeline.playing) Timeline.time = time
+// 	let time = Timeline.time
+// 	if (Timeline.playing) {
+// 		Timeline.time = roundToN(
+// 			time,
+// 			ANIMATED_JAVA.settings.animatedJava.animatorPreviewFps
+// 		)
+// 	}
+// 	if (!animator.muted.rotation)
+// 		animator.displayRotation(interpolate(animator, 'rotation'), multiplier)
+// 	if (!animator.muted.scale)
+// 		animator.displayScale(interpolate(animator, 'scale'), multiplier)
+// 	if (Timeline.playing) Timeline.time = time
 
-	if (!animator.muted.position)
-		animator.displayPosition(interpolate(animator, 'position'), multiplier)
-}
+// 	if (!animator.muted.position)
+// 		animator.displayPosition(interpolate(animator, 'position'), multiplier)
+// }
 
 function newPreview(in_loop) {
 	// Bones
 	Animator.showDefaultPose(true)
-	;[...Group.all, ...NullObject.all].forEach((node) => {
+	;[...Group.all, ...NullObject.all].forEach(node => {
 		Animator.resetLastValues()
-		Animator.animations.forEach((animation) => {
+		Animator.animations.forEach(animation => {
 			let multiplier = animation.blend_weight
-				? Math.clamp(
-						Animator.MolangParser.parse(animation.blend_weight),
-						0,
-						Infinity
-				  )
+				? Math.clamp(Animator.MolangParser.parse(animation.blend_weight), 0, Infinity)
 				: 1
 			if (animation.playing) {
 				const animator = animation.getBoneAnimator(node)
@@ -142,7 +127,7 @@ function newPreview(in_loop) {
 
 	// Effects
 	Animator.resetParticles(true)
-	Animator.animations.forEach((animation) => {
+	Animator.animations.forEach(animation => {
 		if (animation.playing) {
 			if (animation.animators.effects) {
 				animation.animators.effects.displayFrame(in_loop)
@@ -157,13 +142,13 @@ function newPreview(in_loop) {
 }
 
 const originalPreview = Animator.preview
-Animator.preview = (...args) => {
-	if (Project.format.id === modelFormat.id) {
-		newPreview(...args)
-	} else {
-		originalPreview(...args)
-	}
-}
+// Animator.preview = (...args) => {
+// 	if (Project.format.id === modelFormat.id) {
+// 		newPreview(...args)
+// 	} else {
+// 		originalPreview(...args)
+// 	}
+// }
 
 bus.on(EVENTS.LIFECYCLE.CLEANUP, () => {
 	Animator.preview = originalPreview

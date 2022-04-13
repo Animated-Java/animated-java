@@ -3,11 +3,7 @@ import { namespacedID } from './types'
 
 type gamemode = 'survival' | 'creative' | 'spectator' | 'adventure'
 
-type rangeableNumber =
-	| number
-	| `${number}..${number}`
-	| `${number}..`
-	| `..${number}`
+type rangeableNumber = number | `${number}..${number}` | `${number}..` | `..${number}`
 
 type scoreObject = {
 	[index: string]: rangeableNumber
@@ -71,7 +67,7 @@ class EntitySelector {
 		}
 		const args: string[] = []
 		// Tags
-		this.options.tags?.forEach((v) => args.push(`tag=${v}`))
+		this.options.tags?.forEach(v => args.push(`tag=${v}`))
 		// Scores
 		if (Object.entries(this.options.scores).length) {
 			args.push(

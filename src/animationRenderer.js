@@ -37,10 +37,8 @@ function setAnimatorTime(time) {
 // }
 function getRotations(animation) {
 	const bones = {}
-	Group.all.forEach((group) => {
-		bones[group.name] = animation
-			.getBoneAnimator(group)
-			.interpolate('rotation') || [0, 0, 0]
+	Group.all.forEach(group => {
+		bones[group.name] = animation.getBoneAnimator(group).interpolate('rotation') || [0, 0, 0]
 	})
 	const results = {}
 	// function getRotation(group) {
@@ -56,13 +54,9 @@ function getRotations(animation) {
 		const e = new THREE.Euler(1, 1, 1, 'ZYX').setFromQuaternion(
 			obj3d.getWorldQuaternion(new THREE.Quaternion())
 		)
-		return [
-			(e.x * 180) / Math.PI,
-			(e.y * 180) / Math.PI,
-			(e.z * 180) / Math.PI,
-		]
+		return [(e.x * 180) / Math.PI, (e.y * 180) / Math.PI, (e.z * 180) / Math.PI]
 	}
-	Group.all.forEach((group) => {
+	Group.all.forEach(group => {
 		results[group.name] = getRotation(group.mesh)
 	})
 	return results
@@ -70,7 +64,7 @@ function getRotations(animation) {
 
 function getPositions() {
 	const result = {}
-	Group.all.forEach((group) => {
+	Group.all.forEach(group => {
 		let pos = group.mesh.getWorldPosition(new THREE.Vector3())
 		pos.x = roundToN(pos.x / 16, 100000)
 		pos.y = roundToN(pos.y / 16, 100000)
@@ -82,7 +76,7 @@ function getPositions() {
 
 function getScales() {
 	const result = {}
-	Group.all.forEach((group) => {
+	Group.all.forEach(group => {
 		result[group.name] = group.mesh.getWorldScale(new THREE.Vector3())
 	})
 	return result
@@ -94,7 +88,7 @@ function getData(animation, renderedGroups) {
 	const rot = getRotations(animation)
 	const scl = getScales()
 	const res = {}
-	renderedGroups.forEach((group) => {
+	renderedGroups.forEach(group => {
 		const thisPos = pos[group.name]
 		const thisRot = rot[group.name]
 		const groupName = safeFunctionName(group.name)
@@ -139,8 +133,8 @@ const struct = StructTypes.Object({
 	loopMode: StructTypes.String,
 })
 
-StructPacker.defaultPreReadHandlers = [(buf) => gunzipSync(buf)]
-StructPacker.defaultPostWriteHandlers = [(buf) => gzipSync(buf)]
+StructPacker.defaultPreReadHandlers = [buf => gunzipSync(buf)]
+StructPacker.defaultPostWriteHandlers = [buf => gzipSync(buf)]
 const packer = StructPacker.create(struct)
 function animToWriteable(animData) {
 	return packer.write(animData)
@@ -151,10 +145,7 @@ function writtenAnimToReadable(data) {
 const Cache = new (class {
 	constructor() {
 		this.cache = new Map()
-		this.tmp = path.join(
-			os.tmpdir(),
-			`animatedJava-${Math.random().toString(16).substr(2)}`
-		)
+		this.tmp = path.join(os.tmpdir(), `animatedJava-${Math.random().toString(16).substr(2)}`)
 		this.data = new Map()
 		settings.watch('animatedJava.cacheMode', () => {
 			this.initDiskCache()
@@ -188,9 +179,7 @@ const Cache = new (class {
 				if (settings.animatedJava.cacheMode === 'memory') {
 					return this.data.get(anim.uuid)
 				} else {
-					const data = readFileSync(
-						path.join(this.tmp, anim.uuid + '.anim_data')
-					)
+					const data = readFileSync(path.join(this.tmp, anim.uuid + '.anim_data'))
 
 					data._isBuffer = true
 					return writtenAnimToReadable(data)
@@ -207,10 +196,7 @@ const Cache = new (class {
 		if (settings.animatedJava.cacheMode === 'memory') {
 			this.data.set(anim.uuid, value)
 		} else {
-			writeFileSync(
-				path.join(this.tmp, anim.uuid + '.anim_data'),
-				animToWriteable(value)
-			)
+			writeFileSync(path.join(this.tmp, anim.uuid + '.anim_data'), animToWriteable(value))
 		}
 		this.cache.set(anim.uuid, hash.animation(anim))
 	}
@@ -249,10 +235,7 @@ async function renderAnimation(options) {
 		static_animation.uuid = store.get('staticAnimationUuid')
 	}
 
-	const totalAnimationLength = Animator.animations.reduce(
-		(a, v) => a + v.length,
-		0
-	)
+	const totalAnimationLength = Animator.animations.reduce((a, v) => a + v.length, 0)
 	// Accumulated animation length
 	let accAnimationLength = 0
 	const tldMessage = tl('animatedJava.progress.animationRendering')
@@ -271,10 +254,10 @@ async function renderAnimation(options) {
 		// fix_scene_rotation();
 		const animations = {}
 		const renderedGroups = Group.all.filter(
-			(group) =>
+			group =>
 				!isSceneBased(group) &&
 				group.export &&
-				group.children.find((child) => child instanceof Cube)
+				group.children.find(child => child instanceof Cube)
 		)
 		console.log('All Groups:', Group.all)
 		console.log('Rendered Groups:', renderedGroups)
@@ -295,13 +278,10 @@ async function renderAnimation(options) {
 							'animatedJava.dialogs.errors.invalidAnimationSnappingValue.title'
 						),
 						lines: [
-							tl(
-								'animatedJava.dialogs.errors.invalidAnimationSnappingValue.body',
-								{
-									animationName: animation.name,
-									snapping: animation.snapping,
-								}
-							),
+							tl('animatedJava.dialogs.errors.invalidAnimationSnappingValue.body', {
+								animationName: animation.name,
+								snapping: animation.snapping,
+							}),
 						],
 						width: 512 + 256,
 						singleButton: true,
@@ -314,12 +294,10 @@ async function renderAnimation(options) {
 				let maxDistance = -Infinity
 				const frames = []
 				animation.select()
-				// const animLength =
-				// 	animation.loop === 'loop'
-				// 		? animation.length
-				// 		: animation.length + 0.05
+				const animLength =
+					animation.loop === 'loop' ? animation.length : animation.length + 0.05
 
-				for (let i = 0; i <= animation.length + 0.05; i += 0.05) {
+				for (let i = 0; i <= animLength; i += 0.05) {
 					accAnimationLength += 0.05
 					await Async.wait_if_overflow()
 					setAnimatorTime(i)
@@ -327,20 +305,16 @@ async function renderAnimation(options) {
 					if (animation.animators.effects) {
 						const time = Math.round(i * 20) / 20
 						animation.animators.effects.keyframes
-							.filter((keyframe) => keyframe.time === time)
-							.forEach((keyframe) => {
+							.filter(keyframe => keyframe.time === time)
+							.forEach(keyframe => {
 								if (keyframe.channel === 'sound') {
-									effects.sound = keyframe.data_points.map(
-										(kf) => kf.effect
-									)
+									effects.sound = keyframe.data_points.map(kf => kf.effect)
 								}
 								if (
 									keyframe.channel === 'script' ||
 									keyframe.channel === 'timeline'
 								) {
-									effects.script = keyframe.data_points.map(
-										(kf) => kf.script
-									)
+									effects.script = keyframe.data_points.map(kf => kf.script)
 								}
 							})
 					}

@@ -24,94 +24,12 @@ import { CustomError } from './util/customError'
 import * as nbt from './util/SNBT'
 import * as EVENTS from './constants/events'
 
-const errorMessages = [
-	`Uh oh!`,
-	`Time to fire up the ol' debugger!`,
-	`Your armor stands are sad :(`,
-	`Ok, who pushed the big red button?`,
-	`Skill Issue.`,
-	`Too bad, So Sad`,
-	`You have how many elements!?`,
-	`I'll export successfully some day!`,
-	`When I grow up, I wanna be just like Blender!`,
-	`Wow, Epic fail.`,
-	`Should'a seen that one comming...`,
-	`It's all Jannis' fault! :(`,
-	`Snaviewavie did an oopsie poopsie xD`,
-	`We to a little trolling`,
-	`execute run execute run execute run execute run say This is fine.`,
-	`This is why we can't have nice things. :(`,
-	`Have you tried turning it off and on again?`,
-	`What if I put my command block next to yours? Haha just kidding.. Unless?`,
-	`If at first you don't succeed, Try, try again!`,
-	`B:01010111 01100101 00100000 01100100 01101111 00100000 01100001 00100000 01101100 01101001 01110100 01110100 01101100 01100101 00100000 01110100 01110010 01101111 01101100 01101100 01101001 01101110 01100111`,
-	`FetchBot would like to know your location: [Allow] [Deny]`,
-	`I've decided to stop working for today. Try again tomorrow!`,
-	`Every time you see this error message, a developer vanishes in a puff of binary.`,
-	`Maybe we shouldn't press that button...`,
-	`Not to cause any alarm, but you may have just launched all the nukes...`,
-	`"Flavor Text"? I've never tasted text before...`,
-	`<Access Denied>`,
-	`( ͡° ͜ʖ ͡°)`,
-	`.;,,,;.`,
-	`That's a nice model you have there, it'd be a shame if something happend to it...`,
-	`Some day you'll learn. But until then, I control the cheese`,
-	`Please deposit 5 coins!`,
-	`errorMessages[-1] >>> undefined`,
-	`https://youtu.be/dQw4w9WgXcQ`,
-	`<img src="https://i.kym-cdn.com/photos/images/original/000/296/199/9ff.gif" alt="roflcopter">`,
-	`Failed to find global "pandemic"`,
-]
-
-function getRandomErrorMessage() {
-	const index = Math.round(Math.random() * (errorMessages.length - 1))
-	return errorMessages[index]
-}
-
-function showUnknownErrorDialog(e: CustomError | any) {
-	// console.log(e.options)
-	if (e.options?.silent) {
-		console.log(e.options.message)
-		return
-	}
-	new Dialog(
-		Object.assign(
-			{
-				id: 'animatedJava.dialogs.miscError',
-				title: tl('animatedJava.dialogs.errors.misc.title'),
-				lines: [
-					tl(
-						'animatedJava.dialogs.errors.misc.body',
-						{
-							buildID: process.env.BUILD_ID,
-							errorMessage: e.options
-								? e.options.message
-								: e.message,
-							randomErrorMessage: getRandomErrorMessage(),
-							errorStack: e.stack,
-							discordLink: process.env.DISCORD_LINK,
-							githubLink: process.env.GITHUB_ISSUES_LINK,
-						},
-						true
-					),
-				],
-				width: 1024,
-				singleButton: true,
-			},
-			e.options?.dialog || {}
-		)
-	).show()
-}
-
 const ANIMATED_JAVA = {
 	build(callback: Function, configuration: Record<any, any>) {
 		const default_configuration = {
 			generate_static_animation: false,
 		}
-		BuildModel(
-			callback,
-			Object.assign(default_configuration, configuration)
-		)
+		BuildModel(callback, Object.assign(default_configuration, configuration))
 	},
 	registerExportFunc(name: string, exportFunc: () => void) {
 		store.getStore('exporters').set(name, exportFunc)
@@ -126,18 +44,18 @@ const ANIMATED_JAVA = {
 		return store.get('states')
 	},
 	logging: false, //enable logging in production
-	PromiseWrapper<T>(promise: Promise<T>): Promise<T> {
-		return promise.catch((e) => {
-			ANIMATED_JAVA.asyncError(e)
-			return e
-		})
-	},
-	asyncError(e: Error) {
-		showUnknownErrorDialog(e)
-		ANIMATED_JAVA.exportInProgress = false
-		throw e
-		// console.error('CUSTOM ERROR HANDLING', e)
-	},
+	// PromiseWrapper<T>(promise: Promise<T>): Promise<T> {
+	// 	return promise.catch((e) => {
+	// 		ANIMATED_JAVA.asyncError(e)
+	// 		return e
+	// 	})
+	// },
+	// asyncError(e: Error) {
+	// 	showUnknownErrorDialog(e)
+	// 	ANIMATED_JAVA.exportInProgress = false
+	// 	throw e
+	// 	// console.error('CUSTOM ERROR HANDLING', e)
+	// },
 	logIntlDifferences(showDefaultValues: boolean) {
 		intl.diff(showDefaultValues)
 	},

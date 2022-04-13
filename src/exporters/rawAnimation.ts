@@ -49,9 +49,7 @@ function rawExport(exportData: aj.ExportData) {
 	Blockbench.showQuickMessage(tl('animatedJava.popups.successfullyExported'))
 }
 
-const genericEmptySettingText = tl(
-	'animatedJava.settings.generic.errors.emptyValue'
-)
+const genericEmptySettingText = tl('animatedJava.settings.generic.errors.emptyValue')
 
 const Exporter = (AJ: any) => {
 	AJ.settings.registerPluginSettings(
@@ -59,9 +57,7 @@ const Exporter = (AJ: any) => {
 		'rawAnimationExporter', // Exporter Settings Key
 		{
 			outputJsonPath: {
-				title: tl(
-					'animatedJava.exporters.rawAnimation.settings.outputJsonPath.title'
-				),
+				title: tl('animatedJava.exporters.rawAnimation.settings.outputJsonPath.title'),
 				description: tl(
 					'animatedJava.exporters.rawAnimation.settings.outputJsonPath.description'
 				),

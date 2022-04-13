@@ -4,8 +4,7 @@ export interface FormatObject {
 
 export function format(str: string, dict: FormatObject = {}) {
 	const keys = Object.keys(dict).sort((a, b) => b.length - a.length)
-	for (const target of keys)
-		str = str.replace(new RegExp('%' + target, 'g'), dict[target])
+	for (const target of keys) str = str.replace(new RegExp('%' + target, 'g'), dict[target])
 	return str
 }
 

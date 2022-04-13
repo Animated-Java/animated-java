@@ -80,16 +80,12 @@ class MultiFileTag {
 }
 const tickFile = new File()
 tickFile.setPath(
-	'./data/minecraft/functions/' +
-		CONFIG.generatedDirectory +
-		'/events/tick.mcfunction'
+	'./data/minecraft/functions/' + CONFIG.generatedDirectory + '/events/tick.mcfunction'
 )
 const tickFunction = new MultiFile(tickFile)
 const loadFile = new File()
 loadFile.setPath(
-	'./data/minecraft/functions/' +
-		CONFIG.generatedDirectory +
-		'/events/load.mcfunction'
+	'./data/minecraft/functions/' + CONFIG.generatedDirectory + '/events/load.mcfunction'
 )
 const loadFunction = new MultiFile(loadFile)
 
@@ -123,12 +119,9 @@ class MCFunction extends File {
 		return (
 			(CONFIG.header ? CONFIG.header + '\n\n' : '') +
 			this.functions
-				.map((command) =>
+				.map(command =>
 					command
-						.replace(
-							/\$block/g,
-							this.namespace + ':' + this.getFunctionPath()
-						)
+						.replace(/\$block/g, this.namespace + ':' + this.getFunctionPath())
 						.replace(/\$top/g, this.top.getReference())
 						.replace(/\$parent/g, () => {
 							if (this.parent) {
@@ -144,13 +137,7 @@ class MCFunction extends File {
 		)
 	}
 	getPath() {
-		return (
-			'./data/' +
-			this.namespace +
-			'/functions/' +
-			this._path +
-			'.mcfunction'
-		)
+		return './data/' + this.namespace + '/functions/' + this._path + '.mcfunction'
 	}
 	getFunctionPath() {
 		return this._path

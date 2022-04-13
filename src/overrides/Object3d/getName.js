@@ -1,10 +1,10 @@
 export const getName = {
 	value() {
-		return Project.groups.find((group) => group.mesh === this).name
+		return Project.groups.find(group => group.mesh === this).name
 	},
 }
 export const getGroup = {
 	value() {
-		return Project.groups.find((group) => group.mesh === this)
+		return Project.groups.find(group => group.mesh === this)
 	},
 }

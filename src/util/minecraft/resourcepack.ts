@@ -13,16 +13,11 @@ function throwFailedToGeneratePath(name: string, item: any) {
 	throw new CustomError(`Unable to generate ${name} path`, {
 		dialog: {
 			id: `animatedJava.dialogs.errors.unableToGenerate${capName}Path`,
-			title: tl(
-				`animatedJava.dialogs.errors.unableToGenerate${capName}Path.title`
-			),
+			title: tl(`animatedJava.dialogs.errors.unableToGenerate${capName}Path.title`),
 			lines: [
-				tl(
-					`animatedJava.dialogs.errors.unableToGenerate${capName}Path.body`,
-					{
-						[`${name}Name`]: item.name,
-					}
-				),
+				tl(`animatedJava.dialogs.errors.unableToGenerate${capName}Path.body`, {
+					[`${name}Name`]: item.name,
+				}),
 			],
 			width: 512,
 			singleButton: true,
@@ -52,9 +47,7 @@ function throwIfInvalidPath(referencePath: string) {
 		throw new CustomError('Invalid Resource Path', {
 			dialog: {
 				id: 'animatedJava.dialogs.errors.invalidResourcePath',
-				title: tl(
-					'animatedJava.dialogs.errors.invalidResourcePath.title'
-				),
+				title: tl('animatedJava.dialogs.errors.invalidResourcePath.title'),
 				lines: [
 					tl('animatedJava.dialogs.errors.invalidResourcePath.body', {
 						path: referencePath,
@@ -79,9 +72,7 @@ export function getTexturePath(texture: any) {
 				const textureIndex = relative.indexOf('textures') // Locate 'texture' in the path
 				if (textureIndex > -1) {
 					relative.splice(textureIndex, 1) // Remove 'texture' from the path
-					const textureReference = `${namespace}:${normalizePath(
-						path.join(...relative)
-					)}` // Generate texture path
+					const textureReference = `${namespace}:${normalizePath(path.join(...relative))}` // Generate texture path
 					console.log('Texture Reference:', textureReference)
 					throwIfInvalidPath(textureReference)
 					return textureReference
@@ -105,9 +96,7 @@ export function getModelPath(modelPath: string, modelName: string) {
 				const modelsIndex = relative.indexOf('models') // Locate 'texture' in the path
 				if (modelsIndex > -1) {
 					relative.splice(modelsIndex, 1) // Remove 'texture' from the path
-					const modelReference = `${namespace}:${normalizePath(
-						path.join(...relative)
-					)}` // Generate texture path
+					const modelReference = `${namespace}:${normalizePath(path.join(...relative))}` // Generate texture path
 					console.log('Model Reference:', modelReference)
 					throwIfInvalidPath(modelReference)
 					return modelReference

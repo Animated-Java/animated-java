@@ -4,16 +4,12 @@ import { tl } from '../../util/intl'
 import { ERROR } from '../../util/errors'
 import events from '../../constants/events'
 import React, { useEffect, useRef, useState } from 'react'
-import {
-	DefaultSettings,
-	settings,
-	ForeignSettingTranslationKeys,
-} from '../../settings'
+import { DefaultSettings, settings, ForeignSettingTranslationKeys } from '../../settings'
 
 const dialog = electron.dialog
 let updateSettingsUiActions = {}
 let forceUpdateSettingsUi = () => {
-	Object.values(updateSettingsUiActions).forEach((action) => action())
+	Object.values(updateSettingsUiActions).forEach(action => action())
 }
 const RenderTemplates = {
 	checkbox({ value, setValue, namespace, name, children, forceRerender }) {
@@ -24,7 +20,7 @@ const RenderTemplates = {
 						type={'checkbox'}
 						id={`aj.setting.${namespace}.${name}`}
 						checked={value}
-						onChange={(e) => {
+						onChange={e => {
 							try {
 								settings[namespace][name] = e.target.checked
 							} catch (e) {
@@ -51,10 +47,7 @@ const RenderTemplates = {
 			<>
 				<div>{children}</div>
 				<div style={{ display: 'flex' }}>
-					<div
-						className="setting_element"
-						style={{ marginTop: '0px' }}
-					>
+					<div className="setting_element" style={{ marginTop: '0px' }}>
 						<button
 							style={{
 								width: '32px',
@@ -82,10 +75,7 @@ const RenderTemplates = {
 							</span>
 						</button>
 					</div>
-					<div
-						className="setting_element"
-						style={{ marginTop: '0px' }}
-					>
+					<div className="setting_element" style={{ marginTop: '0px' }}>
 						<button
 							style={{
 								width: '32px',
@@ -94,7 +84,7 @@ const RenderTemplates = {
 								paddingLeft: '6px',
 								paddingTop: '4px',
 							}}
-							onClick={(e) => {
+							onClick={e => {
 								e.preventDefault()
 								let d
 								if (target === 'file') {
@@ -102,7 +92,7 @@ const RenderTemplates = {
 								} else {
 									d = dialog.showOpenDialog(dialogOpts)
 								}
-								d.then((res) => {
+								d.then(res => {
 									if (!res.canceled) {
 										let fp
 
@@ -135,10 +125,10 @@ const RenderTemplates = {
 						type="text"
 						id={`aj.setting.${namespace}.${name}`}
 						value={value || ''}
-						onChange={(e) => {
+						onChange={e => {
 							setValue(e.target.value)
 						}}
-						onBlur={(e) => {
+						onBlur={e => {
 							try {
 								settings[namespace][name] = e.target.value
 							} catch (e) {
@@ -152,15 +142,7 @@ const RenderTemplates = {
 			</>
 		)
 	},
-	select({
-		value,
-		setValue,
-		namespace,
-		name,
-		children,
-		definition,
-		forceRerender,
-	}) {
+	select({ value, setValue, namespace, name, children, definition, forceRerender }) {
 		return (
 			<>
 				{children}
@@ -168,7 +150,7 @@ const RenderTemplates = {
 					<select
 						id={`aj.setting.${namespace}.${name}`}
 						value={value}
-						onChange={(e) => {
+						onChange={e => {
 							setValue(e.target.value)
 							try {
 								settings[namespace][name] = e.target.value
@@ -177,13 +159,11 @@ const RenderTemplates = {
 							}
 						}}
 					>
-						{Object.entries(definition.options).map(
-							([key, value]) => (
-								<option value={key} key={key}>
-									{tl(value)}
-								</option>
-							)
-						)}
+						{Object.entries(definition.options).map(([key, value]) => (
+							<option value={key} key={key}>
+								{tl(value)}
+							</option>
+						))}
 					</select>
 				</div>
 			</>
@@ -197,15 +177,13 @@ const RenderTemplates = {
 					type="number"
 					id={`aj.setting.${namespace}.${name}`}
 					value={value}
-					onChange={(e) => {
+					onChange={e => {
 						setValue(e.target.value)
 					}}
-					onBlur={(e) => {
+					onBlur={e => {
 						try {
 							let value = Number(e.target.value)
-							settings[namespace][name] = !Number.isNaN(value)
-								? value
-								: undefined
+							settings[namespace][name] = !Number.isNaN(value) ? value : undefined
 						} catch (e) {
 							forceRerender()
 						}
@@ -248,21 +226,19 @@ const Error = ({ error }) => {
 		</div>
 	)
 }
-const SettingInput = (p) => {
+const SettingInput = p => {
 	const { namespace, name, template } = p
 	const [value, setValue] = useState(settings[namespace][name])
 	const [isValid, setIsValid] = useState(true)
 	const [isVisible, setIsVisible] = useState(true)
 	const [, setRerender] = useState(0)
 	useEffect(() => {
-		updateSettingsUiActions[`${namespace}.${name}`] = () =>
-			setRerender(Math.random())
-		return () =>
-			(updateSettingsUiActions[`${namespace}.${name}`] = () => {})
+		updateSettingsUiActions[`${namespace}.${name}`] = () => setRerender(Math.random())
+		return () => (updateSettingsUiActions[`${namespace}.${name}`] = () => {})
 	}, [])
 	useEffect(() => {
 		// setValue(settings[namespace][name])
-		return settings.watch(namespace + '.' + name, (v) => {
+		return settings.watch(namespace + '.' + name, v => {
 			queueMicrotask(() => {
 				setValue(() => v)
 			})
@@ -280,21 +256,16 @@ const SettingInput = (p) => {
 	useEffect(() => {
 		const watchers = []
 		if (SettingDef.dependencies) {
-			SettingDef.dependencies.forEach((dep) => {
+			SettingDef.dependencies.forEach(dep => {
 				watchers.push(
 					settings.watch(dep, () => {
-						setIsVisible(
-							(typeof isVis === 'function' && isVis(settings)) ||
-								!isVis
-						)
+						setIsVisible((typeof isVis === 'function' && isVis(settings)) || !isVis)
 					})
 				)
 			})
-			setIsVisible(
-				(typeof isVis === 'function' && isVis(settings)) || !isVis
-			)
+			setIsVisible((typeof isVis === 'function' && isVis(settings)) || !isVis)
 		}
-		return () => watchers.forEach((cb) => cb())
+		return () => watchers.forEach(cb => cb())
 	}, [])
 	useEffect(() => {
 		setIsValid(settings.getUpdateDescriptor(namespace, name, value).isValid)
@@ -302,10 +273,7 @@ const SettingInput = (p) => {
 	const descriptor = settings.getUpdateDescriptor(namespace, name, value)
 	let { warnings, errors } = descriptor
 	const children = (
-		<label
-			htmlFor={`aj.setting.${namespace}.${name}`}
-			className="setting_label"
-		>
+		<label htmlFor={`aj.setting.${namespace}.${name}`} className="setting_label">
 			<div className="setting_name">
 				{!isValid && (
 					<>
@@ -405,11 +373,8 @@ const SettingInput = (p) => {
 				<>
 					<Type
 						value={value}
-						setValue={(v) => {
-							setIsValid(
-								settings.getUpdateDescriptor(namespace, name, v)
-									.isValid
-							)
+						setValue={v => {
+							setIsValid(settings.getUpdateDescriptor(namespace, name, v).isValid)
 							setValue(v)
 						}}
 						namespace={namespace}
@@ -430,10 +395,10 @@ const SettingInput = (p) => {
 						type={template.type}
 						id={`aj.setting.${namespace}.${name}`}
 						value={value}
-						onChange={(e) => {
+						onChange={e => {
 							setValue(e.target.value)
 						}}
-						onBlur={(e) => {
+						onBlur={e => {
 							try {
 								settings[namespace][name] = e.target.value
 							} catch (e) {
@@ -495,13 +460,8 @@ const Settings = () => {
 					zIndex: 10001,
 				}}
 			>
-				<div
-					className="dialog_handle tl ui-draggable-handle"
-					style={{ cursor: 'default' }}
-				>
-					<div className="dialog_title">
-						{tl('animatedJava.menubar.settings')}
-					</div>
+				<div className="dialog_handle tl ui-draggable-handle" style={{ cursor: 'default' }}>
+					<div className="dialog_title">{tl('animatedJava.menubar.settings')}</div>
 				</div>
 				<div
 					className="dialog_close_button"
@@ -516,51 +476,35 @@ const Settings = () => {
 						className="WHYCSSWHY-or-settings"
 					>
 						<li>
-							<h2
-								className="tl i_b"
-								style={{ marginLeft: '1em' }}
-							>
+							<h2 className="tl i_b" style={{ marginLeft: '1em' }}>
 								{tl('animatedJava.settings.header')}
 							</h2>
 							<ul style={{ marginLeft: '2em' }}>
-								{Object.keys(DefaultSettings.animatedJava).map(
-									(child, id) => (
-										<li key={child}>
-											<SettingInput
-												namespace={'animatedJava'}
-												name={child}
-												template={
-													DefaultSettings
-														.animatedJava[child]
-												}
-											></SettingInput>
-										</li>
-									)
-								)}
+								{Object.keys(DefaultSettings.animatedJava).map((child, id) => (
+									<li key={child}>
+										<SettingInput
+											namespace={'animatedJava'}
+											name={child}
+											template={DefaultSettings.animatedJava[child]}
+										></SettingInput>
+									</li>
+								))}
 							</ul>
 						</li>
 						<li>
 							<ul>
 								<h2 style={{ marginLeft: '1em' }}>
-									{tl(
-										'animatedJava.settings.exporterSettings'
-									)}
+									{tl('animatedJava.settings.exporterSettings')}
 								</h2>
 								{Object.keys(DefaultSettings)
-									.filter((key) => key !== 'animatedJava')
+									.filter(key => key !== 'animatedJava')
 									.map((key, index) => {
-										const children = Object.keys(
-											DefaultSettings[key]
-										)
+										const children = Object.keys(DefaultSettings[key])
 										return (
 											// SettingsPanel(key, setRevealedIndex, index, revealedIndex, children)
 											<SettingsPanel
 												key={key}
-												name={
-													ForeignSettingTranslationKeys[
-														key
-													] || key
-												}
+												name={ForeignSettingTranslationKeys[key] || key}
 												id={key}
 												childrenSettings={children}
 											/>
@@ -579,10 +523,10 @@ function SettingsPanel({ childrenSettings, name, visible, id }) {
 	const [shown, setShown] = useState(visible)
 	const [childShown, setChildShown] = useState({})
 	const order = []
-	childrenSettings.forEach((setting) => {
+	childrenSettings.forEach(setting => {
 		let template = DefaultSettings[id][setting]
 		if (template.group) {
-			let g = order.find((group) => group.name === template.group) || {
+			let g = order.find(group => group.name === template.group) || {
 				type: 'group',
 				name: template.group,
 				settings: [],
@@ -600,7 +544,7 @@ function SettingsPanel({ childrenSettings, name, visible, id }) {
 	return (
 		<DropDown visible={shown} onClick={() => setShown(!shown)} name={name}>
 			<ul style={{ marginLeft: '2em' }}>
-				{order.map((child) => (
+				{order.map(child => (
 					<li key={child.name}>
 						{child.type === 'group' ? (
 							<DropDown
@@ -615,14 +559,12 @@ function SettingsPanel({ childrenSettings, name, visible, id }) {
 								dontIndent={true}
 							>
 								<ul style={{ marginLeft: '2em' }}>
-									{child.settings.map((setting) => (
+									{child.settings.map(setting => (
 										<li key={setting}>
 											<SettingInput
 												namespace={id}
 												name={setting}
-												template={
-													DefaultSettings[id][setting]
-												}
+												template={DefaultSettings[id][setting]}
 											></SettingInput>
 										</li>
 									))}
@@ -652,9 +594,7 @@ function DropDown({ children, onClick, visible, name, intl, dontIndent }) {
 					marginLeft: dontIndent ? 0 : undefined,
 				}}
 			>
-				<i className="material-icons">
-					{visible ? 'expand_more' : 'navigate_next'}
-				</i>
+				<i className="material-icons">{visible ? 'expand_more' : 'navigate_next'}</i>
 				{tl(intl || `${name}`)}
 			</h3>
 			{visible && children}
@@ -676,7 +616,7 @@ export function show_settings() {
 	el.hidden = false
 	visible = true
 	forceUpdateSettingsUi()
-	Array.from(el.children).forEach((child) => {
+	Array.from(el.children).forEach(child => {
 		child.style.display = 'unset'
 	})
 }
@@ -687,19 +627,16 @@ queueMicrotask(() => {
 	s.innerHTML = Array.from(
 		document.head.querySelector('link[href="css/dialogs.css"]').sheet.rules
 	)
-		.filter((rule) => rule.selectorText?.indexOf('#settingslist') > -1)
-		.map((rule) => {
-			return rule.cssText.replace(
-				/#settingslist/g,
-				'.WHYCSSWHY-or-settings'
-			)
+		.filter(rule => rule.selectorText?.indexOf('#settingslist') > -1)
+		.map(rule => {
+			return rule.cssText.replace(/#settingslist/g, '.WHYCSSWHY-or-settings')
 		})
 		.join('')
 	bus.on(events.LIFECYCLE.CLEANUP, () => {
 		el.remove()
 		s.remove()
 	})
-	const _handler = (key) => {
+	const _handler = key => {
 		if (key.code === 'Escape' && visible) hide_settings()
 	}
 	window.addEventListener('keydown', _handler)

@@ -19,12 +19,12 @@ bus.on(events.LIFECYCLE.CLEANUP, () => {
 })
 
 function updateDisplay(textureState) {
-	Texture.all.forEach((tex) => tex.updateMaterial())
+	Texture.all.forEach(tex => tex.updateMaterial())
 	const changes = Object.keys(textureState)
 	for (let i = 0; i < changes.length; i++) {
 		const to = textureState[changes[i]]
 		const from = changes[i]
-		const tex = Texture.all.find((tex) => tex.uuid === to) || {
+		const tex = Texture.all.find(tex => tex.uuid === to) || {
 			name: 'transparent',
 			source: transparent,
 		}
@@ -55,7 +55,7 @@ function Dialog({ children, onRequestHide }) {
 		}
 	}, [ref])
 	useEffect(() => {
-		const handler = (key) => {
+		const handler = key => {
 			if (key.code === 'Escape') onRequestHide()
 		}
 		window.addEventListener('keydown', handler)
@@ -88,13 +88,8 @@ function Dialog({ children, onRequestHide }) {
 					zIndex: 10001,
 				}}
 			>
-				<div
-					className="dialog_handle tl ui-draggable-handle"
-					style={{ cursor: 'default' }}
-				>
-					<div className="dialog_title">
-						{tl('animatedJava.dialogs.variants.title')}
-					</div>
+				<div className="dialog_handle tl ui-draggable-handle" style={{ cursor: 'default' }}>
+					<div className="dialog_title">{tl('animatedJava.dialogs.variants.title')}</div>
 				</div>
 				<div
 					className="dialog_close_button"
@@ -152,9 +147,7 @@ function StatePanel() {
 		}
 	}, [selectedIndex, states])
 	useEffect(() => {
-		bus.on(events.LIFECYCLE.LOAD_MODEL, () =>
-			setStates(store.get('states'))
-		)
+		bus.on(events.LIFECYCLE.LOAD_MODEL, () => setStates(store.get('states')))
 		bus.on('states_ui_update', () => {
 			setStates(store.get('states'))
 			updateStateViewOnChange()
@@ -183,11 +176,7 @@ function StatePanel() {
 						}}
 					>
 						<div>
-							<p>
-								{tl(
-									'animatedJava.dialogs.variants.description'
-								)}
-							</p>
+							<p>{tl('animatedJava.dialogs.variants.description')}</p>
 						</div>
 						<div style={{ width: '100%', display: 'inline-block' }}>
 							<ul
@@ -221,16 +210,13 @@ function StatePanel() {
 														height={30}
 														style={{
 															marginLeft: '11px',
-															marginBottom:
-																'12px',
+															marginBottom: '12px',
 														}}
 													></img>
 													<div
 														style={{
-															display:
-																'inline-block',
-															verticalAlign:
-																'text-bottom',
+															display: 'inline-block',
+															verticalAlign: 'text-bottom',
 															height: '30px',
 															paddingLeft: '10px',
 															paddingTop: '3px',
@@ -256,15 +242,8 @@ function StatePanel() {
 															label: 'transparent',
 														},
 														...Texture.all
-															.filter(
-																(_) =>
-																	_.uuid !==
-																	t1.uuid
-															)
-															.sort(
-																(a, b) =>
-																	a === t1
-															)
+															.filter(_ => _.uuid !== t1.uuid)
+															.sort((a, b) => a === t1)
 															.map((t2, i) => ({
 																id: i + 2,
 																name: t2.uuid,
@@ -273,20 +252,13 @@ function StatePanel() {
 																	<div
 																		key={i}
 																		style={{
-																			display:
-																				'flex',
+																			display: 'flex',
 																		}}
 																	>
 																		<img
-																			src={
-																				t2.source
-																			}
-																			width={
-																				30
-																			}
-																			height={
-																				30
-																			}
+																			src={t2.source}
+																			width={30}
+																			height={30}
 																		></img>
 																		<div
 																			style={{
@@ -295,33 +267,24 @@ function StatePanel() {
 																				verticalAlign:
 																					'text-bottom',
 																				height: '30px',
-																				paddingLeft:
-																					'10px',
-																				paddingTop:
-																					'3px',
+																				paddingLeft: '10px',
+																				paddingTop: '3px',
 																			}}
 																		>
-																			{
-																				t2.name
-																			}
+																			{t2.name}
 																		</div>
 																	</div>
 																),
 															})),
 													]}
-													onChange={(v) => {
+													onChange={v => {
 														if (
-															t1.uuid ===
-																v.value ||
-															v.value ===
-																'Default'
+															t1.uuid === v.value ||
+															v.value === 'Default'
 														) {
-															delete editState[
-																t1.uuid
-															]
+															delete editState[t1.uuid]
 														} else {
-															editState[t1.uuid] =
-																v.value
+															editState[t1.uuid] = v.value
 														}
 														updateDisplay(editState)
 														console.log(editState)
@@ -345,19 +308,12 @@ function StatePanel() {
 									do {
 										i++
 										nextName = 'state_' + i
-									} while (
-										Object.keys(states).includes(nextName)
-									)
+									} while (Object.keys(states).includes(nextName))
 									setStates({ ...states, [nextName]: {} })
 								}}
 							>
-								<div
-									className="tooltip"
-									style={{ marginLeft: '0px' }}
-								>
-									{intl.tl(
-										'animatedJava.panels.variants.addVariant.title'
-									)}
+								<div className="tooltip" style={{ marginLeft: '0px' }}>
+									{intl.tl('animatedJava.panels.variants.addVariant.title')}
 									<div
 										className="tooltip_description"
 										style={{ marginLeft: '-5px' }}
@@ -383,52 +339,33 @@ function StatePanel() {
 							.map(
 								(state, index) =>
 									states[state] && (
-										<li
-											key={state}
-											className="animation_file"
-										>
+										<li key={state} className="animation_file">
 											<div className="animation_file_head">
 												<label title="StateName">
 													<input
 														type="text"
 														defaultValue={state}
-														onBlur={(e) => {
+														onBlur={e => {
+															if (e.target.value === state) return
 															if (
-																e.target
-																	.value ===
-																state
-															)
-																return
-															if (
-																e.target.value
-																	.length >
-																	0 &&
+																e.target.value.length > 0 &&
 																!/[^a-z0-9\._]/.test(
-																	e.target
-																		.value
+																	e.target.value
 																) &&
-																!states[
-																	e.target
-																		.value
-																]
+																!states[e.target.value]
 															) {
 																const copy = {
 																	...states,
 																}
-																copy[
-																	e.target.value
-																] = copy[state]
-																delete copy[
-																	state
-																]
+																copy[e.target.value] = copy[state]
+																delete copy[state]
 																//console.log(`changed name from '${state}' to '${e.target.value}'`)
 																setStates(copy)
 															} else {
 																Blockbench.showQuickMessage(
 																	'name invalid or already in use'
 																)
-																e.target.value =
-																	state
+																e.target.value = state
 															}
 														}}
 													></input>
@@ -436,26 +373,18 @@ function StatePanel() {
 												<div
 													className="in_list_button"
 													onClick={() => {
-														if (
-															index ===
-															selectedIndex
-														) {
+														if (index === selectedIndex) {
 															setSelectedIndex(-1)
 															updateDisplay({})
 														} else {
-															setSelectedIndex(
-																index
-															)
-															updateDisplay(
-																states[state]
-															)
+															setSelectedIndex(index)
+															updateDisplay(states[state])
 														}
 													}}
 												>
 													<i
 														className={
-															index ===
-															selectedIndex
+															index === selectedIndex
 																? 'fa fa-eye'
 																: 'fa fa-eye-slash icon_off'
 														}
@@ -464,20 +393,15 @@ function StatePanel() {
 												<div
 													className="in_list_button"
 													onClick={() => {
-														setEditState(
-															states[state]
-														)
+														setEditState(states[state])
 														setSelectedIndex(index)
 														setOverlayVisible(state)
 														setDialogVisible(true)
 													}}
 												>
-													<i className="material-icons">
-														edit
-													</i>
+													<i className="material-icons">edit</i>
 												</div>
-												{Object.keys(states).length >
-													1 && (
+												{Object.keys(states).length > 1 && (
 													<div
 														className="in_list_button"
 														onClick={() => {
@@ -488,9 +412,7 @@ function StatePanel() {
 															setStates(copy)
 														}}
 													>
-														<i className="material-icons">
-															delete
-														</i>
+														<i className="material-icons">delete</i>
 													</div>
 												)}
 											</div>
@@ -523,7 +445,7 @@ bus.on(LIFECYCLE.LOAD, () => {
 	}
 })
 
-bus.on('texture_will_be_removed', (texture) => {
+bus.on('texture_will_be_removed', texture => {
 	const states = store.get('states')
 	console.log(states)
 	let uuid = texture.uuid
@@ -542,9 +464,7 @@ bus.on('texture_will_be_removed', (texture) => {
 		updated = updated || has_update
 	}
 	if (updated_states.length) {
-		Blockbench.showQuickMessage(
-			`updated ${updated_states.length} states (${updated_states})`
-		)
+		Blockbench.showQuickMessage(`updated ${updated_states.length} states (${updated_states})`)
 	}
 	store.set('states', { ...states })
 	bus.dispatch('states_ui_update', {})

@@ -148,8 +148,7 @@ animatedJava_exporter_animationExporter.exportingDataPackProgress: Data Pack aan
 animatedJava_exporter_animationExporter.writingDataPackProgress: Data Pack naar de disk aan het schrijven... %progress% | %fileName aan het schrijven
 
 animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.title: Animatie met te korte duur
-animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.body:
-    |-
+animatedJava_exporter_animationExporter.popup.warning.zeroLengthAnimation.body: |-
     Een van je animaties is te kort! Animaties moeten minimaal 0.05 secondes lang zijn (1 game tick)
 
 animatedJava_exporter_animationExporter.popup.error.mcbFilePathNotDefined.title: MCB bestandspad is niet gedefinieerd

@@ -1,7 +1,5 @@
 function logHelper(name, error, meta, note) {
-	console.groupCollapsed(
-		name + '-' + error.message + ' (expand for more info)'
-	)
+	console.groupCollapsed(name + '-' + error.message + ' (expand for more info)')
 	console.log(
 		`An error has ocurred, this isn't necessarily an issue with your system, for more info please read the logs directly bellow this one`
 	)
@@ -25,11 +23,9 @@ export function makeError(name, message, note) {
 		'log',
 		`return class ${name} extends Error{ constructor(meta){super(${JSON.stringify(
 			message
-		)});log(${JSON.stringify(name)},this,meta,${
-			note ? JSON.stringify(note) : 'null'
-		})}}`
+		)});log(${JSON.stringify(name)},this,meta,${note ? JSON.stringify(note) : 'null'})}}`
 	)(logHelper)
-	return (meta) => {
+	return meta => {
 		throw new error(meta)
 	}
 }

@@ -8,11 +8,9 @@ BarItems.cube_counter.onUpdate = function () {
 	if (Animator.open || Mode.selected?.id === VARIANTS_MODE_ID) {
 		var sel = 0
 		if (Group.selected) {
-			Group.selected.forEachChild((_) => sel++, Group, true)
+			Group.selected.forEachChild(_ => sel++, Group, true)
 		}
-		this.set(
-			stringifyLargeInt(sel) + ' / ' + stringifyLargeInt(Group.all.length)
-		)
+		this.set(stringifyLargeInt(sel) + ' / ' + stringifyLargeInt(Group.all.length))
 	} else {
 		this.set(
 			stringifyLargeInt(Outliner.selected.length) +
@@ -39,8 +37,5 @@ outliner.condition.modes.push(VARIANTS_MODE_ID)
 bus.on(PLUGIN.UNLOAD, () => {
 	mode.delete()
 	BarItems.cube_counter.onUpdate = $originalBarUpdate
-	outliner.condition.modes.splice(
-		outliner.condition.modes.indexOf(VARIANTS_MODE_ID),
-		1
-	)
+	outliner.condition.modes.splice(outliner.condition.modes.indexOf(VARIANTS_MODE_ID), 1)
 })

@@ -18,32 +18,21 @@ async function exportRigModels(
 	scaleModels: aj.ScaleModels
 ) {
 	console.groupCollapsed('Export Rig Models')
-	const metaPath = path.join(
-		settings.animatedJava.rigModelsExportFolder,
-		'.aj_meta'
-	)
+	const metaPath = path.join(settings.animatedJava.rigModelsExportFolder, '.aj_meta')
 
 	if (!fs.existsSync(metaPath)) {
-		const files = fs.readdirSync(
-			settings.animatedJava.rigModelsExportFolder
-		)
+		const files = fs.readdirSync(settings.animatedJava.rigModelsExportFolder)
 		// If the meta folder is empty, just write the meta and export models. However it there are other files/folder in there, show a warning.
 		if (files.length > 0) {
 			await new Promise<void>((resolve, reject) => {
 				let d = new Dialog({
 					id: 'animatedJava.rigFolderHasUnknownContent',
-					title: tl(
-						'animatedJava.dialogs.errors.rigFolderHasUnknownContent.title'
-					),
+					title: tl('animatedJava.dialogs.errors.rigFolderHasUnknownContent.title'),
 					lines: [
-						tl(
-							'animatedJava.dialogs.errors.rigFolderHasUnknownContent.body',
-							{
-								path: settings.animatedJava
-									.rigModelsExportFolder,
-								files: files.join(', '),
-							}
-						),
+						tl('animatedJava.dialogs.errors.rigFolderHasUnknownContent.body', {
+							path: settings.animatedJava.rigModelsExportFolder,
+							files: files.join(', '),
+						}),
 					],
 					// @ts-ignore
 					width: 512 + 128,
@@ -62,10 +51,10 @@ async function exportRigModels(
 					onCancel() {
 						d.hide()
 						reject(
-							new CustomError(
-								'Rig Folder Unused -> User Cancelled Export Process',
-								{ intentional: true, silent: true }
-							)
+							new CustomError('Rig Folder Unused -> User Cancelled Export Process', {
+								intentional: true,
+								silent: true,
+							})
 						)
 					},
 				}).show()
@@ -79,23 +68,16 @@ async function exportRigModels(
 		}
 		// @ts-ignore
 	} else if (fs.readFileSync(metaPath, 'utf-8') !== Project.UUID) {
-		const files = fs.readdirSync(
-			settings.animatedJava.rigModelsExportFolder
-		)
+		const files = fs.readdirSync(settings.animatedJava.rigModelsExportFolder)
 		await new Promise<void>((resolve, reject) => {
 			let d = new Dialog({
 				id: 'animatedJava.rigFolderAlreadyUsedByOther',
-				title: tl(
-					'animatedJava.dialogs.errors.rigFolderAlreadyUsedByOther.title'
-				),
+				title: tl('animatedJava.dialogs.errors.rigFolderAlreadyUsedByOther.title'),
 				lines: [
-					tl(
-						'animatedJava.dialogs.errors.rigFolderAlreadyUsedByOther.body',
-						{
-							path: settings.animatedJava.rigModelsExportFolder,
-							files: files.join(', '),
-						}
-					),
+					tl('animatedJava.dialogs.errors.rigFolderAlreadyUsedByOther.body', {
+						path: settings.animatedJava.rigModelsExportFolder,
+						files: files.join(', '),
+					}),
 				],
 				// @ts-ignore
 				width: 512 + 128,
@@ -128,15 +110,11 @@ async function exportRigModels(
 	console.group('Details')
 	for (const [name, model] of Object.entries(models)) {
 		// Get the model's file path
-		const modelFilePath = path.join(
-			settings.animatedJava.rigModelsExportFolder,
-			name + '.json'
-		)
+		const modelFilePath = path.join(settings.animatedJava.rigModelsExportFolder, name + '.json')
 		// Export the model
 		console.log('Exporting Model', modelFilePath, model.elements)
 		const modelJSON = {
-			__credit:
-				'Generated using Animated Java (https://animated-java.dev/)',
+			__credit: 'Generated using Animated Java (https://animated-java.dev/)',
 			...model,
 			aj: undefined,
 		}
@@ -160,8 +138,7 @@ async function exportRigModels(
 
 			console.log('Exporting Model', scale, modelFilePath)
 			const modelJSON = {
-				__credit:
-					'Generated using Animated Java (https://animated-java.dev/)',
+				__credit: 'Generated using Animated Java (https://animated-java.dev/)',
 				...model,
 				aj: undefined,
 			}
@@ -188,15 +165,11 @@ async function exportRigModels(
 
 		for (const [modelName, model] of Object.entries(variant)) {
 			// Get the model's file path
-			const modelFilePath = path.join(
-				variantFolderPath,
-				`${modelName}.json`
-			)
+			const modelFilePath = path.join(variantFolderPath, `${modelName}.json`)
 			console.log('Exporting Model', modelFilePath)
 			// Export the model
 			const modelJSON = {
-				__credit:
-					'Generated using Animated Java (https://animated-java.dev/)',
+				__credit: 'Generated using Animated Java (https://animated-java.dev/)',
 				...model,
 				aj: undefined,
 			}
@@ -240,12 +213,9 @@ function throwPredicateMergingError(reason: string) {
 		intentional: true,
 		dialog: {
 			id: 'animatedJava.predicateMergeFailed',
-			title: tl(
-				'animatedJava.dialogs.errors.predicateMergeFailed.title',
-				{
-					reason,
-				}
-			),
+			title: tl('animatedJava.dialogs.errors.predicateMergeFailed.title', {
+				reason,
+			}),
 			lines: [
 				tl('animatedJava.dialogs.errors.predicateMergeFailed.body', {
 					reason,
@@ -286,20 +256,15 @@ async function exportPredicate(
 	}
 
 	if (fs.existsSync(ajSettings.predicateFilePath)) {
-		const stringContent = await fs.promises.readFile(
-			ajSettings.predicateFilePath,
-			{
-				encoding: 'utf-8',
-			}
-		)
+		const stringContent = await fs.promises.readFile(ajSettings.predicateFilePath, {
+			encoding: 'utf-8',
+		})
 		let oldPredicate: PredicateModel
 		try {
 			oldPredicate = JSON.parse(stringContent)
 		} catch (err) {
 			throwPredicateMergingError(
-				tl(
-					'animatedJava.dialogs.errors.predicateMergeFailed.reasons.invalidJson'
-				)
+				tl('animatedJava.dialogs.errors.predicateMergeFailed.reasons.invalidJson')
 			)
 		}
 		console.log(oldPredicate)
@@ -307,15 +272,11 @@ async function exportPredicate(
 		if (oldPredicate) {
 			if (!oldPredicate?.aj) {
 				throwPredicateMergingError(
-					tl(
-						'animatedJava.dialogs.errors.predicateMergeFailed.reasons.ajMetaMissing'
-					)
+					tl('animatedJava.dialogs.errors.predicateMergeFailed.reasons.ajMetaMissing')
 				)
 			} else if (!oldPredicate.overrides) {
 				throwPredicateMergingError(
-					tl(
-						'animatedJava.dialogs.errors.predicateMergeFailed.reasons.overridesMissing'
-					)
+					tl('animatedJava.dialogs.errors.predicateMergeFailed.reasons.overridesMissing')
 				)
 			}
 		}
@@ -324,7 +285,7 @@ async function exportPredicate(
 			data.preExistingIds = {
 				name: 'preExistingIds',
 				usedIDs: packArr(
-					oldPredicate.overrides.map((override) => {
+					oldPredicate.overrides.map(override => {
 						usedIDs.push(override.predicate.custom_model_data)
 						return override.predicate.custom_model_data
 					})
@@ -350,7 +311,7 @@ async function exportPredicate(
 		// @ts-ignore
 		delete data[Project.UUID]
 		predicateJSON.aj.includedRigs = data
-		predicateJSON.overrides = oldPredicate.overrides.filter((override) => {
+		predicateJSON.overrides = oldPredicate.overrides.filter(override => {
 			return usedIDs.includes(override.predicate.custom_model_data)
 		})
 	}
@@ -361,26 +322,18 @@ async function exportPredicate(
 		model.aj.customModelData = idGenerator.next().value as number
 		predicateJSON.overrides.push({
 			predicate: { custom_model_data: model.aj.customModelData },
-			model: getModelPath(
-				path.join(ajSettings.rigModelsExportFolder, modelName),
-				modelName
-			),
+			model: getModelPath(path.join(ajSettings.rigModelsExportFolder, modelName), modelName),
 		})
 		myMeta.push(model.aj.customModelData)
 
 		if (!scaleModels[modelName]) continue
-		for (const [vecStr, scaleModel] of Object.entries(
-			scaleModels[modelName]
-		)) {
+		for (const [vecStr, scaleModel] of Object.entries(scaleModels[modelName])) {
 			scaleModel.aj.customModelData = idGenerator.next().value as number
 
 			predicateJSON.overrides.push({
 				predicate: { custom_model_data: scaleModel.aj.customModelData },
 				model: getModelPath(
-					path.join(
-						ajSettings.rigModelsExportFolder,
-						`${modelName}_${vecStr}`
-					),
+					path.join(ajSettings.rigModelsExportFolder, `${modelName}_${vecStr}`),
 					`${modelName}_${vecStr}`
 				),
 			})
@@ -395,11 +348,7 @@ async function exportPredicate(
 			predicateJSON.overrides.push({
 				predicate: { custom_model_data: model.aj.customModelData },
 				model: getModelPath(
-					path.join(
-						ajSettings.rigModelsExportFolder,
-						variantName,
-						modelName
-					),
+					path.join(ajSettings.rigModelsExportFolder, variantName, modelName),
 					modelName
 				),
 			})
@@ -432,7 +381,7 @@ function packArr(arr) {
 		}
 	}
 	result.push(currentRange)
-	return result.map((range) => {
+	return result.map(range => {
 		if (range.length === 1) {
 			return range[0]
 		} else {
@@ -443,10 +392,7 @@ function packArr(arr) {
 async function exportTransparentTexture() {
 	console.log(transparent)
 	Blockbench.writeFile(settings.animatedJava.transparentTexturePath, {
-		content: Buffer.from(
-			String(transparent).replace('data:image/png;base64,', ''),
-			'base64'
-		),
+		content: Buffer.from(String(transparent).replace('data:image/png;base64,', ''), 'base64'),
 		custom_writer: null,
 	})
 }

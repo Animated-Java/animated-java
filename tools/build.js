@@ -1,11 +1,11 @@
 const fs = require('fs')
 function makeBanner(lines) {
-	const longest = Math.max(...lines.map((line) => line.length))
+	const longest = Math.max(...lines.map(line => line.length))
 	const top = `/*${'*'.repeat(longest)}*\\`
 	const bottom = `\\*${'*'.repeat(longest)}*/`
 	const res = [
 		top,
-		...lines.map((line) => {
+		...lines.map(line => {
 			return `| ${line}${' '.repeat(longest - line.length)} |`
 		}),
 		bottom,
@@ -46,11 +46,8 @@ const esbuild = require('esbuild')
 				{
 					name: 'build-id',
 					setup(build) {
-						build.onEnd((result) => {
-							const content = fs.readFileSync(
-								'./dist/animated_java.js',
-								'ascii'
-							)
+						build.onEnd(result => {
+							const content = fs.readFileSync('./dist/animated_java.js', 'ascii')
 							const hash = require('crypto')
 								.createHash('sha256')
 								.update(content)
@@ -59,10 +56,7 @@ const esbuild = require('esbuild')
 							console.log('BUILD ID:', id)
 							fs.writeFileSync(
 								'./dist/animated_java.js',
-								content.replace(
-									'process.env.BUILD_ID',
-									JSON.stringify(id)
-								),
+								content.replace('process.env.BUILD_ID', JSON.stringify(id)),
 								'ascii'
 							)
 						})
@@ -78,23 +72,20 @@ const esbuild = require('esbuild')
 							fs
 								.readFileSync('./HEADER.txt', 'utf8')
 								.split('\n')
-								.map((_) => _.trim())
+								.map(_ => _.trim())
 					  ) +
 					  '\n'.repeat(10) +
 					  makeBanner(
 							fs
 								.readFileSync('./LICENSE', 'utf8')
 								.split('\n')
-								.map((_) => _.trim())
+								.map(_ => _.trim())
 					  ),
 			},
 			define: {
 				'process.env.NODE_ENV': dev ? '"development"' : '"production"',
 				...Object.fromEntries(
-					Object.entries(env).map(([k, v]) => [
-						'process.env.' + k,
-						JSON.stringify(v),
-					])
+					Object.entries(env).map(([k, v]) => ['process.env.' + k, JSON.stringify(v)])
 				),
 				...(dev
 					? {
@@ -111,7 +102,7 @@ const esbuild = require('esbuild')
 			charset: 'ascii',
 			drop: dev ? [] : ['console', 'debugger'],
 		})
-		.then((res) => {
+		.then(res => {
 			const end = Date.now()
 			console.log(end - start + 'ms')
 		})

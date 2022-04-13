@@ -7,9 +7,7 @@ export class Path {
 	private parsed?: pathjs.ParsedPath
 
 	constructor(...paths: Array<string> | Array<Path>) {
-		this.path = pathjs.normalize(
-			pathjs.join(...paths.map((p: any) => (p.path ? p.path : p)))
-		)
+		this.path = pathjs.normalize(pathjs.join(...paths.map((p: any) => (p.path ? p.path : p))))
 		this.parts = this.path.split(pathjs.sep)
 	}
 
@@ -53,10 +51,7 @@ export class Path {
 		}
 	}
 
-	write(
-		data: string | NodeJS.ArrayBufferView,
-		options?: fs.WriteFileOptions
-	) {
+	write(data: string | NodeJS.ArrayBufferView, options?: fs.WriteFileOptions) {
 		try {
 			fs.writeFileSync(this.path, data, options)
 		} catch (e) {

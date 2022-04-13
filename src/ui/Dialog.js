@@ -29,10 +29,7 @@ export function Dialog({ children, onRequestHide, title, width, height }) {
 
 		return (
 			dialog &&
-			ReactDOM.createPortal(
-				children,
-				document.getElementById(`${DialogUUID}_mount`)
-			)
+			ReactDOM.createPortal(children, document.getElementById(`${DialogUUID}_mount`))
 		)
 	} else {
 		function hide() {

@@ -37,9 +37,7 @@ const openBoneConfig = CustomAction('animatedJava.BoneConfig', {
 			},
 			onButton(index) {
 				if (index === 0) {
-					this.component.data.nbt = SNBT.parse(
-						this.component.data.nbt
-					).toPrettyString()
+					this.component.data.nbt = SNBT.parse(this.component.data.nbt).toPrettyString()
 					return false
 				} else if (index === 1) {
 					selected.nbt = this.component.data.nbt

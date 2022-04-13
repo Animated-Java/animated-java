@@ -38,12 +38,12 @@ function resetPredicateData() {
 }
 
 function getTextureByUUID(uuid) {
-	return Texture.all.find((t) => t.uuid === uuid)
+	return Texture.all.find(t => t.uuid === uuid)
 }
 
 function hasTexture(model, texture) {
-	return model.elements.find((e) =>
-		Object.values(e.faces).find((f) => f.texture === `#${texture.id}`)
+	return model.elements.find(e =>
+		Object.values(e.faces).find(f => f.texture === `#${texture.id}`)
 	)
 }
 
@@ -79,12 +79,8 @@ export function computeElements() {
 				intentional: true,
 				dialog: {
 					id: 'animatedJava.dialogs.errors.topLevelCubes',
-					title: tl(
-						'animatedJava.dialogs.errors.topLevelCubes.title'
-					),
-					lines: [
-						tl('animatedJava.dialogs.errors.topLevelCubes.body'),
-					],
+					title: tl('animatedJava.dialogs.errors.topLevelCubes.title'),
+					lines: [tl('animatedJava.dialogs.errors.topLevelCubes.body')],
 					width: 128,
 					singleButton: true,
 				},
@@ -182,19 +178,14 @@ export function computeElements() {
 		// element.to = element.to.map(_ => _ + 8);
 		// element.from = element.from.map(_ => _ + 8);
 		if (element.rotation) {
-			element.rotation.origin = element.rotation.origin.map(
-				(_, i) => _ - s.parent.origin[i]
-			)
+			element.rotation.origin = element.rotation.origin.map((_, i) => _ - s.parent.origin[i])
 			// element.rotation.origin = element.rotation.origin.map(_ => _ / 2.5 + 8);
 		}
 		function inVd(n) {
 			return n < -16 || n > 32
 		}
 		if (!isSceneBased(s)) {
-			if (
-				element.rotation &&
-				![-45, -22.5, 0, 22.5, 45].includes(element.rotation.angle)
-			) {
+			if (element.rotation && ![-45, -22.5, 0, 22.5, 45].includes(element.rotation.angle)) {
 				invalid_rot_elements.push(s)
 			} else if (Object.keys(element.faces).length) {
 				clear_elements.push(element)
@@ -220,12 +211,8 @@ export function computeElements() {
 	if (invalid_rot_elements.length) {
 		throw new CustomError('Invalid Element Rotations', {
 			dialog: {
-				title: tl(
-					'animatedJava.dialogs.errors.invalidCubeRotations.title'
-				),
-				lines: [
-					tl('animatedJava.dialogs.errors.invalidCubeRotations.body'),
-				],
+				title: tl('animatedJava.dialogs.errors.invalidCubeRotations.title'),
+				lines: [tl('animatedJava.dialogs.errors.invalidCubeRotations.body')],
 				width: 512,
 			},
 		})
@@ -245,14 +232,13 @@ export function computeElements() {
 function getTexturesOnGroup(group) {
 	const textures = {}
 	group.children
-		.filter((c) => c instanceof Cube)
-		.forEach((cube) => {
+		.filter(c => c instanceof Cube)
+		.forEach(cube => {
 			for (const [faceName, face] of Object.entries(cube.faces)) {
 				const texture = getTextureByUUID(face.texture)
 				if (texture) {
 					if (!textures[`${texture.id}`]) {
-						textures[`${texture.id}`] =
-							resourcepack.getTexturePath(texture)
+						textures[`${texture.id}`] = resourcepack.getTexturePath(texture)
 					}
 				} else {
 					console.log(`Unable to find texture ${face.texture}`)
@@ -271,12 +257,8 @@ async function computeModels(cubeData) {
 	function recurse(group) {
 		console.log(group)
 		const cubeChildren = group.children
-			.filter((c) => c instanceof Cube && c.export)
-			.map((current) =>
-				cubeData.clear_elements.find(
-					(other) => current.uuid === other.uuid
-				)
-			)
+			.filter(c => c instanceof Cube && c.export)
+			.map(current => cubeData.clear_elements.find(other => current.uuid === other.uuid))
 
 		if (
 			group instanceof Group &&
@@ -289,11 +271,9 @@ async function computeModels(cubeData) {
 			if (cubeChildren.length) {
 				const elements = []
 
-				cubeChildren.forEach((cube) => {
+				cubeChildren.forEach(cube => {
 					if (!cube) {
-						throw new CustomError(
-							`Unexpected undefined in ${group.name}.children`
-						)
+						throw new CustomError(`Unexpected undefined in ${group.name}.children`)
 					}
 					elements.push({
 						faces: cube.faces,
@@ -310,9 +290,7 @@ async function computeModels(cubeData) {
 				}
 			}
 
-			group.children
-				.filter((item) => item instanceof Group)
-				.forEach((group) => recurse(group))
+			group.children.filter(item => item instanceof Group).forEach(group => recurse(group))
 		}
 	}
 
@@ -329,11 +307,7 @@ async function computeModels(cubeData) {
 	return scaledModels
 }
 
-export async function computeVariantModels(
-	models,
-	scaleModels,
-	variantOverrides
-) {
+export async function computeVariantModels(models, scaleModels, variantOverrides) {
 	console.groupCollapsed('Compute Variant Models')
 	const variants = store.get('states')
 	const variantModels = {}
@@ -353,19 +327,14 @@ export async function computeVariantModels(
 						customModelData: getPredicateId(),
 					},
 					parent: getModelMCPath(
-						path.join(
-							settings.animatedJava.rigModelsExportFolder,
-							modelName
-						)
+						path.join(settings.animatedJava.rigModelsExportFolder, modelName)
 					),
 					textures: thisModelOverrides.textures,
 				}
 				variantModels[variantName][modelName] = newVariantModel
 
 				if (!scaleModels[modelName]) continue
-				for (const [vecStr, model] of Object.entries(
-					scaleModels[modelName]
-				)) {
+				for (const [vecStr, model] of Object.entries(scaleModels[modelName])) {
 					const clone = cloneObject(model)
 					clone.parent = getModelMCPath(
 						path.join(
@@ -389,7 +358,7 @@ export function computeBones(models, animations) {
 
 	const bones = {}
 
-	for (const value of Project.elements.map((_) => _.mesh)) {
+	for (const value of Project.elements.map(_ => _.mesh)) {
 		// const value = Project.groups[name];
 		if (value.parent) {
 			const parentGroup = value.parent.getGroup()
@@ -410,13 +379,11 @@ export function computeBones(models, animations) {
 					'| mesh:',
 					value.parent
 				)
-				value.parent.customModelData =
-					models[parentName].aj.customModelData
+				value.parent.customModelData = models[parentName].aj.customModelData
 				value.parent.scales = {
 					'1-1-1': models[parentName].aj.customModelData,
 				}
-				value.parent.armAnimationEnabled =
-					parentGroup.armAnimationEnabled
+				value.parent.armAnimationEnabled = parentGroup.armAnimationEnabled
 				value.parent.nbt = parentGroup.nbt
 				bones[parentName] = value.parent
 			}
@@ -457,12 +424,10 @@ let elementScaleModifier = displayScaleModifier / displayScale
 let yTranslation = 5.6
 
 function computeScaleModifiers() {
-	displayScaleModifier =
-		settings.animatedJava.modelScalingMode === '3x3x3' ? 1 : 4
+	displayScaleModifier = settings.animatedJava.modelScalingMode === '3x3x3' ? 1 : 4
 	elementScaleModifier = displayScaleModifier / displayScale
 	// I love magic numbers 😢
-	yTranslation =
-		settings.animatedJava.modelScalingMode === '3x3x3' ? -3.2 : 5.6
+	yTranslation = settings.animatedJava.modelScalingMode === '3x3x3' ? -3.2 : 5.6
 }
 
 async function scaleModels(models) {
@@ -471,7 +436,7 @@ async function scaleModels(models) {
 		model.display = {
 			head: {
 				translation: [0, yTranslation, 0],
-				scale: [1, 1, 1].map((v) => displayScaleModifier),
+				scale: [1, 1, 1].map(v => displayScaleModifier),
 				rotation: [0, 0, 0],
 			},
 		}
@@ -502,7 +467,7 @@ async function scaleModels(models) {
 }
 
 function vecStrToArray(vecStr) {
-	return vecStr.split('-').map((v) => Number(v))
+	return vecStr.split('-').map(v => Number(v))
 }
 
 function throwIfScaleOutOfBounds(scale, boneName) {
@@ -551,24 +516,17 @@ export function computeScaleModels(bones) {
 
 		for (const [vecStr, customModelData] of Object.entries(bone.scales)) {
 			const scale = vecStrToArray(vecStr)
-			const mappedScale = scale.map((v) => v * displayScaleModifier)
+			const mappedScale = scale.map(v => v * displayScaleModifier)
 			throwIfScaleOutOfBounds(mappedScale, boneName)
 
 			const model = {
 				parent: getModelMCPath(
-					path.join(
-						settings.animatedJava.rigModelsExportFolder,
-						boneName
-					)
+					path.join(settings.animatedJava.rigModelsExportFolder, boneName)
 				),
 				display: {
 					head: {
-						translation: [
-							0,
-							yTranslation + -yTranslation * (scale[1] - 1),
-							0,
-						],
-						scale: scale.map((v) => v * displayScaleModifier || 1),
+						translation: [0, yTranslation + -yTranslation * (scale[1] - 1), 0],
+						scale: scale.map(v => v * displayScaleModifier || 1),
 						rotation: [0, 0, 0],
 					},
 				},
@@ -623,29 +581,25 @@ export function computeVariantTextureOverrides(models) {
 									thisVariant[modelName] = { textures: {} }
 								}
 								console.log(texture, '-> transparent')
-								thisVariant[modelName].textures[
-									`${texture.id}`
-								] = transparentTexturePath
+								thisVariant[modelName].textures[`${texture.id}`] =
+									transparentTexturePath
 							} else {
-								throw new CustomError(
-									'Transparent Texture Path Not Found',
-									{
-										intentional: true,
-										dialog: {
-											id: 'animatedJava.dialogs.errors.transparentTexturePathNotFound',
-											title: tl(
-												'animatedJava.dialogs.errors.transparentTexturePathNotFound.title'
+								throw new CustomError('Transparent Texture Path Not Found', {
+									intentional: true,
+									dialog: {
+										id: 'animatedJava.dialogs.errors.transparentTexturePathNotFound',
+										title: tl(
+											'animatedJava.dialogs.errors.transparentTexturePathNotFound.title'
+										),
+										lines: [
+											tl(
+												'animatedJava.dialogs.errors.transparentTexturePathNotFound.body'
 											),
-											lines: [
-												tl(
-													'animatedJava.dialogs.errors.transparentTexturePathNotFound.body'
-												),
-											],
-											width: 512,
-											singleButton: true,
-										},
-									}
-								)
+										],
+										width: 512,
+										singleButton: true,
+									},
+								})
 							}
 						}
 					}

@@ -44,7 +44,7 @@ export class dirTreeItem {
 			this.path.write(this.content)
 		}
 
-		this.children?.forEach((child) => child.exportToPath())
+		this.children?.forEach(child => child.exportToPath())
 	}
 
 	toJSON() {

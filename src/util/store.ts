@@ -12,9 +12,9 @@ const Store_IO = Symbol.for('Store.IO')
 class StoreRef {
 	unreference: () => void;
 	[StoreRef_Watchers] = [];
-	[StoreRef_UpdateReceiver] = (event) => {
+	[StoreRef_UpdateReceiver] = event => {
 		this[StoreRef_Current] = event.value
-		this[StoreRef_Watchers].forEach((cb) => cb())
+		this[StoreRef_Watchers].forEach(cb => cb())
 	}
 	constructor({ parent, target, value, name }) {
 		this[StoreRef_Parent] = parent
@@ -39,11 +39,7 @@ class StoreRef {
 	}
 	watch(cb: (value: any) => void) {
 		this[StoreRef_Watchers].push(cb)
-		return () =>
-			this[StoreRef_Watchers].slice(
-				this[StoreRef_Watchers].indexOf(cb),
-				1
-			)
+		return () => this[StoreRef_Watchers].slice(this[StoreRef_Watchers].indexOf(cb), 1)
 	}
 }
 

@@ -80,6 +80,13 @@ const roles = {
 		color: 'rgb(241, 196, 15)',
 		textColor: 'black',
 	},
+	[Reasons.PreviousPatreon]: {
+		get content() {
+			return tl('animatedJava.dialogs.about.previousPatron')
+		},
+		color: 'rgb(221, 176, 15)',
+		textColor: 'black',
+	},
 }
 function Role({ role, fontSize }) {
 	return (
@@ -144,21 +151,11 @@ function Person({ person }) {
 
 const people = [
 	{
-		roles: [
-			Reasons.BetaTester,
-			Reasons.Moderator,
-			Reasons.Contributor,
-			Reasons.Translator,
-		],
+		roles: [Reasons.BetaTester, Reasons.Moderator, Reasons.Contributor, Reasons.Translator],
 		name: 'Ancientkingg',
 	},
 	{
-		roles: [
-			Reasons.BetaTester,
-			Reasons.Moderator,
-			Reasons.BrandingArtist,
-			Reasons.Translator,
-		],
+		roles: [Reasons.BetaTester, Reasons.Moderator, Reasons.BrandingArtist, Reasons.Translator],
 		name: 'YokaiS',
 	},
 	{ roles: [Reasons.BetaTester, Reasons.Moderator], name: 'dragonmaster95' },
@@ -174,8 +171,13 @@ const people = [
 		name: 'CubeDeveloper',
 		active: true,
 	},
+	{
+		roles: [Reasons.BetaTester, Reasons.Contributor, Reasons.PatreonT2],
+		name: 'LoneDev',
+		active: true,
+	},
 	{ roles: [Reasons.BetaTester], name: 'destruc7i0n' },
-	{ roles: [Reasons.PatreonT3], name: 'DoubleFelix', active: true },
+	{ roles: [Reasons.PreviousPatreon], name: 'DoubleFelix', active: false },
 	{ roles: [Reasons.PatreonT2], name: '__SK__', active: true },
 	{ roles: [Reasons.BetaTester], name: 'Eriol_Eandur' },
 	{ roles: [Reasons.BetaTester], name: 'gibbs' },
@@ -193,6 +195,7 @@ const people = [
 	{ roles: [Reasons.BetaTester], name: 'Violet' },
 	{ roles: [Reasons.BetaTester], name: 'CommanderRedstone' },
 	{ roles: [Reasons.Translator], name: 'brooke-zb' },
+	{ roles: [Reasons.Translator], name: 'Dosingr' },
 	{ roles: [Reasons.Translator], name: 'FabulousCodingFox' },
 	{ roles: [Reasons.Translator], name: 'HURDOO' },
 	{ roles: [Reasons.Translator], name: 'ououn' },
@@ -202,7 +205,7 @@ function Link({ href, children, ...props }) {
 		<a
 			href={href}
 			{...props}
-			onClick={(e) => {
+			onClick={e => {
 				e.preventDefault()
 				shell.openExternal(href)
 			}}
@@ -238,14 +241,10 @@ function About() {
 				></img>
 			</Center>
 			<Center>
-				<h1 style={{ fontSize: '3em' }}>
-					{tl('animatedJava.plugin.title')}
-				</h1>
+				<h1 style={{ fontSize: '3em' }}>{tl('animatedJava.plugin.title')}</h1>
 			</Center>
 			<Center>
-				<p style={{ marginTop: '0.1em' }}>
-					{process.env.PLUGIN_VERSION}
-				</p>
+				<p style={{ marginTop: '0.1em' }}>{process.env.PLUGIN_VERSION}</p>
 			</Center>
 			<Center>
 				<Link
@@ -331,10 +330,7 @@ function About() {
 						}}
 					></img>
 					<div style={{ textAlign: 'center' }}>
-						<a
-							href="https://twitter.com/FetchBot1"
-							style={{ fontSize: '2em' }}
-						>
+						<a href="https://twitter.com/FetchBot1" style={{ fontSize: '2em' }}>
 							FetchBot
 						</a>
 					</div>
@@ -358,10 +354,7 @@ function About() {
 						}}
 					></img>
 					<div style={{ textAlign: 'center' }}>
-						<a
-							href="https://twitter.com/SnaveSutit"
-							style={{ fontSize: '2em' }}
-						>
+						<a href="https://twitter.com/SnaveSutit" style={{ fontSize: '2em' }}>
 							SnaveSutit
 						</a>
 					</div>
@@ -383,14 +376,14 @@ function About() {
 				}}
 			>
 				{people
-					.filter((person) => {
+					.filter(person => {
 						return (
 							person.roles.includes(Reasons.PatreonT1) ||
 							person.roles.includes(Reasons.PatreonT2) ||
 							person.roles.includes(Reasons.PatreonT3)
 						)
 					})
-					.map((person) => (
+					.map(person => (
 						<Person key={person.name} person={person} />
 					))}
 			</div>
@@ -408,20 +401,19 @@ function About() {
 				}}
 			>
 				{people
-					.filter((person) => {
+					.filter(person => {
 						return !(
 							person.roles.includes(Reasons.PatreonT1) ||
 							person.roles.includes(Reasons.PatreonT2) ||
 							person.roles.includes(Reasons.PatreonT3)
 						)
 					})
-					.map((person) => (
+					.map(person => (
 						<Person key={person.name} person={person} />
 					))}
 			</div>
 			<p>
-				<b>{tl('animatedJava.dialogs.about.buildID')}</b>{' '}
-				{process.env.BUILD_ID}
+				<b>{tl('animatedJava.dialogs.about.buildID')}</b> {process.env.BUILD_ID}
 			</p>
 		</div>
 	)

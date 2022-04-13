@@ -33,7 +33,7 @@ Action.prototype.patch = function (name) {
 Action.prototype._trigger = Action.prototype.trigger
 Action.prototype.trigger = function (...args) {
 	if (this.patches) {
-		const defer = this.patches.find((action) => BARS.condition(action))
+		const defer = this.patches.find(action => BARS.condition(action))
 		if (defer) {
 			return defer.click(...args)
 		}

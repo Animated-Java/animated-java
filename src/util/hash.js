@@ -2,15 +2,15 @@ import crypto from 'crypto'
 export function animation(a) {
 	const hash = crypto.createHash('sha512')
 	function kf(k) {
-		k.forEach((v) => {
+		k.forEach(v => {
 			hash.update('kf;')
 			hash.update(v.time + ');')
-			v.data_points.forEach((dp) => {
+			v.data_points.forEach(dp => {
 				hash.update(`${dp.x};${dp.y};${dp.z};${dp.script_string};`)
 			})
 		})
 	}
-	Object.keys(a.animators).forEach((n) => {
+	Object.keys(a.animators).forEach(n => {
 		const i = a.animators[n]
 		if (i instanceof BoneAnimator) {
 			hash.update(`ba;${i.uuid};`)
@@ -53,7 +53,7 @@ export function boneStructure() {
 	}
 
 	function recurse(children) {
-		children.forEach((c) => {
+		children.forEach(c => {
 			if (c instanceof Group) {
 				processGroup(c)
 				recurse(c.children)
