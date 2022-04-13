@@ -162,7 +162,9 @@ ModelFormat.prototype.convertTo = function convertTo() {
 	hideDialog()
 
 	let file = pathjs.parse(Project.save_path)
-	Project.export_path = normalizePath(`${file.dir}.${Project.format.codec.extension}`)
+	Project.export_path = normalizePath(
+		`${file.dir}.${Project.format.codec.extension}`
+	)
 	// Project.format.codec.export()
 
 	Canvas.updateAllPositions()
@@ -174,9 +176,9 @@ ModelFormat.prototype.convertTo = function convertTo() {
 	Project.saved = false
 
 	// Hacky method to refresh the top bar and make the custom tab menu appear without reopening the project
-	let selectedProjTabIndex = 0;
+	let selectedProjTabIndex = 0
 	ModelProject.all.forEach(function (proj) {
-		if(!proj.selected) selectedProjTabIndex++
+		if (!proj.selected) selectedProjTabIndex++
 	})
 	Interface.tab_bar.openNewTab()
 	ModelProject.all[selectedProjTabIndex].select()

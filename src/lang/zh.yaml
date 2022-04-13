@@ -284,7 +284,7 @@ animatedJava:
             settingGroups:
                 entityTags:
                     title: 实体标签
-                    
+
                 scoreboardObjectives:
                     title: 记分项
 
@@ -377,7 +377,7 @@ animatedJava:
 
         rawAnimation:
             title: 原始动画
-            
+
             dialogs:
                 errors:
                     outputJsonPathUndefined:
