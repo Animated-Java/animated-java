@@ -3,7 +3,7 @@
 	"compilerOptions": {
 		"outDir": "dist",
 		"declaration": false,
-		"types": ["node", "blockbench-types"],
+		// "types": ["node"],
 		"lib": ["DOM", "ESNext"],
 		"target": "ES2021",
 		"moduleResolution": "node",
