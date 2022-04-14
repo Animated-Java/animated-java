@@ -53,7 +53,7 @@ export const DefaultSettings = {
 				return Object.fromEntries(
 					[...store.getStore('exporters').keys()].map(v => [
 						v,
-						ForeignSettingTranslationKeys[v],
+						tl(ForeignSettingTranslationKeys[v]),
 					])
 				)
 			},
@@ -107,23 +107,23 @@ export const DefaultSettings = {
 				return d
 			},
 		},
-		animatorPreviewFps: {
-			get title() {
-				return tl('animatedJava.settings.animatorPreviewFps.title')
-			},
-			get description() {
-				return tl('animatedJava.settings.animatorPreviewFps.description')
-			},
-			type: 'number',
-			default: 20,
-			onUpdate(d) {
-				if (!(typeof d.value === 'number')) {
-					d.isValid = false
-					d.errors = tl('animatedJava.settings.generic.errors.mustBeNumber')
-				}
-				return d
-			},
-		},
+		// animatorPreviewFps: {
+		// 	get title() {
+		// 		return tl('animatedJava.settings.animatorPreviewFps.title')
+		// 	},
+		// 	get description() {
+		// 		return tl('animatedJava.settings.animatorPreviewFps.description')
+		// 	},
+		// 	type: 'number',
+		// 	default: 20,
+		// 	onUpdate(d) {
+		// 		if (!(typeof d.value === 'number')) {
+		// 			d.isValid = false
+		// 			d.errors = tl('animatedJava.settings.generic.errors.mustBeNumber')
+		// 		}
+		// 		return d
+		// 	},
+		// },
 		rigItem: {
 			get title() {
 				return tl('animatedJava.settings.rigItem.title')

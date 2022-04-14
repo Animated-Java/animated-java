@@ -45,8 +45,8 @@ const RenderTemplates = {
 	}) {
 		return (
 			<>
-				<div>{children}</div>
-				<div style={{ display: 'flex' }}>
+				{children}
+				<div style={{ display: 'flex', marginTop: '5px', marginBottom: '7px' }}>
 					<div className="setting_element" style={{ marginTop: '0px' }}>
 						<button
 							style={{
@@ -136,7 +136,7 @@ const RenderTemplates = {
 							}
 						}}
 						className="dark_bordered"
-						style={{ width: 'calc(100% - 118px)' }}
+						style={{ width: '76.8%' }}
 					/>
 				</div>
 			</>
@@ -158,10 +158,11 @@ const RenderTemplates = {
 								forceRerender()
 							}
 						}}
+						style={{width: '94%'}}
 					>
 						{Object.entries(definition.options).map(([key, value]) => (
 							<option value={key} key={key}>
-								{tl(value)}
+								{value}
 							</option>
 						))}
 					</select>
@@ -172,7 +173,6 @@ const RenderTemplates = {
 	number({ value, setValue, namespace, name, children, forceRerender }) {
 		return (
 			<>
-				{children}
 				<input
 					type="number"
 					id={`aj.setting.${namespace}.${name}`}
@@ -189,8 +189,14 @@ const RenderTemplates = {
 						}
 					}}
 					className="dark_bordered"
-					style={{ width: 'calc(100% - 18px)' }}
+					style={{
+						width: 'calc(6%)',
+						marginLeft: '1.2%',
+						float: 'left',
+						marginTop: '6px',
+					}}
 				/>
+				{children}
 			</>
 		)
 	},
@@ -273,7 +279,11 @@ const SettingInput = p => {
 	const descriptor = settings.getUpdateDescriptor(namespace, name, value)
 	let { warnings, errors } = descriptor
 	const children = (
-		<label htmlFor={`aj.setting.${namespace}.${name}`} className="setting_label">
+		<label
+			htmlFor={`aj.setting.${namespace}.${name}`}
+			className="setting_label"
+			style={{ width: 'calc(90% - 60px)' }}
+		>
 			<div className="setting_name">
 				{!isValid && (
 					<>
@@ -325,7 +335,7 @@ const SettingInput = p => {
 					</>
 				)}
 				{SettingDef.title}
-				{SettingDef.global && (
+				{/* {SettingDef.global && (
 					<span
 						style={{
 							opacity: 0.8,
@@ -344,7 +354,7 @@ const SettingInput = p => {
 					>
 						{tl('animatedJava.settings.isOptional')}
 					</span>
-				)}
+				)} */}
 			</div>
 			{!isValid && errors && (
 				<div>
@@ -407,7 +417,7 @@ const SettingInput = p => {
 							}
 						}}
 						className="dark_bordered"
-						style={{ width: 'calc(100% - 18px)' }}
+						style={{ width: 'calc(90%)', marginLeft: '9px' }}
 					/>
 				</>
 			)
