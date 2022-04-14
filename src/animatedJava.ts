@@ -10,9 +10,10 @@ import { registerSettingRenderer } from './ui/dialogs/settings'
 import './ui/mods/boneConfig'
 import './ui/variants'
 import './compileLangMC'
-import './exporters/vanillaStatue'
-import './exporters/vanillaAnimation'
-import './exporters/rawAnimation'
+// import './exporters/vanillaStatue'
+// import './exporters/vanillaAnimation'
+// import './exporters/rawAnimation'
+import './exporters/vanillaAnimation/entry'
 import './bbmods/modelFormatMod'
 import './bbmods/faceTint'
 import './bbmods/animator20fps'
@@ -41,7 +42,7 @@ const ANIMATED_JAVA = {
 	registerSettingRenderer,
 	exportInProgress: false,
 	get variants() {
-		return store.get('states')
+		return store.get('variants')
 	},
 	logging: false, //enable logging in production
 	// PromiseWrapper<T>(promise: Promise<T>): Promise<T> {
@@ -83,7 +84,8 @@ Blockbench.events['animated-java-ready'].length = 0
 
 export interface SettingDescriptor {
 	readonly value: any
-	error?: string
+	errors?: string | string[]
+	warnings?: string[]
 	isValid?: boolean
 	setting: any
 	event: 'get' | 'set' | 'update' | 'dummy'
@@ -113,6 +115,68 @@ export interface ExportData {
 	variantTouchedModels: variantTouchedModels
 	animations: Animations
 	scaleModels: ScaleModels
+}
+
+interface ExporterSetting {
+	title: string
+	description: string
+	type: string
+	default: any
+	onUpdate: (d: SettingDescriptor) => SettingDescriptor
+	isVisible?: (settings: GlobalSettings) => boolean
+	dependencies?: string[]
+	groupName?: string
+	group?: string
+}
+
+interface CheckboxExporterSetting extends ExporterSetting {
+	type: 'checkbox'
+	default: boolean
+	onUpdate: (d: SettingDescriptor & { value: boolean }) => SettingDescriptor
+}
+
+interface TextExporterSetting extends ExporterSetting {
+	type: 'text'
+	default: string
+	onUpdate: (d: SettingDescriptor & { value: string }) => SettingDescriptor
+}
+
+interface NumberExporterSetting extends ExporterSetting {
+	type: 'number'
+	default: number
+	onUpdate: (d: SettingDescriptor & { value: number }) => SettingDescriptor
+}
+
+interface SelectExporterSetting<T extends { [key: string | number]: any }> extends ExporterSetting {
+	type: 'select'
+	options: T
+	default: keyof T
+	onUpdate: (d: SettingDescriptor & { value: T }) => SettingDescriptor
+}
+
+interface FilepathExporterSetting extends ExporterSetting {
+	type: 'filepath'
+	default: string
+	props: {
+		target: 'file' | 'folder'
+		dialogOpts: {
+			defaultPath?: string
+			promptToCreate?: boolean
+			properties?: any[]
+		}
+	}
+	onUpdate: (d: SettingDescriptor & { value: string }) => SettingDescriptor
+}
+
+export interface ExporterOptions {
+	settings: {
+		[key: string]:
+			| CheckboxExporterSetting
+			| TextExporterSetting
+			| NumberExporterSetting
+			| FilepathExporterSetting
+			| SelectExporterSetting<any>
+	}
 }
 
 export interface GlobalSettings {

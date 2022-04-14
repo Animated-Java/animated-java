@@ -21,7 +21,7 @@ bus.on(EVENTS.LIFECYCLE.LOAD, () => {
 	)
 	MenuBar.update()
 	Blockbench.on('new_project', () => {
-		store.set('states', { default: {} })
+		store.set('variants', { default: {} })
 		settings.update(DefaultSettings)
 		bus.dispatch(EVENTS.LIFECYCLE.LOAD_MODEL, {})
 	})

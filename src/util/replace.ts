@@ -24,14 +24,14 @@ export function fixIndent(str: string[]) {
 		.map((_: any) => _.trim())
 		.filter(Boolean)
 		.map((_: any) => {
+			let end
 			if (_.startsWith('}')) {
+				end = true
 				indent--
 			}
 			let v = '\t'.repeat(indent) + _
-			if (_.endsWith('{')) {
-				indent++
-			}
-			return v
+			if (_.endsWith('{')) indent++
+			return v + (end ? '\n' : '')
 		})
 		.join('\n')
 }

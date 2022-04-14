@@ -2,7 +2,7 @@
 animatedJava: Animated Java
 animatedJava.menubar.export.name: Export Model
 
-panel.states: Modelvarianten
+panel.variants: Modelvarianten
 
 animatedJava.settings.global: '(Globaal)'
 animatedJava.settings.optional: '(Optioneel)'

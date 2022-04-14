@@ -228,7 +228,7 @@ async function renderAnimation(options) {
 
 	if (options.generate_static_animation) {
 		static_animation = new Animation({
-			name: 'animatedJava.staticSnimation',
+			name: 'animatedJava.staticAnimation',
 			snapping: 20,
 			length: 0,
 		}).add(false)

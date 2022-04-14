@@ -1,7 +1,14 @@
 import * as THREE from 'three'
+import type * as aj from '../animatedJava'
+import type { Store } from '../util/store'
+interface AnimatedJavaGlobal {
+	settings: aj.GlobalSettings
+	store: Store
+}
+
 declare global {
 	var AJ: any
-	const ANIMATED_JAVA: any
+	const ANIMATED_JAVA: AnimatedJavaGlobal
 	function autoStringify(obj: any): string
 	var THREE: typeof import('three')
 	var konsole: Console

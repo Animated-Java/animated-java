@@ -327,12 +327,12 @@ animatedJava:
                     title: Scoreboard Objectives
 
             settings:
-                rootEntityType:
-                    title: Root Entity Type
+                rootEntity:
+                    title: Root Entity
                     description:
-                        - The entity type to use as the root entity for the model
-                    errors:
-                        invalidEntity: Chosen entity does not exist!
+                        - The entity to use as the root entity for the model
+                    warnings:
+                        unknownEntity: Entity does not exist in vanilla Minecraft!
 
                 rootEntityNbt:
                     title: Root Entity NBT
@@ -494,3 +494,110 @@ animatedJava:
                     title: Animation Loop Mode Scoreboard
                     description:
                         - The name of the scoreboard objective used to control the looping behaviour of each animation
+
+vanillaAnimation:
+  title: Vanilla Animation Exporter
+
+  dialogs:
+    errors:
+      mcFilePathNotDefined:
+        title: .mc File Path Empty
+        body:
+          - Please make sure you've configured the .mc file path in your settings.
+
+  settings:
+
+    groups:
+      advanced:
+        title: Advanced
+
+    generic:
+      errors:
+        emptyValue: The value of this setting cannot be left empty!
+
+    rootEntity:
+      title: Root Entity
+      description:
+        - The entity that is used to control the rig.
+      warnings:
+        unknownEntity: Entity does not exist in vanilla Minecraft!
+
+    rootEntityNbt:
+      title: Root Entity NBT
+      description:
+        - Custom NBT data for the root entity.
+        - Some values may be overwritten or modified by AnimatedJava internally.
+      errors:
+        invalidNbt: Invalid NBT! %error
+
+    defaultToMarker:
+      title: Default to Marker
+      description:
+        - If checked, all exported armorstands will have their Marker flag default to true.
+        - This setting can be overwritten on individual bones by modifying their NBT though the Bone Config.
+
+    exportFormat:
+      title: Export Format
+      description:
+        - What data format to export.
+      options:
+        mcbuild: MCBuild
+        vanilla: Vanilla
+
+    mcFilePath:
+      title: .mc File
+      description:
+        - The location of the exported .mc file.
+      errors:
+        fileNameMustMatchProjectName: The file should be named %projectName.mc!
+
+    datapackPath:
+      title: Data Pack Path
+      description:
+        - The location of the exported data pack
+
+
+    exportMethod:
+      title: Export Method
+      description:
+        - What command technology to use when exporting the data pack.
+      options:
+        bakedScoreboardTree: Baked Scoreboard Tree
+        dynamicScoreboardMath: Dynamic Scoreboard Math
+
+    selectionMethod:
+      title: Selection Method
+      description:
+        - What command technology to use when selecting the model's bones.
+        - Scoreboard ID allows multiple copies of the model to co-exist in the world.
+        - UUID is much faster, but only one copy of the model can exist at a time.
+      options:
+        scoreboardId: Scoreboard ID
+        uuid: UUID
+
+    calculateMaximumDistance:
+      title: Calculate Maximum Distance Automatically
+      description:
+        - When enabled AnimatedJava will automatically find the best maximum distance for it's internal entity selectors.
+
+    maximumDistanceSafezone:
+      title: Maximum Distance Safezone
+      description:
+        - How much extra distance to add to the calculated maximum distance.
+      warnings:
+        largeDistance: Larger distances can negatively effect performance!
+      errors:
+        minimumValue: Value must be more than 0!
+
+    manualMaximumDistance:
+      title: Manual Maximum Distance
+      description:
+        - How far from the Root Entity to search for bone entities.
+        - Make sure this is large enough to find even the furthest bone on your model!
+      warnings:
+        largeDistance: Larger distances can negatively effect performance!
+      errors:
+        minimumValue: Value must be more than 0!
+
+
+

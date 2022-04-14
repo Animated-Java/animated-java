@@ -21,7 +21,7 @@
       "minecraftVersion": "1.16.x",
       "advanceOptionsEnabled": false
     },
-    "states": {
+    "variants": {
       "default": {}
     }
   },

@@ -309,7 +309,7 @@ async function computeModels(cubeData) {
 
 export async function computeVariantModels(models, scaleModels, variantOverrides) {
 	console.groupCollapsed('Compute Variant Models')
-	const variants = store.get('states')
+	const variants = store.get('variants')
 	const variantModels = {}
 	const variantTouchedModels = {}
 
@@ -542,7 +542,7 @@ export function computeScaleModels(bones) {
 export function computeVariantTextureOverrides(models) {
 	console.groupCollapsed('Compute Variant Model Overrides')
 
-	const variants = store.get('states')
+	const variants = store.get('variants')
 	const variantModels = {}
 
 	let transparentTexturePath

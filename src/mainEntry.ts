@@ -296,7 +296,7 @@ MenuBar.addAction(
 )
 MenuBar.update()
 const cb = () => {
-	store.set('states', { default: {} })
+	store.set('variants', { default: {} })
 	settings.update(DefaultSettings, true)
 	//@ts-ignore;
 	Project.UUID = globalThis.guid()

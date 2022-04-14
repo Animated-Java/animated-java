@@ -23,7 +23,7 @@ function rawExport(exportData: aj.ExportData) {
 		throw new CustomError(
 			'animatedJava.exporters.rawAnimation.dialogs.errors.outputJsonPathUndefined.title',
 			{
-				intentional: true,
+				showDialog: true,
 				dialog: {
 					id: 'animatedJava.exporters.rawAnimation.dialogs.errors.outputJsonPathUndefined',
 					title: tl(
@@ -76,7 +76,7 @@ const Exporter = (AJ: any) => {
 				onUpdate(d: aj.SettingDescriptor) {
 					if (d.value === '') {
 						d.isValid = false
-						d.error = genericEmptySettingText
+						d.errors = genericEmptySettingText
 					}
 					return d
 				},

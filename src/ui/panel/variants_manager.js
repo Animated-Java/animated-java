@@ -14,8 +14,8 @@ import { css } from '../../util/css'
 css(styles)
 css(dropdownCss)
 bus.on(events.LIFECYCLE.CLEANUP, () => {
-	Interface.Panels?.aj_states?.delete()
-	delete Interface.Panels.aj_states
+	Interface.Panels?.aj_variants?.delete()
+	delete Interface.Panels.aj_variants
 })
 
 function updateDisplay(textureState) {
@@ -118,8 +118,8 @@ function StatePanel() {
 	const [height, setHeight] = useState(0)
 	const [dialogVisible, setDialogVisible] = useState(false)
 	const List = useRef()
-	const [states, setStates] = useState(
-		store.get('states') || {
+	const [variants, setVariants] = useState(
+		store.get('variants') || {
 			default: {},
 		}
 	)
@@ -132,24 +132,24 @@ function StatePanel() {
 		}
 	}, [List])
 	useEffect(() => {
-		console.groupCollapsed('States Update')
+		console.groupCollapsed('Variants Update')
 
-		store.set('states', states)
-		console.log('States', states)
+		store.set('variants', variants)
+		console.log('Variants', variants)
 
-		console.groupEnd('States Update')
-	}, [states])
+		console.groupEnd('Variants Update')
+	}, [variants])
 	const updateStateViewOnChange = React.useCallback(() => {
-		const _states = Object.keys(states).sort((a, b) => a.localeCompare(b))
+		const _variants = Object.keys(variants).sort((a, b) => a.localeCompare(b))
 		if (selectedIndex !== false) {
 			updateDisplay({})
-			updateDisplay(states[_states[selectedIndex]])
+			updateDisplay(variants[_variants[selectedIndex]])
 		}
-	}, [selectedIndex, states])
+	}, [selectedIndex, variants])
 	useEffect(() => {
-		bus.on(events.LIFECYCLE.LOAD_MODEL, () => setStates(store.get('states')))
-		bus.on('states_ui_update', () => {
-			setStates(store.get('states'))
+		bus.on(events.LIFECYCLE.LOAD_MODEL, () => setVariants(store.get('variants')))
+		bus.on('variants_ui_update', () => {
+			setVariants(store.get('variants'))
 			updateStateViewOnChange()
 		})
 	}, [])
@@ -308,8 +308,8 @@ function StatePanel() {
 									do {
 										i++
 										nextName = 'state_' + i
-									} while (Object.keys(states).includes(nextName))
-									setStates({ ...states, [nextName]: {} })
+									} while (Object.keys(variants).includes(nextName))
+									setVariants({ ...variants, [nextName]: {} })
 								}}
 							>
 								<div className="tooltip" style={{ marginLeft: '0px' }}>
@@ -334,11 +334,11 @@ function StatePanel() {
 							overflowY: 'scroll',
 						}}
 					>
-						{Object.keys(states)
+						{Object.keys(variants)
 							.sort((a, b) => a.localeCompare(b))
 							.map(
 								(state, index) =>
-									states[state] && (
+									variants[state] && (
 										<li key={state} className="animation_file">
 											<div className="animation_file_head">
 												<label title="StateName">
@@ -352,15 +352,15 @@ function StatePanel() {
 																!/[^a-z0-9\._]/.test(
 																	e.target.value
 																) &&
-																!states[e.target.value]
+																!variants[e.target.value]
 															) {
 																const copy = {
-																	...states,
+																	...variants,
 																}
 																copy[e.target.value] = copy[state]
 																delete copy[state]
 																//console.log(`changed name from '${state}' to '${e.target.value}'`)
-																setStates(copy)
+																setVariants(copy)
 															} else {
 																Blockbench.showQuickMessage(
 																	'name invalid or already in use'
@@ -378,7 +378,7 @@ function StatePanel() {
 															updateDisplay({})
 														} else {
 															setSelectedIndex(index)
-															updateDisplay(states[state])
+															updateDisplay(variants[state])
 														}
 													}}
 												>
@@ -393,7 +393,7 @@ function StatePanel() {
 												<div
 													className="in_list_button"
 													onClick={() => {
-														setEditState(states[state])
+														setEditState(variants[state])
 														setSelectedIndex(index)
 														setOverlayVisible(state)
 														setDialogVisible(true)
@@ -401,15 +401,15 @@ function StatePanel() {
 												>
 													<i className="material-icons">edit</i>
 												</div>
-												{Object.keys(states).length > 1 && (
+												{Object.keys(variants).length > 1 && (
 													<div
 														className="in_list_button"
 														onClick={() => {
 															const copy = {
-																...states,
+																...variants,
 															}
 															delete copy[state]
-															setStates(copy)
+															setVariants(copy)
 														}}
 													>
 														<i className="material-icons">delete</i>
@@ -425,7 +425,7 @@ function StatePanel() {
 		</div>
 	)
 }
-Interface.Panels.aj_states = new Panel({
+Interface.Panels.aj_variants = new Panel({
 	id: 'animated-java-variants-manager',
 	icon: 'movie',
 	name: intl.tl('animatedJava.panels.variants.title'),
@@ -446,13 +446,13 @@ bus.on(LIFECYCLE.LOAD, () => {
 })
 
 bus.on('texture_will_be_removed', texture => {
-	const states = store.get('states')
-	console.log(states)
+	const variants = store.get('variants')
+	console.log(variants)
 	let uuid = texture.uuid
 	let updated = false
-	let updated_states = []
-	for (const state_name in states) {
-		const sdat = states[state_name]
+	let updated_variants = []
+	for (const state_name in variants) {
+		const sdat = variants[state_name]
 		let has_update = false
 		for (const key in sdat) {
 			if (key === uuid || sdat[key] === uuid) {
@@ -460,14 +460,14 @@ bus.on('texture_will_be_removed', texture => {
 				has_update = true
 			}
 		}
-		if (has_update) updated_states.push(state_name)
+		if (has_update) updated_variants.push(state_name)
 		updated = updated || has_update
 	}
-	if (updated_states.length) {
-		Blockbench.showQuickMessage(`updated ${updated_states.length} states (${updated_states})`)
+	if (updated_variants.length) {
+		Blockbench.showQuickMessage(`updated ${updated_variants.length} variants (${updated_variants})`)
 	}
-	store.set('states', { ...states })
-	bus.dispatch('states_ui_update', {})
+	store.set('variants', { ...variants })
+	bus.dispatch('variants_ui_update', {})
 })
 function VariantsDataBrowser() {
 	return <h1>hi, configuration goes here?</h1>

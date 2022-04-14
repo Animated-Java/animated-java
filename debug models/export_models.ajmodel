@@ -19,7 +19,7 @@
         "mcb_file_path": "C:\\Users\\train\\Documents\\My Projects\\animated-java-experimental\\debug_datapack\\src\\barrel.mc"
       }
     },
-    "states": {
+    "variants": {
       "default": {},
       "state_1": {
         "02fb65d8-edf9-3773-13e8-a98ba1ecabd1": "0ba8b035-fbaf-f252-736b-39eb3d9d833f"

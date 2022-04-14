@@ -87,7 +87,7 @@ const codec = new Codec('ajmodel', {
 				model_format: Format.id,
 				box_uv: Project.box_uv,
 				settings: settings.toObject('project'),
-				variants: store.get('states'),
+				variants: store.get('variants'),
 				uuid: Project.UUID,
 			},
 		}
@@ -209,10 +209,10 @@ const codec = new Codec('ajmodel', {
 			Project.UUID = guid()
 		}
 		if (model.meta.variants) {
-			store.set('states', model.meta.variants)
-			console.log('Got states from model file')
+			store.set('variants', model.meta.variants)
+			console.log('Got variants from model file')
 		} else {
-			store.set('states', { default: {} })
+			store.set('variants', { default: {} })
 		}
 		if (model.meta.model_format) {
 			var format = Formats[model.meta.model_format] || Formats.free

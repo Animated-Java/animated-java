@@ -349,7 +349,7 @@ async function exportMCFile(
 ) {
 	if (!exporterSettings.mcbFilePath) {
 		throw new CustomError('MCB File Path Undefined', {
-			intentional: true,
+			showDialog: true,
 			dialog: {
 				id: 'animatedJava.exporters.generic.dialogs.errors.mcbFilePathNotDefined',
 				title: tl(
@@ -378,7 +378,7 @@ async function exportDataPack(
 	if (!exporterSettings.dataPackPath) {
 		console.log(exporterSettings.dataPackPath)
 		throw new CustomError('Data Pack Folder Undefined', {
-			intentional: true,
+			showDialog: true,
 			dialog: {
 				id: 'animatedJava.exporters.generic.dialogs.errors.dataPackPathNotDefined',
 				title: tl(
@@ -528,14 +528,14 @@ function validateFormattedStringSetting(required: string[]) {
 	return (d: aj.SettingDescriptor) => {
 		if (d.value === '') {
 			d.isValid = false
-			d.error = genericEmptySettingText
+			d.errors = genericEmptySettingText
 			return d
 		}
 		if (required.length) {
 			const notFound = required.find((v: string) => !d.value.includes(v))
 			if (notFound) {
 				d.isValid = false
-				d.error = format(tl('animatedJava.settings.generic.errors.missingFormatString'), {
+				d.errors = format(tl('animatedJava.settings.generic.errors.missingFormatString'), {
 					notFound,
 				})
 			}
@@ -560,13 +560,13 @@ const Exporter = (AJ: any) => {
 					if (d.value != '') {
 						if (!Entities.isEntity(d.value)) {
 							d.isValid = false
-							d.error = tl(
+							d.errors = tl(
 								'animatedJava.exporters.generic.settings.rootEntityType.errors.invalidEntity'
 							)
 						}
 					} else {
 						d.isValid = false
-						d.error = genericEmptySettingText
+						d.errors = genericEmptySettingText
 					}
 					return d
 				},
@@ -584,13 +584,13 @@ const Exporter = (AJ: any) => {
 							SNBT.parse(d.value)
 						} catch (e) {
 							d.isValid = false
-							d.error = tl(
+							d.errors = tl(
 								'animatedJava.exporters.generic.settings.rootEntityType.errors.invalidNbt'
 							)
 						}
 					} else {
 						d.isValid = false
-						d.error = genericEmptySettingText
+						d.errors = genericEmptySettingText
 					}
 					return d
 				},
@@ -668,7 +668,7 @@ const Exporter = (AJ: any) => {
 				onUpdate(d: aj.SettingDescriptor) {
 					if (d.value === '') {
 						d.isValid = false
-						d.error = genericEmptySettingText
+						d.errors = genericEmptySettingText
 					}
 					return d
 				},
@@ -716,7 +716,7 @@ const Exporter = (AJ: any) => {
 						const b = p.parse()
 						if (b.base !== `${AJ.settings.animatedJava.projectName}.mc`) {
 							d.isValid = false
-							d.error = format(
+							d.errors = format(
 								tl(
 									'animatedJava.exporters.generic.settings.mcbFilePath.errors.mustBeNamedAfterProject'
 								),
@@ -727,7 +727,7 @@ const Exporter = (AJ: any) => {
 						}
 					} else {
 						d.isValid = false
-						d.error = genericEmptySettingText
+						d.errors = genericEmptySettingText
 					}
 					return d
 				},
@@ -782,7 +782,7 @@ const Exporter = (AJ: any) => {
 				onUpdate(d: aj.SettingDescriptor) {
 					if (d.value === '') {
 						d.isValid = false
-						d.error = genericEmptySettingText
+						d.errors = genericEmptySettingText
 					}
 					return d
 				},
