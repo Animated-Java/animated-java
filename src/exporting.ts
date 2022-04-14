@@ -52,7 +52,7 @@ async function exportRigModels(
 						d.hide()
 						reject(
 							new CustomError('Rig Folder Unused -> User Cancelled Export Process', {
-								intentional: true,
+								showDialog: true,
 								silent: true,
 							})
 						)
@@ -98,7 +98,7 @@ async function exportRigModels(
 					reject(
 						new CustomError(
 							'Rig Folder Already Occupied -> User Cancelled Export Process',
-							{ intentional: true, silent: true }
+							{ showDialog: true, silent: true }
 						)
 					)
 				},
@@ -210,7 +210,7 @@ interface PredicateModel {
 
 function throwPredicateMergingError(reason: string) {
 	throw new CustomError('Predicate Missing Overrides List', {
-		intentional: true,
+		showDialog: true,
 		dialog: {
 			id: 'animatedJava.predicateMergeFailed',
 			title: tl('animatedJava.dialogs.errors.predicateMergeFailed.title', {

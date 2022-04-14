@@ -26,7 +26,6 @@
 		"@actions/core": "^1.6.0",
 		"@types/node": "^17.0.5",
 		"@types/three": "^0.135.0",
-		"blockbench-types": "^4.0.0",
 		"firebase": "^9.6.1",
 		"husky": "^7.0.4",
 		"js-yaml": "^4.1.0",

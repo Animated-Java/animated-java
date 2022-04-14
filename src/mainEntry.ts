@@ -40,7 +40,7 @@ const errorMessages = [
 	`Wow, Epic fail.`,
 	`Should'a seen that one comming...`,
 	`It's all Jannis' fault! :(`,
-	`Snaviewavie did an oopsie poopsie xD`,
+	`Snaviewavie did an oopsie poopsie x3`,
 	`We to a little trolling`,
 	`execute run execute run execute run execute run say This is fine.`,
 	`This is why we can't have nice things. :(`,
@@ -71,12 +71,7 @@ function getRandomErrorMessage() {
 	return errorMessages[index]
 }
 
-function showUnknownErrorDialog(e: CustomError | any) {
-	// console.log(e.options)
-	if (e.options?.silent) {
-		console.log(e.options.message)
-		return
-	}
+function showErrorDialog(e: CustomError | any) {
 	new Dialog(
 		Object.assign(
 			{
@@ -108,14 +103,17 @@ function showUnknownErrorDialog(e: CustomError | any) {
 function onBuildError(e: any) {
 	ANIMATED_JAVA.exportInProgress = false
 	Blockbench.setProgress(0)
-	if (e instanceof CustomError && e.options.intentional && e.options.silent) {
-		// @ts-ignore
-		Blockbench.showQuickMessage(tl('animatedJava.popups.exportCancelled'))
-		console.log('Intentional Error:', e.message)
-		throw e
+	if (e instanceof CustomError) {
+		if (e.options.silent) {
+			Blockbench.showQuickMessage(tl('animatedJava.popups.exportCancelled'))
+			console.error('Silent Error:', e.stack)
+			throw e
+		}
+		console.error('Dialog Error:')
+		showErrorDialog(e)
 	} else {
-		console.log('Unknown Error:')
-		showUnknownErrorDialog(e)
+		console.error('Unexpected Error:')
+		showErrorDialog(e)
 	}
 }
 
@@ -138,7 +136,7 @@ export const BuildModel = (callback: any, options: any) => {
 
 function throwSkillIssue() {
 	throw new CustomError('Skill Issue', {
-		intentional: true,
+		showDialog: true,
 		dialog: {
 			id: 'animatedJava.dialogs.errors.skillIssue',
 			title: 'Smells like, Skill Issue',
@@ -157,7 +155,7 @@ async function computeAnimationData(callback: (data: any) => any, options: any) 
 
 	if (!settings.animatedJava.predicateFilePath) {
 		throw new CustomError('Predicate File Path Undefined Error', {
-			intentional: true,
+			showDialog: true,
 			dialog: {
 				id: 'animatedJava.dialogs.errors.predicateFilePathUndefined',
 				title: tl('animatedJava.dialogs.errors.predicateFilePathUndefined.title'),
@@ -168,7 +166,7 @@ async function computeAnimationData(callback: (data: any) => any, options: any) 
 	}
 	if (!settings.animatedJava.rigModelsExportFolder) {
 		throw new CustomError('Rig Model Exporter Folder Undefined', {
-			intentional: true,
+			showDialog: true,
 			dialog: {
 				id: 'animatedJava.dialogs.errors.rigModelsExportFolderUndefined',
 				title: tl('animatedJava.dialogs.errors.rigModelsExportFolderUndefined.title'),

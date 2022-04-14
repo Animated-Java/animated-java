@@ -448,13 +448,6 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
-"@types/jquery@^3.5.4":
-  version "3.5.11"
-  resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-3.5.11.tgz#fb2a255e8376779e89a10ddd04bfc1a93398f861"
-  integrity sha512-lYZGdfOtUa0XFjIATQgiogqeTY5PNNMOmp3Jq48ghmJALL8t/IqABRqlEwdHfuUdA8iIE1uGD1HoI4a7Tiy6OA==
-  dependencies:
-    "@types/sizzle" "*"
-
 "@types/long@^4.0.1":
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@types/long/-/long-4.0.1.tgz#459c65fa1867dafe6a8f322c4c51695663cc55e9"
@@ -469,11 +462,6 @@
   version "17.0.5"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.5.tgz#57ca67ec4e57ad9e4ef5a6bab48a15387a1c83e0"
   integrity sha512-w3mrvNXLeDYV1GKTZorGJQivK6XLCoGwpnyJFbJVK/aTBQUxOCaa/GlFAAN3OTDFcb7h5tiFG+YXCO2By+riZw==
-
-"@types/sizzle@*":
-  version "2.3.3"
-  resolved "https://registry.yarnpkg.com/@types/sizzle/-/sizzle-2.3.3.tgz#ff5e2f1902969d305225a047c8a0fd5c915cebef"
-  integrity sha512-JYM8x9EGF163bEyhdJBpR2QX1R5naCJHC8ucJylJ3w9/CVBaskdQ8WqBf8MmQrd1kRvp/a4TS8HJ+bxzR7ZJYQ==
 
 "@types/three@^0.135.0":
   version "0.135.0"
@@ -506,16 +494,6 @@ balanced-match@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.2.tgz#e83e3a7e3f300b34cb9d87f615fa0cbf357690ee"
   integrity sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==
-
-blockbench-types@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/blockbench-types/-/blockbench-types-4.0.0.tgz#fa6d55e6c54c6f8ef439258e08e856a42bfc5f0e"
-  integrity sha512-NF231gxXWFF8J8w9Nk/kbfUnvVt2tMkHXyTdWux8H7CO+m+uFjkrg2QSMObdJu79iM+5U5Xq/8zFx/6KgYsE8Q==
-  dependencies:
-    "@types/jquery" "^3.5.4"
-    three "^0.129.0"
-    vue "^2.6.14"
-    wintersky "^1.0.2"
 
 brace-expansion@^1.1.7:
   version "1.1.11"
@@ -891,11 +869,6 @@ minimatch@^3.0.4:
   dependencies:
     brace-expansion "^1.1.7"
 
-molangjs@^1.4.0:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/molangjs/-/molangjs-1.4.1.tgz#e0e1ed546e74353b94351108f1f51d136ffb35c6"
-  integrity sha512-k8RAqIJC44orQ2IDzS1HTl/RIUiOJcBX4XaSVmLQPoGeAfoUr8e/bmipP8VYdr8Oy4dmmnWs7eF9aWxWs3nKjQ==
-
 node-fetch@2.6.5:
   version "2.6.5"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.5.tgz#42735537d7f080a7e5f78b6c549b7146be1742fd"
@@ -1078,21 +1051,6 @@ struct-packer@^1.0.6:
   resolved "https://registry.yarnpkg.com/struct-packer/-/struct-packer-1.0.6.tgz#d5a29c0e4a186f385f039a2311edd0e401e1d4a8"
   integrity sha512-UJq3PQXIcA2bRJPzLDx3hzfps1z79acLw+sV+L5dAJPbcNuwNP49QsOuiWx0VXicycFKXqke+OnJyV023uW+8w==
 
-three@^0.127.0:
-  version "0.127.0"
-  resolved "https://registry.yarnpkg.com/three/-/three-0.127.0.tgz#c463f4d41b2c735dcf8e9e51a388815e80cd3791"
-  integrity sha512-wtgrn+mhYUbobxT7QN3GPdu3SRpSBQvwY6uOzLChWS7QE//f7paDU/+wlzbg+ngeIvBBqjBHSRuywTh8A99Jng==
-
-three@^0.129.0:
-  version "0.129.0"
-  resolved "https://registry.yarnpkg.com/three/-/three-0.129.0.tgz#f5e530bbc96eac5d5b4749cb5da886ef0d42f554"
-  integrity sha512-wiWio1yVRg2Oj6WEWsTHQo5eSzYpEwSBtPSi3OofNpvFbf26HFfb9kw4FZJNjII4qxzp0b1xLB11+tKkBGB1ZA==
-
-tinycolor2@^1.4.2:
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/tinycolor2/-/tinycolor2-1.4.2.tgz#3f6a4d1071ad07676d7fa472e1fac40a719d8803"
-  integrity sha512-vJhccZPs965sV/L2sU4oRQVAos0pQXwsvTLkWYdqJ+a8Q5kPFzJTuOFwy7UniPli44NKQGAglksjvOcpo95aZA==
-
 tmp@^0.2.1:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/tmp/-/tmp-0.2.1.tgz#8457fc3037dcf4719c251367a1af6500ee1ccf14"
@@ -1125,11 +1083,6 @@ util-deprecate@~1.0.1:
   resolved "https://registry.yarnpkg.com/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
   integrity sha1-RQ1Nyfpw3nMnYvvS1KKJgUGaDM8=
 
-vue@^2.6.14:
-  version "2.6.14"
-  resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.14.tgz#e51aa5250250d569a3fbad3a8a5a687d6036e235"
-  integrity sha512-x2284lgYvjOMj3Za7kqzRcUSxBboHqtgRE2zlos1qWaOye5yUmHn42LB1250NJBLRwEcdrB0JRwyPTEPhfQjiQ==
-
 webidl-conversions@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-3.0.1.tgz#24534275e2a7bc6be7bc86611cc16ae0a5654871"
@@ -1161,15 +1114,6 @@ whatwg-url@^5.0.0:
   dependencies:
     tr46 "~0.0.3"
     webidl-conversions "^3.0.0"
-
-wintersky@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/wintersky/-/wintersky-1.0.2.tgz#75b19be7a28ec9ea74c2490d99c0e8bbb9deaf65"
-  integrity sha512-ZZgjWYQ4gUXgsCA48Ajk+vRMbXMQ6djPdQkyYP84v4sJ50Yc5Q3hELsROaO5cCrWVYLl1Y/7Chabbpl+nss0jg==
-  dependencies:
-    molangjs "^1.4.0"
-    three "^0.127.0"
-    tinycolor2 "^1.4.2"
 
 wrap-ansi@^7.0.0:
   version "7.0.0"

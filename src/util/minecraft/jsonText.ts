@@ -17,6 +17,8 @@ type JsonTextColor =
 	| 'gray'
 	| 'dark_gray'
 	| 'black'
+	| `#${string}`
+
 
 type JsonTextComponent =
 	| string
