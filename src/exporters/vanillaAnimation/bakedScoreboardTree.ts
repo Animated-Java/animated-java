@@ -1,6 +1,5 @@
 import * as aj from '../../animatedJava'
 import * as mc from '../../util/minecraft'
-import { JsonText, Scoreboard, ScoreboardObjective } from '../../util/minecraft'
 import { fixIndent, format, safeFunctionName } from '../../util/replace'
 import { VanillaAnimation } from './entry'
 
@@ -15,8 +14,8 @@ export function generate(): string {
 	const storageKey = 'aj.%projectName:ram'
 	const scoreboard = new mc.Scoreboard(
 		{
-			id: new mc.ScoreboardObjective('aj.id', 'dummy', new JsonText({ text: '%name', color: '#00aced' })),
-			internal: new mc.ScoreboardObjective('aj.i', 'dummy', new JsonText({ text: '%name', color: '#00aced' })),
+			id: new mc.ScoreboardObjective('aj.id', 'dummy', new mc.JsonText({ text: '%name', color: '#00aced' })),
+			internal: new mc.ScoreboardObjective('aj.i', 'dummy', new mc.JsonText({ text: '%name', color: '#00aced' })),
 		},
 		{
 			model: 'aj.%projectName',
@@ -27,8 +26,8 @@ export function generate(): string {
 	)
 	// TODO add scoreboard config options
 	for (const [_, animation] of Object.entries(animations)) {
-		scoreboard.addObj(`${animation.name}Frame`, new ScoreboardObjective(`aj.%projectName.anim.${animation.name}.frame`, 'dummy', new JsonText({ text: '%name', color: '#00aced' })))
-		scoreboard.addObj(`${animation.name}LoopMode`, new ScoreboardObjective(`aj.%projectName.anim.${animation.name}.loopMode`, 'dummy', new JsonText({ text: '%name', color: '#00aced' })))
+		scoreboard.addObj(`${animation.name}Frame`, new mc.ScoreboardObjective(`aj.%projectName.anim.${animation.name}.frame`, 'dummy', new mc.JsonText({ text: '%name', color: '#00aced' })))
+		scoreboard.addObj(`${animation.name}LoopMode`, new mc.ScoreboardObjective(`aj.%projectName.anim.${animation.name}.loopMode`, 'dummy', new mc.JsonText({ text: '%name', color: '#00aced' })))
 	}
 
 	// TODO make this include custom bone entity types
@@ -40,7 +39,7 @@ export function generate(): string {
 	{
 		// install function
 		// TODO Make this message prettier!
-		const manualInstallMessage = new JsonText({
+		const manualInstallMessage = new mc.JsonText({
 			text: 'AJ automatically handles installation. Running this function manually is not recommended.',
 		})
 

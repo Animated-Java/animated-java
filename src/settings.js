@@ -67,26 +67,16 @@ export const DefaultSettings = {
 				return d
 			},
 		},
-		modelScalingMode: {
+		enableScaling: {
 			get title() {
-				return tl('animatedJava.settings.modelScalingMode.title')
+				return tl('animatedJava.settings.enableScaling.title')
 			},
 			get description() {
-				return tl('animatedJava.settings.modelScalingMode.description')
+				return tl('animatedJava.settings.enableScaling.description')
 			},
-			type: 'select',
-			default: '3x3x3',
-			get options() {
-				return {
-					'3x3x3': tl('animatedJava.settings.modelScalingMode.options.3x3x3'),
-					'7x7x7': tl('animatedJava.settings.modelScalingMode.options.7x7x7'),
-				}
-			},
+			type: 'checkbox',
+			default: false,
 			onUpdate(d) {
-				if (!d.value) {
-					d.isValid = false
-					d.error = genericEmptyErrorText()
-				}
 				return d
 			},
 		},

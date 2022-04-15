@@ -1,14 +1,14 @@
 {
   "meta": {
     "format_version": "0.0",
-    "creation_time": 1649960862,
+    "creation_time": 1650033714,
     "model_format": "animated_java/ajmodel",
     "box_uv": false,
     "settings": {
       "animatedJava": {
         "projectName": "goober",
         "exporter": "vanillaAnimation",
-        "modelScalingMode": "3x3x3",
+        "enableScaling": false,
         "verbose": true,
         "rigItem": "minecraft:white_dye",
         "rigModelsExportFolder": "D:\\github-repos\\mcworld-aj-dev\\resources\\assets\\animated_java\\models\\rig\\goober",
