@@ -804,11 +804,14 @@ class SNBTParser {
 	}
 	parseNumber(): any {
 		let int = this.reader.readNumber()
+		if (!/\d+/.test(int)) int = '0'
 		let dec
 		if (this.reader.peek(1).toLowerCase() === '.') {
 			this.reader.skip(1)
 			dec = this.reader.readNumber()
+			if (!/\d+/.test(dec)) dec = '0'
 		}
+
 		if (this.reader.peek(1).toLowerCase() === 'f') {
 			this.reader.skip(1)
 			return SNBT.Float(parseFloat(int + '.' + dec))
@@ -819,15 +822,15 @@ class SNBTParser {
 		}
 		if (this.reader.peek(1).toLowerCase() === 'l') {
 			this.reader.skip(1)
-			return SNBT.Long(parseInt(int + '.' + dec))
+			return SNBT.Long(parseInt(int))
 		}
 		if (this.reader.peek(1).toLowerCase() === 's') {
 			this.reader.skip(1)
-			return SNBT.Short(parseInt(int + '.' + dec))
+			return SNBT.Short(parseInt(int))
 		}
 		if (this.reader.peek(1).toLowerCase() === 'b') {
 			this.reader.skip(1)
-			return SNBT.Byte(parseInt(int + '.' + dec))
+			return SNBT.Byte(parseInt(int))
 		}
 		if (this.reader.peek(1).toLowerCase() === 'i') {
 			this.reader.skip(1)
@@ -866,26 +869,34 @@ export const SNBT = {
 		let parser = new SNBTParser(removeSpacesAndNewlines(str.trim()))
 		let result = parser.parse()
 		if (!parser.reader.isEnd()) {
-			throw new Error('finished reading before end of string.')
+			throw new Error(
+				`finished reading before end of string, found ${parser.reader.peek(10)}`
+			)
 		}
 		return result
 	},
 	// type creations
 	Byte(v: number = 0) {
 		//assert v is a number between -128 and 127
-		assert(v >= -128 && v <= 127, 'Byte value must be between -128 and 127')
+		assert(
+			v >= -128 && v <= 127,
+			`Byte value must be between -128 and 127, got ${v.toLocaleString()}`
+		)
 		return SNBTUtil.TAG_Byte(v)
 	},
 	Short(v: number = 0) {
 		//assert v is a number between -32768 and 32767
-		assert(v >= -32768 && v <= 32767, 'Short value must be between -32768 and 32767')
+		assert(
+			v >= -32768 && v <= 32767,
+			`Short value must be between -32768 and 32767, got ${v.toLocaleString()}`
+		)
 		return SNBTUtil.TAG_Short(v)
 	},
 	Int(v: number = 0) {
 		//assert v is a number between -2147483648 and 2147483647
 		assert(
 			v >= -2147483648 && v <= 2147483647,
-			'Int value must be between -2147483648 and 2147483647'
+			`Int value must be between -2147483648 and 2147483647, got ${v.toLocaleString()}`
 		)
 		return SNBTUtil.TAG_Int(v)
 	},
@@ -893,7 +904,7 @@ export const SNBT = {
 		//assert v is a number between -9223372036854775808 and 9223372036854775807
 		assert(
 			v >= -9223372036854775808 && v <= 9223372036854775807,
-			'Long value must be between -9223372036854775808 and 9223372036854775807'
+			`Long value must be between -9223372036854775808 and 9223372036854775807, got ${v.toLocaleString()}`
 		)
 		return SNBTUtil.TAG_Long(v)
 	},
@@ -901,7 +912,7 @@ export const SNBT = {
 		//assert v is a number between -3.4028235e+38 and 3.4028235e+38
 		assert(
 			v >= -3.4028235e38 && v <= 3.4028235e38,
-			'Float value must be between -3.4028235e+38 and 3.4028235e+38'
+			`Float value must be between -3.4028235e+38 and 3.4028235e+38, got ${v.toLocaleString()}`
 		)
 		return SNBTUtil.TAG_Float(v)
 	},
@@ -909,7 +920,7 @@ export const SNBT = {
 		//assert v is a number between -1.7976931348623157e+308 and 1.7976931348623157e+308
 		assert(
 			v >= -1.7976931348623157e308 && v <= 1.7976931348623157e308,
-			'Double value must be between -1.7976931348623157e+308 and 1.7976931348623157e+308'
+			`Double value must be between -1.7976931348623157e+308 and 1.7976931348623157e+308, got ${v.toLocaleString()}`
 		)
 		return SNBTUtil.TAG_Double(v)
 	},
@@ -917,11 +928,11 @@ export const SNBT = {
 		//assert v is an array of numbers between -128 and 127
 		assert(
 			every(v, x => x >= -128 && x <= 127),
-			'Byte array values must be between -128 and 127'
+			`Byte array values must be between -128 and 127`
 		)
 		return SNBTUtil.TAG_Byte_Array(v.map(SNBT.Byte))
 	},
-	String(v: string = '') {
+	String(v: string = ``) {
 		return SNBTUtil.TAG_String(v)
 	},
 	List(v: SNBTTag[] = []) {
@@ -934,7 +945,7 @@ export const SNBT = {
 		//assert v is an array of numbers between -2147483648 and 2147483647
 		assert(
 			every(v, x => x >= -2147483648 && x <= 2147483647),
-			'Int array values must be between -2147483648 and 2147483647'
+			`Int array values must be between -2147483648 and 2147483647`
 		)
 		return SNBTUtil.TAG_Int_Array(v.map(SNBT.Int))
 	},
@@ -942,7 +953,7 @@ export const SNBT = {
 		//assert v is an array of numbers between -9223372036854775808 and 9223372036854775807
 		assert(
 			every(v, x => x >= -9223372036854775808 && x <= 9223372036854775807),
-			'Long array values must be between -9223372036854775808 and 9223372036854775807'
+			`Long array values must be between -9223372036854775808 and 9223372036854775807`
 		)
 		return SNBTUtil.TAG_Long_Array(v.map(SNBT.Long))
 	},

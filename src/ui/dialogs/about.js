@@ -421,37 +421,11 @@ function About() {
 export function show_about() {
 	new Dialog({
 		id: 'animatedJava.about',
-		// width: 1024,
 		title: tl('animatedJava.dialogs.about.title'),
-		// lines: [format(tl('animatedJava.dialogs.about.body'), {
-		// 	version: process.env.PLUGIN_VERSION,
-		// 	buildID: process.env.BUILD_ID
-		// })],
 		lines: [`<div id="animated_java_about"></div>`],
 		//@ts-ignore
 		width: 900,
 		buttons: [],
-		// component: {
-		// 	template: `
-		// 	<div>
-		// 		<p><b>Version:</b> ${process.env.PLUGIN_VERSION}</p>
-		// 		<p>
-		// 			<b>Build ID:</b> ${process.env.BUILD_ID}
-		// 		</p>
-		// 		<h5>Honourable Mentions</h5>
-		// 		<ul>
-		// 			<li style="color:var(--color-text)">
-		// 				Ancientkingg
-		// 				<span style="color:var(--color-accent)">#0420</span>
-		// 			</li>
-		// 			<li style="color:var(--color-text)">
-		// 				_JeffWooden
-		// 				<span style="color:var(--color-accent)">#0895</span>
-		// 			</li>
-		// 		</ul>
-		// 	</div>
-		// 	`,
-		// },
 	}).show()
 	ReactDOM.render(<About />, document.getElementById('animated_java_about'))
 }

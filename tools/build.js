@@ -1,4 +1,10 @@
 const fs = require('fs')
+require('ts-node/register')
+const { less } = require('./plugins/less')
+const path = require('path')
+const yaml = require('js-yaml')
+const esbuild = require('esbuild')
+
 function makeBanner(lines) {
 	const longest = Math.max(...lines.map(line => line.length))
 	const top = `/*${'*'.repeat(longest)}*\\`
@@ -17,9 +23,7 @@ const flavor = process.env.FLAVOR?.split('/').pop()
 	: process.argv[2] || `local`
 const start = Date.now()
 const dev = process.argv.includes('dev')
-const yaml = require('js-yaml')
 const env = yaml.load(fs.readFileSync('./env.yaml', 'utf8'))
-const esbuild = require('esbuild')
 ;(async () => {
 	await esbuild.build({
 		entryPoints: ['./lang-mc-worker/web_worker.js'],
@@ -43,6 +47,18 @@ const esbuild = require('esbuild')
 			platform: 'node',
 			plugins: [
 				require('esbuild-plugin-yaml').yamlPlugin(),
+				less({
+					writeTypes: true,
+					outputBase: './dist/assets',
+					relativePath: './dist',
+					generateScopeName: dev ? '[name]_[local]_[hash:base64:16]' : '[hash:base64:8]',
+					minify: !dev,
+					inline: true,
+					extra: `const deletable = Blockbench.addCSS(cssPath);
+import {bus} from ${JSON.stringify(path.resolve('src', 'util', 'bus.js'))};
+bus.on("lifecycle:cleanup",()=>deletable.delete());
+`,
+				}),
 				{
 					name: 'build-id',
 					setup(build) {

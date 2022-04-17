@@ -74,16 +74,3 @@ new Property(Group, 'string', 'armAnimationEnabled', {
 Group.prototype.menu.structure.splice(3, 0, openBoneConfig)
 // @ts-ignore
 openBoneConfig.menus.push({ menu: Group.prototype.menu, path: '' })
-;(function (Prism) {
-	Prism.languages.snbt = {
-		boolean: /\b(?:true|false)\b/,
-		number: /-?\d+\.?\d*(e[+-]?\d+[IiBbFfSs]*)?/i,
-		operator: /:/,
-		property: { pattern: /(?:\\.|[^\{\\"\r\n])*(?=\s*:)/g },
-		punctuation: /[{}[\],]/,
-		string: {
-			pattern: /("|')(?:\\(?:\r\n|[\s\S])|(?!\1)[^\\\r\n])*\1/,
-			greedy: true,
-		},
-	}
-})(globalThis.Prism)

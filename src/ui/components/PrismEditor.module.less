@@ -1,0 +1,27 @@
+.textarea {
+	font-family: monospace, monospace;
+	font-size: 1em;
+	border: none;
+	padding: 0;
+}
+.textarea,
+.pre,
+.overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	line-break: anywhere;
+	> code {
+		width: 100%;
+		white-space: pre-wrap;
+	}
+}
+.pre {
+	pointer-events: none;
+}
+.size {
+	width: 100%;
+	height: 300px;
+	position: relative;
+	overflow-y: scroll;
+}

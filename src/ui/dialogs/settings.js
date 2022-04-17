@@ -5,6 +5,7 @@ import { ERROR } from '../../util/errors'
 import events from '../../constants/events'
 import React, { useEffect, useRef, useState } from 'react'
 import { DefaultSettings, settings, ForeignSettingTranslationKeys } from '../../settings'
+import { PrismEditor, SNBTEditor } from '../components/PrismEditor'
 
 const dialog = electron.dialog
 let updateSettingsUiActions = {}
@@ -158,7 +159,7 @@ const RenderTemplates = {
 								forceRerender()
 							}
 						}}
-						style={{width: '94%'}}
+						style={{ width: '94%' }}
 					>
 						{Object.entries(definition.options).map(([key, value]) => (
 							<option value={key} key={key}>
@@ -426,6 +427,55 @@ const SettingInput = p => {
 		return null
 	}
 }
+const EditorTest = () => {
+	return (
+		<SNBTEditor
+			initialValue={`{
+  Age:-2147483648,
+  Duration:-1,
+  WaitTime:-2147483648,
+  Tags:[
+    'new',
+    'aj.armor_stand',
+    'aj.armor_stand.bone',
+    'aj.armor_stand.bone.waist'
+  ],
+  Passengers:[
+    {
+      id:'minecraft:armor_stand',
+      Invisible:true,
+      Marker:false,
+      NoGravity:true,
+      DisabledSlots:4144959,
+      Tags:[
+        'new',
+        'aj.armor_stand',
+        'aj.armor_stand.bone',
+        'aj.armor_stand.bone.waist',
+        'aj.armor_stand.bone_display'
+      ],
+      ArmorItems:[
+        {},
+        {},
+        {},
+        {
+          id:'minecraft:leather_horse_armor',
+          Count:1b,
+          tag:{
+            CustomModelData:1
+          }
+        }
+      ],
+      Pose:{
+        Head:[0, 0, 0]
+      }
+    }
+  ]
+}`}
+			onChange={value => console.log(value)}
+		></SNBTEditor>
+	)
+}
 const Settings = () => {
 	const [, forceRerender] = useState(0)
 	updateSettingsUiActions.main = () => forceRerender(Math.random())
@@ -485,6 +535,9 @@ const Settings = () => {
 						style={{ maxHeight: '75vh', overflowY: 'scroll' }}
 						className="WHYCSSWHY-or-settings"
 					>
+						<li>
+							<EditorTest></EditorTest>
+						</li>
 						<li>
 							<h2 className="tl i_b" style={{ marginLeft: '1em' }}>
 								{tl('animatedJava.settings.header')}

@@ -1,6 +1,6 @@
 import { bus } from './util/bus'
 import EVENTS from './constants/events'
-const log = console.log.bind(console, '[java-animations@redirect]')
+const log = (...args) => console.log('[java-animations@redirect]', ...args)
 const redirect = (from, to) => {
 	log(`redirect: ${from} -> ${to}`)
 	bus.on(from, e => {
