@@ -1,4 +1,5 @@
 import type * as aj from './animatedJava'
+import { store } from './util/store'
 
 interface BoneConfig {
 	nbt: string
@@ -71,5 +72,10 @@ export class Variant {
 		v.textureMap = json.textureMap
 		v.boneConfigs = json.boneConfigs
 		return v
+	}
+
+	static fromOldJSON(json: any) {
+		store.get('')
+		const v = new Variant()
 	}
 }

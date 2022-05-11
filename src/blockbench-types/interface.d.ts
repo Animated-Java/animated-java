@@ -1,7 +1,21 @@
+import type * as vue from 'vue'
+
 interface DialogFormElement {
 	label: string
 	description?: string
-	type: 'text' | 'number' | 'checkbox' | 'select' | 'radio' | 'textarea' | 'vector' | 'color' | 'file' | 'folder' | 'save' | 'info'
+	type:
+		| 'text'
+		| 'number'
+		| 'checkbox'
+		| 'select'
+		| 'radio'
+		| 'textarea'
+		| 'vector'
+		| 'color'
+		| 'file'
+		| 'folder'
+		| 'save'
+		| 'info'
 	nocolon?: boolean
 	readonly?: boolean
 	value?: any
@@ -15,12 +29,12 @@ interface DialogFormElement {
 	options?: object
 }
 
-type FormResultValue = string|number|boolean|[]
+type FormResultValue = string | number | boolean | []
 
 interface ActionInterface {
 	name: string
 	description?: string
-	icon: string,
+	icon: string
 	click: (event: Event) => void
 	condition: Condition
 }
@@ -50,11 +64,11 @@ interface DialogOptions {
 	/**
 	 * Function to run when anything in the form is changed
 	 */
-	onFormChange?: (form_result: {[key: string]: FormResultValue}) => void
+	onFormChange?: (form_result: { [key: string]: FormResultValue }) => void
 	/**
 	 * Array of HTML object strings for each line of content in the dialog.
 	 */
-	lines?: (string|HTMLElement)[]
+	lines?: (string | HTMLElement)[]
 	/**
 	 * Creates a form in the dialog
 	 */
@@ -62,9 +76,9 @@ interface DialogOptions {
 		[formElement: string]: '_' | DialogFormElement
 	}
 	/**
-	 * Vue component
+	 * vue component
 	 */
-	component?: Vue.Component
+	component?: vue.Component
 	/**
 	 * Order that the different interface types appear in the dialog. Default is 'form', 'lines', 'component'.
 	 */
@@ -94,7 +108,7 @@ interface DialogSidebarOptions {
 		[key: string]: string
 	}
 	page?: string
-	actions?: (Action|ActionInterface|string)[],
+	actions?: (Action | ActionInterface | string)[]
 	onPageSwitch?: (page: string) => void
 }
 declare class DialogSidebar {
@@ -104,7 +118,7 @@ declare class DialogSidebar {
 		[key: string]: string
 	}
 	page: string
-	actions: (Action|string)[]
+	actions: (Action | string)[]
 	onPageSwitch(page: string): void
 	build(): void
 	toggle(state?: boolean): void
@@ -112,12 +126,11 @@ declare class DialogSidebar {
 }
 
 declare class Dialog {
-	constructor (options: DialogOptions)
+	constructor(options: DialogOptions)
 
 	id: string
-	component: Vue.Component
+	component: vue.Component
 	sidebar: DialogSidebar | null
-
 
 	show: () => Dialog
 	hide: () => Dialog
@@ -142,7 +155,7 @@ declare class Dialog {
 	/**
 	 * Set the values of the dialog form inputs
 	 */
-	setFormValues(values: {[key: string]: FormResultValue}): void
+	setFormValues(values: { [key: string]: FormResultValue }): void
 	/**
 	 * Delete the dialog object, causing it to be re-build from scratch on next open
 	 */
@@ -152,4 +165,71 @@ declare class Dialog {
 	 * Currently opened dialog
 	 */
 	static open: Dialog | null
+}
+
+// TODO Fix up this interaface. Was created quickly to fix TS errors and doesn't have fully accurate typing
+interface Interface {
+	Panels: { [name: string]: Panel }
+	Resizers: { [name: string]: unknown } // FIXME Missing type
+	addSuggestedModifierKey: (key: string, text: string) => void
+	bottom_panel_height: number
+	center_screen: Element // FIXME No idea how DOM elements work lol
+
+	createElement: (
+		tag: string,
+		attributes: any,
+		content: string | string[] | HTMLElement
+	) => Element
+
+	data: {
+		left_bar: string[]
+		left_bar_width: number
+		quad_view_x: number
+		quad_view_y: number
+		right_bar: string[]
+		right_bar_width: number
+		timeline_head: number
+		timeline_height: number
+	}
+
+	default_data: {
+		left_bar: ['uv', 'textures', 'display', 'animations', 'keyframe', 'variable_placeholders']
+		left_bar_width: 366
+		panels: {
+			paint: {
+				float_position: [300, 0]
+				float_size: [500, 600]
+				height: 490
+				slot: 'left_bar'
+			}
+		}
+		quad_view_x: 50
+		quad_view_y: 50
+		right_bar: ['element', 'bone', 'color', 'skin_pose', 'outliner', 'chat']
+		right_bar_width: 314
+		timeline_head: 196
+	}
+
+	definePanels: (callback: () => void) => void // FIXME Unsure what the callback function's arguments should be
+	getBottomPanel: () => Panel | undefined
+	getTopPanel: () => Panel | undefined
+	getLeftPanel: () => Panel | undefined
+	getRightPanel: () => Panel | undefined
+	left_bar: Element
+	left_bar_width: number
+	page_wrapper: Element
+	panel_definers: (() => void)[]
+	preview: Element
+	removeSuggestedModifierKey: (key: string, text: string) => void
+	right_bar: Element
+	right_bar_width: number
+	status_bar: {
+		menu: Menu
+		vue: vue.Component
+	}
+	tab_bar: vue.Component
+	text_edit_menu: Menu
+	toggleSidebar: (side: string | undefined, status: any) => void
+	top_panel_height: number
+	work_screen: Element
 }

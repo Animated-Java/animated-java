@@ -1,4 +1,4 @@
-/// <reference types="vue" />
+import type * as vue from 'vue'
 /// <reference types="three" />
 /// <reference types="@types/jquery" />
 /// <reference types="wintersky" />
@@ -216,7 +216,7 @@ interface PanelOptions {
 	condition?: Condition
 	onResize: () => void
 	toolbars: object
-	component: Vue.Component
+	component: vue.Component
 	default_side: any
 	insert_before: any
 	insert_after: any
@@ -224,7 +224,6 @@ interface PanelOptions {
 declare class Panel {
 	constructor (options: PanelOptions)
 }
-
 
 interface PropertyOptions {
 	default?: any

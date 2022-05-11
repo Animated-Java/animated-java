@@ -24,6 +24,7 @@ import { intl } from './util/intl'
 import { CustomError } from './util/customError'
 import * as nbt from './util/SNBT'
 import * as EVENTS from './constants/events'
+import type { Variant } from './variants'
 
 const ANIMATED_JAVA = {
 	build(callback: Function, configuration: Record<any, any>) {
@@ -101,8 +102,6 @@ export interface Settings {
 	rigModelsExportFolder: string
 	transparentTexturePath: string
 	boundingBoxRenderMode: 'single' | 'multiple' | 'disabled'
-	verbose: boolean
-	modelScalingMode: '3x3x3' | '7x7x7'
 }
 
 export interface ExportData {
@@ -110,9 +109,7 @@ export interface ExportData {
 	cubeData: CubeData
 	bones: BoneObject
 	models: ModelObject
-	variantTextureOverrides: VariantTextureOverrides
-	variantModels: VariantModels
-	variantTouchedModels: variantTouchedModels
+	variants: Variant[]
 	animations: Animations
 	scaleModels: ScaleModels
 }

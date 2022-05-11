@@ -20,7 +20,7 @@ declare class OutlinerNode {
 	 */
 	showInOutliner: () => this
 	/**
-	 * Updates the Vue node of the element. This is only necessary in some rare situations
+	 * Updates the vue node of the element. This is only necessary in some rare situations
 	 */
 	updateElement: () => this
 	/**
