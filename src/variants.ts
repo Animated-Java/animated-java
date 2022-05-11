@@ -1,10 +1,40 @@
+import type * as aj from './animatedJava'
+
 interface BoneConfig {
 	nbt: string
 }
 
-class Variant {
+type VariantModel = {
+	aj: {
+		customModelData: number
+	}
+	parent: string
+	textures: aj.TextureObject
+}
+
+interface VariantModels {
+	[modelName: string]: VariantModel
+}
+
+interface VariantTextureOverrides {
+	[modelName: string]: {
+		textures: aj.TextureObject
+	}
+}
+
+interface VariantTouchedModels {
+	[modelName: string]: aj.Model
+}
+
+export class Variant {
 	textureMap: { [uuid: string]: string }
 	boneConfigs: { [uuid: string]: BoneConfig }
+
+	// Exporter Data
+	models?: VariantModels
+	touchedModels?: VariantTouchedModels
+	textureOverrides?: VariantTextureOverrides
+
 	constructor() {
 		this.textureMap = {}
 		this.boneConfigs = {}
@@ -21,6 +51,12 @@ class Variant {
 			if (!Group.all.find(v => v.uuid == bone)) missingBones.push(bone)
 		}
 		if (missingBones.length && missingTextures.length) return { missingBones, missingTextures }
+	}
+
+	clearOldExportData() {
+		this.models = {}
+		this.touchedModels = {}
+		this.textureOverrides = {}
 	}
 
 	toJSON() {

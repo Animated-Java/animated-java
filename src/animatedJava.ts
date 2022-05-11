@@ -291,29 +291,3 @@ export interface ScaleModels {
 		[index: string]: ScaleModel
 	}
 }
-
-export type VariantModel = {
-	aj: {
-		customModelData: number
-	}
-	parent: string
-	textures: TextureObject
-}
-
-export interface VariantModels {
-	[index: string]: {
-		[index: string]: VariantModel
-	}
-}
-
-export interface VariantTextureOverrides {
-	[index: string]: {
-		[index: string]: {
-			textures: TextureObject
-		}
-	}
-}
-
-export interface variantTouchedModels {
-	[index: string]: Model
-}
