@@ -75,7 +75,8 @@ export class Variant {
 	}
 
 	static fromOldJSON(json: any) {
-		store.get('')
 		const v = new Variant()
+		v.textureMap = json
+		return v
 	}
 }
