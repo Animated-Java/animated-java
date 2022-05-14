@@ -2,6 +2,7 @@ import type * as aj from '../animatedJava'
 import { CustomError } from '../util/customError'
 import { tl } from '../util/intl'
 import { store } from '../util/store'
+import { Blockbench } from '../typings/global'
 
 interface rawAnimationExporterSettings {
 	outputJsonPath: string

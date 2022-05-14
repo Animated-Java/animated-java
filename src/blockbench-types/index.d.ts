@@ -25,7 +25,6 @@ import type * as vue from 'vue'
 /// <reference types="./util" />
 /// <reference types="./uvEditor" />
 
-
 declare class Deletable {
 	delete: () => void
 }
@@ -36,7 +35,8 @@ type UUID = string
  */
 declare const isApp: boolean
 
-type EventName = 'remove_animation'
+type EventName =
+	| 'remove_animation'
 	| 'display_animation_fram'
 	| 'before_closing'
 	| 'create_session'
@@ -73,7 +73,7 @@ type EventName = 'remove_animation'
 	| 'select_mode'
 	| 'unselect_mode'
 
-type IconString = string;
+type IconString = string
 
 interface MessageBoxOptions {
 	/**
@@ -181,8 +181,152 @@ declare namespace Blockbench {
 	function on(event_names: EventName, callback: (data: object) => void): void
 
 	function removeEventListener(event_names: EventName): void
-}
 
+	/**
+	 * The resource identifier group, used to allow the file dialog (open and save) to remember where it was last used
+	 */
+	type ResourceID =
+		| string
+		| 'texture'
+		| 'minecraft_skin'
+		| 'dev_plugin'
+		| 'animation'
+		| 'animation_particle'
+		| 'animation_audio'
+		| 'theme'
+		| 'model'
+		| 'gltf'
+		| 'obj'
+		| 'preview_background'
+		| 'screenshot'
+		| 'palette'
+
+	interface FileResult {
+		name: string
+		path: string
+		content: string | ArrayBuffer
+	}
+	type ReadType = 'buffer' | 'binary' | 'text' | 'image'
+	interface ReadOptions {
+		readtype?: ReadType | ((file: string) => ReadType)
+		errorbox?: boolean
+	}
+	/**
+	 * Reads the content from the specified files. Desktop app only.
+	 */
+	function read(
+		files: string[],
+		options?: ReadOptions,
+		callback?: (files: FileResult[]) => void
+	): void
+
+	type WriteType = 'buffer' | 'text' | 'zip' | 'image'
+	interface WriteOptions {
+		content: string | ArrayBuffer
+		savetype?: WriteType | ((file: string) => WriteType)
+		custom_writer(content: string | ArrayBuffer, file_path: string): void
+	}
+	/**
+	 * Writes a file to the file system. Desktop app only.
+	 */
+	function writeFile(
+		file_path: string,
+		options: WriteOptions,
+		callback?: (file_path: string) => void
+	): void
+
+	interface PickDirOptions {
+		/**Location where the file dialog starts off
+		 */
+		startpath?: string
+		/** The resource identifier group, used to allow the file dialog (open and save) to remember where it was last used
+		 */
+		resource_id?: ResourceID
+		/** Window title for the file picker
+		 */
+		title?: string
+	}
+	/**
+	 * Pick a directory. Desktop app only.
+	 */
+	function pickDirectory(options: PickDirOptions)
+
+	interface ImportOptions extends ReadOptions {
+		/** Name of the file type
+		 */
+		type: string
+		/** File Extensions
+		 */
+		extensions: string[]
+		/** Allow selection of multiple elements
+		 */
+		multiple?: boolean
+		/** File picker start path
+		 */
+		startpath?: string
+		/** The resource identifier group, used to allow the file dialog (open and save) to remember where it was last used
+		 */
+		resource_id?: ResourceID
+		/** Title of the file picker window
+		 */
+		title?: string
+		/**
+		 */
+	}
+	function _import(options: ImportOptions, callback?: (files: FileResult[]) => void): any
+
+	interface ExportOptions extends WriteOptions {
+		/**
+		 * Name of the file type
+		 */
+		type: string
+		/**
+		 * File extensions
+		 */
+		extensions: string[]
+		/**
+		 * Suggested file name
+		 */
+		name?: string
+		/**
+		 * Location where the file dialog starts
+		 */
+		startpath?: string
+		/**
+		 * The resource identifier group, used to allow the file dialog (open and save) to remember where it was last used
+		 */
+		resource_id?: string
+	}
+	function _export(options: ExportOptions, callback?: (file_path: string) => void): any
+
+	/**
+	 * Adds a drag handler that handles dragging and dropping files into Blockbench
+	 */
+	interface DragHandlerOptions extends ReadOptions {
+		/**
+		 * Allowed file extensions
+		 */
+		extensions: string[] | (() => string[])
+		/**
+		 * Whether or not to enable the drag handler
+		 */
+		condition?: Condition
+		/**
+		 * Drop target element
+		 */
+		element?: string | HTMLElement | (() => string | HTMLElement)
+		/**
+		 * If true, the drop will work on all child elements of the specified element
+		 */
+		propagate?: boolean
+	}
+	function addDragHandler(
+		id: string,
+		options: DragHandlerOptions,
+		callback?: () => void
+	): void
+	function removeDragHandler(id: string): void
+}
 
 interface PluginData {
 	title: string
@@ -222,7 +366,7 @@ interface PanelOptions {
 	insert_after: any
 }
 declare class Panel {
-	constructor (options: PanelOptions)
+	constructor(options: PanelOptions)
 }
 
 interface PropertyOptions {
@@ -242,28 +386,28 @@ interface PropertyOptions {
  * Creates a new property on the specified target class
  */
 declare class Property extends Deletable {
-    constructor(target_class: any, type: string, name: string, options?: PropertyOptions);
-    class: any;
-    name: string;
-    type: string;
-	default: any;
+	constructor(target_class: any, type: string, name: string, options?: PropertyOptions)
+	class: any
+	name: string
+	type: string
+	default: any
 
-    isString: boolean;
-    isMolang: boolean;
-    isNumber: boolean;
-    isBoolean: boolean;
-    isArray: boolean;
-    isVector: boolean;
-	isVector2: boolean;
+	isString: boolean
+	isMolang: boolean
+	isNumber: boolean
+	isBoolean: boolean
+	isArray: boolean
+	isVector: boolean
+	isVector2: boolean
 
-    merge_validation: undefined | ((value: any) => boolean);
-    condition: any;
-    exposed: boolean;
-    label: any;
+	merge_validation: undefined | ((value: any) => boolean)
+	condition: any
+	exposed: boolean
+	label: any
 	merge: (instance: any, data: object) => void
 	reset: (instance: any) => void
-    getDefault(instance: any): any;
-    copy(instance: any, target: any): void;
+	getDefault(instance: any): any
+	copy(instance: any, target: any): void
 }
 
 declare function updateSelection(): void
@@ -291,5 +435,5 @@ declare namespace Language {
 	 * @param language Two letter language code, e. G. 'en'
 	 * @param strings Object listing the translation keys and values
 	 */
-	function addTranslations(language: string, strings: {[key: string]: string})
+	function addTranslations(language: string, strings: { [key: string]: string })
 }

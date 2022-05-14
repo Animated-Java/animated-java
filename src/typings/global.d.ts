@@ -1,6 +1,8 @@
 import * as THREE from 'three'
 import type * as aj from '../animatedJava'
 import type { Store } from '../util/store'
+export * from '../blockbench-types'
+
 interface AnimatedJavaGlobal {
 	settings: aj.GlobalSettings
 	store: Store
@@ -16,7 +18,7 @@ declare global {
 }
 export { AJ, THREE }
 
-export type Modify<T, R> = Omit<T, keyof R> & R
+// export type Modify<T, R> = Omit<T, keyof R> & R
 
 // export type AJGeneralAnimator = {
 // 	type: 'bone' | string
