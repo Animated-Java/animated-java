@@ -3,7 +3,7 @@
 	"compilerOptions": {
 		"outDir": "dist",
 		"declaration": false,
-		"types": ["./src/typings/global"],
+		"types": ["node", "./src/typings/global"],
 		"lib": ["DOM", "ESNext"],
 		"target": "ES2021",
 		"moduleResolution": "node",
