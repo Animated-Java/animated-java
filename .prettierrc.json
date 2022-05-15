@@ -5,13 +5,5 @@
 	"semi": false,
 	"singleQuote": true,
 	"arrowParens": "avoid",
-	"printWidth": 100,
-	"overrides": [
-		{
-			"files": ["./src/exporters/vanillaAnimation/bakedScoreboardTree.ts"],
-			"options": {
-				"printWidth": 200
-			}
-		}
-	]
+	"printWidth": 120
 }

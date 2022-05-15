@@ -1,1 +1,0 @@
-export const styles:{"textarea":string;"pre":string;"overlay":string;"size":string;};export const cssPath:string;

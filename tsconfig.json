@@ -1,12 +1,16 @@
 {
-	// "include": ["*"],
 	"compilerOptions": {
-		"outDir": "dist",
-		"declaration": false,
-		"types": ["node", "./src/typings/global"],
-		"lib": ["DOM", "ESNext"],
+		"outDir": "./dist/",
+		"noImplicitAny": true,
+		"module": "es2020",
 		"target": "ES2021",
+		"jsx": "react",
+		"allowJs": true,
 		"moduleResolution": "node",
-		"jsx": "react"
+		"strict": true,
+		"types": ["node", "blockbench-types"],
+		"resolveJsonModule": true
+		// "declaration": true,
+		// "emitDeclarationOnly": true
 	}
 }
