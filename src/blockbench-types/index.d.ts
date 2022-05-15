@@ -320,11 +320,7 @@ declare namespace Blockbench {
 		 */
 		propagate?: boolean
 	}
-	function addDragHandler(
-		id: string,
-		options: DragHandlerOptions,
-		callback?: () => void
-	): void
+	function addDragHandler(id: string, options: DragHandlerOptions, callback?: () => void): void
 	function removeDragHandler(id: string): void
 }
 
@@ -358,12 +354,12 @@ interface PanelOptions {
 	name: string
 	selection_only?: boolean
 	condition?: Condition
-	onResize: () => void
+	onResize?: () => void
 	toolbars: object
-	component: vue.Component
-	default_side: any
-	insert_before: any
-	insert_after: any
+	component?: vue.Component
+	default_side?: any
+	insert_before?: any
+	insert_after?: any
 }
 declare class Panel {
 	constructor(options: PanelOptions)

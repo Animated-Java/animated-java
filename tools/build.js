@@ -115,7 +115,6 @@ bus.on("lifecycle:cleanup",()=>deletable.delete());
 			sourcesContent: dev,
 			watch: dev,
 			incremental: dev,
-			charset: 'ascii',
 			drop: dev ? [] : ['console', 'debugger'],
 		})
 		.then(res => {

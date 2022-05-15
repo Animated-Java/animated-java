@@ -42,6 +42,9 @@ declare class Texture {
 	readonly display_height: number
 	readonly ratio: number
 
+	name: string
+	source: string
+
 	getErrorMessage(): string
 	extend(data: TextureData): this
 	/**
@@ -121,9 +124,7 @@ declare class Texture {
 	 * @param options Editing options
 	 */
 	edit(
-		callback: (
-			instance: HTMLCanvasElement | object
-		) => void | HTMLCanvasElement,
+		callback: (instance: HTMLCanvasElement | object) => void | HTMLCanvasElement,
 		options: TextureEditOptions
 	): void
 	menu: Menu
