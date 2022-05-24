@@ -4,7 +4,6 @@ const { less } = require('./plugins/less')
 const path = require('path')
 const yaml = require('js-yaml')
 const esbuild = require('esbuild')
-
 function makeBanner(lines) {
 	const longest = Math.max(...lines.map(line => line.length))
 	const top = `/*${'*'.repeat(longest)}*\\`
@@ -25,6 +24,7 @@ const start = Date.now()
 const dev = process.argv.includes('dev')
 const env = yaml.load(fs.readFileSync('./env.yaml', 'utf8'))
 ;(async () => {
+	const mdx = await import('@mdx-js/esbuild')
 	await esbuild.build({
 		entryPoints: ['./lang-mc-worker/web_worker.js'],
 		outfile: './src/dependencies/lang-mc-worker/lang-mc.worker.wjs',
@@ -78,6 +78,7 @@ bus.on("lifecycle:cleanup",()=>deletable.delete());
 						})
 					},
 				},
+				mdx.default({}),
 			],
 			minify: !dev,
 			format: 'iife',
@@ -109,7 +110,6 @@ bus.on("lifecycle:cleanup",()=>deletable.delete());
 					  }
 					: {}),
 			},
-			// sourcemap: dev ? 'inline' : false,
 			sourcemap: 'inline',
 			sourceRoot: 'src/',
 			sourcesContent: dev,

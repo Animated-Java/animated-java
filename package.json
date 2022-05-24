@@ -15,6 +15,7 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"@mdx-js/esbuild": "^2.1.1",
 		"esbuild": "^0.14.27",
 		"esbuild-plugin-yaml": "^0.0.1",
 		"react": "^17.0.1",
