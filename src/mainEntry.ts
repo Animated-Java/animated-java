@@ -308,3 +308,10 @@ bus.on(EVENTS.LIFECYCLE.CLEANUP, () => {
 	// @ts-ignore
 	Blockbench.removeListener('new_project', cb)
 })
+
+// DOCS TESTING STUFF,
+// TODO: REMOVE
+// import * as docs from 'animated-java-docs'
+// print('here')
+// // @ts-ignore
+// docs.register()

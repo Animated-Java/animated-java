@@ -1,0 +1,6 @@
+{
+	"name": "docs-stdlib",
+	"version": "1.0.0",
+	"module": "index.ts",
+	"license": "MIT"
+}
