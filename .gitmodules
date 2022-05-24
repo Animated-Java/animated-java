@@ -1,0 +1,3 @@
+[submodule "src/docs"]
+	path = src/docs
+	url = https://github.com/Animated-Java/docs.git
