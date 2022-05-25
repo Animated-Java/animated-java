@@ -15,9 +15,7 @@ function newMethod(path) {
 		.propertiesDialog()
 }
 
-bus.on(EVENTS.LIFECYCLE.LOAD, () => {
-	Interface.Panels.animations.vue.addAnimation = newMethod
-})
+Interface.Panels.animations.vue.addAnimation = newMethod
 
 bus.on(EVENTS.LIFECYCLE.CLEANUP, () => {
 	Interface.Panels.animations.vue.addAnimation = oldMethod
