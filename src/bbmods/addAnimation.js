@@ -5,16 +5,15 @@ import * as EVENTS from '../constants/events'
 const oldMethod = Interface.Panels.animations.vue.addAnimation
 
 function newMethod(path) {
-	let other_animation = Animation.all.find(a => a.path == path)
-	new Animation({
-		name: other_animation && other_animation.name.replace(/\w+$/, 'new'),
+	console.log('Animation path:', path)
+	const anim = new Animation({
+		name: 'new_animation',
 		snapping: Format.id === format.id ? 20 : undefined,
 		path,
-	})
-		.add(true)
-		.propertiesDialog()
+	}).add(true)
+	// anim.propertiesDialog()
 }
-
+// FIXME This WORKS but it's waiting for blockbench to be updated to fix it.
 Interface.Panels.animations.vue.addAnimation = newMethod
 
 bus.on(EVENTS.LIFECYCLE.CLEANUP, () => {

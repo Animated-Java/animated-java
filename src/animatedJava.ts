@@ -24,7 +24,7 @@ import './util/minecraft/items'
 import { intl } from './util/intl'
 import { CustomError } from './util/customError'
 import * as nbt from './util/SNBT'
-import * as EVENTS from './constants/events'
+// import * as EVENTS from './constants/events'
 import type { Variant } from './variants'
 
 const ANIMATED_JAVA = {
