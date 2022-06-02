@@ -4,6 +4,7 @@ import { tl } from '../../util/intl'
 import { store } from '../../util/store'
 import { settings, ExporterSettings } from './settings'
 import { generate as generateBakedScoreboardTree } from './bakedScoreboardTree'
+import { Blockbench } from '../../typings/global'
 
 export class VanillaAnimation {
 	static exportData: aj.ExportData
