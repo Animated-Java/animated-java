@@ -1,7 +1,7 @@
 {
   "meta": {
     "format_version": "0.0",
-    "creation_time": 1654041171,
+    "creation_time": 1654171865,
     "model_format": "animated_java/ajmodel",
     "box_uv": false,
     "settings": {
@@ -34,7 +34,10 @@
         "textureMap": {},
         "boneConfigs": {}
       },
-      "b": {}
+      "b": {
+        "textureMap": {},
+        "boneConfigs": {}
+      }
     },
     "uuid": "b4dc0f68-700c-e6f0-9523-5c7e3afb7e64"
   },
