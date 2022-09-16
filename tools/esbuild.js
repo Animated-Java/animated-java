@@ -44,11 +44,6 @@ let infoPlugin = {
 		)
 	},
 }
-/** @type {esbuild.Plugin} */
-let cssPlugin = {
-	name: 'cssPlugin',
-	setup(build) {},
-}
 function createBanner(dev) {
 	const LICENSE = fs.readFileSync('./LICENSE').toString()
 
