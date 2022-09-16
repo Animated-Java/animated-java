@@ -1,6 +1,24 @@
+import {
+	SvelteHelperLogCollectedNodes,
+	SvelteHelperMarkPluginInitialization,
+	SvelteHelperMarkPluginInitializationComplete,
+} from './svelteFixup'
+
+SvelteHelperMarkPluginInitialization()
 import * as PACKAGE from '../package.json'
 import { events } from './events'
 import './mods'
+import x from './test.svelte'
+
+console.log({
+	instance: new x({
+		target: document.querySelector('#start-files > div.start_screen_right')!,
+		props: {
+			x: '12345',
+		},
+	}),
+	component: x,
+})
 
 BBPlugin.register(PACKAGE.name, {
 	title: PACKAGE.title,
@@ -29,3 +47,6 @@ BBPlugin.register(PACKAGE.name, {
 		events.uninstall.trigger()
 	},
 })
+
+SvelteHelperMarkPluginInitializationComplete()
+SvelteHelperLogCollectedNodes()

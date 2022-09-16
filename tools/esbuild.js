@@ -1,7 +1,14 @@
+if (process.argv.includes('--mode=dev')) {
+	process.env.NODE_ENV = 'development'
+} else {
+	process.env.NODE_ENV = 'production'
+}
+
 const fs = require('fs')
 const esbuild = require('esbuild')
 const PACKAGE = require('../package.json')
-
+const sveltePlugin = require('esbuild-plugin-svelte')
+const svelteConfig = require('../svelte.config.js')
 let infoPlugin = {
 	name: 'infoPlugin',
 	/**
@@ -37,7 +44,11 @@ let infoPlugin = {
 		)
 	},
 }
-
+/** @type {esbuild.Plugin} */
+let cssPlugin = {
+	name: 'cssPlugin',
+	setup(build) {},
+}
 function createBanner(dev) {
 	const LICENSE = fs.readFileSync('./LICENSE').toString()
 
@@ -75,6 +86,13 @@ function createBanner(dev) {
 	}
 }
 
+const defines = {}
+
+Object.entries(process.env).forEach(([key, value]) => {
+	if (key.match(/[^A-Za-z0-9_]/i)) return
+	defines[`process.env.${key}`] = JSON.stringify(value)
+})
+
 function buildDev() {
 	esbuild.transformSync('function devlog(message) {console.log(message)}')
 	esbuild.build({
@@ -84,9 +102,10 @@ function buildDev() {
 		minify: false,
 		platform: 'node',
 		sourcemap: true,
-		plugins: [infoPlugin],
+		plugins: [infoPlugin, sveltePlugin.default(svelteConfig)],
 		watch: true,
 		format: 'iife',
+		define: defines,
 	})
 }
 
@@ -99,15 +118,16 @@ function buildProd() {
 		minify: true,
 		platform: 'node',
 		sourcemap: false,
-		plugins: [infoPlugin],
+		plugins: [infoPlugin, sveltePlugin.default(svelteConfig)],
 		banner: createBanner(),
 		drop: ['debugger'],
 		format: 'iife',
+		define: defines,
 	})
 }
 
 function main() {
-	if (process.argv.includes('--mode=dev')) {
+	if (process.env.NODE_ENV === 'development') {
 		buildDev()
 		return
 	}

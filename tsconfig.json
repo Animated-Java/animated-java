@@ -8,9 +8,7 @@
 		"allowJs": true,
 		"moduleResolution": "node",
 		"strict": true,
-		"types": ["node", "blockbench-types"],
+		"types": ["node", "blockbench-types", "svelte"],
 		"resolveJsonModule": true
-		// "declaration": true,
-		// "emitDeclarationOnly": true
 	}
 }
