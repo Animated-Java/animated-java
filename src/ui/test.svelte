@@ -14,7 +14,7 @@
 
 <div>{y}</div>
 
-<style data-id="AJ">
+<style>
 	div {
 		color: red;
 	}

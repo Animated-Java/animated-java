@@ -5,10 +5,12 @@ import {
 } from './svelteFixup'
 
 SvelteHelperMarkPluginInitialization()
+//! KEEP CODE WITHIN THESE BOUNDS
+
 import * as PACKAGE from '../package.json'
 import { events } from './events'
 import './mods'
-import x from './test.svelte'
+import x from './ui/test.svelte'
 
 console.log({
 	instance: new x({
@@ -48,5 +50,6 @@ BBPlugin.register(PACKAGE.name, {
 	},
 })
 
+//! KEEP CODE WITHIN THESE BOUNDS
 SvelteHelperMarkPluginInitializationComplete()
 SvelteHelperLogCollectedNodes()
