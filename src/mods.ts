@@ -26,7 +26,7 @@ events.loadMods.addListener(() =>
 		try {
 			mod.inject()
 		} catch (err) {
-			console.log(`Unexpected Error while attempting to inject Figura mod '${mod.name}' into Blockbench!`)
+			console.log(`Unexpected Error while attempting to inject mod '${mod.name}'!`)
 			console.error(err)
 		}
 	})
@@ -36,7 +36,7 @@ events.unloadMods.addListener(() =>
 		try {
 			mod.extract()
 		} catch (err) {
-			console.log(`Unexpected Error while attempting to extract Figura mod '${mod.name}' from Blockbench!`)
+			console.log(`Unexpected Error while attempting to extract mod '${mod.name}'!`)
 			console.error(err)
 		}
 	})

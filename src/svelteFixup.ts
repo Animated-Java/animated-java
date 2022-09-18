@@ -2,7 +2,7 @@ import { events } from './events'
 export const svelteStyleNodes = new Set<HTMLStyleElement>()
 const existingStyleNodes = new Set<HTMLStyleElement>()
 let isCurrentlyCollectingStyleNodes = false
-export function SvelteHelperMarkPluginInitialization() {
+export function svelteHelperMarkPluginInitialization() {
 	if (!isCurrentlyCollectingStyleNodes) {
 		for (const style of document.querySelectorAll('style')) {
 			existingStyleNodes.add(style as HTMLStyleElement)
@@ -11,7 +11,7 @@ export function SvelteHelperMarkPluginInitialization() {
 	isCurrentlyCollectingStyleNodes = true
 }
 
-function SvelteHelperCollectStyleNodes() {
+function svelteHelperCollectStyleNodes() {
 	if (!isCurrentlyCollectingStyleNodes) {
 		return
 	}
@@ -22,20 +22,20 @@ function SvelteHelperCollectStyleNodes() {
 		}
 	}
 }
-export function SvelteHelperLogCollectedNodes() {
+export function svelteHelperLogCollectedNodes() {
 	if (process.env.NODE_ENV === 'development') {
 		console.log(svelteStyleNodes)
 	}
 }
-export function SvelteHelperMarkPluginInitializationComplete() {
-	SvelteHelperCollectStyleNodes()
+export function svelteHelperMarkPluginInitializationComplete() {
+	svelteHelperCollectStyleNodes()
 	isCurrentlyCollectingStyleNodes = false
 }
 
-export function SvelteHelperRemoveCollectedStyleNodes() {
+export function svelteHelperRemoveCollectedStyleNodes() {
 	for (const style of svelteStyleNodes) {
 		style.remove()
 	}
 	svelteStyleNodes.clear()
 }
-events.unload.addListener(SvelteHelperRemoveCollectedStyleNodes)
+events.unload.addListener(svelteHelperRemoveCollectedStyleNodes)

@@ -1,10 +1,10 @@
 import {
-	SvelteHelperLogCollectedNodes,
-	SvelteHelperMarkPluginInitialization,
-	SvelteHelperMarkPluginInitializationComplete,
+	svelteHelperLogCollectedNodes,
+	svelteHelperMarkPluginInitialization,
+	svelteHelperMarkPluginInitializationComplete,
 } from './svelteFixup'
 
-SvelteHelperMarkPluginInitialization()
+svelteHelperMarkPluginInitialization()
 //! KEEP CODE WITHIN THESE BOUNDS
 
 import * as PACKAGE from '../package.json'
@@ -51,5 +51,5 @@ BBPlugin.register(PACKAGE.name, {
 })
 
 //! KEEP CODE WITHIN THESE BOUNDS
-SvelteHelperMarkPluginInitializationComplete()
-SvelteHelperLogCollectedNodes()
+svelteHelperMarkPluginInitializationComplete()
+svelteHelperLogCollectedNodes()
