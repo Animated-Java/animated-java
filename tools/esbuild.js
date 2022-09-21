@@ -8,6 +8,7 @@ const fs = require('fs')
 const esbuild = require('esbuild')
 const PACKAGE = require('../package.json')
 const sveltePlugin = require('esbuild-plugin-svelte')
+const pluginYaml = require('esbuild-plugin-yaml')
 const svelteConfig = require('../svelte.config.js')
 const yaml = require('js-yaml')
 const pathjs = require('path')
@@ -28,7 +29,9 @@ let infoPlugin = {
 			let end = Date.now()
 			const diff = end - start
 			console.log(
-				`\u{2705} Build completed in ${diff}ms with ${result.warnings.length} warnings and ${result.errors.length} errors.`
+				`\u{2705} Build completed in ${diff}ms with ${result.warnings.length} warning${
+					result.warnings.length == 1 ? '' : 's'
+				} and ${result.errors.length} error${result.errors.length == 1 ? '' : 's'}.`
 			)
 		})
 
@@ -44,33 +47,6 @@ let infoPlugin = {
 				}
 			}
 		)
-	},
-}
-let yamlPlugin = {
-	name: 'yamlPlugin',
-	setup(build) {
-		build.onResolve({ filter: /\.ya?ml$/, namespace: 'file' }, args => {
-			return {
-				path: pathjs.resolve(args.resolveDir, args.path),
-				namespace: '.yaml',
-			}
-		})
-		build.onResolve({ filter: /\.ya?ml$/, namespace: 'node-file' }, args => ({
-			contents: 'export default ' + JSON.stringify(yaml.load(fs.readFileSync(args.path, 'utf-8'))),
-			namespace: 'node-file',
-		}))
-		// Load yaml files as JSON
-		build.onLoad({ filter: /.*/, namespace: '.yaml' }, async args => {
-			const content = await fs.promises.readFile(args.path, 'utf8')
-			const json = yaml.load(content)
-			return {
-				contents: JSON.stringify(json),
-				loader: 'json',
-			}
-		})
-		let opts = build.initialOptions
-		opts.loader = opts.loader || {}
-		opts.loader['.yaml'] = 'file'
 	},
 }
 
@@ -128,7 +104,7 @@ function buildDev() {
 			minify: false,
 			platform: 'node',
 			sourcemap: true,
-			plugins: [infoPlugin, sveltePlugin.default(svelteConfig), yamlPlugin],
+			plugins: [infoPlugin, pluginYaml.yamlPlugin(), sveltePlugin.default(svelteConfig)],
 			watch: true,
 			format: 'iife',
 			define: defines,
@@ -146,7 +122,7 @@ function buildProd() {
 			minify: true,
 			platform: 'node',
 			sourcemap: false,
-			plugins: [infoPlugin, sveltePlugin.default(svelteConfig), yamlPlugin],
+			plugins: [infoPlugin, pluginYaml.yamlPlugin(), sveltePlugin.default(svelteConfig)],
 			banner: createBanner(),
 			drop: ['debugger'],
 			format: 'iife',

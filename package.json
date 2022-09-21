@@ -27,6 +27,7 @@
 		"blockbench-types": "^4.4.0",
 		"esbuild": "^0.14.39",
 		"esbuild-plugin-svelte": "^0.1.1",
+		"esbuild-plugin-yaml": "^0.0.1",
 		"js-yaml": "^4.1.0",
 		"prettier": "^2.5.1",
 		"svelte": "^3.50.1",
