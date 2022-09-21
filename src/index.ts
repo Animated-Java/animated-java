@@ -11,10 +11,11 @@ import * as PACKAGE from '../package.json'
 import { events } from './events'
 import './mods'
 import x from './ui/test.svelte'
+import './translation'
 
 console.log({
 	instance: new x({
-		target: document.querySelector('#start-files > div.start_screen_right')!,
+		target: document.querySelector('div.start_screen_right')!,
 		props: {
 			x: '12345',
 		},
@@ -28,7 +29,7 @@ BBPlugin.register(PACKAGE.name, {
 	description: PACKAGE.description,
 	icon: 'create_session',
 	variant: 'desktop',
-	// @ts-ignore // Blockbench types are outdated >:I
+	// @ts-ignore // Blockbench types are outdated still >:I
 	version: PACKAGE.version,
 	min_version: PACKAGE.min_blockbench_version,
 	tags: ['Tag 1', 'Tag 2', 'Tag 3'],

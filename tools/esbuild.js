@@ -9,6 +9,8 @@ const esbuild = require('esbuild')
 const PACKAGE = require('../package.json')
 const sveltePlugin = require('esbuild-plugin-svelte')
 const svelteConfig = require('../svelte.config.js')
+const yaml = require('js-yaml')
+const pathjs = require('path')
 let infoPlugin = {
 	name: 'infoPlugin',
 	/**
@@ -44,6 +46,34 @@ let infoPlugin = {
 		)
 	},
 }
+let yamlPlugin = {
+	name: 'yamlPlugin',
+	setup(build) {
+		build.onResolve({ filter: /\.ya?ml$/, namespace: 'file' }, args => {
+			return {
+				path: pathjs.resolve(args.resolveDir, args.path),
+				namespace: '.yaml',
+			}
+		})
+		build.onResolve({ filter: /\.ya?ml$/, namespace: 'node-file' }, args => ({
+			contents: 'export default ' + JSON.stringify(yaml.load(fs.readFileSync(args.path, 'utf-8'))),
+			namespace: 'node-file',
+		}))
+		// Load yaml files as JSON
+		build.onLoad({ filter: /.*/, namespace: '.yaml' }, async args => {
+			const content = await fs.promises.readFile(args.path, 'utf8')
+			const json = yaml.load(content)
+			return {
+				contents: JSON.stringify(json),
+				loader: 'json',
+			}
+		})
+		let opts = build.initialOptions
+		opts.loader = opts.loader || {}
+		opts.loader['.yaml'] = 'file'
+	},
+}
+
 function createBanner(dev) {
 	const LICENSE = fs.readFileSync('./LICENSE').toString()
 
@@ -90,35 +120,39 @@ Object.entries(process.env).forEach(([key, value]) => {
 
 function buildDev() {
 	esbuild.transformSync('function devlog(message) {console.log(message)}')
-	esbuild.build({
-		entryPoints: ['./src/index.ts'],
-		outfile: `./dist/${PACKAGE.name}.js`,
-		bundle: true,
-		minify: false,
-		platform: 'node',
-		sourcemap: true,
-		plugins: [infoPlugin, sveltePlugin.default(svelteConfig)],
-		watch: true,
-		format: 'iife',
-		define: defines,
-	})
+	esbuild
+		.build({
+			entryPoints: ['./src/index.ts'],
+			outfile: `./dist/${PACKAGE.name}.js`,
+			bundle: true,
+			minify: false,
+			platform: 'node',
+			sourcemap: true,
+			plugins: [infoPlugin, sveltePlugin.default(svelteConfig), yamlPlugin],
+			watch: true,
+			format: 'iife',
+			define: defines,
+		})
+		.catch(() => process.exit(1))
 }
 
 function buildProd() {
 	esbuild.transformSync('function devlog(message) {}')
-	esbuild.build({
-		entryPoints: ['./src/index.ts'],
-		outfile: `./dist/${PACKAGE.name}.js`,
-		bundle: true,
-		minify: true,
-		platform: 'node',
-		sourcemap: false,
-		plugins: [infoPlugin, sveltePlugin.default(svelteConfig)],
-		banner: createBanner(),
-		drop: ['debugger'],
-		format: 'iife',
-		define: defines,
-	})
+	esbuild
+		.build({
+			entryPoints: ['./src/index.ts'],
+			outfile: `./dist/${PACKAGE.name}.js`,
+			bundle: true,
+			minify: true,
+			platform: 'node',
+			sourcemap: false,
+			plugins: [infoPlugin, sveltePlugin.default(svelteConfig), yamlPlugin],
+			banner: createBanner(),
+			drop: ['debugger'],
+			format: 'iife',
+			define: defines,
+		})
+		.catch(() => process.exit(1))
 }
 
 function main() {
