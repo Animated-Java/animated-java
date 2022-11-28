@@ -5,7 +5,7 @@ import {
 } from './svelteFixup'
 
 svelteHelperMarkPluginInitialization()
-//! KEEP CODE WITHIN THESE BOUNDS
+// KEEP CODE WITHIN THESE BOUNDS
 
 import * as PACKAGE from '../package.json'
 import { events } from './events'
@@ -51,6 +51,6 @@ BBPlugin.register(PACKAGE.name, {
 	},
 })
 
-//! KEEP CODE WITHIN THESE BOUNDS
+// KEEP CODE WITHIN THESE BOUNDS
 svelteHelperMarkPluginInitializationComplete()
 svelteHelperLogCollectedNodes()

@@ -52,12 +52,13 @@ let infoPlugin = {
 
 function createBanner(dev) {
 	const LICENSE = fs.readFileSync('./LICENSE').toString()
-
+	const snavesutit = PACKAGE.contributors[0]
 	let lines = [
 		`[ ${PACKAGE.title} ]`,
 		`${PACKAGE.description}`,
-		`Created by ${PACKAGE.author.name}`,
+		`Created by ${PACKAGE.author.name} and, ${snavesutit.name}`,
 		`(${PACKAGE.author.email}) [${PACKAGE.author.url}]`,
+		`(${snavesutit.email}) [${snavesutit.url}]`,
 		``,
 		`[ SOURCE ]`,
 		`${PACKAGE.repository.url}`,
@@ -103,7 +104,7 @@ function buildDev() {
 			bundle: true,
 			minify: false,
 			platform: 'node',
-			sourcemap: true,
+			sourcemap: 'inline',
 			plugins: [infoPlugin, pluginYaml.yamlPlugin(), sveltePlugin.default(svelteConfig)],
 			watch: true,
 			format: 'iife',

@@ -4,10 +4,17 @@
 	"version": "0.3.0",
 	"min_blockbench_version": "4.2.0",
 	"author": {
-		"name": "SnaveSutit",
-		"email": "snavesutit@gmail.com",
-		"url": "https://discordapp.com/users/213746232923783168"
+		"email": "contact@iansenne.com",
+		"name": "Ian Senne",
+		"url": "https://discordapp.com/users/162347688011104256"
 	},
+	"contributors": [
+		{
+			"name": "SnaveSutit",
+			"email": "snavesutit@gmail.com",
+			"url": "https://discordapp.com/users/213746232923783168"
+		}
+	],
 	"repository": {
 		"type": "github",
 		"url": "https://github.com/Animated-Java/animated-java"

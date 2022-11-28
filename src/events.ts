@@ -11,7 +11,6 @@ interface IEvents {
 	// Should show an error if an event that hasn't been labled in IEvents is registered or referenced.
 	// [name: string]: AnimatedJavaEvent
 }
-
 class AnimatedJavaEvent {
 	static events = {} as IEvents
 
