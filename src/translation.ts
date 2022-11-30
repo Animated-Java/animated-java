@@ -3,7 +3,7 @@ import en from './lang/en.yaml'
 
 type TranslationFormattingObject = Record<string, string>
 
-const languages: Record<string, string> = {
+const languages: Record<string, Record<string, string>> = {
 	en,
 }
 
