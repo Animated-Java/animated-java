@@ -331,7 +331,7 @@ animatedJava:
                 individualBoneTag:
                     title: Individuelles Knochentag
                     description:
-                        - Das Tag, mit dem ein bestimmter Bone nach seinem Namen ausgewählt wird
+                        - Das Tag, mit dem ein bestimmter Knochen nach seinem Namen ausgewählt wird
 
                 internalScoreboardObjective:
                     title: Internes Scoreboard
@@ -411,7 +411,7 @@ animatedJava:
                 autoDistance:
                     title: Auto-Abstand
                     description:
-                        - Berechnen Sie automatisch den maximalen Abstand, der erforderlich ist, um alle Bones im Rig zu animieren, basierend auf den gerenderten Animationen.
+                        - Berechnen Sie automatisch den maximalen Abstand, der erforderlich ist, um alle Knochen im Rig zu animieren, basierend auf den berechneten Animationen.
 
                 autoDistanceMovementThreshold:
                     title: Schwellenwert für den automatischen Abstand
