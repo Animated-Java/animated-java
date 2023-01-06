@@ -21,8 +21,8 @@ type AnimatedJavaSettingOptions<T extends keyof AnimatedJavaSettingDataType> = {
 
 interface IAnimatedJavaSettingData<T extends keyof AnimatedJavaSettingDataType> {
 	value?: AnimatedJavaSettingDataType[T]
-	error?: any
-	warning?: any
+	error?: string
+	warning?: string
 }
 
 function newSetting<T extends keyof AnimatedJavaSettingDataType>(
