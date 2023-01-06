@@ -1,24 +1,31 @@
-type AnimatedJavaSettingType = {
-	nbt: string
+type AnimatedJavaSettingDataType = {
+	nbt: string // replace with special NBT type?
 	text: string
 	number: number
-	codebox: string
-	checkbox: boolean
+	boolean: boolean
 }
 
-type AnimatedJavaSettingOptions<T extends keyof AnimatedJavaSettingType> = {
+type AnimatedJavaSettingDisplayType = {
+	nbt: 'codebox' | 'inline'
+	text: 'codebox' | 'inline'
+	number: 'spinner' | 'raw' | 'int' | 'float'
+	boolean: 'checkbox'
+}
+
+type AnimatedJavaSettingOptions<T extends keyof AnimatedJavaSettingDataType> = {
 	id: `${string}:${string}`
 	displayName: string
-	valueType: T
+	dataType: T
+	displayType?: AnimatedJavaSettingDisplayType[T]
 }
 
-interface IAnimatedJavaSettingData<T extends keyof AnimatedJavaSettingType> {
-	value?: AnimatedJavaSettingType[T]
+interface IAnimatedJavaSettingData<T extends keyof AnimatedJavaSettingDataType> {
+	value?: AnimatedJavaSettingDataType[T]
 	error?: any
 	warning?: any
 }
 
-function newSetting<T extends keyof AnimatedJavaSettingType>(
+function newSetting<T extends keyof AnimatedJavaSettingDataType>(
 	options: AnimatedJavaSettingOptions<T>
 ): {
 	info: AnimatedJavaSettingOptions<T>
@@ -39,12 +46,13 @@ const ExporterSettings = {
 	marker: newSetting({
 		id: 'animated_java:marker',
 		displayName: 'animated_java.settings.marker.display_name',
-		valueType: 'checkbox',
+		dataType: 'boolean',
 	}),
 	superSecret: newSetting({
 		id: 'animated_java:superSecret',
 		displayName: 'animated_java.settings.superSecret.display_name',
-		valueType: 'text',
+		dataType: 'text',
+		displayType: 'inline',
 	}),
 }
 
