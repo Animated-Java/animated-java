@@ -25,35 +25,55 @@ interface IAnimatedJavaSettingData<T extends keyof AnimatedJavaSettingDataType> 
 	warning?: string
 }
 
-function newSetting<T extends keyof AnimatedJavaSettingDataType>(
-	options: AnimatedJavaSettingOptions<T>
-): {
+interface IAnimatedJavaSetting<T extends keyof AnimatedJavaSettingDataType> {
 	info: AnimatedJavaSettingOptions<T>
 	push: (settingData: IAnimatedJavaSettingData<T>) => void
 	pull: () => IAnimatedJavaSettingData<T>
-} {
+	onUpdate: <V extends IAnimatedJavaSettingData<T>>(settingData: V) => V
+}
+
+function newSetting<T extends keyof AnimatedJavaSettingDataType>(
+	options: AnimatedJavaSettingOptions<T>,
+	onUpdate?: <V extends IAnimatedJavaSettingData<T>>(settingData: V) => V
+): IAnimatedJavaSetting<T> {
 	return {
 		info: options,
 		push: settingData => {},
 		pull: () => {
 			return {} as IAnimatedJavaSettingData<T>
 		},
+		onUpdate:
+			onUpdate ||
+			(settingData => {
+				return settingData
+			}),
 	}
 }
 
 // NOTE: Translation is handled by the exporter using AJ's built-in translate() function, these are just placeholder values.
 const ExporterSettings = {
-	marker: newSetting({
-		id: 'animated_java:marker',
-		displayName: 'animated_java.settings.marker.display_name',
-		dataType: 'boolean',
-	}),
-	superSecret: newSetting({
-		id: 'animated_java:superSecret',
-		displayName: 'animated_java.settings.superSecret.display_name',
-		dataType: 'text',
-		displayType: 'inline',
-	}),
+	marker: newSetting(
+		{
+			id: 'animated_java:marker',
+			displayName: 'animated_java.settings.marker.display_name',
+			dataType: 'boolean',
+		},
+		settingData => {
+			return settingData
+		}
+	),
+	superSecret: newSetting(
+		{
+			id: 'animated_java:superSecret',
+			displayName: 'animated_java.settings.superSecret.display_name',
+			dataType: 'text',
+			displayType: 'inline',
+		},
+		settingData => {
+			if (settingData.value?.includes('goofy')) settingData.warning = 'Your text is too goofy!'
+			return settingData
+		}
+	),
 }
 
 {
