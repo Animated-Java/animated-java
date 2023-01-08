@@ -24,8 +24,9 @@
 	"types": "./dist/src/index.d.ts",
 	"private": true,
 	"scripts": {
-		"dev": "node ./tools/esbuild.js --mode=dev",
-		"build": "node ./tools/esbuild.js",
+		"build-worker-plugin": "esbuild --bundle --platform=node --outfile=dist/worker-plugin.js --external:esbuild ./tools/plugins/workerPlugin.ts",
+		"dev": "yarn build-worker-plugin && node ./tools/esbuild.js --mode=dev",
+		"build": "yarn build-worker-plugin && node ./tools/esbuild.js",
 		"lint": "prettier --write ."
 	},
 	"devDependencies": {

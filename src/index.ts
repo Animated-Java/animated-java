@@ -12,6 +12,13 @@ import { events } from './events'
 import './mods'
 import x from './ui/test.svelte'
 import './translation'
+import { animationToDataset, workerPool } from './renderWorker/renderer'
+
+//@ts-ignore
+globalThis.ANIMATED_JAVA = {
+	animationToDataset,
+	workerPool,
+}
 
 console.log({
 	instance: new x({

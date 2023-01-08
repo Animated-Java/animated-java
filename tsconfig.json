@@ -9,6 +9,7 @@
 		"moduleResolution": "node",
 		"strict": true,
 		"types": ["node", "blockbench-types", "svelte"],
-		"resolveJsonModule": true
+		"resolveJsonModule": true,
+		"allowSyntheticDefaultImports": true
 	}
 }

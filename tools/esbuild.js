@@ -10,8 +10,7 @@ const PACKAGE = require('../package.json')
 const sveltePlugin = require('esbuild-plugin-svelte')
 const pluginYaml = require('esbuild-plugin-yaml')
 const svelteConfig = require('../svelte.config.js')
-const yaml = require('js-yaml')
-const pathjs = require('path')
+const workerPlugin = require('../dist/worker-plugin')
 let infoPlugin = {
 	name: 'infoPlugin',
 	/**
@@ -95,17 +94,51 @@ Object.entries(process.env).forEach(([key, value]) => {
 	defines[`process.env.${key}`] = JSON.stringify(value)
 })
 
+async function buildWorker(path) {
+	console.log('🤖\u{1F528} Building Worker...')
+	const start = Date.now()
+	const result = await esbuild.build({
+		entryPoints: [path],
+		bundle: true,
+		minify: process.env.NODE_ENV == 'production',
+		sourcemap: process.env.NODE_ENV == 'development' ? 'inline' : false,
+		write: false,
+		target: 'es2019',
+		platform: 'browser',
+		format: 'iife',
+		drop: process.env.NODE_ENV == 'production' ? ['debugger'] : [],
+		metafile: true,
+	})
+	const end = Date.now()
+	const diff = end - start
+	console.log(
+		`🤖\u{2705} Build completed in ${diff}ms with ${result.warnings.length} warning${
+			result.warnings.length == 1 ? '' : 's'
+		} and ${result.errors.length} error${result.errors.length == 1 ? '' : 's'}.`
+	)
+	return result
+}
 function buildDev() {
+	// NOTE: change this to check if logging is enabled?
 	esbuild.transformSync('function devlog(message) {console.log(message)}')
 	esbuild
 		.build({
+			banner: createBanner(),
 			entryPoints: ['./src/index.ts'],
 			outfile: `./dist/${PACKAGE.name}.js`,
 			bundle: true,
 			minify: false,
 			platform: 'node',
 			sourcemap: 'inline',
-			plugins: [infoPlugin, pluginYaml.yamlPlugin(), sveltePlugin.default(svelteConfig)],
+			plugins: [
+				workerPlugin.workerPlugin({
+					builder: buildWorker,
+					typeDefPath: './src/globalWorker.d.ts',
+				}),
+				infoPlugin,
+				pluginYaml.yamlPlugin(),
+				sveltePlugin.default(svelteConfig),
+			],
 			watch: true,
 			format: 'iife',
 			define: defines,
@@ -123,7 +156,14 @@ function buildProd() {
 			minify: true,
 			platform: 'node',
 			sourcemap: false,
-			plugins: [infoPlugin, pluginYaml.yamlPlugin(), sveltePlugin.default(svelteConfig)],
+			plugins: [
+				workerPlugin.workerPlugin({
+					builder: buildWorker,
+				}),
+				infoPlugin,
+				pluginYaml.yamlPlugin(),
+				sveltePlugin.default(svelteConfig),
+			],
 			banner: createBanner(),
 			drop: ['debugger'],
 			format: 'iife',
