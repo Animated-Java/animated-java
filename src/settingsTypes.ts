@@ -36,17 +36,22 @@ function newSetting<T extends keyof AnimatedJavaSettingDataType>(
 	options: AnimatedJavaSettingOptions<T>,
 	onUpdate?: <V extends IAnimatedJavaSettingData<T>>(settingData: V) => V
 ): IAnimatedJavaSetting<T> {
+	// Do setting init stuff
 	return {
 		info: options,
-		push: settingData => {},
+		push: settingData => {
+			// Put setting gui update stuff here
+			// updateGUI(settingData)
+		},
 		pull: () => {
 			return {} as IAnimatedJavaSettingData<T>
 		},
-		onUpdate:
-			onUpdate ||
-			(settingData => {
-				return settingData
-			}),
+		onUpdate: settingData => {
+			const ret = onUpdate ? onUpdate(settingData) : settingData
+			// Put setting gui update stuff here
+			// updateGUI(ret)
+			return ret
+		},
 	}
 }
 
