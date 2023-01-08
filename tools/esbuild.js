@@ -67,7 +67,7 @@ function createBanner(dev) {
 		...LICENSE.split('\n').map(v => v.trim()),
 	]
 
-	let maxLength = JSON.parse(JSON.stringify(lines)).sort((a, b) => b.length - a.length)[0].length
+	let maxLength = Math.max(...lines.map(line => line.length))
 	const leftBuffer = Math.floor(maxLength / 2)
 	const rightBuffer = Math.ceil(maxLength / 2)
 
