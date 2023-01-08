@@ -27,9 +27,12 @@ interface IAnimatedJavaSettingData<T extends keyof AnimatedJavaSettingDataType> 
 
 interface IAnimatedJavaSetting<T extends keyof AnimatedJavaSettingDataType> {
 	info: AnimatedJavaSettingOptions<T>
+	subscribers: Set<Function>
 	push: (settingData: IAnimatedJavaSettingData<T>) => void
 	pull: () => IAnimatedJavaSettingData<T>
 	onUpdate: <V extends IAnimatedJavaSettingData<T>>(settingData: V) => V
+	subscribe(callback: (settingData: IAnimatedJavaSettingData<T>) => void): () => void
+	dispatchSubscribers: (settingData: IAnimatedJavaSettingData<T>) => void
 }
 
 function newSetting<T extends keyof AnimatedJavaSettingDataType>(
@@ -38,19 +41,27 @@ function newSetting<T extends keyof AnimatedJavaSettingDataType>(
 ): IAnimatedJavaSetting<T> {
 	// Do setting init stuff
 	return {
+		subscribers: new Set<Function>(),
 		info: options,
-		push: settingData => {
+		push(settingData) {
 			// Put setting gui update stuff here
 			// updateGUI(settingData)
+			this.dispatchSubscribers(settingData)
 		},
 		pull: () => {
 			return {} as IAnimatedJavaSettingData<T>
 		},
-		onUpdate: settingData => {
+		onUpdate(settingData) {
 			const ret = onUpdate ? onUpdate(settingData) : settingData
-			// Put setting gui update stuff here
-			// updateGUI(ret)
+			this.dispatchSubscribers(ret)
 			return ret
+		},
+		subscribe(callback) {
+			this.subscribers.add(callback)
+			return () => this.subscribers.delete(callback)
+		},
+		dispatchSubscribers(settingData) {
+			this.subscribers.forEach(callback => callback(settingData))
 		},
 	}
 }
