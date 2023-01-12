@@ -27,12 +27,13 @@
 		"build-worker-plugin": "esbuild --bundle --platform=node --outfile=dist/worker-plugin.js --external:esbuild ./tools/plugins/workerPlugin.ts",
 		"dev": "yarn build-worker-plugin && node ./tools/esbuild.js --mode=dev",
 		"build": "yarn build-worker-plugin && node ./tools/esbuild.js",
-		"lint": "prettier --write ."
+		"lint": "prettier --write .",
+		"updateBBTypes": "powershell -Command \"Remove-Item -Recurse temp_bbtypes;\"; git submodule add https://github.com/SnaveSutit/blockbench-types temp_bbtypes/"
 	},
 	"devDependencies": {
 		"@types/js-yaml": "^4.0.5",
 		"@types/node": "^17.0.21",
-		"blockbench-types": "^4.4.0",
+		"@types/three": "^0.148.0",
 		"esbuild": "^0.14.39",
 		"esbuild-plugin-svelte": "^0.1.1",
 		"esbuild-plugin-yaml": "^0.0.1",

@@ -10,25 +10,36 @@ svelteHelperMarkPluginInitialization()
 import * as PACKAGE from '../package.json'
 import { events } from './events'
 import './mods'
-import x from './ui/test.svelte'
+// import x from './ui/test.svelte'
 import './translation'
 import { animationToDataset, workerPool } from './renderWorker/renderer'
+import { AJDialog } from './ui/AJDialog'
+import Settings from './ui/settings.svelte'
 
-//@ts-ignore
+// @ts-ignore
 globalThis.ANIMATED_JAVA = {
 	animationToDataset,
 	workerPool,
+	diagTest() {
+		const d = new AJDialog({
+			svelteComponent: Settings,
+			title: 'Diag Test',
+			id: 'test',
+		})
+		d.show()
+		return d
+	},
 }
 
-console.log({
-	instance: new x({
-		target: document.querySelector('div.start_screen_right')!,
-		props: {
-			x: '12345',
-		},
-	}),
-	component: x,
-})
+// console.log({
+// 	instance: new x({
+// 		target: document.querySelector('div.start_screen_right')!,
+// 		props: {
+// 			x: '12345',
+// 		},
+// 	}),
+// 	component: x,
+// })
 
 BBPlugin.register(PACKAGE.name, {
 	title: PACKAGE.title,

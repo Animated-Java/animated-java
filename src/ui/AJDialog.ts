@@ -23,7 +23,7 @@ export class AJDialog extends Dialog {
 		this.show = () => {
 			diagShow()
 			if (!this.instance) {
-				debugger
+				// debugger
 				this.instance = new svelteComponent({
 					target: mount.parentElement as any,
 					props: {

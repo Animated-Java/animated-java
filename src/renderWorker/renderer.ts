@@ -2,11 +2,11 @@ import type { AnimationDataBundle, DataOutliner, Result, Data } from './renderer
 import { Pool } from './WorkerPool'
 import RenderWorker from 'worker!./renderer.worker'
 export const animationToDataset = (animation: Animation): Data => {
-	function createTree(nodes: OutlinerNode[]): DataOutliner[] {
+	function createTree(nodes: Blockbench.OutlinerNode[]): DataOutliner[] {
 		return nodes
-			.filter(node => node instanceof Group)
+			.filter(node => node instanceof Blockbench.Group)
 			.map(node => {
-				let group = node as Group
+				let group = node as Blockbench.Group
 				return {
 					rot: group.rotation,
 					origin: group.origin,
@@ -19,7 +19,7 @@ export const animationToDataset = (animation: Animation): Data => {
 		return {
 			rot: [0, 0, 0],
 			origin: [0, 0, 0],
-			children: createTree(Outliner.root),
+			children: createTree(Blockbench.Outliner.root),
 			id: 'root',
 		}
 	}
@@ -30,7 +30,8 @@ export const animationToDataset = (animation: Animation): Data => {
 		}
 		// @ts-ignore
 		Object.entries(animation.animators).forEach(([key, animator]: [string, BoneAnimator]) => {
-			data.keyframes[key] = animator.keyframes.map(keyframe => {
+			// FIXME Figure out the correct type for the keyframe param
+			data.keyframes[key] = animator.keyframes.map((keyframe: any) => {
 				return {
 					bezier: {
 						left_time: keyframe.bezier_left_time,
@@ -39,7 +40,12 @@ export const animationToDataset = (animation: Animation): Data => {
 						right_value: keyframe.bezier_right_value,
 						linked: keyframe.bezier_linked,
 					},
-					data_points: keyframe.data_points.map(point => ({ x: point.x, y: point.y, z: point.z })),
+					// FIXME Correct the type for the point param
+					data_points: keyframe.data_points.map((point: THREE.Vector3) => ({
+						x: point.x,
+						y: point.y,
+						z: point.z,
+					})),
 					time: keyframe.time,
 					interpolation: keyframe.interpolation,
 					channel: keyframe.channel,
