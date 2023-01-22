@@ -1,7 +1,7 @@
 import type { AnimationDataBundle, DataOutliner, Result, Data } from './renderer.worker.types'
-import { Pool } from './WorkerPool'
+import { Pool } from './workerPool'
 import RenderWorker from 'worker!./renderer.worker'
-export const animationToDataset = (animation: Animation): Data => {
+export const animationToDataset = (animation: Blockbench.Animation): Data => {
 	function createTree(nodes: Blockbench.OutlinerNode[]): DataOutliner[] {
 		return nodes
 			.filter(node => node instanceof Blockbench.Group)

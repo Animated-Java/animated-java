@@ -1,21 +1,12 @@
-const codec = new Codec('ajmodel', {
+export const codec = new Blockbench.Codec('ajmodel', {
 	load_filter: {
-		extensions: ['ajmodel'],
+		extensions: ['ajmodel', 'mcmodel'],
 		type: 'json',
 	},
 	extension: 'ajmodel',
 	remember: true,
-	id: 'animated_java/ajmodel',
 	name: 'Animated Java Model',
-	description: 'Model format that exports to animated java edition armor_stand animations',
-	show_on_start_screen: true,
-	bone_rig: true,
-	animation_mode: true,
-	canvas_limit: false,
-	rotate_cubes: true,
-	rotation_limit: true,
-	animation_files: true,
-	icon: 'fa-cube',
+
 	export() {
 		var scope = this
 		Blockbench.export(
@@ -31,22 +22,20 @@ const codec = new Codec('ajmodel', {
 			path => scope.afterDownload!(path)
 		)
 	},
-	load(model: any, file: any) {},
-	// @ts-ignore
-	compile(compile: any) {},
-	// @ts-ignore
-	parse(model: any, path: any, add: any) {},
+	load(model, file, add) {},
+	compile(options) {},
+	parse(data, path) {},
 	fileName() {
-		return Project?.name || 'my_ajmodel'
+		return Blockbench.Project?.name || 'my_ajmodel'
 	},
 })
 
-const format = new ModelFormat({
-	id: 'animated_java/ajmodel',
+export const ajModelFormat = new Blockbench.ModelFormat({
+	id: 'animatedJava/ajmodel',
 	icon: 'icon-armor_stand',
 	name: 'Animated Java Model',
-	description: 'Model format that exports to java edition armor_stand animations',
-	category: 'Java',
+	description: 'The Animated Java model format.',
+	category: 'minecraft',
 	target: 'Minecraft: Java Edition',
 	confidential: false,
 	condition: () => true,

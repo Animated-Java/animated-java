@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte'
-	import { Subscribable } from '../util/Suscribable'
+	import { Subscribable } from '../util/suscribable'
 
 	export let onCloseHandler: Subscribable<void> = new Subscribable<void>()
 	let unsub: () => void
@@ -12,11 +12,10 @@
 	})
 </script>
 
-<h1>Hi from Svelteland!</h1>
+<div>
+	<h1>Animated Java</h1>
+	<p>Greetings!</p>
+</div>
 
 <style>
-	h1 {
-		color: red;
-		text-transform: uppercase;
-	}
 </style>

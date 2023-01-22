@@ -13,8 +13,10 @@ import './mods'
 // import x from './ui/test.svelte'
 import './translation'
 import { animationToDataset, workerPool } from './renderWorker/renderer'
-import { AJDialog } from './ui/AJDialog'
+import { AJDialog } from './ui/ajDialog'
 import Settings from './ui/settings.svelte'
+import './modelFormat'
+import './ui/settings'
 
 // @ts-ignore
 globalThis.ANIMATED_JAVA = {
@@ -23,8 +25,8 @@ globalThis.ANIMATED_JAVA = {
 	diagTest() {
 		const d = new AJDialog({
 			svelteComponent: Settings,
-			title: 'Diag Test',
-			id: 'test',
+			title: 'Animated Java: Dialog Test',
+			id: 'animatedJava.test',
 		})
 		d.show()
 		return d
@@ -41,16 +43,16 @@ globalThis.ANIMATED_JAVA = {
 // 	component: x,
 // })
 
-BBPlugin.register(PACKAGE.name, {
+Blockbench.Plugin.register(PACKAGE.name, {
 	title: PACKAGE.title,
 	author: PACKAGE.author.name,
 	description: PACKAGE.description,
-	icon: 'create_session',
+	icon: 'icon-armor_stand',
 	variant: 'desktop',
 	// @ts-ignore // Blockbench types are outdated still >:I
 	version: PACKAGE.version,
 	min_version: PACKAGE.min_blockbench_version,
-	tags: ['Tag 1', 'Tag 2', 'Tag 3'],
+	tags: ['Minecraft: Java Edition', 'Animation', 'Armor Stand'],
 	onload() {
 		devlog(`${PACKAGE.name} loaded!`)
 		events.load.trigger()

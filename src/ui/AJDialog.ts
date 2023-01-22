@@ -1,14 +1,17 @@
 import { SvelteComponent } from 'svelte'
-import { Subscribable } from '../util/Suscribable'
+import { Subscribable } from '../util/suscribable'
 
-export class AJDialog extends Dialog {
+export class AJDialog extends Blockbench.Dialog {
 	instance: SvelteComponent | undefined
 	closeHandler: Subscribable<void>
 	constructor({
 		svelteComponent,
 		...rest
-	}: DialogOptions & {
-		svelteComponent: SvelteComponentConstructor<unknown, Svelte2TsxComponentConstructorParameters<any>>
+	}: Blockbench.DialogOptions & {
+		svelteComponent: SvelteComponentConstructor<
+			unknown,
+			Svelte2TsxComponentConstructorParameters<any>
+		>
 	}) {
 		let mount = document.createComment('Mount')
 		const closeHandler = new Subscribable<void>()

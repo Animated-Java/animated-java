@@ -70,8 +70,8 @@ function newSetting<T extends keyof AnimatedJavaSettingDataType>(
 const ExporterSettings = {
 	marker: newSetting(
 		{
-			id: 'animated_java:marker',
-			displayName: 'animated_java.settings.marker.display_name',
+			id: 'animatedJava:marker',
+			displayName: 'animatedJava.settings.marker.display_name',
 			dataType: 'boolean',
 		},
 		settingData => {
@@ -80,13 +80,14 @@ const ExporterSettings = {
 	),
 	superSecret: newSetting(
 		{
-			id: 'animated_java:superSecret',
-			displayName: 'animated_java.settings.superSecret.display_name',
+			id: 'animatedJava:superSecret',
+			displayName: 'animatedJava.settings.superSecret.display_name',
 			dataType: 'text',
 			displayType: 'inline',
 		},
 		settingData => {
-			if (settingData.value?.includes('goofy')) settingData.warning = 'Your text is too goofy!'
+			if (settingData.value?.includes('goofy'))
+				settingData.warning = 'Your text is too goofy!'
 			return settingData
 		}
 	),
@@ -105,6 +106,6 @@ const ExporterSettings = {
 
 	// Set setting error/warning.
 	// Note that the value doesn't need to be included, if it's ommitted it doesn't effect the setting's value.
-	ExporterSettings.marker.push({ error: 'animated_java.error.generic' })
-	ExporterSettings.superSecret.push({ warning: 'animated_java.warning.generic' })
+	ExporterSettings.marker.push({ error: 'animatedJava.error.generic' })
+	ExporterSettings.superSecret.push({ warning: 'animatedJava.warning.generic' })
 }
