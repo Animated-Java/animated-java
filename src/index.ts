@@ -7,7 +7,7 @@ import {
 svelteHelperMarkPluginInitialization()
 // KEEP CODE WITHIN THESE BOUNDS
 
-import * as PACKAGE from '../package.json'
+import PACKAGE from '../package.json'
 import { events } from './events'
 import './mods'
 // import x from './ui/test.svelte'
@@ -16,7 +16,7 @@ import { animationToDataset, workerPool } from './renderWorker/renderer'
 import { AJDialog } from './ui/ajDialog'
 import Settings from './ui/settings.svelte'
 import './modelFormat'
-import './ui/settings'
+import * as ajMainMenu from './ui/ajMainMenu'
 
 // @ts-ignore
 globalThis.ANIMATED_JAVA = {
@@ -31,6 +31,7 @@ globalThis.ANIMATED_JAVA = {
 		d.show()
 		return d
 	},
+	mainMenu: ajMainMenu.menuBarEntry,
 }
 
 // console.log({
@@ -54,19 +55,19 @@ Blockbench.Plugin.register(PACKAGE.name, {
 	min_version: PACKAGE.min_blockbench_version,
 	tags: ['Minecraft: Java Edition', 'Animation', 'Armor Stand'],
 	onload() {
-		devlog(`${PACKAGE.name} loaded!`)
+		// devlog(`${PACKAGE.name} loaded!`)
 		events.load.trigger()
 	},
 	onunload() {
-		devlog(`${PACKAGE.name} unloaded!`)
+		// devlog(`${PACKAGE.name} unloaded!`)
 		events.unload.trigger()
 	},
 	oninstall() {
-		devlog(`${PACKAGE.name} installed!`)
+		// devlog(`${PACKAGE.name} installed!`)
 		events.install.trigger()
 	},
 	onuninstall() {
-		devlog(`${PACKAGE.name} uninstalled!`)
+		// devlog(`${PACKAGE.name} uninstalled!`)
 		events.uninstall.trigger()
 	},
 })

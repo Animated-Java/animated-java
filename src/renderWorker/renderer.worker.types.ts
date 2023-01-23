@@ -21,11 +21,12 @@ export interface AnimationDataBundle {
 	}
 	length: number
 }
+
 export interface DataOutliner {
-	rot: [number, number, number]
-	origin: [number, number, number]
-	children: DataOutliner[]
 	id: string
+	rot: Blockbench.ArrayVector3
+	origin: Blockbench.ArrayVector3
+	children: DataOutliner[]
 }
 
 export type Data = {

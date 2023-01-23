@@ -1,17 +1,16 @@
-const preprocess = require('svelte-preprocess')
-const { typescript } = require('svelte-preprocess-esbuild')
-/** @type {import("svelte/types/compiler/interfaces").CompileOptions} */
-module.exports.compilerOptions = {
+import prep from 'svelte-preprocess'
+import { typescript } from 'svelte-preprocess-esbuild'
+export const compilerOptions = {
 	dev: process.env.NODE_ENV === 'development',
 	css: true,
 }
 
-module.exports.preprocess = [
+export const preprocess = [
 	typescript({
-		target: 'es2020',
+		target: 'es2022',
 		define: {
 			'process.browser': true,
 		},
 	}),
-	preprocess({ typescript: false }),
+	prep({ typescript: false }),
 ]

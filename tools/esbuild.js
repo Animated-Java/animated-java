@@ -4,13 +4,15 @@ if (process.argv.includes('--mode=dev')) {
 	process.env.NODE_ENV = 'production'
 }
 
-const fs = require('fs')
-const esbuild = require('esbuild')
-const PACKAGE = require('../package.json')
-const sveltePlugin = require('esbuild-plugin-svelte')
-const pluginYaml = require('esbuild-plugin-yaml')
-const svelteConfig = require('../svelte.config.js')
-const workerPlugin = require('../dist/worker-plugin')
+import * as fs from 'fs'
+import * as esbuild from 'esbuild'
+import sveltePlugin from 'esbuild-plugin-svelte'
+import pluginYaml from 'esbuild-plugin-yaml'
+import * as svelteConfig from '../svelte.config.js'
+import * as workerPlugin from './plugins/workerPlugin.js'
+
+const PACKAGE = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
+
 let infoPlugin = {
 	name: 'infoPlugin',
 	/**
@@ -34,18 +36,18 @@ let infoPlugin = {
 			)
 		})
 
-		build.onLoad(
-			{
-				filter: /\.[tj]sx?$/,
-			},
-			result => {
-				const code = fs.readFileSync(result.path, 'utf-8')
-				return {
-					contents: 'const devlog = console.log;\n' + code,
-					loader: 'ts',
-				}
-			}
-		)
+		// build.onLoad(
+		// 	{
+		// 		filter: /\.[tj]sx?$/,
+		// 	},
+		// 	result => {
+		// 		const code = fs.readFileSync(result.path, 'utf-8')
+		// 		return {
+		// 			contents: 'const devlog = console.log;\n' + code,
+		// 			loader: 'ts',
+		// 		}
+		// 	}
+		// )
 	},
 }
 
@@ -120,7 +122,7 @@ async function buildWorker(path) {
 }
 function buildDev() {
 	// NOTE: change this to check if logging is enabled?
-	esbuild.transformSync('function devlog(message) {console.log(message)}')
+	// esbuild.transformSync('function devlog(message) {console.log(message)}')
 	esbuild
 		.build({
 			banner: createBanner(),
@@ -130,6 +132,7 @@ function buildDev() {
 			minify: false,
 			platform: 'node',
 			sourcemap: 'inline',
+			loader: { '.svg': 'dataurl' },
 			plugins: [
 				workerPlugin.workerPlugin({
 					builder: buildWorker,
@@ -147,7 +150,7 @@ function buildDev() {
 }
 
 function buildProd() {
-	esbuild.transformSync('function devlog(message) {}')
+	// esbuild.transformSync('function devlog(message) {}')
 	esbuild
 		.build({
 			entryPoints: ['./src/index.ts'],
@@ -156,6 +159,7 @@ function buildProd() {
 			minify: true,
 			platform: 'node',
 			sourcemap: false,
+			loader: { '.svg': 'dataurl' },
 			plugins: [
 				workerPlugin.workerPlugin({
 					builder: buildWorker,
