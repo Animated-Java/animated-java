@@ -14,3 +14,4 @@ export const preprocess = [
 	}),
 	prep({ typescript: false }),
 ]
+export default { preprocess }
