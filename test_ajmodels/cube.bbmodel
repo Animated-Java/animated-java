@@ -1,0 +1,21 @@
+{
+	"meta": {
+		"format_version": "4.5",
+		"model_format": "animatedJava/ajmodel",
+		"box_uv": true
+	},
+	"name": "",
+	"ambientocclusion": true,
+	"visible_box": [1, 1, 0],
+	"variable_placeholders": "",
+	"variable_placeholder_buttons": [],
+	"timeline_setups": [],
+	"unhandled_root_fields": {},
+	"resolution": {
+		"width": 16,
+		"height": 16
+	},
+	"elements": [],
+	"outliner": [],
+	"textures": []
+}

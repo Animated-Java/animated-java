@@ -8,25 +8,51 @@ export const codec = new Blockbench.Codec('ajmodel', {
 	name: 'Animated Java Model',
 
 	export() {
-		var scope = this
 		Blockbench.export(
 			{
 				resource_id: 'model',
-				type: scope.name,
+				type: this.name,
 				extensions: ['ajmodel', 'mcmodel'],
-				name: scope.fileName!(),
-				startpath: scope.startPath!(),
-				content: scope.compile!()!,
-				custom_writer: isApp ? (a, b) => scope.write!(a, b) : null!,
+				name: this.fileName!(),
+				startpath: this.startPath!(),
+				content: isApp ? undefined : this.compile!(),
+				custom_writer: isApp
+					? (content, path) => {
+							// Path needs to be changed before compiling for relative resource paths
+							Project!.save_path = path
+							content = this.compile!()
+							this.write!(content, path)
+					  }
+					: undefined,
 			},
-			path => scope.afterDownload!(path)
+			path => this.afterDownload!(path)
 		)
 	},
-	load(model, file, add) {},
-	compile(options) {},
+	load(model, file, add) {
+		setupProject(ajModelFormat)
+
+		var name = pathToName(file.path, true)
+		if (file.path && isApp && !file.no_file) {
+			let project = Project
+			Project!.save_path = file.path
+			Project!.name = pathToName(name, false)
+			addRecentProject({
+				name,
+				path: file.path,
+				icon: 'icon-blockbench_file',
+			})
+			setTimeout(() => {
+				if (Project == project) updateRecentProjectThumbnail()
+			}, 200)
+		}
+		this.parse!(model, file.path)
+	},
+	compile(options): string | ArrayBuffer {
+		return ''
+	},
 	parse(data, path) {},
 	fileName() {
-		return Blockbench.Project?.name || 'my_ajmodel'
+		return Project?.name || 'unnamed_ajmodel'
 	},
 })
 
