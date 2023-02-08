@@ -1,12 +1,13 @@
 import type { AnimationDataBundle, DataOutliner, Result, Data } from './renderer.worker.types'
 import { Pool } from './workerPool'
+
 import RenderWorker from 'worker!./renderer.worker'
-export const animationToDataset = (animation: Blockbench.Animation): Data => {
-	function createTree(nodes: Blockbench.OutlinerNode[]): DataOutliner[] {
+export const animationToDataset = (animation: BlockbenchTypeAction): Data => {
+	function createTree(nodes: OutlinerNode[]): DataOutliner[] {
 		return nodes
 			.filter(node => node instanceof Blockbench.Group)
 			.map(node => {
-				let group = node as Blockbench.Group
+				let group = node as Group
 				return {
 					rot: group.rotation,
 					origin: group.origin,

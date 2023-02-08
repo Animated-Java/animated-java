@@ -24,8 +24,8 @@ export interface AnimationDataBundle {
 
 export interface DataOutliner {
 	id: string
-	rot: Blockbench.ArrayVector3
-	origin: Blockbench.ArrayVector3
+	rot: ArrayVector3
+	origin: ArrayVector3
 	children: DataOutliner[]
 }
 

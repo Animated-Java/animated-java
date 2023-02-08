@@ -44,7 +44,7 @@ globalThis.ANIMATED_JAVA = {
 // 	component: x,
 // })
 
-Blockbench.Plugin.register(PACKAGE.name, {
+BBPlugin.register(PACKAGE.name, {
 	title: PACKAGE.title,
 	author: PACKAGE.author.name,
 	description: PACKAGE.description,

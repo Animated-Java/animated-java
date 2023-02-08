@@ -7,7 +7,7 @@ export class AJDialog extends Blockbench.Dialog {
 	constructor({
 		svelteComponent,
 		...rest
-	}: Blockbench.DialogOptions & {
+	}: DialogOptions & {
 		// FIXME These types should not have ugly red squiggly lines under them @IanSSenne
 		// @ts-ignore
 		svelteComponent: SvelteComponentConstructor<

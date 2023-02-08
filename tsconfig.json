@@ -7,7 +7,7 @@
 		"allowJs": true,
 		"moduleResolution": "node",
 		"strict": true,
-		"types": ["node", "svelte", "three", "D:/github-repos/blockbench-types/types"],
+		"types": ["node", "svelte", "three", "./types/blockbench-types"],
 		"resolveJsonModule": true,
 		"allowSyntheticDefaultImports": true
 	}
