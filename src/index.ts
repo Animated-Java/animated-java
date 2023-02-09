@@ -16,7 +16,7 @@ import { animationToDataset, workerPool } from './renderWorker/renderer'
 import { AJDialog } from './ui/ajDialog'
 import Settings from './ui/settings.svelte'
 import './modelFormat'
-import * as ajMainMenu from './ui/ajMainMenu'
+import * as ajMainMenu from './ui/ajSettings'
 
 // @ts-ignore
 globalThis.ANIMATED_JAVA = {

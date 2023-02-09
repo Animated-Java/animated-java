@@ -30,6 +30,7 @@ export class AJDialog extends Blockbench.Dialog {
 			diagShow()
 			if (!this.instance) {
 				// debugger
+				mount.parentElement!.style.overflowY = 'visible'
 				this.instance = new svelteComponent({
 					target: mount.parentElement as any,
 					props: {

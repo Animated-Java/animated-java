@@ -2,6 +2,9 @@
 	import { onDestroy } from 'svelte'
 	import { Subscribable } from '../util/suscribable'
 	import Checkbox from './settingsComponents/checkbox.svelte'
+	import { AnimatedJavaSettings } from '../settings'
+
+	console.log(AnimatedJavaSettings)
 
 	export let onCloseHandler: Subscribable<void> = new Subscribable<void>()
 	let unsub: () => void
@@ -14,9 +17,11 @@
 </script>
 
 <div>
-	<h1>Animated Java</h1>
-	<p>Greetings!</p>
-	<Checkbox />
+	{#each Object.values(AnimatedJavaSettings) as setting}
+		{#if setting.info.displayType == 'checkbox'}
+			<Checkbox {setting} />
+		{/if}
+	{/each}
 </div>
 
 <style>

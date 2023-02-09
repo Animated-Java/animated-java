@@ -1,2 +1,10 @@
-animatedJava.ui.title: Animated Java
-animatedJava.ui.mainMenu: Animated Java
+animatedJava.title: Animated Java
+
+animatedJava.menubar.settings: Animated Java
+
+animatedJava.menubar.items.settings: Settings
+animatedJava.menubar.items.projectSettings: Project Settings
+
+animatedJava.dialog.settings.title: Animated Java Settings
+
+animatedJava.dialog.projectSettings.title: Animated Java Project Settings

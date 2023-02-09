@@ -18,21 +18,8 @@ function format(str: string, dict: TranslationFormattingObject = {}) {
 //!! This may need to be updated inside of a Blockbench post-startup event instead of immediately
 export let currentLanguage = settings.language.value
 
-// interface IYamlFile {
-// 	[name: string]: string | IYamlFile | Array<IYamlFile>
-// }
-
-// function getTranslatedString(str: String) {
-// 	let parts = str.split('.')
-// 	let localObject: IYamlFile = {}
-// 	for (const part of parts) {
-// 		const value = localObject[part]
-// 		if (typeof value == 'string' || Array.isArray(value)) return value
-// 		else localObject = value
-// 	}
-// }
-
 export function translate(key: string, formattingObject?: TranslationFormattingObject): string {
+	console.log(currentLanguage)
 	let translated = languages[currentLanguage][key]
 	// Return the translation key if no valid translation is found.
 	if (translated == undefined) return key
