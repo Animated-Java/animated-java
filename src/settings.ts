@@ -16,7 +16,7 @@ export type AnimatedJavaSettingDataType = {
 export type AnimatedJavaSettingDisplayType = {
 	nbt: 'codebox' | 'inline'
 	text: 'codebox' | 'inline'
-	number: 'spinner' | 'raw' | 'int' | 'float'
+	number: 'int' | 'float'
 	boolean: 'checkbox'
 }
 
@@ -26,7 +26,7 @@ export type AnimatedJavaSettingOptions<T extends keyof AnimatedJavaSettingDataTy
 	 */
 	id: `${string}:${string}`
 	displayName: string
-	description: string
+	description: string[]
 	dataType: T
 	displayType?: AnimatedJavaSettingDisplayType[T]
 }
@@ -90,39 +90,39 @@ export function newSetting<T extends keyof AnimatedJavaSettingDataType>(
 }
 
 export const AnimatedJavaSettings = {
-	foo: newSetting({
-		id: 'animatedjava:foo',
-		displayName: translate('settings.foo'),
-		description: translate('settings.foo.description'),
+	checkbox: newSetting({
+		id: 'animatedjava:checkbox',
+		displayName: translate('animatedJava.settings.checkbox'),
+		description: translate('animatedJava.settings.checkbox.description').split('\n'),
 		dataType: 'boolean',
 		displayType: 'checkbox',
 	}),
-	bar: newSetting({
-		id: 'animatedjava:bar',
-		displayName: translate('settings.bar'),
-		description: translate('settings.bar.description'),
-		dataType: 'boolean',
-		displayType: 'checkbox',
+	number_int: newSetting({
+		id: 'animatedjava:number_int',
+		displayName: translate('animatedJava.settings.number_int'),
+		description: translate('animatedJava.settings.number_int.description').split('\n'),
+		dataType: 'number',
+		displayType: 'int',
 	}),
-	baz: newSetting({
-		id: 'animatedjava:baz',
-		displayName: translate('settings.baz'),
-		description: translate('settings.baz.description'),
-		dataType: 'boolean',
-		displayType: 'checkbox',
+	number_float: newSetting({
+		id: 'animatedjava:number_float',
+		displayName: translate('animatedJava.settings.number_float'),
+		description: translate('animatedJava.settings.number_float.description').split('\n'),
+		dataType: 'number',
+		displayType: 'float',
 	}),
-	qux: newSetting({
-		id: 'animatedjava:qux',
-		displayName: translate('settings.qux'),
-		description: translate('settings.qux.description'),
-		dataType: 'boolean',
-		displayType: 'checkbox',
+	text_inline: newSetting({
+		id: 'animatedjava:text_inline',
+		displayName: translate('animatedJava.settings.text_inline'),
+		description: translate('animatedJava.settings.text_inline.description').split('\n'),
+		dataType: 'text',
+		displayType: 'inline',
 	}),
-	quux: newSetting({
-		id: 'animatedjava:quux',
-		displayName: translate('settings.quux'),
-		description: translate('settings.quux.description'),
-		dataType: 'boolean',
-		displayType: 'checkbox',
+	text_codebox: newSetting({
+		id: 'animatedjava:text_codebox',
+		displayName: translate('animatedJava.settings.text_codebox'),
+		description: translate('animatedJava.settings.text_codebox.description').split('\n'),
+		dataType: 'text',
+		displayType: 'codebox',
 	}),
 }

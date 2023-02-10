@@ -5,6 +5,34 @@ animatedJava.menubar.settings: Animated Java
 animatedJava.menubar.items.settings: Settings
 animatedJava.menubar.items.projectSettings: Project Settings
 
+### Settings
 animatedJava.dialog.settings.title: Animated Java Settings
+### Setting items
+# Dev settings
+animatedJava.settings.checkbox: Checkbox
+animatedJava.settings.checkbox.description: |-
+  A basic checkbox.
+  Contains a boolean.
 
+animatedJava.settings.number_int: Number Int
+animatedJava.settings.number_int.description: |-
+  An integer number setting.
+  It will always contain a real number. None of this floating-point nonsense!
+
+animatedJava.settings.number_float: Number Float
+animatedJava.settings.number_float.description: |-
+  An number setting.
+  Contains a number.
+
+animatedJava.settings.text_inline: Text Inline
+animatedJava.settings.text_inline.description: |-
+  A basic text input.
+  Useful for configuring a single line of text.
+
+animatedJava.settings.text_codebox: Text Codebox
+animatedJava.settings.text_codebox.description: |-
+  Text Codeboxes can be single-line or multi-line, With optional/custom syntax highlighting.
+  Useful for code, formatted text, and other such things.
+
+### Project Settings
 animatedJava.dialog.projectSettings.title: Animated Java Project Settings

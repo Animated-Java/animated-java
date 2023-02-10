@@ -6,13 +6,31 @@
 
 <div class="setting">
 	<div class="flex">
-		<input type="checkbox" />
+		<input type="number" class="number" />
 		<p>{setting.info.displayName}</p>
 	</div>
 	<HelpButton {setting} />
 </div>
 
 <style>
+	.number {
+		border: none;
+		background: var(--color-button);
+		display: inline-block;
+		text-align: center;
+		vertical-align: middle;
+		cursor: default;
+		outline: none;
+		height: 32px;
+		min-width: 100px;
+		width: auto;
+		color: var(--color-text);
+		padding-right: 16px;
+		padding-left: 16px;
+		font-weight: normal;
+		cursor: pointer;
+	}
+
 	p {
 		display: inline-block;
 	}

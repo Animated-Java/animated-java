@@ -1,4 +1,5 @@
 <script lang="ts">
+	// Credit: https://github.com/wysher/svelte-overlay/blob/master/src/components/Overlay.svelte
 	const RIGHT = 'right'
 	const LEFT = 'left'
 	const TOP = 'top'
@@ -231,7 +232,9 @@
 	</div>
 	<div
 		class="content-wrapper"
-		style={`top: ${topStyle}px; left: ${leftStyle}px; width: ${widthStyle}px; height: ${heightStyle}px; z-index:${zIndex};`}
+		style={`top: ${topStyle}px; left: ${leftStyle}px; width: ${widthStyle}px; height: ${heightStyle}px; z-index:${
+			zIndex + 1
+		};`}
 	>
 		{#if openedState}
 			<div class={`content ${currentPosition || ''}`} bind:this={content}>

@@ -77,7 +77,7 @@ export const codec = new Blockbench.Codec('ajmodel', {
 				extensions: ['ajmodel', 'mcmodel'],
 				name: this.fileName!(),
 				startpath: this.startPath!(),
-				content: isApp ? undefined : this.compile!(),
+				content: this.compile!(),
 				custom_writer: isApp
 					? (content, path) => {
 							// Path needs to be changed before compiling for relative resource paths
