@@ -4,7 +4,7 @@ import { ajAction } from '../util/ajAction'
 // @ts-ignore
 import logo from '../assets/AnimatedJava-2022.svg'
 import { AJDialog } from './ajDialog'
-import { default as SettingsComponent } from './settings.svelte'
+import { default as SettingsComponent } from './animatedJavaSettings.svelte'
 
 export const menuBarEntry: any = new BarMenu(
 	'animatedJava',
@@ -39,10 +39,10 @@ Blockbench.on('resize_window', data => {})
 
 export function openAjSettingsDialog() {
 	const dialog = new AJDialog({
-		// @ts-ignore
 		svelteComponent: SettingsComponent,
 		title: translate('animatedJava.dialog.settings.title'),
 		id: 'animatedJava.settings',
+		width: 800,
 	})
 	dialog.show()
 }

@@ -47,6 +47,7 @@
 		"vue": "^3.2.33"
 	},
 	"dependencies": {
-		"molangjs": "^1.6.0"
+		"molangjs": "^1.6.0",
+		"svelte-ace": "^1.0.21"
 	}
 }

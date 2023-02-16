@@ -1,7 +1,8 @@
 <script lang="ts">
-	import type { IAnimatedJavaSetting } from '../../settings'
+	import { fly } from 'svelte/transition'
+	import type { AnimatedJavaSetting } from '../../settings'
 	import Overlay from './overlay.svelte'
-	export let setting: IAnimatedJavaSetting<any>
+	export let setting: AnimatedJavaSetting<any>
 
 	function onClick() {
 		console.log('Setting question mark clicked!')
@@ -9,12 +10,18 @@
 </script>
 
 <Overlay position={'bottom-left'} zIndex={10}>
-	<button class="help-popup" on:click={onClick} slot="parent" let:open on:mouseenter={open}>
+	<button
+		class="help-popup"
+		on:click={onClick}
+		slot="parent"
+		let:open
+		on:mouseenter={open}
+		let:close
+		on:mouseleave={close}
+	>
 		?
 	</button>
-	<!-- let:close
-	on:mouseleave={close} -->
-	<div slot="content">
+	<div slot="content" transition:fly={{ y: -10, duration: 500 }}>
 		<div class="popup">
 			{#each setting.info.description as line}
 				<p class="setting-description">{line}</p>
@@ -30,7 +37,6 @@
 
 	.popup {
 		display: flex;
-		position: relative !important;
 		flex-direction: column;
 		background-color: var(--color-dark);
 		margin: 10px;
@@ -41,18 +47,19 @@
 		border-color: var(--color-bright_border);
 		border-width: 1px;
 		border-style: solid;
-		border-top: unset;
+		/* border-top: unset; */
 	}
 
 	button.help-popup {
 		all: unset !important;
 		position: relative !important;
 		background-color: var(--color-button) !important;
-		padding: 10px !important;
+		padding: 11px !important;
 		height: 10px !important;
 		width: 10px !important;
 		line-height: 10px !important;
 		font-size: 20px !important;
+		margin-left: 10px !important;
 	}
 
 	button.help-popup:hover {

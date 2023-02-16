@@ -14,7 +14,7 @@ import './mods'
 import './translation'
 import { animationToDataset, workerPool } from './renderWorker/renderer'
 import { AJDialog } from './ui/ajDialog'
-import Settings from './ui/settings.svelte'
+import Settings from './ui/animatedJavaSettings.svelte'
 import './modelFormat'
 import * as ajMainMenu from './ui/ajSettings'
 
