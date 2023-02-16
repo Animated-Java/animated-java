@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition'
-	import type { AnimatedJavaSetting } from '../../settings'
+	import type * as Settings from '../../settings'
 	import Overlay from './overlay.svelte'
-	export let setting: AnimatedJavaSetting<any>
+	export let setting: Settings.Setting<any, any>
 
 	function onClick() {
 		console.log('Setting question mark clicked!')

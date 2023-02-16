@@ -2,15 +2,11 @@
 	import { onDestroy } from 'svelte'
 	import { fly } from 'svelte/transition'
 	import { bounceOut } from 'svelte/easing'
-	import { AnimatedJavaSetting } from '../../settings'
+	import * as Settings from '../../settings'
 	import { objectEqual } from '../../util'
 	import HelpButton from './helpButton.svelte'
 
-	// import { AceEditor } from 'svelte-ace'
-	// import 'brace/mode/json'
-	// import 'brace/theme/github'
-
-	export let setting: AnimatedJavaSetting<any>
+	export let setting: Settings.Setting<any, any>
 
 	let storedSetting = setting.pull()
 
@@ -36,25 +32,29 @@
 			<p>{setting.info.displayName}</p>
 		</div>
 		<div class="flex" style="justify-content:flex-end; flex-grow:1; padding-left:10px;">
-			{#if setting.info.dataType === 'boolean' && setting.info.displayType == 'checkbox'}
+			{#if setting instanceof Settings.BooleanSetting && setting.info.displayType == 'checkbox'}
 				<input type="checkbox" bind:checked={storedSetting.value} />
 			{/if}
 
-			{#if setting.info.dataType === 'number' && setting.info.displayType == 'int'}
+			{#if setting instanceof Settings.NumberSetting && setting.info.displayType == 'int'}
 				<input type="number" class="number" step="1" bind:value={storedSetting.value} />
 			{/if}
 
-			{#if setting.info.dataType === 'number' && setting.info.displayType == 'float'}
+			{#if setting instanceof Settings.NumberSetting && setting.info.displayType == 'float'}
 				<input type="number" class="number" step="0.1" bind:value={storedSetting.value} />
 			{/if}
 
-			{#if setting.info.dataType === 'text' && setting.info.displayType == 'inline'}
+			{#if setting instanceof Settings.TextSetting && setting.info.displayType == 'inline'}
 				<input type="text" class="text_inline" bind:value={storedSetting.value} />
 			{/if}
 
-			<!-- {#if setting.info.dataType === 'text' && setting.info.displayType == 'codebox'}
-				<AceEditor bind:value={storedSetting.value} />
-			{/if} -->
+			{#if setting instanceof Settings.RecordSetting && setting.info.displayType == 'dropdown'}
+				<select bind:value={storedSetting.value}>
+					{#each Object.entries(setting.options) as [key, value]}
+						<option value={key}>{value}</option>
+					{/each}
+				</select>
+			{/if}
 
 			<HelpButton {setting} />
 		</div>

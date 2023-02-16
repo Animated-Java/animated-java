@@ -146,7 +146,10 @@ function buildDev() {
 			format: 'iife',
 			define: defines,
 		})
-		.catch(() => process.exit(1))
+		.catch(e => {
+			console.error(e)
+			process.exit(1)
+		})
 }
 
 function buildProd() {

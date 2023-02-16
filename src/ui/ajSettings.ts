@@ -5,9 +5,10 @@ import { ajAction } from '../util/ajAction'
 import logo from '../assets/AnimatedJava-2022.svg'
 import { AJDialog } from './ajDialog'
 import { default as SettingsComponent } from './animatedJavaSettings.svelte'
+import { AnimatedJavaSettings } from '../settings'
 
 export const menuBarEntry: any = new BarMenu(
-	'animatedJava',
+	'animated_java',
 	[],
 	() => Format.id === ajModelFormat.id
 )
@@ -15,7 +16,7 @@ menuBarEntry.label.style.display = 'none'
 document.querySelector('#menu_bar')!.appendChild(menuBarEntry.label)
 
 let img = document.createElement('img')
-menuBarEntry.label.innerHTML = translate('animatedJava.menubar.settings')
+menuBarEntry.label.innerHTML = translate('animated_java.menubar.settings')
 img.src = logo
 img.width = 16
 img.height = 16
@@ -38,24 +39,30 @@ Blockbench.on('unselect_project', data => {
 Blockbench.on('resize_window', data => {})
 
 export function openAjSettingsDialog() {
-	const dialog = new AJDialog({
-		svelteComponent: SettingsComponent,
-		title: translate('animatedJava.dialog.settings.title'),
-		id: 'animatedJava.settings',
-		width: 800,
-	})
+	const dialog = new AJDialog(
+		SettingsComponent,
+		{
+			settings: AnimatedJavaSettings,
+		},
+		{
+			title: translate('animated_java.dialog.settings.title'),
+			id: 'animated_java.settings',
+			width: 800,
+			buttons: [translate('animated_java.dialog.settings.close_button')],
+		}
+	)
 	dialog.show()
 }
 
 MenuBar.addAction(
-	ajAction('animatedJavaSettings', {
+	ajAction('animated_java:settings', {
 		icon: 'settings',
-		category: 'animatedJava',
-		name: translate('animatedJava.menubar.items.settings'),
+		category: 'animated_java',
+		name: translate('animated_java.menubar.items.settings'),
 		condition: () => Format.id === ajModelFormat.id,
 		click: function () {
 			openAjSettingsDialog()
 		},
 	}),
-	'animatedJava'
+	'animated_java'
 )

@@ -19,7 +19,7 @@ function format(str: string, dict: TranslationFormattingObject = {}) {
 export let currentLanguage = settings.language.value
 
 export function translate(key: string, formattingObject?: TranslationFormattingObject): string {
-	console.log(currentLanguage)
+	// console.log(currentLanguage)
 	let translated = languages[currentLanguage][key]
 	// Return the translation key if no valid translation is found.
 	if (translated == undefined) return key

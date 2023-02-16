@@ -1,47 +1,68 @@
-animatedJava.title: Animated Java
+animated_java.title: Animated Java
 #
-animatedJava.menubar.settings: Animated Java
+animated_java.menubar.settings: Animated Java
 #
-animatedJava.menubar.items.settings: Settings
-animatedJava.menubar.items.projectSettings: Project Settings
+animated_java.menubar.items.settings: Settings
+animated_java.menubar.items.project_settings: Project Settings
 #
 ### Settings
-animatedJava.dialog.settings.title: Animated Java Settings
-### Setting items
+animated_java.dialog.settings.title: Animated Java Settings
+animated_java.dialog.settings.close_button: Done
+
+animated_java.settings.default_exporter: Default Exporter
+animated_java.settings.default_exporter.description: |-
+  The default exporter for projects.
+  Can be configured per-project in the Project's Settings.
+
+### Project Settings
+animated_java.dialog.project_settings.title: Animated Java Project Settings
+animated_java.dialog.project_settings.close_button: Done
+
+animated_java.project_settings.project_name: Project Name
+animated_java.project_settings.project_name.description: |-
+  The name of the project.
+  Note that this will be the namespace the exported Data Pack.
+
 # Dev settings
-animatedJava.settings.checkbox: Checkbox
-animatedJava.settings.checkbox.description: |-
+animated_java.settings.checkbox: Checkbox
+animated_java.settings.checkbox.description: |-
   A basic checkbox.
   Contains a boolean.
-animatedJava.settings.checkbox.false_warning: Your checkbox is false. This is wrong >:(
+animated_java.settings.checkbox.false_error: Your checkbox is false. This is wrong >:(
 #
-animatedJava.settings.number_int: Number (Int)
-animatedJava.settings.number_int.description: |-
+animated_java.settings.number_int: Number (Int)
+animated_java.settings.number_int.description: |-
   An integer number setting.
   It will always contain a real number. None of this floating-point nonsense!
-animatedJava.settings.number_int.low_error: Your Int is too low!
+animated_java.settings.number_int.low_error: Your Int is too low!
 #
-animatedJava.settings.number_float: Number (Float)
-animatedJava.settings.number_float.description: |-
+animated_java.settings.number_float: Number (Float)
+animated_java.settings.number_float.description: |-
   An number setting.
   Contains a number.
 #
-animatedJava.settings.text_inline: Text Inline
-animatedJava.settings.text_inline.description: |-
+animated_java.settings.text_inline: Text Inline
+animated_java.settings.text_inline.description: |-
   A basic text input.
   Useful for configuring a single line of text.
 #
-animatedJava.settings.text_codebox: Text Codebox
-animatedJava.settings.text_codebox.description: |-
+animated_java.settings.text_codebox: Text Codebox
+animated_java.settings.text_codebox.description: |-
   Text Codeboxes can be single-line or multi-line, With optional/custom syntax highlighting.
   Useful for code, formatted text, and other such things.
 #
-animatedJava.settings.dropdown: Dropdown
-animatedJava.settings.dropdown.description: |-
+animated_java.settings.dropdown: Dropdown
+animated_java.settings.dropdown.description: |-
   A dropdown menu.
   Contains a list of key-value pairs.
   The value is displayed on the dropdown, and the key is returned.
-animatedJava.settings.dropdown.option3_error: Option 3 is not allowed!
+animated_java.settings.dropdown.option3_error: Option 3 is not allowed!
 #
 ### Project Settings
-animatedJava.dialog.projectSettings.title: Animated Java Project Settings
+animated_java.dialog.projectSettings.title: Animated Java Project Settings
+
+### Exporters
+# Statue Exporter
+animated_java.exporters.statue_exporter.display_name: Statue Exporter
+# Animation Exporter
+animated_java.exporters.animation_exporter.display_name: Animation Exporter

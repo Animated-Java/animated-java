@@ -4,21 +4,20 @@ import { Subscribable } from '../util/suscribable'
 export class AJDialog extends Blockbench.Dialog {
 	instance: SvelteComponent | undefined
 	closeHandler: Subscribable<void>
-	constructor({
-		svelteComponent,
-		...rest
-	}: DialogOptions & {
+	constructor(
 		// @ts-ignore
 		svelteComponent: SvelteComponentConstructor<
 			unknown,
 			// @ts-ignore
 			Svelte2TsxComponentConstructorParameters<any>
-		>
-	}) {
+		>,
+		svelteComponentArgs: Record<string, any>,
+		options: DialogOptions
+	) {
 		let mount = document.createComment('Mount')
 		const closeHandler = new Subscribable<void>()
 		super({
-			...rest,
+			...options,
 			lines: [mount as any as HTMLElement],
 			onCancel() {
 				closeHandler.dispatchSubscribers()
@@ -34,6 +33,7 @@ export class AJDialog extends Blockbench.Dialog {
 					target: mount.parentElement as any,
 					props: {
 						onCloseHandler: closeHandler,
+						...svelteComponentArgs,
 					},
 				}) as any
 			}
