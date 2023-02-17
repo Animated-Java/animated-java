@@ -54,7 +54,10 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 		Blockbench.Codec.prototype.load!.bind(ajCodec)(model, file, add)
 	},
 	compile(options) {
-		const model = {}
+		const model = {
+			meta: {},
+			animated_java: {},
+		}
 		return compileJSON(model)
 	},
 })
