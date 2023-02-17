@@ -31,7 +31,7 @@ function openAjProjectSettingsDialog() {
 }
 
 new BlockbenchMod({
-	name: 'animated_java:project_settings',
+	id: 'animated_java:project_settings',
 	inject() {
 		;(BarItems.project_window as Action).click = projectWindowClick
 	},

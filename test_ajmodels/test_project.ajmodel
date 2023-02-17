@@ -1,0 +1,11 @@
+{
+	"meta": {
+		"format": "animated_java/ajmodel",
+		"format_version": "1.0"
+	},
+	"animated_java": {
+		"settings": {
+			"project_name": "test_project"
+		}
+	}
+}

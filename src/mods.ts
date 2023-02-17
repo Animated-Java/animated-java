@@ -1,7 +1,7 @@
 import { events } from './events'
 
 interface BlockbenchModOptions {
-	name: string
+	id: string
 	inject: () => void
 	extract: () => void
 }
@@ -14,7 +14,7 @@ export class BlockbenchMod {
 	extract: BlockbenchModOptions['extract']
 
 	constructor(options: BlockbenchModOptions) {
-		this.name = options.name
+		this.name = options.id
 		this.inject = options.inject
 		this.extract = options.extract
 		all.push(this)
