@@ -7,5 +7,60 @@
 		"settings": {
 			"project_name": "test_project"
 		}
-	}
+	},
+	"resolution": {
+		"width": 16,
+		"height": 16
+	},
+	"elements": [
+		{
+			"name": "cube",
+			"box_uv": true,
+			"rescale": false,
+			"locked": false,
+			"from": [-1, 0, -1],
+			"to": [1, 2, 1],
+			"autouv": 1,
+			"color": 0,
+			"origin": [0, 0, 0],
+			"faces": {
+				"north": {
+					"uv": [2, 2, 4, 4]
+				},
+				"east": {
+					"uv": [0, 2, 2, 4]
+				},
+				"south": {
+					"uv": [6, 2, 8, 4]
+				},
+				"west": {
+					"uv": [4, 2, 6, 4]
+				},
+				"up": {
+					"uv": [4, 2, 2, 0]
+				},
+				"down": {
+					"uv": [6, 0, 4, 2]
+				}
+			},
+			"type": "cube",
+			"uuid": "cc4fc40c-5e59-13b9-22c9-5d8dadab9122"
+		}
+	],
+	"outliner": [
+		{
+			"name": "bone",
+			"origin": [0, 0, 0],
+			"color": 0,
+			"uuid": "69aa99f5-fee8-5db4-accc-408ffe509670",
+			"export": true,
+			"mirror_uv": false,
+			"isOpen": true,
+			"locked": false,
+			"visibility": true,
+			"autouv": 0,
+			"children": ["cc4fc40c-5e59-13b9-22c9-5d8dadab9122"]
+		}
+	],
+	"textures": []
 }
