@@ -5,7 +5,7 @@
 	},
 	"animated_java": {
 		"settings": {
-			"project_name": "test_project",
+			"project_namespace": "test_project",
 			"exporter": 1
 		}
 	},

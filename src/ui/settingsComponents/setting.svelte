@@ -10,15 +10,9 @@
 
 	setting._onInit()
 
-	// let storedSetting: Settings.ISettingData<any>
-
-	const settingUnsub = setting.subscribe(settingData => {
+	$: {
 		setting._onUpdate()
-	})
-
-	onDestroy(() => {
-		settingUnsub()
-	})
+	}
 </script>
 
 <div class="setting flex_column" style="align-items:stretch;">
@@ -31,12 +25,13 @@
 				<input type="checkbox" bind:checked={setting.value} />
 			{/if}
 
-			{#if setting instanceof Settings.IntSetting}
-				<input type="number" class="number" step="1" bind:value={setting.value} />
-			{/if}
-
-			{#if setting instanceof Settings.IntSetting}
-				<input type="number" class="number" step="0.1" bind:value={setting.value} />
+			{#if setting instanceof Settings.NumberSetting}
+				<input
+					type="number"
+					class="number"
+					step={setting.step}
+					bind:value={setting.value}
+				/>
 			{/if}
 
 			{#if setting instanceof Settings.InlineTextSetting}

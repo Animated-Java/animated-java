@@ -1,5 +1,6 @@
 import { _AnimatedJavaExporter } from './exporter'
 import { translate } from './translation'
+import { defer } from './util'
 import { Subscribable } from './util/suscribable'
 
 export interface ISettingData<V> extends Object {
@@ -42,7 +43,7 @@ export class Setting<V> extends Subscribable<ISettingData<V>> {
 
 	set value(value: V) {
 		this._value = value
-		this.dispatchSubscribers({ value })
+		defer(() => this.dispatchSubscribers({ value }))
 	}
 
 	get warning() {
@@ -50,8 +51,8 @@ export class Setting<V> extends Subscribable<ISettingData<V>> {
 	}
 
 	set warning(str: string | undefined) {
-		this.warning = str
-		this.dispatchSubscribers({ warning: str })
+		this._warning = str
+		defer(() => this.dispatchSubscribers({ warning: str }))
 	}
 
 	get error() {
@@ -60,7 +61,7 @@ export class Setting<V> extends Subscribable<ISettingData<V>> {
 
 	set error(str: string | undefined) {
 		this.error = str
-		this.dispatchSubscribers({ error: str })
+		defer(() => this.dispatchSubscribers({ error: str }))
 	}
 
 	_onInit() {
@@ -90,33 +91,35 @@ export class CheckboxSetting extends Setting<boolean> {
 	}
 }
 
-export class IntSetting extends Setting<number> {
-	constructor(
-		options: ISettingOptions<number>,
-		public onUpdate?: (setting: IntSetting) => void,
-		public onInit?: (setting: IntSetting) => void
-	) {
-		super(options)
-	}
-
-	_onUpdate() {
-		if (isNaN(this._value)) this._value = this.defaultValue
-		this._value = Math.round(this._value)
-		super._onUpdate()
-	}
+interface INumberSettingOptions extends ISettingOptions<number> {
+	min?: number
+	max?: number
+	step?: number
+	snap?: number
 }
 
-export class FloatSetting extends Setting<number> {
+export class NumberSetting extends Setting<number> {
+	min?: number
+	max?: number
+	step?: number
+	snap?: number
 	constructor(
-		options: ISettingOptions<number>,
-		public onUpdate?: (setting: FloatSetting) => void,
-		public onInit?: (setting: FloatSetting) => void
+		options: INumberSettingOptions,
+		public onUpdate?: (setting: NumberSetting) => void,
+		public onInit?: (setting: NumberSetting) => void
 	) {
 		super(options)
+		this.min = options.min
+		this.max = options.max
+		this.step = options.step
+		this.snap = options.snap
 	}
 
 	_onUpdate() {
 		if (isNaN(this._value)) this._value = this.defaultValue
+		if (this.snap) this._value = Math.round(this._value / this.snap) * this.snap
+		this._value = Math.min(Math.max(this._value, this.min ?? -Infinity), this.max ?? Infinity)
+
 		super._onUpdate()
 	}
 }

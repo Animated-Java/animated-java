@@ -1,22 +1,28 @@
+import { safeFunctionName } from './minecraft/util'
 import { ajModelFormat } from './modelFormat'
 import { DropdownSetting, InlineTextSetting } from './settings'
 import { translate } from './translation'
 
 export interface IAnimatedJavaProjectSettings {
-	project_name: InlineTextSetting
+	project_namespace: InlineTextSetting
 	exporter: DropdownSetting<string>
 }
 
 export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 	return {
-		project_name: new InlineTextSetting({
-			id: 'animated_java:project_name',
-			displayName: translate('animated_java.project_settings.project_name'),
-			description: translate('animated_java.project_settings.project_name.description').split(
-				'\n'
-			),
-			defaultValue: 'Untitled',
-		}),
+		project_namespace: new InlineTextSetting(
+			{
+				id: 'animated_java:project_namespace',
+				displayName: translate('animated_java.project_settings.project_namespace'),
+				description: translate(
+					'animated_java.project_settings.project_namespace.description'
+				).split('\n'),
+				defaultValue: 'Untitled',
+			},
+			function onUpdate(setting) {
+				setting._value = safeFunctionName(setting._value)
+			}
+		),
 		exporter: new DropdownSetting<string>(
 			{
 				id: 'animated_java:exporter',

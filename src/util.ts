@@ -16,3 +16,7 @@ export function objectEqual(a: any, b: any) {
 	/*Object's properties are equivalent */
 	return true
 }
+
+export function defer(fn: Function) {
+	setTimeout(fn, 0)
+}

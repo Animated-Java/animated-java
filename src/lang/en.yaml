@@ -18,10 +18,9 @@ animated_java.settings.default_exporter.description: |-
 animated_java.dialog.project_settings.title: Animated Java Project Settings
 animated_java.dialog.project_settings.close_button: Done
 
-animated_java.project_settings.project_name: Project Name
-animated_java.project_settings.project_name.description: |-
-  The name of the project.
-  Note that this will be the namespace the exported Data Pack.
+animated_java.project_settings.project_namespace: Project Name
+animated_java.project_settings.project_namespace.description: |-
+  The namespace of the project.
 
 animated_java.project_settings.exporter: Exporter
 animated_java.project_settings.exporter.description: |-
