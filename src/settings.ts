@@ -21,7 +21,7 @@ export class Setting<V> extends Subscribable<ISettingData<V>> {
 	description: string[]
 	defaultValue: V
 	onUpdate?: (setting: this) => void
-	onOpen?: (setting: this) => void
+	onInit?: (setting: this) => void
 	_value: V
 	_warning?: string
 	_error?: string
@@ -63,8 +63,8 @@ export class Setting<V> extends Subscribable<ISettingData<V>> {
 		this.dispatchSubscribers({ error: str })
 	}
 
-	_onOpen() {
-		if (this.onOpen) this.onOpen(this)
+	_onInit() {
+		if (this.onInit) this.onInit(this)
 	}
 
 	_onUpdate() {
@@ -84,7 +84,7 @@ export class CheckboxSetting extends Setting<boolean> {
 	constructor(
 		options: ISettingOptions<boolean>,
 		public onUpdate?: (setting: CheckboxSetting) => void,
-		public onOpen?: (setting: CheckboxSetting) => void
+		public onInit?: (setting: CheckboxSetting) => void
 	) {
 		super(options)
 	}
@@ -94,7 +94,7 @@ export class IntSetting extends Setting<number> {
 	constructor(
 		options: ISettingOptions<number>,
 		public onUpdate?: (setting: IntSetting) => void,
-		public onOpen?: (setting: IntSetting) => void
+		public onInit?: (setting: IntSetting) => void
 	) {
 		super(options)
 	}
@@ -110,7 +110,7 @@ export class FloatSetting extends Setting<number> {
 	constructor(
 		options: ISettingOptions<number>,
 		public onUpdate?: (setting: FloatSetting) => void,
-		public onOpen?: (setting: FloatSetting) => void
+		public onInit?: (setting: FloatSetting) => void
 	) {
 		super(options)
 	}
@@ -125,7 +125,7 @@ export class InlineTextSetting extends Setting<string> {
 	constructor(
 		options: ISettingOptions<string>,
 		public onUpdate?: (setting: InlineTextSetting) => void,
-		public onOpen?: (setting: InlineTextSetting) => void
+		public onInit?: (setting: InlineTextSetting) => void
 	) {
 		super(options)
 	}
@@ -135,7 +135,7 @@ export class CodeboxSetting extends Setting<string> {
 	constructor(
 		options: ISettingOptions<string>,
 		public onUpdate?: (setting: CodeboxSetting) => void,
-		public onOpen?: (setting: CodeboxSetting) => void
+		public onInit?: (setting: CodeboxSetting) => void
 	) {
 		super(options)
 	}
@@ -154,7 +154,7 @@ export class DropdownSetting<V extends any> extends Setting<number> {
 	constructor(
 		options: IDropdownSettingOptions<V>,
 		public onUpdate?: (options: DropdownSetting<V>) => void,
-		public onOpen?: (options: DropdownSetting<V>) => void
+		public onInit?: (options: DropdownSetting<V>) => void
 	) {
 		super(options as ISettingOptions<number>)
 		this.options = options.options
@@ -191,7 +191,7 @@ export let AnimatedJavaSettings = {
 		function onUpdate(setting) {
 			console.log(setting.selected)
 		},
-		function onOpen(setting) {
+		function onInit(setting) {
 			setting.options = Object.values(AnimatedJavaExporter.exporters).map(exporter => ({
 				displayName: exporter.name,
 				description: exporter.description.split('\n'),

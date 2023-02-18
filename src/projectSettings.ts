@@ -28,7 +28,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				options: [],
 			},
 			undefined,
-			function onOpen(setting) {
+			function onInit(setting) {
 				setting.options = Object.values(AnimatedJavaExporter.exporters).map(exporter => ({
 					displayName: exporter.name,
 					description: exporter.description.split('\n'),

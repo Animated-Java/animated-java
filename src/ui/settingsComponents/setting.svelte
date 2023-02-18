@@ -8,7 +8,7 @@
 
 	export let setting: Settings.Setting<any>
 
-	setting._onOpen()
+	setting._onInit()
 
 	// let storedSetting: Settings.ISettingData<any>
 
