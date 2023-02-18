@@ -22,6 +22,29 @@ animated_java.project_settings.project_namespace: Project Name
 animated_java.project_settings.project_namespace.description: |-
   The namespace of the project.
 
+animated_java.project_settings.rig_export_folder: Rig Export Folder
+animated_java.project_settings.rig_export_folder.description: |-
+  What folder to put the generated model files in.
+  Should be inside of a valid resource pack.
+
+animated_java.project_settings.resourcepack_title: Resource Pack
+
+animated_java.project_settings.rig_item: Rig Item
+animated_java.project_settings.rig_item.description: |-
+  The item to use to display the models used in the rig.
+
+animated_java.project_settings.rig_item_model: Rig Item Model
+animated_java.project_settings.rig_item_model.description: |-
+  The export location of the rig item's model.
+  Should be in a valid resource pack under `minecraft:models/item`
+
+animated_java.project_settings.datapack_title: Data Pack
+
+animated_java.project_settings.verbose: Verbose
+animated_java.project_settings.verbose.description: |-
+  Whether to print verbose output to the chat when running AJ functions.
+  Useful for debugging.
+
 animated_java.project_settings.exporter: Exporter
 animated_java.project_settings.exporter.description: |-
   The exporter for this project.

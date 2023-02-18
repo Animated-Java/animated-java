@@ -47,7 +47,7 @@ export function openAjSettingsDialog() {
 		{
 			title: translate('animated_java.dialog.settings.title'),
 			id: 'animated_java.settings',
-			width: 800,
+			width: 600,
 			buttons: [translate('animated_java.dialog.settings.close_button')],
 		}
 	)

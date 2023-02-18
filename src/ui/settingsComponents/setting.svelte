@@ -3,10 +3,15 @@
 	import { fly } from 'svelte/transition'
 	import { bounceOut } from 'svelte/easing'
 	import * as Settings from '../../settings'
-	import { objectEqual } from '../../util'
+	import { defer, objectEqual } from '../../util'
 	import HelpButton from './helpButton.svelte'
 
-	export let setting: Settings.Setting<any>
+	export let setting: Settings.AJSetting<any>
+	let loaded = false
+
+	defer(() => {
+		loaded = true
+	})
 
 	setting._onInit()
 
@@ -15,55 +20,66 @@
 	}
 </script>
 
-<div class="setting flex_column" style="align-items:stretch;">
-	<div class="flex_row" style="justify-content:space-between;">
-		<div class="flex">
-			<p>{setting.displayName}</p>
+{#if loaded}
+	<div class="setting flex_column" style="align-items:stretch;">
+		<div class="flex_row" style="justify-content:space-between;">
+			<div class="flex">
+				<p>{setting.displayName}</p>
+			</div>
+			<div class="flex" style="justify-content:flex-end; flex-grow:1; padding-left:10px;">
+				{#if setting instanceof Settings.AJCheckboxSetting}
+					<input type="checkbox" bind:checked={setting.value} />
+				{/if}
+
+				{#if setting instanceof Settings.AJNumberSetting}
+					<input
+						type="number"
+						class="number"
+						step={setting.step}
+						bind:value={setting.value}
+					/>
+				{/if}
+
+				{#if setting instanceof Settings.AJInlineTextSetting}
+					<input type="text" class="text_inline" bind:value={setting.value} />
+				{/if}
+
+				{#if setting instanceof Settings.AJDropdownSetting}
+					<select bind:value={setting.value}>
+						{#each setting.options as option}
+							<option value={setting.options.indexOf(option)}>
+								<p>{option.displayName}</p>
+							</option>
+						{/each}
+					</select>
+				{/if}
+
+				{#if setting instanceof Settings.AJFolderSetting}
+					<input
+						type="text"
+						class="text_inline"
+						contenteditable="false"
+						bind:value={setting.value}
+					/>
+				{/if}
+
+				<HelpButton {setting} />
+			</div>
 		</div>
-		<div class="flex" style="justify-content:flex-end; flex-grow:1; padding-left:10px;">
-			{#if setting instanceof Settings.CheckboxSetting}
-				<input type="checkbox" bind:checked={setting.value} />
-			{/if}
-
-			{#if setting instanceof Settings.NumberSetting}
-				<input
-					type="number"
-					class="number"
-					step={setting.step}
-					bind:value={setting.value}
-				/>
-			{/if}
-
-			{#if setting instanceof Settings.InlineTextSetting}
-				<input type="text" class="text_inline" bind:value={setting.value} />
-			{/if}
-
-			{#if setting instanceof Settings.DropdownSetting}
-				<select bind:value={setting.value}>
-					{#each setting.options as option}
-						<option value={setting.options.indexOf(option)}>
-							<p>{option.displayName}</p>
-						</option>
-					{/each}
-				</select>
-			{/if}
-
-			<HelpButton {setting} />
-		</div>
+		{#if setting.warning}
+			<div class="flex_row warning" in:fly={{ y: -25, duration: 500, easing: bounceOut }}>
+				<div class="material-icons" style="margin-right:5px">warning</div>
+				<div>{setting.warning}</div>
+			</div>
+		{/if}
+		{#if setting.error}
+			<div class="flex_row error" in:fly={{ y: -25, duration: 500, easing: bounceOut }}>
+				<div class="material-icons" style="margin-right:5px">error</div>
+				<div>{setting.error}</div>
+			</div>
+		{/if}
 	</div>
-	{#if setting.warning}
-		<div class="flex_row warning" in:fly={{ y: -25, duration: 500, easing: bounceOut }}>
-			<div class="material-icons" style="margin-right:5px">warning</div>
-			<div>{setting.warning}</div>
-		</div>
-	{/if}
-	{#if setting.error}
-		<div class="flex_row error" in:fly={{ y: -25, duration: 500, easing: bounceOut }}>
-			<div class="material-icons" style="margin-right:5px">error</div>
-			<div>{setting.error}</div>
-		</div>
-	{/if}
-</div>
+{/if}
 
 <style>
 	.warning {
@@ -93,10 +109,11 @@
 	.text_inline {
 		background: var(--color-dark);
 		font-family: var(--font-code);
-		flex-grow: 1;
+		/* flex-grow: 1; */
 		padding: 5px;
 		padding-left: 11px;
 		padding-right: 11px;
+		width: 350px;
 	}
 
 	div.flex {

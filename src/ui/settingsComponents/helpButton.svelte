@@ -2,7 +2,7 @@
 	import { fly } from 'svelte/transition'
 	import type * as Settings from '../../settings'
 	import Overlay from './overlay.svelte'
-	export let setting: Settings.Setting<any>
+	export let setting: Settings.AJSetting<any>
 
 	function onClick() {
 		console.log('Setting question mark clicked!')
@@ -21,7 +21,11 @@
 	>
 		?
 	</button>
-	<div slot="content" transition:fly={{ y: -10, duration: 500 }}>
+	<div
+		slot="content"
+		in:fly={{ y: -10, duration: 500, delay: 500 }}
+		out:fly={{ y: -10, duration: 250 }}
+	>
 		<div class="popup">
 			{#each setting.description as line}
 				<p class="setting-description">{line}</p>
@@ -41,7 +45,7 @@
 		background-color: var(--color-dark);
 		margin: 10px;
 		padding: 10px;
-		width: 492px;
+		width: 552px;
 		position: relative;
 		left: 20px;
 		border-color: var(--color-bright_border);

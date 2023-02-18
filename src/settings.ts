@@ -3,20 +3,20 @@ import { translate } from './translation'
 import { defer } from './util'
 import { Subscribable } from './util/suscribable'
 
-export interface ISettingData<V> extends Object {
+export interface IAJSettingData<V> extends Object {
 	value?: V
 	warning?: string
 	error?: string
 }
 
-interface ISettingOptions<V> {
+interface IAJSettingOptions<V> {
 	id: `${string}:${string}`
 	displayName: string
 	description: string[]
 	defaultValue: V
 }
 
-export class Setting<V> extends Subscribable<ISettingData<V>> {
+export class AJSetting<V> extends Subscribable<IAJSettingData<V>> {
 	id: `${string}:${string}`
 	displayName: string
 	description: string[]
@@ -26,8 +26,9 @@ export class Setting<V> extends Subscribable<ISettingData<V>> {
 	_value: V
 	_warning?: string
 	_error?: string
+	export: boolean = true
 
-	constructor(options: ISettingOptions<V>) {
+	constructor(options: IAJSettingOptions<V>) {
 		super()
 		this.id = options.id
 		this.displayName = options.displayName
@@ -81,32 +82,32 @@ export class Setting<V> extends Subscribable<ISettingData<V>> {
 	}
 }
 
-export class CheckboxSetting extends Setting<boolean> {
+export class AJCheckboxSetting extends AJSetting<boolean> {
 	constructor(
-		options: ISettingOptions<boolean>,
-		public onUpdate?: (setting: CheckboxSetting) => void,
-		public onInit?: (setting: CheckboxSetting) => void
+		options: IAJSettingOptions<boolean>,
+		public onUpdate?: (setting: AJCheckboxSetting) => void,
+		public onInit?: (setting: AJCheckboxSetting) => void
 	) {
 		super(options)
 	}
 }
 
-interface INumberSettingOptions extends ISettingOptions<number> {
+interface IAJNumberSettingOptions extends IAJSettingOptions<number> {
 	min?: number
 	max?: number
 	step?: number
 	snap?: number
 }
 
-export class NumberSetting extends Setting<number> {
+export class AJNumberSetting extends AJSetting<number> {
 	min?: number
 	max?: number
 	step?: number
 	snap?: number
 	constructor(
-		options: INumberSettingOptions,
-		public onUpdate?: (setting: NumberSetting) => void,
-		public onInit?: (setting: NumberSetting) => void
+		options: IAJNumberSettingOptions,
+		public onUpdate?: (setting: AJNumberSetting) => void,
+		public onInit?: (setting: AJNumberSetting) => void
 	) {
 		super(options)
 		this.min = options.min
@@ -124,48 +125,47 @@ export class NumberSetting extends Setting<number> {
 	}
 }
 
-export class InlineTextSetting extends Setting<string> {
+export class AJInlineTextSetting extends AJSetting<string> {
 	constructor(
-		options: ISettingOptions<string>,
-		public onUpdate?: (setting: InlineTextSetting) => void,
-		public onInit?: (setting: InlineTextSetting) => void
+		options: IAJSettingOptions<string>,
+		public onUpdate?: (setting: AJInlineTextSetting) => void,
+		public onInit?: (setting: AJInlineTextSetting) => void
 	) {
 		super(options)
 	}
 }
 
-export class CodeboxSetting extends Setting<string> {
+export class AJCodeboxSetting extends AJSetting<string> {
 	constructor(
-		options: ISettingOptions<string>,
-		public onUpdate?: (setting: CodeboxSetting) => void,
-		public onInit?: (setting: CodeboxSetting) => void
+		options: IAJSettingOptions<string>,
+		public onUpdate?: (setting: AJCodeboxSetting) => void,
+		public onInit?: (setting: AJCodeboxSetting) => void
 	) {
 		super(options)
 	}
 }
 
-interface IDropdownOption<V> {
+interface IAJDropdownOption<V> {
 	displayName: string
 	description: string[]
 	value: V
 }
-interface IDropdownSettingOptions<V> extends ISettingOptions<number> {
-	options: IDropdownOption<V>[]
+interface IAJDropdownSettingOptions<V> extends IAJSettingOptions<number> {
+	options: IAJDropdownOption<V>[]
 }
-export class DropdownSetting<V extends any> extends Setting<number> {
-	options: IDropdownOption<V>[]
+export class AJDropdownSetting<V extends any> extends AJSetting<number> {
+	options: IAJDropdownOption<V>[]
 	constructor(
-		options: IDropdownSettingOptions<V>,
-		public onUpdate?: (options: DropdownSetting<V>) => void,
-		public onInit?: (options: DropdownSetting<V>) => void
+		options: IAJDropdownSettingOptions<V>,
+		public onUpdate?: (options: AJDropdownSetting<V>) => void,
+		public onInit?: (options: AJDropdownSetting<V>) => void
 	) {
-		super(options as ISettingOptions<number>)
+		super(options as IAJSettingOptions<number>)
 		this.options = options.options
 	}
 
 	get selected(): V {
-		console.log(this.options, this.options[this._value], this._value)
-		return this.options[this._value].value
+		return this.options[this._value]?.value
 	}
 
 	_onUpdate() {
@@ -180,8 +180,31 @@ export class DropdownSetting<V extends any> extends Setting<number> {
 	}
 }
 
+export class AJFolderSetting extends AJSetting<string> {
+	constructor(
+		options: IAJSettingOptions<string>,
+		public onUpdate?: (setting: AJFolderSetting) => void,
+		public onInit?: (setting: AJFolderSetting) => void
+	) {
+		super(options)
+	}
+}
+
+export class AJMetaSetting extends AJSetting<null> {
+	export: boolean = false
+	constructor(
+		options: IAJSettingOptions<null>,
+		public onUpdate?: (setting: AJTitleSetting) => void,
+		public onInit?: (setting: AJTitleSetting) => void
+	) {
+		super(options)
+	}
+}
+
+export class AJTitleSetting extends AJMetaSetting {}
+
 export let AnimatedJavaSettings = {
-	default_exporter: new DropdownSetting<string>(
+	default_exporter: new AJDropdownSetting<string>(
 		{
 			id: 'animated_java:default_exporter',
 			displayName: translate('animated_java.settings.default_exporter'),

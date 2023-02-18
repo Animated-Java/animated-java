@@ -19,9 +19,12 @@ import './ui/ajProjectSettings'
 import { _AnimatedJavaExporter } from './exporter'
 import { translate } from './translation'
 import { AnimatedJavaSettings } from './settings'
+import * as AJSettings from './settings'
 
 // @ts-ignore
 globalThis.AnimatedJavaExporter = _AnimatedJavaExporter
+// @ts-ignore
+globalThis.AnimatedJavaSettings = AJSettings
 // @ts-ignore
 globalThis.ANIMATED_JAVA = {
 	animationToDataset,

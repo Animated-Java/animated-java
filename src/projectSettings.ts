@@ -1,16 +1,28 @@
 import { safeFunctionName } from './minecraft/util'
 import { ajModelFormat } from './modelFormat'
-import { DropdownSetting, InlineTextSetting } from './settings'
+import {
+	AJCheckboxSetting,
+	AJDropdownSetting,
+	AJFolderSetting,
+	AJInlineTextSetting,
+	AJTitleSetting,
+} from './settings'
 import { translate } from './translation'
 
 export interface IAnimatedJavaProjectSettings {
-	project_namespace: InlineTextSetting
-	exporter: DropdownSetting<string>
+	project_namespace: AJInlineTextSetting
+	resourcepack_title: AJTitleSetting
+	rig_item: AJInlineTextSetting
+	rig_item_model: AJInlineTextSetting
+	rig_export_folder: AJFolderSetting
+	datapack_title: AJTitleSetting
+	verbose: AJCheckboxSetting
+	exporter: AJDropdownSetting<string>
 }
 
 export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 	return {
-		project_namespace: new InlineTextSetting(
+		project_namespace: new AJInlineTextSetting(
 			{
 				id: 'animated_java:project_namespace',
 				displayName: translate('animated_java.project_settings.project_namespace'),
@@ -23,7 +35,58 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				setting._value = safeFunctionName(setting._value)
 			}
 		),
-		exporter: new DropdownSetting<string>(
+
+		resourcepack_title: new AJTitleSetting({
+			id: 'animated_java:resourcepack_title',
+			displayName: translate('animated_java.project_settings.resourcepack_title'),
+			description: [],
+			defaultValue: null,
+		}),
+
+		rig_item: new AJInlineTextSetting({
+			id: 'animated_java:statue_exporter:rig_item',
+			displayName: translate('animated_java.project_settings.rig_item'),
+			description: translate('animated_java.project_settings.rig_item.description').split(
+				'\n'
+			),
+			defaultValue: 'minecraft:stone',
+		}),
+
+		rig_item_model: new AJInlineTextSetting({
+			id: 'animated_java:statue_exporter:rig_item_model',
+			displayName: translate('animated_java.project_settings.rig_item_model'),
+			description: translate(
+				'animated_java.project_settings.rig_item_model.description'
+			).split('\n'),
+			defaultValue: '',
+		}),
+
+		rig_export_folder: new AJFolderSetting({
+			id: 'animated_java:statue_exporter:rig_export_folder',
+			displayName: translate('animated_java.project_settings.rig_export_folder'),
+			description: translate(
+				'animated_java.project_settings.rig_export_folder.description'
+			).split('\n'),
+			defaultValue: '',
+		}),
+
+		datapack_title: new AJTitleSetting({
+			id: 'animated_java:datapack_title',
+			displayName: translate('animated_java.project_settings.datapack_title'),
+			description: [],
+			defaultValue: null,
+		}),
+
+		verbose: new AJCheckboxSetting({
+			id: 'animated_java:verbose',
+			displayName: translate('animated_java.project_settings.verbose'),
+			description: translate('animated_java.project_settings.verbose.description').split(
+				'\n'
+			),
+			defaultValue: false,
+		}),
+
+		exporter: new AJDropdownSetting<string>(
 			{
 				id: 'animated_java:exporter',
 				displayName: translate('animated_java.project_settings.exporter'),

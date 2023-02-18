@@ -7,6 +7,7 @@ declare global {
 		animated_java_settings?: IAnimatedJavaProjectSettings
 	}
 	const AnimatedJavaExporter: typeof _AnimatedJavaExporter
+	const AnimatedJavaSettings: typeof import('./settings')
 	const ANIMATED_JAVA: {
 		translate: typeof translate
 	}

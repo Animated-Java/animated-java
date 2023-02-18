@@ -3,7 +3,7 @@ import { BlockbenchMod } from '../mods'
 import { translate } from '../translation'
 import { ajAction } from '../util/ajAction'
 import { AJDialog } from './ajDialog'
-import { default as SettingsComponent } from './animatedJavaSettings.svelte'
+import { default as SettingsComponent } from './projectSettings.svelte'
 
 const oldProjectWindowClick = (BarItems.project_window as Action).click
 
@@ -23,7 +23,7 @@ function openAjProjectSettingsDialog() {
 		{
 			title: translate('animated_java.dialog.project_settings.title'),
 			id: 'animated_java.project_settings',
-			width: 800,
+			width: 600,
 			buttons: [translate('animated_java.dialog.project_settings.close_button')],
 		}
 	)

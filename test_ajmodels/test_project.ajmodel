@@ -6,7 +6,9 @@
 	"animated_java": {
 		"settings": {
 			"project_namespace": "test_project",
-			"exporter": 1
+			"rig_item": "minecraft:stone",
+			"rig_export_folder": "",
+			"exporter": 0
 		}
 	},
 	"resolution": {
