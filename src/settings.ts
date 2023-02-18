@@ -1,182 +1,202 @@
+import { _AnimatedJavaExporter } from './exporter'
 import { translate } from './translation'
 import { Subscribable } from './util/suscribable'
 
-export interface ISettingData<ValueType> extends Object {
-	value?: ValueType
+export interface ISettingData<V> extends Object {
+	value?: V
 	warning?: string
 	error?: string
 }
 
-interface IOnUpdateSettingData<ValueType> extends ISettingData<ValueType> {
-	value: ValueType
-}
-
-export interface ISettingOptions<ValueType, DisplayType> {
+interface ISettingOptions<V> {
 	id: `${string}:${string}`
 	displayName: string
 	description: string[]
-	defaultValue: ValueType
-	displayType: DisplayType
-	onUpdate?: (settingData: IOnUpdateSettingData<ValueType>) => ISettingData<ValueType>
+	defaultValue: V
 }
 
-export class Setting<ValueType, DisplayType> extends Subscribable<ISettingData<ValueType>> {
-	private stored: ISettingData<ValueType>
-	onUpdate?: ISettingOptions<ValueType, DisplayType>['onUpdate']
-	constructor(public info: ISettingOptions<ValueType, DisplayType>) {
+export class Setting<V> extends Subscribable<ISettingData<V>> {
+	id: `${string}:${string}`
+	displayName: string
+	description: string[]
+	defaultValue: V
+	onUpdate?: (setting: this) => void
+	onOpen?: (setting: this) => void
+	_value: V
+	_warning?: string
+	_error?: string
+
+	constructor(options: ISettingOptions<V>) {
 		super()
-		this.stored = {
-			value: info.defaultValue,
-		}
-		this.onUpdate = info.onUpdate
-		if (this.onUpdate) {
-			this.stored = this.onUpdate({ value: this.stored.value! })
-		}
+		this.id = options.id
+		this.displayName = options.displayName
+		this.description = options.description
+		this.defaultValue = options.defaultValue
+
+		this._value = this.defaultValue
 	}
-	push(settingData: ISettingData<ValueType>) {
-		this.stored = this.onUpdate
-			? this.onUpdate({ value: settingData.value! })
-			: { ...settingData }
-		this.dispatchSubscribers({ ...this.stored })
+
+	get value() {
+		return this._value
 	}
-	pull(): ISettingData<ValueType> {
-		return { ...this.stored }
+
+	set value(value: V) {
+		this._value = value
+		this.dispatchSubscribers({ value })
 	}
+
+	get warning() {
+		return this._warning
+	}
+
+	set warning(str: string | undefined) {
+		this.warning = str
+		this.dispatchSubscribers({ warning: str })
+	}
+
+	get error() {
+		return this._error
+	}
+
+	set error(str: string | undefined) {
+		this.error = str
+		this.dispatchSubscribers({ error: str })
+	}
+
+	_onOpen() {
+		if (this.onOpen) this.onOpen(this)
+	}
+
+	_onUpdate() {
+		if (this.onUpdate) this.onUpdate(this)
+	}
+
 	toJSON() {
-		return this.stored
-	}
-}
-
-export class BooleanSetting<DisplayType extends 'checkbox'> extends Setting<boolean, DisplayType> {
-	constructor(info: ISettingOptions<boolean, DisplayType>) {
-		super(info)
-	}
-}
-
-export class NumberSetting<DisplayType extends 'int' | 'float'> extends Setting<
-	number,
-	DisplayType
-> {
-	constructor(info: ISettingOptions<number, DisplayType>) {
-		super(info)
-	}
-}
-
-export class TextSetting<DisplayType extends 'codebox' | 'inline'> extends Setting<
-	string,
-	DisplayType
-> {
-	constructor(info: ISettingOptions<string, DisplayType>) {
-		super(info)
-	}
-}
-
-interface IDropDownSettingOptions<ValueType, DisplayType>
-	extends ISettingOptions<string, DisplayType> {
-	options: Record<string, ValueType>
-}
-
-export class RecordSetting<ValueType, DisplayType extends 'dropdown'> extends Setting<
-	string,
-	DisplayType
-> {
-	options: Record<string, ValueType>
-	constructor(info: IDropDownSettingOptions<ValueType, DisplayType>) {
-		super(info)
-		this.options = info.options
-		this.onUpdate = settingData => {
-			if (!(settingData.value && settingData.value in this.options)) {
-				settingData.value = info.defaultValue
-			}
-			return this.info.onUpdate ? this.info.onUpdate(settingData) : settingData
+		return {
+			value: this.value,
+			warning: this.warning,
+			error: this.error,
 		}
 	}
 }
 
-export type SettingObject = Record<string, Setting<any, any>>
-
-export let AnimatedJavaSettings: SettingObject = {
-	default_exporter: new RecordSetting({
-		id: 'animated_java:default_exporter',
-		displayName: translate('animated_java.settings.default_exporter'),
-		description: translate('animated_java.settings.default_exporter.description').split('\n'),
-		displayType: 'dropdown',
-		defaultValue: 'animated_java:animation_exporter',
-		options: {
-			'animated_java:statue_exporter': translate(
-				'animated_java.exporters.statue_exporter.display_name'
-			),
-			'animated_java:animation_exporter': translate(
-				'animated_java.exporters.animation_exporter.display_name'
-			),
-		},
-	}),
+export class CheckboxSetting extends Setting<boolean> {
+	constructor(
+		options: ISettingOptions<boolean>,
+		public onUpdate?: (setting: CheckboxSetting) => void,
+		public onOpen?: (setting: CheckboxSetting) => void
+	) {
+		super(options)
+	}
 }
 
-export let TestSettings = {
-	checkbox: new BooleanSetting({
-		id: 'animated_java:checkbox',
-		displayName: translate('animated_java.settings.checkbox'),
-		description: translate('animated_java.settings.checkbox.description').split('\n'),
-		displayType: 'checkbox',
-		defaultValue: true,
-		onUpdate: settingData => {
-			if (settingData.value === false) {
-				settingData.error = translate('animated_java.settings.checkbox.false_error')
-			}
-			return settingData
+export class IntSetting extends Setting<number> {
+	constructor(
+		options: ISettingOptions<number>,
+		public onUpdate?: (setting: IntSetting) => void,
+		public onOpen?: (setting: IntSetting) => void
+	) {
+		super(options)
+	}
+
+	_onUpdate() {
+		if (isNaN(this._value)) this._value = this.defaultValue
+		this._value = Math.round(this._value)
+		super._onUpdate()
+	}
+}
+
+export class FloatSetting extends Setting<number> {
+	constructor(
+		options: ISettingOptions<number>,
+		public onUpdate?: (setting: FloatSetting) => void,
+		public onOpen?: (setting: FloatSetting) => void
+	) {
+		super(options)
+	}
+
+	_onUpdate() {
+		if (isNaN(this._value)) this._value = this.defaultValue
+		super._onUpdate()
+	}
+}
+
+export class InlineTextSetting extends Setting<string> {
+	constructor(
+		options: ISettingOptions<string>,
+		public onUpdate?: (setting: InlineTextSetting) => void,
+		public onOpen?: (setting: InlineTextSetting) => void
+	) {
+		super(options)
+	}
+}
+
+export class CodeboxSetting extends Setting<string> {
+	constructor(
+		options: ISettingOptions<string>,
+		public onUpdate?: (setting: CodeboxSetting) => void,
+		public onOpen?: (setting: CodeboxSetting) => void
+	) {
+		super(options)
+	}
+}
+
+interface IDropdownOption<V> {
+	displayName: string
+	description: string[]
+	value: V
+}
+interface IDropdownSettingOptions<V> extends ISettingOptions<number> {
+	options: IDropdownOption<V>[]
+}
+export class DropdownSetting<V extends any> extends Setting<number> {
+	options: IDropdownOption<V>[]
+	constructor(
+		options: IDropdownSettingOptions<V>,
+		public onUpdate?: (options: DropdownSetting<V>) => void,
+		public onOpen?: (options: DropdownSetting<V>) => void
+	) {
+		super(options as ISettingOptions<number>)
+		this.options = options.options
+	}
+
+	get selected(): V {
+		console.log(this.options, this.options[this._value], this._value)
+		return this.options[this._value].value
+	}
+
+	_onUpdate() {
+		if (!this.options.at(this._value)) {
+			if (this._value === this.defaultValue)
+				throw new Error(
+					`Invalid default index for option setting ${this.id}: ${this._value}`
+				)
+			this._value = this.defaultValue
+		}
+		super._onUpdate()
+	}
+}
+
+export let AnimatedJavaSettings = {
+	default_exporter: new DropdownSetting<string>(
+		{
+			id: 'animated_java:default_exporter',
+			displayName: translate('animated_java.settings.default_exporter'),
+			description: translate('animated_java.settings.default_exporter.description').split(
+				'\n'
+			),
+			defaultValue: 0,
+			options: [],
 		},
-	}),
-	number_int: new NumberSetting({
-		id: 'animated_java:number_int',
-		displayName: translate('animated_java.settings.number_int'),
-		description: translate('animated_java.settings.number_int.description').split('\n'),
-		displayType: 'int',
-		defaultValue: 32,
-		onUpdate: settingData => {
-			if (settingData.value < 32) {
-				settingData.warning = translate('animated_java.settings.number_int.low_error')
-			}
-			return settingData
+		function onUpdate(setting) {
+			console.log(setting.selected)
 		},
-	}),
-	number_float: new NumberSetting({
-		id: 'animated_java:number_float',
-		displayName: translate('animated_java.settings.number_float'),
-		description: translate('animated_java.settings.number_float.description').split('\n'),
-		displayType: 'float',
-		defaultValue: 32.32,
-	}),
-	text_inline: new TextSetting({
-		id: 'animated_java:text_inline',
-		displayName: translate('animated_java.settings.text_inline'),
-		description: translate('animated_java.settings.text_inline.description').split('\n'),
-		displayType: 'inline',
-		defaultValue: 'Hello World!',
-	}),
-	text_codebox: new TextSetting({
-		id: 'animated_java:text_codebox',
-		displayName: translate('animated_java.settings.text_codebox'),
-		description: translate('animated_java.settings.text_codebox.description').split('\n'),
-		displayType: 'codebox',
-		defaultValue: 'Hello World!\nThis is a codebox\nIt can contain multiple lines',
-	}),
-	dropdown: new RecordSetting({
-		id: 'animated_java:dropdown',
-		displayName: translate('animated_java.settings.dropdown'),
-		description: translate('animated_java.settings.dropdown.description').split('\n'),
-		displayType: 'dropdown',
-		defaultValue: 'option1',
-		options: {
-			option1: 'Option 1',
-			option2: 'Option 2',
-			option3: 'Option 3',
-		},
-		onUpdate: settingData => {
-			if (settingData.value === 'option3') {
-				settingData.warning = translate('animated_java.settings.dropdown.option3_error')
-			}
-			return settingData
-		},
-	}),
+		function onOpen(setting) {
+			setting.options = Object.values(AnimatedJavaExporter.exporters).map(exporter => ({
+				displayName: exporter.name,
+				description: exporter.description.split('\n'),
+				value: exporter.id,
+			}))
+		}
+	),
 }

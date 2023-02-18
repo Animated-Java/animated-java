@@ -42,10 +42,7 @@ function loadAnimatedJavaProjectSettings(model: any) {
 	console.log('Loading Animated Java project settings...')
 
 	for (const [name, setting] of Object.entries(Project.animated_java_settings)) {
-		if (model.animated_java.settings[name])
-			setting.push({
-				value: model.animated_java.settings[name],
-			})
+		if (model.animated_java.settings[name]) setting.value = model.animated_java.settings[name]
 	}
 }
 
@@ -53,7 +50,7 @@ function exportAnimatedJavaProjectSettings(): any {
 	if (!(Project && Project.animated_java_settings)) return
 	const exported: any = {}
 	for (const [name, setting] of Object.entries(Project.animated_java_settings)) {
-		exported[name] = setting.pull().value
+		exported[name] = setting.value
 	}
 	return exported
 }
@@ -432,7 +429,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 	},
 
 	fileName() {
-		return Project?.animated_java_settings!.project_name.pull().value
+		return Project!.animated_java_settings!.project_name.value
 	},
 })
 

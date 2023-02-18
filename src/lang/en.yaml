@@ -23,6 +23,11 @@ animated_java.project_settings.project_name.description: |-
   The name of the project.
   Note that this will be the namespace the exported Data Pack.
 
+animated_java.project_settings.exporter: Exporter
+animated_java.project_settings.exporter.description: |-
+  The exporter for this project.
+  This will override the default exporter set in the Animated Java Settings.
+
 # Dev settings
 animated_java.settings.checkbox: Checkbox
 animated_java.settings.checkbox.description: |-
@@ -57,12 +62,8 @@ animated_java.settings.dropdown.description: |-
   Contains a list of key-value pairs.
   The value is displayed on the dropdown, and the key is returned.
 animated_java.settings.dropdown.option3_error: Option 3 is not allowed!
-#
-### Project Settings
-animated_java.dialog.projectSettings.title: Animated Java Project Settings
-
 ### Exporters
 # Statue Exporter
-animated_java.exporters.statue_exporter.display_name: Statue Exporter
+animated_java.exporters.statue_exporter.name: Statue Exporter
 # Animation Exporter
-animated_java.exporters.animation_exporter.display_name: Animation Exporter
+animated_java.exporters.animation_exporter.name: Animation Exporter

@@ -6,52 +6,49 @@
 	import { objectEqual } from '../../util'
 	import HelpButton from './helpButton.svelte'
 
-	export let setting: Settings.Setting<any, any>
+	export let setting: Settings.Setting<any>
 
-	let storedSetting = setting.pull()
+	setting._onOpen()
+
+	// let storedSetting: Settings.ISettingData<any>
 
 	const settingUnsub = setting.subscribe(settingData => {
-		storedSetting = settingData
+		setting._onUpdate()
 	})
 
 	onDestroy(() => {
 		settingUnsub()
 	})
-
-	$: {
-		if (!objectEqual(storedSetting, setting.pull())) {
-			setting.push(storedSetting)
-			console.log('Setting changed!', setting.info.displayName, storedSetting)
-		}
-	}
 </script>
 
 <div class="setting flex_column" style="align-items:stretch;">
 	<div class="flex_row" style="justify-content:space-between;">
 		<div class="flex">
-			<p>{setting.info.displayName}</p>
+			<p>{setting.displayName}</p>
 		</div>
 		<div class="flex" style="justify-content:flex-end; flex-grow:1; padding-left:10px;">
-			{#if setting instanceof Settings.BooleanSetting && setting.info.displayType == 'checkbox'}
-				<input type="checkbox" bind:checked={storedSetting.value} />
+			{#if setting instanceof Settings.CheckboxSetting}
+				<input type="checkbox" bind:checked={setting.value} />
 			{/if}
 
-			{#if setting instanceof Settings.NumberSetting && setting.info.displayType == 'int'}
-				<input type="number" class="number" step="1" bind:value={storedSetting.value} />
+			{#if setting instanceof Settings.IntSetting}
+				<input type="number" class="number" step="1" bind:value={setting.value} />
 			{/if}
 
-			{#if setting instanceof Settings.NumberSetting && setting.info.displayType == 'float'}
-				<input type="number" class="number" step="0.1" bind:value={storedSetting.value} />
+			{#if setting instanceof Settings.IntSetting}
+				<input type="number" class="number" step="0.1" bind:value={setting.value} />
 			{/if}
 
-			{#if setting instanceof Settings.TextSetting && setting.info.displayType == 'inline'}
-				<input type="text" class="text_inline" bind:value={storedSetting.value} />
+			{#if setting instanceof Settings.InlineTextSetting}
+				<input type="text" class="text_inline" bind:value={setting.value} />
 			{/if}
 
-			{#if setting instanceof Settings.RecordSetting && setting.info.displayType == 'dropdown'}
-				<select bind:value={storedSetting.value}>
-					{#each Object.entries(setting.options) as [key, value]}
-						<option value={key}>{value}</option>
+			{#if setting instanceof Settings.DropdownSetting}
+				<select bind:value={setting.value}>
+					{#each setting.options as option}
+						<option value={setting.options.indexOf(option)}>
+							<p>{option.displayName}</p>
+						</option>
 					{/each}
 				</select>
 			{/if}
@@ -59,16 +56,16 @@
 			<HelpButton {setting} />
 		</div>
 	</div>
-	{#if storedSetting.warning}
+	{#if setting.warning}
 		<div class="flex_row warning" in:fly={{ y: -25, duration: 500, easing: bounceOut }}>
 			<div class="material-icons" style="margin-right:5px">warning</div>
-			<div>{storedSetting.warning}</div>
+			<div>{setting.warning}</div>
 		</div>
 	{/if}
-	{#if storedSetting.error}
+	{#if setting.error}
 		<div class="flex_row error" in:fly={{ y: -25, duration: 500, easing: bounceOut }}>
 			<div class="material-icons" style="margin-right:5px">error</div>
-			<div>{storedSetting.error}</div>
+			<div>{setting.error}</div>
 		</div>
 	{/if}
 </div>

@@ -1,18 +1,41 @@
 import { ajModelFormat } from './modelFormat'
-import * as Settings from './settings'
+import { DropdownSetting, InlineTextSetting } from './settings'
 import { translate } from './translation'
 
-export function getDefaultProjectSettings(): Settings.SettingObject {
+export interface IAnimatedJavaProjectSettings {
+	project_name: InlineTextSetting
+	exporter: DropdownSetting<string>
+}
+
+export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 	return {
-		project_name: new Settings.TextSetting({
+		project_name: new InlineTextSetting({
 			id: 'animated_java:project_name',
 			displayName: translate('animated_java.project_settings.project_name'),
 			description: translate('animated_java.project_settings.project_name.description').split(
 				'\n'
 			),
-			displayType: 'inline',
 			defaultValue: 'Untitled',
 		}),
+		exporter: new DropdownSetting<string>(
+			{
+				id: 'animated_java:exporter',
+				displayName: translate('animated_java.project_settings.exporter'),
+				description: translate('animated_java.project_settings.exporter.description').split(
+					'\n'
+				),
+				defaultValue: 0,
+				options: [],
+			},
+			undefined,
+			function onOpen(setting) {
+				setting.options = Object.values(AnimatedJavaExporter.exporters).map(exporter => ({
+					displayName: exporter.name,
+					description: exporter.description.split('\n'),
+					value: exporter.id,
+				}))
+			}
+		),
 	}
 }
 

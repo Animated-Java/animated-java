@@ -4,7 +4,7 @@
 	import * as AJSettings from '../settings'
 	import Setting from './settingsComponents/setting.svelte'
 
-	export let settings: Record<string, AJSettings.Setting<any, any>>
+	export let settings: Record<string, AJSettings.Setting<any>>
 
 	console.log(settings)
 	const settingArray = Object.values(settings)

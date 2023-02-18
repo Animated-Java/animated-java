@@ -5,7 +5,8 @@
 	},
 	"animated_java": {
 		"settings": {
-			"project_name": "test_project"
+			"project_name": "test_project",
+			"exporter": 1
 		}
 	},
 	"resolution": {

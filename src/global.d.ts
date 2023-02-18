@@ -1,7 +1,13 @@
-import { SettingObject } from './settings'
+import { _AnimatedJavaExporter } from './exporter'
+import { IAnimatedJavaProjectSettings } from './projectSettings'
+import { translate } from './translation'
 
 declare global {
 	interface ModelProject {
-		animated_java_settings?: SettingObject
+		animated_java_settings?: IAnimatedJavaProjectSettings
+	}
+	const AnimatedJavaExporter: typeof _AnimatedJavaExporter
+	const ANIMATED_JAVA: {
+		translate: typeof translate
 	}
 }

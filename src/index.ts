@@ -12,12 +12,34 @@ import { events } from './events'
 import './mods'
 import './translation'
 import { animationToDataset, workerPool } from './renderWorker/renderer'
-import { AJDialog } from './ui/ajDialog'
-import Settings from './ui/animatedJavaSettings.svelte'
 import './modelFormat'
 import './projectSettings'
 import './ui/ajSettings'
 import './ui/ajProjectSettings'
+import { _AnimatedJavaExporter } from './exporter'
+import { translate } from './translation'
+import { AnimatedJavaSettings } from './settings'
+
+// @ts-ignore
+globalThis.AnimatedJavaExporter = _AnimatedJavaExporter
+// @ts-ignore
+globalThis.ANIMATED_JAVA = {
+	animationToDataset,
+	workerPool,
+	translate,
+	settings: AnimatedJavaSettings,
+}
+
+import('./exporters/statueExporter')
+import('./exporters/animationExporter')
+
+// setTimeout(() => {
+// 	if (!(AnimatedJavaSettings.default_exporter instanceof RecordSetting)) return
+// 	AnimatedJavaSettings.default_exporter.options = _AnimatedJavaExporter.getRecordOptions()
+// 	AnimatedJavaSettings.default_exporter.push({
+// 		value: Object.keys(_AnimatedJavaExporter.getRecordOptions())[0],
+// 	})
+// }, 100)
 
 BBPlugin.register(PACKAGE.name, {
 	title: PACKAGE.title,
