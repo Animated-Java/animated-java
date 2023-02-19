@@ -5,8 +5,8 @@ import { Subscribable } from './util/suscribable'
 
 export interface IAJSettingData<V> extends Object {
 	value?: V
-	warning?: string
-	error?: string
+	warning?: IAJSettingWarning[]
+	error?: IAJSettingError[]
 }
 
 interface IAJSettingOptions<V> {
@@ -14,6 +14,16 @@ interface IAJSettingOptions<V> {
 	displayName: string
 	description: string[]
 	defaultValue: V
+}
+
+export interface IAJSettingWarning {
+	title: string
+	lines: string[]
+}
+
+export interface IAJSettingError {
+	title: string
+	lines: string[]
 }
 
 export class AJSetting<V> extends Subscribable<IAJSettingData<V>> {
@@ -24,8 +34,8 @@ export class AJSetting<V> extends Subscribable<IAJSettingData<V>> {
 	onUpdate?: (setting: this) => void
 	onInit?: (setting: this) => void
 	_value: V
-	_warning?: string
-	_error?: string
+	warnings: IAJSettingWarning[]
+	errors: IAJSettingWarning[]
 	export: boolean = true
 
 	constructor(options: IAJSettingOptions<V>) {
@@ -36,6 +46,8 @@ export class AJSetting<V> extends Subscribable<IAJSettingData<V>> {
 		this.defaultValue = options.defaultValue
 
 		this._value = this.defaultValue
+		this.warnings = []
+		this.errors = []
 	}
 
 	get value() {
@@ -44,25 +56,7 @@ export class AJSetting<V> extends Subscribable<IAJSettingData<V>> {
 
 	set value(value: V) {
 		this._value = value
-		defer(() => this.dispatchSubscribers({ value }))
-	}
-
-	get warning() {
-		return this._warning
-	}
-
-	set warning(str: string | undefined) {
-		this._warning = str
-		defer(() => this.dispatchSubscribers({ warning: str }))
-	}
-
-	get error() {
-		return this._error
-	}
-
-	set error(str: string | undefined) {
-		this.error = str
-		defer(() => this.dispatchSubscribers({ error: str }))
+		this.dispatchSubscribers({ value })
 	}
 
 	_onInit() {
@@ -70,14 +64,16 @@ export class AJSetting<V> extends Subscribable<IAJSettingData<V>> {
 	}
 
 	_onUpdate() {
+		this.errors = []
+		this.warnings = []
 		if (this.onUpdate) this.onUpdate(this)
 	}
 
 	toJSON() {
 		return {
-			value: this.value,
-			warning: this.warning,
-			error: this.error,
+			value: this._value,
+			warnings: this.warnings,
+			errors: this.errors,
 		}
 	}
 }

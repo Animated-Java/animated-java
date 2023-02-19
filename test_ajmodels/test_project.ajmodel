@@ -6,8 +6,10 @@
 	"animated_java": {
 		"settings": {
 			"project_namespace": "test_project",
-			"rig_item": "minecraft:stone",
+			"rig_item": "minecraft:grass_",
+			"rig_item_model": "",
 			"rig_export_folder": "",
+			"verbose": true,
 			"exporter": 0
 		}
 	},

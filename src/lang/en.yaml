@@ -22,21 +22,32 @@ animated_java.project_settings.project_namespace: Project Name
 animated_java.project_settings.project_namespace.description: |-
   The namespace of the project.
 
+animated_java.project_settings.resourcepack_title: Resource Pack
+
 animated_java.project_settings.rig_export_folder: Rig Export Folder
 animated_java.project_settings.rig_export_folder.description: |-
   What folder to put the generated model files in.
   Should be inside of a valid resource pack.
 
-animated_java.project_settings.resourcepack_title: Resource Pack
-
 animated_java.project_settings.rig_item: Rig Item
 animated_java.project_settings.rig_item.description: |-
   The item to use to display the models used in the rig.
+animated_java.project_settings.rig_item.error.unset: Rig Item cannot be empty.
+animated_java.project_settings.rig_item.error.invalid_item: |-
+  Rig Item must be a valid item ID.
+  %error
+animated_java.project_settings.rig_item.error.space: Item IDs cannot contain spaces.
+animated_java.project_settings.rig_item.error.invalid_namespace: Item IDs must start with a namespace.
+animated_java.project_settings.rig_item.warning.unknown_item: |-
+  Rig Item is not a known item.
+  This may cause issues when exporting.
 
 animated_java.project_settings.rig_item_model: Rig Item Model
 animated_java.project_settings.rig_item_model.description: |-
   The export location of the rig item's model.
   Should be in a valid resource pack under `minecraft:models/item`
+animated_java.project_settings.rig_item_model.error.item_does_not_match: The selected path does not match the selected Rig Item (%rigItem).
+animated_java.project_settings.rig_item_model.error.invalid_location: The selected path is not in a valid resource pack.
 
 animated_java.project_settings.datapack_title: Data Pack
 

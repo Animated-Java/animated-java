@@ -1,5 +1,6 @@
 // @ts-ignore
 import en from './lang/en.yaml'
+import { IAJSettingError, IAJSettingWarning } from './settings'
 
 type TranslationFormattingObject = Record<string, string>
 
@@ -26,4 +27,26 @@ export function translate(key: string, formattingObject?: TranslationFormattingO
 	// If a formatting object is provided, use it to format the translated string.
 	if (formattingObject != undefined) return format(translated, formattingObject)
 	return translated
+}
+
+export function translateError(
+	key: string,
+	formattingObject?: TranslationFormattingObject
+): IAJSettingError {
+	const lines = translate(key, formattingObject).split('\n')
+	return {
+		title: lines[0],
+		lines: lines.slice(1),
+	}
+}
+
+export function translateWarning(
+	key: string,
+	formattingObject?: TranslationFormattingObject
+): IAJSettingWarning {
+	const lines = translate(key, formattingObject).split('\n')
+	return {
+		title: lines[0],
+		lines: lines.slice(1),
+	}
 }

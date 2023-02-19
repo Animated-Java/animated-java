@@ -429,7 +429,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 	},
 
 	fileName() {
-		return Project!.animated_java_settings!.project_namespace.value
+		return Project!.animated_java_settings!.project_namespace._value
 	},
 })
 

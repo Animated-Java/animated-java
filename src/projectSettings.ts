@@ -1,3 +1,4 @@
+import { Items } from './minecraft'
 import { safeFunctionName } from './minecraft/util'
 import { ajModelFormat } from './modelFormat'
 import {
@@ -7,7 +8,7 @@ import {
 	AJInlineTextSetting,
 	AJTitleSetting,
 } from './settings'
-import { translate } from './translation'
+import { translate, translateError, translateWarning } from './translation'
 
 export interface IAnimatedJavaProjectSettings {
 	project_namespace: AJInlineTextSetting
@@ -43,17 +44,58 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 			defaultValue: null,
 		}),
 
-		rig_item: new AJInlineTextSetting({
-			id: 'animated_java:statue_exporter:rig_item',
-			displayName: translate('animated_java.project_settings.rig_item'),
-			description: translate('animated_java.project_settings.rig_item.description').split(
-				'\n'
-			),
-			defaultValue: 'minecraft:stone',
-		}),
+		rig_item: new AJInlineTextSetting(
+			{
+				id: 'animated_java:rig_item',
+				displayName: translate('animated_java.project_settings.rig_item'),
+				description: translate('animated_java.project_settings.rig_item.description').split(
+					'\n'
+				),
+				defaultValue: 'minecraft:white_dye',
+			},
+			function onUpdate(setting) {
+				if (setting.value === '') {
+					setting.errors.push(
+						translateError('animated_java.project_settings.rig_item.error.unset')
+					)
+					return
+				}
+
+				if (setting.value.includes(' ')) {
+					setting.errors.push(
+						translateError('animated_java.project_settings.rig_item.error.invalid_item')
+					)
+					return
+				}
+
+				const [namespace, path] = setting.value.split(':')
+				if (!(namespace && path)) {
+					setting.errors.push(
+						translateError(
+							'animated_java.project_settings.rig_item.error.invalid_item',
+							{
+								error: translate(
+									'animated_java.project_settings.rig_item.error.invalid_namespace'
+								),
+							}
+						)
+					)
+					return
+				}
+
+				if (!Items.isItem(setting.value)) {
+					setting.warnings.push(
+						translateWarning(
+							'animated_java.project_settings.rig_item.warning.unknown_item'
+						)
+					)
+					return
+				}
+			}
+		),
 
 		rig_item_model: new AJInlineTextSetting({
-			id: 'animated_java:statue_exporter:rig_item_model',
+			id: 'animated_java:rig_item_model',
 			displayName: translate('animated_java.project_settings.rig_item_model'),
 			description: translate(
 				'animated_java.project_settings.rig_item_model.description'
@@ -62,7 +104,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 		}),
 
 		rig_export_folder: new AJFolderSetting({
-			id: 'animated_java:statue_exporter:rig_export_folder',
+			id: 'animated_java:rig_export_folder',
 			displayName: translate('animated_java.project_settings.rig_export_folder'),
 			description: translate(
 				'animated_java.project_settings.rig_export_folder.description'
@@ -83,7 +125,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 			description: translate('animated_java.project_settings.verbose.description').split(
 				'\n'
 			),
-			defaultValue: false,
+			defaultValue: true,
 		}),
 
 		exporter: new AJDropdownSetting<string>(

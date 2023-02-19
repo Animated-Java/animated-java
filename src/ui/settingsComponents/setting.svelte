@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte'
-	import { fly } from 'svelte/transition'
+	import { fade, fly } from 'svelte/transition'
 	import { bounceOut } from 'svelte/easing'
 	import * as Settings from '../../settings'
 	import { defer, objectEqual } from '../../util'
 	import HelpButton from './helpButton.svelte'
+	import Overlay from './overlay.svelte'
 
 	export let setting: Settings.AJSetting<any>
 	let loaded = false
@@ -45,7 +46,7 @@
 				{/if}
 
 				{#if setting instanceof Settings.AJDropdownSetting}
-					<select bind:value={setting.value}>
+					<select value={setting.value}>
 						{#each setting.options as option}
 							<option value={setting.options.indexOf(option)}>
 								<p>{option.displayName}</p>
@@ -66,25 +67,72 @@
 				<HelpButton {setting} />
 			</div>
 		</div>
-		{#if setting.warning}
-			<div class="flex_row warning" in:fly={{ y: -25, duration: 500, easing: bounceOut }}>
-				<div class="material-icons" style="margin-right:5px">warning</div>
-				<div>{setting.warning}</div>
+
+		{#if setting.errors}
+			<div class="flex_column error" style="margin-top: 10px; overflow:hidden;">
+				{#each setting.errors as error, index}
+					{#key error}
+						<div
+							class="flex_row"
+							in:fly={{
+								y: -10,
+								duration: 500,
+								delay: 150 * index,
+								easing: bounceOut,
+							}}
+							out:fade={{ duration: 0 }}
+						>
+							<div class="flex_column">
+								<div class="flex_row">
+									<div class="material-icons error" style="margin-right:10px">
+										error
+									</div>
+									<p>{error.title}</p>
+								</div>
+								{#each error.lines as line}
+									<p>{line}</p>
+									<br />
+								{/each}
+							</div>
+						</div>
+					{/key}
+				{/each}
 			</div>
 		{/if}
-		{#if setting.error}
-			<div class="flex_row error" in:fly={{ y: -25, duration: 500, easing: bounceOut }}>
-				<div class="material-icons" style="margin-right:5px">error</div>
-				<div>{setting.error}</div>
+
+		<!-- {#if setting.warnings}
+			<div class="flex_column warning" style="margin-top: 10px; overflow:hidden;">
+				{#each setting.warnings as warning, index}
+					{#key warning}
+						<div
+							class="flex_row"
+							in:fly={{
+								y: -10,
+								duration: 500,
+								delay: 150 * index,
+								easing: bounceOut,
+							}}
+							out:fade={{ duration: 0 }}
+						>
+							<div class="material-icons warning" style="margin-right:10px">
+								warning
+							</div>
+							{#each warning.lines as line}
+								<p>{line}</p>
+								<br />
+							{/each}
+						</div>
+					{/key}
+				{/each}
 			</div>
-		{/if}
+		{/if} -->
 	</div>
 {/if}
 
 <style>
-	.warning {
+	/* .warning {
 		color: var(--color-warning);
-	}
+	} */
 
 	.error {
 		color: var(--color-error);
