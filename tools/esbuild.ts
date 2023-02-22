@@ -6,17 +6,19 @@ if (process.argv.includes('--mode=dev')) {
 
 import * as fs from 'fs'
 import fsExtra from 'fs-extra'
-import * as pathjs from 'path'
-import * as util from 'util'
-import * as jsyaml from 'js-yaml'
+import pathjs from 'path'
+import util from 'util'
+import jsyaml from 'js-yaml'
 import * as esbuild from 'esbuild'
-import sveltePlugin from 'esbuild-plugin-svelte'
-import * as svelteConfig from '../svelte.config.js'
-import * as workerPlugin from './plugins/workerPlugin.js'
+import sveltePlugin from './plugins/sveltePlugin'
+import svelteConfig from '../svelte.config.js'
+import * as workerPlugin from './plugins/workerPlugin'
+
+console.log(sveltePlugin)
 
 const PACKAGE = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
 
-let infoPlugin = {
+let infoPlugin: esbuild.Plugin = {
 	name: 'infoPlugin',
 	/**
 	 *
@@ -54,7 +56,7 @@ let infoPlugin = {
 	},
 }
 
-function createBanner(dev) {
+function createBanner(dev: boolean) {
 	const LICENSE = fs.readFileSync('./LICENSE').toString()
 	const snavesutit = PACKAGE.contributors[0]
 	let lines = [
@@ -92,14 +94,14 @@ function createBanner(dev) {
 	}
 }
 
-const defines = {}
+const defines: Record<string, string> = {}
 
 Object.entries(process.env).forEach(([key, value]) => {
 	if (key.match(/[^A-Za-z0-9_]/i)) return
 	defines[`process.env.${key}`] = JSON.stringify(value)
 })
 
-async function buildWorker(path) {
+async function buildWorker(path: string) {
 	console.log('🤖\u{1F528} Building Worker...')
 	const start = Date.now()
 	const result = await esbuild.build({
@@ -124,7 +126,7 @@ async function buildWorker(path) {
 	return result
 }
 
-const yamlPlugin = options => ({
+const yamlPlugin: (opts: { loadOptions?: any; transform?: any }) => esbuild.Plugin = options => ({
 	name: 'yaml',
 	setup(build) {
 		build.onResolve({ filter: /\.(yml|yaml)$/ }, args => {
@@ -153,36 +155,31 @@ const yamlPlugin = options => ({
 	},
 })
 
-function buildDev() {
+async function buildDev() {
 	// NOTE: change this to check if logging is enabled?
 	// esbuild.transformSync('function devlog(message) {console.log(message)}')
-	esbuild
-		.build({
-			banner: createBanner(),
-			entryPoints: ['./src/index.ts'],
-			outfile: `./dist/${PACKAGE.name}.js`,
-			bundle: true,
-			minify: false,
-			platform: 'node',
-			sourcemap: 'inline',
-			loader: { '.svg': 'dataurl' },
-			plugins: [
-				workerPlugin.workerPlugin({
-					builder: buildWorker,
-					typeDefPath: './src/globalWorker.d.ts',
-				}),
-				infoPlugin,
-				yamlPlugin(),
-				sveltePlugin.default(svelteConfig),
-			],
-			watch: true,
-			format: 'iife',
-			define: defines,
-		})
-		.catch(e => {
-			console.error(e)
-			process.exit(1)
-		})
+	const ctx = await esbuild.context({
+		banner: createBanner(true),
+		entryPoints: ['./src/index.ts'],
+		outfile: `./dist/${PACKAGE.name}.js`,
+		bundle: true,
+		minify: false,
+		platform: 'node',
+		sourcemap: 'inline',
+		loader: { '.svg': 'dataurl' },
+		plugins: [
+			workerPlugin.workerPlugin({
+				builder: buildWorker,
+				typeDefPath: './src/globalWorker.d.ts',
+			}),
+			infoPlugin,
+			yamlPlugin({}),
+			sveltePlugin(svelteConfig as any),
+		],
+		format: 'iife',
+		define: defines,
+	})
+	ctx.watch()
 }
 
 function buildProd() {
@@ -201,10 +198,10 @@ function buildProd() {
 					builder: buildWorker,
 				}),
 				infoPlugin,
-				pluginYaml.yamlPlugin(),
-				sveltePlugin.default(svelteConfig),
+				yamlPlugin({}),
+				sveltePlugin(svelteConfig as any),
 			],
-			banner: createBanner(),
+			banner: createBanner(false),
 			drop: ['debugger'],
 			format: 'iife',
 			define: defines,

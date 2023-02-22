@@ -25,17 +25,18 @@
 	"types": "./dist/src/index.d.ts",
 	"private": true,
 	"scripts": {
-		"build-worker-plugin": "esbuild --bundle --platform=node --outfile=dist/worker-plugin.js --external:esbuild ./tools/plugins/workerPlugin.ts",
-		"dev": "yarn build-worker-plugin && node ./tools/esbuild.js --mode=dev",
-		"build": "yarn build-worker-plugin && node ./tools/esbuild.js",
+		"build:scripts": "esbuild --bundle --platform=node --outfile=dist/build.cjs --packages=external ./tools/esbuild.ts",
+		"build:dev": "yarn build:scripts && node ./dist/build.cjs --mode=dev",
+		"build:prod": "yarn build:scripts && node ./dist/build.cjs",
 		"lint": "prettier --write .",
 		"updateBBTypes": "powershell -Command \"Remove-Item -Recurse temp_bbtypes;\"; git submodule add https://github.com/SnaveSutit/blockbench-types temp_bbtypes/"
 	},
 	"devDependencies": {
+		"@types/fs-extra": "^11.0.1",
 		"@types/js-yaml": "^4.0.5",
 		"@types/node": "^17.0.21",
 		"@types/three": "^0.148.0",
-		"esbuild": "^0.14.39",
+		"esbuild": "^0.17.10",
 		"esbuild-plugin-svelte": "^0.1.1",
 		"fs-extra": "^11.1.0",
 		"js-yaml": "^4.1.0",
