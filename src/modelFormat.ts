@@ -47,10 +47,10 @@ function loadAnimatedJavaProjectSettings(model: any) {
 }
 
 function exportAnimatedJavaProjectSettings(): any {
-	if (!(Project && Project.animated_java_settings)) return
+	if (!Project?.animated_java_settings) return
 	const exported: any = {}
 	for (const [name, setting] of Object.entries(Project.animated_java_settings)) {
-		if (setting.export) exported[name] = setting.value
+		exported[name] = setting.value
 	}
 	return exported
 }

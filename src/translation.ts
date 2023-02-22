@@ -1,6 +1,6 @@
 // @ts-ignore
 import en from './lang/en.yaml'
-import { IAJSettingError, IAJSettingWarning } from './settings'
+import { IInfoPopup } from './settings'
 
 type TranslationFormattingObject = Record<string, string>
 
@@ -29,24 +29,14 @@ export function translate(key: string, formattingObject?: TranslationFormattingO
 	return translated
 }
 
-export function translateError(
+export function translateInfo(
+	type: IInfoPopup['type'],
 	key: string,
 	formattingObject?: TranslationFormattingObject
-): IAJSettingError {
+): IInfoPopup {
 	const lines = translate(key, formattingObject).split('\n')
 	return {
-		title: lines[0],
-		lines: lines.slice(1),
-	}
-}
-
-export function translateWarning(
-	key: string,
-	formattingObject?: TranslationFormattingObject
-): IAJSettingWarning {
-	const lines = translate(key, formattingObject).split('\n')
-	console.log(lines)
-	return {
+		type,
 		title: lines[0],
 		lines: lines.slice(1),
 	}

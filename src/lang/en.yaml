@@ -1,10 +1,9 @@
 animated_java.title: Animated Java
-#
+
 animated_java.menubar.settings: Animated Java
-#
+
 animated_java.menubar.items.settings: Settings
 animated_java.menubar.items.project_settings: Project Settings
-#
 ### Settings
 animated_java.dialog.settings.title: Animated Java Settings
 animated_java.dialog.settings.close_button: Done
@@ -22,7 +21,7 @@ animated_java.project_settings.project_namespace: Project Name
 animated_java.project_settings.project_namespace.description: |-
   The namespace of the project.
 
-animated_java.project_settings.resourcepack_title: Resource Pack
+animated_java.project_settings.rig_settings: Rig Settings
 
 animated_java.project_settings.rig_export_folder: Rig Export Folder
 animated_java.project_settings.rig_export_folder.description: |-
@@ -50,12 +49,12 @@ animated_java.project_settings.rig_item_model.description: |-
 animated_java.project_settings.rig_item_model.error.item_does_not_match: The selected path does not match the selected Rig Item (%rigItem).
 animated_java.project_settings.rig_item_model.error.invalid_location: The selected path is not in a valid resource pack.
 
-animated_java.project_settings.datapack_title: Data Pack
-
 animated_java.project_settings.verbose: Verbose
 animated_java.project_settings.verbose.description: |-
   Whether to print verbose output to the chat when running AJ functions.
   Useful for debugging.
+
+animated_java.project_settings.exporter_settings: Exporter Settings
 
 animated_java.project_settings.exporter: Exporter
 animated_java.project_settings.exporter.description: |-

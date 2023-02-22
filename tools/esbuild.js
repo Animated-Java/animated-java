@@ -5,9 +5,12 @@ if (process.argv.includes('--mode=dev')) {
 }
 
 import * as fs from 'fs'
+import fsExtra from 'fs-extra'
+import * as pathjs from 'path'
+import * as util from 'util'
+import * as jsyaml from 'js-yaml'
 import * as esbuild from 'esbuild'
 import sveltePlugin from 'esbuild-plugin-svelte'
-import pluginYaml from 'esbuild-plugin-yaml'
 import * as svelteConfig from '../svelte.config.js'
 import * as workerPlugin from './plugins/workerPlugin.js'
 
@@ -120,6 +123,36 @@ async function buildWorker(path) {
 	)
 	return result
 }
+
+const yamlPlugin = options => ({
+	name: 'yaml',
+	setup(build) {
+		build.onResolve({ filter: /\.(yml|yaml)$/ }, args => {
+			if (args.resolveDir === '') return
+			return {
+				path: pathjs.isAbsolute(args.path)
+					? args.path
+					: pathjs.join(args.resolveDir, args.path),
+				namespace: 'yaml',
+			}
+		})
+		build.onLoad({ filter: /.*/, namespace: 'yaml' }, async args => {
+			const yamlContent = await fsExtra.readFile(args.path)
+			let parsed = jsyaml.load(
+				new util.TextDecoder().decode(yamlContent),
+				options?.loadOptions
+			)
+			if (options?.transform && options.transform(parsed, args.path) !== void 0)
+				parsed = options.transform(parsed, args.path)
+			return {
+				contents: JSON.stringify(parsed),
+				loader: 'json',
+				watchFiles: [args.path],
+			}
+		})
+	},
+})
+
 function buildDev() {
 	// NOTE: change this to check if logging is enabled?
 	// esbuild.transformSync('function devlog(message) {console.log(message)}')
@@ -139,7 +172,7 @@ function buildDev() {
 					typeDefPath: './src/globalWorker.d.ts',
 				}),
 				infoPlugin,
-				pluginYaml.yamlPlugin(),
+				yamlPlugin(),
 				sveltePlugin.default(svelteConfig),
 			],
 			watch: true,

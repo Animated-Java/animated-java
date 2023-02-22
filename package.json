@@ -37,7 +37,7 @@
 		"@types/three": "^0.148.0",
 		"esbuild": "^0.14.39",
 		"esbuild-plugin-svelte": "^0.1.1",
-		"esbuild-plugin-yaml": "^0.0.1",
+		"fs-extra": "^11.1.0",
 		"js-yaml": "^4.1.0",
 		"prettier": "^2.5.1",
 		"svelte": "^3.50.1",

@@ -1,16 +1,13 @@
 <script lang="ts">
-	import * as AJSettings from '../settings'
-	import Setting from './settingsComponents/setting.svelte'
+	import * as AJ from '../settings'
+	import AJUINode from './settingsComponents/uiNode.svelte'
 
-	export let settings: Record<string, AJSettings.AJSetting<any>>
-
-	console.log(settings)
-	const settingArray = Object.values(settings)
+	let settingArray = Object.values(AJ.AnimatedJavaSettings)
 </script>
 
 <div>
-	{#each settingArray as setting}
-		<Setting {setting} />
+	{#each AJ.AnimatedJavaSettingsStructure as el}
+		<AJUINode {el} {settingArray} />
 	{/each}
 </div>
 

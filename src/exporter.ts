@@ -1,4 +1,4 @@
-import { AJSetting } from './settings'
+import { Setting as AJSetting } from './settings'
 
 interface IAnimatedJavaExporterOptions {
 	id: string

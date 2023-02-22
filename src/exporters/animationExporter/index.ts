@@ -5,7 +5,7 @@ const animationExporter = new AnimatedJavaExporter({
 	name: translate('animated_java.exporters.animation_exporter.name'),
 	description: translate('animated_java.exporters.animation_exporter.description'),
 	settings: {
-		dummy2: new AnimatedJavaSettings.AJCheckboxSetting({
+		dummy2: new AnimatedJavaSettings.CheckboxSetting({
 			id: 'animated_java:statue_exporter:dummy2',
 			displayName: translate('animated_java.exporters.statue_exporter.settings.dummy2'),
 			description: translate(

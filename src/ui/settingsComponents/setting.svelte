@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Settings from '../../settings'
+	import * as AJ from '../../settings'
 	import { defer } from '../../util'
 	import SettingInfoPopup from './settingInfoPopup.svelte'
 	import ResetButton from './resetButton.svelte'
@@ -10,7 +10,8 @@
 	import Dropdown from './settingDisplays/dropdown.svelte'
 	import Folder from './settingDisplays/folder.svelte'
 
-	export let setting: Settings.AJSetting<any>
+	export let setting: AJ.Setting<any>
+
 	let loaded = false
 	let helpButtonHovered = false
 
@@ -41,15 +42,15 @@
 				<p class="setting-name">{setting.displayName}</p>
 			</div>
 			<div class="flex" style="justify-content:flex-end; flex-grow:1; padding-left:10px;">
-				{#if setting instanceof Settings.AJCheckboxSetting}
+				{#if setting instanceof AJ.CheckboxSetting}
 					<Checkbox bind:checked={setting.value} />
-				{:else if setting instanceof Settings.AJNumberSetting}
+				{:else if setting instanceof AJ.NumberSetting}
 					<Number bind:value={setting.value} step={setting.step} />
-				{:else if setting instanceof Settings.AJInlineTextSetting}
+				{:else if setting instanceof AJ.InlineTextSetting}
 					<TextInline bind:value={setting.value} />
-				{:else if setting instanceof Settings.AJDropdownSetting}
+				{:else if setting instanceof AJ.DropdownSetting}
 					<Dropdown bind:value={setting.value} options={setting.options} />
-				{:else if setting instanceof Settings.AJFolderSetting}
+				{:else if setting instanceof AJ.FolderSetting}
 					<Folder bind:value={setting.value} />
 				{/if}
 			</div>
@@ -85,14 +86,9 @@
 			</div>
 		{/if}
 
-		{#if setting.errors.length > 0 || setting.warnings.length > 0}
+		{#if setting.infoPopup}
 			<div transition:slide={{ duration: 200 }}>
-				{#if setting.errors.length > 0}
-					<SettingInfoPopup type={'error'} infos={setting.errors} />
-				{/if}
-				{#if setting.warnings.length > 0}
-					<SettingInfoPopup type={'warning'} infos={setting.warnings} />
-				{/if}
+				<SettingInfoPopup type={setting.infoPopup.type} popup={setting.infoPopup} />
 			</div>
 		{/if}
 	</div>
