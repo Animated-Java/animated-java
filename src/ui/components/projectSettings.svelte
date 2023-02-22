@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { projectSettingStructure } from '../projectSettings'
-	import * as AJ from '../settings'
-	import AJUINode from './settingsComponents/uiNode.svelte'
-	import Setting from './settingsComponents/setting.svelte'
-	import FancyHeader from './settingsComponents/fancyHeader.svelte'
+	import { projectSettingStructure } from '../../projectSettings'
+	import * as AJ from '../../settings'
+	import AJUINode from './uiNode.svelte'
+	import Setting from './setting.svelte'
+	import FancyHeader from './fancyHeader.svelte'
 	import { onDestroy } from 'svelte'
 	import { fade, fly, blur, scale, slide } from 'svelte/transition'
-	import { defer } from '../util'
+	import { defer } from '../../util'
 
 	let settingArray = Object.values(Project!.animated_java_settings!) as AJ.Setting<any>[]
 	console.log('Project Settings', settings, projectSettingStructure)

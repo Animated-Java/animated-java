@@ -9,6 +9,7 @@
 	import TextInline from './settingDisplays/textInline.svelte'
 	import Dropdown from './settingDisplays/dropdown.svelte'
 	import Folder from './settingDisplays/folder.svelte'
+	import File from './settingDisplays/file.svelte'
 
 	export let setting: AJ.Setting<any>
 
@@ -52,6 +53,8 @@
 					<Dropdown bind:value={setting.value} options={setting.options} />
 				{:else if setting instanceof AJ.FolderSetting}
 					<Folder bind:value={setting.value} />
+				{:else if setting instanceof AJ.FileSetting}
+					<File bind:value={setting.value} />
 				{/if}
 			</div>
 

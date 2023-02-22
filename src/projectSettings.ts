@@ -4,6 +4,7 @@ import { ajModelFormat } from './modelFormat'
 import {
 	CheckboxSetting,
 	DropdownSetting,
+	FileSetting,
 	FolderSetting,
 	InlineTextSetting,
 	Setting,
@@ -29,11 +30,11 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				description: translate(
 					'animated_java.project_settings.project_namespace.description'
 				).split('\n'),
-				defaultValue: 'Untitled',
+				defaultValue: 'untitled_project',
 			},
-			function onUpdate(settingData) {
-				settingData.value = safeFunctionName(settingData.value)
-				return settingData
+			function onUpdate(setting) {
+				setting.value = safeFunctionName(setting.value)
+				return setting
 			}
 		),
 
@@ -47,17 +48,19 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				defaultValue: 'minecraft:white_dye',
 				resettable: true,
 			},
-			function onUpdate(settingData) {
-				if (settingData.value === '') {
-					settingData.infoPopup = translateInfo(
+			function onUpdate(setting) {
+				setting.value = setting.value.toLowerCase()
+
+				if (setting.value === '') {
+					setting.infoPopup = translateInfo(
 						'error',
 						'animated_java.project_settings.rig_item.error.unset'
 					)
-					return settingData
+					return setting
 				}
 
-				if (settingData.value.includes(' ')) {
-					settingData.infoPopup = translateInfo(
+				if (setting.value.includes(' ')) {
+					setting.infoPopup = translateInfo(
 						'error',
 						'animated_java.project_settings.rig_item.error.invalid_item',
 						{
@@ -65,12 +68,12 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 						}
 					)
 
-					return settingData
+					return setting
 				}
 
-				const [namespace, path] = settingData.value.split(':')
+				const [namespace, path] = setting.value.split(':')
 				if (!(namespace && path)) {
-					settingData.infoPopup = translateInfo(
+					setting.infoPopup = translateInfo(
 						'error',
 						'animated_java.project_settings.rig_item.error.invalid_item',
 						{
@@ -80,23 +83,23 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 						}
 					)
 
-					return settingData
+					return setting
 				}
 
-				if (!Items.isItem(settingData.value)) {
-					settingData.infoPopup = translateInfo(
+				if (!Items.isItem(setting.value)) {
+					setting.infoPopup = translateInfo(
 						'warning',
 						'animated_java.project_settings.rig_item.warning.unknown_item'
 					)
 
-					return settingData
+					return setting
 				}
 
-				return settingData
+				return setting
 			}
 		),
 
-		rig_item_model: new InlineTextSetting({
+		rig_item_model: new FileSetting({
 			id: 'animated_java:rig_item_model',
 			displayName: translate('animated_java.project_settings.rig_item_model'),
 			description: translate(

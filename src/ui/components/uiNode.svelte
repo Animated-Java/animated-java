@@ -12,16 +12,25 @@
 	if (el.type === 'setting') {
 		setting = Object.values(settingArray).find(s => s.id === (el as any).id)!
 	}
+
+	let visible = true
+	function toggle() {
+		visible = !visible
+	}
 </script>
 
 {#if el.type === 'setting'}
 	<Setting {setting} />
 {:else if el.type === 'group'}
-	<FancyHeader content={el.title} />
-	{#if el.children}
-		{#each el.children as e}
-			<svelte:self el={e} {settingArray} />
-		{/each}
+	<FancyHeader content={el.title} on:click={toggle} />
+	{#if visible}
+		<div>
+			{#if el.children}
+				{#each el.children as e}
+					<svelte:self el={e} {settingArray} />
+				{/each}
+			{/if}
+		</div>
 	{/if}
 {/if}
 

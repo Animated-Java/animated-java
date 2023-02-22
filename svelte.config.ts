@@ -1,5 +1,6 @@
 import prep from 'svelte-preprocess'
 import { typescript } from 'svelte-preprocess-esbuild'
+
 export const compilerOptions = {
 	dev: process.env.NODE_ENV === 'development',
 	css: true,
@@ -15,8 +16,6 @@ export const preprocess = [
 	prep({ typescript: false }),
 ]
 export const transformCssToJs = (css: string) => {
-	return `css:{const $deletable = Blockbench.addCSS(${JSON.stringify(
-		css
-	)});console.log($deletable);}`
+	return `css:{const $deletable = Blockbench.addCSS(${JSON.stringify(css)});}`
 }
 export default { preprocess, transformCssToJs }

@@ -5,8 +5,8 @@
 	},
 	"animated_java": {
 		"settings": {
-			"project_namespace": "Untitled",
-			"rig_item": "minecraft:yellow_dye",
+			"project_namespace": "untitled",
+			"rig_item": "minecraft:white_dye",
 			"rig_item_model": "",
 			"rig_export_folder": "",
 			"verbose": true,

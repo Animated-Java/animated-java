@@ -4,7 +4,7 @@ import { ajAction } from '../util/ajAction'
 // @ts-ignore
 import logo from '../assets/AnimatedJava-2022.svg'
 import { AJDialog } from './ajDialog'
-import { default as SettingsComponent } from './animatedJavaSettings.svelte'
+import { default as SettingsComponent } from './components/animatedJavaSettings.svelte'
 import { AnimatedJavaSettings } from '../settings'
 
 export const menuBarEntry: any = new BarMenu(
