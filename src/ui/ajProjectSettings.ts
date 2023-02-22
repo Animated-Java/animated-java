@@ -3,7 +3,7 @@ import { BlockbenchMod } from '../mods'
 import { translate } from '../translation'
 import { ajAction } from '../util/ajAction'
 import { AJDialog } from './ajDialog'
-import { default as SettingsComponent } from './projectSettings.svelte'
+import { default as SettingsComponent } from './components/projectSettings.svelte'
 
 const oldProjectWindowClick = (BarItems.project_window as Action).click
 

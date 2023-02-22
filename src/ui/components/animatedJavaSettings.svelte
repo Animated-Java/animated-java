@@ -1,6 +1,6 @@
 <script lang="ts">
-	import * as AJ from '../settings'
-	import AJUINode from './settingsComponents/uiNode.svelte'
+	import * as AJ from '../../settings'
+	import AJUINode from './uiNode.svelte'
 
 	let settingArray = Object.values(AJ.AnimatedJavaSettings)
 </script>

@@ -10,6 +10,7 @@
 		text-align: center;
 		font-weight: normal !important;
 		margin-bottom: 10px;
+		flex-grow: 1;
 	}
 	.decorated > span {
 		position: relative;
