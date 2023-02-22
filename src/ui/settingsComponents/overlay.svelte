@@ -232,9 +232,7 @@
 	</div>
 	<div
 		class="content-wrapper"
-		style={`top: ${topStyle}px; left: ${leftStyle}px; width: ${widthStyle}px; height: ${heightStyle}px; z-index:${
-			zIndex + 1
-		};`}
+		style={`top: ${topStyle}px; left: ${leftStyle}px; width: ${widthStyle}px; height: ${heightStyle}px; z-index:${100};`}
 	>
 		{#if openedState}
 			<div class={`content ${currentPosition || ''}`} bind:this={content}>

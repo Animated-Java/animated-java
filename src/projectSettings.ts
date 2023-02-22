@@ -6,17 +6,14 @@ import {
 	AJDropdownSetting,
 	AJFolderSetting,
 	AJInlineTextSetting,
-	AJTitleSetting,
 } from './settings'
 import { translate, translateError, translateWarning } from './translation'
 
 export interface IAnimatedJavaProjectSettings {
 	project_namespace: AJInlineTextSetting
-	resourcepack_title: AJTitleSetting
 	rig_item: AJInlineTextSetting
 	rig_item_model: AJInlineTextSetting
 	rig_export_folder: AJFolderSetting
-	datapack_title: AJTitleSetting
 	verbose: AJCheckboxSetting
 	exporter: AJDropdownSetting<string>
 }
@@ -32,17 +29,11 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				).split('\n'),
 				defaultValue: 'Untitled',
 			},
-			function onUpdate(setting) {
-				setting._value = safeFunctionName(setting._value)
+			function onUpdate(settingData) {
+				settingData.value = safeFunctionName(settingData.value)
+				return settingData
 			}
 		),
-
-		resourcepack_title: new AJTitleSetting({
-			id: 'animated_java:resourcepack_title',
-			displayName: translate('animated_java.project_settings.resourcepack_title'),
-			description: [],
-			defaultValue: null,
-		}),
 
 		rig_item: new AJInlineTextSetting(
 			{
@@ -52,25 +43,33 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 					'\n'
 				),
 				defaultValue: 'minecraft:white_dye',
+				resettable: true,
 			},
-			function onUpdate(setting) {
-				if (setting.value === '') {
-					setting.errors.push(
+			function onUpdate(settingData) {
+				if (settingData.value === '') {
+					settingData.errors.push(
 						translateError('animated_java.project_settings.rig_item.error.unset')
 					)
-					return
+					return settingData
 				}
 
-				if (setting.value.includes(' ')) {
-					setting.errors.push(
-						translateError('animated_java.project_settings.rig_item.error.invalid_item')
+				if (settingData.value.includes(' ')) {
+					settingData.errors.push(
+						translateError(
+							'animated_java.project_settings.rig_item.error.invalid_item',
+							{
+								error: translate(
+									'animated_java.project_settings.rig_item.error.space'
+								),
+							}
+						)
 					)
-					return
+					return settingData
 				}
 
-				const [namespace, path] = setting.value.split(':')
+				const [namespace, path] = settingData.value.split(':')
 				if (!(namespace && path)) {
-					setting.errors.push(
+					settingData.errors.push(
 						translateError(
 							'animated_java.project_settings.rig_item.error.invalid_item',
 							{
@@ -80,17 +79,19 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 							}
 						)
 					)
-					return
+					return settingData
 				}
 
-				if (!Items.isItem(setting.value)) {
-					setting.warnings.push(
+				if (!Items.isItem(settingData.value)) {
+					settingData.warnings.push(
 						translateWarning(
 							'animated_java.project_settings.rig_item.warning.unknown_item'
 						)
 					)
-					return
+					return settingData
 				}
+
+				return settingData
 			}
 		),
 
@@ -101,6 +102,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				'animated_java.project_settings.rig_item_model.description'
 			).split('\n'),
 			defaultValue: '',
+			resettable: true,
 		}),
 
 		rig_export_folder: new AJFolderSetting({
@@ -110,13 +112,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				'animated_java.project_settings.rig_export_folder.description'
 			).split('\n'),
 			defaultValue: '',
-		}),
-
-		datapack_title: new AJTitleSetting({
-			id: 'animated_java:datapack_title',
-			displayName: translate('animated_java.project_settings.datapack_title'),
-			description: [],
-			defaultValue: null,
+			resettable: true,
 		}),
 
 		verbose: new AJCheckboxSetting({
@@ -149,6 +145,41 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 		),
 	}
 }
+
+const _ = getDefaultProjectSettings()
+export const projectSettingStructure = [
+	{
+		type: 'setting',
+		id: _.project_namespace.id,
+	},
+	{
+		type: 'section',
+		title: translate('animated_java.project_settings.rig_settings'),
+		children: [
+			{
+				type: 'setting',
+				id: _.rig_item.id,
+			},
+			{
+				type: 'setting',
+				id: _.rig_item_model.id,
+			},
+			{
+				type: 'setting',
+				id: _.rig_export_folder.id,
+			},
+		],
+	},
+	{
+		type: 'setting',
+		id: _.exporter.id,
+	},
+	{
+		type: 'section',
+		title: translate('animated_java.project_settings.exporter_settings'),
+		children: [],
+	},
+]
 
 function updateProjectSettings() {
 	console.log('updateProjectSettings', Project)

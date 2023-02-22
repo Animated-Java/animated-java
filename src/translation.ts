@@ -45,6 +45,7 @@ export function translateWarning(
 	formattingObject?: TranslationFormattingObject
 ): IAJSettingWarning {
 	const lines = translate(key, formattingObject).split('\n')
+	console.log(lines)
 	return {
 		title: lines[0],
 		lines: lines.slice(1),

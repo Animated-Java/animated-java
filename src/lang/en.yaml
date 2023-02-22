@@ -36,11 +36,12 @@ animated_java.project_settings.rig_item.error.unset: Rig Item cannot be empty.
 animated_java.project_settings.rig_item.error.invalid_item: |-
   Rig Item must be a valid item ID.
   %error
-animated_java.project_settings.rig_item.error.space: Item IDs cannot contain spaces.
-animated_java.project_settings.rig_item.error.invalid_namespace: Item IDs must start with a namespace.
+animated_java.project_settings.rig_item.error.space: Item ID cannot contain spaces.
+animated_java.project_settings.rig_item.error.invalid_namespace: Item ID must have a namespace.
 animated_java.project_settings.rig_item.warning.unknown_item: |-
-  Rig Item is not a known item.
+  Rig Item isn't in vanilla minecraft.
   This may cause issues when exporting.
+  Ignore this warning if you're using snapshots or mods.
 
 animated_java.project_settings.rig_item_model: Rig Item Model
 animated_java.project_settings.rig_item_model.description: |-

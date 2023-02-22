@@ -23,7 +23,7 @@ function openAjProjectSettingsDialog() {
 		{
 			title: translate('animated_java.dialog.project_settings.title'),
 			id: 'animated_java.project_settings',
-			width: 600,
+			width: 700,
 			buttons: [translate('animated_java.dialog.project_settings.close_button')],
 		}
 	)

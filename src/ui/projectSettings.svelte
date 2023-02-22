@@ -1,10 +1,9 @@
 <script lang="ts">
-	import * as AJSettings from '../settings'
 	import type { IAnimatedJavaProjectSettings } from '../projectSettings'
 	import Setting from './settingsComponents/setting.svelte'
 	import Header from './settingsComponents/header.svelte'
 	import { onDestroy } from 'svelte'
-	import { fade, fly, blur, scale } from 'svelte/transition'
+	import { fade, fly, blur, scale, slide } from 'svelte/transition'
 	import { defer } from '../util'
 
 	export let settings: IAnimatedJavaProjectSettings
@@ -12,43 +11,51 @@
 	const settingArray = Object.values(settings)
 	const exporters = AnimatedJavaExporter.exporters
 	let selectedExporter: typeof settings.exporter.options[0] | undefined
-	let loaded = false
 
-	defer(() => {
-		selectedExporter = settings.exporter.options[settings.exporter.value]
+	const unsub = settings.exporter.subscribe(settingData => {
+		selectedExporter = undefined
 	})
 
-	const unsubscribe = settings.exporter.subscribe(value => {
-		selectedExporter = undefined
-		setTimeout(() => {
-			selectedExporter = settings.exporter.options[settings.exporter.value]
-		}, 300)
+	function onExporterChange() {
+		selectedExporter = settings.exporter.options[settings.exporter.value]
+	}
+
+	defer(() => {
+		onExporterChange()
 	})
 
 	onDestroy(() => {
-		unsubscribe()
+		unsub()
 	})
 </script>
 
-<div>
+<div class="dialog-content">
 	{#each settingArray as setting}
-		{#if setting instanceof AJSettings.AJTitleSetting}
-			<Header content={setting.displayName} />
-		{:else}
-			<Setting {setting} />
-		{/if}
+		<Setting {setting} />
 	{/each}
 	{#if selectedExporter}
-		<div transition:fade={{ duration: 300 }} style="z-index: 100">
-			<Header content={selectedExporter?.displayName + ' Settings'} />
-		</div>
-		<div transition:scale={{ start: 0.9, duration: 300 }}>
-			{#each Object.values(exporters[selectedExporter.value].settings) as setting}
-				<Setting {setting} />
-			{/each}
-		</div>
+		{#key selectedExporter}
+			<div transition:fade={{ duration: 250 }} on:outroend={onExporterChange}>
+				<div>
+					<Header content={selectedExporter.displayName + ' Settings'} />
+				</div>
+				{#each Object.values(exporters[selectedExporter.value].settings) as setting, index}
+					<div class="setting-container">
+						<Setting {setting} />
+					</div>
+				{/each}
+			</div>
+		{/key}
 	{/if}
 </div>
 
 <style>
+	div.dialog-content {
+		overflow-y: scroll;
+		max-height: 700px;
+		padding-right: 10px;
+	}
+	div.setting-container {
+		overflow: hidden;
+	}
 </style>

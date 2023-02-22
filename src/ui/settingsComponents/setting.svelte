@@ -1,14 +1,18 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte'
-	import { fade, fly } from 'svelte/transition'
-	import { bounceOut } from 'svelte/easing'
 	import * as Settings from '../../settings'
-	import { defer, objectEqual } from '../../util'
-	import HelpButton from './helpButton.svelte'
-	import Overlay from './overlay.svelte'
+	import { defer } from '../../util'
+	import SettingInfoPopup from './settingInfoPopup.svelte'
+	import ResetButton from './resetButton.svelte'
+	import { fly, slide } from 'svelte/transition'
+	import Checkbox from './settingDisplays/checkbox.svelte'
+	import Number from './settingDisplays/number.svelte'
+	import TextInline from './settingDisplays/textInline.svelte'
+	import Dropdown from './settingDisplays/dropdown.svelte'
+	import Folder from './settingDisplays/folder.svelte'
 
 	export let setting: Settings.AJSetting<any>
 	let loaded = false
+	let helpButtonHovered = false
 
 	defer(() => {
 		loaded = true
@@ -19,127 +23,103 @@
 	$: {
 		setting._onUpdate()
 	}
+
+	function onResetClick() {
+		console.log(`Setting '${setting.displayName}' reset!`)
+		setting.value = setting.defaultValue
+	}
+
+	function onHelpButtonClick() {
+		console.log(`Help button clicked for setting '${setting.displayName}'`)
+	}
 </script>
 
 {#if loaded}
 	<div class="setting flex_column" style="align-items:stretch;">
 		<div class="flex_row" style="justify-content:space-between;">
 			<div class="flex">
-				<p>{setting.displayName}</p>
+				<p class="setting-name">{setting.displayName}</p>
 			</div>
 			<div class="flex" style="justify-content:flex-end; flex-grow:1; padding-left:10px;">
 				{#if setting instanceof Settings.AJCheckboxSetting}
-					<input type="checkbox" bind:checked={setting.value} />
+					<Checkbox bind:checked={setting.value} />
+				{:else if setting instanceof Settings.AJNumberSetting}
+					<Number bind:value={setting.value} step={setting.step} />
+				{:else if setting instanceof Settings.AJInlineTextSetting}
+					<TextInline bind:value={setting.value} />
+				{:else if setting instanceof Settings.AJDropdownSetting}
+					<Dropdown bind:value={setting.value} options={setting.options} />
+				{:else if setting instanceof Settings.AJFolderSetting}
+					<Folder bind:value={setting.value} />
 				{/if}
-
-				{#if setting instanceof Settings.AJNumberSetting}
-					<input
-						type="number"
-						class="number"
-						step={setting.step}
-						bind:value={setting.value}
-					/>
-				{/if}
-
-				{#if setting instanceof Settings.AJInlineTextSetting}
-					<input type="text" class="text_inline" bind:value={setting.value} />
-				{/if}
-
-				{#if setting instanceof Settings.AJDropdownSetting}
-					<select value={setting.value}>
-						{#each setting.options as option}
-							<option value={setting.options.indexOf(option)}>
-								<p>{option.displayName}</p>
-							</option>
-						{/each}
-					</select>
-				{/if}
-
-				{#if setting instanceof Settings.AJFolderSetting}
-					<input
-						type="text"
-						class="text_inline"
-						contenteditable="false"
-						bind:value={setting.value}
-					/>
-				{/if}
-
-				<HelpButton {setting} />
 			</div>
+
+			{#if setting.resettable}
+				<ResetButton onClick={onResetClick} />
+			{/if}
+
+			<button
+				class="help-button"
+				on:click={onHelpButtonClick}
+				on:mouseenter={() => (helpButtonHovered = true)}
+				on:mouseleave={() => (helpButtonHovered = false)}
+			>
+				<span class="material-icons" style="margin:0px">question_mark</span>
+			</button>
 		</div>
 
-		{#if setting.errors}
-			<div class="flex_column error" style="margin-top: 10px; overflow:hidden;">
-				{#each setting.errors as error, index}
-					{#key error}
-						<div
-							class="flex_row"
-							in:fly={{
-								y: -10,
-								duration: 500,
-								delay: 150 * index,
-								easing: bounceOut,
-							}}
-							out:fade={{ duration: 0 }}
-						>
-							<div class="flex_column">
-								<div class="flex_row">
-									<div class="material-icons error" style="margin-right:10px">
-										error
-									</div>
-									<p>{error.title}</p>
-								</div>
-								{#each error.lines as line}
-									<p>{line}</p>
-									<br />
-								{/each}
-							</div>
-						</div>
-					{/key}
+		{#if helpButtonHovered}
+			<div
+				class="setting-description flex_column"
+				in:slide={{ delay: 500, duration: 250 }}
+				out:slide={{ duration: 250 }}
+			>
+				{#each setting.description as line, index}
+					<p
+						class="setting-description"
+						in:fly={{ x: -20, delay: 700 + 100 * index, duration: 500 }}
+					>
+						{line}
+					</p>
 				{/each}
 			</div>
 		{/if}
 
-		<!-- {#if setting.warnings}
-			<div class="flex_column warning" style="margin-top: 10px; overflow:hidden;">
-				{#each setting.warnings as warning, index}
-					{#key warning}
-						<div
-							class="flex_row"
-							in:fly={{
-								y: -10,
-								duration: 500,
-								delay: 150 * index,
-								easing: bounceOut,
-							}}
-							out:fade={{ duration: 0 }}
-						>
-							<div class="material-icons warning" style="margin-right:10px">
-								warning
-							</div>
-							{#each warning.lines as line}
-								<p>{line}</p>
-								<br />
-							{/each}
-						</div>
-					{/key}
-				{/each}
+		{#if setting.errors.length > 0 || setting.warnings.length > 0}
+			<div transition:slide={{ duration: 200 }}>
+				{#if setting.errors.length > 0}
+					<SettingInfoPopup type={'error'} infos={setting.errors} />
+				{/if}
+				{#if setting.warnings.length > 0}
+					<SettingInfoPopup type={'warning'} infos={setting.warnings} />
+				{/if}
 			</div>
-		{/if} -->
+		{/if}
 	</div>
 {/if}
 
 <style>
-	/* .warning {
-		color: var(--color-warning);
-	} */
-
-	.error {
-		color: var(--color-error);
-	}
-
 	p {
 		display: inline-block;
+	}
+
+	p.setting-name {
+		width: 150px;
+	}
+
+	div.setting-description {
+		pointer-events: none;
+		background: var(--color-dark);
+		padding-left: 5px;
+		padding-right: 5px;
+		padding-bottom: 5px;
+		margin-top: 10px;
+		overflow: hidden;
+	}
+
+	p.setting-description {
+		margin: 5px;
+		margin-bottom: 0px;
 	}
 
 	div.setting {
@@ -152,16 +132,6 @@
 		background-color: var(--color-back);
 		border-bottom: 4px solid var(--color-border);
 		margin-bottom: 10px;
-	}
-
-	.text_inline {
-		background: var(--color-dark);
-		font-family: var(--font-code);
-		/* flex-grow: 1; */
-		padding: 5px;
-		padding-left: 11px;
-		padding-right: 11px;
-		width: 350px;
 	}
 
 	div.flex {
@@ -182,21 +152,24 @@
 		flex-direction: row;
 	}
 
-	.number {
-		border: none;
-		background: var(--color-button);
-		display: inline-block;
-		text-align: center;
-		vertical-align: middle;
-		cursor: default;
-		outline: none;
-		height: 32px;
-		min-width: 100px;
-		width: auto;
-		color: var(--color-text);
-		padding-right: 16px;
-		padding-left: 16px;
-		font-weight: normal;
-		cursor: pointer;
+	button.help-button {
+		all: unset !important;
+
+		display: flex !important;
+		justify-content: center !important;
+		align-content: center !important;
+		flex-wrap: wrap !important;
+
+		background-color: var(--color-button) !important;
+		height: 34px !important;
+		width: 34px !important;
+		line-height: 10px !important;
+		font-size: 20px !important;
+		margin-left: 10px !important;
+	}
+
+	button.help-button:hover {
+		color: var(--color-accent_text) !important;
+		background-color: var(--color-accent) !important;
 	}
 </style>
