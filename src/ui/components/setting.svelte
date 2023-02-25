@@ -1,6 +1,5 @@
 <script lang="ts">
 	import * as AJ from '../../settings'
-	import { defer } from '../../util'
 	import SettingInfoPopup from './settingInfoPopup.svelte'
 	import ResetButton from './resetButton.svelte'
 	import { fly, slide } from 'svelte/transition'
@@ -11,7 +10,6 @@
 	import Folder from './settingDisplays/folder.svelte'
 	import File from './settingDisplays/file.svelte'
 	import HelpButton from './helpButton.svelte'
-	import { openAjDocsDialog } from '../ajDocs'
 
 	export let setting: AJ.Setting<any>
 
@@ -21,7 +19,7 @@
 	// defer(() => {
 	// 	loaded = true
 	// })
-
+	console.log(setting)
 	setting._onInit()
 
 	$: {
@@ -35,7 +33,7 @@
 
 	function onHelpButtonClick() {
 		console.log(`Help button clicked for setting '${setting.displayName}' ${setting.docsLink}`)
-		openAjDocsDialog(setting.docsLink)
+		ANIMATED_JAVA.docClick(setting.docsLink || 'page:meta/undocumented')
 	}
 </script>
 

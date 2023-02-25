@@ -15,12 +15,12 @@
 		cursor: default;
 		outline: none;
 		height: 32px;
-		min-width: 100px;
-		width: auto;
+		width: 6em;
 		color: var(--color-text);
 		padding-right: 16px;
 		padding-left: 16px;
 		font-weight: normal;
-		cursor: pointer;
+		cursor: text;
+		text-align: left;
 	}
 </style>

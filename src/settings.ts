@@ -103,9 +103,9 @@ export class NumberSetting extends Setting<number, NumberSetting> {
 	}
 
 	_onUpdate() {
-		if (isNaN(this.value)) this.value = this.defaultValue
-		if (this.step && this.snap) this.value = Math.round(this.value / this.step) * this.step
-		this.value = Math.min(Math.max(this.value, this.min ?? -Infinity), this.max ?? Infinity)
+		if (isNaN(this._value)) this._value = this.defaultValue
+		if (this.step && this.snap) this._value = Math.round(this._value / this.step) * this.step
+		this._value = Math.min(Math.max(this._value, this.min ?? -Infinity), this.max ?? Infinity)
 		super._onUpdate()
 	}
 }

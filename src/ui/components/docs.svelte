@@ -41,7 +41,12 @@
 
 	function scrollToSection(section: string) {
 		const el = document.getElementById(section)
+		console.log('scrollToSection', section, el)
 		if (el) el.scrollIntoView()
+	}
+
+	function onload(el: any) {
+		if (openToSection) scrollToSection(openToSection)
 	}
 </script>
 
@@ -71,12 +76,7 @@
 						</div>
 					</div>
 				{:then page}
-					<div
-						class="content page-content"
-						on:load={() => {
-							if (openToSection) scrollToSection(openToSection)
-						}}
-					>
+					<div class="content page-content" use:onload>
 						<DocPage {page} />
 					</div>
 				{:catch}

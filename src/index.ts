@@ -19,6 +19,8 @@ import * as AJSettings from './settings'
 import './projectSettings'
 import './ui/ajSettings'
 import './ui/ajProjectSettings'
+import './ui/animationConfig'
+import './ui/ajVariants'
 import { openAjDocsDialog } from './ui/ajDocs'
 
 // @ts-ignore
@@ -31,9 +33,13 @@ globalThis.ANIMATED_JAVA = {
 	workerPool,
 	translate,
 	settings: AJSettings.AnimatedJavaSettings,
+	openAjDocsDialog,
 	docClick(link: string) {
 		if (link.startsWith('page:')) {
-			openAjDocsDialog(link)
+			link = link.substring(5)
+			let section: string | undefined
+			if (link.includes('#')) [link, section] = link.split('#')
+			openAjDocsDialog(link, section)
 			return
 		} else if (link.startsWith('tag:')) {
 			console.log(`Tag links aren't implemented: '${link}'`)
@@ -55,6 +61,7 @@ BBPlugin.register(PACKAGE.name, {
 	version: PACKAGE.version,
 	min_version: PACKAGE.min_blockbench_version,
 	tags: ['Minecraft: Java Edition', 'Animation', 'Armor Stand'],
+	await_loading: true,
 	onload() {
 		// devlog(`${PACKAGE.name} loaded!`)
 		events.load.trigger()

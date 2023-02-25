@@ -1,11 +1,16 @@
 
 # UI
-- [ ] Replace default animation creation and config screens
+- [x] Replace default animation creation and config screens
+- [ ] Variants panel
+    - [ ] Texture map is controlled and verified by the UI. Exporters are given a copied map.
 
 # Features
+- [ ] Things to convert when converting model formats into AJ's format
+    - [ ] All animations need their snapping set to 20
+    - [ ] Animation Keyframes need to be rounded to the nearest 20th of a second
 - [ ] Add some way to have the rig follow the root even while it's not animating.
     - Possible solution: Make all display entities ride the root entity.
-- [ ] Make sure loop delay and start delay (in the animation properties menu) are taken into account by AJ when parsing animations.
+- [x] Make sure loop delay and start delay (in the animation properties menu) are taken into account by AJ when parsing animations.
 - [ ] Remove install and just update variables on reload/summon.
 - [ ] Add a way to adjust an animation's control over bones:
     - [ ] Three global options

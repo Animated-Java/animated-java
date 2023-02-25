@@ -15,5 +15,6 @@ declare global {
 	const ANIMATED_JAVA: {
 		translate: typeof translate
 		docClick: (link: string) => void
+		openAjDocsDialog: (link: string) => void
 	}
 }

@@ -6,13 +6,9 @@ import { default as DocsComponent } from './components/docs.svelte'
 
 let docsDialog: AJDialog | undefined
 
-export function openAjDocsDialog(page?: string) {
+export function openAjDocsDialog(page?: string, section?: string) {
 	if (docsDialog) docsDialog.close(0)
-	let section: string | undefined
-	if (page?.startsWith('page:')) {
-		page = page.substring(5)
-		if (page.includes('#')) [page, section] = page.split('#')
-	}
+	console.log('aaa', page)
 
 	docsDialog = new AJDialog(
 		DocsComponent,

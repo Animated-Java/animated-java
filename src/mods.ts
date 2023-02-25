@@ -28,6 +28,7 @@ events.loadMods.addListener(() =>
 		} catch (err) {
 			console.log(`Unexpected Error while attempting to inject mod '${mod.name}'!`)
 			console.error(err)
+			debugger
 		}
 	})
 )
@@ -38,6 +39,7 @@ events.unloadMods.addListener(() =>
 		} catch (err) {
 			console.log(`Unexpected Error while attempting to extract mod '${mod.name}'!`)
 			console.error(err)
+			debugger
 		}
 	})
 )
