@@ -7,7 +7,10 @@
 <select bind:value>
 	{#each options as option, index}
 		<option value={index}>
-			<p>{option.name}</p>
+			<div>{option.name}</div>
 		</option>
 	{/each}
 </select>
+
+<style>
+</style>

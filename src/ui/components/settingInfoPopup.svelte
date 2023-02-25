@@ -6,10 +6,10 @@
 	export var popup: IInfoPopup
 </script>
 
-<div class="flex_column {type}" style="margin-top: 10px; overflow:hidden;">
+<div class="flex-column {type}" style="margin-top: 10px; overflow:hidden;">
 	{#key popup.title}
 		<div
-			class="flex_row"
+			class="flex-row"
 			in:fly={{
 				x: -20,
 				duration: 250,
@@ -17,8 +17,8 @@
 			}}
 			out:fade={{ duration: 0 }}
 		>
-			<div class="flex_column">
-				<div class="flex_row">
+			<div class="flex-column">
+				<div class="flex-row">
 					<div class="material-icons {type}" style="margin-right:10px">{type}</div>
 					<p style="text-decoration:underline;">{popup.title}</p>
 				</div>
@@ -26,7 +26,7 @@
 					{#if popup.lines.length > 0}
 						{#each popup.lines as line}
 							<div
-								class="flex_row"
+								class="flex-row"
 								in:fly={{
 									x: -20,
 									duration: 250,
@@ -64,14 +64,14 @@
 		align-items: center;
 	}
 
-	div.flex_column {
+	div.flex-column {
 		display: flex;
 		align-items: center;
 		flex-direction: column;
 		align-items: flex-start;
 	}
 
-	div.flex_row {
+	div.flex-row {
 		display: flex;
 		align-items: center;
 		flex-direction: row;

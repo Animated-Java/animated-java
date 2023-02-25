@@ -4,6 +4,7 @@ animated_java.menubar.settings: Animated Java
 
 animated_java.menubar.items.settings: Settings
 animated_java.menubar.items.project_settings: Project Settings
+animated_java.menubar.items.documentation: Documentation
 ### Settings
 animated_java.dialog.settings.title: Animated Java Settings
 animated_java.dialog.settings.close_button: Done
@@ -12,6 +13,17 @@ animated_java.settings.default_exporter: Default Exporter
 animated_java.settings.default_exporter.description: |-
   The default exporter for projects.
   Can be configured per-project in the Project's Settings.
+
+### Documentation
+animated_java.dialog.documentation.title: Animated Java Documentation
+animated_java.dialog.documentation.close_button: Done
+
+animated_java.dialog.documentation.loading: Loading Documentation...
+
+animated_java.dialog.documentation.error.failed_to_load.title: Failed to Load Documentation! :(
+animated_java.dialog.documentation.error.failed_to_load.description: |-
+  Make sure you're connected to the internet!
+  Try re-opening this dialog to try again.
 
 ### Project Settings
 animated_java.dialog.project_settings.title: Animated Java Project Settings

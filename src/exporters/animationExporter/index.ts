@@ -4,15 +4,28 @@ const animationExporter = new AnimatedJavaExporter({
 	id: 'animated_java:animation_exporter',
 	name: translate('animated_java.exporters.animation_exporter.name'),
 	description: translate('animated_java.exporters.animation_exporter.description'),
-	settings: {
-		dummy2: new AnimatedJavaSettings.CheckboxSetting({
-			id: 'animated_java:statue_exporter:dummy2',
-			displayName: translate('animated_java.exporters.statue_exporter.settings.dummy2'),
-			description: translate(
-				'animated_java.exporters.statue_exporter.settings.dummy2.description'
-			).split('\n'),
-			defaultValue: false,
-		}),
+	getSettings() {
+		return {
+			bar: new AnimatedJavaSettings.InlineTextSetting({
+				id: 'animated_java:animation_exporter:bar',
+				displayName: translate('animated_java.exporters.animation_exporter.settings.bar'),
+				description: translate(
+					'animated_java.exporters.animation_exporter.settings.bar.description'
+				).split('\n'),
+				defaultValue: 'Hello World!',
+			}),
+		}
+	},
+	settingsStructure: [
+		{
+			type: 'setting',
+			id: 'animated_java:animation_exporter:bar',
+		},
+	],
+	async export(ajSettings, projectSettings, exporterSettings) {
+		console.groupCollapsed('animationExporter.export')
+		console.log(ajSettings, projectSettings, exporterSettings)
+		console.groupEnd()
 	},
 })
 

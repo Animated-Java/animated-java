@@ -7,47 +7,49 @@
 	import { onDestroy } from 'svelte'
 	import { fade, fly, blur, scale, slide } from 'svelte/transition'
 	import { defer } from '../../util'
+	import { _AnimatedJavaExporter } from '../../exporter'
 
 	let settingArray = Object.values(Project!.animated_java_settings!) as AJ.Setting<any>[]
 	console.log('Project Settings', settings, projectSettingStructure)
-	// const exporters = AnimatedJavaExporter.exporters
-	// let selectedExporter: typeof settings.exporter.options[0] | undefined
 
-	// const unsub = settings.exporter.subscribe(settingData => {
-	// 	selectedExporter = undefined
-	// })
+	let selectedExporter: _AnimatedJavaExporter | undefined
 
-	// function onExporterChange() {
-	// 	selectedExporter = settings.exporter.options[settings.exporter.value]
-	// }
+	function getSelectedExporter() {
+		selectedExporter = Object.entries(AnimatedJavaExporter.exporters).find(([, exporter]) => {
+			return exporter.id === Project!.animated_java_settings!.exporter.selected?.value
+		})?.[1]
+		console.log('Selected Exporter', selectedExporter)
+	}
 
-	// defer(() => {
-	// 	onExporterChange()
-	// })
+	queueMicrotask(() => {
+		getSelectedExporter()
+	})
 
-	// onDestroy(() => {
-	// 	unsub()
-	// })
+	let unsub = Project!.animated_java_settings!.exporter.subscribe(() => {
+		selectedExporter = undefined
+	})
+	onDestroy(() => {
+		unsub()
+	})
 </script>
 
 <div class="dialog-content">
 	{#each projectSettingStructure as el}
 		<AJUINode {el} {settingArray} />
 	{/each}
+
+	{#if selectedExporter}
+		{#key selectedExporter}
+			<div transition:slide={{ duration: 250 }} on:outroend={getSelectedExporter}>
+				<FancyHeader content={selectedExporter.name + ' Settings'} />
+				{#each selectedExporter.settingsStructure as el}
+					<AJUINode {el} settingArray={Object.values(selectedExporter.settings)} />
+				{/each}
+			</div>
+		{/key}
+	{/if}
 </div>
 
-<!-- {#if selectedExporter}
-	{#key selectedExporter}
-		<div transition:fade={{ duration: 250 }} on:outroend={onExporterChange}>
-			<div>
-				<Header content={selectedExporter.displayName + ' Settings'} />
-			</div>
-			{#each Object.values(exporters[selectedExporter.value].settings) as setting, index}
-				<Setting {setting} />
-			{/each}
-		</div>
-	{/key}
-{/if} -->
 <style>
 	div.dialog-content {
 		overflow-y: scroll;

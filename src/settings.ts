@@ -121,8 +121,8 @@ export class DropdownSetting<V = any, K extends number = number> extends Setting
 		this.options = options.options
 	}
 
-	get selected(): V {
-		return this.options[this.value].value
+	get selected(): DropdownSetting<V, K>['options'][any] | undefined {
+		return this.options[this.value]
 	}
 }
 

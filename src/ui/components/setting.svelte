@@ -13,12 +13,12 @@
 
 	export let setting: AJ.Setting<any>
 
-	let loaded = false
+	// let loaded = false
 	let helpButtonHovered = false
 
-	defer(() => {
-		loaded = true
-	})
+	// defer(() => {
+	// 	loaded = true
+	// })
 
 	setting._onInit()
 
@@ -36,66 +36,64 @@
 	}
 </script>
 
-{#if loaded}
-	<div class="setting flex_column" style="align-items:stretch;">
-		<div class="flex_row" style="justify-content:space-between;">
-			<div class="flex">
-				<p class="setting-name">{setting.displayName}</p>
-			</div>
-			<div class="flex" style="justify-content:flex-end; flex-grow:1; padding-left:10px;">
-				{#if setting instanceof AJ.CheckboxSetting}
-					<Checkbox bind:checked={setting.value} />
-				{:else if setting instanceof AJ.NumberSetting}
-					<Number bind:value={setting.value} step={setting.step} />
-				{:else if setting instanceof AJ.InlineTextSetting}
-					<TextInline bind:value={setting.value} />
-				{:else if setting instanceof AJ.DropdownSetting}
-					<Dropdown bind:value={setting.value} options={setting.options} />
-				{:else if setting instanceof AJ.FolderSetting}
-					<Folder bind:value={setting.value} />
-				{:else if setting instanceof AJ.FileSetting}
-					<File bind:value={setting.value} />
-				{/if}
-			</div>
-
-			{#if setting.resettable}
-				<ResetButton onClick={onResetClick} />
+<div class="setting flex-column" style="align-items:stretch;">
+	<div class="flex-row" style="justify-content:space-between;">
+		<div class="flex">
+			<p class="setting-name">{setting.displayName}</p>
+		</div>
+		<div class="flex" style="justify-content:flex-end; flex-grow:1; padding-left:10px;">
+			{#if setting instanceof AJ.CheckboxSetting}
+				<Checkbox bind:checked={setting.value} />
+			{:else if setting instanceof AJ.NumberSetting}
+				<Number bind:value={setting.value} step={setting.step} />
+			{:else if setting instanceof AJ.InlineTextSetting}
+				<TextInline bind:value={setting.value} />
+			{:else if setting instanceof AJ.DropdownSetting}
+				<Dropdown bind:value={setting.value} options={setting.options} />
+			{:else if setting instanceof AJ.FolderSetting}
+				<Folder bind:value={setting.value} />
+			{:else if setting instanceof AJ.FileSetting}
+				<File bind:value={setting.value} />
 			{/if}
-
-			<button
-				class="help-button"
-				on:click={onHelpButtonClick}
-				on:mouseenter={() => (helpButtonHovered = true)}
-				on:mouseleave={() => (helpButtonHovered = false)}
-			>
-				<span class="material-icons" style="margin:0px">question_mark</span>
-			</button>
 		</div>
 
-		{#if helpButtonHovered}
-			<div
-				class="setting-description flex_column"
-				in:slide={{ delay: 500, duration: 250 }}
-				out:slide={{ duration: 250 }}
-			>
-				{#each setting.description as line, index}
-					<p
-						class="setting-description"
-						in:fly={{ x: -20, delay: 700 + 100 * index, duration: 500 }}
-					>
-						{line}
-					</p>
-				{/each}
-			</div>
+		{#if setting.resettable}
+			<ResetButton onClick={onResetClick} />
 		{/if}
 
-		{#if setting.infoPopup}
-			<div transition:slide={{ duration: 200 }}>
-				<SettingInfoPopup type={setting.infoPopup.type} popup={setting.infoPopup} />
-			</div>
-		{/if}
+		<button
+			class="help-button"
+			on:click={onHelpButtonClick}
+			on:mouseenter={() => (helpButtonHovered = true)}
+			on:mouseleave={() => (helpButtonHovered = false)}
+		>
+			<span class="material-icons" style="margin:0px">question_mark</span>
+		</button>
 	</div>
-{/if}
+
+	{#if helpButtonHovered}
+		<div
+			class="setting-description flex-column"
+			in:slide={{ delay: 500, duration: 250 }}
+			out:slide={{ duration: 250 }}
+		>
+			{#each setting.description as line, index}
+				<p
+					class="setting-description"
+					in:fly={{ x: -20, delay: 700 + 100 * index, duration: 500 }}
+				>
+					{line}
+				</p>
+			{/each}
+		</div>
+	{/if}
+
+	{#if setting.infoPopup}
+		<div transition:slide={{ duration: 200 }}>
+			<SettingInfoPopup type={setting.infoPopup.type} popup={setting.infoPopup} />
+		</div>
+	{/if}
+</div>
 
 <style>
 	p {
@@ -138,14 +136,14 @@
 		align-items: center;
 	}
 
-	div.flex_column {
+	div.flex-column {
 		display: flex;
 		align-items: center;
 		flex-direction: column;
 		align-items: flex-start;
 	}
 
-	div.flex_row {
+	div.flex-row {
 		display: flex;
 		align-items: center;
 		flex-direction: row;

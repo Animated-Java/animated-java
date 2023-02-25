@@ -177,11 +177,6 @@ export const projectSettingStructure: GUIStructure = [
 		type: 'setting',
 		id: _.exporter.id,
 	},
-	{
-		type: 'group',
-		title: translate('animated_java.project_settings.exporter_settings'),
-		children: [],
-	},
 ]
 
 function updateProjectSettings() {

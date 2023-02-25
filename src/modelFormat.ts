@@ -2,6 +2,7 @@ import * as pathjs from 'path'
 import * as fs from 'fs'
 import { BlockbenchMod } from './mods'
 import { getDefaultProjectSettings } from './projectSettings'
+import { _AnimatedJavaExporter } from './exporter'
 
 const FORMAT_VERSION = '1.0'
 
@@ -33,8 +34,16 @@ function addProjectToRecentProjects(file: FileResult) {
 	}
 }
 
-function loadAnimatedJavaProjectSettings(model: any) {
+interface IAnimatedJavaModel {
+	animated_java: {
+		settings: Record<string, any>
+		exporter_settings: Record<string, Record<string, any>>
+	}
+}
+
+function loadAnimatedJavaProjectSettings(model: IAnimatedJavaModel) {
 	if (!Project) return
+	console.groupCollapsed('loadAnimatedJavaProjectSettings')
 
 	Project.animated_java_settings = getDefaultProjectSettings()
 	if (!(model.animated_java && model.animated_java.settings)) return
@@ -44,6 +53,26 @@ function loadAnimatedJavaProjectSettings(model: any) {
 	for (const [name, setting] of Object.entries(Project.animated_java_settings)) {
 		if (model.animated_java.settings[name]) setting.value = model.animated_java.settings[name]
 	}
+
+	Project.animated_java_exporter_settings = {}
+	_AnimatedJavaExporter.exporters.forEach(exporter => {
+		Project.animated_java_exporter_settings![exporter.id] = exporter.getSettings()
+	})
+	if (!model.animated_java.exporter_settings) return
+
+	console.log('Loading Animated Java exporter settings...')
+
+	for (const [exporterId, exporterSettings] of Object.entries(
+		model.animated_java.exporter_settings
+	)) {
+		if (!Project.animated_java_exporter_settings![exporterId]) continue
+		for (const [settingId, settingValue] of Object.entries(exporterSettings)) {
+			if (!model.animated_java.exporter_settings[exporterId][settingId]) continue
+			console.log('Loading value for', exporterId, settingId, settingValue)
+			Project.animated_java_exporter_settings![exporterId][settingId].value = settingValue
+		}
+	}
+	console.groupEnd()
 }
 
 function exportAnimatedJavaProjectSettings(): any {
@@ -52,6 +81,22 @@ function exportAnimatedJavaProjectSettings(): any {
 	for (const [name, setting] of Object.entries(Project.animated_java_settings)) {
 		exported[name] = setting.value
 	}
+
+	return exported
+}
+
+function exportAnimatedJavaExporterSettings() {
+	if (!Project?.animated_java_exporter_settings) return
+	const exported: any = {}
+	for (const [exporterId, exporterSettings] of Object.entries(
+		Project.animated_java_exporter_settings
+	)) {
+		exported[exporterId] = {}
+		for (const [settingId, setting] of Object.entries(exporterSettings)) {
+			exported[exporterId][settingId] = setting.value
+		}
+	}
+
 	return exported
 }
 
@@ -271,6 +316,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 			},
 			animated_java: {
 				settings: exportAnimatedJavaProjectSettings(),
+				exporter_settings: exportAnimatedJavaExporterSettings(),
 			},
 		}
 

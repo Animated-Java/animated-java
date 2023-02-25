@@ -11,6 +11,14 @@
 			"rig_export_folder": "",
 			"verbose": true,
 			"exporter": 0
+		},
+		"exporter_settings": {
+			"animated_java:statue_exporter": {
+				"foo": true
+			},
+			"animated_java:animation_exporter": {
+				"bar": "Beep Boop"
+			}
 		}
 	},
 	"resolution": {
