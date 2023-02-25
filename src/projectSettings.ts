@@ -31,6 +31,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 					'animated_java.project_settings.project_namespace.description'
 				).split('\n'),
 				defaultValue: 'untitled_project',
+				docsLink: 'page:project_settings#project_namespace',
 			},
 			function onUpdate(setting) {
 				setting.value = safeFunctionName(setting.value)
@@ -47,6 +48,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				),
 				defaultValue: 'minecraft:white_dye',
 				resettable: true,
+				docsLink: 'page:project_settings#rig_item',
 			},
 			function onUpdate(setting) {
 				setting.value = setting.value.toLowerCase()
@@ -107,6 +109,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 			).split('\n'),
 			defaultValue: '',
 			resettable: true,
+			docsLink: 'page:project_settings#rig_item_model',
 		}),
 
 		rig_export_folder: new FolderSetting({
@@ -117,6 +120,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 			).split('\n'),
 			defaultValue: '',
 			resettable: true,
+			docsLink: 'page:project_settings#rig_export_folder',
 		}),
 
 		verbose: new CheckboxSetting({
@@ -126,6 +130,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				'\n'
 			),
 			defaultValue: true,
+			docsLink: 'page:project_settings#verbose',
 		}),
 
 		exporter: new DropdownSetting<string>(
@@ -136,6 +141,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 					'\n'
 				),
 				defaultValue: 0,
+				docsLink: 'page:project_settings#exporter',
 				options: [],
 			},
 			undefined,

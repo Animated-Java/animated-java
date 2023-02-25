@@ -10,6 +10,8 @@
 	import Dropdown from './settingDisplays/dropdown.svelte'
 	import Folder from './settingDisplays/folder.svelte'
 	import File from './settingDisplays/file.svelte'
+	import HelpButton from './helpButton.svelte'
+	import { openAjDocsDialog } from '../ajDocs'
 
 	export let setting: AJ.Setting<any>
 
@@ -32,7 +34,8 @@
 	}
 
 	function onHelpButtonClick() {
-		console.log(`Help button clicked for setting '${setting.displayName}'`)
+		console.log(`Help button clicked for setting '${setting.displayName}' ${setting.docsLink}`)
+		openAjDocsDialog(setting.docsLink)
 	}
 </script>
 
@@ -61,14 +64,7 @@
 			<ResetButton onClick={onResetClick} />
 		{/if}
 
-		<button
-			class="help-button"
-			on:click={onHelpButtonClick}
-			on:mouseenter={() => (helpButtonHovered = true)}
-			on:mouseleave={() => (helpButtonHovered = false)}
-		>
-			<span class="material-icons" style="margin:0px">question_mark</span>
-		</button>
+		<HelpButton handleClick={onHelpButtonClick} bind:hovered={helpButtonHovered} />
 	</div>
 
 	{#if helpButtonHovered}
@@ -147,26 +143,5 @@
 		display: flex;
 		align-items: center;
 		flex-direction: row;
-	}
-
-	button.help-button {
-		all: unset !important;
-
-		display: flex !important;
-		justify-content: center !important;
-		align-content: center !important;
-		flex-wrap: wrap !important;
-
-		background-color: var(--color-button) !important;
-		height: 34px !important;
-		width: 34px !important;
-		line-height: 10px !important;
-		font-size: 20px !important;
-		margin-left: 10px !important;
-	}
-
-	button.help-button:hover {
-		color: var(--color-accent_text) !important;
-		background-color: var(--color-accent) !important;
 	}
 </style>

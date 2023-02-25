@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { translate } from '../../translation'
+	import DocPage from './docs/docPage.svelte'
 	import IndexItem from './docs/indexItem.svelte'
 	import TextAreaAutosize from './textAreaAutosize.svelte'
+
+	export let firstPage: string = 'index'
+	export let openToSection: string | undefined
 
 	const DOC_API_URL = 'http://localhost:3000/api/docs'
 	const DOC_URL = 'http://localhost:3000/docs/'
@@ -11,20 +15,33 @@
 
 	async function getDocIndex() {
 		// await new Promise(resolve => setTimeout(resolve, 1000))
-		return await fetch(DOC_API_URL)
+		const response = await fetch(DOC_API_URL)
 			.then(response => response.json())
 			.catch(error => {
 				throw new Error('Failed to fetch docIndex.\n' + error.stack)
 			})
+		console.log('docIndex', response)
+		return response
 	}
 
 	async function getPage(name: string) {
+		if (name === '') name = 'index'
 		// await new Promise(resolve => setTimeout(resolve, 1000))
 		return await fetch(DOC_URL + name + '.embed')
 			.then(response => response.text())
 			.catch(error => {
 				throw new Error('Failed to fetch docIndex.\n' + error.stack)
 			})
+	}
+
+	let selectedPage: string = firstPage
+	function changePage(page: string) {
+		selectedPage = page
+	}
+
+	function scrollToSection(section: string) {
+		const el = document.getElementById(section)
+		if (el) el.scrollIntoView()
 	}
 </script>
 
@@ -39,24 +56,33 @@
 	<div class="flex-row" style="align-items:stretch;">
 		<div class="flex-column nav-panel">
 			{#each Object.values(index['index.mdx'].children) as localIndex}
-				<IndexItem index={localIndex} />
+				<IndexItem index={localIndex} {changePage} bind:selectedPage />
 			{/each}
 		</div>
 		<div class="flex-column">
-			{#await getPage('_template/_markdown_examples')}
-				<div class="flex-column loading">
-					<h1>{translate('animated_java.dialog.documentation.loading')}</h1>
-					<div class="spin">
-						<span class="material-icons" style="transform: scale(2); margin:0px"
-							>sync</span
-						>
+			{#key selectedPage}
+				{#await getPage(selectedPage)}
+					<div class="flex-column loading">
+						<h1>{translate('animated_java.dialog.documentation.loading')}</h1>
+						<div class="spin">
+							<span class="material-icons" style="transform: scale(2); margin:0px"
+								>sync</span
+							>
+						</div>
 					</div>
-				</div>
-			{:then page}
-				<div class="content">{@html page}</div>
-			{:catch}
-				<p>ur bad</p>
-			{/await}
+				{:then page}
+					<div
+						class="content page-content"
+						on:load={() => {
+							if (openToSection) scrollToSection(openToSection)
+						}}
+					>
+						<DocPage {page} />
+					</div>
+				{:catch}
+					<p>ur bad</p>
+				{/await}
+			{/key}
 		</div>
 	</div>
 {:catch error}
@@ -67,7 +93,7 @@
 				<p>{line}</p>
 			{/each}
 			<br />
-			<TextAreaAutosize value={error.stack} minRows={2} />
+			<TextAreaAutosize value={error.stack} maxWidth={'680px'} maxHeight={'400px'} />
 		</div>
 	</div>
 {/await}
@@ -95,13 +121,9 @@
 	div.nav-panel {
 		background-color: var(--color-back);
 		margin-right: 10px;
-		padding: 10px;
 		align-items: stretch;
-	}
-
-	div.content {
-		overflow-y: scroll;
-		max-height: 700px;
+		min-width: 12em;
+		border: 2px solid var(--color-border);
 	}
 
 	p {
@@ -122,5 +144,13 @@
 		align-items: center;
 		justify-content: center;
 		animation: spin 1.25s ease-in-out infinite;
+	}
+
+	div.content {
+		overflow-y: scroll;
+		max-height: 700px;
+	}
+	div.page-content {
+		padding-left: 1em;
 	}
 </style>

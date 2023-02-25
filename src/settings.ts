@@ -15,6 +15,7 @@ export interface ISettingOptions<V> {
 	description: string[]
 	defaultValue: V
 	resettable?: boolean
+	docsLink?: string
 }
 
 export class Setting<V, R = any> extends Subscribable<R> {
@@ -23,6 +24,7 @@ export class Setting<V, R = any> extends Subscribable<R> {
 	description: string[]
 	defaultValue: V
 	resettable?: boolean
+	docsLink?: string
 
 	protected _value: V
 	private lastValue: V
@@ -38,6 +40,7 @@ export class Setting<V, R = any> extends Subscribable<R> {
 		this.description = options.description
 		this.defaultValue = options.defaultValue
 		this.resettable = options.resettable
+		this.docsLink = options.docsLink
 
 		this._value = this.defaultValue
 		this.lastValue = this.defaultValue

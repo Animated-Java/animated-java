@@ -1,4 +1,7 @@
 
+# UI
+- [ ] Replace default animation creation and config screens
+
 # Features
 - [ ] Add some way to have the rig follow the root even while it's not animating.
     - Possible solution: Make all display entities ride the root entity.

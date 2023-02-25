@@ -14,5 +14,6 @@ declare global {
 	const AnimatedJavaSettings: typeof import('./settings')
 	const ANIMATED_JAVA: {
 		translate: typeof translate
+		docClick: (link: string) => void
 	}
 }

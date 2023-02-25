@@ -23,7 +23,6 @@ animated_java.dialog.documentation.loading: Loading Documentation...
 animated_java.dialog.documentation.error.failed_to_load.title: Failed to Load Documentation! :(
 animated_java.dialog.documentation.error.failed_to_load.description: |-
   Make sure you're connected to the internet!
-  Try re-opening this dialog to try again.
 
 ### Project Settings
 animated_java.dialog.project_settings.title: Animated Java Project Settings

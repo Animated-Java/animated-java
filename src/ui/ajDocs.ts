@@ -4,29 +4,48 @@ import { ajAction } from '../util/ajAction'
 import { AJDialog } from './ajDialog'
 import { default as DocsComponent } from './components/docs.svelte'
 
-function openAjDocsDialog() {
-	const dialog = new AJDialog(
+let docsDialog: AJDialog | undefined
+
+export function openAjDocsDialog(page?: string) {
+	if (docsDialog) docsDialog.close(0)
+	let section: string | undefined
+	if (page?.startsWith('page:')) {
+		page = page.substring(5)
+		if (page.includes('#')) [page, section] = page.split('#')
+	}
+
+	docsDialog = new AJDialog(
 		DocsComponent,
-		{},
+		{
+			firstPage: page,
+			openToSection: section,
+		},
 		{
 			title: translate('animated_java.dialog.documentation.title'),
 			id: 'animated_java.documentation',
-			width: 800,
+			width: 1000,
 			buttons: [translate('animated_java.dialog.documentation.close_button')],
+			onConfirm: () => {
+				docsDialog = undefined
+			},
+			onCancel: () => {
+				docsDialog = undefined
+			},
 		}
-	)
-	dialog.show()
+	).show()
 }
 
-MenuBar.addAction(
-	ajAction('animated_java:documentation', {
-		icon: 'find_in_page',
-		category: 'animated_java',
-		name: translate('animated_java.menubar.items.documentation'),
-		condition: () => Format.id === ajModelFormat.id,
-		click: function () {
-			openAjDocsDialog()
-		},
-	}),
-	'animated_java'
-)
+queueMicrotask(() => {
+	MenuBar.addAction(
+		ajAction('animated_java:documentation', {
+			icon: 'find_in_page',
+			category: 'animated_java',
+			name: translate('animated_java.menubar.items.documentation'),
+			condition: () => Format.id === ajModelFormat.id,
+			click: function () {
+				openAjDocsDialog()
+			},
+		}),
+		'animated_java'
+	)
+})
