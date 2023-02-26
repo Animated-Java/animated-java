@@ -4,8 +4,11 @@
 	export let index: any
 	export let selectedPage: string
 	export let changePage: (page: string) => void
+	export let expanded: boolean = false
+	export let selected: boolean = false
+	export let childSelected: boolean = false
 
-	let expanded: boolean = false
+	index.path = index.path || 'index'
 
 	function handleClick(event: any) {
 		event.preventDefault()
@@ -18,23 +21,29 @@
 		expanded = !expanded
 	}
 
+	$: selected = selectedPage === index.path
+	$: expanded = expanded ? expanded : selected
+
 	$: {
+		childSelected = false
 		if (index.children) {
 			if (Object.values(index.children).find((child: any) => child.path === selectedPage))
-				expanded = true
+				childSelected = true
+			expanded = true
 		}
 	}
 </script>
 
 <div class="index-container">
-	<div
-		class="name-container"
-		style={selectedPage === index.path ? 'background-color:var(--color-button)' : ''}
-	>
+	<div class="name-container" style={selected ? 'background-color:var(--color-button)' : ''}>
 		{#if index.children && Object.keys(index.children).length}
 			{#if expanded}
-				<span class="material-icons" style="margin:0px" on:click={toggleExpand}
-					>expand_more</span
+				<span
+					class="material-icons"
+					style="margin:0px; {childSelected || selected
+						? 'color:var(--color-subtle_text)'
+						: ''}"
+					on:click={toggleExpand}>expand_more</span
 				>
 			{:else}
 				<span class="material-icons" style="margin:0px" on:click={toggleExpand}

@@ -3,17 +3,23 @@ import { translate } from '../util/translation'
 import { ajAction } from '../util/ajAction'
 import { AJDialog } from './ajDialog'
 import { default as DocsComponent } from './components/docs.svelte'
+import { events } from '../util/events'
+
+// events.onDocsLinkClicked.subscribe(event => {})
 
 let docsDialog: AJDialog | undefined
-
-export function openAjDocsDialog(page?: string, section?: string) {
-	if (docsDialog) docsDialog.close(0)
-	console.log('aaa', page)
+export function openAjDocsDialog(link?: string, section?: string) {
+	if (docsDialog) {
+		if (link) {
+			events.onDocsLinkClicked.dispatch({ link, section })
+			return
+		} else docsDialog.close(0)
+	}
 
 	docsDialog = new AJDialog(
 		DocsComponent,
 		{
-			firstPage: page,
+			firstPage: link,
 			openToSection: section,
 		},
 		{

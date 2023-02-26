@@ -2,9 +2,19 @@
 # UI
 - [x] Replace default animation creation and config screens
 - [ ] Variants panel
-    - [ ] Texture map is controlled and verified by the UI. A copy of the map is then put into Project.animated_java_variants.texture_map
+    - [x] Component and mounting
+    - [x] Project based texture map
+    - [ ] Button to add new Variant
+    - [ ] Double click variant (or press the edit button) to open the Variants Dialog
+- [ ] Variants Dialog
+    - [ ] Change the name of the variant
+    - [ ] Configure texture map
 
 # Features
+- [ ] Animations
+    - [ ] Animation "Transitions" - Some way of telling AJ you want to immediately start an animation after another animation finishes
+    - [ ] Animation "Controllers" - Based on a score on the root entity, automatically switch between animations.
+    - [ ] 
 - [ ] Things to convert when converting model formats into AJ's format
     - [ ] All animations need their snapping set to 20
     - [ ] Animation Keyframes need to be rounded to the nearest 20th of a second

@@ -95,14 +95,12 @@ animated_java.animation_config.animation_loop.options.hold: Hold on Last Frame
 
 animated_java.animation_config.animation_loop_delay: Loop Delay
 animated_java.animation_config.animation_loop_delay.description: |-
-  The delay between loops of the animation.
+  The delay (in ticks) between loops of the animation.
   Only applies if the loop mode is set to loop.
-  Time value is in seconds.
 
 animated_java.animation_config.animation_start_delay: Start Delay
 animated_java.animation_config.animation_start_delay.description: |-
-  The delay before the animation starts after the play function is ran.
-  Time value is in seconds.
+  The delay (in ticks) before the animation starts after the play function is ran.
 
 ### Variants Panel
 animated_java.panels.variants.name: Variants

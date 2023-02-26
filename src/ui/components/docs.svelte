@@ -1,8 +1,10 @@
 <script lang="ts">
+	import { fade } from 'svelte/transition'
+	import { events } from '../../util/events'
 	import { translate } from '../../util/translation'
 	import DocPage from './docs/docPage.svelte'
 	import IndexItem from './docs/indexItem.svelte'
-	import TextAreaAutosize from './textAreaAutosize.svelte'
+	import ErrorComponent from './docs/error.svelte'
 
 	export let firstPage: string = 'index'
 	export let openToSection: string | undefined
@@ -15,6 +17,7 @@
 
 	async function getDocIndex() {
 		// await new Promise(resolve => setTimeout(resolve, 1000))
+		// throw new Error('Skill Issue!')
 		const response = await fetch(DOC_API_URL)
 			.then(response => response.json())
 			.catch(error => {
@@ -24,17 +27,21 @@
 		return response
 	}
 
-	async function getPage(name: string) {
+	async function getPage(name: string): Promise<string> {
 		if (name === '') name = 'index'
 		// await new Promise(resolve => setTimeout(resolve, 1000))
-		return await fetch(DOC_URL + name + '.embed')
+		const result = await fetch(DOC_URL + name + '.embed')
 			.then(response => response.text())
 			.catch(error => {
 				throw new Error('Failed to fetch docIndex.\n' + error.stack)
 			})
+
+		if (result.toLowerCase() === 'not found') return getPage('meta/undocumented')
+
+		return result
 	}
 
-	let selectedPage: string = firstPage
+	let selectedPage: string
 	function changePage(page: string) {
 		selectedPage = page
 	}
@@ -42,32 +49,59 @@
 	function scrollToSection(section: string) {
 		const el = document.getElementById(section)
 		// console.log('scrollToSection', section, el)
-		if (el) el.scrollIntoView()
+		if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
 	}
 
-	function onload(el: any) {
-		if (openToSection) scrollToSection(openToSection)
+	let onload = (el: any) => {
+		if (openToSection) {
+			scrollToSection(openToSection)
+			openToSection = undefined
+		}
 	}
+
+	events.onDocsLinkClicked.subscribe(event => {
+		onload = (el: any) => {
+			if (event.section) scrollToSection(event.section)
+			event.section = undefined
+		}
+		changePage(event.link)
+	})
+
+	let loaded = false
+	queueMicrotask(() => {
+		loaded = true
+		changePage(firstPage)
+	})
 </script>
 
 {#await getDocIndex()}
-	<div class="flex-column loading">
-		<h1>{translate('animated_java.dialog.documentation.loading')}</h1>
-		<div class="spin">
-			<span class="material-icons" style="transform: scale(2); margin:0px">sync</span>
+	{#if loaded}
+		<div
+			class="flex-column loading"
+			style="flex-grow:1;"
+			in:fade={{ delay: 250, duration: 500 }}
+		>
+			<h1>{translate('animated_java.dialog.documentation.loading')}</h1>
+			<div class="spin">
+				<span class="material-icons" style="transform: scale(2); margin:0px">sync</span>
+			</div>
 		</div>
-	</div>
+	{/if}
 {:then index}
-	<div class="flex-row" style="align-items:stretch;">
+	<div class="flex-row" style="align-items:stretch; height: 42em;">
 		<div class="flex-column nav-panel">
 			{#each Object.values(index['index.mdx'].children) as localIndex}
 				<IndexItem index={localIndex} {changePage} bind:selectedPage />
 			{/each}
 		</div>
-		<div class="flex-column">
+		<div class="flex-column" style="flex-grow:1;">
 			{#key selectedPage}
 				{#await getPage(selectedPage)}
-					<div class="flex-column loading">
+					<div
+						class="flex-column loading"
+						style="flex-grow:1;"
+						in:fade={{ delay: 250, duration: 500 }}
+					>
 						<h1>{translate('animated_java.dialog.documentation.loading')}</h1>
 						<div class="spin">
 							<span class="material-icons" style="transform: scale(2); margin:0px"
@@ -79,23 +113,14 @@
 					<div class="content page-content" use:onload>
 						<DocPage {page} />
 					</div>
-				{:catch}
-					<p>ur bad</p>
+				{:catch error}
+					<ErrorComponent {error} />
 				{/await}
 			{/key}
 		</div>
 	</div>
 {:catch error}
-	<div class="content">
-		<div class="flex-column loading">
-			<h1>{translate('animated_java.dialog.documentation.error.failed_to_load.title')}</h1>
-			{#each translate('animated_java.dialog.documentation.error.failed_to_load.description').split('\n') as line}
-				<p>{line}</p>
-			{/each}
-			<br />
-			<TextAreaAutosize value={error.stack} maxWidth={'680px'} maxHeight={'400px'} />
-		</div>
-	</div>
+	<ErrorComponent {error} />
 {/await}
 
 <style>
@@ -103,7 +128,6 @@
 		display: flex;
 		align-items: center;
 		flex-direction: column;
-		align-items: flex-start;
 	}
 
 	div.flex-row {
@@ -116,6 +140,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		text-align: center;
 	}
 
 	div.nav-panel {
@@ -124,10 +149,7 @@
 		align-items: stretch;
 		min-width: 12em;
 		border: 2px solid var(--color-border);
-	}
-
-	p {
-		margin: 0px;
+		overflow-y: auto;
 	}
 
 	@keyframes spin {
@@ -147,6 +169,7 @@
 	}
 
 	div.content {
+		display: flex;
 		overflow-y: scroll;
 		max-height: 700px;
 	}

@@ -11,6 +11,8 @@ interface IEvents {
 	loadProject: AnimatedJavaEvent
 	selectProject: AnimatedJavaEvent<ModelProject>
 	postSelectProject: AnimatedJavaEvent<ModelProject>
+
+	onDocsLinkClicked: AnimatedJavaEvent<{ link: string; section?: string }>
 	// Should show an error if an event that hasn't been labled in IEvents is registered or referenced.
 	// [name: string]: AnimatedJavaEvent
 }
@@ -39,6 +41,10 @@ const unloadMods = new AnimatedJavaEvent('unloadMods')
 const loadProject = new AnimatedJavaEvent('loadProject')
 const selectProject = new AnimatedJavaEvent<ModelProject>('selectProject')
 const postSelectProject = new AnimatedJavaEvent<ModelProject>('postSelectProject')
+
+const onDocsLinkClicked = new AnimatedJavaEvent<{ link: string; section?: string }>(
+	'onDocsLinkClicked'
+)
 
 load.subscribe(() => loadMods.dispatch())
 unload.subscribe(() => unloadMods.dispatch())

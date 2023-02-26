@@ -57,8 +57,9 @@ events.uninstall.subscribe(() => {
 	globalThis.AnimatedJavaSettings = undefined
 })
 
-import('./exporters/statueExporter')
 import('./exporters/animationExporter')
+import('./exporters/statueExporter')
+import('./exporters/rawExporter')
 
 BBPlugin.register(PACKAGE.name, {
 	title: PACKAGE.title,
