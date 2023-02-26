@@ -8,19 +8,19 @@ svelteHelperMarkPluginInitialization()
 // KEEP CODE WITHIN THESE BOUNDS
 
 import PACKAGE from '../package.json'
-import { events } from './events'
-import './mods'
-import './translation'
+import { events } from './util/events'
+import './util/mods'
+import './util/translation'
 import { animationToDataset, workerPool } from './renderWorker/renderer'
 import './modelFormat'
 import { _AnimatedJavaExporter } from './exporter'
-import { translate } from './translation'
+import { translate } from './util/translation'
 import * as AJSettings from './settings'
 import './projectSettings'
 import './ui/ajSettings'
 import './ui/ajProjectSettings'
-import './ui/animationConfig'
-import './ui/ajVariants'
+import './ui/ajAnimationConfig'
+import './ui/ajVariantsPanel'
 import { openAjDocsDialog } from './ui/ajDocs'
 
 // @ts-ignore
@@ -47,6 +47,15 @@ globalThis.ANIMATED_JAVA = {
 		Blockbench.openLink(link)
 	},
 }
+// Uninstall events
+events.uninstall.subscribe(() => {
+	// @ts-ignore
+	globalThis.ANIMATED_JAVA = undefined
+	// @ts-ignore
+	globalThis.AnimatedJavaExporter = undefined
+	// @ts-ignore
+	globalThis.AnimatedJavaSettings = undefined
+})
 
 import('./exporters/statueExporter')
 import('./exporters/animationExporter')
@@ -64,19 +73,19 @@ BBPlugin.register(PACKAGE.name, {
 	await_loading: true,
 	onload() {
 		// devlog(`${PACKAGE.name} loaded!`)
-		events.load.trigger()
+		events.load.dispatch()
 	},
 	onunload() {
 		// devlog(`${PACKAGE.name} unloaded!`)
-		events.unload.trigger()
+		events.unload.dispatch()
 	},
 	oninstall() {
 		// devlog(`${PACKAGE.name} installed!`)
-		events.install.trigger()
+		events.install.dispatch()
 	},
 	onuninstall() {
 		// devlog(`${PACKAGE.name} uninstalled!`)
-		events.uninstall.trigger()
+		events.uninstall.dispatch()
 	},
 })
 

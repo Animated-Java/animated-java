@@ -19,7 +19,21 @@
 			"animated_java:animation_exporter": {
 				"bar": "Beep Boop"
 			}
-		}
+		},
+		"variants": [
+			{
+				"name": "default",
+				"textures": {}
+			},
+			{
+				"name": "foo",
+				"textures": {}
+			},
+			{
+				"name": "bar",
+				"textures": {}
+			}
+		]
 	},
 	"resolution": {
 		"width": 16,
@@ -84,12 +98,11 @@
 			"override": false,
 			"length": 0,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",
-			"loop_delay": "",
-			"animators": {}
+			"loop_delay": ""
 		},
 		{
 			"uuid": "78d88b0f-67a5-a78e-cce5-11ecf32c6580",
@@ -102,8 +115,7 @@
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",
-			"loop_delay": "",
-			"animators": {}
+			"loop_delay": ""
 		}
 	]
 }

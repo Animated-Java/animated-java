@@ -2,7 +2,7 @@
 # UI
 - [x] Replace default animation creation and config screens
 - [ ] Variants panel
-    - [ ] Texture map is controlled and verified by the UI. Exporters are given a copied map.
+    - [ ] Texture map is controlled and verified by the UI. A copy of the map is then put into Project.animated_java_variants.texture_map
 
 # Features
 - [ ] Things to convert when converting model formats into AJ's format

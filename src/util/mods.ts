@@ -21,7 +21,7 @@ export class BlockbenchMod {
 	}
 }
 
-events.loadMods.addListener(() =>
+events.loadMods.subscribe(() =>
 	all.forEach(mod => {
 		try {
 			mod.inject()
@@ -32,7 +32,7 @@ events.loadMods.addListener(() =>
 		}
 	})
 )
-events.unloadMods.addListener(() =>
+events.unloadMods.subscribe(() =>
 	all.forEach(mod => {
 		try {
 			mod.extract()

@@ -1,5 +1,5 @@
 import { Setting as AJSetting, AnimatedJavaSettings } from './settings'
-import { GUIStructure } from './ui/uiStructure'
+import { GUIStructure } from './ui/ajUIStructure'
 
 type ProjectSettings = Record<string, AJSetting<any>>
 
@@ -16,7 +16,7 @@ interface IAnimatedJavaExporterOptions<S extends ProjectSettings> {
 	): Promise<void>
 }
 
-export class _AnimatedJavaExporter<S extends ProjectSettings> {
+export class _AnimatedJavaExporter<S extends ProjectSettings = Record<string, AJSetting<any>>> {
 	static exporters = new Map<string, _AnimatedJavaExporter<any>>()
 	id: string
 	name: string
@@ -33,5 +33,9 @@ export class _AnimatedJavaExporter<S extends ProjectSettings> {
 		this.export = options.export
 
 		_AnimatedJavaExporter.exporters.set(this.id, this)
+	}
+
+	static get all() {
+		return [...AnimatedJavaExporter.exporters.entries()].map(v => v[1])
 	}
 }

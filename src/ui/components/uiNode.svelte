@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { AnyGUIElement } from '../uiStructure'
+	import type { AnyGUIElement } from '../ajUIStructure'
 	import * as AJ from '../../settings'
 	import FancyHeader from './fancyHeader.svelte'
 	import Setting from './setting.svelte'

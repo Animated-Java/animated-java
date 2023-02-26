@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { translate } from '../../translation'
+	import { translate } from '../../util/translation'
 	import DocPage from './docs/docPage.svelte'
 	import IndexItem from './docs/indexItem.svelte'
 	import TextAreaAutosize from './textAreaAutosize.svelte'
@@ -20,7 +20,7 @@
 			.catch(error => {
 				throw new Error('Failed to fetch docIndex.\n' + error.stack)
 			})
-		console.log('docIndex', response)
+		// console.log('docIndex', response)
 		return response
 	}
 
@@ -41,7 +41,7 @@
 
 	function scrollToSection(section: string) {
 		const el = document.getElementById(section)
-		console.log('scrollToSection', section, el)
+		// console.log('scrollToSection', section, el)
 		if (el) el.scrollIntoView()
 	}
 

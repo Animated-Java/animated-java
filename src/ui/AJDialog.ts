@@ -20,7 +20,7 @@ export class AJDialog extends Blockbench.Dialog {
 			...options,
 			lines: [mount as any as HTMLElement],
 			onCancel() {
-				closeHandler.dispatchSubscribers()
+				closeHandler.dispatch()
 			},
 		})
 		let diagShow = this.show.bind(this)
@@ -42,7 +42,7 @@ export class AJDialog extends Blockbench.Dialog {
 		let diagClose = this.close.bind(this)
 		this.close = (...args) => {
 			if (this.instance) {
-				closeHandler.dispatchSubscribers()
+				closeHandler.dispatch()
 				this.instance.$destroy()
 				this.instance = undefined
 			}

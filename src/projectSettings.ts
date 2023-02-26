@@ -9,8 +9,8 @@ import {
 	InlineTextSetting,
 	Setting,
 } from './settings'
-import { translate, translateInfo } from './translation'
-import { GUIStructure } from './ui/uiStructure'
+import { translate, translateInfo } from './util/translation'
+import { GUIStructure } from './ui/ajUIStructure'
 
 export interface IAnimatedJavaProjectSettings {
 	project_namespace: InlineTextSetting
@@ -146,7 +146,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 			},
 			undefined,
 			function onInit(setting) {
-				setting.options = Object.values(AnimatedJavaExporter.exporters).map(exporter => ({
+				setting.options = AnimatedJavaExporter.all.map(exporter => ({
 					name: exporter.name,
 					value: exporter.id,
 				}))

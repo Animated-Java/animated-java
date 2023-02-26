@@ -2,8 +2,8 @@
 	import { onDestroy } from 'svelte'
 	import { safeFunctionName } from '../../minecraft/util'
 	import * as AJ from '../../settings'
-	import { translate, translateInfo } from '../../translation'
-	import type { GUIStructure } from '../uiStructure'
+	import { translate, translateInfo } from '../../util/translation'
+	import type { GUIStructure } from '../ajUIStructure'
 	import UiNode from './uiNode.svelte'
 
 	export let animation: _Animation

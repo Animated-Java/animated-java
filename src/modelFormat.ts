@@ -1,8 +1,11 @@
 import * as pathjs from 'path'
 import * as fs from 'fs'
-import { BlockbenchMod } from './mods'
+import { BlockbenchMod } from './util/mods'
 import { getDefaultProjectSettings } from './projectSettings'
 import { _AnimatedJavaExporter } from './exporter'
+import { getDefaultVariants, Variant, VariantsContainer } from './variants'
+import { events } from './util/events'
+import { consoleGroup, consoleGroupCollapsed } from './util/groupWrapper'
 
 const FORMAT_VERSION = '1.0'
 
@@ -35,47 +38,53 @@ function addProjectToRecentProjects(file: FileResult) {
 }
 
 interface IAnimatedJavaModel {
-	animated_java: {
-		settings: Record<string, any>
-		exporter_settings: Record<string, Record<string, any>>
+	animated_java?: {
+		settings?: Record<string, any>
+		exporter_settings?: Record<string, Record<string, any>>
+		variants?: {
+			name: string
+			textures: Record<string, string>
+		}[]
 	}
 }
 
-function loadAnimatedJavaProjectSettings(model: IAnimatedJavaModel) {
-	if (!Project) return
-	console.groupCollapsed('loadAnimatedJavaProjectSettings')
+const loadAnimatedJavaProjectSettings = consoleGroup(
+	'loadAnimatedJavaProjectSettings',
+	(model: IAnimatedJavaModel) => {
+		if (!Project) return
 
-	Project.animated_java_settings = getDefaultProjectSettings()
-	if (!(model.animated_java && model.animated_java.settings)) return
+		Project.animated_java_settings = getDefaultProjectSettings()
+		if (!(model.animated_java && model.animated_java.settings)) return
 
-	console.log('Loading Animated Java project settings...')
+		console.log('Loading Animated Java project settings...')
 
-	for (const [name, setting] of Object.entries(Project.animated_java_settings)) {
-		if (model.animated_java.settings[name]) setting.value = model.animated_java.settings[name]
-	}
+		for (const [name, setting] of Object.entries(Project.animated_java_settings)) {
+			if (model.animated_java.settings[name])
+				setting.value = model.animated_java.settings[name]
+		}
 
-	Project.animated_java_exporter_settings = {}
-	_AnimatedJavaExporter.exporters.forEach(exporter => {
-		Project.animated_java_exporter_settings![exporter.id] = exporter.getSettings()
-	})
-	if (!model.animated_java.exporter_settings) return
+		Project.animated_java_exporter_settings = {}
+		_AnimatedJavaExporter.exporters.forEach(exporter => {
+			Project.animated_java_exporter_settings![exporter.id] = exporter.getSettings()
+		})
+		if (!model.animated_java.exporter_settings) return
 
-	console.log('Loading Animated Java exporter settings...')
+		console.log('Loading Animated Java exporter settings...')
 
-	for (const [exporterId, exporterSettings] of Object.entries(
-		model.animated_java.exporter_settings
-	)) {
-		if (!Project.animated_java_exporter_settings![exporterId]) continue
-		for (const [settingId, settingValue] of Object.entries(exporterSettings)) {
-			if (!model.animated_java.exporter_settings[exporterId][settingId]) continue
-			console.log('Loading value for', exporterId, settingId, settingValue)
-			Project.animated_java_exporter_settings![exporterId][settingId].value = settingValue
+		for (const [exporterId, exporterSettings] of Object.entries(
+			model.animated_java.exporter_settings
+		)) {
+			if (!Project.animated_java_exporter_settings![exporterId]) continue
+			for (const [settingId, settingValue] of Object.entries(exporterSettings)) {
+				if (!model.animated_java.exporter_settings[exporterId][settingId]) continue
+				console.log('Loading value for', exporterId, settingId, settingValue)
+				Project.animated_java_exporter_settings![exporterId][settingId].value = settingValue
+			}
 		}
 	}
-	console.groupEnd()
-}
+)
 
-function exportAnimatedJavaProjectSettings(): any {
+const exportAnimatedJavaProjectSettings = consoleGroup('exportAnimatedJavaProjectSettings', () => {
 	if (!Project?.animated_java_settings) return
 	const exported: any = {}
 	for (const [name, setting] of Object.entries(Project.animated_java_settings)) {
@@ -83,7 +92,7 @@ function exportAnimatedJavaProjectSettings(): any {
 	}
 
 	return exported
-}
+})
 
 function exportAnimatedJavaExporterSettings() {
 	if (!Project?.animated_java_exporter_settings) return
@@ -100,17 +109,45 @@ function exportAnimatedJavaExporterSettings() {
 	return exported
 }
 
+const loadAnimatedJavaVariants = consoleGroup(
+	'loadAnimatedJavaVariants',
+	(model: IAnimatedJavaModel) => {
+		if (!Project) return
+
+		Project.animated_java_variants = getDefaultVariants()
+		if (!(model.animated_java && model.animated_java.variants)) return
+
+		console.log('Loading Animated Java variants...')
+		for (const variant of model.animated_java.variants) {
+			Project.animated_java_variants.addVariant(new Variant(variant.name, variant.textures))
+		}
+	}
+)
+
+const exportAnimatedJavaVariants = consoleGroup('exportAnimatedJavaVariants', () => {
+	if (!Project?.animated_java_variants) return
+	const exported: any = []
+	for (const variant of Project.animated_java_variants.all) {
+		exported.push({
+			name: variant.name,
+			textures: variant.textures,
+		})
+	}
+
+	return exported
+})
+
 Blockbench.on('update_selection', () => {
-	console.log('Selection Update', Group.selected, Cube.selected)
+	// console.log('Selection Update', Group.selected, Cube.selected)
 	if (Format.id === ajModelFormat.id && Mode.selected.id === 'edit') {
 		if (!Group.selected && Cube.selected.length > 0) {
 			Format.rotation_limit = true
 			Format.rotation_snap = true
-			console.log('Rotation Limit Enabled')
+			// console.log('Rotation Limit Enabled')
 		} else {
 			Format.rotation_limit = false
 			Format.rotation_snap = false
-			console.log('Rotation Limit Disabled')
+			// console.log('Rotation Limit Disabled')
 		}
 	}
 })
@@ -124,15 +161,16 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 		type: 'json',
 	},
 
-	load(model, file, add) {
+	load: consoleGroup('ajCodec:load', (model, file, add) => {
 		setupProject(ajModelFormat)
 		Project!.save_path = file.path
 		Project!.export_path = file.path
 		addProjectToRecentProjects(file)
 		ajCodec.parse!(model, file.path)
-	},
+		ajCodec.dispatchEvent('load_project', { model, file })
+	}),
 
-	parse(model, path, add) {
+	parse: consoleGroup('ajCodec:parse', (model, path, add) => {
 		if (!Project) throw new Error('No project to load model into...')
 		console.log('Parsing Animated Java model...')
 		if (!model.elements && !model.parent && !model.display && !model.textures) {
@@ -145,6 +183,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 		ajCodec.dispatchEvent('parse', { model, path })
 		processVersionMigration(model)
 		loadAnimatedJavaProjectSettings(model)
+		loadAnimatedJavaVariants(model)
 
 		if (model.meta.box_uv !== undefined && Format.optional_box_uv) {
 			Project.box_uv = model.meta.box_uv
@@ -303,9 +342,9 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 		}
 
 		ajCodec.dispatchEvent('parsed', { model })
-	},
+	}),
 
-	compile(options) {
+	compile: consoleGroup('ajCodec:compile', options => {
 		if (!options) options = {}
 		if (!Project) throw new Error('No project to compile...')
 		console.log('Compiling Animated Java model...')
@@ -317,6 +356,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 			animated_java: {
 				settings: exportAnimatedJavaProjectSettings(),
 				exporter_settings: exportAnimatedJavaExporterSettings(),
+				variants: exportAnimatedJavaVariants(),
 			},
 		}
 
@@ -459,9 +499,9 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 		ajCodec.dispatchEvent('compile', { model, options })
 
 		return content
-	},
+	}),
 
-	export() {
+	export: consoleGroup('ajCodec:export', () => {
 		console.log('Exporting Animated Java model...')
 		Blockbench.export({
 			resource_id: 'animated_java.export',
@@ -472,7 +512,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 				ajCodec.write(content, path)
 			},
 		})
-	},
+	}),
 
 	fileName() {
 		return Project!.animated_java_settings!.project_namespace.value

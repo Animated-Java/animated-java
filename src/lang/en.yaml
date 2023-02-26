@@ -104,40 +104,12 @@ animated_java.animation_config.animation_start_delay.description: |-
   The delay before the animation starts after the play function is ran.
   Time value is in seconds.
 
-# Dev settings
-animated_java.settings.checkbox: Checkbox
-animated_java.settings.checkbox.description: |-
-  A basic checkbox.
-  Contains a boolean.
-animated_java.settings.checkbox.false_error: Your checkbox is false. This is wrong >:(
-#
-animated_java.settings.number_int: Number (Int)
-animated_java.settings.number_int.description: |-
-  An integer number setting.
-  It will always contain a real number. None of this floating-point nonsense!
-animated_java.settings.number_int.low_error: Your Int is too low!
-#
-animated_java.settings.number_float: Number (Float)
-animated_java.settings.number_float.description: |-
-  An number setting.
-  Contains a number.
-#
-animated_java.settings.text_inline: Text Inline
-animated_java.settings.text_inline.description: |-
-  A basic text input.
-  Useful for configuring a single line of text.
-#
-animated_java.settings.text_codebox: Text Codebox
-animated_java.settings.text_codebox.description: |-
-  Text Codeboxes can be single-line or multi-line, With optional/custom syntax highlighting.
-  Useful for code, formatted text, and other such things.
-#
-animated_java.settings.dropdown: Dropdown
-animated_java.settings.dropdown.description: |-
-  A dropdown menu.
-  Contains a list of key-value pairs.
-  The value is displayed on the dropdown, and the key is returned.
-animated_java.settings.dropdown.option3_error: Option 3 is not allowed!
+### Variants Panel
+animated_java.panels.variants.name: Variants
+animated_java.panels.variants.items: Variant
+animated_java.panels.variants.delete_variant: Delete Variant
+animated_java.panels.variants.edit_variant: Edit Variant
+
 ### Exporters
 # Statue Exporter
 animated_java.exporters.statue_exporter.name: Statue Exporter

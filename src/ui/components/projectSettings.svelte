@@ -6,7 +6,7 @@
 	import FancyHeader from './fancyHeader.svelte'
 	import { onDestroy } from 'svelte'
 	import { fade, fly, blur, scale, slide } from 'svelte/transition'
-	import { defer } from '../../util'
+	import { defer } from '../../util/misc'
 	import { _AnimatedJavaExporter } from '../../exporter'
 
 	let settingArray = Object.values(Project!.animated_java_settings!) as AJ.Setting<any>[]
@@ -31,6 +31,10 @@
 	onDestroy(() => {
 		unsub()
 	})
+
+	function getSettingArray(exporter: _AnimatedJavaExporter): any {
+		return Project!.animated_java_exporter_settings![exporter.id]
+	}
 </script>
 
 <div class="dialog-content">
@@ -43,7 +47,7 @@
 			<div transition:slide={{ duration: 250 }} on:outroend={getSelectedExporter}>
 				<FancyHeader content={selectedExporter.name + ' Settings'} />
 				{#each selectedExporter.settingsStructure as el}
-					<AJUINode {el} settingArray={Object.values(selectedExporter.settings)} />
+					<AJUINode {el} settingArray={getSettingArray(selectedExporter)} />
 				{/each}
 			</div>
 		{/key}

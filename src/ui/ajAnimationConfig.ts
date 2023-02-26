@@ -1,6 +1,6 @@
 import { ajModelFormat } from '../modelFormat'
-import { BlockbenchMod } from '../mods'
-import { translate } from '../translation'
+import { BlockbenchMod } from '../util/mods'
+import { translate } from '../util/translation'
 import { AJDialog } from './ajDialog'
 import { default as SvelteComponent } from './components/animationConfig.svelte'
 

@@ -1,5 +1,5 @@
 import { ajModelFormat } from '../modelFormat'
-import { translate } from '../translation'
+import { translate } from '../util/translation'
 import { ajAction } from '../util/ajAction'
 import { AJDialog } from './ajDialog'
 import { default as DocsComponent } from './components/docs.svelte'

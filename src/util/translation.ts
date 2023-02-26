@@ -1,6 +1,6 @@
 // @ts-ignore
-import en from './lang/en.yaml'
-import { IInfoPopup } from './settings'
+import en from '../lang/en.yaml'
+import { IInfoPopup } from '../settings'
 
 type TranslationFormattingObject = Record<string, string>
 

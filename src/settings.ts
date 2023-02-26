@@ -1,6 +1,6 @@
 import { _AnimatedJavaExporter } from './exporter'
-import { translate } from './translation'
-import { GUIStructure } from './ui/uiStructure'
+import { translate } from './util/translation'
+import { GUIStructure } from './ui/ajUIStructure'
 import { Subscribable } from './util/suscribable'
 
 export interface IInfoPopup {
@@ -64,7 +64,7 @@ export class Setting<V, R = any> extends Subscribable<R> {
 		this.lastValue = this.value
 		this.infoPopup = undefined
 		if (this.onUpdate) this.onUpdate(this as unknown as R)
-		this.dispatchSubscribers(this as unknown as R)
+		this.dispatch(this as unknown as R)
 	}
 
 	toJSON() {
@@ -145,7 +145,7 @@ export let AnimatedJavaSettings = {
 			return settingData
 		},
 		function onInit(setting) {
-			setting.options = Object.values(AnimatedJavaExporter.exporters).map(exporter => ({
+			setting.options = AnimatedJavaExporter.all.map(exporter => ({
 				name: exporter.name,
 				value: exporter.id,
 			}))

@@ -1,5 +1,5 @@
 import { ajModelFormat } from '../modelFormat'
-import { translate } from '../translation'
+import { translate } from '../util/translation'
 import { ajAction } from '../util/ajAction'
 // @ts-ignore
 import logo from '../assets/AnimatedJava-2022.svg'
