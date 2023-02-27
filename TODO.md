@@ -4,10 +4,10 @@
 - [ ] Variants panel
     - [x] Component and mounting
     - [x] Project based texture map
-    - [ ] Button to add new Variant
-    - [ ] Double click variant (or press the edit button) to open the Variants Dialog
+    - [x] Button to add new Variant
+    - [x] ~~Double click variant~~ (or press the edit button) to open the Variants Dialog
 - [ ] Variants Dialog
-    - [ ] Change the name of the variant
+    - [x] Change the name of the variant
     - [ ] Configure texture map
 - [ ] Add accessability options
     - [ ] Disable all UI animations
@@ -17,9 +17,12 @@
 
 # Features
 - [ ] Animations
-    - [ ] Animation "Transitions" - Some way of telling AJ you want to immediately start an animation after another animation finishes
+    - [ ] Animation "Transitions" - Some way of telling AJ you want to immediately start an animation after another animation finishes - This might be accomplished with the state keyframe type?
     - [ ] Animation "Controllers" - Based on a score on the root entity, automatically switch between animations.
-    - [ ] Keyframes for Variant swaps
+    - [x] Keyframes for Variant swaps
+    - [ ] Variant swap keyframe `execute if` condition. Only swap variants if a condition is met on the root entity.
+    - [ ] Animation State keyframe `execute if` condition. Only swap states if a condition is met on the root entity.
+    - [ ] Add a keyframe timeline to every bone for running commands at that bone
 - [ ] Things to convert when converting model formats into AJ's format
     - [ ] All animations need their snapping set to 20
     - [ ] Animation Keyframes need to be rounded to the nearest 20th of a second

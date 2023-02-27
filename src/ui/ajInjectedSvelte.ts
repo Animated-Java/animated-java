@@ -1,4 +1,5 @@
 import { SvelteComponent } from 'svelte'
+import { awaitResolve } from '../util/misc'
 
 export class AJInjectedSvelteComponent {
 	instance?: SvelteComponent
@@ -10,16 +11,12 @@ export class AJInjectedSvelteComponent {
 			Svelte2TsxComponentConstructorParameters<any>
 		>,
 		svelteComponentArgs: Record<string, any>,
-		elementResolver: () => Element | undefined | null
+		options: {
+			elementSelector: () => Element | undefined | null
+			postMount?: (el: Element) => void
+		}
 	) {
-		new Promise<Element>(resolve => {
-			const id = setInterval(() => {
-				const el = elementResolver()
-				if (!el) return
-				clearInterval(id)
-				resolve(el)
-			}, 500)
-		}).then(el => {
+		awaitResolve(options.elementSelector).then(el => {
 			console.log('el', el)
 			this.instance = new svelteComponent({
 				target: el.parentElement as any,
@@ -27,6 +24,7 @@ export class AJInjectedSvelteComponent {
 					...svelteComponentArgs,
 				},
 			})
+			if (options.postMount) options.postMount(el)
 		})
 	}
 }

@@ -132,9 +132,16 @@ animated_java.exporters.statue_exporter.name: Statue Exporter
 animated_java.exporters.raw_exporter.name: Raw Exporter
 
 ### Custom Keyframes
-animated_java.timeline.state: States
-animated_java.keyframe.state: State
-animated_java.timeline.variant: Variants
+animated_java.keyframe.animationState: Animation State
 animated_java.keyframe.variant: Variant
-animated_java.timeline.function: Functions
-animated_java.keyframe.function: Function
+animated_java.keyframe.commands: Commands
+animated_java.keyframe.condition: Condition
+animated_java.keyframe.condition.description: |-
+  The condition that must be met for the keyframe to be applied.
+  This is an execute subcommand chain, so you can use any and all execute subcommands in this field.
+  Example: "if score @s example matches 1.."
+  Hint: You can separate subcommands with newlines!
+
+animated_java.timeline.animationState: Animation States
+animated_java.timeline.variant: Variants
+animated_java.timeline.commands: Commands

@@ -9,13 +9,14 @@ interface IEvents {
 	unloadMods: AnimatedJavaEvent
 
 	loadProject: AnimatedJavaEvent
+
+	preSelectProject: AnimatedJavaEvent<ModelProject>
 	selectProject: AnimatedJavaEvent<ModelProject>
 	postSelectProject: AnimatedJavaEvent<ModelProject>
 
 	variantPropertiesUpdate: AnimatedJavaEvent
 
 	onDocsLinkClicked: AnimatedJavaEvent<{ link: string; section?: string }>
-	keyframeSelectionUpdate: AnimatedJavaEvent
 	// Should show an error if an event that hasn't been labled in IEvents is registered or referenced.
 	// [name: string]: AnimatedJavaEvent
 }
@@ -42,6 +43,7 @@ const loadMods = new AnimatedJavaEvent('loadMods')
 const unloadMods = new AnimatedJavaEvent('unloadMods')
 
 const loadProject = new AnimatedJavaEvent('loadProject')
+const preSelectProject = new AnimatedJavaEvent<ModelProject>('preSelectProject')
 const selectProject = new AnimatedJavaEvent<ModelProject>('selectProject')
 const postSelectProject = new AnimatedJavaEvent<ModelProject>('postSelectProject')
 
@@ -50,7 +52,6 @@ const variantPropertiesUpdate = new AnimatedJavaEvent('variantPropertiesUpdate')
 const onDocsLinkClicked = new AnimatedJavaEvent<{ link: string; section?: string }>(
 	'onDocsLinkClicked'
 )
-const keyframeSelectionUpdate = new AnimatedJavaEvent('keyframeSelectionUpdate')
 
 load.subscribe(() => loadMods.dispatch())
 unload.subscribe(() => unloadMods.dispatch())

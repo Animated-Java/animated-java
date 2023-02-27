@@ -39,6 +39,7 @@
 	<div class="name-container" style={selected ? 'background-color:var(--color-button)' : ''}>
 		{#if index.children && Object.keys(index.children).length}
 			{#if expanded}
+				<!-- svelte-ignore -->
 				<span
 					class="material-icons"
 					style="margin:0px; {childSelected || selected
@@ -52,6 +53,7 @@
 				>
 			{/if}
 		{/if}
+		<!-- svelte-ignore -->
 		<p class="name" on:click={handleClick}>
 			{index.name}
 		</p>

@@ -28,3 +28,17 @@ export function roundTo(n: number, d: number) {
 export function roundToN(n: number, x: number) {
 	return Math.round(n * x) / x
 }
+
+export function awaitResolve<T = any>(
+	resolver: () => T | undefined | null,
+	interval: number = 250
+) {
+	return new Promise<T>(resolve => {
+		const id = setInterval(() => {
+			const result = resolver()
+			if (!result) return
+			clearInterval(id)
+			resolve(result)
+		}, interval)
+	})
+}

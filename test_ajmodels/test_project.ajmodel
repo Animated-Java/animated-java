@@ -39,8 +39,8 @@
 		]
 	},
 	"resolution": {
-		"width": 16,
-		"height": 16
+		"width": 64,
+		"height": 64
 	},
 	"elements": [
 		{
@@ -48,29 +48,35 @@
 			"box_uv": true,
 			"rescale": false,
 			"locked": false,
-			"from": [-1, 0, -1],
-			"to": [1, 2, 1],
-			"autouv": 1,
+			"from": [-8, 0, -8],
+			"to": [8, 16, 8],
+			"autouv": 0,
 			"color": 0,
 			"origin": [0, 0, 0],
 			"faces": {
 				"north": {
-					"uv": [2, 2, 4, 4]
+					"uv": [16, 16, 32, 32],
+					"texture": 0
 				},
 				"east": {
-					"uv": [0, 2, 2, 4]
+					"uv": [0, 16, 16, 32],
+					"texture": 0
 				},
 				"south": {
-					"uv": [6, 2, 8, 4]
+					"uv": [48, 16, 64, 32],
+					"texture": 0
 				},
 				"west": {
-					"uv": [4, 2, 6, 4]
+					"uv": [32, 16, 48, 32],
+					"texture": 0
 				},
 				"up": {
-					"uv": [4, 2, 2, 0]
+					"uv": [32, 16, 16, 0],
+					"texture": 0
 				},
 				"down": {
-					"uv": [6, 0, 4, 2]
+					"uv": [48, 0, 32, 16],
+					"texture": 0
 				}
 			},
 			"type": "cube",
@@ -92,7 +98,28 @@
 			"children": ["cc4fc40c-5e59-13b9-22c9-5d8dadab9122"]
 		}
 	],
-	"textures": [],
+	"textures": [
+		{
+			"path": "D:\\github-repos\\animated-java\\test_ajmodels\\texture.png",
+			"name": "texture.png",
+			"folder": "",
+			"namespace": "",
+			"id": "0",
+			"particle": false,
+			"render_mode": "default",
+			"render_sides": "auto",
+			"frame_time": 1,
+			"frame_order_type": "loop",
+			"frame_order": "",
+			"frame_interpolate": false,
+			"visible": true,
+			"mode": "bitmap",
+			"saved": true,
+			"uuid": "623c3550-3f4b-fc54-be0b-bc134a9c6c31",
+			"relative_path": "../texture.png",
+			"source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAU9JREFUeF7tmTFqAlEURf9AIIW9DhhCBCFbmN5FuIRsJtOYysoV2LkIsbYRBBNRmAlpLVJFvriCd4tw9difP2/uu/P+fVgk8bdYf/0pR8zqDwVP89l7oRwgwfnBWYBq+BSqYbk9pCxAv1eG+GPbIAAO4BNgBkhzTIIZgtwCXIPkAIIQSZAozC5w98tQaJW7Qv++Do+aWtrny/Wb8v5puppI/MP4R+KLLEDV64YOWbbfKQvwUnZC/GdzugjQGTyH+NNun7IAj/3XEP973CQEwAF8AswAhiC3ANcgOSAUJAhCJEGiMLvATSxDoQl4hezXYeXlb4GV/xpzFwEB3Duo1o8DVAXdeRzg3kG1fhygKujO4wD3Dqr14wBVQXceB7h3UK0fB6gKuvM4wL2Dav04QFXQnccB7h1U68cBqoLuPA5w76BaPw5QFXTncYB7B9X6z13Z4LBLm8u4AAAAAElFTkSuQmCC"
+		}
+	],
 	"animations": [
 		{
 			"uuid": "603a8012-ccc1-08c7-6619-9b2b4e87f62e",
@@ -137,13 +164,14 @@
 					"type": "effect",
 					"keyframes": [
 						{
-							"channel": "states",
+							"channel": "animationStates",
 							"data_points": [
 								{
-									"state": ""
+									"animationState": "603a8012-ccc1-08c7-6619-9b2b4e87f62e",
+									"condition": ""
 								}
 							],
-							"uuid": "5d6d5b54-3c77-ec44-f3fd-3886878ec781",
+							"uuid": "055bb973-d905-a1bd-22c1-dee484ea0b32",
 							"time": 0,
 							"color": -1,
 							"interpolation": "linear",
@@ -157,11 +185,12 @@
 							"channel": "variants",
 							"data_points": [
 								{
-									"variant": "default"
+									"variant": "default",
+									"condition": "if score @s example matches 1.."
 								}
 							],
 							"uuid": "13d71016-faf6-e6e2-905d-c56ba95466eb",
-							"time": 0.25,
+							"time": 0.3,
 							"color": -1,
 							"interpolation": "linear",
 							"bezier_linked": true,
@@ -174,7 +203,8 @@
 							"channel": "variants",
 							"data_points": [
 								{
-									"variant": "default"
+									"variant": "foo",
+									"condition": ""
 								}
 							],
 							"uuid": "b971a798-ba53-8d70-9acf-d6e0b2a797f8",
@@ -191,7 +221,8 @@
 							"channel": "variants",
 							"data_points": [
 								{
-									"variant": "default"
+									"variant": "bar",
+									"condition": ""
 								}
 							],
 							"uuid": "7952ab01-147e-6c7e-283a-d3a30d2cc14a",
@@ -205,10 +236,10 @@
 							"bezier_right_value": [0, 0, 0]
 						},
 						{
-							"channel": "functions",
+							"channel": "commands",
 							"data_points": [
 								{
-									"function": ""
+									"commands": "say Hello World!\n"
 								}
 							],
 							"uuid": "00d6f72d-07d3-22f1-21b3-102f4b93a6fb",
@@ -236,8 +267,7 @@
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",
-			"loop_delay": "",
-			"animators": {}
+			"loop_delay": ""
 		}
 	]
 }

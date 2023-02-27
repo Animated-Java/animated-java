@@ -627,3 +627,18 @@ new BlockbenchMod({
 		exportOverAction.click = oldExportOverFunction
 	},
 })
+
+const originalSelectProject = ModelProject.prototype.select
+
+new BlockbenchMod({
+	id: 'animated_kava:events.preSelectProject',
+	inject() {
+		ModelProject.prototype.select = function (this: ModelProject) {
+			if (Project !== this) events.preSelectProject.dispatch(this)
+			return originalSelectProject.call(this)
+		}
+	},
+	extract() {
+		ModelProject.prototype.select = originalSelectProject
+	},
+})

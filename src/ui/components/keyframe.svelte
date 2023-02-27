@@ -1,44 +1,50 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte'
-	import { Variant } from '../../variants'
+	import KeyframeAnimationStates from './keyframe/keyframeAnimationStates.svelte'
+	import KeyframeCommands from './keyframe/keyframeCommands.svelte'
+	import KeyframeVariants from './keyframe/keyframeVariants.svelte'
 
-	let selected: _Keyframe[] = Blockbench.Keyframe.selected
-	let value: any
+	let selected: _Keyframe | undefined
 
-	$: variants = getVariants()
+	function getSelectedKeyframe() {
+		return Blockbench.Keyframe.selected.at(0)
+	}
 
-	function getVariants() {
-		return Project?.animated_java_variants?.variants || []
+	function updateKeyframeLabel() {
+		const label = jQuery('#panel_keyframe .panel_vue_wrapper #keyframe_type_label label')
+		const keyframeChannel = getSelectedKeyframe()?.channel
+		if (label && keyframeChannel) {
+			label.text(`Keyframe (${keyframeChannel[0].toUpperCase() + keyframeChannel.slice(1)})`)
+		}
+	}
+
+	function onSelectionUpdate() {
+		updateKeyframeLabel()
 	}
 
 	function update() {
-		selected = Blockbench.Keyframe.selected
-		value = Blockbench.Keyframe.selected[0]?.data_points[0].variant
+		if (selected !== Blockbench.Keyframe.selected[0]) {
+			console.log('selected changed')
+			onSelectionUpdate()
+			selected = getSelectedKeyframe()
+		}
 		requestAnimationFrame(update)
 	}
 
 	update()
 </script>
 
-{#if selected.length === 1}
+{#if selected}
 	<div class="container">
-		{#if selected[0].channel === 'variants'}
-			<p class="name">Variant</p>
-			{#key variants}
-				<select {value} style="margin-left: 1em;">
-					{#each variants as variant, index}
-						<option value={index}>
-							<div>{variant.name}</div>
-						</option>
-					{/each}
-				</select>
+		{#if selected.channel === 'variants'}
+			{#key selected}
+				<KeyframeVariants />
 			{/key}
-		{:else if selected[0].channel === 'functions'}
-			<p class="name">Function</p>
-			<input type="text" class="text-display" bind:value />
-		{:else if selected[0].channel === 'states'}
-			<p class="name">State</p>
-			<input type="text" class="text-display" bind:value />
+		{:else if selected.channel === 'commands'}
+			<KeyframeCommands />
+		{:else if selected.channel === 'animationStates'}
+			{#key selected}
+				<KeyframeAnimationStates />
+			{/key}
 		{/if}
 	</div>
 {/if}
@@ -46,9 +52,7 @@
 <style>
 	div.container {
 		display: flex;
-		flex-direction: row;
-		/* background-color: var(--color-back); */
-		align-items: center;
+		flex-direction: column;
 		overflow-y: auto;
 	}
 
@@ -64,16 +68,6 @@
 		border: 1px solid var(--color-border);
 	} */
 
-	p.name {
-		padding: 3px 8px;
-		margin: unset;
-		background-color: var(--color-button);
-	}
-
-	.text-display {
-		flex-grow: 1;
-	}
-
 	/* button {
 		all: unset !important;
 
@@ -85,14 +79,5 @@
 
 	button:hover {
 		color: var(--color-light) !important;
-	} */
-
-	/* .text_inline {
-		background: var(--color-dark);
-		font-family: var(--font-code);
-		flex-grow: 1;
-		padding: 5px;
-		padding-left: 11px;
-		padding-right: 11px;
 	} */
 </style>

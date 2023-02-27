@@ -1,3 +1,4 @@
+import { SvelteComponentTyped } from 'svelte'
 import { _AnimatedJavaExporter } from './exporter'
 import { IAnimatedJavaProjectSettings } from './projectSettings'
 import { Setting } from './settings'

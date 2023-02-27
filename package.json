@@ -32,6 +32,7 @@
 		"updateBBTypes": "powershell -Command \"Remove-Item -Recurse temp_bbtypes;\"; git submodule add https://github.com/SnaveSutit/blockbench-types temp_bbtypes/"
 	},
 	"devDependencies": {
+		"@novacbn/svelte-codejar": "^0.1.2",
 		"@types/fs-extra": "^11.0.1",
 		"@types/js-yaml": "^4.0.5",
 		"@types/node": "^17.0.21",
