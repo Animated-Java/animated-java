@@ -16,7 +16,7 @@
 	// 'docs/<filename>.embed' returns the rendered html of the document
 
 	async function getDocIndex() {
-		// await new Promise(resolve => setTimeout(resolve, 1000))
+		// await new Promise(resolve => setTimeout(resolve, 2000))
 		// throw new Error('Skill Issue!')
 		const response = await fetch(DOC_API_URL)
 			.then(response => response.json())
@@ -29,7 +29,7 @@
 
 	async function getPage(name: string): Promise<string> {
 		if (name === '') name = 'index'
-		// await new Promise(resolve => setTimeout(resolve, 1000))
+		// await new Promise(resolve => setTimeout(resolve, 2000))
 		const result = await fetch(DOC_URL + name + '.embed')
 			.then(response => response.text())
 			.catch(error => {

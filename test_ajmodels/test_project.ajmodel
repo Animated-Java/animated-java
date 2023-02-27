@@ -13,11 +13,14 @@
 			"exporter": 0
 		},
 		"exporter_settings": {
+			"animated_java:animation_exporter": {
+				"bar": "Beep Boop"
+			},
 			"animated_java:statue_exporter": {
 				"foo": true
 			},
-			"animated_java:animation_exporter": {
-				"bar": "Beep Boop"
+			"animated_java:raw_exporter": {
+				"foo": false
 			}
 		},
 		"variants": [
@@ -96,13 +99,131 @@
 			"name": "test",
 			"loop": "loop",
 			"override": false,
-			"length": 0,
+			"length": 1,
 			"snapping": 20,
-			"selected": false,
+			"selected": true,
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",
-			"loop_delay": ""
+			"loop_delay": "",
+			"animators": {
+				"69aa99f5-fee8-5db4-accc-408ffe509670": {
+					"name": "bone",
+					"type": "bone",
+					"keyframes": [
+						{
+							"channel": "rotation",
+							"data_points": [
+								{
+									"x": "0",
+									"y": "0",
+									"z": "0"
+								}
+							],
+							"uuid": "c9c127f4-8bb2-59dc-6c83-677fea0a0915",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"bezier_linked": true,
+							"bezier_left_time": [-0.1, -0.1, -0.1],
+							"bezier_left_value": [0, 0, 0],
+							"bezier_right_time": [0.1, 0.1, 0.1],
+							"bezier_right_value": [0, 0, 0]
+						}
+					]
+				},
+				"effects": {
+					"name": "Effects",
+					"type": "effect",
+					"keyframes": [
+						{
+							"channel": "states",
+							"data_points": [
+								{
+									"state": ""
+								}
+							],
+							"uuid": "5d6d5b54-3c77-ec44-f3fd-3886878ec781",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"bezier_linked": true,
+							"bezier_left_time": [-0.1, -0.1, -0.1],
+							"bezier_left_value": [0, 0, 0],
+							"bezier_right_time": [0.1, 0.1, 0.1],
+							"bezier_right_value": [0, 0, 0]
+						},
+						{
+							"channel": "variants",
+							"data_points": [
+								{
+									"variant": "default"
+								}
+							],
+							"uuid": "13d71016-faf6-e6e2-905d-c56ba95466eb",
+							"time": 0.25,
+							"color": -1,
+							"interpolation": "linear",
+							"bezier_linked": true,
+							"bezier_left_time": [-0.1, -0.1, -0.1],
+							"bezier_left_value": [0, 0, 0],
+							"bezier_right_time": [0.1, 0.1, 0.1],
+							"bezier_right_value": [0, 0, 0]
+						},
+						{
+							"channel": "variants",
+							"data_points": [
+								{
+									"variant": "default"
+								}
+							],
+							"uuid": "b971a798-ba53-8d70-9acf-d6e0b2a797f8",
+							"time": 0.5,
+							"color": -1,
+							"interpolation": "linear",
+							"bezier_linked": true,
+							"bezier_left_time": [-0.1, -0.1, -0.1],
+							"bezier_left_value": [0, 0, 0],
+							"bezier_right_time": [0.1, 0.1, 0.1],
+							"bezier_right_value": [0, 0, 0]
+						},
+						{
+							"channel": "variants",
+							"data_points": [
+								{
+									"variant": "default"
+								}
+							],
+							"uuid": "7952ab01-147e-6c7e-283a-d3a30d2cc14a",
+							"time": 0.75,
+							"color": -1,
+							"interpolation": "linear",
+							"bezier_linked": true,
+							"bezier_left_time": [-0.1, -0.1, -0.1],
+							"bezier_left_value": [0, 0, 0],
+							"bezier_right_time": [0.1, 0.1, 0.1],
+							"bezier_right_value": [0, 0, 0]
+						},
+						{
+							"channel": "functions",
+							"data_points": [
+								{
+									"function": ""
+								}
+							],
+							"uuid": "00d6f72d-07d3-22f1-21b3-102f4b93a6fb",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"bezier_linked": true,
+							"bezier_left_time": [-0.1, -0.1, -0.1],
+							"bezier_left_value": [0, 0, 0],
+							"bezier_right_time": [0.1, 0.1, 0.1],
+							"bezier_right_value": [0, 0, 0]
+						}
+					]
+				}
+			}
 		},
 		{
 			"uuid": "78d88b0f-67a5-a78e-cce5-11ecf32c6580",
@@ -115,7 +236,8 @@
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",
-			"loop_delay": ""
+			"loop_delay": "",
+			"animators": {}
 		}
 	]
 }

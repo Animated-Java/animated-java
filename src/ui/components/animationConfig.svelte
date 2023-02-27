@@ -132,9 +132,6 @@
 
 	loadAnimation()
 
-	// @ts-ignore
-	ANIMATED_JAVA.test = settings
-
 	const unsubs = Object.entries(settings).map(([key, s]) => {
 		return s.subscribe(() => {
 			switch (key) {

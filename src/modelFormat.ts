@@ -127,11 +127,8 @@ const loadAnimatedJavaVariants = consoleGroup(
 const exportAnimatedJavaVariants = consoleGroup('exportAnimatedJavaVariants', () => {
 	if (!Project?.animated_java_variants) return
 	const exported: any = []
-	for (const variant of Project.animated_java_variants.all) {
-		exported.push({
-			name: variant.name,
-			textures: variant.textures,
-		})
+	for (const variant of Project.animated_java_variants.variants) {
+		exported.push(variant.toJSON())
 	}
 
 	return exported

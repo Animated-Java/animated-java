@@ -21,6 +21,8 @@ import './ui/ajSettings'
 import './ui/ajProjectSettings'
 import './ui/ajAnimationConfig'
 import './ui/ajVariantsPanel'
+import './keyframes'
+import './ui/ajKeyframe'
 import { openAjDocsDialog } from './ui/ajDocs'
 
 // @ts-ignore

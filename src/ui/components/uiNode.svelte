@@ -8,7 +8,6 @@
 	export let settingArray: AJ.Setting<any>[]
 	let setting: AJ.Setting<any>
 
-	console.log('Node', el)
 	if (el.type === 'setting') {
 		setting = Object.values(settingArray).find(s => s.id === (el as any).id)!
 	}

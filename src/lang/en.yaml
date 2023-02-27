@@ -73,14 +73,14 @@ animated_java.project_settings.exporter.description: |-
   This will override the default exporter set in the Animated Java Settings.
 
 ### Animation Config
-animated_java.dialog.animation_config.title: Animation Config
+animated_java.dialog.animation_config.title: Animation Properties
 animated_java.dialog.animation_config.close_button: Done
 
 animated_java.animation_config.animation_name: Name
 animated_java.animation_config.animation_name.description: |-
   The name of the animation.
 animated_java.animation_config.animation_name.error.duplicate_name: |-
-  An animation with the name %name already exists.
+  An animation with the name "%name" already exists.
   Animation names must be unique.
 
 animated_java.animation_config.animation_loop: Loop Mode
@@ -107,9 +107,34 @@ animated_java.panels.variants.name: Variants
 animated_java.panels.variants.items: Variant
 animated_java.panels.variants.delete_variant: Delete Variant
 animated_java.panels.variants.edit_variant: Edit Variant
+animated_java.actions.add_variant.name: Add Variant
+animated_java.actions.add_variant.description: Create a new Variant
+animated_java.actions.variant_properties.name: Variant Properties
+animated_java.actions.variant_properties.description: Open the Variant properties dialog.
+
+### Variants Properties Dialog
+animated_java.dialog.variant_properties.title: Variant Properties
+animated_java.dialog.variant_properties.close_button: Done
+
+animated_java.dialog.variant_properties.variant_name: Name
+animated_java.dialog.variant_properties.variant_name.description: |-
+  The name of the variant.
+animated_java.variant_properties.variant_name.error.duplicate_name: |-
+  A variant with the name "%name" already exists.
+  Variant names must be unique.
 
 ### Exporters
-# Statue Exporter
-animated_java.exporters.statue_exporter.name: Statue Exporter
 # Animation Exporter
 animated_java.exporters.animation_exporter.name: Animation Exporter
+# Statue Exporter
+animated_java.exporters.statue_exporter.name: Statue Exporter
+# Raw Exporter
+animated_java.exporters.raw_exporter.name: Raw Exporter
+
+### Custom Keyframes
+animated_java.timeline.state: States
+animated_java.keyframe.state: State
+animated_java.timeline.variant: Variants
+animated_java.keyframe.variant: Variant
+animated_java.timeline.function: Functions
+animated_java.keyframe.function: Function

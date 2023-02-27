@@ -20,3 +20,11 @@ export function objectEqual(a: any, b: any) {
 export function defer(fn: Function) {
 	setTimeout(fn, 0)
 }
+
+export function roundTo(n: number, d: number) {
+	return Math.round(n * 10 ** d) / 10 ** d
+}
+
+export function roundToN(n: number, x: number) {
+	return Math.round(n * x) / x
+}

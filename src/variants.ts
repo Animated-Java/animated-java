@@ -1,11 +1,26 @@
 import { ajModelFormat } from './modelFormat'
+import { BlockbenchMod } from './util/mods'
 import { Subscribable } from './util/suscribable'
+import { translate } from './util/translation'
 
 export class Variant {
 	textures: Record<string, string>
-	constructor(public name: string, textures?: Record<string, string>) {
+	_name: string
+	constructor(name: string, textures?: Record<string, string>) {
+		this._name = name
 		this.textures = textures || {}
 		this.verifyTextures()
+	}
+
+	get name() {
+		return this._name
+	}
+
+	set name(name: string) {
+		this._name = name
+		if (Project && Project.animated_java_variants) {
+			this.createUniqueName(Project.animated_java_variants.variants)
+		}
 	}
 
 	addTexture(replaced: string, replacer: string) {
@@ -35,6 +50,22 @@ export class Variant {
 		}
 		return true
 	}
+
+	createUniqueName(otherVariants: Variant[]) {
+		let name = this.name
+		let i = 1
+		while (otherVariants.find(v => v.name === name && v !== this)) {
+			name = this.name.replace(/\d+$/, '') + i++
+		}
+		this._name = name
+	}
+
+	toJSON() {
+		return {
+			name: this.name,
+			textures: this.textures,
+		}
+	}
 }
 
 interface IVariantsContainerEvent {
@@ -43,18 +74,15 @@ interface IVariantsContainerEvent {
 }
 
 export class VariantsContainer extends Subscribable<IVariantsContainerEvent> {
-	variants: Record<string, Variant>
+	variants: Variant[]
 	_selectedVariant?: Variant
-	constructor(variants?: Record<string, Variant>) {
+	constructor(variants?: Variant[]) {
 		super()
-		this.variants = variants || {}
-		if (this.variants.default) {
-			this.selectedVariant = this.variants.default
+		this.variants = variants || []
+		let v
+		if ((v = this.variants.find(v => v.name === 'default'))) {
+			this.selectedVariant = v
 		}
-	}
-
-	get all() {
-		return Object.values(this.variants)
 	}
 
 	get selectedVariant() {
@@ -75,16 +103,20 @@ export class VariantsContainer extends Subscribable<IVariantsContainerEvent> {
 
 	addVariant(variant: Variant) {
 		console.log('Adding variant: ' + variant.name)
-		this.variants[variant.name] = variant
+		let v
+		if ((v = this.variants.find(v => v.name === variant.name && v !== variant))) {
+			this.variants.splice(this.variants.indexOf(v), 1, variant)
+		} else this.variants.push(variant)
 		this.dispatch({
 			type: 'add',
 			variant,
 		})
+		return variant
 	}
 
 	removeVariant(variant: Variant) {
 		console.log('Deleting variant: ' + variant.name)
-		delete this.variants[variant.name]
+		this.variants.splice(this.variants.indexOf(variant), 1)
 		this.dispatch({
 			type: 'remove',
 			variant,
@@ -92,14 +124,14 @@ export class VariantsContainer extends Subscribable<IVariantsContainerEvent> {
 	}
 
 	verifyTextures() {
-		for (const variant of this.all) {
+		for (const variant of this.variants) {
 			variant.verifyTextures()
 		}
 	}
 }
 
 export function getDefaultVariants() {
-	return new VariantsContainer({ default: new Variant('default') })
+	return new VariantsContainer([new Variant('default')])
 }
 
 function updateProjectVariants() {

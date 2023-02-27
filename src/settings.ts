@@ -129,6 +129,20 @@ export class DropdownSetting<V = any, K extends number = number> extends Setting
 	}
 }
 
+export class ImageDropdownSetting extends DropdownSetting<Texture['uuid']> {
+	constructor(
+		options: ISettingOptions<number> & { options: ImageDropdownSetting['options'] },
+		onUpdate?: (setting: ImageDropdownSetting) => void,
+		onInit?: (setting: ImageDropdownSetting) => void
+	) {
+		super(options, onUpdate as any, onInit as any)
+	}
+
+	getSelectedTexture() {
+		return Texture.all.find(texture => texture.uuid === this.selected?.value)
+	}
+}
+
 export let AnimatedJavaSettings = {
 	default_exporter: new DropdownSetting<string>(
 		{

@@ -1,21 +1,42 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte'
+	import { events } from '../../../util/events'
 	import { translate } from '../../../util/translation'
 	import { Variant, VariantsContainer } from '../../../variants'
+	import { state, variantMenu, variantPropertiesAction } from '../../ajVariantsPanel'
 
 	export let variant: Variant
 	export let deleteVariant: (variant: Variant) => void
 	export let variantsContainer: VariantsContainer
 	let selected: boolean
+	let unsubs: any[] = []
 	$: selected = variantsContainer.selectedVariant?.name === variant.name
 
-	const unsub = variantsContainer.subscribe(event => {
-		// selected needs to be updated in the svelte state. Doesn't matter what it's value is.
-		if (event.type === 'select') selected = false
-	})
+	unsubs.push(
+		variantsContainer.subscribe(event => {
+			// selected needs to be updated in the svelte state. Doesn't matter what it's value is.
+			if (event.type === 'select') selected = false
+		})
+	)
+
+	unsubs.push(
+		events.variantPropertiesUpdate.subscribe(() => {
+			variant = variant
+		})
+	)
+
+	function openVariantMenu(event: MouseEvent) {
+		state.recentlyClickedVariant = variant
+		variantMenu.open(event)
+	}
+
+	function openVariantProperties(event: MouseEvent) {
+		state.recentlyClickedVariant = variant
+		variantPropertiesAction.click(event)
+	}
 
 	onDestroy(() => {
-		unsub()
+		unsubs.forEach(u => u())
 	})
 </script>
 
@@ -24,10 +45,11 @@
 	title={translate('animated_java.panels.variants.items')}
 	style={selected ? 'background-color:var(--color-selected);' : ''}
 	on:click={() => variantsContainer.select(variant)}
+	on:contextmenu|stopPropagation={e => openVariantMenu(e)}
 >
 	<p class="variant-name">{variant.name}</p>
 	<button
-		on:click|stopPropagation={() => console.log('Open variants panel!')}
+		on:click|stopPropagation={e => openVariantProperties(e)}
 		title={translate('animated_java.panels.variants.edit_variant')}
 	>
 		<span class="material-icons">edit</span>

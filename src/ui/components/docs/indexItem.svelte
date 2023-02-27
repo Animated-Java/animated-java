@@ -27,9 +27,10 @@
 	$: {
 		childSelected = false
 		if (index.children) {
-			if (Object.values(index.children).find((child: any) => child.path === selectedPage))
+			if (Object.values(index.children).find((child: any) => child.path === selectedPage)) {
 				childSelected = true
-			expanded = true
+				expanded = true
+			}
 		}
 	}
 </script>

@@ -13,13 +13,8 @@
 
 	export let setting: AJ.Setting<any>
 
-	// let loaded = false
 	let helpButtonHovered = false
-
-	// defer(() => {
-	// 	loaded = true
-	// })
-	console.log(setting)
+	// console.log(setting)
 	setting._onInit()
 
 	$: {
