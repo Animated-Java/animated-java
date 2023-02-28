@@ -36,7 +36,7 @@ export class AJPanel extends Blockbench.Panel {
 				props: {
 					...svelteComponentArgs,
 				},
-			})
+			}) as any
 		})
 	}
 }

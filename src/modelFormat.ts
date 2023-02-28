@@ -3,9 +3,9 @@ import * as fs from 'fs'
 import { BlockbenchMod } from './util/mods'
 import { getDefaultProjectSettings } from './projectSettings'
 import { _AnimatedJavaExporter } from './exporter'
-import { getDefaultVariants, Variant, VariantsContainer } from './variants'
+import { getDefaultVariants, Variant } from './variants'
 import { events } from './util/events'
-import { consoleGroup, consoleGroupCollapsed } from './util/groupWrapper'
+import { consoleGroup } from './util/groupWrapper'
 
 const FORMAT_VERSION = '1.0'
 
@@ -44,6 +44,7 @@ interface IAnimatedJavaModel {
 		variants?: {
 			name: string
 			textures: Record<string, string>
+			default: boolean
 		}[]
 	}
 }
@@ -116,10 +117,15 @@ const loadAnimatedJavaVariants = consoleGroup(
 
 		Project.animated_java_variants = getDefaultVariants()
 		if (!(model.animated_java && model.animated_java.variants)) return
+		Project.animated_java_variants.variants = []
 
 		console.log('Loading Animated Java variants...')
 		for (const variant of model.animated_java.variants) {
-			Project.animated_java_variants.addVariant(new Variant(variant.name, variant.textures))
+			Project.animated_java_variants.addVariant(Variant.fromJSON(variant), variant.default)
+		}
+
+		if (Project.animated_java_variants.variants.length === 0) {
+			Project.animated_java_variants.addVariant(new Variant('default'), true)
 		}
 	}
 )
@@ -164,7 +170,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 		Project!.export_path = file.path
 		addProjectToRecentProjects(file)
 		ajCodec.parse!(model, file.path)
-		ajCodec.dispatchEvent('load_project', { model, file })
+		events.loadProject.dispatch()
 	}),
 
 	parse: consoleGroup('ajCodec:parse', (model, path, add) => {
@@ -180,7 +186,6 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 		ajCodec.dispatchEvent('parse', { model, path })
 		processVersionMigration(model)
 		loadAnimatedJavaProjectSettings(model)
-		loadAnimatedJavaVariants(model)
 
 		if (model.meta.box_uv !== undefined && Format.optional_box_uv) {
 			Project.box_uv = model.meta.box_uv
@@ -217,6 +222,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 				}
 			})
 		}
+		loadAnimatedJavaVariants(model)
 
 		if (model.elements) {
 			let default_texture = Texture.getDefault()
@@ -338,6 +344,10 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 			Project.loadEditorState()
 		}
 
+		// if (Project.animated_java_variants!.defaultVariant) {
+		// 	applyVariantToModel(Project.animated_java_variants!.defaultVariant)
+		// }
+
 		ajCodec.dispatchEvent('parsed', { model })
 	}),
 
@@ -345,6 +355,9 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 		if (!options) options = {}
 		if (!Project) throw new Error('No project to compile...')
 		console.log('Compiling Animated Java model...')
+
+		const selectedVariant = Project.animated_java_variants!.selectedVariant
+
 		const model: any = {
 			meta: {
 				format: ajCodec.format.id,
@@ -444,25 +457,6 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 				Interface.Panels.variable_placeholders.inside_vue._data.text
 		}
 
-		if (Format.display_mode && Object.keys(Project.display_settings).length >= 1) {
-			var new_display: any = {}
-			var entries = 0
-			for (var i in DisplayMode.slots) {
-				var key = DisplayMode.slots[i]
-				if (
-					DisplayMode.slots.hasOwnProperty(i) &&
-					Project.display_settings[key] &&
-					Project.display_settings[key].export
-				) {
-					new_display[key] = Project.display_settings[key].export!()
-					entries++
-				}
-			}
-			if (entries) {
-				model.display = new_display
-			}
-		}
-
 		if (!options.backup) {
 			// Backgrounds
 			const backgrounds: any = {}
@@ -494,6 +488,8 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 
 		const content = compileJSON(model)
 		ajCodec.dispatchEvent('compile', { model, options })
+
+		if (selectedVariant) Project.animated_java_variants!.selectedVariant = selectedVariant
 
 		return content
 	}),
@@ -532,7 +528,7 @@ export const ajModelFormat = new Blockbench.ModelFormat({
 	onStart() {},
 	codec: ajCodec,
 
-	box_uv: true,
+	box_uv: false,
 	optional_box_uv: true,
 	single_texture: false,
 	model_identifier: false,
@@ -545,7 +541,7 @@ export const ajModelFormat = new Blockbench.ModelFormat({
 	integer_size: false,
 	meshes: false,
 	texture_meshes: false,
-	locators: false,
+	locators: true,
 	rotation_limit: false,
 	uv_rotation: true,
 	java_face_properties: true,

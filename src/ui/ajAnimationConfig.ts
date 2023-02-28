@@ -18,7 +18,7 @@ function openAjAnimationDialog(animation: BlockbenchTypeAnimation) {
 		{ animation },
 		{
 			title: translate('animated_java.dialog.animation_config.title'),
-			id: 'animated_java.animation_config',
+			id: 'animated_java:animation_config',
 			width: 700,
 			buttons: [translate('animated_java.dialog.animation_config.close_button')],
 		}

@@ -1,7 +1,7 @@
 
 # UI
 - [x] Replace default animation creation and config screens
-- [ ] Variants panel
+- [x] Variants panel
     - [x] Component and mounting
     - [x] Project based texture map
     - [x] Button to add new Variant
@@ -9,19 +9,41 @@
 - [ ] Variants Dialog
     - [x] Change the name of the variant
     - [ ] Configure texture map
+- [x] Variants rendering
+    - [x] Need a function that sets the textures of a model based on a provided variant
+    - [x] Change textures based on which variant is selected
+    - [x] Change variant in animator based on keyframes
+- [ ] CodeboxSetting setting type
 - [ ] Add accessability options
-    - [ ] Disable all UI animations
+    - [ ] Option to disable all UI animations
+- [ ] The setting description scales weirdly. Make it not do that
 
 # Docs
 - [ ] F-A-Q
 
 # Features
+- [ ] Locators
+    - [ ] Exported locators position a tagged entity with the same aj.id
+- [ ] Cameras
+    - [ ] Just fancy locators with x and y rotation support
+- [ ] Exporters
+    - [ ] Animation Exporter
+    - [ ] Statue Exporter
+    - [ ] Raw Exporter
+- [ ] Predicate Item Merging
+- [ ] Bone Config
+    - [ ] Custom display item NBT
+    - [ ] Per-Variant display item NBT
 - [ ] Animations
-    - [ ] Animation "Transitions" - Some way of telling AJ you want to immediately start an animation after another animation finishes - This might be accomplished with the state keyframe type?
-    - [ ] Animation "Controllers" - Based on a score on the root entity, automatically switch between animations.
+    - [ ] Animation "State" - Based on a score on the root entity, automatically switch between animations.
+    - [ ] Animation *Blending*
+        - [ ] When switching active animations, if an animation is already running, blend between it's current frame and the next frame.
+        - [ ] Add some way to choose blend duration.
+        - [ ] Add some way to disable blending.
+    - [x] Keyframes for swapping from one animation to another (Animation State Keyframes)
     - [x] Keyframes for Variant swaps
-    - [ ] Variant swap keyframe `execute if` condition. Only swap variants if a condition is met on the root entity.
-    - [ ] Animation State keyframe `execute if` condition. Only swap states if a condition is met on the root entity.
+    - [x] Variant swap keyframe `execute if` condition. Only swap variants if a condition is met on the root entity.
+    - [x] Animation State keyframe `execute if` condition. Only swap states if a condition is met on the root entity.
     - [ ] Add a keyframe timeline to every bone for running commands at that bone
 - [ ] Things to convert when converting model formats into AJ's format
     - [ ] All animations need their snapping set to 20

@@ -4,7 +4,7 @@
 		getKeyframeCondition,
 		setKeyframeCommands,
 		setKeyframeCondition,
-	} from '../../../keyframes'
+	} from '../../../mods/keyframeMod'
 	import { translate } from '../../../util/translation'
 	import PrismEditorComponent from '../prism/prismEditor.svelte'
 
@@ -35,10 +35,10 @@
 </script>
 
 <div class="property">
-	<p class="name" title={translate('animated_java.keyframe.condition.description')}>
+	<p class="name" title={translate('animated_java.keyframe.commands.description')}>
 		{translate('animated_java.keyframe.commands')}
 	</p>
-	<div class="item-container" title={translate('animated_java.keyframe.condition.description')}>
+	<div class="item-container" title={translate('animated_java.keyframe.commands.description')}>
 		<PrismEditorComponent language="mcfunction" bind:code={value} />
 	</div>
 </div>
@@ -75,6 +75,7 @@
 		flex-direction: row;
 		flex-grow: 1;
 		margin-bottom: 2px;
+		align-items: center;
 	}
 
 	p.name {

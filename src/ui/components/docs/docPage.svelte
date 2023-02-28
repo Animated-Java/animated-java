@@ -13,38 +13,38 @@
 	})
 </script>
 
-<div class="this" in:fly={{ x: -20, duration: 250, easing }}>{@html page}</div>
+<div class="animated-java-doc-page" in:fly={{ x: -20, duration: 250, easing }}>{@html page}</div>
 
 {@html `<style>
-.this h1 {
+.animated-java-doc-page h1 {
 	display: flex;
 	justify-content: center;
 	text-align: center;
 	font-size: 3em;
 }
-.this p {
+.animated-java-doc-page p {
 	margin: 0.5em 1em;
 }
-.this a.animated-java-anchor {
+.animated-java-doc-page a.animated-java-anchor {
 	text-decoration: underline;
 	cursor: pointer;
 }
-.this a.animated-java-anchor:hover {
+.animated-java-doc-page a.animated-java-anchor:hover {
 	color: var(--color-accent);
 }
-.this ol,
-.this ul {
+.animated-java-doc-page ol,
+.animated-java-doc-page ul {
 	margin-left: 2em;
 }
-.this li {
+.animated-java-doc-page li {
 	list-style: unset;
 }
-.this blockquote {
+.animated-java-doc-page blockquote {
 	border-left: 4px solid var(--color-accent);
 	background-color: var(--color-button);
 	padding-left: 1em;
 }
-.this code {
+.animated-java-doc-page code {
 	background-color: var(--color-back);
 	border: unset;
 	user-select: text;
@@ -54,7 +54,7 @@
 	padding: 0em 0.5em;
 	border-radius: 0.2em;
 }
-.this pre {
+.animated-java-doc-page pre {
 	background-color: var(--color-back);
 	border: 2px solid var(--color-border);
 	border-radius: 0.25em;
@@ -62,17 +62,17 @@
 	padding: 0.25em 0.5em;
 	overflow-x: auto;
 }
-.this pre code {
+.animated-java-doc-page pre code {
 	all: unset;
 	font-size: 0.8em;
 	font-family: var(--font-code);
 	cursor: text;
 	user-select: text;
 }
-.this h2 {
+.animated-java-doc-page h2 {
 	font-weight: unset;
 }
-.this h3 {
+.animated-java-doc-page h3 {
 	margin: 0.2em 0.5em;
 	text-decoration: underline;
 }

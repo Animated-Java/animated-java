@@ -1,20 +1,23 @@
 import { events } from './events'
 
-interface BlockbenchModOptions {
+interface BlockbenchModOptions<Context = any> {
 	id: string
-	inject: () => void
-	extract: () => void
+	context?: Context
+	inject: (context: BlockbenchMod<Context>['context']) => void
+	extract: (context: BlockbenchMod<Context>['context']) => void
 }
 
 const all: BlockbenchMod[] = []
 
-export class BlockbenchMod {
+export class BlockbenchMod<Context = any> {
 	name: string
-	inject: BlockbenchModOptions['inject']
-	extract: BlockbenchModOptions['extract']
+	context: Context
+	inject: BlockbenchModOptions<Context>['inject']
+	extract: BlockbenchModOptions<Context>['extract']
 
-	constructor(options: BlockbenchModOptions) {
+	constructor(options: BlockbenchModOptions<Context>) {
 		this.name = options.id
+		this.context = options.context || ({} as Context)
 		this.inject = options.inject
 		this.extract = options.extract
 		all.push(this)
@@ -24,7 +27,7 @@ export class BlockbenchMod {
 events.loadMods.subscribe(() =>
 	all.forEach(mod => {
 		try {
-			mod.inject()
+			mod.inject(mod.context)
 		} catch (err) {
 			console.log(`Unexpected Error while attempting to inject mod '${mod.name}'!`)
 			console.error(err)
@@ -35,7 +38,7 @@ events.loadMods.subscribe(() =>
 events.unloadMods.subscribe(() =>
 	all.forEach(mod => {
 		try {
-			mod.extract()
+			mod.extract(mod.context)
 		} catch (err) {
 			console.log(`Unexpected Error while attempting to extract mod '${mod.name}'!`)
 			console.error(err)

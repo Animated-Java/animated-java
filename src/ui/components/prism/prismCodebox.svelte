@@ -8,7 +8,8 @@
 </div>
 
 <style>
-	.code {
+	div {
+		overflow: auto;
 		white-space: pre-wrap;
 	}
 </style>

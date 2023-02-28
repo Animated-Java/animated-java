@@ -1,7 +1,6 @@
 <script lang="ts">
 	import * as AJ from '../../settings'
 	import SettingInfoPopup from './settingInfoPopup.svelte'
-	import ResetButton from './resetButton.svelte'
 	import { fly, slide } from 'svelte/transition'
 	import Checkbox from './settingDisplays/checkbox.svelte'
 	import Number from './settingDisplays/number.svelte'
@@ -9,7 +8,8 @@
 	import Dropdown from './settingDisplays/dropdown.svelte'
 	import Folder from './settingDisplays/folder.svelte'
 	import File from './settingDisplays/file.svelte'
-	import HelpButton from './helpButton.svelte'
+	import ImageDropdown from './settingDisplays/imageDropdown.svelte'
+	import IconButton from './buttons/iconButton.svelte'
 
 	export let setting: AJ.Setting<any>
 
@@ -50,14 +50,20 @@
 				<Folder bind:value={setting.value} />
 			{:else if setting instanceof AJ.FileSetting}
 				<File bind:value={setting.value} />
+			{:else if setting instanceof AJ.ImageDropdownSetting}
+				<ImageDropdown bind:value={setting.value} options={setting.options} />
 			{/if}
 		</div>
 
 		{#if setting.resettable}
-			<ResetButton onClick={onResetClick} />
+			<IconButton onClick={onResetClick} icon="delete" />
 		{/if}
 
-		<HelpButton handleClick={onHelpButtonClick} bind:hovered={helpButtonHovered} />
+		<IconButton
+			onClick={onHelpButtonClick}
+			bind:hovered={helpButtonHovered}
+			icon="question_mark"
+		/>
 	</div>
 
 	{#if helpButtonHovered}

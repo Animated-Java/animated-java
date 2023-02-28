@@ -4,7 +4,7 @@
 		getKeyframeVariant,
 		setKeyframeCondition,
 		setKeyframeVariant,
-	} from '../../../keyframes'
+	} from '../../../mods/keyframeMod'
 	import { translate } from '../../../util/translation'
 	import { Variant } from '../../../variants'
 	import PrismEditorComponent from '../prism/prismEditor.svelte'
@@ -27,7 +27,7 @@
 			console.log('value undefined')
 			const variantStr = getKeyframeVariant(selectedKeyframe)
 			if (variantStr) {
-				const variant = variants.find(v => v.name === variantStr)
+				const variant = variants.find(v => v.uuid === variantStr)
 				if (variant) value = variants.indexOf(variant)
 			}
 			const conditionStr = getKeyframeCondition(selectedKeyframe)
@@ -37,7 +37,10 @@
 		}
 		selectedVariant = variants.at(value)
 		if (selectedKeyframe) {
-			if (selectedVariant) setKeyframeVariant(selectedKeyframe, selectedVariant.name)
+			if (selectedVariant) {
+				setKeyframeVariant(selectedKeyframe, selectedVariant.uuid)
+				Animator.preview()
+			}
 			if (condition !== undefined) setKeyframeCondition(selectedKeyframe, condition)
 		}
 	}
@@ -68,6 +71,7 @@
 	div.property {
 		display: flex;
 		flex-direction: row;
+		align-items: center;
 		flex-grow: 1;
 		margin-bottom: 2px;
 	}

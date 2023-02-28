@@ -1,5 +1,5 @@
 <script lang="ts">
-	import VariantComponent from './variants/variant.svelte'
+	import VariantComponent from './variants/variantItem.svelte'
 	import { Variant, VariantsContainer } from '../../variants'
 	import { events } from '../../util/events'
 	import { ajModelFormat } from '../../modelFormat'

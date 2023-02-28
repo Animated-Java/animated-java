@@ -23,7 +23,7 @@ export class AJInjectedSvelteComponent {
 				props: {
 					...svelteComponentArgs,
 				},
-			})
+			}) as any
 			if (options.postMount) options.postMount(el)
 		})
 	}

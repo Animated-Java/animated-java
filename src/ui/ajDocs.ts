@@ -24,7 +24,7 @@ export function openAjDocsDialog(link?: string, section?: string) {
 		},
 		{
 			title: translate('animated_java.dialog.documentation.title'),
-			id: 'animated_java.documentation',
+			id: 'animated_java:documentation',
 			width: 1000,
 			buttons: [translate('animated_java.dialog.documentation.close_button')],
 			onConfirm: () => {

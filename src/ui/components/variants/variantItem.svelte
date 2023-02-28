@@ -10,7 +10,7 @@
 	export let variantsContainer: VariantsContainer
 	let selected: boolean
 	let unsubs: any[] = []
-	$: selected = variantsContainer.selectedVariant?.name === variant.name
+	$: selected = variantsContainer.selectedVariant?.uuid === variant.uuid
 
 	unsubs.push(
 		variantsContainer.subscribe(event => {
@@ -35,6 +35,14 @@
 		variantPropertiesAction.click(event)
 	}
 
+	function setDefault(variant: Variant) {
+		variantsContainer.defaultVariant = variant
+	}
+
+	function handleInteraction(event: Event) {
+		return variantsContainer.select(variant)
+	}
+
 	onDestroy(() => {
 		unsubs.forEach(u => u())
 	})
@@ -44,8 +52,11 @@
 	class="variant-container"
 	title={translate('animated_java.panels.variants.items')}
 	style={selected ? 'background-color:var(--color-selected);' : ''}
-	on:click={() => variantsContainer.select(variant)}
+	on:click={handleInteraction}
 	on:contextmenu|stopPropagation={e => openVariantMenu(e)}
+	on:keydown={e => {
+		if (e.key === 'Enter') handleInteraction(e)
+	}}
 >
 	<p class="variant-name">{variant.name}</p>
 	<button
@@ -55,13 +66,24 @@
 		<span class="material-icons">edit</span>
 	</button>
 	<button
+		on:click|stopPropagation={() => setDefault(variant)}
+		title={translate('animated_java.panels.variants.set_default')}
+		disabled={variant.default}
+	>
+		<span class="material-icons" style={variant.default ? 'color: var(--color-accent)' : ''}>
+			star
+		</span>
+	</button>
+	<button
 		on:click|stopPropagation={() => deleteVariant(variant)}
-		title={translate('animated_java.panels.variants.delete_variant')}
-		disabled={variant.name === 'default'}
+		title={variant.default
+			? translate('animated_java.panels.variants.delete_variant_disabled')
+			: translate('animated_java.panels.variants.delete_variant')}
+		disabled={variant.default}
 	>
 		<span
 			class="material-icons"
-			style={variant.name === 'default' ? 'color: var(--color-subtle_text)' : ''}
+			style={variant.default ? 'color: var(--color-subtle_text)' : ''}
 		>
 			delete
 		</span>

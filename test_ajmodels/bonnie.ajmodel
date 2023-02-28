@@ -12,7 +12,25 @@
 			"verbose": true,
 			"exporter": 0
 		},
-		"variants": []
+		"exporter_settings": {
+			"animated_java:animation_exporter": {
+				"bar": "Hello World!"
+			},
+			"animated_java:statue_exporter": {
+				"foo": false
+			},
+			"animated_java:raw_exporter": {
+				"foo": false
+			}
+		},
+		"variants": [
+			{
+				"name": "default",
+				"textures": {},
+				"default": true,
+				"uuid": "b6f9de14-ffc9-1b0b-8672-ac6b61ec73da"
+			}
+		]
 	},
 	"resolution": {
 		"width": 256,
@@ -3091,63 +3109,6 @@
 							"bezier_right_value": [0, 0, 0]
 						}
 					]
-				},
-				"effects": {
-					"name": "Effects",
-					"type": "effect",
-					"keyframes": [
-						{
-							"channel": "timeline",
-							"data_points": [
-								{
-									"script": "function ai:bonnie/sounds/step"
-								}
-							],
-							"uuid": "e7038ecc-0f58-5782-403d-c5644ecf2331",
-							"time": 0.65,
-							"color": -1,
-							"interpolation": "linear",
-							"bezier_linked": true,
-							"bezier_left_time": [-0.1, -0.1, -0.1],
-							"bezier_left_value": [0, 0, 0],
-							"bezier_right_time": [0.1, 0.1, 0.1],
-							"bezier_right_value": [0, 0, 0]
-						},
-						{
-							"channel": "timeline",
-							"data_points": [
-								{
-									"script": "function ai:bonnie/sounds/step\n"
-								}
-							],
-							"uuid": "2d6ce452-652d-b1d6-8140-e458ffe2e59e",
-							"time": 2.05,
-							"color": -1,
-							"interpolation": "linear",
-							"bezier_linked": true,
-							"bezier_left_time": [-0.1, -0.1, -0.1],
-							"bezier_left_value": [0, 0, 0],
-							"bezier_right_time": [0.1, 0.1, 0.1],
-							"bezier_right_value": [0, 0, 0]
-						},
-						{
-							"channel": "timeline",
-							"data_points": [
-								{
-									"script": "execute if score .bonnie.end_walk v matches 1 run function ai:bonnie/animation/walk.end.left_forward"
-								}
-							],
-							"uuid": "86d67ee7-9210-b4b9-0b22-dd943ffff588",
-							"time": 2.1,
-							"color": -1,
-							"interpolation": "linear",
-							"bezier_linked": true,
-							"bezier_left_time": [-0.1, -0.1, -0.1],
-							"bezier_left_value": [0, 0, 0],
-							"bezier_right_time": [0.1, 0.1, 0.1],
-							"bezier_right_value": [0, 0, 0]
-						}
-					]
 				}
 			}
 		},
@@ -4746,46 +4707,6 @@
 							],
 							"uuid": "cea2b58c-5f81-e9f6-0936-fe8bce7dd24c",
 							"time": 0,
-							"color": -1,
-							"interpolation": "linear",
-							"bezier_linked": true,
-							"bezier_left_time": [-0.1, -0.1, -0.1],
-							"bezier_left_value": [0, 0, 0],
-							"bezier_right_time": [0.1, 0.1, 0.1],
-							"bezier_right_value": [0, 0, 0]
-						}
-					]
-				},
-				"effects": {
-					"name": "Effects",
-					"type": "effect",
-					"keyframes": [
-						{
-							"channel": "timeline",
-							"data_points": [
-								{
-									"script": "function ai:bonnie/sounds/step"
-								}
-							],
-							"uuid": "e7038ecc-0f58-5782-403d-c5644ecf2331",
-							"time": 0.3,
-							"color": -1,
-							"interpolation": "linear",
-							"bezier_linked": true,
-							"bezier_left_time": [-0.1, -0.1, -0.1],
-							"bezier_left_value": [0, 0, 0],
-							"bezier_right_time": [0.1, 0.1, 0.1],
-							"bezier_right_value": [0, 0, 0]
-						},
-						{
-							"channel": "timeline",
-							"data_points": [
-								{
-									"script": "function ai:bonnie/sounds/step"
-								}
-							],
-							"uuid": "2d6ce452-652d-b1d6-8140-e458ffe2e59e",
-							"time": 1,
 							"color": -1,
 							"interpolation": "linear",
 							"bezier_linked": true,

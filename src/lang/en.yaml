@@ -105,7 +105,9 @@ animated_java.animation_config.animation_start_delay.description: |-
 ### Variants Panel
 animated_java.panels.variants.name: Variants
 animated_java.panels.variants.items: Variant
+animated_java.panels.variants.set_default: Set as Default
 animated_java.panels.variants.delete_variant: Delete Variant
+animated_java.panels.variants.delete_variant_disabled: Delete Variant (Cannot delete default Variant)
 animated_java.panels.variants.edit_variant: Edit Variant
 animated_java.actions.add_variant.name: Add Variant
 animated_java.actions.add_variant.description: Create a new Variant
@@ -122,6 +124,10 @@ animated_java.dialog.variant_properties.variant_name.description: |-
 animated_java.variant_properties.variant_name.error.duplicate_name: |-
   A variant with the name "%name" already exists.
   Variant names must be unique.
+animated_java.dialog.variant_properties.textureMap: Texture Map
+animated_java.dialog.variant_properties.textureMap.description: |-
+  The texture map to use for this variant.
+  Lets you choose what textures are replaced when this Variant is appied.
 
 ### Exporters
 # Animation Exporter
@@ -135,6 +141,9 @@ animated_java.exporters.raw_exporter.name: Raw Exporter
 animated_java.keyframe.animationState: Animation State
 animated_java.keyframe.variant: Variant
 animated_java.keyframe.commands: Commands
+animated_java.keyframe.commands.description: |-
+  A list of commands (A function) that run when the keyframe is reached.
+
 animated_java.keyframe.condition: Condition
 animated_java.keyframe.condition.description: |-
   The condition that must be met for the keyframe to be applied.
@@ -145,3 +154,19 @@ animated_java.keyframe.condition.description: |-
 animated_java.timeline.animationState: Animation States
 animated_java.timeline.variant: Variants
 animated_java.timeline.commands: Commands
+
+### Popups
+animated_java.popup.invalid_texture_mapping.title: Invalid Texture Mapping(s)
+animated_java.popup.invalid_texture_mapping.close_button: Close
+animated_java.popup.invalid_texture_mapping.body: |-
+  The Variant "%variant" has invalid texture mappings!
+  One or more of the textures in it's texture map are missing from the project, or are invalid.
+  The invalid mappings and a brief explanation of why they're invalid can be found below:
+animated_java.popup.invalid_texture_mapping.reason: Reason(s) for Invalidation
+animated_java.popup.invalid_texture_mapping.reason.invalid_from_texture: |-
+  Couldn't find the "from" texture in the project.
+animated_java.popup.invalid_texture_mapping.reason.invalid_to_texture: |-
+  Couldn't find the "to" texture in the project.
+animated_java.popup.invalid_texture_mapping.footer: |-
+  The missing/invalid texture mappings will be removed from the variant.
+  After closing this popup, please make sure you open the Variant's properties dialog and double check the texture mappings are correct.

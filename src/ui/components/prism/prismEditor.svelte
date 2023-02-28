@@ -11,16 +11,16 @@
 	export let code = ''
 </script>
 
-<div class="this">
+<div class="animated-java-prism-editor">
 	<CodeJar syntax={language} bind:value={code} {highlight} />
 </div>
 
 {@html `<style>
-	.this {
+	.animated-java-prism-editor {
 		display: flex;
 		flex-grow: 1;
 	}
-	.this pre {
+	.animated-java-prism-editor pre {
 		margin: 3px 8px;
 		padding: 0;
 		flex-grow: 1;

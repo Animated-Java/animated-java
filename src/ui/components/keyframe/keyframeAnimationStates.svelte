@@ -4,7 +4,7 @@
 		getKeyframeCondition,
 		setKeyframeAnimationState,
 		setKeyframeCondition,
-	} from '../../../keyframes'
+	} from '../../../mods/keyframeMod'
 	import { translate } from '../../../util/translation'
 	import { Variant } from '../../../variants'
 	import PrismEditorComponent from '../prism/prismEditor.svelte'
@@ -71,6 +71,7 @@
 		flex-direction: row;
 		flex-grow: 1;
 		margin-bottom: 2px;
+		align-items: center;
 	}
 
 	p.name {

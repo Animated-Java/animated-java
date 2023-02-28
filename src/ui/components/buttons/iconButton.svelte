@@ -1,14 +1,26 @@
 <script lang="ts">
-	import type * as Settings from '../../settings'
 	export let onClick: () => void
+	export let icon: string
+	export let hovered: boolean = false
+	export let title: string = ''
+	export let disabled: boolean = false
+	export let buttonStyle: string = ''
+	export let iconStyle: string = 'margin:0px'
 </script>
 
-<button class="reset-button" on:click={onClick}>
-	<span class="material-icons" style="margin:0px">delete</span>
+<button
+	{title}
+	{disabled}
+	style={buttonStyle}
+	on:click|stopPropagation={onClick}
+	on:mouseenter={() => (hovered = true)}
+	on:mouseleave={() => (hovered = false)}
+>
+	<span class="material-icons" style={iconStyle}>{icon}</span>
 </button>
 
 <style>
-	button.reset-button {
+	button {
 		all: unset !important;
 
 		display: flex !important;
@@ -19,12 +31,14 @@
 		background-color: var(--color-button) !important;
 		height: 34px !important;
 		width: 34px !important;
+		min-height: 34px !important;
+		min-width: 34px !important;
 		line-height: 10px !important;
 		font-size: 20px !important;
 		margin-left: 10px !important;
 	}
 
-	button.reset-button:hover {
+	button:hover {
 		color: var(--color-accent_text) !important;
 		background-color: var(--color-accent) !important;
 	}

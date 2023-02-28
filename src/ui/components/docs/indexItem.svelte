@@ -38,23 +38,31 @@
 <div class="index-container">
 	<div class="name-container" style={selected ? 'background-color:var(--color-button)' : ''}>
 		{#if index.children && Object.keys(index.children).length}
-			{#if expanded}
-				<!-- svelte-ignore -->
-				<span
-					class="material-icons"
-					style="margin:0px; {childSelected || selected
-						? 'color:var(--color-subtle_text)'
-						: ''}"
-					on:click={toggleExpand}>expand_more</span
-				>
-			{:else}
-				<span class="material-icons" style="margin:0px" on:click={toggleExpand}
-					>chevron_right</span
-				>
-			{/if}
+			<div
+				on:click={toggleExpand}
+				on:keydown={e => {
+					if (e.key === 'Enter') toggleExpand(e)
+				}}
+			>
+				{#if expanded}
+					<span
+						class="material-icons"
+						style="margin:0px; {childSelected || selected
+							? 'color:var(--color-subtle_text)'
+							: ''}">expand_more</span
+					>
+				{:else}
+					<span class="material-icons" style="margin:0px">chevron_right</span>
+				{/if}
+			</div>
 		{/if}
-		<!-- svelte-ignore -->
-		<p class="name" on:click={handleClick}>
+		<p
+			class="name"
+			on:click={handleClick}
+			on:keypress={e => {
+				if (e.key === 'Enter') handleClick(e)
+			}}
+		>
 			{index.name}
 		</p>
 	</div>

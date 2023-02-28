@@ -1,8 +1,8 @@
-import { ajModelFormat } from './modelFormat'
-import { events } from './util/events'
-import { roundTo, roundToN } from './util/misc'
-import { BlockbenchMod } from './util/mods'
-import { translate } from './util/translation'
+import { ajModelFormat } from '../modelFormat'
+import { events } from '../util/events'
+import { BlockbenchMod } from '../util/mods'
+import { translate } from '../util/translation'
+import { applyModelVariant } from '../variants'
 
 const oldEffectAnimatorDisplayFrame = EffectAnimator.prototype.displayFrame
 const oldEffectAnimatorStartPreviousSounds = EffectAnimator.prototype.startPreviousSounds
@@ -74,10 +74,33 @@ export function injectCustomKeyframes() {
 	// Modify keyframe functionality
 	EffectAnimator.prototype.displayFrame = function (this: EffectAnimator, in_loop: boolean) {
 		if (!this.muted.variants) {
-			for (const kf of this.variants) {
-				if (roundToN(this.last_displayed_time, 20) === kf.time) {
-					console.log('[Insert Variant Display Function Here]', kf)
+			let after, before, result: _Keyframe | undefined
+
+			for (const kf of this.variants as _Keyframe[]) {
+				if (kf.time < this.animation.time) {
+					if (!before || kf.time > before.time) {
+						before = kf
+					}
+				} else {
+					if (!after || kf.time < after.time) {
+						after = kf
+					}
 				}
+			}
+
+			if (after && after.time === this.animation.time) {
+				result = after
+			} else if (before) {
+				result = before
+			} else if (after) {
+				result = this.variants.at(-1)
+			}
+
+			if (result) {
+				const variant = Project!.animated_java_variants!.variants.find(
+					v => v.uuid === result!.data_points[0].variant
+				)
+				if (variant) applyModelVariant(variant)
 			}
 		}
 

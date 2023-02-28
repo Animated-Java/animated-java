@@ -22,9 +22,12 @@ import './ui/ajSettings'
 import './ui/ajProjectSettings'
 import './ui/ajAnimationConfig'
 import './ui/ajVariantsPanel'
-import './keyframes'
+import './mods/keyframeMod'
 import './ui/ajKeyframe'
+import './mods/modeMod'
+import './mods/textureMod'
 import { openAjDocsDialog } from './ui/ajDocs'
+import { applyModelVariant } from './variants'
 
 // @ts-ignore
 globalThis.AnimatedJavaExporter = _AnimatedJavaExporter
@@ -49,6 +52,7 @@ globalThis.ANIMATED_JAVA = {
 		}
 		Blockbench.openLink(link)
 	},
+	applyModelVariant,
 }
 // Uninstall events
 events.uninstall.subscribe(() => {
