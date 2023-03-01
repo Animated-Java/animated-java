@@ -570,6 +570,7 @@ createBlockbenchMod(
 				context.originalClick.call(context.action, event)
 			}
 		}
+		return context
 	},
 	context => {
 		context.action.click = context.originalClick
@@ -590,6 +591,7 @@ createBlockbenchMod(
 				context.originalClick.call(context.action, event)
 			}
 		}
+		return context
 	},
 	context => {
 		context.action.click = context.originalClick
@@ -620,6 +622,7 @@ createBlockbenchMod(
 				context.originalClick.call(context.action, event)
 			}
 		}
+		return context
 	},
 	context => {
 		context.action.click = context.originalClick
@@ -636,6 +639,7 @@ createBlockbenchMod(
 			if (Project !== this) events.preSelectProject.dispatch(this)
 			return context.original.call(this)
 		}
+		return context
 	},
 	context => {
 		ModelProject.prototype.select = context.original

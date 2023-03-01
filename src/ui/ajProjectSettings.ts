@@ -33,6 +33,7 @@ createBlockbenchMod(
 				openAjProjectSettingsDialog()
 			} else context.originalClick.call(this, event)
 		}
+		return context
 	},
 	context => {
 		context.action.click = context.originalClick

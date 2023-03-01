@@ -28,6 +28,7 @@ import './mods/textureMod'
 import { openAjDocsDialog } from './ui/ajDocs'
 import { applyModelVariant } from './variants'
 import { renderAllAnimations } from './rendering/renderer'
+import { consoleGroupCollapsed } from './util/console'
 
 // @ts-ignore
 globalThis.AnimatedJavaExporter = _AnimatedJavaExporter
@@ -81,22 +82,18 @@ BBPlugin.register(PACKAGE.name, {
 	min_version: PACKAGE.min_blockbench_version,
 	tags: ['Minecraft: Java Edition', 'Animation', 'Armor Stand'],
 	await_loading: true,
-	onload() {
-		// devlog(`${PACKAGE.name} loaded!`)
+	onload: consoleGroupCollapsed(`${PACKAGE.name}:onload`, () => {
 		events.load.dispatch()
-	},
-	onunload() {
-		// devlog(`${PACKAGE.name} unloaded!`)
+	}),
+	onunload: consoleGroupCollapsed(`${PACKAGE.name}:onunload`, () => {
 		events.unload.dispatch()
-	},
-	oninstall() {
-		// devlog(`${PACKAGE.name} installed!`)
+	}),
+	oninstall: consoleGroupCollapsed(`${PACKAGE.name}:oninstall`, () => {
 		events.install.dispatch()
-	},
-	onuninstall() {
-		// devlog(`${PACKAGE.name} uninstalled!`)
+	}),
+	onuninstall: consoleGroupCollapsed(`${PACKAGE.name}:onuninstall`, () => {
 		events.uninstall.dispatch()
-	},
+	}),
 })
 
 // KEEP CODE WITHIN THESE BOUNDS

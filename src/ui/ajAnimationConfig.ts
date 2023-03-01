@@ -29,6 +29,7 @@ createBlockbenchMod(
 				openAjAnimationDialog(Animator.selected)
 			} else context.original.call(this)
 		}
+		return context
 	},
 	context => {
 		Blockbench.Animation.prototype.propertiesDialog = context.original

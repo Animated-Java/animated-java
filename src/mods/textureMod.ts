@@ -26,6 +26,7 @@ createBlockbenchMod(
 			}
 			return x
 		}
+		return context
 	},
 	context => {
 		// @ts-ignore

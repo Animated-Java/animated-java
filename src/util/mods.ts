@@ -1,3 +1,4 @@
+import { consoleGroup } from './console'
 import * as events from './events'
 
 class BlockbenchModInstallError extends Error {
@@ -15,9 +16,11 @@ class BlockbenchModUninstallError extends Error {
 /**
  * A simple helper function to make modifing Blockbench easier.
  * @param id A namespaced ID ('my-plugin-id:my-mod')
- * @param context The context of the mod. This is passed to the inject and extract functions.
+ * @param context The context of the mod. This is passed to the inject function.
  * @param inject The function that is called to install the mod.
  * @param extract The function that is called to uninstall the mod.
+ * @template InjectContext The type of the context passed to the inject function.
+ * @template ExtractContext The type of the context returned from the inject function and passed to the extract function.
  * @example
  * ```ts
  * createBlockbenchMod(
@@ -33,6 +36,7 @@ class BlockbenchModUninstallError extends Error {
  * 			}
  * 			return context.original.call(this)
  * 		}
+ * 		return context
  * 	})
  * 	context => {
  * 		// Extract code here
@@ -40,31 +44,40 @@ class BlockbenchModUninstallError extends Error {
  * 	})
  * ```
  */
-export function createBlockbenchMod<C = any>(
+export function createBlockbenchMod<InjectContext = any, ExtractContext = any>(
 	id: `${string}${string}:${string}${string}`,
-	context: C,
-	inject: (context: C) => void,
-	extract: (context: C) => void
+	context: InjectContext,
+	inject: (context: InjectContext) => ExtractContext,
+	extract: (context: ExtractContext) => void
 ) {
 	let installed = false
+	let extractContext: ExtractContext
 
-	events.loadMods.subscribe(() => {
-		try {
-			if (installed) new Error('Mod is already installed!')
-			inject(context)
-			installed = true
-		} catch (err: any) {
-			throw new BlockbenchModInstallError(id, err)
-		}
-	}, true)
+	events.injectMods.subscribe(
+		consoleGroup(`Injecting BlockbenchMod '${id}'`, () => {
+			try {
+				if (installed) new Error('Mod is already installed!')
+				extractContext = inject(context)
+				installed = true
+			} catch (err: any) {
+				throw new BlockbenchModInstallError(id, err)
+			}
+			console.log('Sucess!')
+		}),
+		true
+	)
 
-	events.unloadMods.subscribe(() => {
-		try {
-			if (!installed) new Error('Mod is not installed!')
-			extract(context)
-			installed = false
-		} catch (err: any) {
-			throw new BlockbenchModUninstallError(id, err)
-		}
-	}, true)
+	events.extractMods.subscribe(
+		consoleGroup(`Extracting BlockbenchMod '${id}'`, () => {
+			try {
+				if (!installed) new Error('Mod is not installed!')
+				extract(extractContext)
+				installed = false
+			} catch (err: any) {
+				throw new BlockbenchModUninstallError(id, err)
+			}
+			console.log('Sucess!')
+		}),
+		true
+	)
 }

@@ -1,6 +1,6 @@
-const originalConsoleLog = console.log
-
 // You know how console.log is slow? What if we made it even slower, but only specific functions? :D
+
+const originalConsoleLog = console.log
 
 /**
  * Groups all console output in a function call into a console group
@@ -14,20 +14,23 @@ export function consoleGroup<A extends any[], R>(
 	forced = false
 ): (...args: A) => R {
 	return (...args: A): R => {
-		let logUsed = forced
-		if (logUsed) console.group(groupName)
+		var lastConsoleLog = console.log
+		var used = forced
+		if (used) console.group(groupName)
 		else {
 			console.log = function (...args) {
-				if (!logUsed) {
-					logUsed = true
+				if (!used) {
+					used = true
+					if (lastConsoleLog !== originalConsoleLog) lastConsoleLog()
 					console.group(groupName)
 				}
-				return (console.log = originalConsoleLog)(...args)
+				return (console.log = lastConsoleLog)(...args)
 			}
 		}
-		const ret = fn(...args)
-		if (logUsed) console.groupEnd()
-		return ret
+		const result = fn(...args)
+		if (used) console.groupEnd()
+		else console.log = lastConsoleLog
+		return result
 	}
 }
 
@@ -43,19 +46,22 @@ export function consoleGroupCollapsed<A extends any[], R>(
 	forced = false
 ): (...args: A) => R {
 	return (...args: A): R => {
-		let logUsed = forced
-		if (logUsed) console.groupCollapsed(groupName)
+		var lastConsoleLog = console.log
+		var used = forced
+		if (used) console.groupCollapsed(groupName)
 		else {
 			console.log = function (...args) {
-				if (!logUsed) {
-					logUsed = true
+				if (!used) {
+					used = true
+					if (lastConsoleLog !== originalConsoleLog) lastConsoleLog()
 					console.groupCollapsed(groupName)
 				}
-				return (console.log = originalConsoleLog)(...args)
+				return (console.log = lastConsoleLog)(...args)
 			}
 		}
-		const ret = fn(...args)
-		if (logUsed) console.groupEnd()
-		return ret
+		const result = fn(...args)
+		if (used) console.groupEnd()
+		else console.log = lastConsoleLog
+		return result
 	}
 }

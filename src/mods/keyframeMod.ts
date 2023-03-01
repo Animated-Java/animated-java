@@ -135,7 +135,7 @@ export function extractCustomKeyframes() {
 	installed = false
 }
 
-events.unloadMods.subscribe(() => extractCustomKeyframes())
+events.extractMods.subscribe(() => extractCustomKeyframes())
 
 events.preSelectProject.subscribe(project => {
 	if (project.format.id === ajModelFormat.id) {

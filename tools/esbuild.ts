@@ -44,10 +44,13 @@ let infoPlugin: esbuild.Plugin = {
 }
 
 function createBanner() {
+	function wrap(s: string, width: number) {
+		return s.replace(new RegExp(`(?![^\\n]{1,${width}}$)([^\\n]{1,${width}})\\s`, 'g'), '$1\n')
+	}
+
 	const LICENSE = fs.readFileSync('./LICENSE').toString()
 	const fetchbot = PACKAGE.contributors[0]
 	const dominexis = PACKAGE.contributors[1]
-	const otherContributors = PACKAGE.contributors.slice(2)
 	let lines = [
 		String.raw`____ _  _ _ _  _ ____ ___ ____ ___      _ ____ _  _ ____`,
 		String.raw`|__| |\ | | |\/| |__|  |  |___ |  \     | |__| |  | |__|`,
@@ -67,9 +70,11 @@ function createBanner() {
 		``,
 		`and ${dominexis.name}`,
 		`(${dominexis.email}) [${dominexis.url}]`,
-		otherContributors.length
-			? `And contributions from ${otherContributors.map((v: any) => `${v.name}`).join(', ')}`
-			: '',
+		``,
+		`[ SPECIAL THANKS ]`,
+		``,
+		`$INSERT_SPECIAL_THANKS_HERE`,
+		``,
 		`[ SOURCE ]`,
 		`${PACKAGE.repository.url}`,
 		``,
@@ -78,6 +83,13 @@ function createBanner() {
 	]
 
 	let maxLength = Math.max(...lines.map(line => line.length))
+
+	lines.splice(
+		lines.indexOf('$INSERT_SPECIAL_THANKS_HERE'),
+		1,
+		...wrap(PACKAGE.special_thanks.join(', '), Math.floor(maxLength / 1.5)).split('\n')
+	)
+
 	const leftBuffer = Math.floor(maxLength / 2)
 	const rightBuffer = Math.ceil(maxLength / 2)
 

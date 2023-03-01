@@ -31,6 +31,7 @@ createBlockbenchMod(
 			}
 			return context.originalEditUnselect?.call(this)
 		}
+		return context
 	},
 	context => {
 		Modes.options.edit.onSelect = context.originalEditSelect
