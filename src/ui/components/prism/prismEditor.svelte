@@ -25,5 +25,6 @@
 		padding: 0;
 		flex-grow: 1;
 		border-radius: unset;
+		background: unset;
 	}
 </style>`}

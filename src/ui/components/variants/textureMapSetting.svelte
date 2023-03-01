@@ -58,6 +58,8 @@
 		{/key}
 	</div>
 
+	<div class="spacer" />
+
 	{#if helpButtonHovered}
 		<div
 			class="setting-description flex-column"
@@ -94,13 +96,17 @@
 		width: 150px;
 	}
 
+	div.spacer {
+		min-height: 10px;
+	}
+
 	div.setting-description {
 		pointer-events: none;
 		background: var(--color-dark);
 		padding-left: 5px;
 		padding-right: 5px;
 		padding-bottom: 5px;
-		margin-top: 10px;
+		margin-bottom: 10px;
 		overflow: hidden;
 	}
 
@@ -112,12 +118,14 @@
 	div.setting {
 		display: flex;
 		align-items: center;
-		position: relative;
 		padding: 10px;
+		padding-bottom: 0px;
+		position: relative;
 		justify-content: space-between;
 		border-bottom: 1px solid var(--color-border);
 		background-color: var(--color-back);
 		border-bottom: 4px solid var(--color-border);
+		margin-bottom: 10px;
 	}
 
 	div.flex-column {

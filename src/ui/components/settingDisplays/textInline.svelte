@@ -6,7 +6,7 @@
 
 <style>
 	.text_inline {
-		background: var(--color-dark);
+		background: var(--color-button);
 		font-family: var(--font-code);
 		flex-grow: 1;
 		padding: 5px;

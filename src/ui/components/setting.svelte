@@ -10,6 +10,7 @@
 	import File from './settingDisplays/file.svelte'
 	import ImageDropdown from './settingDisplays/imageDropdown.svelte'
 	import IconButton from './buttons/iconButton.svelte'
+	import Codebox from './settingDisplays/codebox.svelte'
 
 	export let setting: AJ.Setting<any>
 
@@ -66,6 +67,12 @@
 		/>
 	</div>
 
+	{#if setting instanceof AJ.CodeboxSetting}
+		<Codebox bind:value={setting.value} language={setting.language} />
+	{/if}
+
+	<div class="spacer" />
+
 	{#if helpButtonHovered}
 		<div
 			class="setting-description flex-column"
@@ -99,13 +106,17 @@
 		width: 150px;
 	}
 
+	div.spacer {
+		min-height: 10px;
+	}
+
 	div.setting-description {
 		pointer-events: none;
 		background: var(--color-dark);
 		padding-left: 5px;
 		padding-right: 5px;
 		padding-bottom: 5px;
-		margin-top: 10px;
+		margin-bottom: 10px;
 		overflow: hidden;
 	}
 
@@ -118,6 +129,7 @@
 		display: flex;
 		align-items: center;
 		padding: 10px;
+		padding-bottom: 0px;
 		position: relative;
 		justify-content: space-between;
 		border-bottom: 1px solid var(--color-border);
@@ -133,7 +145,6 @@
 
 	div.flex-column {
 		display: flex;
-		align-items: center;
 		flex-direction: column;
 		align-items: flex-start;
 	}

@@ -13,4 +13,7 @@
 </select>
 
 <style>
+	select {
+		height: 34px;
+	}
 </style>

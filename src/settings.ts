@@ -76,7 +76,18 @@ export class Setting<V, R = any> extends Subscribable<R> {
 
 export class CheckboxSetting extends Setting<boolean, CheckboxSetting> {}
 export class InlineTextSetting extends Setting<string, InlineTextSetting> {}
-export class CodeboxSetting extends Setting<string, CodeboxSetting> {}
+export class CodeboxSetting extends Setting<string, CodeboxSetting> {
+	language: string
+	constructor(
+		options: ISettingOptions<string> & { language: string },
+		onUpdate?: (setting: CodeboxSetting) => void,
+		onInit?: (setting: CodeboxSetting) => void
+	) {
+		super(options, onUpdate, onInit)
+		this.language = options.language
+	}
+}
+
 export class FolderSetting extends Setting<string, FolderSetting> {}
 export class FileSetting extends Setting<string, FileSetting> {}
 
@@ -165,11 +176,22 @@ export let AnimatedJavaSettings = {
 			}))
 		}
 	),
+	test_setting: new CodeboxSetting({
+		id: 'animated_java:test_setting',
+		displayName: translate('animated_java.settings.test_setting'),
+		description: translate('animated_java.settings.test_setting.description').split('\n'),
+		defaultValue: `{"test": "test"}`,
+		language: 'json',
+	}),
 }
 
 export const AnimatedJavaSettingsStructure: GUIStructure = [
 	{
 		type: 'setting',
 		id: AnimatedJavaSettings.default_exporter.id,
+	},
+	{
+		type: 'setting',
+		id: AnimatedJavaSettings.test_setting.id,
 	},
 ]

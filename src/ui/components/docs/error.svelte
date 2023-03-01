@@ -1,6 +1,14 @@
+<script lang="ts" context="module">
+	window.Prism.languages.error = {
+		error: {
+			pattern: /^Error:/,
+		},
+	}
+</script>
+
 <script lang="ts">
 	import { translate } from '../../../util/translation'
-	import TextAreaAutosize from '../textAreaAutosize.svelte'
+	import PrismCodebox from '../prism/prismCodebox.svelte'
 
 	export let error: any
 </script>
@@ -12,7 +20,9 @@
 			<p>{line}</p>
 		{/each}
 		<br />
-		<TextAreaAutosize value={error.stack} maxWidth={'680px'} maxHeight={'400px'} />
+		<div class="prism-container">
+			<PrismCodebox language="error" code={error.stack} />
+		</div>
 	</div>
 </div>
 
@@ -20,6 +30,7 @@
 	p {
 		margin: 0px;
 	}
+
 	div.flex-column {
 		display: flex;
 		align-items: center;
@@ -37,5 +48,23 @@
 		display: flex;
 		overflow-y: scroll;
 		max-height: 700px;
+	}
+
+	div.prism-container {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+		justify-content: center;
+		flex-grow: 1;
+
+		background-color: var(--color-back);
+		border: 2px solid var(--color-border);
+		border-radius: 0.25em;
+		text-align: start;
+
+		max-height: 20em;
+		max-width: 50em;
+		padding-left: 8px;
+		padding-top: 3px;
 	}
 </style>
