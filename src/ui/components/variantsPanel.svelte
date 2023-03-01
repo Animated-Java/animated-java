@@ -1,7 +1,7 @@
 <script lang="ts">
 	import VariantComponent from './variants/variantItem.svelte'
 	import { Variant, VariantsContainer } from '../../variants'
-	import { events } from '../../util/events'
+	import * as events from '../../util/events'
 	import { ajModelFormat } from '../../modelFormat'
 	import { state, variantPanelMenu } from '../ajVariantsPanel'
 	import { onDestroy } from 'svelte'

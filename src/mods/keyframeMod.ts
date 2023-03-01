@@ -1,6 +1,6 @@
 import { ajModelFormat } from '../modelFormat'
-import { events } from '../util/events'
-import { BlockbenchMod } from '../util/mods'
+import * as events from '../util/events'
+import { createBlockbenchMod } from '../util/mods'
 import { translate } from '../util/translation'
 import { applyModelVariant } from '../variants'
 
@@ -135,13 +135,7 @@ export function extractCustomKeyframes() {
 	installed = false
 }
 
-new BlockbenchMod({
-	id: 'animated_java:effect_animator_display_frame',
-	inject() {},
-	extract() {
-		extractCustomKeyframes()
-	},
-})
+events.unloadMods.subscribe(() => extractCustomKeyframes())
 
 events.preSelectProject.subscribe(project => {
 	if (project.format.id === ajModelFormat.id) {

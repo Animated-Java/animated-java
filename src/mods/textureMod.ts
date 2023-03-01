@@ -1,5 +1,5 @@
 import { ajModelFormat } from '../modelFormat'
-import { BlockbenchMod } from '../util/mods'
+import { createBlockbenchMod } from '../util/mods'
 import { TextureId } from '../variants'
 
 declare global {
@@ -8,12 +8,12 @@ declare global {
 	}
 }
 
-new BlockbenchMod({
-	id: 'animated_java:texture.toTextureId',
-	context: {
+createBlockbenchMod(
+	'animated_java:texture_toTextureId',
+	{
 		original: Texture.prototype.remove,
 	},
-	inject(context) {
+	context => {
 		Texture.prototype.toTextureId = function (this: Texture) {
 			return `${this.uuid}::${this.name}`
 		}
@@ -27,9 +27,9 @@ new BlockbenchMod({
 			return x
 		}
 	},
-	extract(context) {
+	context => {
 		// @ts-ignore
 		delete Texture.prototype.toTextureId
 		Texture.prototype.remove = context.original
-	},
-})
+	}
+)

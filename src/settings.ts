@@ -1,7 +1,7 @@
 import { _AnimatedJavaExporter } from './exporter'
 import { translate } from './util/translation'
 import { GUIStructure } from './ui/ajUIStructure'
-import { Subscribable } from './util/suscribable'
+import { Subscribable } from './util/subscribable'
 
 export interface IInfoPopup {
 	type: 'warning' | 'error' | 'info'

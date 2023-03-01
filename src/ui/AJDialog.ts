@@ -1,5 +1,5 @@
 import { SvelteComponent } from 'svelte'
-import { Subscribable } from '../util/suscribable'
+import { Subscribable } from '../util/subscribable'
 
 export class AJDialog extends Blockbench.Dialog {
 	instance: SvelteComponent | undefined

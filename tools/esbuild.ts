@@ -40,32 +40,39 @@ let infoPlugin: esbuild.Plugin = {
 				} and ${result.errors.length} error${result.errors.length == 1 ? '' : 's'}.`
 			)
 		})
-
-		// build.onLoad(
-		// 	{
-		// 		filter: /\.[tj]sx?$/,
-		// 	},
-		// 	result => {
-		// 		const code = fs.readFileSync(result.path, 'utf-8')
-		// 		return {
-		// 			contents: 'const devlog = console.log;\n' + code,
-		// 			loader: 'ts',
-		// 		}
-		// 	}
-		// )
 	},
 }
 
-function createBanner(dev: boolean) {
+function createBanner() {
 	const LICENSE = fs.readFileSync('./LICENSE').toString()
-	const snavesutit = PACKAGE.contributors[0]
+	const fetchbot = PACKAGE.contributors[0]
+	const dominexis = PACKAGE.contributors[1]
+	const otherContributors = PACKAGE.contributors.slice(2)
 	let lines = [
-		`[ ${PACKAGE.title} ]`,
-		`${PACKAGE.description}`,
-		`Created by ${PACKAGE.author.name} and, ${snavesutit.name}`,
-		`(${PACKAGE.author.email}) [${PACKAGE.author.url}]`,
-		`(${snavesutit.email}) [${snavesutit.url}]`,
+		` _______ __   _ _____ _______ _______ _______ _______ ______ `,
+		` |_____| | \\  |   |   |  |  | |_____|    |    |______ |     \\`,
+		` |     | |  \\_| __|__ |  |  | |     |    |    |______ |_____/`,
+		`                                                             `,
+		`                _____ _______ _    _ _______                 `,
+		`                  |   |_____|  \\  /  |_____|                 `,
+		`                __|   |     |   \\/   |     |                 `,
 		``,
+		`v${PACKAGE.version}`,
+		``,
+		PACKAGE.description,
+		``,
+		`Created by ${PACKAGE.author.name}`,
+		`(${PACKAGE.author.email}) [${PACKAGE.author.url}]`,
+		``,
+		`With AMAZING help from`,
+		`${fetchbot.name}`,
+		`(${fetchbot.email}) [${fetchbot.url}]`,
+		``,
+		`and ${dominexis.name}`,
+		`(${dominexis.email}) [${dominexis.url}]`,
+		otherContributors.length
+			? `And contributions from ${otherContributors.map((v: any) => `${v.name}`).join(', ')}`
+			: '',
 		`[ SOURCE ]`,
 		`${PACKAGE.repository.url}`,
 		``,
@@ -77,17 +84,17 @@ function createBanner(dev: boolean) {
 	const leftBuffer = Math.floor(maxLength / 2)
 	const rightBuffer = Math.ceil(maxLength / 2)
 
-	let header = `-`.repeat(maxLength + 4)
-	let footer = `-`.repeat(maxLength + 4)
+	let header = '╭' + `─`.repeat(maxLength + 2) + '╮'
+	let footer = '╰' + `─`.repeat(maxLength + 2) + '╯'
 
 	lines = lines.map(v => {
 		const div = v.length / 2
-		const l = Math.floor(leftBuffer - div)
-		const r = Math.ceil(rightBuffer - div)
-		return '| ' + ' '.repeat(l) + v + ' '.repeat(r) + ' |'
+		const l = Math.ceil(leftBuffer - div)
+		const r = Math.floor(rightBuffer - div)
+		return '│ ' + ' '.repeat(l) + v + ' '.repeat(r) + ' │'
 	})
 
-	let banner = '\n' + [header, ...lines, footer].map(v => `// ${v}`).join('\n') + '\n'
+	let banner = '\n' + [header, ...lines, footer].map(v => `//?? ${v}`).join('\n') + '\n'
 
 	return {
 		js: banner,
@@ -156,10 +163,8 @@ const yamlPlugin: (opts: { loadOptions?: any; transform?: any }) => esbuild.Plug
 })
 
 async function buildDev() {
-	// NOTE: change this to check if logging is enabled?
-	// esbuild.transformSync('function devlog(message) {console.log(message)}')
 	const ctx = await esbuild.context({
-		banner: createBanner(true),
+		banner: createBanner(),
 		entryPoints: ['./src/index.ts'],
 		outfile: `./dist/${PACKAGE.name}.js`,
 		bundle: true,
@@ -201,7 +206,7 @@ function buildProd() {
 				yamlPlugin({}),
 				sveltePlugin(svelteConfig as any),
 			],
-			banner: createBanner(false),
+			banner: createBanner(),
 			drop: ['debugger'],
 			format: 'iife',
 			define: defines,

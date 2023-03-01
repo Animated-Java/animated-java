@@ -1,4 +1,4 @@
-import { events } from './util/events'
+import * as events from './util/events'
 export const svelteStyleNodes = new Set<HTMLStyleElement>()
 const existingStyleNodes = new Set<HTMLStyleElement>()
 let isCurrentlyCollectingStyleNodes = false

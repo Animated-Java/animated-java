@@ -1,6 +1,6 @@
 import { ajModelFormat } from '../modelFormat'
-import { events } from '../util/events'
-import { BlockbenchMod } from '../util/mods'
+import * as events from '../util/events'
+import { createBlockbenchMod } from '../util/mods'
 import { translate } from '../util/translation'
 import { Variant } from '../variants'
 import { AJPanel } from './ajPanel'
@@ -54,9 +54,10 @@ export const variantMenu = new Menu(['animated_java:variant_properties'])
 export const variantPanelMenu = new Menu(['animated_java:add_variant'])
 
 let panel: Panel
-new BlockbenchMod({
-	id: 'animated_java:variants_panel',
-	inject() {
+createBlockbenchMod(
+	'animated_java:variants_panel',
+	{},
+	context => {
 		panel = new AJPanel(
 			SvelteComponent,
 			{},
@@ -82,15 +83,15 @@ new BlockbenchMod({
 			}
 		)
 	},
-	extract() {
+	context => {
 		panel?.delete()
-	},
-})
+	}
+)
 
 events.uninstall.subscribe(() => {
 	// toolbar.delete() no delete toolbar :(
-	variantMenu.delete()
-	variantPanelMenu.delete()
-	addVariantAction.delete()
-	variantPropertiesAction.delete()
+	variantMenu?.delete()
+	variantPanelMenu?.delete()
+	addVariantAction?.delete()
+	variantPropertiesAction?.delete()
 })

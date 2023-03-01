@@ -6,7 +6,7 @@
 
 	page = page.replace(
 		/<a href="(.+?)">(.+?)<\/a>/gm,
-		`<a class="animated-java-anchor" onclick="ANIMATED_JAVA.docClick('$1')">$2</a>`
+		`<a class="animated-java-anchor" onclick="animated_java.docClick('$1')">$2</a>`
 	)
 	page = page.replace(/<h([1-6])>(.+?)<\/h[1-6]>/gm, (match, p1, p2) => {
 		return `<h${p1} id="${p2.toLowerCase().replace(' ', '_')}">${p2}</h${p1}>`

@@ -1,7 +1,7 @@
 import { IRenderedAnimation } from './rendering/renderer'
 import { Setting as AJSetting, AnimatedJavaSettings } from './settings'
 import { GUIStructure } from './ui/ajUIStructure'
-import { consoleGroup } from './util/groupWrapper'
+import { consoleGroup } from './util/console'
 
 type ProjectSettings = Record<string, AJSetting<any>>
 

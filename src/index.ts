@@ -8,7 +8,7 @@ svelteHelperMarkPluginInitialization()
 // KEEP CODE WITHIN THESE BOUNDS
 
 import PACKAGE from '../package.json'
-import { events } from './util/events'
+import * as events from './util/events'
 import './util/mods'
 import './util/translation'
 import './modelFormat'
@@ -18,9 +18,9 @@ import * as AJSettings from './settings'
 import './minecraftPrism'
 import './projectSettings'
 import './ui/ajSettings'
+import './ui/ajVariantsPanel'
 import './ui/ajProjectSettings'
 import './ui/ajAnimationConfig'
-import './ui/ajVariantsPanel'
 import './mods/keyframeMod'
 import './ui/ajKeyframe'
 import './mods/modeMod'
@@ -34,7 +34,7 @@ globalThis.AnimatedJavaExporter = _AnimatedJavaExporter
 // @ts-ignore
 globalThis.AnimatedJavaSettings = AJSettings
 // @ts-ignore
-globalThis.ANIMATED_JAVA = {
+globalThis[PACKAGE.name] = {
 	translate,
 	settings: AJSettings.AnimatedJavaSettings,
 	openAjDocsDialog,
@@ -56,7 +56,7 @@ globalThis.ANIMATED_JAVA = {
 // Uninstall events
 events.uninstall.subscribe(() => {
 	// @ts-ignore
-	globalThis.ANIMATED_JAVA = undefined
+	globalThis[PACKAGE.name] = undefined
 	// @ts-ignore
 	globalThis.AnimatedJavaExporter = undefined
 	// @ts-ignore
@@ -67,13 +67,16 @@ import('./exporters/animationExporter')
 import('./exporters/statueExporter')
 import('./exporters/rawExporter')
 
+// Expose this plugin's events to other plugins
+// @ts-ignore
+globalThis[PACKAGE.name].events = events
+
 BBPlugin.register(PACKAGE.name, {
 	title: PACKAGE.title,
 	author: PACKAGE.author.name,
 	description: PACKAGE.description,
 	icon: 'icon-armor_stand',
 	variant: 'desktop',
-	// @ts-ignore // Blockbench types are outdated still >:I
 	version: PACKAGE.version,
 	min_version: PACKAGE.min_blockbench_version,
 	tags: ['Minecraft: Java Edition', 'Animation', 'Armor Stand'],

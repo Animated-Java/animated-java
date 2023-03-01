@@ -5,22 +5,26 @@
 	"version": "1.0.0",
 	"min_blockbench_version": "4.2.0",
 	"author": {
-		"email": "contact@iansenne.com",
-		"name": "Ian Senne",
-		"url": "https://discordapp.com/users/162347688011104256"
+		"name": "Titus Evans (SnaveSutit)",
+		"email": "snavesutit@gmail.com",
+		"url": "https://discordapp.com/users/213746232923783168"
 	},
 	"contributors": [
 		{
-			"name": "SnaveSutit",
-			"email": "snavesutit@gmail.com",
-			"url": "https://discordapp.com/users/213746232923783168"
+			"email": "contact@iansenne.com",
+			"name": "Ian Senne (FetchBot)",
+			"url": "https://discordapp.com/users/162347688011104256"
+		},
+		{
+			"name": "Jesse Spicer (Dominexis)",
+			"url": "https://discordapp.com/users/749826119636615229"
 		}
 	],
 	"repository": {
 		"type": "github",
 		"url": "https://github.com/Animated-Java/animated-java"
 	},
-	"description": "A tool for mapmakers to easily create complex animations for Minecraft Java Edition.",
+	"description": "Easily create custom entity animations in Minecraft Java Edition.",
 	"main": "./dist/index.js",
 	"types": "./dist/src/index.d.ts",
 	"private": true,
@@ -37,6 +41,7 @@
 		"@types/js-yaml": "^4.0.5",
 		"@types/node": "^17.0.21",
 		"@types/three": "^0.148.0",
+		"blockbench-types": "https://github.com/SnaveSutit/blockbench-types.git",
 		"esbuild": "^0.17.10",
 		"esbuild-plugin-svelte": "^0.1.1",
 		"fs-extra": "^11.1.0",

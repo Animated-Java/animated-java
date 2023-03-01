@@ -6,7 +6,7 @@
 	import { safeFunctionName } from '../../minecraft/util'
 	import UiNode from './uiNode.svelte'
 	import { onDestroy } from 'svelte'
-	import { events } from '../../util/events'
+	import * as events from '../../util/events'
 	import TextureMap from './variants/textureMapSetting.svelte'
 
 	export let variant: Variant

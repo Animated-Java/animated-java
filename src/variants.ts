@@ -1,8 +1,8 @@
 import { ajModelFormat } from './modelFormat'
 import { openInvalidVariantPopup } from './ui/popups/invalidVariant'
-import { events } from './util/events'
+import * as events from './util/events'
 import { uuidRegex } from './util/misc'
-import { Subscribable } from './util/suscribable'
+import { Subscribable } from './util/subscribable'
 
 // FIXME This was just changed to a new type.
 // FIXME Make sure everything that uses the TextureMap is updated properly

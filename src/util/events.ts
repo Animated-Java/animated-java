@@ -1,57 +1,31 @@
-import { Subscribable } from './suscribable'
+import { Subscribable } from './subscribable'
 
-interface IEvents {
-	load: AnimatedJavaEvent
-	unload: AnimatedJavaEvent
-	install: AnimatedJavaEvent
-	uninstall: AnimatedJavaEvent
-	loadMods: AnimatedJavaEvent
-	unloadMods: AnimatedJavaEvent
+export class PluginEvent<T = void> extends Subscribable<T> {
+	protected static events: Record<string, PluginEvent<any>> = {}
 
-	loadProject: AnimatedJavaEvent
-
-	preSelectProject: AnimatedJavaEvent<ModelProject>
-	selectProject: AnimatedJavaEvent<ModelProject>
-	postSelectProject: AnimatedJavaEvent<ModelProject>
-
-	variantPropertiesUpdate: AnimatedJavaEvent
-
-	onDocsLinkClicked: AnimatedJavaEvent<{ link: string; section?: string }>
-	// Should show an error if an event that hasn't been labled in IEvents is registered or referenced.
-	// [name: string]: AnimatedJavaEvent
-}
-class AnimatedJavaEvent<T = void> extends Subscribable<T> {
-	static events: any = {}
-
-	name: keyof IEvents
-	listeners: ((data: T) => void)[] = []
-	constructor(name: keyof IEvents) {
+	constructor(public name: string) {
 		super()
-		this.name = name
-		this.listeners = []
-		AnimatedJavaEvent.events[name] = this
+		PluginEvent.events[name] = this
 	}
 }
-export const events = AnimatedJavaEvent.events as IEvents
 
-const load = new AnimatedJavaEvent('load')
-const unload = new AnimatedJavaEvent('unload')
-const install = new AnimatedJavaEvent('install')
-const uninstall = new AnimatedJavaEvent('uninstall')
+export const load = new PluginEvent('load')
+export const unload = new PluginEvent('unload')
+export const install = new PluginEvent('install')
+export const uninstall = new PluginEvent('uninstall')
 
-const loadMods = new AnimatedJavaEvent('loadMods')
-const unloadMods = new AnimatedJavaEvent('unloadMods')
+export const loadMods = new PluginEvent('loadMods')
+export const unloadMods = new PluginEvent('unloadMods')
 
-const loadProject = new AnimatedJavaEvent('loadProject')
-const preSelectProject = new AnimatedJavaEvent<ModelProject>('preSelectProject')
-const selectProject = new AnimatedJavaEvent<ModelProject>('selectProject')
-const postSelectProject = new AnimatedJavaEvent<ModelProject>('postSelectProject')
+export const loadProject = new PluginEvent('loadProject')
+export const preSelectProject = new PluginEvent<ModelProject>('preSelectProject')
+export const selectProject = new PluginEvent<ModelProject>('selectProject')
+export const postSelectProject = new PluginEvent<ModelProject>('postSelectProject')
 
-const variantPropertiesUpdate = new AnimatedJavaEvent('variantPropertiesUpdate')
+export const variantPropertiesUpdate = new PluginEvent('variantPropertiesUpdate')
 
-const onDocsLinkClicked = new AnimatedJavaEvent<{ link: string; section?: string }>(
-	'onDocsLinkClicked'
-)
+type Link = { link: string; section?: string }
+export const onDocsLinkClicked = new PluginEvent<Link>('onDocsLinkClicked')
 
 load.subscribe(() => loadMods.dispatch())
 unload.subscribe(() => unloadMods.dispatch())

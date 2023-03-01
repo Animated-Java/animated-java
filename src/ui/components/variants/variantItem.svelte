@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte'
-	import { events } from '../../../util/events'
+	import * as events from '../../../util/events'
 	import { translate } from '../../../util/translation'
 	import { Variant, VariantsContainer } from '../../../variants'
 	import { state, variantMenu, variantPropertiesAction } from '../../ajVariantsPanel'

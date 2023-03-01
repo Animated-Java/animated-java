@@ -1,18 +1,9 @@
 import { ajModelFormat } from '../modelFormat'
-import { BlockbenchMod } from '../util/mods'
+import { createBlockbenchMod } from '../util/mods'
 import { translate } from '../util/translation'
 import { ajAction } from '../util/ajAction'
 import { AJDialog } from './ajDialog'
 import { default as SettingsComponent } from './components/projectSettings.svelte'
-
-const oldProjectWindowClick = (BarItems.project_window as Action).click
-
-function projectWindowClick(event: Event) {
-	// console.log('projectWindowClick', event)
-	if (Project?.format.id === ajModelFormat.id) {
-		openAjProjectSettingsDialog()
-	} else oldProjectWindowClick(event)
-}
 
 function openAjProjectSettingsDialog() {
 	const dialog = new AJDialog(
@@ -30,15 +21,23 @@ function openAjProjectSettingsDialog() {
 	dialog.show()
 }
 
-new BlockbenchMod({
-	id: 'animated_java:project_settings',
-	inject() {
-		;(BarItems.project_window as Action).click = projectWindowClick
+createBlockbenchMod(
+	'animated_java:project_settings',
+	{
+		action: BarItems.project_window as Action,
+		originalClick: (BarItems.project_window as Action).click,
 	},
-	extract() {
-		;(BarItems.project_window as Action).click = oldProjectWindowClick
+	context => {
+		context.action.click = function (this: Action, event: MouseEvent) {
+			if (Project?.format.id === ajModelFormat.id) {
+				openAjProjectSettingsDialog()
+			} else context.originalClick.call(this, event)
+		}
 	},
-})
+	context => {
+		context.action.click = context.originalClick
+	}
+)
 
 MenuBar.addAction(
 	ajAction('animated_java:project_settings', {

@@ -1,11 +1,11 @@
 import * as pathjs from 'path'
 import * as fs from 'fs'
-import { BlockbenchMod } from './util/mods'
+import { createBlockbenchMod } from './util/mods'
 import { getDefaultProjectSettings } from './projectSettings'
 import { _AnimatedJavaExporter } from './exporter'
 import { Variant, VariantsContainer } from './variants'
-import { events } from './util/events'
-import { consoleGroup } from './util/groupWrapper'
+import * as events from './util/events'
+import { consoleGroup } from './util/console'
 
 const FORMAT_VERSION = '1.0'
 
@@ -556,48 +556,54 @@ export const ajModelFormat = new Blockbench.ModelFormat({
 })
 ajCodec.format = ajModelFormat
 
-const saveProjectAction = BarItems.save_project as Action
-const oldSaveProjectFunction = saveProjectAction.click
-new BlockbenchMod({
-	id: 'animated_java:save_project',
-	inject() {
-		saveProjectAction.click = (event: Event) => {
+createBlockbenchMod(
+	'animated_java:save_project',
+	{
+		action: BarItems.save_project as Action,
+		originalClick: (BarItems.save_project as Action).click,
+	},
+	context => {
+		context.action.click = (event: Event) => {
 			if (Project && Project.format === ajModelFormat) {
 				ajCodec.write(ajCodec.compile(), Project.save_path)
 			} else {
-				oldSaveProjectFunction(event)
+				context.originalClick.call(context.action, event)
 			}
 		}
 	},
-	extract() {
-		saveProjectAction.click = oldSaveProjectFunction
-	},
-})
+	context => {
+		context.action.click = context.originalClick
+	}
+)
 
-const saveProjectAsAction = BarItems.save_project_as as Action
-const oldSaveProjectAsFunction = saveProjectAsAction.click
-new BlockbenchMod({
-	id: 'animated_java:save_project_as',
-	inject() {
-		saveProjectAsAction.click = (event: Event) => {
+createBlockbenchMod(
+	'animated_java:save_project_as',
+	{
+		action: BarItems.save_project_as as Action,
+		originalClick: (BarItems.save_project_as as Action).click,
+	},
+	context => {
+		context.action.click = (event: Event) => {
 			if (Project && Project.format === ajModelFormat) {
 				ajCodec.export()
 			} else {
-				oldSaveProjectAsFunction(event)
+				context.originalClick.call(context.action, event)
 			}
 		}
 	},
-	extract() {
-		saveProjectAsAction.click = oldSaveProjectAsFunction
-	},
-})
+	context => {
+		context.action.click = context.originalClick
+	}
+)
 
-const exportOverAction = BarItems.export_over as Action
-const oldExportOverFunction = exportOverAction.click
-new BlockbenchMod({
-	id: 'animated_java:export_over',
-	inject() {
-		exportOverAction.click = (event: Event) => {
+createBlockbenchMod(
+	'animated_java:export_over',
+	{
+		action: BarItems.export_over as Action,
+		originalClick: (BarItems.export_over as Action).click,
+	},
+	context => {
+		context.action.click = (event: Event) => {
 			if (Project && Project.format === ajModelFormat) {
 				if (Format) {
 					saveTextures()
@@ -611,26 +617,27 @@ new BlockbenchMod({
 					;(BarItems.save_all_animations as Action).trigger()
 				}
 			} else {
-				oldExportOverFunction(event)
+				context.originalClick.call(context.action, event)
 			}
 		}
 	},
-	extract() {
-		exportOverAction.click = oldExportOverFunction
+	context => {
+		context.action.click = context.originalClick
+	}
+)
+
+createBlockbenchMod(
+	'animated_java:events.preSelectProject',
+	{
+		original: ModelProject.prototype.select,
 	},
-})
-
-const originalSelectProject = ModelProject.prototype.select
-
-new BlockbenchMod({
-	id: 'animated_kava:events.preSelectProject',
-	inject() {
+	context => {
 		ModelProject.prototype.select = function (this: ModelProject) {
 			if (Project !== this) events.preSelectProject.dispatch(this)
-			return originalSelectProject.call(this)
+			return context.original.call(this)
 		}
 	},
-	extract() {
-		ModelProject.prototype.select = originalSelectProject
-	},
-})
+	context => {
+		ModelProject.prototype.select = context.original
+	}
+)

@@ -1,47 +1,70 @@
-import { events } from './events'
+import * as events from './events'
 
-interface BlockbenchModOptions<Context = any> {
-	id: string
-	context?: Context
-	inject: (context: BlockbenchMod<Context>['context']) => void
-	extract: (context: BlockbenchMod<Context>['context']) => void
-}
-
-export class BlockbenchMod<Context = any> {
-	static all: BlockbenchMod[] = []
-	name: string
-	context: Context
-	inject: BlockbenchModOptions<Context>['inject']
-	extract: BlockbenchModOptions<Context>['extract']
-
-	constructor(options: BlockbenchModOptions<Context>) {
-		this.name = options.id
-		this.context = options.context || ({} as Context)
-		this.inject = options.inject
-		this.extract = options.extract
-		BlockbenchMod.all.push(this)
+class BlockbenchModInstallError extends Error {
+	constructor(id: string, err: any) {
+		super(`Mod '${id}' failed to install: ${err.message}\n${err.stack}}`)
 	}
 }
 
-events.loadMods.subscribe(() =>
-	BlockbenchMod.all.forEach(mod => {
+class BlockbenchModUninstallError extends Error {
+	constructor(id: string, err: any) {
+		super(`Mod '${id}' failed to uninstall: ${err.message}\n${err.stack}}`)
+	}
+}
+
+/**
+ * A simple helper function to make modifing Blockbench easier.
+ * @param id A namespaced ID ('my-plugin-id:my-mod')
+ * @param context The context of the mod. This is passed to the inject and extract functions.
+ * @param inject The function that is called to install the mod.
+ * @param extract The function that is called to uninstall the mod.
+ * @example
+ * ```ts
+ * createBlockbenchMod(
+ * 	'my-plugin-id:my-mod',
+ * 	{
+ * 		original: Blockbench.Animation.prototype.select
+ * 	},
+ * 	context => {
+ * 		// Inject code here
+ * 		Blockbench.Animation.prototype.select = function(this: _Animation) {
+ * 			if (Format.id === myFormat.id) {
+ * 				// Do something here
+ * 			}
+ * 			return context.original.call(this)
+ * 		}
+ * 	})
+ * 	context => {
+ * 		// Extract code here
+ * 		Blockbench.Animation.prototype.select = context.original
+ * 	})
+ * ```
+ */
+export function createBlockbenchMod<C = any>(
+	id: `${string}${string}:${string}${string}`,
+	context: C,
+	inject: (context: C) => void,
+	extract: (context: C) => void
+) {
+	let installed = false
+
+	events.loadMods.subscribe(() => {
 		try {
-			mod.inject(mod.context)
-		} catch (err) {
-			console.log(`Unexpected Error while attempting to inject mod '${mod.name}'!`)
-			console.error(err)
-			debugger
+			if (installed) new Error('Mod is already installed!')
+			inject(context)
+			installed = true
+		} catch (err: any) {
+			throw new BlockbenchModInstallError(id, err)
 		}
-	})
-)
-events.unloadMods.subscribe(() =>
-	BlockbenchMod.all.forEach(mod => {
+	}, true)
+
+	events.unloadMods.subscribe(() => {
 		try {
-			mod.extract(mod.context)
-		} catch (err) {
-			console.log(`Unexpected Error while attempting to extract mod '${mod.name}'!`)
-			console.error(err)
-			debugger
+			if (!installed) new Error('Mod is not installed!')
+			extract(context)
+			installed = false
+		} catch (err: any) {
+			throw new BlockbenchModUninstallError(id, err)
 		}
-	})
-)
+	}, true)
+}

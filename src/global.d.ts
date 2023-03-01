@@ -1,4 +1,4 @@
-import { SvelteComponentTyped } from 'svelte'
+import * as PACKAGE from '../package.json'
 import { _AnimatedJavaExporter } from './exporter'
 import { IAnimatedJavaProjectSettings } from './projectSettings'
 import { Setting } from './settings'
@@ -15,7 +15,8 @@ declare global {
 	}
 	const AnimatedJavaExporter: typeof _AnimatedJavaExporter
 	const AnimatedJavaSettings: typeof import('./settings')
-	const ANIMATED_JAVA: {
+	const animated_java: {
+		events: typeof import('./util/events')
 		translate: typeof translate
 		docClick: (link: string) => void
 		openAjDocsDialog: (link: string) => void

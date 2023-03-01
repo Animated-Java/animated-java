@@ -1,4 +1,4 @@
-const translate = ANIMATED_JAVA.translate
+const translate = animated_java.translate
 
 const animationExporter = new AnimatedJavaExporter({
 	id: 'animated_java:animation_exporter',

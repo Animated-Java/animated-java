@@ -20,7 +20,7 @@ export const preprocess = [
 const importPath = resolve(__dirname, '../src/util', 'events.ts')
 
 export const transformCssToJs = (css: string) => {
-	return `import {events as SVELTEEVENTS} from ${JSON.stringify(importPath)};
+	return `import * as SVELTEEVENTS from ${JSON.stringify(importPath)};
 	const $deletable = Blockbench.addCSS(${JSON.stringify(css)});
 	SVELTEEVENTS.unload.subscribe(() => $deletable(), true);
 	SVELTEEVENTS.uninstall.subscribe(() => $deletable(), true);`

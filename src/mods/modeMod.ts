@@ -1,14 +1,14 @@
 import { ajModelFormat } from '../modelFormat'
-import { BlockbenchMod } from '../util/mods'
+import { createBlockbenchMod } from '../util/mods'
 import { applyModelVariant, clearModelVariant } from '../variants'
 
-new BlockbenchMod({
-	id: 'animated_java:modes.select',
-	context: {
+createBlockbenchMod(
+	'animated_java:modes.select',
+	{
 		originalEditSelect: Modes.options.edit.onSelect,
 		originalEditUnselect: Modes.options.edit.onUnselect,
 	},
-	inject(context) {
+	context => {
 		Modes.options.edit.onSelect = function (this: Mode) {
 			if (
 				Project &&
@@ -32,8 +32,8 @@ new BlockbenchMod({
 			return context.originalEditUnselect?.call(this)
 		}
 	},
-	extract(context) {
+	context => {
 		Modes.options.edit.onSelect = context.originalEditSelect
 		Modes.options.edit.onUnselect = context.originalEditUnselect
-	},
-})
+	}
+)
