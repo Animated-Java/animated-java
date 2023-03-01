@@ -49,13 +49,9 @@ function createBanner() {
 	const dominexis = PACKAGE.contributors[1]
 	const otherContributors = PACKAGE.contributors.slice(2)
 	let lines = [
-		` _______ __   _ _____ _______ _______ _______ _______ ______ `,
-		` |_____| | \\  |   |   |  |  | |_____|    |    |______ |     \\`,
-		` |     | |  \\_| __|__ |  |  | |     |    |    |______ |_____/`,
-		`                                                             `,
-		`                _____ _______ _    _ _______                 `,
-		`                  |   |_____|  \\  /  |_____|                 `,
-		`                __|   |     |   \\/   |     |                 `,
+		String.raw`____ _  _ _ _  _ ____ ___ ____ ___      _ ____ _  _ ____`,
+		String.raw`|__| |\ | | |\/| |__|  |  |___ |  \     | |__| |  | |__|`,
+		String.raw`|  | | \| | |  | |  |  |  |___ |__/    _| |  |  \/  |  |`,
 		``,
 		`v${PACKAGE.version}`,
 		``,
@@ -65,6 +61,7 @@ function createBanner() {
 		`(${PACKAGE.author.email}) [${PACKAGE.author.url}]`,
 		``,
 		`With AMAZING help from`,
+		``,
 		`${fetchbot.name}`,
 		`(${fetchbot.email}) [${fetchbot.url}]`,
 		``,

@@ -1,3 +1,5 @@
+// Developed by Jesse Spicer (Dominexis) for Animated Java
+
 import { Vector, Matrix, Gimbals } from './linear'
 
 interface IAJBoneOptions {

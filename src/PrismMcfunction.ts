@@ -1,6 +1,3 @@
-import { AJDialog } from './ui/ajDialog'
-import TestEditor from './ui/components/prism/testEditor.svelte'
-
 window.Prism.languages.mcfunction = {
 	comment: /^#.*$/im,
 	selector: {

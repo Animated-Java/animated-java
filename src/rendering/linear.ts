@@ -1,3 +1,5 @@
+// Developed by Jesse Spicer (Dominexis) for Animated Java
+
 export class Vector {
 	constructor(public x: number, public y: number, public z: number) {}
 
