@@ -6,9 +6,9 @@
     - [x] Project based texture map
     - [x] Button to add new Variant
     - [x] ~~Double click variant~~ (or press the edit button) to open the Variants Dialog
-- [ ] Variants Dialog
+- [x] Variants Dialog
     - [x] Change the name of the variant
-    - [ ] Configure texture map
+    - [x] Configure texture map
 - [x] Variants rendering
     - [x] Need a function that sets the textures of a model based on a provided variant
     - [x] Change textures based on which variant is selected
@@ -61,3 +61,6 @@
         - [ ] Use global setting
         - [ ] This bone resets every time an animation is started via the play function
         - [ ] This bone is not animated by any animations
+
+# Future Updates
+- [ ] Animation controller support?

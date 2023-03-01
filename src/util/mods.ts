@@ -7,9 +7,8 @@ interface BlockbenchModOptions<Context = any> {
 	extract: (context: BlockbenchMod<Context>['context']) => void
 }
 
-const all: BlockbenchMod[] = []
-
 export class BlockbenchMod<Context = any> {
+	static all: BlockbenchMod[] = []
 	name: string
 	context: Context
 	inject: BlockbenchModOptions<Context>['inject']
@@ -20,12 +19,12 @@ export class BlockbenchMod<Context = any> {
 		this.context = options.context || ({} as Context)
 		this.inject = options.inject
 		this.extract = options.extract
-		all.push(this)
+		BlockbenchMod.all.push(this)
 	}
 }
 
 events.loadMods.subscribe(() =>
-	all.forEach(mod => {
+	BlockbenchMod.all.forEach(mod => {
 		try {
 			mod.inject(mod.context)
 		} catch (err) {
@@ -36,7 +35,7 @@ events.loadMods.subscribe(() =>
 	})
 )
 events.unloadMods.subscribe(() =>
-	all.forEach(mod => {
+	BlockbenchMod.all.forEach(mod => {
 		try {
 			mod.extract(mod.context)
 		} catch (err) {

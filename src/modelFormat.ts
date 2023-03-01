@@ -3,7 +3,7 @@ import * as fs from 'fs'
 import { BlockbenchMod } from './util/mods'
 import { getDefaultProjectSettings } from './projectSettings'
 import { _AnimatedJavaExporter } from './exporter'
-import { getDefaultVariants, Variant } from './variants'
+import { Variant, VariantsContainer } from './variants'
 import { events } from './util/events'
 import { consoleGroup } from './util/groupWrapper'
 
@@ -44,7 +44,6 @@ interface IAnimatedJavaModel {
 		variants?: {
 			name: string
 			textures: Record<string, string>
-			default: boolean
 		}[]
 	}
 }
@@ -115,18 +114,15 @@ const loadAnimatedJavaVariants = consoleGroup(
 	(model: IAnimatedJavaModel) => {
 		if (!Project) return
 
-		Project.animated_java_variants = getDefaultVariants()
+		Project.animated_java_variants = new VariantsContainer()
 		if (!(model.animated_java && model.animated_java.variants)) return
-		Project.animated_java_variants.variants = []
 
 		console.log('Loading Animated Java variants...')
 		for (const variant of model.animated_java.variants) {
-			Project.animated_java_variants.addVariant(Variant.fromJSON(variant), variant.default)
+			Project.animated_java_variants.addVariant(Variant.fromJSON(variant))
 		}
 
-		if (Project.animated_java_variants.variants.length === 0) {
-			Project.animated_java_variants.addVariant(new Variant('default'), true)
-		}
+		Project.animated_java_variants.select()
 	}
 )
 

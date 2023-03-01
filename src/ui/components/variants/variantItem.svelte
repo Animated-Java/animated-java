@@ -4,10 +4,19 @@
 	import { translate } from '../../../util/translation'
 	import { Variant, VariantsContainer } from '../../../variants'
 	import { state, variantMenu, variantPropertiesAction } from '../../ajVariantsPanel'
+	import FlatIconButton from '../buttons/flatIconButton.svelte'
 
 	export let variant: Variant
 	export let deleteVariant: (variant: Variant) => void
 	export let variantsContainer: VariantsContainer
+
+	const translations = {
+		items: translate('animated_java.panels.variants.items'),
+		edit_variant: translate('animated_java.panels.variants.edit_variant'),
+		delete_variant: translate('animated_java.panels.variants.delete_variant'),
+		delete_default_variant: translate('animated_java.panels.variants.delete_default_variant'),
+	}
+
 	let selected: boolean
 	let unsubs: any[] = []
 	$: selected = variantsContainer.selectedVariant?.uuid === variant.uuid
@@ -50,7 +59,7 @@
 
 <div
 	class="variant-container"
-	title={translate('animated_java.panels.variants.items')}
+	title={translations.items}
 	style={selected ? 'background-color:var(--color-selected);' : ''}
 	on:click={handleInteraction}
 	on:contextmenu|stopPropagation={e => openVariantMenu(e)}
@@ -59,35 +68,13 @@
 	}}
 >
 	<p class="variant-name">{variant.name}</p>
-	<button
-		on:click|stopPropagation={e => openVariantProperties(e)}
-		title={translate('animated_java.panels.variants.edit_variant')}
-	>
-		<span class="material-icons">edit</span>
-	</button>
-	<button
-		on:click|stopPropagation={() => setDefault(variant)}
-		title={translate('animated_java.panels.variants.set_default')}
-		disabled={variant.default}
-	>
-		<span class="material-icons" style={variant.default ? 'color: var(--color-accent)' : ''}>
-			star
-		</span>
-	</button>
-	<button
-		on:click|stopPropagation={() => deleteVariant(variant)}
-		title={variant.default
-			? translate('animated_java.panels.variants.delete_variant_disabled')
-			: translate('animated_java.panels.variants.delete_variant')}
-		disabled={variant.default}
-	>
-		<span
-			class="material-icons"
-			style={variant.default ? 'color: var(--color-subtle_text)' : ''}
-		>
-			delete
-		</span>
-	</button>
+	<FlatIconButton onClick={openVariantProperties} icon="edit" title={translations.edit_variant} />
+	<FlatIconButton
+		onClick={() => deleteVariant(variant)}
+		icon={variant.default ? 'star' : 'delete'}
+		title={variant.default ? translations.delete_default_variant : translations.delete_variant}
+		iconStyle={variant.default ? 'color: var(--color-subtle_text)' : ''}
+	/>
 </div>
 
 <style>
@@ -101,21 +88,6 @@
 		display: flex;
 		align-items: center;
 		flex-grow: 1;
-	}
-
-	button {
-		all: unset !important;
-
-		display: flex !important;
-		justify-content: center !important;
-		align-content: center !important;
-		flex-wrap: wrap !important;
-
-		margin-right: 0.2em !important;
-	}
-
-	.material-icons {
-		margin: 0px;
 	}
 
 	div.variant-container:hover {

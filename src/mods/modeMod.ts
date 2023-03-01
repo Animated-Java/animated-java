@@ -1,6 +1,6 @@
 import { ajModelFormat } from '../modelFormat'
 import { BlockbenchMod } from '../util/mods'
-import { applyModelVariant } from '../variants'
+import { applyModelVariant, clearModelVariant } from '../variants'
 
 new BlockbenchMod({
 	id: 'animated_java:modes.select',
@@ -27,7 +27,7 @@ new BlockbenchMod({
 				Project.animated_java_variants &&
 				Project.animated_java_variants.selectedVariant
 			) {
-				applyModelVariant(Project.animated_java_variants.defaultVariant!)
+				clearModelVariant()
 			}
 			return context.originalEditUnselect?.call(this)
 		}

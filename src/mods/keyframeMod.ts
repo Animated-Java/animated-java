@@ -135,7 +135,7 @@ export function extractCustomKeyframes() {
 	installed = false
 }
 
-const effectAnimatorDisplayFrame = new BlockbenchMod({
+new BlockbenchMod({
 	id: 'animated_java:effect_animator_display_frame',
 	inject() {},
 	extract() {

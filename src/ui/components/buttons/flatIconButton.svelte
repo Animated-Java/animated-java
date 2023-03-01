@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let onClick: () => void
+	export let onClick: (event: MouseEvent) => void
 	export let icon: string
 	export let title: string = ''
 	export let disabled: boolean = false
@@ -12,7 +12,6 @@
 	{title}
 	{disabled}
 	style={buttonStyle}
-	on:click|stopPropagation={() => onClick()}
 	on:click|stopPropagation={onClick}
 	on:mouseenter={() => (hovered = true)}
 	on:mouseleave={() => (hovered = false)}

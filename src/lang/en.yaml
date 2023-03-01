@@ -105,9 +105,8 @@ animated_java.animation_config.animation_start_delay.description: |-
 ### Variants Panel
 animated_java.panels.variants.name: Variants
 animated_java.panels.variants.items: Variant
-animated_java.panels.variants.set_default: Set as Default
+animated_java.panels.variants.delete_default_variant: Default Variant (Cannot delete default Variant)
 animated_java.panels.variants.delete_variant: Delete Variant
-animated_java.panels.variants.delete_variant_disabled: Delete Variant (Cannot delete default Variant)
 animated_java.panels.variants.edit_variant: Edit Variant
 animated_java.actions.add_variant.name: Add Variant
 animated_java.actions.add_variant.description: Create a new Variant

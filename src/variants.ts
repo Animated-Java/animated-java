@@ -1,7 +1,6 @@
 import { ajModelFormat } from './modelFormat'
 import { openInvalidVariantPopup } from './ui/popups/invalidVariant'
 import { events } from './util/events'
-import { consoleGroup } from './util/groupWrapper'
 import { uuidRegex } from './util/misc'
 import { Subscribable } from './util/suscribable'
 
@@ -59,7 +58,7 @@ export class Variant {
 		return result
 	}
 
-	verifyTextures() {
+	verifyTextures(silent: boolean = false) {
 		const removedMappings: TextureMapping[] = []
 		for (const mapping of this.textureMapIterator()) {
 			// console.log('textureMap', this.textureMap, 'mapping', mapping)
@@ -74,11 +73,11 @@ export class Variant {
 		}
 		const valid = removedMappings.length === 0
 
+		if (silent) return valid
 		if (!valid) {
 			if (Animator.open && Timeline.playing) Timeline.pause()
 			openInvalidVariantPopup(this, removedMappings)
 		}
-
 		return valid
 	}
 
@@ -144,8 +143,8 @@ export class Variant {
 		return {
 			name: this.name,
 			textures: this.textureMap,
-			default: this.default,
 			uuid: this.uuid,
+			default: this.default,
 		}
 	}
 
@@ -165,8 +164,6 @@ export class VariantsContainer extends Subscribable<IVariantsContainerEvent> {
 	constructor(variants?: Variant[]) {
 		super()
 		this.variants = variants || []
-		// this.defaultVariant = this.variants.find(v => v.default) || this.variants[0]
-		// this.select(this.defaultVariant)
 	}
 
 	get selectedVariant() {
@@ -181,18 +178,14 @@ export class VariantsContainer extends Subscribable<IVariantsContainerEvent> {
 		})
 	}
 
-	select(variant: Variant) {
+	select(variant: Variant = this.defaultVariant) {
 		this.selectedVariant = variant
 		applyModelVariant(variant)
 	}
 
-	addVariant(variant: Variant, setDefault: boolean = false): Variant {
+	addVariant(variant: Variant): Variant {
 		console.log('Adding variant: ' + variant.name)
 
-		if (this.variants.length === 0) {
-			console.log('No variants found, setting this new variant as default')
-			setDefault = true
-		}
 		let v
 		if (
 			(v = this.variants.find(
@@ -202,10 +195,8 @@ export class VariantsContainer extends Subscribable<IVariantsContainerEvent> {
 			this.variants.splice(this.variants.indexOf(v), 1, variant)
 		} else this.variants.push(variant)
 
-		if (setDefault || variant.default) {
-			this.defaultVariant = variant
-			this.select(variant)
-		}
+		if (this.variants.length === 1) this.defaultVariant = variant
+
 		this.dispatch({
 			type: 'add',
 			variant,
@@ -214,6 +205,8 @@ export class VariantsContainer extends Subscribable<IVariantsContainerEvent> {
 	}
 
 	removeVariant(variant: Variant) {
+		// Can't delete default variant
+		if (variant.default) return
 		console.log('Deleting variant: ' + variant.name)
 		this.variants.splice(this.variants.indexOf(variant), 1)
 		// Make sure we don't have an empty variant list
@@ -224,10 +217,6 @@ export class VariantsContainer extends Subscribable<IVariantsContainerEvent> {
 		// Select the default variant if we're deleting the selected variant
 		if (this.selectedVariant === variant) {
 			this.select(this.defaultVariant)
-		}
-		// Choose new default variant if we're deleting the default variant
-		if (this.defaultVariant === variant) {
-			this.defaultVariant = this.variants[0]
 		}
 
 		this.dispatch({
@@ -256,21 +245,18 @@ export class VariantsContainer extends Subscribable<IVariantsContainerEvent> {
 		}
 	}
 
-	verifyTextures() {
+	verifyTextures(silent: boolean = false) {
 		for (const variant of this.variants) {
-			variant.verifyTextures()
+			variant.verifyTextures(silent)
 		}
 	}
-}
-
-export function getDefaultVariants() {
-	return new VariantsContainer([new Variant('default')])
 }
 
 function updateProjectVariants() {
 	if (!Project) return
 	if (Format.id === ajModelFormat.id) {
-		if (!Project.animated_java_variants) Project.animated_java_variants = getDefaultVariants()
+		if (!Project.animated_java_variants)
+			Project.animated_java_variants = new VariantsContainer()
 		Project.animated_java_variants.verifyTextures()
 	}
 	console.log('updateProjectVariants', Project)
