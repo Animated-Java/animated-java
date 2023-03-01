@@ -22,6 +22,8 @@
 - [ ] F-A-Q
 
 # Features
+- [ ] Animation Caching
+- [ ] Warn users if they have bones spinning faster than 180. Since it may cause interpolation shenanigans
 - [ ] Locators
     - [ ] Exported locators position a tagged entity with the same aj.id
 - [ ] Cameras

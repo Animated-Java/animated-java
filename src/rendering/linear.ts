@@ -25,6 +25,10 @@ export class Vector {
 	length(): number {
 		return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z)
 	}
+
+	static fromArray(vector: [number, number, number]): Vector {
+		return new Vector(vector[0], vector[1], vector[2])
+	}
 }
 
 export class Matrix {
@@ -50,17 +54,17 @@ export class Matrix {
 		return new Matrix(this.x.multiply(scalar), this.y.multiply(scalar), this.z.multiply(scalar))
 	}
 
-	toGimbal(): Gimbals {
-		const y = Math.atan2(this.x.z, Math.sqrt(this.x.x * this.x.x + this.x.y * this.x.y))
+	toGimbals(): Gimbals {
+		const y = -Math.atan2(this.x.z, Math.sqrt(this.x.x * this.x.x + this.x.y * this.x.y))
 		const z =
 			Math.atan2(this.x.y, this.x.x) * Math.ceil(Math.min((y + 0.5 * Math.PI) % Math.PI, 1))
 		const cosZ = Math.cos(z)
 		const sinZ = Math.sin(z)
 		const x = Math.atan2(
-			(this.y.x * cosZ + this.y.y * sinZ) * Math.sin(y) - this.y.z * Math.cos(y),
+			this.y.z * Math.cos(y) + (this.y.x * cosZ + this.y.y * sinZ) * Math.sin(y),
 			this.y.y * cosZ - this.y.x * sinZ
 		)
-		return new Gimbals(x, y, z)
+		return new Gimbals((x * 180) / Math.PI, (y * 180) / Math.PI, (z * 180) / Math.PI)
 	}
 }
 
@@ -68,23 +72,23 @@ export class Gimbals {
 	constructor(public x: number, public y: number, public z: number) {}
 
 	toMatrix(): Matrix {
-		const cosX = Math.cos(this.x)
-		const cosY = Math.cos(this.y)
-		const cosZ = Math.cos(this.z)
-		const sinX = Math.sin(this.x)
-		const sinY = Math.sin(this.y)
-		const sinZ = Math.sin(this.z)
+		const cosX = Math.cos((this.x * Math.PI) / 180)
+		const cosY = Math.cos((this.y * Math.PI) / 180)
+		const cosZ = Math.cos((this.z * Math.PI) / 180)
+		const sinX = Math.sin((this.x * Math.PI) / 180)
+		const sinY = Math.sin((this.y * Math.PI) / 180)
+		const sinZ = Math.sin((this.z * Math.PI) / 180)
 
 		return new Matrix(
 			new Vector(1, 0, 0),
-			new Vector(0, cosX, -sinX),
-			new Vector(0, sinX, cosX)
+			new Vector(0, cosX, sinX),
+			new Vector(0, -sinX, cosX)
 		)
 			.transform(
 				new Matrix(
-					new Vector(cosY, 0, sinY),
+					new Vector(cosY, 0, -sinY),
 					new Vector(0, 1, 0),
-					new Vector(-sinY, 0, cosY)
+					new Vector(sinY, 0, cosY)
 				)
 			)
 			.transform(
@@ -94,5 +98,9 @@ export class Gimbals {
 					new Vector(0, 0, 1)
 				)
 			)
+	}
+
+	static fromArray(gimbals: [number, number, number]): Gimbals {
+		return new Gimbals(gimbals[0], gimbals[1], gimbals[2])
 	}
 }

@@ -22,10 +22,8 @@ const animationExporter = new AnimatedJavaExporter({
 			id: 'animated_java:animation_exporter:bar',
 		},
 	],
-	async export(ajSettings, projectSettings, exporterSettings) {
-		console.groupCollapsed('animationExporter.export')
-		console.log(ajSettings, projectSettings, exporterSettings)
-		console.groupEnd()
+	async export(ajSettings, projectSettings, exporterSettings, renderedAnimations) {
+		console.log(ajSettings, projectSettings, exporterSettings, renderedAnimations)
 	},
 })
 

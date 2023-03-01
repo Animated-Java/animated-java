@@ -1,3 +1,4 @@
+// TODO - only print a group if console.log is called inside the wrapped function
 /**
  * Groups all console output in a function call into a single group
  */

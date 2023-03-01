@@ -23,9 +23,7 @@ const rawExporter = new AnimatedJavaExporter({
 		},
 	],
 	async export(ajSettings, projectSettings, exporterSettings) {
-		console.groupCollapsed('rawExporter.export')
 		console.log(ajSettings, projectSettings, exporterSettings)
-		console.groupEnd()
 	},
 })
 

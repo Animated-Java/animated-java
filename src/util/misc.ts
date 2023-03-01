@@ -45,3 +45,19 @@ export function awaitResolve<T = any>(
 
 export const uuidRegex =
 	/^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/
+
+export class LimitedClock {
+	lastTime: number
+	constructor(public limit: number) {
+		this.lastTime = performance.now()
+	}
+
+	async sync() {
+		const now = performance.now()
+		const diff = now - this.lastTime
+		if (diff >= this.limit) {
+			await new Promise(r => requestAnimationFrame(r))
+			this.lastTime = performance.now()
+		}
+	}
+}

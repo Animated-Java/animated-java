@@ -178,9 +178,9 @@
 			"name": "test",
 			"loop": "loop",
 			"override": false,
-			"length": 1.1,
+			"length": 1,
 			"snapping": 20,
-			"selected": false,
+			"selected": true,
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",
@@ -201,6 +201,44 @@
 							],
 							"uuid": "c9c127f4-8bb2-59dc-6c83-677fea0a0915",
 							"time": 0,
+							"color": -1,
+							"interpolation": "catmullrom",
+							"bezier_linked": true,
+							"bezier_left_time": [-0.1, -0.1, -0.1],
+							"bezier_left_value": [0, 0, 0],
+							"bezier_right_time": [0.1, 0.1, 0.1],
+							"bezier_right_value": [0, 0, 0]
+						},
+						{
+							"channel": "rotation",
+							"data_points": [
+								{
+									"x": 24.14867,
+									"y": -20.70481,
+									"z": -31.50717
+								}
+							],
+							"uuid": "0a0fe3bc-12ff-0731-892f-a92294e5153b",
+							"time": 0.5,
+							"color": -1,
+							"interpolation": "catmullrom",
+							"bezier_linked": true,
+							"bezier_left_time": [-0.1, -0.1, -0.1],
+							"bezier_left_value": [0, 0, 0],
+							"bezier_right_time": [0.1, 0.1, 0.1],
+							"bezier_right_value": [0, 0, 0]
+						},
+						{
+							"channel": "rotation",
+							"data_points": [
+								{
+									"x": "0",
+									"y": "0",
+									"z": "0"
+								}
+							],
+							"uuid": "65bc8c44-9e47-23f8-f435-919dd5d2e443",
+							"time": 1,
 							"color": -1,
 							"interpolation": "linear",
 							"bezier_linked": true,

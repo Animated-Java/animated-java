@@ -1,7 +1,7 @@
-import { Bone } from './bone'
-import { Gimbals, Vector } from './linear'
-import molang from 'molangjs'
-import * as DataTypes from './renderer.worker.types'
+// import { AJBone } from '../rendering/bone'
+// import { Gimbals, Vector } from '../rendering/linear'
+// import molang from 'molangjs'
+// import * as DataTypes from './renderer.worker.types'
 
 // function interpolate(
 // 	channel: 'position' | 'rotation' | 'scale',
@@ -99,36 +99,39 @@ import * as DataTypes from './renderer.worker.types'
 // 	return false
 // }
 
-function buildBoneTree(node: DataTypes.DataOutliner): { boneTree: Bone; boneList: Bone[] } {
-	const boneList: Bone[] = []
+// function buildBoneTree(node: DataTypes.DataOutliner): {
+// 	boneTree: AJBone
+// 	boneList: AJBone[]
+// } {
+// 	const boneList: AJBone[] = []
 
-	function recurse(node: DataTypes.DataOutliner) {
-		const children: Bone[] = []
+// 	function recurse(node: DataTypes.DataOutliner) {
+// 		const children: AJBone[] = []
 
-		for (const child of node.children) {
-			children.push(recurse(child))
-		}
+// 		for (const child of node.children) {
+// 			children.push(recurse(child))
+// 		}
 
-		const bone = new Bone(
-			node.id,
-			new Vector(node.origin[0], node.origin[1], node.origin[2]),
-			new Gimbals(node.rot[0], node.rot[1], node.rot[2]),
-			new Vector(1, 1, 1),
-			children
-		)
+// 		const bone = new AJBone(
+// 			node.id,
+// 			new Vector(node.origin[0], node.origin[1], node.origin[2]),
+// 			new Gimbals(node.rot[0], node.rot[1], node.rot[2]),
+// 			new Vector(1, 1, 1),
+// 			children
+// 		)
 
-		boneList.push(bone)
-		return bone
-	}
+// 		boneList.push(bone)
+// 		return bone
+// 	}
 
-	const boneTree = recurse(node)
-	return { boneTree, boneList }
-}
+// 	const boneTree = recurse(node)
+// 	return { boneTree, boneList }
+// }
 
-export default async function (data: DataTypes.Data): Promise<DataTypes.Result> {
-	// TODO Add progress indicators
-	console.log('Render Worker Input:', { data })
-	const { boneTree, boneList } = buildBoneTree(data.outliner)
+// export default async function (data: DataTypes.Data): Promise<DataTypes.Result> {
+// 	// TODO Add progress indicators
+// 	console.log('Render Worker Input:', { data })
+// 	const { boneTree, boneList } = buildBoneTree(data.outliner)
 
-	return data
-}
+// 	return data
+// }

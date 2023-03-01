@@ -1,5 +1,7 @@
+import { IRenderedAnimation } from './rendering/renderer'
 import { Setting as AJSetting, AnimatedJavaSettings } from './settings'
 import { GUIStructure } from './ui/ajUIStructure'
+import { consoleGroup } from './util/groupWrapper'
 
 type ProjectSettings = Record<string, AJSetting<any>>
 
@@ -12,7 +14,8 @@ interface IAnimatedJavaExporterOptions<S extends ProjectSettings> {
 	export(
 		ajSettings: typeof AnimatedJavaSettings,
 		projectSettings: ModelProject['animated_java_settings'],
-		exporterSettings: S
+		exporterSettings: S,
+		renderedAnimations: IRenderedAnimation[]
 	): Promise<void>
 }
 
@@ -30,7 +33,7 @@ export class _AnimatedJavaExporter<S extends ProjectSettings = Record<string, AJ
 		this.description = options.description
 		this.getSettings = options.getSettings
 		this.settingsStructure = options.settingsStructure
-		this.export = options.export
+		this.export = consoleGroup(`Exporting with ${this.name} (${this.id})`, options.export)
 
 		_AnimatedJavaExporter.exporters.set(this.id, this)
 	}

@@ -23,9 +23,7 @@ const statueExporter = new AnimatedJavaExporter({
 		},
 	],
 	async export(ajSettings, projectSettings, exporterSettings) {
-		console.groupCollapsed('statueExporter.export')
 		console.log(ajSettings, projectSettings, exporterSettings)
-		console.groupEnd()
 	},
 })
 

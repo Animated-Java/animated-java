@@ -11,7 +11,6 @@ import PACKAGE from '../package.json'
 import { events } from './util/events'
 import './util/mods'
 import './util/translation'
-import { animationToDataset, workerPool } from './renderWorker/renderer'
 import './modelFormat'
 import { _AnimatedJavaExporter } from './exporter'
 import { translate } from './util/translation'
@@ -28,6 +27,7 @@ import './mods/modeMod'
 import './mods/textureMod'
 import { openAjDocsDialog } from './ui/ajDocs'
 import { applyModelVariant } from './variants'
+import { renderAllAnimations } from './rendering/renderer'
 
 // @ts-ignore
 globalThis.AnimatedJavaExporter = _AnimatedJavaExporter
@@ -35,8 +35,6 @@ globalThis.AnimatedJavaExporter = _AnimatedJavaExporter
 globalThis.AnimatedJavaSettings = AJSettings
 // @ts-ignore
 globalThis.ANIMATED_JAVA = {
-	animationToDataset,
-	workerPool,
 	translate,
 	settings: AJSettings.AnimatedJavaSettings,
 	openAjDocsDialog,
@@ -53,6 +51,7 @@ globalThis.ANIMATED_JAVA = {
 		Blockbench.openLink(link)
 	},
 	applyModelVariant,
+	renderAllAnimations,
 }
 // Uninstall events
 events.uninstall.subscribe(() => {
