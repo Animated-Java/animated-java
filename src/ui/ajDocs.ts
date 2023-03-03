@@ -20,7 +20,7 @@ export function openAjDocsDialog(link?: string, section?: string) {
 		width: 1000,
 		svelteComponent: DocsComponent,
 		svelteComponentProps: { page: link, section },
-		buttons: [translate('animated_java.dialog.documentation.close_button')],
+		buttons: [translate('animated_java.dialog.close_button')],
 		onButton: () => {
 			docsDialog = undefined
 		},

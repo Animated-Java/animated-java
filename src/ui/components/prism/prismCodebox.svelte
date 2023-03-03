@@ -3,11 +3,8 @@
 	export let code = ''
 
 	const highlight = (code: string, language?: string) => {
-		console.log(language)
-		let grammar
-		if (language) grammar = Prism.languages[language]
-		// @ts-ignore
-		return window.Prism.highlight(code, grammar || undefined)
+		if (language === undefined || Prism.languages[language] === undefined) return code
+		return Prism.highlight(code, Prism.languages[language], language)
 	}
 </script>
 

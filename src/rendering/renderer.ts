@@ -1,4 +1,4 @@
-import { LimitedClock, roundToN } from '../util/misc'
+import { LimitClock, roundToN } from '../util/misc'
 import { AJBone } from './bone'
 import { Gimbals, Vector } from './linear'
 
@@ -117,7 +117,7 @@ export async function renderAnimation(animation: _Animation) {
 	animation.select()
 
 	const bones = getBones()
-	const clock = new LimitedClock(10)
+	const clock = new LimitClock(10)
 
 	for (let time = 0; time <= animation.length; time = roundToN(time + 0.05, 20)) {
 		// await new Promise(resolve => requestAnimationFrame(resolve))

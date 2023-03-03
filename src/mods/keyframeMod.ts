@@ -6,16 +6,19 @@ import { applyModelVariant } from '../variants'
 const oldEffectAnimatorDisplayFrame = EffectAnimator.prototype.displayFrame
 const oldEffectAnimatorStartPreviousSounds = EffectAnimator.prototype.startPreviousSounds
 const OLD_CHANNELS = { ...EffectAnimator.prototype.channels }
-// const oldChannels = {
-// 	particle: { ...EffectAnimator.prototype.channels.particle },
-// 	sound: { ...EffectAnimator.prototype.channels.sound },
-// 	timeline: { ...EffectAnimator.prototype.channels.timeline },
-// }
 
 let installed = false
 
 export function injectCustomKeyframes() {
-	// Add custom channels
+	if (installed) return
+	// Add custom channels to Bone Animator
+	BoneAnimator.addChannel('commands', {
+		name: translate('animated_java.timeline.commands'),
+		mutable: false,
+		max_data_points: 1,
+	})
+
+	// Add custom channels to Effect Animator
 	EffectAnimator.addChannel('animationStates', {
 		name: translate('animated_java.timeline.animationState'),
 		mutable: false,
@@ -33,6 +36,7 @@ export function injectCustomKeyframes() {
 		mutable: false,
 		max_data_points: 1,
 	})
+
 	// Add new KeyframeDataPoint properties
 	new Property(KeyframeDataPoint, 'string', 'variant', {
 		label: translate('animated_java.keyframe.variant'),
@@ -116,6 +120,7 @@ export function injectCustomKeyframes() {
 }
 
 export function extractCustomKeyframes() {
+	if (!installed) return
 	EffectAnimator.prototype.displayFrame = oldEffectAnimatorDisplayFrame
 	EffectAnimator.prototype.startPreviousSounds = oldEffectAnimatorStartPreviousSounds
 
@@ -127,6 +132,9 @@ export function extractCustomKeyframes() {
 	KeyframeDataPoint.properties.commands?.delete()
 	KeyframeDataPoint.properties.animationState?.delete()
 	KeyframeDataPoint.properties.condition?.delete()
+
+	delete BoneAnimator.prototype.channels.commands
+	delete BoneAnimator.prototype.commands
 
 	delete EffectAnimator.prototype.channels.variants
 	delete EffectAnimator.prototype.variants

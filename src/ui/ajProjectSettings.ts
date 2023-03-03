@@ -10,7 +10,7 @@ function openAjProjectSettingsDialog() {
 		title: translate('animated_java.dialog.project_settings.title'),
 		id: 'animated_java:project_settings',
 		width: 700,
-		buttons: [translate('animated_java.dialog.project_settings.close_button')],
+		buttons: [translate('animated_java.dialog.close_button')],
 		svelteComponent: SettingsComponent,
 		svelteComponentProps: { settings: Project.animated_java_settings },
 	})

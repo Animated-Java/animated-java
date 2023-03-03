@@ -44,7 +44,10 @@ export function pollPromise<T = any>(resolver: () => T | undefined | null, inter
 export const uuidRegex =
 	/^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/
 
-export class LimitedClock {
+/**
+ * An class that lets you limit how much time something can take per frame.
+ */
+export class LimitClock {
 	lastTime: number
 	constructor(public limit: number) {
 		this.lastTime = performance.now()
@@ -58,4 +61,18 @@ export class LimitedClock {
 			this.lastTime = performance.now()
 		}
 	}
+}
+
+/**
+ * Resolves a string with %ENVIORNMENT% variables
+ */
+export function resolveEnv(path: string) {
+	return path.replace(/%([^%]+?)%/g, (match: string, key: string) => {
+		const variable = process.env[key]
+		if (variable === undefined) {
+			console.error(`Unknown enviornment variable found in path: '${key}' -> ${path}`)
+			return match
+		}
+		return variable
+	})
 }

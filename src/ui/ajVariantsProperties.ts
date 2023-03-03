@@ -15,7 +15,7 @@ export function openVariantPropertiesDialog(variant: Variant) {
 		width: 700,
 		svelteComponent: VariantPropertiesSvelteComponent,
 		svelteComponentProps: { variant },
-		buttons: [translate('animated_java.dialog.variant_properties.close_button')],
+		buttons: [translate('animated_java.dialog.close_button')],
 		onCancel() {
 			if (previousVariant) applyModelVariant(previousVariant)
 		},

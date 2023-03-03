@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onDestroy } from 'svelte'
 	import KeyframeAnimationStates from './keyframe/keyframeAnimationStates.svelte'
 	import KeyframeCommands from './keyframe/keyframeCommands.svelte'
 	import KeyframeVariants from './keyframe/keyframeVariants.svelte'
@@ -21,7 +22,9 @@
 		updateKeyframeLabel()
 	}
 
+	let destroyed = false
 	function update() {
+		if (destroyed) return
 		if (selected !== Blockbench.Keyframe.selected[0]) {
 			console.log('selected changed')
 			onSelectionUpdate()
@@ -31,6 +34,10 @@
 	}
 
 	update()
+
+	onDestroy(() => {
+		destroyed = true
+	})
 </script>
 
 {#if selected}

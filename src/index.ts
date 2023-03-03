@@ -20,6 +20,7 @@ import './ui/ajSettings'
 import './ui/ajVariantsPanel'
 import './ui/ajProjectSettings'
 import './ui/ajAnimationConfig'
+import './ui/popups/invalidCubes'
 import './mods/keyframeMod'
 import './ui/ajKeyframe'
 import './mods/modeMod'
@@ -30,6 +31,9 @@ import { applyModelVariant } from './variants'
 import { renderAllAnimations } from './rendering/renderer'
 import { consoleGroupCollapsed } from './util/console'
 import { createChaos } from './mods/cubeMod'
+import { openAjInvalidCubesDialog } from './ui/popups/invalidCubes'
+
+Prism.languages.mcfunction = {}
 
 // @ts-ignore
 globalThis.AnimatedJava = {
@@ -54,6 +58,7 @@ globalThis.AnimatedJava = {
 	// Expose this plugin's events to other plugins
 	events,
 	createChaos,
+	openAjInvalidCubesDialog,
 }
 // Uninstall events
 events.UNINSTALL.subscribe(() => {

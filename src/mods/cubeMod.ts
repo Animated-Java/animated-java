@@ -46,6 +46,10 @@ function validateAllCubes() {
 	}
 }
 
+export function getInvalidCubes() {
+	return Cube.all.filter(cube => !validateCube(cube))
+}
+
 export function createChaos(chaosLevel = 1000) {
 	for (let i = 0; i < chaosLevel; i++) {
 		setTimeout(() => {
@@ -54,6 +58,7 @@ export function createChaos(chaosLevel = 1000) {
 			Canvas.updateAll()
 		}, i * 10)
 	}
+	return new Promise(resolve => setTimeout(resolve, chaosLevel * 10))
 }
 
 createBlockbenchMod(

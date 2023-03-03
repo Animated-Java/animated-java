@@ -6,9 +6,12 @@ animated_java.menubar.items.settings: Settings
 animated_java.menubar.items.project_settings: Project Settings
 animated_java.menubar.items.documentation: Documentation
 animated_java.menubar.items.export_project: Export Project
+
+### Dialogs
+animated_java.dialog.close_button: Done
+
 ### Settings
 animated_java.dialog.settings.title: Animated Java Settings
-animated_java.dialog.settings.close_button: Done
 
 animated_java.settings.default_exporter: Default Exporter
 animated_java.settings.default_exporter.description: |-
@@ -17,7 +20,6 @@ animated_java.settings.default_exporter.description: |-
 
 ### Documentation
 animated_java.dialog.documentation.title: Animated Java Documentation
-animated_java.dialog.documentation.close_button: Done
 
 animated_java.dialog.documentation.loading: Loading Documentation...
 
@@ -27,7 +29,6 @@ animated_java.dialog.documentation.error.failed_to_load.description: |-
 
 ### Project Settings
 animated_java.dialog.project_settings.title: Animated Java Project Settings
-animated_java.dialog.project_settings.close_button: Done
 
 animated_java.project_settings.project_namespace: Project Name
 animated_java.project_settings.project_namespace.description: |-
@@ -75,7 +76,6 @@ animated_java.project_settings.exporter.description: |-
 
 ### Animation Config
 animated_java.dialog.animation_config.title: Animation Properties
-animated_java.dialog.animation_config.close_button: Done
 
 animated_java.animation_config.animation_name: Name
 animated_java.animation_config.animation_name.description: |-
@@ -116,7 +116,6 @@ animated_java.actions.variant_properties.description: Open the Variant propertie
 
 ### Variants Properties Dialog
 animated_java.dialog.variant_properties.title: Variant Properties
-animated_java.dialog.variant_properties.close_button: Done
 
 animated_java.dialog.variant_properties.variant_name: Name
 animated_java.dialog.variant_properties.variant_name.description: |-
@@ -156,8 +155,10 @@ animated_java.timeline.variant: Variants
 animated_java.timeline.commands: Commands
 
 ### Popups
+animated_java.popup.close_button: Close
+
+# Invalid Texture Mapping(s)
 animated_java.popup.invalid_texture_mapping.title: Invalid Texture Mapping(s)
-animated_java.popup.invalid_texture_mapping.close_button: Close
 animated_java.popup.invalid_texture_mapping.body: |-
   The Variant "%variant" has invalid texture mappings!
   One or more of the textures in it's texture map are missing from the project, or are invalid.
@@ -170,3 +171,10 @@ animated_java.popup.invalid_texture_mapping.reason.invalid_to_texture: |-
 animated_java.popup.invalid_texture_mapping.footer: |-
   The missing/invalid texture mappings will be removed from the variant.
   After closing this popup, please make sure you open the Variant's properties dialog and double check the texture mappings are correct.
+
+# Invalid Cube(s)
+animated_java.popup.invalid_cubes.title: Invalid Cube(s)
+animated_java.popup.invalid_cubes.body: |-
+  Some Cubes have invalid rotations!
+  The invalid cubes can be found below sorted by the Bones they're in.
+  They will also be highlighted in the 3D view once you exit this dialog.

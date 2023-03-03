@@ -19,8 +19,8 @@
 - [ ] Add accessability options
     - [ ] Option to disable all UI animations
 - [x] The setting description scales weirdly. Make it not do that
-- [ ] Overwrite the rotation limits dialog with a more accurate description for AJ's models.
-- [ ] Add a popup over the canvas that tells the user why their cubes are red
+- [x] ~~Overwrite the rotation limits dialog~~ Create a new rotation limits dialog with a more accurate description for AJ's models.
+- [x] Add a popup over the canvas that tells the user why their cubes are red
 
 # Docs
 - [ ] F-A-Q

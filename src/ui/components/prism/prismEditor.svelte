@@ -2,9 +2,8 @@
 	import CodeJar from '@novacbn/svelte-codejar/components/CodeJar.svelte'
 
 	const highlight = (code: string, language?: string) => {
-		if (language && Prism.languages[language] === undefined) language = undefined
-		// @ts-ignore
-		return Prism.highlight(code, language ? Prism.languages[language] : undefined)
+		if (language === undefined || Prism.languages[language] === undefined) return code
+		return Prism.highlight(code, Prism.languages[language], language)
 	}
 
 	// @ts-ignore
