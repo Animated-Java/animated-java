@@ -6,6 +6,7 @@
 		"target": "ES2022",
 		"moduleResolution": "node",
 		"strict": true,
+		"types": ["node", "blockbench-types", "svelte"],
 		"resolveJsonModule": true,
 		"allowSyntheticDefaultImports": true
 	}

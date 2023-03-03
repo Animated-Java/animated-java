@@ -6,8 +6,8 @@
 	import IndexItem from './docs/indexItem.svelte'
 	import ErrorComponent from './docs/error.svelte'
 
-	export let firstPage: string = 'index'
-	export let openToSection: string | undefined
+	export let page: string = 'index'
+	export let section: string | undefined
 
 	const DOC_API_URL = 'http://localhost:3000/api/docs'
 	const DOC_URL = 'http://localhost:3000/docs/'
@@ -53,13 +53,13 @@
 	}
 
 	let onload = (el: any) => {
-		if (openToSection) {
-			scrollToSection(openToSection)
-			openToSection = undefined
+		if (section) {
+			scrollToSection(section)
+			section = undefined
 		}
 	}
 
-	events.onDocsLinkClicked.subscribe(event => {
+	events.DOCS_LINK_CLICKED.subscribe(event => {
 		onload = (el: any) => {
 			if (event.section) scrollToSection(event.section)
 			event.section = undefined
@@ -70,7 +70,7 @@
 	let loaded = false
 	queueMicrotask(() => {
 		loaded = true
-		changePage(firstPage)
+		changePage(page)
 	})
 </script>
 
@@ -109,9 +109,9 @@
 							>
 						</div>
 					</div>
-				{:then page}
+				{:then openedPage}
 					<div class="content page-content" use:onload>
-						<DocPage {page} />
+						<DocPage page={openedPage} />
 					</div>
 				{:catch error}
 					<ErrorComponent {error} />

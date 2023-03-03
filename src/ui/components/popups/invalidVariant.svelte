@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { translate } from '../../../util/translation'
-	import type { TextureMapping, Variant } from '../../../variants'
+	import type { ITextureMapping, Variant } from '../../../variants'
 	import Prism from '../prism/prismCodebox.svelte'
 
 	export let variant: Variant
-	export let removedTextureMappings: TextureMapping[]
+	export let removedTextureMappings: ITextureMapping[]
 
 	const translations = {
 		variant_name: translate('animated_java.popup.invalid_texture_mapping.body', {

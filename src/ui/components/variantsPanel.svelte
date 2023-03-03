@@ -3,7 +3,7 @@
 	import { Variant, VariantsContainer } from '../../variants'
 	import * as events from '../../util/events'
 	import { ajModelFormat } from '../../modelFormat'
-	import { state, variantPanelMenu } from '../ajVariantsPanel'
+	import { state, VARIANT_PANEL_MENU } from '../ajVariantsPanel'
 	import { onDestroy } from 'svelte'
 
 	let variantsContainer: VariantsContainer | undefined
@@ -17,7 +17,7 @@
 
 	let unsub: any
 	unsubs.push(
-		events.postSelectProject.subscribe(project => {
+		events.POST_SELECT_PROJECT.subscribe(project => {
 			if (variantsContainer) {
 				if (unsub) unsub()
 				variantsContainer = undefined
@@ -49,7 +49,7 @@
 		<p>Loading...</p>
 	</div>
 {:then}
-	<div class="container" on:contextmenu|stopPropagation={e => variantPanelMenu.open(e)}>
+	<div class="container" on:contextmenu|stopPropagation={e => VARIANT_PANEL_MENU.open(e)}>
 		{#key update}
 			{#if variantsContainer}
 				{#each variantsContainer.variants as variant}

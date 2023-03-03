@@ -3,7 +3,7 @@
  * @template T The type of the value that is passed to the subscribers.
  */
 export class Subscribable<T> {
-	protected subscribers: Set<(value: T) => void> = new Set()
+	protected subscribers = new Set<(value: T) => void>()
 
 	/**
 	 * Subscribe to this subscribable.
@@ -11,7 +11,7 @@ export class Subscribable<T> {
 	 * @param oneShot If true, the callback will be removed after it is called once.
 	 * @returns A function that can be called to unsubscribe the callback.
 	 */
-	subscribe(callback: (value: T) => void, oneShot: boolean = false) {
+	subscribe(callback: (value: T) => void, oneShot = false) {
 		if (oneShot) {
 			this.subscribers.add((value: T) => {
 				callback(value)

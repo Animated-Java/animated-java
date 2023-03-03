@@ -3,7 +3,7 @@
 	import * as events from '../../../util/events'
 	import { translate } from '../../../util/translation'
 	import { Variant, VariantsContainer } from '../../../variants'
-	import { state, variantMenu, variantPropertiesAction } from '../../ajVariantsPanel'
+	import { state, VARIANT_MENU, variantPropertiesAction } from '../../ajVariantsPanel'
 	import FlatIconButton from '../buttons/flatIconButton.svelte'
 
 	export let variant: Variant
@@ -29,14 +29,14 @@
 	)
 
 	unsubs.push(
-		events.variantPropertiesUpdate.subscribe(() => {
+		events.VARIANT_PROPERTIES_UPDATE.subscribe(() => {
 			variant = variant
 		})
 	)
 
 	function openVariantMenu(event: MouseEvent) {
 		state.recentlyClickedVariant = variant
-		variantMenu.open(event)
+		VARIANT_MENU.open(event)
 	}
 
 	function openVariantProperties(event: MouseEvent) {

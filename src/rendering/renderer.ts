@@ -3,8 +3,8 @@ import { AJBone } from './bone'
 import { Gimbals, Vector } from './linear'
 
 function eulerToXyz(euler: THREE.Euler) {
-	const a = new window.THREE.Quaternion().setFromEuler(euler)
-	const b = new window.THREE.Euler().setFromQuaternion(a, 'XYZ')
+	const a = new THREE.Quaternion().setFromEuler(euler)
+	const b = new THREE.Euler().setFromQuaternion(a, 'XYZ')
 	return b
 }
 
@@ -95,7 +95,7 @@ function updatePreview(animation: _Animation, time: number) {
 
 export interface IRenderedAnimation {
 	name: string
-	frames: {
+	frames: Array<{
 		bones: AJBone[]
 		variant?: {
 			uuid: string
@@ -109,7 +109,7 @@ export interface IRenderedAnimation {
 			animation: string
 			condition: string
 		}
-	}[]
+	}>
 }
 
 export async function renderAnimation(animation: _Animation) {
@@ -135,7 +135,8 @@ export async function renderAnimation(animation: _Animation) {
 }
 
 export async function renderAllAnimations() {
-	let selectedAnimation: _Animation | undefined, currentTime: number
+	let selectedAnimation: _Animation | undefined
+	let currentTime = 0
 	// Save selected animation
 	if (Mode.selected.id === 'animate') {
 		selectedAnimation = Animator.selected
@@ -151,7 +152,7 @@ export async function renderAllAnimations() {
 	// Restore selected animation
 	if (Mode.selected.id === 'animate' && selectedAnimation) {
 		selectedAnimation.select()
-		Timeline.setTime(currentTime!)
+		Timeline.setTime(currentTime)
 		Animator.preview()
 	} else if (Mode.selected.id === 'edit') {
 		Animator.showDefaultPose()

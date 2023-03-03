@@ -1,7 +1,10 @@
+import { ajModelFormat } from './modelFormat'
 import { IRenderedAnimation } from './rendering/renderer'
-import { Setting as AJSetting, AnimatedJavaSettings } from './settings'
+import { Setting as AJSetting, animatedJavaSettings } from './settings'
 import { GUIStructure } from './ui/ajUIStructure'
-import { consoleGroup } from './util/console'
+import { consoleGroupCollapsed } from './util/console'
+import { createAction, createBlockbenchMod } from './util/moddingTools'
+import { translate } from './util/translation'
 
 type ProjectSettings = Record<string, AJSetting<any>>
 
@@ -12,15 +15,15 @@ interface IAnimatedJavaExporterOptions<S extends ProjectSettings> {
 	getSettings(): S
 	settingsStructure: GUIStructure
 	export(
-		ajSettings: typeof AnimatedJavaSettings,
+		ajSettings: typeof animatedJavaSettings,
 		projectSettings: ModelProject['animated_java_settings'],
 		exporterSettings: S,
 		renderedAnimations: IRenderedAnimation[]
 	): Promise<void>
 }
 
-export class _AnimatedJavaExporter<S extends ProjectSettings = Record<string, AJSetting<any>>> {
-	static exporters = new Map<string, _AnimatedJavaExporter<any>>()
+export class AnimatedJavaExporter<S extends ProjectSettings = Record<string, AJSetting<any>>> {
+	static exporters = new Map<string, AnimatedJavaExporter<any>>()
 	id: string
 	name: string
 	description: string
@@ -33,12 +36,34 @@ export class _AnimatedJavaExporter<S extends ProjectSettings = Record<string, AJ
 		this.description = options.description
 		this.getSettings = options.getSettings
 		this.settingsStructure = options.settingsStructure
-		this.export = consoleGroup(`Exporting with ${this.name} (${this.id})`, options.export)
+		this.export = consoleGroupCollapsed(
+			`Exporting with ${this.name} (${this.id})`,
+			options.export
+		)
 
-		_AnimatedJavaExporter.exporters.set(this.id, this)
+		AnimatedJavaExporter.exporters.set(this.id, this)
 	}
 
 	static get all() {
 		return [...AnimatedJavaExporter.exporters.entries()].map(v => v[1])
 	}
 }
+
+createBlockbenchMod(
+	'animated_java:export_project',
+	{},
+	() => {
+		return createAction('animated_java:export_project', {
+			name: translate('animated_java.menubar.items.export_project'),
+			icon: 'insert_drive_file',
+			category: 'file',
+			condition: () => Format === ajModelFormat,
+			click: () => {
+				//
+			},
+		})
+	},
+	context => {
+		context.delete()
+	}
+)

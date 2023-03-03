@@ -1,20 +1,18 @@
 import { ajModelFormat } from '../modelFormat'
-import { createBlockbenchMod } from '../util/mods'
+import { createBlockbenchMod } from '../util/moddingTools'
 import { translate } from '../util/translation'
-import { AJDialog } from './ajDialog'
+import { SvelteDialog } from './svelteDialog'
 import { default as SvelteComponent } from './components/animationConfig.svelte'
 
 function openAjAnimationDialog(animation: _Animation) {
-	const dialog = new AJDialog(
-		SvelteComponent,
-		{ animation },
-		{
-			title: translate('animated_java.dialog.animation_config.title'),
-			id: 'animated_java:animation_config',
-			width: 700,
-			buttons: [translate('animated_java.dialog.animation_config.close_button')],
-		}
-	).show()
+	new SvelteDialog({
+		title: translate('animated_java.dialog.animation_config.title'),
+		id: 'animated_java:animation_config',
+		width: 700,
+		buttons: [translate('animated_java.dialog.animation_config.close_button')],
+		svelteComponent: SvelteComponent,
+		svelteComponentProps: { animation },
+	}).show()
 }
 
 createBlockbenchMod(

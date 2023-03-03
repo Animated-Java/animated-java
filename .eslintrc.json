@@ -1,0 +1,111 @@
+{
+	"env": {
+		"browser": true,
+		"es2021": true,
+		"node": true
+	},
+	"extends": [
+		"eslint:recommended",
+		"plugin:@typescript-eslint/recommended",
+		"plugin:@typescript-eslint/recommended-requiring-type-checking"
+	],
+	"overrides": [
+		{
+			"files": ["*.js", "*.d.ts"],
+			"parserOptions": {
+				"project": "./tsconfig.json",
+				"tsconfigRootDir": "./"
+			},
+			"rules": {}
+		}
+	],
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"project": "./tsconfig.json",
+		"tsconfigRootDir": "./"
+	},
+	"plugins": ["@typescript-eslint"],
+	"rules": {
+		"semi": ["warn", "never"],
+		"prefer-const": "warn",
+		"no-mixed-spaces-and-tabs": "off",
+		"@typescript-eslint/no-explicit-any": "off",
+		"@typescript-eslint/no-floating-promises": ["error", { "ignoreVoid": true }],
+		"@typescript-eslint/array-type": ["warn", { "default": "array-simple" }],
+		"@typescript-eslint/ban-types": "warn",
+		"@typescript-eslint/consistent-indexed-object-style": ["warn", "record"],
+		"@typescript-eslint/consistent-generic-constructors": "warn",
+		"@typescript-eslint/naming-convention": [
+			"warn",
+			{
+				"selector": "class",
+				"format": ["PascalCase"]
+			},
+			{
+				"selector": ["classProperty", "classMethod"],
+				"format": ["camelCase"]
+			},
+			{
+				"selector": ["classProperty", "classMethod"],
+				"filter": {
+					"regex": "^_.*$",
+					"match": true
+				},
+				"prefix": ["_"],
+				"format": ["camelCase"]
+			},
+			{
+				"selector": "typeProperty",
+				"format": null
+			},
+			{
+				"selector": "variable",
+				"modifiers": ["const"],
+				"format": ["camelCase", "PascalCase"]
+			},
+			{
+				"selector": "variable",
+				"modifiers": ["const", "global"],
+				"format": ["UPPER_CASE"]
+			},
+			{
+				"selector": "variable",
+				"modifiers": ["const", "global"],
+				"filter": {
+					"regex": "^_.*$",
+					"match": true
+				},
+				"prefix": ["_"],
+				"format": ["UPPER_CASE"]
+			},
+			{
+				"selector": "variable",
+				"modifiers": ["const", "global"],
+				"types": ["function"],
+				"format": ["camelCase", "UPPER_CASE"]
+			},
+			{
+				"selector": "variable",
+				"modifiers": ["const", "global", "exported"],
+				"format": ["camelCase", "UPPER_CASE"]
+			},
+			{ "selector": "variableLike", "format": ["camelCase"] },
+			{ "selector": "interface", "format": ["PascalCase"] },
+			{
+				"selector": "interface",
+				"modifiers": ["exported"],
+				"format": ["PascalCase"],
+				"prefix": ["I"]
+			},
+			{ "selector": "typeLike", "format": ["PascalCase"] },
+			{ "selector": "objectLiteralProperty", "format": null },
+			{ "selector": "default", "format": ["camelCase"] }
+		],
+		"@typescript-eslint/no-unsafe-member-access": "off",
+		"@typescript-eslint/no-unsafe-assignment": "off",
+		"@typescript-eslint/ban-ts-comment": "off",
+		"@typescript-eslint/require-await": "warn",
+		"@typescript-eslint/no-unsafe-call": "off",
+		"@typescript-eslint/unbound-method": "off"
+	}
+}

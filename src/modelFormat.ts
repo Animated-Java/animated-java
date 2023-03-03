@@ -1,11 +1,11 @@
-import * as pathjs from 'path'
 import * as fs from 'fs'
-import { createBlockbenchMod } from './util/mods'
+import * as pathjs from 'path'
+import { AnimatedJavaExporter } from './exporter'
 import { getDefaultProjectSettings } from './projectSettings'
-import { _AnimatedJavaExporter } from './exporter'
-import { Variant, VariantsContainer } from './variants'
+import { consoleGroup, consoleGroupCollapsed } from './util/console'
 import * as events from './util/events'
-import { consoleGroup } from './util/console'
+import { createBlockbenchMod } from './util/moddingTools'
+import { TextureMap, Variant, VariantsContainer } from './variants'
 
 const FORMAT_VERSION = '1.0'
 
@@ -21,31 +21,51 @@ function processVersionMigration(model: any) {
 }
 
 function addProjectToRecentProjects(file: FileResult) {
-	var name = pathToName(file.path, true)
+	if (!Project || !file.path) return
+	const name = pathToName(file.path, true)
 	if (file.path && isApp && !file.no_file) {
-		let project = Project
-		Project!.save_path = file.path
-		Project!.name = pathToName(name, false)
+		const project = Project
+		Project.save_path = file.path
+		Project.name = pathToName(name, false)
 		addRecentProject({
 			name,
 			path: file.path,
 			icon: ajModelFormat.icon,
 		})
 		setTimeout(() => {
-			if (Project == project) updateRecentProjectThumbnail()
+			if (Project === project) void updateRecentProjectThumbnail()
 		}, 200)
 	}
 }
 
 interface IAnimatedJavaModel {
-	animated_java?: {
+	animated_java: {
 		settings?: Record<string, any>
 		exporter_settings?: Record<string, Record<string, any>>
-		variants?: {
-			name: string
-			textures: Record<string, string>
-		}[]
+		variants?: Array<{
+			name?: string
+			textures?: TextureMap
+			default?: boolean
+			uuid?: string
+		}>
 	}
+
+	flag?: any
+	meta?: any
+	parent?: any
+	history?: any
+	display?: any
+	textures?: any
+	elements?: any
+	overrides?: any
+	animations?: any
+	outliner?: any[]
+	resolution?: any
+	history_index?: number
+	animation_controllers?: any
+	backgrounds?: Record<string, any>
+	editor_state?: Record<string, any>
+	animation_variable_placeholders?: any
 }
 
 const loadAnimatedJavaProjectSettings = consoleGroup(
@@ -64,21 +84,22 @@ const loadAnimatedJavaProjectSettings = consoleGroup(
 		}
 
 		Project.animated_java_exporter_settings = {}
-		_AnimatedJavaExporter.exporters.forEach(exporter => {
-			Project.animated_java_exporter_settings![exporter.id] = exporter.getSettings()
-		})
-		if (!model.animated_java.exporter_settings) return
 
+		for (const exporter of Object.values(AnimatedJavaExporter.exporters)) {
+			Project.animated_java_exporter_settings[exporter.id] = exporter.getSettings()
+		}
+
+		if (!model.animated_java.exporter_settings) return
 		console.log('Loading Animated Java exporter settings...')
 
 		for (const [exporterId, exporterSettings] of Object.entries(
 			model.animated_java.exporter_settings
 		)) {
-			if (!Project.animated_java_exporter_settings![exporterId]) continue
+			if (!Project.animated_java_exporter_settings[exporterId]) continue
 			for (const [settingId, settingValue] of Object.entries(exporterSettings)) {
 				if (!model.animated_java.exporter_settings[exporterId][settingId]) continue
 				console.log('Loading value for', exporterId, settingId, settingValue)
-				Project.animated_java_exporter_settings![exporterId][settingId].value = settingValue
+				Project.animated_java_exporter_settings[exporterId][settingId].value = settingValue
 			}
 		}
 	}
@@ -86,7 +107,7 @@ const loadAnimatedJavaProjectSettings = consoleGroup(
 
 const exportAnimatedJavaProjectSettings = consoleGroup('exportAnimatedJavaProjectSettings', () => {
 	if (!Project?.animated_java_settings) return
-	const exported: any = {}
+	const exported: Record<string, any> = {}
 	for (const [name, setting] of Object.entries(Project.animated_java_settings)) {
 		exported[name] = setting.value
 	}
@@ -96,7 +117,7 @@ const exportAnimatedJavaProjectSettings = consoleGroup('exportAnimatedJavaProjec
 
 function exportAnimatedJavaExporterSettings() {
 	if (!Project?.animated_java_exporter_settings) return
-	const exported: any = {}
+	const exported: Record<string, any> = {}
 	for (const [exporterId, exporterSettings] of Object.entries(
 		Project.animated_java_exporter_settings
 	)) {
@@ -118,8 +139,12 @@ const loadAnimatedJavaVariants = consoleGroup(
 		if (!(model.animated_java && model.animated_java.variants)) return
 
 		console.log('Loading Animated Java variants...')
-		for (const variant of model.animated_java.variants) {
-			Project.animated_java_variants.addVariant(Variant.fromJSON(variant))
+		for (const { name, textures, uuid, default: isDefault } of model.animated_java.variants) {
+			if (!(name && textures && uuid)) continue
+			Project.animated_java_variants.addVariant(
+				Variant.fromJSON({ name, textures, uuid }),
+				isDefault
+			)
 		}
 
 		Project.animated_java_variants.select()
@@ -128,7 +153,7 @@ const loadAnimatedJavaVariants = consoleGroup(
 
 const exportAnimatedJavaVariants = consoleGroup('exportAnimatedJavaVariants', () => {
 	if (!Project?.animated_java_variants) return
-	const exported: any = []
+	const exported: IAnimatedJavaModel['animated_java']['variants'] = []
 	for (const variant of Project.animated_java_variants.variants) {
 		exported.push(variant.toJSON())
 	}
@@ -138,7 +163,7 @@ const exportAnimatedJavaVariants = consoleGroup('exportAnimatedJavaVariants', ()
 
 Blockbench.on('update_selection', () => {
 	// console.log('Selection Update', Group.selected, Cube.selected)
-	if (Format.id === ajModelFormat.id && Mode.selected.id === 'edit') {
+	if (Format === ajModelFormat && Mode.selected.id === 'edit') {
 		if (!Group.selected && Cube.selected.length > 0) {
 			Format.rotation_limit = true
 			Format.rotation_snap = true
@@ -160,16 +185,17 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 		type: 'json',
 	},
 
-	load: consoleGroup('ajCodec:load', (model, file, add) => {
+	load: consoleGroupCollapsed('ajCodec:load', (model, file) => {
 		setupProject(ajModelFormat)
-		Project!.save_path = file.path
-		Project!.export_path = file.path
+		if (!Project || !ajCodec.parse) return
+		Project.save_path = file.path
+		Project.export_path = file.path
 		addProjectToRecentProjects(file)
-		ajCodec.parse!(model, file.path)
-		events.loadProject.dispatch()
+		ajCodec.parse(model, file.path)
+		events.LOAD_PROJECT.dispatch()
 	}),
 
-	parse: consoleGroup('ajCodec:parse', (model, path, add) => {
+	parse: consoleGroupCollapsed('ajCodec:parse', (model: IAnimatedJavaModel, path) => {
 		if (!Project) throw new Error('No project to load model into...')
 		console.log('Parsing Animated Java model...')
 		if (!model.elements && !model.parent && !model.display && !model.textures) {
@@ -187,7 +213,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 			Project.box_uv = model.meta.box_uv
 		}
 
-		for (var key in ModelProject.properties) {
+		for (const key in ModelProject.properties) {
 			ModelProject.properties[key].merge(Project, model)
 		}
 
@@ -201,39 +227,39 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 
 		if (model.textures) {
 			model.textures.forEach((tex: Texture) => {
-				var tex_copy = new Texture(tex, tex.uuid).add(false)
+				const texCopy = new Texture(tex, tex.uuid).add(false)
 				if (isApp && tex.relative_path && Project.save_path) {
-					let resolved_path = pathjs.resolve(Project.save_path, tex.relative_path)
-					if (fs.existsSync(resolved_path)) {
-						tex_copy.fromPath(resolved_path)
+					const resolvedPath = pathjs.resolve(Project.save_path, tex.relative_path)
+					if (fs.existsSync(resolvedPath)) {
+						texCopy.fromPath(resolvedPath)
 						return
 					}
 				}
 				if (isApp && tex.path && fs.existsSync(tex.path) && !model.meta.backup) {
-					tex_copy.fromPath(tex.path)
+					texCopy.fromPath(tex.path)
 					return
 				}
 				if (tex.source && tex.source.substr(0, 5) == 'data:') {
-					tex_copy.fromDataURL(tex.source)
+					texCopy.fromDataURL(tex.source)
 				}
 			})
 		}
 		loadAnimatedJavaVariants(model)
 
 		if (model.elements) {
-			let default_texture = Texture.getDefault()
+			const defaultTexture = Texture.getDefault()
 			model.elements.forEach(function (element: any) {
-				var copy = OutlinerElement.fromSave(element, true) as Cube
-				for (var face in copy.faces) {
+				const copy = OutlinerElement.fromSave(element, true) as Cube
+				for (const face in copy.faces) {
 					if (!Format.single_texture && element.faces) {
-						var texture =
+						const texture =
 							element.faces[face].texture !== null &&
 							Texture.all[element.faces[face].texture]
 						if (texture) {
 							copy.faces[face].texture = texture.uuid
 						}
-					} else if (default_texture && copy.faces && copy.faces[face].texture !== null) {
-						copy.faces[face].texture = default_texture.uuid
+					} else if (defaultTexture && copy.faces && copy.faces[face].texture !== null) {
+						copy.faces[face].texture = defaultTexture.uuid
 					}
 				}
 				copy.init()
@@ -244,33 +270,33 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 		}
 		if (model.animations) {
 			model.animations.forEach((anim: _Animation) => {
-				const base_ani = new Blockbench.Animation()
-				base_ani.uuid = anim.uuid
-				base_ani.extend(anim).add()
+				const baseAnim = new Blockbench.Animation()
+				baseAnim.uuid = anim.uuid
+				baseAnim.extend(anim).add()
 				if (isApp && Format.animation_files) {
-					base_ani.saved_name = base_ani.name
+					baseAnim.saved_name = baseAnim.name
 				}
 			})
 		}
-		if (model.animation_controllers) {
-			model.animation_controllers.forEach((anim: _Animation) => {
-				var base_ani = new AnimationController()
-				base_ani.uuid = anim.uuid
-				base_ani.extend(anim).add()
-				if (isApp && Format.animation_files) {
-					base_ani.saved_name = base_ani.name
-				}
-			})
-		}
+		// if (model.animation_controllers) {
+		// 	model.animation_controllers.forEach((anim: _Animation) => {
+		// 		var base_ani = new AnimationController()
+		// 		base_ani.uuid = anim.uuid
+		// 		base_ani.extend(anim).add()
+		// 		if (isApp && Format.animation_files) {
+		// 			base_ani.saved_name = base_ani.name
+		// 		}
+		// 	})
+		// }
 		if (model.animation_variable_placeholders) {
 			Interface.Panels.variable_placeholders.inside_vue._data.text =
 				model.animation_variable_placeholders
 		}
 		if (model.backgrounds) {
-			for (var key in model.backgrounds) {
-				if (Project.backgrounds.hasOwnProperty(key)) {
-					let store = model.backgrounds[key]
-					let real = Project.backgrounds[key]
+			for (const key in model.backgrounds) {
+				if (Object.hasOwn(Project.backgrounds, key)) {
+					const store = model.backgrounds[key]
+					const real = Project.backgrounds[key]
 
 					if (store.image !== undefined) {
 						real.image = store.image
@@ -297,7 +323,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 		}
 		if (model.history) {
 			Undo.history = model.history.slice()
-			Undo.index = model.history_index
+			Undo.index = model.history_index || 0
 		}
 		Canvas.updateAllBones()
 		Canvas.updateAllPositions()
@@ -305,7 +331,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 		ajCodec.dispatchEvent('parsed', { model })
 
 		if (model.editor_state) {
-			let state = model.editor_state
+			const state = model.editor_state
 			Merge.string(Project, state, 'save_path')
 			Merge.string(Project, state, 'export_path')
 			Merge.boolean(Project, state, 'saved')
@@ -319,20 +345,20 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 				Merge.arrayVector2((Project.uv_viewport = state.uv_viewport), 'offset')
 			}
 			if (state.previews) {
-				for (let id in state.previews) {
+				for (const id in state.previews) {
 					Project.previews[id] = state.previews[id]
 				}
 			}
 			state.selected_elements.forEach((uuid: string) => {
-				let el = Outliner.elements.find(el2 => el2.uuid == uuid)
+				const el = Outliner.elements.find(el2 => el2.uuid == uuid)
 				if (el) Project.selected_elements.push(el)
 			})
 			Group.selected =
 				state.selected_group && Group.all.find(g => g.uuid == state.selected_group)
-			for (let key in state.selected_vertices) {
+			for (const key in state.selected_vertices) {
 				Project.mesh_selection[key] = state.mesh_selection[key]
 			}
-			Project.selected_faces.replace(state.selected_faces)
+			Project.selected_faces.replace(state.selected_faces as any[])
 			;(
 				state.selected_texture && Texture.all.find(t => t.uuid == state.selected_texture)
 			)?.select()
@@ -347,14 +373,14 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 		ajCodec.dispatchEvent('parsed', { model })
 	}),
 
-	compile: consoleGroup('ajCodec:compile', options => {
+	compile: consoleGroupCollapsed('ajCodec:compile', options => {
 		if (!options) options = {}
 		if (!Project) throw new Error('No project to compile...')
 		console.log('Compiling Animated Java model...')
 
-		const selectedVariant = Project.animated_java_variants!.selectedVariant
+		const selectedVariant = Project.animated_java_variants?.selectedVariant
 
-		const model: any = {
+		const model: IAnimatedJavaModel = {
 			meta: {
 				format: ajCodec.format.id,
 				format_version: FORMAT_VERSION,
@@ -407,17 +433,17 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 
 		model.elements = []
 		elements.forEach(el => {
-			var obj = el.getSaveCopy!(model.meta)
+			const obj = el.getSaveCopy && el.getSaveCopy(!!model.meta)
 			model.elements.push(obj)
 		})
 		model.outliner = compileGroups(true)
 
 		model.textures = []
 		Texture.all.forEach(tex => {
-			var t = tex.getUndoCopy()
+			const t = tex.getUndoCopy()
 			delete t.selected
 			if (isApp && Project.save_path && tex.path) {
-				let relative = pathjs.relative(Project.save_path, tex.path)
+				const relative = pathjs.relative(Project.save_path, tex.path)
 				t.relative_path = relative.replace(/\\/g, '/')
 			}
 			if (
@@ -435,19 +461,20 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 			model.animations = []
 			Blockbench.Animation.all.forEach(a => {
 				model.animations.push(
-					a.getUndoCopy!(
-						{ bone_names: true, absolute_paths: options.absolute_paths },
-						true
-					)
+					a.getUndoCopy &&
+						a.getUndoCopy(
+							{ bone_names: true, absolute_paths: options.absolute_paths },
+							true
+						)
 				)
 			})
 		}
-		if (AnimationController.all.length) {
-			model.animation_controllers = []
-			AnimationController.all.forEach(a => {
-				model.animation_controllers.push(a.getUndoCopy!())
-			})
-		}
+		// if (AnimationController.all.length) {
+		// 	model.animation_controllers = []
+		// 	AnimationController.all.forEach(a => {
+		// 		model.animation_controllers.push(a.getUndoCopy && a.getUndoCopy())
+		// 	})
+		// }
 		if (Interface.Panels.variable_placeholders.inside_vue._data.text) {
 			model.animation_variable_placeholders =
 				Interface.Panels.variable_placeholders.inside_vue._data.text
@@ -455,10 +482,10 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 
 		if (!options.backup) {
 			// Backgrounds
-			const backgrounds: any = {}
+			const backgrounds: IAnimatedJavaModel['backgrounds'] = {}
 
 			for (const key in Project.backgrounds) {
-				let scene = Project.backgrounds[key]
+				const scene = Project.backgrounds[key]
 				if (scene.image) {
 					backgrounds[key] = scene.getSaveCopy()
 				}
@@ -471,7 +498,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 		if (options.history) {
 			model.history = []
 			Undo.history.forEach(h => {
-				var e = {
+				const e = {
 					before: omitKeys(h.before, ['aspects']),
 					post: omitKeys(h.post, ['aspects']),
 					action: h.action,
@@ -485,18 +512,20 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 		const content = compileJSON(model)
 		ajCodec.dispatchEvent('compile', { model, options })
 
-		if (selectedVariant) Project.animated_java_variants!.selectedVariant = selectedVariant
+		if (selectedVariant && Project.animated_java_variants)
+			Project.animated_java_variants.selectedVariant = selectedVariant
 
 		return content
 	}),
 
-	export: consoleGroup('ajCodec:export', () => {
+	export: consoleGroupCollapsed('ajCodec:export', () => {
 		console.log('Exporting Animated Java model...')
 		Blockbench.export({
 			resource_id: 'animated_java.export',
 			type: 'json',
 			extensions: [ajCodec.extension],
 			content: ajCodec.compile(),
+			// eslint-disable-next-line @typescript-eslint/naming-convention
 			custom_writer: (content, path) => {
 				ajCodec.write(content, path)
 			},
@@ -504,7 +533,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 	}),
 
 	fileName() {
-		return Project!.animated_java_settings!.project_namespace.value
+		return Project?.animated_java_settings?.project_namespace.value || 'unnamed_project'
 	},
 })
 
@@ -521,7 +550,7 @@ export const ajModelFormat = new Blockbench.ModelFormat({
 	format_page: {
 		content: [{ type: 'h3', text: tl('animated_java.format_page.h3') }],
 	},
-	onStart() {},
+	// onStart() {},
 	codec: ajCodec,
 
 	box_uv: false,
@@ -564,7 +593,7 @@ createBlockbenchMod(
 	},
 	context => {
 		context.action.click = (event: Event) => {
-			if (Project && Project.format === ajModelFormat) {
+			if (Project && Format === ajModelFormat) {
 				ajCodec.write(ajCodec.compile(), Project.save_path)
 			} else {
 				context.originalClick.call(context.action, event)
@@ -585,7 +614,7 @@ createBlockbenchMod(
 	},
 	context => {
 		context.action.click = (event: Event) => {
-			if (Project && Project.format === ajModelFormat) {
+			if (Project && Format === ajModelFormat) {
 				ajCodec.export()
 			} else {
 				context.originalClick.call(context.action, event)
@@ -606,7 +635,7 @@ createBlockbenchMod(
 	},
 	context => {
 		context.action.click = (event: Event) => {
-			if (Project && Project.format === ajModelFormat) {
+			if (Project && Format === ajModelFormat) {
 				if (Format) {
 					saveTextures()
 					if (Project.export_path) {
@@ -615,8 +644,11 @@ createBlockbenchMod(
 						ajCodec.export()
 					}
 				}
-				if (Blockbench.Animation.all.length) {
-					;(BarItems.save_all_animations as Action).trigger()
+				if (
+					Blockbench.Animation.all.length &&
+					BarItems.save_all_animations instanceof Action
+				) {
+					BarItems.save_all_animations.trigger()
 				}
 			} else {
 				context.originalClick.call(context.action, event)
@@ -636,7 +668,7 @@ createBlockbenchMod(
 	},
 	context => {
 		ModelProject.prototype.select = function (this: ModelProject) {
-			if (Project !== this) events.preSelectProject.dispatch(this)
+			if (Project !== this) events.PRE_SELECT_PROJECT.dispatch(this)
 			return context.original.call(this)
 		}
 		return context

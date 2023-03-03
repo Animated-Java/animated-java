@@ -1,5 +1,5 @@
 import { ajModelFormat } from '../modelFormat'
-import { createBlockbenchMod } from '../util/mods'
+import { createBlockbenchMod } from '../util/moddingTools'
 import { applyModelVariant, clearModelVariant } from '../variants'
 
 createBlockbenchMod(
@@ -12,18 +12,18 @@ createBlockbenchMod(
 		Modes.options.edit.onSelect = function (this: Mode) {
 			if (
 				Project &&
-				Format.id === ajModelFormat.id &&
+				Format === ajModelFormat &&
 				Project.animated_java_variants &&
 				Project.animated_java_variants.selectedVariant
 			) {
-				applyModelVariant(Project.animated_java_variants.selectedVariant!)
+				applyModelVariant(Project.animated_java_variants.selectedVariant)
 			}
 			return context.originalEditSelect?.call(this)
 		}
 		Modes.options.edit.onUnselect = function () {
 			if (
 				Project &&
-				Format.id === ajModelFormat.id &&
+				Format === ajModelFormat &&
 				Project.animated_java_variants &&
 				Project.animated_java_variants.selectedVariant
 			) {

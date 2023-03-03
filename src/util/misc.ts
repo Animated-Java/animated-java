@@ -3,7 +3,7 @@ export function objectEqual(a: any, b: any) {
 	if (typeof b !== typeof a) return false
 
 	/*Iterate through the properties of this object looking for a discrepancy between this and obj*/
-	for (var property in a) {
+	for (const property in a) {
 		/*Return false if obj doesn't have the property or if its value doesn't match this' value*/
 		if (typeof b[property] == 'undefined') return false
 		if (b[property] != a[property]) return false
@@ -17,10 +17,6 @@ export function objectEqual(a: any, b: any) {
 	return true
 }
 
-export function defer(fn: Function) {
-	setTimeout(fn, 0)
-}
-
 export function roundTo(n: number, d: number) {
 	return Math.round(n * 10 ** d) / 10 ** d
 }
@@ -29,14 +25,16 @@ export function roundToN(n: number, x: number) {
 	return Math.round(n * x) / x
 }
 
-export function awaitResolve<T = any>(
-	resolver: () => T | undefined | null,
-	interval: number = 250
-) {
+/**
+ * Returns a promise that resolves when the given resolver function returns a non-null value
+ * @param resolver A function that returns a value or null
+ * @param interval The interval in milliseconds to check the resolver function
+ */
+export function pollPromise<T = any>(resolver: () => T | undefined | null, interval?: 250) {
 	return new Promise<T>(resolve => {
 		const id = setInterval(() => {
 			const result = resolver()
-			if (!result) return
+			if (result === null || result === undefined) return
 			clearInterval(id)
 			resolve(result)
 		}, interval)

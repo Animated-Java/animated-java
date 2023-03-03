@@ -12,7 +12,7 @@
 	$: to !== undefined && onUpdateMapping()
 
 	function onUpdateMapping() {
-		if (!(Project && Project.animated_java_variants)) return
+		if (!Project?.animated_java_variants) return
 		const texture = options[to]
 		console.log('update mapping', fromTexture, texture)
 		if (!texture || fromTexture.toTextureId() === texture.toTextureId()) return

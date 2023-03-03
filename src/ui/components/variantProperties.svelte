@@ -53,7 +53,7 @@
 
 	function loadVariant() {
 		settings = getDefaultSettings()
-		if (!(Project && Project.animated_java_variants)) return
+		if (!Project?.animated_java_variants) return
 		variant.createUniqueName(Project.animated_java_variants.variants)
 
 		for (const [id, setting] of Object.entries(settings)) {
@@ -85,7 +85,7 @@
 
 	onDestroy(() => {
 		unsubs.forEach((u: any) => u())
-		events.variantPropertiesUpdate.dispatch()
+		events.VARIANT_PROPERTIES_UPDATE.dispatch()
 	})
 </script>
 

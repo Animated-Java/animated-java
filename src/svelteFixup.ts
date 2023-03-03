@@ -1,12 +1,12 @@
 import * as events from './util/events'
 export const svelteStyleNodes = new Set<HTMLStyleElement>()
-const existingStyleNodes = new Set<HTMLStyleElement>()
+const EXISTING_STYLE_NODES = new Set<HTMLStyleElement>()
 let isCurrentlyCollectingStyleNodes = false
 
 export function svelteHelperMarkPluginInitialization() {
 	if (!isCurrentlyCollectingStyleNodes) {
 		for (const style of document.querySelectorAll('style')) {
-			existingStyleNodes.add(style as HTMLStyleElement)
+			EXISTING_STYLE_NODES.add(style)
 		}
 	}
 	isCurrentlyCollectingStyleNodes = true
@@ -17,8 +17,8 @@ function svelteHelperCollectStyleNodes() {
 		return
 	}
 	for (const style of document.querySelectorAll('style')) {
-		if (!existingStyleNodes.has(style as HTMLStyleElement)) {
-			svelteStyleNodes.add(style as HTMLStyleElement)
+		if (!EXISTING_STYLE_NODES.has(style)) {
+			svelteStyleNodes.add(style)
 			style.setAttribute('data-aj-style', 'true')
 		}
 	}
@@ -42,4 +42,4 @@ export function svelteHelperRemoveCollectedStyleNodes() {
 	svelteStyleNodes.clear()
 }
 
-events.unload.subscribe(svelteHelperRemoveCollectedStyleNodes)
+events.UNLOAD.subscribe(svelteHelperRemoveCollectedStyleNodes)

@@ -1,4 +1,4 @@
-import { _AnimatedJavaExporter } from './exporter'
+import { AnimatedJavaExporter } from './exporter'
 import { translate } from './util/translation'
 import { GUIStructure } from './ui/ajUIStructure'
 import { Subscribable } from './util/subscribable'
@@ -17,6 +17,8 @@ export interface ISettingOptions<V> {
 	resettable?: boolean
 	docsLink?: string
 }
+
+export type ISettingsObject = Record<string, Setting<any>>
 
 export class Setting<V, R = any> extends Subscribable<R> {
 	id: string
@@ -125,7 +127,7 @@ export class DropdownSetting<V = any, K extends number = number> extends Setting
 	K,
 	DropdownSetting<V, K>
 > {
-	options: { name: string; value: V }[]
+	options: Array<{ name: string; value: V }>
 	constructor(
 		options: ISettingOptions<K> & { options: DropdownSetting<V, K>['options'] },
 		public onUpdate?: (setting: DropdownSetting<V, K>) => void,
@@ -146,7 +148,11 @@ export class ImageDropdownSetting extends DropdownSetting<Texture['uuid']> {
 		onUpdate?: (setting: ImageDropdownSetting) => void,
 		onInit?: (setting: ImageDropdownSetting) => void
 	) {
-		super(options, onUpdate as any, onInit as any)
+		super(
+			options,
+			onUpdate as Setting<Texture['uuid']>['onUpdate'],
+			onInit as Setting<Texture['uuid']>['onInit']
+		)
 	}
 
 	getSelectedTexture() {
@@ -154,7 +160,7 @@ export class ImageDropdownSetting extends DropdownSetting<Texture['uuid']> {
 	}
 }
 
-export let AnimatedJavaSettings = {
+export const animatedJavaSettings = {
 	default_exporter: new DropdownSetting<string>(
 		{
 			id: 'animated_java:default_exporter',
@@ -185,13 +191,13 @@ export let AnimatedJavaSettings = {
 	}),
 }
 
-export const AnimatedJavaSettingsStructure: GUIStructure = [
+export const animatedJavaSettingsStructure: GUIStructure = [
 	{
 		type: 'setting',
-		id: AnimatedJavaSettings.default_exporter.id,
+		id: animatedJavaSettings.default_exporter.id,
 	},
 	{
 		type: 'setting',
-		id: AnimatedJavaSettings.test_setting.id,
+		id: animatedJavaSettings.test_setting.id,
 	},
 ]

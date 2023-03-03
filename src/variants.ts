@@ -4,17 +4,15 @@ import * as events from './util/events'
 import { uuidRegex } from './util/misc'
 import { Subscribable } from './util/subscribable'
 
-// FIXME This was just changed to a new type.
-// FIXME Make sure everything that uses the TextureMap is updated properly
 export type TextureId = `${string}::${string}`
-type TextureMap = Record<TextureId, TextureId>
-export interface TextureMapping {
-	from: `${string}::${string}`
+export type TextureMap = Record<TextureId, TextureId>
+export interface ITextureMapping {
+	from: TextureId
 	fromUUID?: string
 	fromName?: string
 	fromTexture?: Texture
 	fallbackFrom?: boolean
-	to: `${string}::${string}`
+	to: TextureId
 	toUUID?: string
 	toName?: string
 	toTexture?: Texture
@@ -38,7 +36,7 @@ export class Variant {
 
 	set name(name: string) {
 		this._name = name
-		if (Project && Project.animated_java_variants) {
+		if (Project?.animated_java_variants) {
 			this.createUniqueName(Project.animated_java_variants.variants)
 		}
 	}
@@ -58,8 +56,8 @@ export class Variant {
 		return result
 	}
 
-	verifyTextures(silent: boolean = false) {
-		const removedMappings: TextureMapping[] = []
+	verifyTextures(silent = false) {
+		const removedMappings: ITextureMapping[] = []
 		for (const mapping of this.textureMapIterator()) {
 			// console.log('textureMap', this.textureMap, 'mapping', mapping)
 			if (!(mapping.fromTexture && mapping.toTexture)) {
@@ -81,7 +79,7 @@ export class Variant {
 		return valid
 	}
 
-	*textureMapIterator(): Generator<TextureMapping, void, unknown> {
+	*textureMapIterator(): Generator<ITextureMapping, void, unknown> {
 		let from: TextureId, to: TextureId
 		// @ts-ignore
 		for ([from, to] of Object.entries(this.textureMap)) {
@@ -134,7 +132,7 @@ export class Variant {
 		let name = this.name
 		let i = 1
 		while (otherVariants.find(v => v.name === name && v !== this)) {
-			name = this.name.replace(/\d+$/, '') + i++
+			name = `${this.name.replace(/\d+$/, '')}${i++}`
 		}
 		this._name = name
 	}
@@ -148,7 +146,7 @@ export class Variant {
 		}
 	}
 
-	static fromJSON(json: any) {
+	static fromJSON(json: { name: string; textures: TextureMap; uuid: string }) {
 		return new Variant(json.name, json.textures, json.uuid)
 	}
 }
@@ -183,7 +181,7 @@ export class VariantsContainer extends Subscribable<IVariantsContainerEvent> {
 		applyModelVariant(variant)
 	}
 
-	addVariant(variant: Variant): Variant {
+	addVariant(variant: Variant, isDefault = false): Variant {
 		console.log('Adding variant: ' + variant.name)
 
 		let v
@@ -195,7 +193,7 @@ export class VariantsContainer extends Subscribable<IVariantsContainerEvent> {
 			this.variants.splice(this.variants.indexOf(v), 1, variant)
 		} else this.variants.push(variant)
 
-		if (this.variants.length === 1) this.defaultVariant = variant
+		if (isDefault || this.variants.length === 1) this.defaultVariant = variant
 
 		this.dispatch({
 			type: 'add',
@@ -245,7 +243,7 @@ export class VariantsContainer extends Subscribable<IVariantsContainerEvent> {
 		}
 	}
 
-	verifyTextures(silent: boolean = false) {
+	verifyTextures(silent = false) {
 		for (const variant of this.variants) {
 			variant.verifyTextures(silent)
 		}
@@ -254,7 +252,7 @@ export class VariantsContainer extends Subscribable<IVariantsContainerEvent> {
 
 function updateProjectVariants() {
 	if (!Project) return
-	if (Format.id === ajModelFormat.id) {
+	if (Format === ajModelFormat) {
 		if (!Project.animated_java_variants)
 			Project.animated_java_variants = new VariantsContainer()
 		Project.animated_java_variants.verifyTextures()
@@ -291,5 +289,5 @@ export function applyModelVariant(variant: Variant) {
 
 Blockbench.on('load_project', updateProjectVariants)
 Blockbench.on('select_project', updateProjectVariants)
-events.loadProject.subscribe(updateProjectVariants)
-events.selectProject.subscribe(updateProjectVariants)
+events.LOAD_PROJECT.subscribe(updateProjectVariants)
+events.SELECT_PROJECT.subscribe(updateProjectVariants)

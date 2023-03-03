@@ -1,4 +1,4 @@
-interface RegistryJSON {
+interface IRegistryJSON {
 	activity: string[]
 	advancement: string[]
 	attribute: string[]
@@ -85,8 +85,8 @@ interface RegistryJSON {
 	'worldgen/trunk_placer_type': string[]
 }
 
-const twoDays = 172800000
-const maxRetries = 5
+const TWO_DAYS = 172800000
+const MAX_RETRIES = 5
 
 export class RegistryLoader {
 	key: string
@@ -106,15 +106,17 @@ export class RegistryLoader {
 		const local = localStorage.getItem(this.key)
 		if (local) {
 			try {
-				return JSON.parse(local)
-			} catch (err) {}
+				return JSON.parse(local) as IRegistryJSON
+			} catch (err) {
+				console.log('Failed to parse local registry', err)
+			}
 		}
 	}
 
-	async load(): Promise<RegistryJSON> {
+	async load(): Promise<IRegistryJSON> {
 		const lastTime = this.lastTime
 		const now = Date.now()
-		if (lastTime && now - lastTime >= twoDays) {
+		if (lastTime && now - lastTime >= TWO_DAYS) {
 			localStorage.setItem(`${this.key}.lastTime`, String(now))
 			console.log(`Local registry for ${this.key} out of date, Updating...`)
 			return await this.fetch()
@@ -130,24 +132,24 @@ export class RegistryLoader {
 	}
 
 	async fetch() {
-		const THIS = this
+		const url = this.url
 		let retries = 0
-		const json = await new Promise<RegistryJSON>(function request(resolve, reject) {
-			fetch(THIS.url)
-				.catch(err => {})
-				.then(
-					r => {
-						// console.log('Got response', r)
-						if (r) resolve(r.json())
-					},
-					e => {
-						console.log('Failed to get Minecraft registry. Retrying in 1 second...')
-						retries++
-						if (retries > maxRetries)
-							reject('Failed to download Minecraft Registry. Are you connected to the internet?')
-						setTimeout(request, 50)
-					}
-				)
+		const json = await new Promise<IRegistryJSON>(function request(resolve, reject) {
+			fetch(url)
+				.then(r => {
+					if (r) resolve(r.json())
+				})
+				.catch((err: Error) => {
+					console.log(
+						`Failed to get Minecraft registry (${err.message}). Retrying in 1 second...`
+					)
+					retries++
+					if (retries > MAX_RETRIES)
+						reject(
+							'Failed to download Minecraft Registry. Are you connected to the internet?'
+						)
+					setTimeout(request, 50)
+				})
 		})
 
 		localStorage.setItem(this.key, JSON.stringify(json))
@@ -155,8 +157,8 @@ export class RegistryLoader {
 	}
 }
 
-const test = new RegistryLoader(
+const REGISTRY = new RegistryLoader(
 	`animated-java<minecraftRegistry>`,
 	'https://raw.githubusercontent.com/misode/mcmeta/summary/registries/data.json'
 )
-export const registry = test.load()
+export const registry = REGISTRY.load()

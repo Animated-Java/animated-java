@@ -12,17 +12,7 @@
 			"verbose": true,
 			"exporter": 0
 		},
-		"exporter_settings": {
-			"animated_java:animation_exporter": {
-				"bar": "Hello World!"
-			},
-			"animated_java:statue_exporter": {
-				"foo": false
-			},
-			"animated_java:raw_exporter": {
-				"foo": false
-			}
-		},
+		"exporter_settings": {},
 		"variants": [
 			{
 				"name": "default",
@@ -1717,7 +1707,7 @@
 									"uuid": "fd573371-3704-1c74-ca8c-97990c550e0d",
 									"export": true,
 									"mirror_uv": false,
-									"isOpen": false,
+									"isOpen": true,
 									"locked": false,
 									"visibility": true,
 									"autouv": 0,
@@ -1856,7 +1846,7 @@
 									"uuid": "462ff688-a3d5-ef46-de66-9c653d95f486",
 									"export": true,
 									"mirror_uv": false,
-									"isOpen": false,
+									"isOpen": true,
 									"locked": false,
 									"visibility": true,
 									"autouv": 0,

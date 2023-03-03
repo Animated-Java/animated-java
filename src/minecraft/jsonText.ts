@@ -72,7 +72,7 @@ type JsonTextComponent =
 			storage?: string
 	  }
 
-type JsonTextArray = Array<JsonTextComponent> | Array<string>
+type JsonTextArray = JsonTextComponent[] | string[]
 
 export class JsonText {
 	private text: JsonTextComponent

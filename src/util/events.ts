@@ -11,39 +11,39 @@ export class PluginEvent<T = void> extends Subscribable<T> {
 	}
 }
 
-export const load = new PluginEvent('load')
-export const unload = new PluginEvent('unload')
-export const install = new PluginEvent('install')
-export const uninstall = new PluginEvent('uninstall')
+export const LOAD = new PluginEvent('load')
+export const UNLOAD = new PluginEvent('unload')
+export const INSTALL = new PluginEvent('install')
+export const UNINSTALL = new PluginEvent('uninstall')
 
-export const injectMods = new PluginEvent('loadMods')
-export const extractMods = new PluginEvent('unloadMods')
+export const INJECT_MODS = new PluginEvent('loadMods')
+export const EXTRACT_MODS = new PluginEvent('unloadMods')
 
-export const loadProject = new PluginEvent('loadProject')
-export const preSelectProject = new PluginEvent<ModelProject>('preSelectProject')
-export const selectProject = new PluginEvent<ModelProject>('selectProject')
-export const postSelectProject = new PluginEvent<ModelProject>('postSelectProject')
+export const LOAD_PROJECT = new PluginEvent('loadProject')
+export const PRE_SELECT_PROJECT = new PluginEvent<ModelProject>('preSelectProject')
+export const SELECT_PROJECT = new PluginEvent<ModelProject>('selectProject')
+export const POST_SELECT_PROJECT = new PluginEvent<ModelProject>('postSelectProject')
 
-export const variantPropertiesUpdate = new PluginEvent('variantPropertiesUpdate')
+export const VARIANT_PROPERTIES_UPDATE = new PluginEvent('variantPropertiesUpdate')
 
 type Link = { link: string; section?: string }
-export const onDocsLinkClicked = new PluginEvent<Link>('onDocsLinkClicked')
+export const DOCS_LINK_CLICKED = new PluginEvent<Link>('onDocsLinkClicked')
 
-const injectHandler = consoleGroupCollapsed(
+const INJECT_HANDLER = consoleGroupCollapsed(
 	`Injecting BlockbenchMods added by ${PACKAGE.name}`,
-	() => injectMods.dispatch()
+	() => INJECT_MODS.dispatch()
 )
-const extractHandler = consoleGroupCollapsed(
+const EXTRACT_HANDLER = consoleGroupCollapsed(
 	`Extracting BlockbenchMods added by ${PACKAGE.name}`,
-	() => extractMods.dispatch()
+	() => EXTRACT_MODS.dispatch()
 )
-load.subscribe(injectHandler)
-unload.subscribe(extractHandler)
-install.subscribe(injectHandler)
-uninstall.subscribe(extractHandler)
+LOAD.subscribe(INJECT_HANDLER)
+UNLOAD.subscribe(EXTRACT_HANDLER)
+INSTALL.subscribe(INJECT_HANDLER)
+UNINSTALL.subscribe(EXTRACT_HANDLER)
 
-Blockbench.on<EventName>('load_project', () => loadProject.dispatch())
-Blockbench.on<EventName>('select_project', p => {
-	selectProject.dispatch(p.project)
-	queueMicrotask(() => postSelectProject.dispatch(p.project))
+Blockbench.on<EventName>('load_project', () => LOAD_PROJECT.dispatch())
+Blockbench.on<EventName>('select_project', ({ project }: { project: ModelProject }) => {
+	SELECT_PROJECT.dispatch(project)
+	queueMicrotask(() => POST_SELECT_PROJECT.dispatch(project))
 })

@@ -7,7 +7,6 @@ import {
 	FileSetting,
 	FolderSetting,
 	InlineTextSetting,
-	Setting,
 } from './settings'
 import { translate, translateInfo } from './util/translation'
 import { GUIStructure } from './ui/ajUIStructure'
@@ -146,7 +145,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 			},
 			undefined,
 			function onInit(setting) {
-				setting.options = AnimatedJavaExporter.all.map(exporter => ({
+				setting.options = AnimatedJava.Exporter.all.map(exporter => ({
 					name: exporter.name,
 					value: exporter.id,
 				}))

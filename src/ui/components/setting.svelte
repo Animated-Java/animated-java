@@ -29,7 +29,7 @@
 
 	function onHelpButtonClick() {
 		console.log(`Help button clicked for setting '${setting.displayName}' ${setting.docsLink}`)
-		animated_java.docClick(setting.docsLink || 'page:meta/undocumented')
+		AnimatedJava.docClick(setting.docsLink || 'page:meta/undocumented')
 	}
 </script>
 

@@ -5,6 +5,7 @@ animated_java.menubar.settings: Animated Java
 animated_java.menubar.items.settings: Settings
 animated_java.menubar.items.project_settings: Project Settings
 animated_java.menubar.items.documentation: Documentation
+animated_java.menubar.items.export_project: Export Project
 ### Settings
 animated_java.dialog.settings.title: Animated Java Settings
 animated_java.dialog.settings.close_button: Done

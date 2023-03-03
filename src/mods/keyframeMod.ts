@@ -1,16 +1,16 @@
 import { ajModelFormat } from '../modelFormat'
 import * as events from '../util/events'
-import { createBlockbenchMod } from '../util/mods'
 import { translate } from '../util/translation'
 import { applyModelVariant } from '../variants'
 
 const oldEffectAnimatorDisplayFrame = EffectAnimator.prototype.displayFrame
 const oldEffectAnimatorStartPreviousSounds = EffectAnimator.prototype.startPreviousSounds
-const oldChannels: any = {
-	particle: { ...EffectAnimator.prototype.channels.particle },
-	sound: { ...EffectAnimator.prototype.channels.sound },
-	timeline: { ...EffectAnimator.prototype.channels.timeline },
-}
+const OLD_CHANNELS = { ...EffectAnimator.prototype.channels }
+// const oldChannels = {
+// 	particle: { ...EffectAnimator.prototype.channels.particle },
+// 	sound: { ...EffectAnimator.prototype.channels.sound },
+// 	timeline: { ...EffectAnimator.prototype.channels.timeline },
+// }
 
 let installed = false
 
@@ -62,17 +62,18 @@ export function injectCustomKeyframes() {
 	new Property(KeyframeDataPoint, 'string', 'condition', {
 		label: translate('animated_java.keyframe.condition'),
 		condition: point => {
-			return ['animationStates', 'variants'].includes(point.keyframe.channel)
+			return ['animationStates', 'variants'].includes(point.keyframe.channel as string)
 		},
 		exposed: false,
 	})
 
-	for (const channel of Object.keys(oldChannels)) {
+	for (const channel of Object.keys(OLD_CHANNELS)) {
 		delete EffectAnimator.prototype.channels[channel]
 	}
 
 	// Modify keyframe functionality
-	EffectAnimator.prototype.displayFrame = function (this: EffectAnimator, in_loop: boolean) {
+	EffectAnimator.prototype.displayFrame = function (this: EffectAnimator) {
+		if (!Project || !Project.animated_java_variants) return
 		if (!this.muted.variants) {
 			let after, before, result: _Keyframe | undefined
 
@@ -97,8 +98,8 @@ export function injectCustomKeyframes() {
 			}
 
 			if (result) {
-				const variant = Project!.animated_java_variants!.variants.find(
-					v => v.uuid === result!.data_points[0].variant
+				const variant = Project.animated_java_variants.variants.find(
+					v => result && v.uuid === result.data_points[0].variant
 				)
 				if (variant) applyModelVariant(variant)
 			}
@@ -107,7 +108,9 @@ export function injectCustomKeyframes() {
 		this.last_displayed_time = this.animation.time
 	}
 
-	EffectAnimator.prototype.startPreviousSounds = function (this: EffectAnimator) {}
+	EffectAnimator.prototype.startPreviousSounds = function (this: EffectAnimator) {
+		// Do nothing. Blockbench throws an error if this isn't overwritten.
+	}
 
 	installed = true
 }
@@ -116,8 +119,8 @@ export function extractCustomKeyframes() {
 	EffectAnimator.prototype.displayFrame = oldEffectAnimatorDisplayFrame
 	EffectAnimator.prototype.startPreviousSounds = oldEffectAnimatorStartPreviousSounds
 
-	for (const channel of Object.keys(oldChannels)) {
-		EffectAnimator.prototype.channels[channel] = oldChannels[channel]
+	for (const channel of Object.keys(OLD_CHANNELS)) {
+		EffectAnimator.prototype.channels[channel] = OLD_CHANNELS[channel]
 	}
 
 	KeyframeDataPoint.properties.variant?.delete()
@@ -135,9 +138,9 @@ export function extractCustomKeyframes() {
 	installed = false
 }
 
-events.extractMods.subscribe(() => extractCustomKeyframes())
+events.EXTRACT_MODS.subscribe(() => extractCustomKeyframes())
 
-events.preSelectProject.subscribe(project => {
+events.PRE_SELECT_PROJECT.subscribe(project => {
 	if (project.format.id === ajModelFormat.id) {
 		if (!installed) injectCustomKeyframes()
 	} else {
@@ -145,34 +148,24 @@ events.preSelectProject.subscribe(project => {
 	}
 })
 
-export function getKeyframeVariant(kf: _Keyframe): string | undefined {
-	return kf.data_points.at(0)?.variant
+function keyframeSetterFactory(channel: string) {
+	return function (kf: _Keyframe, data: any) {
+		const dataPoint = kf.data_points.at(0)
+		if (dataPoint) dataPoint[channel] = data
+	}
 }
 
-export function setKeyframeVariant(kf: _Keyframe, variant: string | undefined) {
-	kf.data_points.at(0)!.variant = variant
+function keyframeGetterFactory(channel: string) {
+	return function (kf: _Keyframe) {
+		return kf.data_points.at(0)?.[channel] as string | undefined
+	}
 }
 
-export function getKeyframeCommands(kf: _Keyframe): string | undefined {
-	return kf.data_points.at(0)?.commands
-}
-
-export function setKeyframeCommands(kf: _Keyframe, commands: string) {
-	kf.data_points.at(0)!.commands = commands
-}
-
-export function getKeyframeAnimationState(kf: _Keyframe): string | undefined {
-	return kf.data_points.at(0)?.animationState
-}
-
-export function setKeyframeAnimationState(kf: _Keyframe, animationState: string) {
-	kf.data_points.at(0)!.animationState = animationState
-}
-
-export function getKeyframeCondition(kf: _Keyframe): string | undefined {
-	return kf.data_points.at(0)?.condition
-}
-
-export function setKeyframeCondition(kf: _Keyframe, condition: string) {
-	kf.data_points.at(0)!.condition = condition
-}
+export const getKeyframeVariant = keyframeGetterFactory('variant')
+export const setKeyframeVariant = keyframeSetterFactory('variant')
+export const getKeyframeCommands = keyframeGetterFactory('commands')
+export const setKeyframeCommands = keyframeSetterFactory('commands')
+export const getKeyframeAnimationState = keyframeGetterFactory('animationState')
+export const setKeyframeAnimationState = keyframeSetterFactory('animationState')
+export const getKeyframeCondition = keyframeGetterFactory('condition')
+export const setKeyframeCondition = keyframeSetterFactory('condition')

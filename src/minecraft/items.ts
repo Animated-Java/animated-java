@@ -8,6 +8,10 @@ export class Items {
 	}
 }
 
-registry.then(v => {
-	Items.list = v.item.map(v => `minecraft:${v}`)
-})
+registry
+	.then(v => {
+		Items.list = v.item.map(v => `minecraft:${v}`)
+	})
+	.catch(e => {
+		console.error(e)
+	})

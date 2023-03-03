@@ -2,11 +2,11 @@
 	import * as AJ from '../../settings'
 	import AJUINode from './uiNode.svelte'
 
-	let settingArray = Object.values(AJ.AnimatedJavaSettings)
+	let settingArray = Object.values(AJ.animatedJavaSettings)
 </script>
 
 <div class="dialog-content">
-	{#each AJ.AnimatedJavaSettingsStructure as el}
+	{#each AJ.animatedJavaSettingsStructure as el}
 		<AJUINode {el} {settingArray} />
 	{/each}
 </div>

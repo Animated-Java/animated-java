@@ -8,6 +8,10 @@ export class Entities {
 	}
 }
 
-registry.then(v => {
-	Entities.list = v.entity_type.map(v => `minecraft:${v}`)
-})
+registry
+	.then(v => {
+		Entities.list = v.entity_type.map(v => `minecraft:${v}`)
+	})
+	.catch(e => {
+		console.error(e)
+	})

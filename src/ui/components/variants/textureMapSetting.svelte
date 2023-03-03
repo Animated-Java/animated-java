@@ -18,7 +18,7 @@
 	let updateVariants: number = 0
 
 	function onHelpButtonClick() {
-		animated_java.docClick('page:rig/variants#texture_map')
+		AnimatedJava.docClick('page:rig/variants#texture_map')
 	}
 
 	function onResetMappingClick(from: TextureId) {

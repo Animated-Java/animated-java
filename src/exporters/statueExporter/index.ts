@@ -1,12 +1,12 @@
-const translate = animated_java.translate
+const translate = AnimatedJava.translate
 
-const statueExporter = new AnimatedJavaExporter({
+new AnimatedJava.Exporter({
 	id: 'animated_java:statue_exporter',
 	name: translate('animated_java.exporters.statue_exporter.name'),
 	description: translate('animated_java.exporters.statue_exporter.description'),
 	getSettings() {
 		return {
-			foo: new AnimatedJavaSettings.CheckboxSetting({
+			foo: new AnimatedJava.Settings.CheckboxSetting({
 				id: 'animated_java:statue_exporter:foo',
 				displayName: translate('animated_java.exporters.statue_exporter.settings.foo'),
 				description: translate(
@@ -24,6 +24,8 @@ const statueExporter = new AnimatedJavaExporter({
 	],
 	async export(ajSettings, projectSettings, exporterSettings) {
 		console.log(ajSettings, projectSettings, exporterSettings)
+		// Temporary placeholder to hide "no await" warning
+		await new Promise(resolve => setTimeout(resolve, 100))
 	},
 })
 

@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-	window.Prism.languages.error = {
+	Prism.languages.error = {
 		error: {
 			pattern: /^Error:/,
 		},

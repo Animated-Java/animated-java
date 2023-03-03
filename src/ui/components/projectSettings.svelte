@@ -1,18 +1,16 @@
 <script lang="ts">
+	import { onDestroy } from 'svelte'
+	import { slide } from 'svelte/transition'
+	import { AnimatedJavaExporter } from '../../exporter'
 	import { projectSettingStructure } from '../../projectSettings'
 	import * as AJ from '../../settings'
-	import AJUINode from './uiNode.svelte'
-	import Setting from './setting.svelte'
 	import FancyHeader from './fancyHeader.svelte'
-	import { onDestroy } from 'svelte'
-	import { fade, fly, blur, scale, slide } from 'svelte/transition'
-	import { defer } from '../../util/misc'
-	import { _AnimatedJavaExporter } from '../../exporter'
+	import AJUINode from './uiNode.svelte'
 
 	let settingArray = Object.values(Project!.animated_java_settings!) as AJ.Setting<any>[]
 	console.log('Project Settings', settings, projectSettingStructure)
 
-	let selectedExporter: _AnimatedJavaExporter | undefined
+	let selectedExporter: AnimatedJavaExporter | undefined
 
 	function getSelectedExporter() {
 		selectedExporter = Object.entries(AnimatedJavaExporter.exporters).find(([, exporter]) => {
@@ -32,7 +30,7 @@
 		unsub()
 	})
 
-	function getSettingArray(exporter: _AnimatedJavaExporter): any {
+	function getSettingArray(exporter: AnimatedJavaExporter): any {
 		return Project!.animated_java_exporter_settings![exporter.id]
 	}
 </script>

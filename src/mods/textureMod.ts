@@ -1,5 +1,5 @@
 import { ajModelFormat } from '../modelFormat'
-import { createBlockbenchMod } from '../util/mods'
+import { createBlockbenchMod } from '../util/moddingTools'
 import { TextureId } from '../variants'
 
 declare global {
@@ -18,11 +18,11 @@ createBlockbenchMod(
 			return `${this.uuid}::${this.name}`
 		}
 		Texture.prototype.remove = function (this: Texture) {
-			if (!Project) return
+			if (!Project?.animated_java_variants) return
 			const x = context.original.call(this)
 			// Remove all texture mappings that use this texture
-			if (Format.id === ajModelFormat.id) {
-				Project.animated_java_variants!.verifyTextures(true)
+			if (Format === ajModelFormat) {
+				Project.animated_java_variants.verifyTextures(true)
 			}
 			return x
 		}

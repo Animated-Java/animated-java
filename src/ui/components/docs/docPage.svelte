@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition'
 	import { circOut as easing } from 'svelte/easing'
+	import PrismCodebox from '../prism/prismCodebox.svelte'
 
 	export let page: string
 
@@ -11,9 +12,25 @@
 	page = page.replace(/<h([1-6])>(.+?)<\/h[1-6]>/gm, (match, p1, p2) => {
 		return `<h${p1} id="${p2.toLowerCase().replace(' ', '_')}">${p2}</h${p1}>`
 	})
+
+	function replaceElements(node: HTMLElement) {
+		const codeboxes = document.querySelectorAll('div[data-language]')
+
+		for (const codebox of codeboxes) {
+			const code = codebox.textContent!
+			codebox.textContent = ''
+			const language = codebox.getAttribute('data-language')!
+			new PrismCodebox({
+				target: codebox,
+				props: { language, code },
+			})
+		}
+	}
 </script>
 
-<div class="animated-java-doc-page" in:fly={{ x: -20, duration: 250, easing }}>{@html page}</div>
+<div class="animated-java-doc-page" in:fly={{ x: -20, duration: 250, easing }} use:replaceElements>
+	{@html page}
+</div>
 
 {@html `<style>
 .animated-java-doc-page h1 {
@@ -61,6 +78,13 @@
 	margin: 0.5em 1em;
 	padding: 0.25em 0.5em;
 	overflow-x: auto;
+}
+.animated-java-doc-page pre div div {
+	all: unset;
+	font-size: 0.8em;
+	font-family: var(--font-code);
+	cursor: text;
+	user-select: text;
 }
 .animated-java-doc-page pre code {
 	all: unset;

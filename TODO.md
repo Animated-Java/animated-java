@@ -1,3 +1,5 @@
+# IMPORTANT
+- [ ] Message Boq with any issues regarding interpolation jitter and entity rotation interpolation.
 
 # UI
 - [x] Replace default animation creation and config screens
@@ -13,15 +15,19 @@
     - [x] Need a function that sets the textures of a model based on a provided variant
     - [x] Change textures based on which variant is selected
     - [x] Change variant in animator based on keyframes
-- [ ] CodeboxSetting setting type
+- [x] CodeboxSetting setting type
 - [ ] Add accessability options
     - [ ] Option to disable all UI animations
-- [ ] The setting description scales weirdly. Make it not do that
+- [x] The setting description scales weirdly. Make it not do that
+- [ ] Overwrite the rotation limits dialog with a more accurate description for AJ's models.
+- [ ] Add a popup over the canvas that tells the user why their cubes are red
 
 # Docs
 - [ ] F-A-Q
 
 # Features
+- [x] Show invalid element rotations with a red outline around the element.
+- [ ] Unknown Error Dialog
 - [ ] Animation Caching
 - [ ] Warn users if they have bones spinning faster than 180. Since it may cause interpolation shenanigans
 - [ ] Locators

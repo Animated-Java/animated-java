@@ -58,7 +58,7 @@ export class AJBone {
 	}
 
 	exportChildren(parent: AJBone) {
-		let outputBones = [this.toGlobal(parent)]
+		const outputBones = [this.toGlobal(parent)]
 		const childBones = this.children.map(bone => bone.exportChildren(outputBones[0]))
 		for (let i = 0; i < childBones.length; i++) {
 			outputBones.push(...childBones[i])
@@ -67,7 +67,7 @@ export class AJBone {
 	}
 
 	exportRoot() {
-		let outputBones: AJBone[] = []
+		const outputBones: AJBone[] = []
 		const childBones = this.children.map(bone => bone.exportChildren(this))
 		for (let i = 0; i < childBones.length; i++) {
 			outputBones.push(...childBones[i])

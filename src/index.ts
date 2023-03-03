@@ -9,13 +9,12 @@ svelteHelperMarkPluginInitialization()
 
 import PACKAGE from '../package.json'
 import * as events from './util/events'
-import './util/mods'
+import './util/moddingTools'
 import './util/translation'
 import './modelFormat'
-import { _AnimatedJavaExporter } from './exporter'
+import { AnimatedJavaExporter } from './exporter'
 import { translate } from './util/translation'
 import * as AJSettings from './settings'
-import './PrismMcfunction'
 import './projectSettings'
 import './ui/ajSettings'
 import './ui/ajVariantsPanel'
@@ -25,19 +24,17 @@ import './mods/keyframeMod'
 import './ui/ajKeyframe'
 import './mods/modeMod'
 import './mods/textureMod'
+import './mods/cubeMod'
 import { openAjDocsDialog } from './ui/ajDocs'
 import { applyModelVariant } from './variants'
 import { renderAllAnimations } from './rendering/renderer'
 import { consoleGroupCollapsed } from './util/console'
+import { createChaos } from './mods/cubeMod'
 
 // @ts-ignore
-globalThis.AnimatedJavaExporter = _AnimatedJavaExporter
-// @ts-ignore
-globalThis.AnimatedJavaSettings = AJSettings
-// @ts-ignore
-globalThis[PACKAGE.name] = {
+globalThis.AnimatedJava = {
 	translate,
-	settings: AJSettings.AnimatedJavaSettings,
+	settings: AJSettings,
 	openAjDocsDialog,
 	docClick(link: string) {
 		if (link.startsWith('page:')) {
@@ -53,9 +50,13 @@ globalThis[PACKAGE.name] = {
 	},
 	applyModelVariant,
 	renderAllAnimations,
+	Exporter: AnimatedJavaExporter,
+	// Expose this plugin's events to other plugins
+	events,
+	createChaos,
 }
 // Uninstall events
-events.uninstall.subscribe(() => {
+events.UNINSTALL.subscribe(() => {
 	// @ts-ignore
 	globalThis[PACKAGE.name] = undefined
 	// @ts-ignore
@@ -68,10 +69,6 @@ import('./exporters/animationExporter')
 import('./exporters/statueExporter')
 import('./exporters/rawExporter')
 
-// Expose this plugin's events to other plugins
-// @ts-ignore
-globalThis[PACKAGE.name].events = events
-
 BBPlugin.register(PACKAGE.name, {
 	title: PACKAGE.title,
 	author: PACKAGE.author.name,
@@ -83,16 +80,16 @@ BBPlugin.register(PACKAGE.name, {
 	tags: ['Minecraft: Java Edition', 'Animation', 'Armor Stand'],
 	await_loading: true,
 	onload: consoleGroupCollapsed(`${PACKAGE.name}:onload`, () => {
-		events.load.dispatch()
+		events.LOAD.dispatch()
 	}),
 	onunload: consoleGroupCollapsed(`${PACKAGE.name}:onunload`, () => {
-		events.unload.dispatch()
+		events.UNLOAD.dispatch()
 	}),
 	oninstall: consoleGroupCollapsed(`${PACKAGE.name}:oninstall`, () => {
-		events.install.dispatch()
+		events.INSTALL.dispatch()
 	}),
 	onuninstall: consoleGroupCollapsed(`${PACKAGE.name}:onuninstall`, () => {
-		events.uninstall.dispatch()
+		events.UNINSTALL.dispatch()
 	}),
 })
 
