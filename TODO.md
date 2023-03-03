@@ -21,6 +21,7 @@
 - [x] The setting description scales weirdly. Make it not do that
 - [x] ~~Overwrite the rotation limits dialog~~ Create a new rotation limits dialog with a more accurate description for AJ's models.
 - [x] Add a popup over the canvas that tells the user why their cubes are red
+- [ ] Settings UI needs to display the selected exporter's settings
 
 # Docs
 - [ ] F-A-Q
@@ -52,7 +53,7 @@
     - [x] Keyframes for Variant swaps
     - [x] Variant swap keyframe `execute if` condition. Only swap variants if a condition is met on the root entity.
     - [x] Animation State keyframe `execute if` condition. Only swap states if a condition is met on the root entity.
-    - [ ] Add a keyframe timeline to every bone for running commands at that bone
+    - [x] Add a keyframe timeline to every bone for running commands at that bone
 - [ ] Things to convert when converting model formats into AJ's format
     - [ ] All animations need their snapping set to 20
     - [ ] Animation Keyframes need to be rounded to the nearest 20th of a second

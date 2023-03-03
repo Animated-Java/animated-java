@@ -67,7 +67,7 @@ animated_java.project_settings.verbose.description: |-
   Whether to print verbose output to the chat when running AJ functions.
   Useful for debugging.
 
-animated_java.project_settings.exporter_settings: Exporter Settings
+animated_java.project_settings.exporter_settings: '%exporter Settings'
 
 animated_java.project_settings.exporter: Exporter
 animated_java.project_settings.exporter.description: |-

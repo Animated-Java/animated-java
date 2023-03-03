@@ -1,7 +1,7 @@
 <script lang="ts">
 	export let onClick: () => void
 	export let icon: string
-	export let hovered: boolean = false
+	export let onHoverChange: ((isHovered: boolean) => void) | undefined = undefined
 	export let title: string = ''
 	export let disabled: boolean = false
 	export let buttonStyle: string = ''
@@ -13,8 +13,8 @@
 	{disabled}
 	style={buttonStyle}
 	on:click|stopPropagation={onClick}
-	on:mouseenter={() => (hovered = true)}
-	on:mouseleave={() => (hovered = false)}
+	on:mouseenter={() => onHoverChange && onHoverChange(true)}
+	on:mouseleave={() => onHoverChange && onHoverChange(false)}
 >
 	<span class="material-icons" style={iconStyle}>{icon}</span>
 </button>

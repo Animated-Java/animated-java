@@ -4,6 +4,7 @@
 	import { AnimatedJavaExporter } from '../../exporter'
 	import { projectSettingStructure } from '../../projectSettings'
 	import * as AJ from '../../settings'
+	import { translate } from '../../util/translation'
 	import FancyHeader from './fancyHeader.svelte'
 	import AJUINode from './uiNode.svelte'
 
@@ -13,10 +14,10 @@
 	let selectedExporter: AnimatedJavaExporter | undefined
 
 	function getSelectedExporter() {
-		selectedExporter = Object.entries(AnimatedJavaExporter.exporters).find(([, exporter]) => {
+		selectedExporter = [...AnimatedJavaExporter.exporters.values()].find(exporter => {
 			return exporter.id === Project!.animated_java_settings!.exporter.selected?.value
-		})?.[1]
-		console.log('Selected Exporter', selectedExporter)
+		})
+		console.log('Selected exporter changed to', selectedExporter)
 	}
 
 	queueMicrotask(() => {
@@ -43,7 +44,11 @@
 	{#if selectedExporter}
 		{#key selectedExporter}
 			<div transition:slide={{ duration: 250 }} on:outroend={getSelectedExporter}>
-				<FancyHeader content={selectedExporter.name + ' Settings'} />
+				<FancyHeader
+					content={translate('animated_java.project_settings.exporter_settings', {
+						exporter: selectedExporter.name,
+					})}
+				/>
 				{#each selectedExporter.settingsStructure as el}
 					<AJUINode {el} settingArray={getSettingArray(selectedExporter)} />
 				{/each}

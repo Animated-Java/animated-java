@@ -38,7 +38,8 @@ Prism.languages.mcfunction = {}
 // @ts-ignore
 globalThis.AnimatedJava = {
 	translate,
-	settings: AJSettings,
+	settings: AJSettings.animatedJavaSettings,
+	Settings: AJSettings,
 	openAjDocsDialog,
 	docClick(link: string) {
 		if (link.startsWith('page:')) {

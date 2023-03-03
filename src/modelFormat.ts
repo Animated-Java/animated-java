@@ -1,6 +1,5 @@
 import * as fs from 'fs'
 import * as pathjs from 'path'
-import { AnimatedJavaExporter } from './exporter'
 import { getDefaultProjectSettings } from './projectSettings'
 import { consoleGroup, consoleGroupCollapsed } from './util/console'
 import * as events from './util/events'
@@ -82,10 +81,17 @@ const loadAnimatedJavaProjectSettings = consoleGroup(
 			if (model.animated_java.settings[name])
 				setting.value = model.animated_java.settings[name]
 		}
+	}
+)
 
+const loadAnimatedJavaExporterSettings = consoleGroup(
+	'loadAnimatedJavaExporterSettings',
+	(model: IAnimatedJavaModel) => {
+		if (!Project) return
 		Project.animated_java_exporter_settings = {}
 
-		for (const exporter of Object.values(AnimatedJavaExporter.exporters)) {
+		for (const exporter of AnimatedJava.Exporter.exporters.values()) {
+			console.log('Loading settings for', exporter.id)
 			Project.animated_java_exporter_settings[exporter.id] = exporter.getSettings()
 		}
 
@@ -208,6 +214,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 		ajCodec.dispatchEvent('parse', { model, path })
 		processVersionMigration(model)
 		loadAnimatedJavaProjectSettings(model)
+		loadAnimatedJavaExporterSettings(model)
 
 		if (model.meta.box_uv !== undefined && Format.optional_box_uv) {
 			Project.box_uv = model.meta.box_uv

@@ -14,12 +14,26 @@
 
 	export let setting: AJ.Setting<any>
 
+	let descriptionVisible = false
 	let helpButtonHovered = false
-	// console.log(setting)
+	let descriptionState: 'introstart' | 'introend' | 'outrostart' | 'outroend' | 'none' = 'none'
+
 	setting._onInit()
 
 	$: {
 		setting._onUpdate()
+	}
+
+	function onHelpButtonHovered(hovered: boolean) {
+		helpButtonHovered = hovered
+		if (descriptionState === 'outrostart') return
+		descriptionVisible = hovered
+	}
+
+	function onDescriptionTransition(state: typeof descriptionState) {
+		console.log(`Description transition ${state}`)
+		descriptionState = state
+		descriptionVisible = helpButtonHovered
 	}
 
 	function onResetClick() {
@@ -62,7 +76,7 @@
 
 		<IconButton
 			onClick={onHelpButtonClick}
-			bind:hovered={helpButtonHovered}
+			onHoverChange={onHelpButtonHovered}
 			icon="question_mark"
 		/>
 	</div>
@@ -73,11 +87,15 @@
 
 	<div class="spacer" />
 
-	{#if helpButtonHovered}
+	{#if descriptionVisible}
 		<div
 			class="setting-description flex-column"
 			in:slide={{ delay: 500, duration: 250 }}
 			out:slide={{ duration: 250 }}
+			on:introstart={() => onDescriptionTransition('introstart')}
+			on:introend={() => onDescriptionTransition('introend')}
+			on:outrostart={() => onDescriptionTransition('outrostart')}
+			on:outroend={() => onDescriptionTransition('outroend')}
 		>
 			{#each setting.description as line, index}
 				<p
