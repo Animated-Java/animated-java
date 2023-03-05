@@ -11,18 +11,30 @@
 	import ImageDropdown from './settingDisplays/imageDropdown.svelte'
 	import IconButton from './buttons/iconButton.svelte'
 	import Codebox from './settingDisplays/codebox.svelte'
+	import { onDestroy } from 'svelte'
+	import { debounce } from '../../util/misc'
 
 	export let setting: AJ.Setting<any>
 
 	let descriptionVisible = false
 	let helpButtonHovered = false
 	let descriptionState: 'introstart' | 'introend' | 'outrostart' | 'outroend' | 'none' = 'none'
+	let infoPopup: AJ.IInfoPopup | undefined = undefined
 
-	setting._onInit()
+	// console.log(setting.id)
+	requestAnimationFrame(() => {
+		setting._onUpdate(true)
+	})
 
-	$: {
-		setting._onUpdate()
-	}
+	const unsub = setting.subscribe(
+		debounce(() => {
+			infoPopup = setting.infoPopup
+		}, 250)
+	)
+
+	onDestroy(() => {
+		unsub()
+	})
 
 	function onHelpButtonHovered(hovered: boolean) {
 		helpButtonHovered = hovered
@@ -31,13 +43,13 @@
 	}
 
 	function onDescriptionTransition(state: typeof descriptionState) {
-		console.log(`Description transition ${state}`)
+		// console.log(`Description transition ${state}`)
 		descriptionState = state
 		descriptionVisible = helpButtonHovered
 	}
 
 	function onResetClick() {
-		console.log(`Setting '${setting.displayName}' reset!`)
+		// console.log(`Setting '${setting.displayName}' reset!`)
 		setting.value = setting.defaultValue
 	}
 
@@ -108,9 +120,9 @@
 		</div>
 	{/if}
 
-	{#if setting.infoPopup}
+	{#if infoPopup}
 		<div transition:slide={{ duration: 200 }}>
-			<SettingInfoPopup type={setting.infoPopup.type} popup={setting.infoPopup} />
+			<SettingInfoPopup type={infoPopup.type} popup={infoPopup} />
 		</div>
 	{/if}
 </div>

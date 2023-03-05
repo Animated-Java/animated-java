@@ -10,6 +10,7 @@
 
 	if (el.type === 'setting') {
 		setting = Object.values(settingArray).find(s => s.id === (el as any).id)!
+		if (!setting) throw new Error(`Setting ${el.id} not found`)
 	}
 
 	let visible = true

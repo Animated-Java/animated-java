@@ -4,6 +4,7 @@
  */
 export class Subscribable<T> {
 	protected subscribers = new Set<(value: T) => void>()
+	private dispatching = false
 
 	/**
 	 * Subscribe to this subscribable.
@@ -26,6 +27,9 @@ export class Subscribable<T> {
 	 * @param value The value to be passed to the subscribers.
 	 */
 	dispatch(value: T) {
+		if (this.dispatching) return
+		this.dispatching = true
 		this.subscribers.forEach(callback => callback(value))
+		this.dispatching = false
 	}
 }

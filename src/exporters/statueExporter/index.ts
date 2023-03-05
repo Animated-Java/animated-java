@@ -7,7 +7,7 @@ new AnimatedJava.Exporter({
 	getSettings() {
 		return {
 			foo: new AnimatedJava.Settings.CheckboxSetting({
-				id: 'animated_java:statue_exporter:foo',
+				id: 'animated_java:statue_exporter/foo',
 				displayName: translate('animated_java.exporters.statue_exporter.settings.foo'),
 				description: translate(
 					'animated_java.exporters.statue_exporter.settings.foo.description'
@@ -19,7 +19,7 @@ new AnimatedJava.Exporter({
 	settingsStructure: [
 		{
 			type: 'setting',
-			id: 'animated_java:statue_exporter:foo',
+			id: 'animated_java:statue_exporter/foo',
 		},
 	],
 	async export(ajSettings, projectSettings, exporterSettings) {

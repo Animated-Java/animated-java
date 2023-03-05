@@ -7,7 +7,7 @@ new AnimatedJava.Exporter({
 	getSettings() {
 		return {
 			bar: new AnimatedJava.Settings.InlineTextSetting({
-				id: 'animated_java:animation_exporter:bar',
+				id: 'animated_java:animation_exporter/bar',
 				displayName: translate('animated_java.exporters.animation_exporter.settings.bar'),
 				description: translate(
 					'animated_java.exporters.animation_exporter.settings.bar.description'
@@ -19,7 +19,7 @@ new AnimatedJava.Exporter({
 	settingsStructure: [
 		{
 			type: 'setting',
-			id: 'animated_java:animation_exporter:bar',
+			id: 'animated_java:animation_exporter/bar',
 		},
 	],
 	async export(ajSettings, projectSettings, exporterSettings, renderedAnimations) {

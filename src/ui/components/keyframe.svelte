@@ -62,29 +62,4 @@
 		flex-direction: column;
 		overflow-y: auto;
 	}
-
-	/* div.item {
-		display: flex;
-		flex-grow: 1;
-		flex-direction: row;
-		align-items: center;
-		flex-wrap: wrap;
-		background-color: var(--color-back);
-		font-family: var(--font-code);
-		padding: 3px 8px;
-		border: 1px solid var(--color-border);
-	} */
-
-	/* button {
-		all: unset !important;
-
-		display: flex !important;
-		justify-content: center !important;
-		align-content: center !important;
-		flex-wrap: wrap !important;
-	}
-
-	button:hover {
-		color: var(--color-light) !important;
-	} */
 </style>

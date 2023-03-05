@@ -7,16 +7,18 @@ import {
 svelteHelperMarkPluginInitialization()
 // KEEP CODE WITHIN THESE BOUNDS
 
+// These imports are in a specific order. Try not to change them around too much!
 import PACKAGE from '../package.json'
 import * as events from './util/events'
 import './util/moddingTools'
 import './util/translation'
 import './modelFormat'
-import { AnimatedJavaExporter } from './exporter'
+import './exporter'
+import { AnimatedJavaExporter, verifyProjectExportReadiness } from './exporter'
 import { translate } from './util/translation'
 import * as AJSettings from './settings'
-import './projectSettings'
 import './ui/ajSettings'
+import './projectSettings'
 import './ui/ajVariantsPanel'
 import './ui/ajProjectSettings'
 import './ui/ajAnimationConfig'
@@ -26,12 +28,13 @@ import './ui/ajKeyframe'
 import './mods/modeMod'
 import './mods/textureMod'
 import './mods/cubeMod'
+import { renderRig } from './rendering/modelRenderer'
 import { openAjDocsDialog } from './ui/ajDocs'
 import { applyModelVariant } from './variants'
-import { renderAllAnimations } from './rendering/renderer'
+import { renderAllAnimations } from './rendering/animationRenderer'
 import { consoleGroupCollapsed } from './util/console'
 import { createChaos } from './mods/cubeMod'
-import { openAjInvalidCubesDialog } from './ui/popups/invalidCubes'
+import './ui/ajMenuBar'
 
 Prism.languages.mcfunction = {}
 
@@ -59,16 +62,13 @@ globalThis.AnimatedJava = {
 	// Expose this plugin's events to other plugins
 	events,
 	createChaos,
-	openAjInvalidCubesDialog,
+	renderRig,
+	verifyProjectExportReadiness,
 }
 // Uninstall events
-events.UNINSTALL.subscribe(() => {
+events.EXTRACT_MODS.subscribe(() => {
 	// @ts-ignore
 	globalThis[PACKAGE.name] = undefined
-	// @ts-ignore
-	globalThis.AnimatedJavaExporter = undefined
-	// @ts-ignore
-	globalThis.AnimatedJavaSettings = undefined
 })
 
 import('./exporters/animationExporter')

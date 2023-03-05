@@ -1,6 +1,5 @@
 // @ts-ignore
 import en from '../lang/en.yaml'
-import { IInfoPopup } from '../settings'
 
 type TranslationFormattingObject = Record<string, string>
 
@@ -8,10 +7,10 @@ const LANGUAGES: Record<string, Record<string, string>> = {
 	en,
 }
 
-function format(str: string, dict: TranslationFormattingObject = {}) {
+export function formatStr(str: string, formatObj: TranslationFormattingObject = {}) {
 	// Sort the keys by size. This makes sure %a and %abc aren't confused.
-	const keys = Object.keys(dict).sort((a, b) => b.length - a.length)
-	for (const target of keys) str = str.replace(new RegExp('%' + target, 'g'), dict[target])
+	const keys = Object.keys(formatObj).sort((a, b) => b.length - a.length)
+	for (const target of keys) str = str.replace(new RegExp('%' + target, 'g'), formatObj[target])
 	return str
 }
 
@@ -23,19 +22,6 @@ export function translate(key: string, formattingObject?: TranslationFormattingO
 	// Return the translation key if no valid translation is found.
 	if (translated == undefined) return key
 	// If a formatting object is provided, use it to format the translated string.
-	if (formattingObject != undefined) return format(translated, formattingObject)
+	if (formattingObject != undefined) return formatStr(translated, formattingObject)
 	return translated
-}
-
-export function translateInfo(
-	type: IInfoPopup['type'],
-	key: string,
-	formattingObject?: TranslationFormattingObject
-): IInfoPopup {
-	const lines = translate(key, formattingObject).split('\n')
-	return {
-		type,
-		title: lines[0],
-		lines: lines.slice(1),
-	}
 }

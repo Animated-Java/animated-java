@@ -71,7 +71,7 @@
 		flex-direction: row;
 		flex-grow: 1;
 		margin-bottom: 2px;
-		align-items: center;
+		align-items: stretch;
 	}
 
 	p.name {

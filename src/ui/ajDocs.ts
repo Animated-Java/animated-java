@@ -1,9 +1,7 @@
-import { ajModelFormat } from '../modelFormat'
-import { translate } from '../util/translation'
-import { SvelteDialog } from './svelteDialog'
-import { default as DocsComponent } from './components/docs.svelte'
 import * as events from '../util/events'
-import { createAction } from '../util/moddingTools'
+import { translate } from '../util/translation'
+import { default as DocsComponent } from './components/docs.svelte'
+import { SvelteDialog } from './svelteDialog'
 
 let docsDialog: SvelteDialog | undefined
 export function openAjDocsDialog(link?: string, section?: string) {
@@ -21,23 +19,9 @@ export function openAjDocsDialog(link?: string, section?: string) {
 		svelteComponent: DocsComponent,
 		svelteComponentProps: { page: link, section },
 		buttons: [translate('animated_java.dialog.close_button')],
-		onButton: () => {
+		onClose: () => {
 			docsDialog = undefined
+			// console.log('onClose')
 		},
 	}).show()
 }
-
-queueMicrotask(() => {
-	MenuBar.addAction(
-		createAction('animated_java:documentation', {
-			icon: 'find_in_page',
-			category: 'animated_java',
-			name: translate('animated_java.menubar.items.documentation'),
-			condition: () => Format === ajModelFormat,
-			click: function () {
-				openAjDocsDialog()
-			},
-		}),
-		'animated_java'
-	)
-})

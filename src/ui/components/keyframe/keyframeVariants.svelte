@@ -71,7 +71,7 @@
 	div.property {
 		display: flex;
 		flex-direction: row;
-		align-items: center;
+		align-items: stretch;
 		flex-grow: 1;
 		margin-bottom: 2px;
 	}

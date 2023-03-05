@@ -5,7 +5,10 @@
 	import FlatIconButton from '../buttons/flatIconButton.svelte'
 	import IconButton from '../buttons/iconButton.svelte'
 	import TextureMapping from './textureMapping.svelte'
+
+	let descriptionVisible = false
 	let helpButtonHovered = false
+	let descriptionState: 'introstart' | 'introend' | 'outrostart' | 'outroend' | 'none' = 'none'
 	const translations = {
 		name: translate('animated_java.dialog.variant_properties.textureMap'),
 		description: translate(
@@ -16,6 +19,18 @@
 	export let variant: Variant
 	const projectTextures = Texture.all
 	let updateVariants: number = 0
+
+	function onHelpButtonHovered(hovered: boolean) {
+		helpButtonHovered = hovered
+		if (descriptionState === 'outrostart') return
+		descriptionVisible = hovered
+	}
+
+	function onDescriptionTransition(state: typeof descriptionState) {
+		// console.log(`Description transition ${state}`)
+		descriptionState = state
+		descriptionVisible = helpButtonHovered
+	}
 
 	function onHelpButtonClick() {
 		AnimatedJava.docClick('page:rig/variants#texture_map')
@@ -38,7 +53,7 @@
 
 		<IconButton
 			onClick={onHelpButtonClick}
-			bind:hovered={helpButtonHovered}
+			onHoverChange={onHelpButtonHovered}
 			icon="question_mark"
 		/>
 	</div>

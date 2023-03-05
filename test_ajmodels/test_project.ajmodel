@@ -7,8 +7,8 @@
 		"settings": {
 			"project_namespace": "untitled",
 			"rig_item": "minecraft:white_dye",
-			"rig_item_model": "",
-			"rig_export_folder": "",
+			"rig_item_model": "D:\\github-repos\\animated-java\\test_ajmodels\\resources\\assets\\minecraft\\models\\item\\white_dye.json",
+			"rig_export_folder": "D:\\github-repos\\animated-java\\test_ajmodels\\resources\\assets\\animated_java\\models\\rigs\\test_project",
 			"verbose": true,
 			"exporter": 0
 		},
@@ -112,10 +112,10 @@
 	],
 	"textures": [
 		{
-			"path": "D:\\github-repos\\animated-java\\test_ajmodels\\red.png",
+			"path": "D:\\github-repos\\animated-java\\test_ajmodels\\resources\\assets\\animated_java\\textures\\item\\test_project\\red.png",
 			"name": "red.png",
-			"folder": "",
-			"namespace": "",
+			"folder": "item/test_project",
+			"namespace": "animated_java",
 			"id": "0",
 			"particle": false,
 			"render_mode": "default",
@@ -128,14 +128,14 @@
 			"mode": "bitmap",
 			"saved": true,
 			"uuid": "5fa5c44b-1fa3-77d7-895e-48c64e768b87",
-			"relative_path": "../red.png",
+			"relative_path": "../resources/assets/animated_java/textures/item/test_project/red.png",
 			"source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAUlJREFUeF7tmFEOwjAMQ+khd8oecmiISdPopoaunguPLwRNnTmOQ0iPxtc8TXPjFU3hKefUckFT8AIMASiAFsADSiaUcl784fXV9n2tYdXGY4JMgYHG4DetsG2ZUrxdCxw95PL5+3fDqQ1E4y0JOHrC1RTPGFiJKp0pxdsRUOvyV52DAKbAQFPgKtnvJkPTQtcU/BPb4N3rbA9VRO5MEHDzPh+pVo+zKIAWOGiB2n38SJajxNMCtEBgCvTY5yPO3gP/owWi+/j+AUaLLxKg3OdLBCrxMUFMMGCCEcMa5Swt8PctMIpUe+XZ/I9Qr8RU90KAimlXHBTgWhlVXihAxbQrDgpwrYwqLxSgYtoVBwW4VkaVFwpQMe2KgwJcK6PKCwWomHbFQQGulVHlhQJUTLvioADXyqjyQgEqpl1xUIBrZVR5oQAV0644T5Us1sG4m1K0AAAAAElFTkSuQmCC"
 		},
 		{
-			"path": "D:\\github-repos\\animated-java\\test_ajmodels\\green.png",
+			"path": "D:\\github-repos\\animated-java\\test_ajmodels\\resources\\assets\\animated_java\\textures\\item\\test_project\\green.png",
 			"name": "green.png",
-			"folder": "",
-			"namespace": "",
+			"folder": "item/test_project",
+			"namespace": "animated_java",
 			"id": "0",
 			"particle": false,
 			"render_mode": "default",
@@ -148,14 +148,14 @@
 			"mode": "bitmap",
 			"saved": true,
 			"uuid": "623c3550-3f4b-fc54-be0b-bc134a9c6c31",
-			"relative_path": "../green.png",
+			"relative_path": "../resources/assets/animated_java/textures/item/test_project/green.png",
 			"source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAa5JREFUeF7tmVFuwzAMQ+dD5pQ5ZIYMCJBlViSGLSoO7LcZS0+UbaHji/wt27KRn6Dk61gH8wFKvG9sAHbA7xZYx/rjyGVbHjkT1bdsgT2JGYBqcoheBkA1+d02MwCRvi2Aw/+7E5DkDwBVfUsAR/BH4k/PhIq+NYDIzsjpGJ0HJ8jUVU6Jo3dA1MPVmwHRt3cAUu0na9sDqPTxXeKZvi2AWeBZP59BVPXtANxdeRUAqL4dgCd9zGgMgB2HPz3OMtV/hXYYwIfn+VdUkfnGHwegg8t1czX9tAWQeXxGX0lfBoBUFpnnqwDftX8IoDqPRwmo6G9vgewdnh0+Cvr0Gqw8X7NhpjoGV9shA3+dKe72h86AaiLIPF9NGikEsn/qAIS24toUgEIfZy14PpCva0MA1Xk82lxFD70EK32IzvPIS/Id+6ctoNjXSMwGgND6j2vp/wXUoRiAegXZ+O0AlqC63g5QryAbvx3AElTX2wHqFWTjtwNYgup6O0C9gmz8dgBLUF1vB6hXkI3fDmAJquvtAPUKsvHbASxBdb0doF5BNn47gCWorrcD1CvIxv8NtKmK0LmsKIwAAAAASUVORK5CYII="
 		},
 		{
-			"path": "D:\\github-repos\\animated-java\\test_ajmodels\\blue.png",
+			"path": "D:\\github-repos\\animated-java\\test_ajmodels\\resources\\assets\\animated_java\\textures\\item\\test_project\\blue.png",
 			"name": "blue.png",
-			"folder": "",
-			"namespace": "",
+			"folder": "item/test_project",
+			"namespace": "animated_java",
 			"id": "0",
 			"particle": false,
 			"render_mode": "default",
@@ -168,7 +168,7 @@
 			"mode": "bitmap",
 			"saved": true,
 			"uuid": "0e4de5b5-4cca-2e39-3cca-817d30316913",
-			"relative_path": "../blue.png",
+			"relative_path": "../resources/assets/animated_java/textures/item/test_project/blue.png",
 			"source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAZZJREFUeF7tmmtuwzAMg5dD5pQ5ZItgcJEadSRbcz8ZY/+tGUOZpOUHuv0EP/v+eARfEYIfx7ZFXhACn8ReAY7jl2rfx/Rq4ZcQ4Cz+HPioCHf4JQSIRNTCSoBsPaDE9ercp+9azvbilYBsCbDm7F8/T5+A0vlHl0ALn1aAuvDeJdCLTyNA3bxazayVhFF8KgHK4O7cvtnRvXaKPfg0ApzVW/PVaoAj+FQCWAOc8VwCaB8QPA57j7Mz4pvhnZtXgN51vB5cVrxLgJnneU8KZvK7BPAUuer/SIC6B/Sexz/N9freb+Z9QJRfCfCuAqvOcatuMwEj+/P6Oqz8PXIlPpu/KYD3PH53t3cdeO8+4Fv8LwFGz+NlkKvi3wQgzvNXAQn+tykwe75ZDYngN5ugVfTqzyXAv98HrB7haP3h3wdEC6DxEoB2gOZXAmgHaH4lgHaA5lcCaAdofiWAdoDmVwJoB2h+JYB2gOZXAmgHaH4lgHaA5lcCaAdofiWAdoDmVwJoB2h+JYB2gOZXAmgHaH4lgHaA5n8Cp6R40OT9sgcAAAAASUVORK5CYII="
 		}
 	],
@@ -294,7 +294,7 @@
 							"data_points": [
 								{
 									"variant": "a4cca3d2-4474-72c0-01b0-e4cf0ece4c6f",
-									"condition": "if score @s v matches 1.."
+									"condition": "if score @s v matches 1..\n"
 								}
 							],
 							"uuid": "b6299112-75df-24c7-a880-c44eed3ee210",
@@ -322,7 +322,8 @@
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",
-			"loop_delay": ""
+			"loop_delay": "",
+			"animators": {}
 		}
 	]
 }

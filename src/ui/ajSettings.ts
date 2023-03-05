@@ -2,16 +2,21 @@ import { ajModelFormat } from '../modelFormat'
 import { translate } from '../util/translation'
 // @ts-ignore
 import logo from '../assets/AnimatedJava-2022.svg'
-import { SvelteDialog } from './svelteDialog'
-import { default as SettingsComponent } from './components/animatedJavaSettings.svelte'
 import { animatedJavaSettings } from '../settings'
-import { createAction } from '../util/moddingTools'
+import { default as SettingsComponent } from './components/animatedJavaSettings.svelte'
+import { SvelteDialog } from './svelteDialog'
+import { createBarMenu } from '../util/moddingTools'
+import * as events from '../util/events'
 
 interface IAnimatedJavaMenu extends BarMenu {
 	label: HTMLDivElement
 }
 
-const MENU = new BarMenu('animated_java', [], () => Format === ajModelFormat) as IAnimatedJavaMenu
+const MENU = createBarMenu(
+	'animated_java:menu',
+	[],
+	() => Format === ajModelFormat
+) as IAnimatedJavaMenu
 MENU.label.style.display = 'none'
 
 const MENU_BAR = document.querySelector('#menu_bar')
@@ -29,13 +34,13 @@ IMG.style.borderRadius = '8px'
 IMG.style.marginRight = '5px'
 MENU.label.prepend(IMG)
 
-Blockbench.on('select_project', () => {
+events.SELECT_PROJECT.subscribe(() => {
 	queueMicrotask(() => {
 		MENU.label.style.display = Format === ajModelFormat ? 'inline-block' : 'none'
 	})
 })
 
-Blockbench.on('unselect_project', () => {
+events.UNSELECT_PROJECT.subscribe(() => {
 	MENU.label.style.display = 'none'
 })
 
@@ -50,16 +55,3 @@ export function openAjSettingsDialog() {
 	})
 	dialog.show()
 }
-
-MenuBar.addAction(
-	createAction('animated_java:settings', {
-		icon: 'settings',
-		category: 'animated_java',
-		name: translate('animated_java.menubar.items.settings'),
-		condition: () => Format === ajModelFormat,
-		click: function () {
-			openAjSettingsDialog()
-		},
-	}),
-	'animated_java'
-)

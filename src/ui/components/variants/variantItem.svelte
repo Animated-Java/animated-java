@@ -13,6 +13,7 @@
 	const translations = {
 		items: translate('animated_java.panels.variants.items'),
 		edit_variant: translate('animated_java.panels.variants.edit_variant'),
+		default_variant: translate('animated_java.panels.variants.default_variant'),
 		delete_variant: translate('animated_java.panels.variants.delete_variant'),
 		delete_default_variant: translate('animated_java.panels.variants.delete_default_variant'),
 	}
@@ -68,10 +69,13 @@
 	}}
 >
 	<p class="variant-name">{variant.name}</p>
+	{#if variant.default}
+		<FlatIconButton onClick={() => {}} icon="star" title={translations.default_variant} />
+	{/if}
 	<FlatIconButton onClick={openVariantProperties} icon="edit" title={translations.edit_variant} />
 	<FlatIconButton
 		onClick={() => deleteVariant(variant)}
-		icon={variant.default ? 'star' : 'delete'}
+		icon="delete"
 		title={variant.default ? translations.delete_default_variant : translations.delete_variant}
 		iconStyle={variant.default ? 'color: var(--color-subtle_text)' : ''}
 	/>

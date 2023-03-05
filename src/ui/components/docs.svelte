@@ -174,6 +174,6 @@
 		max-height: 700px;
 	}
 	div.page-content {
-		padding-left: 1em;
+		padding-left: 0.5em;
 	}
 </style>

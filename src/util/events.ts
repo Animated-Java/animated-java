@@ -24,6 +24,10 @@ export const PRE_SELECT_PROJECT = new PluginEvent<ModelProject>('preSelectProjec
 export const SELECT_PROJECT = new PluginEvent<ModelProject>('selectProject')
 export const POST_SELECT_PROJECT = new PluginEvent<ModelProject>('postSelectProject')
 
+export const UNSELECT_PROJECT = new PluginEvent('unselectProject')
+
+export const UPDATE_SELECTION = new PluginEvent('updateSelection')
+
 export const VARIANT_PROPERTIES_UPDATE = new PluginEvent('variantPropertiesUpdate')
 
 type Link = { link: string; section?: string }
@@ -47,3 +51,5 @@ Blockbench.on<EventName>('select_project', ({ project }: { project: ModelProject
 	SELECT_PROJECT.dispatch(project)
 	queueMicrotask(() => POST_SELECT_PROJECT.dispatch(project))
 })
+Blockbench.on<EventName>('update_selection', () => UPDATE_SELECTION.dispatch())
+Blockbench.on<EventName>('unselect_project', () => UNSELECT_PROJECT.dispatch())

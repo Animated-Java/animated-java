@@ -30,28 +30,25 @@ animated_java.dialog.documentation.error.failed_to_load.description: |-
 ### Project Settings
 animated_java.dialog.project_settings.title: Animated Java Project Settings
 
-animated_java.project_settings.project_namespace: Project Name
+animated_java.project_settings.project_namespace: Project Namespace
 animated_java.project_settings.project_namespace.description: |-
   The namespace of the project.
 
 animated_java.project_settings.rig_settings: Rig Settings
 
-animated_java.project_settings.rig_export_folder: Rig Export Folder
-animated_java.project_settings.rig_export_folder.description: |-
-  What folder to put the generated model files in.
-  Should be inside of a valid resource pack.
-
 animated_java.project_settings.rig_item: Rig Item
 animated_java.project_settings.rig_item.description: |-
   The item to use to display the models used in the rig.
-animated_java.project_settings.rig_item.error.unset: Rig Item cannot be empty.
-animated_java.project_settings.rig_item.error.invalid_item: |-
-  Rig Item must be a valid item ID.
-  %error
-animated_java.project_settings.rig_item.error.space: Item ID cannot contain spaces.
-animated_java.project_settings.rig_item.error.invalid_namespace: Item ID must have a namespace.
+animated_java.project_settings.rig_item.error.unset: |-
+  Rig Item cannot be empty
+animated_java.project_settings.rig_item.error.space: |-
+  Rig Item must be a valid item ID
+  Item ID cannot contain spaces.
+animated_java.project_settings.rig_item.error.invalid_namespace: |-
+  Rig Item must be a valid item ID
+  Item ID must have a namespace.
 animated_java.project_settings.rig_item.warning.unknown_item: |-
-  Rig Item isn't in vanilla minecraft.
+  Rig Item isn't in vanilla minecraft
   This may cause issues when exporting.
   Ignore this warning if you're using snapshots or mods.
 
@@ -59,8 +56,27 @@ animated_java.project_settings.rig_item_model: Rig Item Model
 animated_java.project_settings.rig_item_model.description: |-
   The export location of the rig item's model.
   Should be in a valid resource pack under `minecraft:models/item`
-animated_java.project_settings.rig_item_model.error.item_does_not_match: The selected path does not match the selected Rig Item (%rigItem).
-animated_java.project_settings.rig_item_model.error.invalid_location: The selected path is not in a valid resource pack.
+animated_java.project_settings.rig_item_model.error.unset: |-
+  Rig Item Model cannot be empty.
+animated_java.project_settings.rig_item_model.error.invalid_path: |-
+  Rig Item Model must be in a valid resource pack
+  The targeted file must be under 'resources/assets/<namespace>/models/'.
+animated_java.project_settings.rig_item_model.error.item_does_not_match: |-
+  Rig Item Model must have the same item name as Rig Item
+  You've selected "%rigItem" as your Rig Item, but Rig Item Model targets "%pathItem".
+animated_java.project_settings.rig_item_model.error.rig_item_unset: |-
+  Rig Item is not set
+  Please set the Rig Item before setting the Rig Item Model.
+
+animated_java.project_settings.rig_export_folder: Rig Export Folder
+animated_java.project_settings.rig_export_folder.description: |-
+  What folder to put the generated model files in.
+  Should be inside of a valid resource pack.
+animated_java.project_settings.rig_export_folder.error.unset: |-
+  Rig Export Folder cannot be empty
+animated_java.project_settings.rig_export_folder.error.invalid_path: |-
+  Rig Export Folder must be in a valid resource pack
+  The targeted folder must be under 'resources/assets/<namespace>/models/'.
 
 animated_java.project_settings.verbose: Verbose
 animated_java.project_settings.verbose.description: |-
@@ -84,31 +100,32 @@ animated_java.animation_config.animation_name.error.duplicate_name: |-
   An animation with the name "%name" already exists.
   Animation names must be unique.
 
-animated_java.animation_config.animation_loop: Loop Mode
-animated_java.animation_config.animation_loop.description: |-
+animated_java.animation_config.loop: Loop Mode
+animated_java.animation_config.loop.description: |-
   The loop mode of the animation.
   once: The animation will only play once and immediately reset once complete.
   loop: The animation will loop forever.
   hold: The animation will hold on the last frame.
-animated_java.animation_config.animation_loop.options.once: Play Once
-animated_java.animation_config.animation_loop.options.loop: Loop
-animated_java.animation_config.animation_loop.options.hold: Hold on Last Frame
+animated_java.animation_config.loop.options.once: Play Once
+animated_java.animation_config.loop.options.loop: Loop
+animated_java.animation_config.loop.options.hold: Hold on Last Frame
 
-animated_java.animation_config.animation_loop_delay: Loop Delay
-animated_java.animation_config.animation_loop_delay.description: |-
+animated_java.animation_config.loop_delay: Loop Delay
+animated_java.animation_config.loop_delay.description: |-
   The delay (in ticks) between loops of the animation.
   Only applies if the loop mode is set to loop.
 
-animated_java.animation_config.animation_start_delay: Start Delay
-animated_java.animation_config.animation_start_delay.description: |-
+animated_java.animation_config.start_delay: Start Delay
+animated_java.animation_config.start_delay.description: |-
   The delay (in ticks) before the animation starts after the play function is ran.
 
 ### Variants Panel
 animated_java.panels.variants.name: Variants
 animated_java.panels.variants.items: Variant
-animated_java.panels.variants.delete_default_variant: Default Variant (Cannot delete default Variant)
+animated_java.panels.variants.delete_default_variant: Cannot delete default Variant
 animated_java.panels.variants.delete_variant: Delete Variant
 animated_java.panels.variants.edit_variant: Edit Variant
+animated_java.panels.variants.default_variant: Default Variant
 animated_java.actions.add_variant.name: Add Variant
 animated_java.actions.add_variant.description: Create a new Variant
 animated_java.actions.variant_properties.name: Variant Properties
@@ -178,3 +195,9 @@ animated_java.popup.invalid_cubes.body: |-
   Some Cubes have invalid rotations!
   The invalid cubes can be found below sorted by the Bones they're in.
   They will also be highlighted in the 3D view once you exit this dialog.
+
+# Failed Project Export Readiness
+animated_java.popup.failed_project_export_readiness.title: Export Failed
+animated_java.popup.failed_project_export_readiness.body: |-
+  The project is not ready to be exported!
+  The following issues were found:

@@ -11,21 +11,27 @@ function consoleGroupFunctionFactory(consoleGroupFunction: typeof console.group)
 		return (...args: A): R => {
 			const lastConsoleLog = console.log
 			let used = forced
-			if (used) consoleGroupFunction(groupName)
-			else {
-				console.log = function (...args) {
-					if (!used) {
-						used = true
-						if (lastConsoleLog !== OG_LOG) lastConsoleLog()
-						consoleGroupFunction(groupName)
+			try {
+				if (used) consoleGroupFunction(groupName)
+				else {
+					console.log = function (...args) {
+						if (!used) {
+							used = true
+							if (lastConsoleLog !== OG_LOG) lastConsoleLog()
+							consoleGroupFunction(groupName)
+						}
+						return (console.log = lastConsoleLog)(...args)
 					}
-					return (console.log = lastConsoleLog)(...args)
 				}
+				const result = fn(...args)
+				if (used) console.groupEnd()
+				console.log = lastConsoleLog
+				return result
+			} catch (e) {
+				if (used) console.groupEnd()
+				console.log = lastConsoleLog
+				throw e
 			}
-			const result = fn(...args)
-			if (used) console.groupEnd()
-			console.log = lastConsoleLog
-			return result
 		}
 	}
 }

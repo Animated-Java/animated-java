@@ -5,14 +5,24 @@
 	},
 	"animated_java": {
 		"settings": {
-			"project_namespace": "untitled_project",
-			"rig_item": "minecraft:white_dye",
-			"rig_item_model": "",
-			"rig_export_folder": "",
+			"project_namespace": "bonnie",
+			"rig_item": "a",
+			"rig_item_model": "D:\\github-repos\\animated-java\\test_ajmodels\\resources\\assets\\minecraft\\models\\item\\purple_dye.json",
+			"rig_export_folder": "D:\\github-repos\\animated-java\\test_ajmodels\\resources\\assets\\animated_java\\models\\rigs\\bonnie",
 			"verbose": true,
 			"exporter": 0
 		},
-		"exporter_settings": {},
+		"exporter_settings": {
+			"animated_java:animation_exporter": {
+				"bar": "Hello World!"
+			},
+			"animated_java:statue_exporter": {
+				"foo": false
+			},
+			"animated_java:raw_exporter": {
+				"foo": false
+			}
+		},
 		"variants": [
 			{
 				"name": "default",

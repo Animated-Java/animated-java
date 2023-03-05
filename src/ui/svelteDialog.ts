@@ -10,6 +10,7 @@ export class SvelteDialog extends Dialog {
 			svelteComponent: SvelteComponentConstructor<SvelteComponent, any>
 			svelteComponentProps: Record<string, any>
 			lines?: never
+			onClose?: () => void
 		}
 	) {
 		const mount = document.createComment(`${PACKAGE.name}-svelte-dialog-` + guid())
@@ -22,6 +23,7 @@ export class SvelteDialog extends Dialog {
 		this.onOpen = () => {
 			const parentElement = mount.parentElement
 			if (this.instance || !parentElement) return
+			// console.log('onOpen')
 			parentElement.style.overflow = 'visible'
 			this.instance = new options.svelteComponent({
 				target: parentElement,
@@ -32,9 +34,20 @@ export class SvelteDialog extends Dialog {
 
 		this.onButton = (...args) => {
 			if (!this.instance) return
+			// console.log('onButton')
 			this.instance.$destroy()
 			this.instance = undefined
 			if (super.onButton) super.onButton(...args)
+			if (options.onClose) options.onClose()
+		}
+
+		this.onCancel = (...args) => {
+			if (!this.instance) return
+			// console.log('onCancel')
+			this.instance.$destroy()
+			this.instance = undefined
+			if (super.onCancel) super.onCancel(...args)
+			if (options.onClose) options.onClose()
 		}
 	}
 }

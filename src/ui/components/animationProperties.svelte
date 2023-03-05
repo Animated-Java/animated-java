@@ -2,89 +2,108 @@
 	import { onDestroy } from 'svelte'
 	import { safeFunctionName } from '../../minecraft/util'
 	import * as AJ from '../../settings'
-	import { translate, translateInfo } from '../../util/translation'
+	import { translate } from '../../util/translation'
 	import type { GUIStructure } from '../ajUIStructure'
 	import UiNode from './uiNode.svelte'
 
-	export let animation: _Animation
+	const TRANSLATIONS = {
+		name: {
+			displayName: translate('animated_java.animation_config.animation_name'),
+			description: translate(
+				'animated_java.animation_config.animation_name.description'
+			).split('\n'),
+			error: {
+				duplicate_name: translate(
+					'animated_java.animation_config.animation_name.error.duplicate_name'
+				),
+			},
+		},
+		loop: {
+			displayName: translate('animated_java.animation_config.loop'),
+			description: translate('animated_java.animation_config.loop.description').split('\n'),
+			options: {
+				once: translate('animated_java.animation_config.loop.options.once'),
+				loop: translate('animated_java.animation_config.loop.options.loop'),
+				hold: translate('animated_java.animation_config.loop.options.hold'),
+			},
+		},
+		loop_delay: {
+			displayName: translate('animated_java.animation_config.loop_delay'),
+			description: translate('animated_java.animation_config.loop_delay.description').split(
+				'\n'
+			),
+		},
+		start_delay: {
+			displayName: translate('animated_java.animation_config.start_delay'),
+			description: translate('animated_java.animation_config.start_delay.description').split(
+				'\n'
+			),
+		},
+	}
 
+	export let animation: _Animation
 	let settings: Record<string, AJ.Setting<any>> = {}
 
 	function getDefaultSettings() {
 		return {
 			name: new AJ.InlineTextSetting(
 				{
-					id: 'animated_java:animation_name',
-					displayName: translate('animated_java.animation_config.animation_name'),
-					description: translate(
-						'animated_java.animation_config.animation_name.description'
-					).split('\n'),
+					id: 'animated_java:animation_properties/name',
+					displayName: TRANSLATIONS.name.displayName,
+					description: TRANSLATIONS.name.description,
 					defaultValue: 'new',
 				},
 				function onUpdate(setting) {
 					setting.value = safeFunctionName(setting.value)
 
 					if (
-						Animator.animations.find(
-							anim => anim.name === setting.value && anim !== animation
-						)
-					)
-						setting.infoPopup = translateInfo(
+						Animator.animations.find(a => a.name === setting.value && a !== animation)
+					) {
+						setting.infoPopup = AJ.createInfo(
 							'error',
-							'animated_java.animation_config.animation_name.error.duplicate_name',
+							TRANSLATIONS.name.error.duplicate_name,
 							{ name: setting.value }
 						)
+					}
 
 					return setting
 				}
 			),
 			loop: new AJ.DropdownSetting({
-				id: 'animated_java:animation_loop',
-				displayName: translate('animated_java.animation_config.animation_loop'),
-				description: translate(
-					'animated_java.animation_config.animation_loop.description'
-				).split('\n'),
+				id: 'animated_java:animation_properties/loop',
+				displayName: TRANSLATIONS.loop.displayName,
+				description: TRANSLATIONS.loop.description,
 				defaultValue: 0,
 				options: [
 					{
-						name: translate(
-							'animated_java.animation_config.animation_loop.options.once'
-						),
+						name: TRANSLATIONS.loop.options.once,
 						value: 'once',
 					},
 					{
-						name: translate(
-							'animated_java.animation_config.animation_loop.options.loop'
-						),
+						name: TRANSLATIONS.loop.options.loop,
 						value: 'loop',
 					},
 					{
-						name: translate(
-							'animated_java.animation_config.animation_loop.options.hold'
-						),
+						name: TRANSLATIONS.loop.options.hold,
 						value: 'hold',
 					},
 				],
 			}),
 			loop_delay: new AJ.NumberSetting({
-				id: 'animated_java:animation_loop_delay',
-				displayName: translate('animated_java.animation_config.animation_loop_delay'),
-				description: translate(
-					'animated_java.animation_config.animation_loop_delay.description'
-				).split('\n'),
+				id: 'animated_java:animation_properties/loop_delay',
+				displayName: TRANSLATIONS.loop_delay.displayName,
+				description: TRANSLATIONS.loop_delay.description,
 				defaultValue: 0,
 				min: 0,
-				step: 0.05,
+				step: 1,
 			}),
 			start_delay: new AJ.NumberSetting({
-				id: 'animated_java:animation_start_delay',
-				displayName: translate('animated_java.animation_config.animation_start_delay'),
-				description: translate(
-					'animated_java.animation_config.animation_start_delay.description'
-				).split('\n'),
+				id: 'animated_java:animation_properties/start_delay',
+				displayName: TRANSLATIONS.start_delay.displayName,
+				description: TRANSLATIONS.start_delay.description,
 				defaultValue: 0,
 				min: 0,
-				step: 0.05,
+				step: 1,
 			}),
 		}
 	}
@@ -92,19 +111,19 @@
 	const settingStructure: GUIStructure = [
 		{
 			type: 'setting',
-			id: 'animated_java:animation_name',
+			id: 'animated_java:animation_properties/name',
 		},
 		{
 			type: 'setting',
-			id: 'animated_java:animation_loop',
+			id: 'animated_java:animation_properties/loop',
 		},
 		{
 			type: 'setting',
-			id: 'animated_java:animation_loop_delay',
+			id: 'animated_java:animation_properties/loop_delay',
 		},
 		{
 			type: 'setting',
-			id: 'animated_java:animation_start_delay',
+			id: 'animated_java:animation_properties/start_delay',
 		},
 	]
 

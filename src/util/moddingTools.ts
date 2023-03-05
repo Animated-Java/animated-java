@@ -2,7 +2,7 @@ import { consoleGroup } from './console'
 import * as events from './events'
 import { Subscribable } from './subscribable'
 
-type NamespacedString = `${string}${string}:${string}${string}`
+export type NamespacedString = `${string}${string}:${string}${string}`
 
 class BlockbenchModInstallError extends Error {
 	constructor(id: string, err: Error) {
@@ -112,6 +112,27 @@ export function createAction(id: NamespacedString, options: ActionOptions) {
  */
 export function createMenu(template: MenuItem[], options?: MenuOptions) {
 	const menu = new Menu(template, options)
+
+	events.EXTRACT_MODS.subscribe(() => {
+		menu.delete()
+	}, true)
+
+	return menu
+}
+
+/**
+ * Creates a new Blockbench.BarMenu and automatically handles it's deletion on the plugin unload and uninstall events.
+ * @param id A namespaced ID ('my-plugin-id:my-menu')
+ * @param structure The menu structure.
+ * @param condition The condition for the menu to be visible.
+ * @returns The created menu.
+ */
+export function createBarMenu(
+	id: NamespacedString,
+	structure: MenuItem[],
+	condition: ConditionResolvable
+) {
+	const menu = new BarMenu(id, structure, condition)
 
 	events.EXTRACT_MODS.subscribe(() => {
 		menu.delete()

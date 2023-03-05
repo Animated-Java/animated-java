@@ -287,7 +287,5 @@ export function applyModelVariant(variant: Variant) {
 	}
 }
 
-Blockbench.on('load_project', updateProjectVariants)
-Blockbench.on('select_project', updateProjectVariants)
 events.LOAD_PROJECT.subscribe(updateProjectVariants)
 events.SELECT_PROJECT.subscribe(updateProjectVariants)

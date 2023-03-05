@@ -6,7 +6,7 @@
 	export var popup: IInfoPopup
 </script>
 
-<div class="flex-column {type}" style="margin-top: 10px; overflow:hidden;">
+<div class="flex-column {type}" style="margin-bottom: 10px; overflow:hidden;">
 	{#key popup.title}
 		<div
 			class="flex-row"

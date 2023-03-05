@@ -76,3 +76,11 @@ export function resolveEnv(path: string) {
 		return variable
 	})
 }
+
+export function debounce(func: (...args: unknown[]) => void, debounceTime = 500) {
+	let timeout: NodeJS.Timeout
+	return function (...args: unknown[]): void {
+		clearTimeout(timeout)
+		timeout = setTimeout(() => func(...args), debounceTime)
+	}
+}

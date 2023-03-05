@@ -58,24 +58,12 @@
 		background-color: var(--color-button);
 	}
 
-	/* div.item {
-		display: flex;
-		flex-grow: 1;
-		flex-direction: row;
-		align-items: center;
-		flex-wrap: wrap;
-		background-color: var(--color-back);
-		font-family: var(--font-code);
-		padding: 3px 8px;
-		border: 1px solid var(--color-border);
-	} */
-
 	div.property {
 		display: flex;
 		flex-direction: row;
 		flex-grow: 1;
 		margin-bottom: 2px;
-		align-items: center;
+		align-items: stretch;
 	}
 
 	p.name {
@@ -94,8 +82,4 @@
 		font-family: var(--font-code);
 		border: 1px solid var(--color-border);
 	}
-
-	/* .item {
-		padding: 3px 8px;
-	} */
 </style>

@@ -14,7 +14,7 @@
 	let selectedExporter: AnimatedJavaExporter | undefined
 
 	function getSelectedExporter() {
-		selectedExporter = [...AnimatedJavaExporter.exporters.values()].find(exporter => {
+		selectedExporter = AnimatedJavaExporter.all.find(exporter => {
 			return exporter.id === Project!.animated_java_settings!.exporter.selected?.value
 		})
 		console.log('Selected exporter changed to', selectedExporter)

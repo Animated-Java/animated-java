@@ -167,17 +167,14 @@ const exportAnimatedJavaVariants = consoleGroup('exportAnimatedJavaVariants', ()
 	return exported
 })
 
-Blockbench.on('update_selection', () => {
-	// console.log('Selection Update', Group.selected, Cube.selected)
+events.UPDATE_SELECTION.subscribe(() => {
 	if (Format === ajModelFormat && Mode.selected.id === 'edit') {
 		if (!Group.selected && Cube.selected.length > 0) {
 			Format.rotation_limit = true
 			Format.rotation_snap = true
-			// console.log('Rotation Limit Enabled')
 		} else {
 			Format.rotation_limit = false
 			Format.rotation_snap = false
-			// console.log('Rotation Limit Disabled')
 		}
 	}
 })
@@ -373,11 +370,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 			Project.loadEditorState()
 		}
 
-		// if (Project.animated_java_variants!.defaultVariant) {
-		// 	applyVariantToModel(Project.animated_java_variants!.defaultVariant)
-		// }
-
-		ajCodec.dispatchEvent('parsed', { model })
+		// ajCodec.dispatchEvent('parsed', { model })
 	}),
 
 	compile: consoleGroupCollapsed('ajCodec:compile', options => {

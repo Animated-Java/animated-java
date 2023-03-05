@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Variant } from '../../variants'
 	import * as AJ from '../../settings'
-	import { translate, translateInfo } from '../../util/translation'
+	import { translate } from '../../util/translation'
 	import type { GUIStructure } from '../ajUIStructure'
 	import { safeFunctionName } from '../../minecraft/util'
 	import UiNode from './uiNode.svelte'
@@ -9,19 +9,30 @@
 	import * as events from '../../util/events'
 	import TextureMap from './variants/textureMapSetting.svelte'
 
-	export let variant: Variant
+	const TRANSLATIONS = {
+		name: {
+			displayName: translate('animated_java.dialog.variant_properties.variant_name'),
+			description: translate(
+				'animated_java.dialog.variant_properties.variant_name.description'
+			).split('\n'),
+			error: {
+				duplicate_name: translate(
+					'animated_java.dialog.variant_properties.variant_name.error.duplicate_name'
+				),
+			},
+		},
+	}
 
+	export let variant: Variant
 	let settings: Record<string, AJ.Setting<any>> = {}
 
 	function getDefaultSettings(): Record<string, AJ.Setting<any>> {
 		return {
 			name: new AJ.InlineTextSetting(
 				{
-					id: 'animated_java:variant_name',
-					displayName: translate('animated_java.dialog.variant_properties.variant_name'),
-					description: translate(
-						'animated_java.dialog.variant_properties.variant_name.description'
-					).split('\n'),
+					id: 'animated_java:variant_properties/name',
+					displayName: TRANSLATIONS.name.displayName,
+					description: TRANSLATIONS.name.description,
 					defaultValue: variant.name,
 					docsLink: 'page:rig/variants#variant_name',
 				},
@@ -32,12 +43,13 @@
 						Project!.animated_java_variants!.variants.find(
 							v => v.name === setting.value && v !== variant
 						)
-					)
-						setting.infoPopup = translateInfo(
+					) {
+						setting.infoPopup = AJ.createInfo(
 							'error',
-							'animated_java.variant_properties.variant_name.error.duplicate_name',
+							TRANSLATIONS.name.error.duplicate_name,
 							{ name: setting.value }
 						)
+					}
 					return setting
 				}
 			),
@@ -47,7 +59,7 @@
 	const settingStructure: GUIStructure = [
 		{
 			type: 'setting',
-			id: 'animated_java:variant_name',
+			id: 'animated_java:variant_properties/name',
 		},
 	]
 
@@ -93,7 +105,9 @@
 	{#each settingStructure as el}
 		<UiNode {el} settingArray={Object.values(settings)} />
 	{/each}
-	<TextureMap {variant} />
+	{#if !variant.default}
+		<TextureMap {variant} />
+	{/if}
 </div>
 
 <style>

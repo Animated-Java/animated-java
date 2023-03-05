@@ -2,7 +2,7 @@ import { ajModelFormat } from '../modelFormat'
 import { createBlockbenchMod } from '../util/moddingTools'
 import { translate } from '../util/translation'
 import { SvelteDialog } from './svelteDialog'
-import { default as SvelteComponent } from './components/animationConfig.svelte'
+import { default as SvelteComponent } from './components/animationProperties.svelte'
 
 function openAjAnimationDialog(animation: _Animation) {
 	new SvelteDialog({

@@ -33,6 +33,12 @@
 </div>
 
 {@html `<style>
+.animated-java-doc-page img {
+	border: 0.25em solid var(--color-dark);
+	border-radius: 0.5em;
+	image-rendering: auto;
+	max-width: 660px;
+}
 .animated-java-doc-page h1 {
 	display: flex;
 	justify-content: center;
