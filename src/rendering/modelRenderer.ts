@@ -1,4 +1,5 @@
 import { parseResourcePackPath } from '../minecraft/util'
+import { ProgressBarController } from '../util/progress'
 import { Variant } from '../variants'
 
 interface IRenderedFace {
@@ -76,6 +77,17 @@ export interface IRenderedRig {
 }
 
 let customModelData = 0
+let progress: ProgressBarController
+
+function countNodesRecursive(nodes: OutlinerNode[] = Outliner.root): number {
+	let count = 0
+	for (const node of nodes) {
+		if (node instanceof Group) {
+			count += countNodesRecursive(node.children)
+		} else count++
+	}
+	return count
+}
 
 function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 	if (!cube.export) return
@@ -139,6 +151,7 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 	}
 
 	if (Object.keys(element.faces).length === 0) return
+	progress.add(1)
 	return element
 }
 
@@ -200,10 +213,12 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 		} else {
 			console.warn(`Encountered unknown node type:`, node)
 		}
+		progress.add(1)
 	}
 
 	rig.models[group.uuid] = renderedBone.model
 	rig.boneMap[group.uuid] = renderedBone
+	progress.add(1)
 	return structure
 }
 // if (!(Project?.animated_java_settings)) return
@@ -265,6 +280,8 @@ export function renderRig(): IRenderedRig {
 		outputFolder: Project.animated_java_settings.rig_export_folder.value,
 	}
 
+	progress = new ProgressBarController('Rendering Rig...', countNodesRecursive())
+
 	for (const node of Outliner.root) {
 		if (node instanceof Group) {
 			const bone = renderGroup(node, rig)
@@ -275,12 +292,15 @@ export function renderRig(): IRenderedRig {
 		} else {
 			console.warn(`Encountered unknown node type:`, node)
 		}
+		progress.add(1)
 	}
 
 	for (const variant of Project.animated_java_variants.variants) {
 		if (variant.default) continue // Don't export the default variant, it's redundant data.
 		rig.variantModels[variant.name] = renderVariantModels(variant, rig)
 	}
+
+	progress.finish()
 
 	return rig
 }

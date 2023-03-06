@@ -55,5 +55,6 @@ declare global {
 			NbtString: typeof NbtString
 			NbtFile: typeof NbtFile
 		}
+		ProgressBarController: typeof import('./util/progress').ProgressBarController
 	}
 }

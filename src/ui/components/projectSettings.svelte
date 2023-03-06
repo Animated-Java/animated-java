@@ -13,19 +13,13 @@
 
 	let selectedExporter: AnimatedJavaExporter | undefined
 
-	function getSelectedExporter() {
+	function getSelectedExporter() {}
+
+	let unsub = Project!.animated_java_settings!.exporter.subscribe(() => {
 		selectedExporter = AnimatedJavaExporter.all.find(exporter => {
 			return exporter.id === Project!.animated_java_settings!.exporter.selected?.value
 		})
 		console.log('Selected exporter changed to', selectedExporter)
-	}
-
-	queueMicrotask(() => {
-		getSelectedExporter()
-	})
-
-	let unsub = Project!.animated_java_settings!.exporter.subscribe(() => {
-		selectedExporter = undefined
 	})
 	onDestroy(() => {
 		unsub()
@@ -43,7 +37,7 @@
 
 	{#if selectedExporter}
 		{#key selectedExporter}
-			<div transition:slide={{ duration: 250 }} on:outroend={getSelectedExporter}>
+			<div in:slide|local={{ delay: 200, duration: 200 }} out:slide|local={{ duration: 200 }}>
 				<FancyHeader
 					content={translate('animated_java.project_settings.exporter_settings', {
 						exporter: selectedExporter.name,
@@ -61,6 +55,6 @@
 	div.dialog-content {
 		overflow-y: scroll;
 		max-height: 700px;
-		padding-right: 10px;
+		/* padding-right: 10px; */
 	}
 </style>

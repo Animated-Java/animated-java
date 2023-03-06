@@ -1,9 +1,15 @@
 import { isValidDatapackName } from '../minecraft/util'
 
 export class VirtualFolder {
+	childCount = 0
 	children: Array<VirtualFolder | VirtualFile> = []
 	constructor(public name: string, public parent?: VirtualFolder) {
 		isValidDatapackName(name, 'folder')
+	}
+
+	protected addChild() {
+		if (this.parent) this.parent.addChild()
+		this.childCount++
 	}
 
 	/**
@@ -23,6 +29,7 @@ export class VirtualFolder {
 				child = this.newFolder(parts[0])
 			}
 
+			this.addChild()
 			return child.newFile(parts.slice(1).join('/'), content)
 		}
 
@@ -30,6 +37,7 @@ export class VirtualFolder {
 			throw new Error(`File ${this.path}/${name} already exists`)
 		const file = new VirtualFile(name, this, content)
 		this.children.push(file)
+		this.addChild()
 		return this
 	}
 
@@ -50,6 +58,7 @@ export class VirtualFolder {
 				child = this.newFolder(parts[0])
 			}
 
+			this.addChild()
 			return child.newFolder(parts.slice(1).join('/'))
 		}
 
@@ -57,6 +66,7 @@ export class VirtualFolder {
 			throw new Error(`Folder ${this.path}/${name} already exists`)
 		const folder = new VirtualFolder(name, this)
 		this.children.push(folder)
+		this.addChild()
 		return folder
 	}
 
@@ -134,6 +144,15 @@ export class VirtualFolder {
 		if (child instanceof VirtualFolder) return child.accessFile(parts.slice(1).join('/'))
 		throw new Error(`Cannot access child of file ${this.path}/${name}`)
 	}
+
+	async writeToDisk(outputFolder: string, progressCallback?: (change: number) => void) {
+		const path = PathModule.join(outputFolder, this.path)
+		await fs.promises.mkdir(path, { recursive: true })
+		if (progressCallback) progressCallback(1)
+		for (const child of this.children) {
+			await child.writeToDisk(outputFolder, progressCallback)
+		}
+	}
 }
 
 type VirtualFileContent = string | Buffer | Uint8Array | string[] | any
@@ -148,6 +167,25 @@ export class VirtualFile {
 		// prettier-ignore
 		[this.name, this.ext] = fileName.split('.')
 		isValidDatapackName(this.name, 'file')
-		// if (Array.isArray(content)) content = content.join('\n')
+	}
+
+	async writeToDisk(outputFolder: string, progressCallback?: (change: number) => void) {
+		const path = PathModule.join(outputFolder, this.parent.path, this.fileName)
+
+		let content: string | Buffer | Uint8Array
+		if (Array.isArray(this.content)) {
+			content = this.content.join('\n')
+		} else if (
+			this.content instanceof Buffer ||
+			this.content instanceof Uint8Array ||
+			typeof this.content === 'string'
+		) {
+			content = this.content
+		} else {
+			content = JSON.stringify(this.content)
+		}
+
+		await fs.promises.writeFile(path, content, { encoding: 'utf-8' })
+		if (progressCallback) progressCallback(1)
 	}
 }

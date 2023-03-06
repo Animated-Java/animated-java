@@ -1,5 +1,5 @@
 import { translate } from './util/translation'
-import { GUIStructure } from './ui/ajUIStructure'
+import { GUIStructure } from './GUIStructure'
 import { Subscribable } from './util/subscribable'
 import { formatStr } from './util/misc'
 
@@ -46,6 +46,7 @@ export type ISettingsObject = Record<string, Setting<any>>
 
 export class Setting<V, R = any> extends Subscribable<R> {
 	static registeredSettings = new Map<string, Setting<any>>()
+
 	id: string
 	displayName: string
 	description: string[]
@@ -53,8 +54,9 @@ export class Setting<V, R = any> extends Subscribable<R> {
 	resettable?: boolean
 	docsLink?: string
 	dependsOn?: SettingID[]
-	private _initialized: boolean
+	active = true
 
+	private _initialized: boolean
 	protected _value: V
 	private lastValue: V
 	infoPopup?: IInfoPopup

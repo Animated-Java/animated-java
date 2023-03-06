@@ -2,7 +2,7 @@
 	import { Variant } from '../../variants'
 	import * as AJ from '../../settings'
 	import { translate } from '../../util/translation'
-	import type { GUIStructure } from '../ajUIStructure'
+	import type { GUIStructure } from '../../GUIStructure'
 	import { safeFunctionName } from '../../minecraft/util'
 	import UiNode from './uiNode.svelte'
 	import { onDestroy } from 'svelte'

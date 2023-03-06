@@ -111,6 +111,7 @@
 		"@typescript-eslint/ban-ts-comment": "off",
 		"@typescript-eslint/require-await": "warn",
 		"@typescript-eslint/no-unsafe-call": "off",
-		"@typescript-eslint/unbound-method": "off"
+		"@typescript-eslint/unbound-method": "off",
+		"@typescript-eslint/no-non-null-assertion": "off"
 	}
 }

@@ -1,5 +1,4 @@
 const translate = AnimatedJava.translate
-const PATHJS = PathModule
 const formatStr = AnimatedJava.formatStr
 
 export {}
@@ -11,6 +10,10 @@ const TRANSLATIONS = {
 			'animated_java.exporters.animation_exporter.settings.datapack_folder.description'
 		).split('\n'),
 	},
+}
+
+async function fileExists(path: string) {
+	return !!(await fs.promises.stat(path).catch(() => false))
 }
 
 new AnimatedJava.Exporter({
@@ -33,7 +36,7 @@ new AnimatedJava.Exporter({
 			id: 'animated_java:animation_exporter/datapack_folder',
 		},
 	],
-	export(ajSettings, projectSettings, exporterSettings, renderedAnimations, rig) {
+	async export(ajSettings, projectSettings, exporterSettings, renderedAnimations, rig) {
 		if (!Project?.animated_java_variants) throw new Error('No variants found')
 		console.log(ajSettings, projectSettings, exporterSettings, renderedAnimations, rig)
 		//--------------------------------------------
@@ -42,6 +45,7 @@ new AnimatedJava.Exporter({
 		const { NbtCompound, NbtString, NbtList, NbtInt } = AnimatedJava.deepslate
 		const NAMESPACE = projectSettings.project_namespace.value
 		const RIG_ITEM = projectSettings.rig_item.value
+		const EXPORT_FOLDER = exporterSettings.datapack_folder.value
 		const variants = Project.animated_java_variants
 
 		//--------------------------------------------
@@ -60,6 +64,10 @@ new AnimatedJava.Exporter({
 
 		const datapack = new AnimatedJava.VirtualFileSystem.VirtualFolder(NAMESPACE)
 		const dataFolder = datapack.newFolder('data')
+
+		datapack.newFile('animated_java.mcmeta', {
+			project_namespace: NAMESPACE,
+		})
 
 		//--------------------------------------------
 		// tags/functions
@@ -89,7 +97,7 @@ new AnimatedJava.Exporter({
 		animatedJavaFolder
 			.accessFolder('functions')
 			.chainNewFile('load.mcfunction', [
-				Object.values(scoreboard).map(s => `scoreboard objectives add ${s} dummy`),
+				...Object.values(scoreboard).map(s => `scoreboard objectives add ${s} dummy`),
 				`scoreboard players add .aj.last_id ${scoreboard.id} 0`,
 			])
 			.chainNewFile('tick.mcfunction', [])
@@ -164,6 +172,31 @@ new AnimatedJava.Exporter({
 				`scoreboard players operation @s ${scoreboard.id} = .aj.last_id ${scoreboard.id}`,
 			])
 
-		return datapack
+		//--------------------------------------------
+		// Export
+		//--------------------------------------------
+
+		const DATAPACK_EXPORT_PATH = PathModule.join(EXPORT_FOLDER, NAMESPACE)
+		const ajMetaPath = PathModule.join(DATAPACK_EXPORT_PATH, 'animated_java.mcmeta')
+
+		const progress = new AnimatedJava.ProgressBarController(
+			'Writing Data Pack to disk...',
+			datapack.childCount
+		)
+
+		if (await fileExists(ajMetaPath)) {
+			const content = await fs.promises.readFile(ajMetaPath, 'utf-8').then(JSON.parse)
+			if (content.project_namespace !== NAMESPACE)
+				throw new Error(
+					`The datapack folder already contains a datapack with a different namespace: ${
+						content.project_namespace as string
+					}`
+				)
+
+			await fs.promises.rm(DATAPACK_EXPORT_PATH, { recursive: true })
+		}
+
+		await datapack.writeToDisk(EXPORT_FOLDER, change => progress.add(change))
+		progress.finish()
 	},
 })

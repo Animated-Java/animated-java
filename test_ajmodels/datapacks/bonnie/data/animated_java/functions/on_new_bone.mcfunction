@@ -1,0 +1,1 @@
+scoreboard players operation @s aj.id = .aj.last_id aj.id

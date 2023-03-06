@@ -1,6 +1,9 @@
 import { LimitClock, roundToN } from '../util/misc'
+import { ProgressBarController } from '../util/progress'
 import { AJBone } from './bone'
 import { Gimbals, Vector } from './linear'
+
+let progress: ProgressBarController
 
 function eulerToXyz(euler: THREE.Euler) {
 	const a = new THREE.Quaternion().setFromEuler(euler)
@@ -137,6 +140,7 @@ export async function renderAnimation(animation: _Animation) {
 export async function renderAllAnimations() {
 	let selectedAnimation: _Animation | undefined
 	let currentTime = 0
+	progress = new ProgressBarController('Rendering Animations...', Animator.animations.length)
 	// Save selected animation
 	if (Mode.selected.id === 'animate') {
 		selectedAnimation = Animator.selected
@@ -147,6 +151,7 @@ export async function renderAllAnimations() {
 
 	for (const animation of Animator.animations) {
 		animations.push(await renderAnimation(animation))
+		progress.add(1)
 	}
 
 	// Restore selected animation

@@ -10,7 +10,7 @@ import {
 	InlineTextSetting,
 } from './settings'
 import * as events from './util/events'
-import { GUIStructure } from './ui/ajUIStructure'
+import { GUIStructure } from './GUIStructure'
 import { translate } from './util/translation'
 
 export interface IAnimatedJavaProjectSettings {
@@ -18,6 +18,7 @@ export interface IAnimatedJavaProjectSettings {
 	rig_item: InlineTextSetting
 	rig_item_model: InlineTextSetting
 	rig_export_folder: FolderSetting
+	resource_pack: FileSetting
 	verbose: CheckboxSetting
 	exporter: DropdownSetting<string>
 }
@@ -71,6 +72,18 @@ const TRANSLATIONS = {
 			unset: translate('animated_java.project_settings.rig_export_folder.error.unset'),
 			invalid_path: translate(
 				'animated_java.project_settings.rig_export_folder.error.invalid_path'
+			),
+		},
+	},
+	resource_pack: {
+		displayName: translate('animated_java.project_settings.resource_pack'),
+		description: translate('animated_java.project_settings.resource_pack.description').split(
+			'\n'
+		),
+		error: {
+			unset: translate('animated_java.project_settings.resource_pack.error.unset'),
+			invalid_path: translate(
+				'animated_java.project_settings.resource_pack.error.invalid_path'
 			),
 		},
 	},
@@ -209,6 +222,15 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 			}
 		),
 
+		resource_pack: new FileSetting({
+			id: 'animated_java:project_settings/resource_pack',
+			displayName: TRANSLATIONS.resource_pack.displayName,
+			description: TRANSLATIONS.resource_pack.description,
+			defaultValue: '',
+			resettable: true,
+			docsLink: 'page:project_settings#resource_pack',
+		}),
+
 		verbose: new CheckboxSetting({
 			id: 'animated_java:project_settings/verbose',
 			displayName: TRANSLATIONS.verbose.displayName,
@@ -245,19 +267,31 @@ export const projectSettingStructure: GUIStructure = [
 	},
 	{
 		type: 'group',
-		title: translate('animated_java.project_settings.rig_settings'),
+		title: translate('animated_java.project_settings.group.resourcepack'),
 		children: [
 			{
 				type: 'setting',
 				id: _.rig_item.id,
 			},
 			{
-				type: 'setting',
-				id: _.rig_item_model.id,
-			},
-			{
-				type: 'setting',
-				id: _.rig_export_folder.id,
+				type: 'toggle',
+				title: translate('animated_java.project_settings.toggle.advanced_resourcepack'),
+				active: [
+					{
+						type: 'setting',
+						id: _.rig_item_model.id,
+					},
+					{
+						type: 'setting',
+						id: _.rig_export_folder.id,
+					},
+				],
+				inactive: [
+					{
+						type: 'setting',
+						id: _.resource_pack.id,
+					},
+				],
 			},
 		],
 	},

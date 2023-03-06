@@ -3,7 +3,7 @@
 	import { safeFunctionName } from '../../minecraft/util'
 	import * as AJ from '../../settings'
 	import { translate } from '../../util/translation'
-	import type { GUIStructure } from '../ajUIStructure'
+	import type { GUIStructure } from '../../GUIStructure'
 	import UiNode from './uiNode.svelte'
 
 	const TRANSLATIONS = {

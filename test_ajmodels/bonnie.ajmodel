@@ -4201,7 +4201,7 @@
 			"override": false,
 			"length": 1.4,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",

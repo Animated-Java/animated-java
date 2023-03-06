@@ -3,10 +3,11 @@ import { VirtualFolder } from './util/virtualFileSystem'
 import { IRenderedAnimation, renderAllAnimations } from './rendering/animationRenderer'
 import { IRenderedRig, renderRig } from './rendering/modelRenderer'
 import { animatedJavaSettings, IInfoPopup, Setting as AJSetting } from './settings'
-import { GUIStructure } from './ui/ajUIStructure'
+import { GUIStructure } from './GUIStructure'
 import { openAjFailedProjectExportReadinessDialog } from './ui/popups/failedProjectExportReadiness'
 import { consoleGroupCollapsed } from './util/console'
 import { NamespacedString } from './util/moddingTools'
+import { translate } from './util/translation'
 
 type ProjectSettings = Record<NamespacedString, AJSetting<any>>
 type NotUndefined<T> = T extends undefined ? never : T
@@ -24,7 +25,7 @@ interface IAnimatedJavaExporterOptions<S extends ProjectSettings> {
 		renderedAnimations: IRenderedAnimation[],
 		rig: IRenderedRig,
 		datapack: VirtualFolder
-	): Promise<VirtualFolder> | VirtualFolder
+	): Promise<void> | void
 }
 
 export class AnimatedJavaExporter<
@@ -68,7 +69,7 @@ export const exportProject = consoleGroupCollapsed('exportProject', async () => 
 
 	const ajSettings = animatedJavaSettings
 	const projectSettings = Project.animated_java_settings
-	const exporterSettings = Project.animated_java_exporter_settings
+	const exporterSettings = Project.animated_java_exporter_settings![selectedExporterId]
 
 	const renderedAnimations = await renderAllAnimations()
 	const rig = renderRig()
@@ -84,7 +85,7 @@ export const exportProject = consoleGroupCollapsed('exportProject', async () => 
 			},
 		})
 
-	const output = await exporter.export(
+	await exporter.export(
 		ajSettings,
 		projectSettings,
 		exporterSettings,
@@ -93,10 +94,22 @@ export const exportProject = consoleGroupCollapsed('exportProject', async () => 
 		datapack
 	)
 
-	console.log(output)
+	await exportResources(ajSettings, projectSettings, rig)
+
+	Blockbench.showQuickMessage(translate('animated_java.quickmessage.exported_successfully'), 2000)
 })
 
-// FIXME - Need GUI for warnings
+async function exportResources(
+	ajSettings: typeof animatedJavaSettings,
+	projectSettings: NotUndefined<ModelProject['animated_java_settings']>,
+	rig: IRenderedRig
+) {
+	const NAMESPACE = projectSettings.project_namespace.value
+	const assetsFolder = new VirtualFolder('assets')
+	const namespaceFolder = assetsFolder.newFolder(NAMESPACE)
+	namespaceFolder.newFolders('models', 'textures')
+}
+
 export function verifyProjectExportReadiness() {
 	const issues: IInfoPopup[] = []
 

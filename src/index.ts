@@ -51,6 +51,7 @@ import {
 	NbtFile,
 } from 'deepslate'
 import * as VirtualFileSystem from './util/virtualFileSystem'
+import { ProgressBarController } from './util/progress'
 
 Prism.languages.mcfunction = {}
 
@@ -96,6 +97,7 @@ globalThis.AnimatedJava = {
 		NbtString,
 		NbtFile,
 	},
+	ProgressBarController,
 }
 // Uninstall events
 events.EXTRACT_MODS.subscribe(() => {

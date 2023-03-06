@@ -12,6 +12,14 @@ interface IGUIElements {
 		type: 'setting'
 		id: string
 	}
+	toggle: {
+		type: 'toggle'
+		title?: string
+		activeTitle?: string
+		inactiveTitle?: string
+		active: GUIStructure
+		inactive: GUIStructure
+	}
 }
 
 export type AnyGUIElement = IGUIElements[keyof IGUIElements]

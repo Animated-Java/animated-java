@@ -7,6 +7,8 @@ animated_java.menubar.items.project_settings: Project Settings
 animated_java.menubar.items.documentation: Documentation
 animated_java.menubar.items.export_project: Export Project
 
+animated_java.quickmessage.exported_successfully: Project Exported Successfully!
+
 ### Dialogs
 animated_java.dialog.close_button: Done
 
@@ -34,7 +36,8 @@ animated_java.project_settings.project_namespace: Project Namespace
 animated_java.project_settings.project_namespace.description: |-
   The namespace of the project.
 
-animated_java.project_settings.rig_settings: Rig Settings
+animated_java.project_settings.group.resourcepack: Resource Pack
+animated_java.project_settings.toggle.advanced_resourcepack: Enable Advanced Resource Pack Settings?
 
 animated_java.project_settings.rig_item: Rig Item
 animated_java.project_settings.rig_item.description: |-
@@ -77,6 +80,16 @@ animated_java.project_settings.rig_export_folder.error.unset: |-
 animated_java.project_settings.rig_export_folder.error.invalid_path: |-
   Rig Export Folder must be in a valid resource pack
   The targeted folder must be under 'resources/assets/<namespace>/models/'.
+
+animated_java.project_settings.resource_pack: Resource Pack
+animated_java.project_settings.resource_pack.description: |-
+  The Resource Pack to inject the Rig's models into.
+  To select a Resource Pack, navigate to it via the open file button, and select it's pack.mcmeta file.
+animated_java.project_settings.resource_pack.error.unset: |-
+  You must select a Resource Pack.
+animated_java.project_settings.resource_pack.error.invalid_path: |-
+  The selected Resource Pack is not valid.
+  Make sure you've selected the pack.mcmeta file of a valid Resource Pack!
 
 animated_java.project_settings.verbose: Verbose
 animated_java.project_settings.verbose.description: |-
@@ -152,8 +165,9 @@ animated_java.exporters.animation_exporter.settings.datapack_folder: Data Pack F
 animated_java.exporters.animation_exporter.settings.datapack_folder.description:
   |-
   The folder to export the generated Data Pack into.
-  Should be a datapacks folder inside of a world (`world/datapacks/`).
+  This should be the datapacks folder inside of your world (`world/datapacks/`).
   The generated Data Pack will be placed in a folder named after the Project's Namespace.
+  WARNING! Data Pack merging is NOT supported. If you have an existing Data Pack with the same namespace, it might be OVERWRITTEN.
 
 # Statue Exporter
 animated_java.exporters.statue_exporter.name: Statue Exporter
