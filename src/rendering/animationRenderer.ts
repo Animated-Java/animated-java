@@ -39,7 +39,7 @@ export function getBones() {
 	return recurseBoneStructure(virtualRoot)
 }
 
-function exportVariant(animation: _Animation, time: number) {
+function getVariantKeyframe(animation: _Animation, time: number) {
 	if (!animation.animators.effects?.variants) return
 	for (const kf of animation.animators.effects.variants as _Keyframe[]) {
 		if (kf.time === time)
@@ -50,7 +50,7 @@ function exportVariant(animation: _Animation, time: number) {
 	}
 }
 
-function exportCommands(animation: _Animation, time: number) {
+function getCommandsKeyframe(animation: _Animation, time: number) {
 	if (!animation.animators.effects?.commands) return
 	for (const kf of animation.animators.effects.commands as _Keyframe[]) {
 		if (kf.time === time)
@@ -61,12 +61,12 @@ function exportCommands(animation: _Animation, time: number) {
 	}
 }
 
-function exportAnimationStates(animation: _Animation, time: number) {
+function getAnimationStateKeyframe(animation: _Animation, time: number) {
 	if (!animation.animators.effects?.animationStates) return
 	for (const kf of animation.animators.effects.animationStates as _Keyframe[]) {
 		if (kf.time === time)
 			return {
-				animation: kf.data_points[0].animationStates,
+				animation: kf.data_points[0].animationState,
 				condition: kf.data_points[0].condition,
 			}
 	}
@@ -105,7 +105,7 @@ export interface IRenderedAnimation {
 			commands: string
 			condition: string
 		}
-		animationStates?: {
+		animationState?: {
 			animation: string
 			condition: string
 		}
@@ -125,9 +125,9 @@ export async function renderAnimation(animation: _Animation) {
 		updatePreview(animation, time)
 		rendered.frames.push({
 			bones: bones.exportRoot(),
-			variant: exportVariant(animation, time),
-			commands: exportCommands(animation, time),
-			animationStates: exportAnimationStates(animation, time),
+			variant: getVariantKeyframe(animation, time),
+			commands: getCommandsKeyframe(animation, time),
+			animationState: getAnimationStateKeyframe(animation, time),
 		})
 		await clock.sync()
 	}

@@ -1,8 +1,22 @@
-import { AnimatedJavaExporter } from './exporter'
-import { IAnimatedJavaProjectSettings } from './projectSettings'
-import { Setting } from './settings'
-import { translate } from './util/translation'
-import { VariantsContainer } from './variants'
+import type { AnimatedJavaExporter } from './exporter'
+import type { IAnimatedJavaProjectSettings } from './projectSettings'
+import type { Setting } from './settings'
+import type { translate } from './util/translation'
+import type { VariantsContainer } from './variants'
+import {
+	NbtByte,
+	NbtByteArray,
+	NbtCompound,
+	NbtDouble,
+	NbtFloat,
+	NbtInt,
+	NbtIntArray,
+	NbtList,
+	NbtLong,
+	NbtLongArray,
+	NbtString,
+	NbtFile,
+} from 'deepslate'
 
 type ProjectSettings = Record<string, Setting<any>>
 
@@ -23,7 +37,23 @@ declare global {
 		Settings: typeof import('./settings')
 		events: typeof import('./util/events')
 		translate: typeof translate
+		formatStr: typeof import('./util/misc').formatStr
 		docClick: (link: string) => void
 		openAjDocsDialog: (link: string) => void
+		VirtualFileSystem: typeof import('./util/virtualFileSystem')
+		deepslate: {
+			NbtByte: typeof NbtByte
+			NbtByteArray: typeof NbtByteArray
+			NbtCompound: typeof NbtCompound
+			NbtDouble: typeof NbtDouble
+			NbtFloat: typeof NbtFloat
+			NbtInt: typeof NbtInt
+			NbtIntArray: typeof NbtIntArray
+			NbtList: typeof NbtList
+			NbtLong: typeof NbtLong
+			NbtLongArray: typeof NbtLongArray
+			NbtString: typeof NbtString
+			NbtFile: typeof NbtFile
+		}
 	}
 }

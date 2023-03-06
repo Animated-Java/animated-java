@@ -12,7 +12,6 @@ import {
 import * as events from './util/events'
 import { GUIStructure } from './ui/ajUIStructure'
 import { translate } from './util/translation'
-import * as pathjs from 'path'
 
 export interface IAnimatedJavaProjectSettings {
 	project_namespace: InlineTextSetting
@@ -163,7 +162,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 					)
 					return setting
 				}
-				const parsed = pathjs.parse(setting.value)
+				const parsed = PathModule.parse(setting.value)
 				const rigItem = Project?.animated_java_settings?.rig_item?.value
 				if (!rigItem) {
 					setting.infoPopup = createInfo(

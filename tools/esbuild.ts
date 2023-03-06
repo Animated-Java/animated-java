@@ -18,7 +18,7 @@ console.log(sveltePlugin)
 
 const PACKAGE = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
 
-let infoPlugin: esbuild.Plugin = {
+const INFO_PLUGIN: esbuild.Plugin = {
 	name: 'infoPlugin',
 	/**
 	 *
@@ -32,7 +32,7 @@ let infoPlugin: esbuild.Plugin = {
 		})
 
 		build.onEnd(result => {
-			let end = Date.now()
+			const end = Date.now()
 			const diff = end - start
 			console.log(
 				`\u{2705} Build completed in ${diff}ms with ${result.warnings.length} warning${
@@ -51,50 +51,52 @@ function createBanner() {
 	const LICENSE = fs.readFileSync('./LICENSE').toString()
 	const fetchbot = PACKAGE.contributors[0]
 	const dominexis = PACKAGE.contributors[1]
-	let lines = [
+	let lines: string[] = [
 		String.raw`____ _  _ _ _  _ ____ ___ ____ ___      _ ____ _  _ ____`,
 		String.raw`|__| |\ | | |\/| |__|  |  |___ |  \     | |__| |  | |__|`,
 		String.raw`|  | | \| | |  | |  |  |  |___ |__/    _| |  |  \/  |  |`,
 		``,
-		`v${PACKAGE.version}`,
+		`v${PACKAGE.version as string}`,
 		``,
 		PACKAGE.description,
 		``,
-		`Created by ${PACKAGE.author.name}`,
-		`(${PACKAGE.author.email}) [${PACKAGE.author.url}]`,
+		`Created by ${PACKAGE.author.name as string}`,
+		`(${PACKAGE.author.email as string}) [${PACKAGE.author.url as string}]`,
 		``,
 		`With AMAZING help from`,
 		``,
-		`${fetchbot.name}`,
-		`(${fetchbot.email}) [${fetchbot.url}]`,
+		`${fetchbot.name as string}`,
+		`(${fetchbot.email as string}) [${fetchbot.url as string}]`,
 		``,
-		`and ${dominexis.name}`,
-		`(${dominexis.email}) [${dominexis.url}]`,
+		`and ${dominexis.name as string}`,
+		`(${dominexis.email as string}) [${dominexis.url as string}]`,
 		``,
 		`[ SPECIAL THANKS ]`,
 		``,
 		`$INSERT_SPECIAL_THANKS_HERE`,
 		``,
 		`[ SOURCE ]`,
-		`${PACKAGE.repository.url}`,
+		`${PACKAGE.repository.url as string}`,
 		``,
 		`[ LICENSE ]`,
 		...LICENSE.split('\n').map(v => v.trim()),
 	]
 
-	let maxLength = Math.max(...lines.map(line => line.length))
+	const maxLength = Math.max(...lines.map(line => line.length))
 
 	lines.splice(
 		lines.indexOf('$INSERT_SPECIAL_THANKS_HERE'),
 		1,
-		...wrap(PACKAGE.special_thanks.join(', '), Math.floor(maxLength / 1.5)).split('\n')
+		...wrap(PACKAGE.special_thanks.join(', ') as string, Math.floor(maxLength / 1.5)).split(
+			'\n'
+		)
 	)
 
 	const leftBuffer = Math.floor(maxLength / 2)
 	const rightBuffer = Math.ceil(maxLength / 2)
 
-	let header = '╭' + `─`.repeat(maxLength + 2) + '╮'
-	let footer = '╰' + `─`.repeat(maxLength + 2) + '╯'
+	const header = '╭' + `─`.repeat(maxLength + 2) + '╮'
+	const footer = '╰' + `─`.repeat(maxLength + 2) + '╯'
 
 	lines = lines.map(v => {
 		const div = v.length / 2
@@ -103,18 +105,18 @@ function createBanner() {
 		return '│ ' + ' '.repeat(l) + v + ' '.repeat(r) + ' │'
 	})
 
-	let banner = '\n' + [header, ...lines, footer].map(v => `//?? ${v}`).join('\n') + '\n'
+	const banner = '\n' + [header, ...lines, footer].map(v => `//?? ${v}`).join('\n') + '\n'
 
 	return {
 		js: banner,
 	}
 }
 
-const defines: Record<string, string> = {}
+const DEFINES: Record<string, string> = {}
 
 Object.entries(process.env).forEach(([key, value]) => {
 	if (key.match(/[^A-Za-z0-9_]/i)) return
-	defines[`process.env.${key}`] = JSON.stringify(value)
+	DEFINES[`process.env.${key}`] = JSON.stringify(value)
 })
 
 async function buildWorker(path: string) {
@@ -142,7 +144,10 @@ async function buildWorker(path: string) {
 	return result
 }
 
-const yamlPlugin: (opts: { loadOptions?: any; transform?: any }) => esbuild.Plugin = options => ({
+const yamlPlugin: (opts: {
+	loadOptions?: jsyaml.LoadOptions
+	transform?: any
+}) => esbuild.Plugin = options => ({
 	name: 'yaml',
 	setup(build) {
 		build.onResolve({ filter: /\.(yml|yaml)$/ }, args => {
@@ -175,7 +180,7 @@ async function buildDev() {
 	const ctx = await esbuild.context({
 		banner: createBanner(),
 		entryPoints: ['./src/index.ts'],
-		outfile: `./dist/${PACKAGE.name}.js`,
+		outfile: `./dist/${PACKAGE.name as string}.js`,
 		bundle: true,
 		minify: false,
 		platform: 'node',
@@ -186,14 +191,14 @@ async function buildDev() {
 				builder: buildWorker,
 				typeDefPath: './src/globalWorker.d.ts',
 			}),
-			infoPlugin,
+			INFO_PLUGIN,
 			yamlPlugin({}),
 			sveltePlugin(svelteConfig as any),
 		],
 		format: 'iife',
-		define: defines,
+		define: DEFINES,
 	})
-	ctx.watch()
+	await ctx.watch()
 }
 
 function buildProd() {
@@ -201,7 +206,7 @@ function buildProd() {
 	esbuild
 		.build({
 			entryPoints: ['./src/index.ts'],
-			outfile: `./dist/${PACKAGE.name}.js`,
+			outfile: `./dist/${PACKAGE.name as string}.js`,
 			bundle: true,
 			minify: true,
 			platform: 'node',
@@ -211,24 +216,24 @@ function buildProd() {
 				workerPlugin.workerPlugin({
 					builder: buildWorker,
 				}),
-				infoPlugin,
+				INFO_PLUGIN,
 				yamlPlugin({}),
 				sveltePlugin(svelteConfig as any),
 			],
 			banner: createBanner(),
 			drop: ['debugger'],
 			format: 'iife',
-			define: defines,
+			define: DEFINES,
 		})
 		.catch(() => process.exit(1))
 }
 
-function main() {
+async function main() {
 	if (process.env.NODE_ENV === 'development') {
-		buildDev()
+		await buildDev()
 		return
 	}
 	buildProd()
 }
 
-main()
+void main()

@@ -148,6 +148,13 @@ animated_java.dialog.variant_properties.textureMap.description: |-
 ### Exporters
 # Animation Exporter
 animated_java.exporters.animation_exporter.name: Animation Exporter
+animated_java.exporters.animation_exporter.settings.datapack_folder: Data Pack Folder
+animated_java.exporters.animation_exporter.settings.datapack_folder.description:
+  |-
+  The folder to export the generated Data Pack into.
+  Should be a datapacks folder inside of a world (`world/datapacks/`).
+  The generated Data Pack will be placed in a folder named after the Project's Namespace.
+
 # Statue Exporter
 animated_java.exporters.statue_exporter.name: Statue Exporter
 # Raw Exporter

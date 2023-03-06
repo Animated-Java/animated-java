@@ -6,7 +6,7 @@
 	"animated_java": {
 		"settings": {
 			"project_namespace": "bonnie",
-			"rig_item": "a",
+			"rig_item": "minecraft:purple_dye",
 			"rig_item_model": "D:\\github-repos\\animated-java\\test_ajmodels\\resources\\assets\\minecraft\\models\\item\\purple_dye.json",
 			"rig_export_folder": "D:\\github-repos\\animated-java\\test_ajmodels\\resources\\assets\\animated_java\\models\\rigs\\bonnie",
 			"verbose": true,
@@ -14,7 +14,7 @@
 		},
 		"exporter_settings": {
 			"animated_java:animation_exporter": {
-				"bar": "Hello World!"
+				"datapack_folder": "D:\\github-repos\\animated-java\\test_ajmodels\\datapacks"
 			},
 			"animated_java:statue_exporter": {
 				"foo": false
@@ -4201,7 +4201,7 @@
 			"override": false,
 			"length": 1.4,
 			"snapping": 20,
-			"selected": false,
+			"selected": true,
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",

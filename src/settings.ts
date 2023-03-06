@@ -1,6 +1,7 @@
-import { formatStr, translate } from './util/translation'
+import { translate } from './util/translation'
 import { GUIStructure } from './ui/ajUIStructure'
 import { Subscribable } from './util/subscribable'
+import { formatStr } from './util/misc'
 
 export interface IInfoPopup {
 	type: 'warning' | 'error' | 'info'

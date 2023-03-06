@@ -61,7 +61,12 @@
 			{
 				"selector": "variable",
 				"modifiers": ["const"],
-				"format": ["camelCase", "PascalCase"]
+				"format": null
+			},
+			{
+				"selector": "variable",
+				"modifiers": ["const", "destructured"],
+				"format": ["camelCase", "PascalCase", "UPPER_CASE"]
 			},
 			{
 				"selector": "variable",

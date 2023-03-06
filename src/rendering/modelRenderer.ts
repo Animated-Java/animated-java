@@ -1,4 +1,3 @@
-import * as pathjs from 'path'
 import { parseResourcePackPath } from '../minecraft/util'
 import { Variant } from '../variants'
 
@@ -23,7 +22,7 @@ interface IRenderedElement {
  */
 interface IRenderedModel {
 	parent?: string
-	textureOverrides: Record<string, string>
+	textures: Record<string, string>
 	elements?: IRenderedElement[]
 }
 
@@ -32,6 +31,14 @@ interface IRenderedBone {
 	name: string
 	textures: Record<string, Texture>
 	model: IRenderedModel
+	customModelData: number
+	modelPath: string
+	resourceLocation: string
+}
+
+interface IRenderedBoneVariant {
+	model: IRenderedModel
+	customModelData: number
 	modelPath: string
 	resourceLocation: string
 }
@@ -41,7 +48,7 @@ interface IBoneStructure {
 	children: IBoneStructure[]
 }
 
-interface IRenderedRig {
+export interface IRenderedRig {
 	/**
 	 * A map of bone UUIDs to rendered models
 	 */
@@ -49,7 +56,7 @@ interface IRenderedRig {
 	/**
 	 * A map of variant names to maps of rendered models
 	 */
-	variants: Record<string, Record<string, IRenderedModel>>
+	variantModels: Record<string, Record<string, IRenderedBoneVariant>>
 	/**
 	 * A map of bone UUIDs to rendered bones
 	 */
@@ -67,6 +74,8 @@ interface IRenderedRig {
 	 */
 	outputFolder: string
 }
+
+let customModelData = 0
 
 function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 	if (!cube.export) return
@@ -121,7 +130,7 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 				renderedFace.texture = '#' + texture.id
 				rig.textures[texture.id] = texture
 				const parsed = parseResourcePackPath(texture.path)
-				if (parsed) model.textureOverrides[texture.id] = parsed.resourceLocation
+				if (parsed) model.textures[texture.id] = parsed.resourceLocation
 			} else renderedFace.texture = '#missing'
 		}
 		if (data.cullface) renderedFace.cullface = data.cullface
@@ -151,10 +160,10 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 
 	let path: string, parsed: { resourceLocation: string } & any
 	if (parentId === 'root') {
-		path = pathjs.join(rig.outputFolder)
+		path = PathModule.join(rig.outputFolder)
 		parsed = parseResourcePackPath(path)
 	} else {
-		path = pathjs.join(rig.outputFolder, group.name + `.json`)
+		path = PathModule.join(rig.outputFolder, group.name + `.json`)
 		parsed = parseResourcePackPath(path)
 	}
 
@@ -168,10 +177,11 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 		name: group.name,
 		textures: {},
 		model: {
-			textureOverrides: {},
 			elements: [],
+			textures: {},
 		},
 		modelPath: path,
+		customModelData: customModelData++,
 		resourceLocation: parsed.resourceLocation,
 	}
 
@@ -201,22 +211,35 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 // const outputFolder = Project.animated_java_settings.rig_export_folder.value
 
 function renderVariantModels(variant: Variant, rig: IRenderedRig) {
-	const models: Record<string, IRenderedModel> = {}
+	const bones: Record<string, IRenderedBoneVariant> = {}
 
 	for (const [uuid, bone] of Object.entries(rig.boneMap)) {
-		const textureOverrides: IRenderedModel['textureOverrides'] = {}
+		const textures: IRenderedModel['textures'] = {}
 		for (const { fromTexture, toTexture } of variant.textureMapIterator()) {
 			if (!(fromTexture && toTexture))
 				throw new Error(
 					`Invalid texture mapping found while exporting variant models. If you're seeing this error something has gone horribly wrong.`
 				)
-			textureOverrides[fromTexture.id] = renderTexture(toTexture)
+			textures[fromTexture.id] = renderTexture(toTexture)
 		}
 
-		models[uuid] = { parent: bone.resourceLocation, textureOverrides }
+		const parsed = PathModule.parse(bone.modelPath)
+		const modelPath = PathModule.join(parsed.dir, variant.name, `${bone.name}.json`)
+		const parsedModelPath = parseResourcePackPath(modelPath)
+		if (!parsedModelPath) throw new Error(`Invalid variant model path: ${modelPath}`)
+
+		bones[uuid] = {
+			model: {
+				parent: bone.resourceLocation,
+				textures,
+			},
+			customModelData: customModelData++,
+			modelPath,
+			resourceLocation: parsedModelPath.resourceLocation,
+		}
 	}
 
-	return models
+	return bones
 }
 
 export function renderRig(): IRenderedRig {
@@ -231,9 +254,11 @@ export function renderRig(): IRenderedRig {
 		)
 	}
 
+	customModelData = 0
+
 	const rig: IRenderedRig = {
 		models: {},
-		variants: {},
+		variantModels: {},
 		boneMap: {},
 		boneStructure: {} as IBoneStructure,
 		textures: {},
@@ -253,7 +278,8 @@ export function renderRig(): IRenderedRig {
 	}
 
 	for (const variant of Project.animated_java_variants.variants) {
-		rig.variants[variant.name] = renderVariantModels(variant, rig)
+		if (variant.default) continue // Don't export the default variant, it's redundant data.
+		rig.variantModels[variant.name] = renderVariantModels(variant, rig)
 	}
 
 	return rig

@@ -21,11 +21,10 @@
 - [x] The setting description scales weirdly. Make it not do that
 - [x] ~~Overwrite the rotation limits dialog~~ Create a new rotation limits dialog with a more accurate description for AJ's models.
 - [x] Add a popup over the canvas that tells the user why their cubes are red
-- [ ] Settings UI needs to display the selected exporter's settings
+- [x] Settings UI needs to display the selected exporter's settings
 
 # Docs
 - [ ] F-A-Q
-- [ ] Implement page caching.
 
 # About Page
 - [ ] Include a small gif of SnaveSutit smashing a keyboard
@@ -80,5 +79,6 @@
         - [ ] This bone resets every time an animation is started via the play function
         - [ ] This bone is not animated by any animations
 
-# Future Updates
+# Post-1.0
 - [ ] Animation controller support?
+- [ ] Armor Stand animation exporter

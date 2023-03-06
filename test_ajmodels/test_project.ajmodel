@@ -5,7 +5,7 @@
 	},
 	"animated_java": {
 		"settings": {
-			"project_namespace": "untitled",
+			"project_namespace": "happy_box",
 			"rig_item": "minecraft:white_dye",
 			"rig_item_model": "D:\\github-repos\\animated-java\\test_ajmodels\\resources\\assets\\minecraft\\models\\item\\white_dye.json",
 			"rig_export_folder": "D:\\github-repos\\animated-java\\test_ajmodels\\resources\\assets\\animated_java\\models\\rigs\\test_project",
@@ -180,7 +180,7 @@
 			"override": false,
 			"length": 1,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",
@@ -318,7 +318,7 @@
 			"override": false,
 			"length": 0,
 			"snapping": 20,
-			"selected": false,
+			"selected": true,
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",

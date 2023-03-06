@@ -18,8 +18,10 @@
 		{#each infos as info}
 			<div class="error">
 				<div class="error-title">
-					<span class="material-icons">error</span>
-					<p style="margin-left: 0.5em; text-decoration: underline;">{info.title}</p>
+					<span class="material-icons" style="color: var(--color-error);">error</span>
+					<p style="margin-left: 0.5em; text-decoration: underline;">
+						{info.title}
+					</p>
 				</div>
 				<div class="error-body">
 					<h5>{info.lines[0]}</h5>
@@ -61,8 +63,7 @@
 		display: flex;
 		flex-direction: row;
 		align-items: center;
-		background-color: var(--color-error);
-		color: var(--color-bright_ui_text);
+		background-color: var(--color-button);
 		font-weight: 600;
 		padding: 0.5em;
 	}

@@ -1,5 +1,4 @@
 import * as fs from 'fs'
-import * as pathjs from 'path'
 import { getDefaultProjectSettings } from './projectSettings'
 import { consoleGroup, consoleGroupCollapsed } from './util/console'
 import * as events from './util/events'
@@ -104,6 +103,10 @@ const loadAnimatedJavaExporterSettings = consoleGroup(
 			if (!Project.animated_java_exporter_settings[exporterId]) continue
 			for (const [settingId, settingValue] of Object.entries(exporterSettings)) {
 				if (!model.animated_java.exporter_settings[exporterId][settingId]) continue
+				if (!Project.animated_java_exporter_settings[exporterId][settingId]) {
+					console.warn('Setting', settingId, 'does not exist in exporter', exporterId)
+					continue
+				}
 				console.log('Loading value for', exporterId, settingId, settingValue)
 				Project.animated_java_exporter_settings[exporterId][settingId].value = settingValue
 			}
@@ -233,7 +236,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 			model.textures.forEach((tex: Texture) => {
 				const texCopy = new Texture(tex, tex.uuid).add(false)
 				if (isApp && tex.relative_path && Project.save_path) {
-					const resolvedPath = pathjs.resolve(Project.save_path, tex.relative_path)
+					const resolvedPath = PathModule.resolve(Project.save_path, tex.relative_path)
 					if (fs.existsSync(resolvedPath)) {
 						texCopy.fromPath(resolvedPath)
 						return
@@ -443,7 +446,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 			const t = tex.getUndoCopy()
 			delete t.selected
 			if (isApp && Project.save_path && tex.path) {
-				const relative = pathjs.relative(Project.save_path, tex.path)
+				const relative = PathModule.relative(Project.save_path, tex.path)
 				t.relative_path = relative.replace(/\\/g, '/')
 			}
 			if (

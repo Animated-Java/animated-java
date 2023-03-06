@@ -84,3 +84,20 @@ export function debounce(func: (...args: unknown[]) => void, debounceTime = 500)
 		timeout = setTimeout(() => func(...args), debounceTime)
 	}
 }
+
+export type FormattingObject = Record<string, string> | string[]
+export function formatStr(str: string, formatObj: FormattingObject = {}) {
+	if (Array.isArray(formatObj)) {
+		for (let i = 0; i < formatObj.length; i++) {
+			str = str.replace(new RegExp(`%s`), formatObj[i])
+			str = str.replace(new RegExp(`%${i}`, 'g'), formatObj[i])
+		}
+		return str
+	} else {
+		// Sort the keys by size. This makes sure %a and %abc aren't confused.
+		const keys = Object.keys(formatObj).sort((a, b) => b.length - a.length)
+		for (const target of keys)
+			str = str.replace(new RegExp('%' + target, 'g'), formatObj[target])
+		return str
+	}
+}

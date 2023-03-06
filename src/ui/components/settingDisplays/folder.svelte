@@ -19,7 +19,7 @@
 	}
 </script>
 
-<input type="text" class="text_inline" contenteditable="false" bind:value />
+<input type="text" class="text_inline" contenteditable="false" bind:value title={value} />
 <button class="open-folder-button" on:click={selectFolder}>
 	<span class="material-icons">folder</span>
 </button>

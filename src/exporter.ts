@@ -1,5 +1,7 @@
 import { isValidResourcePackPath } from './minecraft/util'
+import { VirtualFolder } from './util/virtualFileSystem'
 import { IRenderedAnimation, renderAllAnimations } from './rendering/animationRenderer'
+import { IRenderedRig, renderRig } from './rendering/modelRenderer'
 import { animatedJavaSettings, IInfoPopup, Setting as AJSetting } from './settings'
 import { GUIStructure } from './ui/ajUIStructure'
 import { openAjFailedProjectExportReadinessDialog } from './ui/popups/failedProjectExportReadiness'
@@ -7,6 +9,7 @@ import { consoleGroupCollapsed } from './util/console'
 import { NamespacedString } from './util/moddingTools'
 
 type ProjectSettings = Record<NamespacedString, AJSetting<any>>
+type NotUndefined<T> = T extends undefined ? never : T
 
 interface IAnimatedJavaExporterOptions<S extends ProjectSettings> {
 	id: NamespacedString
@@ -16,10 +19,12 @@ interface IAnimatedJavaExporterOptions<S extends ProjectSettings> {
 	settingsStructure: GUIStructure
 	export(
 		ajSettings: typeof animatedJavaSettings,
-		projectSettings: ModelProject['animated_java_settings'],
+		projectSettings: NotUndefined<ModelProject['animated_java_settings']>,
 		exporterSettings: S,
-		renderedAnimations: IRenderedAnimation[]
-	): Promise<void>
+		renderedAnimations: IRenderedAnimation[],
+		rig: IRenderedRig,
+		datapack: VirtualFolder
+	): Promise<VirtualFolder> | VirtualFolder
 }
 
 export class AnimatedJavaExporter<
@@ -53,7 +58,7 @@ export class AnimatedJavaExporter<
 
 export const exportProject = consoleGroupCollapsed('exportProject', async () => {
 	verifyProjectExportReadiness()
-	if (!Project) return // Project being optional is annoying
+	if (!Project?.animated_java_settings) return // Project being optional is annoying
 
 	const selectedExporterId = Project?.animated_java_settings?.exporter?.selected
 		?.value as NamespacedString
@@ -66,8 +71,29 @@ export const exportProject = consoleGroupCollapsed('exportProject', async () => 
 	const exporterSettings = Project.animated_java_exporter_settings
 
 	const renderedAnimations = await renderAllAnimations()
+	const rig = renderRig()
 
-	await exporter.export(ajSettings, projectSettings, exporterSettings, renderedAnimations)
+	const namespace = Project.animated_java_settings.project_namespace.value
+
+	const datapack = new VirtualFolder('datapack')
+		.chainNewFolder('data')
+		.chainNewFile('pack.mcmeta', {
+			pack: {
+				pack_format: 12, // 12 since 1.19.4
+				description: `"${namespace}" A Datapack generated via Animated Java using the ${exporter.name} exporter.`,
+			},
+		})
+
+	const output = await exporter.export(
+		ajSettings,
+		projectSettings,
+		exporterSettings,
+		renderedAnimations,
+		rig,
+		datapack
+	)
+
+	console.log(output)
 })
 
 // FIXME - Need GUI for warnings
@@ -98,6 +124,7 @@ export function verifyProjectExportReadiness() {
 	for (const setting of Object.values(Project.animated_java_settings)) {
 		const info = setting.verify() as IInfoPopup | undefined
 		if (info?.type === 'error') {
+			// FIXME - Needs translation
 			issues.push({
 				type: 'error',
 				title: `Project Setting "${
@@ -108,37 +135,42 @@ export function verifyProjectExportReadiness() {
 		}
 	}
 
-	// // The Rig Export Folder should be set
-	// if (Project.animated_java_settings.rig_export_folder.value) {
-	// 	// The Rig Export Folder should be located in a valid resource pack
-	// 	if (!isValidResourcePackPath(Project.animated_java_settings.rig_export_folder.value))
-	// 		throw new Error('Rig Export Folder is not located in a valid resource pack')
-	// } else throw new Error('Rig Export Folder is not set')
-	// // The Rig Item Model should be set
-	// if (Project.animated_java_settings.rig_item_model.value) {
-	// 	// The Rig Item Model should be located in a valid resource pack
-	// 	if (!isValidResourcePackPath(Project.animated_java_settings.rig_item_model.value))
-	// 		throw new Error('Rig Item Model is not located in a valid resource pack')
-	// } else throw new Error('Rig Item Model is not set')
-
-	// if (!Project.animated_java_variants) throw new Error('No variants found')
-
 	// Verify textures
 	for (const texture of Project.textures) {
 		// Textures should have a save path
-		if (!texture.path)
-			throw {
+		if (!texture.path) {
+			// FIXME - Needs translation
+			issues.push({
 				type: 'error',
 				title: 'Texture Save Path Not Set',
 				lines: [`Texture "${texture.name}" does not have a save path`],
-			}
+			})
+			continue
+		}
 		// Textures should be saved in a valid resource pack
-		if (!isValidResourcePackPath(texture.path))
-			throw {
+		if (!isValidResourcePackPath(texture.path)) {
+			// FIXME - Needs translation
+			issues.push({
 				type: 'error',
 				title: 'Invalid Texture Save Path',
 				lines: [`Texture "${texture.name}" is saved in an invalid resource pack`],
-			}
+			})
+		}
+	}
+
+	// Verify Outliner
+	for (const node of Outliner.root as any[]) {
+		if (node instanceof Group) continue
+		issues.push({
+			type: 'error',
+			title: 'Invalid Outliner',
+			lines: [
+				`The root of the Outliner can only contain bones.`,
+				`Please remove the ${
+					Object.getPrototypeOf(node).constructor.name as string
+				} named "${node?.name as string}" or move it into a bone.`,
+			],
+		})
 	}
 
 	if (issues.find(v => v.type === 'error')) {

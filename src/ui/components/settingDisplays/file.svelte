@@ -19,7 +19,7 @@
 	}
 </script>
 
-<input type="text" class="text_inline" contenteditable="false" bind:value />
+<input type="text" class="text_inline" contenteditable="false" bind:value title={value} />
 <button class="open-file-button" on:click={selectFile}>
 	<span class="material-icons">insert_drive_file</span>
 </button>

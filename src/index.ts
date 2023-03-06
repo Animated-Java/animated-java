@@ -35,6 +35,22 @@ import { renderAllAnimations } from './rendering/animationRenderer'
 import { consoleGroupCollapsed } from './util/console'
 import { createChaos } from './mods/cubeMod'
 import './ui/ajMenuBar'
+import { formatStr } from './util/misc'
+import {
+	NbtByte,
+	NbtByteArray,
+	NbtCompound,
+	NbtDouble,
+	NbtFloat,
+	NbtInt,
+	NbtIntArray,
+	NbtList,
+	NbtLong,
+	NbtLongArray,
+	NbtString,
+	NbtFile,
+} from 'deepslate'
+import * as VirtualFileSystem from './util/virtualFileSystem'
 
 Prism.languages.mcfunction = {}
 
@@ -64,6 +80,22 @@ globalThis.AnimatedJava = {
 	createChaos,
 	renderRig,
 	verifyProjectExportReadiness,
+	formatStr,
+	VirtualFileSystem,
+	deepslate: {
+		NbtByte,
+		NbtByteArray,
+		NbtCompound,
+		NbtDouble,
+		NbtFloat,
+		NbtInt,
+		NbtIntArray,
+		NbtList,
+		NbtLong,
+		NbtLongArray,
+		NbtString,
+		NbtFile,
+	},
 }
 // Uninstall events
 events.EXTRACT_MODS.subscribe(() => {

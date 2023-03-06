@@ -93,6 +93,7 @@
 		"vue": "^3.2.33"
 	},
 	"dependencies": {
+		"deepslate": "^0.17.2",
 		"svelte-ace": "^1.0.21"
 	}
 }

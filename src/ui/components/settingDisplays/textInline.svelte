@@ -2,7 +2,7 @@
 	export let value: string
 </script>
 
-<input type="text" class="text_inline" bind:value />
+<input type="text" class="text_inline" bind:value title={value} />
 
 <style>
 	.text_inline {
