@@ -175,8 +175,8 @@ const people = [
 		active: true,
 	},
 	{ roles: [Reasons.BetaTester], name: 'destruc7i0n' },
-	{ roles: [Reasons.PatreonT3], name: 'DoubleFelix', active: true },
-	{ roles: [Reasons.PatreonT2], name: '__SK__', active: true },
+	{ roles: [Reasons.PatreonT3], name: 'DoubleFelix' },
+	{ roles: [Reasons.PatreonT2], name: '__SK__' },
 	{ roles: [Reasons.BetaTester], name: 'Eriol_Eandur' },
 	{ roles: [Reasons.BetaTester], name: 'gibbs' },
 	{ roles: [Reasons.BetaTester], name: 'JayPeaSize' },
@@ -196,6 +196,7 @@ const people = [
 	{ roles: [Reasons.Translator], name: 'FabulousCodingFox' },
 	{ roles: [Reasons.Translator], name: 'HURDOO' },
 	{ roles: [Reasons.Translator], name: 'ououn' },
+	{ roles: [Reasons.Translator], name: 'Lena-hal' },
 ]
 function Link({ href, children, ...props }) {
 	return (
