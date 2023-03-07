@@ -7,8 +7,10 @@
 		"settings": {
 			"project_namespace": "bonnie",
 			"rig_item": "minecraft:purple_dye",
-			"rig_item_model": "D:\\github-repos\\animated-java\\test_ajmodels\\resources\\assets\\minecraft\\models\\item\\purple_dye.json",
-			"rig_export_folder": "D:\\github-repos\\animated-java\\test_ajmodels\\resources\\assets\\animated_java\\models\\rigs\\bonnie",
+			"rig_item_model": "",
+			"rig_export_folder": "",
+			"enable_advanced_resource_pack_settings": false,
+			"resource_pack_folder": "D:\\github-repos\\animated-java\\test_ajmodels\\resources\\pack.mcmeta",
 			"verbose": true,
 			"exporter": 0
 		},
@@ -1902,7 +1904,7 @@
 									"uuid": "d327164a-1f8e-7fe2-0463-acea09300724",
 									"export": true,
 									"mirror_uv": false,
-									"isOpen": false,
+									"isOpen": true,
 									"locked": false,
 									"visibility": true,
 									"autouv": 0,

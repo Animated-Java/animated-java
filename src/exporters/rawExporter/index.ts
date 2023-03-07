@@ -19,7 +19,7 @@ new AnimatedJava.Exporter({
 	settingsStructure: [
 		{
 			type: 'setting',
-			id: 'animated_java:raw_exporter/foo',
+			settingId: 'animated_java:raw_exporter/foo',
 		},
 	],
 	async export(ajSettings, projectSettings, exporterSettings) {

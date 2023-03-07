@@ -47,14 +47,13 @@ export type ISettingsObject = Record<string, Setting<any>>
 export class Setting<V, R = any> extends Subscribable<R> {
 	static registeredSettings = new Map<string, Setting<any>>()
 
-	id: string
+	id: SettingID
 	displayName: string
 	description: string[]
 	defaultValue: V
 	resettable?: boolean
 	docsLink?: string
 	dependsOn?: SettingID[]
-	active = true
 
 	private _initialized: boolean
 	protected _value: V
@@ -266,11 +265,11 @@ export const animatedJavaSettings = {
 export const animatedJavaSettingsStructure: GUIStructure = [
 	{
 		type: 'setting',
-		id: animatedJavaSettings.default_exporter.id,
+		settingId: animatedJavaSettings.default_exporter.id,
 	},
 	{
 		type: 'setting',
-		id: animatedJavaSettings.test_setting.id,
+		settingId: animatedJavaSettings.test_setting.id,
 	},
 ]
 

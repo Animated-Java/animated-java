@@ -5,6 +5,12 @@ export function safeFunctionName(name: string) {
 		.toLowerCase()
 }
 
+export function isValidResourcePackMcMeta(path: string) {
+	const parsed = PathModule.parse(path)
+	const assetsPath = PathModule.join(parsed.dir, 'assets')
+	return fs.existsSync(path) && fs.existsSync(assetsPath)
+}
+
 export function isValidResourcePackPath(path: string) {
 	const parsed = parseResourcePackPath(path)
 	return parsed && parsed.namespace && parsed.resourcePath

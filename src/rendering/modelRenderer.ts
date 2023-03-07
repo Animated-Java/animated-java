@@ -257,18 +257,7 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 	return bones
 }
 
-export function renderRig(): IRenderedRig {
-	if (!Project?.animated_java_settings)
-		throw new Error(
-			`No project settings found. If you see this error something has gone horribly wrong.`
-		)
-
-	if (!Project.animated_java_variants) {
-		throw new Error(
-			`No variants found. If you see this error something has gone horribly wrong.`
-		)
-	}
-
+export function renderRig(outputFolder: string): IRenderedRig {
 	customModelData = 0
 
 	const rig: IRenderedRig = {
@@ -277,7 +266,7 @@ export function renderRig(): IRenderedRig {
 		boneMap: {},
 		boneStructure: {} as IBoneStructure,
 		textures: {},
-		outputFolder: Project.animated_java_settings.rig_export_folder.value,
+		outputFolder,
 	}
 
 	progress = new ProgressBarController('Rendering Rig...', countNodesRecursive())
@@ -295,7 +284,7 @@ export function renderRig(): IRenderedRig {
 		progress.add(1)
 	}
 
-	for (const variant of Project.animated_java_variants.variants) {
+	for (const variant of Project!.animated_java_variants!.variants) {
 		if (variant.default) continue // Don't export the default variant, it's redundant data.
 		rig.variantModels[variant.name] = renderVariantModels(variant, rig)
 	}

@@ -21,14 +21,16 @@
 	let descriptionState: 'introstart' | 'introend' | 'outrostart' | 'outroend' | 'none' = 'none'
 	let infoPopup: AJ.IInfoPopup | undefined = undefined
 
-	// console.log(setting.id)
-	requestAnimationFrame(() => {
-		setting._onUpdate(true)
-	})
+	function updateInfoPopup() {
+		infoPopup = setting.infoPopup
+	}
+
+	setting._onUpdate(true)
+	updateInfoPopup()
 
 	const unsub = setting.subscribe(
 		debounce(() => {
-			infoPopup = setting.infoPopup
+			updateInfoPopup()
 		}, 250)
 	)
 
@@ -121,7 +123,7 @@
 	{/if}
 
 	{#if infoPopup}
-		<div transition:slide={{ duration: 200 }}>
+		<div transition:slide|local={{ duration: 200 }}>
 			<SettingInfoPopup type={infoPopup.type} popup={infoPopup} />
 		</div>
 	{/if}

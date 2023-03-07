@@ -22,18 +22,28 @@ new AnimatedJava.Exporter({
 	description: translate('animated_java.exporters.animation_exporter.description'),
 	getSettings() {
 		return {
-			datapack_folder: new AnimatedJava.Settings.FolderSetting({
-				id: 'animated_java:animation_exporter/datapack_folder',
-				displayName: TRANSLATIONS.datapack_folder.name,
-				description: TRANSLATIONS.datapack_folder.description,
-				defaultValue: '',
-			}),
+			datapack_folder: new AnimatedJava.Settings.FolderSetting(
+				{
+					id: 'animated_java:animation_exporter/datapack_folder',
+					displayName: TRANSLATIONS.datapack_folder.name,
+					description: TRANSLATIONS.datapack_folder.description,
+					defaultValue: '',
+				}
+				// function onUpdate(setting) {
+				// 	if (setting.value === '') {
+				// 		setting.infoPopup = AnimatedJava.createInfo(
+				// 			'error',
+				// 			TRANSLATIONS.datapack_folder.name
+				// 		)
+				// 	}
+				// }
+			),
 		}
 	},
 	settingsStructure: [
 		{
 			type: 'setting',
-			id: 'animated_java:animation_exporter/datapack_folder',
+			settingId: 'animated_java:animation_exporter/datapack_folder',
 		},
 	],
 	async export(ajSettings, projectSettings, exporterSettings, renderedAnimations, rig) {

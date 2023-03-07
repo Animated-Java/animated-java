@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fade, fly } from 'svelte/transition'
+	import { fly } from 'svelte/transition'
 	import type { IInfoPopup } from '../../settings'
 
 	export var type: IInfoPopup['type']
@@ -13,9 +13,7 @@
 			in:fly={{
 				x: -20,
 				duration: 250,
-				delay: 100,
 			}}
-			out:fade={{ duration: 0 }}
 		>
 			<div class="flex-column">
 				<div class="flex-row">
@@ -32,7 +30,6 @@
 									duration: 250,
 									delay: 200,
 								}}
-								out:fade={{ duration: 0 }}
 							>
 								<div
 									class="material-icons {type}"

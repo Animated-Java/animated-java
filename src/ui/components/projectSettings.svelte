@@ -13,8 +13,6 @@
 
 	let selectedExporter: AnimatedJavaExporter | undefined
 
-	function getSelectedExporter() {}
-
 	let unsub = Project!.animated_java_settings!.exporter.subscribe(() => {
 		selectedExporter = AnimatedJavaExporter.all.find(exporter => {
 			return exporter.id === Project!.animated_java_settings!.exporter.selected?.value

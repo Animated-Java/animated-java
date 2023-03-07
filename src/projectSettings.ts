@@ -1,5 +1,9 @@
 import { Items } from './minecraft'
-import { isValidResourcePackPath, safeFunctionName } from './minecraft/util'
+import {
+	isValidResourcePackMcMeta,
+	isValidResourcePackPath,
+	safeFunctionName,
+} from './minecraft/util'
 import { ajModelFormat } from './modelFormat'
 import {
 	CheckboxSetting,
@@ -18,7 +22,8 @@ export interface IAnimatedJavaProjectSettings {
 	rig_item: InlineTextSetting
 	rig_item_model: InlineTextSetting
 	rig_export_folder: FolderSetting
-	resource_pack: FileSetting
+	enable_advanced_resource_pack_settings: CheckboxSetting
+	resource_pack_folder: FileSetting
 	verbose: CheckboxSetting
 	exporter: DropdownSetting<string>
 }
@@ -75,15 +80,23 @@ const TRANSLATIONS = {
 			),
 		},
 	},
-	resource_pack: {
-		displayName: translate('animated_java.project_settings.resource_pack'),
-		description: translate('animated_java.project_settings.resource_pack.description').split(
-			'\n'
+	enable_advanced_resource_pack_settings: {
+		displayName: translate(
+			'animated_java.project_settings.enable_advanced_resource_pack_settings'
 		),
+		description: translate(
+			'animated_java.project_settings.enable_advanced_resource_pack_settings.description'
+		).split('\n'),
+	},
+	resource_pack_folder: {
+		displayName: translate('animated_java.project_settings.resource_pack_folder'),
+		description: translate(
+			'animated_java.project_settings.resource_pack_folder.description'
+		).split('\n'),
 		error: {
-			unset: translate('animated_java.project_settings.resource_pack.error.unset'),
+			unset: translate('animated_java.project_settings.resource_pack_folder.error.unset'),
 			invalid_path: translate(
-				'animated_java.project_settings.resource_pack.error.invalid_path'
+				'animated_java.project_settings.resource_pack_folder.error.invalid_path'
 			),
 		},
 	},
@@ -222,14 +235,39 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 			}
 		),
 
-		resource_pack: new FileSetting({
-			id: 'animated_java:project_settings/resource_pack',
-			displayName: TRANSLATIONS.resource_pack.displayName,
-			description: TRANSLATIONS.resource_pack.description,
-			defaultValue: '',
-			resettable: true,
-			docsLink: 'page:project_settings#resource_pack',
+		enable_advanced_resource_pack_settings: new CheckboxSetting({
+			id: 'animated_java:project_settings/enable_advanced_resource_pack_settings',
+			displayName: TRANSLATIONS.enable_advanced_resource_pack_settings.displayName,
+			description: TRANSLATIONS.enable_advanced_resource_pack_settings.description,
+			defaultValue: false,
+			docsLink: 'page:project_settings#enable_advanced_resource_pack_settings',
 		}),
+
+		resource_pack_folder: new FileSetting(
+			{
+				id: 'animated_java:project_settings/resource_pack',
+				displayName: TRANSLATIONS.resource_pack_folder.displayName,
+				description: TRANSLATIONS.resource_pack_folder.description,
+				defaultValue: '',
+				resettable: true,
+				docsLink: 'page:project_settings#resource_pack',
+			},
+			function onUpdate(setting) {
+				if (!setting.value) {
+					setting.infoPopup = createInfo(
+						'error',
+						TRANSLATIONS.resource_pack_folder.error.unset
+					)
+					return setting
+				} else if (!isValidResourcePackMcMeta(setting.value)) {
+					setting.infoPopup = createInfo(
+						'error',
+						TRANSLATIONS.resource_pack_folder.error.invalid_path
+					)
+					return setting
+				}
+			}
+		),
 
 		verbose: new CheckboxSetting({
 			id: 'animated_java:project_settings/verbose',
@@ -263,33 +301,35 @@ const _ = getDefaultProjectSettings()
 export const projectSettingStructure: GUIStructure = [
 	{
 		type: 'setting',
-		id: _.project_namespace.id,
+		settingId: _.project_namespace.id,
 	},
 	{
 		type: 'group',
 		title: translate('animated_java.project_settings.group.resourcepack'),
+		openByDefault: true,
 		children: [
 			{
 				type: 'setting',
-				id: _.rig_item.id,
+				settingId: _.rig_item.id,
 			},
 			{
 				type: 'toggle',
-				title: translate('animated_java.project_settings.toggle.advanced_resourcepack'),
+				title: _.enable_advanced_resource_pack_settings.displayName,
+				settingId: _.enable_advanced_resource_pack_settings.id,
 				active: [
 					{
 						type: 'setting',
-						id: _.rig_item_model.id,
+						settingId: _.rig_item_model.id,
 					},
 					{
 						type: 'setting',
-						id: _.rig_export_folder.id,
+						settingId: _.rig_export_folder.id,
 					},
 				],
 				inactive: [
 					{
 						type: 'setting',
-						id: _.resource_pack.id,
+						settingId: _.resource_pack_folder.id,
 					},
 				],
 			},
@@ -297,7 +337,7 @@ export const projectSettingStructure: GUIStructure = [
 	},
 	{
 		type: 'setting',
-		id: _.exporter.id,
+		settingId: _.exporter.id,
 	},
 ]
 

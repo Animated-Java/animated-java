@@ -1,21 +1,34 @@
+<script lang="ts" context="module">
+	import type { Writable } from 'svelte/store'
+	import { writable } from 'svelte/store'
+	const toggles: Record<string, Writable<boolean>> = {}
+</script>
+
 <script lang="ts">
 	import { slide } from 'svelte/transition'
-	import type { AnyGUIElement } from '../..//GUIStructure'
+	import type { AnyGUIElement } from '../../guiStructure'
 	import * as AJ from '../../settings'
 	import Setting from './setting.svelte'
 
 	export let el: AnyGUIElement
 	export let settingArray: AJ.Setting<any>[]
 	let setting: AJ.Setting<any>
+	let toggle: Writable<boolean>
 
-	if (el.type === 'setting') {
-		setting = Object.values(settingArray).find(s => s.id === (el as any).id)!
-		if (!setting) throw new Error(`Setting ${el.id} not found`)
-	}
+	switch (el.type) {
+		case 'toggle':
+			setting = Object.values(settingArray).find(s => s.id === (el as any).settingId)!
+			if (!setting) throw new Error(`Setting ${el.settingId} not found`)
+			break
 
-	let enabled = el.type === 'toggle' ? false : true
-	function toggle() {
-		enabled = !enabled
+		case 'group':
+			toggle = toggles[el.title] || writable(!!el.openByDefault)
+			break
+
+		case 'setting':
+			setting = Object.values(settingArray).find(s => s.id === (el as any).settingId)!
+			if (!setting) throw new Error(`Setting ${el.settingId} not found`)
+			break
 	}
 </script>
 
@@ -23,14 +36,14 @@
 	<Setting {setting} />
 {:else if el.type === 'group'}
 	<div>
-		<div class="group-title" on:click={toggle} on:keydown={() => {}}>
+		<div class="group-title" on:click={() => toggle.update(v => !v)} on:keydown={() => {}}>
 			<span class="material-icons custom-icon"
-				>{enabled ? 'expand_more' : 'chevron_right'}</span
+				>{$toggle ? 'expand_more' : 'chevron_right'}</span
 			>
 			<span class="h1">{el.title}</span>
 			<div class="line" />
 		</div>
-		{#if enabled}
+		{#if $toggle}
 			<div class="group" transition:slide={{ duration: 250 }}>
 				{#if el.children}
 					{#each el.children as e}
@@ -43,12 +56,12 @@
 {:else if el.type === 'toggle'}
 	<div>
 		<div class="toggle-title">
-			<input type="checkbox" bind:checked={enabled} />
+			<input type="checkbox" bind:checked={setting.value} />
 			<span class="toggle-header">
-				{enabled ? el.activeTitle || el.title : el.inactiveTitle || el.title}
+				{setting.value ? el.activeTitle || el.title : el.inactiveTitle || el.title}
 			</span>
 		</div>
-		{#if enabled}
+		{#if setting.value}
 			<div in:slide|local={{ delay: 200, duration: 200 }} out:slide|local={{ duration: 200 }}>
 				{#each el.active as e}
 					<svelte:self el={e} {settingArray} />

@@ -2,6 +2,7 @@
 - [x] Message Boq with any issues regarding interpolation jitter and entity rotation interpolation.
 
 # UI
+- [ ] Settings should debounce the onUpdate function instead of the infoPopup variable
 - [x] Replace default animation creation and config screens
 - [x] Variants panel
     - [x] Component and mounting

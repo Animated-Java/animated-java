@@ -2,12 +2,19 @@ import { isValidResourcePackPath } from './minecraft/util'
 import { VirtualFolder } from './util/virtualFileSystem'
 import { IRenderedAnimation, renderAllAnimations } from './rendering/animationRenderer'
 import { IRenderedRig, renderRig } from './rendering/modelRenderer'
-import { animatedJavaSettings, IInfoPopup, Setting as AJSetting } from './settings'
+import {
+	animatedJavaSettings,
+	IInfoPopup,
+	ISettingsObject,
+	Setting as AJSetting,
+	Setting,
+} from './settings'
 import { GUIStructure } from './GUIStructure'
 import { openAjFailedProjectExportReadinessDialog } from './ui/popups/failedProjectExportReadiness'
 import { consoleGroupCollapsed } from './util/console'
 import { NamespacedString } from './util/moddingTools'
 import { translate } from './util/translation'
+import { projectSettingStructure } from './projectSettings'
 
 type ProjectSettings = Record<NamespacedString, AJSetting<any>>
 type NotUndefined<T> = T extends undefined ? never : T
@@ -72,7 +79,24 @@ export const exportProject = consoleGroupCollapsed('exportProject', async () => 
 	const exporterSettings = Project.animated_java_exporter_settings![selectedExporterId]
 
 	const renderedAnimations = await renderAllAnimations()
-	const rig = renderRig()
+
+	let outputFolder: string
+	if (Project.animated_java_settings.enable_advanced_resource_pack_settings.value) {
+		outputFolder = Project.animated_java_settings.rig_export_folder.value
+	} else {
+		const resourcePackFolder = PathModule.parse(
+			Project.animated_java_settings.resource_pack_folder.value
+		).dir
+		const projectNamespace = Project.animated_java_settings.project_namespace.value
+		outputFolder = PathModule.join(
+			resourcePackFolder,
+			'assets/animated_java/models/item/',
+			projectNamespace,
+			'rigs/'
+		)
+	}
+
+	const rig = renderRig(outputFolder)
 
 	const namespace = Project.animated_java_settings.project_namespace.value
 
@@ -110,6 +134,38 @@ async function exportResources(
 	namespaceFolder.newFolders('models', 'textures')
 }
 
+function verifySettings(structure: GUIStructure, settings: Array<Setting<any>>) {
+	const issues: IInfoPopup[] = []
+	for (const el of structure) {
+		switch (el.type) {
+			case 'group':
+				verifySettings(el.children, settings)
+				break
+			case 'toggle': {
+				const setting = settings.find(s => s.id === el.settingId)
+				if (!setting) throw new Error(`No setting found with id "${el.settingId}"`)
+				if (setting.value) verifySettings(el.active, settings)
+				else verifySettings(el.inactive, settings)
+				break
+			}
+			case 'setting': {
+				const setting = settings.find(s => s.id === el.settingId)
+				if (!setting) throw new Error(`No setting found with id "${el.settingId}"`)
+				const info = setting.verify()
+				if (info?.type !== 'error') continue
+				// FIXME - Needs translation
+				issues.push({
+					type: 'error',
+					title: `Project Setting "${setting.displayName}" has the following errors:`,
+					lines: [info.title, ...info.lines],
+				})
+				break
+			}
+		}
+	}
+	return issues
+}
+
 export function verifyProjectExportReadiness() {
 	const issues: IInfoPopup[] = []
 
@@ -134,19 +190,33 @@ export function verifyProjectExportReadiness() {
 		return
 	}
 
-	for (const setting of Object.values(Project.animated_java_settings)) {
-		const info = setting.verify() as IInfoPopup | undefined
-		if (info?.type === 'error') {
-			// FIXME - Needs translation
-			issues.push({
-				type: 'error',
-				title: `Project Setting "${
-					setting.displayName as string
-				}" has the following errors:`,
-				lines: [info.title, ...info.lines],
-			})
-		}
-	}
+	// Verify Project Settings
+	issues.push(
+		...verifySettings(
+			projectSettingStructure,
+			Object.values(Project.animated_java_settings) as unknown as Array<Setting<any>>
+		)
+	)
+
+	// Verify Exporter Settings
+	const exporter = AnimatedJavaExporter.exporters.get(
+		Project.animated_java_settings.exporter.selected!.value as unknown as NamespacedString
+	)
+	if (!exporter)
+		issues.push({
+			type: 'error',
+			title: 'No Exporter Selected',
+			lines: ['No exporter was selected for this project'],
+		})
+	else
+		issues.push(
+			...verifySettings(
+				exporter.settingsStructure,
+				Object.values(
+					Project.animated_java_exporter_settings![exporter.id]
+				) as unknown as Array<Setting<any>>
+			)
+		)
 
 	// Verify textures
 	for (const texture of Project.textures) {

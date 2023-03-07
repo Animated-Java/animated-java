@@ -1,3 +1,5 @@
+import { SettingID } from './settings'
+
 interface IGUIElement {
 	type: string
 }
@@ -5,15 +7,17 @@ interface IGUIElement {
 interface IGUIElements {
 	group: IGUIElement & {
 		type: 'group'
+		openByDefault: boolean
 		title: string
 		children: GUIStructure
 	}
 	setting: IGUIElement & {
 		type: 'setting'
-		id: string
+		settingId: SettingID
 	}
 	toggle: {
 		type: 'toggle'
+		settingId: SettingID
 		title?: string
 		activeTitle?: string
 		inactiveTitle?: string

@@ -3,7 +3,7 @@
 	import { safeFunctionName } from '../../minecraft/util'
 	import * as AJ from '../../settings'
 	import { translate } from '../../util/translation'
-	import type { GUIStructure } from '../../GUIStructure'
+	import type { GUIStructure } from '../../guiStructure'
 	import UiNode from './uiNode.svelte'
 
 	const TRANSLATIONS = {
@@ -111,19 +111,19 @@
 	const settingStructure: GUIStructure = [
 		{
 			type: 'setting',
-			id: 'animated_java:animation_properties/name',
+			settingId: 'animated_java:animation_properties/name',
 		},
 		{
 			type: 'setting',
-			id: 'animated_java:animation_properties/loop',
+			settingId: 'animated_java:animation_properties/loop',
 		},
 		{
 			type: 'setting',
-			id: 'animated_java:animation_properties/loop_delay',
+			settingId: 'animated_java:animation_properties/loop_delay',
 		},
 		{
 			type: 'setting',
-			id: 'animated_java:animation_properties/start_delay',
+			settingId: 'animated_java:animation_properties/start_delay',
 		},
 	]
 

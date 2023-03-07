@@ -1,9 +1,9 @@
 import type { AnimatedJavaExporter } from './exporter'
 import type { IAnimatedJavaProjectSettings } from './projectSettings'
-import type { Setting } from './settings'
+import type { Setting, createInfo } from './settings'
 import type { translate } from './util/translation'
 import type { VariantsContainer } from './variants'
-import {
+import type {
 	NbtByte,
 	NbtByteArray,
 	NbtCompound,
@@ -56,5 +56,6 @@ declare global {
 			NbtFile: typeof NbtFile
 		}
 		ProgressBarController: typeof import('./util/progress').ProgressBarController
+		createInfo: typeof createInfo
 	}
 }

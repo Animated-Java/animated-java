@@ -37,7 +37,6 @@ animated_java.project_settings.project_namespace.description: |-
   The namespace of the project.
 
 animated_java.project_settings.group.resourcepack: Resource Pack
-animated_java.project_settings.toggle.advanced_resourcepack: Enable Advanced Resource Pack Settings?
 
 animated_java.project_settings.rig_item: Rig Item
 animated_java.project_settings.rig_item.description: |-
@@ -54,6 +53,12 @@ animated_java.project_settings.rig_item.warning.unknown_item: |-
   Rig Item isn't in vanilla minecraft
   This may cause issues when exporting.
   Ignore this warning if you're using snapshots or mods.
+
+animated_java.project_settings.enable_advanced_resource_pack_settings: Enable Advanced Resource Pack Settings
+animated_java.project_settings.enable_advanced_resource_pack_settings.description: |-
+  Enable advanced resource pack settings.
+  This will allow you to set the Rig Item Model and Rig Export Folder manually instead of Animated Java automatically figuring it out for you.
+  If you're not sure what this does, leave it disabled.
 
 animated_java.project_settings.rig_item_model: Rig Item Model
 animated_java.project_settings.rig_item_model.description: |-
@@ -81,13 +86,13 @@ animated_java.project_settings.rig_export_folder.error.invalid_path: |-
   Rig Export Folder must be in a valid resource pack
   The targeted folder must be under 'resources/assets/<namespace>/models/'.
 
-animated_java.project_settings.resource_pack: Resource Pack
-animated_java.project_settings.resource_pack.description: |-
+animated_java.project_settings.resource_pack_folder: Resource Pack
+animated_java.project_settings.resource_pack_folder.description: |-
   The Resource Pack to inject the Rig's models into.
-  To select a Resource Pack, navigate to it via the open file button, and select it's pack.mcmeta file.
-animated_java.project_settings.resource_pack.error.unset: |-
+  This setting should be targeting the pack.mcmeta file of a valid Resource Pack.
+animated_java.project_settings.resource_pack_folder.error.unset: |-
   You must select a Resource Pack.
-animated_java.project_settings.resource_pack.error.invalid_path: |-
+animated_java.project_settings.resource_pack_folder.error.invalid_path: |-
   The selected Resource Pack is not valid.
   Make sure you've selected the pack.mcmeta file of a valid Resource Pack!
 
@@ -162,8 +167,7 @@ animated_java.dialog.variant_properties.textureMap.description: |-
 # Animation Exporter
 animated_java.exporters.animation_exporter.name: Animation Exporter
 animated_java.exporters.animation_exporter.settings.datapack_folder: Data Pack Folder
-animated_java.exporters.animation_exporter.settings.datapack_folder.description:
-  |-
+animated_java.exporters.animation_exporter.settings.datapack_folder.description: |-
   The folder to export the generated Data Pack into.
   This should be the datapacks folder inside of your world (`world/datapacks/`).
   The generated Data Pack will be placed in a folder named after the Project's Namespace.

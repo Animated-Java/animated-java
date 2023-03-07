@@ -2,7 +2,7 @@
 	import { Variant } from '../../variants'
 	import * as AJ from '../../settings'
 	import { translate } from '../../util/translation'
-	import type { GUIStructure } from '../../GUIStructure'
+	import type { GUIStructure } from '../../guiStructure'
 	import { safeFunctionName } from '../../minecraft/util'
 	import UiNode from './uiNode.svelte'
 	import { onDestroy } from 'svelte'
@@ -59,7 +59,7 @@
 	const settingStructure: GUIStructure = [
 		{
 			type: 'setting',
-			id: 'animated_java:variant_properties/name',
+			settingId: 'animated_java:variant_properties/name',
 		},
 	]
 
