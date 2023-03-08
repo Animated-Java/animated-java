@@ -2370,6 +2370,26 @@
 							"bezier_left_value": [0, 0, 0],
 							"bezier_right_time": [0.1, 0.1, 0.1],
 							"bezier_right_value": [0, 0, 0]
+						},
+						{
+							"channel": "scale",
+							"data_points": [
+								{
+									"x": "1",
+									"y": "1",
+									"z": "1"
+								}
+							],
+							"uuid": "05b69d02-09b1-5b58-5184-c65b52f0463b",
+							"time": 0,
+							"color": -1,
+							"uniform": true,
+							"interpolation": "linear",
+							"bezier_linked": true,
+							"bezier_left_time": [-0.1, -0.1, -0.1],
+							"bezier_left_value": [0, 0, 0],
+							"bezier_right_time": [0.1, 0.1, 0.1],
+							"bezier_right_value": [0, 0, 0]
 						}
 					]
 				},
@@ -2557,7 +2577,7 @@
 			"override": false,
 			"length": 2.75,
 			"snapping": 20,
-			"selected": false,
+			"selected": true,
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",
@@ -3104,83 +3124,6 @@
 							],
 							"uuid": "cea2b58c-5f81-e9f6-0936-fe8bce7dd24c",
 							"time": 0,
-							"color": -1,
-							"interpolation": "linear",
-							"bezier_linked": true,
-							"bezier_left_time": [-0.1, -0.1, -0.1],
-							"bezier_left_value": [0, 0, 0],
-							"bezier_right_time": [0.1, 0.1, 0.1],
-							"bezier_right_value": [0, 0, 0]
-						}
-					]
-				},
-				"effects": {
-					"name": "Effects",
-					"type": "effect",
-					"keyframes": [
-						{
-							"channel": "animationStates",
-							"data_points": [
-								{
-									"animationState": "4d967b67-acd7-3b3e-9011-c3b8a1af747c",
-									"condition": ""
-								}
-							],
-							"uuid": "2eb4e970-9b39-d6df-929b-68cc8da6203a",
-							"time": 0,
-							"color": -1,
-							"interpolation": "linear",
-							"bezier_linked": true,
-							"bezier_left_time": [-0.1, -0.1, -0.1],
-							"bezier_left_value": [0, 0, 0],
-							"bezier_right_time": [0.1, 0.1, 0.1],
-							"bezier_right_value": [0, 0, 0]
-						},
-						{
-							"channel": "variants",
-							"data_points": [
-								{
-									"variant": "b6f9de14-ffc9-1b0b-8672-ac6b61ec73da",
-									"condition": "if score x v matches 1.."
-								}
-							],
-							"uuid": "270b0db8-56ae-cf90-2209-7cee6223f785",
-							"time": 1,
-							"color": -1,
-							"interpolation": "linear",
-							"bezier_linked": true,
-							"bezier_left_time": [-0.1, -0.1, -0.1],
-							"bezier_left_value": [0, 0, 0],
-							"bezier_right_time": [0.1, 0.1, 0.1],
-							"bezier_right_value": [0, 0, 0]
-						},
-						{
-							"channel": "variants",
-							"data_points": [
-								{
-									"variant": "5f6cdafa-dc5d-6b6c-9d79-2bdd30b186b3",
-									"condition": ""
-								}
-							],
-							"uuid": "457c3164-bde1-f5a1-3e52-b1187c2ce01a",
-							"time": 2,
-							"color": -1,
-							"interpolation": "linear",
-							"bezier_linked": true,
-							"bezier_left_time": [-0.1, -0.1, -0.1],
-							"bezier_left_value": [0, 0, 0],
-							"bezier_right_time": [0.1, 0.1, 0.1],
-							"bezier_right_value": [0, 0, 0]
-						},
-						{
-							"channel": "commands",
-							"data_points": [
-								{
-									"commands": "hello!"
-								}
-							],
-							"uuid": "c92bf773-f391-7925-61e4-e1cbe25134e6",
-							"time": 2.75,
 							"color": -1,
 							"interpolation": "linear",
 							"bezier_linked": true,

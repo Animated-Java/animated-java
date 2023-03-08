@@ -1,12 +1,3 @@
-import {
-	svelteHelperLogCollectedNodes,
-	svelteHelperMarkPluginInitialization,
-	svelteHelperMarkPluginInitializationComplete,
-} from './svelteFixup'
-
-svelteHelperMarkPluginInitialization()
-// KEEP CODE WITHIN THESE BOUNDS
-
 // These imports are in a specific order. Try not to change them around too much!
 import PACKAGE from '../package.json'
 import * as events from './util/events'
@@ -36,22 +27,11 @@ import { consoleGroupCollapsed } from './util/console'
 import { createChaos } from './mods/cubeMod'
 import './ui/ajMenuBar'
 import { formatStr } from './util/misc'
-import {
-	NbtByte,
-	NbtByteArray,
-	NbtCompound,
-	NbtDouble,
-	NbtFloat,
-	NbtInt,
-	NbtIntArray,
-	NbtList,
-	NbtLong,
-	NbtLongArray,
-	NbtString,
-	NbtFile,
-} from 'deepslate'
+import * as deepslate from 'deepslate'
 import * as VirtualFileSystem from './util/virtualFileSystem'
 import { ProgressBarController } from './util/progress'
+import { createInfo } from './settings'
+import { JsonText } from './minecraft'
 
 Prism.languages.mcfunction = {}
 
@@ -83,21 +63,10 @@ globalThis.AnimatedJava = {
 	verifyProjectExportReadiness,
 	formatStr,
 	VirtualFileSystem,
-	deepslate: {
-		NbtByte,
-		NbtByteArray,
-		NbtCompound,
-		NbtDouble,
-		NbtFloat,
-		NbtInt,
-		NbtIntArray,
-		NbtList,
-		NbtLong,
-		NbtLongArray,
-		NbtString,
-		NbtFile,
-	},
+	deepslate,
 	ProgressBarController,
+	createInfo,
+	JsonText,
 }
 // Uninstall events
 events.EXTRACT_MODS.subscribe(() => {
@@ -132,7 +101,3 @@ BBPlugin.register(PACKAGE.name, {
 		events.UNINSTALL.dispatch()
 	}),
 })
-
-// KEEP CODE WITHIN THESE BOUNDS
-svelteHelperMarkPluginInitializationComplete()
-svelteHelperLogCollectedNodes()

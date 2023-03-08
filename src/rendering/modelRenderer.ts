@@ -1,6 +1,7 @@
 import { parseResourcePackPath } from '../minecraft/util'
 import { ProgressBarController } from '../util/progress'
 import { Variant } from '../variants'
+import { getAnimationBones, IAnimationBone } from './animationRenderer'
 
 interface IRenderedFace {
 	uv: number[]
@@ -14,7 +15,14 @@ interface IRenderedElement {
 	from: number[]
 	to: number[]
 	shade?: boolean
-	rotation?: oneLiner | number[]
+	rotation?:
+		| {
+				angle: number
+				axis: string
+				origin: number[]
+				rescale?: boolean
+		  }
+		| number[]
 	faces?: Record<string, IRenderedFace>
 }
 
@@ -35,6 +43,7 @@ interface IRenderedBone {
 	customModelData: number
 	modelPath: string
 	resourceLocation: string
+	boundingBox: THREE.Box3
 }
 
 interface IRenderedBoneVariant {
@@ -70,13 +79,14 @@ export interface IRenderedRig {
 	 * A map of texture UUIDs to textures
 	 */
 	textures: Record<string, Texture>
+	defaultPose: IAnimationBone[]
 	/**
 	 * The output folder for the rig
 	 */
 	outputFolder: string
 }
 
-let customModelData = 0
+let customModelData = 1
 let progress: ProgressBarController
 
 function countNodesRecursive(nodes: OutlinerNode[] = Outliner.root): number {
@@ -106,30 +116,48 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 
 	if (!(cube.rotation.allEqual(0) || cube.origin.allEqual(0))) {
 		const axis = cube.rotationAxis() || 'y'
-		element.rotation = new oneLiner({
+		element.rotation = {
 			angle: cube.rotation[getAxisNumber(axis)],
 			axis,
 			origin: cube.origin,
-		})
+		}
 	}
 
 	if (cube.rescale) {
 		// @ts-ignore
 		if (element.rotation) element.rotation.rescale = true
 		else
-			element.rotation = new oneLiner({
+			element.rotation = {
 				angle: 0,
 				axis: cube.rotation_axis || 'y',
 				origin: cube.origin,
 				rescale: true,
+			}
+	}
+
+	if (cube.parent instanceof Group) {
+		const parent = cube.parent
+		element.from = element.from.map((v, i) => {
+			const x = v - parent.origin[i]
+			return i === 1 ? x : x + 8
+		})
+		element.to = element.to.map((v, i) => {
+			const x = v - parent.origin[i]
+			return i === 1 ? x : x + 8
+		})
+		if (element.rotation && !Array.isArray(element.rotation)) {
+			element.rotation.origin = element.rotation.origin.map((v, i) => {
+				const x = v - parent.origin[i]
+				return i === 1 ? x : x + 8
 			})
+		}
 	}
 
 	element.faces = {}
 	for (const [face, data] of Object.entries(cube.faces)) {
 		if (!data) continue
 		if (!data.texture) continue
-		const renderedFace = new oneLiner({}) as IRenderedFace
+		const renderedFace = {} as IRenderedFace
 		if (data.enabled) {
 			renderedFace.uv = cube.faces[face].uv
 				.slice()
@@ -167,18 +195,24 @@ function renderTexture(texture: Texture) {
 	throw new Error(`Invalid texture path: ${texture.path}`)
 }
 
+function getBoneBoundingBox(elements: OutlinerNode[]) {
+	const children = elements.filter(e => e instanceof Cube) as Cube[]
+	const min = new THREE.Vector3(Infinity, Infinity, Infinity)
+	const max = new THREE.Vector3(-Infinity, -Infinity, -Infinity)
+	for (const child of children) {
+		const box = new THREE.Box3().setFromObject(child.mesh)
+		min.min(box.min)
+		max.max(box.max)
+	}
+	return new THREE.Box3(min, max)
+}
+
 function renderGroup(group: Group, rig: IRenderedRig) {
 	if (!group.export) return
 	const parentId = group.parent instanceof Group ? group.parent.uuid : group.parent
 
-	let path: string, parsed: { resourceLocation: string } & any
-	if (parentId === 'root') {
-		path = PathModule.join(rig.outputFolder)
-		parsed = parseResourcePackPath(path)
-	} else {
-		path = PathModule.join(rig.outputFolder, group.name + `.json`)
-		parsed = parseResourcePackPath(path)
-	}
+	const path = PathModule.join(rig.outputFolder, group.name + `.json`)
+	const parsed = parseResourcePackPath(path)
 
 	if (!parsed) {
 		console.error(group)
@@ -196,6 +230,7 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 		modelPath: path,
 		customModelData: customModelData++,
 		resourceLocation: parsed.resourceLocation,
+		boundingBox: getBoneBoundingBox(group.children),
 	}
 
 	const structure: IBoneStructure = {
@@ -258,7 +293,10 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 }
 
 export function renderRig(outputFolder: string): IRenderedRig {
-	customModelData = 0
+	customModelData = 1
+	Texture.all.forEach((t, i) => (t.id = String(i)))
+
+	Animator.showDefaultPose()
 
 	const rig: IRenderedRig = {
 		models: {},
@@ -266,6 +304,7 @@ export function renderRig(outputFolder: string): IRenderedRig {
 		boneMap: {},
 		boneStructure: {} as IBoneStructure,
 		textures: {},
+		defaultPose: getAnimationBones(),
 		outputFolder,
 	}
 
@@ -290,6 +329,5 @@ export function renderRig(outputFolder: string): IRenderedRig {
 	}
 
 	progress.finish()
-
 	return rig
 }

@@ -13,11 +13,20 @@
 
 	let selectedExporter: AnimatedJavaExporter | undefined
 
-	let unsub = Project!.animated_java_settings!.exporter.subscribe(() => {
+	function updateSelectedExporter() {
 		selectedExporter = AnimatedJavaExporter.all.find(exporter => {
 			return exporter.id === Project!.animated_java_settings!.exporter.selected?.value
 		})
-		console.log('Selected exporter changed to', selectedExporter)
+	}
+
+	updateSelectedExporter()
+
+	let unsub: () => void
+	requestAnimationFrame(() => {
+		unsub = Project!.animated_java_settings!.exporter.subscribe(() => {
+			updateSelectedExporter()
+			console.log('Selected exporter changed to', selectedExporter)
+		})
 	})
 	onDestroy(() => {
 		unsub()

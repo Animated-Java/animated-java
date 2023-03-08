@@ -1,14 +1,31 @@
 import { isValidDatapackName } from '../minecraft/util'
 
-export class VirtualFolder {
+class VirtualNode {
+	constructor(public name: string, public parent?: VirtualNode) {}
+
+	/**
+	 * The path to this folder, relative to the root of the virtual file system
+	 */
+	get path(): string {
+		return this.parent ? `${this.parent.path}/${this.name}` : this.name
+	}
+
+	accessParent() {
+		if (this.parent === undefined) throw new Error('Cannot access parent of root folder')
+		return this.parent
+	}
+}
+
+export class VirtualFolder extends VirtualNode {
 	childCount = 0
 	children: Array<VirtualFolder | VirtualFile> = []
-	constructor(public name: string, public parent?: VirtualFolder) {
+	constructor(name: string, parent?: VirtualFolder) {
+		super(name, parent)
 		isValidDatapackName(name, 'folder')
 	}
 
 	protected addChild() {
-		if (this.parent) this.parent.addChild()
+		if (this.parent instanceof VirtualFolder) this.parent.addChild()
 		this.childCount++
 	}
 
@@ -18,7 +35,7 @@ export class VirtualFolder {
 	 * @param content The content of the file. If content is an Array of strings each string will be treated as a new line in the file.
 	 * @returns The created VirtualFile, or throws if it already exists
 	 */
-	newFile(name: string, content: VirtualFileContent): VirtualFolder | never {
+	newFile(name: string, content: VirtualFileContent): VirtualFile | never {
 		const parts = name.split('/')
 		if (parts.length > 1) {
 			let child = this.children.find(
@@ -38,7 +55,7 @@ export class VirtualFolder {
 		const file = new VirtualFile(name, this, content)
 		this.children.push(file)
 		this.addChild()
-		return this
+		return file
 	}
 
 	/**
@@ -101,13 +118,6 @@ export class VirtualFolder {
 	}
 
 	/**
-	 * The path to this folder, relative to the root of the virtual file system
-	 */
-	get path(): string {
-		return this.parent ? `${this.parent.path}/${this.name}` : this.name
-	}
-
-	/**
 	 * Access a child folder of this folder by path
 	 * @param path The path to the child, relative to this folder
 	 * @returns The child, or throws if it doesn't exist
@@ -156,16 +166,16 @@ export class VirtualFolder {
 }
 
 type VirtualFileContent = string | Buffer | Uint8Array | string[] | any
-export class VirtualFile {
-	public name: string
+export class VirtualFile extends VirtualNode {
 	public ext: string
 	constructor(
 		public fileName: string,
 		public parent: VirtualFolder,
 		public content: VirtualFileContent
 	) {
-		// prettier-ignore
-		[this.name, this.ext] = fileName.split('.')
+		const [name, ext] = fileName.split('.')
+		super(name, parent)
+		this.ext = ext
 		isValidDatapackName(this.name, 'file')
 	}
 

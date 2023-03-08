@@ -659,9 +659,9 @@ deep-is@^0.1.3:
   integrity sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==
 
 deepslate@^0.17.2:
-  version "0.17.2"
-  resolved "https://registry.yarnpkg.com/deepslate/-/deepslate-0.17.2.tgz#2c6590c95309eca0915b1ac3692406e9b2c5bdf7"
-  integrity sha512-kQDX2mm0ieKN6HLI+fu+0BBiDqZdTjPsv0uUbpePoDIQd9JxMbvugEpZluQa8ellyEyK9vJOCTT1Wnz+RV8fBQ==
+  version "0.17.3"
+  resolved "https://registry.yarnpkg.com/deepslate/-/deepslate-0.17.3.tgz#23d7b4defe8469dae799cb60058b7f8be79815dd"
+  integrity sha512-rZWjuVol2TdFd/ZK9v8fAGD/uLBH4i7XGSfmOfOCJNV/7MGYUkh4aW/eTvez7qr1wPCSgRVktviMHo4MqBEMcQ==
   dependencies:
     gl-matrix "^3.3.0"
     md5 "^2.3.0"

@@ -30,8 +30,7 @@ interface IAnimatedJavaExporterOptions<S extends ProjectSettings> {
 		projectSettings: NotUndefined<ModelProject['animated_java_settings']>,
 		exporterSettings: S,
 		renderedAnimations: IRenderedAnimation[],
-		rig: IRenderedRig,
-		datapack: VirtualFolder
+		rig: IRenderedRig
 	): Promise<void> | void
 }
 
@@ -90,34 +89,14 @@ export const exportProject = consoleGroupCollapsed('exportProject', async () => 
 		const projectNamespace = Project.animated_java_settings.project_namespace.value
 		outputFolder = PathModule.join(
 			resourcePackFolder,
-			'assets/animated_java/models/item/',
-			projectNamespace,
-			'rigs/'
+			'assets/',
+			projectNamespace + '_animated_java_rig',
+			'/models/item/'
 		)
 	}
-
 	const rig = renderRig(outputFolder)
 
-	const namespace = Project.animated_java_settings.project_namespace.value
-
-	const datapack = new VirtualFolder('datapack')
-		.chainNewFolder('data')
-		.chainNewFile('pack.mcmeta', {
-			pack: {
-				pack_format: 12, // 12 since 1.19.4
-				description: `"${namespace}" A Datapack generated via Animated Java using the ${exporter.name} exporter.`,
-			},
-		})
-
-	await exporter.export(
-		ajSettings,
-		projectSettings,
-		exporterSettings,
-		renderedAnimations,
-		rig,
-		datapack
-	)
-
+	await exporter.export(ajSettings, projectSettings, exporterSettings, renderedAnimations, rig)
 	await exportResources(ajSettings, projectSettings, rig)
 
 	Blockbench.showQuickMessage(translate('animated_java.quickmessage.exported_successfully'), 2000)
@@ -128,10 +107,55 @@ async function exportResources(
 	projectSettings: NotUndefined<ModelProject['animated_java_settings']>,
 	rig: IRenderedRig
 ) {
+	const assetsPackFolder = new VirtualFolder('assets')
+
+	//------------------------------------
+	// Minecraft namespace
+	//------------------------------------
+
+	const [rigItemNamespace, rigItemName] = projectSettings.rig_item.value.split(':')
+
+	const minecraftFolder = assetsPackFolder.newFolder('minecraft').newFolder('models/item')
+	const predicateItemFile = minecraftFolder.newFile(`${rigItemName}.json`, {
+		parent: 'item/generated',
+		textures: {
+			layer0: `${rigItemNamespace}:item/${rigItemName}`,
+		},
+		overrides: [],
+	})
+
+	//------------------------------------
+	// Project namespace
+	//------------------------------------
+
 	const NAMESPACE = projectSettings.project_namespace.value
-	const assetsFolder = new VirtualFolder('assets')
-	const namespaceFolder = assetsFolder.newFolder(NAMESPACE)
-	namespaceFolder.newFolders('models', 'textures')
+	const namespaceFolder = assetsPackFolder.newFolder(`${NAMESPACE}_animated_java_rig`)
+	const [modelsFolder, texturesFolder] = namespaceFolder.newFolders(
+		'models/item',
+		'textures/item'
+	)
+	for (const bone of Object.values(rig.boneMap)) {
+		modelsFolder.newFile(`${bone.name}.json`, bone.model)
+		predicateItemFile.content.overrides.push({
+			predicate: {
+				custom_model_data: bone.customModelData,
+			},
+			model: bone.resourceLocation,
+		})
+	}
+
+	const resourcePackPath = PathModule.parse(projectSettings.resource_pack_folder.value).dir
+	const rigFolderPath = PathModule.join(resourcePackPath, namespaceFolder.path)
+	await fs.promises
+		.access(rigFolderPath)
+		.then(async () => {
+			await fs.promises.rm(rigFolderPath, { recursive: true })
+		})
+		.catch(e => {
+			console.warn(e)
+		})
+
+	await assetsPackFolder.writeToDisk(resourcePackPath)
 }
 
 function verifySettings(structure: GUIStructure, settings: Array<Setting<any>>) {
@@ -139,13 +163,13 @@ function verifySettings(structure: GUIStructure, settings: Array<Setting<any>>) 
 	for (const el of structure) {
 		switch (el.type) {
 			case 'group':
-				verifySettings(el.children, settings)
+				issues.push(...verifySettings(el.children, settings))
 				break
 			case 'toggle': {
 				const setting = settings.find(s => s.id === el.settingId)
 				if (!setting) throw new Error(`No setting found with id "${el.settingId}"`)
-				if (setting.value) verifySettings(el.active, settings)
-				else verifySettings(el.inactive, settings)
+				if (setting.value) issues.push(...verifySettings(el.active, settings))
+				else issues.push(...verifySettings(el.inactive, settings))
 				break
 			}
 			case 'setting': {
@@ -163,6 +187,7 @@ function verifySettings(structure: GUIStructure, settings: Array<Setting<any>>) 
 			}
 		}
 	}
+	console.log(issues)
 	return issues
 }
 

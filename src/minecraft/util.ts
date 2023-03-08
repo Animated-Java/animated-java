@@ -17,6 +17,7 @@ export function isValidResourcePackPath(path: string) {
 }
 
 export function parseResourcePackPath(path: string) {
+	path = path.replace(/[\\/]/g, PathModule.sep)
 	const parts = path.split(PathModule.sep)
 
 	const assetsIndex = parts.indexOf('assets')
@@ -27,17 +28,21 @@ export function parseResourcePackPath(path: string) {
 	const namespace = parts[assetsIndex + 1]
 	if (namespace !== namespace.toLowerCase()) return false
 
-	const resourcePath = parts.slice(assetsIndex + 2).join(PathModule.sep)
+	const resourcePath = parts.slice(assetsIndex + 3).join(PathModule.sep)
 	if (resourcePath !== resourcePath.toLowerCase()) return false
 
 	const fileName = parts[parts.length - 1]
 	if (fileName !== fileName.toLowerCase()) return false
 
+	let resourceLocation = namespace + ':' + resourcePath.replace(/\\/g, '/')
+	const index = resourceLocation.lastIndexOf('.')
+	if (index !== -1) resourceLocation = resourceLocation.substring(0, index)
+
 	return {
 		resourcePackRoot,
 		namespace,
 		resourcePath,
-		resourceLocation: `${namespace}:${resourcePath.replace(/\\/g, '/')}`,
+		resourceLocation,
 		fileName,
 	}
 }

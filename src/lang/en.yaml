@@ -32,9 +32,9 @@ animated_java.dialog.documentation.error.failed_to_load.description: |-
 ### Project Settings
 animated_java.dialog.project_settings.title: Animated Java Project Settings
 
-animated_java.project_settings.project_namespace: Project Namespace
+animated_java.project_settings.project_namespace: Project Name
 animated_java.project_settings.project_namespace.description: |-
-  The namespace of the project.
+  The name and namespace of the project.
 
 animated_java.project_settings.group.resourcepack: Resource Pack
 
@@ -171,7 +171,9 @@ animated_java.exporters.animation_exporter.settings.datapack_folder.description:
   The folder to export the generated Data Pack into.
   This should be the datapacks folder inside of your world (`world/datapacks/`).
   The generated Data Pack will be placed in a folder named after the Project's Namespace.
-  WARNING! Data Pack merging is NOT supported. If you have an existing Data Pack with the same namespace, it might be OVERWRITTEN.
+  WARNING! Data Pack merging is NOT supported. If you have an existing Data Pack with the same namespace as your project, it WILL be overwriten.
+animated_java.exporters.animation_exporter.settings.datapack_folder.error.unset: |-
+  You must select a Data Pack folder.
 
 # Statue Exporter
 animated_java.exporters.statue_exporter.name: Statue Exporter

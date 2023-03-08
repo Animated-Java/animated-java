@@ -1,45 +1,58 @@
 import { LimitClock, roundToN } from '../util/misc'
 import { ProgressBarController } from '../util/progress'
-import { AJBone } from './bone'
-import { Gimbals, Vector } from './linear'
-
 let progress: ProgressBarController
 
-function eulerToXyz(euler: THREE.Euler) {
-	const a = new THREE.Quaternion().setFromEuler(euler)
-	const b = new THREE.Euler().setFromQuaternion(a, 'XYZ')
-	return b
+export function columnToRowMajor(matrixArray: number[]) {
+	const m11 = matrixArray[0],
+		m12 = matrixArray[4],
+		m13 = matrixArray[8],
+		m14 = matrixArray[12]
+	const m21 = matrixArray[1],
+		m22 = matrixArray[5],
+		m23 = matrixArray[9],
+		m24 = matrixArray[13]
+	const m31 = matrixArray[2],
+		m32 = matrixArray[6],
+		m33 = matrixArray[10],
+		m34 = matrixArray[14]
+	const m41 = matrixArray[3],
+		m42 = matrixArray[7],
+		m43 = matrixArray[11],
+		m44 = matrixArray[15]
+
+	return [m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44]
 }
 
-function recurseBoneStructure(group: Group): AJBone {
-	let rot: ArrayVector3, pos: ArrayVector3
-	if (group.name === 'ANIMATED_JAVA_VIRTUAL_ROOT') {
-		rot = group.rotation
-		pos = group.origin
-	} else {
-		const e = eulerToXyz(group.mesh.rotation)
-		rot = [e.x, e.y, e.z].map(r => r * (180 / Math.PI)) as ArrayVector3
-		pos = group.mesh.position.toArray()
+function getGroupMatrixArray(group: Group) {
+	const matrix = group.mesh.matrix.clone()
+	const transform = new THREE.Vector3()
+		.setFromMatrixPosition(matrix)
+		.add(new THREE.Vector3(0, 8, 0))
+		.multiply(new THREE.Vector3(1 / 16, 1 / 16, 1 / 16))
+	matrix.setPosition(transform)
+	return columnToRowMajor(matrix.toArray())
+}
+
+export interface IAnimationBone {
+	name: string
+	uuid: string
+	group?: Group
+	matrix: number[]
+}
+
+export function getAnimationBones() {
+	const bones: IAnimationBone[] = []
+
+	for (const group of Group.all) {
+		bones.push({
+			name: group.name,
+			uuid: group.uuid,
+			group: group,
+			matrix: getGroupMatrixArray(group),
+		})
 	}
-	return new AJBone({
-		name: group.name,
-		origin: Vector.fromArray(pos),
-		rot: Gimbals.fromArray(rot),
-		scale: new Vector(1, 1, 1),
-		children: group.children
-			.filter(c => c instanceof Group)
-			.map(c => recurseBoneStructure(c as Group)),
-	})
-}
 
-export function getBones() {
-	const virtualRoot = new Group({
-		name: 'ANIMATED_JAVA_VIRTUAL_ROOT',
-		origin: [0, 0, 0],
-		rotation: [0, 0, 0],
-	})
-	virtualRoot.children = [...Outliner.root]
-	return recurseBoneStructure(virtualRoot)
+	return bones
 }
 
 function getVariantKeyframe(animation: _Animation, time: number) {
@@ -99,7 +112,7 @@ function updatePreview(animation: _Animation, time: number) {
 export interface IRenderedAnimation {
 	name: string
 	frames: Array<{
-		bones: AJBone[]
+		bones: IAnimationBone[]
 		variant?: {
 			uuid: string
 			condition: string
@@ -119,7 +132,6 @@ export async function renderAnimation(animation: _Animation) {
 	const rendered = { name: animation.name, frames: [] } as IRenderedAnimation
 	animation.select()
 
-	const bones = getBones()
 	const clock = new LimitClock(10)
 
 	for (let time = 0; time <= animation.length; time = roundToN(time + 0.05, 20)) {
@@ -127,7 +139,7 @@ export async function renderAnimation(animation: _Animation) {
 		// await new Promise(resolve => setTimeout(resolve, 50))
 		updatePreview(animation, time)
 		rendered.frames.push({
-			bones: bones.exportRoot(),
+			bones: getAnimationBones(),
 			variant: getVariantKeyframe(animation, time),
 			commands: getCommandsKeyframe(animation, time),
 			animationState: getAnimationStateKeyframe(animation, time),

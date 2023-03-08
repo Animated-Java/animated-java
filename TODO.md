@@ -31,10 +31,10 @@
 - [ ] Include a small gif of SnaveSutit smashing a keyboard
 
 # Features
-- [ ] Bones should have a tick function in their bone-config
+- [ ] ~~Bones should have a tick function in their bone-config~~ There should be a function tag that runs on every bone every tick
 - [ ] There should be tick, load, summon, and remove function settings in the animation and statue exporter.
 - [ ] Bones should be forced to have safe function names instead of being changed on export.
-- [ ] We should check that all cubes are valid before exporting.
+- [x] We should check that all cubes are valid before exporting.
 - [ ] Use modify item to replace display items
 - [x] Show invalid element rotations with a red outline around the element.
 - [ ] Unknown Error Dialog

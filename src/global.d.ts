@@ -3,20 +3,6 @@ import type { IAnimatedJavaProjectSettings } from './projectSettings'
 import type { Setting, createInfo } from './settings'
 import type { translate } from './util/translation'
 import type { VariantsContainer } from './variants'
-import type {
-	NbtByte,
-	NbtByteArray,
-	NbtCompound,
-	NbtDouble,
-	NbtFloat,
-	NbtInt,
-	NbtIntArray,
-	NbtList,
-	NbtLong,
-	NbtLongArray,
-	NbtString,
-	NbtFile,
-} from 'deepslate'
 
 type ProjectSettings = Record<string, Setting<any>>
 
@@ -41,21 +27,9 @@ declare global {
 		docClick: (link: string) => void
 		openAjDocsDialog: (link: string) => void
 		VirtualFileSystem: typeof import('./util/virtualFileSystem')
-		deepslate: {
-			NbtByte: typeof NbtByte
-			NbtByteArray: typeof NbtByteArray
-			NbtCompound: typeof NbtCompound
-			NbtDouble: typeof NbtDouble
-			NbtFloat: typeof NbtFloat
-			NbtInt: typeof NbtInt
-			NbtIntArray: typeof NbtIntArray
-			NbtList: typeof NbtList
-			NbtLong: typeof NbtLong
-			NbtLongArray: typeof NbtLongArray
-			NbtString: typeof NbtString
-			NbtFile: typeof NbtFile
-		}
+		deepslate: typeof import('deepslate')
 		ProgressBarController: typeof import('./util/progress').ProgressBarController
 		createInfo: typeof createInfo
+		JsonText: typeof import('./minecraft').JsonText
 	}
 }
