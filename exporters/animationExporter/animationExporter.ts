@@ -330,7 +330,7 @@ export function loadExporter() {
 
 				const applyFrameFile = animFolder.newFile('apply_frame.mcfunction', [])
 
-				function recurse() {}
+				// function recurse() {}
 			}
 
 			//--------------------------------------------
