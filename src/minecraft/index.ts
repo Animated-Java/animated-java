@@ -1,4 +1,6 @@
 export * from './entities'
 export * from './items'
+export * from './util'
 export * from './jsonText'
+export * from './searchGenerator'
 // export * from './registryLoader'

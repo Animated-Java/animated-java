@@ -59,7 +59,7 @@
 		"type": "github",
 		"url": "https://github.com/Animated-Java/animated-java"
 	},
-	"description": "Easily create custom entity animations in Minecraft Java Edition.",
+	"description": "A tool for easily making animations in Minecraft: Java Edition!",
 	"main": "./dist/index.js",
 	"types": "./dist/src/index.d.ts",
 	"private": true,

@@ -24,13 +24,21 @@
 - [x] Add a popup over the canvas that tells the user why their cubes are red
 - [x] Settings UI needs to display the selected exporter's settings
 
+# Settings
+- [ ] The animation exporter setting should not select based on exporter intex. It should be based on exporter ID
+
 # Docs
 - [ ] F-A-Q
 
 # About Page
 - [ ] Include a small gif of SnaveSutit smashing a keyboard
 
+# Animation Exporter
+- [ ] Figure out a clever way to allow summoning a rig at any frame in any animation
+- [ ] Find a way to summon a model with a specific variant
+
 # Features
+- [ ] Make variants have an option to not change the textures of specific bones.
 - [ ] ~~Bones should have a tick function in their bone-config~~ There should be a function tag that runs on every bone every tick
 - [ ] There should be tick, load, summon, and remove function settings in the animation and statue exporter.
 - [ ] Bones should be forced to have safe function names instead of being changed on export.

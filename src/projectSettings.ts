@@ -1,31 +1,23 @@
+import { AnimatedJavaExporter } from './exporter'
+import { GUIStructure } from './GUIStructure'
 import { Items } from './minecraft'
 import {
 	isValidResourcePackMcMeta,
 	isValidResourcePackPath,
 	safeFunctionName,
 } from './minecraft/util'
-import { ajModelFormat } from './modelFormat'
-import {
-	CheckboxSetting,
-	createInfo,
-	DropdownSetting,
-	FileSetting,
-	FolderSetting,
-	InlineTextSetting,
-} from './settings'
-import * as events from './util/events'
-import { GUIStructure } from './GUIStructure'
+import * as Settings from './settings'
 import { translate } from './util/translation'
 
 export interface IAnimatedJavaProjectSettings {
-	project_namespace: InlineTextSetting
-	rig_item: InlineTextSetting
-	rig_item_model: InlineTextSetting
-	rig_export_folder: FolderSetting
-	enable_advanced_resource_pack_settings: CheckboxSetting
-	resource_pack_folder: FileSetting
-	verbose: CheckboxSetting
-	exporter: DropdownSetting<string>
+	project_namespace: Settings.InlineTextSetting
+	rig_item: Settings.InlineTextSetting
+	rig_item_model: Settings.InlineTextSetting
+	rig_export_folder: Settings.FolderSetting
+	enable_advanced_resource_pack_settings: Settings.CheckboxSetting
+	resource_pack_folder: Settings.FileSetting
+	verbose: Settings.CheckboxSetting
+	exporter: Settings.DropdownSetting<string>
 }
 
 const TRANSLATIONS = {
@@ -112,7 +104,7 @@ const TRANSLATIONS = {
 
 export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 	return {
-		project_namespace: new InlineTextSetting(
+		project_namespace: new Settings.InlineTextSetting(
 			{
 				id: 'animated_java:project_settings/project_namespace',
 				displayName: TRANSLATIONS.project_namespace.displayName,
@@ -126,7 +118,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 			}
 		),
 
-		rig_item: new InlineTextSetting(
+		rig_item: new Settings.InlineTextSetting(
 			{
 				id: 'animated_java:project_settings/rig_item',
 				displayName: TRANSLATIONS.rig_item.displayName,
@@ -139,16 +131,22 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				setting.value = setting.value.toLowerCase()
 
 				if (setting.value === '') {
-					setting.infoPopup = createInfo('error', TRANSLATIONS.rig_item.error.unset)
+					setting.infoPopup = Settings.createInfo(
+						'error',
+						TRANSLATIONS.rig_item.error.unset
+					)
 					return
 				} else if (setting.value.includes(' ')) {
-					setting.infoPopup = createInfo('error', TRANSLATIONS.rig_item.error.space)
+					setting.infoPopup = Settings.createInfo(
+						'error',
+						TRANSLATIONS.rig_item.error.space
+					)
 					return
 				}
 
 				const [namespace, path] = setting.value.split(':')
 				if (!(namespace && path)) {
-					setting.infoPopup = createInfo(
+					setting.infoPopup = Settings.createInfo(
 						'error',
 						TRANSLATIONS.rig_item.error.invalid_namespace
 					)
@@ -156,7 +154,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				}
 
 				if (!Items.isItem(setting.value)) {
-					setting.infoPopup = createInfo(
+					setting.infoPopup = Settings.createInfo(
 						'warning',
 						TRANSLATIONS.rig_item.warning.unknown_item
 					)
@@ -167,7 +165,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 			}
 		),
 
-		rig_item_model: new FileSetting(
+		rig_item_model: new Settings.FileSetting(
 			{
 				id: 'animated_java:project_settings/rig_item_model',
 				displayName: TRANSLATIONS.rig_item_model.displayName,
@@ -179,10 +177,13 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 			},
 			function onUpdate(setting) {
 				if (!setting.value) {
-					setting.infoPopup = createInfo('error', TRANSLATIONS.rig_item_model.error.unset)
+					setting.infoPopup = Settings.createInfo(
+						'error',
+						TRANSLATIONS.rig_item_model.error.unset
+					)
 					return setting
 				} else if (!isValidResourcePackPath(setting.value)) {
-					setting.infoPopup = createInfo(
+					setting.infoPopup = Settings.createInfo(
 						'error',
 						TRANSLATIONS.rig_item_model.error.invalid_path
 					)
@@ -191,7 +192,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				const parsed = PathModule.parse(setting.value)
 				const rigItem = Project?.animated_java_settings?.rig_item?.value
 				if (!rigItem) {
-					setting.infoPopup = createInfo(
+					setting.infoPopup = Settings.createInfo(
 						'error',
 						TRANSLATIONS.rig_item_model.error.rig_item_unset
 					)
@@ -199,7 +200,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				}
 				const [, itemId] = rigItem.split(':')
 				if (parsed.name !== itemId) {
-					setting.infoPopup = createInfo(
+					setting.infoPopup = Settings.createInfo(
 						'error',
 						TRANSLATIONS.rig_item_model.error.item_does_not_match,
 						{ rigItem: itemId, pathItem: parsed.name }
@@ -209,7 +210,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 			}
 		),
 
-		rig_export_folder: new FolderSetting(
+		rig_export_folder: new Settings.FolderSetting(
 			{
 				id: 'animated_java:project_settings/rig_export_folder',
 				displayName: TRANSLATIONS.rig_export_folder.displayName,
@@ -220,13 +221,13 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 			},
 			function onUpdate(setting) {
 				if (!setting.value) {
-					setting.infoPopup = createInfo(
+					setting.infoPopup = Settings.createInfo(
 						'error',
 						TRANSLATIONS.rig_export_folder.error.unset
 					)
 					return setting
 				} else if (!isValidResourcePackPath(setting.value)) {
-					setting.infoPopup = createInfo(
+					setting.infoPopup = Settings.createInfo(
 						'error',
 						TRANSLATIONS.rig_export_folder.error.invalid_path
 					)
@@ -235,7 +236,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 			}
 		),
 
-		enable_advanced_resource_pack_settings: new CheckboxSetting({
+		enable_advanced_resource_pack_settings: new Settings.CheckboxSetting({
 			id: 'animated_java:project_settings/enable_advanced_resource_pack_settings',
 			displayName: TRANSLATIONS.enable_advanced_resource_pack_settings.displayName,
 			description: TRANSLATIONS.enable_advanced_resource_pack_settings.description,
@@ -243,7 +244,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 			docsLink: 'page:project_settings#enable_advanced_resource_pack_settings',
 		}),
 
-		resource_pack_folder: new FileSetting(
+		resource_pack_folder: new Settings.FileSetting(
 			{
 				id: 'animated_java:project_settings/resource_pack',
 				displayName: TRANSLATIONS.resource_pack_folder.displayName,
@@ -254,13 +255,13 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 			},
 			function onUpdate(setting) {
 				if (!setting.value) {
-					setting.infoPopup = createInfo(
+					setting.infoPopup = Settings.createInfo(
 						'error',
 						TRANSLATIONS.resource_pack_folder.error.unset
 					)
 					return setting
 				} else if (!isValidResourcePackMcMeta(setting.value)) {
-					setting.infoPopup = createInfo(
+					setting.infoPopup = Settings.createInfo(
 						'error',
 						TRANSLATIONS.resource_pack_folder.error.invalid_path
 					)
@@ -269,7 +270,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 			}
 		),
 
-		verbose: new CheckboxSetting({
+		verbose: new Settings.CheckboxSetting({
 			id: 'animated_java:project_settings/verbose',
 			displayName: TRANSLATIONS.verbose.displayName,
 			description: TRANSLATIONS.verbose.description,
@@ -277,7 +278,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 			docsLink: 'page:project_settings#verbose',
 		}),
 
-		exporter: new DropdownSetting<string>(
+		exporter: new Settings.DropdownSetting<string>(
 			{
 				id: 'animated_java:project_settings/exporter',
 				displayName: TRANSLATIONS.exporter.displayName,
@@ -288,7 +289,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 			},
 			undefined,
 			function onInit(setting) {
-				setting.options = AnimatedJava.Exporter.all.map(exporter => ({
+				setting.options = AnimatedJavaExporter.all.map(exporter => ({
 					name: exporter.name,
 					value: exporter.id,
 				}))
@@ -341,18 +342,18 @@ export const projectSettingStructure: GUIStructure = [
 	},
 ]
 
-function updateProjectSettings() {
-	if (!Project) return
-	console.log('updateProjectSettings', Project)
-	if (Format === ajModelFormat) {
-		if (!Project.animated_java_settings) {
-			Project.animated_java_settings = getDefaultProjectSettings()
-		}
-		for (const setting of Object.values(Project.animated_java_settings)) {
-			setting._onInit()
-		}
-	}
-}
+// function updateProjectSettings() {
+// 	if (!Project) return
+// 	console.log('updateProjectSettings', Project)
+// 	if (Format === ajModelFormat) {
+// 		if (!Project.animated_java_settings) {
+// 			Project.animated_java_settings = getDefaultProjectSettings()
+// 		}
+// 		for (const setting of Object.values(Project.animated_java_settings)) {
+// 			setting._onInit()
+// 		}
+// 	}
+// }
 
-events.LOAD_PROJECT.subscribe(updateProjectSettings)
-events.SELECT_PROJECT.subscribe(updateProjectSettings)
+// events.LOAD_PROJECT.subscribe(updateProjectSettings)
+// events.SELECT_PROJECT.subscribe(updateProjectSettings)

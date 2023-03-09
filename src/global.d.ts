@@ -1,12 +1,39 @@
 import type { AnimatedJavaExporter } from './exporter'
+import type { generateSearchTree, JsonText } from './minecraft'
 import type { IAnimatedJavaProjectSettings } from './projectSettings'
-import type { Setting, createInfo } from './settings'
-import type { translate } from './util/translation'
+import type { createInfo, Setting } from './settings'
+import type { addTranslations, translate } from './util/translation'
+import type { formatStr, roundTo, roundToN } from './util/misc'
+import type { ProgressBarController } from './util/progress'
 import type { VariantsContainer } from './variants'
 
-type ProjectSettings = Record<string, Setting<any>>
-
 declare global {
+	const AnimatedJava: {
+		loaded?: boolean
+		docClick: (link: string) => void
+		events: typeof import('./util/events')
+
+		API: {
+			Exporter: typeof AnimatedJavaExporter
+			Settings: typeof import('./settings')
+			translate: typeof translate
+			addTranslations: typeof addTranslations
+			formatStr: typeof formatStr
+			roundTo: typeof roundTo
+			roundToN: typeof roundToN
+			VirtualFileSystem: typeof import('./util/virtualFileSystem')
+			deepslate: typeof import('deepslate')
+			ProgressBarController: typeof ProgressBarController
+			createInfo: typeof createInfo
+			JsonText: typeof JsonText
+			generateSearchTree: typeof generateSearchTree
+		}
+	}
+
+	//-------------------------------
+	// Blockbench Type modifications
+	//-------------------------------
+
 	interface Cube {
 		forceVisible?: boolean
 		_forceVisible?: boolean
@@ -14,22 +41,7 @@ declare global {
 
 	interface ModelProject {
 		animated_java_settings?: IAnimatedJavaProjectSettings
-		animated_java_exporter_settings?: Record<string, ProjectSettings>
+		animated_java_exporter_settings?: Record<string, Record<string, Setting<any>>>
 		animated_java_variants?: VariantsContainer
-	}
-	const AnimatedJava: {
-		Exporter: typeof AnimatedJavaExporter
-		settings: Record<string, Setting<unknown>>
-		Settings: typeof import('./settings')
-		events: typeof import('./util/events')
-		translate: typeof translate
-		formatStr: typeof import('./util/misc').formatStr
-		docClick: (link: string) => void
-		openAjDocsDialog: (link: string) => void
-		VirtualFileSystem: typeof import('./util/virtualFileSystem')
-		deepslate: typeof import('deepslate')
-		ProgressBarController: typeof import('./util/progress').ProgressBarController
-		createInfo: typeof createInfo
-		JsonText: typeof import('./minecraft').JsonText
 	}
 }

@@ -10,6 +10,11 @@ export class ProgressBarController {
 		Blockbench.setProgress(this.progress / this.total)
 	}
 
+	setMessage(message: string) {
+		this.message = message
+		Blockbench.setStatusBarText(message)
+	}
+
 	finish() {
 		this.progress = 0
 		Blockbench.setProgress(0)

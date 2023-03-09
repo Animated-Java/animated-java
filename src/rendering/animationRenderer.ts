@@ -1,36 +1,13 @@
-import { LimitClock, roundToN } from '../util/misc'
+import { columnToRowMajor, LimitClock, roundToN } from '../util/misc'
 import { ProgressBarController } from '../util/progress'
+import { IRenderedRig } from './modelRenderer'
 let progress: ProgressBarController
 
-export function columnToRowMajor(matrixArray: number[]) {
-	const m11 = matrixArray[0],
-		m12 = matrixArray[4],
-		m13 = matrixArray[8],
-		m14 = matrixArray[12]
-	const m21 = matrixArray[1],
-		m22 = matrixArray[5],
-		m23 = matrixArray[9],
-		m24 = matrixArray[13]
-	const m31 = matrixArray[2],
-		m32 = matrixArray[6],
-		m33 = matrixArray[10],
-		m34 = matrixArray[14]
-	const m41 = matrixArray[3],
-		m42 = matrixArray[7],
-		m43 = matrixArray[11],
-		m44 = matrixArray[15]
-
-	return [m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44]
-}
-
-function getGroupMatrixArray(group: Group) {
-	const matrix = group.mesh.matrix.clone()
-	const transform = new THREE.Vector3()
-		.setFromMatrixPosition(matrix)
-		.add(new THREE.Vector3(0, 8, 0))
-		.multiply(new THREE.Vector3(1 / 16, 1 / 16, 1 / 16))
-	matrix.setPosition(transform)
-	return columnToRowMajor(matrix.toArray())
+function getGroupMatrix(group: Group, scale: number) {
+	const matrix = group.mesh.matrixWorld.clone()
+	matrix.setPosition(new THREE.Vector3().setFromMatrixPosition(matrix).multiplyScalar(1 / 16))
+	matrix.scale(new THREE.Vector3().setFromMatrixScale(matrix).multiplyScalar(scale))
+	return matrix
 }
 
 export interface IAnimationBone {
@@ -40,15 +17,40 @@ export interface IAnimationBone {
 	matrix: number[]
 }
 
-export function getAnimationBones() {
+export interface IRenderedAnimation {
+	name: string
+	frames: Array<{
+		bones: IAnimationBone[]
+		variant?: {
+			uuid: string
+			condition: string
+		}
+		commands?: {
+			commands: string
+			condition: string
+		}
+		animationState?: {
+			animation: string
+			condition: string
+		}
+	}>
+	/**
+	 * Duration of the animation in ticks (AKA frames). Same as animation.frames.length
+	 */
+	duration: number
+}
+
+export function getAnimationBones(boneMap: IRenderedRig['boneMap']) {
 	const bones: IAnimationBone[] = []
 
 	for (const group of Group.all) {
+		const matrix = getGroupMatrix(group, boneMap[group.uuid].scale)
+
 		bones.push({
 			name: group.name,
 			uuid: group.uuid,
 			group: group,
-			matrix: getGroupMatrixArray(group),
+			matrix: columnToRowMajor(matrix.toArray()),
 		})
 	}
 
@@ -109,27 +111,8 @@ function updatePreview(animation: _Animation, time: number) {
 	Blockbench.dispatchEvent('display_animation_frame')
 }
 
-export interface IRenderedAnimation {
-	name: string
-	frames: Array<{
-		bones: IAnimationBone[]
-		variant?: {
-			uuid: string
-			condition: string
-		}
-		commands?: {
-			commands: string
-			condition: string
-		}
-		animationState?: {
-			animation: string
-			condition: string
-		}
-	}>
-}
-
-export async function renderAnimation(animation: _Animation) {
-	const rendered = { name: animation.name, frames: [] } as IRenderedAnimation
+export async function renderAnimation(animation: _Animation, rig: IRenderedRig) {
+	const rendered = { name: animation.name, frames: [], duration: 0 } as IRenderedAnimation
 	animation.select()
 
 	const clock = new LimitClock(10)
@@ -139,17 +122,18 @@ export async function renderAnimation(animation: _Animation) {
 		// await new Promise(resolve => setTimeout(resolve, 50))
 		updatePreview(animation, time)
 		rendered.frames.push({
-			bones: getAnimationBones(),
+			bones: getAnimationBones(rig.boneMap),
 			variant: getVariantKeyframe(animation, time),
 			commands: getCommandsKeyframe(animation, time),
 			animationState: getAnimationStateKeyframe(animation, time),
 		})
 		await clock.sync()
 	}
+	rendered.duration = rendered.frames.length
 	return rendered
 }
 
-export async function renderAllAnimations() {
+export async function renderAllAnimations(rig: IRenderedRig) {
 	let selectedAnimation: _Animation | undefined
 	let currentTime = 0
 	progress = new ProgressBarController('Rendering Animations...', Animator.animations.length)
@@ -162,7 +146,7 @@ export async function renderAllAnimations() {
 	const animations: IRenderedAnimation[] = []
 
 	for (const animation of Animator.animations) {
-		animations.push(await renderAnimation(animation))
+		animations.push(await renderAnimation(animation, rig))
 		progress.add(1)
 	}
 

@@ -112,6 +112,7 @@
 		"@typescript-eslint/require-await": "warn",
 		"@typescript-eslint/no-unsafe-call": "off",
 		"@typescript-eslint/unbound-method": "off",
-		"@typescript-eslint/no-non-null-assertion": "off"
+		"@typescript-eslint/no-non-null-assertion": "off",
+		"@typescript-eslint/triple-slash-reference": "off"
 	}
 }

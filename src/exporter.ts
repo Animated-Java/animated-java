@@ -1,20 +1,15 @@
+import { GUIStructure } from './GUIStructure'
 import { isValidResourcePackPath } from './minecraft/util'
-import { VirtualFolder } from './util/virtualFileSystem'
+import { projectSettingStructure } from './projectSettings'
 import { IRenderedAnimation, renderAllAnimations } from './rendering/animationRenderer'
 import { IRenderedRig, renderRig } from './rendering/modelRenderer'
-import {
-	animatedJavaSettings,
-	IInfoPopup,
-	ISettingsObject,
-	Setting as AJSetting,
-	Setting,
-} from './settings'
-import { GUIStructure } from './GUIStructure'
+import { animatedJavaSettings, IInfoPopup, Setting as AJSetting, Setting } from './settings'
 import { openAjFailedProjectExportReadinessDialog } from './ui/popups/failedProjectExportReadiness'
 import { consoleGroupCollapsed } from './util/console'
+import * as events from './util/events'
 import { NamespacedString } from './util/moddingTools'
 import { translate } from './util/translation'
-import { projectSettingStructure } from './projectSettings'
+import { VirtualFolder } from './util/virtualFileSystem'
 
 type ProjectSettings = Record<NamespacedString, AJSetting<any>>
 type NotUndefined<T> = T extends undefined ? never : T
@@ -25,6 +20,7 @@ interface IAnimatedJavaExporterOptions<S extends ProjectSettings> {
 	description: string
 	getSettings(): S
 	settingsStructure: GUIStructure
+	onStartup?: () => void
 	export(
 		ajSettings: typeof animatedJavaSettings,
 		projectSettings: NotUndefined<ModelProject['animated_java_settings']>,
@@ -37,12 +33,13 @@ interface IAnimatedJavaExporterOptions<S extends ProjectSettings> {
 export class AnimatedJavaExporter<
 	S extends ProjectSettings = Record<NamespacedString, AJSetting<any>>
 > {
-	static exporters = new Map<NamespacedString, AnimatedJavaExporter<any>>()
+	static exporters: Record<NamespacedString, AnimatedJavaExporter<any>> = {}
 	id: NamespacedString
 	name: string
 	description: string
 	getSettings: IAnimatedJavaExporterOptions<S>['getSettings']
 	settingsStructure: GUIStructure
+	onStartup?: IAnimatedJavaExporterOptions<S>['onStartup']
 	export: IAnimatedJavaExporterOptions<S>['export']
 	constructor(options: IAnimatedJavaExporterOptions<S>) {
 		this.id = options.id
@@ -50,16 +47,21 @@ export class AnimatedJavaExporter<
 		this.description = options.description
 		this.getSettings = options.getSettings
 		this.settingsStructure = options.settingsStructure
+		this.onStartup = options.onStartup
 		this.export = consoleGroupCollapsed(
 			`Exporting Animated Java Rig via ${this.name} (${this.id})`,
 			options.export
 		)
 
-		AnimatedJavaExporter.exporters.set(this.id, this)
+		events.LOAD_PROJECT.subscribe(() => {
+			if (this.onStartup) this.onStartup()
+		}, true)
+
+		AnimatedJavaExporter.exporters[this.id] = this
 	}
 
 	static get all() {
-		return [...AnimatedJavaExporter.exporters.entries()].map(v => v[1])
+		return Object.values(AnimatedJavaExporter.exporters)
 	}
 }
 
@@ -70,14 +72,12 @@ export const exportProject = consoleGroupCollapsed('exportProject', async () => 
 	const selectedExporterId = Project?.animated_java_settings?.exporter?.selected
 		?.value as NamespacedString
 
-	const exporter = AnimatedJavaExporter.exporters.get(selectedExporterId)
+	const exporter = AnimatedJavaExporter.exporters[selectedExporterId]
 	if (!exporter) throw new Error(`No exporter found with id "${selectedExporterId}"`)
 
 	const ajSettings = animatedJavaSettings
 	const projectSettings = Project.animated_java_settings
 	const exporterSettings = Project.animated_java_exporter_settings![selectedExporterId]
-
-	const renderedAnimations = await renderAllAnimations()
 
 	let outputFolder: string
 	if (Project.animated_java_settings.enable_advanced_resource_pack_settings.value) {
@@ -95,6 +95,8 @@ export const exportProject = consoleGroupCollapsed('exportProject', async () => 
 		)
 	}
 	const rig = renderRig(outputFolder)
+
+	const renderedAnimations = await renderAllAnimations(rig)
 
 	await exporter.export(ajSettings, projectSettings, exporterSettings, renderedAnimations, rig)
 	await exportResources(ajSettings, projectSettings, rig)
@@ -142,6 +144,9 @@ async function exportResources(
 			},
 			model: bone.resourceLocation,
 		})
+		predicateItemFile.content.overrides.sort(
+			(a: any, b: any) => a.predicate.custom_model_data - b.predicate.custom_model_data
+		)
 	}
 
 	const resourcePackPath = PathModule.parse(projectSettings.resource_pack_folder.value).dir
@@ -187,7 +192,6 @@ function verifySettings(structure: GUIStructure, settings: Array<Setting<any>>) 
 			}
 		}
 	}
-	console.log(issues)
 	return issues
 }
 
@@ -224,9 +228,10 @@ export function verifyProjectExportReadiness() {
 	)
 
 	// Verify Exporter Settings
-	const exporter = AnimatedJavaExporter.exporters.get(
-		Project.animated_java_settings.exporter.selected!.value as unknown as NamespacedString
-	)
+	const exporter =
+		AnimatedJavaExporter.exporters[
+			Project.animated_java_settings.exporter.selected!.value as NamespacedString
+		]
 	if (!exporter)
 		issues.push({
 			type: 'error',

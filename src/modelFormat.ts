@@ -1,4 +1,5 @@
 import * as fs from 'fs'
+import { AnimatedJavaExporter } from './exporter'
 import { getDefaultProjectSettings } from './projectSettings'
 import { consoleGroup, consoleGroupCollapsed } from './util/console'
 import * as events from './util/events'
@@ -71,15 +72,19 @@ const loadAnimatedJavaProjectSettings = consoleGroup(
 	(model: IAnimatedJavaModel) => {
 		if (!Project) return
 
-		Project.animated_java_settings = getDefaultProjectSettings()
+		const settings = getDefaultProjectSettings()
+		for (const setting of Object.values(settings)) {
+			setting._onInit()
+		}
 		if (!(model.animated_java && model.animated_java.settings)) return
 
 		console.log('Loading Animated Java project settings...')
 
-		for (const [name, setting] of Object.entries(Project.animated_java_settings)) {
+		for (const [name, setting] of Object.entries(settings)) {
 			if (model.animated_java.settings[name])
-				setting.value = model.animated_java.settings[name]
+				setting._load(model.animated_java.settings[name])
 		}
+		Project.animated_java_settings = settings
 	}
 )
 
@@ -87,30 +92,28 @@ const loadAnimatedJavaExporterSettings = consoleGroup(
 	'loadAnimatedJavaExporterSettings',
 	(model: IAnimatedJavaModel) => {
 		if (!Project) return
-		Project.animated_java_exporter_settings = {}
+		const settings: typeof Project.animated_java_exporter_settings = {}
 
-		for (const exporter of AnimatedJava.Exporter.exporters.values()) {
+		for (const exporter of AnimatedJavaExporter.all) {
+			if (!exporter) continue
 			console.log('Loading settings for', exporter.id)
-			Project.animated_java_exporter_settings[exporter.id] = exporter.getSettings()
-		}
+			settings[exporter.id] = exporter.getSettings()
 
-		if (!model.animated_java.exporter_settings) return
-		console.log('Loading Animated Java exporter settings...')
+			if (!model.animated_java.exporter_settings) return
+			console.log(`Loading ${exporter.id} settings...`)
 
-		for (const [exporterId, exporterSettings] of Object.entries(
-			model.animated_java.exporter_settings
-		)) {
-			if (!Project.animated_java_exporter_settings[exporterId]) continue
-			for (const [settingId, settingValue] of Object.entries(exporterSettings)) {
-				if (!model.animated_java.exporter_settings[exporterId][settingId]) continue
-				if (!Project.animated_java_exporter_settings[exporterId][settingId]) {
-					console.warn('Setting', settingId, 'does not exist in exporter', exporterId)
+			const savedSettings = model.animated_java.exporter_settings[exporter.id]
+			for (const [settingId, settingValue] of Object.entries(savedSettings)) {
+				if (!model.animated_java.exporter_settings[exporter.id][settingId]) continue
+				if (!settings[exporter.id][settingId]) {
+					console.warn('Setting', settingId, 'does not exist in exporter', exporter.id)
 					continue
 				}
-				console.log('Loading value for', exporterId, settingId, settingValue)
-				Project.animated_java_exporter_settings[exporterId][settingId].value = settingValue
+				console.log('Loading value for', exporter.id, settingId, settingValue)
+				settings[exporter.id][settingId]._load(settingValue)
 			}
 		}
+		Project.animated_java_exporter_settings = settings
 	}
 )
 
@@ -118,7 +121,7 @@ const exportAnimatedJavaProjectSettings = consoleGroup('exportAnimatedJavaProjec
 	if (!Project?.animated_java_settings) return
 	const exported: Record<string, any> = {}
 	for (const [name, setting] of Object.entries(Project.animated_java_settings)) {
-		exported[name] = setting.value
+		exported[name] = setting._save()
 	}
 
 	return exported
@@ -132,7 +135,7 @@ function exportAnimatedJavaExporterSettings() {
 	)) {
 		exported[exporterId] = {}
 		for (const [settingId, setting] of Object.entries(exporterSettings)) {
-			exported[exporterId][settingId] = setting.value
+			exported[exporterId][settingId] = setting._save()
 		}
 	}
 

@@ -44,6 +44,7 @@ interface IRenderedBone {
 	modelPath: string
 	resourceLocation: string
 	boundingBox: THREE.Box3
+	scale: number
 }
 
 interface IRenderedBoneVariant {
@@ -79,6 +80,9 @@ export interface IRenderedRig {
 	 * A map of texture UUIDs to textures
 	 */
 	textures: Record<string, Texture>
+	/**
+	 * The default pose of the rig as an Animation frame
+	 */
 	defaultPose: IAnimationBone[]
 	/**
 	 * The output folder for the rig
@@ -137,19 +141,10 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 
 	if (cube.parent instanceof Group) {
 		const parent = cube.parent
-		element.from = element.from.map((v, i) => {
-			const x = v - parent.origin[i]
-			return i === 1 ? x : x + 8
-		})
-		element.to = element.to.map((v, i) => {
-			const x = v - parent.origin[i]
-			return i === 1 ? x : x + 8
-		})
+		element.from = element.from.map((v, i) => v - parent.origin[i])
+		element.to = element.to.map((v, i) => v - parent.origin[i])
 		if (element.rotation && !Array.isArray(element.rotation)) {
-			element.rotation.origin = element.rotation.origin.map((v, i) => {
-				const x = v - parent.origin[i]
-				return i === 1 ? x : x + 8
-			})
+			element.rotation.origin = element.rotation.origin.map((v, i) => v - parent.origin[i])
 		}
 	}
 
@@ -159,7 +154,7 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 		if (!data.texture) continue
 		const renderedFace = {} as IRenderedFace
 		if (data.enabled) {
-			renderedFace.uv = cube.faces[face].uv
+			renderedFace.uv = data.uv
 				.slice()
 				.map((v, i) => (v * 16) / UVEditor.getResolution(i % 2))
 		}
@@ -174,7 +169,7 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 			} else renderedFace.texture = '#missing'
 		}
 		if (data.cullface) renderedFace.cullface = data.cullface
-		if (data.tint) renderedFace.tintindex = data.tint
+		if (data.tint >= 0) renderedFace.tintindex = data.tint
 		element.faces[face] = renderedFace
 	}
 
@@ -195,16 +190,15 @@ function renderTexture(texture: Texture) {
 	throw new Error(`Invalid texture path: ${texture.path}`)
 }
 
-function getBoneBoundingBox(elements: OutlinerNode[]) {
-	const children = elements.filter(e => e instanceof Cube) as Cube[]
-	const min = new THREE.Vector3(Infinity, Infinity, Infinity)
-	const max = new THREE.Vector3(-Infinity, -Infinity, -Infinity)
+function getBoneBoundingBox(group: Group) {
+	const children = group.children.filter(e => e instanceof Cube) as Cube[]
+	const box = new THREE.Box3()
+	box.expandByPoint(new THREE.Vector3(group.origin[0], group.origin[1], group.origin[2]))
 	for (const child of children) {
-		const box = new THREE.Box3().setFromObject(child.mesh)
-		min.min(box.min)
-		max.max(box.max)
+		box.expandByPoint(new THREE.Vector3(child.from[0], child.from[1], child.from[2]))
+		box.expandByPoint(new THREE.Vector3(child.to[0], child.to[1], child.to[2]))
 	}
-	return new THREE.Box3(min, max)
+	return box
 }
 
 function renderGroup(group: Group, rig: IRenderedRig) {
@@ -230,7 +224,8 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 		modelPath: path,
 		customModelData: customModelData++,
 		resourceLocation: parsed.resourceLocation,
-		boundingBox: getBoneBoundingBox(group.children),
+		boundingBox: getBoneBoundingBox(group),
+		scale: 1,
 	}
 
 	const structure: IBoneStructure = {
@@ -251,14 +246,26 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 		progress.add(1)
 	}
 
+	const diff = new THREE.Vector3().subVectors(
+		renderedBone.boundingBox.max,
+		renderedBone.boundingBox.min
+	)
+	const max = Math.max(diff.x, diff.y, diff.z)
+	const scale = Math.min(1, 24 / max)
+	for (const element of renderedBone.model.elements) {
+		element.from = element.from.map(v => v * scale + 8)
+		element.to = element.to.map(v => v * scale + 8)
+		if (element.rotation && !Array.isArray(element.rotation)) {
+			element.rotation.origin = element.rotation.origin.map(v => v * scale + 8)
+		}
+	}
+	renderedBone.scale = 1 / scale
+
 	rig.models[group.uuid] = renderedBone.model
 	rig.boneMap[group.uuid] = renderedBone
 	progress.add(1)
 	return structure
 }
-// if (!(Project?.animated_java_settings)) return
-// // FIXME - This needs to verify that the output path is a valid location before starting the rendering process.
-// const outputFolder = Project.animated_java_settings.rig_export_folder.value
 
 function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 	const bones: Record<string, IRenderedBoneVariant> = {}
@@ -304,7 +311,7 @@ export function renderRig(outputFolder: string): IRenderedRig {
 		boneMap: {},
 		boneStructure: {} as IBoneStructure,
 		textures: {},
-		defaultPose: getAnimationBones(),
+		defaultPose: [],
 		outputFolder,
 	}
 
@@ -322,6 +329,8 @@ export function renderRig(outputFolder: string): IRenderedRig {
 		}
 		progress.add(1)
 	}
+
+	rig.defaultPose = getAnimationBones(rig.boneMap)
 
 	for (const variant of Project!.animated_java_variants!.variants) {
 		if (variant.default) continue // Don't export the default variant, it's redundant data.

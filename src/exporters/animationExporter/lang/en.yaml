@@ -1,0 +1,10 @@
+# Animation Exporter
+animated_java.animation_exporter.name: Animation Exporter
+animated_java.animation_exporter.settings.datapack_folder: Data Pack Folder
+animated_java.animation_exporter.settings.datapack_folder.description: |-
+  The folder to export the generated Data Pack into.
+  This should be the datapacks folder inside of your world (`world/datapacks/`).
+  The generated Data Pack will be placed in a folder named after the Project's Namespace.
+  WARNING! Data Pack merging is NOT supported. If you have an existing Data Pack with the same namespace as your project, it WILL be overwriten.
+animated_java.animation_exporter.settings.datapack_folder.error.unset: |-
+  You must select a Data Pack folder.

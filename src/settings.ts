@@ -2,6 +2,7 @@ import { translate } from './util/translation'
 import { GUIStructure } from './GUIStructure'
 import { Subscribable } from './util/subscribable'
 import { formatStr } from './util/misc'
+import { AnimatedJavaExporter } from './exporter'
 
 export interface IInfoPopup {
 	type: 'warning' | 'error' | 'info'
@@ -95,11 +96,6 @@ export class Setting<V, R = any> extends Subscribable<R> {
 	}
 
 	_onInit() {
-		if (!Project?.animated_java_settings)
-			throw new Error(
-				`The project is not initialized and yet we're trying to initialize a setting. If you're seeing this something has gone horribly wrong.`
-			)
-
 		if (this._initialized) return
 		console.log('Initializing setting', this.id)
 		if (this.onInit) this.onInit(this as unknown as R)
@@ -140,10 +136,12 @@ export class Setting<V, R = any> extends Subscribable<R> {
 		return this.infoPopup
 	}
 
-	toJSON() {
-		return {
-			value: this.value,
-		}
+	_save(): any {
+		return this.value
+	}
+
+	_load(value: any) {
+		this.value = value
 	}
 }
 
@@ -211,6 +209,15 @@ export class DropdownSetting<V = any, K extends number = number> extends Setting
 	get selected(): DropdownSetting<V, K>['options'][any] | undefined {
 		return this.options[this.value]
 	}
+
+	override _save() {
+		return this.selected?.value
+	}
+
+	override _load(value: any) {
+		const index = this.options.findIndex(option => option.value === value) as K
+		this.value = index >= 0 ? index : this.defaultValue
+	}
 }
 
 export class ImageDropdownSetting extends DropdownSetting<Texture['uuid']> {
@@ -247,7 +254,7 @@ export const animatedJavaSettings = {
 			return settingData
 		},
 		function onInit(setting) {
-			setting.options = [...AnimatedJava.Exporter.exporters.values()].map(exporter => ({
+			setting.options = AnimatedJavaExporter.all.map(exporter => ({
 				name: exporter.name,
 				value: exporter.id,
 			}))
