@@ -13,7 +13,7 @@
 	const maxHeight = '20em'
 
 	let value: number
-	let condition: string
+	let executeCondition: string
 
 	$: animations = getAnimations()
 	let selectedAnimation: _Animation | undefined
@@ -32,14 +32,15 @@
 			}
 			const conditionStr = getKeyframeCondition(selectedKeyframe)
 			if (conditionStr) {
-				condition = conditionStr
+				executeCondition = conditionStr
 			}
 		}
 		selectedAnimation = Blockbench.Animation.all.at(value) as _Animation
 		if (selectedKeyframe) {
 			if (selectedAnimation)
 				setKeyframeAnimationState(selectedKeyframe, selectedAnimation.uuid)
-			if (condition !== undefined) setKeyframeCondition(selectedKeyframe, condition)
+			if (executeCondition !== undefined)
+				setKeyframeCondition(selectedKeyframe, executeCondition)
 		}
 	}
 
@@ -59,9 +60,14 @@
 	</select>
 </div>
 <div class="property">
-	<p class="name" title={translate('animated_java.keyframe.condition.description')}>Condition</p>
-	<div class="item-container" title={translate('animated_java.keyframe.condition.description')}>
-		<PrismEditorComponent language="mcfunction" bind:code={condition} />
+	<p class="name" title={translate('animated_java.keyframe.executeCondition.description')}>
+		Condition
+	</p>
+	<div
+		class="item-container"
+		title={translate('animated_java.keyframe.executeCondition.description')}
+	>
+		<PrismEditorComponent language="mcfunction" bind:code={executeCondition} />
 	</div>
 </div>
 

@@ -23,21 +23,22 @@ export interface IRenderedAnimation {
 		bones: IAnimationBone[]
 		variant?: {
 			uuid: string
-			condition: string
+			executeCondition: string
 		}
 		commands?: {
 			commands: string
-			condition: string
+			executeCondition: string
 		}
 		animationState?: {
 			animation: string
-			condition: string
+			executeCondition: string
 		}
 	}>
 	/**
 	 * Duration of the animation in ticks (AKA frames). Same as animation.frames.length
 	 */
 	duration: number
+	loopMode: 'loop' | 'once' | 'hold'
 }
 
 export function getAnimationBones(boneMap: IRenderedRig['boneMap']) {
@@ -63,7 +64,7 @@ function getVariantKeyframe(animation: _Animation, time: number) {
 		if (kf.time === time)
 			return {
 				uuid: kf.data_points[0].variant,
-				condition: kf.data_points[0].condition,
+				executeCondition: kf.data_points[0].executeCondition,
 			}
 	}
 }
@@ -74,7 +75,7 @@ function getCommandsKeyframe(animation: _Animation, time: number) {
 		if (kf.time === time)
 			return {
 				commands: kf.data_points[0].commands,
-				condition: kf.data_points[0].condition,
+				executeCondition: kf.data_points[0].executeCondition,
 			}
 	}
 }
@@ -85,7 +86,7 @@ function getAnimationStateKeyframe(animation: _Animation, time: number) {
 		if (kf.time === time)
 			return {
 				animation: kf.data_points[0].animationState,
-				condition: kf.data_points[0].condition,
+				executeCondition: kf.data_points[0].executeCondition,
 			}
 	}
 }
@@ -112,7 +113,12 @@ function updatePreview(animation: _Animation, time: number) {
 }
 
 export async function renderAnimation(animation: _Animation, rig: IRenderedRig) {
-	const rendered = { name: animation.name, frames: [], duration: 0 } as IRenderedAnimation
+	const rendered = {
+		name: animation.name,
+		frames: [],
+		duration: 0,
+		loopMode: animation.loop,
+	} as IRenderedAnimation
 	animation.select()
 
 	const clock = new LimitClock(10)

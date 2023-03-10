@@ -47,3 +47,7 @@
                     - <animation_name/
                         - tick.mcfunction
                         - apply_frame.mcfunction
+                        - tree/
+                            - branch_x_x.mcfunction
+                            - leaf_x.mcfunction
+                            - leaf_x_as_bone.mcfunction

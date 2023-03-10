@@ -8,6 +8,7 @@ import { openAjFailedProjectExportReadinessDialog } from './ui/popups/failedProj
 import { consoleGroupCollapsed } from './util/console'
 import * as events from './util/events'
 import { NamespacedString } from './util/moddingTools'
+import { ProgressBarController } from './util/progress'
 import { translate } from './util/translation'
 import { VirtualFolder } from './util/virtualFileSystem'
 
@@ -144,10 +145,26 @@ async function exportResources(
 			},
 			model: bone.resourceLocation,
 		})
-		predicateItemFile.content.overrides.sort(
-			(a: any, b: any) => a.predicate.custom_model_data - b.predicate.custom_model_data
-		)
 	}
+
+	for (const [variantName, variantBoneMap] of Object.entries(rig.variantModels)) {
+		if (variantBoneMap.default) continue
+		const variantFolder = modelsFolder.newFolder(variantName)
+		for (const [uuid, variantBone] of Object.entries(variantBoneMap)) {
+			const bone = rig.boneMap[uuid]
+			variantFolder.newFile(`${bone.name}.json`, variantBone.model)
+			predicateItemFile.content.overrides.push({
+				predicate: {
+					custom_model_data: variantBone.customModelData,
+				},
+				model: variantBone.resourceLocation,
+			})
+		}
+	}
+
+	predicateItemFile.content.overrides.sort(
+		(a: any, b: any) => a.predicate.custom_model_data - b.predicate.custom_model_data
+	)
 
 	const resourcePackPath = PathModule.parse(projectSettings.resource_pack_folder.value).dir
 	const rigFolderPath = PathModule.join(resourcePackPath, namespaceFolder.path)
@@ -160,7 +177,12 @@ async function exportResources(
 			console.warn(e)
 		})
 
-	await assetsPackFolder.writeToDisk(resourcePackPath)
+	const progress = new ProgressBarController(
+		'Writing Resource Pack to Disk',
+		assetsPackFolder.childCount
+	)
+	await assetsPackFolder.writeToDisk(resourcePackPath, progress.add.bind(progress))
+	progress.finish()
 }
 
 function verifySettings(structure: GUIStructure, settings: Array<Setting<any>>) {

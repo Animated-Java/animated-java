@@ -2576,9 +2576,9 @@
 			"name": "walk",
 			"loop": "loop",
 			"override": false,
-			"length": 5.5,
+			"length": 2.75,
 			"snapping": 20,
-			"selected": false,
+			"selected": true,
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",
@@ -3144,6 +3144,30 @@
 								}
 							],
 							"uuid": "cea2b58c-5f81-e9f6-0936-fe8bce7dd24c",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"bezier_linked": true,
+							"bezier_left_time": [-0.1, -0.1, -0.1],
+							"bezier_left_value": [0, 0, 0],
+							"bezier_right_time": [0.1, 0.1, 0.1],
+							"bezier_right_value": [0, 0, 0]
+						}
+					]
+				},
+				"effects": {
+					"name": "Effects",
+					"type": "effect",
+					"keyframes": [
+						{
+							"channel": "commands",
+							"data_points": [
+								{
+									"commands": "say hi",
+									"executeCondition": "if score test v matches 1"
+								}
+							],
+							"uuid": "ba9131a3-096e-4ab8-67cb-f8f4ec2eb0cd",
 							"time": 0,
 							"color": -1,
 							"interpolation": "linear",
@@ -4771,7 +4795,7 @@
 			"override": false,
 			"length": 10,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",

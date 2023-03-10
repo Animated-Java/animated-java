@@ -218,8 +218,8 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 		name: group.name,
 		textures: {},
 		model: {
-			elements: [],
 			textures: {},
+			elements: [],
 		},
 		modelPath: path,
 		customModelData: customModelData++,

@@ -101,18 +101,20 @@ export function loadExporter() {
 				i: 'aj.i',
 				id: 'aj.id',
 				animTime: 'aj.anim_time',
-				life_time: 'aj.life_time',
+				lifeTime: 'aj.life_time',
+				loopMode: 'aj.loop_mode',
 			}
 			const tags = {
 				new: 'aj.new',
-				root_entity: `aj.${NAMESPACE}.root`,
-				bone_entity: `aj.${NAMESPACE}.bone.%s`,
+				rootEntity: `aj.${NAMESPACE}.root`,
+				boneEntity: `aj.${NAMESPACE}.bone.%s`,
 				activeAnim: `aj.${NAMESPACE}.animations.%s`,
 			}
 			const entity_types = {
-				aj_root: `#${NAMESPACE}:aj_root`,
-				aj_bone: `#${NAMESPACE}:aj_bone`,
+				ajRoot: `#${NAMESPACE}:aj_root`,
+				ajBone: `#${NAMESPACE}:aj_bone`,
 			}
+			const loopModes = ['loop', 'once', 'hold']
 
 			const datapack = new API.VirtualFileSystem.VirtualFolder(NAMESPACE)
 			const dataFolder = datapack.newFolder('data')
@@ -212,13 +214,27 @@ export function loadExporter() {
 				.accessFolder('functions')
 				.chainNewFile('load.mcfunction', [
 					...Object.values(scoreboard).map(s => `scoreboard objectives add ${s} dummy`),
+					//?? Variable initialization
 					`scoreboard players add .aj.last_id ${scoreboard.id} 0`,
+					//?? Const initialization
+					// Interpolation Duration
+					`scoreboard players set #aj.default_interpolation_duration ${scoreboard.i} ${exporterSettings.interpolation_duration.value}`,
+					// Loop modes
+					`scoreboard players set #aj.loop_mode.loop ${scoreboard.i} ${loopModes.indexOf(
+						'loop'
+					)}`,
+					`scoreboard players set #aj.loop_mode.once ${scoreboard.i} ${loopModes.indexOf(
+						'once'
+					)}`,
+					`scoreboard players set #aj.loop_mode.hold ${scoreboard.i} ${loopModes.indexOf(
+						'hold'
+					)}`,
 				])
 				.chainNewFile('tick.mcfunction', [
-					`execute as @e[type=${entity_types.aj_root},tag=${tags.root_entity}] run function ${AJ_NAMESPACE}:tick_as_root`,
+					`execute as @e[type=${entity_types.ajRoot},tag=${tags.rootEntity}] run function ${AJ_NAMESPACE}:tick_as_root`,
 				])
 				.chainNewFile('tick_as_root.mcfunction', [
-					`scoreboard players add @s ${scoreboard.life_time} 1`,
+					`scoreboard players add @s ${scoreboard.lifeTime} 1`,
 					`function ${AJ_NAMESPACE}:animations/tick`,
 				])
 
@@ -229,7 +245,7 @@ export function loadExporter() {
 			const summonNbt = new NbtCompound()
 			summonNbt.set(
 				'Tags',
-				new NbtList([new NbtString(tags.new), new NbtString(tags.root_entity)])
+				new NbtList([new NbtString(tags.new), new NbtString(tags.rootEntity)])
 			)
 
 			const passengers = new NbtList()
@@ -240,7 +256,7 @@ export function loadExporter() {
 						'Tags',
 						new NbtList([
 							new NbtString(tags.new),
-							new NbtString(API.formatStr(tags.bone_entity, [bone.name])),
+							new NbtString(API.formatStr(tags.boneEntity, [bone.name])),
 						])
 					)
 					.set(
@@ -306,14 +322,14 @@ export function loadExporter() {
 			namespaceFolder
 				.newFolder('functions/remove')
 				.chainNewFile('this.mcfunction', [
-					`execute if entity @s[tag=${tags.root_entity}] run function ${AJ_NAMESPACE}:remove/as_root`,
-					`execute if entity @s[tag=!${tags.root_entity}] run tellraw @a ${API.formatStr(
+					`execute if entity @s[tag=${tags.rootEntity}] run function ${AJ_NAMESPACE}:remove/as_root`,
+					`execute if entity @s[tag=!${tags.rootEntity}] run tellraw @a ${API.formatStr(
 						errorMustBeRunAsRoot.toString(),
 						[`${NAMESPACE}:remove/this`]
 					)}`,
 				])
 				.chainNewFile('all.mcfunction', [
-					`execute as @e[type=#${NAMESPACE}:aj_root,tag=${tags.root_entity}] run function ${AJ_NAMESPACE}:remove/as_root`,
+					`execute as @e[type=#${NAMESPACE}:aj_root,tag=${tags.rootEntity}] run function ${AJ_NAMESPACE}:remove/as_root`,
 				])
 
 			animatedJavaFolder
@@ -328,92 +344,23 @@ export function loadExporter() {
 			// animation functions
 			//--------------------------------------------
 
-			// Tree building helpers
-			function getBranchFileName(branch: IFrameBranch) {
-				return `branch_${branch.minScoreIndex}_${branch.maxScoreIndex}`
-			}
-
-			function getRootLeafFileName(frame: IFrameLeaf) {
-				return `frame_${frame.scoreIndex}`
-			}
-
-			function getBoneLeafFileName(frame: IFrameLeaf) {
-				return `frame_${frame.scoreIndex}_as_bone`
-			}
-
-			function generateRootLeafFunction(animName: string, leaf: IFrameLeaf) {
-				const commands: string[] = []
-				commands.push(
-					`execute on passengers run function ${AJ_NAMESPACE}:animations/${animName}/frame_tree/${getBoneLeafFileName(
-						leaf
-					)}`
-				)
-				// TODO - Add command, variant, and animation state functionality here
-				return commands
-			}
-
-			function generateBoneLeafFunction(leaf: IFrameLeaf) {
-				const commands: string[] = []
-				for (const bone of Object.values(leaf.item.bones)) {
-					const data = new NbtCompound()
-						.set('transformation', matrixToNbt(bone.matrix))
-						.set('start_interpolation', new NbtInt(0))
-					commands.push(
-						`execute if entity @s[tag=${API.formatStr(tags.bone_entity, [
-							bone.name,
-						])}] run data modify entity @s {} merge value ${data}`
-					)
-				}
-				return commands
-			}
-
-			function buildFrameTree(
-				anim: AnimatedJava.IRenderedAnimation,
-				frameTree: IFrameTree,
-				applyFrameFolder: AnimatedJava.VirtualFolder
-			) {
-				function recurse(tree: IFrameTree): string {
-					if (tree.type === 'branch') {
-						const content: string[] = []
-						for (const item of tree.items) {
-							content.push(recurse(item))
-						}
-						applyFrameFolder.newFile(getBranchFileName(tree) + '.mcfunction', content)
-
-						return `execute if score @s ${scoreboard.animTime} matches ${
-							tree.minScoreIndex
-						}..${tree.maxScoreIndex} run function ${AJ_NAMESPACE}:animations/${
-							anim.name
-						}/frame_tree/${getBranchFileName(tree)}`
-					}
-
-					applyFrameFolder.newFile(
-						getRootLeafFileName(tree) + '.mcfunction',
-						generateRootLeafFunction(anim.name, tree)
-					)
-					applyFrameFolder.newFile(
-						getBoneLeafFileName(tree) + '.mcfunction',
-						generateBoneLeafFunction(tree)
-					)
-
-					return `execute if score @s ${scoreboard.animTime} matches ${
-						tree.scoreIndex
-					} run function ${AJ_NAMESPACE}:animations/${
-						anim.name
-					}/frame_tree/${getRootLeafFileName(tree)}`
-				}
-				return recurse(frameTree)
-			}
-
 			// External functions
 			for (const anim of renderedAnimations) {
 				namespaceFolder
 					.newFolder(`functions/animations/${anim.name}`)
 					.chainNewFile('play.mcfunction', [
 						`scoreboard players set @s ${scoreboard.animTime} 0`,
+						`scoreboard players set @s ${scoreboard.loopMode} ${loopModes.indexOf(
+							anim.loopMode
+						)}`,
+						`execute on passengers store result entity @s interpolation_duration int 1 run scoreboard players get #aj.default_interpolation_duration ${scoreboard.i}`,
 						`tag @s add ${API.formatStr(tags.activeAnim, [anim.name])}`,
 					])
 					.chainNewFile('resume.mcfunction', [
+						`scoreboard players set @s ${scoreboard.loopMode} ${loopModes.indexOf(
+							anim.loopMode
+						)}`,
+						`execute on passengers store result entity @s interpolation_duration int 1 run scoreboard players get #aj.default_interpolation_duration ${scoreboard.i}`,
 						`tag @s add ${API.formatStr(tags.activeAnim, [anim.name])}`,
 					])
 					.chainNewFile('pause.mcfunction', [
@@ -426,6 +373,100 @@ export function loadExporter() {
 			}
 
 			// Internal functions
+			// Tree building helpers
+			function getBranchFileName(branch: IFrameBranch) {
+				return `branch_${branch.minScoreIndex}_${branch.maxScoreIndex}`
+			}
+
+			function getRootLeafFileName(frame: IFrameLeaf) {
+				return `leaf_${frame.scoreIndex}`
+			}
+
+			function getBoneLeafFileName(frame: IFrameLeaf) {
+				return `leaf_${frame.scoreIndex}_as_bone`
+			}
+
+			function generateRootLeafFunction(
+				frameTreeFolder: AnimatedJava.VirtualFolder,
+				animName: string,
+				leaf: IFrameLeaf
+			) {
+				const commands: string[] = []
+				commands.push(
+					`execute on passengers run function ${AJ_NAMESPACE}:animations/${animName}/tree/${getBoneLeafFileName(
+						leaf
+					)}`
+				)
+				// TODO - Add command, variant, and animation state functionality here
+				if (leaf.item.commands) {
+					frameTreeFolder.newFile(
+						getRootLeafFileName(leaf) + '_commands.mcfunction',
+						leaf.item.commands.commands.split('\n')
+					)
+					let command = `function ${AJ_NAMESPACE}:animations/${animName}/tree/${getRootLeafFileName(
+						leaf
+					)}_commands`
+					if (leaf.item.commands.executeCondition)
+						command = `execute ${leaf.item.commands.executeCondition.trim()} run ${command}`
+					commands.push(command)
+				}
+				return commands
+			}
+
+			function generateBoneLeafFunction(leaf: IFrameLeaf) {
+				const commands: string[] = []
+				for (const bone of Object.values(leaf.item.bones)) {
+					const data = new NbtCompound()
+						.set('transformation', matrixToNbt(bone.matrix))
+						.set('start_interpolation', new NbtInt(0))
+					commands.push(
+						`execute if entity @s[tag=${API.formatStr(tags.boneEntity, [
+							bone.name,
+						])}] run data modify entity @s {} merge value ${data}`
+					)
+				}
+				return commands
+			}
+
+			function buildFrameTree(
+				anim: AnimatedJava.IRenderedAnimation,
+				frameTree: IFrameTree,
+				frameTreeFolder: AnimatedJava.VirtualFolder
+			) {
+				function recurse(tree: IFrameTree): string {
+					if (tree.type === 'branch') {
+						const content: string[] = []
+						for (const item of tree.items) {
+							content.push(recurse(item))
+						}
+						frameTreeFolder.newFile(getBranchFileName(tree) + '.mcfunction', content)
+
+						return `execute if score @s ${scoreboard.animTime} matches ${
+							tree.minScoreIndex
+						}..${tree.maxScoreIndex} run function ${AJ_NAMESPACE}:animations/${
+							anim.name
+						}/tree/${getBranchFileName(tree)}`
+					}
+
+					frameTreeFolder.newFile(
+						getRootLeafFileName(tree) + '.mcfunction',
+						generateRootLeafFunction(frameTreeFolder, anim.name, tree)
+					)
+					frameTreeFolder.newFile(
+						getBoneLeafFileName(tree) + '.mcfunction',
+						generateBoneLeafFunction(tree)
+					)
+
+					return `execute if score @s ${scoreboard.animTime} matches ${
+						tree.scoreIndex
+					} run function ${AJ_NAMESPACE}:animations/${
+						anim.name
+					}/tree/${getRootLeafFileName(tree)}`
+				}
+				return recurse(frameTree)
+			}
+
+			// functions
 			animatedJavaFolder
 				.newFolder('functions/animations')
 				.chainNewFile('tick.mcfunction', [
@@ -444,15 +485,17 @@ export function loadExporter() {
 					.chainNewFile('tick.mcfunction', [
 						`function ${AJ_NAMESPACE}:animations/${anim.name}/apply_frame`,
 						`scoreboard players add @s ${scoreboard.animTime} 1`,
-						`execute if score @s ${scoreboard.animTime} matches ${anim.duration} run function ${AJ_NAMESPACE}:animations/${anim.name}/end`,
+						`execute if score @s ${scoreboard.animTime} matches ${anim.duration}.. run function ${AJ_NAMESPACE}:animations/${anim.name}/end`,
 					])
 					.chainNewFile('end.mcfunction', [
-						`scoreboard players set @s ${scoreboard.animTime} 0`,
+						`execute if score @s ${scoreboard.loopMode} = #aj.loop_mode.loop aj.i run scoreboard players set @s ${scoreboard.animTime} 0`,
+						`execute if score @s ${scoreboard.loopMode} = #aj.loop_mode.once aj.i run function ${AJ_NAMESPACE}:animations/${anim.name}/stop`,
+						`execute if score @s ${scoreboard.loopMode} = #aj.loop_mode.hold aj.i run function ${AJ_NAMESPACE}:animations/${anim.name}/pause`,
 					])
 
 				const tree = API.generateSearchTree(anim.frames)
 				console.log(tree)
-				const frameTreeFolder = animFolder.newFolder('frame_tree')
+				const frameTreeFolder = animFolder.newFolder('tree')
 				const applyFrameFile = animFolder.newFile(
 					'apply_frame.mcfunction',
 					buildFrameTree(anim, tree, frameTreeFolder)

@@ -10,7 +10,7 @@
 
 	let value: string
 	let selectedKeyframe: _Keyframe | undefined
-	let condition: string
+	let executeCondition: string
 
 	$: {
 		selectedKeyframe = Blockbench.Keyframe.selected.at(0)
@@ -24,12 +24,13 @@
 			}
 			const conditionStr = getKeyframeCondition(selectedKeyframe)
 			if (conditionStr) {
-				condition = conditionStr
+				executeCondition = conditionStr
 			}
 		}
 		if (selectedKeyframe) {
 			setKeyframeCommands(selectedKeyframe, value)
-			if (condition !== undefined) setKeyframeCondition(selectedKeyframe, condition)
+			if (executeCondition !== undefined)
+				setKeyframeCondition(selectedKeyframe, executeCondition)
 		}
 	}
 </script>
@@ -43,11 +44,14 @@
 	</div>
 </div>
 <div class="property">
-	<p class="name" title={translate('animated_java.keyframe.condition.description')}>
-		{translate('animated_java.keyframe.condition')}
+	<p class="name" title={translate('animated_java.keyframe.executeCondition.description')}>
+		{translate('animated_java.keyframe.executeCondition')}
 	</p>
-	<div class="item-container" title={translate('animated_java.keyframe.condition.description')}>
-		<PrismEditorComponent language="mcfunction" bind:code={condition} />
+	<div
+		class="item-container"
+		title={translate('animated_java.keyframe.executeCondition.description')}
+	>
+		<PrismEditorComponent language="mcfunction" bind:code={executeCondition} />
 	</div>
 </div>
 

@@ -170,9 +170,9 @@ animated_java.keyframe.commands: Commands
 animated_java.keyframe.commands.description: |-
   A list of commands (A function) that run when the keyframe is reached.
 
-animated_java.keyframe.condition: Condition
-animated_java.keyframe.condition.description: |-
-  The condition that must be met for the keyframe to be applied.
+animated_java.keyframe.executeCondition: Execute Condition
+animated_java.keyframe.executeCondition.description: |-
+  The execute command condition that must be met for the keyframe to be applied.
   This is an execute subcommand chain, so you can use any and all execute subcommands in this field.
   Example: "if score @s example matches 1.."
   Hint: You can separate subcommands with newlines!

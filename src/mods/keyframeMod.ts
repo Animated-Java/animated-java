@@ -12,29 +12,29 @@ let installed = false
 export function injectCustomKeyframes() {
 	if (installed) return
 	// Add custom channels to Bone Animator
-	BoneAnimator.addChannel('commands', {
-		name: translate('animated_java.timeline.commands'),
-		mutable: false,
-		max_data_points: 1,
-	})
+	// BoneAnimator.addChannel('commands', {
+	// 	name: translate('animated_java.timeline.commands'),
+	// 	mutable: false,
+	// 	max_data_points: 2,
+	// })
 
 	// Add custom channels to Effect Animator
 	EffectAnimator.addChannel('animationStates', {
 		name: translate('animated_java.timeline.animationState'),
 		mutable: false,
-		max_data_points: 1,
+		max_data_points: 2,
 	})
 
 	EffectAnimator.addChannel('variants', {
 		name: translate('animated_java.timeline.variant'),
 		mutable: true,
-		max_data_points: 1,
+		max_data_points: 2,
 	})
 
 	EffectAnimator.addChannel('commands', {
 		name: translate('animated_java.timeline.commands'),
 		mutable: false,
-		max_data_points: 1,
+		max_data_points: 2,
 	})
 
 	// Add new KeyframeDataPoint properties
@@ -63,10 +63,12 @@ export function injectCustomKeyframes() {
 		exposed: false,
 	})
 
-	new Property(KeyframeDataPoint, 'string', 'condition', {
-		label: translate('animated_java.keyframe.condition'),
+	new Property(KeyframeDataPoint, 'string', 'executeCondition', {
+		label: translate('animated_java.keyframe.executeCondition'),
 		condition: point => {
-			return ['animationStates', 'variants'].includes(point.keyframe.channel as string)
+			return ['animationStates', 'variants', 'commands'].includes(
+				point.keyframe.channel as string
+			)
 		},
 		exposed: false,
 	})
@@ -131,10 +133,10 @@ export function extractCustomKeyframes() {
 	KeyframeDataPoint.properties.variant?.delete()
 	KeyframeDataPoint.properties.commands?.delete()
 	KeyframeDataPoint.properties.animationState?.delete()
-	KeyframeDataPoint.properties.condition?.delete()
+	KeyframeDataPoint.properties.executeCondition?.delete()
 
-	delete BoneAnimator.prototype.channels.commands
-	delete BoneAnimator.prototype.commands
+	// delete BoneAnimator.prototype.channels.commands
+	// delete BoneAnimator.prototype.commands
 
 	delete EffectAnimator.prototype.channels.variants
 	delete EffectAnimator.prototype.variants
@@ -175,5 +177,5 @@ export const getKeyframeCommands = keyframeGetterFactory('commands')
 export const setKeyframeCommands = keyframeSetterFactory('commands')
 export const getKeyframeAnimationState = keyframeGetterFactory('animationState')
 export const setKeyframeAnimationState = keyframeSetterFactory('animationState')
-export const getKeyframeCondition = keyframeGetterFactory('condition')
-export const setKeyframeCondition = keyframeSetterFactory('condition')
+export const getKeyframeCondition = keyframeGetterFactory('executeCondition')
+export const setKeyframeCondition = keyframeSetterFactory('executeCondition')
