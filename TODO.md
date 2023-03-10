@@ -25,7 +25,7 @@
 - [x] Settings UI needs to display the selected exporter's settings
 
 # Settings
-- [ ] The animation exporter setting should not select based on exporter intex. It should be based on exporter ID
+- [x] The animation exporter setting should not select based on exporter intex. It should be based on exporter ID - Fixed by adding a function to all settings that translates from a saved value to the run-time value.
 
 # Docs
 - [ ] F-A-Q
@@ -38,7 +38,9 @@
 - [ ] Find a way to summon a model with a specific variant
 
 # Features
-- [ ] Make variants have an option to not change the textures of specific bones.
+- [ ] Add a list of bones to the variant properties dialog.
+    - [ ] Add a checkbox that when enabled turns the list into a whitelist.
+    - [ ] The variant should only modify bones according to the list. For instance, If it's a whitelist the variant will only modify the bones in the list. Not touching the textures of other bones.
 - [ ] ~~Bones should have a tick function in their bone-config~~ There should be a function tag that runs on every bone every tick
 - [ ] There should be tick, load, summon, and remove function settings in the animation and statue exporter.
 - [ ] Bones should be forced to have safe function names instead of being changed on export.

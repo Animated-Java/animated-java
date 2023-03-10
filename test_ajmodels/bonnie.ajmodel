@@ -29,16 +29,20 @@
 		"variants": [
 			{
 				"name": "default",
-				"textures": {},
-				"uuid": "b6f9de14-ffc9-1b0b-8672-ac6b61ec73da",
-				"default": true
+				"textureMap": {},
+				"uuid": "eb467b61-e2a5-46ec-81bb-8c9531f72487",
+				"default": true,
+				"affectedBonesIsAWhitelist": false,
+				"affectedBones": []
 			},
 			{
 				"name": "no_guitar",
-				"textures": {
+				"textureMap": {
 					"0857ab9f-98f1-ce3a-bbad-5d411a6adcf6::bonnie.png": "0c40860d-b3c9-e08d-ac22-cf3a5bf1ae3d::bonnie_no_guitar.png"
 				},
-				"uuid": "5f6cdafa-dc5d-6b6c-9d79-2bdd30b186b3"
+				"uuid": "c4f34c0e-5f40-f258-27de-3e4e1cf867c0",
+				"affectedBonesIsAWhitelist": false,
+				"affectedBones": []
 			}
 		]
 	},
@@ -2578,7 +2582,7 @@
 			"override": false,
 			"length": 2.75,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",

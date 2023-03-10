@@ -24,10 +24,16 @@ export class Variant {
 	default?: boolean
 	_name: string
 	uuid: string
-	constructor(name: string, textures?: TextureMap, uuid?: string) {
+	constructor(
+		name: string,
+		textureMap?: TextureMap,
+		uuid?: string,
+		public affectedBones: string[] = [],
+		public affectedBonesIsAWhitelist = false
+	) {
 		this._name = name
 		this.uuid = uuid || guid()
-		this.textureMap = textures || {}
+		this.textureMap = textureMap || {}
 	}
 
 	get name() {
@@ -140,14 +146,28 @@ export class Variant {
 	toJSON() {
 		return {
 			name: this.name,
-			textures: this.textureMap,
+			textureMap: this.textureMap,
 			uuid: this.uuid,
 			default: this.default,
+			affectedBonesIsAWhitelist: this.affectedBonesIsAWhitelist,
+			affectedBones: this.affectedBones,
 		}
 	}
 
-	static fromJSON(json: { name: string; textures: TextureMap; uuid: string }) {
-		return new Variant(json.name, json.textures, json.uuid)
+	static fromJSON(json: {
+		name: string
+		textureMap: TextureMap
+		uuid: string
+		affectedBonesIsAWhitelist?: boolean
+		affectedBones?: string[]
+	}) {
+		return new Variant(
+			json.name,
+			json.textureMap,
+			json.uuid,
+			json.affectedBones,
+			json.affectedBonesIsAWhitelist
+		)
 	}
 }
 

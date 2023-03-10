@@ -1,30 +1,48 @@
 <script lang="ts">
-	export let value: string
+	import SettingContainer from '../settingContainer.svelte'
+	import type * as AJ from '../../../settings'
+
+	export let setting: AJ.FolderSetting
 
 	// @ts-ignore
 	let dialog = electron.dialog
 
-	function selectFile() {
+	function selectFolder() {
 		dialog
-			.showSaveDialog({
+			.showOpenDialog({
 				promptToCreate: true,
-				properties: ['openFile'],
+				properties: ['openDirectory'],
 			})
 			.then((result: any) => {
 				console.log(result)
 				if (!result.canceled) {
-					value = result.filePath
+					setting.value = result.filePaths[0]
 				}
 			})
 	}
 </script>
 
-<input type="text" class="text_inline" contenteditable="false" bind:value title={value} />
-<button class="open-file-button" on:click={selectFile}>
-	<span class="material-icons">insert_drive_file</span>
-</button>
+<SettingContainer {setting}>
+	<div slot="inline" class="container">
+		<input
+			type="text"
+			class="text_inline"
+			contenteditable="false"
+			bind:value={setting.value}
+			title={setting.value}
+		/>
+		<button class="open-folder-button" on:click={selectFolder}>
+			<span class="material-icons">folder</span>
+		</button>
+	</div>
+</SettingContainer>
 
 <style>
+	div.container {
+		display: flex;
+		flex-grow: 1;
+	}
+
 	.text_inline {
 		background: var(--color-button);
 		font-family: var(--font-code);
@@ -34,7 +52,7 @@
 		padding-right: 11px;
 	}
 
-	button.open-file-button {
+	button.open-folder-button {
 		all: unset !important;
 
 		display: flex !important;
@@ -50,7 +68,7 @@
 		margin-left: 10px !important;
 	}
 
-	button.open-file-button:hover {
+	button.open-folder-button:hover {
 		color: var(--color-accent_text) !important;
 		background-color: var(--color-accent) !important;
 	}

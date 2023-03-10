@@ -43,9 +43,11 @@ interface IAnimatedJavaModel {
 		exporter_settings?: Record<string, Record<string, any>>
 		variants?: Array<{
 			name?: string
-			textures?: TextureMap
+			textureMap?: TextureMap
 			default?: boolean
 			uuid?: string
+			affectedBones?: string[]
+			affectedBonesIsAWhitelist?: boolean
 		}>
 	}
 
@@ -151,10 +153,24 @@ const loadAnimatedJavaVariants = consoleGroup(
 		if (!(model.animated_java && model.animated_java.variants)) return
 
 		console.log('Loading Animated Java variants...')
-		for (const { name, textures, uuid, default: isDefault } of model.animated_java.variants) {
-			if (!(name && textures && uuid)) continue
+		for (const {
+			name,
+			textureMap,
+			uuid,
+			default: isDefault,
+			affectedBones,
+			affectedBonesIsAWhitelist,
+		} of model.animated_java.variants) {
+			console.log('Loading variant', name)
+			if (!(name && textureMap && uuid)) continue
 			Project.animated_java_variants.addVariant(
-				Variant.fromJSON({ name, textures, uuid }),
+				Variant.fromJSON({
+					name,
+					textureMap: textureMap,
+					uuid,
+					affectedBones,
+					affectedBonesIsAWhitelist,
+				}),
 				isDefault
 			)
 		}

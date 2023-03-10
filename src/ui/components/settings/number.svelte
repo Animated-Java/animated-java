@@ -1,9 +1,19 @@
 <script lang="ts">
-	export let value: number
-	export let step: number | undefined
+	import type * as AJ from '../../../settings'
+	import SettingContainer from '../settingContainer.svelte'
+
+	export let setting: AJ.NumberSetting
 </script>
 
-<input type="number" class="number" {step} bind:value />
+<SettingContainer {setting}>
+	<input
+		slot="inline"
+		type="number"
+		class="number"
+		step={setting.step}
+		bind:value={setting.value}
+	/>
+</SettingContainer>
 
 <style>
 	.number {

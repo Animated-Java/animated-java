@@ -1,8 +1,8 @@
-import { translate } from './util/translation'
-import { GUIStructure } from './GUIStructure'
-import { Subscribable } from './util/subscribable'
-import { formatStr } from './util/misc'
 import { AnimatedJavaExporter } from './exporter'
+import { GUIStructure } from './GUIStructure'
+import { formatStr } from './util/misc'
+import { Subscribable } from './util/subscribable'
+import { translate } from './util/translation'
 
 export interface IInfoPopup {
 	type: 'warning' | 'error' | 'info'
@@ -58,7 +58,7 @@ export class Setting<V, R = any> extends Subscribable<R> {
 
 	private _initialized: boolean
 	protected _value: V
-	private lastValue: V
+	protected lastValue: V
 	infoPopup?: IInfoPopup
 	/**
 	 * Creates a new setting
@@ -116,10 +116,6 @@ export class Setting<V, R = any> extends Subscribable<R> {
 		}
 
 		this._initialized = true
-	}
-
-	_onOpenGui() {
-		if (this.onUpdate) this.onUpdate(this as unknown as R)
 	}
 
 	_onUpdate(forced = false) {
@@ -235,6 +231,50 @@ export class ImageDropdownSetting extends DropdownSetting<Texture['uuid']> {
 
 	getSelectedTexture() {
 		return Texture.all.find(texture => texture.uuid === this.selected?.value)
+	}
+}
+
+export interface IListItem {
+	name: string
+	value: string
+}
+export class ListBuilderSetting extends Setting<IListItem[]> {
+	options: IListItem[]
+	constructor(
+		options: ISettingOptions<IListItem[]> & {
+			options: ListBuilderSetting['options']
+		},
+		onUpdate?: (setting: ListBuilderSetting) => void,
+		onInit?: (setting: ListBuilderSetting) => void
+	) {
+		super(options, onUpdate as Setting<string>['onUpdate'], onInit as Setting<string>['onInit'])
+		this.options = options.options
+	}
+
+	hasItem(item: IListItem) {
+		return this.value.some(i => i.value === item.value && i.name === item.name)
+	}
+
+	removeItem(item: IListItem) {
+		this.value = this.value.filter(i => i.value !== item.value && i.name !== item.name)
+		this._onUpdate(true)
+	}
+
+	addItem(item: IListItem, forced = false) {
+		if (!forced && this.hasItem(item)) return
+		this.value.push(item)
+		this._onUpdate(true)
+	}
+
+	override _save(): any {
+		return this.value
+	}
+
+	override _load(value: IListItem[]) {
+		this.value = []
+		for (const item of value) {
+			this.addItem(item, true)
+		}
 	}
 }
 

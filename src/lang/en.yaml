@@ -158,6 +158,19 @@ animated_java.dialog.variant_properties.variant_name.description: |-
 animated_java.variant_properties.variant_name.error.duplicate_name: |-
   A variant with the name "%name" already exists.
   Variant names must be unique.
+
+animated_java.dialog.variant_properties.affected_bones_is_a_whitelist: Affected Bones is a Whitelist
+animated_java.dialog.variant_properties.affected_bones_is_a_whitelist.description: |-
+  Whether the affected bones list is a whitelist or blacklist.
+  If it's a whitelist, only the bones in the list will be modified by this variant.
+  If it's a blacklist, all bones except the ones in the list will be modified by this variant.
+
+animated_java.dialog.variant_properties.affected_bones: Affected Bones
+animated_java.dialog.variant_properties.affected_bones.description: |-
+  The list of bones affected by this variant.
+  If it's a whitelist, only the bones in the list will be modified by this variant.
+  If it's a blacklist, all bones except the ones in the list will be modified by this variant.
+
 animated_java.dialog.variant_properties.textureMap: Texture Map
 animated_java.dialog.variant_properties.textureMap.description: |-
   The texture map to use for this variant.
