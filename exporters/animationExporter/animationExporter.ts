@@ -1,6 +1,10 @@
 // @ts-ignore
 import en from './lang/en.yaml'
 
+type IFrameLeaf = AnimatedJava.ITreeLeaf<AnimatedJava.IRenderedAnimation['frames'][any]>
+type IFrameBranch = AnimatedJava.ITreeBranch<AnimatedJava.IRenderedAnimation['frames'][any]>
+type IFrameTree = IFrameBranch | IFrameLeaf
+
 export function loadExporter() {
 	const API = AnimatedJava.API
 	const { NbtCompound, NbtString, NbtList, NbtInt, NbtFloat } = AnimatedJava.API.deepslate
@@ -19,6 +23,12 @@ export function loadExporter() {
 				),
 			},
 		},
+		interpolation_duration: {
+			name: API.translate('animated_java.animation_exporter.settings.interpolation_duration'),
+			description: API.translate(
+				'animated_java.animation_exporter.settings.interpolation_duration.description'
+			).split('\n'),
+		},
 	}
 
 	async function fileExists(path: string) {
@@ -26,7 +36,7 @@ export function loadExporter() {
 	}
 
 	function matrixToNbt(matrix: number[]) {
-		return new NbtList(matrix.map(v => new NbtFloat(API.roundToN(v, 100000000))))
+		return new NbtList(matrix.map(v => new NbtFloat(v)))
 	}
 
 	new API.Exporter({
@@ -51,12 +61,25 @@ export function loadExporter() {
 						}
 					}
 				),
+				interpolation_duration: new API.Settings.NumberSetting({
+					id: 'animated_java:animation_exporter/interpolation_duration',
+					displayName: TRANSLATIONS.interpolation_duration.name,
+					description: TRANSLATIONS.interpolation_duration.description,
+					defaultValue: 1,
+					min: 0,
+					step: 1,
+					resettable: true,
+				}),
 			}
 		},
 		settingsStructure: [
 			{
 				type: 'setting',
 				settingId: 'animated_java:animation_exporter/datapack_folder',
+			},
+			{
+				type: 'setting',
+				settingId: 'animated_java:animation_exporter/interpolation_duration',
 			},
 		],
 		async export(ajSettings, projectSettings, exporterSettings, renderedAnimations, rig) {
@@ -77,14 +100,14 @@ export function loadExporter() {
 			const scoreboard = {
 				i: 'aj.i',
 				id: 'aj.id',
-				anim_time: 'aj.anim_time',
+				animTime: 'aj.anim_time',
 				life_time: 'aj.life_time',
 			}
 			const tags = {
 				new: 'aj.new',
 				root_entity: `aj.${NAMESPACE}.root`,
 				bone_entity: `aj.${NAMESPACE}.bone.%s`,
-				animation: `aj.${NAMESPACE}.animations.%s`,
+				activeAnim: `aj.${NAMESPACE}.animations.%s`,
 			}
 			const entity_types = {
 				aj_root: `#${NAMESPACE}:aj_root`,
@@ -237,6 +260,10 @@ export function loadExporter() {
 						'transformation',
 						matrixToNbt(rig.defaultPose.find(b => b.uuid === uuid)!.matrix)
 					)
+					.set(
+						'interpolation_duration',
+						new NbtInt(exporterSettings.interpolation_duration.value)
+					)
 				passengers.add(passenger)
 			}
 			summonNbt.set('Passengers', passengers)
@@ -301,12 +328,110 @@ export function loadExporter() {
 			// animation functions
 			//--------------------------------------------
 
+			// Tree building helpers
+			function getBranchFileName(branch: IFrameBranch) {
+				return `branch_${branch.minScoreIndex}_${branch.maxScoreIndex}`
+			}
+
+			function getRootLeafFileName(frame: IFrameLeaf) {
+				return `frame_${frame.scoreIndex}`
+			}
+
+			function getBoneLeafFileName(frame: IFrameLeaf) {
+				return `frame_${frame.scoreIndex}_as_bone`
+			}
+
+			function generateRootLeafFunction(animName: string, leaf: IFrameLeaf) {
+				const commands: string[] = []
+				commands.push(
+					`execute on passengers run function ${AJ_NAMESPACE}:animations/${animName}/frame_tree/${getBoneLeafFileName(
+						leaf
+					)}`
+				)
+				// TODO - Add command, variant, and animation state functionality here
+				return commands
+			}
+
+			function generateBoneLeafFunction(leaf: IFrameLeaf) {
+				const commands: string[] = []
+				for (const bone of Object.values(leaf.item.bones)) {
+					const data = new NbtCompound()
+						.set('transformation', matrixToNbt(bone.matrix))
+						.set('start_interpolation', new NbtInt(0))
+					commands.push(
+						`execute if entity @s[tag=${API.formatStr(tags.bone_entity, [
+							bone.name,
+						])}] run data modify entity @s {} merge value ${data}`
+					)
+				}
+				return commands
+			}
+
+			function buildFrameTree(
+				anim: AnimatedJava.IRenderedAnimation,
+				frameTree: IFrameTree,
+				applyFrameFolder: AnimatedJava.VirtualFolder
+			) {
+				function recurse(tree: IFrameTree): string {
+					if (tree.type === 'branch') {
+						const content: string[] = []
+						for (const item of tree.items) {
+							content.push(recurse(item))
+						}
+						applyFrameFolder.newFile(getBranchFileName(tree) + '.mcfunction', content)
+
+						return `execute if score @s ${scoreboard.animTime} matches ${
+							tree.minScoreIndex
+						}..${tree.maxScoreIndex} run function ${AJ_NAMESPACE}:animations/${
+							anim.name
+						}/frame_tree/${getBranchFileName(tree)}`
+					}
+
+					applyFrameFolder.newFile(
+						getRootLeafFileName(tree) + '.mcfunction',
+						generateRootLeafFunction(anim.name, tree)
+					)
+					applyFrameFolder.newFile(
+						getBoneLeafFileName(tree) + '.mcfunction',
+						generateBoneLeafFunction(tree)
+					)
+
+					return `execute if score @s ${scoreboard.animTime} matches ${
+						tree.scoreIndex
+					} run function ${AJ_NAMESPACE}:animations/${
+						anim.name
+					}/frame_tree/${getRootLeafFileName(tree)}`
+				}
+				return recurse(frameTree)
+			}
+
+			// External functions
+			for (const anim of renderedAnimations) {
+				namespaceFolder
+					.newFolder(`functions/animations/${anim.name}`)
+					.chainNewFile('play.mcfunction', [
+						`scoreboard players set @s ${scoreboard.animTime} 0`,
+						`tag @s add ${API.formatStr(tags.activeAnim, [anim.name])}`,
+					])
+					.chainNewFile('resume.mcfunction', [
+						`tag @s add ${API.formatStr(tags.activeAnim, [anim.name])}`,
+					])
+					.chainNewFile('pause.mcfunction', [
+						`tag @s remove ${API.formatStr(tags.activeAnim, [anim.name])}`,
+					])
+					.chainNewFile('stop.mcfunction', [
+						`scoreboard players set @s ${scoreboard.animTime} 0`,
+						`tag @s remove ${API.formatStr(tags.activeAnim, [anim.name])}`,
+					])
+			}
+
+			// Internal functions
 			animatedJavaFolder
 				.newFolder('functions/animations')
 				.chainNewFile('tick.mcfunction', [
 					...renderedAnimations.map(
 						anim =>
-							`execute if entity @s[tag=${API.formatStr(tags.animation, [
+							`execute if entity @s[tag=${API.formatStr(tags.activeAnim, [
 								anim.name,
 							])}] run function ${AJ_NAMESPACE}:animations/${anim.name}/tick`
 					),
@@ -315,22 +440,23 @@ export function loadExporter() {
 			for (const anim of renderedAnimations) {
 				const animFolder = animatedJavaFolder.newFolder(`functions/animations/${anim.name}`)
 
-				const tree = API.generateSearchTree(anim.frames)
-				console.log(tree)
-
 				animFolder
 					.chainNewFile('tick.mcfunction', [
 						`function ${AJ_NAMESPACE}:animations/${anim.name}/apply_frame`,
-						`scoreboard players add @s ${scoreboard.anim_time} 1`,
-						`execute if score @s ${scoreboard.anim_time} matches ${anim.duration} run function ${AJ_NAMESPACE}:animations/${anim.name}/end`,
+						`scoreboard players add @s ${scoreboard.animTime} 1`,
+						`execute if score @s ${scoreboard.animTime} matches ${anim.duration} run function ${AJ_NAMESPACE}:animations/${anim.name}/end`,
 					])
 					.chainNewFile('end.mcfunction', [
-						`scoreboard players set @s ${scoreboard.anim_time} 0`,
+						`scoreboard players set @s ${scoreboard.animTime} 0`,
 					])
 
-				const applyFrameFile = animFolder.newFile('apply_frame.mcfunction', [])
-
-				// function recurse() {}
+				const tree = API.generateSearchTree(anim.frames)
+				console.log(tree)
+				const frameTreeFolder = animFolder.newFolder('frame_tree')
+				const applyFrameFile = animFolder.newFile(
+					'apply_frame.mcfunction',
+					buildFrameTree(anim, tree, frameTreeFolder)
+				)
 			}
 
 			//--------------------------------------------

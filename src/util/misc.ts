@@ -103,22 +103,22 @@ export function formatStr(str: string, formatObj: FormattingObject = {}) {
 }
 
 export function columnToRowMajor(matrixArray: number[]) {
-	const m11 = matrixArray[0],
-		m12 = matrixArray[4],
-		m13 = matrixArray[8],
-		m14 = matrixArray[12]
-	const m21 = matrixArray[1],
-		m22 = matrixArray[5],
-		m23 = matrixArray[9],
-		m24 = matrixArray[13]
-	const m31 = matrixArray[2],
-		m32 = matrixArray[6],
-		m33 = matrixArray[10],
-		m34 = matrixArray[14]
-	const m41 = matrixArray[3],
-		m42 = matrixArray[7],
-		m43 = matrixArray[11],
-		m44 = matrixArray[15]
-
-	return [m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44]
+	return [
+		matrixArray[0],
+		matrixArray[4],
+		matrixArray[8],
+		matrixArray[12],
+		matrixArray[1],
+		matrixArray[5],
+		matrixArray[9],
+		matrixArray[13],
+		matrixArray[2],
+		matrixArray[6],
+		matrixArray[10],
+		matrixArray[14],
+		matrixArray[3],
+		matrixArray[7],
+		matrixArray[11],
+		matrixArray[15],
+	]
 }

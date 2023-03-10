@@ -1,5 +1,5 @@
 {
 	"compilerOptions": {
-		"types": ["node", "D:/github-repos/animated-jata-api-types/types"]
+		"types": ["node", "D:/github-repos/animated-java-api-types/types"]
 	}
 }

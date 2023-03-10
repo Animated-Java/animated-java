@@ -18,6 +18,12 @@
                     - all.mcfunction
                 - set_variant/
                     - <variant_name>.mcfunction
+                - animations/
+                    - <animation_name>/
+                        - play
+                        - pause
+                        - resume
+                        - stop
             - tags/
                 - functions/
                     - on_summon.json
@@ -36,3 +42,8 @@
                         - as_bone.mcfunction
                 - remove/
                     - as_root
+                - animation/
+                    - tick.mcfunction
+                    - <animation_name/
+                        - tick.mcfunction
+                        - apply_frame.mcfunction

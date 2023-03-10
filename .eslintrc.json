@@ -9,6 +9,7 @@
 		"plugin:@typescript-eslint/recommended",
 		"plugin:@typescript-eslint/recommended-requiring-type-checking"
 	],
+	"ignorePatterns": ["node_modules/", "dist/", "exporters/"],
 	"overrides": [
 		{
 			"files": ["*.js", "*.d.ts"],
@@ -21,7 +22,7 @@
 	],
 	"parser": "@typescript-eslint/parser",
 	"parserOptions": {
-		"project": "./tsconfig.json",
+		"project": ["./tsconfig.json"],
 		"tsconfigRootDir": "./"
 	},
 	"plugins": ["@typescript-eslint"],

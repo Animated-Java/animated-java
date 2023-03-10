@@ -6,7 +6,7 @@ let progress: ProgressBarController
 function getGroupMatrix(group: Group, scale: number) {
 	const matrix = group.mesh.matrixWorld.clone()
 	matrix.setPosition(new THREE.Vector3().setFromMatrixPosition(matrix).multiplyScalar(1 / 16))
-	matrix.scale(new THREE.Vector3().setFromMatrixScale(matrix).multiplyScalar(scale))
+	matrix.scale(new THREE.Vector3().setScalar(scale))
 	return matrix
 }
 
