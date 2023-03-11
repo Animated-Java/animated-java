@@ -62,6 +62,12 @@ export class Variant {
 		return result
 	}
 
+	getMappedUuid(uuid: string): string | undefined {
+		for (const [from, to] of Object.entries(this.textureMap)) {
+			if (from.split('::')[0] === uuid) return to.split('::')[0]
+		}
+	}
+
 	verifyTextures(silent = false) {
 		const removedMappings: ITextureMapping[] = []
 		for (const mapping of this.textureMapIterator()) {
@@ -158,8 +164,8 @@ export class Variant {
 		name: string
 		textureMap: TextureMap
 		uuid: string
-		affectedBonesIsAWhitelist?: boolean
 		affectedBones?: string[]
+		affectedBonesIsAWhitelist?: boolean
 	}) {
 		return new Variant(
 			json.name,
@@ -198,7 +204,10 @@ export class VariantsContainer extends Subscribable<IVariantsContainerEvent> {
 
 	select(variant: Variant = this.defaultVariant) {
 		this.selectedVariant = variant
-		applyModelVariant(variant)
+		Canvas.updateAllFaces()
+		requestAnimationFrame(() => {
+			Canvas.updateAllFaces()
+		})
 	}
 
 	addVariant(variant: Variant, isDefault = false): Variant {
@@ -258,6 +267,9 @@ export class VariantsContainer extends Subscribable<IVariantsContainerEvent> {
 
 	set defaultVariant(variant: Variant) {
 		variant.default = true
+		variant.textureMap = {}
+		variant.affectedBones = []
+		variant.affectedBonesIsAWhitelist = false
 		for (const v of this.variants) {
 			if (v !== variant) v.default = false
 		}
@@ -280,32 +292,35 @@ function updateProjectVariants() {
 	console.log('updateProjectVariants', Project)
 }
 
-export function clearModelVariant() {
-	Texture.all.forEach(t => t.updateMaterial())
-}
+// export function resetModelVariant() {
+// 	Texture.all.forEach(t => t.updateMaterial())
+// }
 
-export function applyModelVariant(variant: Variant) {
-	if (!Project) return
-	// console.log('variant', variant)
-	variant.verifyTextures()
+// export function applyModelVariant(variant: Variant) {
+// 	if (!Project) return
+// 	// console.log('variant', variant)
+// 	variant.verifyTextures()
 
-	clearModelVariant()
+// 	resetModelVariant()
 
-	for (const { fromUUID, toUUID } of variant.textureMapIterator()) {
-		if (!fromUUID || !toUUID) {
-			console.log('Skipping texture', fromUUID, toUUID)
-			continue
-		}
-		const texture = Texture.all.find(t => t.uuid === toUUID)
-		if (Project.materials[fromUUID] && texture) {
-			// console.log('Updating texture', fromUUID, texture.name)
-			// @ts-ignore
-			Project.materials[fromUUID].map.image.src = texture.source
-			// @ts-ignore
-			Project.materials[fromUUID].map.needsUpdate = true
-		}
-	}
-}
+// 	for (const { fromUUID, toUUID } of variant.textureMapIterator()) {
+// 		if (!fromUUID || !toUUID) {
+// 			console.log('Skipping texture', fromUUID, toUUID)
+// 			continue
+// 		}
+// 		const texture = Texture.all.find(t => t.uuid === toUUID)
+
+// 		if (Project.materials[fromUUID] && texture) {
+// 			// console.log('Updating texture', fromUUID, texture.name)
+// 			// @ts-ignore
+// 			Project.materials[fromUUID].map.image.src = texture.source
+// 			// @ts-ignore
+// 			Project.materials[fromUUID].map.needsUpdate = true
+// 		}
+// 	}
+
+// 	Canvas.updateAllFaces()
+// }
 
 events.LOAD_PROJECT.subscribe(updateProjectVariants)
 events.SELECT_PROJECT.subscribe(updateProjectVariants)

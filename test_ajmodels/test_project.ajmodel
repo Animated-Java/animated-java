@@ -29,27 +29,33 @@
 		"variants": [
 			{
 				"name": "a",
-				"textures": {},
-				"uuid": "a4cca3d2-4474-72c0-01b0-e4cf0ece4c6f",
-				"default": true
+				"textureMap": {},
+				"uuid": "f7615ce3-3825-cde7-f183-870f32ddfa10",
+				"default": true,
+				"affectedBonesIsAWhitelist": false,
+				"affectedBones": []
 			},
 			{
 				"name": "b",
-				"textures": {
-					"5fa5c44b-1fa3-77d7-895e-48c64e768b87::red.png": "0e4de5b5-4cca-2e39-3cca-817d30316913::blue.png",
+				"textureMap": {
+					"623c3550-3f4b-fc54-be0b-bc134a9c6c31::green.png": "5fa5c44b-1fa3-77d7-895e-48c64e768b87::red.png",
 					"0e4de5b5-4cca-2e39-3cca-817d30316913::blue.png": "623c3550-3f4b-fc54-be0b-bc134a9c6c31::green.png",
-					"623c3550-3f4b-fc54-be0b-bc134a9c6c31::green.png": "5fa5c44b-1fa3-77d7-895e-48c64e768b87::red.png"
+					"5fa5c44b-1fa3-77d7-895e-48c64e768b87::red.png": "0e4de5b5-4cca-2e39-3cca-817d30316913::blue.png"
 				},
-				"uuid": "30d36a94-6e7f-9c10-563f-6b12e7f8eb96"
+				"uuid": "c100284b-bca4-dbd4-9243-8e9badbd66c8",
+				"affectedBonesIsAWhitelist": false,
+				"affectedBones": ["69aa99f5-fee8-5db4-accc-408ffe509670"]
 			},
 			{
 				"name": "c",
-				"textures": {
-					"5fa5c44b-1fa3-77d7-895e-48c64e768b87::red.png": "623c3550-3f4b-fc54-be0b-bc134a9c6c31::green.png",
+				"textureMap": {
 					"0e4de5b5-4cca-2e39-3cca-817d30316913::blue.png": "5fa5c44b-1fa3-77d7-895e-48c64e768b87::red.png",
+					"5fa5c44b-1fa3-77d7-895e-48c64e768b87::red.png": "623c3550-3f4b-fc54-be0b-bc134a9c6c31::green.png",
 					"623c3550-3f4b-fc54-be0b-bc134a9c6c31::green.png": "0e4de5b5-4cca-2e39-3cca-817d30316913::blue.png"
 				},
-				"uuid": "c4e8a394-a830-4046-e305-6a219bb4f7ff"
+				"uuid": "f528135d-bdb3-d9c7-bda1-e074a5afc571",
+				"affectedBonesIsAWhitelist": false,
+				"affectedBones": ["69aa99f5-fee8-5db4-accc-408ffe509670"]
 			}
 		]
 	},
@@ -252,8 +258,8 @@
 							"channel": "variants",
 							"data_points": [
 								{
-									"variant": "30d36a94-6e7f-9c10-563f-6b12e7f8eb96",
-									"condition": ""
+									"variant": "c100284b-bca4-dbd4-9243-8e9badbd66c8",
+									"executeCondition": ""
 								}
 							],
 							"uuid": "b971a798-ba53-8d70-9acf-d6e0b2a797f8",
@@ -270,8 +276,8 @@
 							"channel": "variants",
 							"data_points": [
 								{
-									"variant": "c4e8a394-a830-4046-e305-6a219bb4f7ff",
-									"condition": ""
+									"variant": "f528135d-bdb3-d9c7-bda1-e074a5afc571",
+									"executeCondition": ""
 								}
 							],
 							"uuid": "7952ab01-147e-6c7e-283a-d3a30d2cc14a",
@@ -288,8 +294,8 @@
 							"channel": "variants",
 							"data_points": [
 								{
-									"variant": "a4cca3d2-4474-72c0-01b0-e4cf0ece4c6f",
-									"condition": "if score @s v matches 1..\n"
+									"variant": "f7615ce3-3825-cde7-f183-870f32ddfa10",
+									"executeCondition": ""
 								}
 							],
 							"uuid": "b6299112-75df-24c7-a880-c44eed3ee210",
@@ -306,8 +312,8 @@
 							"channel": "variants",
 							"data_points": [
 								{
-									"variant": "30d36a94-6e7f-9c10-563f-6b12e7f8eb96",
-									"condition": ""
+									"variant": "c100284b-bca4-dbd4-9243-8e9badbd66c8",
+									"executeCondition": ""
 								}
 							],
 							"uuid": "d9eeb0e5-84c9-630f-b31f-3604902cd224",
@@ -324,12 +330,12 @@
 							"channel": "variants",
 							"data_points": [
 								{
-									"variant": "c4e8a394-a830-4046-e305-6a219bb4f7ff",
-									"condition": ""
+									"variant": "f528135d-bdb3-d9c7-bda1-e074a5afc571",
+									"executeCondition": ""
 								}
 							],
 							"uuid": "bfb4ee18-0688-83b4-b7db-d4b74c7f9b40",
-							"time": 3.6,
+							"time": 3.55,
 							"color": -1,
 							"interpolation": "linear",
 							"bezier_linked": true,
@@ -342,8 +348,8 @@
 							"channel": "variants",
 							"data_points": [
 								{
-									"variant": "a4cca3d2-4474-72c0-01b0-e4cf0ece4c6f",
-									"condition": "if score @s v matches 1..\n"
+									"variant": "f7615ce3-3825-cde7-f183-870f32ddfa10",
+									"executeCondition": ""
 								}
 							],
 							"uuid": "434aba00-6adc-789f-3bbe-9ae1559954f2",
@@ -411,7 +417,7 @@
 			"override": false,
 			"length": 2.8,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",

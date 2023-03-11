@@ -135,6 +135,9 @@
 						}
 					})
 					break
+				case 'affected_bones_is_a_whitelist':
+					setting.value = variant.affectedBonesIsAWhitelist
+					break
 				default:
 					// @ts-ignore
 					setting.value = variant[key]
@@ -150,11 +153,12 @@
 			switch (key) {
 				case 'name':
 					variant[key] = s.value
-					// console.log('name', s.value)
 					break
 				case 'affected_bones':
 					variant.affectedBones = (s as AJ.ListBuilderSetting).value.map(g => g.value)
-					// console.log('affected_bones', s.value)
+					break
+				case 'affected_bones_is_a_whitelist':
+					variant.affectedBonesIsAWhitelist = s.value
 					break
 				default:
 					// @ts-ignore

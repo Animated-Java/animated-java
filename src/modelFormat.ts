@@ -15,8 +15,55 @@ function processVersionMigration(model: any) {
 
 	if (model.meta.model_format === 'animatedJava/ajmodel') {
 		model.meta.model_format = 'animated_java/ajmodel'
-		model.meta.format_version = FORMAT_VERSION
 	}
+
+	const needsUpgrade = model.meta.format_version !== FORMAT_VERSION
+	if (!needsUpgrade) return
+
+	console.log('Upgrading model from version', model.meta.format_version, 'to', FORMAT_VERSION)
+
+	if (model.meta.settings) {
+		console.log('Upgrading settings...')
+		const animatedJava: IAnimatedJavaModel['animated_java'] = {
+			settings: {
+				project_name: model.meta.settings.animatedJava.projectName,
+				verbose: model.meta.settings.animatedJava.verbose,
+				rig_item: model.meta.settings.animatedJava.rigItem,
+				rig_item_model: model.meta.settings.animatedJava.predicateFilePath,
+				rig_export_folder: model.meta.settings.animatedJava.rigModelsExportFolder,
+			},
+			exporter_settings: {},
+			variants: [],
+		} as IAnimatedJavaModel['animated_java']
+
+		model.animated_java = animatedJava
+	}
+
+	if (model.meta.variants) {
+		console.log('Upgrading variants...')
+		const variants: IAnimatedJavaModel['animated_java']['variants'] = []
+
+		for (const [name, variant] of Object.entries(model.meta.variants as Record<string, any>)) {
+			variants.push({
+				name,
+				uuid: guid(),
+				textureMap: variant,
+				default: name === 'default',
+				affectedBones: [],
+				affectedBonesIsAWhitelist: false,
+			})
+		}
+
+		model.animated_java.variants = variants
+	}
+
+	model.meta.format_version = FORMAT_VERSION
+
+	delete model.meta.variants
+	delete model.meta.settings
+	delete model.meta.uuid
+
+	console.log('Upgrade complete')
 }
 
 function addProjectToRecentProjects(file: FileResult) {
@@ -95,16 +142,17 @@ const loadAnimatedJavaExporterSettings = consoleGroup(
 	(model: IAnimatedJavaModel) => {
 		if (!Project) return
 		const settings: typeof Project.animated_java_exporter_settings = {}
+		if (!model.animated_java.exporter_settings) return
 
 		for (const exporter of AnimatedJavaExporter.all) {
 			if (!exporter) continue
 			console.log('Loading settings for', exporter.id)
 			settings[exporter.id] = exporter.getSettings()
 
-			if (!model.animated_java.exporter_settings) return
-			console.log(`Loading ${exporter.id} settings...`)
-
 			const savedSettings = model.animated_java.exporter_settings[exporter.id]
+			if (!savedSettings) continue
+
+			console.log(`Loading ${exporter.id} settings...`)
 			for (const [settingId, settingValue] of Object.entries(savedSettings)) {
 				if (!model.animated_java.exporter_settings[exporter.id][settingId]) continue
 				if (!settings[exporter.id][settingId]) {
@@ -400,7 +448,8 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 		if (!Project) throw new Error('No project to compile...')
 		console.log('Compiling Animated Java model...')
 
-		const selectedVariant = Project.animated_java_variants?.selectedVariant
+		const selectedVariant = Project.animated_java_variants!.selectedVariant
+		Project.animated_java_variants!.select()
 
 		const model: IAnimatedJavaModel = {
 			meta: {
@@ -534,8 +583,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 		const content = compileJSON(model)
 		ajCodec.dispatchEvent('compile', { model, options })
 
-		if (selectedVariant && Project.animated_java_variants)
-			Project.animated_java_variants.selectedVariant = selectedVariant
+		if (selectedVariant) Project.animated_java_variants!.select(selectedVariant)
 
 		return content
 	}),

@@ -287,8 +287,13 @@ export function loadExporter() {
 			const variantSummonFolder = namespaceFolder
 				.accessFolder('functions')
 				.chainNewFile('summon.mcfunction', [
-					`summon minecraft:item_display ~ ~ ~ ${summonNbt.toString()}`,
-					`execute as @e[type=minecraft:item_display,limit=1,distance=..1,tag=${tags.new}] run function ${AJ_NAMESPACE}:summon/as_root`,
+					`scoreboard players set .aj.variant_id ${scoreboard.i} ${variants.findIndex(
+						v => v.default
+					)}`,
+					`function ${AJ_NAMESPACE}:summon`,
+				])
+				.chainNewFile('summon_variable_variant.mcfunction', [
+					`function ${AJ_NAMESPACE}:summon`,
 				])
 				.newFolder('summon')
 
@@ -298,21 +303,30 @@ export function loadExporter() {
 					`scoreboard players set .aj.variant_id ${scoreboard.i} ${variants.indexOf(
 						variant
 					)}`,
-					`function ${NAMESPACE}:summon`,
+					`function ${AJ_NAMESPACE}:summon`,
 				])
 			}
 
 			animatedJavaFolder
 				.accessFolder('functions')
+				.chainNewFile('summon.mcfunction', [
+					`summon minecraft:item_display ~ ~ ~ ${summonNbt.toString()}`,
+					`execute as @e[type=minecraft:item_display,limit=1,distance=..1,tag=${tags.new}] run function ${AJ_NAMESPACE}:summon/as_root`,
+				])
 				.newFolder('summon')
 				.chainNewFile('as_root.mcfunction', [
 					`execute store result score @s ${scoreboard.id} run scoreboard players add .aj.last_id ${scoreboard.id} 1`,
 					`execute on passengers run function ${AJ_NAMESPACE}:summon/as_bone`,
+					...variants.map(
+						(v, i) =>
+							`execute if score .aj.variant_id ${scoreboard.i} matches ${i} run function ${AJ_NAMESPACE}:apply_variant/${v.name}_as_root`
+					),
 					`tag @s remove ${tags.new}`,
 					`function #${NAMESPACE}:on_summon`,
 				])
 				.chainNewFile('as_bone.mcfunction', [
 					`scoreboard players operation @s ${scoreboard.id} = .aj.last_id ${scoreboard.id}`,
+					`tag @s remove ${tags.new}`,
 				])
 
 			//--------------------------------------------
@@ -339,6 +353,53 @@ export function loadExporter() {
 					`execute on passengers run kill @s`,
 					`kill @s`,
 				])
+
+			//--------------------------------------------
+			// variant functions
+			//--------------------------------------------
+
+			const applyVariantFolder = namespaceFolder.newFolder('functions/apply_variant')
+			const ajApplyVariantFolder = animatedJavaFolder.newFolder('functions/apply_variant')
+
+			for (const variant of variants) {
+				applyVariantFolder.newFile(`${variant.name}.mcfunction`, [
+					`execute if entity @s[tag=${tags.rootEntity}] run function ${AJ_NAMESPACE}:apply_variant/${variant.name}_as_root`,
+					`execute if entity @s[tag=!${tags.rootEntity}] run tellraw @a ${API.formatStr(
+						errorMustBeRunAsRoot.toString(),
+						[`${NAMESPACE}:apply_variant/${variant.name}`]
+					)}`,
+				])
+
+				ajApplyVariantFolder.newFile(`${variant.name}_as_root.mcfunction`, [
+					`execute on passengers run function ${AJ_NAMESPACE}:apply_variant/${variant.name}_as_bone`,
+				])
+
+				const commands: string[] = []
+				for (const [uuid, bone] of Object.entries(rig.boneMap)) {
+					const included = variant.affectedBones.includes(uuid)
+					if (
+						(!included && variant.affectedBonesIsAWhitelist) ||
+						(included && !variant.affectedBonesIsAWhitelist)
+					)
+						continue
+
+					let variantBone: AnimatedJava.IRenderedBoneVariant
+					if (variant.default) {
+						variantBone = rig.boneMap[uuid]
+					} else {
+						variantBone = rig.variantModels[variant.name][uuid]
+					}
+
+					commands.push(
+						`execute if entity @s[tag=${API.formatStr(tags.boneEntity, [
+							bone.name,
+						])}] run data modify entity @s item.tag.CustomModelData set value ${
+							variantBone.customModelData
+						}`
+					)
+				}
+				ajApplyVariantFolder.newFile(`${variant.name}_as_bone.mcfunction`, commands)
+			}
 
 			//--------------------------------------------
 			// animation functions
@@ -397,7 +458,7 @@ export function loadExporter() {
 						leaf
 					)}`
 				)
-				// TODO - Add command, variant, and animation state functionality here
+
 				if (leaf.item.commands) {
 					frameTreeFolder.newFile(
 						getRootLeafFileName(leaf) + '_commands.mcfunction',
@@ -410,6 +471,16 @@ export function loadExporter() {
 						command = `execute ${leaf.item.commands.executeCondition.trim()} run ${command}`
 					commands.push(command)
 				}
+
+				if (leaf.item.variant) {
+					const variant = variants.find(v => v.uuid === leaf.item.variant.uuid)
+					let command = `function ${AJ_NAMESPACE}:apply_variant/${variant.name}_as_root`
+					if (leaf.item.variant.executeCondition)
+						command = `execute ${leaf.item.variant.executeCondition.trim()} run ${command}`
+					commands.push(command)
+				}
+				// TODO - Add animation state functionality here
+
 				return commands
 			}
 
@@ -489,8 +560,8 @@ export function loadExporter() {
 					])
 					.chainNewFile('end.mcfunction', [
 						`execute if score @s ${scoreboard.loopMode} = #aj.loop_mode.loop aj.i run scoreboard players set @s ${scoreboard.animTime} 0`,
-						`execute if score @s ${scoreboard.loopMode} = #aj.loop_mode.once aj.i run function ${AJ_NAMESPACE}:animations/${anim.name}/stop`,
-						`execute if score @s ${scoreboard.loopMode} = #aj.loop_mode.hold aj.i run function ${AJ_NAMESPACE}:animations/${anim.name}/pause`,
+						`execute if score @s ${scoreboard.loopMode} = #aj.loop_mode.once aj.i run function ${NAMESPACE}:animations/${anim.name}/stop`,
+						`execute if score @s ${scoreboard.loopMode} = #aj.loop_mode.hold aj.i run function ${NAMESPACE}:animations/${anim.name}/pause`,
 					])
 
 				const tree = API.generateSearchTree(anim.frames)

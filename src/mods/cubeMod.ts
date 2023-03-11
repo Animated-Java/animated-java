@@ -85,8 +85,8 @@ createBlockbenchMod(
 
 			this.forceVisible = false
 
-			const [get] = createVariableSubscribable(this.mesh.outline, 'visible')
-			get.subscribe(({ storage }) => {
+			const [visibleGetter] = createVariableSubscribable(this.mesh.outline, 'visible')
+			visibleGetter.subscribe(({ storage }) => {
 				if (Format === ajModelFormat) storage.value = this.forceVisible || storage.value
 			})
 

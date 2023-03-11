@@ -143,6 +143,7 @@ export async function renderAllAnimations(rig: IRenderedRig) {
 	let selectedAnimation: _Animation | undefined
 	let currentTime = 0
 	progress = new ProgressBarController('Rendering Animations...', Animator.animations.length)
+	Timeline.pause()
 	// Save selected animation
 	if (Mode.selected.id === 'animate') {
 		selectedAnimation = Animator.selected

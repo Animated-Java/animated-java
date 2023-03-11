@@ -1,7 +1,7 @@
 import { ajModelFormat } from '../modelFormat'
 import * as events from '../util/events'
 import { translate } from '../util/translation'
-import { applyModelVariant } from '../variants'
+// import { applyModelVariant } from '../variants'
 
 const oldEffectAnimatorDisplayFrame = EffectAnimator.prototype.displayFrame
 const oldEffectAnimatorStartPreviousSounds = EffectAnimator.prototype.startPreviousSounds
@@ -107,7 +107,7 @@ export function injectCustomKeyframes() {
 				const variant = Project.animated_java_variants.variants.find(
 					v => result && v.uuid === result.data_points[0].variant
 				)
-				if (variant) applyModelVariant(variant)
+				Project.animated_java_variants.select(variant)
 			}
 		}
 

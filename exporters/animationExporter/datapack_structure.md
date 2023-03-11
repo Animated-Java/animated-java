@@ -16,7 +16,7 @@
                 - remove/
                     - this.mcfunction
                     - all.mcfunction
-                - set_variant/
+                - apply_variant/
                     - <variant_name>.mcfunction
                 - animations/
                     - <animation_name>/
@@ -37,7 +37,7 @@
                 - summon/
                     - as_root.mcfunction
                     - as_bone.mcfunction
-                - set_variant/
+                - apply_variant/
                     - <variant_name>/
                         - as_bone.mcfunction
                 - remove/

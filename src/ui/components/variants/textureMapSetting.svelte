@@ -65,7 +65,7 @@
 					<TextureMapping {variant} fromTexture={from} />
 					<FlatIconButton
 						onClick={() => onResetMappingClick(from.toTextureId())}
-						icon="delete"
+						icon="undo"
 						iconStyle="margin-right: 0.25em;"
 					/>
 				</div>

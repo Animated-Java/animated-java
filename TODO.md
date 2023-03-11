@@ -36,11 +36,21 @@
 # Animation Exporter
 - [ ] Figure out a clever way to allow summoning a rig at any frame in any animation
 - [ ] Find a way to summon a model with a specific variant
+- [ ] Keyframes need to be deduplicated, otherwise a weird vibration effect occurrs
+- [ ] Add a "version" id of some kind to each model when it get summoned.
+    - [ ] The version changes every time you export
+    - [ ] When the load function runs, and every second or so, check all active rig verison ids against the current version id. If the ids are different, update the rig to the latest verision.
+    - [ ] Update CustomModelData
+    - [ ] Update interpolation_duration
+
+# Model verification
+- [ ] On load make sure all bone names are valid
 
 # Features
-- [ ] Add a list of bones to the variant properties dialog.
-    - [ ] Add a checkbox that when enabled turns the list into a whitelist.
-    - [ ] The variant should only modify bones according to the list. For instance, If it's a whitelist the variant will only modify the bones in the list. Not touching the textures of other bones.
+- [ ] Animation State Keyframes should allow you to choose whether to play the animation from the start, or from the current anim_time
+- [x] Add a list of bones to the variant properties dialog.
+    - [x] Add a checkbox that when enabled turns the list into a whitelist.
+    - [x] The variant should only modify bones according to the list. For instance, If it's a whitelist the variant will only modify the bones in the list. Not touching the textures of other bones.
 - [ ] ~~Bones should have a tick function in their bone-config~~ There should be a function tag that runs on every bone every tick
 - [ ] There should be tick, load, summon, and remove function settings in the animation and statue exporter.
 - [ ] Bones should be forced to have safe function names instead of being changed on export.
@@ -64,7 +74,7 @@
     - [ ] Per-Variant display item NBT
 - [ ] Animations
     - [ ] Animation "State" - Based on a score on the root entity, automatically switch between animations.
-    - [ ] Animation *Blending*
+    - [ ] Animation *Transitioning*
         - [ ] When switching active animations, if an animation is already running, blend between it's current frame and the next frame.
         - [ ] Add some way to choose blend duration.
         - [ ] Add some way to disable blending.
