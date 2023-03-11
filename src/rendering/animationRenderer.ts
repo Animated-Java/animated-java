@@ -1,4 +1,4 @@
-import { columnToRowMajor, LimitClock, roundToN } from '../util/misc'
+import { transposeMatrix, LimitClock, roundToN } from '../util/misc'
 import { ProgressBarController } from '../util/progress'
 import { IRenderedRig } from './modelRenderer'
 let progress: ProgressBarController
@@ -45,13 +45,14 @@ export function getAnimationBones(boneMap: IRenderedRig['boneMap']) {
 	const bones: IAnimationBone[] = []
 
 	for (const group of Group.all) {
+		if (!group.export) continue
 		const matrix = getGroupMatrix(group, boneMap[group.uuid].scale)
 
 		bones.push({
 			name: group.name,
 			uuid: group.uuid,
 			group: group,
-			matrix: columnToRowMajor(matrix.toArray()),
+			matrix: transposeMatrix(matrix.toArray()),
 		})
 	}
 

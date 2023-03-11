@@ -102,23 +102,12 @@ export function formatStr(str: string, formatObj: FormattingObject = {}) {
 	}
 }
 
-export function columnToRowMajor(matrixArray: number[]) {
+export function transposeMatrix(matrixArray: number[]) {
+	// prettier-ignore
 	return [
-		matrixArray[0],
-		matrixArray[4],
-		matrixArray[8],
-		matrixArray[12],
-		matrixArray[1],
-		matrixArray[5],
-		matrixArray[9],
-		matrixArray[13],
-		matrixArray[2],
-		matrixArray[6],
-		matrixArray[10],
-		matrixArray[14],
-		matrixArray[3],
-		matrixArray[7],
-		matrixArray[11],
-		matrixArray[15],
+		matrixArray[0], matrixArray[4], matrixArray[8], matrixArray[12],
+		matrixArray[1], matrixArray[5], matrixArray[9], matrixArray[13],
+		matrixArray[2], matrixArray[6], matrixArray[10], matrixArray[14],
+		matrixArray[3], matrixArray[7], matrixArray[11], matrixArray[15],
 	]
 }

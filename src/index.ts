@@ -25,7 +25,7 @@ import './ui/ajVariantsPanel'
 import './ui/popups/invalidCubes'
 import { consoleGroupCollapsed } from './util/console'
 import * as events from './util/events'
-import { columnToRowMajor, formatStr, roundTo, roundToN } from './util/misc'
+import { transposeMatrix, formatStr, roundTo, roundToN } from './util/misc'
 import './util/moddingTools'
 import { ProgressBarController } from './util/progress'
 import './util/translation'
@@ -66,7 +66,7 @@ globalThis.AnimatedJava = {
 		ProgressBarController,
 		createInfo,
 		JsonText,
-		columnToRowMajor,
+		columnToRowMajor: transposeMatrix,
 		generateSearchTree,
 	},
 }

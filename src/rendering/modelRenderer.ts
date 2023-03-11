@@ -234,6 +234,7 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 	}
 
 	for (const node of group.children) {
+		if (!node.export) continue
 		if (node instanceof Group) {
 			const bone = renderGroup(node, rig)
 			if (bone) structure.children.push(bone)
@@ -317,6 +318,7 @@ export function renderRig(outputFolder: string): IRenderedRig {
 
 	progress = new ProgressBarController('Rendering Rig...', countNodesRecursive())
 
+	// FIXME - Add a warning if no bones or models are exported
 	for (const node of Outliner.root) {
 		if (node instanceof Group) {
 			const bone = renderGroup(node, rig)
