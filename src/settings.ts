@@ -240,15 +240,18 @@ export interface IListItem {
 }
 export class ListBuilderSetting extends Setting<IListItem[]> {
 	options: IListItem[]
+	addNewItemMessage: string
 	constructor(
 		options: ISettingOptions<IListItem[]> & {
 			options: ListBuilderSetting['options']
+			addNewItemMessage: string
 		},
 		onUpdate?: (setting: ListBuilderSetting) => void,
 		onInit?: (setting: ListBuilderSetting) => void
 	) {
 		super(options, onUpdate as Setting<string>['onUpdate'], onInit as Setting<string>['onInit'])
 		this.options = options.options
+		this.addNewItemMessage = options.addNewItemMessage
 	}
 
 	hasItem(item: IListItem) {

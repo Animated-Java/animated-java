@@ -34,9 +34,24 @@ declare global {
 	// Blockbench Type modifications
 	//-------------------------------
 
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface _Animation {
+		affected_bones: string[]
+		affected_bones_is_a_whitelist: boolean
+	}
+
+	interface AnimationOptions {
+		affected_bones?: string[]
+		affected_bones_is_a_whitelist?: boolean
+	}
+
+	interface AnimationUndoCopy {
+		affected_bones: string[]
+		affected_bones_is_a_whitelist: boolean
+	}
+
 	interface Cube {
 		forceVisible?: boolean
-		_forceVisible?: boolean
 	}
 
 	interface ModelProject {

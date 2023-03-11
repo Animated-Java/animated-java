@@ -39,6 +39,21 @@
 				'\n'
 			),
 		},
+		affected_bones_is_a_whitelist: {
+			displayName: translate('animated_java.animation_config.affected_bones_is_a_whitelist'),
+			description: translate(
+				'animated_java.animation_config.affected_bones_is_a_whitelist.description'
+			).split('\n'),
+		},
+		affected_bones: {
+			displayName: translate('animated_java.animation_config.affected_bones'),
+			description: translate(
+				'animated_java.animation_config.affected_bones.description'
+			).split('\n'),
+			addNewItemMessage: translate(
+				'animated_java.animation_config.affected_bones.add_new_item_message'
+			),
+		},
 	}
 
 	export let animation: _Animation
@@ -105,6 +120,44 @@
 				min: 0,
 				step: 1,
 			}),
+			affected_bones_is_a_whitelist: new AJ.CheckboxSetting({
+				id: 'animated_java:animation_properties/affected_bones_is_a_whitelist',
+				displayName: TRANSLATIONS.affected_bones_is_a_whitelist.displayName,
+				description: TRANSLATIONS.affected_bones_is_a_whitelist.description,
+				defaultValue: false,
+			}),
+			affected_bones: new AJ.ListBuilderSetting(
+				{
+					id: 'animated_java:animation_properties/affected_bones',
+					displayName: TRANSLATIONS.affected_bones.displayName,
+					description: TRANSLATIONS.affected_bones.description,
+					addNewItemMessage: TRANSLATIONS.affected_bones.addNewItemMessage,
+					defaultValue: [],
+					options: [],
+				},
+				function onUpdate(setting) {
+					setting.value
+						.map(v => {
+							const bone = Group.all.find(g => g.uuid === v.value)
+							if (bone) v.name = bone.name
+							else return undefined
+
+							return v
+						})
+						.filter(v => v !== undefined)
+
+					setting.options = Group.all
+						.filter(g => !setting.value.find(v => v.value === g.uuid))
+						.map(g => ({
+							name: g.name,
+							value: g.uuid,
+						}))
+					console.log(setting.value)
+				},
+				function onInit(setting) {
+					setting.onUpdate!(setting)
+				}
+			),
 		}
 	}
 
@@ -124,6 +177,14 @@
 		{
 			type: 'setting',
 			settingId: 'animated_java:animation_properties/start_delay',
+		},
+		{
+			type: 'setting',
+			settingId: 'animated_java:animation_properties/affected_bones_is_a_whitelist',
+		},
+		{
+			type: 'setting',
+			settingId: 'animated_java:animation_properties/affected_bones',
 		},
 	]
 

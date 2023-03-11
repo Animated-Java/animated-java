@@ -57,6 +57,32 @@ function processVersionMigration(model: any) {
 		model.animated_java.variants = variants
 	}
 
+	if (
+		model.animations &&
+		model.animations.find((a: any) =>
+			Object.keys(a.animators as Record<string, any>).find(name => name === 'effects')
+		)
+	) {
+		console.log('Upgrading effects...')
+
+		for (const animation of model.animations) {
+			const effects = animation.animators.effects
+			if (!effects) continue
+			for (const keyframe of effects.keyframes) {
+				if (keyframe.channel !== 'timeline') continue
+				for (const dataPoint of keyframe.data_points) {
+					if (dataPoint.script) {
+						dataPoint.commands = dataPoint.script
+						delete dataPoint.script
+						keyframe.channel = 'commands'
+					}
+				}
+			}
+		}
+
+		console.log('Upgrading effects complete', model.animations)
+	}
+
 	model.meta.format_version = FORMAT_VERSION
 
 	delete model.meta.variants
@@ -106,7 +132,7 @@ interface IAnimatedJavaModel {
 	textures?: any
 	elements?: any
 	overrides?: any
-	animations?: any
+	animations?: Record<string, any>
 	outliner?: any[]
 	resolution?: any
 	history_index?: number
@@ -531,7 +557,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 		if (Blockbench.Animation.all.length) {
 			model.animations = []
 			Blockbench.Animation.all.forEach(a => {
-				model.animations.push(
+				model.animations!.push(
 					a.getUndoCopy &&
 						a.getUndoCopy(
 							{ bone_names: true, absolute_paths: options.absolute_paths },

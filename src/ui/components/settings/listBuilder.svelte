@@ -33,9 +33,9 @@
 <SettingContainer {setting}>
 	<select slot="inline" bind:value={selected} on:change={onChange}>
 		<option value={-1}>
-			<div>Add a bone</div>
+			<div>{setting.addNewItemMessage}</div>
 		</option>
-		{#each setting.options as option, index}
+		{#each setting.options as option, index (update)}
 			<option value={index}>
 				<div>{option.name}</div>
 			</option>

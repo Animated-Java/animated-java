@@ -34,6 +34,9 @@
 			description: translate(
 				'animated_java.dialog.variant_properties.affected_bones.description'
 			).split('\n'),
+			addNewItemMessage: translate(
+				'animated_java.dialog.variant_properties.affected_bones.add_new_item_message'
+			),
 		},
 	}
 
@@ -79,15 +82,28 @@
 					id: 'animated_java:variant_properties/affected_bones',
 					displayName: TRANSLATIONS.affected_bones.displayName,
 					description: TRANSLATIONS.affected_bones.description,
+					addNewItemMessage: TRANSLATIONS.affected_bones.addNewItemMessage,
 					defaultValue: [],
 					options: [],
 					docsLink: 'page:rig/variants#affected_bones',
 				},
 				function onUpdate(setting) {
-					setting.options = Group.all.map(g => ({
-						name: g.name,
-						value: g.uuid,
-					}))
+					setting.value
+						.map(v => {
+							const bone = Group.all.find(g => g.uuid === v.value)
+							if (bone) v.name = bone.name
+							else return undefined
+
+							return v
+						})
+						.filter(v => v !== undefined)
+
+					setting.options = Group.all
+						.filter(g => !setting.value.find(v => v.value === g.uuid))
+						.map(g => ({
+							name: g.name,
+							value: g.uuid,
+						}))
 					console.log(setting.value)
 				},
 				function onInit(setting) {

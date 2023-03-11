@@ -536,7 +536,7 @@ balanced-match@^1.0.0:
 
 "blockbench-types@https://github.com/SnaveSutit/blockbench-types.git":
   version "4.6.0"
-  resolved "https://github.com/SnaveSutit/blockbench-types.git#e887738ec2cd05ef3a00d35f4d391cde851f75d7"
+  resolved "https://github.com/SnaveSutit/blockbench-types.git#f90350b61fab2c709174f580a3e57ccbf8bb536b"
   dependencies:
     "@babel/types" "^7.20.7"
     "@types/jquery" "^3.5.4"

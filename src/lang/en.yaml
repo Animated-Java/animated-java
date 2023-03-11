@@ -137,6 +137,18 @@ animated_java.animation_config.start_delay: Start Delay
 animated_java.animation_config.start_delay.description: |-
   The delay (in ticks) before the animation starts after the play function is ran.
 
+animated_java.animation_config.affected_bones_is_a_whitelist: Affected Bones is a Whitelist
+animated_java.animation_config.affected_bones_is_a_whitelist.description: |-
+  If true, only the bones in the Affected Bones list will be affected by this animation.
+  If false, all bones except the ones in the Affected Bones list will be affected by this animation.
+
+animated_java.animation_config.affected_bones: Affected Bones
+animated_java.animation_config.affected_bones.add_new_item_message: Add a Bone
+animated_java.animation_config.affected_bones.description: |-
+  The bones that this animation will affect.
+  If this list is a whitelist, only the bones in the Affected Bones list will be affected by this animation.
+  If this list is a blacklist, all bones except the ones in the Affected Bones list will be affected by this animation.
+
 ### Variants Panel
 animated_java.panels.variants.name: Variants
 animated_java.panels.variants.items: Variant
@@ -162,15 +174,15 @@ animated_java.variant_properties.variant_name.error.duplicate_name: |-
 animated_java.dialog.variant_properties.affected_bones_is_a_whitelist: Affected Bones is a Whitelist
 animated_java.dialog.variant_properties.affected_bones_is_a_whitelist.description: |-
   Whether the affected bones list is a whitelist or blacklist.
-  If it's a whitelist, only the bones in the list will be modified by this variant.
-  If it's a blacklist, all bones except the ones in the list will be modified by this variant.
+  If true, only the bones in the Affected Bones list will be affected by this Variant.
+  If false, all bones except the ones in the Affected Bones list will be affected by this Variant.
 
 animated_java.dialog.variant_properties.affected_bones: Affected Bones
+animated_java.dialog.variant_properties.affected_bones.add_new_item_message: Add a Bone
 animated_java.dialog.variant_properties.affected_bones.description: |-
   The list of bones affected by this variant.
-  If it's a whitelist, only the bones in the list will be modified by this variant.
-  If it's a blacklist, all bones except the ones in the list will be modified by this variant.
-
+  If this is a whitelist, only the bones in the list will be modified by this Variant.
+  If this is a blacklist, all bones except the ones in the list will be modified by this Variant.
 animated_java.dialog.variant_properties.textureMap: Texture Map
 animated_java.dialog.variant_properties.textureMap.description: |-
   The texture map to use for this variant.

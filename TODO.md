@@ -28,6 +28,7 @@
 - [x] The animation exporter setting should not select based on exporter intex. It should be based on exporter ID - Fixed by adding a function to all settings that translates from a saved value to the run-time value.
 
 # Docs
+- [ ] The documentation needs to pull from the website when building for prod, and localhost when building for dev
 - [ ] F-A-Q
 
 # About Page
@@ -103,3 +104,4 @@
 # Post-1.0
 - [ ] Animation controller support?
 - [ ] Armor Stand animation exporter
+- [ ] Stable Player Display support (https://github.com/bradleyq/stable_player_display)
