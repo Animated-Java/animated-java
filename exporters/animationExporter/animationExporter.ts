@@ -103,6 +103,7 @@ export function loadExporter() {
 				animTime: 'aj.anim_time',
 				lifeTime: 'aj.life_time',
 				loopMode: 'aj.loop_mode',
+				animStartTime: `aj.%s.anim_start_time`,
 			}
 			const tags = {
 				new: 'aj.new',
@@ -213,13 +214,16 @@ export function loadExporter() {
 			animatedJavaFolder
 				.accessFolder('functions')
 				.chainNewFile('load.mcfunction', [
-					...Object.values(scoreboard).map(s => `scoreboard objectives add ${s} dummy`),
-					//?? Variable initialization
+					// Scoreboard objectives
+					...Object.values(scoreboard)
+						.filter(s => !s.includes('%s'))
+						.map(s => `scoreboard objectives add ${s} dummy`),
+					// prettier-ignore
+					...renderedAnimations.map(a => `scoreboard objectives add ${API.formatStr(scoreboard.animStartTime, [a.name])} dummy`),
+					// Variable initialization
 					`scoreboard players add .aj.last_id ${scoreboard.id} 0`,
-					//?? Const initialization
-					// Interpolation Duration
+					//// Const initialization
 					`scoreboard players set #aj.default_interpolation_duration ${scoreboard.i} ${exporterSettings.interpolation_duration.value}`,
-					// Loop modes
 					`scoreboard players set #aj.loop_mode.loop ${scoreboard.i} ${loopModes.indexOf(
 						'loop'
 					)}`,
@@ -405,12 +409,22 @@ export function loadExporter() {
 			// animation functions
 			//--------------------------------------------
 
+			//// At start of animation
+			// scoreboard players operation @s aj.anim_name.anim_start_time = @s aj.life_time
+			//// Inside animation
+			// scoreboard players operation @s aj.anim_time = @s aj.life_time
+			// scoreboard players operation @s aj.anim_time -= @s aj.anim_name.anim_start_time
+			//// At end of animation (if looping)
+			// scoreboard players operation @s aj.anim_name.anim_start_time = @s aj.life_time
+
 			// External functions
 			for (const anim of renderedAnimations) {
 				namespaceFolder
 					.newFolder(`functions/animations/${anim.name}`)
 					.chainNewFile('play.mcfunction', [
-						`scoreboard players set @s ${scoreboard.animTime} 0`,
+						`scoreboard players operation @s ${API.formatStr(scoreboard.animStartTime, [
+							anim.name,
+						])} = @s ${scoreboard.lifeTime}`,
 						`scoreboard players set @s ${scoreboard.loopMode} ${loopModes.indexOf(
 							anim.loopMode
 						)}`,
@@ -428,8 +442,15 @@ export function loadExporter() {
 						`tag @s remove ${API.formatStr(tags.activeAnim, [anim.name])}`,
 					])
 					.chainNewFile('stop.mcfunction', [
-						`scoreboard players set @s ${scoreboard.animTime} 0`,
+						`scoreboard players operation @s ${API.formatStr(scoreboard.animStartTime, [
+							anim.name,
+						])} = @s ${scoreboard.lifeTime}`,
 						`tag @s remove ${API.formatStr(tags.activeAnim, [anim.name])}`,
+						`function ${AJ_NAMESPACE}:animations/${anim.name}/tree/leaf_0.mcfunction`,
+					])
+					.chainNewFile('apply_frame.mcfunction', [
+						// Applies the current frame (based on aj.anim_time) to the entity.
+						`function ${AJ_NAMESPACE}:animations/${anim.name}/tree/leaf_0.mcfunction`,
 					])
 			}
 
@@ -480,7 +501,6 @@ export function loadExporter() {
 					commands.push(command)
 				}
 				// TODO - Add animation state functionality here
-
 				return commands
 			}
 
@@ -554,12 +574,20 @@ export function loadExporter() {
 
 				animFolder
 					.chainNewFile('tick.mcfunction', [
+						`scoreboard players operation @s ${scoreboard.animTime} = @s ${scoreboard.lifeTime}`,
+						`scoreboard players operation @s ${
+							scoreboard.animTime
+						} -= @s ${API.formatStr(scoreboard.animStartTime, [anim.name])}`,
 						`function ${AJ_NAMESPACE}:animations/${anim.name}/apply_frame`,
-						`scoreboard players add @s ${scoreboard.animTime} 1`,
 						`execute if score @s ${scoreboard.animTime} matches ${anim.duration}.. run function ${AJ_NAMESPACE}:animations/${anim.name}/end`,
 					])
 					.chainNewFile('end.mcfunction', [
-						`execute if score @s ${scoreboard.loopMode} = #aj.loop_mode.loop aj.i run scoreboard players set @s ${scoreboard.animTime} 0`,
+						`execute if score @s ${
+							scoreboard.loopMode
+						} = #aj.loop_mode.loop aj.i run scoreboard players operation @s ${API.formatStr(
+							scoreboard.animStartTime,
+							[anim.name]
+						)} = @s ${scoreboard.lifeTime}`,
 						`execute if score @s ${scoreboard.loopMode} = #aj.loop_mode.once aj.i run function ${NAMESPACE}:animations/${anim.name}/stop`,
 						`execute if score @s ${scoreboard.loopMode} = #aj.loop_mode.hold aj.i run function ${NAMESPACE}:animations/${anim.name}/pause`,
 					])

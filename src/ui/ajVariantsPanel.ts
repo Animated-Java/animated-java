@@ -34,9 +34,9 @@ export const variantPropertiesAction = createAction('animated_java:variant_prope
 	icon: 'list',
 	description: translate('animated_java.actions.variant_properties.description'),
 	category: 'animated_java:variants',
-	click(event) {
+	click() {
 		if (!Project?.animated_java_variants) return
-		console.log('variantPropertiesAction.click', event)
+		// console.log('variantPropertiesAction.click', event)
 		let variant = Project.animated_java_variants.selectedVariant
 		if (state.recentlyClickedVariant) {
 			variant = state.recentlyClickedVariant

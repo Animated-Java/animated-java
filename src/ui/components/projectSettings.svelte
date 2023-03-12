@@ -25,7 +25,7 @@
 	requestAnimationFrame(() => {
 		unsub = Project!.animated_java_settings!.exporter.subscribe(() => {
 			updateSelectedExporter()
-			console.log('Selected exporter changed to', selectedExporter)
+			// console.log('Selected exporter changed to', selectedExporter)
 		})
 	})
 	onDestroy(() => {

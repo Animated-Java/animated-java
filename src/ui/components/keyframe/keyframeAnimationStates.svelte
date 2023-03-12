@@ -24,7 +24,7 @@
 		if (value === undefined && selectedKeyframe) {
 			// If the value is undefined the selected keyframe was just selected.
 			// So we need to read the existing value from the keyframe.
-			console.log('value undefined')
+			// console.log('value undefined')
 			const animUUID = getKeyframeAnimationState(selectedKeyframe)
 			if (animUUID) {
 				const anim = animations.find(v => v.uuid === animUUID)

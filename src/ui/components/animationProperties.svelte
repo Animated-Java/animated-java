@@ -152,7 +152,7 @@
 							name: g.name,
 							value: g.uuid,
 						}))
-					console.log(setting.value)
+					// console.log(setting.value)
 				},
 				function onInit(setting) {
 					setting.onUpdate!(setting)

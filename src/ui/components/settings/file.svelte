@@ -14,7 +14,7 @@
 				properties: ['openFile'],
 			})
 			.then((result: any) => {
-				console.log(result)
+				// console.log(result)
 				if (!result.canceled) {
 					setting.value = result.filePath
 				}

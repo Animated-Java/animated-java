@@ -54,7 +54,7 @@ createBlockbenchMod(
 				requestAnimationFrame(() => {
 					selectedVariant = Project.animated_java_variants?.selectedVariant
 					Project.animated_java_variants?.select()
-					console.log(Project.animated_java_variants?.selectedVariant?.name)
+					// console.log(Project.animated_java_variants?.selectedVariant?.name)
 				})
 			}
 			return context.originalSelect?.call(this)
@@ -62,7 +62,7 @@ createBlockbenchMod(
 		Modes.options.paint.onUnselect = function () {
 			if (Project && Format === ajModelFormat && Project.animated_java_variants) {
 				Project.animated_java_variants.select(selectedVariant)
-				console.log(Project.animated_java_variants.selectedVariant?.name)
+				// console.log(Project.animated_java_variants.selectedVariant?.name)
 			}
 			return context.originalUnselect?.call(this)
 		}

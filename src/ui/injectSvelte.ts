@@ -21,7 +21,7 @@ export function injectSvelteCompomponent(options: {
 					target: el,
 					props: options.svelteComponentArgs,
 				})
-				console.log(instance)
+				// console.log(instance)
 				if (options.postMount) options.postMount(el)
 			})
 			return instance

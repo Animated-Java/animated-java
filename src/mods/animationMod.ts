@@ -35,7 +35,7 @@ createBlockbenchMod(
 		) {
 			context.extend.call(this, data)
 			if (Format === ajModelFormat) {
-				console.log('extend', this, data)
+				// console.log('extend', this, data)
 				this.snapping = 20
 				// Round keyframes to the nearest tick (0.05 seconds)
 				for (const animator of Object.values(this.animators)) {
@@ -56,7 +56,7 @@ createBlockbenchMod(
 		Blockbench.Animation.prototype.compileBedrockAnimation = function (this: _Animation): any {
 			const tag = context.compileBedrockAnimation.call(this)
 			if (Format === ajModelFormat) {
-				console.log('compileBedrockAnimation', this)
+				// console.log('compileBedrockAnimation', this)
 				tag.affected_bones = this.affected_bones
 				tag.affected_bones_is_a_whitelist = this.affected_bones_is_a_whitelist
 			}

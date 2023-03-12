@@ -26,7 +26,7 @@
 	function update() {
 		if (destroyed) return
 		if (selected !== Blockbench.Keyframe.selected[0]) {
-			console.log('selected changed')
+			// console.log('selected changed')
 			onSelectionUpdate()
 			selected = getSelectedKeyframe()
 		}

@@ -48,7 +48,7 @@
 	}
 
 	function onHelpButtonClick() {
-		console.log(`Help button clicked for setting '${setting.displayName}' ${setting.docsLink}`)
+		// console.log(`Help button clicked for setting '${setting.displayName}' ${setting.docsLink}`)
 		AnimatedJava.docClick(setting.docsLink || 'page:meta/undocumented')
 	}
 </script>

@@ -1,5 +1,5 @@
-# Think about it.
-- [x] Should there be an option to let animated java handle the texture exporting automatically? - YES
+# Important
+- [ ] Try decomposed transformation instead of matrix
 
 # UI
 - [ ] Settings should debounce the onUpdate function instead of the infoPopup variable
@@ -35,6 +35,9 @@
 - [ ] Include a small gif of SnaveSutit smashing a keyboard
 
 # Animation Exporter
+- [ ] Add an uninstall function
+- [ ] Reset function for each animation and for default pose.
+    - [ ] When called for an animation it should set the pose to the first frame of the animation
 - [ ] Figure out a clever way to allow summoning a rig at any frame in any animation
 - [x] Add a way to summon a model with a specific variant
 - [ ] Keyframes need to be deduplicated, otherwise a weird vibration effect occurrs
@@ -53,7 +56,8 @@
 - [x] Update all old variants if possible
 
 # Main Animated Java Features
-- [ ] The Blockbench preview should take affected bones into account.
+- [ ] The Blockbench preview should take affected bones into account and somehow visually show that they aren't being effected.
+    - [ ] Instead of using a "Affected Bones" list, we should use a button on each group in the outliner. This will be easier to configure and will probably be more intuitive.
 - [ ] Textures should be allowed anywhere on the system. AJ should instead put them into the generated resource pack automatically when exporting.
 - [ ] Animation State Keyframes should allow you to choose whether to play the animation from the start, or from the current anim_time
 - [x] Add a list of bones to the variant properties dialog.

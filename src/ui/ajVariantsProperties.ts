@@ -15,7 +15,7 @@ export function openVariantPropertiesDialog(variant: Variant) {
 		svelteComponentProps: { variant },
 		buttons: [translate('animated_java.dialog.close_button')],
 		onClose() {
-			console.log('onButton')
+			// console.log('onButton')
 			Project.animated_java_variants!.select(Project.animated_java_variants!.selectedVariant)
 		},
 	}).show()

@@ -37,7 +37,7 @@
 	}
 
 	function onResetMappingClick(from: TextureId) {
-		console.log('delete mapping')
+		// console.log('delete mapping')
 		variant.removeTextureMapping(from)
 		updateVariants++
 	}

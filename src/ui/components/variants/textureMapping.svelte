@@ -14,9 +14,9 @@
 	function onUpdateMapping() {
 		if (!Project?.animated_java_variants) return
 		const texture = options[to]
-		console.log('update mapping', fromTexture, texture)
+		// console.log('update mapping', fromTexture, texture)
 		if (!texture || fromTexture.toTextureId() === texture.toTextureId()) return
-		console.log('modified mapping')
+		// console.log('modified mapping')
 		variant.addTextureMapping(fromTexture.toTextureId(), texture.toTextureId())
 	}
 

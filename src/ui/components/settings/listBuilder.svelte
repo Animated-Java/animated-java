@@ -11,14 +11,14 @@
 
 	function addItem(item: AJ.IListItem) {
 		setting.addItem(item)
-		console.log('Adding', setting.value)
+		// console.log('Adding', setting.value)
 		items = setting.value
 		update++
 	}
 
 	function removeItem(item: AJ.IListItem) {
 		setting.removeItem(item)
-		console.log('Removing', setting.value)
+		// console.log('Removing', setting.value)
 		items = setting.value
 		update++
 	}

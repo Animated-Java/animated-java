@@ -14,7 +14,7 @@
 				properties: ['openDirectory'],
 			})
 			.then((result: any) => {
-				console.log(result)
+				// console.log(result)
 				if (!result.canceled) {
 					setting.value = result.filePaths[0]
 				}
