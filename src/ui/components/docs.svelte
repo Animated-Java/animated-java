@@ -1,3 +1,19 @@
+<script lang="ts" context="module">
+	const DEV_API_URL = `http://localhost:3000/api/docs/`
+	const DEV_DOCS_URL = `http://localhost:3000/docs/`
+
+	const PROD_API_URL = `https://animated-java-dev-ianssenne.vercel.app/api/docs/`
+	const PROD_DOCS_URL = `https://animated-java-dev-ianssenne.vercel.app/docs/`
+	// const PROD_API_URL = `https://animated-java.dev/api/docs`
+	// const PROD_DOCS_URL = `https://animated-java.dev/api/docs`
+
+	const DOCS_API_URL = process.env.NODE_ENV === 'development' ? DEV_API_URL : PROD_API_URL
+	const DOCS_URL = process.env.NODE_ENV === 'development' ? DEV_DOCS_URL : PROD_DOCS_URL
+
+	// 'api/docs' returns the index.json
+	// 'docs/<filename>.embed' returns the rendered html of the document
+</script>
+
 <script lang="ts">
 	import { fade } from 'svelte/transition'
 	import * as events from '../../events'
@@ -9,23 +25,10 @@
 	export let page: string = 'index'
 	export let section: string | undefined
 
-	const DOC_API_URL =
-		process.env.NODE_ENV === 'development'
-			? 'http://localhost:3000/api/docs'
-			: 'https://animated-java.dev/api/docs'
-
-	const DOC_URL =
-		process.env.NODE_ENV === 'development'
-			? 'http://localhost:3000/docs/'
-			: 'https://animated-java.dev/docs'
-
-	// 'api/docs' returns the index.json
-	// 'docs/<filename>.embed' returns the rendered html of the document
-
 	async function getDocIndex() {
 		// await new Promise(resolve => setTimeout(resolve, 2000))
 		// throw new Error('Skill Issue!')
-		const response = await fetch(DOC_API_URL)
+		const response = await fetch(DOCS_API_URL)
 			.then(response => response.json())
 			.catch(error => {
 				throw new Error('Failed to fetch docIndex.\n' + error.stack)
@@ -37,7 +40,7 @@
 	async function getPage(name: string): Promise<string> {
 		if (name === '') name = 'index'
 		// await new Promise(resolve => setTimeout(resolve, 2000))
-		const result = await fetch(DOC_URL + name + '.embed')
+		const result = await fetch(DOCS_URL + name + '.embed')
 			.then(response => response.text())
 			.catch(error => {
 				throw new Error('Failed to fetch docIndex.\n' + error.stack)

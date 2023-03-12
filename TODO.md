@@ -32,6 +32,7 @@
 - [ ] F-A-Q
 
 # About Page
+- [ ] Make this
 - [ ] Include a small gif of SnaveSutit smashing a keyboard
 
 # Animation Exporter
