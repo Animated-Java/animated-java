@@ -9,8 +9,15 @@
 	export let page: string = 'index'
 	export let section: string | undefined
 
-	const DOC_API_URL = 'http://localhost:3000/api/docs'
-	const DOC_URL = 'http://localhost:3000/docs/'
+	const DOC_API_URL =
+		process.env.NODE_ENV === 'development'
+			? 'http://localhost:3000/api/docs'
+			: 'https://animated-java.dev/api/docs'
+
+	const DOC_URL =
+		process.env.NODE_ENV === 'development'
+			? 'http://localhost:3000/docs/'
+			: 'https://animated-java.dev/docs'
 
 	// 'api/docs' returns the index.json
 	// 'docs/<filename>.embed' returns the rendered html of the document

@@ -59,6 +59,22 @@ interface IBoneStructure {
 	children: IBoneStructure[]
 }
 
+// FIXME - Need to add support for predicate merging
+export interface IPredicateModel {
+	overrides: Array<{
+		predicate: {
+			custom_model_data: number
+			model: string
+		}
+	}>
+	animated_java?: {
+		included_projects: Array<{
+			name: string
+			usedIds: number[]
+		}>
+	}
+}
+
 export interface IRenderedRig {
 	/**
 	 * A map of bone UUIDs to rendered models
@@ -92,6 +108,10 @@ export interface IRenderedRig {
 	 * The export folder for the rig textures
 	 */
 	textureExportFolder: string
+	/**
+	 * The predicate item's model
+	 */
+	// predicateModel: IPredicateModel
 }
 
 let customModelData = 1
@@ -165,12 +185,11 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 		if (data.rotation) renderedFace.rotation = data.rotation
 		if (data.texture) {
 			const texture = data.getTexture()
-			if (texture?.path) {
-				renderedFace.texture = '#' + texture.id
-				rig.textures[texture.id] = texture
-				const resourceLocation = renderTexture(texture, rig)
-				if (resourceLocation) model.textures[texture.id] = resourceLocation
-			} else renderedFace.texture = '#missing'
+			if (!texture) throw new Error('Texture not found')
+			renderedFace.texture = '#' + texture.id
+			rig.textures[texture.id] = texture
+			const resourceLocation = renderTexture(texture, rig)
+			if (resourceLocation) model.textures[texture.id] = resourceLocation
 		}
 		if (data.cullface) renderedFace.cullface = data.cullface
 		if (data.tint >= 0) renderedFace.tintindex = data.tint

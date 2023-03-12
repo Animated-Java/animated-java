@@ -376,7 +376,7 @@ export function loadExporter() {
 
 				const commands: string[] = []
 				for (const [uuid, bone] of Object.entries(rig.boneMap)) {
-					const included = variant.affectedBones.includes(uuid)
+					const included = variant.affectedBones.find(v => v.value === uuid)
 					if (
 						(!included && variant.affectedBonesIsAWhitelist) ||
 						(included && !variant.affectedBonesIsAWhitelist)

@@ -546,7 +546,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 			if (Settings.get('embed_textures') || options.backup) {
 				t.source = 'data:image/png;base64,' + tex.getBase64()
 				t.mode = 'bitmap'
-				tex.saved = true
+				// tex.saved = true
 			}
 			if (options.absolute_paths == false) delete t.path
 			model.textures.push(t)

@@ -53,15 +53,18 @@
 - [x] Update all old variants if possible
 
 # Main Animated Java Features
-- [ ] 
+- [ ] The Blockbench preview should take affected bones into account.
 - [ ] Textures should be allowed anywhere on the system. AJ should instead put them into the generated resource pack automatically when exporting.
 - [ ] Animation State Keyframes should allow you to choose whether to play the animation from the start, or from the current anim_time
 - [x] Add a list of bones to the variant properties dialog.
     - [x] Add a checkbox that when enabled turns the list into a whitelist.
     - [x] The variant should only modify bones according to the list. For instance, If it's a whitelist the variant will only modify the bones in the list. Not touching the textures of other bones.
-- [ ] ~~Bones should have a tick function in their bone-config~~ There should be a function tag that runs on every bone every tick
-- [ ] There should be tick, load, summon, and remove function settings in the animation and statue exporter.
-- [ ] Bones should be forced to have safe function names instead of being changed on export.
+- [ ] There should be tick, load, summon, and remove function tags in the animation and statue exporter.
+    - [ ] tick
+    - [ ] load
+    - [x] summon
+    - [ ] remove
+- [x] Bones should be forced to have safe function names instead of being changed on export.
 - [x] We should check that all cubes are valid before exporting.
 - [ ] Use modify item to replace display items
 - [x] Show invalid element rotations with a red outline around the element.
@@ -72,7 +75,7 @@
     - [ ] Exported locators position a tagged entity with the same aj.id
 - [ ] Cameras
     - [ ] Just fancy locators with x and y rotation support
-- [ ] Exporters
+- [ ] Exporters ready for 1.0 release
     - [ ] Animation Exporter
     - [ ] Statue Exporter
     - [ ] Raw Exporter
@@ -82,8 +85,9 @@
     - [ ] Per-Variant display item NBT
 - [ ] Animations
     - [ ] Animation "State" - Based on a score on the root entity, automatically switch between animations.
+        - [ ] If animation_state is set to -1 no animations will play. This is also the default value of animation_state.
     - [ ] Animation *Transitioning*
-        - [ ] When switching active animations, if an animation is already running, blend between it's current frame and the next frame.
+        - [ ] When switching active animations, if an animation is already running, blend between it's current frame and the other animation's next frame.
         - [ ] Add some way to choose blend duration.
         - [ ] Add some way to disable blending.
     - [x] Keyframes for swapping from one animation to another (Animation State Keyframes)
@@ -91,9 +95,9 @@
     - [x] Variant swap keyframe `execute if` condition. Only swap variants if a condition is met on the root entity.
     - [x] Animation State keyframe `execute if` condition. Only swap states if a condition is met on the root entity.
     - [x] Add a keyframe timeline to every bone for running commands at that bone
-- [ ] Things to convert when converting model formats into AJ's format
-    - [ ] All animations need their snapping set to 20
-    - [ ] Animation Keyframes need to be rounded to the nearest 20th of a second
+- [x] Things to convert when converting model formats into AJ's format
+    - [x] All animations need their snapping set to 20
+    - [x] Animation Keyframes need to be rounded to the nearest 20th of a second
 - [x] Add some way to have the rig follow the root even while it's not animating.
     - ~~Possible solution~~ Solution: Make all display entities ride the root entity.
 - [x] Make sure loop delay and start delay (in the animation properties menu) are taken into account by AJ when parsing animations.
