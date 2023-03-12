@@ -1,5 +1,5 @@
-# IMPORTANT
-- [x] Message Boq with any issues regarding interpolation jitter and entity rotation interpolation.
+# Think about it.
+- [x] Should there be an option to let animated java handle the texture exporting automatically? - YES
 
 # UI
 - [ ] Settings should debounce the onUpdate function instead of the infoPopup variable
@@ -36,18 +36,25 @@
 
 # Animation Exporter
 - [ ] Figure out a clever way to allow summoning a rig at any frame in any animation
-- [ ] Find a way to summon a model with a specific variant
+- [x] Add a way to summon a model with a specific variant
 - [ ] Keyframes need to be deduplicated, otherwise a weird vibration effect occurrs
 - [ ] Add a "version" id of some kind to each model when it get summoned.
     - [ ] The version changes every time you export
     - [ ] When the load function runs, and every second or so, check all active rig verison ids against the current version id. If the ids are different, update the rig to the latest verision.
     - [ ] Update CustomModelData
     - [ ] Update interpolation_duration
+- [ ] Make sure the animations take Affected Bones into account.
+- [ ] Empty bones shouldn't be exported
 
 # Model verification
-- [ ] On load make sure all bone names are valid
+- [x] On load make sure all bone names are valid
+- [x] Enforce 20 fps animation snapping, and round all keyframes to their nearest valid value.
+- [x] Update all instruction keyframes to commands keyframes
+- [x] Update all old variants if possible
 
-# Features
+# Main Animated Java Features
+- [ ] 
+- [ ] Textures should be allowed anywhere on the system. AJ should instead put them into the generated resource pack automatically when exporting.
 - [ ] Animation State Keyframes should allow you to choose whether to play the animation from the start, or from the current anim_time
 - [x] Add a list of bones to the variant properties dialog.
     - [x] Add a checkbox that when enabled turns the list into a whitelist.
@@ -91,15 +98,9 @@
     - ~~Possible solution~~ Solution: Make all display entities ride the root entity.
 - [x] Make sure loop delay and start delay (in the animation properties menu) are taken into account by AJ when parsing animations.
 - [x] Remove install and just update variables on reload/summon.
-- [ ] Add a way to adjust an animation's control over bones:
-    - [ ] Three global options
-        - [ ] This animation controls all bones in the model
-        - [ ] This animation resets all bones to it's default pose when played, but then acts like option 3
-        - [ ] This animation controls only bones it actually animates
-    - [ ] And 3 bone config options
-        - [ ] Use global setting
-        - [ ] This bone resets every time an animation is started via the play function
-        - [ ] This bone is not animated by any animations
+- [x] Add a way to adjust an animation's control over bones
+    - [x] Affected Bones
+    - [x] Affected Bones is a Whitelist
 
 # Post-1.0
 - [ ] Animation controller support?

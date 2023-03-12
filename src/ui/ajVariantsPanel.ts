@@ -1,5 +1,5 @@
 import { ajModelFormat } from '../modelFormat'
-import * as events from '../util/events'
+import * as events from '../events'
 import { createAction, createBlockbenchMod, createMenu } from '../util/moddingTools'
 import { translate } from '../util/translation'
 import { Variant } from '../variants'

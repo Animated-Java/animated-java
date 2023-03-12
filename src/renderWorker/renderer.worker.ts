@@ -129,7 +129,6 @@
 // }
 
 // export default async function (data: DataTypes.Data): Promise<DataTypes.Result> {
-// 	// TODO Add progress indicators
 // 	console.log('Render Worker Input:', { data })
 // 	const { boneTree, boneList } = buildBoneTree(data.outliner)
 

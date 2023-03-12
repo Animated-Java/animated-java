@@ -1,23 +1,62 @@
+// @ts-ignore
+import logo from '../assets/AnimatedJava-2022.svg'
+import * as events from '../events'
 import { exportProject } from '../exporter'
 import { ajModelFormat } from '../modelFormat'
-import { createAction } from '../util/moddingTools'
+import { createAction, createBarMenu } from '../util/moddingTools'
 import { translate } from '../util/translation'
 import { openAjDocsDialog } from './ajDocs'
 import { openAjProjectSettingsDialog } from './ajProjectSettings'
-import { openAjSettingsDialog } from './ajSettings'
+// import { openAjSettingsDialog } from './ajSettings'
 
-MenuBar.addAction(
-	createAction('animated_java:settings', {
-		icon: 'settings',
-		category: 'animated_java',
-		name: translate('animated_java.menubar.items.settings'),
-		condition: () => Format === ajModelFormat,
-		click() {
-			openAjSettingsDialog()
-		},
-	}),
-	'animated_java:menu'
-)
+interface IAnimatedJavaMenu extends BarMenu {
+	label: HTMLDivElement
+}
+
+const MENU = createBarMenu(
+	'animated_java:menu',
+	[],
+	() => Format === ajModelFormat
+) as IAnimatedJavaMenu
+MENU.label.style.display = 'none'
+
+const MENU_BAR = document.querySelector('#menu_bar')
+if (MENU_BAR) MENU_BAR.appendChild(MENU.label)
+else throw new Error('Animated Java failed to load: Could not find Blockbench menu bar element!')
+
+const IMG = document.createElement('img')
+MENU.label.innerHTML = translate('animated_java.menubar.settings')
+IMG.src = logo
+IMG.width = 16
+IMG.height = 16
+IMG.style.position = 'relative'
+IMG.style.top = '2px'
+IMG.style.borderRadius = '8px'
+IMG.style.marginRight = '5px'
+MENU.label.prepend(IMG)
+
+events.SELECT_PROJECT.subscribe(() => {
+	queueMicrotask(() => {
+		MENU.label.style.display = Format === ajModelFormat ? 'inline-block' : 'none'
+	})
+})
+
+events.UNSELECT_PROJECT.subscribe(() => {
+	MENU.label.style.display = 'none'
+})
+
+// MenuBar.addAction(
+// 	createAction('animated_java:settings', {
+// 		icon: 'settings',
+// 		category: 'animated_java',
+// 		name: translate('animated_java.menubar.items.settings'),
+// 		condition: () => Format === ajModelFormat,
+// 		click() {
+// 			openAjSettingsDialog()
+// 		},
+// 	}),
+// 	'animated_java:menu'
+// )
 
 MenuBar.addAction(
 	createAction('animated_java:project_settings', {

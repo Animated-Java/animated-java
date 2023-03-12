@@ -6,15 +6,14 @@ import { SvelteDialog } from './svelteDialog'
 
 export function openAjProjectSettingsDialog() {
 	if (!Project) return
-	const dialog = new SvelteDialog({
+	new SvelteDialog({
 		title: translate('animated_java.dialog.project_settings.title'),
 		id: 'animated_java:project_settings',
 		width: 800,
 		buttons: [translate('animated_java.dialog.close_button')],
 		svelteComponent: SettingsComponent,
 		svelteComponentProps: { settings: Project.animated_java_settings },
-	})
-	dialog.show()
+	}).show()
 }
 
 createBlockbenchMod(

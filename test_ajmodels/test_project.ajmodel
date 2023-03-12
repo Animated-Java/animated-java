@@ -9,6 +9,7 @@
 			"rig_item": "minecraft:white_dye",
 			"rig_item_model": "",
 			"rig_export_folder": "",
+			"texture_export_folder": "",
 			"enable_advanced_resource_pack_settings": false,
 			"resource_pack_folder": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\pack.mcmeta",
 			"verbose": true,
@@ -44,7 +45,12 @@
 				},
 				"uuid": "c100284b-bca4-dbd4-9243-8e9badbd66c8",
 				"affectedBonesIsAWhitelist": false,
-				"affectedBones": ["69aa99f5-fee8-5db4-accc-408ffe509670"]
+				"affectedBones": [
+					{
+						"name": "cube1",
+						"value": "69aa99f5-fee8-5db4-accc-408ffe509670"
+					}
+				]
 			},
 			{
 				"name": "c",
@@ -55,7 +61,12 @@
 				},
 				"uuid": "f528135d-bdb3-d9c7-bda1-e074a5afc571",
 				"affectedBonesIsAWhitelist": false,
-				"affectedBones": ["69aa99f5-fee8-5db4-accc-408ffe509670"]
+				"affectedBones": [
+					{
+						"name": "cube1",
+						"value": "69aa99f5-fee8-5db4-accc-408ffe509670"
+					}
+				]
 			}
 		]
 	},
@@ -146,7 +157,7 @@
 	],
 	"outliner": [
 		{
-			"name": "bone",
+			"name": "cube1",
 			"origin": [-16, 0, 16],
 			"color": 0,
 			"uuid": "69aa99f5-fee8-5db4-accc-408ffe509670",
@@ -159,7 +170,7 @@
 			"children": [
 				"29c15edc-aea1-917e-1210-69c6c9468111",
 				{
-					"name": "bone2",
+					"name": "cube2",
 					"origin": [16, 16, 0],
 					"color": 0,
 					"uuid": "6a32e1b9-fd9e-8aec-9673-c24952af636f",
@@ -176,10 +187,10 @@
 	],
 	"textures": [
 		{
-			"path": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\assets\\happy_box\\textures\\item\\red.png",
+			"path": "",
 			"name": "red.png",
-			"folder": "item",
-			"namespace": "happy_box",
+			"folder": "",
+			"namespace": "",
 			"id": "0",
 			"particle": false,
 			"render_mode": "default",
@@ -192,14 +203,13 @@
 			"mode": "bitmap",
 			"saved": true,
 			"uuid": "5fa5c44b-1fa3-77d7-895e-48c64e768b87",
-			"relative_path": "C:/Users/Snave/AppData/Roaming/.gdlauncher/instances/Snapshot Map Development/resourcepacks/test/assets/happy_box/textures/item/red.png",
 			"source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAUlJREFUeF7tmFEOwjAMQ+khd8oecmiISdPopoaunguPLwRNnTmOQ0iPxtc8TXPjFU3hKefUckFT8AIMASiAFsADSiaUcl784fXV9n2tYdXGY4JMgYHG4DetsG2ZUrxdCxw95PL5+3fDqQ1E4y0JOHrC1RTPGFiJKp0pxdsRUOvyV52DAKbAQFPgKtnvJkPTQtcU/BPb4N3rbA9VRO5MEHDzPh+pVo+zKIAWOGiB2n38SJajxNMCtEBgCvTY5yPO3gP/owWi+/j+AUaLLxKg3OdLBCrxMUFMMGCCEcMa5Swt8PctMIpUe+XZ/I9Qr8RU90KAimlXHBTgWhlVXihAxbQrDgpwrYwqLxSgYtoVBwW4VkaVFwpQMe2KgwJcK6PKCwWomHbFQQGulVHlhQJUTLvioADXyqjyQgEqpl1xUIBrZVR5oQAV0644T5Us1sG4m1K0AAAAAElFTkSuQmCC"
 		},
 		{
-			"path": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\assets\\happy_box\\textures\\item\\green.png",
+			"path": "",
 			"name": "green.png",
-			"folder": "item",
-			"namespace": "happy_box",
+			"folder": "",
+			"namespace": "",
 			"id": "1",
 			"particle": false,
 			"render_mode": "default",
@@ -212,14 +222,13 @@
 			"mode": "bitmap",
 			"saved": true,
 			"uuid": "623c3550-3f4b-fc54-be0b-bc134a9c6c31",
-			"relative_path": "C:/Users/Snave/AppData/Roaming/.gdlauncher/instances/Snapshot Map Development/resourcepacks/test/assets/happy_box/textures/item/green.png",
 			"source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAa5JREFUeF7tmVFuwzAMQ+dD5pQ5ZIYMCJBlViSGLSoO7LcZS0+UbaHji/wt27KRn6Dk61gH8wFKvG9sAHbA7xZYx/rjyGVbHjkT1bdsgT2JGYBqcoheBkA1+d02MwCRvi2Aw/+7E5DkDwBVfUsAR/BH4k/PhIq+NYDIzsjpGJ0HJ8jUVU6Jo3dA1MPVmwHRt3cAUu0na9sDqPTxXeKZvi2AWeBZP59BVPXtANxdeRUAqL4dgCd9zGgMgB2HPz3OMtV/hXYYwIfn+VdUkfnGHwegg8t1czX9tAWQeXxGX0lfBoBUFpnnqwDftX8IoDqPRwmo6G9vgewdnh0+Cvr0Gqw8X7NhpjoGV9shA3+dKe72h86AaiLIPF9NGikEsn/qAIS24toUgEIfZy14PpCva0MA1Xk82lxFD70EK32IzvPIS/Id+6ctoNjXSMwGgND6j2vp/wXUoRiAegXZ+O0AlqC63g5QryAbvx3AElTX2wHqFWTjtwNYgup6O0C9gmz8dgBLUF1vB6hXkI3fDmAJquvtAPUKsvHbASxBdb0doF5BNn47gCWorrcD1CvIxv8NtKmK0LmsKIwAAAAASUVORK5CYII="
 		},
 		{
-			"path": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\assets\\happy_box\\textures\\item\\blue.png",
+			"path": "",
 			"name": "blue.png",
-			"folder": "item",
-			"namespace": "happy_box",
+			"folder": "",
+			"namespace": "",
 			"id": "2",
 			"particle": false,
 			"render_mode": "default",
@@ -232,19 +241,18 @@
 			"mode": "bitmap",
 			"saved": true,
 			"uuid": "0e4de5b5-4cca-2e39-3cca-817d30316913",
-			"relative_path": "C:/Users/Snave/AppData/Roaming/.gdlauncher/instances/Snapshot Map Development/resourcepacks/test/assets/happy_box/textures/item/blue.png",
 			"source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAZZJREFUeF7tmmtuwzAMg5dD5pQ5ZItgcJEadSRbcz8ZY/+tGUOZpOUHuv0EP/v+eARfEYIfx7ZFXhACn8ReAY7jl2rfx/Rq4ZcQ4Cz+HPioCHf4JQSIRNTCSoBsPaDE9ercp+9azvbilYBsCbDm7F8/T5+A0vlHl0ALn1aAuvDeJdCLTyNA3bxazayVhFF8KgHK4O7cvtnRvXaKPfg0ApzVW/PVaoAj+FQCWAOc8VwCaB8QPA57j7Mz4pvhnZtXgN51vB5cVrxLgJnneU8KZvK7BPAUuer/SIC6B/Sexz/N9freb+Z9QJRfCfCuAqvOcatuMwEj+/P6Oqz8PXIlPpu/KYD3PH53t3cdeO8+4Fv8LwFGz+NlkKvi3wQgzvNXAQn+tykwe75ZDYngN5ugVfTqzyXAv98HrB7haP3h3wdEC6DxEoB2gOZXAmgHaH4lgHaA5lcCaAdofiWAdoDmVwJoB2h+JYB2gOZXAmgHaH4lgHaA5lcCaAdofiWAdoDmVwJoB2h+JYB2gOZXAmgHaH4lgHaA5n8Cp6R40OT9sgcAAAAASUVORK5CYII="
 		}
 	],
 	"animations": [
 		{
 			"uuid": "603a8012-ccc1-08c7-6619-9b2b4e87f62e",
-			"name": "test",
+			"name": "cube_1",
 			"loop": "loop",
 			"override": false,
 			"length": 4.2,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",
@@ -372,7 +380,7 @@
 					]
 				},
 				"6a32e1b9-fd9e-8aec-9673-c24952af636f": {
-					"name": "bone2",
+					"name": "cube2",
 					"type": "bone",
 					"keyframes": [
 						{
@@ -419,7 +427,7 @@
 		},
 		{
 			"uuid": "6d0580b6-4653-a767-5f29-79140271bfb5",
-			"name": "scale_test",
+			"name": "cube_2",
 			"loop": "loop",
 			"override": false,
 			"length": 2.8,
@@ -433,7 +441,7 @@
 			"affected_bones_is_a_whitelist": false,
 			"animators": {
 				"69aa99f5-fee8-5db4-accc-408ffe509670": {
-					"name": "bone",
+					"name": "cube1",
 					"type": "bone",
 					"keyframes": [
 						{

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition'
-	import * as events from '../../util/events'
+	import * as events from '../../events'
 	import { translate } from '../../util/translation'
 	import DocPage from './docs/docPage.svelte'
 	import IndexItem from './docs/indexItem.svelte'

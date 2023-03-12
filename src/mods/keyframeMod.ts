@@ -1,5 +1,5 @@
 import { ajModelFormat } from '../modelFormat'
-import * as events from '../util/events'
+import * as events from '../events'
 import { translate } from '../util/translation'
 // import { applyModelVariant } from '../variants'
 

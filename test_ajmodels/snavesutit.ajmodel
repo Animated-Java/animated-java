@@ -1,0 +1,83 @@
+{
+	"meta": {
+		"format": "animated_java/ajmodel",
+		"format_version": "1.0"
+	},
+	"animated_java": {
+		"settings": {
+			"project_namespace": "snavesutit",
+			"rig_item": "minecraft:red_dye",
+			"rig_item_model": "",
+			"rig_export_folder": "",
+			"texture_export_folder": "",
+			"enable_advanced_resource_pack_settings": false,
+			"resource_pack_folder": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\pack.mcmeta",
+			"verbose": true,
+			"exporter": "animated_java:animation_exporter"
+		},
+		"exporter_settings": {
+			"animated_java:animation_exporter": {
+				"datapack_folder": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\saves\\Animated Java Test World\\datapacks",
+				"interpolation_duration": 1
+			},
+			"animated_java:statue_exporter": {
+				"foo": false
+			},
+			"animated_java:raw_exporter": {
+				"foo": false
+			}
+		},
+		"variants": [
+			{
+				"name": "default",
+				"textureMap": {},
+				"uuid": "8299720b-e887-e636-c940-c240a23e6d05",
+				"default": true,
+				"affectedBonesIsAWhitelist": false,
+				"affectedBones": []
+			}
+		]
+	},
+	"resolution": {
+		"width": 16,
+		"height": 16
+	},
+	"elements": [],
+	"outliner": [
+		{
+			"name": "root",
+			"origin": [0, 0, 0],
+			"color": 0,
+			"uuid": "8496256e-ab9e-0166-eff3-c75538c8c1ee",
+			"export": true,
+			"mirror_uv": false,
+			"isOpen": true,
+			"locked": false,
+			"visibility": true,
+			"autouv": 0,
+			"children": []
+		}
+	],
+	"textures": [
+		{
+			"path": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\assets\\snavesutit\\assets\\textures\\item\\snavesutit.png",
+			"name": "snavesutit.png",
+			"folder": "item",
+			"namespace": "assets",
+			"id": "0",
+			"particle": false,
+			"render_mode": "default",
+			"render_sides": "auto",
+			"frame_time": 1,
+			"frame_order_type": "loop",
+			"frame_order": "",
+			"frame_interpolate": false,
+			"visible": true,
+			"mode": "bitmap",
+			"saved": true,
+			"uuid": "4541d856-543c-cb29-b9ca-55aa093b87f4",
+			"relative_path": "C:/Users/Snave/AppData/Roaming/.gdlauncher/instances/Snapshot Map Development/resourcepacks/test/assets/snavesutit/assets/textures/item/snavesutit.png",
+			"source": "data:image/png;base64,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"
+		}
+	]
+}

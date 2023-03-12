@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import { AnimatedJavaExporter } from './exporter'
 import { getDefaultProjectSettings } from './projectSettings'
 import { consoleGroup, consoleGroupCollapsed } from './util/console'
-import * as events from './util/events'
+import * as events from './events'
 import { createBlockbenchMod } from './util/moddingTools'
 import { TextureMap, Variant, VariantsContainer } from './variants'
 
@@ -119,7 +119,7 @@ interface IAnimatedJavaModel {
 			textureMap?: TextureMap
 			default?: boolean
 			uuid?: string
-			affectedBones?: string[]
+			affectedBones?: Array<{ name: string; value: string }>
 			affectedBonesIsAWhitelist?: boolean
 		}>
 	}
@@ -543,12 +543,10 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 				const relative = PathModule.relative(Project.save_path, tex.path)
 				t.relative_path = relative.replace(/\\/g, '/')
 			}
-			if (
-				options.bitmaps != false &&
-				(Settings.get('embed_textures') || options.backup || options.bitmaps == true)
-			) {
+			if (Settings.get('embed_textures') || options.backup) {
 				t.source = 'data:image/png;base64,' + tex.getBase64()
 				t.mode = 'bitmap'
+				tex.saved = true
 			}
 			if (options.absolute_paths == false) delete t.path
 			model.textures.push(t)
@@ -646,7 +644,27 @@ export const ajModelFormat = new Blockbench.ModelFormat({
 	format_page: {
 		content: [{ type: 'h3', text: tl('animated_java.format_page.h3') }],
 	},
-	// onStart() {},
+
+	onSetup() {
+		if (Project?.animated_java_settings) {
+			// Project Settings
+			Project.animated_java_settings = getDefaultProjectSettings()
+			for (const setting of Object.values(Project.animated_java_settings)) {
+				setting._onInit()
+			}
+			// Exporter Settings
+			const settings: typeof Project.animated_java_exporter_settings = {}
+			for (const exporter of AnimatedJavaExporter.all) {
+				if (!exporter) continue
+				settings[exporter.id] = exporter.getSettings()
+				for (const setting of Object.values(settings[exporter.id])) {
+					setting._onInit()
+				}
+			}
+			Project.animated_java_exporter_settings = settings
+		}
+	},
+
 	codec: ajCodec,
 
 	box_uv: false,
@@ -669,15 +687,12 @@ export const ajModelFormat = new Blockbench.ModelFormat({
 	select_texture_for_particles: false,
 	bone_binding_expression: true,
 	animation_files: false,
-	texture_folder: true,
+	texture_folder: false,
 	edit_mode: true,
 	paint_mode: true,
 	display_mode: false,
 	animation_mode: true,
 	pose_mode: false,
-
-	// cube_size_limiter: {
-	// },
 })
 ajCodec.format = ajModelFormat
 
@@ -733,7 +748,7 @@ createBlockbenchMod(
 		context.action.click = (event: Event) => {
 			if (Project && Format === ajModelFormat) {
 				if (Format) {
-					saveTextures()
+					// saveTextures()
 					if (Project.export_path) {
 						ajCodec.write(ajCodec.compile(), Project.export_path)
 					} else if (!Project.save_path) {

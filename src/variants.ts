@@ -1,6 +1,6 @@
 import { ajModelFormat } from './modelFormat'
 import { openInvalidVariantPopup } from './ui/popups/invalidVariant'
-import * as events from './util/events'
+import * as events from './events'
 import { uuidRegex } from './util/misc'
 import { Subscribable } from './util/subscribable'
 
@@ -28,7 +28,7 @@ export class Variant {
 		name: string,
 		textureMap?: TextureMap,
 		uuid?: string,
-		public affectedBones: string[] = [],
+		public affectedBones: Array<{ name: string; value: string }> = [],
 		public affectedBonesIsAWhitelist = false
 	) {
 		this._name = name
@@ -164,7 +164,7 @@ export class Variant {
 		name: string
 		textureMap: TextureMap
 		uuid: string
-		affectedBones?: string[]
+		affectedBones?: Array<{ name: string; value: string }>
 		affectedBonesIsAWhitelist?: boolean
 	}) {
 		return new Variant(

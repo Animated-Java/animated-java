@@ -18,7 +18,9 @@ createBlockbenchMod(
 				if (variant) {
 					const uuid = variant.getMappedUuid(this.texture)
 					if (uuid && this.cube.parent instanceof Group) {
-						const included = variant.affectedBones.includes(this.cube.parent.uuid)
+						const included = variant.affectedBones.find(
+							v => v.value === (this.cube.parent as Group).uuid
+						)
 						if (
 							(included && variant.affectedBonesIsAWhitelist) ||
 							(!included && !variant.affectedBonesIsAWhitelist)

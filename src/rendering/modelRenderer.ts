@@ -1,4 +1,4 @@
-import { parseResourcePackPath } from '../minecraft/util'
+import { parseResourcePackPath, safeFunctionName } from '../minecraft/util'
 import { ProgressBarController } from '../util/progress'
 import { Variant } from '../variants'
 import { getAnimationBones, IAnimationBone } from './animationRenderer'
@@ -85,9 +85,13 @@ export interface IRenderedRig {
 	 */
 	defaultPose: IAnimationBone[]
 	/**
-	 * The output folder for the rig
+	 * The export folder for the rig models
 	 */
-	outputFolder: string
+	modelExportFolder: string
+	/**
+	 * The export folder for the rig textures
+	 */
+	textureExportFolder: string
 }
 
 let customModelData = 1
@@ -164,8 +168,8 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 			if (texture?.path) {
 				renderedFace.texture = '#' + texture.id
 				rig.textures[texture.id] = texture
-				const parsed = parseResourcePackPath(texture.path)
-				if (parsed) model.textures[texture.id] = parsed.resourceLocation
+				const resourceLocation = renderTexture(texture, rig)
+				if (resourceLocation) model.textures[texture.id] = resourceLocation
 			} else renderedFace.texture = '#missing'
 		}
 		if (data.cullface) renderedFace.cullface = data.cullface
@@ -178,16 +182,14 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 	return element
 }
 
-function renderTexture(texture: Texture) {
-	if (!texture.path) {
-		console.error(texture)
-		throw new Error(`Texture ${texture.name} has no path`)
-	}
-	const parsed = parseResourcePackPath(texture.path)
+function renderTexture(texture: Texture, rig: IRenderedRig) {
+	const path = PathModule.join(rig.textureExportFolder, safeFunctionName(texture.name) + '.png')
+
+	const parsed = parseResourcePackPath(path)
 	if (parsed) return parsed.resourceLocation
 
 	console.error(texture)
-	throw new Error(`Invalid texture path: ${texture.path}`)
+	throw new Error(`Invalid texture path: ${path}`)
 }
 
 function getBoneBoundingBox(group: Group) {
@@ -205,7 +207,7 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 	if (!group.export) return
 	const parentId = group.parent instanceof Group ? group.parent.uuid : group.parent
 
-	const path = PathModule.join(rig.outputFolder, group.name + `.json`)
+	const path = PathModule.join(rig.modelExportFolder, group.name + `.json`)
 	const parsed = parseResourcePackPath(path)
 
 	if (!parsed) {
@@ -278,7 +280,7 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 				throw new Error(
 					`Invalid texture mapping found while exporting variant models. If you're seeing this error something has gone horribly wrong.`
 				)
-			textures[fromTexture.id] = renderTexture(toTexture)
+			textures[fromTexture.id] = renderTexture(toTexture, rig)
 		}
 
 		const parsed = PathModule.parse(bone.modelPath)
@@ -300,7 +302,7 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 	return bones
 }
 
-export function renderRig(outputFolder: string): IRenderedRig {
+export function renderRig(modelExportFolder: string, textureExportFolder: string): IRenderedRig {
 	customModelData = 1
 	Texture.all.forEach((t, i) => (t.id = String(i)))
 
@@ -313,7 +315,8 @@ export function renderRig(outputFolder: string): IRenderedRig {
 		boneStructure: {} as IBoneStructure,
 		textures: {},
 		defaultPose: [],
-		outputFolder,
+		modelExportFolder,
+		textureExportFolder,
 	}
 
 	progress = new ProgressBarController('Rendering Rig...', countNodesRecursive())
@@ -324,15 +327,14 @@ export function renderRig(outputFolder: string): IRenderedRig {
 			const bone = renderGroup(node, rig)
 			if (bone) rig.boneStructure = bone
 		} else if (node instanceof Cube) {
-			// FIXME - The user should be warned of this sooner
-			console.error(`Encountered cube outside of bone:`, node)
+			console.error(`Encountered cube in root of outliner:`, node)
 		} else {
 			console.warn(`Encountered unknown node type:`, node)
 		}
 		progress.add(1)
 	}
 
-	rig.defaultPose = getAnimationBones(rig.boneMap)
+	rig.defaultPose = getAnimationBones(new Blockbench.Animation(), rig.boneMap)
 
 	for (const variant of Project!.animated_java_variants!.variants) {
 		if (variant.default) continue // Don't export the default variant, it's redundant data.

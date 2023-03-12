@@ -1,12 +1,12 @@
+import * as events from './events'
 import { GUIStructure } from './GUIStructure'
-import { isValidResourcePackPath } from './minecraft/util'
+import { safeFunctionName } from './minecraft/util'
 import { projectSettingStructure } from './projectSettings'
 import { IRenderedAnimation, renderAllAnimations } from './rendering/animationRenderer'
 import { IRenderedRig, renderRig } from './rendering/modelRenderer'
 import { animatedJavaSettings, IInfoPopup, Setting as AJSetting, Setting } from './settings'
 import { openAjFailedProjectExportReadinessDialog } from './ui/popups/failedProjectExportReadiness'
 import { consoleGroupCollapsed } from './util/console'
-import * as events from './util/events'
 import { NamespacedString } from './util/moddingTools'
 import { ProgressBarController } from './util/progress'
 import { translate } from './util/translation'
@@ -80,23 +80,32 @@ export const exportProject = consoleGroupCollapsed('exportProject', async () => 
 	const projectSettings = Project.animated_java_settings
 	const exporterSettings = Project.animated_java_exporter_settings![selectedExporterId]
 
-	let outputFolder: string
+	let textureExportFolder: string, rigExportFolder: string
 	if (Project.animated_java_settings.enable_advanced_resource_pack_settings.value) {
-		outputFolder = Project.animated_java_settings.rig_export_folder.value
+		// Advanced Resource Pack settings
+		textureExportFolder = Project.animated_java_settings.texture_export_folder.value
+		rigExportFolder = Project.animated_java_settings.rig_export_folder.value
 	} else {
+		// Automatic Resource Pack settings
 		const resourcePackFolder = PathModule.parse(
 			Project.animated_java_settings.resource_pack_folder.value
 		).dir
 		const projectNamespace = Project.animated_java_settings.project_namespace.value
-		outputFolder = PathModule.join(
+		textureExportFolder = PathModule.join(
+			resourcePackFolder,
+			'assets/',
+			projectNamespace + '_animated_java_rig',
+			'/textures/item/'
+		)
+		rigExportFolder = PathModule.join(
 			resourcePackFolder,
 			'assets/',
 			projectNamespace + '_animated_java_rig',
 			'/models/item/'
 		)
 	}
-	const rig = renderRig(outputFolder)
 
+	const rig = renderRig(rigExportFolder, textureExportFolder)
 	const renderedAnimations = await renderAllAnimations(rig)
 
 	await exporter.export(ajSettings, projectSettings, exporterSettings, renderedAnimations, rig)
@@ -137,6 +146,20 @@ async function exportResources(
 		'models/item',
 		'textures/item'
 	)
+
+	for (const texture of Object.values(rig.textures)) {
+		const fileName = `${safeFunctionName(texture.name)}.png`
+		let image: Buffer
+		if (texture.source?.startsWith('data:')) {
+			image = Buffer.from(texture.source.split(',')[1], 'base64')
+		} else if (texture.path) {
+			image = await fs.promises.readFile(texture.path)
+		} else {
+			throw new Error(`Texture "${texture.name}" has no source or path`)
+		}
+		texturesFolder.newFile(fileName, image)
+	}
+
 	for (const bone of Object.values(rig.boneMap)) {
 		modelsFolder.newFile(`${bone.name}.json`, bone.model)
 		predicateItemFile.content.overrides.push({
@@ -204,10 +227,11 @@ function verifySettings(structure: GUIStructure, settings: Array<Setting<any>>) 
 				if (!setting) throw new Error(`No setting found with id "${el.settingId}"`)
 				const info = setting.verify()
 				if (info?.type !== 'error') continue
-				// FIXME - Needs translation
 				issues.push({
 					type: 'error',
-					title: `Project Setting "${setting.displayName}" has the following errors:`,
+					title: translate('animated_java.popup.failed_project_export_readiness.issue', [
+						setting.displayName,
+					]),
 					lines: [info.title, ...info.lines],
 				})
 				break
@@ -221,6 +245,7 @@ export function verifyProjectExportReadiness() {
 	const issues: IInfoPopup[] = []
 
 	if (!Project) {
+		// FIXME - Needs translation
 		issues.push({
 			type: 'error',
 			title: 'No Project Found',
@@ -233,6 +258,7 @@ export function verifyProjectExportReadiness() {
 	}
 
 	if (!Project.animated_java_settings) {
+		// FIXME - Needs translation
 		issues.push({
 			type: 'error',
 			title: 'No Animated Java Settings Found',
@@ -255,6 +281,7 @@ export function verifyProjectExportReadiness() {
 			Project.animated_java_settings.exporter.selected!.value as NamespacedString
 		]
 	if (!exporter)
+		// FIXME - Needs translation
 		issues.push({
 			type: 'error',
 			title: 'No Exporter Selected',
@@ -270,32 +297,32 @@ export function verifyProjectExportReadiness() {
 			)
 		)
 
+	// This is no longer needed, we're handling the texture saving automatically.
 	// Verify textures
-	for (const texture of Project.textures) {
-		// Textures should have a save path
-		if (!texture.path) {
-			// FIXME - Needs translation
-			issues.push({
-				type: 'error',
-				title: 'Texture Save Path Not Set',
-				lines: [`Texture "${texture.name}" does not have a save path`],
-			})
-			continue
-		}
-		// Textures should be saved in a valid resource pack
-		if (!isValidResourcePackPath(texture.path)) {
-			// FIXME - Needs translation
-			issues.push({
-				type: 'error',
-				title: 'Invalid Texture Save Path',
-				lines: [`Texture "${texture.name}" is saved in an invalid resource pack`],
-			})
-		}
-	}
+	// for (const texture of Project.textures) {
+	// 	// Textures should have a save path
+	// 	if (!texture.path) {
+	// 		issues.push({
+	// 			type: 'error',
+	// 			title: 'Texture Save Path Not Set',
+	// 			lines: [`Texture "${texture.name}" does not have a save path`],
+	// 		})
+	// 		continue
+	// 	}
+	// 	// Textures should be saved in a valid resource pack
+	// 	if (!isValidResourcePackPath(texture.path)) {
+	// 		issues.push({
+	// 			type: 'error',
+	// 			title: 'Invalid Texture Save Path',
+	// 			lines: [`Texture "${texture.name}" is saved in an invalid resource pack`],
+	// 		})
+	// 	}
+	// }
 
 	// Verify Outliner
 	for (const node of Outliner.root as any[]) {
 		if (node instanceof Group) continue
+		// FIXME - Needs translation
 		issues.push({
 			type: 'error',
 			title: 'Invalid Outliner',

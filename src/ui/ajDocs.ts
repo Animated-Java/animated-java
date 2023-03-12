@@ -1,4 +1,4 @@
-import * as events from '../util/events'
+import * as events from '../events'
 import { translate } from '../util/translation'
 import { default as DocsComponent } from './components/docs.svelte'
 import { SvelteDialog } from './svelteDialog'

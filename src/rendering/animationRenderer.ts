@@ -41,11 +41,18 @@ export interface IRenderedAnimation {
 	loopMode: 'loop' | 'once' | 'hold'
 }
 
-export function getAnimationBones(boneMap: IRenderedRig['boneMap']) {
+export function getAnimationBones(animation: _Animation, boneMap: IRenderedRig['boneMap']) {
 	const bones: IAnimationBone[] = []
 
 	for (const group of Group.all) {
 		if (!group.export) continue
+		const included = animation.affected_bones.find(b => b.value === group.uuid)
+		// Ignore this bone if it's not affected by this animation
+		if (
+			(!included && animation.affected_bones_is_a_whitelist) ||
+			(included && !animation.affected_bones_is_a_whitelist)
+		)
+			continue
 		const matrix = getGroupMatrix(group, boneMap[group.uuid].scale)
 
 		bones.push({
@@ -129,7 +136,7 @@ export async function renderAnimation(animation: _Animation, rig: IRenderedRig) 
 		// await new Promise(resolve => setTimeout(resolve, 50))
 		updatePreview(animation, time)
 		rendered.frames.push({
-			bones: getAnimationBones(rig.boneMap),
+			bones: getAnimationBones(animation, rig.boneMap),
 			variant: getVariantKeyframe(animation, time),
 			commands: getCommandsKeyframe(animation, time),
 			animationState: getAnimationStateKeyframe(animation, time),

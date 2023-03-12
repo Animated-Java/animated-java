@@ -282,27 +282,6 @@ export class ListBuilderSetting extends Setting<IListItem[]> {
 }
 
 export const animatedJavaSettings = {
-	default_exporter: new DropdownSetting<string>(
-		{
-			id: 'animated_java:global_settings/default_exporter',
-			displayName: translate('animated_java.settings.default_exporter'),
-			description: translate('animated_java.settings.default_exporter.description').split(
-				'\n'
-			),
-			defaultValue: 0,
-			options: [],
-		},
-		function onUpdate(settingData) {
-			console.log(settingData.selected)
-			return settingData
-		},
-		function onInit(setting) {
-			setting.options = AnimatedJavaExporter.all.map(exporter => ({
-				name: exporter.name,
-				value: exporter.id,
-			}))
-		}
-	),
 	test_setting: new CodeboxSetting({
 		id: 'animated_java:global_settings/test_setting',
 		displayName: translate('animated_java.settings.test_setting'),
@@ -313,10 +292,6 @@ export const animatedJavaSettings = {
 }
 
 export const animatedJavaSettingsStructure: GUIStructure = [
-	{
-		type: 'setting',
-		settingId: animatedJavaSettings.default_exporter.id,
-	},
 	{
 		type: 'setting',
 		settingId: animatedJavaSettings.test_setting.id,

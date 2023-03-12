@@ -17,7 +17,7 @@ export const preprocess = [
 	prep({ typescript: false }),
 ]
 
-const IMPORT_PATH = resolve(__dirname, '../src/util', 'events.ts')
+const IMPORT_PATH = resolve(__dirname, '../src/', 'events.ts')
 
 export const transformCssToJs = (css: string) => {
 	return `import * as SVELTEEVENTS from ${JSON.stringify(IMPORT_PATH)};

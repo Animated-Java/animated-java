@@ -11,7 +11,7 @@ declare global {
 	const AnimatedJava: {
 		loaded?: boolean
 		docClick: (link: string) => void
-		events: typeof import('./util/events')
+		events: typeof import('./events')
 
 		API: {
 			Exporter: typeof AnimatedJavaExporter
@@ -36,17 +36,17 @@ declare global {
 
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface _Animation {
-		affected_bones: string[]
+		affected_bones: Array<{ name: string; value: string }>
 		affected_bones_is_a_whitelist: boolean
 	}
 
 	interface AnimationOptions {
-		affected_bones?: string[]
+		affected_bones?: Array<{ name: string; value: string }>
 		affected_bones_is_a_whitelist?: boolean
 	}
 
 	interface AnimationUndoCopy {
-		affected_bones: string[]
+		affected_bones: Array<{ name: string; value: string }>
 		affected_bones_is_a_whitelist: boolean
 	}
 

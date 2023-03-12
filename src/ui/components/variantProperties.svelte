@@ -6,7 +6,7 @@
 	import { safeFunctionName } from '../../minecraft/util'
 	import UiNode from './uiNode.svelte'
 	import { onDestroy } from 'svelte'
-	import * as events from '../../util/events'
+	import * as events from '../../events'
 	import TextureMap from './variants/textureMapSetting.svelte'
 
 	const TRANSLATIONS = {
@@ -142,8 +142,8 @@
 		for (const [key, setting] of Object.entries(settings)) {
 			switch (key) {
 				case 'affected_bones':
-					setting.value = variant.affectedBones.map(uuid => {
-						const bone = Group.all.find(g => g.uuid === uuid)
+					setting.value = variant.affectedBones.map(b => {
+						const bone = Group.all.find(g => g.uuid === b.value)
 						if (!bone) return
 						return {
 							name: bone.name,
@@ -171,7 +171,7 @@
 					variant[key] = s.value
 					break
 				case 'affected_bones':
-					variant.affectedBones = (s as AJ.ListBuilderSetting).value.map(g => g.value)
+					variant.affectedBones = (s as AJ.ListBuilderSetting).value
 					break
 				case 'affected_bones_is_a_whitelist':
 					variant.affectedBonesIsAWhitelist = s.value

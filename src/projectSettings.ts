@@ -6,14 +6,17 @@ import {
 	isValidResourcePackPath,
 	safeFunctionName,
 } from './minecraft/util'
+import { ajModelFormat } from './modelFormat'
 import * as Settings from './settings'
 import { translate } from './util/translation'
+import * as events from './events'
 
 export interface IAnimatedJavaProjectSettings {
 	project_namespace: Settings.InlineTextSetting
 	rig_item: Settings.InlineTextSetting
 	rig_item_model: Settings.InlineTextSetting
 	rig_export_folder: Settings.FolderSetting
+	texture_export_folder: Settings.FolderSetting
 	enable_advanced_resource_pack_settings: Settings.CheckboxSetting
 	resource_pack_folder: Settings.FileSetting
 	verbose: Settings.CheckboxSetting
@@ -26,6 +29,9 @@ const TRANSLATIONS = {
 		description: translate(
 			'animated_java.project_settings.project_namespace.description'
 		).split('\n'),
+		error: {
+			unset: translate('animated_java.project_settings.project_namespace.error.unset'),
+		},
 	},
 	rig_item: {
 		displayName: translate('animated_java.project_settings.rig_item'),
@@ -72,6 +78,18 @@ const TRANSLATIONS = {
 			),
 		},
 	},
+	texture_export_folder: {
+		displayName: translate('animated_java.project_settings.texture_export_folder'),
+		description: translate(
+			'animated_java.project_settings.texture_export_folder.description'
+		).split('\n'),
+		error: {
+			unset: translate('animated_java.project_settings.texture_export_folder.error.unset'),
+			invalid_path: translate(
+				'animated_java.project_settings.texture_export_folder.error.invalid_path'
+			),
+		},
+	},
 	enable_advanced_resource_pack_settings: {
 		displayName: translate(
 			'animated_java.project_settings.enable_advanced_resource_pack_settings'
@@ -113,6 +131,11 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				docsLink: 'page:project_settings#project_namespace',
 			},
 			function onUpdate(setting) {
+				if (setting.value === '')
+					setting.infoPopup = Settings.createInfo(
+						'error',
+						TRANSLATIONS.project_namespace.error.unset
+					)
 				setting.value = safeFunctionName(setting.value)
 				return setting
 			}
@@ -236,6 +259,32 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 			}
 		),
 
+		texture_export_folder: new Settings.FolderSetting(
+			{
+				id: 'animated_java:project_settings/texture_export_folder',
+				displayName: TRANSLATIONS.texture_export_folder.displayName,
+				description: TRANSLATIONS.texture_export_folder.description,
+				defaultValue: '',
+				resettable: true,
+				docsLink: 'page:project_settings#texture_export_folder',
+			},
+			function onUpdate(setting) {
+				if (!setting.value) {
+					setting.infoPopup = Settings.createInfo(
+						'error',
+						TRANSLATIONS.texture_export_folder.error.unset
+					)
+					return setting
+				} else if (!isValidResourcePackPath(setting.value)) {
+					setting.infoPopup = Settings.createInfo(
+						'error',
+						TRANSLATIONS.texture_export_folder.error.invalid_path
+					)
+					return setting
+				}
+			}
+		),
+
 		enable_advanced_resource_pack_settings: new Settings.CheckboxSetting({
 			id: 'animated_java:project_settings/enable_advanced_resource_pack_settings',
 			displayName: TRANSLATIONS.enable_advanced_resource_pack_settings.displayName,
@@ -326,6 +375,10 @@ export const projectSettingStructure: GUIStructure = [
 						type: 'setting',
 						settingId: _.rig_export_folder.id,
 					},
+					{
+						type: 'setting',
+						settingId: _.texture_export_folder.id,
+					},
 				],
 				inactive: [
 					{
@@ -342,18 +395,18 @@ export const projectSettingStructure: GUIStructure = [
 	},
 ]
 
-// function updateProjectSettings() {
-// 	if (!Project) return
-// 	console.log('updateProjectSettings', Project)
-// 	if (Format === ajModelFormat) {
-// 		if (!Project.animated_java_settings) {
-// 			Project.animated_java_settings = getDefaultProjectSettings()
-// 		}
-// 		for (const setting of Object.values(Project.animated_java_settings)) {
-// 			setting._onInit()
-// 		}
-// 	}
-// }
+function updateProjectSettings() {
+	if (!Project) return
+	console.log('updateProjectSettings', Project)
+	if (Format === ajModelFormat) {
+		if (!Project.animated_java_settings) {
+			Project.animated_java_settings = getDefaultProjectSettings()
+		}
+		for (const setting of Object.values(Project.animated_java_settings)) {
+			setting._onInit()
+		}
+	}
+}
 
-// events.LOAD_PROJECT.subscribe(updateProjectSettings)
-// events.SELECT_PROJECT.subscribe(updateProjectSettings)
+events.LOAD_PROJECT.subscribe(updateProjectSettings)
+events.SELECT_PROJECT.subscribe(updateProjectSettings)

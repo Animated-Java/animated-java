@@ -1,6 +1,6 @@
-import { consoleGroupCollapsed } from './console'
-import { Subscribable } from './subscribable'
-import * as PACKAGE from '../../package.json'
+import { consoleGroupCollapsed } from './util/console'
+import { Subscribable } from './util/subscribable'
+import * as PACKAGE from '../package.json'
 
 export class PluginEvent<T = void> extends Subscribable<T> {
 	protected static events: Record<string, PluginEvent<any>> = {}
