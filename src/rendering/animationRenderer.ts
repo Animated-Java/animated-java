@@ -15,6 +15,9 @@ export interface IAnimationBone {
 	uuid: string
 	group?: Group
 	matrix: number[]
+	pos: number[]
+	rot: number[]
+	scale: number[]
 }
 
 export interface IRenderedAnimation {
@@ -54,12 +57,19 @@ export function getAnimationBones(animation: _Animation, boneMap: IRenderedRig['
 		)
 			continue
 		const matrix = getGroupMatrix(group, boneMap[group.uuid].scale)
+		const pos = new THREE.Vector3()
+		const rot = new THREE.Quaternion()
+		const scale = new THREE.Vector3()
+		matrix.decompose(pos, rot, scale)
 
 		bones.push({
 			name: group.name,
 			uuid: group.uuid,
 			group: group,
 			matrix: transposeMatrix(matrix.toArray()),
+			pos: pos.toArray(),
+			rot: rot.toArray(),
+			scale: scale.toArray(),
 		})
 	}
 

@@ -56,6 +56,7 @@
 - [x] Update all old variants if possible
 
 # Main Animated Java Features
+- [ ] While rendering animations we should be updating the progress bar based on how many frames are left, not just based on how many animations are left
 - [ ] The Blockbench preview should take affected bones into account and somehow visually show that they aren't being effected.
     - [ ] Instead of using a "Affected Bones" list, we should use a button on each group in the outliner. This will be easier to configure and will probably be more intuitive.
 - [ ] Textures should be allowed anywhere on the system. AJ should instead put them into the generated resource pack automatically when exporting.
@@ -112,5 +113,5 @@
 
 # Post-1.0
 - [ ] Animation controller support?
-- [ ] Armor Stand animation exporter
-- [ ] Stable Player Display support (https://github.com/bradleyq/stable_player_display)
+- [ ] Armor Stand animation exporter?
+- [ ] Stable Player Display support? (https://github.com/bradleyq/stable_player_display)

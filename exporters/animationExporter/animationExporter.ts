@@ -35,8 +35,18 @@ export function loadExporter() {
 		return !!(await fs.promises.stat(path).catch(() => false))
 	}
 
-	function matrixToNbt(matrix: number[]) {
+	function numberArrayToNbtFloatArray(matrix: number[]) {
 		return new NbtList(matrix.map(v => new NbtFloat(v)))
+	}
+
+	function transformationToNbt(pos: number[], rot: number[], scale: number[]) {
+		return new NbtCompound(
+			new Map()
+				.set('translation', numberArrayToNbtFloatArray(pos))
+				.set('right_rotation', numberArrayToNbtFloatArray([0, 0, 0, 1]))
+				.set('left_rotation', numberArrayToNbtFloatArray(rot))
+				.set('scale', numberArrayToNbtFloatArray(scale))
+		)
 	}
 
 	new API.Exporter({
@@ -103,7 +113,7 @@ export function loadExporter() {
 				animTime: 'aj.anim_time',
 				lifeTime: 'aj.life_time',
 				loopMode: 'aj.loop_mode',
-				animStartTime: `aj.%s.anim_start_time`,
+				localAnimTime: `aj.%s.local_anim_time`,
 			}
 			const tags = {
 				new: 'aj.new',
@@ -219,7 +229,7 @@ export function loadExporter() {
 						.filter(s => !s.includes('%s'))
 						.map(s => `scoreboard objectives add ${s} dummy`),
 					// prettier-ignore
-					...renderedAnimations.map(a => `scoreboard objectives add ${API.formatStr(scoreboard.animStartTime, [a.name])} dummy`),
+					...renderedAnimations.map(a => `scoreboard objectives add ${API.formatStr(scoreboard.localAnimTime, [a.name])} dummy`),
 					// Variable initialization
 					`scoreboard players add .aj.last_id ${scoreboard.id} 0`,
 					//// Const initialization
@@ -254,6 +264,7 @@ export function loadExporter() {
 
 			const passengers = new NbtList()
 			for (const [uuid, bone] of Object.entries(rig.boneMap)) {
+				const pose = rig.defaultPose.find(p => p.uuid === uuid)
 				const passenger = new NbtCompound()
 					.set('id', new NbtString('minecraft:item_display'))
 					.set(
@@ -278,7 +289,8 @@ export function loadExporter() {
 					)
 					.set(
 						'transformation',
-						matrixToNbt(rig.defaultPose.find(b => b.uuid === uuid)!.matrix)
+						transformationToNbt(pose.pos, pose.rot, pose.scale)
+						// numberArrayToNbtFloatArray(pos.matrix)
 					)
 					.set(
 						'interpolation_duration',
@@ -422,9 +434,9 @@ export function loadExporter() {
 				namespaceFolder
 					.newFolder(`functions/animations/${anim.name}`)
 					.chainNewFile('play.mcfunction', [
-						`scoreboard players operation @s ${API.formatStr(scoreboard.animStartTime, [
+						`scoreboard players set @s ${API.formatStr(scoreboard.localAnimTime, [
 							anim.name,
-						])} = @s ${scoreboard.lifeTime}`,
+						])} 0`,
 						`scoreboard players set @s ${scoreboard.loopMode} ${loopModes.indexOf(
 							anim.loopMode
 						)}`,
@@ -442,9 +454,9 @@ export function loadExporter() {
 						`tag @s remove ${API.formatStr(tags.activeAnim, [anim.name])}`,
 					])
 					.chainNewFile('stop.mcfunction', [
-						`scoreboard players operation @s ${API.formatStr(scoreboard.animStartTime, [
+						`scoreboard players set @s ${API.formatStr(scoreboard.localAnimTime, [
 							anim.name,
-						])} = @s ${scoreboard.lifeTime}`,
+						])} 0`,
 						`tag @s remove ${API.formatStr(tags.activeAnim, [anim.name])}`,
 						`function ${AJ_NAMESPACE}:animations/${anim.name}/tree/leaf_0.mcfunction`,
 					])
@@ -508,7 +520,11 @@ export function loadExporter() {
 				const commands: string[] = []
 				for (const bone of Object.values(leaf.item.bones)) {
 					const data = new NbtCompound()
-						.set('transformation', matrixToNbt(bone.matrix))
+						.set(
+							'transformation',
+							transformationToNbt(bone.pos, bone.rot, bone.scale)
+							// numberArrayToNbtFloatArray(bone.matrix)
+						)
 						.set('start_interpolation', new NbtInt(0))
 					commands.push(
 						`execute if entity @s[tag=${API.formatStr(tags.boneEntity, [
@@ -574,20 +590,26 @@ export function loadExporter() {
 
 				animFolder
 					.chainNewFile('tick.mcfunction', [
-						`scoreboard players operation @s ${scoreboard.animTime} = @s ${scoreboard.lifeTime}`,
 						`scoreboard players operation @s ${
 							scoreboard.animTime
-						} -= @s ${API.formatStr(scoreboard.animStartTime, [anim.name])}`,
+						} = @s ${API.formatStr(scoreboard.localAnimTime, [anim.name])}`,
 						`function ${AJ_NAMESPACE}:animations/${anim.name}/apply_frame`,
-						`execute if score @s ${scoreboard.animTime} matches ${anim.duration}.. run function ${AJ_NAMESPACE}:animations/${anim.name}/end`,
+						`scoreboard players add @s ${API.formatStr(scoreboard.localAnimTime, [
+							anim.name,
+						])} 1`,
+						`execute if score @s ${API.formatStr(scoreboard.localAnimTime, [
+							anim.name,
+						])} matches ${anim.duration}.. run function ${AJ_NAMESPACE}:animations/${
+							anim.name
+						}/end`,
 					])
 					.chainNewFile('end.mcfunction', [
 						`execute if score @s ${
 							scoreboard.loopMode
-						} = #aj.loop_mode.loop aj.i run scoreboard players operation @s ${API.formatStr(
-							scoreboard.animStartTime,
+						} = #aj.loop_mode.loop aj.i run scoreboard players set @s ${API.formatStr(
+							scoreboard.localAnimTime,
 							[anim.name]
-						)} = @s ${scoreboard.lifeTime}`,
+						)} 0`,
 						`execute if score @s ${scoreboard.loopMode} = #aj.loop_mode.once aj.i run function ${NAMESPACE}:animations/${anim.name}/stop`,
 						`execute if score @s ${scoreboard.loopMode} = #aj.loop_mode.hold aj.i run function ${NAMESPACE}:animations/${anim.name}/pause`,
 					])

@@ -59,7 +59,7 @@
 		"type": "github",
 		"url": "https://github.com/Animated-Java/animated-java"
 	},
-	"description": "A tool for easily making animations in Minecraft: Java Edition!",
+	"description": "A tool that makes complex animation a breeze in Minecraft: Java Edition",
 	"main": "./dist/index.js",
 	"types": "./dist/src/index.d.ts",
 	"private": true,
