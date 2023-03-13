@@ -57,6 +57,9 @@
 - [x] Update all old variants if possible
 
 # Main Animated Java Features
+- [ ] Keyframe properties menu
+    - [ ] More spacious command editing UI
+    - [ ] Per-keyframe interpolation duration
 - [ ] While rendering animations we should be updating the progress bar based on how many frames are left, not just based on how many animations are left
 - [ ] The Blockbench preview should take affected bones into account and somehow visually show that they aren't being effected.
     - [ ] Instead of using a "Affected Bones" list, we should use a button on each group in the outliner. This will be easier to configure and will probably be more intuitive.
