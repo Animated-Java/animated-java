@@ -65,6 +65,6 @@
 	div.dialog-content {
 		overflow-y: scroll;
 		max-height: 700px;
-		/* padding-right: 10px; */
+		padding-right: 10px;
 	}
 </style>

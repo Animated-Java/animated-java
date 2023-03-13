@@ -298,8 +298,15 @@ export const animatedJavaSettings = {
 
 export const animatedJavaSettingsStructure: GUIStructure = [
 	{
-		type: 'setting',
-		settingId: animatedJavaSettings.reduced_motion.id,
+		type: 'group',
+		title: translate('animated_java.settings.accessability_options_group'),
+		openByDefault: true,
+		children: [
+			{
+				type: 'setting',
+				settingId: animatedJavaSettings.reduced_motion.id,
+			},
+		],
 	},
 ]
 

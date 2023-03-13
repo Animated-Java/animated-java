@@ -13,6 +13,8 @@ animated_java.quickmessage.exported_successfully: Project Exported Successfully!
 animated_java.dialog.close_button: Done
 
 ### Settings
+animated_java.settings.accessability_options_group: Accessability Options
+
 animated_java.dialog.settings.title: Animated Java Settings
 animated_java.settings.reduced_motion: Reduced Motion
 animated_java.settings.reduced_motion.description: |-
