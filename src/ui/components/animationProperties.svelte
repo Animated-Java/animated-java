@@ -4,7 +4,7 @@
 	import * as AJ from '../../settings'
 	import { translate } from '../../util/translation'
 	import type { GUIStructure } from '../../guiStructure'
-	import UiNode from './uiNode.svelte'
+	import UiNode from './settingNode.svelte'
 
 	const TRANSLATIONS = {
 		name: {

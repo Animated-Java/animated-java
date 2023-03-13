@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { slide } from 'svelte/transition'
+	import { slide } from '../../accessability'
 
 	export let index: any
 	export let selectedPage: string
@@ -67,7 +67,7 @@
 		</p>
 	</div>
 	{#if index.children && Object.keys(index.children).length && expanded}
-		<div class="child" transition:slide={{ duration: 250 }}>
+		<div class="child" transition:$slide={{ duration: 250 }}>
 			{#each Object.values(index.children) as localIndex}
 				<svelte:self index={localIndex} {changePage} bind:selectedPage />
 			{/each}

@@ -1,8 +1,16 @@
 <script lang="ts">
+	import { onDestroy } from 'svelte'
 	import * as AJ from '../../settings'
-	import AJUINode from './uiNode.svelte'
+	import AJUINode from './settingNode.svelte'
 
 	let settingArray = Object.values(AJ.animatedJavaSettings)
+
+	AJ.loadAJSettings()
+
+	onDestroy(() => {
+		console.log('unload')
+		AJ.saveAJSettings()
+	})
 </script>
 
 <div class="dialog-content">

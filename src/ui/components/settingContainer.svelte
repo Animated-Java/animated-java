@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte'
-	import { fly, slide } from 'svelte/transition'
+	import { fade, slide } from '../accessability'
 	import type * as AJ from '../../settings'
 	import { debounce } from '../../util/misc'
 	import IconButton from './buttons/iconButton.svelte'
@@ -80,18 +80,15 @@
 	{#if descriptionVisible}
 		<div
 			class="setting-description flex-column"
-			in:slide={{ delay: 500, duration: 250 }}
-			out:slide={{ duration: 250 }}
+			in:$slide={{ delay: 100, duration: 150 }}
+			out:$slide={{ duration: 150 }}
 			on:introstart={() => onDescriptionTransition('introstart')}
 			on:introend={() => onDescriptionTransition('introend')}
 			on:outrostart={() => onDescriptionTransition('outrostart')}
 			on:outroend={() => onDescriptionTransition('outroend')}
 		>
 			{#each setting.description as line, index}
-				<p
-					class="setting-description"
-					in:fly={{ x: -20, delay: 700 + 100 * index, duration: 500 }}
-				>
+				<p class="setting-description" in:$fade={{ delay: 150, duration: 150 }}>
 					{line}
 				</p>
 			{/each}
@@ -99,7 +96,7 @@
 	{/if}
 
 	{#if infoPopup}
-		<div transition:slide|local={{ duration: 200 }}>
+		<div transition:$slide|local={{ delay: 500, duration: 200 }}>
 			<SettingInfoPopup type={infoPopup.type} popup={infoPopup} />
 		</div>
 	{/if}

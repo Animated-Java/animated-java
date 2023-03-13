@@ -15,7 +15,7 @@
 </script>
 
 <script lang="ts">
-	import { fade } from 'svelte/transition'
+	import { fade } from '../accessability'
 	import * as events from '../../events'
 	import { translate } from '../../util/translation'
 	import DocPage from './docs/docPage.svelte'
@@ -89,7 +89,7 @@
 		<div
 			class="flex-column loading"
 			style="flex-grow:1;"
-			in:fade={{ delay: 250, duration: 500 }}
+			in:$fade={{ delay: 250, duration: 500 }}
 		>
 			<h1>{translate('animated_java.dialog.documentation.loading')}</h1>
 			<div class="spin">
@@ -110,7 +110,7 @@
 					<div
 						class="flex-column loading"
 						style="flex-grow:1;"
-						in:fade={{ delay: 250, duration: 500 }}
+						in:$fade={{ delay: 250, duration: 500 }}
 					>
 						<h1>{translate('animated_java.dialog.documentation.loading')}</h1>
 						<div class="spin">

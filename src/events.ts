@@ -20,6 +20,7 @@ export const INJECT_MODS = new PluginEvent('loadMods')
 export const EXTRACT_MODS = new PluginEvent('unloadMods')
 
 export const LOAD_PROJECT = new PluginEvent('loadProject')
+export const SAVE_PROJECT = new PluginEvent('saveProject')
 export const PRE_SELECT_PROJECT = new PluginEvent<ModelProject>('preSelectProject')
 export const SELECT_PROJECT = new PluginEvent<ModelProject>('selectProject')
 export const POST_SELECT_PROJECT = new PluginEvent<ModelProject>('postSelectProject')
@@ -47,6 +48,7 @@ INSTALL.subscribe(INJECT_HANDLER)
 UNINSTALL.subscribe(EXTRACT_HANDLER)
 
 Blockbench.on<EventName>('load_project', () => LOAD_PROJECT.dispatch())
+Blockbench.on<EventName>('save_project', () => SAVE_PROJECT.dispatch())
 Blockbench.on<EventName>('select_project', ({ project }: { project: ModelProject }) => {
 	SELECT_PROJECT.dispatch(project)
 	queueMicrotask(() => POST_SELECT_PROJECT.dispatch(project))

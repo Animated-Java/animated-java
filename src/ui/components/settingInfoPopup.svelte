@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fly } from 'svelte/transition'
+	import { fly } from '../accessability'
 	import type { IInfoPopup } from '../../settings'
 
 	export var type: IInfoPopup['type']
@@ -10,7 +10,7 @@
 	{#key popup.title}
 		<div
 			class="flex-row"
-			in:fly={{
+			in:$fly={{
 				x: -20,
 				duration: 250,
 			}}
@@ -25,7 +25,7 @@
 						{#each popup.lines as line}
 							<div
 								class="flex-row"
-								in:fly={{
+								in:$fly={{
 									x: -20,
 									duration: 250,
 									delay: 200,

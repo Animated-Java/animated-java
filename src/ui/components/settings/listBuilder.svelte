@@ -2,7 +2,7 @@
 	import SettingContainer from '../settingContainer.svelte'
 	import type * as AJ from '../../../settings'
 	import FlatIconButton from '../buttons/flatIconButton.svelte'
-	import { slide } from 'svelte/transition'
+	import { slide } from '../../accessability'
 
 	export let setting: AJ.ListBuilderSetting
 	let selected = -1
@@ -46,7 +46,7 @@
 		{#if items.length !== 0}
 			<div class="slot-container">
 				{#each items as item (item.value)}
-					<div class="item" transition:slide={{ duration: 250 }}>
+					<div class="item" transition:$slide={{ duration: 250 }}>
 						{item.name}
 						<FlatIconButton icon="delete" onClick={() => removeItem(item)} />
 					</div>

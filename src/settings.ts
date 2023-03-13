@@ -1,8 +1,9 @@
-import { AnimatedJavaExporter } from './exporter'
 import { GUIStructure } from './GUIStructure'
 import { formatStr } from './util/misc'
 import { Subscribable } from './util/subscribable'
 import { translate } from './util/translation'
+import * as events from './events'
+import { reducedMotion } from './ui/accessability'
 
 export interface IInfoPopup {
 	type: 'warning' | 'error' | 'info'
@@ -282,19 +283,23 @@ export class ListBuilderSetting extends Setting<IListItem[]> {
 }
 
 export const animatedJavaSettings = {
-	test_setting: new CodeboxSetting({
-		id: 'animated_java:global_settings/test_setting',
-		displayName: translate('animated_java.settings.test_setting'),
-		description: translate('animated_java.settings.test_setting.description').split('\n'),
-		defaultValue: `{"test": "test"}`,
-		language: 'json',
-	}),
+	reduced_motion: new CheckboxSetting(
+		{
+			id: 'animated_java:global_settings/reduced_motion',
+			displayName: translate('animated_java.settings.reduced_motion'),
+			description: translate('animated_java.settings.reduced_motion.description').split('\n'),
+			defaultValue: false,
+		},
+		function onUpdate(setting) {
+			reducedMotion.set(setting.value)
+		}
+	),
 }
 
 export const animatedJavaSettingsStructure: GUIStructure = [
 	{
 		type: 'setting',
-		settingId: animatedJavaSettings.test_setting.id,
+		settingId: animatedJavaSettings.reduced_motion.id,
 	},
 ]
 
@@ -306,3 +311,29 @@ export function createInfo(type: 'error' | 'warning' | 'info', info: string, for
 		lines: lines.slice(1),
 	}
 }
+
+export function loadAJSettings() {
+	let savedSettings = localStorage.getItem('animated_java:settings')
+	if (!savedSettings) savedSettings = '{}'
+
+	const settings = JSON.parse(savedSettings)
+
+	for (const [id, setting] of Object.entries(animatedJavaSettings)) {
+		if (settings[id] !== undefined) {
+			console.log('Loading setting', id, settings[id])
+			setting._load(settings[id])
+		}
+	}
+}
+
+export function saveAJSettings() {
+	const settings: Record<string, any> = {}
+	for (const [id, setting] of Object.entries(animatedJavaSettings)) {
+		settings[id] = setting._save()
+	}
+	localStorage.setItem('animated_java:settings', JSON.stringify(settings))
+}
+
+events.LOAD_PROJECT.subscribe(() => {
+	loadAJSettings()
+})

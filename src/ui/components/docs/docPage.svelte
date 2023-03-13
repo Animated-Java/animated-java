@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fly } from 'svelte/transition'
+	import { fly } from '../../accessability'
 	import { circOut as easing } from 'svelte/easing'
 	import PrismCodebox from '../prism/prismCodebox.svelte'
 
@@ -28,7 +28,7 @@
 	}
 </script>
 
-<div class="animated-java-doc-page" in:fly={{ x: -20, duration: 250, easing }} use:replaceElements>
+<div class="animated-java-doc-page" in:$fly={{ x: -20, duration: 250, easing }} use:replaceElements>
 	{@html page}
 </div>
 

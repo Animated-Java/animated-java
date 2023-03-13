@@ -6,15 +6,41 @@
 	export let disabled: boolean = false
 	export let buttonStyle: string = ''
 	export let iconStyle: string = 'margin:0px'
+	let mouseHoverState = false
+	let lastMousePosition: { x: number; y: number } = { x: 0, y: 0 }
+
+	function updateMouseHoverState(event: MouseEvent) {
+		if (mouseHoverState) lastMousePosition = { x: 0, y: 0 }
+		if (
+			Math.abs(lastMousePosition.x - event.clientX) < 10 &&
+			Math.abs(lastMousePosition.y - event.clientY) < 10
+		)
+			return
+		if (onHoverChange) onHoverChange(mouseHoverState)
+		lastMousePosition = {
+			x: event.clientX,
+			y: event.clientY,
+		}
+	}
+
+	function onMouseEnter() {
+		mouseHoverState = true
+	}
+
+	function onMouseLeave() {
+		mouseHoverState = false
+	}
 </script>
+
+<svelte:window on:mousemove={updateMouseHoverState} />
 
 <button
 	{title}
 	{disabled}
 	style={buttonStyle}
 	on:click|stopPropagation={onClick}
-	on:mouseenter={() => onHoverChange && onHoverChange(true)}
-	on:mouseleave={() => onHoverChange && onHoverChange(false)}
+	on:mouseenter={onMouseEnter}
+	on:mouseleave={onMouseLeave}
 >
 	<span class="material-icons" style={iconStyle}>{icon}</span>
 </button>

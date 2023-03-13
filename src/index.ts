@@ -1,4 +1,5 @@
 // These imports are in a specific order. Try not to change them around too much!
+// FIXME - Deepslate should only be importing the NBT library.
 import * as deepslate from 'deepslate'
 import PACKAGE from '../package.json'
 import './exporter'
@@ -33,6 +34,7 @@ import { ProgressBarController } from './util/progress'
 import './util/translation'
 import { addTranslations, translate } from './util/translation'
 import * as VirtualFileSystem from './util/virtualFileSystem'
+import { writable } from 'svelte/store'
 
 Prism.languages.mcfunction = {}
 

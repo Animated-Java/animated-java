@@ -606,6 +606,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 
 		const content = compileJSON(model)
 		ajCodec.dispatchEvent('compile', { model, options })
+		events.SAVE_PROJECT.dispatch()
 
 		if (selectedVariant) Project.animated_java_variants!.select(selectedVariant)
 

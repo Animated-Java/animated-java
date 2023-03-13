@@ -5,8 +5,8 @@
 </script>
 
 <script lang="ts">
-	import { slide } from 'svelte/transition'
-	import type { AnyGUIElement } from '../../guiStructure'
+	import { fly, slide } from '../accessability'
+	import type { AnyGUIElement } from '../../GUIStructure'
 	import * as AJ from '../../settings'
 	import Setting from './setting.svelte'
 
@@ -44,7 +44,7 @@
 			<div class="line" />
 		</div>
 		{#if $toggle}
-			<div class="group" transition:slide={{ duration: 250 }}>
+			<div class="group" transition:$slide={{ duration: 250 }}>
 				{#if el.children}
 					{#each el.children as e}
 						<svelte:self el={e} {settingArray} />
@@ -62,13 +62,13 @@
 			</span>
 		</div>
 		{#if setting.value}
-			<div in:slide|local={{ delay: 200, duration: 200 }} out:slide|local={{ duration: 200 }}>
+			<div in:$fly|local={{ x: -20, duration: 250 }}>
 				{#each el.active as e}
 					<svelte:self el={e} {settingArray} />
 				{/each}
 			</div>
 		{:else}
-			<div in:slide|local={{ delay: 200, duration: 200 }} out:slide|local={{ duration: 200 }}>
+			<div in:$fly|local={{ x: -20, duration: 250 }}>
 				{#each el.inactive as e}
 					<svelte:self el={e} {settingArray} />
 				{/each}

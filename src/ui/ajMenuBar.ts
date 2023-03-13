@@ -7,7 +7,7 @@ import { createAction, createBarMenu } from '../util/moddingTools'
 import { translate } from '../util/translation'
 import { openAjDocsDialog } from './ajDocs'
 import { openAjProjectSettingsDialog } from './ajProjectSettings'
-// import { openAjSettingsDialog } from './ajSettings'
+import { openAjSettingsDialog } from './ajSettings'
 
 interface IAnimatedJavaMenu extends BarMenu {
 	label: HTMLDivElement
@@ -45,18 +45,18 @@ events.UNSELECT_PROJECT.subscribe(() => {
 	MENU.label.style.display = 'none'
 })
 
-// MenuBar.addAction(
-// 	createAction('animated_java:settings', {
-// 		icon: 'settings',
-// 		category: 'animated_java',
-// 		name: translate('animated_java.menubar.items.settings'),
-// 		condition: () => Format === ajModelFormat,
-// 		click() {
-// 			openAjSettingsDialog()
-// 		},
-// 	}),
-// 	'animated_java:menu'
-// )
+MenuBar.addAction(
+	createAction('animated_java:settings', {
+		icon: 'settings',
+		category: 'animated_java',
+		name: translate('animated_java.menubar.items.settings'),
+		condition: () => Format === ajModelFormat,
+		click() {
+			openAjSettingsDialog()
+		},
+	}),
+	'animated_java:menu'
+)
 
 MenuBar.addAction(
 	createAction('animated_java:project_settings', {

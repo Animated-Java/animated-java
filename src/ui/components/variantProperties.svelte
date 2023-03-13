@@ -4,7 +4,7 @@
 	import { translate } from '../../util/translation'
 	import type { GUIStructure } from '../../guiStructure'
 	import { safeFunctionName } from '../../minecraft/util'
-	import UiNode from './uiNode.svelte'
+	import UiNode from './settingNode.svelte'
 	import { onDestroy } from 'svelte'
 	import * as events from '../../events'
 	import TextureMap from './variants/textureMapSetting.svelte'

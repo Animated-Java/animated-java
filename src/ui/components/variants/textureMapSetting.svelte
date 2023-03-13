@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fly, slide } from 'svelte/transition'
+	import { fly, slide } from '../../accessability'
 	import { translate } from '../../../util/translation'
 	import type { TextureId, Variant } from '../../../variants'
 	import FlatIconButton from '../buttons/flatIconButton.svelte'
@@ -78,13 +78,13 @@
 	{#if helpButtonHovered}
 		<div
 			class="setting-description flex-column"
-			in:slide={{ delay: 500, duration: 250 }}
-			out:slide={{ duration: 250 }}
+			in:$slide={{ delay: 500, duration: 250 }}
+			out:$slide={{ duration: 250 }}
 		>
 			{#each translations.description as line, index}
 				<p
 					class="setting-description"
-					in:fly={{ x: -20, delay: 700 + 100 * index, duration: 500 }}
+					in:$fly={{ x: -20, delay: 700 + 100 * index, duration: 500 }}
 				>
 					{line}
 				</p>

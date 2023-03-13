@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte'
-	import { slide } from 'svelte/transition'
+	import { slide } from '../accessability'
 	import { AnimatedJavaExporter } from '../../exporter'
 	import { projectSettingStructure } from '../../projectSettings'
 	import * as AJ from '../../settings'
 	import { translate } from '../../util/translation'
 	import FancyHeader from './fancyHeader.svelte'
-	import AJUINode from './uiNode.svelte'
+	import AJUINode from './settingNode.svelte'
 
 	let settingArray = Object.values(Project!.animated_java_settings!) as AJ.Setting<any>[]
 	console.log('Project Settings', settings, projectSettingStructure)
@@ -44,7 +44,10 @@
 
 	{#if selectedExporter}
 		{#key selectedExporter}
-			<div in:slide|local={{ delay: 200, duration: 200 }} out:slide|local={{ duration: 200 }}>
+			<div
+				in:$slide|local={{ delay: 200, duration: 200 }}
+				out:$slide|local={{ duration: 200 }}
+			>
 				<FancyHeader
 					content={translate('animated_java.project_settings.exporter_settings', {
 						exporter: selectedExporter.name,
