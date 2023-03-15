@@ -1,7 +1,7 @@
 // @ts-ignore
 import logo from '../assets/AnimatedJava-2022.svg'
 import * as events from '../events'
-import { exportProject } from '../exporter'
+import { exportProject, safeExportProject } from '../exporter'
 import { ajModelFormat } from '../modelFormat'
 import { createAction, createBarMenu } from '../util/moddingTools'
 import { translate } from '../util/translation'
@@ -91,9 +91,7 @@ MenuBar.addAction(
 		category: 'file',
 		condition: () => Format === ajModelFormat,
 		click: () => {
-			void exportProject().catch(e => {
-				console.error(e)
-			})
+			void safeExportProject()
 		},
 	}),
 	'animated_java:menu'

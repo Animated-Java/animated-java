@@ -7,6 +7,9 @@ export class ProgressBarController {
 
 	add(change: number) {
 		this.progress += change
+	}
+
+	update() {
 		Blockbench.setProgress(this.progress / this.total)
 	}
 

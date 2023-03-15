@@ -221,6 +221,10 @@ animated_java.timeline.commands: Commands
 
 ### Popups
 animated_java.popup.close_button: Close
+animated_java.popup.unexpectedError.title: Unexpected Error
+animated_java.popup.unexpectedError.body: |-
+  An unexpected error occurred!
+  Please report this error on our Github or in the support channel on our official Discord server.
 
 # Invalid Texture Mapping(s)
 animated_java.popup.invalid_texture_mapping.title: Invalid Texture Mapping(s)

@@ -59,7 +59,9 @@ export class LimitClock {
 		if (diff >= this.limit) {
 			await new Promise(r => requestAnimationFrame(r))
 			this.lastTime = performance.now()
+			return true
 		}
+		return false
 	}
 }
 
@@ -111,3 +113,5 @@ export function transposeMatrix(matrixArray: number[]) {
 		matrixArray[3], matrixArray[7], matrixArray[11], matrixArray[15],
 	]
 }
+
+export class ExpectedError extends Error {}

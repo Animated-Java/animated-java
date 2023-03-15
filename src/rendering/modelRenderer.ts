@@ -37,6 +37,7 @@ interface IRenderedModel {
 
 interface IRenderedBone {
 	parent: string
+	group: Group
 	name: string
 	textures: Record<string, Texture>
 	model: IRenderedModel
@@ -198,6 +199,7 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 
 	if (Object.keys(element.faces).length === 0) return
 	progress.add(1)
+	progress.update()
 	return element
 }
 
@@ -236,6 +238,7 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 
 	const renderedBone: IRenderedBone & { model: { elements: IRenderedElement[] } } = {
 		parent: parentId,
+		group,
 		name: group.name,
 		textures: {},
 		model: {
@@ -267,6 +270,9 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 		}
 		progress.add(1)
 	}
+
+	// Don't export groups without a model.
+	if (group.children.filter(c => c instanceof Cube).length === 0) return
 
 	const diff = new THREE.Vector3().subVectors(
 		renderedBone.boundingBox.max,
@@ -351,6 +357,7 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 			console.warn(`Encountered unknown node type:`, node)
 		}
 		progress.add(1)
+		progress.update()
 	}
 
 	rig.defaultPose = getAnimationBones(new Blockbench.Animation(), rig.boneMap)

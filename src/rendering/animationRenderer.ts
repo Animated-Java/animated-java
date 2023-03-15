@@ -23,6 +23,7 @@ export interface IAnimationBone {
 export interface IRenderedAnimation {
 	name: string
 	frames: Array<{
+		time: number
 		bones: IAnimationBone[]
 		variant?: {
 			uuid: string
@@ -44,29 +45,42 @@ export interface IRenderedAnimation {
 	loopMode: 'loop' | 'once' | 'hold'
 }
 
+let lastAnimation: _Animation
+let previousMatrices: Record<string, number[]>
 export function getAnimationBones(animation: _Animation, boneMap: IRenderedRig['boneMap']) {
+	if (lastAnimation !== animation) {
+		// console.log(lastAnimation?.name, '!=', animation.name)
+		lastAnimation = animation
+		previousMatrices = {}
+	}
 	const bones: IAnimationBone[] = []
 
-	for (const group of Group.all) {
-		if (!group.export) continue
-		const included = animation.affected_bones.find(b => b.value === group.uuid)
+	for (const [uuid, bone] of Object.entries(boneMap)) {
+		if (!bone.group.export) continue
+		const included = animation.affected_bones.find(b => b.value === uuid)
 		// Ignore this bone if it's not affected by this animation
 		if (
 			(!included && animation.affected_bones_is_a_whitelist) ||
 			(included && !animation.affected_bones_is_a_whitelist)
 		)
 			continue
-		const matrix = getGroupMatrix(group, boneMap[group.uuid].scale)
+
+		const matrix = getGroupMatrix(bone.group, boneMap[uuid].scale)
 		const pos = new THREE.Vector3()
 		const rot = new THREE.Quaternion()
 		const scale = new THREE.Vector3()
 		matrix.decompose(pos, rot, scale)
+		const matrixArray = transposeMatrix(matrix.toArray())
+
+		const prevMatrix = previousMatrices[uuid]
+		if (prevMatrix !== undefined && prevMatrix.equals(matrixArray)) continue
+		previousMatrices[uuid] = matrixArray
 
 		bones.push({
-			name: group.name,
-			uuid: group.uuid,
-			group: group,
-			matrix: transposeMatrix(matrix.toArray()),
+			name: bone.name,
+			uuid,
+			group: bone.group,
+			matrix: matrixArray,
 			pos: pos.toArray(),
 			rot: rot.toArray(),
 			scale: scale.toArray(),
@@ -146,21 +160,27 @@ export async function renderAnimation(animation: _Animation, rig: IRenderedRig) 
 		// await new Promise(resolve => setTimeout(resolve, 50))
 		updatePreview(animation, time)
 		rendered.frames.push({
+			time,
 			bones: getAnimationBones(animation, rig.boneMap),
 			variant: getVariantKeyframe(animation, time),
 			commands: getCommandsKeyframe(animation, time),
 			animationState: getAnimationStateKeyframe(animation, time),
 		})
-		await clock.sync()
+		progress.add(1)
+		await clock.sync().then(b => b && progress.update())
 	}
 	rendered.duration = rendered.frames.length
 	return rendered
 }
 
+function gatherProgress(): number {
+	return Animator.animations.reduce((a, b) => a + b.length * 20, 0)
+}
+
 export async function renderAllAnimations(rig: IRenderedRig) {
 	let selectedAnimation: _Animation | undefined
 	let currentTime = 0
-	progress = new ProgressBarController('Rendering Animations...', Animator.animations.length)
+	progress = new ProgressBarController('Rendering Animations...', gatherProgress())
 	Timeline.pause()
 	// Save selected animation
 	if (Mode.selected.id === 'animate') {
@@ -172,7 +192,6 @@ export async function renderAllAnimations(rig: IRenderedRig) {
 
 	for (const animation of Animator.animations) {
 		animations.push(await renderAnimation(animation, rig))
-		progress.add(1)
 	}
 
 	// Restore selected animation

@@ -1,4 +1,5 @@
 import { isValidDatapackName } from '../minecraft/util'
+import { ProgressBarController } from './progress'
 
 class VirtualNode {
 	constructor(public name: string, public parent?: VirtualNode) {}
@@ -155,12 +156,15 @@ export class VirtualFolder extends VirtualNode {
 		throw new Error(`Cannot access child of file ${this.path}/${name}`)
 	}
 
-	async writeToDisk(outputFolder: string, progressCallback?: (change: number) => void) {
+	async writeToDisk(outputFolder: string, progress?: ProgressBarController) {
 		const path = PathModule.join(outputFolder, this.path)
 		await fs.promises.mkdir(path, { recursive: true })
-		if (progressCallback) progressCallback(1)
+		if (progress) {
+			progress.add(1)
+			progress.update()
+		}
 		for (const child of this.children) {
-			await child.writeToDisk(outputFolder, progressCallback)
+			await child.writeToDisk(outputFolder, progress)
 		}
 	}
 }
@@ -179,7 +183,7 @@ export class VirtualFile extends VirtualNode {
 		isValidDatapackName(this.name, 'file')
 	}
 
-	async writeToDisk(outputFolder: string, progressCallback?: (change: number) => void) {
+	async writeToDisk(outputFolder: string, progress?: ProgressBarController) {
 		const path = PathModule.join(outputFolder, this.parent.path, this.fileName)
 
 		let content: string | Buffer | Uint8Array
@@ -196,6 +200,9 @@ export class VirtualFile extends VirtualNode {
 		}
 
 		await fs.promises.writeFile(path, content, { encoding: 'utf-8' })
-		if (progressCallback) progressCallback(1)
+		if (progress) {
+			progress.add(1)
+			progress.update()
+		}
 	}
 }

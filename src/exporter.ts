@@ -6,7 +6,9 @@ import { IRenderedAnimation, renderAllAnimations } from './rendering/animationRe
 import { IRenderedRig, renderRig } from './rendering/modelRenderer'
 import { animatedJavaSettings, IInfoPopup, Setting as AJSetting, Setting } from './settings'
 import { openAjFailedProjectExportReadinessDialog } from './ui/popups/failedProjectExportReadiness'
+import { openUnexpectedErrorDialog } from './ui/popups/unexpectedError'
 import { consoleGroupCollapsed } from './util/console'
+import { ExpectedError } from './util/misc'
 import { NamespacedString } from './util/moddingTools'
 import { ProgressBarController } from './util/progress'
 import { translate } from './util/translation'
@@ -64,6 +66,18 @@ export class AnimatedJavaExporter<
 	static get all() {
 		return Object.values(AnimatedJavaExporter.exporters)
 	}
+}
+
+let activelyExporting = false
+export async function safeExportProject() {
+	if (activelyExporting) return
+	activelyExporting = true
+	await exportProject().catch(e => {
+		console.error(e)
+		if (e instanceof ExpectedError) return
+		openUnexpectedErrorDialog(e)
+	})
+	activelyExporting = false
 }
 
 export const exportProject = consoleGroupCollapsed('exportProject', async () => {
@@ -204,7 +218,7 @@ async function exportResources(
 		'Writing Resource Pack to Disk',
 		assetsPackFolder.childCount
 	)
-	await assetsPackFolder.writeToDisk(resourcePackPath, progress.add.bind(progress))
+	await assetsPackFolder.writeToDisk(resourcePackPath, progress)
 	progress.finish()
 }
 
@@ -337,6 +351,6 @@ export function verifyProjectExportReadiness() {
 
 	if (issues.find(v => v.type === 'error')) {
 		openAjFailedProjectExportReadinessDialog(issues)
-		throw new Error('Project is not ready for export')
+		throw new ExpectedError('Project is not ready for export')
 	}
 }
