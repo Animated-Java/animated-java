@@ -13,6 +13,7 @@ import * as events from './events'
 
 export interface IAnimatedJavaProjectSettings {
 	project_namespace: Settings.InlineTextSetting
+	texture_size: Settings.DropdownSetting<number>
 	rig_item: Settings.InlineTextSetting
 	rig_item_model: Settings.InlineTextSetting
 	rig_export_folder: Settings.FolderSetting
@@ -32,6 +33,12 @@ const TRANSLATIONS = {
 		error: {
 			unset: translate('animated_java.project_settings.project_namespace.error.unset'),
 		},
+	},
+	texture_size: {
+		displayName: translate('animated_java.project_settings.texture_size'),
+		description: translate('animated_java.project_settings.texture_size.description').split(
+			'\n'
+		),
 	},
 	rig_item: {
 		displayName: translate('animated_java.project_settings.rig_item'),
@@ -138,6 +145,30 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 					)
 				setting.value = safeFunctionName(setting.value)
 				return setting
+			}
+		),
+
+		texture_size: new Settings.DropdownSetting(
+			{
+				id: 'animated_java:project_settings/texture_size',
+				displayName: TRANSLATIONS.texture_size.displayName,
+				description: TRANSLATIONS.texture_size.description,
+				defaultValue: 0,
+				options: [
+					{ name: '16x16', value: 16 },
+					{ name: '32x32', value: 32 },
+					{ name: '64x64', value: 64 },
+					{ name: '128x128', value: 128 },
+					{ name: '256x256', value: 256 },
+					{ name: '512x512', value: 512 },
+					{ name: '1024x1024', value: 1024 },
+					{ name: '2048x2048', value: 2048 },
+				],
+			},
+			function onUpdate(setting) {
+				const selected = setting.selected!
+				Project!.texture_height = selected.value
+				Project!.texture_width = selected.value
 			}
 		),
 
@@ -350,12 +381,23 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 const _ = getDefaultProjectSettings()
 export const projectSettingStructure: GUIStructure = [
 	{
-		type: 'setting',
-		settingId: _.project_namespace.id,
+		type: 'group',
+		title: translate('animated_java.dialog.project_settings.project_group'),
+		openByDefault: true,
+		children: [
+			{
+				type: 'setting',
+				settingId: _.project_namespace.id,
+			},
+			{
+				type: 'setting',
+				settingId: _.texture_size.id,
+			},
+		],
 	},
 	{
 		type: 'group',
-		title: translate('animated_java.project_settings.group.resourcepack'),
+		title: translate('animated_java.project_settings.resourcepack_group'),
 		openByDefault: true,
 		children: [
 			{

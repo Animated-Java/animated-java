@@ -14,3 +14,7 @@ animated_java.animation_exporter.settings.interpolation_duration.description: |-
   How much time (in ticks) each keyframe will attempt to spend smoothing changes between keyframes on the client.
   Setting this higher than 1 will cause the animation to be smoother, but lose precision.
   Setting this to 0 will disable interpolation.
+
+animated_java.animation_exporter.settings.outdated_rig_warning: Outdated Rig Warning
+animated_java.animation_exporter.settings.outdated_rig_warning.description: |-
+  Whether to show a warning in-game when a Rig is found that was summoned before the most recent export.

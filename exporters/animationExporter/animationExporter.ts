@@ -33,6 +33,12 @@ export function loadExporter() {
 				'animated_java.animation_exporter.settings.interpolation_duration.description'
 			).split('\n'),
 		},
+		outdated_rig_warning: {
+			name: API.translate('animated_java.animation_exporter.settings.outdated_rig_warning'),
+			description: API.translate(
+				'animated_java.animation_exporter.settings.outdated_rig_warning.description'
+			).split('\n'),
+		},
 	}
 
 	async function fileExists(path: string) {
@@ -84,6 +90,12 @@ export function loadExporter() {
 					step: 1,
 					resettable: true,
 				}),
+				outdated_rig_warning: new API.Settings.CheckboxSetting({
+					id: 'animated_java:animation_exporter/outdated_rig_warning',
+					displayName: TRANSLATIONS.outdated_rig_warning.name,
+					description: TRANSLATIONS.outdated_rig_warning.description,
+					defaultValue: true,
+				}),
 			}
 		},
 		settingsStructure: [
@@ -94,6 +106,10 @@ export function loadExporter() {
 			{
 				type: 'setting',
 				settingId: 'animated_java:animation_exporter/interpolation_duration',
+			},
+			{
+				type: 'setting',
+				settingId: 'animated_java:animation_exporter/outdated_rig_warning',
 			},
 		],
 		async export(ajSettings, projectSettings, exporterSettings, renderedAnimations, rig) {
@@ -106,6 +122,7 @@ export function loadExporter() {
 			const RIG_ITEM = projectSettings.rig_item.value
 			const EXPORT_FOLDER = exporterSettings.datapack_folder.value
 			const variants = Project.animated_java_variants.variants
+			const outdatedRigWarningEnabled = exporterSettings.outdated_rig_warning.value
 
 			//--------------------------------------------
 			// Data Pack
@@ -193,7 +210,11 @@ export function loadExporter() {
 				.newFolder('tags/functions')
 				.chainNewFile('on_summon.json', {
 					replace: false,
-					values: [`${AJ_NAMESPACE}:check_if_updating_rig_on_summon`],
+					values: [
+						outdatedRigWarningEnabled
+							? `${AJ_NAMESPACE}:check_if_updating_rig_on_summon`
+							: undefined,
+					],
 				})
 				.chainNewFile('on_tick.json', {
 					replace: false,
@@ -205,7 +226,11 @@ export function loadExporter() {
 				})
 				.chainNewFile('on_remove.json', {
 					replace: false,
-					values: [`${AJ_NAMESPACE}:check_if_updating_rig_on_remove`],
+					values: [
+						outdatedRigWarningEnabled
+							? `${AJ_NAMESPACE}:check_if_updating_rig_on_remove`
+							: undefined,
+					],
 				})
 
 			//--------------------------------------------
@@ -280,7 +305,9 @@ export function loadExporter() {
 				])
 				.chainNewFile('on_load.mcfunction', [
 					`scoreboard players set @s ${scoreboard.rigLoaded} 1`,
-					`execute unless score @s ${scoreboard.exportVersion} = .aj.export_version ${scoreboard.i} at @s run function ${AJ_NAMESPACE}:upgrade_rig`,
+					outdatedRigWarningEnabled
+						? `execute unless score @s ${scoreboard.exportVersion} = .aj.export_version ${scoreboard.i} at @s run function ${AJ_NAMESPACE}:upgrade_rig`
+						: undefined,
 					`function #${NAMESPACE}:on_load`,
 					`say Loaded!`,
 				])
@@ -345,8 +372,8 @@ export function loadExporter() {
 					)
 					.set(
 						'transformation',
-						transformationToNbt(pose.pos, pose.rot, pose.scale)
-						// numberArrayToNbtFloatArray(pos.matrix)
+						// transformationToNbt(pose.pos, pose.rot, pose.scale)
+						numberArrayToNbtFloatArray(pose.matrix)
 					)
 					.set(
 						'interpolation_duration',
@@ -406,14 +433,16 @@ export function loadExporter() {
 			//--------------------------------------------
 			// ANCHOR upgrade functions
 			//--------------------------------------------
-			animatedJavaFolder
-				.accessFolder('functions')
-				.chainNewFile('upgrade_rig.mcfunction', [
-					`scoreboard players operation @s ${scoreboard.exportVersion} = .aj.export_version ${scoreboard.i}`,
-					`execute on passengers run data modify entity @s Glowing set value 1`,
-					`execute on passengers run data modify entity @s glow_color_override set value 16711680`,
-					`tellraw @a ${errorOutOfDateRig}`,
-				])
+			if (outdatedRigWarningEnabled) {
+				animatedJavaFolder
+					.accessFolder('functions')
+					.chainNewFile('upgrade_rig.mcfunction', [
+						`scoreboard players operation @s ${scoreboard.exportVersion} = .aj.export_version ${scoreboard.i}`,
+						`execute on passengers run data modify entity @s Glowing set value 1`,
+						`execute on passengers run data modify entity @s glow_color_override set value 16711680`,
+						`tellraw @a ${errorOutOfDateRig}`,
+					])
+			}
 
 			//--------------------------------------------
 			// ANCHOR remove functions
@@ -584,8 +613,8 @@ export function loadExporter() {
 					const data = new NbtCompound()
 						.set(
 							'transformation',
-							transformationToNbt(bone.pos, bone.rot, bone.scale)
-							// numberArrayToNbtFloatArray(bone.matrix)
+							// transformationToNbt(bone.pos, bone.rot, bone.scale)
+							numberArrayToNbtFloatArray(bone.matrix)
 						)
 						.set('start_interpolation', new NbtInt(0))
 					commands.push(

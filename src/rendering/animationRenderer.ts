@@ -54,6 +54,8 @@ export function getAnimationBones(animation: _Animation, boneMap: IRenderedRig['
 		previousMatrices = {}
 	}
 	const bones: IAnimationBone[] = []
+	// const outliner = scene.children.find(v => v.name === 'outline_group')!
+	// outliner.rotation.y = Math.PI
 
 	for (const [uuid, bone] of Object.entries(boneMap)) {
 		if (!bone.group.export) continue
@@ -86,6 +88,7 @@ export function getAnimationBones(animation: _Animation, boneMap: IRenderedRig['
 			scale: scale.toArray(),
 		})
 	}
+	// outliner.rotation.y = 0
 
 	return bones
 }
@@ -127,20 +130,19 @@ function updatePreview(animation: _Animation, time: number) {
 	Timeline.time = time
 	Animator.showDefaultPose(true)
 	Animator.resetLastValues()
-	for (const node of [
-		...Group.all,
-		...NullObject.all,
-		...Locator.all,
-		...OutlinerElement.types.camera.all,
-	]) {
+	const nodes: OutlinerNode[] = [...Group.all, ...NullObject.all, ...Locator.all]
+	if (OutlinerElement.types.camera) {
+		nodes.push(...OutlinerElement.types.camera.all)
+	}
+	for (const node of nodes) {
 		animation.getBoneAnimator(node).displayFrame(1)
 		if (animation.effects) animation.effects.displayFrame()
 	}
 	Animator.resetLastValues()
 	scene.updateMatrixWorld()
-	if (Group.selected) {
-		Transformer.updateSelection()
-	}
+	// if (Group.selected) {
+	// 	Transformer.updateSelection()
+	// }
 	Blockbench.dispatchEvent('display_animation_frame')
 }
 
