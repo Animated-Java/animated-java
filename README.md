@@ -1,18 +1,20 @@
-
 <div align="center">
-	<img style={{width: '128px', borderRadius:'1em', marginTop: '2em'}} src="https://raw.githubusercontent.com/Animated-Java/animated-java/complete-rewrite/src/assets/AnimatedJava-2022.webp"/>
+	<img src="https://raw.githubusercontent.com/Animated-Java/animated-java/complete-rewrite/src/assets/AnimatedJava-2022.webp"/>
 </div>
-<h1 align="center">Animated Java</h1>
-<div style={{display:'flex', justifyContent:'center'}}>
-	<a href="https://discord.gg/jFgY4PXZfp" style={{paddingRight:'1em'}}>
+<h1 align="center">
+	Animated Java
+	<br>
+	<a href="https://discord.gg/jFgY4PXZfp">
 		<img src="https://img.shields.io/discord/785339959518953482?color=5865f2&label=Discord&style=flat" alt="Discord" />
 	</a>
 	<a>
 		<img src="https://img.shields.io/github/package-json/v/animated-java/animated-java" alt="GitHub package.json version" />
 	</a>
-</div>
+</h1>
+<h3 align="center">
+	A Blockbench plugin that makes complex animation a breeze in Minecraft: Java Edition.
+</h3>
 <br/>
-A Blockbench plugin that makes complex animation a breeze in Minecraft: Java Edition.
 
 # How to Install
 Check out the [installation guide]().
