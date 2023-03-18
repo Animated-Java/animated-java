@@ -1,6 +1,6 @@
 
 <div align="center">
-	<img style={{width: '128px', borderRadius:'1em', marginTop: '2em'}} src="https://raw.githubusercontent.com/Animated-Java/animated-java/complete-rewrite/src/assets/AnimatedJava-2022.svg"/>
+	<img style={{width: '128px', borderRadius:'1em', marginTop: '2em'}} src="https://raw.githubusercontent.com/Animated-Java/animated-java/complete-rewrite/src/assets/AnimatedJava-2022.webp"/>
 </div>
 <h1 align="center">Animated Java</h1>
 <div style={{display:'flex', justifyContent:'center'}}>
