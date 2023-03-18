@@ -2,9 +2,9 @@ import { ajModelFormat } from '../modelFormat'
 import { createBlockbenchMod } from '../util/moddingTools'
 import { translate } from '../util/translation'
 import { default as SettingsComponent } from './components/projectSettings.svelte'
-import { SvelteDialog } from './svelteDialog'
+import { SvelteDialog } from './util/svelteDialog'
 
-export function openAjProjectSettingsDialog() {
+export function openAJProjectSettingsDialog() {
 	if (!Project) return
 	new SvelteDialog({
 		title: translate('animated_java.dialog.project_settings.title'),
@@ -25,7 +25,7 @@ createBlockbenchMod(
 	context => {
 		context.action.click = function (this: Action, event: MouseEvent) {
 			if (Project?.format.id === ajModelFormat.id) {
-				openAjProjectSettingsDialog()
+				openAJProjectSettingsDialog()
 			} else context.originalClick.call(this, event)
 		}
 		return context

@@ -3,7 +3,7 @@ import { formatStr } from './util/misc'
 import { Subscribable } from './util/subscribable'
 import { translate } from './util/translation'
 import * as events from './events'
-import { reducedMotion } from './ui/accessability'
+import { reducedMotion } from './ui/util/accessability'
 
 export interface IInfoPopup {
 	type: 'warning' | 'error' | 'info'

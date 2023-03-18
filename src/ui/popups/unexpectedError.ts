@@ -1,5 +1,5 @@
 import { translate } from '../../util/translation'
-import { SvelteDialog } from '../svelteDialog'
+import { SvelteDialog } from '../util/svelteDialog'
 import UnexpectedError from '../components/popups/unexpectedError.svelte'
 
 export function openUnexpectedErrorDialog(error: any) {

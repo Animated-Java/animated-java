@@ -60,7 +60,7 @@
 		"type": "github",
 		"url": "https://github.com/Animated-Java/animated-java"
 	},
-	"description": "A tool that makes complex animation a breeze in Minecraft: Java Edition",
+	"description": "A Blockbench plugin that makes complex animation a breeze in Minecraft: Java Edition.",
 	"main": "./dist/index.js",
 	"types": "./dist/src/index.d.ts",
 	"private": true,
@@ -81,6 +81,7 @@
 		"@typescript-eslint/parser": "^5.54.0",
 		"blockbench-types": "https://github.com/SnaveSutit/blockbench-types.git",
 		"esbuild": "^0.17.10",
+		"esbuild-plugin-inline-image": "^0.0.9",
 		"esbuild-plugin-svelte": "^0.1.1",
 		"eslint": "^8.35.0",
 		"fs-extra": "^11.1.0",

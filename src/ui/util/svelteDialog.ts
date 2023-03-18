@@ -1,5 +1,5 @@
 import type { SvelteComponent } from 'svelte'
-import * as PACKAGE from '../../package.json'
+import * as PACKAGE from '../../../package.json'
 
 export class SvelteDialog extends Dialog {
 	instance?: SvelteComponent | undefined

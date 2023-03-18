@@ -3,7 +3,7 @@ import * as events from '../events'
 import { createAction, createBlockbenchMod, createMenu } from '../util/moddingTools'
 import { translate } from '../util/translation'
 import { Variant } from '../variants'
-import { SveltePanel } from './sveltePanel'
+import { SveltePanel } from './util/sveltePanel'
 import { openVariantPropertiesDialog } from './ajVariantsProperties'
 import { default as SvelteComponent } from './components/variantsPanel.svelte'
 

@@ -13,8 +13,7 @@ import * as esbuild from 'esbuild'
 import sveltePlugin from './plugins/sveltePlugin'
 import svelteConfig from '../svelte.config.js'
 import * as workerPlugin from './plugins/workerPlugin'
-
-console.log(sveltePlugin)
+import inlineImage from 'esbuild-plugin-inline-image'
 
 const PACKAGE = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
 
@@ -191,6 +190,9 @@ async function buildDev() {
 				builder: buildWorker,
 				typeDefPath: './src/globalWorker.d.ts',
 			}),
+			inlineImage({
+				limit: -1,
+			}),
 			INFO_PLUGIN,
 			yamlPlugin({}),
 			sveltePlugin(svelteConfig),
@@ -216,6 +218,9 @@ function buildProd() {
 			plugins: [
 				workerPlugin.workerPlugin({
 					builder: buildWorker,
+				}),
+				inlineImage({
+					limit: -1,
 				}),
 				INFO_PLUGIN,
 				yamlPlugin({}),

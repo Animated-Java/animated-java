@@ -1,6 +1,6 @@
 import { SvelteComponent } from 'svelte'
-import { pollPromise } from '../util/misc'
-import { createBlockbenchMod } from '../util/moddingTools'
+import { pollPromise } from '../../util/misc'
+import { createBlockbenchMod } from '../../util/moddingTools'
 
 export function injectSvelteCompomponent(options: {
 	// @ts-ignore

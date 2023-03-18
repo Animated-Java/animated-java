@@ -1,6 +1,6 @@
 import { SvelteComponent } from 'svelte'
-import * as PACKAGE from '../../package.json'
-import { pollPromise } from '../util/misc'
+import * as PACKAGE from '../../../package.json'
+import { pollPromise } from '../../util/misc'
 
 export class SveltePanel extends Panel {
 	instance?: SvelteComponent | undefined

@@ -1,9 +1,9 @@
 import { translate } from '../util/translation'
-import { SvelteDialog } from './svelteDialog'
+import { SvelteDialog } from './util/svelteDialog'
 import SettingsComponent from './components/animatedJavaSettings.svelte'
 import { animatedJavaSettings } from '../settings'
 
-export function openAjSettingsDialog() {
+export function openAJSettingsDialog() {
 	new SvelteDialog({
 		title: translate('animated_java.dialog.settings.title'),
 		id: 'animated_java:settings',

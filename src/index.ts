@@ -19,7 +19,7 @@ import './projectSettings'
 import * as AJSettings from './settings'
 import { createInfo } from './settings'
 import './ui/ajAnimationProperties'
-import { openAjDocsDialog } from './ui/ajDocs'
+import { openAJDocsDialog } from './ui/ajDocs'
 import './ui/ajKeyframe'
 import './ui/ajMenuBar'
 import './ui/ajProjectSettings'
@@ -47,7 +47,7 @@ globalThis.AnimatedJava = {
 			link = link.substring(5)
 			let section: string | undefined
 			if (link.includes('#')) [link, section] = link.split('#')
-			openAjDocsDialog(link, section)
+			openAJDocsDialog(link, section)
 			return
 		} else if (link.startsWith('tag:')) {
 			console.log(`Tag links aren't implemented: '${link}'`)

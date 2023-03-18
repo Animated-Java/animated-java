@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fly } from '../../accessability'
+	import { fly } from '../../util/accessability'
 	import { circOut as easing } from 'svelte/easing'
 	import PrismCodebox from '../prism/prismCodebox.svelte'
 

@@ -13,22 +13,9 @@
 			"texture_export_folder": "",
 			"enable_advanced_resource_pack_settings": false,
 			"resource_pack_folder": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\pack.mcmeta",
-			"verbose": true,
-			"exporter": "animated_java:animation_exporter"
+			"verbose": true
 		},
-		"exporter_settings": {
-			"animated_java:animation_exporter": {
-				"datapack_folder": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\saves\\Animated Java Test World\\datapacks",
-				"interpolation_duration": 1,
-				"outdated_rig_warning": false
-			},
-			"animated_java:statue_exporter": {
-				"foo": false
-			},
-			"animated_java:raw_exporter": {
-				"foo": false
-			}
-		},
+		"exporter_settings": {},
 		"variants": [
 			{
 				"name": "default",
@@ -4960,7 +4947,7 @@
 			"override": false,
 			"length": 3.95,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",

@@ -1,7 +1,7 @@
 import { translate } from '../util/translation'
 // import { applyModelVariant, resetModelVariant, Variant } from '../variants'
 import { Variant } from '../variants'
-import { SvelteDialog } from './svelteDialog'
+import { SvelteDialog } from './util/svelteDialog'
 import { default as VariantPropertiesSvelteComponent } from './components/variantProperties.svelte'
 
 export function openVariantPropertiesDialog(variant: Variant) {

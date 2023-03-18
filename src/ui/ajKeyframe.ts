@@ -1,4 +1,4 @@
-import { injectSvelteCompomponent } from './injectSvelte'
+import { injectSvelteCompomponent } from './util/injectedSvelte'
 import KeyframeComponent from './components/keyframe.svelte'
 
 injectSvelteCompomponent({

@@ -2,6 +2,7 @@ animated_java.title: Animated Java
 
 animated_java.menubar.settings: Animated Java
 
+animated_java.menubar.items.about: About
 animated_java.menubar.items.settings: Settings
 animated_java.menubar.items.project_settings: Project Settings
 animated_java.menubar.items.documentation: Documentation
@@ -11,6 +12,9 @@ animated_java.quickmessage.exported_successfully: Project Exported Successfully!
 
 ### Dialogs
 animated_java.dialog.close_button: Done
+
+### About
+animated_java.dialog.about.title: About Animated Java
 
 ### Settings
 animated_java.settings.accessability_options_group: Accessability

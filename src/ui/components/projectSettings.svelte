@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte'
-	import { slide } from '../accessability'
+	import { slide } from '../util/accessability'
 	import { AnimatedJavaExporter } from '../../exporter'
 	import { projectSettingStructure } from '../../projectSettings'
 	import * as AJ from '../../settings'

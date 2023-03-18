@@ -1,5 +1,5 @@
 import { translate } from '../../util/translation'
-import { SvelteDialog } from '../svelteDialog'
+import { SvelteDialog } from '../util/svelteDialog'
 import InvalidCubes from '../components/popups/invalidCubes.svelte'
 
 export function openAjInvalidCubesDialog() {

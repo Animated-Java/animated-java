@@ -1,10 +1,10 @@
 import * as events from '../events'
 import { translate } from '../util/translation'
 import { default as DocsComponent } from './components/docs.svelte'
-import { SvelteDialog } from './svelteDialog'
+import { SvelteDialog } from './util/svelteDialog'
 
 let docsDialog: SvelteDialog | undefined
-export function openAjDocsDialog(link?: string, section?: string) {
+export function openAJDocsDialog(link?: string, section?: string) {
 	if (docsDialog) {
 		if (link) {
 			events.DOCS_LINK_CLICKED.dispatch({ link, section })

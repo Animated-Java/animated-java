@@ -1,13 +1,14 @@
 // @ts-ignore
 import logo from '../assets/AnimatedJava-2022.svg'
 import * as events from '../events'
-import { exportProject, safeExportProject } from '../exporter'
+import { safeExportProject } from '../exporter'
 import { ajModelFormat } from '../modelFormat'
 import { createAction, createBarMenu } from '../util/moddingTools'
 import { translate } from '../util/translation'
-import { openAjDocsDialog } from './ajDocs'
-import { openAjProjectSettingsDialog } from './ajProjectSettings'
-import { openAjSettingsDialog } from './ajSettings'
+import { openAJAboutDialog } from './ajAbout'
+import { openAJDocsDialog } from './ajDocs'
+import { openAJProjectSettingsDialog } from './ajProjectSettings'
+import { openAJSettingsDialog } from './ajSettings'
 
 interface IAnimatedJavaMenu extends BarMenu {
 	label: HTMLDivElement
@@ -46,13 +47,26 @@ events.UNSELECT_PROJECT.subscribe(() => {
 })
 
 MenuBar.addAction(
+	createAction('animated_java:about', {
+		icon: 'info_outline',
+		category: 'animated_java',
+		name: translate('animated_java.menubar.items.about'),
+		condition: () => Format === ajModelFormat,
+		click() {
+			openAJAboutDialog()
+		},
+	}),
+	'animated_java:menu'
+)
+
+MenuBar.addAction(
 	createAction('animated_java:settings', {
 		icon: 'settings',
 		category: 'animated_java',
 		name: translate('animated_java.menubar.items.settings'),
 		condition: () => Format === ajModelFormat,
 		click() {
-			openAjSettingsDialog()
+			openAJSettingsDialog()
 		},
 	}),
 	'animated_java:menu'
@@ -65,7 +79,7 @@ MenuBar.addAction(
 		name: translate('animated_java.menubar.items.project_settings'),
 		condition: () => Format === ajModelFormat,
 		click: function () {
-			openAjProjectSettingsDialog()
+			openAJProjectSettingsDialog()
 		},
 	}),
 	'animated_java:menu'
@@ -78,7 +92,7 @@ MenuBar.addAction(
 		name: translate('animated_java.menubar.items.documentation'),
 		condition: () => Format === ajModelFormat,
 		click: function () {
-			openAjDocsDialog()
+			openAJDocsDialog()
 		},
 	}),
 	'animated_java:menu'

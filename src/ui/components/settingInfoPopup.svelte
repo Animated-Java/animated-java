@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fly } from '../accessability'
+	import { fly } from '../util/accessability'
 	import type { IInfoPopup } from '../../settings'
 
 	export var type: IInfoPopup['type']

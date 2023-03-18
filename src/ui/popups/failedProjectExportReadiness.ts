@@ -1,5 +1,5 @@
 import { translate } from '../../util/translation'
-import { SvelteDialog } from '../svelteDialog'
+import { SvelteDialog } from '../util/svelteDialog'
 import FailedProjectExportReadiness from '../components/popups/failedProjectExportReadiness.svelte'
 import type { IInfoPopup } from '../../settings'
 

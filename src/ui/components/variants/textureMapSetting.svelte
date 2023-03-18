@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fly, slide } from '../../accessability'
+	import { fly, slide } from '../../util/accessability'
 	import { translate } from '../../../util/translation'
 	import type { TextureId, Variant } from '../../../variants'
 	import FlatIconButton from '../buttons/flatIconButton.svelte'

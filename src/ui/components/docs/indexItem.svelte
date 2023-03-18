@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { slide } from '../../accessability'
+	import { slide } from '../../util/accessability'
 
 	export let index: any
 	export let selectedPage: string

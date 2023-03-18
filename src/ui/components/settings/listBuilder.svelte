@@ -2,7 +2,7 @@
 	import SettingContainer from '../settingContainer.svelte'
 	import type * as AJ from '../../../settings'
 	import FlatIconButton from '../buttons/flatIconButton.svelte'
-	import { slide } from '../../accessability'
+	import { slide } from '../../util/accessability'
 
 	export let setting: AJ.ListBuilderSetting
 	let selected = -1

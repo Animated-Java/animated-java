@@ -45,17 +45,22 @@ export function loadExporter() {
 		return !!(await fs.promises.stat(path).catch(() => false))
 	}
 
-	function numberArrayToNbtFloatArray(matrix: number[]) {
-		return new NbtList(matrix.map(v => new NbtFloat(v)))
+	function arrayToNbtFloatArray(array: number[]) {
+		return new NbtList(array.map(v => new NbtFloat(v)))
 	}
 
-	function transformationToNbt(pos: number[], rot: number[], scale: number[]) {
+	function matrixToNbtFloatArray(matrix: THREE.Matrix4) {
+		const matrixArray = new THREE.Matrix4().copy(matrix).transpose().toArray()
+		return arrayToNbtFloatArray(matrixArray)
+	}
+
+	function transformationToNbt(pos: THREE.Vector3, rot: THREE.Quaternion, scale: THREE.Vector3) {
 		return new NbtCompound(
 			new Map()
-				.set('translation', numberArrayToNbtFloatArray(pos))
-				.set('right_rotation', numberArrayToNbtFloatArray([0, 0, 0, 1]))
-				.set('left_rotation', numberArrayToNbtFloatArray(rot))
-				.set('scale', numberArrayToNbtFloatArray(scale))
+				.set('translation', arrayToNbtFloatArray(pos.toArray()))
+				.set('right_rotation', arrayToNbtFloatArray([0, 0, 0, 1]))
+				.set('left_rotation', arrayToNbtFloatArray(rot.toArray()))
+				.set('scale', arrayToNbtFloatArray(scale.toArray()))
 		)
 	}
 
@@ -373,7 +378,7 @@ export function loadExporter() {
 					.set(
 						'transformation',
 						// transformationToNbt(pose.pos, pose.rot, pose.scale)
-						numberArrayToNbtFloatArray(pose.matrix)
+						matrixToNbtFloatArray(pose.matrix)
 					)
 					.set(
 						'interpolation_duration',
@@ -614,7 +619,7 @@ export function loadExporter() {
 						.set(
 							'transformation',
 							// transformationToNbt(bone.pos, bone.rot, bone.scale)
-							numberArrayToNbtFloatArray(bone.matrix)
+							matrixToNbtFloatArray(bone.matrix)
 						)
 						.set('start_interpolation', new NbtInt(0))
 					commands.push(

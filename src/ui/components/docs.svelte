@@ -15,7 +15,7 @@
 </script>
 
 <script lang="ts">
-	import { fade } from '../accessability'
+	import { fade } from '../util/accessability'
 	import * as events from '../../events'
 	import { translate } from '../../util/translation'
 	import DocPage from './docs/docPage.svelte'

@@ -1,6 +1,6 @@
 import { translate } from '../../util/translation'
 import { ITextureMapping, Variant } from '../../variants'
-import { SvelteDialog } from '../svelteDialog'
+import { SvelteDialog } from '../util/svelteDialog'
 import { default as SvelteComponent } from '../components/popups/invalidVariant.svelte'
 
 export function openInvalidVariantPopup(

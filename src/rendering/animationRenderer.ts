@@ -1,23 +1,25 @@
-import { transposeMatrix, LimitClock, roundToN } from '../util/misc'
+import { LimitClock, roundToN } from '../util/misc'
 import { ProgressBarController } from '../util/progress'
 import { IRenderedRig } from './modelRenderer'
 let progress: ProgressBarController
 
 function getGroupMatrix(group: Group, scale: number) {
-	const matrix = group.mesh.matrixWorld.clone()
-	matrix.setPosition(new THREE.Vector3().setFromMatrixPosition(matrix).multiplyScalar(1 / 16))
-	matrix.scale(new THREE.Vector3().setScalar(scale))
-	return matrix
+	const matrixWorld = group.mesh.matrixWorld.clone()
+	matrixWorld.setPosition(
+		new THREE.Vector3().setFromMatrixPosition(matrixWorld).multiplyScalar(1 / 16)
+	)
+	matrixWorld.scale(new THREE.Vector3().setScalar(scale))
+	return matrixWorld
 }
 
 export interface IAnimationBone {
 	name: string
 	uuid: string
-	group?: Group
-	matrix: number[]
-	pos: number[]
-	rot: number[]
-	scale: number[]
+	node?: Group | NullObject | Locator | OutlinerElement
+	matrix: THREE.Matrix4
+	pos: THREE.Vector3
+	rot: THREE.Quaternion
+	scale: THREE.Vector3
 }
 
 export interface IRenderedAnimation {
@@ -72,7 +74,7 @@ export function getAnimationBones(animation: _Animation, boneMap: IRenderedRig['
 		const rot = new THREE.Quaternion()
 		const scale = new THREE.Vector3()
 		matrix.decompose(pos, rot, scale)
-		const matrixArray = transposeMatrix(matrix.toArray())
+		const matrixArray = matrix.toArray()
 
 		const prevMatrix = previousMatrices[uuid]
 		if (prevMatrix !== undefined && prevMatrix.equals(matrixArray)) continue
@@ -81,11 +83,11 @@ export function getAnimationBones(animation: _Animation, boneMap: IRenderedRig['
 		bones.push({
 			name: bone.name,
 			uuid,
-			group: bone.group,
-			matrix: matrixArray,
-			pos: pos.toArray(),
-			rot: rot.toArray(),
-			scale: scale.toArray(),
+			node: bone.group,
+			matrix,
+			pos,
+			rot,
+			scale,
 		})
 	}
 	// outliner.rotation.y = 0
@@ -129,20 +131,18 @@ function getAnimationStateKeyframe(animation: _Animation, time: number) {
 function updatePreview(animation: _Animation, time: number) {
 	Timeline.time = time
 	Animator.showDefaultPose(true)
-	Animator.resetLastValues()
 	const nodes: OutlinerNode[] = [...Group.all, ...NullObject.all, ...Locator.all]
 	if (OutlinerElement.types.camera) {
 		nodes.push(...OutlinerElement.types.camera.all)
 	}
 	for (const node of nodes) {
+		if (!(node.constructor as any).animator) continue
+		Animator.resetLastValues()
 		animation.getBoneAnimator(node).displayFrame(1)
-		if (animation.effects) animation.effects.displayFrame()
 	}
 	Animator.resetLastValues()
 	scene.updateMatrixWorld()
-	// if (Group.selected) {
-	// 	Transformer.updateSelection()
-	// }
+	if (animation.effects) animation.effects.displayFrame()
 	Blockbench.dispatchEvent('display_animation_frame')
 }
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte'
-	import { fade, slide } from '../accessability'
+	import { fade, slide } from '../util/accessability'
 	import type * as AJ from '../../settings'
 	import { debounce } from '../../util/misc'
 	import IconButton from './buttons/iconButton.svelte'
