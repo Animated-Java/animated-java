@@ -1,35 +1,58 @@
 // You know how console.log is slow? What if we made it even slower, but only specific functions? :D
 
-const OG_LOG = console.log
+function getConsoleObj(consoleClass: Console) {
+	return Object.fromEntries(Object.entries(consoleClass)) as Console
+}
+
+function overwriteConsole(consoleObj: Console) {
+	Object.assign(console, consoleObj)
+}
+
+function mapFuncToConsoleObj(consoleClass: Console, func: (fn: any, original: any) => any) {
+	for (const [k, v] of Object.entries(consoleClass)) {
+		if (typeof v === 'function') {
+			// @ts-ignore
+			consoleClass[k] = func(func, v)
+		}
+	}
+	return consoleClass
+}
+
+// Original console functions
+const CONSOLE = getConsoleObj(console)
 
 function consoleGroupFunctionFactory(consoleGroupFunction: typeof console.group) {
 	return function consoleGroup<A extends unknown[], R = unknown>(
 		groupName: string,
-		fn: (...args: A) => R,
+		wrappedFunction: (...args: A) => R,
 		forced = false
 	): (...args: A) => R {
 		return (...args: A): R => {
-			const lastConsoleLog = console.log
+			const lastConsole = getConsoleObj(console)
 			let used = forced
-			try {
-				if (used) consoleGroupFunction(groupName)
-				else {
-					console.log = function (...args) {
+
+			if (used) consoleGroupFunction(groupName)
+			else
+				mapFuncToConsoleObj(console, (func, original) => {
+					return (...args: unknown[]) => {
 						if (!used) {
 							used = true
-							if (lastConsoleLog !== OG_LOG) lastConsoleLog()
+							if (func !== original) func(...args)
 							consoleGroupFunction(groupName)
 						}
-						return (console.log = lastConsoleLog)(...args)
+						overwriteConsole(lastConsole)
+						return original(...args) as unknown
 					}
-				}
-				const result = fn(...args)
-				if (used) console.groupEnd()
-				console.log = lastConsoleLog
+				})
+
+			try {
+				const result = wrappedFunction(...args)
+				if (used) CONSOLE.groupEnd()
+				overwriteConsole(lastConsole)
 				return result
 			} catch (e) {
-				if (used) console.groupEnd()
-				console.log = lastConsoleLog
+				if (used) CONSOLE.groupEnd()
+				overwriteConsole(lastConsole)
 				throw e
 			}
 		}

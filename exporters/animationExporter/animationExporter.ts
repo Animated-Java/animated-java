@@ -119,7 +119,14 @@ export function loadExporter() {
 		],
 		async export(ajSettings, projectSettings, exporterSettings, renderedAnimations, rig) {
 			if (!Project?.animated_java_variants) throw new Error('No variants found')
-			console.log(ajSettings, projectSettings, exporterSettings, renderedAnimations, rig)
+			console.log('Animated Java Settings', ajSettings)
+			console.log('Project Settings', projectSettings)
+			console.log('Exporter Settings', exporterSettings)
+			console.log('Rendered Animations', renderedAnimations)
+			console.log('Rig', rig)
+
+			console.log('Beginning export process...')
+
 			//--------------------------------------------
 			// Settings
 			//--------------------------------------------
@@ -713,14 +720,10 @@ export function loadExporter() {
 
 				// console.log(anim.name)
 				const tree = API.generateSearchTree(anim.frames, item => {
-					if (item.type === 'branch') {
-						console.log('branch', item.items.length > 0, item)
-						return item.items.length > 0
-					}
-					if (item.type === 'leaf') {
-						console.log('leaf', item.item.bones.length > 0, item)
-						return item.item.bones.length > 0
-					}
+					if (item.type === 'branch') return item.items.length > 0
+
+					if (item.type === 'leaf') return item.item.bones.length > 0
+
 					return false
 				})
 				// console.log(anim.name, tree)
@@ -757,6 +760,7 @@ export function loadExporter() {
 
 			await datapack.writeToDisk(EXPORT_FOLDER, progress)
 			progress.finish()
+			console.log('Export Complete!')
 		},
 	})
 }
