@@ -157,12 +157,18 @@ export class VirtualFolder extends VirtualNode {
 	}
 
 	async writeToDisk(outputFolder: string, progress?: ProgressBarController) {
-		const path = PathModule.join(outputFolder, this.path)
+		const path = PathModule.join(outputFolder, this.name)
 		await fs.promises.mkdir(path, { recursive: true })
 		if (progress) {
 			progress.add(1)
 			progress.update()
 		}
+		for (const child of this.children) {
+			await child.writeToDisk(path, progress)
+		}
+	}
+
+	async writeChildrenToDisk(outputFolder: string, progress?: ProgressBarController) {
 		for (const child of this.children) {
 			await child.writeToDisk(outputFolder, progress)
 		}
@@ -184,7 +190,7 @@ export class VirtualFile extends VirtualNode {
 	}
 
 	async writeToDisk(outputFolder: string, progress?: ProgressBarController) {
-		const path = PathModule.join(outputFolder, this.parent.path, this.fileName)
+		const path = PathModule.join(outputFolder, this.fileName)
 
 		let content: string | Buffer | Uint8Array
 		if (Array.isArray(this.content)) {

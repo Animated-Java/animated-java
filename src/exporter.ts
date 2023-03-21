@@ -96,11 +96,17 @@ export const exportProject = consoleGroupCollapsed('exportProject', async () => 
 	const projectSettings = Project.animated_java_settings
 	const exporterSettings = Project.animated_java_exporter_settings![selectedExporterId]
 
-	let textureExportFolder: string, rigExportFolder: string
-	if (Project.animated_java_settings.enable_advanced_resource_pack_settings.value) {
+	const rigItemId = Project.animated_java_settings.rig_item.value
+
+	let textureExportFolder: string, rigExportFolder: string, rigItemModelExportPath: string
+	const advancedResourcePackSettingsEnabled =
+		Project.animated_java_settings.enable_advanced_resource_pack_settings.value
+	if (advancedResourcePackSettingsEnabled) {
 		// Advanced Resource Pack settings
 		textureExportFolder = Project.animated_java_settings.texture_export_folder.value
 		rigExportFolder = Project.animated_java_settings.rig_export_folder.value
+		rigItemModelExportPath = Project.animated_java_settings.rig_item_model.value
+		console.log('Using advanced resource pack settings')
 	} else {
 		// Automatic Resource Pack settings
 		const resourcePackFolder = PathModule.parse(
@@ -119,12 +125,27 @@ export const exportProject = consoleGroupCollapsed('exportProject', async () => 
 			projectNamespace + '_animated_java_rig',
 			'/models/item/'
 		)
+		rigItemModelExportPath = PathModule.join(
+			resourcePackFolder,
+			'assets/',
+			projectNamespace + '_animated_java_rig',
+			`/models/item/${rigItemId.split(':')[1]}.json`
+		)
+		console.log('Using automatic resource pack settings')
 	}
 
 	const rig = renderRig(rigExportFolder, textureExportFolder)
 	const renderedAnimations = await renderAllAnimations(rig)
 
-	await exportResources(ajSettings, projectSettings, rig) // Resources must be exported first
+	await exportResources(
+		ajSettings,
+		projectSettings,
+		rig,
+		rigExportFolder,
+		textureExportFolder,
+		rigItemModelExportPath
+	)
+	// Resources MUST be exported before the exporter is ran
 	await exporter.export(ajSettings, projectSettings, exporterSettings, renderedAnimations, rig)
 
 	Blockbench.showQuickMessage(translate('animated_java.quickmessage.exported_successfully'), 2000)
@@ -144,11 +165,16 @@ function showPredicateFileOverwriteConfirmation(path: string) {
 async function exportResources(
 	ajSettings: typeof animatedJavaSettings,
 	projectSettings: NotUndefined<ModelProject['animated_java_settings']>,
-	rig: IRenderedRig
+	rig: IRenderedRig,
+	rigExportFolder: string,
+	textureExportFolder: string,
+	rigItemModelExportPath: string
 ) {
 	const projectNamespace = projectSettings.project_namespace.value
 	const resourcePackPath = PathModule.parse(projectSettings.resource_pack_folder.value).dir
 	const assetsPackFolder = new VirtualFolder('assets')
+	const advancedResourcePackSettingsEnabled =
+		projectSettings.enable_advanced_resource_pack_settings.value
 
 	//------------------------------------
 	// Minecraft namespace
@@ -201,7 +227,7 @@ async function exportResources(
 			console.warn('Failed to read predicate item file as JSON')
 			console.warn(e)
 		}
-	}
+	} else successfullyReadPredicateItemFile = true
 	if (!successfullyReadPredicateItemFile || !content.animated_java) {
 		showPredicateFileOverwriteConfirmation(predicateItemFilePath)
 	}
@@ -287,22 +313,41 @@ async function exportResources(
 		(a: any, b: any) => a.predicate.custom_model_data - b.predicate.custom_model_data
 	)
 
-	const rigFolderPath = PathModule.join(resourcePackPath, namespaceFolder.path)
-	await fs.promises
-		.access(rigFolderPath)
-		.then(async () => {
-			await fs.promises.rm(rigFolderPath, { recursive: true })
-		})
-		.catch(e => {
-			console.warn(e)
-		})
+	if (advancedResourcePackSettingsEnabled) {
+		const progress = new ProgressBarController(
+			'Writing Resource Pack to Disk',
+			modelsFolder.childCount + texturesFolder.childCount + 1
+		)
+		await fs.promises.mkdir(rigExportFolder, { recursive: true })
+		await modelsFolder.writeChildrenToDisk(rigExportFolder, progress)
 
-	const progress = new ProgressBarController(
-		'Writing Resource Pack to Disk',
-		assetsPackFolder.childCount
-	)
-	await assetsPackFolder.writeToDisk(resourcePackPath, progress)
-	progress.finish()
+		await fs.promises.mkdir(textureExportFolder, { recursive: true })
+		await texturesFolder.writeChildrenToDisk(textureExportFolder, progress)
+
+		const predicateItemExportFolder = PathModule.parse(rigItemModelExportPath).dir
+		await fs.promises.mkdir(predicateItemExportFolder, { recursive: true })
+		await predicateItemFile.writeToDisk(predicateItemExportFolder, progress)
+
+		progress.finish()
+	} else {
+		const progress = new ProgressBarController(
+			'Writing Resource Pack to Disk',
+			assetsPackFolder.childCount
+		)
+
+		const rigFolderPath = PathModule.join(resourcePackPath, namespaceFolder.path)
+		await fs.promises
+			.access(rigFolderPath)
+			.then(async () => {
+				await fs.promises.rm(rigFolderPath, { recursive: true })
+			})
+			.catch(e => {
+				console.warn(e)
+			})
+
+		await assetsPackFolder.writeToDisk(resourcePackPath, progress)
+		progress.finish()
+	}
 }
 
 function verifySettings(structure: GUIStructure, settings: Array<Setting<any>>) {
