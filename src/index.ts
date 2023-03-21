@@ -34,7 +34,6 @@ import { ProgressBarController } from './util/progress'
 import './util/translation'
 import { addTranslations, translate } from './util/translation'
 import * as VirtualFileSystem from './util/virtualFileSystem'
-import { writable } from 'svelte/store'
 
 Prism.languages.mcfunction = {}
 

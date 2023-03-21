@@ -153,21 +153,21 @@ const SUBSCRIBABLES = new Map<
 >()
 
 /**
- * Creates a subscribable for a variable on an object.
+ * Creates a subscribable for a property on an object.
  * @param object The object to create the subscribable for.
- * @param key The key of the variable on the object.
+ * @param key The key of the property on the object.
  * @returns A tuple of {@link Subscribable | Subscribables} [onGet, onSet]
  * @example
  * Using the subscribables as simple events.
  * ```ts
- * const [onGet, onSet] = createVariableSubscribable(Blockbench, 'version')
+ * const [onGet, onSet] = createPropertySubscribable(Blockbench, 'version')
  * onGet.subscribe(({ value }) => console.log('Blockbench version:', value))
  * onSet.subscribe(({ newValue }) => console.log('Blockbench version changed to:', newValue))
  * ```
  * @example
- * Using the subscribables to change the value of a variable.
+ * Using the subscribables to change the value of a Property.
  * ```ts
- * const [, onSet] = createVariableSubscribable(Blockbench, 'version')
+ * const [, onSet] = createPropertySubscribable(Blockbench, 'version')
  * onSet.subscribe(({ storage, newValue }) => {
  * 	if (newValue === '1.0.0') storage.value = '1.0.1'
  * })
@@ -177,7 +177,7 @@ const SUBSCRIBABLES = new Map<
 
  * The Getter can also modify `storage.value`, but this is not recommended.
  */
-export function createVariableSubscribable<Value = any>(object: any, key: string) {
+export function createPropertySubscribable<Value = any>(object: any, key: string) {
 	let subscribables = SUBSCRIBABLES.get(object)
 	const storage: Storage<Value> = { value: object[key] }
 

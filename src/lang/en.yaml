@@ -231,10 +231,23 @@ animated_java.timeline.commands: Commands
 
 ### Popups
 animated_java.popup.close_button: Close
+animated_java.popup.confirm_button: Done
+animated_java.popup.cancel_button: Done
+
+# Unexpected Error
 animated_java.popup.unexpectedError.title: Unexpected Error
 animated_java.popup.unexpectedError.body: |-
   An unexpected error occurred!
   Please report this error on our Github or in the support channel on our official Discord server.
+
+# Confirm predicate file overwrite
+animated_java.popup.confirm_predicate_file_overwrite.title: Confirm Predicate File Overwrite
+animated_java.popup.confirm_predicate_file_overwrite.body: |-
+  The file "%file" already exists and is not a Rig Item Model!
+  Do you want to overwrite it?
+
+  Full file path:
+  %path
 
 # Invalid Texture Mapping(s)
 animated_java.popup.invalid_texture_mapping.title: Invalid Texture Mapping(s)

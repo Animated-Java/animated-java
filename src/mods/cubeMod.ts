@@ -1,5 +1,5 @@
 import { ajModelFormat } from '../modelFormat'
-import { createBlockbenchMod, createVariableSubscribable } from '../util/moddingTools'
+import { createBlockbenchMod, createPropertySubscribable } from '../util/moddingTools'
 
 const ERROR_OUTLINE_MATERIAL = Canvas.outlineMaterial.clone()
 ERROR_OUTLINE_MATERIAL.color = new THREE.Color(1, 0, 0)
@@ -85,7 +85,7 @@ createBlockbenchMod(
 
 			this.forceVisible = false
 
-			const [visibleGetter] = createVariableSubscribable(this.mesh.outline, 'visible')
+			const [visibleGetter] = createPropertySubscribable(this.mesh.outline, 'visible')
 			visibleGetter.subscribe(({ storage }) => {
 				if (Format === ajModelFormat) storage.value = this.forceVisible || storage.value
 			})

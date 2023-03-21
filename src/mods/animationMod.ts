@@ -1,11 +1,12 @@
 import { ajModelFormat } from '../modelFormat'
 import { roundToN } from '../util/misc'
-import { createBlockbenchMod } from '../util/moddingTools'
+import { createBlockbenchMod, createPropertySubscribable } from '../util/moddingTools'
 
 createBlockbenchMod(
 	'animated_java:animation/affected_bones',
 	{
 		extend: Blockbench.Animation.prototype.extend,
+		setLength: Blockbench.Animation.prototype.setLength,
 		compileBedrockAnimation: Blockbench.Animation.prototype.compileBedrockAnimation,
 		propertyAffectedBones: undefined as Property<'array'> | undefined,
 		propertyAffectedBonesIsAWhitelist: undefined as Property<'boolean'> | undefined,
@@ -28,6 +29,13 @@ createBlockbenchMod(
 				condition: () => Format === ajModelFormat,
 			}
 		)
+
+		Blockbench.Animation.prototype.setLength = function (len?: number) {
+			if (Format === ajModelFormat) {
+				len = Math.max(len === undefined ? this.length : len, 0.05)
+			}
+			return context.setLength.call(this, len)
+		}
 
 		Blockbench.Animation.prototype.extend = function (
 			this: _Animation,
@@ -69,6 +77,7 @@ createBlockbenchMod(
 		context.propertyAffectedBones?.delete()
 		context.propertyAffectedBonesIsAWhitelist?.delete()
 		Blockbench.Animation.prototype.extend = context.extend
+		Blockbench.Animation.prototype.setLength = context.setLength
 		Blockbench.Animation.prototype.compileBedrockAnimation = context.compileBedrockAnimation
 	}
 )

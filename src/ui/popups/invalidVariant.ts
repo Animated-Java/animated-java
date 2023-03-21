@@ -11,6 +11,7 @@ export function openInvalidVariantPopup(
 		title: translate('animated_java.popup.invalid_texture_mapping.title'),
 		id: 'animated_java:popup.invalid_variant',
 		width: 700,
+		stackable: true,
 		svelteComponent: SvelteComponent,
 		svelteComponentProps: { variant, removedTextureMappings },
 		buttons: [translate('animated_java.popup.close_button')],

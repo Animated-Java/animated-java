@@ -60,22 +60,6 @@ interface IBoneStructure {
 	children: IBoneStructure[]
 }
 
-// FIXME - Need to add support for predicate merging
-export interface IPredicateModel {
-	overrides: Array<{
-		predicate: {
-			custom_model_data: number
-			model: string
-		}
-	}>
-	animated_java?: {
-		included_projects: Array<{
-			name: string
-			usedIds: number[]
-		}>
-	}
-}
-
 export interface IRenderedRig {
 	/**
 	 * A map of bone UUIDs to rendered models
@@ -109,13 +93,25 @@ export interface IRenderedRig {
 	 * The export folder for the rig textures
 	 */
 	textureExportFolder: string
-	/**
-	 * The predicate item's model
-	 */
-	// predicateModel: IPredicateModel
 }
 
-let customModelData = 1
+export class CustomModelData {
+	private static current = 0
+	public static usedIds: number[] = []
+
+	public static get() {
+		let id = this.current
+		while (this.usedIds.includes(id)) id++
+		this.current = id + 1
+		this.usedIds.push(id)
+		return id
+	}
+
+	public static set(value: number) {
+		this.current = value
+	}
+}
+
 let progress: ProgressBarController
 
 function countNodesRecursive(nodes: OutlinerNode[] = Outliner.root): number {
@@ -246,7 +242,7 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 			elements: [],
 		},
 		modelPath: path,
-		customModelData: customModelData++,
+		customModelData: -1,
 		resourceLocation: parsed.resourceLocation,
 		boundingBox: getBoneBoundingBox(group),
 		scale: 1,
@@ -318,7 +314,7 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 				parent: bone.resourceLocation,
 				textures,
 			},
-			customModelData: customModelData++,
+			customModelData: -1,
 			modelPath,
 			resourceLocation: parsedModelPath.resourceLocation,
 		}
@@ -328,7 +324,7 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 }
 
 export function renderRig(modelExportFolder: string, textureExportFolder: string): IRenderedRig {
-	customModelData = 1
+	CustomModelData.set(1)
 	Texture.all.forEach((t, i) => (t.id = String(i)))
 
 	Animator.showDefaultPose()

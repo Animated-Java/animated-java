@@ -9,7 +9,7 @@
 <script lang="ts">
 	import { translate } from '../../../util/translation'
 	import PrismCodebox from '../prism/prismCodebox.svelte'
-
+	const openLink = Blockbench.openLink
 	export let error: any
 </script>
 
@@ -19,13 +19,21 @@
 		{#each translate('animated_java.popup.unexpectedError.body').split('\n') as line}
 			<p>{line}</p>
 		{/each}
-		<div>
-			<a href="https://github.com/Animated-Java/animated-java">
+		<div style="display: flex; justify-content: space-between; width: 120px; margin-top: 15px;">
+			<div
+				class="icon"
+				on:click={() => openLink('https://github.com/Animated-Java/animated-java')}
+				on:keypress={() => openLink('https://github.com/Animated-Java/animated-java')}
+			>
 				<i class="fa-brands fa-github github-icon" />
-			</a>
-			<a href="https://animated-java.dev/discord">
+			</div>
+			<div
+				class="icon"
+				on:click={() => openLink('https://animated-java.dev/discord')}
+				on:keypress={() => openLink('https://animated-java.dev/discord')}
+			>
 				<i class="fa-brands fa-discord discord-icon" />
-			</a>
+			</div>
 		</div>
 		<br />
 		<div class="prism-container">
@@ -35,16 +43,26 @@
 </div>
 
 <style>
-	.discord-icon {
-		font-size: 2em;
-		color: #454fbf;
-		padding: 10px;
+	.icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 48px;
+		width: 48px;
+		background-color: var(--color-button);
+	}
+	.icon:hover {
+		background-color: var(--color-selected);
 	}
 
+	.discord-icon {
+		font-size: 2em;
+		color: white;
+		/* color: #454fbf; */
+	}
 	.github-icon {
 		font-size: 2em;
 		color: white;
-		padding: 10px;
 	}
 
 	p {
@@ -84,7 +102,6 @@
 
 		max-height: 20em;
 		max-width: 580px;
-		padding-left: 8px;
-		padding-top: 3px;
+		padding: 3px 8px;
 	}
 </style>

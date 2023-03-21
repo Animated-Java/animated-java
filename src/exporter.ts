@@ -3,7 +3,7 @@ import { GUIStructure } from './GUIStructure'
 import { safeFunctionName } from './minecraft/util'
 import { projectSettingStructure } from './projectSettings'
 import { IRenderedAnimation, renderAllAnimations } from './rendering/animationRenderer'
-import { IRenderedRig, renderRig } from './rendering/modelRenderer'
+import { CustomModelData, IRenderedRig, renderRig } from './rendering/modelRenderer'
 import { animatedJavaSettings, IInfoPopup, Setting as AJSetting, Setting } from './settings'
 import { openAjFailedProjectExportReadinessDialog } from './ui/popups/failedProjectExportReadiness'
 import { openUnexpectedErrorDialog } from './ui/popups/unexpectedError'
@@ -73,6 +73,8 @@ export async function safeExportProject() {
 	if (activelyExporting) return
 	activelyExporting = true
 	await exportProject().catch(e => {
+		Blockbench.setProgress(0)
+		Blockbench.setStatusBarText('')
 		console.error(e)
 		if (e instanceof ExpectedError) return
 		openUnexpectedErrorDialog(e)
@@ -122,17 +124,30 @@ export const exportProject = consoleGroupCollapsed('exportProject', async () => 
 	const rig = renderRig(rigExportFolder, textureExportFolder)
 	const renderedAnimations = await renderAllAnimations(rig)
 
+	await exportResources(ajSettings, projectSettings, rig) // Resources must be exported first
 	await exporter.export(ajSettings, projectSettings, exporterSettings, renderedAnimations, rig)
-	await exportResources(ajSettings, projectSettings, rig)
 
 	Blockbench.showQuickMessage(translate('animated_java.quickmessage.exported_successfully'), 2000)
 })
+
+function showPredicateFileOverwriteConfirmation(path: string) {
+	const result = confirm(
+		translate('animated_java.popup.confirm_predicate_file_overwrite.body', {
+			file: PathModule.parse(path).base,
+			path,
+		}),
+		translate('animated_java.popup.confirm_predicate_file_overwrite.title')
+	)
+	if (!result) throw new ExpectedError('User cancelled export due to predicate file overwrite.')
+}
 
 async function exportResources(
 	ajSettings: typeof animatedJavaSettings,
 	projectSettings: NotUndefined<ModelProject['animated_java_settings']>,
 	rig: IRenderedRig
 ) {
+	const projectNamespace = projectSettings.project_namespace.value
+	const resourcePackPath = PathModule.parse(projectSettings.resource_pack_folder.value).dir
 	const assetsPackFolder = new VirtualFolder('assets')
 
 	//------------------------------------
@@ -142,13 +157,80 @@ async function exportResources(
 	const [rigItemNamespace, rigItemName] = projectSettings.rig_item.value.split(':')
 
 	const minecraftFolder = assetsPackFolder.newFolder('minecraft').newFolder('models/item')
-	const predicateItemFile = minecraftFolder.newFile(`${rigItemName}.json`, {
+
+	//------------------------------------
+	// Rig Item Predicate File
+	//------------------------------------
+
+	interface IPredicateItemModel {
+		parent: string
+		textures: any
+		overrides: Array<{
+			predicate: { custom_model_data: number }
+			model: string
+		}>
+		animated_java: {
+			rigs: Record<string, { used_ids: number[] }>
+		}
+	}
+
+	const predicateItemFilePath = PathModule.join(
+		resourcePackPath,
+		minecraftFolder.path,
+		`${rigItemName}.json`
+	)
+	const content: IPredicateItemModel = {
 		parent: 'item/generated',
 		textures: {
 			layer0: `${rigItemNamespace}:item/${rigItemName}`,
 		},
 		overrides: [],
-	})
+		animated_java: {
+			rigs: {},
+		},
+	}
+	const predicateItemFile = minecraftFolder.newFile(`${rigItemName}.json`, content)
+	let successfullyReadPredicateItemFile = false
+	if (fs.existsSync(predicateItemFilePath)) {
+		const stringContent = await fs.promises.readFile(predicateItemFilePath, 'utf8')
+		try {
+			const localContent = JSON.parse(stringContent)
+			Object.assign(content, localContent)
+			successfullyReadPredicateItemFile = true
+		} catch (e) {
+			console.warn('Failed to read predicate item file as JSON')
+			console.warn(e)
+		}
+	}
+	if (!successfullyReadPredicateItemFile || !content.animated_java) {
+		showPredicateFileOverwriteConfirmation(predicateItemFilePath)
+	}
+	if (!content.overrides) content.overrides = []
+	if (!content.animated_java.rigs) content.animated_java.rigs = {}
+
+	// const content = predicateItemFile.content as IPredicateItemModel
+	const usedIds: number[] = [] // IDs that are used by other projects
+	const consumedIds: number[] = [] // IDs that are used by this project
+	for (const [name, rig] of Object.entries(content.animated_java.rigs)) {
+		if (!rig.used_ids) {
+			console.warn('Found existing rig in predicate file, but it is missing used_ids.')
+			continue
+		}
+		const localUsedIds = rig.used_ids
+		if (name === projectNamespace) {
+			// Clean out old overrides
+			content.overrides = content.overrides.filter(o => {
+				if (localUsedIds.includes(o.predicate.custom_model_data)) return false
+			})
+			continue
+		}
+		usedIds.push(...rig.used_ids)
+	}
+
+	CustomModelData.usedIds = usedIds
+	content.animated_java.rigs[projectNamespace] = {
+		used_ids: consumedIds,
+	}
 
 	//------------------------------------
 	// Project namespace
@@ -176,6 +258,7 @@ async function exportResources(
 
 	for (const bone of Object.values(rig.boneMap)) {
 		modelsFolder.newFile(`${bone.name}.json`, bone.model)
+		consumedIds.push((bone.customModelData = CustomModelData.get()))
 		predicateItemFile.content.overrides.push({
 			predicate: {
 				custom_model_data: bone.customModelData,
@@ -190,6 +273,7 @@ async function exportResources(
 		for (const [uuid, variantBone] of Object.entries(variantBoneMap)) {
 			const bone = rig.boneMap[uuid]
 			variantFolder.newFile(`${bone.name}.json`, variantBone.model)
+			consumedIds.push((variantBone.customModelData = CustomModelData.get()))
 			predicateItemFile.content.overrides.push({
 				predicate: {
 					custom_model_data: variantBone.customModelData,
@@ -203,7 +287,6 @@ async function exportResources(
 		(a: any, b: any) => a.predicate.custom_model_data - b.predicate.custom_model_data
 	)
 
-	const resourcePackPath = PathModule.parse(projectSettings.resource_pack_folder.value).dir
 	const rigFolderPath = PathModule.join(resourcePackPath, namespaceFolder.path)
 	await fs.promises
 		.access(rigFolderPath)

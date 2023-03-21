@@ -6,10 +6,11 @@
 	"animated_java": {
 		"settings": {
 			"project_namespace": "happy_box",
+			"texture_size": 64,
 			"rig_item": "minecraft:white_dye",
-			"rig_item_model": "",
-			"rig_export_folder": "",
-			"texture_export_folder": "",
+			"rig_item_model": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\assets\\minecraft\\models\\item\\white_dye.json",
+			"rig_export_folder": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\assets\\happy_box_animated_java_rig\\models\\item",
+			"texture_export_folder": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\assets\\happy_box_animated_java_rig\\textures\\item",
 			"enable_advanced_resource_pack_settings": false,
 			"resource_pack_folder": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\pack.mcmeta",
 			"verbose": true,
@@ -18,7 +19,8 @@
 		"exporter_settings": {
 			"animated_java:animation_exporter": {
 				"datapack_folder": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\saves\\Animated Java Test World\\datapacks",
-				"interpolation_duration": 1
+				"interpolation_duration": 1,
+				"outdated_rig_warning": true
 			},
 			"animated_java:statue_exporter": {
 				"foo": true
@@ -488,6 +490,72 @@
 							"color": -1,
 							"uniform": false,
 							"interpolation": "linear",
+							"bezier_linked": true,
+							"bezier_left_time": [-0.1, -0.1, -0.1],
+							"bezier_left_value": [0, 0, 0],
+							"bezier_right_time": [0.1, 0.1, 0.1],
+							"bezier_right_value": [0, 0, 0]
+						}
+					]
+				}
+			}
+		},
+		{
+			"uuid": "68911fb5-7295-544a-ffe3-4d885167193b",
+			"name": "step",
+			"loop": "once",
+			"override": false,
+			"length": 1,
+			"snapping": 20,
+			"selected": true,
+			"anim_time_update": "",
+			"blend_weight": "",
+			"start_delay": "",
+			"loop_delay": "",
+			"affected_bones": [],
+			"affected_bones_is_a_whitelist": false,
+			"animators": {
+				"69aa99f5-fee8-5db4-accc-408ffe509670": {
+					"name": "cube1",
+					"type": "bone",
+					"keyframes": [
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "0",
+									"y": "0",
+									"z": "0"
+								}
+							],
+							"uuid": "a02de81e-a697-956b-0a00-102ec5404015",
+							"time": 0.2,
+							"color": -1,
+							"interpolation": "linear",
+							"bezier_linked": true,
+							"bezier_left_time": [-0.1, -0.1, -0.1],
+							"bezier_left_value": [0, 0, 0],
+							"bezier_right_time": [0.1, 0.1, 0.1],
+							"bezier_right_value": [0, 0, 0]
+						},
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "0",
+									"y": 0,
+									"z": 0
+								},
+								{
+									"x": 32,
+									"y": 0,
+									"z": 0
+								}
+							],
+							"uuid": "0648e54c-f6ea-504c-0be1-6dbd199124bd",
+							"time": 0.5,
+							"color": -1,
+							"interpolation": "step",
 							"bezier_linked": true,
 							"bezier_left_time": [-0.1, -0.1, -0.1],
 							"bezier_left_value": [0, 0, 0],

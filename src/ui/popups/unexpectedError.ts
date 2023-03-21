@@ -7,6 +7,7 @@ export function openUnexpectedErrorDialog(error: any) {
 		title: translate('animated_java.popup.invalid_cubes.title'),
 		id: 'animated_java:popup.invalid_cubes',
 		width: 700,
+		stackable: true,
 		buttons: [translate('animated_java.popup.close_button')],
 		svelteComponent: UnexpectedError,
 		svelteComponentProps: { error },

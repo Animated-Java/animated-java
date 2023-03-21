@@ -19,6 +19,7 @@ export function openAJDocsDialog(link?: string, section?: string) {
 		svelteComponent: DocsComponent,
 		svelteComponentProps: { page: link, section },
 		buttons: [translate('animated_java.dialog.close_button')],
+		stackable: true,
 		onClose: () => {
 			docsDialog = undefined
 			// console.log('onClose')

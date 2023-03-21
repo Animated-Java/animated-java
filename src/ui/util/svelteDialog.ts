@@ -1,6 +1,8 @@
 import type { SvelteComponent } from 'svelte'
 import * as PACKAGE from '../../../package.json'
 
+const DIALOG_STACK: SvelteDialog[] = []
+
 export class SvelteDialog extends Dialog {
 	instance?: SvelteComponent | undefined
 	constructor(
@@ -11,6 +13,7 @@ export class SvelteDialog extends Dialog {
 			svelteComponentProps: Record<string, any>
 			lines?: never
 			onClose?: () => void
+			stackable?: boolean
 		}
 	) {
 		const mount = document.createComment(`${PACKAGE.name}-svelte-dialog-` + guid())
@@ -30,6 +33,11 @@ export class SvelteDialog extends Dialog {
 				props: options.svelteComponentProps,
 			})
 			if (super.onOpen) super.onOpen()
+			if (!options.stackable) {
+				DIALOG_STACK.forEach(v => v.cancel())
+				DIALOG_STACK.empty()
+			}
+			DIALOG_STACK.push(this)
 		}
 
 		this.onButton = (...args) => {
