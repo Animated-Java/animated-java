@@ -7,6 +7,7 @@ animated_java.menubar.items.settings: Settings
 animated_java.menubar.items.project_settings: Project Settings
 animated_java.menubar.items.documentation: Documentation
 animated_java.menubar.items.export_project: Export Project
+animated_java.menubar.items.bone_config: Bone Config
 
 animated_java.quickmessage.exported_successfully: Project Exported Successfully!
 
@@ -130,6 +131,12 @@ animated_java.project_settings.exporter: Exporter
 animated_java.project_settings.exporter.description: |-
   The exporter for this project.
   This will override the default exporter set in the Animated Java Settings.
+
+### Bone Config
+animated_java.bone_config.nbt: Bone Entity NBT
+animated_java.bone_config.nbt.description: |-
+  This NBT will be merged into the bone entity's NBT when exporting.
+  Animated Java's generated NBT will take priority over this if there are any conflicts.
 
 ### Animation Config
 animated_java.dialog.animation_config.title: Animation Properties

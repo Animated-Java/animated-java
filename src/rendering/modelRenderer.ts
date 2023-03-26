@@ -2,6 +2,7 @@ import { parseResourcePackPath, safeFunctionName } from '../minecraft/util'
 import { ProgressBarController } from '../util/progress'
 import { Variant } from '../variants'
 import { getAnimationBones, IAnimationBone } from './animationRenderer'
+import { Setting } from '../settings'
 
 interface IRenderedFace {
 	uv: number[]
@@ -46,6 +47,7 @@ interface IRenderedBone {
 	resourceLocation: string
 	boundingBox: THREE.Box3
 	scale: number
+	boneConfig: Record<string, Setting<any>>
 }
 
 interface IRenderedBoneVariant {
@@ -246,6 +248,7 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 		resourceLocation: parsed.resourceLocation,
 		boundingBox: getBoneBoundingBox(group),
 		scale: 1,
+		boneConfig: {},
 	}
 
 	const structure: IBoneStructure = {

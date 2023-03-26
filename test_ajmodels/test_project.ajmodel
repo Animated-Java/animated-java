@@ -11,7 +11,7 @@
 			"rig_item_model": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\assets\\minecraft\\models\\item\\white_dye.json",
 			"rig_export_folder": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\assets\\happy_box_animated_java_rig\\models\\item",
 			"texture_export_folder": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\assets\\happy_box_animated_java_rig\\textures\\item",
-			"enable_advanced_resource_pack_settings": true,
+			"enable_advanced_resource_pack_settings": false,
 			"resource_pack_folder": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\pack.mcmeta",
 			"verbose": true,
 			"exporter": "animated_java:animation_exporter"
@@ -34,6 +34,7 @@
 				"name": "a",
 				"textureMap": {},
 				"uuid": "f7615ce3-3825-cde7-f183-870f32ddfa10",
+				"boneConfig": {},
 				"default": true,
 				"affectedBonesIsAWhitelist": false,
 				"affectedBones": []
@@ -46,6 +47,7 @@
 					"5fa5c44b-1fa3-77d7-895e-48c64e768b87::red.png": "0e4de5b5-4cca-2e39-3cca-817d30316913::blue.png"
 				},
 				"uuid": "c100284b-bca4-dbd4-9243-8e9badbd66c8",
+				"boneConfig": {},
 				"affectedBonesIsAWhitelist": false,
 				"affectedBones": [
 					{
@@ -62,6 +64,7 @@
 					"623c3550-3f4b-fc54-be0b-bc134a9c6c31::green.png": "0e4de5b5-4cca-2e39-3cca-817d30316913::blue.png"
 				},
 				"uuid": "f528135d-bdb3-d9c7-bda1-e074a5afc571",
+				"boneConfig": {},
 				"affectedBonesIsAWhitelist": false,
 				"affectedBones": [
 					{
@@ -162,6 +165,7 @@
 			"name": "cube1",
 			"origin": [-16, 0, 16],
 			"color": 0,
+			"nbt": "{Glowing:1b}",
 			"uuid": "69aa99f5-fee8-5db4-accc-408ffe509670",
 			"export": true,
 			"mirror_uv": false,
@@ -175,6 +179,7 @@
 					"name": "cube2",
 					"origin": [16, 16, 0],
 					"color": 0,
+					"nbt": "{}",
 					"uuid": "6a32e1b9-fd9e-8aec-9673-c24952af636f",
 					"export": true,
 					"mirror_uv": false,
@@ -507,7 +512,7 @@
 			"override": false,
 			"length": 1,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",

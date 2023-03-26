@@ -329,7 +329,7 @@ export function loadExporter() {
 				.chainNewFile('tick_as_root.mcfunction', [
 					`execute unless score @s ${scoreboard.rigLoaded} matches 1 run function ${AJ_NAMESPACE}:on_load`,
 					`scoreboard players add @s ${scoreboard.lifeTime} 1`,
-					`execute at @s on passengers run tp @s ~ ~ ~ ~ ~`,
+					`execute at @s on passengers run tp @s ~ ~ ~ ~180 ~`,
 					`function #${NAMESPACE}:on_tick`,
 					`function ${AJ_NAMESPACE}:animations/tick`,
 				])
@@ -422,7 +422,7 @@ export function loadExporter() {
 				.accessFolder('functions')
 				.chainNewFile('summon.mcfunction', [
 					`summon minecraft:item_display ~ ~ ~ ${summonNbt.toString()}`,
-					`execute as @e[type=#${NAMESPACE}:aj_root,limit=1,distance=..1,tag=${tags.new}] run function ${AJ_NAMESPACE}:summon/as_root`,
+					`execute as @e[type=#${NAMESPACE}:aj_root,limit=1,distance=..1,tag=${tags.new}] at @s run function ${AJ_NAMESPACE}:summon/as_root`,
 				])
 				.newFolder('summon')
 				.chainNewFile('as_root.mcfunction', [

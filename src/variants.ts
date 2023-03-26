@@ -19,8 +19,13 @@ export interface ITextureMapping {
 	fallbackTo?: boolean
 }
 
+export interface IBoneConfig {
+	nbt: string
+}
+
 export class Variant {
 	textureMap: TextureMap
+	boneConfig: Record<string, IBoneConfig>
 	default?: boolean
 	_name: string
 	uuid: string
@@ -28,12 +33,14 @@ export class Variant {
 		name: string,
 		textureMap?: TextureMap,
 		uuid?: string,
+		boneConfig?: Record<string, IBoneConfig>,
 		public affectedBones: Array<{ name: string; value: string }> = [],
 		public affectedBonesIsAWhitelist = false
 	) {
 		this._name = name
 		this.uuid = uuid || guid()
 		this.textureMap = textureMap || {}
+		this.boneConfig = boneConfig || {}
 	}
 
 	get name() {
@@ -154,6 +161,7 @@ export class Variant {
 			name: this.name,
 			textureMap: this.textureMap,
 			uuid: this.uuid,
+			boneConfig: this.boneConfig,
 			default: this.default,
 			affectedBonesIsAWhitelist: this.affectedBonesIsAWhitelist,
 			affectedBones: this.affectedBones,
@@ -164,6 +172,7 @@ export class Variant {
 		name: string
 		textureMap: TextureMap
 		uuid: string
+		boneConfig: Record<string, IBoneConfig>
 		affectedBones?: Array<{ name: string; value: string }>
 		affectedBonesIsAWhitelist?: boolean
 	}) {
@@ -171,6 +180,7 @@ export class Variant {
 			json.name,
 			json.textureMap,
 			json.uuid,
+			json.boneConfig,
 			json.affectedBones,
 			json.affectedBonesIsAWhitelist
 		)

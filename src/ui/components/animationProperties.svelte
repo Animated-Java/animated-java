@@ -1,10 +1,10 @@
-<script lang="ts">
+<script lang="ts" context="module">
 	import { onDestroy } from 'svelte'
 	import { safeFunctionName } from '../../minecraft/util'
 	import * as AJ from '../../settings'
-	import { translate } from '../../util/translation'
 	import type { GUIStructure } from '../../guiStructure'
 	import UiNode from './settingNode.svelte'
+	import { translate } from '../../util/translation'
 
 	const TRANSLATIONS = {
 		name: {
@@ -55,7 +55,9 @@
 			),
 		},
 	}
+</script>
 
+<script lang="ts">
 	export let animation: _Animation
 	let settings: Record<string, AJ.Setting<any>> = {}
 

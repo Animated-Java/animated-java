@@ -4,7 +4,7 @@ import { getDefaultProjectSettings } from './projectSettings'
 import { consoleGroup, consoleGroupCollapsed } from './util/console'
 import * as events from './events'
 import { createBlockbenchMod } from './util/moddingTools'
-import { TextureMap, Variant, VariantsContainer } from './variants'
+import { IBoneConfig, TextureMap, Variant, VariantsContainer } from './variants'
 
 const FORMAT_VERSION = '1.0'
 
@@ -49,6 +49,7 @@ function processVersionMigration(model: any) {
 				uuid: guid(),
 				textureMap: variant,
 				default: name === 'default',
+				boneConfig: {},
 				affectedBones: [],
 				affectedBonesIsAWhitelist: false,
 			})
@@ -115,10 +116,11 @@ interface IAnimatedJavaModel {
 		settings?: Record<string, any>
 		exporter_settings?: Record<string, Record<string, any>>
 		variants?: Array<{
-			name?: string
-			textureMap?: TextureMap
+			name: string
+			textureMap: TextureMap
 			default?: boolean
-			uuid?: string
+			uuid: string
+			boneConfig: Record<string, IBoneConfig>
 			affectedBones?: Array<{ name: string; value: string }>
 			affectedBonesIsAWhitelist?: boolean
 		}>
@@ -232,26 +234,10 @@ const loadAnimatedJavaVariants = consoleGroup(
 		if (!(model.animated_java && model.animated_java.variants)) return
 
 		console.log('Loading Animated Java variants...')
-		for (const {
-			name,
-			textureMap,
-			uuid,
-			default: isDefault,
-			affectedBones,
-			affectedBonesIsAWhitelist,
-		} of model.animated_java.variants) {
-			console.log('Loading variant', name)
-			if (!(name && textureMap && uuid)) continue
-			Project.animated_java_variants.addVariant(
-				Variant.fromJSON({
-					name,
-					textureMap: textureMap,
-					uuid,
-					affectedBones,
-					affectedBonesIsAWhitelist,
-				}),
-				isDefault
-			)
+		for (const variant of model.animated_java.variants) {
+			console.log('Loading variant', variant.name)
+			if (!(variant.name && variant.textureMap && variant.uuid)) continue
+			Project.animated_java_variants.addVariant(Variant.fromJSON(variant), variant.default)
 		}
 
 		Project.animated_java_variants.select()
