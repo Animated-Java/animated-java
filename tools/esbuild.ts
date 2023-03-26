@@ -210,9 +210,8 @@ function buildProd() {
 			entryPoints: ['./src/index.ts'],
 			outfile: `./dist/${PACKAGE.name as string}.js`,
 			bundle: true,
-			// FIXME - Minify and sourcemap should be updated when we start making real production builds.
-			// minify: true,
-			sourcemap: 'inline',
+			minify: true,
+			// sourcemap: 'inline',
 			platform: 'node',
 			loader: { '.svg': 'dataurl' },
 			plugins: [

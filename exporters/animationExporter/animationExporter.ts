@@ -39,6 +39,14 @@ export function loadExporter() {
 				'animated_java.animation_exporter.settings.outdated_rig_warning.description'
 			).split('\n'),
 		},
+		include_convenience_functions: {
+			name: API.translate(
+				'animated_java.animation_exporter.settings.include_convenience_functions'
+			),
+			description: API.translate(
+				'animated_java.animation_exporter.settings.include_convenience_functions.description'
+			).split('\n'),
+		},
 	}
 
 	async function fileExists(path: string) {
@@ -101,6 +109,12 @@ export function loadExporter() {
 					description: TRANSLATIONS.outdated_rig_warning.description,
 					defaultValue: true,
 				}),
+				include_convenience_functions: new API.Settings.CheckboxSetting({
+					id: 'animated_java:animation_exporter/include_convenience_functions',
+					displayName: TRANSLATIONS.include_convenience_functions.name,
+					description: TRANSLATIONS.include_convenience_functions.description,
+					defaultValue: true,
+				}),
 			}
 		},
 		settingsStructure: [
@@ -115,6 +129,10 @@ export function loadExporter() {
 			{
 				type: 'setting',
 				settingId: 'animated_java:animation_exporter/outdated_rig_warning',
+			},
+			{
+				type: 'setting',
+				settingId: 'animated_java:animation_exporter/include_convenience_functions',
 			},
 		],
 		async export(ajSettings, projectSettings, exporterSettings, renderedAnimations, rig) {
@@ -147,7 +165,7 @@ export function loadExporter() {
 				animTime: 'aj.anim_time',
 				lifeTime: 'aj.life_time',
 				loopMode: 'aj.loop_mode',
-				localAnimTime: `aj.%s.local_anim_time`,
+				localAnimTime: `aj.animation.%s.local_anim_time`,
 				rigLoaded: `aj.${NAMESPACE}.rig_loaded`,
 			}
 			const tags = {
@@ -222,11 +240,7 @@ export function loadExporter() {
 				.newFolder('tags/functions')
 				.chainNewFile('on_summon.json', {
 					replace: false,
-					values: [
-						outdatedRigWarningEnabled
-							? `${AJ_NAMESPACE}:check_if_updating_rig_on_summon`
-							: undefined,
-					],
+					values: [],
 				})
 				.chainNewFile('on_tick.json', {
 					replace: false,
@@ -238,11 +252,7 @@ export function loadExporter() {
 				})
 				.chainNewFile('on_remove.json', {
 					replace: false,
-					values: [
-						outdatedRigWarningEnabled
-							? `${AJ_NAMESPACE}:check_if_updating_rig_on_remove`
-							: undefined,
-					],
+					values: [],
 				})
 
 			//--------------------------------------------
@@ -294,19 +304,15 @@ export function loadExporter() {
 						.map(s => `scoreboard objectives add ${s} dummy`),
 					// prettier-ignore
 					...renderedAnimations.map(a => `scoreboard objectives add ${API.formatStr(scoreboard.localAnimTime, [a.name])} dummy`),
+					// prettier-ignore
+					...renderedAnimations.map((a, i) => `scoreboard players set $aj.${NAMESPACE}.animation.${a.name} ${scoreboard.id} ${i}`),
+					// prettier-ignore
+					...variants.map((v, i) => `scoreboard players set $aj.${NAMESPACE}.variant.${v.name} ${scoreboard.id} ${i}`),
 					// Variable initialization
 					`scoreboard players add .aj.last_id ${scoreboard.id} 0`,
-					//// Const initialization
-					`scoreboard players set #aj.default_interpolation_duration ${scoreboard.i} ${exporterSettings.interpolation_duration.value}`,
-					`scoreboard players set #aj.loop_mode.loop ${scoreboard.i} ${loopModes.indexOf(
-						'loop'
-					)}`,
-					`scoreboard players set #aj.loop_mode.once ${scoreboard.i} ${loopModes.indexOf(
-						'once'
-					)}`,
-					`scoreboard players set #aj.loop_mode.hold ${scoreboard.i} ${loopModes.indexOf(
-						'hold'
-					)}`,
+					`scoreboard players set $aj.default_interpolation_duration ${scoreboard.i} ${exporterSettings.interpolation_duration.value}`,
+					// prettier-ignore
+					...loopModes.map((mode, i) => `scoreboard players set $aj.loop_mode.${mode} ${scoreboard.i} ${i}`),
 					// version ID
 					`scoreboard players set .aj.export_version ${
 						scoreboard.i
@@ -321,7 +327,6 @@ export function loadExporter() {
 						? `execute unless score @s ${scoreboard.exportVersion} = .aj.export_version ${scoreboard.i} at @s run function ${AJ_NAMESPACE}:upgrade_rig`
 						: undefined,
 					`function #${NAMESPACE}:on_load`,
-					`say Loaded!`,
 				])
 				.chainNewFile('tick.mcfunction', [
 					`execute as @e[type=${entity_types.ajRoot},tag=${tags.rootEntity}] run function ${AJ_NAMESPACE}:tick_as_root`,
@@ -398,43 +403,60 @@ export function loadExporter() {
 			const variantSummonFolder = namespaceFolder
 				.accessFolder('functions')
 				.chainNewFile('summon.mcfunction', [
-					`scoreboard players set .aj.variant_id ${scoreboard.i} ${variants.findIndex(
-						v => v.default
-					)}`,
-					`function ${AJ_NAMESPACE}:summon`,
-				])
-				.chainNewFile('summon_variable_variant.mcfunction', [
-					`function ${AJ_NAMESPACE}:summon`,
+					`summon minecraft:item_display ~ ~ ~ ${summonNbt.toString()}`,
+					`execute as @e[type=#${NAMESPACE}:aj_root,limit=1,distance=..1,tag=${tags.new}] run function ${AJ_NAMESPACE}:summon/as_root`,
 				])
 				.newFolder('summon')
 
-			for (const variant of variants) {
-				if (variant.default) continue
-				variantSummonFolder.newFile(`${variant.name}.mcfunction`, [
-					`scoreboard players set .aj.variant_id ${scoreboard.i} ${variants.indexOf(
-						variant
-					)}`,
-					`function ${AJ_NAMESPACE}:summon`,
-				])
+			if (exporterSettings.include_convenience_functions.value === true) {
+				for (const variant of variants) {
+					if (variant.default) continue
+					variantSummonFolder.newFile(`${variant.name}.mcfunction`, [
+						`scoreboard players set #variant ${scoreboard.i} ${variants.indexOf(
+							variant
+						)}`,
+						`function ${NAMESPACE}:summon`,
+					])
+				}
 			}
 
 			animatedJavaFolder
 				.accessFolder('functions')
-				.chainNewFile('summon.mcfunction', [
-					`summon minecraft:item_display ~ ~ ~ ${summonNbt.toString()}`,
-					`execute as @e[type=#${NAMESPACE}:aj_root,limit=1,distance=..1,tag=${tags.new}] at @s run function ${AJ_NAMESPACE}:summon/as_root`,
-				])
 				.newFolder('summon')
 				.chainNewFile('as_root.mcfunction', [
+					// Default argument values
+					`execute unless score #frame ${scoreboard.i} = #frame ${scoreboard.i} run scoreboard players set #frame ${scoreboard.i} 0`,
+					`execute unless score #variant ${scoreboard.i} = #variant ${
+						scoreboard.i
+					} run scoreboard players set #variant ${scoreboard.i} ${variants.findIndex(
+						v => v.default
+					)}`,
+					`execute unless score #animation ${scoreboard.i} = #animation ${scoreboard.i} run scoreboard players set #animation ${scoreboard.i} -1`,
+
 					`scoreboard players set @s ${scoreboard.rigLoaded} 1`,
 					`scoreboard players operation @s ${scoreboard.exportVersion} = .aj.export_version ${scoreboard.i}`,
 					`execute store result score @s ${scoreboard.id} run scoreboard players add .aj.last_id ${scoreboard.id} 1`,
-					`execute on passengers run function ${AJ_NAMESPACE}:summon/as_bone`,
+					`tp @s ~ ~ ~ ~ ~`,
+					`execute at @s on passengers run function ${AJ_NAMESPACE}:summon/as_bone`,
 					...variants.map(
-						(v, i) =>
-							`execute if score .aj.variant_id ${scoreboard.i} matches ${i} run function ${AJ_NAMESPACE}:apply_variant/${v.name}_as_root`
+						v =>
+							`execute if score #variant ${scoreboard.i} = $aj.${NAMESPACE}.variant.${v.name} ${scoreboard.id} run function ${AJ_NAMESPACE}:apply_variant/${v.name}_as_root`
 					),
-					`function #${NAMESPACE}:on_summon`,
+					`execute if score #animation ${scoreboard.i} matches 0.. run scoreboard players operation @s ${scoreboard.animTime} = #frame ${scoreboard.i}`,
+					...renderedAnimations
+						.map(a => [
+							`execute if score #animation ${scoreboard.i} = $aj.${NAMESPACE}.animation.${a.name} ${scoreboard.id} run function ${AJ_NAMESPACE}:animations/${a.name}/apply_frame`,
+							`execute if score #animation ${
+								scoreboard.i
+							} = $aj.${NAMESPACE}.animation.${a.name} ${
+								scoreboard.id
+							} run scoreboard players operation @s ${API.formatStr(
+								scoreboard.localAnimTime,
+								[a.name]
+							)} = #frame ${scoreboard.i}`,
+						])
+						.reduce((a, b) => a.concat(b), []),
+					`execute at @s run function #${NAMESPACE}:on_summon`,
 					`tag @s remove ${tags.new}`,
 				])
 				.chainNewFile('as_bone.mcfunction', [
@@ -543,14 +565,14 @@ export function loadExporter() {
 						`scoreboard players set @s ${scoreboard.loopMode} ${loopModes.indexOf(
 							anim.loopMode
 						)}`,
-						`execute on passengers store result entity @s interpolation_duration int 1 run scoreboard players get #aj.default_interpolation_duration ${scoreboard.i}`,
+						`execute on passengers store result entity @s interpolation_duration int 1 run scoreboard players get $aj.default_interpolation_duration ${scoreboard.i}`,
 						`tag @s add ${API.formatStr(tags.activeAnim, [anim.name])}`,
 					])
 					.chainNewFile('resume.mcfunction', [
 						`scoreboard players set @s ${scoreboard.loopMode} ${loopModes.indexOf(
 							anim.loopMode
 						)}`,
-						`execute on passengers store result entity @s interpolation_duration int 1 run scoreboard players get #aj.default_interpolation_duration ${scoreboard.i}`,
+						`execute on passengers store result entity @s interpolation_duration int 1 run scoreboard players get $aj.default_interpolation_duration ${scoreboard.i}`,
 						`tag @s add ${API.formatStr(tags.activeAnim, [anim.name])}`,
 					])
 					.chainNewFile('pause.mcfunction', [
@@ -710,12 +732,12 @@ export function loadExporter() {
 					.chainNewFile('end.mcfunction', [
 						`execute if score @s ${
 							scoreboard.loopMode
-						} = #aj.loop_mode.loop aj.i run scoreboard players set @s ${API.formatStr(
+						} = $aj.loop_mode.loop aj.i run scoreboard players set @s ${API.formatStr(
 							scoreboard.localAnimTime,
 							[anim.name]
 						)} 0`,
-						`execute if score @s ${scoreboard.loopMode} = #aj.loop_mode.once aj.i run function ${NAMESPACE}:animations/${anim.name}/stop`,
-						`execute if score @s ${scoreboard.loopMode} = #aj.loop_mode.hold aj.i run function ${NAMESPACE}:animations/${anim.name}/pause`,
+						`execute if score @s ${scoreboard.loopMode} = $aj.loop_mode.once aj.i run function ${NAMESPACE}:animations/${anim.name}/stop`,
+						`execute if score @s ${scoreboard.loopMode} = $aj.loop_mode.hold aj.i run function ${NAMESPACE}:animations/${anim.name}/pause`,
 					])
 
 				// console.log(anim.name)

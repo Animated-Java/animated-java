@@ -43,6 +43,7 @@
 				on:keydown={e => {
 					if (e.key === 'Enter') toggleExpand(e)
 				}}
+				style="display: flex"
 			>
 				{#if expanded}
 					<span
@@ -104,6 +105,6 @@
 	}
 
 	div.child {
-		margin-left: 3.8ch;
+		margin-left: 22px;
 	}
 </style>

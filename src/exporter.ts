@@ -270,7 +270,6 @@ async function exportResources(
 	)
 
 	for (const texture of Object.values(rig.textures)) {
-		const fileName = `${safeFunctionName(texture.name)}.png`
 		let image: Buffer
 		if (texture.source?.startsWith('data:')) {
 			image = Buffer.from(texture.source.split(',')[1], 'base64')
@@ -279,7 +278,8 @@ async function exportResources(
 		} else {
 			throw new Error(`Texture "${texture.name}" has no source or path`)
 		}
-		texturesFolder.newFile(fileName, image)
+		texturesFolder.newFile(`${safeFunctionName(texture.name)}.png`, image)
+		// console.log(`Exported texture ${texture.name} to ${texturesFolder.path}`)
 	}
 
 	for (const bone of Object.values(rig.boneMap)) {
@@ -340,6 +340,16 @@ async function exportResources(
 			.access(rigFolderPath)
 			.then(async () => {
 				await fs.promises.rm(rigFolderPath, { recursive: true })
+			})
+			.catch(e => {
+				console.warn(e)
+			})
+
+		const textureFolderPath = PathModule.join(resourcePackPath, texturesFolder.path)
+		await fs.promises
+			.access(textureFolderPath)
+			.then(async () => {
+				await fs.promises.rm(textureFolderPath, { recursive: true })
 			})
 			.catch(e => {
 				console.warn(e)
@@ -438,6 +448,35 @@ export function verifyProjectExportReadiness() {
 				) as unknown as Array<Setting<any>>
 			)
 		)
+
+	// Verify variant keyframes
+	for (const animation of Project.animations) {
+		const effects = animation.animators.effects
+		if (!effects) continue
+		for (const keyframe of effects.keyframes) {
+			if (!(keyframe.channel === 'variants')) continue
+			for (const dataPoint of keyframe.data_points) {
+				if (!dataPoint.variant) continue
+				const variant = Project.animated_java_variants?.variants.find(
+					v => v.uuid === dataPoint.variant
+				)
+				if (!variant) {
+					// FIXME - Needs translation
+					issues.push({
+						type: 'error',
+						title: 'Variant Not Found',
+						lines: [
+							`Variant UUID "${
+								dataPoint.variant as string
+							}" referenced in animation "${animation.name}" in a keyframe at ${
+								keyframe.time
+							} seconds, but no variant with that UUID was found.`,
+						],
+					})
+				}
+			}
+		}
+	}
 
 	// This is no longer needed, we're handling the texture saving automatically.
 	// Verify textures

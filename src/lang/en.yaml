@@ -129,8 +129,7 @@ animated_java.project_settings.exporter_settings: '%exporter Settings'
 
 animated_java.project_settings.exporter: Exporter
 animated_java.project_settings.exporter.description: |-
-  The exporter for this project.
-  This will override the default exporter set in the Animated Java Settings.
+  The exporter to use when exporting this project.
 
 ### Bone Config
 animated_java.bone_config.nbt: Bone Entity NBT

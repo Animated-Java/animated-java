@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte'
-	import { slide } from '../util/accessability'
+	import { fly } from '../util/accessability'
 	import { AnimatedJavaExporter } from '../../exporter'
 	import { projectSettingStructure } from '../../projectSettings'
 	import * as AJ from '../../settings'
@@ -44,10 +44,7 @@
 
 	{#if selectedExporter}
 		{#key selectedExporter}
-			<div
-				in:$slide|local={{ delay: 200, duration: 200 }}
-				out:$slide|local={{ duration: 200 }}
-			>
+			<div in:$fly|local={{ x: -20, duration: 250 }}>
 				<FancyHeader
 					content={translate('animated_java.project_settings.exporter_settings', {
 						exporter: selectedExporter.name,

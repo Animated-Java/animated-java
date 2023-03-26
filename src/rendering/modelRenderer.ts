@@ -304,6 +304,8 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 				throw new Error(
 					`Invalid texture mapping found while exporting variant models. If you're seeing this error something has gone horribly wrong.`
 				)
+			// console.log(fromTexture, toTexture)
+			if (!rig.textures[toTexture.id]) rig.textures[toTexture.id] = toTexture
 			textures[fromTexture.id] = renderTexture(toTexture, rig)
 		}
 

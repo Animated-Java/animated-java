@@ -58,6 +58,7 @@ export class Setting<V, R = any> extends Subscribable<R> {
 	dependsOn?: SettingID[]
 
 	private _initialized: boolean
+	private _updating: boolean
 	protected _value: V
 	protected lastValue: V
 	infoPopup?: IInfoPopup
@@ -83,6 +84,7 @@ export class Setting<V, R = any> extends Subscribable<R> {
 		this._value = this.defaultValue
 		this.lastValue = this.defaultValue
 		this._initialized = false
+		this._updating = false
 
 		Setting.registeredSettings.set(this.id, this)
 	}
@@ -120,12 +122,15 @@ export class Setting<V, R = any> extends Subscribable<R> {
 	}
 
 	_onUpdate(forced = false) {
+		if (this._updating) return
 		if (!forced && this.lastValue === this.value) return
+		this._updating = true
 		// console.log('Updating setting', this.id, forced)
 		this.lastValue = this.value
 		this.infoPopup = undefined
 		if (this.onUpdate) this.onUpdate(this as unknown as R)
 		this.dispatch(this as unknown as R)
+		this._updating = false
 	}
 
 	verify() {

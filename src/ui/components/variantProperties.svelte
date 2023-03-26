@@ -88,15 +88,13 @@
 					docsLink: 'page:rig/variants#affected_bones',
 				},
 				function onUpdate(setting) {
-					setting.value
-						.map(v => {
-							const bone = Group.all.find(g => g.uuid === v.value)
-							if (bone) v.name = bone.name
-							else return undefined
-
-							return v
-						})
-						.filter(v => v !== undefined)
+					setting.value.map(v => {
+						const bone = Group.all.find(g => v && g.uuid === v.value)
+						if (bone) v.name = bone.name
+						else v.value = '???'
+					})
+					setting.value = setting.value.filter(v => v.value !== '???')
+					console.log(setting.value)
 
 					setting.options = Group.all
 						.filter(g => !setting.value.find(v => v.value === g.uuid))
@@ -104,7 +102,6 @@
 							name: g.name,
 							value: g.uuid,
 						}))
-					// console.log(setting.value)
 				},
 				function onInit(setting) {
 					setting.onUpdate!(setting)

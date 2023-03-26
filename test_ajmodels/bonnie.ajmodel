@@ -20,7 +20,8 @@
 			"animated_java:animation_exporter": {
 				"datapack_folder": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\saves\\Animated Java Test World\\datapacks",
 				"interpolation_duration": 1,
-				"outdated_rig_warning": true
+				"outdated_rig_warning": true,
+				"include_convenience_functions": true
 			},
 			"animated_java:statue_exporter": {
 				"foo": false
@@ -42,13 +43,13 @@
 			{
 				"name": "with_guitar",
 				"textureMap": {
-					"0857ab9f-98f1-ce3a-bbad-5d411a6adcf6::bonnie.png": "0c40860d-b3c9-e08d-ac22-cf3a5bf1ae3d::bonnie_no_guitar.png",
-					"0c40860d-b3c9-e08d-ac22-cf3a5bf1ae3d::bonnie_no_guitar.png": "0857ab9f-98f1-ce3a-bbad-5d411a6adcf6::bonnie.png"
+					"0c40860d-b3c9-e08d-ac22-cf3a5bf1ae3d::bonnie_no_guitar.png": "0857ab9f-98f1-ce3a-bbad-5d411a6adcf6::bonnie.png",
+					"0857ab9f-98f1-ce3a-bbad-5d411a6adcf6::bonnie.png": "0857ab9f-98f1-ce3a-bbad-5d411a6adcf6::bonnie.png"
 				},
-				"uuid": "c4f34c0e-5f40-f258-27de-3e4e1cf867c0",
+				"uuid": "3ed3d9af-4083-4d96-115c-2a490e7c6882",
 				"boneConfig": {},
-				"affectedBonesIsAWhitelist": true,
-				"affectedBones": ["d327164a-1f8e-7fe2-0463-acea09300724"]
+				"affectedBonesIsAWhitelist": false,
+				"affectedBones": []
 			}
 		]
 	},
@@ -2046,7 +2047,7 @@
 	"textures": [
 		{
 			"path": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\assets\\bonnie\\textures\\item\\bonnie.png",
-			"name": "bonnie.png",
+			"name": "bonnie",
 			"folder": "item",
 			"namespace": "bonnie",
 			"id": "0",
@@ -2066,7 +2067,7 @@
 		},
 		{
 			"path": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\assets\\bonnie\\textures\\item\\bonnie_no_guitar.png",
-			"name": "bonnie_no_guitar.png",
+			"name": "bonnie_no_guitar",
 			"folder": "item",
 			"namespace": "bonnie",
 			"id": "1",
@@ -3190,54 +3191,12 @@
 							"bezier_right_value": [0, 0, 0]
 						}
 					]
-				},
-				"effects": {
-					"name": "Effects",
-					"type": "effect",
-					"keyframes": [
-						{
-							"channel": "variants",
-							"data_points": [
-								{
-									"variant": "eb467b61-e2a5-46ec-81bb-8c9531f72487",
-									"executeCondition": "if score test v matches 0"
-								}
-							],
-							"uuid": "e2b4a50f-f1a9-15bc-f825-72c7d8080f92",
-							"time": 0,
-							"color": -1,
-							"interpolation": "linear",
-							"bezier_linked": true,
-							"bezier_left_time": [-0.1, -0.1, -0.1],
-							"bezier_left_value": [0, 0, 0],
-							"bezier_right_time": [0.1, 0.1, 0.1],
-							"bezier_right_value": [0, 0, 0]
-						},
-						{
-							"channel": "variants",
-							"data_points": [
-								{
-									"variant": "c4f34c0e-5f40-f258-27de-3e4e1cf867c0",
-									"executeCondition": "if score test v matches 1"
-								}
-							],
-							"uuid": "640ba7f1-f405-1ee5-b602-e4f9e8f58696",
-							"time": 0.5,
-							"color": -1,
-							"interpolation": "linear",
-							"bezier_linked": true,
-							"bezier_left_time": [-0.1, -0.1, -0.1],
-							"bezier_left_value": [0, 0, 0],
-							"bezier_right_time": [0.1, 0.1, 0.1],
-							"bezier_right_value": [0, 0, 0]
-						}
-					]
 				}
 			}
 		},
 		{
 			"uuid": "4d967b67-acd7-3b3e-9011-c3b8a1af747c",
-			"name": "walk.end.left_forward",
+			"name": "walk.end_left_forward",
 			"loop": "hold",
 			"override": false,
 			"length": 1,
@@ -4984,7 +4943,7 @@
 			"override": false,
 			"length": 3.95,
 			"snapping": 20,
-			"selected": false,
+			"selected": true,
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",
