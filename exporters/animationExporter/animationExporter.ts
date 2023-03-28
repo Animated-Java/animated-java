@@ -161,12 +161,13 @@ export function loadExporter() {
 			const scoreboard = {
 				i: 'aj.i',
 				id: 'aj.id',
-				exportVersion: `aj.export_version`,
+				tweenTime: 'aj.tween_time',
 				animTime: 'aj.anim_time',
 				lifeTime: 'aj.life_time',
 				loopMode: 'aj.loop_mode',
-				localAnimTime: `aj.animation.%s.local_anim_time`,
+				exportVersion: `aj.export_version`,
 				rigLoaded: `aj.${NAMESPACE}.rig_loaded`,
+				localAnimTime: `aj.animation.%s.local_anim_time`,
 			}
 			const tags = {
 				new: 'aj.new',
@@ -437,6 +438,7 @@ export function loadExporter() {
 					)}`,
 					`execute unless score #animation ${scoreboard.i} = #animation ${scoreboard.i} run scoreboard players set #animation ${scoreboard.i} -1`,
 
+					`scoreboard players set @s ${scoreboard.animTime} 0`,
 					`scoreboard players set @s ${scoreboard.rigLoaded} 1`,
 					`scoreboard players operation @s ${scoreboard.exportVersion} = .aj.export_version ${scoreboard.i}`,
 					`execute store result score @s ${scoreboard.id} run scoreboard players add .aj.last_id ${scoreboard.id} 1`,
@@ -449,7 +451,7 @@ export function loadExporter() {
 					`execute if score #animation ${scoreboard.i} matches 0.. run scoreboard players operation @s ${scoreboard.animTime} = #frame ${scoreboard.i}`,
 					...renderedAnimations
 						.map(a => [
-							`execute if score #animation ${scoreboard.i} = $aj.${NAMESPACE}.animation.${a.name} ${scoreboard.id} run function ${AJ_NAMESPACE}:animations/${a.name}/apply_frame`,
+							`execute if score #animation ${scoreboard.i} = $aj.${NAMESPACE}.animation.${a.name} ${scoreboard.id} run function ${AJ_NAMESPACE}:animations/${a.name}/apply_frame_as_root`,
 							`execute if score #animation ${
 								scoreboard.i
 							} = $aj.${NAMESPACE}.animation.${a.name} ${
@@ -565,42 +567,27 @@ export function loadExporter() {
 
 			// External functions
 			for (const anim of renderedAnimations) {
-				namespaceFolder
-					.newFolder(`functions/animations/${anim.name}`)
-					.chainNewFile('play.mcfunction', [
-						`scoreboard players set @s ${API.formatStr(scoreboard.localAnimTime, [
-							anim.name,
-						])} 0`,
-						`scoreboard players set @s ${scoreboard.loopMode} ${loopModes.indexOf(
-							anim.loopMode
-						)}`,
-						`execute on passengers store result entity @s interpolation_duration int 1 run scoreboard players get $aj.default_interpolation_duration ${scoreboard.i}`,
-						`tag @s add ${API.formatStr(tags.activeAnim, [anim.name])}`,
+				const animFolder = namespaceFolder.newFolder(`functions/animations/${anim.name}`)
+				for (const name of [
+					'play',
+					'resume',
+					'pause',
+					'stop',
+					'apply_frame',
+					'tween_play',
+					'tween_resume',
+				]) {
+					animFolder.newFile(`${name}.mcfunction`, [
+						`execute if entity @s[tag=${tags.rootEntity}] run function ${AJ_NAMESPACE}:animations/${anim.name}/${name}_as_root`,
+						`execute if entity @s[tag=!${
+							tags.rootEntity
+						}] run tellraw @a ${API.formatStr(errorMustBeRunAsRoot.toString(), [
+							`${NAMESPACE}:animations/${anim.name}/${name}`,
+						])}`,
 					])
-					.chainNewFile('resume.mcfunction', [
-						`scoreboard players set @s ${scoreboard.loopMode} ${loopModes.indexOf(
-							anim.loopMode
-						)}`,
-						`execute on passengers store result entity @s interpolation_duration int 1 run scoreboard players get $aj.default_interpolation_duration ${scoreboard.i}`,
-						`tag @s add ${API.formatStr(tags.activeAnim, [anim.name])}`,
-					])
-					.chainNewFile('pause.mcfunction', [
-						`tag @s remove ${API.formatStr(tags.activeAnim, [anim.name])}`,
-					])
-					.chainNewFile('stop.mcfunction', [
-						`scoreboard players set @s ${API.formatStr(scoreboard.localAnimTime, [
-							anim.name,
-						])} 0`,
-						`tag @s remove ${API.formatStr(tags.activeAnim, [anim.name])}`,
-						`function ${AJ_NAMESPACE}:animations/${anim.name}/tree/leaf_0.mcfunction`,
-					])
-					.chainNewFile('apply_frame.mcfunction', [
-						// Applies the a frame of the animation to the entity based on aj.anim_time.
-						`function ${AJ_NAMESPACE}:animations/${anim.name}/apply_frame`,
-					])
+				}
 			}
 
-			// Internal functions
 			// Tree building helpers
 			function getBranchFileName(branch: IFrameBranch) {
 				return `branch_${branch.minScoreIndex}_${branch.maxScoreIndex}`
@@ -753,14 +740,74 @@ export function loadExporter() {
 				])
 
 			for (const anim of renderedAnimations) {
-				const animFolder = animatedJavaFolder.newFolder(`functions/animations/${anim.name}`)
-
-				animFolder
+				const animFolder = animatedJavaFolder
+					.newFolder(`functions/animations/${anim.name}`)
+					.chainNewFile('play_as_root.mcfunction', [
+						`scoreboard players set @s ${API.formatStr(scoreboard.localAnimTime, [
+							anim.name,
+						])} 0`,
+						`scoreboard players set @s ${scoreboard.loopMode} ${loopModes.indexOf(
+							anim.loopMode
+						)}`,
+						`scoreboard players operation @s ${scoreboard.animTime} = ${API.formatStr(
+							scoreboard.localAnimTime,
+							[anim.name]
+						)}`,
+						`execute on passengers run data modify entity @s interpolation_duration set value 0`,
+						`function ${AJ_NAMESPACE}:animations/${anim.name}/tree/leaf_0`,
+						`execute on passengers store result entity @s interpolation_duration int 1 run scoreboard players get $aj.default_interpolation_duration ${scoreboard.i}`,
+						`tag @s add ${API.formatStr(tags.activeAnim, [anim.name])}`,
+					])
+					.chainNewFile('resume_as_root.mcfunction', [
+						`scoreboard players set @s ${scoreboard.loopMode} ${loopModes.indexOf(
+							anim.loopMode
+						)}`,
+						`execute on passengers store result entity @s interpolation_duration int 1 run scoreboard players get $aj.default_interpolation_duration ${scoreboard.i}`,
+						`tag @s add ${API.formatStr(tags.activeAnim, [anim.name])}`,
+					])
+					.chainNewFile('pause_as_root.mcfunction', [
+						`tag @s remove ${API.formatStr(tags.activeAnim, [anim.name])}`,
+					])
+					.chainNewFile('stop_as_root.mcfunction', [
+						`scoreboard players set @s ${API.formatStr(scoreboard.localAnimTime, [
+							anim.name,
+						])} 0`,
+						`tag @s remove ${API.formatStr(tags.activeAnim, [anim.name])}`,
+						`execute on passengers run data modify entity @s interpolation_duration set value 0`,
+						`function ${AJ_NAMESPACE}:animations/${anim.name}/tree/leaf_0`,
+					])
+					.chainNewFile('tween_play_as_root.mcfunction', [
+						`function ${AJ_NAMESPACE}:animations/${anim.name}/play_as_root`,
+						`function ${AJ_NAMESPACE}:animations/${anim.name}/tween_as_root`,
+					])
+					.chainNewFile('tween_resume_as_root.mcfunction', [
+						`function ${AJ_NAMESPACE}:animations/${anim.name}/resume_as_root`,
+						`function ${AJ_NAMESPACE}:animations/${anim.name}/tween_as_root`,
+						`function ${AJ_NAMESPACE}:animations/${anim.name}/apply_frame_as_root`,
+					])
+					.chainNewFile('tween_as_root.mcfunction', [
+						`execute unless score #tween_duration ${scoreboard.i} = #tween_duration ${scoreboard.i} run scoreboard players operation #tween_duration ${scoreboard.i} = $aj.default_interpolation_duration ${scoreboard.i}`,
+						`scoreboard players operation @s ${scoreboard.tweenTime} = #tween_duration ${scoreboard.i}`,
+						`scoreboard players remove @s ${scoreboard.tweenTime} 1`,
+						`execute on passengers store result entity @s interpolation_duration int 1 run scoreboard players get #tween_duration ${scoreboard.i}`,
+						`scoreboard players reset #tween_duration ${scoreboard.i}`,
+					])
 					.chainNewFile('tick.mcfunction', [
+						`execute if score @s ${scoreboard.tweenTime} matches 1.. run function ${AJ_NAMESPACE}:animations/${anim.name}/tick_tween`,
+						`execute unless score @s ${scoreboard.tweenTime} matches 1.. run function ${AJ_NAMESPACE}:animations/${anim.name}/tick_animation`,
+						// `function ${AJ_NAMESPACE}:animations/${anim.name}/tick_animation`,
+					])
+					.chainNewFile('tick_tween.mcfunction', [
+						`scoreboard players remove @s ${scoreboard.tweenTime} 1`,
+						// `scoreboard players operation #t ${scoreboard.i} = @s ${scoreboard.tweenTime}`,
+						// `execute on passengers store result entity @s interpolation_duration int 1 run scoreboard players get #t ${scoreboard.i}`,
+						`execute if score @s ${scoreboard.tweenTime} matches ..0 on passengers store result entity @s interpolation_duration int 1 run scoreboard players get $aj.default_interpolation_duration ${scoreboard.i}`,
+					])
+					.chainNewFile('tick_animation.mcfunction', [
 						`scoreboard players operation @s ${
 							scoreboard.animTime
 						} = @s ${API.formatStr(scoreboard.localAnimTime, [anim.name])}`,
-						`function ${AJ_NAMESPACE}:animations/${anim.name}/apply_frame`,
+						`function ${AJ_NAMESPACE}:animations/${anim.name}/apply_frame_as_root`,
 						`scoreboard players add @s ${API.formatStr(scoreboard.localAnimTime, [
 							anim.name,
 						])} 1`,
@@ -781,19 +828,14 @@ export function loadExporter() {
 						`execute if score @s ${scoreboard.loopMode} = $aj.loop_mode.hold aj.i run function ${NAMESPACE}:animations/${anim.name}/pause`,
 					])
 
-				// console.log(anim.name)
 				const tree = API.generateSearchTree(anim.frames, item => {
 					if (item.type === 'branch') return item.items.length > 0
-
 					if (item.type === 'leaf') return item.item.nodes.length > 0
-
 					return false
 				})
-				// console.log(anim.name, tree)
-				const frameTreeFolder = animFolder.newFolder('tree')
-				const applyFrameFile = animFolder.newFile(
-					'apply_frame.mcfunction',
-					buildFrameTree(anim, tree, frameTreeFolder)
+				animFolder.newFile(
+					'apply_frame_as_root.mcfunction',
+					buildFrameTree(anim, tree, animFolder.newFolder('tree'))
 				)
 			}
 

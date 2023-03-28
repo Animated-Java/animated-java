@@ -20,7 +20,7 @@
 			"animated_java:animation_exporter": {
 				"datapack_folder": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\saves\\Animated Java Test World\\datapacks",
 				"interpolation_duration": 1,
-				"outdated_rig_warning": true,
+				"outdated_rig_warning": false,
 				"include_convenience_functions": true
 			},
 			"animated_java:statue_exporter": {
