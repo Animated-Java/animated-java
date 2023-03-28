@@ -282,7 +282,8 @@ async function exportResources(
 		// console.log(`Exported texture ${texture.name} to ${texturesFolder.path}`)
 	}
 
-	for (const bone of Object.values(rig.boneMap)) {
+	for (const bone of Object.values(rig.nodeMap)) {
+		if (bone.type !== 'bone') continue
 		modelsFolder.newFile(`${bone.name}.json`, bone.model)
 		consumedIds.push((bone.customModelData = CustomModelData.get()))
 		predicateItemFile.content.overrides.push({
@@ -297,7 +298,8 @@ async function exportResources(
 		if (variantBoneMap.default) continue
 		const variantFolder = modelsFolder.newFolder(variantName)
 		for (const [uuid, variantBone] of Object.entries(variantBoneMap)) {
-			const bone = rig.boneMap[uuid]
+			const bone = rig.nodeMap[uuid]
+			if (bone.type !== 'bone') continue
 			variantFolder.newFile(`${bone.name}.json`, variantBone.model)
 			consumedIds.push((variantBone.customModelData = CustomModelData.get()))
 			predicateItemFile.content.overrides.push({
@@ -478,31 +480,14 @@ export function verifyProjectExportReadiness() {
 		}
 	}
 
-	// This is no longer needed, we're handling the texture saving automatically.
-	// Verify textures
-	// for (const texture of Project.textures) {
-	// 	// Textures should have a save path
-	// 	if (!texture.path) {
-	// 		issues.push({
-	// 			type: 'error',
-	// 			title: 'Texture Save Path Not Set',
-	// 			lines: [`Texture "${texture.name}" does not have a save path`],
-	// 		})
-	// 		continue
-	// 	}
-	// 	// Textures should be saved in a valid resource pack
-	// 	if (!isValidResourcePackPath(texture.path)) {
-	// 		issues.push({
-	// 			type: 'error',
-	// 			title: 'Invalid Texture Save Path',
-	// 			lines: [`Texture "${texture.name}" is saved in an invalid resource pack`],
-	// 		})
-	// 	}
-	// }
-
 	// Verify Outliner
 	for (const node of Outliner.root as any[]) {
-		if (node instanceof Group) continue
+		if (
+			node instanceof Group ||
+			(OutlinerElement.types.camera && node instanceof OutlinerElement.types.camera) ||
+			node instanceof Locator
+		)
+			continue
 		// FIXME - Needs translation
 		issues.push({
 			type: 'error',

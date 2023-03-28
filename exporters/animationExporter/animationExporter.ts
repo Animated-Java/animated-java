@@ -174,6 +174,8 @@ export function loadExporter() {
 				boneEntity: `aj.${NAMESPACE}.bone.%s`,
 				activeAnim: `aj.${NAMESPACE}.animation.%s`,
 				activeVariant: `aj.${NAMESPACE}.variant.%s`,
+				cameraTag: `aj.${NAMESPACE}.camera.%s`,
+				locatorTag: `aj.${NAMESPACE}.locator.%s`,
 			}
 			const entity_types = {
 				ajRoot: `#${NAMESPACE}:aj_root`,
@@ -363,7 +365,7 @@ export function loadExporter() {
 			)
 
 			const passengers = new NbtList()
-			for (const [uuid, bone] of Object.entries(rig.boneMap)) {
+			for (const [uuid, bone] of Object.entries(rig.nodeMap)) {
 				const pose = rig.defaultPose.find(p => p.uuid === uuid)
 				const passenger = new NbtCompound()
 					.set('id', new NbtString('minecraft:item_display'))
@@ -375,6 +377,16 @@ export function loadExporter() {
 						])
 					)
 					.set(
+						'transformation',
+						// transformationToNbt(pose.pos, pose.rot, pose.scale)
+						matrixToNbtFloatArray(pose.matrix)
+					)
+					.set(
+						'interpolation_duration',
+						new NbtInt(exporterSettings.interpolation_duration.value)
+					)
+				if (bone.type === 'bone') {
+					passenger.set(
 						'item',
 						new NbtCompound()
 							.set('id', new NbtString(RIG_ITEM))
@@ -387,15 +399,7 @@ export function loadExporter() {
 								)
 							)
 					)
-					.set(
-						'transformation',
-						// transformationToNbt(pose.pos, pose.rot, pose.scale)
-						matrixToNbtFloatArray(pose.matrix)
-					)
-					.set(
-						'interpolation_duration',
-						new NbtInt(exporterSettings.interpolation_duration.value)
-					)
+				}
 				passengers.add(passenger)
 			}
 			summonNbt.set('Passengers', passengers)
@@ -458,6 +462,10 @@ export function loadExporter() {
 						.reduce((a, b) => a.concat(b), []),
 					`execute at @s run function #${NAMESPACE}:on_summon`,
 					`tag @s remove ${tags.new}`,
+					// Reset scoreboard arguemnts
+					`scoreboard players reset #frame ${scoreboard.i}`,
+					`scoreboard players reset #variant ${scoreboard.i}`,
+					`scoreboard players reset #animation ${scoreboard.i}`,
 				])
 				.chainNewFile('as_bone.mcfunction', [
 					`scoreboard players operation @s ${scoreboard.id} = .aj.last_id ${scoreboard.id}`,
@@ -524,7 +532,8 @@ export function loadExporter() {
 				])
 
 				const commands: string[] = []
-				for (const [uuid, bone] of Object.entries(rig.boneMap)) {
+				for (const [uuid, bone] of Object.entries(rig.nodeMap)) {
+					if (bone.type !== 'bone') continue
 					const included = variant.affectedBones.find(v => v.value === uuid)
 					if (
 						(!included && variant.affectedBonesIsAWhitelist) ||
@@ -534,7 +543,7 @@ export function loadExporter() {
 
 					let variantBone: AnimatedJava.IRenderedBoneVariant
 					if (variant.default) {
-						variantBone = rig.boneMap[uuid]
+						variantBone = bone
 					} else {
 						variantBone = rig.variantModels[variant.name][uuid]
 					}
@@ -601,7 +610,7 @@ export function loadExporter() {
 				return `leaf_${frame.scoreIndex}`
 			}
 
-			function getBoneLeafFileName(frame: IFrameLeaf) {
+			function getNodeLeafFileName(frame: IFrameLeaf) {
 				return `leaf_${frame.scoreIndex}_as_bone`
 			}
 
@@ -612,7 +621,7 @@ export function loadExporter() {
 			) {
 				const commands: string[] = []
 				commands.push(
-					`execute on passengers run function ${AJ_NAMESPACE}:animations/${animName}/tree/${getBoneLeafFileName(
+					`execute on passengers run function ${AJ_NAMESPACE}:animations/${animName}/tree/${getNodeLeafFileName(
 						leaf
 					)}`
 				)
@@ -641,21 +650,53 @@ export function loadExporter() {
 				return commands
 			}
 
-			function generateBoneLeafFunction(leaf: IFrameLeaf) {
+			function generateNodeLeafFunction(leaf: IFrameLeaf) {
 				const commands: string[] = []
-				for (const bone of Object.values(leaf.item.bones)) {
-					const data = new NbtCompound()
-						.set(
-							'transformation',
-							// transformationToNbt(bone.pos, bone.rot, bone.scale)
-							matrixToNbtFloatArray(bone.matrix)
-						)
-						.set('start_interpolation', new NbtInt(0))
-					commands.push(
-						`execute if entity @s[tag=${API.formatStr(tags.boneEntity, [
-							bone.name,
-						])}] run data modify entity @s {} merge value ${data}`
-					)
+				for (const node of Object.values(leaf.item.nodes)) {
+					switch (node.type) {
+						case 'bone': {
+							const data = new NbtCompound()
+								.set(
+									'transformation',
+									// transformationToNbt(bone.pos, bone.rot, bone.scale)
+									matrixToNbtFloatArray(node.matrix)
+								)
+								.set('start_interpolation', new NbtInt(0))
+							commands.push(
+								`execute if entity @s[tag=${API.formatStr(tags.boneEntity, [
+									node.name,
+								])}] run data modify entity @s {} merge value ${data}`
+							)
+							break
+						}
+						case 'camera': {
+							const pos = node.pos
+							const euler = new THREE.Euler().setFromQuaternion(node.rot, 'YZX')
+							const rot = new THREE.Vector3(euler.x, euler.y, euler.z).multiplyScalar(
+								180 / Math.PI
+							)
+							commands.push(
+								`execute if entity @s[tag=${API.formatStr(tags.boneEntity, [
+									node.name,
+								])}] at @s run tp @e[tag=${API.formatStr(tags.cameraTag, [
+									node.name,
+								])}] ^${pos.x} ^${pos.y - 1.62} ^${pos.z} ~${
+									-rot.y + 180
+								} ~${-rot.x}`
+							)
+							break
+						}
+						case 'locator': {
+							commands.push(
+								`execute if entity @s[tag=${API.formatStr(tags.boneEntity, [
+									node.name,
+								])}] at @s run tp @e[tag=${API.formatStr(tags.locatorTag, [
+									node.name,
+								])}] ^${node.pos.x} ^${node.pos.y} ^${node.pos.z} ~ ~`
+							)
+							break
+						}
+					}
 				}
 				return commands
 			}
@@ -686,8 +727,8 @@ export function loadExporter() {
 					)
 
 					frameTreeFolder.newFile(
-						getBoneLeafFileName(tree) + '.mcfunction',
-						generateBoneLeafFunction(tree)
+						getNodeLeafFileName(tree) + '.mcfunction',
+						generateNodeLeafFunction(tree)
 					)
 
 					return `execute if score @s ${scoreboard.animTime} matches ${
@@ -725,9 +766,9 @@ export function loadExporter() {
 						])} 1`,
 						`execute if score @s ${API.formatStr(scoreboard.localAnimTime, [
 							anim.name,
-						])} matches ${anim.duration}.. run function ${AJ_NAMESPACE}:animations/${
-							anim.name
-						}/end`,
+						])} matches ${
+							anim.duration - 1
+						}.. run function ${AJ_NAMESPACE}:animations/${anim.name}/end`,
 					])
 					.chainNewFile('end.mcfunction', [
 						`execute if score @s ${
@@ -744,7 +785,7 @@ export function loadExporter() {
 				const tree = API.generateSearchTree(anim.frames, item => {
 					if (item.type === 'branch') return item.items.length > 0
 
-					if (item.type === 'leaf') return item.item.bones.length > 0
+					if (item.type === 'leaf') return item.item.nodes.length > 0
 
 					return false
 				})

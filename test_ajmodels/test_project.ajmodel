@@ -20,7 +20,8 @@
 			"animated_java:animation_exporter": {
 				"datapack_folder": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\saves\\Animated Java Test World\\datapacks",
 				"interpolation_duration": 1,
-				"outdated_rig_warning": true
+				"outdated_rig_warning": true,
+				"include_convenience_functions": true
 			},
 			"animated_java:statue_exporter": {
 				"foo": true
@@ -158,6 +159,28 @@
 			},
 			"type": "cube",
 			"uuid": "29c15edc-aea1-917e-1210-69c6c9468111"
+		},
+		{
+			"name": "camera",
+			"path": "",
+			"position": [0, 0, 0],
+			"rotation": [0, 0, 0],
+			"linked_preview": "",
+			"camera_linked": false,
+			"visibility": true,
+			"type": "camera",
+			"uuid": "36f06c91-bd3f-4427-1f02-256581cc85c3"
+		},
+		{
+			"name": "locator",
+			"position": [-16, 48, 0],
+			"rotation": [0, 0, 0],
+			"ignore_inherited_scale": false,
+			"visibility": true,
+			"locked": false,
+			"modelPath": "",
+			"uuid": "e74b221b-1dd5-a96d-98b8-e2ba36335e13",
+			"type": "locator"
 		}
 	],
 	"outliner": [
@@ -190,6 +213,22 @@
 					"children": ["cc4fc40c-5e59-13b9-22c9-5d8dadab9122"]
 				}
 			]
+		},
+		"36f06c91-bd3f-4427-1f02-256581cc85c3",
+		"e74b221b-1dd5-a96d-98b8-e2ba36335e13",
+		{
+			"name": "bone",
+			"origin": [0, 0, 0],
+			"color": 0,
+			"nbt": "{}",
+			"uuid": "31b160d4-1966-f4c2-59c2-1b1227bcb9f2",
+			"export": true,
+			"mirror_uv": false,
+			"isOpen": true,
+			"locked": false,
+			"visibility": true,
+			"autouv": 0,
+			"children": []
 		}
 	],
 	"textures": [
@@ -508,11 +547,11 @@
 		{
 			"uuid": "68911fb5-7295-544a-ffe3-4d885167193b",
 			"name": "step",
-			"loop": "once",
+			"loop": "loop",
 			"override": false,
-			"length": 1,
+			"length": 8,
 			"snapping": 20,
-			"selected": false,
+			"selected": true,
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",
@@ -524,25 +563,6 @@
 					"name": "cube1",
 					"type": "bone",
 					"keyframes": [
-						{
-							"channel": "position",
-							"data_points": [
-								{
-									"x": "0",
-									"y": "0",
-									"z": "0"
-								}
-							],
-							"uuid": "a02de81e-a697-956b-0a00-102ec5404015",
-							"time": 0.2,
-							"color": -1,
-							"interpolation": "linear",
-							"bezier_linked": true,
-							"bezier_left_time": [-0.1, -0.1, -0.1],
-							"bezier_left_value": [0, 0, 0],
-							"bezier_right_time": [0.1, 0.1, 0.1],
-							"bezier_right_value": [0, 0, 0]
-						},
 						{
 							"channel": "position",
 							"data_points": [
@@ -561,6 +581,50 @@
 							"time": 0.5,
 							"color": -1,
 							"interpolation": "step",
+							"bezier_linked": true,
+							"bezier_left_time": [-0.1, -0.1, -0.1],
+							"bezier_left_value": [0, 0, 0],
+							"bezier_right_time": [0.1, 0.1, 0.1],
+							"bezier_right_value": [0, 0, 0]
+						}
+					]
+				},
+				"36f06c91-bd3f-4427-1f02-256581cc85c3": {
+					"name": "camera",
+					"type": "camera",
+					"keyframes": [
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "math.sin(q.life_time * 45) * 16 * 20",
+									"y": "10 * 16",
+									"z": "math.cos(q.life_time * 45) * 16 * 20"
+								}
+							],
+							"uuid": "90a04774-e943-ba98-c8af-3f2f09c25cea",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"bezier_linked": true,
+							"bezier_left_time": [-0.1, -0.1, -0.1],
+							"bezier_left_value": [0, 0, 0],
+							"bezier_right_time": [0.1, 0.1, 0.1],
+							"bezier_right_value": [0, 0, 0]
+						},
+						{
+							"channel": "rotation",
+							"data_points": [
+								{
+									"x": "22.5",
+									"y": "q.life_time * 45",
+									"z": "0"
+								}
+							],
+							"uuid": "9dd09ef9-15a9-5c37-2346-564de8b30ec8",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
 							"bezier_linked": true,
 							"bezier_left_time": [-0.1, -0.1, -0.1],
 							"bezier_left_value": [0, 0, 0],

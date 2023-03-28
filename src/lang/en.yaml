@@ -49,6 +49,7 @@ animated_java.project_settings.project_namespace.error.unset: |-
 animated_java.project_settings.texture_size: Texture Size
 animated_java.project_settings.texture_size.description: |-
   The UV resolution of the Project.
+  This should equal the resolution of the largest texture in your project.
 
 animated_java.project_settings.resourcepack_group: Resource Pack
 

@@ -3,8 +3,8 @@ import { ProgressBarController } from '../util/progress'
 import { IRenderedRig } from './modelRenderer'
 let progress: ProgressBarController
 
-function getGroupMatrix(group: Group, scale: number) {
-	const matrixWorld = group.mesh.matrixWorld.clone()
+function getNodeMatrix(node: OutlinerElement, scale: number) {
+	const matrixWorld = node.mesh.matrixWorld.clone()
 	matrixWorld.setPosition(
 		new THREE.Vector3().setFromMatrixPosition(matrixWorld).multiplyScalar(1 / 16)
 	)
@@ -12,7 +12,8 @@ function getGroupMatrix(group: Group, scale: number) {
 	return matrixWorld
 }
 
-export interface IAnimationBone {
+export interface IAnimationNode {
+	type: 'bone' | 'camera' | 'locator'
 	name: string
 	uuid: string
 	node?: Group | NullObject | Locator | OutlinerElement
@@ -26,7 +27,7 @@ export interface IRenderedAnimation {
 	name: string
 	frames: Array<{
 		time: number
-		bones: IAnimationBone[]
+		nodes: IAnimationNode[]
 		variant?: {
 			uuid: string
 			executeCondition: string
@@ -49,18 +50,17 @@ export interface IRenderedAnimation {
 
 let lastAnimation: _Animation
 let previousMatrices: Record<string, number[]>
-export function getAnimationBones(animation: _Animation, boneMap: IRenderedRig['boneMap']) {
+export function getAnimationNodes(animation: _Animation, nodeMap: IRenderedRig['nodeMap']) {
 	if (lastAnimation !== animation) {
-		// console.log(lastAnimation?.name, '!=', animation.name)
 		lastAnimation = animation
 		previousMatrices = {}
 	}
-	const bones: IAnimationBone[] = []
+	const nodes: IAnimationNode[] = []
 	// const outliner = scene.children.find(v => v.name === 'outline_group')!
 	// outliner.rotation.y = Math.PI
 
-	for (const [uuid, bone] of Object.entries(boneMap)) {
-		if (!bone.group.export) continue
+	for (const [uuid, node] of Object.entries(nodeMap)) {
+		if (!node.node.export) continue
 		const included = animation.affected_bones.find(b => b.value === uuid)
 		// Ignore this bone if it's not affected by this animation
 		if (
@@ -69,7 +69,18 @@ export function getAnimationBones(animation: _Animation, boneMap: IRenderedRig['
 		)
 			continue
 
-		const matrix = getGroupMatrix(bone.group, boneMap[uuid].scale)
+		let matrix: THREE.Matrix4
+		switch (node.type) {
+			case 'bone': {
+				matrix = getNodeMatrix(node.node, node.scale)
+				break
+			}
+			case 'camera':
+			case 'locator':
+				matrix = getNodeMatrix(node.node, 1)
+				break
+		}
+
 		const pos = new THREE.Vector3()
 		const rot = new THREE.Quaternion()
 		const scale = new THREE.Vector3()
@@ -80,10 +91,11 @@ export function getAnimationBones(animation: _Animation, boneMap: IRenderedRig['
 		if (prevMatrix !== undefined && prevMatrix.equals(matrixArray)) continue
 		previousMatrices[uuid] = matrixArray
 
-		bones.push({
-			name: bone.name,
+		nodes.push({
+			type: node.type,
+			name: node.name,
 			uuid,
-			node: bone.group,
+			node: node.node,
 			matrix,
 			pos,
 			rot,
@@ -92,7 +104,7 @@ export function getAnimationBones(animation: _Animation, boneMap: IRenderedRig['
 	}
 	// outliner.rotation.y = 0
 
-	return bones
+	return nodes
 }
 
 function getVariantKeyframe(animation: _Animation, time: number) {
@@ -163,7 +175,7 @@ export async function renderAnimation(animation: _Animation, rig: IRenderedRig) 
 		updatePreview(animation, time)
 		rendered.frames.push({
 			time,
-			bones: getAnimationBones(animation, rig.boneMap),
+			nodes: getAnimationNodes(animation, rig.nodeMap),
 			variant: getVariantKeyframe(animation, time),
 			commands: getCommandsKeyframe(animation, time),
 			animationState: getAnimationStateKeyframe(animation, time),

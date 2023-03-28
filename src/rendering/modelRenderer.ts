@@ -1,10 +1,10 @@
 import { parseResourcePackPath, safeFunctionName } from '../minecraft/util'
 import { ProgressBarController } from '../util/progress'
 import { Variant } from '../variants'
-import { getAnimationBones, IAnimationBone } from './animationRenderer'
+import { getAnimationNodes, IAnimationNode } from './animationRenderer'
 import { Setting } from '../settings'
 
-interface IRenderedFace {
+export interface IRenderedFace {
 	uv: number[]
 	rotation?: number
 	texture: string
@@ -12,7 +12,7 @@ interface IRenderedFace {
 	tintindex?: number
 }
 
-interface IRenderedElement {
+export interface IRenderedElement {
 	from: number[]
 	to: number[]
 	shade?: boolean
@@ -30,36 +30,65 @@ interface IRenderedElement {
 /**
  * An actual Minecraft model
  */
-interface IRenderedModel {
+export interface IRenderedModel {
 	parent?: string
 	textures: Record<string, string>
 	elements?: IRenderedElement[]
 }
 
-interface IRenderedBone {
+export interface IRenderedNode {
+	type: string
 	parent: string
-	group: Group
 	name: string
-	textures: Record<string, Texture>
+	node: OutlinerNode
+}
+
+export interface ICamera extends OutlinerElement {
+	name: string
+	path: string
+	position: ArrayVector3
+	rotation: ArrayVector3
+	linked_preview: string
+	camera_linked: boolean
+	visibility: boolean
+}
+
+export interface IRenderedNodes {
+	Bone: IRenderedNode & {
+		type: 'bone'
+		node: Group
+		textures: Record<string, Texture>
+		model: IRenderedModel
+		customModelData: number
+		modelPath: string
+		resourceLocation: string
+		boundingBox: THREE.Box3
+		scale: number
+		boneConfig: Record<string, Setting<any>>
+	}
+	Camera: IRenderedNode & {
+		type: 'camera'
+		name: string
+		node: ICamera
+	}
+	Locator: IRenderedNode & {
+		type: 'locator'
+		node: Locator
+	}
+}
+
+export type AnyRenderedNode = IRenderedNodes[keyof IRenderedNodes]
+
+export interface IRenderedBoneVariant {
 	model: IRenderedModel
 	customModelData: number
 	modelPath: string
 	resourceLocation: string
-	boundingBox: THREE.Box3
-	scale: number
-	boneConfig: Record<string, Setting<any>>
 }
 
-interface IRenderedBoneVariant {
-	model: IRenderedModel
-	customModelData: number
-	modelPath: string
-	resourceLocation: string
-}
-
-interface IBoneStructure {
+export interface INodeStructure {
 	uuid: string
-	children: IBoneStructure[]
+	children: INodeStructure[]
 }
 
 export interface IRenderedRig {
@@ -72,13 +101,13 @@ export interface IRenderedRig {
 	 */
 	variantModels: Record<string, Record<string, IRenderedBoneVariant>>
 	/**
-	 * A map of bone UUIDs to rendered bones
+	 * A map of outliner node UUIDs to rendered bones
 	 */
-	boneMap: Record<string, IRenderedBone>
+	nodeMap: Record<string, AnyRenderedNode>
 	/**
-	 * A recursive structure of bone UUIDs
+	 * The recursive structure of node UUIDs
 	 */
-	boneStructure: IBoneStructure
+	nodeStructure: INodeStructure
 	/**
 	 * A map of texture UUIDs to textures
 	 */
@@ -86,7 +115,7 @@ export interface IRenderedRig {
 	/**
 	 * The default pose of the rig as an Animation frame
 	 */
-	defaultPose: IAnimationBone[]
+	defaultPose: IAnimationNode[]
 	/**
 	 * The export folder for the rig models
 	 */
@@ -234,9 +263,12 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 		throw new Error(`Invalid bone path: ${group.name} -> ${path}`)
 	}
 
-	const renderedBone: IRenderedBone & { model: { elements: IRenderedElement[] } } = {
+	const renderedBone: IRenderedNodes['Bone'] & {
+		model: { elements: IRenderedElement[] }
+	} = {
+		type: 'bone',
 		parent: parentId,
-		group,
+		node: group,
 		name: group.name,
 		textures: {},
 		model: {
@@ -251,7 +283,7 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 		boneConfig: {},
 	}
 
-	const structure: IBoneStructure = {
+	const structure: INodeStructure = {
 		uuid: group.uuid,
 		children: [],
 	}
@@ -289,15 +321,52 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 	renderedBone.scale = 1 / scale
 
 	rig.models[group.uuid] = renderedBone.model
-	rig.boneMap[group.uuid] = renderedBone
+	rig.nodeMap[group.uuid] = renderedBone
 	progress.add(1)
 	return structure
+}
+
+function renderLocator(locator: Locator, rig: IRenderedRig): INodeStructure {
+	const parentId = locator.parent instanceof Group ? locator.parent.uuid : locator.parent
+
+	const renderedLocator: IRenderedNodes['Locator'] = {
+		type: 'locator',
+		parent: parentId,
+		node: locator,
+		name: locator.name,
+	}
+
+	rig.nodeMap[locator.uuid] = renderedLocator
+	progress.add(1)
+	return {
+		uuid: locator.uuid,
+		children: [],
+	}
+}
+
+function renderCamera(camera: ICamera, rig: IRenderedRig): INodeStructure {
+	const parentId = camera.parent instanceof Group ? camera.parent.uuid : camera.parent
+
+	const renderedCamera: IRenderedNodes['Camera'] = {
+		type: 'camera',
+		parent: parentId,
+		node: camera,
+		name: camera.name,
+	}
+
+	rig.nodeMap[camera.uuid] = renderedCamera
+	progress.add(1)
+	return {
+		uuid: camera.uuid,
+		children: [],
+	}
 }
 
 function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 	const bones: Record<string, IRenderedBoneVariant> = {}
 
-	for (const [uuid, bone] of Object.entries(rig.boneMap)) {
+	for (const [uuid, bone] of Object.entries(rig.nodeMap)) {
+		if (bone.type !== 'bone') continue
 		const textures: IRenderedModel['textures'] = {}
 		for (const { fromTexture, toTexture } of variant.textureMapIterator()) {
 			if (!(fromTexture && toTexture))
@@ -334,11 +403,16 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 
 	Animator.showDefaultPose()
 
+	const rootNode: INodeStructure = {
+		uuid: 'root',
+		children: [],
+	}
+
 	const rig: IRenderedRig = {
 		models: {},
 		variantModels: {},
-		boneMap: {},
-		boneStructure: {} as IBoneStructure,
+		nodeMap: {},
+		nodeStructure: rootNode,
 		textures: {},
 		defaultPose: [],
 		modelExportFolder,
@@ -351,7 +425,13 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 	for (const node of Outliner.root) {
 		if (node instanceof Group) {
 			const bone = renderGroup(node, rig)
-			if (bone) rig.boneStructure = bone
+			if (bone) rootNode.children.push(bone)
+		} else if (node instanceof Locator) {
+			const locator = renderLocator(node, rig)
+			if (locator) rootNode.children.push(locator)
+		} else if (OutlinerElement.types.camera && node instanceof OutlinerElement.types.camera) {
+			const camera = renderCamera(node as ICamera, rig)
+			if (camera) rootNode.children.push(camera)
 		} else if (node instanceof Cube) {
 			console.error(`Encountered cube in root of outliner:`, node)
 		} else {
@@ -361,7 +441,7 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 		progress.update()
 	}
 
-	rig.defaultPose = getAnimationBones(new Blockbench.Animation(), rig.boneMap)
+	rig.defaultPose = getAnimationNodes(new Blockbench.Animation(), rig.nodeMap)
 
 	for (const variant of Project!.animated_java_variants!.variants) {
 		if (variant.default) continue // Don't export the default variant, it's redundant data.
