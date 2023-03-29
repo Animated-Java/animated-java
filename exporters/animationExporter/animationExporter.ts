@@ -391,6 +391,7 @@ export function loadExporter() {
 			const summonTags = userSummonTags instanceof NbtList ? userSummonTags : new NbtList()
 			summonTags.add(new NbtString(tags.new))
 			summonTags.add(new NbtString(tags.rootEntity))
+			summonNbt.set('Tags', summonTags)
 
 			const passengers = new NbtList()
 			for (const [uuid, bone] of Object.entries(rig.nodeMap)) {

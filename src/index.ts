@@ -79,6 +79,14 @@ events.EXTRACT_MODS.subscribe(() => {
 	globalThis.AnimatedJava = undefined
 })
 
+events.SELECT_PROJECT.subscribe(() => {
+	if (localStorage.getItem('aj:showWelcome') === 'false') return
+	requestAnimationFrame(() => {
+		AnimatedJava.docClick('page:index')
+	})
+	localStorage.setItem('aj:showWelcome', 'false')
+}, true)
+
 BBPlugin.register(PACKAGE.name, {
 	title: PACKAGE.title,
 	author: PACKAGE.author.name,

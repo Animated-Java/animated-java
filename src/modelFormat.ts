@@ -626,16 +626,13 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 export const ajModelFormat = new Blockbench.ModelFormat({
 	id: 'animated_java/ajmodel',
 	icon: 'icon-armor_stand',
-	name: 'Animated Java Model',
+	name: 'Animated Java Rig',
 	description: 'The Animated Java model format.',
 	category: 'minecraft',
 	target: 'Minecraft: Java Edition',
 	confidential: false,
 	condition: () => true,
 	show_on_start_screen: true,
-	format_page: {
-		content: [{ type: 'h3', text: tl('animated_java.format_page.h3') }],
-	},
 
 	onSetup() {
 		if (Project?.animated_java_settings) {

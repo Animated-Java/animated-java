@@ -501,6 +501,11 @@ export function verifyProjectExportReadiness() {
 		})
 	}
 
+	// Verify and clean textures
+	for (const texture of Project.textures) {
+		texture.name = texture.name.replace(/\.png$/, '')
+	}
+
 	if (issues.find(v => v.type === 'error')) {
 		openAjFailedProjectExportReadinessDialog(issues)
 		throw new ExpectedError('Project is not ready for export')

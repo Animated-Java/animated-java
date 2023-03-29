@@ -14,10 +14,11 @@ export class Subscribable<T> {
 	 */
 	subscribe(callback: (value: T) => void, oneShot = false) {
 		if (oneShot) {
-			this.subscribers.add((value: T) => {
+			const wrappedCallback = (value: T) => {
 				callback(value)
-				this.subscribers.delete(callback)
-			})
+				this.subscribers.delete(wrappedCallback)
+			}
+			this.subscribers.add(wrappedCallback)
 		} else this.subscribers.add(callback)
 		return () => this.subscribers.delete(callback)
 	}

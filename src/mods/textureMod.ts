@@ -11,7 +11,7 @@ declare global {
 createBlockbenchMod(
 	'animated_java:texture_toTextureId',
 	{
-		original: Texture.prototype.remove,
+		remove: Texture.prototype.remove,
 	},
 	context => {
 		Texture.prototype.toTextureId = function (this: Texture) {
@@ -19,7 +19,7 @@ createBlockbenchMod(
 		}
 		Texture.prototype.remove = function (this: Texture) {
 			if (!Project?.animated_java_variants) return
-			const x = context.original.call(this)
+			const x = context.remove.call(this)
 			// Remove all texture mappings that use this texture
 			if (Format === ajModelFormat) {
 				Project.animated_java_variants.verifyTextures(true)
@@ -31,6 +31,6 @@ createBlockbenchMod(
 	context => {
 		// @ts-ignore
 		delete Texture.prototype.toTextureId
-		Texture.prototype.remove = context.original
+		Texture.prototype.remove = context.remove
 	}
 )

@@ -104,7 +104,7 @@
 				<IndexItem index={localIndex} {changePage} bind:selectedPage />
 			{/each}
 		</div>
-		<div class="flex-column" style="flex-grow:1;">
+		<div class="flex-column" style="flex-grow:1; align-items: stretch;">
 			{#key selectedPage}
 				{#await getPage(selectedPage)}
 					<div
