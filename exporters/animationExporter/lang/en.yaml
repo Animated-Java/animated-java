@@ -24,3 +24,8 @@ animated_java.animation_exporter.settings.include_convenience_functions.descript
   Whether to include convenience functions in the generated Data Pack.
   The convenience functions are simplified functions (Like the summon/<variant_name> functions) that are easier to use, but less flexible than their counterparts.
   You may want to disable them if you don't use them, or if you want to reduce the size of the generated Data Pack.
+
+animated_java.animation_exporter.settings.root_entity_nbt: Root Entity NBT
+animated_java.animation_exporter.settings.root_entity_nbt.description: |-
+  Custom NBT to apply to the root entity of the Rig.
+  WARNING! This NBT will overwrite any NBT that Animated Java creates. Use with caution.

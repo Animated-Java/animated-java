@@ -135,8 +135,8 @@ animated_java.project_settings.exporter.description: |-
 ### Bone Config
 animated_java.bone_config.nbt: Bone Entity NBT
 animated_java.bone_config.nbt.description: |-
-  This NBT will be merged into the bone entity's NBT when exporting.
-  Animated Java's generated NBT will take priority over this if there are any conflicts.
+  Custom NBT to apply to this bone entity.
+  WARNING! This NBT will overwrite any NBT that Animated Java creates. Use with caution.
 
 ### Animation Config
 animated_java.dialog.animation_config.title: Animation Properties
@@ -219,11 +219,29 @@ animated_java.dialog.variant_properties.textureMap.description: |-
   Lets you choose what textures are replaced when this Variant is appied.
 
 ### Custom Keyframes
-animated_java.keyframe.animationState: Animation State
+animated_java.keyframe.animation: Animation
+animated_java.keyframe.animation.description: |-
+  The animation to apply when this keyframe is reached.
+
 animated_java.keyframe.variant: Variant
+animated_java.keyframe.variant.description: |-
+  The variant to apply when this keyframe is reached.
+
 animated_java.keyframe.commands: Commands
 animated_java.keyframe.commands.description: |-
   A list of commands (A function) that run when the keyframe is reached.
+
+animated_java.keyframe.tweenDuration: Tween Duration
+animated_java.keyframe.tweenDuration.description: |-
+  The duration (in ticks) of the tween between this keyframe and the next animation.
+
+animated_java.keyframe.tweenMode: Tween Mode
+animated_java.keyframe.tweenMode.description: |-
+  The tween mode of the keyframe.
+  Play: The animation will play from the start.
+  Resume: The animation will play from the same anim_time as this keyframe.
+animated_java.keyframe.tweenMode.play: Play
+animated_java.keyframe.tweenMode.resume: Resume
 
 animated_java.keyframe.executeCondition: Execute Condition
 animated_java.keyframe.executeCondition.description: |-
@@ -232,7 +250,7 @@ animated_java.keyframe.executeCondition.description: |-
   Example: "if score @s example matches 1.."
   Hint: You can separate subcommands with newlines!
 
-animated_java.timeline.animationState: Animation States
+animated_java.timeline.animation: Animations
 animated_java.timeline.variant: Variants
 animated_java.timeline.commands: Commands
 

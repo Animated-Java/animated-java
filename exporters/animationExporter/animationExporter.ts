@@ -11,7 +11,7 @@ function getExportVersionId() {
 
 export function loadExporter() {
 	const API = AnimatedJava.API
-	const { NbtCompound, NbtString, NbtList, NbtInt, NbtFloat } = AnimatedJava.API.deepslate
+	const { NbtTag, NbtCompound, NbtString, NbtList, NbtInt, NbtFloat } = AnimatedJava.API.deepslate
 
 	API.addTranslations('en', en as Record<string, string>)
 
@@ -45,6 +45,12 @@ export function loadExporter() {
 			),
 			description: API.translate(
 				'animated_java.animation_exporter.settings.include_convenience_functions.description'
+			).split('\n'),
+		},
+		root_entity_nbt: {
+			name: API.translate('animated_java.animation_exporter.settings.root_entity_nbt'),
+			description: API.translate(
+				'animated_java.animation_exporter.settings.root_entity_nbt.description'
 			).split('\n'),
 		},
 	}
@@ -115,6 +121,22 @@ export function loadExporter() {
 					description: TRANSLATIONS.include_convenience_functions.description,
 					defaultValue: true,
 				}),
+				root_entity_nbt: new API.Settings.CodeboxSetting(
+					{
+						id: 'animated_java:animation_exporter/root_entity_nbt',
+						displayName: TRANSLATIONS.root_entity_nbt.name,
+						description: TRANSLATIONS.root_entity_nbt.description,
+						language: 'nbt',
+						defaultValue: '{}',
+					},
+					function onUpdate(setting) {
+						try {
+							NbtTag.fromString(setting.value)
+						} catch (e) {
+							setting.infoPopup = API.createInfo('error', e.message)
+						}
+					}
+				),
 			}
 		},
 		settingsStructure: [
@@ -134,6 +156,10 @@ export function loadExporter() {
 				type: 'setting',
 				settingId: 'animated_java:animation_exporter/include_convenience_functions',
 			},
+			{
+				type: 'setting',
+				settingId: 'animated_java:animation_exporter/root_entity_nbt',
+			},
 		],
 		async export(ajSettings, projectSettings, exporterSettings, renderedAnimations, rig) {
 			if (!Project?.animated_java_variants) throw new Error('No variants found')
@@ -146,16 +172,17 @@ export function loadExporter() {
 			console.log('Beginning export process...')
 
 			//--------------------------------------------
-			// Settings
+			// ANCHOR Settings
 			//--------------------------------------------
 			const NAMESPACE = projectSettings.project_namespace.value
 			const RIG_ITEM = projectSettings.rig_item.value
 			const EXPORT_FOLDER = exporterSettings.datapack_folder.value
 			const variants = Project.animated_java_variants.variants
 			const outdatedRigWarningEnabled = exporterSettings.outdated_rig_warning.value
+			const userRootEntityNbt = NbtTag.fromString(exporterSettings.root_entity_nbt.value)
 
 			//--------------------------------------------
-			// Data Pack
+			// ANCHOR Data Pack
 			//--------------------------------------------
 
 			const scoreboard = {
@@ -207,7 +234,7 @@ export function loadExporter() {
 			const AJ_NAMESPACE = animatedJavaFolder.name
 
 			//--------------------------------------------
-			// minecraft function tags
+			// ANCHOR minecraft function tags
 			//--------------------------------------------
 
 			const functionTagFolder = dataFolder.newFolder('minecraft/tags/functions')
@@ -221,7 +248,7 @@ export function loadExporter() {
 			})
 
 			//--------------------------------------------
-			// entity_type tags
+			// ANCHOR entity_type tags
 			//--------------------------------------------
 
 			namespaceFolder
@@ -236,7 +263,7 @@ export function loadExporter() {
 				})
 
 			//--------------------------------------------
-			// function tags
+			// ANCHOR function tags
 			//--------------------------------------------
 
 			namespaceFolder
@@ -343,7 +370,7 @@ export function loadExporter() {
 				])
 
 			//--------------------------------------------
-			// uninstall function
+			// ANCHOR uninstall function
 			//--------------------------------------------
 
 			namespaceFolder.accessFolder('functions').chainNewFile('uninstall.mcfunction', [
@@ -359,11 +386,11 @@ export function loadExporter() {
 			// ANCHOR summon functions
 			//--------------------------------------------
 
-			const summonNbt = new NbtCompound()
-			summonNbt.set(
-				'Tags',
-				new NbtList([new NbtString(tags.new), new NbtString(tags.rootEntity)])
-			)
+			const summonNbt = userRootEntityNbt.isCompound() ? userRootEntityNbt : new NbtCompound()
+			const userSummonTags = summonNbt.get('Tags')
+			const summonTags = userSummonTags instanceof NbtList ? userSummonTags : new NbtList()
+			summonTags.add(new NbtString(tags.new))
+			summonTags.add(new NbtString(tags.rootEntity))
 
 			const passengers = new NbtList()
 			for (const [uuid, bone] of Object.entries(rig.nodeMap)) {
@@ -400,6 +427,11 @@ export function loadExporter() {
 								)
 							)
 					)
+					const userBoneNbt = NbtTag.fromString(bone.nbt)
+					if (userBoneNbt instanceof NbtCompound)
+						userBoneNbt.forEach((key, value) => {
+							passenger.set(key, value)
+						})
 				}
 				passengers.add(passenger)
 			}
@@ -514,7 +546,7 @@ export function loadExporter() {
 				])
 
 			//--------------------------------------------
-			// variant functions
+			// ANCHOR variant functions
 			//--------------------------------------------
 
 			const applyVariantFolder = namespaceFolder.newFolder('functions/apply_variant')
@@ -562,7 +594,7 @@ export function loadExporter() {
 			}
 
 			//--------------------------------------------
-			// animation functions
+			// ANCHOR animation functions
 			//--------------------------------------------
 
 			// External functions
@@ -612,28 +644,43 @@ export function loadExporter() {
 						leaf
 					)}`
 				)
+				if (!(leaf.item.commands || leaf.item.variant)) return commands
+
+				const functions: Record<string, string[]> = {}
 
 				if (leaf.item.commands) {
-					frameTreeFolder.newFile(
-						getRootLeafFileName(leaf) + '_commands.mcfunction',
-						leaf.item.commands.commands.split('\n')
-					)
-					let command = `function ${AJ_NAMESPACE}:animations/${animName}/tree/${getRootLeafFileName(
-						leaf
-					)}_commands`
-					if (leaf.item.commands.executeCondition)
-						command = `execute ${leaf.item.commands.executeCondition.trim()} run ${command}`
-					commands.push(command)
+					const condition = leaf.item.commands.executeCondition
+					const commands = leaf.item.commands.commands.split('\n')
+					if (!functions[condition]) functions[condition] = []
+					functions[condition].push(...commands)
 				}
 
 				if (leaf.item.variant) {
 					const variant = variants.find(v => v.uuid === leaf.item.variant.uuid)
 					let command = `function ${AJ_NAMESPACE}:apply_variant/${variant.name}_as_root`
-					if (leaf.item.variant.executeCondition)
-						command = `execute ${leaf.item.variant.executeCondition.trim()} run ${command}`
-					commands.push(command)
+					const condition = leaf.item.variant.executeCondition
+					if (!functions[condition]) functions[condition] = []
+					functions[condition].push(command)
 				}
-				// TODO - Add animation state functionality here
+
+				for (const [condition, cmds] of Object.entries(functions)) {
+					if (cmds.length === 0) continue
+					if (cmds.length === 1) {
+						if (condition) commands.push(`execute ${condition} run ${cmds[0]}`)
+						else commands.push(cmds[0])
+						continue
+					}
+					const index = Object.keys(functions).indexOf(condition)
+					frameTreeFolder.newFile(
+						`${getRootLeafFileName(leaf)}_effects_${index}.mcfunction`,
+						cmds
+					)
+					let command = `function ${AJ_NAMESPACE}:animations/${animName}/tree/${getRootLeafFileName(
+						leaf
+					)}_effects_${index}`
+					commands.push(condition ? `execute ${condition} run ${command}` : command)
+				}
+
 				return commands
 			}
 
@@ -667,9 +714,13 @@ export function loadExporter() {
 									node.name,
 								])}] at @s run tp @e[tag=${API.formatStr(tags.cameraTag, [
 									node.name,
-								])}] ^${pos.x} ^${pos.y - 1.62} ^${pos.z} ~${
-									-rot.y + 180
-								} ~${-rot.x}`
+								])}] ^${API.roundToN(pos.x, 10)} ^${API.roundToN(
+									pos.y - 1.62,
+									10
+								)} ^${API.roundToN(pos.z, 10)} ~${API.roundToN(
+									-rot.y + 180,
+									10
+								)} ~${API.roundToN(-rot.x, 10)}`
 							)
 							break
 						}
@@ -679,7 +730,10 @@ export function loadExporter() {
 									node.name,
 								])}] at @s run tp @e[tag=${API.formatStr(tags.locatorTag, [
 									node.name,
-								])}] ^${node.pos.x} ^${node.pos.y} ^${node.pos.z} ~ ~`
+								])}] ^${API.roundToN(node.pos.x, 10)} ^${API.roundToN(
+									node.pos.y,
+									10
+								)} ^${API.roundToN(node.pos.z, 10)} ~ ~`
 							)
 							break
 						}
@@ -840,7 +894,7 @@ export function loadExporter() {
 			}
 
 			//--------------------------------------------
-			// Export Data Pack
+			// ANCHOR Export Data Pack
 			//--------------------------------------------
 
 			const DATAPACK_EXPORT_PATH = PathModule.join(EXPORT_FOLDER, NAMESPACE)

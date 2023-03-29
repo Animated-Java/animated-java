@@ -19,11 +19,11 @@ export function injectCustomKeyframes() {
 	// })
 
 	// Add custom channels to Effect Animator
-	EffectAnimator.addChannel('animationStates', {
-		name: translate('animated_java.timeline.animationState'),
-		mutable: false,
-		max_data_points: 2,
-	})
+	// EffectAnimator.addChannel('animationStates', {
+	// 	name: translate('animated_java.timeline.animation'),
+	// 	mutable: false,
+	// 	max_data_points: 2,
+	// })
 
 	EffectAnimator.addChannel('variants', {
 		name: translate('animated_java.timeline.variant'),
@@ -55,13 +55,13 @@ export function injectCustomKeyframes() {
 		exposed: false,
 	})
 
-	new Property(KeyframeDataPoint, 'string', 'animationState', {
-		label: translate('animated_java.keyframe.animationState'),
-		condition: point => {
-			return point.keyframe.channel === 'animationStates'
-		},
-		exposed: false,
-	})
+	// new Property(KeyframeDataPoint, 'string', 'animationState', {
+	// 	label: translate('animated_java.keyframe.animationState'),
+	// 	condition: point => {
+	// 		return point.keyframe.channel === 'animationStates'
+	// 	},
+	// 	exposed: false,
+	// })
 
 	new Property(KeyframeDataPoint, 'string', 'executeCondition', {
 		label: translate('animated_java.keyframe.executeCondition'),
@@ -132,7 +132,7 @@ export function extractCustomKeyframes() {
 
 	KeyframeDataPoint.properties.variant?.delete()
 	KeyframeDataPoint.properties.commands?.delete()
-	KeyframeDataPoint.properties.animationState?.delete()
+	// KeyframeDataPoint.properties.animationState?.delete()
 	KeyframeDataPoint.properties.executeCondition?.delete()
 
 	// delete BoneAnimator.prototype.channels.commands
@@ -142,8 +142,8 @@ export function extractCustomKeyframes() {
 	delete EffectAnimator.prototype.variants
 	delete EffectAnimator.prototype.channels.commands
 	delete EffectAnimator.prototype.commands
-	delete EffectAnimator.prototype.channels.animationStates
-	delete EffectAnimator.prototype.animationStates
+	// delete EffectAnimator.prototype.channels.animationStates
+	// delete EffectAnimator.prototype.animationStates
 
 	installed = false
 }
@@ -175,7 +175,7 @@ export const getKeyframeVariant = keyframeGetterFactory('variant')
 export const setKeyframeVariant = keyframeSetterFactory('variant')
 export const getKeyframeCommands = keyframeGetterFactory('commands')
 export const setKeyframeCommands = keyframeSetterFactory('commands')
-export const getKeyframeAnimationState = keyframeGetterFactory('animationState')
-export const setKeyframeAnimationState = keyframeSetterFactory('animationState')
+// export const getKeyframeAnimationState = keyframeGetterFactory('animationState')
+// export const setKeyframeAnimationState = keyframeSetterFactory('animationState')
 export const getKeyframeCondition = keyframeGetterFactory('executeCondition')
 export const setKeyframeCondition = keyframeSetterFactory('executeCondition')

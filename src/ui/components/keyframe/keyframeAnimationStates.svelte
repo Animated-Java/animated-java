@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import {
 		getKeyframeAnimationState,
 		getKeyframeCondition,
@@ -6,14 +6,12 @@
 		setKeyframeCondition,
 	} from '../../../mods/keyframeMod'
 	import { translate } from '../../../util/translation'
-	import { Variant } from '../../../variants'
 	import PrismEditorComponent from '../prism/prismEditor.svelte'
-
-	const maxWidth = 'auto'
-	const maxHeight = '20em'
 
 	let value: number
 	let executeCondition: string
+	let tweenDuration: number
+	let tweenMode: 'play' | 'resume'
 
 	$: animations = getAnimations()
 	let selectedAnimation: _Animation | undefined
@@ -50,24 +48,47 @@
 </script>
 
 <div class="property">
-	<p class="name">{translate('animated_java.keyframe.animationState')}</p>
-	<select class="item-container item" bind:value>
-		{#each animations as anim, index}
-			<option value={index}>
-				<div>{anim.name}</div>
-			</option>
-		{/each}
-	</select>
+	<p class="name" title={translate('animated_java.keyframe.animation.description')}>
+		{translate('animated_java.keyframe.animation')}
+	</p>
+	<div class="item-container">
+		<select class="item" bind:value>
+			{#each animations as anim, index}
+				<option value={index}>
+					<div>{anim.name}</div>
+				</option>
+			{/each}
+		</select>
+	</div>
 </div>
 <div class="property">
 	<p class="name" title={translate('animated_java.keyframe.executeCondition.description')}>
-		Condition
+		{translate('animated_java.keyframe.executeCondition')}
 	</p>
 	<div
 		class="item-container"
 		title={translate('animated_java.keyframe.executeCondition.description')}
 	>
 		<PrismEditorComponent language="mcfunction" bind:code={executeCondition} />
+	</div>
+</div>
+<div class="property">
+	<p class="name" title={translate('animated_java.keyframe.tweenDuration.description')}>
+		{translate('animated_java.keyframe.tweenDuration')}
+	</p>
+	<div class="item-container">
+		<input type="number" class="number" step={1} bind:value={tweenDuration} />
+	</div>
+</div>
+<div class="property">
+	<p class="name" title={translate('animated_java.keyframe.tweenMode.description')}>
+		{translate('animated_java.keyframe.tweenMode')}
+	</p>
+	<div class="item-container">
+		<select class="item" bind:value={tweenMode}>
+			<option value="play">{translate('animated_java.keyframe.tweenMode.play')}</option>
+			<option value="resume">{translate('animated_java.keyframe.tweenMode.resume')}</option>
+		</select>
 	</div>
 </div>
 
@@ -78,6 +99,7 @@
 		flex-grow: 1;
 		margin-bottom: 2px;
 		align-items: stretch;
+		min-height: 2em;
 	}
 
 	p.name {
@@ -100,4 +122,21 @@
 	.item {
 		padding: 3px 8px;
 	}
-</style>
+
+	.number {
+		border: none;
+		display: inline-block;
+		text-align: center;
+		vertical-align: middle;
+		cursor: default;
+		outline: none;
+		height: 32px;
+		width: 6em;
+		color: var(--color-text);
+		padding-right: 16px;
+		padding-left: 16px;
+		font-weight: normal;
+		cursor: text;
+		text-align: left;
+	}
+</style> -->

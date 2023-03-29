@@ -21,7 +21,8 @@
 				"datapack_folder": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\saves\\Animated Java Test World\\datapacks",
 				"interpolation_duration": 1,
 				"outdated_rig_warning": true,
-				"include_convenience_functions": true
+				"include_convenience_functions": true,
+				"root_entity_nbt": "{}"
 			},
 			"animated_java:statue_exporter": {
 				"foo": true
@@ -622,6 +623,48 @@
 								}
 							],
 							"uuid": "9dd09ef9-15a9-5c37-2346-564de8b30ec8",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"bezier_linked": true,
+							"bezier_left_time": [-0.1, -0.1, -0.1],
+							"bezier_left_value": [0, 0, 0],
+							"bezier_right_time": [0.1, 0.1, 0.1],
+							"bezier_right_value": [0, 0, 0]
+						}
+					]
+				},
+				"effects": {
+					"name": "Effects",
+					"type": "effect",
+					"keyframes": [
+						{
+							"channel": "variants",
+							"data_points": [
+								{
+									"variant": "f7615ce3-3825-cde7-f183-870f32ddfa10",
+									"executeCondition": "if score i v matches 1"
+								}
+							],
+							"uuid": "8ab4b923-3c8f-f012-3da0-105834b1b7ea",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"bezier_linked": true,
+							"bezier_left_time": [-0.1, -0.1, -0.1],
+							"bezier_left_value": [0, 0, 0],
+							"bezier_right_time": [0.1, 0.1, 0.1],
+							"bezier_right_value": [0, 0, 0]
+						},
+						{
+							"channel": "commands",
+							"data_points": [
+								{
+									"commands": "say hello!",
+									"executeCondition": "if score i v matches 1"
+								}
+							],
+							"uuid": "232331ac-58a9-2fae-c72a-f99e05e79928",
 							"time": 0,
 							"color": -1,
 							"interpolation": "linear",

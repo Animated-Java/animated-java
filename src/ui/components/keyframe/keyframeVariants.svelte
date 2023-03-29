@@ -52,7 +52,9 @@
 </script>
 
 <div class="property">
-	<p class="name">{translate('animated_java.keyframe.variant')}</p>
+	<p class="name" title={translate('animated_java.keyframe.variant.description')}>
+		{translate('animated_java.keyframe.variant')}
+	</p>
 	<select class="item-container item" bind:value>
 		{#each variants as variant, index}
 			<option value={index}>

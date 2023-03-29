@@ -2,7 +2,6 @@ import { parseResourcePackPath, safeFunctionName } from '../minecraft/util'
 import { ProgressBarController } from '../util/progress'
 import { Variant } from '../variants'
 import { getAnimationNodes, IAnimationNode } from './animationRenderer'
-import { Setting } from '../settings'
 
 export interface IRenderedFace {
 	uv: number[]
@@ -64,7 +63,7 @@ export interface IRenderedNodes {
 		resourceLocation: string
 		boundingBox: THREE.Box3
 		scale: number
-		boneConfig: Record<string, Setting<any>>
+		nbt: string
 	}
 	Camera: IRenderedNode & {
 		type: 'camera'
@@ -280,7 +279,7 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 		resourceLocation: parsed.resourceLocation,
 		boundingBox: getBoneBoundingBox(group),
 		scale: 1,
-		boneConfig: {},
+		nbt: group.nbt || '{}',
 	}
 
 	const structure: INodeStructure = {

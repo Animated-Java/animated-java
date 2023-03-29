@@ -54,6 +54,10 @@ declare global {
 		forceVisible?: boolean
 	}
 
+	interface Group {
+		nbt?: string
+	}
+
 	interface ModelProject {
 		animated_java_settings?: IAnimatedJavaProjectSettings
 		animated_java_exporter_settings?: Record<string, Record<string, Setting<any>>>
