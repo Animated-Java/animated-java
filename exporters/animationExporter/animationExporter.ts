@@ -834,18 +834,21 @@ export function loadExporter() {
 					.chainNewFile('tween_play_as_root.mcfunction', [
 						`function ${AJ_NAMESPACE}:animations/${anim.name}/play_as_root`,
 						`function ${AJ_NAMESPACE}:animations/${anim.name}/tween_as_root`,
+						`execute if score #tween_duration ${scoreboard.i} matches ..0 on passengers store result entity @s interpolation_duration int 1 run scoreboard players get $aj.default_interpolation_duration ${scoreboard.i}`,
+						`scoreboard players reset #tween_duration ${scoreboard.i}`,
 					])
 					.chainNewFile('tween_resume_as_root.mcfunction', [
 						`function ${AJ_NAMESPACE}:animations/${anim.name}/resume_as_root`,
 						`function ${AJ_NAMESPACE}:animations/${anim.name}/tween_as_root`,
 						`function ${AJ_NAMESPACE}:animations/${anim.name}/apply_frame_as_root`,
+						`execute if score #tween_duration ${scoreboard.i} matches ..0 on passengers store result entity @s interpolation_duration int 1 run scoreboard players get $aj.default_interpolation_duration ${scoreboard.i}`,
+						`scoreboard players reset #tween_duration ${scoreboard.i}`,
 					])
 					.chainNewFile('tween_as_root.mcfunction', [
 						`execute unless score #tween_duration ${scoreboard.i} = #tween_duration ${scoreboard.i} run scoreboard players operation #tween_duration ${scoreboard.i} = $aj.default_interpolation_duration ${scoreboard.i}`,
 						`scoreboard players operation @s ${scoreboard.tweenTime} = #tween_duration ${scoreboard.i}`,
-						`scoreboard players remove @s ${scoreboard.tweenTime} 1`,
 						`execute on passengers store result entity @s interpolation_duration int 1 run scoreboard players get #tween_duration ${scoreboard.i}`,
-						`scoreboard players reset #tween_duration ${scoreboard.i}`,
+						`scoreboard players remove @s ${scoreboard.tweenTime} 1`,
 					])
 					.chainNewFile('tick.mcfunction', [
 						`execute if score @s ${scoreboard.tweenTime} matches 1.. run function ${AJ_NAMESPACE}:animations/${anim.name}/tick_tween`,
