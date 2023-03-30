@@ -1,2 +1,25 @@
-# Statue Exporter
-animated_java.exporters.statue_exporter.name: Statue Exporter
+# Animation Exporter
+animated_java.statue_exporter.name: Statue Exporter
+animated_java.statue_exporter.settings.datapack_folder: Data Pack Folder
+animated_java.statue_exporter.settings.datapack_folder.description: |-
+  The folder to export the generated Data Pack into.
+  This should be the datapacks folder inside of your world (`world/datapacks/`).
+  The generated Data Pack will be placed in a folder named after the Project's Namespace.
+  WARNING! Data Pack merging is NOT supported. If you have an existing Data Pack with the same namespace as your project, it WILL be overwriten.
+animated_java.statue_exporter.settings.datapack_folder.error.unset: |-
+  You must select a Data Pack folder.
+
+animated_java.statue_exporter.settings.outdated_rig_warning: Outdated Rig Warning
+animated_java.statue_exporter.settings.outdated_rig_warning.description: |-
+  Whether to show a warning in-game when a Rig is found that was summoned before the most recent export.
+
+animated_java.statue_exporter.settings.include_convenience_functions: Include Convenience Functions
+animated_java.statue_exporter.settings.include_convenience_functions.description: |-
+  Whether to include convenience functions in the generated Data Pack.
+  The convenience functions are simplified functions (Like the summon/<variant_name> functions) that are easier to use, but less flexible than their counterparts.
+  You may want to disable them if you don't use them, or if you want to reduce the size of the generated Data Pack.
+
+animated_java.statue_exporter.settings.root_entity_nbt: Root Entity NBT
+animated_java.statue_exporter.settings.root_entity_nbt.description: |-
+  Custom NBT to apply to the root entity of the Rig.
+  WARNING! This NBT will overwrite any NBT that Animated Java creates. Use with caution.

@@ -201,7 +201,6 @@ export function loadExporter() {
 				rootEntity: `aj.${NAMESPACE}.root`,
 				boneEntity: `aj.${NAMESPACE}.bone.%s`,
 				activeAnim: `aj.${NAMESPACE}.animation.%s`,
-				activeVariant: `aj.${NAMESPACE}.variant.%s`,
 				cameraTag: `aj.${NAMESPACE}.camera.%s`,
 				locatorTag: `aj.${NAMESPACE}.locator.%s`,
 			}
