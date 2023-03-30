@@ -133,6 +133,7 @@ export class Setting<V, R = any> extends Subscribable<R> {
 		this.lastValue = this.value
 		this.infoPopup = undefined
 		if (this.onUpdate) this.onUpdate(this as unknown as R)
+		console.log(this.subscribers)
 		this.dispatch(this as unknown as R)
 		this._updating = false
 	}

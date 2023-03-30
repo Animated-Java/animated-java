@@ -24,7 +24,7 @@
 		vertical-align: middle;
 		cursor: default;
 		outline: none;
-		height: 32px;
+		height: 34px;
 		width: 6em;
 		color: var(--color-text);
 		padding-right: 16px;

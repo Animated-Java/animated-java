@@ -178,7 +178,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				displayName: TRANSLATIONS.rig_item.displayName,
 				description: TRANSLATIONS.rig_item.description,
 				defaultValue: 'minecraft:white_dye',
-				resettable: true,
+				// resettable: true,
 				docsLink: 'page:project_settings#rig_item',
 			},
 			function onUpdate(setting) {
@@ -225,7 +225,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				displayName: TRANSLATIONS.rig_item_model.displayName,
 				description: TRANSLATIONS.rig_item_model.description,
 				defaultValue: '',
-				resettable: true,
+				// resettable: true,
 				docsLink: 'page:project_settings#rig_item_model',
 				dependsOn: ['animated_java:project_settings/rig_item'],
 			},
@@ -270,7 +270,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				displayName: TRANSLATIONS.rig_export_folder.displayName,
 				description: TRANSLATIONS.rig_export_folder.description,
 				defaultValue: '',
-				resettable: true,
+				// resettable: true,
 				docsLink: 'page:project_settings#rig_export_folder',
 			},
 			function onUpdate(setting) {
@@ -296,7 +296,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				displayName: TRANSLATIONS.texture_export_folder.displayName,
 				description: TRANSLATIONS.texture_export_folder.description,
 				defaultValue: '',
-				resettable: true,
+				// resettable: true,
 				docsLink: 'page:project_settings#texture_export_folder',
 			},
 			function onUpdate(setting) {
@@ -330,7 +330,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				displayName: TRANSLATIONS.resource_pack_folder.displayName,
 				description: TRANSLATIONS.resource_pack_folder.description,
 				defaultValue: '',
-				resettable: true,
+				// resettable: true,
 				docsLink: 'page:project_settings#resource_pack',
 			},
 			function onUpdate(setting) {

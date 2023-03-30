@@ -107,7 +107,7 @@ export function loadExporter() {
 					defaultValue: 1,
 					min: 0,
 					step: 1,
-					resettable: true,
+					// resettable: true,
 				}),
 				outdated_rig_warning: new API.Settings.CheckboxSetting({
 					id: 'animated_java:animation_exporter/outdated_rig_warning',
