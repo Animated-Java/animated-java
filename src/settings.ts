@@ -98,6 +98,10 @@ export class Setting<V, R = any> extends Subscribable<R> {
 		this._onUpdate()
 	}
 
+	set(value: V) {
+		this.value = value
+	}
+
 	_onInit() {
 		if (this._initialized) return
 		console.log('Initializing setting', this.id)

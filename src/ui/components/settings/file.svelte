@@ -24,13 +24,7 @@
 
 <SettingContainer {setting}>
 	<div slot="inline" class="container">
-		<input
-			type="text"
-			class="text_inline"
-			contenteditable="false"
-			bind:value={setting.value}
-			title={setting.value}
-		/>
+		<input type="text" class="text_inline" bind:value={setting.value} title={setting.value} />
 		<button class="open-file-button" on:click={selectFile}>
 			<span class="material-icons">insert_drive_file</span>
 		</button>

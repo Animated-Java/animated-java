@@ -1,12 +1,13 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte'
-	import { fade, slide } from '../util/accessability'
+	import { createEventDispatcher, onDestroy } from 'svelte'
 	import type * as AJ from '../../settings'
 	import { debounce } from '../../util/misc'
+	import { fade, slide } from '../util/accessability'
 	import IconButton from './buttons/iconButton.svelte'
 	import SettingInfoPopup from './settingInfoPopup.svelte'
 
 	export let setting: AJ.Setting<any>
+	export let onSettingUpdate: () => void = () => {}
 
 	let descriptionVisible = false
 	let helpButtonHovered = false
@@ -43,7 +44,8 @@
 	}
 
 	function onResetClick() {
-		// console.log(`Setting '${setting.displayName}' reset!`)
+		console.log(`Resetting setting '${setting.displayName}' to default value`)
+		onSettingUpdate()
 		setting.value = setting.defaultValue
 	}
 

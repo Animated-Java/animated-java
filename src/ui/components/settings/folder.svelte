@@ -4,6 +4,11 @@
 
 	export let setting: AJ.FolderSetting
 
+	function onContainerUpdate() {
+		setting.value = setting.value
+		console.log('settingUpdate', setting.value)
+	}
+
 	// @ts-ignore
 	let dialog = electron.dialog
 
@@ -22,15 +27,9 @@
 	}
 </script>
 
-<SettingContainer {setting}>
+<SettingContainer {setting} onSettingUpdate={onContainerUpdate}>
 	<div slot="inline" class="container">
-		<input
-			type="text"
-			class="text_inline"
-			contenteditable="false"
-			bind:value={setting.value}
-			title={setting.value}
-		/>
+		<input type="text" class="text_inline" bind:value={setting.value} title={setting.value} />
 		<button class="open-folder-button" on:click={selectFolder}>
 			<span class="material-icons">folder</span>
 		</button>

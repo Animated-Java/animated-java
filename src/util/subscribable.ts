@@ -19,6 +19,7 @@ export class Subscribable<T> {
 				this.subscribers.delete(wrappedCallback)
 			}
 			this.subscribers.add(wrappedCallback)
+			return () => this.subscribers.delete(wrappedCallback)
 		} else this.subscribers.add(callback)
 		return () => this.subscribers.delete(callback)
 	}
