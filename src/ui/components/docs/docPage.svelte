@@ -7,7 +7,6 @@
 	export let page: string
 
 	page = page.replace(/<h([1-6])>(.+?)<\/h[1-6]>/gm, (match, p1, p2) => {
-		console.log('match', match, 'p1', p1, 'p2', p2)
 		return `<h${p1} id="${escape(p2.toLowerCase().replace(' ', '_'))}">${p2}</h${p1}>`
 	})
 	page = page.replace(
