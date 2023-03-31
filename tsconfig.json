@@ -1,0 +1,13 @@
+{
+	"compilerOptions": {
+		"outDir": "./dist/",
+		"noImplicitAny": true,
+		"module": "es2022",
+		"target": "ES2022",
+		"moduleResolution": "node",
+		"strict": true,
+		"types": ["node", "./types/blockbench-types", "svelte"],
+		"resolveJsonModule": true,
+		"allowSyntheticDefaultImports": true
+	}
+}

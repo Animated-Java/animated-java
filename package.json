@@ -1,0 +1,101 @@
+{
+	"type": "module",
+	"name": "animated_java",
+	"title": "Animated Java",
+	"version": "0.3.0",
+	"min_blockbench_version": "4.2.0",
+	"author": {
+		"name": "Titus Evans (SnaveSutit)",
+		"email": "snavesutit@gmail.com",
+		"url": "https://discordapp.com/users/213746232923783168"
+	},
+	"contributors": [
+		{
+			"email": "contact@iansenne.com",
+			"name": "Ian Senne (FetchBot)",
+			"url": "https://discordapp.com/users/162347688011104256"
+		},
+		{
+			"email": "dominexis9@gmail.com",
+			"name": "Jesse Spicer (Dominexis)",
+			"url": "https://discordapp.com/users/749826119636615229"
+		}
+	],
+	"special_thanks": [
+		"YokaiS",
+		"Ancientkingg",
+		"Ersatz",
+		"dragonmaster95",
+		"CubeDeveloper",
+		"__SK__",
+		"MrMakistein",
+		"Flubberschnub",
+		"CommandWitchery",
+		"legitimoose",
+		"VelVoxelRaptor",
+		"_JeffWooden",
+		"Onnowhere",
+		"destruc7i0n",
+		"DoubleFelix",
+		"Eriol_Eandur",
+		"JayPeaSize",
+		"Kastle",
+		"Kyle10BC",
+		"Matt/Arwen",
+		"Nerdrope",
+		"Onnowhere",
+		"Sprunkles",
+		"Suso",
+		"taj",
+		"TheRedstoneer",
+		"Totigonzales",
+		"Violet",
+		"CommanderRedstone",
+		"brooke-zb",
+		"FabulousCodingFox",
+		"HURDOO",
+		"ououn"
+	],
+	"repository": {
+		"type": "github",
+		"url": "https://github.com/Animated-Java/animated-java"
+	},
+	"description": "A Blockbench plugin that makes complex animation a breeze in Minecraft: Java Edition.",
+	"main": "./dist/index.js",
+	"types": "./dist/src/index.d.ts",
+	"private": true,
+	"scripts": {
+		"build:scripts": "esbuild --bundle --platform=node --outfile=dist/build.cjs --packages=external ./tools/esbuild.ts",
+		"build:dev": "yarn build:scripts && node ./dist/build.cjs --mode=dev",
+		"build:prod": "yarn build:scripts && node ./dist/build.cjs",
+		"format": "prettier --write ."
+	},
+	"devDependencies": {
+		"@novacbn/svelte-codejar": "^0.1.2",
+		"@types/eslint": "^8.21.1",
+		"@types/fs-extra": "^11.0.1",
+		"@types/js-yaml": "^4.0.5",
+		"@types/node": "^17.0.21",
+		"@types/three": "^0.148.0",
+		"@typescript-eslint/eslint-plugin": "^5.54.0",
+		"@typescript-eslint/parser": "^5.54.0",
+		"blockbench-types": "https://github.com/SnaveSutit/blockbench-types.git",
+		"esbuild": "^0.17.10",
+		"esbuild-plugin-inline-image": "^0.0.9",
+		"esbuild-plugin-svelte": "^0.1.1",
+		"eslint": "^8.35.0",
+		"firebase": "^9.19.0",
+		"fs-extra": "^11.1.0",
+		"js-yaml": "^4.1.0",
+		"prettier": "^2.5.1",
+		"svelte": "^3.50.1",
+		"svelte-preprocess": "^4.10.7",
+		"svelte-preprocess-esbuild": "^3.0.1",
+		"typescript": "^4.5.5",
+		"vue": "^3.2.33"
+	},
+	"dependencies": {
+		"deepslate": "^0.17.2",
+		"svelte-ace": "^1.0.21"
+	}
+}
