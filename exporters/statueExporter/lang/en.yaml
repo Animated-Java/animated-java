@@ -22,4 +22,4 @@ animated_java.statue_exporter.settings.include_convenience_functions.description
 animated_java.statue_exporter.settings.root_entity_nbt: Root Entity NBT
 animated_java.statue_exporter.settings.root_entity_nbt.description: |-
   Custom NBT to apply to the root entity of the Rig.
-  WARNING! This NBT will overwrite any NBT that Animated Java creates. Use with caution.
+  WARNING! This NBT will overwrite any NBT that the exporter would normally add to the root entity.
