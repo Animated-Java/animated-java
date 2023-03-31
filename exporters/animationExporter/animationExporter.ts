@@ -200,7 +200,8 @@ export function loadExporter() {
 			const tags = {
 				new: 'aj.new',
 				rootEntity: `aj.${NAMESPACE}.root`,
-				boneEntity: `aj.${NAMESPACE}.bone.%s`,
+				boneEntity: `aj.${NAMESPACE}.bone`,
+				namedBoneEntity: `aj.${NAMESPACE}.bone.%s`,
 				activeAnim: `aj.${NAMESPACE}.animation.%s`,
 				cameraTag: `aj.${NAMESPACE}.camera.%s`,
 				locatorTag: `aj.${NAMESPACE}.locator.%s`,
@@ -402,7 +403,8 @@ export function loadExporter() {
 						'Tags',
 						new NbtList([
 							new NbtString(tags.new),
-							new NbtString(API.formatStr(tags.boneEntity, [bone.name])),
+							new NbtString(API.formatStr(tags.boneEntity)),
+							new NbtString(API.formatStr(tags.namedBoneEntity, [bone.name])),
 						])
 					)
 					.set(
@@ -584,7 +586,7 @@ export function loadExporter() {
 					}
 
 					commands.push(
-						`execute if entity @s[tag=${API.formatStr(tags.boneEntity, [
+						`execute if entity @s[tag=${API.formatStr(tags.namedBoneEntity, [
 							bone.name,
 						])}] run data modify entity @s item.tag.CustomModelData set value ${
 							variantBone.customModelData
@@ -685,7 +687,6 @@ export function loadExporter() {
 							: `execute at @s run ${command}`
 					)
 				}
-
 				return commands
 			}
 
@@ -710,7 +711,7 @@ export function loadExporter() {
 									new NbtInt(defaultInterpolationDuration)
 								)
 							commands.push(
-								`execute if entity @s[tag=${API.formatStr(tags.boneEntity, [
+								`execute if entity @s[tag=${API.formatStr(tags.namedBoneEntity, [
 									node.name,
 								])}] run data modify entity @s {} merge value ${data}`
 							)
@@ -723,7 +724,7 @@ export function loadExporter() {
 								180 / Math.PI
 							)
 							commands.push(
-								`execute if entity @s[tag=${API.formatStr(tags.boneEntity, [
+								`execute if entity @s[tag=${API.formatStr(tags.namedBoneEntity, [
 									node.name,
 								])}] at @s run tp @e[tag=${API.formatStr(tags.cameraTag, [
 									node.name,
@@ -739,7 +740,7 @@ export function loadExporter() {
 						}
 						case 'locator': {
 							commands.push(
-								`execute if entity @s[tag=${API.formatStr(tags.boneEntity, [
+								`execute if entity @s[tag=${API.formatStr(tags.namedBoneEntity, [
 									node.name,
 								])}] at @s run tp @e[tag=${API.formatStr(tags.locatorTag, [
 									node.name,
