@@ -244,8 +244,20 @@ function getBoneBoundingBox(group: Group) {
 	const box = new THREE.Box3()
 	box.expandByPoint(new THREE.Vector3(group.origin[0], group.origin[1], group.origin[2]))
 	for (const child of children) {
-		box.expandByPoint(new THREE.Vector3(child.from[0], child.from[1], child.from[2]))
-		box.expandByPoint(new THREE.Vector3(child.to[0], child.to[1], child.to[2]))
+		box.expandByPoint(
+			new THREE.Vector3(
+				child.from[0] - child.inflate,
+				child.from[1] - child.inflate,
+				child.from[2] - child.inflate
+			)
+		)
+		box.expandByPoint(
+			new THREE.Vector3(
+				child.to[0] + child.inflate,
+				child.to[1] + child.inflate,
+				child.to[2] + child.inflate
+			)
+		)
 	}
 	return box
 }

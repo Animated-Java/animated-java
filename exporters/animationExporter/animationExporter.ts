@@ -813,10 +813,9 @@ export function loadExporter() {
 						`scoreboard players set @s ${scoreboard.loopMode} ${loopModes.indexOf(
 							anim.loopMode
 						)}`,
-						`scoreboard players operation @s ${scoreboard.animTime} = ${API.formatStr(
-							scoreboard.localAnimTime,
-							[anim.name]
-						)}`,
+						`scoreboard players operation @s ${
+							scoreboard.animTime
+						} = @s ${API.formatStr(scoreboard.localAnimTime, [anim.name])}`,
 						`execute on passengers run data modify entity @s interpolation_duration set value 0`,
 						`function ${AJ_NAMESPACE}:animations/${anim.name}/tree/leaf_0`,
 						`execute on passengers store result entity @s interpolation_duration int 1 run scoreboard players get $aj.default_interpolation_duration ${scoreboard.i}`,
