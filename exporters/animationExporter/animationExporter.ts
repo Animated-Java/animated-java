@@ -180,6 +180,7 @@ export function loadExporter() {
 			const variants = Project.animated_java_variants.variants
 			const outdatedRigWarningEnabled = exporterSettings.outdated_rig_warning.value
 			const userRootEntityNbt = NbtTag.fromString(exporterSettings.root_entity_nbt.value)
+			const defaultInterpolationDuration = exporterSettings.interpolation_duration.value
 
 			//--------------------------------------------
 			// ANCHOR Data Pack
@@ -684,6 +685,7 @@ export function loadExporter() {
 				return commands
 			}
 
+			let prevFrames: Record<string, AnimatedJava.IRenderedAnimation['frames'][any]>
 			function generateNodeLeafFunction(leaf: IFrameLeaf) {
 				const commands: string[] = []
 				for (const node of Object.values(leaf.item.nodes)) {
@@ -696,6 +698,14 @@ export function loadExporter() {
 									matrixToNbtFloatArray(node.matrix)
 								)
 								.set('start_interpolation', new NbtInt(0))
+							if (node.interpolation === 'instant')
+								data.set('interpolation_duration', new NbtInt(0))
+							else if (node.interpolation === 'default')
+								// FIXME: This does not work if the default interpolation duration scoreboard is changed during runtime
+								data.set(
+									'interpolation_duration',
+									new NbtInt(defaultInterpolationDuration)
+								)
 							commands.push(
 								`execute if entity @s[tag=${API.formatStr(tags.boneEntity, [
 									node.name,

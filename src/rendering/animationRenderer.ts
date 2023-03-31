@@ -21,6 +21,7 @@ export interface IAnimationNode {
 	pos: THREE.Vector3
 	rot: THREE.Quaternion
 	scale: THREE.Vector3
+	interpolation?: 'instant' | 'default'
 }
 
 export interface IRenderedAnimation {
@@ -49,15 +50,20 @@ export interface IRenderedAnimation {
 }
 
 let lastAnimation: _Animation
-let previousMatrices: Record<string, number[]>
-export function getAnimationNodes(animation: _Animation, nodeMap: IRenderedRig['nodeMap']) {
+let previousFrame: Record<
+	string,
+	{ matrix: number[]; interpolation: IAnimationNode['interpolation'] }
+>
+export function getAnimationNodes(
+	animation: _Animation,
+	nodeMap: IRenderedRig['nodeMap'],
+	time = 0
+) {
 	if (lastAnimation !== animation) {
 		lastAnimation = animation
-		previousMatrices = {}
+		previousFrame = {}
 	}
 	const nodes: IAnimationNode[] = []
-	// const outliner = scene.children.find(v => v.name === 'outline_group')!
-	// outliner.rotation.y = Math.PI
 
 	for (const [uuid, node] of Object.entries(nodeMap)) {
 		if (!node.node.export) continue
@@ -69,10 +75,23 @@ export function getAnimationNodes(animation: _Animation, nodeMap: IRenderedRig['
 		)
 			continue
 
+		const prevFrame = previousFrame[uuid]
+		let interpolation: IAnimationNode['interpolation'] = undefined
 		let matrix: THREE.Matrix4
 		switch (node.type) {
 			case 'bone': {
 				matrix = getNodeMatrix(node.node, node.scale)
+				const animator = animation.animators[node.node.uuid]!
+				if (
+					animator?.keyframes
+						.filter(k => k.time === time)
+						.find(k => k.interpolation === 'step')
+				) {
+					console.log('step', node.name, animator)
+					interpolation = 'instant'
+				} else if (previousFrame[uuid]?.interpolation === 'instant') {
+					interpolation = 'default'
+				}
 				break
 			}
 			case 'camera':
@@ -87,9 +106,17 @@ export function getAnimationNodes(animation: _Animation, nodeMap: IRenderedRig['
 		matrix.decompose(pos, rot, scale)
 		const matrixArray = matrix.toArray()
 
-		const prevMatrix = previousMatrices[uuid]
-		if (prevMatrix !== undefined && prevMatrix.equals(matrixArray)) continue
-		previousMatrices[uuid] = matrixArray
+		if (
+			prevFrame !== undefined &&
+			prevFrame.matrix !== undefined &&
+			prevFrame.matrix.equals(matrixArray) &&
+			prevFrame.interpolation === interpolation
+		)
+			continue
+		previousFrame[uuid] = {
+			matrix: matrixArray,
+			interpolation,
+		}
 
 		nodes.push({
 			type: node.type,
@@ -100,9 +127,9 @@ export function getAnimationNodes(animation: _Animation, nodeMap: IRenderedRig['
 			pos,
 			rot,
 			scale,
+			interpolation,
 		})
 	}
-	// outliner.rotation.y = 0
 
 	return nodes
 }
@@ -175,7 +202,7 @@ export async function renderAnimation(animation: _Animation, rig: IRenderedRig) 
 		updatePreview(animation, time)
 		rendered.frames.push({
 			time,
-			nodes: getAnimationNodes(animation, rig.nodeMap),
+			nodes: getAnimationNodes(animation, rig.nodeMap, time),
 			variant: getVariantKeyframe(animation, time),
 			commands: getCommandsKeyframe(animation, time),
 			animationState: getAnimationStateKeyframe(animation, time),
