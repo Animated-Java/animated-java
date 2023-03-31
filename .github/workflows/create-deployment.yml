@@ -15,9 +15,9 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Setup Node.js environment
-        uses: actions/setup-node@v2.5.1
+        uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: v18.x
       - name: install yarn
         run: npm i -g yarn
       - name: run yarn
