@@ -41,4 +41,4 @@ Things you'll need installed before you can setup the development environment
 3. Once you're done translating and testing, open a pull request with your changes.
 
 # Creating a Custom Exporter
-We have a guide on how to create an external exporter for Animated Java [here]().
+We have a guide on how to create an external exporter for Animated Java [here](https://github.com/Animated-Java/animated-java-exporter-plugin-template).
