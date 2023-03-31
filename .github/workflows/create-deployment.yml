@@ -27,7 +27,7 @@ jobs:
         env:
           FLAVOR: ${{ github.ref_name }}
       - name: create distribution
-        run: node .github/workflows/distribute.js ${{ github.ref_name }}
+        run: node .github/workflows/distribute.cjs ${{ github.ref_name }}
         env:
           API_KEY: ${{ secrets.API_KEY }}
           APP_ID: ${{ secrets.SECRET_KEY }}
