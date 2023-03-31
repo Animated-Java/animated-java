@@ -230,7 +230,7 @@ export function loadExporter() {
 				`zzz_${NAMESPACE}_internal`
 			)
 			namespaceFolder.newFolders('functions', 'tags')
-			animatedJavaFolder.newFolders('functions', 'tags', 'item_modifiers')
+			animatedJavaFolder.newFolders('functions')
 			const AJ_NAMESPACE = animatedJavaFolder.name
 
 			//--------------------------------------------
