@@ -685,7 +685,6 @@ export function loadExporter() {
 				return commands
 			}
 
-			let prevFrames: Record<string, AnimatedJava.IRenderedAnimation['frames'][any]>
 			function generateNodeLeafFunction(leaf: IFrameLeaf) {
 				const commands: string[] = []
 				for (const node of Object.values(leaf.item.nodes)) {
