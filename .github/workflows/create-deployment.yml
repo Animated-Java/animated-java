@@ -4,7 +4,7 @@ name: Build and push to site
 
 on:
   push:
-    branches: [main, experimental, complete-rewrite]
+    branches: [main, experimental]
 
   workflow_dispatch:
 
