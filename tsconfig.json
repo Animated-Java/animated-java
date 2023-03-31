@@ -1,12 +1,13 @@
 {
-	// "include": ["*"],
 	"compilerOptions": {
-		"outDir": "dist",
-		"declaration": false,
-		"types": ["node", "blockbench-types"],
-		"lib": ["DOM", "ESNext"],
-		"target": "ES2021",
+		"outDir": "./dist/",
+		"noImplicitAny": true,
+		"module": "es2022",
+		"target": "ES2022",
 		"moduleResolution": "node",
-		"jsx": "react"
+		"strict": true,
+		"types": ["node", "./types/blockbench-types", "svelte"],
+		"resolveJsonModule": true,
+		"allowSyntheticDefaultImports": true
 	}
 }

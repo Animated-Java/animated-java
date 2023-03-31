@@ -1,43 +1,56 @@
-<p align="center"><img src="https://user-images.githubusercontent.com/48780301/147949112-1929eeeb-e8e6-412d-886e-5b3d6615886f.png" width="256" alt="Animated Java Logo"></img></p>
-<h1 align="center">Animated Java<br>
-  <a href="https://discord.gg/jFgY4PXZfp"><img src="https://img.shields.io/discord/785339959518953482?color=5865f2&label=Discord&style=flat" alt="Discord"></a>
+<div align="center">
+	<img src="https://raw.githubusercontent.com/Animated-Java/animated-java/experimental/src/assets/animated_java_icon.webp"/>
+</div>
+<h1 align="center">
+	Animated Java
+	<br>
+	<a href="https://discord.gg/jFgY4PXZfp">
+		<img src="https://img.shields.io/discord/785339959518953482?color=5865f2&label=Discord&style=flat" alt="Discord" />
+	</a>
+	<a>
+		<img src="https://img.shields.io/github/package-json/v/animated-java/animated-java" alt="GitHub package.json version" />
+	</a>
 </h1>
+<h3 align="center">
+	A Blockbench plugin that makes complex animation a breeze in Minecraft: Java Edition.
+</h3>
+<br/>
 
-Welcome to Animated Java, A tool for mapmakers to create smooth, and detailed animations for Minecraft Java Edition.
+# How to Install
+Open the Plugins menu in BlockBench (File > Plugins)
 
-# Installing
+![Plugin Menu](https://raw.githubusercontent.com/Animated-Java/animated-java/experimental/src/assets/plugin_menu.png)
 
--   Open Blockbench and navigate to the plugin list
--   Click on the "Available" tab, then search for `Animated Java`
--   Click `install`
--   Congratulations! You've installed Animated Java!
+In the Plugins menu, click on `Load Plugin from URL`
 
-# Contributing to Animated Java
+![Load Plugin from URL](https://raw.githubusercontent.com/Animated-Java/animated-java/experimental/src/assets/load_plugin_from_url.png)
 
-### Setting up a Development Enviornment
+Then, paste this URL into the box that appears: https://animated-java.dev/animated_java.js
 
-You will need to install `nodejs` and `yarn` before you get started.
+![URL](https://raw.githubusercontent.com/Animated-Java/animated-java/experimental/src/assets/plugin_menu.png)
 
-1. Clone the repo
-2. Run `yarn setup` to setup the yarn env and build the development tools.
-3. Run `yarn dev` to build automatically on file changes.
+Click Confirm, and success! You've just installed Animated Java.
 
-To make a production build, run `yarn build` inside your development enviornment.
+# Getting Started
+Check out the [Getting Started](https://animated-java.dev/docs/getting_started) page either online or in-app for detailed information on getting started with Animated Java.
 
-### Adding Localizations
+# Contributing
+## Prerequisites
+Things you'll need installed before you can setup the development environment
+- [Node.js](https://nodejs.org/en/)
+- [Yarn](https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable)
 
-Note: Translations should use formal language
+## Setting up the Development Environment
 
-1. Fork the animated-java repo.
-2. copy `src/lang/en.yaml` and rename it to the language you're translating. If a language file with that name already exists you should overwrite it.
-3. translate!
-4. Make a pull request with your translations against the animated java repo.
-5. We'll look over the PR ASAP and provide feedback if nessessary, or merge it.
+1. Clone the repository.
+2. Run `yarn install` to install dependencies.
+3. Run `yarn build:dev` to start the development environment.
+4. Open Blockbench, then go to `File > Plugins > Load Plugin From File` and select the `animated_java.js` file from your local repo (`dist/animated-java.js`).
 
-To edit an existing language follow the above steps; but instead of overwriting the file just edit it as is.
-You can check what translation keys are missing using the following code inside of blockbench's dev tools (Opened with Ctrl+shift+i)
+## Adding Localizations
+1. Copy the `en.yaml` file in `src/lang/` and rename it to match the language you're translating to.
+2. Translate! Note that you should be testing your translations as you go in Blockbench.
+3. Once you're done translating and testing, open a pull request with your changes.
 
-```js
-ANIMATED_JAVA.logging = true
-ANIMATED_JAVA.logIntlDifferences()
-```
+# Creating a Custom Exporter
+We have a guide on how to create an external exporter for Animated Java [here](https://github.com/Animated-Java/animated-java-exporter-plugin-template).

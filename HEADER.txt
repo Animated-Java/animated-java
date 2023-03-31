@@ -1,7 +1,0 @@
-Animated Java
-
-A Blockbench plugin by Ian Senne (Fetchbot) and Titus Evans (SnaveSutit)
-
-A tool for mapmakers to create smooth, and detailed animations for Minecraft Java Edition.
-
-https://github.com/animated-java/animated-java

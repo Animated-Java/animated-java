@@ -1,7 +1,7 @@
 ---
 name: Bug report
 about: Report an issue you encountered while using Animated Java
-title: '[BUG]'
+title: '[BUG] <Bug Name>'
 labels: bug
 assignees: ''
 ---
