@@ -1,6 +1,5 @@
 const { initializeApp } = require('firebase/app')
 const { getStorage, ref, uploadString } = require('firebase/storage')
-const core = require('@actions/core')
 console.log(`builds/${process.env.GITHUB_REF.split('/').pop()}/animated_java.js`)
 const app = initializeApp({
 	apiKey: process.env.API_KEY,
