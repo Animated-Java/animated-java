@@ -129,7 +129,6 @@ export class Setting<V, R = any> extends Subscribable<R> {
 		if (this._updating) return
 		if (!forced && this.lastValue === this.value) return
 		this._updating = true
-		// console.log('Updating setting', this.id, forced)
 		this.lastValue = this.value
 		this.infoPopup = undefined
 		if (this.onUpdate) this.onUpdate(this as unknown as R)

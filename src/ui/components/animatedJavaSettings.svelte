@@ -8,7 +8,6 @@
 	AJ.loadAJSettings()
 
 	onDestroy(() => {
-		console.log('unload')
 		AJ.saveAJSettings()
 	})
 </script>

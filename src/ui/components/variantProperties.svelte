@@ -94,7 +94,7 @@
 						else v.value = '???'
 					})
 					setting.value = setting.value.filter(v => v.value !== '???')
-					console.log(setting.value)
+					// console.log(setting.value)
 
 					setting.options = Group.all
 						.filter(g => !setting.value.find(v => v.value === g.uuid))
