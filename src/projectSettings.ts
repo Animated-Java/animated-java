@@ -1,5 +1,5 @@
 import { AnimatedJavaExporter } from './exporter'
-import { GUIStructure } from './GUIStructure'
+import { GUIStructure } from './guiStructure'
 import { Items } from './minecraft'
 import {
 	isValidResourcePackMcMeta,

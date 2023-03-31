@@ -17,10 +17,22 @@
 <br/>
 
 # How to Install
-Check out the [installation guide]().
+Open the Plugins menu in BlockBench (File > Plugins)
+
+![Plugin Menu](https://raw.githubusercontent.com/Animated-Java/animated-java/experimental/src/assets/plugin_menu.png)
+
+In the Plugins menu, click on `Load Plugin from URL`
+
+![Load Plugin from URL](https://raw.githubusercontent.com/Animated-Java/animated-java/experimental/src/assets/load_plugin_from_url.png)
+
+Then, paste this URL into the box that appears: https://animated-java.dev/animated_java.js
+
+![URL](https://raw.githubusercontent.com/Animated-Java/animated-java/experimental/src/assets/plugin_menu.png)
+
+Click Confirm, and success! You've just installed Animated Java.
 
 # Getting Started
-Check out the [Getting Started]() page for detailed information on getting started with Animated Java.
+Check out the [Getting Started](https://animated-java.dev/docs/getting_started) page either online or in-app for detailed information on getting started with Animated Java.
 
 # Contributing
 ## Prerequisites

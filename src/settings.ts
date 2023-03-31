@@ -1,4 +1,4 @@
-import { GUIStructure } from './GUIStructure'
+import { GUIStructure } from './guiStructure'
 import { formatStr } from './util/misc'
 import { Subscribable } from './util/subscribable'
 import { translate } from './util/translation'

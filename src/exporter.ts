@@ -1,5 +1,5 @@
 import * as events from './events'
-import { GUIStructure } from './GUIStructure'
+import { GUIStructure } from './guiStructure'
 import { safeFunctionName } from './minecraft/util'
 import { projectSettingStructure } from './projectSettings'
 import { IRenderedAnimation, renderAllAnimations } from './rendering/animationRenderer'
