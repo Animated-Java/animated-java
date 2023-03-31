@@ -4,6 +4,8 @@ if (process.argv.includes('--mode=dev')) {
 	process.env.NODE_ENV = 'production'
 }
 
+process.env.FLAVOR ??= `local`
+
 import * as fs from 'fs'
 import fsExtra from 'fs-extra'
 import pathjs from 'path'

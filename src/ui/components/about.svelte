@@ -24,7 +24,7 @@
 		<div style="display: flex; flex-direction: column; justify-content: center;">
 			<h1 style="margin-bottom: 0px; font-size: 40px;">{PACKAGE.title}</h1>
 			<div style="display: flex; align-items: center; justify-content: flex-start;">
-				<p style="margin: 0px;">v{PACKAGE.version}</p>
+				<p style="margin: 0px;">v{PACKAGE.version}-{process.env.FLAVOR}</p>
 				<a href="https://github.com/Animated-Java/animated-java">
 					<i class="fa-brands fa-github" style="margin-left: 10px; font-size: 25px;" />
 				</a>

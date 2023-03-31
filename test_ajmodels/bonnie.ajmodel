@@ -25,7 +25,10 @@
 				"root_entity_nbt": "{}"
 			},
 			"animated_java:statue_exporter": {
-				"foo": false
+				"datapack_folder": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\saves\\Animated Java Test World\\datapacks",
+				"outdated_rig_warning": true,
+				"include_convenience_functions": true,
+				"root_entity_nbt": "{}"
 			},
 			"animated_java:raw_exporter": {
 				"foo": false
@@ -4944,7 +4947,7 @@
 			"override": false,
 			"length": 3.95,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",

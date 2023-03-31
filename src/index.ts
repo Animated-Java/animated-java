@@ -34,6 +34,7 @@ import { ProgressBarController } from './util/progress'
 import './util/translation'
 import { addTranslations, translate } from './util/translation'
 import * as VirtualFileSystem from './util/virtualFileSystem'
+import { openUnexpectedErrorDialog } from './ui/popups/unexpectedError'
 
 Prism.languages.mcfunction = {}
 
@@ -55,6 +56,7 @@ globalThis.AnimatedJava = {
 	},
 	// Expose this plugin's events to other plugins
 	events,
+	openUnexpectedErrorDialog,
 
 	API: {
 		Settings: AJSettings,

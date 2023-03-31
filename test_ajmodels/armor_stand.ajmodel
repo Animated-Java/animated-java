@@ -19,10 +19,16 @@
 		"exporter_settings": {
 			"animated_java:animation_exporter": {
 				"datapack_folder": "",
-				"interpolation_duration": 1
+				"interpolation_duration": 1,
+				"outdated_rig_warning": true,
+				"include_convenience_functions": true,
+				"root_entity_nbt": "{}"
 			},
 			"animated_java:statue_exporter": {
-				"foo": false
+				"datapack_folder": "",
+				"outdated_rig_warning": true,
+				"include_convenience_functions": true,
+				"root_entity_nbt": "{}"
 			},
 			"animated_java:raw_exporter": {
 				"foo": false
@@ -33,6 +39,7 @@
 				"name": "default",
 				"textureMap": {},
 				"uuid": "f78e10c0-a4a3-aa2f-43ac-753facebd709",
+				"boneConfig": {},
 				"default": true,
 				"affectedBonesIsAWhitelist": false,
 				"affectedBones": []
@@ -53,6 +60,7 @@
 			"to": [6, 1, 6],
 			"autouv": 0,
 			"color": 0,
+			"visibility": false,
 			"origin": [0, 0, 0],
 			"faces": {
 				"north": {
@@ -443,6 +451,7 @@
 			"to": [5, 32, 5],
 			"autouv": 0,
 			"color": 0,
+			"visibility": false,
 			"origin": [0, 23, 0],
 			"faces": {
 				"north": {
@@ -482,6 +491,7 @@
 			"to": [5, 23.75, 3],
 			"autouv": 0,
 			"color": 0,
+			"visibility": false,
 			"origin": [0, 24, 0],
 			"faces": {
 				"north": {
@@ -521,6 +531,7 @@
 			"to": [-3, 25, 3],
 			"autouv": 0,
 			"color": 0,
+			"visibility": false,
 			"origin": [-6, 23, 0],
 			"faces": {
 				"north": {
@@ -560,6 +571,7 @@
 			"to": [9, 25, 3],
 			"autouv": 0,
 			"color": 0,
+			"visibility": false,
 			"origin": [6, 23, 0],
 			"faces": {
 				"north": {
@@ -599,6 +611,7 @@
 			"to": [4.5, 17, 2.5],
 			"autouv": 0,
 			"color": 0,
+			"visibility": false,
 			"origin": [0, 24, 0],
 			"faces": {
 				"north": {
@@ -638,6 +651,7 @@
 			"to": [4.25, 12, 2.375],
 			"autouv": 0,
 			"color": 0,
+			"visibility": false,
 			"origin": [2, 12, 0],
 			"faces": {
 				"north": {
@@ -677,6 +691,7 @@
 			"to": [0.5, 12, 2.375],
 			"autouv": 0,
 			"color": 0,
+			"visibility": false,
 			"origin": [-2, 12, 0],
 			"faces": {
 				"north": {
@@ -716,6 +731,7 @@
 			"to": [4.75, 6, 3],
 			"autouv": 0,
 			"color": 0,
+			"visibility": false,
 			"origin": [2, 12, 0],
 			"faces": {
 				"north": {
@@ -755,6 +771,7 @@
 			"to": [1, 6, 3],
 			"autouv": 0,
 			"color": 0,
+			"visibility": false,
 			"origin": [-2, 12, 0],
 			"faces": {
 				"north": {
@@ -791,6 +808,7 @@
 			"name": "root",
 			"origin": [0, 0, 0],
 			"color": 0,
+			"nbt": "{}",
 			"uuid": "98795982-9c43-6e3e-eed9-2c776a957938",
 			"export": true,
 			"mirror_uv": false,
@@ -803,24 +821,26 @@
 					"name": "baseplate_root",
 					"origin": [0, 0, 0],
 					"color": 0,
+					"nbt": "{}",
 					"uuid": "102db36a-eeda-0e6f-d5cc-c186ecda8165",
 					"export": true,
 					"mirror_uv": false,
 					"isOpen": true,
 					"locked": false,
-					"visibility": true,
+					"visibility": false,
 					"autouv": 0,
 					"children": [
 						{
 							"name": "baseplate_pivot_a",
 							"origin": [0, 1, 6],
 							"color": 0,
+							"nbt": "{}",
 							"uuid": "4f000ffc-11d6-3a4b-7c8d-6b5ba483228c",
 							"export": true,
 							"mirror_uv": false,
 							"isOpen": true,
 							"locked": false,
-							"visibility": true,
+							"visibility": false,
 							"autouv": 0,
 							"children": ["46624743-e0ef-5e97-e6d8-ba5dc100baf4"]
 						}
@@ -830,6 +850,7 @@
 					"name": "armor_stand_root",
 					"origin": [0, 1, 0],
 					"color": 0,
+					"nbt": "{}",
 					"uuid": "5e08acae-d6ca-0dfd-9360-8cdb13c7a824",
 					"export": true,
 					"mirror_uv": false,
@@ -842,6 +863,7 @@
 							"name": "waist_pivot",
 							"origin": [0, 12, 0],
 							"color": 0,
+							"nbt": "{}",
 							"uuid": "98a28100-07e8-849a-38b7-f56abc2c2e56",
 							"export": true,
 							"mirror_uv": false,
@@ -854,6 +876,7 @@
 									"name": "body",
 									"origin": [0, 24, 0],
 									"color": 0,
+									"nbt": "{}",
 									"uuid": "6c53311f-ffc8-e567-ff1b-65840698e9ba",
 									"export": true,
 									"mirror_uv": false,
@@ -872,6 +895,7 @@
 											"name": "head",
 											"origin": [0, 23, 0],
 											"color": 0,
+											"nbt": "{}",
 											"uuid": "808e3c26-7285-af3f-a079-d8b899176dd3",
 											"export": true,
 											"mirror_uv": false,
@@ -885,6 +909,7 @@
 											"name": "left_arm",
 											"origin": [-6, 23, 0],
 											"color": 0,
+											"nbt": "{}",
 											"uuid": "b5b52d2c-097c-08df-6457-372fbae12445",
 											"export": true,
 											"mirror_uv": false,
@@ -898,6 +923,7 @@
 											"name": "right_arm",
 											"origin": [6, 23, 0],
 											"color": 0,
+											"nbt": "{}",
 											"uuid": "215d1b02-0e64-a794-1b88-a9c5a6d7541c",
 											"export": true,
 											"mirror_uv": false,
@@ -913,6 +939,7 @@
 									"name": "right_leg2",
 									"origin": [2, 12, 0],
 									"color": 0,
+									"nbt": "{}",
 									"uuid": "55b812fe-7e4c-b2a5-da5b-3a8c82f9fc69",
 									"export": true,
 									"mirror_uv": false,
@@ -926,6 +953,7 @@
 									"name": "left_leg",
 									"origin": [-2, 12, 0],
 									"color": 0,
+									"nbt": "{}",
 									"uuid": "60d50d30-a018-429d-ba78-c5fb5804dd8a",
 									"export": true,
 									"mirror_uv": false,
@@ -1010,16 +1038,15 @@
 			"name": "walk",
 			"loop": "loop",
 			"override": false,
-			"length": 0,
+			"length": 0.05,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",
 			"loop_delay": "",
 			"affected_bones": [],
-			"affected_bones_is_a_whitelist": false,
-			"animators": {}
+			"affected_bones_is_a_whitelist": false
 		}
 	]
 }
