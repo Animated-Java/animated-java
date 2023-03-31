@@ -84,6 +84,7 @@
 		"esbuild-plugin-inline-image": "^0.0.9",
 		"esbuild-plugin-svelte": "^0.1.1",
 		"eslint": "^8.35.0",
+		"firebase": "^9.19.0",
 		"fs-extra": "^11.1.0",
 		"js-yaml": "^4.1.0",
 		"prettier": "^2.5.1",
