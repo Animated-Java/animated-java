@@ -1,5 +1,5 @@
 // @ts-ignore
-import logo from '../assets/AnimatedJava-2022.svg'
+import logo from '../assets/animated_java_icon.svg'
 import * as events from '../events'
 import { safeExportProject } from '../exporter'
 import { ajModelFormat } from '../modelFormat'

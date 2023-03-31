@@ -1,5 +1,5 @@
 <div align="center">
-	<img src="https://raw.githubusercontent.com/Animated-Java/animated-java/complete-rewrite/src/assets/AnimatedJava-2022.webp"/>
+	<img src="https://raw.githubusercontent.com/Animated-Java/animated-java/experimental/src/assets/animated_java_icon.webp"/>
 </div>
 <h1 align="center">
 	Animated Java

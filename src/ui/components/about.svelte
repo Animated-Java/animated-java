@@ -2,7 +2,7 @@
 	// @ts-ignore
 	import kofiImage from '../../assets/kofi_button_blue.webp'
 	// @ts-ignore
-	import logo from '../../assets/AnimatedJava-2022.svg'
+	import logo from '../../assets/animated_java_icon.svg'
 	// @ts-ignore
 	import snavesutitImage from '../../assets/YokaiS Snave.webp'
 	// @ts-ignore
