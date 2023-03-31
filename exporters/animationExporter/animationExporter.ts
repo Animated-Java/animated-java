@@ -667,8 +667,8 @@ export function loadExporter() {
 				for (const [condition, cmds] of Object.entries(functions)) {
 					if (cmds.length === 0) continue
 					if (cmds.length === 1) {
-						if (condition) commands.push(`execute ${condition} run ${cmds[0]}`)
-						else commands.push(cmds[0])
+						if (condition) commands.push(`execute at @s ${condition} run ${cmds[0]}`)
+						else commands.push(`execute at @s run ${cmds[0]}`)
 						continue
 					}
 					const index = Object.keys(functions).indexOf(condition)
@@ -679,7 +679,11 @@ export function loadExporter() {
 					let command = `function ${AJ_NAMESPACE}:animations/${animName}/tree/${getRootLeafFileName(
 						leaf
 					)}_effects_${index}`
-					commands.push(condition ? `execute ${condition} run ${command}` : command)
+					commands.push(
+						condition
+							? `execute at @s ${condition} run ${command}`
+							: `execute at @s run ${command}`
+					)
 				}
 
 				return commands
@@ -895,7 +899,12 @@ export function loadExporter() {
 
 				const tree = API.generateSearchTree(anim.frames, item => {
 					if (item.type === 'branch') return item.items.length > 0
-					if (item.type === 'leaf') return item.item.nodes.length > 0
+					if (item.type === 'leaf')
+						return (
+							item.item.nodes.length > 0 ||
+							item.item.variant !== undefined ||
+							item.item.commands !== undefined
+						)
 					return false
 				})
 				animFolder.newFile(
