@@ -27,6 +27,7 @@ declare global {
 			createInfo: typeof createInfo
 			JsonText: typeof JsonText
 			generateSearchTree: typeof generateSearchTree
+			minecraft: typeof import('./minecraft')
 		}
 	}
 

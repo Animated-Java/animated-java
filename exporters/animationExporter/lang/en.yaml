@@ -1,13 +1,14 @@
 # Animation Exporter
 animated_java.animation_exporter.name: Animation Exporter
-animated_java.animation_exporter.settings.datapack_folder: Data Pack Folder
-animated_java.animation_exporter.settings.datapack_folder.description: |-
-  The folder to export the generated Data Pack into.
-  This should be the datapacks folder inside of your world (`world/datapacks/`).
-  The generated Data Pack will be placed in a folder named after the Project's Namespace.
-  WARNING! Data Pack merging is NOT supported. If you have an existing Data Pack with the same namespace as your project, it WILL be overwriten.
-animated_java.animation_exporter.settings.datapack_folder.error.unset: |-
+animated_java.animation_exporter.settings.datapack_mcmeta: Data Pack
+animated_java.animation_exporter.settings.datapack_mcmeta.description: |-
+  The Data Pack to inject the generated functions into.
+  This setting should be targeting the pack.mcmeta file of a valid Data Pack.
+animated_java.animation_exporter.settings.datapack_mcmeta.error.unset: |-
   You must select a Data Pack folder.
+animated_java.animation_exporter.settings.datapack_mcmeta.error.invalid: |-
+  The selected path is not a valid Data Pack!
+  Make sure you've selected the pack.mcmeta file of a valid Data Pack.
 
 animated_java.animation_exporter.settings.interpolation_duration: Interpolation Duration
 animated_java.animation_exporter.settings.interpolation_duration.description: |-

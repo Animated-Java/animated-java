@@ -303,6 +303,12 @@ export const animatedJavaSettings = {
 			reducedMotion.set(setting.value)
 		}
 	),
+	minify_output: new CheckboxSetting({
+		id: 'animated_java:global_settings/minify_output',
+		displayName: translate('animated_java.settings.minify_output'),
+		description: translate('animated_java.settings.minify_output.description').split('\n'),
+		defaultValue: false,
+	}),
 }
 
 export const animatedJavaSettingsStructure: GUIStructure = [
@@ -314,6 +320,17 @@ export const animatedJavaSettingsStructure: GUIStructure = [
 			{
 				type: 'setting',
 				settingId: animatedJavaSettings.reduced_motion.id,
+			},
+		],
+	},
+	{
+		type: 'group',
+		title: translate('animated_java.settings.resource_pack_group'),
+		openByDefault: true,
+		children: [
+			{
+				type: 'setting',
+				settingId: animatedJavaSettings.minify_output.id,
 			},
 		],
 	},
