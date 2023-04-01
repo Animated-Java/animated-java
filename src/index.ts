@@ -118,5 +118,5 @@ BBPlugin.register(PACKAGE.name, {
 })
 
 import('../exporters/animationExporter')
-import('../exporters/statueExporter')
+// import('../exporters/statueExporter')
 import('../exporters/rawExporter')
