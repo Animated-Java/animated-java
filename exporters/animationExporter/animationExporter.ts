@@ -430,6 +430,21 @@ export function loadExporter() {
 								)
 							)
 					)
+					// These values are quite extreme, Should probably figure out how to get a perfect bounding box based on model *and* animations.
+					const maxHeight = Math.max(
+						Math.abs(bone.boundingBox.min.y),
+						Math.abs(bone.boundingBox.max.y)
+					)
+					const maxWidth = Math.max(
+						Math.abs(bone.boundingBox.min.x),
+						Math.abs(bone.boundingBox.max.x),
+						Math.abs(bone.boundingBox.min.z),
+						Math.abs(bone.boundingBox.max.z)
+					)
+					passenger
+						.set('height', new NbtInt(maxHeight))
+						.set('width', new NbtInt(maxWidth))
+
 					const userBoneNbt = NbtTag.fromString(bone.nbt)
 					if (userBoneNbt instanceof NbtCompound)
 						userBoneNbt.forEach((key, value) => {
