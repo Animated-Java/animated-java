@@ -1,4 +1,5 @@
 import { isValidDatapackName } from '../minecraft/util'
+import { animatedJavaSettings } from '../settings'
 import { ProgressBarController } from './progress'
 
 class VirtualNode {
@@ -202,7 +203,7 @@ export class VirtualFile extends VirtualNode {
 		) {
 			content = this.content
 		} else {
-			if (Blockbench.Settings.stored.minifiedout.value) content = JSON.stringify(this.content)
+			if (animatedJavaSettings.minify_output.value) content = JSON.stringify(this.content)
 			else content = JSON.stringify(this.content, null, '\t')
 		}
 

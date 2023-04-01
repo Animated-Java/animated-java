@@ -246,7 +246,7 @@ async function exportResources(
 		if (name === projectNamespace) {
 			// Clean out old overrides
 			content.overrides = content.overrides.filter(o => {
-				if (localUsedIds.includes(o.predicate.custom_model_data)) return false
+				return !localUsedIds.includes(o.predicate.custom_model_data)
 			})
 			continue
 		}
