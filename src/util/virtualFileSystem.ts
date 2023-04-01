@@ -202,7 +202,8 @@ export class VirtualFile extends VirtualNode {
 		) {
 			content = this.content
 		} else {
-			content = JSON.stringify(this.content)
+			if (Blockbench.Settings.stored.minifiedout.value) content = JSON.stringify(this.content)
+			else content = JSON.stringify(this.content, null, '\t')
 		}
 
 		await fs.promises.writeFile(path, content, { encoding: 'utf-8' })
