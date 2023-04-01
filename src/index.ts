@@ -28,13 +28,14 @@ import './ui/ajVariantsPanel'
 import './ui/popups/invalidCubes'
 import { consoleGroupCollapsed } from './util/console'
 import * as events from './events'
-import { transposeMatrix, formatStr, roundTo, roundToN } from './util/misc'
+import { transposeMatrix, formatStr, roundTo, roundToN, ExpectedError } from './util/misc'
 import './util/moddingTools'
 import { ProgressBarController } from './util/progress'
 import './util/translation'
 import { addTranslations, translate } from './util/translation'
 import * as VirtualFileSystem from './util/virtualFileSystem'
 import { openUnexpectedErrorDialog } from './ui/popups/unexpectedError'
+import * as minecraft from './minecraft'
 
 Prism.languages.mcfunction = {}
 
@@ -73,6 +74,8 @@ globalThis.AnimatedJava = {
 		JsonText,
 		columnToRowMajor: transposeMatrix,
 		generateSearchTree,
+		minecraft,
+		ExpectedError,
 	},
 }
 // Uninstall events

@@ -8,7 +8,13 @@ export function safeFunctionName(name: string) {
 export function isValidResourcePackMcMeta(path: string) {
 	const parsed = PathModule.parse(path)
 	const assetsPath = PathModule.join(parsed.dir, 'assets')
-	return fs.existsSync(path) && fs.existsSync(assetsPath)
+	return parsed.base === 'pack.mcmeta' && fs.existsSync(path) && fs.existsSync(assetsPath)
+}
+
+export function isValidDataPackMcMeta(path: string) {
+	const parsed = PathModule.parse(path)
+	const dataPath = PathModule.join(parsed.dir, 'data')
+	return parsed.base === 'pack.mcmeta' && fs.existsSync(path) && fs.existsSync(dataPath)
 }
 
 export function isValidResourcePackPath(path: string) {

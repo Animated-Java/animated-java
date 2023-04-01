@@ -110,7 +110,7 @@ export const exportProject = consoleGroupCollapsed('exportProject', async () => 
 	} else {
 		// Automatic Resource Pack settings
 		const resourcePackFolder = PathModule.parse(
-			Project.animated_java_settings.resource_pack_folder.value
+			Project.animated_java_settings.resource_pack_mcmeta.value
 		).dir
 		const projectNamespace = Project.animated_java_settings.project_namespace.value
 		textureExportFolder = PathModule.join(
@@ -171,7 +171,7 @@ async function exportResources(
 	rigItemModelExportPath: string
 ) {
 	const projectNamespace = projectSettings.project_namespace.value
-	const resourcePackPath = PathModule.parse(projectSettings.resource_pack_folder.value).dir
+	const resourcePackPath = PathModule.parse(projectSettings.resource_pack_mcmeta.value).dir
 	const assetsPackFolder = new VirtualFolder('assets')
 	const advancedResourcePackSettingsEnabled =
 		projectSettings.enable_advanced_resource_pack_settings.value
