@@ -1,0 +1,31 @@
+# Animation Exporter
+animated_java.animation_exporter.name: 动态导出器
+animated_java.animation_exporter.settings.datapack_folder: 数据包文件夹
+animated_java.animation_exporter.settings.datapack_folder.description: |-
+  生成的数据包导出时所存放到的文件夹。
+  应为存档内的数据包文件夹（`world/datapacks/`）。
+  生成的数据包将存放在名称与项目命名空间相同的文件夹内。
+  警告！不支持数据包合并。与该项目命名空间相同的现有数据包将会被覆盖。
+animated_java.animation_exporter.settings.datapack_folder.error.unset: |-
+  必须选择一个数据包文件夹。
+
+animated_java.animation_exporter.settings.interpolation_duration: 插值持续时间
+animated_java.animation_exporter.settings.interpolation_duration.description: |-
+  各关键帧之间变化时，在客户端上平滑过渡的时间（刻为单位）。
+  设置的值高于1时能让动画更顺畅，但损失精度。
+  设置的值等于0时将禁用插值。
+
+animated_java.animation_exporter.settings.outdated_rig_warning: 警告过期骨骼
+animated_java.animation_exporter.settings.outdated_rig_warning.description: |-
+  在游戏内检测到在最近导出前已存在的骨骼时，是否显示警告。
+
+animated_java.animation_exporter.settings.include_convenience_functions: 包含便利函数
+animated_java.animation_exporter.settings.include_convenience_functions.description: |-
+  是否在生成的数据包内包含方便调用的函数。
+  便利函数为以灵活性为代价，更易于使用的简化函数（如 summon/<变体名称>）。
+  如果不使用该功能或想减少生成的数据包大小，可禁用该项。
+
+animated_java.animation_exporter.settings.root_entity_nbt: 根实体 NBT
+animated_java.animation_exporter.settings.root_entity_nbt.description: |-
+  应用到骨骼根实体的自定义NBT。
+  警告！该NBT将会覆盖任何导出器对根实体生成的NBT。
