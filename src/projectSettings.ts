@@ -451,4 +451,5 @@ function updateProjectSettings() {
 }
 
 events.LOAD_PROJECT.subscribe(updateProjectSettings)
+events.CONVERT_PROJECT.subscribe(updateProjectSettings)
 events.SELECT_PROJECT.subscribe(updateProjectSettings)

@@ -37,7 +37,14 @@ export class VirtualFolder extends VirtualNode {
 	 * @param content The content of the file. If content is an Array of strings each string will be treated as a new line in the file.
 	 * @returns The created VirtualFile, or throws if it already exists
 	 */
-	newFile(name: string, content: VirtualFileContent): VirtualFile | never {
+	newFile(
+		name: string,
+		content: VirtualFileContent,
+		customJsonMerger?: (
+			oldContent: VirtualFileContent,
+			newContent: VirtualFileContent
+		) => VirtualFileContent
+	): VirtualFile | never {
 		const parts = name.split('/')
 		if (parts.length > 1) {
 			let child = this.children.find(
@@ -49,12 +56,12 @@ export class VirtualFolder extends VirtualNode {
 			}
 
 			this.addChild()
-			return child.newFile(parts.slice(1).join('/'), content)
+			return child.newFile(parts.slice(1).join('/'), content, customJsonMerger)
 		}
 
 		if (this.children.find(child => child instanceof VirtualFile && child.fileName === name))
 			throw new Error(`File ${this.path}/${name} already exists`)
-		const file = new VirtualFile(name, this, content)
+		const file = new VirtualFile(name, this, content, customJsonMerger)
 		this.children.push(file)
 		this.addChild()
 		return file
@@ -104,8 +111,15 @@ export class VirtualFolder extends VirtualNode {
 	 * @param content The content of the file. If content is an Array of strings each string will be treated as a new line in the file.
 	 * @returns The folder this function was called on
 	 */
-	chainNewFile(name: string, content: VirtualFileContent): VirtualFolder | never {
-		this.newFile(name, content)
+	chainNewFile(
+		name: string,
+		content: VirtualFileContent,
+		customJsonMerger?: (
+			oldContent: VirtualFileContent,
+			newContent: VirtualFileContent
+		) => VirtualFileContent
+	): VirtualFolder | never {
+		this.newFile(name, content, customJsonMerger)
 		return this
 	}
 

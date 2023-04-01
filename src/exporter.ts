@@ -272,18 +272,23 @@ async function exportResources(
 	for (const texture of Object.values(rig.textures)) {
 		let image: Buffer
 		let mcmeta: Buffer | undefined
+		let optifineEmissive: Buffer | undefined
 		if (texture.source?.startsWith('data:')) {
 			image = Buffer.from(texture.source.split(',')[1], 'base64')
 		} else if (texture.path) {
 			image = await fs.promises.readFile(texture.path)
 			if (fs.existsSync(texture.path + '.mcmeta'))
 				mcmeta = await fs.promises.readFile(texture.path + '.mcmeta')
+			const emissivePath = texture.path.replace('.png', '') + '_e.png'
+			if (fs.existsSync(emissivePath))
+				optifineEmissive = await fs.promises.readFile(emissivePath)
 		} else {
 			throw new Error(`Texture "${texture.name}" has no source or path`)
 		}
 		const textureName = safeFunctionName(texture.name)
 		texturesFolder.newFile(`${textureName}.png`, image)
 		if (mcmeta) texturesFolder.newFile(`${textureName}.png.mcmeta`, mcmeta)
+		if (optifineEmissive) texturesFolder.newFile(`${textureName}_e.png`, optifineEmissive)
 		// console.log(`Exported texture ${texture.name} to ${texturesFolder.path}`)
 	}
 

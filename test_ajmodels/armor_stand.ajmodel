@@ -24,12 +24,6 @@
 				"include_convenience_functions": true,
 				"root_entity_nbt": "{}"
 			},
-			"animated_java:statue_exporter": {
-				"datapack_folder": "",
-				"outdated_rig_warning": true,
-				"include_convenience_functions": true,
-				"root_entity_nbt": "{}"
-			},
 			"animated_java:raw_exporter": {
 				"foo": false
 			}

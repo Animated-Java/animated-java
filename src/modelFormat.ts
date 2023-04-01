@@ -5,6 +5,7 @@ import { consoleGroup, consoleGroupCollapsed } from './util/console'
 import * as events from './events'
 import { createBlockbenchMod } from './util/moddingTools'
 import { IBoneConfig, TextureMap, Variant, VariantsContainer } from './variants'
+import * as AJSettings from './settings'
 
 const FORMAT_VERSION = '1.1'
 
@@ -617,7 +618,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 
 		if (selectedVariant) Project.animated_java_variants!.select(selectedVariant)
 
-		return content
+		return options.raw ? content : model
 	}),
 
 	export: consoleGroupCollapsed('ajCodec:export', () => {
@@ -639,6 +640,42 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 	},
 })
 
+export function convertToAJModelFormat() {
+	console.log('Converting to Animated Java model...')
+	Project!.animated_java_settings = getDefaultProjectSettings()
+	for (const setting of Object.values(Project!.animated_java_settings)) {
+		setting._onInit()
+	}
+
+	Project!.animated_java_exporter_settings = {}
+	for (const exporter of AnimatedJavaExporter.all) {
+		if (!exporter) continue
+		console.log('Initializing settings for', exporter.id)
+		Project!.animated_java_exporter_settings[exporter.id] = exporter.getSettings()
+		for (const setting of Object.values(
+			Project!.animated_java_exporter_settings[exporter.id]
+		)) {
+			setting._onInit()
+		}
+	}
+
+	Project!.animated_java_variants = new VariantsContainer()
+	Project!.animated_java_variants.addVariant(new Variant('default'))
+
+	const oldAnimations = Project!.animations
+	Project!.animations = []
+	for (const animation of oldAnimations) {
+		const newAnimation = new Blockbench.Animation()
+		Project!.animations.push(newAnimation.extend(animation))
+	}
+
+	events.CONVERT_PROJECT.dispatch()
+
+	const project = Project!
+	project.unselect()
+	project.select()
+}
+
 export const ajModelFormat = new Blockbench.ModelFormat({
 	id: 'animated_java/ajmodel',
 	icon: 'icon-armor_stand',
@@ -658,7 +695,7 @@ export const ajModelFormat = new Blockbench.ModelFormat({
 				setting._onInit()
 			}
 			// Exporter Settings
-			const settings: typeof Project.animated_java_exporter_settings = {}
+			const settings: Record<string, Record<string, AJSettings.Setting<any>>> = {}
 			for (const exporter of AnimatedJavaExporter.all) {
 				if (!exporter) continue
 				settings[exporter.id] = exporter.getSettings()

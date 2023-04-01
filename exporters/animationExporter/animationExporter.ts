@@ -9,6 +9,12 @@ function getExportVersionId() {
 	return Math.round(Math.random() * 2 ** 31 - 1 - (Math.random() * 2 ** 31 - 1))
 }
 
+function tagJsonMerger(a: any, b: any) {
+	a.values = a.values.filter(v => !b.values.includes(v))
+	a.values.push(...b.values)
+	return a
+}
+
 export function loadExporter() {
 	const API = AnimatedJava.API
 	const { NbtTag, NbtCompound, NbtString, NbtList, NbtInt, NbtFloat } = AnimatedJava.API.deepslate
@@ -271,18 +277,22 @@ export function loadExporter() {
 				.chainNewFile('on_summon.json', {
 					replace: false,
 					values: [],
+					tagJsonMerger,
 				})
 				.chainNewFile('on_tick.json', {
 					replace: false,
 					values: [],
+					tagJsonMerger,
 				})
 				.chainNewFile('on_load.json', {
 					replace: false,
 					values: [`${AJ_NAMESPACE}:on_load`],
+					tagJsonMerger,
 				})
 				.chainNewFile('on_remove.json', {
 					replace: false,
 					values: [],
+					tagJsonMerger,
 				})
 
 			//--------------------------------------------

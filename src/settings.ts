@@ -95,6 +95,7 @@ export class Setting<V, R = any> extends Subscribable<R> {
 
 	set value(value: V) {
 		this._value = value
+		this._value ??= this.defaultValue
 		this._onUpdate()
 	}
 
