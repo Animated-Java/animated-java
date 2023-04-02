@@ -653,22 +653,19 @@ export function loadExporter() {
 				}
 			}
 
-			namespaceFolder
-				.accessFolder('functions/animations')
+			animatedJavaFolder
+				.newFolder('functions/animations')
+				.chainNewFile('stop_all_animations_as_root.mcfunction', [
+					...renderedAnimations.map(
+						anim => `function ${AJ_NAMESPACE}:animations/${anim.name}/pause`
+					),
+				])
 				.chainNewFile('stop_all_animations.mcfunction', [
 					`execute if entity @s[tag=${tags.rootEntity}] run function ${AJ_NAMESPACE}:animations/stop_all_animations_as_root`,
 					`execute if entity @s[tag=!${tags.rootEntity}] run tellraw @a ${API.formatStr(
 						errorMustBeRunAsRoot.toString(),
 						[`${NAMESPACE}:animations/stop_all_animations`]
 					)}`,
-				])
-
-			animatedJavaFolder
-				.accessFolder('functions/animations')
-				.chainNewFile('stop_all_animations_as_root.mcfunction', [
-					...renderedAnimations.map(
-						anim => `function ${AJ_NAMESPACE}:animations/${anim.name}/pause`
-					),
 				])
 
 			// Tree building helpers
@@ -851,7 +848,7 @@ export function loadExporter() {
 
 			// functions
 			animatedJavaFolder
-				.newFolder('functions/animations')
+				.accessFolder('functions/animations')
 				.chainNewFile('tick.mcfunction', [
 					...renderedAnimations.map(
 						anim =>

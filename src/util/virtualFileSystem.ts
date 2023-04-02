@@ -72,7 +72,7 @@ export class VirtualFolder extends VirtualNode {
 	 * @param name The name of the folder to create. If the name contains slashes, the parent folders will be created recursively.
 	 * @returns The created folder, or throws if it already exists
 	 */
-	newFolder(name: string): VirtualFolder | never {
+	newFolder(name: string, existsOk?: boolean): VirtualFolder | never {
 		const parts = name.split('/').filter(part => part.length > 0)
 
 		if (parts.length > 1) {
@@ -85,10 +85,13 @@ export class VirtualFolder extends VirtualNode {
 			}
 
 			this.addChild()
-			return child.newFolder(parts.slice(1).join('/'))
+			return child.newFolder(parts.slice(1).join('/'), existsOk)
 		}
 
-		if (this.children.find(child => child instanceof VirtualFolder && child.name === name))
+		if (
+			!existsOk &&
+			this.children.find(child => child instanceof VirtualFolder && child.name === name)
+		)
 			throw new Error(`Folder ${this.path}/${name} already exists`)
 		const folder = new VirtualFolder(name, this)
 		this.children.push(folder)
@@ -102,7 +105,7 @@ export class VirtualFolder extends VirtualNode {
 	 * @returns The created folders, or throws if any of them already exist
 	 */
 	newFolders(...names: string[]): VirtualFolder[] | never {
-		return names.map(name => this.newFolder(name))
+		return names.map(name => this.newFolder(name, true))
 	}
 
 	/**
@@ -128,8 +131,8 @@ export class VirtualFolder extends VirtualNode {
 	 * @param name The name of the file to create. If the name contains slashes, the parent folders will be created recursively.
 	 * @returns The folder this function was called on
 	 */
-	chainNewFolder(name: string): VirtualFolder | never {
-		this.newFolder(name)
+	chainNewFolder(name: string, existsOk?: boolean): VirtualFolder | never {
+		this.newFolder(name, existsOk)
 		return this
 	}
 
@@ -145,8 +148,8 @@ export class VirtualFolder extends VirtualNode {
 			child => child instanceof VirtualFolder && child.name === name
 		)
 		if (!(child instanceof VirtualFolder))
-			throw new Error(`No folder named ${name} in ${this.path}`)
-		if (!child) throw new Error(`No child named ${name} in ${this.path}`)
+			throw new Error(`No folder named "${name}" in ${this.path}`)
+		if (!child) throw new Error(`No child named "${name}" in ${this.path}`)
 		if (parts.length === 1) return child
 		if (child instanceof VirtualFolder) return child.accessFolder(parts.slice(1).join('/'))
 		throw new Error(`Cannot access child of file ${this.path}/${name}`)
