@@ -127,10 +127,10 @@ export function loadExporter() {
 			tweenTime: 'aj.tween_time',
 			animTime: 'aj.anim_time',
 			lifeTime: 'aj.life_time',
-			loopMode: 'aj.loop_mode',
-			exportVersion: `aj.export_version`,
+			exportVersion: `aj.${NAMESPACE}.export_version`,
 			rigLoaded: `aj.${NAMESPACE}.rig_loaded`,
-			localAnimTime: `aj.animation.%s.local_anim_time`,
+			loopMode: `aj.${NAMESPACE}.animation.%s.loop_mode`,
+			localAnimTime: `aj.${NAMESPACE}.animation.%s.local_anim_time`,
 		}
 		const tags = {
 			new: 'aj.new',
@@ -275,7 +275,9 @@ export function loadExporter() {
 				// prettier-ignore
 				...loopModes.map((mode, i) => `scoreboard players set $aj.loop_mode.${mode} ${scoreboard.i} ${i}`),
 				// version ID
-				`scoreboard players set .aj.export_version ${scoreboard.i} ${getExportVersionId()}`,
+				`scoreboard players set ${scoreboard.exportVersion} ${
+					scoreboard.i
+				} ${getExportVersionId()}`,
 				// load function tag
 				`scoreboard players reset * ${scoreboard.rigLoaded}`,
 				`execute as @e[type=${entityTypes.ajRoot},tag=${tags.rootEntity}] run function #${NAMESPACE}:on_load`,
@@ -283,7 +285,7 @@ export function loadExporter() {
 			.chainNewFile('on_load.mcfunction', [
 				`scoreboard players set @s ${scoreboard.rigLoaded} 1`,
 				outdatedRigWarningEnabled
-					? `execute unless score @s ${scoreboard.exportVersion} = .aj.export_version ${scoreboard.i} at @s run function ${AJ_NAMESPACE}:upgrade_rig`
+					? `execute unless score @s ${scoreboard.exportVersion} = ${scoreboard.exportVersion} ${scoreboard.i} at @s run function ${AJ_NAMESPACE}:upgrade_rig`
 					: undefined,
 				`function #${NAMESPACE}:on_load`,
 			])
@@ -421,9 +423,9 @@ export function loadExporter() {
 
 				`scoreboard players set @s ${scoreboard.animTime} 0`,
 				`scoreboard players set @s ${scoreboard.rigLoaded} 1`,
-				`scoreboard players operation @s ${scoreboard.exportVersion} = .aj.export_version ${scoreboard.i}`,
+				`scoreboard players operation @s ${scoreboard.exportVersion} = ${scoreboard.exportVersion} ${scoreboard.i}`,
 				`execute store result score @s ${scoreboard.id} run scoreboard players add .aj.last_id ${scoreboard.id} 1`,
-				`tp @s ~ ~ ~ ~ ~`,
+				singleEntityRig ? `tp @s ~ ~ ~ ~180 ~` : `tp @s ~ ~ ~ ~ ~`,
 				`execute at @s ${boneSelector}run function ${AJ_NAMESPACE}:summon/as_bone`,
 				...variants.map(
 					v =>
@@ -460,7 +462,7 @@ export function loadExporter() {
 			animatedJavaFolder
 				.accessFolder('functions')
 				.chainNewFile('upgrade_rig.mcfunction', [
-					`scoreboard players operation @s ${scoreboard.exportVersion} = .aj.export_version ${scoreboard.i}`,
+					`scoreboard players operation @s ${scoreboard.exportVersion} = ${scoreboard.exportVersion} ${scoreboard.i}`,
 					`data modify entity @s Glowing set value 1`,
 					`data modify entity @s glow_color_override set value 16711680`,
 					`execute ${boneSelector}run data modify entity @s Glowing set value 1`,
@@ -788,18 +790,18 @@ export function loadExporter() {
 					`scoreboard players set @s ${API.formatStr(scoreboard.localAnimTime, [
 						anim.name,
 					])} 0`,
-					`scoreboard players set @s ${scoreboard.loopMode} ${loopModes.indexOf(
-						anim.loopMode
-					)}`,
+					`scoreboard players set @s ${API.formatStr(scoreboard.loopMode, [
+						anim.name,
+					])} ${loopModes.indexOf(anim.loopMode)}`,
 					`execute ${boneSelector}run data modify entity @s interpolation_duration set value 0`,
 					`function ${AJ_NAMESPACE}:animations/${anim.name}/tree/leaf_0`,
 					`execute ${boneSelector}store result entity @s interpolation_duration int 1 run scoreboard players get $aj.default_interpolation_duration ${scoreboard.i}`,
 					`tag @s add ${API.formatStr(tags.activeAnim, [anim.name])}`,
 				])
 				.chainNewFile('resume_as_root.mcfunction', [
-					`scoreboard players set @s ${scoreboard.loopMode} ${loopModes.indexOf(
-						anim.loopMode
-					)}`,
+					`scoreboard players set @s ${API.formatStr(scoreboard.loopMode, [
+						anim.name,
+					])} ${loopModes.indexOf(anim.loopMode)}`,
 					`execute ${boneSelector}store result entity @s interpolation_duration int 1 run scoreboard players get $aj.default_interpolation_duration ${scoreboard.i}`,
 					`tag @s add ${API.formatStr(tags.activeAnim, [anim.name])}`,
 				])
@@ -862,14 +864,22 @@ export function loadExporter() {
 					}/end`,
 				])
 				.chainNewFile('end.mcfunction', [
-					`execute if score @s ${
-						scoreboard.loopMode
-					} = $aj.loop_mode.loop aj.i run scoreboard players set @s ${API.formatStr(
+					`execute if score @s ${API.formatStr(scoreboard.loopMode, [
+						anim.name,
+					])} = $aj.loop_mode.loop aj.i run scoreboard players set @s ${API.formatStr(
 						scoreboard.localAnimTime,
 						[anim.name]
 					)} 0`,
-					`execute if score @s ${scoreboard.loopMode} = $aj.loop_mode.once aj.i run function ${NAMESPACE}:animations/${anim.name}/stop`,
-					`execute if score @s ${scoreboard.loopMode} = $aj.loop_mode.hold aj.i run function ${NAMESPACE}:animations/${anim.name}/pause`,
+					`execute if score @s ${API.formatStr(scoreboard.loopMode, [
+						anim.name,
+					])} = $aj.loop_mode.once aj.i run function ${NAMESPACE}:animations/${
+						anim.name
+					}/stop`,
+					`execute if score @s ${API.formatStr(scoreboard.loopMode, [
+						anim.name,
+					])} = $aj.loop_mode.hold aj.i run function ${NAMESPACE}:animations/${
+						anim.name
+					}/pause`,
 				])
 				.chainNewFile('next_frame_as_root.mcfunction', [
 					`function ${AJ_NAMESPACE}:animations/${anim.name}/tick_animation`,
