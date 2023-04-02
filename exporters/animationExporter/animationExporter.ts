@@ -215,14 +215,16 @@ export function loadExporter() {
 			}
 			const tags = {
 				new: 'aj.new',
+				rigEntity: `aj.${NAMESPACE}.rig_entity`,
 				rootEntity: `aj.${NAMESPACE}.root`,
 				boneEntity: `aj.${NAMESPACE}.bone`,
 				namedBoneEntity: `aj.${NAMESPACE}.bone.%s`,
 				activeAnim: `aj.${NAMESPACE}.animation.%s`,
 				cameraTag: `aj.${NAMESPACE}.camera.%s`,
 				locatorTag: `aj.${NAMESPACE}.locator.%s`,
+				disableCommandKeyframes: `aj.${NAMESPACE}.disable_command_keyframes`,
 			}
-			const entity_types = {
+			const entityTypes = {
 				ajRoot: `#${NAMESPACE}:aj_root`,
 				ajBone: `#${NAMESPACE}:aj_bone`,
 			}
@@ -359,7 +361,7 @@ export function loadExporter() {
 					} ${getExportVersionId()}`,
 					// load function tag
 					`scoreboard players reset * ${scoreboard.rigLoaded}`,
-					`execute as @e[type=${entity_types.ajRoot},tag=${tags.rootEntity}] run function #${NAMESPACE}:on_load`,
+					`execute as @e[type=${entityTypes.ajRoot},tag=${tags.rootEntity}] run function #${NAMESPACE}:on_load`,
 				])
 				.chainNewFile('on_load.mcfunction', [
 					`scoreboard players set @s ${scoreboard.rigLoaded} 1`,
@@ -369,7 +371,7 @@ export function loadExporter() {
 					`function #${NAMESPACE}:on_load`,
 				])
 				.chainNewFile('tick.mcfunction', [
-					`execute as @e[type=${entity_types.ajRoot},tag=${tags.rootEntity}] run function ${AJ_NAMESPACE}:tick_as_root`,
+					`execute as @e[type=${entityTypes.ajRoot},tag=${tags.rootEntity}] run function ${AJ_NAMESPACE}:tick_as_root`,
 				])
 				.chainNewFile('tick_as_root.mcfunction', [
 					`execute unless score @s ${scoreboard.rigLoaded} matches 1 run function ${AJ_NAMESPACE}:on_load`,
@@ -400,6 +402,7 @@ export function loadExporter() {
 			const userSummonTags = summonNbt.get('Tags')
 			const summonTags = userSummonTags instanceof NbtList ? userSummonTags : new NbtList()
 			summonTags.add(new NbtString(tags.new))
+			summonTags.add(new NbtString(tags.rigEntity))
 			summonTags.add(new NbtString(tags.rootEntity))
 			summonNbt.set('Tags', summonTags)
 
@@ -412,6 +415,7 @@ export function loadExporter() {
 						'Tags',
 						new NbtList([
 							new NbtString(tags.new),
+							new NbtString(tags.rigEntity),
 							new NbtString(API.formatStr(tags.boneEntity)),
 							new NbtString(API.formatStr(tags.namedBoneEntity, [bone.name])),
 						])
@@ -468,7 +472,7 @@ export function loadExporter() {
 				.accessFolder('functions')
 				.chainNewFile('summon.mcfunction', [
 					`summon minecraft:item_display ~ ~ ~ ${summonNbt.toString()}`,
-					`execute as @e[type=#${NAMESPACE}:aj_root,limit=1,distance=..1,tag=${tags.new}] run function ${AJ_NAMESPACE}:summon/as_root`,
+					`execute as @e[type=${entityTypes.ajRoot},limit=1,distance=..1,tag=${tags.new}] run function ${AJ_NAMESPACE}:summon/as_root`,
 				])
 				.newFolder('summon')
 
@@ -560,9 +564,10 @@ export function loadExporter() {
 						[`${NAMESPACE}:remove/this`]
 					)}`,
 				])
-				.chainNewFile('all.mcfunction', [
-					`execute as @e[type=#${NAMESPACE}:aj_root,tag=${tags.rootEntity}] run function ${AJ_NAMESPACE}:remove/as_root`,
+				.chainNewFile('rigs.mcfunction', [
+					`execute as @e[type=${entityTypes.ajRoot},tag=${tags.rootEntity}] run function ${AJ_NAMESPACE}:remove/as_root`,
 				])
+				.chainNewFile('all.mcfunction', [`kill @e[tag=${tags.rigEntity}]`])
 
 			animatedJavaFolder
 				.newFolder('functions/remove')
@@ -633,6 +638,7 @@ export function loadExporter() {
 					'pause',
 					'stop',
 					'apply_frame',
+					'next_frame',
 					'tween_play',
 					'tween_resume',
 				]) {
@@ -646,6 +652,24 @@ export function loadExporter() {
 					])
 				}
 			}
+
+			namespaceFolder
+				.accessFolder('functions/animations')
+				.chainNewFile('stop_all_animations.mcfunction', [
+					`execute if entity @s[tag=${tags.rootEntity}] run function ${AJ_NAMESPACE}:animations/stop_all_animations_as_root`,
+					`execute if entity @s[tag=!${tags.rootEntity}] run tellraw @a ${API.formatStr(
+						errorMustBeRunAsRoot.toString(),
+						[`${NAMESPACE}:animations/stop_all_animations`]
+					)}`,
+				])
+
+			animatedJavaFolder
+				.accessFolder('functions/animations')
+				.chainNewFile('stop_all_animations_as_root.mcfunction', [
+					...renderedAnimations.map(
+						anim => `function ${AJ_NAMESPACE}:animations/${anim.name}/pause`
+					),
+				])
 
 			// Tree building helpers
 			function getBranchFileName(branch: IFrameBranch) {
@@ -693,8 +717,14 @@ export function loadExporter() {
 				for (const [condition, cmds] of Object.entries(functions)) {
 					if (cmds.length === 0) continue
 					if (cmds.length === 1) {
-						if (condition) commands.push(`execute at @s ${condition} run ${cmds[0]}`)
-						else commands.push(`execute at @s run ${cmds[0]}`)
+						if (condition)
+							commands.push(
+								`execute unless entity @s[tag=${tags.disableCommandKeyframes}] at @s ${condition} run ${cmds[0]}`
+							)
+						else
+							commands.push(
+								`execute unless entity @s[tag=${tags.disableCommandKeyframes}] at @s run ${cmds[0]}`
+							)
 						continue
 					}
 					const index = Object.keys(functions).indexOf(condition)
@@ -707,8 +737,8 @@ export function loadExporter() {
 					)}_effects_${index}`
 					commands.push(
 						condition
-							? `execute at @s ${condition} run ${command}`
-							: `execute at @s run ${command}`
+							? `execute unless entity @s[tag=${tags.disableCommandKeyframes}] at @s ${condition} run ${command}`
+							: `execute unless entity @s[tag=${tags.disableCommandKeyframes}] at @s run ${command}`
 					)
 				}
 				return commands
@@ -865,7 +895,9 @@ export function loadExporter() {
 						])} 0`,
 						`tag @s remove ${API.formatStr(tags.activeAnim, [anim.name])}`,
 						`execute on passengers run data modify entity @s interpolation_duration set value 0`,
+						`tag @s add ${tags.disableCommandKeyframes}`,
 						`function ${AJ_NAMESPACE}:animations/${anim.name}/tree/leaf_0`,
+						`tag @s remove ${tags.disableCommandKeyframes}`,
 					])
 					.chainNewFile('tween_play_as_root.mcfunction', [
 						`function ${AJ_NAMESPACE}:animations/${anim.name}/play_as_root`,
@@ -920,6 +952,9 @@ export function loadExporter() {
 						)} 0`,
 						`execute if score @s ${scoreboard.loopMode} = $aj.loop_mode.once aj.i run function ${NAMESPACE}:animations/${anim.name}/stop`,
 						`execute if score @s ${scoreboard.loopMode} = $aj.loop_mode.hold aj.i run function ${NAMESPACE}:animations/${anim.name}/pause`,
+					])
+					.chainNewFile('next_frame.mcfunction', [
+						`function ${AJ_NAMESPACE}:animations/${anim.name}/tick_animation`,
 					])
 
 				const tree = API.generateSearchTree(anim.frames, item => {

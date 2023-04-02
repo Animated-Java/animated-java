@@ -618,7 +618,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 
 		if (selectedVariant) Project.animated_java_variants!.select(selectedVariant)
 
-		return options.raw ? content : model
+		return options.raw ? model : content
 	}),
 
 	export: consoleGroupCollapsed('ajCodec:export', () => {
