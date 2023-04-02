@@ -389,7 +389,7 @@ export function loadExporter() {
 			.accessFolder('functions')
 			.chainNewFile('summon.mcfunction', [
 				`summon minecraft:item_display ~ ~ ~ ${summonNbt.toString()}`,
-				`execute as @e[type=${entityTypes.ajRoot},limit=1,distance=..1,tag=${tags.new}] run function ${AJ_NAMESPACE}:summon/as_root`,
+				`execute as @e[type=${entityTypes.ajRoot},limit=1,distance=..1,tag=${tags.rootEntity},tag=${tags.new}] run function ${AJ_NAMESPACE}:summon/as_root`,
 			])
 			.newFolder('summon')
 
@@ -458,6 +458,8 @@ export function loadExporter() {
 				.accessFolder('functions')
 				.chainNewFile('upgrade_rig.mcfunction', [
 					`scoreboard players operation @s ${scoreboard.exportVersion} = .aj.export_version ${scoreboard.i}`,
+					`data modify entity @s Glowing set value 1`,
+					`data modify entity @s glow_color_override set value 16711680`,
 					`execute on passengers run data modify entity @s Glowing set value 1`,
 					`execute on passengers run data modify entity @s glow_color_override set value 16711680`,
 					`tellraw @a ${errorOutOfDateRig}`,
