@@ -197,105 +197,106 @@ animated_java.panels.variants.default_variant: Standard-Variante
 animated_java.actions.add_variant.name: Variante hinzufügen
 animated_java.actions.add_variant.description: Eine neue Variante erstellen
 animated_java.actions.variant_properties.name: Eigenschaften der Variante
-animated_java.actions.variant_properties.description: Öffnet den Dialog Varianten Eigenschaften.
+animated_java.actions.variant_properties.description: Öffnet den Dialog Varianteneigenschaften.
 
 ### Variants Properties Dialog
-animated_java.dialog.variant_properties.title: Variant Properties
+animated_java.dialog.variant_properties.title: Varianteneigenschaften
 
 animated_java.dialog.variant_properties.variant_name: Name
 animated_java.dialog.variant_properties.variant_name.description: |-
-  The name of the variant.
+  Der Name der Variante.
 animated_java.variant_properties.variant_name.error.duplicate_name: |-
-  A variant with the name "%name" already exists.
-  Variant names must be unique.
+  Es existiert bereits eine Variante mit dem Namen "%name".
+  Variantennamen müssen einzigartig sein.
 
-animated_java.dialog.variant_properties.affected_bones_is_a_whitelist: Affected Bones is a Whitelist
+animated_java.dialog.variant_properties.affected_bones_is_a_whitelist: Betroffene Knochen ist eine Whitelist
 animated_java.dialog.variant_properties.affected_bones_is_a_whitelist.description: |-
-  Whether the affected bones list is a whitelist or blacklist.
-  If true, only the bones in the Affected Bones list will be affected by this Variant.
-  If false, all bones except the ones in the Affected Bones list will be affected by this Variant.
+  Ob die Liste der betroffenen Knochen eine Whitelist oder eine Blacklist ist.
+  Die Knochen, die von dieser Animation betroffen sind.
+  Wenn diese Liste eine Whitelist ist, werden nur die Knochen in der Liste der betroffene Knochen von dieser Animation betroffen sein.
+  Wenn diese Liste eine Blacklist ist, werden alle Bones außer denen in der Liste der betroffene Knochen von dieser Animation betroffen.
 
-animated_java.dialog.variant_properties.affected_bones: Affected Bones
-animated_java.dialog.variant_properties.affected_bones.add_new_item_message: Add a Bone
+animated_java.dialog.variant_properties.affected_bones: Betroffene Knochen
+animated_java.dialog.variant_properties.affected_bones.add_new_item_message: Hinzufügen eines Knochen
 animated_java.dialog.variant_properties.affected_bones.description: |-
-  The list of bones affected by this variant.
-  If this is a whitelist, only the bones in the list will be modified by this Variant.
-  If this is a blacklist, all bones except the ones in the list will be modified by this Variant.
-animated_java.dialog.variant_properties.textureMap: Texture Map
+  Die Liste der von dieser Variante betroffenen Knochen.
+  Wenn es sich um eine Whitelist handelt, werden nur die Knochen in der Liste durch diese Variante verändert.
+  Wenn es sich um eine Blacklist handelt, werden alle Knochen außer denen in der Liste von dieser Variante betroffen.
+animated_java.dialog.variant_properties.textureMap: Texturen-Zuordnung
 animated_java.dialog.variant_properties.textureMap.description: |-
-  The texture map to use for this variant.
-  Lets you choose what textures are replaced when this Variant is appied.
+  Die Textur(en), die für diese Variante verwendet werden soll(en).
+  Erlaubt die Auswahl der Texturen, die bei der Anwendung dieser Variante ersetzt werden.
 
-### Custom Keyframes
+### Benutzerdefinierte Keyframes
 animated_java.keyframe.animation: Animation
 animated_java.keyframe.animation.description: |-
-  The animation to apply when this keyframe is reached.
+  Die Animation, die bei Erreichen dieses Keyframes ausgeführt wird.
 
-animated_java.keyframe.variant: Variant
+animated_java.keyframe.variant: Variante
 animated_java.keyframe.variant.description: |-
-  The variant to apply when this keyframe is reached.
+  Die Variante, die bei Erreichen dieses Keyframes angewendet werden soll.
 
-animated_java.keyframe.commands: Commands
+animated_java.keyframe.commands: Befehle
 animated_java.keyframe.commands.description: |-
-  A list of commands (A function) that run when the keyframe is reached.
+  Eine Liste von Befehlen (Eine Funktion), die bei Erreichen des Keyframes ausgeführt werden.
 
-animated_java.keyframe.tweenDuration: Tween Duration
+animated_java.keyframe.tweenDuration: Tween-Dauer
 animated_java.keyframe.tweenDuration.description: |-
-  The duration (in ticks) of the tween between this keyframe and the next animation.
+  Die Dauer (in Ticks) des Tweens zwischen diesem Keyframe und der nächsten Animation.
 
-animated_java.keyframe.tweenMode: Tween Mode
+animated_java.keyframe.tweenMode: Tween-Modus
 animated_java.keyframe.tweenMode.description: |-
-  The tween mode of the keyframe.
-  Play: The animation will play from the start.
-  Resume: The animation will play from the same anim_time as this keyframe.
-animated_java.keyframe.tweenMode.play: Play
-animated_java.keyframe.tweenMode.resume: Resume
+  Der Tween-Modus des Keyframes.
+  Play: Die Animation wird von Anfang an abgespielt.
+  Fortsetzen: Die Animation wird ab der gleichen anim_time wie dieser Keyframe abgespielt.
+animated_java.keyframe.tweenMode.play: Abspielen
+animated_java.keyframe.tweenMode.resume: Fortsetzen
 
-animated_java.keyframe.executeCondition: Execute Condition
+animated_java.keyframe.executeCondition: Ausführen der Bedingung
 animated_java.keyframe.executeCondition.description: |-
-  The execute command condition that must be met for the keyframe to be applied.
-  This is an execute subcommand chain, so you can use any and all execute subcommands in this field.
-  Example: "if score @s example matches 1.."
-  Hint: You can separate subcommands with newlines!
+  Die Bedingung für die Ausführung des Befehls, die erfüllt sein muss, damit der Keyframe angewendet wird.
+  Dies ist eine Kette von Ausführungsunterbefehlen, so dass Sie alle Ausführungsunterbefehle in diesem Feld verwenden können.
+  Beispiel: "if score @s example matches 1.."
+  Tipp: Sie können weitere Befehle mit Zeilenumbrüchen hinzufügen!
 
-animated_java.timeline.animation: Animations
-animated_java.timeline.variant: Variants
-animated_java.timeline.commands: Commands
+animated_java.timeline.animation: Animationen
+animated_java.timeline.variant: Varianten
+animated_java.timeline.commands: Befehle
 
 ### Popups
-animated_java.popup.close_button: Close
-animated_java.popup.confirm_button: Done
-animated_java.popup.cancel_button: Done
+animated_java.popup.close_button: Schließen
+animated_java.popup.confirm_button: Erledigt
+animated_java.popup.cancel_button: Abbrechen
 
-# Unexpected Error
-animated_java.popup.unexpectedError.title: Unexpected Error
+# Unerwarteter Fehler
+animated_java.popup.unexpectedError.title: Unerwarteter Fehler
 animated_java.popup.unexpectedError.body: |-
-  An unexpected error occurred!
-  Please report this error on our Github or in the support channel on our official Discord server.
+  Ein unerwarteter Fehler ist aufgetreten!
+  Bitte melden Sie diesen Fehler auf unserem Github oder im Support-Kanal auf unserem offiziellen Discord-Server.
 
-# Confirm predicate file overwrite
-animated_java.popup.confirm_predicate_file_overwrite.title: Confirm Predicate File Overwrite
+# Überschreiben der Prädikatsdatei bestätigen
+animated_java.popup.confirm_predicate_file_overwrite.title: Überschreiben der Prädikats-Datei bestätigen
 animated_java.popup.confirm_predicate_file_overwrite.body: |-
-  The file "%file" already exists and is not a Rig Item Model!
-  Do you want to overwrite it?
+  Die Datei "%file" existiert bereits und ist kein Rig Item Modell!
+  Möchten Sie sie überschreiben?
 
-  Full file path:
-  %path
+  Vollständiger Dateipfad:
+  %Pfad
 
 # Invalid Texture Mapping(s)
-animated_java.popup.invalid_texture_mapping.title: Invalid Texture Mapping(s)
+animated_java.popup.invalid_texture_mapping.title: Ungültige Textur-Zuordnung(en)
 animated_java.popup.invalid_texture_mapping.body: |-
-  The Variant "%variant" has invalid texture mappings!
-  One or more of the textures in it's texture map are missing from the project, or are invalid.
-  The invalid mappings and a brief explanation of why they're invalid can be found below:
-animated_java.popup.invalid_texture_mapping.reason: Reason(s) for Invalidation
+  Die Variante "%variant" hat ungültige Textur-Zuordnungen!
+  Eine oder mehrere der Texturen in ihrer Textur-Zuordnung fehlen im Projekt oder sind ungültig.
+  Die ungültigen Zuordnungen und eine kurze Erklärung, warum sie ungültig sind, finden Sie unten:
+animated_java.popup.invalid_texture_mapping.reason: Grund(e) für die Invalidierung
 animated_java.popup.invalid_texture_mapping.reason.invalid_from_texture: |-
-  Couldn't find the "from" texture in the project.
+  Die "von"-Textur konnte im Projekt nicht gefunden werden.
 animated_java.popup.invalid_texture_mapping.reason.invalid_to_texture: |-
-  Couldn't find the "to" texture in the project.
+  Die "bis"-Textur konnte im Projekt nicht gefunden werden.
 animated_java.popup.invalid_texture_mapping.footer: |-
-  The missing/invalid texture mappings will be removed from the variant.
-  After closing this popup, please make sure you open the Variant's properties dialog and double check the texture mappings are correct.
+  Die fehlenden/ungültigen Textur-Zuordnungen werden aus der Variante entfernt.
+  Nachdem Sie dieses Popup geschlossen haben, öffnen Sie bitte den Eigenschaften-Dialog der Variante und überprüfen Sie, ob die Textur-Zuordnungen korrekt sind.
 
 # Invalid Cube(s)
 animated_java.popup.invalid_cubes.title: Invalid Cube(s)
