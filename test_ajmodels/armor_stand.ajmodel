@@ -1,7 +1,7 @@
 {
 	"meta": {
 		"format": "animated_java/ajmodel",
-		"format_version": "1.0"
+		"format_version": "1.1"
 	},
 	"animated_java": {
 		"settings": {
@@ -12,20 +12,14 @@
 			"rig_export_folder": "",
 			"texture_export_folder": "",
 			"enable_advanced_resource_pack_settings": false,
-			"resource_pack_folder": "",
+			"resource_pack_mcmeta": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\pack.mcmeta",
 			"verbose": true,
 			"exporter": "animated_java:animation_exporter"
 		},
 		"exporter_settings": {
 			"animated_java:animation_exporter": {
-				"datapack_folder": "",
+				"datapack_mcmeta": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\saves\\Animated Java Test World\\datapacks\\test_datapack\\pack.mcmeta",
 				"interpolation_duration": 1,
-				"outdated_rig_warning": true,
-				"include_convenience_functions": true,
-				"root_entity_nbt": "{}"
-			},
-			"animated_java:statue_exporter": {
-				"datapack_folder": "",
 				"outdated_rig_warning": true,
 				"include_convenience_functions": true,
 				"root_entity_nbt": "{}"
@@ -973,7 +967,7 @@
 	"textures": [
 		{
 			"path": "C:\\Users\\Snave\\AppData\\Roaming\\.curseforge\\Install\\versions\\1.19.3\\assets\\minecraft\\textures\\entity\\armorstand\\wood.png",
-			"name": "wood.png",
+			"name": "wood",
 			"folder": "",
 			"namespace": "",
 			"id": "0",
@@ -993,7 +987,7 @@
 		},
 		{
 			"path": "C:\\Users\\Snave\\AppData\\Roaming\\.curseforge\\Install\\versions\\1.19.3\\assets\\minecraft\\textures\\models\\armor\\iron_layer_1.png",
-			"name": "iron_layer_1.png",
+			"name": "iron_layer_1",
 			"folder": "",
 			"namespace": "",
 			"id": "1",
@@ -1013,7 +1007,7 @@
 		},
 		{
 			"path": "C:\\Users\\Snave\\AppData\\Roaming\\.curseforge\\Install\\versions\\1.19.3\\assets\\minecraft\\textures\\models\\armor\\iron_layer_2.png",
-			"name": "iron_layer_2.png",
+			"name": "iron_layer_2",
 			"folder": "",
 			"namespace": "",
 			"id": "2",
@@ -1040,13 +1034,14 @@
 			"override": false,
 			"length": 0.05,
 			"snapping": 20,
-			"selected": false,
+			"selected": true,
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",
 			"loop_delay": "",
 			"affected_bones": [],
-			"affected_bones_is_a_whitelist": false
+			"affected_bones_is_a_whitelist": false,
+			"animators": {}
 		}
 	]
 }

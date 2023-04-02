@@ -110,7 +110,7 @@ export const exportProject = consoleGroupCollapsed('exportProject', async () => 
 	} else {
 		// Automatic Resource Pack settings
 		const resourcePackFolder = PathModule.parse(
-			Project.animated_java_settings.resource_pack_folder.value
+			Project.animated_java_settings.resource_pack_mcmeta.value
 		).dir
 		const projectNamespace = Project.animated_java_settings.project_namespace.value
 		textureExportFolder = PathModule.join(
@@ -171,7 +171,7 @@ async function exportResources(
 	rigItemModelExportPath: string
 ) {
 	const projectNamespace = projectSettings.project_namespace.value
-	const resourcePackPath = PathModule.parse(projectSettings.resource_pack_folder.value).dir
+	const resourcePackPath = PathModule.parse(projectSettings.resource_pack_mcmeta.value).dir
 	const assetsPackFolder = new VirtualFolder('assets')
 	const advancedResourcePackSettingsEnabled =
 		projectSettings.enable_advanced_resource_pack_settings.value
@@ -246,7 +246,7 @@ async function exportResources(
 		if (name === projectNamespace) {
 			// Clean out old overrides
 			content.overrides = content.overrides.filter(o => {
-				if (localUsedIds.includes(o.predicate.custom_model_data)) return false
+				return !localUsedIds.includes(o.predicate.custom_model_data)
 			})
 			continue
 		}
@@ -271,14 +271,24 @@ async function exportResources(
 
 	for (const texture of Object.values(rig.textures)) {
 		let image: Buffer
+		let mcmeta: Buffer | undefined
+		let optifineEmissive: Buffer | undefined
 		if (texture.source?.startsWith('data:')) {
 			image = Buffer.from(texture.source.split(',')[1], 'base64')
 		} else if (texture.path) {
 			image = await fs.promises.readFile(texture.path)
+			if (fs.existsSync(texture.path + '.mcmeta'))
+				mcmeta = await fs.promises.readFile(texture.path + '.mcmeta')
+			const emissivePath = texture.path.replace('.png', '') + '_e.png'
+			if (fs.existsSync(emissivePath))
+				optifineEmissive = await fs.promises.readFile(emissivePath)
 		} else {
 			throw new Error(`Texture "${texture.name}" has no source or path`)
 		}
-		texturesFolder.newFile(`${safeFunctionName(texture.name)}.png`, image)
+		const textureName = safeFunctionName(texture.name)
+		texturesFolder.newFile(`${textureName}.png`, image)
+		if (mcmeta) texturesFolder.newFile(`${textureName}.png.mcmeta`, mcmeta)
+		if (optifineEmissive) texturesFolder.newFile(`${textureName}_e.png`, optifineEmissive)
 		// console.log(`Exported texture ${texture.name} to ${texturesFolder.path}`)
 	}
 

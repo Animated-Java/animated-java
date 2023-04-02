@@ -19,7 +19,7 @@ export interface IAnimatedJavaProjectSettings {
 	rig_export_folder: Settings.FolderSetting
 	texture_export_folder: Settings.FolderSetting
 	enable_advanced_resource_pack_settings: Settings.CheckboxSetting
-	resource_pack_folder: Settings.FileSetting
+	resource_pack_mcmeta: Settings.FileSetting
 	verbose: Settings.CheckboxSetting
 	exporter: Settings.DropdownSetting<string>
 }
@@ -105,15 +105,15 @@ const TRANSLATIONS = {
 			'animated_java.project_settings.enable_advanced_resource_pack_settings.description'
 		).split('\n'),
 	},
-	resource_pack_folder: {
-		displayName: translate('animated_java.project_settings.resource_pack_folder'),
+	resource_pack_mcmeta: {
+		displayName: translate('animated_java.project_settings.resource_pack_mcmeta'),
 		description: translate(
-			'animated_java.project_settings.resource_pack_folder.description'
+			'animated_java.project_settings.resource_pack_mcmeta.description'
 		).split('\n'),
 		error: {
-			unset: translate('animated_java.project_settings.resource_pack_folder.error.unset'),
+			unset: translate('animated_java.project_settings.resource_pack_mcmeta.error.unset'),
 			invalid_path: translate(
-				'animated_java.project_settings.resource_pack_folder.error.invalid_path'
+				'animated_java.project_settings.resource_pack_mcmeta.error.invalid_path'
 			),
 		},
 	},
@@ -324,26 +324,26 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 			docsLink: 'page:project_settings#enable_advanced_resource_pack_settings',
 		}),
 
-		resource_pack_folder: new Settings.FileSetting(
+		resource_pack_mcmeta: new Settings.FileSetting(
 			{
-				id: 'animated_java:project_settings/resource_pack',
-				displayName: TRANSLATIONS.resource_pack_folder.displayName,
-				description: TRANSLATIONS.resource_pack_folder.description,
+				id: 'animated_java:project_settings/resource_pack_mcmeta',
+				displayName: TRANSLATIONS.resource_pack_mcmeta.displayName,
+				description: TRANSLATIONS.resource_pack_mcmeta.description,
 				defaultValue: '',
 				// resettable: true,
-				docsLink: 'page:project_settings#resource_pack',
+				docsLink: 'page:project_settings#resource_pack_mcmeta',
 			},
 			function onUpdate(setting) {
 				if (!setting.value) {
 					setting.infoPopup = Settings.createInfo(
 						'error',
-						TRANSLATIONS.resource_pack_folder.error.unset
+						TRANSLATIONS.resource_pack_mcmeta.error.unset
 					)
 					return setting
 				} else if (!isValidResourcePackMcMeta(setting.value)) {
 					setting.infoPopup = Settings.createInfo(
 						'error',
-						TRANSLATIONS.resource_pack_folder.error.invalid_path
+						TRANSLATIONS.resource_pack_mcmeta.error.invalid_path
 					)
 					return setting
 				}
@@ -425,7 +425,7 @@ export const projectSettingStructure: GUIStructure = [
 				inactive: [
 					{
 						type: 'setting',
-						settingId: _.resource_pack_folder.id,
+						settingId: _.resource_pack_mcmeta.id,
 					},
 				],
 			},
@@ -451,4 +451,5 @@ function updateProjectSettings() {
 }
 
 events.LOAD_PROJECT.subscribe(updateProjectSettings)
+events.CONVERT_PROJECT.subscribe(updateProjectSettings)
 events.SELECT_PROJECT.subscribe(updateProjectSettings)

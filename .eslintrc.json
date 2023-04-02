@@ -29,6 +29,7 @@
 	"rules": {
 		"semi": ["warn", "never"],
 		"prefer-const": "warn",
+		"no-fallthrough": "off",
 		"no-mixed-spaces-and-tabs": "off",
 		"@typescript-eslint/no-explicit-any": "off",
 		"@typescript-eslint/no-floating-promises": ["error", { "ignoreVoid": true }],

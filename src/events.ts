@@ -20,6 +20,7 @@ export const INJECT_MODS = new PluginEvent('loadMods')
 export const EXTRACT_MODS = new PluginEvent('unloadMods')
 
 export const LOAD_PROJECT = new PluginEvent('loadProject')
+export const CONVERT_PROJECT = new PluginEvent('convertProject')
 export const SAVE_PROJECT = new PluginEvent('saveProject')
 export const PRE_SELECT_PROJECT = new PluginEvent<ModelProject>('preSelectProject')
 export const SELECT_PROJECT = new PluginEvent<ModelProject>('selectProject')

@@ -26,6 +26,14 @@ animated_java.settings.reduced_motion.description: |-
   Disable all UI animations in Animated Java's Menus.
   This will disable animations and other effects that may cause motion sickness.
 
+animated_java.settings.resource_pack_group: Resource Pack
+
+animated_java.settings.minify_output: Minify Output
+animated_java.settings.minify_output.description: |-
+  Minify the output of the exported resource pack.
+  This will remove all comments and whitespace from the output.
+  This will make the output smaller, but will make it harder to read.
+
 ### Documentation
 animated_java.dialog.documentation.title: Animated Java Documentation
 
@@ -111,15 +119,15 @@ animated_java.project_settings.texture_export_folder.error.invalid_path: |-
   Texture Export Folder must be in a valid resource pack
   The targeted folder must be under 'resources/assets/<namespace>/textures/'.
 
-animated_java.project_settings.resource_pack_folder: Resource Pack
-animated_java.project_settings.resource_pack_folder.description: |-
+animated_java.project_settings.resource_pack_mcmeta: Resource Pack
+animated_java.project_settings.resource_pack_mcmeta.description: |-
   The Resource Pack to inject the Rig's models into.
   This setting should be targeting the pack.mcmeta file of a valid Resource Pack.
-animated_java.project_settings.resource_pack_folder.error.unset: |-
+animated_java.project_settings.resource_pack_mcmeta.error.unset: |-
   You must select a Resource Pack.
-animated_java.project_settings.resource_pack_folder.error.invalid_path: |-
-  The selected Resource Pack is not valid.
-  Make sure you've selected the pack.mcmeta file of a valid Resource Pack!
+animated_java.project_settings.resource_pack_mcmeta.error.invalid_path: |-
+  The selected path is not a valid Resource Pack!
+  Make sure you've selected the pack.mcmeta file of a valid Resource Pack.
 
 animated_java.project_settings.verbose: Verbose
 animated_java.project_settings.verbose.description: |-

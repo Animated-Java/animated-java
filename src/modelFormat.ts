@@ -5,23 +5,42 @@ import { consoleGroup, consoleGroupCollapsed } from './util/console'
 import * as events from './events'
 import { createBlockbenchMod } from './util/moddingTools'
 import { IBoneConfig, TextureMap, Variant, VariantsContainer } from './variants'
+import * as AJSettings from './settings'
 
-const FORMAT_VERSION = '1.0'
+const FORMAT_VERSION = '1.1'
 
 function processVersionMigration(model: any) {
-	if (!model.meta.format_version) {
-		model.meta.format_version = FORMAT_VERSION
-	}
-
 	if (model.meta.model_format === 'animatedJava/ajmodel') {
 		model.meta.model_format = 'animated_java/ajmodel'
+		model.meta.format_version = '0.2.4'
 	}
 
-	const needsUpgrade = model.meta.format_version !== FORMAT_VERSION
+	const needsUpgrade = compareVersions(FORMAT_VERSION, model.meta.format_version)
 	if (!needsUpgrade) return
 
 	console.log('Upgrading model from version', model.meta.format_version, 'to', FORMAT_VERSION)
 
+	if (compareVersions('1.0', model.meta.format_version)) updateModelTo1_0(model)
+	if (compareVersions('1.1', model.meta.format_version)) updateModelTo1_1(model)
+
+	model.meta.format_version ??= FORMAT_VERSION
+
+	console.log('Upgrade complete')
+}
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+function updateModelTo1_1(model: any) {
+	model.animated_java.settings.resource_pack_mcmeta =
+		model.animated_java.settings.resource_pack_folder
+	delete model.animated_java.settings.resource_pack_folder
+	const animationExporterSettings =
+		model.animated_java.exporter_settings['animated_java:animation_exporter']
+	animationExporterSettings.datapack_mcmeta = animationExporterSettings.datapack_folder
+	delete animationExporterSettings.datapack_folder
+}
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+function updateModelTo1_0(model: any) {
 	if (model.meta.settings) {
 		console.log('Upgrading settings...')
 		const animatedJava: IAnimatedJavaModel['animated_java'] = {
@@ -89,8 +108,6 @@ function processVersionMigration(model: any) {
 	delete model.meta.variants
 	delete model.meta.settings
 	delete model.meta.uuid
-
-	console.log('Upgrade complete')
 }
 
 function addProjectToRecentProjects(file: FileResult) {
@@ -287,7 +304,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 
 	parse: consoleGroupCollapsed('ajCodec:parse', (model: IAnimatedJavaModel, path) => {
 		if (!Project) throw new Error('No project to load model into...')
-		console.log('Parsing Animated Java model...')
+		console.log('Parsing Animated Java model...', model)
 		if (!model.elements && !model.parent && !model.display && !model.textures) {
 			Blockbench.showMessageBox({
 				translateKey: 'invalid_model',
@@ -601,7 +618,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 
 		if (selectedVariant) Project.animated_java_variants!.select(selectedVariant)
 
-		return content
+		return options.raw ? model : content
 	}),
 
 	export: consoleGroupCollapsed('ajCodec:export', () => {
@@ -623,6 +640,42 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 	},
 })
 
+export function convertToAJModelFormat() {
+	console.log('Converting to Animated Java model...')
+	Project!.animated_java_settings = getDefaultProjectSettings()
+	for (const setting of Object.values(Project!.animated_java_settings)) {
+		setting._onInit()
+	}
+
+	Project!.animated_java_exporter_settings = {}
+	for (const exporter of AnimatedJavaExporter.all) {
+		if (!exporter) continue
+		console.log('Initializing settings for', exporter.id)
+		Project!.animated_java_exporter_settings[exporter.id] = exporter.getSettings()
+		for (const setting of Object.values(
+			Project!.animated_java_exporter_settings[exporter.id]
+		)) {
+			setting._onInit()
+		}
+	}
+
+	Project!.animated_java_variants = new VariantsContainer()
+	Project!.animated_java_variants.addVariant(new Variant('default'))
+
+	const oldAnimations = Project!.animations
+	Project!.animations = []
+	for (const animation of oldAnimations) {
+		const newAnimation = new Blockbench.Animation()
+		Project!.animations.push(newAnimation.extend(animation))
+	}
+
+	events.CONVERT_PROJECT.dispatch()
+
+	const project = Project!
+	project.unselect()
+	project.select()
+}
+
 export const ajModelFormat = new Blockbench.ModelFormat({
 	id: 'animated_java/ajmodel',
 	icon: 'icon-armor_stand',
@@ -642,7 +695,7 @@ export const ajModelFormat = new Blockbench.ModelFormat({
 				setting._onInit()
 			}
 			// Exporter Settings
-			const settings: typeof Project.animated_java_exporter_settings = {}
+			const settings: Record<string, Record<string, AJSettings.Setting<any>>> = {}
 			for (const exporter of AnimatedJavaExporter.all) {
 				if (!exporter) continue
 				settings[exporter.id] = exporter.getSettings()

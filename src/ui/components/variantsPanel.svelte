@@ -22,7 +22,6 @@
 				if (unsub) unsub()
 				variantsContainer = undefined
 			}
-			// console.log(project)
 			if (!(project.format.id === ajModelFormat.id)) return
 
 			variantsContainer = project.animated_java_variants!

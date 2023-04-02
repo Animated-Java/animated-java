@@ -1,4 +1,5 @@
 import { isValidDatapackName } from '../minecraft/util'
+import { animatedJavaSettings } from '../settings'
 import { ProgressBarController } from './progress'
 
 class VirtualNode {
@@ -36,7 +37,14 @@ export class VirtualFolder extends VirtualNode {
 	 * @param content The content of the file. If content is an Array of strings each string will be treated as a new line in the file.
 	 * @returns The created VirtualFile, or throws if it already exists
 	 */
-	newFile(name: string, content: VirtualFileContent): VirtualFile | never {
+	newFile(
+		name: string,
+		content: VirtualFileContent,
+		customJsonMerger?: (
+			oldContent: VirtualFileContent,
+			newContent: VirtualFileContent
+		) => VirtualFileContent
+	): VirtualFile | never {
 		const parts = name.split('/')
 		if (parts.length > 1) {
 			let child = this.children.find(
@@ -48,12 +56,12 @@ export class VirtualFolder extends VirtualNode {
 			}
 
 			this.addChild()
-			return child.newFile(parts.slice(1).join('/'), content)
+			return child.newFile(parts.slice(1).join('/'), content, customJsonMerger)
 		}
 
 		if (this.children.find(child => child instanceof VirtualFile && child.fileName === name))
 			throw new Error(`File ${this.path}/${name} already exists`)
-		const file = new VirtualFile(name, this, content)
+		const file = new VirtualFile(name, this, content, customJsonMerger)
 		this.children.push(file)
 		this.addChild()
 		return file
@@ -103,8 +111,15 @@ export class VirtualFolder extends VirtualNode {
 	 * @param content The content of the file. If content is an Array of strings each string will be treated as a new line in the file.
 	 * @returns The folder this function was called on
 	 */
-	chainNewFile(name: string, content: VirtualFileContent): VirtualFolder | never {
-		this.newFile(name, content)
+	chainNewFile(
+		name: string,
+		content: VirtualFileContent,
+		customJsonMerger?: (
+			oldContent: VirtualFileContent,
+			newContent: VirtualFileContent
+		) => VirtualFileContent
+	): VirtualFolder | never {
+		this.newFile(name, content, customJsonMerger)
 		return this
 	}
 
@@ -173,6 +188,15 @@ export class VirtualFolder extends VirtualNode {
 			await child.writeToDisk(outputFolder, progress)
 		}
 	}
+
+	getAllFilePaths(rootPath = this.path): string[] {
+		const paths: string[] = []
+		for (const child of this.children) {
+			if (child instanceof VirtualFolder) paths.push(...child.getAllFilePaths(rootPath))
+			else paths.push(PathModule.relative(rootPath, child.path))
+		}
+		return paths.sort((a, b) => b.split('/').length - a.split('/').length)
+	}
 }
 
 type VirtualFileContent = string | Buffer | Uint8Array | string[] | any
@@ -181,12 +205,20 @@ export class VirtualFile extends VirtualNode {
 	constructor(
 		public fileName: string,
 		public parent: VirtualFolder,
-		public content: VirtualFileContent
+		public content: VirtualFileContent,
+		public customJsonMerger?: (
+			oldContent: VirtualFileContent,
+			newContent: VirtualFileContent
+		) => VirtualFileContent
 	) {
 		const [name, ext] = fileName.split('.')
 		super(name, parent)
 		this.ext = ext
 		isValidDatapackName(this.name, 'file')
+	}
+
+	get path() {
+		return `${this.parent.path}/${this.fileName}`
 	}
 
 	async writeToDisk(outputFolder: string, progress?: ProgressBarController) {
@@ -202,7 +234,16 @@ export class VirtualFile extends VirtualNode {
 		) {
 			content = this.content
 		} else {
-			content = JSON.stringify(this.content)
+			let jsonContent = this.content
+			if (this.customJsonMerger && fs.existsSync(path)) {
+				const oldContent = JSON.parse(
+					await fs.promises.readFile(path, { encoding: 'utf-8' })
+				)
+				jsonContent = this.customJsonMerger(oldContent, this.content)
+			}
+
+			if (animatedJavaSettings.minify_output.value) content = JSON.stringify(jsonContent)
+			else content = JSON.stringify(jsonContent, null, '\t')
 		}
 
 		await fs.promises.writeFile(path, content, { encoding: 'utf-8' })

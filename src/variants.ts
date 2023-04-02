@@ -302,35 +302,6 @@ function updateProjectVariants() {
 	console.log('updateProjectVariants', Project)
 }
 
-// export function resetModelVariant() {
-// 	Texture.all.forEach(t => t.updateMaterial())
-// }
-
-// export function applyModelVariant(variant: Variant) {
-// 	if (!Project) return
-// 	// console.log('variant', variant)
-// 	variant.verifyTextures()
-
-// 	resetModelVariant()
-
-// 	for (const { fromUUID, toUUID } of variant.textureMapIterator()) {
-// 		if (!fromUUID || !toUUID) {
-// 			console.log('Skipping texture', fromUUID, toUUID)
-// 			continue
-// 		}
-// 		const texture = Texture.all.find(t => t.uuid === toUUID)
-
-// 		if (Project.materials[fromUUID] && texture) {
-// 			// console.log('Updating texture', fromUUID, texture.name)
-// 			// @ts-ignore
-// 			Project.materials[fromUUID].map.image.src = texture.source
-// 			// @ts-ignore
-// 			Project.materials[fromUUID].map.needsUpdate = true
-// 		}
-// 	}
-
-// 	Canvas.updateAllFaces()
-// }
-
 events.LOAD_PROJECT.subscribe(updateProjectVariants)
+events.CONVERT_PROJECT.subscribe(updateProjectVariants)
 events.SELECT_PROJECT.subscribe(updateProjectVariants)
