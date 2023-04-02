@@ -312,13 +312,7 @@ export function loadExporter() {
 		// ANCHOR summon functions
 		//--------------------------------------------
 
-		const summonNbt = userRootEntityNbt.isCompound() ? userRootEntityNbt : new NbtCompound()
-		const userSummonTags = summonNbt.get('Tags')
-		const summonTags = userSummonTags instanceof NbtList ? userSummonTags : new NbtList()
-		summonTags.add(new NbtString(tags.new))
-		summonTags.add(new NbtString(tags.rigEntity))
-		summonTags.add(new NbtString(tags.rootEntity))
-		summonNbt.set('Tags', summonTags)
+		let summonNbt = userRootEntityNbt.isCompound() ? userRootEntityNbt : new NbtCompound()
 
 		const passengers = new NbtList()
 		for (const [uuid, bone] of Object.entries(rig.nodeMap)) {
@@ -378,7 +372,18 @@ export function loadExporter() {
 			}
 			passengers.add(passenger)
 		}
-		summonNbt.set('Passengers', passengers)
+		if (Object.keys(rig.nodeMap).length === 1 && renderedAnimations.length === 0) {
+			summonNbt = passengers.get(0) as typeof summonNbt
+		} else {
+			summonNbt.set('Passengers', passengers)
+		}
+
+		const userSummonTags = summonNbt.get('Tags')
+		const summonTags = userSummonTags instanceof NbtList ? userSummonTags : new NbtList()
+		summonTags.add(new NbtString(tags.new))
+		summonTags.add(new NbtString(tags.rigEntity))
+		summonTags.add(new NbtString(tags.rootEntity))
+		summonNbt.set('Tags', summonTags)
 
 		const variantSummonFolder = namespaceFolder
 			.accessFolder('functions')
