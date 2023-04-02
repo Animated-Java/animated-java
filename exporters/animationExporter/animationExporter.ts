@@ -117,6 +117,9 @@ export function loadExporter() {
 		//--------------------------------------------
 		// ANCHOR Data Pack
 		//--------------------------------------------
+		const singleEntityRig =
+			Object.keys(rig.nodeMap).length === 1 && renderedAnimations.length === 0
+		const boneSelector = singleEntityRig ? '' : `on passengers `
 
 		const scoreboard = {
 			i: 'aj.i',
@@ -290,7 +293,7 @@ export function loadExporter() {
 			.chainNewFile('tick_as_root.mcfunction', [
 				`execute unless score @s ${scoreboard.rigLoaded} matches 1 run function ${AJ_NAMESPACE}:on_load`,
 				`scoreboard players add @s ${scoreboard.lifeTime} 1`,
-				`execute at @s on passengers run tp @s ~ ~ ~ ~180 ~`,
+				`execute at @s ${boneSelector}run tp @s ~ ~ ~ ~180 ~`,
 				`function #${NAMESPACE}:on_tick`,
 				`function ${AJ_NAMESPACE}:animations/tick`,
 			])
@@ -421,7 +424,7 @@ export function loadExporter() {
 				`scoreboard players operation @s ${scoreboard.exportVersion} = .aj.export_version ${scoreboard.i}`,
 				`execute store result score @s ${scoreboard.id} run scoreboard players add .aj.last_id ${scoreboard.id} 1`,
 				`tp @s ~ ~ ~ ~ ~`,
-				`execute at @s on passengers run function ${AJ_NAMESPACE}:summon/as_bone`,
+				`execute at @s ${boneSelector}run function ${AJ_NAMESPACE}:summon/as_bone`,
 				...variants.map(
 					v =>
 						`execute if score #variant ${scoreboard.i} = $aj.${NAMESPACE}.variant.${v.name} ${scoreboard.id} run function ${AJ_NAMESPACE}:apply_variant/${v.name}_as_root`
@@ -460,8 +463,8 @@ export function loadExporter() {
 					`scoreboard players operation @s ${scoreboard.exportVersion} = .aj.export_version ${scoreboard.i}`,
 					`data modify entity @s Glowing set value 1`,
 					`data modify entity @s glow_color_override set value 16711680`,
-					`execute on passengers run data modify entity @s Glowing set value 1`,
-					`execute on passengers run data modify entity @s glow_color_override set value 16711680`,
+					`execute ${boneSelector}run data modify entity @s Glowing set value 1`,
+					`execute ${boneSelector}run data modify entity @s glow_color_override set value 16711680`,
 					`tellraw @a ${errorOutOfDateRig}`,
 				])
 		}
@@ -488,7 +491,7 @@ export function loadExporter() {
 			.newFolder('functions/remove')
 			.chainNewFile('as_root.mcfunction', [
 				`execute at @s run function #${NAMESPACE}:on_remove`,
-				`execute on passengers run kill @s`,
+				`execute ${boneSelector}run kill @s`,
 				`kill @s`,
 			])
 
@@ -509,7 +512,7 @@ export function loadExporter() {
 			])
 
 			ajApplyVariantFolder.newFile(`${variant.name}_as_root.mcfunction`, [
-				`execute on passengers run function ${AJ_NAMESPACE}:apply_variant/${variant.name}_as_bone`,
+				`execute ${boneSelector}run function ${AJ_NAMESPACE}:apply_variant/${variant.name}_as_bone`,
 			])
 
 			const commands: string[] = []
@@ -567,21 +570,23 @@ export function loadExporter() {
 			}
 		}
 
-		namespaceFolder.chainNewFile('stop_all_animations.mcfunction', [
-			`execute if entity @s[tag=${tags.rootEntity}] run function ${AJ_NAMESPACE}:animations/stop_all_animations_as_root`,
-			`execute if entity @s[tag=!${tags.rootEntity}] run tellraw @a ${API.formatStr(
-				errorMustBeRunAsRoot.toString(),
-				[`${NAMESPACE}:animations/stop_all_animations`]
-			)}`,
-		])
-
-		animatedJavaFolder
-			.newFolder('functions/animations')
-			.chainNewFile('stop_all_animations_as_root.mcfunction', [
-				...renderedAnimations.map(
-					anim => `function ${AJ_NAMESPACE}:animations/${anim.name}/pause`
-				),
+		if (!singleEntityRig) {
+			namespaceFolder.chainNewFile('stop_all_animations.mcfunction', [
+				`execute if entity @s[tag=${tags.rootEntity}] run function ${AJ_NAMESPACE}:animations/stop_all_animations_as_root`,
+				`execute if entity @s[tag=!${tags.rootEntity}] run tellraw @a ${API.formatStr(
+					errorMustBeRunAsRoot.toString(),
+					[`${NAMESPACE}:animations/stop_all_animations`]
+				)}`,
 			])
+
+			animatedJavaFolder
+				.newFolder('functions/animations')
+				.chainNewFile('stop_all_animations_as_root.mcfunction', [
+					...renderedAnimations.map(
+						anim => `function ${AJ_NAMESPACE}:animations/${anim.name}/pause`
+					),
+				])
+		}
 
 		// Tree building helpers
 		function getBranchFileName(branch: IFrameBranch) {
@@ -603,7 +608,7 @@ export function loadExporter() {
 		) {
 			const commands: string[] = []
 			commands.push(
-				`execute on passengers run function ${AJ_NAMESPACE}:animations/${animName}/tree/${getNodeLeafFileName(
+				`execute ${boneSelector}run function ${AJ_NAMESPACE}:animations/${animName}/tree/${getNodeLeafFileName(
 					leaf
 				)}`
 			)
@@ -761,17 +766,19 @@ export function loadExporter() {
 			return recurse(frameTree)
 		}
 
-		// functions
-		animatedJavaFolder
-			.accessFolder('functions/animations')
-			.chainNewFile('tick.mcfunction', [
-				...renderedAnimations.map(
-					anim =>
-						`execute if entity @s[tag=${API.formatStr(tags.activeAnim, [
-							anim.name,
-						])}] run function ${AJ_NAMESPACE}:animations/${anim.name}/tick`
-				),
-			])
+		if (!singleEntityRig) {
+			// functions
+			animatedJavaFolder
+				.accessFolder('functions/animations')
+				.chainNewFile('tick.mcfunction', [
+					...renderedAnimations.map(
+						anim =>
+							`execute if entity @s[tag=${API.formatStr(tags.activeAnim, [
+								anim.name,
+							])}] run function ${AJ_NAMESPACE}:animations/${anim.name}/tick`
+					),
+				])
+		}
 
 		for (const anim of renderedAnimations) {
 			const animFolder = animatedJavaFolder
@@ -784,16 +791,16 @@ export function loadExporter() {
 					`scoreboard players set @s ${scoreboard.loopMode} ${loopModes.indexOf(
 						anim.loopMode
 					)}`,
-					`execute on passengers run data modify entity @s interpolation_duration set value 0`,
+					`execute ${boneSelector}run data modify entity @s interpolation_duration set value 0`,
 					`function ${AJ_NAMESPACE}:animations/${anim.name}/tree/leaf_0`,
-					`execute on passengers store result entity @s interpolation_duration int 1 run scoreboard players get $aj.default_interpolation_duration ${scoreboard.i}`,
+					`execute ${boneSelector}store result entity @s interpolation_duration int 1 run scoreboard players get $aj.default_interpolation_duration ${scoreboard.i}`,
 					`tag @s add ${API.formatStr(tags.activeAnim, [anim.name])}`,
 				])
 				.chainNewFile('resume_as_root.mcfunction', [
 					`scoreboard players set @s ${scoreboard.loopMode} ${loopModes.indexOf(
 						anim.loopMode
 					)}`,
-					`execute on passengers store result entity @s interpolation_duration int 1 run scoreboard players get $aj.default_interpolation_duration ${scoreboard.i}`,
+					`execute ${boneSelector}store result entity @s interpolation_duration int 1 run scoreboard players get $aj.default_interpolation_duration ${scoreboard.i}`,
 					`tag @s add ${API.formatStr(tags.activeAnim, [anim.name])}`,
 				])
 				.chainNewFile('pause_as_root.mcfunction', [
@@ -804,7 +811,7 @@ export function loadExporter() {
 						anim.name,
 					])} 0`,
 					`tag @s remove ${API.formatStr(tags.activeAnim, [anim.name])}`,
-					`execute on passengers run data modify entity @s interpolation_duration set value 0`,
+					`execute ${boneSelector}run data modify entity @s interpolation_duration set value 0`,
 					`tag @s add ${tags.disableCommandKeyframes}`,
 					`function ${AJ_NAMESPACE}:animations/${anim.name}/tree/leaf_0`,
 					`tag @s remove ${tags.disableCommandKeyframes}`,
@@ -812,20 +819,20 @@ export function loadExporter() {
 				.chainNewFile('tween_play_as_root.mcfunction', [
 					`function ${AJ_NAMESPACE}:animations/${anim.name}/play_as_root`,
 					`function ${AJ_NAMESPACE}:animations/${anim.name}/tween_as_root`,
-					`execute if score #tween_duration ${scoreboard.i} matches ..0 on passengers store result entity @s interpolation_duration int 1 run scoreboard players get $aj.default_interpolation_duration ${scoreboard.i}`,
+					`execute if score #tween_duration ${scoreboard.i} matches ..0 ${boneSelector}store result entity @s interpolation_duration int 1 run scoreboard players get $aj.default_interpolation_duration ${scoreboard.i}`,
 					`scoreboard players reset #tween_duration ${scoreboard.i}`,
 				])
 				.chainNewFile('tween_resume_as_root.mcfunction', [
 					`function ${AJ_NAMESPACE}:animations/${anim.name}/resume_as_root`,
 					`function ${AJ_NAMESPACE}:animations/${anim.name}/tween_as_root`,
 					`function ${AJ_NAMESPACE}:animations/${anim.name}/apply_frame_as_root`,
-					`execute if score #tween_duration ${scoreboard.i} matches ..0 on passengers store result entity @s interpolation_duration int 1 run scoreboard players get $aj.default_interpolation_duration ${scoreboard.i}`,
+					`execute if score #tween_duration ${scoreboard.i} matches ..0 ${boneSelector}store result entity @s interpolation_duration int 1 run scoreboard players get $aj.default_interpolation_duration ${scoreboard.i}`,
 					`scoreboard players reset #tween_duration ${scoreboard.i}`,
 				])
 				.chainNewFile('tween_as_root.mcfunction', [
 					`execute unless score #tween_duration ${scoreboard.i} = #tween_duration ${scoreboard.i} run scoreboard players operation #tween_duration ${scoreboard.i} = $aj.default_interpolation_duration ${scoreboard.i}`,
 					`scoreboard players operation @s ${scoreboard.tweenTime} = #tween_duration ${scoreboard.i}`,
-					`execute on passengers store result entity @s interpolation_duration int 1 run scoreboard players get #tween_duration ${scoreboard.i}`,
+					`execute ${boneSelector}store result entity @s interpolation_duration int 1 run scoreboard players get #tween_duration ${scoreboard.i}`,
 					`scoreboard players remove @s ${scoreboard.tweenTime} 1`,
 				])
 				.chainNewFile('tick.mcfunction', [
@@ -836,8 +843,8 @@ export function loadExporter() {
 				.chainNewFile('tick_tween.mcfunction', [
 					`scoreboard players remove @s ${scoreboard.tweenTime} 1`,
 					// `scoreboard players operation #t ${scoreboard.i} = @s ${scoreboard.tweenTime}`,
-					// `execute on passengers store result entity @s interpolation_duration int 1 run scoreboard players get #t ${scoreboard.i}`,
-					`execute if score @s ${scoreboard.tweenTime} matches ..0 on passengers store result entity @s interpolation_duration int 1 run scoreboard players get $aj.default_interpolation_duration ${scoreboard.i}`,
+					// `execute ${boneSelector}store result entity @s interpolation_duration int 1 run scoreboard players get #t ${scoreboard.i}`,
+					`execute if score @s ${scoreboard.tweenTime} matches ..0 ${boneSelector}store result entity @s interpolation_duration int 1 run scoreboard players get $aj.default_interpolation_duration ${scoreboard.i}`,
 				])
 				.chainNewFile('tick_animation.mcfunction', [
 					`scoreboard players add @s ${API.formatStr(scoreboard.localAnimTime, [
