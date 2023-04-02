@@ -266,6 +266,8 @@ export function loadExporter() {
 				// prettier-ignore
 				...renderedAnimations.map(a => `scoreboard objectives add ${API.formatStr(scoreboard.localAnimTime, [a.name])} dummy`),
 				// prettier-ignore
+				...renderedAnimations.map(a => `scoreboard objectives add ${API.formatStr(scoreboard.loopMode, [a.name])} dummy`),
+				// prettier-ignore
 				...renderedAnimations.map((a, i) => `scoreboard players set $aj.${NAMESPACE}.animation.${a.name} ${scoreboard.id} ${i}`),
 				// prettier-ignore
 				...variants.map((v, i) => `scoreboard players set $aj.${NAMESPACE}.variant.${v.name} ${scoreboard.id} ${i}`),
