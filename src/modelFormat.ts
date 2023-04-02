@@ -640,6 +640,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 	},
 })
 
+// ANCHOR Model Conversion
 export function convertToAJModelFormat() {
 	console.log('Converting to Animated Java model...')
 	Project!.animated_java_settings = getDefaultProjectSettings()

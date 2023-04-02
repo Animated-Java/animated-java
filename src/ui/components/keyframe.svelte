@@ -26,7 +26,7 @@
 	function update() {
 		if (destroyed) return
 		if (selected !== Blockbench.Keyframe.selected[0]) {
-			// console.log('selected changed')
+			console.log('selected changed')
 			onSelectionUpdate()
 			selected = getSelectedKeyframe()
 		}
@@ -47,7 +47,9 @@
 				<KeyframeVariants />
 			{/key}
 		{:else if selected.channel === 'commands'}
-			<KeyframeCommands />
+			{#key selected}
+				<KeyframeCommands />
+			{/key}
 		{:else if selected.channel === 'animationStates'}
 			{#key selected}
 				<KeyframeAnimationStates />
