@@ -950,7 +950,7 @@ export function loadExporter() {
 						`execute if score @s ${scoreboard.loopMode} = $aj.loop_mode.once aj.i run function ${NAMESPACE}:animations/${anim.name}/stop`,
 						`execute if score @s ${scoreboard.loopMode} = $aj.loop_mode.hold aj.i run function ${NAMESPACE}:animations/${anim.name}/pause`,
 					])
-					.chainNewFile('next_frame.mcfunction', [
+					.chainNewFile('next_frame_as_root.mcfunction', [
 						`function ${AJ_NAMESPACE}:animations/${anim.name}/tick_animation`,
 					])
 
