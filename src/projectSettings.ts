@@ -134,7 +134,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				id: 'animated_java:project_settings/project_namespace',
 				displayName: TRANSLATIONS.project_namespace.displayName,
 				description: TRANSLATIONS.project_namespace.description,
-				defaultValue: 'untitled_project',
+				defaultValue: '',
 				docsLink: 'page:project_settings#project_namespace',
 			},
 			function onUpdate(setting) {
