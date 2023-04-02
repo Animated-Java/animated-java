@@ -8,11 +8,10 @@ createBlockbenchMod(
 	},
 	context => {
 		Texture.prototype.remove = function (this: Texture) {
-			if (!Project?.animated_java_variants) return
 			const x = context.remove.call(this)
 			// Remove all texture mappings that use this texture
 			if (Format === ajModelFormat) {
-				Project.animated_java_variants.verifyTextures(true)
+				Project!.animated_java_variants!.verifyTextures(true)
 			}
 			return x
 		}
