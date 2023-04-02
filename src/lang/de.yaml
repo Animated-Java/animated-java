@@ -299,15 +299,15 @@ animated_java.popup.invalid_texture_mapping.footer: |-
   Nachdem Sie dieses Popup geschlossen haben, öffnen Sie bitte den Eigenschaften-Dialog der Variante und überprüfen Sie, ob die Textur-Zuordnungen korrekt sind.
 
 # Invalid Cube(s)
-animated_java.popup.invalid_cubes.title: Invalid Cube(s)
+animated_java.popup.invalid_cubes.title: Ungültige(r) Würfel
 animated_java.popup.invalid_cubes.body: |-
-  Some Cubes have invalid rotations!
-  The invalid cubes can be found below sorted by the Bones they're in.
-  They will also be highlighted in the 3D view once you exit this dialog.
+  Einige Würfel haben ungültige Rotationen!
+  Die ungültigen Würfel finden Sie unten, sortiert nach den Knochen, in denen sie sich befinden.
+  Sie werden auch in der 3D-Ansicht hervorgehoben, sobald Sie diesen Dialog verlassen.
 
 # Failed Project Export Readiness
-animated_java.popup.failed_project_export_readiness.title: Export Failed
+animated_java.popup.failed_project_export_readiness.title: Export fehlgeschlagen
 animated_java.popup.failed_project_export_readiness.body: |-
-  The project is not ready to be exported!
-  The following issues were found:
-animated_java.popup.failed_project_export_readiness.issue: Project Setting "%s" has the following errors
+  Das Projekt ist nicht bereit, exportiert zu werden!
+  Die folgenden Probleme wurden gefunden:
+animated_java.popup.failed_project_export_readiness.issue: Die Projekteinstellung "%s" hat die folgenden Fehler
