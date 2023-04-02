@@ -293,7 +293,7 @@ export function loadExporter() {
 			.chainNewFile('tick_as_root.mcfunction', [
 				`execute unless score @s ${scoreboard.rigLoaded} matches 1 run function ${AJ_NAMESPACE}:on_load`,
 				`scoreboard players add @s ${scoreboard.lifeTime} 1`,
-				`execute at @s ${boneSelector}run tp @s ~ ~ ~ ~180 ~`,
+				`execute at @s on passengers run tp @s ~ ~ ~ ~180 ~`,
 				`function #${NAMESPACE}:on_tick`,
 				`function ${AJ_NAMESPACE}:animations/tick`,
 			])
