@@ -7,7 +7,7 @@ import { createBlockbenchMod } from './util/moddingTools'
 import { IBoneConfig, TextureMap, Variant, VariantsContainer } from './variants'
 import * as AJSettings from './settings'
 
-const FORMAT_VERSION = '1.1'
+const FORMAT_VERSION = '1.2'
 
 function processVersionMigration(model: any) {
 	if (model.meta.model_format === 'animatedJava/ajmodel') {
@@ -22,10 +22,23 @@ function processVersionMigration(model: any) {
 
 	if (compareVersions('1.0', model.meta.format_version)) updateModelTo1_0(model)
 	if (compareVersions('1.1', model.meta.format_version)) updateModelTo1_1(model)
+	if (compareVersions('1.2', model.meta.format_version)) updateModelTo1_2(model)
 
 	model.meta.format_version ??= FORMAT_VERSION
 
 	console.log('Upgrade complete')
+}
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+function updateModelTo1_2(model: any) {
+	for (const variant of model.animated_java.variants) {
+		for (const [from, to] of Object.entries(variant.textureMap as Record<string, string>)) {
+			const fromUUID = from.split('::')[0]
+			const toUUID = to.split('::')[0]
+			variant.textureMap[fromUUID] = toUUID
+			delete variant.textureMap[from]
+		}
+	}
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -474,6 +487,10 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 			Project.loadEditorState()
 		}
 
+		// Verify and clean textures
+		for (const texture of Project.textures) {
+			texture.name = texture.name.replace(/\.png$/, '')
+		}
 		// ajCodec.dispatchEvent('parsed', { model })
 	}),
 
@@ -668,6 +685,11 @@ export function convertToAJModelFormat() {
 	for (const animation of oldAnimations) {
 		const newAnimation = new Blockbench.Animation()
 		Project!.animations.push(newAnimation.extend(animation))
+	}
+
+	// Verify and clean textures
+	for (const texture of Project!.textures) {
+		texture.name = texture.name.replace(/\.png$/, '')
 	}
 
 	events.CONVERT_PROJECT.dispatch()

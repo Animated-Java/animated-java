@@ -2,6 +2,7 @@
 	export let value: number = 0
 	export let options: Texture[]
 	export let locked: boolean = false
+	console.log(value)
 </script>
 
 <div class="container">

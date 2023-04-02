@@ -9,18 +9,18 @@
 	let from: number = options.indexOf(fromTexture)
 	let to: number = options.indexOf(fromTexture)
 
-	$: to !== undefined && onUpdateMapping()
+	$: to !== -1 && onUpdateMapping()
 
 	function onUpdateMapping() {
 		if (!Project?.animated_java_variants) return
 		const texture = options[to]
-		variant.addTextureMapping(fromTexture.toTextureId(), texture.toTextureId())
+		variant.addTextureMapping(fromTexture.uuid, texture.uuid)
 	}
 
 	function loadMapping() {
-		const texId = variant.textureMap[fromTexture.toTextureId()]
+		const texId = variant.textureMap[fromTexture.uuid]
 		if (!texId) return
-		to = options.findIndex(t => t.toTextureId() === texId)
+		to = options.findIndex(t => t.uuid === texId)
 	}
 
 	loadMapping()
