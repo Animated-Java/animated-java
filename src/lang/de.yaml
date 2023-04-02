@@ -101,103 +101,103 @@ animated_java.project_settings.rig_item_model.error.rig_item_unset: |-
 
 animated_java.project_settings.rig_export_folder: Rig Export Folder
 animated_java.project_settings.rig_export_folder.description: |-
-  What folder to put the generated model files in.
-  Should be inside of a valid resource pack.
+  In welchem Ordner sollen die generierten Modelldateien abgelegt werden.
+  Dieser sollte sich innerhalb eines gültigen Ressourcenpakets befinden.
 animated_java.project_settings.rig_export_folder.error.unset: |-
-  Rig Export Folder cannot be empty
+  Rig Exportornder kann nicht leer sein
 animated_java.project_settings.rig_export_folder.error.invalid_path: |-
-  Rig Export Folder must be in a valid resource pack
-  The targeted folder must be under 'resources/assets/<namespace>/models/'.
+  Der Rig Exportordner muss sich in einem gültigen Ressourcenpaket befinden.
+  Der Zielordner muss sich unter "resources/assets/<namespace>/models/" befinden.
 
-animated_java.project_settings.texture_export_folder: Texture Export Folder
+animated_java.project_settings.texture_export_folder: Texturenexportordner
 animated_java.project_settings.texture_export_folder.description: |-
-  What folder to put the generated texture files in.
-  Should be inside of a valid resource pack.
+  In welchem Ordner sollen die generierten Texturdateien abgelegt werden.
+  Sollte innerhalb eines gültigen Resource Packs sein.
 animated_java.project_settings.texture_export_folder.error.unset: |-
-  Texture Export Folder cannot be empty
+  Texturenxportordner kann nicht leer sein
 animated_java.project_settings.texture_export_folder.error.invalid_path: |-
-  Texture Export Folder must be in a valid resource pack
-  The targeted folder must be under 'resources/assets/<namespace>/textures/'.
+  Der Texturenxportordner muss sich in einem gültigen Ressourcenpaket befinden.
+  Der Zielordner muss sich unter "resources/assets/<namespace>/textures/" befinden.
 
 animated_java.project_settings.resource_pack_mcmeta: Resource Pack
 animated_java.project_settings.resource_pack_mcmeta.description: |-
-  The Resource Pack to inject the Rig's models into.
-  This setting should be targeting the pack.mcmeta file of a valid Resource Pack.
+  Das Resource Pack, in das die Modelle des Rigs injiziert werden sollen.
+  Diese Einstellung sollte auf die pack.mcmeta-Datei eines gültigen Resource Packs abzielen.
 animated_java.project_settings.resource_pack_mcmeta.error.unset: |-
-  You must select a Resource Pack.
+  Sie müssen ein Ressourcenpaket auswählen.
 animated_java.project_settings.resource_pack_mcmeta.error.invalid_path: |-
-  The selected path is not a valid Resource Pack!
-  Make sure you've selected the pack.mcmeta file of a valid Resource Pack.
+  Der ausgewählte Pfad ist kein gültiges Ressourcenpaket!
+  Stellen Sie sicher, dass Sie die pack.mcmeta-Datei eines gültigen Ressourcenpakets ausgewählt haben.
 
-animated_java.project_settings.verbose: Verbose
+animated_java.project_settings.verbose: Ausführliche Informationen
 animated_java.project_settings.verbose.description: |-
-  Whether to print verbose output to the chat when running AJ functions.
-  Useful for debugging.
+  Ob bei der Ausführung von AJ-Funktionen eine ausführliche Ausgabe im Chat erfolgen soll.
+  Nützlich für die Fehlersuche.
 
-animated_java.project_settings.exporter_settings: '%exporter Settings'
+animated_java.project_settings.exporter_settings: '%exporter Einstellungen'
 
 animated_java.project_settings.exporter: Exporter
 animated_java.project_settings.exporter.description: |-
-  The exporter to use when exporting this project.
+  Der Exporter, der beim Exportieren dieses Projekts verwendet werden soll.
 
 ### Bone Config
-animated_java.bone_config.nbt: Bone Entity NBT
+animated_java.bone_config.nbt: Knochenentitäts NBT
 animated_java.bone_config.nbt.description: |-
-  Custom NBT to apply to this bone entity.
-  WARNING! This NBT will overwrite any NBT that Animated Java creates. Use with caution.
+  Benutzerdefinierte NBT, die auf diese Knochenentität anzuwenden ist.
+  WARNUNG! Diese NBT überschreibt jede NBT, die Animated Java erstellt. Verwenden Sie sie mit Vorsicht.
 
 ### Animation Config
-animated_java.dialog.animation_config.title: Animation Properties
+animated_java.dialog.animation_config.title: Animationseigenschaften
 
 animated_java.animation_config.animation_name: Name
 animated_java.animation_config.animation_name.description: |-
-  The name of the animation.
+  Der Name der Animation.
 animated_java.animation_config.animation_name.error.duplicate_name: |-
-  An animation with the name "%name" already exists.
-  Animation names must be unique.
+  Eine Animation mit dem Namen "%name" existiert bereits.
+  Animationsnamen müssen einzigartig sein.
 
-animated_java.animation_config.loop: Loop Mode
+animated_java.animation_config.loop: Schleifenmodus
 animated_java.animation_config.loop.description: |-
-  The loop mode of the animation.
-  once: The animation will only play once and immediately reset once complete.
-  loop: The animation will loop forever.
-  hold: The animation will hold on the last frame.
-animated_java.animation_config.loop.options.once: Play Once
-animated_java.animation_config.loop.options.loop: Loop
-animated_java.animation_config.loop.options.hold: Hold on Last Frame
+  Der Schleifenmodus der Animation.
+  once: Die Animation wird nur einmal abgespielt und nach Abschluss sofort zurückgesetzt.
+  loop: Die Animation wird in einer Endlosschleife abgespielt.
+  hold: Die Animation wird beim letzten Frame angehalten.
+animated_java.animation_config.loop.options.once: Einmal abspielen
+animated_java.animation_config.loop.options.loop: Schleife
+animated_java.animation_config.loop.options.hold: Am letzten Frame halten
 
-animated_java.animation_config.loop_delay: Loop Delay
+animated_java.animation_config.loop_delay: Schleifenverzögerung
 animated_java.animation_config.loop_delay.description: |-
-  The delay (in ticks) between loops of the animation.
-  Only applies if the loop mode is set to loop.
+  Die Verzögerung (in Ticks) zwischen den Schleifen der Animation.
+  Gilt nur, wenn der Schleifenmodus auf loop gesetzt ist.
 
-animated_java.animation_config.start_delay: Start Delay
+animated_java.animation_config.start_delay: Start-Verzögerung
 animated_java.animation_config.start_delay.description: |-
-  The delay (in ticks) before the animation starts after the play function is ran.
+  Die Verzögerung (in Ticks), bevor die Animation nach Ausführung der Abspielfunktion beginnt.
 
-animated_java.animation_config.affected_bones_is_a_whitelist: Affected Bones is a Whitelist
+animated_java.animation_config.affected_bones_is_a_whitelist: Betroffene Knochen sind eine Whitelist
 animated_java.animation_config.affected_bones_is_a_whitelist.description: |-
-  If true, only the bones in the Affected Bones list will be affected by this animation.
-  If false, all bones except the ones in the Affected Bones list will be affected by this animation.
+  Wenn true, werden nur die Knochen in der Liste 'Betroffene Knochen' von dieser Animation betroffen.
+  Wenn false, werden alle Knochen außer denen in der Liste 'Betroffene Knochen' von dieser Animation betroffen.
 
-animated_java.animation_config.affected_bones: Affected Bones
-animated_java.animation_config.affected_bones.add_new_item_message: Add a Bone
+animated_java.animation_config.affected_bones: Betroffene Knochen
+animated_java.animation_config.affected_bones.add_new_item_message: Einen Knochen hinzufügen
 animated_java.animation_config.affected_bones.description: |-
-  The bones that this animation will affect.
-  If this list is a whitelist, only the bones in the Affected Bones list will be affected by this animation.
-  If this list is a blacklist, all bones except the ones in the Affected Bones list will be affected by this animation.
+  Die Knochen, die von dieser Animation betroffen sind.
+  Wenn diese Liste eine Whitelist ist, werden nur die Knochen in der Liste 'Betroffene Knochen' von dieser Animation betroffen sein.
+  Wenn diese Liste eine Blacklist ist, werden alle Bones außer denen in der Liste 'Betroffene Knochen' von dieser Animation betroffen.
 
 ### Variants Panel
-animated_java.panels.variants.name: Variants
-animated_java.panels.variants.items: Variant
-animated_java.panels.variants.delete_default_variant: Cannot delete default Variant
-animated_java.panels.variants.delete_variant: Delete Variant
-animated_java.panels.variants.edit_variant: Edit Variant
-animated_java.panels.variants.default_variant: Default Variant
-animated_java.actions.add_variant.name: Add Variant
-animated_java.actions.add_variant.description: Create a new Variant
-animated_java.actions.variant_properties.name: Variant Properties
-animated_java.actions.variant_properties.description: Open the Variant properties dialog.
+animated_java.panels.variants.name: Varianten
+animated_java.panels.variants.items: Variante
+animated_java.panels.variants.delete_default_variant: Standard-Variante kann nicht gelöscht werden
+animated_java.panels.variants.delete_variant: Variante löschen
+animated_java.panels.variants.edit_variant: Variante bearbeiten
+animated_java.panels.variants.default_variant: Standard-Variante
+animated_java.actions.add_variant.name: Variante hinzufügen
+animated_java.actions.add_variant.description: Eine neue Variante erstellen
+animated_java.actions.variant_properties.name: Eigenschaften der Variante
+animated_java.actions.variant_properties.description: Öffnet den Dialog Varianten Eigenschaften.
 
 ### Variants Properties Dialog
 animated_java.dialog.variant_properties.title: Variant Properties
