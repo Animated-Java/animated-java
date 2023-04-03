@@ -728,6 +728,7 @@ export const ajModelFormat = new Blockbench.ModelFormat({
 			}
 			Project.animated_java_exporter_settings = settings
 		}
+		Group.all.forEach(v => v.createUniqueName())
 	},
 
 	codec: ajCodec,

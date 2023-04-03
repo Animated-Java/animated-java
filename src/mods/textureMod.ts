@@ -15,9 +15,24 @@ createBlockbenchMod(
 			}
 			return x
 		}
-		return context
+		// I'm lazy 🤪
+		const interval = setInterval(() => {
+			if (Format === ajModelFormat) {
+				const maxTextureSize = Texture.all.reduce(
+					(max, texture) => Math.max(max, texture.width, texture.height),
+					0
+				)
+				Project!.texture_height = maxTextureSize
+				Project!.texture_width = maxTextureSize
+			}
+		}, 1000)
+		return {
+			interval,
+			...context,
+		}
 	},
 	context => {
+		clearInterval(context.interval)
 		Texture.prototype.remove = context.remove
 	}
 )
