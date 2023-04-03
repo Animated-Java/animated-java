@@ -981,7 +981,7 @@ export function loadExporter() {
 				await fs.promises.unlink(PathModule.join(EXPORT_FOLDER, path)).catch(() => {})
 				const dirPath = PathModule.join(EXPORT_FOLDER, PathModule.dirname(path))
 				if ((await fs.promises.readdir(dirPath)).length === 0)
-					await fs.promises.rmdir(dirPath)
+					await fs.promises.rmdir(dirPath).catch(() => {})
 			}
 			project.file_list = datapack.getAllFilePaths()
 
