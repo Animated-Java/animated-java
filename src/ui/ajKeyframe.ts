@@ -1,7 +1,7 @@
-import { injectSvelteCompomponent } from './util/injectedSvelte'
+import { injectSvelteCompomponentMod } from './util/injectedSvelte'
 import KeyframeComponent from './components/keyframe.svelte'
 
-injectSvelteCompomponent({
+injectSvelteCompomponentMod({
 	svelteComponent: KeyframeComponent,
 	svelteComponentArgs: {},
 	elementSelector() {

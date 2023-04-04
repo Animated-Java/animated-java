@@ -1,11 +1,13 @@
 import * as fs from 'fs'
+import PACKAGE from '../package.json'
+import * as events from './events'
 import { AnimatedJavaExporter } from './exporter'
 import { getDefaultProjectSettings } from './projectSettings'
+import * as AJSettings from './settings'
 import { consoleGroup, consoleGroupCollapsed } from './util/console'
-import * as events from './events'
 import { createBlockbenchMod } from './util/moddingTools'
 import { IBoneConfig, TextureMap, Variant, VariantsContainer } from './variants'
-import * as AJSettings from './settings'
+import { injectStartScreen } from './ui/ajStartScreen'
 
 const FORMAT_VERSION = '1.2'
 
@@ -703,12 +705,24 @@ export const ajModelFormat = new Blockbench.ModelFormat({
 	id: 'animated_java/ajmodel',
 	icon: 'icon-armor_stand',
 	name: 'Animated Java Rig',
-	description: 'The Animated Java model format.',
 	category: 'minecraft',
 	target: 'Minecraft: Java Edition',
 	confidential: false,
 	condition: () => true,
 	show_on_start_screen: true,
+	format_page: {
+		component: {
+			methods: {},
+			created: () => {
+				console.log('Loading Animated Java model format page...')
+				injectStartScreen()
+			},
+			template: `<div class="animated-java-start-screen">
+                <p class="format_description">The Animated Java Model Format</p>
+                <p class="format_target"><b>Target</b> : <span>Minecraft: Java Edition</span></p>
+			</div>`,
+		},
+	},
 
 	onSetup() {
 		if (Project?.animated_java_settings) {

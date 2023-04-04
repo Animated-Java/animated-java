@@ -28,6 +28,7 @@ import './ui/ajProjectSettings'
 import './ui/ajSettings'
 import './ui/ajVariantsPanel'
 import './ui/popups/invalidCubes'
+import './ui/ajStartScreen'
 import { consoleGroupCollapsed } from './util/console'
 import * as events from './events'
 import {
