@@ -297,7 +297,7 @@ export function loadExporter() {
 			.chainNewFile('tick_as_root.mcfunction', [
 				`execute unless score @s ${scoreboard.rigLoaded} matches 1 run function ${AJ_NAMESPACE}:on_load`,
 				`scoreboard players add @s ${scoreboard.lifeTime} 1`,
-				`execute at @s on passengers run tp @s ~ ~ ~ ~180 ~`,
+				`execute at @s on passengers run tp @s ~ ~ ~ ~ ~`,
 				`function #${NAMESPACE}:on_tick`,
 				`function ${AJ_NAMESPACE}:animations/tick`,
 			])
@@ -427,7 +427,7 @@ export function loadExporter() {
 				`scoreboard players set @s ${scoreboard.rigLoaded} 1`,
 				`scoreboard players operation @s ${scoreboard.exportVersion} = ${scoreboard.exportVersion} ${scoreboard.i}`,
 				`execute store result score @s ${scoreboard.id} run scoreboard players add .aj.last_id ${scoreboard.id} 1`,
-				singleEntityRig ? `tp @s ~ ~ ~ ~180 ~` : `tp @s ~ ~ ~ ~ ~`,
+				`tp @s ~ ~ ~ ~ ~`,
 				`execute at @s ${boneSelector}run function ${AJ_NAMESPACE}:summon/as_bone`,
 				...variants.map(
 					v =>
@@ -973,10 +973,11 @@ export function loadExporter() {
 				throw new AnimatedJava.API.ExpectedError(message)
 			}
 
-			console.log(project)
 			progress.total += project.file_list.length
+			const clock = new API.LimitClock(10)
 			for (const path of project.file_list) {
 				progress.add(1)
+				await clock.sync().then(b => b && progress.update())
 				if (path.endsWith('tick.json') || path.endsWith('load.json')) continue
 				await fs.promises.unlink(PathModule.join(EXPORT_FOLDER, path)).catch(() => {})
 				const dirPath = PathModule.join(EXPORT_FOLDER, PathModule.dirname(path))

@@ -87,7 +87,6 @@ export function getAnimationNodes(
 						.filter(k => k.time === time)
 						.find(k => k.interpolation === 'step')
 				) {
-					console.log('step', node.name, animator)
 					interpolation = 'instant'
 				} else if (previousFrame[uuid]?.interpolation === 'instant') {
 					interpolation = 'default'
@@ -230,7 +229,6 @@ export async function renderAllAnimations(rig: IRenderedRig) {
 	}
 
 	const animations: IRenderedAnimation[] = []
-
 	for (const animation of Animator.animations) {
 		animations.push(await renderAnimation(animation, rig))
 	}

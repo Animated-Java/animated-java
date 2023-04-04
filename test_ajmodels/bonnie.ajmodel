@@ -1,32 +1,25 @@
 {
 	"meta": {
 		"format": "animated_java/ajmodel",
-		"format_version": "1.0"
+		"format_version": "1.2"
 	},
 	"animated_java": {
 		"settings": {
 			"project_namespace": "bonnie",
-			"texture_size": 256,
 			"rig_item": "minecraft:purple_dye",
 			"rig_item_model": "",
 			"rig_export_folder": "",
 			"texture_export_folder": "",
 			"enable_advanced_resource_pack_settings": false,
-			"resource_pack_folder": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\pack.mcmeta",
+			"resource_pack_mcmeta": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\pack.mcmeta",
 			"verbose": true,
 			"exporter": "animated_java:animation_exporter"
 		},
 		"exporter_settings": {
 			"animated_java:animation_exporter": {
-				"datapack_folder": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\saves\\Animated Java Test World\\datapacks",
+				"datapack_mcmeta": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\saves\\Animated Java Test World\\datapacks\\test_datapack\\pack.mcmeta",
 				"interpolation_duration": 1,
 				"outdated_rig_warning": false,
-				"include_convenience_functions": true,
-				"root_entity_nbt": "{}"
-			},
-			"animated_java:statue_exporter": {
-				"datapack_folder": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\saves\\Animated Java Test World\\datapacks",
-				"outdated_rig_warning": true,
 				"include_convenience_functions": true,
 				"root_entity_nbt": "{}"
 			},
@@ -47,8 +40,7 @@
 			{
 				"name": "with_guitar",
 				"textureMap": {
-					"0c40860d-b3c9-e08d-ac22-cf3a5bf1ae3d::bonnie_no_guitar.png": "0857ab9f-98f1-ce3a-bbad-5d411a6adcf6::bonnie.png",
-					"0857ab9f-98f1-ce3a-bbad-5d411a6adcf6::bonnie.png": "0857ab9f-98f1-ce3a-bbad-5d411a6adcf6::bonnie.png"
+					"0c40860d-b3c9-e08d-ac22-cf3a5bf1ae3d": "0857ab9f-98f1-ce3a-bbad-5d411a6adcf6"
 				},
 				"uuid": "3ed3d9af-4083-4d96-115c-2a490e7c6882",
 				"boneConfig": {},

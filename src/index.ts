@@ -30,7 +30,14 @@ import './ui/ajVariantsPanel'
 import './ui/popups/invalidCubes'
 import { consoleGroupCollapsed } from './util/console'
 import * as events from './events'
-import { transposeMatrix, formatStr, roundTo, roundToN, ExpectedError } from './util/misc'
+import {
+	transposeMatrix,
+	formatStr,
+	roundTo,
+	roundToN,
+	ExpectedError,
+	LimitClock,
+} from './util/misc'
 import './util/moddingTools'
 import { ProgressBarController } from './util/progress'
 import './util/translation'
@@ -78,6 +85,7 @@ globalThis.AnimatedJava = {
 		generateSearchTree,
 		minecraft,
 		ExpectedError,
+		LimitClock,
 	},
 }
 // Uninstall events
