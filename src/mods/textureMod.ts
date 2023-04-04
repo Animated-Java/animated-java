@@ -18,12 +18,12 @@ createBlockbenchMod(
 		// I'm lazy 🤪
 		const interval = setInterval(() => {
 			if (Format === ajModelFormat) {
-				const maxTextureSize = Texture.all.reduce(
-					(max, texture) => Math.max(max, texture.width, texture.height),
+				const maxTextureWidth = Texture.all.reduce(
+					(max, texture) => Math.max(max, texture.width),
 					0
 				)
-				Project!.texture_height = maxTextureSize
-				Project!.texture_width = maxTextureSize
+				Project!.texture_height = maxTextureWidth
+				Project!.texture_width = maxTextureWidth
 			}
 		}, 1000)
 		return {
