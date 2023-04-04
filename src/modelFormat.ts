@@ -1,14 +1,13 @@
 import * as fs from 'fs'
-import PACKAGE from '../package.json'
 import * as events from './events'
 import { AnimatedJavaExporter } from './exporter'
+import * as DFU from './modelDataFixerUpper'
 import { getDefaultProjectSettings } from './projectSettings'
 import * as AJSettings from './settings'
+import { injectStartScreen } from './ui/ajStartScreen'
 import { consoleGroup, consoleGroupCollapsed } from './util/console'
 import { createBlockbenchMod } from './util/moddingTools'
 import { IBoneConfig, TextureMap, Variant, VariantsContainer } from './variants'
-import { injectStartScreen } from './ui/ajStartScreen'
-import * as DFU from './modelDataFixerUpper'
 
 export const FORMAT_VERSION = '1.3'
 
@@ -604,7 +603,7 @@ export const ajModelFormat = new Blockbench.ModelFormat({
 				console.log('Loading Animated Java model format page...')
 				injectStartScreen()
 			},
-			template: `<div class="animated-java-start-screen">
+			template: `<div class="animated-java-start-screen" style="flex-grow: 1; display: flex; flex-direction: column;">
                 <p class="format_description">The Animated Java Model Format</p>
                 <p class="format_target"><b>Target</b> : <span>Minecraft: Java Edition</span></p>
 			</div>`,
