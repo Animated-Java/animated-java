@@ -27,7 +27,7 @@ In the Plugins menu, click on `Load Plugin from URL`
 
 Then, paste this URL into the box that appears: https://animated-java.dev/api/builds/main/animated_java.js
 
-![URL](https://raw.githubusercontent.com/Animated-Java/animated-java/experimental/src/assets/plugin_menu.png)
+![URL](https://raw.githubusercontent.com/Animated-Java/animated-java/experimental/src/assets/url.png)
 
 Click Confirm, and success! You've just installed Animated Java.
 
