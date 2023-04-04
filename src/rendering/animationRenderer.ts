@@ -4,10 +4,12 @@ import { IRenderedRig } from './modelRenderer'
 let progress: ProgressBarController
 
 export function correctSceneAngle() {
+	main_preview.controls.rotateLeft(Math.PI)
 	scene.setRotationFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI)
 }
 
 export function restoreSceneAngle() {
+	main_preview.controls.rotateLeft(-Math.PI)
 	scene.setRotationFromAxisAngle(new THREE.Vector3(0, 1, 0), 0)
 }
 
