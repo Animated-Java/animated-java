@@ -1,0 +1,128 @@
+import { FORMAT_VERSION, IAnimatedJavaModel } from './modelFormat'
+
+export function process(model: any) {
+	if (model.meta.model_format === 'animatedJava/ajmodel') {
+		model.meta.model_format = 'animated_java/ajmodel'
+		model.meta.format_version = '0.2.4'
+	}
+
+	const needsUpgrade = compareVersions(FORMAT_VERSION, model.meta.format_version)
+	if (!needsUpgrade) return
+
+	console.log('Upgrading model from version', model.meta.format_version, 'to', FORMAT_VERSION)
+
+	if (compareVersions('1.0', model.meta.format_version)) updateModelTo1_0(model)
+	if (compareVersions('1.1', model.meta.format_version)) updateModelTo1_1(model)
+	if (compareVersions('1.2', model.meta.format_version)) updateModelTo1_2(model)
+	if (compareVersions('1.3', model.meta.format_version)) updateModelTo1_3(model)
+
+	model.meta.format_version ??= FORMAT_VERSION
+
+	console.log('Upgrade complete')
+}
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+function updateModelTo1_3(model: any) {
+	if (model.animated_java.settings.exporter === 'animated_java:animation_exporter') {
+		model.animated_java.settings.exporter = 'animated_java:datapack_exporter'
+	}
+	if (model.animated_java.exporter_settings['animated_java:animation_exporter']) {
+		model.animated_java.exporter_settings['animated_java:datapack_exporter'] =
+			model.animated_java.exporter_settings['animated_java:animation_exporter']
+		delete model.animated_java.exporter_settings['animated_java:animation_exporter']
+	}
+}
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+function updateModelTo1_2(model: any) {
+	for (const variant of model.animated_java.variants) {
+		for (const [from, to] of Object.entries(variant.textureMap as Record<string, string>)) {
+			const fromUUID = from.split('::')[0]
+			const toUUID = to.split('::')[0]
+			variant.textureMap[fromUUID] = toUUID
+			delete variant.textureMap[from]
+		}
+	}
+}
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+function updateModelTo1_1(model: any) {
+	model.animated_java.settings.resource_pack_mcmeta =
+		model.animated_java.settings.resource_pack_folder
+	delete model.animated_java.settings.resource_pack_folder
+	const animationExporterSettings =
+		model.animated_java.exporter_settings['animated_java:animation_exporter']
+	animationExporterSettings.datapack_mcmeta = animationExporterSettings.datapack_folder
+	delete animationExporterSettings.datapack_folder
+}
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+function updateModelTo1_0(model: any) {
+	if (model.meta.settings) {
+		console.log('Upgrading settings...')
+		const animatedJava: IAnimatedJavaModel['animated_java'] = {
+			settings: {
+				project_name: model.meta.settings.animatedJava.projectName,
+				verbose: model.meta.settings.animatedJava.verbose,
+				rig_item: model.meta.settings.animatedJava.rigItem,
+				rig_item_model: model.meta.settings.animatedJava.predicateFilePath,
+				rig_export_folder: model.meta.settings.animatedJava.rigModelsExportFolder,
+			},
+			exporter_settings: {},
+			variants: [],
+		} as IAnimatedJavaModel['animated_java']
+
+		model.animated_java = animatedJava
+	}
+
+	if (model.meta.variants) {
+		console.log('Upgrading variants...')
+		const variants: IAnimatedJavaModel['animated_java']['variants'] = []
+
+		for (const [name, variant] of Object.entries(model.meta.variants as Record<string, any>)) {
+			variants.push({
+				name,
+				uuid: guid(),
+				textureMap: variant,
+				default: name === 'default',
+				boneConfig: {},
+				affectedBones: [],
+				affectedBonesIsAWhitelist: false,
+			})
+		}
+
+		model.animated_java.variants = variants
+	}
+
+	if (
+		model.animations &&
+		model.animations.find((a: any) =>
+			Object.keys(a.animators as Record<string, any>).find(name => name === 'effects')
+		)
+	) {
+		console.log('Upgrading effects...')
+
+		for (const animation of model.animations) {
+			const effects = animation.animators.effects
+			if (!effects) continue
+			for (const keyframe of effects.keyframes) {
+				if (keyframe.channel !== 'timeline') continue
+				for (const dataPoint of keyframe.data_points) {
+					if (dataPoint.script) {
+						dataPoint.commands = dataPoint.script
+						delete dataPoint.script
+						keyframe.channel = 'commands'
+					}
+				}
+			}
+		}
+
+		console.log('Upgrading effects complete', model.animations)
+	}
+
+	model.meta.format_version = FORMAT_VERSION
+
+	delete model.meta.variants
+	delete model.meta.settings
+	delete model.meta.uuid
+}

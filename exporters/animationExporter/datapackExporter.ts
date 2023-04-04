@@ -23,43 +23,43 @@ export function loadExporter() {
 
 	const TRANSLATIONS = {
 		datapack_mcmeta: {
-			name: API.translate('animated_java.animation_exporter.settings.datapack_mcmeta'),
+			name: API.translate('animated_java.datapack_exporter.settings.datapack_mcmeta'),
 			description: API.translate(
-				'animated_java.animation_exporter.settings.datapack_mcmeta.description'
+				'animated_java.datapack_exporter.settings.datapack_mcmeta.description'
 			).split('\n'),
 			error: {
 				unset: API.translate(
-					'animated_java.animation_exporter.settings.datapack_mcmeta.error.unset'
+					'animated_java.datapack_exporter.settings.datapack_mcmeta.error.unset'
 				),
 				invalid: API.translate(
-					'animated_java.animation_exporter.settings.datapack_mcmeta.error.invalid'
+					'animated_java.datapack_exporter.settings.datapack_mcmeta.error.invalid'
 				),
 			},
 		},
 		interpolation_duration: {
-			name: API.translate('animated_java.animation_exporter.settings.interpolation_duration'),
+			name: API.translate('animated_java.datapack_exporter.settings.interpolation_duration'),
 			description: API.translate(
-				'animated_java.animation_exporter.settings.interpolation_duration.description'
+				'animated_java.datapack_exporter.settings.interpolation_duration.description'
 			).split('\n'),
 		},
 		outdated_rig_warning: {
-			name: API.translate('animated_java.animation_exporter.settings.outdated_rig_warning'),
+			name: API.translate('animated_java.datapack_exporter.settings.outdated_rig_warning'),
 			description: API.translate(
-				'animated_java.animation_exporter.settings.outdated_rig_warning.description'
+				'animated_java.datapack_exporter.settings.outdated_rig_warning.description'
 			).split('\n'),
 		},
 		include_convenience_functions: {
 			name: API.translate(
-				'animated_java.animation_exporter.settings.include_convenience_functions'
+				'animated_java.datapack_exporter.settings.include_convenience_functions'
 			),
 			description: API.translate(
-				'animated_java.animation_exporter.settings.include_convenience_functions.description'
+				'animated_java.datapack_exporter.settings.include_convenience_functions.description'
 			).split('\n'),
 		},
 		root_entity_nbt: {
-			name: API.translate('animated_java.animation_exporter.settings.root_entity_nbt'),
+			name: API.translate('animated_java.datapack_exporter.settings.root_entity_nbt'),
 			description: API.translate(
-				'animated_java.animation_exporter.settings.root_entity_nbt.description'
+				'animated_java.datapack_exporter.settings.root_entity_nbt.description'
 			).split('\n'),
 		},
 	}
@@ -1018,14 +1018,14 @@ export function loadExporter() {
 	}
 
 	new API.Exporter({
-		id: 'animated_java:animation_exporter',
-		name: API.translate('animated_java.animation_exporter.name'),
-		description: API.translate('animated_java.animation_exporter.description'),
+		id: 'animated_java:datapack_exporter',
+		name: API.translate('animated_java.datapack_exporter.name'),
+		description: API.translate('animated_java.datapack_exporter.description'),
 		getSettings() {
 			return {
 				datapack_mcmeta: new API.Settings.FileSetting(
 					{
-						id: 'animated_java:animation_exporter/datapack_mcmeta',
+						id: 'animated_java:datapack_exporter/datapack_mcmeta',
 						displayName: TRANSLATIONS.datapack_mcmeta.name,
 						description: TRANSLATIONS.datapack_mcmeta.description,
 						defaultValue: '',
@@ -1047,7 +1047,7 @@ export function loadExporter() {
 					}
 				),
 				interpolation_duration: new API.Settings.NumberSetting({
-					id: 'animated_java:animation_exporter/interpolation_duration',
+					id: 'animated_java:datapack_exporter/interpolation_duration',
 					displayName: TRANSLATIONS.interpolation_duration.name,
 					description: TRANSLATIONS.interpolation_duration.description,
 					defaultValue: 1,
@@ -1056,20 +1056,20 @@ export function loadExporter() {
 					// resettable: true,
 				}),
 				outdated_rig_warning: new API.Settings.CheckboxSetting({
-					id: 'animated_java:animation_exporter/outdated_rig_warning',
+					id: 'animated_java:datapack_exporter/outdated_rig_warning',
 					displayName: TRANSLATIONS.outdated_rig_warning.name,
 					description: TRANSLATIONS.outdated_rig_warning.description,
 					defaultValue: true,
 				}),
 				include_convenience_functions: new API.Settings.CheckboxSetting({
-					id: 'animated_java:animation_exporter/include_convenience_functions',
+					id: 'animated_java:datapack_exporter/include_convenience_functions',
 					displayName: TRANSLATIONS.include_convenience_functions.name,
 					description: TRANSLATIONS.include_convenience_functions.description,
 					defaultValue: true,
 				}),
 				root_entity_nbt: new API.Settings.CodeboxSetting(
 					{
-						id: 'animated_java:animation_exporter/root_entity_nbt',
+						id: 'animated_java:datapack_exporter/root_entity_nbt',
 						displayName: TRANSLATIONS.root_entity_nbt.name,
 						description: TRANSLATIONS.root_entity_nbt.description,
 						language: 'nbt',
@@ -1088,23 +1088,23 @@ export function loadExporter() {
 		settingsStructure: [
 			{
 				type: 'setting',
-				settingId: 'animated_java:animation_exporter/datapack_mcmeta',
+				settingId: 'animated_java:datapack_exporter/datapack_mcmeta',
 			},
 			{
 				type: 'setting',
-				settingId: 'animated_java:animation_exporter/interpolation_duration',
+				settingId: 'animated_java:datapack_exporter/interpolation_duration',
 			},
 			{
 				type: 'setting',
-				settingId: 'animated_java:animation_exporter/outdated_rig_warning',
+				settingId: 'animated_java:datapack_exporter/outdated_rig_warning',
 			},
 			{
 				type: 'setting',
-				settingId: 'animated_java:animation_exporter/include_convenience_functions',
+				settingId: 'animated_java:datapack_exporter/include_convenience_functions',
 			},
 			{
 				type: 'setting',
-				settingId: 'animated_java:animation_exporter/root_entity_nbt',
+				settingId: 'animated_java:datapack_exporter/root_entity_nbt',
 			},
 		],
 		export: _export,

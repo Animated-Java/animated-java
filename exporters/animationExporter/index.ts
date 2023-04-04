@@ -1,4 +1,4 @@
-import { loadExporter } from './animationExporter'
+import { loadExporter } from './datapackExporter'
 
 requestAnimationFrame(function repeat() {
 	if (AnimatedJava?.loaded) loadExporter()
