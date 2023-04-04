@@ -14,6 +14,9 @@ import './mods/keyframeMod'
 import './mods/modeMod'
 import './mods/textureMod'
 import './mods/groupMod'
+import './mods/locatorMod'
+import './mods/outlinerNodeMod'
+import './mods/cameraPluginMod'
 import './mods/boneAnimatorMod'
 import './mods/modelFormatMod'
 import './projectSettings'
@@ -27,9 +30,17 @@ import './ui/ajProjectSettings'
 import './ui/ajSettings'
 import './ui/ajVariantsPanel'
 import './ui/popups/invalidCubes'
+import './ui/ajStartScreen'
 import { consoleGroupCollapsed } from './util/console'
 import * as events from './events'
-import { transposeMatrix, formatStr, roundTo, roundToN, ExpectedError } from './util/misc'
+import {
+	transposeMatrix,
+	formatStr,
+	roundTo,
+	roundToN,
+	ExpectedError,
+	LimitClock,
+} from './util/misc'
 import './util/moddingTools'
 import { ProgressBarController } from './util/progress'
 import './util/translation'
@@ -77,6 +88,7 @@ globalThis.AnimatedJava = {
 		generateSearchTree,
 		minecraft,
 		ExpectedError,
+		LimitClock,
 	},
 }
 // Uninstall events
@@ -118,6 +130,5 @@ BBPlugin.register(PACKAGE.name, {
 	}),
 })
 
-import('../exporters/animationExporter')
-// import('../exporters/statueExporter')
+import('../exporters/datapackExporter')
 import('../exporters/rawExporter')

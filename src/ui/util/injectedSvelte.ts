@@ -9,6 +9,22 @@ export function injectSvelteCompomponent(options: {
 	elementSelector: () => Element | undefined | null
 	postMount?: (el: Element) => void
 }) {
+	void pollPromise(options.elementSelector).then(el => {
+		new options.svelteComponent({
+			target: el,
+			props: options.svelteComponentArgs,
+		})
+		if (options.postMount) options.postMount(el)
+	})
+}
+
+export function injectSvelteCompomponentMod(options: {
+	// @ts-ignore
+	svelteComponent: SvelteComponentConstructor<SvelteComponent, any>
+	svelteComponentArgs: Record<string, any>
+	elementSelector: () => Element | undefined | null
+	postMount?: (el: Element) => void
+}) {
 	createBlockbenchMod(
 		`animated_java:injected_svelte_component[${
 			options.svelteComponent.name as string
@@ -21,7 +37,6 @@ export function injectSvelteCompomponent(options: {
 					target: el,
 					props: options.svelteComponentArgs,
 				})
-				// console.log(instance)
 				if (options.postMount) options.postMount(el)
 			})
 			return instance

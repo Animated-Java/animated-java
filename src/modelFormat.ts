@@ -1,114 +1,15 @@
 import * as fs from 'fs'
-import { AnimatedJavaExporter } from './exporter'
-import { getDefaultProjectSettings } from './projectSettings'
-import { consoleGroup, consoleGroupCollapsed } from './util/console'
 import * as events from './events'
+import { AnimatedJavaExporter } from './exporter'
+import * as DFU from './modelDataFixerUpper'
+import { getDefaultProjectSettings } from './projectSettings'
+import * as AJSettings from './settings'
+import { injectStartScreen } from './ui/ajStartScreen'
+import { consoleGroup, consoleGroupCollapsed } from './util/console'
 import { createBlockbenchMod } from './util/moddingTools'
 import { IBoneConfig, TextureMap, Variant, VariantsContainer } from './variants'
-import * as AJSettings from './settings'
 
-const FORMAT_VERSION = '1.1'
-
-function processVersionMigration(model: any) {
-	if (model.meta.model_format === 'animatedJava/ajmodel') {
-		model.meta.model_format = 'animated_java/ajmodel'
-		model.meta.format_version = '0.2.4'
-	}
-
-	const needsUpgrade = compareVersions(FORMAT_VERSION, model.meta.format_version)
-	if (!needsUpgrade) return
-
-	console.log('Upgrading model from version', model.meta.format_version, 'to', FORMAT_VERSION)
-
-	if (compareVersions('1.0', model.meta.format_version)) updateModelTo1_0(model)
-	if (compareVersions('1.1', model.meta.format_version)) updateModelTo1_1(model)
-
-	model.meta.format_version ??= FORMAT_VERSION
-
-	console.log('Upgrade complete')
-}
-
-// eslint-disable-next-line @typescript-eslint/naming-convention
-function updateModelTo1_1(model: any) {
-	model.animated_java.settings.resource_pack_mcmeta =
-		model.animated_java.settings.resource_pack_folder
-	delete model.animated_java.settings.resource_pack_folder
-	const animationExporterSettings =
-		model.animated_java.exporter_settings['animated_java:animation_exporter']
-	animationExporterSettings.datapack_mcmeta = animationExporterSettings.datapack_folder
-	delete animationExporterSettings.datapack_folder
-}
-
-// eslint-disable-next-line @typescript-eslint/naming-convention
-function updateModelTo1_0(model: any) {
-	if (model.meta.settings) {
-		console.log('Upgrading settings...')
-		const animatedJava: IAnimatedJavaModel['animated_java'] = {
-			settings: {
-				project_name: model.meta.settings.animatedJava.projectName,
-				verbose: model.meta.settings.animatedJava.verbose,
-				rig_item: model.meta.settings.animatedJava.rigItem,
-				rig_item_model: model.meta.settings.animatedJava.predicateFilePath,
-				rig_export_folder: model.meta.settings.animatedJava.rigModelsExportFolder,
-			},
-			exporter_settings: {},
-			variants: [],
-		} as IAnimatedJavaModel['animated_java']
-
-		model.animated_java = animatedJava
-	}
-
-	if (model.meta.variants) {
-		console.log('Upgrading variants...')
-		const variants: IAnimatedJavaModel['animated_java']['variants'] = []
-
-		for (const [name, variant] of Object.entries(model.meta.variants as Record<string, any>)) {
-			variants.push({
-				name,
-				uuid: guid(),
-				textureMap: variant,
-				default: name === 'default',
-				boneConfig: {},
-				affectedBones: [],
-				affectedBonesIsAWhitelist: false,
-			})
-		}
-
-		model.animated_java.variants = variants
-	}
-
-	if (
-		model.animations &&
-		model.animations.find((a: any) =>
-			Object.keys(a.animators as Record<string, any>).find(name => name === 'effects')
-		)
-	) {
-		console.log('Upgrading effects...')
-
-		for (const animation of model.animations) {
-			const effects = animation.animators.effects
-			if (!effects) continue
-			for (const keyframe of effects.keyframes) {
-				if (keyframe.channel !== 'timeline') continue
-				for (const dataPoint of keyframe.data_points) {
-					if (dataPoint.script) {
-						dataPoint.commands = dataPoint.script
-						delete dataPoint.script
-						keyframe.channel = 'commands'
-					}
-				}
-			}
-		}
-
-		console.log('Upgrading effects complete', model.animations)
-	}
-
-	model.meta.format_version = FORMAT_VERSION
-
-	delete model.meta.variants
-	delete model.meta.settings
-	delete model.meta.uuid
-}
+export const FORMAT_VERSION = '1.3'
 
 function addProjectToRecentProjects(file: FileResult) {
 	if (!Project || !file.path) return
@@ -128,7 +29,7 @@ function addProjectToRecentProjects(file: FileResult) {
 	}
 }
 
-interface IAnimatedJavaModel {
+export interface IAnimatedJavaModel {
 	animated_java: {
 		settings?: Record<string, any>
 		exporter_settings?: Record<string, Record<string, any>>
@@ -313,7 +214,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 			return
 		}
 		ajCodec.dispatchEvent('parse', { model, path })
-		processVersionMigration(model)
+		DFU.process(model)
 		loadAnimatedJavaProjectSettings(model)
 		loadAnimatedJavaExporterSettings(model)
 
@@ -474,6 +375,10 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 			Project.loadEditorState()
 		}
 
+		// Verify and clean textures
+		for (const texture of Project.textures) {
+			texture.name = texture.name.replace(/\.png$/, '')
+		}
 		// ajCodec.dispatchEvent('parsed', { model })
 	}),
 
@@ -640,6 +545,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 	},
 })
 
+// ANCHOR Model Conversion
 export function convertToAJModelFormat() {
 	console.log('Converting to Animated Java model...')
 	Project!.animated_java_settings = getDefaultProjectSettings()
@@ -669,6 +575,11 @@ export function convertToAJModelFormat() {
 		Project!.animations.push(newAnimation.extend(animation))
 	}
 
+	// Verify and clean textures
+	for (const texture of Project!.textures) {
+		texture.name = texture.name.replace(/\.png$/, '')
+	}
+
 	events.CONVERT_PROJECT.dispatch()
 
 	const project = Project!
@@ -680,12 +591,24 @@ export const ajModelFormat = new Blockbench.ModelFormat({
 	id: 'animated_java/ajmodel',
 	icon: 'icon-armor_stand',
 	name: 'Animated Java Rig',
-	description: 'The Animated Java model format.',
 	category: 'minecraft',
 	target: 'Minecraft: Java Edition',
 	confidential: false,
 	condition: () => true,
 	show_on_start_screen: true,
+	format_page: {
+		component: {
+			methods: {},
+			created: () => {
+				console.log('Loading Animated Java model format page...')
+				injectStartScreen()
+			},
+			template: `<div class="animated-java-start-screen" style="flex-grow: 1; display: flex; flex-direction: column;">
+                <p class="format_description">The Animated Java Model Format</p>
+                <p class="format_target"><b>Target</b> : <span>Minecraft: Java Edition</span></p>
+			</div>`,
+		},
+	},
 
 	onSetup() {
 		if (Project?.animated_java_settings) {
@@ -705,6 +628,7 @@ export const ajModelFormat = new Blockbench.ModelFormat({
 			}
 			Project.animated_java_exporter_settings = settings
 		}
+		Group.all.forEach(v => v.createUniqueName())
 	},
 
 	codec: ajCodec,

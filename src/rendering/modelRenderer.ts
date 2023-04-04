@@ -1,7 +1,13 @@
 import { parseResourcePackPath, safeFunctionName } from '../minecraft/util'
 import { ProgressBarController } from '../util/progress'
 import { Variant } from '../variants'
-import { getAnimationNodes, IAnimationNode } from './animationRenderer'
+import {
+	correctSceneAngle,
+	getAnimationNodes,
+	IAnimationNode,
+	restoreSceneAngle,
+	updatePreview,
+} from './animationRenderer'
 
 export interface IRenderedFace {
 	uv: number[]
@@ -50,6 +56,7 @@ export interface ICamera extends OutlinerElement {
 	linked_preview: string
 	camera_linked: boolean
 	visibility: boolean
+	teleported_entity_type: string
 }
 
 export interface IRenderedNodes {
@@ -69,10 +76,12 @@ export interface IRenderedNodes {
 		type: 'camera'
 		name: string
 		node: ICamera
+		teleported_entity_type: string
 	}
 	Locator: IRenderedNode & {
 		type: 'locator'
 		node: Locator
+		teleported_entity_type: string
 	}
 }
 
@@ -345,6 +354,7 @@ function renderLocator(locator: Locator, rig: IRenderedRig): INodeStructure {
 		parent: parentId,
 		node: locator,
 		name: locator.name,
+		teleported_entity_type: locator.teleported_entity_type,
 	}
 
 	rig.nodeMap[locator.uuid] = renderedLocator
@@ -363,6 +373,7 @@ function renderCamera(camera: ICamera, rig: IRenderedRig): INodeStructure {
 		parent: parentId,
 		node: camera,
 		name: camera.name,
+		teleported_entity_type: camera.teleported_entity_type,
 	}
 
 	rig.nodeMap[camera.uuid] = renderedCamera
@@ -406,6 +417,14 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 	}
 
 	return bones
+}
+
+function getDefaultPose(rig: IRenderedRig) {
+	const anim = new Blockbench.Animation()
+	correctSceneAngle()
+	updatePreview(anim, 0)
+	rig.defaultPose = getAnimationNodes(anim, rig.nodeMap)
+	restoreSceneAngle()
 }
 
 export function renderRig(modelExportFolder: string, textureExportFolder: string): IRenderedRig {
@@ -452,7 +471,7 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 		progress.update()
 	}
 
-	rig.defaultPose = getAnimationNodes(new Blockbench.Animation(), rig.nodeMap)
+	getDefaultPose(rig)
 
 	for (const variant of Project!.animated_java_variants!.variants) {
 		if (variant.default) continue // Don't export the default variant, it's redundant data.

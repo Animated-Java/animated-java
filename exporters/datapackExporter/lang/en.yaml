@@ -1,32 +1,32 @@
 # Animation Exporter
-animated_java.animation_exporter.name: Animation Exporter
-animated_java.animation_exporter.settings.datapack_mcmeta: Data Pack
-animated_java.animation_exporter.settings.datapack_mcmeta.description: |-
+animated_java.datapack_exporter.name: Data Pack Exporter
+animated_java.datapack_exporter.settings.datapack_mcmeta: Data Pack
+animated_java.datapack_exporter.settings.datapack_mcmeta.description: |-
   The Data Pack to inject the generated functions into.
   This setting should be targeting the pack.mcmeta file of a valid Data Pack.
-animated_java.animation_exporter.settings.datapack_mcmeta.error.unset: |-
+animated_java.datapack_exporter.settings.datapack_mcmeta.error.unset: |-
   You must select a Data Pack folder.
-animated_java.animation_exporter.settings.datapack_mcmeta.error.invalid: |-
+animated_java.datapack_exporter.settings.datapack_mcmeta.error.invalid: |-
   The selected path is not a valid Data Pack!
   Make sure you've selected the pack.mcmeta file of a valid Data Pack.
 
-animated_java.animation_exporter.settings.interpolation_duration: Interpolation Duration
-animated_java.animation_exporter.settings.interpolation_duration.description: |-
+animated_java.datapack_exporter.settings.interpolation_duration: Interpolation Duration
+animated_java.datapack_exporter.settings.interpolation_duration.description: |-
   How much time (in ticks) each keyframe will attempt to spend smoothing changes between keyframes on the client.
   Setting this higher than 1 will cause the animation to be smoother, but lose precision.
   Setting this to 0 will disable interpolation.
 
-animated_java.animation_exporter.settings.outdated_rig_warning: Outdated Rig Warning
-animated_java.animation_exporter.settings.outdated_rig_warning.description: |-
+animated_java.datapack_exporter.settings.outdated_rig_warning: Outdated Rig Warning
+animated_java.datapack_exporter.settings.outdated_rig_warning.description: |-
   Whether to show a warning in-game when a Rig is found that was summoned before the most recent export.
 
-animated_java.animation_exporter.settings.include_convenience_functions: Include Convenience Functions
-animated_java.animation_exporter.settings.include_convenience_functions.description: |-
+animated_java.datapack_exporter.settings.include_convenience_functions: Include Convenience Functions
+animated_java.datapack_exporter.settings.include_convenience_functions.description: |-
   Whether to include convenience functions in the generated Data Pack.
   The convenience functions are simplified functions (Like the summon/<variant_name> functions) that are easier to use, but less flexible than their counterparts.
   You may want to disable them if you don't use them, or if you want to reduce the size of the generated Data Pack.
 
-animated_java.animation_exporter.settings.root_entity_nbt: Root Entity NBT
-animated_java.animation_exporter.settings.root_entity_nbt.description: |-
+animated_java.datapack_exporter.settings.root_entity_nbt: Root Entity NBT
+animated_java.datapack_exporter.settings.root_entity_nbt.description: |-
   Custom NBT to apply to the root entity of the Rig.
   WARNING! This NBT will overwrite any NBT that the exporter would normally add to the root entity.

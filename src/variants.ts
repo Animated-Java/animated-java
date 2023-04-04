@@ -1,22 +1,14 @@
 import { ajModelFormat } from './modelFormat'
 import { openInvalidVariantPopup } from './ui/popups/invalidVariant'
 import * as events from './events'
-import { uuidRegex } from './util/misc'
 import { Subscribable } from './util/subscribable'
 
-export type TextureId = `${string}::${string}`
-export type TextureMap = Record<TextureId, TextureId>
+export type TextureMap = Record<string, string>
 export interface ITextureMapping {
-	from: TextureId
-	fromUUID?: string
-	fromName?: string
+	from: string
 	fromTexture?: Texture
-	fallbackFrom?: boolean
-	to: TextureId
-	toUUID?: string
-	toName?: string
+	to: string
 	toTexture?: Texture
-	fallbackTo?: boolean
 }
 
 export interface IBoneConfig {
@@ -54,25 +46,22 @@ export class Variant {
 		}
 	}
 
-	addTextureMapping(from: TextureId, to: TextureId) {
+	addTextureMapping(from: string, to: string) {
 		this.textureMap[from] = to
 	}
 
-	removeTextureMapping(from: TextureId) {
+	removeTextureMapping(from: string) {
 		delete this.textureMap[from]
 	}
 
-	getTexture(id: TextureId) {
-		const [uuid, name] = id.split('::')
-		let result = Texture.all.find(t => t.uuid === uuid)
-		if (!result) result = Texture.all.find(t => t.name === name)
+	getTexture(id: string) {
+		const result = Texture.all.find(t => t.uuid === id)
 		return result
 	}
 
 	getMappedUuid(uuid: string): string | undefined {
-		for (const [from, to] of Object.entries(this.textureMap)) {
-			if (from.split('::')[0] === uuid) return to.split('::')[0]
-		}
+		const result = Object.entries(this.textureMap).find(([from]) => from === uuid)
+		return result ? result[1] : undefined
 	}
 
 	verifyTextures(silent = false) {
@@ -87,6 +76,13 @@ export class Variant {
 				removedMappings.push(mapping)
 				this.removeTextureMapping(mapping.from)
 			}
+			if (mapping.from === mapping.to) {
+				console.log(
+					`Removing redundant texture mapping from variant '${this.name}':`,
+					mapping
+				)
+				this.removeTextureMapping(mapping.from)
+			}
 		}
 		const valid = removedMappings.length === 0
 
@@ -99,50 +95,17 @@ export class Variant {
 	}
 
 	*textureMapIterator(): Generator<ITextureMapping, void, unknown> {
-		let from: TextureId, to: TextureId
+		let from: string, to: string
 		// @ts-ignore
 		for ([from, to] of Object.entries(this.textureMap)) {
-			let fromUUID: string | undefined,
-				fromName: string | undefined,
-				toUUID: string | undefined,
-				toName: string | undefined
-
-			if (from.includes('::')) [fromUUID, fromName] = from.split('::')
-			else if (from.match(uuidRegex)) fromUUID = from
-			else fromName = from
-
-			if (to.includes('::')) [toUUID, toName] = to.split('::')
-			else if (to.match(uuidRegex)) toUUID = to
-			else toName = to
-
-			let fallbackFrom: boolean | undefined, fallbackTo: boolean | undefined
-
-			const fromTexture = Texture.all.find(t => {
-				if (t.uuid === fromUUID) return true
-				if (t.name === fromName) {
-					fallbackFrom = true
-					return true
-				}
-			})
-			const toTexture = Texture.all.find(t => {
-				if (t.uuid === toUUID) return true
-				if (t.name === toName) {
-					fallbackTo = true
-					return true
-				}
-			})
+			const fromTexture = Texture.all.find(t => t.uuid === from)
+			const toTexture = Texture.all.find(t => t.uuid === to)
 
 			yield {
 				from,
-				fromUUID,
-				fromName,
 				fromTexture,
-				fallbackFrom,
 				to,
-				toUUID,
-				toName,
 				toTexture,
-				fallbackTo,
 			}
 		}
 	}

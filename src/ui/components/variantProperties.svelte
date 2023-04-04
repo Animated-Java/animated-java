@@ -200,7 +200,9 @@
 	div.container {
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
+		justify-content: flex-start;
 		align-items: stretch;
+		overflow-y: auto;
+		max-height: 800px;
 	}
 </style>

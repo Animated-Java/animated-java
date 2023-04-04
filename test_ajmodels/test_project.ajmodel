@@ -1,31 +1,24 @@
 {
 	"meta": {
 		"format": "animated_java/ajmodel",
-		"format_version": "1.0"
+		"format_version": "1.3"
 	},
 	"animated_java": {
 		"settings": {
 			"project_namespace": "happy_box",
-			"texture_size": 64,
 			"rig_item": "minecraft:white_dye",
 			"rig_item_model": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\assets\\minecraft\\models\\item\\white_dye.json",
 			"rig_export_folder": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\assets\\happy_box_animated_java_rig\\models\\item",
 			"texture_export_folder": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\assets\\happy_box_animated_java_rig\\textures\\item",
 			"enable_advanced_resource_pack_settings": false,
-			"resource_pack_folder": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\pack.mcmeta",
+			"resource_pack_mcmeta": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\pack.mcmeta",
 			"verbose": true,
-			"exporter": "animated_java:animation_exporter"
+			"exporter": "animated_java:datapack_exporter"
 		},
 		"exporter_settings": {
-			"animated_java:animation_exporter": {
-				"datapack_folder": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\saves\\Animated Java Test World\\datapacks",
+			"animated_java:datapack_exporter": {
+				"datapack_mcmeta": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\saves\\Animated Java Test World\\datapacks\\test_datapack\\pack.mcmeta",
 				"interpolation_duration": 1,
-				"outdated_rig_warning": true,
-				"include_convenience_functions": true,
-				"root_entity_nbt": "{}"
-			},
-			"animated_java:statue_exporter": {
-				"datapack_folder": "",
 				"outdated_rig_warning": true,
 				"include_convenience_functions": true,
 				"root_entity_nbt": "{}"
@@ -47,9 +40,9 @@
 			{
 				"name": "b",
 				"textureMap": {
-					"623c3550-3f4b-fc54-be0b-bc134a9c6c31::green.png": "5fa5c44b-1fa3-77d7-895e-48c64e768b87::red.png",
-					"0e4de5b5-4cca-2e39-3cca-817d30316913::blue.png": "623c3550-3f4b-fc54-be0b-bc134a9c6c31::green.png",
-					"5fa5c44b-1fa3-77d7-895e-48c64e768b87::red.png": "0e4de5b5-4cca-2e39-3cca-817d30316913::blue.png"
+					"623c3550-3f4b-fc54-be0b-bc134a9c6c31": "5fa5c44b-1fa3-77d7-895e-48c64e768b87",
+					"0e4de5b5-4cca-2e39-3cca-817d30316913": "623c3550-3f4b-fc54-be0b-bc134a9c6c31",
+					"5fa5c44b-1fa3-77d7-895e-48c64e768b87": "0e4de5b5-4cca-2e39-3cca-817d30316913"
 				},
 				"uuid": "c100284b-bca4-dbd4-9243-8e9badbd66c8",
 				"boneConfig": {},
@@ -64,9 +57,9 @@
 			{
 				"name": "c",
 				"textureMap": {
-					"0e4de5b5-4cca-2e39-3cca-817d30316913::blue.png": "5fa5c44b-1fa3-77d7-895e-48c64e768b87::red.png",
-					"5fa5c44b-1fa3-77d7-895e-48c64e768b87::red.png": "623c3550-3f4b-fc54-be0b-bc134a9c6c31::green.png",
-					"623c3550-3f4b-fc54-be0b-bc134a9c6c31::green.png": "0e4de5b5-4cca-2e39-3cca-817d30316913::blue.png"
+					"0e4de5b5-4cca-2e39-3cca-817d30316913": "5fa5c44b-1fa3-77d7-895e-48c64e768b87",
+					"5fa5c44b-1fa3-77d7-895e-48c64e768b87": "623c3550-3f4b-fc54-be0b-bc134a9c6c31",
+					"623c3550-3f4b-fc54-be0b-bc134a9c6c31": "0e4de5b5-4cca-2e39-3cca-817d30316913"
 				},
 				"uuid": "f528135d-bdb3-d9c7-bda1-e074a5afc571",
 				"boneConfig": {},
@@ -172,6 +165,7 @@
 			"linked_preview": "",
 			"camera_linked": false,
 			"visibility": true,
+			"teleported_entity_type": "minecraft:armor_stand",
 			"type": "camera",
 			"uuid": "36f06c91-bd3f-4427-1f02-256581cc85c3"
 		},
@@ -183,6 +177,7 @@
 			"visibility": true,
 			"locked": false,
 			"modelPath": "",
+			"teleported_entity_type": "minecraft:player",
 			"uuid": "e74b221b-1dd5-a96d-98b8-e2ba36335e13",
 			"type": "locator"
 		}
@@ -236,7 +231,7 @@
 	"textures": [
 		{
 			"path": "",
-			"name": "red.png",
+			"name": "red",
 			"folder": "",
 			"namespace": "",
 			"id": "0",
@@ -255,7 +250,7 @@
 		},
 		{
 			"path": "",
-			"name": "green.png",
+			"name": "green",
 			"folder": "",
 			"namespace": "",
 			"id": "1",
@@ -274,7 +269,7 @@
 		},
 		{
 			"path": "",
-			"name": "blue.png",
+			"name": "blue",
 			"folder": "",
 			"namespace": "",
 			"id": "2",

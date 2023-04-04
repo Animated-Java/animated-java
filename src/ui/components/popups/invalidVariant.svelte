@@ -21,11 +21,9 @@
 	}
 
 	const cleanedMappings = removedTextureMappings.map(m => {
-		const { from, fromUUID, fromName, fromTexture, to, toUUID, toName, toTexture } = m
+		const { from, fromTexture, to, toTexture } = m
 		return {
 			from,
-			fromUUID,
-			fromName,
 			fromTexture:
 				(fromTexture && {
 					name: fromTexture.name,
@@ -33,8 +31,6 @@
 				}) ||
 				undefined,
 			to,
-			toUUID,
-			toName,
 			toTexture:
 				(toTexture && {
 					name: toTexture.name,

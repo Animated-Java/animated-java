@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fly, slide } from '../../util/accessability'
 	import { translate } from '../../../util/translation'
-	import type { TextureId, Variant } from '../../../variants'
+	import type { Variant } from '../../../variants'
 	import FlatIconButton from '../buttons/flatIconButton.svelte'
 	import IconButton from '../buttons/iconButton.svelte'
 	import TextureMapping from './textureMapping.svelte'
@@ -36,7 +36,7 @@
 		AnimatedJava.docClick('page:rig/variants#texture_map')
 	}
 
-	function onResetMappingClick(from: TextureId) {
+	function onResetMappingClick(from: string) {
 		// console.log('delete mapping')
 		variant.removeTextureMapping(from)
 		updateVariants++
@@ -64,7 +64,7 @@
 				<div class="texture-mapping">
 					<TextureMapping {variant} fromTexture={from} />
 					<FlatIconButton
-						onClick={() => onResetMappingClick(from.toTextureId())}
+						onClick={() => onResetMappingClick(from.uuid)}
 						icon="undo"
 						iconStyle="margin-right: 0.25em;"
 					/>

@@ -3,6 +3,16 @@ import { ProgressBarController } from '../util/progress'
 import { IRenderedRig } from './modelRenderer'
 let progress: ProgressBarController
 
+export function correctSceneAngle() {
+	main_preview.controls.rotateLeft(Math.PI)
+	scene.setRotationFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI)
+}
+
+export function restoreSceneAngle() {
+	main_preview.controls.rotateLeft(-Math.PI)
+	scene.setRotationFromAxisAngle(new THREE.Vector3(0, 1, 0), 0)
+}
+
 function getNodeMatrix(node: OutlinerElement, scale: number) {
 	const matrixWorld = node.mesh.matrixWorld.clone()
 	matrixWorld.setPosition(
@@ -87,7 +97,6 @@ export function getAnimationNodes(
 						.filter(k => k.time === time)
 						.find(k => k.interpolation === 'step')
 				) {
-					console.log('step', node.name, animator)
 					interpolation = 'instant'
 				} else if (previousFrame[uuid]?.interpolation === 'instant') {
 					interpolation = 'default'
@@ -107,6 +116,7 @@ export function getAnimationNodes(
 		const matrixArray = matrix.toArray()
 
 		if (
+			node.type === 'bone' &&
 			prevFrame !== undefined &&
 			prevFrame.matrix !== undefined &&
 			prevFrame.matrix.equals(matrixArray) &&
@@ -167,7 +177,7 @@ function getAnimationStateKeyframe(animation: _Animation, time: number) {
 	}
 }
 
-function updatePreview(animation: _Animation, time: number) {
+export function updatePreview(animation: _Animation, time: number) {
 	Timeline.time = time
 	Animator.showDefaultPose(true)
 	const nodes: OutlinerNode[] = [...Group.all, ...NullObject.all, ...Locator.all]
@@ -195,7 +205,6 @@ export async function renderAnimation(animation: _Animation, rig: IRenderedRig) 
 	animation.select()
 
 	const clock = new LimitClock(10)
-
 	for (let time = 0; time <= animation.length; time = roundToN(time + 0.05, 20)) {
 		// await new Promise(resolve => requestAnimationFrame(resolve))
 		// await new Promise(resolve => setTimeout(resolve, 50))
@@ -211,6 +220,7 @@ export async function renderAnimation(animation: _Animation, rig: IRenderedRig) 
 		await clock.sync().then(b => b && progress.update())
 	}
 	rendered.duration = rendered.frames.length
+
 	return rendered
 }
 
@@ -229,11 +239,12 @@ export async function renderAllAnimations(rig: IRenderedRig) {
 		currentTime = Timeline.time
 	}
 
+	correctSceneAngle()
 	const animations: IRenderedAnimation[] = []
-
 	for (const animation of Animator.animations) {
 		animations.push(await renderAnimation(animation, rig))
 	}
+	restoreSceneAngle()
 
 	// Restore selected animation
 	if (Mode.selected.id === 'animate' && selectedAnimation) {
