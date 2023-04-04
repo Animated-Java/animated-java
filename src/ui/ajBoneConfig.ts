@@ -7,7 +7,7 @@ import BoneConfigComponent from './components/boneConfig.svelte'
 export function openAJBoneConfigDialog() {
 	new SvelteDialog({
 		id: 'aj_bone_config',
-		title: 'Bone Config',
+		title: translate('animated_java.dialog.bone_config'),
 		width: 600,
 		svelteComponent: BoneConfigComponent,
 		svelteComponentProps: { group: Group.selected },

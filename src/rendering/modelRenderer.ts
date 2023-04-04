@@ -56,6 +56,7 @@ export interface ICamera extends OutlinerElement {
 	linked_preview: string
 	camera_linked: boolean
 	visibility: boolean
+	teleported_entity_type: string
 }
 
 export interface IRenderedNodes {
@@ -75,10 +76,12 @@ export interface IRenderedNodes {
 		type: 'camera'
 		name: string
 		node: ICamera
+		teleported_entity_type: string
 	}
 	Locator: IRenderedNode & {
 		type: 'locator'
 		node: Locator
+		teleported_entity_type: string
 	}
 }
 
@@ -351,6 +354,7 @@ function renderLocator(locator: Locator, rig: IRenderedRig): INodeStructure {
 		parent: parentId,
 		node: locator,
 		name: locator.name,
+		teleported_entity_type: locator.teleported_entity_type,
 	}
 
 	rig.nodeMap[locator.uuid] = renderedLocator
@@ -369,6 +373,7 @@ function renderCamera(camera: ICamera, rig: IRenderedRig): INodeStructure {
 		parent: parentId,
 		node: camera,
 		name: camera.name,
+		teleported_entity_type: camera.teleported_entity_type,
 	}
 
 	rig.nodeMap[camera.uuid] = renderedCamera

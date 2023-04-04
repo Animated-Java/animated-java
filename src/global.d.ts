@@ -59,6 +59,10 @@ declare global {
 		nbt?: string
 	}
 
+	interface Locator {
+		teleported_entity_type: string
+	}
+
 	interface ModelProject {
 		animated_java_settings?: IAnimatedJavaProjectSettings
 		animated_java_exporter_settings?: Record<string, Record<string, Setting<any>>>

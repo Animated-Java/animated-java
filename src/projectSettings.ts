@@ -148,30 +148,6 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 			}
 		),
 
-		// texture_size: new Settings.DropdownSetting(
-		// 	{
-		// 		id: 'animated_java:project_settings/texture_size',
-		// 		displayName: TRANSLATIONS.texture_size.displayName,
-		// 		description: TRANSLATIONS.texture_size.description,
-		// 		defaultValue: 0,
-		// 		options: [
-		// 			{ name: '16x16', value: 16 },
-		// 			{ name: '32x32', value: 32 },
-		// 			{ name: '64x64', value: 64 },
-		// 			{ name: '128x128', value: 128 },
-		// 			{ name: '256x256', value: 256 },
-		// 			{ name: '512x512', value: 512 },
-		// 			{ name: '1024x1024', value: 1024 },
-		// 			{ name: '2048x2048', value: 2048 },
-		// 		],
-		// 	},
-		// 	function onUpdate(setting) {
-		// 		const selected = setting.selected!
-		// 		Project!.texture_height = selected.value
-		// 		Project!.texture_width = selected.value
-		// 	}
-		// ),
-
 		rig_item: new Settings.InlineTextSetting(
 			{
 				id: 'animated_java:project_settings/rig_item',

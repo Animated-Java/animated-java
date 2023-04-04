@@ -116,6 +116,7 @@ export function getAnimationNodes(
 		const matrixArray = matrix.toArray()
 
 		if (
+			node.type === 'bone' &&
 			prevFrame !== undefined &&
 			prevFrame.matrix !== undefined &&
 			prevFrame.matrix.equals(matrixArray) &&

@@ -1,5 +1,3 @@
-import { safeFunctionName } from '../minecraft'
-import { ajModelFormat } from '../modelFormat'
 import { BONE_CONFIG_ACTION } from '../ui/ajBoneConfig'
 import { createBlockbenchMod } from '../util/moddingTools'
 
@@ -21,24 +19,5 @@ createBlockbenchMod(
 	context => {
 		context.nbtProperty?.delete()
 		Group.prototype.menu!.structure = context.menuStructure
-	}
-)
-
-createBlockbenchMod(
-	'animated_java:outlinerNode/force_valid_function_name',
-	{
-		createUniqueName: Group.prototype.createUniqueName,
-	},
-	context => {
-		OutlinerNode.prototype.createUniqueName = function (this: Group, others?: Group[]) {
-			if (Format === ajModelFormat) {
-				this.name = safeFunctionName(this.name)
-			}
-			return context.createUniqueName.call(this, others)
-		}
-		return context
-	},
-	context => {
-		OutlinerNode.prototype.createUniqueName = context.createUniqueName
 	}
 )

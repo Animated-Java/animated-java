@@ -14,7 +14,9 @@ import './mods/keyframeMod'
 import './mods/modeMod'
 import './mods/textureMod'
 import './mods/groupMod'
+import './mods/locatorMod'
 import './mods/outlinerNodeMod'
+import './mods/cameraPluginMod'
 import './mods/boneAnimatorMod'
 import './mods/modelFormatMod'
 import './projectSettings'
@@ -128,5 +130,5 @@ BBPlugin.register(PACKAGE.name, {
 	}),
 })
 
-import('../exporters/animationExporter')
+import('../exporters/datapackExporter')
 import('../exporters/rawExporter')

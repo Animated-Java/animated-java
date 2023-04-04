@@ -693,6 +693,7 @@ export function loadExporter() {
 						break
 					}
 					case 'camera': {
+						const bone = rig.nodeMap[node.uuid] as AnimatedJava.IRenderedNodes['Camera']
 						const pos = node.pos
 						const euler = new THREE.Euler().setFromQuaternion(node.rot, 'YZX')
 						const rot = new THREE.Vector3(euler.x, euler.y, euler.z).multiplyScalar(
@@ -701,9 +702,13 @@ export function loadExporter() {
 						commands.push(
 							`execute if entity @s[tag=${API.formatStr(tags.namedBoneEntity, [
 								node.name,
-							])}] at @s run tp @e[tag=${API.formatStr(tags.cameraTag, [
+							])}] at @s run tp @e[${
+								bone.teleported_entity_type === ''
+									? ''
+									: `type=${bone.teleported_entity_type},`
+							}tag=${API.formatStr(tags.cameraTag, [
 								node.name,
-							])}] ^${API.roundToN(pos.x, 10)} ^${API.roundToN(
+							])},limit=1] ^${API.roundToN(pos.x, 10)} ^${API.roundToN(
 								pos.y - 1.62,
 								10
 							)} ^${API.roundToN(pos.z, 10)} ~${API.roundToN(
@@ -714,12 +719,19 @@ export function loadExporter() {
 						break
 					}
 					case 'locator': {
+						const bone = rig.nodeMap[
+							node.uuid
+						] as AnimatedJava.IRenderedNodes['Locator']
 						commands.push(
 							`execute if entity @s[tag=${API.formatStr(tags.namedBoneEntity, [
 								node.name,
-							])}] at @s run tp @e[tag=${API.formatStr(tags.locatorTag, [
+							])}] at @s run tp @e[${
+								bone.teleported_entity_type === ''
+									? ''
+									: `type=${bone.teleported_entity_type},`
+							}tag=${API.formatStr(tags.locatorTag, [
 								node.name,
-							])}] ^${API.roundToN(node.pos.x, 10)} ^${API.roundToN(
+							])},limit=1] ^${API.roundToN(node.pos.x, 10)} ^${API.roundToN(
 								node.pos.y,
 								10
 							)} ^${API.roundToN(node.pos.z, 10)} ~ ~`
@@ -981,7 +993,8 @@ export function loadExporter() {
 				if (path.endsWith('tick.json') || path.endsWith('load.json')) continue
 				await fs.promises.unlink(PathModule.join(EXPORT_FOLDER, path)).catch(() => {})
 				const dirPath = PathModule.join(EXPORT_FOLDER, PathModule.dirname(path))
-				if ((await fs.promises.readdir(dirPath)).length === 0)
+				const contents = await fs.promises.readdir(dirPath).catch(() => {})
+				if (contents && contents.length === 0)
 					await fs.promises.rmdir(dirPath).catch(() => {})
 			}
 			project.file_list = datapack.getAllFilePaths()
