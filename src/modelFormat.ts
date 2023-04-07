@@ -215,6 +215,12 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 		}
 		ajCodec.dispatchEvent('parse', { model, path })
 		DFU.process(model)
+
+		if (model.resolution !== undefined) {
+			Project.texture_width = model.resolution.width
+			Project.texture_height = model.resolution.height
+		}
+
 		loadAnimatedJavaProjectSettings(model)
 		loadAnimatedJavaExporterSettings(model)
 
@@ -229,11 +235,6 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 		if (model.overrides) {
 			Project.overrides = model.overrides
 		}
-		if (model.resolution !== undefined) {
-			Project.texture_width = model.resolution.width
-			Project.texture_height = model.resolution.height
-		}
-
 		if (model.textures) {
 			model.textures.forEach((tex: Texture) => {
 				const texCopy = new Texture(tex, tex.uuid).add(false)

@@ -16,23 +16,23 @@ createBlockbenchMod(
 			return x
 		}
 		// I'm lazy 🤪
-		const interval = setInterval(() => {
-			if (Format === ajModelFormat) {
-				const maxTextureWidth = Texture.all.reduce(
-					(max, texture) => Math.max(max, texture.width),
-					0
-				)
-				Project!.texture_height = maxTextureWidth
-				Project!.texture_width = maxTextureWidth
-			}
-		}, 1000)
+		// const interval = setInterval(() => {
+		// 	if (Format === ajModelFormat) {
+		// 		const maxTextureWidth = Texture.all.reduce(
+		// 			(max, texture) => Math.max(max, texture.width),
+		// 			0
+		// 		)
+		// 		Project!.texture_height = maxTextureWidth
+		// 		Project!.texture_width = maxTextureWidth
+		// 	}
+		// }, 1000)
 		return {
-			interval,
+			// interval,
 			...context,
 		}
 	},
 	context => {
-		clearInterval(context.interval)
+		// clearInterval(context.interval)
 		Texture.prototype.remove = context.remove
 	}
 )

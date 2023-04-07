@@ -13,7 +13,7 @@ import * as events from './events'
 
 export interface IAnimatedJavaProjectSettings {
 	project_namespace: Settings.InlineTextSetting
-	// texture_size: Settings.DropdownSetting<number>
+	project_resolution: Settings.DoubleNumberSetting
 	rig_item: Settings.InlineTextSetting
 	rig_item_model: Settings.InlineTextSetting
 	rig_export_folder: Settings.FolderSetting
@@ -34,12 +34,12 @@ const TRANSLATIONS = {
 			unset: translate('animated_java.project_settings.project_namespace.error.unset'),
 		},
 	},
-	// texture_size: {
-	// 	displayName: translate('animated_java.project_settings.texture_size'),
-	// 	description: translate('animated_java.project_settings.texture_size.description').split(
-	// 		'\n'
-	// 	),
-	// },
+	project_resolution: {
+		displayName: translate('animated_java.project_settings.project_resolution'),
+		description: translate(
+			'animated_java.project_settings.project_resolution.description'
+		).split('\n'),
+	},
 	rig_item: {
 		displayName: translate('animated_java.project_settings.rig_item'),
 		description: translate('animated_java.project_settings.rig_item.description').split('\n'),
@@ -145,6 +145,26 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 					)
 				setting.value = safeFunctionName(setting.value)
 				return setting
+			}
+		),
+
+		project_resolution: new Settings.DoubleNumberSetting(
+			{
+				id: 'animated_java:project_settings/project_resolution',
+				displayName: TRANSLATIONS.project_resolution.displayName,
+				description: TRANSLATIONS.project_resolution.description,
+				get defaultValue(): [number, number] {
+					return [Project!.texture_width, Project!.texture_height]
+				},
+				min: 1,
+				secondNumberLabel: 'x',
+				docsLink: 'page:project_settings#project_resolution',
+			},
+			function onUpdate(setting) {
+				Project!.texture_width = setting.numberA
+				Project!.texture_height = setting.numberB
+				console.log('Project resolution changed to', setting.value)
+				Canvas.updateAllUVs()
 			}
 		),
 
@@ -365,10 +385,10 @@ export const projectSettingStructure: GUIStructure = [
 				type: 'setting',
 				settingId: _.project_namespace.id,
 			},
-			// {
-			// 	type: 'setting',
-			// 	settingId: _.texture_size.id,
-			// },
+			{
+				type: 'setting',
+				settingId: _.project_resolution.id,
+			},
 		],
 	},
 	{

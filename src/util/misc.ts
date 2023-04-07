@@ -114,4 +114,14 @@ export function transposeMatrix(matrixArray: number[]) {
 	]
 }
 
+export function arrayEqual(a: any[], b: any[]): boolean {
+	console.log(a, b)
+	if (a.length !== b.length) return false
+	return a.every((v, i) => {
+		const bi = b[i]
+		if (Array.isArray(v) && Array.isArray(bi)) return arrayEqual(v, bi)
+		return v === bi
+	})
+}
+
 export class ExpectedError extends Error {}
