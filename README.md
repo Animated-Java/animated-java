@@ -34,7 +34,7 @@ Click Confirm, and success! You've just installed Animated Java.
 # Getting Started
 Check out the [Getting Started](https://animated-java.dev/docs/getting_started) page either online or in-app for detailed information on getting started with Animated Java.
 
-# Contributing
+# Contributing to Animated Java
 ## Prerequisites
 Things you'll need installed before you can setup the development environment
 - [Node.js](https://nodejs.org/en/)
