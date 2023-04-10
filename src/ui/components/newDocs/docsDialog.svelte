@@ -38,7 +38,6 @@
 
 	function getPage(pageUrl: string) {
 		const page = manifest.pages.find(page => page.url === pageUrl)
-		console.log(manifest.pages)
 		if (!page) throw new Error(`Failed to find page with URL ${pageUrl}`)
 		return page
 	}
