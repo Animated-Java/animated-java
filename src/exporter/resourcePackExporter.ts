@@ -130,7 +130,7 @@ export async function exportResources(
 		let optifineEmissive: Buffer | undefined
 		if (texture.source?.startsWith('data:')) {
 			image = Buffer.from(texture.source.split(',')[1], 'base64')
-		} else if (texture.path) {
+		} else if (texture.path && fs.existsSync(texture.path)) {
 			if (!isValidResourcePackPath(texture.path)) {
 				image = await fs.promises.readFile(texture.path)
 				if (fs.existsSync(texture.path + '.mcmeta'))
