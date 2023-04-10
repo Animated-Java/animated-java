@@ -42,10 +42,12 @@ export function loadExporter() {
 				'animated_java.datapack_exporter.settings.interpolation_duration.description'
 			).split('\n'),
 		},
-		outdated_rig_warning: {
-			name: API.translate('animated_java.datapack_exporter.settings.outdated_rig_warning'),
+		enable_outdated_rig_warning: {
+			name: API.translate(
+				'animated_java.datapack_exporter.settings.enable_outdated_rig_warning'
+			),
 			description: API.translate(
-				'animated_java.datapack_exporter.settings.outdated_rig_warning.description'
+				'animated_java.datapack_exporter.settings.enable_outdated_rig_warning.description'
 			).split('\n'),
 		},
 		include_convenience_functions: {
@@ -56,6 +58,14 @@ export function loadExporter() {
 				'animated_java.datapack_exporter.settings.include_convenience_functions.description'
 			).split('\n'),
 		},
+		// enable_single_rig_optimizations: {
+		// 	name: API.translate(
+		// 		'animated_java.datapack_exporter.settings.enable_single_rig_optimizations'
+		// 	),
+		// 	description: API.translate(
+		// 		'animated_java.datapack_exporter.settings.enable_single_rig_optimizations.description'
+		// 	).split('\n'),
+		// },
 		root_entity_nbt: {
 			name: API.translate('animated_java.datapack_exporter.settings.root_entity_nbt'),
 			description: API.translate(
@@ -87,25 +97,17 @@ export function loadExporter() {
 		)
 	}
 
-	const _export: (typeof API.Exporter)['prototype']['export'] = async (
-		ajSettings,
-		projectSettings,
-		exporterSettings,
-		renderedAnimations,
-		rig
-	) => {
+	const _export: (typeof API.Exporter)['prototype']['export'] = async exportData => {
 		if (!Project?.animated_java_variants) throw new Error('No variants found')
-		console.log('Animated Java Settings', ajSettings)
-		console.log('Project Settings', projectSettings)
-		console.log('Exporter Settings', exporterSettings)
-		console.log('Rendered Animations', renderedAnimations)
-		console.log('Rig', rig)
+		console.log('Export Options', exportData)
 
 		console.log('Beginning export process...')
 
 		//--------------------------------------------
-		// ANCHOR Settings
+		// ANCHOR Settings and Export Options
 		//--------------------------------------------
+		const { ajSettings, projectSettings, exporterSettings, renderedAnimations, rig } =
+			exportData
 		const NAMESPACE = projectSettings.project_namespace.value
 		const RIG_ITEM = projectSettings.rig_item.value
 		const EXPORT_FOLDER = PathModule.parse(exporterSettings.datapack_mcmeta.value).dir
@@ -1070,8 +1072,8 @@ export function loadExporter() {
 				}),
 				outdated_rig_warning: new API.Settings.CheckboxSetting({
 					id: 'animated_java:datapack_exporter/outdated_rig_warning',
-					displayName: TRANSLATIONS.outdated_rig_warning.name,
-					description: TRANSLATIONS.outdated_rig_warning.description,
+					displayName: TRANSLATIONS.enable_outdated_rig_warning.name,
+					description: TRANSLATIONS.enable_outdated_rig_warning.description,
 					defaultValue: true,
 				}),
 				include_convenience_functions: new API.Settings.CheckboxSetting({
@@ -1080,6 +1082,12 @@ export function loadExporter() {
 					description: TRANSLATIONS.include_convenience_functions.description,
 					defaultValue: true,
 				}),
+				// enable_single_rig_optimizations: new API.Settings.CheckboxSetting({
+				// 	id: 'animated_java:datapack_exporter/enable_single_rig_optimizations',
+				// 	displayName: TRANSLATIONS.enable_single_rig_optimizations.name,
+				// 	description: TRANSLATIONS.enable_single_rig_optimizations.description,
+				// 	defaultValue: false,
+				// }),
 				root_entity_nbt: new API.Settings.CodeboxSetting(
 					{
 						id: 'animated_java:datapack_exporter/root_entity_nbt',
@@ -1115,6 +1123,10 @@ export function loadExporter() {
 				type: 'setting',
 				settingId: 'animated_java:datapack_exporter/include_convenience_functions',
 			},
+			// {
+			// 	type: 'setting',
+			// 	settingId: 'animated_java:datapack_exporter/enable_single_rig_optimizations',
+			// },
 			{
 				type: 'setting',
 				settingId: 'animated_java:datapack_exporter/root_entity_nbt',

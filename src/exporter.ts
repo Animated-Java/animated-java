@@ -14,6 +14,14 @@ import { translate } from './util/translation'
 
 type ProjectSettings = Record<NamespacedString, AJSetting<any>>
 
+export interface IAnimatedJavaExportData<S> {
+	ajSettings: typeof animatedJavaSettings
+	projectSettings: ProjectSettings
+	exporterSettings: S
+	renderedAnimations: IRenderedAnimation[]
+	rig: IRenderedRig
+}
+
 interface IAnimatedJavaExporterOptions<S extends ProjectSettings> {
 	id: NamespacedString
 	name: string
@@ -21,13 +29,7 @@ interface IAnimatedJavaExporterOptions<S extends ProjectSettings> {
 	getSettings(): S
 	settingsStructure: GUIStructure
 	onStartup?: () => void
-	export(
-		ajSettings: typeof animatedJavaSettings,
-		projectSettings: NotUndefined<ModelProject['animated_java_settings']>,
-		exporterSettings: S,
-		renderedAnimations: IRenderedAnimation[],
-		rig: IRenderedRig
-	): Promise<void> | void
+	export(exportData: IAnimatedJavaExportData<S>): Promise<void> | void
 }
 
 export class AnimatedJavaExporter<
@@ -82,6 +84,11 @@ export async function safeExportProject() {
 export const exportProject = consoleGroupCollapsed('exportProject', async () => {
 	verifyProjectExportReadiness()
 	if (!Project?.animated_java_settings) return // Project being optional is annoying
+
+	// Pre-export
+	const selectedVariant = Project.animated_java_variants!.selectedVariant!
+	Project.animated_java_variants?.select()
+	jQuery('#blackout').show()
 
 	const selectedExporterId = Project?.animated_java_settings?.exporter?.selected
 		?.value as NamespacedString
@@ -143,9 +150,18 @@ export const exportProject = consoleGroupCollapsed('exportProject', async () => 
 		rigItemModelExportPath
 	)
 	// Resources MUST be exported before the exporter is ran
-	await exporter.export(ajSettings, projectSettings, exporterSettings, renderedAnimations, rig)
+	await exporter.export({
+		ajSettings,
+		projectSettings: projectSettings as any,
+		exporterSettings,
+		renderedAnimations,
+		rig,
+	})
 
 	Blockbench.showQuickMessage(translate('animated_java.quickmessage.exported_successfully'), 2000)
+	// Post-export
+	Project.animated_java_variants?.select(selectedVariant)
+	jQuery('#blackout').hide()
 })
 
 function verifySettings(structure: GUIStructure, settings: Array<Setting<any>>) {

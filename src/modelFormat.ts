@@ -9,7 +9,7 @@ import { consoleGroup, consoleGroupCollapsed } from './util/console'
 import { createBlockbenchMod } from './util/moddingTools'
 import { IBoneConfig, TextureMap, Variant, VariantsContainer } from './variants'
 
-export const FORMAT_VERSION = '1.3'
+export const FORMAT_VERSION = '1.4'
 
 function addProjectToRecentProjects(file: FileResult) {
 	if (!Project || !file.path) return
