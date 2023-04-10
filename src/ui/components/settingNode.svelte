@@ -6,7 +6,7 @@
 
 <script lang="ts">
 	import { fly, slide } from '../util/accessability'
-	import type { AnyGUIElement } from '../../GUIStructure'
+	import type { AnyGUIElement } from '../../guiStructure'
 	import * as AJ from '../../settings'
 	import Setting from './setting.svelte'
 

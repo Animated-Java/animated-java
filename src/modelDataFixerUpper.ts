@@ -1,4 +1,5 @@
 import { FORMAT_VERSION, IAnimatedJavaModel } from './modelFormat'
+import { openUnexpectedErrorDialog } from './ui/popups/unexpectedError'
 
 export function process(model: any) {
 	if (model.meta.model_format === 'animatedJava/ajmodel') {
@@ -11,14 +12,39 @@ export function process(model: any) {
 
 	console.log('Upgrading model from version', model.meta.format_version, 'to', FORMAT_VERSION)
 
-	if (compareVersions('1.0', model.meta.format_version)) updateModelTo1_0(model)
-	if (compareVersions('1.1', model.meta.format_version)) updateModelTo1_1(model)
-	if (compareVersions('1.2', model.meta.format_version)) updateModelTo1_2(model)
-	if (compareVersions('1.3', model.meta.format_version)) updateModelTo1_3(model)
+	try {
+		if (compareVersions('1.0', model.meta.format_version)) updateModelTo1_0(model)
+		if (compareVersions('1.1', model.meta.format_version)) updateModelTo1_1(model)
+		if (compareVersions('1.2', model.meta.format_version)) updateModelTo1_2(model)
+		if (compareVersions('1.3', model.meta.format_version)) updateModelTo1_3(model)
+		if (compareVersions('1.4', model.meta.format_version)) updateModelTo1_4(model)
+	} catch (e) {
+		console.error(e)
+		openUnexpectedErrorDialog(e)
+		void Project?.close(true)
+		return
+	}
 
 	model.meta.format_version ??= FORMAT_VERSION
 
 	console.log('Upgrade complete')
+}
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+function updateModelTo1_4(model: any) {
+	if (
+		model.animated_java.exporter_settings['animated_java:datapack_exporter']
+			.outdated_rig_warning
+	) {
+		model.animated_java.exporter_settings[
+			'animated_java:datapack_exporter'
+		].enable_outdated_rig_warning =
+			model.animated_java.exporter_settings[
+				'animated_java:datapack_exporter'
+			].outdated_rig_warning
+		delete model.animated_java.exporter_settings['animated_java:datapack_exporter']
+			.outdated_rig_warning
+	}
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention

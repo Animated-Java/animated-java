@@ -8,6 +8,7 @@
 	import Dropdown from './settings/dropdown.svelte'
 	import File from './settings/file.svelte'
 	import Folder from './settings/folder.svelte'
+	import DoubleNumber from './settings/doubleNumber.svelte'
 
 	export let setting: AJ.Setting<any>
 </script>
@@ -26,6 +27,8 @@
 	<Folder {setting} />
 {:else if setting instanceof AJ.NumberSetting}
 	<Number {setting} />
+{:else if setting instanceof AJ.DoubleNumberSetting}
+	<DoubleNumber {setting} />
 {:else if setting instanceof AJ.InlineTextSetting}
 	<TextInline {setting} />
 {:else}

@@ -128,12 +128,12 @@ export class Setting<V, R = any> extends Subscribable<R> {
 
 	_onUpdate(forced = false) {
 		if (this._updating) return
-		if (!forced && this.lastValue === this.value) return
+		if (!forced && this.value === this.lastValue) return
+		// console.log('Updating setting', this.id, this.value)
 		this._updating = true
 		this.lastValue = this.value
 		this.infoPopup = undefined
 		if (this.onUpdate) this.onUpdate(this as unknown as R)
-		console.log(this.subscribers)
 		this.dispatch(this as unknown as R)
 		this._updating = false
 	}
@@ -196,6 +196,72 @@ export class NumberSetting extends Setting<number, NumberSetting> {
 		if (this.step && this.snap) this._value = Math.round(this._value / this.step) * this.step
 		this._value = Math.min(Math.max(this._value, this.min ?? -Infinity), this.max ?? Infinity)
 		super._onUpdate()
+	}
+}
+
+export class DoubleNumberSetting extends Setting<[number, number], DoubleNumberSetting> {
+	min?: number
+	max?: number
+	step?: number
+	snap?: boolean
+	firstNumberLabel?: string
+	secondNumberLabel?: string
+
+	constructor(
+		options: ISettingOptions<[number, number]> & {
+			min?: number
+			max?: number
+			step?: number
+			snap?: boolean
+			firstNumberLabel?: string
+			secondNumberLabel?: string
+		},
+		onUpdate?: (setting: DoubleNumberSetting) => void,
+		onInit?: (setting: DoubleNumberSetting) => void
+	) {
+		super(options, onUpdate, onInit)
+		this.min = options.min
+		this.max = options.max
+		this.step = options.step
+		this.snap = options.snap
+		this.firstNumberLabel = options.firstNumberLabel
+		this.secondNumberLabel = options.secondNumberLabel
+	}
+
+	get numberA() {
+		return this._value[0]
+	}
+
+	set numberA(value: number) {
+		this._value[0] = value
+		this._onUpdate(true)
+	}
+
+	get numberB() {
+		return this._value[1]
+	}
+
+	set numberB(value: number) {
+		this._value[1] = value
+		this._onUpdate(true)
+	}
+
+	_onUpdate(forced = false) {
+		if (isNaN(this._value[0])) this._value[0] = this.defaultValue[0]
+		if (isNaN(this._value[1])) this._value[1] = this.defaultValue[1]
+		if (this.step && this.snap) {
+			this._value[0] = Math.round(this._value[0] / this.step) * this.step
+			this._value[1] = Math.round(this._value[1] / this.step) * this.step
+		}
+		this._value[0] = Math.min(
+			Math.max(this._value[0], this.min ?? -Infinity),
+			this.max ?? Infinity
+		)
+		this._value[1] = Math.min(
+			Math.max(this._value[1], this.min ?? -Infinity),
+			this.max ?? Infinity
+		)
+		super._onUpdate(forced)
 	}
 }
 

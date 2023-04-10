@@ -28,8 +28,9 @@ export function loadExporter() {
 				settingId: 'animated_java:raw_exporter/foo',
 			},
 		],
-		async export(ajSettings, projectSettings, exporterSettings) {
-			console.log(ajSettings, projectSettings, exporterSettings)
+		async export(exportOptions) {
+			console.log('Export Options:', exportOptions)
+			const { ajSettings, projectSettings, exporterSettings } = exportOptions
 			// Temporary placeholder to hide "no await" warning
 			await new Promise(resolve => setTimeout(resolve, 100))
 		},

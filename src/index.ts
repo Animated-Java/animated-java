@@ -56,7 +56,7 @@ globalThis.AnimatedJava = {
 	// settings: AJSettings.animatedJavaSettings,
 	createChaos,
 	docClick(link: string) {
-		if (link.startsWith('page:')) {
+		if (link.startsWith('/docs/')) {
 			link = link.substring(5)
 			let section: string | undefined
 			if (link.includes('#')) [link, section] = link.split('#')

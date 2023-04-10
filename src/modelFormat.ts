@@ -9,7 +9,7 @@ import { consoleGroup, consoleGroupCollapsed } from './util/console'
 import { createBlockbenchMod } from './util/moddingTools'
 import { IBoneConfig, TextureMap, Variant, VariantsContainer } from './variants'
 
-export const FORMAT_VERSION = '1.3'
+export const FORMAT_VERSION = '1.4'
 
 function addProjectToRecentProjects(file: FileResult) {
 	if (!Project || !file.path) return
@@ -215,6 +215,12 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 		}
 		ajCodec.dispatchEvent('parse', { model, path })
 		DFU.process(model)
+
+		if (model.resolution !== undefined) {
+			Project.texture_width = model.resolution.width
+			Project.texture_height = model.resolution.height
+		}
+
 		loadAnimatedJavaProjectSettings(model)
 		loadAnimatedJavaExporterSettings(model)
 
@@ -229,11 +235,6 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 		if (model.overrides) {
 			Project.overrides = model.overrides
 		}
-		if (model.resolution !== undefined) {
-			Project.texture_width = model.resolution.width
-			Project.texture_height = model.resolution.height
-		}
-
 		if (model.textures) {
 			model.textures.forEach((tex: Texture) => {
 				const texCopy = new Texture(tex, tex.uuid).add(false)

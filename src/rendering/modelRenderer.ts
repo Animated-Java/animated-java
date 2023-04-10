@@ -224,7 +224,7 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 			if (!texture) throw new Error('Texture not found')
 			renderedFace.texture = '#' + texture.id
 			rig.textures[texture.id] = texture
-			const resourceLocation = renderTexture(texture, rig)
+			const resourceLocation = getTextureResourceLocation(texture, rig).resourceLocation
 			if (resourceLocation) model.textures[texture.id] = resourceLocation
 		}
 		if (data.cullface) renderedFace.cullface = data.cullface
@@ -238,11 +238,15 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 	return element
 }
 
-function renderTexture(texture: Texture, rig: IRenderedRig) {
+export function getTextureResourceLocation(texture: Texture, rig: IRenderedRig) {
+	if (texture.path) {
+		const parsed = parseResourcePackPath(texture.path)
+		if (parsed) return parsed
+	}
 	const path = PathModule.join(rig.textureExportFolder, safeFunctionName(texture.name) + '.png')
 
 	const parsed = parseResourcePackPath(path)
-	if (parsed) return parsed.resourceLocation
+	if (parsed) return parsed
 
 	console.error(texture)
 	throw new Error(`Invalid texture path: ${path}`)
@@ -313,6 +317,12 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 		if (node instanceof Group) {
 			const bone = renderGroup(node, rig)
 			if (bone) structure.children.push(bone)
+		} else if (node instanceof Locator) {
+			const locator = renderLocator(node, rig)
+			if (locator) structure.children.push(locator)
+		} else if (OutlinerElement.types.camera && node instanceof OutlinerElement.types.camera) {
+			const camera = renderCamera(node as ICamera, rig)
+			if (camera) structure.children.push(camera)
 		} else if (node instanceof Cube) {
 			const element = renderCube(node, rig, renderedBone.model)
 			if (element) renderedBone.model.elements.push(element)
@@ -397,7 +407,7 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 				)
 			// console.log(fromTexture, toTexture)
 			if (!rig.textures[toTexture.id]) rig.textures[toTexture.id] = toTexture
-			textures[fromTexture.id] = renderTexture(toTexture, rig)
+			textures[fromTexture.id] = getTextureResourceLocation(toTexture, rig).resourceLocation
 		}
 
 		const parsed = PathModule.parse(bone.modelPath)
