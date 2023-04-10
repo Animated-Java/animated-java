@@ -4,7 +4,7 @@
 <h1 align="center">
 	Animated Java
 	<br>
-	<a href="https://discord.gg/jFgY4PXZfp">
+	<a href="https://animated-java.dev/discord">
 		<img src="https://img.shields.io/discord/785339959518953482?color=5865f2&label=Discord&style=flat" alt="Discord" />
 	</a>
 	<a>
