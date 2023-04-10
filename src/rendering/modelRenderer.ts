@@ -178,7 +178,7 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 
 	if (cube.shade === false) element.shade = false
 
-	if (!(cube.rotation.allEqual(0) || cube.origin.allEqual(0))) {
+	if (!(cube.rotation.allEqual(0) && cube.origin.allEqual(0))) {
 		const axis = cube.rotationAxis() || 'y'
 		element.rotation = {
 			angle: cube.rotation[getAxisNumber(axis)],
@@ -198,6 +198,7 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 				rescale: true,
 			}
 	}
+	console.log(cube.rotation, element)
 
 	if (cube.parent instanceof Group) {
 		const parent = cube.parent
@@ -239,7 +240,7 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 }
 
 export function getTextureResourceLocation(texture: Texture, rig: IRenderedRig) {
-	if (texture.path) {
+	if (texture.path && fs.existsSync(texture.path)) {
 		const parsed = parseResourcePackPath(texture.path)
 		if (parsed) return parsed
 	}
