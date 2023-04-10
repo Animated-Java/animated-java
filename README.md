@@ -32,7 +32,7 @@ Then, paste this URL into the box that appears: https://animated-java.dev/api/bu
 Click Confirm, and success! You've just installed Animated Java.
 
 # Getting Started
-Check out the [Getting Started](https://animated-java-dev-ianssenne.vercel.app/docs/getting_started) page either online or in-app for detailed information on getting started with Animated Java.
+Check out the [Getting Started](https://animated-java.dev/docs/getting_started) page either online or in-app for detailed information on getting started with Animated Java.
 
 # Contributing
 ## Prerequisites
