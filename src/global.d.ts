@@ -8,6 +8,8 @@ import type { ProgressBarController } from './util/progress'
 import type { VariantsContainer } from './variants'
 
 declare global {
+	type NotUndefined<T> = T extends undefined ? never : T
+
 	interface IDocsManifest {
 		structure: Record<string, any>
 		pages: IDocsManifestPage[]
