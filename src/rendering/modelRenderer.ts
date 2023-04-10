@@ -313,6 +313,12 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 		if (node instanceof Group) {
 			const bone = renderGroup(node, rig)
 			if (bone) structure.children.push(bone)
+		} else if (node instanceof Locator) {
+			const locator = renderLocator(node, rig)
+			if (locator) structure.children.push(locator)
+		} else if (OutlinerElement.types.camera && node instanceof OutlinerElement.types.camera) {
+			const camera = renderCamera(node as ICamera, rig)
+			if (camera) structure.children.push(camera)
 		} else if (node instanceof Cube) {
 			const element = renderCube(node, rig, renderedBone.model)
 			if (element) renderedBone.model.elements.push(element)
