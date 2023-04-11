@@ -2,10 +2,10 @@
 	import { ajModelFormat } from '../../modelFormat'
 
 	function documentationOnClick() {
-		AnimatedJava.docClick('page:index')
+		AnimatedJava.docClick('/docs/home')
 	}
 	function gettingStartedOnClick() {
-		AnimatedJava.docClick('page:getting_started')
+		AnimatedJava.docClick('/docs/getting_started')
 	}
 	function discordOnClick() {
 		AnimatedJava.docClick('https://animated-java.dev/discord')
