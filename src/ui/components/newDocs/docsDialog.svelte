@@ -65,7 +65,6 @@
 				/<img alt="(.+?)" src="(.+?)">/gm,
 				(match, p1, p2) => `<img alt="${p1}" src="${URL + p2}">`
 			)
-			console.log(page.content)
 		}
 	}
 
