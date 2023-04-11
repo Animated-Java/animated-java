@@ -1,6 +1,6 @@
 import * as events from '../events'
 import { translate } from '../util/translation'
-import { default as DocsComponent } from './components/newDocs/docsDialog.svelte'
+import { default as DocsComponent } from './components/docs/docsDialog.svelte'
 import { SvelteDialog } from './util/svelteDialog'
 
 let docsDialog: SvelteDialog | undefined
