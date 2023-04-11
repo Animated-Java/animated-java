@@ -135,7 +135,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				displayName: TRANSLATIONS.project_namespace.displayName,
 				description: TRANSLATIONS.project_namespace.description,
 				defaultValue: '',
-				docsLink: 'page:project_settings#project_namespace',
+				docsLink: '/docs/project_settings#project_namespace',
 			},
 			function onUpdate(setting) {
 				if (setting.value === '')
@@ -158,7 +158,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				},
 				min: 1,
 				secondNumberLabel: 'x',
-				docsLink: 'page:project_settings#project_resolution',
+				docsLink: '/docs/project_settings#project_resolution',
 			},
 			function onUpdate(setting) {
 				Project!.texture_width = setting.numberA
@@ -175,7 +175,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				description: TRANSLATIONS.rig_item.description,
 				defaultValue: 'minecraft:white_dye',
 				// resettable: true,
-				docsLink: 'page:project_settings#rig_item',
+				docsLink: '/docs/project_settings#rig_item',
 			},
 			function onUpdate(setting) {
 				setting.value = setting.value.toLowerCase()
@@ -222,7 +222,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				description: TRANSLATIONS.rig_item_model.description,
 				defaultValue: '',
 				// resettable: true,
-				docsLink: 'page:project_settings#rig_item_model',
+				docsLink: '/docs/project_settings#rig_item_model',
 				dependsOn: ['animated_java:project_settings/rig_item'],
 			},
 			function onUpdate(setting) {
@@ -267,7 +267,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				description: TRANSLATIONS.rig_export_folder.description,
 				defaultValue: '',
 				// resettable: true,
-				docsLink: 'page:project_settings#rig_export_folder',
+				docsLink: '/docs/project_settings#rig_export_folder',
 			},
 			function onUpdate(setting) {
 				if (!setting.value) {
@@ -293,7 +293,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				description: TRANSLATIONS.texture_export_folder.description,
 				defaultValue: '',
 				// resettable: true,
-				docsLink: 'page:project_settings#texture_export_folder',
+				docsLink: '/docs/project_settings#texture_export_folder',
 			},
 			function onUpdate(setting) {
 				if (!setting.value) {
@@ -317,7 +317,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 			displayName: TRANSLATIONS.enable_advanced_resource_pack_settings.displayName,
 			description: TRANSLATIONS.enable_advanced_resource_pack_settings.description,
 			defaultValue: false,
-			docsLink: 'page:project_settings#enable_advanced_resource_pack_settings',
+			docsLink: '/docs/project_settings#enable_advanced_resource_pack_settings',
 		}),
 
 		resource_pack_mcmeta: new Settings.FileSetting(
@@ -327,7 +327,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				description: TRANSLATIONS.resource_pack_mcmeta.description,
 				defaultValue: '',
 				// resettable: true,
-				docsLink: 'page:project_settings#resource_pack_mcmeta',
+				docsLink: '/docs/project_settings#resource_pack',
 			},
 			function onUpdate(setting) {
 				if (!setting.value) {
@@ -351,7 +351,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 			displayName: TRANSLATIONS.verbose.displayName,
 			description: TRANSLATIONS.verbose.description,
 			defaultValue: true,
-			docsLink: 'page:project_settings#verbose',
+			docsLink: '/docs/project_settings#verbose',
 		}),
 
 		exporter: new Settings.DropdownSetting<string>(
@@ -360,7 +360,7 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				displayName: TRANSLATIONS.exporter.displayName,
 				description: TRANSLATIONS.exporter.description,
 				defaultValue: 0,
-				docsLink: 'page:project_settings#exporter',
+				docsLink: '/docs/project_settings#exporter',
 				options: [],
 			},
 			undefined,

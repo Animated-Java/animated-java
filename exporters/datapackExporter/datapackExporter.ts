@@ -1044,6 +1044,7 @@ export function loadExporter() {
 						displayName: TRANSLATIONS.datapack_mcmeta.name,
 						description: TRANSLATIONS.datapack_mcmeta.description,
 						defaultValue: '',
+						docsLink: '/docs/exporters/datapack_exporter/settings#datapack',
 					},
 					function onUpdate(setting) {
 						if (!setting.value) {
@@ -1069,18 +1070,22 @@ export function loadExporter() {
 					min: 0,
 					step: 1,
 					// resettable: true,
+					docsLink: '/docs/exporters/datapack_exporter/settings#interpolation_duration',
 				}),
 				outdated_rig_warning: new API.Settings.CheckboxSetting({
 					id: 'animated_java:datapack_exporter/outdated_rig_warning',
 					displayName: TRANSLATIONS.enable_outdated_rig_warning.name,
 					description: TRANSLATIONS.enable_outdated_rig_warning.description,
 					defaultValue: true,
+					docsLink: '/docs/exporters/datapack_exporter/settings#outdated_rig_warning',
 				}),
 				include_convenience_functions: new API.Settings.CheckboxSetting({
 					id: 'animated_java:datapack_exporter/include_convenience_functions',
 					displayName: TRANSLATIONS.include_convenience_functions.name,
 					description: TRANSLATIONS.include_convenience_functions.description,
 					defaultValue: true,
+					docsLink:
+						'/docs/exporters/datapack_exporter/settings#include_convenience_functions',
 				}),
 				// enable_single_rig_optimizations: new API.Settings.CheckboxSetting({
 				// 	id: 'animated_java:datapack_exporter/enable_single_rig_optimizations',
@@ -1095,6 +1100,7 @@ export function loadExporter() {
 						description: TRANSLATIONS.root_entity_nbt.description,
 						language: 'nbt',
 						defaultValue: '{}',
+						docsLink: '/docs/exporters/datapack_exporter/settings#root_entity_nbt',
 					},
 					function onUpdate(setting) {
 						try {

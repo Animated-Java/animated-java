@@ -72,7 +72,30 @@
 		openPageUrl.set(event.link)
 	})
 
+	function scrollToSection(section: string) {
+		const element = document.getElementById(section)
+		if (!element) return
+		element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+	}
+
 	void load()
+	//
+</script>
+
+<script lang="ts">
+	export let link: string
+	export let section: string | undefined
+
+	function onLoad(event: HTMLDivElement) {
+		setTimeout(() => {
+			if (link) openPageUrl.set(link)
+			if (section) {
+				scrollToSection(section.replaceAll('_', '-'))
+				console.log(link, section.replaceAll('_', '-'))
+			}
+		}, 100)
+	}
+
 	//
 </script>
 
@@ -86,7 +109,7 @@
 			</div>
 			<div />
 		</div>
-		<div class="animated-java-page-container">
+		<div class="animated-java-page-container" use:onLoad>
 			<DocsPage page={getPage($openPageUrl)} />
 		</div>
 	{:else}

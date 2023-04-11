@@ -365,6 +365,7 @@ export const animatedJavaSettings = {
 			displayName: translate('animated_java.settings.reduced_motion'),
 			description: translate('animated_java.settings.reduced_motion.description').split('\n'),
 			defaultValue: false,
+			docsLink: '/docs/animated-java/settings#reduced-motion',
 		},
 		function onUpdate(setting) {
 			reducedMotion.set(setting.value)
@@ -375,6 +376,7 @@ export const animatedJavaSettings = {
 		displayName: translate('animated_java.settings.minify_output'),
 		description: translate('animated_java.settings.minify_output.description').split('\n'),
 		defaultValue: false,
+		docsLink: '/docs/animated-java/settings#minify-output',
 	}),
 }
 
