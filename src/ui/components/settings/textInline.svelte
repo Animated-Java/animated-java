@@ -3,6 +3,7 @@
 	import type * as AJ from '../../../settings'
 
 	export let setting: AJ.InlineTextSetting
+	//
 </script>
 
 <SettingContainer {setting}>
@@ -23,5 +24,6 @@
 		padding: 5px;
 		padding-left: 11px;
 		padding-right: 11px;
+		height: unset;
 	}
 </style>

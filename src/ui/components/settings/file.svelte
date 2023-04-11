@@ -44,6 +44,7 @@
 		padding: 5px;
 		padding-left: 11px;
 		padding-right: 11px;
+		height: unset;
 	}
 
 	button.open-file-button {
