@@ -17,6 +17,7 @@
 
 	let manifest: IDocsManifest
 	let openPageUrl: Writable<string> = writable('/home')
+	const maxAttempts = 10
 
 	async function load(attemptCount: number = 0) {
 		manifest = await fetch(API)
@@ -30,6 +31,10 @@
 					`Failed to fetch docs manifest. (Attempt ${attemptCount + 1})\n` + err.stack
 				)
 				// retry
+				if (attemptCount >= maxAttempts) {
+					throw new Error(`Failed to fetch docs manifest after ${maxAttempts} attempts.`)
+					return
+				}
 				void load(attemptCount + 1)
 			})
 		compilePages()
@@ -44,6 +49,9 @@
 
 	function compilePages() {
 		for (const page of manifest.pages) {
+			// Sanitize page content
+			// @ts-ignore
+			page.content = DOMPurify.sanitize(page.content)
 			page.content = page.content.replace(
 				/<h([1-6])>(.+?)<\/h[1-6]>/gm,
 				(match, p1, p2) =>
@@ -54,9 +62,10 @@
 				`<a class="animated-java-anchor" onclick="AnimatedJava.docClick('$1')">$2</a>`
 			)
 			page.content = page.content.replace(
-				/<img src="(.+?)" alt="(.+?)">/gm,
-				(match, p1, p2) => `<img src="${URL + p1}" alt="${p2}">`
+				/<img alt="(.+?)" src="(.+?)">/gm,
+				(match, p1, p2) => `<img alt="${p1}" src="${URL + p2}">`
 			)
+			console.log(page.content)
 		}
 	}
 
@@ -65,10 +74,6 @@
 	})
 
 	void load()
-	//
-</script>
-
-<script lang="ts">
 	//
 </script>
 
