@@ -284,7 +284,7 @@ export function loadExporter() {
 				} ${getExportVersionId()}`,
 				// load function tag
 				`scoreboard players reset * ${scoreboard.rigLoaded}`,
-				`execute as @e[type=${entityTypes.ajRoot},tag=${tags.rootEntity}] run function #${NAMESPACE}:on_load`,
+				`execute as @e[type=${entityTypes.ajRoot},tag=${tags.rootEntity}] run function ${AJ_NAMESPACE}:on_load`,
 			])
 			.chainNewFile('on_load.mcfunction', [
 				`scoreboard players set @s ${scoreboard.rigLoaded} 1`,
@@ -577,13 +577,15 @@ export function loadExporter() {
 		}
 
 		if (!singleEntityRig) {
-			namespaceFolder.chainNewFile('stop_all_animations.mcfunction', [
-				`execute if entity @s[tag=${tags.rootEntity}] run function ${AJ_NAMESPACE}:animations/stop_all_animations_as_root`,
-				`execute if entity @s[tag=!${tags.rootEntity}] run tellraw @a ${API.formatStr(
-					errorMustBeRunAsRoot.toString(),
-					[`${NAMESPACE}:animations/stop_all_animations`]
-				)}`,
-			])
+			namespaceFolder
+				.accessFolder('functions/animations')
+				.chainNewFile('stop_all_animations.mcfunction', [
+					`execute if entity @s[tag=${tags.rootEntity}] run function ${AJ_NAMESPACE}:animations/stop_all_animations_as_root`,
+					`execute if entity @s[tag=!${tags.rootEntity}] run tellraw @a ${API.formatStr(
+						errorMustBeRunAsRoot.toString(),
+						[`${NAMESPACE}:animations/stop_all_animations`]
+					)}`,
+				])
 
 			animatedJavaFolder
 				.newFolder('functions/animations')
@@ -1024,7 +1026,6 @@ export function loadExporter() {
 			}
 		}
 		datapack.newFile('animated_java.mcmeta', content)
-		console.log(EXPORT_FOLDER)
 		await Promise.all(
 			datapack.children.map(async child => await child.writeToDisk(EXPORT_FOLDER, progress))
 		)
