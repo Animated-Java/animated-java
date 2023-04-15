@@ -55,11 +55,9 @@ export async function exportResources(
 		}
 	}
 
-	const predicateItemFilePath = PathModule.join(
-		resourcePackPath,
-		minecraftFolder.path,
-		`${rigItemName}.json`
-	)
+	const predicateItemFilePath = advancedResourcePackSettingsEnabled
+		? rigItemModelExportPath
+		: PathModule.join(resourcePackPath, minecraftFolder.path, `${rigItemName}.json`)
 	const content: IPredicateItemModel = {
 		parent: 'item/generated',
 		textures: {
