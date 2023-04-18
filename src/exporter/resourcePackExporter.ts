@@ -1,10 +1,14 @@
 import { isValidResourcePackPath, safeFunctionName } from '../minecraft'
 import { CustomModelData, IRenderedRig } from '../rendering/modelRenderer'
 import { animatedJavaSettings } from '../settings'
-import { ExpectedError } from '../util/misc'
+import { ExpectedError, LimitClock } from '../util/misc'
 import { ProgressBarController } from '../util/progress'
 import { translate } from '../util/translation'
 import { VirtualFolder } from '../util/virtualFileSystem'
+
+async function fileExists(path: string) {
+	return !!(await fs.promises.stat(path).catch(() => false))
+}
 
 function showPredicateFileOverwriteConfirmation(path: string) {
 	const result = confirm(
@@ -27,7 +31,8 @@ export async function exportResources(
 ) {
 	const projectNamespace = projectSettings.project_namespace.value
 	const resourcePackPath = PathModule.parse(projectSettings.resource_pack_mcmeta.value).dir
-	const assetsPackFolder = new VirtualFolder('assets')
+	const resourcePackFolder = new VirtualFolder('internal_resource_pack_folder')
+	const assetsPackFolder = resourcePackFolder.newFolder('assets')
 	const advancedResourcePackSettingsEnabled =
 		projectSettings.enable_advanced_resource_pack_settings.value
 
@@ -36,7 +41,6 @@ export async function exportResources(
 	//------------------------------------
 
 	const [rigItemNamespace, rigItemName] = projectSettings.rig_item.value.split(':')
-
 	const minecraftFolder = assetsPackFolder.newFolder('minecraft').newFolder('models/item')
 
 	//------------------------------------
@@ -182,11 +186,95 @@ export async function exportResources(
 		(a: any, b: any) => a.predicate.custom_model_data - b.predicate.custom_model_data
 	)
 
+	interface IAJMeta {
+		projects: Record<string, { file_list: string[] }>
+	}
+
+	async function processAJMeta(filePaths: string[]) {
+		const ajMetaPath = PathModule.join(resourcePackPath, '.ajmeta')
+		let content: IAJMeta | undefined
+
+		// FIXME - This is an extremely hacky way to filter out the predicate item file from the file list
+		filePaths = filePaths.filter(
+			p =>
+				p !==
+				predicateItemFile.path
+					.replace(resourcePackFolder.path + '/', '')
+					.replaceAll('/', PathModule.sep)
+		)
+
+		if (await fileExists(ajMetaPath)) {
+			content = await fs.promises
+				.readFile(ajMetaPath, 'utf8')
+				.then(JSON.parse)
+				.catch(() => {
+					throw new Error('Failed to read .ajmeta file as JSON')
+				})
+			if (!content)
+				throw new Error('Failed to read .ajmeta file as JSON. Content is undefined.')
+
+			if (!content.projects) {
+				console.warn('Found existing .ajmeta file, but it is missing "projects" key.')
+				content.projects = {}
+			}
+
+			if (!content.projects[NAMESPACE]) {
+				console.warn('Found existing .ajmeta file, but it is missing this project.')
+				content.projects[NAMESPACE] = {
+					file_list: [],
+				}
+			} else {
+				const progress = new ProgressBarController(
+					'Cleaning up old Resource Pack files...',
+					content.projects[NAMESPACE].file_list.length
+				)
+				// Clean out old files from disk
+				const clock = new LimitClock(10)
+				for (let path of content.projects[NAMESPACE].file_list) {
+					await clock.sync().then(b => b && progress.update())
+					path = PathModule.join(resourcePackPath, path)
+					await fs.promises.unlink(path).catch(() => undefined)
+					const dirPath = PathModule.dirname(path)
+					const contents = await fs.promises.readdir(dirPath).catch(() => undefined)
+					if (contents && contents.length === 0)
+						await fs.promises.rmdir(dirPath).catch(() => undefined)
+					progress.add(1)
+				}
+				progress.finish()
+			}
+
+			content.projects[NAMESPACE].file_list = filePaths
+		}
+
+		if (!content) {
+			console.warn('.ajmeta does not exist. Creating new .ajmeta file.')
+			content = {
+				projects: {
+					[NAMESPACE]: {
+						file_list: filePaths,
+					},
+				},
+			}
+		}
+
+		await fs.promises.writeFile(
+			ajMetaPath,
+			ajSettings.minify_output.value
+				? JSON.stringify(content)
+				: JSON.stringify(content, null, 4)
+		)
+	}
+
 	if (advancedResourcePackSettingsEnabled) {
 		const progress = new ProgressBarController(
 			'Writing Resource Pack to Disk',
 			modelsFolder.childCount + texturesFolder.childCount + 1
 		)
+
+		const filePaths = [...modelsFolder.getAllFilePaths(), ...texturesFolder.getAllFilePaths()]
+
+		await processAJMeta(filePaths)
+
 		await fs.promises.mkdir(rigExportFolder, { recursive: true })
 		await modelsFolder.writeChildrenToDisk(rigExportFolder, progress)
 
@@ -204,27 +292,12 @@ export async function exportResources(
 			assetsPackFolder.childCount
 		)
 
-		const rigFolderPath = PathModule.join(resourcePackPath, namespaceFolder.path)
-		await fs.promises
-			.access(rigFolderPath)
-			.then(async () => {
-				await fs.promises.rm(rigFolderPath, { recursive: true })
-			})
-			.catch(e => {
-				console.warn(e)
-			})
+		const filePaths = resourcePackFolder.getAllFilePaths()
 
-		const textureFolderPath = PathModule.join(resourcePackPath, texturesFolder.path)
-		await fs.promises
-			.access(textureFolderPath)
-			.then(async () => {
-				await fs.promises.rm(textureFolderPath, { recursive: true })
-			})
-			.catch(e => {
-				console.warn(e)
-			})
+		await processAJMeta(filePaths)
 
 		await assetsPackFolder.writeToDisk(resourcePackPath, progress)
+
 		progress.finish()
 	}
 }

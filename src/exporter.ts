@@ -5,6 +5,7 @@ import { projectSettingStructure } from './projectSettings'
 import { IRenderedAnimation, renderAllAnimations } from './rendering/animationRenderer'
 import { IRenderedRig, renderRig } from './rendering/modelRenderer'
 import { animatedJavaSettings, IInfoPopup, Setting as AJSetting, Setting } from './settings'
+import { openAJExportInProgressDialog } from './ui/ajExportInProgress'
 import { openAjFailedProjectExportReadinessDialog } from './ui/popups/failedProjectExportReadiness'
 import { openUnexpectedErrorDialog } from './ui/popups/unexpectedError'
 import { consoleGroupCollapsed } from './util/console'
@@ -71,14 +72,17 @@ let activelyExporting = false
 export async function safeExportProject() {
 	if (activelyExporting) return
 	activelyExporting = true
+	const dialog = openAJExportInProgressDialog()
 	await exportProject().catch(e => {
 		Blockbench.setProgress(0)
 		Blockbench.setStatusBarText('')
 		console.error(e)
+		dialog.cancel()
 		if (e instanceof ExpectedError) return
 		openUnexpectedErrorDialog(e)
 	})
 	activelyExporting = false
+	dialog.cancel()
 }
 
 export const exportProject = consoleGroupCollapsed('exportProject', async () => {
@@ -88,7 +92,6 @@ export const exportProject = consoleGroupCollapsed('exportProject', async () => 
 	// Pre-export
 	const selectedVariant = Project.animated_java_variants!.selectedVariant!
 	Project.animated_java_variants?.select()
-	jQuery('#blackout').show()
 
 	const selectedExporterId = Project?.animated_java_settings?.exporter?.selected
 		?.value as NamespacedString
@@ -161,7 +164,6 @@ export const exportProject = consoleGroupCollapsed('exportProject', async () => 
 	Blockbench.showQuickMessage(translate('animated_java.quickmessage.exported_successfully'), 2000)
 	// Post-export
 	Project.animated_java_variants?.select(selectedVariant)
-	jQuery('#blackout').hide()
 })
 
 function verifySettings(structure: GUIStructure, settings: Array<Setting<any>>) {

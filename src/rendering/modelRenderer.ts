@@ -44,6 +44,7 @@ export interface IRenderedModel {
 export interface IRenderedNode {
 	type: string
 	parent: string
+	parentNode: Group | null
 	name: string
 	node: OutlinerNode
 }
@@ -293,6 +294,7 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 	} = {
 		type: 'bone',
 		parent: parentId,
+		parentNode: group.parent instanceof Group ? group.parent : null,
 		node: group,
 		name: group.name,
 		textures: {},
@@ -363,6 +365,7 @@ function renderLocator(locator: Locator, rig: IRenderedRig): INodeStructure {
 	const renderedLocator: IRenderedNodes['Locator'] = {
 		type: 'locator',
 		parent: parentId,
+		parentNode: locator.parent instanceof Group ? locator.parent : null,
 		node: locator,
 		name: locator.name,
 		teleported_entity_type: locator.teleported_entity_type,
@@ -382,6 +385,7 @@ function renderCamera(camera: ICamera, rig: IRenderedRig): INodeStructure {
 	const renderedCamera: IRenderedNodes['Camera'] = {
 		type: 'camera',
 		parent: parentId,
+		parentNode: camera.parent instanceof Group ? camera.parent : null,
 		node: camera,
 		name: camera.name,
 		teleported_entity_type: camera.teleported_entity_type,

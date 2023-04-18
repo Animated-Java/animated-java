@@ -726,6 +726,11 @@ export function loadExporter() {
 						const bone = rig.nodeMap[
 							node.uuid
 						] as AnimatedJava.IRenderedNodes['Locator']
+						const pos = node.pos
+						const euler = new THREE.Euler().setFromQuaternion(node.rot, 'YZX')
+						const rot = new THREE.Vector3(euler.x, euler.y, euler.z).multiplyScalar(
+							180 / Math.PI
+						)
 						commands.push(
 							`execute if entity @s[tag=${API.formatStr(tags.namedBoneEntity, [
 								node.name,
@@ -735,11 +740,28 @@ export function loadExporter() {
 									: `type=${bone.teleported_entity_type},`
 							}tag=${API.formatStr(tags.locatorTag, [
 								node.name,
-							])},limit=1] ^${API.roundToN(node.pos.x, 10)} ^${API.roundToN(
-								node.pos.y,
+							])},limit=1] ^${API.roundToN(pos.x, 10)} ^${API.roundToN(
+								pos.y - 1.62,
 								10
-							)} ^${API.roundToN(node.pos.z, 10)} ~ ~`
+							)} ^${API.roundToN(pos.z, 10)} ~${API.roundToN(
+								-rot.y + 180,
+								10
+							)} ~${API.roundToN(-rot.x, 10)}`
 						)
+						// commands.push(
+						// 	`execute if entity @s[tag=${API.formatStr(tags.namedBoneEntity, [
+						// 		node.name,
+						// 	])}] at @s run tp @e[${
+						// 		bone.teleported_entity_type === ''
+						// 			? ''
+						// 			: `type=${bone.teleported_entity_type},`
+						// 	}tag=${API.formatStr(tags.locatorTag, [
+						// 		node.name,
+						// 	])},limit=1] ^${API.roundToN(node.pos.x, 10)} ^${API.roundToN(
+						// 		node.pos.y,
+						// 		10
+						// 	)} ^${API.roundToN(node.pos.z, 10)} ~ ~`
+						// )
 						break
 					}
 				}
@@ -928,27 +950,33 @@ export function loadExporter() {
 			datapack.childCount
 		)
 
-		let content:
-			| {
-					projects: Record<
-						string,
-						{
-							tick_functions: string[]
-							load_functions: string[]
-							file_list: string[]
-						}
-					>
-			  }
-			| undefined
+		interface IAJMeta {
+			projects: Record<
+				string,
+				{
+					tick_functions: string[]
+					load_functions: string[]
+					file_list: string[]
+				}
+			>
+		}
 
-		const ajMetaPath = PathModule.join(EXPORT_FOLDER, 'animated_java.mcmeta')
-		if (await fileExists(ajMetaPath)) {
-			content = await fs.promises.readFile(ajMetaPath, 'utf-8').then(JSON.parse)
+		let content: IAJMeta | undefined
+
+		const oldAJMetaPath = PathModule.join(EXPORT_FOLDER, 'animated_java.mcmeta')
+		const ajMetaPath = PathModule.join(EXPORT_FOLDER, '.ajmeta')
+		const existingMetaFile = (await fileExists(oldAJMetaPath))
+			? oldAJMetaPath
+			: (await fileExists(ajMetaPath))
+			? ajMetaPath
+			: undefined
+		if (existingMetaFile !== undefined) {
+			content = await fs.promises.readFile(existingMetaFile, 'utf-8').then(JSON.parse)
 
 			if (!content.projects) {
 				const message = `Failed to read the animated_java.mcdata file. (Missing projects). Please delete the file and try again.`
 				Blockbench.showMessageBox({
-					title: 'Failed to read animated_java.mcmeta',
+					title: 'Failed to read .ajmeta',
 					message,
 				})
 				throw new AnimatedJava.API.ExpectedError(message)
@@ -965,7 +993,7 @@ export function loadExporter() {
 			if (!project.file_list) {
 				const message = `Failed to read the animated_java.mcdata file. (Missing project file_list). Please delete the file and try again.`
 				Blockbench.showMessageBox({
-					title: 'Failed to read animated_java.mcmeta',
+					title: 'Failed to read .ajmeta',
 					message,
 				})
 				throw new AnimatedJava.API.ExpectedError(message)
@@ -974,7 +1002,7 @@ export function loadExporter() {
 			if (!project.tick_functions) {
 				const message = `Failed to read the animated_java.mcdata file. (Missing project tick_functions). Please delete the file and try again.`
 				Blockbench.showMessageBox({
-					title: 'Failed to read animated_java.mcmeta',
+					title: 'Failed to read .ajmeta',
 					message,
 				})
 				throw new AnimatedJava.API.ExpectedError(message)
@@ -983,7 +1011,7 @@ export function loadExporter() {
 			if (!project.load_functions) {
 				const message = `Failed to read the animated_java.mcdata file. (Missing project load_functions). Please delete the file and try again.`
 				Blockbench.showMessageBox({
-					title: 'Failed to read animated_java.mcmeta',
+					title: 'Failed to read .ajmeta',
 					message,
 				})
 				throw new AnimatedJava.API.ExpectedError(message)
@@ -991,12 +1019,13 @@ export function loadExporter() {
 
 			progress.total += project.file_list.length
 			const clock = new API.LimitClock(10)
-			for (const path of project.file_list) {
+			for (let path of project.file_list) {
 				progress.add(1)
 				await clock.sync().then(b => b && progress.update())
 				if (path.endsWith('tick.json') || path.endsWith('load.json')) continue
-				await fs.promises.unlink(PathModule.join(EXPORT_FOLDER, path)).catch(() => {})
-				const dirPath = PathModule.join(EXPORT_FOLDER, PathModule.dirname(path))
+				path = PathModule.join(EXPORT_FOLDER, path)
+				await fs.promises.unlink(path).catch(() => {})
+				const dirPath = PathModule.dirname(path)
 				const contents = await fs.promises.readdir(dirPath).catch(() => {})
 				if (contents && contents.length === 0)
 					await fs.promises.rmdir(dirPath).catch(() => {})
@@ -1014,6 +1043,8 @@ export function loadExporter() {
 				a.values.push(...b.values)
 				return a
 			}
+
+			await fs.promises.rm(existingMetaFile)
 		} else {
 			content = {
 				projects: {
@@ -1025,7 +1056,7 @@ export function loadExporter() {
 				},
 			}
 		}
-		datapack.newFile('animated_java.mcmeta', content)
+		datapack.newFile('.ajmeta', content)
 		await Promise.all(
 			datapack.children.map(async child => await child.writeToDisk(EXPORT_FOLDER, progress))
 		)
