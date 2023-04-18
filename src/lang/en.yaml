@@ -19,6 +19,9 @@ animated_java.dialog.close_button: Done
 ### About
 animated_java.dialog.about.title: About Animated Java
 
+### Export in Progress
+animated_java.dialog.export_in_progress.title: Exporting Project...
+
 ### Settings
 animated_java.settings.accessability_options_group: Accessability
 

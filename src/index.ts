@@ -48,6 +48,7 @@ import { addTranslations, translate } from './util/translation'
 import * as VirtualFileSystem from './util/virtualFileSystem'
 import { openUnexpectedErrorDialog } from './ui/popups/unexpectedError'
 import * as minecraft from './minecraft'
+import { openAJExportInProgressDialog } from './ui/ajExportInProgress'
 
 Prism.languages.mcfunction = {}
 
@@ -70,6 +71,7 @@ globalThis.AnimatedJava = {
 	// Expose this plugin's events to other plugins
 	events,
 	openUnexpectedErrorDialog,
+	openAJExportInProgressDialog,
 
 	API: {
 		Settings: AJSettings,
