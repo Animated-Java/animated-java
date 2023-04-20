@@ -42,8 +42,8 @@ export function loadDataPackGenerator() {
 			projects: Record<
 				string,
 				{
-					tick_functions: string[]
-					load_functions: string[]
+					// tick_functions: string[]
+					// load_functions: string[]
 					file_list: string[]
 				}
 			>
@@ -87,23 +87,23 @@ export function loadDataPackGenerator() {
 				throw new ExpectedError(message)
 			}
 
-			if (!project.tick_functions) {
-				const message = `Failed to read the animated_java.mcdata file. (Missing project tick_functions). Please delete the file and try again.`
-				Blockbench.showMessageBox({
-					title: 'Failed to read .ajmeta',
-					message,
-				})
-				throw new ExpectedError(message)
-			}
+			// if (!project.tick_functions) {
+			// 	const message = `Failed to read the animated_java.mcdata file. (Missing project tick_functions). Please delete the file and try again.`
+			// 	Blockbench.showMessageBox({
+			// 		title: 'Failed to read .ajmeta',
+			// 		message,
+			// 	})
+			// 	throw new ExpectedError(message)
+			// }
 
-			if (!project.load_functions) {
-				const message = `Failed to read the animated_java.mcdata file. (Missing project load_functions). Please delete the file and try again.`
-				Blockbench.showMessageBox({
-					title: 'Failed to read .ajmeta',
-					message,
-				})
-				throw new ExpectedError(message)
-			}
+			// if (!project.load_functions) {
+			// 	const message = `Failed to read the animated_java.mcdata file. (Missing project load_functions). Please delete the file and try again.`
+			// 	Blockbench.showMessageBox({
+			// 		title: 'Failed to read .ajmeta',
+			// 		message,
+			// 	})
+			// 	throw new ExpectedError(message)
+			// }
 
 			progress.total += project.file_list.length
 			const clock = new LimitClock(10)
@@ -120,25 +120,25 @@ export function loadDataPackGenerator() {
 			}
 			project.file_list = G.DATAPACK.getAllFilePaths()
 
-			tickFunctionTag.customJsonMerger = (a, b) => {
-				a.values = a.values.filter(v => !project.tick_functions.includes(v))
-				a.values.push(...b.values)
-				return a
-			}
+			// tickFunctionTag.customJsonMerger = (a, b) => {
+			// 	a.values = a.values.filter(v => !project.tick_functions.includes(v))
+			// 	a.values.push(...b.values)
+			// 	return a
+			// }
 
-			loadFunctionTag.customJsonMerger = (a, b) => {
-				a.values = a.values.filter(v => !project.load_functions.includes(v))
-				a.values.push(...b.values)
-				return a
-			}
+			// loadFunctionTag.customJsonMerger = (a, b) => {
+			// 	a.values = a.values.filter(v => !project.load_functions.includes(v))
+			// 	a.values.push(...b.values)
+			// 	return a
+			// }
 
 			await fs.promises.rm(existingMetaFile)
 		} else {
 			content = {
 				projects: {
 					[G.NAMESPACE]: {
-						tick_functions: tickFunctionTag.content.values,
-						load_functions: loadFunctionTag.content.values,
+						// tick_functions: tickFunctionTag.content.values,
+						// load_functions: loadFunctionTag.content.values,
 						file_list: G.DATAPACK.getAllFilePaths(),
 					},
 				},
