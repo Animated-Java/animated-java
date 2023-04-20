@@ -8,10 +8,6 @@ import { Globals as G } from './datapackGen/globals'
 type ExporterSettings = ReturnType<ReturnType<typeof loadExporter>['getSettings']>
 export type ExportData = AnimatedJava.IAnimatedJavaExportData<ExporterSettings>
 
-export interface DataPackContext {
-	scoreboards: {}
-}
-
 export function loadDataPackGenerator() {
 	const { formatStr, ProgressBarController, ExpectedError, LimitClock } = AnimatedJava.API
 	const { NbtTag, NbtCompound, NbtString, NbtList, NbtInt } = AnimatedJava.API.deepslate

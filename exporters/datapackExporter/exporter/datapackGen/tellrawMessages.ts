@@ -1,4 +1,4 @@
-function loadTellrawMessages() {
+export function loadTellrawMessages() {
 	const { JsonText } = AnimatedJava.API
 
 	const errorMustBeRunAsRoot = new JsonText([

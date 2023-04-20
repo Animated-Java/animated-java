@@ -165,8 +165,7 @@ export function generateNamespaceFolder() {
 	summonTags.add(new NbtString(G.TAGS.rootEntity))
 	summonNbt.set('Tags', summonTags)
 
-	const variantSummonFolder = namespaceFolder
-		.accessFolder('functions')
+	const variantSummonFolder = functionsFolder
 		// ANCHOR - function NAMESPACE:summon
 		.chainNewFile('summon.mcfunction', [
 			`summon minecraft:item_display ~ ~ ~ ${summonNbt.toString()}`,

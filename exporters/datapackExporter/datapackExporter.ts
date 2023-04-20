@@ -112,6 +112,6 @@ export function loadExporter() {
 				settingId: 'animated_java:datapack_exporter/root_entity_nbt',
 			},
 		],
-		export() {},
+		export: loadDataPackGenerator() as any,
 	})
 }
