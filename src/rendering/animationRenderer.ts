@@ -111,9 +111,8 @@ export function getAnimationNodes(
 					const parentRotation = new THREE.Quaternion().setFromRotationMatrix(
 						parentMatrix
 					)
-					const childRotation = new THREE.Quaternion().setFromRotationMatrix(matrix)
-					childRotation.multiply(parentRotation)
-					matrix.makeRotationFromQuaternion(childRotation)
+					console.log(matrix, parentRotation)
+					matrix.makeRotationFromQuaternion(parentRotation)
 				}
 				break
 			case 'camera':
