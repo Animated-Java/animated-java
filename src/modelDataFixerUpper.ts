@@ -34,7 +34,7 @@ export function process(model: any) {
 function updateModelTo1_4(model: any) {
 	if (
 		model.animated_java.exporter_settings['animated_java:datapack_exporter']
-			.outdated_rig_warning
+			.outdated_rig_warning !== undefined
 	) {
 		model.animated_java.exporter_settings[
 			'animated_java:datapack_exporter'
