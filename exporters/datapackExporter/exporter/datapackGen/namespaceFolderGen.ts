@@ -24,8 +24,8 @@ export function generateNamespaceFolder() {
 		'functions',
 		'functions/apply_variant',
 		'functions/animations',
-		'tags',
-		'tags/functions'
+		'tags/functions',
+		'tags/entity_types'
 	)
 
 	G.MINECRAFT_FOLDER.newFolder('tags/functions')

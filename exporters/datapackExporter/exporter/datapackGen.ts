@@ -9,9 +9,8 @@ type ExporterSettings = ReturnType<ReturnType<typeof loadExporter>['getSettings'
 export type ExportData = AnimatedJava.IAnimatedJavaExportData<ExporterSettings>
 
 export function loadDataPackGenerator() {
-	const { formatStr, ProgressBarController, ExpectedError, LimitClock } = AnimatedJava.API
-	const { NbtTag, NbtCompound, NbtString, NbtList, NbtInt } = AnimatedJava.API.deepslate
-	const { fileExists, matrixToNbtFloatArray } = loadUtil()
+	const { ProgressBarController, ExpectedError, LimitClock } = AnimatedJava.API
+	const { fileExists } = loadUtil()
 
 	return async (exportData: ExportData) => {
 		if (!Project?.animated_java_variants) throw new Error('No variants found')
@@ -35,14 +34,7 @@ export function loadDataPackGenerator() {
 		)
 
 		interface IAJMeta {
-			projects: Record<
-				string,
-				{
-					// tick_functions: string[]
-					// load_functions: string[]
-					file_list: string[]
-				}
-			>
+			projects: Record<string, { file_list: string[] }>
 		}
 
 		let content: IAJMeta | undefined
@@ -58,7 +50,7 @@ export function loadDataPackGenerator() {
 			content = await fs.promises.readFile(existingMetaFile, 'utf-8').then(JSON.parse)
 
 			if (!content.projects) {
-				const message = `Failed to read the animated_java.mcdata file. (Missing projects). Please delete the file and try again.`
+				const message = `Failed to read the .ajmeta file. (Missing projects). Please delete the file and try again.`
 				Blockbench.showMessageBox({
 					title: 'Failed to read .ajmeta',
 					message,
@@ -75,7 +67,7 @@ export function loadDataPackGenerator() {
 			content.projects[G.NAMESPACE] = project
 
 			if (!project.file_list) {
-				const message = `Failed to read the animated_java.mcdata file. (Missing project file_list). Please delete the file and try again.`
+				const message = `Failed to read the .ajmeta file. (Missing project file_list). Please delete the file and try again.`
 				Blockbench.showMessageBox({
 					title: 'Failed to read .ajmeta',
 					message,
@@ -83,30 +75,16 @@ export function loadDataPackGenerator() {
 				throw new ExpectedError(message)
 			}
 
-			// if (!project.tick_functions) {
-			// 	const message = `Failed to read the animated_java.mcdata file. (Missing project tick_functions). Please delete the file and try again.`
-			// 	Blockbench.showMessageBox({
-			// 		title: 'Failed to read .ajmeta',
-			// 		message,
-			// 	})
-			// 	throw new ExpectedError(message)
-			// }
-
-			// if (!project.load_functions) {
-			// 	const message = `Failed to read the animated_java.mcdata file. (Missing project load_functions). Please delete the file and try again.`
-			// 	Blockbench.showMessageBox({
-			// 		title: 'Failed to read .ajmeta',
-			// 		message,
-			// 	})
-			// 	throw new ExpectedError(message)
-			// }
-
 			progress.total += project.file_list.length
 			const clock = new LimitClock(10)
 			for (let path of project.file_list) {
 				progress.add(1)
 				await clock.sync().then(b => b && progress.update())
-				if (path.endsWith('tick.json') || path.endsWith('load.json')) continue
+				if (
+					PathModule.basename(path) === 'tick.json' ||
+					PathModule.basename(path) === 'load.json'
+				)
+					continue
 				path = PathModule.join(G.DATAPACK_EXPORT_PATH, path)
 				await fs.promises.unlink(path).catch(() => {})
 				const dirPath = PathModule.dirname(path)
@@ -116,27 +94,11 @@ export function loadDataPackGenerator() {
 			}
 			project.file_list = G.DATAPACK.getAllFilePaths()
 
-			// tickFunctionTag.customJsonMerger = (a, b) => {
-			// 	a.values = a.values.filter(v => !project.tick_functions.includes(v))
-			// 	a.values.push(...b.values)
-			// 	return a
-			// }
-
-			// loadFunctionTag.customJsonMerger = (a, b) => {
-			// 	a.values = a.values.filter(v => !project.load_functions.includes(v))
-			// 	a.values.push(...b.values)
-			// 	return a
-			// }
-
 			await fs.promises.rm(existingMetaFile)
 		} else {
 			content = {
 				projects: {
-					[G.NAMESPACE]: {
-						// tick_functions: tickFunctionTag.content.values,
-						// load_functions: loadFunctionTag.content.values,
-						file_list: G.DATAPACK.getAllFilePaths(),
-					},
+					[G.NAMESPACE]: { file_list: G.DATAPACK.getAllFilePaths() },
 				},
 			}
 		}
