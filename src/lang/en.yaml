@@ -132,7 +132,7 @@ animated_java.project_settings.resource_pack_mcmeta.error.unset: |-
   You must select a Resource Pack.
 animated_java.project_settings.resource_pack_mcmeta.error.invalid_path: |-
   The selected path is not a valid Resource Pack!
-  Make sure you've selected the pack.mcmeta file of a valid Resource Pack.
+  Make sure you've selected the correct pack.mcmeta, and that the Resource Pack has an assets folder.
 
 animated_java.project_settings.verbose: Verbose
 animated_java.project_settings.verbose.description: |-

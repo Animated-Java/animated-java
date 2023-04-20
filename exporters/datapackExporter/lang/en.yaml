@@ -8,7 +8,7 @@ animated_java.datapack_exporter.settings.datapack_mcmeta.error.unset: |-
   You must select a Data Pack folder.
 animated_java.datapack_exporter.settings.datapack_mcmeta.error.invalid: |-
   The selected path is not a valid Data Pack!
-  Make sure you've selected the pack.mcmeta file of a valid Data Pack.
+  Make sure you've selected the correct pack.mcmeta, and that the Data Pack has a data folder.
 
 animated_java.datapack_exporter.settings.interpolation_duration: Interpolation Duration
 animated_java.datapack_exporter.settings.interpolation_duration.description: |-
