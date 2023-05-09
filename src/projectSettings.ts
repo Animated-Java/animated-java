@@ -428,8 +428,15 @@ export const projectSettingStructure: GUIStructure = [
 		],
 	},
 	{
-		type: 'setting',
-		settingId: _.exporter.id,
+		type: 'group',
+		title: translate('animated_java.project_settings.exporter_group'),
+		openByDefault: true,
+		children: [
+			{
+				type: 'setting',
+				settingId: _.exporter.id,
+			},
+		],
 	},
 ]
 

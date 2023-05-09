@@ -41,7 +41,7 @@ export class Globals {
 			Object.keys(rig.nodeMap).length === 1 && renderedAnimations.length === 0
 		Globals.DEFAULT_INTERPOLATION_DURATION = exporterSettings.interpolation_duration.value
 
-		Globals.DATAPACK = new VirtualFileSystem.VirtualFolder(Globals.NAMESPACE)
+		Globals.DATAPACK = new VirtualFileSystem.VirtualFolder('virtual_datapack')
 		Globals.DATA_FOLDER = Globals.DATAPACK.newFolder('data')
 		Globals.MINECRAFT_FOLDER = Globals.DATA_FOLDER.newFolder('minecraft')
 

@@ -1,4 +1,3 @@
-import { type ExportData } from '../datapackGen'
 import { loadAnimationTreeGenerator } from './animationTreeGen'
 import { Globals as G } from './globals'
 
@@ -50,7 +49,6 @@ export function generateAnimatedJavaFolder() {
 			G.OUTDATED_RIG_WARNING_ENABLED
 				? `execute unless score @s ${G.SCOREBOARD.exportVersion} = ${G.SCOREBOARD.exportVersion} ${G.SCOREBOARD.i} at @s run function ${G.AJ_NAMESPACE}:upgrade_rig`
 				: undefined,
-			`function #${G.NAMESPACE}:on_load`,
 		])
 		// ANCHOR - func AJ_NAMESPACE:tick
 		.chainNewFile('tick.mcfunction', [

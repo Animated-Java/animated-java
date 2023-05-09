@@ -72,7 +72,23 @@ export async function exportResources(
 			rigs: {},
 		},
 	}
-	const predicateItemFile = minecraftFolder.newFile(`${rigItemName}.json`, content)
+	const predicateItemFile = minecraftFolder.newFile(
+		`${rigItemName}.json`,
+		content,
+		// TODO
+		(oldContent, newContent) => {
+			console.log('Merging predicate file...', oldContent, newContent)
+			if (!oldContent.animated_java) {
+				showPredicateFileOverwriteConfirmation(predicateItemFilePath)
+				oldContent.animated_java = {
+					rigs: {
+						[projectNamespace]: { used_ids: [] },
+					},
+				}
+			}
+			return newContent as unknown
+		}
+	)
 	let successfullyReadPredicateItemFile = false
 	if (fs.existsSync(predicateItemFilePath)) {
 		const stringContent = await fs.promises.readFile(predicateItemFilePath, 'utf8')

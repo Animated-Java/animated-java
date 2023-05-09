@@ -199,7 +199,6 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 				rescale: true,
 			}
 	}
-	console.log(cube.rotation, element)
 
 	if (cube.parent instanceof Group) {
 		const parent = cube.parent

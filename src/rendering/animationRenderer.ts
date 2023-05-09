@@ -16,7 +16,10 @@ export function restoreSceneAngle() {
 function getNodeMatrix(node: OutlinerElement, scale: number) {
 	const matrixWorld = node.mesh.matrixWorld.clone()
 	matrixWorld.setPosition(
-		new THREE.Vector3().setFromMatrixPosition(matrixWorld).multiplyScalar(1 / 16)
+		new THREE.Vector3()
+			.setFromMatrixPosition(matrixWorld)
+			.multiplyScalar(1 / 16)
+			.multiply(new THREE.Vector3(-1, 1, -1))
 	)
 	matrixWorld.scale(new THREE.Vector3().setScalar(scale))
 	return matrixWorld
@@ -34,24 +37,26 @@ export interface IAnimationNode {
 	interpolation?: 'instant' | 'default'
 }
 
+export interface IRenderedFrame {
+	time: number
+	nodes: IAnimationNode[]
+	variant?: {
+		uuid: string
+		executeCondition: string
+	}
+	commands?: {
+		commands: string
+		executeCondition: string
+	}
+	animationState?: {
+		animation: string
+		executeCondition: string
+	}
+}
+
 export interface IRenderedAnimation {
 	name: string
-	frames: Array<{
-		time: number
-		nodes: IAnimationNode[]
-		variant?: {
-			uuid: string
-			executeCondition: string
-		}
-		commands?: {
-			commands: string
-			executeCondition: string
-		}
-		animationState?: {
-			animation: string
-			executeCondition: string
-		}
-	}>
+	frames: IRenderedFrame[]
 	/**
 	 * Duration of the animation in ticks (AKA frames). Same as animation.frames.length
 	 */
@@ -111,7 +116,7 @@ export function getAnimationNodes(
 					const parentRotation = new THREE.Quaternion().setFromRotationMatrix(
 						parentMatrix
 					)
-					console.log(matrix, parentRotation)
+					// console.log(matrix, parentRotation)
 					matrix.makeRotationFromQuaternion(parentRotation)
 				}
 				break
