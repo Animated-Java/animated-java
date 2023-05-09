@@ -14,7 +14,7 @@
 			"enable_advanced_resource_pack_settings": false,
 			"resource_pack_mcmeta": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\pack.mcmeta",
 			"verbose": true,
-			"exporter": "animated_java:datapack_exporter"
+			"exporter": "animated_java:json_exporter"
 		},
 		"exporter_settings": {
 			"animated_java:datapack_exporter": {
@@ -24,8 +24,8 @@
 				"include_convenience_functions": true,
 				"root_entity_nbt": "{}"
 			},
-			"animated_java:raw_exporter": {
-				"foo": false
+			"animated_java:json_exporter": {
+				"output_file": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\assets\\happy_box_animated_java_rig\\test.json"
 			}
 		},
 		"variants": [
@@ -323,7 +323,7 @@
 		},
 		{
 			"name": "cube4",
-			"origin": [48, 0, 16],
+			"origin": [32, 0, 16],
 			"color": 0,
 			"nbt": "{Glowing:1b}",
 			"uuid": "567089b8-0a14-a178-6deb-1f0d91a80e0d",

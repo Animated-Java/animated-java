@@ -133,4 +133,4 @@ BBPlugin.register(PACKAGE.name, {
 })
 
 import('../exporters/datapackExporter')
-import('../exporters/rawExporter')
+import('../exporters/jsonExporter')

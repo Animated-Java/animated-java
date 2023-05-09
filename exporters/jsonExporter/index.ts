@@ -1,4 +1,4 @@
-import { loadExporter } from './rawExporter'
+import { loadExporter } from './jsonExporter'
 
 requestAnimationFrame(function repeat() {
 	if (AnimatedJava?.loaded) loadExporter()

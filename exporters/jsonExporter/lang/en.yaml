@@ -1,0 +1,9 @@
+# JSON Exporter
+animated_java.exporters.json_exporter.name: JSON Exporter
+animated_java.exporters.json_exporter.description: Exports an Animated Java Rig as a JSON file for use in plugins or mods.
+
+# Settings
+animated_java.exporters.json_exporter.settings.output_file: Output File
+animated_java.exporters.json_exporter.settings.output_file.description: The file to export to.
+animated_java.exporters.json_exporter.settings.output_file.error.empty: |-
+  The output file cannot be empty.
