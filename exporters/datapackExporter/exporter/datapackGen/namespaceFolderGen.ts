@@ -120,6 +120,7 @@ export function generateNamespaceFolder() {
 				'interpolation_duration',
 				new NbtInt(exporterSettings.interpolation_duration.value)
 			)
+			.set('item_display', new NbtString('head'))
 		if (bone.type === 'bone') {
 			passenger.set(
 				'item',
@@ -199,7 +200,10 @@ export function generateNamespaceFolder() {
 			`execute as @e[type=${G.ENTITY_TYPES.ajRoot},tag=${G.TAGS.rootEntity}] run function ${G.AJ_NAMESPACE}:remove/as_root`,
 		])
 		// ANCHOR - function NAMESPACE:remove/all
-		.chainNewFile('all.mcfunction', [`kill @e[tag=${G.TAGS.rigEntity}]`])
+		.chainNewFile('all.mcfunction', [
+			`execute as @e[type=${G.ENTITY_TYPES.ajRoot},tag=${G.TAGS.rootEntity}] run function ${G.AJ_NAMESPACE}:remove/as_root`,
+			`kill @e[tag=${G.TAGS.rigEntity}]`,
+		])
 
 	for (const variant of G.VARIANTS) {
 		// ANCHOR - func NAMESPACE:apply_variant/${variant.name}

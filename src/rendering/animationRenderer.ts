@@ -16,10 +16,8 @@ export function restoreSceneAngle() {
 function getNodeMatrix(node: OutlinerElement, scale: number) {
 	const matrixWorld = node.mesh.matrixWorld.clone()
 	matrixWorld.setPosition(
-		new THREE.Vector3()
-			.setFromMatrixPosition(matrixWorld)
-			.multiplyScalar(1 / 16)
-			.multiply(new THREE.Vector3(-1, 1, -1))
+		new THREE.Vector3().setFromMatrixPosition(matrixWorld).multiplyScalar(1 / 16)
+		// .multiply(new THREE.Vector3(-1, 1, -1))
 	)
 	matrixWorld.scale(new THREE.Vector3().setScalar(scale))
 	return matrixWorld

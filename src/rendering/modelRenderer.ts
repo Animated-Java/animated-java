@@ -39,6 +39,9 @@ export interface IRenderedModel {
 	parent?: string
 	textures: Record<string, string>
 	elements?: IRenderedElement[]
+	display?: {
+		head: { rotation: [0, 180, 0] }
+	}
 }
 
 export interface IRenderedNode {
@@ -300,6 +303,9 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 		model: {
 			textures: {},
 			elements: [],
+			display: {
+				head: { rotation: [0, 180, 0] },
+			},
 		},
 		modelPath: path,
 		customModelData: -1,
