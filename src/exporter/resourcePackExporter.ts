@@ -29,12 +29,16 @@ export async function exportResources(
 	textureExportFolder: string,
 	rigItemModelExportPath: string
 ) {
-	const projectNamespace = projectSettings.project_namespace.value
-	const resourcePackPath = PathModule.parse(projectSettings.resource_pack_mcmeta.value).dir
-	const resourcePackFolder = new VirtualFolder('internal_resource_pack_folder')
-	const assetsPackFolder = resourcePackFolder.newFolder('assets')
 	const advancedResourcePackSettingsEnabled =
 		projectSettings.enable_advanced_resource_pack_settings.value
+	const projectNamespace = projectSettings.project_namespace.value
+	const resourcePackPath = PathModule.parse(projectSettings.resource_pack_mcmeta.value).dir
+	const resourcePackFolder = new VirtualFolder(
+		advancedResourcePackSettingsEnabled
+			? 'internal_resource_pack_folder'
+			: PathModule.basename(resourcePackPath)
+	)
+	const assetsPackFolder = resourcePackFolder.newFolder('assets')
 
 	//------------------------------------
 	// Minecraft namespace
@@ -61,8 +65,16 @@ export async function exportResources(
 
 	const predicateItemFilePath = advancedResourcePackSettingsEnabled
 		? rigItemModelExportPath
-		: PathModule.join(resourcePackPath, minecraftFolder.path, `${rigItemName}.json`)
-	const content: IPredicateItemModel = {
+		: PathModule.join(
+				PathModule.dirname(resourcePackPath),
+				minecraftFolder.path,
+				`${rigItemName}.json`
+		  )
+
+	console.log('Predicate item file path:', predicateItemFilePath)
+
+	// Default predicate item file content
+	let content: IPredicateItemModel = {
 		parent: 'item/generated',
 		textures: {
 			layer0: `${rigItemNamespace}:item/${rigItemName}`,
@@ -72,64 +84,56 @@ export async function exportResources(
 			rigs: {},
 		},
 	}
-	const predicateItemFile = minecraftFolder.newFile(
-		`${rigItemName}.json`,
-		content,
-		// TODO
-		(oldContent, newContent) => {
-			console.log('Merging predicate file...', oldContent, newContent)
-			if (!oldContent.animated_java) {
-				showPredicateFileOverwriteConfirmation(predicateItemFilePath)
-				oldContent.animated_java = {
-					rigs: {
-						[projectNamespace]: { used_ids: [] },
-					},
-				}
-			}
-			return newContent as unknown
-		}
-	)
-	let successfullyReadPredicateItemFile = false
-	if (fs.existsSync(predicateItemFilePath)) {
-		const stringContent = await fs.promises.readFile(predicateItemFilePath, 'utf8')
-		try {
-			const localContent = JSON.parse(stringContent)
-			Object.assign(content, localContent)
-			successfullyReadPredicateItemFile = true
-		} catch (e) {
-			console.warn('Failed to read predicate item file as JSON')
-			console.warn(e)
-		}
-	} else successfullyReadPredicateItemFile = true
-	if (!successfullyReadPredicateItemFile || !content.animated_java) {
-		showPredicateFileOverwriteConfirmation(predicateItemFilePath)
-	}
-	if (!content.overrides) content.overrides = []
-	if (!content.animated_java.rigs) content.animated_java.rigs = {}
-
-	// const content = predicateItemFile.content as IPredicateItemModel
 	const usedIds: number[] = [] // IDs that are used by other projects
 	const consumedIds: number[] = [] // IDs that are used by this project
-	for (const [name, rig] of Object.entries(content.animated_java.rigs)) {
-		if (!rig.used_ids) {
-			console.warn('Found existing rig in predicate file, but it is missing used_ids.')
-			continue
+	// Read predicate item file if it exists
+	if (fs.existsSync(predicateItemFilePath)) {
+		console.log('Reading predicate item file')
+		try {
+			const stringContent = await fs.promises.readFile(predicateItemFilePath, 'utf8')
+			content = JSON.parse(stringContent)
+		} catch (e) {
+			console.warn('Failed to read predicate item file JSON')
+			console.warn(e)
 		}
-		const localUsedIds = rig.used_ids
-		if (name === projectNamespace) {
-			// Clean out old overrides
-			content.overrides = content.overrides.filter(o => {
-				return !localUsedIds.includes(o.predicate.custom_model_data)
-			})
-			continue
+		// Show overwrite confirmation if predicate file wasn't created by animated_java.
+		if (!content.animated_java) {
+			showPredicateFileOverwriteConfirmation(predicateItemFilePath)
+			content.animated_java = {
+				rigs: {
+					ORIGINAL_PREDICATE_FILE: {
+						used_ids: content.overrides
+							.filter(o => o.predicate.custom_model_data !== undefined)
+							.map(o => o.predicate.custom_model_data),
+					},
+				},
+			}
 		}
-		usedIds.push(...rig.used_ids)
+
+		// Clean up content
+		content.animated_java ??= { rigs: {} }
+		content.animated_java.rigs ??= {}
+		// Merge with existing predicate file
+		console.log('Merging with existing predicate file')
+		console.log(content)
+		for (const [name, rig] of Object.entries(content.animated_java.rigs)) {
+			const localUsedIds = rig.used_ids
+			if (name === projectNamespace) {
+				// Clean out old overrides
+				content.overrides = content.overrides.filter(o => {
+					return !localUsedIds.includes(o.predicate.custom_model_data)
+				})
+				continue
+			}
+			usedIds.push(...localUsedIds)
+		}
 	}
 
 	CustomModelData.usedIds = usedIds
-	content.animated_java.rigs[projectNamespace] = {
-		used_ids: consumedIds,
-	}
+	content.animated_java.rigs[projectNamespace] = { used_ids: consumedIds }
+
+	// Create virtual predicate item file with content
+	const predicateItemFile = minecraftFolder.newFile(`${rigItemName}.json`, content)
 
 	//------------------------------------
 	// Project namespace
