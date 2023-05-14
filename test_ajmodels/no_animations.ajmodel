@@ -24,8 +24,8 @@
 				"include_convenience_functions": true,
 				"root_entity_nbt": "{}"
 			},
-			"animated_java:raw_exporter": {
-				"foo": false
+			"animated_java:json_exporter": {
+				"output_file": ""
 			}
 		},
 		"variants": [
@@ -14371,13 +14371,13 @@
 	"outliner": [
 		{
 			"name": "structure",
-			"origin": [-8, 0, -8],
+			"origin": [72, 0, 88],
 			"color": 0,
 			"nbt": "{}",
 			"uuid": "c5384b2d-969b-0b3a-c7b0-37baac2b274a",
 			"export": true,
 			"mirror_uv": false,
-			"isOpen": true,
+			"isOpen": false,
 			"locked": false,
 			"visibility": true,
 			"autouv": 0,
