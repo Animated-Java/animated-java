@@ -107,17 +107,6 @@ export function getAnimationNodes(
 				break
 			}
 			case 'locator':
-				matrix = getNodeMatrix(node.node, 1)
-				if (node.parentNode) {
-					const parentMatrix = getNodeMatrix(node.parentNode, 1)
-					// Extract the rotation from the parent matrix and apply it to the child matrix
-					const parentRotation = new THREE.Quaternion().setFromRotationMatrix(
-						parentMatrix
-					)
-					// console.log(matrix, parentRotation)
-					matrix.makeRotationFromQuaternion(parentRotation)
-				}
-				break
 			case 'camera':
 				matrix = getNodeMatrix(node.node, 1)
 				break

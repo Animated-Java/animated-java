@@ -160,11 +160,10 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				secondNumberLabel: 'x',
 				docsLink: '/docs/project_settings#project_resolution',
 			},
-			function onUpdate(setting) {
-				Project!.texture_width = setting.numberA
-				Project!.texture_height = setting.numberB
-				console.log('Project resolution changed to', setting.value)
-				Canvas.updateAllUVs()
+			undefined,
+			undefined,
+			function onConfirm(setting) {
+				setProjectResolution(setting.numberA, setting.numberB, true)
 			}
 		),
 

@@ -39,7 +39,7 @@ export class Globals {
 		Globals.OUTDATED_RIG_WARNING_ENABLED = exporterSettings.outdated_rig_warning.value
 		Globals.IS_SINGLE_ENTITY_RIG =
 			Object.keys(rig.nodeMap).length === 1 && renderedAnimations.length === 0
-		Globals.DEFAULT_INTERPOLATION_DURATION = exporterSettings.interpolation_duration.value
+		Globals.DEFAULT_INTERPOLATION_DURATION = 1
 
 		Globals.DATAPACK = new VirtualFileSystem.VirtualFolder('virtual_datapack')
 		Globals.DATA_FOLDER = Globals.DATAPACK.newFolder('data')

@@ -20,16 +20,23 @@ export function getTags() {
 		rigEntity: `aj.${G.NAMESPACE}.rig_entity`,
 		rootEntity: `aj.${G.NAMESPACE}.root`,
 		boneEntity: `aj.${G.NAMESPACE}.bone`,
+		locatorEntity: `aj.${G.NAMESPACE}.locator`,
+		cameraEntity: `aj.${G.NAMESPACE}.camera`,
 		namedBoneEntity: `aj.${G.NAMESPACE}.bone.%s`,
+		namedLocatorEntity: `aj.${G.NAMESPACE}.locator.%s`,
+		namedCameraEntity: `aj.${G.NAMESPACE}.camera.%s`,
 		activeAnim: `aj.${G.NAMESPACE}.animation.%s`,
-		cameraTag: `aj.${G.NAMESPACE}.camera.%s`,
-		locatorTag: `aj.${G.NAMESPACE}.locator.%s`,
+		locatorTarget: `aj.${G.NAMESPACE}.locator_target`,
+		namedLocatorTarget: `aj.${G.NAMESPACE}.locator_target.%s`,
+		cameraTarget: `aj.${G.NAMESPACE}.camera_target`,
+		namedCameraTarget: `aj.${G.NAMESPACE}.camera_target.%s`,
 		disableCommandKeyframes: `aj.${G.NAMESPACE}.disable_command_keyframes`,
 	}
 }
 
 export function getEntityTypes() {
 	return {
+		ajRigEntity: `#${G.NAMESPACE}:aj_rig_entity`,
 		ajRoot: `#${G.NAMESPACE}:aj_root`,
 		ajBone: `#${G.NAMESPACE}:aj_bone`,
 	}

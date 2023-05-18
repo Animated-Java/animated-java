@@ -1,4 +1,4 @@
-import { loadUtil } from '../util'
+import { loadUtil, wrapNum } from '../util'
 import { Globals as G } from './globals'
 
 export type IFrameLeaf = AnimatedJava.ITreeLeaf<AnimatedJava.IRenderedAnimation['frames'][any]>
@@ -23,89 +23,63 @@ export function loadAnimationTreeGenerator() {
 		return `leaf_${frame.scoreIndex}_as_bone`
 	}
 
+	function boneToString(node: AnimatedJava.IAnimationNode) {
+		const data = new NbtCompound()
+			.set('transformation', matrixToNbtFloatArray(node.matrix))
+			.set('start_interpolation', new NbtInt(0))
+		if (node.interpolation === 'instant') data.set('interpolation_duration', new NbtInt(0))
+		else if (node.interpolation === 'default')
+			// FIXME: This does not work if the default interpolation duration scoreboard is changed during runtime
+			data.set('interpolation_duration', new NbtInt(G.DEFAULT_INTERPOLATION_DURATION))
+		return `execute if entity @s[tag=${formatStr(G.TAGS.namedBoneEntity, [
+			node.name,
+		])}] run data modify entity @s {} merge value ${data}`
+	}
+
+	function locatorToString(node: AnimatedJava.IAnimationNode) {
+		const pos = node.pos
+		const euler = new THREE.Euler().setFromQuaternion(node.rot, 'YXZ')
+		const rot = new THREE.Vector3(euler.x, euler.y, euler.z).multiplyScalar(180 / Math.PI)
+		return `execute if entity @s[tag=${formatStr(G.TAGS.namedLocatorEntity, [
+			node.name,
+		])}] at @s on origin run tp @s ^${roundToN(pos.x, 100000)} ^${roundToN(
+			pos.y,
+			100000
+		)} ^${roundToN(pos.z, 100000)} ~${roundToN(
+			wrapNum(-rot.y - 180, -180, 180),
+			100000
+		)} ~${roundToN(-rot.x, 100000)}`
+	}
+
+	function cameraToString(node: AnimatedJava.IAnimationNode) {
+		const pos = node.pos
+		const euler = new THREE.Euler().setFromQuaternion(node.rot, 'YXZ')
+		const rot = new THREE.Vector3(euler.x, euler.y, euler.z).multiplyScalar(180 / Math.PI)
+		return `execute if entity @s[tag=${formatStr(G.TAGS.namedCameraEntity, [
+			node.name,
+		])}] at @s on origin run tp @s ^${roundToN(pos.x, 100000)} ^${roundToN(
+			pos.y - 1.62,
+			100000
+		)} ^${roundToN(pos.z, 100000)} ~${roundToN(
+			wrapNum(-rot.y - 180, -180, 180),
+			100000
+		)} ~${roundToN(-rot.x, 100000)}`
+	}
+
 	function generateNodeLeafFunction(leaf: IFrameLeaf) {
 		const commands: string[] = []
 		for (const node of Object.values(leaf.item.nodes)) {
 			switch (node.type) {
 				case 'bone': {
-					const data = new NbtCompound()
-						.set('transformation', matrixToNbtFloatArray(node.matrix))
-						.set('start_interpolation', new NbtInt(0))
-					if (node.interpolation === 'instant')
-						data.set('interpolation_duration', new NbtInt(0))
-					else if (node.interpolation === 'default')
-						// FIXME: This does not work if the default interpolation duration scoreboard is changed during runtime
-						data.set(
-							'interpolation_duration',
-							new NbtInt(G.DEFAULT_INTERPOLATION_DURATION)
-						)
-					commands.push(
-						`execute if entity @s[tag=${formatStr(G.TAGS.namedBoneEntity, [
-							node.name,
-						])}] run data modify entity @s {} merge value ${data}`
-					)
+					commands.push(boneToString(node))
 					break
 				}
 				case 'camera': {
-					const bone = rig.nodeMap[node.uuid] as AnimatedJava.IRenderedNodes['Camera']
-					const pos = node.pos
-					const euler = new THREE.Euler().setFromQuaternion(node.rot, 'YZX')
-					const rot = new THREE.Vector3(euler.x, euler.y, euler.z).multiplyScalar(
-						180 / Math.PI
-					)
-					commands.push(
-						`execute if entity @s[tag=${formatStr(G.TAGS.namedBoneEntity, [
-							node.name,
-						])}] at @s run tp @e[${
-							bone.teleported_entity_type === ''
-								? ''
-								: `type=${bone.teleported_entity_type},`
-						}tag=${formatStr(G.TAGS.cameraTag, [node.name])},limit=1] ^${roundToN(
-							pos.x,
-							10
-						)} ^${roundToN(pos.y - 1.62, 10)} ^${roundToN(pos.z, 10)} ~${roundToN(
-							-rot.y + 180,
-							10
-						)} ~${roundToN(-rot.x, 10)}`
-					)
+					commands.push(cameraToString(node))
 					break
 				}
 				case 'locator': {
-					const bone = rig.nodeMap[node.uuid] as AnimatedJava.IRenderedNodes['Locator']
-					const pos = node.pos
-					const euler = new THREE.Euler().setFromQuaternion(node.rot, 'YZX')
-					const rot = new THREE.Vector3(euler.x, euler.y, euler.z).multiplyScalar(
-						180 / Math.PI
-					)
-					commands.push(
-						`execute if entity @s[tag=${formatStr(G.TAGS.namedBoneEntity, [
-							node.name,
-						])}] at @s run tp @e[${
-							bone.teleported_entity_type === ''
-								? ''
-								: `type=${bone.teleported_entity_type},`
-						}tag=${formatStr(G.TAGS.locatorTag, [node.name])},limit=1] ^${roundToN(
-							pos.x,
-							10
-						)} ^${roundToN(pos.y - 1.62, 10)} ^${roundToN(pos.z, 10)} ~${roundToN(
-							-rot.y + 180,
-							10
-						)} ~${roundToN(-rot.x, 10)}`
-					)
-					// commands.push(
-					// 	`execute if entity @s[tag=${formatStr(G.TAGS.namedBoneEntity, [
-					// 		node.name,
-					// 	])}] at @s run tp @e[${
-					// 		bone.teleported_entity_type === ''
-					// 			? ''
-					// 			: `type=${bone.teleported_entity_type},`
-					// 	}tag=${formatStr(G.TAGS.locatorTag, [
-					// 		node.name,
-					// 	])},limit=1] ^${roundToN(node.pos.x, 10)} ^${roundToN(
-					// 		node.pos.y,
-					// 		10
-					// 	)} ^${roundToN(node.pos.z, 10)} ~ ~`
-					// )
+					commands.push(locatorToString(node))
 					break
 				}
 			}
@@ -141,8 +115,8 @@ export function loadAnimationTreeGenerator() {
 			const variant = G.VARIANTS.find(v => v.uuid === leaf.item.variant.uuid)
 			let command = `function ${G.AJ_NAMESPACE}:apply_variant/${variant.name}_as_root`
 			const condition = leaf.item.variant.executeCondition
-			if (!functions[condition]) functions[condition] = []
-			functions[condition].push(command)
+			if (condition) commands.push(`execute ${condition} run ${command}`)
+			else commands.push(command)
 		}
 
 		for (const [condition, cmds] of Object.entries(functions)) {

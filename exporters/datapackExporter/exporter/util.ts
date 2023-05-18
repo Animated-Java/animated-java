@@ -26,3 +26,7 @@ export function loadUtil() {
 
 	return { fileExists, arrayToNbtFloatArray, matrixToNbtFloatArray, transformationToNbt }
 }
+
+export function wrapNum(num: number, min: number, max: number) {
+	return ((((num - min) % (max - min)) + (max - min)) % (max - min)) + min
+}

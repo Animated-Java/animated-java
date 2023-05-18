@@ -13,6 +13,11 @@ export function openAJProjectSettingsDialog() {
 		buttons: [translate('animated_java.dialog.close_button')],
 		svelteComponent: SettingsComponent,
 		svelteComponentProps: { settings: Project.animated_java_settings },
+		onClose: () => {
+			Object.values(Project.animated_java_settings!).forEach(s => {
+				if (s.onConfirm) s.onConfirm(s)
+			})
+		},
 	}).show()
 }
 

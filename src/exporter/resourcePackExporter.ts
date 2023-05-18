@@ -48,6 +48,11 @@ export async function exportResources(
 	const minecraftFolder = assetsPackFolder.newFolder('minecraft').newFolder('models/item')
 
 	//------------------------------------
+	// Empty Model
+	//------------------------------------
+	minecraftFolder.newFile('animated_java_empty.json', '{}')
+
+	//------------------------------------
 	// Rig Item Predicate File
 	//------------------------------------
 
@@ -108,6 +113,7 @@ export async function exportResources(
 					},
 				},
 			}
+			usedIds.push(...content.animated_java.rigs.ORIGINAL_PREDICATE_FILE.used_ids)
 		}
 
 		// Clean up content
@@ -128,6 +134,11 @@ export async function exportResources(
 			usedIds.push(...localUsedIds)
 		}
 	}
+
+	content.overrides.push({
+		predicate: { custom_model_data: CustomModelData.get() },
+		model: 'item/animated_java_empty',
+	})
 
 	CustomModelData.usedIds = usedIds
 	content.animated_java.rigs[projectNamespace] = { used_ids: consumedIds }

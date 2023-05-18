@@ -66,11 +66,13 @@ export class Setting<V, R = any> extends Subscribable<R> {
 	 * Creates a new setting
 	 * @param onUpdate runs when the setting's value is updated.
 	 * @param onInit runs when the setting is initialized.
+	 * @param onConfirm runs when the setting's value is confirmed (when closing the dialog).
 	 */
 	constructor(
 		options: ISettingOptions<V>,
 		public onUpdate?: (setting: R) => void,
-		public onInit?: (setting: R) => void
+		public onInit?: (setting: R) => void,
+		public onConfirm?: (setting: R) => void
 	) {
 		super()
 		this.id = options.id
@@ -159,9 +161,10 @@ export class CodeboxSetting extends Setting<string, CodeboxSetting> {
 	constructor(
 		options: ISettingOptions<string> & { language: string },
 		onUpdate?: (setting: CodeboxSetting) => void,
-		onInit?: (setting: CodeboxSetting) => void
+		onInit?: (setting: CodeboxSetting) => void,
+		onConfirm?: (setting: CodeboxSetting) => void
 	) {
-		super(options, onUpdate, onInit)
+		super(options, onUpdate, onInit, onConfirm)
 		this.language = options.language
 	}
 }
@@ -182,9 +185,10 @@ export class NumberSetting extends Setting<number, NumberSetting> {
 			snap?: boolean
 		},
 		onUpdate?: (setting: NumberSetting) => void,
-		onInit?: (setting: NumberSetting) => void
+		onInit?: (setting: NumberSetting) => void,
+		onConfirm?: (setting: NumberSetting) => void
 	) {
-		super(options, onUpdate, onInit)
+		super(options, onUpdate, onInit, onConfirm)
 		this.min = options.min
 		this.max = options.max
 		this.step = options.step
@@ -217,9 +221,10 @@ export class DoubleNumberSetting extends Setting<[number, number], DoubleNumberS
 			secondNumberLabel?: string
 		},
 		onUpdate?: (setting: DoubleNumberSetting) => void,
-		onInit?: (setting: DoubleNumberSetting) => void
+		onInit?: (setting: DoubleNumberSetting) => void,
+		onConfirm?: (setting: DoubleNumberSetting) => void
 	) {
-		super(options, onUpdate, onInit)
+		super(options, onUpdate, onInit, onConfirm)
 		this.min = options.min
 		this.max = options.max
 		this.step = options.step
@@ -273,9 +278,10 @@ export class DropdownSetting<V = any, K extends number = number> extends Setting
 	constructor(
 		options: ISettingOptions<K> & { options: DropdownSetting<V, K>['options'] },
 		public onUpdate?: (setting: DropdownSetting<V, K>) => void,
-		public onInit?: (setting: DropdownSetting<V, K>) => void
+		public onInit?: (setting: DropdownSetting<V, K>) => void,
+		public onConfirm?: (setting: DropdownSetting<V, K>) => void
 	) {
-		super(options, onUpdate, onInit)
+		super(options, onUpdate, onInit, onConfirm)
 		this.options = options.options
 	}
 
@@ -297,12 +303,14 @@ export class ImageDropdownSetting extends DropdownSetting<Texture['uuid']> {
 	constructor(
 		options: ISettingOptions<number> & { options: ImageDropdownSetting['options'] },
 		onUpdate?: (setting: ImageDropdownSetting) => void,
-		onInit?: (setting: ImageDropdownSetting) => void
+		onInit?: (setting: ImageDropdownSetting) => void,
+		onConfirm?: (setting: ImageDropdownSetting) => void
 	) {
 		super(
 			options,
 			onUpdate as Setting<Texture['uuid']>['onUpdate'],
-			onInit as Setting<Texture['uuid']>['onInit']
+			onInit as Setting<Texture['uuid']>['onInit'],
+			onConfirm as Setting<Texture['uuid']>['onConfirm']
 		)
 	}
 
@@ -324,9 +332,15 @@ export class ListBuilderSetting extends Setting<IListItem[]> {
 			addNewItemMessage: string
 		},
 		onUpdate?: (setting: ListBuilderSetting) => void,
-		onInit?: (setting: ListBuilderSetting) => void
+		onInit?: (setting: ListBuilderSetting) => void,
+		onConfirm?: (setting: ListBuilderSetting) => void
 	) {
-		super(options, onUpdate as Setting<string>['onUpdate'], onInit as Setting<string>['onInit'])
+		super(
+			options,
+			onUpdate as Setting<string>['onUpdate'],
+			onInit as Setting<string>['onInit'],
+			onConfirm as Setting<string>['onConfirm']
+		)
 		this.options = options.options
 		this.addNewItemMessage = options.addNewItemMessage
 	}

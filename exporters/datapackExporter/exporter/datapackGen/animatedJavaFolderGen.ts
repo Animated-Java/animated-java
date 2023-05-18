@@ -1,3 +1,5 @@
+import { NbtCompound } from 'deepslate'
+import { wrapNum } from '../util'
 import { loadAnimationTreeGenerator } from './animationTreeGen'
 import { Globals as G } from './globals'
 
@@ -6,14 +8,25 @@ function getExportVersionId() {
 }
 
 export function generateAnimatedJavaFolder() {
-	const { formatStr, generateSearchTree } = AnimatedJava.API
-	const { ajSettings, projectSettings, exporterSettings, renderedAnimations, rig } = G.exportData
+	const { formatStr, generateSearchTree, roundToN } = AnimatedJava.API
+	const { NbtString, NbtList, NbtTag } = AnimatedJava.API.deepslate
+	const { exporterSettings, renderedAnimations, rig } = G.exportData
 
 	const internalFolder = G.DATA_FOLDER.newFolder(G.AJ_NAMESPACE)
 	const [functionsFolder, applyVariantFolder, animationFunctionsFolder] =
 		internalFolder.newFolders('functions', 'functions/apply_variant', 'functions/animations')
 
 	const { buildFrameTree } = loadAnimationTreeGenerator()
+
+	function locatorToString(node: AnimatedJava.IAnimationNode) {
+		const pos = node.pos
+		const euler = new THREE.Euler().setFromQuaternion(node.rot, 'YXZ')
+		const rot = new THREE.Vector3(euler.x, euler.y, euler.z).multiplyScalar(180 / Math.PI)
+		return `tp @s ^${roundToN(pos.x, 100000)} ^${roundToN(pos.y, 100000)} ^${roundToN(
+			pos.z,
+			100000
+		)} ~${roundToN(wrapNum(-rot.y - 180, -180, 180), 100000)} ~${roundToN(-rot.x, 100000)}`
+	}
 
 	functionsFolder
 		// ANCHOR - func AJ_NAMESPACE:load
@@ -32,7 +45,7 @@ export function generateAnimatedJavaFolder() {
 			...G.VARIANTS.map((v, i) => `scoreboard players set $aj.${G.NAMESPACE}.variant.${v.name} ${G.SCOREBOARD.id} ${i}`),
 			// Variable initialization
 			`scoreboard players add .aj.last_id ${G.SCOREBOARD.id} 0`,
-			`scoreboard players set $aj.default_interpolation_duration ${G.SCOREBOARD.i} ${exporterSettings.interpolation_duration.value}`,
+			`scoreboard players set $aj.default_interpolation_duration ${G.SCOREBOARD.i} ${G.DEFAULT_INTERPOLATION_DURATION}`,
 			// prettier-ignore
 			...G.LOOP_MODES.map((mode, i) => `scoreboard players set $aj.loop_mode.${mode} ${G.SCOREBOARD.i} ${i}`),
 			// version ID
@@ -63,7 +76,7 @@ export function generateAnimatedJavaFolder() {
 			`function ${G.AJ_NAMESPACE}:animations/tick`,
 		])
 
-	functionsFolder
+	const summonFolder = functionsFolder
 		.newFolder('summon')
 		// ANCHOR - func AJ_NAMESPACE:summon/as_root
 		.chainNewFile('as_root.mcfunction', [
@@ -82,8 +95,8 @@ export function generateAnimatedJavaFolder() {
 			`execute store result score @s ${G.SCOREBOARD.id} run scoreboard players add .aj.last_id ${G.SCOREBOARD.id} 1`,
 			`tp @s ~ ~ ~ ~ ~`,
 			G.IS_SINGLE_ENTITY_RIG
-				? `execute at @s run function ${G.AJ_NAMESPACE}:summon/as_bone`
-				: `execute at @s on passengers run function ${G.AJ_NAMESPACE}:summon/as_bone`,
+				? `execute at @s run function ${G.AJ_NAMESPACE}:summon/as_rig_entities`
+				: `execute at @s on passengers run function ${G.AJ_NAMESPACE}:summon/as_rig_entities`,
 			...G.VARIANTS.map(
 				v =>
 					`execute if score #variant ${G.SCOREBOARD.i} = $aj.${G.NAMESPACE}.variant.${v.name} ${G.SCOREBOARD.id} run function ${G.AJ_NAMESPACE}:apply_variant/${v.name}_as_root`
@@ -100,24 +113,135 @@ export function generateAnimatedJavaFolder() {
 					)} = #frame ${G.SCOREBOARD.i}`,
 				])
 				.reduce((a, b) => a.concat(b), []),
-			`execute at @s run function #${G.NAMESPACE}:on_summon`,
+			`execute at @s run function #${G.NAMESPACE}:on_summon_as_root`,
 			`tag @s remove ${G.TAGS.new}`,
 			// Reset scoreboard arguemnts
 			`scoreboard players reset #frame ${G.SCOREBOARD.i}`,
 			`scoreboard players reset #variant ${G.SCOREBOARD.i}`,
 			`scoreboard players reset #animation ${G.SCOREBOARD.i}`,
 		])
-		// ANCHOR - func AJ_NAMESPACE:summon/as_bone
-		.chainNewFile('as_bone.mcfunction', [
+		// ANCHOR - func AJ_NAMESPACE:summon/as_rig_entities
+		.chainNewFile('as_rig_entities.mcfunction', [
 			`scoreboard players operation @s ${G.SCOREBOARD.id} = .aj.last_id ${G.SCOREBOARD.id}`,
 			`tag @s remove ${G.TAGS.new}`,
+			`function #${G.NAMESPACE}:on_summon_as_rig_entities`,
+			`execute if entity @s[tag=${G.TAGS.boneEntity}] run function ${G.AJ_NAMESPACE}:summon/as_bones`,
+			`execute if entity @s[tag=${G.TAGS.locatorEntity}] run function ${G.AJ_NAMESPACE}:summon/as_locators`,
+			`execute if entity @s[tag=${G.TAGS.cameraEntity}] run function ${G.AJ_NAMESPACE}:summon/as_cameras`,
 		])
+		// ANCHOR - func AJ_NAMESPACE:summon/as_bones
+		.chainNewFile('as_bones.mcfunction', [
+			// `say bone`,
+			`function #${G.NAMESPACE}:on_summon_as_bones`,
+		])
+		// ANCHOR - func AJ_NAMESPACE:summon/as_locators
+		.chainNewFile('as_locators.mcfunction', [
+			// `say locator`,
+			...Object.values(rig.nodeMap)
+				.map(locator =>
+					locator.type === 'locator'
+						? `execute if entity @s[tag=${formatStr(G.TAGS.namedLocatorEntity, [
+								locator.name,
+						  ])}] run function ${G.AJ_NAMESPACE}:summon/locator_${
+								locator.name
+						  }/as_origin`
+						: ''
+				)
+				.filter(v => v),
+			`function #${G.NAMESPACE}:on_summon_as_locators`,
+		])
+		// ANCHOR - func AJ_NAMESPACE:summon/as_cameras
+		.chainNewFile('as_cameras.mcfunction', [
+			// `say camera`,
+			...Object.values(rig.nodeMap)
+				.map(camera =>
+					camera.type === 'camera'
+						? `execute if entity @s[tag=${formatStr(G.TAGS.namedCameraEntity, [
+								camera.name,
+						  ])}] run function ${G.AJ_NAMESPACE}:summon/camera_${
+								camera.name
+						  }/as_origin`
+						: ''
+				)
+				.filter(v => v),
+			`function #${G.NAMESPACE}:on_summon_as_cameras`,
+		])
+
+	for (const [uuid, camera] of Object.entries(rig.nodeMap)) {
+		if (camera.type !== 'camera') continue
+		const cameraNbt = (NbtTag.fromString(camera.nbt) as NbtCompound).set(
+			'Tags',
+			new NbtList([
+				new NbtString(G.TAGS.cameraTarget),
+				new NbtString(formatStr(G.TAGS.namedCameraTarget, [camera.name])),
+				new NbtString(G.TAGS.new),
+			])
+		)
+		summonFolder
+			.newFolder(`camera_${camera.name}`)
+			// ANCHOR - func AJ_NAMESPACE:summon/camera_${camera.name}/as_origin
+			.chainNewFile(`as_origin.mcfunction`, [
+				// `say Camera Origin`,
+				`summon ${camera.entity_type} ~ ~ ~ ${cameraNbt.toString()}`,
+				`execute as @e[type=${camera.entity_type},tag=${formatStr(
+					G.TAGS.namedCameraTarget,
+					[camera.name]
+				)},tag=${G.TAGS.new},limit=1,distance=..0.1] run function ${
+					G.AJ_NAMESPACE
+				}:summon/camera_${camera.name}/as_target`,
+				`data modify entity @s Owner set from storage animated_java Owner`,
+				`data remove storage animated_java Owner`,
+			])
+			// ANCHOR - func AJ_NAMESPACE:summon/camera_${camera.name}/as_target
+			.chainNewFile(`as_target.mcfunction`, [
+				// `say Camera Target`,
+				locatorToString(rig.defaultPose.find(v => v.uuid === uuid)),
+				`data modify storage animated_java Owner set from entity @s UUID`,
+				`tag @s remove ${G.TAGS.new}`,
+			])
+	}
+
+	for (const [uuid, locator] of Object.entries(rig.nodeMap)) {
+		if (locator.type !== 'locator') continue
+		const locatorNbt = (NbtTag.fromString(locator.nbt) as NbtCompound).set(
+			'Tags',
+			new NbtList([
+				new NbtString(G.TAGS.locatorTarget),
+				new NbtString(formatStr(G.TAGS.namedLocatorTarget, [locator.name])),
+				new NbtString(G.TAGS.new),
+			])
+		)
+		summonFolder
+			.newFolder(`locator_${locator.name}`)
+			// ANCHOR - func AJ_NAMESPACE:summon/locator_${locator.name}/as_origin
+			.chainNewFile(`as_origin.mcfunction`, [
+				// `say Origin`,
+				`summon ${locator.entity_type} ~ ~ ~ ${locatorNbt.toString()}`,
+				`execute as @e[type=${locator.entity_type},tag=${formatStr(
+					G.TAGS.namedLocatorTarget,
+					[locator.name]
+				)},tag=${G.TAGS.new},limit=1,distance=..0.1] run function ${
+					G.AJ_NAMESPACE
+				}:summon/locator_${locator.name}/as_target`,
+				`data modify entity @s Owner set from storage animated_java Owner`,
+				`data remove storage animated_java Owner`,
+				// `execute on origin run say locatorTarget for ${locator.name}`,
+			])
+			// ANCHOR - func AJ_NAMESPACE:summon/locator_${locator.name}/as_target
+			.chainNewFile(`as_target.mcfunction`, [
+				// `say Target`,
+				locatorToString(rig.defaultPose.find(v => v.uuid === uuid)),
+				`data modify storage animated_java Owner set from entity @s UUID`,
+				`tag @s remove ${G.TAGS.new}`,
+			])
+	}
 
 	functionsFolder
 		.newFolder('remove')
 		// ANCHOR - func AJ_NAMESPACE:remove/as_root
 		.chainNewFile('as_root.mcfunction', [
 			`execute at @s run function #${G.NAMESPACE}:on_remove`,
+			G.IS_SINGLE_ENTITY_RIG ? undefined : `execute on passengers on origin run kill @s`,
 			G.IS_SINGLE_ENTITY_RIG ? undefined : `execute on passengers run kill @s`,
 			`kill @s`,
 		])

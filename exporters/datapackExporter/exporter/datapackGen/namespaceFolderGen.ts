@@ -9,8 +9,8 @@ function tagJsonMerger(a: any, b: any) {
 
 export function generateNamespaceFolder() {
 	const { formatStr } = AnimatedJava.API
-	const { NbtCompound, NbtInt, NbtTag, NbtList, NbtString } = AnimatedJava.API.deepslate
-	const { renderedAnimations, exporterSettings, rig } = G.exportData
+	const { NbtCompound, NbtInt, NbtTag, NbtList, NbtString, NbtByte } = AnimatedJava.API.deepslate
+	const { projectSettings, renderedAnimations, exporterSettings, rig } = G.exportData
 	const { matrixToNbtFloatArray } = loadUtil()
 
 	const namespaceFolder = G.DATA_FOLDER.newFolder(G.NAMESPACE)
@@ -59,10 +59,39 @@ export function generateNamespaceFolder() {
 			replace: false,
 			values: ['minecraft:item_display'],
 		})
+		// ANCHOR - entity_type NAMESPACE:entity_types/aj_rig_entity
+		.chainNewFile('aj_rig_entity.json', {
+			replace: false,
+			values: ['minecraft:item_display', 'minecraft:snowball'],
+		})
 
 	functionTagFolder
-		// ANCHOR - tag NAMESPACE:on_summon
-		.chainNewFile('on_summon.json', {
+		// ANCHOR - tag NAMESPACE:on_summon_as_root
+		.chainNewFile('on_summon_as_root.json', {
+			replace: false,
+			values: [],
+			tagJsonMerger,
+		})
+		// ANCHOR - tag NAMESPACE:on_summon_as_rig_entities
+		.chainNewFile('on_summon_as_rig_entities.json', {
+			replace: false,
+			values: [],
+			tagJsonMerger,
+		})
+		// ANCHOR - tag NAMESPACE:on_summon_as_bones
+		.chainNewFile('on_summon_as_bones.json', {
+			replace: false,
+			values: [],
+			tagJsonMerger,
+		})
+		// ANCHOR - tag NAMESPACE:on_summon_as_locators
+		.chainNewFile('on_summon_as_locators.json', {
+			replace: false,
+			values: [],
+			tagJsonMerger,
+		})
+		// ANCHOR - tag NAMESPACE:on_summon_as_cameras
+		.chainNewFile('on_summon_as_cameras.json', {
 			replace: false,
 			values: [],
 			tagJsonMerger,
@@ -105,51 +134,101 @@ export function generateNamespaceFolder() {
 	for (const [uuid, bone] of Object.entries(rig.nodeMap)) {
 		const pose = rig.defaultPose.find(p => p.uuid === uuid)
 		const passenger = new NbtCompound()
-			.set('id', new NbtString('minecraft:item_display'))
-			.set(
-				'Tags',
-				new NbtList([
-					new NbtString(G.TAGS.new),
-					new NbtString(G.TAGS.rigEntity),
-					new NbtString(formatStr(G.TAGS.boneEntity)),
-					new NbtString(formatStr(G.TAGS.namedBoneEntity, [bone.name])),
-				])
-			)
-			.set('transformation', matrixToNbtFloatArray(pose.matrix))
-			.set(
-				'interpolation_duration',
-				new NbtInt(exporterSettings.interpolation_duration.value)
-			)
-			.set('item_display', new NbtString('head'))
-		if (bone.type === 'bone') {
-			passenger.set(
-				'item',
-				new NbtCompound()
-					.set('id', new NbtString(G.RIG_ITEM))
-					.set('Count', new NbtInt(1))
+		switch (bone.type) {
+			case 'bone': {
+				passenger
+					.set('id', new NbtString('minecraft:item_display'))
 					.set(
-						'tag',
-						new NbtCompound().set('CustomModelData', new NbtInt(bone.customModelData))
+						'Tags',
+						new NbtList([
+							new NbtString(G.TAGS.new),
+							new NbtString(G.TAGS.rigEntity),
+							new NbtString(formatStr(G.TAGS.boneEntity)),
+							new NbtString(formatStr(G.TAGS.namedBoneEntity, [bone.name])),
+						])
 					)
-			)
-			// These values are quite extreme, Should probably figure out how to get a perfect bounding box based on model *and* animations.
-			const maxHeight = Math.max(
-				Math.abs(bone.boundingBox.min.y),
-				Math.abs(bone.boundingBox.max.y)
-			)
-			const maxWidth = Math.max(
-				Math.abs(bone.boundingBox.min.x),
-				Math.abs(bone.boundingBox.max.x),
-				Math.abs(bone.boundingBox.min.z),
-				Math.abs(bone.boundingBox.max.z)
-			)
-			passenger.set('height', new NbtInt(maxHeight)).set('width', new NbtInt(maxWidth))
+					.set('transformation', matrixToNbtFloatArray(pose.matrix))
+					.set('interpolation_duration', new NbtInt(1))
+					.set('item_display', new NbtString('head'))
+					.set(
+						'item',
+						new NbtCompound()
+							.set('id', new NbtString(G.RIG_ITEM))
+							.set('Count', new NbtInt(1))
+							.set(
+								'tag',
+								new NbtCompound().set(
+									'CustomModelData',
+									new NbtInt(bone.customModelData)
+								)
+							)
+					)
+				// FIXME - This doesn't account for animations, and it SHOULD
+				const maxHeight = Math.max(
+					Math.abs(bone.boundingBox.min.y),
+					Math.abs(bone.boundingBox.max.y)
+				)
+				const maxWidth = Math.max(
+					Math.abs(bone.boundingBox.min.x),
+					Math.abs(bone.boundingBox.max.x),
+					Math.abs(bone.boundingBox.min.z),
+					Math.abs(bone.boundingBox.max.z)
+				)
+				passenger.set('height', new NbtInt(maxHeight)).set('width', new NbtInt(maxWidth))
 
-			const userBoneNbt = NbtTag.fromString(bone.nbt)
-			if (userBoneNbt instanceof NbtCompound)
-				userBoneNbt.forEach((key, value) => {
-					passenger.set(key, value)
-				})
+				const userBoneNbt = NbtTag.fromString(bone.nbt)
+				if (userBoneNbt instanceof NbtCompound)
+					userBoneNbt.forEach((key, value) => {
+						passenger.set(key, value)
+					})
+				break
+			}
+			case 'locator': {
+				passenger
+					.set('id', new NbtString('minecraft:snowball'))
+					.set(
+						'Tags',
+						new NbtList([
+							new NbtString(G.TAGS.new),
+							new NbtString(G.TAGS.rigEntity),
+							new NbtString(formatStr(G.TAGS.locatorEntity)),
+							new NbtString(formatStr(G.TAGS.namedLocatorEntity, [bone.name])),
+						])
+					)
+					.set(
+						'Item',
+						new NbtCompound()
+							.set('id', new NbtString(projectSettings.rig_item.value))
+							.set('Count', new NbtByte(1))
+							.set('tag', new NbtCompound().set('CustomModelData', new NbtInt(1)))
+					)
+				break
+			}
+			case 'camera': {
+				passenger
+					.set('id', new NbtString('minecraft:snowball'))
+					.set(
+						'Tags',
+						new NbtList([
+							new NbtString(G.TAGS.new),
+							new NbtString(G.TAGS.rigEntity),
+							new NbtString(formatStr(G.TAGS.cameraEntity)),
+							new NbtString(formatStr(G.TAGS.namedCameraEntity, [bone.name])),
+						])
+					)
+					.set(
+						'Item',
+						new NbtCompound()
+							.set('id', new NbtString(projectSettings.rig_item.value))
+							.set('Count', new NbtByte(1))
+							.set('tag', new NbtCompound().set('CustomModelData', new NbtInt(1)))
+					)
+				break
+			}
+			default: {
+				// @ts-ignore
+				throw new Error(`Unknown bone type: ${bone.type}`)
+			}
 		}
 		passengers.add(passenger)
 	}
