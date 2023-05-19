@@ -243,6 +243,7 @@ export function generateNamespaceFolder() {
 	summonTags.add(new NbtString(G.TAGS.new))
 	summonTags.add(new NbtString(G.TAGS.rigEntity))
 	summonTags.add(new NbtString(G.TAGS.rootEntity))
+	summonTags.add(new NbtString(G.TAGS.globalRigRoot))
 	summonNbt.set('Tags', summonTags)
 
 	const variantSummonFolder = functionsFolder

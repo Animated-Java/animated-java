@@ -17,6 +17,7 @@ export function getScoreboard() {
 export function getTags() {
 	return {
 		new: 'aj.new',
+		globalRigRoot: `aj.rig_root`,
 		rigEntity: `aj.${G.NAMESPACE}.rig_entity`,
 		rootEntity: `aj.${G.NAMESPACE}.root`,
 		boneEntity: `aj.${G.NAMESPACE}.bone`,
