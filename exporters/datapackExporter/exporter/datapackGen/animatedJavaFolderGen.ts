@@ -375,8 +375,8 @@ export function generateAnimatedJavaFolder() {
 					: `execute on passengers run data modify entity @s interpolation_duration set value 0`,
 				`function ${G.AJ_NAMESPACE}:animations/${anim.name}/tree/leaf_0`,
 				G.IS_SINGLE_ENTITY_RIG
-					? `execute store result entity @s interpolation_duration int 1 run scoreboard players get $aj.default_interpolation_duration ${G.SCOREBOARD.i}`
-					: `execute on passengers store result entity @s interpolation_duration int 1 run scoreboard players get $aj.default_interpolation_duration ${G.SCOREBOARD.i}`,
+					? `data modify entity @s interpolation_duration set value 1`
+					: `execute on passengers run data modify entity @s interpolation_duration set value 1`,
 				`tag @s add ${formatStr(G.TAGS.activeAnim, [anim.name])}`,
 			])
 			// ANCHOR - func AJ_NAMESPACE:animations/${anim.name}/resume_as_root
@@ -385,8 +385,8 @@ export function generateAnimatedJavaFolder() {
 					anim.name,
 				])} ${G.LOOP_MODES.indexOf(anim.loopMode)}`,
 				G.IS_SINGLE_ENTITY_RIG
-					? `execute store result entity @s interpolation_duration int 1 run scoreboard players get $aj.default_interpolation_duration ${G.SCOREBOARD.i}`
-					: `execute on passengers store result entity @s interpolation_duration int 1 run scoreboard players get $aj.default_interpolation_duration ${G.SCOREBOARD.i}`,
+					? `data modify entity @s interpolation_duration set value 1`
+					: `execute on passengers run data modify entity @s interpolation_duration set value 1`,
 				`tag @s add ${formatStr(G.TAGS.activeAnim, [anim.name])}`,
 			])
 			// ANCHOR - func AJ_NAMESPACE:animations/${anim.name}/pause_as_root
@@ -463,10 +463,9 @@ export function generateAnimatedJavaFolder() {
 			.chainNewFile('end.mcfunction', [
 				`execute if score @s ${formatStr(G.SCOREBOARD.loopMode, [
 					anim.name,
-				])} = $aj.loop_mode.loop aj.i run scoreboard players set @s ${formatStr(
-					G.SCOREBOARD.localAnimTime,
-					[anim.name]
-				)} 0`,
+				])} = $aj.loop_mode.loop aj.i run function ${G.AJ_NAMESPACE}:animations/${
+					anim.name
+				}/end_loop`,
 				`execute if score @s ${formatStr(G.SCOREBOARD.loopMode, [
 					anim.name,
 				])} = $aj.loop_mode.once aj.i run function ${G.NAMESPACE}:animations/${
@@ -477,6 +476,12 @@ export function generateAnimatedJavaFolder() {
 				])} = $aj.loop_mode.hold aj.i run function ${G.NAMESPACE}:animations/${
 					anim.name
 				}/pause`,
+			])
+			// ANCHOR - func AJ_NAMESPACE:animations/${anim.name}/end_loop
+			.chainNewFile('end_loop.mcfunction', [
+				`scoreboard players set @s ${formatStr(G.SCOREBOARD.localAnimTime, [anim.name])} 0`,
+				`scoreboard players set @s ${G.SCOREBOARD.animTime} 0`,
+				`function ${G.AJ_NAMESPACE}:animations/${anim.name}/tree/leaf_0`,
 			])
 			// ANCHOR - func AJ_NAMESPACE:animations/${anim.name}/next_frame_as_root
 			.chainNewFile('next_frame_as_root.mcfunction', [

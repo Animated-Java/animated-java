@@ -79,19 +79,6 @@
 	},
 	"elements": [
 		{
-			"name": "pig",
-			"position": [0, 0, 0],
-			"rotation": [0, 0, 0],
-			"ignore_inherited_scale": false,
-			"visibility": true,
-			"locked": false,
-			"modelPath": "",
-			"entity_type": "minecraft:pig",
-			"nbt": "{deathLootTable:\"minecraft:entities/bat\"}",
-			"uuid": "e74b221b-1dd5-a96d-98b8-e2ba36335e13",
-			"type": "locator"
-		},
-		{
 			"name": "cube",
 			"box_uv": false,
 			"rescale": false,
@@ -129,19 +116,6 @@
 			},
 			"type": "cube",
 			"uuid": "29c15edc-aea1-917e-1210-69c6c9468111"
-		},
-		{
-			"name": "armor_stand_cam",
-			"path": "",
-			"position": [0, 64, 0],
-			"rotation": [0, 0, 0],
-			"linked_preview": "",
-			"camera_linked": false,
-			"visibility": true,
-			"entity_type": "minecraft:armor_stand",
-			"nbt": "{}",
-			"type": "camera",
-			"uuid": "270ad0fb-c9b7-9fc3-0b93-24e492570533"
 		}
 	],
 	"outliner": [
@@ -157,21 +131,7 @@
 			"locked": false,
 			"visibility": true,
 			"autouv": 0,
-			"children": ["29c15edc-aea1-917e-1210-69c6c9468111", "270ad0fb-c9b7-9fc3-0b93-24e492570533"]
-		},
-		{
-			"name": "pig",
-			"origin": [0, 0, 0],
-			"color": 0,
-			"nbt": "{}",
-			"uuid": "9ab6586b-0f27-bd36-c585-4584cdf05d05",
-			"export": true,
-			"mirror_uv": false,
-			"isOpen": true,
-			"locked": false,
-			"visibility": true,
-			"autouv": 0,
-			"children": ["e74b221b-1dd5-a96d-98b8-e2ba36335e13"]
+			"children": ["29c15edc-aea1-917e-1210-69c6c9468111"]
 		}
 	],
 	"textures": [
@@ -239,7 +199,7 @@
 			"name": "test",
 			"loop": "loop",
 			"override": false,
-			"length": 4,
+			"length": 1,
 			"snapping": 20,
 			"selected": true,
 			"anim_time_update": "",
@@ -254,15 +214,20 @@
 					"type": "bone",
 					"keyframes": [
 						{
-							"channel": "rotation",
+							"channel": "position",
 							"data_points": [
 								{
-									"x": "0",
-									"y": "time * 180",
-									"z": "22.5 + math.sin(q.life_time * 90) * 22.5"
+									"x": -16,
+									"y": "0",
+									"z": "0"
+								},
+								{
+									"x": "16",
+									"y": "0",
+									"z": "0"
 								}
 							],
-							"uuid": "7526a6bf-4eb0-103b-e2b4-30a4dfe0eb06",
+							"uuid": "5a584adb-bb2f-e98c-f064-6ec08cf2eebd",
 							"time": 0,
 							"color": -1,
 							"interpolation": "linear",
@@ -271,24 +236,18 @@
 							"bezier_left_value": [0, 0, 0],
 							"bezier_right_time": [0.1, 0.1, 0.1],
 							"bezier_right_value": [0, 0, 0]
-						}
-					]
-				},
-				"9ab6586b-0f27-bd36-c585-4584cdf05d05": {
-					"name": "pig",
-					"type": "bone",
-					"keyframes": [
+						},
 						{
 							"channel": "position",
 							"data_points": [
 								{
-									"x": "math.sin(time * 90) * 100",
-									"y": "16",
-									"z": "math.cos(time * 90) * 100"
+									"x": -16,
+									"y": 0,
+									"z": 0
 								}
 							],
-							"uuid": "67370c85-298c-e771-dc13-411c5ca88cec",
-							"time": 0,
+							"uuid": "7920351c-ed3d-ca1f-532c-52c86c120329",
+							"time": 1,
 							"color": -1,
 							"interpolation": "linear",
 							"bezier_linked": true,

@@ -27,10 +27,14 @@ export function loadAnimationTreeGenerator() {
 		const data = new NbtCompound()
 			.set('transformation', matrixToNbtFloatArray(node.matrix))
 			.set('start_interpolation', new NbtInt(0))
-		if (node.interpolation === 'instant') data.set('interpolation_duration', new NbtInt(0))
-		else if (node.interpolation === 'default')
-			// FIXME: This does not work if the default interpolation duration scoreboard is changed during runtime
+		console.log(node.interpolation)
+		if (node.interpolation === 'instant') {
+			console.log('a')
+			data.set('interpolation_duration', new NbtInt(0))
+		} else if (node.interpolation === 'default') {
+			console.log('b')
 			data.set('interpolation_duration', new NbtInt(G.DEFAULT_INTERPOLATION_DURATION))
+		}
 		return `execute if entity @s[tag=${formatStr(G.TAGS.namedBoneEntity, [
 			node.name,
 		])}] run data modify entity @s {} merge value ${data}`
@@ -81,6 +85,9 @@ export function loadAnimationTreeGenerator() {
 				case 'locator': {
 					commands.push(locatorToString(node))
 					break
+				}
+				default: {
+					throw new Error(`Unknown node type: ${node.type}`)
 				}
 			}
 		}

@@ -17,7 +17,6 @@ function getNodeMatrix(node: OutlinerElement, scale: number) {
 	const matrixWorld = node.mesh.matrixWorld.clone()
 	matrixWorld.setPosition(
 		new THREE.Vector3().setFromMatrixPosition(matrixWorld).multiplyScalar(1 / 16)
-		// .multiply(new THREE.Vector3(-1, 1, -1))
 	)
 	matrixWorld.scale(new THREE.Vector3().setScalar(scale))
 	return matrixWorld
@@ -97,8 +96,8 @@ export function getAnimationNodes(
 				const animator = animation.animators[node.node.uuid]!
 				if (
 					animator?.keyframes
-						.filter(k => k.time === time)
-						.find(k => k.interpolation === 'step')
+						.filter(k => k.time === time - 0.05)
+						.find(k => k.data_points.length === 2)
 				) {
 					interpolation = 'instant'
 				} else if (previousFrame[uuid]?.interpolation === 'instant') {
