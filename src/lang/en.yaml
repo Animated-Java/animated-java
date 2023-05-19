@@ -19,6 +19,9 @@ animated_java.dialog.close_button: Done
 ### About
 animated_java.dialog.about.title: About Animated Java
 
+### Export in Progress
+animated_java.dialog.export_in_progress.title: Exporting Project...
+
 ### Settings
 animated_java.settings.accessability_options_group: Accessability
 
@@ -60,6 +63,10 @@ animated_java.project_settings.project_resolution: Project Resolution
 animated_java.project_settings.project_resolution.description: |-
   The UV resolution of the Project.
   This should equal the resolution of the largest texture in your project.
+
+animated_java.project_settings.target_minecraft_version: Target Minecraft Version
+animated_java.project_settings.target_minecraft_version.description: |-
+  The version of Minecraft you expect to use the exported rig in.
 
 animated_java.project_settings.resourcepack_group: Resource Pack
 
@@ -129,7 +136,7 @@ animated_java.project_settings.resource_pack_mcmeta.error.unset: |-
   You must select a Resource Pack.
 animated_java.project_settings.resource_pack_mcmeta.error.invalid_path: |-
   The selected path is not a valid Resource Pack!
-  Make sure you've selected the pack.mcmeta file of a valid Resource Pack.
+  Make sure you've selected the correct pack.mcmeta, and that the Resource Pack has an assets folder.
 
 animated_java.project_settings.verbose: Verbose
 animated_java.project_settings.verbose.description: |-
@@ -152,34 +159,44 @@ animated_java.bone_config.nbt.description: |-
 ### Camera Config
 animated_java.dialog.camera_config: Animated Java Camera Config
 
-animated_java.camera_config.teleported_entity_type: Teleported Entity Type
-animated_java.camera_config.teleported_entity_type.description: |-
-  The type of entity to teleport to the camera's location.
-  NOTE: Leaving this empty will remove the type check entirely.
-animated_java.camera_config.teleported_entity_type.error.space: |-
+animated_java.camera_config.entity_type: Teleported Entity Type
+animated_java.camera_config.entity_type.description: |-
+  The entity to use when summoning the camera.
+  For instance, if you set this to `minecraft:armor_stand`, The camera will be a armor_stand in-game.
+animated_java.camera_config.entity_type.error.space: |-
   Entity IDs cannot contain spaces.
-animated_java.camera_config.teleported_entity_type.error.invalid_namespace: |-
+animated_java.camera_config.entity_type.error.invalid_namespace: |-
   Entity IDs must have a namespace.
-animated_java.camera_config.teleported_entity_type.warning.unknown_entity: |-
+animated_java.camera_config.entity_type.warning.unknown_entity: |-
   Entity ID isn't in vanilla minecraft
   This may cause issues when exporting.
   Ignore this warning if you're using snapshots or mods.
+
+animated_java.camera_config.nbt: NBT
+animated_java.camera_config.nbt.description: |-
+  Custom NBT to apply to the summoned camera entity.
+  NOTE: Any tags you add to the entity in this NBT will be removed when exported.
 
 ### Locator Config
 animated_java.dialog.locator_config: Animated Java Locator Config
 
-animated_java.locator_config.teleported_entity_type: Teleported Entity Type
-animated_java.locator_config.teleported_entity_type.description: |-
-  The type of entity to teleport to the locator's location.
-  NOTE: Leaving this empty will remove the type check entirely.
-animated_java.locator_config.teleported_entity_type.error.space: |-
+animated_java.locator_config.entity_type: Entity Type
+animated_java.locator_config.entity_type.description: |-
+  The entity to use when summoning the locator.
+  For instance, if you set this to `minecraft:pig`, The locator will be a pig in-game.
+animated_java.locator_config.entity_type.error.space: |-
   Entity IDs cannot contain spaces.
-animated_java.locator_config.teleported_entity_type.error.invalid_namespace: |-
+animated_java.locator_config.entity_type.error.invalid_namespace: |-
   Entity IDs must have a namespace.
-animated_java.locator_config.teleported_entity_type.warning.unknown_entity: |-
+animated_java.locator_config.entity_type.warning.unknown_entity: |-
   Entity ID isn't in vanilla minecraft
   This may cause issues when exporting.
   Ignore this warning if you're using snapshots or mods.
+
+animated_java.locator_config.nbt: NBT
+animated_java.locator_config.nbt.description: |-
+  Custom NBT to apply to the summoned locator entity.
+  NOTE: Any tags you add to the entity in this NBT will be removed when exported.
 
 ### Animation Config
 animated_java.dialog.animation_config.title: Animation Properties
@@ -210,17 +227,17 @@ animated_java.animation_config.start_delay: Start Delay
 animated_java.animation_config.start_delay.description: |-
   The delay (in ticks) before the animation starts after the play function is ran.
 
-animated_java.animation_config.affected_bones_is_a_whitelist: Affected Bones is a Whitelist
+animated_java.animation_config.affected_bones_is_a_whitelist: Ignored Bones is a Whitelist
 animated_java.animation_config.affected_bones_is_a_whitelist.description: |-
-  If true, only the bones in the Affected Bones list will be affected by this animation.
-  If false, all bones except the ones in the Affected Bones list will be affected by this animation.
+  If true, only the bones in the Ignored Bones list will be affected by this animation.
+  If false, all bones except the ones in the Ignored Bones list will be affected by this animation.
 
-animated_java.animation_config.affected_bones: Affected Bones
+animated_java.animation_config.affected_bones: Ignored Bones
 animated_java.animation_config.affected_bones.add_new_item_message: Add a Bone
 animated_java.animation_config.affected_bones.description: |-
   The bones that this animation will affect.
-  If this list is a whitelist, only the bones in the Affected Bones list will be affected by this animation.
-  If this list is a blacklist, all bones except the ones in the Affected Bones list will be affected by this animation.
+  If this list is a whitelist, only the bones in the Ignored Bones list will be affected by this animation.
+  If this list is a blacklist, all bones except the ones in the Ignored Bones list will be affected by this animation.
 
 ### Variants Panel
 animated_java.panels.variants.name: Variants

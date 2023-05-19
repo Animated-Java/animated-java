@@ -3,7 +3,7 @@
 	import { Variant, VariantsContainer } from '../../variants'
 	import * as events from '../../events'
 	import { ajModelFormat } from '../../modelFormat'
-	import { state, VARIANT_PANEL_MENU } from '../ajVariantsPanel'
+	import { VARIANT_PANEL_MENU, addVariantAction } from '../ajVariantsPanel'
 	import { onDestroy } from 'svelte'
 
 	let variantsContainer: VariantsContainer | undefined
@@ -48,6 +48,11 @@
 		<p>Loading...</p>
 	</div>
 {:then}
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<div class="tool" on:click={e => addVariantAction.click(e)}>
+		<div class="tooltip">Add Variant</div>
+		<i class="fa_big icon fa fa-plus-circle" />
+	</div>
 	<div class="container" on:contextmenu|stopPropagation={e => VARIANT_PANEL_MENU.open(e)}>
 		{#key update}
 			{#if variantsContainer}
@@ -66,11 +71,12 @@
 <style>
 	div.container {
 		display: flex;
+		flex-grow: 1;
 		flex-direction: column;
+		justify-content: flex-start;
 		background-color: var(--color-back);
 		align-items: stretch;
 		overflow-y: auto;
-		min-height: 10em;
-		max-height: 20em;
+		min-height: 8em;
 	}
 </style>

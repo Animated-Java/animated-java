@@ -14,6 +14,7 @@ import * as events from './events'
 export interface IAnimatedJavaProjectSettings {
 	project_namespace: Settings.InlineTextSetting
 	project_resolution: Settings.DoubleNumberSetting
+	target_minecraft_version: Settings.DropdownSetting<string>
 	rig_item: Settings.InlineTextSetting
 	rig_item_model: Settings.InlineTextSetting
 	rig_export_folder: Settings.FolderSetting
@@ -38,6 +39,12 @@ const TRANSLATIONS = {
 		displayName: translate('animated_java.project_settings.project_resolution'),
 		description: translate(
 			'animated_java.project_settings.project_resolution.description'
+		).split('\n'),
+	},
+	target_minecraft_version: {
+		displayName: translate('animated_java.project_settings.target_minecraft_version'),
+		description: translate(
+			'animated_java.project_settings.target_minecraft_version.description'
 		).split('\n'),
 	},
 	rig_item: {
@@ -160,13 +167,30 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				secondNumberLabel: 'x',
 				docsLink: '/docs/project_settings#project_resolution',
 			},
-			function onUpdate(setting) {
-				Project!.texture_width = setting.numberA
-				Project!.texture_height = setting.numberB
-				console.log('Project resolution changed to', setting.value)
-				Canvas.updateAllUVs()
+			undefined,
+			undefined,
+			function onConfirm(setting) {
+				setProjectResolution(setting.numberA, setting.numberB, true)
 			}
 		),
+
+		target_minecraft_version: new Settings.DropdownSetting({
+			id: 'animated_java:project_settings/target_minecraft_version',
+			displayName: TRANSLATIONS.target_minecraft_version.displayName,
+			description: TRANSLATIONS.target_minecraft_version.description,
+			defaultValue: 0,
+			options: [
+				{
+					name: '1.19.4',
+					value: '1.19.4',
+				},
+				{
+					name: '1.20+',
+					value: '1.20+',
+				},
+			],
+			docsLink: '/docs/project_settings#target_minecraft_version',
+		}),
 
 		rig_item: new Settings.InlineTextSetting(
 			{
@@ -389,6 +413,10 @@ export const projectSettingStructure: GUIStructure = [
 				type: 'setting',
 				settingId: _.project_resolution.id,
 			},
+			{
+				type: 'setting',
+				settingId: _.target_minecraft_version.id,
+			},
 		],
 	},
 	{
@@ -428,8 +456,15 @@ export const projectSettingStructure: GUIStructure = [
 		],
 	},
 	{
-		type: 'setting',
-		settingId: _.exporter.id,
+		type: 'group',
+		title: translate('animated_java.project_settings.exporter_group'),
+		openByDefault: true,
+		children: [
+			{
+				type: 'setting',
+				settingId: _.exporter.id,
+			},
+		],
 	},
 ]
 

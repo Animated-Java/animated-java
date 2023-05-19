@@ -17,7 +17,7 @@
 
 	let manifest: IDocsManifest
 	let openPageUrl: Writable<string> = writable('/home')
-	const maxAttempts = 10
+	const maxAttempts = 2
 
 	async function load(attemptCount: number = 0) {
 		manifest = await fetch(API)
@@ -28,12 +28,11 @@
 			})
 			.catch(err => {
 				console.error(
-					`Failed to fetch docs manifest. (Attempt ${attemptCount + 1})\n` + err.stack
+					`Failed to fetch docs manifest. (Attempt ${attemptCount + 1})\n` + err.message
 				)
 				// retry
 				if (attemptCount >= maxAttempts) {
 					throw new Error(`Failed to fetch docs manifest after ${maxAttempts} attempts.`)
-					return
 				}
 				void load(attemptCount + 1)
 			})

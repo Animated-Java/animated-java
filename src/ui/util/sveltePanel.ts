@@ -25,7 +25,7 @@ export class SveltePanel extends Panel {
 
 		void pollPromise(() => document.querySelector(`#${mountId}`)).then(el => {
 			this.instance = new options.svelteComponent({
-				target: el.parentElement as any,
+				target: el as any,
 				props: options.svelteComponentProps,
 			})
 		})

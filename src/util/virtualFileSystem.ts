@@ -164,13 +164,15 @@ export class VirtualFolder extends VirtualNode {
 		const parts = path.split('/')
 		const name = parts[0]
 		const child = this.children.find(
-			child => child instanceof VirtualFile && child.fileName === name
+			child =>
+				(child instanceof VirtualFile && child.fileName === name) ||
+				(child instanceof VirtualFolder && child.name === name)
 		)
+		if (!child) throw new Error(`No child named ${name} in ${this.path}`)
+		if (child instanceof VirtualFolder) return child.accessFile(parts.slice(1).join('/'))
 		if (!(child instanceof VirtualFile))
 			throw new Error(`No file named ${name} in ${this.path}`)
-		if (!child) throw new Error(`No child named ${name} in ${this.path}`)
 		if (parts.length === 1) return child
-		if (child instanceof VirtualFolder) return child.accessFile(parts.slice(1).join('/'))
 		throw new Error(`Cannot access child of file ${this.path}/${name}`)
 	}
 

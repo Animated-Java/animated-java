@@ -63,6 +63,7 @@ createBlockbenchMod(
 			name: translate('animated_java.panels.variants.name'),
 			icon: 'movie',
 			expand_button: true,
+			growable: true,
 			condition: () =>
 				Format === ajModelFormat && Mode.selected && Mode.selected.id === 'edit',
 			svelteComponent: SvelteComponent,

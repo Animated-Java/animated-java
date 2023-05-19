@@ -34,24 +34,26 @@ export interface IAnimationNode {
 	interpolation?: 'instant' | 'default'
 }
 
+export interface IRenderedFrame {
+	time: number
+	nodes: IAnimationNode[]
+	variant?: {
+		uuid: string
+		executeCondition: string
+	}
+	commands?: {
+		commands: string
+		executeCondition: string
+	}
+	animationState?: {
+		animation: string
+		executeCondition: string
+	}
+}
+
 export interface IRenderedAnimation {
 	name: string
-	frames: Array<{
-		time: number
-		nodes: IAnimationNode[]
-		variant?: {
-			uuid: string
-			executeCondition: string
-		}
-		commands?: {
-			commands: string
-			executeCondition: string
-		}
-		animationState?: {
-			animation: string
-			executeCondition: string
-		}
-	}>
+	frames: IRenderedFrame[]
 	/**
 	 * Duration of the animation in ticks (AKA frames). Same as animation.frames.length
 	 */
@@ -94,8 +96,8 @@ export function getAnimationNodes(
 				const animator = animation.animators[node.node.uuid]!
 				if (
 					animator?.keyframes
-						.filter(k => k.time === time)
-						.find(k => k.interpolation === 'step')
+						.filter(k => k.time === time - 0.05)
+						.find(k => k.data_points.length === 2)
 				) {
 					interpolation = 'instant'
 				} else if (previousFrame[uuid]?.interpolation === 'instant') {
@@ -103,8 +105,8 @@ export function getAnimationNodes(
 				}
 				break
 			}
-			case 'camera':
 			case 'locator':
+			case 'camera':
 				matrix = getNodeMatrix(node.node, 1)
 				break
 		}

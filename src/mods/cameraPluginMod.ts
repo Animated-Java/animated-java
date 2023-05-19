@@ -31,11 +31,15 @@ function inject() {
 	const camera = OutlinerElement.types.camera
 	const context = {
 		structure: [...camera.prototype.menu!.structure],
-		teleported_entity_type: undefined as Property<any> | undefined,
+		entity_type: undefined as Property<any> | undefined,
+		nbt: undefined as Property<any> | undefined,
 	}
 	camera.prototype.menu!.structure.splice(1, 0, CAMERA_CONFIG_ACTION)
-	context.teleported_entity_type = new Property(camera, 'string', 'teleported_entity_type', {
-		default: '',
+	context.entity_type = new Property(camera, 'string', 'entity_type', {
+		default: 'minecraft:armor_stand',
+	})
+	context.nbt = new Property(camera, 'string', 'nbt', {
+		default: '{}',
 	})
 	return context
 }
@@ -43,5 +47,6 @@ function inject() {
 function extract(context: any) {
 	const camera = OutlinerElement.types.camera
 	camera.prototype.menu!.structure = context.structure
-	context.teleported_entity_type.delete()
+	context.entity_type.delete()
+	context.nbt.delete()
 }

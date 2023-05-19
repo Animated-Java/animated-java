@@ -73,7 +73,8 @@ declare global {
 	}
 
 	interface Locator {
-		teleported_entity_type: string
+		entity_type: string
+		nbt: string
 	}
 
 	interface ModelProject {

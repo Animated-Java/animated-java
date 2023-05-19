@@ -26,7 +26,6 @@ export class SvelteDialog extends Dialog {
 		this.onOpen = () => {
 			const parentElement = mount.parentElement
 			if (this.instance || !parentElement) return
-			// console.log('onOpen')
 			parentElement.style.overflow = 'visible'
 			this.instance = new options.svelteComponent({
 				target: parentElement,
@@ -43,19 +42,19 @@ export class SvelteDialog extends Dialog {
 		this.onButton = (...args) => {
 			if (!this.instance) return
 			// console.log('onButton')
-			this.instance.$destroy()
-			this.instance = undefined
 			if (super.onButton) super.onButton(...args)
 			if (options.onClose) options.onClose()
+			this.instance.$destroy()
+			this.instance = undefined
 		}
 
 		this.onCancel = (...args) => {
 			if (!this.instance) return
 			// console.log('onCancel')
-			this.instance.$destroy()
-			this.instance = undefined
 			if (super.onCancel) super.onCancel(...args)
 			if (options.onClose) options.onClose()
+			this.instance.$destroy()
+			this.instance = undefined
 		}
 	}
 }

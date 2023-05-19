@@ -1,5 +1,10 @@
 # Animation Exporter
 animated_java.datapack_exporter.name: Data Pack Exporter
+
+animated_java.datapack_exporter.settings.target_minecraft_version: Target Minecraft Version
+animated_java.datapack_exporter.settings.target_minecraft_version.description: |-
+  The version of Minecraft that you plan on using the data pack in.
+
 animated_java.datapack_exporter.settings.datapack_mcmeta: Data Pack
 animated_java.datapack_exporter.settings.datapack_mcmeta.description: |-
   The Data Pack to inject the generated functions into.
@@ -8,7 +13,7 @@ animated_java.datapack_exporter.settings.datapack_mcmeta.error.unset: |-
   You must select a Data Pack folder.
 animated_java.datapack_exporter.settings.datapack_mcmeta.error.invalid: |-
   The selected path is not a valid Data Pack!
-  Make sure you've selected the pack.mcmeta file of a valid Data Pack.
+  Make sure you've selected the correct pack.mcmeta, and that the Data Pack has a data folder.
 
 animated_java.datapack_exporter.settings.interpolation_duration: Interpolation Duration
 animated_java.datapack_exporter.settings.interpolation_duration.description: |-
