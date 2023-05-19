@@ -1,6 +1,6 @@
 import { ExportData } from '../datapackGen'
 import { getEntityTypes, getScoreboard, getTags, loopModes } from './data'
-import { loadTellrawMessages } from './tellrawMessages'
+import { loadTellrawMessages } from './jsonText'
 
 export class Globals {
 	static exportData: ExportData

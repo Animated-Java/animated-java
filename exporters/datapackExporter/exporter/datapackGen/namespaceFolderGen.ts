@@ -8,7 +8,7 @@ function tagJsonMerger(a: any, b: any) {
 }
 
 export function generateNamespaceFolder() {
-	const { formatStr } = AnimatedJava.API
+	const { formatStr, JsonText } = AnimatedJava.API
 	const { NbtCompound, NbtInt, NbtTag, NbtList, NbtString, NbtByte } = AnimatedJava.API.deepslate
 	const { projectSettings, renderedAnimations, exporterSettings, rig } = G.exportData
 	const { matrixToNbtFloatArray } = loadUtil()
@@ -163,6 +163,25 @@ export function generateNamespaceFolder() {
 								)
 							)
 					)
+					.set(
+						'CustomName',
+						new NbtString(
+							new JsonText([
+								{ text: '[', color: 'gray' },
+								{ text: 'AJ', color: 'aqua' },
+								`] `,
+								[
+									'',
+									{ text: `${G.NAMESPACE}`, color: 'light_purple' },
+									`.`,
+									{ text: `bone`, color: 'white' },
+									`[`,
+									{ text: `${bone.name}`, color: 'yellow' },
+									`]`,
+								],
+							]).toString()
+						)
+					)
 				// FIXME - This doesn't account for animations, and it SHOULD
 				const maxHeight = Math.max(
 					Math.abs(bone.boundingBox.min.y),
@@ -202,6 +221,25 @@ export function generateNamespaceFolder() {
 							.set('Count', new NbtByte(1))
 							.set('tag', new NbtCompound().set('CustomModelData', new NbtInt(1)))
 					)
+					.set(
+						'CustomName',
+						new NbtString(
+							new JsonText([
+								{ text: '[', color: 'gray' },
+								{ text: 'AJ', color: 'aqua' },
+								`] `,
+								[
+									'',
+									{ text: `${G.NAMESPACE}`, color: 'light_purple' },
+									`.`,
+									{ text: `locator`, color: 'white' },
+									`[`,
+									{ text: `${bone.name}`, color: 'yellow' },
+									`]`,
+								],
+							]).toString()
+						)
+					)
 				break
 			}
 			case 'camera': {
@@ -222,6 +260,25 @@ export function generateNamespaceFolder() {
 							.set('id', new NbtString(projectSettings.rig_item.value))
 							.set('Count', new NbtByte(1))
 							.set('tag', new NbtCompound().set('CustomModelData', new NbtInt(1)))
+					)
+					.set(
+						'CustomName',
+						new NbtString(
+							new JsonText([
+								{ text: '[', color: 'gray' },
+								{ text: 'AJ', color: 'aqua' },
+								`] `,
+								[
+									'',
+									{ text: `${G.NAMESPACE}`, color: 'light_purple' },
+									`.`,
+									{ text: `camera`, color: 'white' },
+									`[`,
+									{ text: `${bone.name}`, color: 'yellow' },
+									`]`,
+								],
+							]).toString()
+						)
 					)
 				break
 			}
@@ -245,6 +302,25 @@ export function generateNamespaceFolder() {
 	summonTags.add(new NbtString(G.TAGS.rootEntity))
 	summonTags.add(new NbtString(G.TAGS.globalRigRoot))
 	summonNbt.set('Tags', summonTags)
+
+	if (!summonNbt.get('CustomName')) {
+		summonNbt.set(
+			'CustomName',
+			new NbtString(
+				new JsonText([
+					{ text: '[', color: 'gray' },
+					{ text: 'AJ', color: 'aqua' },
+					`] `,
+					[
+						'',
+						{ text: `${G.NAMESPACE}`, color: 'light_purple' },
+						`.`,
+						{ text: `root`, color: 'white' },
+					],
+				]).toString()
+			)
+		)
+	}
 
 	const variantSummonFolder = functionsFolder
 		// ANCHOR - function NAMESPACE:summon

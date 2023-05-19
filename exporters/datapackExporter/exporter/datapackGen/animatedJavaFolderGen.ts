@@ -8,7 +8,7 @@ function getExportVersionId() {
 }
 
 export function generateAnimatedJavaFolder() {
-	const { formatStr, generateSearchTree, roundToN } = AnimatedJava.API
+	const { formatStr, generateSearchTree, roundToN, JsonText } = AnimatedJava.API
 	const { NbtString, NbtList, NbtTag } = AnimatedJava.API.deepslate
 	const { exporterSettings, renderedAnimations, rig } = G.exportData
 
@@ -169,14 +169,35 @@ export function generateAnimatedJavaFolder() {
 
 	for (const [uuid, camera] of Object.entries(rig.nodeMap)) {
 		if (camera.type !== 'camera') continue
-		const cameraNbt = (NbtTag.fromString(camera.nbt) as NbtCompound).set(
-			'Tags',
-			new NbtList([
-				new NbtString(G.TAGS.cameraTarget),
-				new NbtString(formatStr(G.TAGS.namedCameraTarget, [camera.name])),
-				new NbtString(G.TAGS.new),
-			])
-		)
+		const cameraNbt = (NbtTag.fromString(camera.nbt) as NbtCompound)
+			.set(
+				'Tags',
+				new NbtList([
+					new NbtString(G.TAGS.cameraTarget),
+					new NbtString(formatStr(G.TAGS.namedCameraTarget, [camera.name])),
+					new NbtString(G.TAGS.new),
+				])
+			)
+			.set(
+				'CustomName',
+				new NbtString(
+					new JsonText([
+						{ text: '[', color: 'gray' },
+						{ text: 'AJ', color: 'aqua' },
+						`] `,
+						[
+							'',
+							{ text: `${G.NAMESPACE}`, color: 'light_purple' },
+							`.`,
+							{ text: `cameraTarget`, color: 'white' },
+							`[`,
+							{ text: `${camera.name}`, color: 'yellow' },
+							`]`,
+						],
+					]).toString()
+				)
+			)
+
 		summonFolder
 			.newFolder(`camera_${camera.name}`)
 			// ANCHOR - func AJ_NAMESPACE:summon/camera_${camera.name}/as_origin
@@ -203,14 +224,34 @@ export function generateAnimatedJavaFolder() {
 
 	for (const [uuid, locator] of Object.entries(rig.nodeMap)) {
 		if (locator.type !== 'locator') continue
-		const locatorNbt = (NbtTag.fromString(locator.nbt) as NbtCompound).set(
-			'Tags',
-			new NbtList([
-				new NbtString(G.TAGS.locatorTarget),
-				new NbtString(formatStr(G.TAGS.namedLocatorTarget, [locator.name])),
-				new NbtString(G.TAGS.new),
-			])
-		)
+		const locatorNbt = (NbtTag.fromString(locator.nbt) as NbtCompound)
+			.set(
+				'Tags',
+				new NbtList([
+					new NbtString(G.TAGS.locatorTarget),
+					new NbtString(formatStr(G.TAGS.namedLocatorTarget, [locator.name])),
+					new NbtString(G.TAGS.new),
+				])
+			)
+			.set(
+				'CustomName',
+				new NbtString(
+					new JsonText([
+						{ text: '[', color: 'gray' },
+						{ text: 'AJ', color: 'aqua' },
+						`] `,
+						[
+							'',
+							{ text: `${G.NAMESPACE}`, color: 'light_purple' },
+							`.`,
+							{ text: `locatorTarget`, color: 'white' },
+							`[`,
+							{ text: `${locator.name}`, color: 'yellow' },
+							`]`,
+						],
+					]).toString()
+				)
+			)
 		summonFolder
 			.newFolder(`locator_${locator.name}`)
 			// ANCHOR - func AJ_NAMESPACE:summon/locator_${locator.name}/as_origin

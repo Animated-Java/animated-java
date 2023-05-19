@@ -87,7 +87,7 @@
 			"locked": false,
 			"modelPath": "",
 			"entity_type": "minecraft:pig",
-			"nbt": "{}",
+			"nbt": "{deathLootTable:\"minecraft:entities/bat\"}",
 			"uuid": "e74b221b-1dd5-a96d-98b8-e2ba36335e13",
 			"type": "locator"
 		},
@@ -142,45 +142,6 @@
 			"nbt": "{}",
 			"type": "camera",
 			"uuid": "270ad0fb-c9b7-9fc3-0b93-24e492570533"
-		},
-		{
-			"name": "sheep",
-			"position": [0, 0, 0],
-			"rotation": [0, 0, 0],
-			"ignore_inherited_scale": false,
-			"visibility": true,
-			"locked": false,
-			"modelPath": "",
-			"entity_type": "minecraft:sheep",
-			"nbt": "{}",
-			"uuid": "d67569d9-9f44-2dd2-f4ac-805f708ec9d5",
-			"type": "locator"
-		},
-		{
-			"name": "cow",
-			"position": [0, 0, 0],
-			"rotation": [0, 0, 0],
-			"ignore_inherited_scale": false,
-			"visibility": true,
-			"locked": false,
-			"modelPath": "",
-			"entity_type": "minecraft:cow",
-			"nbt": "{}",
-			"uuid": "6edec6d3-b248-55aa-0362-b87e46471ded",
-			"type": "locator"
-		},
-		{
-			"name": "creeper",
-			"position": [0, 0, 0],
-			"rotation": [0, 0, 0],
-			"ignore_inherited_scale": false,
-			"visibility": true,
-			"locked": false,
-			"modelPath": "",
-			"entity_type": "minecraft:creeper",
-			"nbt": "{}",
-			"uuid": "a1d616fa-e310-9a06-2b6d-c56100e9f3a7",
-			"type": "locator"
 		}
 	],
 	"outliner": [
@@ -211,48 +172,6 @@
 			"visibility": true,
 			"autouv": 0,
 			"children": ["e74b221b-1dd5-a96d-98b8-e2ba36335e13"]
-		},
-		{
-			"name": "sheep",
-			"origin": [0, 0, 0],
-			"color": 0,
-			"nbt": "{}",
-			"uuid": "c69b93cd-7274-227f-a5e4-c656cb892f89",
-			"export": true,
-			"mirror_uv": false,
-			"isOpen": true,
-			"locked": false,
-			"visibility": true,
-			"autouv": 0,
-			"children": ["d67569d9-9f44-2dd2-f4ac-805f708ec9d5"]
-		},
-		{
-			"name": "cow",
-			"origin": [0, 0, 0],
-			"color": 0,
-			"nbt": "{}",
-			"uuid": "f9abd2c3-a3ab-7fc8-de70-adbcb8e83646",
-			"export": true,
-			"mirror_uv": false,
-			"isOpen": true,
-			"locked": false,
-			"visibility": true,
-			"autouv": 0,
-			"children": ["6edec6d3-b248-55aa-0362-b87e46471ded"]
-		},
-		{
-			"name": "creeper",
-			"origin": [0, 0, 0],
-			"color": 0,
-			"nbt": "{}",
-			"uuid": "6c6f7583-a726-d486-ffad-9fab8ed5d956",
-			"export": true,
-			"mirror_uv": false,
-			"isOpen": true,
-			"locked": false,
-			"visibility": true,
-			"autouv": 0,
-			"children": ["a1d616fa-e310-9a06-2b6d-c56100e9f3a7"]
 		}
 	],
 	"textures": [
@@ -369,81 +288,6 @@
 								}
 							],
 							"uuid": "67370c85-298c-e771-dc13-411c5ca88cec",
-							"time": 0,
-							"color": -1,
-							"interpolation": "linear",
-							"bezier_linked": true,
-							"bezier_left_time": [-0.1, -0.1, -0.1],
-							"bezier_left_value": [0, 0, 0],
-							"bezier_right_time": [0.1, 0.1, 0.1],
-							"bezier_right_value": [0, 0, 0]
-						}
-					]
-				},
-				"c69b93cd-7274-227f-a5e4-c656cb892f89": {
-					"name": "sheep",
-					"type": "bone",
-					"keyframes": [
-						{
-							"channel": "position",
-							"data_points": [
-								{
-									"x": "math.sin(-time * 90) * 100",
-									"y": "math.sin(time * 360) * 32 + 64",
-									"z": "math.cos(time * 90) * 256"
-								}
-							],
-							"uuid": "3453f8cf-7b95-59ac-c969-75589a1b502b",
-							"time": 0,
-							"color": -1,
-							"interpolation": "linear",
-							"bezier_linked": true,
-							"bezier_left_time": [-0.1, -0.1, -0.1],
-							"bezier_left_value": [0, 0, 0],
-							"bezier_right_time": [0.1, 0.1, 0.1],
-							"bezier_right_value": [0, 0, 0]
-						}
-					]
-				},
-				"f9abd2c3-a3ab-7fc8-de70-adbcb8e83646": {
-					"name": "cow",
-					"type": "bone",
-					"keyframes": [
-						{
-							"channel": "position",
-							"data_points": [
-								{
-									"x": "math.sin(-time * 90) * 100",
-									"y": "math.sin(-time * 90) * 32 + 64",
-									"z": "math.cos(-time * 180) * 256"
-								}
-							],
-							"uuid": "f57291a3-6626-12d7-5084-c376611b546c",
-							"time": 0,
-							"color": -1,
-							"interpolation": "linear",
-							"bezier_linked": true,
-							"bezier_left_time": [-0.1, -0.1, -0.1],
-							"bezier_left_value": [0, 0, 0],
-							"bezier_right_time": [0.1, 0.1, 0.1],
-							"bezier_right_value": [0, 0, 0]
-						}
-					]
-				},
-				"6c6f7583-a726-d486-ffad-9fab8ed5d956": {
-					"name": "creeper",
-					"type": "bone",
-					"keyframes": [
-						{
-							"channel": "position",
-							"data_points": [
-								{
-									"x": "math.sin(-time * 90) * 100\n+ math.cos(-time * 90) * 100\n",
-									"y": "math.cos(-time * 9  0) * 64 + 72",
-									"z": "math.cos(-time * 180) * 256"
-								}
-							],
-							"uuid": "57497dea-ff07-6f3e-d2c0-d5ee709fb5d6",
 							"time": 0,
 							"color": -1,
 							"interpolation": "linear",
