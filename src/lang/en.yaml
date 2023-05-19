@@ -64,6 +64,10 @@ animated_java.project_settings.project_resolution.description: |-
   The UV resolution of the Project.
   This should equal the resolution of the largest texture in your project.
 
+animated_java.project_settings.target_minecraft_version: Target Minecraft Version
+animated_java.project_settings.target_minecraft_version.description: |-
+  The version of Minecraft you expect to use the exported rig in.
+
 animated_java.project_settings.resourcepack_group: Resource Pack
 
 animated_java.project_settings.rig_item: Rig Item

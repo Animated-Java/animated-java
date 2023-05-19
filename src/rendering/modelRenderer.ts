@@ -40,7 +40,7 @@ export interface IRenderedModel {
 	textures: Record<string, string>
 	elements?: IRenderedElement[]
 	display?: {
-		head: { rotation: [0, 180, 0] }
+		head: { rotation: [0, number, 0] }
 	}
 }
 
@@ -294,6 +294,10 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 		throw new Error(`Invalid bone path: ${group.name} -> ${path}`)
 	}
 
+	let displayRotation = 0
+	if (Project!.animated_java_settings!.target_minecraft_version.selected!.value === '1.20+')
+		displayRotation = 180
+
 	const renderedBone: IRenderedNodes['Bone'] & {
 		model: { elements: IRenderedElement[] }
 	} = {
@@ -307,7 +311,7 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 			textures: {},
 			elements: [],
 			display: {
-				head: { rotation: [0, 180, 0] },
+				head: { rotation: [0, displayRotation, 0] },
 			},
 		},
 		modelPath: path,

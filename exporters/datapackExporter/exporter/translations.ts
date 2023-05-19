@@ -7,6 +7,14 @@ export function loadTranslations() {
 	addTranslations('en', en as Record<string, string>)
 
 	return {
+		target_minecraft_version: {
+			displayName: translate(
+				'animated_java.datapack_exporter.settings.target_minecraft_version'
+			),
+			description: translate(
+				'animated_java.datapack_exporter.settings.target_minecraft_version.description'
+			).split('\n'),
+		},
 		datapack_mcmeta: {
 			name: translate('animated_java.datapack_exporter.settings.datapack_mcmeta'),
 			description: translate(

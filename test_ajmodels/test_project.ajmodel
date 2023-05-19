@@ -7,6 +7,7 @@
 		"settings": {
 			"project_namespace": "happy_box",
 			"project_resolution": [64, 64],
+			"target_minecraft_version": "1.20+",
 			"rig_item": "minecraft:white_dye",
 			"rig_item_model": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\assets\\minecraft\\models\\item\\white_dye.json",
 			"rig_export_folder": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\assets\\happy_box_animated_java_rig\\models\\item",

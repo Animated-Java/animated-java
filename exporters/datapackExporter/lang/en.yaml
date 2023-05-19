@@ -1,5 +1,10 @@
 # Animation Exporter
 animated_java.datapack_exporter.name: Data Pack Exporter
+
+animated_java.datapack_exporter.settings.target_minecraft_version: Target Minecraft Version
+animated_java.datapack_exporter.settings.target_minecraft_version.description: |-
+  The version of Minecraft that you plan on using the data pack in.
+
 animated_java.datapack_exporter.settings.datapack_mcmeta: Data Pack
 animated_java.datapack_exporter.settings.datapack_mcmeta.description: |-
   The Data Pack to inject the generated functions into.
