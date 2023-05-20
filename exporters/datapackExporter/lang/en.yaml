@@ -25,18 +25,35 @@ animated_java.datapack_exporter.settings.enable_outdated_rig_warning: Enable Out
 animated_java.datapack_exporter.settings.enable_outdated_rig_warning.description: |-
   Whether to show a warning in-game when a Rig is found that was summoned before the most recent export.
 
-# animated_java.datapack_exporter.settings.enable_single_rig_optimizations: Enable Single Rig Optimizations
-# animated_java.datapack_exporter.settings.enable_single_rig_optimizations.description: |-
-#   Whether to enable optimizations that are only possible when there is only one Rig in the world at a time.
-#   These optimizations will reduce the performance impact of the generated Data Pack, but will prevent you from having multiple Rigs in the world at once.
-
-animated_java.datapack_exporter.settings.include_convenience_functions: Include Convenience Functions
-animated_java.datapack_exporter.settings.include_convenience_functions.description: |-
-  Whether to include convenience functions in the generated Data Pack.
-  The convenience functions are simplified functions (Like the summon/<variant_name> functions) that are easier to use, but less flexible than their counterparts.
-  You may want to disable them if you don't use them, or if you want to reduce the size of the generated Data Pack.
-
 animated_java.datapack_exporter.settings.root_entity_nbt: Root Entity NBT
 animated_java.datapack_exporter.settings.root_entity_nbt.description: |-
   Custom NBT to apply to the root entity of the Rig.
   WARNING! This NBT will overwrite any NBT that the exporter would normally add to the root entity.
+
+animated_java.datapack_exporter.settings.function_toggles_group: Function Toggles
+
+animated_java.datapack_exporter.settings.include_variant_summon_functions: Include Variant Summon Functions
+animated_java.datapack_exporter.settings.include_variant_summon_functions.description: |-
+  Whether to include functions that summon each variant of the Rig in the exported Data Pack.
+  These functions are equivalent to setting #variant aj.id when running the summon function.
+
+animated_java.datapack_exporter.settings.include_apply_variant_functions: Include Apply Variant Functions
+animated_java.datapack_exporter.settings.include_apply_variant_functions.description: |-
+  Whether to include functions that apply each variant of the Rig in the exported Data Pack.
+  Note that even if these functions are disabled, you will still be able to swap variants in animations using variant keyframes.
+
+animated_java.datapack_exporter.settings.include_uninstall_function: Include Uninstall Function
+animated_java.datapack_exporter.settings.include_uninstall_function.description: |-
+  Whether to include the uninstall function in the exported Data Pack.
+
+animated_java.datapack_exporter.settings.include_pause_all_animations_function: Include Pause All Animations Function
+animated_java.datapack_exporter.settings.include_pause_all_animations_function.description: |-
+  Whether to include the pause_all_animations function in the exported Data Pack.
+
+animated_java.datapack_exporter.settings.include_remove_rigs_function: Include Remove Rigs Function
+animated_java.datapack_exporter.settings.include_remove_rigs_function.description: |-
+  Whether to include the remove/rigs function in the exported Data Pack.
+
+animated_java.datapack_exporter.settings.include_remove_all_function: Include Remove All Function
+animated_java.datapack_exporter.settings.include_remove_all_function.description: |-
+  Whether to include the remove/all function in the exported Data Pack.

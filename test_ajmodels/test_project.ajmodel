@@ -21,8 +21,13 @@
 			"animated_java:datapack_exporter": {
 				"datapack_mcmeta": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\saves\\Animated Java Test World\\datapacks\\test_datapack\\pack.mcmeta",
 				"outdated_rig_warning": false,
-				"include_convenience_functions": true,
-				"root_entity_nbt": "{}"
+				"root_entity_nbt": "{}",
+				"include_variant_summon_functions": false,
+				"include_apply_variant_functions": false,
+				"include_uninstall_function": false,
+				"include_pause_all_animations_function": false,
+				"include_remove_rigs_function": false,
+				"include_remove_all_function": false
 			},
 			"animated_java:json_exporter": {
 				"output_file": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\assets\\happy_box_animated_java_rig\\test.json"
@@ -202,7 +207,7 @@
 			"override": false,
 			"length": 1,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",

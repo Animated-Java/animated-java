@@ -36,7 +36,9 @@ export async function exportResources(
 	const resourcePackFolder = new VirtualFolder(
 		advancedResourcePackSettingsEnabled
 			? 'internal_resource_pack_folder'
-			: PathModule.basename(resourcePackPath)
+			: PathModule.basename(resourcePackPath),
+		undefined,
+		true
 	)
 	const assetsPackFolder = resourcePackFolder.newFolder('assets')
 
@@ -307,14 +309,23 @@ export async function exportResources(
 		await processAJMeta(filePaths)
 
 		await fs.promises.mkdir(rigExportFolder, { recursive: true })
-		await modelsFolder.writeChildrenToDisk(rigExportFolder, progress)
+		await modelsFolder.writeChildrenToDisk(rigExportFolder, {
+			progress,
+			skipEmptyFolders: true,
+		})
 
 		await fs.promises.mkdir(textureExportFolder, { recursive: true })
-		await texturesFolder.writeChildrenToDisk(textureExportFolder, progress)
+		await texturesFolder.writeChildrenToDisk(textureExportFolder, {
+			progress,
+			skipEmptyFolders: true,
+		})
 
 		const predicateItemExportFolder = PathModule.parse(rigItemModelExportPath).dir
 		await fs.promises.mkdir(predicateItemExportFolder, { recursive: true })
-		await predicateItemFile.writeToDisk(predicateItemExportFolder, progress)
+		await predicateItemFile.writeToDisk(predicateItemExportFolder, {
+			progress,
+			skipEmptyFolders: true,
+		})
 
 		progress.finish()
 	} else {
@@ -327,7 +338,7 @@ export async function exportResources(
 
 		await processAJMeta(filePaths)
 
-		await assetsPackFolder.writeToDisk(resourcePackPath, progress)
+		await assetsPackFolder.writeToDisk(resourcePackPath, { progress, skipEmptyFolders: true })
 
 		progress.finish()
 	}
