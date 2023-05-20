@@ -2,6 +2,11 @@ import { isValidDatapackName } from '../minecraft/util'
 import { animatedJavaSettings } from '../settings'
 import { ProgressBarController } from './progress'
 
+interface VirtualFileSystemWriteOptions {
+	skipEmptyFolders?: boolean
+	progress?: ProgressBarController
+}
+
 class VirtualNode {
 	constructor(public name: string, public parent?: VirtualNode) {}
 
@@ -21,9 +26,9 @@ class VirtualNode {
 export class VirtualFolder extends VirtualNode {
 	childCount = 0
 	children: Array<VirtualFolder | VirtualFile> = []
-	constructor(name: string, parent?: VirtualFolder) {
+	constructor(name: string, parent?: VirtualFolder, ignoreInvalidName = false) {
 		super(name, parent)
-		isValidDatapackName(name, 'folder')
+		if (!ignoreInvalidName) isValidDatapackName(name, 'folder')
 	}
 
 	protected addChild() {
@@ -176,21 +181,22 @@ export class VirtualFolder extends VirtualNode {
 		throw new Error(`Cannot access child of file ${this.path}/${name}`)
 	}
 
-	async writeToDisk(outputFolder: string, progress?: ProgressBarController) {
+	async writeToDisk(outputFolder: string, writeOptions: VirtualFileSystemWriteOptions) {
+		if (writeOptions.skipEmptyFolders && this.children.length === 0) return
 		const path = PathModule.join(outputFolder, this.name)
 		await fs.promises.mkdir(path, { recursive: true })
-		if (progress) {
-			progress.add(1)
-			progress.update()
+		if (writeOptions.progress) {
+			writeOptions.progress.add(1)
+			writeOptions.progress.update()
 		}
 		for (const child of this.children) {
-			await child.writeToDisk(path, progress)
+			await child.writeToDisk(path, writeOptions)
 		}
 	}
 
-	async writeChildrenToDisk(outputFolder: string, progress?: ProgressBarController) {
+	async writeChildrenToDisk(outputFolder: string, writeOptions: VirtualFileSystemWriteOptions) {
 		for (const child of this.children) {
-			await child.writeToDisk(outputFolder, progress)
+			await child.writeToDisk(outputFolder, writeOptions)
 		}
 	}
 
@@ -226,7 +232,7 @@ export class VirtualFile extends VirtualNode {
 		return `${this.parent.path}/${this.fileName}`
 	}
 
-	async writeToDisk(outputFolder: string, progress?: ProgressBarController) {
+	async writeToDisk(outputFolder: string, writeOptions: VirtualFileSystemWriteOptions) {
 		const path = PathModule.join(outputFolder, this.fileName)
 
 		let content: string | Buffer | Uint8Array
@@ -252,9 +258,9 @@ export class VirtualFile extends VirtualNode {
 		}
 
 		await fs.promises.writeFile(path, content, { encoding: 'utf-8' })
-		if (progress) {
-			progress.add(1)
-			progress.update()
+		if (writeOptions.progress) {
+			writeOptions.progress.add(1)
+			writeOptions.progress.update()
 		}
 	}
 }
