@@ -105,7 +105,11 @@ export function loadDataPackGenerator() {
 		G.DATAPACK.newFile('.ajmeta', content)
 		await Promise.all(
 			G.DATAPACK.children.map(
-				async child => await child.writeToDisk(G.DATAPACK_EXPORT_PATH, progress)
+				async child =>
+					await child.writeToDisk(G.DATAPACK_EXPORT_PATH, {
+						progress,
+						skipEmptyFolders: true,
+					})
 			)
 		)
 		progress.finish()

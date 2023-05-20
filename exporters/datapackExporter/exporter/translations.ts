@@ -41,27 +41,58 @@ export function loadTranslations() {
 				'animated_java.datapack_exporter.settings.enable_outdated_rig_warning.description'
 			).split('\n'),
 		},
-		include_convenience_functions: {
-			name: translate(
-				'animated_java.datapack_exporter.settings.include_convenience_functions'
-			),
-			description: translate(
-				'animated_java.datapack_exporter.settings.include_convenience_functions.description'
-			).split('\n'),
-		},
-		// enable_single_rig_optimizations: {
-		// 	name: translate(
-		// 		'animated_java.datapack_exporter.settings.enable_single_rig_optimizations'
-		// 	),
-		// 	description: translate(
-		// 		'animated_java.datapack_exporter.settings.enable_single_rig_optimizations.description'
-		// 	).split('\n'),
-		// },
 		root_entity_nbt: {
 			name: translate('animated_java.datapack_exporter.settings.root_entity_nbt'),
 			description: translate(
 				'animated_java.datapack_exporter.settings.root_entity_nbt.description'
 			).split('\n'),
+		},
+		include_variant_summon_functions: {
+			name: translate(
+				'animated_java.datapack_exporter.settings.include_variant_summon_functions'
+			),
+			description: translate(
+				'animated_java.datapack_exporter.settings.include_variant_summon_functions.description'
+			).split('\n'),
+		},
+		include_apply_variant_functions: {
+			name: translate(
+				'animated_java.datapack_exporter.settings.include_apply_variant_functions'
+			),
+			description: translate(
+				'animated_java.datapack_exporter.settings.include_apply_variant_functions.description'
+			).split('\n'),
+		},
+		include_uninstall_function: {
+			name: translate('animated_java.datapack_exporter.settings.include_uninstall_function'),
+			description: translate(
+				'animated_java.datapack_exporter.settings.include_uninstall_function.description'
+			).split('\n'),
+		},
+		include_pause_all_animations_function: {
+			name: translate(
+				'animated_java.datapack_exporter.settings.include_pause_all_animations_function'
+			),
+			description: translate(
+				'animated_java.datapack_exporter.settings.include_pause_all_animations_function.description'
+			).split('\n'),
+		},
+		include_remove_rigs_function: {
+			name: translate(
+				'animated_java.datapack_exporter.settings.include_remove_rigs_function'
+			),
+			description: translate(
+				'animated_java.datapack_exporter.settings.include_remove_rigs_function.description'
+			).split('\n'),
+		},
+		include_remove_all_function: {
+			name: translate('animated_java.datapack_exporter.settings.include_remove_all_function'),
+			description: translate(
+				'animated_java.datapack_exporter.settings.include_remove_all_function.description'
+			).split('\n'),
+		},
+		function_toggles_group: {
+			title: translate('animated_java.datapack_exporter.settings.function_toggles_group'),
 		},
 	}
 }

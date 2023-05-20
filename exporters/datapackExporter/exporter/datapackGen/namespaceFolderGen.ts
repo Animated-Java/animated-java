@@ -115,17 +115,19 @@ export function generateNamespaceFolder() {
 			tagJsonMerger,
 		})
 
-	// ANCHOR - function NAMESPACE:uninstall
-	functionsFolder.chainNewFile('uninstall.mcfunction', [
-		// Scoreboard objectives
-		...Object.values(G.SCOREBOARD)
-			.filter(s => !s.includes('%s'))
-			.map(s => `scoreboard objectives remove ${s}`),
-		// prettier-ignore
-		...renderedAnimations.map(a => `scoreboard objectives remove ${formatStr(G.SCOREBOARD.localAnimTime, [a.name])}`),
-		// prettier-ignore
-		...renderedAnimations.map(a => `scoreboard objectives remove ${formatStr(G.SCOREBOARD.loopMode, [a.name])}`),
-	])
+	if (exporterSettings.include_uninstall_function.value === true) {
+		// ANCHOR - function NAMESPACE:uninstall
+		functionsFolder.newFile('uninstall.mcfunction', [
+			// Scoreboard objectives
+			...Object.values(G.SCOREBOARD)
+				.filter(s => !s.includes('%s'))
+				.map(s => `scoreboard objectives remove ${s}`),
+			// prettier-ignore
+			...renderedAnimations.map(a => `scoreboard objectives remove ${formatStr(G.SCOREBOARD.localAnimTime, [a.name])}`),
+			// prettier-ignore
+			...renderedAnimations.map(a => `scoreboard objectives remove ${formatStr(G.SCOREBOARD.loopMode, [a.name])}`),
+		])
+	}
 	const userRootEntityNbt = NbtTag.fromString(exporterSettings.root_entity_nbt.value)
 
 	// Summon NBT
@@ -330,7 +332,7 @@ export function generateNamespaceFolder() {
 		])
 		.newFolder('summon')
 
-	if (exporterSettings.include_convenience_functions.value === true) {
+	if (exporterSettings.include_variant_summon_functions.value === true) {
 		for (const variant of G.VARIANTS) {
 			if (variant.default) continue
 			// ANCHOR - function NAMESPACE:summon/${variant.name}
@@ -341,7 +343,7 @@ export function generateNamespaceFolder() {
 		}
 	}
 
-	functionsFolder
+	const removeFolder = functionsFolder
 		.newFolder('remove')
 		// ANCHOR - function NAMESPACE:remove/this
 		.chainNewFile('this.mcfunction', [
@@ -351,25 +353,31 @@ export function generateNamespaceFolder() {
 				[`${G.NAMESPACE}:remove/this`]
 			)}`,
 		])
+	if (exporterSettings.include_remove_rigs_function.value === true) {
 		// ANCHOR - function NAMESPACE:remove/rigs
-		.chainNewFile('rigs.mcfunction', [
+		removeFolder.newFile('rigs.mcfunction', [
 			`execute as @e[type=${G.ENTITY_TYPES.ajRoot},tag=${G.TAGS.rootEntity}] run function ${G.AJ_NAMESPACE}:remove/as_root`,
 		])
+	}
+	if (exporterSettings.include_remove_all_function.value === true) {
 		// ANCHOR - function NAMESPACE:remove/all
-		.chainNewFile('all.mcfunction', [
+		removeFolder.newFile('all.mcfunction', [
 			`execute as @e[type=${G.ENTITY_TYPES.ajRoot},tag=${G.TAGS.rootEntity}] run function ${G.AJ_NAMESPACE}:remove/as_root`,
 			`kill @e[tag=${G.TAGS.rigEntity}]`,
 		])
+	}
 
-	for (const variant of G.VARIANTS) {
-		// ANCHOR - func NAMESPACE:apply_variant/${variant.name}
-		applyVariantFolder.newFile(`${variant.name}.mcfunction`, [
-			`execute if entity @s[tag=${G.TAGS.rootEntity}] run function ${G.AJ_NAMESPACE}:apply_variant/${variant.name}_as_root`,
-			`execute if entity @s[tag=!${G.TAGS.rootEntity}] run tellraw @a ${formatStr(
-				G.TELLRAW.errorMustBeRunAsRoot.toString(),
-				[`${G.NAMESPACE}:apply_variant/${variant.name}`]
-			)}`,
-		])
+	if (exporterSettings.include_apply_variant_functions.value === true) {
+		for (const variant of G.VARIANTS) {
+			// ANCHOR - func NAMESPACE:apply_variant/${variant.name}
+			applyVariantFolder.newFile(`${variant.name}.mcfunction`, [
+				`execute if entity @s[tag=${G.TAGS.rootEntity}] run function ${G.AJ_NAMESPACE}:apply_variant/${variant.name}_as_root`,
+				`execute if entity @s[tag=!${G.TAGS.rootEntity}] run tellraw @a ${formatStr(
+					G.TELLRAW.errorMustBeRunAsRoot.toString(),
+					[`${G.NAMESPACE}:apply_variant/${variant.name}`]
+				)}`,
+			])
+		}
 	}
 
 	for (const anim of renderedAnimations) {
@@ -402,14 +410,17 @@ export function generateNamespaceFolder() {
 		}
 	}
 
-	if (!G.IS_SINGLE_ENTITY_RIG) {
+	if (
+		!G.IS_SINGLE_ENTITY_RIG &&
+		exporterSettings.include_pause_all_animations_function.value === true
+	) {
 		animationsFolder
-			// ANCHOR - function NAMESPACE:animations/stop_all_animations
-			.chainNewFile('stop_all_animations.mcfunction', [
-				`execute if entity @s[tag=${G.TAGS.rootEntity}] run function ${G.AJ_NAMESPACE}:animations/stop_all_animations_as_root`,
+			// ANCHOR - function NAMESPACE:animations/pause_all_animations
+			.chainNewFile('pause_all_animations.mcfunction', [
+				`execute if entity @s[tag=${G.TAGS.rootEntity}] run function ${G.AJ_NAMESPACE}:animations/pause_all_animations_as_root`,
 				`execute if entity @s[tag=!${G.TAGS.rootEntity}] run tellraw @a ${formatStr(
 					G.TELLRAW.errorMustBeRunAsRoot.toString(),
-					[`${G.NAMESPACE}:animations/stop_all_animations`]
+					[`${G.NAMESPACE}:animations/pause_all_animations`]
 				)}`,
 			])
 	}
