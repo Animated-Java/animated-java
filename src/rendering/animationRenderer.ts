@@ -96,7 +96,7 @@ export function getAnimationNodes(
 				const animator = animation.animators[node.node.uuid]!
 				if (
 					animator?.keyframes
-						.filter(k => k.time === time - 0.05)
+						.filter(k => k.time === roundToN(time - 0.05, 20))
 						.find(k => k.data_points.length === 2)
 				) {
 					interpolation = 'instant'
