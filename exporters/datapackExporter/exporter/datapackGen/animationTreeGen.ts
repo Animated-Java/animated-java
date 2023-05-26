@@ -6,7 +6,7 @@ export type IFrameBranch = AnimatedJava.ITreeBranch<AnimatedJava.IRenderedAnimat
 export type IFrameTree = IFrameBranch | IFrameLeaf
 
 export function loadAnimationTreeGenerator() {
-	const { rig } = G.exportData
+	// const { rig } = G.exportData
 	const { formatStr, roundToN } = AnimatedJava.API
 	const { NbtCompound, NbtInt } = AnimatedJava.API.deepslate
 	const { matrixToNbtFloatArray } = loadUtil()
@@ -27,12 +27,12 @@ export function loadAnimationTreeGenerator() {
 		const data = new NbtCompound()
 			.set('transformation', matrixToNbtFloatArray(node.matrix))
 			.set('start_interpolation', new NbtInt(0))
-		console.log(node.interpolation)
+		// console.log(node.interpolation)
 		if (node.interpolation === 'instant') {
-			console.log('a')
+			// console.log('a')
 			data.set('interpolation_duration', new NbtInt(0))
 		} else if (node.interpolation === 'default') {
-			console.log('b')
+			// console.log('b')
 			data.set('interpolation_duration', new NbtInt(G.DEFAULT_INTERPOLATION_DURATION))
 		}
 		return `execute if entity @s[tag=${formatStr(G.TAGS.namedBoneEntity, [

@@ -52,6 +52,8 @@ import { openAJExportInProgressDialog } from './ui/ajExportInProgress'
 
 Prism.languages.mcfunction = {}
 
+import './outliner/textDisplay'
+
 // @ts-ignore
 globalThis.AnimatedJava = {
 	// settings: AJSettings.animatedJavaSettings,

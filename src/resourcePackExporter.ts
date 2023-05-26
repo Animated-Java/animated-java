@@ -1,10 +1,10 @@
-import { isValidResourcePackPath, safeFunctionName } from '../minecraft'
-import { CustomModelData, IRenderedRig } from '../rendering/modelRenderer'
-import { animatedJavaSettings } from '../settings'
-import { ExpectedError, LimitClock } from '../util/misc'
-import { ProgressBarController } from '../util/progress'
-import { translate } from '../util/translation'
-import { VirtualFolder } from '../util/virtualFileSystem'
+import { isValidResourcePackPath, safeFunctionName } from './minecraft'
+import { CustomModelData, IRenderedRig } from './rendering/modelRenderer'
+import { animatedJavaSettings } from './settings'
+import { ExpectedError, LimitClock } from './util/misc'
+import { ProgressBarController } from './util/progress'
+import { translate } from './util/translation'
+import { VirtualFolder } from './util/virtualFileSystem'
 
 async function fileExists(path: string) {
 	return !!(await fs.promises.stat(path).catch(() => false))
@@ -329,10 +329,12 @@ export async function exportResources(
 
 		progress.finish()
 	} else {
+		console.log('Writing Resource Pack to Disk')
 		const progress = new ProgressBarController(
 			'Writing Resource Pack to Disk',
 			assetsPackFolder.childCount
 		)
+		progress.update()
 
 		const filePaths = resourcePackFolder.getAllFilePaths()
 

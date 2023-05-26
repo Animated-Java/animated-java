@@ -7,6 +7,7 @@
 		"settings": {
 			"project_namespace": "bonnie",
 			"project_resolution": [256, 256],
+			"target_minecraft_version": "1.20+",
 			"rig_item": "minecraft:purple_dye",
 			"rig_item_model": "",
 			"rig_export_folder": "",
@@ -19,10 +20,14 @@
 		"exporter_settings": {
 			"animated_java:datapack_exporter": {
 				"datapack_mcmeta": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\saves\\Animated Java Test World\\datapacks\\test_datapack\\pack.mcmeta",
-				"interpolation_duration": 1,
 				"outdated_rig_warning": false,
-				"include_convenience_functions": true,
-				"root_entity_nbt": "{}"
+				"root_entity_nbt": "{}",
+				"include_variant_summon_functions": true,
+				"include_apply_variant_functions": true,
+				"include_uninstall_function": true,
+				"include_pause_all_animations_function": true,
+				"include_remove_rigs_function": true,
+				"include_remove_all_function": true
 			},
 			"animated_java:json_exporter": {
 				"output_file": ""
@@ -4809,7 +4814,7 @@
 			"override": false,
 			"length": 2,
 			"snapping": 20,
-			"selected": false,
+			"selected": true,
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",
@@ -4825,12 +4830,12 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "math.sin(q.life_time * 180) * 10",
-									"y": "0",
-									"z": "0"
+									"x": "math.sin(q.life_time * 180) * 22.5",
+									"y": 0,
+									"z": 0
 								}
 							],
-							"uuid": "01b1981d-19ee-9746-49f3-947f38ed1d22",
+							"uuid": "87f1e2ee-ffc2-9245-7e19-fbfcaf1c9164",
 							"time": 0,
 							"color": -1,
 							"interpolation": "linear",
@@ -4850,31 +4855,12 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "-math.sin(q.life_time * 180) * 45",
+									"x": "0",
 									"y": "0",
 									"z": "0"
 								}
 							],
 							"uuid": "83c3e68f-b7ac-29fa-203e-c6869ea18728",
-							"time": 0,
-							"color": -1,
-							"interpolation": "linear",
-							"bezier_linked": true,
-							"bezier_left_time": [-0.1, -0.1, -0.1],
-							"bezier_left_value": [0, 0, 0],
-							"bezier_right_time": [0.1, 0.1, 0.1],
-							"bezier_right_value": [0, 0, 0]
-						},
-						{
-							"channel": "position",
-							"data_points": [
-								{
-									"x": "0",
-									"y": "0",
-									"z": "math.sin(q.life_time * 180) * 10"
-								}
-							],
-							"uuid": "79342a8c-d6c1-5ad6-889b-095c5a12fb43",
 							"time": 0,
 							"color": -1,
 							"interpolation": "linear",
@@ -4894,7 +4880,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "q.life_time * 180",
+									"x": "math.sin(q.life_time * 180) * 90",
 									"y": "0",
 									"z": "0"
 								}
@@ -4914,7 +4900,7 @@
 							"data_points": [
 								{
 									"x": "1",
-									"y": "1 + math.sin(q.life_time * 180) * 0.5",
+									"y": "1 + math.sin(q.life_time * 360) * 0.75",
 									"z": "1"
 								}
 							],
@@ -4940,7 +4926,7 @@
 			"override": false,
 			"length": 3.95,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",

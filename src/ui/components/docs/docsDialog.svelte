@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
 	import { type Writable, writable } from 'svelte/store'
-	import { openAJDocsDialog } from '../../ajDocs'
+	// import { openAJDocsDialog } from '../../ajDocs'
 	import DocsIndexItem from './docsIndexItem.svelte'
 	import DocsPage from './docsPage.svelte'
 	import * as events from '../../../events'
@@ -12,7 +12,7 @@
 	const PROD_API = 'https://animated-java-dev-ianssenne.vercel.app/api/docs_manifest'
 	const PROD_DOCS = 'https://animated-java-dev-ianssenne.vercel.app/docs/'
 	const API = process.env.NODE_ENV === 'development' ? DEV_API : PROD_API
-	const DOCS = process.env.NODE_ENV === 'development' ? DEV_DOCS : PROD_DOCS
+	// const DOCS = process.env.NODE_ENV === 'development' ? DEV_DOCS : PROD_DOCS
 	const URL = process.env.NODE_ENV === 'development' ? DEV_URL : PROD_URL
 
 	let manifest: IDocsManifest
@@ -22,20 +22,21 @@
 	async function load(attemptCount: number = 0) {
 		manifest = await fetch(API)
 			.then(res => {
-				if (!res.ok)
-					throw new Error(`Failed to fetch docs manifest. (Attempt ${attemptCount + 1})`)
-				return res.json()
+				if (res.ok) return res.json()
+				throw new Error(`Failed to fetch docs manifest. (Attempt ${attemptCount + 1})`)
 			})
 			.catch(err => {
-				console.error(
-					`Failed to fetch docs manifest. (Attempt ${attemptCount + 1})\n` + err.message
-				)
+				// console.error(
+				// 	`Failed to fetch docs manifest. (Attempt ${attemptCount + 1})\n` + err.message
+				// )
 				// retry
-				if (attemptCount >= maxAttempts) {
-					throw new Error(`Failed to fetch docs manifest after ${maxAttempts} attempts.`)
+				if (attemptCount + 1 >= maxAttempts) {
+					console.error(`Failed to fetch docs manifest after ${maxAttempts} attempts.`)
+					return
 				}
 				void load(attemptCount + 1)
 			})
+		if (!manifest) return
 		compilePages()
 		// openAJDocsDialog()
 	}
