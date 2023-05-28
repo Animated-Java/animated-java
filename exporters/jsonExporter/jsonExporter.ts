@@ -7,9 +7,6 @@ interface ISerealizedAnimationNode {
 	uuid: string
 	node: undefined
 	matrix: number[]
-	pos: [number, number, number]
-	rot: [number, number, number, number]
-	scale: [number, number, number]
 	interpolation?: 'instant' | 'default'
 }
 
@@ -38,33 +35,30 @@ function serializeOutlinerNode(node: AnimatedJava.AnyRenderedNode) {
 			} = node
 			return {
 				type,
-				parent,
 				name,
 				uuid: outlinerNode.uuid,
 				customModelData,
 				resourceLocation,
-				scale,
-				modelPath,
 			}
 		}
 		case 'camera': {
-			const { type, name, parent, teleported_entity_type, node: outlinerNode } = node
+			const { type, name, parent, entity_type, nbt, node: outlinerNode } = node
 			return {
 				type,
-				parent,
 				name,
 				uuid: outlinerNode.uuid,
-				teleported_entity_type,
+				entity_type,
+				nbt,
 			}
 		}
 		case 'locator': {
-			const { type, name, parent, teleported_entity_type, node: outlinerNode } = node
+			const { type, name, parent, entity_type, nbt, node: outlinerNode } = node
 			return {
 				type,
-				parent,
 				name,
 				uuid: outlinerNode.uuid,
-				teleported_entity_type,
+				entity_type,
+				nbt,
 			}
 		}
 	}
@@ -78,9 +72,6 @@ function serializeAnimationNode(node: AnimatedJava.IAnimationNode): ISerealizedA
 		uuid,
 		node: undefined,
 		matrix: matrix.toArray(),
-		pos: [pos.x, pos.y, pos.z],
-		rot: [rot.x, rot.y, rot.z, rot.w],
-		scale: [scale.x, scale.y, scale.z],
 		interpolation,
 	}
 }
@@ -103,7 +94,6 @@ interface RawExportData {
 	exporter_settings: Record<string, any>
 	rig: {
 		default_pose: ISerealizedAnimationNode[]
-		node_structure: AnimatedJava.INodeStructure
 		node_map: any
 	}
 	animations: Record<string, ISerealizedAnimation>
@@ -166,7 +156,6 @@ export function loadExporter() {
 				exporter_settings: {},
 				rig: {
 					default_pose: exportOptions.rig.defaultPose.map(serializeAnimationNode),
-					node_structure: exportOptions.rig.nodeStructure,
 					node_map: {},
 				},
 				animations: {},

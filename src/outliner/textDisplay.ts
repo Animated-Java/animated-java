@@ -3,11 +3,13 @@ import fontUrl from '../assets/MinecraftFull.ttf'
 import { createAction } from '../util/moddingTools'
 import * as events from '../events'
 import { ajModelFormat } from '../modelFormat'
+import { JsonText } from '../minecraft'
 
 const PIXEL_FILTER =
 	'url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxmaWx0ZXIgaWQ9ImZpbHRlciIgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj48ZmVDb21wb25lbnRUcmFuc2Zlcj48ZmVGdW5jUiB0eXBlPSJpZGVudGl0eSIvPjxmZUZ1bmNHIHR5cGU9ImlkZW50aXR5Ii8+PGZlRnVuY0IgdHlwZT0iaWRlbnRpdHkiLz48ZmVGdW5jQSB0eXBlPSJkaXNjcmV0ZSIgdGFibGVWYWx1ZXM9IjAgMSIvPjwvZmVDb21wb25lbnRUcmFuc2Zlcj48L2ZpbHRlcj48L3N2Zz4=#filter)'
 
 const FONT = '16px MinecraftFull'
+
 const DEFAULT_TEXT = 'The quick brown fox jumps over the lazy dog.'
 const SIZE_DIVISOR = 4.75
 
@@ -120,26 +122,38 @@ events.LOAD.subscribe(() => {
 
 	const PreviewController = new NodePreviewController(TextDisplayElement, {
 		setup(element: TextDisplayElement) {
-			const measure = new CanvasFrame(1, 1)
-			measure.ctx.font = FONT
-			measure.ctx.filter = PIXEL_FILTER
-			const metrics = measure.ctx.measureText(element.text)
-			const width = Math.ceil(metrics.width)
-			const height = Math.ceil(metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent)
+			// const measure = new CanvasFrame(1, 1)
+			// measure.ctx.font = FONT
+			// measure.ctx.filter = PIXEL_FILTER
+			// const metrics = measure.ctx.measureText(element.text)
+			// const width = Math.ceil(metrics.width)
+			// const height = Math.ceil(metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent)
 
-			const canvas = new CanvasFrame(width, height)
-			canvas.ctx.filter = PIXEL_FILTER
-			canvas.ctx.font = FONT
-			canvas.ctx.textBaseline = 'top'
-			canvas.ctx.fillStyle = '#ffffff'
-			canvas.ctx.fillText(element.text, 0, 0)
+			// const canvas = new CanvasFrame(width, height)
+			// canvas.ctx.filter = PIXEL_FILTER
+			// canvas.ctx.font = FONT
+			// canvas.ctx.textBaseline = 'top'
+			// canvas.ctx.fillStyle = '#ffffff'
+			// canvas.ctx.fillText(element.text, 0, 0)
 
-			const texture = new THREE.TextureLoader().load(canvas.canvas.toDataURL(), texture => {
-				// @ts-ignore
-				texture.colorSpace = THREE.sRGBEncoding
-				texture.magFilter = THREE.NearestFilter
-				console.log('texture', texture)
-			})
+			// const text = new JsonText([
+			// 	{ text: 'Hello World!', color: 'red' },
+			// 	{ text: 'Hello World Again!' },
+			// ])
+			const text = new JsonText([
+				{ text: 'MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM' },
+			])
+			const canvas = text.renderToCanvas()
+			const width = canvas.width
+			const height = canvas.height
+
+			const texture = new THREE.CanvasTexture(canvas.canvas)
+			// @ts-ignore
+			texture.colorSpace = THREE.sRGBEncoding
+			texture.magFilter = THREE.NearestFilter
+			console.log('texture', texture)
+			texture.image.style.border = '2px solid black'
+			jQuery('#preview')[0].appendChild(texture.image)
 
 			const material = new THREE.MeshBasicMaterial({
 				map: texture,
