@@ -52,7 +52,7 @@ import { openAJExportInProgressDialog } from './ui/ajExportInProgress'
 
 Prism.languages.mcfunction = {}
 
-import './outliner/textDisplay'
+// import './outliner/textDisplay'
 
 // @ts-ignore
 globalThis.AnimatedJava = {
