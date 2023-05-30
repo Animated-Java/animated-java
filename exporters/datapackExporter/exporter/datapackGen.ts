@@ -34,7 +34,10 @@ export function loadDataPackGenerator() {
 		)
 
 		interface IAJMeta {
-			projects: Record<string, { file_list: string[] }>
+			datapack: {
+				projects: Record<string, { file_list: string[] }>
+			}
+			resourcepack: object
 		}
 
 		let content: IAJMeta | undefined
@@ -49,7 +52,19 @@ export function loadDataPackGenerator() {
 		if (existingMetaFile !== undefined) {
 			content = await fs.promises.readFile(existingMetaFile, 'utf-8').then(JSON.parse)
 
-			if (!content.projects) {
+			// Upgrade from old format
+			// @ts-ignore
+			if (!content.datapack && content.projects) {
+				// @ts-ignore
+				content.datapack = {}
+				content.resourcepack = {}
+				// @ts-ignore
+				content.datapack.projects = content.projects
+				// @ts-ignore
+				delete content.projects
+			}
+
+			if (!content.datapack.projects) {
 				const message = `Failed to read the .ajmeta file. (Missing projects). Please delete the file and try again.`
 				Blockbench.showMessageBox({
 					title: 'Failed to read .ajmeta',
@@ -58,13 +73,13 @@ export function loadDataPackGenerator() {
 				throw new ExpectedError(message)
 			}
 
-			const project = content.projects[G.NAMESPACE] || {
+			const project = content.datapack.projects[G.NAMESPACE] || {
 				namespace: G.NAMESPACE,
 				tick_functions: tickFunctionTag.content.values,
 				load_functions: loadFunctionTag.content.values,
 				file_list: [],
 			}
-			content.projects[G.NAMESPACE] = project
+			content.datapack.projects[G.NAMESPACE] = project
 
 			if (!project.file_list) {
 				const message = `Failed to read the .ajmeta file. (Missing project file_list). Please delete the file and try again.`
@@ -97,9 +112,12 @@ export function loadDataPackGenerator() {
 			await fs.promises.rm(existingMetaFile)
 		} else {
 			content = {
-				projects: {
-					[G.NAMESPACE]: { file_list: G.DATAPACK.getAllFilePaths() },
+				datapack: {
+					projects: {
+						[G.NAMESPACE]: { file_list: G.DATAPACK.getAllFilePaths() },
+					},
 				},
+				resourcepack: {},
 			}
 		}
 		G.DATAPACK.newFile('.ajmeta', content)
