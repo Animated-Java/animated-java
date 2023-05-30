@@ -1,103 +1,6 @@
 // @ts-ignore
 import en from './lang/en.yaml'
-// TODO - Remake this exporter, it's a bit of a mess.
-interface ISerealizedAnimationNode {
-	type: 'bone' | 'camera' | 'locator'
-	name: string
-	uuid: string
-	node: undefined
-	matrix: number[]
-	interpolation?: 'instant' | 'default'
-}
-
-function serializeFrame(frame: AnimatedJava.IRenderedFrame) {
-	return {
-		time: frame.time,
-		nodes: frame.nodes.map(serializeAnimationNode),
-		variant: frame.variant,
-		commands: frame.commands,
-		animationState: frame.animationState,
-	}
-}
-
-function serializeOutlinerNode(node: AnimatedJava.AnyRenderedNode) {
-	switch (node.type) {
-		case 'bone': {
-			const {
-				type,
-				name,
-				parent,
-				customModelData,
-				resourceLocation,
-				scale,
-				modelPath,
-				node: outlinerNode,
-			} = node
-			return {
-				type,
-				name,
-				uuid: outlinerNode.uuid,
-				customModelData,
-				resourceLocation,
-			}
-		}
-		case 'camera': {
-			const { type, name, parent, entity_type, nbt, node: outlinerNode } = node
-			return {
-				type,
-				name,
-				uuid: outlinerNode.uuid,
-				entity_type,
-				nbt,
-			}
-		}
-		case 'locator': {
-			const { type, name, parent, entity_type, nbt, node: outlinerNode } = node
-			return {
-				type,
-				name,
-				uuid: outlinerNode.uuid,
-				entity_type,
-				nbt,
-			}
-		}
-	}
-}
-
-function serializeAnimationNode(node: AnimatedJava.IAnimationNode): ISerealizedAnimationNode {
-	const { type, name, uuid, matrix, pos, rot, scale, interpolation } = node
-	return {
-		type,
-		name,
-		uuid,
-		node: undefined,
-		matrix: matrix.toArray(),
-		interpolation,
-	}
-}
-
-interface ISerealizedAnimation {
-	frames: ISerealizedAnimationNode[]
-	duration: number
-	loopMode: 'loop' | 'once' | 'hold'
-}
-
-function serializeAnimation(animation: AnimatedJava.IRenderedAnimation): any {
-	return {
-		...animation,
-		frames: animation.frames.map(serializeFrame),
-	}
-}
-
-interface RawExportData {
-	project_settings: Record<string, any>
-	exporter_settings: Record<string, any>
-	rig: {
-		default_pose: ISerealizedAnimationNode[]
-		node_map: any
-	}
-	animations: Record<string, ISerealizedAnimation>
-}
+import { constructJSON } from './jsonConstructor'
 
 export function loadExporter() {
 	const API = AnimatedJava.API
@@ -151,40 +54,15 @@ export function loadExporter() {
 		async export(exportOptions) {
 			console.log('Export Options:', exportOptions)
 
-			const data: RawExportData = {
-				project_settings: {},
-				exporter_settings: {},
-				rig: {
-					default_pose: exportOptions.rig.defaultPose.map(serializeAnimationNode),
-					node_map: {},
-				},
-				animations: {},
-			}
+			const json = constructJSON(exportOptions)
 
-			for (const [key, setting] of Object.entries(exportOptions.projectSettings)) {
-				data.project_settings[key] = setting._save()
-			}
-
-			for (const [key, setting] of Object.entries(exportOptions.exporterSettings)) {
-				data.exporter_settings[key] = setting._save()
-			}
-
-			for (const [uuid, node] of Object.entries(exportOptions.rig.nodeMap)) {
-				if (!node.node.export) continue
-				data.rig.node_map[uuid] = serializeOutlinerNode(node)
-			}
-
-			for (const animation of exportOptions.renderedAnimations) {
-				data.animations[animation.name] = serializeAnimation(animation)
-			}
-
-			console.log('Exported data:', data)
+			console.log('Exported JSON:', json)
 
 			await fs.promises.writeFile(
 				exportOptions.exporterSettings.output_file.value,
 				exportOptions.ajSettings.minify_output.value
-					? JSON.stringify(data)
-					: JSON.stringify(data, null, '\t')
+					? JSON.stringify(json)
+					: JSON.stringify(json, null, '\t')
 			)
 		},
 	})
