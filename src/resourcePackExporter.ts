@@ -121,6 +121,7 @@ export async function exportResources(
 		// Clean up content
 		content.animated_java ??= { rigs: {} }
 		content.animated_java.rigs ??= {}
+		content.overrides = content.overrides.filter(o => o.predicate.custom_model_data !== 1)
 		// Merge with existing predicate file
 		console.log('Merging with existing predicate file')
 		console.log(content)
@@ -137,8 +138,9 @@ export async function exportResources(
 		}
 	}
 
+	if (!usedIds.includes(1)) usedIds.push(1)
 	content.overrides.push({
-		predicate: { custom_model_data: CustomModelData.get() },
+		predicate: { custom_model_data: 1 },
 		model: 'item/animated_java_empty',
 	})
 
