@@ -1,3 +1,5 @@
+import { Globals as G } from './globals'
+
 export function loadJSONText() {
 	const { JsonText } = AnimatedJava.API
 
@@ -33,5 +35,21 @@ export function loadJSONText() {
 		],
 	])
 
-	return { errorMustBeRunAsRoot, errorOutOfDateRig }
+	const uninstallMessage = new JsonText([
+		'',
+		{ text: '[' },
+		{ text: 'Animated Java', color: 'aqua' },
+		{ text: '] ' },
+		[
+			{ text: 'INFO ℹ', color: 'green' },
+			{ text: ' > ', color: 'gray' },
+			{ text: `The ${G.PROJECT_NAME} Rig has been uninstalled successfully.\n` },
+			{
+				text: `Please remove the Rig's functions from the datapack before reloading.`,
+				color: 'gray',
+			},
+		],
+	])
+
+	return { errorMustBeRunAsRoot, errorOutOfDateRig, uninstallMessage }
 }

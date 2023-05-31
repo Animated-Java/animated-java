@@ -90,7 +90,7 @@ datapack:
                           - as_locator_targets.json
                           - as_cameras.json
                           - as_camera_targets.json
-                      - on_summon.json:
+                      - on_summon:
                           - as_root.json
                           - as_rig_entities.json
                           - as_bones.json
@@ -106,12 +106,6 @@ datapack:
                           - as_locator_targets.json
                           - as_cameras.json
                           - as_camera_targets.json
-              - entity_types:
-                  - functions:
-                      - rig_root.json
-                      - rig_bones.json
-                      - project_name:
-                          - rig_entities.json
       - minecraft:
           - tags:
               - functions:

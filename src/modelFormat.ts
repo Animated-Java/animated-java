@@ -216,6 +216,8 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 		ajCodec.dispatchEvent('parse', { model, path })
 		DFU.process(model)
 
+		Project.animated_java_uuid = model.meta.uuid || guid()
+
 		if (model.resolution !== undefined) {
 			Project.texture_width = model.resolution.width
 			Project.texture_height = model.resolution.height
@@ -395,6 +397,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 			meta: {
 				format: ajCodec.format.id,
 				format_version: FORMAT_VERSION,
+				uuid: Project.animated_java_uuid,
 			},
 			animated_java: {
 				settings: exportAnimatedJavaProjectSettings(),

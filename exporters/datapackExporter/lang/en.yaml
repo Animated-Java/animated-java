@@ -28,7 +28,7 @@ animated_java.datapack_exporter.settings.enable_outdated_rig_warning.description
 animated_java.datapack_exporter.settings.root_entity_nbt: Root Entity NBT
 animated_java.datapack_exporter.settings.root_entity_nbt.description: |-
   Custom NBT to apply to the root entity of the Rig.
-  WARNING! This NBT will overwrite any NBT that the exporter would normally add to the root entity.
+  Note that some internal NBT tags will take priority over this setting.
 
 animated_java.datapack_exporter.settings.function_toggles_group: Function Toggles
 
@@ -57,3 +57,21 @@ animated_java.datapack_exporter.settings.include_remove_rigs_function.descriptio
 animated_java.datapack_exporter.settings.include_remove_all_function: Include Remove All Function
 animated_java.datapack_exporter.settings.include_remove_all_function.description: |-
   Whether to include the remove/all function in the exported Data Pack.
+
+animated_java.datapack_exporter.settings.function_tag_toggles_group: Function Tag Toggles
+
+animated_java.datapack_exporter.settings.include_on_load_function_tags: Include On Load Function Tags
+animated_java.datapack_exporter.settings.include_on_load_function_tags.description: |-
+  Whether to include the on_load function tags in the exported Data Pack.
+
+animated_java.datapack_exporter.settings.include_on_tick_function_tags: Include On Tick Function Tags
+animated_java.datapack_exporter.settings.include_on_tick_function_tags.description: |-
+  Whether to include the on_tick function tags in the exported Data Pack.
+
+animated_java.datapack_exporter.settings.include_on_summon_function_tags: Include On Summon Function Tags
+animated_java.datapack_exporter.settings.include_on_summon_function_tags.description: |-
+  Whether to include the on_summon function tags in the exported Data Pack.
+
+animated_java.datapack_exporter.settings.include_on_remove_function_tags: Include On Remove Function Tags
+animated_java.datapack_exporter.settings.include_on_remove_function_tags.description: |-
+  Whether to include the on_uninstall function tags in the exported Data Pack.

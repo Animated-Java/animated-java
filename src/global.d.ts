@@ -81,5 +81,6 @@ declare global {
 		animated_java_settings?: IAnimatedJavaProjectSettings
 		animated_java_exporter_settings?: Record<string, Record<string, Setting<any>>>
 		animated_java_variants?: VariantsContainer
+		animated_java_uuid?: string
 	}
 }

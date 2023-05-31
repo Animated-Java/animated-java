@@ -94,5 +94,40 @@ export function loadTranslations() {
 		function_toggles_group: {
 			title: translate('animated_java.datapack_exporter.settings.function_toggles_group'),
 		},
+		include_on_load_function_tags: {
+			name: translate(
+				'animated_java.datapack_exporter.settings.include_on_load_function_tags'
+			),
+			description: translate(
+				'animated_java.datapack_exporter.settings.include_on_load_function_tags.description'
+			).split('\n'),
+		},
+		include_on_tick_function_tags: {
+			name: translate(
+				'animated_java.datapack_exporter.settings.include_on_tick_function_tags'
+			),
+			description: translate(
+				'animated_java.datapack_exporter.settings.include_on_tick_function_tags.description'
+			).split('\n'),
+		},
+		include_on_summon_function_tags: {
+			name: translate(
+				'animated_java.datapack_exporter.settings.include_on_summon_function_tags'
+			),
+			description: translate(
+				'animated_java.datapack_exporter.settings.include_on_summon_function_tags.description'
+			).split('\n'),
+		},
+		include_on_remove_function_tags: {
+			name: translate(
+				'animated_java.datapack_exporter.settings.include_on_remove_function_tags'
+			),
+			description: translate(
+				'animated_java.datapack_exporter.settings.include_on_remove_function_tags.description'
+			).split('\n'),
+		},
+		function_tag_toggles_group: {
+			title: translate('animated_java.datapack_exporter.settings.function_tag_toggles_group'),
+		},
 	}
 }
