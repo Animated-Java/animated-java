@@ -40,14 +40,15 @@ export async function exportResources(
 		undefined,
 		true
 	)
-	const assetsPackFolder = resourcePackFolder.newFolder('assets')
+	const assetsFolder = resourcePackFolder.newFolder('assets')
+	const animatedJavaFolder = assetsFolder.newFolder('animated_java')
 
 	//------------------------------------
 	// Minecraft namespace
 	//------------------------------------
 
 	const [rigItemNamespace, rigItemName] = projectSettings.rig_item.value.split(':')
-	const minecraftFolder = assetsPackFolder.newFolder('minecraft').newFolder('models/item')
+	const minecraftFolder = assetsFolder.newFolder('minecraft').newFolder('models/item')
 
 	//------------------------------------
 	// Empty Model
@@ -155,10 +156,9 @@ export async function exportResources(
 	//------------------------------------
 
 	const NAMESPACE = projectSettings.project_namespace.value
-	const namespaceFolder = assetsPackFolder.newFolder(`${NAMESPACE}_animated_java_rig`)
-	const [modelsFolder, texturesFolder] = namespaceFolder.newFolders(
-		'models/item',
-		'textures/item'
+	const [modelsFolder, texturesFolder] = animatedJavaFolder.newFolders(
+		`/models/item/${NAMESPACE}`,
+		`/textures/item/${NAMESPACE}`
 	)
 
 	for (const texture of Object.values(rig.textures)) {
@@ -352,7 +352,7 @@ export async function exportResources(
 		console.log('Writing Resource Pack to Disk')
 		const progress = new ProgressBarController(
 			'Writing Resource Pack to Disk',
-			assetsPackFolder.childCount
+			assetsFolder.childCount
 		)
 		progress.update()
 
@@ -360,7 +360,7 @@ export async function exportResources(
 
 		await processAJMeta(filePaths)
 
-		await assetsPackFolder.writeToDisk(resourcePackPath, { progress, skipEmptyFolders: true })
+		await assetsFolder.writeToDisk(resourcePackPath, { progress, skipEmptyFolders: true })
 
 		progress.finish()
 	}
