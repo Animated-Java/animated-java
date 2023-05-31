@@ -122,21 +122,15 @@ export const exportProject = consoleGroupCollapsed('exportProject', async () => 
 		const projectNamespace = Project.animated_java_settings.project_namespace.value
 		textureExportFolder = PathModule.join(
 			resourcePackFolder,
-			'assets/',
-			projectNamespace + '_animated_java_rig',
-			'/textures/item/'
+			`assets/animated_java/textures/item/${projectNamespace}/`
 		)
 		rigExportFolder = PathModule.join(
 			resourcePackFolder,
-			'assets/',
-			projectNamespace + '_animated_java_rig',
-			'/models/item/'
+			`assets/animated_java/models/item/${projectNamespace}/`
 		)
 		rigItemModelExportPath = PathModule.join(
 			resourcePackFolder,
-			'assets/',
-			projectNamespace + '_animated_java_rig',
-			`/models/item/${rigItemId.split(':')[1]}.json`
+			`assets/animated_java/models/item/${projectNamespace}/${rigItemId.split(':')[1]}.json`
 		)
 		console.log('Using automatic resource pack settings')
 	}
