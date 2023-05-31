@@ -1,10 +1,10 @@
-import { isValidResourcePackPath, safeFunctionName } from '../minecraft'
-import { CustomModelData, IRenderedRig } from '../rendering/modelRenderer'
-import { animatedJavaSettings } from '../settings'
-import { ExpectedError, LimitClock } from '../util/misc'
-import { ProgressBarController } from '../util/progress'
-import { translate } from '../util/translation'
-import { VirtualFolder } from '../util/virtualFileSystem'
+import { isValidResourcePackPath, safeFunctionName } from './minecraft'
+import { CustomModelData, IRenderedRig } from './rendering/modelRenderer'
+import { animatedJavaSettings } from './settings'
+import { ExpectedError, LimitClock } from './util/misc'
+import { ProgressBarController } from './util/progress'
+import { translate } from './util/translation'
+import { VirtualFolder } from './util/virtualFileSystem'
 
 async function fileExists(path: string) {
 	return !!(await fs.promises.stat(path).catch(() => false))
@@ -121,6 +121,7 @@ export async function exportResources(
 		// Clean up content
 		content.animated_java ??= { rigs: {} }
 		content.animated_java.rigs ??= {}
+		content.overrides = content.overrides.filter(o => o.predicate.custom_model_data !== 1)
 		// Merge with existing predicate file
 		console.log('Merging with existing predicate file')
 		console.log(content)
@@ -137,8 +138,9 @@ export async function exportResources(
 		}
 	}
 
+	if (!usedIds.includes(1)) usedIds.push(1)
 	content.overrides.push({
-		predicate: { custom_model_data: CustomModelData.get() },
+		predicate: { custom_model_data: 1 },
 		model: 'item/animated_java_empty',
 	})
 
@@ -220,7 +222,10 @@ export async function exportResources(
 	)
 
 	interface IAJMeta {
-		projects: Record<string, { file_list: string[] }>
+		datapack: object
+		resourcepack: {
+			projects: Record<string, { file_list: string[] }>
+		}
 	}
 
 	async function processAJMeta(filePaths: string[]) {
@@ -246,24 +251,36 @@ export async function exportResources(
 			if (!content)
 				throw new Error('Failed to read .ajmeta file as JSON. Content is undefined.')
 
-			if (!content.projects) {
-				console.warn('Found existing .ajmeta file, but it is missing "projects" key.')
-				content.projects = {}
+			// Upgrade from old format
+			// @ts-ignore
+			if (!content.resourcepack && content.projects) {
+				// @ts-ignore
+				content.resourcepack = {}
+				content.datapack = {}
+				// @ts-ignore
+				content.resourcepack.projects = content.projects
+				// @ts-ignore
+				delete content.projects
 			}
 
-			if (!content.projects[NAMESPACE]) {
+			if (!content.resourcepack.projects) {
+				console.warn('Found existing .ajmeta file, but it is missing "projects" key.')
+				content.resourcepack.projects = {}
+			}
+
+			if (!content.resourcepack.projects[NAMESPACE]) {
 				console.warn('Found existing .ajmeta file, but it is missing this project.')
-				content.projects[NAMESPACE] = {
+				content.resourcepack.projects[NAMESPACE] = {
 					file_list: [],
 				}
 			} else {
 				const progress = new ProgressBarController(
 					'Cleaning up old Resource Pack files...',
-					content.projects[NAMESPACE].file_list.length
+					content.resourcepack.projects[NAMESPACE].file_list.length
 				)
 				// Clean out old files from disk
 				const clock = new LimitClock(10)
-				for (let path of content.projects[NAMESPACE].file_list) {
+				for (let path of content.resourcepack.projects[NAMESPACE].file_list) {
 					await clock.sync().then(b => b && progress.update())
 					path = PathModule.join(resourcePackPath, path)
 					await fs.promises.unlink(path).catch(() => undefined)
@@ -276,15 +293,18 @@ export async function exportResources(
 				progress.finish()
 			}
 
-			content.projects[NAMESPACE].file_list = filePaths
+			content.resourcepack.projects[NAMESPACE].file_list = filePaths
 		}
 
 		if (!content) {
 			console.warn('.ajmeta does not exist. Creating new .ajmeta file.')
 			content = {
-				projects: {
-					[NAMESPACE]: {
-						file_list: filePaths,
+				datapack: {},
+				resourcepack: {
+					projects: {
+						[NAMESPACE]: {
+							file_list: filePaths,
+						},
 					},
 				},
 			}
@@ -329,10 +349,12 @@ export async function exportResources(
 
 		progress.finish()
 	} else {
+		console.log('Writing Resource Pack to Disk')
 		const progress = new ProgressBarController(
 			'Writing Resource Pack to Disk',
 			assetsPackFolder.childCount
 		)
+		progress.update()
 
 		const filePaths = resourcePackFolder.getAllFilePaths()
 

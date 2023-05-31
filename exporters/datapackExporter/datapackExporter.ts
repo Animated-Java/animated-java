@@ -1,4 +1,4 @@
-import { loadDataPackGenerator } from './exporter/datapackGen'
+import { generateDatapack } from './exporter/gen/datapack'
 import { loadTranslations } from './exporter/translations'
 
 export function loadExporter() {
@@ -109,6 +109,39 @@ export function loadExporter() {
 					docsLink:
 						'/docs/exporters/datapack_exporter/settings#include_remove_all_function',
 				}),
+				// Tag Toggles
+				include_on_load_function_tags: new Settings.CheckboxSetting({
+					id: 'animated_java:datapack_exporter/include_on_load_function_tags',
+					displayName: TRANSLATIONS.include_on_load_function_tags.name,
+					description: TRANSLATIONS.include_on_load_function_tags.description,
+					defaultValue: true,
+					docsLink:
+						'/docs/exporters/datapack_exporter/settings#include_on_load_function_tags',
+				}),
+				include_on_tick_function_tags: new Settings.CheckboxSetting({
+					id: 'animated_java:datapack_exporter/include_on_tick_function_tags',
+					displayName: TRANSLATIONS.include_on_tick_function_tags.name,
+					description: TRANSLATIONS.include_on_tick_function_tags.description,
+					defaultValue: true,
+					docsLink:
+						'/docs/exporters/datapack_exporter/settings#include_on_tick_function_tags',
+				}),
+				include_on_summon_function_tags: new Settings.CheckboxSetting({
+					id: 'animated_java:datapack_exporter/include_on_summon_function_tags',
+					displayName: TRANSLATIONS.include_on_summon_function_tags.name,
+					description: TRANSLATIONS.include_on_summon_function_tags.description,
+					defaultValue: true,
+					docsLink:
+						'/docs/exporters/datapack_exporter/settings#include_on_summon_function_tags',
+				}),
+				include_on_remove_function_tags: new Settings.CheckboxSetting({
+					id: 'animated_java:datapack_exporter/include_on_remove_function_tags',
+					displayName: TRANSLATIONS.include_on_remove_function_tags.name,
+					description: TRANSLATIONS.include_on_remove_function_tags.description,
+					defaultValue: true,
+					docsLink:
+						'/docs/exporters/datapack_exporter/settings#include_on_remove_function_tags',
+				}),
 			}
 		},
 		settingsStructure: [
@@ -158,7 +191,32 @@ export function loadExporter() {
 					},
 				],
 			},
+			{
+				type: 'group',
+				title: TRANSLATIONS.function_tag_toggles_group.title,
+				openByDefault: false,
+				children: [
+					{
+						type: 'setting',
+						settingId: 'animated_java:datapack_exporter/include_on_load_function_tags',
+					},
+					{
+						type: 'setting',
+						settingId: 'animated_java:datapack_exporter/include_on_tick_function_tags',
+					},
+					{
+						type: 'setting',
+						settingId:
+							'animated_java:datapack_exporter/include_on_summon_function_tags',
+					},
+					{
+						type: 'setting',
+						settingId:
+							'animated_java:datapack_exporter/include_on_remove_function_tags',
+					},
+				],
+			},
 		],
-		export: loadDataPackGenerator() as any,
+		export: generateDatapack as any,
 	})
 }

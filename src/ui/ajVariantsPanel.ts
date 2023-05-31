@@ -88,6 +88,6 @@ createBlockbenchMod(
 
 events.UNINSTALL.subscribe(() => {
 	// toolbar.delete() no delete toolbar :(
-	VARIANT_MENU?.delete()
-	VARIANT_PANEL_MENU?.delete()
+	// VARIANT_MENU?.delete()
+	// VARIANT_PANEL_MENU?.delete()
 })

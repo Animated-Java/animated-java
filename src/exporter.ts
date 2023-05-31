@@ -1,5 +1,5 @@
 import * as events from './events'
-import { exportResources } from './exporter/resourcePackExporter'
+import { exportResources } from './resourcePackExporter'
 import { GUIStructure } from './guiStructure'
 import { projectSettingStructure } from './projectSettings'
 import { IRenderedAnimation, renderAllAnimations } from './rendering/animationRenderer'

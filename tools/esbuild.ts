@@ -186,7 +186,7 @@ async function buildDev() {
 		minify: false,
 		platform: 'node',
 		sourcemap: 'inline',
-		loader: { '.svg': 'dataurl' },
+		loader: { '.svg': 'dataurl', '.ttf': 'binary' },
 		plugins: [
 			workerPlugin.workerPlugin({
 				builder: buildWorker,
