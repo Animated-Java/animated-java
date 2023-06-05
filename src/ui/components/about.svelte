@@ -72,7 +72,14 @@
 	</h2>
 	<div class="name-grid supporter-name-grid">
 		<!-- Active supporters go below this line -->
+		<p class="active-supporter">Boxic</p>
+		<p class="active-supporter">Flubberschnub</p>
+		<p class="active-supporter">HaxOR359</p>
 		<p class="active-supporter">MrMakistein</p>
+		<p class="active-supporter">alumina6767</p>
+		<p class="active-supporter">Serahs</p>
+		<p class="active-supporter">Cinnamon Studios</p>
+		<p class="active-supporter">MarcoStrk</p>
 		<!-- Inactive/old supporters go below this line -->
 		<p class="inactive-supporter">CubeDeveloper</p>
 		<p class="inactive-supporter">DoubleFelix</p>
