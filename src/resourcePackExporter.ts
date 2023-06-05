@@ -1,3 +1,4 @@
+import { AJMetaFile } from './ajmeta'
 import { isValidResourcePackPath, safeFunctionName } from './minecraft'
 import { CustomModelData, IRenderedRig } from './rendering/modelRenderer'
 import { animatedJavaSettings } from './settings'
@@ -82,7 +83,7 @@ export async function exportResources(
 	console.log('Predicate item file path:', predicateItemFilePath)
 
 	// Default predicate item file content
-	let content: IPredicateItemModel = {
+	let predicateContent: IPredicateItemModel = {
 		parent: 'item/generated',
 		textures: {
 			layer0: `${rigItemNamespace}:item/${rigItemName}`,
@@ -99,38 +100,40 @@ export async function exportResources(
 		console.log('Reading predicate item file')
 		try {
 			const stringContent = await fs.promises.readFile(predicateItemFilePath, 'utf8')
-			content = JSON.parse(stringContent)
+			predicateContent = JSON.parse(stringContent)
 		} catch (e) {
 			console.warn('Failed to read predicate item file JSON')
 			console.warn(e)
 		}
 		// Show overwrite confirmation if predicate file wasn't created by animated_java.
-		if (!content.animated_java) {
+		if (!predicateContent.animated_java) {
 			showPredicateFileOverwriteConfirmation(predicateItemFilePath)
-			content.animated_java = {
+			predicateContent.animated_java = {
 				rigs: {
 					ORIGINAL_PREDICATE_FILE: {
-						used_ids: content.overrides
+						used_ids: predicateContent.overrides
 							.filter(o => o.predicate.custom_model_data !== undefined)
 							.map(o => o.predicate.custom_model_data),
 					},
 				},
 			}
-			usedIds.push(...content.animated_java.rigs.ORIGINAL_PREDICATE_FILE.used_ids)
+			usedIds.push(...predicateContent.animated_java.rigs.ORIGINAL_PREDICATE_FILE.used_ids)
 		}
 
 		// Clean up content
-		content.animated_java ??= { rigs: {} }
-		content.animated_java.rigs ??= {}
-		content.overrides = content.overrides.filter(o => o.predicate.custom_model_data !== 1)
+		predicateContent.animated_java ??= { rigs: {} }
+		predicateContent.animated_java.rigs ??= {}
+		predicateContent.overrides = predicateContent.overrides.filter(
+			o => o.predicate.custom_model_data !== 1
+		)
 		// Merge with existing predicate file
 		console.log('Merging with existing predicate file')
-		console.log(content)
-		for (const [name, rig] of Object.entries(content.animated_java.rigs)) {
+		console.log(predicateContent)
+		for (const [name, rig] of Object.entries(predicateContent.animated_java.rigs)) {
 			const localUsedIds = rig.used_ids
 			if (name === projectNamespace) {
 				// Clean out old overrides
-				content.overrides = content.overrides.filter(o => {
+				predicateContent.overrides = predicateContent.overrides.filter(o => {
 					return !localUsedIds.includes(o.predicate.custom_model_data)
 				})
 				continue
@@ -140,16 +143,16 @@ export async function exportResources(
 	}
 
 	if (!usedIds.includes(1)) usedIds.push(1)
-	content.overrides.push({
+	predicateContent.overrides.push({
 		predicate: { custom_model_data: 1 },
 		model: 'item/animated_java_empty',
 	})
 
 	CustomModelData.usedIds = usedIds
-	content.animated_java.rigs[projectNamespace] = { used_ids: consumedIds }
+	predicateContent.animated_java.rigs[projectNamespace] = { used_ids: consumedIds }
 
 	// Create virtual predicate item file with content
-	const predicateItemFile = minecraftFolder.newFile(`${rigItemName}.json`, content)
+	const predicateItemFile = minecraftFolder.newFile(`${rigItemName}.json`, predicateContent)
 
 	//------------------------------------
 	// Project namespace
@@ -221,16 +224,9 @@ export async function exportResources(
 		(a: any, b: any) => a.predicate.custom_model_data - b.predicate.custom_model_data
 	)
 
-	interface IAJMeta {
-		datapack: object
-		resourcepack: {
-			projects: Record<string, { file_list: string[] }>
-		}
-	}
-
 	async function processAJMeta(filePaths: string[]) {
-		const ajMetaPath = PathModule.join(resourcePackPath, '.ajmeta')
-		let content: IAJMeta | undefined
+		const oldAJMetaPath = PathModule.join(resourcePackPath, '.ajmeta')
+		const ajMetaPath = PathModule.join(resourcePackPath, 'resourcepack.ajmeta')
 
 		// FIXME - This is an extremely hacky way to filter out the predicate item file from the file list
 		filePaths = filePaths.filter(
@@ -241,80 +237,44 @@ export async function exportResources(
 					.replaceAll('/', PathModule.sep)
 		)
 
-		if (await fileExists(ajMetaPath)) {
-			content = await fs.promises
-				.readFile(ajMetaPath, 'utf8')
-				.then(JSON.parse)
-				.catch(() => {
-					throw new Error('Failed to read .ajmeta file as JSON')
-				})
-			if (!content)
-				throw new Error('Failed to read .ajmeta file as JSON. Content is undefined.')
+		const ajmeta = new AJMetaFile()
 
-			// Upgrade from old format
-			// @ts-ignore
-			if (!content.resourcepack && content.projects) {
-				// @ts-ignore
-				content.resourcepack = {}
-				content.datapack = {}
-				// @ts-ignore
-				content.resourcepack.projects = content.projects
-				// @ts-ignore
-				delete content.projects
-			}
-
-			if (!content.resourcepack.projects) {
-				console.warn('Found existing .ajmeta file, but it is missing "projects" key.')
-				content.resourcepack.projects = {}
-			}
-
-			if (!content.resourcepack.projects[NAMESPACE]) {
-				console.warn('Found existing .ajmeta file, but it is missing this project.')
-				content.resourcepack.projects[NAMESPACE] = {
-					file_list: [],
-				}
-			} else {
-				const progress = new ProgressBarController(
-					'Cleaning up old Resource Pack files...',
-					content.resourcepack.projects[NAMESPACE].file_list.length
-				)
-				// Clean out old files from disk
-				const clock = new LimitClock(10)
-				for (let path of content.resourcepack.projects[NAMESPACE].file_list) {
-					await clock.sync().then(b => b && progress.update())
-					path = PathModule.join(resourcePackPath, path)
-					await fs.promises.unlink(path).catch(() => undefined)
-					const dirPath = PathModule.dirname(path)
-					const contents = await fs.promises.readdir(dirPath).catch(() => undefined)
-					if (contents && contents.length === 0)
-						await fs.promises.rmdir(dirPath).catch(() => undefined)
-					progress.add(1)
-				}
-				progress.finish()
-			}
-
-			content.resourcepack.projects[NAMESPACE].file_list = filePaths
+		if (await fileExists(ajMetaPath)) await ajmeta.load(ajMetaPath)
+		else if (await fileExists(oldAJMetaPath)) {
+			await ajmeta.load(oldAJMetaPath)
+			await fs.promises.unlink(oldAJMetaPath)
 		}
 
-		if (!content) {
-			console.warn('.ajmeta does not exist. Creating new .ajmeta file.')
-			content = {
-				datapack: {},
-				resourcepack: {
-					projects: {
-						[NAMESPACE]: {
-							file_list: filePaths,
-						},
-					},
-				},
-			}
+		let project = ajmeta.getProject(Project!.animated_java_uuid!)
+		if (project === undefined) {
+			project = ajmeta.addProject(Project!.animated_java_uuid!, NAMESPACE, filePaths)
 		}
+
+		const progress = new ProgressBarController(
+			'Cleaning up old Resource Pack files...',
+			project.file_list.length
+		)
+		// Clean out old files from disk
+		const clock = new LimitClock(10)
+		for (let path of project.file_list) {
+			await clock.sync().then(b => b && progress.update())
+			path = PathModule.join(resourcePackPath, path)
+			await fs.promises.unlink(path).catch(() => undefined)
+			const dirPath = PathModule.dirname(path)
+			const contents = await fs.promises.readdir(dirPath).catch(() => undefined)
+			if (contents && contents.length === 0)
+				await fs.promises.rmdir(dirPath).catch(() => undefined)
+			progress.add(1)
+		}
+		progress.finish()
+
+		project.file_list = filePaths
 
 		await fs.promises.writeFile(
 			ajMetaPath,
 			ajSettings.minify_output.value
-				? JSON.stringify(content)
-				: JSON.stringify(content, null, 4)
+				? JSON.stringify(ajmeta.toJSON())
+				: JSON.stringify(ajmeta.toJSON(), null, 4)
 		)
 	}
 

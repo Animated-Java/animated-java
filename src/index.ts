@@ -49,6 +49,7 @@ import * as VirtualFileSystem from './util/virtualFileSystem'
 import { openUnexpectedErrorDialog } from './ui/popups/unexpectedError'
 import * as minecraft from './minecraft'
 import { openAJExportInProgressDialog } from './ui/ajExportInProgress'
+import { AJMetaFile } from './ajmeta'
 
 Prism.languages.mcfunction = {}
 
@@ -76,23 +77,24 @@ globalThis.AnimatedJava = {
 	openAJExportInProgressDialog,
 
 	API: {
-		Settings: AJSettings,
-		Exporter: AnimatedJavaExporter,
-		translate,
 		addTranslations,
+		AJMetaFile,
+		columnToRowMajor: transposeMatrix,
+		createInfo,
+		deepslate,
+		ExpectedError,
+		Exporter: AnimatedJavaExporter,
 		formatStr,
+		generateSearchTree,
+		JsonText,
+		LimitClock,
+		minecraft,
+		ProgressBarController,
 		roundTo,
 		roundToN,
+		Settings: AJSettings,
+		translate,
 		VirtualFileSystem,
-		deepslate,
-		ProgressBarController,
-		createInfo,
-		JsonText,
-		columnToRowMajor: transposeMatrix,
-		generateSearchTree,
-		minecraft,
-		ExpectedError,
-		LimitClock,
 	},
 }
 // Uninstall events
