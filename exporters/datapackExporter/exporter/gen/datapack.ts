@@ -98,9 +98,12 @@ export async function generateDatapack(exportData: ExportData) {
 	console.log(folders.datapack)
 
 	const writeProgress = new AnimatedJava.API.ProgressBarController(
-		'Writing datapack to disk',
+		'Writing Data Pack to disk',
 		folders.datapack.childCount
 	)
-	await folders.datapack.writeChildrenToDisk(G.DATAPACK_EXPORT_PATH, { skipEmptyFolders: true })
+	await folders.datapack.writeChildrenToDisk(G.DATAPACK_EXPORT_PATH, {
+		progress: writeProgress,
+		skipEmptyFolders: true,
+	})
 	writeProgress.finish()
 }

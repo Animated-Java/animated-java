@@ -310,15 +310,15 @@ export async function exportResources(
 		progress.finish()
 	} else {
 		console.log('Writing Resource Pack to Disk')
-		const progress = new ProgressBarController(
-			'Writing Resource Pack to Disk',
-			assetsFolder.childCount
-		)
-		progress.update()
 
 		const filePaths = resourcePackFolder.getAllFilePaths()
 
 		await processAJMeta(filePaths)
+
+		const progress = new ProgressBarController(
+			'Writing Resource Pack to Disk',
+			assetsFolder.childCount
+		)
 
 		await assetsFolder.writeToDisk(resourcePackPath, { progress, skipEmptyFolders: true })
 

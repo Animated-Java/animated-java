@@ -6,6 +6,7 @@ import type { addTranslations, translate } from './util/translation'
 import type { formatStr, roundTo, roundToN } from './util/misc'
 import type { ProgressBarController } from './util/progress'
 import type { VariantsContainer } from './variants'
+import { Writable } from 'svelte/store'
 
 declare global {
 	type NotUndefined<T> = T extends undefined ? never : T
@@ -25,6 +26,8 @@ declare global {
 		loaded?: boolean
 		docClick: (link: string) => void
 		events: typeof import('./events')
+		progress: Writable<number>
+		progress_text: Writable<string>
 
 		API: {
 			Exporter: typeof AnimatedJavaExporter

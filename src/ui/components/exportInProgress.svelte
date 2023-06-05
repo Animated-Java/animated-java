@@ -5,6 +5,8 @@
 
 <script lang="ts">
 	import { onDestroy } from 'svelte'
+	let text = AnimatedJava.progress_text
+	let value = AnimatedJava.progress
 
 	jQuery('.dialog_close_button').remove()
 
@@ -14,8 +16,9 @@
 	})
 
 	const interval = setInterval(() => {
-		// @ts-ignore
-		progress.set(Prop.progress)
+		if ($value < $progress) {
+			progress.set($value, { duration: 0 })
+		} else progress.set($value)
 	}, 16)
 
 	onDestroy(() => {
@@ -24,16 +27,18 @@
 </script>
 
 <div class="progress-bar-container">
+	<p>{$text || 'Exporting...'}</p>
 	<progress value={$progress} />
 </div>
 
 <style>
 	.progress-bar-container {
 		display: flex;
-		flex-direction: row;
+		flex-direction: column;
 		align-items: center;
 	}
 	progress {
 		flex-grow: 1;
+		width: 100%;
 	}
 </style>

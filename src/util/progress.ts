@@ -2,7 +2,8 @@ export class ProgressBarController {
 	progress: number
 	constructor(public message: string, public total: number) {
 		this.progress = 0
-		Blockbench.setStatusBarText(message)
+		AnimatedJava.progress.set(0)
+		AnimatedJava.progress_text.set(message)
 	}
 
 	add(change: number) {
@@ -10,17 +11,17 @@ export class ProgressBarController {
 	}
 
 	update() {
-		Blockbench.setProgress(this.progress / this.total)
+		AnimatedJava.progress.set(this.progress / this.total)
 	}
 
 	setMessage(message: string) {
 		this.message = message
-		Blockbench.setStatusBarText(message)
+		AnimatedJava.progress_text.set(message)
 	}
 
 	finish() {
 		this.progress = 0
-		Blockbench.setProgress(0)
-		Blockbench.setStatusBarText()
+		AnimatedJava.progress.set(0)
+		AnimatedJava.progress_text.set('')
 	}
 }

@@ -50,6 +50,7 @@ import { openUnexpectedErrorDialog } from './ui/popups/unexpectedError'
 import * as minecraft from './minecraft'
 import { openAJExportInProgressDialog } from './ui/ajExportInProgress'
 import { AJMetaFile } from './ajmeta'
+import { writable } from 'svelte/store'
 
 Prism.languages.mcfunction = {}
 
@@ -75,6 +76,8 @@ globalThis.AnimatedJava = {
 	events,
 	openUnexpectedErrorDialog,
 	openAJExportInProgressDialog,
+	progress: writable<number>(),
+	progress_text: writable<string>(),
 
 	API: {
 		addTranslations,
