@@ -715,17 +715,17 @@ export function generateFunctions(folders: IFolders) {
 		G.exportData.exporterSettings.include_pause_all_animations_function.value === true
 	) {
 		animationsFolder
-			// ANCHOR - function G.PROJECT_PATH:animations/pause_all_animations
-			.chainNewFile('pause_all_animations.mcfunction', [
-				`execute if entity @s[tag=${G.TAGS.rootEntity}] run function ${G.INTERNAL_PATH}/animations/pause_all_animations_as_root`,
+			// ANCHOR - function G.PROJECT_PATH:animations/pause_all
+			.chainNewFile('pause_all.mcfunction', [
+				`execute if entity @s[tag=${G.TAGS.rootEntity}] run function ${G.INTERNAL_PATH}/animations/pause_all_as_root`,
 				`execute if entity @s[tag=!${G.TAGS.rootEntity}] run tellraw @a ${formatStr(
 					G.TEXT.errorMustBeRunAsRoot.toString(),
-					[`${G.PROJECT_PATH}/animations/pause_all_animations`]
+					[`${G.PROJECT_PATH}/animations/pause_all`]
 				)}`,
 			])
 		internalAnimationsFolder
-			// ANCHOR - function G.INTERNAL_PATH:animations/pause_all_animations_as_root
-			.chainNewFile('pause_all_animations_as_root.mcfunction', [
+			// ANCHOR - function G.INTERNAL_PATH:animations/pause_all_as_root
+			.chainNewFile('pause_all_as_root.mcfunction', [
 				...G.exportData.renderedAnimations.map(
 					a => `function ${G.INTERNAL_PATH}/animations/${a.name}/pause`
 				),

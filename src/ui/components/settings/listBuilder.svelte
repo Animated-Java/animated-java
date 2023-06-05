@@ -27,6 +27,7 @@
 		if (selected === -1) return
 		addItem(setting.options[selected])
 		selected = -1
+		update++
 	}
 </script>
 
@@ -35,11 +36,13 @@
 		<option value={-1}>
 			<div>{setting.addNewItemMessage}</div>
 		</option>
-		{#each setting.options as option, index (update)}
-			<option value={index}>
-				<div>{option.name}</div>
-			</option>
-		{/each}
+		{#key update}
+			{#each setting.options as option, index}
+				<option value={index}>
+					<div>{option.name}</div>
+				</option>
+			{/each}
+		{/key}
 	</select>
 
 	<div slot="beneath">

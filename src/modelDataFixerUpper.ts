@@ -13,11 +13,18 @@ export function process(model: any) {
 	console.log('Upgrading model from version', model.meta.format_version, 'to', FORMAT_VERSION)
 
 	try {
-		if (compareVersions('1.0', model.meta.format_version)) updateModelTo1_0(model)
-		if (compareVersions('1.1', model.meta.format_version)) updateModelTo1_1(model)
-		if (compareVersions('1.2', model.meta.format_version)) updateModelTo1_2(model)
-		if (compareVersions('1.3', model.meta.format_version)) updateModelTo1_3(model)
-		if (compareVersions('1.4', model.meta.format_version)) updateModelTo1_4(model)
+		console.group('Upgrade process')
+		if (model.meta.format_version.length === 3) {
+			if (compareVersions('1.0', model.meta.format_version)) updateModelTo1_0(model)
+			if (compareVersions('1.1', model.meta.format_version)) updateModelTo1_1(model)
+			if (compareVersions('1.2', model.meta.format_version)) updateModelTo1_2(model)
+			if (compareVersions('1.3', model.meta.format_version)) updateModelTo1_3(model)
+			if (compareVersions('1.4', model.meta.format_version)) updateModelTo1_4(model)
+			model.meta.format_version = '0.3.9'
+		}
+		// Versions below this are post 0.3.10. I changed the versioning system to use the AJ version instead of a unique format version.
+		if (compareVersions('0.3.10', model.meta.format_version)) updateModelTo0_3_10(model)
+		console.groupEnd()
 	} catch (e) {
 		console.error(e)
 		openUnexpectedErrorDialog(e)
@@ -25,13 +32,19 @@ export function process(model: any) {
 		return
 	}
 
-	model.meta.format_version ??= FORMAT_VERSION
+	model.meta.format_version = FORMAT_VERSION
 
 	console.log('Upgrade complete')
 }
 
+// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-unused-vars
+function updateModelTo0_3_10(model: any) {
+	console.log('Processing model for AJ 0.3.10')
+}
+
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelTo1_4(model: any) {
+	console.log('Processing model format 1.4')
 	if (
 		model.animated_java.exporter_settings['animated_java:datapack_exporter']
 			.outdated_rig_warning !== undefined
@@ -49,6 +62,7 @@ function updateModelTo1_4(model: any) {
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelTo1_3(model: any) {
+	console.log('Processing model format 1.3')
 	if (model.animated_java.settings.exporter === 'animated_java:animation_exporter') {
 		model.animated_java.settings.exporter = 'animated_java:datapack_exporter'
 	}
@@ -61,6 +75,7 @@ function updateModelTo1_3(model: any) {
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelTo1_2(model: any) {
+	console.log('Processing model format 1.2')
 	for (const variant of model.animated_java.variants) {
 		for (const [from, to] of Object.entries(variant.textureMap as Record<string, string>)) {
 			const fromUUID = from.split('::')[0]
@@ -73,6 +88,7 @@ function updateModelTo1_2(model: any) {
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelTo1_1(model: any) {
+	console.log('Processing model format 1.1')
 	model.animated_java.settings.resource_pack_mcmeta =
 		model.animated_java.settings.resource_pack_folder
 	delete model.animated_java.settings.resource_pack_folder
@@ -84,6 +100,7 @@ function updateModelTo1_1(model: any) {
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelTo1_0(model: any) {
+	console.log('Processing model format 1.0')
 	if (model.meta.settings) {
 		console.log('Upgrading settings...')
 		const animatedJava: IAnimatedJavaModel['animated_java'] = {

@@ -1,4 +1,5 @@
 import { fileExists, loadJsonFile, recursivelyRemoveEmptyFolders } from '../util'
+import { generateEntityTypes } from './entity_types'
 import { generateTags } from './function_tags'
 import { generateFunctions } from './functions'
 import { Globals as G, util } from './globals'
@@ -23,52 +24,23 @@ export interface IFolders {
 	}
 }
 
-export interface IAJMeta {
-	datapack: {
-		projects: Record<
-			string, // UUID
-			{
-				project_name: string
-				files: string[]
-			}
-		>
-	}
-	resourcepack: object
-}
-
-async function loadAJMeta() {
-	let ajMeta: IAJMeta
-	const oldPath = PathModule.join(G.DATAPACK_EXPORT_PATH, '.ajmeta')
-	const newPath = PathModule.join(G.DATAPACK_EXPORT_PATH, '.ajmeta')
-	const path = (await fileExists(oldPath)) ? oldPath : newPath
-
-	if (await fileExists(path)) {
-		ajMeta = await loadJsonFile(path).catch(e => {
-			console.warn(`Failed to load .ajmeta file:\n${e.stack}`)
-		})
-	}
-	if (!ajMeta) ajMeta = {} as IAJMeta
-
-	ajMeta.datapack ??= { projects: {} }
-	ajMeta.datapack.projects ??= {}
-
-	if (path === oldPath) await fs.promises.rm(path).catch(() => {})
-
-	return ajMeta
-}
-
 async function processAJMeta(folders: IFolders) {
 	const { LimitClock } = AnimatedJava.API
-	const ajMetaContent = await loadAJMeta()
+	const ajmeta = new AnimatedJava.API.AJMetaFile()
 
-	let project =
-		ajMetaContent.datapack.projects[Project!.animated_java_uuid!] ??
-		({} as IAJMeta['datapack']['projects'][string])
-	ajMetaContent.datapack.projects[Project!.animated_java_uuid!] = project
-	project.project_name = G.PROJECT_NAME
-	project.files ??= []
+	const oldPath = PathModule.join(G.DATAPACK_EXPORT_PATH, '.ajmeta')
+	const newPath = PathModule.join(G.DATAPACK_EXPORT_PATH, 'datapack.ajmeta')
 
-	const oldFiles = project.files
+	if (await fileExists(newPath)) await ajmeta.load(newPath)
+	else if (await fileExists(oldPath)) {
+		await ajmeta.load(oldPath)
+		await fs.promises.unlink(oldPath).catch(() => {})
+	}
+
+	let project = ajmeta.getProject(Project!.animated_java_uuid!)
+	if (!project) project = ajmeta.addProject(Project!.animated_java_uuid!, G.PROJECT_NAME, [])
+
+	const oldFiles = project.file_list
 	const newFiles = folders.datapack.getAllFilePaths()
 	const filesToRemove = oldFiles.filter(f => !newFiles.includes(f))
 
@@ -89,9 +61,9 @@ async function processAJMeta(folders: IFolders) {
 	}
 	progress.finish()
 
-	project.files = newFiles
+	project.file_list = newFiles
 
-	folders.datapack.newFile('.ajmeta', ajMetaContent)
+	folders.datapack.newFile('datapack.ajmeta', ajmeta.toJSON())
 }
 
 export async function generateDatapack(exportData: ExportData) {
@@ -119,15 +91,19 @@ export async function generateDatapack(exportData: ExportData) {
 
 	generateFunctions(folders)
 	generateTags(folders)
+	generateEntityTypes(folders)
 
 	await processAJMeta(folders)
 
 	console.log(folders.datapack)
 
 	const writeProgress = new AnimatedJava.API.ProgressBarController(
-		'Writing datapack to disk',
+		'Writing Data Pack to disk',
 		folders.datapack.childCount
 	)
-	await folders.datapack.writeChildrenToDisk(G.DATAPACK_EXPORT_PATH, { skipEmptyFolders: true })
+	await folders.datapack.writeChildrenToDisk(G.DATAPACK_EXPORT_PATH, {
+		progress: writeProgress,
+		skipEmptyFolders: true,
+	})
 	writeProgress.finish()
 }

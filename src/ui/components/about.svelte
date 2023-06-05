@@ -32,7 +32,7 @@
 		</div>
 	</div>
 	<p>{PACKAGE.description}</p>
-	<h2 style="margin: 0px 0px 10px 0px;">Created by</h2>
+	<h2 style="padding-top: 16px;">Created by</h2>
 	<br />
 	<div class="profile-image-container">
 		<img
@@ -72,7 +72,15 @@
 	</h2>
 	<div class="name-grid supporter-name-grid">
 		<!-- Active supporters go below this line -->
+		<p class="active-supporter">Boxic</p>
+		<p class="active-supporter">Flubberschnub</p>
+		<p class="active-supporter">HaxOR359</p>
 		<p class="active-supporter">MrMakistein</p>
+		<p class="active-supporter">alumina6767</p>
+		<p class="active-supporter">Serahs</p>
+		<p class="active-supporter">Cinnamon Studios</p>
+		<p class="active-supporter">MarcoStrk</p>
+		<p class="active-supporter">VonLeipenstein</p>
 		<!-- Inactive/old supporters go below this line -->
 		<p class="inactive-supporter">CubeDeveloper</p>
 		<p class="inactive-supporter">DoubleFelix</p>
