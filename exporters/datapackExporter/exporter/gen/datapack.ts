@@ -1,4 +1,5 @@
 import { fileExists, loadJsonFile, recursivelyRemoveEmptyFolders } from '../util'
+import { generateEntityTypes } from './entity_types'
 import { generateTags } from './function_tags'
 import { generateFunctions } from './functions'
 import { Globals as G, util } from './globals'
@@ -90,6 +91,7 @@ export async function generateDatapack(exportData: ExportData) {
 
 	generateFunctions(folders)
 	generateTags(folders)
+	generateEntityTypes(folders)
 
 	await processAJMeta(folders)
 
