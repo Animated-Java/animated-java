@@ -32,7 +32,7 @@
 		</div>
 	</div>
 	<p>{PACKAGE.description}</p>
-	<h2 style="margin: 0px 0px 10px 0px;">Created by</h2>
+	<h2 style="padding-top: 16px;">Created by</h2>
 	<br />
 	<div class="profile-image-container">
 		<img
