@@ -80,6 +80,7 @@
 		<p class="active-supporter">Serahs</p>
 		<p class="active-supporter">Cinnamon Studios</p>
 		<p class="active-supporter">MarcoStrk</p>
+		<p class="active-supporter">VonLeipenstein</p>
 		<!-- Inactive/old supporters go below this line -->
 		<p class="inactive-supporter">CubeDeveloper</p>
 		<p class="inactive-supporter">DoubleFelix</p>
