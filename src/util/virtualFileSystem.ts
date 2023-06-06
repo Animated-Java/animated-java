@@ -182,6 +182,8 @@ export class VirtualFolder extends VirtualNode {
 	}
 
 	async writeToDisk(outputFolder: string, writeOptions: VirtualFileSystemWriteOptions) {
+		// await new Promise(resolve => setTimeout(resolve, 100))
+
 		if (writeOptions.skipEmptyFolders && this.children.length === 0) return
 		const path = PathModule.join(outputFolder, this.name)
 		await fs.promises.mkdir(path, { recursive: true })
@@ -233,6 +235,8 @@ export class VirtualFile extends VirtualNode {
 	}
 
 	async writeToDisk(outputFolder: string, writeOptions: VirtualFileSystemWriteOptions) {
+		// await new Promise(resolve => setTimeout(resolve, 100))
+
 		const path = PathModule.join(outputFolder, this.fileName)
 
 		let content: string | Buffer | Uint8Array

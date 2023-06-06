@@ -2,7 +2,7 @@
 	"type": "module",
 	"name": "animated_java",
 	"title": "Animated Java",
-	"version": "0.3.9b",
+	"version": "0.4.0",
 	"min_blockbench_version": "4.6.5",
 	"author": {
 		"name": "Titus Evans (SnaveSutit)",
@@ -76,7 +76,6 @@
 		"@types/fs-extra": "^11.0.1",
 		"@types/js-yaml": "^4.0.5",
 		"@types/node": "^17.0.21",
-		"@types/three": "^0.148.0",
 		"@typescript-eslint/eslint-plugin": "^5.54.0",
 		"@typescript-eslint/parser": "^5.54.0",
 		"blockbench-types": "https://github.com/SnaveSutit/blockbench-types.git",

@@ -22,12 +22,12 @@
 				"datapack_mcmeta": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\saves\\Animated Java Test World\\datapacks\\test_datapack\\pack.mcmeta",
 				"outdated_rig_warning": false,
 				"root_entity_nbt": "{}",
-				"include_variant_summon_functions": false,
-				"include_apply_variant_functions": false,
-				"include_uninstall_function": false,
-				"include_pause_all_animations_function": false,
-				"include_remove_rigs_function": false,
-				"include_remove_all_function": false
+				"include_variant_summon_functions": true,
+				"include_apply_variant_functions": true,
+				"include_uninstall_function": true,
+				"include_pause_all_animations_function": true,
+				"include_remove_rigs_function": true,
+				"include_remove_all_function": true
 			},
 			"animated_java:json_exporter": {
 				"output_file": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\assets\\happy_box_animated_java_rig\\test.json"
@@ -90,9 +90,10 @@
 			"rescale": false,
 			"locked": false,
 			"from": [-8, 0, -8],
-			"to": [8, 32, 8],
+			"to": [8, 16, 8],
 			"autouv": 0,
 			"color": 0,
+			"visibility": false,
 			"origin": [16, 0, 0],
 			"faces": {
 				"north": {
@@ -112,7 +113,7 @@
 					"texture": 2
 				},
 				"up": {
-					"uv": [32, 16, 16, 0],
+					"uv": [64, 64, 0, 0],
 					"texture": 1
 				},
 				"down": {
@@ -122,6 +123,15 @@
 			},
 			"type": "cube",
 			"uuid": "29c15edc-aea1-917e-1210-69c6c9468111"
+		},
+		{
+			"name": "Text Display",
+			"text": "The quick brown fox jumps over the lazy dog.",
+			"position": [0, 0, 0],
+			"rotation": [0, 0, 0],
+			"visibility": true,
+			"type": "textDisplay",
+			"uuid": "6ea2e259-ed99-118f-bff7-18c54a6e901d"
 		}
 	],
 	"outliner": [
@@ -135,10 +145,11 @@
 			"mirror_uv": false,
 			"isOpen": true,
 			"locked": false,
-			"visibility": true,
+			"visibility": false,
 			"autouv": 0,
 			"children": ["29c15edc-aea1-917e-1210-69c6c9468111"]
-		}
+		},
+		"6ea2e259-ed99-118f-bff7-18c54a6e901d"
 	],
 	"textures": [
 		{

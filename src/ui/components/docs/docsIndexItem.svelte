@@ -45,12 +45,12 @@
 		style={$openPageUrl === myPageUrl ? 'background: var(--color-button);' : ''}
 		on:click={onTitleClick}
 	>
+		<span class="title">{myPage.title}</span>
 		{#if Object.entries(myStructure).length > 0}
-			<span class="material-icons" on:click={toggleExpand}>
+			<span class="material-icons arrow" on:click={toggleExpand}>
 				{expanded ? 'expand_more' : 'chevron_right'}
 			</span>
 		{/if}
-		<span class="title">{myPage.title}</span>
 	</div>
 	{#if expanded}
 		<ol class="child-container">
@@ -71,11 +71,12 @@
 	.title-container {
 		display: flex;
 		padding: 2px 10px 2px 5px;
+		text-decoration: unset;
 	}
 
 	.title {
 		text-decoration: underline;
-		margin-left: 2px;
+		margin-right: 2px;
 	}
 
 	.title-container:hover {
@@ -87,6 +88,13 @@
 		display: flex;
 		flex-direction: column;
 		list-style-type: none;
-		margin-left: 20px;
+		margin: 0px 0px 0px 1em;
+		padding: 0px;
+	}
+
+	.arrow {
+		font-size: 20px;
+		display: flex;
+		align-items: center;
 	}
 </style>

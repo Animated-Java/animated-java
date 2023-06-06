@@ -113,9 +113,9 @@ export function createAction(id: NamespacedString, options: ActionOptions) {
 export function createMenu(template: MenuItem[], options?: MenuOptions) {
 	const menu = new Menu(template, options)
 
-	events.EXTRACT_MODS.subscribe(() => {
-		menu.delete()
-	}, true)
+	// events.EXTRACT_MODS.subscribe(() => {
+	// 	menu.delete()
+	// }, true)
 
 	return menu
 }
@@ -134,9 +134,9 @@ export function createBarMenu(
 ) {
 	const menu = new BarMenu(id, structure, condition)
 
-	events.EXTRACT_MODS.subscribe(() => {
-		menu.delete()
-	}, true)
+	// events.EXTRACT_MODS.subscribe(() => {
+	// 	menu.delete()
+	// }, true)
 
 	return menu
 }

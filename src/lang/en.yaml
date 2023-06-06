@@ -154,7 +154,7 @@ animated_java.dialog.bone_config: Animated Java Bone Config
 animated_java.bone_config.nbt: Bone Entity NBT
 animated_java.bone_config.nbt.description: |-
   Custom NBT to apply to this bone entity.
-  WARNING! This NBT will overwrite any NBT that Animated Java creates. Use with caution.
+  Note that some internal NBT may take priority over this setting.
 
 ### Camera Config
 animated_java.dialog.camera_config: Animated Java Camera Config
@@ -175,7 +175,7 @@ animated_java.camera_config.entity_type.warning.unknown_entity: |-
 animated_java.camera_config.nbt: NBT
 animated_java.camera_config.nbt.description: |-
   Custom NBT to apply to the summoned camera entity.
-  NOTE: Any tags you add to the entity in this NBT will be removed when exported.
+  Note that some internal NBT tags will take priority over this setting.
 
 ### Locator Config
 animated_java.dialog.locator_config: Animated Java Locator Config
@@ -196,7 +196,7 @@ animated_java.locator_config.entity_type.warning.unknown_entity: |-
 animated_java.locator_config.nbt: NBT
 animated_java.locator_config.nbt.description: |-
   Custom NBT to apply to the summoned locator entity.
-  NOTE: Any tags you add to the entity in this NBT will be removed when exported.
+  Note that some internal NBT tags will take priority over this setting.
 
 ### Animation Config
 animated_java.dialog.animation_config.title: Animation Properties

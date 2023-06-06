@@ -11,6 +11,7 @@
 	const sortedCubes: Record<string, Cube[]> = {}
 	for (const cube of invalidCubes) {
 		const parentName = getParentName(cube)
+		if (!parentName) continue
 		if (!sortedCubes[parentName]) sortedCubes[parentName] = []
 		sortedCubes[parentName].push(cube)
 	}

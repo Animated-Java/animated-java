@@ -1,0 +1,218 @@
+{
+	"title": "JSON Exporter Structure",
+	"type": "object",
+	"required": ["project_settings", "exporter_settings", "rig", "variants", "animations"],
+	"properties": {
+		"project_settings": {
+			"type": "object",
+			"description": "The project settings used to export the file."
+		},
+		"exporter_settings": {
+			"type": "object",
+			"description": "The exporter settings used to export the file."
+		},
+		"rig": {
+			"type": "object",
+			"required": ["default_pose", "node_map"],
+			"properties": {
+				"default_pose": {
+					"type": "array",
+					"description": "The default pose of the rig.",
+					"items": {
+						"$ref": "#/definitions/animation_frame"
+					}
+				},
+				"node_map": {
+					"type": "object",
+					"description": "A map of nodes by UUID.",
+					"patternProperties": {
+						".*": {
+							"$ref": "#/definitions/node"
+						}
+					}
+				}
+			}
+		},
+		"variants": {
+			"type": "object",
+			"description": "A map of variants by uuid.",
+			"patternProperties": {
+				".*": {
+					"$ref": "#/definitions/variant"
+				}
+			}
+		},
+		"animations": {
+			"type": "object",
+			"description": "A map of animations by name.",
+			"patternProperties": {
+				".*": {
+					"$ref": "#/definitions/animation"
+				}
+			}
+		}
+	},
+	"$def": {
+		"node_type": {
+			"enum": ["bone", "locator", "camera"]
+		},
+		"node": {
+			"type": "object",
+			"required": ["type", "name", "uuid", "custom_model_data", "resource_location"],
+			"properties": {
+				"type": {
+					"$ref": "#/definitions/node_type"
+				},
+				"name": {
+					"type": "string"
+				},
+				"uuid": {
+					"type": "string"
+				},
+				"custom_model_data": {
+					"type": "number"
+				},
+				"resource_location": {
+					"type": "string"
+				}
+			}
+		},
+		"variant": {
+			"type": "object",
+			"required": ["name", "uuid", "affected_bones", "affected_bones_is_a_whitelist"],
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"uuid": {
+					"type": "string"
+				},
+				"models": {
+					"type": "object",
+					"description": "A map of modified bones by UUID.",
+					"patternProperties": {
+						".*": {
+							"type": "object",
+							"properties": {
+								"custom_model_data": {
+									"type": "number",
+									"description": "The custom model data to use for this bone."
+								},
+								"resource_location": {
+									"type": "string",
+									"description": "The resource location of the model to use for this bone."
+								}
+							}
+						}
+					}
+				},
+				"affected_bones": {
+					"type": "array",
+					"description": "A list of bones (by UUID) affected by this variant.",
+					"items": {
+						"type": "string"
+					}
+				},
+				"affected_bones_is_a_whitelist": {
+					"type": "boolean",
+					"description": "If true, only the bones in the list are affected. If false, all bones except those in the list are affected."
+				}
+			}
+		},
+		"animation": {
+			"type": "object",
+			"required": [
+				"frames",
+				"duration",
+				"loop_mode",
+				"affected_bones",
+				"affected_bones_is_a_whitelist"
+			],
+			"properties": {
+				"frames": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/animation_frame"
+					}
+				},
+				"duration": {
+					"type": "number"
+				},
+				"loop_mode": {
+					"$ref": "#/definitions/animation_loop_mode"
+				},
+				"affected_bones": {
+					"type": "array",
+					"description": "A list of bones (by UUID) affected by this animation.",
+					"items": {
+						"type": "string"
+					}
+				},
+				"affected_bones_is_a_whitelist": {
+					"type": "boolean",
+					"description": "If true, only the bones in the list are affected. If false, all bones except those in the list are affected."
+				}
+			}
+		},
+		"loop_mode": {
+			"enum": ["once", "hold", "loop"]
+		},
+		"animation_frame": {
+			"type": "object",
+			"required": ["time", "nodes"],
+			"properties": {
+				"nodes": {
+					"type": "array",
+					"description": "A list of nodes and their new transforms for this frame.\nNodes that do not change this frame are omitted.",
+					"items": {
+						"$ref": "#/definitions/node_animation_frame_entry"
+					}
+				},
+				"commands": {
+					"type": "object",
+					"properties": {
+						"commands": {
+							"type": "string",
+							"description": "The contents of a function to execute on this frame."
+						},
+						"execute_condition": {
+							"type": "string",
+							"description": "The condition to execute the variant switch."
+						}
+					}
+				},
+				"variant": {
+					"type": "object",
+					"properties": {
+						"variant": {
+							"type": "string",
+							"description": "The UUID of the variant to switch to."
+						},
+						"execute_condition": {
+							"type": "string",
+							"description": "The condition to execute the variant switch."
+						}
+					}
+				}
+			}
+		},
+		"node_animation_frame_entry": {
+			"type": "object",
+			"required": ["type", "uuid", "matrix"],
+			"properties": {
+				"uuid": {
+					"type": "string"
+				},
+				"matrix": {
+					"type": "array",
+					"items": {
+						"type": "number"
+					}
+				},
+				"interpolation": {
+					"enum": ["default", "instant"]
+				}
+			}
+		}
+	}
+}

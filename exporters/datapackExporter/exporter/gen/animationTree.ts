@@ -6,7 +6,7 @@ export type IFrameBranch = AnimatedJava.ITreeBranch<AnimatedJava.IRenderedAnimat
 export type IFrameTree = IFrameBranch | IFrameLeaf
 
 export function loadAnimationTreeGenerator() {
-	const { rig } = G.exportData
+	// const { rig } = G.exportData
 	const { formatStr, roundToN } = AnimatedJava.API
 	const { NbtCompound, NbtInt } = AnimatedJava.API.deepslate
 	const { matrixToNbtFloatArray } = loadUtil()
@@ -27,12 +27,12 @@ export function loadAnimationTreeGenerator() {
 		const data = new NbtCompound()
 			.set('transformation', matrixToNbtFloatArray(node.matrix))
 			.set('start_interpolation', new NbtInt(0))
-		console.log(node.interpolation)
+		// console.log(node.interpolation)
 		if (node.interpolation === 'instant') {
-			console.log('a')
+			// console.log('a')
 			data.set('interpolation_duration', new NbtInt(0))
 		} else if (node.interpolation === 'default') {
-			console.log('b')
+			// console.log('b')
 			data.set('interpolation_duration', new NbtInt(G.DEFAULT_INTERPOLATION_DURATION))
 		}
 		return `execute if entity @s[tag=${formatStr(G.TAGS.namedBoneEntity, [
@@ -103,9 +103,9 @@ export function loadAnimationTreeGenerator() {
 		commands.push(
 			G.IS_SINGLE_ENTITY_RIG
 				? // prettier-ignore
-				  `function ${G.AJ_NAMESPACE}:animations/${animName}/tree/${getNodeLeafFileName(leaf)}`
+				  `function ${G.INTERNAL_PATH}/animations/${animName}/tree/${getNodeLeafFileName(leaf)}`
 				: // prettier-ignore
-				  `execute on passengers run function ${G.AJ_NAMESPACE}:animations/${animName}/tree/${getNodeLeafFileName(leaf)}`
+				  `execute on passengers run function ${G.INTERNAL_PATH}/animations/${animName}/tree/${getNodeLeafFileName(leaf)}`
 		)
 		if (!(leaf.item.commands || leaf.item.variant)) return commands
 
@@ -120,7 +120,7 @@ export function loadAnimationTreeGenerator() {
 
 		if (leaf.item.variant) {
 			const variant = G.VARIANTS.find(v => v.uuid === leaf.item.variant.uuid)
-			let command = `function ${G.AJ_NAMESPACE}:apply_variant/${variant.name}_as_root`
+			let command = `function ${G.INTERNAL_PATH}/apply_variant/${variant.name}/as_root`
 			const condition = leaf.item.variant.executeCondition
 			if (condition) commands.push(`execute ${condition} run ${command}`)
 			else commands.push(command)
@@ -145,8 +145,8 @@ export function loadAnimationTreeGenerator() {
 				cmds
 			)
 			let command = `function ${
-				G.AJ_NAMESPACE
-			}:animations/${animName}/tree/${getRootLeafFileName(leaf)}_effects_${index}`
+				G.INTERNAL_PATH
+			}/animations/${animName}/tree/${getRootLeafFileName(leaf)}_effects_${index}`
 			commands.push(
 				condition
 					? `execute unless entity @s[tag=${G.TAGS.disableCommandKeyframes}] at @s ${condition} run ${command}`
@@ -171,7 +171,7 @@ export function loadAnimationTreeGenerator() {
 
 				return `execute if score @s ${G.SCOREBOARD.animTime} matches ${
 					tree.minScoreIndex
-				}..${tree.maxScoreIndex} run function ${G.AJ_NAMESPACE}:animations/${
+				}..${tree.maxScoreIndex} run function ${G.INTERNAL_PATH}/animations/${
 					anim.name
 				}/tree/${getBranchFileName(tree)}`
 			}
@@ -188,7 +188,7 @@ export function loadAnimationTreeGenerator() {
 
 			return `execute if score @s ${G.SCOREBOARD.animTime} matches ${
 				tree.scoreIndex
-			} run function ${G.AJ_NAMESPACE}:animations/${anim.name}/tree/${getRootLeafFileName(
+			} run function ${G.INTERNAL_PATH}/animations/${anim.name}/tree/${getRootLeafFileName(
 				tree
 			)}`
 		}

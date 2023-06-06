@@ -284,7 +284,7 @@ function getBoneBoundingBox(group: Group) {
 
 function renderGroup(group: Group, rig: IRenderedRig) {
 	if (!group.export) return
-	const parentId = group.parent instanceof Group ? group.parent.uuid : group.parent
+	const parentId = (group.parent instanceof Group ? group.parent.uuid : group.parent)!
 
 	const path = PathModule.join(rig.modelExportFolder, group.name + `.json`)
 	const parsed = parseResourcePackPath(path)
@@ -372,7 +372,7 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 }
 
 function renderLocator(locator: Locator, rig: IRenderedRig): INodeStructure {
-	const parentId = locator.parent instanceof Group ? locator.parent.uuid : locator.parent
+	const parentId = (locator.parent instanceof Group ? locator.parent.uuid : locator.parent)!
 
 	const renderedLocator: IRenderedNodes['Locator'] = {
 		type: 'locator',
@@ -393,7 +393,7 @@ function renderLocator(locator: Locator, rig: IRenderedRig): INodeStructure {
 }
 
 function renderCamera(camera: ICamera, rig: IRenderedRig): INodeStructure {
-	const parentId = camera.parent instanceof Group ? camera.parent.uuid : camera.parent
+	const parentId = (camera.parent instanceof Group ? camera.parent.uuid : camera.parent)!
 
 	const renderedCamera: IRenderedNodes['Camera'] = {
 		type: 'camera',
@@ -424,7 +424,6 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 				throw new Error(
 					`Invalid texture mapping found while exporting variant models. If you're seeing this error something has gone horribly wrong.`
 				)
-			// console.log(fromTexture, toTexture)
 			if (!rig.textures[toTexture.id]) rig.textures[toTexture.id] = toTexture
 			textures[fromTexture.id] = getTextureResourceLocation(toTexture, rig).resourceLocation
 		}
