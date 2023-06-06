@@ -215,7 +215,7 @@ function buildProd() {
 			minify: true,
 			// sourcemap: 'inline',
 			platform: 'node',
-			loader: { '.svg': 'dataurl' },
+			loader: { '.svg': 'dataurl', '.ttf': 'binary' },
 			plugins: [
 				workerPlugin.workerPlugin({
 					builder: buildWorker,

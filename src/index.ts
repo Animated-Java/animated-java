@@ -122,7 +122,7 @@ BBPlugin.register(PACKAGE.name, {
 	variant: 'desktop',
 	version: PACKAGE.version,
 	min_version: PACKAGE.min_blockbench_version,
-	tags: ['Minecraft: Java Edition', 'Animation', 'Armor Stand'],
+	tags: ['Minecraft: Java Edition', 'Animation', 'Display Entities'],
 	await_loading: true,
 	onload: consoleGroupCollapsed(`${PACKAGE.name}:onload`, () => {
 		events.LOAD.dispatch()
