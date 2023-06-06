@@ -181,7 +181,7 @@
 	}
 	.support-me-button:hover {
 		transform: scale(1.05);
-		box-shadow: 0px 0px 10px 0px #fff;
+		box-shadow: 0px 0px 10px 0px white;
 	}
 
 	div.dialog-content {
