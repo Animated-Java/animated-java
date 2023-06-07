@@ -65,8 +65,14 @@ datapack:
                           - as_root.mcfunction
                           - as_rig_entities.mcfunction
                           - as_bones.mcfunction
-                          - as_locators.mcfunction
-                          - as_cameras.mcfunction
+                          - as_locator_origins.mcfunction
+                          - as_camera_origins.mcfunction
+                          - camera_a:
+                              - as_origin.mcfunction
+                              - as_camera.mcfunction
+                          - locator_a:
+                              - as_origin.mcfunction
+                              - as_locator.mcfunction
                       - load.mcfunction
                       - load_as_root.mcfunction
                       - tick.mcfunction
@@ -78,34 +84,34 @@ datapack:
                           - as_root.json
                           - as_rig_entities.json
                           - as_bones.json
+                          - as_locator_origins.json
                           - as_locators.json
-                          - as_locator_targets.json
+                          - as_camera_origins.json
                           - as_cameras.json
-                          - as_camera_targets.json
                       - on_tick:
                           - as_root.json
                           - as_rig_entities.json
                           - as_bones.json
+                          - as_locator_origins.json
                           - as_locators.json
-                          - as_locator_targets.json
+                          - as_camera_origins.json
                           - as_cameras.json
-                          - as_camera_targets.json
                       - on_summon:
                           - as_root.json
                           - as_rig_entities.json
                           - as_bones.json
+                          - as_locator_origins.json
                           - as_locators.json
-                          - as_locator_targets.json
+                          - as_camera_origins.json
                           - as_cameras.json
-                          - as_camera_targets.json
                       - on_remove:
                           - as_root.json
                           - as_rig_entities.json
                           - as_bones.json
+                          - as_locator_origins.json
                           - as_locators.json
-                          - as_locator_targets.json
+                          - as_camera_origins.json
                           - as_cameras.json
-                          - as_camera_targets.json
       - minecraft:
           - tags:
               - functions:

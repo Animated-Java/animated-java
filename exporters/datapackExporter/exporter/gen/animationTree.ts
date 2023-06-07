@@ -44,7 +44,7 @@ export function loadAnimationTreeGenerator() {
 		const pos = node.pos
 		const euler = new THREE.Euler().setFromQuaternion(node.rot, 'YXZ')
 		const rot = new THREE.Vector3(euler.x, euler.y, euler.z).multiplyScalar(180 / Math.PI)
-		return `execute if entity @s[tag=${formatStr(G.TAGS.namedLocatorEntity, [
+		return `execute if entity @s[tag=${formatStr(G.TAGS.namedLocatorOrigin, [
 			node.name,
 		])}] at @s on origin run tp @s ^${roundToN(pos.x, 100000)} ^${roundToN(
 			pos.y,
@@ -59,7 +59,7 @@ export function loadAnimationTreeGenerator() {
 		const pos = node.pos
 		const euler = new THREE.Euler().setFromQuaternion(node.rot, 'YXZ')
 		const rot = new THREE.Vector3(euler.x, euler.y, euler.z).multiplyScalar(180 / Math.PI)
-		return `execute if entity @s[tag=${formatStr(G.TAGS.namedCameraEntity, [
+		return `execute if entity @s[tag=${formatStr(G.TAGS.namedCameraOrigin, [
 			node.name,
 		])}] at @s on origin run tp @s ^${roundToN(pos.x, 100000)} ^${roundToN(
 			pos.y - 1.62,

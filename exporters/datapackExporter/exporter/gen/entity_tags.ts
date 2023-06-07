@@ -6,17 +6,21 @@ export function getTags() {
 		globalRigRoot: `aj.rig_root`,
 		rigEntity: `aj.${G.PROJECT_NAME}.rig_entity`,
 		rootEntity: `aj.${G.PROJECT_NAME}.root`,
+
 		boneEntity: `aj.${G.PROJECT_NAME}.bone`,
-		locatorEntity: `aj.${G.PROJECT_NAME}.locator`,
-		cameraEntity: `aj.${G.PROJECT_NAME}.camera`,
 		namedBoneEntity: `aj.${G.PROJECT_NAME}.bone.%s`,
+
+		locatorOrigin: `aj.${G.PROJECT_NAME}.locator_origin`,
+		namedLocatorOrigin: `aj.${G.PROJECT_NAME}.locator_origin.%s`,
+		locatorEntity: `aj.${G.PROJECT_NAME}.locator`,
 		namedLocatorEntity: `aj.${G.PROJECT_NAME}.locator.%s`,
+
+		cameraOrigin: `aj.${G.PROJECT_NAME}.camera_origin`,
+		namedCameraOrigin: `aj.${G.PROJECT_NAME}.camera_origin.%s`,
+		cameraEntity: `aj.${G.PROJECT_NAME}.camera`,
 		namedCameraEntity: `aj.${G.PROJECT_NAME}.camera.%s`,
+
 		activeAnim: `aj.${G.PROJECT_NAME}.animation.%s`,
-		locatorTarget: `aj.${G.PROJECT_NAME}.locator_target`,
-		namedLocatorTarget: `aj.${G.PROJECT_NAME}.locator_target.%s`,
-		cameraTarget: `aj.${G.PROJECT_NAME}.camera_target`,
-		namedCameraTarget: `aj.${G.PROJECT_NAME}.camera_target.%s`,
 		disableCommandKeyframes: `aj.${G.PROJECT_NAME}.disable_command_keyframes`,
 	}
 }
