@@ -12,6 +12,6 @@ export function generateEntityTypes(folders: IFolders) {
 		.newFolder('entity_types')
 		.chainNewFile('root.json', { replace: false, values: ['minecraft:item_display'] })
 		.chainNewFile('bone.json', { replace: false, values: ['minecraft:item_display'] })
-		.chainNewFile('locator.json', { replace: false, values: ['minecraft:snowball'] })
-		.chainNewFile('camera.json', { replace: false, values: ['minecraft:snowball'] })
+		.chainNewFile('locator_origin.json', { replace: false, values: ['minecraft:snowball'] })
+		.chainNewFile('camera_origin.json', { replace: false, values: ['minecraft:snowball'] })
 }

@@ -4,7 +4,7 @@ import { translate } from '../util/translation'
 // import { applyModelVariant } from '../variants'
 
 const oldEffectAnimatorDisplayFrame = EffectAnimator.prototype.displayFrame
-const oldEffectAnimatorStartPreviousSounds = EffectAnimator.prototype.startPreviousSounds
+// const oldEffectAnimatorStartPreviousSounds = EffectAnimator.prototype.startPreviousSounds
 const OLD_CHANNELS = { ...EffectAnimator.prototype.channels }
 
 let installed = false
