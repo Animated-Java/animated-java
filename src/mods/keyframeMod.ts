@@ -74,11 +74,35 @@ export function injectCustomKeyframes() {
 	})
 
 	for (const channel of Object.keys(OLD_CHANNELS)) {
+		if (channel === 'sound') continue
 		delete EffectAnimator.prototype.channels[channel]
 	}
 
 	// Modify keyframe functionality
-	EffectAnimator.prototype.displayFrame = function (this: EffectAnimator) {
+	EffectAnimator.prototype.displayFrame = function (this: EffectAnimator, inLoop: boolean) {
+		// Default Blockbench Sound keyframe handling
+		if (inLoop && !this.muted.sound) {
+			this.sound.forEach((kf: _Keyframe) => {
+				const diff = kf.time - this.animation.time
+				if (diff >= 0 && diff < (1 / 60) * (Timeline.playback_speed / 100)) {
+					if (kf.data_points[0].file && !kf.cooldown) {
+						const media = new Audio(kf.data_points[0].file as string)
+						media.playbackRate = Math.clamp(Timeline.playback_speed / 100, 0.1, 4.0)
+						media.volume = Math.clamp(settings.volume.value / 100, 0, 1)
+						media.play().catch(() => null)
+						Timeline.playing_sounds.push(media)
+						media.onended = function () {
+							Timeline.playing_sounds.remove(media)
+						}
+						kf.cooldown = true
+						setTimeout(() => {
+							delete kf.cooldown
+						}, 400)
+					}
+				}
+			})
+		}
+
 		if (!Project || !Project.animated_java_variants) return
 		if (!this.muted.variants) {
 			let after, before, result: _Keyframe | undefined
@@ -114,9 +138,9 @@ export function injectCustomKeyframes() {
 		this.last_displayed_time = this.animation.time
 	}
 
-	EffectAnimator.prototype.startPreviousSounds = function (this: EffectAnimator) {
-		// Do nothing. Blockbench throws an error if this isn't overwritten.
-	}
+	// EffectAnimator.prototype.startPreviousSounds = function (this: EffectAnimator) {
+	// 	// Do nothing. Blockbench throws an error if this isn't overwritten.
+	// }
 
 	installed = true
 }
@@ -124,9 +148,10 @@ export function injectCustomKeyframes() {
 export function extractCustomKeyframes() {
 	if (!installed) return
 	EffectAnimator.prototype.displayFrame = oldEffectAnimatorDisplayFrame
-	EffectAnimator.prototype.startPreviousSounds = oldEffectAnimatorStartPreviousSounds
+	// EffectAnimator.prototype.startPreviousSounds = oldEffectAnimatorStartPreviousSounds
 
 	for (const channel of Object.keys(OLD_CHANNELS)) {
+		if (channel === 'sound') continue
 		EffectAnimator.prototype.channels[channel] = OLD_CHANNELS[channel]
 	}
 
