@@ -91,8 +91,8 @@ function generateLocatorPassenger(
 			new deepslate.NbtList([
 				new deepslate.NbtString(G.TAGS.new),
 				new deepslate.NbtString(G.TAGS.rigEntity),
-				new deepslate.NbtString(G.TAGS.locatorEntity),
-				new deepslate.NbtString(formatStr(G.TAGS.namedLocatorEntity, [locator.name])),
+				new deepslate.NbtString(G.TAGS.locatorOrigin),
+				new deepslate.NbtString(formatStr(G.TAGS.namedLocatorOrigin, [locator.name])),
 			])
 		)
 		.set(
@@ -125,12 +125,12 @@ function generateLocatorPassenger(
 			)
 		)
 
-	const locatorTargetNbt = (deepslate.NbtTag.fromString(locator.nbt) as NbtCompound)
+	const locatorEntityNbt = (deepslate.NbtTag.fromString(locator.nbt) as NbtCompound)
 		.set(
 			'Tags',
 			new deepslate.NbtList([
-				new deepslate.NbtString(G.TAGS.locatorTarget),
-				new deepslate.NbtString(formatStr(G.TAGS.namedLocatorTarget, [locator.name])),
+				new deepslate.NbtString(G.TAGS.locatorEntity),
+				new deepslate.NbtString(formatStr(G.TAGS.namedLocatorEntity, [locator.name])),
 				new deepslate.NbtString(G.TAGS.new),
 			])
 		)
@@ -145,7 +145,7 @@ function generateLocatorPassenger(
 						'',
 						{ text: `${G.PROJECT_NAME}`, color: 'light_purple' },
 						`.`,
-						{ text: `locatorTarget`, color: 'white' },
+						{ text: `locatorEntity`, color: 'white' },
 						`[`,
 						{ text: `${locator.name}`, color: 'yellow' },
 						`]`,
@@ -164,25 +164,25 @@ function generateLocatorPassenger(
 	}
 	internalSummonFolder
 		.newFolder('locator_' + locator.name)
-		// ANCHOR - function G.PROJECT_PATH/summon/locator_<locator_name>/as_locator
-		.chainNewFile('as_locator.mcfunction', [
-			// `say Origin`,
-			`summon ${locator.entity_type} ~ ~ ~ ${locatorTargetNbt.toString()}`,
-			`execute as @e[type=${locator.entity_type},tag=${formatStr(G.TAGS.namedLocatorTarget, [
+		// ANCHOR - function G.PROJECT_PATH/summon/locator_<locator_name>/as_origin
+		.chainNewFile('as_origin.mcfunction', [
+			// `say Locator Origin`,
+			`summon ${locator.entity_type} ~ ~ ~ ${locatorEntityNbt.toString()}`,
+			`execute as @e[type=${locator.entity_type},tag=${formatStr(G.TAGS.namedLocatorEntity, [
 				locator.name,
-			])},tag=${G.TAGS.new},limit=1,distance=..0.1] run function ${
-				G.PROJECT_PATH
-			}/summon/locator_${locator.name}/as_target`,
+			])},tag=${G.TAGS.new},limit=1,distance=..1] run function ${
+				G.INTERNAL_PATH
+			}/summon/locator_${locator.name}/as_entity`,
 			`data modify entity @s Owner set from storage animated_java Owner`,
 			`data remove storage animated_java Owner`,
-			// `execute on origin run say locatorTarget for ${locator.name}`,
 		])
-		// ANCHOR - function G.PROJECT_PATH/summon/locator_<locator_name>/as_target
-		.chainNewFile('as_target.mcfunction', [
+		// ANCHOR - function G.PROJECT_PATH/summon/locator_<locator_name>/as_entity
+		.chainNewFile('as_entity.mcfunction', [
+			// `say Locator Entity`,
 			locatorToString(G.exportData.rig.defaultPose.find(v => v.uuid === uuid)),
 			`data modify storage animated_java Owner set from entity @s UUID`,
 			`tag @s remove ${G.TAGS.new}`,
-			`function #${G.PROJECT_PATH}/on_summon/as_locator_targets`,
+			`function #${G.PROJECT_PATH}/on_summon/as_locator_entities`,
 		])
 
 	return passenger
@@ -204,8 +204,8 @@ function generateCameraPassenger(
 			new deepslate.NbtList([
 				new deepslate.NbtString(G.TAGS.new),
 				new deepslate.NbtString(G.TAGS.rigEntity),
-				new deepslate.NbtString(G.TAGS.cameraEntity),
-				new deepslate.NbtString(formatStr(G.TAGS.namedCameraEntity, [camera.name])),
+				new deepslate.NbtString(G.TAGS.cameraOrigin),
+				new deepslate.NbtString(formatStr(G.TAGS.namedCameraOrigin, [camera.name])),
 			])
 		)
 		.set(
@@ -238,12 +238,12 @@ function generateCameraPassenger(
 			)
 		)
 
-	const cameraTargetNbt = (deepslate.NbtTag.fromString(camera.nbt) as NbtCompound)
+	const cameraNbt = (deepslate.NbtTag.fromString(camera.nbt) as NbtCompound)
 		.set(
 			'Tags',
 			new deepslate.NbtList([
-				new deepslate.NbtString(G.TAGS.locatorTarget),
-				new deepslate.NbtString(formatStr(G.TAGS.namedLocatorTarget, [camera.name])),
+				new deepslate.NbtString(G.TAGS.cameraEntity),
+				new deepslate.NbtString(formatStr(G.TAGS.namedCameraEntity, [camera.name])),
 				new deepslate.NbtString(G.TAGS.new),
 			])
 		)
@@ -258,7 +258,7 @@ function generateCameraPassenger(
 						'',
 						{ text: `${G.PROJECT_NAME}`, color: 'light_purple' },
 						`.`,
-						{ text: `locatorTarget`, color: 'white' },
+						{ text: `camera`, color: 'white' },
 						`[`,
 						{ text: `${camera.name}`, color: 'yellow' },
 						`]`,
@@ -277,25 +277,25 @@ function generateCameraPassenger(
 	}
 	internalSummonFolder
 		.newFolder('camera_' + camera.name)
-		// ANCHOR - function G.PROJECT_PATH/summon/camera_<camera_name>/as_camera
-		.chainNewFile('as_camera.mcfunction', [
-			// `say Origin`,
-			`summon ${camera.entity_type} ~ ~ ~ ${cameraTargetNbt.toString()}`,
-			`execute as @e[type=${camera.entity_type},tag=${formatStr(G.TAGS.namedCameraTarget, [
+		// ANCHOR - function G.PROJECT_PATH/summon/camera_<camera_name>/as_origin
+		.chainNewFile('as_origin.mcfunction', [
+			// `say Camera Origin`,
+			`summon ${camera.entity_type} ~ ~ ~ ${cameraNbt.toString()}`,
+			`execute as @e[type=${camera.entity_type},tag=${formatStr(G.TAGS.namedCameraEntity, [
 				camera.name,
-			])},tag=${G.TAGS.new},limit=1,distance=..0.1] run function ${
-				G.PROJECT_PATH
-			}/summon/camera_${camera.name}/as_target`,
+			])},tag=${G.TAGS.new},limit=1,distance=..1] run function ${
+				G.INTERNAL_PATH
+			}/summon/camera_${camera.name}/as_entity`,
 			`data modify entity @s Owner set from storage animated_java Owner`,
 			`data remove storage animated_java Owner`,
-			// `execute on origin run say cameraTarget for ${camera.name}`,
 		])
-		// ANCHOR - function G.PROJECT_PATH/summon/camera_<camera_name>/as_target
-		.chainNewFile('as_target.mcfunction', [
+		// ANCHOR - function G.PROJECT_PATH/summon/camera_<camera_name>/as_entity
+		.chainNewFile('as_entity.mcfunction', [
+			// `say Camera Entity`,
 			cameraToString(G.exportData.rig.defaultPose.find(v => v.uuid === uuid)),
 			`data modify storage animated_java Owner set from entity @s UUID`,
 			`tag @s remove ${G.TAGS.new}`,
-			`function #${G.PROJECT_PATH}/on_summon/as_camera_targets`,
+			`function #${G.PROJECT_PATH}/on_summon/as_camera_entities`,
 		])
 
 	return passenger
@@ -527,21 +527,21 @@ export function generateFunctions(folders: IFolders) {
 			`function #${G.PROJECT_PATH}/on_summon/as_rig_entities`,
 			`execute if entity @s[tag=${G.TAGS.boneEntity}] run function #${G.INTERNAL_PATH}/on_summon/as_bones`,
 			locatorCount > 0
-				? `execute if entity @s[tag=${G.TAGS.locatorEntity}] run function ${G.INTERNAL_PATH}/summon/as_locators`
+				? `execute if entity @s[tag=${G.TAGS.locatorOrigin}] run function ${G.INTERNAL_PATH}/summon/as_locator_origins`
 				: undefined,
 			cameraCount > 0
-				? `execute if entity @s[tag=${G.TAGS.cameraEntity}] run function ${G.INTERNAL_PATH}/summon/as_cameras`
+				? `execute if entity @s[tag=${G.TAGS.cameraOrigin}] run function ${G.INTERNAL_PATH}/summon/as_camera_origins`
 				: undefined,
 		])
 
 	if (locatorCount > 0)
 		internalSummonFolder
-			// ANCHOR - function G.INTERNAL_FUNCTIONS/summon/as_locators
-			.chainNewFile('as_locators.mcfunction', [
+			// ANCHOR - function G.INTERNAL_FUNCTIONS/summon/as_locator_origins
+			.chainNewFile('as_locator_origins.mcfunction', [
 				...Object.values(G.exportData.rig.nodeMap)
 					.map(locator =>
 						locator.type === 'locator'
-							? `execute if entity @s[tag=${formatStr(G.TAGS.namedLocatorEntity, [
+							? `execute if entity @s[tag=${formatStr(G.TAGS.namedLocatorOrigin, [
 									locator.name,
 							  ])}] run function ${G.INTERNAL_PATH}/summon/locator_${
 									locator.name
@@ -549,17 +549,17 @@ export function generateFunctions(folders: IFolders) {
 							: ''
 					)
 					.filter(v => v),
-				`function #${G.PROJECT_PATH}/on_summon/as_locators`,
+				`function #${G.PROJECT_PATH}/on_summon/as_locator_origins`,
 			])
 
 	if (cameraCount > 0)
 		internalSummonFolder
-			// ANCHOR - function G.INTERNAL_FUNCTIONS/summon/as_cameras
-			.chainNewFile('as_cameras.mcfunction', [
+			// ANCHOR - function G.INTERNAL_FUNCTIONS/summon/as_camera_origins
+			.chainNewFile('as_camera_origins.mcfunction', [
 				...Object.values(G.exportData.rig.nodeMap)
 					.map(camera =>
 						camera.type === 'camera'
-							? `execute if entity @s[tag=${formatStr(G.TAGS.namedCameraEntity, [
+							? `execute if entity @s[tag=${formatStr(G.TAGS.namedCameraOrigin, [
 									camera.name,
 							  ])}] run function ${G.INTERNAL_PATH}/summon/camera_${
 									camera.name
@@ -567,7 +567,7 @@ export function generateFunctions(folders: IFolders) {
 							: ''
 					)
 					.filter(v => v),
-				`function #${G.PROJECT_PATH}/on_summon/as_cameras`,
+				`function #${G.PROJECT_PATH}/on_summon/as_camera_origins`,
 			])
 
 	// ANCHOR - function G.PROJECT_PATH/summon/<variant_name>
