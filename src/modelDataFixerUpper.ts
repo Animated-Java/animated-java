@@ -4,8 +4,9 @@ import { openUnexpectedErrorDialog } from './ui/popups/unexpectedError'
 export function process(model: any) {
 	if (model.meta.model_format === 'animatedJava/ajmodel') {
 		model.meta.model_format = 'animated_java/ajmodel'
-		model.meta.format_version = '0.2.4'
+		model.meta.format_version = '0.0'
 	}
+	console.log('Processing model', JSON.parse(JSON.stringify(model)))
 
 	const needsUpgrade = compareVersions(FORMAT_VERSION, model.meta.format_version)
 	if (!needsUpgrade) return
@@ -39,16 +40,14 @@ export function process(model: any) {
 
 // eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-unused-vars
 function updateModelTo0_3_10(model: any) {
-	console.log('Processing model for AJ 0.3.10')
+	console.log('Processing model for AJ 0.3.10', JSON.parse(JSON.stringify(model)))
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelTo1_4(model: any) {
-	console.log('Processing model format 1.4')
-	if (
-		model.animated_java.exporter_settings['animated_java:datapack_exporter']
-			.outdated_rig_warning !== undefined
-	) {
+	console.log('Processing model format 1.4', JSON.parse(JSON.stringify(model)))
+	const exporter = model.animated_java.exporter_settings['animated_java:datapack_exporter']
+	if (exporter && exporter.outdated_rig_warning !== undefined) {
 		model.animated_java.exporter_settings[
 			'animated_java:datapack_exporter'
 		].enable_outdated_rig_warning =
@@ -62,7 +61,7 @@ function updateModelTo1_4(model: any) {
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelTo1_3(model: any) {
-	console.log('Processing model format 1.3')
+	console.log('Processing model format 1.3', JSON.parse(JSON.stringify(model)))
 	if (model.animated_java.settings.exporter === 'animated_java:animation_exporter') {
 		model.animated_java.settings.exporter = 'animated_java:datapack_exporter'
 	}
@@ -75,7 +74,7 @@ function updateModelTo1_3(model: any) {
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelTo1_2(model: any) {
-	console.log('Processing model format 1.2')
+	console.log('Processing model format 1.2', JSON.parse(JSON.stringify(model)))
 	for (const variant of model.animated_java.variants) {
 		for (const [from, to] of Object.entries(variant.textureMap as Record<string, string>)) {
 			const fromUUID = from.split('::')[0]
@@ -88,19 +87,20 @@ function updateModelTo1_2(model: any) {
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelTo1_1(model: any) {
-	console.log('Processing model format 1.1')
+	console.log('Processing model format 1.1', JSON.parse(JSON.stringify(model)))
 	model.animated_java.settings.resource_pack_mcmeta =
 		model.animated_java.settings.resource_pack_folder
 	delete model.animated_java.settings.resource_pack_folder
 	const animationExporterSettings =
 		model.animated_java.exporter_settings['animated_java:animation_exporter']
+	if (!animationExporterSettings) return
 	animationExporterSettings.datapack_mcmeta = animationExporterSettings.datapack_folder
 	delete animationExporterSettings.datapack_folder
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelTo1_0(model: any) {
-	console.log('Processing model format 1.0')
+	console.log('Processing model format 1.0', JSON.parse(JSON.stringify(model)))
 	if (model.meta.settings) {
 		console.log('Upgrading settings...')
 		const animatedJava: IAnimatedJavaModel['animated_java'] = {
