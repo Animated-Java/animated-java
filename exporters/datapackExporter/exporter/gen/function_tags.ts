@@ -12,7 +12,7 @@ export function generateTags(folders: IFolders) {
 	minecraftFunctionTagFolder
 		.chainNewFile(
 			'load.json',
-			{ replace: false, values: [`${G.PROJECT_PATH}/load`] },
+			{ replace: false, values: [`${G.INTERNAL_PATH}/load`] },
 			tagMerger
 		)
 		.chainNewFile(

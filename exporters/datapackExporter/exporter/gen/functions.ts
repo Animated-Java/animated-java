@@ -18,7 +18,7 @@ function generateBonePassenger(uuid: string, bone: AnimatedJava.IRenderedNodes['
 	if (!passenger.get('Tags')) passenger.set('Tags', new deepslate.NbtList())
 	const tags = passenger.get('Tags') as InstanceType<typeof deepslate.NbtList>
 	tags.add(new deepslate.NbtString(G.TAGS.new))
-	tags.add(new deepslate.NbtString(G.TAGS.rootEntity))
+	tags.add(new deepslate.NbtString(G.TAGS.rigEntity))
 	tags.add(new deepslate.NbtString(G.TAGS.boneEntity))
 	tags.add(new deepslate.NbtString(formatStr(G.TAGS.namedBoneEntity, [bone.name])))
 
@@ -392,7 +392,6 @@ export function generateFunctions(folders: IFolders) {
 			...G.VARIANTS.map((v, i) => `scoreboard players set $aj.${G.PROJECT_NAME}.variant.${v.name} ${G.SCOREBOARD.id} ${i}`),
 			// Variable initialization
 			`scoreboard players add .aj.last_id ${G.SCOREBOARD.id} 0`,
-			`scoreboard players set $aj.default_interpolation_duration ${G.SCOREBOARD.i} ${G.DEFAULT_INTERPOLATION_DURATION}`,
 			// prettier-ignore
 			...G.LOOP_MODES.map((mode, i) => `scoreboard players set $aj.loop_mode.${mode} ${G.SCOREBOARD.i} ${i}`),
 			// version ID
@@ -458,7 +457,7 @@ export function generateFunctions(folders: IFolders) {
 		])
 		// ANCHOR - function G.INTERNAL_FUNCTIONS/tick_as_root
 		.chainNewFile('tick_as_root.mcfunction', [
-			`execute unless score @s ${G.SCOREBOARD.rigLoaded} matches 1 run function ${G.INTERNAL_PATH}/on_load`,
+			`execute unless score @s ${G.SCOREBOARD.rigLoaded} = @s ${G.SCOREBOARD.rigLoaded} run function ${G.INTERNAL_PATH}/on_load`,
 			`scoreboard players add @s ${G.SCOREBOARD.lifeTime} 1`,
 			`execute at @s on passengers run tp @s ~ ~ ~ ~ ~`,
 			`function ${G.INTERNAL_PATH}/animations/tick`,
@@ -811,7 +810,7 @@ export function generateFunctions(folders: IFolders) {
 			])
 			// ANCHOR - func G.INTERNAL_PATH:animations/<anim_name>/tween_as_root
 			.chainNewFile('tween_as_root.mcfunction', [
-				`execute unless score #tween_duration ${G.SCOREBOARD.i} = #tween_duration ${G.SCOREBOARD.i} run scoreboard players operation #tween_duration ${G.SCOREBOARD.i} = $aj.default_interpolation_duration ${G.SCOREBOARD.i}`,
+				`execute unless score #tween_duration ${G.SCOREBOARD.i} = #tween_duration ${G.SCOREBOARD.i} run scoreboard players set #tween_duration ${G.SCOREBOARD.i} 1`,
 				`scoreboard players operation @s ${G.SCOREBOARD.tweenTime} = #tween_duration ${G.SCOREBOARD.i}`,
 				G.IS_SINGLE_ENTITY_RIG
 					? `execute store result entity @s interpolation_duration int 1 run scoreboard players get #tween_duration ${G.SCOREBOARD.i}`
