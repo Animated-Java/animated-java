@@ -1,0 +1,9 @@
+# JSON Exporter
+animated_java.exporters.json_exporter.name: JSON导出器
+animated_java.exporters.json_exporter.description: 导出 Animated Java 骨骼为可被用于插件或模组的 JSON 文件。
+
+# Settings
+animated_java.exporters.json_exporter.settings.output_file: 输出文件
+animated_java.exporters.json_exporter.settings.output_file.description: 需要导出的文件。
+animated_java.exporters.json_exporter.settings.output_file.error.empty: |-
+  输出文件不能为空。
