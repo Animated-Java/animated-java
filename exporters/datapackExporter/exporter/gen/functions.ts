@@ -450,10 +450,14 @@ export function generateFunctions(folders: IFolders) {
 	// SECTION - Tick functions
 	// ------------------------
 
+	folders.animatedJava.functions.newFile('tick.mcfunction', [
+		`execute as @e[type=minecraft:item_display,tag=${G.TAGS.globalRigRoot}] run function #animated_java:rig_tick`,
+	])
+
 	folders.project.internalFunctions
 		// ANCHOR - function G.INTERNAL_FUNCTIONS/tick
 		.chainNewFile('tick.mcfunction', [
-			`execute as @e[type=minecraft:item_display,tag=${G.TAGS.rootEntity}] run function ${G.INTERNAL_PATH}/tick_as_root`,
+			`execute if entity @s[tag=${G.TAGS.rootEntity}] run function ${G.INTERNAL_PATH}/tick_as_root`,
 		])
 		// ANCHOR - function G.INTERNAL_FUNCTIONS/tick_as_root
 		.chainNewFile('tick_as_root.mcfunction', [
