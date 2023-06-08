@@ -498,7 +498,7 @@ export function generateFunctions(folders: IFolders) {
 				: `execute at @s on passengers run function ${G.INTERNAL_PATH}/summon/as_rig_entities`,
 			...G.VARIANTS.map(
 				v =>
-					`execute if score #variant ${G.SCOREBOARD.i} = $aj.${G.PROJECT_NAME}.variant.${v.name} ${G.SCOREBOARD.id} run function ${G.INTERNAL_PATH}/apply_variant/${v.name}_as_root`
+					`execute if score #variant ${G.SCOREBOARD.i} = $aj.${G.PROJECT_NAME}.variant.${v.name} ${G.SCOREBOARD.id} run function ${G.INTERNAL_PATH}/apply_variant/${v.name}/as_root`
 			),
 			`execute if score #animation ${G.SCOREBOARD.i} matches 0.. run scoreboard players operation @s ${G.SCOREBOARD.animTime} = #frame ${G.SCOREBOARD.i}`,
 			...G.exportData.renderedAnimations
@@ -726,7 +726,7 @@ export function generateFunctions(folders: IFolders) {
 			// ANCHOR - function G.INTERNAL_PATH:animations/pause_all_as_root
 			.chainNewFile('pause_all_as_root.mcfunction', [
 				...G.exportData.renderedAnimations.map(
-					a => `function ${G.INTERNAL_PATH}/animations/${a.name}/pause`
+					a => `function ${G.INTERNAL_PATH}/animations/${a.name}/pause_as_root`
 				),
 			])
 	}
