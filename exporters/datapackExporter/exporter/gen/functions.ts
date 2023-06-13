@@ -450,10 +450,14 @@ export function generateFunctions(folders: IFolders) {
 	// SECTION - Tick functions
 	// ------------------------
 
+	folders.animatedJava.functions.newFile('tick.mcfunction', [
+		`execute as @e[type=minecraft:item_display,tag=${G.TAGS.globalRigRoot}] run function #animated_java:rig_tick`,
+	])
+
 	folders.project.internalFunctions
 		// ANCHOR - function G.INTERNAL_FUNCTIONS/tick
 		.chainNewFile('tick.mcfunction', [
-			`execute as @e[type=minecraft:item_display,tag=${G.TAGS.rootEntity}] run function ${G.INTERNAL_PATH}/tick_as_root`,
+			`execute if entity @s[tag=${G.TAGS.rootEntity}] run function ${G.INTERNAL_PATH}/tick_as_root`,
 		])
 		// ANCHOR - function G.INTERNAL_FUNCTIONS/tick_as_root
 		.chainNewFile('tick_as_root.mcfunction', [
@@ -498,7 +502,7 @@ export function generateFunctions(folders: IFolders) {
 				: `execute at @s on passengers run function ${G.INTERNAL_PATH}/summon/as_rig_entities`,
 			...G.VARIANTS.map(
 				v =>
-					`execute if score #variant ${G.SCOREBOARD.i} = $aj.${G.PROJECT_NAME}.variant.${v.name} ${G.SCOREBOARD.id} run function ${G.INTERNAL_PATH}/apply_variant/${v.name}_as_root`
+					`execute if score #variant ${G.SCOREBOARD.i} = $aj.${G.PROJECT_NAME}.variant.${v.name} ${G.SCOREBOARD.id} run function ${G.INTERNAL_PATH}/apply_variant/${v.name}/as_root`
 			),
 			`execute if score #animation ${G.SCOREBOARD.i} matches 0.. run scoreboard players operation @s ${G.SCOREBOARD.animTime} = #frame ${G.SCOREBOARD.i}`,
 			...G.exportData.renderedAnimations
@@ -726,7 +730,7 @@ export function generateFunctions(folders: IFolders) {
 			// ANCHOR - function G.INTERNAL_PATH:animations/pause_all_as_root
 			.chainNewFile('pause_all_as_root.mcfunction', [
 				...G.exportData.renderedAnimations.map(
-					a => `function ${G.INTERNAL_PATH}/animations/${a.name}/pause`
+					a => `function ${G.INTERNAL_PATH}/animations/${a.name}/pause_as_root`
 				),
 			])
 	}
