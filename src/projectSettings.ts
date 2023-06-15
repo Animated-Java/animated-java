@@ -181,12 +181,12 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 			defaultValue: 0,
 			options: [
 				{
-					name: '1.19.4',
-					value: '1.19.4',
-				},
-				{
 					name: '1.20+',
 					value: '1.20+',
+				},
+				{
+					name: '1.19.4',
+					value: '1.19.4',
 				},
 			],
 			docsLink: '/docs/project_settings#target_minecraft_version',
