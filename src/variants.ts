@@ -148,6 +148,17 @@ export class Variant {
 			json.affectedBonesIsAWhitelist
 		)
 	}
+
+	clone(): Variant {
+		return new Variant(
+			this.name,
+			{ ...this.textureMap },
+			guid(),
+			{ ...this.boneConfig },
+			this.affectedBones,
+			this.affectedBonesIsAWhitelist
+		)
+	}
 }
 
 interface IVariantsContainerEvent {
@@ -196,6 +207,8 @@ export class VariantsContainer extends Subscribable<IVariantsContainerEvent> {
 		} else this.variants.push(variant)
 
 		if (isDefault || this.variants.length === 1) this.defaultVariant = variant
+
+		this.sortVariants()
 
 		this.dispatch({
 			type: 'add',
@@ -252,6 +265,14 @@ export class VariantsContainer extends Subscribable<IVariantsContainerEvent> {
 		for (const variant of this.variants) {
 			variant.verifyTextures(silent)
 		}
+	}
+
+	sortVariants() {
+		this.variants.sort((a, b) => {
+			if (a.default) return -1
+			if (b.default) return 1
+			return a.name.localeCompare(b.name)
+		})
 	}
 }
 

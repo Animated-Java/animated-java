@@ -174,13 +174,13 @@ const exportAnimatedJavaVariants = consoleGroup('exportAnimatedJavaVariants', ()
 })
 
 events.UPDATE_SELECTION.subscribe(() => {
-	if (Format === ajModelFormat && Mode.selected.id === 'edit') {
+	if (Format === ajModelFormat) {
 		if (!Group.selected && Cube.selected.length > 0) {
-			Format.rotation_limit = true
-			Format.rotation_snap = true
+			ajModelFormat.rotation_limit = true
+			ajModelFormat.rotation_snap = true
 		} else {
-			Format.rotation_limit = false
-			Format.rotation_snap = false
+			ajModelFormat.rotation_limit = false
+			ajModelFormat.rotation_snap = false
 		}
 	}
 })

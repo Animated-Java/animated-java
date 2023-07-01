@@ -53,6 +53,8 @@ export interface IRenderedFrame {
 
 export interface IRenderedAnimation {
 	name: string
+	startDelay: number
+	loopDelay: number
 	frames: IRenderedFrame[]
 	/**
 	 * Duration of the animation in ticks (AKA frames). Same as animation.frames.length
@@ -200,6 +202,8 @@ export function updatePreview(animation: _Animation, time: number) {
 export async function renderAnimation(animation: _Animation, rig: IRenderedRig) {
 	const rendered = {
 		name: animation.name,
+		startDelay: Number(animation.start_delay),
+		loopDelay: Number(animation.loop_delay),
 		frames: [],
 		duration: 0,
 		loopMode: animation.loop,

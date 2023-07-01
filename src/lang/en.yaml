@@ -250,6 +250,8 @@ animated_java.actions.add_variant.name: Add Variant
 animated_java.actions.add_variant.description: Create a new Variant
 animated_java.actions.variant_properties.name: Variant Properties
 animated_java.actions.variant_properties.description: Open the Variant properties dialog.
+animated_java.actions.duplicate_variant.name: Duplicate Variant
+animated_java.actions.duplicate_variant.description: Duplicate this Variant.
 
 ### Variants Properties Dialog
 animated_java.dialog.variant_properties.title: Variant Properties

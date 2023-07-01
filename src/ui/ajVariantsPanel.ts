@@ -29,6 +29,28 @@ export const addVariantAction = createAction('animated_java:add_variant', {
 	},
 })
 
+export const duplicateVariantAction = createAction('animated_java:duplicate_variant', {
+	name: translate('animated_java.actions.duplicate_variant.name'),
+	icon: 'content_copy',
+	description: translate('animated_java.actions.duplicate_variant.description'),
+	category: 'animated_java:variants',
+	click() {
+		if (!Project?.animated_java_variants) return
+		let v = Project.animated_java_variants.selectedVariant
+		if (state.recentlyClickedVariant) {
+			v = state.recentlyClickedVariant
+			state.recentlyClickedVariant = undefined
+		}
+		if (v) {
+			const newVariant = v.clone()
+			newVariant.createUniqueName(Project.animated_java_variants.variants)
+			Project.animated_java_variants.addVariant(newVariant)
+			Project.animated_java_variants.select(newVariant)
+			openVariantPropertiesDialog(newVariant)
+		}
+	},
+})
+
 export const variantPropertiesAction = createAction('animated_java:variant_properties', {
 	name: translate('animated_java.actions.variant_properties.name'),
 	icon: 'list',
@@ -51,7 +73,10 @@ const VARIANT_PANEL_TOOLBAR = new Toolbar({
 	children: ['animated_java:add_variant'],
 })
 
-export const VARIANT_MENU = createMenu(['animated_java:variant_properties'])
+export const VARIANT_MENU = createMenu([
+	'animated_java:variant_properties',
+	'animated_java:duplicate_variant',
+])
 export const VARIANT_PANEL_MENU = createMenu(['animated_java:add_variant'])
 
 createBlockbenchMod(

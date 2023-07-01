@@ -1,6 +1,7 @@
 import { ajModelFormat } from '../modelFormat'
 import { createBlockbenchMod } from '../util/moddingTools'
 import { Variant } from '../variants'
+import * as events from '../events'
 
 createBlockbenchMod(
 	'animated_java:modes.edit/variants',
@@ -18,6 +19,7 @@ createBlockbenchMod(
 				Project.animated_java_variants.selectedVariant
 			) {
 				if (selectedVariant) Project.animated_java_variants.select(selectedVariant)
+				events.UPDATE_SELECTION.dispatch()
 			}
 			return context.originalEditSelect?.call(this)
 		}
@@ -30,6 +32,7 @@ createBlockbenchMod(
 			) {
 				selectedVariant = Project.animated_java_variants.selectedVariant
 				Project.animated_java_variants.select()
+				events.UPDATE_SELECTION.dispatch()
 			}
 			return context.originalEditUnselect?.call(this)
 		}

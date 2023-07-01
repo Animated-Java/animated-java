@@ -32,19 +32,22 @@ interface ISerializedNodeAnimationFrameEntry {
 }
 
 interface ISerealizedAnimation {
-	frames: ISerializedAnimationFrame[]
+	start_delay?: number
+	loop_delay?: number
 	duration: number
 	loop_mode: 'once' | 'hold' | 'loop'
 	affected_bones: string[]
 	affected_bones_is_a_whitelist: boolean
+	frames: ISerializedAnimationFrame[]
 }
 
 interface ISerializedNode {
 	type: NodeType
 	name: string
 	uuid: string
-	custom_model_data: number
-	resource_location: string
+	nbt: string
+	custom_model_data?: number
+	resource_location?: string
 }
 
 interface ISerializedVariant {
@@ -92,21 +95,40 @@ function serializeNodeAnimationFrameEntry(
 	}
 }
 
-function serializeNodeMap(nodeMap: Record<string, any>): Record<string, ISerializedNode> {
+function serializeNodeMap(
+	nodeMap: Record<string, AnimatedJava.IRenderedNodes[keyof AnimatedJava.IRenderedNodes]>
+): Record<string, ISerializedNode> {
 	const serializedNodeMap: Record<string, ISerializedNode> = {}
 	for (const uuid in nodeMap) {
 		const node = nodeMap[uuid]
 		const type = node.type
 		const name = node.name
-		const custom_model_data = node.customModelData
-		const resource_location = node.resourceLocation
 
-		serializedNodeMap[uuid] = {
-			type,
-			name,
-			uuid,
-			custom_model_data,
-			resource_location,
+		switch (type) {
+			case 'bone': {
+				const custom_model_data = node.customModelData
+				const resource_location = node.resourceLocation
+
+				serializedNodeMap[uuid] = {
+					type,
+					name,
+					uuid,
+					nbt: node.nbt,
+					custom_model_data,
+					resource_location,
+				}
+
+				break
+			}
+			case 'camera':
+			case 'locator': {
+				serializedNodeMap[uuid] = {
+					type,
+					name,
+					uuid,
+					nbt: node.nbt,
+				}
+			}
 		}
 	}
 	return serializedNodeMap
@@ -155,6 +177,8 @@ function serializeAnimationFrame(
 }
 
 function serializeAnimation(animation: AnimatedJava.IRenderedAnimation): ISerealizedAnimation {
+	const start_delay = animation.startDelay
+	const loop_delay = animation.loopDelay
 	const frames = animation.frames.map(serializeAnimationFrame)
 	const duration = animation.duration
 	const loop_mode = animation.loopMode
@@ -165,6 +189,8 @@ function serializeAnimation(animation: AnimatedJava.IRenderedAnimation): ISereal
 	const affected_bones_is_a_whitelist = bbAnimation.affected_bones_is_a_whitelist
 
 	return {
+		start_delay,
+		loop_delay,
 		frames,
 		duration,
 		loop_mode,

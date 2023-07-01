@@ -17,6 +17,7 @@ export function openVariantPropertiesDialog(variant: Variant) {
 		onClose() {
 			// console.log('onButton')
 			Project.animated_java_variants!.select(Project.animated_java_variants!.selectedVariant)
+			Project.animated_java_variants!.sortVariants()
 		},
 	}).show()
 }
