@@ -125,16 +125,16 @@ function generateLocatorPassenger(
 			)
 		)
 
-	const locatorEntityNbt = (deepslate.NbtTag.fromString(locator.nbt) as NbtCompound)
-		.set(
-			'Tags',
-			new deepslate.NbtList([
-				new deepslate.NbtString(G.TAGS.locatorEntity),
-				new deepslate.NbtString(formatStr(G.TAGS.namedLocatorEntity, [locator.name])),
-				new deepslate.NbtString(G.TAGS.new),
-			])
-		)
-		.set(
+	const locatorEntityNbt = deepslate.NbtTag.fromString(locator.nbt) as NbtCompound
+	if (!locatorEntityNbt.get('Tags')) locatorEntityNbt.set('Tags', new deepslate.NbtList())
+	const tags = locatorEntityNbt.get('Tags') as InstanceType<typeof deepslate.NbtList>
+
+	tags.add(new deepslate.NbtString(G.TAGS.locatorEntity))
+	tags.add(new deepslate.NbtString(formatStr(G.TAGS.namedLocatorEntity, [locator.name])))
+	tags.add(new deepslate.NbtString(G.TAGS.new))
+
+	if (!locatorEntityNbt.get('CustomName'))
+		locatorEntityNbt.set(
 			'CustomName',
 			new deepslate.NbtString(
 				new JsonText([
@@ -153,6 +153,7 @@ function generateLocatorPassenger(
 				]).toString()
 			)
 		)
+
 	function locatorToString(node: AnimatedJava.IAnimationNode) {
 		const pos = node.pos
 		const euler = new THREE.Euler().setFromQuaternion(node.rot, 'YXZ')
@@ -238,16 +239,16 @@ function generateCameraPassenger(
 			)
 		)
 
-	const cameraNbt = (deepslate.NbtTag.fromString(camera.nbt) as NbtCompound)
-		.set(
-			'Tags',
-			new deepslate.NbtList([
-				new deepslate.NbtString(G.TAGS.cameraEntity),
-				new deepslate.NbtString(formatStr(G.TAGS.namedCameraEntity, [camera.name])),
-				new deepslate.NbtString(G.TAGS.new),
-			])
-		)
-		.set(
+	const cameraEntityNbt = deepslate.NbtTag.fromString(camera.nbt) as NbtCompound
+	if (!cameraEntityNbt.get('Tags')) cameraEntityNbt.set('Tags', new deepslate.NbtList())
+	const tags = cameraEntityNbt.get('Tags') as InstanceType<typeof deepslate.NbtList>
+
+	tags.add(new deepslate.NbtString(G.TAGS.cameraEntity))
+	tags.add(new deepslate.NbtString(formatStr(G.TAGS.namedCameraEntity, [camera.name])))
+	tags.add(new deepslate.NbtString(G.TAGS.new))
+
+	if (!cameraEntityNbt.get('CustomName'))
+		cameraEntityNbt.set(
 			'CustomName',
 			new deepslate.NbtString(
 				new JsonText([
@@ -258,7 +259,7 @@ function generateCameraPassenger(
 						'',
 						{ text: `${G.PROJECT_NAME}`, color: 'light_purple' },
 						`.`,
-						{ text: `camera`, color: 'white' },
+						{ text: `cameraEntity`, color: 'white' },
 						`[`,
 						{ text: `${camera.name}`, color: 'yellow' },
 						`]`,
@@ -266,6 +267,7 @@ function generateCameraPassenger(
 				]).toString()
 			)
 		)
+
 	function cameraToString(node: AnimatedJava.IAnimationNode) {
 		const pos = node.pos
 		const euler = new THREE.Euler().setFromQuaternion(node.rot, 'YXZ')
@@ -280,7 +282,7 @@ function generateCameraPassenger(
 		// ANCHOR - function G.PROJECT_PATH/summon/camera_<camera_name>/as_origin
 		.chainNewFile('as_origin.mcfunction', [
 			// `say Camera Origin`,
-			`summon ${camera.entity_type} ~ ~ ~ ${cameraNbt.toString()}`,
+			`summon ${camera.entity_type} ~ ~ ~ ${cameraEntityNbt.toString()}`,
 			`execute as @e[type=${camera.entity_type},tag=${formatStr(G.TAGS.namedCameraEntity, [
 				camera.name,
 			])},tag=${G.TAGS.new},limit=1,distance=..1] run function ${
