@@ -78,6 +78,9 @@
 				},
 				"nbt": {
 					"type": "string"
+				},
+				"entity_type": {
+					"type": "string"
 				}
 			}
 		},

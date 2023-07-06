@@ -46,6 +46,7 @@ interface ISerializedNode {
 	name: string
 	uuid: string
 	nbt: string
+	entity_type?: string
 	custom_model_data?: number
 	resource_location?: string
 }
@@ -127,6 +128,7 @@ function serializeNodeMap(
 					name,
 					uuid,
 					nbt: node.nbt,
+					entity_type: node.entity_type,
 				}
 			}
 		}
