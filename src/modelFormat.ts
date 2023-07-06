@@ -398,7 +398,7 @@ export const ajCodec = new Blockbench.Codec('ajmodel', {
 			meta: {
 				format: ajCodec.format.id,
 				format_version: FORMAT_VERSION,
-				uuid: Project.animated_java_uuid,
+				uuid: Project.animated_java_uuid || guid(),
 			},
 			animated_java: {
 				settings: exportAnimatedJavaProjectSettings(),
@@ -615,11 +615,11 @@ export const ajModelFormat = new Blockbench.ModelFormat({
 		},
 	},
 
-	onSetup() {
-		if (Project?.animated_java_settings) {
+	onSetup(project: ModelProject, newModel = true) {
+		if (project.animated_java_settings) {
 			// Project Settings
-			Project.animated_java_settings = getDefaultProjectSettings()
-			for (const setting of Object.values(Project.animated_java_settings)) {
+			project.animated_java_settings = getDefaultProjectSettings()
+			for (const setting of Object.values(project.animated_java_settings)) {
 				setting._onInit()
 			}
 			// Exporter Settings
@@ -631,7 +631,8 @@ export const ajModelFormat = new Blockbench.ModelFormat({
 					setting._onInit()
 				}
 			}
-			Project.animated_java_exporter_settings = settings
+			if (newModel) project.animated_java_uuid = guid()
+			project.animated_java_exporter_settings = settings
 		}
 		Group.all.forEach(v => v.createUniqueName())
 	},

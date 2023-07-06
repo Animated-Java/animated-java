@@ -143,6 +143,9 @@ export function getDefaultProjectSettings(): IAnimatedJavaProjectSettings {
 				description: TRANSLATIONS.project_namespace.description,
 				defaultValue: '',
 				docsLink: '/docs/project_settings#project_namespace',
+				get subtext() {
+					return Project?.animated_java_uuid
+				},
 			},
 			function onUpdate(setting) {
 				if (setting.value === '')

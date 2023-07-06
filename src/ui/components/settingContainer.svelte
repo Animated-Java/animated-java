@@ -76,7 +76,11 @@
 
 	<slot name="beneath" />
 
-	<div class="spacer" />
+	{#if setting.subtext}
+		<div class="subtext">{setting.subtext}</div>
+	{:else}
+		<div class="spacer" />
+	{/if}
 
 	{#if descriptionVisible}
 		<div
@@ -130,6 +134,17 @@
 	p.setting-description {
 		margin: 5px;
 		margin-bottom: 0px;
+	}
+
+	div.subtext {
+		font-style: italic;
+		font-size: 0.8em;
+		color: var(--color-subtle_text);
+		text-align: center;
+		margin-top: 1px;
+		margin-bottom: 1px;
+		cursor: text;
+		user-select: text;
 	}
 
 	div.setting {

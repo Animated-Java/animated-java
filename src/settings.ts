@@ -26,6 +26,10 @@ export interface ISettingOptions<V> {
 	 */
 	description: string[]
 	/**
+	 * A string to display below the setting's value in the settings dialog.
+	 */
+	subtext?: string
+	/**
 	 * The default value of the setting.
 	 */
 	defaultValue: V
@@ -56,6 +60,7 @@ export class Setting<V, R = any> extends Subscribable<R> {
 	resettable?: boolean
 	docsLink?: string
 	dependsOn?: SettingID[]
+	subtext?: string
 
 	private _initialized: boolean
 	private _updating: boolean
@@ -82,6 +87,7 @@ export class Setting<V, R = any> extends Subscribable<R> {
 		this.resettable = options.resettable
 		this.docsLink = options.docsLink
 		this.dependsOn = options.dependsOn
+		this.subtext = options.subtext
 
 		this._value = this.defaultValue
 		this.lastValue = this.defaultValue
