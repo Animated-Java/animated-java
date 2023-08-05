@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"format": "animated_java/ajmodel",
-		"format_version": "1.4"
+		"format_version": "0.4.6",
+		"uuid": "257899d2-8a31-64fe-f7ae-b7afa1acbd89"
 	},
 	"animated_java": {
 		"settings": {
@@ -27,7 +28,11 @@
 				"include_uninstall_function": true,
 				"include_pause_all_animations_function": true,
 				"include_remove_rigs_function": true,
-				"include_remove_all_function": true
+				"include_remove_all_function": true,
+				"include_on_load_function_tags": true,
+				"include_on_tick_function_tags": true,
+				"include_on_summon_function_tags": true,
+				"include_on_remove_function_tags": true
 			},
 			"animated_java:json_exporter": {
 				"output_file": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\assets\\happy_box_animated_java_rig\\test.json"
@@ -93,7 +98,6 @@
 			"to": [8, 16, 8],
 			"autouv": 0,
 			"color": 0,
-			"visibility": false,
 			"origin": [16, 0, 0],
 			"faces": {
 				"north": {
@@ -113,7 +117,7 @@
 					"texture": 2
 				},
 				"up": {
-					"uv": [64, 64, 0, 0],
+					"uv": [32, 16, 16, 0],
 					"texture": 1
 				},
 				"down": {
@@ -126,11 +130,41 @@
 		},
 		{
 			"name": "Text Display",
-			"text": "The quick brown fox jumps over the lazy dog.",
-			"position": [0, 0, 0],
-			"rotation": [0, 0, 0],
-			"visibility": true,
-			"type": "textDisplay",
+			"box_uv": false,
+			"rescale": false,
+			"locked": false,
+			"from": [0, 0, 0],
+			"to": [2, 2, 2],
+			"autouv": 0,
+			"color": 5,
+			"origin": [0, 0, 0],
+			"faces": {
+				"north": {
+					"uv": [0, 0, 1, 1],
+					"texture": 0
+				},
+				"east": {
+					"uv": [0, 0, 1, 1],
+					"texture": 0
+				},
+				"south": {
+					"uv": [0, 0, 1, 1],
+					"texture": 0
+				},
+				"west": {
+					"uv": [0, 0, 1, 1],
+					"texture": 0
+				},
+				"up": {
+					"uv": [0, 0, 1, 1],
+					"texture": 0
+				},
+				"down": {
+					"uv": [0, 0, 1, 1],
+					"texture": 0
+				}
+			},
+			"type": "cube",
 			"uuid": "6ea2e259-ed99-118f-bff7-18c54a6e901d"
 		}
 	],
@@ -145,7 +179,7 @@
 			"mirror_uv": false,
 			"isOpen": true,
 			"locked": false,
-			"visibility": false,
+			"visibility": true,
 			"autouv": 0,
 			"children": ["29c15edc-aea1-917e-1210-69c6c9468111"]
 		},
@@ -218,7 +252,7 @@
 			"override": false,
 			"length": 1,
 			"snapping": 20,
-			"selected": false,
+			"selected": true,
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",
@@ -265,6 +299,66 @@
 							],
 							"uuid": "7920351c-ed3d-ca1f-532c-52c86c120329",
 							"time": 1,
+							"color": -1,
+							"interpolation": "linear",
+							"bezier_linked": true,
+							"bezier_left_time": [-0.1, -0.1, -0.1],
+							"bezier_left_value": [0, 0, 0],
+							"bezier_right_time": [0.1, 0.1, 0.1],
+							"bezier_right_value": [0, 0, 0]
+						}
+					]
+				},
+				"effects": {
+					"name": "Effects",
+					"type": "effect",
+					"keyframes": [
+						{
+							"channel": "variants",
+							"data_points": [
+								{
+									"variant": "f7615ce3-3825-cde7-f183-870f32ddfa10",
+									"executeCondition": ""
+								}
+							],
+							"uuid": "0eee78b2-b71e-bd17-8910-fe408350fdeb",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"bezier_linked": true,
+							"bezier_left_time": [-0.1, -0.1, -0.1],
+							"bezier_left_value": [0, 0, 0],
+							"bezier_right_time": [0.1, 0.1, 0.1],
+							"bezier_right_value": [0, 0, 0]
+						},
+						{
+							"channel": "variants",
+							"data_points": [
+								{
+									"variant": "c100284b-bca4-dbd4-9243-8e9badbd66c8",
+									"executeCondition": ""
+								}
+							],
+							"uuid": "fa1b3a05-9af2-dac2-e37a-11eae7fa58a8",
+							"time": 0.4,
+							"color": -1,
+							"interpolation": "linear",
+							"bezier_linked": true,
+							"bezier_left_time": [-0.1, -0.1, -0.1],
+							"bezier_left_value": [0, 0, 0],
+							"bezier_right_time": [0.1, 0.1, 0.1],
+							"bezier_right_value": [0, 0, 0]
+						},
+						{
+							"channel": "variants",
+							"data_points": [
+								{
+									"variant": "f528135d-bdb3-d9c7-bda1-e074a5afc571",
+									"executeCondition": ""
+								}
+							],
+							"uuid": "d0396498-2ac6-6b30-acde-cb008f992664",
+							"time": 0.8,
 							"color": -1,
 							"interpolation": "linear",
 							"bezier_linked": true,

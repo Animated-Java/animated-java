@@ -81,8 +81,8 @@ function generateLocatorPassenger(
 	internalSummonFolder: AnimatedJava.VirtualFolder
 ) {
 	const { roundToN } = AnimatedJava.API
-	const passenger = deepslate.NbtTag.fromString(locator.nbt) as NbtCompound
-	// const default_pose = G.exportData.rig.defaultPose.find(pose => pose.uuid === uuid)
+	const passenger = new deepslate.NbtCompound()
+	// const passenger = deepslate.NbtTag.fromString(locator.nbt) as NbtCompound
 
 	passenger
 		.set('id', new deepslate.NbtString('minecraft:snowball'))

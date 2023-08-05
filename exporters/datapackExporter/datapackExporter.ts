@@ -1,5 +1,13 @@
-import { generateDatapack } from './exporter/gen/datapack'
+import { generateDatapack as gd120 } from './exporter/gen-1.20/datapack'
+import { generateDatapack as gd1202 } from './exporter/gen-1.20.2/datapack'
 import { loadTranslations } from './exporter/translations'
+
+function generateDatapack(exportData: ExportData) {
+	if (exportData.projectSettings.target_minecraft_version.selected.value === '1.20')
+		return gd120(exportData)
+	else if (exportData.projectSettings.target_minecraft_version.selected.value === '1.20.2')
+		return gd1202(exportData)
+}
 
 export function loadExporter() {
 	const { Settings, createInfo, Exporter, translate } = AnimatedJava.API
@@ -217,6 +225,6 @@ export function loadExporter() {
 				],
 			},
 		],
-		export: generateDatapack as any,
+		export: generateDatapack,
 	})
 }
