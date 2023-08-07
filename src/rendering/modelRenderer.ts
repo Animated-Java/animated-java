@@ -295,7 +295,7 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 	}
 
 	let displayRotation = 0
-	if (Project!.animated_java_settings!.target_minecraft_version.selected!.value === '1.20+')
+	if (Project!.animated_java_settings!.target_minecraft_version.selected!.value !== '1.19.4')
 		displayRotation = 180
 
 	const renderedBone: IRenderedNodes['Bone'] & {

@@ -1,12 +1,12 @@
 import { generateDatapack as gd120 } from './exporter/gen-1.20/datapack'
-import { generateDatapack as gd1202 } from './exporter/gen-1.20.2/datapack'
+import { generateDatapack as gd1201 } from './exporter/gen-1.20.1/datapack'
 import { loadTranslations } from './exporter/translations'
 
 function generateDatapack(exportData: ExportData) {
 	if (exportData.projectSettings.target_minecraft_version.selected.value === '1.20')
 		return gd120(exportData)
-	else if (exportData.projectSettings.target_minecraft_version.selected.value === '1.20.2')
-		return gd1202(exportData)
+	else if (exportData.projectSettings.target_minecraft_version.selected.value === '1.20.1')
+		return gd1201(exportData)
 }
 
 export function loadExporter() {

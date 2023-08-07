@@ -26,6 +26,7 @@ function generateBonePassenger(uuid: string, bone: AnimatedJava.IRenderedNodes['
 		.set('transformation', util.matrixToNbtFloatArray(default_pose.matrix))
 		.set('interpolation_duration', new deepslate.NbtInt(G.DEFAULT_INTERPOLATION_DURATION))
 		.set('item_display', new deepslate.NbtString('head'))
+		.set('teleport_duration', new deepslate.NbtInt(1))
 
 	if (!passenger.get('item')) passenger.set('item', new deepslate.NbtCompound())
 	const item = passenger.get('item') as InstanceType<typeof deepslate.NbtCompound>
@@ -248,25 +249,27 @@ function generateCameraPassenger(
 	tags.add(new deepslate.NbtString(G.TAGS.new))
 
 	if (!cameraEntityNbt.get('CustomName'))
-		cameraEntityNbt.set(
-			'CustomName',
-			new deepslate.NbtString(
-				new JsonText([
-					{ text: '[', color: 'gray' },
-					{ text: 'AJ', color: 'aqua' },
-					`] `,
-					[
-						'',
-						{ text: `${G.PROJECT_NAME}`, color: 'light_purple' },
-						`.`,
-						{ text: `cameraEntity`, color: 'white' },
-						`[`,
-						{ text: `${camera.name}`, color: 'yellow' },
-						`]`,
-					],
-				]).toString()
+		cameraEntityNbt
+			.set(
+				'CustomName',
+				new deepslate.NbtString(
+					new JsonText([
+						{ text: '[', color: 'gray' },
+						{ text: 'AJ', color: 'aqua' },
+						`] `,
+						[
+							'',
+							{ text: `${G.PROJECT_NAME}`, color: 'light_purple' },
+							`.`,
+							{ text: `cameraEntity`, color: 'white' },
+							`[`,
+							{ text: `${camera.name}`, color: 'yellow' },
+							`]`,
+						],
+					]).toString()
+				)
 			)
-		)
+			.set('teleport_duration', new deepslate.NbtInt(1))
 
 	function cameraToString(node: AnimatedJava.IAnimationNode) {
 		const pos = node.pos
@@ -340,22 +343,25 @@ function generateSummonFunction(internalSummonFolder: AnimatedJava.VirtualFolder
 	tags.add(new deepslate.NbtString(G.TAGS.globalRigRoot))
 
 	if (!rootNbt.get('CustomName'))
-		rootNbt.set(
-			'CustomName',
-			new deepslate.NbtString(
-				new JsonText([
-					{ text: '[', color: 'gray' },
-					{ text: 'AJ', color: 'aqua' },
-					`] `,
-					[
-						'',
-						{ text: `${G.PROJECT_NAME}`, color: 'light_purple' },
-						`.`,
-						{ text: `root`, color: 'white' },
-					],
-				]).toString()
+		rootNbt
+			.set(
+				'CustomName',
+				new deepslate.NbtString(
+					new JsonText([
+						{ text: '[', color: 'gray' },
+						{ text: 'AJ', color: 'aqua' },
+						`] `,
+						[
+							'',
+							{ text: `${G.PROJECT_NAME}`, color: 'light_purple' },
+							`.`,
+							{ text: `root`, color: 'white' },
+						],
+					]).toString()
+				)
 			)
-		)
+			.set('teleport_duration', new deepslate.NbtInt(1))
+
 	// ANCHOR - function G.PROJECT_PATH/summon
 	return [
 		`summon minecraft:item_display ~ ~ ~ ${rootNbt.toString()}`,
