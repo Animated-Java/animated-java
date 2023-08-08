@@ -1,5 +1,5 @@
 import { wrapNum } from '../util'
-import { loadAnimationTreeGenerator } from './animationTree'
+import { loadAnimationTreeGenerator } from './frameGenerator'
 import { type IFolders } from './datapack'
 import { Globals as G, JsonText, deepslate, formatStr, util } from './globals'
 
@@ -692,33 +692,24 @@ export function generateFunctions(folders: IFolders) {
 	const internalAnimationsFolder = folders.project.internalFunctions.newFolder('animations')
 
 	for (const anim of G.exportData.renderedAnimations) {
-		const animFolder = animationsFolder.newFolder(anim.name)
-		for (const name of [
-			'play',
-			'resume',
-			'pause',
-			'stop',
-			'apply_frame',
-			'next_frame',
-			'tween_play',
-			'tween_resume',
-		]) {
-			// ANCHOR - G.PROJECT_PATH/animations/<anim_name>/play
-			// ANCHOR - G.PROJECT_PATH/animations/<anim_name>/resume
-			// ANCHOR - G.PROJECT_PATH/animations/<anim_name>/pause
-			// ANCHOR - G.PROJECT_PATH/animations/<anim_name>/stop
-			// ANCHOR - G.PROJECT_PATH/animations/<anim_name>/apply_frame
-			// ANCHOR - G.PROJECT_PATH/animations/<anim_name>/next_frame
-			// ANCHOR - G.PROJECT_PATH/animations/<anim_name>/tween_play
-			// ANCHOR - G.PROJECT_PATH/animations/<anim_name>/tween_resume
-			animFolder.newFile(`${name}.mcfunction`, [
-				`execute if entity @s[tag=${G.TAGS.rootEntity}] run function ${G.INTERNAL_PATH}/animations/${anim.name}/${name}_as_root`,
-				`execute if entity @s[tag=!${G.TAGS.rootEntity}] run tellraw @a ${formatStr(
-					G.TEXT.errorMustBeRunAsRoot.toString(),
-					[`${G.PROJECT_PATH}/animations/${anim.name}/${name}`]
-				)}`,
+		const animFolder = animationsFolder
+			.newFolder(anim.name)
+			// ANCHOR - func G.INTERNAL_PATH:animations/<anim_name>/play_as_root
+			.chainNewFile('play.mcfunction', [
+				mustBeRootWarning(`${G.INTERNAL_PATH}/animations/${anim.name}/play`),
 			])
-		}
+			// ANCHOR - func G.INTERNAL_PATH:animations/<anim_name>/resume
+			.chainNewFile('resume.mcfunction', [
+				mustBeRootWarning(`${G.INTERNAL_PATH}/animations/${anim.name}/resume`),
+			])
+			// ANCHOR - func G.INTERNAL_PATH:animations/<anim_name>/pause
+			.chainNewFile('pause.mcfunction', [
+				mustBeRootWarning(`${G.INTERNAL_PATH}/animations/${anim.name}/pause`),
+			])
+			// ANCHOR - func G.INTERNAL_PATH:animations/<anim_name>/stop
+			.chainNewFile('stop.mcfunction', [
+				mustBeRootWarning(`${G.INTERNAL_PATH}/animations/${anim.name}/stop`),
+			])
 	}
 
 	if (
@@ -757,147 +748,33 @@ export function generateFunctions(folders: IFolders) {
 	// SECTION - Animation Tree Generation
 	// -----------------------------------
 
+	function mustBeRootWarning(functionPath: string) {
+		return `execute if entity @s[tag=!${
+			G.TAGS.rootEntity
+		}] run return run tellraw @a ${formatStr(G.TEXT.errorMustBeRunAsRoot.toString(), [
+			functionPath,
+		])}`
+	}
+
 	for (const anim of G.exportData.renderedAnimations) {
 		const animFolder = internalAnimationsFolder
 			.newFolder(`${anim.name}`)
-			// ANCHOR - func G.INTERNAL_PATH:animations/<anim_name>/play_as_root
-			.chainNewFile('play_as_root.mcfunction', [
-				`scoreboard players set @s ${G.SCOREBOARD.animTime} 0`,
-				`scoreboard players set @s ${formatStr(G.SCOREBOARD.localAnimTime, [anim.name])} 0`,
-				`scoreboard players set @s ${formatStr(G.SCOREBOARD.loopMode, [
-					anim.name,
-				])} ${G.LOOP_MODES.indexOf(anim.loopMode)}`,
-				G.IS_SINGLE_ENTITY_RIG
-					? `data modify entity @s interpolation_duration set value 0`
-					: `execute on passengers run data modify entity @s interpolation_duration set value 0`,
-				`function ${G.INTERNAL_PATH}/animations/${anim.name}/tree/leaf_0`,
-				G.IS_SINGLE_ENTITY_RIG
-					? `data modify entity @s interpolation_duration set value 1`
-					: `execute on passengers run data modify entity @s interpolation_duration set value 1`,
-				`tag @s add ${formatStr(G.TAGS.activeAnim, [anim.name])}`,
-			])
-			// ANCHOR - func G.INTERNAL_PATH:animations/<anim_name>/resume_as_root
-			.chainNewFile('resume_as_root.mcfunction', [
-				`scoreboard players set @s ${formatStr(G.SCOREBOARD.loopMode, [
-					anim.name,
-				])} ${G.LOOP_MODES.indexOf(anim.loopMode)}`,
-				G.IS_SINGLE_ENTITY_RIG
-					? `data modify entity @s interpolation_duration set value 1`
-					: `execute on passengers run data modify entity @s interpolation_duration set value 1`,
-				`tag @s add ${formatStr(G.TAGS.activeAnim, [anim.name])}`,
-			])
-			// ANCHOR - func G.INTERNAL_PATH:animations/<anim_name>/pause_as_root
-			.chainNewFile('pause_as_root.mcfunction', [
-				`tag @s remove ${formatStr(G.TAGS.activeAnim, [anim.name])}`,
-			])
-			// ANCHOR - func G.INTERNAL_PATH:animations/<anim_name>/stop_as_root
-			.chainNewFile('stop_as_root.mcfunction', [
-				`scoreboard players set @s ${formatStr(G.SCOREBOARD.localAnimTime, [anim.name])} 0`,
-				`tag @s remove ${formatStr(G.TAGS.activeAnim, [anim.name])}`,
-				G.IS_SINGLE_ENTITY_RIG
-					? `execute run data modify entity @s interpolation_duration set value 0`
-					: `execute on passengers run data modify entity @s interpolation_duration set value 0`,
-				`tag @s add ${G.TAGS.disableCommandKeyframes}`,
-				`function ${G.INTERNAL_PATH}/animations/${anim.name}/tree/leaf_0`,
-				`tag @s remove ${G.TAGS.disableCommandKeyframes}`,
-			])
-			// ANCHOR - func G.INTERNAL_PATH:animations/<anim_name>/twen_play_as_root
-			.chainNewFile('tween_play_as_root.mcfunction', [
-				`function ${G.INTERNAL_PATH}/animations/${anim.name}/play_as_root`,
-				`function ${G.INTERNAL_PATH}/animations/${anim.name}/tween_as_root`,
-				G.IS_SINGLE_ENTITY_RIG
-					? `execute if score #tween_duration ${G.SCOREBOARD.i} matches ..0 run data modify entity @s interpolation_duration set value 1`
-					: `execute if score #tween_duration ${G.SCOREBOARD.i} matches ..0 on passengers run data modify entity @s interpolation_duration set value 1`,
-				`scoreboard players reset #tween_duration ${G.SCOREBOARD.i}`,
-			])
-			// ANCHOR - func G.INTERNAL_PATH:animations/<anim_name>/tween_resume_as_root
-			.chainNewFile('tween_resume_as_root.mcfunction', [
-				`function ${G.INTERNAL_PATH}/animations/${anim.name}/resume_as_root`,
-				`function ${G.INTERNAL_PATH}/animations/${anim.name}/tween_as_root`,
-				`function ${G.INTERNAL_PATH}/animations/${anim.name}/apply_frame_as_root`,
-				G.IS_SINGLE_ENTITY_RIG
-					? `execute if score #tween_duration ${G.SCOREBOARD.i} matches ..0 run data modify entity @s interpolation_duration set value 1`
-					: `execute if score #tween_duration ${G.SCOREBOARD.i} matches ..0 on passengers run data modify entity @s interpolation_duration set value 1`,
-				`scoreboard players reset #tween_duration ${G.SCOREBOARD.i}`,
-			])
-			// ANCHOR - func G.INTERNAL_PATH:animations/<anim_name>/tween_as_root
-			.chainNewFile('tween_as_root.mcfunction', [
-				`execute unless score #tween_duration ${G.SCOREBOARD.i} = #tween_duration ${G.SCOREBOARD.i} run scoreboard players set #tween_duration ${G.SCOREBOARD.i} 1`,
-				`scoreboard players operation @s ${G.SCOREBOARD.tweenTime} = #tween_duration ${G.SCOREBOARD.i}`,
-				G.IS_SINGLE_ENTITY_RIG
-					? `execute store result entity @s interpolation_duration int 1 run scoreboard players get #tween_duration ${G.SCOREBOARD.i}`
-					: `execute on passengers store result entity @s interpolation_duration int 1 run scoreboard players get #tween_duration ${G.SCOREBOARD.i}`,
-				`scoreboard players remove @s ${G.SCOREBOARD.tweenTime} 1`,
-			])
 			// ANCHOR - func G.INTERNAL_PATH:animations/<anim_name>/tick
-			.chainNewFile('tick.mcfunction', [
-				`execute if score @s ${G.SCOREBOARD.tweenTime} matches 1.. run function ${G.INTERNAL_PATH}/animations/${anim.name}/tick_tween`,
-				`execute unless score @s ${G.SCOREBOARD.tweenTime} matches 1.. run function ${G.INTERNAL_PATH}/animations/${anim.name}/tick_animation`,
-			])
+			.chainNewFile('tick.mcfunction', [])
 			// ANCHOR - func G.INTERNAL_PATH:animations/<anim_name>/tick_tween
-			.chainNewFile('tick_tween.mcfunction', [
-				`scoreboard players remove @s ${G.SCOREBOARD.tweenTime} 1`,
-				G.IS_SINGLE_ENTITY_RIG
-					? `execute if score @s ${G.SCOREBOARD.tweenTime} matches ..0 run data modify entity @s interpolation_duration set value 1`
-					: `execute if score @s ${G.SCOREBOARD.tweenTime} matches ..0 on passengers run data modify entity @s interpolation_duration set value 1`,
-			])
+			.chainNewFile('tick_tween.mcfunction', [])
 			// ANCHOR - func G.INTERNAL_PATH:animations/<anim_name>/tick_animation
-			.chainNewFile('tick_animation.mcfunction', [
-				`scoreboard players add @s ${formatStr(G.SCOREBOARD.localAnimTime, [anim.name])} 1`,
-				`scoreboard players operation @s ${G.SCOREBOARD.animTime} = @s ${formatStr(
-					G.SCOREBOARD.localAnimTime,
-					[anim.name]
-				)}`,
-				`function ${G.INTERNAL_PATH}/animations/${anim.name}/apply_frame_as_root`,
-				`execute if score @s ${formatStr(G.SCOREBOARD.localAnimTime, [
-					anim.name,
-				])} matches ${anim.duration - 1}.. run function ${G.INTERNAL_PATH}/animations/${
-					anim.name
-				}/end`,
-			])
+			.chainNewFile('tick_animation.mcfunction', [])
 			// ANCHOR - func G.INTERNAL_PATH:animations/<anim_name>/end
-			.chainNewFile('end.mcfunction', [
-				`execute if score @s ${formatStr(G.SCOREBOARD.loopMode, [
-					anim.name,
-				])} = $aj.loop_mode.loop aj.i run function ${G.INTERNAL_PATH}/animations/${
-					anim.name
-				}/end_loop`,
-				`execute if score @s ${formatStr(G.SCOREBOARD.loopMode, [
-					anim.name,
-				])} = $aj.loop_mode.once aj.i run function ${G.PROJECT_PATH}/animations/${
-					anim.name
-				}/stop`,
-				`execute if score @s ${formatStr(G.SCOREBOARD.loopMode, [
-					anim.name,
-				])} = $aj.loop_mode.hold aj.i run function ${G.PROJECT_PATH}/animations/${
-					anim.name
-				}/pause`,
-			])
+			.chainNewFile('end.mcfunction', [])
 			// ANCHOR - func G.INTERNAL_PATH:animations/<anim_name>/end_loop
-			.chainNewFile('end_loop.mcfunction', [
-				`scoreboard players set @s ${formatStr(G.SCOREBOARD.localAnimTime, [anim.name])} 0`,
-				`scoreboard players set @s ${G.SCOREBOARD.animTime} 0`,
-				`function ${G.INTERNAL_PATH}/animations/${anim.name}/tree/leaf_0`,
-			])
+			.chainNewFile('end_loop.mcfunction', [])
 			// ANCHOR - func G.INTERNAL_PATH:animations/<anim_name>/next_frame_as_root
-			.chainNewFile('next_frame_as_root.mcfunction', [
-				`function ${G.INTERNAL_PATH}/animations/${anim.name}/tick_animation`,
+			.chainNewFile('next_frame_as_root.mcfunction', [])
+			// ANCHOR - func AJ_NAMESPACE:animations/${anim.name}/tree
+			.chainNewFile('apply_frame_as_root.mcfunction', [
+				`$function ${G.INTERNAL_PATH}/animations/${anim.name}/frame/$(index)`,
 			])
-		const tree = generateSearchTree(anim.frames, item => {
-			if (item.type === 'branch') return item.items.length > 0
-			if (item.type === 'leaf')
-				return (
-					item.item.nodes.length > 0 ||
-					item.item.variant !== undefined ||
-					item.item.commands !== undefined
-				)
-			return false
-		})
-		// ANCHOR - func AJ_NAMESPACE:animations/${anim.name}/tree
-		animFolder.newFile(
-			'apply_frame_as_root.mcfunction',
-			buildFrameTree(anim, tree, animFolder.newFolder('tree'))
-		)
 	}
 	// !SECTION
 

@@ -1,5 +1,5 @@
 import { generateDatapack as gd120 } from './exporter/gen-1.20/datapack'
-import { generateDatapack as gd1201 } from './exporter/gen-1.20.1/datapack'
+import { generateDatapack as gd1201 } from './exporter/gen-1.20.2/datapack'
 import { loadTranslations } from './exporter/translations'
 
 function generateDatapack(exportData: ExportData) {
