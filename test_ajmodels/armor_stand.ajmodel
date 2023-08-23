@@ -1,7 +1,7 @@
 {
 	"meta": {
 		"format": "animated_java/ajmodel",
-		"format_version": "0.4.6",
+		"format_version": "0.5.0",
 		"uuid": "167b27cd-b559-3f13-a97c-0841fe21f1d1"
 	},
 	"animated_java": {
@@ -984,7 +984,7 @@
 													"uuid": "b5b52d2c-097c-08df-6457-372fbae12445",
 													"export": true,
 													"mirror_uv": false,
-													"isOpen": false,
+													"isOpen": true,
 													"locked": false,
 													"visibility": true,
 													"autouv": 0,

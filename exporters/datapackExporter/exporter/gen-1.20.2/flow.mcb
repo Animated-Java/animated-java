@@ -1,0 +1,26 @@
+function entry {
+	function set_frame {animation:'walk', frame:0, duration: 1}
+}
+
+function set_frame {
+	$data modify storage animated_java:temp frame merge value {animation: $(animation), frame:$(frame)}
+	$data modify storage animated_java:temp uuids set from animated_java:project_name animations.$(animation).nodes
+	$data modify storage animated_kava:temp merge set value {transformation: false, interpolation_duration: $(duration), start_interpolation: 0}
+	data modify storage animated_java:temp uuid_map set from entity @s uuid_map
+
+	LOOP(nodes, node) {
+		data modify storage animated_java:temp uuid set from storage animated_java:temp uuids[-1]
+		data remove storage animated_java:temp uuids[-1]
+		function map_bone_uuid_to_entity_uuid with storage animated_java:temp
+		function modify_bone_transformation with storage animated_java:temp
+	}
+}
+
+function modify_bone_transformation {
+	$data modify storage animated_java:temp merge.transformation set from storage animated_java:project_name animations.$(animation).frames[$(frame)].bones[$(uuid)].transformation
+	$execute as $(uuid) run data modify entity @s {} merge from storage animated_java:temp merge
+}
+
+function map_bone_uuid_to_entity_uuid {
+	$data modify storage animated_java:temp uuid set from storage animated_java:temp uuid_map[$(uuid)]
+}

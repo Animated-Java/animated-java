@@ -1,7 +1,7 @@
 import { wrapNum } from '../util'
-import { loadAnimationTreeGenerator } from './frameGenerator'
 import { type IFolders } from './datapack'
-import { Globals as G, JsonText, deepslate, formatStr, util } from './globals'
+import { Globals as G, JsonText, deepslate, formatStr as f, util } from './globals'
+import { loadStorageGenerator } from './storageGenerator'
 
 type NbtCompound = InstanceType<typeof deepslate.NbtCompound>
 
@@ -20,7 +20,7 @@ function generateBonePassenger(uuid: string, bone: AnimatedJava.IRenderedNodes['
 	tags.add(new deepslate.NbtString(G.TAGS.new))
 	tags.add(new deepslate.NbtString(G.TAGS.rigEntity))
 	tags.add(new deepslate.NbtString(G.TAGS.boneEntity))
-	tags.add(new deepslate.NbtString(formatStr(G.TAGS.namedBoneEntity, [bone.name])))
+	tags.add(new deepslate.NbtString(f(G.TAGS.namedBoneEntity, [bone.name])))
 
 	passenger
 		.set('transformation', util.matrixToNbtFloatArray(default_pose.matrix))
@@ -93,7 +93,7 @@ function generateLocatorPassenger(
 				new deepslate.NbtString(G.TAGS.new),
 				new deepslate.NbtString(G.TAGS.rigEntity),
 				new deepslate.NbtString(G.TAGS.locatorOrigin),
-				new deepslate.NbtString(formatStr(G.TAGS.namedLocatorOrigin, [locator.name])),
+				new deepslate.NbtString(f(G.TAGS.namedLocatorOrigin, [locator.name])),
 			])
 		)
 		.set(
@@ -131,7 +131,7 @@ function generateLocatorPassenger(
 	const tags = locatorEntityNbt.get('Tags') as InstanceType<typeof deepslate.NbtList>
 
 	tags.add(new deepslate.NbtString(G.TAGS.locatorEntity))
-	tags.add(new deepslate.NbtString(formatStr(G.TAGS.namedLocatorEntity, [locator.name])))
+	tags.add(new deepslate.NbtString(f(G.TAGS.namedLocatorEntity, [locator.name])))
 	tags.add(new deepslate.NbtString(G.TAGS.new))
 
 	if (!locatorEntityNbt.get('CustomName'))
@@ -170,7 +170,7 @@ function generateLocatorPassenger(
 		.chainNewFile('as_origin.mcfunction', [
 			// `say Locator Origin`,
 			`summon ${locator.entity_type} ~ ~ ~ ${locatorEntityNbt.toString()}`,
-			`execute as @e[type=${locator.entity_type},tag=${formatStr(G.TAGS.namedLocatorEntity, [
+			`execute as @e[type=${locator.entity_type},tag=${f(G.TAGS.namedLocatorEntity, [
 				locator.name,
 			])},tag=${G.TAGS.new},limit=1,distance=..1] run function ${
 				G.INTERNAL_PATH
@@ -207,7 +207,7 @@ function generateCameraPassenger(
 				new deepslate.NbtString(G.TAGS.new),
 				new deepslate.NbtString(G.TAGS.rigEntity),
 				new deepslate.NbtString(G.TAGS.cameraOrigin),
-				new deepslate.NbtString(formatStr(G.TAGS.namedCameraOrigin, [camera.name])),
+				new deepslate.NbtString(f(G.TAGS.namedCameraOrigin, [camera.name])),
 			])
 		)
 		.set(
@@ -245,7 +245,7 @@ function generateCameraPassenger(
 	const tags = cameraEntityNbt.get('Tags') as InstanceType<typeof deepslate.NbtList>
 
 	tags.add(new deepslate.NbtString(G.TAGS.cameraEntity))
-	tags.add(new deepslate.NbtString(formatStr(G.TAGS.namedCameraEntity, [camera.name])))
+	tags.add(new deepslate.NbtString(f(G.TAGS.namedCameraEntity, [camera.name])))
 	tags.add(new deepslate.NbtString(G.TAGS.new))
 
 	if (!cameraEntityNbt.get('CustomName'))
@@ -286,7 +286,7 @@ function generateCameraPassenger(
 		.chainNewFile('as_origin.mcfunction', [
 			// `say Camera Origin`,
 			`summon ${camera.entity_type} ~ ~ ~ ${cameraEntityNbt.toString()}`,
-			`execute as @e[type=${camera.entity_type},tag=${formatStr(G.TAGS.namedCameraEntity, [
+			`execute as @e[type=${camera.entity_type},tag=${f(G.TAGS.namedCameraEntity, [
 				camera.name,
 			])},tag=${G.TAGS.new},limit=1,distance=..1] run function ${
 				G.INTERNAL_PATH
@@ -371,7 +371,7 @@ function generateSummonFunction(internalSummonFolder: AnimatedJava.VirtualFolder
 
 export function generateFunctions(folders: IFolders) {
 	const { generateSearchTree } = AnimatedJava.API
-	const { buildFrameTree } = loadAnimationTreeGenerator()
+	const { generateStorage } = loadStorageGenerator()
 	const cameraCount = Object.values(G.exportData.rig.nodeMap).filter(
 		v => v.type === 'camera'
 	).length
@@ -391,9 +391,9 @@ export function generateFunctions(folders: IFolders) {
 				.filter(s => !s.includes('%s'))
 				.map(s => `scoreboard objectives add ${s} dummy`),
 			// prettier-ignore
-			...G.exportData.renderedAnimations.map(a => `scoreboard objectives add ${formatStr(G.SCOREBOARD.localAnimTime, [a.name])} dummy`),
+			...G.exportData.renderedAnimations.map(a => `scoreboard objectives add ${f(G.SCOREBOARD.localAnimTime, [a.name])} dummy`),
 			// prettier-ignore
-			...G.exportData.renderedAnimations.map(a => `scoreboard objectives add ${formatStr(G.SCOREBOARD.loopMode, [a.name])} dummy`),
+			...G.exportData.renderedAnimations.map(a => `scoreboard objectives add ${f(G.SCOREBOARD.loopMode, [a.name])} dummy`),
 			// prettier-ignore
 			...G.exportData.renderedAnimations.map((a, i) => `scoreboard players set $aj.${G.PROJECT_NAME}.animation.${a.name} ${G.SCOREBOARD.id} ${i}`),
 			// prettier-ignore
@@ -409,6 +409,10 @@ export function generateFunctions(folders: IFolders) {
 			// load function tag
 			`scoreboard players reset * ${G.SCOREBOARD.rigLoaded}`,
 			`execute as @e[type=minecraft:item_display,tag=${G.TAGS.rootEntity}] run function ${G.INTERNAL_PATH}/on_load`,
+			// load storage
+			`data modify storage animated_java:${
+				G.PROJECT_NAME
+			} set value ${generateStorage().toString()}`,
 		])
 		// ANCHOR - func G.INTERNAL_PATH/on_load
 		.chainNewFile('on_load.mcfunction', [
@@ -426,9 +430,9 @@ export function generateFunctions(folders: IFolders) {
 				.filter(s => !s.includes('%s'))
 				.map(s => `scoreboard objectives remove ${s}`),
 			// prettier-ignore
-			...G.exportData.renderedAnimations.map(a => `scoreboard objectives remove ${formatStr(G.SCOREBOARD.localAnimTime, [a.name])}`),
+			...G.exportData.renderedAnimations.map(a => `scoreboard objectives remove ${f(G.SCOREBOARD.localAnimTime, [a.name])}`),
 			// prettier-ignore
-			...G.exportData.renderedAnimations.map(a => `scoreboard objectives remove ${formatStr(G.SCOREBOARD.loopMode, [a.name])}`),
+			...G.exportData.renderedAnimations.map(a => `scoreboard objectives remove ${f(G.SCOREBOARD.loopMode, [a.name])}`),
 			`tellraw @a ${G.TEXT.uninstallMessage.toString()}`,
 		])
 	}
@@ -520,7 +524,7 @@ export function generateFunctions(folders: IFolders) {
 						G.PROJECT_NAME
 					}.animation.${a.name} ${
 						G.SCOREBOARD.id
-					} run scoreboard players operation @s ${formatStr(G.SCOREBOARD.localAnimTime, [
+					} run scoreboard players operation @s ${f(G.SCOREBOARD.localAnimTime, [
 						a.name,
 					])} = #frame ${G.SCOREBOARD.i}`,
 				])
@@ -553,7 +557,7 @@ export function generateFunctions(folders: IFolders) {
 				...Object.values(G.exportData.rig.nodeMap)
 					.map(locator =>
 						locator.type === 'locator'
-							? `execute if entity @s[tag=${formatStr(G.TAGS.namedLocatorOrigin, [
+							? `execute if entity @s[tag=${f(G.TAGS.namedLocatorOrigin, [
 									locator.name,
 							  ])}] run function ${G.INTERNAL_PATH}/summon/locator_${
 									locator.name
@@ -571,7 +575,7 @@ export function generateFunctions(folders: IFolders) {
 				...Object.values(G.exportData.rig.nodeMap)
 					.map(camera =>
 						camera.type === 'camera'
-							? `execute if entity @s[tag=${formatStr(G.TAGS.namedCameraOrigin, [
+							? `execute if entity @s[tag=${f(G.TAGS.namedCameraOrigin, [
 									camera.name,
 							  ])}] run function ${G.INTERNAL_PATH}/summon/camera_${
 									camera.name
@@ -608,7 +612,7 @@ export function generateFunctions(folders: IFolders) {
 			// ANCHOR - function G.PROJECT_PATH/apply_variant/<variant_name>
 			applyVariantsFolder.newFile(`${variant.name}.mcfunction`, [
 				`execute if entity @s[tag=${G.TAGS.rootEntity}] run function ${G.INTERNAL_PATH}/apply_variant/${variant.name}/as_root`,
-				`execute if entity @s[tag=!${G.TAGS.rootEntity}] run tellraw @a ${formatStr(
+				`execute if entity @s[tag=!${G.TAGS.rootEntity}] run tellraw @a ${f(
 					G.TEXT.errorMustBeRunAsRoot.toString(),
 					[`${G.PROJECT_PATH}/apply_variant/${variant.name}`]
 				)}`,
@@ -633,7 +637,7 @@ export function generateFunctions(folders: IFolders) {
 							? node
 							: G.exportData.rig.variantModels[variant.name][uuid]
 
-						return `execute if entity @s[tag=${formatStr(G.TAGS.namedBoneEntity, [
+						return `execute if entity @s[tag=${f(G.TAGS.namedBoneEntity, [
 							node.name,
 						])}] run data modify entity @s item.tag.CustomModelData set value ${
 							variantBone.customModelData
@@ -654,7 +658,7 @@ export function generateFunctions(folders: IFolders) {
 		// ANCHOR - function G.PROJECT_PATH/remove/this
 		.chainNewFile('this.mcfunction', [
 			`execute if entity @s[tag=${G.TAGS.rootEntity}] run function ${G.INTERNAL_PATH}/remove/as_root`,
-			`execute if entity @s[tag=!${G.TAGS.rootEntity}] run tellraw @a ${formatStr(
+			`execute if entity @s[tag=!${G.TAGS.rootEntity}] run tellraw @a ${f(
 				G.TEXT.errorMustBeRunAsRoot.toString(),
 				[`${G.PROJECT_PATH}/remove/this`]
 			)}`,
@@ -692,23 +696,77 @@ export function generateFunctions(folders: IFolders) {
 	const internalAnimationsFolder = folders.project.internalFunctions.newFolder('animations')
 
 	for (const anim of G.exportData.renderedAnimations) {
-		const animFolder = animationsFolder
+		animationsFolder
 			.newFolder(anim.name)
-			// ANCHOR - func G.INTERNAL_PATH:animations/<anim_name>/play_as_root
+			// ANCHOR - func G.PROJECT_PATH:animations/<anim_name>/play
 			.chainNewFile('play.mcfunction', [
-				mustBeRootWarning(`${G.INTERNAL_PATH}/animations/${anim.name}/play`),
+				mustBeRootWarning(`${G.PROJECT_PATH}/animations/${anim.name}/play`),
+				`scoreboard players set @s ${G.SCOREBOARD.animTime} 0`,
+				`scoreboard players set @s ${f(G.SCOREBOARD.localAnimTime, [anim.name])} 0`,
+				`$scoreboard players set @s ${G.SCOREBOARD.tweenTime} $(tween_time)`,
+				...(G.IS_SINGLE_ENTITY_RIG
+					? [
+							`data modify entity @s interpolation_duration set value 0`,
+							`$function ${G.PROJECT_PATH}/animations/${anim.name}/set_frame with storage animated_java:${G.PROJECT_NAME} animation.${anim.name}[$(frame)]`,
+							`data modify entity @s interpolation_duration set value 1`,
+					  ]
+					: [
+							`execute on passengers run data modify entity @s interpolation_duration set value 0`,
+							`$function ${G.PROJECT_PATH}/animations/${anim.name}/set_frame with storage animated_java:${G.PROJECT_NAME} animation.${anim.name}[$(frame)]`,
+							`execute on passengers run data modify entity @s interpolation_duration set value 1`,
+					  ]),
+				`tag @s add ${f(G.TAGS.activeAnim, [anim.name])}`,
 			])
-			// ANCHOR - func G.INTERNAL_PATH:animations/<anim_name>/resume
+			// ANCHOR - func G.PROJECT_PATH:animations/<anim_name>/resume
 			.chainNewFile('resume.mcfunction', [
-				mustBeRootWarning(`${G.INTERNAL_PATH}/animations/${anim.name}/resume`),
+				mustBeRootWarning(`${G.PROJECT_PATH}/animations/${anim.name}/resume`),
+				`tag @s add ${f(G.TAGS.activeAnim, [anim.name])}`,
 			])
-			// ANCHOR - func G.INTERNAL_PATH:animations/<anim_name>/pause
+			// ANCHOR - func G.PROJECT_PATH:animations/<anim_name>/set_frame
+			.chainNewFile('set_frame.mcfunction', [
+				mustBeRootWarning(`${G.PROJECT_PATH}/animations/${anim.name}/resume`),
+				...(G.IS_SINGLE_ENTITY_RIG
+					? [
+							`data modify entity @s interpolation_duration set value 0`,
+							`$function ${G.PROJECT_PATH}/animations/${anim.name}/set_frame with storage animated_java:${G.PROJECT_NAME} animation.${anim.name}[$(frame)]`,
+							`data modify entity @s interpolation_duration set value 1`,
+					  ]
+					: [
+							`execute on passengers run data modify entity @s interpolation_duration set value 0`,
+							`$function ${G.PROJECT_PATH}/animations/${anim.name}/set_frame with storage animated_java:${G.PROJECT_NAME} animation.${anim.name}[$(frame)]`,
+							`execute on passengers run data modify entity @s interpolation_duration set value 1`,
+					  ]),
+			])
+			// ANCHOR - func G.PROJECT_PATH:animations/<anim_name>/next_frame
+			.chainNewFile('next_frame.mcfunction', [
+				mustBeRootWarning(`${G.PROJECT_PATH}/animations/${anim.name}/resume`),
+				`execute store result storage animated_java:args frame int 1 run scoreboard players get @s ${G.SCOREBOARD.animTime}`,
+				`$function ${G.PROJECT_PATH}/animations/${anim.name}/set_frame with storage animated_java:${G.PROJECT_NAME} animation.${anim.name}[$(frame)]`,
+			])
+			// ANCHOR - func G.PROJECT_PATH:animations/<anim_name>/pause
 			.chainNewFile('pause.mcfunction', [
-				mustBeRootWarning(`${G.INTERNAL_PATH}/animations/${anim.name}/pause`),
+				mustBeRootWarning(`${G.PROJECT_PATH}/animations/${anim.name}/pause`),
+				`tag @s remove ${f(G.TAGS.activeAnim, [anim.name])}`,
 			])
-			// ANCHOR - func G.INTERNAL_PATH:animations/<anim_name>/stop
+			// ANCHOR - func G.PROJECT_PATH:animations/<anim_name>/stop
 			.chainNewFile('stop.mcfunction', [
-				mustBeRootWarning(`${G.INTERNAL_PATH}/animations/${anim.name}/stop`),
+				mustBeRootWarning(`${G.PROJECT_PATH}/animations/${anim.name}/stop`),
+				`scoreboard players set @s ${G.SCOREBOARD.animTime} 0`,
+				`scoreboard players set @s ${f(G.SCOREBOARD.localAnimTime, [anim.name])} 0`,
+				`tag @s add ${f(G.TAGS.disableCommandKeyframes)}`,
+				...(G.IS_SINGLE_ENTITY_RIG
+					? [
+							`data modify entity @s interpolation_duration set value 0`,
+							`$function ${G.PROJECT_PATH}/animations/${anim.name}/set_frame with storage animated_java:${G.PROJECT_NAME} animation.${anim.name}[$(frame)]`,
+							`data modify entity @s interpolation_duration set value 1`,
+					  ]
+					: [
+							`execute on passengers run data modify entity @s interpolation_duration set value 0`,
+							`$function ${G.PROJECT_PATH}/animations/${anim.name}/set_frame with storage animated_java:${G.PROJECT_NAME} animation.${anim.name}[$(frame)]`,
+							`execute on passengers run data modify entity @s interpolation_duration set value 1`,
+					  ]),
+				`tag @s remove ${f(G.TAGS.disableCommandKeyframes)}`,
+				`tag @s remove ${f(G.TAGS.activeAnim, [anim.name])}`,
 			])
 	}
 
@@ -720,7 +778,7 @@ export function generateFunctions(folders: IFolders) {
 			// ANCHOR - function G.PROJECT_PATH:animations/pause_all
 			.chainNewFile('pause_all.mcfunction', [
 				`execute if entity @s[tag=${G.TAGS.rootEntity}] run function ${G.INTERNAL_PATH}/animations/pause_all_as_root`,
-				`execute if entity @s[tag=!${G.TAGS.rootEntity}] run tellraw @a ${formatStr(
+				`execute if entity @s[tag=!${G.TAGS.rootEntity}] run tellraw @a ${f(
 					G.TEXT.errorMustBeRunAsRoot.toString(),
 					[`${G.PROJECT_PATH}/animations/pause_all`]
 				)}`,
@@ -738,9 +796,9 @@ export function generateFunctions(folders: IFolders) {
 	internalAnimationsFolder.newFile('tick.mcfunction', [
 		...G.exportData.renderedAnimations.map(
 			anim =>
-				`execute if entity @s[tag=${formatStr(G.TAGS.activeAnim, [
-					anim.name,
-				])}] run function ${G.INTERNAL_PATH}/animations/${anim.name}/tick`
+				`execute if entity @s[tag=${f(G.TAGS.activeAnim, [anim.name])}] run function ${
+					G.INTERNAL_PATH
+				}/animations/${anim.name}/tick`
 		),
 	])
 
@@ -749,15 +807,14 @@ export function generateFunctions(folders: IFolders) {
 	// -----------------------------------
 
 	function mustBeRootWarning(functionPath: string) {
-		return `execute if entity @s[tag=!${
-			G.TAGS.rootEntity
-		}] run return run tellraw @a ${formatStr(G.TEXT.errorMustBeRunAsRoot.toString(), [
-			functionPath,
-		])}`
+		return `execute if entity @s[tag=!${G.TAGS.rootEntity}] run return run tellraw @a ${f(
+			G.TEXT.errorMustBeRunAsRoot.toString(),
+			[functionPath]
+		)}`
 	}
 
 	for (const anim of G.exportData.renderedAnimations) {
-		const animFolder = internalAnimationsFolder
+		internalAnimationsFolder
 			.newFolder(`${anim.name}`)
 			// ANCHOR - func G.INTERNAL_PATH:animations/<anim_name>/tick
 			.chainNewFile('tick.mcfunction', [])
@@ -769,12 +826,6 @@ export function generateFunctions(folders: IFolders) {
 			.chainNewFile('end.mcfunction', [])
 			// ANCHOR - func G.INTERNAL_PATH:animations/<anim_name>/end_loop
 			.chainNewFile('end_loop.mcfunction', [])
-			// ANCHOR - func G.INTERNAL_PATH:animations/<anim_name>/next_frame_as_root
-			.chainNewFile('next_frame_as_root.mcfunction', [])
-			// ANCHOR - func AJ_NAMESPACE:animations/${anim.name}/tree
-			.chainNewFile('apply_frame_as_root.mcfunction', [
-				`$function ${G.INTERNAL_PATH}/animations/${anim.name}/frame/$(index)`,
-			])
 	}
 	// !SECTION
 

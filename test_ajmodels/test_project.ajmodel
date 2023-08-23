@@ -1,14 +1,14 @@
 {
 	"meta": {
 		"format": "animated_java/ajmodel",
-		"format_version": "0.4.6",
+		"format_version": "0.5.0",
 		"uuid": "257899d2-8a31-64fe-f7ae-b7afa1acbd89"
 	},
 	"animated_java": {
 		"settings": {
 			"project_namespace": "happy_box",
 			"project_resolution": [64, 64],
-			"target_minecraft_version": "1.20+",
+			"target_minecraft_version": "1.20.1",
 			"rig_item": "minecraft:white_dye",
 			"rig_item_model": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\assets\\minecraft\\models\\item\\white_dye.json",
 			"rig_export_folder": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\assets\\happy_box_animated_java_rig\\models\\item",
@@ -94,11 +94,13 @@
 			"box_uv": false,
 			"rescale": false,
 			"locked": false,
+			"render_order": "default",
+			"allow_mirror_modeling": true,
 			"from": [-8, 0, -8],
 			"to": [8, 16, 8],
 			"autouv": 0,
 			"color": 0,
-			"origin": [16, 0, 0],
+			"origin": [0, 8, 0],
 			"faces": {
 				"north": {
 					"uv": [16, 16, 32, 32],
@@ -133,6 +135,8 @@
 			"box_uv": false,
 			"rescale": false,
 			"locked": false,
+			"render_order": "default",
+			"allow_mirror_modeling": true,
 			"from": [0, 0, 0],
 			"to": [2, 2, 2],
 			"autouv": 0,
@@ -171,7 +175,7 @@
 	"outliner": [
 		{
 			"name": "cube1",
-			"origin": [0, 0, 0],
+			"origin": [0, 8, 0],
 			"color": 0,
 			"nbt": "{}",
 			"uuid": "69aa99f5-fee8-5db4-accc-408ffe509670",
@@ -300,6 +304,26 @@
 							"uuid": "7920351c-ed3d-ca1f-532c-52c86c120329",
 							"time": 1,
 							"color": -1,
+							"interpolation": "linear",
+							"bezier_linked": true,
+							"bezier_left_time": [-0.1, -0.1, -0.1],
+							"bezier_left_value": [0, 0, 0],
+							"bezier_right_time": [0.1, 0.1, 0.1],
+							"bezier_right_value": [0, 0, 0]
+						},
+						{
+							"channel": "scale",
+							"data_points": [
+								{
+									"x": "1",
+									"y": "1",
+									"z": 1
+								}
+							],
+							"uuid": "2fe89dce-970e-9466-5e09-e6f182b7eebc",
+							"time": 0,
+							"color": -1,
+							"uniform": false,
 							"interpolation": "linear",
 							"bezier_linked": true,
 							"bezier_left_time": [-0.1, -0.1, -0.1],

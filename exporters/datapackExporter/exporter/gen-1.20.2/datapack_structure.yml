@@ -1,4 +1,4 @@
-datapack:
+datapack_structure:
   - data:
       - animated_java:
           - functions:
