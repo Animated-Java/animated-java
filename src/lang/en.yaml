@@ -227,17 +227,17 @@ animated_java.animation_config.start_delay: Start Delay
 animated_java.animation_config.start_delay.description: |-
   The delay (in ticks) before the animation starts after the play function is ran.
 
-animated_java.animation_config.affected_bones_is_a_whitelist: Ignored Bones is a Whitelist
+animated_java.animation_config.affected_bones_is_a_whitelist: Affected Bones is a Whitelist
 animated_java.animation_config.affected_bones_is_a_whitelist.description: |-
-  If true, only the bones in the Ignored Bones list will be affected by this animation.
-  If false, all bones except the ones in the Ignored Bones list will be affected by this animation.
+  If true, only the bones in the Affected Bones list will be modified by this animation.
+  If false, all bones except the ones in the Affected Bones list will be modified by this animation.
 
-animated_java.animation_config.affected_bones: Ignored Bones
+animated_java.animation_config.affected_bones: Affected Bones
 animated_java.animation_config.affected_bones.add_new_item_message: Add a Bone
 animated_java.animation_config.affected_bones.description: |-
   The bones that this animation will affect.
-  If this list is a whitelist, only the bones in the Ignored Bones list will be affected by this animation.
-  If this list is a blacklist, all bones except the ones in the Ignored Bones list will be affected by this animation.
+  If this list is a whitelist, only the bones in the Affected Bones list will be modified by this animation.
+  If this list is a blacklist, all bones except the ones in the Affected Bones list will be modified by this animation.
 
 ### Variants Panel
 animated_java.panels.variants.name: Variants
