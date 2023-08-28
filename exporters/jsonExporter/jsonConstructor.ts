@@ -29,6 +29,7 @@ interface ISerializedAnimationFrame {
 interface ISerializedNodeAnimationFrameEntry {
 	uuid: string
 	matrix: number[]
+	interpolation: 'instant' | 'default'
 }
 
 interface ISerealizedAnimation {
@@ -92,6 +93,7 @@ function serializeNodeAnimationFrameEntry(
 	const { type, uuid, matrix } = node
 	return {
 		uuid,
+		interpolation: node.interpolation,
 		matrix: matrix.toArray(),
 	}
 }
@@ -146,10 +148,20 @@ function serializeVariant(
 	const affected_bones = variant.affectedBones.map(v => v.value)
 	const affected_bones_is_a_whitelist = variant.affectedBonesIsAWhitelist
 
-	for (const [uuid, model] of Object.entries(exportOptions.rig.variantModels[name])) {
-		models[uuid] = {
-			custom_model_data: model.customModelData,
-			resource_location: model.resourceLocation,
+	if (variant.default) {
+		for (const [uuid, model] of Object.entries(exportOptions.rig.nodeMap)) {
+			if (model.type !== 'bone') continue
+			models[uuid] = {
+				custom_model_data: model.customModelData,
+				resource_location: model.resourceLocation,
+			}
+		}
+	} else {
+		for (const [uuid, model] of Object.entries(exportOptions.rig.variantModels[name])) {
+			models[uuid] = {
+				custom_model_data: model.customModelData,
+				resource_location: model.resourceLocation,
+			}
 		}
 	}
 
@@ -215,7 +227,6 @@ export function constructJSON(
 	const animations = {}
 
 	for (const variant of Project!.animated_java_variants.variants) {
-		if (variant.default) continue
 		variants[variant.uuid] = serializeVariant(exportOptions, variant)
 	}
 
