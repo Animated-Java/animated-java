@@ -18,11 +18,11 @@ export function isValidDataPackMcMeta(path: string) {
 }
 
 export function isValidResourcePackPath(path: string) {
-	const parsed = parseResourcePackPath(path)
+	const parsed = parseResourcePath(path)
 	return parsed && parsed.namespace && parsed.resourcePath
 }
 
-export function parseResourcePackPath(path: string) {
+export function parseResourcePath(path: string) {
 	path = path.replace(/[\\/]/g, PathModule.sep)
 	const parts = path.split(PathModule.sep)
 

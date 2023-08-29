@@ -1,4 +1,4 @@
-import { parseResourcePackPath, safeFunctionName } from '../minecraft/util'
+import { parseResourcePath, safeFunctionName } from '../minecraft/util'
 import { ProgressBarController } from '../util/progress'
 import { Variant } from '../variants'
 import {
@@ -247,12 +247,12 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 
 export function getTextureResourceLocation(texture: Texture, rig: IRenderedRig) {
 	if (texture.path && fs.existsSync(texture.path)) {
-		const parsed = parseResourcePackPath(texture.path)
+		const parsed = parseResourcePath(texture.path)
 		if (parsed) return parsed
 	}
 	const path = PathModule.join(rig.textureExportFolder, safeFunctionName(texture.name) + '.png')
 
-	const parsed = parseResourcePackPath(path)
+	const parsed = parseResourcePath(path)
 	if (parsed) return parsed
 
 	console.error(texture)
@@ -287,7 +287,7 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 	const parentId = (group.parent instanceof Group ? group.parent.uuid : group.parent)!
 
 	const path = PathModule.join(rig.modelExportFolder, group.name + `.json`)
-	const parsed = parseResourcePackPath(path)
+	const parsed = parseResourcePath(path)
 
 	if (!parsed) {
 		console.error(group)
@@ -430,7 +430,7 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 
 		const parsed = PathModule.parse(bone.modelPath)
 		const modelPath = PathModule.join(parsed.dir, variant.name, `${bone.name}.json`)
-		const parsedModelPath = parseResourcePackPath(modelPath)
+		const parsedModelPath = parseResourcePath(modelPath)
 		if (!parsedModelPath) throw new Error(`Invalid variant model path: ${modelPath}`)
 
 		bones[uuid] = {

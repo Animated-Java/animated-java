@@ -1,6 +1,6 @@
 import { loadJSONText } from './text'
 import { getScoreboards } from './scoreboards'
-import { getTags } from './entity_tags'
+import { getTags } from './entityTags'
 import { loadUtil } from '../util'
 
 export let deepslate = AnimatedJava.API.deepslate

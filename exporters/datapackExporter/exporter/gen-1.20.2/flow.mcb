@@ -3,24 +3,99 @@ function entry {
 }
 
 function set_frame {
-	$data modify storage animated_java:temp frame merge value {animation: $(animation), frame:$(frame)}
-	$data modify storage animated_java:temp uuids set from animated_java:project_name animations.$(animation).nodes
-	$data modify storage animated_kava:temp merge set value {transformation: false, interpolation_duration: $(duration), start_interpolation: 0}
+	$data modify storage animated_java:temp {} merge value {animation: $(animation), frame:$(frame)}
+	$data modify storage animated_java:temp nodes set from animated_java:project_name animations.$(animation).nodes
 	data modify storage animated_java:temp uuid_map set from entity @s uuid_map
 
-	LOOP(nodes, node) {
-		data modify storage animated_java:temp uuid set from storage animated_java:temp uuids[-1]
-		data remove storage animated_java:temp uuids[-1]
-		function map_bone_uuid_to_entity_uuid with storage animated_java:temp
-		function modify_bone_transformation with storage animated_java:temp
+	# For each uuid in nodes
+	execute store result score #count aj.i if data storage animated_java:temp nodes[]
+	{
+		data modify storage animated_java:temp uuid merge from storage animated_java:temp nodes[-1]
+
+		function map_node_uuid_to_entity_uuid with storage animated_java:temp
+		scoreboard players set #success aj.i 0
+		execute store success score #success aj.i if data storage animated_java:temp {type:'bone'} run function animated_java:set_bone_transformation with storage animated_java:temp
+		execute if score #success aj.i matches 0 run function animated_java:set_locator_transformation with storage animated_java:temp
+
+		data remove storage animated_java:temp nodes[-1]
+
+		scoreboard players remove #count aj.i 1
+		execute if score #count aj.i matches 1.. run function $block
 	}
 }
 
-function modify_bone_transformation {
-	$data modify storage animated_java:temp merge.transformation set from storage animated_java:project_name animations.$(animation).frames[$(frame)].bones[$(uuid)].transformation
-	$execute as $(uuid) run data modify entity @s {} merge from storage animated_java:temp merge
+function set_frame_animation_specific {
+	$data modify storage animated_java:temp {} merge value {animation: <%animation.name%>, frame:$(frame)}
+	data modify storage animated_java:temp uuid_map set from entity @s uuid_map
+
+	# AJ only includes nodes modified by this animation while generating this function
+	LOOP(nodes, node) {
+		data modify storage animated_java:temp uuidset from storage animated_java:project_name animations.<%animation.name%>.frames[$(frame)].nodes[{uuid: <%node.uuid%>}]
+		function map_node_uuid_to_entity_uuid with storage animated_java:temp
+		function animated_java:set_bone_transformation with storage animated_java:temp
+	}
 }
 
-function map_bone_uuid_to_entity_uuid {
+function set_bone_transformation {
+	$data modify storage animated_java:project_name animations.$(animation).frames[$(frame)].nodes[$(uuid)].duration set value $(duration)
+	$execute as $(uuid) run data modify entity @s {} merge from storage animated_java:project_name animations.$(animation).frames[$(frame)].nodes[$(uuid)]
+}
+
+function set_locator_transformation {
+	$execute as $(uuid) run data modify entity @s {} merge from storage animated_java:project_name animations.$(animation).frames[$(frame)].nodes[$(uuid)]
+}
+
+function map_node_uuid_to_entity_uuid {
 	$data modify storage animated_java:temp uuid set from storage animated_java:temp uuid_map[$(uuid)]
+}
+
+loot storage {
+	"animated_java:project_name": {
+		"animations": {
+			"$(animation)": {
+				"nodes": [
+					{
+						"type": "bone",
+						"uuid": "$(uuid)",
+					},
+					{
+						"type": "locator",
+						"uuid": "$(uuid)",
+					}
+				],
+				"frames": [
+					{
+						"nodes": {
+							"$(bone_uuid)": {
+								"transformation": {},
+								"start_interpolation": 0,
+								"duration": 1,
+							},
+							"$(locator_uuid)": {
+								"Position": [],
+								"Rotation": [],
+							}
+						}
+					}
+				]
+			}
+		}
+	},
+	"animated_java:temp": {
+		"animation": "walk",
+		"frame": 0,
+		"nodes": [
+			{
+				"type": "bone",
+				"uuid": "$(uuid)",
+			},
+			{
+				"type": "locator",
+				"uuid": "$(uuid)",
+			}
+		],
+		"uuid_map": {
+			"$(node_uuid)": "$(entity_uuid)"
+		}
+	}
 }

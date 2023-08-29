@@ -1,6 +1,6 @@
 import { ajModelFormat } from '../modelFormat'
 import { roundToN } from '../util/misc'
-import { createBlockbenchMod, createPropertySubscribable } from '../util/moddingTools'
+import { createBlockbenchMod } from '../util/moddingTools'
 
 createBlockbenchMod(
 	'animated_java:animation/affected_bones',

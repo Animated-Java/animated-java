@@ -502,6 +502,7 @@
 			"to": [5, 32, 5],
 			"autouv": 0,
 			"color": 0,
+			"visibility": false,
 			"origin": [0, 23, 0],
 			"faces": {
 				"north": {
@@ -543,6 +544,7 @@
 			"to": [5, 23.75, 3],
 			"autouv": 0,
 			"color": 0,
+			"visibility": false,
 			"origin": [0, 24, 0],
 			"faces": {
 				"north": {
@@ -584,6 +586,7 @@
 			"to": [-3, 25, 3],
 			"autouv": 0,
 			"color": 0,
+			"visibility": false,
 			"origin": [-6, 23, 0],
 			"faces": {
 				"north": {
@@ -625,6 +628,7 @@
 			"to": [9, 25, 3],
 			"autouv": 0,
 			"color": 0,
+			"visibility": false,
 			"origin": [6, 23, 0],
 			"faces": {
 				"north": {
@@ -666,6 +670,7 @@
 			"to": [4.5, 17, 2.5],
 			"autouv": 0,
 			"color": 0,
+			"visibility": false,
 			"origin": [0, 24, 0],
 			"faces": {
 				"north": {
@@ -707,6 +712,7 @@
 			"to": [4.25, 12, 2.375],
 			"autouv": 0,
 			"color": 0,
+			"visibility": false,
 			"origin": [2, 12, 0],
 			"faces": {
 				"north": {
@@ -748,6 +754,7 @@
 			"to": [0.5, 12, 2.375],
 			"autouv": 0,
 			"color": 0,
+			"visibility": false,
 			"origin": [-2, 12, 0],
 			"faces": {
 				"north": {
@@ -789,6 +796,7 @@
 			"to": [4.75, 6, 3],
 			"autouv": 0,
 			"color": 0,
+			"visibility": false,
 			"origin": [2, 12, 0],
 			"faces": {
 				"north": {
@@ -830,6 +838,7 @@
 			"to": [1, 6, 3],
 			"autouv": 0,
 			"color": 0,
+			"visibility": false,
 			"origin": [-2, 12, 0],
 			"faces": {
 				"north": {
@@ -970,7 +979,7 @@
 													"uuid": "808e3c26-7285-af3f-a079-d8b899176dd3",
 													"export": true,
 													"mirror_uv": false,
-													"isOpen": false,
+													"isOpen": true,
 													"locked": false,
 													"visibility": true,
 													"autouv": 0,
@@ -998,7 +1007,7 @@
 													"uuid": "215d1b02-0e64-a794-1b88-a9c5a6d7541c",
 													"export": true,
 													"mirror_uv": false,
-													"isOpen": false,
+													"isOpen": true,
 													"locked": false,
 													"visibility": true,
 													"autouv": 0,

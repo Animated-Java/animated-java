@@ -1,6 +1,6 @@
 import { fileExists, loadJsonFile, recursivelyRemoveEmptyFolders } from '../util'
-import { generateEntityTypes } from './entity_types'
-import { generateTags } from './function_tags'
+import { generateEntityTypes } from './entityTypes'
+import { generateTags } from './functionTags'
 import { generateFunctions } from './functions'
 import { Globals as G, util } from './globals'
 
