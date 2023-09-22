@@ -99,3 +99,105 @@ loot storage {
 		}
 	}
 }
+
+
+###########################
+#--- The new solution? ---#
+###########################
+
+loot aj:project_name_storage {
+	"animations": {
+		"$(animation)": {
+			"frames": [
+				{
+					"nodes": {
+						"$(bone_name)": {
+							"transformation": {},
+							"start_interpolation": 0,
+							"duration": 1,
+						},
+						"$(locator_name)": {
+							"x": 0,
+							"y": 0,
+							"z": 0,
+							"rx": 0,
+							"ry": 0,
+						}
+					}
+				}
+			]
+		}
+	},
+}
+
+loot root_entity_nbt {
+	"data": {
+		"nodes": {
+			"$(bone_name)": {
+				"name": "$(bone_name)",
+				"uuid": "$(bone_entity_uuid)",
+			},
+			"$(locator_name)": {
+				"name": "$(locator_name)",
+				"uuid": "$(locator_entity_uuid)",
+			}
+		}
+	}
+}
+
+function summon {
+	# Summon all the entities
+	summon minecraft:item_display ~ ~ ~ {...}
+	# Init storage
+	(
+		data modify storage aj:temp data set value {
+			nodes: {
+				"bone1": {
+					name: "bone1",
+					uuid: ""
+				},
+				"bone2": {
+					name: "bone2",
+					uuid: ""
+				},
+				"locator1": {
+					name: "locator1",
+					uuid: ""
+				},
+			}
+		}
+	)
+	# Then as each bone entity (selected via tags), store the correct UUID in the correct key.
+	execute as @e[type=minecraft:item_display,tag=aj.root_entity,tag=new,limit=1,distance=..0.01] run {
+		execute on passengers run {
+			execute if entity @s[tag=bone1] run data modify storage aj:temp data.nodes.bone1.uuid set from entity @s uuid
+			execute if entity @s[tag=bone2] run data modify storage aj:temp data.nodes.bone2.uuid set from entity @s uuid
+			execute if entity @s[tag=locator1] run data modify storage aj:temp data.nodes.locator1.uuid set from entity @s uuid
+		}
+		data modify entity @s data set from storage aj:temp data
+	}
+}
+
+function apply_frame {
+	# Executed as root
+	# Load animation data
+	$data modify storage aj:temp animation set from storage aj:project_name animations.$(animation)
+	# Load frame data
+	execute store result data storage aj:temp frame int 1 run scoreboard players get @s aj.frame
+	{
+		$data modify storage aj:temp frame_data from storage aj:temp animation.frames[$(frame)]
+		function apply_bone_frame_data with storage aj:temp data.nodes.bone1
+		function apply_bone_frame_data with storage aj:temp data.nodes.bone2
+		# Locators need special treatment since their position and rotation are applied via teleportation, and accessing sub-object data is not possible.
+		data modify storage aj:temp data.nodes.locator1 merge from storage aj:temp frame_data.nodes.locator1
+		function apply_locator_frame_data with storage aj:temp data.nodes.locator1
+	} with storage aj:temp
+}
+
+function apply_bone_frame_data {
+	$execute as $(uuid) run data modify entity @s {} merge from storage aj:temp frame_data.nodes.$(name).merge
+}
+
+function apply_locator_frame_data {
+	$execute as $(uuid) run tp @s ~$(x) ~$(y) ~$(z) ~$(rx) ~$(ry)
+}
