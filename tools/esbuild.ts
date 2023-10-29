@@ -7,24 +7,19 @@ if (process.argv.includes('--mode=dev')) {
 process.env.FLAVOR ??= `local`
 
 import * as fs from 'fs'
-import fsExtra from 'fs-extra'
-import pathjs from 'path'
-import util from 'util'
-import jsyaml from 'js-yaml'
+import { readFile } from 'fs-extra'
+import { isAbsolute, join } from 'path'
+import { TextDecoder } from 'util'
+import { load } from 'js-yaml'
 import * as esbuild from 'esbuild'
 import sveltePlugin from './plugins/sveltePlugin'
 import svelteConfig from '../svelte.config.js'
-import * as workerPlugin from './plugins/workerPlugin'
 import inlineImage from 'esbuild-plugin-inline-image'
 
 const PACKAGE = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
 
 const INFO_PLUGIN: esbuild.Plugin = {
 	name: 'infoPlugin',
-	/**
-	 *
-	 * @param {esbuild.PluginBuild} build
-	 */
 	setup(build) {
 		let start = Date.now()
 		build.onStart(() => {
@@ -154,18 +149,13 @@ const yamlPlugin: (opts: {
 		build.onResolve({ filter: /\.(yml|yaml)$/ }, args => {
 			if (args.resolveDir === '') return
 			return {
-				path: pathjs.isAbsolute(args.path)
-					? args.path
-					: pathjs.join(args.resolveDir, args.path),
+				path: isAbsolute(args.path) ? args.path : join(args.resolveDir, args.path),
 				namespace: 'yaml',
 			}
 		})
 		build.onLoad({ filter: /.*/, namespace: 'yaml' }, async args => {
-			const yamlContent = await fsExtra.readFile(args.path)
-			let parsed = jsyaml.load(
-				new util.TextDecoder().decode(yamlContent),
-				options?.loadOptions
-			)
+			const yamlContent = await readFile(args.path)
+			let parsed = load(new TextDecoder().decode(yamlContent), options?.loadOptions)
 			if (options?.transform && options.transform(parsed, args.path) !== void 0)
 				parsed = options.transform(parsed, args.path)
 			return {
@@ -188,10 +178,6 @@ async function buildDev() {
 		sourcemap: 'inline',
 		loader: { '.svg': 'dataurl', '.ttf': 'binary' },
 		plugins: [
-			workerPlugin.workerPlugin({
-				builder: buildWorker,
-				typeDefPath: './src/globalWorker.d.ts',
-			}),
 			inlineImage({
 				limit: -1,
 			}),
@@ -213,13 +199,9 @@ function buildProd() {
 			outfile: `./dist/${PACKAGE.name as string}.js`,
 			bundle: true,
 			minify: true,
-			// sourcemap: 'inline',
 			platform: 'node',
 			loader: { '.svg': 'dataurl', '.ttf': 'binary' },
 			plugins: [
-				workerPlugin.workerPlugin({
-					builder: buildWorker,
-				}),
 				inlineImage({
 					limit: -1,
 				}),

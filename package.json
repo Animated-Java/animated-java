@@ -89,9 +89,9 @@
 		"fs-extra": "^11.1.0",
 		"js-yaml": "^4.1.0",
 		"prettier": "^2.5.1",
-		"svelte": "^3.50.1",
-		"svelte-preprocess": "^4.10.7",
 		"svelte-preprocess-esbuild": "^3.0.1",
+		"svelte-preprocess": "^5.0.1",
+		"svelte": "^3.55.1",
 		"typescript": "^4.5.5",
 		"vue": "^3.2.33"
 	},

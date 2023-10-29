@@ -1,5 +1,4 @@
-import { consoleGroup } from './console'
-import * as events from '../events'
+import { events } from './events'
 import { Subscribable } from './subscribable'
 
 export type NamespacedString = `${string}${string}:${string}${string}`
@@ -58,33 +57,29 @@ export function createBlockbenchMod<InjectContext = any, ExtractContext = any>(
 	let installed = false
 	let extractContext: ExtractContext
 
-	events.INJECT_MODS.subscribe(
-		consoleGroup(`Injecting BBMod '${id}'`, () => {
-			try {
-				if (installed) new Error('Mod is already installed!')
-				extractContext = inject(context)
-				installed = true
-			} catch (err) {
-				throw new BlockbenchModInstallError(id, err as Error)
-			}
-			console.log('Sucess!')
-		}),
-		true
-	)
+	events.INJECT_MODS.subscribe(() => {
+		console.log(`Injecting BBMod '${id}'`)
+		try {
+			if (installed) new Error('Mod is already installed!')
+			extractContext = inject(context)
+			installed = true
+		} catch (err) {
+			throw new BlockbenchModInstallError(id, err as Error)
+		}
+		console.log('Sucess!')
+	})
 
-	events.EXTRACT_MODS.subscribe(
-		consoleGroup(`Extracting BBMod '${id}'`, () => {
-			try {
-				if (!installed) new Error('Mod is not installed!')
-				extract(extractContext)
-				installed = false
-			} catch (err) {
-				throw new BlockbenchModUninstallError(id, err as Error)
-			}
-			console.log('Sucess!')
-		}),
-		true
-	)
+	events.EXTRACT_MODS.subscribe(() => {
+		console.log(`Extracting BBMod '${id}'`)
+		try {
+			if (!installed) new Error('Mod is not installed!')
+			extract(extractContext)
+			installed = false
+		} catch (err) {
+			throw new BlockbenchModUninstallError(id, err as Error)
+		}
+		console.log('Sucess!')
+	})
 }
 
 /** Creates a new Blockbench.Action and automatically handles it's deletion on the plugin unload and uninstall events.

@@ -6,15 +6,14 @@
 
 'use strict'
 Object.defineProperty(exports, '__esModule', { value: true })
-import fs_1 from 'fs'
-import compiler_1 from 'svelte/compiler'
-import path_1 from 'path'
+import { readFile } from 'fs/promises'
+import { preprocess, compile } from 'svelte/compiler'
+import { relative } from 'path'
 import { Plugin } from 'esbuild'
-const { readFile } = fs_1.promises
 /**
  * Convert a warning or error emitted from the svelte compiler for esbuild.
  */
-function convertWarning(source: any, { message, filename, start, end, frame }: any) {
+function convertWarning(source: any, { message, filename, start, end }: any) {
 	if (!start || !end) {
 		return { text: message }
 	}
@@ -49,9 +48,9 @@ function esbuildPluginSvelte(
 			//
 			build.onLoad({ filter: /\.svelte$/ }, async ({ path }) => {
 				let source = await readFile(path, 'utf-8')
-				const filename = path_1.relative(process.cwd(), path)
+				const filename = relative(process.cwd(), path)
 				if (opts.preprocess) {
-					const processed = await compiler_1.preprocess(source, opts.preprocess, {
+					const processed = await preprocess(source, opts.preprocess, {
 						filename,
 					})
 					source = processed.code
@@ -62,23 +61,26 @@ function esbuildPluginSvelte(
 				}
 				let res
 				try {
-					res = compiler_1.compile(source, { ...compilerOptions, filename })
+					res = compile(source, { ...compilerOptions, filename })
 				} catch (err) {
 					return { errors: [convertWarning(source, err as any)] }
 				}
 				const { js, css, warnings } = res
-				let code = `${js.code}\n//# sourceMappingURL=${js.map.toUrl()}`
+				let code = `${js.code as string}\n//# sourceMappingURL=${js.map.toUrl() as string}`
 				// Emit CSS, otherwise it will be included in the JS and injected at runtime.
 				if (css.code && opts.transformCssToJs) {
-					code = `${code}\n${opts.transformCssToJs(css.code)}`
+					code = `${code}\n${opts.transformCssToJs(css.code) as string}`
 				} else if (css.code && !compilerOptions.css) {
 					const cssPath = `${path}.css`
-					cache.set(cssPath, `${css.code}/*# sourceMappingURL=${css.map.toUrl()}*/`)
+					cache.set(
+						cssPath,
+						`${css.code as string}/*# sourceMappingURL=${css.map.toUrl() as string}*/`
+					)
 					code = `${code}\nimport ${JSON.stringify(cssPath)}`
 				}
 				return {
 					contents: code,
-					warnings: warnings.map(w => convertWarning(source, w as any)),
+					warnings: warnings.map(w => convertWarning(source, w)),
 				}
 			})
 		},

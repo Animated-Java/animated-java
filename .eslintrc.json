@@ -9,7 +9,7 @@
 		"plugin:@typescript-eslint/recommended",
 		"plugin:@typescript-eslint/recommended-requiring-type-checking"
 	],
-	"ignorePatterns": ["node_modules/", "dist/", "exporters/"],
+	"ignorePatterns": ["node_modules/", "dist/", "exporters/", "tools/", "svelte.config.ts"],
 	"overrides": [
 		{
 			"files": ["*.js", "*.d.ts"],

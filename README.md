@@ -17,6 +17,17 @@
 <br/>
 
 # How to Install
+There are two ways to install Animated Java: through the Official Plugin List, or through a direct link.
+The Direct link is the recommended way to install Animated Java, as it will always be up to date with the latest version the moment it's released. While the Official Plugin List is also up to date, it may take a few days for the latest version to be available.
+
+## Through the Official Plugin List
+Open the Plugins menu in Blockbench (File > Plugins)
+![Plugin Menu](https://raw.githubusercontent.com/Animated-Java/animated-java/experimental/src/assets/plugin_menu.png)
+
+Click on the `Available` tab, Then search for Animated Java in the search bar, and click Install.
+![Search](https://raw.githubusercontent.com/Animated-Java/animated-java/experimental/src/assets/search.png)
+
+## Through the Direct Link
 Open the Plugins menu in BlockBench (File > Plugins)
 
 ![Plugin Menu](https://raw.githubusercontent.com/Animated-Java/animated-java/experimental/src/assets/plugin_menu.png)
@@ -44,8 +55,9 @@ Things you'll need installed before you can setup the development environment
 
 1. Clone the repository.
 2. Run `yarn install` to install dependencies.
-3. Run `yarn build:dev` to start the development environment.
-4. Open Blockbench, then go to `File > Plugins > Load Plugin From File` and select the `animated_java.js` file from your local repo (`dist/animated-java.js`).
+3. Open up `types/blockbench-types.d.ts` and uncomment the first line, then comment out the second line.
+4. Run `yarn build:dev` to start the development environment.
+5. Open Blockbench, then go to `File > Plugins > Load Plugin From File` and select the `animated_java.js` file from your local repo (`dist/animated-java.js`).
 
 ## Adding Localizations
 1. Copy the `en.yaml` file in `src/lang/` and rename it to match the language you're translating to.
