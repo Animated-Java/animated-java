@@ -152,8 +152,16 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 	onSetup() {
 		if (!Project) return
 		console.log('Animated Java Blueprint format setup')
-		Project.animated_java = {
-			export_mode: 'datapack_and_resourcepack',
+		Project.animated_java ??= {
+			export_namespace: '',
+			export_mode: '',
+			// Resource Pack Settings
+			display_item: '',
+			enable_advanced_resource_pack_settings: false,
+			resource_pack: '',
+			// Data Pack Settings
+			enable_advanced_data_pack_settings: false,
+			data_pack: '',
 		}
 	},
 

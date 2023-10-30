@@ -8,9 +8,6 @@
 	export let max: number | undefined = undefined
 	export let step: number | undefined = undefined
 
-	$: if (min !== undefined && value < min) value = min
-	$: if (max !== undefined && value > max) value = max
-
 	const molangParser = new Molang()
 
 	let input: HTMLInputElement

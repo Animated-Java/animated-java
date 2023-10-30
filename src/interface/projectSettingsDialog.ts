@@ -26,10 +26,22 @@ function injectTitle() {
 export function openProjectSettingsDialog() {
 	if (!Project) return
 
-	const projectName = writable(Project.name)
+	const blueprintName = writable(Project.name)
+	const exportNamespace = writable(Project.animated_java.export_namespace)
 	const textureSizeX = writable(Project.texture_width)
 	const textureSizeY = writable(Project.texture_height)
 	const exportMode = writable(Project.animated_java.export_mode)
+	// Resource Pack Settings
+	const displayItem = writable(Project.animated_java.display_item)
+	const enableAdvancedResourcePackSettings = writable(
+		Project.animated_java.enable_advanced_resource_pack_settings
+	)
+	const resourcePack = writable(Project.animated_java.resource_pack)
+	// Data Pack Settings
+	const enableAdvancedDataPackSettings = writable(
+		Project.animated_java.enable_advanced_data_pack_settings
+	)
+	const dataPack = writable(Project.animated_java.data_pack)
 
 	new SvelteDialog({
 		id: `${PACKAGE.name}:projectSettingsDialog`,
@@ -37,21 +49,39 @@ export function openProjectSettingsDialog() {
 		width: 512,
 		svelteComponent: ProjectSettingsDialogSvelteComponent,
 		svelteComponentProps: {
-			projectName,
+			blueprintName,
+			exportNamespace,
 			textureSizeX,
 			textureSizeY,
 			exportMode,
+			displayItem,
+			enableAdvancedResourcePackSettings,
+			resourcePack,
+			enableAdvancedDataPackSettings,
+			dataPack,
 		},
 		onOpen() {
 			injectTitle()
 		},
 		onConfirm() {
 			if (!Project) return
-			console.log('Saving Project setting changes.')
-			Project.name = get(projectName)
+			Project.name = get(blueprintName)
+			Project.animated_java.export_namespace = get(exportNamespace)
 			Project.texture_width = get(textureSizeX)
 			Project.texture_height = get(textureSizeY)
 			Project.animated_java.export_mode = get(exportMode)
+			// Resource Pack Settings
+			Project.animated_java.display_item = get(displayItem)
+			Project.animated_java.enable_advanced_resource_pack_settings = get(
+				enableAdvancedResourcePackSettings
+			)
+			Project.animated_java.resource_pack = get(resourcePack)
+			// Data Pack Settings
+			Project.animated_java.enable_advanced_data_pack_settings = get(
+				enableAdvancedDataPackSettings
+			)
+			Project.animated_java.data_pack = get(dataPack)
+			console.log('Successfully saved project settings', Project)
 		},
 	}).show()
 }

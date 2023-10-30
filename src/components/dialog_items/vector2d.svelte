@@ -10,15 +10,9 @@
 	export let minX: number | undefined = undefined
 	export let maxX: number | undefined = undefined
 
-	$: if (minX !== undefined && valueX < minX) valueX = minX
-	$: if (maxX !== undefined && valueX > maxX) valueX = maxX
-
 	export let valueY: number
 	export let minY: number | undefined = undefined
 	export let maxY: number | undefined = undefined
-
-	$: if (minY !== undefined && valueY < minY) valueY = minY
-	$: if (maxY !== undefined && valueY > maxY) valueY = maxY
 
 	const molangParser = new Molang()
 
@@ -81,6 +75,14 @@
 			}
 			addEventListeners(document as unknown as any, 'mousemove touchmove', move)
 			addEventListeners(document as unknown as any, 'mouseup touchend', stop)
+		})
+
+		addEventListeners(inputY, 'focusout dblclick', () => {
+			valueY = Math.clamp(
+				molangParser.parse(valueY),
+				minY !== undefined ? minY : -Infinity,
+				maxY !== undefined ? maxY : Infinity
+			)
 		})
 	})
 </script>

@@ -9,14 +9,14 @@
 
 	let container: HTMLDivElement
 
-	value ??= defaultOption
+	if (!value) value = defaultOption
 
 	// @ts-ignore
 	const selectInput = new Interface.CustomElements.SelectInput('test', {
 		options,
 		value,
 		onChange() {
-			value = selectInput.node.value
+			value = selectInput.node.getAttribute('value')
 		},
 	})
 

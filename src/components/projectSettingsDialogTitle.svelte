@@ -5,7 +5,7 @@
 
 <div class="title_wrapper">
 	<img src={AnimatedJavaIcon} alt="" />
-	<div class="dialog_title">Project Settings</div>
+	<div class="dialog_title">Blueprint Settings</div>
 </div>
 
 <style>
