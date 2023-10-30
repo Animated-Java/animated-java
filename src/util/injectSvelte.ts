@@ -5,14 +5,14 @@ import { createBlockbenchMod } from '../util/moddingTools'
 export function injectSvelteCompomponent(options: {
 	// @ts-ignore
 	svelteComponent: SvelteComponentConstructor<SvelteComponent, any>
-	svelteComponentArgs: Record<string, any>
+	svelteComponentProperties: Record<string, any>
 	elementSelector: () => Element | undefined | null
 	postMount?: (el: Element) => void
 }) {
 	void pollPromise(options.elementSelector).then(el => {
 		new options.svelteComponent({
 			target: el,
-			props: options.svelteComponentArgs,
+			props: options.svelteComponentProperties,
 		})
 		if (options.postMount) options.postMount(el)
 	})

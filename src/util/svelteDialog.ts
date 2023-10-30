@@ -31,7 +31,7 @@ export class SvelteDialog extends Dialog {
 				target: parentElement,
 				props: options.svelteComponentProps,
 			})
-			if (super.onOpen) super.onOpen()
+			if (options.onOpen) options.onOpen()
 			if (!options.stackable) {
 				DIALOG_STACK.forEach(v => v.cancel())
 				DIALOG_STACK.empty()
@@ -43,7 +43,7 @@ export class SvelteDialog extends Dialog {
 			if (!this.instance) return
 			this.instance.$destroy()
 			this.instance = undefined
-			if (super.onButton) super.onButton(...args)
+			if (options.onButton) options.onButton(...args)
 			if (options.onClose) options.onClose()
 		}
 
@@ -51,7 +51,7 @@ export class SvelteDialog extends Dialog {
 			if (!this.instance) return
 			this.instance.$destroy()
 			this.instance = undefined
-			if (super.onCancel) super.onCancel(...args)
+			if (options.onCancel) options.onCancel(...args)
 			if (options.onClose) options.onClose()
 		}
 	}

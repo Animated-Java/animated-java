@@ -11,7 +11,6 @@ createBlockbenchMod(
 	},
 	context => {
 		context.action.click = function (this, event: Event) {
-			console.log('Opening project settings dialog')
 			if (Format.id === BLUEPRINT_FORMAT.id) {
 				openProjectSettingsDialog()
 			} else {

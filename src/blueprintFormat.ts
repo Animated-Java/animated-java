@@ -96,11 +96,13 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 
 	// ANCHOR - Codec:load
 	load(model, file) {
+		if (!Project) return
 		console.log(`Loading Animated Java Blueprint from '${file.name}'...`)
 	},
 
 	// ANCHOR - Codec:parse
 	parse(model: IBlueprintFormatJSON, path) {
+		if (!Project) return
 		console.log(`Parsing Animated Java Blueprint from '${path}'...`)
 	},
 
@@ -120,7 +122,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 
 	// ANCHOR - Codec:save
 	fileName() {
-		if (!Project) return 'unnamed_project.ajblueprint'
+		if (!Project || !Project.name) return 'unnamed_project.ajblueprint'
 		return `${Project.name}.ajblueprint`
 	},
 })
@@ -148,7 +150,11 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 	},
 
 	onSetup() {
+		if (!Project) return
 		console.log('Animated Java Blueprint format setup')
+		Project.animated_java = {
+			export_mode: 'datapack_and_resourcepack',
+		}
 	},
 
 	codec: BLUEPRINT_CODEC,
