@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Valuable } from '../../util/stores'
 	import BaseDialogItem from './baseDialogItem.svelte'
 
 	export let label: string
@@ -6,11 +7,11 @@
 
 	export let step: number | undefined = undefined
 
-	export let valueX: number
+	export let valueX: Valuable<number>
 	export let minX: number | undefined = undefined
 	export let maxX: number | undefined = undefined
 
-	export let valueY: number
+	export let valueY: Valuable<number>
 	export let minY: number | undefined = undefined
 	export let maxY: number | undefined = undefined
 
@@ -30,10 +31,12 @@
 				convertTouchEvent(e2)
 				let difference = Math.trunc((e2.clientX - e1.clientX) / 10) * (step || 1)
 				if (difference != last_difference) {
-					valueX = Math.clamp(
-						valueX + (difference - last_difference),
-						minX !== undefined ? minX : -Infinity,
-						maxX !== undefined ? maxX : Infinity
+					valueX.set(
+						Math.clamp(
+							valueX.get() + (difference - last_difference),
+							minX !== undefined ? minX : -Infinity,
+							maxX !== undefined ? maxX : Infinity
+						)
 					)
 					last_difference = difference
 				}
@@ -47,10 +50,12 @@
 		})
 
 		addEventListeners(inputX, 'focusout dblclick', () => {
-			valueX = Math.clamp(
-				molangParser.parse(valueX),
-				minX !== undefined ? minX : -Infinity,
-				maxX !== undefined ? maxX : Infinity
+			valueX.set(
+				Math.clamp(
+					molangParser.parse(valueX.get()),
+					minX !== undefined ? minX : -Infinity,
+					maxX !== undefined ? maxX : Infinity
+				)
 			)
 		})
 
@@ -61,10 +66,12 @@
 				convertTouchEvent(e2)
 				let difference = Math.trunc((e2.clientX - e1.clientX) / 10) * (step || 1)
 				if (difference != last_difference) {
-					valueY = Math.clamp(
-						valueY + (difference - last_difference),
-						minY !== undefined ? minY : -Infinity,
-						maxY !== undefined ? maxY : Infinity
+					valueY.set(
+						Math.clamp(
+							valueY.get() + (difference - last_difference),
+							minY !== undefined ? minY : -Infinity,
+							maxY !== undefined ? maxY : Infinity
+						)
 					)
 					last_difference = difference
 				}
@@ -78,10 +85,12 @@
 		})
 
 		addEventListeners(inputY, 'focusout dblclick', () => {
-			valueY = Math.clamp(
-				molangParser.parse(valueY),
-				minY !== undefined ? minY : -Infinity,
-				maxY !== undefined ? maxY : Infinity
+			valueY.set(
+				Math.clamp(
+					molangParser.parse(valueY.get()),
+					minY !== undefined ? minY : -Infinity,
+					maxY !== undefined ? maxY : Infinity
+				)
 			)
 		})
 	})
@@ -96,7 +105,7 @@
 					bind:this={inputX}
 					id="snapping"
 					class="dark_bordered focusable_input"
-					bind:value={valueX}
+					bind:value={$valueX}
 					inputmode="decimal"
 				/>
 				<div bind:this={sliderX} class="tool numaric_input_slider">
@@ -108,7 +117,7 @@
 					bind:this={inputY}
 					id="snapping"
 					class="dark_bordered focusable_input"
-					bind:value={valueY}
+					bind:value={$valueY}
 					inputmode="decimal"
 				/>
 				<div bind:this={sliderY} class="tool numaric_input_slider">

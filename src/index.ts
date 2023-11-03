@@ -1,5 +1,7 @@
 import { PACKAGE } from './constants'
 import { events } from './util/events'
+import './util/translation'
+
 import './blueprintFormat'
 
 // Blockbench Mods

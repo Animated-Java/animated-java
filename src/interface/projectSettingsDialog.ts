@@ -1,9 +1,11 @@
 import { PACKAGE } from '../constants'
 import { SvelteDialog } from '../util/svelteDialog'
-import { get, writable } from 'svelte/store'
+import { Valuable } from '../util/stores'
 import { injectSvelteCompomponent } from '../util/injectSvelte'
 import ProjectSettingsDialogSvelteComponent from '../components/projectSettingsDialog.svelte'
 import ProjectSettingsDialogTitleSvelteComponent from '../components/projectSettingsDialogTitle.svelte'
+import { toSafeFuntionName } from '../minecraft'
+import { defaultValues } from '../projectSettings'
 
 function injectTitle() {
 	injectSvelteCompomponent({
@@ -23,65 +25,79 @@ function injectTitle() {
 	})
 }
 
+function getSettings() {
+	return {
+		blueprintName: new Valuable(Project!.name, value => {
+			if (!value) {
+				return defaultValues.blueprintName
+			}
+			return value
+		}),
+		exportNamespace: new Valuable(Project!.animated_java.export_namespace, value => {
+			if (!value) {
+				return defaultValues.exportNamespace
+			}
+			return toSafeFuntionName(value)
+		}),
+		textureSizeX: new Valuable(Project!.texture_width),
+		textureSizeY: new Valuable(Project!.texture_height),
+		// Resource Pack Settings
+		exportResourcePack: new Valuable(Project!.animated_java.export_resource_pack),
+		displayItem: new Valuable(Project!.animated_java.display_item, value => {
+			if (!value) {
+				return defaultValues.displayItem
+			}
+			return value
+		}),
+		enableAdvancedResourcePackSettings: new Valuable(
+			Project!.animated_java.enable_advanced_resource_pack_settings
+		),
+		resourcePack: new Valuable(Project!.animated_java.resource_pack),
+		// Data Pack Settings
+		exportDataPack: new Valuable(Project!.animated_java.export_data_pack),
+		enableAdvancedDataPackSettings: new Valuable(
+			Project!.animated_java.enable_advanced_data_pack_settings
+		),
+		dataPack: new Valuable(Project!.animated_java.data_pack),
+	}
+}
+
+function setSettings(settings: any) {
+	if (!Project) return
+	Project.name = settings.blueprintName.get()
+	Project.animated_java.export_namespace = settings.exportNamespace.get()
+	Project.texture_width = settings.textureSizeX.get()
+	Project.texture_height = settings.textureSizeY.get()
+	// Resource Pack Settings
+	Project.animated_java.export_resource_pack = settings.exportResourcePack.get()
+	Project.animated_java.display_item = settings.displayItem.get()
+	Project.animated_java.enable_advanced_resource_pack_settings =
+		settings.enableAdvancedResourcePackSettings.get()
+	Project.animated_java.resource_pack = settings.resourcePack.get()
+	// Data Pack Settings
+	Project.animated_java.export_data_pack = settings.exportDataPack.get()
+	Project.animated_java.enable_advanced_data_pack_settings =
+		settings.enableAdvancedDataPackSettings.get()
+	Project.animated_java.data_pack = settings.dataPack.get()
+	console.log('Successfully saved project settings', Project)
+}
+
 export function openProjectSettingsDialog() {
 	if (!Project) return
 
-	const blueprintName = writable(Project.name)
-	const exportNamespace = writable(Project.animated_java.export_namespace)
-	const textureSizeX = writable(Project.texture_width)
-	const textureSizeY = writable(Project.texture_height)
-	const exportMode = writable(Project.animated_java.export_mode)
-	// Resource Pack Settings
-	const displayItem = writable(Project.animated_java.display_item)
-	const enableAdvancedResourcePackSettings = writable(
-		Project.animated_java.enable_advanced_resource_pack_settings
-	)
-	const resourcePack = writable(Project.animated_java.resource_pack)
-	// Data Pack Settings
-	const enableAdvancedDataPackSettings = writable(
-		Project.animated_java.enable_advanced_data_pack_settings
-	)
-	const dataPack = writable(Project.animated_java.data_pack)
+	const settings = getSettings()
 
 	new SvelteDialog({
 		id: `${PACKAGE.name}:projectSettingsDialog`,
 		title: 'Project Settings',
 		width: 512,
 		svelteComponent: ProjectSettingsDialogSvelteComponent,
-		svelteComponentProps: {
-			blueprintName,
-			exportNamespace,
-			textureSizeX,
-			textureSizeY,
-			exportMode,
-			displayItem,
-			enableAdvancedResourcePackSettings,
-			resourcePack,
-			enableAdvancedDataPackSettings,
-			dataPack,
-		},
+		svelteComponentProps: settings,
 		onOpen() {
 			injectTitle()
 		},
 		onConfirm() {
-			if (!Project) return
-			Project.name = get(blueprintName)
-			Project.animated_java.export_namespace = get(exportNamespace)
-			Project.texture_width = get(textureSizeX)
-			Project.texture_height = get(textureSizeY)
-			Project.animated_java.export_mode = get(exportMode)
-			// Resource Pack Settings
-			Project.animated_java.display_item = get(displayItem)
-			Project.animated_java.enable_advanced_resource_pack_settings = get(
-				enableAdvancedResourcePackSettings
-			)
-			Project.animated_java.resource_pack = get(resourcePack)
-			// Data Pack Settings
-			Project.animated_java.enable_advanced_data_pack_settings = get(
-				enableAdvancedDataPackSettings
-			)
-			Project.animated_java.data_pack = get(dataPack)
-			console.log('Successfully saved project settings', Project)
+			setSettings(settings)
 		},
 	}).show()
 }

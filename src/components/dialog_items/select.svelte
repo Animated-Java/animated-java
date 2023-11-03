@@ -1,22 +1,23 @@
 <script lang="ts">
+	import { Valuable } from '../../util/stores'
 	import BaseDialogItem from './baseDialogItem.svelte'
 
 	export let label: string
 	export let tooltip: string = ''
 	export let options: Record<string, string>
 	export let defaultOption: string
-	export let value: string | undefined = undefined
+	export let value: Valuable<string>
 
 	let container: HTMLDivElement
 
-	if (!value) value = defaultOption
+	if (!(value.get() || options[value.get()])) value.set(defaultOption)
 
 	// @ts-ignore
 	const selectInput = new Interface.CustomElements.SelectInput('test', {
 		options,
-		value,
+		value: value.get(),
 		onChange() {
-			value = selectInput.node.getAttribute('value')
+			value.set(selectInput.node.getAttribute('value'))
 		},
 	})
 

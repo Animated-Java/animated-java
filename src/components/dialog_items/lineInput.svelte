@@ -1,18 +1,16 @@
 <script lang="ts">
+	import { Valuable } from '../../util/stores'
 	import BaseDialogItem from './baseDialogItem.svelte'
 
 	export let label: string
 	export let tooltip: string = ''
-	export let value: string
-	export let valueValidator: ((value: string) => string) | undefined = undefined
+	export let value: Valuable<string>
 
-	let _value: string = valueValidator ? valueValidator(value) : value
+	let _value: string = value.get()
 
-	function onValueChange(e: Event) {
-		if (valueValidator) {
-			_value = valueValidator(_value)
-		}
-		value = _value
+	function onValueChange() {
+		value.set(_value)
+		_value = value.get()
 	}
 </script>
 

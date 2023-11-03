@@ -15,6 +15,7 @@ export const events = {
 	UNLOAD: new PluginEvent('unload'),
 	INSTALL: new PluginEvent('install'),
 	UNINSTALL: new PluginEvent('uninstall'),
+
 	INJECT_MODS: new PluginEvent('injectMods'),
 	EXTRACT_MODS: new PluginEvent('extractMods'),
 }

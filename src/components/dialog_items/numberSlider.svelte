@@ -1,9 +1,10 @@
 <script lang="ts">
+	import { Valuable } from '../../util/stores'
 	import BaseDialogItem from './baseDialogItem.svelte'
 
 	export let label: string
 	export let tooltip: string = ''
-	export let value: number
+	export let value: Valuable<number>
 	export let min: number | undefined = undefined
 	export let max: number | undefined = undefined
 	export let step: number | undefined = undefined
@@ -22,10 +23,12 @@
 				convertTouchEvent(e2)
 				let difference = Math.trunc((e2.clientX - e1.clientX) / 10) * (step || 1)
 				if (difference != last_difference) {
-					value = Math.clamp(
-						value + (difference - last_difference),
-						min !== undefined ? min : -Infinity,
-						max !== undefined ? max : Infinity
+					value.set(
+						Math.clamp(
+							value.get() + (difference - last_difference),
+							min !== undefined ? min : -Infinity,
+							max !== undefined ? max : Infinity
+						)
 					)
 					last_difference = difference
 				}
@@ -39,10 +42,12 @@
 		})
 
 		addEventListeners(input, 'focusout dblclick', () => {
-			value = Math.clamp(
-				molangParser.parse(value),
-				min !== undefined ? min : -Infinity,
-				max !== undefined ? max : Infinity
+			value.set(
+				Math.clamp(
+					molangParser.parse(value.get()),
+					min !== undefined ? min : -Infinity,
+					max !== undefined ? max : Infinity
+				)
 			)
 		})
 	})
@@ -56,7 +61,7 @@
 				bind:this={input}
 				id="snapping"
 				class="dark_bordered focusable_input"
-				bind:value
+				bind:value={$value}
 				inputmode="decimal"
 			/>
 			<div bind:this={slider} class="tool numaric_input_slider">
