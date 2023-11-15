@@ -59,7 +59,7 @@ export interface IBlueprintFormatJSON {
 	/**
 	 * The project settings of the Blueprint
 	 */
-	project_settings?: Record<string, any>
+	project_settings?: NonNullable<typeof Project>['animated_java']
 	/**
 	 * The variants of the Blueprint
 	 */
@@ -86,8 +86,6 @@ export interface IBlueprintFormatJSON {
 	animation_controllers: AnimationControllerOptions[]
 	animation_variable_placeholders: string
 	backgrounds: Record<string, any>
-	history: any[]
-	history_index: number
 }
 
 /**
@@ -124,10 +122,6 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 			Project.uuid = model.meta.uuid
 		}
 
-		if (ModelProject.all.find(p => p.uuid === model.meta.uuid)) {
-			Project.uuid = guid()
-		}
-
 		if (model.meta.box_uv !== undefined) {
 			Project.box_uv = model.meta.box_uv
 		}
@@ -140,6 +134,10 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 		// Misc Project Properties
 		for (const key in ModelProject.properties) {
 			ModelProject.properties[key].merge(Project, model)
+		}
+
+		if (model.project_settings) {
+			Project.animated_java = { ...Project.animated_java, ...model.project_settings }
 		}
 
 		if (model.textures) {
@@ -192,8 +190,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 			for (const animation of model.animations) {
 				const newAnimation = new Blockbench.Animation()
 				newAnimation.uuid = animation.uuid || guid()
-				newAnimation.extend(animation)
-				newAnimation.saved_name = animation.name
+				newAnimation.extend(animation).add()
 			}
 		}
 
@@ -201,8 +198,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 			for (const controller of model.animation_controllers) {
 				const newController = new Blockbench.AnimationController()
 				newController.uuid = controller.uuid || guid()
-				newController.extend(controller)
-				newController.saved_name = controller.name!
+				newController.extend(controller).add()
 			}
 		}
 
@@ -241,14 +237,14 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 			})
 		}
 
-		if (model.history) {
-			Undo.history = model.history.slice()
-			Undo.index = model.history_index || 0
-		}
+		// if (model.history) {
+		// 	Undo.history = model.history.slice()
+		// 	Undo.index = model.history_index || 0
+		// }
 
-		Canvas.updateAllBones()
-		Canvas.updateAllPositions()
+		Canvas.updateAll()
 		Validator.validate()
+		BLUEPRINT_CODEC.dispatchEvent('parsed', { model })
 	},
 
 	// ANCHOR - Codec:compile
@@ -263,11 +259,14 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 				format_version: PACKAGE.version,
 				uuid: Project.uuid,
 			},
+			project_settings: Project.animated_java,
 			resolution: {
 				width: Project.texture_width || 16,
 				height: Project.texture_height || 16,
 			},
 		} as IBlueprintFormatJSON
+
+		console.log(Project.animated_java)
 
 		for (const key in ModelProject.properties) {
 			if (ModelProject.properties[key].export)
@@ -302,6 +301,12 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 			model.animations.push(animation.getUndoCopy(animationOptions, true))
 		}
 
+		model.animation_controllers = []
+		for (const controller of Blockbench.AnimationController.all) {
+			if (!controller.getUndoCopy) continue
+			model.animation_controllers.push(controller.getUndoCopy(animationOptions, true))
+		}
+
 		if (Interface.Panels.variable_placeholders.inside_vue._data.text) {
 			model.animation_variable_placeholders =
 				Interface.Panels.variable_placeholders.inside_vue._data.text
@@ -320,19 +325,19 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 			}
 		}
 
-		if (options.history) {
-			model.history = []
-			Undo.history.forEach(h => {
-				const e = {
-					before: omitKeys(h.before, ['aspects']),
-					post: omitKeys(h.post, ['aspects']),
-					action: h.action,
-					time: h.time,
-				}
-				model.history.push(e)
-			})
-			model.history_index = Undo.index
-		}
+		// if (options.history) {
+		// 	model.history = []
+		// 	Undo.history.forEach(h => {
+		// 		const e = {
+		// 			before: omitKeys(h.before, ['aspects']),
+		// 			post: omitKeys(h.post, ['aspects']),
+		// 			action: h.action,
+		// 			time: h.time,
+		// 		}
+		// 		model.history.push(e)
+		// 	})
+		// 	model.history_index = Undo.index
+		// }
 
 		return options.raw ? model : compileJSON(model)
 	},
@@ -353,7 +358,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 		})
 	},
 
-	// ANCHOR - Codec:save
+	// ANCHOR - Codec:fileName
 	fileName() {
 		if (!Project || !Project.name) return 'unnamed_project.ajblueprint'
 		return `${Project.name}.ajblueprint`
@@ -387,12 +392,13 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 		console.log('Animated Java Blueprint format setup')
 		Project.animated_java ??= {
 			export_namespace: '',
-			export_mode: '',
 			// Resource Pack Settings
+			export_resource_pack: true,
 			display_item: '',
 			enable_advanced_resource_pack_settings: false,
 			resource_pack: '',
 			// Data Pack Settings
+			export_data_pack: true,
 			enable_advanced_data_pack_settings: false,
 			data_pack: '',
 		}
@@ -400,31 +406,32 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 
 	codec: BLUEPRINT_CODEC,
 
-	box_uv: false,
-	optional_box_uv: true,
-	single_texture: false,
-	model_identifier: false,
-	parent_model_id: false,
-	vertex_color_ambient_occlusion: true,
 	animated_textures: true,
-	bone_rig: true,
-	centered_grid: true,
-	rotate_cubes: true,
-	integer_size: false,
-	meshes: false,
-	texture_meshes: false,
-	locators: true,
-	rotation_limit: false,
-	uv_rotation: true,
-	java_face_properties: true,
-	select_texture_for_particles: false,
-	bone_binding_expression: true,
-	animation_files: false,
-	texture_folder: false,
-	edit_mode: true,
-	paint_mode: true,
-	display_mode: false,
+	animation_controllers: true,
+	animation_files: true,
 	animation_mode: true,
+	bone_binding_expression: true,
+	bone_rig: true,
+	box_uv: false,
+	centered_grid: true,
+	display_mode: false,
+	edit_mode: true,
+	integer_size: false,
+	java_face_properties: true,
+	locators: true,
+	meshes: false,
+	model_identifier: false,
+	optional_box_uv: true,
+	paint_mode: true,
+	parent_model_id: false,
 	pose_mode: false,
+	rotate_cubes: true,
+	rotation_limit: false,
+	select_texture_for_particles: false,
+	single_texture: false,
+	texture_folder: false,
+	texture_meshes: false,
+	uv_rotation: true,
+	vertex_color_ambient_occlusion: true,
 })
 BLUEPRINT_CODEC.format = BLUEPRINT_FORMAT

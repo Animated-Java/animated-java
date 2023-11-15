@@ -6,6 +6,12 @@ import './blueprintFormat'
 
 // Blockbench Mods
 import './mods/projectSettingsActionOverride'
+import './mods/animationControllerMod'
+import './mods/saveAllAnimationsActionMod'
+import './mods/panelMod'
+import './mods/saveProjectActionMod'
+import './mods/saveProjectAsActionMod'
+import './mods/exportOverActionMod'
 
 // @ts-ignore
 globalThis.AnimatedJava = {

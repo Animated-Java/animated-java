@@ -1,0 +1,368 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"properties": {
+		"meta": {
+			"type": "object",
+			"required": ["format_version", "model_format"],
+			"properties": {
+				"format_version": {
+					"type": "string",
+					"enum": ["0.5.0"]
+				},
+				"model_format": {
+					"const": "animated_java_blueprint"
+				}
+			}
+		},
+		"project_settings": {
+			"type": "object",
+			"properties": {
+				"export_namespace": {
+					"type": "string"
+				},
+				"export_resource_pack": {
+					"type": "boolean"
+				},
+				"display_item": {
+					"type": "string"
+				},
+				"enable_advanced_resource_pack_settings": {
+					"type": "boolean"
+				},
+				"resource_pack": {
+					"type": "string"
+				},
+				"export_data_pack": {
+					"type": "boolean"
+				},
+				"enable_advanced_data_pack_settings": {
+					"type": "boolean"
+				},
+				"data_pack": {
+					"type": "string"
+				}
+			}
+		},
+		"resolution": {
+			"type": "object",
+			"required": ["width", "height"],
+			"properties": {
+				"width": {
+					"type": "integer",
+					"minimum": 1,
+					"maximum": 4096
+				},
+				"height": {
+					"type": "integer",
+					"minimum": 1,
+					"maximum": 4096
+				}
+			}
+		},
+		"elements": {
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/element"
+			}
+		},
+		"outliner": {
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/outlinerNode"
+			}
+		},
+		"textures": {
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/texture"
+			}
+		},
+		"animations": {
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/animation"
+			}
+		},
+		"animation_controllers": {
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/animationController"
+			}
+		}
+	},
+	"definitions": {
+		"element": {
+			"type": "object",
+			"required": ["type", "name", "uuid", "from", "to", "faces"],
+			"properties": {
+				"type": {
+					"type": "string",
+					"enum": ["cube"]
+				},
+				"name": {
+					"type": "string"
+				},
+				"uuid": {
+					"type": "string"
+				},
+				"rescale": {
+					"type": "boolean"
+				},
+				"from": {
+					"type": "array",
+					"items": {
+						"type": "number"
+					},
+					"minItems": 3,
+					"maxItems": 3
+				},
+				"to": {
+					"type": "array",
+					"items": {
+						"type": "number"
+					},
+					"minItems": 3,
+					"maxItems": 3
+				},
+				"origin": {
+					"type": "array",
+					"items": {
+						"type": "number"
+					},
+					"minItems": 3,
+					"maxItems": 3
+				},
+				"faces": {
+					"type": "object",
+					"properties": {
+						"north": {
+							"$ref": "#/definitions/face"
+						},
+						"east": {
+							"$ref": "#/definitions/face"
+						},
+						"south": {
+							"$ref": "#/definitions/face"
+						},
+						"west": {
+							"$ref": "#/definitions/face"
+						},
+						"up": {
+							"$ref": "#/definitions/face"
+						}
+					}
+				}
+			}
+		},
+		"face": {
+			"type": "object",
+			"required": ["uv"],
+			"properties": {
+				"uv": {
+					"type": "array",
+					"items": {
+						"type": "number"
+					},
+					"minItems": 4,
+					"maxItems": 4
+				}
+			}
+		},
+		"outlinerNode": {
+			"type": "object",
+			"required": ["name", "uuid", "children", "origin", "export"],
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"uuid": {
+					"type": "string"
+				},
+				"export": {
+					"description": "Whether or not this element should be included in the generated rig.",
+					"type": "boolean",
+					"default": true
+				},
+				"origin": {
+					"type": "array",
+					"items": {
+						"type": "number"
+					},
+					"minItems": 3,
+					"maxItems": 3
+				},
+				"children": {
+					"description": "List of UUIDs of child elements",
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				}
+			}
+		},
+		"texture": {
+			"type": "object",
+			"required": ["name", "uuid", "source", "mode"],
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"uuid": {
+					"type": "string"
+				},
+				"source": {
+					"type": "string"
+				},
+				"mode": {
+					"type": "string",
+					"enum": ["bitmap"]
+				}
+			}
+		},
+		"animation": {
+			"type": "object",
+			"required": ["name", "uuid", "bones", "frames", "loop", "length", "snapping"],
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"uuid": {
+					"type": "string"
+				},
+				"loop": {
+					"description": "The animation's loop mode.",
+					"type": "string",
+					"enum": ["loop", "once", "hold"]
+				},
+				"override": {
+					"description": "Whether or not this animation should override other animations.",
+					"type": "boolean",
+					"default": false
+				},
+				"length": {
+					"description": "The length of the animation in seconds.",
+					"type": "number",
+					"minimum": 0
+				},
+				"snapping": {
+					"description": "Effectively the maximum Keyframes-per-second of the animation.",
+					"type": "boolean",
+					"default": false
+				},
+				"blend_weight": {
+					"description": "The weight of the animation when blending.",
+					"type": "number",
+					"minimum": 0,
+					"maximum": 1
+				},
+				"start_delay": {
+					"description": "The delay before the animation starts playing.",
+					"type": "number",
+					"minimum": 0
+				},
+				"loop_delay": {
+					"description": "The delay before the animation loops.",
+					"type": "number",
+					"minimum": 0
+				}
+			}
+		},
+		"animationController": {
+			"type": "object",
+			"required": ["name", "uuid", "states", "transitions"],
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"uuid": {
+					"type": "string"
+				},
+				"initial_state": {
+					"type": "string"
+				},
+				"states": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/animationControllerState"
+					}
+				},
+				"transitions": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/animationControllerTransition"
+					}
+				}
+			}
+		},
+		"animationControllerState": {
+			"type": "object",
+			"required": ["name", "uuid", "animations"],
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"uuid": {
+					"type": "string"
+				},
+				"animations": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/animationControllerStateAnimation"
+					}
+				},
+				"transitions": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/animationControllerTransition"
+					}
+				},
+				"on_entry": {
+					"type": "string"
+				},
+				"on_exit": {
+					"type": "string"
+				},
+				"blend_transition": {
+					"type": "number"
+				},
+				"blend_via_shortest_path": {
+					"type": "boolean"
+				}
+			}
+		},
+		"animationControllerTransition": {
+			"type": "object",
+			"required": ["uuid", "target", "condition"],
+			"properties": {
+				"uuid": {
+					"type": "string"
+				},
+				"target": {
+					"type": "string"
+				},
+				"condition": {
+					"type": "string"
+				}
+			}
+		},
+		"animationControllerStateAnimation": {
+			"type": "object",
+			"required": ["uuid", "key", "animation"],
+			"properties": {
+				"uuid": {
+					"type": "string"
+				},
+				"key": {
+					"description": "The animation's key. Usually identical to the name of the animation but can be modified by the user. Not sure if this will be used by AJ or not.",
+					"type": "string"
+				},
+				"animation": {
+					"type": "string"
+				},
+				"blend_value": {
+					"type": "string"
+				}
+			}
+		}
+	}
+}
