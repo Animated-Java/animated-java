@@ -2,8 +2,10 @@ import { PACKAGE } from './constants'
 import { events } from './util/events'
 import './util/translation'
 
+// Misc
 import './blueprintFormat'
-
+// Interface
+import './interface/animatedJavaBarItem'
 // Blockbench Mods
 import './mods/projectSettingsActionOverride'
 import './mods/animationControllerMod'

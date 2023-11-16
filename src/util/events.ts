@@ -18,6 +18,9 @@ export const events = {
 
 	INJECT_MODS: new PluginEvent('injectMods'),
 	EXTRACT_MODS: new PluginEvent('extractMods'),
+
+	SELECT_PROJECT: new PluginEvent<ModelProject>('selectProject'),
+	DESELECT_PROJECT: new PluginEvent<ModelProject>('deselectProject'),
 }
 
 function injectionHandler() {
@@ -34,3 +37,10 @@ events.LOAD.subscribe(injectionHandler)
 events.UNLOAD.subscribe(extractionHandler)
 events.INSTALL.subscribe(injectionHandler)
 events.UNINSTALL.subscribe(extractionHandler)
+
+Blockbench.on<EventName>('select_project', ({ project }: { project: ModelProject }) => {
+	events.SELECT_PROJECT.dispatch(project)
+})
+Blockbench.on<EventName>('unselect_project', ({ project }: { project: ModelProject }) => {
+	events.DESELECT_PROJECT.dispatch(project)
+})

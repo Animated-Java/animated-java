@@ -325,20 +325,6 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 			}
 		}
 
-		// if (options.history) {
-		// 	model.history = []
-		// 	Undo.history.forEach(h => {
-		// 		const e = {
-		// 			before: omitKeys(h.before, ['aspects']),
-		// 			post: omitKeys(h.post, ['aspects']),
-		// 			action: h.action,
-		// 			time: h.time,
-		// 		}
-		// 		model.history.push(e)
-		// 	})
-		// 	model.history_index = Undo.index
-		// }
-
 		return options.raw ? model : compileJSON(model)
 	},
 
@@ -365,6 +351,21 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 	},
 })
 
+export function getDefaultProjectSettings() {
+	return {
+		export_namespace: '',
+		// Resource Pack Settings
+		export_resource_pack: true,
+		display_item: '',
+		enable_advanced_resource_pack_settings: false,
+		resource_pack: '',
+		// Data Pack Settings
+		export_data_pack: true,
+		enable_advanced_data_pack_settings: false,
+		data_pack: '',
+	}
+}
+
 /** ANCHOR
  * The Animated Java Blueprint format
  */
@@ -390,18 +391,7 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 	onSetup() {
 		if (!Project) return
 		console.log('Animated Java Blueprint format setup')
-		Project.animated_java ??= {
-			export_namespace: '',
-			// Resource Pack Settings
-			export_resource_pack: true,
-			display_item: '',
-			enable_advanced_resource_pack_settings: false,
-			resource_pack: '',
-			// Data Pack Settings
-			export_data_pack: true,
-			enable_advanced_data_pack_settings: false,
-			data_pack: '',
-		}
+		Project.animated_java ??= getDefaultProjectSettings()
 	},
 
 	codec: BLUEPRINT_CODEC,
