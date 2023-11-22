@@ -1,11 +1,12 @@
 <script lang="ts" context="module">
 	// @ts-ignore
 	import AnimatedJavaIcon from '../assets/animated_java_icon.svg'
+	import { translate } from '../util/translation'
 </script>
 
 <div class="title_wrapper">
 	<img src={AnimatedJavaIcon} alt="" />
-	<div class="dialog_title">Blueprint Settings</div>
+	<div class="dialog_title">{translate('dialog.blueprint_settings.title')}</div>
 </div>
 
 <style>

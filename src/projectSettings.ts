@@ -4,12 +4,16 @@ export const defaultValues = {
 	textureSizeX: 16,
 	textureSizeY: 16,
 	// Resource Pack Settings
-	exportResourcePack: true,
+	enableResourcePack: true,
 	displayItem: 'minecraft:white_dye',
+	customModelDataOffset: 0,
 	enableAdvancedResourcePackSettings: false,
 	resourcePack: '',
+	displayItemPath: '',
+	modelFolder: '',
+	textureFolder: '',
 	// Data Pack Settings
-	exportDataPack: true,
+	enableDataPack: true,
 	enableAdvancedDataPackSettings: false,
 	dataPack: '',
 }

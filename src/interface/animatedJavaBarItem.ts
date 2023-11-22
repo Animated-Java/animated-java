@@ -4,6 +4,8 @@ import { BLUEPRINT_FORMAT } from '../blueprintFormat'
 import { PACKAGE } from '../constants'
 import { events } from '../util/events'
 import { createAction, createBarMenu } from '../util/moddingTools'
+import { translate } from '../util/translation'
+import { openBlueprintSettingsDialog } from './projectSettingsDialog'
 
 function createIconImg() {
 	const IMG = document.createElement('img')
@@ -39,7 +41,7 @@ MenuBar.addAction(
 	createAction(`${PACKAGE.name}:about`, {
 		icon: 'info_outline',
 		category: 'animated_java',
-		name: 'About',
+		name: translate('action.open_about.name'),
 		condition() {
 			return Format === BLUEPRINT_FORMAT
 		},
@@ -50,31 +52,32 @@ MenuBar.addAction(
 	MENU.id
 )
 
-MenuBar.addAction(
-	createAction(`${PACKAGE.name}:settings`, {
-		icon: 'settings',
-		category: 'animated_java',
-		name: 'Settings',
-		condition() {
-			return Format === BLUEPRINT_FORMAT
-		},
-		click() {
-			console.log('Settings')
-		},
-	}),
-	MENU.id
-)
+// MenuBar.addAction(
+// 	createAction(`${PACKAGE.name}:settings`, {
+// 		icon: 'settings',
+// 		category: 'animated_java',
+// 		name: 'Settings',
+// 		condition() {
+// 			return Format === BLUEPRINT_FORMAT
+// 		},
+// 		click() {
+// 			console.log('Settings')
+// 		},
+// 	}),
+// 	MENU.id
+// )
 
 MenuBar.addAction(
-	createAction(`${PACKAGE.name}:project_settings`, {
+	createAction(`${PACKAGE.name}:blueprint_settings`, {
 		icon: 'settings',
 		category: 'animated_java',
-		name: 'Project Settings',
+		name: translate('action.open_blueprint_settings.name'),
 		condition() {
 			return Format === BLUEPRINT_FORMAT
 		},
 		click() {
-			console.log('Project Settings')
+			console.log('Blueprint Settings')
+			openBlueprintSettingsDialog()
 		},
 	}),
 	MENU.id
@@ -84,7 +87,7 @@ MenuBar.addAction(
 	createAction(`${PACKAGE.name}:documentation`, {
 		icon: 'find_in_page',
 		category: 'animated_java',
-		name: 'Documentation',
+		name: translate('action.open_documentation.name'),
 		condition() {
 			return Format === BLUEPRINT_FORMAT
 		},
@@ -99,9 +102,9 @@ MenuBar.addAction(
 	createAction(`${PACKAGE.name}:export`, {
 		icon: 'insert_drive_file',
 		category: 'animated_java',
-		name: 'Export',
+		name: translate('action.export.name'),
 		condition() {
-			return Format === BLUEPRINT_FORMAT
+			return Format === BLUEPRINT_FORMAT && !Project?.animated_java.enable_plugin_mode
 		},
 		click() {
 			console.log('Export')

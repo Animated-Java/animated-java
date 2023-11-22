@@ -6,14 +6,16 @@ import './util/translation'
 import './blueprintFormat'
 // Interface
 import './interface/animatedJavaBarItem'
+import './interface/boneConfigDialog'
 // Blockbench Mods
-import './mods/projectSettingsActionOverride'
 import './mods/animationControllerMod'
-import './mods/saveAllAnimationsActionMod'
+import './mods/exportOverActionMod'
+import './mods/groupContextMenuMod'
 import './mods/panelMod'
+import './mods/projectSettingsActionOverride'
+import './mods/saveAllAnimationsActionMod'
 import './mods/saveProjectActionMod'
 import './mods/saveProjectAsActionMod'
-import './mods/exportOverActionMod'
 
 // @ts-ignore
 globalThis.AnimatedJava = {

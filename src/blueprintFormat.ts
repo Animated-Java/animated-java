@@ -1,4 +1,6 @@
+import ProjectTitleSvelteComponent from './components/projectTitle.svelte'
 import { PACKAGE } from './constants'
+import { injectSvelteCompomponent } from './util/injectSvelte'
 import { addProjectToRecentProjects } from './util/misc'
 
 /**
@@ -55,6 +57,7 @@ export interface IBlueprintFormatJSON {
 		uuid: string
 		box_uv: boolean
 		backup: boolean
+		save_location: string
 	}
 	/**
 	 * The project settings of the Blueprint
@@ -120,6 +123,10 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 
 		if (model.meta.uuid !== undefined) {
 			Project.uuid = model.meta.uuid
+		}
+
+		if (model.meta.save_location !== undefined) {
+			Project.save_path = model.meta.save_location
 		}
 
 		if (model.meta.box_uv !== undefined) {
@@ -258,6 +265,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 				format: BLUEPRINT_FORMAT.id,
 				format_version: PACKAGE.version,
 				uuid: Project.uuid,
+				save_location: Project.save_path,
 			},
 			project_settings: Project.animated_java,
 			resolution: {
@@ -351,16 +359,22 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 	},
 })
 
-export function getDefaultProjectSettings() {
+export function getDefaultProjectSettings(): ModelProject['animated_java'] {
 	return {
 		export_namespace: '',
+		// Plugin Settings
+		enable_plugin_mode: false,
 		// Resource Pack Settings
-		export_resource_pack: true,
+		enable_resource_pack: true,
 		display_item: '',
+		customModelDataOffset: 0,
 		enable_advanced_resource_pack_settings: false,
 		resource_pack: '',
+		display_item_path: '',
+		model_folder: '',
+		texture_folder: '',
 		// Data Pack Settings
-		export_data_pack: true,
+		enable_data_pack: true,
 		enable_advanced_data_pack_settings: false,
 		data_pack: '',
 	}
@@ -392,6 +406,20 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 		if (!Project) return
 		console.log('Animated Java Blueprint format setup')
 		Project.animated_java ??= getDefaultProjectSettings()
+
+		// Custom title
+		injectSvelteCompomponent({
+			elementFinder: () => {
+				const titles = [...document.querySelectorAll('.project_tab.selected')]
+				titles.filter(title => title.textContent === Project.name)
+				if (titles.length) {
+					return titles[0]
+				}
+			},
+			prepend: true,
+			svelteComponent: ProjectTitleSvelteComponent,
+			svelteComponentProperties: { project: Project },
+		})
 	},
 
 	codec: BLUEPRINT_CODEC,

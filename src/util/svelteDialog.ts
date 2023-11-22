@@ -10,7 +10,7 @@ export class SvelteDialog extends Dialog {
 			id: string
 			// @ts-ignore
 			svelteComponent: SvelteComponentConstructor<SvelteComponent, any>
-			svelteComponentProps: Record<string, any>
+			svelteComponentProperties: Record<string, any>
 			lines?: never
 			onClose?: () => void
 			stackable?: boolean
@@ -29,7 +29,7 @@ export class SvelteDialog extends Dialog {
 			parentElement.style.overflow = 'visible'
 			this.instance = new options.svelteComponent({
 				target: parentElement,
-				props: options.svelteComponentProps,
+				props: options.svelteComponentProperties,
 			})
 			if (options.onOpen) options.onOpen()
 			if (!options.stackable) {

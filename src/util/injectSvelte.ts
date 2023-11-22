@@ -6,12 +6,18 @@ export function injectSvelteCompomponent(options: {
 	// @ts-ignore
 	svelteComponent: SvelteComponentConstructor<SvelteComponent, any>
 	svelteComponentProperties: Record<string, any>
-	elementSelector: () => Element | undefined | null
+	elementFinder: () => Element | undefined | null
+	prepend?: boolean
 	postMount?: (el: Element) => void
 }) {
-	void pollPromise(options.elementSelector).then(el => {
+	void pollPromise(options.elementFinder).then(el => {
+		let anchor = undefined
+		if (options.prepend) {
+			anchor = el.children[0]
+		}
 		new options.svelteComponent({
 			target: el,
+			anchor,
 			props: options.svelteComponentProperties,
 		})
 		if (options.postMount) options.postMount(el)

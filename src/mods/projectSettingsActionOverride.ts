@@ -1,6 +1,6 @@
 import PACKAGE from '../../package.json'
 import { BLUEPRINT_FORMAT } from '../blueprintFormat'
-import { openProjectSettingsDialog } from '../interface/projectSettingsDialog'
+import { openBlueprintSettingsDialog } from '../interface/projectSettingsDialog'
 import { createBlockbenchMod } from '../util/moddingTools'
 
 createBlockbenchMod(
@@ -12,7 +12,7 @@ createBlockbenchMod(
 	context => {
 		context.action.click = function (this, event: Event) {
 			if (Format.id === BLUEPRINT_FORMAT.id) {
-				openProjectSettingsDialog()
+				openBlueprintSettingsDialog()
 			} else {
 				context.oldClick.call(this, event)
 			}
