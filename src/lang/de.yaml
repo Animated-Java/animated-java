@@ -150,32 +150,32 @@ animated_java.project_settings.exporter.description: |-
     Der Exporter, der beim Exportieren dieses Projekts verwendet werden soll.
 
 ### Bone Config
-animated_java.dialog.bone_config: Animated Java Bone Config
-animated_java.bone_config.nbt: Bone Entity NBT
+animated_java.dialog.bone_config: Animated Java Knochen-Konfiguration
+animated_java.bone_config.nbt: Knochen NBT
 animated_java.bone_config.nbt.description: |-
-    Custom NBT to apply to this bone entity.
-    Note that some internal NBT may take priority over this setting.
+    Benutzerdefinierte NBT, die bei diesem Knochen angewendet werden soll.
+    Beachten Sie, dass einige interne NBT Vorrang vor dieser Einstellung habn können.
 
 ### Camera Config
-animated_java.dialog.camera_config: Animated Java Camera Config
+animated_java.dialog.camera_config: Animated Java Kamera-Konfiguration
 
-animated_java.camera_config.entity_type: Teleported Entity Type
+animated_java.camera_config.entity_type: Typ des teleportierten Objektes
 animated_java.camera_config.entity_type.description: |-
-    The entity to use when summoning the camera.
-    For instance, if you set this to `minecraft:armor_stand`, The camera will be a armor_stand in-game.
+    Das Objekt, das beim Erzeugen der Kamera verwendet werden soll.
+    Zum Beispiel, falls Sie `minecraft:armor_stand` einstellen, wird die Kamera im Spiel zu einem armor_stand.
 animated_java.camera_config.entity_type.error.space: |-
-    Entity IDs cannot contain spaces.
+    Objekt-IDs dürfen keine Leerzeichen enthalten.
 animated_java.camera_config.entity_type.error.invalid_namespace: |-
-    Entity IDs must have a namespace.
+    Objekt-IDs müssen ein Namespace haben.
 animated_java.camera_config.entity_type.warning.unknown_entity: |-
-    Entity ID isn't in vanilla minecraft
-    This may cause issues when exporting.
-    Ignore this warning if you're using snapshots or mods.
+    Objekt existiert nicht in Vanilla Minecraft.
+    Dies könnte Probleme verursachen beim exportieren.
+    Ignorieren Sie diese Warnung, falls Sie Snapshot-Versionen oder mit Mods spielen.
 
 animated_java.camera_config.nbt: NBT
 animated_java.camera_config.nbt.description: |-
-    Custom NBT to apply to the summoned camera entity.
-    Note that some internal NBT tags will take priority over this setting.
+    Benutzerdefinierte NBT, die bei dieser Kamera angewendet werden soll.
+    Beachten Sie, dass einige interne NBT Vorrang vor dieser Einstellung habn können.
 
 ### Locator Config
 animated_java.dialog.locator_config: Animated Java Locator Config
