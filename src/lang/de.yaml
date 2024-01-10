@@ -2,152 +2,152 @@ animated_java.title: Animated Java
 
 animated_java.menubar.settings: Animated Java
 
-animated_java.menubar.items.about: About
-animated_java.menubar.items.settings: Settings
-animated_java.menubar.items.project_settings: Project Settings
-animated_java.menubar.items.documentation: Documentation
-animated_java.menubar.items.export_project: Export Project
-animated_java.menubar.items.bone_config: Bone Config
-animated_java.menubar.items.camera_config: Camera Config
-animated_java.menubar.items.locator_config: Locator Config
+animated_java.menubar.items.about: Über...
+animated_java.menubar.items.settings: Einstellungen
+animated_java.menubar.items.project_settings: Projekteinstellungen
+animated_java.menubar.items.documentation: Dokumentation
+animated_java.menubar.items.export_project: Projekt exportieren
+animated_java.menubar.items.bone_config: Knochen-Konfiguration
+animated_java.menubar.items.camera_config: Kamera-Konfiguration
+animated_java.menubar.items.locator_config: Locator-Konfiguration
 
-animated_java.quickmessage.exported_successfully: Project Exported Successfully!
+animated_java.quickmessage.exported_successfully: Export erfolgreich!
 
 ### Dialogs
-animated_java.dialog.close_button: Done
+animated_java.dialog.close_button: Fertig
 
 ### About
-animated_java.dialog.about.title: About Animated Java
+animated_java.dialog.about.title: Über Animated Java
 
 ### Export in Progress
-animated_java.dialog.export_in_progress.title: Exporting Project...
+animated_java.dialog.export_in_progress.title: Export läuft ...
 
 ### Settings
-animated_java.settings.accessability_options_group: Accessability
+animated_java.settings.accessability_options_group: Barrierefreiheit
 
-animated_java.dialog.settings.title: Animated Java Settings
-animated_java.settings.reduced_motion: Reduced Motion
+animated_java.dialog.settings.title: Animated Java Einstellungen
+animated_java.settings.reduced_motion: Reduzierte Bewegungen
 animated_java.settings.reduced_motion.description: |-
-    Disable all UI animations in Animated Java's Menus.
-    This will disable animations and other effects that may cause motion sickness.
+    Deaktivieren Sie alle UI-Animationen in Animated Java Menüs.
+    Dadurch werden Animationen und andere Effekte deaktiviert, die Schwindel verursachen können.
 
 animated_java.settings.resource_pack_group: Resource Pack
 
-animated_java.settings.minify_output: Minify Output
+animated_java.settings.minify_output: Export minimieren
 animated_java.settings.minify_output.description: |-
-    Minify the output of the exported resource pack.
-    This will remove all comments and whitespace from the output.
-    This will make the output smaller, but will make it harder to read.
+    Verkleinert die Ausgabe des exportierten Resource Packs
+    Dabei werden alle Kommentare und Leerzeichen aus dem Export entfernt.
+    Dadurch wird die Ausgabe kleiner, aber schwieriger zu lesen.
 
 ### Documentation
-animated_java.dialog.documentation.title: Animated Java Documentation
+animated_java.dialog.documentation.title: Animated Java Dokumentation
 
-animated_java.dialog.documentation.loading: Loading Documentation...
+animated_java.dialog.documentation.loading: Dokumentation wird geladen ...
 
-animated_java.dialog.documentation.error.failed_to_load.title: Failed to Load Documentation! :(
+animated_java.dialog.documentation.error.failed_to_load.title: Dokumentation konnte nicht geladen werden! :(
 animated_java.dialog.documentation.error.failed_to_load.description: |-
-    Make sure you're connected to the internet!
+    Stellen Sie sicher, dass eine Internetverbindung besteht!
 
 ### Project Settings
-animated_java.dialog.project_settings.title: Animated Java Project Settings
+animated_java.dialog.project_settings.title: Animated Java Projekteinstellungen
 
-animated_java.dialog.project_settings.project_group: Project
+animated_java.dialog.project_settings.project_group: Projekt
 
-animated_java.project_settings.project_namespace: Project Name
+animated_java.project_settings.project_namespace: Name des Projekts
 animated_java.project_settings.project_namespace.description: |-
-    The name and namespace of the project.
+    Der Name und das Namespace des Projekts.
 animated_java.project_settings.project_namespace.error.unset: |-
-    Project Name cannot be empty
+    Das Projekt muss einen Namen haben.
 
-animated_java.project_settings.project_resolution: Project Resolution
+animated_java.project_settings.project_resolution: Projektauflösung
 animated_java.project_settings.project_resolution.description: |-
-    The UV resolution of the Project.
-    This should equal the resolution of the largest texture in your project.
+    Die UV Auflösung des Projekts.
+    Dies sollte der Auflösung der größten Textur in Ihrem Projekt entsprechen.
 
-animated_java.project_settings.target_minecraft_version: Target Minecraft Version
+animated_java.project_settings.target_minecraft_version: Ziel Minecraft-Version
 animated_java.project_settings.target_minecraft_version.description: |-
-    The version of Minecraft you expect to use the exported rig in.
+    Die Minecraft-Version, in der Sie das exportierte Rig verwenden möchten.
 
 animated_java.project_settings.resourcepack_group: Resource Pack
 
 animated_java.project_settings.rig_item: Rig Item
 animated_java.project_settings.rig_item.description: |-
-    The item to use to display the models used in the rig.
+    Das Element, das für die Anzeige der Modelle auf den Rüstungsständern verwendet wird.
 animated_java.project_settings.rig_item.error.unset: |-
-    Rig Item cannot be empty
+    Rig Item darf nicht leer sein.
 animated_java.project_settings.rig_item.error.space: |-
-    Rig Item must be a valid item ID
-    Item ID cannot contain spaces.
+    Rig Item muss eine gültige Item ID sein.
+    Item IDs dürfen keine Leerzeichen enthalten.
 animated_java.project_settings.rig_item.error.invalid_namespace: |-
-    Rig Item must be a valid item ID
-    Item ID must have a namespace.
+    Rig Item muss eine gültige Item ID sein.
+    Item IDs müssen ein Namespace haben.
 animated_java.project_settings.rig_item.warning.unknown_item: |-
-    Rig Item isn't in vanilla minecraft
-    This may cause issues when exporting.
-    Ignore this warning if you're using snapshots or mods.
+    Rig Item existiert nicht in Vanilla Minecraft.
+    Dies könnte Probleme verursachen beim exportieren.
+    Ignorieren Sie diese Warnung, falls Sie Snapshot-Versionen oder mit Mods spielen.
 
-animated_java.project_settings.enable_advanced_resource_pack_settings: Enable Advanced Resource Pack Settings
+animated_java.project_settings.enable_advanced_resource_pack_settings: Erweiterte Resource Pack Einstellungen aktivieren
 animated_java.project_settings.enable_advanced_resource_pack_settings.description: |-
-    Enable advanced resource pack settings.
-    This will allow you to set the Rig Item Model and Rig Export Folder manually instead of Animated Java automatically figuring it out for you.
-    If you're not sure what this does, leave it disabled.
+    Aktiviert die erweiterten Einstellungen des Resource Packs.
+    Dadurch können Sie manuell das Rig Item-Modell und Exportordner einstellen, anstatt dass Animated Java dies automatisch für Sie erledigt.
+    Wenn Sie sich nicht sicher sind, was dies bewirkt, lassen Sie es deaktiviert.
 
-animated_java.project_settings.rig_item_model: Rig Item Model
+animated_java.project_settings.rig_item_model: Rig Item-Modell
 animated_java.project_settings.rig_item_model.description: |-
-    The export location of the rig item's model.
-    Should be in a valid resource pack under `minecraft:models/item`
+    Der Ordnerpfad des exportierten Rig Item-Modells.
+    Dies sollte in einem gültigen Resource Pack unter `minecraft:models/item` sein.
 animated_java.project_settings.rig_item_model.error.unset: |-
-    Rig Item Model cannot be empty.
+    Rig Item-Modell darf nicht leer sein.
 animated_java.project_settings.rig_item_model.error.invalid_path: |-
-    Rig Item Model must be in a valid resource pack
-    The targeted file must be under 'resources/assets/<namespace>/models/'.
+    Rig Item-Modell muss in einem gültigen Resource Pack sein.
+    Der Zielort muss sich in 'resources/assets/<namespace>/models/' befinden.
 animated_java.project_settings.rig_item_model.error.item_does_not_match: |-
-    Rig Item Model must have the same item name as Rig Item
-    You've selected "%rigItem" as your Rig Item, but Rig Item Model targets "%pathItem".
+    Rig Item-Modell muss den gleichen Namen wie das Rig Item haben.
+    Sie haben das Rig Item als "%rigItem" bestimmt, aber das Rig Item-Modell entspricht "%pathItem".
 animated_java.project_settings.rig_item_model.error.rig_item_unset: |-
-    Rig Item is not set
-    Please set the Rig Item before setting the Rig Item Model.
+    Rig Item ist nicht definiert.
+    Bestimmen Sie zuerst ein Rig Item, bevor Sie das Rig Item-Modell bestimmen.
 
-animated_java.project_settings.rig_export_folder: Rig Export Folder
+animated_java.project_settings.rig_export_folder: Rig Exportordner
 animated_java.project_settings.rig_export_folder.description: |-
-    What folder to put the generated model files in.
-    Should be inside of a valid resource pack.
+    Der Ordner, in den die generierten Modelle gespeichert werden.
+    Dies muss in einem gültigen Resource Pack sein.
 animated_java.project_settings.rig_export_folder.error.unset: |-
-    Rig Export Folder cannot be empty
+    Rig Exportordner darf nicht leer sein.
 animated_java.project_settings.rig_export_folder.error.invalid_path: |-
-    Rig Export Folder must be in a valid resource pack
-    The targeted folder must be under 'resources/assets/<namespace>/models/'.
+    Rig Exportordner muss in einem gültigen Resource Pack sein.
+    Der Zielordner muss sich in 'resources/assets/<namespace>/models/' befinden.
 
-animated_java.project_settings.texture_export_folder: Texture Export Folder
+animated_java.project_settings.texture_export_folder: Textur-Exportordner
 animated_java.project_settings.texture_export_folder.description: |-
-    What folder to put the generated texture files in.
-    Should be inside of a valid resource pack.
+    Der Ordner, in den die generierten Texturen gespeichert werden.
+    Dies muss in einem gültigen Resource Pack sein.
 animated_java.project_settings.texture_export_folder.error.unset: |-
-    Texture Export Folder cannot be empty
+    Textur-Exportordner darf nicht leer sein.
 animated_java.project_settings.texture_export_folder.error.invalid_path: |-
-    Texture Export Folder must be in a valid resource pack
-    The targeted folder must be under 'resources/assets/<namespace>/textures/'.
+    Textur-Exportordner muss in einem gültigen Resource Pack sein.
+    Der Zielordner muss sich in 'resources/assets/<namespace>/textures/' befinden.
 
 animated_java.project_settings.resource_pack_mcmeta: Resource Pack
 animated_java.project_settings.resource_pack_mcmeta.description: |-
-    The Resource Pack to inject the Rig's models into.
-    This setting should be targeting the pack.mcmeta file of a valid Resource Pack.
+    Das Resource Pack, in das die Modelle eingefügt werden.
+    Dieser Dateipfad sollte die 'pack.mcmeta'-Datei eines gültigen Resource Packs bezeichnen.
 animated_java.project_settings.resource_pack_mcmeta.error.unset: |-
-    You must select a Resource Pack.
+    Sie müssen ein Resource Pack auswählen.
 animated_java.project_settings.resource_pack_mcmeta.error.invalid_path: |-
-    The selected path is not a valid Resource Pack!
-    Make sure you've selected the correct pack.mcmeta, and that the Resource Pack has an assets folder.
+    Dieser Pfad ist kein gültiges Resource Pack!
+    Stellen Sie sicher, dass die korrekte 'pack.mcmeta'-Datei ausgewählt wurde und dass das Resource Pack ein 'assets'-Ordner hat.
 
-animated_java.project_settings.verbose: Verbose
+animated_java.project_settings.verbose: Ausführlich
 animated_java.project_settings.verbose.description: |-
-    Whether to print verbose output to the chat when running AJ functions.
-    Useful for debugging.
+    Ob bei der Ausführung von AJ-Funktionen eine ausführliche Nachricht im Chat angezeigt werden.
+    Nützlich für die Fehlersuche und -analyse.
 
 animated_java.project_settings.exporter_settings: '%exporter Settings'
 
 animated_java.project_settings.exporter: Exporter
 animated_java.project_settings.exporter.description: |-
-    The exporter to use when exporting this project.
+    Der Exporter, der beim Exportieren dieses Projekts verwendet werden soll.
 
 ### Bone Config
 animated_java.dialog.bone_config: Animated Java Bone Config
