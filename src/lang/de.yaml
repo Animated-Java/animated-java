@@ -162,7 +162,7 @@ animated_java.dialog.camera_config: Animated Java Kamera-Konfiguration
 animated_java.camera_config.entity_type: Typ des teleportierten Objektes
 animated_java.camera_config.entity_type.description: |-
     Das Objekt, das beim Erzeugen der Kamera verwendet werden soll.
-    Zum Beispiel, falls Sie `minecraft:armor_stand` einstellen, wird die Kamera im Spiel zu einem armor_stand.
+    Zum Beispiel, falls Sie `minecraft:armor_stand` einstellen, wird die Kamera im Spiel ein armor_stand sein.
 animated_java.camera_config.entity_type.error.space: |-
     Objekt-IDs dürfen keine Leerzeichen enthalten.
 animated_java.camera_config.entity_type.error.invalid_namespace: |-
@@ -178,25 +178,25 @@ animated_java.camera_config.nbt.description: |-
     Beachten Sie, dass einige interne NBT Vorrang vor dieser Einstellung habn können.
 
 ### Locator Config
-animated_java.dialog.locator_config: Animated Java Locator Config
+animated_java.dialog.locator_config: Animated Java Locator-Konfiguration
 
-animated_java.locator_config.entity_type: Entity Type
+animated_java.locator_config.entity_type: Objekt-Typ
 animated_java.locator_config.entity_type.description: |-
-    The entity to use when summoning the locator.
-    For instance, if you set this to `minecraft:pig`, The locator will be a pig in-game.
+    Das Objekt, das beim Erzeugen des Locators verwendet wird.
+    Zum Beispiel, falls Sie `minecraft:pig` einstellen, wird der Locator im Spiel ein Schwein sein.
 animated_java.locator_config.entity_type.error.space: |-
-    Entity IDs cannot contain spaces.
+    Objekt-IDs dürfen keine Leerzeichen enthalten.
 animated_java.locator_config.entity_type.error.invalid_namespace: |-
-    Entity IDs must have a namespace.
+    Objekt-IDs müssen ein Namespace haben.
 animated_java.locator_config.entity_type.warning.unknown_entity: |-
-    Entity ID isn't in vanilla minecraft
-    This may cause issues when exporting.
-    Ignore this warning if you're using snapshots or mods.
+    Objekt existiert nicht in Vanilla Minecraft.
+    Dies könnte Probleme verursachen beim exportieren.
+    Ignorieren Sie diese Warnung, falls Sie Snapshot-Versionen oder mit Mods spielen.
 
 animated_java.locator_config.nbt: NBT
 animated_java.locator_config.nbt.description: |-
-    Custom NBT to apply to the summoned locator entity.
-    Note that some internal NBT tags will take priority over this setting.
+    Benutzerdefinierte NBT, die bei diesem Locator angewendet werden soll.
+    Beachten Sie, dass einige interne NBT Vorrang vor dieser Einstellung habn können.
 
 ### Animation Config
 animated_java.dialog.animation_config.title: Animation Properties
