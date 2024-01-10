@@ -265,6 +265,7 @@ animated_java.variant_properties.variant_name.error.duplicate_name: |-
 
 animated_java.dialog.variant_properties.affected_bones_is_a_whitelist: Ignorierte Knochen sind eine White-Liste
 animated_java.dialog.variant_properties.affected_bones_is_a_whitelist.description: |-
+    Die Knochen, die diese Variante beeinflussen wird.
     Falls wahr, werden nur Knochen auf der 'Ignorierte Knochen'-Liste von dieser Variante betroffen sein.
     Falls falsch, werden alle Knochen außer denen in der Liste von dieser Variente betroffen sein.
 
