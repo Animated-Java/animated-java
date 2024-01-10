@@ -199,45 +199,45 @@ animated_java.locator_config.nbt.description: |-
     Beachten Sie, dass einige interne NBT Vorrang vor dieser Einstellung habn können.
 
 ### Animation Config
-animated_java.dialog.animation_config.title: Animation Properties
+animated_java.dialog.animation_config.title: Animationseigenschaften
 
 animated_java.animation_config.animation_name: Name
 animated_java.animation_config.animation_name.description: |-
-    The name of the animation.
+    Der Name der Animation.
 animated_java.animation_config.animation_name.error.duplicate_name: |-
-    An animation with the name "%name" already exists.
-    Animation names must be unique.
+    Es existiert bereits eine Animation namens "%name".
+    Animationsnamen müssen eindeutig sein.
 
-animated_java.animation_config.loop: Loop Mode
+animated_java.animation_config.loop: Wiederholungsmodus
 animated_java.animation_config.loop.description: |-
-    The loop mode of the animation.
-    once: The animation will only play once and immediately reset once complete.
-    loop: The animation will loop forever.
-    hold: The animation will hold on the last frame.
-animated_java.animation_config.loop.options.once: Play Once
-animated_java.animation_config.loop.options.loop: Loop
-animated_java.animation_config.loop.options.hold: Hold on Last Frame
+    Der Wiederholungsmodus der Animation.
+    Einmal: Die Animation wird nur einmal abspielen und danach sofort zurückgesetzt.
+    Wiederholen: Die Animation wird sich unendlich wiederholen.
+    Halten: Die Animation wird beim letzten letzten Bild angehalten.
+animated_java.animation_config.loop.options.once: Einmal abspielen
+animated_java.animation_config.loop.options.loop: Wiederholen
+animated_java.animation_config.loop.options.hold: Auf letztem Bild halten
 
-animated_java.animation_config.loop_delay: Loop Delay
+animated_java.animation_config.loop_delay: Wiederholungsverzögerung
 animated_java.animation_config.loop_delay.description: |-
-    The delay (in ticks) between loops of the animation.
-    Only applies if the loop mode is set to loop.
+    Die Verzögerung (in Ticks) zwischen Wiederholungen der Animation.
+    Gilt nur, wenn der Wiederholungsmodus auf 'Wiederholen' eingestellt ist.
 
-animated_java.animation_config.start_delay: Start Delay
+animated_java.animation_config.start_delay: Startverzögerung
 animated_java.animation_config.start_delay.description: |-
-    The delay (in ticks) before the animation starts after the play function is ran.
+    Die Verzögerung (in Ticks) zwischen der Ausführung der Funktion und dem Abspielen der Animation.
 
-animated_java.animation_config.affected_bones_is_a_whitelist: Ignored Bones is a Whitelist
+animated_java.animation_config.affected_bones_is_a_whitelist: Ignorierte Knochen sind eine White-Liste
 animated_java.animation_config.affected_bones_is_a_whitelist.description: |-
-    If true, only the bones in the Ignored Bones list will be affected by this animation.
-    If false, all bones except the ones in the Ignored Bones list will be affected by this animation.
+    Falls wahr, werden nur Knochen auf der 'Ignorierte Knochen'-Liste von dieser Animation betroffen sein.
+    Falls falsch, werden alle Knochen außer denen in der Liste von dieser Animation betroffen sein.
 
-animated_java.animation_config.affected_bones: Ignored Bones
-animated_java.animation_config.affected_bones.add_new_item_message: Add a Bone
+animated_java.animation_config.affected_bones: Ignorierte Knochen
+animated_java.animation_config.affected_bones.add_new_item_message: Knochen hinzufügen
 animated_java.animation_config.affected_bones.description: |-
-    The bones that this animation will affect.
-    If this list is a whitelist, only the bones in the Ignored Bones list will be affected by this animation.
-    If this list is a blacklist, all bones except the ones in the Ignored Bones list will be affected by this animation.
+    Die Knochen, die diese Animation beeinflussen wird.
+    Falls diese Liste eine White-Liste ist, werden nur aufgeführte Knochen von dieser Animation betroffen sein.
+    Falls diese Liste eine Black-Liste ist, werden alle Knochen außer denen in der Liste von dieser Animation betroffen sein.
 
 ### Variants Panel
 animated_java.panels.variants.name: Variants
