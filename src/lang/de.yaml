@@ -282,89 +282,84 @@ animated_java.dialog.variant_properties.textureMap.description: |-
 ### Custom Keyframes
 animated_java.keyframe.animation: Animation
 animated_java.keyframe.animation.description: |-
-    The animation to apply when this keyframe is reached.
+    Die Animation, die angewendet wird, sobald dieser Keyframe erreicht wird.
 
-animated_java.keyframe.variant: Variant
+animated_java.keyframe.variant: Variante
 animated_java.keyframe.variant.description: |-
-    The variant to apply when this keyframe is reached.
+    Die Variante, die angewendet wird, sobald dieser Keyframe erreicht wird.
 
-animated_java.keyframe.commands: Commands
+animated_java.keyframe.commands: Befehle
 animated_java.keyframe.commands.description: |-
-    A list of commands (A function) that run when the keyframe is reached.
+    Eine Liste von Befehlen (eine Funktion), die ausgeführt wird, sobald dieser Keyframe erreicht wird.
 
-animated_java.keyframe.tweenDuration: Tween Duration
+animated_java.keyframe.tweenDuration: Tween-Dauer
 animated_java.keyframe.tweenDuration.description: |-
-    The duration (in ticks) of the tween between this keyframe and the next animation.
+    Die Dauer des Tweens (in Ticks) zwischen diesem Keyframe und der nächsten Animation.
 
-animated_java.keyframe.tweenMode: Tween Mode
+animated_java.keyframe.tweenMode: Tween-Modus
 animated_java.keyframe.tweenMode.description: |-
-    The tween mode of the keyframe.
-    Play: The animation will play from the start.
-    Resume: The animation will play from the same anim_time as this keyframe.
-animated_java.keyframe.tweenMode.play: Play
-animated_java.keyframe.tweenMode.resume: Resume
+    Der Tween-Modus dieses Keyframes.
+    Abspielen: Die Animation wird von Anfang an abgespielt.
+    Fortsetzen: Die Animation wird von derselben anim_time wie dieser Keyframe abgespielt.
+animated_java.keyframe.tweenMode.play: Abspielen
+animated_java.keyframe.tweenMode.resume: Fortsetzen
 
-animated_java.keyframe.executeCondition: Execute Condition
+animated_java.keyframe.executeCondition: Ausführungsbedingung
 animated_java.keyframe.executeCondition.description: |-
-    The execute command condition that must be met for the keyframe to be applied.
-    This is an execute subcommand chain, so you can use any and all execute subcommands in this field.
-    Example: "if score @s example matches 1.."
-    Hint: You can separate subcommands with newlines!
+    Die Ausführungsbedingung, die erfüllt sein muss, damit der Keyframe angewendet wird.
+    Dies ist eine Kette von 'execute'-Unterbefehlen, also können Sie alle Unterbefehle in diesem Feld benutzen.
+    Beispiel: "if score @s example matches 1.."
+    Tipp: Sie können Unterbefehle mit Zeilenumbrüchen trennen!
 
-animated_java.keyframe.playsound: Sound
-animated_java.keyframe.playsound.description: |-
-    The sound that is executed using the playsound command at this keyframe.
-
-animated_java.timeline.animation: Animations
-animated_java.timeline.variant: Variants
-animated_java.timeline.commands: Commands
-animated_java.timeline.playsound: Playsound
+animated_java.timeline.animation: Animationen
+animated_java.timeline.variant: Varianten
+animated_java.timeline.commands: Befehle
 
 ### Popups
-animated_java.popup.close_button: Close
-animated_java.popup.confirm_button: Done
-animated_java.popup.cancel_button: Done
+animated_java.popup.close_button: Schließen
+animated_java.popup.confirm_button: Fertig
+animated_java.popup.cancel_button: Abbrechen
 
 # Unexpected Error
-animated_java.popup.unexpectedError.title: Unexpected Error
+animated_java.popup.unexpectedError.title: Unerwarteter Fehler
 animated_java.popup.unexpectedError.body: |-
-    An unexpected error occurred!
-    Please report this error on our Github or in the support channel on our official Discord server.
+    Ein unerwarteter Fehler ist aufgetreten!
+    Bitte melden Sie diesen Fehler auf unserem Github oder im Support-Kanal unseres offizielem Discord-Servers.
 
 # Confirm predicate file overwrite
-animated_java.popup.confirm_predicate_file_overwrite.title: Confirm Predicate File Overwrite
+animated_java.popup.confirm_predicate_file_overwrite.title: Bestätigen Sie die Überschreibung der Predicate-Datei
 animated_java.popup.confirm_predicate_file_overwrite.body: |-
-    The file "%file" already exists and is not a Rig Item Model!
-    Do you want to overwrite it?
+    Die Datei "%file" existiert bereits und ist nicht ein Rig Item-Modell!
+    Möchten Sie es überschreiben?
 
-    Full file path:
+    Dateipfad:
     %path
 
 # Invalid Texture Mapping(s)
-animated_java.popup.invalid_texture_mapping.title: Invalid Texture Mapping(s)
+animated_java.popup.invalid_texture_mapping.title: Ungültige Textur-Zuordnung(en)
 animated_java.popup.invalid_texture_mapping.body: |-
-    The Variant "%variant" has invalid texture mappings!
-    One or more of the textures in it's texture map are missing from the project, or are invalid.
-    The invalid mappings and a brief explanation of why they're invalid can be found below:
-animated_java.popup.invalid_texture_mapping.reason: Reason(s) for Invalidation
+    Die Variante "%variant" hat ungültige Textur-Zuordnungen!
+    Eine oder mehrere Texturen in der Textur-Map fehlen im Projekt oder sind ungültig.
+    Die ungültigen Zuordnungen und eine kurze Erkärung, warum sie ungültig sind, finden Sie unten:
+animated_java.popup.invalid_texture_mapping.reason: Ungültigkeitsgründe
 animated_java.popup.invalid_texture_mapping.reason.invalid_from_texture: |-
-    Couldn't find the "from" texture in the project.
+    Die 'von' Textur konnte im Projekt nicht gefunden werden.
 animated_java.popup.invalid_texture_mapping.reason.invalid_to_texture: |-
-    Couldn't find the "to" texture in the project.
+    Die 'zu' Textur konnte im Projekt nicht gefunden werden.
 animated_java.popup.invalid_texture_mapping.footer: |-
-    The missing/invalid texture mappings will be removed from the variant.
-    After closing this popup, please make sure you open the Variant's properties dialog and double check the texture mappings are correct.
+    Die fehlenden / ungültigen Textur-Zuordnungen werden von der Variante entfernt.
+    Nachdem Sie das Popup geschlossen haben, überprüfen Sie bitte, ob die Textur-Zuordnungen in den Varianten-Eigenschaften korrekt sind.
 
 # Invalid Cube(s)
-animated_java.popup.invalid_cubes.title: Invalid Cube(s)
+animated_java.popup.invalid_cubes.title: Ungültige Form(en)
 animated_java.popup.invalid_cubes.body: |-
-    Some Cubes have invalid rotations!
-    The invalid cubes can be found below sorted by the Bones they're in.
-    They will also be highlighted in the 3D view once you exit this dialog.
+    Einige Formen haben ungültige Drehungen!
+    Die ungültigen Formen können Sie unten finden, sortiert nach den Knochen, in denen sie sich befinden.
+    Die Formen werden auch in der 3D-Ansicht hervorgehoben, sobald Sie dieses Popup schliessen.
 
 # Failed Project Export Readiness
-animated_java.popup.failed_project_export_readiness.title: Export Failed
+animated_java.popup.failed_project_export_readiness.title: Export fehlgeschlagen
 animated_java.popup.failed_project_export_readiness.body: |-
-    The project is not ready to be exported!
-    The following issues were found:
-animated_java.popup.failed_project_export_readiness.issue: Project Setting "%s" has the following errors
+    Dieses Projekt ist nicht bereit, exportiert zu werden!
+    Die folgenden Probleme wurden festgestellt:
+animated_java.popup.failed_project_export_readiness.issue: Projekteinstellung "%s" hat den folgenden Fehler
