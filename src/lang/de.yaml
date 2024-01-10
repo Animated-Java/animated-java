@@ -356,7 +356,7 @@ animated_java.popup.invalid_cubes.title: Ungültige Form(en)
 animated_java.popup.invalid_cubes.body: |-
     Einige Formen haben ungültige Drehungen!
     Die ungültigen Formen können Sie unten finden, sortiert nach den Knochen, in denen sie sich befinden.
-    Die Formen werden auch in der 3D-Ansicht hervorgehoben, sobald Sie dieses Popup schliessen.
+    Die Formen werden auch in der 3D-Ansicht hervorgehoben, sobald Sie dieses Popup schließen.
 
 # Failed Project Export Readiness
 animated_java.popup.failed_project_export_readiness.title: Export fehlgeschlagen
