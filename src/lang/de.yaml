@@ -240,45 +240,44 @@ animated_java.animation_config.affected_bones.description: |-
     Falls diese Liste eine Black-Liste ist, werden alle Knochen außer denen in der Liste von dieser Animation betroffen sein.
 
 ### Variants Panel
-animated_java.panels.variants.name: Variants
-animated_java.panels.variants.items: Variant
-animated_java.panels.variants.delete_default_variant: Cannot delete default Variant
-animated_java.panels.variants.delete_variant: Delete Variant
-animated_java.panels.variants.edit_variant: Edit Variant
-animated_java.panels.variants.default_variant: Default Variant
-animated_java.actions.add_variant.name: Add Variant
-animated_java.actions.add_variant.description: Create a new Variant
-animated_java.actions.variant_properties.name: Variant Properties
-animated_java.actions.variant_properties.description: Open the Variant properties dialog.
-animated_java.actions.duplicate_variant.name: Duplicate Variant
-animated_java.actions.duplicate_variant.description: Duplicate this Variant.
+animated_java.panels.variants.name: Varianten
+animated_java.panels.variants.items: Variante
+animated_java.panels.variants.delete_default_variant: Standard-Varianten können nicht gelöscht werden.
+animated_java.panels.variants.delete_variant: Variante löschen
+animated_java.panels.variants.edit_variant: Variante bearbeiten
+animated_java.panels.variants.default_variant: Standard-Variante
+animated_java.actions.add_variant.name: Variante hinzufügen
+animated_java.actions.add_variant.description: Neue Variante erstellen
+animated_java.actions.variant_properties.name: Varianten-Eigenschaften
+animated_java.actions.variant_properties.description: Öffnet den Dialog für Varianten-Eigenschaften.
+animated_java.actions.duplicate_variant.name: Variante duplizieren
+animated_java.actions.duplicate_variant.description: Dupliziert diese Variante.
 
 ### Variants Properties Dialog
-animated_java.dialog.variant_properties.title: Variant Properties
+animated_java.dialog.variant_properties.title: Varianten-Eigenschaften
 
 animated_java.dialog.variant_properties.variant_name: Name
 animated_java.dialog.variant_properties.variant_name.description: |-
-    The name of the variant.
+    Der Name der Variante.
 animated_java.variant_properties.variant_name.error.duplicate_name: |-
-    A variant with the name "%name" already exists.
-    Variant names must be unique.
+    Eine Variante mit dem Namen "%name" existiert bereits.
+    Namen müssen eindeutig sein.
 
-animated_java.dialog.variant_properties.affected_bones_is_a_whitelist: Affected Bones is a Whitelist
+animated_java.dialog.variant_properties.affected_bones_is_a_whitelist: Ignorierte Knochen sind eine White-Liste
 animated_java.dialog.variant_properties.affected_bones_is_a_whitelist.description: |-
-    Whether the affected bones list is a whitelist or blacklist.
-    If true, only the bones in the Affected Bones list will be affected by this Variant.
-    If false, all bones except the ones in the Affected Bones list will be affected by this Variant.
+    Falls wahr, werden nur Knochen auf der 'Ignorierte Knochen'-Liste von dieser Variante betroffen sein.
+    Falls falsch, werden alle Knochen außer denen in der Liste von dieser Variente betroffen sein.
 
-animated_java.dialog.variant_properties.affected_bones: Affected Bones
-animated_java.dialog.variant_properties.affected_bones.add_new_item_message: Add a Bone
+animated_java.dialog.variant_properties.affected_bones: Ignorierte Knochen
+animated_java.dialog.variant_properties.affected_bones.add_new_item_message: Knochen hinzufügen
 animated_java.dialog.variant_properties.affected_bones.description: |-
-    The list of bones affected by this variant.
-    If this is a whitelist, only the bones in the list will be modified by this Variant.
-    If this is a blacklist, all bones except the ones in the list will be modified by this Variant.
-animated_java.dialog.variant_properties.textureMap: Texture Map
+    Die Knochen, die diese Variante beeinflussen wird.
+    Falls diese Liste eine White-Liste ist, werden nur aufgeführte Knochen von dieser Variante betroffen sein.
+    Falls diese Liste eine Black-Liste ist, werden alle Knochen außer denen in der Liste von dieser Variante betroffen sein.
+animated_java.dialog.variant_properties.textureMap: Textur-Map
 animated_java.dialog.variant_properties.textureMap.description: |-
-    The texture map to use for this variant.
-    Lets you choose what textures are replaced when this Variant is appied.
+    Die Textur-Map, die für diese Variante verwendet wird.
+    Hier können Sie auswählen, welche Texturen bei der Anwendung dieser Variante ersetzt werden.
 
 ### Custom Keyframes
 animated_java.keyframe.animation: Animation
