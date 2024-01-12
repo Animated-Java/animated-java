@@ -1,9 +1,15 @@
 // @ts-ignore
 import en from '../lang/en.yaml'
+// @ts-ignore
+import de from '../lang/de.yaml'
+// @ts-ignore
+import zh from '../lang/zh_cn.yaml'
 import { formatStr, FormattingObject } from './misc'
 
 const LANGUAGES: Record<string, Record<string, string>> = {
 	en,
+	de,
+	zh,
 }
 
 export const currentLanguage = settings.language.value
