@@ -1,64 +1,99 @@
 ### Actions
-animated_java.action.open_blueprint_settings.name: 'Blueprint Settings'
-animated_java.action.open_documentation.name: 'Documentation'
-animated_java.action.open_about.name: 'About'
-animated_java.action.open_bone_config.name: 'Bone Config'
-animated_java.action.export.name: 'Export'
+animated_java.action.open_blueprint_settings.name: Blueprint Settings
+animated_java.action.open_documentation.name: Documentation
+animated_java.action.open_about.name: About
+animated_java.action.open_bone_config.name: Bone Config
+animated_java.action.export.name: Export
 
 ### Dialogs
-animated_java.dialog.blueprint_settings.title: 'Blueprint Settings'
+animated_java.dialog.blueprint_settings.title: Blueprint Settings
+
+animated_java.dialog.blueprint_settings.advanced_settings_warning: Advanced settings should only be used if absolutely needed!
 
 ## Blueprint Settings Dialog
-animated_java.dialog.blueprint_settings.blueprint_name.title: 'Blueprint Name'
-animated_java.dialog.blueprint_settings.blueprint_name.description: 'The name of the Blueprint. Only used to identify the project in the workspace.'
+animated_java.dialog.blueprint_settings.blueprint_name.title: Blueprint Name
+animated_java.dialog.blueprint_settings.blueprint_name.description: The name of the Blueprint. Only used to identify the project in the workspace.
 
-animated_java.dialog.blueprint_settings.export_namespace.title: 'Export Namespace'
-animated_java.dialog.blueprint_settings.export_namespace.description: 'The namespace to export the project to. This is the namespace that will be used in the exported Resource Pack and Data Pack.'
+animated_java.dialog.blueprint_settings.export_namespace.title: Export Namespace
+animated_java.dialog.blueprint_settings.export_namespace.description: The namespace to export the project to. This is the namespace that will be used in the exported Resource Pack and Data Pack.
 
-animated_java.dialog.blueprint_settings.texture_size.title: 'Texture Size'
-animated_java.dialog.blueprint_settings.texture_size.description: 'The resolution of the UV editor. This should be a power of 2, and ideally both X and Y should be identical.'
+animated_java.dialog.blueprint_settings.texture_size.title: Texture Size
+animated_java.dialog.blueprint_settings.texture_size.description: The resolution of the UV editor. This should be the same size as the largest texture. For best results use a square texture, and make sure it's size is a power of 2.
+animated_java.dialog.blueprint_settings.texture_size.warning.not_square: The Texture Size should be square for best results.
+animated_java.dialog.blueprint_settings.texture_size.warning.not_a_power_of_2: The Texture Size should be a power of 2 for best results.
+animated_java.dialog.blueprint_settings.texture_size.error.does_not_match_largest_texture: The Texture Size should match the largest texture's size.
 
-animated_java.dialog.blueprint_settings.enable_plugin_mode.title: 'Plugin Mode'
-animated_java.dialog.blueprint_settings.enable_plugin_mode.description: 'Whether or not to enable Plugin Mode. Enable when you plan to use the .ajblueprint file in a plugin instead of a Resource Pack and/or Data Pack.'
+animated_java.dialog.blueprint_settings.enable_plugin_mode.title: Plugin Mode
+animated_java.dialog.blueprint_settings.enable_plugin_mode.description: Whether or not to enable Plugin Mode. Enable when you plan to use the .ajblueprint file in a plugin instead of a Resource Pack and/or Data Pack.
 
-animated_java.dialog.blueprint_settings.enable_resource_pack.title: 'Export Resources'
-animated_java.dialog.blueprint_settings.enable_resource_pack.description: 'Whether or not to export resources into a Resource Pack.'
+animated_java.dialog.blueprint_settings.enable_resource_pack.title: Export Resources
+animated_java.dialog.blueprint_settings.enable_resource_pack.description: Whether or not to export resources into a Resource Pack.
 
-animated_java.dialog.blueprint_settings.enable_data_pack.title: 'Export Data Pack'
-animated_java.dialog.blueprint_settings.enable_data_pack.description: 'Whether or not to export into a Data Pack.'
+animated_java.dialog.blueprint_settings.enable_data_pack.title: Export Data Pack
+animated_java.dialog.blueprint_settings.enable_data_pack.description: Whether or not to export into a Data Pack.
 
 # Resource Pack Settings
-animated_java.dialog.blueprint_settings.resource_pack_settings.title: 'Resource Pack Settings'
+animated_java.dialog.blueprint_settings.resource_pack_settings.title: Resource Pack Settings
 
-animated_java.dialog.blueprint_settings.enable_advanced_resource_pack_settings.title: 'Advanced'
-animated_java.dialog.blueprint_settings.enable_advanced_resource_pack_settings.description: 'Whether or not to enable the advanced Resource Pack settings.'
+animated_java.dialog.blueprint_settings.enable_advanced_resource_pack_settings.title: Advanced
+animated_java.dialog.blueprint_settings.enable_advanced_resource_pack_settings.description: Whether or not to enable the advanced Resource Pack settings.
 
-animated_java.dialog.blueprint_settings.display_item.title: 'Display Item'
-animated_java.dialog.blueprint_settings.display_item.description: 'The item to display the Blueprints models in-game. Multiple Blueprints can be placed on the same item and they will be merged automatically.'
+animated_java.dialog.blueprint_settings.display_item.title: Display Item
+animated_java.dialog.blueprint_settings.display_item.description: The item to display the Blueprints models in-game. Multiple Blueprints can be placed on the same item and they will be merged automatically.
 
-animated_java.dialog.blueprint_settings.custom_model_data_offset.title: 'CMD Offset'
-animated_java.dialog.blueprint_settings.custom_model_data_offset.description: 'The offset to use for the Custom Model Data of the Display Item. Used to allow multiple Blueprints on the same item, but in different Resource Packs.'
+animated_java.dialog.blueprint_settings.custom_model_data_offset.title: CMD Offset
+animated_java.dialog.blueprint_settings.custom_model_data_offset.description: The offset to use for the Custom Model Data of the Display Item. Used to allow multiple Blueprints on the same item, but in different Resource Packs.
 
-animated_java.dialog.blueprint_settings.resource_pack.title: 'Resource Pack'
-animated_java.dialog.blueprint_settings.resource_pack.description: 'The Resource Pack to export the project to.'
+animated_java.dialog.blueprint_settings.resource_pack.title: Resource Pack
+animated_java.dialog.blueprint_settings.resource_pack.description: The Resource Pack to export the project to.
 
-animated_java.dialog.blueprint_settings.display_item_path.title: 'Display Item Path'
-animated_java.dialog.blueprint_settings.display_item_path.description: 'Where to place the Display Item. This should be a path to a .json file in a Resource Pack.'
+animated_java.dialog.blueprint_settings.display_item_path.title: Display Item Path
+animated_java.dialog.blueprint_settings.display_item_path.description: Where to place the Display Item. This should be a path to a .json file in a Resource Pack.
 
-animated_java.dialog.blueprint_settings.model_folder.title: 'Model Folder'
-animated_java.dialog.blueprint_settings.model_folder.description: 'Where to place all of the exported models. This should be a path to a folder in a Resource Pack.'
+animated_java.dialog.blueprint_settings.model_folder.title: Model Folder
+animated_java.dialog.blueprint_settings.model_folder.description: Where to place all of the exported models. This should be a path to a folder in a Resource Pack.
 
-animated_java.dialog.blueprint_settings.texture_folder.title: 'Texture Folder'
-animated_java.dialog.blueprint_settings.texture_folder.description: 'Where to place all of the exported textures. This should be a path to a folder in a Resource Pack.'
+animated_java.dialog.blueprint_settings.texture_folder.title: Texture Folder
+animated_java.dialog.blueprint_settings.texture_folder.description: Where to place all of the exported textures. This should be a path to a folder in a Resource Pack.
 
 # Data Pack Settings
-animated_java.dialog.blueprint_settings.data_pack_settings.title: 'Data Pack Settings'
+animated_java.dialog.blueprint_settings.data_pack_settings.title: Data Pack Settings
 
-animated_java.dialog.blueprint_settings.enable_advanced_data_pack_settings.title: 'Advanced'
-animated_java.dialog.blueprint_settings.enable_advanced_data_pack_settings.description: 'Whether or not to enable the advanced Data Pack settings.'
+animated_java.dialog.blueprint_settings.enable_advanced_data_pack_settings.title: Advanced
+animated_java.dialog.blueprint_settings.enable_advanced_data_pack_settings.description: Whether or not to enable the advanced Data Pack settings.
 
-animated_java.dialog.blueprint_settings.data_pack.title: 'Data Pack'
-animated_java.dialog.blueprint_settings.data_pack.description: 'The Data Pack to export the project to.'
+animated_java.dialog.blueprint_settings.data_pack.title: Data Pack
+animated_java.dialog.blueprint_settings.data_pack.description: The Data Pack to export the project to.
 
 ## Bone Config Dialog
-animated_java.dialog.bone_config.title: 'Bone Config'
+animated_java.dialog.bone_config.title: Bone Config
+
+animated_java.dialog.bone_config.enable_advanced_settings.title: Advanced
+animated_java.dialog.bone_config.enable_advanced_settings.description: Whether or not to enable the advanced Bone Config settings.
+
+animated_java.dialog.bone_config.inherit_settings.title: Inherit Settings
+animated_java.dialog.bone_config.inherit_settings.description: Whether or not to inherit the settings from the parent bone.
+
+animated_java.dialog.bone_config.glowing.title: Glowing
+animated_java.dialog.bone_config.glowing.description: Whether or not the bone should glow in-game.
+
+animated_java.dialog.bone_config.glow_color.title: Glow Color
+animated_java.dialog.bone_config.glow_color.description: The color of the glow.
+
+animated_java.dialog.bone_config.shadow_radius.title: Shadow Radius
+animated_java.dialog.bone_config.shadow_radius.description: The radius of the shadow.
+
+animated_java.dialog.bone_config.shadow_strength.title: Shadow Strength
+animated_java.dialog.bone_config.shadow_strength.description: The strength of the shadow.
+
+animated_java.dialog.bone_config.brightness_override.title: Brightness Override
+animated_java.dialog.bone_config.brightness_override.description: The brightness of the bone. This should be a value between 0 and 15.
+
+animated_java.dialog.bone_config.enchanted.title: Enchanted
+animated_java.dialog.bone_config.enchanted.description: Whether or not the bone should be enchanted.
+
+animated_java.dialog.bone_config.invisible.title: Invisible
+animated_java.dialog.bone_config.invisible.description: Whether or not the bone should be invisible.
+
+animated_java.dialog.bone_config.nbt.title: NBT
+animated_java.dialog.bone_config.nbt.description: The NBT to apply to the bone.

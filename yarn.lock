@@ -1106,6 +1106,11 @@ color-name@~1.1.4:
   resolved "https://registry.yarnpkg.com/color-name/-/color-name-1.1.4.tgz#c2a09a87acbde69543de6f63fa3995c826c536a2"
   integrity sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==
 
+colord@^2.9.3:
+  version "2.9.3"
+  resolved "https://registry.yarnpkg.com/colord/-/colord-2.9.3.tgz#4f8ce919de456f1d5c1c368c307fe20f3e59fb43"
+  integrity sha512-jeC1axXpnb0/2nn/Y1LPuLdgXBLH7aDcHu4KEKfqw3CUhX7ZpfBSlPKyqXE6btIgEzfWtrX3/tyBCaCvXvMkOw==
+
 concat-map@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
@@ -2186,6 +2191,13 @@ svelte-ace@^1.0.21:
   dependencies:
     brace "^0.11.1"
     sirv-cli "^1.0.0"
+
+svelte-awesome-color-picker@^3.0.0-beta.7:
+  version "3.0.0-beta.7"
+  resolved "https://registry.yarnpkg.com/svelte-awesome-color-picker/-/svelte-awesome-color-picker-3.0.0-beta.7.tgz#8c1a0f6de97afe42ec4fc6ae244a9799346a4012"
+  integrity sha512-H5KDKHADiqLokCavGGbTXowKN53MoQcX2Mm047+eqt5ypY26Vx4NnMB6VWlExCTqUrAh68AIT8em4HbAl6ATjA==
+  dependencies:
+    colord "^2.9.3"
 
 svelte-preprocess-esbuild@^3.0.1:
   version "3.0.1"

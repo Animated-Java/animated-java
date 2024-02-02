@@ -15,7 +15,6 @@
 	let slider: HTMLElement
 
 	requestAnimationFrame(() => {
-		console.log('mount')
 		addEventListeners(slider, 'mousedown touchstart', (e1: any) => {
 			convertTouchEvent(e1)
 			let last_difference = 0

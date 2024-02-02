@@ -18,3 +18,16 @@ declare interface ModelProject {
 		data_pack: string
 	}
 }
+
+declare interface Group {
+	inherit_settings: boolean
+	enable_advanced_settings: boolean
+	glowing: boolean
+	glow_color: number
+	shadow_radius: number
+	shadow_strength: number
+	brightness_override: number
+	enchanted: boolean
+	invisible: boolean
+	nbt: string
+}

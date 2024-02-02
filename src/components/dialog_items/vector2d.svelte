@@ -15,6 +15,35 @@
 	export let minY: number | undefined = undefined
 	export let maxY: number | undefined = undefined
 
+	export let valueChecker:
+		| ((valueX: number, valueY: number) => { type: string; message: string })
+		| undefined = undefined
+
+	let warning_text = ''
+	let error_text = ''
+
+	function checkValue() {
+		if (!valueChecker) return
+		const result = valueChecker(valueX.get(), valueY.get())
+		console.log('Checker result:', result)
+		switch (result.type) {
+			case 'error':
+				error_text = result.message
+				warning_text = ''
+				break
+			case 'warning':
+				warning_text = result.message
+				error_text = ''
+				break
+			default:
+				warning_text = ''
+				error_text = ''
+				break
+		}
+	}
+	valueX.subscribe(() => checkValue())
+	valueY.subscribe(() => checkValue())
+
 	const molangParser = new Molang()
 
 	let inputX: HTMLInputElement
@@ -35,8 +64,8 @@
 						Math.clamp(
 							valueX.get() + (difference - last_difference),
 							minX !== undefined ? minX : -Infinity,
-							maxX !== undefined ? maxX : Infinity
-						)
+							maxX !== undefined ? maxX : Infinity,
+						),
 					)
 					last_difference = difference
 				}
@@ -54,8 +83,8 @@
 				Math.clamp(
 					molangParser.parse(valueX.get()),
 					minX !== undefined ? minX : -Infinity,
-					maxX !== undefined ? maxX : Infinity
-				)
+					maxX !== undefined ? maxX : Infinity,
+				),
 			)
 		})
 
@@ -70,8 +99,8 @@
 						Math.clamp(
 							valueY.get() + (difference - last_difference),
 							minY !== undefined ? minY : -Infinity,
-							maxY !== undefined ? maxY : Infinity
-						)
+							maxY !== undefined ? maxY : Infinity,
+						),
 					)
 					last_difference = difference
 				}
@@ -89,14 +118,14 @@
 				Math.clamp(
 					molangParser.parse(valueY.get()),
 					minY !== undefined ? minY : -Infinity,
-					maxY !== undefined ? maxY : Infinity
-				)
+					maxY !== undefined ? maxY : Infinity,
+				),
 			)
 		})
 	})
 </script>
 
-<BaseDialogItem {tooltip}>
+<BaseDialogItem {tooltip} bind:warning_text bind:error_text>
 	<div class="dialog_bar form_bar">
 		<label class="name_space_left" for="name">{label}</label>
 		<div class="dialog_vector_group half">

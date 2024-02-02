@@ -39,7 +39,7 @@ events.SELECT_PROJECT.subscribe(project => {
 
 MenuBar.addAction(
 	createAction(`${PACKAGE.name}:about`, {
-		icon: 'info_outline',
+		icon: 'info',
 		category: 'animated_java',
 		name: translate('action.open_about.name'),
 		condition() {

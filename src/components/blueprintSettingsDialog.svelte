@@ -32,6 +32,48 @@
 	export let enableDataPack: Valuable<boolean>
 	export let enableAdvancedDataPackSettings: Valuable<boolean>
 	export let dataPack: Valuable<string>
+
+	function textureSizeChecker(x: number, y: number): { type: string; message: string } {
+		x = Number(x)
+		y = Number(y)
+		const largestHeight: number = Number(
+			Texture.all.map(t => t.height).reduce((max, cur) => Math.max(max, cur), 0),
+		)
+		const largestWidth: number = Number(
+			Texture.all.map(t => t.width).reduce((max, cur) => Math.max(max, cur), 0),
+		)
+
+		console.log('Largest Width:', largestWidth, 'vs', x)
+		console.log('Largest Height:', largestHeight, 'vs', y)
+
+		if (!(x === largestWidth && y === largestHeight)) {
+			return {
+				type: 'error',
+				message: translate(
+					'animated_java.dialog.blueprint_settings.texture_size.error.does_not_match_largest_texture',
+				),
+			}
+		} else if (x !== y) {
+			return {
+				type: 'warning',
+				message: translate(
+					'animated_java.dialog.blueprint_settings.texture_size.warning.not_square',
+				),
+			}
+		} else if (x !== 2 ** Math.floor(Math.log2(x)) || y !== 2 ** Math.floor(Math.log2(y))) {
+			return {
+				type: 'warning',
+				message: translate(
+					'animated_java.dialog.blueprint_settings.texture_size.warning.not_a_power_of_2',
+				),
+			}
+		} else {
+			return {
+				type: 'success',
+				message: '',
+			}
+		}
+	}
 </script>
 
 <div>
@@ -56,6 +98,7 @@
 		bind:valueY={textureSizeY}
 		minY={2}
 		maxY={4096}
+		valueChecker={textureSizeChecker}
 	/>
 
 	<Checkbox
@@ -88,14 +131,14 @@
 			/>
 			<Checkbox
 				label={translate(
-					'dialog.blueprint_settings.enable_advanced_resource_pack_settings.title'
+					'dialog.blueprint_settings.enable_advanced_resource_pack_settings.title',
 				)}
 				bind:checked={enableAdvancedResourcePackSettings}
 			/>
 			{#if $enableAdvancedResourcePackSettings}
 				<!--  -->
-				<p class="advanced_settings_warning">
-					Advanced settings should only be used if absolutely needed!
+				<p class="warning">
+					{translate('dialog.blueprint_settings.advanced_settings_warning')}
 				</p>
 				<LineInput
 					label={translate('dialog.blueprint_settings.display_item.title')}
@@ -106,7 +149,7 @@
 				<NumberSlider
 					label={translate('dialog.blueprint_settings.custom_model_data_offset.title')}
 					tooltip={translate(
-						'dialog.blueprint_settings.custom_model_data_offset.description'
+						'dialog.blueprint_settings.custom_model_data_offset.description',
 					)}
 					bind:value={customModelDataOffset}
 				/>
@@ -138,7 +181,7 @@
 				<NumberSlider
 					label={translate('dialog.blueprint_settings.custom_model_data_offset.title')}
 					tooltip={translate(
-						'dialog.blueprint_settings.custom_model_data_offset.description'
+						'dialog.blueprint_settings.custom_model_data_offset.description',
 					)}
 					bind:value={customModelDataOffset}
 					min={0}
@@ -159,14 +202,14 @@
 			/>
 			<Checkbox
 				label={translate(
-					'dialog.blueprint_settings.enable_advanced_data_pack_settings.title'
+					'dialog.blueprint_settings.enable_advanced_data_pack_settings.title',
 				)}
 				bind:checked={enableAdvancedDataPackSettings}
 			/>
 			{#if $enableAdvancedDataPackSettings}
 				<!--  -->
-				<p class="advanced_settings_warning">
-					Advanced settings should only be used if absolutely needed!
+				<p class="warning">
+					{translate('dialog.blueprint_settings.advanced_settings_warning')}
 				</p>
 
 				<FileSelect
@@ -186,10 +229,16 @@
 </div>
 
 <style>
-	.advanced_settings_warning {
+	.warning {
 		color: var(--color-warning);
 		font-family: var(--font-code);
 		font-size: 0.8em;
 		margin-bottom: 8px;
 	}
+	/* .error {
+		color: var(--color-error);
+		font-family: var(--font-code);
+		font-size: 0.8em;
+		margin-bottom: 8px;
+	} */
 </style>
