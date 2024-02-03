@@ -81,6 +81,40 @@
 				},
 				"entity_type": {
 					"type": "string"
+				},
+				"bounding_box": {
+					"type": "object",
+					"description": "The bounding box of the bone.",
+					"properties": {
+						"min": {
+							"type": "object",
+							"properties": {
+								"x": {
+									"type": "number"
+								},
+								"y": {
+									"type": "number"
+								},
+								"z": {
+									"type": "number"
+								}
+							}
+						},
+						"max": {
+							"type": "object",
+							"properties": {
+								"x": {
+									"type": "number"
+								},
+								"y": {
+									"type": "number"
+								},
+								"z": {
+									"type": "number"
+								}
+							}
+						}
+					}
 				}
 			}
 		},
