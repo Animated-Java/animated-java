@@ -48,7 +48,7 @@ events.UNSELECT_PROJECT.subscribe(() => {
 
 MenuBar.addAction(
 	createAction('animated_java:about', {
-		icon: 'info_outline',
+		icon: 'info',
 		category: 'animated_java',
 		name: translate('animated_java.menubar.items.about'),
 		condition: () => Format === ajModelFormat,
