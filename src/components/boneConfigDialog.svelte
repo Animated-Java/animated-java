@@ -14,9 +14,9 @@
 	const pluginModeEnabled = !!Project?.animated_java?.enable_plugin_mode
 
 	export let inheritSettings: Valuable<boolean>
-	export let enableAdvancedSettings: Valuable<boolean>
+	export let useNBT: Valuable<boolean>
 	export let glowing: Valuable<boolean>
-	export let glowColor: Valuable<number>
+	export let glowColor: Valuable<string>
 	export let shadowRadius: Valuable<number>
 	export let shadowStrength: Valuable<number>
 	export let brightnessOverride: Valuable<number>
@@ -82,7 +82,6 @@
 			tooltip={translate('dialog.bone_config.invisible.description')}
 			bind:checked={invisible}
 		/>
-
 	{:else}
 		<Checkbox
 			label={translate('dialog.bone_config.inherit_settings.title')}
@@ -91,14 +90,14 @@
 		/>
 
 		<Checkbox
-			label={translate('dialog.bone_config.enable_advanced_settings.title')}
-			tooltip={translate('dialog.bone_config.enable_advanced_settings.description')}
-			bind:checked={enableAdvancedSettings}
+			label={translate('dialog.bone_config.use_nbt.title')}
+			tooltip={translate('dialog.bone_config.use_nbt.description')}
+			bind:checked={useNBT}
 		/>
 
-		{#if $enableAdvancedSettings}
-			<p class="advanced_settings_warning">
-				{translate('dialog.blueprint_settings.advanced_settings_warning')}
+		{#if $useNBT}
+			<p class="use_nbt_warning">
+				{translate('dialog.bone_config.use_nbt.use_nbt_warning')}
 			</p>
 			<LineInput
 				label={translate('dialog.bone_config.nbt.title')}
@@ -160,7 +159,7 @@
 </div>
 
 <style>
-	.advanced_settings_warning {
+	.use_nbt_warning {
 		color: var(--color-warning);
 		font-family: var(--font-code);
 		font-size: 0.8em;

@@ -9,6 +9,7 @@ import './interface/animatedJavaBarItem'
 import './interface/boneConfigDialog'
 // Blockbench Mods
 import './mods/animationControllerMod'
+import './mods/bonePropertiesMod'
 import './mods/exportOverActionMod'
 import './mods/groupContextMenuMod'
 import './mods/panelMod'

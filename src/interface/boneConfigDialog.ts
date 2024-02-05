@@ -8,7 +8,7 @@ import { translate } from '../util/translation'
 
 export function openBoneConfigDialog(bone: Group) {
 	const inheritSettings = new Valuable(bone.inherit_settings)
-	const enableAdvancedSettings = new Valuable(bone.enable_advanced_settings)
+	const useNBT = new Valuable(bone.use_nbt)
 	const glowing = new Valuable(bone.glowing)
 	const glowColor = new Valuable(bone.glow_color)
 	const shadowRadius = new Valuable(bone.shadow_radius)
@@ -25,7 +25,7 @@ export function openBoneConfigDialog(bone: Group) {
 		svelteComponent: BoneConfigDialogSvelteComponent,
 		svelteComponentProperties: {
 			inheritSettings,
-			enableAdvancedSettings,
+			useNBT,
 			glowing,
 			glowColor,
 			shadowRadius,
@@ -37,7 +37,7 @@ export function openBoneConfigDialog(bone: Group) {
 		},
 		onConfirm: () => {
 			bone.inherit_settings = inheritSettings.get()
-			bone.enable_advanced_settings = enableAdvancedSettings.get()
+			bone.use_nbt = useNBT.get()
 			bone.glowing = glowing.get()
 			bone.glow_color = glowColor.get()
 			bone.shadow_radius = shadowRadius.get()

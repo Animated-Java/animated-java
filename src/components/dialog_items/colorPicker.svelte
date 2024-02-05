@@ -6,23 +6,19 @@
 
 	export let label: string
 	export let tooltip: string = ''
-	export let value: Valuable<number>
-
-	console.log(value)
+	export let value: Valuable<string>
 
 	let colorPicker = new ColorPicker(`${PACKAGE.name}:${label}-color_picker`, {
 		onChange() {
-			console.log(colorPicker.get())
-		}
+			const color = colorPicker.get() as tinycolor.Instance
+			value.set(color.toHexString())
+		},
 	})
 	let colorPickerMount: HTMLDivElement
 
 	function onLoad(el: HTMLDivElement) {
-		colorPicker.toElement(colorPickerMount)
-		// colorPickerMount.appendChild()
-		// @ts-ignore
-		colorPicker.jq.spectrum('show')
-		console.log('colorPicker:', colorPicker.get())
+		colorPicker.toElement(el)
+		colorPicker.set(value.get())
 	}
 
 	onDestroy(() => {
@@ -33,6 +29,6 @@
 <BaseDialogItem {tooltip}>
 	<div class="dialog_bar form_bar">
 		<label class="name_space_left" for="export">{label}</label>
+		<div bind:this={colorPickerMount} use:onLoad />
 	</div>
-	<div bind:this={colorPickerMount} use:onLoad/>
 </BaseDialogItem>

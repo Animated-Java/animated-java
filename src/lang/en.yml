@@ -35,14 +35,14 @@ animated_java.dialog.blueprint_settings.enable_data_pack.description: Whether or
 # Resource Pack Settings
 animated_java.dialog.blueprint_settings.resource_pack_settings.title: Resource Pack Settings
 
-animated_java.dialog.blueprint_settings.enable_advanced_resource_pack_settings.title: Advanced
+animated_java.dialog.blueprint_settings.enable_advanced_resource_pack_settings.title: Use Advanced Settings
 animated_java.dialog.blueprint_settings.enable_advanced_resource_pack_settings.description: Whether or not to enable the advanced Resource Pack settings.
 
 animated_java.dialog.blueprint_settings.display_item.title: Display Item
 animated_java.dialog.blueprint_settings.display_item.description: The item to display the Blueprints models in-game. Multiple Blueprints can be placed on the same item and they will be merged automatically.
 
 animated_java.dialog.blueprint_settings.custom_model_data_offset.title: CMD Offset
-animated_java.dialog.blueprint_settings.custom_model_data_offset.description: The offset to use for the Custom Model Data of the Display Item. Used to allow multiple Blueprints on the same item, but in different Resource Packs.
+animated_java.dialog.blueprint_settings.custom_model_data_offset.description: The offset to use for the Custom Model Data of the Display Item. Allows multiple Blueprints on the same item, but in separate, unaffiliated Resource Packs.
 
 animated_java.dialog.blueprint_settings.resource_pack.title: Resource Pack
 animated_java.dialog.blueprint_settings.resource_pack.description: The Resource Pack to export the project to.
@@ -59,7 +59,7 @@ animated_java.dialog.blueprint_settings.texture_folder.description: Where to pla
 # Data Pack Settings
 animated_java.dialog.blueprint_settings.data_pack_settings.title: Data Pack Settings
 
-animated_java.dialog.blueprint_settings.enable_advanced_data_pack_settings.title: Advanced
+animated_java.dialog.blueprint_settings.enable_advanced_data_pack_settings.title: Use Advanced Settings
 animated_java.dialog.blueprint_settings.enable_advanced_data_pack_settings.description: Whether or not to enable the advanced Data Pack settings.
 
 animated_java.dialog.blueprint_settings.data_pack.title: Data Pack
@@ -68,8 +68,9 @@ animated_java.dialog.blueprint_settings.data_pack.description: The Data Pack to 
 ## Bone Config Dialog
 animated_java.dialog.bone_config.title: Bone Config
 
-animated_java.dialog.bone_config.enable_advanced_settings.title: Advanced
-animated_java.dialog.bone_config.enable_advanced_settings.description: Whether or not to enable the advanced Bone Config settings.
+animated_java.dialog.bone_config.use_nbt.title: Use NBT
+animated_java.dialog.bone_config.use_nbt.description: Whether or not to use NBT to configure the bone instead of settings.
+animated_java.dialog.bone_config.use_nbt.use_nbt_warning: Using NBT will override all other settings, and will not be visible in the editor. Only use this if you know what you're doing!
 
 animated_java.dialog.bone_config.inherit_settings.title: Inherit Settings
 animated_java.dialog.bone_config.inherit_settings.description: Whether or not to inherit the settings from the parent bone.

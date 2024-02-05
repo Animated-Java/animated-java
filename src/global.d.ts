@@ -21,9 +21,9 @@ declare interface ModelProject {
 
 declare interface Group {
 	inherit_settings: boolean
-	enable_advanced_settings: boolean
+	use_nbt: boolean
 	glowing: boolean
-	glow_color: number
+	glow_color: string
 	shadow_radius: number
 	shadow_strength: number
 	brightness_override: number
