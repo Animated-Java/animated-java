@@ -195,14 +195,11 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 		}
 
 		if (model.variants) {
-			console.log('Parsing Variants')
 			Variant.fromJSON(model.variants.default, true)
 			for (const variantJSON of model.variants.list) {
 				Variant.fromJSON(variantJSON)
 			}
-		} else {
-			console.log('No Variants found, creating default Variant')
-			new Variant('Default', true)
+			Project.variants = Variant.all
 		}
 
 		if (model.animations) {
@@ -314,6 +311,11 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 			model.textures.push(save)
 		}
 
+		model.variants = {
+			default: Variant.all.find(v => v.isDefault)!.toJSON(),
+			list: Variant.all.filter(v => !v.isDefault).map(v => v.toJSON()),
+		}
+
 		model.animations = []
 		const animationOptions = { bone_names: true, absolute_paths: options.absolute_paths }
 		for (const animation of Blockbench.Animation.all) {
@@ -410,15 +412,19 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 			created() {
 				console.log('Start screen created')
 			},
-			template: `Hello Animated Java World!`,
+			template: `<div>Hello Animated Java World!</div>`,
 		},
 	},
 
-	onSetup() {
+	onSetup(project, newModel) {
 		if (!Project) return
 		console.log('Animated Java Blueprint format setup')
 		Project.animated_java ??= getDefaultProjectSettings()
 
+		Project.variants ??= []
+		if (newModel) {
+			new Variant('Default', true)
+		}
 		// Remove the default title
 		requestAnimationFrame(() => {
 			const element = document.querySelector('#tab_bar_list .icon-armor_stand.icon')

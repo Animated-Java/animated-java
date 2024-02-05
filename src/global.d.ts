@@ -21,6 +21,8 @@ declare global {
 			enable_advanced_data_pack_settings: boolean
 			data_pack: string
 		}
+
+		variants: Variant[]
 	}
 
 	interface Group {

@@ -137,3 +137,11 @@ export class Variant {
 		return newName
 	}
 }
+
+events.SELECT_PROJECT.subscribe(project => {
+	project.variants ??= []
+	Variant.all = project.variants
+})
+events.UNSELECT_PROJECT.subscribe(() => {
+	Variant.all = []
+})

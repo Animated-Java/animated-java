@@ -21,10 +21,9 @@ export const events = {
 	EXTRACT_MODS: new PluginEvent('extractMods'),
 
 	SELECT_PROJECT: new PluginEvent<ModelProject>('selectProject'),
-	DESELECT_PROJECT: new PluginEvent<ModelProject>('deselectProject'),
+	UNSELECT_PROJECT: new PluginEvent<ModelProject>('deselectProject'),
 
 	CREATE_VARIANT: new PluginEvent<Variant>('createVariant'),
-	EDIT_VARIANT: new PluginEvent<Variant>('editVariant'),
 	DELETE_VARIANT: new PluginEvent<Variant>('deleteVariant'),
 }
 
@@ -47,5 +46,5 @@ Blockbench.on<EventName>('select_project', ({ project }: { project: ModelProject
 	events.SELECT_PROJECT.dispatch(project)
 })
 Blockbench.on<EventName>('unselect_project', ({ project }: { project: ModelProject }) => {
-	events.DESELECT_PROJECT.dispatch(project)
+	events.UNSELECT_PROJECT.dispatch(project)
 })

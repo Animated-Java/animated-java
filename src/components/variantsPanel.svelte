@@ -19,6 +19,10 @@
 		localVariants = Variant.all
 	})
 
+	events.SELECT_PROJECT.subscribe(() => {
+		localVariants = Variant.all
+	})
+
 	function createVariant() {
 		new Variant('New Variant')
 		console.log(Variant.all.map(v => v.name))
