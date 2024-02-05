@@ -1,24 +1,20 @@
-import { BLUEPRINT_FORMAT } from '../blueprintFormat'
+import { isCurrentFormat as condition } from '../blueprintFormat'
 import { PACKAGE } from '../constants'
-import { createBlockbenchMod } from '../util/moddingTools'
-
-function condition() {
-	return Format.id === BLUEPRINT_FORMAT.id
-}
+import { type ContextProperty, createBlockbenchMod } from '../util/moddingTools'
 
 createBlockbenchMod(
 	`${PACKAGE.name}:boneProperties`,
 	{
-		inherit_settings: undefined as Property<'boolean'> | undefined,
-		use_nbt: undefined as Property<'boolean'> | undefined,
-		glowing: undefined as Property<'boolean'> | undefined,
-		glow_color: undefined as Property<'string'> | undefined,
-		shadow_radius: undefined as Property<'number'> | undefined,
-		shadow_strength: undefined as Property<'number'> | undefined,
-		brightness_override: undefined as Property<'number'> | undefined,
-		enchanted: undefined as Property<'boolean'> | undefined,
-		invisible: undefined as Property<'boolean'> | undefined,
-		nbt: undefined as Property<'string'> | undefined,
+		inherit_settings: undefined as ContextProperty<'boolean'>,
+		use_nbt: undefined as ContextProperty<'boolean'>,
+		glowing: undefined as ContextProperty<'boolean'>,
+		glow_color: undefined as ContextProperty<'string'>,
+		shadow_radius: undefined as ContextProperty<'number'>,
+		shadow_strength: undefined as ContextProperty<'number'>,
+		brightness_override: undefined as ContextProperty<'number'>,
+		enchanted: undefined as ContextProperty<'boolean'>,
+		invisible: undefined as ContextProperty<'boolean'>,
+		nbt: undefined as ContextProperty<'string'>,
 	},
 	// prettier-ignore
 	context => {

@@ -2,6 +2,8 @@ import { events } from './events'
 import { Subscribable } from './subscribable'
 
 export type NamespacedString = `${string}${string}:${string}${string}`
+// Useful for describing context variables that will become BlochBench class properties in the inject function.
+export type ContextProperty<Type extends keyof IPropertyType> = Property<Type> | undefined
 
 class BlockbenchModInstallError extends Error {
 	constructor(id: string, err: Error) {

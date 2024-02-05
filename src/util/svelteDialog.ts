@@ -12,6 +12,9 @@ export class SvelteDialog extends Dialog {
 			svelteComponent: SvelteComponentConstructor<SvelteComponent, any>
 			svelteComponentProperties: Record<string, any>
 			lines?: never
+			preventKeybinds?: boolean
+			preventKeybindConfirm?: boolean
+			preventKeybindCancel?: boolean
 			onClose?: () => void
 			stackable?: boolean
 		}
@@ -37,6 +40,31 @@ export class SvelteDialog extends Dialog {
 				DIALOG_STACK.empty()
 			}
 			DIALOG_STACK.push(this)
+		}
+
+		this.confirm = (e: Event) => {
+			if (e instanceof KeyboardEvent) {
+				if (options.preventKeybinds) {
+					e.preventDefault()
+					e.stopPropagation()
+					return
+				} else if (
+					options.preventKeybindConfirm &&
+					e.key === Keybinds.extra.confirm.keybind.getCode()
+				) {
+					e.preventDefault()
+					e.stopPropagation()
+					return
+				} else if (
+					options.preventKeybindCancel &&
+					e.key === Keybinds.extra.cancel.keybind.getCode()
+				) {
+					e.preventDefault()
+					e.stopPropagation()
+					return
+				}
+			}
+			this.close(this.confirmIndex, e)
 		}
 
 		this.onButton = (...args) => {

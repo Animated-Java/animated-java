@@ -46,6 +46,11 @@ animated_java.dialog.blueprint_settings.custom_model_data_offset.description: Th
 
 animated_java.dialog.blueprint_settings.resource_pack.title: Resource Pack
 animated_java.dialog.blueprint_settings.resource_pack.description: The Resource Pack to export the project to.
+animated_java.dialog.blueprint_settings.resource_pack.error.no_folder_selected: No folder selected!
+animated_java.dialog.blueprint_settings.resource_pack.error.folder_does_not_exist: The selected folder does not exist!
+animated_java.dialog.blueprint_settings.resource_pack.error.not_a_folder: The selected path is not a folder!
+animated_java.dialog.blueprint_settings.resource_pack.error.missing_pack_mcmeta: The selected folder is missing a pack.mcmeta file!
+animated_java.dialog.blueprint_settings.resource_pack.error.missing_assets_folder: The selected Data Pack is missing an assets folder!
 
 animated_java.dialog.blueprint_settings.display_item_path.title: Display Item Path
 animated_java.dialog.blueprint_settings.display_item_path.description: Where to place the Display Item. This should be a path to a .json file in a Resource Pack.
@@ -63,7 +68,12 @@ animated_java.dialog.blueprint_settings.enable_advanced_data_pack_settings.title
 animated_java.dialog.blueprint_settings.enable_advanced_data_pack_settings.description: Whether or not to enable the advanced Data Pack settings.
 
 animated_java.dialog.blueprint_settings.data_pack.title: Data Pack
-animated_java.dialog.blueprint_settings.data_pack.description: The Data Pack to export the project to.
+animated_java.dialog.blueprint_settings.data_pack.description: The Data Pack to export the project into.
+animated_java.dialog.blueprint_settings.data_pack.error.no_folder_selected: No folder selected!
+animated_java.dialog.blueprint_settings.data_pack.error.folder_does_not_exist: The selected folder does not exist!
+animated_java.dialog.blueprint_settings.data_pack.error.not_a_folder: The selected path is not a folder!
+animated_java.dialog.blueprint_settings.data_pack.error.missing_pack_mcmeta: The selected folder is missing a pack.mcmeta file!
+animated_java.dialog.blueprint_settings.data_pack.error.missing_data_folder: The selected Data Pack is missing a data folder!
 
 ## Bone Config Dialog
 animated_java.dialog.bone_config.title: Bone Config

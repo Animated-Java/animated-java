@@ -50,21 +50,19 @@
 			return {
 				type: 'error',
 				message: translate(
-					'animated_java.dialog.blueprint_settings.texture_size.error.does_not_match_largest_texture',
+					'dialog.blueprint_settings.texture_size.error.does_not_match_largest_texture',
 				),
 			}
 		} else if (x !== y) {
 			return {
 				type: 'warning',
-				message: translate(
-					'animated_java.dialog.blueprint_settings.texture_size.warning.not_square',
-				),
+				message: translate('dialog.blueprint_settings.texture_size.warning.not_square'),
 			}
 		} else if (x !== 2 ** Math.floor(Math.log2(x)) || y !== 2 ** Math.floor(Math.log2(y))) {
 			return {
 				type: 'warning',
 				message: translate(
-					'animated_java.dialog.blueprint_settings.texture_size.warning.not_a_power_of_2',
+					'dialog.blueprint_settings.texture_size.warning.not_a_power_of_2',
 				),
 			}
 		} else {
@@ -72,6 +70,88 @@
 				type: 'success',
 				message: '',
 			}
+		}
+	}
+
+	function dataPackFolderChecker(value: string): { type: string; message: string } {
+		switch (true) {
+			case value === '':
+				return {
+					type: 'error',
+					message: translate(
+						'dialog.blueprint_settings.data_pack.error.no_folder_selected',
+					),
+				}
+			case !fs.existsSync(value):
+				return {
+					type: 'error',
+					message: translate(
+						'dialog.blueprint_settings.data_pack.error.folder_does_not_exist',
+					),
+				}
+			case !fs.statSync(value).isDirectory():
+				return {
+					type: 'error',
+					message: translate('dialog.blueprint_settings.data_pack.error.not_a_folder'),
+				}
+			case !fs.existsSync(PathModule.join(value, 'pack.mcmeta')):
+				return {
+					type: 'error',
+					message: translate(
+						'dialog.blueprint_settings.data_pack.error.missing_pack_mcmeta',
+					),
+				}
+			case !fs.existsSync(PathModule.join(value, 'data')):
+				return {
+					type: 'error',
+					message: translate(
+						'dialog.blueprint_settings.data_pack.error.missing_data_folder',
+					),
+				}
+			default:
+				return { type: 'success', message: '' }
+		}
+	}
+
+	function resourcePackFolderChecker(value: string): { type: string; message: string } {
+		switch (true) {
+			case value === '':
+				return {
+					type: 'error',
+					message: translate(
+						'dialog.blueprint_settings.resource_pack.error.no_folder_selected',
+					),
+				}
+			case !fs.existsSync(value):
+				return {
+					type: 'error',
+					message: translate(
+						'dialog.blueprint_settings.resource_pack.error.folder_does_not_exist',
+					),
+				}
+			case !fs.statSync(value).isDirectory():
+				return {
+					type: 'error',
+					message: translate(
+						'dialog.blueprint_settings.resource_pack.error.not_a_folder',
+					),
+				}
+			case !fs.existsSync(PathModule.join(value, 'pack.mcmeta')):
+				return {
+					type: 'error',
+					message: translate(
+						'dialog.blueprint_settings.resource_pack.error.missing_pack_mcmeta',
+					),
+				}
+			case !fs.existsSync(PathModule.join(value, 'assets')):
+				return {
+					type: 'error',
+					message: translate(
+						'dialog.blueprint_settings.resource_pack.error.missing_assets_folder',
+					),
+				}
+			default:
+				return { type: 'success', message: '' }
 		}
 	}
 </script>
@@ -188,10 +268,11 @@
 					max={2147483647}
 				/>
 
-				<FileSelect
+				<FolderSelect
 					label={translate('dialog.blueprint_settings.resource_pack.title')}
 					tooltip={translate('dialog.blueprint_settings.resource_pack.description')}
 					bind:value={resourcePack}
+					valueChecker={resourcePackFolderChecker}
 				/>
 			{/if}
 		{/if}
@@ -212,16 +293,18 @@
 					{translate('dialog.blueprint_settings.advanced_settings_warning')}
 				</p>
 
-				<FileSelect
+				<FolderSelect
 					label={translate('dialog.blueprint_settings.data_pack.title')}
 					tooltip={translate('dialog.blueprint_settings.data_pack.description')}
 					bind:value={dataPack}
+					valueChecker={dataPackFolderChecker}
 				/>
 			{:else}
-				<FileSelect
+				<FolderSelect
 					label={translate('dialog.blueprint_settings.data_pack.title')}
 					tooltip={translate('dialog.blueprint_settings.data_pack.description')}
 					bind:value={dataPack}
+					valueChecker={dataPackFolderChecker}
 				/>
 			{/if}
 		{/if}

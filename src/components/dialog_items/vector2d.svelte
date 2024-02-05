@@ -25,7 +25,6 @@
 	function checkValue() {
 		if (!valueChecker) return
 		const result = valueChecker(valueX.get(), valueY.get())
-		console.log('Checker result:', result)
 		switch (result.type) {
 			case 'error':
 				error_text = result.message

@@ -407,6 +407,11 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 		console.log('Animated Java Blueprint format setup')
 		Project.animated_java ??= getDefaultProjectSettings()
 
+		// Remove the default title
+		requestAnimationFrame(() => {
+			const element = document.querySelector('#tab_bar_list .icon-armor_stand.icon')
+			element?.remove()
+		})
 		// Custom title
 		injectSvelteCompomponent({
 			elementFinder: () => {
@@ -453,3 +458,7 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 	vertex_color_ambient_occlusion: true,
 })
 BLUEPRINT_CODEC.format = BLUEPRINT_FORMAT
+
+export function isCurrentFormat() {
+	return Format.id === BLUEPRINT_FORMAT.id
+}

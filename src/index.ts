@@ -17,10 +17,14 @@ import './mods/projectSettingsActionOverride'
 import './mods/saveAllAnimationsActionMod'
 import './mods/saveProjectActionMod'
 import './mods/saveProjectAsActionMod'
+// Compilers
+import { compileDataPack } from './systems/datapackCompiler'
 
 // @ts-ignore
 globalThis.AnimatedJava = {
-	API: {},
+	API: {
+		compileDataPack,
+	},
 }
 
 // Uninstall events

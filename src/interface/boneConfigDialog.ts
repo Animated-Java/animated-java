@@ -35,6 +35,7 @@ export function openBoneConfigDialog(bone: Group) {
 			invisible,
 			nbt,
 		},
+		preventKeybinds: true,
 		onConfirm: () => {
 			bone.inherit_settings = inheritSettings.get()
 			bone.use_nbt = useNBT.get()

@@ -107,6 +107,7 @@ export function openBlueprintSettingsDialog() {
 		width: 512,
 		svelteComponent: BlueprintSettingsDialogSvelteComponent,
 		svelteComponentProperties: settings,
+		preventKeybinds: true,
 		onOpen() {
 			injectTitle()
 		},

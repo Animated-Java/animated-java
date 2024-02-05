@@ -10,6 +10,32 @@
 
 	let _value: string = value.get()
 
+	export let valueChecker: ((value: string) => { type: string; message: string }) | undefined =
+		undefined
+
+	let warning_text = ''
+	let error_text = ''
+
+	function checkValue() {
+		if (!valueChecker) return
+		const result = valueChecker(value.get())
+		switch (result.type) {
+			case 'error':
+				error_text = result.message
+				warning_text = ''
+				break
+			case 'warning':
+				warning_text = result.message
+				error_text = ''
+				break
+			default:
+				warning_text = ''
+				error_text = ''
+				break
+		}
+	}
+	value.subscribe(() => checkValue())
+
 	function onValueChange() {
 		value.set(_value)
 		_value = value.get()
@@ -33,7 +59,7 @@
 	}
 </script>
 
-<BaseDialogItem {tooltip}>
+<BaseDialogItem {tooltip} bind:warning_text bind:error_text>
 	<div class="dialog_bar form_bar">
 		<label class="name_space_left" for="name">{label}</label>
 		<input
@@ -41,6 +67,7 @@
 			class="dark_bordered half focusable_input"
 			id="name"
 			bind:value={_value}
+			on:input={onValueChange}
 			on:change={onValueChange}
 		/>
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
