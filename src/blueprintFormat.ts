@@ -2,11 +2,12 @@ import ProjectTitleSvelteComponent from './components/projectTitle.svelte'
 import { PACKAGE } from './constants'
 import { injectSvelteCompomponent } from './util/injectSvelte'
 import { addProjectToRecentProjects } from './util/misc'
+import { Variant } from './variants'
 
 /**
  * The serialized Variant Bone Config
  */
-interface IBlueprintVariantBoneConfigJSON {
+export interface IBlueprintVariantBoneConfigJSON {
 	/**
 	 * The uuid of the bone
 	 */
@@ -20,7 +21,7 @@ interface IBlueprintVariantBoneConfigJSON {
 /**
  * The serialized Variant
  */
-interface IBlueprintVariantJSON {
+export interface IBlueprintVariantJSON {
 	/**
 	 * The name of the Variant
 	 */
@@ -74,7 +75,7 @@ export interface IBlueprintFormatJSON {
 		/**
 		 * The list of variants of the Blueprint, excluding the default Variant
 		 */
-		list: Record<string, IBlueprintVariantJSON>
+		list: IBlueprintVariantJSON[]
 	}
 
 	resolution: {
@@ -191,6 +192,17 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 
 		if (model.outliner) {
 			parseGroups(model.outliner)
+		}
+
+		if (model.variants) {
+			console.log('Parsing Variants')
+			Variant.fromJSON(model.variants.default, true)
+			for (const variantJSON of model.variants.list) {
+				Variant.fromJSON(variantJSON)
+			}
+		} else {
+			console.log('No Variants found, creating default Variant')
+			new Variant('Default', true)
 		}
 
 		if (model.animations) {

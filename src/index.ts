@@ -7,6 +7,7 @@ import './blueprintFormat'
 // Interface
 import './interface/animatedJavaBarItem'
 import './interface/boneConfigDialog'
+import './interface/variantsPanel'
 // Blockbench Mods
 import './mods/animationControllerMod'
 import './mods/bonePropertiesMod'

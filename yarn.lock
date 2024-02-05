@@ -2204,6 +2204,11 @@ svelte-awesome-color-picker@^3.0.0-beta.7:
   dependencies:
     colord "^2.9.3"
 
+svelte-dnd-action@^0.9.38:
+  version "0.9.38"
+  resolved "https://registry.yarnpkg.com/svelte-dnd-action/-/svelte-dnd-action-0.9.38.tgz#ec0945588bece5f457415fea779c4b1cf0f877de"
+  integrity sha512-L80YR+aknn54LmjPKFELYGDkZhed5ReBzH2xe61zFNGfQyoeXbFB1hs69QWgBIYufZPWUhAiVXIMhP7UQWs1dw==
+
 svelte-preprocess-esbuild@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/svelte-preprocess-esbuild/-/svelte-preprocess-esbuild-3.0.1.tgz#1f31c7a46f56d4c60dde3ec5fe72f2ddf40ad700"

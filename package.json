@@ -102,6 +102,7 @@
 		"marked": "^4.3.0",
 		"marked-gfm-heading-id": "^3.0.0",
 		"mc-build": "^3.0.2-alpha.9",
-		"svelte-ace": "^1.0.21"
+		"svelte-ace": "^1.0.21",
+		"svelte-dnd-action": "^0.9.38"
 	}
 }

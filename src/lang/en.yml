@@ -108,3 +108,10 @@ animated_java.dialog.bone_config.invisible.description: Whether or not the bone 
 
 animated_java.dialog.bone_config.nbt.title: NBT
 animated_java.dialog.bone_config.nbt.description: The NBT to apply to the bone.
+
+### Panels
+
+## Variants Panel
+animated_java.panel.variants.title: Variants
+animated_java.panel.variants.tool.create_new_variant: Create New Variant
+animated_java.panel.variants.tool.delete_selected_variant: Delete Selected Variant

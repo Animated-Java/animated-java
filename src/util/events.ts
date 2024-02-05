@@ -1,5 +1,6 @@
 import { Subscribable } from './subscribable'
 import * as PACKAGE from '../../package.json'
+import { Variant } from '../variants'
 
 export class PluginEvent<EventData = void> extends Subscribable<EventData> {
 	protected static events: Record<string, PluginEvent<any>> = {}
@@ -21,6 +22,10 @@ export const events = {
 
 	SELECT_PROJECT: new PluginEvent<ModelProject>('selectProject'),
 	DESELECT_PROJECT: new PluginEvent<ModelProject>('deselectProject'),
+
+	CREATE_VARIANT: new PluginEvent<Variant>('createVariant'),
+	EDIT_VARIANT: new PluginEvent<Variant>('editVariant'),
+	DELETE_VARIANT: new PluginEvent<Variant>('deleteVariant'),
 }
 
 function injectionHandler() {

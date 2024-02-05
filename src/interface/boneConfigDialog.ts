@@ -19,7 +19,7 @@ export function openBoneConfigDialog(bone: Group) {
 	const nbt = new Valuable(bone.nbt)
 
 	new SvelteDialog({
-		id: `${PACKAGE.name}:bone_config`,
+		id: `${PACKAGE.name}:boneConfig`,
 		title: translate('dialog.bone_config.title'),
 		width: 400,
 		svelteComponent: BoneConfigDialogSvelteComponent,
