@@ -1,10 +1,10 @@
 <script lang="ts" context="module">
-	import { safeFunctionName } from '../util/minecraftUtil'
 	import { type Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
 	import { TextureMap, Variant } from '../variants'
 	import Checkbox from './dialog_items/checkbox.svelte'
 	import LineInput from './dialog_items/lineInput.svelte'
+	import MissingTexture from '../assets/missing_texture.png'
 </script>
 
 <script lang="ts">
@@ -42,7 +42,7 @@
 
 	function getTextureSrc(uuid: string) {
 		const texture = Texture.all.find(t => t.uuid === uuid)
-		if (!texture) return ''
+		if (!texture) return MissingTexture
 		return texture.img.src
 	}
 
@@ -80,12 +80,6 @@
 		const usedTextures = [...textureMap.map.keys()]
 		return Texture.all.filter(t => !usedTextures.includes(t.uuid))
 	}
-
-	// function getTextureName(uuid: string) {
-	// 	const texture = Texture.all.find(t => t.uuid === uuid)
-	// 	if (!texture) return 'Failed to find texture'
-	// 	return texture.name
-	// }
 </script>
 
 <div class="dialog_container">
@@ -235,11 +229,9 @@
 	}
 	.texture_mapping_item_dropdown {
 		display: flex;
-		/* position: absolute; */
 		flex-direction: column;
 		align-items: center;
-		/* width: 100%;
-		bottom: 0; */
+		max-width: 128px;
 	}
 	.texture_map_container {
 		display: flex;
@@ -247,6 +239,8 @@
 		border: 1px solid var(--color-border);
 		background-color: var(--color-back);
 		padding: 4px;
+		overflow-y: auto;
+		max-height: 600px;
 	}
 	.spacer {
 		flex-grow: 1;
