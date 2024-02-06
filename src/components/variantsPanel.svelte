@@ -4,6 +4,7 @@
 	import { dndzone } from 'svelte-dnd-action'
 	import { Variant } from '../variants'
 	import { events } from '../util/events'
+	import { openVariantConfigDialog } from '../interface/variantConfigDialog'
 
 	const flipDurationMs = 100
 </script>
@@ -12,6 +13,10 @@
 	let localVariants: Variant[] = []
 
 	events.CREATE_VARIANT.subscribe(() => {
+		localVariants = Variant.all
+	})
+
+	events.UPDATE_VARIANT.subscribe(() => {
 		localVariants = Variant.all
 	})
 
@@ -84,16 +89,25 @@
 				>
 					<i class="material-icons icon in_list_button">texture</i>
 					<div class="variant_item_name">
-						{item.name}
+						{item.displayName}
 					</div>
 					<div class="spacer" />
 					{#if !item.isDefault}
-						<i class="material-icons icon in_list_button">edit</i>
+						<i
+							class="material-icons icon in_list_button"
+							title={translate('panel.variants.tool.edit_variant')}
+							on:click={() => openVariantConfigDialog(item)}>edit</i
+						>
 					{/if}
 					{#if Variant.selected === item}
-						<i class="material-icons icon in_list_button">visibility</i>
+						<i
+							class="material-icons icon in_list_button"
+							title={translate('panel.variants.tool.variant_visible')}>visibility</i
+						>
 					{:else}
-						<i class="material-icons icon in_list_button in_list_button_disabled"
+						<i
+							class="material-icons icon in_list_button in_list_button_disabled"
+							title={translate('panel.variants.tool.variant_not_visible')}
 							>visibility_off</i
 						>
 					{/if}

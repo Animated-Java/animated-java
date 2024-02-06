@@ -24,6 +24,7 @@ export const events = {
 	UNSELECT_PROJECT: new PluginEvent<ModelProject>('deselectProject'),
 
 	CREATE_VARIANT: new PluginEvent<Variant>('createVariant'),
+	UPDATE_VARIANT: new PluginEvent<Variant>('updateVariant'),
 	DELETE_VARIANT: new PluginEvent<Variant>('deleteVariant'),
 }
 

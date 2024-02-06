@@ -7,7 +7,6 @@ animated_java.action.export.name: Export
 
 ### Dialogs
 animated_java.dialog.blueprint_settings.title: Blueprint Settings
-
 animated_java.dialog.blueprint_settings.advanced_settings_warning: Advanced settings should only be used if absolutely needed!
 
 ## Blueprint Settings Dialog
@@ -109,9 +108,29 @@ animated_java.dialog.bone_config.invisible.description: Whether or not the bone 
 animated_java.dialog.bone_config.nbt.title: NBT
 animated_java.dialog.bone_config.nbt.description: The NBT to apply to the bone.
 
+## Variant Config Dialog
+animated_java.dialog.variant_config.title: Variant Config
+
+animated_java.dialog.variant_config.variant_display_name: Display Name
+animated_java.dialog.variant_config.variant_display_name.description: Used to identify the Variant in the editor, and in error messages.
+
+animated_java.dialog.variant_config.generate_name_from_display_name: Generate Name From Display Name
+animated_java.dialog.variant_config.generate_name_from_display_name.description: Whether or not to generate the Name automatically from the Display Name.
+
+animated_java.dialog.variant_config.variant_name: Name
+animated_java.dialog.variant_config.variant_name.description: Used to identify the Variant in the exported Resource Pack and Data Pack.
+
+animated_java.dialog.variant_config.texture_map.title: Texture Map
+animated_java.dialog.variant_config.texture_map.description: A map of which textures to swap out when applying this Variant.
+animated_java.dialog.variant_config.texture_map.create_new_mapping: Create New Mapping
+animated_java.dialog.variant_config.texture_map.no_mappings: Variant has no mapped textures.
+
 ### Panels
 
 ## Variants Panel
 animated_java.panel.variants.title: Variants
 animated_java.panel.variants.tool.create_new_variant: Create New Variant
+animated_java.panel.variants.tool.edit_variant: Edit Variant
 animated_java.panel.variants.tool.delete_selected_variant: Delete Selected Variant
+animated_java.panel.variants.tool.variant_visible: Variant Selected
+animated_java.panel.variants.tool.variant_not_visible: Variant Not Selected

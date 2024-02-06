@@ -5,6 +5,7 @@
 	export let label: string
 	export let tooltip: string = ''
 	export let value: Valuable<string>
+	export let disabled: boolean = false
 
 	let _value: string = value.get()
 
@@ -23,6 +24,8 @@
 			id="name"
 			bind:value={_value}
 			on:change={onValueChange}
+			{disabled}
+			style={disabled ? 'color: var(--color-subtle_text);' : ''}
 		/>
 	</div>
 </BaseDialogItem>

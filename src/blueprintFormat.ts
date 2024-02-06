@@ -23,6 +23,10 @@ export interface IBlueprintVariantBoneConfigJSON {
  */
 export interface IBlueprintVariantJSON {
 	/**
+	 * The display name of the Variant. Only use in Blockbench and for error messages.
+	 */
+	display_name: string
+	/**
 	 * The name of the Variant
 	 */
 	name: string

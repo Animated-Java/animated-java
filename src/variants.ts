@@ -1,5 +1,6 @@
 import { IBlueprintVariantJSON } from './blueprintFormat'
 import { events } from './util/events'
+import { safeFunctionName } from './util/minecraftUtil'
 
 export class TextureMap {
 	map: Map<string, string>
@@ -43,6 +44,12 @@ export class TextureMap {
 		}
 		return textureMap
 	}
+
+	copy() {
+		const textureMap = new TextureMap()
+		textureMap.map = new Map(this.map)
+		return textureMap
+	}
 }
 
 export class VariantBoneConfig {
@@ -58,14 +65,16 @@ export class Variant {
 	public static selected: Variant | undefined
 
 	public id: number
+	public displayName: string
 	public name: string
 	public uuid: string
 	public textureMap: TextureMap
 	public isDefault = false
+	public generateNameFromDisplayName = true
 
-	constructor(name: string, isDefault = false) {
-		this.name = name
-		this.makeNameUnique()
+	constructor(displayName: string, isDefault = false) {
+		this.displayName = Variant.makeDisplayNameUnique(this, displayName)
+		this.name = Variant.makeNameUnique(this, this.displayName)
 		this.uuid = guid()
 		this.isDefault = isDefault
 		this.textureMap = new TextureMap()
@@ -104,6 +113,7 @@ export class Variant {
 
 	public toJSON(): IBlueprintVariantJSON {
 		return {
+			display_name: this.displayName,
 			name: this.name,
 			uuid: this.uuid,
 			texture_map: Object.fromEntries(this.textureMap.map),
@@ -116,7 +126,7 @@ export class Variant {
 	}
 
 	public static fromJSON(json: IBlueprintVariantJSON, isDefault = false): Variant {
-		const variant = new Variant(json.name, isDefault)
+		const variant = new Variant(json.display_name, isDefault)
 		variant.uuid = json.uuid
 		for (const [key, value] of Object.entries(json.texture_map)) {
 			variant.textureMap.add(key, value)
@@ -126,14 +136,23 @@ export class Variant {
 		return variant
 	}
 
-	public makeNameUnique(): string {
+	public static makeDisplayNameUnique(variant: Variant, displayName: string): string {
 		let i = 1
-		let newName = this.name
-		while (Variant.all.some(v => v.name === newName)) {
-			newName = `${this.name} ${i}`
+		let newName = displayName
+		while (Variant.all.some(v => v !== variant && v.displayName === newName)) {
+			newName = `${displayName} ${i}`
 			i++
 		}
-		this.name = newName
+		return newName
+	}
+
+	public static makeNameUnique(variant: Variant, name: string): string {
+		let i = 1
+		let newName = safeFunctionName(name)
+		while (Variant.all.some(v => v !== variant && v.name === newName)) {
+			newName = safeFunctionName(`${name}_${i}`)
+			i++
+		}
 		return newName
 	}
 }
