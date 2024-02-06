@@ -8,10 +8,15 @@ import { Variant } from './variants'
  * The serialized Variant Bone Config
  */
 export interface IBlueprintVariantBoneConfigJSON {
-	/**
-	 * The uuid of the bone
-	 */
-	uuid: string
+	inherit_settings: boolean
+	use_nbt: boolean
+	glowing: boolean
+	glow_color: string
+	shadow_radius: number
+	shadow_strength: number
+	brightness_override: number
+	enchanted: boolean
+	invisible: boolean
 	/**
 	 * Custom NBT for the bone that will be merged when this Variant is applied
 	 */
@@ -289,6 +294,10 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 
 		console.log(Project.animated_java)
 
+		// Disable variants while compiling
+		const previouslySelectedVariant = Variant.selected
+		Variant.selectDefault()
+
 		for (const key in ModelProject.properties) {
 			if (ModelProject.properties[key].export)
 				ModelProject.properties[key].copy(Project, model)
@@ -350,6 +359,8 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 				model.backgrounds = backgrounds
 			}
 		}
+
+		previouslySelectedVariant?.select()
 
 		return options.raw ? model : compileJSON(model)
 	},

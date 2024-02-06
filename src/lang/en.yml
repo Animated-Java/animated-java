@@ -79,7 +79,7 @@ animated_java.dialog.bone_config.title: Bone Config
 
 animated_java.dialog.bone_config.use_nbt.title: Use NBT
 animated_java.dialog.bone_config.use_nbt.description: Whether or not to use NBT to configure the bone instead of settings.
-animated_java.dialog.bone_config.use_nbt.use_nbt_warning: Using NBT will override all other settings, and will not be visible in the editor. Only use this if you know what you're doing!
+animated_java.dialog.bone_config.use_nbt.use_nbt_warning: Using NBT will override all other settings, and any changes you make will not be visible in the editor. Only use this if you know what you're doing!
 
 animated_java.dialog.bone_config.inherit_settings.title: Inherit Settings
 animated_java.dialog.bone_config.inherit_settings.description: Whether or not to inherit the settings from the parent bone.

@@ -1,4 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { IBlueprintVariantBoneConfigJSON } from './blueprintFormat'
 import { type Variant } from './variants'
 
 declare global {
@@ -26,15 +26,19 @@ declare global {
 	}
 
 	interface Group {
-		inherit_settings: boolean
-		use_nbt: boolean
-		glowing: boolean
-		glow_color: string
-		shadow_radius: number
-		shadow_strength: number
-		brightness_override: number
-		enchanted: boolean
-		invisible: boolean
-		nbt: string
+		// inherit_settings: boolean
+		// use_nbt: boolean
+		// glowing: boolean
+		// glow_color: string
+		// shadow_radius: number
+		// shadow_strength: number
+		// brightness_override: number
+		// enchanted: boolean
+		// invisible: boolean
+		// nbt: string
+		configs: {
+			default: IBlueprintVariantBoneConfigJSON
+			variants: Record<string, IBlueprintVariantBoneConfigJSON>
+		}
 	}
 }
