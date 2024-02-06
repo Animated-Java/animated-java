@@ -17,6 +17,10 @@ export class TextureMap {
 		return this.map.get(key)
 	}
 
+	public has(key: string) {
+		return this.map.has(key)
+	}
+
 	public delete(key: string) {
 		this.map.delete(key)
 	}
@@ -88,6 +92,9 @@ export class Variant {
 	public select() {
 		if (Variant.selected) Variant.selected.unselect()
 		Variant.selected = this
+		console.log(`Selected variant: ${this.name}`)
+		Canvas.updateAllFaces()
+		events.SELECT_VARIANT.dispatch(this)
 	}
 
 	public unselect() {
@@ -105,7 +112,7 @@ export class Variant {
 
 		if (Variant.selected === this) {
 			this.unselect()
-			Variant.all[Math.clamp(index - 1, 0, Variant.all.length)].select()
+			Variant.selectDefault()
 		}
 
 		events.DELETE_VARIANT.dispatch(this)
@@ -154,6 +161,11 @@ export class Variant {
 			i++
 		}
 		return newName
+	}
+
+	public static selectDefault() {
+		const variant = Variant.all.find(v => v.isDefault)
+		if (variant) variant.select()
 	}
 }
 

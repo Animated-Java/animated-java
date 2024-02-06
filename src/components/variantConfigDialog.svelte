@@ -81,11 +81,11 @@
 		return Texture.all.filter(t => !usedTextures.includes(t.uuid))
 	}
 
-	function getTextureName(uuid: string) {
-		const texture = Texture.all.find(t => t.uuid === uuid)
-		if (!texture) return 'Failed to find texture'
-		return texture.name
-	}
+	// function getTextureName(uuid: string) {
+	// 	const texture = Texture.all.find(t => t.uuid === uuid)
+	// 	if (!texture) return 'Failed to find texture'
+	// 	return texture.name
+	// }
 </script>
 
 <div class="dialog_container">

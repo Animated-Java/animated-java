@@ -18,13 +18,16 @@ import './mods/projectSettingsActionOverride'
 import './mods/saveAllAnimationsActionMod'
 import './mods/saveProjectActionMod'
 import './mods/saveProjectAsActionMod'
+import './mods/variantPreviewCubeFaceMod'
 // Compilers
 import { compileDataPack } from './systems/datapackCompiler'
+import { Variant } from './variants'
 
 // @ts-ignore
 globalThis.AnimatedJava = {
 	API: {
 		compileDataPack,
+		Variant,
 	},
 }
 

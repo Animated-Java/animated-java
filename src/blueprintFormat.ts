@@ -447,6 +447,10 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 			svelteComponent: ProjectTitleSvelteComponent,
 			svelteComponentProperties: { project: Project },
 		})
+
+		requestAnimationFrame(() => {
+			Variant.selectDefault()
+		})
 	},
 
 	codec: BLUEPRINT_CODEC,

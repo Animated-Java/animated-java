@@ -25,6 +25,11 @@
 	})
 
 	events.SELECT_PROJECT.subscribe(() => {
+		Variant.selectDefault()
+		localVariants = Variant.all
+	})
+
+	events.SELECT_VARIANT.subscribe(() => {
 		localVariants = Variant.all
 	})
 
@@ -34,7 +39,7 @@
 	}
 
 	function selectVariant(variant: Variant) {
-		Variant.selected = variant
+		variant.select()
 		localVariants = Variant.all
 	}
 

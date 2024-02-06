@@ -26,6 +26,7 @@ export const events = {
 	CREATE_VARIANT: new PluginEvent<Variant>('createVariant'),
 	UPDATE_VARIANT: new PluginEvent<Variant>('updateVariant'),
 	DELETE_VARIANT: new PluginEvent<Variant>('deleteVariant'),
+	SELECT_VARIANT: new PluginEvent<Variant>('selectVariant'),
 }
 
 function injectionHandler() {

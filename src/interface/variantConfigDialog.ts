@@ -33,6 +33,7 @@ export function openVariantConfigDialog(variant: Variant) {
 			variant.uuid = uuid.get()
 			variant.textureMap = textureMap
 			events.UPDATE_VARIANT.dispatch(variant)
+			variant.select()
 		},
 	}).show()
 }
