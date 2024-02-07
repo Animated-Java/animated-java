@@ -101,6 +101,22 @@ export function createAction(id: NamespacedString, options: ActionOptions) {
 }
 
 /**
+ * Creates a new Blockbench.ModelLoader and automatically handles it's deletion on the plugin unload and uninstall events.
+ * @param id A namespaced ID ('my-plugin-id:my-model-loader')
+ * @param options The options for the model loader.
+ * @returns The created model loader.
+ */
+export function createModelLoader(id: string, options: ModelLoaderOptions): ModelLoader {
+	const modelLoader = new ModelLoader(id, options)
+
+	events.EXTRACT_MODS.subscribe(() => {
+		modelLoader.delete()
+	}, true)
+
+	return modelLoader
+}
+
+/**
  * Creates a new Blockbench.Menu and automatically handles it's deletion on the plugin unload and uninstall events.
  * See https://www.blockbench.net/wiki/api/menu for more information on the Blockbench.Menu class.
  * @param template The menu template.

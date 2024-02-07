@@ -10,8 +10,7 @@
 
 	let _value: string = value.get()
 
-	export let valueChecker: ((value: string) => { type: string; message: string }) | undefined =
-		undefined
+	export let valueChecker: DialogItemValueChecker<string> = undefined
 
 	let warning_text = ''
 	let error_text = ''
@@ -19,20 +18,8 @@
 	function checkValue() {
 		if (!valueChecker) return
 		const result = valueChecker(value.get())
-		switch (result.type) {
-			case 'error':
-				error_text = result.message
-				warning_text = ''
-				break
-			case 'warning':
-				warning_text = result.message
-				error_text = ''
-				break
-			default:
-				warning_text = ''
-				error_text = ''
-				break
-		}
+		result.type === 'error' ? (error_text = result.message) : (error_text = '')
+		result.type === 'warning' ? (warning_text = result.message) : (warning_text = '')
 	}
 	value.subscribe(() => checkValue())
 

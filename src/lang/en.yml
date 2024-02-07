@@ -39,12 +39,16 @@ animated_java.dialog.blueprint_settings.enable_advanced_resource_pack_settings.d
 
 animated_java.dialog.blueprint_settings.display_item.title: Display Item
 animated_java.dialog.blueprint_settings.display_item.description: The item to display the Blueprints models in-game. Multiple Blueprints can be placed on the same item and they will be merged automatically.
+animated_java.dialog.blueprint_settings.display_item.error.no_item_selected: No item selected!
+animated_java.dialog.blueprint_settings.display_item.error.invalid_item_id.no_namespace: The provided item ID is invalid! Item IDs should be in the format namespace:item_id.
+animated_java.dialog.blueprint_settings.display_item.error.invalid_item_id.whitespace: The provided item ID is invalid! Item IDs should not contain any whitespace.
+animated_java.dialog.blueprint_settings.display_item.warning.item_does_not_exist: The selected item does not exist in vanilla!
 
 animated_java.dialog.blueprint_settings.custom_model_data_offset.title: CMD Offset
 animated_java.dialog.blueprint_settings.custom_model_data_offset.description: The offset to use for the Custom Model Data of the Display Item. Allows multiple Blueprints on the same item, but in separate, unaffiliated Resource Packs.
 
 animated_java.dialog.blueprint_settings.resource_pack.title: Resource Pack
-animated_java.dialog.blueprint_settings.resource_pack.description: The Resource Pack to export the project to.
+animated_java.dialog.blueprint_settings.resource_pack.description: The root folder of the Resource Pack to export the project into.
 animated_java.dialog.blueprint_settings.resource_pack.error.no_folder_selected: No folder selected!
 animated_java.dialog.blueprint_settings.resource_pack.error.folder_does_not_exist: The selected folder does not exist!
 animated_java.dialog.blueprint_settings.resource_pack.error.not_a_folder: The selected path is not a folder!
@@ -67,7 +71,7 @@ animated_java.dialog.blueprint_settings.enable_advanced_data_pack_settings.title
 animated_java.dialog.blueprint_settings.enable_advanced_data_pack_settings.description: Whether or not to enable the advanced Data Pack settings.
 
 animated_java.dialog.blueprint_settings.data_pack.title: Data Pack
-animated_java.dialog.blueprint_settings.data_pack.description: The Data Pack to export the project into.
+animated_java.dialog.blueprint_settings.data_pack.description: The root folder of the Data Pack to export the project into.
 animated_java.dialog.blueprint_settings.data_pack.error.no_folder_selected: No folder selected!
 animated_java.dialog.blueprint_settings.data_pack.error.folder_does_not_exist: The selected folder does not exist!
 animated_java.dialog.blueprint_settings.data_pack.error.not_a_folder: The selected path is not a folder!
@@ -124,6 +128,10 @@ animated_java.dialog.variant_config.texture_map.title: Texture Map
 animated_java.dialog.variant_config.texture_map.description: A map of which textures to swap out when applying this Variant.
 animated_java.dialog.variant_config.texture_map.create_new_mapping: Create New Mapping
 animated_java.dialog.variant_config.texture_map.no_mappings: Variant has no mapped textures.
+
+## Old AJModel Loader Dialog
+animated_java.action.upgrade_old_aj_model_loader.name: Upgrade Old .ajmodel
+animated_java.dialog.upgrade_old_aj_model_loader.title: Upgrade Old .ajmodel
 
 ### Panels
 

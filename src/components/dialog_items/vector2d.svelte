@@ -15,30 +15,16 @@
 	export let minY: number | undefined = undefined
 	export let maxY: number | undefined = undefined
 
-	export let valueChecker:
-		| ((valueX: number, valueY: number) => { type: string; message: string })
-		| undefined = undefined
+	export let valueChecker: DialogItemValueChecker<{ x: number; y: number }> = undefined
 
 	let warning_text = ''
 	let error_text = ''
 
 	function checkValue() {
 		if (!valueChecker) return
-		const result = valueChecker(valueX.get(), valueY.get())
-		switch (result.type) {
-			case 'error':
-				error_text = result.message
-				warning_text = ''
-				break
-			case 'warning':
-				warning_text = result.message
-				error_text = ''
-				break
-			default:
-				warning_text = ''
-				error_text = ''
-				break
-		}
+		const result = valueChecker({ x: valueX.get(), y: valueY.get() })
+		result.type === 'error' ? (error_text = result.message) : (error_text = '')
+		result.type === 'warning' ? (warning_text = result.message) : (warning_text = '')
 	}
 	valueX.subscribe(() => checkValue())
 	valueY.subscribe(() => checkValue())

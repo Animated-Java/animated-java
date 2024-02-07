@@ -13,6 +13,8 @@
 </script>
 
 <script lang="ts">
+	import { MINECRAFT_REGISTRY } from '../util/minecraftRegistries'
+
 	export let blueprintName: Valuable<string>
 	export let exportNamespace: Valuable<string>
 	export let textureSizeX: Valuable<number>
@@ -33,9 +35,44 @@
 	export let enableAdvancedDataPackSettings: Valuable<boolean>
 	export let dataPack: Valuable<string>
 
-	function textureSizeChecker(x: number, y: number): { type: string; message: string } {
-		x = Number(x)
-		y = Number(y)
+	function displayItemChecker(value: string): { type: string; message: string } {
+		if (value === '') {
+			return {
+				type: 'error',
+				message: translate('dialog.blueprint_settings.display_item.error.no_item_selected'),
+			}
+		} else if (value.split(':').length !== 2) {
+			return {
+				type: 'error',
+				message: translate(
+					'dialog.blueprint_settings.display_item.error.invalid_item_id.no_namespace',
+				),
+			}
+		} else if (value.includes(' ')) {
+			return {
+				type: 'error',
+				message: translate(
+					'dialog.blueprint_settings.display_item.error.invalid_item_id.whitespace',
+				),
+			}
+		} else if (!MINECRAFT_REGISTRY.item.has(value.replace('minecraft:', ''))) {
+			return {
+				type: 'warning',
+				message: translate(
+					'dialog.blueprint_settings.display_item.warning.item_does_not_exist',
+				),
+			}
+		} else {
+			return { type: 'success', message: '' }
+		}
+	}
+
+	function textureSizeChecker(value: { x: number; y: number }): {
+		type: string
+		message: string
+	} {
+		const x = Number(value.x)
+		const y = Number(value.y)
 		const largestHeight: number = Number(
 			Texture.all.map(t => t.height).reduce((max, cur) => Math.max(max, cur), 0),
 		)
@@ -192,6 +229,7 @@
 			label={translate('dialog.blueprint_settings.display_item.title')}
 			tooltip={translate('dialog.blueprint_settings.display_item.description')}
 			bind:value={displayItem}
+			valueChecker={displayItemChecker}
 		/>
 	{:else}
 		<Checkbox
@@ -224,6 +262,7 @@
 					label={translate('dialog.blueprint_settings.display_item.title')}
 					tooltip={translate('dialog.blueprint_settings.display_item.description')}
 					bind:value={displayItem}
+					valueChecker={displayItemChecker}
 				/>
 
 				<NumberSlider
@@ -256,6 +295,7 @@
 					label={translate('dialog.blueprint_settings.display_item.title')}
 					tooltip={translate('dialog.blueprint_settings.display_item.description')}
 					bind:value={displayItem}
+					valueChecker={displayItemChecker}
 				/>
 
 				<NumberSlider

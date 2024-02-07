@@ -2,12 +2,13 @@ import { PACKAGE } from './constants'
 import { events } from './util/events'
 import './util/translation'
 
-// Misc
+// Blueprint Format
 import './blueprintFormat'
 // Interface
 import './interface/animatedJavaBarItem'
 import './interface/boneConfigDialog'
 import './interface/variantsPanel'
+import './interface/importOldAJModelLoader'
 // Blockbench Mods
 import './mods/animationControllerMod'
 import './mods/bonePropertiesMod'
@@ -21,13 +22,17 @@ import './mods/saveProjectAsActionMod'
 import './mods/variantPreviewCubeFaceMod'
 // Compilers
 import { compileDataPack } from './systems/datapackCompiler'
+// Misc imports
 import { Variant } from './variants'
+import './util/minecraftRegistries'
+import { MINECRAFT_REGISTRY } from './util/minecraftRegistries'
 
 // @ts-ignore
 globalThis.AnimatedJava = {
 	API: {
 		compileDataPack,
 		Variant,
+		MINECRAFT_REGISTRY,
 	},
 }
 
