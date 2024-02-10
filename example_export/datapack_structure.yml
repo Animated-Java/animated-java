@@ -1,0 +1,30 @@
+- datapack:
+    - pack.mcmeta
+    - .animated_java:
+        # Used to store the blueprint's metadata, and export-diffs.
+        - <blueprint_export_namespace>.ajmeta
+    - data:
+        - animated_java:
+            - functions:
+                - global:
+                    - on_tick.mcfunction
+                    - on_load.mcfunction
+                - <blueprint_export_namespace>:
+                    - summon.mcfunction
+                    - animations:
+                    - do_not_run_manually:
+                        - check_if_rig_out_of_date.mcfunction
+                        - update_outdated_rig.mcfunction
+                        - root_entity:
+                            - on_tick.mcfunction
+                            - on_load.mcfunction
+                    # Folder for summoning with different variants applied
+                    - summon:
+                        - variant_name.mcfunction
+                    - variants:
+            - tags:
+                - global:
+                    - check_if_rig_out_of_date.json
+                    - root_entity:
+                        - on_tick.json
+                        - on_load.json

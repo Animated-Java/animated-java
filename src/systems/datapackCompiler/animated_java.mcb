@@ -1,0 +1,90 @@
+
+dir global {
+	function load {
+		# Initialize Scoreboards
+		scoreboard objectives add aj.i dummy
+		scoreboard objectives add aj.id dummy
+		scoreboard objectives add aj.frame dummy
+		scoreboard objectives add aj.rig_is_loaded dummy
+
+		scoreboard players reset * aj.rig_is_loaded
+		execute as @e[type=item_display,tag=aj.root_entity] unless score @s aj.rig_is_loaded matches 1 at @s run function #animated_java:global/root_entity/on_load
+	}
+
+	function tick {
+		execute as @e[type=item_display,tag=aj.root_entity] at @s run function #animated_java:global/root_entity/on_tick
+	}
+
+	dir root_entity {
+		function on_tick {
+			execute unless score @s aj.rig_is_loaded matches 1 run function #animated_java:global/root_entity/on_load
+			function #animated_java:global/root_entity/on_tick
+		}
+		function on_load {
+			function #animated_java:global/root_entity/on_load
+			scoreboard players set @s aj.rig_is_loaded 1
+		}
+
+		# TODO Maybe instead of merging tags, I should just generate it from the .ajmeta data every time a rig is exported?
+		# That way I can also check if the rig's files still exist, and remove tag entries if they don't.
+		# An entry will be added for each exported rig.
+		functions on_tick {
+			#animated_java:<%export_namespace%>/_/on_tick
+		}
+		# An entry will be added for each exported rig.
+		functions on_load {
+			#animated_java:<%export_namespace%>/_/on_load
+		}
+	}
+
+	# An entry will be added for each exported rig.
+	functions check_if_rig_outdated {
+		#animated_java:<%export_namespace%>/_/check_if_rig_outdated
+	}
+}
+
+dir <%export_namespace%> {
+	dir animations {
+		dir animation_name {
+			
+		}
+	}
+
+	function summon {
+		
+	}
+
+	dir summon {
+		function <%variant_name%> {
+			
+		}
+	}
+
+	dir variants {
+		dir <%variant_name%> {
+			function apply {
+				
+			}
+		}
+	}
+
+	dir root_entity {
+		functions on_tick {
+			
+		}
+
+		functions on_load {
+			
+		}
+	}
+
+	dir _ {
+		function check_if_rig_outdated {
+			execute unless score @s aj.<%export_version%> matches <%export_version%> run function #animated_java:<%export_namespace%>/_/update_outdated_rig
+		}
+
+		function update_outdated_rig {
+			# TODO Figure out how this will work.
+		}
+	}
+}

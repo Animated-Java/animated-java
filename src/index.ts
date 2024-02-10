@@ -26,11 +26,13 @@ import { compileDataPack } from './systems/datapackCompiler'
 import { Variant } from './variants'
 import './util/minecraftRegistries'
 import { MINECRAFT_REGISTRY } from './util/minecraftRegistries'
+import { compileResourcePack } from './systems/resourcepackCompiler'
 
 // @ts-ignore
 globalThis.AnimatedJava = {
 	API: {
 		compileDataPack,
+		compileResourcePack,
 		Variant,
 		MINECRAFT_REGISTRY,
 	},

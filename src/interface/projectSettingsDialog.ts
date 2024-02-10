@@ -4,7 +4,7 @@ import { Valuable } from '../util/stores'
 import { injectSvelteCompomponent } from '../util/injectSvelte'
 import BlueprintSettingsDialogSvelteComponent from '../components/blueprintSettingsDialog.svelte'
 import BlueprintSettingsDialogTitleSvelteComponent from '../components/blueprintSettingsDialogTitle.svelte'
-import { toSafeFuntionName } from '../minecraft'
+import { toSafeFuntionName } from '../util/minecraftUtil'
 import { defaultValues } from '../projectSettings'
 import { translate } from '../util/translation'
 

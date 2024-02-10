@@ -1,6 +1,6 @@
-export function safeFunctionName(name: string) {
+export function toSafeFuntionName(name: string): string {
 	return name
-		.replace(/[\s-]+/g, '_')
-		.replace(/[^a-zA-Z0-9_\\.]+/g, '')
 		.toLowerCase()
+		.replace(/[^a-z0-9_\\.]/g, '_')
+		.replace(/_+/g, '_')
 }

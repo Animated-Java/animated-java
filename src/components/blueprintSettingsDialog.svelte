@@ -55,7 +55,10 @@
 					'dialog.blueprint_settings.display_item.error.invalid_item_id.whitespace',
 				),
 			}
-		} else if (!MINECRAFT_REGISTRY.item.has(value.replace('minecraft:', ''))) {
+		} else if (
+			MINECRAFT_REGISTRY.item &&
+			!MINECRAFT_REGISTRY.item.has(value.replace('minecraft:', ''))
+		) {
 			return {
 				type: 'warning',
 				message: translate(
