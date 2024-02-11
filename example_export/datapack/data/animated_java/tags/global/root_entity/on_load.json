@@ -1,7 +1,0 @@
-{
-	"replace": false,
-	"values": [
-		"animated_java:my_project/root_entity/on_load",
-		"animated_java:global/root_entity/on_load"
-	]
-}

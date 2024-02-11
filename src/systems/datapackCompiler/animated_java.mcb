@@ -1,6 +1,6 @@
 
 dir global {
-	function load {
+	function on_load load {
 		# Initialize Scoreboards
 		scoreboard objectives add aj.i dummy
 		scoreboard objectives add aj.id dummy
@@ -11,7 +11,7 @@ dir global {
 		execute as @e[type=item_display,tag=aj.root_entity] unless score @s aj.rig_is_loaded matches 1 at @s run function #animated_java:global/root_entity/on_load
 	}
 
-	function tick {
+	function on_tick tick {
 		execute as @e[type=item_display,tag=aj.root_entity] at @s run function #animated_java:global/root_entity/on_tick
 	}
 
@@ -41,29 +41,104 @@ dir global {
 	functions check_if_rig_outdated {
 		#animated_java:<%export_namespace%>/_/check_if_rig_outdated
 	}
+
+	dir errors {
+		function function_not_executed_as_root_entity {
+			$tellraw @a 'The function $(function_path) must be executed as the root entity of the rig.'
+		}
+	}
 }
 
 dir <%export_namespace%> {
+	function uninstall {
+		# TODO Remove all scoreboard for this rig from the world.
+	}
+
+	function on_tick {
+		# This command will be added for each animation.
+		execute if entity @s[tag=aj.<%export_namespace%>.animation.<%animation_name%>.playing] run \
+			function animated_java:<%export_namespace%>/animations/<%animation_name%>/on_tick
+	}
+
 	dir animations {
 		dir animation_name {
-			
+			function play {
+				execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
+					function animated_java:global/errors/function_not_executed_as_root_entity \
+					with {'function_path': 'animated_java:<%export_namespace%>/animations/<%animation_name%>/play'}
+				tag @s add aj.<%export_namespace%>.animation.<%animation_name%>.playing
+			}
+			function stop {
+				execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
+					function animated_java:global/errors/function_not_executed_as_root_entity \
+					with {'function_path': 'animated_java:<%export_namespace%>/animations/<%animation_name%>/stop'}
+				tag @s remove aj.<%export_namespace%>.animation.<%animation_name%>.playing
+			}
+			function pause {
+				execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
+					function animated_java:global/errors/function_not_executed_as_root_entity \
+					with {'function_path': 'animated_java:<%export_namespace%>/animations/<%animation_name%>/pause'}
+				tag @s remove aj.<%export_namespace%>.animation.<%animation_name%>.playing
+			}
+			function resume {
+				execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
+					function animated_java:global/errors/function_not_executed_as_root_entity \
+					with {'function_path': 'animated_java:<%export_namespace%>/animations/<%animation_name%>/resume'}
+				tag @s add aj.<%export_namespace%>.animation.<%animation_name%>.playing
+			}
+			function reset {
+				execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
+					function animated_java:global/errors/function_not_executed_as_root_entity \
+					with {'function_path': 'animated_java:<%export_namespace%>/animations/<%animation_name%>/reset'}
+				tag @s remove aj.<%export_namespace%>.animation.<%animation_name%>.playing
+			}
+			function next_frame {
+				execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
+					function animated_java:global/errors/function_not_executed_as_root_entity \
+					with {'function_path': 'animated_java:<%export_namespace%>/animations/<%animation_name%>/next_frame'}
+			}
+			function apply_frame {
+				# ARGS: {frame: int}
+				execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
+					function animated_java:global/errors/function_not_executed_as_root_entity \
+					with {'function_path': 'animated_java:<%export_namespace%>/animations/<%animation_name%>/apply_frame'}
+			}
+			function tween_play {
+				execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
+					function animated_java:global/errors/function_not_executed_as_root_entity \
+					with {'function_path': 'animated_java:<%export_namespace%>/animations/<%animation_name%>/tween_play'}
+				tag @s add aj.<%export_namespace%>.animation.<%animation_name%>.tween_playing
+			}
+			function tween_resume {
+				execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
+					function animated_java:global/errors/function_not_executed_as_root_entity \
+					with {'function_path': 'animated_java:<%export_namespace%>/animations/<%animation_name%>/tween_resume'}
+				tag @s add aj.<%export_namespace%>.animation.<%animation_name%>.tween_playing
+			}
+			dir _ {
+				function on_tick {
+				}
+			}
 		}
 	}
 
 	function summon {
-		
+		# TODO Summon the rig here.
 	}
 
 	dir summon {
 		function <%variant_name%> {
-			
+			function animated_java:<%export_namespace%>/variants/<%variant_name%>/apply
 		}
 	}
 
 	dir variants {
 		dir <%variant_name%> {
 			function apply {
-				
+				execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
+					function animated_java:global/errors/function_not_executed_as_root_entity \
+					with {'function_path': 'animated_java:<%export_namespace%>/variants/<%variant_name%>/apply'}
+				# TODO Apply the variant to the rig here.
 			}
 		}
 	}
@@ -85,6 +160,7 @@ dir <%export_namespace%> {
 
 		function update_outdated_rig {
 			# TODO Figure out how this will work.
+			# It will probably involve killing the existing bones, and re-summoning them, then applying the default NBT to the root entity.
 		}
 	}
 }
