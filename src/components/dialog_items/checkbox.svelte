@@ -19,4 +19,7 @@
 	.spacer {
 		flex-grow: 1;
 	}
+	label {
+		width: auto;
+	}
 </style>

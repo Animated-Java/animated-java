@@ -17,3 +17,17 @@ export function addProjectToRecentProjects(file: FileResult) {
 		}, 200)
 	}
 }
+
+/**
+ * Rounds a number to a certain number of decimal places
+ */
+export function roundTo(n: number, d: number) {
+	return Math.round(n * 10 ** d) / 10 ** d
+}
+
+/**
+ * Rounds a number to the nearest multiple of n
+ */
+export function roundToN(n: number, x: number) {
+	return Math.round(n * x) / x
+}

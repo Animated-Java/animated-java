@@ -24,6 +24,20 @@ export interface IBlueprintVariantBoneConfigJSON {
 }
 
 /**
+ * The serialized Variant Locator Config
+ */
+export interface IBlueprintVariantLocatorConfigJSON {
+	entity_type: string
+}
+
+/**
+ * The serialized Variant Camera Config
+ */
+export interface IBlueprintVariantCameraConfigJSON {
+	entity_type: string
+}
+
+/**
  * The serialized Variant
  */
 export interface IBlueprintVariantJSON {

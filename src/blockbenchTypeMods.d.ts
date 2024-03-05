@@ -1,4 +1,7 @@
-import { IBlueprintVariantBoneConfigJSON } from './blueprintFormat'
+import type {
+	IBlueprintVariantBoneConfigJSON,
+	IBlueprintVariantLocatorConfigJSON,
+} from './blueprintFormat'
 import { type Variant } from './variants'
 
 declare global {
@@ -25,6 +28,12 @@ declare global {
 		variants: Variant[]
 	}
 
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface _Animation {
+		excludedBones: string[]
+		invertExcludedBones: boolean
+	}
+
 	interface Group {
 		// inherit_settings: boolean
 		// use_nbt: boolean
@@ -39,6 +48,14 @@ declare global {
 		configs: {
 			default: IBlueprintVariantBoneConfigJSON
 			variants: Record<string, IBlueprintVariantBoneConfigJSON>
+		}
+	}
+
+	interface Locator {
+		configs: {
+			// FIXME: This should be a LocatorConfigJSON
+			default: IBlueprintVariantLocatorConfigJSON
+			variants: Record<string, IBlueprintVariantLocatorConfigJSON>
 		}
 	}
 }

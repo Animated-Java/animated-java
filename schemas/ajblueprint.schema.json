@@ -7,7 +7,7 @@
 			"properties": {
 				"format_version": {
 					"type": "string",
-					"enum": ["0.5.0"]
+					"enum": ["1.0.0"]
 				},
 				"model_format": {
 					"const": "animated_java_blueprint"
@@ -20,25 +20,45 @@
 				"export_namespace": {
 					"type": "string"
 				},
-				"export_resource_pack": {
+				"enable_plugin_mode": {
+					"type": "boolean"
+				},
+				"enable_resource_pack": {
 					"type": "boolean"
 				},
 				"display_item": {
 					"type": "string"
 				},
+				"custom_model_data_offset": {
+					"type": "integer"
+				},
 				"enable_advanced_resource_pack_settings": {
 					"type": "boolean"
 				},
 				"resource_pack": {
+					"description": "The path to the resource pack that you want to export into.",
 					"type": "string"
 				},
-				"export_data_pack": {
+				"display_item_path": {
+					"description": "Only used if advanced resource pack settings are enabled. The path to the display item's texture in the resource pack.",
+					"type": "string"
+				},
+				"model_folder": {
+					"description": "Only used if advanced resource pack settings are enabled. The folder that you want the blueprint's generated models to be exported into.",
+					"type": "string"
+				},
+				"texture_folder": {
+					"description": "Only used if advanced resource pack settings are enabled. The folder that you want the blueprint's generated textures to be exported into.",
+					"type": "string"
+				},
+				"enable_data_pack": {
 					"type": "boolean"
 				},
 				"enable_advanced_data_pack_settings": {
 					"type": "boolean"
 				},
 				"data_pack": {
+					"description": "The path to the data pack that you want to export into.",
 					"type": "string"
 				}
 			}
@@ -68,7 +88,7 @@
 		"outliner": {
 			"type": "array",
 			"items": {
-				"$ref": "#/definitions/outlinerNode"
+				"$ref": "#/definitions/outliner_bone"
 			}
 		},
 		"textures": {
@@ -86,18 +106,122 @@
 		"animation_controllers": {
 			"type": "array",
 			"items": {
-				"$ref": "#/definitions/animationController"
+				"$ref": "#/definitions/animation_controller"
 			}
 		}
 	},
 	"definitions": {
 		"element": {
+			"allOf": [
+				{
+					"if": {
+						"required": ["type"],
+						"properties": {
+							"type": {
+								"const": "cube"
+							}
+						}
+					},
+					"then": {
+						"$ref": "#/definitions/cube_element"
+					}
+				},
+				{
+					"if": {
+						"required": ["type"],
+						"properties": {
+							"type": {
+								"const": "locator"
+							}
+						}
+					},
+					"then": {
+						"$ref": "#/definitions/locator_element"
+					}
+				},
+				{
+					"if": {
+						"required": ["type"],
+						"properties": {
+							"type": {
+								"const": "camera"
+							}
+						}
+					},
+					"then": {
+						"$ref": "#/definitions/camera_element"
+					}
+				}
+			]
+		},
+		"camera_element": {
+			"type": "object",
+			"required": ["type", "name", "position", "rotation", "uuid"],
+			"properties": {
+				"type": {
+					"const": "camera"
+				},
+				"name": {
+					"type": "string"
+				},
+				"uuid": {
+					"type": "string"
+				},
+				"position": {
+					"type": "array",
+					"items": {
+						"type": "number"
+					},
+					"minItems": 3,
+					"maxItems": 3
+				},
+				"rotation": {
+					"type": "array",
+					"items": {
+						"type": "number"
+					},
+					"minItems": 3,
+					"maxItems": 3
+				}
+			}
+		},
+		"locator_element": {
+			"type": "object",
+			"required": ["type", "name", "position", "rotation", "uuid"],
+			"properties": {
+				"type": {
+					"const": "locator"
+				},
+				"name": {
+					"type": "string"
+				},
+				"uuid": {
+					"type": "string"
+				},
+				"position": {
+					"type": "array",
+					"items": {
+						"type": "number"
+					},
+					"minItems": 3,
+					"maxItems": 3
+				},
+				"rotation": {
+					"type": "array",
+					"items": {
+						"type": "number"
+					},
+					"minItems": 3,
+					"maxItems": 3
+				}
+			}
+		},
+		"cube_element": {
 			"type": "object",
 			"required": ["type", "name", "uuid", "from", "to", "faces"],
 			"properties": {
 				"type": {
-					"type": "string",
-					"enum": ["cube"]
+					"const": "cube"
 				},
 				"name": {
 					"type": "string"
@@ -168,9 +292,9 @@
 				}
 			}
 		},
-		"outlinerNode": {
+		"outliner_bone": {
 			"type": "object",
-			"required": ["name", "uuid", "children", "origin", "export"],
+			"required": ["name", "uuid", "children", "origin", "export", "configs"],
 			"properties": {
 				"name": {
 					"type": "string"
@@ -196,6 +320,24 @@
 					"type": "array",
 					"items": {
 						"type": "string"
+					}
+				},
+				"configs": {
+					"type": "object",
+					"properties": {
+						"default": {
+							"description": "The default bone config. This will be applied when the rig is summoned.",
+							"$ref": "#/definitions/bone_config"
+						},
+						"variants": {
+							"type": "object",
+							"description": "A map of variant UUIDS to bone configs. Will only contain configs for variants that are different from the default config. These are only applied when a variant is applied. You must apply another variant to remove/change the config.",
+							"patternProperties": {
+								".+": {
+									"$ref": "#/definitions/bone_config"
+								}
+							}
+						}
 					}
 				}
 			}
@@ -267,7 +409,7 @@
 				}
 			}
 		},
-		"animationController": {
+		"animation_controller": {
 			"type": "object",
 			"required": ["name", "uuid", "states", "transitions"],
 			"properties": {
@@ -283,18 +425,18 @@
 				"states": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/animationControllerState"
+						"$ref": "#/definitions/animation_controller_state"
 					}
 				},
 				"transitions": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/animationControllerTransition"
+						"$ref": "#/definitions/animation_controller_transition"
 					}
 				}
 			}
 		},
-		"animationControllerState": {
+		"animation_controller_state": {
 			"type": "object",
 			"required": ["name", "uuid", "animations"],
 			"properties": {
@@ -307,13 +449,13 @@
 				"animations": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/animationControllerStateAnimation"
+						"$ref": "#/definitions/animation_controller_state_animation"
 					}
 				},
 				"transitions": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/animationControllerTransition"
+						"$ref": "#/definitions/animation_controller_transition"
 					}
 				},
 				"on_entry": {
@@ -330,7 +472,7 @@
 				}
 			}
 		},
-		"animationControllerTransition": {
+		"animation_controller_transition": {
 			"type": "object",
 			"required": ["uuid", "target", "condition"],
 			"properties": {
@@ -345,7 +487,7 @@
 				}
 			}
 		},
-		"animationControllerStateAnimation": {
+		"animation_controller_state_animation": {
 			"type": "object",
 			"required": ["uuid", "key", "animation"],
 			"properties": {
@@ -361,6 +503,68 @@
 				},
 				"blend_value": {
 					"type": "string"
+				}
+			}
+		},
+		"bone_config": {
+			"type": "object",
+			"required": [
+				"inherit_settings",
+				"use_nbt",
+				"glowing",
+				"glow_color",
+				"shadow_radius",
+				"shadow_strength",
+				"brightness_override",
+				"enchanted",
+				"invisible",
+				"nbt"
+			],
+			"properties": {
+				"inherit_settings": {
+					"type": "boolean",
+					"default": true
+				},
+				"use_nbt": {
+					"type": "boolean",
+					"default": false
+				},
+				"glowing": {
+					"type": "boolean",
+					"default": false
+				},
+				"glow_color": {
+					"type": "string",
+					"pattern": "^#[0-9a-fA-F]{6}$",
+					"default": "#ffffff"
+				},
+				"shadow_radius": {
+					"type": "number",
+					"minimum": 0,
+					"default": 0
+				},
+				"shadow_strength": {
+					"type": "number",
+					"minimum": 0,
+					"default": 0
+				},
+				"brightness_override": {
+					"type": "number",
+					"minimum": 0,
+					"maximum": 15,
+					"default": 0
+				},
+				"enchanted": {
+					"type": "boolean",
+					"default": false
+				},
+				"invisible": {
+					"type": "boolean",
+					"default": false
+				},
+				"nbt": {
+					"type": "string",
+					"default": "{}"
 				}
 			}
 		}
