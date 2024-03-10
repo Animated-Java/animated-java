@@ -27,6 +27,12 @@ import { Variant } from './variants'
 import './util/minecraftRegistries'
 import { MINECRAFT_REGISTRY } from './util/minecraftRegistries'
 import { compileResourcePack } from './systems/resourcepackCompiler'
+import {
+	openExportProgressDialog,
+	setProgress,
+	getProgress,
+	logMessage,
+} from './interface/exportProgressDialog'
 
 // @ts-ignore
 globalThis.AnimatedJava = {
@@ -35,6 +41,10 @@ globalThis.AnimatedJava = {
 		compileResourcePack,
 		Variant,
 		MINECRAFT_REGISTRY,
+		openExportProgressDialog,
+		setProgress,
+		getProgress,
+		logMessage,
 	},
 }
 
