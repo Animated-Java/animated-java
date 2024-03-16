@@ -227,6 +227,7 @@ function buildProd() {
 				yamlPlugin({}),
 				sveltePlugin(svelteConfig),
 			],
+			keepNames: true,
 			banner: createBanner(),
 			drop: ['debugger'],
 			format: 'iife',
