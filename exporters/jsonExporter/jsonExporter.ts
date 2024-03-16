@@ -1,11 +1,17 @@
 // @ts-ignore
 import en from './lang/en.yaml'
+// @ts-ignore
+import de from './lang/de.yaml'
+// @ts-ignore
+import zh from './lang/zh_cn.yaml'
 import { constructJSON } from './jsonConstructor'
 
 export function loadExporter() {
 	const API = AnimatedJava.API
 
 	API.addTranslations('en', en as Record<string, string>)
+	API.addTranslations('de', de as Record<string, string>)
+	API.addTranslations('zh', zh as Record<string, string>)
 
 	const TRANSLATIONS = {
 		output_file: {

@@ -1,10 +1,16 @@
 // @ts-ignore
 import en from '../lang/en.yaml'
+// @ts-ignore
+import de from '../lang/de.yaml'
+// @ts-ignore
+import zh from '../lang/zh_cn.yaml'
 
 export function loadTranslations() {
 	const { addTranslations, translate } = AnimatedJava.API
 
 	addTranslations('en', en as Record<string, string>)
+	addTranslations('de', de as Record<string, string>)
+	addTranslations('zh', zh as Record<string, string>)
 
 	return {
 		target_minecraft_version: {
