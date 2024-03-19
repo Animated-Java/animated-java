@@ -23,7 +23,7 @@
 	const unsub = setting.subscribe(
 		debounce(() => {
 			updateInfoPopup()
-		}, 250)
+		}, 250),
 	)
 
 	onDestroy(() => {
