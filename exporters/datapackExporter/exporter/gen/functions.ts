@@ -12,6 +12,7 @@ function getExportVersionId() {
 function generateBonePassenger(uuid: string, bone: AnimatedJava.IRenderedNodes['Bone']) {
 	const passenger = deepslate.NbtTag.fromString(bone.nbt) as NbtCompound
 	const default_pose = G.exportData.rig.defaultPose.find(pose => pose.uuid === uuid)
+	const useComponents = G.exportData.exporterSettings.use_component_system.value
 
 	passenger.set('id', new deepslate.NbtString('minecraft:item_display'))
 
@@ -30,11 +31,11 @@ function generateBonePassenger(uuid: string, bone: AnimatedJava.IRenderedNodes['
 	if (!passenger.get('item')) passenger.set('item', new deepslate.NbtCompound())
 	const item = passenger.get('item') as InstanceType<typeof deepslate.NbtCompound>
 	item.set('id', new deepslate.NbtString(G.RIG_ITEM))
-		.set('Count', new deepslate.NbtByte(1))
+		.set(useComponents ? 'count' : 'Count', new deepslate.NbtByte(1))
 		.set(
-			'tag',
+			useComponents ? 'components' : 'tag',
 			new deepslate.NbtCompound().set(
-				'CustomModelData',
+				useComponents ? 'minecraft:custom_model_data' : 'CustomModelData',
 				new deepslate.NbtInt(bone.customModelData)
 			)
 		)
@@ -82,6 +83,7 @@ function generateLocatorPassenger(
 ) {
 	const { roundToN } = AnimatedJava.API
 	const passenger = deepslate.NbtTag.fromString(locator.nbt) as NbtCompound
+	const useComponents = G.exportData.exporterSettings.use_component_system.value
 	// const default_pose = G.exportData.rig.defaultPose.find(pose => pose.uuid === uuid)
 
 	passenger
@@ -99,10 +101,10 @@ function generateLocatorPassenger(
 			'Item',
 			new deepslate.NbtCompound()
 				.set('id', new deepslate.NbtString(G.RIG_ITEM))
-				.set('Count', new deepslate.NbtByte(1))
+				.set(useComponents ? 'count' : 'Count', new deepslate.NbtByte(1))
 				.set(
-					'tag',
-					new deepslate.NbtCompound().set('CustomModelData', new deepslate.NbtInt(1))
+					useComponents ? 'components' : 'tag',
+					new deepslate.NbtCompound().set(useComponents ? 'minecraft:custom_model_data' : 'CustomModelData', new deepslate.NbtInt(1))
 				)
 		)
 		.set(
@@ -196,6 +198,7 @@ function generateCameraPassenger(
 ) {
 	const { roundToN } = AnimatedJava.API
 	const passenger = deepslate.NbtTag.fromString(camera.nbt) as NbtCompound
+	const useComponents = G.exportData.exporterSettings.use_component_system.value
 	// const default_pose = G.exportData.rig.defaultPose.find(pose => pose.uuid === uuid)
 
 	passenger
@@ -213,10 +216,10 @@ function generateCameraPassenger(
 			'Item',
 			new deepslate.NbtCompound()
 				.set('id', new deepslate.NbtString(G.RIG_ITEM))
-				.set('Count', new deepslate.NbtByte(1))
+				.set(useComponents ? 'count' : 'Count', new deepslate.NbtByte(1))
 				.set(
-					'tag',
-					new deepslate.NbtCompound().set('CustomModelData', new deepslate.NbtInt(1))
+					useComponents ? 'components' : 'tag',
+					new deepslate.NbtCompound().set(useComponents ? 'minecraft:custom_model_data' : 'CustomModelData', new deepslate.NbtInt(1))
 				)
 		)
 		.set(
@@ -598,6 +601,7 @@ export function generateFunctions(folders: IFolders) {
 		const applyVariantsFolder = folders.project.functions.newFolder('apply_variant')
 		const internalApplyVariantsFolder =
 			folders.project.internalFunctions.newFolder('apply_variant')
+		const useComponents = G.exportData.exporterSettings.use_component_system.value
 		for (const variant of G.VARIANTS) {
 			// ANCHOR - function G.PROJECT_PATH/apply_variant/<variant_name>
 			applyVariantsFolder.newFile(`${variant.name}.mcfunction`, [
@@ -627,9 +631,11 @@ export function generateFunctions(folders: IFolders) {
 							? node
 							: G.exportData.rig.variantModels[variant.name][uuid]
 
+						const cmdPath = useComponents ? 'item.components.minecraft:custom_model_data' : 'item.tag.CustomModelData'
+
 						return `execute if entity @s[tag=${formatStr(G.TAGS.namedBoneEntity, [
 							node.name,
-						])}] run data modify entity @s item.tag.CustomModelData set value ${
+						])}] run data modify entity @s ${cmdPath} set value ${
 							variantBone.customModelData
 						}`
 					}),

@@ -47,6 +47,12 @@ export function loadTranslations() {
 				'animated_java.datapack_exporter.settings.enable_outdated_rig_warning.description'
 			).split('\n'),
 		},
+		use_component_system: {
+			name: translate('animated_java.datapack_exporter.settings.use_component_system'),
+			description: translate(
+				'animated_java.datapack_exporter.settings.use_component_system.description'
+			).split('\n'),
+		},
 		root_entity_nbt: {
 			name: translate('animated_java.datapack_exporter.settings.root_entity_nbt'),
 			description: translate(
