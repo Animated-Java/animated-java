@@ -7,12 +7,21 @@ dir global {
 		scoreboard objectives add aj.frame dummy
 		scoreboard objectives add aj.rig_is_loaded dummy
 
+		scoreboard players set aj.true aj.i 1
+		scoreboard players set aj.false aj.i 0
+		scoreboard players add aj.last_id aj.id 0
+
 		scoreboard players reset * aj.rig_is_loaded
 		execute as @e[type=item_display,tag=aj.root_entity] unless score @s aj.rig_is_loaded matches 1 at @s run function #animated_java:global/root_entity/on_load
 	}
 
 	function on_tick tick {
 		execute as @e[type=item_display,tag=aj.root_entity] at @s run function #animated_java:global/root_entity/on_tick
+	}
+
+	function help {
+		# This just prints a link to the docs.
+		tellraw @a {"text": "..."}
 	}
 
 	dir root_entity {
@@ -44,6 +53,7 @@ dir global {
 
 	dir errors {
 		function function_not_executed_as_root_entity {
+			# Make this text fancier in the actual implementation.
 			$tellraw @a 'The function $(function_path) must be executed as the root entity of the rig.'
 		}
 	}
@@ -123,12 +133,44 @@ dir <%export_namespace%> {
 	}
 
 	function summon {
-		# TODO Summon the rig here.
+		# Args: {variant: int, animation: int, frame: int}
+		# frame is ignored unless animation is specified.
+
+		summon minecraft:item_display ~ ~ ~ {Tags:['aj.rig_entity','aj.root_entity','aj.$<project_name>.root','aj.new'],Passengers:[]}
+		execute as @e[type=item_display,tag=aj.new,limit=1,distance=..0.01] run {
+			execute store result score @s aj.id run scoreboard players add aj.last_id aj.id 1
+			tag @s remove aj.new
+		}
 	}
 
 	dir summon {
 		function <%variant_name%> {
 			function animated_java:<%export_namespace%>/variants/<%variant_name%>/apply
+		}
+	}
+
+	dir remove {
+		# Removes all instances of this rig from the world.
+		function all {
+			execute as @e[type=item_display,tag=aj.project_name.root] run function #animated_java:<%export_namespace%>/remove/this
+		}
+		# Removes the rig this function is executed as.
+		function this {
+			execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
+				function animated_java:global/errors/function_not_executed_as_root_entity \
+				with {'function_path': 'animated_java:<%export_namespace%>/variants/<%variant_name%>/apply'}
+			# TODO Remove the rig here.
+			execute on passengers run kill @s
+			kill @s
+		}
+		# Removes all instances of all rigs from the world.
+		function everything {
+			# Args: {confirm: boolean}
+			$execute if score aj.$(confirm) aj.i matches 0 run tellraw @a 'Are you sure you want to remove all Animated Java rigs from the world? Run this command again with {confirm:true} to confirm.'
+			$execute if score aj.$(confirm) aj.i matches 1 run {
+				kill @e[type=item_display,tag=aj.rig_entity]
+				tellraw @a 'All Animated Java rigs have been removed from the world.'
+			}
 		}
 	}
 
@@ -160,7 +202,8 @@ dir <%export_namespace%> {
 
 		function update_outdated_rig {
 			# TODO Figure out how this will work.
-			# It will probably involve killing the existing bones, and re-summoning them, then applying the default NBT to the root entity.
+			# It will probably involve killing the existing bones, and re-summoning them, then applying the default NBT to the root entity?
+			# This probably won't work in cases where custom NBT is removed from the root between exports.
 		}
 	}
 }

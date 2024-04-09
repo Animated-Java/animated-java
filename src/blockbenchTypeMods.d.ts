@@ -35,16 +35,6 @@ declare global {
 	}
 
 	interface Group {
-		// inherit_settings: boolean
-		// use_nbt: boolean
-		// glowing: boolean
-		// glow_color: string
-		// shadow_radius: number
-		// shadow_strength: number
-		// brightness_override: number
-		// enchanted: boolean
-		// invisible: boolean
-		// nbt: string
 		configs: {
 			default: IBlueprintVariantBoneConfigJSON
 			variants: Record<string, IBlueprintVariantBoneConfigJSON>
@@ -53,7 +43,6 @@ declare global {
 
 	interface Locator {
 		configs: {
-			// FIXME: This should be a LocatorConfigJSON
 			default: IBlueprintVariantLocatorConfigJSON
 			variants: Record<string, IBlueprintVariantLocatorConfigJSON>
 		}
