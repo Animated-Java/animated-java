@@ -25,6 +25,11 @@ animated_java.datapack_exporter.settings.enable_outdated_rig_warning: Enable Out
 animated_java.datapack_exporter.settings.enable_outdated_rig_warning.description: |-
   Whether to show a warning in-game when a Rig is found that was summoned before the most recent export.
 
+animated_java.datapack_exporter.settings.use_component_system: Use Component System
+animated_java.datapack_exporter.settings.use_component_system.description: |-
+  Whether to use the component system for the exported Data Pack.
+  Enable this setting to make the Data Pack work with 1.20.5 and above.
+
 animated_java.datapack_exporter.settings.root_entity_nbt: Root Entity NBT
 animated_java.datapack_exporter.settings.root_entity_nbt.description: |-
   Custom NBT to apply to the root entity of the Rig.

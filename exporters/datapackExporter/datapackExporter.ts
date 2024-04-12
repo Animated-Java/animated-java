@@ -60,6 +60,13 @@ export function loadExporter() {
 						}
 					}
 				),
+				use_component_system: new Settings.CheckboxSetting({
+					id: 'animated_java:datapack_exporter/use_component_system',
+					displayName: TRANSLATIONS.use_component_system.name,
+					description: TRANSLATIONS.use_component_system.description,
+					defaultValue: false,
+					docsLink: '/docs/exporters/datapack_exporter/settings#use_component_system',
+				}),
 				// Function Toggles
 				include_variant_summon_functions: new Settings.CheckboxSetting({
 					id: 'animated_java:datapack_exporter/include_variant_summon_functions',
@@ -156,6 +163,10 @@ export function loadExporter() {
 			{
 				type: 'setting',
 				settingId: 'animated_java:datapack_exporter/root_entity_nbt',
+			},
+			{
+				type: 'setting',
+				settingId: 'animated_java:datapack_exporter/use_component_system',
 			},
 			{
 				type: 'group',
