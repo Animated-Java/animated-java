@@ -142,3 +142,17 @@ animated_java.panel.variants.tool.edit_variant: Edit Variant
 animated_java.panel.variants.tool.delete_selected_variant: Delete Selected Variant
 animated_java.panel.variants.tool.variant_visible: Variant Selected
 animated_java.panel.variants.tool.variant_not_visible: Variant Not Selected
+
+### Animator
+
+## Timeline
+animated_java.effect_animator.timeline.variant: Variant
+animated_java.effect_animator.timeline.commands: Commands
+
+## Keyframes
+animated_java.effect_animator.keyframes.variant: Variant
+animated_java.effect_animator.keyframes.commands: Commands
+animated_java.effect_animator.keyframes.execute_condition: Execute Condition
+
+# Keyframe Panel
+animated_java.panel.keyframe.keyframe_title: Keyframe ({0})

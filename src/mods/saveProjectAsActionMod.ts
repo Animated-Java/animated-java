@@ -1,8 +1,9 @@
 import { BLUEPRINT_CODEC, BLUEPRINT_FORMAT } from '../blueprintFormat'
+import { PACKAGE } from '../constants'
 import { createBlockbenchMod } from '../util/moddingTools'
 
 createBlockbenchMod(
-	'animated_java:save_project_as',
+	`${PACKAGE.name}:save_project_as`,
 	{
 		action: BarItems.save_project_as as Action,
 		originalClick: (BarItems.save_project_as as Action).click,

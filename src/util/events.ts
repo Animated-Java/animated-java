@@ -20,6 +20,7 @@ export const events = {
 	INJECT_MODS: new PluginEvent('injectMods'),
 	EXTRACT_MODS: new PluginEvent('extractMods'),
 
+	PRE_SELECT_PROJECT: new PluginEvent<ModelProject>('preSelectProject'),
 	SELECT_PROJECT: new PluginEvent<ModelProject>('selectProject'),
 	UNSELECT_PROJECT: new PluginEvent<ModelProject>('deselectProject'),
 
@@ -27,6 +28,8 @@ export const events = {
 	UPDATE_VARIANT: new PluginEvent<Variant>('updateVariant'),
 	DELETE_VARIANT: new PluginEvent<Variant>('deleteVariant'),
 	SELECT_VARIANT: new PluginEvent<Variant>('selectVariant'),
+
+	SELECT_KEYFRAME: new PluginEvent<_Keyframe>('selectKeyframe'),
 }
 
 function injectionHandler() {

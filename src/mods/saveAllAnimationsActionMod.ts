@@ -13,7 +13,7 @@ createBlockbenchMod(
 			if (Format.id === BLUEPRINT_FORMAT.id) {
 				return false
 			}
-			return originalCondition.call(this) as boolean
+			return originalCondition.call(this)
 		}
 		return { ...context, originalCondition }
 	},

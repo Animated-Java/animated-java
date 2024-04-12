@@ -1,8 +1,9 @@
 import { BLUEPRINT_CODEC, BLUEPRINT_FORMAT } from '../blueprintFormat'
+import { PACKAGE } from '../constants'
 import { createBlockbenchMod } from '../util/moddingTools'
 
 createBlockbenchMod(
-	'animated_java:export_over',
+	`${PACKAGE.name}:exportOverAction`,
 	{
 		action: BarItems.export_over as Action,
 		originalClick: (BarItems.export_over as Action).click,
