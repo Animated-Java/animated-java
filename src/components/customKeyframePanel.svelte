@@ -3,8 +3,9 @@
 </script>
 
 <script lang="ts">
-	import { channel } from 'diagnostics_channel'
 	import { translate } from '../util/translation'
+	import CommandsKeyframePanel from './keyframePanels/commandsKeyframePanel.svelte'
+	import VariantKeyframePanel from './keyframePanels/variantKeyframePanel.svelte'
 
 	export let currentPanel: Valuable<HTMLDivElement>
 	export let selectedKeyframe: _Keyframe
@@ -15,24 +16,22 @@
 <div class="container" bind:this={$currentPanel}>
 	<div class="bar flex">
 		{#if selectedKeyframe.channel === 'variant'}
-			<label for="variant_input" class="undefined" style="font-weight: unset;">
-				{translate('effect_animator.timeline.variant')}
-			</label>
-			<input
-				id="variant_input"
-				type="text"
-				class="dark_bordered code keyframe_input tab_target"
-			/>
+			<VariantKeyframePanel {selectedKeyframe} />
 		{:else if selectedKeyframe.channel === 'commands'}
-			<label for="commands_input" class="undefined" style="font-weight: unset;">
-				{translate('effect_animator.timeline.commands')}
-			</label>
-			<input
-				id="commands_input"
-				type="text"
-				class="dark_bordered code keyframe_input tab_target"
-			/>
+			<CommandsKeyframePanel {selectedKeyframe} />
+		{:else}
+			<p>Unknown keyframe channel: '{selectedKeyframe.channel}'</p>
 		{/if}
+	</div>
+	<div class="bar flex">
+		<label for="execute_condition" class="undefined" style="font-weight: unset;">
+			{translate('effect_animator.keyframes.execute_condition')}
+		</label>
+		<input
+			id="execute_condition"
+			type="text"
+			class="dark_bordered code keyframe_input tab_target"
+		/>
 	</div>
 </div>
 

@@ -2,8 +2,8 @@
 	import { type Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
 	import { TextureMap, Variant } from '../variants'
-	import Checkbox from './dialog_items/checkbox.svelte'
-	import LineInput from './dialog_items/lineInput.svelte'
+	import Checkbox from './dialogItems/checkbox.svelte'
+	import LineInput from './dialogItems/lineInput.svelte'
 	import MissingTexture from '../assets/missing_texture.png'
 </script>
 

@@ -1,8 +1,8 @@
 <script lang="ts" , context="module">
-	import Checkbox from './dialog_items/checkbox.svelte'
-	import NumberSlider from './dialog_items/numberSlider.svelte'
-	import LineInput from './dialog_items/lineInput.svelte'
-	import ColorPicker from './dialog_items/colorPicker.svelte'
+	import Checkbox from './dialogItems/checkbox.svelte'
+	import NumberSlider from './dialogItems/numberSlider.svelte'
+	import LineInput from './dialogItems/lineInput.svelte'
+	import ColorPicker from './dialogItems/colorPicker.svelte'
 
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'

@@ -2,14 +2,14 @@
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
 
-	import Checkbox from './dialog_items/checkbox.svelte'
-	import NumberSlider from './dialog_items/numberSlider.svelte'
-	import LineInput from './dialog_items/lineInput.svelte'
-	import Vector2D from './dialog_items/vector2d.svelte'
-	import Select from './dialog_items/select.svelte'
-	import SectionHeader from './dialog_items/sectionHeader.svelte'
-	import FileSelect from './dialog_items/fileSelect.svelte'
-	import FolderSelect from './dialog_items/folderSelect.svelte'
+	import Checkbox from './dialogItems/checkbox.svelte'
+	import NumberSlider from './dialogItems/numberSlider.svelte'
+	import LineInput from './dialogItems/lineInput.svelte'
+	import Vector2D from './dialogItems/vector2d.svelte'
+	import Select from './dialogItems/select.svelte'
+	import SectionHeader from './dialogItems/sectionHeader.svelte'
+	import FileSelect from './dialogItems/fileSelect.svelte'
+	import FolderSelect from './dialogItems/folderSelect.svelte'
 </script>
 
 <script lang="ts">

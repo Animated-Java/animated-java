@@ -167,6 +167,10 @@ export class Variant {
 		const variant = Variant.all.find(v => v.isDefault)
 		if (variant) variant.select()
 	}
+
+	public static getDefault(): Variant {
+		return Variant.all.find(v => v.isDefault) ?? Variant.all[0]
+	}
 }
 
 events.SELECT_PROJECT.subscribe(project => {

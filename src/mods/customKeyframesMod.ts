@@ -27,21 +27,25 @@ function injectCustomKeyframes() {
 	})
 
 	// Add custom keyframe properties to the KeyframeDataPoint class
-	new Property(KeyframeDataPoint, 'string', 'variant', {
+	const variantKeyframeDataPoint = new Property(KeyframeDataPoint, 'string', 'variant', {
 		label: translate('effect_animator.keyframe.variant'),
-		default: 'default',
 		condition: datapoint => datapoint.keyframe.channel === 'variant',
 		exposed: false,
 	})
+	Object.defineProperty(variantKeyframeDataPoint, 'default', {
+		get() {
+			return Variant.getDefault().uuid
+		},
+	})
 	new Property(KeyframeDataPoint, 'string', 'commands', {
 		label: translate('effect_animator.keyframe.commands'),
-		default: 'default',
+		default: '',
 		condition: datapoint => datapoint.keyframe.channel === 'commands',
 		exposed: false,
 	})
 	new Property(KeyframeDataPoint, 'string', 'execute_condition', {
 		label: translate('effect_animator.keyframe.execute_condition'),
-		default: 'default',
+		default: '',
 		condition: datapoint =>
 			['variant', 'commands'].includes(datapoint.keyframe.channel as string),
 		exposed: false,
