@@ -11,7 +11,7 @@ export function injectCustomKeyframePanel(selectedKeyframe: _Keyframe) {
 	injectSvelteCompomponent({
 		svelteComponent: CustomKeyframePanelSvelteComponent,
 		svelteComponentProperties: { currentPanel: CURRENT_PANEL, selectedKeyframe },
-		elementFinder() {
+		elementSelector() {
 			return document.querySelector('#panel_keyframe .panel_vue_wrapper .keyframe_data_point')
 		},
 	})

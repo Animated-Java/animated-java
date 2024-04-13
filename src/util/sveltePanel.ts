@@ -9,7 +9,7 @@ export class SveltePanel extends Panel {
 			id: string
 			// @ts-ignore
 			svelteComponent: SvelteComponentConstructor<SvelteComponent, any>
-			svelteComponentProps: Record<string, any>
+			svelteComponentProperties: Record<string, any>
 			component?: never
 		}
 	) {
@@ -26,7 +26,7 @@ export class SveltePanel extends Panel {
 		void pollPromise(() => document.querySelector(`#${mountId}`)).then(el => {
 			this.instance = new options.svelteComponent({
 				target: el.parentElement,
-				props: options.svelteComponentProps,
+				props: options.svelteComponentProperties,
 			})
 		})
 	}

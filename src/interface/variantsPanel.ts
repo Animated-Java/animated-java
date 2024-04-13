@@ -25,5 +25,5 @@ export const VARIANTS_PANEL = new SveltePanel({
 				Modes.selected.id === Modes.options.paint.id)
 		),
 	svelteComponent: VariantsPanel,
-	svelteComponentProps: {},
+	svelteComponentProperties: {},
 })

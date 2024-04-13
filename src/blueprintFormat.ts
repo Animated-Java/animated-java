@@ -461,7 +461,7 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 		})
 		// Custom title
 		injectSvelteCompomponent({
-			elementFinder: () => {
+			elementSelector: () => {
 				const titles = [...document.querySelectorAll('.project_tab.selected')]
 				titles.filter(title => title.textContent === Project.name)
 				if (titles.length) {

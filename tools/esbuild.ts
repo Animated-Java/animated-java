@@ -16,6 +16,7 @@ import sveltePlugin from './plugins/sveltePlugin'
 import svelteConfig from '../svelte.config.js'
 import inlineImage from 'esbuild-plugin-inline-image'
 import ImportGlobPlugin from 'esbuild-plugin-import-glob'
+import packagerPlugin from './plugins/packagerPlugin'
 
 const PACKAGE = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
 
@@ -162,6 +163,7 @@ async function buildDev() {
 			INFO_PLUGIN,
 			yamlPlugin({}),
 			sveltePlugin(svelteConfig),
+			packagerPlugin(),
 		],
 		format: 'iife',
 		define: DEFINES,
@@ -188,6 +190,7 @@ function buildProd() {
 				INFO_PLUGIN,
 				yamlPlugin({}),
 				sveltePlugin(svelteConfig),
+				packagerPlugin(),
 			],
 			keepNames: true,
 			banner: createBanner(),

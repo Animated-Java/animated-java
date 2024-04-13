@@ -10,7 +10,7 @@ import { translate } from '../util/translation'
 
 function injectTitle() {
 	injectSvelteCompomponent({
-		elementFinder() {
+		elementSelector() {
 			const dialogTitle = document.querySelectorAll('.dialog_handle')
 			if (
 				dialogTitle.length > 0 &&
