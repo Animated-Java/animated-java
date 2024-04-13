@@ -86,13 +86,13 @@ export class Variant {
 		Variant.all.push(this)
 		this.select()
 		events.CREATE_VARIANT.dispatch(this)
-		console.log(`Created variant: ${this.name} - ${this.id}`)
+		// console.log(`Created variant: ${this.name} - ${this.id}`)
 	}
 
 	public select() {
 		if (Variant.selected) Variant.selected.unselect()
 		Variant.selected = this
-		console.log(`Selected variant: ${this.name}`)
+		// console.log(`Selected variant: ${this.name}`)
 		Canvas.updateAllFaces()
 		events.SELECT_VARIANT.dispatch(this)
 	}

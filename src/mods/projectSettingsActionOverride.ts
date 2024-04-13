@@ -1,6 +1,6 @@
 import PACKAGE from '../../package.json'
 import { BLUEPRINT_FORMAT } from '../blueprintFormat'
-import { openBlueprintSettingsDialog } from '../interface/projectSettingsDialog'
+import { openBlueprintSettingsDialog } from '../interface/blueprintSettingsDialog'
 import { createBlockbenchMod } from '../util/moddingTools'
 
 createBlockbenchMod(

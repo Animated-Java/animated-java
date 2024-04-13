@@ -13,7 +13,7 @@
 	if (!(value.get() || options[value.get()])) value.set(defaultOption)
 
 	// @ts-ignore
-	const selectInput = new Interface.CustomElements.SelectInput('test', {
+	const selectInput = new Interface.CustomElements.SelectInput('dialog-select', {
 		options,
 		value: value.get(),
 		onChange() {

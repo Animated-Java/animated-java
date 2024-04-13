@@ -6,7 +6,7 @@ import { compileDataPack } from '../systems/datapackCompiler'
 import { events } from '../util/events'
 import { createAction, createBarMenu } from '../util/moddingTools'
 import { translate } from '../util/translation'
-import { openBlueprintSettingsDialog } from './projectSettingsDialog'
+import { openBlueprintSettingsDialog } from './blueprintSettingsDialog'
 
 function createIconImg() {
 	const IMG = document.createElement('img')

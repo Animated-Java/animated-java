@@ -5,7 +5,7 @@ import { injectSvelteCompomponent } from '../util/injectSvelte'
 import BlueprintSettingsDialogSvelteComponent from '../components/blueprintSettingsDialog.svelte'
 import BlueprintSettingsDialogTitleSvelteComponent from '../components/blueprintSettingsDialogTitle.svelte'
 import { toSafeFuntionName } from '../util/minecraftUtil'
-import { defaultValues } from '../projectSettings'
+import { defaultValues } from '../blueprintSettings'
 import { translate } from '../util/translation'
 
 function injectTitle() {
@@ -31,13 +31,13 @@ function getSettings(): Record<string, Valuable<any>> {
 	return {
 		blueprintName: new Valuable(Project!.name, value => {
 			if (!value) {
-				return defaultValues.blueprintName
+				return 'My Blueprint'
 			}
 			return value
 		}),
 		exportNamespace: new Valuable(Project!.animated_java.export_namespace, value => {
 			if (!value) {
-				return defaultValues.exportNamespace
+				return defaultValues.export_namespace
 			}
 			return toSafeFuntionName(value)
 		}),
@@ -49,7 +49,7 @@ function getSettings(): Record<string, Valuable<any>> {
 		enableResourcePack: new Valuable(Project!.animated_java.enable_resource_pack),
 		displayItem: new Valuable(Project!.animated_java.display_item, value => {
 			if (!value) {
-				return defaultValues.displayItem
+				return defaultValues.display_item
 			}
 			return value
 		}),
@@ -67,6 +67,7 @@ function getSettings(): Record<string, Valuable<any>> {
 			Project!.animated_java.enable_advanced_data_pack_settings
 		),
 		dataPack: new Valuable(Project!.animated_java.data_pack),
+		rootEntitySummonCommands: new Valuable(Project!.animated_java.root_entity_summon_commands),
 	}
 }
 
@@ -93,6 +94,7 @@ function setSettings(settings: any) {
 	Project.animated_java.enable_advanced_data_pack_settings =
 		settings.enableAdvancedDataPackSettings.get()
 	Project.animated_java.data_pack = settings.dataPack.get()
+	Project.animated_java.root_entity_summon_commands = settings.rootEntitySummonCommands.get()
 	console.log('Successfully saved project settings', Project)
 }
 

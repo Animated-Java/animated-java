@@ -78,6 +78,9 @@ animated_java.dialog.blueprint_settings.data_pack.error.not_a_folder: The select
 animated_java.dialog.blueprint_settings.data_pack.error.missing_pack_mcmeta: The selected folder is missing a pack.mcmeta file!
 animated_java.dialog.blueprint_settings.data_pack.error.missing_data_folder: The selected Data Pack is missing a data folder!
 
+animated_java.dialog.blueprint_settings.root_entity_summon_commands.title: Custom On-Summon Commands
+animated_java.dialog.blueprint_settings.root_entity_summon_commands.description: Commands to run as the root entity when summoned. Treat this text input as a normal mcfunction.
+
 ## Bone Config Dialog
 animated_java.dialog.bone_config.title: Bone Config
 
@@ -132,6 +135,20 @@ animated_java.dialog.variant_config.texture_map.no_mappings: Variant has no mapp
 ## Old AJModel Loader Dialog
 animated_java.action.upgrade_old_aj_model_loader.name: Upgrade Old .ajmodel
 animated_java.dialog.upgrade_old_aj_model_loader.title: Upgrade Old .ajmodel
+
+## Animation Properties Dialog
+animated_java.dialog.animation_properties.title: Animation Properties ({0})
+
+animated_java.dialog.animation_properties.animation_name.title: Animation Name
+animated_java.dialog.animation_properties.animation_name.description: The name of the animation.
+
+animated_java.dialog.animation_properties.loop_mode.title: Loop Mode
+animated_java.dialog.animation_properties.loop_mode.description: Determines how the animation should loop. Once - The animation will play once and stop. Hold - The animation will play once and hold the last frame. Loop - The animation will loop indefinitely.
+animated_java.dialog.animation_properties.loop_mode.options.once: Once
+animated_java.dialog.animation_properties.loop_mode.options.hold: Hold
+animated_java.dialog.animation_properties.loop_mode.options.loop: Loop
+animated_java.dialog.animation_properties.animation_name.error.empty: The animation name cannot be empty!
+animated_java.dialog.animation_properties.animation_name.error.invalid_characters: The animation name contains invalid characters! Animation names should only contain letters, numbers, underscores, and periods.
 
 ### Panels
 

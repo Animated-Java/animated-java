@@ -14,6 +14,7 @@
 
 <script lang="ts">
 	import { MINECRAFT_REGISTRY } from '../util/minecraftRegistries'
+	import CodeInput from './dialogItems/codeInput.svelte'
 
 	export let blueprintName: Valuable<string>
 	export let exportNamespace: Valuable<string>
@@ -34,6 +35,7 @@
 	export let enableDataPack: Valuable<boolean>
 	export let enableAdvancedDataPackSettings: Valuable<boolean>
 	export let dataPack: Valuable<string>
+	export let rootEntitySummonCommands: Valuable<string>
 
 	function displayItemChecker(value: string): { type: string; message: string } {
 		if (value === '') {
@@ -350,6 +352,13 @@
 					valueChecker={dataPackFolderChecker}
 				/>
 			{/if}
+			<CodeInput
+				label={translate('dialog.blueprint_settings.root_entity_summon_commands.title')}
+				tooltip={translate(
+					'dialog.blueprint_settings.root_entity_summon_commands.description',
+				)}
+				bind:value={rootEntitySummonCommands}
+			/>
 		{/if}
 	{/if}
 </div>

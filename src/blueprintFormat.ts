@@ -1,3 +1,4 @@
+import * as blueprintSettings from './blueprintSettings'
 import ProjectTitleSvelteComponent from './components/projectTitle.svelte'
 import { PACKAGE } from './constants'
 import { injectSvelteCompomponent } from './util/injectSvelte'
@@ -403,24 +404,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 })
 
 export function getDefaultProjectSettings(): ModelProject['animated_java'] {
-	return {
-		export_namespace: '',
-		// Plugin Settings
-		enable_plugin_mode: false,
-		// Resource Pack Settings
-		enable_resource_pack: true,
-		display_item: '',
-		customModelDataOffset: 0,
-		enable_advanced_resource_pack_settings: false,
-		resource_pack: '',
-		display_item_path: '',
-		model_folder: '',
-		texture_folder: '',
-		// Data Pack Settings
-		enable_data_pack: true,
-		enable_advanced_data_pack_settings: false,
-		data_pack: '',
-	}
+	return blueprintSettings.defaultValues
 }
 
 /** ANCHOR
@@ -448,7 +432,16 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 	onSetup(project, newModel) {
 		if (!Project) return
 		console.log('Animated Java Blueprint format setup')
-		Project.animated_java ??= getDefaultProjectSettings()
+		const defaults = getDefaultProjectSettings()
+		Project.animated_java ??= defaults
+		for (const [key, value] of Object.entries(defaults) as Array<
+			[keyof ModelProject['animated_java'], any]
+		>) {
+			if (Project.animated_java[key] === undefined) {
+				// @ts-ignore
+				Project.animated_java[key] = value
+			}
+		}
 
 		Project.variants ??= []
 		if (newModel) {
