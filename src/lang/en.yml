@@ -13,14 +13,16 @@ animated_java.dialog.blueprint_settings.advanced_settings_warning: Advanced sett
 animated_java.dialog.blueprint_settings.blueprint_name.title: Blueprint Name
 animated_java.dialog.blueprint_settings.blueprint_name.description: The name of the Blueprint. Only used to identify the project in the workspace.
 
-animated_java.dialog.blueprint_settings.export_namespace.title: Export Namespace
-animated_java.dialog.blueprint_settings.export_namespace.description: The namespace to export the project to. This is the namespace that will be used in the exported Resource Pack and Data Pack.
-
 animated_java.dialog.blueprint_settings.texture_size.title: Texture Size
 animated_java.dialog.blueprint_settings.texture_size.description: The resolution of the UV editor. This should be the same size as the largest texture. For best results use a square texture, and make sure it's size is a power of 2.
 animated_java.dialog.blueprint_settings.texture_size.warning.not_square: The Texture Size should be square for best results.
 animated_java.dialog.blueprint_settings.texture_size.warning.not_a_power_of_2: The Texture Size should be a power of 2 for best results.
 animated_java.dialog.blueprint_settings.texture_size.error.does_not_match_largest_texture: The Texture Size should match the largest texture's size.
+
+animated_java.dialog.blueprint_settings.export_settings.title: Export Settings
+
+animated_java.dialog.blueprint_settings.export_namespace.title: Export Namespace
+animated_java.dialog.blueprint_settings.export_namespace.description: The namespace to export the project to. This is the namespace that will be used in the exported Resource Pack and Data Pack.
 
 animated_java.dialog.blueprint_settings.enable_plugin_mode.title: Plugin Mode
 animated_java.dialog.blueprint_settings.enable_plugin_mode.description: Whether or not to enable Plugin Mode. Enable when you plan to use the .ajblueprint file in a plugin instead of a Resource Pack and/or Data Pack.

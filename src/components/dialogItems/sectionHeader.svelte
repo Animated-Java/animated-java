@@ -3,18 +3,21 @@
 </script>
 
 <div class="dialog_bar form_bar animated-java-section-header">
-	<h3 class="name_space_left">{label}</h3>
+	<h4 class="name_space_left">{label}</h4>
 </div>
 
 <style>
 	.animated-java-section-header {
 		display: flex;
+		flex-direction: row;
 		justify-content: flex-start;
 		align-items: center;
 	}
-	h3 {
-		background-color: var(--color-button);
+	h4 {
 		padding: 0px 8px;
-		flex-grow: 2;
+		flex-grow: 1;
+		font-size: 1.12em;
+		border-bottom: 2px solid var(--color-back);
+		background-color: var(--color-button);
 	}
 </style>

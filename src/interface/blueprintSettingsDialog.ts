@@ -111,7 +111,7 @@ export function openBlueprintSettingsDialog() {
 		svelteComponentProperties: settings,
 		preventKeybinds: true,
 		onOpen() {
-			injectTitle()
+			// injectTitle()
 		},
 		onConfirm() {
 			setSettings(settings)

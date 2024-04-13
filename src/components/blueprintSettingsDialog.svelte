@@ -205,12 +205,6 @@
 		bind:value={blueprintName}
 	/>
 
-	<LineInput
-		label={translate('dialog.blueprint_settings.export_namespace.title')}
-		tooltip={translate('dialog.blueprint_settings.export_namespace.description')}
-		bind:value={exportNamespace}
-	/>
-
 	<Vector2D
 		label={translate('dialog.blueprint_settings.texture_size.title')}
 		tooltip={translate('dialog.blueprint_settings.texture_size.description')}
@@ -221,6 +215,14 @@
 		minY={2}
 		maxY={4096}
 		valueChecker={textureSizeChecker}
+	/>
+
+	<SectionHeader label={translate('dialog.blueprint_settings.export_settings.title')} />
+
+	<LineInput
+		label={translate('dialog.blueprint_settings.export_namespace.title')}
+		tooltip={translate('dialog.blueprint_settings.export_namespace.description')}
+		bind:value={exportNamespace}
 	/>
 
 	<Checkbox
@@ -364,6 +366,11 @@
 </div>
 
 <style>
+	div {
+		padding-right: 8px;
+		overflow-y: auto;
+		max-height: 50rem;
+	}
 	.warning {
 		color: var(--color-warning);
 		font-family: var(--font-code);

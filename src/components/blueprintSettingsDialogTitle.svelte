@@ -1,5 +1,4 @@
 <script lang="ts" context="module">
-	// @ts-ignore
 	import AnimatedJavaIcon from '../assets/animated_java_icon.svg'
 	import { translate } from '../util/translation'
 </script>

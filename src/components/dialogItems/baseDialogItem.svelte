@@ -15,6 +15,8 @@
 	{#if tooltip}
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<i class="fa fa-question dialog_form_description" on:click={onQuestionMarkClick} />
+	{:else}
+		<i class="fa fa-question dialog_form_description" style="visibility: hidden" />
 	{/if}
 </div>
 <div class="base_dialog_item">

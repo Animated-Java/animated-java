@@ -1,7 +1,7 @@
 
 # Blockbench
-- [ ] Custom animation properties dialog
 - [x] ~~Add a root NBT blueprint setting~~ Add a custom summon commands setting.
+- [ ] Custom animation properties dialog
 - [ ] Prevent the user setting their export namespace to 'global' or 'minecraft'
 - [ ] Add affected bones list to variant, and animation properties.
 - [ ] Add an option to blueprint settings to export the raw .mcb file instead of the generated Data Pack.
