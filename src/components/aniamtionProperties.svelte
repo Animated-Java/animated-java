@@ -8,10 +8,22 @@
 </script>
 
 <script lang="ts">
+	import Collection from './dialogItems/collection.svelte'
 	import Select from './dialogItems/select.svelte'
 
 	export let animationName: Valuable<string>
 	export let loopMode: Valuable<string>
+	export let excludedBones: Valuable<Array<{ name: string; value: string }>>
+	export let invertExcludedBones: Valuable<boolean>
+
+	const availableBones = Group.all.map(group => {
+		const entry = excludedBones.get().find(bone => bone.value === group.uuid)
+		if (entry) {
+			entry.name = group.name
+		}
+
+		return { name: group.name, value: group.uuid }
+	})
 
 	function animationNameValueChecker(value: string): { type: string; message: string } {
 		if (value.trim().length === 0) {
@@ -49,6 +61,23 @@
 		}}
 		defaultOption={'once'}
 		bind:value={loopMode}
+	/>
+
+	<Collection
+		label={$invertExcludedBones
+			? translate('dialog.animation_properties.included_bones.title')
+			: translate('dialog.animation_properties.excluded_bones.title')}
+		tooltip={$invertExcludedBones
+			? translate('dialog.animation_properties.included_bones.description')
+			: translate('dialog.animation_properties.excluded_bones.description')}
+		availableItems={availableBones}
+		bind:includedItems={excludedBones}
+	/>
+
+	<Checkbox
+		label={translate('dialog.animation_properties.invert_excluded_bones.title')}
+		tooltip={translate('dialog.animation_properties.invert_excluded_bones.description')}
+		bind:checked={invertExcludedBones}
 	/>
 </div>
 

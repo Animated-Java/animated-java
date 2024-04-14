@@ -11,6 +11,7 @@ import './interface/variantsPanel'
 import './interface/importOldAJModelLoader'
 import './interface/customKeyframePanel'
 // Blockbench Mods
+import './mods/animationPropertiesMod'
 import './mods/animationPropertiesAction'
 import './mods/modelFormatMod'
 import './mods/customKeyframesMod'

@@ -14,9 +14,15 @@
 	</div>
 	{#if tooltip}
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
-		<i class="fa fa-question dialog_form_description" on:click={onQuestionMarkClick} />
+		<i
+			class="fa fa-question dialog_form_description dialog-form-description"
+			on:click={onQuestionMarkClick}
+		/>
 	{:else}
-		<i class="fa fa-question dialog_form_description" style="visibility: hidden" />
+		<i
+			class="fa fa-question dialog_form_description dialog-form-description"
+			style="visibility: hidden"
+		/>
 	{/if}
 </div>
 <div class="base_dialog_item">
@@ -35,7 +41,7 @@
 	.base_dialog_item {
 		display: flex;
 		flex-direction: row;
-		align-items: center;
+		/* align-items: center; */
 		justify-content: space-between;
 	}
 	.slot_container {
@@ -53,5 +59,8 @@
 	}
 	.text_icon {
 		margin-right: 8px;
+	}
+	.dialog-form-description {
+		padding-top: 12px;
 	}
 </style>

@@ -133,13 +133,46 @@ dir <%export_namespace%> {
 	}
 
 	function summon {
-		# Args: {variant: int, animation: int, frame: int}
+		#Args: {args:{variant: string, animation: string, frame: int, start_animation: boolean}}
 		# frame is ignored unless animation is specified.
 
 		summon minecraft:item_display ~ ~ ~ {Tags:['aj.rig_entity','aj.root_entity','aj.$<project_name>.root','aj.new'],Passengers:[]}
 		execute as @e[type=item_display,tag=aj.new,limit=1,distance=..0.01] run {
 			execute store result score @s aj.id run scoreboard players add aj.last_id aj.id 1
 			tag @s remove aj.new
+
+			data set value aj:temp args set value {variant:'', animation:'', frame: 0}
+			$execute store success score #success aj.i run data modify storage aj:temp args set value $(args)
+
+			# Variant Arguement
+			execute if data storage aj:temp args.variant run {
+				execute if data storage aj:temp {args:{variant:''}} run return run tellraw @a 'The variant argument cannot be an empty string.'
+				# Attempt to apply the variant, if it fails, print an error.
+				execute store success score #success aj.i run { with storage aj:temp args
+					$execute store success score #success aj.i run function animated_java:<%export_namespace%>/variants/$(variant)/apply
+					execute if score #success aj.i matches 1 run return 1
+					return fail
+				}
+				$execute unless score #success aj.i matches 1 run return run tellraw @a 'The variant $(variant) does not exist.'
+			}
+
+			# Animation, Frame, and Start Animation Arguments
+			execute if data storage aj:temp args.animation run {
+				execute if data storage aj:temp {args:{animation:''}} run return run tellraw @a 'The animation argument cannot be an empty string.'
+				execute store result score #frame aj.i run data get storage aj:temp args.frame
+				execute if score #frame aj.i matches ..-1 run return run tellraw @a 'The frame argument must be a non-negative integer.'
+				execute store result storage aj:temp args.frame int 1 run scoreboard players get #frame aj.i
+				# Attempt to apply the animation frame, if it fails, print an error.
+				execute store success score #success aj.i run { with storage aj:temp args
+					$execute store success score #success aj.i run function animated_java:<%export_namespace%>/animations/$(animation)/apply_frame {frame: $(frame)}
+					execute if score #success aj.i matches 1 run return 1
+					return fail
+				}
+				$execute unless score #success aj.i matches 1 run return run tellraw @a 'The animation $(animation) does not exist.'
+				execute if data storage aj:temp {args:{start_animation: true}} run { with storage aj:temp args
+					$function animated_java:<%export_namespace%>/animations/$(animation)/resume
+				}
+			}
 		}
 	}
 

@@ -1,7 +1,8 @@
 import { isCurrentFormat } from '../blueprintFormat'
 import { PACKAGE } from '../constants'
 import { roundToN } from '../util/misc'
-import { createBlockbenchMod } from '../util/moddingTools'
+import { ContextProperty, createBlockbenchMod } from '../util/moddingTools'
+import { translate } from '../util/translation'
 
 export const DEFAULT_SNAPPING_VALUE = 20
 
@@ -36,5 +37,39 @@ createBlockbenchMod(
 	},
 	context => {
 		Blockbench.Animation.prototype.extend = context.originalExtend
+	}
+)
+
+createBlockbenchMod(
+	`${PACKAGE.name}:animationPropertiesMod`,
+	{
+		excludedBonesProperty: undefined as ContextProperty<'array'>,
+		invertExcludedBonesProperty: undefined as ContextProperty<'boolean'>,
+	},
+	context => {
+		context.excludedBonesProperty = new Property(
+			Blockbench.Animation,
+			'array',
+			'excluded_bones',
+			{
+				condition: () => isCurrentFormat(),
+				label: translate('animation.excluded_bones'),
+				default: [],
+			}
+		)
+		context.invertExcludedBonesProperty = new Property(
+			Blockbench.Animation,
+			'boolean',
+			'invert_excluded_bones',
+			{
+				condition: () => isCurrentFormat(),
+				label: translate('animation.invert_excluded_bones'),
+				default: false,
+			}
+		)
+		return context
+	},
+	context => {
+		context.excludedBonesProperty?.delete()
 	}
 )

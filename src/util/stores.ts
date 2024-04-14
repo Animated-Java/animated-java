@@ -28,3 +28,21 @@ export class Valuable<T> implements Writable<T> {
 		return this.store.subscribe(run, invalidate)
 	}
 }
+
+export class SetStore<T> extends Valuable<Set<T>> {
+	constructor(value: Set<T>) {
+		super(value, (value: Set<T>) => new Set(value))
+	}
+
+	add(value: T) {
+		const set = this.get()
+		set.add(value)
+		this.set(set)
+	}
+
+	delete(value: T) {
+		const set = this.get()
+		set.delete(value)
+		this.set(set)
+	}
+}

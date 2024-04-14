@@ -17,7 +17,6 @@
 
 <style>
 	.checkbox_bar {
-		display: flex;
 		flex-direction: row;
 		align-items: center;
 	}

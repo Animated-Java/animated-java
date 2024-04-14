@@ -82,9 +82,9 @@ export function getAnimationNodes(
 
 	for (const [uuid, node] of Object.entries(nodeMap)) {
 		if (!node.node.export) continue
-		const included = animation.excludedBones.find(b => b === uuid)
+		const included = animation.excluded_bones.find(b => b === uuid)
 		// Skip excluded bones, or include only excluded bones, based on invertExcludedBones.
-		if (animation.invertExcludedBones ? included : !included) continue
+		if (animation.invert_excluded_bones ? included : !included) continue
 
 		const prevFrame = previousFrame[uuid]
 		let interpolation: IAnimationNode['interpolation'] = undefined

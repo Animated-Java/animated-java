@@ -7,6 +7,8 @@ import { translate } from '../util/translation'
 export function openAnimationPropertiesDialog(animation: _Animation) {
 	const animationName = new Valuable(animation.name)
 	const loopMode = new Valuable(animation.loop)
+	const excludedBones = new Valuable(animation.excluded_bones)
+	const invertExcludedBones = new Valuable(animation.invert_excluded_bones)
 
 	new SvelteDialog({
 		id: `${PACKAGE.name}:animationPropertiesDialog`,
@@ -16,12 +18,16 @@ export function openAnimationPropertiesDialog(animation: _Animation) {
 		svelteComponentProperties: {
 			animationName,
 			loopMode,
+			excludedBones,
+			invertExcludedBones,
 		},
 		preventKeybinds: true,
 		onConfirm() {
 			animation.name = animationName.get()
 			animation.createUniqueName(Blockbench.Animation.all)
 			animation.loop = loopMode.get()
+			animation.excluded_bones = excludedBones.get()
+			animation.invert_excluded_bones = invertExcludedBones.get()
 		},
 	}).show()
 }
