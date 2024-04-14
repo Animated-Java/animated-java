@@ -14,7 +14,6 @@
 	export let animationName: Valuable<string>
 	export let loopMode: Valuable<string>
 	export let excludedBones: Valuable<Array<{ name: string; value: string }>>
-	export let invertExcludedBones: Valuable<boolean>
 
 	const availableBones = Group.all.map(group => {
 		const entry = excludedBones.get().find(bone => bone.value === group.uuid)
@@ -64,21 +63,27 @@
 	/>
 
 	<Collection
-		label={$invertExcludedBones
-			? translate('dialog.animation_properties.included_bones.title')
-			: translate('dialog.animation_properties.excluded_bones.title')}
-		tooltip={$invertExcludedBones
-			? translate('dialog.animation_properties.included_bones.description')
-			: translate('dialog.animation_properties.excluded_bones.description')}
+		tooltip={translate('dialog.animation_properties.bone_lists.description')}
+		availableItemsColumnLable={translate('dialog.animation_properties.included_bones.title')}
+		availableItemsColumnTooltip={translate(
+			'dialog.animation_properties.included_bones.description',
+		)}
+		includedItemsColumnLable={translate('dialog.animation_properties.excluded_bones.title')}
+		includedItemsColumnTooltip={translate(
+			'dialog.animation_properties.excluded_bones.description',
+		)}
+		swapColumnsButtonTooltip={translate(
+			'dialog.animation_properties.swap_columns_button.tooltip',
+		)}
 		availableItems={availableBones}
 		bind:includedItems={excludedBones}
 	/>
 
-	<Checkbox
+	<!-- <Checkbox
 		label={translate('dialog.animation_properties.invert_excluded_bones.title')}
 		tooltip={translate('dialog.animation_properties.invert_excluded_bones.description')}
 		bind:checked={invertExcludedBones}
-	/>
+	/> -->
 </div>
 
 <style>

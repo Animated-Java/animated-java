@@ -152,15 +152,12 @@ animated_java.dialog.animation_properties.loop_mode.options.loop: Loop
 animated_java.dialog.animation_properties.animation_name.error.empty: The animation name cannot be empty!
 animated_java.dialog.animation_properties.animation_name.error.invalid_characters: The animation name contains invalid characters! Animation names should only contain letters, numbers, underscores, and periods.
 
+animated_java.dialog.animation_properties.bone_lists.description: A list of bones to include or exclude from the animation. Only bones in the included list will be modified by the animation, and bones in the excluded list will be ignored.
 animated_java.dialog.animation_properties.excluded_bones.title: Excluded Bones
 animated_java.dialog.animation_properties.excluded_bones.description: A list of bones to exclude from the animation. These bones will not be modified by the animation.
 animated_java.dialog.animation_properties.included_bones.title: Included Bones
 animated_java.dialog.animation_properties.included_bones.description: A list of bones to include in the animation. Only these bones will be modified by the animation.
-animated_java.dialog.animation_properties.no_more_bones.description: No more bones to add!
-animated_java.dialog.animation_properties.add_bone.description: Add a bone to the list.
-
-animated_java.dialog.animation_properties.invert_excluded_bones.title: Invert Excluded Bones
-animated_java.dialog.animation_properties.invert_excluded_bones.description: Whether or not to invert the excluded bones list. If enabled, only the bones in the list will be modified by the animation.
+animated_java.dialog.animation_properties.swap_columns_button.tooltip: Swap Lists
 
 ### Panels
 

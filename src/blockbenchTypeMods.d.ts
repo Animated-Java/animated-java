@@ -32,7 +32,6 @@ declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface _Animation {
 		excluded_bones: CollectionItem[]
-		invert_excluded_bones: boolean
 	}
 
 	interface Group {

@@ -44,7 +44,6 @@ createBlockbenchMod(
 	`${PACKAGE.name}:animationPropertiesMod`,
 	{
 		excludedBonesProperty: undefined as ContextProperty<'array'>,
-		invertExcludedBonesProperty: undefined as ContextProperty<'boolean'>,
 	},
 	context => {
 		context.excludedBonesProperty = new Property(
@@ -55,16 +54,6 @@ createBlockbenchMod(
 				condition: () => isCurrentFormat(),
 				label: translate('animation.excluded_bones'),
 				default: [],
-			}
-		)
-		context.invertExcludedBonesProperty = new Property(
-			Blockbench.Animation,
-			'boolean',
-			'invert_excluded_bones',
-			{
-				condition: () => isCurrentFormat(),
-				label: translate('animation.invert_excluded_bones'),
-				default: false,
 			}
 		)
 		return context
