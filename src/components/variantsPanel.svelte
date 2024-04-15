@@ -1,46 +1,53 @@
 <script lang="ts" context="module">
 	import { translate } from '../util/translation'
 	import { flip } from 'svelte/animate'
-	import { dndzone } from 'svelte-dnd-action'
+	import { SHADOW_ITEM_MARKER_PROPERTY_NAME, dndzone } from 'svelte-dnd-action'
 	import { Variant } from '../variants'
 	import { events } from '../util/events'
 	import { openVariantConfigDialog } from '../interface/variantConfigDialog'
+	import { fade } from 'svelte/transition'
+	import { cubicIn } from 'svelte/easing'
+
+	type LocalVariant = { id: number; value: Variant }
 
 	const flipDurationMs = 100
 </script>
 
 <script lang="ts">
-	let localVariants: Variant[] = []
+	let localVariants: LocalVariant[] = []
+
+	function updateLocalVariants() {
+		localVariants = Variant.all.map((v, i) => ({ id: i, value: v }))
+	}
 
 	events.CREATE_VARIANT.subscribe(() => {
-		localVariants = Variant.all
+		updateLocalVariants()
 	})
 
 	events.UPDATE_VARIANT.subscribe(() => {
-		localVariants = Variant.all
+		updateLocalVariants()
 	})
 
 	events.DELETE_VARIANT.subscribe(() => {
-		localVariants = Variant.all
+		updateLocalVariants()
 	})
 
 	events.SELECT_PROJECT.subscribe(() => {
 		Variant.selectDefault()
-		localVariants = Variant.all
+		updateLocalVariants()
 	})
 
 	events.SELECT_VARIANT.subscribe(() => {
-		localVariants = Variant.all
+		updateLocalVariants()
 	})
 
 	function createVariant() {
 		new Variant('New Variant')
-		console.log(Variant.all.map(v => v.name))
 	}
 
 	function selectVariant(variant: Variant) {
 		variant.select()
-		localVariants = Variant.all
+		updateLocalVariants()
 	}
 
 	function deleteVariant(variant: Variant) {
@@ -48,8 +55,12 @@
 	}
 
 	function handleSort(e: any) {
-		Variant.all = e.detail.items
-		localVariants = Variant.all
+		localVariants = e.detail.items
+	}
+
+	function finalizeSort(e: any) {
+		localVariants = e.detail.items
+		Variant.all = localVariants.map((item: LocalVariant) => item.value)
 	}
 </script>
 
@@ -80,31 +91,36 @@
 		class="variants_list"
 		use:dndzone={{ items: localVariants, flipDurationMs, dropTargetStyle: {} }}
 		on:consider={handleSort}
-		on:finalize={handleSort}
+		on:finalize={finalizeSort}
 	>
-		{#key localVariants}
-			{#each localVariants as item (item.id)}
-				<!-- svelte-ignore a11y-click-events-have-key-events -->
-				<li
-					class={item === Variant.selected
-						? 'variant_item selected_variant_item'
-						: 'variant_item'}
-					animate:flip={{ duration: flipDurationMs }}
-					on:click={() => selectVariant(item)}
-				>
+		{#each localVariants as item (item.id)}
+			<!-- svelte-ignore a11y-click-events-have-key-events -->
+			<li
+				class={item.value === Variant.selected
+					? 'variant_item selected_variant_item'
+					: 'variant_item'}
+				animate:flip={{ duration: flipDurationMs }}
+				on:click={() => selectVariant(item.value)}
+			>
+				{#if item[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
+					<div
+						style="visibility: visible !important; position: relative; top: 0; left: 0; border-bottom: 2px solid var(--color-accent); width: 100%; height: 15px;"
+						in:fade={{ duration: 150, easing: cubicIn }}
+					></div>
+				{:else}
 					<i class="material-icons icon in_list_button">texture</i>
 					<div class="variant_item_name">
-						{item.displayName}
+						{item.value.displayName}
 					</div>
 					<div class="spacer" />
-					{#if !item.isDefault}
+					{#if !item.value.isDefault}
 						<i
 							class="material-icons icon in_list_button"
 							title={translate('panel.variants.tool.edit_variant')}
-							on:click={() => openVariantConfigDialog(item)}>edit</i
+							on:click={() => openVariantConfigDialog(item.value)}>edit</i
 						>
 					{/if}
-					{#if Variant.selected === item}
+					{#if Variant.selected === item.value}
 						<i
 							class="material-icons icon in_list_button"
 							title={translate('panel.variants.tool.variant_visible')}>visibility</i
@@ -116,16 +132,16 @@
 							>visibility_off</i
 						>
 					{/if}
-					{#if !item.isDefault}
+					{#if !item.value.isDefault}
 						<!-- svelte-ignore a11y-click-events-have-key-events -->
 						<i
 							class="material-icons icon in_list_button"
-							on:click={() => deleteVariant(item)}>delete</i
+							on:click={() => deleteVariant(item.value)}>delete</i
 						>
 					{/if}
-				</li>
-			{/each}
-		{/key}
+				{/if}
+			</li>
+		{/each}
 	</ul>
 </div>
 
@@ -150,9 +166,14 @@
 		justify-content: flex-start;
 		padding: 4px;
 		cursor: unset !important;
+		min-height: 32px;
+		max-height: 32px;
 	}
 	.variant_item_name {
 		margin-left: 8px;
+	}
+	.variant_item:hover {
+		color: var(--color-light);
 	}
 	.in_list_button_disabled {
 		color: var(--color-subtle_text);

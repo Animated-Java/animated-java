@@ -75,6 +75,7 @@ export class Variant {
 	public textureMap: TextureMap
 	public isDefault = false
 	public generateNameFromDisplayName = true
+	public excludedBones: CollectionItem[] = []
 
 	constructor(displayName: string, isDefault = false) {
 		this.displayName = Variant.makeDisplayNameUnique(this, displayName)

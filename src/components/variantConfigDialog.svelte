@@ -8,12 +8,24 @@
 </script>
 
 <script lang="ts">
+	import Collection from './dialogItems/collection.svelte'
+
 	export let variant: Variant
 	export let displayName: Valuable<string>
 	export let name: Valuable<string>
 	export let uuid: Valuable<string>
 	export let textureMap: TextureMap
 	export let generateNameFromDisplayName: Valuable<boolean>
+	export let excludedBones: Valuable<Array<{ name: string; value: string }>>
+
+	const availableBones = Group.all.map(group => {
+		const entry = excludedBones.get().find(bone => bone.value === group.uuid)
+		if (entry) {
+			entry.name = group.name
+		}
+
+		return { name: group.name, value: group.uuid }
+	})
 
 	let textureMapUpdated = 0
 
@@ -116,7 +128,7 @@
 		{$uuid}
 	</div>
 
-	<div class="toolbar">
+	<div class="toolbar" style="margin: 8px 0;">
 		<div>
 			{translate('dialog.variant_config.texture_map.title')}
 		</div>
@@ -189,6 +201,16 @@
 			{/each}
 		{/key}
 	</lu>
+	<Collection
+		tooltip={translate('dialog.variant_config.bone_lists.description')}
+		availableItemsColumnLable={translate('dialog.variant_config.included_bones.title')}
+		availableItemsColumnTooltip={translate('dialog.variant_config.included_bones.description')}
+		includedItemsColumnLable={translate('dialog.variant_config.excluded_bones.title')}
+		includedItemsColumnTooltip={translate('dialog.variant_config.excluded_bones.description')}
+		swapColumnsButtonTooltip={translate('dialog.variant_config.swap_columns_button.tooltip')}
+		availableItems={availableBones}
+		bind:includedItems={excludedBones}
+	/>
 </div>
 
 <style>

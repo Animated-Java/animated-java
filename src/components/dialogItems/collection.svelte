@@ -45,29 +45,11 @@
 		)
 	}
 
-	function hasItem(item: CollectionItem) {
-		return includedItems.get().includes(item)
-	}
-
 	function swapColumns() {
 		const temp = availableItemsList
 		availableItemsList = includedItemsList
 		includedItemsList = temp
 		finalizeSort()
-	}
-
-	function addItem(item: CollectionItem) {
-		includedItems.update(items => {
-			if (items.includes(item)) {
-				Blockbench.showQuickMessage('Cannot add the same item twice!')
-				return items
-			}
-			return [...items, item]
-		})
-	}
-
-	function removeItem(item: CollectionItem) {
-		includedItems.update(items => items.filter(i => i !== item))
 	}
 </script>
 
@@ -153,6 +135,7 @@
 		background-color: var(--color-back);
 		border: 1px solid var(--color-border);
 		margin: 8px;
+		margin-top: 0px;
 		padding: 4px 8px 30px;
 	}
 	h3 {
@@ -180,10 +163,6 @@
 	span:hover {
 		color: var(--color-light);
 	}
-	.dialog-item {
-		display: flex;
-		align-items: center;
-	}
 	.fa-icon {
 		display: flex;
 		align-items: center;
@@ -191,14 +170,5 @@
 		padding-right: 8px;
 		padding-left: 8px;
 		margin-top: 68px;
-	}
-	.spacer {
-		flex-grow: 1;
-		border-bottom: 2px dashed var(--color-button);
-		height: 0px;
-		margin: 8px;
-	}
-	label {
-		width: auto;
 	}
 </style>

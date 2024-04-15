@@ -134,6 +134,13 @@ animated_java.dialog.variant_config.texture_map.description: A map of which text
 animated_java.dialog.variant_config.texture_map.create_new_mapping: Create New Mapping
 animated_java.dialog.variant_config.texture_map.no_mappings: Variant has no mapped textures.
 
+animated_java.dialog.variant_config.bone_lists.description: A list of bones to include or exclude from the Variant. Only bones in the included list will be modified by the Variant, and bones in the excluded list will be ignored.
+animated_java.dialog.variant_config.excluded_bones.title: Excluded Bones
+animated_java.dialog.variant_config.excluded_bones.description: A list of bones to exclude from the Variant. These bones will not be modified by the Variant.
+animated_java.dialog.variant_config.included_bones.title: Included Bones
+animated_java.dialog.variant_config.included_bones.description: A list of bones to include in the Variant. Only these bones will be modified by the Variant.
+animated_java.dialog.variant_config.swap_columns_button.tooltip: Swap Lists
+
 ## Old AJModel Loader Dialog
 animated_java.action.upgrade_old_aj_model_loader.name: Upgrade Old .ajmodel
 animated_java.dialog.upgrade_old_aj_model_loader.title: Upgrade Old .ajmodel

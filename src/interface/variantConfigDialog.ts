@@ -12,6 +12,7 @@ export function openVariantConfigDialog(variant: Variant) {
 	const uuid = new Valuable(variant.uuid)
 	const textureMap = variant.textureMap.copy()
 	const generateNameFromDisplayName = new Valuable(variant.generateNameFromDisplayName)
+	const excludedBones = new Valuable(variant.excludedBones)
 
 	new SvelteDialog({
 		id: `${PACKAGE.name}:variantConfig`,
@@ -25,6 +26,7 @@ export function openVariantConfigDialog(variant: Variant) {
 			uuid,
 			textureMap,
 			generateNameFromDisplayName,
+			excludedBones,
 		},
 		preventKeybinds: true,
 		onConfirm() {
@@ -32,6 +34,8 @@ export function openVariantConfigDialog(variant: Variant) {
 			variant.name = name.get()
 			variant.uuid = uuid.get()
 			variant.textureMap = textureMap
+			variant.generateNameFromDisplayName = generateNameFromDisplayName.get()
+			variant.excludedBones = excludedBones.get()
 			events.UPDATE_VARIANT.dispatch(variant)
 			variant.select()
 		},

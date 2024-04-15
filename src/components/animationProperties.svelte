@@ -78,12 +78,6 @@
 		availableItems={availableBones}
 		bind:includedItems={excludedBones}
 	/>
-
-	<!-- <Checkbox
-		label={translate('dialog.animation_properties.invert_excluded_bones.title')}
-		tooltip={translate('dialog.animation_properties.invert_excluded_bones.description')}
-		bind:checked={invertExcludedBones}
-	/> -->
 </div>
 
 <style>
