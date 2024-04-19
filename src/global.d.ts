@@ -9,3 +9,8 @@ declare module '*.svg' {
 	const value: string
 	export = value
 }
+
+declare module '*.mcb' {
+	const value: string
+	export = value
+}

@@ -1,14 +1,15 @@
 
 # Blockbench
 - [x] ~~Add a root NBT blueprint setting~~ Add a custom summon commands setting.
-- [ ] Custom animation properties dialog
+- [x] Custom animation properties dialog
 - [ ] Prevent the user setting their export namespace to 'global' or 'minecraft'
 - [ ] Add affected bones list to variant, and animation properties.
     - [ ] Variant Properties
     - [x] Animation Properties
 - [ ] Add an option to blueprint settings to export the raw .mcb file instead of the generated Data Pack.
-- [ ] Implment ajmodel to blueprint conversion.
+- [ ] Implement .ajmodel to blueprint conversion.
 - [ ] Add a setting to automatically reduce the number of require bones, if the bones are not using special rotations, and have no unique config options.
+- [ ] Change the Collection setting type to allow single-click swapping of items between lists.
 
 # Data Pack
 - [ ] When merging the new minecraft:tick tag with old one, try and find any old style function references (AKA animated_java:my_project/zzzzzz/tick), and remove them.

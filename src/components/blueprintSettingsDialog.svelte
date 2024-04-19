@@ -6,7 +6,6 @@
 	import NumberSlider from './dialogItems/numberSlider.svelte'
 	import LineInput from './dialogItems/lineInput.svelte'
 	import Vector2D from './dialogItems/vector2d.svelte'
-	import Select from './dialogItems/select.svelte'
 	import SectionHeader from './dialogItems/sectionHeader.svelte'
 	import FileSelect from './dialogItems/fileSelect.svelte'
 	import FolderSelect from './dialogItems/folderSelect.svelte'
@@ -36,6 +35,32 @@
 	export let enableAdvancedDataPackSettings: Valuable<boolean>
 	export let dataPack: Valuable<string>
 	export let rootEntitySummonCommands: Valuable<string>
+
+	function exportNamespaceChecker(value: string): { type: string; message: string } {
+		if (value === '') {
+			return {
+				type: 'error',
+				message: translate('dialog.blueprint_settings.export_namespace.error.empty'),
+			}
+		} else if (value.trim().match('[^a-zA-Z0-9_]')) {
+			return {
+				type: 'error',
+				message: translate(
+					'dialog.blueprint_settings.export_namespace.error.invalid_characters',
+				),
+			}
+		} else if (['global', 'animated_java'].includes(value)) {
+			return {
+				type: 'error',
+				message: translate(
+					'dialog.blueprint_settings.export_namespace.error.reserved',
+					value,
+				),
+			}
+		} else {
+			return { type: 'success', message: '' }
+		}
+	}
 
 	function displayItemChecker(value: string): { type: string; message: string } {
 		if (value === '') {
@@ -223,6 +248,7 @@
 		label={translate('dialog.blueprint_settings.export_namespace.title')}
 		tooltip={translate('dialog.blueprint_settings.export_namespace.description')}
 		bind:value={exportNamespace}
+		valueChecker={exportNamespaceChecker}
 	/>
 
 	<Checkbox

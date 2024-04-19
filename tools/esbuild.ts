@@ -153,7 +153,7 @@ async function buildDev() {
 		minify: false,
 		platform: 'node',
 		sourcemap: 'inline',
-		loader: { '.svg': 'dataurl', '.ttf': 'binary' },
+		loader: { '.svg': 'dataurl', '.ttf': 'binary', '.mcb': 'text' },
 		plugins: [
 			inlineImage({
 				limit: -1,
@@ -180,7 +180,7 @@ function buildProd() {
 			bundle: true,
 			minify: true,
 			platform: 'node',
-			loader: { '.svg': 'dataurl', '.ttf': 'binary' },
+			loader: { '.svg': 'dataurl', '.ttf': 'binary', '.mcb': 'text' },
 			plugins: [
 				inlineImage({
 					limit: -1,

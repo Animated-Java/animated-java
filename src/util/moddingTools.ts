@@ -221,3 +221,24 @@ export function createPropertySubscribable<Value = any>(object: any, key: string
 
 	return subscribables
 }
+
+// export function overwriteFunction<Target extends Record<string, any>, Key extends string>(
+// 	/**
+// 	 * The object or class to overwrite the function on.
+// 	 */
+// 	target: Target,
+// 	/**
+// 	 * The key of the function to overwrite.
+// 	 */
+// 	key: string,
+// 	/**
+// 	 * The function to overwrite the original function with.
+// 	 */
+// 	callback: (target: Target, originalFunction: Target[Key]) => void,
+// 	/**
+// 	 * The priority of the overwrite. Higher priority overwrites are called first.
+// 	 */
+// 	priority?: number
+// ) {
+// 	//
+// }
