@@ -6,10 +6,14 @@ animated_java.action.open_bone_config.name: Bone Config
 animated_java.action.export.name: Export
 
 ### Dialogs
-animated_java.dialog.blueprint_settings.title: Blueprint Settings
-animated_java.dialog.blueprint_settings.advanced_settings_warning: Advanced settings should only be used if absolutely needed!
+
+## Unexpected Error Dialog
+animated_java.dialog.unexpected_error.title: An Unexpected Error Occurred!
+animated_java.dialog.unexpected_error.close_button: Close
 
 ## Blueprint Settings Dialog
+animated_java.dialog.blueprint_settings.title: Blueprint Settings
+animated_java.dialog.blueprint_settings.advanced_settings_warning: Advanced settings should only be used if absolutely needed!
 animated_java.dialog.blueprint_settings.blueprint_name.title: Blueprint Name
 animated_java.dialog.blueprint_settings.blueprint_name.description: The name of the Blueprint. Only used to identify the project in the workspace.
 

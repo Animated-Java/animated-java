@@ -171,17 +171,15 @@ export class CustomModelData {
 	}
 }
 
-// let progress: ProgressBarController
-
-function countNodesRecursive(nodes: OutlinerNode[] = Outliner.root): number {
-	let count = 0
-	for (const node of nodes) {
-		if (node instanceof Group) {
-			count += countNodesRecursive(node.children)
-		} else count++
-	}
-	return count
-}
+// function countNodesRecursive(nodes: OutlinerNode[] = Outliner.root): number {
+// 	let count = 0
+// 	for (const node of nodes) {
+// 		if (node instanceof Group) {
+// 			count += countNodesRecursive(node.children)
+// 		} else count++
+// 	}
+// 	return count
+// }
 
 function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 	if (!cube.export) return
@@ -380,7 +378,6 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 
 	rig.models[group.uuid] = renderedBone.model
 	rig.nodeMap[group.uuid] = renderedBone
-	// progress.add(1)
 	return structure
 }
 
@@ -397,7 +394,6 @@ function renderLocator(locator: Locator, rig: IRenderedRig): INodeStructure {
 	}
 
 	rig.nodeMap[locator.uuid] = renderedLocator
-	// progress.add(1)
 	return {
 		uuid: locator.uuid,
 		children: [],
@@ -493,8 +489,6 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 		textureExportFolder,
 	}
 
-	// progress = new ProgressBarController('Rendering Rig...', countNodesRecursive())
-
 	// FIXME - Add a warning if no bones or models are exported
 	for (const node of Outliner.root) {
 		if (node instanceof Group) {
@@ -511,8 +505,6 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 		} else {
 			console.warn(`Encountered unknown node type:`, node)
 		}
-		// progress.add(1)
-		// progress.update()
 	}
 
 	getDefaultPose(rig)
@@ -522,6 +514,5 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 		rig.variantModels[variant.name] = renderVariantModels(variant, rig)
 	}
 
-	// progress.finish()
 	return rig
 }

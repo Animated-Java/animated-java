@@ -1,8 +1,7 @@
-// @ts-ignore
 import AnimatedJavaIcon from '../assets/animated_java_icon.svg'
 import { BLUEPRINT_FORMAT } from '../blueprintFormat'
 import { PACKAGE } from '../constants'
-import { compileDataPack } from '../systems/datapackCompiler'
+import { exportProject } from '../systems/exporter'
 import { events } from '../util/events'
 import { createAction, createBarMenu } from '../util/moddingTools'
 import { translate } from '../util/translation'
@@ -109,7 +108,7 @@ MenuBar.addAction(
 		},
 		click() {
 			console.log('Export')
-			compileDataPack()
+			exportProject()
 		},
 	}),
 	MENU.id

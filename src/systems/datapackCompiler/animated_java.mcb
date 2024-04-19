@@ -38,17 +38,17 @@ dir global {
 		# That way I can also check if the rig's files still exist, and remove tag entries if they don't.
 		# An entry will be added for each exported rig.
 		tag functions on_tick {
-			#animated_java:<%export_namespace%>/_/on_tick
+			#animated_java:<%export_namespace%>/zzz/on_tick
 		}
 		# An entry will be added for each exported rig.
 		tag functions on_load {
-			#animated_java:<%export_namespace%>/_/on_load
+			#animated_java:<%export_namespace%>/zzz/on_load
 		}
 	}
 
 	# An entry will be added for each exported rig.
 	tag functions check_if_rig_outdated {
-		#animated_java:<%export_namespace%>/_/check_if_rig_outdated
+		#animated_java:<%export_namespace%>/zzz/check_if_rig_outdated
 	}
 
 	dir errors {
@@ -66,8 +66,10 @@ dir <%export_namespace%> {
 
 	function on_tick {
 		# This command will be added for each animation.
-		execute if entity @s[tag=aj.<%export_namespace%>.animation.<%animation_name%>.playing] run \
-			function *<%export_namespace%>/animations/<%animation_name%>/on_tick
+		REPEAT (animations) as animation {
+			execute if entity @s[tag=aj.<%export_namespace%>.animation.<%animation.name%>.playing] run \
+				function *<%export_namespace%>/animations/<%animation.name%>/on_tick
+		}
 	}
 
 	# Function Tag Hooks
@@ -80,7 +82,7 @@ dir <%export_namespace%> {
 		tag functions post_tick {
 		}
 		# Runs when the rig is summoned.
-		function on_summon {
+		tag functions on_summon {
 		}
 		# Runs when the rig is removed.
 		tag functions on_remove {
@@ -136,62 +138,64 @@ dir <%export_namespace%> {
 	}
 
 	dir animations {
-		dir animation_name {
-			function play {
-				execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
-					function *global/errors/function_not_executed_as_root_entity \
-					with {'function_path': 'animated_java:<%export_namespace%>/animations/<%animation_name%>/play'}
-				tag @s add aj.<%export_namespace%>.animation.<%animation_name%>.playing
-			}
-			function stop {
-				execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
-					function *global/errors/function_not_executed_as_root_entity \
-					with {'function_path': 'animated_java:<%export_namespace%>/animations/<%animation_name%>/stop'}
-				tag @s remove aj.<%export_namespace%>.animation.<%animation_name%>.playing
-			}
-			function pause {
-				execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
-					function *global/errors/function_not_executed_as_root_entity \
-					with {'function_path': 'animated_java:<%export_namespace%>/animations/<%animation_name%>/pause'}
-				tag @s remove aj.<%export_namespace%>.animation.<%animation_name%>.playing
-			}
-			function resume {
-				execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
-					function *global/errors/function_not_executed_as_root_entity \
-					with {'function_path': 'animated_java:<%export_namespace%>/animations/<%animation_name%>/resume'}
-				tag @s add aj.<%export_namespace%>.animation.<%animation_name%>.playing
-			}
-			function reset {
-				execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
-					function *global/errors/function_not_executed_as_root_entity \
-					with {'function_path': 'animated_java:<%export_namespace%>/animations/<%animation_name%>/reset'}
-				tag @s remove aj.<%export_namespace%>.animation.<%animation_name%>.playing
-			}
-			function next_frame {
-				execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
-					function *global/errors/function_not_executed_as_root_entity \
-					with {'function_path': 'animated_java:<%export_namespace%>/animations/<%animation_name%>/next_frame'}
-			}
-			function apply_frame {
-				# ARGS: {frame: int}
-				execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
-					function *global/errors/function_not_executed_as_root_entity \
-					with {'function_path': 'animated_java:<%export_namespace%>/animations/<%animation_name%>/apply_frame'}
-			}
-			function tween_play {
-				execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
-					function *global/errors/function_not_executed_as_root_entity \
-					with {'function_path': 'animated_java:<%export_namespace%>/animations/<%animation_name%>/tween_play'}
-				tag @s add aj.<%export_namespace%>.animation.<%animation_name%>.tween_playing
-			}
-			function tween_resume {
-				execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
-					function *global/errors/function_not_executed_as_root_entity \
-					with {'function_path': 'animated_java:<%export_namespace%>/animations/<%animation_name%>/tween_resume'}
-				tag @s add aj.<%export_namespace%>.animation.<%animation_name%>.tween_playing
-			}
-			dir _ {
-				function on_tick {
+		REPEAT (animations) as animation {
+			dir <%animation.name%> {
+				function play {
+					execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
+						function *global/errors/function_not_executed_as_root_entity \
+						with {'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/play'}
+					tag @s add aj.<%export_namespace%>.animation.<%animation.name%>.playing
+				}
+				function stop {
+					execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
+						function *global/errors/function_not_executed_as_root_entity \
+						with {'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/stop'}
+					tag @s remove aj.<%export_namespace%>.animation.<%animation.name%>.playing
+				}
+				function pause {
+					execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
+						function *global/errors/function_not_executed_as_root_entity \
+						with {'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/pause'}
+					tag @s remove aj.<%export_namespace%>.animation.<%animation.name%>.playing
+				}
+				function resume {
+					execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
+						function *global/errors/function_not_executed_as_root_entity \
+						with {'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/resume'}
+					tag @s add aj.<%export_namespace%>.animation.<%animation.name%>.playing
+				}
+				function reset {
+					execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
+						function *global/errors/function_not_executed_as_root_entity \
+						with {'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/reset'}
+					tag @s remove aj.<%export_namespace%>.animation.<%animation.name%>.playing
+				}
+				function next_frame {
+					execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
+						function *global/errors/function_not_executed_as_root_entity \
+						with {'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/next_frame'}
+				}
+				function apply_frame {
+					# ARGS: {frame: int}
+					execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
+						function *global/errors/function_not_executed_as_root_entity \
+						with {'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/apply_frame'}
+				}
+				function tween_play {
+					execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
+						function *global/errors/function_not_executed_as_root_entity \
+						with {'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/tween_play'}
+					tag @s add aj.<%export_namespace%>.animation.<%animation.name%>.tween_playing
+				}
+				function tween_resume {
+					execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
+						function *global/errors/function_not_executed_as_root_entity \
+						with {'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/tween_resume'}
+					tag @s add aj.<%export_namespace%>.animation.<%animation.name%>.tween_playing
+				}
+				dir zzz {
+					function on_tick {
+					}
 				}
 			}
 		}
@@ -238,9 +242,8 @@ dir <%export_namespace%> {
 					$function *<%export_namespace%>/animations/$(animation)/resume
 				}
 			}
-			
 			# Run the on_summon function for the root entity.
-			$function #*<%export_namespace%>/as_root/on_summon
+			function #*<%export_namespace%>/as_root/on_summon
 		}
 	}
 
@@ -285,10 +288,10 @@ dir <%export_namespace%> {
 						function *global/errors/function_not_executed_as_root_entity \
 						with {'function_path': 'animated_java:<%export_namespace%>/variants/<%variant.name%>/apply'}
 					# TODO Apply the variant to the rig here.
-					REPEAT bones as bone {
-						IF (!variant.excludedBones.includes(bone.uuid)) {
+					REPEAT (rig.nodeMap) as bone {
+						IF (!Object.values(variant.excludedBones).find(v => v.value === bone.uuid)) {
 							execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%bone.name%>] run {
-								data modify entity @s item.components.minecraft:custom_model_data set value <%bone.custom_model_data%>
+								data modify entity @s item.components.minecraft:custom_model_data set value <%rig.variantModels[variant.name][bone.uuid].customModelData%>
 							}
 						}
 					}
@@ -297,19 +300,9 @@ dir <%export_namespace%> {
 		}
 	}
 
-	dir root_entity {
-		tag functions on_tick {
-			
-		}
-
-		tag functions on_load {
-			
-		}
-	}
-
-	dir _ {
+	dir zzz {
 		function check_if_rig_outdated {
-			execute unless score @s aj.<%export_version%> matches <%export_version%> run function #animated_java:<%export_namespace%>/_/update_outdated_rig
+			execute unless score @s aj.<%export_version%> matches <%export_version%> run function #animated_java:<%export_namespace%>/zzz/update_outdated_rig
 		}
 
 		function update_outdated_rig {

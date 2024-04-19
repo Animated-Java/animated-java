@@ -194,7 +194,7 @@ export function updatePreview(animation: _Animation, time: number) {
 	Blockbench.dispatchEvent('display_animation_frame')
 }
 
-export async function renderAnimation(animation: _Animation, rig: IRenderedRig) {
+export function renderAnimation(animation: _Animation, rig: IRenderedRig) {
 	const rendered = {
 		name: animation.name,
 		startDelay: Number(animation.start_delay),
@@ -205,7 +205,6 @@ export async function renderAnimation(animation: _Animation, rig: IRenderedRig) 
 	} as IRenderedAnimation
 	animation.select()
 
-	const limiter = new MSLimiter(10)
 	for (let time = 0; time <= animation.length; time = roundToN(time + 0.05, 20)) {
 		// await new Promise(resolve => requestAnimationFrame(resolve))
 		// await new Promise(resolve => setTimeout(resolve, 50))
@@ -217,24 +216,15 @@ export async function renderAnimation(animation: _Animation, rig: IRenderedRig) 
 			commands: getCommandsKeyframe(animation, time),
 			animationState: getAnimationStateKeyframe(animation, time),
 		})
-		// progress.add(1)
-		await limiter.sync().then(b => {
-			// b && progress.update()
-		})
 	}
 	rendered.duration = rendered.frames.length
 
 	return rendered
 }
 
-// function gatherProgress(): number {
-// 	return Animator.animations.reduce((a, b) => a + b.length * 20, 0)
-// }
-
-export async function renderProjectAnimations(project: ModelProject, rig: IRenderedRig) {
+export function renderProjectAnimations(project: ModelProject, rig: IRenderedRig) {
 	let selectedAnimation: _Animation | undefined
 	let currentTime = 0
-	// progress = new ProgressBarController('Rendering Animations...', gatherProgress())
 	Timeline.pause()
 	// Save selected animation
 	if (Mode.selected.id === 'animate') {
@@ -245,7 +235,7 @@ export async function renderProjectAnimations(project: ModelProject, rig: IRende
 	correctSceneAngle()
 	const animations: IRenderedAnimation[] = []
 	for (const animation of project.animations) {
-		animations.push(await renderAnimation(animation, rig))
+		animations.push(renderAnimation(animation, rig))
 	}
 	restoreSceneAngle()
 

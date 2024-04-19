@@ -2,7 +2,10 @@ import { Compiler, Parser, Tokenizer, SyncIo } from 'mc-build'
 import { VariableMap } from 'mc-build/dist/mcl/Compiler'
 import { isFunctionTagPath } from '../util/fileUtil'
 import datapackTemplate from './datapackCompiler/animated_java.mcb'
-import { IMap } from 'mc-build/dist/Map'
+import { openUnexpectedErrorDialog } from '../interface/unexpectedErrorDialog'
+import { IRenderedRig } from './rigRenderer'
+import { IRenderedAnimation } from './animationRenderer'
+import { Variant } from '../variants'
 
 function createCustomSyncIO(): SyncIo {
 	const io = new SyncIo()
@@ -20,12 +23,12 @@ function createCustomSyncIO(): SyncIo {
 	return io
 }
 
-export function compileDataPack() {
+export function compileDataPack(rig: IRenderedRig, animations: IRenderedAnimation[]) {
 	try {
 		console.log('Compiling Data Pack...')
 		const compiler = new Compiler('src/', {
 			libDir: null,
-			generatedDirName: 'zzzzzz',
+			generatedDirName: 'zzz',
 			internalScoreboardName: 'aj.i',
 			eqVarScoreboardName: null,
 			eqConstScoreboardName: null,
@@ -37,6 +40,9 @@ export function compileDataPack() {
 
 		const variables = {
 			export_namespace: Project!.animated_java.export_namespace,
+			rig,
+			animations,
+			variants: Variant.all,
 		}
 
 		compiler.addFile(
@@ -46,6 +52,7 @@ export function compileDataPack() {
 
 		compiler.compile(VariableMap.fromObject(variables))
 	} catch (e: any) {
+		openUnexpectedErrorDialog(e as Error)
 		console.error(e)
 	}
 }
