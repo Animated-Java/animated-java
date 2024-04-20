@@ -282,16 +282,21 @@ dir <%export_namespace%> {
 
 	dir variants {
 		REPEAT (variants) as variant {
-			dir <%variant.name%> {
-				function apply {
-					execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
-						function *global/errors/function_not_executed_as_root_entity \
-						with {'function_path': 'animated_java:<%export_namespace%>/variants/<%variant.name%>/apply'}
-					# TODO Apply the variant to the rig here.
-					REPEAT (rig.nodeMap) as bone {
-						IF (!Object.values(variant.excludedBones).find(v => v.value === bone.uuid)) {
-							execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%bone.name%>] run {
-								data modify entity @s item.components.minecraft:custom_model_data set value <%rig.variantModels[variant.name][bone.uuid].customModelData%>
+			IF (!variant.isDefault) {
+				dir <%variant.name%> {
+					function apply {
+						execute unless entity @s[type=item_display,tag=aj.root_entity] run return run \
+							function *global/errors/function_not_executed_as_root_entity \
+							with {'function_path': 'animated_java:<%export_namespace%>/variants/<%variant.name%>/apply'}
+						# TODO Apply the variant to the rig here.
+						REPEAT (Object.values(rig.nodeMap)) as bone {
+							IF (bone.type === 'bone' && !Object.values(variant.excludedBones).find(v => v.value === bone.node.uuid)) {
+								execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%bone.name%>] run {
+									<%%
+										console.log(variant.name, bone, rig.variantModels)
+									%%>
+									data modify entity @s item.components.minecraft:custom_model_data set value <%rig.variantModels[variant.name][bone.node.uuid].customModelData%>
+								}
 							}
 						}
 					}

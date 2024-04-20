@@ -37,20 +37,23 @@ export function compileDataPack(rig: IRenderedRig, animations: IRenderedAnimatio
 			setup: null,
 		})
 		compiler.io = createCustomSyncIO()
+		compiler.disableRequire = true
 
 		const variables = {
 			export_namespace: Project!.animated_java.export_namespace,
 			rig,
 			animations,
 			variants: Variant.all,
+			export_version: Math.random().toString().substring(2, 12),
 		}
 
+		console.time('Data Pack Compilation')
 		compiler.addFile(
 			'src/animated_java.mcb',
 			Parser.parseMcbFile(Tokenizer.tokenize(datapackTemplate, 'src/animated_java.mcb'))
 		)
-
 		compiler.compile(VariableMap.fromObject(variables))
+		console.timeEnd('Data Pack Compilation')
 	} catch (e: any) {
 		openUnexpectedErrorDialog(e as Error)
 		console.error(e)

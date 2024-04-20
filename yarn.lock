@@ -1760,10 +1760,10 @@ marked@^4.2.12, marked@^4.3.0:
   resolved "https://registry.yarnpkg.com/marked/-/marked-4.3.0.tgz#796362821b019f734054582038b116481b456cf3"
   integrity sha512-PRsaiG84bK+AMvxziE/lCFss8juXjNaWzVbN5tXAm4XjeaS9NAHhop+PjQxz2A9h8Q4M/xGmzP8vqNwy6JeK0A==
 
-mc-build@^3.0.10:
-  version "3.0.10"
-  resolved "https://registry.yarnpkg.com/mc-build/-/mc-build-3.0.10.tgz#f6efbe392ecdd909021eff6b1bf1bdf3bc994d66"
-  integrity sha512-oyjOJ437c4tMLa79nkbMjlK6/43+iSkomhfnLHTeXioeBqKM68DWbbhCFTgIqxeYF7aDsSWVMTsltaO9FD33CA==
+mc-build@^3.0.12:
+  version "3.0.12"
+  resolved "https://registry.yarnpkg.com/mc-build/-/mc-build-3.0.12.tgz#7baa9251bc0fbd95c265f3cffd7d7c893317162a"
+  integrity sha512-TttnueI6nkD9dIP0MFdc5jfSrPPX/rDCLBVJ9aZLuldRuzd8F2HtY3FI4UxdSzqDbBhUR6gf40dCqLaFJT3TOg==
 
 md5@^2.3.0:
   version "2.3.0"
