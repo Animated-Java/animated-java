@@ -98,10 +98,10 @@
 		"vue": "^3.2.33"
 	},
 	"dependencies": {
-		"deepslate": "^0.17.2",
+		"deepslate": "^0.19.2",
 		"marked": "^4.3.0",
 		"marked-gfm-heading-id": "^3.0.0",
-		"mc-build": "^3.0.12",
+		"mc-build": "^3.0.14",
 		"svelte-ace": "^1.0.21",
 		"svelte-dnd-action": "^0.9.38"
 	}

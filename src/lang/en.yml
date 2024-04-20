@@ -13,6 +13,12 @@ animated_java.dialog.unexpected_error.close_button: Close
 animated_java.dialog.unexpected_error.copy_error_message_button.message: Error Message Copied to Clipboard!
 animated_java.dialog.unexpected_error.copy_error_message_button.description: Click to copy the error message to the clipboard.
 animated_java.dialog.unexpected_error.paragraph: 'Please report this error by joining our {0} and creating a thread in the #animated-java-support channel, or by creating an issue on our {1}. Thank you!'
+animated_java.dialog.bone_config.billboard.title: Billboard
+animated_java.dialog.bone_config.billboard.description: Controls if this bone should pivot to face player when rendered. It can be fixed (both vertical and horizontal angles are fixed), vertical (faces player around vertical axis), horizontal (pivots around horizontal axis), and center (pivots around center point).
+animated_java.dialog.bone_config.billboard.options.fixed: Fixed
+animated_java.dialog.bone_config.billboard.options.vertical: Vertical
+animated_java.dialog.bone_config.billboard.options.horizontal: Horizontal
+animated_java.dialog.bone_config.billboard.options.center: Center
 
 ## Blueprint Settings Dialog
 animated_java.dialog.blueprint_settings.title: Blueprint Settings

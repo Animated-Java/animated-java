@@ -205,7 +205,12 @@ dir <%export_namespace%> {
 		#Args: {args:{variant: string, animation: string, frame: int, start_animation: boolean}}
 		# frame is ignored unless animation is specified.
 
-		summon minecraft:item_display ~ ~ ~ {Tags:['aj.rig_entity','aj.root_entity','aj.$<project_name>.root','aj.new'],Passengers:[]}
+		summon minecraft:item_display ~ ~ ~ { \
+			teleport_duration: 1, \
+			interpolation_duration: 1, \
+			Tags:['<%TAGS.NEW()%>','<%TAGS.GLOBAL_RIG_ENTITY()%>','<%TAGS.GLOBAL_ROOT()%>','<%TAGS.PROJECT_ROOT(export_namespace)%>'], \
+			Passengers:<%root_entity_passengers%> \
+		}
 		execute as @e[type=item_display,tag=aj.new,limit=1,distance=..0.01] run {
 			execute store result score @s aj.id run scoreboard players add aj.last_id aj.id 1
 			tag @s remove aj.new

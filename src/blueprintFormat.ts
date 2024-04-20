@@ -1,4 +1,5 @@
 import * as blueprintSettings from './blueprintSettings'
+import { BoneConfig } from './boneConfig'
 import ProjectTitleSvelteComponent from './components/projectTitle.svelte'
 import { PACKAGE } from './constants'
 import { injectSvelteCompomponent } from './util/injectSvelte'
@@ -9,19 +10,20 @@ import { Variant } from './variants'
  * The serialized Variant Bone Config
  */
 export interface IBlueprintVariantBoneConfigJSON {
-	inherit_settings: boolean
-	use_nbt: boolean
-	glowing: boolean
-	glow_color: string
-	shadow_radius: number
-	shadow_strength: number
-	brightness_override: number
-	enchanted: boolean
-	invisible: boolean
+	billboard: BoneConfig['billboard']
+	brightness_override: BoneConfig['brightnessOverride']
+	enchanted: BoneConfig['enchanted']
+	glow_color: BoneConfig['glowColor']
+	glowing: BoneConfig['glowing']
+	inherit_settings: BoneConfig['inheritSettings']
+	invisible: BoneConfig['invisible']
 	/**
 	 * Custom NBT for the bone that will be merged when this Variant is applied
 	 */
-	nbt: string
+	nbt: BoneConfig['nbt']
+	shadow_radius: BoneConfig['shadowRadius']
+	shadow_strength: BoneConfig['shadowStrength']
+	use_nbt: BoneConfig['useNBT']
 }
 
 /**

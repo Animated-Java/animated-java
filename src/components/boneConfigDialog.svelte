@@ -10,20 +10,31 @@
 </script>
 
 <script lang="ts">
+	import { BoneConfig } from '../boneConfig'
+	import Select from './dialogItems/select.svelte'
+
 	const pluginModeEnabled = !!Project?.animated_java?.enable_plugin_mode
 
 	export let variant: Variant
 
-	export let inheritSettings: Valuable<boolean>
-	export let useNBT: Valuable<boolean>
-	export let glowing: Valuable<boolean>
-	export let glowColor: Valuable<string>
-	export let shadowRadius: Valuable<number>
-	export let shadowStrength: Valuable<number>
-	export let brightnessOverride: Valuable<number>
-	export let enchanted: Valuable<boolean>
-	export let invisible: Valuable<boolean>
-	export let nbt: Valuable<string>
+	export let billboard: Valuable<string>
+	export let brightnessOverride: Valuable<BoneConfig['brightnessOverride']>
+	export let enchanted: Valuable<BoneConfig['enchanted']>
+	export let glowColor: Valuable<BoneConfig['glowColor']>
+	export let glowing: Valuable<BoneConfig['glowing']>
+	export let inheritSettings: Valuable<BoneConfig['inheritSettings']>
+	export let invisible: Valuable<BoneConfig['invisible']>
+	export let nbt: Valuable<BoneConfig['nbt']>
+	export let shadowRadius: Valuable<BoneConfig['shadowRadius']>
+	export let shadowStrength: Valuable<BoneConfig['shadowStrength']>
+	export let useNBT: Valuable<BoneConfig['useNBT']>
+
+	const billboardOptions: Record<BoneConfig['billboard'], string> = {
+		fixed: translate('dialog.bone_config.billboard.options.fixed'),
+		vertical: translate('dialog.bone_config.billboard.options.vertical'),
+		horizontal: translate('dialog.bone_config.billboard.options.horizontal'),
+		center: translate('dialog.bone_config.billboard.options.center'),
+	}
 </script>
 
 <div>
@@ -45,6 +56,14 @@
 			label={translate('dialog.bone_config.inherit_settings.title')}
 			tooltip={translate('dialog.bone_config.inherit_settings.description')}
 			bind:checked={inheritSettings}
+		/>
+
+		<Select
+			label={translate('dialog.bone_config.billboard.title')}
+			tooltip={translate('dialog.bone_config.billboard.description')}
+			options={billboardOptions}
+			defaultOption={BoneConfig.prototype.billboard}
+			bind:value={billboard}
 		/>
 
 		<Checkbox
@@ -118,6 +137,14 @@
 				bind:value={nbt}
 			/>
 		{:else}
+			<Select
+				label={translate('dialog.bone_config.billboard.title')}
+				tooltip={translate('dialog.bone_config.billboard.description')}
+				options={billboardOptions}
+				defaultOption={BoneConfig.prototype.billboard}
+				bind:value={billboard}
+			/>
+
 			<Checkbox
 				label={translate('dialog.bone_config.glowing.title')}
 				tooltip={translate('dialog.bone_config.glowing.description')}

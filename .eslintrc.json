@@ -37,6 +37,7 @@
 		"@typescript-eslint/ban-types": "warn",
 		"@typescript-eslint/consistent-indexed-object-style": ["warn", "record"],
 		"@typescript-eslint/consistent-generic-constructors": "warn",
+		"@typescript-eslint/no-namespace": "off",
 		"@typescript-eslint/naming-convention": [
 			"warn",
 			{
@@ -106,7 +107,11 @@
 			},
 			{ "selector": "typeLike", "format": ["PascalCase"] },
 			{ "selector": "objectLiteralProperty", "format": null },
-			{ "selector": "default", "format": ["camelCase"] }
+			{ "selector": "default", "format": ["camelCase"] },
+			{
+				"selector": "enumMember",
+				"format": ["UPPER_CASE"]
+			}
 		],
 		"@typescript-eslint/no-unsafe-member-access": "off",
 		"@typescript-eslint/no-unsafe-assignment": "off",

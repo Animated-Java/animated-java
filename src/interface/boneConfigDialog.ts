@@ -21,16 +21,17 @@ export function openBoneConfigDialog(bone: Group) {
 
 	const boneConfig = new BoneConfig(bone).fromJSON(boneConfigJSON)
 
-	const inheritSettings = new Valuable(boneConfig.inheritSettings)
-	const useNBT = new Valuable(boneConfig.useNBT)
-	const glowing = new Valuable(boneConfig.glowing)
-	const glowColor = new Valuable(boneConfig.glowColor)
-	const shadowRadius = new Valuable(boneConfig.shadowRadius)
-	const shadowStrength = new Valuable(boneConfig.shadowStrength)
+	const billboard = new Valuable(boneConfig.billboard)
 	const brightnessOverride = new Valuable(boneConfig.brightnessOverride)
 	const enchanted = new Valuable(boneConfig.enchanted)
+	const glowColor = new Valuable(boneConfig.glowColor)
+	const glowing = new Valuable(boneConfig.glowing)
+	const inheritSettings = new Valuable(boneConfig.inheritSettings)
 	const invisible = new Valuable(boneConfig.invisible)
 	const nbt = new Valuable(boneConfig.nbt)
+	const shadowRadius = new Valuable(boneConfig.shadowRadius)
+	const shadowStrength = new Valuable(boneConfig.shadowStrength)
+	const useNBT = new Valuable(boneConfig.useNBT)
 
 	new SvelteDialog({
 		id: `${PACKAGE.name}:boneConfig`,
@@ -39,29 +40,31 @@ export function openBoneConfigDialog(bone: Group) {
 		svelteComponent: BoneConfigDialogSvelteComponent,
 		svelteComponentProperties: {
 			variant: Variant.selected,
-			inheritSettings,
-			useNBT,
-			glowing,
-			glowColor,
-			shadowRadius,
-			shadowStrength,
+			billboard,
 			brightnessOverride,
 			enchanted,
+			glowColor,
+			glowing,
+			inheritSettings,
 			invisible,
 			nbt,
+			shadowRadius,
+			shadowStrength,
+			useNBT,
 		},
 		preventKeybinds: true,
 		onConfirm() {
-			boneConfig.inheritSettings = inheritSettings.get()
-			boneConfig.useNBT = useNBT.get()
-			boneConfig.glowing = glowing.get()
-			boneConfig.glowColor = glowColor.get()
-			boneConfig.shadowRadius = shadowRadius.get()
-			boneConfig.shadowStrength = shadowStrength.get()
+			boneConfig.billboard = billboard.get()
 			boneConfig.brightnessOverride = brightnessOverride.get()
 			boneConfig.enchanted = enchanted.get()
+			boneConfig.glowColor = glowColor.get()
+			boneConfig.glowing = glowing.get()
+			boneConfig.inheritSettings = inheritSettings.get()
 			boneConfig.invisible = invisible.get()
 			boneConfig.nbt = nbt.get()
+			boneConfig.shadowRadius = shadowRadius.get()
+			boneConfig.shadowStrength = shadowStrength.get()
+			boneConfig.useNBT = useNBT.get()
 
 			if (boneConfig.checkIfEqual(new BoneConfig(bone).fromJSON(bone.configs.default))) {
 				// Don't save the variant config if it's the same as the default
