@@ -97,8 +97,8 @@ animated_java.dialog.blueprint_settings.data_pack.error.not_a_folder: The select
 animated_java.dialog.blueprint_settings.data_pack.error.missing_pack_mcmeta: The selected folder is missing a pack.mcmeta file!
 animated_java.dialog.blueprint_settings.data_pack.error.missing_data_folder: The selected Data Pack is missing a data folder!
 
-animated_java.dialog.blueprint_settings.root_entity_summon_commands.title: Custom On-Summon Commands
-animated_java.dialog.blueprint_settings.root_entity_summon_commands.description: Commands to run as the root entity when summoned. Treat this text input as a normal mcfunction.
+animated_java.dialog.blueprint_settings.custom_summon_commands.title: Custom On-Summon Commands
+animated_java.dialog.blueprint_settings.custom_summon_commands.description: Commands to run as the root entity when summoned. Treat this text input as a normal mcfunction.
 
 ## Bone Config Dialog
 animated_java.dialog.bone_config.title: Bone Config

@@ -381,10 +381,8 @@
 				/>
 			{/if}
 			<CodeInput
-				label={translate('dialog.blueprint_settings.root_entity_summon_commands.title')}
-				tooltip={translate(
-					'dialog.blueprint_settings.root_entity_summon_commands.description',
-				)}
+				label={translate('dialog.blueprint_settings.custom_summon_commands.title')}
+				tooltip={translate('dialog.blueprint_settings.custom_summon_commands.description')}
 				bind:value={rootEntitySummonCommands}
 			/>
 		{/if}

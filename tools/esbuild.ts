@@ -153,6 +153,7 @@ async function buildDev() {
 		minify: false,
 		platform: 'node',
 		sourcemap: 'inline',
+		sourceRoot: 'http://animated-java/',
 		loader: { '.svg': 'dataurl', '.ttf': 'binary', '.mcb': 'text' },
 		plugins: [
 			inlineImage({

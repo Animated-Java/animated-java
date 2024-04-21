@@ -7,6 +7,11 @@ export function toSafeFuntionName(name: string): string {
 		.replace(/_+/g, '_')
 }
 
+export function isResourcePackPath(path: string) {
+	const parsed = parseResourcePackPath(path)
+	return parsed && parsed.namespace && parsed.resourcePath
+}
+
 export function parseResourcePackPath(path: string) {
 	path = path.replaceAll(/\\/g, '/')
 	const parts = path.split('/')
@@ -19,7 +24,7 @@ export function parseResourcePackPath(path: string) {
 	const resourcePath = parts.slice(assetsIndex + 3).join('/')
 	const fileName = pathjs.basename(path).split('.')[0]
 	if (fileName !== fileName.toLowerCase()) return undefined
-	const resourceLocation = namespace + ':' + resourcePath + '/' + fileName
+	const resourceLocation = namespace + ':' + resourcePath
 
 	return {
 		resourcePackRoot,

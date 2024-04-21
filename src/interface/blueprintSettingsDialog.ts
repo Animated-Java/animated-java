@@ -67,7 +67,7 @@ function getSettings(): Record<string, Valuable<any>> {
 			Project!.animated_java.enable_advanced_data_pack_settings
 		),
 		dataPack: new Valuable(Project!.animated_java.data_pack),
-		rootEntitySummonCommands: new Valuable(Project!.animated_java.root_entity_summon_commands),
+		rootEntitySummonCommands: new Valuable(Project!.animated_java.custom_summon_commands),
 	}
 }
 
@@ -94,7 +94,7 @@ function setSettings(settings: any) {
 	Project.animated_java.enable_advanced_data_pack_settings =
 		settings.enableAdvancedDataPackSettings.get()
 	Project.animated_java.data_pack = settings.dataPack.get()
-	Project.animated_java.root_entity_summon_commands = settings.rootEntitySummonCommands.get()
+	Project.animated_java.custom_summon_commands = settings.rootEntitySummonCommands.get()
 	console.log('Successfully saved project settings', Project)
 }
 

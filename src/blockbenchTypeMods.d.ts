@@ -23,8 +23,9 @@ declare global {
 			enable_data_pack: boolean
 			enable_advanced_data_pack_settings: boolean
 			data_pack: string
-			root_entity_summon_commands: string
+			custom_summon_commands: string
 		}
+		last_used_export_namespace: string
 
 		variants: Variant[]
 	}

@@ -1,4 +1,4 @@
-import { BLUEPRINT_CODEC, BLUEPRINT_FORMAT } from '../blueprintFormat'
+import { BLUEPRINT_FORMAT, saveBlueprint } from '../blueprintFormat'
 import { PACKAGE } from '../constants'
 import { createBlockbenchMod } from '../util/moddingTools'
 
@@ -12,7 +12,7 @@ createBlockbenchMod(
 		context.action.click = (event: Event) => {
 			if (!Project || !Format) return
 			if (Format === BLUEPRINT_FORMAT) {
-				BLUEPRINT_CODEC.write(BLUEPRINT_CODEC.compile(), Project.save_path)
+				saveBlueprint()
 			} else {
 				context.originalClick.call(context.action, event)
 			}

@@ -85,6 +85,7 @@ export interface IBlueprintFormatJSON {
 		box_uv: boolean
 		backup: boolean
 		save_location: string
+		last_used_export_namespace: string
 	}
 	/**
 	 * The project settings of the Blueprint
@@ -173,6 +174,9 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 		if (model.project_settings) {
 			Project.animated_java = { ...Project.animated_java, ...model.project_settings }
 		}
+
+		Project.last_used_export_namespace =
+			model.meta.last_used_export_namespace || Project.animated_java.export_namespace
 
 		if (model.textures) {
 			for (const texture of model.textures) {
@@ -301,6 +305,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 				format_version: PACKAGE.version,
 				uuid: Project.uuid,
 				save_location: Project.save_path,
+				last_used_export_namespace: Project.last_used_export_namespace,
 			},
 			project_settings: Project.animated_java,
 			resolution: {
@@ -446,6 +451,7 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 		}
 
 		Project.variants ??= []
+		Project.last_used_export_namespace = Project.animated_java.export_namespace
 		if (newModel) {
 			new Variant('Default', true)
 		}
@@ -507,4 +513,10 @@ BLUEPRINT_CODEC.format = BLUEPRINT_FORMAT
 
 export function isCurrentFormat() {
 	return Format.id === BLUEPRINT_FORMAT.id
+}
+
+export function saveBlueprint() {
+	if (!Project || !Format) return
+	if (Format !== BLUEPRINT_FORMAT) return
+	BLUEPRINT_CODEC.write(BLUEPRINT_CODEC.compile(), Project.save_path)
 }

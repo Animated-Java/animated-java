@@ -154,23 +154,6 @@ export interface IRenderedRig {
 	textureExportFolder: string
 }
 
-export class CustomModelData {
-	private static current = 0
-	public static usedIds: number[] = []
-
-	public static get() {
-		let id = this.current
-		while (this.usedIds.includes(id)) id++
-		this.current = id + 1
-		this.usedIds.push(id)
-		return id
-	}
-
-	public static set(value: number) {
-		this.current = value
-	}
-}
-
 // function countNodesRecursive(nodes: OutlinerNode[] = Outliner.root): number {
 // 	let count = 0
 // 	for (const node of nodes) {
@@ -251,8 +234,6 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 	}
 
 	if (Object.keys(element.faces).length === 0) return
-	// progress.add(1)
-	// progress.update()
 	return element
 }
 
@@ -261,7 +242,7 @@ export function getTextureResourceLocation(texture: Texture, rig: IRenderedRig) 
 		const parsed = parseResourcePackPath(texture.path)
 		if (parsed) return parsed
 	}
-	const path = PathModule.join(rig.textureExportFolder, toSafeFuntionName(texture.name) + '.png')
+	const path = PathModule.join(rig.textureExportFolder, toSafeFuntionName(texture.name))
 
 	const parsed = parseResourcePackPath(path)
 	if (parsed) return parsed
@@ -355,7 +336,6 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 		} else {
 			console.warn(`Encountered unknown node type:`, node)
 		}
-		// progress.add(1)
 	}
 
 	// Don't export groups without a model.
@@ -374,8 +354,8 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 			element.rotation.origin = element.rotation.origin.map(v => v * scale + 8)
 		}
 	}
-	renderedBone.scale = 1 / scale
 
+	renderedBone.scale = 1 / scale
 	rig.models[group.uuid] = renderedBone.model
 	rig.nodeMap[group.uuid] = renderedBone
 	return structure
@@ -413,7 +393,6 @@ function renderCamera(camera: ICamera, rig: IRenderedRig): INodeStructure {
 	}
 
 	rig.nodeMap[camera.uuid] = renderedCamera
-	// progress.add(1)
 	return {
 		uuid: camera.uuid,
 		children: [],
@@ -423,27 +402,32 @@ function renderCamera(camera: ICamera, rig: IRenderedRig): INodeStructure {
 function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 	const bones: Record<string, IRenderedBoneVariant> = {}
 
+	// TODO Remove elements if they are entirely transparent.
+
 	for (const [uuid, bone] of Object.entries(rig.nodeMap)) {
 		if (bone.type !== 'bone') continue
 		const textures: IRenderedModel['textures'] = {}
-		for (const [fromUUID, toUUID] of Object.entries(variant.textureMap.map) as Array<
-			[string, string]
-		>) {
+
+		for (const [fromUUID, toUUID] of variant.textureMap.map.entries()) {
 			if (!(fromUUID && toUUID))
 				throw new Error(
 					`Invalid texture mapping found while exporting variant models. If you're seeing this error something has gone horribly wrong.`
 				)
-			const fromTexture = rig.textures[fromUUID]
-			if (!fromTexture) throw new Error(`Texture not found: ${fromUUID}`)
-			const toTexture = rig.textures[toUUID]
-			if (!toTexture) throw new Error(`Texture not found: ${toUUID}`)
+			const fromTexture = Texture.all.find(t => t.uuid === fromUUID)
+			if (!fromTexture) throw new Error(`From texture not found: ${fromUUID}`)
+			const toTexture = Texture.all.find(t => t.uuid === toUUID)
+			if (!toTexture) throw new Error(`To texture not found: ${toUUID}`)
 			textures[fromTexture.id] = getTextureResourceLocation(toTexture, rig).resourceLocation
+			rig.textures[toTexture.id] = toTexture
 		}
 
 		const parsed = PathModule.parse(bone.modelPath)
 		const modelPath = PathModule.join(parsed.dir, variant.name, `${bone.name}.json`)
 		const parsedModelPath = parseResourcePackPath(modelPath)
 		if (!parsedModelPath) throw new Error(`Invalid variant model path: ${modelPath}`)
+
+		// Don't export models without any texture changes
+		if (Object.keys(textures).length === 0) continue
 
 		bones[uuid] = {
 			model: {
@@ -468,7 +452,6 @@ function getDefaultPose(rig: IRenderedRig) {
 }
 
 export function renderRig(modelExportFolder: string, textureExportFolder: string): IRenderedRig {
-	CustomModelData.set(1)
 	Texture.all.forEach((t, i) => (t.id = String(i)))
 
 	Animator.showDefaultPose()
