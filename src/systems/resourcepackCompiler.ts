@@ -10,35 +10,31 @@ interface IPredicateItemModel {
 		predicate: { custom_model_data: number }
 		model: string
 	}>
-	animated_java: {
-		rigs: Record<string /* Rig Name */, { used_ids: number[] }>
-	}
+	animated_java: Record<string /* Rig Name */, number[]>
 }
 
 class PredicateItemModel {
-	private lastOverrideId = 1
+	public lastOverrideId = 1
 	private overrides = new Map<number, string>()
-	public usedIds = new Set<number>()
-	public rigs: Record<string, { used_ids: number[] }> = {}
+	private externalOverrides = new Map<number, string>()
+	public rigs: Record<string, number[]> = {}
 
 	// constructor() {}
 
 	setOverride(id: number, model: string) {
-		if (!this.usedIds.has(id)) this.usedIds.add(id)
 		this.overrides.set(id, model)
 	}
 
 	addOverride(model: string) {
 		let id = this.lastOverrideId
-		while (this.overrides.get(id) !== undefined) id++
+		while (this.overrides.has(id) || this.externalOverrides.has(id)) id++
 		this.lastOverrideId = id
-		this.usedIds.add(id)
 		this.overrides.set(id, model)
 		return id
 	}
 
 	assertOverride(id: number, model: string) {
-		if (this.overrides.get(id) === undefined) this.setOverride(id, model)
+		if (!(this.overrides.has(id) || this.externalOverrides.has(id))) this.setOverride(id, model)
 	}
 
 	readExisting(path: string) {
@@ -56,23 +52,26 @@ class PredicateItemModel {
 
 		// Assert important fields
 		file.overrides ??= []
-		file.animated_java ??= { rigs: {} }
-		file.animated_java.rigs ??= {}
+		file.animated_java ??= {}
 
-		for (const [name, rig] of Object.entries(file.animated_java.rigs)) {
+		for (const [name, ownedIds] of Object.entries(file.animated_java)) {
 			const namespace = Project!.animated_java.export_namespace
 			const lastNamespace = Project!.last_used_export_namespace
 			if (name === namespace || name === lastNamespace) {
 				file.overrides = file.overrides.filter(
-					override => !rig.used_ids.includes(override.predicate.custom_model_data)
+					override => !ownedIds.includes(override.predicate.custom_model_data)
 				)
 				if (name === lastNamespace && namespace !== lastNamespace)
-					delete file.animated_java.rigs[lastNamespace]
+					delete file.animated_java[lastNamespace]
 				continue
+			} else {
+				for (const id of ownedIds) {
+					const override = file.overrides.find(o => o.predicate.custom_model_data === id)!
+					this.externalOverrides.set(id, override.model)
+				}
 			}
 
-			rig.used_ids.forEach(id => this.usedIds.add(id))
-			this.rigs[name] = rig
+			this.rigs[name] = ownedIds
 		}
 	}
 
@@ -80,23 +79,23 @@ class PredicateItemModel {
 		const [displayItemNamespace, displayItemName] =
 			Project!.animated_java.display_item.split(':')
 		const exportNamespace = Project!.animated_java.export_namespace
+
+		const unsortedRigs = { ...this.rigs, [exportNamespace]: [...this.overrides.keys()] }
+		const sortedRigsKeys = Object.keys(unsortedRigs).sort()
+		const sortedRigs = Object.fromEntries(sortedRigsKeys.map(key => [key, unsortedRigs[key]]))
+
 		return {
 			parent: 'item/generated',
 			textures: {
 				layer0: `${displayItemNamespace}:item/${displayItemName}`,
 			},
-			overrides: [...this.overrides.entries()].map(([id, model]) => ({
-				predicate: { custom_model_data: id },
-				model,
-			})),
-			animated_java: {
-				rigs: {
-					...this.rigs,
-					[exportNamespace]: {
-						used_ids: [...this.usedIds.values()],
-					},
-				},
-			},
+			overrides: [...this.externalOverrides.entries(), ...this.overrides.entries()]
+				.sort((a, b) => a[0] - b[0])
+				.map(([id, model]) => ({
+					predicate: { custom_model_data: id },
+					model,
+				})),
+			animated_java: sortedRigs,
 		}
 	}
 }
@@ -138,6 +137,7 @@ export function compileResourcePack(options: {
 		console.warn('Display item already exists! Attempting to merge...')
 		displayItemModel.readExisting(displayItemPath)
 	}
+	displayItemModel.lastOverrideId = Math.max(1, aj.customModelDataOffset)
 
 	// Empty model for hiding bones / snowballs
 	displayItemModel.assertOverride(1, 'animated_java:empty')
@@ -153,7 +153,7 @@ export function compileResourcePack(options: {
 		bone.customModelData = displayItemModel.addOverride(bone.resourceLocation)
 		fs.writeFileSync(
 			PathModule.join(modelExportFolder, bone.name + '.json'),
-			JSON.stringify(model)
+			autoStringify(model)
 		)
 	}
 
@@ -211,7 +211,7 @@ export function compileResourcePack(options: {
 			)
 			fs.writeFileSync(
 				PathModule.join(modelExportFolder, variantName, bone.name + '.json'),
-				JSON.stringify(variantModel.model)
+				autoStringify(variantModel.model)
 			)
 		}
 	}
@@ -219,7 +219,7 @@ export function compileResourcePack(options: {
 	// Write display item model
 	console.log('Display Item Model', displayItemModel.toJSON())
 	fs.mkdirSync(PathModule.dirname(displayItemPath), { recursive: true })
-	fs.writeFileSync(displayItemPath, JSON.stringify(displayItemModel.toJSON()))
+	fs.writeFileSync(displayItemPath, autoStringify(displayItemModel.toJSON()))
 
 	console.log('Resource pack compiled!')
 }
