@@ -2,4 +2,4 @@
 data modify storage aj:temp frame set value 0
 execute store result storage aj:temp frame int 1 run scoreboard players add @s aj.frame 1
 function animated_java:test_blueprint/animations/anim1/zzz/apply_frame with storage aj:temp
-execute if score @s aj.frame matches 20.. run scoreboard players set @s aj.frame -1
+execute if score @s aj.frame matches 21.. run scoreboard players set @s aj.frame 0

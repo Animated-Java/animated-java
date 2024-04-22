@@ -6,8 +6,7 @@ execute if data storage aj:temp args.variant run function animated_java:test_blu
 # Animation, Frame, and Start Animation Arguments
 execute if data storage aj:temp args.animation run function animated_java:test_blueprint/zzz/23 with storage aj:temp args
 # Custom Summon Commands
-say Hello World!
-tellraw @a "I was summoned!"
+
 # Custom Summon Commands
 # Run the on_summon function for the root entity.
 function #animated_java:test_blueprint/as_root/on_summon
