@@ -1,1 +1,6 @@
-{"parent":"animated_java:item/test_blueprint/bone","textures":{"0":"animated_java:item/test_blueprint/puffy_boi_2.0_edit"}}
+{
+	"parent": "animated_java:item/test_blueprint/bone",
+	"textures": {
+		"0": "animated_java:item/test_blueprint/puffy_boi_2.0_edit"
+	}
+}

@@ -1,0 +1,7 @@
+{
+	"parent": "animated_java:item/armor_stand/baseplate_pivot_a",
+	"textures": {
+		"1": "animated_java:item/armor_stand/empty",
+		"2": "animated_java:item/armor_stand/empty"
+	}
+}

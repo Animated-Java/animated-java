@@ -1,1 +1,6 @@
-{"parent":"animated_java:item/test_blueprint/bone","textures":{"0":"animated_java:item/test_blueprint/snavesutit_2.0_tweaks"}}
+{
+	"parent": "animated_java:item/test_blueprint/bone",
+	"textures": {
+		"0": "animated_java:item/test_blueprint/snavesutit_2.0_tweaks"
+	}
+}
