@@ -15,3 +15,16 @@ export function replacePathPart(path: string, oldPart: string, newPart: string) 
 		.map(v => (v === oldPart ? newPart : v))
 		.join(PathModule.sep)
 }
+
+/**
+ * Returns a new object with the keys sorted alphabetically
+ */
+export function sortObjectKeys<T extends Record<string, any>>(obj: T): T {
+	const sorted: Record<string, any> = {}
+	Object.keys(obj)
+		.sort()
+		.forEach(key => {
+			sorted[key] = obj[key]
+		})
+	return sorted as T
+}

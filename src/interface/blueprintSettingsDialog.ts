@@ -1,31 +1,10 @@
 import { PACKAGE } from '../constants'
 import { SvelteDialog } from '../util/svelteDialog'
 import { Valuable } from '../util/stores'
-import { injectSvelteCompomponent } from '../util/injectSvelte'
 import BlueprintSettingsDialogSvelteComponent from '../components/blueprintSettingsDialog.svelte'
-import BlueprintSettingsDialogTitleSvelteComponent from '../components/blueprintSettingsDialogTitle.svelte'
 import { toSafeFuntionName } from '../util/minecraftUtil'
 import { defaultValues } from '../blueprintSettings'
 import { translate } from '../util/translation'
-
-function injectTitle() {
-	injectSvelteCompomponent({
-		elementSelector() {
-			const dialogTitle = document.querySelectorAll('.dialog_handle')
-			if (
-				dialogTitle.length > 0 &&
-				dialogTitle[0].children.length > 0 &&
-				dialogTitle[0].children[0].innerHTML ===
-					translate('dialog.blueprint_settings.title')
-			) {
-				dialogTitle[0].children[0].remove()
-				return dialogTitle[0]
-			}
-		},
-		svelteComponent: BlueprintSettingsDialogTitleSvelteComponent,
-		svelteComponentProperties: {},
-	})
-}
 
 function getSettings(): Record<string, Valuable<any>> {
 	return {
@@ -67,7 +46,9 @@ function getSettings(): Record<string, Valuable<any>> {
 			Project!.animated_java.enable_advanced_data_pack_settings
 		),
 		dataPack: new Valuable(Project!.animated_java.data_pack),
-		rootEntitySummonCommands: new Valuable(Project!.animated_java.custom_summon_commands),
+		summonCommands: new Valuable(Project!.animated_java.summon_commands),
+		interpolationDuration: new Valuable(Project!.animated_java.interpolation_duration),
+		teleportationDuration: new Valuable(Project!.animated_java.teleportation_duration),
 	}
 }
 
@@ -94,7 +75,9 @@ function setSettings(settings: any) {
 	Project.animated_java.enable_advanced_data_pack_settings =
 		settings.enableAdvancedDataPackSettings.get()
 	Project.animated_java.data_pack = settings.dataPack.get()
-	Project.animated_java.custom_summon_commands = settings.rootEntitySummonCommands.get()
+	Project.animated_java.summon_commands = settings.summonCommands.get()
+	Project.animated_java.interpolation_duration = settings.interpolationDuration.get()
+	Project.animated_java.teleportation_duration = settings.teleportationDuration.get()
 	console.log('Successfully saved project settings', Project)
 }
 
@@ -103,16 +86,13 @@ export function openBlueprintSettingsDialog() {
 
 	const settings = getSettings()
 
-	new SvelteDialog({
+	return new SvelteDialog({
 		id: `${PACKAGE.name}:blueprintSettingsDialog`,
 		title: translate('dialog.blueprint_settings.title'),
 		width: 512,
 		svelteComponent: BlueprintSettingsDialogSvelteComponent,
 		svelteComponentProperties: settings,
 		preventKeybinds: true,
-		onOpen() {
-			// injectTitle()
-		},
 		onConfirm() {
 			setSettings(settings)
 		},

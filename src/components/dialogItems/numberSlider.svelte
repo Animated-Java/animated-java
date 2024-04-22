@@ -26,8 +26,8 @@
 						Math.clamp(
 							value.get() + (difference - last_difference),
 							min !== undefined ? min : -Infinity,
-							max !== undefined ? max : Infinity
-						)
+							max !== undefined ? max : Infinity,
+						),
 					)
 					last_difference = difference
 				}
@@ -45,14 +45,14 @@
 				Math.clamp(
 					molangParser.parse(value.get()),
 					min !== undefined ? min : -Infinity,
-					max !== undefined ? max : Infinity
-				)
+					max !== undefined ? max : Infinity,
+				),
 			)
 		})
 	})
 </script>
 
-<BaseDialogItem {tooltip}>
+<BaseDialogItem {label} {tooltip}>
 	<div class="dialog_bar form_bar">
 		<label class="name_space_left" for="name">{label}</label>
 		<div class="numeric_input">

@@ -1,4 +1,4 @@
-import { Compiler, Parser, Tokenizer, SyncIo, MultiThreadIo } from 'mc-build'
+import { Compiler, Parser, Tokenizer, SyncIo } from 'mc-build'
 import { VariableMap } from 'mc-build/dist/mcl/Compiler'
 import { isFunctionTagPath } from '../util/fileUtil'
 import datapackTemplate from './datapackCompiler/animated_java.mcb'
@@ -6,7 +6,7 @@ import { IRenderedNodes, IRenderedRig } from './rigRenderer'
 import { IRenderedAnimation } from './animationRenderer'
 import { Variant } from '../variants'
 import { NbtCompound, NbtFloat, NbtInt, NbtList, NbtString, NbtTag } from 'deepslate'
-import { matrixToNbtFloatArray } from './util'
+import { matrixToNbtFloatArray, replacePathPart, sortObjectKeys } from './util'
 import { BoneConfig } from '../boneConfig'
 import { IBlueprintVariantBoneConfigJSON } from '../blueprintFormat'
 import { IFunctionTag, mergeTag, parseDataPackPath } from '../util/minecraftUtil'
@@ -47,8 +47,6 @@ namespace OBJECTIVES {
 	export const IS_RIG_LOADED = () => 'aj.is_rig_loaded'
 }
 
-OBJECTIVES.I()
-
 function applyBoneConfigToPassenger(
 	passenger: NbtCompound,
 	config: IBlueprintVariantBoneConfigJSON,
@@ -72,7 +70,6 @@ function applyBoneConfigToPassenger(
 	}
 
 	if (config.enchanted !== defaultConfig.enchanted) {
-		console.log('Enchanted:', config.enchanted, defaultConfig.enchanted, defaultConfig)
 		const components = item.get(useComponents ? 'components' : 'tag') as NbtCompound
 		if (useComponents) {
 			components.set(
@@ -134,8 +131,8 @@ function generateRootEntityPassengers(rig: IRenderedRig) {
 			tags.add(new NbtString(TAGS.PROJECT_BONE_ENTITY(aj.export_namespace)))
 			tags.add(new NbtString(TAGS.LOCAL_BONE_ENTITY(aj.export_namespace, node.name)))
 			passenger.set('transformation', matrixToNbtFloatArray(defaultPos!.matrix))
-			passenger.set('interpolation_duration', new NbtInt(1))
-			passenger.set('teleport_duration', new NbtInt(1))
+			passenger.set('interpolation_duration', new NbtInt(aj.interpolation_duration))
+			passenger.set('teleport_duration', new NbtInt(aj.teleportation_duration))
 			passenger.set('item_display', new NbtString('head'))
 			const item = new NbtCompound()
 			passenger.set(
@@ -170,14 +167,60 @@ function generateRootEntityPassengers(rig: IRenderedRig) {
 		passengers.add(passenger)
 	}
 
-	console.log(passengers)
 	return passengers.toString()
 }
 
-const BASIC_FUNCTION_TAGS = ['minecraft:tick', 'minecraft:load']
+class AJMeta {
+	public datapack = {
+		files: new Set<string>(),
+	}
+	public oldDatapack = {
+		files: new Set<string>(),
+	}
+	private oldContent: Record<string, { datapack: { files: string[] } }> = {}
+
+	constructor(
+		public path: string,
+		public exportNamespace: string,
+		public lastUsedExportNamespace: string
+	) {}
+
+	read() {
+		if (!fs.existsSync(this.path)) return
+		this.oldContent = JSON.parse(fs.readFileSync(this.path, 'utf-8'))
+		const data = this.oldContent[this.exportNamespace]
+		const lastData = this.oldContent[this.lastUsedExportNamespace]
+		if (lastData) {
+			for (const file of lastData.datapack.files) {
+				this.oldDatapack.files.add(file)
+			}
+			delete this.oldContent[this.lastUsedExportNamespace]
+		}
+		if (data) {
+			for (const file of data.datapack.files) {
+				this.oldDatapack.files.add(file)
+			}
+			delete this.oldContent[this.exportNamespace]
+		}
+	}
+
+	write() {
+		const content: AJMeta['oldContent'] = {
+			...this.oldContent,
+			[this.exportNamespace]: {
+				datapack: {
+					files: Array.from(this.datapack.files),
+				},
+			},
+		}
+		fs.writeFileSync(this.path, autoStringify(sortObjectKeys(content)))
+	}
+}
 
 export function compileDataPack(options: { rig: IRenderedRig; animations: IRenderedAnimation[] }) {
+	console.time('Data Pack Compilation took')
 	const { rig, animations } = options
+	const aj = Project!.animated_java
 	console.log('Compiling Data Pack...')
 	const compiler = new Compiler('src/', {
 		libDir: null,
@@ -190,7 +233,47 @@ export function compileDataPack(options: { rig: IRenderedRig; animations: IRende
 		setup: null,
 	})
 
-	const exportedFiles = new Set<string>()
+	const ajmeta = new AJMeta(
+		PathModule.join(Project!.animated_java.data_pack, '.ajmeta'),
+		aj.export_namespace,
+		Project!.last_used_export_namespace
+	)
+	ajmeta.read()
+
+	const removedFolders = new Set<string>()
+	for (const file of ajmeta.oldDatapack.files) {
+		if (!isFunctionTagPath(file)) {
+			if (fs.existsSync(file)) fs.unlinkSync(file)
+		} else if (aj.export_namespace !== Project!.last_used_export_namespace) {
+			const resourceLocation = parseDataPackPath(file)!.resourceLocation
+			if (
+				resourceLocation.startsWith(
+					`animated_java:${Project!.last_used_export_namespace}/`
+				) &&
+				fs.existsSync(file)
+			) {
+				console.log('Moving old function tag:', file)
+				const newPath = replacePathPart(
+					file,
+					Project!.last_used_export_namespace,
+					aj.export_namespace
+				)
+				fs.mkdirSync(PathModule.dirname(newPath), { recursive: true })
+				fs.copyFileSync(file, newPath)
+				fs.unlinkSync(file)
+			}
+		}
+		let folder = PathModule.dirname(file)
+		while (
+			!removedFolders.has(folder) &&
+			fs.existsSync(folder) &&
+			fs.readdirSync(folder).length === 0
+		) {
+			fs.rmSync(folder, { recursive: true })
+			removedFolders.add(folder)
+			folder = PathModule.dirname(folder)
+		}
+	}
 
 	function createSyncIO(): SyncIo {
 		const io = new SyncIo()
@@ -200,12 +283,23 @@ export function compileDataPack(options: { rig: IRenderedRig; animations: IRende
 			const writePath = PathModule.join(Project!.animated_java.data_pack, localPath)
 
 			if (isFunctionTagPath(writePath) && fs.existsSync(writePath)) {
-				const resourceLocation = parseDataPackPath(writePath)!.resourceLocation
-				if (BASIC_FUNCTION_TAGS.includes(resourceLocation)) {
-					const oldFile: IFunctionTag = JSON.parse(fs.readFileSync(writePath, 'utf-8'))
-					const newFile: IFunctionTag = JSON.parse(content)
-					content = JSON.stringify(mergeTag(oldFile, newFile))
+				const oldFile: IFunctionTag = JSON.parse(fs.readFileSync(writePath, 'utf-8'))
+				const newFile: IFunctionTag = JSON.parse(content)
+				const merged = mergeTag(oldFile, newFile)
+				if (aj.export_namespace !== Project!.last_used_export_namespace) {
+					merged.values = merged.values.filter(v => {
+						const value = typeof v === 'string' ? v : v.id
+						return (
+							!value.startsWith(
+								`#animated_java:${Project!.last_used_export_namespace}/`
+							) ||
+							value.startsWith(
+								`animated_java:${Project!.last_used_export_namespace}/`
+							)
+						)
+					})
 				}
+				content = JSON.stringify(merged)
 			}
 
 			const folderPath = PathModule.dirname(writePath)
@@ -214,7 +308,7 @@ export function compileDataPack(options: { rig: IRenderedRig; animations: IRende
 				folderCache.add(folderPath)
 			}
 			fs.writeFileSync(writePath, content)
-			exportedFiles.add(writePath)
+			ajmeta.datapack.files.add(writePath)
 		}
 
 		return io
@@ -223,10 +317,10 @@ export function compileDataPack(options: { rig: IRenderedRig; animations: IRende
 	compiler.io = createSyncIO()
 	compiler.disableRequire = true
 
-	const aj = Project!.animated_java
-
 	const variables = {
 		export_namespace: aj.export_namespace,
+		interpolation_duration: aj.interpolation_duration,
+		teleportation_duration: aj.teleportation_duration,
 		rig,
 		animations,
 		variants: Variant.all,
@@ -234,14 +328,16 @@ export function compileDataPack(options: { rig: IRenderedRig; animations: IRende
 		root_entity_passengers: generateRootEntityPassengers(rig),
 		TAGS,
 		OBJECTIVES,
-		custom_summon_commands: aj.custom_summon_commands,
+		custom_summon_commands: aj.summon_commands,
 		matrixToNbtFloatArray,
 	}
 
-	console.time('Data Pack Compilation')
+	console.time('MC-Build Compiler took')
 	const tokens = Tokenizer.tokenize(datapackTemplate, 'src/animated_java.mcb')
 	compiler.addFile('src/animated_java.mcb', Parser.parseMcbFile(tokens))
 	compiler.compile(VariableMap.fromObject(variables))
+	console.timeEnd('MC-Build Compiler took')
 
-	console.timeEnd('Data Pack Compilation')
+	ajmeta.write()
+	console.timeEnd('Data Pack Compilation took')
 }

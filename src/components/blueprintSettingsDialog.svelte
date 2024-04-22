@@ -34,7 +34,9 @@
 	export let enableDataPack: Valuable<boolean>
 	export let enableAdvancedDataPackSettings: Valuable<boolean>
 	export let dataPack: Valuable<string>
-	export let rootEntitySummonCommands: Valuable<string>
+	export let summonCommands: Valuable<string>
+	export let interpolationDuration: Valuable<number>
+	export let teleportationDuration: Valuable<number>
 
 	function exportNamespaceChecker(value: string): { type: string; message: string } {
 		if (value === '') {
@@ -109,9 +111,6 @@
 		const largestWidth: number = Number(
 			Texture.all.map(t => t.width).reduce((max, cur) => Math.max(max, cur), 0),
 		)
-
-		console.log('Largest Width:', largestWidth, 'vs', x)
-		console.log('Largest Height:', largestHeight, 'vs', y)
 
 		if (!(x === largestWidth && y === largestHeight)) {
 			return {
@@ -381,9 +380,25 @@
 				/>
 			{/if}
 			<CodeInput
-				label={translate('dialog.blueprint_settings.custom_summon_commands.title')}
-				tooltip={translate('dialog.blueprint_settings.custom_summon_commands.description')}
-				bind:value={rootEntitySummonCommands}
+				label={translate('dialog.blueprint_settings.summon_commands.title')}
+				tooltip={translate('dialog.blueprint_settings.summon_commands.description')}
+				bind:value={summonCommands}
+			/>
+
+			<NumberSlider
+				label={translate('dialog.blueprint_settings.interpolation_duration.title')}
+				tooltip={translate('dialog.blueprint_settings.interpolation_duration.description')}
+				bind:value={interpolationDuration}
+				min={0}
+				max={2147483647}
+			/>
+
+			<NumberSlider
+				label={translate('dialog.blueprint_settings.teleportation_duration.title')}
+				tooltip={translate('dialog.blueprint_settings.teleportation_duration.description')}
+				bind:value={teleportationDuration}
+				min={0}
+				max={2147483647}
 			/>
 		{/if}
 	{/if}

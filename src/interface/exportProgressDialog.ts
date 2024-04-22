@@ -4,33 +4,32 @@ import { Valuable } from '../util/stores'
 import { SvelteDialog } from '../util/svelteDialog'
 import { translate } from '../util/translation'
 
-const PROGRESS = new Valuable(0)
-const LOG = new Valuable('Hello World!\nLorem Ipsum Dolor Sit Amet\n')
-
-export function setProgress(value: number) {
-	PROGRESS.set(value)
-}
-
-export function getProgress() {
-	return PROGRESS.get()
-}
-
-export function logMessage(message: string) {
-	const current = LOG.get()
-	LOG.set(current + message + '\n')
-}
+const LOG = new Valuable('')
 
 export function openExportProgressDialog() {
-	new SvelteDialog({
+	const originalLog = console.log
+	LOG.set('')
+
+	function logMessage(...messages: any[]) {
+		const current = LOG.get()
+		LOG.set(current + messages.join(' ') + '\n')
+		originalLog(...(messages as string[]))
+	}
+	console.log = logMessage
+
+	const dialog = new SvelteDialog({
 		id: `${PACKAGE.name}:exportProgressDialog`,
 		title: translate('dialog.export_progress.title'),
 		width: 512,
 		svelteComponent: ExportProgressDialogSvelteComponent,
 		svelteComponentProperties: {
-			progress: PROGRESS,
 			log: LOG,
 		},
 		preventKeybinds: true,
 		buttons: [],
+		onClose: () => {
+			console.log = originalLog
+		},
 	}).show()
+	return dialog
 }

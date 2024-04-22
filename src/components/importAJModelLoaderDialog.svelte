@@ -14,7 +14,6 @@
 			}),
 		]).then(result => {
 			if (!result.canceled) {
-				console.log(result)
 				convertAJModelToBlueprint(result.filePaths[0] as string)
 			}
 		})

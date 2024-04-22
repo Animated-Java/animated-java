@@ -10,6 +10,7 @@
 
 <script lang="ts">
 	// An editable list of unique items, with a button to add new items from a list of options.
+	export let label: string
 	export let tooltip: string
 	export let availableItemsColumnLable: string
 	export let availableItemsColumnTooltip: string
@@ -53,7 +54,7 @@
 	}
 </script>
 
-<BaseDialogItem {tooltip}>
+<BaseDialogItem {label} {tooltip}>
 	<div class="main-column-container">
 		<div class="column" title={availableItemsColumnTooltip}>
 			<h3>{availableItemsColumnLable}</h3>

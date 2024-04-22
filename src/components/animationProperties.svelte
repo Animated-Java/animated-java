@@ -63,6 +63,7 @@
 	/>
 
 	<Collection
+		label={translate('dialog.animation_properties.excluded_bones.title')}
 		tooltip={translate('dialog.animation_properties.bone_lists.description')}
 		availableItemsColumnLable={translate('dialog.animation_properties.included_bones.title')}
 		availableItemsColumnTooltip={translate(

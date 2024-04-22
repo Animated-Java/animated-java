@@ -20,14 +20,14 @@
 			result.type === 'warning' ? (warning_text = result.message) : (warning_text = '')
 		}
 
-		console.log('onValueChange', _value)
-
 		value.set(_value)
 		_value = value.get()
 	}
+
+	onValueChange()
 </script>
 
-<BaseDialogItem {tooltip} {warning_text} {error_text}>
+<BaseDialogItem {label} {tooltip} {warning_text} {error_text}>
 	<div class="dialog_bar form_bar">
 		<label class="name_space_left" for="name">{label}</label>
 		<textarea

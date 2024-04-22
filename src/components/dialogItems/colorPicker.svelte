@@ -26,7 +26,7 @@
 	})
 </script>
 
-<BaseDialogItem {tooltip}>
+<BaseDialogItem {label} {tooltip}>
 	<div class="dialog_bar form_bar">
 		<label class="name_space_left" for="export">{label}</label>
 		<div bind:this={colorPickerMount} use:onLoad />

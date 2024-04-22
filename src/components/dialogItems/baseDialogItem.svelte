@@ -1,7 +1,16 @@
+<script lang="ts" context="module">
+	import { blueprintSettingErrors } from '../../blueprintSettings'
+</script>
+
 <script lang="ts">
+	export let label: string
 	export let tooltip: string = ''
 	export let warning_text: string = ''
 	export let error_text: string = ''
+
+	$: if (error_text) {
+		blueprintSettingErrors.get()[label] = error_text
+	}
 
 	function onQuestionMarkClick() {
 		Blockbench.showQuickMessage(tooltip, 50 * tooltip.length)

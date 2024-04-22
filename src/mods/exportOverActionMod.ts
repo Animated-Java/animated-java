@@ -11,7 +11,6 @@ createBlockbenchMod(
 	context => {
 		context.action.click = (event: Event) => {
 			if (!Project || !Format) return
-			console.log('Export Over')
 			if (Format.id === BLUEPRINT_FORMAT.id) {
 				if (Project.save_path || Project.export_path) {
 					BLUEPRINT_CODEC.write(

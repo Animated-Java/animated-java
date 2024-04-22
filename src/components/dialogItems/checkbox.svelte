@@ -7,7 +7,7 @@
 	export let checked: Valuable<boolean>
 </script>
 
-<BaseDialogItem {tooltip}>
+<BaseDialogItem {label} {tooltip}>
 	<div class="dialog_bar form_bar checkbox_bar">
 		<label class="name_space_left" for="export">{label}</label>
 		<div class="spacer" />

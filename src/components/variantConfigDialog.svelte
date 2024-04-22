@@ -202,6 +202,7 @@
 		{/key}
 	</lu>
 	<Collection
+		label={translate('dialog.variant_config.excluded_bones.title')}
 		tooltip={translate('dialog.variant_config.bone_lists.description')}
 		availableItemsColumnLable={translate('dialog.variant_config.included_bones.title')}
 		availableItemsColumnTooltip={translate('dialog.variant_config.included_bones.description')}

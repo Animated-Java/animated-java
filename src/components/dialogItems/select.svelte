@@ -26,7 +26,7 @@
 	})
 </script>
 
-<BaseDialogItem {tooltip}>
+<BaseDialogItem {label} {tooltip}>
 	<div bind:this={container} class="dialog_bar form_bar">
 		<label class="name_space_left" for="name">{label}</label>
 	</div>

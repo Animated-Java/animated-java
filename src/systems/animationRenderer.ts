@@ -222,6 +222,7 @@ export function renderAnimation(animation: _Animation, rig: IRenderedRig) {
 }
 
 export function renderProjectAnimations(project: ModelProject, rig: IRenderedRig) {
+	console.time('Rendering animations took')
 	let selectedAnimation: _Animation | undefined
 	let currentTime = 0
 	Timeline.pause()
@@ -247,5 +248,6 @@ export function renderProjectAnimations(project: ModelProject, rig: IRenderedRig
 		Animator.showDefaultPose()
 	}
 
+	console.timeEnd('Rendering animations took')
 	return animations
 }

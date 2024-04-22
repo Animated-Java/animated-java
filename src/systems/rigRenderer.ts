@@ -452,6 +452,7 @@ function getDefaultPose(rig: IRenderedRig) {
 }
 
 export function renderRig(modelExportFolder: string, textureExportFolder: string): IRenderedRig {
+	console.time('Rendering rig took')
 	Texture.all.forEach((t, i) => (t.id = String(i)))
 
 	Animator.showDefaultPose()
@@ -497,5 +498,6 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 		rig.variantModels[variant.name] = renderVariantModels(variant, rig)
 	}
 
+	console.timeEnd('Rendering rig took')
 	return rig
 }

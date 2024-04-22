@@ -20,6 +20,9 @@
 		"enable_data_pack": true,
 		"enable_advanced_data_pack_settings": false,
 		"data_pack": "D:\\github-repos\\animated-java\\debug_packs\\datapack",
+		"summon_commands": "",
+		"interpolation_duration": 1,
+		"teleportation_duration": 1,
 		"custom_summon_commands": ""
 	},
 	"resolution": {

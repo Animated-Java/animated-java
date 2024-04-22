@@ -38,15 +38,16 @@
 			}),
 		]).then(result => {
 			if (!result.canceled) {
-				console.log(result)
 				_value = result.filePaths[0]
 				onValueChange()
 			}
 		})
 	}
+
+	onValueChange()
 </script>
 
-<BaseDialogItem {tooltip} bind:warning_text bind:error_text>
+<BaseDialogItem {label} {tooltip} bind:warning_text bind:error_text>
 	<div class="dialog_bar form_bar">
 		<label class="name_space_left" for="name">{label}</label>
 		<input

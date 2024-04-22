@@ -11,9 +11,7 @@ createBlockbenchMod(
 		const originalFilesFunction = context.panel.inside_vue.$options.computed.files
 
 		context.panel.inside_vue.$options.computed.files = function (this: Vue) {
-			console.log('files')
 			if (Format.id === BLUEPRINT_FORMAT.id) {
-				console.log('blueprint')
 				return {
 					'': {
 						animations: [

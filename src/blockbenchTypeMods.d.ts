@@ -23,7 +23,9 @@ declare global {
 			enable_data_pack: boolean
 			enable_advanced_data_pack_settings: boolean
 			data_pack: string
-			custom_summon_commands: string
+			summon_commands: string
+			interpolation_duration: number
+			teleportation_duration: number
 		}
 		last_used_export_namespace: string
 

@@ -76,7 +76,6 @@ MenuBar.addAction(
 			return Format === BLUEPRINT_FORMAT
 		},
 		click() {
-			console.log('Blueprint Settings')
 			openBlueprintSettingsDialog()
 		},
 	}),
@@ -107,7 +106,6 @@ MenuBar.addAction(
 			return Format === BLUEPRINT_FORMAT && !Project?.animated_java.enable_plugin_mode
 		},
 		click() {
-			console.log('Export')
 			exportProject()
 		},
 	}),

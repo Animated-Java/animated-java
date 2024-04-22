@@ -97,8 +97,14 @@ animated_java.dialog.blueprint_settings.data_pack.error.not_a_folder: The select
 animated_java.dialog.blueprint_settings.data_pack.error.missing_pack_mcmeta: The selected folder is missing a pack.mcmeta file!
 animated_java.dialog.blueprint_settings.data_pack.error.missing_data_folder: The selected Data Pack is missing a data folder!
 
-animated_java.dialog.blueprint_settings.custom_summon_commands.title: Custom On-Summon Commands
-animated_java.dialog.blueprint_settings.custom_summon_commands.description: Commands to run as the root entity when summoned. Treat this text input as a normal mcfunction.
+animated_java.dialog.blueprint_settings.summon_commands.title: On-Summon Commands
+animated_java.dialog.blueprint_settings.summon_commands.description: Commands to run as the root entity when summoned. Treat this text input as a normal mcfunction.
+
+animated_java.dialog.blueprint_settings.interpolation_duration.title: Interp Duration
+animated_java.dialog.blueprint_settings.interpolation_duration.description: The duration of the smoothing between keyframes in ticks. This is the time it takes for the model to transition from one keyframe to the next. Higher values will cause animations to lose precision. Generally, you want this to have a value of 1 or 2.
+
+animated_java.dialog.blueprint_settings.teleportation_duration.title: Teleport Duration
+animated_java.dialog.blueprint_settings.teleportation_duration.description: The duration of the teleportation between keyframes in ticks. This is the time over which the model will visually interpolate between it's old position to it's new position. Higher values will cause animations to lose precision.
 
 ## Bone Config Dialog
 animated_java.dialog.bone_config.title: Bone Config
@@ -186,6 +192,9 @@ animated_java.dialog.animation_properties.included_bones.title: Included Bones
 animated_java.dialog.animation_properties.included_bones.description: A list of bones to include in the animation. Only these bones will be modified by the animation.
 animated_java.dialog.animation_properties.swap_columns_button.tooltip: Swap Lists
 
+## Export Progress Dialog
+animated_java.dialog.export_progress.title: Exporting...
+
 ### Panels
 
 ## Variants Panel
@@ -215,4 +224,12 @@ animated_java.effect_animator.keyframes.execute_condition: Execute Condition
 animated_java.panel.keyframe.keyframe_title: Keyframe ({0})
 
 ### Misc
+
+# Blueprint Setting Errors - Failed to Export Message Box
+animated_java.misc.failed_to_export.title: Failed to Export
+animated_java.misc.failed_to_export.message: There are errors in your blueprint settings! Please fix them before exporting.
+animated_java.misc.failed_to_export.error_item: 'Found an issue with {0}:'
+animated_java.misc.failed_to_export.button: Ok
+
+# Format Category
 animated_java.format_category.animated_java: Animated Java

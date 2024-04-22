@@ -34,13 +34,9 @@ import { Variant } from './variants'
 import './util/minecraftRegistries'
 import { MINECRAFT_REGISTRY } from './util/minecraftRegistries'
 import { compileResourcePack } from './systems/resourcepackCompiler'
-import {
-	openExportProgressDialog,
-	setProgress,
-	getProgress,
-	logMessage,
-} from './interface/exportProgressDialog'
+import { openExportProgressDialog } from './interface/exportProgressDialog'
 import { isDataPackPath, isResourcePackPath } from './util/minecraftUtil'
+import { blueprintSettingErrors } from './blueprintSettings'
 
 // @ts-ignore
 globalThis.AnimatedJava = {
@@ -50,11 +46,9 @@ globalThis.AnimatedJava = {
 		Variant,
 		MINECRAFT_REGISTRY,
 		openExportProgressDialog,
-		setProgress,
-		getProgress,
-		logMessage,
 		isResourcePackPath,
 		isDataPackPath,
+		blueprintSettingErrors,
 	},
 }
 

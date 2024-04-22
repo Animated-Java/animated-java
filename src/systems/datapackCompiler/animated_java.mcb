@@ -158,12 +158,16 @@ dir <%export_namespace%> {
 						function animated_java:global/errors/function_not_executed_as_root_entity \
 							{'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/play'}
 					tag @s add <%TAGS.ANIMATION_PLAYING(export_namespace, animation.name)%>
+					execute store result storage aj:temp frame int 1 run scoreboard players set @s <%OBJECTIVES.FRAME()%> 1
+					function ./zzz/frames/1
 				}
 				function stop {
 					execute unless entity @s[type=item_display,tag=<%TAGS.GLOBAL_ROOT()%>] run return run \
 						function animated_java:global/errors/function_not_executed_as_root_entity \
 							{'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/stop'}
 					tag @s remove <%TAGS.ANIMATION_PLAYING(export_namespace, animation.name)%>
+					execute store result storage aj:temp frame int 1 run scoreboard players set @s <%OBJECTIVES.FRAME()%> 1
+					function ./zzz/frames/1
 				}
 				function pause {
 					execute unless entity @s[type=item_display,tag=<%TAGS.GLOBAL_ROOT()%>] run return run \
@@ -214,7 +218,7 @@ dir <%export_namespace%> {
 						data modify storage aj:temp frame set value 0
 						execute store result storage aj:temp frame int 1 run scoreboard players add @s <%OBJECTIVES.FRAME()%> 1
 						function ./apply_frame with storage aj:temp
-						execute if score @s <%OBJECTIVES.FRAME()%> matches <%animation.duration-1%>.. run scoreboard players set @s <%OBJECTIVES.FRAME()%> -1
+						execute if score @s <%OBJECTIVES.FRAME()%> matches <%animation.duration%>.. run scoreboard players set @s <%OBJECTIVES.FRAME()%> 0
 					}
 					function apply_frame {
 						#ARGS: {frame: int}
@@ -222,7 +226,7 @@ dir <%export_namespace%> {
 					}
 					dir frames {
 						REPEAT (animation.frames) as frame {
-							function <%animation.frames.indexOf(frame)%> {
+							function <%animation.frames.indexOf(frame)+1%> {
 								REPEAT (frame.nodes) as node {
 									IF (node.type === 'bone') {
 										# It's actually faster to use a single command like this than to spread it into a function.
@@ -246,8 +250,8 @@ dir <%export_namespace%> {
 		$execute store success score #success <%OBJECTIVES.I()%> run data modify storage aj:temp args set value $(args)
 
 		summon minecraft:item_display ~ ~ ~ { \
-			teleport_duration: 1, \
-			interpolation_duration: 1, \
+			teleport_duration: <%teleportation_duration%>, \
+			interpolation_duration: <%interpolation_duration%>, \
 			Tags:['<%TAGS.NEW()%>','<%TAGS.GLOBAL_RIG_ENTITY()%>','<%TAGS.GLOBAL_ROOT()%>','<%TAGS.PROJECT_ROOT(export_namespace)%>'], \
 			Passengers:<%root_entity_passengers%> \
 		}

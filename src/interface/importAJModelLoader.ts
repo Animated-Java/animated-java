@@ -23,7 +23,6 @@ createModelLoader(`${PACKAGE.name}-upgradeAJModelLoader`, {
 		},
 	},
 	onFormatPage() {
-		console.log('Upgrade Old .ajmodel Loader')
 		if (activeComponent) {
 			activeComponent.$destroy()
 		}
@@ -50,7 +49,6 @@ export function convertAJModelToBlueprint(path: string) {
 			ajmodel.animated_java.exporter_settings['animated_java:datapack_exporter']
 
 		const defaultVariant = ajmodel.animated_java.variants.find((v: any) => !!v.default)
-		console.log(defaultVariant)
 		const variants = ajmodel.animated_java.variants.filter((v: any) => !v.default)
 
 		const blueprint: IBlueprintFormatJSON = {
@@ -78,7 +76,9 @@ export function convertAJModelToBlueprint(path: string) {
 				enable_data_pack: true,
 				enable_advanced_data_pack_settings: false,
 				data_pack: datapackExporterSettings.datapack_mcmeta.replace(/\.mcmeta$/, ''),
-				custom_summon_commands: '',
+				summon_commands: '',
+				interpolation_duration: 0,
+				teleportation_duration: 0,
 			},
 			variants: {
 				default: {
@@ -143,7 +143,7 @@ export function convertAJModelToBlueprint(path: string) {
 			datapackExporterSettings.root_entity_nbt &&
 			datapackExporterSettings.root_entity_nbt !== '{}'
 		) {
-			blueprint.project_settings!.custom_summon_commands = `data merge entity @s ${
+			blueprint.project_settings!.summon_commands = `data merge entity @s ${
 				datapackExporterSettings.root_entity_nbt as string
 			}`
 		}

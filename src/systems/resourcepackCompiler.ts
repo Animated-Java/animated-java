@@ -1,7 +1,7 @@
 import { isResourcePackPath, toSafeFuntionName } from '../util/minecraftUtil'
 import { IRenderedAnimation } from './animationRenderer'
 import { IRenderedNodes, IRenderedRig } from './rigRenderer'
-import { replacePathPart } from './util'
+import { replacePathPart, sortObjectKeys } from './util'
 
 interface IPredicateItemModel {
 	parent: string
@@ -80,10 +80,6 @@ class PredicateItemModel {
 			Project!.animated_java.display_item.split(':')
 		const exportNamespace = Project!.animated_java.export_namespace
 
-		const unsortedRigs = { ...this.rigs, [exportNamespace]: [...this.overrides.keys()] }
-		const sortedRigsKeys = Object.keys(unsortedRigs).sort()
-		const sortedRigs = Object.fromEntries(sortedRigsKeys.map(key => [key, unsortedRigs[key]]))
-
 		return {
 			parent: 'item/generated',
 			textures: {
@@ -95,7 +91,10 @@ class PredicateItemModel {
 					predicate: { custom_model_data: id },
 					model,
 				})),
-			animated_java: sortedRigs,
+			animated_java: sortObjectKeys({
+				...this.rigs,
+				[exportNamespace]: [...this.overrides.keys()],
+			}),
 		}
 	}
 }

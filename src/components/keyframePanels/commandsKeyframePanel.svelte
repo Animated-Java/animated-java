@@ -12,8 +12,6 @@
 	keyframeValue.subscribe(value => {
 		setKeyframeCommands(selectedKeyframe, value)
 	})
-
-	console.log(selectedKeyframe)
 </script>
 
 <label for="commands_input" class="undefined" style="font-weight: unset;">

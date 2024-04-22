@@ -3,12 +3,10 @@
 </script>
 
 <script lang="ts">
-	export let progress: Valuable<number>
 	export let log: Valuable<string>
 </script>
 
 <div class="dialog-container">
-	<progress value={$progress} max="1" />
 	<code>
 		{#each $log.split('\n') as line}
 			<pre>{line}</pre>
@@ -20,10 +18,6 @@
 	.dialog-container {
 		display: flex;
 		flex-direction: column;
-	}
-
-	progress {
-		width: 100%;
 	}
 
 	code {
