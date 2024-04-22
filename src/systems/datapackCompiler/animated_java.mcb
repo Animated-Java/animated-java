@@ -39,11 +39,11 @@ dir global {
 		# That way I can also check if the rig's files still exist, and remove tag entries if they don't.
 		# An entry will be added for each exported rig.
 		tag functions on_tick {
-			#animated_java:<%export_namespace%>/zzz/on_tick
+			animated_java:<%export_namespace%>/on_tick
 		}
 		# An entry will be added for each exported rig.
 		tag functions on_load {
-			#animated_java:<%export_namespace%>/zzz/on_load
+			animated_java:<%export_namespace%>/on_load
 		}
 	}
 
@@ -218,6 +218,9 @@ dir <%export_namespace%> {
 		#Args: {args:{variant: string, animation: string, frame: int, start_animation: boolean}}
 		# frame is ignored unless animation is specified.
 
+		data modify storage aj:temp args set value {variant:'', animation:'', frame: 0}
+		$execute store success score #success <%OBJECTIVES.I()%> run data modify storage aj:temp args set value $(args)
+
 		summon minecraft:item_display ~ ~ ~ { \
 			teleport_duration: 1, \
 			interpolation_duration: 1, \
@@ -228,11 +231,8 @@ dir <%export_namespace%> {
 			execute store result score @s <%OBJECTIVES.ID()%> run scoreboard players add aj.last_id <%OBJECTIVES.ID()%> 1
 			tag @s remove aj.new
 
-			data modify storage aj:temp args set value {variant:'', animation:'', frame: 0}
-			$execute store success score #success <%OBJECTIVES.I()%> run data modify storage aj:temp args set value $(args)
-
 			# Variant Arguement
-			execute if data storage aj:temp args.variant run {
+			execute if data storage aj:temp args.variant run { with storage aj:temp args
 				execute if data storage aj:temp {args:{variant:''}} run return run tellraw @a "The variant argument cannot be an empty string."
 				# Attempt to apply the variant, if it fails, print an error.
 				execute store success score #success <%OBJECTIVES.I()%> run { with storage aj:temp args
@@ -244,7 +244,7 @@ dir <%export_namespace%> {
 			}
 
 			# Animation, Frame, and Start Animation Arguments
-			execute if data storage aj:temp args.animation run {
+			execute if data storage aj:temp args.animation run { with storage aj:temp args
 				execute if data storage aj:temp {args:{animation:''}} run return run tellraw @a "The animation argument cannot be an empty string."
 				execute store result score #frame <%OBJECTIVES.I()%> run data get storage aj:temp args.frame
 				execute if score #frame <%OBJECTIVES.I()%> matches ..-1 run return run tellraw @a "The frame argument must be a non-negative integer."
@@ -294,20 +294,28 @@ dir <%export_namespace%> {
 	}
 
 	dir variants {
+		dir default {
+			function apply {
+				execute unless entity @s[type=item_display,tag=<%TAGS.GLOBAL_ROOT()%>] run return run \
+					function animated_java:global/errors/function_not_executed_as_root_entity \
+					{'function_path': 'animated_java:<%export_namespace%>/variants/default/apply'}
+				REPEAT (Object.values(rig.nodeMap)) as bone {
+					execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%bone.name%>] run {
+						data modify entity @s item.components.minecraft:custom_model_data set value <%bone.customModelData%>
+					}
+				}
+			}
+		}
 		REPEAT (variants) as variant {
 			IF (!variant.isDefault) {
 				dir <%variant.name%> {
 					function apply {
 						execute unless entity @s[type=item_display,tag=<%TAGS.GLOBAL_ROOT()%>] run return run \
 							function animated_java:global/errors/function_not_executed_as_root_entity \
-							with {'function_path': 'animated_java:<%export_namespace%>/variants/<%variant.name%>/apply'}
-						# TODO Apply the variant to the rig here.
+							{'function_path': 'animated_java:<%export_namespace%>/variants/<%variant.name%>/apply'}
 						REPEAT (Object.values(rig.nodeMap)) as bone {
 							IF (bone.type === 'bone' && !Object.values(variant.excludedBones).find(v => v.value === bone.node.uuid)) {
 								execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%bone.name%>] run {
-									<%%
-										console.log(variant.name, bone, rig.variantModels)
-									%%>
 									data modify entity @s item.components.minecraft:custom_model_data set value <%rig.variantModels[variant.name][bone.node.uuid].customModelData%>
 								}
 							}

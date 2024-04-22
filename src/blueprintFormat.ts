@@ -61,10 +61,6 @@ export interface IBlueprintVariantJSON {
 	 */
 	texture_map: Record<string, string>
 	/**
-	 * The bone configs that are modified in by the Variant
-	 */
-	bone_configs: Record<string, IBlueprintVariantBoneConfigJSON>
-	/**
 	 * The list of bones that should be ignored when applying the Variant
 	 */
 	excluded_bones: string[]
@@ -110,9 +106,9 @@ export interface IBlueprintFormatJSON {
 	outliner: any[]
 	textures: Texture[]
 	animations: AnimationOptions[]
-	animation_controllers: AnimationControllerOptions[]
+	animation_controllers?: AnimationControllerOptions[]
 	animation_variable_placeholders: string
-	backgrounds: Record<string, any>
+	backgrounds?: Record<string, any>
 }
 
 /**

@@ -125,10 +125,7 @@ export class Variant {
 			name: this.name,
 			uuid: this.uuid,
 			texture_map: Object.fromEntries(this.textureMap.map),
-			// TODO: Implement bone configs
-			bone_configs: {},
-			// TODO: Implement excluded bones
-			excluded_bones: [],
+			excluded_bones: this.excludedBones.map(item => item.value),
 		}
 	}
 
@@ -138,8 +135,12 @@ export class Variant {
 		for (const [key, value] of Object.entries(json.texture_map)) {
 			variant.textureMap.add(key, value)
 		}
-		// TODO: Implement bone configs
-		// TODO: Implement excluded bones
+		variant.excludedBones = json.excluded_bones
+			.map(bone => {
+				const group = Group.all.find(g => g.uuid === bone)
+				return group ? { name: group.name, value: bone } : undefined
+			})
+			.filter(Boolean) as CollectionItem[]
 		return variant
 	}
 

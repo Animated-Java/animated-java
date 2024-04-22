@@ -12,7 +12,14 @@ createBlockbenchMod(
 		CubeFace.prototype.getTexture = function (this: CubeFace): Texture | undefined {
 			if (isCurrentFormat() && this.texture) {
 				const variant = Variant.selected
-				if (variant && variant.textureMap.has(this.texture)) {
+				if (
+					variant &&
+					this.cube.parent instanceof Group &&
+					!variant.excludedBones.find(
+						v => v.value === (this.cube.parent as Group).uuid
+					) &&
+					variant.textureMap.has(this.texture)
+				) {
 					return variant.textureMap.getMappedTexture(this.texture)
 				}
 			}

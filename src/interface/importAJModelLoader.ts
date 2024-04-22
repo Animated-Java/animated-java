@@ -86,17 +86,9 @@ export function convertAJModelToBlueprint(path: string) {
 					display_name: defaultVariant.name || 'Default',
 					uuid: defaultVariant.uuid || guid(),
 					texture_map: defaultVariant.textureMap || {},
-					bone_configs: {},
 					excluded_bones: [],
 				},
-				list: variants.map((v: any) => ({
-					name: v.name,
-					display_name: v.name,
-					uuid: v.uuid,
-					texture_map: v.textureMap,
-					bone_configs: {},
-					excluded_bones: [],
-				})),
+				list: [],
 			},
 			resolution: ajmodel.resolution,
 			outliner: [],
@@ -104,11 +96,12 @@ export function convertAJModelToBlueprint(path: string) {
 			animations: ajmodel.animations,
 			textures: ajmodel.textures,
 			animation_variable_placeholders: ajmodel.animation_variable_placeholders,
-			animation_controllers: [],
-			backgrounds: [],
 		}
 
+		const bones: string[] = []
+
 		const recurseOutliner = (node: any) => {
+			bones.push(node.uuid as string)
 			node.configs = {
 				default: new BoneConfig().toJSON(),
 				variants: {},
@@ -126,6 +119,24 @@ export function convertAJModelToBlueprint(path: string) {
 
 		ajmodel.outliner.forEach(recurseOutliner)
 		blueprint.outliner = ajmodel.outliner
+
+		for (const variant of variants) {
+			const affectedBones = variant.affectedBones.map((v: any) => v.value as string)
+			let excludedBones: string[]
+			if (variant.affectedBonesIsAWhitelist) {
+				excludedBones = bones.filter(b => !affectedBones.includes(b))
+			} else {
+				excludedBones = affectedBones
+			}
+
+			blueprint.variants.list.push({
+				name: variant.name,
+				display_name: variant.name,
+				uuid: variant.uuid,
+				texture_map: variant.textureMap,
+				excluded_bones: excludedBones,
+			})
+		}
 
 		// Convert rig nbt into data merge command
 		if (
