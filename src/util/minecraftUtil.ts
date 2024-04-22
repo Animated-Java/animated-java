@@ -9,7 +9,7 @@ export function toSafeFuntionName(name: string): string {
 
 export function isResourcePackPath(path: string) {
 	const parsed = parseResourcePackPath(path)
-	return parsed && parsed.namespace && parsed.resourcePath
+	return !!(parsed && parsed.namespace && parsed.resourcePath)
 }
 
 export function parseResourcePackPath(path: string) {
@@ -42,7 +42,7 @@ export function parseResourcePackPath(path: string) {
 
 export function isDataPackPath(path: string) {
 	const parsed = parseDataPackPath(path)
-	return parsed && parsed.namespace && parsed.resourcePath
+	return !!(parsed && parsed.namespace && parsed.resourcePath)
 }
 
 export function parseDataPackPath(path: string) {

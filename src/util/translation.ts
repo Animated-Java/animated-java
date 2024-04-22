@@ -22,3 +22,5 @@ export function translate(key: string, ...args: string[]) {
 		return key
 	}
 }
+
+Language.data['format_category.animated_java'] = translate('format_category.animated_java')

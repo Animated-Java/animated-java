@@ -176,13 +176,18 @@ export function compileResourcePack(options: {
 				const emissivePath = texture.path.replace('.png', '_e.png')
 				if (fs.existsSync(mcmetaPath)) mcmeta = fs.readFileSync(mcmetaPath)
 				if (fs.existsSync(emissivePath)) optifineEmissive = fs.readFileSync(emissivePath)
+			} else {
+				// Don't copy the texture if it's already in a valid resource pack location.
+				continue
 			}
-		} else {
-			throw new Error(`Texture ${texture.name} has no image!`)
+		}
+
+		if (image === undefined) {
+			throw new Error(`Texture ${texture.name} is missing it's image data.`)
 		}
 
 		const textureName = toSafeFuntionName(texture.name)
-		fs.writeFileSync(PathModule.join(textureExportFolder, textureName), image!)
+		fs.writeFileSync(PathModule.join(textureExportFolder, textureName), image)
 		if (mcmeta !== undefined)
 			fs.writeFileSync(PathModule.join(textureExportFolder, textureName + '.mcmeta'), mcmeta)
 		if (optifineEmissive !== undefined)
@@ -190,6 +195,10 @@ export function compileResourcePack(options: {
 				PathModule.join(textureExportFolder, textureName + '_e.png'),
 				optifineEmissive
 			)
+	}
+	// Remove texture folder if it's empty - Doing it this way because I'm lazy.
+	if (fs.readdirSync(textureExportFolder).length === 0) {
+		fs.rmdirSync(textureExportFolder)
 	}
 
 	// Variant Models

@@ -159,8 +159,11 @@ animated_java.dialog.variant_config.included_bones.description: A list of bones 
 animated_java.dialog.variant_config.swap_columns_button.tooltip: Swap Lists
 
 ## Old AJModel Loader Dialog
-animated_java.action.upgrade_old_aj_model_loader.name: Upgrade Old .ajmodel
-animated_java.dialog.upgrade_old_aj_model_loader.title: Upgrade Old .ajmodel
+animated_java.action.upgrade_old_aj_model_loader.name: Update .ajmodel
+animated_java.dialog.upgrade_old_aj_model_loader.title: Update .ajmodel
+animated_java.action.upgrade_old_aj_model_loader.select_file: Select .ajmodel File
+animated_java.action.upgrade_old_aj_model_loader.body: Upgrade your outdated .ajmodel files to the new .ajblueprint format.
+animated_java.action.upgrade_old_aj_model_loader.button: Select an .ajmodel File to Upgrade
 
 ## Animation Properties Dialog
 animated_java.dialog.animation_properties.title: Animation Properties ({0})
@@ -210,3 +213,6 @@ animated_java.effect_animator.keyframes.execute_condition: Execute Condition
 
 # Keyframe Panel
 animated_java.panel.keyframe.keyframe_title: Keyframe ({0})
+
+### Misc
+animated_java.format_category.animated_java: Animated Java

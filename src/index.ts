@@ -8,7 +8,7 @@ import './blueprintFormat'
 import './interface/animatedJavaBarItem'
 import './interface/boneConfigDialog'
 import './interface/variantsPanel'
-import './interface/importOldAJModelLoader'
+import './interface/importAJModelLoader'
 import './interface/customKeyframePanel'
 // Blockbench Mods
 import './mods/animationPropertiesMod'
@@ -26,6 +26,7 @@ import './mods/saveAllAnimationsActionMod'
 import './mods/saveProjectActionMod'
 import './mods/saveProjectAsActionMod'
 import './mods/variantPreviewCubeFaceMod'
+import './mods/modelFormatConvertToMod'
 // Compilers
 import { compileDataPack } from './systems/datapackCompiler'
 // Misc imports
@@ -39,6 +40,7 @@ import {
 	getProgress,
 	logMessage,
 } from './interface/exportProgressDialog'
+import { isDataPackPath, isResourcePackPath } from './util/minecraftUtil'
 
 // @ts-ignore
 globalThis.AnimatedJava = {
@@ -51,6 +53,8 @@ globalThis.AnimatedJava = {
 		setProgress,
 		getProgress,
 		logMessage,
+		isResourcePackPath,
+		isDataPackPath,
 	},
 }
 

@@ -51,7 +51,7 @@ function applyBoneConfigToPassenger(
 	useComponents: boolean
 ) {
 	const item = passenger.get('item') as NbtCompound
-	const defaultConfig = new BoneConfig(bone.node)
+	const defaultConfig = new BoneConfig()
 
 	if (config.billboard !== defaultConfig.billboard) {
 		passenger.set('billboard', new NbtString(config.billboard))

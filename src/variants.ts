@@ -129,7 +129,6 @@ export class Variant {
 			bone_configs: {},
 			// TODO: Implement excluded bones
 			excluded_bones: [],
-			excluded_bones_is_whitelist: false,
 		}
 	}
 

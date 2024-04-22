@@ -1,8 +1,6 @@
 import { IBlueprintVariantBoneConfigJSON } from './blueprintFormat'
 
 export class BoneConfig {
-	public bone: Group
-
 	public billboard: 'fixed' | 'vertical' | 'horizontal' | 'center' = 'fixed'
 	public brightnessOverride = 0
 	public enchanted = false
@@ -15,9 +13,9 @@ export class BoneConfig {
 	public shadowStrength = 1
 	public useNBT = false
 
-	constructor(bone: Group) {
-		this.bone = bone
-	}
+	// constructor(public bone: Group) {
+	// 	this.bone = bone
+	// }
 
 	public checkIfEqual(other: BoneConfig) {
 		return (
@@ -52,17 +50,18 @@ export class BoneConfig {
 	}
 
 	public fromJSON(json: IBlueprintVariantBoneConfigJSON): BoneConfig {
-		this.billboard = json.billboard
-		this.brightnessOverride = json.brightness_override
-		this.enchanted = json.enchanted
-		this.glowColor = json.glow_color
-		this.glowing = json.glowing
-		this.inheritSettings = json.inherit_settings
-		this.invisible = json.invisible
-		this.nbt = json.nbt
-		this.shadowRadius = json.shadow_radius
-		this.shadowStrength = json.shadow_strength
-		this.useNBT = json.use_nbt
+		if (json.billboard != undefined) this.billboard = json.billboard
+		if (json.brightness_override != undefined)
+			this.brightnessOverride = json.brightness_override
+		if (json.enchanted != undefined) this.enchanted = json.enchanted
+		if (json.glow_color != undefined) this.glowColor = json.glow_color
+		if (json.glowing != undefined) this.glowing = json.glowing
+		if (json.inherit_settings != undefined) this.inheritSettings = json.inherit_settings
+		if (json.invisible != undefined) this.invisible = json.invisible
+		if (json.nbt != undefined) this.nbt = json.nbt
+		if (json.shadow_radius != undefined) this.shadowRadius = json.shadow_radius
+		if (json.shadow_strength != undefined) this.shadowStrength = json.shadow_strength
+		if (json.use_nbt != undefined) this.useNBT = json.use_nbt
 		return this
 	}
 }

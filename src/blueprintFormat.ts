@@ -68,10 +68,6 @@ export interface IBlueprintVariantJSON {
 	 * The list of bones that should be ignored when applying the Variant
 	 */
 	excluded_bones: string[]
-	/**
-	 * Whether the excluded bones list is a whitelist or blacklist
-	 */
-	excluded_bones_is_whitelist: boolean
 }
 
 /**
@@ -82,10 +78,10 @@ export interface IBlueprintFormatJSON {
 		format: 'animated_java_blueprint'
 		format_version: string
 		uuid: string
-		box_uv: boolean
-		backup: boolean
-		save_location: string
 		last_used_export_namespace: string
+		box_uv?: boolean
+		backup?: boolean
+		save_location?: string
 	}
 	/**
 	 * The project settings of the Blueprint
@@ -398,6 +394,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 			content: BLUEPRINT_CODEC.compile(),
 			// eslint-disable-next-line @typescript-eslint/naming-convention
 			custom_writer: (content, path) => {
+				Project.save_path = path
 				BLUEPRINT_CODEC.write(content, path)
 			},
 		})
@@ -409,6 +406,10 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 		return `${Project.name}.ajblueprint`
 	},
 })
+
+export function convertToBlueprint() {
+	console.error('Blueprint conversion is currently unsupported!')
+}
 
 export function getDefaultProjectSettings(): ModelProject['animated_java'] {
 	return blueprintSettings.defaultValues

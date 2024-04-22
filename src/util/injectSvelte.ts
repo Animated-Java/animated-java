@@ -1,6 +1,7 @@
 import { SvelteComponent } from 'svelte'
 import { pollPromise } from './promises'
 import { createBlockbenchMod } from '../util/moddingTools'
+import { SvelteComponentDev } from 'svelte/internal'
 
 export function injectSvelteCompomponent(options: {
 	// @ts-ignore
@@ -11,19 +12,22 @@ export function injectSvelteCompomponent(options: {
 	 */
 	elementSelector: () => Element | undefined | null
 	prepend?: boolean
-	postMount?: (el: Element) => void
+	postMount?: (comp: SvelteComponentDev) => void
+	injectIndex?: number
 }) {
 	void pollPromise(options.elementSelector).then(el => {
 		let anchor = undefined
 		if (options.prepend) {
 			anchor = el.children[0]
+		} else if (options.injectIndex !== undefined) {
+			anchor = el.children[options.injectIndex]
 		}
-		new options.svelteComponent({
+		const component = new options.svelteComponent({
 			target: el,
 			anchor,
 			props: options.svelteComponentProperties,
 		})
-		if (options.postMount) options.postMount(el)
+		if (options.postMount) options.postMount(component as SvelteComponentDev)
 	})
 }
 

@@ -10,16 +10,14 @@ import { Variant } from '../variants'
 
 export function openBoneConfigDialog(bone: Group) {
 	// Blockbench's JSON stringifier doesn't handle custom toJSON functions, so I'm storing the config JSON in the bone instead of the actual BoneConfig object
-	let boneConfigJSON = (bone.configs.default ??= new BoneConfig(bone).toJSON())
+	let boneConfigJSON = (bone.configs.default ??= new BoneConfig().toJSON())
 
 	if (Variant.selected && !Variant.selected.isDefault) {
 		// Get the variant's config, or create a new one if it doesn't exist
-		boneConfigJSON = bone.configs.variants[Variant.selected.uuid] ??= new BoneConfig(
-			bone
-		).toJSON()
+		boneConfigJSON = bone.configs.variants[Variant.selected.uuid] ??= new BoneConfig().toJSON()
 	}
 
-	const boneConfig = new BoneConfig(bone).fromJSON(boneConfigJSON)
+	const boneConfig = new BoneConfig().fromJSON(boneConfigJSON)
 
 	const billboard = new Valuable(boneConfig.billboard)
 	const brightnessOverride = new Valuable(boneConfig.brightnessOverride)
@@ -66,7 +64,7 @@ export function openBoneConfigDialog(bone: Group) {
 			boneConfig.shadowStrength = shadowStrength.get()
 			boneConfig.useNBT = useNBT.get()
 
-			if (boneConfig.checkIfEqual(new BoneConfig(bone).fromJSON(bone.configs.default))) {
+			if (boneConfig.checkIfEqual(new BoneConfig().fromJSON(bone.configs.default))) {
 				// Don't save the variant config if it's the same as the default
 				delete bone.configs.variants[Variant.selected!.uuid]
 				return
