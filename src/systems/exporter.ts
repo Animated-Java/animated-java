@@ -3,6 +3,7 @@ import { blueprintSettingErrors } from '../blueprintSettings'
 import { openBlueprintSettingsDialog } from '../interface/blueprintSettingsDialog'
 import { openExportProgressDialog } from '../interface/exportProgressDialog'
 import { openUnexpectedErrorDialog } from '../interface/unexpectedErrorDialog'
+import { resolveEnvVariables } from '../util/misc'
 import { translate } from '../util/translation'
 import { renderProjectAnimations } from './animationRenderer'
 import { compileDataPack } from './datapackCompiler'
@@ -22,8 +23,10 @@ function actuallyExportProject() {
 				modelExportFolder: string,
 				displayItemPath: string
 
-			resourcePackFolder = aj.resource_pack
-			dataPackFolder = aj.data_pack
+			resourcePackFolder = resolveEnvVariables(aj.resource_pack)
+			dataPackFolder = resolveEnvVariables(aj.data_pack)
+
+			console.log('Exporting to', resourcePackFolder, dataPackFolder)
 
 			if (aj.enable_advanced_resource_pack_settings) {
 				modelExportFolder = aj.model_folder
@@ -63,7 +66,7 @@ function actuallyExportProject() {
 			}
 
 			if (aj.enable_data_pack) {
-				compileDataPack({ rig, animations })
+				compileDataPack({ rig, animations, dataPackFolder })
 			}
 
 			Project!.last_used_export_namespace = aj.export_namespace

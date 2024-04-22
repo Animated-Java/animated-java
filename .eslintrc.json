@@ -109,6 +109,11 @@
 			{ "selector": "objectLiteralProperty", "format": null },
 			{ "selector": "default", "format": ["camelCase"] },
 			{
+				"selector": "parameter",
+				"modifiers": ["unused"],
+				"format": null
+			},
+			{
 				"selector": "enumMember",
 				"format": ["UPPER_CASE"]
 			}

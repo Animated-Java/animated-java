@@ -7,6 +7,8 @@
     - [x] Variant Properties
     - [x] Animation Properties
 - [x] Implement .ajmodel to blueprint conversion.
+- [x] Change .ajmeta to use relative file paths.
+- [x] Resolve env variables in blueprint settings.
 - [ ] Add a setting to automatically reduce the number of required bones, if the bones are not using special rotations, and have no unique config options.
 - [ ] Change the Collection setting type to allow single-click swapping of items between lists.
 

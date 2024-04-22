@@ -182,7 +182,8 @@ class AJMeta {
 	constructor(
 		public path: string,
 		public exportNamespace: string,
-		public lastUsedExportNamespace: string
+		public lastUsedExportNamespace: string,
+		public dataPackFolder: string
 	) {}
 
 	read() {
@@ -192,24 +193,27 @@ class AJMeta {
 		const lastData = this.oldContent[this.lastUsedExportNamespace]
 		if (lastData) {
 			for (const file of lastData.datapack.files) {
-				this.oldDatapack.files.add(file)
+				this.oldDatapack.files.add(PathModule.join(this.dataPackFolder, file))
 			}
 			delete this.oldContent[this.lastUsedExportNamespace]
 		}
 		if (data) {
 			for (const file of data.datapack.files) {
-				this.oldDatapack.files.add(file)
+				this.oldDatapack.files.add(PathModule.join(this.dataPackFolder, file))
 			}
 			delete this.oldContent[this.exportNamespace]
 		}
 	}
 
 	write() {
+		const folder = PathModule.dirname(this.path)
 		const content: AJMeta['oldContent'] = {
 			...this.oldContent,
 			[this.exportNamespace]: {
 				datapack: {
-					files: Array.from(this.datapack.files),
+					files: Array.from(this.datapack.files).map(v =>
+						PathModule.relative(folder, v).replace(/\\/g, '/')
+					),
 				},
 			},
 		}
@@ -217,7 +221,11 @@ class AJMeta {
 	}
 }
 
-export function compileDataPack(options: { rig: IRenderedRig; animations: IRenderedAnimation[] }) {
+export function compileDataPack(options: {
+	rig: IRenderedRig
+	animations: IRenderedAnimation[]
+	dataPackFolder: string
+}) {
 	console.time('Data Pack Compilation took')
 	const { rig, animations } = options
 	const aj = Project!.animated_java
@@ -234,9 +242,10 @@ export function compileDataPack(options: { rig: IRenderedRig; animations: IRende
 	})
 
 	const ajmeta = new AJMeta(
-		PathModule.join(Project!.animated_java.data_pack, '.ajmeta'),
+		PathModule.join(options.dataPackFolder, '.ajmeta'),
 		aj.export_namespace,
-		Project!.last_used_export_namespace
+		Project!.last_used_export_namespace,
+		options.dataPackFolder
 	)
 	ajmeta.read()
 
@@ -280,7 +289,7 @@ export function compileDataPack(options: { rig: IRenderedRig; animations: IRende
 		const folderCache = new Set<string>()
 
 		io.write = (localPath, content) => {
-			const writePath = PathModule.join(Project!.animated_java.data_pack, localPath)
+			const writePath = PathModule.join(options.dataPackFolder, localPath)
 
 			if (isFunctionTagPath(writePath) && fs.existsSync(writePath)) {
 				const oldFile: IFunctionTag = JSON.parse(fs.readFileSync(writePath, 'utf-8'))

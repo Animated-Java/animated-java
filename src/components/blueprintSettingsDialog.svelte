@@ -14,6 +14,7 @@
 <script lang="ts">
 	import { MINECRAFT_REGISTRY } from '../util/minecraftRegistries'
 	import CodeInput from './dialogItems/codeInput.svelte'
+	import { resolveEnvVariables } from '../util/misc'
 
 	export let blueprintName: Valuable<string>
 	export let exportNamespace: Valuable<string>
@@ -140,6 +141,7 @@
 	}
 
 	function dataPackFolderChecker(value: string): { type: string; message: string } {
+		value = resolveEnvVariables(value)
 		switch (true) {
 			case value === '':
 				return {
