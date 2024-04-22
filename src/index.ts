@@ -37,6 +37,7 @@ import { compileResourcePack } from './systems/resourcepackCompiler'
 import { openExportProgressDialog } from './interface/exportProgressDialog'
 import { isDataPackPath, isResourcePackPath } from './util/minecraftUtil'
 import { blueprintSettingErrors } from './blueprintSettings'
+import { openUnexpectedErrorDialog } from './interface/unexpectedErrorDialog'
 
 // @ts-ignore
 globalThis.AnimatedJava = {
@@ -49,6 +50,7 @@ globalThis.AnimatedJava = {
 		isResourcePackPath,
 		isDataPackPath,
 		blueprintSettingErrors,
+		openUnexpectedErrorDialog,
 	},
 }
 

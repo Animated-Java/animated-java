@@ -1,6 +1,5 @@
 <script lang="ts" context="module">
 	import { Valuable } from '../../util/stores'
-	import { translate } from '../../util/translation'
 	import { dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action'
 	import BaseDialogItem from './baseDialogItem.svelte'
 	import { flip } from 'svelte/animate'
