@@ -3,9 +3,9 @@
 scoreboard objectives add aj.i dummy
 scoreboard objectives add aj.id dummy
 scoreboard objectives add aj.frame dummy
-scoreboard objectives add aj.rig_is_loaded dummy
+scoreboard objectives add aj.is_rig_loaded dummy
 scoreboard players set aj.1b aj.i 1
 scoreboard players set aj.0b aj.i 0
 scoreboard players add aj.last_id aj.id 0
-scoreboard players reset * aj.rig_is_loaded
-execute as @e[type=item_display,tag=aj.root_entity] unless score @s aj.rig_is_loaded matches 1 at @s run function #animated_java:global/root_entity/on_load
+scoreboard players reset * aj.is_rig_loaded
+execute as @e[type=item_display,tag=aj.rig_root] unless score @s aj.is_rig_loaded matches 1 at @s run function #animated_java:global/root_entity/on_load
