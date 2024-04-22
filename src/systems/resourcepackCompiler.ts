@@ -140,7 +140,7 @@ export function compileResourcePack(options: {
 	}
 
 	// Empty model for hiding bones / snowballs
-	displayItemModel.assertOverride(1, 'animated_java:item/empty')
+	displayItemModel.assertOverride(1, 'animated_java:empty')
 
 	// Models
 	fs.rmSync(replacePathPart(modelExportFolder, aj.export_namespace, lastUsedExportNamespace), {

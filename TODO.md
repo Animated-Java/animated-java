@@ -2,9 +2,9 @@
 # Blockbench
 - [x] ~~Add a root NBT blueprint setting~~ Add a custom summon commands setting.
 - [x] Custom animation properties dialog
-- [ ] Prevent the user setting their export namespace to 'global' or 'minecraft'
-- [ ] Add affected bones list to variant, and animation properties.
-    - [ ] Variant Properties
+- [x] Prevent the user setting their export namespace to 'global' or 'minecraft'
+- [x] Add affected bones list to variant, and animation properties.
+    - [x] Variant Properties
     - [x] Animation Properties
 - [ ] Add an option to blueprint settings to export the raw .mcb file instead of the generated Data Pack.
 - [ ] Implement .ajmodel to blueprint conversion.

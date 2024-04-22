@@ -9,6 +9,7 @@ import { NbtCompound, NbtFloat, NbtInt, NbtList, NbtString, NbtTag } from 'deeps
 import { matrixToNbtFloatArray } from './util'
 import { BoneConfig } from '../boneConfig'
 import { IBlueprintVariantBoneConfigJSON } from '../blueprintFormat'
+import { IFunctionTag, mergeTag, parseDataPackPath } from '../util/minecraftUtil'
 
 namespace TAGS {
 	export const NEW = () => 'aj.new'
@@ -33,6 +34,15 @@ namespace TAGS {
 	export const LOCAL_LOCATOR_ENTITY = (exportNamespace: string, locatorName: string) =>
 		`aj.${exportNamespace}.locator.${locatorName}`
 }
+
+namespace OBJECTIVES {
+	export const I = () => 'aj.i'
+	export const ID = () => 'aj.id'
+	export const FRAME = () => 'aj.frame'
+	export const IS_RIG_LOADED = () => 'aj.is_rig_loaded'
+}
+
+OBJECTIVES.I()
 
 function applyBoneConfigToPassenger(
 	passenger: NbtCompound,
@@ -159,28 +169,7 @@ function generateRootEntityPassengers(rig: IRenderedRig) {
 	return passengers.toString()
 }
 
-function createCustomSyncIO(): SyncIo {
-	const io = new SyncIo()
-
-	const filePathCache = new Set<string>()
-
-	io.write = (localPath, content) => {
-		const writePath = PathModule.join(Project!.animated_java.data_pack, localPath)
-
-		if (isFunctionTagPath(writePath)) {
-			console.log(`Function tag merging not implemented yet.`)
-		}
-
-		const folderPath = PathModule.dirname(writePath)
-		if (!filePathCache.has(folderPath)) {
-			fs.mkdirSync(folderPath, { recursive: true })
-			filePathCache.add(folderPath)
-		}
-		fs.writeFileSync(writePath, content)
-	}
-
-	return io
-}
+const BASIC_FUNCTION_TAGS = ['minecraft:tick', 'minecraft:load']
 
 export function compileDataPack(options: { rig: IRenderedRig; animations: IRenderedAnimation[] }) {
 	const { rig, animations } = options
@@ -195,7 +184,38 @@ export function compileDataPack(options: { rig: IRenderedRig; animations: IRende
 		ioThreadCount: null,
 		setup: null,
 	})
-	compiler.io = createCustomSyncIO()
+
+	const exportedFiles = new Set<string>()
+
+	function createSyncIO(): SyncIo {
+		const io = new SyncIo()
+		const folderCache = new Set<string>()
+
+		io.write = (localPath, content) => {
+			const writePath = PathModule.join(Project!.animated_java.data_pack, localPath)
+
+			if (isFunctionTagPath(writePath) && fs.existsSync(writePath)) {
+				const resourceLocation = parseDataPackPath(writePath)!.resourceLocation
+				if (BASIC_FUNCTION_TAGS.includes(resourceLocation)) {
+					const oldFile: IFunctionTag = JSON.parse(fs.readFileSync(writePath, 'utf-8'))
+					const newFile: IFunctionTag = JSON.parse(content)
+					content = JSON.stringify(mergeTag(oldFile, newFile))
+				}
+			}
+
+			const folderPath = PathModule.dirname(writePath)
+			if (!folderCache.has(folderPath)) {
+				fs.mkdirSync(folderPath, { recursive: true })
+				folderCache.add(folderPath)
+			}
+			fs.writeFileSync(writePath, content)
+			exportedFiles.add(writePath)
+		}
+
+		return io
+	}
+
+	compiler.io = createSyncIO()
 	compiler.disableRequire = true
 
 	const aj = Project!.animated_java
@@ -208,6 +228,7 @@ export function compileDataPack(options: { rig: IRenderedRig; animations: IRende
 		export_version: Math.random().toString().substring(2, 10),
 		root_entity_passengers: generateRootEntityPassengers(rig),
 		TAGS,
+		OBJECTIVES,
 		custom_summon_commands: aj.custom_summon_commands,
 	}
 
@@ -217,5 +238,6 @@ export function compileDataPack(options: { rig: IRenderedRig; animations: IRende
 		Parser.parseMcbFile(Tokenizer.tokenize(datapackTemplate, 'src/animated_java.mcb'))
 	)
 	compiler.compile(VariableMap.fromObject(variables))
+
 	console.timeEnd('Data Pack Compilation')
 }

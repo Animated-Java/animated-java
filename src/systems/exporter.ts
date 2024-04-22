@@ -26,12 +26,12 @@ export function exportProject() {
 		} else {
 			modelExportFolder = PathModule.join(
 				resourcePackFolder,
-				'assets/animated_java/models/',
+				'assets/animated_java/models/item/',
 				aj.export_namespace
 			)
 			textureExportFolder = PathModule.join(
 				resourcePackFolder,
-				'assets/animated_java/textures/',
+				'assets/animated_java/textures/item/',
 				aj.export_namespace
 			)
 			displayItemPath = PathModule.join(
