@@ -80,8 +80,8 @@ dir <%export_namespace%> {
 	function on_tick {
 		# This command will be added for each animation.
 		REPEAT (animations) as animation {
-			execute if entity @s[tag=aj.<%export_namespace%>.animation.<%animation.name%>.playing] run \
-				function animated_java:<%export_namespace%>/animations/<%animation.name%>/on_tick
+			execute if entity @s[tag=<%TAGS.ANIMATION_PLAYING(export_namespace, animation.name)%>] run \
+				function animated_java:<%export_namespace%>/animations/<%animation.name%>/zzz/on_tick
 		}
 	}
 
@@ -157,57 +157,81 @@ dir <%export_namespace%> {
 					execute unless entity @s[type=item_display,tag=<%TAGS.GLOBAL_ROOT()%>] run return run \
 						function animated_java:global/errors/function_not_executed_as_root_entity \
 							{'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/play'}
-					tag @s add aj.<%export_namespace%>.animation.<%animation.name%>.playing
+					tag @s add <%TAGS.ANIMATION_PLAYING(export_namespace, animation.name)%>
 				}
 				function stop {
 					execute unless entity @s[type=item_display,tag=<%TAGS.GLOBAL_ROOT()%>] run return run \
 						function animated_java:global/errors/function_not_executed_as_root_entity \
 							{'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/stop'}
-					tag @s remove aj.<%export_namespace%>.animation.<%animation.name%>.playing
+					tag @s remove <%TAGS.ANIMATION_PLAYING(export_namespace, animation.name)%>
 				}
 				function pause {
 					execute unless entity @s[type=item_display,tag=<%TAGS.GLOBAL_ROOT()%>] run return run \
 						function animated_java:global/errors/function_not_executed_as_root_entity \
 							{'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/pause'}
-					tag @s remove aj.<%export_namespace%>.animation.<%animation.name%>.playing
+					tag @s remove <%TAGS.ANIMATION_PLAYING(export_namespace, animation.name)%>
 				}
 				function resume {
 					execute unless entity @s[type=item_display,tag=<%TAGS.GLOBAL_ROOT()%>] run return run \
 						function animated_java:global/errors/function_not_executed_as_root_entity \
 							{'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/resume'}
-					tag @s add aj.<%export_namespace%>.animation.<%animation.name%>.playing
+					tag @s add <%TAGS.ANIMATION_PLAYING(export_namespace, animation.name)%>
 				}
 				function reset {
 					execute unless entity @s[type=item_display,tag=<%TAGS.GLOBAL_ROOT()%>] run return run \
 						function animated_java:global/errors/function_not_executed_as_root_entity \
 							{'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/reset'}
-					tag @s remove aj.<%export_namespace%>.animation.<%animation.name%>.playing
+					tag @s remove <%TAGS.ANIMATION_PLAYING(export_namespace, animation.name)%>
 				}
 				function next_frame {
 					execute unless entity @s[type=item_display,tag=<%TAGS.GLOBAL_ROOT()%>] run return run \
 						function animated_java:global/errors/function_not_executed_as_root_entity \
 							{'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/next_frame'}
+					execute store result storage aj:temp frame int 1 run scoreboard players get @s <%OBJECTIVES.FRAME()%>
+					$function ./zzz/frames/$(frame)
 				}
 				function apply_frame {
 					# ARGS: {frame: int}
 					execute unless entity @s[type=item_display,tag=<%TAGS.GLOBAL_ROOT()%>] run return run \
 						function animated_java:global/errors/function_not_executed_as_root_entity \
 							{'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/apply_frame'}
+					$function ./zzz/frames/$(frame)
 				}
 				function tween_play {
 					execute unless entity @s[type=item_display,tag=<%TAGS.GLOBAL_ROOT()%>] run return run \
 						function animated_java:global/errors/function_not_executed_as_root_entity \
 							{'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/tween_play'}
-					tag @s add aj.<%export_namespace%>.animation.<%animation.name%>.tween_playing
+					tag @s add <%TAGS.TWEEN_PLAYING(export_namespace, animation.name)%>
 				}
 				function tween_resume {
 					execute unless entity @s[type=item_display,tag=<%TAGS.GLOBAL_ROOT()%>] run return run \
 						function animated_java:global/errors/function_not_executed_as_root_entity \
 							{'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/tween_resume'}
-					tag @s add aj.<%export_namespace%>.animation.<%animation.name%>.tween_playing
+					tag @s add <%TAGS.TWEEN_PLAYING(export_namespace, animation.name)%>
 				}
 				dir zzz {
 					function on_tick {
+						data modify storage aj:temp frame set value 0
+						execute store result storage aj:temp frame int 1 run scoreboard players add @s <%OBJECTIVES.FRAME()%> 1
+						function ./apply_frame with storage aj:temp
+						execute if score @s <%OBJECTIVES.FRAME()%> matches <%animation.duration-1%>.. run scoreboard players set @s <%OBJECTIVES.FRAME()%> -1
+					}
+					function apply_frame {
+						#ARGS: {frame: int}
+						$function ./frames/$(frame)
+					}
+					dir frames {
+						REPEAT (animation.frames) as frame {
+							function <%animation.frames.indexOf(frame)%> {
+								REPEAT (frame.nodes) as node {
+									IF (node.type === 'bone') {
+										# It's actually faster to use a single command like this than to spread it into a function.
+										execute on passengers if entity @s[tag=<%TAGS.LOCAL_BONE_ENTITY(export_namespace, node.name)%>] run \
+											data merge entity @s {transformation: <%matrixToNbtFloatArray(node.matrix).toString()%>, start_interpolation: 0}
+									}
+								}
+							}
+						}
 					}
 				}
 			}

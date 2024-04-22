@@ -1348,7 +1348,12 @@
 			"blend_weight": "",
 			"start_delay": "",
 			"loop_delay": "",
-			"excluded_bones": [],
+			"excluded_bones": [
+				{
+					"name": "baseplate_pivot_a",
+					"value": "4f000ffc-11d6-3a4b-7c8d-6b5ba483228c"
+				}
+			],
 			"animators": {
 				"5e08acae-d6ca-0dfd-9360-8cdb13c7a824": {
 					"name": "armor_stand_root",

@@ -2,3 +2,5 @@
 execute unless entity @s[type=item_display,tag=aj.rig_root] run return run \
 	function animated_java:global/errors/function_not_executed_as_root_entity \
 	{'function_path': 'animated_java:test_blueprint/animations/anim1/next_frame'}
+execute store result storage aj:temp frame int 1 run scoreboard players get @s aj.frame
+$function animated_java:test_blueprint/animations/anim1/zzz/frames/$(frame)

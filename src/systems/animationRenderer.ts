@@ -1,5 +1,4 @@
 import { roundToN } from '../util/misc'
-import { MSLimiter } from '../util/msLimiter'
 import { IRenderedRig } from './rigRenderer'
 // import { ProgressBarController } from '../util/progress'
 // let progress: ProgressBarController

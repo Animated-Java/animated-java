@@ -1,4 +1,4 @@
-import { Compiler, Parser, Tokenizer, SyncIo } from 'mc-build'
+import { Compiler, Parser, Tokenizer, SyncIo, MultiThreadIo } from 'mc-build'
 import { VariableMap } from 'mc-build/dist/mcl/Compiler'
 import { isFunctionTagPath } from '../util/fileUtil'
 import datapackTemplate from './datapackCompiler/animated_java.mcb'
@@ -33,6 +33,11 @@ namespace TAGS {
 		`aj.${exportNamespace}.camera.${cameraName}`
 	export const LOCAL_LOCATOR_ENTITY = (exportNamespace: string, locatorName: string) =>
 		`aj.${exportNamespace}.locator.${locatorName}`
+
+	export const ANIMATION_PLAYING = (exportNamespace: string, animationName: string) =>
+		`aj.${exportNamespace}.animation.${animationName}.playing`
+	export const TWEEN_PLAYING = (exportNamespace: string, animationName: string) =>
+		`aj.${exportNamespace}.animation.${animationName}.tween_playing`
 }
 
 namespace OBJECTIVES {
@@ -230,13 +235,12 @@ export function compileDataPack(options: { rig: IRenderedRig; animations: IRende
 		TAGS,
 		OBJECTIVES,
 		custom_summon_commands: aj.custom_summon_commands,
+		matrixToNbtFloatArray,
 	}
 
 	console.time('Data Pack Compilation')
-	compiler.addFile(
-		'src/animated_java.mcb',
-		Parser.parseMcbFile(Tokenizer.tokenize(datapackTemplate, 'src/animated_java.mcb'))
-	)
+	const tokens = Tokenizer.tokenize(datapackTemplate, 'src/animated_java.mcb')
+	compiler.addFile('src/animated_java.mcb', Parser.parseMcbFile(tokens))
 	compiler.compile(VariableMap.fromObject(variables))
 
 	console.timeEnd('Data Pack Compilation')
