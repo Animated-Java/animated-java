@@ -8,10 +8,14 @@ declare global {
 	interface ModelProject {
 		animated_java: {
 			export_namespace: string
-			// Plugin Settings
+			show_bounding_box: boolean
+			auto_bounding_box: boolean
+			bounding_box: [number, number]
+			// Export Settings
 			enable_plugin_mode: boolean
-			// Resource Pack Settings
 			enable_resource_pack: boolean
+			enable_data_pack: boolean
+			// Resource Pack Settings
 			display_item: string
 			customModelDataOffset: number
 			enable_advanced_resource_pack_settings: boolean
@@ -20,14 +24,15 @@ declare global {
 			model_folder: string
 			texture_folder: string
 			// Data Pack Settings
-			enable_data_pack: boolean
 			enable_advanced_data_pack_settings: boolean
 			data_pack: string
 			summon_commands: string
 			interpolation_duration: number
 			teleportation_duration: number
+			use_storage_for_animation: boolean
 		}
 		last_used_export_namespace: string
+		visualBoundingBox?: THREE.LineSegments
 
 		variants: Variant[]
 	}

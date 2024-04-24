@@ -90,7 +90,7 @@ type JsonTextObject = {
 	storage?: string
 }
 
-type JsonTextComponent = string | JsonTextArray | JsonTextObject
+type JsonTextComponent = string | JsonTextArray | JsonTextObject | JsonText
 
 type JsonTextArray = JsonTextComponent[] | string[]
 

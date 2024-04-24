@@ -1,5 +1,5 @@
 import { roundToN } from '../util/misc'
-import { IRenderedRig } from './rigRenderer'
+import { AnyRenderedNode, IRenderedRig } from './rigRenderer'
 // import { ProgressBarController } from '../util/progress'
 // let progress: ProgressBarController
 
@@ -61,6 +61,7 @@ export interface IRenderedAnimation {
 	 */
 	duration: number
 	loopMode: 'loop' | 'once' | 'hold'
+	includedNodes: AnyRenderedNode[]
 }
 
 let lastAnimation: _Animation
@@ -201,22 +202,29 @@ export function renderAnimation(animation: _Animation, rig: IRenderedRig) {
 		frames: [],
 		duration: 0,
 		loopMode: animation.loop,
+		includedNodes: [],
 	} as IRenderedAnimation
 	animation.select()
+
+	const includedNodes = new Set<string>()
 
 	for (let time = 0; time <= animation.length; time = roundToN(time + 0.05, 20)) {
 		// await new Promise(resolve => requestAnimationFrame(resolve))
 		// await new Promise(resolve => setTimeout(resolve, 50))
 		updatePreview(animation, time)
-		rendered.frames.push({
+		const frame = {
 			time,
 			nodes: getAnimationNodes(animation, rig.nodeMap, time),
 			variant: getVariantKeyframe(animation, time),
 			commands: getCommandsKeyframe(animation, time),
 			animationState: getAnimationStateKeyframe(animation, time),
-		})
+		}
+		frame.nodes.forEach(n => includedNodes.add(n.uuid))
+		rendered.frames.push(frame)
 	}
 	rendered.duration = rendered.frames.length
+
+	rendered.includedNodes = Object.values(rig.nodeMap).filter(n => includedNodes.has(n.uuid))
 
 	return rendered
 }

@@ -50,6 +50,15 @@ animated_java.dialog.blueprint_settings.enable_resource_pack.description: Whethe
 animated_java.dialog.blueprint_settings.enable_data_pack.title: Export Data Pack
 animated_java.dialog.blueprint_settings.enable_data_pack.description: Whether or not to export into a Data Pack.
 
+animated_java.dialog.blueprint_settings.show_bounding_box.title: Show Bounding Box
+animated_java.dialog.blueprint_settings.show_bounding_box.description: Whether or not to show the bounding box in the editor.
+
+animated_java.dialog.blueprint_settings.auto_bounding_box.title: Auto Bounding Box
+animated_java.dialog.blueprint_settings.auto_bounding_box.description: Whether or not to automatically calculate the bounding box based on the model's geometry.
+
+animated_java.dialog.blueprint_settings.bounding_box.title: Bounding Box
+animated_java.dialog.blueprint_settings.bounding_box.description: Determines the culling box of the model. The model will stop rendering when this box is off-screen.
+
 # Resource Pack Settings
 animated_java.dialog.blueprint_settings.resource_pack_settings.title: Resource Pack Settings
 
@@ -105,6 +114,9 @@ animated_java.dialog.blueprint_settings.interpolation_duration.description: The 
 
 animated_java.dialog.blueprint_settings.teleportation_duration.title: Teleport Duration
 animated_java.dialog.blueprint_settings.teleportation_duration.description: The duration of the teleportation between keyframes in ticks. This is the time over which the model will visually interpolate between it's old position to it's new position. Higher values will cause animations to lose precision.
+
+animated_java.dialog.blueprint_settings.use_storage_for_animation.title: Use Storage for Animation
+animated_java.dialog.blueprint_settings.use_storage_for_animation.description: Whether or not to use NBT storage to store animation data instead of functions. This will vastly reduce the number of functions in the generated Data Pack, but is 33% slower than the function method.
 
 ## Bone Config Dialog
 animated_java.dialog.bone_config.title: Bone Config

@@ -15,19 +15,24 @@
 	export let minY: number | undefined = undefined
 	export let maxY: number | undefined = undefined
 
-	export let valueChecker: DialogItemValueChecker<{ x: number; y: number }> = undefined
+	export let valueZ: Valuable<number>
+	export let minZ: number | undefined = undefined
+	export let maxZ: number | undefined = undefined
+
+	export let valueChecker: DialogItemValueChecker<{ x: number; y: number; z: number }> = undefined
 
 	let warning_text = ''
 	let error_text = ''
 
 	function checkValue() {
 		if (!valueChecker) return
-		const result = valueChecker({ x: valueX.get(), y: valueY.get() })
+		const result = valueChecker({ x: valueX.get(), y: valueY.get(), z: valueZ.get() })
 		result.type === 'error' ? (error_text = result.message) : (error_text = '')
 		result.type === 'warning' ? (warning_text = result.message) : (warning_text = '')
 	}
 	valueX.subscribe(() => checkValue())
 	valueY.subscribe(() => checkValue())
+	valueZ.subscribe(() => checkValue())
 
 	const molangParser = new Molang()
 
@@ -36,6 +41,9 @@
 
 	let inputY: HTMLInputElement
 	let sliderY: HTMLElement
+
+	let inputZ: HTMLInputElement
+	let sliderZ: HTMLElement
 
 	function eventListenerFactory(
 		target: HTMLElement,
@@ -82,6 +90,7 @@
 	requestAnimationFrame(() => {
 		eventListenerFactory(sliderX, valueX, minX, maxX)
 		eventListenerFactory(sliderY, valueY, minY, maxY)
+		eventListenerFactory(sliderZ, valueZ, minZ, maxZ)
 	})
 </script>
 
@@ -110,6 +119,18 @@
 					inputmode="decimal"
 				/>
 				<div bind:this={sliderY} class="tool numaric_input_slider">
+					<i class="material-icons icon">code</i>
+				</div>
+			</div>
+			<div class="numeric_input">
+				<input
+					bind:this={inputZ}
+					id="snapping"
+					class="dark_bordered focusable_input"
+					bind:value={$valueZ}
+					inputmode="decimal"
+				/>
+				<div bind:this={sliderZ} class="tool numaric_input_slider">
 					<i class="material-icons icon">code</i>
 				</div>
 			</div>

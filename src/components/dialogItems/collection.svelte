@@ -59,7 +59,11 @@
 			<h3>{availableItemsColumnLable}</h3>
 			<section
 				class="column sub-column-container"
-				use:dndzone={{ items: availableItemsList, flipDurationMs: 150 }}
+				use:dndzone={{
+					items: availableItemsList,
+					flipDurationMs: 150,
+					centreDraggedOnCursor: true,
+				}}
 				on:consider={handleSortAvailableItems}
 				on:finalize={e => {
 					handleSortAvailableItems(e)
@@ -94,7 +98,11 @@
 			<h3>{includedItemsColumnLable}</h3>
 			<section
 				class="column sub-column-container"
-				use:dndzone={{ items: includedItemsList, flipDurationMs: 150 }}
+				use:dndzone={{
+					items: includedItemsList,
+					flipDurationMs: 150,
+					centreDraggedOnCursor: true,
+				}}
 				on:consider={handleSortIncludedItems}
 				on:finalize={e => {
 					handleSortIncludedItems(e)
@@ -137,6 +145,8 @@
 		margin: 8px;
 		margin-top: 0px;
 		padding: 4px 8px 30px;
+		max-height: 16rem;
+		overflow-y: auto;
 	}
 	h3 {
 		text-align: center;

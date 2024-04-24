@@ -1916,10 +1916,10 @@ marked@^4.2.12, marked@^4.3.0:
   resolved "https://registry.yarnpkg.com/marked/-/marked-4.3.0.tgz#796362821b019f734054582038b116481b456cf3"
   integrity sha512-PRsaiG84bK+AMvxziE/lCFss8juXjNaWzVbN5tXAm4XjeaS9NAHhop+PjQxz2A9h8Q4M/xGmzP8vqNwy6JeK0A==
 
-mc-build@^3.0.17:
-  version "3.0.17"
-  resolved "https://registry.yarnpkg.com/mc-build/-/mc-build-3.0.17.tgz#15d5101e144c9ffef4510ba7b8d889f1a4358d29"
-  integrity sha512-qQ0CUGdOAQ2RnDFF2XvmJaTf6fHLN2ft/YXx5xwmVS/FZbqrXGKZ2lVqQgBoFhjE6Pd6RNO31HGkv+Wqo6imxA==
+mc-build@^3.0.19:
+  version "3.0.19"
+  resolved "https://registry.yarnpkg.com/mc-build/-/mc-build-3.0.19.tgz#f859df37c52ee8f9a1772b0cb9e5d1e49b14a61c"
+  integrity sha512-332CnouCs2HtnrsF7/U9oTIYreKxofE1LNLzM1unhV2zHksDfQsRJs/x5Leb19MHEQzTywZsKDethRhzMwqxWA==
   dependencies:
     tsx "^4.7.2"
 

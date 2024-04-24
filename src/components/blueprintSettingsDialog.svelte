@@ -1,6 +1,8 @@
 <script lang="ts" context="module">
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
+	import { resolveEnvVariables } from '../util/misc'
+	import { MINECRAFT_REGISTRY } from '../util/minecraftRegistries'
 
 	import Checkbox from './dialogItems/checkbox.svelte'
 	import NumberSlider from './dialogItems/numberSlider.svelte'
@@ -9,21 +11,24 @@
 	import SectionHeader from './dialogItems/sectionHeader.svelte'
 	import FileSelect from './dialogItems/fileSelect.svelte'
 	import FolderSelect from './dialogItems/folderSelect.svelte'
+	import CodeInput from './dialogItems/codeInput.svelte'
 </script>
 
 <script lang="ts">
-	import { MINECRAFT_REGISTRY } from '../util/minecraftRegistries'
-	import CodeInput from './dialogItems/codeInput.svelte'
-	import { resolveEnvVariables } from '../util/misc'
-
 	export let blueprintName: Valuable<string>
-	export let exportNamespace: Valuable<string>
 	export let textureSizeX: Valuable<number>
 	export let textureSizeY: Valuable<number>
-	// Plugin Settings
+	// Export Settings
+	export let exportNamespace: Valuable<string>
 	export let enablePluginMode: Valuable<boolean>
-	// Resource Pack Settings
 	export let enableResourcePack: Valuable<boolean>
+	export let enableDataPack: Valuable<boolean>
+	// Bounding Box
+	export let showBoundingBox: Valuable<boolean>
+	export let autoBoundingBox: Valuable<boolean>
+	export let boundingBoxX: Valuable<number>
+	export let boundingBoxY: Valuable<number>
+	// Resource Pack Settings
 	export let displayItem: Valuable<string>
 	export let customModelDataOffset: Valuable<number>
 	export let enableAdvancedResourcePackSettings: Valuable<boolean>
@@ -32,12 +37,12 @@
 	export let modelFolder: Valuable<string>
 	export let textureFolder: Valuable<string>
 	// Data Pack Settings
-	export let enableDataPack: Valuable<boolean>
 	export let enableAdvancedDataPackSettings: Valuable<boolean>
 	export let dataPack: Valuable<string>
 	export let summonCommands: Valuable<string>
 	export let interpolationDuration: Valuable<number>
 	export let teleportationDuration: Valuable<number>
+	export let useStorageForAnimation: Valuable<boolean>
 
 	function exportNamespaceChecker(value: string): { type: string; message: string } {
 		if (value === '') {
@@ -243,6 +248,31 @@
 		valueChecker={textureSizeChecker}
 	/>
 
+	<Checkbox
+		label={translate('dialog.blueprint_settings.show_bounding_box.title')}
+		tooltip={translate('dialog.blueprint_settings.show_bounding_box.description')}
+		bind:checked={showBoundingBox}
+	/>
+
+	<Checkbox
+		label={translate('dialog.blueprint_settings.auto_bounding_box.title')}
+		tooltip={translate('dialog.blueprint_settings.auto_bounding_box.description')}
+		bind:checked={autoBoundingBox}
+	/>
+
+	{#if !$autoBoundingBox}
+		<Vector2D
+			label={translate('dialog.blueprint_settings.bounding_box.title')}
+			tooltip={translate('dialog.blueprint_settings.bounding_box.description')}
+			bind:valueX={boundingBoxX}
+			minX={2}
+			maxX={4096}
+			bind:valueY={boundingBoxY}
+			minY={2}
+			maxY={4096}
+		/>
+	{/if}
+
 	<SectionHeader label={translate('dialog.blueprint_settings.export_settings.title')} />
 
 	<LineInput
@@ -401,6 +431,14 @@
 				bind:value={teleportationDuration}
 				min={0}
 				max={2147483647}
+			/>
+
+			<Checkbox
+				label={translate('dialog.blueprint_settings.use_storage_for_animation.title')}
+				tooltip={translate(
+					'dialog.blueprint_settings.use_storage_for_animation.description',
+				)}
+				bind:checked={useStorageForAnimation}
 			/>
 		{/if}
 	{/if}

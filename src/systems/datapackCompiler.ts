@@ -6,37 +6,43 @@ import { IRenderedNodes, IRenderedRig } from './rigRenderer'
 import { IRenderedAnimation } from './animationRenderer'
 import { Variant } from '../variants'
 import { NbtCompound, NbtFloat, NbtInt, NbtList, NbtString, NbtTag } from 'deepslate'
-import { matrixToNbtFloatArray, replacePathPart, sortObjectKeys } from './util'
+import {
+	arrayToNbtFloatArray,
+	matrixToNbtFloatArray,
+	replacePathPart,
+	sortObjectKeys,
+} from './util'
 import { BoneConfig } from '../boneConfig'
 import { IBlueprintVariantBoneConfigJSON } from '../blueprintFormat'
 import { IFunctionTag, mergeTag, parseDataPackPath } from '../util/minecraftUtil'
+import { JsonText } from '../util/jsonText'
 
 namespace TAGS {
 	export const NEW = () => 'aj.new'
-	export const GLOBAL_RIG_ENTITY = () => 'aj.rig_entity'
+	export const GLOBAL_RIG = () => 'aj.rig_entity'
 
 	export const GLOBAL_ROOT = () => 'aj.rig_root'
 	export const PROJECT_ROOT = (exportNamespace: string) => `aj.${exportNamespace}.root`
 
-	export const GLOBAL_BONE_ENTITY = () => 'aj.bone'
-	export const GLOBAL_CAMERA_ENTITY = () => 'aj.camera'
-	export const GLOBAL_LOCATOR_ENTITY = () => 'aj.locator'
+	export const GLOBAL_BONE = () => 'aj.bone'
+	export const GLOBAL_CAMERA = () => 'aj.camera'
+	export const GLOBAL_LOCATOR = () => 'aj.locator'
 
-	export const PROJECT_BONE_ENTITY = (exportNamespace: string) => `aj.${exportNamespace}.bone`
-	export const PROJECT_CAMERA_ENTITY = (exportNamespace: string) => `aj.${exportNamespace}.camera`
-	export const PROJECT_LOCATOR_ENTITY = (exportNamespace: string) =>
-		`aj.${exportNamespace}.locator`
+	export const PROJECT_BONE = (exportNamespace: string) => `aj.${exportNamespace}.bone`
+	export const PROJECT_CAMERA = (exportNamespace: string) => `aj.${exportNamespace}.camera`
+	export const PROJECT_LOCATOR = (exportNamespace: string) => `aj.${exportNamespace}.locator`
 
-	export const LOCAL_BONE_ENTITY = (exportNamespace: string, boneName: string) =>
+	export const LOCAL_BONE = (exportNamespace: string, boneName: string) =>
 		`aj.${exportNamespace}.bone.${boneName}`
-	export const LOCAL_CAMERA_ENTITY = (exportNamespace: string, cameraName: string) =>
+	export const LOCAL_CAMERA = (exportNamespace: string, cameraName: string) =>
 		`aj.${exportNamespace}.camera.${cameraName}`
-	export const LOCAL_LOCATOR_ENTITY = (exportNamespace: string, locatorName: string) =>
+	export const LOCAL_LOCATOR = (exportNamespace: string, locatorName: string) =>
 		`aj.${exportNamespace}.locator.${locatorName}`
 
 	export const ANIMATION_PLAYING = (exportNamespace: string, animationName: string) =>
 		`aj.${exportNamespace}.animation.${animationName}.playing`
-	export const TWEEN_PLAYING = (exportNamespace: string, animationName: string) =>
+
+	export const TWEENING = (exportNamespace: string, animationName: string) =>
 		`aj.${exportNamespace}.animation.${animationName}.tween_playing`
 }
 
@@ -45,6 +51,105 @@ namespace OBJECTIVES {
 	export const ID = () => 'aj.id'
 	export const FRAME = () => 'aj.frame'
 	export const IS_RIG_LOADED = () => 'aj.is_rig_loaded'
+	export const TWEEN_DURATION = () => 'aj.tween_duration'
+}
+
+// 🗡 🏹 🔱 🧪 ⚗ 🎣 🛡 🪓 ⛏ ☠ ☮ ☯ ♠ Ω ♤ ♣ ♧ ❤ ♥ ♡
+// ♦ ♢ ★ ☆ ☄ ☽ ☀ ☁ ☂ ☃ ◎ ☺ ☻ ☹ ☜ ☞ ♪ ♩ ♫ ♬ ✂ ✉ ∞ ♂ ♀ ❤ ™ ®
+// © ✘ ■ □ ▲ △ ▼ ▽ ◆ ◇ ○ ◎ ● Δ ʊ ღ ₪ ½ ⅓ ⅔ ¼ ¾ ⅛ ⅜ ⅝ ⅞ ∧ ∨ ∩
+// ⊂ ⊃  ⊥ ∀ Ξ Γ ɐ ə ɘ ε β ɟ ɥ ɯ ɔ и  ɹ ʁ я ʌ ʍ λ ч ∞ Σ Π Ⓐ Ⓑ Ⓒ
+// Ⓓ Ⓔ Ⓕ Ⓖ Ⓗ Ⓘ Ⓙ Ⓚ Ⓛ Ⓜ Ⓝ Ⓞ Ⓟ Ⓠ Ⓡ Ⓢ Ⓣ Ⓤ Ⓥ Ⓦ Ⓧ Ⓨ Ⓩ ⓐ ⓑ ⓒ ⓓ ⓔ ⓕ ⓖ ⓗ ⓘ ⓙ ⓚ ⓛ ⓜ ⓝ ⓞ ⓟ ⓠ ⓡ ⓢ ⓣ ⓤ ⓥ ⓦ ⓧ ⓨ ⓩ
+// ▓ □〓≡ ╝╚╔╗╬ ╓ ╩┌ ┐└ ┘ ↑ ↓ → ← ↔ ▀▐ ░ ▒▬ ♦ ◘
+// → ✎ ❣ ✚ ✔ ✖ ▁ ▂ ▃ ▄ ▅ ▆ ▇ █ ⊻ ⊼ ⊽ ⋃ ⌀ ⌂
+
+const TELLRAW_PREFIX = new JsonText([
+	{ text: '[', color: 'gray' },
+	{ text: 'AJ', color: 'aqua' },
+	{ text: '] ' },
+])
+
+namespace TELLRAW {
+	export const FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR = (functionName: string, rootTag: string) =>
+		new JsonText([
+			'',
+			TELLRAW_PREFIX,
+			{ text: 'Error: ', color: 'red' },
+			{ text: 'The function ', color: 'red' },
+			{ text: functionName, color: 'yellow' },
+			{ text: ' must be executed as the root entity.', color: 'red' },
+			{ text: '\n You can use ', color: 'red' },
+			{ text: `execute as @e[tag=${rootTag}] run ...`, color: 'aqua' },
+			{ text: ' to run the function as the root.', color: 'red' },
+		])
+	// Summon Function
+	export const VARIANT_CANNOT_BE_EMPTY = () =>
+		new JsonText([
+			'',
+			TELLRAW_PREFIX,
+			{ text: 'Error: ', color: 'red' },
+			{ text: 'variant', color: 'yellow' },
+			{ text: ' cannot be an empty string.', color: 'red' },
+		])
+	export const INVALID_VARIANT = (variantName: string, variants: Variant[]) =>
+		new JsonText([
+			'',
+			TELLRAW_PREFIX,
+			{ text: 'Error: ', color: 'red' },
+			{ text: 'The variant ', color: 'red' },
+			{ text: variantName, color: 'yellow' },
+			{ text: ' does not exist.', color: 'red' },
+			'\n ',
+			{ text: ' ≡ ', color: 'white' },
+			{ text: 'Available Variants:', color: 'green' },
+			...variants.map(
+				variant =>
+					new JsonText([
+						'\n ',
+						' ',
+						' ',
+						{ text: ' ● ', color: 'gray' },
+						{ text: variant.name, color: 'yellow' },
+					])
+			),
+		])
+	export const ANIMATION_CANNOT_BE_EMPTY = () =>
+		new JsonText([
+			'',
+			TELLRAW_PREFIX,
+			{ text: 'Error: ', color: 'red' },
+			{ text: 'animation', color: 'yellow' },
+			{ text: ' cannot be an empty string.', color: 'red' },
+		])
+	export const FRAME_CANNOT_BE_NEGATIVE = () =>
+		new JsonText([
+			'',
+			TELLRAW_PREFIX,
+			{ text: 'Error: ', color: 'red' },
+			{ text: 'frame', color: 'yellow' },
+			{ text: ' must be a non-negative integer.', color: 'red' },
+		])
+	export const INVALID_ANIMATION = (animationName: string, animations: IRenderedAnimation[]) =>
+		new JsonText([
+			'',
+			TELLRAW_PREFIX,
+			{ text: 'Error: ', color: 'red' },
+			{ text: 'The animation ', color: 'red' },
+			{ text: animationName, color: 'yellow' },
+			{ text: ' does not exist.', color: 'red' },
+			'\n ',
+			{ text: ' ≡ ', color: 'white' },
+			{ text: 'Available Animations:', color: 'green' },
+			...animations.map(
+				anim =>
+					new JsonText([
+						'\n ',
+						' ',
+						' ',
+						{ text: ' ● ', color: 'gray' },
+						{ text: anim.name, color: 'yellow' },
+					])
+			),
+		])
 }
 
 function applyBoneConfigToPassenger(
@@ -112,25 +217,28 @@ function applyBoneConfigToPassenger(
 function generateRootEntityPassengers(rig: IRenderedRig) {
 	const aj = Project!.animated_java
 	const passengers: NbtList = new NbtList()
-	for (const [nodeUuid, node] of Object.entries(rig.nodeMap)) {
+	for (const node of Object.values(rig.nodeMap)) {
 		const passenger = new NbtCompound()
-		const defaultPos = rig.defaultPose.find(pose => pose.uuid === nodeUuid)
-		// TODO Add components setting to blueprint settings.
+		// TODO Maybe add components setting to blueprint settings?
 		const useComponents = true
 
 		passenger.set('id', new NbtString('minecraft:item_display'))
 
-		const tags = new NbtList([
-			new NbtString(TAGS.NEW()),
-			new NbtString(TAGS.GLOBAL_RIG_ENTITY()),
-		])
+		const tags = new NbtList([new NbtString(TAGS.GLOBAL_RIG())])
 		passenger.set('Tags', tags)
 
 		if (node.type === 'bone') {
-			tags.add(new NbtString(TAGS.GLOBAL_BONE_ENTITY()))
-			tags.add(new NbtString(TAGS.PROJECT_BONE_ENTITY(aj.export_namespace)))
-			tags.add(new NbtString(TAGS.LOCAL_BONE_ENTITY(aj.export_namespace, node.name)))
-			passenger.set('transformation', matrixToNbtFloatArray(defaultPos!.matrix))
+			tags.add(new NbtString(TAGS.GLOBAL_BONE()))
+			tags.add(new NbtString(TAGS.PROJECT_BONE(aj.export_namespace)))
+			tags.add(new NbtString(TAGS.LOCAL_BONE(aj.export_namespace, node.name)))
+			passenger.set(
+				'transformation',
+				new NbtCompound()
+					.set('translation', arrayToNbtFloatArray([0, 0, 0]))
+					.set('left_rotation', arrayToNbtFloatArray([0, 0, 0, 1]))
+					.set('right_rotation', arrayToNbtFloatArray([0, 0, 0, 1]))
+					.set('scale', arrayToNbtFloatArray([0, 0, 0]))
+			)
 			passenger.set('interpolation_duration', new NbtInt(aj.interpolation_duration))
 			passenger.set('teleport_duration', new NbtInt(aj.teleportation_duration))
 			passenger.set('item_display', new NbtString('head'))
@@ -151,17 +259,16 @@ function generateRootEntityPassengers(rig: IRenderedRig) {
 
 			applyBoneConfigToPassenger(passenger, node.configs.default, node, useComponents)
 
-			// TODO Add bone bounding box adjustment
-			passenger.set('height', new NbtFloat(100))
-			passenger.set('width', new NbtFloat(100))
+			passenger.set('height', new NbtFloat(aj.bounding_box[1]))
+			passenger.set('width', new NbtFloat(aj.bounding_box[0]))
 		} else if (node.type === 'camera') {
-			tags.add(new NbtString(TAGS.GLOBAL_CAMERA_ENTITY()))
-			tags.add(new NbtString(TAGS.PROJECT_CAMERA_ENTITY(aj.export_namespace)))
-			tags.add(new NbtString(TAGS.LOCAL_CAMERA_ENTITY(aj.export_namespace, node.name)))
+			tags.add(new NbtString(TAGS.GLOBAL_CAMERA()))
+			tags.add(new NbtString(TAGS.PROJECT_CAMERA(aj.export_namespace)))
+			tags.add(new NbtString(TAGS.LOCAL_CAMERA(aj.export_namespace, node.name)))
 		} else if (node.type === 'locator') {
-			tags.add(new NbtString(TAGS.GLOBAL_LOCATOR_ENTITY()))
-			tags.add(new NbtString(TAGS.PROJECT_LOCATOR_ENTITY(aj.export_namespace)))
-			tags.add(new NbtString(TAGS.LOCAL_LOCATOR_ENTITY(aj.export_namespace, node.name)))
+			tags.add(new NbtString(TAGS.GLOBAL_LOCATOR()))
+			tags.add(new NbtString(TAGS.PROJECT_LOCATOR(aj.export_namespace)))
+			tags.add(new NbtString(TAGS.LOCAL_LOCATOR(aj.export_namespace, node.name)))
 		}
 
 		passengers.add(passenger)
@@ -219,6 +326,31 @@ class AJMeta {
 		}
 		fs.writeFileSync(this.path, autoStringify(sortObjectKeys(content)))
 	}
+}
+
+function createAnimationStorage(animations: IRenderedAnimation[]) {
+	const storage: NbtCompound = new NbtCompound()
+	for (const animation of animations) {
+		const frames = new NbtList([
+			new NbtCompound(), // This compound is just to make the list 1-indexed
+		])
+		const animStorage = new NbtCompound().set('frames', frames)
+		storage.set(animation.name, animStorage)
+		for (const frame of animation.frames) {
+			const frameStorage = new NbtCompound()
+			frames.add(frameStorage)
+			for (const node of frame.nodes) {
+				if (node.type !== 'bone') continue
+				frameStorage.set(
+					node.name,
+					new NbtCompound()
+						.set('transformation', matrixToNbtFloatArray(node.matrix))
+						.set('start_interpolation', new NbtInt(0))
+				)
+			}
+		}
+	}
+	return storage
 }
 
 export function compileDataPack(options: {
@@ -325,6 +457,7 @@ export function compileDataPack(options: {
 
 	compiler.io = createSyncIO()
 	compiler.disableRequire = true
+	compiler.templateParsingEnabled = false
 
 	const variables = {
 		export_namespace: aj.export_namespace,
@@ -337,9 +470,13 @@ export function compileDataPack(options: {
 		root_entity_passengers: generateRootEntityPassengers(rig),
 		TAGS,
 		OBJECTIVES,
+		TELLRAW,
 		custom_summon_commands: aj.summon_commands,
 		matrixToNbtFloatArray,
+		use_storage_for_animation: aj.use_storage_for_animation,
+		animationStorage: createAnimationStorage(animations),
 	}
+	console.log('Compiler Variables:', variables)
 
 	console.time('MC-Build Compiler took')
 	const tokens = Tokenizer.tokenize(datapackTemplate, 'src/animated_java.mcb')

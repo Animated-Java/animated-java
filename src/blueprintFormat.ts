@@ -2,6 +2,7 @@ import * as blueprintSettings from './blueprintSettings'
 import { BoneConfig } from './boneConfig'
 import ProjectTitleSvelteComponent from './components/projectTitle.svelte'
 import { PACKAGE } from './constants'
+import { events } from './util/events'
 import { injectSvelteCompomponent } from './util/injectSvelte'
 import { addProjectToRecentProjects } from './util/misc'
 import { Variant } from './variants'
@@ -145,9 +146,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 			Project.uuid = model.meta.uuid
 		}
 
-		if (model.meta.save_location !== undefined) {
-			Project.save_path = model.meta.save_location
-		}
+		Project.save_path = model.meta.save_location || path
 
 		if (model.meta.box_uv !== undefined) {
 			Project.box_uv = model.meta.box_uv
@@ -411,6 +410,44 @@ export function getDefaultProjectSettings(): ModelProject['animated_java'] {
 	return blueprintSettings.defaultValues
 }
 
+export function updateBoundingBox() {
+	if (!Project) return
+
+	if (Project.visualBoundingBox) {
+		scene.remove(Project.visualBoundingBox)
+	}
+	if (!Project.animated_java.show_bounding_box) return
+
+	let width = 0
+	let height = 0
+	if (Project.animated_java.auto_bounding_box) {
+		for (const cube of Cube.all) {
+			width = Math.max(
+				width,
+				Math.abs(cube.to[0]),
+				Math.abs(cube.to[2]),
+				Math.abs(cube.from[0]),
+				Math.abs(cube.from[2])
+			)
+			height = Math.max(height, cube.to[1], cube.from[1])
+		}
+		const boundingBoxOverflow = 8
+		width += boundingBoxOverflow
+		height += boundingBoxOverflow
+	} else {
+		width = Project.animated_java.bounding_box[0]
+		height = Project.animated_java.bounding_box[1]
+	}
+
+	const boundingBox = new THREE.BoxGeometry(width * 2, height, width * 2)
+	Project.visualBoundingBox = new THREE.LineSegments(
+		new THREE.EdgesGeometry(boundingBox),
+		new THREE.LineBasicMaterial({ color: '#855000' })
+	)
+	Project.visualBoundingBox.position.set(0, height / 2, 0)
+	scene.add(Project.visualBoundingBox)
+}
+
 /** ANCHOR
  * The Animated Java Blueprint format
  */
@@ -470,7 +507,11 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 			svelteComponent: ProjectTitleSvelteComponent,
 			svelteComponentProperties: { project: Project },
 		})
-
+		const updateBoundingBoxIntervalId = setInterval(() => {
+			updateBoundingBox()
+		}, 500)
+		events.UNLOAD.subscribe(() => clearInterval(updateBoundingBoxIntervalId), true)
+		events.UNINSTALL.subscribe(() => clearInterval(updateBoundingBoxIntervalId), true)
 		requestAnimationFrame(() => {
 			Variant.selectDefault()
 		})

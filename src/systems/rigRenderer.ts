@@ -54,6 +54,7 @@ export interface IRenderedNode {
 	parentNode: Group | null
 	name: string
 	node: OutlinerNode
+	uuid: string
 }
 
 export interface ICamera extends OutlinerElement {
@@ -298,6 +299,7 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 		parentNode: group.parent instanceof Group ? group.parent : null,
 		node: group,
 		name: group.name,
+		uuid: group.uuid,
 		textures: {},
 		model: {
 			textures: {},
@@ -370,6 +372,7 @@ function renderLocator(locator: Locator, rig: IRenderedRig): INodeStructure {
 		parentNode: locator.parent instanceof Group ? locator.parent : null,
 		node: locator,
 		name: locator.name,
+		uuid: locator.uuid,
 		configs: locator.configs,
 	}
 
@@ -389,6 +392,7 @@ function renderCamera(camera: ICamera, rig: IRenderedRig): INodeStructure {
 		parentNode: camera.parent instanceof Group ? camera.parent : null,
 		node: camera,
 		name: camera.name,
+		uuid: camera.uuid,
 		configs: camera.configs,
 	}
 
