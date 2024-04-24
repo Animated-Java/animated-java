@@ -1,0 +1,6 @@
+{
+	"parent": "animated_java:item/armor_stand_modify/right_leg2",
+	"textures": {
+		"0": "animated_java:item/armor_stand_modify/empty"
+	}
+}

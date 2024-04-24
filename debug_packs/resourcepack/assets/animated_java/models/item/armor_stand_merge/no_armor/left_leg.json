@@ -1,0 +1,7 @@
+{
+	"parent": "animated_java:item/armor_stand_merge/left_leg",
+	"textures": {
+		"1": "animated_java:item/armor_stand_merge/empty",
+		"2": "animated_java:item/armor_stand_merge/empty"
+	}
+}

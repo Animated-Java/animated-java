@@ -1,0 +1,83 @@
+{
+	"textures": {
+		"0": "animated_java:item/armor_stand_modify/wood",
+		"1": "animated_java:item/armor_stand_modify/iron_layer_1"
+	},
+	"elements": [
+		{
+			"from": [7, -3, 7],
+			"to": [9, 9, 9],
+			"rotation": {
+				"angle": 0,
+				"axis": "y",
+				"origin": [14, -15, 8]
+			},
+			"faces": {
+				"north": {
+					"uv": [6.5, 0.5, 7, 3.5],
+					"texture": "#0"
+				},
+				"east": {
+					"uv": [6, 0.5, 6.5, 3.5],
+					"texture": "#0"
+				},
+				"south": {
+					"uv": [7.5, 0.5, 8, 3.5],
+					"texture": "#0"
+				},
+				"west": {
+					"uv": [7, 0.5, 7.5, 3.5],
+					"texture": "#0"
+				},
+				"up": {
+					"uv": [6.5, 0, 7, 0.5],
+					"texture": "#0"
+				},
+				"down": {
+					"uv": [7.5, 0, 7, 0.5],
+					"texture": "#0"
+				}
+			}
+		},
+		{
+			"from": [5, 4.25, 5],
+			"to": [11, 10, 11],
+			"rotation": {
+				"angle": 0,
+				"axis": "y",
+				"origin": [8, 8, 8]
+			},
+			"faces": {
+				"north": {
+					"uv": [11, 10, 12, 12.4375],
+					"texture": "#1"
+				},
+				"east": {
+					"uv": [12, 10, 13, 12.4375],
+					"texture": "#1"
+				},
+				"south": {
+					"uv": [13, 10, 14, 12.4375],
+					"texture": "#1"
+				},
+				"west": {
+					"uv": [10, 10, 11, 12.4375],
+					"texture": "#1"
+				},
+				"up": {
+					"uv": [12, 9.9375, 11, 8],
+					"texture": "#1"
+				},
+				"down": {
+					"uv": [12, 8, 13, 9.9375],
+					"texture": "#1"
+				}
+			}
+		}
+	],
+	"display": {
+		"head": {
+			"rotation": [0, 180, 0]
+		}
+	}
+}
