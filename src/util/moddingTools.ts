@@ -212,10 +212,16 @@ export function createPropertySubscribable<Value = any>(object: any, key: string
 				storage.value = newValue
 				onSet.dispatch({ storage, newValue })
 			},
+			configurable: true,
 		})
 
 		events.EXTRACT_MODS.subscribe(() => {
-			Object.defineProperty(object, key, {})
+			const value = object[key]
+			delete object[key]
+			Object.defineProperty(object, key, {
+				value,
+				configurable: true,
+			})
 		}, true)
 	}
 

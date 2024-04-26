@@ -70,6 +70,7 @@ function setSettings(settings: ReturnType<typeof getSettings>) {
 
 	// Export Settings
 	Project.animated_java.enable_plugin_mode = settings.enablePluginMode.get()
+	Project.pluginMode.set(settings.enablePluginMode.get()) // Required to update the project title.
 	Project.animated_java.export_namespace = settings.exportNamespace.get()
 	Project.animated_java.enable_resource_pack = settings.enableResourcePack.get()
 	Project.animated_java.enable_data_pack = settings.enableDataPack.get()

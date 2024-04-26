@@ -2,6 +2,7 @@ import type {
 	IBlueprintVariantBoneConfigJSON,
 	IBlueprintVariantLocatorConfigJSON,
 } from './blueprintFormat'
+import { Valuable } from './util/stores'
 import { type Variant } from './variants'
 
 declare global {
@@ -33,6 +34,7 @@ declare global {
 		}
 		last_used_export_namespace: string
 		visualBoundingBox?: THREE.LineSegments
+		pluginMode: Valuable<boolean>
 
 		variants: Variant[]
 	}

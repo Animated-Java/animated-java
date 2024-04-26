@@ -37,3 +37,12 @@
 - [ ] Total functions created by the data pack compiler
     - Stored in amount per day
 
+# Github
+- [ ] Reorganize the repo's branches.
+    - [ ] Create a `release` branch.
+    - [ ] Create a `dev` branch.
+    - [x] Create a `legacy` branch.
+- [ ] Reorganize the repo's tags.
+    - [ ] Create a `v1.0.0` tag.
+    - [ ] Create a `legacy-v0.4.8` tag.
+    - [x] Create a `legacy-armorstands` tag.

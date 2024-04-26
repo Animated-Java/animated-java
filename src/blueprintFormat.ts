@@ -5,6 +5,7 @@ import { PACKAGE } from './constants'
 import { events } from './util/events'
 import { injectSvelteCompomponent } from './util/injectSvelte'
 import { addProjectToRecentProjects } from './util/misc'
+import { Valuable } from './util/stores'
 import { Variant } from './variants'
 
 /**
@@ -493,6 +494,7 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 		events.UNLOAD.subscribe(() => clearInterval(updateBoundingBoxIntervalId), true)
 		events.UNINSTALL.subscribe(() => clearInterval(updateBoundingBoxIntervalId), true)
 		requestAnimationFrame(() => {
+			Project.pluginMode = new Valuable(Project.animated_java.enable_plugin_mode)
 			// Remove the default title
 			const element = document.querySelector('#tab_bar_list .icon-armor_stand.icon')
 			element?.remove()
@@ -507,7 +509,7 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 				},
 				prepend: true,
 				svelteComponent: ProjectTitleSvelteComponent,
-				svelteComponentProperties: { project: Project },
+				svelteComponentProperties: { pluginMode: Project.pluginMode },
 			})
 
 			Variant.selectDefault()
