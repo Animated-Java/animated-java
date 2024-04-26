@@ -15,6 +15,7 @@
 - [ ] Force animations to be at least 1 tick long
 - [ ] Render and handle invalid cubes with a red outline.
 - [ ] Add a transparency option to the variant texture map selection.
+- [ ] Add an about page.
 
 # Data Pack Compiler
 - [x] Merge on_tick and on_load function tags
