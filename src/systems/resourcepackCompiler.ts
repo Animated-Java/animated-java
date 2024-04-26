@@ -185,7 +185,8 @@ export function compileResourcePack(options: {
 			throw new Error(`Texture ${texture.name} is missing it's image data.`)
 		}
 
-		const textureName = toSafeFuntionName(texture.name)
+		let textureName = toSafeFuntionName(texture.name)
+		if (!texture.name.endsWith('.png')) textureName += '.png'
 		fs.writeFileSync(PathModule.join(textureExportFolder, textureName), image)
 		if (mcmeta !== undefined)
 			fs.writeFileSync(PathModule.join(textureExportFolder, textureName + '.mcmeta'), mcmeta)

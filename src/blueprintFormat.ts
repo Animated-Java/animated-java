@@ -112,6 +112,50 @@ export interface IBlueprintFormatJSON {
 	backgrounds?: Record<string, any>
 }
 
+export function convertToBlueprint() {
+	console.error('Blueprint conversion is currently unsupported!')
+}
+
+export function getDefaultProjectSettings(): ModelProject['animated_java'] {
+	return blueprintSettings.defaultValues
+}
+
+export function updateBoundingBox() {
+	if (!Project || !isCurrentFormat()) return
+	if (Project.visualBoundingBox) scene.remove(Project.visualBoundingBox)
+
+	if (!Project.animated_java.show_bounding_box) return
+
+	let width = 0
+	let height = 0
+	if (Project.animated_java.auto_bounding_box) {
+		for (const cube of Cube.all) {
+			width = Math.max(
+				width,
+				Math.abs(cube.to[0]),
+				Math.abs(cube.to[2]),
+				Math.abs(cube.from[0]),
+				Math.abs(cube.from[2])
+			)
+			height = Math.max(height, cube.to[1], cube.from[1])
+		}
+		const boundingBoxOverflow = 8
+		width += boundingBoxOverflow
+		height += boundingBoxOverflow
+	} else {
+		width = Project.animated_java.bounding_box[0]
+		height = Project.animated_java.bounding_box[1]
+	}
+
+	const boundingBox = new THREE.BoxGeometry(width * 2, height, width * 2)
+	Project.visualBoundingBox = new THREE.LineSegments(
+		new THREE.EdgesGeometry(boundingBox),
+		new THREE.LineBasicMaterial({ color: '#855000' })
+	)
+	Project.visualBoundingBox.position.set(0, height / 2, 0)
+	scene.add(Project.visualBoundingBox)
+}
+
 /**
  * The Animated Java Blueprint codec
  */
@@ -402,52 +446,6 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 	},
 })
 
-export function convertToBlueprint() {
-	console.error('Blueprint conversion is currently unsupported!')
-}
-
-export function getDefaultProjectSettings(): ModelProject['animated_java'] {
-	return blueprintSettings.defaultValues
-}
-
-export function updateBoundingBox() {
-	if (!Project) return
-
-	if (Project.visualBoundingBox) {
-		scene.remove(Project.visualBoundingBox)
-	}
-	if (!Project.animated_java.show_bounding_box) return
-
-	let width = 0
-	let height = 0
-	if (Project.animated_java.auto_bounding_box) {
-		for (const cube of Cube.all) {
-			width = Math.max(
-				width,
-				Math.abs(cube.to[0]),
-				Math.abs(cube.to[2]),
-				Math.abs(cube.from[0]),
-				Math.abs(cube.from[2])
-			)
-			height = Math.max(height, cube.to[1], cube.from[1])
-		}
-		const boundingBoxOverflow = 8
-		width += boundingBoxOverflow
-		height += boundingBoxOverflow
-	} else {
-		width = Project.animated_java.bounding_box[0]
-		height = Project.animated_java.bounding_box[1]
-	}
-
-	const boundingBox = new THREE.BoxGeometry(width * 2, height, width * 2)
-	Project.visualBoundingBox = new THREE.LineSegments(
-		new THREE.EdgesGeometry(boundingBox),
-		new THREE.LineBasicMaterial({ color: '#855000' })
-	)
-	Project.visualBoundingBox.position.set(0, height / 2, 0)
-	scene.add(Project.visualBoundingBox)
-}
-
 /** ANCHOR
  * The Animated Java Blueprint format
  */
@@ -489,32 +487,35 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 		if (newModel) {
 			new Variant('Default', true)
 		}
-		// Remove the default title
-		requestAnimationFrame(() => {
-			const element = document.querySelector('#tab_bar_list .icon-armor_stand.icon')
-			element?.remove()
-		})
-		// Custom title
-		injectSvelteCompomponent({
-			elementSelector: () => {
-				const titles = [...document.querySelectorAll('.project_tab.selected')]
-				titles.filter(title => title.textContent === Project.name)
-				if (titles.length) {
-					return titles[0]
-				}
-			},
-			prepend: true,
-			svelteComponent: ProjectTitleSvelteComponent,
-			svelteComponentProperties: { project: Project },
-		})
 		const updateBoundingBoxIntervalId = setInterval(() => {
 			updateBoundingBox()
 		}, 500)
 		events.UNLOAD.subscribe(() => clearInterval(updateBoundingBoxIntervalId), true)
 		events.UNINSTALL.subscribe(() => clearInterval(updateBoundingBoxIntervalId), true)
 		requestAnimationFrame(() => {
+			// Remove the default title
+			const element = document.querySelector('#tab_bar_list .icon-armor_stand.icon')
+			element?.remove()
+			// Custom title
+			injectSvelteCompomponent({
+				elementSelector: () => {
+					const titles = [...document.querySelectorAll('.project_tab.selected')]
+					titles.filter(title => title.textContent === Project.name)
+					if (titles.length) {
+						return titles[0]
+					}
+				},
+				prepend: true,
+				svelteComponent: ProjectTitleSvelteComponent,
+				svelteComponentProperties: { project: Project },
+			})
+
 			Variant.selectDefault()
 		})
+	},
+
+	onActivation() {
+		console.log('Animated Java Blueprint format activated')
 	},
 
 	codec: BLUEPRINT_CODEC,
@@ -558,3 +559,38 @@ export function saveBlueprint() {
 	if (Format !== BLUEPRINT_FORMAT) return
 	BLUEPRINT_CODEC.write(BLUEPRINT_CODEC.compile(), Project.save_path)
 }
+
+export function updateRotationLock() {
+	if (!isCurrentFormat()) return
+	BLUEPRINT_FORMAT.rotation_limit = !Group.selected
+	BLUEPRINT_FORMAT.rotation_snap = !Group.selected
+}
+
+export function disableRotationLock() {
+	if (!isCurrentFormat()) return
+	BLUEPRINT_FORMAT.rotation_limit = false
+	BLUEPRINT_FORMAT.rotation_snap = false
+}
+
+events.SELECT_PROJECT.subscribe(project => {
+	if (project.format.id === BLUEPRINT_FORMAT.id) {
+		events.SELECT_AJ_PROJECT.dispatch(project)
+	}
+})
+events.UNSELECT_PROJECT.subscribe(project => {
+	if (project.format.id === BLUEPRINT_FORMAT.id) {
+		events.UNSELECT_AJ_PROJECT.dispatch(project)
+	}
+})
+events.UPDATE_SELECTION.subscribe(updateRotationLock)
+events.SELECT_AJ_PROJECT.subscribe(() => {
+	requestAnimationFrame(() => {
+		updateBoundingBox()
+		updateRotationLock()
+	})
+})
+events.UNSELECT_AJ_PROJECT.subscribe(project => {
+	console.log('Unselecting Animated Java Project', project)
+	if (project.visualBoundingBox) scene.remove(project.visualBoundingBox)
+	disableRotationLock()
+})

@@ -62,6 +62,8 @@
 		localVariants = e.detail.items
 		Variant.all = localVariants.map((item: LocalVariant) => item.value)
 	}
+
+	updateLocalVariants()
 </script>
 
 <div class="panel_container">

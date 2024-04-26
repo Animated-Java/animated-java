@@ -4,7 +4,11 @@ import { PACKAGE } from '../constants'
 import { injectSvelteCompomponent } from '../util/injectSvelte'
 import { createModelLoader } from '../util/moddingTools'
 import { translate } from '../util/translation'
-import { BLUEPRINT_CODEC, IBlueprintFormatJSON } from '../blueprintFormat'
+import {
+	BLUEPRINT_CODEC,
+	IBlueprintFormatJSON,
+	getDefaultProjectSettings,
+} from '../blueprintFormat'
 import { openUnexpectedErrorDialog } from './unexpectedErrorDialog'
 import { BoneConfig } from '../boneConfig'
 
@@ -43,6 +47,7 @@ createModelLoader(`${PACKAGE.name}-upgradeAJModelLoader`, {
 export function convertAJModelToBlueprint(path: string) {
 	try {
 		console.log(`Convert Old .ajmodel: ${path}`)
+		const defaultSettings = getDefaultProjectSettings()
 		const ajmodel = JSON.parse(fs.readFileSync(path, 'utf8'))
 
 		const datapackExporterSettings =
@@ -59,9 +64,16 @@ export function convertAJModelToBlueprint(path: string) {
 				last_used_export_namespace: ajmodel.animated_java.settings.project_namespace,
 			},
 			project_settings: {
+				// Blueprint Settings
+				show_bounding_box: defaultSettings.show_bounding_box,
+				auto_bounding_box: defaultSettings.auto_bounding_box,
+				bounding_box: defaultSettings.bounding_box,
+				// Export settings
 				export_namespace: ajmodel.animated_java.settings.project_namespace,
-				enable_plugin_mode: false,
-				enable_resource_pack: true,
+				enable_plugin_mode: defaultSettings.enable_plugin_mode,
+				enable_resource_pack: defaultSettings.enable_resource_pack,
+				enable_data_pack: defaultSettings.enable_data_pack,
+				// Resource pack settings
 				display_item: ajmodel.animated_java.settings.rig_item,
 				customModelDataOffset: 0,
 				enable_advanced_resource_pack_settings:
@@ -73,12 +85,14 @@ export function convertAJModelToBlueprint(path: string) {
 				display_item_path: ajmodel.animated_java.settings.rig_item_model,
 				model_folder: ajmodel.animated_java.settings.rig_export_folder,
 				texture_folder: ajmodel.animated_java.settings.texture_export_folder,
-				enable_data_pack: true,
-				enable_advanced_data_pack_settings: false,
+				// Data pack settings
+				enable_advanced_data_pack_settings:
+					defaultSettings.enable_advanced_data_pack_settings,
 				data_pack: datapackExporterSettings.datapack_mcmeta.replace(/\.mcmeta$/, ''),
-				summon_commands: '',
-				interpolation_duration: 0,
-				teleportation_duration: 0,
+				summon_commands: defaultSettings.summon_commands,
+				interpolation_duration: defaultSettings.interpolation_duration,
+				teleportation_duration: defaultSettings.teleportation_duration,
+				use_storage_for_animation: defaultSettings.use_storage_for_animation,
 			},
 			variants: {
 				default: {

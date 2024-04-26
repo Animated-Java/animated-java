@@ -60,7 +60,7 @@
 <div class="container">
 	<div class="quote">
 		<i class="fas fa-quote-left dialog_form_warning text_icon" />
-		<h2 style="font-size: 24px;">{@html pickRandomFlavorQuote()}</h2>
+		<h2 style="font-size: 24px; text-align: center;">{@html pickRandomFlavorQuote()}</h2>
 		<i class="fas fa-quote-right dialog_form_warning text_icon" />
 	</div>
 	<p>

@@ -123,7 +123,7 @@ const yamlPlugin: (opts: {
 }) => esbuild.Plugin = options => ({
 	name: 'yaml',
 	setup(build) {
-		build.onResolve({ filter: /\.(yml|yaml)$/ }, args => {
+		build.onResolve({ filter: /\.(yml|yaml|molang)$/ }, args => {
 			if (args.resolveDir === '') return
 			return {
 				path: isAbsolute(args.path) ? args.path : join(args.resolveDir, args.path),

@@ -1,5 +1,14 @@
 import * as pathjs from 'path'
 
+export interface MinecraftResourceLocation {
+	resourcePackRoot: string
+	namespace: string
+	resourcePath: string
+	resourceLocation: string
+	fileName: string
+	fileExtension: string
+}
+
 export function toSafeFuntionName(name: string): string {
 	return name
 		.toLowerCase()
@@ -12,7 +21,7 @@ export function isResourcePackPath(path: string) {
 	return !!(parsed && parsed.namespace && parsed.resourcePath)
 }
 
-export function parseResourcePackPath(path: string) {
+export function parseResourcePackPath(path: string): MinecraftResourceLocation | undefined {
 	path = path.replaceAll(/\\/g, '/')
 	const parts = path.split('/')
 
@@ -45,7 +54,7 @@ export function isDataPackPath(path: string) {
 	return !!(parsed && parsed.namespace && parsed.resourcePath)
 }
 
-export function parseDataPackPath(path: string) {
+export function parseDataPackPath(path: string): MinecraftResourceLocation | undefined {
 	path = path.replaceAll(/\\/g, '/')
 	const parts = path.split('/')
 

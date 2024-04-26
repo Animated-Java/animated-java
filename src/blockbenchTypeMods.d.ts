@@ -55,4 +55,8 @@ declare global {
 			variants: Record<string, IBlueprintVariantLocatorConfigJSON>
 		}
 	}
+
+	interface Cube {
+		rotationInvalid: boolean
+	}
 }

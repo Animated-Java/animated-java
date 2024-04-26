@@ -1,6 +1,7 @@
 import { Subscribable } from './subscribable'
 import * as PACKAGE from '../../package.json'
 import { Variant } from '../variants'
+import { BLUEPRINT_FORMAT } from '../blueprintFormat'
 
 export class PluginEvent<EventData = void> extends Subscribable<EventData> {
 	protected static events: Record<string, PluginEvent<any>> = {}
@@ -24,12 +25,17 @@ export const events = {
 	SELECT_PROJECT: new PluginEvent<ModelProject>('selectProject'),
 	UNSELECT_PROJECT: new PluginEvent<ModelProject>('deselectProject'),
 
+	SELECT_AJ_PROJECT: new PluginEvent<ModelProject>('selectAJProject'),
+	UNSELECT_AJ_PROJECT: new PluginEvent<ModelProject>('unselectAJProject'),
+
 	CREATE_VARIANT: new PluginEvent<Variant>('createVariant'),
 	UPDATE_VARIANT: new PluginEvent<Variant>('updateVariant'),
 	DELETE_VARIANT: new PluginEvent<Variant>('deleteVariant'),
 	SELECT_VARIANT: new PluginEvent<Variant>('selectVariant'),
 
 	SELECT_KEYFRAME: new PluginEvent<_Keyframe>('selectKeyframe'),
+
+	UPDATE_SELECTION: new PluginEvent('updateSelection'),
 }
 
 function injectionHandler() {
@@ -53,3 +59,4 @@ Blockbench.on<EventName>('select_project', ({ project }: { project: ModelProject
 Blockbench.on<EventName>('unselect_project', ({ project }: { project: ModelProject }) => {
 	events.UNSELECT_PROJECT.dispatch(project)
 })
+Blockbench.on<EventName>('update_selection', () => events.UPDATE_SELECTION.dispatch())

@@ -3,7 +3,11 @@ import {
 	type IBlueprintVariantBoneConfigJSON,
 	IBlueprintVariantLocatorConfigJSON,
 } from '../blueprintFormat'
-import { parseResourcePackPath, toSafeFuntionName } from '../util/minecraftUtil'
+import {
+	MinecraftResourceLocation,
+	parseResourcePackPath,
+	toSafeFuntionName,
+} from '../util/minecraftUtil'
 import { Variant } from '../variants'
 import {
 	correctSceneAngle,
@@ -238,15 +242,25 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 	return element
 }
 
+const TEXTURE_RESOURCE_LOCATION_CACHE = new Map<string, MinecraftResourceLocation>()
 export function getTextureResourceLocation(texture: Texture, rig: IRenderedRig) {
-	if (texture.path && fs.existsSync(texture.path)) {
+	if (TEXTURE_RESOURCE_LOCATION_CACHE.has(texture.uuid)) {
+		return TEXTURE_RESOURCE_LOCATION_CACHE.get(texture.uuid)!
+	}
+	if (!texture.name.endsWith('.png')) texture.name += '.png'
+	if (texture.path && fs.existsSync(texture.path) && fs.statSync(texture.path).isFile()) {
 		const parsed = parseResourcePackPath(texture.path)
-		if (parsed) return parsed
+		if (parsed) {
+			TEXTURE_RESOURCE_LOCATION_CACHE.set(texture.uuid, parsed)
+			return parsed
+		}
 	}
 	const path = PathModule.join(rig.textureExportFolder, toSafeFuntionName(texture.name))
-
 	const parsed = parseResourcePackPath(path)
-	if (parsed) return parsed
+	if (parsed) {
+		TEXTURE_RESOURCE_LOCATION_CACHE.set(texture.uuid, parsed)
+		return parsed
+	}
 
 	console.error(texture)
 	throw new Error(`Invalid texture path: ${path}`)
@@ -410,13 +424,10 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 
 	for (const [uuid, bone] of Object.entries(rig.nodeMap)) {
 		if (bone.type !== 'bone') continue
+		if (variant.excludedBones.find(v => v.value === uuid)) continue
 		const textures: IRenderedModel['textures'] = {}
 
 		for (const [fromUUID, toUUID] of variant.textureMap.map.entries()) {
-			if (!(fromUUID && toUUID))
-				throw new Error(
-					`Invalid texture mapping found while exporting variant models. If you're seeing this error something has gone horribly wrong.`
-				)
 			const fromTexture = Texture.all.find(t => t.uuid === fromUUID)
 			if (!fromTexture) throw new Error(`From texture not found: ${fromUUID}`)
 			const toTexture = Texture.all.find(t => t.uuid === toUUID)

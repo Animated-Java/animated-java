@@ -27,6 +27,9 @@ import './mods/saveProjectActionMod'
 import './mods/saveProjectAsActionMod'
 import './mods/variantPreviewCubeFaceMod'
 import './mods/modelFormatConvertToMod'
+import './mods/cubeOutlineMod'
+import './mods/groupNameMod'
+import './mods/molangMod'
 // Compilers
 import { compileDataPack } from './systems/datapackCompiler'
 // Misc imports

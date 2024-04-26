@@ -1,7 +1,7 @@
 import { Compiler, Parser, Tokenizer, SyncIo } from 'mc-build'
 import { VariableMap } from 'mc-build/dist/mcl/Compiler'
 import { isFunctionTagPath } from '../util/fileUtil'
-import datapackTemplate from './datapackCompiler/animated_java.mcb'
+import datapackTemplate from './animated_java.mcb'
 import { IRenderedNodes, IRenderedRig } from './rigRenderer'
 import { IRenderedAnimation } from './animationRenderer'
 import { Variant } from '../variants'
@@ -16,6 +16,7 @@ import { BoneConfig } from '../boneConfig'
 import { IBlueprintVariantBoneConfigJSON } from '../blueprintFormat'
 import { IFunctionTag, mergeTag, parseDataPackPath } from '../util/minecraftUtil'
 import { JsonText } from '../util/jsonText'
+import { MAX_PROGRESS, PROGRESS } from '../interface/exportProgressDialog'
 
 namespace TAGS {
 	export const NEW = () => 'aj.new'
@@ -353,7 +354,7 @@ function createAnimationStorage(animations: IRenderedAnimation[]) {
 	return storage
 }
 
-export function compileDataPack(options: {
+export async function compileDataPack(options: {
 	rig: IRenderedRig
 	animations: IRenderedAnimation[]
 	dataPackFolder: string
@@ -384,7 +385,7 @@ export function compileDataPack(options: {
 	const removedFolders = new Set<string>()
 	for (const file of ajmeta.oldDatapack.files) {
 		if (!isFunctionTagPath(file)) {
-			if (fs.existsSync(file)) fs.unlinkSync(file)
+			if (fs.existsSync(file)) await fs.promises.unlink(file)
 		} else if (aj.export_namespace !== Project!.last_used_export_namespace) {
 			const resourceLocation = parseDataPackPath(file)!.resourceLocation
 			if (
@@ -399,59 +400,31 @@ export function compileDataPack(options: {
 					Project!.last_used_export_namespace,
 					aj.export_namespace
 				)
-				fs.mkdirSync(PathModule.dirname(newPath), { recursive: true })
-				fs.copyFileSync(file, newPath)
-				fs.unlinkSync(file)
+				await fs.promises.mkdir(PathModule.dirname(newPath), { recursive: true })
+				await fs.promises.copyFile(file, newPath)
+				await fs.promises.unlink(file)
 			}
 		}
 		let folder = PathModule.dirname(file)
 		while (
 			!removedFolders.has(folder) &&
 			fs.existsSync(folder) &&
-			fs.readdirSync(folder).length === 0
+			(await fs.promises.readdir(folder)).length === 0
 		) {
-			fs.rmSync(folder, { recursive: true })
+			await fs.promises.rm(folder, { recursive: true })
 			removedFolders.add(folder)
 			folder = PathModule.dirname(folder)
 		}
 	}
 
+	const exportedFiles = new Map<string, string>()
 	function createSyncIO(): SyncIo {
 		const io = new SyncIo()
-		const folderCache = new Set<string>()
-
 		io.write = (localPath, content) => {
 			const writePath = PathModule.join(options.dataPackFolder, localPath)
-
-			if (isFunctionTagPath(writePath) && fs.existsSync(writePath)) {
-				const oldFile: IFunctionTag = JSON.parse(fs.readFileSync(writePath, 'utf-8'))
-				const newFile: IFunctionTag = JSON.parse(content)
-				const merged = mergeTag(oldFile, newFile)
-				if (aj.export_namespace !== Project!.last_used_export_namespace) {
-					merged.values = merged.values.filter(v => {
-						const value = typeof v === 'string' ? v : v.id
-						return (
-							!value.startsWith(
-								`#animated_java:${Project!.last_used_export_namespace}/`
-							) ||
-							value.startsWith(
-								`animated_java:${Project!.last_used_export_namespace}/`
-							)
-						)
-					})
-				}
-				content = JSON.stringify(merged)
-			}
-
-			const folderPath = PathModule.dirname(writePath)
-			if (!folderCache.has(folderPath)) {
-				fs.mkdirSync(folderPath, { recursive: true })
-				folderCache.add(folderPath)
-			}
-			fs.writeFileSync(writePath, content)
+			exportedFiles.set(writePath, content)
 			ajmeta.datapack.files.add(writePath)
 		}
-
 		return io
 	}
 
@@ -484,6 +457,62 @@ export function compileDataPack(options: {
 	compiler.compile(VariableMap.fromObject(variables))
 	console.timeEnd('MC-Build Compiler took')
 
+	console.time('Writing Files took')
+	await writeFiles(exportedFiles)
+	console.timeEnd('Writing Files took')
+
 	ajmeta.write()
 	console.timeEnd('Data Pack Compilation took')
+}
+
+async function writeFiles(map: Map<string, string>) {
+	PROGRESS.set(0)
+	MAX_PROGRESS.set(map.size)
+	const aj = Project!.animated_java
+	const folderCache = new Set<string>()
+
+	async function writeFile(path: string, content: string) {
+		if (isFunctionTagPath(path) && fs.existsSync(path)) {
+			const oldFile: IFunctionTag = JSON.parse(fs.readFileSync(path, 'utf-8'))
+			const newFile: IFunctionTag = JSON.parse(content)
+			const merged = mergeTag(oldFile, newFile)
+			if (aj.export_namespace !== Project!.last_used_export_namespace) {
+				merged.values = merged.values.filter(v => {
+					const value = typeof v === 'string' ? v : v.id
+					return (
+						!value.startsWith(
+							`#animated_java:${Project!.last_used_export_namespace}/`
+						) ||
+						value.startsWith(`animated_java:${Project!.last_used_export_namespace}/`)
+					)
+				})
+			}
+			content = JSON.stringify(merged)
+		}
+
+		const folderPath = PathModule.dirname(path)
+		if (!folderCache.has(folderPath)) {
+			await fs.promises.mkdir(folderPath, { recursive: true })
+			folderCache.add(folderPath)
+		}
+		await fs.promises.writeFile(path, content)
+		PROGRESS.set(PROGRESS.get() + 1)
+		// console.log(PROGRESS.get())
+		// await new Promise<void>(resolve => setTimeout(resolve, 100))
+	}
+
+	const maxWriteThreads = 8
+	const writeQueue = new Map<string, Promise<void>>()
+	for (const [path, content] of map) {
+		writeQueue.set(
+			path,
+			writeFile(path, content).finally(() => {
+				writeQueue.delete(path)
+			})
+		)
+		if (writeQueue.size >= maxWriteThreads) {
+			await Promise.any(writeQueue)
+		}
+	}
+	await Promise.all(writeQueue.values())
 }

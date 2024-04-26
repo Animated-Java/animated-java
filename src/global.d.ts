@@ -5,6 +5,11 @@ declare module '*.png' {
 	export = value
 }
 
+declare module '*.gif' {
+	const value: string
+	export = value
+}
+
 declare module '*.svg' {
 	const value: string
 	export = value
@@ -12,5 +17,10 @@ declare module '*.svg' {
 
 declare module '*.mcb' {
 	const value: string
+	export = value
+}
+
+declare module '*.molang' {
+	const value: Record<string, string>
 	export = value
 }

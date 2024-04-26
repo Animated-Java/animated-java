@@ -197,13 +197,6 @@ dir <%export_namespace%> {
 							{'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/resume'}
 					tag @s add <%TAGS.ANIMATION_PLAYING(export_namespace, animation.name)%>
 				}
-				function reset {
-					execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-						function *global/errors/function_not_executed_as_root_entity \
-							{'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/reset'}
-					tag @s remove <%TAGS.ANIMATION_PLAYING(export_namespace, animation.name)%>
-					function ./zzz/set_frame {frame: 1}
-				}
 				function next_frame {
 					execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 						function *global/errors/function_not_executed_as_root_entity \

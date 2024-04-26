@@ -54,7 +54,9 @@ animated_java.dialog.blueprint_settings.show_bounding_box.title: Show Bounding B
 animated_java.dialog.blueprint_settings.show_bounding_box.description: Whether or not to show the bounding box in the editor.
 
 animated_java.dialog.blueprint_settings.auto_bounding_box.title: Auto Bounding Box
-animated_java.dialog.blueprint_settings.auto_bounding_box.description: Whether or not to automatically calculate the bounding box based on the model's geometry.
+animated_java.dialog.blueprint_settings.auto_bounding_box.description: |-
+  Whether or not to automatically calculate the bounding box based on the model's geometry.
+  NOTE: The auto bounding box will NOT take bone offsets from animations into account, so the bounding box may be smaller than needed in some cases.
 
 animated_java.dialog.blueprint_settings.bounding_box.title: Bounding Box
 animated_java.dialog.blueprint_settings.bounding_box.description: Determines the culling box of the model. The model will stop rendering when this box is off-screen.
