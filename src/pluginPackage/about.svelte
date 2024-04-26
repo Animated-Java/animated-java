@@ -33,7 +33,7 @@
 <p>
 	Animated Java is a plugin for Blockbench that allows you to create custom animations and models
 	for Vanilla Minecraft. It uses the power of Java Edition's Data Pack and Resource Pack systems
-	to create smooth, customizable animations and models.
+	to bring your creations to life!
 </p>
 
 <h3 class="animated-java-plugin-page-h3">Features</h3>
