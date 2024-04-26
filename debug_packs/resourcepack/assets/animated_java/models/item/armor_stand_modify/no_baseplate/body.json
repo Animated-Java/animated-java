@@ -1,6 +1,0 @@
-{
-	"parent": "animated_java:item/armor_stand_modify/body",
-	"textures": {
-		"0": "animated_java:item/armor_stand_modify/empty"
-	}
-}
