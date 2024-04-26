@@ -29,6 +29,7 @@
 # Resource Pack
 
 # Website / Documentation
+- [ ] Replicate API *legacy* routes statically for backwards compatability.
 
 # List of numbers to track
 - [ ] Total exports
