@@ -40,15 +40,6 @@ dir global {
 	}
 
 	dir root {
-		function on_tick {
-			execute unless score @s <%OBJECTIVES.IS_RIG_LOADED()%> matches 1 run function #animated_java:global/root/on_load
-			function #animated_java:global/root/on_tick
-		}
-		function on_load {
-			function #animated_java:global/root/on_load
-			scoreboard players set @s <%OBJECTIVES.IS_RIG_LOADED()%> 1
-		}
-
 		# TODO Maybe instead of merging tags, I should just generate it from the .ajmeta data every time a rig is exported?
 		# That way I can also check if the rig's files still exist, and remove tag entries if they don't.
 		# An entry will be added for each exported rig.
@@ -57,12 +48,8 @@ dir global {
 		}
 		# An entry will be added for each exported rig.
 		tag functions on_load {
+			animated_java:<%export_namespace%>/root/on_load
 		}
-	}
-
-	# An entry will be added for each exported rig.
-	tag functions check_if_rig_outdated {
-		#animated_java:<%export_namespace%>/zzz/check_if_rig_outdated
 	}
 
 	dir errors {
@@ -92,8 +79,25 @@ dir <%export_namespace%> {
 	}
 
 	dir root {
+		function on_load {
+			execute unless data entity @s {item:{components:{'minecraft:custom_data':{rigHash: '<%rigHash%>'}}}} run {
+				execute store result storage aj:temp x int 1 store result score #this.x aj.i run data get entity @s Pos[0] 1
+				execute store result storage aj:temp y int 1 store result score #this.y aj.i run data get entity @s Pos[1] 1
+				execute store result storage aj:temp z int 1 store result score #this.z aj.i run data get entity @s Pos[2] 1
+				block outdated_tellraw { with storage aj:temp
+					$tellraw @a <%TELLRAW.RIG_OUTDATED(export_namespace)%>
+				}
+				data modify entity @s item.components.minecraft:custom_data set value {rigHash: <%rigHash%>}
+				execute on passengers run data merge entity @s {Glowing: 1b, glow_color_override: <%0xff0000%>}
+				summon minecraft:text_display ~ ~ ~ {Tags:['<%TAGS.GLOBAL_RIG()%>', '<%TAGS.OUTDATED_RIG_TEXT_DISPLAY()%>', '<%TAGS.NEW()%>'], text:'<%TELLRAW.RIG_OUTDATED_TEXT_DISPLAY()%>', billboard: "vertical", transformation:{translation:[0,<%boundingBox[1]/16%>,0],left_rotation:[0,0,0,1],right_rotation:[0,0,0,1],scale:[1,1,1]}}
+				ride @e[type=minecraft:text_display,tag=<%TAGS.NEW()%>,limit=1,distance=..0.01] mount @s
+				tag @e[type=minecraft:text_display,tag=<%TAGS.NEW()%>,limit=1,distance=..0.01] remove <%TAGS.NEW()%>
+			}
+			scoreboard players set @s <%OBJECTIVES.IS_RIG_LOADED()%> 1
+		}
 		function on_tick {
-			# This command will be added for each animation.
+			execute unless score @s <%OBJECTIVES.IS_RIG_LOADED()%> matches 1 run function #animated_java:global/root/on_load
+			# Animations
 			REPEAT (animations) as animation {
 				execute if entity @s[tag=<%TAGS.ANIMATION_PLAYING(export_namespace, animation.name)%>] run \
 					function *<%export_namespace%>/animations/<%animation.name%>/zzz/on_tick
@@ -315,7 +319,15 @@ dir <%export_namespace%> {
 			teleport_duration: <%teleportation_duration%>, \
 			interpolation_duration: <%interpolation_duration%>, \
 			Tags:['<%TAGS.NEW()%>','<%TAGS.GLOBAL_RIG()%>','<%TAGS.GLOBAL_ROOT()%>','<%TAGS.PROJECT_ROOT(export_namespace)%>'], \
-			Passengers:<%root_entity_passengers%> \
+			Passengers:<%root_entity_passengers%>, \
+			item: { \
+				id: '<%display_item%>', \
+				Count: 1b, \
+				components: { \
+					'minecraft:custom_data': {rigHash: '<%rigHash%>'}, \
+					'minecraft:custom_model_data': 1 \
+				} \
+			} \
 		}
 		execute as @e[type=item_display,tag=<%TAGS.NEW()%>,limit=1,distance=..0.01] run {
 			execute store result score @s <%OBJECTIVES.ID()%> run scoreboard players add aj.last_id <%OBJECTIVES.ID()%> 1
@@ -396,7 +408,7 @@ dir <%export_namespace%> {
 			execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 				function *global/errors/function_not_executed_as_root_entity \
 					{'function_path': 'animated_java:<%export_namespace%>/remove/this'}
-			# TODO Remove the rig here.
+
 			execute on passengers run kill @s
 			kill @s
 		}
@@ -411,6 +423,12 @@ dir <%export_namespace%> {
 				REPEAT (Object.values(rig.nodeMap)) as bone {
 					execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%bone.name%>] run {
 						data modify entity @s item.components.minecraft:custom_model_data set value <%bone.customModelData%>
+						<%%
+							global.config = BoneConfig.fromJSON(bone.configs.default)
+						%%>
+						IF (!global.config.isDefault()) {
+							data merge entity @s <%global.config.toNBT(undefined, true)%>
+						}
 					}
 				}
 			}
@@ -423,9 +441,19 @@ dir <%export_namespace%> {
 							function *global/errors/function_not_executed_as_root_entity \
 								{'function_path': 'animated_java:<%export_namespace%>/variants/<%variant.name%>/apply'}
 						REPEAT (Object.values(rig.nodeMap)) as bone {
-							IF (bone.type === 'bone' && !Object.values(variant.excludedBones).find(v => v.value === bone.node.uuid)) {
+							IF (bone.type === 'bone' && !Object.values(variant.excludedBones).find(v => v.value === bone.node.uuid) && (rig.variantModels[variant.name][bone.node.uuid] !== undefined || bone.configs.variants[variant.uuid])) {
 								execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%bone.name%>] run {
-									data modify entity @s item.components.minecraft:custom_model_data set value <%rig.variantModels[variant.name][bone.node.uuid].customModelData%>
+									IF (rig.variantModels[variant.name][bone.node.uuid] !== undefined) {
+										data modify entity @s item.components.minecraft:custom_model_data set value <%rig.variantModels[variant.name][bone.node.uuid].customModelData%>
+									}
+									IF (bone.configs.variants[variant.uuid]) {
+										<%%
+											global.config = BoneConfig.fromJSON(bone.configs.variants[variant.uuid])
+										%%>
+										IF (!global.config.isDefault()) {
+											data merge entity @s <%global.config.toNBT()%>
+										}
+									}
 								}
 							}
 						}
@@ -457,18 +485,6 @@ dir <%export_namespace%> {
 				execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%node.name%>] run \
 					data merge entity @s {transformation: <%matrixToNbtFloatArray(node.matrix).toString()%>, start_interpolation: -1}
 			}
-		}
-	}
-
-	dir zzz {
-		function check_if_rig_outdated {
-			execute unless score @s aj.export_version matches <%export_version%> run function #animated_java:<%export_namespace%>/zzz/update_outdated_rig
-		}
-
-		function update_outdated_rig {
-			# TODO Figure out how this will work.
-			# It will probably involve killing the existing bones, and re-summoning them, then applying the default NBT to the root entity?
-			# This probably won't work in cases where custom NBT is removed from the root between exports.
 		}
 	}
 }

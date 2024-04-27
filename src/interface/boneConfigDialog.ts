@@ -17,13 +17,15 @@ export function openBoneConfigDialog(bone: Group) {
 		boneConfigJSON = bone.configs.variants[Variant.selected.uuid] ??= new BoneConfig().toJSON()
 	}
 
-	const boneConfig = new BoneConfig().fromJSON(boneConfigJSON)
+	const boneConfig = BoneConfig.fromJSON(boneConfigJSON)
 
 	const billboard = new Valuable(boneConfig.billboard)
+	const overrideBrightness = new Valuable(boneConfig.overrideBrightness)
 	const brightnessOverride = new Valuable(boneConfig.brightnessOverride)
 	const enchanted = new Valuable(boneConfig.enchanted)
-	const glowColor = new Valuable(boneConfig.glowColor)
 	const glowing = new Valuable(boneConfig.glowing)
+	const overrideGlowColor = new Valuable(boneConfig.overrideGlowColor)
+	const glowColor = new Valuable(boneConfig.glowColor)
 	const inheritSettings = new Valuable(boneConfig.inheritSettings)
 	const invisible = new Valuable(boneConfig.invisible)
 	const nbt = new Valuable(boneConfig.nbt)
@@ -39,10 +41,12 @@ export function openBoneConfigDialog(bone: Group) {
 		svelteComponentProperties: {
 			variant: Variant.selected,
 			billboard,
+			overrideBrightness,
 			brightnessOverride,
 			enchanted,
-			glowColor,
 			glowing,
+			overrideGlowColor,
+			glowColor,
 			inheritSettings,
 			invisible,
 			nbt,
@@ -53,10 +57,12 @@ export function openBoneConfigDialog(bone: Group) {
 		preventKeybinds: true,
 		onConfirm() {
 			boneConfig.billboard = billboard.get()
+			boneConfig.overrideBrightness = overrideBrightness.get()
 			boneConfig.brightnessOverride = brightnessOverride.get()
 			boneConfig.enchanted = enchanted.get()
-			boneConfig.glowColor = glowColor.get()
 			boneConfig.glowing = glowing.get()
+			boneConfig.overrideGlowColor = overrideGlowColor.get()
+			boneConfig.glowColor = glowColor.get()
 			boneConfig.inheritSettings = inheritSettings.get()
 			boneConfig.invisible = invisible.get()
 			boneConfig.nbt = nbt.get()
@@ -64,7 +70,7 @@ export function openBoneConfigDialog(bone: Group) {
 			boneConfig.shadowStrength = shadowStrength.get()
 			boneConfig.useNBT = useNBT.get()
 
-			if (boneConfig.checkIfEqual(new BoneConfig().fromJSON(bone.configs.default))) {
+			if (boneConfig.checkIfEqual(BoneConfig.fromJSON(bone.configs.default))) {
 				// Don't save the variant config if it's the same as the default
 				delete bone.configs.variants[Variant.selected!.uuid]
 				return

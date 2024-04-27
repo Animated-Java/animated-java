@@ -5,10 +5,10 @@ import { openExportProgressDialog } from '../interface/exportProgressDialog'
 import { openUnexpectedErrorDialog } from '../interface/unexpectedErrorDialog'
 import { resolveEnvVariables } from '../util/misc'
 import { translate } from '../util/translation'
-import { renderProjectAnimations } from './animationRenderer'
+import { hashAnimations, renderProjectAnimations } from './animationRenderer'
 import { compileDataPack } from './datapackCompiler'
 import { compileResourcePack } from './resourcepackCompiler'
-import { renderRig } from './rigRenderer'
+import { renderRig, hashRig } from './rigRenderer'
 
 async function actuallyExportProject() {
 	const aj = Project!.animated_java
@@ -54,6 +54,9 @@ async function actuallyExportProject() {
 		const rig = renderRig(modelExportFolder, textureExportFolder)
 		const animations = renderProjectAnimations(Project!, rig)
 
+		const rigHash = hashRig(rig)
+		const animationHash = hashAnimations(animations)
+
 		if (aj.enable_resource_pack) {
 			compileResourcePack({
 				rig,
@@ -67,7 +70,7 @@ async function actuallyExportProject() {
 		}
 
 		if (aj.enable_data_pack) {
-			await compileDataPack({ rig, animations, dataPackFolder })
+			await compileDataPack({ rig, animations, dataPackFolder, rigHash, animationHash })
 		}
 
 		Project!.last_used_export_namespace = aj.export_namespace

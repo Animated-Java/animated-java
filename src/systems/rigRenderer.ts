@@ -3,6 +3,7 @@ import {
 	type IBlueprintVariantBoneConfigJSON,
 	IBlueprintVariantLocatorConfigJSON,
 } from '../blueprintFormat'
+import { BoneConfig } from '../boneConfig'
 import {
 	MinecraftResourceLocation,
 	parseResourcePackPath,
@@ -16,6 +17,7 @@ import {
 	restoreSceneAngle,
 	updatePreview,
 } from './animationRenderer'
+import * as crypto from 'crypto'
 
 export interface IRenderedFace {
 	uv: number[]
@@ -158,16 +160,6 @@ export interface IRenderedRig {
 	 */
 	textureExportFolder: string
 }
-
-// function countNodesRecursive(nodes: OutlinerNode[] = Outliner.root): number {
-// 	let count = 0
-// 	for (const node of nodes) {
-// 		if (node instanceof Group) {
-// 			count += countNodesRecursive(node.children)
-// 		} else count++
-// 	}
-// 	return count
-// }
 
 function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 	if (!cube.export) return
@@ -464,6 +456,32 @@ function getDefaultPose(rig: IRenderedRig) {
 	updatePreview(anim, 0)
 	rig.defaultPose = getAnimationNodes(anim, rig.nodeMap)
 	restoreSceneAngle()
+}
+
+export function hashRig(rig: IRenderedRig) {
+	const hash = crypto.createHash('sha256')
+	for (const [nodeUuid, node] of Object.entries(rig.nodeMap)) {
+		hash.update('node;')
+		hash.update(nodeUuid)
+		hash.update(node.name)
+		if (node.type === 'bone') {
+			const defaultConfig = BoneConfig.fromJSON(node.configs.default)
+			if (!defaultConfig.isDefault()) {
+				hash.update('defaultconfig;')
+				hash.update(defaultConfig.toNBT().toString())
+			}
+			for (const [variantName, config] of Object.entries(node.configs.variants)) {
+				console.log('variantconfig;', variantName, config)
+				const variantConfig = BoneConfig.fromJSON(config)
+				if (!variantConfig.isDefault()) {
+					hash.update('variantconfig;')
+					hash.update(variantName)
+					hash.update(variantConfig.toNBT().toString())
+				}
+			}
+		}
+	}
+	return hash.digest('hex')
 }
 
 export function renderRig(modelExportFolder: string, textureExportFolder: string): IRenderedRig {

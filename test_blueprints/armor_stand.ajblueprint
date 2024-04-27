@@ -1009,18 +1009,51 @@
 											"configs": {
 												"default": {
 													"billboard": "fixed",
+													"override_brightness": false,
 													"brightness_override": 0,
 													"enchanted": false,
-													"glow_color": "#ffffff",
 													"glowing": false,
-													"inherit_settings": true,
+													"override_glow_color": true,
+													"glow_color": "#ff0000",
+													"inherit_settings": false,
 													"invisible": false,
 													"nbt": "{}",
 													"shadow_radius": 0,
 													"shadow_strength": 1,
 													"use_nbt": false
 												},
-												"variants": {}
+												"variants": {
+													"5417306e-2c69-3f36-1e3c-edd904034a36": {
+														"billboard": "fixed",
+														"override_brightness": false,
+														"brightness_override": 0,
+														"enchanted": false,
+														"glowing": false,
+														"override_glow_color": false,
+														"glow_color": "#ffffff",
+														"inherit_settings": true,
+														"invisible": false,
+														"nbt": "{}",
+														"shadow_radius": 0,
+														"shadow_strength": 1,
+														"use_nbt": false
+													},
+													"49521f4b-b970-e4bd-b594-2e05d2d46027": {
+														"billboard": "fixed",
+														"override_brightness": false,
+														"brightness_override": 0,
+														"enchanted": false,
+														"glowing": true,
+														"override_glow_color": true,
+														"glow_color": "#00ff06",
+														"inherit_settings": true,
+														"invisible": false,
+														"nbt": "{}",
+														"shadow_radius": 0,
+														"shadow_strength": 1,
+														"use_nbt": false
+													}
+												}
 											},
 											"nbt": "{}",
 											"uuid": "6c53311f-ffc8-e567-ff1b-65840698e9ba",
@@ -1055,13 +1088,29 @@
 															"shadow_strength": 1,
 															"use_nbt": false
 														},
-														"variants": {}
+														"variants": {
+															"49521f4b-b970-e4bd-b594-2e05d2d46027": {
+																"billboard": "fixed",
+																"override_brightness": false,
+																"brightness_override": 0,
+																"enchanted": false,
+																"glowing": true,
+																"override_glow_color": true,
+																"glow_color": "#c400ff",
+																"inherit_settings": true,
+																"invisible": false,
+																"nbt": "{}",
+																"shadow_radius": 0,
+																"shadow_strength": 1,
+																"use_nbt": false
+															}
+														}
 													},
 													"nbt": "{}",
 													"uuid": "808e3c26-7285-af3f-a079-d8b899176dd3",
 													"export": true,
 													"mirror_uv": false,
-													"isOpen": true,
+													"isOpen": false,
 													"locked": false,
 													"visibility": true,
 													"autouv": 0,
@@ -1085,13 +1134,29 @@
 															"shadow_strength": 1,
 															"use_nbt": false
 														},
-														"variants": {}
+														"variants": {
+															"49521f4b-b970-e4bd-b594-2e05d2d46027": {
+																"billboard": "fixed",
+																"override_brightness": false,
+																"brightness_override": 0,
+																"enchanted": false,
+																"glowing": true,
+																"override_glow_color": true,
+																"glow_color": "#00ff9f",
+																"inherit_settings": true,
+																"invisible": false,
+																"nbt": "{}",
+																"shadow_radius": 0,
+																"shadow_strength": 1,
+																"use_nbt": false
+															}
+														}
 													},
 													"nbt": "{}",
 													"uuid": "b5b52d2c-097c-08df-6457-372fbae12445",
 													"export": true,
 													"mirror_uv": false,
-													"isOpen": true,
+													"isOpen": false,
 													"locked": false,
 													"visibility": true,
 													"autouv": 0,
@@ -1115,13 +1180,29 @@
 															"shadow_strength": 1,
 															"use_nbt": false
 														},
-														"variants": {}
+														"variants": {
+															"49521f4b-b970-e4bd-b594-2e05d2d46027": {
+																"billboard": "fixed",
+																"override_brightness": false,
+																"brightness_override": 0,
+																"enchanted": false,
+																"glowing": true,
+																"override_glow_color": true,
+																"glow_color": "#ff0000",
+																"inherit_settings": true,
+																"invisible": false,
+																"nbt": "{}",
+																"shadow_radius": 0,
+																"shadow_strength": 1,
+																"use_nbt": false
+															}
+														}
 													},
 													"nbt": "{}",
 													"uuid": "215d1b02-0e64-a794-1b88-a9c5a6d7541c",
 													"export": true,
 													"mirror_uv": false,
-													"isOpen": true,
+													"isOpen": false,
 													"locked": false,
 													"visibility": true,
 													"autouv": 0,
@@ -1149,7 +1230,23 @@
 											"shadow_strength": 1,
 											"use_nbt": false
 										},
-										"variants": {}
+										"variants": {
+											"49521f4b-b970-e4bd-b594-2e05d2d46027": {
+												"billboard": "fixed",
+												"override_brightness": false,
+												"brightness_override": 0,
+												"enchanted": false,
+												"glowing": true,
+												"override_glow_color": true,
+												"glow_color": "#ffee00",
+												"inherit_settings": true,
+												"invisible": false,
+												"nbt": "{}",
+												"shadow_radius": 0,
+												"shadow_strength": 1,
+												"use_nbt": false
+											}
+										}
 									},
 									"nbt": "{}",
 									"uuid": "55b812fe-7e4c-b2a5-da5b-3a8c82f9fc69",
@@ -1179,7 +1276,23 @@
 											"shadow_strength": 1,
 											"use_nbt": false
 										},
-										"variants": {}
+										"variants": {
+											"49521f4b-b970-e4bd-b594-2e05d2d46027": {
+												"billboard": "fixed",
+												"override_brightness": false,
+												"brightness_override": 0,
+												"enchanted": false,
+												"glowing": true,
+												"override_glow_color": true,
+												"glow_color": "#6e00ff",
+												"inherit_settings": true,
+												"invisible": false,
+												"nbt": "{}",
+												"shadow_radius": 0,
+												"shadow_strength": 1,
+												"use_nbt": false
+											}
+										}
 									},
 									"nbt": "{}",
 									"uuid": "60d50d30-a018-429d-ba78-c5fb5804dd8a",
@@ -1354,6 +1467,13 @@
 					"55b812fe-7e4c-b2a5-da5b-3a8c82f9fc69",
 					"60d50d30-a018-429d-ba78-c5fb5804dd8a"
 				]
+			},
+			{
+				"display_name": "colors",
+				"name": "colors",
+				"uuid": "49521f4b-b970-e4bd-b594-2e05d2d46027",
+				"texture_map": {},
+				"excluded_bones": []
 			}
 		]
 	},
@@ -1644,6 +1764,30 @@
 								}
 							],
 							"uuid": "d3d81801-bcd6-8e3c-8c8c-1e62874345de",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"bezier_linked": true,
+							"bezier_left_time": [-0.1, -0.1, -0.1],
+							"bezier_left_value": [0, 0, 0],
+							"bezier_right_time": [0.1, 0.1, 0.1],
+							"bezier_right_value": [0, 0, 0]
+						}
+					]
+				},
+				"effects": {
+					"name": "Effects",
+					"type": "effect",
+					"keyframes": [
+						{
+							"channel": "commands",
+							"data_points": [
+								{
+									"commands": "say hi!",
+									"execute_condition": ""
+								}
+							],
+							"uuid": "1820da15-3190-23ec-9958-8e79c0618e4a",
 							"time": 0,
 							"color": -1,
 							"interpolation": "linear",

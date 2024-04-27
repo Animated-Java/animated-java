@@ -19,17 +19,20 @@
 - [ ] Respect inheritance in the bone config.
 - [ ] Locator config doesn't exist yet.
 - [ ] Camera config doesn't exist yet.
+- [ ] Natively support step keyframes.
 
 # Data Pack Compiler
 - [x] Merge on_tick and on_load function tags
 - [x] When merging the new minecraft:tick tag with old one, try and find any old style function references (AKA animated_java:my_project/zzzzzz/tick), and remove them.
 - [x] Animation Tweening
-- [ ] Warn the user when a previously summoned rig needs to be re-summoned due to changes in the blueprint.
-- [ ] Implement animation loop mode tech.
-- [ ] Write files after compilaion is done by using a queue system.
-- [ ] Make data pack compiler as async as possible.
+- [x] Implement animation loop mode tech.
+- [x] Write files after compilaion is done by using a queue system.
+- [x] Make data pack compiler as async as possible.
+- [x] Actually respect variant config options.
+- [x] Warn the user when a previously summoned rig needs to be re-summoned due to changes in the blueprint.
 - [ ] Figure out how to add repeating functionality to command keyframes.
 - [ ] Figure out how cameras will work.
+- [ ] Add toggles to command keyframes to allow continuously running the commands in the keyframe instead of only once when the keyframe is reached.
 
 # Resource Pack
 

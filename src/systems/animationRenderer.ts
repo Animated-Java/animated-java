@@ -1,7 +1,6 @@
 import { roundToN } from '../util/misc'
 import { AnyRenderedNode, IRenderedRig } from './rigRenderer'
-// import { ProgressBarController } from '../util/progress'
-// let progress: ProgressBarController
+import * as crypto from 'crypto'
 
 export function correctSceneAngle() {
 	main_preview.controls.rotateLeft(Math.PI)
@@ -227,6 +226,39 @@ export function renderAnimation(animation: _Animation, rig: IRenderedRig) {
 	rendered.includedNodes = Object.values(rig.nodeMap).filter(n => includedNodes.has(n.uuid))
 
 	return rendered
+}
+
+export function hashAnimations(animations: IRenderedAnimation[]) {
+	const hash = crypto.createHash('sha256')
+	for (const animation of animations) {
+		hash.update('anim;' + animation.name)
+		hash.update(';' + animation.duration.toString())
+		hash.update(';' + animation.loopMode)
+		hash.update(';' + animation.includedNodes.map(n => n.uuid).join(';'))
+		for (const frame of animation.frames) {
+			hash.update(';' + frame.time.toString())
+			for (const node of frame.nodes) {
+				hash.update(';' + node.uuid)
+				hash.update(';' + node.pos.toArray().join(';'))
+				hash.update(';' + node.rot.toArray().join(';'))
+				hash.update(';' + node.scale.toArray().join(';'))
+				node.interpolation && hash.update(';' + node.interpolation)
+			}
+			if (frame.variant) {
+				hash.update(';' + frame.variant.uuid)
+				hash.update(';' + frame.variant.executeCondition)
+			}
+			if (frame.commands) {
+				hash.update(';' + frame.commands.commands)
+				hash.update(';' + frame.commands.executeCondition)
+			}
+			if (frame.animationState) {
+				hash.update(';' + frame.animationState.animation)
+				hash.update(';' + frame.animationState.executeCondition)
+			}
+		}
+	}
+	return hash.digest('hex')
 }
 
 export function renderProjectAnimations(project: ModelProject, rig: IRenderedRig) {

@@ -5,7 +5,7 @@ import datapackTemplate from './animated_java.mcb'
 import { IRenderedNodes, IRenderedRig } from './rigRenderer'
 import { IRenderedAnimation } from './animationRenderer'
 import { Variant } from '../variants'
-import { NbtCompound, NbtFloat, NbtInt, NbtList, NbtString, NbtTag } from 'deepslate'
+import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString, NbtTag } from 'deepslate'
 import {
 	arrayToNbtFloatArray,
 	matrixToNbtFloatArray,
@@ -24,6 +24,8 @@ namespace TAGS {
 
 	export const GLOBAL_ROOT = () => 'aj.rig_root'
 	export const PROJECT_ROOT = (exportNamespace: string) => `aj.${exportNamespace}.root`
+
+	export const OUTDATED_RIG_TEXT_DISPLAY = () => 'aj.outdated_rig_text_display'
 
 	export const GLOBAL_BONE = () => 'aj.bone'
 	export const GLOBAL_CAMERA = () => 'aj.camera'
@@ -45,6 +47,9 @@ namespace TAGS {
 
 	export const TWEENING = (exportNamespace: string, animationName: string) =>
 		`aj.${exportNamespace}.animation.${animationName}.tween_playing`
+
+	export const VARIANT_APPLIED = (exportNamespace: string, variantName: string) =>
+		`aj.${exportNamespace}.variant.${variantName}.applied`
 }
 
 namespace OBJECTIVES {
@@ -70,6 +75,46 @@ const TELLRAW_PREFIX = new JsonText([
 ])
 
 namespace TELLRAW {
+	export const RIG_OUTDATED = (exportNamespace: string) =>
+		new JsonText([
+			'',
+			TELLRAW_PREFIX,
+			{ text: 'Error: ', color: 'red' },
+			{ text: 'The ', color: 'red' },
+			{ text: exportNamespace, color: 'yellow' },
+			{ text: ' rig instance at', color: 'red' },
+			[
+				{ text: ' [', color: 'yellow' },
+				{ score: { name: '#this.x', objective: OBJECTIVES.I() } },
+				', ',
+				{ score: { name: '#this.y', objective: OBJECTIVES.I() } },
+				', ',
+				{ score: { name: '#this.z', objective: OBJECTIVES.I() } },
+				']',
+			],
+			{
+				text: ' is outdated! It will not function correctly and should be removed or re-summoned.',
+				color: 'red',
+			},
+			'\n ',
+			{
+				text: '[Click Here to Teleport to the Rig Instance]',
+				clickEvent: {
+					action: 'suggest_command',
+					value: '/tp @s $(x) $(y) $(z)',
+				},
+				color: 'aqua',
+				underlined: true,
+			},
+		])
+	export const RIG_OUTDATED_TEXT_DISPLAY = () =>
+		new JsonText([
+			'',
+			{
+				text: 'This rig instance is outdated!\\nIt will not function correctly and should be removed or re-summoned.',
+				color: 'red',
+			},
+		])
 	export const FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR = (functionName: string, rootTag: string) =>
 		new JsonText([
 			'',
@@ -153,10 +198,9 @@ namespace TELLRAW {
 		])
 }
 
-function applyBoneConfigToPassenger(
+function applyBoneConfigToNbtCompound(
 	passenger: NbtCompound,
 	config: IBlueprintVariantBoneConfigJSON,
-	bone: IRenderedNodes['Bone'],
 	useComponents: boolean
 ) {
 	const item = passenger.get('item') as NbtCompound
@@ -166,7 +210,7 @@ function applyBoneConfigToPassenger(
 		passenger.set('billboard', new NbtString(config.billboard))
 	}
 
-	if (bone.configs.default.brightness_override !== defaultConfig.brightnessOverride) {
+	if (config.brightness_override !== defaultConfig.brightnessOverride) {
 		passenger.set(
 			'brightness',
 			new NbtCompound()
@@ -191,7 +235,14 @@ function applyBoneConfigToPassenger(
 	}
 
 	if (config.glowing !== defaultConfig.glowing) {
-		passenger.set('glow_color_override', new NbtString(config.glow_color))
+		passenger.set('Glowing', new NbtByte(1))
+	}
+
+	if (config.glow_color !== defaultConfig.glowColor) {
+		passenger.set(
+			'glow_color_override',
+			new NbtInt(Number(config.glow_color.replace('#', '0x')))
+		)
 	}
 
 	// TODO Figure out a good solution for toggling a bone's visibility...
@@ -258,7 +309,7 @@ function generateRootEntityPassengers(rig: IRenderedRig) {
 					)
 			)
 
-			applyBoneConfigToPassenger(passenger, node.configs.default, node, useComponents)
+			applyBoneConfigToNbtCompound(passenger, node.configs.default, useComponents)
 
 			passenger.set('height', new NbtFloat(aj.bounding_box[1]))
 			passenger.set('width', new NbtFloat(aj.bounding_box[0]))
@@ -358,11 +409,13 @@ export async function compileDataPack(options: {
 	rig: IRenderedRig
 	animations: IRenderedAnimation[]
 	dataPackFolder: string
+	rigHash: string
+	animationHash: string
 }) {
 	console.time('Data Pack Compilation took')
-	const { rig, animations } = options
+	const { rig, animations, rigHash, animationHash } = options
 	const aj = Project!.animated_java
-	console.log('Compiling Data Pack...')
+	console.log('Compiling Data Pack...', options)
 	const compiler = new Compiler('src/', {
 		libDir: null,
 		generatedDirName: 'zzz',
@@ -436,6 +489,7 @@ export async function compileDataPack(options: {
 		export_namespace: aj.export_namespace,
 		interpolation_duration: aj.interpolation_duration,
 		teleportation_duration: aj.teleportation_duration,
+		display_item: aj.display_item,
 		rig,
 		animations,
 		variants: Variant.all,
@@ -448,6 +502,10 @@ export async function compileDataPack(options: {
 		matrixToNbtFloatArray,
 		use_storage_for_animation: aj.use_storage_for_animation,
 		animationStorage: createAnimationStorage(animations),
+		rigHash,
+		animationHash,
+		boundingBox: aj.bounding_box,
+		BoneConfig,
 	}
 	console.log('Compiler Variables:', variables)
 

@@ -18,10 +18,12 @@
 	export let variant: Variant
 
 	export let billboard: Valuable<string>
+	export let overrideBrightness: Valuable<boolean>
 	export let brightnessOverride: Valuable<BoneConfig['brightnessOverride']>
 	export let enchanted: Valuable<BoneConfig['enchanted']>
-	export let glowColor: Valuable<BoneConfig['glowColor']>
 	export let glowing: Valuable<BoneConfig['glowing']>
+	export let overrideGlowColor: Valuable<boolean>
+	export let glowColor: Valuable<BoneConfig['glowColor']>
 	export let inheritSettings: Valuable<BoneConfig['inheritSettings']>
 	export let invisible: Valuable<BoneConfig['invisible']>
 	export let nbt: Valuable<BoneConfig['nbt']>
@@ -72,7 +74,13 @@
 			bind:checked={glowing}
 		/>
 
-		{#if $glowing}
+		<Checkbox
+			label={translate('dialog.bone_config.override_glow_color.title')}
+			tooltip={translate('dialog.bone_config.override_glow_color.description')}
+			bind:checked={overrideGlowColor}
+		/>
+
+		{#if $overrideGlowColor}
 			<ColorPicker
 				label={translate('dialog.bone_config.glow_color.title')}
 				tooltip={translate('dialog.bone_config.glow_color.description')}
@@ -95,13 +103,21 @@
 			min={0}
 		/>
 
-		<NumberSlider
-			label={translate('dialog.bone_config.brightness_override.title')}
-			tooltip={translate('dialog.bone_config.brightness_override.description')}
-			bind:value={brightnessOverride}
-			min={0}
-			max={15}
+		<Checkbox
+			label={translate('dialog.bone_config.override_brightness.title')}
+			tooltip={translate('dialog.bone_config.override_brightness.description')}
+			bind:checked={overrideBrightness}
 		/>
+
+		{#if $overrideBrightness}
+			<NumberSlider
+				label={translate('dialog.bone_config.brightness_override.title')}
+				tooltip={translate('dialog.bone_config.brightness_override.description')}
+				bind:value={brightnessOverride}
+				min={0}
+				max={15}
+			/>
+		{/if}
 
 		<Checkbox
 			label={translate('dialog.bone_config.enchanted.title')}
@@ -151,7 +167,13 @@
 				bind:checked={glowing}
 			/>
 
-			{#if $glowing}
+			<Checkbox
+				label={translate('dialog.bone_config.override_glow_color.title')}
+				tooltip={translate('dialog.bone_config.override_glow_color.description')}
+				bind:checked={overrideGlowColor}
+			/>
+
+			{#if $overrideGlowColor}
 				<ColorPicker
 					label={translate('dialog.bone_config.glow_color.title')}
 					tooltip={translate('dialog.bone_config.glow_color.description')}
@@ -175,13 +197,21 @@
 				max={15}
 			/>
 
-			<NumberSlider
-				label={translate('dialog.bone_config.brightness_override.title')}
-				tooltip={translate('dialog.bone_config.brightness_override.description')}
-				bind:value={brightnessOverride}
-				min={0}
-				max={15}
+			<Checkbox
+				label={translate('dialog.bone_config.override_brightness.title')}
+				tooltip={translate('dialog.bone_config.override_brightness.description')}
+				bind:checked={overrideBrightness}
 			/>
+
+			{#if $overrideBrightness}
+				<NumberSlider
+					label={translate('dialog.bone_config.brightness_override.title')}
+					tooltip={translate('dialog.bone_config.brightness_override.description')}
+					bind:value={brightnessOverride}
+					min={0}
+					max={15}
+				/>
+			{/if}
 
 			<Checkbox
 				label={translate('dialog.bone_config.enchanted.title')}

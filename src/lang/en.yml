@@ -133,6 +133,9 @@ animated_java.dialog.bone_config.inherit_settings.description: Whether or not to
 animated_java.dialog.bone_config.glowing.title: Glowing
 animated_java.dialog.bone_config.glowing.description: Whether or not the bone should glow in-game.
 
+animated_java.dialog.bone_config.override_glow_color.title: Override Glow Color
+animated_java.dialog.bone_config.override_glow_color.description: Whether or not to override the default glow color.
+
 animated_java.dialog.bone_config.glow_color.title: Glow Color
 animated_java.dialog.bone_config.glow_color.description: The color of the glow.
 
@@ -142,7 +145,10 @@ animated_java.dialog.bone_config.shadow_radius.description: The radius of the sh
 animated_java.dialog.bone_config.shadow_strength.title: Shadow Strength
 animated_java.dialog.bone_config.shadow_strength.description: The strength of the shadow.
 
-animated_java.dialog.bone_config.brightness_override.title: Brightness Override
+animated_java.dialog.bone_config.override_brightness.title: Override Brightness
+animated_java.dialog.bone_config.override_brightness.description: Whether or not to override the default brightness.
+
+animated_java.dialog.bone_config.brightness_override.title: Brightness
 animated_java.dialog.bone_config.brightness_override.description: The brightness of the bone. This should be a value between 0 and 15.
 
 animated_java.dialog.bone_config.enchanted.title: Enchanted

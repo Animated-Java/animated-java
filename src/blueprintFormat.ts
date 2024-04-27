@@ -13,10 +13,12 @@ import { Variant } from './variants'
  */
 export interface IBlueprintVariantBoneConfigJSON {
 	billboard: BoneConfig['billboard']
+	override_brightness: BoneConfig['overrideBrightness']
 	brightness_override: BoneConfig['brightnessOverride']
 	enchanted: BoneConfig['enchanted']
-	glow_color: BoneConfig['glowColor']
 	glowing: BoneConfig['glowing']
+	override_glow_color: BoneConfig['overrideGlowColor']
+	glow_color: BoneConfig['glowColor']
 	inherit_settings: BoneConfig['inheritSettings']
 	invisible: BoneConfig['invisible']
 	/**
