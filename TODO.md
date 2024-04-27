@@ -11,9 +11,9 @@
 - [x] Resolve env variables in blueprint settings.
 - [x] Add renderbox options to the blueprint settings.
 - [x] Render and handle invalid cubes with a red outline.
+- [x] Force animations to be at least 1 tick long
 - [ ] Add a setting to automatically reduce the number of required bones, if the bones are not using special rotations, and have no unique config options.
 - [ ] Change the Collection setting type to allow single-click swapping of items between lists.
-- [ ] Force animations to be at least 1 tick long
 - [ ] Add a transparency option to the variant texture map selection. (And don't export completely transparent bones)
 - [ ] Add an about page.
 - [ ] Respect inheritance in the bone config.
