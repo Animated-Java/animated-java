@@ -61,8 +61,8 @@ function getSettings() {
 function setSettings(settings: ReturnType<typeof getSettings>) {
 	if (!Project) return
 	Project.name = settings.blueprintName.get()
-	Project.texture_width = settings.textureSizeX.get()
-	Project.texture_height = settings.textureSizeY.get()
+
+	setProjectResolution(settings.textureSizeX.get(), settings.textureSizeY.get(), true)
 
 	Project.animated_java.show_bounding_box = settings.showBoundingBox.get()
 	Project.animated_java.auto_bounding_box = settings.autoBoundingBox.get()

@@ -7,7 +7,10 @@
 	"animated_java": {
 		"settings": {
 			"project_namespace": "happy_box",
-			"project_resolution": [64, 64],
+			"project_resolution": [
+				64,
+				64
+			],
 			"target_minecraft_version": "1.20.1",
 			"rig_item": "minecraft:white_dye",
 			"rig_item_model": "C:\\Users\\Snave\\AppData\\Roaming\\.gdlauncher\\instances\\Snapshot Map Development\\resourcepacks\\test\\assets\\minecraft\\models\\item\\white_dye.json",
@@ -96,34 +99,76 @@
 			"locked": false,
 			"render_order": "default",
 			"allow_mirror_modeling": true,
-			"from": [-8, 0, -8],
-			"to": [8, 16, 8],
+			"from": [
+				-8,
+				0,
+				-8
+			],
+			"to": [
+				8,
+				16,
+				8
+			],
 			"autouv": 0,
 			"color": 0,
-			"origin": [0, 8, 0],
+			"origin": [
+				0,
+				8,
+				0
+			],
 			"faces": {
 				"north": {
-					"uv": [16, 16, 32, 32],
+					"uv": [
+						16,
+						16,
+						32,
+						32
+					],
 					"texture": 0
 				},
 				"east": {
-					"uv": [0, 16, 16, 32],
+					"uv": [
+						0,
+						16,
+						16,
+						32
+					],
 					"texture": 1
 				},
 				"south": {
-					"uv": [48, 16, 64, 32],
+					"uv": [
+						48,
+						16,
+						64,
+						32
+					],
 					"texture": 0
 				},
 				"west": {
-					"uv": [32, 16, 48, 32],
+					"uv": [
+						32,
+						16,
+						48,
+						32
+					],
 					"texture": 2
 				},
 				"up": {
-					"uv": [32, 16, 16, 0],
+					"uv": [
+						32,
+						16,
+						16,
+						0
+					],
 					"texture": 1
 				},
 				"down": {
-					"uv": [48, 0, 32, 16],
+					"uv": [
+						48,
+						0,
+						32,
+						16
+					],
 					"texture": 2
 				}
 			},
@@ -137,34 +182,76 @@
 			"locked": false,
 			"render_order": "default",
 			"allow_mirror_modeling": true,
-			"from": [0, 0, 0],
-			"to": [2, 2, 2],
+			"from": [
+				0,
+				0,
+				0
+			],
+			"to": [
+				2,
+				2,
+				2
+			],
 			"autouv": 0,
 			"color": 5,
-			"origin": [0, 0, 0],
+			"origin": [
+				0,
+				0,
+				0
+			],
 			"faces": {
 				"north": {
-					"uv": [0, 0, 1, 1],
+					"uv": [
+						0,
+						0,
+						1,
+						1
+					],
 					"texture": 0
 				},
 				"east": {
-					"uv": [0, 0, 1, 1],
+					"uv": [
+						0,
+						0,
+						1,
+						1
+					],
 					"texture": 0
 				},
 				"south": {
-					"uv": [0, 0, 1, 1],
+					"uv": [
+						0,
+						0,
+						1,
+						1
+					],
 					"texture": 0
 				},
 				"west": {
-					"uv": [0, 0, 1, 1],
+					"uv": [
+						0,
+						0,
+						1,
+						1
+					],
 					"texture": 0
 				},
 				"up": {
-					"uv": [0, 0, 1, 1],
+					"uv": [
+						0,
+						0,
+						1,
+						1
+					],
 					"texture": 0
 				},
 				"down": {
-					"uv": [0, 0, 1, 1],
+					"uv": [
+						0,
+						0,
+						1,
+						1
+					],
 					"texture": 0
 				}
 			},
@@ -175,7 +262,11 @@
 	"outliner": [
 		{
 			"name": "cube1",
-			"origin": [0, 8, 0],
+			"origin": [
+				0,
+				8,
+				0
+			],
 			"color": 0,
 			"nbt": "{}",
 			"uuid": "69aa99f5-fee8-5db4-accc-408ffe509670",
@@ -185,7 +276,9 @@
 			"locked": false,
 			"visibility": true,
 			"autouv": 0,
-			"children": ["29c15edc-aea1-917e-1210-69c6c9468111"]
+			"children": [
+				"29c15edc-aea1-917e-1210-69c6c9468111"
+			]
 		},
 		"6ea2e259-ed99-118f-bff7-18c54a6e901d"
 	],
@@ -287,10 +380,26 @@
 							"color": -1,
 							"interpolation": "linear",
 							"bezier_linked": true,
-							"bezier_left_time": [-0.1, -0.1, -0.1],
-							"bezier_left_value": [0, 0, 0],
-							"bezier_right_time": [0.1, 0.1, 0.1],
-							"bezier_right_value": [0, 0, 0]
+							"bezier_left_time": [
+								-0.1,
+								-0.1,
+								-0.1
+							],
+							"bezier_left_value": [
+								0,
+								0,
+								0
+							],
+							"bezier_right_time": [
+								0.1,
+								0.1,
+								0.1
+							],
+							"bezier_right_value": [
+								0,
+								0,
+								0
+							]
 						},
 						{
 							"channel": "position",
@@ -306,10 +415,26 @@
 							"color": -1,
 							"interpolation": "linear",
 							"bezier_linked": true,
-							"bezier_left_time": [-0.1, -0.1, -0.1],
-							"bezier_left_value": [0, 0, 0],
-							"bezier_right_time": [0.1, 0.1, 0.1],
-							"bezier_right_value": [0, 0, 0]
+							"bezier_left_time": [
+								-0.1,
+								-0.1,
+								-0.1
+							],
+							"bezier_left_value": [
+								0,
+								0,
+								0
+							],
+							"bezier_right_time": [
+								0.1,
+								0.1,
+								0.1
+							],
+							"bezier_right_value": [
+								0,
+								0,
+								0
+							]
 						},
 						{
 							"channel": "scale",
@@ -326,10 +451,26 @@
 							"uniform": false,
 							"interpolation": "linear",
 							"bezier_linked": true,
-							"bezier_left_time": [-0.1, -0.1, -0.1],
-							"bezier_left_value": [0, 0, 0],
-							"bezier_right_time": [0.1, 0.1, 0.1],
-							"bezier_right_value": [0, 0, 0]
+							"bezier_left_time": [
+								-0.1,
+								-0.1,
+								-0.1
+							],
+							"bezier_left_value": [
+								0,
+								0,
+								0
+							],
+							"bezier_right_time": [
+								0.1,
+								0.1,
+								0.1
+							],
+							"bezier_right_value": [
+								0,
+								0,
+								0
+							]
 						}
 					]
 				},
@@ -350,10 +491,26 @@
 							"color": -1,
 							"interpolation": "linear",
 							"bezier_linked": true,
-							"bezier_left_time": [-0.1, -0.1, -0.1],
-							"bezier_left_value": [0, 0, 0],
-							"bezier_right_time": [0.1, 0.1, 0.1],
-							"bezier_right_value": [0, 0, 0]
+							"bezier_left_time": [
+								-0.1,
+								-0.1,
+								-0.1
+							],
+							"bezier_left_value": [
+								0,
+								0,
+								0
+							],
+							"bezier_right_time": [
+								0.1,
+								0.1,
+								0.1
+							],
+							"bezier_right_value": [
+								0,
+								0,
+								0
+							]
 						},
 						{
 							"channel": "variants",
@@ -368,10 +525,26 @@
 							"color": -1,
 							"interpolation": "linear",
 							"bezier_linked": true,
-							"bezier_left_time": [-0.1, -0.1, -0.1],
-							"bezier_left_value": [0, 0, 0],
-							"bezier_right_time": [0.1, 0.1, 0.1],
-							"bezier_right_value": [0, 0, 0]
+							"bezier_left_time": [
+								-0.1,
+								-0.1,
+								-0.1
+							],
+							"bezier_left_value": [
+								0,
+								0,
+								0
+							],
+							"bezier_right_time": [
+								0.1,
+								0.1,
+								0.1
+							],
+							"bezier_right_value": [
+								0,
+								0,
+								0
+							]
 						},
 						{
 							"channel": "variants",
@@ -386,10 +559,26 @@
 							"color": -1,
 							"interpolation": "linear",
 							"bezier_linked": true,
-							"bezier_left_time": [-0.1, -0.1, -0.1],
-							"bezier_left_value": [0, 0, 0],
-							"bezier_right_time": [0.1, 0.1, 0.1],
-							"bezier_right_value": [0, 0, 0]
+							"bezier_left_time": [
+								-0.1,
+								-0.1,
+								-0.1
+							],
+							"bezier_left_value": [
+								0,
+								0,
+								0
+							],
+							"bezier_right_time": [
+								0.1,
+								0.1,
+								0.1
+							],
+							"bezier_right_value": [
+								0,
+								0,
+								0
+							]
 						}
 					]
 				}

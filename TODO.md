@@ -10,26 +10,32 @@
 - [x] Change .ajmeta to use relative file paths.
 - [x] Resolve env variables in blueprint settings.
 - [x] Add renderbox options to the blueprint settings.
+- [x] Render and handle invalid cubes with a red outline.
 - [ ] Add a setting to automatically reduce the number of required bones, if the bones are not using special rotations, and have no unique config options.
 - [ ] Change the Collection setting type to allow single-click swapping of items between lists.
 - [ ] Force animations to be at least 1 tick long
-- [ ] Render and handle invalid cubes with a red outline.
-- [ ] Add a transparency option to the variant texture map selection.
+- [ ] Add a transparency option to the variant texture map selection. (And don't export completely transparent bones)
 - [ ] Add an about page.
+- [ ] Respect inheritance in the bone config.
+- [ ] Locator config doesn't exist yet.
+- [ ] Camera config doesn't exist yet.
 
 # Data Pack Compiler
 - [x] Merge on_tick and on_load function tags
 - [x] When merging the new minecraft:tick tag with old one, try and find any old style function references (AKA animated_java:my_project/zzzzzz/tick), and remove them.
-- [ ] Look into automatically updating "outdated" rigs when the data pack is reloaded and a new version of the rig is present. Maybe only resummon the bones of the rig, and apply summon nbt to the root?
+- [x] Animation Tweening
+- [ ] Warn the user when a previously summoned rig needs to be re-summoned due to changes in the blueprint.
 - [ ] Implement animation loop mode tech.
-- [ ] Animation Tweening
 - [ ] Write files after compilaion is done by using a queue system.
 - [ ] Make data pack compiler as async as possible.
+- [ ] Figure out how to add repeating functionality to command keyframes.
+- [ ] Figure out how cameras will work.
 
 # Resource Pack
 
 # Website / Documentation
 - [ ] Replicate API *legacy* routes statically for backwards compatability.
+- [ ] Migration guide for 0.4.8 to 1.0.0
 
 # List of numbers to track
 - [ ] Total exports
