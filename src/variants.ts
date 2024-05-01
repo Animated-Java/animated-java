@@ -1,6 +1,19 @@
 import { IBlueprintVariantJSON } from './blueprintFormat'
+import { PACKAGE } from './constants'
 import { events } from './util/events'
 import { toSafeFuntionName } from './util/minecraftUtil'
+
+const OLD_PROJECT = Project
+// @ts-ignore
+Project = { materials: {} }
+export const TRANSPARENT_TEXTURE = new Texture(
+	{
+		id: `${PACKAGE.name}:transparent_texture`,
+		name: 'Transparent',
+	},
+	'797174ae-5c58-4a83-a630-eefd51007c80'
+)
+Project = OLD_PROJECT
 
 export class TextureMap {
 	map: Map<string, string>

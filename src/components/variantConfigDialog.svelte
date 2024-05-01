@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
 	import { type Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
-	import { TextureMap, Variant } from '../variants'
+	import { TRANSPARENT_TEXTURE, TextureMap, Variant } from '../variants'
 	import Checkbox from './dialogItems/checkbox.svelte'
 	import LineInput from './dialogItems/lineInput.svelte'
 	import MissingTexture from '../assets/missing_texture.png'
@@ -17,6 +17,8 @@
 	export let textureMap: TextureMap
 	export let generateNameFromDisplayName: Valuable<boolean>
 	export let excludedBones: Valuable<Array<{ name: string; value: string }>>
+
+	const availableTextures = [...Texture.all, TRANSPARENT_TEXTURE]
 
 	const availableBones = Group.all.map(group => {
 		const entry = excludedBones.get().find(bone => bone.value === group.uuid)
@@ -164,7 +166,7 @@
 							on:change={e => selectNewPrimaryTexture(e, entry[0])}
 						>
 							<!-- svelte-ignore missing-declaration -->
-							{#each Texture.all as texture}
+							{#each availableTextures as texture}
 								<option selected={texture.uuid === entry[0]}>
 									{texture.name}
 								</option>
@@ -181,7 +183,7 @@
 							on:change={e => selectNewSecondaryTexture(e, entry[0])}
 						>
 							<!-- svelte-ignore missing-declaration -->
-							{#each Texture.all as texture}
+							{#each availableTextures as texture}
 								<option selected={texture.uuid === entry[1]}>
 									{texture.name}
 								</option>

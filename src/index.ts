@@ -33,7 +33,7 @@ import './mods/molangMod'
 // Compilers
 import { compileDataPack } from './systems/datapackCompiler'
 // Misc imports
-import { Variant } from './variants'
+import { TRANSPARENT_TEXTURE, Variant } from './variants'
 import './util/minecraftRegistries'
 import { MINECRAFT_REGISTRY } from './util/minecraftRegistries'
 import { compileResourcePack } from './systems/resourcepackCompiler'
@@ -54,6 +54,7 @@ globalThis.AnimatedJava = {
 		isDataPackPath,
 		blueprintSettingErrors,
 		openUnexpectedErrorDialog,
+		TRANSPARENT_TEXTURE,
 	},
 }
 

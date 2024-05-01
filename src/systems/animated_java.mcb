@@ -1,5 +1,6 @@
 
 dir global {
+
 	function on_load load {
 		# Initialize Scoreboards
 		<%%
