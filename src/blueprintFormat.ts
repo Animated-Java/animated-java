@@ -436,7 +436,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 			content: BLUEPRINT_CODEC.compile(),
 			// eslint-disable-next-line @typescript-eslint/naming-convention
 			custom_writer: (content, path) => {
-				Project.save_path = path
+				Project!.save_path = path
 				BLUEPRINT_CODEC.write(content, path)
 			},
 		})
@@ -496,7 +496,7 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 		events.UNLOAD.subscribe(() => clearInterval(updateBoundingBoxIntervalId), true)
 		events.UNINSTALL.subscribe(() => clearInterval(updateBoundingBoxIntervalId), true)
 		requestAnimationFrame(() => {
-			Project.pluginMode = new Valuable(Project.animated_java.enable_plugin_mode)
+			Project!.pluginMode = new Valuable(Project!.animated_java.enable_plugin_mode)
 			// Remove the default title
 			const element = document.querySelector('#tab_bar_list .icon-armor_stand.icon')
 			element?.remove()
@@ -504,14 +504,14 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 			injectSvelteCompomponent({
 				elementSelector: () => {
 					const titles = [...document.querySelectorAll('.project_tab.selected')]
-					titles.filter(title => title.textContent === Project.name)
+					titles.filter(title => title.textContent === Project!.name)
 					if (titles.length) {
 						return titles[0]
 					}
 				},
 				prepend: true,
 				svelteComponent: ProjectTitleSvelteComponent,
-				svelteComponentProperties: { pluginMode: Project.pluginMode },
+				svelteComponentProperties: { pluginMode: Project!.pluginMode },
 			})
 
 			Variant.selectDefault()
