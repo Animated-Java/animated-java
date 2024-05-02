@@ -20,9 +20,17 @@ createBlockbenchMod(
 					) &&
 					variant.textureMap.has(this.texture)
 				) {
+					this.lastVariant = variant
 					return variant.textureMap.getMappedTexture(this.texture)
+				} else if (
+					Mode.selected.id === Modes.options.animate.id &&
+					this.lastVariant &&
+					!variant?.isDefault
+				) {
+					return this.lastVariant.textureMap.getMappedTexture(this.texture)
 				}
 			}
+			this.lastVariant = undefined
 			return context.originalGetTexture.call(this)
 		}
 		return context

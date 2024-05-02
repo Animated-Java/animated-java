@@ -142,6 +142,16 @@ export class Variant {
 		}
 	}
 
+	public duplicate() {
+		const variant = new Variant(this.displayName, false)
+		variant.uuid = guid()
+		variant.isDefault = false
+		variant.generateNameFromDisplayName = this.generateNameFromDisplayName
+		variant.textureMap = this.textureMap.copy()
+		variant.excludedBones = this.excludedBones.map(item => ({ ...item }))
+		variant.select()
+	}
+
 	public static fromJSON(json: IBlueprintVariantJSON, isDefault = false): Variant {
 		const variant = new Variant(json.display_name, isDefault)
 		variant.uuid = json.uuid
@@ -158,23 +168,51 @@ export class Variant {
 	}
 
 	public static makeDisplayNameUnique(variant: Variant, displayName: string): string {
+		if (!Variant.all.some(v => v !== variant && v.displayName === displayName)) {
+			return displayName
+		}
+
 		let i = 1
-		let newName = displayName
-		while (Variant.all.some(v => v !== variant && v.displayName === newName)) {
-			newName = `${displayName} ${i}`
+		const match = displayName.match(/\d+$/)
+		if (match) {
+			i = parseInt(match[0])
+			displayName = displayName.slice(0, -match[0].length)
+		}
+
+		let maxTries = 1000
+		while (maxTries-- > 0) {
+			const newName = `${displayName}${i}`
+			if (!Variant.all.some(v => v !== variant && v.displayName === newName)) {
+				return newName
+			}
 			i++
 		}
-		return newName
+
+		throw new Error('Could not make Variant display name unique!')
 	}
 
 	public static makeNameUnique(variant: Variant, name: string): string {
+		if (!Variant.all.some(v => v !== variant && v.name === name)) {
+			return name
+		}
+
 		let i = 1
-		let newName = toSafeFuntionName(name)
-		while (Variant.all.some(v => v !== variant && v.name === newName)) {
-			newName = toSafeFuntionName(`${name}_${i}`)
+		const match = name.match(/\d+$/)
+		if (match) {
+			i = parseInt(match[0])
+			name = name.slice(0, -match[0].length)
+		}
+
+		let maxTries = 1000
+		while (maxTries-- > 0) {
+			const newName = `${name}${i}`
+			if (!Variant.all.some(v => v !== variant && v.name === newName)) {
+				return newName
+			}
 			i++
 		}
-		return newName
+
+		throw new Error('Could not make Variant name unique!')
 	}
 
 	public static selectDefault() {

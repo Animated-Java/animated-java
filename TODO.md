@@ -12,6 +12,7 @@
 - [x] Add renderbox options to the blueprint settings.
 - [x] Render and handle invalid cubes with a red outline.
 - [x] Force animations to be at least 1 tick long
+- [x] Respect Variant inheritance when applying variants in the animation preview.
 - [ ] Change the Collection setting type to allow single-click swapping of items between lists.
 - [ ] Add a transparency option to the variant texture map selection. (And don't export completely transparent bones)
 - [ ] Add an about page.
@@ -21,6 +22,7 @@
 - [ ] Natively support step keyframes.
 - [ ] Add a bone config option to replace the bone's display item with a custom item.
     - [ ] Will require somehow rendering the vanilla item/block model.
+- [ ] Add Variants to the UndoSystem
 
 # Data Pack Compiler
 - [x] Merge on_tick and on_load function tags

@@ -33,6 +33,7 @@ export function process(model: any): any {
 		}
 		// Versions below this are post 0.3.10. I changed the versioning system to use the AJ version instead of a unique format version.
 		if (compareVersions('0.3.10', model.meta.format_version)) updateModelTo0_3_10(model)
+		// Animated Java 1.0+
 		if (compareVersions('1.0.0', model.meta.format_version)) model = updateModelTo1_0(model)
 		console.groupEnd()
 
@@ -48,22 +49,6 @@ export function process(model: any): any {
 // eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-unused-vars
 function updateModelTo0_3_10(model: any) {
 	console.log('Processing model for AJ 0.3.10', JSON.parse(JSON.stringify(model)))
-}
-
-// eslint-disable-next-line @typescript-eslint/naming-convention
-function updateModelToOld1_4(model: any) {
-	console.log('Processing model format 1.4', JSON.parse(JSON.stringify(model)))
-	const exporter = model.animated_java.exporter_settings['animated_java:datapack_exporter']
-	if (exporter && exporter.outdated_rig_warning !== undefined) {
-		model.animated_java.exporter_settings[
-			'animated_java:datapack_exporter'
-		].enable_outdated_rig_warning =
-			model.animated_java.exporter_settings[
-				'animated_java:datapack_exporter'
-			].outdated_rig_warning
-		delete model.animated_java.exporter_settings['animated_java:datapack_exporter']
-			.outdated_rig_warning
-	}
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -178,7 +163,24 @@ function updateModelToOld1_3(model: any) {
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
+function updateModelToOld1_4(model: any) {
+	console.log('Processing model format 1.4', JSON.parse(JSON.stringify(model)))
+	const exporter = model.animated_java.exporter_settings['animated_java:datapack_exporter']
+	if (exporter && exporter.outdated_rig_warning !== undefined) {
+		model.animated_java.exporter_settings[
+			'animated_java:datapack_exporter'
+		].enable_outdated_rig_warning =
+			model.animated_java.exporter_settings[
+				'animated_java:datapack_exporter'
+			].outdated_rig_warning
+		delete model.animated_java.exporter_settings['animated_java:datapack_exporter']
+			.outdated_rig_warning
+	}
+}
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelTo1_0(model: any) {
+	console.log('Processing model format 1.0', JSON.parse(JSON.stringify(model)))
 	const defaultSettings = getDefaultProjectSettings()
 	const datapackExporterSettings =
 		model.animated_java.exporter_settings['animated_java:datapack_exporter']
@@ -208,16 +210,17 @@ function updateModelTo1_0(model: any) {
 			customModelDataOffset: 0,
 			enable_advanced_resource_pack_settings:
 				model.animated_java.settings.enable_advanced_resource_pack_settings,
-			resource_pack: model.animated_java.settings.resource_pack_mcmeta.replace(
-				/\.mcmeta$/,
-				''
-			),
+			resource_pack: model.animated_java.settings.resource_pack_mcmeta
+				? model.animated_java.settings.resource_pack_mcmeta.replace(/\.mcmeta$/, '')
+				: '',
 			display_item_path: model.animated_java.settings.rig_item_model,
 			model_folder: model.animated_java.settings.rig_export_folder,
 			texture_folder: model.animated_java.settings.texture_export_folder,
 			// Data pack settings
 			enable_advanced_data_pack_settings: defaultSettings.enable_advanced_data_pack_settings,
-			data_pack: datapackExporterSettings.datapack_mcmeta.replace(/\.mcmeta$/, ''),
+			data_pack: datapackExporterSettings?.datapack_mcmeta
+				? datapackExporterSettings.datapack_mcmeta.replace(/\.mcmeta$/, '')
+				: '',
 			summon_commands: defaultSettings.summon_commands,
 			interpolation_duration: defaultSettings.interpolation_duration,
 			teleportation_duration: defaultSettings.teleportation_duration,
@@ -284,7 +287,7 @@ function updateModelTo1_0(model: any) {
 
 	// Convert rig nbt into data merge command
 	if (
-		datapackExporterSettings.root_entity_nbt &&
+		datapackExporterSettings?.root_entity_nbt &&
 		datapackExporterSettings.root_entity_nbt !== '{}'
 	) {
 		blueprint.project_settings!.summon_commands = `data merge entity @s ${

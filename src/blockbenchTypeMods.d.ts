@@ -61,4 +61,8 @@ declare global {
 	interface Cube {
 		rotationInvalid: boolean
 	}
+
+	interface CubeFace {
+		lastVariant: Variant | undefined
+	}
 }

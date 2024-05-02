@@ -7,6 +7,12 @@
 	import { openVariantConfigDialog } from '../interface/variantConfigDialog'
 	import { fade } from 'svelte/transition'
 	import { cubicIn } from 'svelte/easing'
+	import {
+		CREATE_VARIANT_ACTION,
+		DELETE_VARIANT_ACTION,
+		DUPLICATE_VARIANT_ACTION,
+		VARIANT_PANEL_CONTEXT_MENU,
+	} from '../interface/variantsPanel'
 
 	type LocalVariant = { id: number; value: Variant }
 
@@ -41,8 +47,12 @@
 		updateLocalVariants()
 	})
 
-	function createVariant() {
-		new Variant('New Variant')
+	function createVariant(e: Event) {
+		CREATE_VARIANT_ACTION.click(e)
+	}
+
+	function duplicateVariant(e: Event) {
+		DUPLICATE_VARIANT_ACTION.click(e)
 	}
 
 	function selectVariant(variant: Variant) {
@@ -50,8 +60,8 @@
 		updateLocalVariants()
 	}
 
-	function deleteVariant(variant: Variant) {
-		variant.delete()
+	function deleteVariant(e: Event) {
+		DELETE_VARIANT_ACTION.click(e)
 	}
 
 	function handleSort(e: any) {
@@ -72,15 +82,23 @@
 		<div
 			class="tool"
 			title={translate('panel.variants.tool.create_new_variant')}
-			on:click={() => createVariant()}
+			on:click={e => createVariant(e)}
 		>
 			<i class="material-icons icon">texture_add</i>
 		</div>
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<div
 			class="tool"
+			title={translate('panel.variants.tool.duplicate_selected_variant')}
+			on:click={e => duplicateVariant(e)}
+		>
+			<i class="material-icons icon">content_copy</i>
+		</div>
+		<!-- svelte-ignore a11y-click-events-have-key-events -->
+		<div
+			class="tool"
 			title={translate('panel.variants.tool.delete_selected_variant')}
-			on:click={() => Variant.selected && deleteVariant(Variant.selected)}
+			on:click={e => deleteVariant(e)}
 		>
 			<i
 				class={'material-icons icon' +
@@ -103,6 +121,10 @@
 					: 'variant_item'}
 				animate:flip={{ duration: flipDurationMs }}
 				on:click={() => selectVariant(item.value)}
+				on:contextmenu|stopPropagation={e => {
+					item.value.select()
+					VARIANT_PANEL_CONTEXT_MENU.open(e)
+				}}
 			>
 				{#if item[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
 					<div
