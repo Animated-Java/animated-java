@@ -1,7 +1,7 @@
 import { IBlueprintVariantJSON } from './blueprintFormat'
 import { PACKAGE } from './constants'
 import { events } from './util/events'
-import { toSafeFuntionName } from './util/minecraftUtil'
+import TransparentTexture from './assets/transparent.png'
 
 const OLD_PROJECT = Project
 // @ts-ignore
@@ -12,7 +12,9 @@ export const TRANSPARENT_TEXTURE = new Texture(
 		name: 'Transparent',
 	},
 	'797174ae-5c58-4a83-a630-eefd51007c80'
-)
+).fromDataURL(TransparentTexture)
+export const TRANSPARENT_TEXTURE_MATERIAL = Project!.materials[TRANSPARENT_TEXTURE.uuid]
+export const TRANSPARENT_TEXTURE_RESOURCE_LOCATION = 'animated_java:items/transparent'
 Project = OLD_PROJECT
 
 export class TextureMap {
@@ -43,6 +45,7 @@ export class TextureMap {
 	 */
 	public getMappedTexture(texture: Texture | string): Texture | undefined {
 		const uuid = this.map.get(texture instanceof Texture ? texture.uuid : texture)
+		if (uuid === TRANSPARENT_TEXTURE.uuid) return TRANSPARENT_TEXTURE
 		return Texture.all.find(t => t.uuid === uuid)
 	}
 
@@ -100,13 +103,11 @@ export class Variant {
 		Variant.all.push(this)
 		this.select()
 		events.CREATE_VARIANT.dispatch(this)
-		// console.log(`Created variant: ${this.name} - ${this.id}`)
 	}
 
 	public select() {
 		if (Variant.selected) Variant.selected.unselect()
 		Variant.selected = this
-		// console.log(`Selected variant: ${this.name}`)
 		Canvas.updateAllFaces()
 		events.SELECT_VARIANT.dispatch(this)
 	}

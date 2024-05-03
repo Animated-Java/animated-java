@@ -9,7 +9,7 @@ import {
 	parseResourcePackPath,
 	toSafeFuntionName,
 } from '../util/minecraftUtil'
-import { Variant } from '../variants'
+import { TRANSPARENT_TEXTURE, TRANSPARENT_TEXTURE_RESOURCE_LOCATION, Variant } from '../variants'
 import {
 	correctSceneAngle,
 	getAnimationNodes,
@@ -209,7 +209,7 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 	element.faces = {}
 	for (const [face, data] of Object.entries(cube.faces)) {
 		if (!data) continue
-		if (!data.texture) continue
+		if (!data.texture || data.getTexture()?.uuid === TRANSPARENT_TEXTURE.uuid) continue
 		const renderedFace = {} as IRenderedFace
 		if (data.enabled) {
 			renderedFace.uv = data.uv
@@ -412,8 +412,6 @@ function renderCamera(camera: ICamera, rig: IRenderedRig): INodeStructure {
 function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 	const bones: Record<string, IRenderedBoneVariant> = {}
 
-	// TODO Remove elements if they are entirely transparent.
-
 	for (const [uuid, bone] of Object.entries(rig.nodeMap)) {
 		if (bone.type !== 'bone') continue
 		if (variant.excludedBones.find(v => v.value === uuid)) continue
@@ -422,10 +420,18 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 		for (const [fromUUID, toUUID] of variant.textureMap.map.entries()) {
 			const fromTexture = Texture.all.find(t => t.uuid === fromUUID)
 			if (!fromTexture) throw new Error(`From texture not found: ${fromUUID}`)
-			const toTexture = Texture.all.find(t => t.uuid === toUUID)
-			if (!toTexture) throw new Error(`To texture not found: ${toUUID}`)
-			textures[fromTexture.id] = getTextureResourceLocation(toTexture, rig).resourceLocation
-			rig.textures[toTexture.id] = toTexture
+			if (toUUID === TRANSPARENT_TEXTURE.uuid) {
+				textures[fromTexture.id] = TRANSPARENT_TEXTURE_RESOURCE_LOCATION
+				rig.textures[TRANSPARENT_TEXTURE.id] = TRANSPARENT_TEXTURE
+			} else {
+				const toTexture = Texture.all.find(t => t.uuid === toUUID)
+				if (!toTexture) throw new Error(`To texture not found: ${toUUID}`)
+				textures[fromTexture.id] = getTextureResourceLocation(
+					toTexture,
+					rig
+				).resourceLocation
+				rig.textures[toTexture.id] = toTexture
+			}
 		}
 
 		const parsed = PathModule.parse(bone.modelPath)

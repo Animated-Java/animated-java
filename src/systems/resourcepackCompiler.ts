@@ -1,4 +1,5 @@
 import { isResourcePackPath, toSafeFuntionName } from '../util/minecraftUtil'
+import { TRANSPARENT_TEXTURE } from '../variants'
 import { IRenderedAnimation } from './animationRenderer'
 import { IRenderedNodes, IRenderedRig } from './rigRenderer'
 import { replacePathPart, sortObjectKeys } from './util'
@@ -196,6 +197,12 @@ export function compileResourcePack(options: {
 				optifineEmissive
 			)
 	}
+	// Transparent texture
+	fs.writeFileSync(
+		PathModule.join(resourcePackFolder, 'assets/animated_java/textures/transparent.png'),
+		nativeImage.createFromDataURL(TRANSPARENT_TEXTURE.source).toPNG(),
+		'base64'
+	)
 	// Remove texture folder if it's empty - Doing it this way because I'm lazy.
 	if (fs.readdirSync(textureExportFolder).length === 0) {
 		fs.rmdirSync(textureExportFolder)

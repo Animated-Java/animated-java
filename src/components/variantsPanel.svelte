@@ -160,7 +160,7 @@
 						<!-- svelte-ignore a11y-click-events-have-key-events -->
 						<i
 							class="material-icons icon in_list_button"
-							on:click={() => deleteVariant(item.value)}>delete</i
+							on:click={e => deleteVariant(e)}>delete</i
 						>
 					{/if}
 				{/if}

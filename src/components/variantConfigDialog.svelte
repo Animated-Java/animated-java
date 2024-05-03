@@ -19,6 +19,8 @@
 	export let excludedBones: Valuable<Array<{ name: string; value: string }>>
 
 	const availableTextures = [...Texture.all, TRANSPARENT_TEXTURE]
+	const primaryTextures = [...Texture.all]
+	const secondaryTextures = availableTextures
 
 	const availableBones = Group.all.map(group => {
 		const entry = excludedBones.get().find(bone => bone.value === group.uuid)
@@ -55,7 +57,7 @@
 	}
 
 	function getTextureSrc(uuid: string) {
-		const texture = Texture.all.find(t => t.uuid === uuid)
+		const texture = availableTextures.find(t => t.uuid === uuid)
 		if (!texture) return MissingTexture
 		return texture.img.src
 	}
@@ -63,7 +65,7 @@
 	function selectNewPrimaryTexture(e: Event, oldPrimaryUUID: string) {
 		const select = e.target as HTMLSelectElement
 		const textureName = select.value.trim()
-		const newPrimaryUUID = Texture.all.find(t => t.name === textureName)?.uuid
+		const newPrimaryUUID = primaryTextures.find(t => t.name === textureName)?.uuid
 		if (!newPrimaryUUID) {
 			console.error(`Failed to find new primary texture with the name: ${textureName}`)
 			return
@@ -81,7 +83,7 @@
 	function selectNewSecondaryTexture(e: Event, primaryUUID: string) {
 		const select = e.target as HTMLSelectElement
 		const textureName = select.value.trim()
-		const newSecondaryUUID = Texture.all.find(t => t.name === textureName)?.uuid
+		const newSecondaryUUID = secondaryTextures.find(t => t.name === textureName)?.uuid
 		if (!newSecondaryUUID) {
 			console.error(`Failed to find new secondary texture with the name: ${textureName}`)
 			return
@@ -92,7 +94,7 @@
 
 	function getUnusedPrimaryTextures() {
 		const usedTextures = [...textureMap.map.keys()]
-		return Texture.all.filter(t => !usedTextures.includes(t.uuid))
+		return primaryTextures.filter(t => !usedTextures.includes(t.uuid))
 	}
 </script>
 
@@ -166,7 +168,7 @@
 							on:change={e => selectNewPrimaryTexture(e, entry[0])}
 						>
 							<!-- svelte-ignore missing-declaration -->
-							{#each availableTextures as texture}
+							{#each primaryTextures as texture}
 								<option selected={texture.uuid === entry[0]}>
 									{texture.name}
 								</option>
@@ -183,7 +185,7 @@
 							on:change={e => selectNewSecondaryTexture(e, entry[0])}
 						>
 							<!-- svelte-ignore missing-declaration -->
-							{#each availableTextures as texture}
+							{#each secondaryTextures as texture}
 								<option selected={texture.uuid === entry[1]}>
 									{texture.name}
 								</option>
@@ -192,8 +194,9 @@
 					</div>
 
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
-					<i class="material-icons icon" on:click={() => deleteTextureMapping(entry[0])}
-						>delete</i
+					<i
+						class="material-icons icon tool"
+						on:click={() => deleteTextureMapping(entry[0])}>delete</i
 					>
 				</li>
 			{:else}
@@ -266,6 +269,8 @@
 		padding: 4px;
 		overflow-y: auto;
 		max-height: 600px;
+		overflow-y: auto;
+		max-height: 16rem;
 	}
 	.spacer {
 		flex-grow: 1;

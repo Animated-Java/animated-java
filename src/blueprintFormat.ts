@@ -4,9 +4,10 @@ import ProjectTitleSvelteComponent from './components/projectTitle.svelte'
 import { PACKAGE } from './constants'
 import { events } from './util/events'
 import { injectSvelteCompomponent } from './util/injectSvelte'
+import { toSafeFuntionName } from './util/minecraftUtil'
 import { addProjectToRecentProjects } from './util/misc'
 import { Valuable } from './util/stores'
-import { Variant } from './variants'
+import { TRANSPARENT_TEXTURE, TRANSPARENT_TEXTURE_MATERIAL, Variant } from './variants'
 
 /**
  * The serialized Variant Bone Config
@@ -260,6 +261,10 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 
 		if (model.outliner) {
 			parseGroups(model.outliner)
+
+			for (const group of Group.all) {
+				group.name = toSafeFuntionName(group.name)
+			}
 		}
 
 		if (model.variants) {
@@ -372,7 +377,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 
 		model.textures = []
 		for (const texture of Texture.all) {
-			const save = texture.getUndoCopy()
+			const save = texture.getUndoCopy() as Texture
 			delete save.selected
 			if (Project.save_path && texture.path) {
 				const relative = PathModule.relative(Project.save_path, texture.path)
@@ -514,6 +519,8 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 				svelteComponentProperties: { pluginMode: Project!.pluginMode },
 			})
 
+			Project!.materials[TRANSPARENT_TEXTURE.uuid] = TRANSPARENT_TEXTURE_MATERIAL
+			TRANSPARENT_TEXTURE.updateMaterial()
 			Variant.selectDefault()
 		})
 	},
@@ -543,6 +550,7 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 	paint_mode: true,
 	parent_model_id: false,
 	pose_mode: false,
+	render_sides: 'front',
 	rotate_cubes: true,
 	rotation_limit: false,
 	select_texture_for_particles: false,

@@ -35,6 +35,7 @@ declare global {
 		last_used_export_namespace: string
 		visualBoundingBox?: THREE.LineSegments
 		pluginMode: Valuable<boolean>
+		transparentTexture: Texture
 
 		variants: Variant[]
 	}
