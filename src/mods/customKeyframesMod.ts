@@ -62,21 +62,35 @@ function injectCustomKeyframes() {
 		// Default Blockbench Sound keyframe handling
 		if (inLoop && !this.muted.sound) {
 			this.sound.forEach((kf: _Keyframe) => {
-				const diff = kf.time - this.animation.time
-				if (diff >= 0 && diff < (1 / 60) * (Timeline.playback_speed / 100)) {
+				const diff = this.animation.time - kf.time
+				if (diff < 0) return
+
+				let media = Timeline.playing_sounds.find(s => s.keyframe_id == kf.uuid)
+				if (diff >= 0 && diff < (1 / 60) * (Timeline.playback_speed / 100) && !media) {
 					if (kf.data_points[0].file && !kf.cooldown) {
-						const media = new Audio(kf.data_points[0].file as string)
+						media = new Audio(kf.data_points[0].file as string)
+						media.keyframe_id = kf.uuid
 						media.playbackRate = Math.clamp(Timeline.playback_speed / 100, 0.1, 4.0)
 						media.volume = Math.clamp(settings.volume.value / 100, 0, 1)
-						media.play().catch(() => null)
+						media.play().catch(() => {
+							/**/
+						})
 						Timeline.playing_sounds.push(media)
 						media.onended = function () {
 							Timeline.playing_sounds.remove(media)
 						}
+
 						kf.cooldown = true
 						setTimeout(() => {
 							delete kf.cooldown
 						}, 400)
+					}
+				} else if (diff > 0) {
+					media = Timeline.playing_sounds.find(s => s.keyframe_id == kf.uuid)
+					if (Math.abs(media.currentTime - diff) > 0.08) {
+						// Resync
+						media.currentTime = diff
+						media.playbackRate = Math.clamp(Timeline.playback_speed / 100, 0.1, 4.0)
 					}
 				}
 			})
