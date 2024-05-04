@@ -13,12 +13,14 @@
 - [x] Render and handle invalid cubes with a red outline.
 - [x] Force animations to be at least 1 tick long
 - [x] Respect Variant inheritance when applying variants in the animation preview.
+- [x] Add a transparency option to the variant texture map selection. (And don't export completely transparent bones)
 - [ ] Change the Collection setting type to allow single-click swapping of items between lists.
-- [ ] Add a transparency option to the variant texture map selection. (And don't export completely transparent bones)
 - [ ] Add an about page.
 - [ ] Respect inheritance in the bone config.
 - [ ] Locator config doesn't exist yet.
-- [ ] Camera config doesn't exist yet.
+- [ ] Camera Plugin Support
+    - [ ] Camera config.
+    - [ ] Data Pack Compiler support.
 - [ ] Natively support step keyframes.
 - [ ] Add a bone config option to replace the bone's display item with a custom item.
     - [ ] Will require somehow rendering the vanilla item/block model.

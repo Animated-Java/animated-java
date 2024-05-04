@@ -11,25 +11,25 @@ import './interface/variantsPanel'
 import './interface/importAJModelLoader'
 import './interface/customKeyframePanel'
 // Blockbench Mods
-import './mods/animationPropertiesMod'
-import './mods/animationPropertiesAction'
-import './mods/modelFormatMod'
-import './mods/customKeyframesMod'
-import './mods/keyframeMod'
 import './mods/animationControllerMod'
+import './mods/animationPropertiesAction'
+import './mods/animationPropertiesMod'
 import './mods/bonePropertiesMod'
+import './mods/cubeOutlineMod'
+import './mods/customKeyframesMod'
 import './mods/exportOverActionMod'
 import './mods/groupContextMenuMod'
+import './mods/groupNameMod'
+import './mods/keyframeMod'
+import './mods/modelFormatConvertToMod'
+import './mods/modelFormatMod'
+import './mods/molangMod'
 import './mods/panelMod'
 import './mods/projectSettingsActionOverride'
 import './mods/saveAllAnimationsActionMod'
 import './mods/saveProjectActionMod'
 import './mods/saveProjectAsActionMod'
 import './mods/variantPreviewCubeFaceMod'
-import './mods/modelFormatConvertToMod'
-import './mods/cubeOutlineMod'
-import './mods/groupNameMod'
-import './mods/molangMod'
 // Compilers
 import { compileDataPack } from './systems/datapackCompiler'
 // Misc imports
@@ -41,6 +41,7 @@ import { openExportProgressDialog } from './interface/exportProgressDialog'
 import { isDataPackPath, isResourcePackPath } from './util/minecraftUtil'
 import { blueprintSettingErrors } from './blueprintSettings'
 import { openUnexpectedErrorDialog } from './interface/unexpectedErrorDialog'
+import { BLUEPRINT_CODEC, BLUEPRINT_FORMAT } from './blueprintFormat'
 
 // @ts-ignore
 globalThis.AnimatedJava = {
@@ -55,6 +56,8 @@ globalThis.AnimatedJava = {
 		blueprintSettingErrors,
 		openUnexpectedErrorDialog,
 		TRANSPARENT_TEXTURE,
+		BLUEPRINT_FORMAT,
+		BLUEPRINT_CODEC,
 	},
 }
 

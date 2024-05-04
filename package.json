@@ -3,7 +3,7 @@
 	"name": "animated_java",
 	"title": "Animated Java",
 	"version": "1.0.0",
-	"min_blockbench_version": "4.10.0",
+	"min_blockbench_version": "4.9.4",
 	"author": {
 		"name": "Titus Evans (SnaveSutit)",
 		"email": "snavesutit@gmail.com",
@@ -45,7 +45,6 @@
 		"Kyle10BC",
 		"Matt/Arwen",
 		"Nerdrope",
-		"Onnowhere",
 		"Sprunkles",
 		"Suso",
 		"taj",
