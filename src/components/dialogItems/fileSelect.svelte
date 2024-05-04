@@ -1,11 +1,12 @@
 <script lang="ts">
+	import type { FileFilter } from 'electron'
 	import { Valuable } from '../../util/stores'
 	import BaseDialogItem from './baseDialogItem.svelte'
 
 	export let label: string
 	export let tooltip: string = ''
 	export let value: Valuable<string>
-	export let filters: Array<{ name: string; extension: string }> = []
+	export let filters: FileFilter[] = []
 	export let fileSelectMessage: string = 'Select File'
 
 	let _value: string = value.get()
@@ -64,5 +65,8 @@
 	}
 	i:hover {
 		color: var(--color-text);
+	}
+	input {
+		font-family: var(--font-code);
 	}
 </style>

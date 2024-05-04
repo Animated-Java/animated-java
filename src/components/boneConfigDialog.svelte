@@ -3,16 +3,15 @@
 	import NumberSlider from './dialogItems/numberSlider.svelte'
 	import LineInput from './dialogItems/lineInput.svelte'
 	import ColorPicker from './dialogItems/colorPicker.svelte'
+	import Select from './dialogItems/select.svelte'
 
+	import { Variant } from '../variants'
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
-	import { Variant } from '../variants'
+	import { BoneConfig } from '../boneConfig'
 </script>
 
 <script lang="ts">
-	import { BoneConfig } from '../boneConfig'
-	import Select from './dialogItems/select.svelte'
-
 	const pluginModeEnabled = !!Project?.animated_java?.enable_plugin_mode
 
 	export let variant: Variant

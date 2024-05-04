@@ -17,7 +17,9 @@
 - [ ] Change the Collection setting type to allow single-click swapping of items between lists.
 - [ ] Add an about page.
 - [ ] Respect inheritance in the bone config.
-- [ ] Locator config doesn't exist yet.
+- [ ] Locators
+    - [x] Locator config.
+    - [ ] Data Pack Compiler support.
 - [ ] Camera Plugin Support
     - [ ] Camera config.
     - [ ] Data Pack Compiler support.

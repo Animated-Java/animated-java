@@ -35,7 +35,7 @@ export interface IBlueprintVariantBoneConfigJSON {
  * The serialized Variant Locator Config
  */
 export interface IBlueprintVariantLocatorConfigJSON {
-	entity_type: string
+	ticking_commands: string
 }
 
 /**
@@ -43,6 +43,7 @@ export interface IBlueprintVariantLocatorConfigJSON {
  */
 export interface IBlueprintVariantCameraConfigJSON {
 	entity_type: string
+	ticking_commands: string
 }
 
 /**

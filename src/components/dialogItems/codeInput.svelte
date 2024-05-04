@@ -46,5 +46,6 @@
 		resize: vertical;
 		word-wrap: unset;
 		min-height: 60px;
+		font-family: var(--font-code);
 	}
 </style>

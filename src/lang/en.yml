@@ -3,6 +3,7 @@ animated_java.action.open_blueprint_settings.name: Blueprint Settings
 animated_java.action.open_documentation.name: Documentation
 animated_java.action.open_about.name: About
 animated_java.action.open_bone_config.name: Bone Config
+animated_java.action.open_locator_config.name: Locator Config
 animated_java.action.export.name: Export
 
 ### Dialogs
@@ -160,6 +161,14 @@ animated_java.dialog.bone_config.invisible.description: Whether or not the bone 
 animated_java.dialog.bone_config.nbt.title: NBT
 animated_java.dialog.bone_config.nbt.description: The NBT to apply to the bone.
 
+## Locator Config Dialog
+animated_java.dialog.locator_config.title: Locator Config
+
+animated_java.dialog.locator_config.ticking_commands.title: Ticking Commands
+animated_java.dialog.locator_config.ticking_commands.description: |-
+  Commands to run every tick at the Locator's position. Treat this text input as a normal mcfunction.
+  NOTE: These commands will only run while an animation is playing.
+
 ## Variant Config Dialog
 animated_java.dialog.variant_config.title: Variant Config
 
@@ -221,6 +230,7 @@ animated_java.dialog.export_progress.title: Exporting...
 animated_java.panel.variants.title: Variants
 animated_java.panel.variants.tool.create_new_variant: Create New Variant
 animated_java.panel.variants.tool.edit_variant: Edit Variant
+animated_java.panel.variants.tool.duplicate_selected_variant: Duplicate Selected Variant
 animated_java.panel.variants.tool.delete_selected_variant: Delete Selected Variant
 animated_java.panel.variants.tool.variant_visible: Variant Selected
 animated_java.panel.variants.tool.variant_not_visible: Variant Not Selected

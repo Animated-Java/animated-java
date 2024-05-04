@@ -41,3 +41,9 @@
 		/>
 	</div>
 </BaseDialogItem>
+
+<style>
+	input {
+		font-family: var(--font-code);
+	}
+</style>

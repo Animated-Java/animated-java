@@ -1,5 +1,8 @@
 import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtString, NbtTag } from 'deepslate'
-import { IBlueprintVariantBoneConfigJSON } from './blueprintFormat'
+import {
+	IBlueprintVariantBoneConfigJSON,
+	IBlueprintVariantLocatorConfigJSON,
+} from './blueprintFormat'
 
 export class BoneConfig {
 	public billboard: 'fixed' | 'vertical' | 'horizontal' | 'center' = 'fixed'
@@ -141,5 +144,29 @@ export class BoneConfig {
 		}
 
 		return compound
+	}
+}
+
+export class LocatorConfig {
+	public tickingCommands = ''
+
+	public toJSON(): IBlueprintVariantLocatorConfigJSON {
+		return {
+			ticking_commands: this.tickingCommands,
+		}
+	}
+
+	public static fromJSON(json: IBlueprintVariantLocatorConfigJSON): LocatorConfig {
+		const config = new LocatorConfig()
+		if (json.ticking_commands != undefined) config.tickingCommands = json.ticking_commands
+		return config
+	}
+
+	public isDefault(): boolean {
+		return this.checkIfEqual(new LocatorConfig())
+	}
+
+	public checkIfEqual(other: LocatorConfig) {
+		return this.tickingCommands === other.tickingCommands
 	}
 }

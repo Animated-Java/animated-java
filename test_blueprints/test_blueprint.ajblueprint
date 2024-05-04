@@ -83,6 +83,12 @@
 			"ignore_inherited_scale": false,
 			"visibility": true,
 			"locked": false,
+			"configs": {
+				"default": {
+					"ticking_commands": ""
+				},
+				"variants": {}
+			},
 			"uuid": "834b3b7a-51ef-00de-b4c2-a3819903c148",
 			"type": "locator"
 		},
@@ -204,7 +210,6 @@
 					}
 				}
 			},
-			"nbt": "{}",
 			"uuid": "c4c4eb26-3da5-e050-4aa5-cfa1335d78f7",
 			"export": true,
 			"mirror_uv": false,
@@ -226,7 +231,6 @@
 			"configs": {
 				"variants": {}
 			},
-			"nbt": "{}",
 			"uuid": "14df2e83-0f77-6ef5-947c-6531822c5618",
 			"export": true,
 			"mirror_uv": false,
@@ -243,7 +247,6 @@
 			"configs": {
 				"variants": {}
 			},
-			"nbt": "{}",
 			"uuid": "4b62999d-39f0-e5df-d6ef-b3d5506c713e",
 			"export": true,
 			"mirror_uv": false,
@@ -260,7 +263,6 @@
 			"configs": {
 				"variants": {}
 			},
-			"nbt": "{}",
 			"uuid": "3f7f0c79-b975-9577-c8c9-77958a58ff0a",
 			"export": true,
 			"mirror_uv": false,
@@ -277,7 +279,6 @@
 			"configs": {
 				"variants": {}
 			},
-			"nbt": "{}",
 			"uuid": "fd4b3d6b-5a77-8d16-849a-ed284a895d57",
 			"export": true,
 			"mirror_uv": false,
@@ -300,6 +301,7 @@
 			"uv_width": 16,
 			"uv_height": 16,
 			"particle": false,
+			"use_as_default": false,
 			"layers_enabled": false,
 			"sync_to_project": "",
 			"render_mode": "default",
@@ -326,6 +328,7 @@
 			"uv_width": 64,
 			"uv_height": 64,
 			"particle": false,
+			"use_as_default": false,
 			"layers_enabled": false,
 			"sync_to_project": "",
 			"render_mode": "default",
@@ -352,6 +355,7 @@
 			"uv_width": 64,
 			"uv_height": 64,
 			"particle": false,
+			"use_as_default": false,
 			"layers_enabled": false,
 			"sync_to_project": "",
 			"render_mode": "default",
@@ -378,6 +382,7 @@
 			"uv_width": 64,
 			"uv_height": 64,
 			"particle": false,
+			"use_as_default": false,
 			"layers_enabled": false,
 			"sync_to_project": "",
 			"render_mode": "default",
@@ -404,6 +409,7 @@
 			"uv_width": 64,
 			"uv_height": 64,
 			"particle": false,
+			"use_as_default": false,
 			"layers_enabled": false,
 			"sync_to_project": "",
 			"render_mode": "default",
@@ -430,6 +436,7 @@
 			"uv_width": 64,
 			"uv_height": 64,
 			"particle": false,
+			"use_as_default": false,
 			"layers_enabled": false,
 			"sync_to_project": "",
 			"render_mode": "default",
@@ -449,7 +456,7 @@
 	"variants": {
 		"default": {
 			"display_name": "Default",
-			"name": "default",
+			"name": "Default",
 			"uuid": "c7310d5a-add7-89d1-bf21-eb7ce78063e2",
 			"texture_map": {},
 			"excluded_bones": []
@@ -457,7 +464,7 @@
 		"list": [
 			{
 				"display_name": "Puffy Boi",
-				"name": "puffy_boi",
+				"name": "Puffy Boi",
 				"uuid": "ed8d4165-96f2-35f9-9d4d-45aed3409b97",
 				"texture_map": {
 					"69e2e536-1405-7521-d208-e4961dddabd1": "0d1b5455-f6a7-5678-c6c1-60e1cbed1c6b"
@@ -466,7 +473,7 @@
 			},
 			{
 				"display_name": "Green Snave",
-				"name": "green_snave",
+				"name": "Green Snave",
 				"uuid": "7342b836-5512-51e4-cd80-385d511c0d19",
 				"texture_map": {
 					"69e2e536-1405-7521-d208-e4961dddabd1": "5aca03f5-e226-2841-68f4-9866ecbf17b1"
@@ -475,7 +482,7 @@
 			},
 			{
 				"display_name": "Bronze Aged",
-				"name": "bronze_aged",
+				"name": "Bronze Aged",
 				"uuid": "f56e614f-a753-9d6f-277b-1729796d745c",
 				"texture_map": {
 					"69e2e536-1405-7521-d208-e4961dddabd1": "7954a232-d411-498d-45f7-4a42b7161f99"
@@ -484,7 +491,7 @@
 			},
 			{
 				"display_name": "Snave Tweaked",
-				"name": "snave_tweaked",
+				"name": "Snave Tweaked",
 				"uuid": "25569e27-550b-4e98-d165-12d9f4b0f021",
 				"texture_map": {
 					"69e2e536-1405-7521-d208-e4961dddabd1": "97d65b00-ef06-9243-ce2d-237d8b4fedc9"
