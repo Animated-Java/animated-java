@@ -831,7 +831,7 @@
 			"visibility": true,
 			"locked": false,
 			"config": {
-				"ticking_commands": "particle minecraft:bubble ~ ~1 ~"
+				"ticking_commands": "particle minecraft:bubble ~ ~ ~"
 			},
 			"uuid": "7de415a2-9fdd-e4b2-3455-c3bed72eb896",
 			"type": "locator"

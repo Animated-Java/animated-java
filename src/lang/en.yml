@@ -281,6 +281,7 @@ animated_java.panel.keyframe.repeat_frequency.title: Repeat Frequency
 animated_java.panel.keyframe.repeat_frequency.description: |-
   How many ticks to wait before running the commands in this keyframe again.
   Setting this to 1 will run the commands every tick.
+  NOTE: If the animation is not evenly divisible by this value, the interval may be slightly off when the animation loops.
   If this is set to a value larger than the length of the animation, the commands will run as if repeat was disabled (Once when the keyframe is reached).
 
 ### Misc
