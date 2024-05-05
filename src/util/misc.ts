@@ -28,7 +28,7 @@ export function roundTo(n: number, d: number) {
 /**
  * Rounds a number to the nearest multiple of n
  */
-export function roundToN(n: number, x: number) {
+export function roundToNth(n: number, x: number) {
 	return Math.round(n * x) / x
 }
 

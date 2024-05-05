@@ -8,16 +8,31 @@ import { translate } from '../util/translation'
 const CURRENT_PANEL = new Valuable<HTMLDivElement | undefined>(undefined)
 
 export function injectCustomKeyframePanel(selectedKeyframe: _Keyframe) {
+	if (!CUSTOM_CHANNELS.includes(selectedKeyframe.channel)) return
+
+	const element = document.querySelector(
+		'#panel_keyframe .panel_vue_wrapper .keyframe_data_point'
+	)
+	if (!element) {
+		console.warn(
+			'Failed to find keyframe panel element. Aborting custom keyframe panel injection.'
+		)
+		return
+	}
+	for (const child of [...element.children]) {
+		child.remove()
+	}
+
 	injectSvelteCompomponent({
 		svelteComponent: CustomKeyframePanelSvelteComponent,
 		svelteComponentProperties: { currentPanel: CURRENT_PANEL, selectedKeyframe },
 		elementSelector() {
-			return document.querySelector('#panel_keyframe .panel_vue_wrapper .keyframe_data_point')
+			return element
 		},
 		postMount() {
 			const label = jQuery('#panel_keyframe .panel_vue_wrapper #keyframe_type_label label')
 			if (label && selectedKeyframe.channel) {
-				const property = EffectAnimator.prototype.channels[selectedKeyframe.channel]
+				const property = selectedKeyframe.animator.channels[selectedKeyframe.channel]
 				label.text(translate('panel.keyframe.keyframe_title', `${property.name}`))
 			}
 		},
@@ -26,8 +41,5 @@ export function injectCustomKeyframePanel(selectedKeyframe: _Keyframe) {
 
 events.SELECT_KEYFRAME.subscribe(kf => {
 	CURRENT_PANEL.get()?.remove()
-
-	if (CUSTOM_CHANNELS.includes(kf.channel)) {
-		injectCustomKeyframePanel(kf)
-	}
+	requestAnimationFrame(() => injectCustomKeyframePanel(kf))
 })

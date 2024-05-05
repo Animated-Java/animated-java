@@ -14,19 +14,21 @@
 - [x] Force animations to be at least 1 tick long
 - [x] Respect Variant inheritance when applying variants in the animation preview.
 - [x] Add a transparency option to the variant texture map selection. (And don't export completely transparent bones)
-- [ ] Change the Collection setting type to allow single-click swapping of items between lists.
-- [ ] Add an about page.
-- [ ] Respect inheritance in the bone config.
-- [ ] Locators
+- [x] Locators
+    - [x] Custom command keyframes.
     - [x] Locator config.
-    - [ ] Data Pack Compiler support.
+    - [x] Data Pack Compiler support.
+- [x] Natively support step keyframes.
 - [ ] Camera Plugin Support
     - [ ] Camera config.
     - [ ] Data Pack Compiler support.
-- [ ] Natively support step keyframes.
+- [ ] Change the Collection setting type to allow single-click swapping of items between lists.
+- [ ] Add an about page.
+- [ ] Respect inheritance in the bone config.
 - [ ] Add a bone config option to replace the bone's display item with a custom item.
     - [ ] Will require somehow rendering the vanilla item/block model.
 - [ ] Add Variants to the UndoSystem
+- [ ] When upgrading old ajmodels, if they have command keyframes in the effect animator, create a locator at 0 0 0 with those keyframes.
 
 # Data Pack Compiler
 - [x] Merge on_tick and on_load function tags
@@ -37,9 +39,11 @@
 - [x] Make data pack compiler as async as possible.
 - [x] Actually respect variant config options.
 - [x] Warn the user when a previously summoned rig needs to be re-summoned due to changes in the blueprint.
-- [ ] Figure out how to add repeating functionality to command keyframes.
+- [x] Figure out how to add repeating functionality to command keyframes.
+- [x] Add toggles to command keyframes to allow continuously running the commands in the keyframe instead of only once when the keyframe is reached.
+- [x] Teleport the rig to the execution location of the summon command.
+- [x] Rotate the bones with the root entity.
 - [ ] Figure out how cameras will work.
-- [ ] Add toggles to command keyframes to allow continuously running the commands in the keyframe instead of only once when the keyframe is reached.
 - [ ] Rebuild main function tags based off of the AJ meta file to avoid issues with left-over function references.
 
 # Resource Pack

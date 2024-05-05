@@ -1,12 +1,11 @@
 import { BLUEPRINT_FORMAT, isCurrentFormat } from '../blueprintFormat'
-import { PACKAGE } from '../constants'
 import { events } from '../util/events'
-import { createBlockbenchMod } from '../util/moddingTools'
 import { translate } from '../util/translation'
 import { Variant } from '../variants'
 
 const DEFAULT_CHANNELS = { ...EffectAnimator.prototype.channels }
-const DEFAULT_DISPLAY_FRAME = EffectAnimator.prototype.displayFrame
+const DEFAULT_EFFECT_DISPLAY_FRAME = EffectAnimator.prototype.displayFrame
+// const DEFAULT_BONE_DISPLAY_FRAME = BoneAnimator.prototype.displayFrame
 export const CUSTOM_CHANNELS = ['variant', 'commands']
 
 let installed = false
@@ -20,11 +19,17 @@ function injectCustomKeyframes() {
 		mutable: true,
 		max_data_points: 1,
 	})
-	EffectAnimator.addChannel('commands', {
-		name: translate('effect_animator.timeline.commands'),
-		mutable: true,
-		max_data_points: 1,
-	})
+	// EffectAnimator.addChannel('commands', {
+	// 	name: translate('effect_animator.timeline.commands'),
+	// 	mutable: true,
+	// 	max_data_points: 1,
+	// })
+	// BoneAnimator.addChannel('commands', {
+	// 	name: translate('effect_animator.timeline.commands'),
+	// 	mutable: true,
+	// 	transform: true,
+	// 	max_data_points: 1,
+	// })
 
 	// Add custom keyframe properties to the KeyframeDataPoint class
 	const variantKeyframeDataPoint = new Property(KeyframeDataPoint, 'string', 'variant', {
@@ -38,16 +43,27 @@ function injectCustomKeyframes() {
 		},
 	})
 	new Property(KeyframeDataPoint, 'string', 'commands', {
-		label: translate('effect_animator.keyframe.commands'),
+		label: translate('effect_animator.timeline.commands'),
 		default: '',
 		condition: datapoint => datapoint.keyframe.channel === 'commands',
 		exposed: false,
 	})
 	new Property(KeyframeDataPoint, 'string', 'execute_condition', {
-		label: translate('effect_animator.keyframe.execute_condition'),
+		label: translate('effect_animator.timeline.execute_condition'),
 		default: '',
-		condition: datapoint =>
-			['variant', 'commands'].includes(datapoint.keyframe.channel as string),
+		condition: datapoint => CUSTOM_CHANNELS.includes(datapoint.keyframe.channel as string),
+		exposed: false,
+	})
+	new Property(KeyframeDataPoint, 'boolean', 'repeat', {
+		label: translate('effect_animator.timeline.repeat'),
+		default: false,
+		condition: datapoint => CUSTOM_CHANNELS.includes(datapoint.keyframe.channel as string),
+		exposed: false,
+	})
+	new Property(KeyframeDataPoint, 'number', 'repeat_frequency', {
+		label: translate('effect_animator.timeline.repeat_frequency'),
+		default: 1,
+		condition: datapoint => CUSTOM_CHANNELS.includes(datapoint.keyframe.channel as string),
 		exposed: false,
 	})
 
@@ -87,7 +103,7 @@ function injectCustomKeyframes() {
 					}
 				} else if (diff > 0) {
 					media = Timeline.playing_sounds.find(s => s.keyframe_id == kf.uuid)
-					if (Math.abs(media.currentTime - diff) > 0.08) {
+					if (media && Math.abs(media.currentTime - diff) > 0.08) {
 						// Resync
 						media.currentTime = diff
 						media.playbackRate = Math.clamp(Timeline.playback_speed / 100, 0.1, 4.0)
@@ -144,27 +160,21 @@ function extractCustomKeyframes() {
 	KeyframeDataPoint.properties.variant?.delete()
 	KeyframeDataPoint.properties.commands?.delete()
 	KeyframeDataPoint.properties.execute_condition?.delete()
+	KeyframeDataPoint.properties.repeat?.delete()
+	KeyframeDataPoint.properties.repeat_frequency?.delete()
 
 	delete EffectAnimator.prototype.channels.variant
 	delete EffectAnimator.prototype.variant
-	delete EffectAnimator.prototype.channels.commands
-	delete EffectAnimator.prototype.commands
+	// delete EffectAnimator.prototype.channels.commands
+	// delete EffectAnimator.prototype.commands
+	delete BoneAnimator.prototype.channels.commands
+	delete BoneAnimator.prototype.commands
 
-	EffectAnimator.prototype.displayFrame = DEFAULT_DISPLAY_FRAME
+	EffectAnimator.prototype.displayFrame = DEFAULT_EFFECT_DISPLAY_FRAME
+	// BoneAnimator.prototype.displayFrame = DEFAULT_BONE_DISPLAY_FRAME
 
 	installed = false
 }
-
-createBlockbenchMod(
-	`${PACKAGE.name}:customKeyframes`,
-	undefined,
-	() => {
-		injectCustomKeyframes()
-	},
-	() => {
-		extractCustomKeyframes()
-	}
-)
 
 events.PRE_SELECT_PROJECT.subscribe(project => {
 	if (project.format.id === BLUEPRINT_FORMAT.id) {
@@ -195,3 +205,7 @@ export const setKeyframeCommands = keyframeValueSetterFactory<string>('commands'
 export const getKeyframeCommands = keyframeValueGetterFactory<string>('commands')
 export const setKeyframeExecuteCondition = keyframeValueSetterFactory<string>('execute_condition')
 export const getKeyframeExecuteCondition = keyframeValueGetterFactory<string>('execute_condition')
+export const setKeyframeRepeat = keyframeValueSetterFactory<boolean>('repeat')
+export const getKeyframeRepeat = keyframeValueGetterFactory<boolean>('repeat')
+export const setKeyframeRepeatFrequency = keyframeValueSetterFactory<number>('repeat_frequency')
+export const getKeyframeRepeatFrequency = keyframeValueGetterFactory<number>('repeat_frequency')

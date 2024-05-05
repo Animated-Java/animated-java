@@ -766,6 +766,58 @@
 					]
 				}
 			}
+		},
+		{
+			"uuid": "07194ad0-c015-59ca-aca7-9e07b9e62031",
+			"name": "step",
+			"loop": "loop",
+			"override": false,
+			"length": 1,
+			"snapping": 20,
+			"selected": true,
+			"saved": false,
+			"path": "",
+			"anim_time_update": "",
+			"blend_weight": "",
+			"start_delay": "",
+			"loop_delay": "",
+			"excluded_bones": [],
+			"animators": {
+				"c4c4eb26-3da5-e050-4aa5-cfa1335d78f7": {
+					"name": "bone",
+					"type": "bone",
+					"keyframes": [
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": 0,
+									"y": "10",
+									"z": 0
+								}
+							],
+							"uuid": "d6a17349-8c8e-9395-974f-319adac403a7",
+							"time": 0,
+							"color": -1,
+							"interpolation": "step"
+						},
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": 0,
+									"y": "0",
+									"z": 0
+								}
+							],
+							"uuid": "60a2c3d9-b13e-04ed-6a3d-d92f7242c1cc",
+							"time": 0.5,
+							"color": -1,
+							"interpolation": "linear"
+						}
+					]
+				}
+			}
 		}
 	],
 	"animation_controllers": [

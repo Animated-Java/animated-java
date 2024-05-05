@@ -1,6 +1,6 @@
 import { isCurrentFormat } from '../blueprintFormat'
 import { PACKAGE } from '../constants'
-import { roundToN } from '../util/misc'
+import { roundToNth } from '../util/misc'
 import { ContextProperty, createBlockbenchMod } from '../util/moddingTools'
 import { translate } from '../util/translation'
 
@@ -26,7 +26,7 @@ createBlockbenchMod(
 					if (!animator) continue
 					let lastTime = -Infinity
 					for (const kf of animator.keyframes) {
-						let rounded = roundToN(kf.time, DEFAULT_SNAPPING_VALUE)
+						let rounded = roundToNth(kf.time, DEFAULT_SNAPPING_VALUE)
 						if (rounded === kf.time) continue
 						if (rounded === lastTime) rounded += 0.05
 						kf.time = rounded

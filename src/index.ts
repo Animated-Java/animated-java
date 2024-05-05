@@ -33,6 +33,7 @@ import './mods/saveAllAnimationsActionMod'
 import './mods/saveProjectActionMod'
 import './mods/saveProjectAsActionMod'
 import './mods/variantPreviewCubeFaceMod'
+import './mods/locatorAnimatorMod'
 // Compilers
 import { compileDataPack } from './systems/datapackCompiler'
 // Misc imports

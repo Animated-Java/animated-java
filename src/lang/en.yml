@@ -164,6 +164,11 @@ animated_java.dialog.bone_config.nbt.description: The NBT to apply to the bone.
 ## Locator Config Dialog
 animated_java.dialog.locator_config.title: Locator Config
 
+animated_java.dialog.locator_config.plugin_mode_warning: |-
+  Plugin Mode is enabled! Locators have no configuration in Plugin Mode.
+  Instead, use the Plugin API to add custom functionality to your Locators.
+  For more information, see the Official Plugin API documentation for more information.
+
 animated_java.dialog.locator_config.ticking_commands.title: Ticking Commands
 animated_java.dialog.locator_config.ticking_commands.description: |-
   Commands to run every tick at the Locator's position. Treat this text input as a normal mcfunction.
@@ -257,6 +262,26 @@ animated_java.effect_animator.keyframes.execute_condition: Execute Condition
 
 # Keyframe Panel
 animated_java.panel.keyframe.keyframe_title: Keyframe ({0})
+
+animated_java.panel.keyframe.variant.title: Variant
+animated_java.panel.keyframe.variant.description: The Variant to apply to the keyframe.
+
+animated_java.panel.keyframe.commands.title: Commands
+animated_java.panel.keyframe.commands.description: Commands to run when the keyframe is reached. Treat this text input as a normal mcfunction.
+
+animated_java.panel.keyframe.execute_condition.title: Execute Condition
+animated_java.panel.keyframe.execute_condition.description: A condition that must be met for the keyframe to execute. Treat this text input as the sub-commands of an execute command.
+
+animated_java.panel.keyframe.repeat.title: Repeat?
+animated_java.panel.keyframe.repeat.description: |-
+  Whether or not to run the commands in this keyframe repeatedly.
+  If enabled, the commands will run every Repeat Frequency ticks.
+
+animated_java.panel.keyframe.repeat_frequency.title: Repeat Frequency
+animated_java.panel.keyframe.repeat_frequency.description: |-
+  How many ticks to wait before running the commands in this keyframe again.
+  Setting this to 1 will run the commands every tick.
+  If this is set to a value larger than the length of the animation, the commands will run as if repeat was disabled (Once when the keyframe is reached).
 
 ### Misc
 

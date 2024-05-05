@@ -1,7 +1,7 @@
 
 dir global {
 
-	function on_load load {
+	function on_load minecraft:load {
 		# Initialize Scoreboards
 		<%%
 			Object.values(OBJECTIVES).forEach(obj => {
@@ -9,35 +9,21 @@ dir global {
 			})
 		%%>
 
-		scoreboard players set aj.1b <%OBJECTIVES.I()%> 1
-		scoreboard players set aj.0b <%OBJECTIVES.I()%> 0
 		scoreboard players add aj.last_id <%OBJECTIVES.ID()%> 0
 
 		# Initialize Storage
 		data modify storage aj:temp args set value {}
-
-		scoreboard players reset * <%OBJECTIVES.IS_RIG_LOADED()%>
-		execute as @e[type=item_display,tag=<%TAGS.GLOBAL_ROOT()%>] unless score @s <%OBJECTIVES.IS_RIG_LOADED()%> matches 1 at @s run function #animated_java:global/root/on_load
-
 		# Initialize Rigs
+		scoreboard players reset * <%OBJECTIVES.IS_RIG_LOADED()%>
 		function #animated_java:global/on_load
 	}
 
-	function on_tick tick {
+	function on_tick minecraft:tick {
 		execute as @e[type=item_display,tag=<%TAGS.GLOBAL_ROOT()%>] at @s run function #animated_java:global/root/on_tick
 	}
 
-	# tag functions on_tick {
-	# 	animated_java:<%export_namespace%>/on_tick
-	# }
-
 	tag functions on_load {
 		animated_java:<%export_namespace%>/on_load
-	}
-
-	function help {
-		# This just prints a link to the docs.
-		tellraw @a {"text": "..."}
 	}
 
 	dir root {
@@ -51,6 +37,11 @@ dir global {
 		tag functions on_load {
 			animated_java:<%export_namespace%>/root/on_load
 		}
+	}
+
+	function help {
+		# This just prints a link to the docs.
+		tellraw @a {"text": "..."}
 	}
 
 	dir errors {
@@ -77,10 +68,14 @@ dir <%export_namespace%> {
 		IF (use_storage_for_animation) {
 			data modify storage aj.<%export_namespace%>:animations list set value <%animationStorage.toString()%>
 		}
+		execute as @e[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] \
+			unless score @s <%OBJECTIVES.IS_RIG_LOADED()%> matches 1 at @s run \
+			function animated_java:<%export_namespace%>/root/on_load
 	}
 
 	dir root {
 		function on_load {
+			execute unless entity @s[tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return 0
 			execute unless data entity @s {item:{components:{'minecraft:custom_data':{rigHash: '<%rigHash%>'}}}} run {
 				execute store result storage aj:temp x int 1 store result score #this.x aj.i run data get entity @s Pos[0] 1
 				execute store result storage aj:temp y int 1 store result score #this.y aj.i run data get entity @s Pos[1] 1
@@ -97,12 +92,28 @@ dir <%export_namespace%> {
 			scoreboard players set @s <%OBJECTIVES.IS_RIG_LOADED()%> 1
 		}
 		function on_tick {
+			execute unless entity @s[tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return 0
 			execute unless score @s <%OBJECTIVES.IS_RIG_LOADED()%> matches 1 run function #animated_java:global/root/on_load
+			# Pre tick
+			function #animated_java:<%export_namespace%>/as_root/pre_tick
 			# Animations
 			REPEAT (animations) as animation {
 				execute if entity @s[tag=<%TAGS.ANIMATION_PLAYING(export_namespace, animation.name)%>] run \
 					function *<%export_namespace%>/animations/<%animation.name%>/zzz/on_tick
 			}
+			REPEAT (Object.values(rig.nodeMap)) as node {
+				IF (node.type === 'locator' && node.config?.ticking_commands) {
+					execute run { with entity @s item.components.minecraft:custom_data.locators.<%node.name%>
+						$execute positioned ^$(posx) ^$(posy) ^$(posz) rotated ~$(roty) ~$(rotx) run {
+							<%node.config.ticking_commands%>
+						}
+					}
+				}
+			}
+			# Rotation Logic
+			execute at @s on passengers run tp @s ~ ~ ~ ~ ~
+			# Post tick
+			function #animated_java:<%export_namespace%>/as_root/post_tick
 		}
 	}
 
@@ -180,7 +191,7 @@ dir <%export_namespace%> {
 							{'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/play'}
 					tag @s add <%TAGS.ANIMATION_PLAYING(export_namespace, animation.name)%>
 					scoreboard players set @s <%OBJECTIVES.FRAME()%> 1
-					function ./zzz/set_frame {frame: 1}
+					execute at @s run function ./zzz/set_frame {frame: 1}
 				}
 				function stop {
 					execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
@@ -188,7 +199,7 @@ dir <%export_namespace%> {
 							{'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/stop'}
 					tag @s remove <%TAGS.ANIMATION_PLAYING(export_namespace, animation.name)%>
 					scoreboard players set @s <%OBJECTIVES.FRAME()%> 1
-					function ./zzz/set_frame {frame: 1}
+					execute at @s run function ./zzz/set_frame {frame: 1}
 				}
 				function pause {
 					execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
@@ -208,7 +219,7 @@ dir <%export_namespace%> {
 							{'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/next_frame'}
 					execute if score @s <%OBJECTIVES.FRAME()%> matches <%animation.duration%>.. run scoreboard players set @s <%OBJECTIVES.FRAME()%> 1
 					execute store result storage aj:temp frame int 1 run scoreboard players get @s <%OBJECTIVES.FRAME()%>
-					function ./zzz/apply_frame with storage aj:temp
+					execute at @s run function ./zzz/apply_frame with storage aj:temp
 					scoreboard players add @s <%OBJECTIVES.FRAME()%> 1
 				}
 				function set_frame {
@@ -218,7 +229,7 @@ dir <%export_namespace%> {
 						function *global/errors/function_not_executed_as_root_entity \
 							{'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/set_frame'}
 					$execute store result storage aj:temp frame int 1 run scoreboard players set @s <%OBJECTIVES.FRAME()%> $(frame)
-					function ./zzz/set_frame with storage aj:temp
+					execute at @s run function ./zzz/set_frame with storage aj:temp
 				}
 				function apply_frame {
 					# ARGS: {frame: int}
@@ -226,7 +237,7 @@ dir <%export_namespace%> {
 						function *global/errors/function_not_executed_as_root_entity \
 							{'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/apply_frame'}
 					$execute store result storage aj:temp frame int 1 run scoreboard players set @s <%OBJECTIVES.FRAME()%> $(frame)
-					function ./zzz/apply_frame with storage aj:temp
+					execute at @s run function ./zzz/apply_frame with storage aj:temp
 				}
 				function tween {
 					# Attempts to smoothly transition from the currently playing animation into this one.
@@ -242,8 +253,8 @@ dir <%export_namespace%> {
 
 					scoreboard players operation #this <%OBJECTIVES.I()%> = @s <%OBJECTIVES.TWEEN_DURATION()%>
 					scoreboard players add @s <%OBJECTIVES.TWEEN_DURATION()%> 1
+					$execute at @s run function ./zzz/apply_frame {frame: $(to_frame)}
 					execute on passengers store result entity @s interpolation_duration int 1 run scoreboard players get #this <%OBJECTIVES.I()%>
-					$function ./zzz/apply_frame {frame: $(to_frame)}
 				}
 				dir zzz {
 					function on_tick {
@@ -282,16 +293,59 @@ dir <%export_namespace%> {
 						function apply_frame {
 							#ARGS: {frame: int}
 							$function ./frames/$(frame)
+							<%%
+								// A record of node uuid to IAnimationNode.
+								// Keeps track of the last time a bone was updated.
+								// Only used for step keyframe interpolation.
+								global.lastActiveFrame = {}
+							%%>
 						}
 						dir frames {
 							REPEAT (animation.frames) as frame {
 								function <%animation.frames.indexOf(frame)+1%> {
 									REPEAT (frame.nodes) as node {
 										IF (node.type === 'bone') {
+											<%%
+												const last = global.lastActiveFrame[node.uuid]
+												global.isStepInterpolation = !!(last?.interpolation === 'step')
+												global.lastActiveFrame[node.uuid] = node
+											%%>
 											# It's actually faster to use an on passeners call that checks tag immediately
 											# than to spread it into a function that runs a bunch of tag checks on each bone.
-											execute on passengers if entity @s[tag=<%TAGS.LOCAL_BONE(export_namespace, node.name)%>] run \
-												data merge entity @s {transformation: <%matrixToNbtFloatArray(node.matrix).toString()%>, start_interpolation: 0}
+											IF (node.interpolation === 'pre-post' || global.isStepInterpolation) {
+												execute on passengers if entity @s[tag=<%TAGS.LOCAL_BONE(export_namespace, node.name)%>] run \
+													data merge entity @s { \
+														transformation: <%matrixToNbtFloatArray(node.matrix).toString()%>, \
+														start_interpolation: -1, \
+														interpolation_duration: 0 \
+													}
+											} ELSE {
+												execute on passengers if entity @s[tag=<%TAGS.LOCAL_BONE(export_namespace, node.name)%>] run \
+													data merge entity @s { \
+														transformation: <%matrixToNbtFloatArray(node.matrix).toString()%>, \
+														start_interpolation: 0, \
+														interpolation_duration: <%interpolation_duration%> \
+													}
+											}
+										} ELSE IF (node.type === 'locator') {
+											IF (rig.nodeMap[node.uuid]?.config?.ticking_commands) {
+												data modify entity @s item.components.minecraft:custom_data.locators.<%node.name%> set value { \
+													posx: <%node.pos.x%>, posy: <%node.pos.y%>, posz: <%node.pos.z%>, \
+													rotx: <%node.rot.x%>, roty: <%node.rot.y%>, \
+												}
+											}
+											IF (node.commands) {
+												execute <%node.execute_condition ? node.execute_condition.trim() + ' ' : ''%>positioned \
+														^<%roundTo(node.pos.x, 10)%> \
+														^<%roundTo(node.pos.y, 10)%> \
+														^<%roundTo(node.pos.z, 10)%> \
+													rotated \
+														~<%roundTo(node.rot.x, 10)%> \
+														~<%roundTo(node.rot.y, 10)%> \
+												run execute run {
+													<%node.commands%>
+												}
+											}
 										}
 									}
 								}
@@ -317,10 +371,7 @@ dir <%export_namespace%> {
 		$execute store success score #success <%OBJECTIVES.I()%> run data modify storage aj:temp args set value $(args)
 
 		summon minecraft:item_display ~ ~ ~ { \
-			teleport_duration: <%teleportation_duration%>, \
-			interpolation_duration: <%interpolation_duration%>, \
 			Tags:['<%TAGS.NEW()%>','<%TAGS.GLOBAL_RIG()%>','<%TAGS.GLOBAL_ROOT()%>','<%TAGS.PROJECT_ROOT(export_namespace)%>'], \
-			Passengers:<%root_entity_passengers%>, \
 			item: { \
 				id: '<%display_item%>', \
 				Count: 1b, \
@@ -328,7 +379,10 @@ dir <%export_namespace%> {
 					'minecraft:custom_data': {rigHash: '<%rigHash%>'}, \
 					'minecraft:custom_model_data': 1 \
 				} \
-			} \
+			}, \
+			teleport_duration: 0, \
+			interpolation_duration: <%interpolation_duration%>, \
+			Passengers:<%root_entity_passengers%>, \
 		}
 		execute as @e[type=item_display,tag=<%TAGS.NEW()%>,limit=1,distance=..0.01] run {
 			execute store result score @s <%OBJECTIVES.ID()%> run scoreboard players add aj.last_id <%OBJECTIVES.ID()%> 1
@@ -353,7 +407,7 @@ dir <%export_namespace%> {
 			}
 
 			# Animation, Frame, and Start Animation Arguments
-			execute unless data storage aj:temp args.animation run return run function *<%export_namespace%>/set_default_pose
+			execute unless data storage aj:temp args.animation run function *<%export_namespace%>/set_default_pose
 			execute if data storage aj:temp args.animation run { with storage aj:temp args
 				execute if data storage aj:temp {args:{animation:''}} run return run {
 					tellraw @a <%TELLRAW.ANIMATION_CANNOT_BE_EMPTY()%>
@@ -382,6 +436,10 @@ dir <%export_namespace%> {
 					$function *<%export_namespace%>/animations/$(animation)/resume
 				}
 			}
+			tp @s ~ ~ ~ ~ ~
+			execute at @s on passengers run tp @s ~ ~ ~ ~ ~
+			data modify entity @s teleport_duration set value <%teleportation_duration%>
+			execute on passengers run data modify entity @s teleport_duration set value <%teleportation_duration%>
 			# Custom Summon Commands
 			<%custom_summon_commands%>
 			# Custom Summon Commands
@@ -421,14 +479,16 @@ dir <%export_namespace%> {
 				execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 					function *global/errors/function_not_executed_as_root_entity \
 						{'function_path': 'animated_java:<%export_namespace%>/variants/default/apply'}
-				REPEAT (Object.values(rig.nodeMap)) as bone {
-					execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%bone.name%>] run {
-						data modify entity @s item.components.minecraft:custom_model_data set value <%bone.customModelData%>
-						<%%
-							global.config = BoneConfig.fromJSON(bone.configs.default)
-						%%>
-						IF (!global.config.isDefault()) {
-							data merge entity @s <%global.config.toNBT(undefined, true)%>
+				REPEAT (Object.values(rig.nodeMap)) as node {
+					IF (node.type === 'bone') {
+						execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%node.name%>] run {
+							data modify entity @s item.components.minecraft:custom_model_data set value <%node.customModelData%>
+							<%%
+								global.config = BoneConfig.fromJSON(node.configs.default)
+							%%>
+							IF (!global.config.isDefault()) {
+								data merge entity @s <%global.config.toNBT(undefined, true)%>
+							}
 						}
 					}
 				}
@@ -441,15 +501,15 @@ dir <%export_namespace%> {
 						execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 							function *global/errors/function_not_executed_as_root_entity \
 								{'function_path': 'animated_java:<%export_namespace%>/variants/<%variant.name%>/apply'}
-						REPEAT (Object.values(rig.nodeMap)) as bone {
-							IF (bone.type === 'bone' && !Object.values(variant.excludedBones).find(v => v.value === bone.node.uuid) && (rig.variantModels[variant.name][bone.node.uuid] !== undefined || bone.configs.variants[variant.uuid])) {
-								execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%bone.name%>] run {
-									IF (rig.variantModels[variant.name][bone.node.uuid] !== undefined) {
-										data modify entity @s item.components.minecraft:custom_model_data set value <%rig.variantModels[variant.name][bone.node.uuid].customModelData%>
+						REPEAT (Object.values(rig.nodeMap)) as node {
+							IF (node.type === 'bone' && !Object.values(variant.excludedBones).find(v => v.value === node.node.uuid) && (rig.variantModels[variant.name][node.node.uuid] !== undefined || node.configs.variants[variant.uuid])) {
+								execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%node.name%>] run {
+									IF (rig.variantModels[variant.name][node.node.uuid] !== undefined) {
+										data modify entity @s item.components.minecraft:custom_model_data set value <%rig.variantModels[variant.name][node.node.uuid].customModelData%>
 									}
-									IF (bone.configs.variants[variant.uuid]) {
+									IF (node.configs.variants[variant.uuid]) {
 										<%%
-											global.config = BoneConfig.fromJSON(bone.configs.variants[variant.uuid])
+											global.config = BoneConfig.fromJSON(node.configs.variants[variant.uuid])
 										%%>
 										IF (!global.config.isDefault()) {
 											data merge entity @s <%global.config.toNBT()%>

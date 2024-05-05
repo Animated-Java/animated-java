@@ -33,17 +33,17 @@
 	})
 </script>
 
-<label for="variant_input" class="undefined" style="font-weight: unset;">
-	{translate('effect_animator.keyframes.variant')}
-</label>
-
-<div class="select-container" bind:this={selectContainer} />
-
-<!-- <select bind:value={$keyframeValue}>
-	{#each Variant.all as variant}
-		<option value={variant.uuid}>{variant.displayName}</option>
-	{/each}
-</select> -->
+<div class="bar flex">
+	<label
+		for="variant_input"
+		class="undefined"
+		style="font-weight: unset;"
+		title={translate('panel.keyframe.variant.description')}
+	>
+		{translate('panel.keyframe.variant.title')}
+	</label>
+	<div class="select-container" bind:this={selectContainer} />
+</div>
 
 <style>
 	.select-container {

@@ -1,6 +1,7 @@
 import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtString, NbtTag } from 'deepslate'
 import {
 	IBlueprintVariantBoneConfigJSON,
+	IBlueprintVariantCameraConfigJSON,
 	IBlueprintVariantLocatorConfigJSON,
 } from './blueprintFormat'
 
@@ -168,5 +169,39 @@ export class LocatorConfig {
 
 	public checkIfEqual(other: LocatorConfig) {
 		return this.tickingCommands === other.tickingCommands
+	}
+}
+
+export class CameraConfig {
+	public entityType = 'minecraft:item_display'
+	public nbt = '{}'
+	public tickingCommands = ''
+
+	public toJSON(): IBlueprintVariantCameraConfigJSON {
+		return {
+			entity_type: this.entityType,
+			nbt: this.nbt,
+			ticking_commands: this.tickingCommands,
+		}
+	}
+
+	public static fromJSON(json: IBlueprintVariantCameraConfigJSON): CameraConfig {
+		const config = new CameraConfig()
+		if (json.entity_type != undefined) config.entityType = json.entity_type
+		if (json.nbt != undefined) config.nbt = json.nbt
+		if (json.ticking_commands != undefined) config.tickingCommands = json.ticking_commands
+		return config
+	}
+
+	public isDefault(): boolean {
+		return this.checkIfEqual(new CameraConfig())
+	}
+
+	public checkIfEqual(other: CameraConfig) {
+		return (
+			this.entityType === other.entityType &&
+			this.nbt === other.nbt &&
+			this.tickingCommands === other.tickingCommands
+		)
 	}
 }

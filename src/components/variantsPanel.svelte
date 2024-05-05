@@ -20,7 +20,7 @@
 </script>
 
 <script lang="ts">
-	let localVariants: LocalVariant[] = []
+	let localVariants: (LocalVariant & { [SHADOW_ITEM_MARKER_PROPERTY_NAME]?: boolean })[] = []
 
 	function updateLocalVariants() {
 		localVariants = Variant.all.map((v, i) => ({ id: i, value: v }))

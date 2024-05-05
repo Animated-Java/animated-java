@@ -13,11 +13,9 @@
 
 <div>
 	{#if pluginModeEnabled}
-		<CodeInput
-			label={translate('dialog.locator_config.ticking_commands.title')}
-			tooltip={translate('dialog.locator_config.ticking_commands.description')}
-			bind:value={tickingCommands}
-		/>
+		{#each translate('dialog.locator_config.plugin_mode_warning').split('\n') as line}
+			<p>{line}</p>
+		{/each}
 	{:else}
 		<CodeInput
 			label={translate('dialog.locator_config.ticking_commands.title')}

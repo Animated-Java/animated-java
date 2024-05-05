@@ -5,16 +5,16 @@ import { type ContextProperty, createBlockbenchMod } from '../util/moddingTools'
 createBlockbenchMod(
 	`${PACKAGE.name}:locatorProperties`,
 	{
-		configs: undefined as ContextProperty<'instance'>,
+		config: undefined as ContextProperty<'instance'>,
 	},
 	context => {
-		context.configs = new Property(Locator, 'instance', 'configs', {
+		context.config = new Property(Locator, 'instance', 'config', {
 			condition,
-			default: { default: undefined, variants: {} },
+			default: undefined,
 		})
 		return context
 	},
 	context => {
-		context.configs?.delete()
+		context.config?.delete()
 	}
 )

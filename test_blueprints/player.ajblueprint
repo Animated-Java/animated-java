@@ -735,7 +735,6 @@
 				},
 				"variants": {}
 			},
-			"nbt": "{}",
 			"uuid": "000eddba-124d-d59d-3864-54478ed23530",
 			"export": true,
 			"mirror_uv": false,
@@ -766,7 +765,6 @@
 						},
 						"variants": {}
 					},
-					"nbt": "{}",
 					"uuid": "b10ca338-dd64-e6d8-4eea-777727db6562",
 					"export": true,
 					"mirror_uv": false,
@@ -797,7 +795,6 @@
 								},
 								"variants": {}
 							},
-							"nbt": "{}",
 							"uuid": "bbc6831c-4111-a7e3-6b9e-4b3f79f976ca",
 							"export": true,
 							"mirror_uv": false,
@@ -830,7 +827,6 @@
 										},
 										"variants": {}
 									},
-									"nbt": "{}",
 									"uuid": "02d71484-1250-ceea-32f5-6bfa901fa363",
 									"export": true,
 									"mirror_uv": false,
@@ -867,7 +863,6 @@
 										},
 										"variants": {}
 									},
-									"nbt": "{}",
 									"uuid": "85a240ec-688d-aa16-4a19-23fa08380dad",
 									"export": true,
 									"mirror_uv": false,
@@ -899,7 +894,6 @@
 										},
 										"variants": {}
 									},
-									"nbt": "{}",
 									"uuid": "50e188c1-fc06-c84b-e966-0a700043c9f2",
 									"export": true,
 									"mirror_uv": false,
@@ -938,7 +932,6 @@
 								},
 								"variants": {}
 							},
-							"nbt": "{}",
 							"uuid": "4411adba-9c6a-76af-7083-7b92064256ee",
 							"export": true,
 							"mirror_uv": false,
@@ -970,7 +963,6 @@
 								},
 								"variants": {}
 							},
-							"nbt": "{}",
 							"uuid": "02999a03-41c2-0837-e31b-a4dc619ebd4a",
 							"export": true,
 							"mirror_uv": false,
@@ -997,6 +989,7 @@
 			"uv_width": 64,
 			"uv_height": 64,
 			"particle": false,
+			"use_as_default": false,
 			"layers_enabled": false,
 			"sync_to_project": "",
 			"render_mode": "normal",
@@ -1024,6 +1017,7 @@
 			"uv_width": 64,
 			"uv_height": 64,
 			"particle": false,
+			"use_as_default": false,
 			"layers_enabled": false,
 			"sync_to_project": "",
 			"render_mode": "default",
@@ -1050,6 +1044,7 @@
 			"uv_width": 64,
 			"uv_height": 64,
 			"particle": false,
+			"use_as_default": false,
 			"layers_enabled": false,
 			"sync_to_project": "",
 			"render_mode": "default",
@@ -1077,7 +1072,7 @@
 		"list": [
 			{
 				"display_name": "Transparent",
-				"name": "Transparent",
+				"name": "transparent",
 				"uuid": "b8189cb6-a3ac-928e-4cd6-258c731cf692",
 				"texture_map": {
 					"1909ead3-7e92-313f-7489-3c40abc1811d": "797174ae-5c58-4a83-a630-eefd51007c80"
@@ -1086,7 +1081,7 @@
 			},
 			{
 				"display_name": "SnaveSutit",
-				"name": "SnaveSutit",
+				"name": "snavesutit",
 				"uuid": "d0221cc3-7cda-4d3f-684a-362794528b2d",
 				"texture_map": {
 					"1909ead3-7e92-313f-7489-3c40abc1811d": "217be0f0-f604-eb6b-d3e3-b854c44a03c0"
@@ -1095,7 +1090,7 @@
 			},
 			{
 				"display_name": "FetchBot",
-				"name": "FetchBot",
+				"name": "fetchbot",
 				"uuid": "425b2b19-3b95-4850-93cf-3a42913ed7d9",
 				"texture_map": {
 					"1909ead3-7e92-313f-7489-3c40abc1811d": "c064d146-a9c0-869b-e72f-fc632c726803"
@@ -1104,7 +1099,7 @@
 			},
 			{
 				"display_name": "Takeover1",
-				"name": "Takeover1",
+				"name": "takeover1",
 				"uuid": "953d47d6-1f3c-56c4-9f53-5c41f8ad129d",
 				"texture_map": {
 					"1909ead3-7e92-313f-7489-3c40abc1811d": "c064d146-a9c0-869b-e72f-fc632c726803"
@@ -1121,7 +1116,7 @@
 			},
 			{
 				"display_name": "Takeover2",
-				"name": "Takeover2",
+				"name": "takeover2",
 				"uuid": "3a7214ba-6bda-0e2f-bdbf-61b984abaa4a",
 				"texture_map": {
 					"1909ead3-7e92-313f-7489-3c40abc1811d": "c064d146-a9c0-869b-e72f-fc632c726803"
@@ -1138,7 +1133,7 @@
 			},
 			{
 				"display_name": "Takeover3",
-				"name": "Takeover3",
+				"name": "takeover3",
 				"uuid": "384be109-5185-c839-31a2-d371669f77a0",
 				"texture_map": {
 					"1909ead3-7e92-313f-7489-3c40abc1811d": "c064d146-a9c0-869b-e72f-fc632c726803"
@@ -1155,7 +1150,7 @@
 			},
 			{
 				"display_name": "Takeover4",
-				"name": "Takeover4",
+				"name": "takeover4",
 				"uuid": "e66d68a1-f79b-97ce-c93a-f9b64e048af6",
 				"texture_map": {
 					"1909ead3-7e92-313f-7489-3c40abc1811d": "c064d146-a9c0-869b-e72f-fc632c726803"
@@ -1172,7 +1167,7 @@
 			},
 			{
 				"display_name": "Takeover5",
-				"name": "Takeover5",
+				"name": "takeover5",
 				"uuid": "9cf1a30c-669e-e682-01ff-fb09f2418eac",
 				"texture_map": {
 					"1909ead3-7e92-313f-7489-3c40abc1811d": "c064d146-a9c0-869b-e72f-fc632c726803"
@@ -1189,7 +1184,7 @@
 			},
 			{
 				"display_name": "Takeover6",
-				"name": "Takeover6",
+				"name": "takeover6",
 				"uuid": "b5064131-3d4b-eb54-5dc3-3776089ac2b6",
 				"texture_map": {
 					"1909ead3-7e92-313f-7489-3c40abc1811d": "c064d146-a9c0-869b-e72f-fc632c726803"
@@ -1794,7 +1789,7 @@
 			"override": false,
 			"length": 4,
 			"snapping": 20,
-			"selected": false,
+			"selected": true,
 			"saved": false,
 			"path": "",
 			"anim_time_update": "",

@@ -2,6 +2,7 @@ import { IBlueprintVariantJSON } from './blueprintFormat'
 import { PACKAGE } from './constants'
 import { events } from './util/events'
 import TransparentTexture from './assets/transparent.png'
+import { toSafeFuntionName } from './util/minecraftUtil'
 
 const OLD_PROJECT = Project
 // @ts-ignore
@@ -193,6 +194,7 @@ export class Variant {
 	}
 
 	public static makeNameUnique(variant: Variant, name: string): string {
+		name = toSafeFuntionName(name)
 		if (!Variant.all.some(v => v !== variant && v.name === name)) {
 			return name
 		}

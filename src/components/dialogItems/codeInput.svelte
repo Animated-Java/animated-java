@@ -44,7 +44,7 @@
 <style>
 	textarea {
 		resize: vertical;
-		word-wrap: unset;
+		text-wrap: nowrap;
 		min-height: 60px;
 		font-family: var(--font-code);
 	}

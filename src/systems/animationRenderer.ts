@@ -1,4 +1,10 @@
-import { roundToN } from '../util/misc'
+import {
+	getKeyframeCommands,
+	getKeyframeExecuteCondition,
+	getKeyframeRepeat,
+	getKeyframeRepeatFrequency,
+} from '../mods/customKeyframesMod'
+import { roundToNth } from '../util/misc'
 import { AnyRenderedNode, IRenderedRig } from './rigRenderer'
 import * as crypto from 'crypto'
 
@@ -30,7 +36,15 @@ export interface IAnimationNode {
 	pos: THREE.Vector3
 	rot: THREE.Quaternion
 	scale: THREE.Vector3
-	interpolation?: 'instant' | 'default'
+	interpolation?: 'step' | 'pre-post'
+	/**
+	 * Commands is only set for locator nodes
+	 */
+	commands?: string
+	/**
+	 * Execute condition is only set for locator nodes
+	 */
+	execute_condition?: string
 }
 
 export interface IRenderedFrame {
@@ -38,10 +52,6 @@ export interface IRenderedFrame {
 	nodes: IAnimationNode[]
 	variant?: {
 		uuid: string
-		executeCondition: string
-	}
-	commands?: {
-		commands: string
 		executeCondition: string
 	}
 	animationState?: {
@@ -64,10 +74,16 @@ export interface IRenderedAnimation {
 }
 
 let lastAnimation: _Animation
-let previousFrame: Record<
-	string,
-	{ matrix: number[]; interpolation: IAnimationNode['interpolation'] }
->
+interface ILastFrameCacheItem {
+	matrix: THREE.Matrix4
+	keyframe?: _Keyframe
+}
+let lastFrameCache = new Map<string, ILastFrameCacheItem>()
+/**
+ * Map of node UUIDs to a map of times to keyframes
+ */
+let keyframeCache = new Map<string, Map<number, _Keyframe | undefined>>()
+let excludedBonesCache = new Set<string>()
 export function getAnimationNodes(
 	animation: _Animation,
 	nodeMap: IRenderedRig['nodeMap'],
@@ -75,56 +91,88 @@ export function getAnimationNodes(
 ) {
 	if (lastAnimation !== animation) {
 		lastAnimation = animation
-		previousFrame = {}
+		lastFrameCache = new Map()
+		keyframeCache = new Map()
+		for (const [uuid, node] of Object.entries(nodeMap)) {
+			const animator = animation.getBoneAnimator(node.node)
+			const keyframeMap = new Map(animator.keyframes.map(kf => [kf.time, kf]))
+			keyframeCache.set(uuid, keyframeMap)
+		}
+		excludedBonesCache = new Set(animation.excluded_bones.map(b => b.value))
 	}
 	const nodes: IAnimationNode[] = []
 
 	for (const [uuid, node] of Object.entries(nodeMap)) {
 		if (!node.node.export) continue
-		if (animation.excluded_bones.find(b => b.value === uuid)) continue
+		if (excludedBonesCache.has(uuid)) continue
+		const keyframes = keyframeCache.get(uuid)
+		if (!keyframes) continue
+		const keyframe = keyframes.get(time)
+		const prevKeyframe = keyframes.get(time - 0.05)
+		const lastFrame = lastFrameCache.get(uuid)
 
-		const prevFrame = previousFrame[uuid]
-		let interpolation: IAnimationNode['interpolation'] = undefined
 		let matrix: THREE.Matrix4
+		let interpolation: IAnimationNode['interpolation']
+		let commands,
+			executeCondition: string | undefined,
+			repeat: boolean | undefined,
+			repeatFrequency: number | undefined
 		switch (node.type) {
 			case 'bone': {
 				matrix = getNodeMatrix(node.node, node.scale)
-				const animator = animation.animators[node.node.uuid]!
-				if (
-					animator?.keyframes
-						.filter(k => k.time === roundToN(time - 0.05, 20))
-						.find(k => k.data_points.length === 2)
-				) {
-					interpolation = 'instant'
-				} else if (previousFrame[uuid]?.interpolation === 'instant') {
-					interpolation = 'default'
+				// Only add the frame if the matrix has changed.
+				if (lastFrame && lastFrame.matrix.equals(matrix)) continue
+				// Inherit instant interpolation from parent
+				if (node.parentNode) {
+					const parentKeyframes = keyframeCache.get(node.parentNode.uuid)
+					const parentKeyframe = parentKeyframes?.get(time)
+					const prevParentKeyframe = parentKeyframes?.get(time - 0.05)
+					if (parentKeyframe?.interpolation === 'step') {
+						interpolation = 'step'
+					} else if (prevParentKeyframe?.data_points.length === 2) {
+						interpolation = 'pre-post'
+					}
+				}
+				// Instant interpolation
+				if (keyframe?.interpolation === 'step') {
+					interpolation = 'step'
+				} else if (prevKeyframe?.data_points.length === 2) {
+					interpolation = 'pre-post'
+				}
+
+				lastFrameCache.set(uuid, { matrix, keyframe })
+				break
+			}
+			case 'locator': {
+				matrix = getNodeMatrix(node.node, 1)
+				if (keyframe) {
+					commands = getKeyframeCommands(keyframe)
+					executeCondition = getKeyframeExecuteCondition(keyframe)
+					lastFrameCache.set(uuid, { matrix, keyframe })
+				} else if (lastFrame?.keyframe) {
+					repeat = getKeyframeRepeat(lastFrame.keyframe)
+					repeatFrequency = getKeyframeRepeatFrequency(lastFrame.keyframe)
+					if (
+						repeat &&
+						repeatFrequency &&
+						Math.round(time * 20) % repeatFrequency === 0
+					) {
+						commands = getKeyframeCommands(lastFrame.keyframe)
+						executeCondition = getKeyframeExecuteCondition(lastFrame.keyframe)
+					}
 				}
 				break
 			}
-			case 'locator':
-			case 'camera':
+			case 'camera': {
 				matrix = getNodeMatrix(node.node, 1)
 				break
+			}
 		}
 
 		const pos = new THREE.Vector3()
 		const rot = new THREE.Quaternion()
 		const scale = new THREE.Vector3()
 		matrix.decompose(pos, rot, scale)
-		const matrixArray = matrix.toArray()
-
-		if (
-			node.type === 'bone' &&
-			prevFrame !== undefined &&
-			prevFrame.matrix !== undefined &&
-			prevFrame.matrix.equals(matrixArray) &&
-			prevFrame.interpolation === interpolation
-		)
-			continue
-		previousFrame[uuid] = {
-			matrix: matrixArray,
-			interpolation,
-		}
 
 		nodes.push({
 			type: node.type,
@@ -136,6 +184,8 @@ export function getAnimationNodes(
 			rot,
 			scale,
 			interpolation,
+			commands,
+			execute_condition: executeCondition,
 		})
 	}
 
@@ -148,17 +198,6 @@ function getVariantKeyframe(animation: _Animation, time: number) {
 		if (kf.time === time)
 			return {
 				uuid: kf.data_points[0].variant,
-				executeCondition: kf.data_points[0].executeCondition,
-			}
-	}
-}
-
-function getCommandsKeyframe(animation: _Animation, time: number) {
-	if (!animation.animators.effects?.commands) return
-	for (const kf of animation.animators.effects.commands as _Keyframe[]) {
-		if (kf.time === time)
-			return {
-				commands: kf.data_points[0].commands,
 				executeCondition: kf.data_points[0].executeCondition,
 			}
 	}
@@ -185,7 +224,7 @@ export function updatePreview(animation: _Animation, time: number) {
 	for (const node of nodes) {
 		if (!(node.constructor as any).animator) continue
 		Animator.resetLastValues()
-		animation.getBoneAnimator(node).displayFrame(1)
+		animation.getBoneAnimator(node).displayFrame()
 	}
 	Animator.resetLastValues()
 	scene.updateMatrixWorld()
@@ -207,15 +246,12 @@ export function renderAnimation(animation: _Animation, rig: IRenderedRig) {
 
 	const includedNodes = new Set<string>()
 
-	for (let time = 0; time <= animation.length; time = roundToN(time + 0.05, 20)) {
-		// await new Promise(resolve => requestAnimationFrame(resolve))
-		// await new Promise(resolve => setTimeout(resolve, 50))
+	for (let time = 0; time <= animation.length; time = roundToNth(time + 0.05, 20)) {
 		updatePreview(animation, time)
 		const frame = {
 			time,
 			nodes: getAnimationNodes(animation, rig.nodeMap, time),
 			variant: getVariantKeyframe(animation, time),
-			commands: getCommandsKeyframe(animation, time),
 			animationState: getAnimationStateKeyframe(animation, time),
 		}
 		frame.nodes.forEach(n => includedNodes.add(n.uuid))
@@ -243,14 +279,12 @@ export function hashAnimations(animations: IRenderedAnimation[]) {
 				hash.update(';' + node.rot.toArray().join(';'))
 				hash.update(';' + node.scale.toArray().join(';'))
 				node.interpolation && hash.update(';' + node.interpolation)
+				if (node.commands) hash.update(';' + node.commands)
+				if (node.execute_condition) hash.update(';' + node.execute_condition)
 			}
 			if (frame.variant) {
 				hash.update(';' + frame.variant.uuid)
 				hash.update(';' + frame.variant.executeCondition)
-			}
-			if (frame.commands) {
-				hash.update(';' + frame.commands.commands)
-				hash.update(';' + frame.commands.executeCondition)
 			}
 			if (frame.animationState) {
 				hash.update(';' + frame.animationState.animation)

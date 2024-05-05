@@ -53,10 +53,7 @@ declare global {
 	}
 
 	interface Locator {
-		configs: {
-			default: IBlueprintVariantLocatorConfigJSON
-			variants: Record<string, IBlueprintVariantLocatorConfigJSON>
-		}
+		config: IBlueprintVariantLocatorConfigJSON
 	}
 
 	interface Cube {

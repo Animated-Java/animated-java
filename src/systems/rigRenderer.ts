@@ -3,7 +3,7 @@ import {
 	type IBlueprintVariantBoneConfigJSON,
 	IBlueprintVariantLocatorConfigJSON,
 } from '../blueprintFormat'
-import { BoneConfig } from '../boneConfig'
+import { BoneConfig, CameraConfig, LocatorConfig } from '../boneConfig'
 import {
 	MinecraftResourceLocation,
 	parseResourcePackPath,
@@ -71,10 +71,7 @@ export interface ICamera extends OutlinerElement {
 	linked_preview: string
 	camera_linked: boolean
 	visibility: boolean
-	configs: {
-		default: IBlueprintVariantCameraConfigJSON
-		variants: Record<string, IBlueprintVariantCameraConfigJSON>
-	}
+	config: IBlueprintVariantCameraConfigJSON
 }
 
 export interface IRenderedNodes {
@@ -97,18 +94,12 @@ export interface IRenderedNodes {
 		type: 'camera'
 		name: string
 		node: ICamera
-		configs: {
-			default: IBlueprintVariantCameraConfigJSON
-			variants: Record<string, IBlueprintVariantCameraConfigJSON>
-		}
+		config: IBlueprintVariantCameraConfigJSON
 	}
 	Locator: IRenderedNode & {
 		type: 'locator'
 		node: Locator
-		configs: {
-			default: IBlueprintVariantLocatorConfigJSON
-			variants: Record<string, IBlueprintVariantLocatorConfigJSON>
-		}
+		config: IBlueprintVariantLocatorConfigJSON
 	}
 }
 
@@ -379,7 +370,7 @@ function renderLocator(locator: Locator, rig: IRenderedRig): INodeStructure {
 		node: locator,
 		name: locator.name,
 		uuid: locator.uuid,
-		configs: locator.configs,
+		config: locator.config,
 	}
 
 	rig.nodeMap[locator.uuid] = renderedLocator
@@ -399,7 +390,7 @@ function renderCamera(camera: ICamera, rig: IRenderedRig): INodeStructure {
 		node: camera,
 		name: camera.name,
 		uuid: camera.uuid,
-		configs: camera.configs,
+		config: camera.config,
 	}
 
 	rig.nodeMap[camera.uuid] = renderedCamera
@@ -470,20 +461,31 @@ export function hashRig(rig: IRenderedRig) {
 		hash.update('node;')
 		hash.update(nodeUuid)
 		hash.update(node.name)
-		if (node.type === 'bone') {
-			const defaultConfig = BoneConfig.fromJSON(node.configs.default)
-			if (!defaultConfig.isDefault()) {
-				hash.update('defaultconfig;')
-				hash.update(defaultConfig.toNBT().toString())
-			}
-			for (const [variantName, config] of Object.entries(node.configs.variants)) {
-				console.log('variantconfig;', variantName, config)
-				const variantConfig = BoneConfig.fromJSON(config)
-				if (!variantConfig.isDefault()) {
-					hash.update('variantconfig;')
-					hash.update(variantName)
-					hash.update(variantConfig.toNBT().toString())
+		switch (node.type) {
+			case 'bone': {
+				const defaultConfig = BoneConfig.fromJSON(node.configs.default)
+				if (!defaultConfig.isDefault()) {
+					hash.update('defaultconfig;')
+					hash.update(defaultConfig.toNBT().toString())
 				}
+				for (const [variantName, config] of Object.entries(node.configs.variants)) {
+					console.log('variantconfig;', variantName, config)
+					const variantConfig = BoneConfig.fromJSON(config)
+					if (!variantConfig.isDefault()) {
+						hash.update('variantconfig;')
+						hash.update(variantName)
+						hash.update(variantConfig.toNBT().toString())
+					}
+				}
+				break
+			}
+			case 'locator': {
+				hash.update(JSON.stringify(LocatorConfig.fromJSON(node.config).toJSON()))
+				break
+			}
+			case 'camera': {
+				hash.update(JSON.stringify(CameraConfig.fromJSON(node.config).toJSON()))
+				break
 			}
 		}
 	}
@@ -538,5 +540,6 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 	}
 
 	console.timeEnd('Rendering rig took')
+	console.log('Rendered rig:', rig)
 	return rig
 }

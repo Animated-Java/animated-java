@@ -43,6 +43,7 @@ export interface IBlueprintVariantLocatorConfigJSON {
  */
 export interface IBlueprintVariantCameraConfigJSON {
 	entity_type: string
+	nbt: string
 	ticking_commands: string
 }
 
