@@ -19,6 +19,7 @@
     - [x] Locator config.
     - [x] Data Pack Compiler support.
 - [x] Natively support step keyframes.
+- [x] When upgrading old ajmodels, if they have command keyframes in the effect animator, create a locator at 0 0 0 with those keyframes.
 - [ ] Camera Plugin Support
     - [ ] Camera config.
     - [ ] Data Pack Compiler support.
@@ -28,7 +29,6 @@
 - [ ] Add a bone config option to replace the bone's display item with a custom item.
     - [ ] Will require somehow rendering the vanilla item/block model.
 - [ ] Add Variants to the UndoSystem
-- [ ] When upgrading old ajmodels, if they have command keyframes in the effect animator, create a locator at 0 0 0 with those keyframes.
 
 # Data Pack Compiler
 - [x] Merge on_tick and on_load function tags

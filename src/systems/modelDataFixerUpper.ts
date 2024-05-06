@@ -2,6 +2,7 @@ import { IBlueprintFormatJSON, getDefaultProjectSettings } from '../blueprintFor
 import { BoneConfig } from '../boneConfig'
 import { PACKAGE } from '../constants'
 import { openUnexpectedErrorDialog } from '../interface/unexpectedErrorDialog'
+import { LocatorAnimator } from '../mods/locatorAnimatorMod'
 
 export function process(model: any): any {
 	if (model.meta.model_format === 'animatedJava/ajmodel') {
@@ -283,6 +284,51 @@ function updateModelTo1_0(model: any) {
 			texture_map: variant.textureMap,
 			excluded_bones: excludedBones,
 		})
+	}
+
+	// Move command keyframes into commands channel on a "root" locator.
+	if (blueprint.animations) {
+		for (const animation of blueprint.animations) {
+			let keyframes: any[] = []
+			const effects = animation.animators.effects
+			if (!effects || !effects.keyframes) continue
+			for (const keyframe of effects.keyframes) {
+				if (
+					!keyframe ||
+					keyframe.channel !== 'commands' ||
+					(keyframe.data_points && keyframe.data_points.length < 1)
+				)
+					continue
+
+				for (const datapoint of keyframe.data_points) {
+					if (!datapoint.commands) continue
+					keyframes.push({
+						...keyframe,
+						data_points: [
+							{
+								commands: datapoint.commands,
+								time: datapoint.time,
+							},
+						],
+					})
+				}
+			}
+			if (keyframes.length > 0) {
+				const rootLocator = new Locator({
+					name: 'root',
+					from: [0, 0, 0],
+				}).getSaveCopy!()
+				const actualAnim = new Blockbench.Animation({}).extend(animation)
+				const rootAnimator = new LocatorAnimator(rootLocator.uuid, actualAnim, 'root')
+
+				for (const keyframe of keyframes) {
+					rootAnimator.addKeyframe(keyframe as KeyframeOptions)
+				}
+
+				const savedAnim = actualAnim.getUndoCopy({ bone_names: true }, true)
+				blueprint.animations.push(savedAnim)
+			}
+		}
 	}
 
 	// Convert rig nbt into data merge command
