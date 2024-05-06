@@ -43,8 +43,9 @@
 - [x] Add toggles to command keyframes to allow continuously running the commands in the keyframe instead of only once when the keyframe is reached.
 - [x] Teleport the rig to the execution location of the summon command.
 - [x] Rotate the bones with the root entity.
+- [x] Add default saved Locator positions to the summoned rig.
 - [ ] Figure out how cameras will work.
-- [ ] Rebuild main function tags based off of the AJ meta file to avoid issues with left-over function references.
+- [ ] Check for references to non-existant functions in merged function tags, and remove them.
 
 # Resource Pack
 

@@ -103,6 +103,7 @@ dir <%export_namespace%> {
 			}
 			REPEAT (Object.values(rig.nodeMap)) as node {
 				IF (node.type === 'locator' && node.config?.ticking_commands) {
+					# FIXME: Once https://github.com/mc-build/mcb/issues/15 is fixed this should be changed to a block instead of an execute run.
 					execute run { with entity @s item.components.minecraft:custom_data.locators.<%node.name%>
 						$execute positioned ^$(posx) ^$(posy) ^$(posz) rotated ~$(roty) ~$(rotx) run {
 							<%node.config.ticking_commands%>
@@ -134,38 +135,6 @@ dir <%export_namespace%> {
 		}
 	}
 
-	dir as_bone {
-		# All child functions of this folder run as a bone entity
-		# Runs before the bone is ticked.
-		tag functions pre_tick {
-		}
-		# Runs after the bone is ticked.
-		tag functions post_tick {
-		}
-		# Runs when the bone is summoned.
-		tag functions on_summon {
-		}
-		# Runs when the bone is removed.
-		tag functions on_remove {
-		}
-	}
-
-	dir as_locator {
-		# All child functions of this folder run as a locator entity
-		# Runs before the locator is ticked.
-		tag functions pre_tick {
-		}
-		# Runs after the locator is ticked.
-		tag functions post_tick {
-		}
-		# Runs when the locator is summoned.
-		tag functions on_summon {
-		}
-		# Runs when the locator is removed.
-		tag functions on_remove {
-		}
-	}
-
 	dir as_camera {
 		# All child functions of this folder run as a camera entity
 		# Runs before the camera is ticked.
@@ -185,21 +154,22 @@ dir <%export_namespace%> {
 	dir animations {
 		REPEAT (animations) as animation {
 			dir <%animation.name%> {
+				# TODO: Maybe add an exclusive argument to the play function that will pause all other animations before playing this one.
 				function play {
 					execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 						function *global/errors/function_not_executed_as_root_entity \
 							{'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/play'}
 					tag @s add <%TAGS.ANIMATION_PLAYING(export_namespace, animation.name)%>
-					scoreboard players set @s <%OBJECTIVES.FRAME()%> 1
-					execute at @s run function ./zzz/set_frame {frame: 1}
+					scoreboard players set @s <%OBJECTIVES.FRAME()%> 0
+					execute at @s run function ./zzz/set_frame {frame: 0}
 				}
 				function stop {
 					execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 						function *global/errors/function_not_executed_as_root_entity \
 							{'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/stop'}
 					tag @s remove <%TAGS.ANIMATION_PLAYING(export_namespace, animation.name)%>
-					scoreboard players set @s <%OBJECTIVES.FRAME()%> 1
-					execute at @s run function ./zzz/set_frame {frame: 1}
+					scoreboard players set @s <%OBJECTIVES.FRAME()%> 0
+					execute at @s run function ./zzz/set_frame {frame: 0}
 				}
 				function pause {
 					execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
@@ -266,11 +236,14 @@ dir <%export_namespace%> {
 						execute store result storage aj:temp frame int 1 run scoreboard players get @s <%OBJECTIVES.FRAME()%>
 						function ./apply_frame with storage aj:temp
 						IF (animation.loopMode === 'loop') {
-							execute if score @s <%OBJECTIVES.FRAME()%> matches <%animation.duration-1%>.. run scoreboard players set @s <%OBJECTIVES.FRAME()%> 0
+							execute if score @s <%OBJECTIVES.FRAME()%> matches <%animation.duration-2%>.. run return run {
+								scoreboard players set @s <%OBJECTIVES.FRAME()%> 0
+								function ./apply_frame {frame: <%animation.duration-1%>}
+							}
 						} ELSE IF (animation.loopMode === 'hold') {
-							execute if score @s <%OBJECTIVES.FRAME()%> matches <%animation.duration-1%>.. run function ../pause
+							execute if score @s <%OBJECTIVES.FRAME()%> matches <%animation.duration-1%>.. run return run function ../pause
 						} ELSE IF (animation.loopMode === 'once') {
-							execute if score @s <%OBJECTIVES.FRAME()%> matches <%animation.duration-1%> run function ../stop
+							execute if score @s <%OBJECTIVES.FRAME()%> matches <%animation.duration-1%> run return run function ../stop
 						}
 						scoreboard players add @s <%OBJECTIVES.FRAME()%> 1
 					}
@@ -302,8 +275,8 @@ dir <%export_namespace%> {
 						}
 						dir frames {
 							REPEAT (animation.frames) as frame {
-								function <%animation.frames.indexOf(frame)+1%> {
-									REPEAT (frame.nodes) as node {
+								function <%animation.frames.indexOf(frame)%> {
+									REPEAT (frame.nodes.sort(nodeSorter)) as node {
 										IF (node.type === 'bone') {
 											<%%
 												const last = global.lastActiveFrame[node.uuid]
@@ -342,7 +315,7 @@ dir <%export_namespace%> {
 													rotated \
 														~<%roundTo(node.rot.x, 10)%> \
 														~<%roundTo(node.rot.y, 10)%> \
-												run execute run {
+												run {
 													<%node.commands%>
 												}
 											}
@@ -357,8 +330,11 @@ dir <%export_namespace%> {
 		}
 		function pause_all {
 			# Pauses all animations
+			execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+				function *global/errors/function_not_executed_as_root_entity \
+					{'function_path': 'animated_java:<%export_namespace%>/animations/pause_all'}
 			REPEAT (animations) as animation {
-				function ./<%animation.name%>/pause
+				tag @s remove <%TAGS.ANIMATION_PLAYING(export_namespace, animation.name)%>
 			}
 		}
 	}
@@ -376,7 +352,10 @@ dir <%export_namespace%> {
 				id: '<%display_item%>', \
 				Count: 1b, \
 				components: { \
-					'minecraft:custom_data': {rigHash: '<%rigHash%>'}, \
+					'minecraft:custom_data': { \
+						rigHash: '<%rigHash%>', \
+						locators: <%locator_position_storage.toString()%> \
+					}, \
 					'minecraft:custom_model_data': 1 \
 				} \
 			}, \
@@ -413,13 +392,13 @@ dir <%export_namespace%> {
 					tellraw @a <%TELLRAW.ANIMATION_CANNOT_BE_EMPTY()%>
 					function *<%export_namespace%>/remove/this
 				}
-				execute store result score #frame <%OBJECTIVES.I()%> run data get storage aj:temp args.frame
+				execute store result storage aj:temp args.frame int 1 \
+					store result score #frame <%OBJECTIVES.I()%> run \
+						data get storage aj:temp args.frame
 				execute if score #frame <%OBJECTIVES.I()%> matches ..-1 run return run {
 					tellraw @a <%TELLRAW.FRAME_CANNOT_BE_NEGATIVE()%>
 					function *<%export_namespace%>/remove/this
 				}
-				# The frame list is 1-indexed, so we need to add 1 to the frame argument.
-				execute store result storage aj:temp args.frame int 1 run scoreboard players add #frame aj.i 1
 				# Attempt to apply the animation frame, if it fails, print an error.
 				execute store success score #success <%OBJECTIVES.I()%> run { with storage aj:temp args
 					$execute store success score #success <%OBJECTIVES.I()%> run function *<%export_namespace%>/animations/$(animation)/zzz/set_frame with storage aj:temp args
@@ -467,6 +446,9 @@ dir <%export_namespace%> {
 			execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 				function *global/errors/function_not_executed_as_root_entity \
 					{'function_path': 'animated_java:<%export_namespace%>/remove/this'}
+
+			# On Remove Event
+			function #animated_java:<%export_namespace%>/as_root/on_remove
 
 			execute on passengers run kill @s
 			kill @s

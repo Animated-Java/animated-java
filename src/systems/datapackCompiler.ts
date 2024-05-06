@@ -2,7 +2,7 @@ import { Compiler, Parser, Tokenizer, SyncIo } from 'mc-build'
 import { VariableMap } from 'mc-build/dist/mcl/Compiler'
 import { isFunctionTagPath } from '../util/fileUtil'
 import datapackTemplate from './animated_java.mcb'
-import { IRenderedRig } from './rigRenderer'
+import { AnyRenderedNode, IRenderedRig } from './rigRenderer'
 import { IRenderedAnimation } from './animationRenderer'
 import { Variant } from '../variants'
 import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString, NbtTag } from 'deepslate'
@@ -406,6 +406,29 @@ function createAnimationStorage(animations: IRenderedAnimation[]) {
 	return storage
 }
 
+function createLocatorPositionStorage(rig: IRenderedRig) {
+	const storage = new NbtCompound()
+	for (const node of Object.values(rig.defaultPose)) {
+		if (node.type !== 'locator') continue
+		storage.set(
+			node.name,
+			new NbtCompound()
+				.set('posx', new NbtFloat(node.pos.x))
+				.set('posy', new NbtFloat(node.pos.y))
+				.set('posz', new NbtFloat(node.pos.z))
+				.set('rotx', new NbtFloat(node.rot.x))
+				.set('roty', new NbtFloat(node.rot.y))
+		)
+	}
+	return storage
+}
+
+function nodeSorter(a: AnyRenderedNode, b: AnyRenderedNode): number {
+	if (a.type === 'bone' && b.type !== 'bone') return -1
+	if (a.type !== 'bone' && b.type === 'bone') return 1
+	return 0
+}
+
 export async function compileDataPack(options: {
 	rig: IRenderedRig
 	animations: IRenderedAnimation[]
@@ -509,6 +532,8 @@ export async function compileDataPack(options: {
 		boundingBox: aj.bounding_box,
 		BoneConfig,
 		roundTo,
+		nodeSorter,
+		locator_position_storage: createLocatorPositionStorage(rig),
 	}
 	console.log('Compiler Variables:', variables)
 

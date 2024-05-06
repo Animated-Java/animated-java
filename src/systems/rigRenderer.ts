@@ -480,11 +480,15 @@ export function hashRig(rig: IRenderedRig) {
 				break
 			}
 			case 'locator': {
-				hash.update(JSON.stringify(LocatorConfig.fromJSON(node.config).toJSON()))
+				if (node.config) {
+					hash.update(';' + JSON.stringify(LocatorConfig.fromJSON(node.config).toJSON()))
+				}
 				break
 			}
 			case 'camera': {
-				hash.update(JSON.stringify(CameraConfig.fromJSON(node.config).toJSON()))
+				if (node.config) {
+					hash.update(';' + JSON.stringify(CameraConfig.fromJSON(node.config).toJSON()))
+				}
 				break
 			}
 		}

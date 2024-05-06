@@ -844,7 +844,7 @@
 			"visibility": true,
 			"locked": false,
 			"config": {
-				"ticking_commands": ""
+				"ticking_commands": "particle minecraft:bubble ~ ~ ~"
 			},
 			"uuid": "7747736f-85e2-338f-207e-53f8d3d2fa39",
 			"type": "locator"
@@ -902,7 +902,7 @@
 					"uuid": "102db36a-eeda-0e6f-d5cc-c186ecda8165",
 					"export": true,
 					"mirror_uv": false,
-					"isOpen": true,
+					"isOpen": false,
 					"locked": false,
 					"visibility": true,
 					"autouv": 0,
@@ -1594,6 +1594,212 @@
 								}
 							],
 							"uuid": "fe357d53-5802-876b-c5d0-9eb8a19f573b",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						}
+					]
+				}
+			}
+		},
+		{
+			"uuid": "5e3039f9-10df-1514-b93e-00a5072bce17",
+			"name": "worm",
+			"loop": "loop",
+			"override": false,
+			"length": 1,
+			"snapping": 20,
+			"selected": false,
+			"saved": false,
+			"path": "",
+			"anim_time_update": "",
+			"blend_weight": "",
+			"start_delay": "",
+			"loop_delay": "",
+			"excluded_bones": [],
+			"animators": {
+				"5e08acae-d6ca-0dfd-9360-8cdb13c7a824": {
+					"name": "armor_stand_root",
+					"type": "bone",
+					"keyframes": [
+						{
+							"channel": "rotation",
+							"data_points": [
+								{
+									"x": 90,
+									"y": "0",
+									"z": "0"
+								}
+							],
+							"uuid": "6c5f5c32-6af9-adf1-dcb4-9a16b85bc0ed",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						},
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "0",
+									"y": 0,
+									"z": 13
+								}
+							],
+							"uuid": "76d2f009-56ee-aced-904d-622f9cef4131",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						}
+					]
+				},
+				"98a28100-07e8-849a-38b7-f56abc2c2e56": {
+					"name": "waist_pivot",
+					"type": "bone",
+					"keyframes": [
+						{
+							"channel": "rotation",
+							"data_points": [
+								{
+									"x": "math.cos(q.life_time * 360) * 22.5",
+									"y": "0",
+									"z": "0"
+								}
+							],
+							"uuid": "7fe2a851-e166-e00e-3657-9284a7c7703a",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						},
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "0",
+									"y": "math.cos(q.life_time * 360) * 0.75",
+									"z": "4 + math.sin(q.life_time * 360) * 4"
+								}
+							],
+							"uuid": "3f8c3676-ddb0-11cf-2aa7-2ba18e4d332c",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						}
+					]
+				},
+				"49e67c2a-3d1d-792d-9c75-72ecbc0f92e0": {
+					"name": "body_waist_pivot",
+					"type": "bone",
+					"keyframes": [
+						{
+							"channel": "rotation",
+							"data_points": [
+								{
+									"x": "-6\n+ math.sin(q.life_time * 360) * 22.5",
+									"y": "0",
+									"z": "0"
+								}
+							],
+							"uuid": "607b0e6d-bf19-01cf-325c-0feef8b8d92b",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						}
+					]
+				},
+				"808e3c26-7285-af3f-a079-d8b899176dd3": {
+					"name": "head",
+					"type": "bone",
+					"keyframes": [
+						{
+							"channel": "rotation",
+							"data_points": [
+								{
+									"x": "-math.cos(q.life_time * 360) * 22.5",
+									"y": "0",
+									"z": "0"
+								}
+							],
+							"uuid": "43d2c0b4-8c67-a5bc-9183-4d61ef9123e3",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						}
+					]
+				},
+				"b5b52d2c-097c-08df-6457-372fbae12445": {
+					"name": "left_arm",
+					"type": "bone",
+					"keyframes": [
+						{
+							"channel": "rotation",
+							"data_points": [
+								{
+									"x": "-math.cos(q.life_time * 360) * 12.25",
+									"y": "0",
+									"z": "0"
+								}
+							],
+							"uuid": "bd8f4462-cc31-e96a-d72a-fd448f139d40",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						}
+					]
+				},
+				"215d1b02-0e64-a794-1b88-a9c5a6d7541c": {
+					"name": "right_arm",
+					"type": "bone",
+					"keyframes": [
+						{
+							"channel": "rotation",
+							"data_points": [
+								{
+									"x": "-math.cos(q.life_time * 360) * 12.25",
+									"y": "0",
+									"z": "0"
+								}
+							],
+							"uuid": "9887d189-06e4-67c1-e748-673c746bdd8e",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						}
+					]
+				},
+				"55b812fe-7e4c-b2a5-da5b-3a8c82f9fc69": {
+					"name": "left_leg",
+					"type": "bone",
+					"keyframes": [
+						{
+							"channel": "rotation",
+							"data_points": [
+								{
+									"x": "-math.sin(q.life_time * 360) * 22.5",
+									"y": "0",
+									"z": "0"
+								}
+							],
+							"uuid": "c443d63d-fe82-e608-00d9-436144190f3d",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						}
+					]
+				},
+				"60d50d30-a018-429d-ba78-c5fb5804dd8a": {
+					"name": "right_leg",
+					"type": "bone",
+					"keyframes": [
+						{
+							"channel": "rotation",
+							"data_points": [
+								{
+									"x": "-math.sin(q.life_time * 360) * 22.5",
+									"y": "0",
+									"z": "0"
+								}
+							],
+							"uuid": "bb7b0603-f063-d0bb-fc1e-b9c34ed48bf8",
 							"time": 0,
 							"color": -1,
 							"interpolation": "linear"
@@ -2513,7 +2719,7 @@
 			"name": "sitting",
 			"loop": "loop",
 			"override": false,
-			"length": 1,
+			"length": 2,
 			"snapping": 20,
 			"selected": false,
 			"saved": false,
@@ -2939,7 +3145,7 @@
 			"override": false,
 			"length": 2,
 			"snapping": 20,
-			"selected": false,
+			"selected": true,
 			"saved": false,
 			"path": "",
 			"anim_time_update": "",
@@ -3044,23 +3250,6 @@
 					]
 				}
 			}
-		},
-		{
-			"uuid": "5e3039f9-10df-1514-b93e-00a5072bce17",
-			"name": "worm",
-			"loop": "loop",
-			"override": false,
-			"length": 0.05,
-			"snapping": 20,
-			"selected": true,
-			"saved": false,
-			"path": "",
-			"anim_time_update": "",
-			"blend_weight": "",
-			"start_delay": "",
-			"loop_delay": "",
-			"excluded_bones": [],
-			"animators": {}
 		}
 	],
 	"animation_controllers": [],
