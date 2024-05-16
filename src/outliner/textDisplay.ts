@@ -222,7 +222,7 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 		void getVanillaFont().then(async () => {
 			let text: JsonText | undefined
 			try {
-				text = JsonText.fromString(el.text + 'awd')
+				text = JsonText.fromString(el.text)
 			} catch (e: any) {
 				console.error('Failed to parse JsonText:', e)
 			}
