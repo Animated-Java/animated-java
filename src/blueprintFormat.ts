@@ -13,38 +13,38 @@ import { TRANSPARENT_TEXTURE, TRANSPARENT_TEXTURE_MATERIAL, Variant } from './va
  * The serialized Variant Bone Config
  */
 export interface IBlueprintVariantBoneConfigJSON {
-	billboard: BoneConfig['billboard']
-	override_brightness: BoneConfig['overrideBrightness']
-	brightness_override: BoneConfig['brightnessOverride']
-	enchanted: BoneConfig['enchanted']
-	glowing: BoneConfig['glowing']
-	override_glow_color: BoneConfig['overrideGlowColor']
-	glow_color: BoneConfig['glowColor']
-	inherit_settings: BoneConfig['inheritSettings']
-	invisible: BoneConfig['invisible']
+	billboard?: BoneConfig['billboard']
+	override_brightness?: BoneConfig['overrideBrightness']
+	brightness_override?: BoneConfig['brightnessOverride']
+	enchanted?: BoneConfig['enchanted']
+	glowing?: BoneConfig['glowing']
+	override_glow_color?: BoneConfig['overrideGlowColor']
+	glow_color?: BoneConfig['glowColor']
+	inherit_settings?: BoneConfig['inheritSettings']
+	invisible?: BoneConfig['invisible']
 	/**
 	 * Custom NBT for the bone that will be merged when this Variant is applied
 	 */
-	nbt: BoneConfig['nbt']
-	shadow_radius: BoneConfig['shadowRadius']
-	shadow_strength: BoneConfig['shadowStrength']
-	use_nbt: BoneConfig['useNBT']
+	nbt?: BoneConfig['nbt']
+	shadow_radius?: BoneConfig['shadowRadius']
+	shadow_strength?: BoneConfig['shadowStrength']
+	use_nbt?: BoneConfig['useNBT']
 }
 
 /**
  * The serialized Variant Locator Config
  */
 export interface IBlueprintVariantLocatorConfigJSON {
-	ticking_commands: string
+	ticking_commands?: string
 }
 
 /**
  * The serialized Variant Camera Config
  */
 export interface IBlueprintVariantCameraConfigJSON {
-	entity_type: string
-	nbt: string
-	ticking_commands: string
+	entity_type?: string
+	nbt?: string
+	ticking_commands?: string
 }
 
 /**
@@ -241,22 +241,26 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 		if (model.elements) {
 			const defaultTexture = Texture.getDefault()
 			for (const element of model.elements) {
-				const newElement = OutlinerElement.fromSave(element, true) as Cube
-				for (const face in newElement.faces) {
-					if (element.faces) {
-						const texture =
-							element.faces[face].texture !== undefined &&
-							Texture.all[element.faces[face].texture]
-						if (texture) {
-							newElement.faces[face].texture = texture.uuid
+				const newElement = OutlinerElement.fromSave(element, true)
+				if (newElement instanceof Cube) {
+					for (const face in newElement.faces) {
+						if (element.faces) {
+							const texture =
+								element.faces[face].texture !== undefined &&
+								Texture.all[element.faces[face].texture]
+							if (texture) {
+								newElement.faces[face].texture = texture.uuid
+							}
+						} else if (
+							defaultTexture &&
+							newElement.faces &&
+							newElement.faces[face].texture !== undefined
+						) {
+							newElement.faces[face].texture = defaultTexture.uuid
 						}
-					} else if (
-						defaultTexture &&
-						newElement.faces &&
-						newElement.faces[face].texture !== undefined
-					) {
-						newElement.faces[face].texture = defaultTexture.uuid
 					}
+				} else if (newElement instanceof AnimatedJava.API.TextDisplay) {
+					console.log('TextDisplay', newElement)
 				}
 			}
 		}
@@ -508,7 +512,7 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 			const element = document.querySelector('#tab_bar_list .icon-armor_stand.icon')
 			element?.remove()
 			// Custom title
-			injectSvelteCompomponent({
+			void injectSvelteCompomponent({
 				elementSelector: () => {
 					const titles = [...document.querySelectorAll('.project_tab.selected')]
 					titles.filter(title => title.textContent === Project!.name)
@@ -576,8 +580,12 @@ export function saveBlueprint() {
 
 export function updateRotationLock() {
 	if (!isCurrentFormat()) return
-	BLUEPRINT_FORMAT.rotation_limit = !Group.selected
-	BLUEPRINT_FORMAT.rotation_snap = !Group.selected
+	BLUEPRINT_FORMAT.rotation_limit = !(
+		Group.selected || !!AnimatedJava.API.TextDisplay.selected.length
+	)
+	BLUEPRINT_FORMAT.rotation_snap = !(
+		Group.selected || !!AnimatedJava.API.TextDisplay.selected.length
+	)
 }
 
 export function disableRotationLock() {

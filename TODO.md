@@ -27,8 +27,25 @@
 - [ ] Add an about page.
 - [ ] Respect inheritance in the bone config.
 - [ ] Add a bone config option to replace the bone's display item with a custom item.
-    - [ ] Will require somehow rendering the vanilla item/block model.
+    - [ ] Will require somehow rendering the vanilla item/block model. - I've setup the assetsManager to handle loading, and updating the vanilla assets. Now I need to figure out how to load and render them.
 - [ ] Add Variants to the UndoSystem
+- [ ] Add support for Text Displays
+    - [x] Basic rendering
+    - [x] Word wrapping - Thanks Fetchbot!
+    - [x] Italic
+    - [x] Bold
+    - [x] Underline
+    - [x] Strikethrough
+    - [x] Support vanilla fonts
+        - [x] minecraft:default
+        - [x] minecraft:alt
+        - [x] minecraft:illageralt
+    - [ ] User interface
+        - [ ] Figure out a nice way to configure text displays...
+        - [ ] Include an option to change the text.
+        - [ ] Include an option to change the max line width.
+    - [ ] Animation
+        - [ ] Make sure the text display is animatable.
 
 # Data Pack Compiler
 - [x] Merge on_tick and on_load function tags
@@ -46,6 +63,7 @@
 - [x] Add default saved Locator positions to the summoned rig.
 - [ ] Figure out how cameras will work.
 - [ ] Check for references to non-existant functions in merged function tags, and remove them.
+- [ ] Add support for text displays.
 
 # Resource Pack
 
@@ -68,3 +86,7 @@
     - [ ] Create a `v1.0.0` tag.
     - [ ] Create a `legacy-v0.4.8` tag.
     - [x] Create a `legacy-armorstands` tag.
+
+# Post 1.0.0
+- [ ] Add support for [block-display.com's API](https://wiki.block-display.com/api/get-api)
+

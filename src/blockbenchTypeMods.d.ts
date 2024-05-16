@@ -1,7 +1,17 @@
 import type {
+	BLUEPRINT_CODEC,
+	BLUEPRINT_FORMAT,
 	IBlueprintVariantBoneConfigJSON,
 	IBlueprintVariantLocatorConfigJSON,
 } from './blueprintFormat'
+import { blueprintSettingErrors } from './blueprintSettings'
+import { openExportProgressDialog } from './interface/exportProgressDialog'
+import { openUnexpectedErrorDialog } from './interface/unexpectedErrorDialog'
+import { TextDisplay } from './outliner/textDisplay'
+import { compileDataPack } from './systems/datapackCompiler'
+import { compileResourcePack } from './systems/resourcepackCompiler'
+import { MINECRAFT_REGISTRY } from './systems/minecraft/registryManager'
+import { isDataPackPath, isResourcePackPath } from './util/minecraftUtil'
 import { Valuable } from './util/stores'
 import { type Variant } from './variants'
 
@@ -48,6 +58,10 @@ declare global {
 	interface Group {
 		configs: {
 			default: IBlueprintVariantBoneConfigJSON
+			/**
+			 * @key Variant UUID
+			 * @value Variant Bone Config
+			 */
 			variants: Record<string, IBlueprintVariantBoneConfigJSON>
 		}
 	}
@@ -62,5 +76,23 @@ declare global {
 
 	interface CubeFace {
 		lastVariant: Variant | undefined
+	}
+
+	const AnimatedJava: {
+		API: {
+			compileDataPack: typeof compileDataPack
+			compileResourcePack: typeof compileResourcePack
+			Variant: typeof Variant
+			MINECRAFT_REGISTRY: typeof MINECRAFT_REGISTRY
+			openExportProgressDialog: typeof openExportProgressDialog
+			isResourcePackPath: typeof isResourcePackPath
+			isDataPackPath: typeof isDataPackPath
+			blueprintSettingErrors: typeof blueprintSettingErrors
+			openUnexpectedErrorDialog: typeof openUnexpectedErrorDialog
+			TRANSPARENT_TEXTURE: Texture
+			BLUEPRINT_FORMAT: typeof BLUEPRINT_FORMAT
+			BLUEPRINT_CODEC: typeof BLUEPRINT_CODEC
+			TextDisplay: typeof TextDisplay
+		}
 	}
 }

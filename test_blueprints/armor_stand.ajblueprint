@@ -10,7 +10,7 @@
 		"export_namespace": "armor_stand",
 		"show_bounding_box": false,
 		"auto_bounding_box": true,
-		"bounding_box": [32, 32],
+		"bounding_box": [95, 32],
 		"enable_plugin_mode": false,
 		"enable_resource_pack": true,
 		"enable_data_pack": true,
@@ -848,6 +848,19 @@
 			},
 			"uuid": "7747736f-85e2-338f-207e-53f8d3d2fa39",
 			"type": "locator"
+		},
+		{
+			"text": "Hello World! ☺",
+			"position": [0, 33, -4],
+			"rotation": [0, 0, 0],
+			"scale": [1, 1, 1],
+			"lineLength": 50,
+			"backgroundColor": "#000000",
+			"backgroundAlpha": 0.25,
+			"align": "center",
+			"visibility": "true",
+			"uuid": "365b1266-1125-13e1-01ee-5a82335137f4",
+			"type": "animated_java:text_display"
 		}
 	],
 	"outliner": [
@@ -1323,7 +1336,8 @@
 					]
 				}
 			]
-		}
+		},
+		"365b1266-1125-13e1-01ee-5a82335137f4"
 	],
 	"textures": [
 		{
@@ -3145,7 +3159,7 @@
 			"override": false,
 			"length": 2,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"saved": false,
 			"path": "",
 			"anim_time_update": "",

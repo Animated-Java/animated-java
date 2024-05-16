@@ -15,7 +15,7 @@ import {
 import { BoneConfig } from '../boneConfig'
 import { IBlueprintVariantBoneConfigJSON } from '../blueprintFormat'
 import { IFunctionTag, mergeTag, parseDataPackPath } from '../util/minecraftUtil'
-import { JsonText } from '../util/jsonText'
+import { JsonText } from './minecraft/jsonText'
 import { MAX_PROGRESS, PROGRESS } from '../interface/exportProgressDialog'
 import { roundTo } from '../util/misc'
 

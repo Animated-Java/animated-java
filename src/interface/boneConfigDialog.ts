@@ -8,30 +8,76 @@ import { SvelteDialog } from '../util/svelteDialog'
 import { translate } from '../util/translation'
 import { Variant } from '../variants'
 
+// TODO: These should probably be part of the BoneConfig class
+function propagateInheritanceUp(group: Group, config: BoneConfig, variant?: string): void {
+	// Recurse to the topmost parent that doesn't have inherit_settings enabled, then inherit down from there
+	if (group.parent instanceof Group) {
+		const parentConfig = variant ? group.configs.variants[variant] : group.configs.default
+		if (parentConfig) {
+			console.log('propagating inheritance up', group.name)
+			if (parentConfig.inherit_settings) {
+				propagateInheritanceUp(group.parent, config, variant)
+			}
+			const parentBoneConfig = BoneConfig.fromJSON(parentConfig)
+			config.inheritFrom(parentBoneConfig)
+			if (variant) group.configs.variants[variant] = config.toJSON()
+			else group.configs.default = config.toJSON()
+		}
+	}
+}
+
+function propagateInheritanceDown(group: Group, config: BoneConfig, variant?: string) {
+	for (const child of group.children) {
+		if (!(child instanceof Group)) continue
+		const childConfig = variant ? child.configs.variants[variant] : child.configs.default
+		if (childConfig && childConfig.inherit_settings) {
+			console.log('propagating inheritance down', child.name)
+			const childBoneConfig = BoneConfig.fromJSON(childConfig)
+			childBoneConfig.inheritFrom(config)
+			if (variant) child.configs.variants[variant] = childBoneConfig.toJSON()
+			else child.configs.default = childBoneConfig.toJSON()
+			propagateInheritanceDown(child, childBoneConfig, variant)
+		}
+	}
+}
+
 export function openBoneConfigDialog(bone: Group) {
 	// Blockbench's JSON stringifier doesn't handle custom toJSON functions, so I'm storing the config JSON in the bone instead of the actual BoneConfig object
 	let boneConfigJSON = (bone.configs.default ??= new BoneConfig().toJSON())
+	let parentConfigJSON =
+		bone.parent instanceof Group
+			? (bone.parent.configs.default ??= new BoneConfig().toJSON())
+			: undefined
 
 	if (Variant.selected && !Variant.selected.isDefault) {
 		// Get the variant's config, or create a new one if it doesn't exist
 		boneConfigJSON = bone.configs.variants[Variant.selected.uuid] ??= new BoneConfig().toJSON()
+		parentConfigJSON =
+			bone.parent instanceof Group
+				? (bone.parent.configs.variants[Variant.selected.uuid] ??=
+						new BoneConfig().toJSON())
+				: undefined
 	}
 
-	const boneConfig = BoneConfig.fromJSON(boneConfigJSON)
+	const parentConfig = parentConfigJSON
+		? BoneConfig.fromJSON(parentConfigJSON)
+		: BoneConfig.getDefault()
 
-	const billboard = new Valuable(boneConfig.billboard)
-	const overrideBrightness = new Valuable(boneConfig.overrideBrightness)
-	const brightnessOverride = new Valuable(boneConfig.brightnessOverride)
-	const enchanted = new Valuable(boneConfig.enchanted)
-	const glowing = new Valuable(boneConfig.glowing)
-	const overrideGlowColor = new Valuable(boneConfig.overrideGlowColor)
-	const glowColor = new Valuable(boneConfig.glowColor)
-	const inheritSettings = new Valuable(boneConfig.inheritSettings)
-	const invisible = new Valuable(boneConfig.invisible)
-	const nbt = new Valuable(boneConfig.nbt)
-	const shadowRadius = new Valuable(boneConfig.shadowRadius)
-	const shadowStrength = new Valuable(boneConfig.shadowStrength)
-	const useNBT = new Valuable(boneConfig.useNBT)
+	const oldConfig = BoneConfig.fromJSON(boneConfigJSON)
+
+	const billboard = new Valuable(oldConfig.billboard)
+	const overrideBrightness = new Valuable(oldConfig.overrideBrightness)
+	const brightnessOverride = new Valuable(oldConfig.brightnessOverride)
+	const enchanted = new Valuable(oldConfig.enchanted)
+	const glowing = new Valuable(oldConfig.glowing)
+	const overrideGlowColor = new Valuable(oldConfig.overrideGlowColor)
+	const glowColor = new Valuable(oldConfig.glowColor)
+	const inheritSettings = new Valuable(oldConfig.inheritSettings)
+	const invisible = new Valuable(oldConfig.invisible)
+	const nbt = new Valuable(oldConfig.nbt)
+	const shadowRadius = new Valuable(oldConfig.shadowRadius)
+	const shadowStrength = new Valuable(oldConfig.shadowStrength)
+	const useNBT = new Valuable(oldConfig.useNBT)
 
 	new SvelteDialog({
 		id: `${PACKAGE.name}:boneConfig`,
@@ -40,6 +86,7 @@ export function openBoneConfigDialog(bone: Group) {
 		svelteComponent: BoneConfigDialogSvelteComponent,
 		svelteComponentProperties: {
 			variant: Variant.selected,
+			parentConfig,
 			billboard,
 			overrideBrightness,
 			brightnessOverride,
@@ -56,30 +103,40 @@ export function openBoneConfigDialog(bone: Group) {
 		},
 		preventKeybinds: true,
 		onConfirm() {
-			boneConfig.billboard = billboard.get()
-			boneConfig.overrideBrightness = overrideBrightness.get()
-			boneConfig.brightnessOverride = brightnessOverride.get()
-			boneConfig.enchanted = enchanted.get()
-			boneConfig.glowing = glowing.get()
-			boneConfig.overrideGlowColor = overrideGlowColor.get()
-			boneConfig.glowColor = glowColor.get()
-			boneConfig.inheritSettings = inheritSettings.get()
-			boneConfig.invisible = invisible.get()
-			boneConfig.nbt = nbt.get()
-			boneConfig.shadowRadius = shadowRadius.get()
-			boneConfig.shadowStrength = shadowStrength.get()
-			boneConfig.useNBT = useNBT.get()
+			const newConfig = new BoneConfig()
 
-			if (boneConfig.checkIfEqual(BoneConfig.fromJSON(bone.configs.default))) {
+			newConfig.billboard = billboard.get()
+			newConfig.overrideBrightness = overrideBrightness.get()
+			newConfig.brightnessOverride = brightnessOverride.get()
+			newConfig.enchanted = enchanted.get()
+			newConfig.glowing = glowing.get()
+			newConfig.overrideGlowColor = overrideGlowColor.get()
+			newConfig.glowColor = glowColor.get()
+			newConfig.inheritSettings = inheritSettings.get()
+			newConfig.invisible = invisible.get()
+			newConfig.nbt = nbt.get()
+			newConfig.shadowRadius = shadowRadius.get()
+			newConfig.shadowStrength = shadowStrength.get()
+			newConfig.useNBT = useNBT.get()
+
+			if (newConfig.checkIfEqual(BoneConfig.fromJSON(bone.configs.default))) {
 				// Don't save the variant config if it's the same as the default
 				delete bone.configs.variants[Variant.selected!.uuid]
 				return
 			}
 
 			if (Variant.selected && !Variant.selected.isDefault) {
-				bone.configs.variants[Variant.selected.uuid] = boneConfig.toJSON()
+				if (newConfig.inheritSettings) {
+					propagateInheritanceUp(bone, newConfig, Variant.selected.uuid)
+				}
+				bone.configs.variants[Variant.selected.uuid] = newConfig.toJSON()
+				propagateInheritanceDown(bone, newConfig, Variant.selected.uuid)
 			} else {
-				bone.configs.default = boneConfig.toJSON()
+				if (newConfig.inheritSettings) {
+					propagateInheritanceUp(bone, newConfig)
+				}
+				bone.configs.default = newConfig.toJSON()
+				propagateInheritanceDown(bone, newConfig)
 			}
 		},
 	}).show()

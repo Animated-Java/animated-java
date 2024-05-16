@@ -2,7 +2,7 @@
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
 	import { resolveEnvVariables } from '../util/misc'
-	import { MINECRAFT_REGISTRY } from '../util/minecraftRegistries'
+	import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
 
 	import Checkbox from './dialogItems/checkbox.svelte'
 	import NumberSlider from './dialogItems/numberSlider.svelte'

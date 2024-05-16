@@ -17,18 +17,18 @@
 	export let variant: Variant
 
 	export let billboard: Valuable<string>
-	export let overrideBrightness: Valuable<boolean>
-	export let brightnessOverride: Valuable<BoneConfig['brightnessOverride']>
-	export let enchanted: Valuable<BoneConfig['enchanted']>
-	export let glowing: Valuable<BoneConfig['glowing']>
-	export let overrideGlowColor: Valuable<boolean>
-	export let glowColor: Valuable<BoneConfig['glowColor']>
-	export let inheritSettings: Valuable<BoneConfig['inheritSettings']>
-	export let invisible: Valuable<BoneConfig['invisible']>
-	export let nbt: Valuable<BoneConfig['nbt']>
-	export let shadowRadius: Valuable<BoneConfig['shadowRadius']>
-	export let shadowStrength: Valuable<BoneConfig['shadowStrength']>
-	export let useNBT: Valuable<BoneConfig['useNBT']>
+	export let overrideBrightness: Valuable<NonNullable<BoneConfig['_overrideBrightness']>>
+	export let brightnessOverride: Valuable<NonNullable<BoneConfig['_brightnessOverride']>>
+	export let enchanted: Valuable<NonNullable<BoneConfig['_enchanted']>>
+	export let glowing: Valuable<NonNullable<BoneConfig['_glowing']>>
+	export let overrideGlowColor: Valuable<NonNullable<BoneConfig['_overrideGlowColor']>>
+	export let glowColor: Valuable<NonNullable<BoneConfig['_glowColor']>>
+	export let inheritSettings: Valuable<NonNullable<BoneConfig['_inheritSettings']>>
+	export let invisible: Valuable<NonNullable<BoneConfig['_invisible']>>
+	export let nbt: Valuable<NonNullable<BoneConfig['_nbt']>>
+	export let shadowRadius: Valuable<NonNullable<BoneConfig['_shadowRadius']>>
+	export let shadowStrength: Valuable<NonNullable<BoneConfig['_shadowStrength']>>
+	export let useNBT: Valuable<NonNullable<BoneConfig['_useNBT']>>
 
 	const billboardOptions: Record<BoneConfig['billboard'], string> = {
 		fixed: translate('dialog.bone_config.billboard.options.fixed'),
@@ -235,7 +235,6 @@
 		margin-bottom: 8px;
 	}
 	.selected_variant_title {
-		text-align: center;
 		font-size: 1.2em;
 		margin-bottom: 8px;
 	}

@@ -34,18 +34,46 @@ import './mods/saveProjectActionMod'
 import './mods/saveProjectAsActionMod'
 import './mods/variantPreviewCubeFaceMod'
 import './mods/locatorAnimatorMod'
+// Outliner
+import './outliner/textDisplay'
 // Compilers
 import { compileDataPack } from './systems/datapackCompiler'
+// Minecraft Systems
+import './systems/minecraft/versionManager'
+import './systems/minecraft/registryManager'
+import './systems/minecraft/assetManager'
+import './systems/minecraft/fontManager'
 // Misc imports
 import { TRANSPARENT_TEXTURE, Variant } from './variants'
-import './util/minecraftRegistries'
-import { MINECRAFT_REGISTRY } from './util/minecraftRegistries'
+import './systems/minecraft/registryManager'
+import { MINECRAFT_REGISTRY } from './systems/minecraft/registryManager'
 import { compileResourcePack } from './systems/resourcepackCompiler'
 import { openExportProgressDialog } from './interface/exportProgressDialog'
 import { isDataPackPath, isResourcePackPath } from './util/minecraftUtil'
 import { blueprintSettingErrors } from './blueprintSettings'
 import { openUnexpectedErrorDialog } from './interface/unexpectedErrorDialog'
 import { BLUEPRINT_CODEC, BLUEPRINT_FORMAT } from './blueprintFormat'
+import { TextDisplay } from './outliner/textDisplay'
+import { getLatestVersionClientDownloadUrl } from './systems/minecraft/assetManager'
+import { hideLoadingPopup, showLoadingPopup } from './interface/animatedJavaLoadingPopup'
+import { getVanillaFont } from './systems/minecraft/fontManager'
+
+// Show loading popup
+void showLoadingPopup().then(async () => {
+	await Promise.all([
+		new Promise<void>(resolve => {
+			events.MINECRAFT_ASSETS_LOADED.subscribe(() => resolve())
+		}),
+		new Promise<void>(resolve => {
+			events.MINECRAFT_REGISTRY_LOADED.subscribe(() => resolve())
+		}),
+		new Promise<void>(resolve => {
+			events.MINECRAFT_FONTS_LOADED.subscribe(() => resolve())
+		}),
+	]).then(() => {
+		hideLoadingPopup()
+	})
+})
 
 // @ts-ignore
 globalThis.AnimatedJava = {
@@ -62,6 +90,9 @@ globalThis.AnimatedJava = {
 		TRANSPARENT_TEXTURE,
 		BLUEPRINT_FORMAT,
 		BLUEPRINT_CODEC,
+		TextDisplay,
+		getLatestVersionClientDownloadUrl,
+		getVanillaFont,
 	},
 }
 

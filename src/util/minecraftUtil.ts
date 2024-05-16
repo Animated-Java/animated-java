@@ -16,6 +16,17 @@ export function toSafeFuntionName(name: string): string {
 		.replace(/_+/g, '_')
 }
 
+/**
+ * Get the path of a resource location, e.g. 'minecraft:models/block/stone.json' -> 'assets/minecraft/models/block/stone.json'
+ * @param resourceLocation The resource location, e.g. 'minecraft:models/block/stone.json'
+ * @param type The type of the resource, e.g. 'models', 'textures', 'sounds'
+ * @returns The path of the resource, e.g. 'assets/minecraft/models/block/stone.json'
+ */
+export function getPathFromResourceLocation(resourceLocation: string, type: string): string {
+	const [namespace, ...path] = resourceLocation.split(':')
+	return `assets/${namespace}/${type}/${path.join('/')}`
+}
+
 export function isResourcePackPath(path: string) {
 	const parsed = parseResourcePackPath(path)
 	return !!(parsed && parsed.namespace && parsed.resourcePath)

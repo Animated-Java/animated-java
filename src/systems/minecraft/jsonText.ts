@@ -1,6 +1,6 @@
 export const FONT = '16px MinecraftFull'
 
-type JsonTextColor =
+export type JsonTextColor =
 	| 'dark_red'
 	| 'red'
 	| 'gold'
@@ -38,7 +38,7 @@ export const COLOR_MAP: Record<string, string> = {
 	black: '#000000',
 }
 
-type JsonTextObject = {
+export type JsonTextObject = {
 	text?: string
 	font?: string
 	color?: JsonTextColor
@@ -90,9 +90,9 @@ type JsonTextObject = {
 	storage?: string
 }
 
-type JsonTextComponent = string | JsonTextArray | JsonTextObject | JsonText
+export type JsonTextComponent = string | JsonTextArray | JsonTextObject | JsonText
 
-type JsonTextArray = JsonTextComponent[] | string[]
+export type JsonTextArray = JsonTextComponent[]
 
 export class JsonText {
 	private text: JsonTextComponent

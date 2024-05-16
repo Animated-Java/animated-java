@@ -1,3 +1,7 @@
+import { checkForAssetsUpdate } from './assetManager'
+import { getLatestVersion } from './versionManager'
+import { events } from '../../util/events'
+
 interface IRegistryJSON {
 	activity: string[]
 	advancement: string[]
@@ -85,22 +89,6 @@ interface IRegistryJSON {
 	'worldgen/trunk_placer_type': string[]
 }
 
-interface IMinecraftVersion {
-	id: string
-	name: string
-	release_target: string | null
-	type: 'snapshot' | 'release'
-	stable: boolean
-	data_version: number
-	protocol_version: number
-	data_pack_version: number
-	resource_pack_version: number
-	build_time: string
-	release_time: string
-	sha1: string
-}
-
-const LATEST_VERSION_URL = 'https://raw.githubusercontent.com/misode/mcmeta/summary/version.json'
 const REGISTRIES_URL =
 	'https://raw.githubusercontent.com/misode/mcmeta/summary/registries/data.json'
 
@@ -163,44 +151,35 @@ async function updateLocalRegistry() {
 	throw new Error('Failed to fetch latest Minecraft registry after 3 retries.')
 }
 
-async function getLatestVersion(): Promise<IMinecraftVersion> {
-	console.log('Fetching latest Minecraft version...')
-	let retries = 3
-	while (retries-- >= 0) {
-		let response
-		try {
-			response = await fetch(LATEST_VERSION_URL)
-		} catch (error) {
-			console.error('Failed to fetch latest Minecraft version:', error)
-		}
-		if (response && response.ok) {
-			return (await response.json()) as IMinecraftVersion
-		}
-	}
-	throw new Error('Failed to fetch latest Minecraft version after 3 retries.')
-}
-
-export async function checkIfRegistryNeedsUpdate() {
-	console.log('Checking if Minecraft Registry needs an update')
+export async function checkForRegistryUpdate() {
+	console.log('Checking if Minecraft Registry update...')
 	const currentValueString = localStorage.getItem('animated_java:minecraftRegistry')
 	if (!currentValueString) {
+		console.log('No Minecraft Registry found. Updating...')
 		await updateLocalRegistry()
 		return
 	}
 	const currentVersionString = localStorage.getItem('animated_java:minecraftRegistryVersion')
 	if (!currentVersionString) {
+		console.log('No Minecraft Registry version found. Updating...')
 		await updateLocalRegistry()
 		return
 	}
-	const currentVersion = JSON.parse(currentVersionString) as IMinecraftVersion
+	const currentVersion = JSON.parse(currentVersionString)
 	const latestVersion = await getLatestVersion()
 	if (currentVersion.id !== latestVersion.id) {
+		console.log('Minecraft Registry is outdated. Updating...')
 		await updateLocalRegistry()
 		return
 	}
 
-	console.log('Minecraft Registry is up to date')
+	console.log('Minecraft Registry is up to date!')
 	updateMemoryRegistry()
+	events.MINECRAFT_REGISTRY_LOADED.dispatch()
 }
 
-void checkIfRegistryNeedsUpdate()
+events.LOAD.subscribe(() => {
+	void checkForRegistryUpdate().then(async () => {
+		await checkForAssetsUpdate()
+	})
+})

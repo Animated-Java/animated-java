@@ -15,6 +15,11 @@ declare module '*.svg' {
 	export = value
 }
 
+declare module '*.webp' {
+	const value: string
+	export = value
+}
+
 declare module '*.mcb' {
 	const value: string
 	export = value
@@ -23,4 +28,8 @@ declare module '*.mcb' {
 declare module '*.molang' {
 	const value: Record<string, string>
 	export = value
+}
+
+declare module 'fflate/browser' {
+	export * from 'fflate'
 }

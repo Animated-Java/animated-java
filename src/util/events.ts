@@ -20,6 +20,10 @@ export const events = {
 	INJECT_MODS: new PluginEvent('injectMods'),
 	EXTRACT_MODS: new PluginEvent('extractMods'),
 
+	MINECRAFT_ASSETS_LOADED: new PluginEvent('minecraftAssetsLoaded'),
+	MINECRAFT_REGISTRY_LOADED: new PluginEvent('minecraftRegistriesLoaded'),
+	MINECRAFT_FONTS_LOADED: new PluginEvent('minecraftFontsLoaded'),
+
 	PRE_SELECT_PROJECT: new PluginEvent<ModelProject>('preSelectProject'),
 	SELECT_PROJECT: new PluginEvent<ModelProject>('selectProject'),
 	UNSELECT_PROJECT: new PluginEvent<ModelProject>('deselectProject'),

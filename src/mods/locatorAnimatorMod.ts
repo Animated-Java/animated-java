@@ -42,7 +42,8 @@ export class LocatorAnimator extends BoneAnimator {
 
 		if (
 			this[Toolbox.selected.animation_channel] &&
-			(Timeline.selected.length === 0 || (Timeline.selected[0].animator as any) !== this)
+			((Timeline.selected && Timeline.selected.length === 0) ||
+				(Timeline.selected && (Timeline.selected[0].animator as any)) !== this)
 		) {
 			let nearest: _Keyframe | undefined
 			this[Toolbox.selected.animation_channel].forEach((kf: _Keyframe) => {
