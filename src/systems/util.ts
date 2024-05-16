@@ -28,3 +28,11 @@ export function sortObjectKeys<T extends Record<string, any>>(obj: T): T {
 		})
 	return sorted as T
 }
+
+export function debounce(func: () => void, timeout = 300) {
+	let timer: NodeJS.Timeout
+	return () => {
+		clearTimeout(timer)
+		timer = setTimeout(func, timeout)
+	}
+}

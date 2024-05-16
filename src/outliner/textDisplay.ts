@@ -14,9 +14,13 @@ import { isCurrentFormat } from '../blueprintFormat'
 import { PACKAGE } from '../constants'
 import { createAction } from '../util/moddingTools'
 // import * as MinecraftFull from '../assets/MinecraftFull.json'
-import TextDisplayLoading from '../assets/text_display_loading.webp'
 import { getVanillaFont } from '../systems/minecraft/fontManager'
 import { JsonText } from '../systems/minecraft/jsonText'
+import TextDisplayLoading from '../assets/text_display_loading.webp'
+
+const DEFAULT_PLANE = new THREE.PlaneBufferGeometry(1, 1)
+DEFAULT_PLANE.rotateY(Math.PI)
+const INVISIBLE_PLANE = new THREE.PlaneBufferGeometry(0, 0)
 
 interface TextDisplayOptions {
 	name?: string
@@ -32,10 +36,11 @@ interface TextDisplayOptions {
 }
 type Alignment = 'left' | 'center' | 'right'
 
-const TEXT_SCALE = 4
+const TEXT_SCALE = 8
 
 export class TextDisplay extends OutlinerElement {
 	static type = `${PACKAGE.name}:text_display`
+	static selected: TextDisplay[] = []
 
 	public type = `${PACKAGE.name}:text_display`
 	public icon = 'text_fields'
@@ -64,6 +69,7 @@ export class TextDisplay extends OutlinerElement {
 	public buttons = [Outliner.buttons.export, Outliner.buttons.locked, Outliner.buttons.visibility]
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	public preview_controller = PREVIEW_CONTROLLER
+	public loadingMesh: THREE.Mesh = new THREE.Mesh()
 
 	constructor(data: TextDisplayOptions, uuid = guid()) {
 		super(data, uuid)
@@ -154,11 +160,21 @@ export class TextDisplay extends OutlinerElement {
 	}
 
 	async setText(jsonText: JsonText) {
-		console.log(jsonText.toString())
+		// console.log(jsonText.toString())
 		const font = await getVanillaFont()
 		const ctx = this.canvas.getContext('2d', { willReadFrequently: true })!
-		console.time('drawTextToCanvas')
-		await font.drawTextToCanvas({
+		// @ts-ignore
+		const outline: THREE.LineSegments = this.mesh.outline
+		// Hide the geo while rendering
+		this.loadingMesh.visible = true
+		this.textGeo.setAttribute('position', INVISIBLE_PLANE.getAttribute('position').clone())
+		const map = (this.loadingMesh.material as THREE.MeshBasicMaterial).map
+		if (map) {
+			outline.scale.set(map.image.width / 5, map.image.height / 5, 1)
+			outline.position.set(0, map.image.height / 10, 0)
+		}
+
+		await font.drawJsonTextToCanvas({
 			ctx,
 			jsonText,
 			x: 1,
@@ -169,14 +185,29 @@ export class TextDisplay extends OutlinerElement {
 			backgroundColor: this.backgroundColor,
 			backgroundAlpha: this.backgroundAlpha,
 		})
-		console.timeEnd('drawTextToCanvas')
-		this.texture.needsUpdate = true
 
+		this.texture.needsUpdate = true
+		this.loadingMesh.visible = false
+
+		// Set geo back to a 1 1 plane
+		this.textGeo.setAttribute('position', DEFAULT_PLANE.getAttribute('position').clone())
 		this.textGeo.scale(
 			this.canvas.width / TEXT_SCALE / 2.5,
 			this.canvas.height / TEXT_SCALE / 2.5,
 			1
 		)
+
+		const xOffset = -(1 / 5)
+		const scaleX = this.canvas.width / TEXT_SCALE / 2.5
+		const scaleY = this.canvas.height / TEXT_SCALE / 2.5
+
+		this.textGeo.center()
+		this.textGeo.translate(xOffset, scaleY / 2, 0)
+
+		outline.scale.x = scaleX
+		outline.scale.y = scaleY
+		outline.position.x = xOffset
+		outline.position.y = scaleY / 2
 	}
 }
 new Property(TextDisplay, 'string', 'text', { default: '"Hello World!"' })
@@ -194,11 +225,9 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 	setup(el: TextDisplay) {
 		el.textGeo = new THREE.PlaneGeometry(1, 1)
 		el.textGeo.rotateY(Math.PI)
-		let loaded = false
 
 		const material = new THREE.MeshBasicMaterial({ map: el.texture, transparent: true })
 		const textMesh = new THREE.Mesh(el.textGeo, material)
-		let loadingMesh: THREE.Mesh
 		new THREE.TextureLoader().load(TextDisplayLoading, texture => {
 			texture.magFilter = THREE.NearestFilter
 			texture.minFilter = THREE.NearestFilter
@@ -209,9 +238,9 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 			loadingGeo.rotateY(Math.PI)
 			loadingGeo.translate(0, texture.image.height / 2 / 5, 0)
 			const loadingMaterial = new THREE.MeshBasicMaterial({ map: texture, transparent: true })
-			loadingMesh = new THREE.Mesh(loadingGeo, loadingMaterial)
-			textMesh.add(loadingMesh)
-			loadingMesh.visible = !loaded
+			el.loadingMesh = new THREE.Mesh(loadingGeo, loadingMaterial)
+			textMesh.add(el.loadingMesh)
+			el.loadingMesh.visible = false
 		})
 
 		// @ts-ignore
@@ -220,21 +249,7 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 		Project!.nodes_3d[el.uuid] = textMesh
 
 		void getVanillaFont().then(async () => {
-			let text: JsonText | undefined
-			try {
-				text = JsonText.fromString(el.text)
-			} catch (e: any) {
-				console.error('Failed to parse JsonText:', e)
-			}
-			if (text) {
-				await el.setText(text)
-			}
-
 			textMesh.renderOrder = 1
-			el.textGeo.center()
-			el.textGeo.computeBoundingBox()
-			const box = el.textGeo.boundingBox
-			el.textGeo.translate(-1 / 5, -box!.min.y, 0)
 
 			const outline = new THREE.LineSegments(
 				new THREE.EdgesGeometry(el.textGeo),
@@ -261,10 +276,18 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 			textMesh.outline = outline
 			textMesh.add(outline)
 
-			loaded = true
-			if (loadingMesh) {
-				loadingMesh.visible = !loaded
+			let text: JsonText | undefined
+			try {
+				text = JsonText.fromString(el.text)
+				// text = JsonText.fromString(JSON.stringify(TestText))
+			} catch (e: any) {
+				console.error('Failed to parse JsonText:', e)
 			}
+			if (text) {
+				await el.setText(text)
+			}
+
+			el.loadingMesh.visible = false
 
 			PREVIEW_CONTROLLER.updateTransform(el)
 			PREVIEW_CONTROLLER.dispatchEvent('setup', { element: el })

@@ -10,6 +10,7 @@ import './interface/boneConfigDialog'
 import './interface/variantsPanel'
 import './interface/importAJModelLoader'
 import './interface/customKeyframePanel'
+import './interface/textDisplayElementPanel'
 // Blockbench Mods
 import './interface/locatorConfigDialog'
 import './mods/animationControllerMod'

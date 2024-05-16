@@ -83,6 +83,7 @@
 		"esbuild": "^0.17.10",
 		"esbuild-plugin-import-glob": "^0.1.1",
 		"esbuild-plugin-inline-image": "^0.0.9",
+		"esbuild-plugin-inline-worker": "^0.1.1",
 		"esbuild-plugin-svelte": "^0.1.1",
 		"eslint": "^8.35.0",
 		"firebase": "^9.19.0",

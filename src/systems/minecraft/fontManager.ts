@@ -1,7 +1,6 @@
 import { events } from '../../util/events'
 import { COLOR_MAP, JsonText } from './jsonText'
 import { getPathFromResourceLocation } from '../../util/minecraftUtil'
-import { MSLimiter } from '../../util/msLimiter'
 import * as assets from './assetManager'
 import MissingCharacter from '../../assets/missing_character.png'
 import {
@@ -11,6 +10,7 @@ import {
 	computeTextWrapping,
 	StyleRecord,
 } from './textWrapping'
+import { createHash } from 'crypto'
 
 interface IFontProviderBitmap {
 	type: 'bitmap'
@@ -55,6 +55,9 @@ interface ICachedSpaceChar {
 }
 
 type ICachedChar = ICachedBitmapChar | ICachedSpaceChar
+
+const MAX_CANVAS_WIDTH = 16_384
+const MAX_CANVAS_HEIGHT = 16_384
 
 function hexToRGB(hex: string) {
 	return {
@@ -249,6 +252,7 @@ class MinecraftFont {
 
 	private charCache = new Map<string, ICachedChar>()
 	private loaded = false
+	private charCanvasCache = new Map<string, HTMLCanvasElement>()
 
 	constructor(id: string, assetPath: string, fallback?: MinecraftFont) {
 		this.id = id
@@ -386,7 +390,7 @@ class MinecraftFont {
 
 		let color = '#ffffff'
 		if (typeof style.color === 'string') {
-			color = style.color.startsWith('#') ? style.color : COLOR_MAP[style.color]
+			color = style.color.startsWith('#') ? style.color : COLOR_MAP[style.color] || color
 		}
 		const r = parseInt(color.substring(1, 3), 16)
 		const g = parseInt(color.substring(3, 5), 16)
@@ -394,55 +398,72 @@ class MinecraftFont {
 
 		if (charData.type === 'bitmap') {
 			// Create a canvas for the character to allow us to style it before drawing it to the actual canvas
-			const charCanvas = document.createElement('canvas')
-			const charCtx = charCanvas.getContext('2d')!
 
-			charCanvas.width = charData.width * 2 * scale
-			charCanvas.height = charData.pixelUV[3] * scale
-			charCtx.imageSmoothingEnabled = false
-			charCtx.clearRect(0, 0, charCanvas.width, charCanvas.height)
+			const hash = createHash('sha256')
+			hash.update(char)
+			hash.update(';' + scale.toString())
+			hash.update(';' + color)
+			if (style.bold) hash.update(';bold')
+			if (style.italic) hash.update(';italic')
+			// if (style.underlined) hash.update('underlined')
+			// if (style.strikethrough) hash.update('strikethrough')
+			// if (style.obfuscated) hash.update('obfuscated')
+			const digest = hash.digest('hex')
 
-			if (style.italic) {
-				charCtx.setTransform(1, 0, -0.25, 1, scale / 1.5, 0)
-			}
-			charCtx.drawImage(
-				charData.atlas.image as HTMLImageElement,
-				charData.pixelUV[0],
-				charData.pixelUV[1],
-				charData.pixelUV[2],
-				charData.pixelUV[3],
-				scale,
-				0,
-				charData.pixelUV[2] * scale,
-				charData.pixelUV[3] * scale
-			)
-			if (style.bold) {
+			let charCanvas = this.charCanvasCache.get(digest)
+			if (!charCanvas) {
+				charCanvas = document.createElement('canvas')
+				this.charCanvasCache.set(digest, charCanvas)
+
+				const charCtx = charCanvas.getContext('2d')!
+
+				charCanvas.width = charData.width * 2 * scale
+				charCanvas.height = charData.pixelUV[3] * scale
+				charCtx.imageSmoothingEnabled = false
+				charCtx.clearRect(0, 0, charCanvas.width, charCanvas.height)
+
+				if (style.italic) {
+					charCtx.setTransform(1, 0, -0.25, 1, scale / 1.5, 0)
+				}
 				charCtx.drawImage(
 					charData.atlas.image as HTMLImageElement,
 					charData.pixelUV[0],
 					charData.pixelUV[1],
 					charData.pixelUV[2],
 					charData.pixelUV[3],
-					scale * 2,
+					scale,
 					0,
 					charData.pixelUV[2] * scale,
 					charData.pixelUV[3] * scale
 				)
-			}
-
-			// Colorize the character
-			const imageData = charCtx.getImageData(0, 0, charCanvas.width, charCanvas.height)
-			const data = imageData.data
-
-			for (let i = 0; i < data.length; i += 4) {
-				if (data[i + 3] > 0) {
-					data[i] = r // Red
-					data[i + 1] = g // Green
-					data[i + 2] = b // Blue
-					data[i + 3] = 255 // Alpha
+				if (style.bold) {
+					charCtx.drawImage(
+						charData.atlas.image as HTMLImageElement,
+						charData.pixelUV[0],
+						charData.pixelUV[1],
+						charData.pixelUV[2],
+						charData.pixelUV[3],
+						scale * 2,
+						0,
+						charData.pixelUV[2] * scale,
+						charData.pixelUV[3] * scale
+					)
 				}
+
+				// Colorize the character
+				const imageData = charCtx.getImageData(0, 0, charCanvas.width, charCanvas.height)
+				const data = imageData.data
+
+				for (let i = 0; i < data.length; i += 4) {
+					if (data[i + 3] > 0) {
+						data[i] = r // Red
+						data[i + 1] = g // Green
+						data[i + 2] = b // Blue
+						data[i + 3] = 255 // Alpha
+					}
+				}
+				charCtx.putImageData(imageData, 0, 0)
 			}
-			charCtx.putImageData(imageData, 0, 0)
 
 			// Draw the character to the actual canvas
 			ctx.drawImage(
@@ -478,7 +499,7 @@ class MinecraftFont {
 		cursor.x += charData.width
 	}
 
-	async drawTextToCanvas(options: {
+	async drawJsonTextToCanvas(options: {
 		ctx: CanvasRenderingContext2D
 		jsonText: JsonText
 		x: number
@@ -488,34 +509,73 @@ class MinecraftFont {
 		backgroundColor: string
 		backgroundAlpha: number
 	}) {
-		const { ctx, jsonText, x, y, lineWidth, scale, backgroundColor, backgroundAlpha } = options
+		const {
+			ctx,
+			jsonText,
+			x,
+			y,
+			lineWidth,
+			scale: originalScale,
+			backgroundColor,
+			backgroundAlpha,
+		} = options
+		let scale = options.scale
 		console.time('drawTextToCanvas')
-		const words = getComponentWords(jsonText)
+		const words = await getComponentWords(jsonText)
 		const { lines, canvasWidth } = await computeTextWrapping(words, lineWidth)
 		// Debug output
-		const wordWidths = words.map(word => this.getWordWidth(word))
-		for (const word of words) {
-			console.log(words.indexOf(word), word.text, wordWidths[words.indexOf(word)])
-			for (const span of word.styles) {
-				console.log(
-					`'${word.text.slice(span.start, span.end)}' ${span.start}-${span.end} = `,
-					span.style
-				)
-			}
-		}
-		console.log('Lines:', lines)
-		for (const line of lines) {
-			console.log('Line', lines.indexOf(line), line.width)
-			for (const word of line.words) {
-				console.log(
-					'Word',
-					line.words.indexOf(word),
-					word.text,
-					word.styles.map(span => span.style),
-					word.styles.map(
-						span => `${span.start}-${span.end} ${word.text.slice(span.start, span.end)}`
-					)
-				)
+		// const wordWidths = words.map(word => this.getWordWidth(word))
+		// for (const word of words) {
+		// 	console.log(words.indexOf(word), word.text, wordWidths[words.indexOf(word)])
+		// 	for (const span of word.styles) {
+		// 		console.log(
+		// 			`'${word.text.slice(span.start, span.end)}' ${span.start}-${span.end} = `,
+		// 			span.style
+		// 		)
+		// 	}
+		// }
+		// console.log('Lines:', lines)
+		// for (const line of lines) {
+		// 	console.log('Line', lines.indexOf(line), line.width)
+		// 	for (const word of line.words) {
+		// 		console.log(
+		// 			'Word',
+		// 			line.words.indexOf(word),
+		// 			word.text,
+		// 			word.styles.map(span => span.style),
+		// 			word.styles.map(
+		// 				span => `${span.start}-${span.end} ${word.text.slice(span.start, span.end)}`
+		// 			)
+		// 		)
+		// 	}
+		// }
+
+		while (
+			(canvasWidth + 1) * scale > MAX_CANVAS_WIDTH ||
+			lines.length * 11 * scale > MAX_CANVAS_HEIGHT
+		) {
+			console.warn(
+				`Text Canvas too large (${(canvasWidth + 1) * scale} x ${
+					lines.length * 11 * scale
+				}) , scaling down...`,
+				scale,
+				'->',
+				scale / 2
+			)
+			scale /= 2
+			if (scale < 1) {
+				console.error('Text too large to render')
+				await this.drawJsonTextToCanvas({
+					ctx,
+					jsonText: new JsonText(`Text too large to render :(`),
+					x,
+					y,
+					lineWidth,
+					scale: originalScale,
+					backgroundColor,
+					backgroundAlpha,
+				})
+				return
 			}
 		}
 
@@ -529,7 +589,6 @@ class MinecraftFont {
 
 		// TODO: Style inheritance
 
-		const limiter = new MSLimiter(8)
 		const cursor = { x, y }
 		for (const line of lines) {
 			cursor.x = x + (canvasWidth - line.width) / 2
@@ -542,7 +601,6 @@ class MinecraftFont {
 				}
 			}
 			cursor.y += 11
-			await limiter.sync()
 		}
 		console.timeEnd('drawTextToCanvas')
 	}

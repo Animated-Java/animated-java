@@ -17,6 +17,7 @@ import svelteConfig from '../svelte.config.js'
 import inlineImage from 'esbuild-plugin-inline-image'
 import ImportGlobPlugin from 'esbuild-plugin-import-glob'
 import packagerPlugin from './plugins/packagerPlugin'
+import inlineWorkerPlugin from './plugins/workerPlugin'
 
 const PACKAGE = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
 
@@ -144,62 +145,88 @@ const yamlPlugin: (opts: {
 	},
 })
 
+const devWorkerConfig: esbuild.BuildOptions = {
+	bundle: true,
+	minify: false,
+	platform: 'node',
+	sourcemap: 'inline',
+	sourceRoot: 'http://animated-java/',
+	loader: { '.svg': 'dataurl', '.ttf': 'binary', '.mcb': 'text' },
+	plugins: [
+		// inlineImage({
+		// 	limit: -1,
+		// }),
+		// @ts-ignore
+		// ImportGlobPlugin.default(),
+		// INFO_PLUGIN,
+		// yamlPlugin({}),
+		// sveltePlugin(svelteConfig),
+		// packagerPlugin(),
+	],
+	// format: 'iife',
+	// define: DEFINES,
+}
+const devConfig: esbuild.BuildOptions = {
+	banner: createBanner(),
+	entryPoints: ['./src/index.ts'],
+	outfile: `./dist/${PACKAGE.name as string}.js`,
+	bundle: true,
+	minify: false,
+	platform: 'node',
+	sourcemap: 'inline',
+	sourceRoot: 'http://animated-java/',
+	loader: { '.svg': 'dataurl', '.ttf': 'binary', '.mcb': 'text' },
+	plugins: [
+		inlineImage({
+			limit: -1,
+		}),
+		// @ts-ignore
+		ImportGlobPlugin.default(),
+		INFO_PLUGIN,
+		yamlPlugin({}),
+		sveltePlugin(svelteConfig),
+		packagerPlugin(),
+		inlineWorkerPlugin(devWorkerConfig),
+	],
+	format: 'iife',
+	define: DEFINES,
+}
+
+const prodConfig: esbuild.BuildOptions = {
+	entryPoints: ['./src/index.ts'],
+	outfile: `./dist/${PACKAGE.name as string}.js`,
+	bundle: true,
+	minify: true,
+	platform: 'node',
+	loader: { '.svg': 'dataurl', '.ttf': 'binary', '.mcb': 'text' },
+	plugins: [
+		inlineImage({
+			limit: -1,
+		}),
+		// @ts-ignore
+		ImportGlobPlugin.default(),
+		INFO_PLUGIN,
+		inlineWorkerPlugin({}),
+		yamlPlugin({}),
+		sveltePlugin(svelteConfig),
+		packagerPlugin(),
+		inlineWorkerPlugin({}),
+	],
+	keepNames: true,
+	banner: createBanner(),
+	drop: ['debugger'],
+	format: 'iife',
+	define: DEFINES,
+}
+
 async function buildDev() {
-	const ctx = await esbuild.context({
-		banner: createBanner(),
-		entryPoints: ['./src/index.ts'],
-		outfile: `./dist/${PACKAGE.name as string}.js`,
-		bundle: true,
-		minify: false,
-		platform: 'node',
-		sourcemap: 'inline',
-		sourceRoot: 'http://animated-java/',
-		loader: { '.svg': 'dataurl', '.ttf': 'binary', '.mcb': 'text' },
-		plugins: [
-			inlineImage({
-				limit: -1,
-			}),
-			// @ts-ignore
-			ImportGlobPlugin.default(),
-			INFO_PLUGIN,
-			yamlPlugin({}),
-			sveltePlugin(svelteConfig),
-			packagerPlugin(),
-		],
-		format: 'iife',
-		define: DEFINES,
-	})
+	const ctx = await esbuild.context(devConfig)
 	await ctx.watch()
 }
 
 function buildProd() {
 	// esbuild.transformSync('function devlog(message) {}')
-	esbuild
-		.build({
-			entryPoints: ['./src/index.ts'],
-			outfile: `./dist/${PACKAGE.name as string}.js`,
-			bundle: true,
-			minify: true,
-			platform: 'node',
-			loader: { '.svg': 'dataurl', '.ttf': 'binary', '.mcb': 'text' },
-			plugins: [
-				inlineImage({
-					limit: -1,
-				}),
-				// @ts-ignore
-				ImportGlobPlugin.default(),
-				INFO_PLUGIN,
-				yamlPlugin({}),
-				sveltePlugin(svelteConfig),
-				packagerPlugin(),
-			],
-			keepNames: true,
-			banner: createBanner(),
-			drop: ['debugger'],
-			format: 'iife',
-			define: DEFINES,
-		})
-		.catch(() => process.exit(1))
+	esbuild.build(prodConfig).catch(() => process.exit(1))
 }
 
 async function main() {

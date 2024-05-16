@@ -111,6 +111,7 @@ export class JsonText {
 	}
 
 	static fromString(str: string): JsonText | undefined {
+		// return new JsonText(JSON.parse(str) as JsonTextComponent)
 		const parser = new JsonTextParser(str)
 		return parser.parse()
 	}
@@ -129,7 +130,7 @@ class JsonTextParser {
 	parse(): JsonText | undefined {
 		let text: JsonTextComponent | undefined
 		try {
-			text = this.parseTextComponent()
+			text = this.parseTextComponent(true)
 		} catch (e: any) {
 			throw this.createError(
 				'Unexpected Error while parsing JsonText',
@@ -144,15 +145,18 @@ class JsonTextParser {
 	}
 
 	createError(message: string, line: number, column: number, child?: Error) {
-		if (child) return new Error(`${message} at ${line}:${column}\n\t\t${child.message}`)
-		return new Error(`${message} at ${line}:${column}`)
+		if (child) {
+			return new Error(`${message} at ${line}:${column}\n\t\t${child.message}`)
+		}
+		const surrounding = this.s.string.slice(Math.max(0, this.s.index - 10), this.s.index + 10)
+		return new Error(`${message} at ${line}:${column} -> ${surrounding}`)
 	}
 
 	consumeWhitespace() {
 		this.s.consumeWhile(s => !!s.item && this.whitespaceChars.includes(s.item))
 	}
 
-	parseTextComponent(): JsonTextComponent {
+	parseTextComponent(single = false): JsonTextComponent {
 		const { line, column } = this.s
 		let result: JsonTextComponent
 		this.consumeWhitespace()
@@ -163,12 +167,17 @@ class JsonTextParser {
 		} else if (this.s.item === '"') {
 			result = this.parseString()
 		} else {
-			throw this.createError(`Unexpected token ${this.s.item as string}`, line, column)
+			throw this.createError(
+				`Unexpected token '${this.s.item as string}' while parsing JsonTextComponent`,
+				line,
+				column
+			)
 		}
 		this.consumeWhitespace()
-		if (this.s.item) {
+		if (single && this.s.item) {
+			console.log('result', result)
 			throw this.createError(
-				`Unexpected token ${this.s.item as string}`,
+				`Unexpected token '${this.s.item as string}' while parsing JsonTextComponent`,
 				this.s.line,
 				this.s.column
 			)
@@ -202,13 +211,9 @@ class JsonTextParser {
 		const { line, column } = this.s
 		try {
 			this.s.consume() // {
+			this.consumeWhitespace()
 			const obj: JsonTextObject = {}
 			while (this.s.item !== '}') {
-				this.consumeWhitespace()
-				if (this.s.item === ',') {
-					this.s.consume()
-					this.consumeWhitespace()
-				}
 				const key = this.parseString()
 				this.consumeWhitespace()
 				this.s.consume() // :
@@ -216,6 +221,19 @@ class JsonTextParser {
 				const value = this.parseValue()
 				// @ts-ignore
 				obj[key] = value
+				this.consumeWhitespace()
+				if (this.s.item === ',') {
+					this.s.consume()
+					this.consumeWhitespace()
+				} else if (this.s.item === '}') {
+					break
+				} else {
+					throw this.createError(
+						`Unexpected token '${this.s.item as string}' while parsing JsonTextObject`,
+						line,
+						column
+					)
+				}
 			}
 			this.s.consume() // }
 			return obj
@@ -234,12 +252,12 @@ class JsonTextParser {
 		const arr: JsonTextArray = []
 		while (this.s.item !== ']') {
 			this.consumeWhitespace()
+			const value = this.parseTextComponent()
+			arr.push(value)
 			if (this.s.item === ',') {
 				this.s.consume()
 				this.consumeWhitespace()
 			}
-			const value = this.parseTextComponent()
-			arr.push(value)
 		}
 		this.s.consume() // ]
 		return arr
@@ -250,10 +268,18 @@ class JsonTextParser {
 		let str = ''
 		while (this.s.item) {
 			if (this.s.item === '\\') {
-				str += this.s.item
-				this.s.consume() // \
-				str += this.s.item
-				this.s.consume() // Escaped character
+				if (this.s.look(1) === 'n') {
+					str += '\n'
+					this.s.consume() // \
+					this.s.consume() // n
+					continue
+				} else {
+					str += this.s.item
+					this.s.consume() // \
+					str += this.s.item
+					this.s.consume() // Escaped character
+					continue
+				}
 			}
 			if (this.s.item === '"') {
 				break

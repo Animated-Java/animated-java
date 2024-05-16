@@ -1,6 +1,13 @@
 import { JsonText, JsonTextComponent, JsonTextObject } from './jsonText'
 import { getVanillaFont } from './fontManager'
 
+// @ts-ignore
+// import TestWorker from './textWrapping.worker.ts'
+// const WORKER: Worker = new TestWorker()
+// WORKER.onmessage = ({ data }) => {
+// 	console.log(data)
+// }
+
 // Written by @IanSSenne (FetchBot) and refactored by @SnaveSutit to do line wrapping on JSON Text Components.
 // THANK U IAN <3 - SnaveSutit
 const STYLE_KEYS = [
@@ -53,8 +60,10 @@ function flattenTextComponent(input: JsonTextComponent): JsonTextObject[] {
 }
 
 function getText(component: JsonTextObject) {
-	const text = component.text || (component.tl ? `{${component.tl}}` : `{unknown text}`)
-	return text
+	if (typeof component === 'string') return component
+	else if (component.text) return component.text
+	else if (component.tl) return `{${component.tl}}`
+	else return ''
 }
 
 export interface IStyleSpan {
@@ -83,7 +92,9 @@ interface IComponentLine {
  * WARNING: Word width is not calculated by this function.
  */
 export function getComponentWords(input: JsonTextComponent) {
+	console.time('getComponentWords')
 	const flattenedComponents = flattenTextComponent(input)
+	if (!flattenedComponents.length) return []
 	const words: IComponentWord[] = []
 	let word: IComponentWord | undefined
 	let component: JsonTextObject | undefined = flattenedComponents.shift()
@@ -149,6 +160,7 @@ export function getComponentWords(input: JsonTextComponent) {
 		words.push(word)
 	}
 
+	console.timeEnd('getComponentWords')
 	return words
 }
 

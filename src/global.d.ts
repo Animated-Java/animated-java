@@ -25,6 +25,15 @@ declare module '*.mcb' {
 	export = value
 }
 
+declare module '*.txt' {
+	const value: string
+	export = value
+}
+
+declare module '*.worker.ts' {
+	export = Worker
+}
+
 declare module '*.molang' {
 	const value: Record<string, string>
 	export = value

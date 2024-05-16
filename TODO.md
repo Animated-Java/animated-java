@@ -46,6 +46,7 @@
         - [ ] Include an option to change the max line width.
     - [ ] Animation
         - [ ] Make sure the text display is animatable.
+        - [ ] Add a keyframe that changes the text of the text display. (Preview-ably)
 
 # Data Pack Compiler
 - [x] Merge on_tick and on_load function tags
