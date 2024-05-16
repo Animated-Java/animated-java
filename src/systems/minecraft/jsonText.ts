@@ -1,3 +1,5 @@
+import { StringStream } from 'generic-stream'
+
 export const FONT = '16px MinecraftFull'
 
 export type JsonTextColor =
@@ -106,5 +108,190 @@ export class JsonText {
 
 	toJSON() {
 		return this.text
+	}
+
+	static fromString(str: string): JsonText | undefined {
+		const parser = new JsonTextParser(str)
+		return parser.parse()
+	}
+}
+
+class JsonTextParser {
+	private s: StringStream
+	private unquotedStringChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_'
+	private numChars = '0123456789'
+	private whitespaceChars = ' \t\n\r'
+
+	constructor(private str: string) {
+		this.s = new StringStream(str)
+	}
+
+	parse(): JsonText | undefined {
+		let text: JsonTextComponent | undefined
+		try {
+			text = this.parseTextComponent()
+		} catch (e: any) {
+			throw this.createError(
+				'Unexpected Error while parsing JsonText',
+				this.s.line,
+				this.s.column,
+				e as Error
+			)
+		}
+		if (text) {
+			return new JsonText(text)
+		}
+	}
+
+	createError(message: string, line: number, column: number, child?: Error) {
+		if (child) return new Error(`${message} at ${line}:${column}\n\t\t${child.message}`)
+		return new Error(`${message} at ${line}:${column}`)
+	}
+
+	consumeWhitespace() {
+		this.s.consumeWhile(s => !!s.item && this.whitespaceChars.includes(s.item))
+	}
+
+	parseTextComponent(): JsonTextComponent {
+		const { line, column } = this.s
+		let result: JsonTextComponent
+		this.consumeWhitespace()
+		if (this.s.item === '{') {
+			result = this.parseObject()
+		} else if (this.s.item === '[') {
+			result = this.parseArray()
+		} else if (this.s.item === '"') {
+			result = this.parseString()
+		} else {
+			throw this.createError(`Unexpected token ${this.s.item as string}`, line, column)
+		}
+		this.consumeWhitespace()
+		if (this.s.item) {
+			throw this.createError(
+				`Unexpected token ${this.s.item as string}`,
+				this.s.line,
+				this.s.column
+			)
+		}
+		return result
+	}
+
+	parseValue(): JsonTextComponent | boolean | string | number {
+		const { line, column } = this.s
+		this.consumeWhitespace()
+		if (this.s.item === '{') {
+			return this.parseObject()
+		} else if (this.s.item === '[') {
+			return this.parseArray()
+		} else if (this.s.item === '"') {
+			return this.parseString()
+		} else if (this.s.item === 't' || this.s.item === 'f') {
+			return this.parseBoolean()
+		} else if (
+			this.s.item === '-' ||
+			this.s.item === '.' ||
+			(this.s.item && this.numChars.includes(this.s.item))
+		) {
+			return this.parseNumber()
+		} else {
+			throw this.createError(`Unexpected token ${this.s.item as string}`, line, column)
+		}
+	}
+
+	parseObject(): JsonTextObject {
+		const { line, column } = this.s
+		try {
+			this.s.consume() // {
+			const obj: JsonTextObject = {}
+			while (this.s.item !== '}') {
+				this.consumeWhitespace()
+				if (this.s.item === ',') {
+					this.s.consume()
+					this.consumeWhitespace()
+				}
+				const key = this.parseString()
+				this.consumeWhitespace()
+				this.s.consume() // :
+				this.consumeWhitespace()
+				const value = this.parseValue()
+				// @ts-ignore
+				obj[key] = value
+			}
+			this.s.consume() // }
+			return obj
+		} catch (e: any) {
+			throw this.createError(
+				'Unexpected Error while parsing JsonTextObject',
+				line,
+				column,
+				e as Error
+			)
+		}
+	}
+
+	parseArray(): JsonTextArray {
+		this.s.consume() // [
+		const arr: JsonTextArray = []
+		while (this.s.item !== ']') {
+			this.consumeWhitespace()
+			if (this.s.item === ',') {
+				this.s.consume()
+				this.consumeWhitespace()
+			}
+			const value = this.parseTextComponent()
+			arr.push(value)
+		}
+		this.s.consume() // ]
+		return arr
+	}
+
+	parseString(): string {
+		this.s.consume() // "
+		let str = ''
+		while (this.s.item) {
+			if (this.s.item === '\\') {
+				str += this.s.item
+				this.s.consume() // \
+				str += this.s.item
+				this.s.consume() // Escaped character
+			}
+			if (this.s.item === '"') {
+				break
+			}
+			str += this.s.item
+			this.s.consume()
+		}
+		if (!this.s.item) {
+			throw new Error('Unexpected EOF while parsing string')
+		}
+		this.s.consume() // "
+		return str
+	}
+
+	parseBoolean(): boolean {
+		if (this.s.look(0, 4) === 'true') {
+			this.s.consumeN(4)
+			return true
+		} else if (this.s.look(0, 5) === 'false') {
+			this.s.consumeN(5)
+			return false
+		}
+		throw new Error(`Unexpected token while parsing boolean`)
+	}
+
+	parseNumber(): number {
+		let num = ''
+		let hasDecimal = false
+		while (this.s.item) {
+			if (this.s.item === '.') {
+				if (hasDecimal) {
+					throw new Error('Unexpected second decimal point in number')
+				}
+				hasDecimal = true
+			}
+			num += this.s.item
+			this.s.consume()
+		}
+		return parseInt(num)
 	}
 }

@@ -16,13 +16,7 @@ import { createAction } from '../util/moddingTools'
 // import * as MinecraftFull from '../assets/MinecraftFull.json'
 import TextDisplayLoading from '../assets/text_display_loading.webp'
 import { getVanillaFont } from '../systems/minecraft/fontManager'
-import {
-	COLOR_MAP,
-	JsonText,
-	JsonTextArray,
-	JsonTextColor,
-	JsonTextComponent,
-} from '../systems/minecraft/jsonText'
+import { JsonText } from '../systems/minecraft/jsonText'
 
 interface TextDisplayOptions {
 	name?: string
@@ -185,7 +179,7 @@ export class TextDisplay extends OutlinerElement {
 		)
 	}
 }
-new Property(TextDisplay, 'string', 'text', { default: 'Hello World!' })
+new Property(TextDisplay, 'string', 'text', { default: '"Hello World!"' })
 new Property(TextDisplay, 'vector', 'position', { default: [0, 0, 0] })
 new Property(TextDisplay, 'vector', 'rotation', { default: [0, 0, 0] })
 new Property(TextDisplay, 'vector', 'scale', { default: [1, 1, 1] })
@@ -226,26 +220,15 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 		Project!.nodes_3d[el.uuid] = textMesh
 
 		void getVanillaFont().then(async () => {
-			// const jsonText: JsonTextArray = []
-			// while (jsonText.length < 33 * 33) {
-			// 	const color = Object.values(COLOR_MAP)[
-			// 		jsonText.length % Object.keys(COLOR_MAP).length
-			// 	] as JsonTextColor
-			// 	jsonText.push({
-			// 		text: '█',
-			// 		color,
-			// 	})
-			// }
-			// console.log(JSON.stringify(jsonText))
-
-			await el.setText(
-				// new JsonText(jsonText)
-				new JsonText([
-					{ text: 'Hello World!\n', color: 'white' },
-					{ text: 'Hello World!\n', color: 'white', font: 'minecraft:alt' },
-					{ text: 'Hello World!', color: 'white', font: 'minecraft:illageralt' },
-				])
-			)
+			let text: JsonText | undefined
+			try {
+				text = JsonText.fromString(el.text + 'awd')
+			} catch (e: any) {
+				console.error('Failed to parse JsonText:', e)
+			}
+			if (text) {
+				await el.setText(text)
+			}
 
 			textMesh.renderOrder = 1
 			el.textGeo.center()
