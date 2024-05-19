@@ -108,8 +108,8 @@ export function getComponentWords(input: JsonTextComponent) {
 	while (component) {
 		for (const char of componentText) {
 			if (char === ' ') {
-				if (word) {
-					word.text += char
+				// A group of multiple spaces is treated as a word.
+				if (word && !(word.text.at(-1) === ' ')) {
 					style.end++
 					if (Object.keys(style.style).length) {
 						word.styles.push({ ...style })
@@ -119,6 +119,7 @@ export function getComponentWords(input: JsonTextComponent) {
 					words.push(word)
 					word = undefined
 				}
+				// A group of multiple spaces is treated as a word.
 			} else if (char === '\n') {
 				if (word) {
 					if (Object.keys(style.style).length) {
@@ -129,13 +130,23 @@ export function getComponentWords(input: JsonTextComponent) {
 					words.push(word)
 				}
 				word = { styles: [], text: '', width: 0, forceWrap: true }
-			} else {
-				if (!word) {
-					word = { styles: [], text: '', width: 0 }
-				}
-				word.text += char
+				continue
+			} else if (char !== ' ' && word?.text.at(-1) === ' ') {
 				style.end++
+				if (Object.keys(style.style).length) {
+					word.styles.push({ ...style })
+					style.start = 0
+					style.end = 0
+				}
+				words.push(word)
+				word = undefined
 			}
+
+			if (!word) {
+				word = { styles: [], text: '', width: 0 }
+			}
+			word.text += char
+			style.end++
 		}
 		component = flattenedComponents.shift()
 		if (component) {
@@ -171,13 +182,25 @@ export async function computeTextWrapping(words: IComponentWord[], maxLineWidth 
 
 	let canvasWidth = 0
 	let currentLine: IComponentLine = { words: [], width: 0 }
+	// let lastSpaceWidth = 0
 	for (const word of words) {
+		// if (currentLine.words.length === 0 && word.text[0] === ' ') {
+		// 	word.text = word.text.slice(1)
+		// 	console.log(`Trimmed leading whitespace ${word.text}`)
+		// }
+
+		// lastSpaceWidth = font.getTextWidth(' ', {
+		// 	start: 0,
+		// 	end: 1,
+		// 	style: word.styles.at(-1)!.style,
+		// })
 		const wordWidth = font.getWordWidth(word)
 		const wordStyles = [...word.styles]
+		// If the word is longer than than the max line width, split it into multiple lines
 		if (wordWidth > maxLineWidth) {
 			if (currentLine.words.length) {
-				canvasWidth = Math.max(canvasWidth, currentLine.width)
 				lines.push(currentLine)
+				canvasWidth = Math.max(canvasWidth, currentLine.width)
 			}
 			currentLine = { words: [], width: 0 }
 
@@ -185,21 +208,20 @@ export async function computeTextWrapping(words: IComponentWord[], maxLineWidth 
 			let partWidth = 0
 			let partStartIndex = 0
 			let style: IStyleSpan | undefined = wordStyles.shift()
-			if (!style) throw new Error(`No active style found for word ${word.text}`)
+			if (!style) throw new Error(`No active style found for word '${word.text}'`)
 
 			for (let i = 0; i < word.text.length; i++) {
 				const char = word.text[i]
-				// if (i >= style.end - 1) {
 				if (i >= style.end) {
 					style = wordStyles.shift()
 					if (!style)
 						throw new Error(
-							`No active style found for character ${char} in word ${word.text}`
+							`No active style found for character '${char}' in word '${word.text}'`
 						)
 				}
 
 				const charWidth = font.getTextWidth(char, style)
-				if (partWidth + charWidth > maxLineWidth) {
+				if (part && partWidth + charWidth > maxLineWidth) {
 					// Find all styles that apply to this part
 					// FIXME: Attempt to avoid filtering and maping the styles for each character
 					const partStyles = word.styles
@@ -213,11 +235,11 @@ export async function computeTextWrapping(words: IComponentWord[], maxLineWidth 
 							start: Math.max(span.start - partStartIndex, 0),
 							end: Math.min(span.end - partStartIndex, part.length),
 						}))
-					canvasWidth = Math.max(canvasWidth, partWidth)
 					lines.push({
 						words: [{ text: part, styles: partStyles, width: wordWidth }],
 						width: partWidth,
 					})
+					canvasWidth = Math.max(canvasWidth, partWidth)
 					partStartIndex += part.length
 					part = ''
 					partWidth = 0
@@ -226,6 +248,7 @@ export async function computeTextWrapping(words: IComponentWord[], maxLineWidth 
 				partWidth += charWidth
 			}
 			if (part) {
+				// Find all styles that apply to this part
 				// FIXME: Attempt to avoid filtering and maping the styles for each character
 				const partStyles = word.styles
 					.filter(
@@ -244,15 +267,29 @@ export async function computeTextWrapping(words: IComponentWord[], maxLineWidth 
 				}
 			}
 			continue
+			// If the word is a newline character, force a line break
 		} else if (word.forceWrap) {
 			if (currentLine.words.length) {
-				canvasWidth = Math.max(canvasWidth, currentLine.width)
 				lines.push(currentLine)
+				// if (word.text[-1] === ' ') {
+				// 	word.text = word.text.slice(0, -1)
+				// 	wordWidth -= lastSpaceWidth
+				// 	currentLine.width -= lastSpaceWidth
+				// 	console.log(`Trimmed trailing whitespace ${word.text}`)
+				// }
+				canvasWidth = Math.max(canvasWidth, currentLine.width)
 			}
 			currentLine = { words: [], width: 0 }
+			// If the current line has words and adding the current word would exceed the max line width, start a new line
 		} else if (currentLine.words.length && currentLine.width + wordWidth > maxLineWidth) {
-			canvasWidth = Math.max(canvasWidth, currentLine.width)
 			lines.push(currentLine)
+			// if (word.text.at(-1) === ' ') {
+			// 	word.text = word.text.slice(0, -1)
+			// 	wordWidth -= lastSpaceWidth
+			// 	currentLine.width -= lastSpaceWidth
+			// 	console.log(`Trimmed trailing whitespace ${word.text}`)
+			// }
+			canvasWidth = Math.max(canvasWidth, currentLine.width)
 			currentLine = { words: [], width: 0 }
 		}
 		word.width = wordWidth
@@ -260,8 +297,15 @@ export async function computeTextWrapping(words: IComponentWord[], maxLineWidth 
 		currentLine.width += wordWidth
 	}
 	if (currentLine.words.length) {
-		canvasWidth = Math.max(canvasWidth, currentLine.width)
 		lines.push(currentLine)
+		// const word = currentLine.words.at(-1)!
+		// if (word.text.at(-1) === ' ') {
+		// 	word.text = word.text.slice(0, -1)
+		// 	word.width -= lastSpaceWidth
+		// 	currentLine.width -= lastSpaceWidth
+		// 	console.log(`Trimmed trailing whitespace ${word.text}`)
+		// }
+		canvasWidth = Math.max(canvasWidth, currentLine.width)
 	}
 
 	console.timeEnd('computeTextWrapping')

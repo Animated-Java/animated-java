@@ -1,4 +1,5 @@
-import { JsonText, type JsonTextComponent, type JsonTextObject } from './jsonText'
+import { type JsonTextComponent, type JsonTextObject } from './jsonText'
+import { JsonText } from './JsonText'
 import type { IComponentWord, IStyleSpan, StyleRecord } from './textWrapping'
 
 const STYLE_KEYS = [

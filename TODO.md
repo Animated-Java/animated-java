@@ -40,10 +40,10 @@
         - [x] minecraft:default
         - [x] minecraft:alt
         - [x] minecraft:illageralt
-    - [ ] User interface
-        - [ ] Figure out a nice way to configure text displays...
-        - [ ] Include an option to change the text.
-        - [ ] Include an option to change the max line width.
+    - [x] User interface
+        - [x] Figure out a nice way to configure text displays...
+        - [x] Include an option to change the text.
+        - [x] Include an option to change the max line width.
     - [ ] Animation
         - [ ] Make sure the text display is animatable.
         - [ ] Add a keyframe that changes the text of the text display. (Preview-ably)

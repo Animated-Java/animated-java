@@ -850,11 +850,11 @@
 			"type": "locator"
 		},
 		{
-			"text": "[\n  {\n    \"text\": \"Hello\",\n    \"italic\": true,\n    \"bold\": true,\n    \"underlined\": true\n  },\n  \"\\n\",\n  {\n    \"text\": \"World!\",\n    \"color\": \"green\",\n    \"strikethrough\": true\n  }\n]",
+			"text": "[\n  {\n  \t\"text\": \"Sometimes \",\n  \t\"italic\": true\n  },\n  \"you \",\n  {\n  \t\"text\": \"have\",\n  \t\"bold\": true\n  },\n  \" to wear \",\n  {\n  \t\"text\": \"stretchy\",\n  \t\"color\": \"yellow\"\n  },\n  \" pants.\\n\",\n  {\n  \t\"text\": \"(It's for \",\n  },\n  {\n  \t\"text\": \"fun.\",\n  \t\"underlined\": true,\n  \t\"color\": \"blue\"\n  },\n  \")\"\n]",
 			"position": [0, 33, 0],
 			"rotation": [0, 0, 0],
 			"scale": [1, 1, 1],
-			"lineLength": 50,
+			"lineWidth": 100,
 			"backgroundColor": "#000000",
 			"backgroundAlpha": 0.25,
 			"align": "center",

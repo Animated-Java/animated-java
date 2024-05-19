@@ -242,7 +242,7 @@ class BitmapFontProvider extends FontProvider {
 	}
 }
 
-class MinecraftFont {
+export class MinecraftFont {
 	static all: MinecraftFont[] = []
 	static missingCharacterAtlas = new THREE.TextureLoader().load(MissingCharacter)
 
@@ -520,10 +520,9 @@ class MinecraftFont {
 			backgroundAlpha,
 		} = options
 		let scale = options.scale
-		console.time('drawTextToCanvas')
-		const words = await getComponentWords(jsonText)
+		const words = getComponentWords(jsonText)
 		const { lines, canvasWidth } = await computeTextWrapping(words, lineWidth)
-		// Debug output
+		// // Debug output
 		// const wordWidths = words.map(word => this.getWordWidth(word))
 		// for (const word of words) {
 		// 	console.log(words.indexOf(word), word.text, wordWidths[words.indexOf(word)])
@@ -549,6 +548,8 @@ class MinecraftFont {
 		// 		)
 		// 	}
 		// }
+
+		console.time('drawTextToCanvas')
 
 		while (
 			(canvasWidth + 1) * scale > MAX_CANVAS_WIDTH ||
@@ -588,6 +589,7 @@ class MinecraftFont {
 		ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 
 		// TODO: Style inheritance
+		// TODO: Change this system to use a geometry plane for each character instead of drawing to a canvas, to support proper ascent, negative space, and large characters.
 
 		const cursor = { x, y }
 		for (const line of lines) {

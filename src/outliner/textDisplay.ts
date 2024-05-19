@@ -17,6 +17,7 @@ import { createAction } from '../util/moddingTools'
 import { getVanillaFont } from '../systems/minecraft/fontManager'
 import { JsonText } from '../systems/minecraft/jsonText'
 import TextDisplayLoading from '../assets/text_display_loading.webp'
+import { Valuable } from '../util/stores'
 
 const DEFAULT_PLANE = new THREE.PlaneBufferGeometry(1, 1)
 DEFAULT_PLANE.rotateY(Math.PI)
@@ -51,11 +52,9 @@ export class TextDisplay extends OutlinerElement {
 
 	// Properties
 	public name: string
-	public text: string
 	public position: ArrayVector3
 	public rotation: ArrayVector3
 	public scale: ArrayVector3
-	public lineWidth: number
 	public backgroundColor: string
 	public backgroundAlpha: number
 	public align: Alignment
@@ -70,6 +69,14 @@ export class TextDisplay extends OutlinerElement {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	public preview_controller = PREVIEW_CONTROLLER
 	public loadingMesh: THREE.Mesh = new THREE.Mesh()
+	public ready = false
+
+	public textError = new Valuable('')
+	private _text = new Valuable('Hello World!')
+	private _newText: string | undefined
+	private _lineWidth = new Valuable(200)
+	private _newLineWidth: number | undefined
+	private _updating = false
 
 	constructor(data: TextDisplayOptions, uuid = guid()) {
 		super(data, uuid)
@@ -84,17 +91,40 @@ export class TextDisplay extends OutlinerElement {
 		this.extend(data)
 
 		this.name ??= 'Text Display'
-		this.text ??= 'Hello World!'
 		this.position ??= [0, 0, 0]
 		this.rotation ??= [0, 0, 0]
 		this.scale ??= [1, 1, 1]
-		this.lineWidth ??= 200
 		this.backgroundColor ??= '#000000'
 		this.backgroundAlpha ??= 0.25
 		this.align ??= 'center'
 		this.visibility ??= true
 
 		this.sanitizeName()
+
+		this._text.subscribe(v => {
+			this._newText = v
+			void this.updateText()
+		})
+		this._lineWidth.subscribe(v => {
+			this._newLineWidth = v
+			void this.updateText()
+		})
+	}
+
+	get text() {
+		return this._text.get()
+	}
+
+	set text(value) {
+		this._text.set(value)
+	}
+
+	get lineWidth() {
+		return this._lineWidth.get()
+	}
+
+	set lineWidth(value) {
+		this._lineWidth.set(value)
 	}
 
 	extend(data: TextDisplayOptions) {
@@ -159,8 +189,56 @@ export class TextDisplay extends OutlinerElement {
 		}
 	}
 
-	async setText(jsonText: JsonText) {
-		// console.log(jsonText.toString())
+	async updateText() {
+		if (this._updating) return
+		this._updating = true
+		let text: JsonText | undefined
+
+		if (this._newText) {
+			this.textError.set('')
+			try {
+				text = JsonText.fromString(this._newText)
+			} catch (e: any) {
+				console.error(e)
+				this.textError.set(e.message as string)
+			}
+			this._updating = false
+			if (!text) return
+
+			while (this._newText) {
+				await this.setText(text)
+				this._newText = undefined
+			}
+		}
+
+		if (this._newLineWidth) {
+			this.textError.set('')
+			try {
+				text = JsonText.fromString(this.text)
+			} catch (e: any) {
+				console.error(e)
+				this.textError.set(e.message as string)
+			}
+			this._updating = false
+			if (!text) return
+
+			while (this._newLineWidth) {
+				await this.setText(text)
+				this._newLineWidth = undefined
+			}
+		}
+
+		this._updating = false
+	}
+
+	async waitForReady() {
+		while (!this.ready) {
+			await new Promise(resolve => setTimeout(resolve, 100))
+		}
+	}
+
+	private async setText(jsonText: JsonText) {
+		await this.waitForReady()
 		const font = await getVanillaFont()
 		const ctx = this.canvas.getContext('2d', { willReadFrequently: true })!
 		// @ts-ignore
@@ -214,7 +292,7 @@ new Property(TextDisplay, 'string', 'text', { default: '"Hello World!"' })
 new Property(TextDisplay, 'vector', 'position', { default: [0, 0, 0] })
 new Property(TextDisplay, 'vector', 'rotation', { default: [0, 0, 0] })
 new Property(TextDisplay, 'vector', 'scale', { default: [1, 1, 1] })
-new Property(TextDisplay, 'number', 'lineLength', { default: 200 / 4 })
+new Property(TextDisplay, 'number', 'lineWidth', { default: 200 })
 new Property(TextDisplay, 'string', 'backgroundColor', { default: '#000000' })
 new Property(TextDisplay, 'number', 'backgroundAlpha', { default: 0.25 })
 new Property(TextDisplay, 'string', 'align', { default: 'center' })
@@ -248,7 +326,7 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 		// FIXME: This will error if there is no Project loaded.
 		Project!.nodes_3d[el.uuid] = textMesh
 
-		void getVanillaFont().then(async () => {
+		void getVanillaFont().then(() => {
 			textMesh.renderOrder = 1
 
 			const outline = new THREE.LineSegments(
@@ -276,22 +354,16 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 			textMesh.outline = outline
 			textMesh.add(outline)
 
-			let text: JsonText | undefined
-			try {
-				text = JsonText.fromString(el.text)
-				// text = JsonText.fromString(JSON.stringify(TestText))
-			} catch (e: any) {
-				console.error('Failed to parse JsonText:', e)
-			}
-			if (text) {
-				await el.setText(text)
-			}
-
 			el.loadingMesh.visible = false
+
+			el.ready = true
 
 			PREVIEW_CONTROLLER.updateTransform(el)
 			PREVIEW_CONTROLLER.dispatchEvent('setup', { element: el })
 		})
+	},
+	updateGeometry(el: TextDisplay) {
+		void el.updateText()
 	},
 })
 
