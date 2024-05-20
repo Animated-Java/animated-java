@@ -47,6 +47,8 @@
 - [ ] Add a bone config option to replace the bone's display item with a custom item.
     - [ ] Will require somehow rendering the vanilla item/block model. - I've setup the assetsManager to handle loading, and updating the vanilla assets. Now I need to figure out how to load and render them.
 - [ ] Add Variants to the UndoSystem (Blocked by vanilla Blockbench not supporting custom undo actions)
+- [ ] Add a TextDisplay config.
+    - [ ] Add support for billboarding to TextDisplays.
 
 # Data Pack Compiler
 - [x] Merge on_tick and on_load function tags

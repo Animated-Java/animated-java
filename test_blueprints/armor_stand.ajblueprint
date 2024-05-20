@@ -852,7 +852,7 @@
 		{
 			"name": "my_text",
 			"text": "[\n  \"\",\n  {\n  \t\"text\": \"Sometimes \",\n  \t\"italic\": true\n  },\n  \"you \",\n  {\n  \t\"text\": \"have\",\n  \t\"bold\": true\n  },\n  \" to wear \",\n  {\n  \t\"text\": \"stretchy\",\n  \t\"color\": \"yellow\"\n  },\n  \" pants.\\n\",\n  {\n  \t\"text\": \"(It's for \",\n  },\n  {\n  \t\"text\": \"fun!\",\n  \t\"underlined\": true,\n  \t\"color\": \"blue\"\n  },\n  \")\"\n]",
-			"position": [0, 21, -15],
+			"position": [0, 33, 0],
 			"rotation": [0, 0, 0],
 			"scale": [1, 1, 1],
 			"lineWidth": 100,

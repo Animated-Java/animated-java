@@ -37,7 +37,6 @@ export class TextDisplay extends OutlinerElement {
 	public icon = 'text_fields'
 	public movable = true
 	public rotatable = true
-	// resizable causes issues, and I can't fix them because the internal Blockbench code is restrictive.
 	// public resizable = true
 	public scalable = true
 	public needsUniqueName = true
@@ -285,13 +284,13 @@ export class TextDisplay extends OutlinerElement {
 		await this.waitForReady()
 		const font = await getVanillaFont()
 		const ctx = this.canvas.getContext('2d', { willReadFrequently: true })!
-		// @ts-ignore
-		const outline: THREE.LineSegments = this.mesh.outline
 		// Hide the geo while rendering
 		this.loadingMesh.visible = true
 		this.textGeo.setAttribute('position', INVISIBLE_PLANE.getAttribute('position').clone())
 		const map = (this.loadingMesh.material as THREE.MeshBasicMaterial).map
+		const outline = this.mesh.outline as THREE.LineSegments
 		if (map) {
+			outline.geometry = new THREE.EdgesGeometry(this.loadingMesh.geometry)
 			outline.scale.set(map.image.width / 5, map.image.height / 5, 1)
 			outline.position.set(0, map.image.height / 10, 0)
 		}
@@ -301,7 +300,6 @@ export class TextDisplay extends OutlinerElement {
 			jsonText,
 			x: 1,
 			y: 1,
-			// lineWidth: 1000,
 			lineWidth: this.lineWidth,
 			scale: TEXT_SCALE,
 			backgroundColor: this.backgroundColor,
@@ -311,17 +309,13 @@ export class TextDisplay extends OutlinerElement {
 		this.texture.needsUpdate = true
 		this.loadingMesh.visible = false
 
-		// Set geo back to a 1 1 plane
-		this.textGeo.setAttribute('position', DEFAULT_PLANE.getAttribute('position').clone())
-		this.textGeo.scale(
-			this.canvas.width / TEXT_SCALE / 2.5,
-			this.canvas.height / TEXT_SCALE / 2.5,
-			1
-		)
-
 		const xOffset = -(1 / 5)
 		const scaleX = this.canvas.width / TEXT_SCALE / 2.5
 		const scaleY = this.canvas.height / TEXT_SCALE / 2.5
+
+		// Set geo back to a 1 1 plane
+		this.textGeo.setAttribute('position', DEFAULT_PLANE.getAttribute('position').clone())
+		this.textGeo.scale(scaleX, scaleY, 1)
 
 		this.textGeo.center()
 		this.textGeo.translate(xOffset, scaleY / 2, 0)
@@ -330,10 +324,9 @@ export class TextDisplay extends OutlinerElement {
 		const fix_position = this.mesh.fix_position as THREE.Vector3
 		fix_position.set(...this.position)
 
-		outline.scale.x = scaleX
-		outline.scale.y = scaleY
-		outline.position.x = xOffset
-		outline.position.y = scaleY / 2
+		outline.geometry = new THREE.EdgesGeometry(this.textGeo)
+		outline.scale.set(1, 1, 1)
+		outline.position.set(0, 0, 0)
 	}
 }
 new Property(TextDisplay, 'string', 'name', { default: 'Text Display' })
@@ -350,14 +343,12 @@ OutlinerElement.registerType(TextDisplay, TextDisplay.type)
 
 export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 	setup(el: TextDisplay) {
-		el.textGeo = new THREE.PlaneGeometry(1, 1)
+		el.textGeo = new THREE.PlaneGeometry(0, 0)
 		el.textGeo.rotateY(Math.PI)
 
 		const material = new THREE.MeshBasicMaterial({ map: el.texture, transparent: true })
 		const textMesh = new THREE.Mesh(el.textGeo, material)
-		// @ts-ignore
 		textMesh.fix_rotation = new THREE.Euler(0, 0, 0, 'ZYX')
-		// @ts-ignore
 		textMesh.fix_position = new THREE.Vector3(0, 0, 0)
 
 		new THREE.TextureLoader().load(TextDisplayLoading, texture => {
@@ -375,7 +366,6 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 			el.loadingMesh.visible = false
 		})
 
-		// @ts-ignore
 		this.mesh = textMesh
 		// FIXME: This will error if there is no Project loaded.
 		Project!.nodes_3d[el.uuid] = textMesh
@@ -388,24 +378,17 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 				new THREE.EdgesGeometry(el.textGeo),
 				Canvas.outlineMaterial
 			)
-			outline.add(
-				new THREE.LineSegments(new THREE.EdgesGeometry(el.textGeo), Canvas.outlineMaterial)
-			)
-			// @ts-ignore
 			outline.no_export = true
 			outline.name = el.uuid + '_outline'
 			outline.visible = el.selected
 			outline.renderOrder = 2
 			outline.frustumCulled = false
 
-			// @ts-ignore
 			textMesh.isElement = true
 			textMesh.name = el.uuid
-			// @ts-ignore
 			textMesh.type = el.type
 			textMesh.visible = el.visibility
 			textMesh.rotation.order = 'ZYX'
-			// @ts-ignore
 			textMesh.outline = outline
 			textMesh.add(outline)
 
@@ -417,7 +400,14 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 		})
 	},
 	updateGeometry(el: TextDisplay) {
+		el.mesh.scale.set(...el.scale)
 		void el.updateText()
+	},
+	updateTransform(el: TextDisplay) {
+		NodePreviewController.prototype.updateTransform.call(this, el)
+		if (el.mesh.fix_position) {
+			el.mesh.fix_position.set(...el.position)
+		}
 	},
 })
 
