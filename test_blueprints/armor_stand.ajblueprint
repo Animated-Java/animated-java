@@ -860,6 +860,7 @@
 			"backgroundAlpha": 0.25,
 			"align": "center",
 			"visibility": "true",
+			"config": {},
 			"uuid": "365b1266-1125-13e1-01ee-5a82335137f4",
 			"type": "animated_java:text_display"
 		}
@@ -1518,7 +1519,7 @@
 			"override": false,
 			"length": 2,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"saved": false,
 			"path": "",
 			"anim_time_update": "",
@@ -3209,7 +3210,7 @@
 			"override": false,
 			"length": 2,
 			"snapping": 20,
-			"selected": false,
+			"selected": true,
 			"saved": false,
 			"path": "",
 			"anim_time_update": "",

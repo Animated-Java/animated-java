@@ -1,5 +1,5 @@
 import { BLUEPRINT_FORMAT } from '../blueprintFormat'
-import { LocatorConfig } from '../boneConfig'
+import { LocatorConfig } from '../nodeConfigs'
 import LocatorConfigDialog from '../components/locatorConfigDialog.svelte'
 import { PACKAGE } from '../constants'
 import { createAction } from '../util/moddingTools'

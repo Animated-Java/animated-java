@@ -1,8 +1,8 @@
 import type {
 	BLUEPRINT_CODEC,
 	BLUEPRINT_FORMAT,
-	IBlueprintVariantBoneConfigJSON,
-	IBlueprintVariantLocatorConfigJSON,
+	IBlueprintBoneConfigJSON,
+	IBlueprintLocatorConfigJSON,
 } from './blueprintFormat'
 import { blueprintSettingErrors } from './blueprintSettings'
 import { openExportProgressDialog } from './interface/exportProgressDialog'
@@ -57,17 +57,17 @@ declare global {
 
 	interface Group {
 		configs: {
-			default: IBlueprintVariantBoneConfigJSON
+			default: IBlueprintBoneConfigJSON
 			/**
 			 * @key Variant UUID
 			 * @value Variant Bone Config
 			 */
-			variants: Record<string, IBlueprintVariantBoneConfigJSON>
+			variants: Record<string, IBlueprintBoneConfigJSON>
 		}
 	}
 
 	interface Locator {
-		config: IBlueprintVariantLocatorConfigJSON
+		config: IBlueprintLocatorConfigJSON
 	}
 
 	interface Cube {

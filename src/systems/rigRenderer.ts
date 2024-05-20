@@ -1,9 +1,10 @@
 import {
-	IBlueprintVariantCameraConfigJSON,
-	type IBlueprintVariantBoneConfigJSON,
-	IBlueprintVariantLocatorConfigJSON,
+	IBlueprintCameraConfigJSON,
+	type IBlueprintBoneConfigJSON,
+	IBlueprintLocatorConfigJSON,
+	IBlueprintTextDisplayConfigJSON,
 } from '../blueprintFormat'
-import { BoneConfig, CameraConfig, LocatorConfig } from '../boneConfig'
+import { BoneConfig } from '../nodeConfigs'
 import { TextDisplay } from '../outliner/textDisplay'
 import {
 	MinecraftResourceLocation,
@@ -73,7 +74,7 @@ export interface ICamera extends OutlinerElement {
 	linked_preview: string
 	camera_linked: boolean
 	visibility: boolean
-	config: IBlueprintVariantCameraConfigJSON
+	config: IBlueprintCameraConfigJSON
 }
 
 export interface IRenderedNodes {
@@ -88,20 +89,20 @@ export interface IRenderedNodes {
 		boundingBox: THREE.Box3
 		scale: number
 		configs: {
-			default: IBlueprintVariantBoneConfigJSON
-			variants: Record<string, IBlueprintVariantBoneConfigJSON>
+			default: IBlueprintBoneConfigJSON
+			variants: Record<string, IBlueprintBoneConfigJSON>
 		}
 	}
 	Camera: IRenderedNode & {
 		type: 'camera'
 		name: string
 		node: ICamera
-		config: IBlueprintVariantCameraConfigJSON
+		config: IBlueprintCameraConfigJSON
 	}
 	Locator: IRenderedNode & {
 		type: 'locator'
 		node: Locator
-		config: IBlueprintVariantLocatorConfigJSON
+		config: IBlueprintLocatorConfigJSON
 	}
 	TextDisplay: IRenderedNode & {
 		type: 'text_display'
@@ -109,6 +110,7 @@ export interface IRenderedNodes {
 		text?: JsonText
 		lineWidth: number
 		scale: number
+		config: IBlueprintTextDisplayConfigJSON
 	}
 }
 
@@ -399,6 +401,7 @@ function renderTextDisplay(
 		text: JsonText.fromString(textDisplay.text),
 		lineWidth: textDisplay.lineWidth,
 		scale: 1,
+		config: textDisplay.config,
 	}
 
 	rig.nodeMap[textDisplay.uuid] = renderedBone
@@ -529,18 +532,21 @@ export function hashRig(rig: IRenderedRig) {
 			}
 			case 'locator': {
 				if (node.config) {
-					hash.update(';' + JSON.stringify(LocatorConfig.fromJSON(node.config).toJSON()))
+					hash.update(';' + JSON.stringify(node.config))
 				}
 				break
 			}
 			case 'camera': {
 				if (node.config) {
-					hash.update(';' + JSON.stringify(CameraConfig.fromJSON(node.config).toJSON()))
+					hash.update(';' + JSON.stringify(node.config))
 				}
 				break
 			}
 			case 'text_display': {
 				hash.update(`;${node.text?.toString() as string}`)
+				if (node.config) {
+					hash.update(';' + JSON.stringify(node.config))
+				}
 				break
 			}
 		}

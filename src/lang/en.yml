@@ -4,6 +4,7 @@ animated_java.action.open_documentation.name: Documentation
 animated_java.action.open_about.name: About
 animated_java.action.open_bone_config.name: Bone Config
 animated_java.action.open_locator_config.name: Locator Config
+animated_java.action.open_text_display_config.name: Text Display Config
 animated_java.action.export.name: Export
 
 ### Dialogs
@@ -14,12 +15,6 @@ animated_java.dialog.unexpected_error.close_button: Close
 animated_java.dialog.unexpected_error.copy_error_message_button.message: Error Message Copied to Clipboard!
 animated_java.dialog.unexpected_error.copy_error_message_button.description: Click to copy the error message to the clipboard.
 animated_java.dialog.unexpected_error.paragraph: 'Please report this error by joining our {0} and creating a thread in the #animated-java-support channel, or by creating an issue on our {1}. Thank you!'
-animated_java.dialog.bone_config.billboard.title: Billboard
-animated_java.dialog.bone_config.billboard.description: Controls if this bone should pivot to face player when rendered. It can be fixed (both vertical and horizontal angles are fixed), vertical (faces player around vertical axis), horizontal (pivots around horizontal axis), and center (pivots around center point).
-animated_java.dialog.bone_config.billboard.options.fixed: Fixed
-animated_java.dialog.bone_config.billboard.options.vertical: Vertical
-animated_java.dialog.bone_config.billboard.options.horizontal: Horizontal
-animated_java.dialog.bone_config.billboard.options.center: Center
 
 ## Blueprint Settings Dialog
 animated_java.dialog.blueprint_settings.title: Blueprint Settings
@@ -161,6 +156,13 @@ animated_java.dialog.bone_config.invisible.description: Whether or not the bone 
 animated_java.dialog.bone_config.nbt.title: NBT
 animated_java.dialog.bone_config.nbt.description: The NBT to apply to the bone.
 
+animated_java.dialog.bone_config.billboard.title: Billboard
+animated_java.dialog.bone_config.billboard.description: Controls if this bone should pivot to face player when rendered. It can be fixed (both vertical and horizontal angles are fixed), vertical (faces player around vertical axis), horizontal (pivots around horizontal axis), and center (pivots around center point).
+animated_java.dialog.bone_config.billboard.options.fixed: Fixed
+animated_java.dialog.bone_config.billboard.options.vertical: Vertical
+animated_java.dialog.bone_config.billboard.options.horizontal: Horizontal
+animated_java.dialog.bone_config.billboard.options.center: Center
+
 ## Locator Config Dialog
 animated_java.dialog.locator_config.title: Locator Config
 
@@ -173,6 +175,50 @@ animated_java.dialog.locator_config.ticking_commands.title: Ticking Commands
 animated_java.dialog.locator_config.ticking_commands.description: |-
   Commands to run every tick at the Locator's position. Treat this text input as a normal mcfunction.
   NOTE: These commands will only run while an animation is playing.
+
+## Text Display Config Dialog
+animated_java.dialog.text_display_config.title: Text Display Config
+
+animated_java.dialog.text_display_config.use_nbt.title: Use NBT
+animated_java.dialog.text_display_config.use_nbt.description: Whether or not to use NBT to configure the text display instead of settings.
+animated_java.dialog.text_display_config.use_nbt.use_nbt_warning: Using NBT will override all other settings, and any changes you make will not be visible in the editor. Only use this if you know what you're doing!
+
+animated_java.dialog.text_display_config.inherit_settings.title: Inherit Settings
+animated_java.dialog.text_display_config.inherit_settings.description: Whether or not to inherit the settings from the parent text display.
+
+animated_java.dialog.text_display_config.glowing.title: Glowing
+animated_java.dialog.text_display_config.glowing.description: Whether or not the text display should glow in-game.
+
+animated_java.dialog.text_display_config.override_glow_color.title: Override Glow Color
+animated_java.dialog.text_display_config.override_glow_color.description: Whether or not to override the default glow color.
+
+animated_java.dialog.text_display_config.glow_color.title: Glow Color
+animated_java.dialog.text_display_config.glow_color.description: The color of the glow.
+
+animated_java.dialog.text_display_config.shadow_radius.title: Shadow Radius
+animated_java.dialog.text_display_config.shadow_radius.description: The radius of the shadow.
+
+animated_java.dialog.text_display_config.shadow_strength.title: Shadow Strength
+animated_java.dialog.text_display_config.shadow_strength.description: The strength of the shadow.
+
+animated_java.dialog.text_display_config.override_brightness.title: Override Brightness
+animated_java.dialog.text_display_config.override_brightness.description: Whether or not to override the default brightness.
+
+animated_java.dialog.text_display_config.brightness_override.title: Brightness
+animated_java.dialog.text_display_config.brightness_override.description: The brightness of the text display. This should be a value between 0 and 15.
+
+animated_java.dialog.text_display_config.invisible.title: Invisible
+animated_java.dialog.text_display_config.invisible.description: Whether or not the bone should be invisible.
+
+animated_java.dialog.text_display_config.nbt.title: NBT
+animated_java.dialog.text_display_config.nbt.description: The NBT to apply to the text display.
+
+animated_java.dialog.text_display_config.billboard.title: Billboard
+animated_java.dialog.text_display_config.billboard.description: Controls if this text display should pivot to face player when rendered. It can be fixed (both vertical and horizontal angles are fixed), vertical (faces player around vertical axis), horizontal (pivots around horizontal axis), and center (pivots around center point).
+animated_java.dialog.text_display_config.billboard.options.fixed: Fixed
+animated_java.dialog.text_display_config.billboard.options.vertical: Vertical
+animated_java.dialog.text_display_config.billboard.options.horizontal: Horizontal
+animated_java.dialog.text_display_config.billboard.options.center: Center
 
 ## Variant Config Dialog
 animated_java.dialog.variant_config.title: Variant Config

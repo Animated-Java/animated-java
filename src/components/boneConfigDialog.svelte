@@ -8,7 +8,7 @@
 	import { Variant } from '../variants'
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
-	import { BoneConfig } from '../boneConfig'
+	import { BoneConfig } from '../nodeConfigs'
 </script>
 
 <script lang="ts">

@@ -12,7 +12,7 @@ import {
 	replacePathPart,
 	sortObjectKeys,
 } from './util'
-import { BoneConfig } from '../boneConfig'
+import { BoneConfig, TextDisplayConfig } from '../nodeConfigs'
 import { IFunctionTag, mergeTag, parseDataPackPath } from '../util/minecraftUtil'
 import { JsonText } from './minecraft/jsonText'
 import { MAX_PROGRESS, PROGRESS } from '../interface/exportProgressDialog'
@@ -273,11 +273,13 @@ function generateRootEntityPassengers(rig: IRenderedRig) {
 				passenger.set('height', new NbtFloat(aj.bounding_box[1]))
 				passenger.set('width', new NbtFloat(aj.bounding_box[0]))
 
-				if (node.text) {
-					passenger.set('text', new NbtString(node.text.toString()))
-				}
-
+				passenger.set(
+					'text',
+					new NbtString(node.text ? node.text.toString() : '"Invalid Text Component"')
+				)
 				passenger.set('line_width', new NbtInt(node.lineWidth))
+
+				TextDisplayConfig.fromJSON(node.config).toNBT(passenger)
 				break
 			}
 		}

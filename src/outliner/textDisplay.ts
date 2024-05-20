@@ -1,4 +1,4 @@
-import { isCurrentFormat } from '../blueprintFormat'
+import { IBlueprintTextDisplayConfigJSON, isCurrentFormat } from '../blueprintFormat'
 import { PACKAGE } from '../constants'
 import { createAction, createBlockbenchMod } from '../util/moddingTools'
 // import * as MinecraftFull from '../assets/MinecraftFull.json'
@@ -7,6 +7,8 @@ import { JsonText } from '../systems/minecraft/jsonText'
 import TextDisplayLoading from '../assets/text_display_loading.webp'
 import { Valuable } from '../util/stores'
 import { toSafeFuntionName } from '../util/minecraftUtil'
+import { TextDisplayConfig } from '../nodeConfigs'
+import { TEXT_DISPLAY_CONFIG_ACTION } from '../interface/textDisplayConfigDialog'
 
 const DEFAULT_PLANE = new THREE.PlaneBufferGeometry(1, 1)
 DEFAULT_PLANE.rotateY(Math.PI)
@@ -50,12 +52,19 @@ export class TextDisplay extends OutlinerElement {
 	public backgroundAlpha: number
 	public align: Alignment
 	public visibility
+	public config: IBlueprintTextDisplayConfigJSON
 
 	public textGeo: THREE.PlaneGeometry = new THREE.PlaneGeometry(1, 1)
 	public canvas = document.createElement('canvas')
 	public texture = new THREE.CanvasTexture(this.canvas)
 
-	public menu = new Menu([...Outliner.control_menu_group, '_', 'rename', 'delete'])
+	public menu = new Menu([
+		...Outliner.control_menu_group,
+		TEXT_DISPLAY_CONFIG_ACTION,
+		'_',
+		'rename',
+		'delete',
+	])
 	public buttons = [Outliner.buttons.export, Outliner.buttons.locked, Outliner.buttons.visibility]
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	public preview_controller = PREVIEW_CONTROLLER
@@ -89,6 +98,7 @@ export class TextDisplay extends OutlinerElement {
 		this.backgroundAlpha ??= 0.25
 		this.align ??= 'center'
 		this.visibility ??= true
+		this.config ??= {}
 
 		this.sanitizeName()
 
@@ -339,6 +349,11 @@ new Property(TextDisplay, 'string', 'backgroundColor', { default: '#000000' })
 new Property(TextDisplay, 'number', 'backgroundAlpha', { default: 0.25 })
 new Property(TextDisplay, 'string', 'align', { default: 'center' })
 new Property(TextDisplay, 'string', 'visibility', { default: true })
+new Property(TextDisplay, 'object', 'config', {
+	get default() {
+		return new TextDisplayConfig().toJSON()
+	},
+})
 OutlinerElement.registerType(TextDisplay, TextDisplay.type)
 
 export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {

@@ -49,11 +49,16 @@
 				font-size: 14px;
 				text-align: left;
 				padding: 4px 8px;
-				height: 2.5rem;
+				height: 10rem;
 				resize: vertical;
 				border: none;
 				width: 95%;
 				margin-bottom: 0px;
+				outline: none;
+				overflow-wrap: break-word;
+				overflow-y: auto;
+				white-space: pre-wrap;
+				margin-top: 0px;
 			"
 		/>
 		{#if $error}

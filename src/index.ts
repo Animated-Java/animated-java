@@ -11,6 +11,7 @@ import './interface/variantsPanel'
 import './interface/importAJModelLoader'
 import './interface/customKeyframePanel'
 import './interface/textDisplayElementPanel'
+import './interface/textDisplayConfigDialog'
 // Blockbench Mods
 import './interface/locatorConfigDialog'
 import './mods/animationControllerMod'

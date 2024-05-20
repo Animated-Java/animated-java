@@ -1,5 +1,5 @@
 import { IBlueprintFormatJSON, getDefaultProjectSettings } from '../blueprintFormat'
-import { BoneConfig } from '../boneConfig'
+import { BoneConfig } from '../nodeConfigs'
 import { PACKAGE } from '../constants'
 import { openUnexpectedErrorDialog } from '../interface/unexpectedErrorDialog'
 import { LocatorAnimator } from '../mods/locatorAnimatorMod'

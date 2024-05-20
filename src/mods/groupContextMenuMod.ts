@@ -9,7 +9,7 @@ createBlockbenchMod(
 	},
 	context => {
 		const structure = [...context.menuStructure]
-		structure.splice(5, 0, BONE_CONFIG_ACTION)
+		structure.splice(6, 0, BONE_CONFIG_ACTION)
 		Group.prototype.menu!.structure = structure
 
 		return context

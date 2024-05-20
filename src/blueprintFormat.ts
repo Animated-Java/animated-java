@@ -1,5 +1,5 @@
 import * as blueprintSettings from './blueprintSettings'
-import { BoneConfig } from './boneConfig'
+import { BillboardMode, BoneConfig, LocatorConfig } from './nodeConfigs'
 import ProjectTitleSvelteComponent from './components/projectTitle.svelte'
 import { PACKAGE } from './constants'
 import { events } from './util/events'
@@ -12,7 +12,7 @@ import { TRANSPARENT_TEXTURE, TRANSPARENT_TEXTURE_MATERIAL, Variant } from './va
 /**
  * The serialized Variant Bone Config
  */
-export interface IBlueprintVariantBoneConfigJSON {
+export interface IBlueprintBoneConfigJSON {
 	billboard?: BoneConfig['billboard']
 	override_brightness?: BoneConfig['overrideBrightness']
 	brightness_override?: BoneConfig['brightnessOverride']
@@ -34,17 +34,37 @@ export interface IBlueprintVariantBoneConfigJSON {
 /**
  * The serialized Variant Locator Config
  */
-export interface IBlueprintVariantLocatorConfigJSON {
-	ticking_commands?: string
+export interface IBlueprintLocatorConfigJSON {
+	ticking_commands?: LocatorConfig['tickingCommands']
 }
 
 /**
  * The serialized Variant Camera Config
  */
-export interface IBlueprintVariantCameraConfigJSON {
+export interface IBlueprintCameraConfigJSON {
 	entity_type?: string
 	nbt?: string
 	ticking_commands?: string
+}
+
+/**
+ * The serialized Variant Locator Config
+ */
+export interface IBlueprintTextDisplayConfigJSON {
+	billboard?: BillboardMode
+	override_brightness?: BoneConfig['overrideBrightness']
+	brightness_override?: BoneConfig['brightnessOverride']
+	glowing?: BoneConfig['glowing']
+	override_glow_color?: BoneConfig['overrideGlowColor']
+	glow_color?: BoneConfig['glowColor']
+	invisible?: BoneConfig['invisible']
+	shadow_radius?: BoneConfig['shadowRadius']
+	shadow_strength?: BoneConfig['shadowStrength']
+	use_nbt?: BoneConfig['useNBT']
+	/**
+	 * Custom NBT for the bone that will be merged when this Variant is applied
+	 */
+	nbt?: BoneConfig['nbt']
 }
 
 /**
