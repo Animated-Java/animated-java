@@ -26,8 +26,8 @@ export function openBoneConfigDialog(bone: TextDisplay) {
 	const useNBT = new Valuable(oldConfig.useNBT)
 
 	new SvelteDialog({
-		id: `${PACKAGE.name}:boneConfig`,
-		title: translate('dialog.bone_config.title'),
+		id: `${PACKAGE.name}:textDisplayConfigDialog`,
+		title: translate('dialog.text_display_config.title'),
 		width: 400,
 		svelteComponent: TextDisplayConfigDialog,
 		svelteComponentProperties: {
