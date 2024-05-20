@@ -7,7 +7,7 @@ import {
 import { BoneConfig } from '../nodeConfigs'
 import { TextDisplay } from '../outliner/textDisplay'
 import {
-	MinecraftResourceLocation,
+	IMinecraftResourceLocation,
 	parseResourcePackPath,
 	toSafeFuntionName,
 } from '../util/minecraftUtil'
@@ -236,7 +236,7 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 	return element
 }
 
-const TEXTURE_RESOURCE_LOCATION_CACHE = new Map<string, MinecraftResourceLocation>()
+const TEXTURE_RESOURCE_LOCATION_CACHE = new Map<string, IMinecraftResourceLocation>()
 export function getTextureResourceLocation(texture: Texture, rig: IRenderedRig) {
 	if (TEXTURE_RESOURCE_LOCATION_CACHE.has(texture.uuid)) {
 		return TEXTURE_RESOURCE_LOCATION_CACHE.get(texture.uuid)!

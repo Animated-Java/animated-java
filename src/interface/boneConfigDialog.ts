@@ -7,6 +7,7 @@ import { Valuable } from '../util/stores'
 import { SvelteDialog } from '../util/svelteDialog'
 import { translate } from '../util/translation'
 import { Variant } from '../variants'
+import { getItemModel } from '../systems/minecraft/itemModelManager'
 
 // TODO: These should probably be part of the BoneConfig class
 function propagateInheritanceUp(group: Group, config: BoneConfig, variant?: string): void {
@@ -65,6 +66,7 @@ export function openBoneConfigDialog(bone: Group) {
 
 	const oldConfig = BoneConfig.fromJSON(boneConfigJSON)
 
+	const vanillaItemModel = new Valuable(oldConfig.vanillaItemModel)
 	const billboard = new Valuable(oldConfig.billboard)
 	const overrideBrightness = new Valuable(oldConfig.overrideBrightness)
 	const brightnessOverride = new Valuable(oldConfig.brightnessOverride)
@@ -86,7 +88,7 @@ export function openBoneConfigDialog(bone: Group) {
 		svelteComponent: BoneConfigDialogSvelteComponent,
 		svelteComponentProperties: {
 			variant: Variant.selected,
-			parentConfig,
+			vanillaItemModel,
 			billboard,
 			overrideBrightness,
 			brightnessOverride,
@@ -105,6 +107,7 @@ export function openBoneConfigDialog(bone: Group) {
 		onConfirm() {
 			const newConfig = new BoneConfig()
 
+			newConfig.vanillaItemModel = vanillaItemModel.get()
 			newConfig.billboard = billboard.get()
 			newConfig.overrideBrightness = overrideBrightness.get()
 			newConfig.brightnessOverride = brightnessOverride.get()
@@ -119,6 +122,8 @@ export function openBoneConfigDialog(bone: Group) {
 			newConfig.shadowStrength = shadowStrength.get()
 			newConfig.useNBT = useNBT.get()
 
+			newConfig.vanillaItemModel === parentConfig.vanillaItemModel &&
+				(newConfig.vanillaItemModel = undefined)
 			newConfig.billboard === parentConfig.billboard && (newConfig.billboard = undefined)
 			newConfig.overrideBrightness === parentConfig.overrideBrightness &&
 				(newConfig.overrideBrightness = undefined)
@@ -155,6 +160,35 @@ export function openBoneConfigDialog(bone: Group) {
 				}
 				bone.configs.default = newConfig.toJSON()
 				propagateInheritanceDown(bone, newConfig)
+			}
+
+			if (newConfig.vanillaItemModel) {
+				for (const child of bone.children) {
+					if (child instanceof Cube) {
+						child.export = false
+						child.visibility = false
+					}
+					Canvas.updateAll()
+				}
+				void getItemModel(newConfig.vanillaItemModel).then(mesh => {
+					const oldMesh = bone.mesh.getObjectByName('vanillaItemModel')
+					if (oldMesh) bone.mesh.remove(oldMesh)
+					if (mesh) {
+						bone.mesh.add(mesh)
+					}
+				})
+			} else {
+				const oldMesh = bone.mesh.getObjectByName('vanillaItemModel')
+				if (oldMesh) {
+					bone.mesh.remove(oldMesh)
+					for (const child of bone.children) {
+						if (child instanceof Cube) {
+							child.export = true
+							child.visibility = true
+						}
+					}
+					Canvas.updateAll()
+				}
 			}
 		},
 	}).show()

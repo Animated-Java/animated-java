@@ -1,6 +1,6 @@
 import * as pathjs from 'path'
 
-export interface MinecraftResourceLocation {
+export interface IMinecraftResourceLocation {
 	resourcePackRoot: string
 	namespace: string
 	resourcePath: string
@@ -17,10 +17,10 @@ export function toSafeFuntionName(name: string): string {
 }
 
 /**
- * Get the path of a resource location, e.g. 'minecraft:models/block/stone.json' -> 'assets/minecraft/models/block/stone.json'
- * @param resourceLocation The resource location, e.g. 'minecraft:models/block/stone.json'
+ * Get the path of a resource location, e.g. 'minecraft:block/stone' -> 'assets/minecraft/models/block/stone'
+ * @param resourceLocation The resource location, e.g. 'minecraft:block/stone'
  * @param type The type of the resource, e.g. 'models', 'textures', 'sounds'
- * @returns The path of the resource, e.g. 'assets/minecraft/models/block/stone.json'
+ * @returns The path of the resource, e.g. 'assets/minecraft/models/block/stone'
  */
 export function getPathFromResourceLocation(resourceLocation: string, type: string): string {
 	const [namespace, ...path] = resourceLocation.split(':')
@@ -32,7 +32,7 @@ export function isResourcePackPath(path: string) {
 	return !!(parsed && parsed.namespace && parsed.resourcePath)
 }
 
-export function parseResourcePackPath(path: string): MinecraftResourceLocation | undefined {
+export function parseResourcePackPath(path: string): IMinecraftResourceLocation | undefined {
 	path = path.replaceAll(/\\/g, '/')
 	const parts = path.split('/')
 
@@ -65,7 +65,7 @@ export function isDataPackPath(path: string) {
 	return !!(parsed && parsed.namespace && parsed.resourcePath)
 }
 
-export function parseDataPackPath(path: string): MinecraftResourceLocation | undefined {
+export function parseDataPackPath(path: string): IMinecraftResourceLocation | undefined {
 	path = path.replaceAll(/\\/g, '/')
 	const parts = path.split('/')
 

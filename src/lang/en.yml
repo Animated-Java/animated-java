@@ -179,6 +179,11 @@ animated_java.dialog.locator_config.ticking_commands.description: |-
 ## Text Display Config Dialog
 animated_java.dialog.text_display_config.title: Text Display Config
 
+animated_java.dialog.bone_config.vanilla_item_model.title: Vanilla Item Model
+animated_java.dialog.bone_config.vanilla_item_model.description: |-
+  If set, the bone will render as a vanilla item model.
+  This will overwrite the bone's existing cubes.
+
 animated_java.dialog.text_display_config.use_nbt.title: Use NBT
 animated_java.dialog.text_display_config.use_nbt.description: Whether or not to use NBT to configure the text display instead of settings.
 animated_java.dialog.text_display_config.use_nbt.use_nbt_warning: Using NBT will override all other settings, and any changes you make will not be visible in the editor. Only use this if you know what you're doing!

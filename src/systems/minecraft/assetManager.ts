@@ -88,6 +88,16 @@ export async function extractAssets() {
 	})
 }
 
+export async function assetsLoaded() {
+	return new Promise<void>(resolve => {
+		if (loadedAssets !== undefined) {
+			resolve()
+		} else {
+			events.MINECRAFT_ASSETS_LOADED.subscribe(() => resolve(), true)
+		}
+	})
+}
+
 export function getRawAsset(path: string) {
 	if (!loadedAssets) throw new Error('Assets not loaded')
 	const asset = loadedAssets[path]

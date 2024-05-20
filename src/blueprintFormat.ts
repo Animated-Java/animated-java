@@ -13,6 +13,7 @@ import { TRANSPARENT_TEXTURE, TRANSPARENT_TEXTURE_MATERIAL, Variant } from './va
  * The serialized Variant Bone Config
  */
 export interface IBlueprintBoneConfigJSON {
+	vanilla_item_model?: BoneConfig['vanillaItemModel']
 	billboard?: BoneConfig['billboard']
 	override_brightness?: BoneConfig['overrideBrightness']
 	brightness_override?: BoneConfig['brightnessOverride']

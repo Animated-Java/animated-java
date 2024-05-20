@@ -60,6 +60,7 @@ import { TextDisplay } from './outliner/textDisplay'
 import { getLatestVersionClientDownloadUrl } from './systems/minecraft/assetManager'
 import { hideLoadingPopup, showLoadingPopup } from './interface/animatedJavaLoadingPopup'
 import { getVanillaFont } from './systems/minecraft/fontManager'
+import * as itemModelManager from './systems/minecraft/itemModelManager'
 
 // Show loading popup
 void showLoadingPopup().then(async () => {
@@ -96,6 +97,7 @@ globalThis.AnimatedJava = {
 		TextDisplay,
 		getLatestVersionClientDownloadUrl,
 		getVanillaFont,
+		itemModelManager,
 	},
 }
 

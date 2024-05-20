@@ -16,6 +16,7 @@
 
 	export let variant: Variant
 
+	export let vanillaItemModel: Valuable<NonNullable<BoneConfig['_vanillaModel']>>
 	export let billboard: Valuable<string>
 	export let overrideBrightness: Valuable<NonNullable<BoneConfig['_overrideBrightness']>>
 	export let brightnessOverride: Valuable<NonNullable<BoneConfig['_brightnessOverride']>>
@@ -134,6 +135,12 @@
 			label={translate('dialog.bone_config.inherit_settings.title')}
 			tooltip={translate('dialog.bone_config.inherit_settings.description')}
 			bind:checked={inheritSettings}
+		/>
+
+		<LineInput
+			label={translate('dialog.bone_config.vanilla_item_model.title')}
+			tooltip={translate('dialog.bone_config.vanilla_item_model.description')}
+			bind:value={vanillaItemModel}
 		/>
 
 		<Checkbox

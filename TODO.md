@@ -38,17 +38,24 @@
         - [x] Include an option to change the max line width.
     - [x] Animation
         - [x] Make sure the text display is animatable.
+    - [x] Add a TextDisplay config.
+        - [x] Add support for billboarding to TextDisplays.
+- [x] Respect inheritance in the bone config.
 - [ ] Camera Plugin Support
     - [ ] Camera config.
     - [ ] Data Pack Compiler support.
 - [ ] Change the Collection setting type to allow single-click swapping of items between lists.
 - [ ] Add an about page.
-- [ ] Respect inheritance in the bone config.
-- [ ] Add a bone config option to replace the bone's display item with a custom item.
-    - [ ] Will require somehow rendering the vanilla item/block model. - I've setup the assetsManager to handle loading, and updating the vanilla assets. Now I need to figure out how to load and render them.
+- [x] Add a bone config option to replace the bone's display item with a custom item.
+    - [ ] Add rendering for vanilla item models.
+        - [ ] Parent model inheritance
+        - [x] item/generated
+        - [ ] item/handheld
+        - [ ] item/handheld_rod
+    - [ ] Add rendering for vanilla block models.
+        - [ ] Parent model inheritance
+    - [ ] Add an option to switch the display entity between item and block display.
 - [ ] Add Variants to the UndoSystem (Blocked by vanilla Blockbench not supporting custom undo actions)
-- [ ] Add a TextDisplay config.
-    - [ ] Add support for billboarding to TextDisplays.
 
 # Data Pack Compiler
 - [x] Merge on_tick and on_load function tags
