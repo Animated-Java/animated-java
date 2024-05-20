@@ -4,6 +4,7 @@ import {
 	getKeyframeRepeat,
 	getKeyframeRepeatFrequency,
 } from '../mods/customKeyframesMod'
+import { TextDisplay } from '../outliner/textDisplay'
 import { roundToNth } from '../util/misc'
 import { AnyRenderedNode, IRenderedRig } from './rigRenderer'
 import * as crypto from 'crypto'
@@ -24,14 +25,19 @@ function getNodeMatrix(node: OutlinerElement, scale: number) {
 		new THREE.Vector3().setFromMatrixPosition(matrixWorld).multiplyScalar(1 / 16)
 	)
 	matrixWorld.scale(new THREE.Vector3().setScalar(scale))
+	if (node instanceof TextDisplay) {
+		matrixWorld.multiply(
+			new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(0, Math.PI, 0, 'XYZ'))
+		)
+	}
 	return matrixWorld
 }
 
 export interface IAnimationNode {
-	type: 'bone' | 'camera' | 'locator'
+	type: 'bone' | 'camera' | 'locator' | 'text_display'
 	name: string
 	uuid: string
-	node?: Group | NullObject | Locator | OutlinerElement
+	node?: Group | NullObject | Locator | OutlinerElement | TextDisplay
 	matrix: THREE.Matrix4
 	pos: THREE.Vector3
 	rot: THREE.Quaternion
@@ -118,6 +124,7 @@ export function getAnimationNodes(
 			repeat: boolean | undefined,
 			repeatFrequency: number | undefined
 		switch (node.type) {
+			case 'text_display':
 			case 'bone': {
 				matrix = getNodeMatrix(node.node, node.scale)
 				// Only add the frame if the matrix has changed.
@@ -217,7 +224,12 @@ function getAnimationStateKeyframe(animation: _Animation, time: number) {
 export function updatePreview(animation: _Animation, time: number) {
 	Timeline.time = time
 	Animator.showDefaultPose(true)
-	const nodes: OutlinerNode[] = [...Group.all, ...NullObject.all, ...Locator.all]
+	const nodes: OutlinerNode[] = [
+		...Group.all,
+		...NullObject.all,
+		...Locator.all,
+		...TextDisplay.all,
+	]
 	if (OutlinerElement.types.camera) {
 		nodes.push(...OutlinerElement.types.camera.all)
 	}

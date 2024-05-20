@@ -119,6 +119,24 @@ export function openBoneConfigDialog(bone: Group) {
 			newConfig.shadowStrength = shadowStrength.get()
 			newConfig.useNBT = useNBT.get()
 
+			newConfig.billboard === parentConfig.billboard && (newConfig.billboard = undefined)
+			newConfig.overrideBrightness === parentConfig.overrideBrightness &&
+				(newConfig.overrideBrightness = undefined)
+			newConfig.brightnessOverride === parentConfig.brightnessOverride &&
+				(newConfig.brightnessOverride = undefined)
+			newConfig.enchanted === parentConfig.enchanted && (newConfig.enchanted = undefined)
+			newConfig.glowing === parentConfig.glowing && (newConfig.glowing = undefined)
+			newConfig.overrideGlowColor === parentConfig.overrideGlowColor &&
+				(newConfig.overrideGlowColor = undefined)
+			newConfig.glowColor === parentConfig.glowColor && (newConfig.glowColor = undefined)
+			newConfig.invisible === parentConfig.invisible && (newConfig.invisible = undefined)
+			newConfig.nbt === parentConfig.nbt && (newConfig.nbt = undefined)
+			newConfig.shadowRadius === parentConfig.shadowRadius &&
+				(newConfig.shadowRadius = undefined)
+			newConfig.shadowStrength === parentConfig.shadowStrength &&
+				(newConfig.shadowStrength = undefined)
+			newConfig.useNBT === parentConfig.useNBT && (newConfig.useNBT = undefined)
+
 			if (newConfig.checkIfEqual(BoneConfig.fromJSON(bone.configs.default))) {
 				// Don't save the variant config if it's the same as the default
 				delete bone.configs.variants[Variant.selected!.uuid]

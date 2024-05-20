@@ -4,6 +4,7 @@ import {
 	IBlueprintVariantLocatorConfigJSON,
 } from '../blueprintFormat'
 import { BoneConfig, CameraConfig, LocatorConfig } from '../boneConfig'
+import { TextDisplay } from '../outliner/textDisplay'
 import {
 	MinecraftResourceLocation,
 	parseResourcePackPath,
@@ -18,6 +19,7 @@ import {
 	updatePreview,
 } from './animationRenderer'
 import * as crypto from 'crypto'
+import { JsonText } from './minecraft/jsonText'
 
 export interface IRenderedFace {
 	uv: number[]
@@ -100,6 +102,13 @@ export interface IRenderedNodes {
 		type: 'locator'
 		node: Locator
 		config: IBlueprintVariantLocatorConfigJSON
+	}
+	TextDisplay: IRenderedNode & {
+		type: 'text_display'
+		node: TextDisplay
+		text?: JsonText
+		lineWidth: number
+		scale: number
 	}
 }
 
@@ -272,7 +281,7 @@ function getBoneBoundingBox(group: Group) {
 	return box
 }
 
-function renderGroup(group: Group, rig: IRenderedRig) {
+function renderGroup(group: Group, rig: IRenderedRig): INodeStructure | undefined {
 	if (!group.export) return
 	const parentId = (group.parent instanceof Group ? group.parent.uuid : group.parent)!
 
@@ -326,6 +335,9 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 		} else if (node instanceof Locator) {
 			const locator = renderLocator(node, rig)
 			if (locator) structure.children.push(locator)
+		} else if (node instanceof TextDisplay) {
+			const textDisplay = renderTextDisplay(node, rig)
+			if (textDisplay) structure.children.push(textDisplay)
 		} else if (OutlinerElement.types.camera && node instanceof OutlinerElement.types.camera) {
 			const camera = renderCamera(node as ICamera, rig)
 			if (camera) structure.children.push(camera)
@@ -358,6 +370,42 @@ function renderGroup(group: Group, rig: IRenderedRig) {
 	rig.models[group.uuid] = renderedBone.model
 	rig.nodeMap[group.uuid] = renderedBone
 	return structure
+}
+
+function renderTextDisplay(
+	textDisplay: TextDisplay,
+	rig: IRenderedRig
+): INodeStructure | undefined {
+	if (!textDisplay.export) return
+	const parentId = (
+		textDisplay.parent instanceof Group ? textDisplay.parent.uuid : textDisplay.parent
+	)!
+
+	const path = PathModule.join(rig.modelExportFolder, textDisplay.name + `.json`)
+	const parsed = parseResourcePackPath(path)
+
+	if (!parsed) {
+		console.error(textDisplay)
+		throw new Error(`Invalid bone path: ${textDisplay.name} -> ${path}`)
+	}
+
+	const renderedBone: IRenderedNodes['TextDisplay'] = {
+		type: 'text_display',
+		parent: parentId,
+		parentNode: textDisplay.parent instanceof Group ? textDisplay.parent : null,
+		node: textDisplay,
+		name: textDisplay.name,
+		uuid: textDisplay.uuid,
+		text: JsonText.fromString(textDisplay.text),
+		lineWidth: textDisplay.lineWidth,
+		scale: 1,
+	}
+
+	rig.nodeMap[textDisplay.uuid] = renderedBone
+	return {
+		uuid: textDisplay.uuid,
+		children: [],
+	}
 }
 
 function renderLocator(locator: Locator, rig: IRenderedRig): INodeStructure {
@@ -491,6 +539,10 @@ export function hashRig(rig: IRenderedRig) {
 				}
 				break
 			}
+			case 'text_display': {
+				hash.update(`;${node.text?.toString() as string}`)
+				break
+			}
 		}
 	}
 	return hash.digest('hex')
@@ -526,6 +578,9 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 		} else if (node instanceof Locator) {
 			const locator = renderLocator(node, rig)
 			if (locator) rootNode.children.push(locator)
+		} else if (node instanceof TextDisplay) {
+			const textDisplay = renderTextDisplay(node, rig)
+			if (textDisplay) rootNode.children.push(textDisplay)
 		} else if (OutlinerElement.types.camera && node instanceof OutlinerElement.types.camera) {
 			const camera = renderCamera(node as ICamera, rig)
 			if (camera) rootNode.children.push(camera)

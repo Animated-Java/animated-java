@@ -62,9 +62,10 @@
 - [x] Teleport the rig to the execution location of the summon command.
 - [x] Rotate the bones with the root entity.
 - [x] Add default saved Locator positions to the summoned rig.
+- [x] Add support for text displays.
 - [ ] Figure out how cameras will work.
 - [ ] Check for references to non-existant functions in merged function tags, and remove them.
-- [ ] Add support for text displays.
+- [ ] Apply variant keyframes in animations.
 
 # Resource Pack
 

@@ -39,6 +39,7 @@ class PredicateItemModel {
 	}
 
 	readExisting(path: string) {
+		const aj = Project!.animated_java
 		let file: IPredicateItemModel
 		try {
 			file = JSON.parse(fs.readFileSync(path, 'utf-8'))
@@ -54,9 +55,25 @@ class PredicateItemModel {
 		// Assert important fields
 		file.overrides ??= []
 		file.animated_java ??= {}
+		// Update pre-1.0.0 format
+		if (
+			typeof file.animated_java.rigs === 'object' &&
+			!Array.isArray(file.animated_java.rigs)
+		) {
+			const oldFormat = file.animated_java.rigs as unknown as Record<
+				string,
+				{ used_ids: number[] }
+			>
+			file.animated_java = {}
+			for (const name of Object.keys(oldFormat)) {
+				file.animated_java[name] = oldFormat[name].used_ids
+			}
+		}
+
+		file.animated_java[aj.export_namespace] ??= []
 
 		for (const [name, ownedIds] of Object.entries(file.animated_java)) {
-			const namespace = Project!.animated_java.export_namespace
+			const namespace = aj.export_namespace
 			const lastNamespace = Project!.last_used_export_namespace
 			if (name === namespace || name === lastNamespace) {
 				file.overrides = file.overrides.filter(

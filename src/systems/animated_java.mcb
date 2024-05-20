@@ -251,7 +251,7 @@ dir <%export_namespace%> {
 						function apply_frame {
 							#ARGS: {frame: int}
 							REPEAT (animation.includedNodes) as node {
-								IF (node.type === 'bone') {
+								IF (node.type === 'bone' || node.type === 'text_display') {
 									$execute on passengers run data modify entity @s[tag=<%TAGS.LOCAL_BONE(export_namespace, node.name)%>] {} merge from storage aj.<%export_namespace%>:animations list.<%animation.name%>.frames[$(frame)].<%node.name%>
 								}
 							}
@@ -277,7 +277,7 @@ dir <%export_namespace%> {
 							REPEAT (animation.frames) as frame {
 								function <%animation.frames.indexOf(frame)%> {
 									REPEAT (frame.nodes.sort(nodeSorter)) as node {
-										IF (node.type === 'bone') {
+										IF (node.type === 'bone' || node.type === 'text_display') {
 											<%%
 												const last = global.lastActiveFrame[node.uuid]
 												global.isStepInterpolation = !!(last?.interpolation === 'step')
@@ -512,7 +512,7 @@ dir <%export_namespace%> {
 			function *global/errors/function_not_executed_as_root_entity \
 				{'function_path': 'animated_java:<%export_namespace%>/apply_default_pose'}
 		REPEAT (rig.defaultPose) as node {
-			IF (node.type === 'bone') {
+			IF (node.type === 'bone' || node.type === 'text_display') {
 				execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%node.name%>] run \
 					data merge entity @s {transformation: <%matrixToNbtFloatArray(node.matrix).toString()%>, start_interpolation: 0}
 			}
@@ -524,7 +524,7 @@ dir <%export_namespace%> {
 			function *global/errors/function_not_executed_as_root_entity \
 				{'function_path': 'animated_java:<%export_namespace%>/set_default_pose'}
 		REPEAT (rig.defaultPose) as node {
-			IF (node.type === 'bone') {
+			IF (node.type === 'bone' || node.type === 'text_display') {
 				execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%node.name%>] run \
 					data merge entity @s {transformation: <%matrixToNbtFloatArray(node.matrix).toString()%>, start_interpolation: -1}
 			}

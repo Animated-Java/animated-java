@@ -6,6 +6,7 @@ import { getVanillaFont } from '../systems/minecraft/fontManager'
 import { JsonText } from '../systems/minecraft/jsonText'
 import TextDisplayLoading from '../assets/text_display_loading.webp'
 import { Valuable } from '../util/stores'
+import { toSafeFuntionName } from '../util/minecraftUtil'
 
 const DEFAULT_PLANE = new THREE.PlaneBufferGeometry(1, 1)
 DEFAULT_PLANE.rotateY(Math.PI)
@@ -30,6 +31,7 @@ const TEXT_SCALE = 8
 export class TextDisplay extends OutlinerElement {
 	static type = `${PACKAGE.name}:text_display`
 	static selected: TextDisplay[] = []
+	static all: TextDisplay[] = []
 
 	public type = `${PACKAGE.name}:text_display`
 	public icon = 'text_fields'
@@ -99,6 +101,31 @@ export class TextDisplay extends OutlinerElement {
 			this._newLineWidth = v
 			void this.updateText()
 		})
+	}
+
+	public sanitizeName(): string {
+		this.name = toSafeFuntionName(this.name)
+		if (!TextDisplay.all.some(v => v !== this && v.name === this.name)) {
+			return this.name
+		}
+
+		let i = 1
+		const match = this.name.match(/\d+$/)
+		if (match) {
+			i = parseInt(match[0])
+			this.name = this.name.slice(0, -match[0].length)
+		}
+
+		let maxTries = 1000
+		while (maxTries-- > 0) {
+			const newName = `${this.name}${i}`
+			if (!TextDisplay.all.some(v => v !== this && v.name === newName)) {
+				return newName
+			}
+			i++
+		}
+
+		throw new Error('Could not make TextDisplay name unique!')
 	}
 
 	get text() {
@@ -354,7 +381,8 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 		Project!.nodes_3d[el.uuid] = textMesh
 
 		void getVanillaFont().then(() => {
-			textMesh.renderOrder = 1
+			// Minecraft's transparency is funky 😭
+			textMesh.renderOrder = -1
 
 			const outline = new THREE.LineSegments(
 				new THREE.EdgesGeometry(el.textGeo),

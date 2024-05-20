@@ -5,7 +5,7 @@ import datapackTemplate from './animated_java.mcb'
 import { AnyRenderedNode, IRenderedRig } from './rigRenderer'
 import { IRenderedAnimation } from './animationRenderer'
 import { Variant } from '../variants'
-import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString, NbtTag } from 'deepslate'
+import { NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate'
 import {
 	arrayToNbtFloatArray,
 	matrixToNbtFloatArray,
@@ -13,7 +13,6 @@ import {
 	sortObjectKeys,
 } from './util'
 import { BoneConfig } from '../boneConfig'
-import { IBlueprintVariantBoneConfigJSON } from '../blueprintFormat'
 import { IFunctionTag, mergeTag, parseDataPackPath } from '../util/minecraftUtil'
 import { JsonText } from './minecraft/jsonText'
 import { MAX_PROGRESS, PROGRESS } from '../interface/exportProgressDialog'
@@ -199,74 +198,6 @@ namespace TELLRAW {
 		])
 }
 
-function applyBoneConfigToNbtCompound(
-	passenger: NbtCompound,
-	config: IBlueprintVariantBoneConfigJSON,
-	useComponents: boolean
-) {
-	const item = passenger.get('item') as NbtCompound
-	const defaultConfig = new BoneConfig()
-
-	if (config.billboard !== defaultConfig.billboard) {
-		passenger.set('billboard', new NbtString(config.billboard))
-	}
-
-	if (config.brightness_override !== defaultConfig.brightnessOverride) {
-		passenger.set(
-			'brightness',
-			new NbtCompound()
-				.set('block', new NbtFloat(config.brightness_override))
-				.set('sky', new NbtFloat(config.brightness_override))
-		)
-	}
-
-	if (config.enchanted !== defaultConfig.enchanted) {
-		const components = item.get(useComponents ? 'components' : 'tag') as NbtCompound
-		if (useComponents) {
-			components.set(
-				'minecraft:enchantments',
-				new NbtCompound().set(
-					'levels',
-					new NbtCompound().set('minecraft:infinity', new NbtInt(1))
-				)
-			)
-		} else {
-			components.set('Enchantments', new NbtList([]))
-		}
-	}
-
-	if (config.glowing !== defaultConfig.glowing) {
-		passenger.set('Glowing', new NbtByte(1))
-	}
-
-	if (config.glow_color !== defaultConfig.glowColor) {
-		passenger.set(
-			'glow_color_override',
-			new NbtInt(Number(config.glow_color.replace('#', '0x')))
-		)
-	}
-
-	// TODO Figure out a good solution for toggling a bone's visibility...
-	// if (config.invisible !== defaultConfig.invisible) {
-	// 	passenger.set('invisible', new NbtByte(1))
-	// }
-
-	if (config.shadow_radius !== defaultConfig.shadowRadius) {
-		passenger.set('shadow_radius', new NbtFloat(config.shadow_radius))
-	}
-
-	if (config.shadow_strength !== defaultConfig.shadowStrength) {
-		passenger.set('shadow_strength', new NbtFloat(config.shadow_strength))
-	}
-
-	if (config.use_nbt !== defaultConfig.useNBT) {
-		const newData = NbtTag.fromString(config.nbt) as NbtCompound
-		for (const key of newData.keys()) {
-			passenger.set(key, newData.get(key)!)
-		}
-	}
-}
-
 function generateRootEntityPassengers(rig: IRenderedRig) {
 	const aj = Project!.animated_java
 	const passengers: NbtList = new NbtList()
@@ -275,53 +206,80 @@ function generateRootEntityPassengers(rig: IRenderedRig) {
 		// TODO Maybe add components setting to blueprint settings?
 		const useComponents = true
 
-		passenger.set('id', new NbtString('minecraft:item_display'))
-
 		const tags = new NbtList([new NbtString(TAGS.GLOBAL_RIG())])
 		passenger.set('Tags', tags)
 
-		if (node.type === 'bone') {
-			tags.add(new NbtString(TAGS.GLOBAL_BONE()))
-			tags.add(new NbtString(TAGS.PROJECT_BONE(aj.export_namespace)))
-			tags.add(new NbtString(TAGS.LOCAL_BONE(aj.export_namespace, node.name)))
-			passenger.set(
-				'transformation',
-				new NbtCompound()
-					.set('translation', arrayToNbtFloatArray([0, 0, 0]))
-					.set('left_rotation', arrayToNbtFloatArray([0, 0, 0, 1]))
-					.set('right_rotation', arrayToNbtFloatArray([0, 0, 0, 1]))
-					.set('scale', arrayToNbtFloatArray([0, 0, 0]))
-			)
-			passenger.set('interpolation_duration', new NbtInt(aj.interpolation_duration))
-			passenger.set('teleport_duration', new NbtInt(0))
-			passenger.set('item_display', new NbtString('head'))
-			const item = new NbtCompound()
-			passenger.set(
-				'item',
-				item
-					.set('id', new NbtString(aj.display_item))
-					.set(useComponents ? 'count' : 'Count', new NbtInt(1))
-					.set(
-						useComponents ? 'components' : 'tag',
-						new NbtCompound().set(
-							useComponents ? 'minecraft:custom_model_data' : 'CustomModelData',
-							new NbtInt(node.customModelData)
+		switch (node.type) {
+			case 'bone': {
+				passenger.set('id', new NbtString('minecraft:item_display'))
+				tags.add(new NbtString(TAGS.GLOBAL_BONE()))
+				tags.add(new NbtString(TAGS.PROJECT_BONE(aj.export_namespace)))
+				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.export_namespace, node.name)))
+				passenger.set(
+					'transformation',
+					new NbtCompound()
+						.set('translation', arrayToNbtFloatArray([0, 0, 0]))
+						.set('left_rotation', arrayToNbtFloatArray([0, 0, 0, 1]))
+						.set('right_rotation', arrayToNbtFloatArray([0, 0, 0, 1]))
+						.set('scale', arrayToNbtFloatArray([0, 0, 0]))
+				)
+				passenger.set('interpolation_duration', new NbtInt(aj.interpolation_duration))
+				passenger.set('teleport_duration', new NbtInt(0))
+				passenger.set('item_display', new NbtString('head'))
+				const item = new NbtCompound()
+				passenger.set(
+					'item',
+					item
+						.set('id', new NbtString(aj.display_item))
+						.set(useComponents ? 'count' : 'Count', new NbtInt(1))
+						.set(
+							useComponents ? 'components' : 'tag',
+							new NbtCompound().set(
+								useComponents ? 'minecraft:custom_model_data' : 'CustomModelData',
+								new NbtInt(node.customModelData)
+							)
 						)
-					)
-			)
+				)
 
-			applyBoneConfigToNbtCompound(passenger, node.configs.default, useComponents)
+				BoneConfig.fromJSON(node.configs.default).toNBT(passenger)
 
-			passenger.set('height', new NbtFloat(aj.bounding_box[1]))
-			passenger.set('width', new NbtFloat(aj.bounding_box[0]))
-		} else if (node.type === 'camera') {
-			tags.add(new NbtString(TAGS.GLOBAL_CAMERA()))
-			tags.add(new NbtString(TAGS.PROJECT_CAMERA(aj.export_namespace)))
-			tags.add(new NbtString(TAGS.LOCAL_CAMERA(aj.export_namespace, node.name)))
-		} else if (node.type === 'locator') {
-			tags.add(new NbtString(TAGS.GLOBAL_LOCATOR()))
-			tags.add(new NbtString(TAGS.PROJECT_LOCATOR(aj.export_namespace)))
-			tags.add(new NbtString(TAGS.LOCAL_LOCATOR(aj.export_namespace, node.name)))
+				passenger.set('height', new NbtFloat(aj.bounding_box[1]))
+				passenger.set('width', new NbtFloat(aj.bounding_box[0]))
+				break
+			}
+			case 'camera': {
+				passenger.set('id', new NbtString('minecraft:item_display'))
+				tags.add(new NbtString(TAGS.GLOBAL_CAMERA()))
+				tags.add(new NbtString(TAGS.PROJECT_CAMERA(aj.export_namespace)))
+				tags.add(new NbtString(TAGS.LOCAL_CAMERA(aj.export_namespace, node.name)))
+				break
+			}
+			case 'text_display': {
+				passenger.set('id', new NbtString('minecraft:text_display'))
+				tags.add(new NbtString(TAGS.GLOBAL_BONE()))
+				tags.add(new NbtString(TAGS.PROJECT_BONE(aj.export_namespace)))
+				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.export_namespace, node.name)))
+				passenger.set(
+					'transformation',
+					new NbtCompound()
+						.set('translation', arrayToNbtFloatArray([0, 0, 0]))
+						.set('left_rotation', arrayToNbtFloatArray([0, 0, 0, 1]))
+						.set('right_rotation', arrayToNbtFloatArray([0, 0, 0, 1]))
+						.set('scale', arrayToNbtFloatArray([0, 0, 0]))
+				)
+				passenger.set('interpolation_duration', new NbtInt(aj.interpolation_duration))
+				passenger.set('teleport_duration', new NbtInt(0))
+
+				passenger.set('height', new NbtFloat(aj.bounding_box[1]))
+				passenger.set('width', new NbtFloat(aj.bounding_box[0]))
+
+				if (node.text) {
+					passenger.set('text', new NbtString(node.text.toString()))
+				}
+
+				passenger.set('line_width', new NbtInt(node.lineWidth))
+				break
+			}
 		}
 
 		passengers.add(passenger)
@@ -424,8 +382,8 @@ function createLocatorPositionStorage(rig: IRenderedRig) {
 }
 
 function nodeSorter(a: AnyRenderedNode, b: AnyRenderedNode): number {
-	if (a.type === 'bone' && b.type !== 'bone') return -1
-	if (a.type !== 'bone' && b.type === 'bone') return 1
+	if (a.type === 'locator' && b.type !== 'locator') return 1
+	if (a.type !== 'locator' && b.type === 'locator') return -1
 	return 0
 }
 
