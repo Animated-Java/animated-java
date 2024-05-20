@@ -49,7 +49,7 @@
 				font-size: 14px;
 				text-align: left;
 				padding: 4px 8px;
-				height: 4rem;
+				height: 2.5rem;
 				resize: vertical;
 				border: none;
 				width: 95%;
@@ -69,9 +69,6 @@
 </div>
 
 <style>
-	p {
-		margin: 0;
-	}
 	.label {
 		margin-bottom: -3px !important;
 	}

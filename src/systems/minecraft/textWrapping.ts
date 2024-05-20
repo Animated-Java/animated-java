@@ -1,4 +1,4 @@
-import { JsonText, JsonTextComponent, JsonTextObject } from './jsonText'
+import { JsonText, JsonTextArray, JsonTextComponent, JsonTextObject } from './jsonText'
 import { getVanillaFont } from './fontManager'
 
 // @ts-ignore
@@ -21,34 +21,51 @@ const STYLE_KEYS = [
 ] as const
 
 export type StyleRecord = Partial<Record<(typeof STYLE_KEYS)[number], boolean | string>>
-function getStylesFromComponent(component: JsonTextObject): StyleRecord {
-	// TODO: Style inheritance
-	const styles: StyleRecord = { color: 'white' }
+function getStylesFromComponent(
+	component: JsonTextObject,
+	parent: StyleRecord = { color: 'white' }
+): StyleRecord {
 	for (const key of STYLE_KEYS) {
 		if (component[key]) {
-			styles[key] = component[key]
+			parent[key] = component[key]
 		}
 	}
-	return styles
+	return parent
+}
+
+function getFirstItemStyle(input: JsonTextArray): StyleRecord {
+	let item = input.at(0)
+	if (Array.isArray(item)) {
+		return getFirstItemStyle(item)
+	} else if (item instanceof JsonText) {
+		item = item.toJSON() as JsonTextObject | JsonTextArray
+		if (Array.isArray(item)) return getFirstItemStyle(item)
+		else return getStylesFromComponent(item)
+	} else if (typeof item === 'object') {
+		return getStylesFromComponent(item)
+	}
+	return {}
 }
 
 function flattenTextComponent(input: JsonTextComponent): JsonTextObject[] {
 	const output: JsonTextObject[] = []
-	function flattenComponent(component: JsonTextComponent, parentStyles: StyleRecord = {}) {
+	function flattenComponent(component: JsonTextComponent, parentStyle: StyleRecord = {}) {
 		if (Array.isArray(component)) {
+			// The items of an array inherit the first item's style
+			parentStyle = Object.assign({}, parentStyle, getFirstItemStyle(component))
 			for (const subcomponent of component) {
-				flattenComponent(subcomponent, parentStyles)
+				flattenComponent(subcomponent, parentStyle)
 			}
 		} else if (typeof component === 'string') {
 			output.push(
-				Object.assign({}, parentStyles, {
+				Object.assign({}, parentStyle, {
 					text: component,
 				}) as JsonTextObject
 			)
 		} else if (component instanceof JsonText) {
-			flattenComponent(component.toJSON(), parentStyles)
+			flattenComponent(component.toJSON(), parentStyle)
 		} else if (typeof component === 'object') {
-			output.push(Object.assign({}, parentStyles, component, { extra: undefined }))
+			output.push(Object.assign({}, parentStyle, component, { extra: undefined }))
 			if (component.extra) {
 				const childStyles = getStylesFromComponent(component)
 				flattenComponent(component.extra, childStyles)

@@ -20,22 +20,14 @@
     - [x] Data Pack Compiler support.
 - [x] Natively support step keyframes.
 - [x] When upgrading old ajmodels, if they have command keyframes in the effect animator, create a locator at 0 0 0 with those keyframes.
-- [ ] Camera Plugin Support
-    - [ ] Camera config.
-    - [ ] Data Pack Compiler support.
-- [ ] Change the Collection setting type to allow single-click swapping of items between lists.
-- [ ] Add an about page.
-- [ ] Respect inheritance in the bone config.
-- [ ] Add a bone config option to replace the bone's display item with a custom item.
-    - [ ] Will require somehow rendering the vanilla item/block model. - I've setup the assetsManager to handle loading, and updating the vanilla assets. Now I need to figure out how to load and render them.
-- [ ] Add Variants to the UndoSystem
-- [ ] Add support for Text Displays
+- [x] Add support for Text Displays
     - [x] Basic rendering
     - [x] Word wrapping - Thanks Fetchbot!
     - [x] Italic
     - [x] Bold
     - [x] Underline
     - [x] Strikethrough
+    - [x] Array style inheritance
     - [x] Support vanilla fonts
         - [x] minecraft:default
         - [x] minecraft:alt
@@ -44,9 +36,17 @@
         - [x] Figure out a nice way to configure text displays...
         - [x] Include an option to change the text.
         - [x] Include an option to change the max line width.
-    - [ ] Animation
-        - [ ] Make sure the text display is animatable.
-        - [ ] Add a keyframe that changes the text of the text display. (Preview-ably)
+    - [x] Animation
+        - [x] Make sure the text display is animatable.
+- [ ] Camera Plugin Support
+    - [ ] Camera config.
+    - [ ] Data Pack Compiler support.
+- [ ] Change the Collection setting type to allow single-click swapping of items between lists.
+- [ ] Add an about page.
+- [ ] Respect inheritance in the bone config.
+- [ ] Add a bone config option to replace the bone's display item with a custom item.
+    - [ ] Will require somehow rendering the vanilla item/block model. - I've setup the assetsManager to handle loading, and updating the vanilla assets. Now I need to figure out how to load and render them.
+- [ ] Add Variants to the UndoSystem (Blocked by vanilla Blockbench not supporting custom undo actions)
 
 # Data Pack Compiler
 - [x] Merge on_tick and on_load function tags

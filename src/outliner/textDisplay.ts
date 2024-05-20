@@ -1,18 +1,6 @@
-// createBlockbenchMod(
-// 	`${PACKAGE.name}:textDisplay`,
-// 	{},
-// 	context => {
-// 		return context
-// 	},
-// 	context => {
-// 		// @ts-ignore
-// 		delete globalThis.TextDisplay
-// 	}
-// )
-
 import { isCurrentFormat } from '../blueprintFormat'
 import { PACKAGE } from '../constants'
-import { createAction } from '../util/moddingTools'
+import { createAction, createBlockbenchMod } from '../util/moddingTools'
 // import * as MinecraftFull from '../assets/MinecraftFull.json'
 import { getVanillaFont } from '../systems/minecraft/fontManager'
 import { JsonText } from '../systems/minecraft/jsonText'
@@ -47,6 +35,8 @@ export class TextDisplay extends OutlinerElement {
 	public icon = 'text_fields'
 	public movable = true
 	public rotatable = true
+	// resizable causes issues, and I can't fix them because the internal Blockbench code is restrictive.
+	// public resizable = true
 	public scalable = true
 	public needsUniqueName = true
 
@@ -170,23 +160,50 @@ export class TextDisplay extends OutlinerElement {
 		return el
 	}
 
-	select(event?: any, isOutlinerClick?: boolean) {
-		super.select(event, isOutlinerClick)
+	select() {
+		if (Group.selected) {
+			Group.selected.unselect()
+		}
+		if (!Pressing.ctrl && !Pressing.shift) {
+			if (Cube.selected) {
+				Cube.selected.forEachReverse(el => el.unselect())
+			}
+			if (TextDisplay.selected) {
+				TextDisplay.selected.forEachReverse(el => el !== this && el.unselect())
+			}
+		}
+
+		TextDisplay.selected.safePush(this)
+		this.selectLow()
+		this.showInOutliner()
+		updateSelection()
 		if (Animator.open && Blockbench.Animation.selected) {
 			Blockbench.Animation.selected.getBoneAnimator(this).select()
 		}
 		return this
 	}
 
+	selectLow() {
+		Project!.selected_elements.safePush(this)
+		this.selected = true
+		TickUpdates.selection = true
+		return this
+	}
+
 	unselect() {
-		super.unselect()
+		if (!this.selected) return
 		if (
 			Animator.open &&
 			Timeline.selected_animator &&
-			Timeline.selected_animator.element === this
+			Timeline.selected_animator.element === this &&
+			Timeline.selected
 		) {
-			Timeline.selected = false
+			Timeline.selected.empty()
 		}
+		Project!.selected_elements.remove(this)
+		TextDisplay.selected.remove(this)
+		this.selected = false
+		TickUpdates.selection = true
 	}
 
 	async updateText() {
@@ -282,12 +299,17 @@ export class TextDisplay extends OutlinerElement {
 		this.textGeo.center()
 		this.textGeo.translate(xOffset, scaleY / 2, 0)
 
+		// @ts-ignore
+		const fix_position = this.mesh.fix_position as THREE.Vector3
+		fix_position.set(...this.position)
+
 		outline.scale.x = scaleX
 		outline.scale.y = scaleY
 		outline.position.x = xOffset
 		outline.position.y = scaleY / 2
 	}
 }
+new Property(TextDisplay, 'string', 'name', { default: 'Text Display' })
 new Property(TextDisplay, 'string', 'text', { default: '"Hello World!"' })
 new Property(TextDisplay, 'vector', 'position', { default: [0, 0, 0] })
 new Property(TextDisplay, 'vector', 'rotation', { default: [0, 0, 0] })
@@ -306,6 +328,11 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 
 		const material = new THREE.MeshBasicMaterial({ map: el.texture, transparent: true })
 		const textMesh = new THREE.Mesh(el.textGeo, material)
+		// @ts-ignore
+		textMesh.fix_rotation = new THREE.Euler(0, 0, 0, 'ZYX')
+		// @ts-ignore
+		textMesh.fix_position = new THREE.Vector3(0, 0, 0)
+
 		new THREE.TextureLoader().load(TextDisplayLoading, texture => {
 			texture.magFilter = THREE.NearestFilter
 			texture.minFilter = THREE.NearestFilter
@@ -355,7 +382,6 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 			textMesh.add(outline)
 
 			el.loadingMesh.visible = false
-
 			el.ready = true
 
 			PREVIEW_CONTROLLER.updateTransform(el)
@@ -380,7 +406,7 @@ export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_text_display`,
 		const textDisplay = new TextDisplay({}).init()
 		const group = getCurrentGroup()
 
-		if (group) {
+		if (group instanceof Group) {
 			textDisplay.addTo(group)
 			textDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
 		}
@@ -398,6 +424,81 @@ export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_text_display`,
 	},
 })
 
-Interface.Panels.outliner.menu.addAction(CREATE_ACTION, 3)
-Toolbars.outliner.add(CREATE_ACTION, 0)
-MenuBar.menus.edit.addAction(CREATE_ACTION, 8)
+class TextDisplayAnimator extends BoneAnimator {
+	private _name: string
+
+	public uuid: string
+	public element: TextDisplay | undefined
+
+	constructor(uuid: string, animation: _Animation, name: string) {
+		super(uuid, animation, name)
+		this.uuid = uuid
+		this._name = name
+	}
+
+	getElement() {
+		this.element = OutlinerNode.uuids[this.uuid] as TextDisplay
+		return this.element
+	}
+
+	select() {
+		this.getElement()
+		if (!this.element) {
+			unselectAllElements()
+			return this
+		}
+
+		if (this.element.locked) {
+			return this
+		}
+
+		if (!this.element.selected && this.element) {
+			this.element.select()
+		}
+		GeneralAnimator.prototype.select.call(this)
+
+		if (
+			this[Toolbox.selected.animation_channel] &&
+			((Timeline.selected && Timeline.selected.length === 0) ||
+				(Timeline.selected && (Timeline.selected[0].animator as any)) !== this)
+		) {
+			let nearest: _Keyframe | undefined
+			this[Toolbox.selected.animation_channel].forEach((kf: _Keyframe) => {
+				if (Math.abs(kf.time - Timeline.time) < 0.002) {
+					nearest = kf
+				}
+			})
+			if (nearest) {
+				nearest.select()
+			}
+		}
+
+		if (this.element && this.element.parent && this.element.parent !== 'root') {
+			this.element.parent.openUp()
+		}
+
+		return this
+	}
+
+	doRender() {
+		this.getElement()
+		return !!(this.element && this.element.mesh)
+	}
+}
+TextDisplayAnimator.prototype.type = TextDisplay.type
+TextDisplay.animator = TextDisplayAnimator as any
+
+createBlockbenchMod(
+	`${PACKAGE.name}:textDisplay`,
+	undefined,
+	() => {
+		Interface.Panels.outliner.menu.addAction(CREATE_ACTION, 3)
+		Toolbars.outliner.add(CREATE_ACTION, 0)
+		MenuBar.menus.edit.addAction(CREATE_ACTION, 8)
+	},
+	() => {
+		Interface.Panels.outliner.menu.removeAction(CREATE_ACTION.id)
+		Toolbars.outliner.remove(CREATE_ACTION)
+		MenuBar.menus.edit.removeAction(CREATE_ACTION.id)
+	}
+)

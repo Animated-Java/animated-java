@@ -97,7 +97,9 @@ export type JsonTextComponent = string | JsonTextArray | JsonTextObject | JsonTe
 export type JsonTextArray = JsonTextComponent[]
 
 export class JsonText {
+	public isJsonTextClass = true
 	private text: JsonTextComponent
+
 	constructor(jsonText: JsonTextComponent) {
 		this.text = jsonText
 	}
@@ -118,16 +120,22 @@ export class JsonText {
 }
 
 class ParserError extends Error {
+	line: number
+	column: number
 	constructor(
 		message: string,
-		public line: StringStream['lines'][0],
-		public column: number,
-		child?: Error
+		private stream: StringStream,
+		child?: Error,
+		line?: number,
+		column?: number
 	) {
 		super(message)
 
+		this.line = line ?? stream.line
+		this.column = column ?? stream.column
+
 		if (child) {
-			this.message = `${message} at ${line.number}:${column}\n${child.message}`
+			this.message = `${message} at ${this.line}:${this.column}\n${child.message}`
 			return
 		}
 		this.setPointerMessage()
@@ -138,9 +146,9 @@ class ParserError extends Error {
 		// World!"}
 		//        ^
 		const pointer = ' '.repeat(this.column - 1) + '^'
-		this.message = `${this.message} at ${this.line.number}:${
-			this.column
-		}\n${this.line.content.trimEnd()}\n${pointer}`
+		this.message = `${this.message} at ${this.line}:${this.column}\n${this.stream.lines[
+			this.line - 1
+		].content.trimEnd()}\n${pointer}`
 	}
 }
 
@@ -158,12 +166,7 @@ class JsonTextParser {
 		try {
 			text = this.parseTextComponent(true)
 		} catch (e) {
-			throw new ParserError(
-				'Failed to parse JsonText',
-				this.s.lines[this.s.line - 1],
-				this.s.column,
-				e as Error
-			)
+			throw new ParserError('Failed to parse JsonText', this.s, e as Error)
 		}
 		if (text) {
 			return new JsonText(text)
@@ -175,7 +178,6 @@ class JsonTextParser {
 	}
 
 	parseTextComponent(single = false): JsonTextComponent {
-		const { line, column } = this.s
 		let result: JsonTextComponent
 		this.consumeWhitespace()
 		if (this.s.item === '{') {
@@ -187,8 +189,7 @@ class JsonTextParser {
 		} else {
 			throw new ParserError(
 				`Unexpected '${this.s.item as string}' in JsonTextComponent`,
-				this.s.lines[line - 1],
-				column
+				this.s
 			)
 		}
 		this.consumeWhitespace()
@@ -196,8 +197,7 @@ class JsonTextParser {
 			console.log('result', result)
 			throw new ParserError(
 				`Unexpected '${this.s.item as string}' in JsonTextComponent`,
-				this.s.lines[this.s.line - 1],
-				this.s.column
+				this.s
 			)
 		}
 		return result
@@ -223,7 +223,9 @@ class JsonTextParser {
 		} else {
 			throw new ParserError(
 				`Unexpected ${this.s.item as string}`,
-				this.s.lines[line - 1],
+				this.s,
+				undefined,
+				line,
 				column
 			)
 		}
@@ -255,15 +257,10 @@ class JsonTextParser {
 					case 'tl':
 						obj[key] = this.parseString()
 						break
-
 					case 'color': {
 						const color = this.parseString() as JsonTextColor
 						if (!(color.startsWith('#') || COLOR_MAP[color])) {
-							throw new ParserError(
-								`Unknown color '${color}'`,
-								this.s.lines[this.s.line - 1],
-								this.s.column
-							)
+							throw new ParserError(`Unknown color '${color}'`, this.s)
 						}
 						obj.color = color
 						break
@@ -285,15 +282,8 @@ class JsonTextParser {
 						obj[key] = this.parseObject() as any
 						break
 					default:
-						throw new ParserError(
-							`Unknown key '${key}' in JsonTextObject`,
-							this.s.lines[this.s.line - 1],
-							this.s.column
-						)
+						throw new ParserError(`Unknown key '${key}' in JsonTextObject`, this.s)
 				}
-				// const value = this.parseValue()
-				// // @ts-ignore
-				// obj[key] = value
 				this.consumeWhitespace()
 				if (this.s.item === ',') {
 					this.s.consume()
@@ -303,8 +293,7 @@ class JsonTextParser {
 				} else {
 					throw new ParserError(
 						`Unexpected '${this.s.item as string}' in JsonTextObject`,
-						this.s.lines[this.s.line - 1],
-						this.s.column
+						this.s
 					)
 				}
 			}
@@ -313,9 +302,10 @@ class JsonTextParser {
 		} catch (e: any) {
 			throw new ParserError(
 				'Failed to parse JsonTextObject',
-				this.s.lines[line - 1],
-				column,
-				e as Error
+				this.s,
+				e as Error,
+				line,
+				column
 			)
 		}
 	}
@@ -335,8 +325,7 @@ class JsonTextParser {
 			} else {
 				throw new ParserError(
 					`Unexpected '${this.s.item as string}' in JsonTextArray`,
-					this.s.lines[this.s.line - 1],
-					this.s.column
+					this.s
 				)
 			}
 		}
@@ -346,11 +335,7 @@ class JsonTextParser {
 
 	parseString(): string {
 		if (this.s.item !== '"') {
-			throw new ParserError(
-				`Unexpected '${this.s.item as string}' in string`,
-				this.s.lines[this.s.line - 1],
-				this.s.column
-			)
+			throw new ParserError(`Unexpected '${this.s.item as string}' in string`, this.s)
 		}
 		this.s.consume() // "
 		let str = ''
@@ -372,17 +357,13 @@ class JsonTextParser {
 			if (this.s.item === '"') {
 				break
 			} else if (this.s.item === '\n') {
-				throw new ParserError(
-					'Unexpected newline in string',
-					this.s.lines[this.s.line - 1],
-					this.s.column
-				)
+				throw new ParserError('Unexpected newline in string', this.s)
 			}
 			str += this.s.item
 			this.s.consume()
 		}
 		if (!this.s.item) {
-			throw new Error('Unexpected EOF in string')
+			throw new ParserError('Unexpected EOF in string', this.s)
 		}
 		this.s.consume() // "
 		return str
@@ -396,11 +377,7 @@ class JsonTextParser {
 			} else if (value === 'false') {
 				return false
 			}
-			throw new ParserError(
-				`Unexpected incomplete string boolean`,
-				this.s.lines[this.s.line - 1],
-				this.s.column
-			)
+			throw new ParserError(`Unexpected incomplete string boolean`, this.s)
 		}
 		if (this.s.look(0, 4) === 'true') {
 			this.s.consumeN(4)
@@ -409,11 +386,7 @@ class JsonTextParser {
 			this.s.consumeN(5)
 			return false
 		}
-		throw new ParserError(
-			`Unexpected incomplete boolean`,
-			this.s.lines[this.s.line - 1],
-			this.s.column
-		)
+		throw new ParserError(`Unexpected incomplete boolean`, this.s)
 	}
 
 	parseNumber(): number {
@@ -422,11 +395,7 @@ class JsonTextParser {
 		while (this.s.item) {
 			if (this.s.item === '.') {
 				if (hasDecimal) {
-					throw new ParserError(
-						'Unexpected second decimal point in number',
-						this.s.lines[this.s.line - 1],
-						this.s.column
-					)
+					throw new ParserError('Unexpected second decimal point in number', this.s)
 				}
 				hasDecimal = true
 			}

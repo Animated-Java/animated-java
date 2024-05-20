@@ -850,7 +850,8 @@
 			"type": "locator"
 		},
 		{
-			"text": "[\n  {\n  \t\"text\": \"Sometimes \",\n  \t\"italic\": true\n  },\n  \"you \",\n  {\n  \t\"text\": \"have\",\n  \t\"bold\": true\n  },\n  \" to wear \",\n  {\n  \t\"text\": \"stretchy\",\n  \t\"color\": \"yellow\"\n  },\n  \" pants.\\n\",\n  {\n  \t\"text\": \"(It's for \",\n  },\n  {\n  \t\"text\": \"fun.\",\n  \t\"underlined\": true,\n  \t\"color\": \"blue\"\n  },\n  \")\"\n]",
+			"name": "My Text",
+			"text": "[\n  \"\",\n  {\n  \t\"text\": \"Sometimes \",\n  \t\"italic\": true\n  },\n  \"you \",\n  {\n  \t\"text\": \"have\",\n  \t\"bold\": true\n  },\n  \" to wear \",\n  {\n  \t\"text\": \"stretchy\",\n  \t\"color\": \"yellow\"\n  },\n  \" pants.\\n\",\n  {\n  \t\"text\": \"(It's for \",\n  },\n  {\n  \t\"text\": \"fun!\",\n  \t\"underlined\": true,\n  \t\"color\": \"blue\"\n  },\n  \")\"\n]",
 			"position": [0, 33, 0],
 			"rotation": [0, 0, 0],
 			"scale": [1, 1, 1],
@@ -974,7 +975,7 @@
 					"uuid": "5e08acae-d6ca-0dfd-9360-8cdb13c7a824",
 					"export": true,
 					"mirror_uv": false,
-					"isOpen": true,
+					"isOpen": false,
 					"locked": false,
 					"visibility": true,
 					"autouv": 0,
@@ -1334,10 +1335,10 @@
 							]
 						}
 					]
-				}
+				},
+				"365b1266-1125-13e1-01ee-5a82335137f4"
 			]
-		},
-		"365b1266-1125-13e1-01ee-5a82335137f4"
+		}
 	],
 	"textures": [
 		{
@@ -1515,9 +1516,9 @@
 			"name": "wizard",
 			"loop": "loop",
 			"override": false,
-			"length": 1,
+			"length": 2,
 			"snapping": 20,
-			"selected": false,
+			"selected": true,
 			"saved": false,
 			"path": "",
 			"anim_time_update": "",
@@ -1610,6 +1611,55 @@
 							"uuid": "fe357d53-5802-876b-c5d0-9eb8a19f573b",
 							"time": 0,
 							"color": -1,
+							"interpolation": "linear"
+						}
+					]
+				},
+				"365b1266-1125-13e1-01ee-5a82335137f4": {
+					"name": "My Text",
+					"type": "animated_java:text_display",
+					"keyframes": [
+						{
+							"channel": "rotation",
+							"data_points": [
+								{
+									"x": "0",
+									"y": "0",
+									"z": "math.sin(q.life_time * 180) * 3"
+								}
+							],
+							"uuid": "2fd40dec-84c0-f9a6-2670-fd31b54a0267",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						},
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": 0,
+									"y": "-19 + math.sin(q.life_time * 360) * 1",
+									"z": -19
+								}
+							],
+							"uuid": "8e2dd8d3-08b1-73c8-973e-7c0561307966",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						},
+						{
+							"channel": "scale",
+							"data_points": [
+								{
+									"x": "1 - math.cos(q.life_time * 360) * 0.125",
+									"y": "1 - math.sin(q.life_time * 360) * 0.125",
+									"z": "1"
+								}
+							],
+							"uuid": "b5a144ce-ebcf-b151-682d-0a0315a6ec73",
+							"time": 0,
+							"color": -1,
+							"uniform": false,
 							"interpolation": "linear"
 						}
 					]

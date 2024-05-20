@@ -1,5 +1,4 @@
-import { type JsonTextComponent, type JsonTextObject } from './jsonText'
-import { JsonText } from './JsonText'
+import type { JsonText, JsonTextComponent, JsonTextObject } from './jsonText'
 import type { IComponentWord, IStyleSpan, StyleRecord } from './textWrapping'
 
 const STYLE_KEYS = [
@@ -43,9 +42,10 @@ function flattenTextComponent(input: JsonTextComponent): JsonTextObject[] {
 					text: component,
 				}) as JsonTextObject
 			)
-		} else if (component instanceof JsonText) {
-			flattenComponent(component.toJSON(), parentStyles)
+		} else if (Object.hasOwn(component, 'isJsonTextClass')) {
+			flattenComponent((component as JsonText).toJSON(), parentStyles)
 		} else if (typeof component === 'object') {
+			component = component as JsonTextObject
 			output.push(Object.assign({}, parentStyles, component, { extra: undefined }))
 			if (component.extra) {
 				const childStyles = getStylesFromComponent(component)
@@ -137,11 +137,12 @@ function getComponentWords(input: JsonTextComponent) {
 
 addEventListener('message', ({ data }) => {
 	switch (data.type) {
-		case 'getComponentWords':
+		case 'getComponentWords': {
 			console.log('Received getComponentWords request', data.args)
 			const result = getComponentWords(...(data.args as [JsonTextComponent]))
 			console.log('Sending getComponentWords result', result)
 			postMessage(result)
 			break
+		}
 	}
 })
