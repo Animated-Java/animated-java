@@ -12,6 +12,7 @@ createBlockbenchMod(
 			condition,
 			default: { default: undefined, variants: {} },
 		})
+
 		return context
 	},
 	context => {

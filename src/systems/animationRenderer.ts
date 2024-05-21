@@ -21,15 +21,20 @@ export function restoreSceneAngle() {
 
 function getNodeMatrix(node: OutlinerElement, scale: number) {
 	const matrixWorld = node.mesh.matrixWorld.clone()
+	const vanillaItemModel = node.mesh.children.find(c => c.isVanillaItemModel)
 	matrixWorld.setPosition(
 		new THREE.Vector3().setFromMatrixPosition(matrixWorld).multiplyScalar(1 / 16)
 	)
 	matrixWorld.scale(new THREE.Vector3().setScalar(scale))
+
+	if (vanillaItemModel) return matrixWorld
+
 	if (node instanceof TextDisplay) {
 		matrixWorld.multiply(
 			new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(0, Math.PI, 0, 'XYZ'))
 		)
 	}
+
 	return matrixWorld
 }
 

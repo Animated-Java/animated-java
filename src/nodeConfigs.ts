@@ -255,8 +255,9 @@ export class BoneConfig {
 
 	public toNBT(compound: NbtCompound = new NbtCompound()): NbtCompound {
 		if (this.vanillaItemModel) {
-			const item = compound.get('item') as NbtCompound
-			item.set('id', new NbtString(this.vanillaItemModel)).set('count', new NbtByte(1))
+			const item = (compound.get('item') as NbtCompound) || new NbtCompound()
+			compound.set('item', item.set('id', new NbtString(this.vanillaItemModel)))
+			compound.set('item_display', new NbtString('none'))
 		}
 
 		if (this.useNBT) {
@@ -281,9 +282,10 @@ export class BoneConfig {
 		}
 
 		if (this.enchanted) {
+			const item = (compound.get('item') as NbtCompound) || new NbtCompound()
 			compound.set(
 				'item',
-				new NbtCompound().set(
+				item.set(
 					'components',
 					new NbtCompound().set(
 						'minecraft:enchantments',

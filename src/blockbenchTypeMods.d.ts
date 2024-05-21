@@ -15,6 +15,12 @@ import { isDataPackPath, isResourcePackPath } from './util/minecraftUtil'
 import { Valuable } from './util/stores'
 import { type Variant } from './variants'
 
+declare module 'three' {
+	interface Object3D {
+		isVanillaItemModel?: boolean
+	}
+}
+
 declare global {
 	interface ModelProject {
 		animated_java: {

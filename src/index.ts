@@ -37,6 +37,8 @@ import './mods/saveAllAnimationsActionMod'
 import './mods/saveProjectActionMod'
 import './mods/saveProjectAsActionMod'
 import './mods/variantPreviewCubeFaceMod'
+import './mods/previewRaycastMod'
+import './mods/groupPreviewControllerMod'
 // Outliner
 import './outliner/textDisplay'
 // Compilers

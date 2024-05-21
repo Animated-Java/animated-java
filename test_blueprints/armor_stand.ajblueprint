@@ -959,11 +959,13 @@
 					"color": 0,
 					"configs": {
 						"default": {
+							"vanilla_item_model": "",
 							"billboard": "fixed",
 							"brightness_override": 0,
 							"enchanted": false,
-							"glow_color": "#ffffff",
 							"glowing": false,
+							"override_glow_color": true,
+							"glow_color": "#ffffff",
 							"inherit_settings": true,
 							"invisible": false,
 							"nbt": "{}",
@@ -976,7 +978,7 @@
 					"uuid": "5e08acae-d6ca-0dfd-9360-8cdb13c7a824",
 					"export": true,
 					"mirror_uv": false,
-					"isOpen": false,
+					"isOpen": true,
 					"locked": false,
 					"visibility": true,
 					"autouv": 0,
@@ -987,11 +989,13 @@
 							"color": 0,
 							"configs": {
 								"default": {
+									"vanilla_item_model": "",
 									"billboard": "fixed",
 									"brightness_override": 0,
 									"enchanted": false,
-									"glow_color": "#ffffff",
 									"glowing": false,
+									"override_glow_color": true,
+									"glow_color": "#ffffff",
 									"inherit_settings": true,
 									"invisible": false,
 									"nbt": "{}",
@@ -1015,11 +1019,13 @@
 									"color": 0,
 									"configs": {
 										"default": {
+											"vanilla_item_model": "",
 											"billboard": "fixed",
 											"brightness_override": 0,
 											"enchanted": false,
-											"glow_color": "#ffffff",
 											"glowing": false,
+											"override_glow_color": true,
+											"glow_color": "#ffffff",
 											"inherit_settings": true,
 											"invisible": false,
 											"nbt": "{}",
@@ -1043,13 +1049,14 @@
 											"color": 0,
 											"configs": {
 												"default": {
+													"vanilla_item_model": "",
 													"billboard": "fixed",
 													"override_brightness": false,
 													"brightness_override": 0,
 													"enchanted": false,
 													"glowing": false,
 													"override_glow_color": true,
-													"glow_color": "#ff0000",
+													"glow_color": "#ffffff",
 													"inherit_settings": true,
 													"invisible": false,
 													"nbt": "{}",
@@ -1111,10 +1118,12 @@
 													"configs": {
 														"default": {
 															"billboard": "fixed",
+															"override_brightness": false,
 															"brightness_override": 0,
 															"enchanted": false,
-															"glow_color": "#ffffff",
 															"glowing": false,
+															"override_glow_color": true,
+															"glow_color": "#ffffff",
 															"inherit_settings": true,
 															"invisible": false,
 															"nbt": "{}",
@@ -1156,10 +1165,12 @@
 													"configs": {
 														"default": {
 															"billboard": "fixed",
+															"override_brightness": false,
 															"brightness_override": 0,
 															"enchanted": false,
-															"glow_color": "#ffffff",
 															"glowing": false,
+															"override_glow_color": true,
+															"glow_color": "#ffffff",
 															"inherit_settings": true,
 															"invisible": false,
 															"nbt": "{}",
@@ -1188,7 +1199,7 @@
 													"uuid": "b5b52d2c-097c-08df-6457-372fbae12445",
 													"export": true,
 													"mirror_uv": false,
-													"isOpen": true,
+													"isOpen": false,
 													"locked": false,
 													"visibility": true,
 													"autouv": 0,
@@ -1201,10 +1212,12 @@
 													"configs": {
 														"default": {
 															"billboard": "fixed",
+															"override_brightness": false,
 															"brightness_override": 0,
 															"enchanted": false,
-															"glow_color": "#ffffff",
 															"glowing": false,
+															"override_glow_color": true,
+															"glow_color": "#ffffff",
 															"inherit_settings": true,
 															"invisible": false,
 															"nbt": "{}",
@@ -1237,7 +1250,76 @@
 													"locked": false,
 													"visibility": true,
 													"autouv": 0,
-													"children": ["13293700-7f42-2279-6a1f-4e0a6a4d89b3", "98475898-cfc8-f67b-3145-abaf659deb3e", "7747736f-85e2-338f-207e-53f8d3d2fa39"]
+													"children": [
+														"13293700-7f42-2279-6a1f-4e0a6a4d89b3",
+														{
+															"name": "hand_item",
+															"origin": [6, 11.5, -6],
+															"rotation": [-90, -45, -90],
+															"color": 0,
+															"configs": {
+																"default": {
+																	"vanilla_item_model": "minecraft:mace",
+																	"billboard": "fixed",
+																	"override_brightness": false,
+																	"brightness_override": 0,
+																	"enchanted": false,
+																	"glowing": false,
+																	"override_glow_color": true,
+																	"glow_color": "#ffffff",
+																	"inherit_settings": true,
+																	"invisible": false,
+																	"nbt": "{}",
+																	"shadow_radius": 0,
+																	"shadow_strength": 1,
+																	"use_nbt": false
+																},
+																"variants": {}
+															},
+															"uuid": "a144b565-9526-f92c-7d86-36fc20b5e891",
+															"export": true,
+															"mirror_uv": false,
+															"isOpen": true,
+															"locked": false,
+															"visibility": true,
+															"autouv": 0,
+															"children": []
+														},
+														"98475898-cfc8-f67b-3145-abaf659deb3e",
+														"7747736f-85e2-338f-207e-53f8d3d2fa39"
+													]
+												},
+												{
+													"name": "puffer",
+													"origin": [0, 21, 2],
+													"color": 0,
+													"configs": {
+														"default": {
+															"vanilla_item_model": "minecraft:pufferfish",
+															"billboard": "fixed",
+															"override_brightness": false,
+															"brightness_override": 0,
+															"enchanted": false,
+															"glowing": false,
+															"override_glow_color": true,
+															"glow_color": "#ffffff",
+															"inherit_settings": true,
+															"invisible": false,
+															"nbt": "{}",
+															"shadow_radius": 0,
+															"shadow_strength": 1,
+															"use_nbt": false
+														},
+														"variants": {}
+													},
+													"uuid": "2ebe39a8-3394-4aff-b1c0-df983cd19e08",
+													"export": true,
+													"mirror_uv": false,
+													"isOpen": false,
+													"locked": false,
+													"visibility": true,
+													"autouv": 0,
+													"children": []
 												}
 											]
 										}
@@ -1472,14 +1554,7 @@
 					"240844f3-f615-fe51-0ada-d208791fbdc0": "a3f6a420-7f66-366f-30dc-58d15dec29b7",
 					"34528a28-3a31-8b47-65bb-ef2b60b02401": "a3f6a420-7f66-366f-30dc-58d15dec29b7"
 				},
-				"excluded_bones": [
-					"98795982-9c43-6e3e-eed9-2c776a957938",
-					"102db36a-eeda-0e6f-d5cc-c186ecda8165",
-					"4f000ffc-11d6-3a4b-7c8d-6b5ba483228c",
-					"5e08acae-d6ca-0dfd-9360-8cdb13c7a824",
-					"49e67c2a-3d1d-792d-9c75-72ecbc0f92e0",
-					"98a28100-07e8-849a-38b7-f56abc2c2e56"
-				]
+				"excluded_bones": []
 			},
 			{
 				"display_name": "no_baseplate",
@@ -1488,19 +1563,7 @@
 				"texture_map": {
 					"eb6c49b8-8e8e-a039-9a6f-ef6a06bc7924": "a3f6a420-7f66-366f-30dc-58d15dec29b7"
 				},
-				"excluded_bones": [
-					"98795982-9c43-6e3e-eed9-2c776a957938",
-					"102db36a-eeda-0e6f-d5cc-c186ecda8165",
-					"5e08acae-d6ca-0dfd-9360-8cdb13c7a824",
-					"98a28100-07e8-849a-38b7-f56abc2c2e56",
-					"49e67c2a-3d1d-792d-9c75-72ecbc0f92e0",
-					"6c53311f-ffc8-e567-ff1b-65840698e9ba",
-					"808e3c26-7285-af3f-a079-d8b899176dd3",
-					"b5b52d2c-097c-08df-6457-372fbae12445",
-					"215d1b02-0e64-a794-1b88-a9c5a6d7541c",
-					"55b812fe-7e4c-b2a5-da5b-3a8c82f9fc69",
-					"60d50d30-a018-429d-ba78-c5fb5804dd8a"
-				]
+				"excluded_bones": []
 			},
 			{
 				"display_name": "colors",

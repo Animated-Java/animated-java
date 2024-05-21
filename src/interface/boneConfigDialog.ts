@@ -13,13 +13,15 @@ import { getItemModel } from '../systems/minecraft/itemModelManager'
 function propagateInheritanceUp(group: Group, config: BoneConfig, variant?: string): void {
 	// Recurse to the topmost parent that doesn't have inherit_settings enabled, then inherit down from there
 	if (group.parent instanceof Group) {
-		const parentConfig = variant ? group.configs.variants[variant] : group.configs.default
+		const parentConfig = variant
+			? group.parent.configs.variants[variant]
+			: group.parent.configs.default
 		if (parentConfig) {
-			console.log('propagating inheritance up', group.name)
-			if (parentConfig.inherit_settings) {
-				propagateInheritanceUp(group.parent, config, variant)
-			}
 			const parentBoneConfig = BoneConfig.fromJSON(parentConfig)
+			if (parentConfig.inherit_settings) {
+				propagateInheritanceUp(group.parent, parentBoneConfig, variant)
+			}
+			console.log('Inheriting from', group.parent.name, parentConfig)
 			config.inheritFrom(parentBoneConfig)
 			if (variant) group.configs.variants[variant] = config.toJSON()
 			else group.configs.default = config.toJSON()
@@ -32,8 +34,8 @@ function propagateInheritanceDown(group: Group, config: BoneConfig, variant?: st
 		if (!(child instanceof Group)) continue
 		const childConfig = variant ? child.configs.variants[variant] : child.configs.default
 		if (childConfig && childConfig.inherit_settings) {
-			console.log('propagating inheritance down', child.name)
 			const childBoneConfig = BoneConfig.fromJSON(childConfig)
+			console.log('Inheriting to', child.name, childBoneConfig)
 			childBoneConfig.inheritFrom(config)
 			if (variant) child.configs.variants[variant] = childBoneConfig.toJSON()
 			else child.configs.default = childBoneConfig.toJSON()
@@ -171,14 +173,14 @@ export function openBoneConfigDialog(bone: Group) {
 					Canvas.updateAll()
 				}
 				void getItemModel(newConfig.vanillaItemModel).then(mesh => {
-					const oldMesh = bone.mesh.getObjectByName('vanillaItemModel')
+					const oldMesh = bone.mesh.children.find(child => child.isVanillaItemModel)
 					if (oldMesh) bone.mesh.remove(oldMesh)
 					if (mesh) {
 						bone.mesh.add(mesh)
 					}
 				})
 			} else {
-				const oldMesh = bone.mesh.getObjectByName('vanillaItemModel')
+				const oldMesh = bone.mesh.children.find(child => child.isVanillaItemModel)
 				if (oldMesh) {
 					bone.mesh.remove(oldMesh)
 					for (const child of bone.children) {

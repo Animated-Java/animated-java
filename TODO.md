@@ -50,11 +50,13 @@
     - [ ] Add rendering for vanilla item models.
         - [ ] Parent model inheritance
         - [x] item/generated
-        - [ ] item/handheld
-        - [ ] item/handheld_rod
+        - [x] item/handheld
+        - [x] item/handheld_rod
+        - [x] item/handheld_mace
     - [ ] Add rendering for vanilla block models.
         - [ ] Parent model inheritance
     - [ ] Add an option to switch the display entity between item and block display.
+    - [ ] Figure out a way to allow the user to scale the model of a bone with a display item set.
 - [ ] Add Variants to the UndoSystem (Blocked by vanilla Blockbench not supporting custom undo actions)
 
 # Data Pack Compiler

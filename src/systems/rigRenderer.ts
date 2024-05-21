@@ -352,7 +352,14 @@ function renderGroup(group: Group, rig: IRenderedRig): INodeStructure | undefine
 	}
 
 	// Don't export groups without a model.
-	if (group.children.filter(c => c instanceof Cube).length === 0) return
+	if (
+		!(
+			group.configs.default.vanilla_item_model ||
+			Object.values(group.configs.variants).some(v => v.vanilla_item_model)
+		) &&
+		group.children.filter(c => c instanceof Cube).length === 0
+	)
+		return
 
 	const diff = new THREE.Vector3().subVectors(
 		renderedBone.boundingBox.max,
