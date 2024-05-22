@@ -1,4 +1,5 @@
 import { PACKAGE } from '../constants'
+import { TextDisplay } from '../outliner/textDisplay'
 import { createBlockbenchMod } from '../util/moddingTools'
 
 const ITEM_IMAGE_CACHE = new Map<HTMLImageElement, ImageData>()
@@ -42,40 +43,53 @@ createBlockbenchMod(
 			this.mouse.y = -((event.clientY - canvasOffset.top) / this.height) * 2 + 1
 			this.raycaster.setFromCamera(this.mouse, this.camera)
 
-			const intersects = this.raycaster.intersectObjects(scene.children, true)
-			if (intersects.length === 0) return raycast(event)
-
-			for (const intersect of intersects) {
-				if (intersect.object.isVanillaItemModel) {
-					const object = intersect.object as THREE.Mesh
-					const image = (object.material as THREE.MeshBasicMaterial).map!
-						.image as HTMLImageElement
-					const uv = intersect.uv!
-					const { width, height } = image
-					const imageData = getImageData(image)
-					const x = Math.round(uv.x * width)
-					const y = height - Math.round(uv.y * height)
-					const I = (x + y * width) * 4
-					const A = imageData.data[I + 3]
-					if (A === 0) {
-						continue
-					}
-					const group = Group.all.find(group => group.mesh.children.includes(object))
-					if (group) {
-						if (isHover) {
-							// @ts-expect-error
-							Group.preview_controller.updateHighlight(group, true)
-						} else {
-							group.select()
-							// @ts-expect-error
-							this.selection.click_target = group
-						}
-						return false
-					}
+			const vanillaItemModels = new Map<THREE.Object3D, Group>()
+			const objects: THREE.Object3D[] = []
+			for (const group of Group.all) {
+				const mesh = group.mesh.children.at(0)
+				if (mesh?.isVanillaItemModel) {
+					vanillaItemModels.set(mesh, group)
+					objects.push(mesh)
+				}
+			}
+			for (const element of OutlinerElement.all) {
+				if (element instanceof TextDisplay) continue
+				if (
+					element.mesh instanceof THREE.Mesh &&
+					element.mesh.geometry &&
+					// @ts-expect-error
+					element.visibility &&
+					!element.locked
+				) {
+					objects.push(element.mesh)
+				} else if (element instanceof Locator) {
+					// @ts-expect-error
+					objects.push(element.mesh.sprite as THREE.Sprite)
 				}
 			}
 
-			return raycast(event)
+			const intersects = this.raycaster.intersectObjects(objects)
+			const i = intersects.at(0) as THREE.Intersection
+			if (!(i && i.uv && i.object instanceof THREE.Mesh && i.object.isVanillaItemModel))
+				return raycast(event)
+			const image = i.object.material.map!.image as HTMLImageElement
+			const { width, height } = image
+			const imageData = getImageData(image)
+			const x = Math.ceil(i.uv.x * width) - 1
+			const y = height - Math.ceil(i.uv.y * height)
+			const I = (x + y * width) * 4
+			if (imageData.data[I + 3] <= 140) return raycast(event)
+
+			const group = vanillaItemModels.get(i.object)!
+			if (isHover) {
+				// @ts-expect-error
+				Group.preview_controller.updateHighlight(group, true)
+			} else {
+				group.select()
+				// @ts-expect-error
+				this.selection.click_target = group
+			}
+			return false
 		}
 
 		return context

@@ -16,6 +16,7 @@ createBlockbenchMod(
 			forced = false
 		) {
 			if (!isCurrentFormat()) return context.originalUpdateHighlight?.call(this, element)
+			if (!element?.mesh) return
 
 			const vanillaItemMesh = element.mesh.children.at(0) as THREE.Mesh | undefined
 			if (!vanillaItemMesh?.isVanillaItemModel) return

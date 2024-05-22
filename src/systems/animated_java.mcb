@@ -76,14 +76,15 @@ dir <%export_namespace%> {
 	dir root {
 		function on_load {
 			execute unless entity @s[tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return 0
-			execute unless data entity @s {item:{components:{'minecraft:custom_data':{rigHash: '<%rigHash%>'}}}} run {
+			execute on passengers if entity @s[tag=<%TAGS.PROJECT_DATA(export_namespace)%>] \
+					unless data entity @s {data:{{rigHash: '<%rigHash%>'}}} on vehicle run {
 				execute store result storage aj:temp x int 1 store result score #this.x aj.i run data get entity @s Pos[0] 1
 				execute store result storage aj:temp y int 1 store result score #this.y aj.i run data get entity @s Pos[1] 1
 				execute store result storage aj:temp z int 1 store result score #this.z aj.i run data get entity @s Pos[2] 1
 				block outdated_tellraw { with storage aj:temp
 					$tellraw @a <%TELLRAW.RIG_OUTDATED(export_namespace)%>
 				}
-				data modify entity @s item.components.minecraft:custom_data set value {rigHash: <%rigHash%>}
+				data modify entity @s data.rigHash set value '<%rigHash%>'
 				execute on passengers run data merge entity @s {Glowing: 1b, glow_color_override: <%0xff0000%>}
 				summon minecraft:text_display ~ ~ ~ {Tags:['<%TAGS.GLOBAL_RIG()%>', '<%TAGS.OUTDATED_RIG_TEXT_DISPLAY()%>', '<%TAGS.NEW()%>'], text:'<%TELLRAW.RIG_OUTDATED_TEXT_DISPLAY()%>', billboard: "vertical", transformation:{translation:[0,<%boundingBox[1]/16%>,0],left_rotation:[0,0,0,1],right_rotation:[0,0,0,1],scale:[1,1,1]}}
 				ride @e[type=minecraft:text_display,tag=<%TAGS.NEW()%>,limit=1,distance=..0.01] mount @s
@@ -104,7 +105,7 @@ dir <%export_namespace%> {
 			REPEAT (Object.values(rig.nodeMap)) as node {
 				IF (node.type === 'locator' && node.config?.ticking_commands) {
 					# FIXME: Once https://github.com/mc-build/mcb/issues/15 is fixed this should be changed to a block instead of an execute run.
-					execute run { with entity @s item.components.minecraft:custom_data.locators.<%node.name%>
+					execute on passengers if entity @s[tag=<%TAGS.PROJECT_DATA(export_namespace)%>] run { with entity @s data.locators.<%node.name%>
 						$execute positioned ^$(posx) ^$(posy) ^$(posz) rotated ~$(roty) ~$(rotx) run {
 							<%node.config.ticking_commands%>
 						}
@@ -302,10 +303,11 @@ dir <%export_namespace%> {
 											}
 										} ELSE IF (node.type === 'locator') {
 											IF (rig.nodeMap[node.uuid]?.config?.ticking_commands) {
-												data modify entity @s item.components.minecraft:custom_data.locators.<%node.name%> set value { \
-													posx: <%node.pos.x%>, posy: <%node.pos.y%>, posz: <%node.pos.z%>, \
-													rotx: <%node.rot.x%>, roty: <%node.rot.y%>, \
-												}
+												execute on passengers if entity @s[tag=<%TAGS.PROJECT_DATA(export_namespace)%>] run \
+													data modify entity @s data.locators.<%node.name%> set value { \
+														posx: <%node.pos.x%>, posy: <%node.pos.y%>, posz: <%node.pos.z%>, \
+														rotx: <%node.rot.x%>, roty: <%node.rot.y%>, \
+													}
 											}
 											IF (node.commands) {
 												execute <%node.execute_condition ? node.execute_condition.trim() + ' ' : ''%>positioned \
@@ -348,17 +350,6 @@ dir <%export_namespace%> {
 
 		summon minecraft:item_display ~ ~ ~ { \
 			Tags:['<%TAGS.NEW()%>','<%TAGS.GLOBAL_RIG()%>','<%TAGS.GLOBAL_ROOT()%>','<%TAGS.PROJECT_ROOT(export_namespace)%>'], \
-			item: { \
-				id: '<%display_item%>', \
-				Count: 1b, \
-				components: { \
-					'minecraft:custom_data': { \
-						rigHash: '<%rigHash%>', \
-						locators: <%locator_position_storage.toString()%> \
-					}, \
-					'minecraft:custom_model_data': 1 \
-				} \
-			}, \
 			teleport_duration: 0, \
 			interpolation_duration: <%interpolation_duration%>, \
 			Passengers:<%root_entity_passengers%>, \

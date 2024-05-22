@@ -41,11 +41,15 @@
     - [x] Add a TextDisplay config.
         - [x] Add support for billboarding to TextDisplays.
 - [x] Respect inheritance in the bone config.
+- [x] Change font rendering to use a geometry for each character instead of a single plane for the entire text display. This will open the possibility of loading custom fonts and spacing.
 - [ ] Camera Plugin Support
     - [ ] Camera config.
     - [ ] Data Pack Compiler support.
 - [ ] Change the Collection setting type to allow single-click swapping of items between lists.
 - [ ] Add an about page.
+    - [ ] Add an option to switch the display entity between item and block display.
+    - [ ] Figure out a way to allow the user to scale the model of a bone with a display item set.
+- [ ] Add Variants to the UndoSystem (Blocked by vanilla Blockbench not supporting custom undo actions)
 - [x] Add a bone config option to replace the bone's display item with a custom item.
     - [ ] Add rendering for vanilla item models.
         - [ ] Parent model inheritance
@@ -55,9 +59,6 @@
         - [x] item/handheld_mace
     - [ ] Add rendering for vanilla block models.
         - [ ] Parent model inheritance
-    - [ ] Add an option to switch the display entity between item and block display.
-    - [ ] Figure out a way to allow the user to scale the model of a bone with a display item set.
-- [ ] Add Variants to the UndoSystem (Blocked by vanilla Blockbench not supporting custom undo actions)
 
 # Data Pack Compiler
 - [x] Merge on_tick and on_load function tags

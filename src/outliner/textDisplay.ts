@@ -10,10 +10,6 @@ import { toSafeFuntionName } from '../util/minecraftUtil'
 import { TextDisplayConfig } from '../nodeConfigs'
 import { TEXT_DISPLAY_CONFIG_ACTION } from '../interface/textDisplayConfigDialog'
 
-const DEFAULT_PLANE = new THREE.PlaneBufferGeometry(1, 1)
-DEFAULT_PLANE.rotateY(Math.PI)
-const INVISIBLE_PLANE = new THREE.PlaneBufferGeometry(0, 0)
-
 interface TextDisplayOptions {
 	name?: string
 	text?: string
@@ -27,8 +23,6 @@ interface TextDisplayOptions {
 	visibility?: boolean
 }
 type Alignment = 'left' | 'center' | 'right'
-
-const TEXT_SCALE = 8
 
 export class TextDisplay extends OutlinerElement {
 	static type = `${PACKAGE.name}:text_display`
@@ -54,10 +48,6 @@ export class TextDisplay extends OutlinerElement {
 	public visibility
 	public config: IBlueprintTextDisplayConfigJSON
 
-	public textGeo: THREE.PlaneGeometry = new THREE.PlaneGeometry(1, 1)
-	public canvas = document.createElement('canvas')
-	public texture = new THREE.CanvasTexture(this.canvas)
-
 	public menu = new Menu([
 		...Outliner.control_menu_group,
 		TEXT_DISPLAY_CONFIG_ACTION,
@@ -80,9 +70,6 @@ export class TextDisplay extends OutlinerElement {
 
 	constructor(data: TextDisplayOptions, uuid = guid()) {
 		super(data, uuid)
-
-		this.texture.magFilter = THREE.NearestFilter
-		this.texture.minFilter = THREE.NearestFilter
 
 		for (const key in TextDisplay.properties) {
 			TextDisplay.properties[key].reset(this)
@@ -293,50 +280,29 @@ export class TextDisplay extends OutlinerElement {
 	private async setText(jsonText: JsonText) {
 		await this.waitForReady()
 		const font = await getVanillaFont()
-		const ctx = this.canvas.getContext('2d', { willReadFrequently: true })!
 		// Hide the geo while rendering
 		this.loadingMesh.visible = true
-		this.textGeo.setAttribute('position', INVISIBLE_PLANE.getAttribute('position').clone())
 		const map = (this.loadingMesh.material as THREE.MeshBasicMaterial).map
 		const outline = this.mesh.outline as THREE.LineSegments
-		if (map) {
+		if (map && outline) {
 			outline.geometry = new THREE.EdgesGeometry(this.loadingMesh.geometry)
 			outline.scale.set(map.image.width / 5, map.image.height / 5, 1)
 			outline.position.set(0, map.image.height / 10, 0)
 		}
 
-		await font.drawJsonTextToCanvas({
-			ctx,
+		const mesh = await font.generateTextMesh({
 			jsonText,
-			x: 1,
-			y: 1,
-			lineWidth: this.lineWidth,
-			scale: TEXT_SCALE,
+			maxLineWidth: this.lineWidth,
 			backgroundColor: this.backgroundColor,
 			backgroundAlpha: this.backgroundAlpha,
 		})
+		mesh.name = this.uuid + '_text'
+		const previousMesh = this.mesh.children.find(v => v.name === mesh.name)
+		if (previousMesh) this.mesh.remove(previousMesh)
+		createOutline(this, (mesh.children[0] as THREE.Mesh).geometry)
+		this.mesh.add(mesh)
 
-		this.texture.needsUpdate = true
 		this.loadingMesh.visible = false
-
-		const xOffset = -(1 / 5)
-		const scaleX = this.canvas.width / TEXT_SCALE / 2.5
-		const scaleY = this.canvas.height / TEXT_SCALE / 2.5
-
-		// Set geo back to a 1 1 plane
-		this.textGeo.setAttribute('position', DEFAULT_PLANE.getAttribute('position').clone())
-		this.textGeo.scale(scaleX, scaleY, 1)
-
-		this.textGeo.center()
-		this.textGeo.translate(xOffset, scaleY / 2, 0)
-
-		// @ts-ignore
-		const fix_position = this.mesh.fix_position as THREE.Vector3
-		fix_position.set(...this.position)
-
-		outline.geometry = new THREE.EdgesGeometry(this.textGeo)
-		outline.scale.set(1, 1, 1)
-		outline.position.set(0, 0, 0)
 	}
 }
 new Property(TextDisplay, 'string', 'name', { default: 'Text Display' })
@@ -356,15 +322,38 @@ new Property(TextDisplay, 'object', 'config', {
 })
 OutlinerElement.registerType(TextDisplay, TextDisplay.type)
 
+/**
+ * Create an outline for the given element
+ * @param el The element to create the outline for
+ * @param mesh The mesh to use make the outline from
+ */
+function createOutline(el: TextDisplay, geometry: THREE.BufferGeometry) {
+	const outline = new THREE.LineSegments(
+		new THREE.EdgesGeometry(geometry),
+		Canvas.outlineMaterial
+	)
+
+	outline.no_export = true
+	outline.name = el.uuid + '_outline'
+	outline.visible = el.selected
+	outline.renderOrder = 2
+	outline.frustumCulled = false
+
+	if (el.mesh.outline) {
+		el.mesh.remove(el.mesh.outline as THREE.Object3D)
+	}
+
+	el.mesh.outline = outline
+	el.mesh.add(outline)
+}
+
 export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 	setup(el: TextDisplay) {
-		el.textGeo = new THREE.PlaneGeometry(0, 0)
-		el.textGeo.rotateY(Math.PI)
-
-		const material = new THREE.MeshBasicMaterial({ map: el.texture, transparent: true })
-		const textMesh = new THREE.Mesh(el.textGeo, material)
+		const textMesh = new THREE.Mesh(new THREE.PlaneGeometry(0, 0))
 		textMesh.fix_rotation = new THREE.Euler(0, 0, 0, 'ZYX')
 		textMesh.fix_position = new THREE.Vector3(0, 0, 0)
+		// Minecraft's transparency is funky 😭
+		textMesh.renderOrder = -1
 
 		new THREE.TextureLoader().load(TextDisplayLoading, texture => {
 			texture.magFilter = THREE.NearestFilter
@@ -386,27 +375,6 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 		Project!.nodes_3d[el.uuid] = textMesh
 
 		void getVanillaFont().then(() => {
-			// Minecraft's transparency is funky 😭
-			textMesh.renderOrder = -1
-
-			const outline = new THREE.LineSegments(
-				new THREE.EdgesGeometry(el.textGeo),
-				Canvas.outlineMaterial
-			)
-			outline.no_export = true
-			outline.name = el.uuid + '_outline'
-			outline.visible = el.selected
-			outline.renderOrder = 2
-			outline.frustumCulled = false
-
-			textMesh.isElement = true
-			textMesh.name = el.uuid
-			textMesh.type = el.type
-			textMesh.visible = el.visibility
-			textMesh.rotation.order = 'ZYX'
-			textMesh.outline = outline
-			textMesh.add(outline)
-
 			el.loadingMesh.visible = false
 			el.ready = true
 

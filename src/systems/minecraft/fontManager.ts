@@ -11,6 +11,7 @@ import {
 	StyleRecord,
 } from './textWrapping'
 import { createHash } from 'crypto'
+import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils'
 
 interface IFontProviderBitmap {
 	type: 'bitmap'
@@ -55,6 +56,11 @@ interface ICachedSpaceChar {
 }
 
 type ICachedChar = ICachedBitmapChar | ICachedSpaceChar
+
+type ICachedCharMesh = {
+	geo?: THREE.BufferGeometry
+	width: number
+}
 
 const MAX_CANVAS_WIDTH = 16_384
 const MAX_CANVAS_HEIGHT = 16_384
@@ -203,21 +209,24 @@ class BitmapFontProvider extends FontProvider {
 			// Figure out how wide the character is by checking for the last non-transparent pixel
 			const startX = charPos[1] * this.charWidth
 			const startY = charPos[0] * this.charHeight
-			const maxX = charPos[1] * this.charWidth + this.charWidth
-			const maxY = charPos[0] * this.charHeight + this.charHeight
+			const data = this.canvas
+				.getContext('2d')!
+				.getImageData(startX, startY, this.charWidth, this.charHeight)
 
 			let width = 0
-			const ctx = this.canvas.getContext('2d', { willReadFrequently: true })!
-			for (let x = startX; x < maxX; x++) {
+			for (let x = this.charWidth - 1; x >= 0; x--) {
 				let found = false
-				for (let y = startY; y < maxY; y++) {
-					const pixel = ctx.getImageData(x, y, 1, 1).data
-					if (pixel[3] > 0) {
+				for (let y = 0; y < this.charHeight; y++) {
+					const i = (y * this.charWidth + x) * 4
+					if (data.data[i + 3] > 0) {
 						found = true
 						break
 					}
 				}
-				if (found) width = x - charPos[1] * this.charWidth + 1
+				if (found) {
+					width = x + 1
+					break
+				}
 			}
 
 			// eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -276,13 +285,6 @@ export class MinecraftFont {
 					)
 			}
 		}
-
-		// this.providers.sort((a, b) => {
-		// 	// Sort space providers to the front so they take priority over bitmap providers
-		// 	if (a.type === 'space') return -1
-		// 	if (b.type === 'space') return 1
-		// 	return 0
-		// })
 
 		MinecraftFont.all.push(this)
 	}
@@ -588,9 +590,6 @@ export class MinecraftFont {
 		ctx.fillStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${backgroundAlpha})`
 		ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 
-		// TODO: Style inheritance
-		// TODO: Change this system to use a geometry plane for each character instead of drawing to a canvas, to support proper ascent, negative space, and large characters.
-
 		const cursor = { x, y }
 		for (const line of lines) {
 			cursor.x = x + (canvasWidth - line.width) / 2
@@ -605,6 +604,276 @@ export class MinecraftFont {
 			cursor.y += 11
 		}
 		console.timeEnd('drawTextToCanvas')
+	}
+
+	characterMeshCache = new Map<string, ICachedCharMesh>()
+
+	async generateTextMesh({
+		jsonText,
+		maxLineWidth,
+		backgroundColor,
+		backgroundAlpha,
+	}: {
+		jsonText: JsonText
+		maxLineWidth: number
+		backgroundColor: string
+		backgroundAlpha: number
+	}): Promise<THREE.Mesh> {
+		console.log(
+			'Drawing text to mesh...',
+			jsonText,
+			maxLineWidth,
+			backgroundColor,
+			backgroundAlpha
+		)
+		console.time('drawTextToMesh')
+		const mesh = new THREE.Mesh()
+
+		const words = getComponentWords(jsonText)
+		const { lines, canvasWidth } = await computeTextWrapping(words, maxLineWidth)
+		const width = canvasWidth + 1
+		const height = lines.length * 10 + 1
+		// // Debug output
+		// const wordWidths = words.map(word => this.getWordWidth(word))
+		// for (const word of words) {
+		// 	console.log(words.indexOf(word), word.text, wordWidths[words.indexOf(word)])
+		// 	for (const span of word.styles) {
+		// 		console.log(
+		// 			`'${word.text.slice(span.start, span.end)}' ${span.start}-${span.end} = `,
+		// 			span.style
+		// 		)
+		// 	}
+		// }
+		// console.log('Lines:', lines)
+		// for (const line of lines) {
+		// 	console.log('Line', lines.indexOf(line), line.width)
+		// 	for (const word of line.words) {
+		// 		console.log(
+		// 			'Word',
+		// 			line.words.indexOf(word),
+		// 			`'${word.text}'`,
+		// 			word.styles.map(span => span.style),
+		// 			word.styles.map(
+		// 				span =>
+		// 					`${span.start}-${span.end} '${word.text.slice(span.start, span.end)}'`
+		// 			)
+		// 		)
+		// 	}
+		// }
+
+		const backgroundGeo = new THREE.PlaneBufferGeometry(width, height)
+		const backgroundMesh = new THREE.Mesh(
+			backgroundGeo,
+			new THREE.MeshBasicMaterial({
+				color: backgroundColor,
+				transparent: true,
+				opacity: backgroundAlpha,
+			})
+		)
+			.translateY(height / 2)
+			.translateZ(-0.05)
+		mesh.add(backgroundMesh)
+
+		const geos: THREE.BufferGeometry[] = []
+		const cursor = { x: 0, y: height - 9 }
+		for (const line of lines) {
+			cursor.x = -width / 2 + Math.ceil((width - line.width) / 2)
+			for (const word of line.words) {
+				for (const span of word.styles) {
+					const text = word.text.slice(span.start, span.end)
+					for (const char of text) {
+						const charMesh = this.generateCharMesh(char, span.style)
+						if (!charMesh) continue
+						if (charMesh.geo) {
+							const clone = charMesh.geo.clone()
+							clone.translate(cursor.x, cursor.y, 0)
+							geos.push(clone)
+						}
+						cursor.x += charMesh.width
+					}
+				}
+			}
+			cursor.y -= 10
+		}
+
+		// @ts-expect-error
+		const charGeo = BufferGeometryUtils.mergeBufferGeometries(geos)
+		if (charGeo) {
+			const charMesh = new THREE.Mesh(
+				charGeo,
+				new THREE.MeshBasicMaterial({ vertexColors: true })
+			)
+			mesh.add(charMesh)
+		}
+
+		mesh.scale.set(0.4, 0.4, 0.4)
+		mesh.rotateY(Math.PI)
+		mesh.translateX(1 / 5)
+
+		console.timeEnd('drawTextToMesh')
+		return mesh
+	}
+
+	generateCharMesh(char: string, style: StyleRecord): ICachedCharMesh | undefined {
+		// eslint-disable-next-line @typescript-eslint/no-this-alias
+		let font: MinecraftFont = this
+		if (style.font) {
+			const newFont = MinecraftFont.getById(style.font as string)
+			if (newFont) font = newFont
+		}
+		const charData = font.getChar(char)
+		if (!charData) {
+			// Technically this should never happen, but just in case...
+			console.error('Unknown character:', char)
+			return
+		}
+
+		let color = new THREE.Color('#ffffff')
+		if (typeof style.color === 'string') {
+			color =
+				style.color.startsWith('#') && style.color.length === 7
+					? new THREE.Color(style.color)
+					: new THREE.Color(COLOR_MAP[style.color]) || color
+		}
+		const boldExtra = style.bold ? 1 : 0
+
+		if (charData.type === 'bitmap') {
+			const hash = createHash('sha256')
+			hash.update(char)
+			hash.update(color.getHexString())
+			if (style.bold) hash.update('bold')
+			if (style.italic) hash.update('italic')
+			if (style.underlined) hash.update('underlined')
+			if (style.strikethrough) hash.update('strikethrough')
+			// if (style.obfuscated) hash.update('obfuscated')
+			const digest = hash.digest('hex')
+
+			let charMesh = this.characterMeshCache.get(digest)
+
+			if (charMesh === undefined) {
+				// If no mesh is found, create a new one
+				const canvas = document.createElement('canvas')
+				const ctx = canvas.getContext('2d', { willReadFrequently: true })!
+				canvas.width = charData.pixelUV[2]
+				canvas.height = charData.pixelUV[3]
+				ctx.imageSmoothingEnabled = false
+				ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+				ctx.drawImage(
+					charData.atlas.image as HTMLImageElement,
+					charData.pixelUV[0],
+					charData.pixelUV[1],
+					charData.pixelUV[2],
+					charData.pixelUV[3],
+					0,
+					0,
+					canvas.width,
+					canvas.height
+				)
+				const data = ctx.getImageData(0, 0, canvas.width, canvas.height)
+
+				const geo = new THREE.BufferGeometry()
+				let colors: number[] = []
+				let vertices: number[] = []
+				let indices: number[] = []
+
+				const createQuad = (x: number, y: number, w: number, h: number) => {
+					const vertIndex = vertices.length / 3
+					// prettier-ignore
+					vertices.push(
+						x, y, 0,
+						x + w, y, 0,
+						x + w, y + h, 0,
+						x, y + h, 0
+					)
+
+					indices.push(
+						vertIndex,
+						vertIndex + 1,
+						vertIndex + 2,
+						vertIndex,
+						vertIndex + 2,
+						vertIndex + 3
+					)
+					// prettier-ignore
+					colors.push(
+						color.r, color.g, color.b,
+						color.r, color.g, color.b,
+						color.r, color.g, color.b,
+						color.r, color.g, color.b
+					)
+				}
+
+				// Generate a quad for each pixel in the character
+				// This also attempts to make a single quad for each horizontal line of connected pixels
+				for (let y = 0; y < canvas.height; y++) {
+					const ascent = -y + charData.ascent
+					let width = 0
+					for (let x = 0; x < canvas.width; x++) {
+						const i = (y * canvas.width + x) * 4
+						const alpha = data.data[i + 3]
+						if (alpha === 0) {
+							if (width > 0) {
+								createQuad(x - width, ascent, width + boldExtra, 1)
+								width = 0
+							}
+							continue
+						} else {
+							width++
+						}
+					}
+					if (width > 0) {
+						createQuad(canvas.width - width, ascent, width + boldExtra, 1)
+					}
+				}
+
+				geo.setIndex(indices)
+				geo.setAttribute(
+					'position',
+					new THREE.BufferAttribute(new Float32Array(vertices), 3)
+				)
+				geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(colors), 3))
+
+				if (style.italic) {
+					geo.applyMatrix4(new THREE.Matrix4().makeShear(0, 0, 0.2, 0, 0, 0))
+					geo.translate(-1, 0, 0)
+				}
+
+				vertices = Array.from(geo.getAttribute('position').array)
+				colors = Array.from(geo.getAttribute('color').array)
+				indices = Array.from(geo.getIndex()!.array)
+
+				if (style.underlined) {
+					createQuad(-1, -1, canvas.width + 2, 1)
+				}
+
+				if (style.strikethrough) {
+					const ascent = charData.ascent / 2 + 1
+					createQuad(-1, ascent, canvas.width + 2, 1)
+				}
+
+				geo.setIndex(indices)
+				geo.setAttribute(
+					'position',
+					new THREE.BufferAttribute(new Float32Array(vertices), 3)
+				)
+				geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(colors), 3))
+
+				geo.attributes.position.needsUpdate = true
+				geo.attributes.color.needsUpdate = true
+				charMesh = {
+					geo,
+					width: charData.width + boldExtra,
+				}
+
+				this.characterMeshCache.set(digest, charMesh)
+			}
+			return charMesh
+		} else {
+			return {
+				width: charData.width,
+			}
+		}
 	}
 }
 
@@ -646,3 +915,40 @@ export async function getVanillaFont() {
 events.MINECRAFT_ASSETS_LOADED.subscribe(() => {
 	loadMinecraftFonts()
 })
+
+// events.SELECT_PROJECT.subscribe(() => {
+// 	void getVanillaFont().then(async font => {
+// 		await font.generateTextMesh({
+// 			jsonText: new JsonText([
+// 				'',
+// 				{
+// 					text: 'Sometimes ',
+// 					italic: true,
+// 				},
+// 				'you ',
+// 				{
+// 					text: 'have',
+// 					bold: true,
+// 				},
+// 				' to wear ',
+// 				{
+// 					text: 'stretchy',
+// 					color: 'yellow',
+// 				},
+// 				' pants.\n',
+// 				{
+// 					text: "(It's for ",
+// 				},
+// 				{
+// 					text: 'fun!',
+// 					underlined: true,
+// 					color: 'blue',
+// 				},
+// 				')',
+// 			]),
+// 			maxLineWidth: 100,
+// 			backgroundColor: '#000000',
+// 			backgroundAlpha: 0.25,
+// 		})
+// 	})
+// })

@@ -191,7 +191,6 @@ async function generateItemMesh(item: string, texturePath: string) {
 
 	addNormal(0, 1, 0)
 	addNormal(0, -1, 0)
-
 	if (texture && texture.image.width) {
 		const canvas = document.createElement('canvas')
 		const ctx = canvas.getContext('2d')!

@@ -30,10 +30,12 @@ namespace TAGS {
 	export const GLOBAL_BONE = () => 'aj.bone'
 	export const GLOBAL_CAMERA = () => 'aj.camera'
 	export const GLOBAL_LOCATOR = () => 'aj.locator'
+	export const GLOBAL_DATA = () => 'aj.data'
 
 	export const PROJECT_BONE = (exportNamespace: string) => `aj.${exportNamespace}.bone`
 	export const PROJECT_CAMERA = (exportNamespace: string) => `aj.${exportNamespace}.camera`
 	export const PROJECT_LOCATOR = (exportNamespace: string) => `aj.${exportNamespace}.locator`
+	export const PROJECT_DATA = (exportNamespace: string) => `aj.${exportNamespace}.data`
 
 	export const LOCAL_BONE = (exportNamespace: string, boneName: string) =>
 		`aj.${exportNamespace}.bone.${boneName}`
@@ -198,9 +200,29 @@ namespace TELLRAW {
 		])
 }
 
-function generateRootEntityPassengers(rig: IRenderedRig) {
+function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) {
 	const aj = Project!.animated_java
 	const passengers: NbtList = new NbtList()
+
+	passengers.add(
+		new NbtCompound()
+			.set('id', new NbtString('minecraft:marker'))
+			.set(
+				'Tags',
+				new NbtList([
+					new NbtString(TAGS.GLOBAL_RIG()),
+					new NbtString(TAGS.GLOBAL_DATA()),
+					new NbtString(TAGS.PROJECT_DATA(aj.export_namespace)),
+				])
+			)
+			.set(
+				'data',
+				new NbtCompound()
+					.set('rigHash', new NbtString(rigHash))
+					.set('locators', createLocatorPositionStorage(rig))
+			)
+	)
+
 	for (const node of Object.values(rig.nodeMap)) {
 		const passenger = new NbtCompound()
 		// TODO Maybe add components setting to blueprint settings?
@@ -223,6 +245,10 @@ function generateRootEntityPassengers(rig: IRenderedRig) {
 						.set('right_rotation', arrayToNbtFloatArray([0, 0, 0, 1]))
 						.set('scale', arrayToNbtFloatArray([0, 0, 0]))
 				)
+				// passenger.set(
+				// 	'transformation',
+				// 	matrixToNbtFloatArray(rig.defaultPose.find(v => v.name === node.name)!.matrix)
+				// )
 				passenger.set('interpolation_duration', new NbtInt(aj.interpolation_duration))
 				passenger.set('teleport_duration', new NbtInt(0))
 				passenger.set('item_display', new NbtString('head'))
@@ -479,7 +505,7 @@ export async function compileDataPack(options: {
 		animations,
 		variants: Variant.all,
 		export_version: Math.random().toString().substring(2, 10),
-		root_entity_passengers: generateRootEntityPassengers(rig),
+		root_entity_passengers: generateRootEntityPassengers(rig, rigHash),
 		TAGS,
 		OBJECTIVES,
 		TELLRAW,
@@ -493,7 +519,7 @@ export async function compileDataPack(options: {
 		BoneConfig,
 		roundTo,
 		nodeSorter,
-		locator_position_storage: createLocatorPositionStorage(rig),
+		// locator_position_storage: createLocatorPositionStorage(rig),
 	}
 	console.log('Compiler Variables:', variables)
 

@@ -136,7 +136,6 @@ export function getComponentWords(input: JsonTextComponent) {
 					words.push(word)
 					word = undefined
 				}
-				// A group of multiple spaces is treated as a word.
 			} else if (char === '\n') {
 				if (word) {
 					if (Object.keys(style.style).length) {
@@ -199,18 +198,7 @@ export async function computeTextWrapping(words: IComponentWord[], maxLineWidth 
 
 	let canvasWidth = 0
 	let currentLine: IComponentLine = { words: [], width: 0 }
-	// let lastSpaceWidth = 0
 	for (const word of words) {
-		// if (currentLine.words.length === 0 && word.text[0] === ' ') {
-		// 	word.text = word.text.slice(1)
-		// 	console.log(`Trimmed leading whitespace ${word.text}`)
-		// }
-
-		// lastSpaceWidth = font.getTextWidth(' ', {
-		// 	start: 0,
-		// 	end: 1,
-		// 	style: word.styles.at(-1)!.style,
-		// })
 		const wordWidth = font.getWordWidth(word)
 		const wordStyles = [...word.styles]
 		// If the word is longer than than the max line width, split it into multiple lines
@@ -288,24 +276,17 @@ export async function computeTextWrapping(words: IComponentWord[], maxLineWidth 
 		} else if (word.forceWrap) {
 			if (currentLine.words.length) {
 				lines.push(currentLine)
-				// if (word.text[-1] === ' ') {
-				// 	word.text = word.text.slice(0, -1)
-				// 	wordWidth -= lastSpaceWidth
-				// 	currentLine.width -= lastSpaceWidth
-				// 	console.log(`Trimmed trailing whitespace ${word.text}`)
-				// }
 				canvasWidth = Math.max(canvasWidth, currentLine.width)
 			}
 			currentLine = { words: [], width: 0 }
 			// If the current line has words and adding the current word would exceed the max line width, start a new line
 		} else if (currentLine.words.length && currentLine.width + wordWidth > maxLineWidth) {
+			const lastWord = currentLine.words.at(-1)
+			if (lastWord?.text.at(-1) === ' ') {
+				currentLine.words.pop()
+				currentLine.width -= lastWord.width
+			}
 			lines.push(currentLine)
-			// if (word.text.at(-1) === ' ') {
-			// 	word.text = word.text.slice(0, -1)
-			// 	wordWidth -= lastSpaceWidth
-			// 	currentLine.width -= lastSpaceWidth
-			// 	console.log(`Trimmed trailing whitespace ${word.text}`)
-			// }
 			canvasWidth = Math.max(canvasWidth, currentLine.width)
 			currentLine = { words: [], width: 0 }
 		}
@@ -315,13 +296,6 @@ export async function computeTextWrapping(words: IComponentWord[], maxLineWidth 
 	}
 	if (currentLine.words.length) {
 		lines.push(currentLine)
-		// const word = currentLine.words.at(-1)!
-		// if (word.text.at(-1) === ' ') {
-		// 	word.text = word.text.slice(0, -1)
-		// 	word.width -= lastSpaceWidth
-		// 	currentLine.width -= lastSpaceWidth
-		// 	console.log(`Trimmed trailing whitespace ${word.text}`)
-		// }
 		canvasWidth = Math.max(canvasWidth, currentLine.width)
 	}
 
