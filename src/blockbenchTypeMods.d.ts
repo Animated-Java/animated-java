@@ -18,6 +18,7 @@ import { type Variant } from './variants'
 declare module 'three' {
 	interface Object3D {
 		isVanillaItemModel?: boolean
+		isTextDisplayText?: boolean
 	}
 }
 

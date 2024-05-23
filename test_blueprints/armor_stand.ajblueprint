@@ -856,7 +856,7 @@
 			"rotation": [0, 0, 0],
 			"scale": [1, 1, 1],
 			"lineWidth": 100,
-			"backgroundColor": "#000000",
+			"backgroundColor": "#3a0b5c",
 			"backgroundAlpha": 0.25,
 			"align": "center",
 			"visibility": "true",
@@ -894,6 +894,7 @@
 			"visibility": true,
 			"autouv": 0,
 			"children": [
+				"365b1266-1125-13e1-01ee-5a82335137f4",
 				{
 					"name": "baseplate_root",
 					"origin": [0, 0, 0],
@@ -1203,7 +1204,44 @@
 													"locked": false,
 													"visibility": true,
 													"autouv": 0,
-													"children": ["c219cb9b-53a7-6a5b-7b47-dce0a1e6ec14", "967c77d0-2607-0ecb-8093-416d237cdb85", "7de415a2-9fdd-e4b2-3455-c3bed72eb896"]
+													"children": [
+														"c219cb9b-53a7-6a5b-7b47-dce0a1e6ec14",
+														"967c77d0-2607-0ecb-8093-416d237cdb85",
+														"7de415a2-9fdd-e4b2-3455-c3bed72eb896",
+														{
+															"name": "hand_item2",
+															"origin": [-6, 11.5, -6],
+															"rotation": [-90, -45, -90],
+															"color": 0,
+															"configs": {
+																"default": {
+																	"vanilla_item_model": "minecraft:amethyst_shard",
+																	"billboard": "fixed",
+																	"override_brightness": false,
+																	"brightness_override": 0,
+																	"enchanted": false,
+																	"glowing": false,
+																	"override_glow_color": true,
+																	"glow_color": "#ffffff",
+																	"inherit_settings": true,
+																	"invisible": false,
+																	"nbt": "{}",
+																	"shadow_radius": 0,
+																	"shadow_strength": 1,
+																	"use_nbt": false
+																},
+																"variants": {}
+															},
+															"uuid": "b4ab5aa8-b6da-3e6f-3130-4b8e87f55052",
+															"export": true,
+															"mirror_uv": false,
+															"isOpen": true,
+															"locked": false,
+															"visibility": true,
+															"autouv": 0,
+															"children": []
+														}
+													]
 												},
 												{
 													"name": "right_arm",
@@ -1259,7 +1297,7 @@
 															"color": 0,
 															"configs": {
 																"default": {
-																	"vanilla_item_model": "minecraft:mace",
+																	"vanilla_item_model": "minecraft:amethyst_shard",
 																	"billboard": "fixed",
 																	"override_brightness": false,
 																	"brightness_override": 0,
@@ -1418,8 +1456,7 @@
 							]
 						}
 					]
-				},
-				"365b1266-1125-13e1-01ee-5a82335137f4"
+				}
 			]
 		}
 	],
@@ -3273,7 +3310,7 @@
 			"override": false,
 			"length": 2,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"saved": false,
 			"path": "",
 			"anim_time_update": "",

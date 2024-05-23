@@ -52,13 +52,16 @@
 - [ ] Add Variants to the UndoSystem (Blocked by vanilla Blockbench not supporting custom undo actions)
 - [x] Add a bone config option to replace the bone's display item with a custom item.
     - [ ] Add rendering for vanilla item models.
-        - [ ] Parent model inheritance
+        - [x] Parent model inheritance
         - [x] item/generated
         - [x] item/handheld
         - [x] item/handheld_rod
         - [x] item/handheld_mace
+        - [ ] Edge Cases go here
+            - [ ] 
     - [ ] Add rendering for vanilla block models.
         - [ ] Parent model inheritance
+- [ ] Locator rotation support
 
 # Data Pack Compiler
 - [x] Merge on_tick and on_load function tags

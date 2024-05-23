@@ -9,7 +9,7 @@ createBlockbenchMod(
 	},
 	context => {
 		const structure = [...context.menuStructure]
-		structure.splice(5, 0, LOCATOR_CONFIG_ACTION)
+		structure.splice(6, 0, LOCATOR_CONFIG_ACTION)
 		Locator.prototype.menu!.structure = structure
 
 		return context

@@ -43,18 +43,23 @@ createBlockbenchMod(
 			this.mouse.y = -((event.clientY - canvasOffset.top) / this.height) * 2 + 1
 			this.raycaster.setFromCamera(this.mouse, this.camera)
 
-			const vanillaItemModels = new Map<THREE.Object3D, Group>()
+			const animatedJavaModels = new Map<THREE.Object3D, Group | TextDisplay>()
 			const objects: THREE.Object3D[] = []
 			for (const group of Group.all) {
 				const mesh = group.mesh.children.at(0)
 				if (mesh?.isVanillaItemModel) {
-					vanillaItemModels.set(mesh, group)
+					animatedJavaModels.set(mesh, group)
 					objects.push(mesh)
 				}
 			}
 			for (const element of OutlinerElement.all) {
-				if (element instanceof TextDisplay) continue
-				if (
+				if (element instanceof TextDisplay) {
+					const mesh = element.mesh.children.find(el => el.isTextDisplayText)
+					if (mesh) {
+						objects.push(mesh)
+						animatedJavaModels.set(mesh, element)
+					}
+				} else if (
 					element.mesh instanceof THREE.Mesh &&
 					element.mesh.geometry &&
 					// @ts-expect-error
@@ -68,28 +73,39 @@ createBlockbenchMod(
 				}
 			}
 
-			const intersects = this.raycaster.intersectObjects(objects)
+			const intersects = this.raycaster.intersectObjects(objects, true)
 			const i = intersects.at(0) as THREE.Intersection
-			if (!(i && i.uv && i.object instanceof THREE.Mesh && i.object.isVanillaItemModel))
-				return raycast(event)
-			const image = i.object.material.map!.image as HTMLImageElement
-			const { width, height } = image
-			const imageData = getImageData(image)
-			const x = Math.ceil(i.uv.x * width) - 1
-			const y = height - Math.ceil(i.uv.y * height)
-			const I = (x + y * width) * 4
-			if (imageData.data[I + 3] <= 140) return raycast(event)
+			if (i && i.uv && i.object instanceof THREE.Mesh && i.object.isVanillaItemModel) {
+				const image = i.object.material.map!.image as HTMLImageElement
+				const { width, height } = image
+				const imageData = getImageData(image)
+				const x = Math.ceil(i.uv.x * width) - 1
+				const y = height - Math.ceil(i.uv.y * height)
+				const I = (x + y * width) * 4
+				if (imageData.data[I + 3] <= 140) return raycast(event)
 
-			const group = vanillaItemModels.get(i.object)!
-			if (isHover) {
-				// @ts-expect-error
-				Group.preview_controller.updateHighlight(group, true)
-			} else {
-				group.select()
-				// @ts-expect-error
-				this.selection.click_target = group
+				const group = animatedJavaModels.get(i.object)!
+				if (isHover) {
+					// @ts-expect-error
+					Group.preview_controller.updateHighlight(group, true)
+				} else {
+					group.select()
+					// @ts-expect-error
+					this.selection.click_target = group
+				}
+				return false
+			} else if (i && i.object.parent) {
+				const group = animatedJavaModels.get(i.object.parent)!
+				if (group) {
+					if (isClick) {
+						group.select()
+						// @ts-expect-error
+						this.selection.click_target = group
+					}
+					return false
+				}
 			}
-			return false
+			return raycast(event)
 		}
 
 		return context

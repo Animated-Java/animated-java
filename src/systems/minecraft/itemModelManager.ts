@@ -1,47 +1,72 @@
-import { getPathFromResourceLocation } from '../../util/minecraftUtil'
+import { getPathFromResourceLocation, parseResourceLocation } from '../../util/minecraftUtil'
 import { assetsLoaded, getJSONAsset, getPngAssetAsDataUrl } from './assetManager'
-
-interface IItemModel {
-	parent?: string
-	textures: Record<string, any> & {
-		layer0: string
-	}
-}
+import { IItemModel } from './model'
 
 const LOADER = new THREE.TextureLoader()
 const ITEM_MODEL_CACHE = new Map<string, THREE.Mesh>()
 
 export async function getItemModel(item: string): Promise<THREE.Mesh | undefined> {
 	await assetsLoaded()
-	if (ITEM_MODEL_CACHE.has(item)) return ITEM_MODEL_CACHE.get(item)
-	const modelPath = getPathFromResourceLocation(item, 'models/item') + '.json'
-	try {
-		const model = getJSONAsset(modelPath) as IItemModel
-
-		if (
-			model.parent?.endsWith('item/generated') ||
-			model.parent?.endsWith('item/handheld') ||
-			model.parent?.endsWith('item/handheld_rod') ||
-			model.parent?.endsWith('item/handheld_mace')
-		) {
-			delete model.parent
-			const texturePath = getPathFromResourceLocation(item, 'textures/item') + '.png'
-			const mesh = await generateItemMesh(item, texturePath)
-			console.warn('Found no cached item model mesh for', texturePath)
-			mesh.name = 'vanillaItemModel'
-			mesh.isVanillaItemModel = true
+	let mesh = ITEM_MODEL_CACHE.get(item)
+	if (!mesh) {
+		console.warn(`Found no cached item model mesh for '${item}'`)
+		try {
+			mesh = await parseItemModel(getItemResourceLocation(item))
 			ITEM_MODEL_CACHE.set(item, mesh)
-			return mesh
+		} catch (e) {
+			console.error(e)
+			return undefined
 		}
-	} catch (e) {
-		console.error(e)
-		return undefined
 	}
-
-	return ITEM_MODEL_CACHE.get(item)
+	if (!mesh) return undefined
+	mesh = mesh.clone()
+	mesh.geometry = mesh.geometry.clone()
+	mesh.name = 'vanillaItemModel'
+	mesh.isVanillaItemModel = true
+	return mesh
 }
 
-async function generateItemMesh(item: string, texturePath: string) {
+function getItemResourceLocation(item: string) {
+	const resource = parseResourceLocation(item)
+	return resource.namespace + ':' + 'item/' + resource.path
+}
+
+async function parseItemModel(location: string, childModel?: IItemModel): Promise<THREE.Mesh> {
+	const modelPath = getPathFromResourceLocation(location, 'models')
+	const model = getJSONAsset(modelPath + '.json') as IItemModel
+
+	if (childModel) {
+		// if (childModel.ambientocclusion !== undefined)
+		// 	model.ambientocclusion = childModel.ambientocclusion
+		if (childModel.textures !== undefined) {
+			model.textures ??= {}
+			Object.assign(model.textures, childModel.textures)
+		}
+		// Interesting that elements aren't merged in vanilla...
+		if (childModel.elements !== undefined) model.elements = childModel.elements
+		if (childModel.display !== undefined)
+			Object.assign(model.display as any, childModel.display)
+		if (childModel.gui_light !== undefined) model.gui_light = childModel.gui_light
+	}
+
+	if (model.parent) {
+		const resource = parseResourceLocation(model.parent)
+		if (resource.path === 'item/generated') {
+			if (!model.textures.layer0) {
+				throw new Error(`No layer0 texture for generated item model '${location}'`)
+			}
+			const texturePath =
+				getPathFromResourceLocation(model.textures.layer0, 'textures') + '.png'
+			const mesh = await generateItemMesh(location, texturePath)
+			return mesh
+		} else {
+			return await parseItemModel(model.parent, model)
+		}
+	}
+	throw new Error(`Unsupported item model for '${location}'`)
+}
+
+async function generateItemMesh(location: string, texturePath: string) {
 	const textureUrl = getPngAssetAsDataUrl(texturePath)
 	const texture = await LOADER.loadAsync(textureUrl)
 	texture.magFilter = THREE.NearestFilter
@@ -157,7 +182,7 @@ async function generateItemMesh(item: string, texturePath: string) {
 	})
 	// @ts-ignore
 	mat.map = texture
-	mat.name = item
+	mat.name = location
 
 	const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), mat)
 

@@ -8,7 +8,6 @@ import { toSafeFuntionName } from './util/minecraftUtil'
 import { addProjectToRecentProjects } from './util/misc'
 import { Valuable } from './util/stores'
 import { TRANSPARENT_TEXTURE, TRANSPARENT_TEXTURE_MATERIAL, Variant } from './variants'
-import { getItemModel } from './systems/minecraft/itemModelManager'
 
 /**
  * The serialized Variant Bone Config
@@ -300,20 +299,6 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 
 			for (const group of Group.all) {
 				group.name = toSafeFuntionName(group.name)
-				if (group.configs.default.vanilla_item_model) {
-					for (const child of group.children) {
-						if (child instanceof Cube) {
-							child.export = false
-							child.visibility = false
-						}
-						Canvas.updateAll()
-					}
-					void getItemModel(group.configs.default.vanilla_item_model).then(mesh => {
-						if (mesh) {
-							group.mesh.add(mesh)
-						}
-					})
-				}
 			}
 		}
 

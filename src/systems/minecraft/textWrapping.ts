@@ -1,5 +1,5 @@
-import { JsonText, JsonTextArray, JsonTextComponent, JsonTextObject } from './jsonText'
 import { getVanillaFont } from './fontManager'
+import { JsonText, JsonTextArray, JsonTextComponent, JsonTextObject } from './jsonText'
 
 // @ts-ignore
 // import TestWorker from './textWrapping.worker.ts'
@@ -144,8 +144,9 @@ export function getComponentWords(input: JsonTextComponent) {
 						style.end = 0
 					}
 					words.push(word)
+					words.push({ styles: [], text: '', width: 0, forceWrap: true })
 				}
-				word = { styles: [], text: '', width: 0, forceWrap: true }
+				word = undefined
 				continue
 			} else if (char !== ' ' && word?.text.at(-1) === ' ') {
 				style.end++

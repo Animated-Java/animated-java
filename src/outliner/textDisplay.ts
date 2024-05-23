@@ -42,8 +42,6 @@ export class TextDisplay extends OutlinerElement {
 	public position: ArrayVector3
 	public rotation: ArrayVector3
 	public scale: ArrayVector3
-	public backgroundColor: string
-	public backgroundAlpha: number
 	public align: Alignment
 	public visibility
 	public config: IBlueprintTextDisplayConfigJSON
@@ -62,11 +60,16 @@ export class TextDisplay extends OutlinerElement {
 	public ready = false
 
 	public textError = new Valuable('')
+
+	private _updating = false
 	private _text = new Valuable('Hello World!')
 	private _newText: string | undefined
 	private _lineWidth = new Valuable(200)
 	private _newLineWidth: number | undefined
-	private _updating = false
+	private _backgroundColor = new Valuable('#000000')
+	private _newBackgroundColor: string | undefined
+	private _backgroundAlpha = new Valuable(0.25)
+	private _newBackgroundAlpha: number | undefined
 
 	constructor(data: TextDisplayOptions, uuid = guid()) {
 		super(data, uuid)
@@ -81,8 +84,6 @@ export class TextDisplay extends OutlinerElement {
 		this.position ??= [0, 0, 0]
 		this.rotation ??= [0, 0, 0]
 		this.scale ??= [1, 1, 1]
-		this.backgroundColor ??= '#000000'
-		this.backgroundAlpha ??= 0.25
 		this.align ??= 'center'
 		this.visibility ??= true
 		this.config ??= {}
@@ -95,6 +96,14 @@ export class TextDisplay extends OutlinerElement {
 		})
 		this._lineWidth.subscribe(v => {
 			this._newLineWidth = v
+			void this.updateText()
+		})
+		this._backgroundColor.subscribe(v => {
+			this._newBackgroundColor = v
+			void this.updateText()
+		})
+		this._backgroundAlpha.subscribe(v => {
+			this._newBackgroundAlpha = v
 			void this.updateText()
 		})
 	}
@@ -138,6 +147,22 @@ export class TextDisplay extends OutlinerElement {
 
 	set lineWidth(value) {
 		this._lineWidth.set(value)
+	}
+
+	get backgroundColor() {
+		return this._backgroundColor.get()
+	}
+
+	set backgroundColor(value) {
+		this._backgroundColor.set(value)
+	}
+
+	get backgroundAlpha() {
+		return this._backgroundAlpha.get()
+	}
+
+	set backgroundAlpha(value) {
+		this._backgroundAlpha.set(value)
 	}
 
 	extend(data: TextDisplayOptions) {
@@ -232,42 +257,28 @@ export class TextDisplay extends OutlinerElement {
 	async updateText() {
 		if (this._updating) return
 		this._updating = true
-		let text: JsonText | undefined
-
-		if (this._newText) {
-			this.textError.set('')
-			try {
-				text = JsonText.fromString(this._newText)
-			} catch (e: any) {
-				console.error(e)
-				this.textError.set(e.message as string)
-			}
-			this._updating = false
-			if (!text) return
-
-			while (this._newText) {
-				await this.setText(text)
-				this._newText = undefined
-			}
-		}
-
-		if (this._newLineWidth) {
+		while (
+			this._newText !== undefined ||
+			this._newLineWidth !== undefined ||
+			this._newBackgroundColor !== undefined ||
+			this._newBackgroundAlpha !== undefined
+		) {
+			let text: JsonText | undefined
 			this.textError.set('')
 			try {
 				text = JsonText.fromString(this.text)
 			} catch (e: any) {
 				console.error(e)
 				this.textError.set(e.message as string)
+				this._updating = false
 			}
-			this._updating = false
-			if (!text) return
-
-			while (this._newLineWidth) {
-				await this.setText(text)
-				this._newLineWidth = undefined
-			}
+			this._newText = undefined
+			this._newLineWidth = undefined
+			this._newBackgroundColor = undefined
+			this._newBackgroundAlpha = undefined
+			if (!text) continue
+			await this.setText(text)
 		}
-
 		this._updating = false
 	}
 
@@ -282,15 +293,8 @@ export class TextDisplay extends OutlinerElement {
 		const font = await getVanillaFont()
 		// Hide the geo while rendering
 		this.loadingMesh.visible = true
-		const map = (this.loadingMesh.material as THREE.MeshBasicMaterial).map
-		const outline = this.mesh.outline as THREE.LineSegments
-		if (map && outline) {
-			outline.geometry = new THREE.EdgesGeometry(this.loadingMesh.geometry)
-			outline.scale.set(map.image.width / 5, map.image.height / 5, 1)
-			outline.position.set(0, map.image.height / 10, 0)
-		}
 
-		const mesh = await font.generateTextMesh({
+		const { mesh, outline } = await font.generateTextMesh({
 			jsonText,
 			maxLineWidth: this.lineWidth,
 			backgroundColor: this.backgroundColor,
@@ -299,8 +303,14 @@ export class TextDisplay extends OutlinerElement {
 		mesh.name = this.uuid + '_text'
 		const previousMesh = this.mesh.children.find(v => v.name === mesh.name)
 		if (previousMesh) this.mesh.remove(previousMesh)
-		createOutline(this, (mesh.children[0] as THREE.Mesh).geometry)
 		this.mesh.add(mesh)
+
+		outline.name = this.uuid + '_outline'
+		outline.visible = this.selected
+		this.mesh.outline = outline
+		const previousOutline = this.mesh.children.find(v => v.name === outline.name)
+		if (previousOutline) this.mesh.remove(previousOutline)
+		this.mesh.add(outline)
 
 		this.loadingMesh.visible = false
 	}
@@ -327,25 +337,30 @@ OutlinerElement.registerType(TextDisplay, TextDisplay.type)
  * @param el The element to create the outline for
  * @param mesh The mesh to use make the outline from
  */
-function createOutline(el: TextDisplay, geometry: THREE.BufferGeometry) {
-	const outline = new THREE.LineSegments(
-		new THREE.EdgesGeometry(geometry),
-		Canvas.outlineMaterial
-	)
+// function createOutline(el: TextDisplay, mesh: THREE.Mesh) {
+// 	const outline = new THREE.LineSegments(
+// 		new THREE.EdgesGeometry((mesh.children[0] as THREE.Mesh).geometry),
+// 		Canvas.outlineMaterial
+// 	)
 
-	outline.no_export = true
-	outline.name = el.uuid + '_outline'
-	outline.visible = el.selected
-	outline.renderOrder = 2
-	outline.frustumCulled = false
+// 	// outline.name = el.uuid + '_outline'
+// 	// outline.visible = el.selected
 
-	if (el.mesh.outline) {
-		el.mesh.remove(el.mesh.outline as THREE.Object3D)
-	}
+// 	outline.no_export = true
+// 	outline.name = el.uuid + '_outline'
+// 	outline.visible = el.selected
+// 	outline.renderOrder = 2
+// 	outline.frustumCulled = false
 
-	el.mesh.outline = outline
-	el.mesh.add(outline)
-}
+// 	if (el.mesh.outline) {
+// 		el.mesh.remove(el.mesh.outline as THREE.Object3D)
+// 	}
+
+// 	// outline.scale.set(mesh.scale.x, mesh.scale.y, mesh.scale.z)
+
+// 	el.mesh.outline = outline
+// 	el.mesh.add(outline)
+// }
 
 export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 	setup(el: TextDisplay) {

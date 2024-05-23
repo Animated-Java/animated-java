@@ -23,7 +23,14 @@ export function toSafeFuntionName(name: string): string {
  * @returns The path of the resource, e.g. 'assets/minecraft/models/block/stone'
  */
 export function getPathFromResourceLocation(resourceLocation: string, type: string): string {
-	const [namespace, ...path] = resourceLocation.split(':')
+	let [namespace, ...path] = resourceLocation.split(':')
+	if (!namespace) {
+		throw new Error(`Invalid resource location: '${resourceLocation}'`)
+	}
+	if (path.length === 0) {
+		path = [namespace]
+		namespace = 'minecraft'
+	}
 	return `assets/${namespace}/${type}/${path.join('/')}`
 }
 
@@ -57,6 +64,22 @@ export function parseResourcePackPath(path: string): IMinecraftResourceLocation 
 		resourceLocation,
 		fileName,
 		fileExtension: pathjs.extname(path),
+	}
+}
+
+export function parseResourceLocation(resourceLocation: string) {
+	let [namespace, ...parts] = resourceLocation.split(':')
+	if (parts.length === 0) {
+		parts = [namespace]
+		namespace = 'minecraft'
+	}
+	const path = parts.join('')
+	const parsed = PathModule.parse(path)
+	return {
+		namespace,
+		path,
+		dir: parsed.dir,
+		name: parsed.name,
 	}
 }
 

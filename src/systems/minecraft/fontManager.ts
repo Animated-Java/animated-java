@@ -95,7 +95,7 @@ class FontProvider {
 	static fromAssetPath(assetPath: string) {
 		if (!assetPath.endsWith('.json')) assetPath += '.json'
 		const providerJSON = assets.getJSONAsset(assetPath) as IFontProvider
-		console.log('Font provider JSON:', providerJSON)
+		// console.log('Font provider JSON:', providerJSON)
 		switch (providerJSON.type) {
 			case 'bitmap':
 				return new BitmapFontProvider(providerJSON)
@@ -138,7 +138,7 @@ class SpaceFontProvider extends FontProvider {
 	constructor(providerJSON: IFontProviderSpace) {
 		super(providerJSON)
 		this.advances = providerJSON.advances
-		console.log('SpaceFontProvider:', this.advances)
+		// console.log('SpaceFontProvider:', this.advances)
 	}
 
 	getChar(char: string): ICachedChar | undefined {
@@ -186,9 +186,7 @@ class BitmapFontProvider extends FontProvider {
 		this.canvas.height = texture.image.height
 		const ctx = this.canvas.getContext('2d')!
 		ctx.drawImage(this.atlas.image as HTMLImageElement, 0, 0)
-		// Debug display
-		// document.body.prepend(this.canvas)
-		console.log('BitmapFontProvider loaded:', this)
+		// console.log('BitmapFontProvider loaded:', this)
 		this.loaded = true
 		return this
 	}
@@ -214,20 +212,16 @@ class BitmapFontProvider extends FontProvider {
 				.getImageData(startX, startY, this.charWidth, this.charHeight)
 
 			let width = 0
-			for (let x = this.charWidth - 1; x >= 0; x--) {
-				let found = false
+			for (let x = 0; x < this.charWidth; x++) {
 				for (let y = 0; y < this.charHeight; y++) {
 					const i = (y * this.charWidth + x) * 4
 					if (data.data[i + 3] > 0) {
-						found = true
+						width = x + 1
 						break
 					}
 				}
-				if (found) {
-					width = x + 1
-					break
-				}
 			}
+			// console.log('Char width:', char, width)
 
 			// eslint-disable-next-line @typescript-eslint/no-this-alias
 			const scope = this
@@ -321,10 +315,10 @@ export class MinecraftFont {
 				return {
 					type: 'bitmap',
 					ascent: 7,
-					width: 8,
+					width: 6,
 					atlas: MinecraftFont.missingCharacterAtlas,
 					pixelUV: [0, 0, 8, 8],
-					uv: [0, 0, 1, 1],
+					uv: [0, 0, (1 / 8) * 6, 1],
 				}
 			}
 			// if (this.fallback) {
@@ -618,14 +612,14 @@ export class MinecraftFont {
 		maxLineWidth: number
 		backgroundColor: string
 		backgroundAlpha: number
-	}): Promise<THREE.Mesh> {
-		console.log(
-			'Drawing text to mesh...',
-			jsonText,
-			maxLineWidth,
-			backgroundColor,
-			backgroundAlpha
-		)
+	}): Promise<{ mesh: THREE.Mesh; outline: THREE.LineSegments }> {
+		// console.log(
+		// 	'Drawing text to mesh...',
+		// 	jsonText,
+		// 	maxLineWidth,
+		// 	backgroundColor,
+		// 	backgroundAlpha
+		// )
 		console.time('drawTextToMesh')
 		const mesh = new THREE.Mesh()
 
@@ -710,8 +704,23 @@ export class MinecraftFont {
 		mesh.rotateY(Math.PI)
 		mesh.translateX(1 / 5)
 
+		const outlineGeo = new THREE.EdgesGeometry(backgroundGeo.clone().scale(0.4, 0.4, 0.4))
+		const outline = new THREE.LineSegments(outlineGeo, Canvas.outlineMaterial)
+		const positions = Array.from(outlineGeo.getAttribute('position').array)
+		for (let i = 0; i < positions.length; i += 3) {
+			positions[i] -= 1 / 5
+			positions[i + 1] += (height / 2) * 0.4
+		}
+		outlineGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
+
+		outline.no_export = true
+		outline.renderOrder = 2
+		outline.frustumCulled = false
+
+		mesh.isTextDisplayText = true
+
 		console.timeEnd('drawTextToMesh')
-		return mesh
+		return { mesh, outline }
 	}
 
 	generateCharMesh(char: string, style: StyleRecord): ICachedCharMesh | undefined {
@@ -745,6 +754,7 @@ export class MinecraftFont {
 			if (style.italic) hash.update('italic')
 			if (style.underlined) hash.update('underlined')
 			if (style.strikethrough) hash.update('strikethrough')
+			if (style.font) hash.update(';' + font.id)
 			// if (style.obfuscated) hash.update('obfuscated')
 			const digest = hash.digest('hex')
 
@@ -899,6 +909,7 @@ function loadMinecraftFonts() {
 		illagerFont.load(),
 		standardGalacticAlphabetFont.load(),
 	]).then(() => {
+		console.log('Minecraft fonts loaded!')
 		events.MINECRAFT_FONTS_LOADED.dispatch()
 	})
 }
