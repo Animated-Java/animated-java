@@ -5,7 +5,6 @@
 	import ColorPicker from './dialogItems/colorPicker.svelte'
 	import Select from './dialogItems/select.svelte'
 
-	import { Variant } from '../variants'
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
 	import { BoneConfig } from '../nodeConfigs'
@@ -14,16 +13,12 @@
 <script lang="ts">
 	const pluginModeEnabled = !!Project?.animated_java?.enable_plugin_mode
 
-	export let variant: Variant
-
 	export let billboard: Valuable<string>
 	export let overrideBrightness: Valuable<NonNullable<BoneConfig['_overrideBrightness']>>
 	export let brightnessOverride: Valuable<NonNullable<BoneConfig['_brightnessOverride']>>
-	export let enchanted: Valuable<NonNullable<BoneConfig['_enchanted']>>
 	export let glowing: Valuable<NonNullable<BoneConfig['_glowing']>>
 	export let overrideGlowColor: Valuable<NonNullable<BoneConfig['_overrideGlowColor']>>
 	export let glowColor: Valuable<NonNullable<BoneConfig['_glowColor']>>
-	export let inheritSettings: Valuable<NonNullable<BoneConfig['_inheritSettings']>>
 	export let invisible: Valuable<NonNullable<BoneConfig['_invisible']>>
 	export let nbt: Valuable<NonNullable<BoneConfig['_nbt']>>
 	export let shadowRadius: Valuable<NonNullable<BoneConfig['_shadowRadius']>>
@@ -39,26 +34,7 @@
 </script>
 
 <div>
-	<div class="selected_variant_title">
-		Selected Variant: {variant.displayName}
-	</div>
-	{#if variant.isDefault}
-		<div class="selected_variant_subtitle">
-			The settings below will be applied to this bone by default.
-		</div>
-	{:else}
-		<div class="selected_variant_subtitle">
-			The settings below will be applied to this bone only when this variant is applied.
-		</div>
-	{/if}
-
 	{#if pluginModeEnabled}
-		<Checkbox
-			label={translate('dialog.bone_config.inherit_settings.title')}
-			tooltip={translate('dialog.bone_config.inherit_settings.description')}
-			bind:checked={inheritSettings}
-		/>
-
 		<Select
 			label={translate('dialog.bone_config.billboard.title')}
 			tooltip={translate('dialog.bone_config.billboard.description')}
@@ -119,23 +95,11 @@
 		{/if}
 
 		<Checkbox
-			label={translate('dialog.bone_config.enchanted.title')}
-			tooltip={translate('dialog.bone_config.enchanted.description')}
-			bind:checked={enchanted}
-		/>
-
-		<Checkbox
 			label={translate('dialog.bone_config.invisible.title')}
 			tooltip={translate('dialog.bone_config.invisible.description')}
 			bind:checked={invisible}
 		/>
 	{:else}
-		<Checkbox
-			label={translate('dialog.bone_config.inherit_settings.title')}
-			tooltip={translate('dialog.bone_config.inherit_settings.description')}
-			bind:checked={inheritSettings}
-		/>
-
 		<Checkbox
 			label={translate('dialog.bone_config.use_nbt.title')}
 			tooltip={translate('dialog.bone_config.use_nbt.description')}
@@ -213,12 +177,6 @@
 			{/if}
 
 			<Checkbox
-				label={translate('dialog.bone_config.enchanted.title')}
-				tooltip={translate('dialog.bone_config.enchanted.description')}
-				bind:checked={enchanted}
-			/>
-
-			<Checkbox
 				label={translate('dialog.bone_config.invisible.title')}
 				tooltip={translate('dialog.bone_config.invisible.description')}
 				bind:checked={invisible}
@@ -228,19 +186,4 @@
 </div>
 
 <style>
-	.use_nbt_warning {
-		color: var(--color-warning);
-		font-family: var(--font-code);
-		font-size: 0.8em;
-		margin-bottom: 8px;
-	}
-	.selected_variant_title {
-		font-size: 1.2em;
-		margin-bottom: 8px;
-	}
-	.selected_variant_subtitle {
-		text-align: center;
-		font-size: 0.8em;
-		margin-bottom: 8px;
-	}
 </style>

@@ -1,3 +1,4 @@
+import { UnicodeString } from '../../util/unicodeString'
 import { getVanillaFont } from './fontManager'
 import { JsonText, JsonTextArray, JsonTextComponent, JsonTextObject } from './jsonText'
 
@@ -8,7 +9,7 @@ import { JsonText, JsonTextArray, JsonTextComponent, JsonTextObject } from './js
 // 	console.log(data)
 // }
 
-// Written by @IanSSenne (FetchBot) and refactored by @SnaveSutit to do line wrapping on JSON Text Components.
+// Jumpstarted by @IanSSenne (FetchBot) and refactored by @SnaveSutit to do line wrapping on JSON Text Components.
 // THANK U IAN <3 - SnaveSutit
 const STYLE_KEYS = [
 	'bold',
@@ -77,10 +78,10 @@ function flattenTextComponent(input: JsonTextComponent): JsonTextObject[] {
 }
 
 function getText(component: JsonTextObject) {
-	if (typeof component === 'string') return component
-	else if (component.text) return component.text
-	else if (component.tl) return `{${component.tl}}`
-	else return ''
+	if (typeof component === 'string') return new UnicodeString(component)
+	else if (component.text) return new UnicodeString(component.text)
+	else if (component.tl) return new UnicodeString(`{${component.tl}}`)
+	else return new UnicodeString('')
 }
 
 export interface IStyleSpan {
@@ -91,7 +92,7 @@ export interface IStyleSpan {
 
 export interface IComponentWord {
 	styles: IStyleSpan[]
-	text: string
+	text: UnicodeString
 	/**
 	 * The width of the word in pixels.
 	 */
@@ -144,8 +145,13 @@ export function getComponentWords(input: JsonTextComponent) {
 						style.end = 0
 					}
 					words.push(word)
-					words.push({ styles: [], text: '', width: 0, forceWrap: true })
 				}
+				words.push({
+					styles: [],
+					text: new UnicodeString(''),
+					width: 0,
+					forceWrap: true,
+				})
 				word = undefined
 				continue
 			} else if (char !== ' ' && word?.text.at(-1) === ' ') {
@@ -160,9 +166,9 @@ export function getComponentWords(input: JsonTextComponent) {
 			}
 
 			if (!word) {
-				word = { styles: [], text: '', width: 0 }
+				word = { styles: [], text: new UnicodeString(''), width: 0 }
 			}
-			word.text += char
+			word.text.append(char)
 			style.end++
 		}
 		component = flattenedComponents.shift()
@@ -197,37 +203,34 @@ export async function computeTextWrapping(words: IComponentWord[], maxLineWidth 
 	const lines: IComponentLine[] = []
 	const font = await getVanillaFont()
 
-	let canvasWidth = 0
+	let backgroundWidth = 0
 	let currentLine: IComponentLine = { words: [], width: 0 }
 	for (const word of words) {
 		const wordWidth = font.getWordWidth(word)
 		const wordStyles = [...word.styles]
 		// If the word is longer than than the max line width, split it into multiple lines
-		if (wordWidth > maxLineWidth) {
+		if (wordWidth - 1 > maxLineWidth) {
 			if (currentLine.words.length) {
 				lines.push(currentLine)
-				canvasWidth = Math.max(canvasWidth, currentLine.width)
+				backgroundWidth = Math.max(backgroundWidth, currentLine.width)
 			}
 			currentLine = { words: [], width: 0 }
 
-			let part = ''
+			let part = new UnicodeString('')
 			let partWidth = 0
 			let partStartIndex = 0
 			let style: IStyleSpan | undefined = wordStyles.shift()
-			if (!style) throw new Error(`No active style found for word '${word.text}'`)
+			if (!style) throw new Error(`No active style found for word '${word.text.toString()}'`)
 
 			for (let i = 0; i < word.text.length; i++) {
-				const char = word.text[i]
-				if (i >= style.end) {
-					style = wordStyles.shift()
-					if (!style)
-						throw new Error(
-							`No active style found for character '${char}' in word '${word.text}'`
-						)
+				const char = word.text.at(i)!
+				if (wordStyles.length > 1 && i >= style.end) {
+					style = wordStyles.shift()!
 				}
 
-				const charWidth = font.getTextWidth(char, style)
-				if (part && partWidth + charWidth > maxLineWidth) {
+				const charWidth = font.getTextWidth(new UnicodeString(char), style)
+				// console.log(`Char: ${char}, Width: ${charWidth}, Part Width: ${partWidth}`)
+				if (part.length > 0 && partWidth + (charWidth - 1) > maxLineWidth) {
 					// Find all styles that apply to this part
 					// FIXME: Attempt to avoid filtering and maping the styles for each character
 					const partStyles = word.styles
@@ -245,12 +248,12 @@ export async function computeTextWrapping(words: IComponentWord[], maxLineWidth 
 						words: [{ text: part, styles: partStyles, width: wordWidth }],
 						width: partWidth,
 					})
-					canvasWidth = Math.max(canvasWidth, partWidth)
+					backgroundWidth = Math.max(backgroundWidth, partWidth)
 					partStartIndex += part.length
-					part = ''
+					part = new UnicodeString('')
 					partWidth = 0
 				}
-				part += char
+				part.append(char)
 				partWidth += charWidth
 			}
 			if (part) {
@@ -266,7 +269,7 @@ export async function computeTextWrapping(words: IComponentWord[], maxLineWidth 
 						start: Math.max(span.start - partStartIndex, 0),
 						end: Math.min(span.end - partStartIndex, part.length),
 					}))
-				canvasWidth = Math.max(canvasWidth, partWidth)
+				backgroundWidth = Math.max(backgroundWidth, partWidth)
 				currentLine = {
 					words: [{ text: part, styles: partStyles, width: wordWidth }],
 					width: partWidth,
@@ -277,18 +280,19 @@ export async function computeTextWrapping(words: IComponentWord[], maxLineWidth 
 		} else if (word.forceWrap) {
 			if (currentLine.words.length) {
 				lines.push(currentLine)
-				canvasWidth = Math.max(canvasWidth, currentLine.width)
+				backgroundWidth = Math.max(backgroundWidth, currentLine.width)
 			}
 			currentLine = { words: [], width: 0 }
 			// If the current line has words and adding the current word would exceed the max line width, start a new line
-		} else if (currentLine.words.length && currentLine.width + wordWidth > maxLineWidth) {
+		} else if (currentLine.words.length && currentLine.width + (wordWidth - 1) > maxLineWidth) {
 			const lastWord = currentLine.words.at(-1)
+			// This will only effect space "words"
 			if (lastWord?.text.at(-1) === ' ') {
 				currentLine.words.pop()
 				currentLine.width -= lastWord.width
 			}
 			lines.push(currentLine)
-			canvasWidth = Math.max(canvasWidth, currentLine.width)
+			backgroundWidth = Math.max(backgroundWidth, currentLine.width)
 			currentLine = { words: [], width: 0 }
 		}
 		word.width = wordWidth
@@ -297,9 +301,9 @@ export async function computeTextWrapping(words: IComponentWord[], maxLineWidth 
 	}
 	if (currentLine.words.length) {
 		lines.push(currentLine)
-		canvasWidth = Math.max(canvasWidth, currentLine.width)
+		backgroundWidth = Math.max(backgroundWidth, currentLine.width)
 	}
 
 	console.timeEnd('computeTextWrapping')
-	return { lines, canvasWidth }
+	return { lines, backgroundWidth }
 }

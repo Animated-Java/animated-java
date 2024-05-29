@@ -21,7 +21,7 @@ export function restoreSceneAngle() {
 
 function getNodeMatrix(node: OutlinerElement, scale: number) {
 	const matrixWorld = node.mesh.matrixWorld.clone()
-	const vanillaItemModel = node.mesh.children.find(c => c.isVanillaItemModel)
+	// const vanillaItemModel = node.mesh.children.find(c => c.isVanillaItemModel)
 	matrixWorld.setPosition(
 		new THREE.Vector3().setFromMatrixPosition(matrixWorld).multiplyScalar(1 / 16)
 	)
@@ -31,7 +31,7 @@ function getNodeMatrix(node: OutlinerElement, scale: number) {
 	scaleVec.z += Math.random() * 0.00001
 	matrixWorld.scale(scaleVec)
 
-	if (vanillaItemModel) return matrixWorld
+	// if (vanillaItemModel) return matrixWorld
 
 	if (node instanceof TextDisplay) {
 		matrixWorld.multiply(

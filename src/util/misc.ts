@@ -40,3 +40,9 @@ export function resolveEnvVariables(path: string) {
 		return process.env[key]!
 	})
 }
+
+export function floatToHex(n: number) {
+	return Number((255 * n).toFixed(0))
+		.toString(16)
+		.padStart(2, '0')
+}

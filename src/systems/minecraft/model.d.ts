@@ -34,7 +34,7 @@ type ItemModelPredicateTypes =
 
 export interface IItemModelElementFace {
 	uv: [number, number, number, number]
-	texture: `#${string}`
+	texture: string
 	cullface?: ItemModelFaceDirection
 	rotation?: 0 | 90 | 180 | 270
 	tintindex?: number

@@ -75,6 +75,7 @@ export interface ICamera extends OutlinerElement {
 	camera_linked: boolean
 	visibility: boolean
 	config: IBlueprintCameraConfigJSON
+	preview_controller: NodePreviewController
 }
 
 export interface IRenderedNodes {

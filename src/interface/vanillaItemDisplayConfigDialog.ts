@@ -6,12 +6,14 @@ import { Valuable } from '../util/stores'
 import { SvelteDialog } from '../util/svelteDialog'
 import { translate } from '../util/translation'
 import { Variant } from '../variants'
-import TextDisplayConfigDialog from '../components/textDisplayConfigDialog.svelte'
-import { TextDisplay } from '../outliner/textDisplay'
+import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
+import VanillaItemDisplayConfigDialog from '../components/vanillaItemDisplayConfigDialog.svelte'
 
-export function openBoneConfigDialog(bone: TextDisplay) {
+export function openVanillaItemDisplayConfigDialog(display: VanillaItemDisplay) {
 	// Blockbench's JSON stringifier doesn't handle custom toJSON functions, so I'm storing the config JSON in the bone instead of the actual BoneConfig object
-	const oldConfig = TextDisplayConfig.fromJSON((bone.config ??= new TextDisplayConfig().toJSON()))
+	const oldConfig = TextDisplayConfig.fromJSON(
+		(display.config ??= new TextDisplayConfig().toJSON())
+	)
 
 	const billboard = new Valuable(oldConfig.billboard)
 	const overrideBrightness = new Valuable(oldConfig.overrideBrightness)
@@ -26,10 +28,10 @@ export function openBoneConfigDialog(bone: TextDisplay) {
 	const useNBT = new Valuable(oldConfig.useNBT)
 
 	new SvelteDialog({
-		id: `${PACKAGE.name}:textDisplayConfigDialog`,
-		title: translate('dialog.text_display_config.title'),
+		id: `${PACKAGE.name}:vanillaItemDisplayConfigDialog`,
+		title: translate('dialog.vanilla_item_display_config.title'),
 		width: 400,
-		svelteComponent: TextDisplayConfigDialog,
+		svelteComponent: VanillaItemDisplayConfigDialog,
 		svelteComponentProperties: {
 			variant: Variant.selected,
 			billboard,
@@ -79,17 +81,20 @@ export function openBoneConfigDialog(bone: TextDisplay) {
 				(newConfig.shadowStrength = undefined)
 			newConfig.useNBT === defaultConfig.useNBT && (newConfig.useNBT = undefined)
 
-			bone.config = newConfig.toJSON()
+			display.config = newConfig.toJSON()
 		},
 	}).show()
 }
 
-export const TEXT_DISPLAY_CONFIG_ACTION = createAction(`${PACKAGE.name}:text_display_config`, {
-	icon: 'settings',
-	name: translate('action.open_text_display_config.name'),
-	condition: () => isCurrentFormat(),
-	click: () => {
-		if (TextDisplay.selected.length === 0) return
-		openBoneConfigDialog(TextDisplay.selected[0])
-	},
-})
+export const VANILLA_ITEM_DISPLAY_CONFIG_ACTION = createAction(
+	`${PACKAGE.name}:open_vanilla_item_display_config`,
+	{
+		icon: 'settings',
+		name: translate('action.open_vanilla_item_display_config.name'),
+		condition: () => isCurrentFormat(),
+		click: () => {
+			if (VanillaItemDisplay.selected.length === 0) return
+			openVanillaItemDisplayConfigDialog(VanillaItemDisplay.selected[0])
+		},
+	}
+)

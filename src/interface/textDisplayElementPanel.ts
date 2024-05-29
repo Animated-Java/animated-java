@@ -3,6 +3,7 @@ import TextDisplayElementPanel from '../components/textDisplayElementPanel.svelt
 import { PACKAGE } from '../constants'
 import { TextDisplay } from '../outliner/textDisplay'
 import { injectSvelteCompomponentMod } from '../util/injectSvelte'
+import { floatToHex } from '../util/misc'
 
 injectSvelteCompomponentMod({
 	svelteComponent: TextDisplayElementPanel,
@@ -46,10 +47,12 @@ export const TEXT_DISPLAY_BACKGROUND_COLOR_PICKER = new ColorPicker(
 		condition: () => isCurrentFormat() && !!TextDisplay.selected.length,
 	}
 )
-TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.get = function (this: ColorPicker) {
+// @ts-expect-error
+TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.jq.spectrum('option', 'defaultColor', '#0000003f')
+TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.get = function () {
 	const selected = TextDisplay.selected[0]
-	if (!selected) return '#ffffff3f'
-	return selected.backgroundColor
+	if (!selected) return new tinycolor('#0000003f')
+	return new tinycolor(selected.backgroundColor + floatToHex(selected.backgroundAlpha))
 }
 TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.set = function (this: ColorPicker, color: string) {
 	this.value = new tinycolor(color)
@@ -66,12 +69,31 @@ TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.change = function (
 	this: ColorPicker,
 	color: tinycolor.Instance
 ) {
-	console.log('change', color)
 	const selected = TextDisplay.selected[0]
-	this.dispatchEvent('change', { color })
 	if (!selected) return this
 	selected.backgroundColor = color.toHexString()
 	selected.backgroundAlpha = color.getAlpha()
-	this.dispatchEvent('change', { color })
+	return this
+}
+
+export const TEXT_DISPLAY_SHADOW_TOGGLE = new Toggle(`${PACKAGE.name}:textDisplayShadowToggle`, {
+	name: 'Text Shadow',
+	icon: 'check_box_outline_blank',
+	description: 'Whether the text has a shadow.',
+	condition: () => isCurrentFormat() && !!TextDisplay.selected.length,
+	click() {
+		//
+	},
+	onChange() {
+		const scope = TEXT_DISPLAY_SHADOW_TOGGLE
+		scope.setIcon(scope.value ? 'check_box' : 'check_box_outline_blank')
+		const selected = TextDisplay.selected[0]
+		if (!selected) return
+		selected.shadow = TEXT_DISPLAY_SHADOW_TOGGLE.value
+	},
+})
+TEXT_DISPLAY_SHADOW_TOGGLE.set = function (value) {
+	if (this.value === value) return this
+	this.click()
 	return this
 }

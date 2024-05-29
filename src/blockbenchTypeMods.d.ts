@@ -14,10 +14,13 @@ import { MINECRAFT_REGISTRY } from './systems/minecraft/registryManager'
 import { isDataPackPath, isResourcePackPath } from './util/minecraftUtil'
 import { Valuable } from './util/stores'
 import { type Variant } from './variants'
+import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
+import { VanillaBlockDisplay } from './outliner/vanillaBlockDisplay'
 
 declare module 'three' {
 	interface Object3D {
 		isVanillaItemModel?: boolean
+		isVanillaBlockModel?: boolean
 		isTextDisplayText?: boolean
 	}
 }
@@ -55,6 +58,9 @@ declare global {
 		transparentTexture: Texture
 
 		variants: Variant[]
+		textDisplays: TextDisplay[]
+		vanillaItemDisplays: VanillaItemDisplay[]
+		vanillaBlockDisplays: VanillaBlockDisplay[]
 	}
 
 	// eslint-disable-next-line @typescript-eslint/naming-convention

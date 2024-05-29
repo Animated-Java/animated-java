@@ -1,4 +1,8 @@
-import { IBlueprintTextDisplayConfigJSON, isCurrentFormat } from '../blueprintFormat'
+import {
+	BLUEPRINT_FORMAT,
+	IBlueprintTextDisplayConfigJSON,
+	isCurrentFormat,
+} from '../blueprintFormat'
 import { PACKAGE } from '../constants'
 import { createAction, createBlockbenchMod } from '../util/moddingTools'
 // import * as MinecraftFull from '../assets/MinecraftFull.json'
@@ -9,6 +13,7 @@ import { Valuable } from '../util/stores'
 import { toSafeFuntionName } from '../util/minecraftUtil'
 import { TextDisplayConfig } from '../nodeConfigs'
 import { TEXT_DISPLAY_CONFIG_ACTION } from '../interface/textDisplayConfigDialog'
+import { events } from '../util/events'
 
 interface TextDisplayOptions {
 	name?: string
@@ -29,7 +34,7 @@ export class TextDisplay extends OutlinerElement {
 	static selected: TextDisplay[] = []
 	static all: TextDisplay[] = []
 
-	public type = `${PACKAGE.name}:text_display`
+	public type = TextDisplay.type
 	public icon = 'text_fields'
 	public movable = true
 	public rotatable = true
@@ -70,9 +75,12 @@ export class TextDisplay extends OutlinerElement {
 	private _newBackgroundColor: string | undefined
 	private _backgroundAlpha = new Valuable(0.25)
 	private _newBackgroundAlpha: number | undefined
+	private _shadow = new Valuable(false)
+	private _newShadow: boolean | undefined
 
 	constructor(data: TextDisplayOptions, uuid = guid()) {
 		super(data, uuid)
+		TextDisplay.all.push(this)
 
 		for (const key in TextDisplay.properties) {
 			TextDisplay.properties[key].reset(this)
@@ -104,6 +112,10 @@ export class TextDisplay extends OutlinerElement {
 		})
 		this._backgroundAlpha.subscribe(v => {
 			this._newBackgroundAlpha = v
+			void this.updateText()
+		})
+		this._shadow.subscribe(v => {
+			this._newShadow = v
 			void this.updateText()
 		})
 	}
@@ -165,9 +177,20 @@ export class TextDisplay extends OutlinerElement {
 		this._backgroundAlpha.set(value)
 	}
 
+	get shadow() {
+		return this._shadow.get()
+	}
+
+	set shadow(value) {
+		this._shadow.set(value)
+	}
+
 	extend(data: TextDisplayOptions) {
 		for (const key in TextDisplay.properties) {
 			TextDisplay.properties[key].merge(this, data)
+		}
+		if (data.visibility !== undefined) {
+			this.visibility = data.visibility
 		}
 
 		return this
@@ -212,12 +235,13 @@ export class TextDisplay extends OutlinerElement {
 		if (Group.selected) {
 			Group.selected.unselect()
 		}
+
 		if (!Pressing.ctrl && !Pressing.shift) {
-			if (Cube.selected) {
+			if (Cube.selected.length) {
 				Cube.selected.forEachReverse(el => el.unselect())
 			}
-			if (TextDisplay.selected) {
-				TextDisplay.selected.forEachReverse(el => el !== this && el.unselect())
+			if (selected.length) {
+				selected.forEachReverse(el => el !== this && el.unselect())
 			}
 		}
 
@@ -261,7 +285,8 @@ export class TextDisplay extends OutlinerElement {
 			this._newText !== undefined ||
 			this._newLineWidth !== undefined ||
 			this._newBackgroundColor !== undefined ||
-			this._newBackgroundAlpha !== undefined
+			this._newBackgroundAlpha !== undefined ||
+			this._newShadow !== undefined
 		) {
 			let text: JsonText | undefined
 			this.textError.set('')
@@ -276,6 +301,7 @@ export class TextDisplay extends OutlinerElement {
 			this._newLineWidth = undefined
 			this._newBackgroundColor = undefined
 			this._newBackgroundAlpha = undefined
+			this._newShadow = undefined
 			if (!text) continue
 			await this.setText(text)
 		}
@@ -299,6 +325,7 @@ export class TextDisplay extends OutlinerElement {
 			maxLineWidth: this.lineWidth,
 			backgroundColor: this.backgroundColor,
 			backgroundAlpha: this.backgroundAlpha,
+			shadow: this.shadow,
 		})
 		mesh.name = this.uuid + '_text'
 		const previousMesh = this.mesh.children.find(v => v.name === mesh.name)
@@ -311,6 +338,7 @@ export class TextDisplay extends OutlinerElement {
 		const previousOutline = this.mesh.children.find(v => v.name === outline.name)
 		if (previousOutline) this.mesh.remove(previousOutline)
 		this.mesh.add(outline)
+		this.mesh.visible = this.visibility
 
 		this.loadingMesh.visible = false
 	}
@@ -331,36 +359,6 @@ new Property(TextDisplay, 'object', 'config', {
 	},
 })
 OutlinerElement.registerType(TextDisplay, TextDisplay.type)
-
-/**
- * Create an outline for the given element
- * @param el The element to create the outline for
- * @param mesh The mesh to use make the outline from
- */
-// function createOutline(el: TextDisplay, mesh: THREE.Mesh) {
-// 	const outline = new THREE.LineSegments(
-// 		new THREE.EdgesGeometry((mesh.children[0] as THREE.Mesh).geometry),
-// 		Canvas.outlineMaterial
-// 	)
-
-// 	// outline.name = el.uuid + '_outline'
-// 	// outline.visible = el.selected
-
-// 	outline.no_export = true
-// 	outline.name = el.uuid + '_outline'
-// 	outline.visible = el.selected
-// 	outline.renderOrder = 2
-// 	outline.frustumCulled = false
-
-// 	if (el.mesh.outline) {
-// 		el.mesh.remove(el.mesh.outline as THREE.Object3D)
-// 	}
-
-// 	// outline.scale.set(mesh.scale.x, mesh.scale.y, mesh.scale.z)
-
-// 	el.mesh.outline = outline
-// 	el.mesh.add(outline)
-// }
 
 export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 	setup(el: TextDisplay) {
@@ -398,7 +396,7 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 		})
 	},
 	updateGeometry(el: TextDisplay) {
-		el.mesh.scale.set(...el.scale)
+		PREVIEW_CONTROLLER.mesh.scale.set(...el.scale)
 		void el.updateText()
 	},
 	updateTransform(el: TextDisplay) {
@@ -427,6 +425,7 @@ export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_text_display`,
 			textDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
 		}
 
+		selected.forEachReverse(el => el.unselect())
 		Group.selected && Group.selected.unselect()
 		textDisplay.select()
 
@@ -506,15 +505,36 @@ TextDisplay.animator = TextDisplayAnimator as any
 
 createBlockbenchMod(
 	`${PACKAGE.name}:textDisplay`,
-	undefined,
-	() => {
+	{
+		subscriptions: [] as Array<() => void>,
+	},
+	context => {
 		Interface.Panels.outliner.menu.addAction(CREATE_ACTION, 3)
 		Toolbars.outliner.add(CREATE_ACTION, 0)
 		MenuBar.menus.edit.addAction(CREATE_ACTION, 8)
+
+		context.subscriptions.push(
+			events.SELECT_PROJECT.subscribe(project => {
+				if (project.format.id !== BLUEPRINT_FORMAT.id) return
+				console.log('SELECT_PROJECT')
+				project.textDisplays ??= []
+				TextDisplay.all.empty()
+				TextDisplay.all.push(...project.textDisplays)
+			}),
+			events.UNSELECT_PROJECT.subscribe(project => {
+				if (project.format.id !== BLUEPRINT_FORMAT.id) return
+				console.log('UNSELECT_PROJECT')
+				project.textDisplays = [...TextDisplay.all]
+				TextDisplay.all.empty()
+			})
+		)
+		return context
 	},
-	() => {
+	context => {
 		Interface.Panels.outliner.menu.removeAction(CREATE_ACTION.id)
 		Toolbars.outliner.remove(CREATE_ACTION)
 		MenuBar.menus.edit.removeAction(CREATE_ACTION.id)
+
+		context.subscriptions.forEach(unsub => unsub())
 	}
 )

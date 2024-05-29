@@ -40,6 +40,7 @@
         - [x] Make sure the text display is animatable.
     - [x] Add a TextDisplay config.
         - [x] Add support for billboarding to TextDisplays.
+    - [ ] Add an option to change the alignment of the text.
 - [x] Respect inheritance in the bone config.
 - [x] Change font rendering to use a geometry for each character instead of a single plane for the entire text display. This will open the possibility of loading custom fonts and spacing.
 - [ ] Camera Plugin Support
@@ -58,9 +59,24 @@
         - [x] item/handheld_rod
         - [x] item/handheld_mace
         - [ ] Edge Cases go here
-            - [ ] 
+            - [ ] <entity>_spawn_egg
+            - [ ] firework_star
+            - [ ] leather armor
+                - [ ] Look into adding a color picker for tintable items.
+            - [ ] builtin/entity
+                - [ ] shield
+                - [ ] chest
+                - [ ] conduit
+                - [ ] decorated_pot
+                - [ ] template_banner
+                - [ ] template_shulker_box
+                - [ ] template_skull
+                - [ ] trident_in_hand
+                - [ ] trident_throwing
     - [ ] Add rendering for vanilla block models.
-        - [ ] Parent model inheritance
+        - [x] Parent model inheritance
+        - [x] block/block
+        - [ ] Edge Cases go here
 - [ ] Locator rotation support
 
 # Data Pack Compiler

@@ -6,7 +6,9 @@
 	import {
 		TEXT_DISPLAY_WIDTH_SLIDER,
 		TEXT_DISPLAY_BACKGROUND_COLOR_PICKER,
+		TEXT_DISPLAY_SHADOW_TOGGLE,
 	} from '../interface/textDisplayElementPanel'
+	import { floatToHex } from '../util/misc'
 
 	function highlight(code: string, syntax?: string) {
 		if (!syntax) return code
@@ -21,15 +23,11 @@
 	let text = selected?._text ?? new Valuable('')
 	// @ts-expect-error
 	let error = selected?._textError ?? new Valuable('')
-	// let backgroundColor =
-	// 	// @ts-expect-error
-	// 	selected?._backgroundColor ?? new Valuable('#000000')
-	// let backgroundAlpha =
-	// 	// @ts-expect-error
-	// 	selected?._backgroundAlpha ?? new Valuable(0.25)
 
 	let lineWidthSlot: HTMLDivElement
 	let backgroundColorSlot: HTMLDivElement
+	let shadowSlot: HTMLDivElement
+	let codeJar: CodeJar
 
 	events.UPDATE_SELECTION.subscribe(() => {
 		selected = TextDisplay.selected.at(0)
@@ -38,21 +36,26 @@
 		// @ts-ignore
 		text = selected._text
 		error = selected.textError
-		// // @ts-expect-error
-		// backgroundColor = selected._backgroundColor
-		// // @ts-expect-error
-		// backgroundAlpha = selected._backgroundAlpha
 
 		// Force the inputs to update
 		TEXT_DISPLAY_WIDTH_SLIDER.setValue(selected.lineWidth)
-		const color = selected.backgroundColor + Number((255 * 0.25).toFixed(0)).toString(16)
+		const color = selected.backgroundColor + floatToHex(selected.backgroundAlpha)
 		TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.set(color)
+		TEXT_DISPLAY_SHADOW_TOGGLE.set(selected.shadow)
 	})
 
 	requestAnimationFrame(() => {
 		lineWidthSlot.appendChild(TEXT_DISPLAY_WIDTH_SLIDER.node)
 		backgroundColorSlot.appendChild(TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.node)
+		shadowSlot.appendChild(TEXT_DISPLAY_SHADOW_TOGGLE.node)
+		forceNoWrap()
 	})
+
+	function forceNoWrap() {
+		if (!codeJar) return
+		codeJar.$$.ctx[0].style.overflowWrap = 'unset'
+		codeJar.$$.ctx[0].style.whiteSpace = 'nowrap'
+	}
 </script>
 
 <p class="panel_toolbar_label label" style={!!selected ? '' : 'visibility:hidden; height: 0px;'}>
@@ -62,13 +65,19 @@
 <div class="toolbar custom-toolbar" style={!!selected ? '' : 'visibility:hidden; height: 0px;'}>
 	<div class="content" bind:this={lineWidthSlot}></div>
 	<div class="content" bind:this={backgroundColorSlot}></div>
+	<div class="content" bind:this={shadowSlot}></div>
 </div>
 
-<div class="toolbar" style={!!selected ? '' : 'visibility:hidden; height: 0px;'}>
+<div
+	class="toolbar"
+	style={!!selected ? 'margin-bottom: 16px;' : 'visibility:hidden; height: 0px;'}
+>
 	<div class="content">
 		<CodeJar
+			on:change={() => forceNoWrap()}
 			syntax="json"
 			{highlight}
+			bind:this={codeJar}
 			bind:value={$text}
 			style="
 				background-color: var(--color-button);
@@ -82,9 +91,9 @@
 				width: 95%;
 				margin-bottom: 0px;
 				outline: none;
-				overflow-wrap: break-word;
+				overflow-wrap: unset;
 				overflow-y: auto;
-				white-space: pre-wrap;
+				white-space: nowrap;
 				margin-top: 0px;
 			"
 		/>

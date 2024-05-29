@@ -12,6 +12,10 @@ import './interface/importAJModelLoader'
 import './interface/customKeyframePanel'
 import './interface/textDisplayElementPanel'
 import './interface/textDisplayConfigDialog'
+import './interface/vanillaItemDisplayConfigDialog'
+import './interface/vanillaItemDisplayElementPanel'
+import './interface/vanillaBlockDisplayConfigDialog'
+import './interface/vanillaBlockDisplayElementPanel'
 // Blockbench Mods
 import './interface/locatorConfigDialog'
 import './mods/animationControllerMod'
@@ -23,7 +27,6 @@ import './mods/customKeyframesMod'
 import './mods/elementToolbarsMod'
 import './mods/exportOverActionMod'
 import './mods/groupContextMenuMod'
-import './mods/groupExtendMod'
 import './mods/groupNameMod'
 import './mods/groupPreviewControllerMod'
 import './mods/keyframeMod'
@@ -42,6 +45,8 @@ import './mods/saveProjectAsActionMod'
 import './mods/variantPreviewCubeFaceMod'
 // Outliner
 import './outliner/textDisplay'
+import './outliner/vanillaItemDisplay'
+import './outliner/vanillaBlockDisplay'
 // Compilers
 import { compileDataPack } from './systems/datapackCompiler'
 // Minecraft Systems
@@ -64,6 +69,8 @@ import { getLatestVersionClientDownloadUrl } from './systems/minecraft/assetMana
 import { hideLoadingPopup, showLoadingPopup } from './interface/animatedJavaLoadingPopup'
 import { getVanillaFont } from './systems/minecraft/fontManager'
 import * as itemModelManager from './systems/minecraft/itemModelManager'
+import * as blockModelManager from './systems/minecraft/blockModelManager'
+import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
 
 // Show loading popup
 void showLoadingPopup().then(async () => {
@@ -101,6 +108,8 @@ globalThis.AnimatedJava = {
 		getLatestVersionClientDownloadUrl,
 		getVanillaFont,
 		itemModelManager,
+		blockModelManager,
+		VanillaItemDisplay,
 	},
 }
 
