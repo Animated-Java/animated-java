@@ -14,6 +14,7 @@ import { toSafeFuntionName } from '../util/minecraftUtil'
 import { TextDisplayConfig } from '../nodeConfigs'
 import { TEXT_DISPLAY_CONFIG_ACTION } from '../interface/textDisplayConfigDialog'
 import { events } from '../util/events'
+import { translate } from '../util/translation'
 
 interface TextDisplayOptions {
 	name?: string
@@ -88,7 +89,7 @@ export class TextDisplay extends OutlinerElement {
 
 		this.extend(data)
 
-		this.name ??= 'Text Display'
+		this.name ??= 'text_display'
 		this.position ??= [0, 0, 0]
 		this.rotation ??= [0, 0, 0]
 		this.scale ??= [1, 1, 1]
@@ -343,7 +344,7 @@ export class TextDisplay extends OutlinerElement {
 		this.loadingMesh.visible = false
 	}
 }
-new Property(TextDisplay, 'string', 'name', { default: 'Text Display' })
+new Property(TextDisplay, 'string', 'name', { default: 'text_display' })
 new Property(TextDisplay, 'string', 'text', { default: '"Hello World!"' })
 new Property(TextDisplay, 'vector', 'position', { default: [0, 0, 0] })
 new Property(TextDisplay, 'vector', 'rotation', { default: [0, 0, 0] })
@@ -408,7 +409,7 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 })
 
 export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_text_display`, {
-	name: 'Add Text Display',
+	name: translate('action.create_text_display.title'),
 	icon: 'text_fields',
 	category: 'animated_java',
 	condition() {

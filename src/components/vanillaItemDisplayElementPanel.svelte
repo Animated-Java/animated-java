@@ -1,11 +1,11 @@
 <script lang="ts" context="module">
 	import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
 	import { events } from '../util/events'
+	import { Valuable } from '../util/stores'
+	import { translate } from '../util/translation'
 </script>
 
 <script lang="ts">
-	import { Valuable } from '../util/stores'
-
 	let selected = VanillaItemDisplay.selected.at(0)
 
 	let item = new Valuable<string>('')
@@ -20,7 +20,7 @@
 </script>
 
 <p class="panel_toolbar_label label" style={!!selected ? '' : 'visibility:hidden; height: 0px;'}>
-	Vanilla Item
+	{translate('panel.vanilla_item_display.title')}
 </p>
 
 <div class="toolbar custom-toolbar" style={!!selected ? '' : 'visibility:hidden; height: 0px;'}>

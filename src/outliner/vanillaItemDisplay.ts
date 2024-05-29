@@ -9,10 +9,11 @@ import { events } from '../util/events'
 import { toSafeFuntionName } from '../util/minecraftUtil'
 import { createAction, createBlockbenchMod } from '../util/moddingTools'
 import { Valuable } from '../util/stores'
+import { translate } from '../util/translation'
 
 interface VanillaItemDisplayOptions {
 	name?: string
-	text?: string
+	block?: string
 	position?: ArrayVector3
 	rotation?: ArrayVector3
 	scale?: ArrayVector3
@@ -64,7 +65,7 @@ export class VanillaItemDisplay extends OutlinerElement {
 
 		this.extend(data)
 
-		this.name ??= 'Text Display'
+		this.name ??= 'vanilla_item_display'
 		this.item ??= 'minecraft:diamond'
 		this.position ??= [0, 0, 0]
 		this.rotation ??= [0, 0, 0]
@@ -221,7 +222,7 @@ export class VanillaItemDisplay extends OutlinerElement {
 		this.preview_controller.updateHighlight(this)
 	}
 }
-new Property(VanillaItemDisplay, 'string', 'name', { default: 'Vanilla Item Model' })
+new Property(VanillaItemDisplay, 'string', 'name', { default: 'vanilla_item_display' })
 new Property(VanillaItemDisplay, 'string', 'item', { default: 'minecraft:diamond' })
 new Property(VanillaItemDisplay, 'vector', 'position', { default: [0, 0, 0] })
 new Property(VanillaItemDisplay, 'vector', 'rotation', { default: [0, 0, 0] })
@@ -290,7 +291,7 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, 
 })
 
 export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_vanilla_item_display`, {
-	name: 'Add Vanilla Item Display',
+	name: translate('action.create_vanilla_item_display.title'),
 	icon: 'icecream',
 	category: 'animated_java',
 	condition() {

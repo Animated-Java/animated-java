@@ -89,50 +89,53 @@ createBlockbenchMod(
 			}
 
 			const intersects = this.raycaster.intersectObjects(objects, false)
-			const i = intersects.at(0) as THREE.Intersection
-			if (i && i.uv && i.object instanceof THREE.Mesh && i.object.isVanillaItemModel) {
-				const image = i.object.material.map!.image as HTMLImageElement
-				const { width, height } = image
-				const imageData = getImageData(image)
-				const x = Math.ceil(i.uv.x * width) - 1
-				const y = height - Math.ceil(i.uv.y * height)
-				const I = (x + y * width) * 4
-				if (imageData.data[I + 3] <= 140) return raycast(event)
+			// const i = intersects.at(0) as THREE.Intersection
+			for (const i of intersects) {
+				if (i && i.uv && i.object instanceof THREE.Mesh && i.object.isVanillaItemModel) {
+					const image = i.object.material.map!.image as HTMLImageElement
+					const { width, height } = image
+					const imageData = getImageData(image)
+					const x = Math.ceil(i.uv.x * width) - 1
+					const y = height - Math.ceil(i.uv.y * height)
+					const I = (x + y * width) * 4
+					if (imageData.data[I + 3] <= 140) continue
 
-				const element = animatedJavaModels.get(i.object)
-				if (element) {
-					if (isHover) {
-						element.preview_controller.updateHighlight(element, true)
-						return { element }
-					} else {
-						element.select()
-						// @ts-expect-error
-						this.selection.click_target = element
+					const element = animatedJavaModels.get(i.object)
+					if (element) {
+						if (isHover) {
+							element.preview_controller.updateHighlight(element, true)
+							return { element }
+						} else {
+							element.select()
+							// @ts-expect-error
+							this.selection.click_target = element
+						}
+						return false
 					}
-					return false
 				}
-			} else if (i && i.object.parent?.isTextDisplayText) {
-				const element = animatedJavaModels.get(i.object.parent)
-				if (element) {
-					if (isClick) {
-						element.select()
-						// @ts-expect-error
-						this.selection.click_target = element
+				if (i && i.object.parent?.isTextDisplayText) {
+					const element = animatedJavaModels.get(i.object.parent)
+					if (element) {
+						if (isClick) {
+							element.select()
+							// @ts-expect-error
+							this.selection.click_target = element
+						}
+						return false
 					}
-					return false
-				}
-			} else if (i && i.object.parent?.isVanillaBlockModel) {
-				const element = animatedJavaModels.get(i.object.parent)
-				if (element) {
-					if (isHover) {
-						element.preview_controller.updateHighlight(element, true)
-						return { element }
-					} else {
-						element.select()
-						// @ts-expect-error
-						this.selection.click_target = element
+				} else if (i && i.object.parent?.isVanillaBlockModel) {
+					const element = animatedJavaModels.get(i.object.parent)
+					if (element) {
+						if (isHover) {
+							element.preview_controller.updateHighlight(element, true)
+							return { element }
+						} else {
+							element.select()
+							// @ts-expect-error
+							this.selection.click_target = element
+						}
+						return false
 					}
-					return false
 				}
 			}
 			return raycast(event)

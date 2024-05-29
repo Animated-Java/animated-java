@@ -9,6 +9,7 @@
 		TEXT_DISPLAY_SHADOW_TOGGLE,
 	} from '../interface/textDisplayElementPanel'
 	import { floatToHex } from '../util/misc'
+	import { translate } from '../util/translation'
 
 	function highlight(code: string, syntax?: string) {
 		if (!syntax) return code
@@ -59,7 +60,7 @@
 </script>
 
 <p class="panel_toolbar_label label" style={!!selected ? '' : 'visibility:hidden; height: 0px;'}>
-	Text Component
+	{translate('panel.text_display.title')}
 </p>
 
 <div class="toolbar custom-toolbar" style={!!selected ? '' : 'visibility:hidden; height: 0px;'}>

@@ -6,6 +6,11 @@ animated_java.action.open_bone_config.name: Bone Config
 animated_java.action.open_locator_config.name: Locator Config
 animated_java.action.open_text_display_config.name: Text Display Config
 animated_java.action.export.name: Export
+animated_java.action.create_text_display.title: Add Text Display
+animated_java.action.create_vanilla_item_display.title: Add Vanilla Item Display
+animated_java.action.create_vanilla_block_display.title: Add Vanilla Block Display
+animated_java.action.open_vanilla_item_display_config.name: Vanilla Item Display Config
+animated_java.action.open_vanilla_block_display_config.name: Vanilla Block Display Config
 
 ### Dialogs
 
@@ -334,6 +339,30 @@ animated_java.panel.keyframe.repeat_frequency.description: |-
   Setting this to 1 will run the commands every tick.
   NOTE: If the animation is not evenly divisible by this value, the interval may be slightly off when the animation loops.
   If this is set to a value larger than the length of the animation, the commands will run as if repeat was disabled (Once when the keyframe is reached).
+
+# Text Display Panel
+animated_java.panel.text_display.title: Text Display
+
+animated_java.tool.text_display.line_width.title: Line Width
+animated_java.tool.text_display.line_width.description: The width of the text display in pixels.
+
+animated_java.tool.text_display.background_color.title: Background Color
+animated_java.tool.text_display.background_color.description: The color of the background of the text display.
+
+animated_java.tool.text_display.text_shadow.title: Text Shadow
+animated_java.tool.text_display.text_shadow.description: Whether or not to display a shadow behind the text.
+
+# Vanilla Item Display Panel
+animated_java.panel.vanilla_item_display.title: Displayed Item
+
+# Vanilla Block Display Panel
+animated_java.panel.vanilla_block_display.title: Displayed Block
+
+### Custom Elements
+## Vanilla Item Display
+animated_java.vanilla_item_display.title: Vanilla Item Display
+
+## Vanilla Block Display
 
 ### Misc
 

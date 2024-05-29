@@ -9,10 +9,11 @@ import { events } from '../util/events'
 import { toSafeFuntionName } from '../util/minecraftUtil'
 import { createAction, createBlockbenchMod } from '../util/moddingTools'
 import { Valuable } from '../util/stores'
+import { translate } from '../util/translation'
 
 interface VanillaBlockDisplayOptions {
 	name?: string
-	text?: string
+	block?: string
 	position?: ArrayVector3
 	rotation?: ArrayVector3
 	scale?: ArrayVector3
@@ -64,7 +65,7 @@ export class VanillaBlockDisplay extends OutlinerElement {
 
 		this.extend(data)
 
-		this.name ??= 'Text Display'
+		this.name ??= 'vanilla_item_display'
 		this.block ??= 'minecraft:diamond'
 		this.position ??= [0, 0, 0]
 		this.rotation ??= [0, 0, 0]
@@ -221,7 +222,7 @@ export class VanillaBlockDisplay extends OutlinerElement {
 		this.preview_controller.updateHighlight(this)
 	}
 }
-new Property(VanillaBlockDisplay, 'string', 'name', { default: 'Vanilla Block Model' })
+new Property(VanillaBlockDisplay, 'string', 'name', { default: 'vanilla_block_display' })
 new Property(VanillaBlockDisplay, 'string', 'block', { default: 'minecraft:stone' })
 new Property(VanillaBlockDisplay, 'vector', 'position', { default: [0, 0, 0] })
 new Property(VanillaBlockDisplay, 'vector', 'rotation', { default: [0, 0, 0] })
@@ -298,7 +299,7 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay,
 })
 
 export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_vanilla_block_display`, {
-	name: 'Add Vanilla Block Display',
+	name: translate('action.create_vanilla_block_display.title'),
 	icon: 'deployed_code',
 	category: 'animated_java',
 	condition() {

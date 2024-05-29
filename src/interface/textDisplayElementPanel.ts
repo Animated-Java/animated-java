@@ -4,6 +4,7 @@ import { PACKAGE } from '../constants'
 import { TextDisplay } from '../outliner/textDisplay'
 import { injectSvelteCompomponentMod } from '../util/injectSvelte'
 import { floatToHex } from '../util/misc'
+import { translate } from '../util/translation'
 
 injectSvelteCompomponentMod({
 	svelteComponent: TextDisplayElementPanel,
@@ -16,9 +17,9 @@ injectSvelteCompomponentMod({
 export const TEXT_DISPLAY_WIDTH_SLIDER = new NumSlider(
 	`${PACKAGE.name}:textDisplayLineWidthSlider`,
 	{
-		name: 'Line Width',
+		name: translate('tool.text_display.line_width.title'),
 		icon: 'format_size',
-		description: 'The width of the text display.',
+		description: translate('tool.text_display.line_width.description'),
 		settings: {
 			min: 1,
 			max: 10000,
@@ -41,9 +42,9 @@ export const TEXT_DISPLAY_WIDTH_SLIDER = new NumSlider(
 export const TEXT_DISPLAY_BACKGROUND_COLOR_PICKER = new ColorPicker(
 	`${PACKAGE.name}:textDisplayBackgroundColorPicker`,
 	{
-		name: 'Background Color',
+		name: translate('tool.text_display.background_color.title'),
 		icon: 'format_color_fill',
-		description: 'The background color of the text display.',
+		description: translate('tool.text_display.background_color.description'),
 		condition: () => isCurrentFormat() && !!TextDisplay.selected.length,
 	}
 )
@@ -77,9 +78,9 @@ TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.change = function (
 }
 
 export const TEXT_DISPLAY_SHADOW_TOGGLE = new Toggle(`${PACKAGE.name}:textDisplayShadowToggle`, {
-	name: 'Text Shadow',
+	name: translate('tool.text_display.text_shadow.title'),
 	icon: 'check_box_outline_blank',
-	description: 'Whether the text has a shadow.',
+	description: translate('tool.text_display.text_shadow.description'),
 	condition: () => isCurrentFormat() && !!TextDisplay.selected.length,
 	click() {
 		//

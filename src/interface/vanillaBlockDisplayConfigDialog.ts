@@ -9,7 +9,7 @@ import { Variant } from '../variants'
 import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
 import VanillaBlockDisplayConfigDialog from '../components/vanillaBlockDisplayConfigDialog.svelte'
 
-export function openVanillaItemDisplayConfigDialog(display: VanillaBlockDisplay) {
+export function openVanillaBlockDisplayConfigDialog(display: VanillaBlockDisplay) {
 	// Blockbench's JSON stringifier doesn't handle custom toJSON functions, so I'm storing the config JSON in the bone instead of the actual BoneConfig object
 	const oldConfig = TextDisplayConfig.fromJSON(
 		(display.config ??= new TextDisplayConfig().toJSON())
@@ -87,14 +87,14 @@ export function openVanillaItemDisplayConfigDialog(display: VanillaBlockDisplay)
 }
 
 export const VANILLA_BLOCK_DISPLAY_CONFIG_ACTION = createAction(
-	`${PACKAGE.name}:open_vanilla_item_display_config`,
+	`${PACKAGE.name}:open_vanilla_block_display_config`,
 	{
 		icon: 'settings',
-		name: translate('action.open_vanilla_item_display_config.name'),
+		name: translate('action.open_vanilla_block_display_config.name'),
 		condition: () => isCurrentFormat(),
 		click: () => {
 			if (VanillaBlockDisplay.selected.length === 0) return
-			openVanillaItemDisplayConfigDialog(VanillaBlockDisplay.selected[0])
+			openVanillaBlockDisplayConfigDialog(VanillaBlockDisplay.selected[0])
 		},
 	}
 )
