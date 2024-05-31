@@ -19,6 +19,7 @@ export async function getItemModel(item: string): Promise<THREE.Mesh | undefined
 	mesh.geometry = mesh.geometry.clone()
 	mesh.name = 'vanillaItemModel'
 	mesh.isVanillaItemModel = true
+
 	return mesh
 }
 
@@ -232,7 +233,7 @@ async function generateItemMesh(location: string, texturePath: string) {
 	mesh.geometry.attributes.color.needsUpdate = true
 	mesh.geometry.attributes.normal.needsUpdate = true
 
-	mesh.rotateX(Math.PI / 2)
+	mesh.geometry.rotateX(Math.PI / 2)
 
 	return mesh
 }

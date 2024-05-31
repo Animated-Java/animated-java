@@ -34,12 +34,6 @@ createBlockbenchMod(
 			if ((!isClick && !isHover) || Transformer.dragging) return raycast(event)
 			convertTouchEvent(event)
 
-			if (isHover) {
-				for (const group of Group.all) {
-					Group.preview_controller.updateHighlight(group)
-				}
-			}
-
 			const canvasOffset = $(this.canvas).offset()!
 			this.mouse.x = ((event.clientX - canvasOffset.left) / this.width) * 2 - 1
 			this.mouse.y = -((event.clientY - canvasOffset.top) / this.height) * 2 + 1

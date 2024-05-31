@@ -22,6 +22,7 @@ declare module 'three' {
 		isVanillaItemModel?: boolean
 		isVanillaBlockModel?: boolean
 		isTextDisplayText?: boolean
+		fix_scale?: THREE.Vector3
 	}
 }
 
@@ -106,6 +107,8 @@ declare global {
 			BLUEPRINT_FORMAT: typeof BLUEPRINT_FORMAT
 			BLUEPRINT_CODEC: typeof BLUEPRINT_CODEC
 			TextDisplay: typeof TextDisplay
+			VanillaItemDisplay: typeof VanillaItemDisplay
+			VanillaBlockDisplay: typeof VanillaBlockDisplay
 		}
 	}
 }

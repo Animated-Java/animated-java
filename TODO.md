@@ -51,7 +51,8 @@
     - [ ] Add an option to switch the display entity between item and block display.
     - [ ] Figure out a way to allow the user to scale the model of a bone with a display item set.
 - [ ] Add Variants to the UndoSystem (Blocked by vanilla Blockbench not supporting custom undo actions)
-- [x] Add a bone config option to replace the bone's display item with a custom item.
+- [ ] Add vanilla item displays
+    - [x] Create a custom element type for item displays.
     - [ ] Add rendering for vanilla item models.
         - [x] Parent model inheritance
         - [x] item/generated
@@ -73,10 +74,14 @@
                 - [ ] template_skull
                 - [ ] trident_in_hand
                 - [ ] trident_throwing
+- [ ] Add vanilla block displays
+    - [x] Create a custom element type for block displays.
     - [ ] Add rendering for vanilla block models.
+        - [ ] Use Blockstates to select models.
         - [x] Parent model inheritance
         - [x] block/block
         - [ ] Edge Cases go here
+            - [ ] 
 - [ ] Locator rotation support
 
 # Data Pack Compiler
@@ -97,6 +102,8 @@
 - [ ] Figure out how cameras will work.
 - [ ] Check for references to non-existant functions in merged function tags, and remove them.
 - [ ] Apply variant keyframes in animations.
+- [ ] Add support for vanilla item displays.
+- [ ] Add support for vanilla block displays.
 
 # Resource Pack
 

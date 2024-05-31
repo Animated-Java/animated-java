@@ -364,8 +364,9 @@ OutlinerElement.registerType(TextDisplay, TextDisplay.type)
 export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 	setup(el: TextDisplay) {
 		const textMesh = new THREE.Mesh(new THREE.PlaneGeometry(0, 0))
-		textMesh.fix_rotation = new THREE.Euler(0, 0, 0, 'ZYX')
-		textMesh.fix_position = new THREE.Vector3(0, 0, 0)
+		textMesh.fix_rotation = new THREE.Euler(...el.rotation, 'ZYX')
+		textMesh.fix_position = new THREE.Vector3(...el.position)
+		textMesh.fix_scale = new THREE.Vector3(...el.scale)
 		// Minecraft's transparency is funky 😭
 		textMesh.renderOrder = -1
 
@@ -401,9 +402,20 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 		void el.updateText()
 	},
 	updateTransform(el: TextDisplay) {
-		NodePreviewController.prototype.updateTransform.call(this, el)
+		NodePreviewController.prototype.updateTransform.call(PREVIEW_CONTROLLER, el)
 		if (el.mesh.fix_position) {
 			el.mesh.fix_position.set(...el.position)
+			if (el.parent instanceof Group) {
+				el.mesh.fix_position.x -= el.parent.origin[0]
+				el.mesh.fix_position.y -= el.parent.origin[1]
+				el.mesh.fix_position.z -= el.parent.origin[2]
+			}
+		}
+		if (el.mesh.fix_rotation) {
+			el.mesh.fix_rotation.set(...el.rotation)
+		}
+		if (el.mesh.fix_scale) {
+			el.mesh.fix_scale.set(...el.scale)
 		}
 	},
 })
@@ -499,6 +511,62 @@ class TextDisplayAnimator extends BoneAnimator {
 	doRender() {
 		this.getElement()
 		return !!(this.element && this.element.mesh)
+	}
+
+	displayRotation(arr: ArrayVector3 | ArrayVector4, multiplier = 1) {
+		const bone = this.getElement().mesh
+
+		if (bone.fix_rotation) {
+			bone.rotation.copy(bone.fix_rotation as THREE.Euler)
+		}
+
+		if (arr) {
+			if (arr.length === 4) {
+				const added_rotation = new THREE.Euler().setFromQuaternion(
+					new THREE.Quaternion().fromArray(arr),
+					'ZYX'
+				)
+				bone.rotation.x -= added_rotation.x * multiplier
+				bone.rotation.y -= added_rotation.y * multiplier
+				bone.rotation.z += added_rotation.z * multiplier
+			} else {
+				bone.rotation.x += Math.degToRad(-arr[0]) * multiplier
+				bone.rotation.y += Math.degToRad(-arr[1]) * multiplier
+				bone.rotation.z += Math.degToRad(arr[2]) * multiplier
+			}
+		}
+		if (this.rotation_global) {
+			const quat = bone.parent?.getWorldQuaternion(Reusable.quat1)
+			if (!quat) return this
+			quat.invert()
+			bone.quaternion.premultiply(quat)
+		}
+		return this
+	}
+
+	displayPosition(arr: ArrayVector3, multiplier = 1) {
+		const bone = this.getElement().mesh
+		if (bone.fix_position) {
+			bone.position.copy(bone.fix_position as THREE.Vector3)
+		}
+		if (arr) {
+			bone.position.x -= arr[0] * multiplier
+			bone.position.y += arr[1] * multiplier
+			bone.position.z += arr[2] * multiplier
+		}
+		return this
+	}
+
+	displayScale(arr: ArrayVector3, multiplier = 1) {
+		if (!arr) return this
+		const bone = this.getElement().mesh
+		if (bone.fix_scale) {
+			bone.scale.copy(bone.fix_scale)
+		}
+		bone.scale.x *= 1 + (arr[0] - 1) * multiplier || 0.00001
+		bone.scale.y *= 1 + (arr[1] - 1) * multiplier || 0.00001
+		bone.scale.z *= 1 + (arr[2] - 1) * multiplier || 0.00001
+		return this
 	}
 }
 TextDisplayAnimator.prototype.type = TextDisplay.type

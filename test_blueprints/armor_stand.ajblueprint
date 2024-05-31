@@ -1707,7 +1707,7 @@
 							"data_points": [
 								{
 									"x": 0,
-									"y": "-19 + math.sin(q.life_time * 360) * 1",
+									"y": "-26 + math.sin(q.life_time * 360) * 1",
 									"z": -19
 								}
 							],

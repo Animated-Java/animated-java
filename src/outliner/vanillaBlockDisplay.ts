@@ -7,6 +7,7 @@ import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
 import { getCurrentVersion } from '../systems/minecraft/versionManager'
 import { events } from '../util/events'
 import { toSafeFuntionName } from '../util/minecraftUtil'
+import { makeNotZero } from '../util/misc'
 import { createAction, createBlockbenchMod } from '../util/moddingTools'
 import { Valuable } from '../util/stores'
 import { translate } from '../util/translation'
@@ -238,8 +239,9 @@ OutlinerElement.registerType(VanillaBlockDisplay, VanillaBlockDisplay.type)
 export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay, {
 	setup(el: VanillaBlockDisplay) {
 		const mesh = new THREE.Mesh()
-		mesh.fix_rotation = new THREE.Euler(0, 0, 0, 'ZYX')
-		mesh.fix_position = new THREE.Vector3(0, 0, 0)
+		mesh.fix_rotation = new THREE.Euler(...el.rotation, 'ZYX')
+		mesh.fix_position = new THREE.Vector3(...el.position)
+		mesh.fix_scale = new THREE.Vector3(...el.scale)
 		Project!.nodes_3d[el.uuid] = mesh
 
 		PREVIEW_CONTROLLER.updateTransform(el)
@@ -276,6 +278,17 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay,
 		NodePreviewController.prototype.updateTransform.call(PREVIEW_CONTROLLER, el)
 		if (el.mesh.fix_position) {
 			el.mesh.fix_position.set(...el.position)
+			if (el.parent instanceof Group) {
+				el.mesh.fix_position.x -= el.parent.origin[0]
+				el.mesh.fix_position.y -= el.parent.origin[1]
+				el.mesh.fix_position.z -= el.parent.origin[2]
+			}
+		}
+		if (el.mesh.fix_rotation) {
+			el.mesh.fix_rotation.set(...el.rotation)
+		}
+		if (el.mesh.fix_scale) {
+			el.mesh.fix_scale.set(...el.scale)
 		}
 	},
 	updateHighlight(element: VanillaBlockDisplay, force?: boolean | VanillaBlockDisplay) {
@@ -391,13 +404,60 @@ class VanillaBlockDisplayAnimator extends BoneAnimator {
 		return !!(this.element && this.element.mesh)
 	}
 
-	displayPosition(arr?: ArrayVector3, multiplier = 1) {
-		const bone = this.element!.mesh
-		if (arr) {
-			bone.position.x = -arr[0] * multiplier
-			bone.position.y = arr[1] * multiplier
-			bone.position.z = arr[2] * multiplier
+	displayRotation(arr: ArrayVector3 | ArrayVector4, multiplier = 1) {
+		const bone = this.getElement().mesh
+
+		if (bone.fix_rotation) {
+			bone.rotation.copy(bone.fix_rotation as THREE.Euler)
 		}
+
+		if (arr) {
+			if (arr.length === 4) {
+				const added_rotation = new THREE.Euler().setFromQuaternion(
+					new THREE.Quaternion().fromArray(arr),
+					'ZYX'
+				)
+				bone.rotation.x -= added_rotation.x * multiplier
+				bone.rotation.y -= added_rotation.y * multiplier
+				bone.rotation.z += added_rotation.z * multiplier
+			} else {
+				bone.rotation.x -= Math.degToRad(arr[0]) * multiplier
+				bone.rotation.y -= Math.degToRad(arr[1]) * multiplier
+				bone.rotation.z += Math.degToRad(arr[2]) * multiplier
+			}
+		}
+		if (this.rotation_global) {
+			const quat = bone.parent?.getWorldQuaternion(Reusable.quat1)
+			if (!quat) return this
+			quat.invert()
+			bone.quaternion.premultiply(quat)
+		}
+		return this
+	}
+
+	displayPosition(arr: ArrayVector3, multiplier = 1) {
+		const bone = this.getElement().mesh
+		if (bone.fix_position) {
+			bone.position.copy(bone.fix_position as THREE.Vector3)
+		}
+		if (arr) {
+			bone.position.x -= arr[0] * multiplier
+			bone.position.y += arr[1] * multiplier
+			bone.position.z += arr[2] * multiplier
+		}
+		return this
+	}
+
+	displayScale(arr: ArrayVector3, multiplier = 1) {
+		if (!arr) return this
+		const bone = this.getElement().mesh
+		if (bone.fix_scale) {
+			bone.scale.copy(bone.fix_scale)
+			makeNotZero(bone.scale)
+		}
+		bone.scale.x *= 1 + (arr[0] - 1) * multiplier || 0.00001
+		bone.scale.y *= 1 + (arr[1] - 1) * multiplier || 0.00001
+		bone.scale.z *= 1 + (arr[2] - 1) * multiplier || 0.00001
 		return this
 	}
 }

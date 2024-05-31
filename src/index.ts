@@ -28,7 +28,6 @@ import './mods/elementToolbarsMod'
 import './mods/exportOverActionMod'
 import './mods/groupContextMenuMod'
 import './mods/groupNameMod'
-import './mods/groupPreviewControllerMod'
 import './mods/keyframeMod'
 import './mods/locatorAnimatorMod'
 import './mods/locatorContextMenuMod'
@@ -43,6 +42,7 @@ import './mods/saveAllAnimationsActionMod'
 import './mods/saveProjectActionMod'
 import './mods/saveProjectAsActionMod'
 import './mods/variantPreviewCubeFaceMod'
+import './mods/animatorShowDefaultPoseMod'
 // Outliner
 import './outliner/textDisplay'
 import './outliner/vanillaItemDisplay'
@@ -71,6 +71,7 @@ import { getVanillaFont } from './systems/minecraft/fontManager'
 import * as itemModelManager from './systems/minecraft/itemModelManager'
 import * as blockModelManager from './systems/minecraft/blockModelManager'
 import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
+import { VanillaBlockDisplay } from './outliner/vanillaBlockDisplay'
 
 // Show loading popup
 void showLoadingPopup().then(async () => {
@@ -110,6 +111,7 @@ globalThis.AnimatedJava = {
 		itemModelManager,
 		blockModelManager,
 		VanillaItemDisplay,
+		VanillaBlockDisplay,
 	},
 }
 

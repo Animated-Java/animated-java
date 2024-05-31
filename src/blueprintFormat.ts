@@ -601,11 +601,12 @@ export function saveBlueprint() {
 export function updateRotationLock() {
 	if (!isCurrentFormat()) return
 	BLUEPRINT_FORMAT.rotation_limit = !(
-		Group.selected || !!AnimatedJava.API.TextDisplay.selected.length
+		Group.selected ||
+		!!AnimatedJava.API.TextDisplay.selected.length ||
+		!!AnimatedJava.API.VanillaItemDisplay.selected.length ||
+		!!AnimatedJava.API.VanillaBlockDisplay.selected.length
 	)
-	BLUEPRINT_FORMAT.rotation_snap = !(
-		Group.selected || !!AnimatedJava.API.TextDisplay.selected.length
-	)
+	BLUEPRINT_FORMAT.rotation_snap = BLUEPRINT_FORMAT.rotation_limit
 }
 
 export function disableRotationLock() {
