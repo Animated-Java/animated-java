@@ -68,7 +68,11 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 				requestAnimationFrame(() => updateBlock(newBlock))
 				return
 			}
-			const [namespace, id] = newBlock.split(':')
+			let [namespace, id] = newBlock.split(':')
+			if (!id) {
+				id = namespace
+				namespace = 'minecraft'
+			}
 			if (
 				(namespace === 'minecraft' || namespace === '') &&
 				MINECRAFT_REGISTRY.block.has(id)
@@ -91,6 +95,7 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 	}
 	set block(value: string) {
 		if (this._block === undefined) return
+		if (this.block === value) return
 		this._block.set(value)
 	}
 
@@ -204,6 +209,9 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay,
 	},
 	updateGeometry(el: VanillaBlockDisplay) {
 		if (!el.mesh) return
+		const currentModel = el.mesh.children.at(0)
+		if (currentModel?.name === el.block) return
+
 		void getBlockModel(el.block)
 			.then(result => {
 				if (!result?.mesh) return
@@ -430,3 +438,13 @@ export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_vanilla_block_
 		return vanillaBlockDisplay
 	},
 })
+
+export function debugBlocks() {
+	const maxX = Math.floor(Math.sqrt(MINECRAFT_REGISTRY.block.items.length))
+	for (let i = 0; i < MINECRAFT_REGISTRY.block.items.length; i++) {
+		const block = MINECRAFT_REGISTRY.block.items[i]
+		const x = (i % maxX) * 32
+		const y = Math.floor(i / maxX) * 32
+		new VanillaBlockDisplay({ name: block, block, position: [x, 8, y] }).init()
+	}
+}

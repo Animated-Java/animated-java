@@ -17,7 +17,7 @@ export async function getItemModel(item: string): Promise<THREE.Mesh | undefined
 	if (!mesh) return undefined
 	mesh = mesh.clone()
 	mesh.geometry = mesh.geometry.clone()
-	mesh.name = 'vanillaItemModel'
+	mesh.name = item
 	mesh.isVanillaItemModel = true
 
 	return mesh

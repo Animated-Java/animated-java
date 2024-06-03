@@ -31,7 +31,7 @@ export async function getBlockModel(item: string): Promise<BlockModelMesh | unde
 		child.geometry = child.geometry.clone()
 	}
 	result.mesh.geometry = result.mesh.geometry.clone()
-	result.mesh.name = 'vanillaBlockModel'
+	result.mesh.name = item
 	result.mesh.isVanillaBlockModel = true
 	console.log(`Loaded block model for '${item}'`, result)
 	return result
@@ -86,9 +86,9 @@ async function generateBlockMesh(location: string, model: IBlockModel): Promise<
 			element.to[2] - element.from[2],
 		]
 		const position: ArrayVector3 = [
-			element.from[0] + (element.to[0] - element.from[0]) / 2 - 8,
-			element.from[1] + (element.to[1] - element.from[1]) / 2 - 8,
-			element.from[2] + (element.to[2] - element.from[2]) / 2 - 8,
+			element.from[0] + (element.to[0] - element.from[0]) / 2,
+			element.from[1] + (element.to[1] - element.from[1]) / 2,
+			element.from[2] + (element.to[2] - element.from[2]) / 2,
 		]
 		if (size[0] === 0) {
 			size[0] += 0.01
@@ -112,6 +112,14 @@ async function generateBlockMesh(location: string, model: IBlockModel): Promise<
 				factor = getRescalingFactor(element.rotation.angle)
 			}
 
+			console.log(element.rotation)
+			let origin = element.rotation.origin
+			if (origin) {
+				console.log('Origin:', origin)
+				origin = [origin[0], origin[1], origin[2]]
+				geometry.translate(...(origin.map(v => -v) as ArrayVector3))
+			}
+
 			switch (element.rotation.axis) {
 				case 'x':
 					geometry.rotateX(Math.degToRad(element.rotation.angle))
@@ -126,7 +134,13 @@ async function generateBlockMesh(location: string, model: IBlockModel): Promise<
 					if (factor !== undefined) geometry.scale(factor, factor, 1)
 					break
 			}
+
+			if (origin) {
+				geometry.translate(...origin)
+			}
 		}
+
+		geometry.translate(-8, -8, -8)
 
 		const indices = []
 		for (let i = 0; i < 6; i++) {

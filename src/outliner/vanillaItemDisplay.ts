@@ -74,7 +74,11 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 				requestAnimationFrame(() => updateItem(newItem))
 				return
 			}
-			const [namespace, id] = newItem.split(':')
+			let [namespace, id] = newItem.split(':')
+			if (!id) {
+				id = namespace
+				namespace = 'minecraft'
+			}
 			if (
 				(namespace === 'minecraft' || namespace === '') &&
 				MINECRAFT_REGISTRY.item.has(id)
@@ -210,6 +214,9 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, 
 	},
 	updateGeometry(el: VanillaItemDisplay) {
 		if (!el.mesh) return
+		const currentModel = el.mesh.children.at(0)
+		if (currentModel?.name === el.item) return
+
 		void getItemModel(el.item)
 			.then(mesh => {
 				if (!mesh) return

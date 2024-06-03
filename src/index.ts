@@ -71,7 +71,7 @@ import { getVanillaFont } from './systems/minecraft/fontManager'
 import * as itemModelManager from './systems/minecraft/itemModelManager'
 import * as blockModelManager from './systems/minecraft/blockModelManager'
 import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
-import { VanillaBlockDisplay } from './outliner/vanillaBlockDisplay'
+import { VanillaBlockDisplay, debugBlocks } from './outliner/vanillaBlockDisplay'
 
 // Show loading popup
 void showLoadingPopup().then(async () => {
@@ -112,6 +112,7 @@ globalThis.AnimatedJava = {
 		blockModelManager,
 		VanillaItemDisplay,
 		VanillaBlockDisplay,
+		debugBlocks,
 	},
 }
 
