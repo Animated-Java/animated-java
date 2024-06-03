@@ -42,7 +42,7 @@ import './mods/saveAllAnimationsActionMod'
 import './mods/saveProjectActionMod'
 import './mods/saveProjectAsActionMod'
 import './mods/variantPreviewCubeFaceMod'
-import './mods/animatorShowDefaultPoseMod'
+import './mods/showDefaultPoseMod'
 // Outliner
 import './outliner/textDisplay'
 import './outliner/vanillaItemDisplay'

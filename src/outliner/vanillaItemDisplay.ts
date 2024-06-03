@@ -10,43 +10,30 @@ import { toSafeFuntionName } from '../util/minecraftUtil'
 import { createAction, createBlockbenchMod } from '../util/moddingTools'
 import { Valuable } from '../util/stores'
 import { translate } from '../util/translation'
+import { ResizableOutlinerElement } from './resizableOutlinerElement'
+import { TextDisplay } from './textDisplay'
+import { VanillaBlockDisplay } from './vanillaBlockDisplay'
 
 interface VanillaItemDisplayOptions {
 	name?: string
-	block?: string
+	item?: string
 	position?: ArrayVector3
 	rotation?: ArrayVector3
 	scale?: ArrayVector3
 	visibility?: boolean
 }
 
-export class VanillaItemDisplay extends OutlinerElement {
+export class VanillaItemDisplay extends ResizableOutlinerElement {
 	static type = `${PACKAGE.name}:vanilla_item_display`
 	static selected: VanillaItemDisplay[] = []
 	static all: VanillaItemDisplay[] = []
 
 	public type = VanillaItemDisplay.type
 	public icon = 'icecream'
-	public movable = true
-	public rotatable = true
-	public scalable = true
 	public needsUniqueName = true
 
-	public resizable = true
-	// Lame workaround variables to make the resize function work
-	public stretch = [0, 0, 0]
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	public uv_offset = [0, 0]
-	public from = [0, 0, 0]
-	public to = [0, 0, 0]
-
 	// Properties
-	public name: string
 	public _item = new Valuable('minecraft:diamond')
-	public position: ArrayVector3
-	public rotation: ArrayVector3
-	public scale: ArrayVector3
-	public visibility: boolean
 	public config: IBlueprintBoneConfigJSON
 
 	public error = new Valuable('')
@@ -70,9 +57,9 @@ export class VanillaItemDisplay extends OutlinerElement {
 			VanillaItemDisplay.properties[key].reset(this)
 		}
 
+		this.name = 'vanilla_item_display'
 		this.extend(data)
 
-		this.name ??= 'vanilla_item_display'
 		this.item ??= 'minecraft:diamond'
 		this.position ??= [0, 0, 0]
 		this.rotation ??= [0, 0, 0]
@@ -105,26 +92,23 @@ export class VanillaItemDisplay extends OutlinerElement {
 	}
 
 	get item() {
+		if (this._item === undefined) return 'minecraft:diamond'
 		return this._item.get()
 	}
 	set item(value: string) {
+		if (this._item === undefined) return
 		this._item.set(value)
-	}
-
-	public extend(data: VanillaItemDisplayOptions) {
-		for (const key in VanillaItemDisplay.properties) {
-			VanillaItemDisplay.properties[key].merge(this, data)
-		}
-		if (data.visibility !== undefined) {
-			this.visibility = data.visibility
-		}
-
-		return this
 	}
 
 	public sanitizeName(): string {
 		this.name = toSafeFuntionName(this.name)
-		if (!VanillaItemDisplay.all.some(v => v !== this && v.name === this.name)) {
+		const otherNodes = [
+			...VanillaItemDisplay.all.filter(v => v !== this),
+			...Group.all,
+			...TextDisplay.all,
+			...VanillaBlockDisplay.all,
+		]
+		if (!otherNodes.some(v => v !== this && v.name === this.name)) {
 			return this.name
 		}
 
@@ -138,24 +122,14 @@ export class VanillaItemDisplay extends OutlinerElement {
 		let maxTries = 1000
 		while (maxTries-- > 0) {
 			const newName = `${this.name}${i}`
-			if (!VanillaItemDisplay.all.some(v => v !== this && v.name === newName)) {
+			if (!otherNodes.some(v => v !== this && v.name === newName)) {
+				this.name = newName
 				return newName
 			}
 			i++
 		}
 
 		throw new Error('Could not make VanillaItemDisplay name unique!')
-	}
-
-	get origin(): ArrayVector3 {
-		return this.position
-	}
-
-	getWorldCenter(): THREE.Vector3 {
-		Reusable.vec3.set(0, 0, 0)
-		// @ts-ignore
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-		return THREE.fastWorldPosition(this.mesh, Reusable.vec2).add(Reusable.vec3)
 	}
 
 	getUndoCopy() {
@@ -205,13 +179,6 @@ export class VanillaItemDisplay extends OutlinerElement {
 		return this
 	}
 
-	selectLow() {
-		Project!.selected_elements.safePush(this)
-		this.selected = true
-		TickUpdates.selection = true
-		return this
-	}
-
 	unselect() {
 		if (!this.selected) return
 		if (
@@ -228,46 +195,8 @@ export class VanillaItemDisplay extends OutlinerElement {
 		TickUpdates.selection = true
 		this.preview_controller.updateHighlight(this)
 	}
-
-	size(axis?: number, floored?: boolean) {
-		if (axis === undefined) {
-			return this.scale
-		}
-		return this.scale[axis]
-	}
-
-	private oldScale: ArrayVector3 | undefined
-	resize(
-		val: number | ((n: number) => number),
-		axis: number,
-		negative: boolean,
-		allowNegative: boolean,
-		bidirectional: boolean
-	) {
-		console.log('resize', val, axis, negative, allowNegative, bidirectional)
-		let before = this.oldScale != undefined ? this.oldScale : this.size(axis)
-		if (before instanceof Array) before = before[axis]
-		// const isInverted = before < 0
-		// if (isInverted) negative = !negative
-		const modify = val instanceof Function ? val : (n: number) => n + val
-
-		this.scale[axis] = modify(before)
-		console.log('resize', before, this.scale)
-		// if (negative) {
-		// 	this.scale[axis] = modify(-before)
-		// } else {
-		// 	this.scale[axis] = modify(before)
-		// }
-
-		this.preview_controller.updateGeometry(this)
-	}
 }
-new Property(VanillaItemDisplay, 'string', 'name', { default: 'vanilla_item_display' })
 new Property(VanillaItemDisplay, 'string', 'item', { default: 'minecraft:diamond' })
-new Property(VanillaItemDisplay, 'vector', 'position', { default: [0, 0, 0] })
-new Property(VanillaItemDisplay, 'vector', 'rotation', { default: [0, 0, 0] })
-new Property(VanillaItemDisplay, 'vector', 'scale', { default: [1, 1, 1] })
-new Property(VanillaItemDisplay, 'string', 'visibility', { default: true })
 new Property(VanillaItemDisplay, 'object', 'config', {
 	get default() {
 		return new BoneConfig().toJSON()
@@ -277,33 +206,18 @@ OutlinerElement.registerType(VanillaItemDisplay, VanillaItemDisplay.type)
 
 export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, {
 	setup(el: VanillaItemDisplay) {
-		const mesh = new THREE.Mesh()
-		mesh.fix_rotation = new THREE.Euler(0, 0, 0, 'ZYX')
-		mesh.fix_rotation.x = Math.degToRad(el.rotation[0])
-		mesh.fix_rotation.y = Math.degToRad(el.rotation[1])
-		mesh.fix_rotation.z = Math.degToRad(el.rotation[2])
-		mesh.fix_position = new THREE.Vector3(...el.position)
-		// mesh.fix_scale = new THREE.Vector3(...el.scale)
-		Project!.nodes_3d[el.uuid] = mesh
-
-		PREVIEW_CONTROLLER.updateTransform(el)
-		PREVIEW_CONTROLLER.updateGeometry(el)
-		PREVIEW_CONTROLLER.dispatchEvent('setup', { element: el })
+		ResizableOutlinerElement.prototype.preview_controller.setup(el)
 	},
 	updateGeometry(el: VanillaItemDisplay) {
 		if (!el.mesh) return
-		console.log('updateGeometry', el)
-		// el.mesh.scale.set(...el.scale)
 		void getItemModel(el.item)
 			.then(mesh => {
 				if (!mesh) return
 
-				mesh.geometry.scale(...el.scale)
 				el.mesh.clear()
 				el.mesh.add(mesh)
-
-				PREVIEW_CONTROLLER.updateHighlight(el)
-				PREVIEW_CONTROLLER.updateTransform(el)
+				el.preview_controller.updateHighlight(el)
+				el.preview_controller.updateTransform(el)
 				el.mesh.visible = el.visibility
 				TickUpdates.selection = true
 			})
@@ -314,52 +228,7 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, 
 			})
 	},
 	updateTransform(el: VanillaItemDisplay) {
-		const mesh = el.mesh
-
-		mesh.position.set(el.origin[0], el.origin[1], el.origin[2])
-
-		mesh.rotation.x = Math.degToRad(el.rotation[0])
-		mesh.rotation.y = Math.degToRad(el.rotation[1])
-		mesh.rotation.z = Math.degToRad(el.rotation[2])
-
-		mesh.scale.x = el.scale[0] || 1e-7
-		mesh.scale.y = el.scale[1] || 1e-7
-		mesh.scale.z = el.scale[2] || 1e-7
-
-		if (Format.bone_rig) {
-			if (el.parent instanceof Group) {
-				el.parent.mesh.add(mesh)
-				mesh.position.x -= el.parent.origin[0]
-				mesh.position.y -= el.parent.origin[1]
-				mesh.position.z -= el.parent.origin[2]
-			} else if (mesh.parent !== Project!.model_3d) {
-				Project!.model_3d.add(mesh)
-			}
-		} else if (mesh.parent !== Project!.model_3d) {
-			Project!.model_3d.add(mesh)
-		}
-
-		mesh.updateMatrixWorld()
-
-		if (el.mesh.fix_position) {
-			el.mesh.fix_position.set(...el.position)
-			if (el.parent instanceof Group) {
-				el.mesh.fix_position.x -= el.parent.origin[0]
-				el.mesh.fix_position.y -= el.parent.origin[1]
-				el.mesh.fix_position.z -= el.parent.origin[2]
-			}
-		}
-		if (el.mesh.fix_rotation) {
-			el.mesh.fix_rotation.copy(el.mesh.rotation)
-		}
-		// const itemModel = el.mesh.children.at(0) as THREE.Mesh
-		// if (itemModel) {
-		// 	itemModel.geometry.scale(...el.scale)
-		// 	itemModel.geometry.scale(...el.scale)
-		// }
-		// if (el.mesh.fix_scale) {
-		// 	el.mesh.fix_scale.set(...el.scale)
-		// }
+		ResizableOutlinerElement.prototype.preview_controller.updateTransform(el)
 	},
 	updateHighlight(element: VanillaItemDisplay, force?: boolean | VanillaItemDisplay) {
 		if (!isCurrentFormat() || !element?.mesh) return
@@ -375,38 +244,6 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, 
 			highlight.array.set(Array(highlight.count).fill(highlighted))
 			highlight.needsUpdate = true
 		}
-	},
-})
-
-export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_vanilla_item_display`, {
-	name: translate('action.create_vanilla_item_display.title'),
-	icon: 'icecream',
-	category: 'animated_java',
-	condition() {
-		return isCurrentFormat() && Mode.selected.id === Modes.options.edit.id
-	},
-	click() {
-		Undo.initEdit({ outliner: true, elements: [], selection: true })
-
-		const vanillaItemDisplay = new VanillaItemDisplay({}).init()
-		const group = getCurrentGroup()
-
-		if (group instanceof Group) {
-			vanillaItemDisplay.addTo(group)
-			vanillaItemDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
-		}
-
-		selected.forEachReverse(el => el.unselect())
-		Group.selected && Group.selected.unselect()
-		vanillaItemDisplay.select()
-
-		Undo.finishEdit('Create Vanilla Item Display', {
-			outliner: true,
-			elements: selected,
-			selection: true,
-		})
-
-		return vanillaItemDisplay
 	},
 })
 
@@ -475,9 +312,7 @@ class VanillaItemDisplayAnimator extends BoneAnimator {
 		const bone = this.getElement().mesh
 
 		if (bone.fix_rotation) {
-			bone.rotation.x = Math.degToRad(bone.fix_rotation.x as number)
-			bone.rotation.y = Math.degToRad(bone.fix_rotation.y as number)
-			bone.rotation.z = Math.degToRad(bone.fix_rotation.z as number)
+			bone.rotation.copy(bone.fix_rotation as THREE.Euler)
 			console.log(
 				'fix_rotation',
 				this.element!.name,
@@ -527,9 +362,6 @@ class VanillaItemDisplayAnimator extends BoneAnimator {
 	displayScale(arr: ArrayVector3, multiplier = 1) {
 		if (!arr) return this
 		const bone = this.getElement().mesh
-		// if (bone.fix_scale) {
-		// 	bone.scale.copy(bone.fix_scale)
-		// }
 		bone.scale.x = 1 + (arr[0] - 1) * multiplier || 0.00001
 		bone.scale.y = 1 + (arr[1] - 1) * multiplier || 0.00001
 		bone.scale.z = 1 + (arr[2] - 1) * multiplier || 0.00001
@@ -570,3 +402,35 @@ createBlockbenchMod(
 		context.subscriptions.forEach(unsub => unsub())
 	}
 )
+
+export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_vanilla_item_display`, {
+	name: translate('action.create_vanilla_item_display.title'),
+	icon: 'icecream',
+	category: 'animated_java',
+	condition() {
+		return isCurrentFormat() && Mode.selected.id === Modes.options.edit.id
+	},
+	click() {
+		Undo.initEdit({ outliner: true, elements: [], selection: true })
+
+		const vanillaItemDisplay = new VanillaItemDisplay({}).init()
+		const group = getCurrentGroup()
+
+		if (group instanceof Group) {
+			vanillaItemDisplay.addTo(group)
+			vanillaItemDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
+		}
+
+		selected.forEachReverse(el => el.unselect())
+		Group.selected && Group.selected.unselect()
+		vanillaItemDisplay.select()
+
+		Undo.finishEdit('Create Vanilla Item Display', {
+			outliner: true,
+			elements: selected,
+			selection: true,
+		})
+
+		return vanillaItemDisplay
+	},
+})

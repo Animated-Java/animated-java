@@ -7,10 +7,12 @@ import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
 import { getCurrentVersion } from '../systems/minecraft/versionManager'
 import { events } from '../util/events'
 import { toSafeFuntionName } from '../util/minecraftUtil'
-import { makeNotZero } from '../util/misc'
 import { createAction, createBlockbenchMod } from '../util/moddingTools'
 import { Valuable } from '../util/stores'
 import { translate } from '../util/translation'
+import { ResizableOutlinerElement } from './resizableOutlinerElement'
+import { TextDisplay } from './textDisplay'
+import { VanillaItemDisplay } from './vanillaItemDisplay'
 
 interface VanillaBlockDisplayOptions {
 	name?: string
@@ -21,26 +23,17 @@ interface VanillaBlockDisplayOptions {
 	visibility?: boolean
 }
 
-export class VanillaBlockDisplay extends OutlinerElement {
+export class VanillaBlockDisplay extends ResizableOutlinerElement {
 	static type = `${PACKAGE.name}:vanilla_block_display`
 	static selected: VanillaBlockDisplay[] = []
 	static all: VanillaBlockDisplay[] = []
 
 	public type = VanillaBlockDisplay.type
 	public icon = 'deployed_code'
-	public movable = true
-	public rotatable = true
-	// public resizable = true
-	public scalable = true
 	public needsUniqueName = true
 
 	// Properties
-	public name: string
 	public _block = new Valuable('minecraft:stone')
-	public position: ArrayVector3
-	public rotation: ArrayVector3
-	public scale: ArrayVector3
-	public visibility: boolean
 	public config: IBlueprintBoneConfigJSON
 
 	public error = new Valuable('')
@@ -64,17 +57,11 @@ export class VanillaBlockDisplay extends OutlinerElement {
 			VanillaBlockDisplay.properties[key].reset(this)
 		}
 
+		this.name = 'vanilla_block_display'
 		this.extend(data)
 
-		this.name ??= 'vanilla_item_display'
 		this.block ??= 'minecraft:diamond'
-		this.position ??= [0, 0, 0]
-		this.rotation ??= [0, 0, 0]
-		this.scale ??= [1, 1, 1]
-		this.visibility ??= true
 		this.config ??= {}
-
-		this.sanitizeName()
 
 		const updateBlock = (newBlock: string) => {
 			if (!MINECRAFT_REGISTRY.block) {
@@ -99,26 +86,23 @@ export class VanillaBlockDisplay extends OutlinerElement {
 	}
 
 	get block() {
+		if (this._block === undefined) return 'minecraft:stone'
 		return this._block.get()
 	}
 	set block(value: string) {
+		if (this._block === undefined) return
 		this._block.set(value)
-	}
-
-	public extend(data: VanillaBlockDisplayOptions) {
-		for (const key in VanillaBlockDisplay.properties) {
-			VanillaBlockDisplay.properties[key].merge(this, data)
-		}
-		if (data.visibility !== undefined) {
-			this.visibility = data.visibility
-		}
-
-		return this
 	}
 
 	public sanitizeName(): string {
 		this.name = toSafeFuntionName(this.name)
-		if (!VanillaBlockDisplay.all.some(v => v !== this && v.name === this.name)) {
+		const otherNodes = [
+			...VanillaBlockDisplay.all.filter(v => v !== this),
+			...Group.all,
+			...TextDisplay.all,
+			...VanillaItemDisplay.all,
+		]
+		if (!otherNodes.some(v => v !== this && v.name === this.name)) {
 			return this.name
 		}
 
@@ -132,24 +116,14 @@ export class VanillaBlockDisplay extends OutlinerElement {
 		let maxTries = 1000
 		while (maxTries-- > 0) {
 			const newName = `${this.name}${i}`
-			if (!VanillaBlockDisplay.all.some(v => v !== this && v.name === newName)) {
+			if (!otherNodes.some(v => v !== this && v.name === newName)) {
+				this.name = newName
 				return newName
 			}
 			i++
 		}
 
 		throw new Error('Could not make VanillaBlockDisplay name unique!')
-	}
-
-	get origin(): ArrayVector3 {
-		return this.position
-	}
-
-	getWorldCenter(): THREE.Vector3 {
-		Reusable.vec3.set(0, 0, 0)
-		// @ts-ignore
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-		return THREE.fastWorldPosition(this.mesh, Reusable.vec2).add(Reusable.vec3)
 	}
 
 	getUndoCopy() {
@@ -199,13 +173,6 @@ export class VanillaBlockDisplay extends OutlinerElement {
 		return this
 	}
 
-	selectLow() {
-		Project!.selected_elements.safePush(this)
-		this.selected = true
-		TickUpdates.selection = true
-		return this
-	}
-
 	unselect() {
 		if (!this.selected) return
 		if (
@@ -223,12 +190,7 @@ export class VanillaBlockDisplay extends OutlinerElement {
 		this.preview_controller.updateHighlight(this)
 	}
 }
-new Property(VanillaBlockDisplay, 'string', 'name', { default: 'vanilla_block_display' })
 new Property(VanillaBlockDisplay, 'string', 'block', { default: 'minecraft:stone' })
-new Property(VanillaBlockDisplay, 'vector', 'position', { default: [0, 0, 0] })
-new Property(VanillaBlockDisplay, 'vector', 'rotation', { default: [0, 0, 0] })
-new Property(VanillaBlockDisplay, 'vector', 'scale', { default: [1, 1, 1] })
-new Property(VanillaBlockDisplay, 'string', 'visibility', { default: true })
 new Property(VanillaBlockDisplay, 'object', 'config', {
 	get default() {
 		return new BoneConfig().toJSON()
@@ -238,19 +200,10 @@ OutlinerElement.registerType(VanillaBlockDisplay, VanillaBlockDisplay.type)
 
 export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay, {
 	setup(el: VanillaBlockDisplay) {
-		const mesh = new THREE.Mesh()
-		mesh.fix_rotation = new THREE.Euler(...el.rotation, 'ZYX')
-		mesh.fix_position = new THREE.Vector3(...el.position)
-		mesh.fix_scale = new THREE.Vector3(...el.scale)
-		Project!.nodes_3d[el.uuid] = mesh
-
-		PREVIEW_CONTROLLER.updateTransform(el)
-		PREVIEW_CONTROLLER.updateGeometry(el)
-		PREVIEW_CONTROLLER.dispatchEvent('setup', { element: el })
+		ResizableOutlinerElement.prototype.preview_controller.setup(el)
 	},
 	updateGeometry(el: VanillaBlockDisplay) {
 		if (!el.mesh) return
-		el.mesh.scale.set(...el.scale)
 		void getBlockModel(el.block)
 			.then(result => {
 				if (!result?.mesh) return
@@ -262,8 +215,8 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay,
 				el.mesh.add(result.mesh)
 				el.mesh.add(result.outline)
 
-				PREVIEW_CONTROLLER.updateHighlight(el)
-				PREVIEW_CONTROLLER.updateTransform(el)
+				el.preview_controller.updateHighlight(el)
+				el.preview_controller.updateTransform(el)
 				el.mesh.visible = el.visibility
 				TickUpdates.selection = true
 			})
@@ -275,21 +228,7 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay,
 			})
 	},
 	updateTransform(el: VanillaBlockDisplay) {
-		NodePreviewController.prototype.updateTransform.call(PREVIEW_CONTROLLER, el)
-		if (el.mesh.fix_position) {
-			el.mesh.fix_position.set(...el.position)
-			if (el.parent instanceof Group) {
-				el.mesh.fix_position.x -= el.parent.origin[0]
-				el.mesh.fix_position.y -= el.parent.origin[1]
-				el.mesh.fix_position.z -= el.parent.origin[2]
-			}
-		}
-		if (el.mesh.fix_rotation) {
-			el.mesh.fix_rotation.set(...el.rotation)
-		}
-		if (el.mesh.fix_scale) {
-			el.mesh.fix_scale.set(...el.scale)
-		}
+		ResizableOutlinerElement.prototype.preview_controller.updateTransform(el)
 	},
 	updateHighlight(element: VanillaBlockDisplay, force?: boolean | VanillaBlockDisplay) {
 		if (!isCurrentFormat() || !element?.mesh) return
@@ -308,38 +247,6 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay,
 				highlight.needsUpdate = true
 			}
 		}
-	},
-})
-
-export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_vanilla_block_display`, {
-	name: translate('action.create_vanilla_block_display.title'),
-	icon: 'deployed_code',
-	category: 'animated_java',
-	condition() {
-		return isCurrentFormat() && Mode.selected.id === Modes.options.edit.id
-	},
-	click() {
-		Undo.initEdit({ outliner: true, elements: [], selection: true })
-
-		const vanillaBlockDisplay = new VanillaBlockDisplay({}).init()
-		const group = getCurrentGroup()
-
-		if (group instanceof Group) {
-			vanillaBlockDisplay.addTo(group)
-			vanillaBlockDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
-		}
-
-		selected.forEachReverse(el => el.unselect())
-		Group.selected && Group.selected.unselect()
-		vanillaBlockDisplay.select()
-
-		Undo.finishEdit('Create Vanilla Block Display', {
-			outliner: true,
-			elements: selected,
-			selection: true,
-		})
-
-		return vanillaBlockDisplay
 	},
 })
 
@@ -451,10 +358,6 @@ class VanillaBlockDisplayAnimator extends BoneAnimator {
 	displayScale(arr: ArrayVector3, multiplier = 1) {
 		if (!arr) return this
 		const bone = this.getElement().mesh
-		if (bone.fix_scale) {
-			bone.scale.copy(bone.fix_scale)
-			makeNotZero(bone.scale)
-		}
 		bone.scale.x *= 1 + (arr[0] - 1) * multiplier || 0.00001
 		bone.scale.y *= 1 + (arr[1] - 1) * multiplier || 0.00001
 		bone.scale.z *= 1 + (arr[2] - 1) * multiplier || 0.00001
@@ -495,3 +398,35 @@ createBlockbenchMod(
 		context.subscriptions.forEach(unsub => unsub())
 	}
 )
+
+export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_vanilla_block_display`, {
+	name: translate('action.create_vanilla_block_display.title'),
+	icon: 'deployed_code',
+	category: 'animated_java',
+	condition() {
+		return isCurrentFormat() && Mode.selected.id === Modes.options.edit.id
+	},
+	click() {
+		Undo.initEdit({ outliner: true, elements: [], selection: true })
+
+		const vanillaBlockDisplay = new VanillaBlockDisplay({}).init()
+		const group = getCurrentGroup()
+
+		if (group instanceof Group) {
+			vanillaBlockDisplay.addTo(group)
+			vanillaBlockDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
+		}
+
+		selected.forEachReverse(el => el.unselect())
+		Group.selected && Group.selected.unselect()
+		vanillaBlockDisplay.select()
+
+		Undo.finishEdit('Create Vanilla Block Display', {
+			outliner: true,
+			elements: selected,
+			selection: true,
+		})
+
+		return vanillaBlockDisplay
+	},
+})

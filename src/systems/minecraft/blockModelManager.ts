@@ -24,12 +24,16 @@ export async function getBlockModel(item: string): Promise<BlockModelMesh | unde
 	}
 	if (!result) return undefined
 	result = {
-		mesh: result.mesh.clone(),
-		outline: result.outline.clone(),
+		mesh: result.mesh.clone(true),
+		outline: result.outline.clone(true),
+	}
+	for (const child of result.mesh.children as THREE.Mesh[]) {
+		child.geometry = child.geometry.clone()
 	}
 	result.mesh.geometry = result.mesh.geometry.clone()
 	result.mesh.name = 'vanillaBlockModel'
 	result.mesh.isVanillaBlockModel = true
+	console.log(`Loaded block model for '${item}'`, result)
 	return result
 }
 

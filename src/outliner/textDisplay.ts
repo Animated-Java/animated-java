@@ -8,13 +8,15 @@ import { createAction, createBlockbenchMod } from '../util/moddingTools'
 // import * as MinecraftFull from '../assets/MinecraftFull.json'
 import { getVanillaFont } from '../systems/minecraft/fontManager'
 import { JsonText } from '../systems/minecraft/jsonText'
-import TextDisplayLoading from '../assets/text_display_loading.webp'
 import { Valuable } from '../util/stores'
 import { toSafeFuntionName } from '../util/minecraftUtil'
 import { TextDisplayConfig } from '../nodeConfigs'
 import { TEXT_DISPLAY_CONFIG_ACTION } from '../interface/textDisplayConfigDialog'
 import { events } from '../util/events'
 import { translate } from '../util/translation'
+import { ResizableOutlinerElement } from './resizableOutlinerElement'
+import { VanillaBlockDisplay } from './vanillaBlockDisplay'
+import { VanillaItemDisplay } from './vanillaItemDisplay'
 
 interface TextDisplayOptions {
 	name?: string
@@ -30,26 +32,17 @@ interface TextDisplayOptions {
 }
 type Alignment = 'left' | 'center' | 'right'
 
-export class TextDisplay extends OutlinerElement {
+export class TextDisplay extends ResizableOutlinerElement {
 	static type = `${PACKAGE.name}:text_display`
 	static selected: TextDisplay[] = []
 	static all: TextDisplay[] = []
 
 	public type = TextDisplay.type
 	public icon = 'text_fields'
-	public movable = true
-	public rotatable = true
-	// public resizable = true
-	public scalable = true
 	public needsUniqueName = true
 
 	// Properties
-	public name: string
-	public position: ArrayVector3
-	public rotation: ArrayVector3
-	public scale: ArrayVector3
 	public align: Alignment
-	public visibility
 	public config: IBlueprintTextDisplayConfigJSON
 
 	public menu = new Menu([
@@ -62,9 +55,8 @@ export class TextDisplay extends OutlinerElement {
 	public buttons = [Outliner.buttons.export, Outliner.buttons.locked, Outliner.buttons.visibility]
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	public preview_controller = PREVIEW_CONTROLLER
-	public loadingMesh: THREE.Mesh = new THREE.Mesh()
-	public ready = false
 
+	public ready = false
 	public textError = new Valuable('')
 
 	private _updating = false
@@ -123,7 +115,13 @@ export class TextDisplay extends OutlinerElement {
 
 	public sanitizeName(): string {
 		this.name = toSafeFuntionName(this.name)
-		if (!TextDisplay.all.some(v => v !== this && v.name === this.name)) {
+		const otherNodes = [
+			...TextDisplay.all.filter(v => v !== this),
+			...Group.all,
+			...VanillaBlockDisplay.all,
+			...VanillaItemDisplay.all,
+		]
+		if (!otherNodes.some(v => v !== this && v.name === this.name)) {
 			return this.name
 		}
 
@@ -137,7 +135,8 @@ export class TextDisplay extends OutlinerElement {
 		let maxTries = 1000
 		while (maxTries-- > 0) {
 			const newName = `${this.name}${i}`
-			if (!TextDisplay.all.some(v => v !== this && v.name === newName)) {
+			if (!otherNodes.some(v => v !== this && v.name === newName)) {
+				this.name = newName
 				return newName
 			}
 			i++
@@ -147,65 +146,57 @@ export class TextDisplay extends OutlinerElement {
 	}
 
 	get text() {
+		if (this._text === undefined) return TextDisplay.properties['text'].default as string
 		return this._text.get()
 	}
 
 	set text(value) {
+		if (this._text === undefined) return
+		if (value === this.text) return
 		this._text.set(value)
 	}
 
 	get lineWidth() {
+		if (this._lineWidth === undefined)
+			return TextDisplay.properties['lineWidth'].default as number
 		return this._lineWidth.get()
 	}
 
 	set lineWidth(value) {
+		if (this._lineWidth === undefined) return
 		this._lineWidth.set(value)
 	}
 
 	get backgroundColor() {
+		if (this._backgroundColor === undefined)
+			return TextDisplay.properties['backgroundColor'].default as string
 		return this._backgroundColor.get()
 	}
 
 	set backgroundColor(value) {
+		if (this._backgroundColor === undefined) return
 		this._backgroundColor.set(value)
 	}
 
 	get backgroundAlpha() {
+		if (this._backgroundAlpha === undefined)
+			return TextDisplay.properties['backgroundAlpha'].default as number
 		return this._backgroundAlpha.get()
 	}
 
 	set backgroundAlpha(value) {
+		if (this._backgroundAlpha === undefined) return
 		this._backgroundAlpha.set(value)
 	}
 
 	get shadow() {
+		if (this._shadow === undefined) return TextDisplay.properties['shadow'].default as boolean
 		return this._shadow.get()
 	}
 
 	set shadow(value) {
+		if (this._shadow === undefined) return
 		this._shadow.set(value)
-	}
-
-	extend(data: TextDisplayOptions) {
-		for (const key in TextDisplay.properties) {
-			TextDisplay.properties[key].merge(this, data)
-		}
-		if (data.visibility !== undefined) {
-			this.visibility = data.visibility
-		}
-
-		return this
-	}
-
-	get origin(): ArrayVector3 {
-		return this.position
-	}
-
-	getWorldCenter(): THREE.Vector3 {
-		Reusable.vec3.set(0, 0, 0)
-		// @ts-ignore
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-		return THREE.fastWorldPosition(this.mesh, Reusable.vec2).add(Reusable.vec3)
 	}
 
 	getUndoCopy() {
@@ -256,13 +247,6 @@ export class TextDisplay extends OutlinerElement {
 		return this
 	}
 
-	selectLow() {
-		Project!.selected_elements.safePush(this)
-		this.selected = true
-		TickUpdates.selection = true
-		return this
-	}
-
 	unselect() {
 		if (!this.selected) return
 		if (
@@ -282,6 +266,7 @@ export class TextDisplay extends OutlinerElement {
 	async updateText() {
 		if (this._updating) return
 		this._updating = true
+		let latestMesh: THREE.Mesh | undefined
 		while (
 			this._newText !== undefined ||
 			this._newLineWidth !== undefined ||
@@ -304,9 +289,10 @@ export class TextDisplay extends OutlinerElement {
 			this._newBackgroundAlpha = undefined
 			this._newShadow = undefined
 			if (!text) continue
-			await this.setText(text)
+			latestMesh = await this.setText(text)
 		}
 		this._updating = false
+		return latestMesh
 	}
 
 	async waitForReady() {
@@ -319,7 +305,6 @@ export class TextDisplay extends OutlinerElement {
 		await this.waitForReady()
 		const font = await getVanillaFont()
 		// Hide the geo while rendering
-		this.loadingMesh.visible = true
 
 		const { mesh, outline } = await font.generateTextMesh({
 			jsonText,
@@ -340,20 +325,14 @@ export class TextDisplay extends OutlinerElement {
 		if (previousOutline) this.mesh.remove(previousOutline)
 		this.mesh.add(outline)
 		this.mesh.visible = this.visibility
-
-		this.loadingMesh.visible = false
+		return mesh
 	}
 }
-new Property(TextDisplay, 'string', 'name', { default: 'text_display' })
 new Property(TextDisplay, 'string', 'text', { default: '"Hello World!"' })
-new Property(TextDisplay, 'vector', 'position', { default: [0, 0, 0] })
-new Property(TextDisplay, 'vector', 'rotation', { default: [0, 0, 0] })
-new Property(TextDisplay, 'vector', 'scale', { default: [1, 1, 1] })
 new Property(TextDisplay, 'number', 'lineWidth', { default: 200 })
 new Property(TextDisplay, 'string', 'backgroundColor', { default: '#000000' })
 new Property(TextDisplay, 'number', 'backgroundAlpha', { default: 0.25 })
 new Property(TextDisplay, 'string', 'align', { default: 'center' })
-new Property(TextDisplay, 'string', 'visibility', { default: true })
 new Property(TextDisplay, 'object', 'config', {
 	get default() {
 		return new TextDisplayConfig().toJSON()
@@ -363,92 +342,27 @@ OutlinerElement.registerType(TextDisplay, TextDisplay.type)
 
 export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 	setup(el: TextDisplay) {
-		const textMesh = new THREE.Mesh(new THREE.PlaneGeometry(0, 0))
-		textMesh.fix_rotation = new THREE.Euler(...el.rotation, 'ZYX')
-		textMesh.fix_position = new THREE.Vector3(...el.position)
-		textMesh.fix_scale = new THREE.Vector3(...el.scale)
+		ResizableOutlinerElement.prototype.preview_controller.setup(el)
+		const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0, 0))
 		// Minecraft's transparency is funky 😭
-		textMesh.renderOrder = -1
-
-		new THREE.TextureLoader().load(TextDisplayLoading, texture => {
-			texture.magFilter = THREE.NearestFilter
-			texture.minFilter = THREE.NearestFilter
-			const loadingGeo = new THREE.PlaneGeometry(
-				texture.image.width / 5,
-				texture.image.height / 5
-			)
-			loadingGeo.rotateY(Math.PI)
-			loadingGeo.translate(0, texture.image.height / 2 / 5, 0)
-			const loadingMaterial = new THREE.MeshBasicMaterial({ map: texture, transparent: true })
-			el.loadingMesh = new THREE.Mesh(loadingGeo, loadingMaterial)
-			textMesh.add(el.loadingMesh)
-			el.loadingMesh.visible = false
-		})
-
-		this.mesh = textMesh
+		mesh.renderOrder = -1
 		// FIXME: This will error if there is no Project loaded.
-		Project!.nodes_3d[el.uuid] = textMesh
+		Project!.nodes_3d[el.uuid] = mesh
 
 		void getVanillaFont().then(() => {
-			el.loadingMesh.visible = false
 			el.ready = true
-
-			PREVIEW_CONTROLLER.updateTransform(el)
-			PREVIEW_CONTROLLER.dispatchEvent('setup', { element: el })
+			el.preview_controller.updateTransform(el)
+			el.preview_controller.updateGeometry(el)
+			el.preview_controller.dispatchEvent('setup', { element: el })
 		})
 	},
 	updateGeometry(el: TextDisplay) {
-		PREVIEW_CONTROLLER.mesh.scale.set(...el.scale)
-		void el.updateText()
+		void el.updateText().then(() => {
+			el.preview_controller.updateTransform(el)
+		})
 	},
 	updateTransform(el: TextDisplay) {
-		NodePreviewController.prototype.updateTransform.call(PREVIEW_CONTROLLER, el)
-		if (el.mesh.fix_position) {
-			el.mesh.fix_position.set(...el.position)
-			if (el.parent instanceof Group) {
-				el.mesh.fix_position.x -= el.parent.origin[0]
-				el.mesh.fix_position.y -= el.parent.origin[1]
-				el.mesh.fix_position.z -= el.parent.origin[2]
-			}
-		}
-		if (el.mesh.fix_rotation) {
-			el.mesh.fix_rotation.set(...el.rotation)
-		}
-		if (el.mesh.fix_scale) {
-			el.mesh.fix_scale.set(...el.scale)
-		}
-	},
-})
-
-export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_text_display`, {
-	name: translate('action.create_text_display.title'),
-	icon: 'text_fields',
-	category: 'animated_java',
-	condition() {
-		return isCurrentFormat() && Mode.selected.id === Modes.options.edit.id
-	},
-	click() {
-		Undo.initEdit({ outliner: true, elements: [], selection: true })
-
-		const textDisplay = new TextDisplay({}).init()
-		const group = getCurrentGroup()
-
-		if (group instanceof Group) {
-			textDisplay.addTo(group)
-			textDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
-		}
-
-		selected.forEachReverse(el => el.unselect())
-		Group.selected && Group.selected.unselect()
-		textDisplay.select()
-
-		Undo.finishEdit('Create Text Display', {
-			outliner: true,
-			elements: selected,
-			selection: true,
-		})
-
-		return textDisplay
+		ResizableOutlinerElement.prototype.preview_controller.updateTransform(el)
 	},
 })
 
@@ -607,3 +521,35 @@ createBlockbenchMod(
 		context.subscriptions.forEach(unsub => unsub())
 	}
 )
+
+export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_text_display`, {
+	name: translate('action.create_text_display.title'),
+	icon: 'text_fields',
+	category: 'animated_java',
+	condition() {
+		return isCurrentFormat() && Mode.selected.id === Modes.options.edit.id
+	},
+	click() {
+		Undo.initEdit({ outliner: true, elements: [], selection: true })
+
+		const textDisplay = new TextDisplay({}).init()
+		const group = getCurrentGroup()
+
+		if (group instanceof Group) {
+			textDisplay.addTo(group)
+			textDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
+		}
+
+		selected.forEachReverse(el => el.unselect())
+		Group.selected && Group.selected.unselect()
+		textDisplay.select()
+
+		Undo.finishEdit('Create Text Display', {
+			outliner: true,
+			elements: selected,
+			selection: true,
+		})
+
+		return textDisplay
+	},
+})
