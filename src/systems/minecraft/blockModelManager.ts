@@ -4,7 +4,7 @@ import { IBlockModel } from './model'
 import { TEXTURE_FRAG_SHADER, TEXTURE_VERT_SHADER } from './textureShaders'
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils'
 
-type BlockModelMesh = { mesh: THREE.Mesh; outline: THREE.LineSegments }
+type BlockModelMesh = { mesh: THREE.Mesh; outline: THREE.LineSegments; isBlock: true }
 
 const LOADER = new THREE.TextureLoader()
 const BLOCK_MODEL_CACHE = new Map<string, BlockModelMesh>()
@@ -14,30 +14,31 @@ function getBlockResourceLocation(item: string) {
 	return resource.namespace + ':' + 'block/' + resource.path
 }
 
-export async function getBlockModel(item: string): Promise<BlockModelMesh | undefined> {
+export async function getBlockModel(block: string): Promise<BlockModelMesh | undefined> {
 	await assetsLoaded()
-	let result = BLOCK_MODEL_CACHE.get(item)
+	let result = BLOCK_MODEL_CACHE.get(block)
 	if (!result) {
-		console.warn(`Found no cached item model mesh for '${item}'`)
-		result = await parseBlockModel(getBlockResourceLocation(item))
-		BLOCK_MODEL_CACHE.set(item, result)
+		console.warn(`Found no cached item model mesh for '${block}'`)
+		result = await parseBlockModel(getBlockResourceLocation(block))
+		BLOCK_MODEL_CACHE.set(block, result)
 	}
 	if (!result) return undefined
 	result = {
 		mesh: result.mesh.clone(true),
 		outline: result.outline.clone(true),
+		isBlock: true,
 	}
 	for (const child of result.mesh.children as THREE.Mesh[]) {
 		child.geometry = child.geometry.clone()
 	}
 	result.mesh.geometry = result.mesh.geometry.clone()
-	result.mesh.name = item
+	result.mesh.name = block
 	result.mesh.isVanillaBlockModel = true
-	console.log(`Loaded block model for '${item}'`, result)
+	console.log(`Loaded block model for '${block}'`, result)
 	return result
 }
 
-async function parseBlockModel(
+export async function parseBlockModel(
 	location: string,
 	childModel?: IBlockModel
 ): Promise<BlockModelMesh> {
@@ -68,7 +69,6 @@ async function parseBlockModel(
 
 async function generateBlockMesh(location: string, model: IBlockModel): Promise<BlockModelMesh> {
 	console.log(`Generating block mesh for '${location}' from `, model)
-	const mesh: THREE.Mesh = new THREE.Mesh()
 
 	if (!model.elements) {
 		throw new Error(`No elements defined in block model '${location}'`)
@@ -77,6 +77,7 @@ async function generateBlockMesh(location: string, model: IBlockModel): Promise<
 		throw new Error(`No textures defined in block model '${location}'`)
 	}
 
+	const mesh: THREE.Mesh = new THREE.Mesh()
 	const outlineGeos: THREE.BufferGeometry[] = []
 
 	for (const element of model.elements) {
@@ -112,11 +113,8 @@ async function generateBlockMesh(location: string, model: IBlockModel): Promise<
 				factor = getRescalingFactor(element.rotation.angle)
 			}
 
-			console.log(element.rotation)
-			let origin = element.rotation.origin
+			const origin = element.rotation.origin
 			if (origin) {
-				console.log('Origin:', origin)
-				origin = [origin[0], origin[1], origin[2]]
 				geometry.translate(...(origin.map(v => -v) as ArrayVector3))
 			}
 
@@ -305,7 +303,7 @@ async function generateBlockMesh(location: string, model: IBlockModel): Promise<
 	outline.renderOrder = 2
 	outline.frustumCulled = false
 
-	return { mesh, outline }
+	return { mesh, outline, isBlock: true }
 }
 
 const TEXTURE_CACHE = new Map<string, THREE.Texture>()

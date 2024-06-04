@@ -1,26 +1,39 @@
 import { getPathFromResourceLocation, parseResourceLocation } from '../../util/minecraftUtil'
 import { assetsLoaded, getJSONAsset, getPngAssetAsDataUrl } from './assetManager'
+import { parseBlockModel } from './blockModelManager'
 import { IItemModel } from './model'
 import { TEXTURE_FRAG_SHADER, TEXTURE_VERT_SHADER } from './textureShaders'
 
+type ItemModelMesh = { mesh: THREE.Mesh; outline: THREE.LineSegments; isBlock?: boolean }
+
 const LOADER = new THREE.TextureLoader()
-const ITEM_MODEL_CACHE = new Map<string, THREE.Mesh>()
+const ITEM_MODEL_CACHE = new Map<string, ItemModelMesh>()
 
-export async function getItemModel(item: string): Promise<THREE.Mesh | undefined> {
+export async function getItemModel(item: string): Promise<ItemModelMesh | undefined> {
 	await assetsLoaded()
-	let mesh = ITEM_MODEL_CACHE.get(item)
-	if (!mesh) {
+	let result = ITEM_MODEL_CACHE.get(item)
+	if (!result) {
 		console.warn(`Found no cached item model mesh for '${item}'`)
-		mesh = await parseItemModel(getItemResourceLocation(item))
-		ITEM_MODEL_CACHE.set(item, mesh)
+		result = await parseItemModel(getItemResourceLocation(item))
+		ITEM_MODEL_CACHE.set(item, result)
 	}
-	if (!mesh) return undefined
-	mesh = mesh.clone()
-	mesh.geometry = mesh.geometry.clone()
-	mesh.name = item
-	mesh.isVanillaItemModel = true
+	if (!result) return undefined
+	result = {
+		mesh: result.mesh.clone(true),
+		outline: result.outline.clone(true),
+		isBlock: result.isBlock,
+	}
 
-	return mesh
+	result.mesh.geometry = result.mesh.geometry.clone()
+	result.outline.geometry = result.outline.geometry.clone()
+	result.mesh.name = item
+	if (result.isBlock) {
+		result.mesh.isVanillaBlockModel = true
+	} else {
+		result.mesh.isVanillaItemModel = true
+	}
+
+	return result
 }
 
 function getItemResourceLocation(item: string) {
@@ -28,7 +41,7 @@ function getItemResourceLocation(item: string) {
 	return resource.namespace + ':' + 'item/' + resource.path
 }
 
-async function parseItemModel(location: string, childModel?: IItemModel): Promise<THREE.Mesh> {
+async function parseItemModel(location: string, childModel?: IItemModel): Promise<ItemModelMesh> {
 	const modelPath = getPathFromResourceLocation(location, 'models')
 	const model = getJSONAsset(modelPath + '.json') as IItemModel
 
@@ -49,14 +62,16 @@ async function parseItemModel(location: string, childModel?: IItemModel): Promis
 
 	if (model.parent) {
 		const resource = parseResourceLocation(model.parent)
+		if (resource.type === 'block') {
+			return await parseBlockModel(model.parent, model)
+		}
 		if (resource.path === 'item/generated') {
 			if (!model.textures.layer0) {
 				throw new Error(`No layer0 texture for generated item model '${location}'`)
 			}
 			const texturePath =
 				getPathFromResourceLocation(model.textures.layer0, 'textures') + '.png'
-			const mesh = await generateItemMesh(location, texturePath)
-			return mesh
+			return await generateItemMesh(location, texturePath)
 		} else {
 			return await parseItemModel(model.parent, model)
 		}
@@ -64,7 +79,7 @@ async function parseItemModel(location: string, childModel?: IItemModel): Promis
 	throw new Error(`Unsupported item model '${location}'`)
 }
 
-async function generateItemMesh(location: string, texturePath: string) {
+async function generateItemMesh(location: string, texturePath: string): Promise<ItemModelMesh> {
 	const textureUrl = getPngAssetAsDataUrl(texturePath)
 	const texture = await LOADER.loadAsync(textureUrl)
 	texture.magFilter = THREE.NearestFilter
@@ -235,5 +250,19 @@ async function generateItemMesh(location: string, texturePath: string) {
 
 	mesh.geometry.rotateX(Math.PI / 2)
 
-	return mesh
+	const outlineGeo = mesh.geometry.clone()
+	// Remove the front and back face planes
+	const outlineVerts = Array.from(outlineGeo.attributes.position.array)
+	outlineVerts.splice(0, 24)
+	outlineGeo.setAttribute(
+		'position',
+		new THREE.BufferAttribute(new Float32Array(outlineVerts), 3)
+	)
+
+	const outline = new THREE.LineSegments(
+		new THREE.EdgesGeometry(outlineGeo),
+		Canvas.outlineMaterial
+	)
+
+	return { mesh, outline }
 }

@@ -74,10 +74,12 @@ export function parseResourceLocation(resourceLocation: string) {
 		namespace = 'minecraft'
 	}
 	const path = parts.join('')
+	const resourceType = path.split('/')[0]
 	const parsed = PathModule.parse(path)
 	return {
 		namespace,
 		path,
+		type: resourceType,
 		dir: parsed.dir,
 		name: parsed.name,
 	}

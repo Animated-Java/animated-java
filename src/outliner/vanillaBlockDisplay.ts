@@ -210,7 +210,10 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay,
 	updateGeometry(el: VanillaBlockDisplay) {
 		if (!el.mesh) return
 		const currentModel = el.mesh.children.at(0)
-		if (currentModel?.name === el.block) return
+		if (currentModel?.name === el.block) {
+			el.preview_controller.updateTransform(el)
+			return
+		}
 
 		void getBlockModel(el.block)
 			.then(result => {
@@ -240,15 +243,15 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay,
 	},
 	updateHighlight(element: VanillaBlockDisplay, force?: boolean | VanillaBlockDisplay) {
 		if (!isCurrentFormat() || !element?.mesh) return
-
-		const vanillaBlockMesh = element.mesh.children.at(0) as THREE.Mesh
-		if (!vanillaBlockMesh?.isVanillaBlockModel) return
 		const highlighted =
 			Modes.edit && (force === true || force === element || element.selected) ? 1 : 0
 
-		for (const child of vanillaBlockMesh.children) {
-			if (!(child instanceof THREE.Mesh && child.geometry)) continue
+		const blockModel = element.mesh.children.at(0) as THREE.Mesh
+		if (!blockModel) return
+		for (const child of blockModel.children) {
+			if (!(child instanceof THREE.Mesh)) continue
 			const highlight = child.geometry.attributes.highlight
+
 			if (highlight.array[0] != highlighted) {
 				// @ts-ignore
 				highlight.array.set(Array(highlight.count).fill(highlighted))

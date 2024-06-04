@@ -57,13 +57,19 @@ createBlockbenchMod(
 				} else if (element instanceof VanillaItemDisplay) {
 					if (!element.mesh) continue // Weird edge case.
 					const mesh = element.mesh.children.at(0)
-					if (!mesh?.isVanillaItemModel) continue
+					if (!mesh) continue
 					animatedJavaModels.set(mesh, element)
-					objects.push(mesh)
+					if (mesh.isVanillaItemModel) {
+						objects.push(mesh)
+					} else if (mesh.isVanillaBlockModel) {
+						for (const child of mesh.children) {
+							objects.push(child)
+						}
+					}
 				} else if (element instanceof VanillaBlockDisplay) {
 					if (!element.mesh) continue // Weird edge case.
 					const mesh = element.mesh.children.at(0)
-					if (!mesh?.isVanillaBlockModel) continue
+					if (!mesh) continue
 					animatedJavaModels.set(mesh, element)
 					for (const child of mesh.children) {
 						objects.push(child)

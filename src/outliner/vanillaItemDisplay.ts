@@ -215,14 +215,20 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, 
 	updateGeometry(el: VanillaItemDisplay) {
 		if (!el.mesh) return
 		const currentModel = el.mesh.children.at(0)
-		if (currentModel?.name === el.item) return
+		if (currentModel?.name === el.item) {
+			el.preview_controller.updateTransform(el)
+			return
+		}
 
 		void getItemModel(el.item)
-			.then(mesh => {
-				if (!mesh) return
+			.then(result => {
+				if (!result) return
 
 				el.mesh.clear()
-				el.mesh.add(mesh)
+				el.mesh.add(result.mesh)
+				el.mesh.add(result.outline)
+				el.mesh.outline = result.outline
+
 				el.preview_controller.updateHighlight(el)
 				el.preview_controller.updateTransform(el)
 				el.mesh.visible = el.visibility
@@ -239,17 +245,28 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, 
 	},
 	updateHighlight(element: VanillaItemDisplay, force?: boolean | VanillaItemDisplay) {
 		if (!isCurrentFormat() || !element?.mesh) return
-
-		const vanillaItemMesh = element.mesh.children.at(0) as THREE.Mesh
-		if (!vanillaItemMesh?.isVanillaItemModel) return
-		const highlight = vanillaItemMesh.geometry.attributes.highlight
 		const highlighted =
 			Modes.edit && (force === true || force === element || element.selected) ? 1 : 0
 
-		if (highlight.array[0] != highlighted) {
+		const blockModel = element.mesh.children.at(0) as THREE.Mesh
+		if (!blockModel) return
+
+		const highlight = blockModel.geometry.attributes.highlight
+		if (highlight && highlight.array[0] != highlighted) {
 			// @ts-ignore
 			highlight.array.set(Array(highlight.count).fill(highlighted))
 			highlight.needsUpdate = true
+		}
+
+		for (const child of blockModel.children) {
+			if (!(child instanceof THREE.Mesh)) continue
+			const highlight = child.geometry.attributes.highlight
+
+			if (highlight.array[0] != highlighted) {
+				// @ts-ignore
+				highlight.array.set(Array(highlight.count).fill(highlighted))
+				highlight.needsUpdate = true
+			}
 		}
 	},
 })
