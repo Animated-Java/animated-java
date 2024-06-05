@@ -1,25 +1,33 @@
-import { getPathFromResourceLocation, parseResourceLocation } from '../../util/minecraftUtil'
+import {
+	getPathFromResourceLocation,
+	parseBlock,
+	resolveBlockstateValueType,
+} from '../../util/minecraftUtil'
 import { assetsLoaded, getJSONAsset, getPngAssetAsDataUrl } from './assetManager'
-import { IBlockModel } from './model'
+import {
+	IBlockModel,
+	IBlockState,
+	IBlockStateMultipartCase,
+	IBlockStateMultipartCaseCondition,
+	IBlockStateVariant,
+} from './model'
 import { TEXTURE_FRAG_SHADER, TEXTURE_VERT_SHADER } from './textureShaders'
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils'
 
+type ParsedBlock = NonNullable<ReturnType<typeof parseBlock>>
 type BlockModelMesh = { mesh: THREE.Mesh; outline: THREE.LineSegments; isBlock: true }
 
 const LOADER = new THREE.TextureLoader()
 const BLOCK_MODEL_CACHE = new Map<string, BlockModelMesh>()
-
-function getBlockResourceLocation(item: string) {
-	const resource = parseResourceLocation(item)
-	return resource.namespace + ':' + 'block/' + resource.path
-}
 
 export async function getBlockModel(block: string): Promise<BlockModelMesh | undefined> {
 	await assetsLoaded()
 	let result = BLOCK_MODEL_CACHE.get(block)
 	if (!result) {
 		console.warn(`Found no cached item model mesh for '${block}'`)
-		result = await parseBlockModel(getBlockResourceLocation(block))
+		const parsed = parseBlock(block)
+		if (!parsed) return undefined
+		result = await parseBlockState(parsed)
 		BLOCK_MODEL_CACHE.set(block, result)
 	}
 	if (!result) return undefined
@@ -39,10 +47,10 @@ export async function getBlockModel(block: string): Promise<BlockModelMesh | und
 }
 
 export async function parseBlockModel(
-	location: string,
+	variant: IBlockStateVariant,
 	childModel?: IBlockModel
 ): Promise<BlockModelMesh> {
-	const modelPath = getPathFromResourceLocation(location, 'models')
+	const modelPath = getPathFromResourceLocation(variant.model, 'models')
 	const model = getJSONAsset(modelPath + '.json') as IBlockModel
 
 	if (childModel) {
@@ -59,22 +67,24 @@ export async function parseBlockModel(
 	}
 
 	if (model.parent) {
-		return await parseBlockModel(model.parent, model)
+		const parentVariant = { ...variant, model: model.parent }
+		return await parseBlockModel(parentVariant, model)
 	}
 
-	return await generateBlockMesh(location, model)
-
-	throw new Error(`Unsupported block model '${location}'`)
+	return await generateBlockMesh(variant, model)
 }
 
-async function generateBlockMesh(location: string, model: IBlockModel): Promise<BlockModelMesh> {
-	console.log(`Generating block mesh for '${location}' from `, model)
+async function generateBlockMesh(
+	variant: IBlockStateVariant,
+	model: IBlockModel
+): Promise<BlockModelMesh> {
+	console.log(`Generating block mesh for '${variant.model}' from `, variant, model)
 
 	if (!model.elements) {
-		throw new Error(`No elements defined in block model '${location}'`)
+		throw new Error(`No elements defined in block model '${variant.model}'`)
 	}
 	if (!model.textures) {
-		throw new Error(`No textures defined in block model '${location}'`)
+		throw new Error(`No textures defined in block model '${variant.model}'`)
 	}
 
 	const mesh: THREE.Mesh = new THREE.Mesh()
@@ -152,7 +162,7 @@ async function generateBlockMesh(location: string, model: IBlockModel): Promise<
 		)
 
 		if (!element.faces) {
-			throw new Error(`No faces defined in element for block model '${location}'`)
+			throw new Error(`No faces defined in element for block model '${variant.model}'`)
 		}
 
 		const uvs: number[] = []
@@ -190,7 +200,7 @@ async function generateBlockMesh(location: string, model: IBlockModel): Promise<
 			})
 			// @ts-expect-error
 			material.map = texture
-			material.name = location
+			material.name = variant.model
 			materials.push(material)
 
 			const tw = texture.image.width
@@ -299,6 +309,15 @@ async function generateBlockMesh(location: string, model: IBlockModel): Promise<
 	const outlineGeo = BufferGeometryUtils.mergeBufferGeometries(outlineGeos)
 	const outline = new THREE.LineSegments(outlineGeo, Canvas.outlineMaterial)
 
+	if (variant.y) {
+		mesh.rotateY(Math.degToRad(-variant.y))
+		outline.rotateY(Math.degToRad(-variant.y))
+	}
+	if (variant.x) {
+		mesh.rotateX(Math.degToRad(-variant.x))
+		outline.rotateX(Math.degToRad(-variant.x))
+	}
+
 	outline.no_export = true
 	outline.renderOrder = 2
 	outline.frustumCulled = false
@@ -322,4 +341,157 @@ async function loadTexture(textures: IBlockModel['textures'], key: string): Prom
 	texture.minFilter = THREE.NearestFilter
 	TEXTURE_CACHE.set(textureUrl, texture)
 	return texture
+}
+
+export async function parseBlockState(block: ParsedBlock): Promise<BlockModelMesh> {
+	const path = getPathFromResourceLocation(block.resourceLocation, 'blockstates')
+	const blockstate = (await getJSONAsset(path + '.json')) as IBlockState
+	console.log('Building model from block state', blockstate)
+	// Make sure the block has all the default states
+	block.states = Object.assign({}, block.blockStateRegistryEntry.defaultStates, block.states)
+
+	for (const [k, v] of Object.entries(block.states)) {
+		if (!block.blockStateRegistryEntry.stateValues[k]) {
+			throw new Error(`Invalid block state '${k}' for '${block.resource.name}' `)
+		} else if (!block.blockStateRegistryEntry.stateValues[k].includes(v)) {
+			throw new Error(`Invalid block state value '${v.toString()}' for '${k}'`)
+		}
+	}
+
+	if (blockstate.variants) {
+		const singleVariant = blockstate.variants['']
+		if (singleVariant) {
+			if (Array.isArray(singleVariant)) {
+				return await parseBlockModel(singleVariant[0])
+			} else {
+				return await parseBlockModel(singleVariant)
+			}
+		}
+
+		for (const [name, variant] of Object.entries(blockstate.variants)) {
+			const variantStates: Record<string, ReturnType<typeof resolveBlockstateValueType>> = {}
+			const args = name.split(',')
+			for (const arg of args) {
+				const [key, value] = arg.trim().split('=')
+				const parsedValue = resolveBlockstateValueType(value, false)
+				variantStates[key] = parsedValue
+			}
+
+			const matchesState = Object.entries(variantStates).allAre(([k, v]) =>
+				checkIfBlockStateMatches(block, k, v, false)
+			)
+
+			if (!matchesState) {
+				continue
+			}
+
+			let model: BlockModelMesh
+			if (Array.isArray(variant)) {
+				model = await parseBlockModel(variant[0])
+			} else {
+				model = await parseBlockModel(variant)
+			}
+			return model
+		}
+	} else if (blockstate.multipart) {
+		// throw new Error(`Multipart block states are not supported yet`)
+		const mesh = new THREE.Mesh()
+		const outlines: THREE.BufferGeometry[] = []
+		for (const c of blockstate.multipart) {
+			const result = await parseMultipartCase(block, c)
+			if (!result) continue
+			for (const child of result.mesh.children as THREE.Mesh[]) {
+				const newChild = child.clone()
+				newChild.geometry = newChild.geometry.clone()
+				newChild.rotateY(result.mesh.rotation.y)
+				newChild.rotateX(result.mesh.rotation.x)
+				mesh.add(newChild)
+			}
+			const outlineGeo = result.outline.geometry.clone()
+			outlineGeo.rotateY(result.mesh.rotation.y)
+			outlineGeo.rotateX(result.mesh.rotation.x)
+			outlines.push(outlineGeo)
+		}
+		console.log('Multipart mesh', mesh)
+
+		// @ts-expect-error
+		const outlineGeo = BufferGeometryUtils.mergeBufferGeometries(outlines)
+		const outline = new THREE.LineSegments(outlineGeo, Canvas.outlineMaterial)
+
+		outline.no_export = true
+		outline.renderOrder = 2
+		outline.frustumCulled = false
+
+		return { mesh, outline, isBlock: true }
+	}
+
+	throw new Error(`Unsupported block state '${block.resourceLocation}'`)
+}
+
+async function parseMultipartCase(
+	block: ParsedBlock,
+	mpCase: IBlockStateMultipartCase
+): Promise<BlockModelMesh | void> {
+	if (mpCase.when) {
+		// console.log('NEW CASE\n', mpCase.when, '\n', mpCase.apply)
+		const recurse = (c: IBlockStateMultipartCaseCondition): boolean => {
+			if (c.OR && c.AND) {
+				throw new Error(`Cannot have both OR and AND in a multipart case condition`)
+			} else if (c.OR) {
+				return c.OR.some(v => recurse(v))
+			} else if (c.AND) {
+				return c.AND.every(v => recurse(v))
+			}
+
+			// console.log('CONDITION', c)
+
+			let matchesState = true
+			for (const [k, v] of Object.entries(c) as Array<[string, string]>) {
+				const parsedValue = resolveBlockstateValueType(v, true)
+				matchesState = checkIfBlockStateMatches(block, k, parsedValue, true)
+				// console.log('\t', k, v, '==', parsedValue, '=>', matchesState)
+				if (!matchesState) break
+			}
+
+			// console.log('MATCHES?', matchesState)
+
+			return matchesState
+		}
+		const result = recurse(mpCase.when)
+		// console.log('CASE MATCH?', result)
+		if (!result) return
+	}
+	// console.log('Applying multipart case', mpCase.apply)
+	if (Array.isArray(mpCase.apply)) {
+		return await parseBlockModel(mpCase.apply[0])
+	} else {
+		return await parseBlockModel(mpCase.apply)
+	}
+}
+
+function checkIfBlockStateMatches(
+	block: ParsedBlock,
+	key: string,
+	value: string | number | boolean | Array<string | number | boolean>,
+	allowArray: boolean
+) {
+	if (typeof value === 'string' && value.includes('|')) {
+		if (!allowArray)
+			throw new Error(`Unsupported OR condition in block state '${key}': '${value}'`)
+		value = value.split('|')
+	}
+
+	if (typeof value === 'boolean') {
+		return !!block.states[key] === value
+	} else if (typeof value === 'string') {
+		return block.states[key] === value
+	} else if (typeof value === 'number') {
+		return value === 0
+			? block.states[key] === value || block.states[key] === undefined
+			: block.states[key] === value
+	} else if (allowArray) {
+		return value.includes(block.states[key])
+	} else {
+		throw new Error(`Unsupported variant state type '${typeof value}'`)
+	}
 }

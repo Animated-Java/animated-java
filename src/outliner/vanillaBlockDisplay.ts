@@ -3,16 +3,20 @@ import { PACKAGE } from '../constants'
 import { VANILLA_BLOCK_DISPLAY_CONFIG_ACTION } from '../interface/vanillaBlockDisplayConfigDialog'
 import { BoneConfig } from '../nodeConfigs'
 import { getBlockModel } from '../systems/minecraft/blockModelManager'
+import { BLOCKSTATE_REGISTRY, BlockStateValue } from '../systems/minecraft/blockstateManager'
 import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
 import { getCurrentVersion } from '../systems/minecraft/versionManager'
 import { events } from '../util/events'
-import { toSafeFuntionName } from '../util/minecraftUtil'
+import { parseBlock, toSafeFuntionName } from '../util/minecraftUtil'
 import { createAction, createBlockbenchMod } from '../util/moddingTools'
 import { Valuable } from '../util/stores'
 import { translate } from '../util/translation'
 import { ResizableOutlinerElement } from './resizableOutlinerElement'
 import { TextDisplay } from './textDisplay'
 import { VanillaItemDisplay } from './vanillaItemDisplay'
+
+const ERROR_OUTLINE_MATERIAL = Canvas.outlineMaterial.clone()
+ERROR_OUTLINE_MATERIAL.color.set('#ff0000')
 
 interface VanillaBlockDisplayOptions {
 	name?: string
@@ -60,7 +64,7 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 		this.name = 'vanilla_block_display'
 		this.extend(data)
 
-		this.block ??= 'minecraft:diamond'
+		this.block ??= 'minecraft:stone'
 		this.config ??= {}
 
 		const updateBlock = (newBlock: string) => {
@@ -68,19 +72,21 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 				requestAnimationFrame(() => updateBlock(newBlock))
 				return
 			}
-			let [namespace, id] = newBlock.split(':')
-			if (!id) {
-				id = namespace
-				namespace = 'minecraft'
-			}
-			if (
-				(namespace === 'minecraft' || namespace === '') &&
-				MINECRAFT_REGISTRY.block.has(id)
+			const parsed = parseBlock(newBlock)
+			if (!parsed) {
+				this.error.set('Invalid block ID.')
+			} else if (
+				(parsed.resource.namespace === 'minecraft' || parsed.resource.namespace === '') &&
+				MINECRAFT_REGISTRY.block.has(parsed.resource.name)
 			) {
 				this.error.set('')
 				this.preview_controller.updateGeometry(this)
 			} else {
 				this.error.set(`This block does not exist in Minecraft ${getCurrentVersion()!.id}.`)
+			}
+			if (this.mesh?.outline instanceof THREE.LineSegments) {
+				if (this.error.get()) this.mesh.outline.material = ERROR_OUTLINE_MATERIAL
+				else this.mesh.outline.material = Canvas.outlineMaterial
 			}
 		}
 
@@ -237,16 +243,21 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay,
 					el.error.set(err.message as string)
 				}
 			})
+			.finally(() => {
+				if (el.mesh?.outline instanceof THREE.LineSegments) {
+					if (el.error.get()) el.mesh.outline.material = ERROR_OUTLINE_MATERIAL
+					else el.mesh.outline.material = Canvas.outlineMaterial
+				}
+			})
 	},
 	updateTransform(el: VanillaBlockDisplay) {
 		ResizableOutlinerElement.prototype.preview_controller.updateTransform(el)
 	},
-	updateHighlight(element: VanillaBlockDisplay, force?: boolean | VanillaBlockDisplay) {
-		if (!isCurrentFormat() || !element?.mesh) return
-		const highlighted =
-			Modes.edit && (force === true || force === element || element.selected) ? 1 : 0
+	updateHighlight(el: VanillaBlockDisplay, force?: boolean | VanillaBlockDisplay) {
+		if (!isCurrentFormat() || !el?.mesh) return
+		const highlighted = Modes.edit && (force === true || force === el || el.selected) ? 1 : 0
 
-		const blockModel = element.mesh.children.at(0) as THREE.Mesh
+		const blockModel = el.mesh.children.at(0) as THREE.Mesh
 		if (!blockModel) return
 		for (const child of blockModel.children) {
 			if (!(child instanceof THREE.Mesh)) continue
@@ -450,4 +461,45 @@ export function debugBlocks() {
 		const y = Math.floor(i / maxX) * 32
 		new VanillaBlockDisplay({ name: block, block, position: [x, 8, y] }).init()
 	}
+}
+
+export function debugBlockState(block: string) {
+	const blockState = BLOCKSTATE_REGISTRY[block]
+	if (!blockState) return
+
+	const permutations = computeState(blockState.stateValues)
+
+	const maxX = Math.floor(Math.sqrt(permutations.length))
+	for (let i = 0; i < permutations.length; i++) {
+		const x = (i % maxX) * 32
+		const y = Math.floor(i / maxX) * 32
+		const str = generateBlockStateString(permutations[i])
+		new VanillaBlockDisplay({
+			name: block + str,
+			block: block + str,
+			position: [x, 8, y],
+		}).init()
+	}
+}
+
+function generateBlockStateString(state: Record<string, BlockStateValue>) {
+	const str = Object.entries(state).map(([k, v]) => `${k}=${v.toString()}`)
+	return `[${str.join(',')}]`
+}
+
+// FetchBot is the GOAT 🐐
+function computeState(state: Record<string, BlockStateValue[]>) {
+	const maxPermutation = Object.values(state).reduce((acc, cur) => acc * cur.length, 1)
+	const permutations: Array<Record<string, string>> = []
+	for (let i = 0; i < maxPermutation; i++) {
+		const permutation: Record<string, string> = {}
+		let i2 = i
+		Object.entries(state).forEach(([key, value]) => {
+			const index = i2 % value.length
+			permutation[key] = String(value[index])
+			i2 = Math.floor(i2 / value.length)
+		})
+		permutations.push(permutation)
+	}
+	return permutations
 }

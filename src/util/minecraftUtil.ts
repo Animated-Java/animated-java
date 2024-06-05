@@ -1,4 +1,5 @@
 import * as pathjs from 'path'
+import { BLOCKSTATE_REGISTRY } from '../systems/minecraft/blockstateManager'
 
 export interface IMinecraftResourceLocation {
 	resourcePackRoot: string
@@ -147,4 +148,51 @@ export function mergeTag(oldTag: IFunctionTag, newTag: IFunctionTag): IFunctionT
 		}
 	})
 	return newTag
+}
+
+export function resolveBlockstateValueType(
+	value: string,
+	allowArray: true
+): string | number | boolean | Array<string | number | boolean>
+export function resolveBlockstateValueType(
+	value: string,
+	allowArray: false
+): string | number | boolean
+export function resolveBlockstateValueType(value: string, allowArray: boolean) {
+	if (value === 'true') return true
+	if (value === 'false') return false
+	if (!isNaN(Number(value))) return Number(value)
+	if (allowArray && value.includes('|')) {
+		return value.split('|').map(v => {
+			if (v === 'true') return true
+			if (v === 'false') return false
+			if (!isNaN(Number(v))) return Number(v)
+			return v
+		})
+	}
+	return value
+}
+
+export function parseBlock(block: string) {
+	const states: Record<string, ReturnType<typeof resolveBlockstateValueType>> = {}
+	if (block.includes('[')) {
+		const match = block.match(/(.+?)\[((?:[^,=[\]]+=[^,=[\]]+,?)+)?]/)
+		if (!match) return
+		if (match[2] !== undefined) {
+			const args = match[2].split(',')
+			for (const arg of args) {
+				const [key, value] = arg.trim().split('=')
+				states[key] = resolveBlockstateValueType(value, false)
+			}
+		}
+		block = match[1]
+	}
+
+	const resource = parseResourceLocation(block)
+	return {
+		resource,
+		resourceLocation: resource.namespace + ':' + resource.path,
+		states,
+		blockStateRegistryEntry: BLOCKSTATE_REGISTRY[resource.name],
+	}
 }

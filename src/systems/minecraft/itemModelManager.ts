@@ -63,7 +63,7 @@ async function parseItemModel(location: string, childModel?: IItemModel): Promis
 	if (model.parent) {
 		const resource = parseResourceLocation(model.parent)
 		if (resource.type === 'block') {
-			return await parseBlockModel(model.parent, model)
+			return await parseBlockModel({ model: model.parent }, model)
 		}
 		if (resource.path === 'item/generated') {
 			if (!model.textures.layer0) {

@@ -81,7 +81,16 @@
         - [x] Parent model inheritance
         - [x] block/block
         - [ ] Edge Cases go here
-            - [ ] 
+            - [ ] signs
+            - [ ] fluids, water/lava
+            - [ ] hanging_signs
+            - [ ] chest
+            - [ ] ender_chest
+            - [ ] mob heads
+            - [ ] banners
+            - [ ] shulker boxes
+            - [ ] beds
+            - [ ] multi-parts like walls throw an error if they don't have any elements.
 - [ ] Locator rotation support
 
 # Data Pack Compiler
@@ -106,6 +115,7 @@
 - [ ] Add support for vanilla block displays.
 
 # Resource Pack
+- [ ] Warn the user when they have custom elements in their model, but have disabled the resource pack export.
 
 # Website / Documentation
 - [ ] Replicate API *legacy* routes statically for backwards compatability.

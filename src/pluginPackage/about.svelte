@@ -45,6 +45,8 @@
 		Java's Exported Data Pack to make sure it has as little performance impact as possible.
 	</li>
 	<li>Limited Molang support. If Blockbench can render it, Animated Java can animate it.</li>
+	<li>Text Display previewing and animation support.</li>
+	<li>Resource Pack-less exporting. Animate Vanilla block and item models!</li>
 	<li>Locators: Run commands relative to a locators position via keyframes.</li>
 	<li>
 		Camera Plugin Support: Install the <a href="https://www.blockbench.net/plugins/cameras"

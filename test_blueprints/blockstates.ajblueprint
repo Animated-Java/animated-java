@@ -1,0 +1,50 @@
+{
+	"meta": {
+		"format": "animated_java_blueprint",
+		"format_version": "1.0.0",
+		"uuid": "0184ff74-4557-e0db-2ecc-efe8a7011a46",
+		"save_location": "D:\\github-repos\\animated-java\\animated-java\\test_blueprints\\blockstates.ajblueprint",
+		"last_used_export_namespace": "blueprint"
+	},
+	"project_settings": {
+		"export_namespace": "blueprint",
+		"show_bounding_box": false,
+		"auto_bounding_box": true,
+		"bounding_box": [48, 48],
+		"enable_plugin_mode": false,
+		"enable_resource_pack": true,
+		"enable_data_pack": true,
+		"display_item": "minecraft:white_dye",
+		"customModelDataOffset": 0,
+		"enable_advanced_resource_pack_settings": false,
+		"resource_pack": "",
+		"display_item_path": "",
+		"model_folder": "",
+		"texture_folder": "",
+		"enable_advanced_data_pack_settings": false,
+		"data_pack": "",
+		"summon_commands": "",
+		"interpolation_duration": 1,
+		"teleportation_duration": 1,
+		"use_storage_for_animation": false
+	},
+	"resolution": {
+		"width": 16,
+		"height": 16
+	},
+	"elements": [],
+	"outliner": [],
+	"textures": [],
+	"variants": {
+		"default": {
+			"display_name": "Default",
+			"name": "default",
+			"uuid": "c79ede10-67d7-8730-033c-de43ab658b53",
+			"texture_map": {},
+			"excluded_bones": []
+		},
+		"list": []
+	},
+	"animations": [],
+	"animation_controllers": []
+}

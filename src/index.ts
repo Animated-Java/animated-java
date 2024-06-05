@@ -52,6 +52,7 @@ import { compileDataPack } from './systems/datapackCompiler'
 // Minecraft Systems
 import './systems/minecraft/versionManager'
 import './systems/minecraft/registryManager'
+import './systems/minecraft/blockstateManager'
 import './systems/minecraft/assetManager'
 import './systems/minecraft/fontManager'
 // Misc imports
@@ -71,7 +72,8 @@ import { getVanillaFont } from './systems/minecraft/fontManager'
 import * as itemModelManager from './systems/minecraft/itemModelManager'
 import * as blockModelManager from './systems/minecraft/blockModelManager'
 import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
-import { VanillaBlockDisplay, debugBlocks } from './outliner/vanillaBlockDisplay'
+import { VanillaBlockDisplay, debugBlockState, debugBlocks } from './outliner/vanillaBlockDisplay'
+import { BLOCKSTATE_REGISTRY } from './systems/minecraft/blockstateManager'
 
 // Show loading popup
 void showLoadingPopup().then(async () => {
@@ -113,6 +115,8 @@ globalThis.AnimatedJava = {
 		VanillaItemDisplay,
 		VanillaBlockDisplay,
 		debugBlocks,
+		debugBlockState,
+		BLOCKSTATE_REGISTRY,
 	},
 }
 

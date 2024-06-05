@@ -86,3 +86,25 @@ export interface IBlockModel {
 	ambientocclusion?: boolean
 	elements?: IModelELement[]
 }
+
+export interface IBlockStateVariant {
+	model: string
+	uvlock?: boolean
+	x?: number
+	y?: number
+}
+
+export type IBlockStateMultipartCaseCondition = {
+	OR: IBlockStateMultipartCaseCondition[]
+	AND: IBlockStateMultipartCaseCondition[]
+} & Record<string, string>
+
+export interface IBlockStateMultipartCase {
+	when?: IBlockStateMultipartCaseCondition
+	apply: IBlockStateVariant | Array<IBlockStateVariant & { weight?: number }>
+}
+
+export interface IBlockState {
+	variants?: Record<string, IBlockStateVariant | Array<IBlockStateVariant & { weight?: number }>>
+	multipart?: IBlockStateMultipartCase[]
+}

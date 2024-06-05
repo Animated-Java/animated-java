@@ -444,8 +444,8 @@ class TextDisplayAnimator extends BoneAnimator {
 				bone.rotation.y -= added_rotation.y * multiplier
 				bone.rotation.z += added_rotation.z * multiplier
 			} else {
-				bone.rotation.x += Math.degToRad(-arr[0]) * multiplier
-				bone.rotation.y += Math.degToRad(-arr[1]) * multiplier
+				bone.rotation.x -= Math.degToRad(arr[0]) * multiplier
+				bone.rotation.y -= Math.degToRad(arr[1]) * multiplier
 				bone.rotation.z += Math.degToRad(arr[2]) * multiplier
 			}
 		}
@@ -474,9 +474,6 @@ class TextDisplayAnimator extends BoneAnimator {
 	displayScale(arr: ArrayVector3, multiplier = 1) {
 		if (!arr) return this
 		const bone = this.getElement().mesh
-		if (bone.fix_scale) {
-			bone.scale.copy(bone.fix_scale)
-		}
 		bone.scale.x *= 1 + (arr[0] - 1) * multiplier || 0.00001
 		bone.scale.y *= 1 + (arr[1] - 1) * multiplier || 0.00001
 		bone.scale.z *= 1 + (arr[2] - 1) * multiplier || 0.00001

@@ -36,7 +36,7 @@
 		{
 			"name": "vanilla_block_display",
 			"position": [0, 6, 16],
-			"rotation": [90, 0, 0],
+			"rotation": [-180, 0, 0],
 			"scale": [3, 1, 1],
 			"visibility": true,
 			"item": "minecraft:diamond",
@@ -53,7 +53,7 @@
 		{
 			"name": "vanilla_block_display2",
 			"position": [0, 6, -16],
-			"rotation": [-90, 0, 0],
+			"rotation": [0, 0, 0],
 			"scale": [3, 1, 1],
 			"visibility": true,
 			"item": "minecraft:diamond",
@@ -235,15 +235,14 @@
 			"override": false,
 			"length": 0.05,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"saved": false,
 			"path": "",
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",
 			"loop_delay": "",
-			"excluded_bones": [],
-			"animators": {}
+			"excluded_bones": []
 		}
 	],
 	"animation_controllers": []

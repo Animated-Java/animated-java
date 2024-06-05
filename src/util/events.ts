@@ -23,6 +23,7 @@ export const events = {
 	MINECRAFT_ASSETS_LOADED: new PluginEvent('minecraftAssetsLoaded'),
 	MINECRAFT_REGISTRY_LOADED: new PluginEvent('minecraftRegistriesLoaded'),
 	MINECRAFT_FONTS_LOADED: new PluginEvent('minecraftFontsLoaded'),
+	BLOCKSTATE_REGISTRY_LOADED: new PluginEvent('blockstateRegistryLoaded'),
 
 	PRE_SELECT_PROJECT: new PluginEvent<ModelProject>('preSelectProject'),
 	SELECT_PROJECT: new PluginEvent<ModelProject>('selectProject'),

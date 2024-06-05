@@ -436,6 +436,7 @@ export async function compileDataPack(options: {
 		ioThreadCount: null,
 		dontEmitComments: true,
 		setup: null,
+		formatVersion: Infinity, // We are living in the future! 🤖
 	})
 
 	const ajmeta = new AJMeta(
