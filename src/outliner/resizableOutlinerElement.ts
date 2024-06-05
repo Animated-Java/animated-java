@@ -43,7 +43,7 @@ export class ResizableOutlinerElement extends OutlinerElement {
 		this.scale ??= [1, 1, 1]
 		this.visibility ??= true
 
-		this.sanitizeName()
+		// this.sanitizeName()
 	}
 
 	get origin() {

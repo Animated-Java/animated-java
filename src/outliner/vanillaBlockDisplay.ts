@@ -3,7 +3,7 @@ import { PACKAGE } from '../constants'
 import { VANILLA_BLOCK_DISPLAY_CONFIG_ACTION } from '../interface/vanillaBlockDisplayConfigDialog'
 import { BoneConfig } from '../nodeConfigs'
 import { getBlockModel } from '../systems/minecraft/blockModelManager'
-import { BLOCKSTATE_REGISTRY, BlockStateValue } from '../systems/minecraft/blockstateManager'
+import { BlockStateValue, getBlockState } from '../systems/minecraft/blockstateManager'
 import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
 import { getCurrentVersion } from '../systems/minecraft/versionManager'
 import { events } from '../util/events'
@@ -67,12 +67,12 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 		this.block ??= 'minecraft:stone'
 		this.config ??= {}
 
-		const updateBlock = (newBlock: string) => {
+		const updateBlock = async (newBlock: string) => {
 			if (!MINECRAFT_REGISTRY.block) {
-				requestAnimationFrame(() => updateBlock(newBlock))
+				requestAnimationFrame(() => void updateBlock(newBlock))
 				return
 			}
-			const parsed = parseBlock(newBlock)
+			const parsed = await parseBlock(newBlock)
 			if (!parsed) {
 				this.error.set('Invalid block ID.')
 			} else if (
@@ -91,7 +91,7 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 		}
 
 		this._block.subscribe(value => {
-			updateBlock(value)
+			void updateBlock(value)
 		})
 	}
 
@@ -108,12 +108,14 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 	public sanitizeName(): string {
 		this.name = toSafeFuntionName(this.name)
 		const otherNodes = [
-			...VanillaBlockDisplay.all.filter(v => v !== this),
+			...VanillaBlockDisplay.all.filter(v => v.uuid !== this.uuid),
 			...Group.all,
 			...TextDisplay.all,
 			...VanillaItemDisplay.all,
 		]
-		if (!otherNodes.some(v => v !== this && v.name === this.name)) {
+		const otherNames = new Set(otherNodes.map(v => v.name))
+
+		if (!otherNames.has(this.name)) {
 			return this.name
 		}
 
@@ -124,10 +126,10 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 			this.name = this.name.slice(0, -match[0].length)
 		}
 
-		let maxTries = 1000
+		let maxTries = 10000
 		while (maxTries-- > 0) {
 			const newName = `${this.name}${i}`
-			if (!otherNodes.some(v => v !== this && v.name === newName)) {
+			if (!otherNames.has(newName)) {
 				this.name = newName
 				return newName
 			}
@@ -463,8 +465,8 @@ export function debugBlocks() {
 	}
 }
 
-export function debugBlockState(block: string) {
-	const blockState = BLOCKSTATE_REGISTRY[block]
+export async function debugBlockState(block: string) {
+	const blockState = await getBlockState(block)
 	if (!blockState) return
 
 	const permutations = computeState(blockState.stateValues)

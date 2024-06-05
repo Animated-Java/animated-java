@@ -116,12 +116,14 @@ export class TextDisplay extends ResizableOutlinerElement {
 	public sanitizeName(): string {
 		this.name = toSafeFuntionName(this.name)
 		const otherNodes = [
-			...TextDisplay.all.filter(v => v !== this),
+			...TextDisplay.all.filter(v => v.uuid !== this.uuid),
 			...Group.all,
 			...VanillaBlockDisplay.all,
 			...VanillaItemDisplay.all,
 		]
-		if (!otherNodes.some(v => v !== this && v.name === this.name)) {
+		const otherNames = new Set(otherNodes.map(v => v.name))
+
+		if (!otherNames.has(this.name)) {
 			return this.name
 		}
 
@@ -132,10 +134,10 @@ export class TextDisplay extends ResizableOutlinerElement {
 			this.name = this.name.slice(0, -match[0].length)
 		}
 
-		let maxTries = 1000
+		let maxTries = 10000
 		while (maxTries-- > 0) {
 			const newName = `${this.name}${i}`
-			if (!otherNodes.some(v => v !== this && v.name === newName)) {
+			if (!otherNames.has(newName)) {
 				this.name = newName
 				return newName
 			}

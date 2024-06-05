@@ -1,5 +1,9 @@
 import * as pathjs from 'path'
-import { BLOCKSTATE_REGISTRY } from '../systems/minecraft/blockstateManager'
+import {
+	BlockStateRegistryEntry,
+	BlockStateValue,
+	getBlockState,
+} from '../systems/minecraft/blockstateManager'
 
 export interface IMinecraftResourceLocation {
 	resourcePackRoot: string
@@ -173,7 +177,14 @@ export function resolveBlockstateValueType(value: string, allowArray: boolean) {
 	return value
 }
 
-export function parseBlock(block: string) {
+export interface IParsedBlock {
+	resource: ReturnType<typeof parseResourceLocation>
+	resourceLocation: string
+	states: Record<string, BlockStateValue>
+	blockStateRegistryEntry: BlockStateRegistryEntry | undefined
+}
+
+export async function parseBlock(block: string): Promise<IParsedBlock | undefined> {
 	const states: Record<string, ReturnType<typeof resolveBlockstateValueType>> = {}
 	if (block.includes('[')) {
 		const match = block.match(/(.+?)\[((?:[^,=[\]]+=[^,=[\]]+,?)+)?]/)
@@ -193,6 +204,6 @@ export function parseBlock(block: string) {
 		resource,
 		resourceLocation: resource.namespace + ':' + resource.path,
 		states,
-		blockStateRegistryEntry: BLOCKSTATE_REGISTRY[resource.name],
+		blockStateRegistryEntry: await getBlockState(resource.name),
 	}
 }

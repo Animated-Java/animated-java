@@ -107,12 +107,14 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 	public sanitizeName(): string {
 		this.name = toSafeFuntionName(this.name)
 		const otherNodes = [
-			...VanillaItemDisplay.all.filter(v => v !== this),
+			...VanillaItemDisplay.all.filter(v => v.uuid !== this.uuid),
 			...Group.all,
 			...TextDisplay.all,
 			...VanillaBlockDisplay.all,
 		]
-		if (!otherNodes.some(v => v !== this && v.name === this.name)) {
+		const otherNames = new Set(otherNodes.map(v => v.name))
+
+		if (!otherNames.has(this.name)) {
 			return this.name
 		}
 
@@ -123,10 +125,10 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 			this.name = this.name.slice(0, -match[0].length)
 		}
 
-		let maxTries = 1000
+		let maxTries = 10000
 		while (maxTries-- > 0) {
 			const newName = `${this.name}${i}`
-			if (!otherNodes.some(v => v !== this && v.name === newName)) {
+			if (!otherNames.has(newName)) {
 				this.name = newName
 				return newName
 			}
@@ -137,7 +139,7 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 	}
 
 	getUndoCopy() {
-		const copy = new VanillaItemDisplay(this)
+		const copy: any = {}
 
 		for (const key in VanillaItemDisplay.properties) {
 			VanillaItemDisplay.properties[key].copy(this, copy)
@@ -145,7 +147,8 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 
 		copy.uuid = this.uuid
 		copy.type = this.type
-		delete copy.parent
+		// delete copy.parent
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 		return copy
 	}
 

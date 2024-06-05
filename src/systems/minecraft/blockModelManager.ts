@@ -1,9 +1,11 @@
 import {
+	IParsedBlock,
 	getPathFromResourceLocation,
 	parseBlock,
 	resolveBlockstateValueType,
 } from '../../util/minecraftUtil'
 import { assetsLoaded, getJSONAsset, getPngAssetAsDataUrl } from './assetManager'
+import { BlockStateValue } from './blockstateManager'
 import {
 	IBlockModel,
 	IBlockState,
@@ -14,7 +16,6 @@ import {
 import { TEXTURE_FRAG_SHADER, TEXTURE_VERT_SHADER } from './textureShaders'
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils'
 
-type ParsedBlock = NonNullable<ReturnType<typeof parseBlock>>
 type BlockModelMesh = { mesh: THREE.Mesh; outline: THREE.LineSegments; isBlock: true }
 
 const LOADER = new THREE.TextureLoader()
@@ -25,7 +26,7 @@ export async function getBlockModel(block: string): Promise<BlockModelMesh | und
 	let result = BLOCK_MODEL_CACHE.get(block)
 	if (!result) {
 		console.warn(`Found no cached item model mesh for '${block}'`)
-		const parsed = parseBlock(block)
+		const parsed = await parseBlock(block)
 		if (!parsed) return undefined
 		result = await parseBlockState(parsed)
 		BLOCK_MODEL_CACHE.set(block, result)
@@ -343,10 +344,12 @@ async function loadTexture(textures: IBlockModel['textures'], key: string): Prom
 	return texture
 }
 
-export async function parseBlockState(block: ParsedBlock): Promise<BlockModelMesh> {
+export async function parseBlockState(block: IParsedBlock): Promise<BlockModelMesh> {
 	const path = getPathFromResourceLocation(block.resourceLocation, 'blockstates')
 	const blockstate = (await getJSONAsset(path + '.json')) as IBlockState
-	console.log('Building model from block state', blockstate)
+	if (!block.blockStateRegistryEntry) {
+		throw new Error(`Block state registry entry not found for '${block.resource.name}'`)
+	}
 	// Make sure the block has all the default states
 	block.states = Object.assign({}, block.blockStateRegistryEntry.defaultStates, block.states)
 
@@ -412,7 +415,6 @@ export async function parseBlockState(block: ParsedBlock): Promise<BlockModelMes
 			outlineGeo.rotateX(result.mesh.rotation.x)
 			outlines.push(outlineGeo)
 		}
-		console.log('Multipart mesh', mesh)
 
 		// @ts-expect-error
 		const outlineGeo = BufferGeometryUtils.mergeBufferGeometries(outlines)
@@ -429,11 +431,10 @@ export async function parseBlockState(block: ParsedBlock): Promise<BlockModelMes
 }
 
 async function parseMultipartCase(
-	block: ParsedBlock,
+	block: IParsedBlock,
 	mpCase: IBlockStateMultipartCase
 ): Promise<BlockModelMesh | void> {
 	if (mpCase.when) {
-		// console.log('NEW CASE\n', mpCase.when, '\n', mpCase.apply)
 		const recurse = (c: IBlockStateMultipartCaseCondition): boolean => {
 			if (c.OR && c.AND) {
 				throw new Error(`Cannot have both OR and AND in a multipart case condition`)
@@ -443,25 +444,17 @@ async function parseMultipartCase(
 				return c.AND.every(v => recurse(v))
 			}
 
-			// console.log('CONDITION', c)
-
 			let matchesState = true
 			for (const [k, v] of Object.entries(c) as Array<[string, string]>) {
 				const parsedValue = resolveBlockstateValueType(v, true)
 				matchesState = checkIfBlockStateMatches(block, k, parsedValue, true)
-				// console.log('\t', k, v, '==', parsedValue, '=>', matchesState)
 				if (!matchesState) break
 			}
-
-			// console.log('MATCHES?', matchesState)
-
 			return matchesState
 		}
 		const result = recurse(mpCase.when)
-		// console.log('CASE MATCH?', result)
 		if (!result) return
 	}
-	// console.log('Applying multipart case', mpCase.apply)
 	if (Array.isArray(mpCase.apply)) {
 		return await parseBlockModel(mpCase.apply[0])
 	} else {
@@ -470,9 +463,9 @@ async function parseMultipartCase(
 }
 
 function checkIfBlockStateMatches(
-	block: ParsedBlock,
+	block: IParsedBlock,
 	key: string,
-	value: string | number | boolean | Array<string | number | boolean>,
+	value: BlockStateValue,
 	allowArray: boolean
 ) {
 	if (typeof value === 'string' && value.includes('|')) {
@@ -490,7 +483,7 @@ function checkIfBlockStateMatches(
 			? block.states[key] === value || block.states[key] === undefined
 			: block.states[key] === value
 	} else if (allowArray) {
-		return value.includes(block.states[key])
+		return value.includes(block.states[key] as string | number | boolean)
 	} else {
 		throw new Error(`Unsupported variant state type '${typeof value}'`)
 	}

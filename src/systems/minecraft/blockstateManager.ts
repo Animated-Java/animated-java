@@ -10,7 +10,7 @@ const REGISTRIES_URL = 'https://raw.githubusercontent.com/misode/mcmeta/summary/
 
 export type BlockStateValue = string | number | boolean | Array<string | number | boolean>
 
-class BlockStateRegistryEntry {
+export class BlockStateRegistryEntry {
 	public defaultStates: Record<string, BlockStateValue> = {}
 	public stateValues: Record<string, BlockStateValue[]> = {}
 
@@ -89,6 +89,17 @@ export async function checkForRegistryUpdate() {
 	console.log('BlockState Registry is up to date!')
 	updateMemoryRegistry()
 	events.BLOCKSTATE_REGISTRY_LOADED.dispatch()
+}
+
+export async function getBlockState(block: string) {
+	if (Object.keys(BLOCKSTATE_REGISTRY).length === 0) {
+		return new Promise<BlockStateRegistryEntry | undefined>(resolve => {
+			events.BLOCKSTATE_REGISTRY_LOADED.subscribe(() => {
+				resolve(BLOCKSTATE_REGISTRY[block])
+			}, true)
+		})
+	}
+	return BLOCKSTATE_REGISTRY[block]
 }
 
 events.LOAD.subscribe(() => {
