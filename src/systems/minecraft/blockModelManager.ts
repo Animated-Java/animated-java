@@ -204,8 +204,11 @@ async function generateBlockMesh(
 			material.name = variant.model
 			materials.push(material)
 
-			const tw = texture.image.width
-			const th = texture.image.height
+			// UVs are always based on 16x16 texture width, not the actual texture size
+			const tw = 16
+			const th = 16
+			// const tw = texture.image.width
+			// const th = texture.image.height
 			if (face.uv) {
 				const [x, y, w, h] = face.uv
 				// The THREE face UV has a strange order.

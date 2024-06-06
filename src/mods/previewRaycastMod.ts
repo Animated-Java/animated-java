@@ -59,12 +59,8 @@ createBlockbenchMod(
 					const mesh = element.mesh.children.at(0)
 					if (!mesh) continue
 					animatedJavaModels.set(mesh, element)
-					if (mesh.isVanillaItemModel) {
-						objects.push(mesh)
-					} else if (mesh.isVanillaBlockModel) {
-						for (const child of mesh.children) {
-							objects.push(child)
-						}
+					for (const child of mesh.children) {
+						objects.push(child)
 					}
 				} else if (element instanceof VanillaBlockDisplay) {
 					if (!element.mesh) continue // Weird edge case.
@@ -91,7 +87,12 @@ createBlockbenchMod(
 			const intersects = this.raycaster.intersectObjects(objects, false)
 			// const i = intersects.at(0) as THREE.Intersection
 			for (const i of intersects) {
-				if (i && i.uv && i.object instanceof THREE.Mesh && i.object.isVanillaItemModel) {
+				if (
+					i &&
+					i.uv &&
+					i.object instanceof THREE.Mesh &&
+					i.object.parent?.isVanillaItemModel
+				) {
 					const image = i.object.material.map!.image as HTMLImageElement
 					const { width, height } = image
 					const imageData = getImageData(image)
@@ -100,7 +101,7 @@ createBlockbenchMod(
 					const I = (x + y * width) * 4
 					if (imageData.data[I + 3] <= 140) continue
 
-					const element = animatedJavaModels.get(i.object)
+					const element = animatedJavaModels.get(i.object.parent)
 					if (element) {
 						if (isHover) {
 							element.preview_controller.updateHighlight(element, true)

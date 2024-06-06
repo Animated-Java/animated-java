@@ -69,6 +69,7 @@ import { TextDisplay } from './outliner/textDisplay'
 import { getLatestVersionClientDownloadUrl } from './systems/minecraft/assetManager'
 import { hideLoadingPopup, showLoadingPopup } from './interface/animatedJavaLoadingPopup'
 import { getVanillaFont } from './systems/minecraft/fontManager'
+import * as assetManager from './systems/minecraft/assetManager'
 import * as itemModelManager from './systems/minecraft/itemModelManager'
 import * as blockModelManager from './systems/minecraft/blockModelManager'
 import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
@@ -110,6 +111,7 @@ globalThis.AnimatedJava = {
 		TextDisplay,
 		getLatestVersionClientDownloadUrl,
 		getVanillaFont,
+		assetManager,
 		itemModelManager,
 		blockModelManager,
 		VanillaItemDisplay,

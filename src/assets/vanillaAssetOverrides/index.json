@@ -1,0 +1,15 @@
+{
+	"assets/minecraft/blockstates/chest.json": {
+		"override": "blockstates/chest.json"
+	},
+	"assets/minecraft/models/block/chest.json": {
+		"override": "models/block/chest.json"
+	},
+
+	"assets/minecraft/models/item/player_head.json": {
+		"override": "models/item/player_head.json"
+	},
+	"assets/animated_java/textures/steve.png": {
+		"override": "textures/steve.png"
+	}
+}

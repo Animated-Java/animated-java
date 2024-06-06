@@ -13,7 +13,11 @@
 
 	events.UPDATE_SELECTION.subscribe(() => {
 		selected = VanillaItemDisplay.selected.at(0)
-		if (!selected) return
+		if (!selected) {
+			item = new Valuable('')
+			error = new Valuable('')
+			return
+		}
 		item = selected._item
 		error = selected.error
 	})

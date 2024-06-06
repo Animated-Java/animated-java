@@ -13,7 +13,11 @@
 
 	events.UPDATE_SELECTION.subscribe(() => {
 		selected = VanillaBlockDisplay.selected.at(0)
-		if (!selected) return
+		if (!selected) {
+			block = new Valuable('')
+			error = new Valuable('')
+			return
+		}
 		block = selected._block
 		error = selected.error
 	})

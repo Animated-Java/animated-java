@@ -246,22 +246,13 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, 
 	updateTransform(el: VanillaItemDisplay) {
 		ResizableOutlinerElement.prototype.preview_controller.updateTransform(el)
 	},
-	updateHighlight(element: VanillaItemDisplay, force?: boolean | VanillaItemDisplay) {
-		if (!isCurrentFormat() || !element?.mesh) return
-		const highlighted =
-			Modes.edit && (force === true || force === element || element.selected) ? 1 : 0
+	updateHighlight(el: VanillaItemDisplay, force?: boolean | VanillaItemDisplay) {
+		if (!isCurrentFormat() || !el?.mesh) return
+		const highlighted = Modes.edit && (force === true || force === el || el.selected) ? 1 : 0
 
-		const blockModel = element.mesh.children.at(0) as THREE.Mesh
-		if (!blockModel) return
-
-		const highlight = blockModel.geometry.attributes.highlight
-		if (highlight && highlight.array[0] != highlighted) {
-			// @ts-ignore
-			highlight.array.set(Array(highlight.count).fill(highlighted))
-			highlight.needsUpdate = true
-		}
-
-		for (const child of blockModel.children) {
+		const itemModel = el.mesh.children.at(0) as THREE.Mesh
+		if (!itemModel) return
+		for (const child of itemModel.children) {
 			if (!(child instanceof THREE.Mesh)) continue
 			const highlight = child.geometry.attributes.highlight
 

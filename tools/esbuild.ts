@@ -18,6 +18,7 @@ import inlineImage from 'esbuild-plugin-inline-image'
 import ImportGlobPlugin from 'esbuild-plugin-import-glob'
 import packagerPlugin from './plugins/packagerPlugin'
 import inlineWorkerPlugin from './plugins/workerPlugin'
+import assetOverridePlugin from './plugins/assetOverridePlugin'
 
 const PACKAGE = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
 
@@ -187,6 +188,7 @@ const devConfig: esbuild.BuildOptions = {
 		sveltePlugin(svelteConfig),
 		packagerPlugin(),
 		inlineWorkerPlugin(devWorkerConfig),
+		assetOverridePlugin(),
 	],
 	format: 'iife',
 	define: DEFINES,
@@ -211,6 +213,7 @@ const prodConfig: esbuild.BuildOptions = {
 		sveltePlugin(svelteConfig),
 		packagerPlugin(),
 		inlineWorkerPlugin({}),
+		assetOverridePlugin(),
 	],
 	keepNames: true,
 	banner: createBanner(),

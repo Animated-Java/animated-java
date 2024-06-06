@@ -1,0 +1,21 @@
+{
+	"textures": {
+		"skull": "animated_java:steve"
+	},
+	"elements": [
+		{
+			"name": "head",
+			"from": [4, 0, 4],
+			"to": [12, 8, 12],
+			"rotation": { "angle": 0, "axis": "y", "origin": [8, 0, 8] },
+			"faces": {
+				"north": { "uv": [2, 2, 4, 4], "texture": "#skull" },
+				"east": { "uv": [0, 2, 2, 4], "texture": "#skull" },
+				"south": { "uv": [6, 2, 8, 4], "texture": "#skull" },
+				"west": { "uv": [4, 2, 6, 4], "texture": "#skull" },
+				"up": { "uv": [2, 0, 4, 2], "texture": "#skull" },
+				"down": { "uv": [4, 0, 6, 2], "texture": "#skull" }
+			}
+		}
+	]
+}
