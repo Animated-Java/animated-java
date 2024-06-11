@@ -25,7 +25,7 @@ export async function getBlockModel(block: string): Promise<BlockModelMesh | und
 	await assetsLoaded()
 	let result = BLOCK_MODEL_CACHE.get(block)
 	if (!result) {
-		console.warn(`Found no cached item model mesh for '${block}'`)
+		// console.warn(`Found no cached item model mesh for '${block}'`)
 		const parsed = await parseBlock(block)
 		if (!parsed) return undefined
 		result = await parseBlockState(parsed)
@@ -43,7 +43,6 @@ export async function getBlockModel(block: string): Promise<BlockModelMesh | und
 	result.mesh.geometry = result.mesh.geometry.clone()
 	result.mesh.name = block
 	result.mesh.isVanillaBlockModel = true
-	console.log(`Loaded block model for '${block}'`, result)
 	return result
 }
 
@@ -150,6 +149,8 @@ async function generateBlockMesh(
 		}
 
 		geometry.translate(-8, -8, -8)
+		geometry.rotateY(Math.degToRad(180))
+		geometry.translate(8, 8, 8)
 
 		const indices = []
 		for (let i = 0; i < 6; i++) {

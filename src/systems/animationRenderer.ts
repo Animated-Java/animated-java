@@ -5,6 +5,7 @@ import {
 	getKeyframeRepeatFrequency,
 } from '../mods/customKeyframesMod'
 import { TextDisplay } from '../outliner/textDisplay'
+import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
 import { roundToNth } from '../util/misc'
 import { AnyRenderedNode, IRenderedRig } from './rigRenderer'
 import * as crypto from 'crypto'
@@ -21,17 +22,15 @@ export function restoreSceneAngle() {
 
 function getNodeMatrix(node: OutlinerElement, scale: number) {
 	const matrixWorld = node.mesh.matrixWorld.clone()
-	// const vanillaItemModel = node.mesh.children.find(c => c.isVanillaItemModel)
-	matrixWorld.setPosition(
-		new THREE.Vector3().setFromMatrixPosition(matrixWorld).multiplyScalar(1 / 16)
-	)
+	const pos = new THREE.Vector3().setFromMatrixPosition(matrixWorld).multiplyScalar(1 / 16)
+	matrixWorld.setPosition(pos)
+
 	const scaleVec = new THREE.Vector3().setScalar(scale)
+	// Hacky way to force the matrix to update in-game
 	scaleVec.x += Math.random() * 0.00001
 	scaleVec.y += Math.random() * 0.00001
 	scaleVec.z += Math.random() * 0.00001
 	matrixWorld.scale(scaleVec)
-
-	// if (vanillaItemModel) return matrixWorld
 
 	if (node instanceof TextDisplay) {
 		matrixWorld.multiply(
@@ -43,7 +42,7 @@ function getNodeMatrix(node: OutlinerElement, scale: number) {
 }
 
 export interface IAnimationNode {
-	type: 'bone' | 'camera' | 'locator' | 'text_display'
+	type: 'bone' | 'camera' | 'locator' | 'text_display' | 'item_display' | 'block_display'
 	name: string
 	uuid: string
 	node?: Group | NullObject | Locator | OutlinerElement | TextDisplay
@@ -134,6 +133,8 @@ export function getAnimationNodes(
 			repeatFrequency: number | undefined
 		switch (node.type) {
 			case 'text_display':
+			case 'item_display':
+			case 'block_display':
 			case 'bone': {
 				matrix = getNodeMatrix(node.node, node.scale)
 				// Only add the frame if the matrix has changed.

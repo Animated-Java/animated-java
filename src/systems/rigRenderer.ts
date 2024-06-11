@@ -21,6 +21,8 @@ import {
 } from './animationRenderer'
 import * as crypto from 'crypto'
 import { JsonText } from './minecraft/jsonText'
+import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
+import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
 
 export interface IRenderedFace {
 	uv: number[]
@@ -112,6 +114,20 @@ export interface IRenderedNodes {
 		lineWidth: number
 		scale: number
 		config: IBlueprintTextDisplayConfigJSON
+	}
+	ItemDisplay: IRenderedNode & {
+		type: 'item_display'
+		node: VanillaItemDisplay
+		item: string
+		scale: number
+		config: IBlueprintBoneConfigJSON
+	}
+	BlockDisplay: IRenderedNode & {
+		type: 'block_display'
+		node: VanillaBlockDisplay
+		block: string
+		scale: number
+		config: IBlueprintBoneConfigJSON
 	}
 }
 
@@ -344,6 +360,12 @@ function renderGroup(group: Group, rig: IRenderedRig): INodeStructure | undefine
 		} else if (OutlinerElement.types.camera && node instanceof OutlinerElement.types.camera) {
 			const camera = renderCamera(node as ICamera, rig)
 			if (camera) structure.children.push(camera)
+		} else if (node instanceof VanillaItemDisplay) {
+			const display = renderItemDisplay(node, rig)
+			if (display) structure.children.push(display)
+		} else if (node instanceof VanillaBlockDisplay) {
+			const display = renderBlockDisplay(node, rig)
+			if (display) structure.children.push(display)
 		} else if (node instanceof Cube) {
 			const element = renderCube(node, rig, renderedBone.model)
 			if (element) renderedBone.model.elements.push(element)
@@ -353,14 +375,7 @@ function renderGroup(group: Group, rig: IRenderedRig): INodeStructure | undefine
 	}
 
 	// Don't export groups without a model.
-	if (
-		!(
-			group.configs.default.vanilla_item_model ||
-			Object.values(group.configs.variants).some(v => v.vanilla_item_model)
-		) &&
-		group.children.filter(c => c instanceof Cube).length === 0
-	)
-		return
+	if (group.children.filter(c => c instanceof Cube).length === 0) return
 
 	const diff = new THREE.Vector3().subVectors(
 		renderedBone.boundingBox.max,
@@ -382,39 +397,102 @@ function renderGroup(group: Group, rig: IRenderedRig): INodeStructure | undefine
 	return structure
 }
 
-function renderTextDisplay(
-	textDisplay: TextDisplay,
+function renderItemDisplay(
+	display: VanillaItemDisplay,
 	rig: IRenderedRig
 ): INodeStructure | undefined {
-	if (!textDisplay.export) return
-	const parentId = (
-		textDisplay.parent instanceof Group ? textDisplay.parent.uuid : textDisplay.parent
-	)!
+	if (!display.export) return
+	const parentId = (display.parent instanceof Group ? display.parent.uuid : display.parent)!
 
-	const path = PathModule.join(rig.modelExportFolder, textDisplay.name + `.json`)
+	const path = PathModule.join(rig.modelExportFolder, display.name + `.json`)
 	const parsed = parseResourcePackPath(path)
 
 	if (!parsed) {
-		console.error(textDisplay)
-		throw new Error(`Invalid bone path: ${textDisplay.name} -> ${path}`)
+		console.error(display)
+		throw new Error(`Invalid bone path: ${display.name} -> ${path}`)
+	}
+
+	const renderedBone: IRenderedNodes['ItemDisplay'] = {
+		type: 'item_display',
+		parent: parentId,
+		parentNode: display.parent instanceof Group ? display.parent : null,
+		node: display,
+		name: display.name,
+		uuid: display.uuid,
+		item: display.item,
+		scale: 1,
+		config: display.config,
+	}
+
+	rig.nodeMap[display.uuid] = renderedBone
+	return {
+		uuid: display.uuid,
+		children: [],
+	}
+}
+
+function renderBlockDisplay(
+	display: VanillaBlockDisplay,
+	rig: IRenderedRig
+): INodeStructure | undefined {
+	if (!display.export) return
+	const parentId = (display.parent instanceof Group ? display.parent.uuid : display.parent)!
+
+	const path = PathModule.join(rig.modelExportFolder, display.name + `.json`)
+	const parsed = parseResourcePackPath(path)
+
+	if (!parsed) {
+		console.error(display)
+		throw new Error(`Invalid bone path: ${display.name} -> ${path}`)
+	}
+
+	const renderedBone: IRenderedNodes['BlockDisplay'] = {
+		type: 'block_display',
+		parent: parentId,
+		parentNode: display.parent instanceof Group ? display.parent : null,
+		node: display,
+		name: display.name,
+		uuid: display.uuid,
+		block: display.block,
+		scale: 1,
+		config: display.config,
+	}
+
+	rig.nodeMap[display.uuid] = renderedBone
+	return {
+		uuid: display.uuid,
+		children: [],
+	}
+}
+
+function renderTextDisplay(display: TextDisplay, rig: IRenderedRig): INodeStructure | undefined {
+	if (!display.export) return
+	const parentId = (display.parent instanceof Group ? display.parent.uuid : display.parent)!
+
+	const path = PathModule.join(rig.modelExportFolder, display.name + `.json`)
+	const parsed = parseResourcePackPath(path)
+
+	if (!parsed) {
+		console.error(display)
+		throw new Error(`Invalid bone path: ${display.name} -> ${path}`)
 	}
 
 	const renderedBone: IRenderedNodes['TextDisplay'] = {
 		type: 'text_display',
 		parent: parentId,
-		parentNode: textDisplay.parent instanceof Group ? textDisplay.parent : null,
-		node: textDisplay,
-		name: textDisplay.name,
-		uuid: textDisplay.uuid,
-		text: JsonText.fromString(textDisplay.text),
-		lineWidth: textDisplay.lineWidth,
+		parentNode: display.parent instanceof Group ? display.parent : null,
+		node: display,
+		name: display.name,
+		uuid: display.uuid,
+		text: JsonText.fromString(display.text),
+		lineWidth: display.lineWidth,
 		scale: 1,
-		config: textDisplay.config,
+		config: display.config,
 	}
 
-	rig.nodeMap[textDisplay.uuid] = renderedBone
+	rig.nodeMap[display.uuid] = renderedBone
 	return {
-		uuid: textDisplay.uuid,
+		uuid: display.uuid,
 		children: [],
 	}
 }
@@ -598,6 +676,12 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 		} else if (OutlinerElement.types.camera && node instanceof OutlinerElement.types.camera) {
 			const camera = renderCamera(node as ICamera, rig)
 			if (camera) rootNode.children.push(camera)
+		} else if (node instanceof VanillaItemDisplay) {
+			const display = renderItemDisplay(node, rig)
+			if (display) rootNode.children.push(display)
+		} else if (node instanceof VanillaBlockDisplay) {
+			const display = renderBlockDisplay(node, rig)
+			if (display) rootNode.children.push(display)
 		} else if (node instanceof Cube) {
 			console.error(`Encountered cube in root of outliner:`, node)
 		} else {

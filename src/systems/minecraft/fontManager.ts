@@ -703,7 +703,7 @@ function loadMinecraftFonts() {
 		standardGalacticAlphabetFont.load(),
 	]).then(() => {
 		console.log('Minecraft fonts loaded!')
-		events.MINECRAFT_FONTS_LOADED.dispatch()
+		requestAnimationFrame(() => events.MINECRAFT_FONTS_LOADED.dispatch())
 	})
 }
 

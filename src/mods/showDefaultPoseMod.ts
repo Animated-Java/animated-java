@@ -14,7 +14,7 @@ createBlockbenchMod(
 			const nodes = [...Group.all, ...Outliner.elements]
 			for (const node of nodes) {
 				// @ts-expect-error
-				if (!node.constructor.animator) return
+				if (!node.constructor.animator) continue
 				const mesh = node.mesh
 				if (mesh.fix_rotation) mesh.rotation.copy(mesh.fix_rotation as THREE.Euler)
 				if (mesh.fix_position) mesh.position.copy(mesh.fix_position as THREE.Vector3)

@@ -60,13 +60,13 @@
         - [x] item/handheld_rod
         - [x] item/handheld_mace
         - [ ] Edge Cases go here
-            - [ ] <entity>_spawn_egg
-            - [ ] firework_star
-            - [ ] leather armor
+            - [x] <entity>_spawn_egg
+            - [x] firework_star
+            - [x] leather armor
                 - [ ] Look into adding a color picker for tintable items.
             - [ ] builtin/entity
                 - [ ] shield
-                - [ ] chest
+                - [x] chest
                 - [ ] conduit
                 - [ ] decorated_pot
                 - [ ] template_banner
@@ -77,20 +77,20 @@
 - [ ] Add vanilla block displays
     - [x] Create a custom element type for block displays.
     - [ ] Add rendering for vanilla block models.
-        - [ ] Use Blockstates to select models.
+        - [x] Use Blockstates to select models.
         - [x] Parent model inheritance
         - [x] block/block
         - [ ] Edge Cases go here
             - [ ] signs
             - [ ] fluids, water/lava
             - [ ] hanging_signs
-            - [ ] chest
+            - [x] chest
             - [ ] ender_chest
             - [ ] mob heads
             - [ ] banners
             - [ ] shulker boxes
             - [ ] beds
-            - [ ] multi-parts like walls throw an error if they don't have any elements.
+            - [ ] multi-parts like walls throw an intneral error if they don't have any elements.
 - [ ] Locator rotation support
 
 # Data Pack Compiler
@@ -139,4 +139,5 @@
 
 # Post 1.0.0
 - [ ] Add support for [block-display.com's API](https://wiki.block-display.com/api/get-api)
+- [ ] Add support and previewing for interaction entities.
 

@@ -1,3 +1,5 @@
+import { makeNotZero } from '../util/misc'
+
 export class ResizableOutlinerElement extends OutlinerElement {
 	// Properties
 	public name: string
@@ -105,7 +107,7 @@ export class ResizableOutlinerElement extends OutlinerElement {
 		this.preview_controller.updateGeometry(this)
 	}
 }
-new Property(ResizableOutlinerElement, 'string', 'name', { default: 'vanilla_item_display' })
+new Property(ResizableOutlinerElement, 'string', 'name', { default: 'resizable_outliner_element' })
 new Property(ResizableOutlinerElement, 'vector', 'position', { default: [0, 0, 0] })
 new Property(ResizableOutlinerElement, 'vector', 'rotation', { default: [0, 0, 0] })
 new Property(ResizableOutlinerElement, 'vector', 'scale', { default: [1, 1, 1] })
@@ -141,6 +143,7 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(ResizableOutlinerEle
 		}
 		if (el.mesh.fix_scale) {
 			el.mesh.fix_scale.set(...el.scale)
+			makeNotZero(el.mesh.fix_scale)
 		}
 	},
 })

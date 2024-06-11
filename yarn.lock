@@ -2414,10 +2414,10 @@ matcher@^3.0.0:
   dependencies:
     escape-string-regexp "^4.0.0"
 
-mc-build@^3.2.1:
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/mc-build/-/mc-build-3.2.1.tgz#cd3abee288ea15d885c088e3640d43e102d863b9"
-  integrity sha512-5vfkgTorAjzhXHfN+wI3//8iD4C6y8lNVgWdokVAEBY7aLEjYA8yWuovd+69k6+E8dvInRDiYMvkgu1NQlqdpg==
+mc-build@^3.2.2:
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/mc-build/-/mc-build-3.2.2.tgz#39edc6c47ba0f79a56fdcee562fed1c99b273823"
+  integrity sha512-L/1DEqO1ubRuISTS92x64MzpmzmpLmXM90zCX5hMuv6BG5DtEsB2BNlcpvTU9zZ7/EnlmgW9kQ9tO2L4pyF2bg==
   dependencies:
     tsx "^4.7.2"
 

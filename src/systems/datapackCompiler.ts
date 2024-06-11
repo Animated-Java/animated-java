@@ -13,7 +13,7 @@ import {
 	sortObjectKeys,
 } from './util'
 import { BoneConfig, TextDisplayConfig } from '../nodeConfigs'
-import { IFunctionTag, mergeTag, parseDataPackPath } from '../util/minecraftUtil'
+import { IFunctionTag, mergeTag, parseBlock, parseDataPackPath } from '../util/minecraftUtil'
 import { JsonText } from './minecraft/jsonText'
 import { MAX_PROGRESS, PROGRESS } from '../interface/exportProgressDialog'
 import { roundTo } from '../util/misc'
@@ -200,7 +200,7 @@ namespace TELLRAW {
 		])
 }
 
-function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) {
+async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) {
 	const aj = Project!.animated_java
 	const passengers: NbtList = new NbtList()
 
@@ -306,6 +306,47 @@ function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) {
 				passenger.set('line_width', new NbtInt(node.lineWidth))
 
 				TextDisplayConfig.fromJSON(node.config).toNBT(passenger)
+				break
+			}
+			case 'item_display': {
+				passenger.set('id', new NbtString('minecraft:item_display'))
+				tags.add(new NbtString(TAGS.GLOBAL_BONE()))
+				tags.add(new NbtString(TAGS.PROJECT_BONE(aj.export_namespace)))
+				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.export_namespace, node.name)))
+				passenger.set(
+					'item',
+					new NbtCompound()
+						.set('id', new NbtString(node.item))
+						.set('count', new NbtInt(1))
+				)
+
+				BoneConfig.fromJSON(node.config).toNBT(passenger)
+				break
+			}
+			case 'block_display': {
+				passenger.set('id', new NbtString('minecraft:block_display'))
+				tags.add(new NbtString(TAGS.GLOBAL_BONE()))
+				tags.add(new NbtString(TAGS.PROJECT_BONE(aj.export_namespace)))
+				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.export_namespace, node.name)))
+
+				const parsed = await parseBlock(node.block)
+				if (!parsed) {
+					throw new Error(`Invalid Blockstate '${node.block}' in node '${node.name}'!`)
+				}
+
+				const states = new NbtCompound()
+				for (const [k, v] of Object.entries(parsed.states)) {
+					states.set(k, new NbtString(v.toString()))
+				}
+
+				passenger.set(
+					'block_state',
+					new NbtCompound()
+						.set('Name', new NbtString(parsed.resource.name))
+						.set('Properties', states)
+				)
+
+				BoneConfig.fromJSON(node.config).toNBT(passenger)
 				break
 			}
 		}
@@ -506,7 +547,7 @@ export async function compileDataPack(options: {
 		animations,
 		variants: Variant.all,
 		export_version: Math.random().toString().substring(2, 10),
-		root_entity_passengers: generateRootEntityPassengers(rig, rigHash),
+		root_entity_passengers: await generateRootEntityPassengers(rig, rigHash),
 		TAGS,
 		OBJECTIVES,
 		TELLRAW,

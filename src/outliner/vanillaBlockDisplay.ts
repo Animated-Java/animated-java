@@ -382,6 +382,10 @@ class VanillaBlockDisplayAnimator extends BoneAnimator {
 	displayScale(arr: ArrayVector3, multiplier = 1) {
 		if (!arr) return this
 		const bone = this.getElement().mesh
+		if (bone.fix_scale) {
+			bone.scale.copy(bone.fix_scale)
+		}
+
 		bone.scale.x *= 1 + (arr[0] - 1) * multiplier || 0.00001
 		bone.scale.y *= 1 + (arr[1] - 1) * multiplier || 0.00001
 		bone.scale.z *= 1 + (arr[2] - 1) * multiplier || 0.00001
@@ -469,7 +473,7 @@ export async function debugBlockState(block: string) {
 	const blockState = await getBlockState(block)
 	if (!blockState) return
 
-	const permutations = computeState(blockState.stateValues)
+	const permutations = computeAllStatePermutations(blockState.stateValues)
 
 	const maxX = Math.floor(Math.sqrt(permutations.length))
 	for (let i = 0; i < permutations.length; i++) {
@@ -490,7 +494,7 @@ function generateBlockStateString(state: Record<string, BlockStateValue>) {
 }
 
 // FetchBot is the GOAT 🐐
-function computeState(state: Record<string, BlockStateValue[]>) {
+function computeAllStatePermutations(state: Record<string, BlockStateValue[]>) {
 	const maxPermutation = Object.values(state).reduce((acc, cur) => acc * cur.length, 1)
 	const permutations: Array<Record<string, string>> = []
 	for (let i = 0; i < maxPermutation; i++) {

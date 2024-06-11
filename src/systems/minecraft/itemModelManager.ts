@@ -14,7 +14,7 @@ export async function getItemModel(item: string): Promise<ItemModelMesh | undefi
 	await assetsLoaded()
 	let result = ITEM_MODEL_CACHE.get(item)
 	if (!result) {
-		console.warn(`Found no cached item model mesh for '${item}'`)
+		// console.warn(`Found no cached item model mesh for '${item}'`)
 		result = await parseItemModel(getItemResourceLocation(item))
 		ITEM_MODEL_CACHE.set(item, result)
 	}

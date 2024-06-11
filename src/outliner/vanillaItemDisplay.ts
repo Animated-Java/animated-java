@@ -331,13 +331,6 @@ class VanillaItemDisplayAnimator extends BoneAnimator {
 
 		if (bone.fix_rotation) {
 			bone.rotation.copy(bone.fix_rotation as THREE.Euler)
-			console.log(
-				'fix_rotation',
-				this.element!.name,
-				bone.fix_rotation.toArray(),
-				bone.rotation.toArray(),
-				arr
-			)
 		}
 
 		if (arr) {
@@ -380,6 +373,9 @@ class VanillaItemDisplayAnimator extends BoneAnimator {
 	displayScale(arr: ArrayVector3, multiplier = 1) {
 		if (!arr) return this
 		const bone = this.getElement().mesh
+		if (bone.fix_scale) {
+			bone.scale.copy(bone.fix_scale)
+		}
 		bone.scale.x = 1 + (arr[0] - 1) * multiplier || 0.00001
 		bone.scale.y = 1 + (arr[1] - 1) * multiplier || 0.00001
 		bone.scale.z = 1 + (arr[2] - 1) * multiplier || 0.00001

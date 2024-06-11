@@ -849,23 +849,6 @@
 			"type": "locator"
 		},
 		{
-			"name": "stretchy_pants",
-			"position": [0, 40, 0],
-			"rotation": [0, 0, 0],
-			"scale": [1, 1, 1],
-			"visibility": true,
-			"item": "minecraft:diamond",
-			"config": {},
-			"block": "minecraft:stone",
-			"text": "[\n  \"\",\n  {\n  \t\"text\": \"Sometimes \",\n  \t\"italic\": true\n  },\n  \"you \",\n  {\n  \t\"text\": \"have\",\n  \t\"bold\": true\n  },\n  \" to wear \",\n  {\n  \t\"text\": \"stretchy\",\n  \t\"color\": \"yellow\"\n  },\n  \" pants.\\n\",\n  {\n  \t\"text\": \"(It's for \",\n  },\n  {\n  \t\"text\": \"fun!\",\n  \t\"underlined\": true,\n  \t\"color\": \"blue\"\n  },\n  \")\"\n]",
-			"lineWidth": 100,
-			"backgroundColor": "#000000",
-			"backgroundAlpha": 0.25098,
-			"align": "center",
-			"uuid": "365b1266-1125-13e1-01ee-5a82335137f4",
-			"type": "animated_java:text_display"
-		},
-		{
 			"name": "egg",
 			"position": [0, 30, -1.5],
 			"rotation": [0, 0, 0],
@@ -883,8 +866,8 @@
 			"type": "animated_java:vanilla_item_display"
 		},
 		{
-			"name": "vanilla_block_model",
-			"position": [-3, 31, -2.25],
+			"name": "eye_left",
+			"position": [-5, 29, -2.25],
 			"rotation": [0, 0, 0],
 			"scale": [0.25, 0.25, 0],
 			"visibility": true,
@@ -900,8 +883,8 @@
 			"type": "animated_java:vanilla_block_display"
 		},
 		{
-			"name": "vanilla_block_model2",
-			"position": [3, 31, -2.25],
+			"name": "eye_right",
+			"position": [1, 29, -2.25],
 			"rotation": [0, 0, 0],
 			"scale": [0.25, 0.25, 0],
 			"visibility": true,
@@ -917,8 +900,8 @@
 			"type": "animated_java:vanilla_block_display"
 		},
 		{
-			"name": "vanilla_block_model3",
-			"position": [-2.5, 30.5, -2.5],
+			"name": "pupil_left",
+			"position": [-3.5, 29.5, -2.5],
 			"rotation": [0, 0, 0],
 			"scale": [0.1, 0.1, 0],
 			"visibility": true,
@@ -934,8 +917,8 @@
 			"type": "animated_java:vanilla_block_display"
 		},
 		{
-			"name": "vanilla_block_model4",
-			"position": [2.5, 30.5, -2.5],
+			"name": "pupil_right",
+			"position": [1.5, 29.5, -2.5],
 			"rotation": [0, 0, 0],
 			"scale": [0.1, 0.1, 0],
 			"visibility": true,
@@ -951,21 +934,21 @@
 			"type": "animated_java:vanilla_block_display"
 		},
 		{
-			"name": "vanilla_item_model",
-			"position": [-0.25, 28, -2.25],
-			"rotation": [0, 0, 135],
-			"scale": [0.25, 0.25, 0.25],
+			"name": "chest",
+			"position": [16, 0, 0],
+			"rotation": [0, 0, 0],
+			"scale": [0.5, 0.5, 0.5],
 			"visibility": true,
-			"item": "minecraft:iron_pickaxe",
+			"item": "minecraft:diamond",
 			"config": {},
-			"block": "minecraft:stone",
+			"block": "chest",
 			"text": "\"Hello World!\"",
 			"lineWidth": 200,
 			"backgroundColor": "#000000",
 			"backgroundAlpha": 0.25,
 			"align": "center",
-			"uuid": "c6221a0f-63d1-e277-6ebe-ed4989a4ed64",
-			"type": "animated_java:vanilla_item_display"
+			"uuid": "34ead2fe-108a-7751-5777-facccfac8e11",
+			"type": "animated_java:vanilla_block_display"
 		}
 	],
 	"outliner": [
@@ -1266,8 +1249,7 @@
 														"b69d6d65-370e-c90f-b025-dd7703253850",
 														"beb6a95e-574c-22c3-2d69-7f55532e6ea8",
 														"c6696a60-8f7e-63b4-24f8-dd9bad05cf18",
-														"27f26301-9ccd-def2-94ef-577950e84e02",
-														"c6221a0f-63d1-e277-6ebe-ed4989a4ed64"
+														"27f26301-9ccd-def2-94ef-577950e84e02"
 													]
 												},
 												{
@@ -1461,10 +1443,10 @@
 							]
 						}
 					]
-				},
-				"365b1266-1125-13e1-01ee-5a82335137f4"
+				}
 			]
-		}
+		},
+		"34ead2fe-108a-7751-5777-facccfac8e11"
 	],
 	"textures": [
 		{
@@ -1718,55 +1700,6 @@
 							"uuid": "fe357d53-5802-876b-c5d0-9eb8a19f573b",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
-						}
-					]
-				},
-				"365b1266-1125-13e1-01ee-5a82335137f4": {
-					"name": "stretchy_pants",
-					"type": "animated_java:text_display",
-					"keyframes": [
-						{
-							"channel": "rotation",
-							"data_points": [
-								{
-									"x": "0",
-									"y": "0",
-									"z": "math.sin(q.life_time * 180) * 3"
-								}
-							],
-							"uuid": "2fd40dec-84c0-f9a6-2670-fd31b54a0267",
-							"time": 0,
-							"color": -1,
-							"interpolation": "linear"
-						},
-						{
-							"channel": "position",
-							"data_points": [
-								{
-									"x": 0,
-									"y": "-26 + math.sin(q.life_time * 360) * 1",
-									"z": -19
-								}
-							],
-							"uuid": "8e2dd8d3-08b1-73c8-973e-7c0561307966",
-							"time": 0,
-							"color": -1,
-							"interpolation": "linear"
-						},
-						{
-							"channel": "scale",
-							"data_points": [
-								{
-									"x": "1 - math.cos(q.life_time * 360) * 0.125",
-									"y": "1 - math.sin(q.life_time * 360) * 0.125",
-									"z": "1"
-								}
-							],
-							"uuid": "b5a144ce-ebcf-b151-682d-0a0315a6ec73",
-							"time": 0,
-							"color": -1,
-							"uniform": false,
 							"interpolation": "linear"
 						}
 					]
@@ -3268,6 +3201,46 @@
 							"interpolation": "linear"
 						}
 					]
+				},
+				"c6696a60-8f7e-63b4-24f8-dd9bad05cf18": {
+					"name": "pupil_left",
+					"type": "animated_java:vanilla_block_display",
+					"keyframes": [
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "easeinoutquart(\n  linear_wave(q.life_time * v.stickbug_speed + 90 + 45)\n)",
+									"y": "0",
+									"z": "0"
+								}
+							],
+							"uuid": "aac0e586-8a87-9118-fe99-3bbb9495e868",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						}
+					]
+				},
+				"27f26301-9ccd-def2-94ef-577950e84e02": {
+					"name": "pupil_right",
+					"type": "animated_java:vanilla_block_display",
+					"keyframes": [
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "-1 + easeinoutquart(\n  linear_wave(q.life_time * v.stickbug_speed + 90 + 45)\n)",
+									"y": "0",
+									"z": "0"
+								}
+							],
+							"uuid": "eac1cc70-a616-b0d3-da18-50782aa7b8c9",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						}
+					]
 				}
 			}
 		},
@@ -3316,7 +3289,7 @@
 			"override": false,
 			"length": 2,
 			"snapping": 20,
-			"selected": false,
+			"selected": true,
 			"saved": false,
 			"path": "",
 			"anim_time_update": "",

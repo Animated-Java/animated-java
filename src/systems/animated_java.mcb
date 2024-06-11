@@ -77,7 +77,7 @@ dir <%export_namespace%> {
 		function on_load {
 			execute unless entity @s[tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return 0
 			execute on passengers if entity @s[tag=<%TAGS.PROJECT_DATA(export_namespace)%>] \
-					unless data entity @s {data:{{rigHash: '<%rigHash%>'}}} on vehicle run {
+					unless data entity @s {data:{rigHash: '<%rigHash%>'}} on vehicle run {
 				execute store result storage aj:temp x int 1 store result score #this.x aj.i run data get entity @s Pos[0] 1
 				execute store result storage aj:temp y int 1 store result score #this.y aj.i run data get entity @s Pos[1] 1
 				execute store result storage aj:temp z int 1 store result score #this.z aj.i run data get entity @s Pos[2] 1
@@ -119,6 +119,7 @@ dir <%export_namespace%> {
 		}
 	}
 
+	# FIXME - Maybe remove these in favor of the new options-based system?
 	# Function Tag Hooks
 	dir as_root {
 		# All child functions of this folder run as the root entity
@@ -252,7 +253,7 @@ dir <%export_namespace%> {
 						function apply_frame {
 							#ARGS: {frame: int}
 							REPEAT (animation.includedNodes) as node {
-								IF (node.type === 'bone' || node.type === 'text_display') {
+								IF (['bone', 'text_display', 'item_display', 'block_display'].includes(node.type)) {
 									$execute on passengers run data modify entity @s[tag=<%TAGS.LOCAL_BONE(export_namespace, node.name)%>] {} merge from storage aj.<%export_namespace%>:animations list.<%animation.name%>.frames[$(frame)].<%node.name%>
 								}
 							}
@@ -278,7 +279,7 @@ dir <%export_namespace%> {
 							REPEAT (animation.frames) as frame {
 								function <%animation.frames.indexOf(frame)%> {
 									REPEAT (frame.nodes.sort(nodeSorter)) as node {
-										IF (node.type === 'bone' || node.type === 'text_display') {
+										IF (['bone', 'text_display', 'item_display', 'block_display'].includes(node.type)) {
 											<%%
 												const last = global.lastActiveFrame[node.uuid]
 												global.isStepInterpolation = !!(last?.interpolation === 'step')
@@ -503,7 +504,7 @@ dir <%export_namespace%> {
 			function *global/errors/function_not_executed_as_root_entity \
 				{'function_path': 'animated_java:<%export_namespace%>/apply_default_pose'}
 		REPEAT (rig.defaultPose) as node {
-			IF (node.type === 'bone' || node.type === 'text_display') {
+			IF (['bone', 'text_display', 'item_display', 'block_display'].includes(node.type)) {
 				execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%node.name%>] run \
 					data merge entity @s {transformation: <%matrixToNbtFloatArray(node.matrix).toString()%>, start_interpolation: 0}
 			}
@@ -515,7 +516,7 @@ dir <%export_namespace%> {
 			function *global/errors/function_not_executed_as_root_entity \
 				{'function_path': 'animated_java:<%export_namespace%>/set_default_pose'}
 		REPEAT (rig.defaultPose) as node {
-			IF (node.type === 'bone' || node.type === 'text_display') {
+			IF (['bone', 'text_display', 'item_display', 'block_display'].includes(node.type)) {
 				execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%node.name%>] run \
 					data merge entity @s {transformation: <%matrixToNbtFloatArray(node.matrix).toString()%>, start_interpolation: -1}
 			}

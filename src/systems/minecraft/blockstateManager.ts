@@ -88,7 +88,7 @@ export async function checkForRegistryUpdate() {
 
 	console.log('BlockState Registry is up to date!')
 	updateMemoryRegistry()
-	events.BLOCKSTATE_REGISTRY_LOADED.dispatch()
+	requestAnimationFrame(() => events.BLOCKSTATE_REGISTRY_LOADED.dispatch())
 }
 
 export async function getBlockState(block: string) {

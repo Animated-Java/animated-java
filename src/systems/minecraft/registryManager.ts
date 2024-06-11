@@ -175,7 +175,7 @@ export async function checkForRegistryUpdate() {
 
 	console.log('Minecraft Registry is up to date!')
 	updateMemoryRegistry()
-	events.MINECRAFT_REGISTRY_LOADED.dispatch()
+	requestAnimationFrame(() => events.MINECRAFT_REGISTRY_LOADED.dispatch())
 }
 
 events.LOAD.subscribe(() => {

@@ -81,7 +81,7 @@ export async function checkForAssetsUpdate() {
 
 	await extractAssets()
 	console.log('Minecraft assets are up to date!')
-	events.MINECRAFT_ASSETS_LOADED.dispatch()
+	requestAnimationFrame(() => events.MINECRAFT_ASSETS_LOADED.dispatch())
 }
 
 let loadedAssets: Unzipped | undefined

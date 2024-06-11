@@ -79,6 +79,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 			TextDisplay.properties[key].reset(this)
 		}
 
+		this.name = 'vanilla_block_display'
 		this.extend(data)
 
 		this.name ??= 'text_display'
@@ -345,11 +346,8 @@ OutlinerElement.registerType(TextDisplay, TextDisplay.type)
 export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 	setup(el: TextDisplay) {
 		ResizableOutlinerElement.prototype.preview_controller.setup(el)
-		const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0, 0))
 		// Minecraft's transparency is funky 😭
-		mesh.renderOrder = -1
-		// FIXME: This will error if there is no Project loaded.
-		Project!.nodes_3d[el.uuid] = mesh
+		Project!.nodes_3d[el.uuid].renderOrder = -1
 
 		void getVanillaFont().then(() => {
 			el.ready = true
@@ -476,6 +474,9 @@ class TextDisplayAnimator extends BoneAnimator {
 	displayScale(arr: ArrayVector3, multiplier = 1) {
 		if (!arr) return this
 		const bone = this.getElement().mesh
+		if (bone.fix_scale) {
+			bone.scale.copy(bone.fix_scale)
+		}
 		bone.scale.x *= 1 + (arr[0] - 1) * multiplier || 0.00001
 		bone.scale.y *= 1 + (arr[1] - 1) * multiplier || 0.00001
 		bone.scale.z *= 1 + (arr[2] - 1) * multiplier || 0.00001
