@@ -27,7 +27,11 @@
 	{translate('panel.vanilla_item_display.title')}
 </p>
 
-<div class="toolbar custom-toolbar" style={!!selected ? '' : 'visibility:hidden; height: 0px;'}>
+<div
+	class="toolbar custom-toolbar"
+	style={!!selected ? '' : 'visibility:hidden; height: 0px;'}
+	title={translate('panel.vanilla_item_display.description')}
+>
 	<div class="content" style="width: 95%;">
 		<input type="text" bind:value={$item} />
 	</div>

@@ -354,9 +354,11 @@ animated_java.tool.text_display.text_shadow.description: Whether or not to displ
 
 # Vanilla Item Display Panel
 animated_java.panel.vanilla_item_display.title: Displayed Item
+animated_java.panel.vanilla_item_display.description: The item to display.
 
 # Vanilla Block Display Panel
 animated_java.panel.vanilla_block_display.title: Displayed Block
+animated_java.panel.vanilla_block_display.description: The block to display. Supports block states!
 
 ### Custom Elements
 ## Vanilla Item Display
