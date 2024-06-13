@@ -48,8 +48,6 @@
     - [ ] Data Pack Compiler support.
 - [ ] Change the Collection setting type to allow single-click swapping of items between lists.
 - [ ] Add an about page.
-    - [ ] Add an option to switch the display entity between item and block display.
-    - [ ] Figure out a way to allow the user to scale the model of a bone with a display item set.
 - [ ] Add Variants to the UndoSystem (Blocked by vanilla Blockbench not supporting custom undo actions)
 - [ ] Add vanilla item displays
     - [x] Create a custom element type for item displays.
@@ -59,38 +57,31 @@
         - [x] item/handheld
         - [x] item/handheld_rod
         - [x] item/handheld_mace
-        - [ ] Edge Cases go here
-            - [x] <entity>_spawn_egg
-            - [x] firework_star
-            - [x] leather armor
-                - [ ] Look into adding a color picker for tintable items.
-            - [ ] builtin/entity
-                - [ ] shield
-                - [x] chest
-                - [ ] conduit
-                - [ ] decorated_pot
-                - [ ] template_banner
-                - [ ] template_shulker_box
-                - [ ] template_skull
-                - [ ] trident_in_hand
-                - [ ] trident_throwing
+    - [ ] Look into adding a color picker for tintable items.
+    - [ ] Add overrides for entity-based block models.
+        - [ ] shield
+        - [ ] conduit
+        - [ ] decorated_pot
+        - [ ] template_banner
+        - [ ] template_shulker_box
+        - [ ] template_skull
+        - [ ] trident
+        - [ ] banners
 - [ ] Add vanilla block displays
     - [x] Create a custom element type for block displays.
     - [ ] Add rendering for vanilla block models.
         - [x] Use Blockstates to select models.
         - [x] Parent model inheritance
         - [x] block/block
-        - [ ] Edge Cases go here
-            - [ ] signs
-            - [ ] fluids, water/lava
-            - [ ] hanging_signs
-            - [x] chest
-            - [ ] ender_chest
-            - [ ] mob heads
-            - [ ] banners
-            - [ ] shulker boxes
-            - [ ] beds
-            - [ ] multi-parts like walls throw an intneral error if they don't have any elements.
+    - [ ] Add overrides for entity-based block models.
+        - [ ] fluids, water/lava
+        - [x] chest
+        - [ ] ender_chest
+        - [ ] mob heads
+        - [ ] shulker boxes
+        - [ ] beds
+        - [ ] enchantment table
+    - [ ] multi-parts like walls throw an intneral error if they don't have any elements.
 - [ ] Locator rotation support
 
 # Data Pack Compiler
@@ -108,11 +99,11 @@
 - [x] Rotate the bones with the root entity.
 - [x] Add default saved Locator positions to the summoned rig.
 - [x] Add support for text displays.
+- [x] Add support for vanilla item displays.
+- [x] Add support for vanilla block displays.
 - [ ] Figure out how cameras will work.
 - [ ] Check for references to non-existant functions in merged function tags, and remove them.
 - [ ] Apply variant keyframes in animations.
-- [ ] Add support for vanilla item displays.
-- [ ] Add support for vanilla block displays.
 
 # Resource Pack
 - [ ] Warn the user when they have custom elements in their model, but have disabled the resource pack export.
@@ -140,4 +131,3 @@
 # Post 1.0.0
 - [ ] Add support for [block-display.com's API](https://wiki.block-display.com/api/get-api)
 - [ ] Add support and previewing for interaction entities.
-

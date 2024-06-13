@@ -1,6 +1,6 @@
 import * as blueprintSettings from './blueprintSettings'
 import { BillboardMode, BoneConfig, LocatorConfig } from './nodeConfigs'
-import ProjectTitleSvelteComponent from './components/projectTitle.svelte'
+import ProjectTitleSvelte from './components/projectTitle.svelte'
 import { PACKAGE } from './constants'
 import { events } from './util/events'
 import { injectSvelteCompomponent } from './util/injectSvelte'
@@ -8,6 +8,7 @@ import { toSafeFuntionName } from './util/minecraftUtil'
 import { addProjectToRecentProjects } from './util/misc'
 import { Valuable } from './util/stores'
 import { TRANSPARENT_TEXTURE, TRANSPARENT_TEXTURE_MATERIAL, Variant } from './variants'
+import FormatPageSvelte from './components/formatPage.svelte'
 
 /**
  * The serialized Variant Bone Config
@@ -496,9 +497,14 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 		component: {
 			methods: {},
 			created() {
-				console.log('Start screen created')
+				// if (formatPage)
+				void injectSvelteCompomponent({
+					elementSelector: () => $('#format_page_animated_java_blueprint_mount')[0],
+					svelteComponent: FormatPageSvelte,
+					svelteComponentProperties: { format: BLUEPRINT_FORMAT },
+				})
 			},
-			template: `<div>Hello Animated Java World!</div>`,
+			template: `<div id="format_page_animated_java_blueprint_mount" style="display: flex; flex-direction: column; flex-grow: 1;"></div>`,
 		},
 	},
 
@@ -541,7 +547,7 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 					}
 				},
 				prepend: true,
-				svelteComponent: ProjectTitleSvelteComponent,
+				svelteComponent: ProjectTitleSvelte,
 				svelteComponentProperties: { pluginMode: Project!.pluginMode },
 			})
 

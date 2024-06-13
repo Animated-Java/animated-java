@@ -528,6 +528,8 @@ export async function compileDataPack(options: {
 		const io = new SyncIo()
 		io.write = (localPath, content) => {
 			const writePath = PathModule.join(options.dataPackFolder, localPath)
+				// FIXME - Remove this when MC-Build is fixed
+				.replace('/tags/functions/', '/tags/function')
 			exportedFiles.set(writePath, content)
 			ajmeta.datapack.files.add(writePath)
 		}

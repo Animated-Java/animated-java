@@ -5,6 +5,7 @@ import {
 	getKeyframeRepeatFrequency,
 } from '../mods/customKeyframesMod'
 import { TextDisplay } from '../outliner/textDisplay'
+import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
 import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
 import { roundToNth } from '../util/misc'
 import { AnyRenderedNode, IRenderedRig } from './rigRenderer'
@@ -138,7 +139,7 @@ export function getAnimationNodes(
 			case 'bone': {
 				matrix = getNodeMatrix(node.node, node.scale)
 				// Only add the frame if the matrix has changed.
-				// Disabled because it causes issues with vanilla interpolation.
+				// NOTE - Disabled because it causes issues with vanilla interpolation.
 				// if (lastFrame && lastFrame.matrix.equals(matrix)) continue
 				// Inherit instant interpolation from parent
 				if (node.parentNode) {
@@ -240,6 +241,8 @@ export function updatePreview(animation: _Animation, time: number) {
 		...NullObject.all,
 		...Locator.all,
 		...TextDisplay.all,
+		...VanillaBlockDisplay.all,
+		...VanillaItemDisplay.all,
 	]
 	if (OutlinerElement.types.camera) {
 		nodes.push(...OutlinerElement.types.camera.all)

@@ -35,13 +35,13 @@
 	"elements": [
 		{
 			"name": "stone",
-			"position": [0, 8, 0],
+			"position": [-8, 0, -8],
 			"rotation": [0, 0, 0],
 			"scale": [1, 1, 1],
 			"visibility": true,
 			"item": "minecraft:diamond",
 			"config": {},
-			"block": "observer[facing=north]",
+			"block": "red_bed",
 			"text": "\"Hello World!\"",
 			"lineWidth": 200,
 			"backgroundColor": "#000000",
@@ -52,7 +52,7 @@
 		},
 		{
 			"name": "chest",
-			"position": [0, 20, 0],
+			"position": [-4, 16, -4],
 			"rotation": [0, 0, 0],
 			"scale": [0.5, 0.5, 0.5],
 			"visibility": true,
@@ -259,7 +259,7 @@
 			"override": false,
 			"length": 2,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"saved": false,
 			"path": "",
 			"anim_time_update": "",

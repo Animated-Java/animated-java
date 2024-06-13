@@ -850,8 +850,8 @@
 		},
 		{
 			"name": "egg",
-			"position": [0, 30, -1.5],
-			"rotation": [0, 0, 0],
+			"position": [0, 29, -1.5],
+			"rotation": [0, 0, -180],
 			"scale": [1, 1, 1],
 			"visibility": true,
 			"item": "minecraft:egg",
@@ -918,7 +918,7 @@
 		},
 		{
 			"name": "pupil_right",
-			"position": [1.5, 29.5, -2.5],
+			"position": [2, 29.5, -2.5],
 			"rotation": [0, 0, 0],
 			"scale": [0.1, 0.1, 0],
 			"visibility": true,
@@ -935,7 +935,7 @@
 		},
 		{
 			"name": "chest",
-			"position": [16, 0, 0],
+			"position": [-4, 16, 0],
 			"rotation": [0, 0, 0],
 			"scale": [0.5, 0.5, 0.5],
 			"visibility": true,
@@ -947,7 +947,7 @@
 			"backgroundColor": "#000000",
 			"backgroundAlpha": 0.25,
 			"align": "center",
-			"uuid": "34ead2fe-108a-7751-5777-facccfac8e11",
+			"uuid": "f92184c7-5a28-47b8-8369-7dc7872e358a",
 			"type": "animated_java:vanilla_block_display"
 		}
 	],
@@ -1191,6 +1191,7 @@
 											"visibility": true,
 											"autouv": 0,
 											"children": [
+												"f92184c7-5a28-47b8-8369-7dc7872e358a",
 												"55829f3d-26dc-8f49-39b8-5ba2c0159a24",
 												"9d16df18-0574-58bb-e0f9-f799946257c9",
 												"f26e6144-8dab-547a-16e8-adaa6fa2c45d",
@@ -1293,7 +1294,7 @@
 													"uuid": "b5b52d2c-097c-08df-6457-372fbae12445",
 													"export": true,
 													"mirror_uv": false,
-													"isOpen": true,
+													"isOpen": false,
 													"locked": false,
 													"visibility": true,
 													"autouv": 0,
@@ -1340,7 +1341,7 @@
 													"uuid": "215d1b02-0e64-a794-1b88-a9c5a6d7541c",
 													"export": true,
 													"mirror_uv": false,
-													"isOpen": true,
+													"isOpen": false,
 													"locked": false,
 													"visibility": true,
 													"autouv": 0,
@@ -1445,8 +1446,7 @@
 					]
 				}
 			]
-		},
-		"34ead2fe-108a-7751-5777-facccfac8e11"
+		}
 	],
 	"textures": [
 		{
@@ -1698,6 +1698,46 @@
 								}
 							],
 							"uuid": "fe357d53-5802-876b-c5d0-9eb8a19f573b",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						}
+					]
+				},
+				"c6696a60-8f7e-63b4-24f8-dd9bad05cf18": {
+					"name": "pupil_left",
+					"type": "animated_java:vanilla_block_display",
+					"keyframes": [
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "0.35 + math.cos(q.life_time * 180)",
+									"y": "0.7 + math.sin(q.life_time * 180)",
+									"z": "0"
+								}
+							],
+							"uuid": "1ed8db81-057d-ac42-3066-e5513808e8b3",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						}
+					]
+				},
+				"27f26301-9ccd-def2-94ef-577950e84e02": {
+					"name": "pupil_right",
+					"type": "animated_java:vanilla_block_display",
+					"keyframes": [
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "-0.35 - math.cos(q.life_time * 180)",
+									"y": "0.7 - math.sin(q.life_time * 180)",
+									"z": "0"
+								}
+							],
+							"uuid": "d7201c93-1fc8-5f10-4e00-9efc9f1445b9",
 							"time": 0,
 							"color": -1,
 							"interpolation": "linear"
@@ -2162,6 +2202,46 @@
 								}
 							],
 							"uuid": "3c7a1e34-e89d-9bb3-2b5b-11594c26e1bc",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						}
+					]
+				},
+				"c6696a60-8f7e-63b4-24f8-dd9bad05cf18": {
+					"name": "pupil_left",
+					"type": "animated_java:vanilla_block_display",
+					"keyframes": [
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "1 - easeinoutexpo(\n  linear_wave(q.life_time * v.walk_speed + 180)\n) * 1.25\n",
+									"y": "0",
+									"z": "0"
+								}
+							],
+							"uuid": "a9b1c34b-a0ce-c1a2-73e5-8f11591b6e1a",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						}
+					]
+				},
+				"27f26301-9ccd-def2-94ef-577950e84e02": {
+					"name": "pupil_right",
+					"type": "animated_java:vanilla_block_display",
+					"keyframes": [
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "0.5 - easeinoutexpo(\n  linear_wave(q.life_time * v.walk_speed + 180)\n) * 1.25\n",
+									"y": "0",
+									"z": "0"
+								}
+							],
+							"uuid": "595b9015-2eea-85a5-4511-da31a5019413",
 							"time": 0,
 							"color": -1,
 							"interpolation": "linear"
@@ -3289,7 +3369,7 @@
 			"override": false,
 			"length": 2,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"saved": false,
 			"path": "",
 			"anim_time_update": "",

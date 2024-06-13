@@ -150,6 +150,8 @@ async function generateBlockMesh(
 
 		geometry.translate(-8, -8, -8)
 		geometry.rotateY(Math.degToRad(180))
+		if (variant.y) geometry.rotateY(Math.degToRad(variant.y))
+		if (variant.x) geometry.rotateX(Math.degToRad(variant.x))
 		geometry.translate(8, 8, 8)
 
 		const indices = []
@@ -314,14 +316,14 @@ async function generateBlockMesh(
 	const outlineGeo = BufferGeometryUtils.mergeBufferGeometries(outlineGeos)
 	const outline = new THREE.LineSegments(outlineGeo, Canvas.outlineMaterial)
 
-	if (variant.y) {
-		mesh.rotateY(Math.degToRad(-variant.y))
-		outline.rotateY(Math.degToRad(-variant.y))
-	}
-	if (variant.x) {
-		mesh.rotateX(Math.degToRad(-variant.x))
-		outline.rotateX(Math.degToRad(-variant.x))
-	}
+	// if (variant.y) {
+	// 	mesh.rotateY(Math.degToRad(-variant.y))
+	// 	outline.rotateY(Math.degToRad(-variant.y))
+	// }
+	// if (variant.x) {
+	// 	mesh.rotateX(Math.degToRad(-variant.x))
+	// 	outline.rotateX(Math.degToRad(-variant.x))
+	// }
 
 	outline.no_export = true
 	outline.renderOrder = 2
@@ -334,7 +336,7 @@ const TEXTURE_CACHE = new Map<string, THREE.Texture>()
 async function loadTexture(textures: IBlockModel['textures'], key: string): Promise<THREE.Texture> {
 	if (key.at(0) === '#') key = key.slice(1)
 	const resourceLocation = textures[key]
-	if (resourceLocation.at(0) === '#') {
+	if (resourceLocation?.at(0) === '#') {
 		return await loadTexture(textures, resourceLocation.slice(1))
 	}
 	const textureUrl = getPathFromResourceLocation(resourceLocation, 'textures') + '.png'

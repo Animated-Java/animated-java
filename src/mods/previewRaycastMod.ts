@@ -32,7 +32,7 @@ createBlockbenchMod(
 			const isHover = event.type === 'mousemove'
 			const raycast = context.originalRaycast.bind(this)
 			if (!isClick && !isHover) return raycast(event)
-			if (Transformer.dragging) return false
+			if (Transformer.dragging) return raycast(event)
 
 			convertTouchEvent(event)
 			const canvasOffset = $(this.canvas).offset()!
@@ -138,6 +138,8 @@ createBlockbenchMod(
 						}
 						return false
 					}
+				} else if (i && i.object.isElement) {
+					return raycast(event)
 				}
 			}
 			return raycast(event)
