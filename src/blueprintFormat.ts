@@ -286,20 +286,20 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 			}
 		}
 
-		if (model.variants) {
-			Variant.fromJSON(model.variants.default, true)
-			for (const variantJSON of model.variants.list) {
-				Variant.fromJSON(variantJSON)
-			}
-			Project.variants = Variant.all
-		}
-
 		if (model.outliner) {
 			parseGroups(model.outliner)
 
 			for (const group of Group.all) {
 				group.name = toSafeFuntionName(group.name)
 			}
+		}
+
+		if (model.variants) {
+			Variant.fromJSON(model.variants.default, true)
+			for (const variantJSON of model.variants.list) {
+				Variant.fromJSON(variantJSON)
+			}
+			Project.variants = Variant.all
 		}
 
 		if (model.animations) {

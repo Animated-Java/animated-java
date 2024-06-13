@@ -161,9 +161,9 @@ export class Variant {
 			variant.textureMap.add(key, value)
 		}
 		variant.excludedBones = json.excluded_bones
-			.map(bone => {
-				const group = Group.all.find(g => g.uuid === bone)
-				return group ? { name: group.name, value: bone } : undefined
+			.map(uuid => {
+				const group = Group.all.find(group => group.uuid === uuid)
+				return group ? { name: group.name, value: uuid } : undefined
 			})
 			.filter(Boolean) as CollectionItem[]
 		return variant
