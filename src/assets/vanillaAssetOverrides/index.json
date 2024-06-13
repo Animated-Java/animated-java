@@ -11,5 +11,100 @@
 	},
 	"assets/animated_java/textures/steve.png": {
 		"override": "textures/steve.png"
+	},
+
+	"assets/minecraft/blockstates/blue_bed.json": {
+		"override": "blockstates/blue_bed.json"
+	},
+	"assets/minecraft/blockstates/brown_bed.json": {
+		"override": "blockstates/brown_bed.json"
+	},
+	"assets/minecraft/blockstates/cyan_bed.json": {
+		"override": "blockstates/cyan_bed.json"
+	},
+	"assets/minecraft/blockstates/gray_bed.json": {
+		"override": "blockstates/gray_bed.json"
+	},
+	"assets/minecraft/blockstates/green_bed.json": {
+		"override": "blockstates/green_bed.json"
+	},
+	"assets/minecraft/blockstates/light_blue_bed.json": {
+		"override": "blockstates/light_blue_bed.json"
+	},
+	"assets/minecraft/blockstates/light_gray_bed.json": {
+		"override": "blockstates/light_gray_bed.json"
+	},
+	"assets/minecraft/blockstates/lime_bed.json": {
+		"override": "blockstates/lime_bed.json"
+	},
+	"assets/minecraft/blockstates/magenta_bed.json": {
+		"override": "blockstates/magenta_bed.json"
+	},
+	"assets/minecraft/blockstates/orange_bed.json": {
+		"override": "blockstates/orange_bed.json"
+	},
+	"assets/minecraft/blockstates/pink_bed.json": {
+		"override": "blockstates/pink_bed.json"
+	},
+	"assets/minecraft/blockstates/purple_bed.json": {
+		"override": "blockstates/purple_bed.json"
+	},
+	"assets/minecraft/blockstates/red_bed.json": {
+		"override": "blockstates/red_bed.json"
+	},
+	"assets/minecraft/blockstates/white_bed.json": {
+		"override": "blockstates/white_bed.json"
+	},
+	"assets/minecraft/blockstates/yellow_bed.json": {
+		"override": "blockstates/yellow_bed.json"
+	},
+
+	"assets/minecraft/models/block/bed.json": {
+		"override": "models/block/bed.json"
+	},
+	"assets/minecraft/models/block/blue_bed.json": {
+		"override": "models/block/blue_bed.json"
+	},
+	"assets/minecraft/models/block/brown_bed.json": {
+		"override": "models/block/brown_bed.json"
+	},
+	"assets/minecraft/models/block/cyan_bed.json": {
+		"override": "models/block/cyan_bed.json"
+	},
+	"assets/minecraft/models/block/gray_bed.json": {
+		"override": "models/block/gray_bed.json"
+	},
+	"assets/minecraft/models/block/green_bed.json": {
+		"override": "models/block/green_bed.json"
+	},
+	"assets/minecraft/models/block/light_blue_bed.json": {
+		"override": "models/block/light_blue_bed.json"
+	},
+	"assets/minecraft/models/block/light_gray_bed.json": {
+		"override": "models/block/light_gray_bed.json"
+	},
+	"assets/minecraft/models/block/lime_bed.json": {
+		"override": "models/block/lime_bed.json"
+	},
+	"assets/minecraft/models/block/magenta_bed.json": {
+		"override": "models/block/magenta_bed.json"
+	},
+	"assets/minecraft/models/block/orange_bed.json": {
+		"override": "models/block/orange_bed.json"
+	},
+	"assets/minecraft/models/block/pink_bed.json": {
+		"override": "models/block/pink_bed.json"
+	},
+	"assets/minecraft/models/block/purple_bed.json": {
+		"override": "models/block/purple_bed.json"
+	},
+	"assets/minecraft/models/block/red_bed.json": {
+		"override": "models/block/red_bed.json"
+	},
+	"assets/minecraft/models/block/white_bed.json": {
+		"override": "models/block/white_bed.json"
+	},
+	"assets/minecraft/models/block/yellow_bed.json": {
+		"override": "models/block/yellow_bed.json"
 	}
 }
