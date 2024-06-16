@@ -43,12 +43,25 @@
     -   [ ] Add an option to change the alignment of the text.
 -   [x] Respect inheritance in the bone config.
 -   [x] Change font rendering to use a geometry for each character instead of a single plane for the entire text display. This will open the possibility of loading custom fonts and spacing.
+-   [x] Add vanilla block displays
+    -   [x] Create a custom element type for block displays.
+    -   [x] Add rendering for vanilla block models.
+        -   [x] Use Blockstates to select models.
+        -   [x] Parent model inheritance
+        -   [x] block/block
+    -   [x] Add overrides for entity-based block models.
+        -   [x] chest
+        -   [x] ender_chest
+        -   [x] mob heads
+        -   [x] shulker boxes
+        -   [x] beds
+    -   [x] multi-parts like walls throw an intneral error if they don't have any elements.
+-   [x] Add an option to Locators to use the old entity-based functionality.
+-   [x] Add an about page.
 -   [ ] Camera Plugin Support
     -   [ ] Camera config.
     -   [ ] Data Pack Compiler support.
 -   [ ] Change the Collection setting type to allow single-click swapping of items between lists.
--   [ ] Add an about page.
--   [ ] Add Variants to the UndoSystem (Blocked by vanilla Blockbench not supporting custom undo actions)
 -   [ ] Add vanilla item displays
     -   [x] Create a custom element type for item displays.
     -   [ ] Add rendering for vanilla item models.
@@ -67,20 +80,7 @@
         -   [x] template_skull
         -   [ ] trident
         -   [x] banners
--   [ ] Add vanilla block displays
-    -   [x] Create a custom element type for block displays.
-    -   [x] Add rendering for vanilla block models.
-        -   [x] Use Blockstates to select models.
-        -   [x] Parent model inheritance
-        -   [x] block/block
-    -   [x] Add overrides for entity-based block models.
-        -   [x] chest
-        -   [x] ender_chest
-        -   [x] mob heads
-        -   [x] shulker boxes
-        -   [x] beds
-    -   [x] multi-parts like walls throw an intneral error if they don't have any elements.
--   [x] Add an option to Locators to use the old entity-based functionality.
+-   [ ] Add Variants to the UndoSystem (Blocked by vanilla Blockbench not supporting custom undo actions)
 
 # Data Pack Compiler
 
@@ -137,4 +137,5 @@
 # Post 1.0.0
 
 -   [ ] Add support for [block-display.com's API](https://wiki.block-display.com/api/get-api)
+-   [ ] Add support for custom fonts in TextDisplays.
 -   [ ] Add support and previewing for interaction entities.

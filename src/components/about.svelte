@@ -10,7 +10,7 @@
 		<img src={AnimatedJavaIcon} />
 		<div>
 			<h1>Animated Java</h1>
-			<h3>v{PACKAGE.version}</h3>
+			<h3>v{PACKAGE.display_version}</h3>
 		</div>
 	</div>
 

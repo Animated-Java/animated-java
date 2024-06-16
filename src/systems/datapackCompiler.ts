@@ -220,7 +220,7 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 				'data',
 				new NbtCompound()
 					.set('rigHash', new NbtString(rigHash))
-					.set('locators', createLocatorPositionStorage(rig))
+					.set('positions', createPositionStorage(rig))
 			)
 	)
 
@@ -272,13 +272,6 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 
 				passenger.set('height', new NbtFloat(aj.bounding_box[1]))
 				passenger.set('width', new NbtFloat(aj.bounding_box[0]))
-				break
-			}
-			case 'camera': {
-				passenger.set('id', new NbtString('minecraft:item_display'))
-				tags.add(new NbtString(TAGS.GLOBAL_CAMERA()))
-				tags.add(new NbtString(TAGS.PROJECT_CAMERA(aj.export_namespace)))
-				tags.add(new NbtString(TAGS.LOCAL_CAMERA(aj.export_namespace, node.name)))
 				break
 			}
 			case 'text_display': {
@@ -434,19 +427,32 @@ function createAnimationStorage(animations: IRenderedAnimation[]) {
 	return storage
 }
 
-function createLocatorPositionStorage(rig: IRenderedRig) {
+function getRotationFromQuaternion(q: THREE.Quaternion) {
+	const euler = new THREE.Euler().setFromQuaternion(q, 'YXZ')
+	const rot = new THREE.Vector3(euler.x, euler.y, euler.z).multiplyScalar(180 / Math.PI)
+	rot.x *= -1
+	rot.y = rot.y * -1 + 180
+	return rot
+}
+
+function createPositionStorage(rig: IRenderedRig) {
 	const storage = new NbtCompound()
+	const locators = new NbtCompound()
+	const cameras = new NbtCompound()
+	storage.set('locators', locators)
+	storage.set('cameras', cameras)
 	for (const node of Object.values(rig.defaultPose)) {
-		if (node.type !== 'locator') continue
-		storage.set(
+		if (node.type !== 'locator' && node.type !== 'camera') continue
+		const rot = getRotationFromQuaternion(node.rot)
+		;(node.type === 'locator' ? locators : cameras).set(
 			node.name,
 			new NbtCompound()
 				.set('uuid', new NbtString(''))
 				.set('posx', new NbtFloat(node.pos.x))
 				.set('posy', new NbtFloat(node.pos.y))
 				.set('posz', new NbtFloat(node.pos.z))
-				.set('rotx', new NbtFloat(node.rot.x))
-				.set('roty', new NbtFloat(node.rot.y))
+				.set('rotx', new NbtFloat(Math.radToDeg(rot.x)))
+				.set('roty', new NbtFloat(Math.radToDeg(rot.y)))
 		)
 	}
 	return storage
@@ -568,6 +574,7 @@ export async function compileDataPack(options: {
 		BoneConfig,
 		roundTo,
 		nodeSorter,
+		getRotationFromQuaternion,
 	}
 	console.log('Compiler Variables:', variables)
 

@@ -38,7 +38,7 @@ export interface IBlueprintBoneConfigJSON {
 export interface IBlueprintLocatorConfigJSON {
 	use_entity?: LocatorConfig['useEntity']
 	entity_type?: LocatorConfig['entityType']
-	summon_commands?: LocatorConfig['entityNBT']
+	summon_commands?: LocatorConfig['_summonCommands']
 	ticking_commands?: LocatorConfig['tickingCommands']
 }
 
@@ -613,7 +613,8 @@ export function updateRotationLock() {
 		Group.selected ||
 		!!AnimatedJava.API.TextDisplay.selected.length ||
 		!!AnimatedJava.API.VanillaItemDisplay.selected.length ||
-		!!AnimatedJava.API.VanillaBlockDisplay.selected.length
+		!!AnimatedJava.API.VanillaBlockDisplay.selected.length ||
+		!!OutlinerElement.types.camera?.all.length
 	)
 	BLUEPRINT_FORMAT.rotation_snap = BLUEPRINT_FORMAT.rotation_limit
 }

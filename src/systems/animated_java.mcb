@@ -163,20 +163,23 @@ dir <%export_namespace%> {
 			}
 			REPEAT (Object.values(rig.nodeMap).filter(v => v.type === 'locator')) as node {
 				IF (node.config.use_entity) {
-					execute on passengers if entity @s[tag=<%TAGS.PROJECT_DATA(export_namespace)%>] run { with entity @s data.locators.<%node.name%>
+					execute on passengers if entity @s[tag=<%TAGS.PROJECT_DATA(export_namespace)%>] run { with entity @s data.positions.locators.<%node.name%>
 						$execute as $(uuid) positioned ^$(posx) ^$(posy) ^$(posz) rotated ~$(roty) ~$(rotx) run {
 							tp @s ~ ~ ~ ~ ~
-							IF (node.config?.ticking_commands) {
-								<%node.config.ticking_commands%>
-							}
+							<%node.config?.ticking_commands || ''%>
 						}
 					}
 				} ELSE IF (node.config?.ticking_commands) {
-					execute on passengers if entity @s[tag=<%TAGS.PROJECT_DATA(export_namespace)%>] run { with entity @s data.locators.<%node.name%>
+					execute on passengers if entity @s[tag=<%TAGS.PROJECT_DATA(export_namespace)%>] run { with entity @s data.positions.locators.<%node.name%>
 						$execute positioned ^$(posx) ^$(posy) ^$(posz) rotated ~$(roty) ~$(rotx) run {
 							<%node.config.ticking_commands%>
 						}
 					}
+				}
+			}
+			REPEAT (Object.values(rig.nodeMap).filter(v => v.type === 'camera')) as node {
+				execute on passengers if entity @s[tag=<%TAGS.PROJECT_DATA(export_namespace)%>] run { with entity @s data.positions.cameras.<%node.name%>
+					$execute as $(uuid) positioned ^$(posx) ^$(posy) ^$(posz) rotated ~$(roty) ~$(rotx) run tp @s ~ ~ ~ ~ ~
 				}
 			}
 			# Rotation Logic
@@ -377,10 +380,13 @@ dir <%export_namespace%> {
 											}
 										} ELSE IF (node.type === 'locator') {
 											IF (rig.nodeMap[node.uuid]?.config?.use_entity || rig.nodeMap[node.uuid]?.config?.ticking_commands) {
+												<%%
+													global.rot = getRotationFromQuaternion(node.rot)
+												%%>
 												execute on passengers if entity @s[tag=<%TAGS.PROJECT_DATA(export_namespace)%>] run \
-													data modify entity @s data.locators.<%node.name%> merge value { \
+													data modify entity @s data.positions.locators.<%node.name%> merge value { \
 														posx: <%node.pos.x%>, posy: <%node.pos.y%>, posz: <%node.pos.z%>, \
-														rotx: <%node.rot.x%>, roty: <%node.rot.y%>, \
+														rotx: <%global.rot.x%>, roty: <%global.rot.y%>, \
 													}
 											}
 											IF (node.commands) {
@@ -394,6 +400,17 @@ dir <%export_namespace%> {
 												run {
 													<%node.commands%>
 												}
+											}
+										} ELSE IF (node.type === 'camera') {
+											IF (rig.nodeMap[node.uuid]) {
+												<%%
+													global.rot = getRotationFromQuaternion(node.rot)
+												%%>
+												execute on passengers if entity @s[tag=<%TAGS.PROJECT_DATA(export_namespace)%>] run \
+													data modify entity @s data.positions.cameras.<%node.name%> merge value { \
+														posx: <%node.pos.x%>, posy: <%node.pos.y%>, posz: <%node.pos.z%>, \
+														rotx: <%global.rot.x%>, roty: <%global.rot.y%>, \
+													}
 											}
 										}
 									}
@@ -439,10 +456,21 @@ dir <%export_namespace%> {
 
 						function animated_java:global/internal/gu/convert_uuid_array_to_string with entity @s
 						execute as @e[type=item_display,tag=<%TAGS.NEW()%>,limit=1,distance=..0.01] on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run {
-							data modify entity @s data.locators.<%locator.name%>.uuid set from storage aj:uuid main.out
+							data modify entity @s data.positions.locators.<%locator.name%>.uuid set from storage aj:uuid main.out
 						}
-
 						<%locator.config.summon_commands%>
+					}
+				}
+			}
+
+			REPEAT (Object.values(rig.nodeMap).filter(v => v.type === 'camera')) as camera {
+				summon item_display ~ ~ ~ {Tags:['<%TAGS.NEW()%>', '<%TAGS.GLOBAL_CAMERA()%>', '<%TAGS.PROJECT_CAMERA(export_namespace)%>', '<%TAGS.LOCAL_CAMERA(export_namespace, camera.name)%>'], interpolation_duration: 2}
+				execute as @e[type=item_display,tag=<%TAGS.NEW()%>,tag=<%TAGS.GLOBAL_CAMERA()%>,limit=1,distance=..0.01] run {
+					tag @s remove <%TAGS.NEW()%>
+
+					function animated_java:global/internal/gu/convert_uuid_array_to_string with entity @s
+					execute as @e[type=item_display,tag=<%TAGS.NEW()%>,limit=1,distance=..0.01] on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run {
+						data modify entity @s data.positions.camerass.<%camera.name%>.uuid set from storage aj:uuid main.out
 					}
 				}
 			}

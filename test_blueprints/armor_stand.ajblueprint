@@ -1,7 +1,7 @@
 {
 	"meta": {
 		"format": "animated_java_blueprint",
-		"format_version": "1.0.0",
+		"format_version": "0.5.0",
 		"uuid": "167b27cd-b559-3f13-a97c-0841fe21f1d1",
 		"save_location": "D:\\github-repos\\animated-java\\animated-java\\test_blueprints\\armor_stand.ajblueprint",
 		"last_used_export_namespace": "armor_stand"
@@ -958,6 +958,17 @@
 			},
 			"uuid": "a2ebcf74-9f58-df75-9b42-f565d9d6e42c",
 			"type": "locator"
+		},
+		{
+			"name": "camera",
+			"path": "",
+			"position": [0, 40, 31],
+			"rotation": [-22.5, -22.5, 0],
+			"linked_preview": "",
+			"camera_linked": false,
+			"visibility": true,
+			"type": "camera",
+			"uuid": "d0076177-a6cf-561c-08d8-efd07677b337"
 		}
 	],
 	"outliner": [
@@ -1471,7 +1482,8 @@
 			"visibility": true,
 			"autouv": 0,
 			"children": ["a2ebcf74-9f58-df75-9b42-f565d9d6e42c"]
-		}
+		},
+		"d0076177-a6cf-561c-08d8-efd07677b337"
 	],
 	"textures": [
 		{
