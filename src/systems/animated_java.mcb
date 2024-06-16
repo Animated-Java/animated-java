@@ -354,6 +354,12 @@ dir <%export_namespace%> {
 						dir frames {
 							REPEAT (animation.frames) as frame {
 								function <%animation.frames.indexOf(frame)%> {
+									<%%
+										if (frame.variant) global.variant = variants.find(v => v.uuid === frame.variant.uuid)
+									%%>
+									IF (global.variant) {
+										function *<%export_namespace%>/variants/<%global.variant.name%>/apply
+									}
 									REPEAT (frame.nodes.sort(nodeSorter)) as node {
 										IF (['bone', 'text_display', 'item_display', 'block_display'].includes(node.type)) {
 											<%%
@@ -464,13 +470,13 @@ dir <%export_namespace%> {
 			}
 
 			REPEAT (Object.values(rig.nodeMap).filter(v => v.type === 'camera')) as camera {
-				summon item_display ~ ~ ~ {Tags:['<%TAGS.NEW()%>', '<%TAGS.GLOBAL_CAMERA()%>', '<%TAGS.PROJECT_CAMERA(export_namespace)%>', '<%TAGS.LOCAL_CAMERA(export_namespace, camera.name)%>'], interpolation_duration: 2}
+				summon item_display ~ ~ ~ {Tags:['<%TAGS.NEW()%>', '<%TAGS.GLOBAL_CAMERA()%>', '<%TAGS.PROJECT_CAMERA(export_namespace)%>', '<%TAGS.LOCAL_CAMERA(export_namespace, camera.name)%>'], teleport_duration: 2}
 				execute as @e[type=item_display,tag=<%TAGS.NEW()%>,tag=<%TAGS.GLOBAL_CAMERA()%>,limit=1,distance=..0.01] run {
 					tag @s remove <%TAGS.NEW()%>
 
 					function animated_java:global/internal/gu/convert_uuid_array_to_string with entity @s
 					execute as @e[type=item_display,tag=<%TAGS.NEW()%>,limit=1,distance=..0.01] on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run {
-						data modify entity @s data.positions.camerass.<%camera.name%>.uuid set from storage aj:uuid main.out
+						data modify entity @s data.positions.cameras.<%camera.name%>.uuid set from storage aj:uuid main.out
 					}
 				}
 			}

@@ -58,9 +58,8 @@
     -   [x] multi-parts like walls throw an intneral error if they don't have any elements.
 -   [x] Add an option to Locators to use the old entity-based functionality.
 -   [x] Add an about page.
--   [ ] Camera Plugin Support
-    -   [ ] Camera config.
-    -   [ ] Data Pack Compiler support.
+-   [x] Camera Plugin Support
+    -   [x] Data Pack Compiler support.
 -   [ ] Change the Collection setting type to allow single-click swapping of items between lists.
 -   [ ] Add vanilla item displays
     -   [x] Create a custom element type for item displays.
@@ -102,7 +101,7 @@
 -   [x] Add support for vanilla block displays.
 -   [x] Locator rotation inheritance support - looks like they've supported it all this time...
 -   [x] Apply variant keyframes in animations.
--   [ ] Figure out how cameras will work.
+-   [x] Figure out how cameras will work.
 -   [ ] Check for references to non-existant functions in merged function tags, and remove them.
 -   [ ] When applying variants, remove any bones that have no elements with textured faces.
 
