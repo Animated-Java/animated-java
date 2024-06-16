@@ -4,6 +4,7 @@ import {
 	parseBlock,
 	resolveBlockstateValueType,
 } from '../../util/minecraftUtil'
+import { translate } from '../../util/translation'
 import { assetsLoaded, getJSONAsset, getPngAssetAsDataUrl } from './assetManager'
 import { BlockStateValue } from './blockstateManager'
 import {
@@ -21,6 +22,26 @@ type BlockModelMesh = { mesh: THREE.Mesh; outline: THREE.LineSegments; isBlock: 
 const LOADER = new THREE.TextureLoader()
 const BLOCK_MODEL_CACHE = new Map<string, BlockModelMesh>()
 
+const BLACKLISTED_BLOCKS = new Map([
+	['water', "Fluids are don't render in Block Displays."],
+	['lava', "Fluids are don't render in Block Displays."],
+
+	['player_head', translate('block_model_manager.mob_head_warning')],
+	['player_wall_head', translate('block_model_manager.mob_head_warning')],
+	['skeleton_skull', translate('block_model_manager.mob_head_warning')],
+	['skeleton_wall_skull', translate('block_model_manager.mob_head_warning')],
+	['wither_skeleton_skull', translate('block_model_manager.mob_head_warning')],
+	['wither_skeleton_wall_skull', translate('block_model_manager.mob_head_warning')],
+	['creeper_head', translate('block_model_manager.mob_head_warning')],
+	['creeper_wall_head', translate('block_model_manager.mob_head_warning')],
+	['zombie_head', translate('block_model_manager.mob_head_warning')],
+	['zombie_wall_head', translate('block_model_manager.mob_head_warning')],
+	['dragon_head', translate('block_model_manager.mob_head_warning')],
+	['dragon_wall_head', translate('block_model_manager.mob_head_warning')],
+	['piglin_head', translate('block_model_manager.mob_head_warning')],
+	['piglin_wall_head', translate('block_model_manager.mob_head_warning')],
+])
+
 export async function getBlockModel(block: string): Promise<BlockModelMesh | undefined> {
 	await assetsLoaded()
 	let result = BLOCK_MODEL_CACHE.get(block)
@@ -28,6 +49,9 @@ export async function getBlockModel(block: string): Promise<BlockModelMesh | und
 		// console.warn(`Found no cached item model mesh for '${block}'`)
 		const parsed = await parseBlock(block)
 		if (!parsed) return undefined
+		if (BLACKLISTED_BLOCKS.has(block)) {
+			throw new Error(BLACKLISTED_BLOCKS.get(block))
+		}
 		result = await parseBlockState(parsed)
 		BLOCK_MODEL_CACHE.set(block, result)
 	}
@@ -424,6 +448,12 @@ export async function parseBlockState(block: IParsedBlock): Promise<BlockModelMe
 			outlineGeo.rotateY(result.mesh.rotation.y)
 			outlineGeo.rotateX(result.mesh.rotation.x)
 			outlines.push(outlineGeo)
+		}
+
+		if (outlines.length === 0) {
+			throw new Error(
+				`The selected block state for '${block.resourceLocation}' has no model!`
+			)
 		}
 
 		// @ts-expect-error

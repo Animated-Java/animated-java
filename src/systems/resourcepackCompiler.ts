@@ -1,3 +1,4 @@
+import { PROGRESS_DESCRIPTION } from '../interface/exportProgressDialog'
 import { isResourcePackPath, toSafeFuntionName } from '../util/minecraftUtil'
 import { TRANSPARENT_TEXTURE } from '../variants'
 import { IRenderedAnimation } from './animationRenderer'
@@ -137,6 +138,7 @@ export function compileResourcePack(options: {
 	} = options
 	const aj = Project!.animated_java
 	const lastUsedExportNamespace = Project!.last_used_export_namespace
+	PROGRESS_DESCRIPTION.set('Compiling Resource Pack...')
 	console.log('Compiling resource pack...', options)
 
 	// Internal Models
@@ -160,6 +162,7 @@ export function compileResourcePack(options: {
 	displayItemModel.assertOverride(1, 'animated_java:empty')
 
 	// Models
+	PROGRESS_DESCRIPTION.set('Writing Bone Models...')
 	fs.rmSync(replacePathPart(modelExportFolder, aj.export_namespace, lastUsedExportNamespace), {
 		recursive: true,
 		force: true,
@@ -175,6 +178,7 @@ export function compileResourcePack(options: {
 	}
 
 	// Textures
+	PROGRESS_DESCRIPTION.set('Writing Textures...')
 	fs.rmSync(replacePathPart(textureExportFolder, aj.export_namespace, lastUsedExportNamespace), {
 		recursive: true,
 		force: true,
@@ -226,6 +230,7 @@ export function compileResourcePack(options: {
 	}
 
 	// Variant Models
+	PROGRESS_DESCRIPTION.set('Writing Variant Models...')
 	for (const [variantName, models] of Object.entries(rig.variantModels)) {
 		fs.mkdirSync(PathModule.join(modelExportFolder, variantName), { recursive: true })
 		for (const [boneUuid, variantModel] of Object.entries(models)) {
@@ -241,6 +246,7 @@ export function compileResourcePack(options: {
 	}
 
 	// Write display item model
+	PROGRESS_DESCRIPTION.set('Writing Display Item...')
 	console.log('Display Item Model', displayItemModel.toJSON())
 	fs.mkdirSync(PathModule.dirname(displayItemPath), { recursive: true })
 	fs.writeFileSync(displayItemPath, autoStringify(displayItemModel.toJSON()))

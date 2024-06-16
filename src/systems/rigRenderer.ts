@@ -178,6 +178,10 @@ export interface IRenderedRig {
 	 * The export folder for the rig textures
 	 */
 	textureExportFolder: string
+	/**
+	 * Whether or not this rig includes Cubes
+	 */
+	includesCustomModels: boolean
 }
 
 function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
@@ -368,6 +372,7 @@ function renderGroup(group: Group, rig: IRenderedRig): INodeStructure | undefine
 			if (display) structure.children.push(display)
 		} else if (node instanceof Cube) {
 			const element = renderCube(node, rig, renderedBone.model)
+			rig.includesCustomModels = true
 			if (element) renderedBone.model.elements.push(element)
 		} else {
 			console.warn(`Encountered unknown node type:`, node)
@@ -660,6 +665,7 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 		defaultPose: [],
 		modelExportFolder,
 		textureExportFolder,
+		includesCustomModels: false,
 	}
 
 	// FIXME - Add a warning if no bones or models are exported

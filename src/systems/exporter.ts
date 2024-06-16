@@ -1,7 +1,7 @@
 import { saveBlueprint } from '../blueprintFormat'
 import { blueprintSettingErrors } from '../blueprintSettings'
 import { openBlueprintSettingsDialog } from '../interface/blueprintSettingsDialog'
-import { openExportProgressDialog } from '../interface/exportProgressDialog'
+import { PROGRESS_DESCRIPTION, openExportProgressDialog } from '../interface/exportProgressDialog'
 import { openUnexpectedErrorDialog } from '../interface/unexpectedErrorDialog'
 import { resolveEnvVariables } from '../util/misc'
 import { translate } from '../util/translation'
@@ -18,14 +18,10 @@ async function actuallyExportProject() {
 	try {
 		console.time('Exporting project took')
 
-		let resourcePackFolder: string,
-			dataPackFolder: string,
-			textureExportFolder: string,
-			modelExportFolder: string,
-			displayItemPath: string
+		let textureExportFolder: string, modelExportFolder: string, displayItemPath: string
 
-		resourcePackFolder = resolveEnvVariables(aj.resource_pack)
-		dataPackFolder = resolveEnvVariables(aj.data_pack)
+		const resourcePackFolder = resolveEnvVariables(aj.resource_pack)
+		const dataPackFolder = resolveEnvVariables(aj.data_pack)
 
 		console.log('Exporting to', resourcePackFolder, dataPackFolder)
 
@@ -51,9 +47,23 @@ async function actuallyExportProject() {
 			)
 		}
 
+		PROGRESS_DESCRIPTION.set('Rendering Rig...')
 		const rig = renderRig(modelExportFolder, textureExportFolder)
+
+		if (!Project!.animated_java.enable_resource_pack && rig.includesCustomModels) {
+			Blockbench.showMessageBox({
+				title: translate('misc.failed_to_export.title'),
+				message: translate('misc.failed_to_export.custom_models.message'),
+				buttons: [translate('misc.failed_to_export.button')],
+			})
+			dialog.close(0)
+			return
+		}
+
+		PROGRESS_DESCRIPTION.set('Rendering Animations...')
 		const animations = renderProjectAnimations(Project!, rig)
 
+		PROGRESS_DESCRIPTION.set('Hashing Rendered Objects...')
 		const rigHash = hashRig(rig)
 		const animationHash = hashAnimations(animations)
 
@@ -97,15 +107,21 @@ export async function exportProject() {
 		Blockbench.showMessageBox({
 			title: translate('misc.failed_to_export.title'),
 			message:
-				translate('misc.failed_to_export.message') +
+				translate('misc.failed_to_export.blueprint_settings.message') +
 				'\n\n' +
 				Object.entries(blueprintSettingErrors.get())
-					.map(v => translate('misc.failed_to_export.error_item', v[0]) + '\n - ' + v[1])
+					.map(
+						v =>
+							translate('misc.failed_to_export.blueprint_settings.error_item', v[0]) +
+							'\n - ' +
+							v[1]
+					)
 					.join('\n\n'),
 			buttons: [translate('misc.failed_to_export.button')],
 		})
-	} else {
-		settingsDialog.close(0)
-		await actuallyExportProject()
+		return
 	}
+
+	settingsDialog.close(0)
+	await actuallyExportProject()
 }

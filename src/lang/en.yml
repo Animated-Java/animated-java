@@ -370,9 +370,13 @@ animated_java.vanilla_item_display.title: Vanilla Item Display
 
 # Blueprint Setting Errors - Failed to Export Message Box
 animated_java.misc.failed_to_export.title: Failed to Export
-animated_java.misc.failed_to_export.message: There are errors in your blueprint settings! Please fix them before exporting.
-animated_java.misc.failed_to_export.error_item: 'Found an issue with {0}:'
+animated_java.misc.failed_to_export.custom_models.message: You have disabled resource pack exporting, but have custom models in your project! Please enable resource pack exporting or remove the custom models before exporting.
+animated_java.misc.failed_to_export.blueprint_settings.message: There are errors in your blueprint settings! Please fix them before exporting.
+animated_java.misc.failed_to_export.blueprint_settings.error_item: 'Found an issue with {0}:'
 animated_java.misc.failed_to_export.button: Ok
 
 # Format Category
 animated_java.format_category.animated_java: Animated Java
+
+# Model Manager Warnings
+animated_java.block_model_manager.mob_head_warning: Mob Heads are don't render in Block Displays. Use an Item Display instead.

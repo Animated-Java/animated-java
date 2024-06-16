@@ -15,8 +15,9 @@ import {
 import { BoneConfig, TextDisplayConfig } from '../nodeConfigs'
 import { IFunctionTag, mergeTag, parseBlock, parseDataPackPath } from '../util/minecraftUtil'
 import { JsonText } from './minecraft/jsonText'
-import { MAX_PROGRESS, PROGRESS } from '../interface/exportProgressDialog'
+import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../interface/exportProgressDialog'
 import { roundTo } from '../util/misc'
+import { setTimeout } from 'timers'
 
 namespace TAGS {
 	export const NEW = () => 'aj.new'
@@ -488,10 +489,14 @@ export async function compileDataPack(options: {
 	)
 	ajmeta.read()
 
+	PROGRESS_DESCRIPTION.set('Removing Old Data Pack Files...')
+	PROGRESS.set(0)
+	MAX_PROGRESS.set(ajmeta.oldDatapack.files.size)
 	const removedFolders = new Set<string>()
 	for (const file of ajmeta.oldDatapack.files) {
 		if (!isFunctionTagPath(file)) {
 			if (fs.existsSync(file)) await fs.promises.unlink(file)
+			PROGRESS.set(PROGRESS.get() + 1)
 		} else if (aj.export_namespace !== Project!.last_used_export_namespace) {
 			const resourceLocation = parseDataPackPath(file)!.resourceLocation
 			if (
@@ -510,6 +515,7 @@ export async function compileDataPack(options: {
 				await fs.promises.copyFile(file, newPath)
 				await fs.promises.unlink(file)
 			}
+			PROGRESS.set(PROGRESS.get() + 1)
 		}
 		let folder = PathModule.dirname(file)
 		while (
@@ -563,16 +569,19 @@ export async function compileDataPack(options: {
 		BoneConfig,
 		roundTo,
 		nodeSorter,
-		// locator_position_storage: createLocatorPositionStorage(rig),
 	}
 	console.log('Compiler Variables:', variables)
 
+	PROGRESS_DESCRIPTION.set('Compiling Data Pack...')
+	PROGRESS.set(0)
+	await new Promise(resolve => setTimeout(resolve, 2000 / framespersecond))
 	console.time('MC-Build Compiler took')
 	const tokens = Tokenizer.tokenize(datapackTemplate, 'src/animated_java.mcb')
 	compiler.addFile('src/animated_java.mcb', Parser.parseMcbFile(tokens))
 	compiler.compile(VariableMap.fromObject(variables))
 	console.timeEnd('MC-Build Compiler took')
 
+	PROGRESS_DESCRIPTION.set('Writing Data Pack...')
 	console.time('Writing Files took')
 	await writeFiles(exportedFiles)
 	console.timeEnd('Writing Files took')

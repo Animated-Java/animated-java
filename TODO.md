@@ -60,13 +60,13 @@
     -   [ ] Look into adding a color picker for tintable items.
     -   [ ] Add overrides for entity-based block models.
         -   [ ] shield
-        -   [ ] conduit
-        -   [ ] decorated_pot
-        -   [ ] template_banner
-        -   [ ] template_shulker_box
-        -   [ ] template_skull
+        -   [x] conduit
+        -   [x] decorated_pot
+        -   [x] template_banner
+        -   [x] template_shulker_box
+        -   [x] template_skull
         -   [ ] trident
-        -   [ ] banners
+        -   [x] banners
 -   [ ] Add vanilla block displays
     -   [x] Create a custom element type for block displays.
     -   [ ] Add rendering for vanilla block models.
@@ -74,14 +74,13 @@
         -   [x] Parent model inheritance
         -   [x] block/block
     -   [ ] Add overrides for entity-based block models.
-        -   [ ] fluids, water/lava
         -   [x] chest
-        -   [ ] ender_chest
-        -   [ ] mob heads
-        -   [ ] shulker boxes
-        -   [ ] beds
+        -   [x] ender_chest
+        -   [x] mob heads
+        -   [x] shulker boxes
+        -   [x] beds
         -   [ ] enchantment table
-    -   [ ] multi-parts like walls throw an intneral error if they don't have any elements.
+    -   [x] multi-parts like walls throw an intneral error if they don't have any elements.
 -   [ ] Add an option to Locators to use the old entity-based functionality.
 
 # Data Pack Compiler
@@ -103,9 +102,9 @@
 -   [x] Add support for vanilla item displays.
 -   [x] Add support for vanilla block displays.
 -   [x] Locator rotation inheritance support - looks like they've supported it all this time...
+-   [x] Apply variant keyframes in animations.
 -   [ ] Figure out how cameras will work.
 -   [ ] Check for references to non-existant functions in merged function tags, and remove them.
--   [ ] Apply variant keyframes in animations.
 -   [ ] When applying variants, remove any bones that have no elements with textured faces.
 
 # Resource Pack

@@ -124,7 +124,7 @@
 			"rotation": [0, 0, 0],
 			"scale": [1, 1, 1],
 			"visibility": true,
-			"item": "ender_chest",
+			"item": "decorated_pot",
 			"config": {},
 			"block": "minecraft:stone",
 			"text": "\"Hello World!\"",
