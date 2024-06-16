@@ -36,6 +36,9 @@ export interface IBlueprintBoneConfigJSON {
  * The serialized Variant Locator Config
  */
 export interface IBlueprintLocatorConfigJSON {
+	use_entity?: LocatorConfig['useEntity']
+	entity_type?: LocatorConfig['entityType']
+	summon_commands?: LocatorConfig['entityNBT']
 	ticking_commands?: LocatorConfig['tickingCommands']
 }
 

@@ -821,6 +821,8 @@
 			"visibility": true,
 			"locked": false,
 			"config": {
+				"use_entity": false,
+				"entity_type": "minecraft:pig",
 				"ticking_commands": "particle minecraft:bubble ~ ~ ~"
 			},
 			"uuid": "7de415a2-9fdd-e4b2-3455-c3bed72eb896",
@@ -940,6 +942,22 @@
 			"align": "center",
 			"uuid": "f92184c7-5a28-47b8-8369-7dc7872e358a",
 			"type": "animated_java:vanilla_block_display"
+		},
+		{
+			"name": "pig",
+			"position": [16, 7, 0],
+			"rotation": [0, 0, 0],
+			"ignore_inherited_scale": false,
+			"visibility": true,
+			"locked": false,
+			"config": {
+				"use_entity": true,
+				"entity_type": "minecraft:pig",
+				"summon_commands": "",
+				"ticking_commands": ""
+			},
+			"uuid": "a2ebcf74-9f58-df75-9b42-f565d9d6e42c",
+			"type": "locator"
 		}
 	],
 	"outliner": [
@@ -1437,6 +1455,22 @@
 					]
 				}
 			]
+		},
+		{
+			"name": "pig",
+			"origin": [16, 7, 0],
+			"color": 0,
+			"configs": {
+				"variants": {}
+			},
+			"uuid": "3b35d1a9-befe-066e-60df-e1f3a5ec5a78",
+			"export": true,
+			"mirror_uv": false,
+			"isOpen": true,
+			"locked": false,
+			"visibility": true,
+			"autouv": 0,
+			"children": ["a2ebcf74-9f58-df75-9b42-f565d9d6e42c"]
 		}
 	],
 	"textures": [
@@ -1741,6 +1775,26 @@
 								}
 							],
 							"uuid": "d7201c93-1fc8-5f10-4e00-9efc9f1445b9",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						}
+					]
+				},
+				"3b35d1a9-befe-066e-60df-e1f3a5ec5a78": {
+					"name": "pig",
+					"type": "bone",
+					"keyframes": [
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "16 - math.cos(q.life_time * 180) * 16",
+									"y": "16 + math.sin(q.life_time * 360) * 8",
+									"z": "-32"
+								}
+							],
+							"uuid": "08083fab-35c8-d8f0-44b0-000f720cf533",
 							"time": 0,
 							"color": -1,
 							"interpolation": "linear"

@@ -69,19 +69,18 @@
         -   [x] banners
 -   [ ] Add vanilla block displays
     -   [x] Create a custom element type for block displays.
-    -   [ ] Add rendering for vanilla block models.
+    -   [x] Add rendering for vanilla block models.
         -   [x] Use Blockstates to select models.
         -   [x] Parent model inheritance
         -   [x] block/block
-    -   [ ] Add overrides for entity-based block models.
+    -   [x] Add overrides for entity-based block models.
         -   [x] chest
         -   [x] ender_chest
         -   [x] mob heads
         -   [x] shulker boxes
         -   [x] beds
-        -   [ ] enchantment table
     -   [x] multi-parts like walls throw an intneral error if they don't have any elements.
--   [ ] Add an option to Locators to use the old entity-based functionality.
+-   [x] Add an option to Locators to use the old entity-based functionality.
 
 # Data Pack Compiler
 
@@ -127,7 +126,7 @@
 
 -   [ ] Reorganize the repo's branches.
     -   [ ] Create a `release` branch.
-    -   [ ] Create a `dev` branch.
+    -   [x] Create a `dev` branch.
     -   [x] Create a `legacy-beta` tag.
     -   [x] Create a `legacy-armorstands` tag.
 -   [ ] Reorganize the repo's tags.

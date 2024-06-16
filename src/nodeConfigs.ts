@@ -313,12 +313,45 @@ export class BoneConfig {
 }
 
 export class LocatorConfig {
+	private _useEntity?: boolean
+	private _entityType?: string
+	private _summonCommands?: string
 	private _tickingCommands?: string
 
 	getDefault(): LocatorConfig {
 		return LocatorConfig.fromJSON({
+			use_entity: false,
+			entity_type: 'minecraft:pig',
+			summon_commands: '',
 			ticking_commands: '',
 		})
+	}
+
+	get useEntity(): NonNullable<LocatorConfig['_useEntity']> {
+		if (this._useEntity !== undefined) return this._useEntity
+		const defaultConfig = this.getDefault()
+		return defaultConfig.useEntity
+	}
+	set useEntity(value: NonNullable<LocatorConfig['_useEntity']>) {
+		this._useEntity = value
+	}
+
+	get entityType(): NonNullable<LocatorConfig['_entityType']> {
+		if (this._entityType !== undefined) return this._entityType
+		const defaultConfig = this.getDefault()
+		return defaultConfig.entityType
+	}
+	set entityType(value: NonNullable<LocatorConfig['_entityType']>) {
+		this._entityType = value
+	}
+
+	get summonCommands(): NonNullable<LocatorConfig['_summonCommands']> {
+		if (this._summonCommands !== undefined) return this._summonCommands
+		const defaultConfig = this.getDefault()
+		return defaultConfig.summonCommands
+	}
+	set summonCommands(value: NonNullable<LocatorConfig['_summonCommands']>) {
+		this._summonCommands = value
 	}
 
 	get tickingCommands(): NonNullable<LocatorConfig['_tickingCommands']> {
@@ -332,12 +365,18 @@ export class LocatorConfig {
 
 	public toJSON(): IBlueprintLocatorConfigJSON {
 		return {
+			use_entity: this._useEntity,
+			entity_type: this._entityType,
+			summon_commands: this._summonCommands,
 			ticking_commands: this._tickingCommands,
 		}
 	}
 
 	public static fromJSON(json: IBlueprintLocatorConfigJSON): LocatorConfig {
 		const config = new LocatorConfig()
+		if (json.use_entity !== undefined) config._useEntity = json.use_entity
+		if (json.entity_type !== undefined) config._entityType = json.entity_type
+		if (json.summon_commands !== undefined) config._summonCommands = json.summon_commands
 		if (json.ticking_commands !== undefined) config._tickingCommands = json.ticking_commands
 		return config
 	}
@@ -347,7 +386,12 @@ export class LocatorConfig {
 	}
 
 	public checkIfEqual(other: LocatorConfig) {
-		return this._tickingCommands === other._tickingCommands
+		return (
+			this.useEntity === other.useEntity &&
+			this.entityType === other.entityType &&
+			this.summonCommands === other.summonCommands &&
+			this.tickingCommands === other.tickingCommands
+		)
 	}
 }
 

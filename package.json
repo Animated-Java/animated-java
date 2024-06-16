@@ -32,17 +32,13 @@
 		"__SK__",
 		"MrMakistein",
 		"Flubberschnub",
-		"CommandWitchery",
 		"legitimoose",
 		"VelVoxelRaptor",
 		"_JeffWooden",
 		"Onnowhere",
-		"destruc7i0n",
 		"DoubleFelix",
-		"Eriol_Eandur",
 		"JayPeaSize",
 		"Kastle",
-		"Kyle10BC",
 		"Matt/Arwen",
 		"Nerdrope",
 		"Sprunkles",
@@ -50,12 +46,11 @@
 		"taj",
 		"TheRedstoneer",
 		"Totigonzales",
-		"Violet",
+		"VioletXIV",
 		"CommanderRedstone",
-		"brooke-zb",
 		"FabulousCodingFox",
-		"HURDOO",
-		"ououn"
+		"ououn",
+		"123yeah_boi321"
 	],
 	"repository": {
 		"type": "github",
@@ -102,7 +97,7 @@
 		"generic-stream": "^1.2.6",
 		"marked": "^4.3.0",
 		"marked-gfm-heading-id": "^3.0.0",
-		"mc-build": "^3.2.2",
+		"mc-build": "^3.3.1",
 		"svelte-ace": "^1.0.21",
 		"svelte-dnd-action": "^0.9.38"
 	}

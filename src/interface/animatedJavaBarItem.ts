@@ -5,6 +5,7 @@ import { exportProject } from '../systems/exporter'
 import { events } from '../util/events'
 import { createAction, createBarMenu } from '../util/moddingTools'
 import { translate } from '../util/translation'
+import { openAboutDialog } from './aboutDialog'
 import { openBlueprintSettingsDialog } from './blueprintSettingsDialog'
 
 function createIconImg() {
@@ -46,26 +47,11 @@ MenuBar.addAction(
 			return Format === BLUEPRINT_FORMAT
 		},
 		click() {
-			console.log('About')
+			openAboutDialog()
 		},
 	}),
 	MENU.id
 )
-
-// MenuBar.addAction(
-// 	createAction(`${PACKAGE.name}:settings`, {
-// 		icon: 'settings',
-// 		category: 'animated_java',
-// 		name: 'Settings',
-// 		condition() {
-// 			return Format === BLUEPRINT_FORMAT
-// 		},
-// 		click() {
-// 			console.log('Settings')
-// 		},
-// 	}),
-// 	MENU.id
-// )
 
 MenuBar.addAction(
 	createAction(`${PACKAGE.name}:blueprint_settings`, {
@@ -106,7 +92,7 @@ MenuBar.addAction(
 			return Format === BLUEPRINT_FORMAT && !Project?.animated_java.enable_plugin_mode
 		},
 		click() {
-			exportProject()
+			void exportProject()
 		},
 	}),
 	MENU.id

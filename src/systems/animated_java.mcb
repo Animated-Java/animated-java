@@ -1,4 +1,3 @@
-
 dir global {
 
 	function on_load minecraft:load {
@@ -57,6 +56,66 @@ dir global {
 			kill @e[type=item_display,tag=aj.rig_entity]
 		}
 	}
+
+	dir internal {
+		# Thanks Gibbly for this code! https://github.com/gibbsly/gu
+		dir gu {
+			function load minecraft:load {
+				scoreboard players set 256 <%OBJECTIVES.I()%> 256
+				data modify storage aj:uuid main.hex_chars set value \
+					<%JSON.stringify([...Array(0x100).keys()].map(v => {const x = v.toString(16); return x.length > 1 ? x : '0' + x}))%>
+			}
+
+			function convert_uuid_array_to_string {
+				#ARGS: {UUID: [int, int, int, int]}
+
+				data modify storage aj:uuid temp set value {0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,a:0,b:0,c:0,d:0,e:0,f:0}
+				$data modify storage aj:uuid main.in set value $(UUID)
+
+				execute store result score 0= <%OBJECTIVES.I()%> store result score 1= <%OBJECTIVES.I()%> run data get storage aj:uuid main.in[0]
+				execute store result storage aj:uuid temp.0 int 1 run scoreboard players operation 0= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+				execute store result score 2= <%OBJECTIVES.I()%> run scoreboard players operation 1= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+				execute store result storage aj:uuid temp.1 int 1 run scoreboard players operation 1= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+				execute store result score 3= <%OBJECTIVES.I()%> run scoreboard players operation 2= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+				execute store result storage aj:uuid temp.2 int 1 run scoreboard players operation 2= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+				execute store result storage aj:uuid temp.3 int 1 run scoreboard players operation 3= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+
+				execute store result score 0= <%OBJECTIVES.I()%> store result score 1= <%OBJECTIVES.I()%> run data get storage aj:uuid main.in[1]
+				execute store result storage aj:uuid temp.4 int 1 run scoreboard players operation 0= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+				execute store result score 2= <%OBJECTIVES.I()%> run scoreboard players operation 1= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+				execute store result storage aj:uuid temp.5 int 1 run scoreboard players operation 1= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+				execute store result score 3= <%OBJECTIVES.I()%> run scoreboard players operation 2= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+				execute store result storage aj:uuid temp.6 int 1 run scoreboard players operation 2= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+				execute store result storage aj:uuid temp.7 int 1 run scoreboard players operation 3= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+
+				execute store result score 0= <%OBJECTIVES.I()%> store result score 1= <%OBJECTIVES.I()%> run data get storage aj:uuid main.in[2]
+				execute store result storage aj:uuid temp.8 int 1 run scoreboard players operation 0= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+				execute store result score 2= <%OBJECTIVES.I()%> run scoreboard players operation 1= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+				execute store result storage aj:uuid temp.9 int 1 run scoreboard players operation 1= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+				execute store result score 3= <%OBJECTIVES.I()%> run scoreboard players operation 2= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+				execute store result storage aj:uuid temp.a int 1 run scoreboard players operation 2= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+				execute store result storage aj:uuid temp.b int 1 run scoreboard players operation 3= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+
+				execute store result score 0= <%OBJECTIVES.I()%> store result score 1= <%OBJECTIVES.I()%> run data get storage aj:uuid main.in[3]
+				execute store result storage aj:uuid temp.c int 1 run scoreboard players operation 0= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+				execute store result score 2= <%OBJECTIVES.I()%> run scoreboard players operation 1= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+				execute store result storage aj:uuid temp.d int 1 run scoreboard players operation 1= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+				execute store result score 3= <%OBJECTIVES.I()%> run scoreboard players operation 2= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+				execute store result storage aj:uuid temp.e int 1 run scoreboard players operation 2= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+				execute store result storage aj:uuid temp.f int 1 run scoreboard players operation 3= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+
+				block { with storage aj:uuid temp
+					REPEAT (0, 15) as i {
+						$data modify storage aj:uuid temp.<%i.toString(16)%> set from storage aj:uuid main.hex_chars[$(<%i.toString(16)%>)]
+					}
+				}
+
+				block { with storage aj:uuid temp
+					$data modify storage aj:uuid main.out set value "$(3)$(2)$(1)$(0)-$(7)$(6)-$(5)$(4)-$(b)$(a)-$(9)$(8)$(f)$(e)$(d)$(c)"
+				}
+			}
+		}
+	}
 }
 
 dir <%export_namespace%> {
@@ -102,9 +161,17 @@ dir <%export_namespace%> {
 				execute if entity @s[tag=<%TAGS.ANIMATION_PLAYING(export_namespace, animation.name)%>] run \
 					function *<%export_namespace%>/animations/<%animation.name%>/zzz/on_tick
 			}
-			REPEAT (Object.values(rig.nodeMap)) as node {
-				IF (node.type === 'locator' && node.config?.ticking_commands) {
-					# FIXME: Once https://github.com/mc-build/mcb/issues/15 is fixed this should be changed to a block instead of an execute run.
+			REPEAT (Object.values(rig.nodeMap).filter(v => v.type === 'locator')) as node {
+				IF (node.config.use_entity) {
+					execute on passengers if entity @s[tag=<%TAGS.PROJECT_DATA(export_namespace)%>] run { with entity @s data.locators.<%node.name%>
+						$execute as $(uuid) positioned ^$(posx) ^$(posy) ^$(posz) rotated ~$(roty) ~$(rotx) run {
+							tp @s ~ ~ ~ ~ ~
+							IF (node.config?.ticking_commands) {
+								<%node.config.ticking_commands%>
+							}
+						}
+					}
+				} ELSE IF (node.config?.ticking_commands) {
 					execute on passengers if entity @s[tag=<%TAGS.PROJECT_DATA(export_namespace)%>] run { with entity @s data.locators.<%node.name%>
 						$execute positioned ^$(posx) ^$(posy) ^$(posz) rotated ~$(roty) ~$(rotx) run {
 							<%node.config.ticking_commands%>
@@ -309,9 +376,9 @@ dir <%export_namespace%> {
 													}
 											}
 										} ELSE IF (node.type === 'locator') {
-											IF (rig.nodeMap[node.uuid]?.config?.ticking_commands) {
+											IF (rig.nodeMap[node.uuid]?.config?.use_entity || rig.nodeMap[node.uuid]?.config?.ticking_commands) {
 												execute on passengers if entity @s[tag=<%TAGS.PROJECT_DATA(export_namespace)%>] run \
-													data modify entity @s data.locators.<%node.name%> set value { \
+													data modify entity @s data.locators.<%node.name%> merge value { \
 														posx: <%node.pos.x%>, posy: <%node.pos.y%>, posz: <%node.pos.z%>, \
 														rotx: <%node.rot.x%>, roty: <%node.rot.y%>, \
 													}
@@ -363,6 +430,23 @@ dir <%export_namespace%> {
 		}
 		execute as @e[type=item_display,tag=<%TAGS.NEW()%>,limit=1,distance=..0.01] run {
 			execute store result score @s <%OBJECTIVES.ID()%> run scoreboard players add aj.last_id <%OBJECTIVES.ID()%> 1
+
+			REPEAT (Object.values(rig.nodeMap).filter(v => v.type === 'locator')) as locator {
+				IF (locator.config && locator.config.use_entity) {
+					summon <%locator.config.entity_type%> ~ ~ ~ {Tags:['<%TAGS.NEW()%>', '<%TAGS.GLOBAL_LOCATOR()%>', '<%TAGS.PROJECT_LOCATOR(export_namespace)%>', '<%TAGS.LOCAL_LOCATOR(export_namespace, locator.name)%>']}
+					execute as @e[type=<%locator.config.entity_type%>,tag=<%TAGS.NEW()%>,tag=<%TAGS.GLOBAL_LOCATOR()%>,limit=1,distance=..0.01] run {
+						tag @s remove <%TAGS.NEW()%>
+
+						function animated_java:global/internal/gu/convert_uuid_array_to_string with entity @s
+						execute as @e[type=item_display,tag=<%TAGS.NEW()%>,limit=1,distance=..0.01] on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run {
+							data modify entity @s data.locators.<%locator.name%>.uuid set from storage aj:uuid main.out
+						}
+
+						<%locator.config.summon_commands%>
+					}
+				}
+			}
+
 			tag @s remove <%TAGS.NEW()%>
 
 			# Variant Arguement
