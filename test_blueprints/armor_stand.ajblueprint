@@ -455,7 +455,6 @@
 			"to": [5, 32, 5],
 			"autouv": 0,
 			"color": 9,
-			"visibility": false,
 			"origin": [0, 27, 0],
 			"faces": {
 				"north": {
@@ -497,7 +496,6 @@
 			"to": [5, 23.75, 3],
 			"autouv": 0,
 			"color": 9,
-			"visibility": false,
 			"origin": [0, 17.5, 0],
 			"faces": {
 				"north": {
@@ -539,7 +537,6 @@
 			"to": [-3, 25, 3],
 			"autouv": 0,
 			"color": 9,
-			"visibility": false,
 			"origin": [-6, 22.125, 0],
 			"faces": {
 				"north": {
@@ -581,7 +578,6 @@
 			"to": [9, 25, 3],
 			"autouv": 0,
 			"color": 9,
-			"visibility": false,
 			"origin": [6, 22.125, 0],
 			"faces": {
 				"north": {
@@ -623,7 +619,6 @@
 			"to": [4.5, 17, 2.5],
 			"autouv": 0,
 			"color": 9,
-			"visibility": false,
 			"origin": [0, 14.25, 0],
 			"faces": {
 				"north": {
@@ -665,7 +660,6 @@
 			"to": [4.25, 12, 2.375],
 			"autouv": 0,
 			"color": 9,
-			"visibility": false,
 			"origin": [1.875, 7.375, 0],
 			"faces": {
 				"north": {
@@ -707,7 +701,6 @@
 			"to": [0.5, 12, 2.375],
 			"autouv": 0,
 			"color": 9,
-			"visibility": false,
 			"origin": [-1.875, 7.375, 0],
 			"faces": {
 				"north": {
@@ -749,7 +742,6 @@
 			"to": [4.75, 6, 3],
 			"autouv": 0,
 			"color": 9,
-			"visibility": false,
 			"origin": [1.875, 2.5, 0],
 			"faces": {
 				"north": {
@@ -791,7 +783,6 @@
 			"to": [1, 6, 3],
 			"autouv": 0,
 			"color": 9,
-			"visibility": false,
 			"origin": [-1.875, 2.5, 0],
 			"faces": {
 				"north": {
@@ -1294,7 +1285,7 @@
 													"uuid": "b5b52d2c-097c-08df-6457-372fbae12445",
 													"export": true,
 													"mirror_uv": false,
-													"isOpen": false,
+													"isOpen": true,
 													"locked": false,
 													"visibility": true,
 													"autouv": 0,
@@ -3479,6 +3470,60 @@
 								}
 							],
 							"uuid": "91fd39fe-bb52-3026-6ec1-26276a222718",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						}
+					]
+				}
+			}
+		},
+		{
+			"uuid": "52b25351-eb41-9619-73b8-257da0ed2337",
+			"name": "variant_test",
+			"loop": "loop",
+			"override": false,
+			"length": 1,
+			"snapping": 20,
+			"selected": true,
+			"saved": false,
+			"path": "",
+			"anim_time_update": "",
+			"blend_weight": "",
+			"start_delay": "",
+			"loop_delay": "",
+			"excluded_bones": [],
+			"animators": {
+				"effects": {
+					"name": "Effects",
+					"type": "effect",
+					"keyframes": [
+						{
+							"channel": "variant",
+							"data_points": [
+								{
+									"variant": "f78e10c0-a4a3-aa2f-43ac-753facebd709",
+									"execute_condition": "",
+									"repeat": false,
+									"repeat_frequency": 1
+								}
+							],
+							"uuid": "d5272eef-6700-f8e2-7db9-047c77d9a5c3",
+							"time": 0.5,
+							"color": -1,
+							"interpolation": "linear"
+						},
+						{
+							"channel": "variant",
+							"data_points": [
+								{
+									"variant": "5417306e-2c69-3f36-1e3c-edd904034a36",
+									"execute_condition": "",
+									"repeat": false,
+									"repeat_frequency": 1
+								}
+							],
+							"uuid": "deb559d1-e577-8b47-3527-4dd5e725d5a4",
 							"time": 0,
 							"color": -1,
 							"interpolation": "linear"

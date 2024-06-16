@@ -71,10 +71,10 @@ export async function parseBlockModel(
 		return await parseBlockModel(parentVariant, model)
 	}
 
-	return await generateBlockMesh(variant, model)
+	return await generateModelMesh(variant, model)
 }
 
-async function generateBlockMesh(
+async function generateModelMesh(
 	variant: IBlockStateVariant,
 	model: IBlockModel
 ): Promise<BlockModelMesh> {
@@ -152,7 +152,11 @@ async function generateBlockMesh(
 		geometry.rotateY(Math.degToRad(180))
 		if (variant.y) geometry.rotateY(Math.degToRad(variant.y))
 		if (variant.x) geometry.rotateX(Math.degToRad(variant.x))
-		geometry.translate(8, 8, 8)
+		if (variant.isItemModel) {
+			geometry.translate(0, 8, 0)
+		} else {
+			geometry.translate(8, 8, 8)
+		}
 
 		const indices = []
 		for (let i = 0; i < 6; i++) {

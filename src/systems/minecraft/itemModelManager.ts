@@ -64,21 +64,16 @@ async function parseItemModel(location: string, childModel?: IItemModel): Promis
 	if (model.parent) {
 		const resource = parseResourceLocation(model.parent)
 		if (resource.type === 'block') {
-			return await parseBlockModel({ model: model.parent }, model)
+			return await parseBlockModel({ model: model.parent, isItemModel: true }, model)
 		}
 		if (resource.path === 'item/generated') {
-			// if (!model.textures.layer0) {
-			// 	throw new Error(`No layer0 texture for generated item model '${location}'`)
-			// }
-			// const texturePath =
-			// 	getPathFromResourceLocation(model.textures.layer0, 'textures') + '.png'
 			return await generateItemMesh(location, model)
 		} else {
 			return await parseItemModel(model.parent, model)
 		}
 	} else {
 		// The block model parser handles custom item models made from elements just fine, so we can use it here
-		return await parseBlockModel({ model: location }, model)
+		return await parseBlockModel({ model: location, isItemModel: true }, model)
 	}
 
 	throw new Error(`Unsupported item model '${location}'`)

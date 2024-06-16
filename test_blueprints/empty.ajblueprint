@@ -41,7 +41,7 @@
 			"visibility": true,
 			"item": "minecraft:diamond",
 			"config": {},
-			"block": "red_bed",
+			"block": "lime_bed",
 			"text": "\"Hello World!\"",
 			"lineWidth": 200,
 			"backgroundColor": "#000000",
@@ -83,6 +83,57 @@
 			"align": "center",
 			"uuid": "7edf27c8-19bd-8a1a-6c23-888d95c417d8",
 			"type": "animated_java:text_display"
+		},
+		{
+			"name": "vanilla_block_display",
+			"position": [24, 0, -8],
+			"rotation": [0, 0, 0],
+			"scale": [1, 1, 1],
+			"visibility": true,
+			"item": "minecraft:diamond",
+			"config": {},
+			"block": "ender_chest",
+			"text": "\"Hello World!\"",
+			"lineWidth": 200,
+			"backgroundColor": "#000000",
+			"backgroundAlpha": 0.25,
+			"align": "center",
+			"uuid": "011c3839-535e-c84c-3f07-feaea270eb50",
+			"type": "animated_java:vanilla_block_display"
+		},
+		{
+			"name": "vanilla_item_display",
+			"position": [14, 35, 0],
+			"rotation": [0, 0, 0],
+			"scale": [1, 1, 1],
+			"visibility": true,
+			"item": "orange_banner",
+			"config": {},
+			"block": "minecraft:stone",
+			"text": "\"Hello World!\"",
+			"lineWidth": 200,
+			"backgroundColor": "#000000",
+			"backgroundAlpha": 0.25,
+			"align": "center",
+			"uuid": "2c03f4d5-e12a-5e1a-6a75-a68bb6ebb221",
+			"type": "animated_java:vanilla_item_display"
+		},
+		{
+			"name": "vanilla_item_display1",
+			"position": [32, 16, 0],
+			"rotation": [0, 0, 0],
+			"scale": [1, 1, 1],
+			"visibility": true,
+			"item": "ender_chest",
+			"config": {},
+			"block": "minecraft:stone",
+			"text": "\"Hello World!\"",
+			"lineWidth": 200,
+			"backgroundColor": "#000000",
+			"backgroundAlpha": 0.25,
+			"align": "center",
+			"uuid": "5ce3bffe-5c27-ba91-8f8d-4d300d1392c5",
+			"type": "animated_java:vanilla_item_display"
 		}
 	],
 	"outliner": [
@@ -102,7 +153,10 @@
 			"visibility": true,
 			"autouv": 0,
 			"children": ["2d724d26-385a-a106-f4a5-f9e4a342bef1", "7edf27c8-19bd-8a1a-6c23-888d95c417d8"]
-		}
+		},
+		"011c3839-535e-c84c-3f07-feaea270eb50",
+		"2c03f4d5-e12a-5e1a-6a75-a68bb6ebb221",
+		"5ce3bffe-5c27-ba91-8f8d-4d300d1392c5"
 	],
 	"textures": [],
 	"variants": {

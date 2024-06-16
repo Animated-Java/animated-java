@@ -3,6 +3,7 @@ import {
 	getKeyframeExecuteCondition,
 	getKeyframeRepeat,
 	getKeyframeRepeatFrequency,
+	getKeyframeVariant,
 } from '../mods/customKeyframesMod'
 import { TextDisplay } from '../outliner/textDisplay'
 import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
@@ -67,11 +68,7 @@ export interface IRenderedFrame {
 	nodes: IAnimationNode[]
 	variant?: {
 		uuid: string
-		executeCondition: string
-	}
-	animationState?: {
-		animation: string
-		executeCondition: string
+		executeCondition?: string
 	}
 }
 
@@ -212,24 +209,17 @@ export function getAnimationNodes(
 }
 
 function getVariantKeyframe(animation: _Animation, time: number) {
-	if (!animation.animators.effects?.variants) return
-	for (const kf of animation.animators.effects.variants as _Keyframe[]) {
-		if (kf.time === time)
-			return {
-				uuid: kf.data_points[0].variant,
-				executeCondition: kf.data_points[0].executeCondition,
-			}
-	}
-}
-
-function getAnimationStateKeyframe(animation: _Animation, time: number) {
-	if (!animation.animators.effects?.animationStates) return
-	for (const kf of animation.animators.effects.animationStates as _Keyframe[]) {
-		if (kf.time === time)
-			return {
-				animation: kf.data_points[0].animationState,
-				executeCondition: kf.data_points[0].executeCondition,
-			}
+	const variantKeyframes = animation.animators.effects?.variant as _Keyframe[]
+	if (!variantKeyframes) return
+	for (const kf of variantKeyframes) {
+		if (kf.time !== time) continue
+		const uuid = getKeyframeVariant(kf)
+		if (!uuid) return
+		const executeCondition = getKeyframeExecuteCondition(kf)
+		return {
+			uuid,
+			executeCondition,
+		}
 	}
 }
 
@@ -278,7 +268,6 @@ export function renderAnimation(animation: _Animation, rig: IRenderedRig) {
 			time,
 			nodes: getAnimationNodes(animation, rig.nodeMap, time),
 			variant: getVariantKeyframe(animation, time),
-			animationState: getAnimationStateKeyframe(animation, time),
 		}
 		frame.nodes.forEach(n => includedNodes.add(n.uuid))
 		rendered.frames.push(frame)
@@ -310,11 +299,8 @@ export function hashAnimations(animations: IRenderedAnimation[]) {
 			}
 			if (frame.variant) {
 				hash.update(';' + frame.variant.uuid)
-				hash.update(';' + frame.variant.executeCondition)
-			}
-			if (frame.animationState) {
-				hash.update(';' + frame.animationState.animation)
-				hash.update(';' + frame.animationState.executeCondition)
+				if (frame.variant.executeCondition)
+					hash.update(';' + frame.variant.executeCondition)
 			}
 		}
 	}

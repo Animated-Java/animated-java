@@ -56,8 +56,8 @@ animated_java.dialog.blueprint_settings.show_bounding_box.description: Whether o
 
 animated_java.dialog.blueprint_settings.auto_bounding_box.title: Auto Bounding Box
 animated_java.dialog.blueprint_settings.auto_bounding_box.description: |-
-  Whether or not to automatically calculate the bounding box based on the model's geometry.
-  NOTE: The auto bounding box will NOT take bone offsets from animations into account, so the bounding box may be smaller than needed in some cases.
+    Whether or not to automatically calculate the bounding box based on the model's geometry.
+    NOTE: The auto bounding box will NOT take bone offsets from animations into account, so the bounding box may be smaller than needed in some cases.
 
 animated_java.dialog.blueprint_settings.bounding_box.title: Bounding Box
 animated_java.dialog.blueprint_settings.bounding_box.description: Determines the culling box of the model. The model will stop rendering when this box is off-screen.
@@ -172,22 +172,22 @@ animated_java.dialog.bone_config.billboard.options.center: Center
 animated_java.dialog.locator_config.title: Locator Config
 
 animated_java.dialog.locator_config.plugin_mode_warning: |-
-  Plugin Mode is enabled! Locators have no configuration in Plugin Mode.
-  Instead, use the Plugin API to add custom functionality to your Locators.
-  For more information, see the Official Plugin API documentation for more information.
+    Plugin Mode is enabled! Locators have no configuration in Plugin Mode.
+    Instead, use the Plugin API to add custom functionality to your Locators.
+    For more information, see the Official Plugin API documentation for more information.
 
 animated_java.dialog.locator_config.ticking_commands.title: Ticking Commands
 animated_java.dialog.locator_config.ticking_commands.description: |-
-  Commands to run every tick at the Locator's position. Treat this text input as a normal mcfunction.
-  NOTE: These commands will only run while an animation is playing.
+    Commands to run every tick at the Locator's position. Treat this text input as a normal mcfunction.
+    NOTE: These commands will only run while an animation is playing.
 
 ## Text Display Config Dialog
 animated_java.dialog.text_display_config.title: Text Display Config
 
 animated_java.dialog.bone_config.vanilla_item_model.title: Vanilla Item Model
 animated_java.dialog.bone_config.vanilla_item_model.description: |-
-  If set, the bone will render as a vanilla item model.
-  This will overwrite the bone's existing cubes.
+    If set, the bone will render as a vanilla item model.
+    This will overwrite the bone's existing cubes.
 
 animated_java.dialog.text_display_config.use_nbt.title: Use NBT
 animated_java.dialog.text_display_config.use_nbt.description: Whether or not to use NBT to configure the text display instead of settings.
@@ -330,15 +330,15 @@ animated_java.panel.keyframe.execute_condition.description: A condition that mus
 
 animated_java.panel.keyframe.repeat.title: Repeat?
 animated_java.panel.keyframe.repeat.description: |-
-  Whether or not to run the commands in this keyframe repeatedly.
-  If enabled, the commands will run every Repeat Frequency ticks.
+    Whether or not to run the commands in this keyframe repeatedly.
+    If enabled, the commands will run every Repeat Frequency ticks.
 
 animated_java.panel.keyframe.repeat_frequency.title: Repeat Frequency
 animated_java.panel.keyframe.repeat_frequency.description: |-
-  How many ticks to wait before running the commands in this keyframe again.
-  Setting this to 1 will run the commands every tick.
-  NOTE: If the animation is not evenly divisible by this value, the interval may be slightly off when the animation loops.
-  If this is set to a value larger than the length of the animation, the commands will run as if repeat was disabled (Once when the keyframe is reached).
+    How many ticks to wait before running the commands in this keyframe again.
+    Setting this to 1 will run the commands every tick.
+    NOTE: If the animation is not evenly divisible by this value, the interval may be slightly off when the animation loops.
+    If this is set to a value larger than the length of the animation, the commands will run as if repeat was disabled (Once when the keyframe is reached).
 
 # Text Display Panel
 animated_java.panel.text_display.title: Text Display

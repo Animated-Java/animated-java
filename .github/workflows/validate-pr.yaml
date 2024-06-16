@@ -3,25 +3,25 @@
 name: Validate PR builds successfully.
 
 on:
-  pull_request:
-    branches: [main, experimental]
-  workflow_dispatch:
+    pull_request:
+        branches: [main, experimental]
+    workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+    build:
+        runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v1
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v2.5.1
-        with:
-          node-version: 16.x
-      - name: install yarn
-        run: npm i -g yarn
-      - name: run yarn
-        run: yarn
-      - name: build release
-        run: yarn build:prod
-        env:
-          FLAVOR: pr-test
+        steps:
+            - uses: actions/checkout@v1
+            - name: Setup Node.js environment
+              uses: actions/setup-node@v2.5.1
+              with:
+                  node-version: 16.x
+            - name: install yarn
+              run: npm i -g yarn
+            - name: run yarn
+              run: yarn
+            - name: build release
+              run: yarn build:prod
+              env:
+                  FLAVOR: pr-test

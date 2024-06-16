@@ -92,6 +92,7 @@ export interface IBlockStateVariant {
 	uvlock?: boolean
 	x?: number
 	y?: number
+	isItemModel?: boolean // Internal use only
 }
 
 export type IBlockStateMultipartCaseCondition = {
