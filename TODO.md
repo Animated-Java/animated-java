@@ -109,7 +109,7 @@
 
 # Resource Pack
 
--   [ ] Warn the user when they have custom elements in their model, but have disabled the resource pack export.
+-   [x] Warn the user when they have custom elements in their model, but have disabled the resource pack export.
 
 # Website / Documentation
 
@@ -128,10 +128,11 @@
 -   [ ] Reorganize the repo's branches.
     -   [ ] Create a `release` branch.
     -   [ ] Create a `dev` branch.
-    -   [x] Create a `legacy` branch.
+    -   [x] Create a `legacy-beta` tag.
+    -   [x] Create a `legacy-armorstands` tag.
 -   [ ] Reorganize the repo's tags.
     -   [ ] Create a `v1.0.0` tag.
-    -   [ ] Create a `legacy-v0.4.8` tag.
+    -   [x] Create a `legacy-beta` tag.
     -   [x] Create a `legacy-armorstands` tag.
 
 # Post 1.0.0
