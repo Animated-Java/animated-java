@@ -60,25 +60,25 @@
 -   [x] Add an about page.
 -   [x] Camera Plugin Support
     -   [x] Data Pack Compiler support.
--   [ ] Change the Collection setting type to allow single-click swapping of items between lists.
--   [ ] Add vanilla item displays
+-   [x] Add vanilla item displays
     -   [x] Create a custom element type for item displays.
-    -   [ ] Add rendering for vanilla item models.
+    -   [x] Add rendering for vanilla item models.
         -   [x] Parent model inheritance
         -   [x] item/generated
         -   [x] item/handheld
         -   [x] item/handheld_rod
         -   [x] item/handheld_mace
-    -   [ ] Look into adding a color picker for tintable items.
-    -   [ ] Add overrides for entity-based block models.
-        -   [ ] shield
+    -   [ ] Add overrides for entity-based models.
         -   [x] conduit
         -   [x] decorated_pot
         -   [x] template_banner
         -   [x] template_shulker_box
         -   [x] template_skull
-        -   [ ] trident
         -   [x] banners
+        -   [ ] shield
+        -   [ ] trident
+-   [ ] Change the Collection setting type to allow single-click swapping of items between lists.
+-   [ ] Look into adding a color picker for tintable vanilla items.
 -   [ ] Add Variants to the UndoSystem (Blocked by vanilla Blockbench not supporting custom undo actions)
 
 # Data Pack Compiler

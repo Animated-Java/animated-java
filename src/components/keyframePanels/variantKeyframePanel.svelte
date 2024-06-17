@@ -37,7 +37,7 @@
 	<label
 		for="variant_input"
 		class="undefined"
-		style="font-weight: unset;"
+		style="font-weight: unset; width: fit-content;"
 		title={translate('panel.keyframe.variant.description')}
 	>
 		{translate('panel.keyframe.variant.title')}

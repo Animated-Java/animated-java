@@ -2,7 +2,6 @@ import { IBlueprintFormatJSON, getDefaultProjectSettings } from '../blueprintFor
 import { BoneConfig } from '../nodeConfigs'
 import { PACKAGE } from '../constants'
 import { openUnexpectedErrorDialog } from '../interface/unexpectedErrorDialog'
-import { LocatorAnimator } from '../mods/locatorAnimatorMod'
 
 export function process(model: any): any {
 	if (model.meta.model_format === 'animatedJava/ajmodel') {
@@ -42,8 +41,8 @@ export function process(model: any): any {
 		console.log('Upgrade complete')
 		return model
 	} catch (e: any) {
-		console.error(e)
 		openUnexpectedErrorDialog(e as Error)
+		throw e
 	}
 }
 
@@ -182,6 +181,7 @@ function updateModelToOld1_4(model: any) {
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelTo1_0(model: any) {
 	console.log('Processing model format 1.0', JSON.parse(JSON.stringify(model)))
+
 	const defaultSettings = getDefaultProjectSettings()
 	const datapackExporterSettings =
 		model.animated_java.exporter_settings['animated_java:datapack_exporter']
@@ -272,9 +272,9 @@ function updateModelTo1_0(model: any) {
 		const includedBones = variant.affectedBones.map((v: any) => v.value as string)
 		let excludedBones: string[]
 		if (variant.affectedBonesIsAWhitelist) {
-			excludedBones = includedBones
-		} else {
 			excludedBones = bones.filter(b => !includedBones.includes(b))
+		} else {
+			excludedBones = includedBones
 		}
 
 		blueprint.variants.list.push({
@@ -286,10 +286,21 @@ function updateModelTo1_0(model: any) {
 		})
 	}
 
+	const commandsLocator = new Locator({
+		name: 'commands',
+		from: [0, 0, 0],
+	}).getSaveCopy!()
+	let commandKeyframeCount = 0
+
 	// Move command keyframes into commands channel on a "root" locator.
 	if (blueprint.animations) {
 		for (const animation of blueprint.animations) {
-			let keyframes: any[] = []
+			if (animation.animators.effects) {
+				for (const kf of animation.animators.effects.keyframes) {
+					if (kf.channel === 'variants') kf.channel = 'variant'
+				}
+			}
+			const keyframes: any[] = []
 			const effects = animation.animators.effects
 			if (!effects || !effects.keyframes) continue
 			for (const keyframe of effects.keyframes) {
@@ -314,22 +325,21 @@ function updateModelTo1_0(model: any) {
 				}
 			}
 			if (keyframes.length > 0) {
-				const rootLocator = new Locator({
-					name: 'root',
-					from: [0, 0, 0],
-				}).getSaveCopy!()
-				const actualAnim = new Blockbench.Animation({}).extend(animation)
-				const rootAnimator = new LocatorAnimator(rootLocator.uuid, actualAnim, 'root')
-
-				for (const keyframe of keyframes) {
-					rootAnimator.addKeyframe(keyframe as KeyframeOptions)
+				animation.animators[commandsLocator.uuid] ??= {
+					type: 'locator',
+					name: 'commands',
+					keyframes: [],
 				}
-
-				const savedAnim = actualAnim.getUndoCopy({ bone_names: true }, true)
-				blueprint.animations.push(savedAnim)
+				const animator = animation.animators[commandsLocator.uuid]
+				for (const keyframe of keyframes) {
+					// animator.addKeyframe(keyframe as KeyframeOptions)
+					animator.keyframes.push(keyframe)
+					commandKeyframeCount++
+				}
 			}
 		}
 	}
+	if (commandKeyframeCount > 0) blueprint.elements.push(commandsLocator)
 
 	// Convert rig nbt into data merge command
 	if (
