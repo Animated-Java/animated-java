@@ -1793,26 +1793,6 @@
 						}
 					]
 				},
-				"3b35d1a9-befe-066e-60df-e1f3a5ec5a78": {
-					"name": "pig",
-					"type": "bone",
-					"keyframes": [
-						{
-							"channel": "position",
-							"data_points": [
-								{
-									"x": "16 - math.cos(q.life_time * 180) * 16",
-									"y": "16 + math.sin(q.life_time * 360) * 8",
-									"z": "-32"
-								}
-							],
-							"uuid": "08083fab-35c8-d8f0-44b0-000f720cf533",
-							"time": 0,
-							"color": -1,
-							"interpolation": "linear"
-						}
-					]
-				},
 				"d0076177-a6cf-561c-08d8-efd07677b337": {
 					"name": "camera",
 					"type": "camera",
@@ -1841,6 +1821,26 @@
 								}
 							],
 							"uuid": "01848b41-27ed-45c5-168f-64a1623fa350",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						}
+					]
+				},
+				"3b35d1a9-befe-066e-60df-e1f3a5ec5a78": {
+					"name": "pig",
+					"type": "bone",
+					"keyframes": [
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "16 - math.cos(q.life_time * 180) * 16",
+									"y": "16 + math.sin(q.life_time * 360) * 8",
+									"z": "-32"
+								}
+							],
+							"uuid": "08083fab-35c8-d8f0-44b0-000f720cf533",
 							"time": 0,
 							"color": -1,
 							"interpolation": "linear"

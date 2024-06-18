@@ -139,7 +139,7 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 	}
 
 	getUndoCopy() {
-		const copy: any = {}
+		const copy = {} as VanillaItemDisplayOptions & { uuid: string; type: string }
 
 		for (const key in VanillaItemDisplay.properties) {
 			VanillaItemDisplay.properties[key].copy(this, copy)
@@ -147,8 +147,6 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 
 		copy.uuid = this.uuid
 		copy.type = this.type
-		// delete copy.parent
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 		return copy
 	}
 
@@ -217,8 +215,6 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, 
 	},
 	updateGeometry(el: VanillaItemDisplay) {
 		if (!el.mesh) return
-		// const currentModel = el.mesh.children.at(0)
-		// if (currentModel?.name === el.item) return
 
 		void getItemModel(el.item)
 			.then(result => {

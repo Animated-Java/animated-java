@@ -140,7 +140,7 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 	}
 
 	getUndoCopy() {
-		const copy = new VanillaBlockDisplay(this)
+		const copy = {} as VanillaBlockDisplayOptions & { uuid: string; type: string }
 
 		for (const key in VanillaBlockDisplay.properties) {
 			VanillaBlockDisplay.properties[key].copy(this, copy)
@@ -148,7 +148,6 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 
 		copy.uuid = this.uuid
 		copy.type = this.type
-		delete copy.parent
 		return copy
 	}
 
@@ -217,10 +216,6 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay,
 	},
 	updateGeometry(el: VanillaBlockDisplay) {
 		if (!el.mesh) return
-		// const currentModel = el.mesh.children.at(0)
-		// if (currentModel?.name === el.block) {
-		// 	return
-		// }
 
 		void getBlockModel(el.block)
 			.then(result => {
@@ -234,7 +229,7 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay,
 				el.mesh.add(result.outline)
 
 				el.preview_controller.updateHighlight(el)
-				// el.preview_controller.updateTransform(el)
+				el.preview_controller.updateTransform(el)
 				el.mesh.visible = el.visibility
 				TickUpdates.selection = true
 			})

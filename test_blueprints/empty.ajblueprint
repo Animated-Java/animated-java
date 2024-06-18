@@ -54,7 +54,7 @@
 			"name": "chest",
 			"position": [-4, 16, -4],
 			"rotation": [0, 0, 0],
-			"scale": [0.5625, 0.5, 0.5],
+			"scale": [0.5, 0.5, 0.5],
 			"visibility": true,
 			"item": "minecraft:diamond",
 			"config": {},

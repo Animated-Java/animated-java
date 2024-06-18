@@ -611,7 +611,6 @@ export function hashRig(rig: IRenderedRig) {
 					hash.update(defaultConfig.toNBT().toString())
 				}
 				for (const [variantName, config] of Object.entries(node.configs.variants)) {
-					console.log('variantconfig;', variantName, config)
 					const variantConfig = BoneConfig.fromJSON(config)
 					if (!variantConfig.isDefault()) {
 						hash.update('variantconfig;')
