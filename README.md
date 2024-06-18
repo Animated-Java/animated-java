@@ -1,5 +1,5 @@
 <div align="center">
-	<img src="https://raw.githubusercontent.com/Animated-Java/animated-java/experimental/src/assets/animated_java_icon.webp"/>
+	<img src="https://raw.githubusercontent.com/Animated-Java/animated-java/main/src/assets/animated_java_icon.webp"/>
 </div>
 <h1 align="center">
 	Animated Java
@@ -33,15 +33,15 @@ Click on the `Available` tab, Then search for Animated Java in the search bar, a
 
 Open the Plugins menu in BlockBench (File > Plugins)
 
-![Plugin Menu](https://raw.githubusercontent.com/Animated-Java/animated-java/experimental/src/assets/plugin_menu.png)
+![Plugin Menu](https://raw.githubusercontent.com/Animated-Java/animated-java/main/src/assets/plugin_menu.png)
 
 In the Plugins menu, click on `Load Plugin from URL`
 
-![Load Plugin from URL](https://raw.githubusercontent.com/Animated-Java/animated-java/experimental/src/assets/load_plugin_from_url.png)
+![Load Plugin from URL](https://raw.githubusercontent.com/Animated-Java/animated-java/main/src/assets/load_plugin_from_url.png)
 
 Then, paste this URL into the box that appears: https://animated-java.dev/api/builds/main/animated_java.js
 
-![URL](https://raw.githubusercontent.com/Animated-Java/animated-java/experimental/src/assets/url.png)
+![URL](https://raw.githubusercontent.com/Animated-Java/animated-java/main/src/assets/url.png)
 
 Click Confirm, and success! You've just installed Animated Java.
 

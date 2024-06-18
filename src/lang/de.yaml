@@ -1,0 +1,366 @@
+animated_java.title: Animated Java
+
+animated_java.menubar.settings: Animated Java
+
+animated_java.menubar.items.about: Über...
+animated_java.menubar.items.settings: Einstellungen
+animated_java.menubar.items.project_settings: Projekteinstellungen
+animated_java.menubar.items.documentation: Dokumentation
+animated_java.menubar.items.export_project: Projekt exportieren
+animated_java.menubar.items.bone_config: Knochen-Konfiguration
+animated_java.menubar.items.camera_config: Kamera-Konfiguration
+animated_java.menubar.items.locator_config: Locator-Konfiguration
+
+animated_java.quickmessage.exported_successfully: Export erfolgreich!
+
+### Dialogs
+animated_java.dialog.close_button: Fertig
+
+### About
+animated_java.dialog.about.title: Über Animated Java
+
+### Export in Progress
+animated_java.dialog.export_in_progress.title: Export läuft ...
+
+### Settings
+animated_java.settings.accessability_options_group: Barrierefreiheit
+
+animated_java.dialog.settings.title: Animated Java Einstellungen
+animated_java.settings.reduced_motion: Reduzierte Bewegungen
+animated_java.settings.reduced_motion.description: |-
+    Deaktivieren Sie alle UI-Animationen in Animated Java Menüs.
+    Dadurch werden Animationen und andere Effekte deaktiviert, die Schwindel verursachen können.
+
+animated_java.settings.resource_pack_group: Resource Pack
+
+animated_java.settings.minify_output: Export minimieren
+animated_java.settings.minify_output.description: |-
+    Verkleinert die Ausgabe des exportierten Resource Packs
+    Dabei werden alle Kommentare und Leerzeichen aus dem Export entfernt.
+    Dadurch wird die Ausgabe kleiner, aber schwieriger zu lesen.
+
+### Documentation
+animated_java.dialog.documentation.title: Animated Java Dokumentation
+
+animated_java.dialog.documentation.loading: Dokumentation wird geladen ...
+
+animated_java.dialog.documentation.error.failed_to_load.title: Dokumentation konnte nicht geladen werden! :(
+animated_java.dialog.documentation.error.failed_to_load.description: |-
+    Stellen Sie sicher, dass eine Internetverbindung besteht!
+
+### Project Settings
+animated_java.dialog.project_settings.title: Animated Java Projekteinstellungen
+
+animated_java.dialog.project_settings.project_group: Projekt
+
+animated_java.project_settings.project_namespace: Name des Projekts
+animated_java.project_settings.project_namespace.description: |-
+    Der Name und das Namespace des Projekts.
+animated_java.project_settings.project_namespace.error.unset: |-
+    Das Projekt muss einen Namen haben.
+
+animated_java.project_settings.project_resolution: Projektauflösung
+animated_java.project_settings.project_resolution.description: |-
+    Die UV Auflösung des Projekts.
+    Dies sollte der Auflösung der größten Textur in Ihrem Projekt entsprechen.
+
+animated_java.project_settings.target_minecraft_version: Ziel Minecraft-Version
+animated_java.project_settings.target_minecraft_version.description: |-
+    Die Minecraft-Version, in der Sie das exportierte Rig verwenden möchten.
+
+animated_java.project_settings.resourcepack_group: Resource Pack
+
+animated_java.project_settings.rig_item: Rig Item
+animated_java.project_settings.rig_item.description: |-
+    Das Element, das für die Anzeige der Modelle auf den Rüstungsständern verwendet wird.
+animated_java.project_settings.rig_item.error.unset: |-
+    Rig Item darf nicht leer sein.
+animated_java.project_settings.rig_item.error.space: |-
+    Rig Item muss eine gültige Item ID sein.
+    Item IDs dürfen keine Leerzeichen enthalten.
+animated_java.project_settings.rig_item.error.invalid_namespace: |-
+    Rig Item muss eine gültige Item ID sein.
+    Item IDs müssen ein Namespace haben.
+animated_java.project_settings.rig_item.warning.unknown_item: |-
+    Rig Item existiert nicht in Vanilla Minecraft.
+    Dies könnte Probleme verursachen beim exportieren.
+    Ignorieren Sie diese Warnung, falls Sie Snapshot-Versionen oder mit Mods spielen.
+
+animated_java.project_settings.enable_advanced_resource_pack_settings: Erweiterte Resource Pack Einstellungen aktivieren
+animated_java.project_settings.enable_advanced_resource_pack_settings.description: |-
+    Aktiviert die erweiterten Einstellungen des Resource Packs.
+    Dadurch können Sie manuell das Rig Item-Modell und Exportordner einstellen, anstatt dass Animated Java dies automatisch für Sie erledigt.
+    Wenn Sie sich nicht sicher sind, was dies bewirkt, lassen Sie es deaktiviert.
+
+animated_java.project_settings.rig_item_model: Rig Item-Modell
+animated_java.project_settings.rig_item_model.description: |-
+    Der Ordnerpfad des exportierten Rig Item-Modells.
+    Dies sollte in einem gültigen Resource Pack unter `minecraft:models/item` sein.
+animated_java.project_settings.rig_item_model.error.unset: |-
+    Rig Item-Modell darf nicht leer sein.
+animated_java.project_settings.rig_item_model.error.invalid_path: |-
+    Rig Item-Modell muss in einem gültigen Resource Pack sein.
+    Der Zielort muss sich in 'resources/assets/<namespace>/models/' befinden.
+animated_java.project_settings.rig_item_model.error.item_does_not_match: |-
+    Rig Item-Modell muss den gleichen Namen wie das Rig Item haben.
+    Sie haben das Rig Item als "%rigItem" bestimmt, aber das Rig Item-Modell entspricht "%pathItem".
+animated_java.project_settings.rig_item_model.error.rig_item_unset: |-
+    Rig Item ist nicht definiert.
+    Bestimmen Sie zuerst ein Rig Item, bevor Sie das Rig Item-Modell bestimmen.
+
+animated_java.project_settings.rig_export_folder: Rig Exportordner
+animated_java.project_settings.rig_export_folder.description: |-
+    Der Ordner, in den die generierten Modelle gespeichert werden.
+    Dies muss in einem gültigen Resource Pack sein.
+animated_java.project_settings.rig_export_folder.error.unset: |-
+    Rig Exportordner darf nicht leer sein.
+animated_java.project_settings.rig_export_folder.error.invalid_path: |-
+    Rig Exportordner muss in einem gültigen Resource Pack sein.
+    Der Zielordner muss sich in 'resources/assets/<namespace>/models/' befinden.
+
+animated_java.project_settings.texture_export_folder: Textur-Exportordner
+animated_java.project_settings.texture_export_folder.description: |-
+    Der Ordner, in den die generierten Texturen gespeichert werden.
+    Dies muss in einem gültigen Resource Pack sein.
+animated_java.project_settings.texture_export_folder.error.unset: |-
+    Textur-Exportordner darf nicht leer sein.
+animated_java.project_settings.texture_export_folder.error.invalid_path: |-
+    Textur-Exportordner muss in einem gültigen Resource Pack sein.
+    Der Zielordner muss sich in 'resources/assets/<namespace>/textures/' befinden.
+
+animated_java.project_settings.resource_pack_mcmeta: Resource Pack
+animated_java.project_settings.resource_pack_mcmeta.description: |-
+    Das Resource Pack, in das die Modelle eingefügt werden.
+    Dieser Dateipfad sollte die 'pack.mcmeta'-Datei eines gültigen Resource Packs bezeichnen.
+animated_java.project_settings.resource_pack_mcmeta.error.unset: |-
+    Sie müssen ein Resource Pack auswählen.
+animated_java.project_settings.resource_pack_mcmeta.error.invalid_path: |-
+    Dieser Pfad ist kein gültiges Resource Pack!
+    Stellen Sie sicher, dass die korrekte 'pack.mcmeta'-Datei ausgewählt wurde und dass das Resource Pack ein 'assets'-Ordner hat.
+
+animated_java.project_settings.verbose: Ausführlich
+animated_java.project_settings.verbose.description: |-
+    Ob bei der Ausführung von AJ-Funktionen eine ausführliche Nachricht im Chat angezeigt werden.
+    Nützlich für die Fehlersuche und -analyse.
+
+animated_java.project_settings.exporter_settings: '%exporter Settings'
+
+animated_java.project_settings.exporter: Exporter
+animated_java.project_settings.exporter.description: |-
+    Der Exporter, der beim Exportieren dieses Projekts verwendet werden soll.
+
+### Bone Config
+animated_java.dialog.bone_config: Animated Java Knochen-Konfiguration
+animated_java.bone_config.nbt: Knochen NBT
+animated_java.bone_config.nbt.description: |-
+    Benutzerdefinierte NBT, die bei diesem Knochen angewendet werden soll.
+    Beachten Sie, dass einige interne NBT Vorrang vor dieser Einstellung habn können.
+
+### Camera Config
+animated_java.dialog.camera_config: Animated Java Kamera-Konfiguration
+
+animated_java.camera_config.entity_type: Typ des teleportierten Objektes
+animated_java.camera_config.entity_type.description: |-
+    Das Objekt, das beim Erzeugen der Kamera verwendet werden soll.
+    Zum Beispiel, falls Sie `minecraft:armor_stand` einstellen, wird die Kamera im Spiel ein armor_stand sein.
+animated_java.camera_config.entity_type.error.space: |-
+    Objekt-IDs dürfen keine Leerzeichen enthalten.
+animated_java.camera_config.entity_type.error.invalid_namespace: |-
+    Objekt-IDs müssen ein Namespace haben.
+animated_java.camera_config.entity_type.warning.unknown_entity: |-
+    Objekt existiert nicht in Vanilla Minecraft.
+    Dies könnte Probleme verursachen beim exportieren.
+    Ignorieren Sie diese Warnung, falls Sie Snapshot-Versionen oder mit Mods spielen.
+
+animated_java.camera_config.nbt: NBT
+animated_java.camera_config.nbt.description: |-
+    Benutzerdefinierte NBT, die bei dieser Kamera angewendet werden soll.
+    Beachten Sie, dass einige interne NBT Vorrang vor dieser Einstellung habn können.
+
+### Locator Config
+animated_java.dialog.locator_config: Animated Java Locator-Konfiguration
+
+animated_java.locator_config.entity_type: Objekt-Typ
+animated_java.locator_config.entity_type.description: |-
+    Das Objekt, das beim Erzeugen des Locators verwendet wird.
+    Zum Beispiel, falls Sie `minecraft:pig` einstellen, wird der Locator im Spiel ein Schwein sein.
+animated_java.locator_config.entity_type.error.space: |-
+    Objekt-IDs dürfen keine Leerzeichen enthalten.
+animated_java.locator_config.entity_type.error.invalid_namespace: |-
+    Objekt-IDs müssen ein Namespace haben.
+animated_java.locator_config.entity_type.warning.unknown_entity: |-
+    Objekt existiert nicht in Vanilla Minecraft.
+    Dies könnte Probleme verursachen beim exportieren.
+    Ignorieren Sie diese Warnung, falls Sie Snapshot-Versionen oder mit Mods spielen.
+
+animated_java.locator_config.nbt: NBT
+animated_java.locator_config.nbt.description: |-
+    Benutzerdefinierte NBT, die bei diesem Locator angewendet werden soll.
+    Beachten Sie, dass einige interne NBT Vorrang vor dieser Einstellung habn können.
+
+### Animation Config
+animated_java.dialog.animation_config.title: Animationseigenschaften
+
+animated_java.animation_config.animation_name: Name
+animated_java.animation_config.animation_name.description: |-
+    Der Name der Animation.
+animated_java.animation_config.animation_name.error.duplicate_name: |-
+    Es existiert bereits eine Animation namens "%name".
+    Animationsnamen müssen eindeutig sein.
+
+animated_java.animation_config.loop: Wiederholungsmodus
+animated_java.animation_config.loop.description: |-
+    Der Wiederholungsmodus der Animation.
+    Einmal: Die Animation wird nur einmal abspielen und danach sofort zurückgesetzt.
+    Wiederholen: Die Animation wird sich unendlich wiederholen.
+    Halten: Die Animation wird beim letzten letzten Bild angehalten.
+animated_java.animation_config.loop.options.once: Einmal abspielen
+animated_java.animation_config.loop.options.loop: Wiederholen
+animated_java.animation_config.loop.options.hold: Auf letztem Bild halten
+
+animated_java.animation_config.loop_delay: Wiederholungsverzögerung
+animated_java.animation_config.loop_delay.description: |-
+    Die Verzögerung (in Ticks) zwischen Wiederholungen der Animation.
+    Gilt nur, wenn der Wiederholungsmodus auf 'Wiederholen' eingestellt ist.
+
+animated_java.animation_config.start_delay: Startverzögerung
+animated_java.animation_config.start_delay.description: |-
+    Die Verzögerung (in Ticks) zwischen der Ausführung der Funktion und dem Abspielen der Animation.
+
+animated_java.animation_config.affected_bones_is_a_whitelist: Ignorierte Knochen sind eine White-Liste
+animated_java.animation_config.affected_bones_is_a_whitelist.description: |-
+    Falls wahr, werden nur Knochen auf der 'Ignorierte Knochen'-Liste von dieser Animation betroffen sein.
+    Falls falsch, werden alle Knochen außer denen in der Liste von dieser Animation betroffen sein.
+
+animated_java.animation_config.affected_bones: Ignorierte Knochen
+animated_java.animation_config.affected_bones.add_new_item_message: Knochen hinzufügen
+animated_java.animation_config.affected_bones.description: |-
+    Die Knochen, die diese Animation beeinflussen wird.
+    Falls diese Liste eine White-Liste ist, werden nur aufgeführte Knochen von dieser Animation betroffen sein.
+    Falls diese Liste eine Black-Liste ist, werden alle Knochen außer denen in der Liste von dieser Animation betroffen sein.
+
+### Variants Panel
+animated_java.panels.variants.name: Varianten
+animated_java.panels.variants.items: Variante
+animated_java.panels.variants.delete_default_variant: Standard-Varianten können nicht gelöscht werden.
+animated_java.panels.variants.delete_variant: Variante löschen
+animated_java.panels.variants.edit_variant: Variante bearbeiten
+animated_java.panels.variants.default_variant: Standard-Variante
+animated_java.actions.add_variant.name: Variante hinzufügen
+animated_java.actions.add_variant.description: Neue Variante erstellen
+animated_java.actions.variant_properties.name: Varianten-Eigenschaften
+animated_java.actions.variant_properties.description: Öffnet den Dialog für Varianten-Eigenschaften.
+animated_java.actions.duplicate_variant.name: Variante duplizieren
+animated_java.actions.duplicate_variant.description: Dupliziert diese Variante.
+
+### Variants Properties Dialog
+animated_java.dialog.variant_properties.title: Varianten-Eigenschaften
+
+animated_java.dialog.variant_properties.variant_name: Name
+animated_java.dialog.variant_properties.variant_name.description: |-
+    Der Name der Variante.
+animated_java.variant_properties.variant_name.error.duplicate_name: |-
+    Eine Variante mit dem Namen "%name" existiert bereits.
+    Namen müssen eindeutig sein.
+
+animated_java.dialog.variant_properties.affected_bones_is_a_whitelist: Ignorierte Knochen sind eine White-Liste
+animated_java.dialog.variant_properties.affected_bones_is_a_whitelist.description: |-
+    Die Knochen, die diese Variante beeinflussen wird.
+    Falls wahr, werden nur Knochen auf der 'Ignorierte Knochen'-Liste von dieser Variante betroffen sein.
+    Falls falsch, werden alle Knochen außer denen in der Liste von dieser Variente betroffen sein.
+
+animated_java.dialog.variant_properties.affected_bones: Ignorierte Knochen
+animated_java.dialog.variant_properties.affected_bones.add_new_item_message: Knochen hinzufügen
+animated_java.dialog.variant_properties.affected_bones.description: |-
+    Die Knochen, die diese Variante beeinflussen wird.
+    Falls diese Liste eine White-Liste ist, werden nur aufgeführte Knochen von dieser Variante betroffen sein.
+    Falls diese Liste eine Black-Liste ist, werden alle Knochen außer denen in der Liste von dieser Variante betroffen sein.
+animated_java.dialog.variant_properties.textureMap: Textur-Map
+animated_java.dialog.variant_properties.textureMap.description: |-
+    Die Textur-Map, die für diese Variante verwendet wird.
+    Hier können Sie auswählen, welche Texturen bei der Anwendung dieser Variante ersetzt werden.
+
+### Custom Keyframes
+animated_java.keyframe.animation: Animation
+animated_java.keyframe.animation.description: |-
+    Die Animation, die angewendet wird, sobald dieser Keyframe erreicht wird.
+
+animated_java.keyframe.variant: Variante
+animated_java.keyframe.variant.description: |-
+    Die Variante, die angewendet wird, sobald dieser Keyframe erreicht wird.
+
+animated_java.keyframe.commands: Befehle
+animated_java.keyframe.commands.description: |-
+    Eine Liste von Befehlen (eine Funktion), die ausgeführt wird, sobald dieser Keyframe erreicht wird.
+
+animated_java.keyframe.tweenDuration: Tween-Dauer
+animated_java.keyframe.tweenDuration.description: |-
+    Die Dauer des Tweens (in Ticks) zwischen diesem Keyframe und der nächsten Animation.
+
+animated_java.keyframe.tweenMode: Tween-Modus
+animated_java.keyframe.tweenMode.description: |-
+    Der Tween-Modus dieses Keyframes.
+    Abspielen: Die Animation wird von Anfang an abgespielt.
+    Fortsetzen: Die Animation wird von derselben anim_time wie dieser Keyframe abgespielt.
+animated_java.keyframe.tweenMode.play: Abspielen
+animated_java.keyframe.tweenMode.resume: Fortsetzen
+
+animated_java.keyframe.executeCondition: Ausführungsbedingung
+animated_java.keyframe.executeCondition.description: |-
+    Die Ausführungsbedingung, die erfüllt sein muss, damit der Keyframe angewendet wird.
+    Dies ist eine Kette von 'execute'-Unterbefehlen, also können Sie alle Unterbefehle in diesem Feld benutzen.
+    Beispiel: "if score @s example matches 1.."
+    Tipp: Sie können Unterbefehle mit Zeilenumbrüchen trennen!
+
+animated_java.timeline.animation: Animationen
+animated_java.timeline.variant: Varianten
+animated_java.timeline.commands: Befehle
+
+### Popups
+animated_java.popup.close_button: Schließen
+animated_java.popup.confirm_button: Fertig
+animated_java.popup.cancel_button: Abbrechen
+
+# Unexpected Error
+animated_java.popup.unexpectedError.title: Unerwarteter Fehler
+animated_java.popup.unexpectedError.body: |-
+    Ein unerwarteter Fehler ist aufgetreten!
+    Bitte melden Sie diesen Fehler auf unserem Github oder im Support-Kanal unseres offizielem Discord-Servers.
+
+# Confirm predicate file overwrite
+animated_java.popup.confirm_predicate_file_overwrite.title: Bestätigen Sie die Überschreibung der Predicate-Datei
+animated_java.popup.confirm_predicate_file_overwrite.body: |-
+    Die Datei "%file" existiert bereits und ist nicht ein Rig Item-Modell!
+    Möchten Sie es überschreiben?
+
+    Dateipfad:
+    %path
+
+# Invalid Texture Mapping(s)
+animated_java.popup.invalid_texture_mapping.title: Ungültige Textur-Zuordnung(en)
+animated_java.popup.invalid_texture_mapping.body: |-
+    Die Variante "%variant" hat ungültige Textur-Zuordnungen!
+    Eine oder mehrere Texturen in der Textur-Map fehlen im Projekt oder sind ungültig.
+    Die ungültigen Zuordnungen und eine kurze Erkärung, warum sie ungültig sind, finden Sie unten:
+animated_java.popup.invalid_texture_mapping.reason: Ungültigkeitsgründe
+animated_java.popup.invalid_texture_mapping.reason.invalid_from_texture: |-
+    Die 'von' Textur konnte im Projekt nicht gefunden werden.
+animated_java.popup.invalid_texture_mapping.reason.invalid_to_texture: |-
+    Die 'zu' Textur konnte im Projekt nicht gefunden werden.
+animated_java.popup.invalid_texture_mapping.footer: |-
+    Die fehlenden / ungültigen Textur-Zuordnungen werden von der Variante entfernt.
+    Nachdem Sie das Popup geschlossen haben, überprüfen Sie bitte, ob die Textur-Zuordnungen in den Varianten-Eigenschaften korrekt sind.
+
+# Invalid Cube(s)
+animated_java.popup.invalid_cubes.title: Ungültige Form(en)
+animated_java.popup.invalid_cubes.body: |-
+    Einige Formen haben ungültige Drehungen!
+    Die ungültigen Formen können Sie unten finden, sortiert nach den Knochen, in denen sie sich befinden.
+    Die Formen werden auch in der 3D-Ansicht hervorgehoben, sobald Sie dieses Popup schließen.
+
+# Failed Project Export Readiness
+animated_java.popup.failed_project_export_readiness.title: Export fehlgeschlagen
+animated_java.popup.failed_project_export_readiness.body: |-
+    Dieses Projekt ist nicht bereit, exportiert zu werden!
+    Die folgenden Probleme wurden festgestellt:
+animated_java.popup.failed_project_export_readiness.issue: Projekteinstellung "%s" hat den folgenden Fehler

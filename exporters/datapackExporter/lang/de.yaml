@@ -1,0 +1,82 @@
+# Animation Exporter
+animated_java.datapack_exporter.name: Datenpaket Exportierer
+
+animated_java.datapack_exporter.settings.target_minecraft_version: Ziel Minecraft-Version
+animated_java.datapack_exporter.settings.target_minecraft_version.description: |-
+    Die Minecraft-Version, in der Sie das Datenpaket verwenden möchten.
+
+animated_java.datapack_exporter.settings.datapack_mcmeta: Datenpaket
+animated_java.datapack_exporter.settings.datapack_mcmeta.description: |-
+    Das Datenpaket, in das die generierten Funktionen eingefügt werden.
+    Dieser Dateipfad sollte die 'pack.mcmeta'-Datei eines gültigen Datenpakets bezeichnen.
+animated_java.datapack_exporter.settings.datapack_mcmeta.error.unset: |-
+    Sie müssen ein Datenpakets-Ordner auswählen
+animated_java.datapack_exporter.settings.datapack_mcmeta.error.invalid: |-
+    Der ausgewählte Pfad ist kein gültiges Datenpaket!
+    Stellen Sie sicher, dass Sie die richtige 'pack.mcmeta'-Datei ausgewählt haben und dass das Datenpaket ein 'data'-Ordner hat.
+
+animated_java.datapack_exporter.settings.interpolation_duration: Interpolation-Dauer
+animated_java.datapack_exporter.settings.interpolation_duration.description: |-
+    Die Dauer (in Ticks), die jedes Keyframe versuchen wird, Änderungen zwischen Keyframes zu glätten.
+    Wenn diese Einstellung höher als 1 ist, wird die Animation flüssiger, verliert aber an Präzision.
+    Bei einem Wert von 0 wird Interpolation deaktiviert.
+
+animated_java.datapack_exporter.settings.enable_outdated_rig_warning: Warnung für veraltetes Rig aktivieren
+animated_java.datapack_exporter.settings.enable_outdated_rig_warning.description: |-
+    Ob eine Warnung im Spiel angezeigt werden soll, wenn ein Rig gefunden wird, das vor dem neuesten Export erschaffen wurde.
+
+animated_java.datapack_exporter.settings.use_component_system: Komponentensystem Verwenden
+animated_java.datapack_exporter.settings.use_component_system.description: |-
+    Ob das Komponentensystem für das exportierte Datenpaket verwendet werden soll.
+    Aktiviere diese Einstellung, damit das Datenpaket in 1.20.5 und neuer funktioniert.
+
+animated_java.datapack_exporter.settings.root_entity_nbt: Ursprungsobjekt NBT
+animated_java.datapack_exporter.settings.root_entity_nbt.description: |-
+    Benutzerdefinierte NBT, die beim Ursprungsobjekt angewendet werden soll.
+    Beachten Sie, dass einige interne NBT Vorrang vor dieser Einstellung habn können.
+
+animated_java.datapack_exporter.settings.function_toggles_group: Funktionseinstellungen
+
+animated_java.datapack_exporter.settings.include_variant_summon_functions: Varianten-Beschwörungsfunktionen generieren
+animated_java.datapack_exporter.settings.include_variant_summon_functions.description: |-
+    Ob Funktionen, die Varianten des Rigs erschaffen, exportiert werden sollen.
+    Diese Funktionen sind gleichbedeutend mit dem Setzen von #variant aj.id beim Ausführen der Erschaffungsfunktion.
+
+animated_java.datapack_exporter.settings.include_apply_variant_functions: Varianten-Funktionen generieren
+animated_java.datapack_exporter.settings.include_apply_variant_functions.description: |-
+    Ob Funktionen, die Varienten des Rigs ändern, exportiert werden sollen.
+    Beachten Sie, dass Varianten-Keyframes auch ohne diese Funktionen die Variante ändern können.
+
+animated_java.datapack_exporter.settings.include_uninstall_function: Deinstallationsfunktion generieren
+animated_java.datapack_exporter.settings.include_uninstall_function.description: |-
+    Ob die Funktion, um das Datenpaket zu deinstallieren, exportiert werden soll.
+
+animated_java.datapack_exporter.settings.include_pause_all_animations_function: Funktion 'Alle Animationen Pausieren' generieren
+animated_java.datapack_exporter.settings.include_pause_all_animations_function.description: |-
+    Ob die Funktion 'pause_all_animations' exportiert werden soll.
+
+animated_java.datapack_exporter.settings.include_remove_rigs_function: Funktion 'Rigs Entfernen' generieren
+animated_java.datapack_exporter.settings.include_remove_rigs_function.description: |-
+    Ob die Funktion 'remove/rigs' exportiert werden soll.
+
+animated_java.datapack_exporter.settings.include_remove_all_function: Funktion 'Alles Entfernen' generieren
+animated_java.datapack_exporter.settings.include_remove_all_function.description: |-
+    Ob die Funktion 'remove/all' exportiert werden soll.
+
+animated_java.datapack_exporter.settings.function_tag_toggles_group: Funktions-Tags-Einstellungen
+
+animated_java.datapack_exporter.settings.include_on_load_function_tags: Tag 'on load' generieren
+animated_java.datapack_exporter.settings.include_on_load_function_tags.description: |-
+    Ob die Funktions-Tags 'on_load' exportiert werden sollen.
+
+animated_java.datapack_exporter.settings.include_on_tick_function_tags: Tag 'on tick' generieren
+animated_java.datapack_exporter.settings.include_on_tick_function_tags.description: |-
+    Ob die Funktions-Tags 'on_tick' exportiert werden sollen.
+
+animated_java.datapack_exporter.settings.include_on_summon_function_tags: Tag 'on summon' generieren
+animated_java.datapack_exporter.settings.include_on_summon_function_tags.description: |-
+    Ob die Funktions-Tags 'on_summon' exportiert werden sollen.
+
+animated_java.datapack_exporter.settings.include_on_remove_function_tags: Tag 'on remove' generieren
+animated_java.datapack_exporter.settings.include_on_remove_function_tags.description: |-
+    Ob die Funktions-Tags 'on_remove' exportiert werden sollen.
