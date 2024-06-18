@@ -385,14 +385,13 @@
 			<SectionHeader
 				label={translate('dialog.blueprint_settings.data_pack_settings.title')}
 			/>
-			<Checkbox
+			<!-- <Checkbox
 				label={translate(
 					'dialog.blueprint_settings.enable_advanced_data_pack_settings.title',
 				)}
 				bind:checked={enableAdvancedDataPackSettings}
-			/>
+			/> -->
 			{#if $enableAdvancedDataPackSettings}
-				<!--  -->
 				<p class="warning">
 					{translate('dialog.blueprint_settings.advanced_settings_warning')}
 				</p>
