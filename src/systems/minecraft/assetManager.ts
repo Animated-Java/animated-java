@@ -79,6 +79,12 @@ export async function checkForAssetsUpdate() {
 		}
 	}
 
+	const cachedJarFilePath = getCachedJarFilePath()
+	if (!fs.existsSync(cachedJarFilePath)) {
+		console.log('No cached Minecraft client found, updating assets...')
+		await updateAssets()
+	}
+
 	await extractAssets()
 	console.log('Minecraft assets are up to date!')
 	requestAnimationFrame(() => events.MINECRAFT_ASSETS_LOADED.dispatch())
