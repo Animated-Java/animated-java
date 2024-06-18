@@ -120,9 +120,9 @@
 
 		if (!(x === largestWidth && y === largestHeight)) {
 			return {
-				type: 'error',
+				type: 'warning',
 				message: translate(
-					'dialog.blueprint_settings.texture_size.error.does_not_match_largest_texture',
+					'dialog.blueprint_settings.texture_size.warning.does_not_match_largest_texture',
 				),
 			}
 		} else if (x !== y) {

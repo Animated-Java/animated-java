@@ -35,7 +35,7 @@ animated_java.dialog.blueprint_settings.texture_size.title: Texture Size
 animated_java.dialog.blueprint_settings.texture_size.description: The resolution of the UV editor. This should be the same size as the largest texture. For best results use a square texture, and make sure it's size is a power of 2.
 animated_java.dialog.blueprint_settings.texture_size.warning.not_square: The Texture Size should be square for best results.
 animated_java.dialog.blueprint_settings.texture_size.warning.not_a_power_of_2: The Texture Size should be a power of 2 for best results.
-animated_java.dialog.blueprint_settings.texture_size.error.does_not_match_largest_texture: The Texture Size should match the largest texture's size.
+animated_java.dialog.blueprint_settings.texture_size.warning.does_not_match_largest_texture: The Texture Size should match the largest texture's size.
 
 # Export Settings
 animated_java.dialog.blueprint_settings.export_settings.title: Export Settings
