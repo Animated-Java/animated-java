@@ -26,7 +26,7 @@ createModelLoader(`${PACKAGE.name}-upgradeAJModelLoader`, {
 		if (activeComponent) {
 			activeComponent.$destroy()
 		}
-		injectSvelteCompomponent({
+		void injectSvelteCompomponent({
 			svelteComponent: ImportAjModelLoaderDialog,
 			svelteComponentProperties: {},
 			elementSelector() {
@@ -48,6 +48,10 @@ export function convertAJModelToBlueprint(path: string) {
 		BLUEPRINT_CODEC.load(blueprint, {
 			name: 'Upgrade .ajmodel to Blueprint',
 			path: undefined,
+		})
+
+		requestAnimationFrame(() => {
+			Project!.openSettings()
 		})
 	} catch (e) {
 		console.error(e)

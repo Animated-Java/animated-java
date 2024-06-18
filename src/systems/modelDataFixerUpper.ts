@@ -12,7 +12,7 @@ export function process(model: any): any {
 
 	try {
 		let needsUpgrade = model.meta.format_version.length === 3
-		needsUpgrade = needsUpgrade || compareVersions('1.0.0', model.meta.format_version)
+		needsUpgrade = needsUpgrade || compareVersions(PACKAGE.version, model.meta.format_version)
 		if (!needsUpgrade) return
 
 		console.log(
@@ -33,8 +33,8 @@ export function process(model: any): any {
 		}
 		// Versions below this are post 0.3.10. I changed the versioning system to use the AJ version instead of a unique format version.
 		if (compareVersions('0.3.10', model.meta.format_version)) updateModelTo0_3_10(model)
-		// Animated Java 1.0+
-		if (compareVersions('1.0.0', model.meta.format_version)) model = updateModelTo1_0(model)
+		// Animated Java 1.0.0-pre1
+		if (compareVersions('0.5.0', model.meta.format_version)) model = updateModelTo1_0pre1(model)
 		console.groupEnd()
 
 		model.meta.format_version = PACKAGE.version
@@ -179,8 +179,8 @@ function updateModelToOld1_4(model: any) {
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-function updateModelTo1_0(model: any) {
-	console.log('Processing model format 1.0', JSON.parse(JSON.stringify(model)))
+function updateModelTo1_0pre1(model: any) {
+	console.log('Processing model format 1.0.0-pre1', JSON.parse(JSON.stringify(model)))
 
 	const defaultSettings = getDefaultProjectSettings()
 	const datapackExporterSettings =
@@ -212,7 +212,7 @@ function updateModelTo1_0(model: any) {
 			enable_advanced_resource_pack_settings:
 				model.animated_java.settings.enable_advanced_resource_pack_settings,
 			resource_pack: model.animated_java.settings.resource_pack_mcmeta
-				? model.animated_java.settings.resource_pack_mcmeta.replace(/\.mcmeta$/, '')
+				? model.animated_java.settings.resource_pack_mcmeta.replace(/pack\.mcmeta$/, '')
 				: '',
 			display_item_path: model.animated_java.settings.rig_item_model,
 			model_folder: model.animated_java.settings.rig_export_folder,
@@ -220,7 +220,7 @@ function updateModelTo1_0(model: any) {
 			// Data pack settings
 			enable_advanced_data_pack_settings: defaultSettings.enable_advanced_data_pack_settings,
 			data_pack: datapackExporterSettings?.datapack_mcmeta
-				? datapackExporterSettings.datapack_mcmeta.replace(/\.mcmeta$/, '')
+				? datapackExporterSettings.datapack_mcmeta.replace(/pack\.mcmeta$/, '')
 				: '',
 			summon_commands: defaultSettings.summon_commands,
 			interpolation_duration: defaultSettings.interpolation_duration,

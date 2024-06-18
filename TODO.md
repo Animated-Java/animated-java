@@ -109,11 +109,6 @@
 
 -   [x] Warn the user when they have custom elements in their model, but have disabled the resource pack export.
 
-# Website / Documentation
-
--   [ ] Replicate API _legacy_ routes statically for backwards compatability.
--   [ ] Migration guide for 0.4.8 to 1.0.0
-
 # List of numbers to track
 
 -   [ ] Total exports

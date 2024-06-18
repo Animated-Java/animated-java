@@ -7,7 +7,7 @@ export function openAboutDialog() {
 	new SvelteDialog({
 		id: `${PACKAGE.name}:aboutDialog`,
 		title: translate('dialog.about.title'),
-		width: 600,
+		width: 700,
 		svelteComponent: AboutSvelte,
 		svelteComponentProperties: {},
 		buttons: [translate('dialog.about.close_button')],
