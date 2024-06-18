@@ -15,7 +15,9 @@
 		<!-- svelte-ignore a11y-missing-attribute -->
 		<img src={ArmorStandRunningGif} width="64px" />
 	</div>
-	<progress value={$progress / $maxProgress || 0} max="1" />
+	{#if $progress !== 0}
+		<progress value={$progress / $maxProgress || 0} max="1" />
+	{/if}
 </div>
 
 <style>
