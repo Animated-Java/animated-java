@@ -145,5 +145,7 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(ResizableOutlinerEle
 			el.mesh.fix_scale.set(...el.scale)
 			makeNotZero(el.mesh.fix_scale)
 		}
+		// @ts-ignore
+		el.preview_controller.dispatchEvent('update_transform', { element: el })
 	},
 })

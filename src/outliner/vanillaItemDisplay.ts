@@ -218,10 +218,7 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, 
 	updateGeometry(el: VanillaItemDisplay) {
 		if (!el.mesh) return
 		const currentModel = el.mesh.children.at(0)
-		if (currentModel?.name === el.item) {
-			el.preview_controller.updateTransform(el)
-			return
-		}
+		if (currentModel?.name === el.item) return
 
 		void getItemModel(el.item)
 			.then(result => {
@@ -233,7 +230,6 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, 
 				el.mesh.outline = result.outline
 
 				el.preview_controller.updateHighlight(el)
-				el.preview_controller.updateTransform(el)
 				el.mesh.visible = el.visibility
 				TickUpdates.selection = true
 			})
