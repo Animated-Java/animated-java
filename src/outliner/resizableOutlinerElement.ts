@@ -79,7 +79,7 @@ export class ResizableOutlinerElement extends OutlinerElement {
 	size(axis?: number, floored?: boolean) {
 		if (axis === undefined) {
 			if (floored) return this.scale.map(n => Math.floor(n))
-			return this.scale
+			return [...this.scale]
 		}
 		if (floored) return Math.floor(this.scale[axis])
 		return this.scale[axis]
@@ -88,23 +88,23 @@ export class ResizableOutlinerElement extends OutlinerElement {
 	private oldScale: ArrayVector3 | undefined
 	resize(
 		val: number | ((n: number) => number),
-		axis: number,
-		negative: boolean,
-		allowNegative: boolean,
-		bidirectional: boolean
+		axis: number
+		// negative: boolean,
+		// allowNegative: boolean,
+		// bidirectional: boolean
 	) {
-		let before = this.oldScale != undefined ? this.oldScale : this.size(axis)
+		let before = this.oldScale !== undefined ? this.oldScale : this.size(axis)
+		console.log(before, this.oldScale)
 		if (before instanceof Array) before = before[axis]
-		const isInverted = before < 0
-		if (isInverted) negative = !negative
-		const modify = typeof val === 'function' ? val : (n: number) => n + val
-		if (negative) {
-			this.scale[axis] = modify(-before)
-		} else {
-			this.scale[axis] = modify(before)
-		}
+		// For some unknown reason scale is not inverted on the y axis
+		const sign = before < 0 && axis !== 1 ? -1 : 1
 
-		this.preview_controller.updateGeometry(this)
+		const modify = typeof val === 'function' ? val : (n: number) => n + (val * sign) / 16
+
+		this.scale[axis] = modify(before)
+
+		this.preview_controller.updateGeometry?.(this)
+		this.preview_controller.updateTransform(this)
 	}
 }
 new Property(ResizableOutlinerElement, 'string', 'name', { default: 'resizable_outliner_element' })
@@ -124,8 +124,8 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(ResizableOutlinerEle
 		mesh.fix_scale = new THREE.Vector3(...el.scale)
 		Project!.nodes_3d[el.uuid] = mesh
 
-		el.preview_controller.updateTransform(el)
 		el.preview_controller.updateGeometry?.(el)
+		// el.preview_controller.updateTransform(el)
 		el.preview_controller.dispatchEvent('setup', { element: el })
 	},
 	updateTransform(el: ResizableOutlinerElement) {
