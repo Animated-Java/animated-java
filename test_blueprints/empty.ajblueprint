@@ -1,0 +1,406 @@
+{
+	"meta": {
+		"format": "animated_java_blueprint",
+		"format_version": "0.5.0",
+		"uuid": "a8205f23-18ae-5c38-fc3c-ad4397b0ed09",
+		"save_location": "D:\\github-repos\\animated-java\\animated-java\\test_blueprints\\empty.ajblueprint",
+		"last_used_export_namespace": "blueprint"
+	},
+	"project_settings": {
+		"export_namespace": "blueprint",
+		"show_bounding_box": false,
+		"auto_bounding_box": true,
+		"bounding_box": [48, 48],
+		"enable_plugin_mode": false,
+		"enable_resource_pack": true,
+		"enable_data_pack": true,
+		"display_item": "minecraft:white_dye",
+		"customModelDataOffset": 0,
+		"enable_advanced_resource_pack_settings": false,
+		"resource_pack": "",
+		"display_item_path": "",
+		"model_folder": "",
+		"texture_folder": "",
+		"enable_advanced_data_pack_settings": false,
+		"data_pack": "",
+		"summon_commands": "",
+		"interpolation_duration": 1,
+		"teleportation_duration": 1,
+		"use_storage_for_animation": false
+	},
+	"resolution": {
+		"width": 16,
+		"height": 16
+	},
+	"elements": [
+		{
+			"name": "stone",
+			"position": [-8, 0, -8],
+			"rotation": [0, 0, 0],
+			"scale": [2, 1, 1],
+			"visibility": true,
+			"item": "minecraft:diamond",
+			"config": {},
+			"block": "lime_bed",
+			"text": "\"Hello World!\"",
+			"lineWidth": 200,
+			"backgroundColor": "#000000",
+			"backgroundAlpha": 0.25,
+			"align": "center",
+			"uuid": "6e0e83a2-173f-0a6d-65af-b45b78e0d747",
+			"type": "animated_java:vanilla_block_display"
+		},
+		{
+			"name": "chest",
+			"position": [-4, 16, -4],
+			"rotation": [0, 0, 0],
+			"scale": [0.5, 0.5, 0.5],
+			"visibility": true,
+			"item": "minecraft:diamond",
+			"config": {},
+			"block": "chest",
+			"text": "\"Hello World!\"",
+			"lineWidth": 200,
+			"backgroundColor": "#000000",
+			"backgroundAlpha": 0.25,
+			"align": "center",
+			"uuid": "2d724d26-385a-a106-f4a5-f9e4a342bef1",
+			"type": "animated_java:vanilla_block_display"
+		},
+		{
+			"name": "wow",
+			"position": [0, 23, 0],
+			"rotation": [0, 0, 0],
+			"scale": [1, 1, 1],
+			"visibility": true,
+			"item": "minecraft:diamond",
+			"config": {},
+			"block": "minecraft:stone",
+			"text": "\"Wow!\"",
+			"lineWidth": 200,
+			"backgroundColor": "#000000",
+			"backgroundAlpha": 0.25098,
+			"align": "center",
+			"uuid": "7edf27c8-19bd-8a1a-6c23-888d95c417d8",
+			"type": "animated_java:text_display"
+		},
+		{
+			"name": "vanilla_block_display",
+			"position": [24, 0, -8],
+			"rotation": [0, 0, 0],
+			"scale": [1, 1, 1],
+			"visibility": true,
+			"item": "minecraft:diamond",
+			"config": {},
+			"block": "ender_chest",
+			"text": "\"Hello World!\"",
+			"lineWidth": 200,
+			"backgroundColor": "#000000",
+			"backgroundAlpha": 0.25,
+			"align": "center",
+			"uuid": "011c3839-535e-c84c-3f07-feaea270eb50",
+			"type": "animated_java:vanilla_block_display"
+		},
+		{
+			"name": "vanilla_item_display",
+			"position": [14, 35, 0],
+			"rotation": [0, 0, 0],
+			"scale": [1, 1, 1],
+			"visibility": true,
+			"item": "orange_banner",
+			"config": {},
+			"block": "minecraft:stone",
+			"text": "\"Hello World!\"",
+			"lineWidth": 200,
+			"backgroundColor": "#000000",
+			"backgroundAlpha": 0.25,
+			"align": "center",
+			"uuid": "2c03f4d5-e12a-5e1a-6a75-a68bb6ebb221",
+			"type": "animated_java:vanilla_item_display"
+		},
+		{
+			"name": "vanilla_item_display1",
+			"position": [32, 16, 0],
+			"rotation": [0, 0, 0],
+			"scale": [1, 1, 1],
+			"visibility": true,
+			"item": "decorated_pot",
+			"config": {},
+			"block": "minecraft:stone",
+			"text": "\"Hello World!\"",
+			"lineWidth": 200,
+			"backgroundColor": "#000000",
+			"backgroundAlpha": 0.25,
+			"align": "center",
+			"uuid": "5ce3bffe-5c27-ba91-8f8d-4d300d1392c5",
+			"type": "animated_java:vanilla_item_display"
+		}
+	],
+	"outliner": [
+		"6e0e83a2-173f-0a6d-65af-b45b78e0d747",
+		{
+			"name": "bone",
+			"origin": [0, 23, 0],
+			"color": 0,
+			"configs": {
+				"variants": {}
+			},
+			"uuid": "d8f2a1b8-436e-34b3-fff8-3b5fb5a98a3b",
+			"export": true,
+			"mirror_uv": false,
+			"isOpen": true,
+			"locked": false,
+			"visibility": true,
+			"autouv": 0,
+			"children": ["2d724d26-385a-a106-f4a5-f9e4a342bef1", "7edf27c8-19bd-8a1a-6c23-888d95c417d8"]
+		},
+		"011c3839-535e-c84c-3f07-feaea270eb50",
+		"2c03f4d5-e12a-5e1a-6a75-a68bb6ebb221",
+		"5ce3bffe-5c27-ba91-8f8d-4d300d1392c5"
+	],
+	"textures": [],
+	"variants": {
+		"default": {
+			"display_name": "Default",
+			"name": "default",
+			"uuid": "ac0bd41c-64b1-de01-e18d-5175f37a89cd",
+			"texture_map": {},
+			"excluded_bones": []
+		},
+		"list": []
+	},
+	"animations": [
+		{
+			"uuid": "68ba2ad4-8928-4b08-2de8-ab7ab389926a",
+			"name": "pos_test",
+			"loop": "loop",
+			"override": false,
+			"length": 2,
+			"snapping": 20,
+			"selected": false,
+			"saved": false,
+			"path": "",
+			"anim_time_update": "",
+			"blend_weight": "",
+			"start_delay": "",
+			"loop_delay": "",
+			"excluded_bones": [],
+			"animators": {
+				"6e0e83a2-173f-0a6d-65af-b45b78e0d747": {
+					"name": "stone",
+					"type": "animated_java:vanilla_block_display",
+					"keyframes": [
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "0",
+									"y": "0",
+									"z": "math.sin(q.life_time * 180) * 16"
+								}
+							],
+							"uuid": "58eeab35-0b05-ed23-f696-b41f98f5c4f0",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						}
+					]
+				},
+				"d8f2a1b8-436e-34b3-fff8-3b5fb5a98a3b": {
+					"name": "bone",
+					"type": "bone",
+					"keyframes": [
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "math.cos(q.life_time * 180) * 4.5",
+									"y": "0",
+									"z": "math.sin(q.life_time * 180) * 16\n- math.sin(q.life_time * 180) * 4.5"
+								}
+							],
+							"uuid": "42510118-620c-d795-55bb-c1f8e0841c81",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						}
+					]
+				}
+			}
+		},
+		{
+			"uuid": "db1f0d58-b606-d53d-3d89-404a3d9b0a6a",
+			"name": "rot_test",
+			"loop": "loop",
+			"override": false,
+			"length": 2,
+			"snapping": 20,
+			"selected": false,
+			"saved": false,
+			"path": "",
+			"anim_time_update": "",
+			"blend_weight": "",
+			"start_delay": "",
+			"loop_delay": "",
+			"excluded_bones": [],
+			"animators": {
+				"6e0e83a2-173f-0a6d-65af-b45b78e0d747": {
+					"name": "stone",
+					"type": "animated_java:vanilla_block_display",
+					"keyframes": [
+						{
+							"channel": "rotation",
+							"data_points": [
+								{
+									"x": "math.sin(q.life_time * 180) * 90",
+									"y": "0",
+									"z": "0"
+								}
+							],
+							"uuid": "2369d2a5-0350-c288-393d-cfa8d4faf67a",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						}
+					]
+				},
+				"2d724d26-385a-a106-f4a5-f9e4a342bef1": {
+					"name": "chest",
+					"type": "animated_java:vanilla_block_display",
+					"keyframes": [
+						{
+							"channel": "rotation",
+							"data_points": [
+								{
+									"x": "math.sin(q.life_time * 180) * 90",
+									"y": "0",
+									"z": "0"
+								}
+							],
+							"uuid": "7da6acee-57cf-e294-35af-bb74485260bc",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						}
+					]
+				},
+				"7edf27c8-19bd-8a1a-6c23-888d95c417d8": {
+					"name": "wow",
+					"type": "animated_java:text_display",
+					"keyframes": [
+						{
+							"channel": "rotation",
+							"data_points": [
+								{
+									"x": "math.sin(q.life_time * 180) * 90",
+									"y": "0",
+									"z": "0"
+								}
+							],
+							"uuid": "bf25404d-a16c-4bde-ccca-04f3611385e4",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						}
+					]
+				}
+			}
+		},
+		{
+			"uuid": "116f2928-c622-b7ad-bc1a-377d70ac3e71",
+			"name": "scale_test",
+			"loop": "loop",
+			"override": false,
+			"length": 2,
+			"snapping": 20,
+			"selected": false,
+			"saved": false,
+			"path": "",
+			"anim_time_update": "",
+			"blend_weight": "",
+			"start_delay": "",
+			"loop_delay": "",
+			"excluded_bones": [],
+			"animators": {
+				"6e0e83a2-173f-0a6d-65af-b45b78e0d747": {
+					"name": "stone",
+					"type": "animated_java:vanilla_block_display",
+					"keyframes": [
+						{
+							"channel": "scale",
+							"data_points": [
+								{
+									"x": "1",
+									"y": "1",
+									"z": "1 + math.sin(q.life_time * 180) * 1"
+								}
+							],
+							"uuid": "00852a46-b59d-ff95-78f8-01aa11dbe0dc",
+							"time": 0,
+							"color": -1,
+							"uniform": false,
+							"interpolation": "linear"
+						}
+					]
+				},
+				"2d724d26-385a-a106-f4a5-f9e4a342bef1": {
+					"name": "chest",
+					"type": "animated_java:vanilla_block_display",
+					"keyframes": [
+						{
+							"channel": "scale",
+							"data_points": [
+								{
+									"x": "1",
+									"y": "1",
+									"z": "1 + math.sin(q.life_time * 180) * 1"
+								}
+							],
+							"uuid": "9d107021-f032-1410-364d-d925e74e9a4b",
+							"time": 0,
+							"color": -1,
+							"uniform": false,
+							"interpolation": "linear"
+						}
+					]
+				},
+				"7edf27c8-19bd-8a1a-6c23-888d95c417d8": {
+					"name": "wow",
+					"type": "animated_java:text_display",
+					"keyframes": [
+						{
+							"channel": "rotation",
+							"data_points": [
+								{
+									"x": "0",
+									"y": "-90",
+									"z": "0"
+								}
+							],
+							"uuid": "da69b774-9cfa-d2f4-03b1-2cf48551f7b1",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						},
+						{
+							"channel": "scale",
+							"data_points": [
+								{
+									"x": "1 + math.sin(q.life_time * 180) * 1",
+									"y": "1",
+									"z": "1"
+								}
+							],
+							"uuid": "c6b6f4f3-1bc9-df61-2c87-bf1ba1df4cc2",
+							"time": 0,
+							"color": -1,
+							"uniform": false,
+							"interpolation": "linear"
+						}
+					]
+				}
+			}
+		}
+	],
+	"animation_controllers": []
+}

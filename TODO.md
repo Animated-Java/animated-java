@@ -1,68 +1,135 @@
-# Important
-- [x] Try decomposed transformation instead of matrix
+# Blockbench
 
-# UI
-- [ ] Settings should debounce the onUpdate function instead of the infoPopup variable
-- [x] Replace default animation creation and config screens
-- [x] Variants panel
-    - [x] Component and mounting
-    - [x] Project based texture map
-    - [x] Button to add new Variant
-    - [x] ~~Double click variant~~ (or press the edit button) to open the Variants Dialog
-- [x] Variants Dialog
-    - [x] Change the name of the variant
-    - [x] Configure texture map
-- [x] Variants rendering
-    - [x] Need a function that sets the textures of a model based on a provided variant
-    - [x] Change textures based on which variant is selected
-    - [x] Change variant in animator based on keyframes
-- [x] CodeboxSetting setting type
-- [x] Add accessability options
-    - [x] Option to disable all UI animations
-- [x] The setting description scales weirdly. Make it not do that
-- [x] ~~Overwrite the rotation limits dialog~~ Create a new rotation limits dialog with a more accurate description for AJ's models.
-- [x] Add a popup over the canvas that tells the user why their cubes are red
-- [x] Settings UI needs to display the selected exporter's settings
+-   [x] ~~Add a root NBT blueprint setting~~ Add a custom summon commands setting.
+-   [x] Custom animation properties dialog
+-   [x] Prevent the user setting their export namespace to 'global' or 'minecraft'
+-   [x] Add affected bones list to variant, and animation properties.
+    -   [x] Variant Properties
+    -   [x] Animation Properties
+-   [x] Implement .ajmodel to blueprint conversion.
+-   [x] Change .ajmeta to use relative file paths.
+-   [x] Resolve env variables in blueprint settings.
+-   [x] Add renderbox options to the blueprint settings.
+-   [x] Render and handle invalid cubes with a red outline.
+-   [x] Force animations to be at least 1 tick long
+-   [x] Respect Variant inheritance when applying variants in the animation preview.
+-   [x] Add a transparency option to the variant texture map selection. (And don't export completely transparent bones)
+-   [x] Locators
+    -   [x] Custom command keyframes.
+    -   [x] Locator config.
+    -   [x] Data Pack Compiler support.
+-   [x] Natively support step keyframes.
+-   [x] When upgrading old ajmodels, if they have command keyframes in the effect animator, create a locator at 0 0 0 with those keyframes.
+-   [x] Add support for Text Displays
+    -   [x] Basic rendering
+    -   [x] Word wrapping - Thanks Fetchbot!
+    -   [x] Italic
+    -   [x] Bold
+    -   [x] Underline
+    -   [x] Strikethrough
+    -   [x] Array style inheritance
+    -   [x] Support vanilla fonts
+        -   [x] minecraft:default
+        -   [x] minecraft:alt
+        -   [x] minecraft:illageralt
+    -   [x] User interface
+        -   [x] Figure out a nice way to configure text displays...
+        -   [x] Include an option to change the text.
+        -   [x] Include an option to change the max line width.
+    -   [x] Animation
+        -   [x] Make sure the text display is animatable.
+    -   [x] Add a TextDisplay config.
+        -   [x] Add support for billboarding to TextDisplays.
+    -   [ ] Add an option to change the alignment of the text.
+-   [x] Respect inheritance in the bone config.
+-   [x] Change font rendering to use a geometry for each character instead of a single plane for the entire text display. This will open the possibility of loading custom fonts and spacing.
+-   [x] Add vanilla block displays
+    -   [x] Create a custom element type for block displays.
+    -   [x] Add rendering for vanilla block models.
+        -   [x] Use Blockstates to select models.
+        -   [x] Parent model inheritance
+        -   [x] block/block
+    -   [x] Add overrides for entity-based block models.
+        -   [x] chest
+        -   [x] ender_chest
+        -   [x] mob heads
+        -   [x] shulker boxes
+        -   [x] beds
+    -   [x] multi-parts like walls throw an intneral error if they don't have any elements.
+-   [x] Add an option to Locators to use the old entity-based functionality.
+-   [x] Add an about page.
+-   [x] Camera Plugin Support
+    -   [x] Data Pack Compiler support.
+-   [x] Add vanilla item displays
+    -   [x] Create a custom element type for item displays.
+    -   [x] Add rendering for vanilla item models.
+        -   [x] Parent model inheritance
+        -   [x] item/generated
+        -   [x] item/handheld
+        -   [x] item/handheld_rod
+        -   [x] item/handheld_mace
+    -   [ ] Add overrides for entity-based models.
+        -   [x] conduit
+        -   [x] decorated_pot
+        -   [x] template_banner
+        -   [x] template_shulker_box
+        -   [x] template_skull
+        -   [x] banners
+        -   [ ] shield
+        -   [ ] trident
+-   [ ] Change the Collection setting type to allow single-click swapping of items between lists.
+-   [ ] Look into adding a color picker for tintable vanilla items.
+-   [ ] Add Variants to the UndoSystem (Blocked by vanilla Blockbench not supporting custom undo actions)
 
-# Settings
-- [x] The animation exporter setting should not select based on exporter intex. It should be based on exporter ID - Fixed by adding a function to all settings that translates from a saved value to the run-time value.
+# Data Pack Compiler
 
-# Docs
-- [x] The documentation needs to pull from the website when building for prod, and localhost when building for dev
+-   [x] Merge on_tick and on_load function tags
+-   [x] When merging the new minecraft:tick tag with old one, try and find any old style function references (AKA animated_java:my_project/zzzzzz/tick), and remove them.
+-   [x] Animation Tweening
+-   [x] Implement animation loop mode tech.
+-   [x] Write files after compilaion is done by using a queue system.
+-   [x] Make data pack compiler as async as possible.
+-   [x] Actually respect variant config options.
+-   [x] Warn the user when a previously summoned rig needs to be re-summoned due to changes in the blueprint.
+-   [x] Figure out how to add repeating functionality to command keyframes.
+-   [x] Add toggles to command keyframes to allow continuously running the commands in the keyframe instead of only once when the keyframe is reached.
+-   [x] Teleport the rig to the execution location of the summon command.
+-   [x] Rotate the bones with the root entity.
+-   [x] Add default saved Locator positions to the summoned rig.
+-   [x] Add support for text displays.
+-   [x] Add support for vanilla item displays.
+-   [x] Add support for vanilla block displays.
+-   [x] Locator rotation inheritance support - looks like they've supported it all this time...
+-   [x] Apply variant keyframes in animations.
+-   [x] Figure out how cameras will work.
+-   [ ] Check for references to non-existant functions in merged function tags, and remove them.
+-   [ ] When applying variants, remove any bones that have no elements with textured faces.
 
-# About Page
+# Resource Pack
 
-# Animation Exporter
-- [x] Add a way to summon a model with a specific variant
-- [x] Make sure the animations take Affected Bones into account.
+-   [x] Warn the user when they have custom elements in their model, but have disabled the resource pack export.
 
-# Model verification
-- [x] On load make sure all bone names are valid
-- [x] Enforce 20 fps animation snapping, and round all keyframes to their nearest valid value.
-- [x] Update all instruction keyframes to commands keyframes
-- [x] Update all old variants if possible
+# List of numbers to track
 
-# Main Animated Java Features
-- [x] Textures should be allowed anywhere on the system. AJ should instead put them into the generated resource pack automatically when exporting.
-- [x] Add a list of bones to the variant properties dialog.
-    - [x] Add a checkbox that when enabled turns the list into a whitelist.
-    - [x] The variant should only modify bones according to the list. For instance, If it's a whitelist the variant will only modify the bones in the list. Not touching the textures of other bones.
-- [x] Bones should be forced to have safe function names instead of being changed on export.
-- [x] We should check that all cubes are valid before exporting.
-- [x] Show invalid element rotations with a red outline around the element.
-- [x] Animations
-    - [x] Keyframes for swapping from one animation to another (Animation State Keyframes)
-    - [x] Keyframes for Variant swaps
-    - [x] Variant swap keyframe `execute if` condition. Only swap variants if a condition is met on the root entity.
-    - [x] Animation State keyframe `execute if` condition. Only swap states if a condition is met on the root entity.
-    - [x] Add a keyframe timeline to every bone for running commands at that bone
-- [x] Things to convert when converting model formats into AJ's format
-    - [x] All animations need their snapping set to 20
-    - [x] Animation Keyframes need to be rounded to the nearest 20th of a second
-- [x] Add some way to have the rig follow the root even while it's not animating.
-    - ~~Possible solution~~ Solution: Make all display entities ride the root entity.
-- [x] Make sure loop delay and start delay (in the animation properties menu) are taken into account by AJ when parsing animations.
-- [x] Remove install and just update variables on reload/summon.
-- [x] Add a way to adjust an animation's control over bones
-    - [x] Affected Bones
-    - [x] Affected Bones is a Whitelist
+-   [ ] Total exports
+    -   Stored in amount per day
+-   [ ] Total functions created by the data pack compiler
+    -   Stored in amount per day
+
+# Github
+
+-   [ ] Reorganize the repo's branches.
+    -   [ ] Create a `release` branch.
+    -   [x] Create a `dev` branch.
+    -   [x] Create a `legacy-beta` tag.
+    -   [x] Create a `legacy-armorstands` tag.
+-   [ ] Reorganize the repo's tags.
+    -   [ ] Create a `v1.0.0` tag.
+    -   [x] Create a `legacy-beta` tag.
+    -   [x] Create a `legacy-armorstands` tag.
+
+# Post 1.0.0
+
+-   [ ] Add support for [block-display.com's API](https://wiki.block-display.com/api/get-api)
+-   [ ] Add support for custom fonts in TextDisplays.
+-   [ ] Add support and previewing for interaction entities.

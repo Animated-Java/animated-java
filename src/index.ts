@@ -1,118 +1,135 @@
-// These imports are in a specific order. Try not to change them around too much!
-// FIXME - Deepslate should only be importing the NBT library.
-import * as deepslate from 'deepslate'
-import PACKAGE from '../package.json'
-import './exporter'
-import { AnimatedJavaExporter } from './exporter'
-import { generateSearchTree, JsonText } from './minecraft'
-import './modelFormat'
-import { createChaos } from './mods/cubeMod'
-import './mods/cubeMod'
-import './mods/cubeFaceMod'
-import './mods/animationMod'
-import './mods/keyframeMod'
-import './mods/modeMod'
-import './mods/textureMod'
-import './mods/groupMod'
-import './mods/locatorMod'
-import './mods/outlinerNodeMod'
-import './mods/cameraPluginMod'
-import './mods/boneAnimatorMod'
-import './mods/modelFormatMod'
-import './projectSettings'
-import * as AJSettings from './settings'
-import { createInfo } from './settings'
-import './ui/ajAnimationProperties'
-import { openAJDocsDialog } from './ui/ajDocs'
-import './ui/ajKeyframe'
-import './ui/ajMenuBar'
-import './ui/ajProjectSettings'
-import './ui/ajSettings'
-import './ui/ajVariantsPanel'
-import './ui/popups/invalidCubes'
-import './ui/ajStartScreen'
-import { consoleGroupCollapsed } from './util/console'
-import * as events from './events'
-import {
-	transposeMatrix,
-	formatStr,
-	roundTo,
-	roundToN,
-	ExpectedError,
-	LimitClock,
-} from './util/misc'
-import './util/moddingTools'
-import { ProgressBarController } from './util/progress'
+import { PACKAGE } from './constants'
+import { events } from './util/events'
 import './util/translation'
-import { addTranslations, translate } from './util/translation'
-import * as VirtualFileSystem from './util/virtualFileSystem'
-import { openUnexpectedErrorDialog } from './ui/popups/unexpectedError'
-import * as minecraft from './minecraft'
-import { openAJExportInProgressDialog } from './ui/ajExportInProgress'
-import { AJMetaFile } from './ajmeta'
-import { writable } from 'svelte/store'
 
-Prism.languages.mcfunction = {}
+// Blueprint Format
+import './blueprintFormat'
+// Interface
+import './interface/animatedJavaBarItem'
+import './interface/boneConfigDialog'
+import './interface/variantsPanel'
+import './interface/importAJModelLoader'
+import './interface/customKeyframePanel'
+import './interface/textDisplayElementPanel'
+import './interface/textDisplayConfigDialog'
+import './interface/vanillaItemDisplayConfigDialog'
+import './interface/vanillaItemDisplayElementPanel'
+import './interface/vanillaBlockDisplayConfigDialog'
+import './interface/vanillaBlockDisplayElementPanel'
+// Blockbench Mods
+import './interface/locatorConfigDialog'
+import './mods/animationControllerMod'
+import './mods/animationPropertiesAction'
+import './mods/animationPropertiesMod'
+import './mods/bonePropertiesMod'
+import './mods/cubeOutlineMod'
+import './mods/customKeyframesMod'
+import './mods/elementToolbarsMod'
+import './mods/exportOverActionMod'
+import './mods/groupContextMenuMod'
+import './mods/groupNameMod'
+import './mods/keyframeMod'
+import './mods/locatorAnimatorMod'
+import './mods/locatorContextMenuMod'
+import './mods/locatorPropertiesMod'
+import './mods/modelFormatConvertToMod'
+import './mods/modelFormatMod'
+import './mods/molangMod'
+import './mods/panelMod'
+import './mods/previewRaycastMod'
+import './mods/projectSettingsActionOverride'
+import './mods/saveAllAnimationsActionMod'
+import './mods/saveProjectActionMod'
+import './mods/saveProjectAsActionMod'
+import './mods/variantPreviewCubeFaceMod'
+import './mods/showDefaultPoseMod'
+// Outliner
+import './outliner/textDisplay'
+import './outliner/vanillaItemDisplay'
+import './outliner/vanillaBlockDisplay'
+// Compilers
+import { compileDataPack } from './systems/datapackCompiler'
+// Minecraft Systems
+import './systems/minecraft/versionManager'
+import './systems/minecraft/registryManager'
+import './systems/minecraft/blockstateManager'
+import './systems/minecraft/assetManager'
+import './systems/minecraft/fontManager'
+// Misc imports
+import { TRANSPARENT_TEXTURE, Variant } from './variants'
+import './systems/minecraft/registryManager'
+import { MINECRAFT_REGISTRY } from './systems/minecraft/registryManager'
+import { compileResourcePack } from './systems/resourcepackCompiler'
+import { openExportProgressDialog } from './interface/exportProgressDialog'
+import { isDataPackPath, isResourcePackPath } from './util/minecraftUtil'
+import { blueprintSettingErrors } from './blueprintSettings'
+import { openUnexpectedErrorDialog } from './interface/unexpectedErrorDialog'
+import { BLUEPRINT_CODEC, BLUEPRINT_FORMAT } from './blueprintFormat'
+import { TextDisplay } from './outliner/textDisplay'
+import { getLatestVersionClientDownloadUrl } from './systems/minecraft/assetManager'
+import { hideLoadingPopup, showLoadingPopup } from './interface/animatedJavaLoadingPopup'
+import { getVanillaFont } from './systems/minecraft/fontManager'
+import * as assetManager from './systems/minecraft/assetManager'
+import * as itemModelManager from './systems/minecraft/itemModelManager'
+import * as blockModelManager from './systems/minecraft/blockModelManager'
+import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
+import { VanillaBlockDisplay, debugBlockState, debugBlocks } from './outliner/vanillaBlockDisplay'
+import { BLOCKSTATE_REGISTRY } from './systems/minecraft/blockstateManager'
 
-// import './outliner/textDisplay'
+// Show loading popup
+void showLoadingPopup().then(async () => {
+	await Promise.all([
+		new Promise<void>(resolve => events.MINECRAFT_ASSETS_LOADED.subscribe(() => resolve())),
+		new Promise<void>(resolve => events.MINECRAFT_REGISTRY_LOADED.subscribe(() => resolve())),
+		new Promise<void>(resolve => events.MINECRAFT_FONTS_LOADED.subscribe(() => resolve())),
+		new Promise<void>(resolve => events.BLOCKSTATE_REGISTRY_LOADED.subscribe(() => resolve())),
+	])
+		.then(() => {
+			hideLoadingPopup()
+		})
+		.catch(error => {
+			console.error(error)
+			Blockbench.showToastNotification({
+				text: 'Animated Java failed to load! Please restart Blockbench',
+				color: 'var(--color-error)',
+			})
+		})
+})
 
 // @ts-ignore
 globalThis.AnimatedJava = {
-	// settings: AJSettings.animatedJavaSettings,
-	createChaos,
-	docClick(link: string) {
-		if (link.startsWith('/docs/')) {
-			link = link.substring(5)
-			let section: string | undefined
-			if (link.includes('#')) [link, section] = link.split('#')
-			openAJDocsDialog(link, section)
-			return
-		} else if (link.startsWith('tag:')) {
-			console.log(`Tag links aren't implemented: '${link}'`)
-		}
-		Blockbench.openLink(link)
-	},
-	// Expose this plugin's events to other plugins
-	events,
-	openUnexpectedErrorDialog,
-	openAJExportInProgressDialog,
-	progress: writable<number>(),
-	progress_text: writable<string>(),
-
 	API: {
-		addTranslations,
-		AJMetaFile,
-		columnToRowMajor: transposeMatrix,
-		createInfo,
-		deepslate,
-		ExpectedError,
-		Exporter: AnimatedJavaExporter,
-		formatStr,
-		generateSearchTree,
-		JsonText,
-		LimitClock,
-		minecraft,
-		ProgressBarController,
-		roundTo,
-		roundToN,
-		Settings: AJSettings,
-		translate,
-		VirtualFileSystem,
+		compileDataPack,
+		compileResourcePack,
+		Variant,
+		MINECRAFT_REGISTRY,
+		openExportProgressDialog,
+		isResourcePackPath,
+		isDataPackPath,
+		blueprintSettingErrors,
+		openUnexpectedErrorDialog,
+		TRANSPARENT_TEXTURE,
+		BLUEPRINT_FORMAT,
+		BLUEPRINT_CODEC,
+		TextDisplay,
+		getLatestVersionClientDownloadUrl,
+		getVanillaFont,
+		assetManager,
+		itemModelManager,
+		blockModelManager,
+		VanillaItemDisplay,
+		VanillaBlockDisplay,
+		debugBlocks,
+		debugBlockState,
+		BLOCKSTATE_REGISTRY,
 	},
 }
+
 // Uninstall events
 events.EXTRACT_MODS.subscribe(() => {
 	// @ts-ignore
 	globalThis.AnimatedJava = undefined
 })
-
-events.SELECT_PROJECT.subscribe(() => {
-	if (localStorage.getItem('aj:showWelcome') === 'false') return
-	requestAnimationFrame(() => {
-		AnimatedJava.docClick('page:index')
-	})
-	localStorage.setItem('aj:showWelcome', 'false')
-}, true)
 
 BBPlugin.register(PACKAGE.name, {
 	title: PACKAGE.title,
@@ -124,20 +141,16 @@ BBPlugin.register(PACKAGE.name, {
 	min_version: PACKAGE.min_blockbench_version,
 	tags: ['Minecraft: Java Edition', 'Animation', 'Display Entities'],
 	await_loading: true,
-	onload: consoleGroupCollapsed(`${PACKAGE.name}:onload`, () => {
+	onload() {
 		events.LOAD.dispatch()
-		AnimatedJava.loaded = true
-	}),
-	onunload: consoleGroupCollapsed(`${PACKAGE.name}:onunload`, () => {
+	},
+	onunload() {
 		events.UNLOAD.dispatch()
-	}),
-	oninstall: consoleGroupCollapsed(`${PACKAGE.name}:oninstall`, () => {
+	},
+	oninstall() {
 		events.INSTALL.dispatch()
-	}),
-	onuninstall: consoleGroupCollapsed(`${PACKAGE.name}:onuninstall`, () => {
+	},
+	onuninstall() {
 		events.UNINSTALL.dispatch()
-	}),
+	},
 })
-
-import('../exporters/datapackExporter')
-import('../exporters/jsonExporter')

@@ -1,37 +1,26 @@
 // @ts-ignore
-import en from '../lang/en.yaml'
-// @ts-ignore
-import de from '../lang/de.yaml'
-// @ts-ignore
-import zh from '../lang/zh_cn.yaml'
-import { formatStr, FormattingObject } from './misc'
+import { default as LANGUAGES, filenames as filepaths } from '../lang/*.yml'
 
-const LANGUAGES: Record<string, Record<string, string>> = {
-	en,
-	de,
-	zh,
-}
+const FILE_NAMES = filepaths.map((path: string) => PathModule.basename(path, '.yml'))
 
-export const currentLanguage = settings.language.value
-
-export function translate(key: string, formatObj?: FormattingObject): string {
-	let language = LANGUAGES[currentLanguage]
-	if (!LANGUAGES[currentLanguage]) language = LANGUAGES.en
-
-	const translated = language[key]
-	// Return the translation key if no valid translation is found.
-	if (translated == undefined) return key
-	// If a formatting object is provided, use it to format the translated string.
-	if (formatObj != undefined) return formatStr(translated, formatObj)
-	return translated
-}
-
-export function addTranslations(language: string, translations: Record<string, string>) {
-	for (const key in translations) {
-		if (LANGUAGES[language][key] !== undefined) {
-			console.warn(`Translation key '${key}' is already defined. Discarding new translation.`)
-			continue
-		}
-		LANGUAGES[language][key] = translations[key]
+export function translate(key: string, ...args: string[]) {
+	const languageIndex = FILE_NAMES.indexOf(settings.language.value)
+	if (languageIndex === -1) {
+		console.warn(`Could not find language '${settings.language.value as string}'`)
+		console.log(`Available languages: ${FILE_NAMES.join(', ') as string}`)
+		return key
+	}
+	const lang = LANGUAGES[languageIndex] as Record<string, string>
+	if (!key.startsWith('animated_java.')) {
+		key = `animated_java.${key}`
+	}
+	const translation = lang[key]
+	if (translation) {
+		return translation.replace(/\{(\d+)\}/g, (str, index) => args[index] || '')
+	} else {
+		console.warn(`Could not find translation for '${key}'`)
+		return key
 	}
 }
+
+Language.data['format_category.animated_java'] = translate('format_category.animated_java')

@@ -1,0 +1,572 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"properties": {
+		"meta": {
+			"type": "object",
+			"required": ["format_version", "model_format"],
+			"properties": {
+				"format_version": {
+					"type": "string",
+					"enum": ["1.0.0"]
+				},
+				"model_format": {
+					"const": "animated_java_blueprint"
+				}
+			}
+		},
+		"project_settings": {
+			"type": "object",
+			"properties": {
+				"export_namespace": {
+					"type": "string"
+				},
+				"enable_plugin_mode": {
+					"type": "boolean"
+				},
+				"enable_resource_pack": {
+					"type": "boolean"
+				},
+				"display_item": {
+					"type": "string"
+				},
+				"custom_model_data_offset": {
+					"type": "integer"
+				},
+				"enable_advanced_resource_pack_settings": {
+					"type": "boolean"
+				},
+				"resource_pack": {
+					"description": "The path to the resource pack that you want to export into.",
+					"type": "string"
+				},
+				"display_item_path": {
+					"description": "Only used if advanced resource pack settings are enabled. The path to the display item's texture in the resource pack.",
+					"type": "string"
+				},
+				"model_folder": {
+					"description": "Only used if advanced resource pack settings are enabled. The folder that you want the blueprint's generated models to be exported into.",
+					"type": "string"
+				},
+				"texture_folder": {
+					"description": "Only used if advanced resource pack settings are enabled. The folder that you want the blueprint's generated textures to be exported into.",
+					"type": "string"
+				},
+				"enable_data_pack": {
+					"type": "boolean"
+				},
+				"enable_advanced_data_pack_settings": {
+					"type": "boolean"
+				},
+				"data_pack": {
+					"description": "The path to the data pack that you want to export into.",
+					"type": "string"
+				}
+			}
+		},
+		"resolution": {
+			"type": "object",
+			"required": ["width", "height"],
+			"properties": {
+				"width": {
+					"type": "integer",
+					"minimum": 1,
+					"maximum": 4096
+				},
+				"height": {
+					"type": "integer",
+					"minimum": 1,
+					"maximum": 4096
+				}
+			}
+		},
+		"elements": {
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/element"
+			}
+		},
+		"outliner": {
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/outliner_bone"
+			}
+		},
+		"textures": {
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/texture"
+			}
+		},
+		"animations": {
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/animation"
+			}
+		},
+		"animation_controllers": {
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/animation_controller"
+			}
+		}
+	},
+	"definitions": {
+		"element": {
+			"allOf": [
+				{
+					"if": {
+						"required": ["type"],
+						"properties": {
+							"type": {
+								"const": "cube"
+							}
+						}
+					},
+					"then": {
+						"$ref": "#/definitions/cube_element"
+					}
+				},
+				{
+					"if": {
+						"required": ["type"],
+						"properties": {
+							"type": {
+								"const": "locator"
+							}
+						}
+					},
+					"then": {
+						"$ref": "#/definitions/locator_element"
+					}
+				},
+				{
+					"if": {
+						"required": ["type"],
+						"properties": {
+							"type": {
+								"const": "camera"
+							}
+						}
+					},
+					"then": {
+						"$ref": "#/definitions/camera_element"
+					}
+				}
+			]
+		},
+		"camera_element": {
+			"type": "object",
+			"required": ["type", "name", "position", "rotation", "uuid"],
+			"properties": {
+				"type": {
+					"const": "camera"
+				},
+				"name": {
+					"type": "string"
+				},
+				"uuid": {
+					"type": "string"
+				},
+				"position": {
+					"type": "array",
+					"items": {
+						"type": "number"
+					},
+					"minItems": 3,
+					"maxItems": 3
+				},
+				"rotation": {
+					"type": "array",
+					"items": {
+						"type": "number"
+					},
+					"minItems": 3,
+					"maxItems": 3
+				}
+			}
+		},
+		"locator_element": {
+			"type": "object",
+			"required": ["type", "name", "position", "rotation", "uuid"],
+			"properties": {
+				"type": {
+					"const": "locator"
+				},
+				"name": {
+					"type": "string"
+				},
+				"uuid": {
+					"type": "string"
+				},
+				"position": {
+					"type": "array",
+					"items": {
+						"type": "number"
+					},
+					"minItems": 3,
+					"maxItems": 3
+				},
+				"rotation": {
+					"type": "array",
+					"items": {
+						"type": "number"
+					},
+					"minItems": 3,
+					"maxItems": 3
+				}
+			}
+		},
+		"cube_element": {
+			"type": "object",
+			"required": ["type", "name", "uuid", "from", "to", "faces"],
+			"properties": {
+				"type": {
+					"const": "cube"
+				},
+				"name": {
+					"type": "string"
+				},
+				"uuid": {
+					"type": "string"
+				},
+				"rescale": {
+					"type": "boolean"
+				},
+				"from": {
+					"type": "array",
+					"items": {
+						"type": "number"
+					},
+					"minItems": 3,
+					"maxItems": 3
+				},
+				"to": {
+					"type": "array",
+					"items": {
+						"type": "number"
+					},
+					"minItems": 3,
+					"maxItems": 3
+				},
+				"origin": {
+					"type": "array",
+					"items": {
+						"type": "number"
+					},
+					"minItems": 3,
+					"maxItems": 3
+				},
+				"faces": {
+					"type": "object",
+					"properties": {
+						"north": {
+							"$ref": "#/definitions/face"
+						},
+						"east": {
+							"$ref": "#/definitions/face"
+						},
+						"south": {
+							"$ref": "#/definitions/face"
+						},
+						"west": {
+							"$ref": "#/definitions/face"
+						},
+						"up": {
+							"$ref": "#/definitions/face"
+						}
+					}
+				}
+			}
+		},
+		"face": {
+			"type": "object",
+			"required": ["uv"],
+			"properties": {
+				"uv": {
+					"type": "array",
+					"items": {
+						"type": "number"
+					},
+					"minItems": 4,
+					"maxItems": 4
+				}
+			}
+		},
+		"outliner_bone": {
+			"type": "object",
+			"required": ["name", "uuid", "children", "origin", "export", "configs"],
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"uuid": {
+					"type": "string"
+				},
+				"export": {
+					"description": "Whether or not this element should be included in the generated rig.",
+					"type": "boolean",
+					"default": true
+				},
+				"origin": {
+					"type": "array",
+					"items": {
+						"type": "number"
+					},
+					"minItems": 3,
+					"maxItems": 3
+				},
+				"children": {
+					"description": "List of UUIDs of child elements",
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				},
+				"configs": {
+					"type": "object",
+					"properties": {
+						"default": {
+							"description": "The default bone config. This will be applied when the rig is summoned.",
+							"$ref": "#/definitions/bone_config"
+						},
+						"variants": {
+							"type": "object",
+							"description": "A map of variant UUIDS to bone configs. Will only contain configs for variants that are different from the default config. These are only applied when a variant is applied. You must apply another variant to remove/change the config.",
+							"patternProperties": {
+								".+": {
+									"$ref": "#/definitions/bone_config"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"texture": {
+			"type": "object",
+			"required": ["name", "uuid", "source", "mode"],
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"uuid": {
+					"type": "string"
+				},
+				"source": {
+					"type": "string"
+				},
+				"mode": {
+					"type": "string",
+					"enum": ["bitmap"]
+				}
+			}
+		},
+		"animation": {
+			"type": "object",
+			"required": ["name", "uuid", "bones", "frames", "loop", "length", "snapping"],
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"uuid": {
+					"type": "string"
+				},
+				"loop": {
+					"description": "The animation's loop mode.",
+					"type": "string",
+					"enum": ["loop", "once", "hold"]
+				},
+				"override": {
+					"description": "Whether or not this animation should override other animations.",
+					"type": "boolean",
+					"default": false
+				},
+				"length": {
+					"description": "The length of the animation in seconds.",
+					"type": "number",
+					"minimum": 0
+				},
+				"snapping": {
+					"description": "Effectively the maximum Keyframes-per-second of the animation.",
+					"type": "boolean",
+					"default": false
+				},
+				"blend_weight": {
+					"description": "The weight of the animation when blending.",
+					"type": "number",
+					"minimum": 0,
+					"maximum": 1
+				},
+				"start_delay": {
+					"description": "The delay before the animation starts playing.",
+					"type": "number",
+					"minimum": 0
+				},
+				"loop_delay": {
+					"description": "The delay before the animation loops.",
+					"type": "number",
+					"minimum": 0
+				}
+			}
+		},
+		"animation_controller": {
+			"type": "object",
+			"required": ["name", "uuid", "states", "transitions"],
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"uuid": {
+					"type": "string"
+				},
+				"initial_state": {
+					"type": "string"
+				},
+				"states": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/animation_controller_state"
+					}
+				},
+				"transitions": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/animation_controller_transition"
+					}
+				}
+			}
+		},
+		"animation_controller_state": {
+			"type": "object",
+			"required": ["name", "uuid", "animations"],
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"uuid": {
+					"type": "string"
+				},
+				"animations": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/animation_controller_state_animation"
+					}
+				},
+				"transitions": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/animation_controller_transition"
+					}
+				},
+				"on_entry": {
+					"type": "string"
+				},
+				"on_exit": {
+					"type": "string"
+				},
+				"blend_transition": {
+					"type": "number"
+				},
+				"blend_via_shortest_path": {
+					"type": "boolean"
+				}
+			}
+		},
+		"animation_controller_transition": {
+			"type": "object",
+			"required": ["uuid", "target", "condition"],
+			"properties": {
+				"uuid": {
+					"type": "string"
+				},
+				"target": {
+					"type": "string"
+				},
+				"condition": {
+					"type": "string"
+				}
+			}
+		},
+		"animation_controller_state_animation": {
+			"type": "object",
+			"required": ["uuid", "key", "animation"],
+			"properties": {
+				"uuid": {
+					"type": "string"
+				},
+				"key": {
+					"description": "The animation's key. Usually identical to the name of the animation but can be modified by the user. Not sure if this will be used by AJ or not.",
+					"type": "string"
+				},
+				"animation": {
+					"type": "string"
+				},
+				"blend_value": {
+					"type": "string"
+				}
+			}
+		},
+		"bone_config": {
+			"type": "object",
+			"required": [
+				"inherit_settings",
+				"use_nbt",
+				"glowing",
+				"glow_color",
+				"shadow_radius",
+				"shadow_strength",
+				"brightness_override",
+				"enchanted",
+				"invisible",
+				"nbt"
+			],
+			"properties": {
+				"inherit_settings": {
+					"type": "boolean",
+					"default": true
+				},
+				"use_nbt": {
+					"type": "boolean",
+					"default": false
+				},
+				"glowing": {
+					"type": "boolean",
+					"default": false
+				},
+				"glow_color": {
+					"type": "string",
+					"pattern": "^#[0-9a-fA-F]{6}$",
+					"default": "#ffffff"
+				},
+				"shadow_radius": {
+					"type": "number",
+					"minimum": 0,
+					"default": 0
+				},
+				"shadow_strength": {
+					"type": "number",
+					"minimum": 0,
+					"default": 0
+				},
+				"brightness_override": {
+					"type": "number",
+					"minimum": 0,
+					"maximum": 15,
+					"default": 0
+				},
+				"enchanted": {
+					"type": "boolean",
+					"default": false
+				},
+				"invisible": {
+					"type": "boolean",
+					"default": false
+				},
+				"nbt": {
+					"type": "string",
+					"default": "{}"
+				}
+			}
+		}
+	}
+}

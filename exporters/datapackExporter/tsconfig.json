@@ -1,6 +1,0 @@
-{
-	"include": ["./**/*"],
-	"compilerOptions": {
-		"types": ["node", "D:/github-repos/animated-java-api-types/types"]
-	}
-}

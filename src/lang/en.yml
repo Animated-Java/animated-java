@@ -1,0 +1,397 @@
+### Actions
+animated_java.action.open_blueprint_settings.name: Blueprint Settings
+animated_java.action.open_documentation.name: Documentation
+animated_java.action.open_about.name: About
+animated_java.action.open_bone_config.name: Bone Config
+animated_java.action.open_locator_config.name: Locator Config
+animated_java.action.open_text_display_config.name: Text Display Config
+animated_java.action.export.name: Export
+animated_java.action.create_text_display.title: Add Text Display
+animated_java.action.create_vanilla_item_display.title: Add Vanilla Item Display
+animated_java.action.create_vanilla_block_display.title: Add Vanilla Block Display
+animated_java.action.open_vanilla_item_display_config.name: Vanilla Item Display Config
+animated_java.action.open_vanilla_block_display_config.name: Vanilla Block Display Config
+
+### Dialogs
+
+## About
+animated_java.dialog.about.title: About Animated Java
+animated_java.dialog.about.close_button: Close
+
+## Unexpected Error Dialog
+animated_java.dialog.unexpected_error.title: An Unexpected Error Occurred!
+animated_java.dialog.unexpected_error.close_button: Close
+animated_java.dialog.unexpected_error.copy_error_message_button.message: Error Message Copied to Clipboard!
+animated_java.dialog.unexpected_error.copy_error_message_button.description: Click to copy the error message to the clipboard.
+animated_java.dialog.unexpected_error.paragraph: 'Please report this error by joining our {0} and creating a thread in the #animated-java-support channel, or by creating an issue on our {1}. Thank you!'
+
+## Blueprint Settings Dialog
+animated_java.dialog.blueprint_settings.title: Blueprint Settings
+animated_java.dialog.blueprint_settings.advanced_settings_warning: Advanced settings should only be used if absolutely needed!
+animated_java.dialog.blueprint_settings.blueprint_name.title: Blueprint Name
+animated_java.dialog.blueprint_settings.blueprint_name.description: The name of the Blueprint. Only used to identify the project in the workspace.
+
+animated_java.dialog.blueprint_settings.texture_size.title: Texture Size
+animated_java.dialog.blueprint_settings.texture_size.description: The resolution of the UV editor. This should be the same size as the largest texture. For best results use a square texture, and make sure it's size is a power of 2.
+animated_java.dialog.blueprint_settings.texture_size.warning.not_square: The Texture Size should be square for best results.
+animated_java.dialog.blueprint_settings.texture_size.warning.not_a_power_of_2: The Texture Size should be a power of 2 for best results.
+animated_java.dialog.blueprint_settings.texture_size.error.does_not_match_largest_texture: The Texture Size should match the largest texture's size.
+
+# Export Settings
+animated_java.dialog.blueprint_settings.export_settings.title: Export Settings
+
+animated_java.dialog.blueprint_settings.export_namespace.title: Export Namespace
+animated_java.dialog.blueprint_settings.export_namespace.description: The namespace to export the project to. This is the namespace that will be used in the exported Resource Pack and Data Pack.
+animated_java.dialog.blueprint_settings.export_namespace.error.empty: The export namespace cannot be empty!
+animated_java.dialog.blueprint_settings.export_namespace.error.reserved: The export namespace "{0}" is reserved for internal functionality! Please choose a different namespace.
+animated_java.dialog.blueprint_settings.export_namespace.error.invalid_characters: The export namespace contains invalid characters! Namespaces can only contain letters, numbers, and underscores.
+
+animated_java.dialog.blueprint_settings.enable_plugin_mode.title: Plugin Mode
+animated_java.dialog.blueprint_settings.enable_plugin_mode.description: Whether or not to enable Plugin Mode. Enable when you plan to use the .ajblueprint file in a plugin instead of a Resource Pack and/or Data Pack.
+
+animated_java.dialog.blueprint_settings.enable_resource_pack.title: Export Resources
+animated_java.dialog.blueprint_settings.enable_resource_pack.description: Whether or not to export resources into a Resource Pack.
+
+animated_java.dialog.blueprint_settings.enable_data_pack.title: Export Data Pack
+animated_java.dialog.blueprint_settings.enable_data_pack.description: Whether or not to export into a Data Pack.
+
+animated_java.dialog.blueprint_settings.show_bounding_box.title: Show Bounding Box
+animated_java.dialog.blueprint_settings.show_bounding_box.description: Whether or not to show the bounding box in the editor.
+
+animated_java.dialog.blueprint_settings.auto_bounding_box.title: Auto Bounding Box
+animated_java.dialog.blueprint_settings.auto_bounding_box.description: |-
+    Whether or not to automatically calculate the bounding box based on the model's geometry.
+    NOTE: The auto bounding box will NOT take bone offsets from animations into account, so the bounding box may be smaller than needed in some cases.
+
+animated_java.dialog.blueprint_settings.bounding_box.title: Bounding Box
+animated_java.dialog.blueprint_settings.bounding_box.description: Determines the culling box of the model. The model will stop rendering when this box is off-screen.
+
+# Resource Pack Settings
+animated_java.dialog.blueprint_settings.resource_pack_settings.title: Resource Pack Settings
+
+animated_java.dialog.blueprint_settings.enable_advanced_resource_pack_settings.title: Use Advanced Settings
+animated_java.dialog.blueprint_settings.enable_advanced_resource_pack_settings.description: Whether or not to enable the advanced Resource Pack settings.
+
+animated_java.dialog.blueprint_settings.display_item.title: Display Item
+animated_java.dialog.blueprint_settings.display_item.description: The item to display the Blueprints models in-game. Multiple Blueprints can be placed on the same item and they will be merged automatically.
+animated_java.dialog.blueprint_settings.display_item.error.no_item_selected: No item selected!
+animated_java.dialog.blueprint_settings.display_item.error.invalid_item_id.no_namespace: The provided item ID is invalid! Item IDs should be in the format namespace:item_id.
+animated_java.dialog.blueprint_settings.display_item.error.invalid_item_id.whitespace: The provided item ID is invalid! Item IDs should not contain any whitespace.
+animated_java.dialog.blueprint_settings.display_item.warning.item_does_not_exist: The selected item does not exist in vanilla!
+
+animated_java.dialog.blueprint_settings.custom_model_data_offset.title: CMD Offset
+animated_java.dialog.blueprint_settings.custom_model_data_offset.description: The offset to use for the Custom Model Data of the Display Item. Allows multiple Blueprints on the same item, but in separate, unaffiliated Resource Packs.
+
+animated_java.dialog.blueprint_settings.resource_pack.title: Resource Pack
+animated_java.dialog.blueprint_settings.resource_pack.description: The root folder of the Resource Pack to export the project into.
+animated_java.dialog.blueprint_settings.resource_pack.error.no_folder_selected: No folder selected!
+animated_java.dialog.blueprint_settings.resource_pack.error.folder_does_not_exist: The selected folder does not exist!
+animated_java.dialog.blueprint_settings.resource_pack.error.not_a_folder: The selected path is not a folder!
+animated_java.dialog.blueprint_settings.resource_pack.error.missing_pack_mcmeta: The selected folder is missing a pack.mcmeta file!
+animated_java.dialog.blueprint_settings.resource_pack.error.missing_assets_folder: The selected Resource Pack is missing an assets folder!
+
+animated_java.dialog.blueprint_settings.display_item_path.title: Display Item Path
+animated_java.dialog.blueprint_settings.display_item_path.description: Where to place the Display Item. This should be a path to a .json file in a Resource Pack.
+
+animated_java.dialog.blueprint_settings.model_folder.title: Model Folder
+animated_java.dialog.blueprint_settings.model_folder.description: Where to place all of the exported models. This should be a path to a folder in a Resource Pack.
+
+animated_java.dialog.blueprint_settings.texture_folder.title: Texture Folder
+animated_java.dialog.blueprint_settings.texture_folder.description: Where to place all of the exported textures. This should be a path to a folder in a Resource Pack.
+
+# Data Pack Settings
+animated_java.dialog.blueprint_settings.data_pack_settings.title: Data Pack Settings
+
+animated_java.dialog.blueprint_settings.enable_advanced_data_pack_settings.title: Use Advanced Settings
+animated_java.dialog.blueprint_settings.enable_advanced_data_pack_settings.description: Whether or not to enable the advanced Data Pack settings.
+
+animated_java.dialog.blueprint_settings.data_pack.title: Data Pack
+animated_java.dialog.blueprint_settings.data_pack.description: The root folder of the Data Pack to export the project into.
+animated_java.dialog.blueprint_settings.data_pack.error.no_folder_selected: No folder selected!
+animated_java.dialog.blueprint_settings.data_pack.error.folder_does_not_exist: The selected folder does not exist!
+animated_java.dialog.blueprint_settings.data_pack.error.not_a_folder: The selected path is not a folder!
+animated_java.dialog.blueprint_settings.data_pack.error.missing_pack_mcmeta: The selected folder is missing a pack.mcmeta file!
+animated_java.dialog.blueprint_settings.data_pack.error.missing_data_folder: The selected Data Pack is missing a data folder!
+
+animated_java.dialog.blueprint_settings.summon_commands.title: On-Summon Commands
+animated_java.dialog.blueprint_settings.summon_commands.description: Commands to run as the root entity when summoned. Treat this text input as a normal mcfunction.
+
+animated_java.dialog.blueprint_settings.interpolation_duration.title: Interp Duration
+animated_java.dialog.blueprint_settings.interpolation_duration.description: The duration of the smoothing between keyframes in ticks. This is the time it takes for the model to transition from one keyframe to the next. Higher values will cause animations to lose precision. Generally, you want this to have a value of 1 or 2.
+
+animated_java.dialog.blueprint_settings.teleportation_duration.title: Teleport Duration
+animated_java.dialog.blueprint_settings.teleportation_duration.description: The duration of the teleportation between keyframes in ticks. This is the time over which the model will visually interpolate between it's old position to it's new position. Higher values will cause animations to lose precision.
+
+animated_java.dialog.blueprint_settings.use_storage_for_animation.title: Use Storage for Animation
+animated_java.dialog.blueprint_settings.use_storage_for_animation.description: Whether or not to use NBT storage to store animation data instead of functions. This will vastly reduce the number of functions in the generated Data Pack, but is 33% slower than the function method.
+
+## Bone Config Dialog
+animated_java.dialog.bone_config.title: Bone Config
+
+animated_java.dialog.bone_config.use_nbt.title: Use NBT
+animated_java.dialog.bone_config.use_nbt.description: Whether or not to use NBT to configure the bone instead of settings.
+animated_java.dialog.bone_config.use_nbt.use_nbt_warning: Using NBT will override all other settings, and any changes you make will not be visible in the editor. Only use this if you know what you're doing!
+
+animated_java.dialog.bone_config.inherit_settings.title: Inherit Settings
+animated_java.dialog.bone_config.inherit_settings.description: Whether or not to inherit the settings from the parent bone.
+
+animated_java.dialog.bone_config.glowing.title: Glowing
+animated_java.dialog.bone_config.glowing.description: Whether or not the bone should glow in-game.
+
+animated_java.dialog.bone_config.override_glow_color.title: Override Glow Color
+animated_java.dialog.bone_config.override_glow_color.description: Whether or not to override the default glow color.
+
+animated_java.dialog.bone_config.glow_color.title: Glow Color
+animated_java.dialog.bone_config.glow_color.description: The color of the glow.
+
+animated_java.dialog.bone_config.shadow_radius.title: Shadow Radius
+animated_java.dialog.bone_config.shadow_radius.description: The radius of the shadow.
+
+animated_java.dialog.bone_config.shadow_strength.title: Shadow Strength
+animated_java.dialog.bone_config.shadow_strength.description: The strength of the shadow.
+
+animated_java.dialog.bone_config.override_brightness.title: Override Brightness
+animated_java.dialog.bone_config.override_brightness.description: Whether or not to override the default brightness.
+
+animated_java.dialog.bone_config.brightness_override.title: Brightness
+animated_java.dialog.bone_config.brightness_override.description: The brightness of the bone. This should be a value between 0 and 15.
+
+animated_java.dialog.bone_config.enchanted.title: Enchanted
+animated_java.dialog.bone_config.enchanted.description: Whether or not the bone should be enchanted.
+
+animated_java.dialog.bone_config.invisible.title: Invisible
+animated_java.dialog.bone_config.invisible.description: Whether or not the bone should be invisible.
+
+animated_java.dialog.bone_config.nbt.title: NBT
+animated_java.dialog.bone_config.nbt.description: The NBT to apply to the bone.
+
+animated_java.dialog.bone_config.billboard.title: Billboard
+animated_java.dialog.bone_config.billboard.description: Controls if this bone should pivot to face player when rendered. It can be fixed (both vertical and horizontal angles are fixed), vertical (faces player around vertical axis), horizontal (pivots around horizontal axis), and center (pivots around center point).
+animated_java.dialog.bone_config.billboard.options.fixed: Fixed
+animated_java.dialog.bone_config.billboard.options.vertical: Vertical
+animated_java.dialog.bone_config.billboard.options.horizontal: Horizontal
+animated_java.dialog.bone_config.billboard.options.center: Center
+
+## Locator Config Dialog
+animated_java.dialog.locator_config.title: Locator Config
+
+animated_java.dialog.locator_config.plugin_mode_warning: |-
+    Plugin Mode is enabled! Locators have no configuration in Plugin Mode.
+    Instead, use the Plugin API to add custom functionality to your Locators.
+    For more information, see the Official Plugin API documentation for more information.
+
+animated_java.dialog.locator_config.use_entity.title: Use Entity
+animated_java.dialog.locator_config.use_entity.description: Whether or not to attach an entity to the Locator.
+
+animated_java.dialog.locator_config.entity_type.title: Entity Type
+animated_java.dialog.locator_config.entity_type.description: The type of entity to attach to the Locator.
+animated_java.dialog.locator_config.entity_type.error.empty: Entity Type cannot be empty!
+animated_java.dialog.locator_config.entity_type.warning.invalid: The selected entity type doesn't exist in Minecraft {0}
+
+animated_java.dialog.locator_config.summon_commands.title: On-Summon Commands
+animated_java.dialog.locator_config.summon_commands.description: Commands to run as the Locator's entity when summoned. Treat this text input as a normal mcfunction.
+
+animated_java.dialog.locator_config.ticking_commands.title: Ticking Commands
+animated_java.dialog.locator_config.ticking_commands.description: |-
+    Commands to run every tick at the Locator's position. Treat this text input as a normal mcfunction.
+    NOTE: These commands will only run while an animation is playing.
+
+## Text Display Config Dialog
+animated_java.dialog.text_display_config.title: Text Display Config
+
+animated_java.dialog.bone_config.vanilla_item_model.title: Vanilla Item Model
+animated_java.dialog.bone_config.vanilla_item_model.description: |-
+    If set, the bone will render as a vanilla item model.
+    This will overwrite the bone's existing cubes.
+
+animated_java.dialog.text_display_config.use_nbt.title: Use NBT
+animated_java.dialog.text_display_config.use_nbt.description: Whether or not to use NBT to configure the text display instead of settings.
+animated_java.dialog.text_display_config.use_nbt.use_nbt_warning: Using NBT will override all other settings, and any changes you make will not be visible in the editor. Only use this if you know what you're doing!
+
+animated_java.dialog.text_display_config.inherit_settings.title: Inherit Settings
+animated_java.dialog.text_display_config.inherit_settings.description: Whether or not to inherit the settings from the parent text display.
+
+animated_java.dialog.text_display_config.glowing.title: Glowing
+animated_java.dialog.text_display_config.glowing.description: Whether or not the text display should glow in-game.
+
+animated_java.dialog.text_display_config.override_glow_color.title: Override Glow Color
+animated_java.dialog.text_display_config.override_glow_color.description: Whether or not to override the default glow color.
+
+animated_java.dialog.text_display_config.glow_color.title: Glow Color
+animated_java.dialog.text_display_config.glow_color.description: The color of the glow.
+
+animated_java.dialog.text_display_config.shadow_radius.title: Shadow Radius
+animated_java.dialog.text_display_config.shadow_radius.description: The radius of the shadow.
+
+animated_java.dialog.text_display_config.shadow_strength.title: Shadow Strength
+animated_java.dialog.text_display_config.shadow_strength.description: The strength of the shadow.
+
+animated_java.dialog.text_display_config.override_brightness.title: Override Brightness
+animated_java.dialog.text_display_config.override_brightness.description: Whether or not to override the default brightness.
+
+animated_java.dialog.text_display_config.brightness_override.title: Brightness
+animated_java.dialog.text_display_config.brightness_override.description: The brightness of the text display. This should be a value between 0 and 15.
+
+animated_java.dialog.text_display_config.invisible.title: Invisible
+animated_java.dialog.text_display_config.invisible.description: Whether or not the bone should be invisible.
+
+animated_java.dialog.text_display_config.nbt.title: NBT
+animated_java.dialog.text_display_config.nbt.description: The NBT to apply to the text display.
+
+animated_java.dialog.text_display_config.billboard.title: Billboard
+animated_java.dialog.text_display_config.billboard.description: Controls if this text display should pivot to face player when rendered. It can be fixed (both vertical and horizontal angles are fixed), vertical (faces player around vertical axis), horizontal (pivots around horizontal axis), and center (pivots around center point).
+animated_java.dialog.text_display_config.billboard.options.fixed: Fixed
+animated_java.dialog.text_display_config.billboard.options.vertical: Vertical
+animated_java.dialog.text_display_config.billboard.options.horizontal: Horizontal
+animated_java.dialog.text_display_config.billboard.options.center: Center
+
+## Variant Config Dialog
+animated_java.dialog.variant_config.title: Variant Config
+
+animated_java.dialog.variant_config.variant_display_name: Display Name
+animated_java.dialog.variant_config.variant_display_name.description: Used to identify the Variant in the editor, and in error messages.
+
+animated_java.dialog.variant_config.generate_name_from_display_name: Generate Name From Display Name
+animated_java.dialog.variant_config.generate_name_from_display_name.description: Whether or not to generate the Name automatically from the Display Name.
+
+animated_java.dialog.variant_config.variant_name: Name
+animated_java.dialog.variant_config.variant_name.description: Used to identify the Variant in the exported Resource Pack and Data Pack.
+
+animated_java.dialog.variant_config.texture_map.title: Texture Map
+animated_java.dialog.variant_config.texture_map.description: A map of which textures to swap out when applying this Variant.
+animated_java.dialog.variant_config.texture_map.create_new_mapping: Create New Mapping
+animated_java.dialog.variant_config.texture_map.no_mappings: Variant has no mapped textures.
+
+animated_java.dialog.variant_config.bone_lists.description: A list of bones to include or exclude from the Variant. Only bones in the included list will be modified by the Variant, and bones in the excluded list will be ignored.
+animated_java.dialog.variant_config.excluded_bones.title: Excluded Bones
+animated_java.dialog.variant_config.excluded_bones.description: A list of bones to exclude from the Variant. These bones will not be modified by the Variant.
+animated_java.dialog.variant_config.included_bones.title: Included Bones
+animated_java.dialog.variant_config.included_bones.description: A list of bones to include in the Variant. Only these bones will be modified by the Variant.
+animated_java.dialog.variant_config.swap_columns_button.tooltip: Swap Lists
+
+## Old AJModel Loader Dialog
+animated_java.action.upgrade_old_aj_model_loader.name: Update .ajmodel
+animated_java.dialog.upgrade_old_aj_model_loader.title: Update .ajmodel
+animated_java.action.upgrade_old_aj_model_loader.select_file: Select .ajmodel File
+animated_java.action.upgrade_old_aj_model_loader.body: Upgrade your outdated .ajmodel files to the new .ajblueprint format.
+animated_java.action.upgrade_old_aj_model_loader.button: Select an .ajmodel File to Upgrade
+
+## Animation Properties Dialog
+animated_java.dialog.animation_properties.title: Animation Properties ({0})
+
+animated_java.dialog.animation_properties.animation_name.title: Animation Name
+animated_java.dialog.animation_properties.animation_name.description: The name of the animation.
+
+animated_java.dialog.animation_properties.loop_mode.title: Loop Mode
+animated_java.dialog.animation_properties.loop_mode.description: Determines how the animation should loop. Once - The animation will play once and stop. Hold - The animation will play once and hold the last frame. Loop - The animation will loop indefinitely.
+animated_java.dialog.animation_properties.loop_mode.options.once: Once
+animated_java.dialog.animation_properties.loop_mode.options.hold: Hold
+animated_java.dialog.animation_properties.loop_mode.options.loop: Loop
+animated_java.dialog.animation_properties.animation_name.error.empty: The animation name cannot be empty!
+animated_java.dialog.animation_properties.animation_name.error.invalid_characters: The animation name contains invalid characters! Animation names should only contain letters, numbers, underscores, and periods.
+
+animated_java.dialog.animation_properties.bone_lists.description: A list of bones to include or exclude from the animation. Only bones in the included list will be modified by the animation, and bones in the excluded list will be ignored.
+animated_java.dialog.animation_properties.excluded_bones.title: Excluded Bones
+animated_java.dialog.animation_properties.excluded_bones.description: A list of bones to exclude from the animation. These bones will not be modified by the animation.
+animated_java.dialog.animation_properties.included_bones.title: Included Bones
+animated_java.dialog.animation_properties.included_bones.description: A list of bones to include in the animation. Only these bones will be modified by the animation.
+animated_java.dialog.animation_properties.swap_columns_button.tooltip: Swap Lists
+
+## Export Progress Dialog
+animated_java.dialog.export_progress.title: Exporting...
+
+### Panels
+
+## Variants Panel
+animated_java.panel.variants.title: Variants
+animated_java.panel.variants.tool.create_new_variant: Create New Variant
+animated_java.panel.variants.tool.edit_variant: Edit Variant
+animated_java.panel.variants.tool.duplicate_selected_variant: Duplicate Selected Variant
+animated_java.panel.variants.tool.delete_selected_variant: Delete Selected Variant
+animated_java.panel.variants.tool.variant_visible: Variant Selected
+animated_java.panel.variants.tool.variant_not_visible: Variant Not Selected
+
+animated_java.action.variants.create: Create Variant
+animated_java.action.variants.duplicate: Duplicate Variant
+animated_java.action.variants.open_config: Open Variant Config
+animated_java.action.variants.delete: Delete Variant
+
+### Animator
+
+## Properties
+animated_java.animation.excluded_bones: Excluded Bones
+animated_java.animation.invert_excluded_bones: Invert Excluded Bones
+
+## Timeline
+animated_java.effect_animator.timeline.variant: Variant
+animated_java.effect_animator.timeline.commands: Commands
+
+## Keyframes
+animated_java.effect_animator.keyframes.variant: Variant
+animated_java.effect_animator.keyframes.commands: Commands
+animated_java.effect_animator.keyframes.execute_condition: Execute Condition
+
+# Keyframe Panel
+animated_java.panel.keyframe.keyframe_title: Keyframe ({0})
+
+animated_java.panel.keyframe.variant.title: Variant
+animated_java.panel.keyframe.variant.description: The Variant to apply to the keyframe.
+
+animated_java.panel.keyframe.commands.title: Commands
+animated_java.panel.keyframe.commands.description: Commands to run when the keyframe is reached. Treat this text input as a normal mcfunction.
+
+animated_java.panel.keyframe.execute_condition.title: Execute Condition
+animated_java.panel.keyframe.execute_condition.description: A condition that must be met for the keyframe to execute. Treat this text input as the sub-commands of an execute command.
+
+animated_java.panel.keyframe.repeat.title: Repeat?
+animated_java.panel.keyframe.repeat.description: |-
+    Whether or not to run the commands in this keyframe repeatedly.
+    If enabled, the commands will run every Repeat Frequency ticks.
+
+animated_java.panel.keyframe.repeat_frequency.title: Repeat Frequency
+animated_java.panel.keyframe.repeat_frequency.description: |-
+    How many ticks to wait before running the commands in this keyframe again.
+    Setting this to 1 will run the commands every tick.
+    NOTE: If the animation is not evenly divisible by this value, the interval may be slightly off when the animation loops.
+    If this is set to a value larger than the length of the animation, the commands will run as if repeat was disabled (Once when the keyframe is reached).
+
+# Text Display Panel
+animated_java.panel.text_display.title: Text Display
+
+animated_java.tool.text_display.line_width.title: Line Width
+animated_java.tool.text_display.line_width.description: The width of the text display in pixels.
+
+animated_java.tool.text_display.background_color.title: Background Color
+animated_java.tool.text_display.background_color.description: The color of the background of the text display.
+
+animated_java.tool.text_display.text_shadow.title: Text Shadow
+animated_java.tool.text_display.text_shadow.description: Whether or not to display a shadow behind the text.
+
+# Vanilla Item Display Panel
+animated_java.panel.vanilla_item_display.title: Displayed Item
+animated_java.panel.vanilla_item_display.description: The item to display.
+
+# Vanilla Block Display Panel
+animated_java.panel.vanilla_block_display.title: Displayed Block
+animated_java.panel.vanilla_block_display.description: The block to display. Supports block states!
+
+### Custom Elements
+## Vanilla Item Display
+animated_java.vanilla_item_display.title: Vanilla Item Display
+
+## Vanilla Block Display
+
+### Misc
+
+# Blueprint Setting Errors - Failed to Export Message Box
+animated_java.misc.failed_to_export.title: Failed to Export
+animated_java.misc.failed_to_export.custom_models.message: You have disabled resource pack exporting, but have custom models in your project! Please enable resource pack exporting or remove the custom models before exporting.
+animated_java.misc.failed_to_export.blueprint_settings.message: There are errors in your blueprint settings! Please fix them before exporting.
+animated_java.misc.failed_to_export.blueprint_settings.error_item: 'Found an issue with {0}:'
+animated_java.misc.failed_to_export.button: Ok
+
+# Format Category
+animated_java.format_category.animated_java: Animated Java
+
+# Model Manager Warnings
+animated_java.block_model_manager.mob_head_warning: Mob Heads are don't render in Block Displays. Use an Item Display instead.

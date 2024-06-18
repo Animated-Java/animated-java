@@ -7,24 +7,23 @@ if (process.argv.includes('--mode=dev')) {
 process.env.FLAVOR ??= `local`
 
 import * as fs from 'fs'
-import fsExtra from 'fs-extra'
-import pathjs from 'path'
-import util from 'util'
-import jsyaml from 'js-yaml'
+import { readFile } from 'fs-extra'
+import { isAbsolute, join } from 'path'
+import { TextDecoder } from 'util'
+import { load } from 'js-yaml'
 import * as esbuild from 'esbuild'
 import sveltePlugin from './plugins/sveltePlugin'
 import svelteConfig from '../svelte.config.js'
-import * as workerPlugin from './plugins/workerPlugin'
 import inlineImage from 'esbuild-plugin-inline-image'
+import ImportGlobPlugin from 'esbuild-plugin-import-glob'
+import packagerPlugin from './plugins/packagerPlugin'
+import inlineWorkerPlugin from './plugins/workerPlugin'
+import assetOverridePlugin from './plugins/assetOverridePlugin'
 
 const PACKAGE = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
 
 const INFO_PLUGIN: esbuild.Plugin = {
 	name: 'infoPlugin',
-	/**
-	 *
-	 * @param {esbuild.PluginBuild} build
-	 */
 	setup(build) {
 		let start = Date.now()
 		build.onStart(() => {
@@ -120,52 +119,22 @@ Object.entries(process.env).forEach(([key, value]) => {
 	DEFINES[`process.env.${key}`] = JSON.stringify(value)
 })
 
-async function buildWorker(path: string) {
-	console.log('🤖\u{1F528} Building Worker...')
-	const start = Date.now()
-	const result = await esbuild.build({
-		entryPoints: [path],
-		bundle: true,
-		minify: process.env.NODE_ENV == 'production',
-		sourcemap: process.env.NODE_ENV == 'development' ? 'inline' : false,
-		write: false,
-		target: 'es2019',
-		platform: 'browser',
-		format: 'iife',
-		drop: process.env.NODE_ENV == 'production' ? ['debugger'] : [],
-		metafile: true,
-	})
-	const end = Date.now()
-	const diff = end - start
-	console.log(
-		`🤖\u{2705} Build completed in ${diff}ms with ${result.warnings.length} warning${
-			result.warnings.length == 1 ? '' : 's'
-		} and ${result.errors.length} error${result.errors.length == 1 ? '' : 's'}.`
-	)
-	return result
-}
-
 const yamlPlugin: (opts: {
 	loadOptions?: jsyaml.LoadOptions
 	transform?: any
 }) => esbuild.Plugin = options => ({
 	name: 'yaml',
 	setup(build) {
-		build.onResolve({ filter: /\.(yml|yaml)$/ }, args => {
+		build.onResolve({ filter: /\.(yml|yaml|molang)$/ }, args => {
 			if (args.resolveDir === '') return
 			return {
-				path: pathjs.isAbsolute(args.path)
-					? args.path
-					: pathjs.join(args.resolveDir, args.path),
+				path: isAbsolute(args.path) ? args.path : join(args.resolveDir, args.path),
 				namespace: 'yaml',
 			}
 		})
 		build.onLoad({ filter: /.*/, namespace: 'yaml' }, async args => {
-			const yamlContent = await fsExtra.readFile(args.path)
-			let parsed = jsyaml.load(
-				new util.TextDecoder().decode(yamlContent),
-				options?.loadOptions
-			)
+			const yamlContent = await readFile(args.path)
+			let parsed = load(new TextDecoder().decode(yamlContent), options?.loadOptions)
 			if (options?.transform && options.transform(parsed, args.path) !== void 0)
 				parsed = options.transform(parsed, args.path)
 			return {
@@ -177,63 +146,90 @@ const yamlPlugin: (opts: {
 	},
 })
 
+const devWorkerConfig: esbuild.BuildOptions = {
+	bundle: true,
+	minify: false,
+	platform: 'node',
+	sourcemap: 'inline',
+	sourceRoot: 'http://animated-java/',
+	loader: { '.svg': 'dataurl', '.ttf': 'binary', '.mcb': 'text' },
+	plugins: [
+		// inlineImage({
+		// 	limit: -1,
+		// }),
+		// @ts-ignore
+		// ImportGlobPlugin.default(),
+		// INFO_PLUGIN,
+		// yamlPlugin({}),
+		// sveltePlugin(svelteConfig),
+		// packagerPlugin(),
+	],
+	// format: 'iife',
+	// define: DEFINES,
+}
+const devConfig: esbuild.BuildOptions = {
+	banner: createBanner(),
+	entryPoints: ['./src/index.ts'],
+	outfile: `./dist/${PACKAGE.name as string}.js`,
+	bundle: true,
+	minify: false,
+	platform: 'node',
+	sourcemap: 'inline',
+	sourceRoot: 'http://animated-java/',
+	loader: { '.svg': 'dataurl', '.ttf': 'binary', '.mcb': 'text' },
+	plugins: [
+		inlineImage({
+			limit: -1,
+		}),
+		// @ts-ignore
+		ImportGlobPlugin.default(),
+		INFO_PLUGIN,
+		yamlPlugin({}),
+		sveltePlugin(svelteConfig),
+		packagerPlugin(),
+		inlineWorkerPlugin(devWorkerConfig),
+		assetOverridePlugin(),
+	],
+	format: 'iife',
+	define: DEFINES,
+}
+
+const prodConfig: esbuild.BuildOptions = {
+	entryPoints: ['./src/index.ts'],
+	outfile: `./dist/${PACKAGE.name as string}.js`,
+	bundle: true,
+	minify: true,
+	platform: 'node',
+	loader: { '.svg': 'dataurl', '.ttf': 'binary', '.mcb': 'text' },
+	plugins: [
+		inlineImage({
+			limit: -1,
+		}),
+		// @ts-ignore
+		ImportGlobPlugin.default(),
+		INFO_PLUGIN,
+		inlineWorkerPlugin({}),
+		yamlPlugin({}),
+		sveltePlugin(svelteConfig),
+		packagerPlugin(),
+		inlineWorkerPlugin({}),
+		assetOverridePlugin(),
+	],
+	keepNames: true,
+	banner: createBanner(),
+	drop: ['debugger'],
+	format: 'iife',
+	define: DEFINES,
+}
+
 async function buildDev() {
-	const ctx = await esbuild.context({
-		banner: createBanner(),
-		entryPoints: ['./src/index.ts'],
-		outfile: `./dist/${PACKAGE.name as string}.js`,
-		bundle: true,
-		minify: false,
-		platform: 'node',
-		sourcemap: 'inline',
-		loader: { '.svg': 'dataurl', '.ttf': 'binary' },
-		plugins: [
-			workerPlugin.workerPlugin({
-				builder: buildWorker,
-				typeDefPath: './src/globalWorker.d.ts',
-			}),
-			inlineImage({
-				limit: -1,
-			}),
-			INFO_PLUGIN,
-			yamlPlugin({}),
-			sveltePlugin(svelteConfig),
-		],
-		format: 'iife',
-		define: DEFINES,
-	})
+	const ctx = await esbuild.context(devConfig)
 	await ctx.watch()
 }
 
 function buildProd() {
 	// esbuild.transformSync('function devlog(message) {}')
-	esbuild
-		.build({
-			entryPoints: ['./src/index.ts'],
-			outfile: `./dist/${PACKAGE.name as string}.js`,
-			bundle: true,
-			minify: true,
-			// sourcemap: 'inline',
-			platform: 'node',
-			loader: { '.svg': 'dataurl', '.ttf': 'binary' },
-			plugins: [
-				workerPlugin.workerPlugin({
-					builder: buildWorker,
-				}),
-				inlineImage({
-					limit: -1,
-				}),
-				INFO_PLUGIN,
-				yamlPlugin({}),
-				sveltePlugin(svelteConfig),
-			],
-			keepNames: true,
-			banner: createBanner(),
-			drop: ['debugger'],
-			format: 'iife',
-			define: DEFINES,
-		})
-		.catch(() => process.exit(1))
+	esbuild.build(prodConfig).catch(() => process.exit(1))
 }
 
 async function main() {
