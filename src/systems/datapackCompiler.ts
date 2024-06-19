@@ -205,6 +205,7 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 	const aj = Project!.animated_java
 	const passengers: NbtList = new NbtList()
 
+	const { locators, cameras } = createPositionStorage(rig)
 	passengers.add(
 		new NbtCompound()
 			.set('id', new NbtString('minecraft:marker'))
@@ -220,7 +221,8 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 				'data',
 				new NbtCompound()
 					.set('rigHash', new NbtString(rigHash))
-					.set('positions', createPositionStorage(rig))
+					.set('locators', locators)
+					.set('cameras', cameras)
 			)
 	)
 
@@ -444,11 +446,8 @@ function getRotationFromQuaternion(q: THREE.Quaternion) {
 }
 
 function createPositionStorage(rig: IRenderedRig) {
-	const storage = new NbtCompound()
 	const locators = new NbtCompound()
 	const cameras = new NbtCompound()
-	storage.set('locators', locators)
-	storage.set('cameras', cameras)
 	for (const node of Object.values(rig.defaultPose)) {
 		if (node.type !== 'locator' && node.type !== 'camera') continue
 		const rot = getRotationFromQuaternion(node.rot)
@@ -463,7 +462,7 @@ function createPositionStorage(rig: IRenderedRig) {
 				.set('roty', new NbtFloat(Math.radToDeg(rot.y)))
 		)
 	}
-	return storage
+	return { locators, cameras }
 }
 
 function nodeSorter(a: AnyRenderedNode, b: AnyRenderedNode): number {
