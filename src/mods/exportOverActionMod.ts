@@ -13,13 +13,9 @@ createBlockbenchMod(
 			if (!Project || !Format) return
 			if (Format.id === BLUEPRINT_FORMAT.id) {
 				if (Project.save_path || Project.export_path) {
-					BLUEPRINT_CODEC.write(
-						BLUEPRINT_CODEC.compile(),
-						Project.save_path || Project.export_path
-					)
-				} else {
-					BLUEPRINT_CODEC.export()
+					Project.save_path = Project.save_path || Project.export_path
 				}
+				BLUEPRINT_CODEC.export()
 			} else {
 				context.originalClick.call(context.action, event)
 			}

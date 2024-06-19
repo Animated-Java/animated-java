@@ -94,7 +94,6 @@ export class ResizableOutlinerElement extends OutlinerElement {
 		// bidirectional: boolean
 	) {
 		let before = this.oldScale !== undefined ? this.oldScale : this.size(axis)
-		console.log(before, this.oldScale)
 		if (before instanceof Array) before = before[axis]
 		// For some unknown reason scale is not inverted on the y axis
 		const sign = before < 0 && axis !== 1 ? -1 : 1

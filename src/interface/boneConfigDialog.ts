@@ -20,7 +20,6 @@ function propagateInheritanceUp(group: Group, config: BoneConfig, variant?: stri
 			if (parentConfig.inherit_settings) {
 				propagateInheritanceUp(group.parent, parentBoneConfig, variant)
 			}
-			console.log('Inheriting from', group.parent.name, parentConfig)
 			config.inheritFrom(parentBoneConfig)
 			if (variant) group.configs.variants[variant] = config.toJSON()
 			else group.configs.default = config.toJSON()
@@ -34,7 +33,6 @@ function propagateInheritanceDown(group: Group, config: BoneConfig, variant?: st
 		const childConfig = variant ? child.configs.variants[variant] : child.configs.default
 		if (childConfig && childConfig.inherit_settings) {
 			const childBoneConfig = BoneConfig.fromJSON(childConfig)
-			console.log('Inheriting to', child.name, childBoneConfig)
 			childBoneConfig.inheritFrom(config)
 			if (variant) child.configs.variants[variant] = childBoneConfig.toJSON()
 			else child.configs.default = childBoneConfig.toJSON()

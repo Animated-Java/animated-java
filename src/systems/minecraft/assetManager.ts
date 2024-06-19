@@ -18,8 +18,6 @@ const unzip = (data: Uint8Array, options: AsyncUnzipOptions) => {
 }
 
 import index from '../../assets/vanillaAssetOverrides/index.json'
-console.log(index)
-// FIXME - The Skull entity models don't render on block displays in-game, I should only override the item models.
 const ASSET_OVERRIDES = index as unknown as Record<string, string>
 
 export async function getLatestVersionClientDownloadUrl() {

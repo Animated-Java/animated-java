@@ -499,14 +499,12 @@ createBlockbenchMod(
 		context.subscriptions.push(
 			events.SELECT_PROJECT.subscribe(project => {
 				if (project.format.id !== BLUEPRINT_FORMAT.id) return
-				console.log('SELECT_PROJECT')
 				project.textDisplays ??= []
 				TextDisplay.all.empty()
 				TextDisplay.all.push(...project.textDisplays)
 			}),
 			events.UNSELECT_PROJECT.subscribe(project => {
 				if (project.format.id !== BLUEPRINT_FORMAT.id) return
-				console.log('UNSELECT_PROJECT')
 				project.textDisplays = [...TextDisplay.all]
 				TextDisplay.all.empty()
 			})

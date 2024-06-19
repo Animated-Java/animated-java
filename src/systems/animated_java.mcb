@@ -162,7 +162,7 @@ dir <%export_namespace%> {
 					function *<%export_namespace%>/animations/<%animation.name%>/zzz/on_tick
 			}
 			REPEAT (Object.values(rig.nodeMap).filter(v => v.type === 'locator')) as node {
-				IF (node.config.use_entity) {
+				IF (node.config?.use_entity) {
 					execute on passengers if entity @s[tag=<%TAGS.PROJECT_DATA(export_namespace)%>] run { with entity @s data.positions.locators.<%node.name%>
 						$execute as $(uuid) positioned ^$(posx) ^$(posy) ^$(posz) rotated ~$(roty) ~$(rotx) run {
 							tp @s ~ ~ ~ ~ ~
@@ -582,11 +582,11 @@ dir <%export_namespace%> {
 						execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%node.name%>] run {
 							data modify entity @s item.components.minecraft:custom_model_data set value <%node.customModelData%>
 							<%%
-								global.config = BoneConfig.fromJSON(node.configs.default)
+								if (node.configs.default) {
+									global.config = BoneConfig.fromJSON(node.configs.default)
+									emit.mcb(`data merge entity @s <%global.config.toNBT(undefined, true)%>`)
+								}
 							%%>
-							IF (!global.config.isDefault()) {
-								data merge entity @s <%global.config.toNBT(undefined, true)%>
-							}
 						}
 					}
 				}

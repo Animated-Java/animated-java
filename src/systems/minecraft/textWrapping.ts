@@ -229,7 +229,6 @@ export async function computeTextWrapping(words: IComponentWord[], maxLineWidth 
 				}
 
 				const charWidth = font.getTextWidth(new UnicodeString(char), style)
-				// console.log(`Char: ${char}, Width: ${charWidth}, Part Width: ${partWidth}`)
 				if (part.length > 0 && partWidth + (charWidth - 1) > maxLineWidth) {
 					// Find all styles that apply to this part
 					// FIXME: Attempt to avoid filtering and maping the styles for each character

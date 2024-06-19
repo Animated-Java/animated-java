@@ -9,6 +9,7 @@ import { addProjectToRecentProjects } from './util/misc'
 import { Valuable } from './util/stores'
 import { TRANSPARENT_TEXTURE, TRANSPARENT_TEXTURE_MATERIAL, Variant } from './variants'
 import FormatPageSvelte from './components/formatPage.svelte'
+import { translate } from './util/translation'
 
 /**
  * The serialized Variant Bone Config
@@ -283,8 +284,6 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 							newElement.faces[face].texture = defaultTexture.uuid
 						}
 					}
-				} else if (newElement instanceof AnimatedJava.API.TextDisplay) {
-					console.log('TextDisplay', newElement)
 				}
 			}
 		}
@@ -471,8 +470,18 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 			content: BLUEPRINT_CODEC.compile(),
 			// eslint-disable-next-line @typescript-eslint/naming-convention
 			custom_writer: (content, path) => {
-				Project!.save_path = path
-				BLUEPRINT_CODEC.write(content, path)
+				if (fs.existsSync(PathModule.dirname(path))) {
+					Project!.save_path = path
+					BLUEPRINT_CODEC.write(content, path)
+				} else {
+					console.error(
+						`Failed to export Animated Java Blueprint, file location '${path}' does not exist!`
+					)
+					Blockbench.showMessageBox({
+						title: translate('error.blueprint_export_path_doesnt_exist.title'),
+						message: translate('error.blueprint_export_path_doesnt_exist', path),
+					})
+				}
 			},
 		})
 	},
@@ -500,7 +509,6 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 		component: {
 			methods: {},
 			created() {
-				// if (formatPage)
 				void injectSvelteCompomponent({
 					elementSelector: () => $('#format_page_animated_java_blueprint_mount')[0],
 					svelteComponent: FormatPageSvelte,
@@ -643,7 +651,6 @@ events.SELECT_AJ_PROJECT.subscribe(() => {
 	})
 })
 events.UNSELECT_AJ_PROJECT.subscribe(project => {
-	console.log('Unselecting Animated Java Project', project)
 	if (project.visualBoundingBox) scene.remove(project.visualBoundingBox)
 	disableRotationLock()
 })

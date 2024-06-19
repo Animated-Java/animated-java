@@ -86,7 +86,6 @@ class FontProvider {
 	static fromAssetPath(assetPath: string) {
 		if (!assetPath.endsWith('.json')) assetPath += '.json'
 		const providerJSON = assets.getJSONAsset(assetPath) as IFontProvider
-		// console.log('Font provider JSON:', providerJSON)
 		switch (providerJSON.type) {
 			case 'bitmap':
 				return new BitmapFontProvider(providerJSON)
@@ -129,7 +128,6 @@ class SpaceFontProvider extends FontProvider {
 	constructor(providerJSON: IFontProviderSpace) {
 		super(providerJSON)
 		this.advances = providerJSON.advances
-		// console.log('SpaceFontProvider:', this.advances)
 	}
 
 	getChar(char: string): ICachedChar | undefined {
@@ -179,7 +177,6 @@ class BitmapFontProvider extends FontProvider {
 		this.canvas.height = texture.image.height
 		const ctx = this.canvas.getContext('2d')!
 		ctx.drawImage(this.atlas.image as HTMLImageElement, 0, 0)
-		// console.log('BitmapFontProvider loaded:', this)
 		this.loaded = true
 		return this
 	}

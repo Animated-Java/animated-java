@@ -42,7 +42,7 @@ createModelLoader(`${PACKAGE.name}-upgradeAJModelLoader`, {
 
 export function convertAJModelToBlueprint(path: string) {
 	try {
-		console.log(`Convert Old .ajmodel: ${path}`)
+		console.log(`Convert .ajmodel: ${path}`)
 		const blueprint = ModelDatFixerUpper.process(JSON.parse(fs.readFileSync(path, 'utf8')))
 
 		BLUEPRINT_CODEC.load(blueprint, {

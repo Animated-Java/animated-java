@@ -9,7 +9,6 @@ export const MAX_PROGRESS = new Valuable(1)
 export const PROGRESS_DESCRIPTION = new Valuable('')
 
 export function openExportProgressDialog(debug?: boolean) {
-	const originalLog = console.log
 	PROGRESS.set(0)
 	MAX_PROGRESS.set(1)
 	PROGRESS_DESCRIPTION.set('Preparing...')
@@ -37,9 +36,6 @@ export function openExportProgressDialog(debug?: boolean) {
 		},
 		preventKeybinds: true,
 		buttons: [],
-		onClose: () => {
-			console.log = originalLog
-		},
 	}).show()
 	return dialog
 }

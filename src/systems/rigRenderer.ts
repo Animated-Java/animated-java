@@ -92,7 +92,7 @@ export interface IRenderedNodes {
 		boundingBox: THREE.Box3
 		scale: number
 		configs: {
-			default: IBlueprintBoneConfigJSON
+			default?: IBlueprintBoneConfigJSON
 			variants: Record<string, IBlueprintBoneConfigJSON>
 		}
 	}
@@ -113,21 +113,21 @@ export interface IRenderedNodes {
 		text?: JsonText
 		lineWidth: number
 		scale: number
-		config: IBlueprintTextDisplayConfigJSON
+		config?: IBlueprintTextDisplayConfigJSON
 	}
 	ItemDisplay: IRenderedNode & {
 		type: 'item_display'
 		node: VanillaItemDisplay
 		item: string
 		scale: number
-		config: IBlueprintBoneConfigJSON
+		config?: IBlueprintBoneConfigJSON
 	}
 	BlockDisplay: IRenderedNode & {
 		type: 'block_display'
 		node: VanillaBlockDisplay
 		block: string
 		scale: number
-		config: IBlueprintBoneConfigJSON
+		config?: IBlueprintBoneConfigJSON
 	}
 }
 
@@ -605,10 +605,12 @@ export function hashRig(rig: IRenderedRig) {
 		hash.update(node.name)
 		switch (node.type) {
 			case 'bone': {
-				const defaultConfig = BoneConfig.fromJSON(node.configs.default)
-				if (!defaultConfig.isDefault()) {
-					hash.update('defaultconfig;')
-					hash.update(defaultConfig.toNBT().toString())
+				if (node.configs.default) {
+					const defaultConfig = BoneConfig.fromJSON(node.configs.default)
+					if (!defaultConfig.isDefault()) {
+						hash.update('defaultconfig;')
+						hash.update(defaultConfig.toNBT().toString())
+					}
 				}
 				for (const [variantName, config] of Object.entries(node.configs.variants)) {
 					const variantConfig = BoneConfig.fromJSON(config)

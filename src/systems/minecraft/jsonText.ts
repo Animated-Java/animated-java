@@ -194,7 +194,6 @@ class JsonTextParser {
 		}
 		this.consumeWhitespace()
 		if (single && this.s.item) {
-			console.log('result', result)
 			throw new ParserError(
 				`Unexpected '${this.s.item as string}' in JsonTextComponent`,
 				this.s

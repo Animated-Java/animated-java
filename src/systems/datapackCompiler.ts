@@ -268,7 +268,9 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 						)
 				)
 
-				BoneConfig.fromJSON(node.configs.default).toNBT(passenger)
+				if (node.configs.default) {
+					BoneConfig.fromJSON(node.configs.default).toNBT(passenger)
+				}
 
 				passenger.set('height', new NbtFloat(aj.bounding_box[1]))
 				passenger.set('width', new NbtFloat(aj.bounding_box[0]))
@@ -299,7 +301,9 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 				)
 				passenger.set('line_width', new NbtInt(node.lineWidth))
 
-				TextDisplayConfig.fromJSON(node.config).toNBT(passenger)
+				if (node.config) {
+					TextDisplayConfig.fromJSON(node.config).toNBT(passenger)
+				}
 				break
 			}
 			case 'item_display': {
@@ -314,7 +318,9 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 						.set('count', new NbtInt(1))
 				)
 
-				BoneConfig.fromJSON(node.config).toNBT(passenger)
+				if (node.config) {
+					BoneConfig.fromJSON(node.config).toNBT(passenger)
+				}
 				break
 			}
 			case 'block_display': {
@@ -340,7 +346,9 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 						.set('Properties', states)
 				)
 
-				BoneConfig.fromJSON(node.config).toNBT(passenger)
+				if (node.config) {
+					BoneConfig.fromJSON(node.config).toNBT(passenger)
+				}
 				break
 			}
 		}
@@ -512,7 +520,7 @@ export async function compileDataPack(options: {
 				) &&
 				fs.existsSync(file)
 			) {
-				console.log('Moving old function tag:', file)
+				// console.log('Moving old function tag:', file)
 				const newPath = replacePathPart(
 					file,
 					Project!.last_used_export_namespace,
@@ -628,8 +636,6 @@ async function writeFiles(map: Map<string, string>) {
 		}
 		await fs.promises.writeFile(path, content)
 		PROGRESS.set(PROGRESS.get() + 1)
-		// console.log(PROGRESS.get())
-		// await new Promise<void>(resolve => setTimeout(resolve, 100))
 	}
 
 	const maxWriteThreads = 8
