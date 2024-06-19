@@ -396,7 +396,9 @@ dir <%export_namespace%> {
 														~<%roundTo(node.rot.x, 10)%> \
 														~<%roundTo(node.rot.y, 10)%> \
 												run {
-													<%%emit.mcb(node.commands)%%>
+													<%%
+														emit.mcb(node.commands)
+													%%>
 												}
 											}
 										} ELSE IF (node.type === 'camera') {
@@ -532,7 +534,9 @@ dir <%export_namespace%> {
 			data modify entity @s teleport_duration set value <%teleportation_duration%>
 			execute on passengers run data modify entity @s teleport_duration set value <%teleportation_duration%>
 			# Custom Summon Commands
-			<%%if (custom_summon_commands) emit.mcb(custom_summon_commands)%%>
+			<%%
+				if (custom_summon_commands) emit.mcb(custom_summon_commands)
+			%%>
 			# Custom Summon Commands
 
 			# Run the on_summon function for the root entity.
@@ -547,6 +551,23 @@ dir <%export_namespace%> {
 			}
 		}
 	}
+
+	function as_own_locator_entities {
+		#ARGS: {command: string}
+		execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+			function *global/errors/function_not_executed_as_root_entity \
+				{'function_path': 'animated_java:<%export_namespace%>/as_all_locators'}
+		$data modify storage aj:temp command set value '$(command)'
+		execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run {
+			REPEAT (Object.values(rig.nodeMap).filter(v => v.type === 'locator')) as locator {
+				data modify storage aj:temp uuid set from entity @s data.positions.locators.<%locator.name%>.uuid
+				block zzz/execute { with storage aj:temp
+					$execute as $(uuid) run $(command)
+				}
+			}
+		}
+	}
+
 
 	dir remove {
 		# Removes all instances of this rig from the world.
@@ -565,7 +586,11 @@ dir <%export_namespace%> {
 			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run {
 				REPEAT (Object.values(rig.nodeMap).filter(v => v.type === 'locator' && v.config?.use_entity)) as locator {
 					block zzz/kill { with entity @s data.positions.locators.<%locator.name%>
-						$kill $(uuid)
+						# Recursively remove any stacked locator entities
+						$execute as $(uuid) run block kill_passengers {
+							execute on passengers run function ^0
+							kill @s
+						}
 					}
 				}
 			}

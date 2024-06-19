@@ -277,6 +277,12 @@ function updateModelTo1_0pre1(model: any) {
 			if (element.entity_type) element.config.entity_type = element.entity_type
 			if (element.nbt) {
 				const summon_commands: string[] = []
+				const nbt = NbtTag.fromString(element.nbt as string) as NbtCompound
+				nbt.delete('Passengers')
+				const tags = (nbt.get('Tags') as NbtList<NbtString>)?.map(t => t.getAsString())
+				nbt.delete('Tags')
+				summon_commands.push('data merge entity @s ' + nbt.toString())
+				if (tags) summon_commands.push(...tags.map(t => `tag @s add ${t}`))
 
 				const recursePassengers = (stringNbt: string): string[] => {
 					const nbt = NbtTag.fromString(stringNbt) as NbtCompound
@@ -287,15 +293,25 @@ function updateModelTo1_0pre1(model: any) {
 						const commands = passengers.map(p => {
 							const id = (p.get('id') as NbtString).getAsString()
 							p.delete('id')
+							const tags = (p.get('Tags') as NbtList<NbtString>).map(t =>
+								t.getAsString()
+							)
+							p.delete('Tags')
 							const data = p.toString()
 							return `execute summon ${id} run {\n\t${[
 								`data merge entity @s ${data}`,
+								...tags.map(t => `tag @s add ${t}`),
 								`tag @s add to_mount`,
 								...recursePassengers(data),
 							].join('\n\t')}\n}`
 						})
 						commands.push(
-							`ride @e[tag=to_mount,distance=..0.01] mount @s`,
+							`tag @s add vehicle`,
+							`execute as @e[tag=to_mount,distance=..0.01] run {`,
+							`\tride @s mount @e[tag=vehicle,limit=1]`,
+							`\ttag @s remove to_mount`,
+							`}`,
+							`tag @s remove vehicle`,
 							`execute on passengers run tag @s remove to_mount`
 						)
 						return commands
@@ -312,6 +328,7 @@ function updateModelTo1_0pre1(model: any) {
 				if (summon_commands.length === 0) {
 					summon_commands.push(`data merge entity @s ${element.nbt as string}`)
 				}
+
 				element.config.summon_commands = summon_commands.join('\n')
 			}
 		}
@@ -395,9 +412,15 @@ function updateModelTo1_0pre1(model: any) {
 		datapackExporterSettings?.root_entity_nbt &&
 		datapackExporterSettings.root_entity_nbt !== '{}'
 	) {
-		blueprint.project_settings!.summon_commands = `data merge entity @s ${
+		const commands: string[] = []
+		const nbt = NbtTag.fromString(
 			datapackExporterSettings.root_entity_nbt as string
-		}`
+		) as NbtCompound
+		const tags = (nbt.get('Tags') as NbtList<NbtString>)?.map(t => t.getAsString())
+		nbt.delete('Tags')
+		if ([...nbt.keys()].length !== 0) commands.push('data merge entity @s ' + nbt.toString())
+		if (tags) commands.push(...tags.map(t => `tag @s add ${t}`))
+		blueprint.project_settings!.summon_commands = commands.join('\n')
 	}
 
 	console.log('Finished Blueprint:', blueprint)
