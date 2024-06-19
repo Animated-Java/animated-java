@@ -207,22 +207,6 @@ dir <%export_namespace%> {
 		}
 	}
 
-	dir as_camera {
-		# All child functions of this folder run as a camera entity
-		# Runs before the camera is ticked.
-		tag functions pre_tick {
-		}
-		# Runs after the camera is ticked.
-		tag functions post_tick {
-		}
-		# Runs when the camera is summoned.
-		tag functions on_summon {
-		}
-		# Runs when the camera is removed.
-		tag functions on_remove {
-		}
-	}
-
 	dir animations {
 		REPEAT (animations) as animation {
 			dir <%animation.name%> {
@@ -565,6 +549,14 @@ dir <%export_namespace%> {
 
 			# On Remove Event
 			function #animated_java:<%export_namespace%>/as_root/on_remove
+
+			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run {
+				REPEAT (Object.values(rig.nodeMap).filter(v => v.type === 'locator' && v.config?.use_entity)) as locator {
+					execute run block zzz/kill { with entity @s data.positions.locators.<%locator.name%>
+						$kill $(uuid)
+					}
+				}
+			}
 
 			execute on passengers run kill @s
 			kill @s
