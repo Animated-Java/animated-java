@@ -51,6 +51,8 @@ export function convertAJModelToBlueprint(path: string) {
 		})
 
 		requestAnimationFrame(() => {
+			Project!.save_path = ''
+			Project!.export_path = ''
 			Project!.openSettings()
 		})
 	} catch (e) {
