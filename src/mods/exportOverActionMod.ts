@@ -1,6 +1,7 @@
 import { BLUEPRINT_CODEC, BLUEPRINT_FORMAT } from '../blueprintFormat'
 import { PACKAGE } from '../constants'
 import { createBlockbenchMod } from '../util/moddingTools'
+import { translate } from '../util/translation'
 
 createBlockbenchMod(
 	`${PACKAGE.name}:exportOverAction`,
@@ -12,10 +13,23 @@ createBlockbenchMod(
 		context.action.click = (event: Event) => {
 			if (!Project || !Format) return
 			if (Format.id === BLUEPRINT_FORMAT.id) {
-				if (Project.save_path || Project.export_path) {
-					Project.save_path = Project.save_path || Project.export_path
+				const path = Project.save_path || Project.export_path
+				if (path) {
+					if (fs.existsSync(PathModule.dirname(path))) {
+						Project.save_path = path
+						BLUEPRINT_CODEC.write(BLUEPRINT_CODEC.compile(), path)
+					} else {
+						console.error(
+							`Failed to export Animated Java Blueprint, file location '${path}' does not exist!`
+						)
+						Blockbench.showMessageBox({
+							title: translate('error.blueprint_export_path_doesnt_exist.title'),
+							message: translate('error.blueprint_export_path_doesnt_exist', path),
+						})
+					}
+				} else {
+					BLUEPRINT_CODEC.export()
 				}
-				BLUEPRINT_CODEC.export()
 			} else {
 				context.originalClick.call(context.action, event)
 			}

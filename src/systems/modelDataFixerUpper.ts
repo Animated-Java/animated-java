@@ -2,6 +2,7 @@ import { IBlueprintFormatJSON, getDefaultProjectSettings } from '../blueprintFor
 import { BoneConfig } from '../nodeConfigs'
 import { PACKAGE } from '../constants'
 import { openUnexpectedErrorDialog } from '../interface/unexpectedErrorDialog'
+import { NbtCompound, NbtList, NbtString, NbtTag } from 'deepslate'
 
 export function process(model: any): any {
 	if (model.meta.model_format === 'animatedJava/ajmodel') {
@@ -267,6 +268,54 @@ function updateModelTo1_0pre1(model: any) {
 
 	model.outliner.forEach(recurseOutliner)
 	blueprint.outliner = model.outliner
+
+	for (const element of blueprint.elements) {
+		if (element.type === 'locator') {
+			element.config = {
+				use_entity: true,
+			}
+			if (element.entity_type) element.config.entity_type = element.entity_type
+			if (element.nbt) {
+				const summon_commands: string[] = []
+
+				const recursePassengers = (stringNbt: string): string[] => {
+					const nbt = NbtTag.fromString(stringNbt) as NbtCompound
+					if (!(nbt instanceof NbtCompound)) throw new Error('NBT is not a compound')
+					const passengers = nbt.get('Passengers') as NbtList<NbtCompound>
+					if (passengers) {
+						console.log('Found passengers')
+						const commands = passengers.map(p => {
+							const id = (p.get('id') as NbtString).getAsString()
+							p.delete('id')
+							const data = p.toString()
+							return `execute summon ${id} run {\n\t${[
+								`data merge entity @s ${data}`,
+								`tag @s add to_mount`,
+								...recursePassengers(data),
+							].join('\n\t')}\n}`
+						})
+						commands.push(
+							`ride @e[tag=to_mount,distance=..0.01] mount @s`,
+							`execute on passengers run tag @s remove to_mount`
+						)
+						return commands
+					}
+					return []
+				}
+
+				try {
+					summon_commands.push(...recursePassengers(element.nbt as string))
+				} catch (e) {
+					console.error('Failed to parse NBT', element.nbt)
+					console.error(e)
+				}
+				if (summon_commands.length === 0) {
+					summon_commands.push(`data merge entity @s ${element.nbt as string}`)
+				}
+				element.config.summon_commands = summon_commands.join('\n')
+			}
+		}
+	}
 
 	for (const variant of variants) {
 		const includedBones = variant.affectedBones.map((v: any) => v.value as string)

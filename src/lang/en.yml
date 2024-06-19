@@ -114,7 +114,9 @@ animated_java.dialog.blueprint_settings.data_pack.error.missing_pack_mcmeta: The
 animated_java.dialog.blueprint_settings.data_pack.error.missing_data_folder: The selected Data Pack is missing a data folder!
 
 animated_java.dialog.blueprint_settings.summon_commands.title: On-Summon Commands
-animated_java.dialog.blueprint_settings.summon_commands.description: Commands to run as the root entity when summoned. Treat this text input as a normal mcfunction.
+animated_java.dialog.blueprint_settings.summon_commands.description: |-
+    Commands to run as the root entity when summoned.
+    Treat this text input as a .mcfunction file. (Also supports MC-Build syntax!)
 
 animated_java.dialog.blueprint_settings.interpolation_duration.title: Interp Duration
 animated_java.dialog.blueprint_settings.interpolation_duration.description: The duration of the smoothing between keyframes in ticks. This is the time it takes for the model to transition from one keyframe to the next. Higher values will cause animations to lose precision. Generally, you want this to have a value of 1 or 2.
@@ -189,12 +191,14 @@ animated_java.dialog.locator_config.entity_type.error.empty: Entity Type cannot 
 animated_java.dialog.locator_config.entity_type.warning.invalid: The selected entity type doesn't exist in Minecraft {0}
 
 animated_java.dialog.locator_config.summon_commands.title: On-Summon Commands
-animated_java.dialog.locator_config.summon_commands.description: Commands to run as the Locator's entity when summoned. Treat this text input as a normal mcfunction.
+animated_java.dialog.locator_config.summon_commands.description: |-
+    Commands to run as the Locator's entity when summoned.
+    Treat this text input as a .mcfunction file. (Also supports MC-Build syntax!)
 
 animated_java.dialog.locator_config.ticking_commands.title: Ticking Commands
 animated_java.dialog.locator_config.ticking_commands.description: |-
-    Commands to run every tick at the Locator's position. Treat this text input as a normal mcfunction.
-    NOTE: These commands will only run while an animation is playing.
+    Commands to run every tick at the Locator's position.
+    Treat this text input as a .mcfunction file. (Also supports MC-Build syntax!)
 
 ## Text Display Config Dialog
 animated_java.dialog.text_display_config.title: Text Display Config
@@ -338,8 +342,9 @@ animated_java.panel.keyframe.variant.title: Variant
 animated_java.panel.keyframe.variant.description: The Variant to apply to the keyframe.
 
 animated_java.panel.keyframe.commands.title: Commands
-animated_java.panel.keyframe.commands.description: Commands to run when the keyframe is reached. Treat this text input as a normal mcfunction.
-
+animated_java.panel.keyframe.commands.description: |-
+    Commands to run when the keyframe is reached.
+    Treat this text input as a .mcfunction file. (Also supports MC-Build syntax!)
 animated_java.panel.keyframe.execute_condition.title: Execute Condition
 animated_java.panel.keyframe.execute_condition.description: A condition that must be met for the keyframe to execute. Treat this text input as the sub-commands of an execute command.
 

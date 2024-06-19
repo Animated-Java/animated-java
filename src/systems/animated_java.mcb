@@ -166,13 +166,21 @@ dir <%export_namespace%> {
 					execute on passengers if entity @s[tag=<%TAGS.PROJECT_DATA(export_namespace)%>] run { with entity @s data.positions.locators.<%node.name%>
 						$execute as $(uuid) positioned ^$(posx) ^$(posy) ^$(posz) rotated ~$(roty) ~$(rotx) run {
 							tp @s ~ ~ ~ ~ ~
-							<%node.config?.ticking_commands || ''%>
+							<%%
+								if (node.config?.ticking_commands) {
+									emit.mcb(node.config.ticking_commands)
+								}
+							%%>
 						}
 					}
 				} ELSE IF (node.config?.ticking_commands) {
 					execute on passengers if entity @s[tag=<%TAGS.PROJECT_DATA(export_namespace)%>] run { with entity @s data.positions.locators.<%node.name%>
 						$execute positioned ^$(posx) ^$(posy) ^$(posz) rotated ~$(roty) ~$(rotx) run {
-							<%node.config.ticking_commands%>
+							<%%
+								if (node.config?.ticking_commands) {
+									emit.mcb(node.config.ticking_commands)
+								}
+							%%>
 						}
 					}
 				}
@@ -388,7 +396,7 @@ dir <%export_namespace%> {
 														~<%roundTo(node.rot.x, 10)%> \
 														~<%roundTo(node.rot.y, 10)%> \
 												run {
-													<%node.commands%>
+													<%%emit.mcb(node.commands)%%>
 												}
 											}
 										} ELSE IF (node.type === 'camera') {
@@ -448,7 +456,11 @@ dir <%export_namespace%> {
 						execute as @e[type=item_display,tag=<%TAGS.NEW()%>,limit=1,distance=..0.01] on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run {
 							data modify entity @s data.positions.locators.<%locator.name%>.uuid set from storage aj:uuid main.out
 						}
-						<%locator.config.summon_commands%>
+						<%%
+							if (locator.config.summon_commands) {
+								emit.mcb(locator.config.summon_commands)
+							}
+						%%>
 					}
 				}
 			}
@@ -520,7 +532,7 @@ dir <%export_namespace%> {
 			data modify entity @s teleport_duration set value <%teleportation_duration%>
 			execute on passengers run data modify entity @s teleport_duration set value <%teleportation_duration%>
 			# Custom Summon Commands
-			<%custom_summon_commands%>
+			<%%if (custom_summon_commands) emit.mcb(custom_summon_commands)%%>
 			# Custom Summon Commands
 
 			# Run the on_summon function for the root entity.
@@ -552,7 +564,7 @@ dir <%export_namespace%> {
 
 			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run {
 				REPEAT (Object.values(rig.nodeMap).filter(v => v.type === 'locator' && v.config?.use_entity)) as locator {
-					execute run block zzz/kill { with entity @s data.positions.locators.<%locator.name%>
+					block zzz/kill { with entity @s data.positions.locators.<%locator.name%>
 						$kill $(uuid)
 					}
 				}
