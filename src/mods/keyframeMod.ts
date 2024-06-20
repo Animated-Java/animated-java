@@ -4,7 +4,6 @@ import { events } from '../util/events'
 import { ContextProperty, createBlockbenchMod } from '../util/moddingTools'
 import {
 	EASING_DEFAULT,
-	EASING_OPTIONS,
 	EasingKey,
 	easingFunctions,
 	getEasingArgDefault,
@@ -138,7 +137,6 @@ createBlockbenchMod(
 	`${PACKAGE.name}:keyframeEasingMod`,
 	{
 		originalGetLerp: Blockbench.Keyframe.prototype.getLerp,
-		originalGetArray: Blockbench.Keyframe.prototype.getArray,
 		easingProperty: undefined as ContextProperty<'string'>,
 		easingArgsProperty: undefined as ContextProperty<'array'>,
 	},
@@ -181,23 +179,11 @@ createBlockbenchMod(
 			return result
 		}
 
-		Blockbench.Keyframe.prototype.getArray = function (this: _Keyframe, dataPoint) {
-			// const { easing, easingArgs } = this
-			let result = context.originalGetArray.call(this, dataPoint)
-			if (isCurrentFormat()) {
-				// result = { vector: result, easing }
-				// if (hasArgs(easing)) result.easingArgs = easingArgs
-			}
-
-			return result
-		}
-
 		return context
 	},
 	context => {
 		context.easingProperty?.delete()
 		context.easingArgsProperty?.delete()
 		Blockbench.Keyframe.prototype.getLerp = context.originalGetLerp
-		Blockbench.Keyframe.prototype.getArray = context.originalGetArray
 	}
 )
