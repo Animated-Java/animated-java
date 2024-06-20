@@ -158,6 +158,7 @@ createBlockbenchMod(
 		): number {
 			if (!isCurrentFormat())
 				return context.originalGetLerp.call(this, other, axis, amount, allowExpression)
+
 			const easing = other.easing || 'linear'
 			let easingFunc = easingFunctions[easing]
 			if (hasArgs(easing)) {

@@ -79,7 +79,8 @@
         -   [ ] trident
 -   [ ] Change the Collection setting type to allow single-click swapping of items between lists.
 -   [ ] Look into adding a color picker for tintable vanilla items.
--   [ ] Add Variants to the UndoSystem (Blocked by vanilla Blockbench not supporting custom undo actions)
+-   [ ] Add Variants to the UndoSystem (Blocked by vanilla Blockbench not supporting custom undo actions).
+-   [ ] Remove `easingArgs` and `easingMode` from saved keyframes if `easingType` is `linear`.
 
 # Data Pack Compiler
 

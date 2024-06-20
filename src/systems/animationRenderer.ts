@@ -244,7 +244,7 @@ export function updatePreview(animation: _Animation, time: number) {
 	Animator.resetLastValues()
 	scene.updateMatrixWorld()
 	if (animation.effects) animation.effects.displayFrame()
-	Blockbench.dispatchEvent('display_animation_frame')
+	// Blockbench.dispatchEvent('display_animation_frame')
 }
 
 export function renderAnimation(animation: _Animation, rig: IRenderedRig) {
