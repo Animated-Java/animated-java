@@ -298,7 +298,7 @@ dir <%export_namespace%> {
 						execute if score @s <%OBJECTIVES.TWEEN_DURATION()%> matches 0 on passengers run data modify entity @s interpolation_duration set value <%interpolation_duration%>
 						# Animation logic
 						execute store result storage aj:temp frame int 1 run scoreboard players get @s <%OBJECTIVES.FRAME()%>
-						IF (animation.loopMode === 'loop') {
+						IF (animation.loopMode === 'loop' && animation.loopDelay === 0) {
 							# Makes sure commands in the last frame of the animation is run.
 							execute if score @s <%OBJECTIVES.FRAME()%> matches -1 run {
 								function ./apply_frame {frame: <%animation.duration-1%>}
@@ -307,8 +307,8 @@ dir <%export_namespace%> {
 						}
 						function ./apply_frame with storage aj:temp
 						IF (animation.loopMode === 'loop') {
-							execute if score @s <%OBJECTIVES.FRAME()%> matches <%animation.duration-2%>.. run return run {
-								scoreboard players set @s <%OBJECTIVES.FRAME()%> -1
+							execute if score @s <%OBJECTIVES.FRAME()%> matches <%animation.duration-2 + animation.loopDelay%>.. run return run {
+								scoreboard players set @s <%OBJECTIVES.FRAME()%> <%animation.loopDelay === 0 ? -1 : 0%>
 							}
 						} ELSE IF (animation.loopMode === 'hold') {
 							execute if score @s <%OBJECTIVES.FRAME()%> matches <%animation.duration-1%>.. run return run function ../pause

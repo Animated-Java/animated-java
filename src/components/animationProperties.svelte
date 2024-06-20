@@ -13,6 +13,7 @@
 
 	export let animationName: Valuable<string>
 	export let loopMode: Valuable<string>
+	export let loopDelay: Valuable<number>
 	export let excludedBones: Valuable<Array<{ name: string; value: string }>>
 
 	const availableBones = Group.all.map(group => {
@@ -60,6 +61,13 @@
 		}}
 		defaultOption={'once'}
 		bind:value={loopMode}
+	/>
+
+	<NumberSlider
+		label={translate('dialog.animation_properties.loop_delay.title')}
+		tooltip={translate('dialog.animation_properties.loop_delay.description')}
+		min={0}
+		bind:value={loopDelay}
 	/>
 
 	<Collection

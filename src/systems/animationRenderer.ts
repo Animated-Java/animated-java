@@ -74,7 +74,6 @@ export interface IRenderedFrame {
 
 export interface IRenderedAnimation {
 	name: string
-	startDelay: number
 	loopDelay: number
 	frames: IRenderedFrame[]
 	/**
@@ -251,8 +250,7 @@ export function updatePreview(animation: _Animation, time: number) {
 export function renderAnimation(animation: _Animation, rig: IRenderedRig) {
 	const rendered = {
 		name: animation.name,
-		startDelay: Number(animation.start_delay),
-		loopDelay: Number(animation.loop_delay),
+		loopDelay: Number(animation.loop_delay) || 0,
 		frames: [],
 		duration: 0,
 		loopMode: animation.loop,

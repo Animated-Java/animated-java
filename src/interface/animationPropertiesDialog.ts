@@ -7,6 +7,7 @@ import { translate } from '../util/translation'
 export function openAnimationPropertiesDialog(animation: _Animation) {
 	const animationName = new Valuable(animation.name)
 	const loopMode = new Valuable(animation.loop)
+	const loopDelay = new Valuable(Number(animation.loop_delay) || 0)
 	const excludedBones = new Valuable(animation.excluded_bones)
 
 	new SvelteDialog({
@@ -17,6 +18,7 @@ export function openAnimationPropertiesDialog(animation: _Animation) {
 		svelteComponentProperties: {
 			animationName,
 			loopMode,
+			loopDelay,
 			excludedBones,
 		},
 		preventKeybinds: true,
@@ -24,17 +26,8 @@ export function openAnimationPropertiesDialog(animation: _Animation) {
 			animation.name = animationName.get()
 			animation.createUniqueName(Blockbench.Animation.all)
 			animation.loop = loopMode.get()
+			animation.loop_delay = loopDelay.get().toString()
 			animation.excluded_bones = excludedBones.get()
 		},
 	}).show()
 }
-
-// export const ANIMATION_PROPERTIES_ACTION = createAction(`${PACKAGE.name}:bone_config`, {
-// 	icon: 'settings',
-// 	name: translate('action.open_bone_config.name'),
-// 	condition: () => Format === BLUEPRINT_FORMAT,
-// 	click: () => {
-// 		if (!Blockbench.Animation.selected) return
-// 		openBoneConfigDialog(Blockbench.Animation.selected)
-// 	},
-// })
