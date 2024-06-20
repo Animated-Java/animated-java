@@ -25,6 +25,7 @@ export function process(model: any): any {
 
 		console.group('Upgrade process')
 		if (model.meta.format_version.length === 3) {
+			console.log('Processing old model format', JSON.parse(JSON.stringify(model)))
 			if (compareVersions('1.0', model.meta.format_version)) updateModelToOld1_0(model)
 			if (compareVersions('1.1', model.meta.format_version)) updateModelToOld1_1(model)
 			if (compareVersions('1.2', model.meta.format_version)) updateModelToOld1_2(model)
