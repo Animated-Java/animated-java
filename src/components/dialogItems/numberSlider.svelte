@@ -27,7 +27,7 @@
 							value.get() + (difference - last_difference),
 							min !== undefined ? min : -Infinity,
 							max !== undefined ? max : Infinity,
-						),
+						) || 0,
 					)
 					last_difference = difference
 				}
@@ -46,7 +46,7 @@
 					molangParser.parse(value.get()),
 					min !== undefined ? min : -Infinity,
 					max !== undefined ? max : Infinity,
-				),
+				) || 0,
 			)
 		})
 	})

@@ -16,6 +16,7 @@ import './interface/vanillaItemDisplayConfigDialog'
 import './interface/vanillaItemDisplayElementPanel'
 import './interface/vanillaBlockDisplayConfigDialog'
 import './interface/vanillaBlockDisplayElementPanel'
+import './interface/keyframeEasings'
 // Blockbench Mods
 import './interface/locatorConfigDialog'
 import './mods/animationControllerMod'

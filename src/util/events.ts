@@ -38,6 +38,7 @@ export const events = {
 	SELECT_VARIANT: new PluginEvent<Variant>('selectVariant'),
 
 	SELECT_KEYFRAME: new PluginEvent<_Keyframe>('selectKeyframe'),
+	UNSELECT_KEYFRAME: new PluginEvent('unselectKeyframe'),
 
 	UPDATE_SELECTION: new PluginEvent('updateSelection'),
 }

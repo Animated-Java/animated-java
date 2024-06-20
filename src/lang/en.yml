@@ -363,6 +363,35 @@ animated_java.panel.keyframe.repeat_frequency.description: |-
     NOTE: If the animation is not evenly divisible by this value, the interval may be slightly off when the animation loops.
     If this is set to a value larger than the length of the animation, the commands will run as if repeat was disabled (Once when the keyframe is reached).
 
+animated_java.panel.keyframe.easing_type.title: Easing Type
+animated_java.panel.keyframe.easing_type.description: The type of easing to apply to the keyframe.
+animated_java.panel.keyframe.easing_type.options.linear: Linear
+animated_java.panel.keyframe.easing_type.options.sine: Sine
+animated_java.panel.keyframe.easing_type.options.quad: Quad
+animated_java.panel.keyframe.easing_type.options.cubic: Cubic
+animated_java.panel.keyframe.easing_type.options.quart: Quart
+animated_java.panel.keyframe.easing_type.options.quint: Quint
+animated_java.panel.keyframe.easing_type.options.expo: Expo
+animated_java.panel.keyframe.easing_type.options.circ: Circ
+animated_java.panel.keyframe.easing_type.options.elastic: Elastic
+animated_java.panel.keyframe.easing_type.options.back: Back
+animated_java.panel.keyframe.easing_type.options.bounce: Bounce
+
+animated_java.panel.keyframe.easing_mode.title: Easing Mode
+animated_java.panel.keyframe.easing_mode.description: The easing mode to apply to the keyframe.
+animated_java.panel.keyframe.easing_mode.options.in: In
+animated_java.panel.keyframe.easing_mode.options.out: Out
+animated_java.panel.keyframe.easing_mode.options.in-out: In-Out
+
+animated_java.panel.keyframe.easing_args.title: Easing Args
+animated_java.panel.keyframe.easing_args.description: The arguments to apply to the easing function.
+animated_java.panel.keyframe.easing_args.easing_arg.elastic.title: Elasticity
+animated_java.panel.keyframe.easing_args.easing_arg.elastic.description: The elasticity of the easing function.
+animated_java.panel.keyframe.easing_args.easing_arg.back.title: Overshoot
+animated_java.panel.keyframe.easing_args.easing_arg.back.description: The amount of overshoot to apply to the easing function.
+animated_java.panel.keyframe.easing_args.easing_arg.bounce.title: Bounciness
+animated_java.panel.keyframe.easing_args.easing_arg.bounce.description: The bounciness of the easing function.
+
 # Text Display Panel
 animated_java.panel.text_display.title: Text Display
 

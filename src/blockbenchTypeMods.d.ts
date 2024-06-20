@@ -16,6 +16,7 @@ import { Valuable } from './util/stores'
 import { type Variant } from './variants'
 import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
 import { VanillaBlockDisplay } from './outliner/vanillaBlockDisplay'
+import { EasingKey } from './util/easing'
 
 declare module 'three' {
 	interface Object3D {
@@ -67,6 +68,12 @@ declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface _Animation {
 		excluded_bones: CollectionItem[]
+	}
+
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface _Keyframe {
+		easing?: EasingKey
+		easingArgs?: number[]
 	}
 
 	interface Group {

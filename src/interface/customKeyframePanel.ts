@@ -23,7 +23,7 @@ export function injectCustomKeyframePanel(selectedKeyframe: _Keyframe) {
 		child.remove()
 	}
 
-	injectSvelteCompomponent({
+	void injectSvelteCompomponent({
 		svelteComponent: CustomKeyframePanelSvelteComponent,
 		svelteComponentProperties: { currentPanel: CURRENT_PANEL, selectedKeyframe },
 		elementSelector() {

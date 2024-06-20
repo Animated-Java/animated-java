@@ -178,11 +178,11 @@ const devConfig: esbuild.BuildOptions = {
 	sourceRoot: 'http://animated-java/',
 	loader: { '.svg': 'dataurl', '.ttf': 'binary', '.mcb': 'text' },
 	plugins: [
+		// @ts-ignore
+		ImportGlobPlugin.default(),
 		inlineImage({
 			limit: -1,
 		}),
-		// @ts-ignore
-		ImportGlobPlugin.default(),
 		INFO_PLUGIN,
 		yamlPlugin({}),
 		sveltePlugin(svelteConfig),
@@ -202,11 +202,11 @@ const prodConfig: esbuild.BuildOptions = {
 	platform: 'node',
 	loader: { '.svg': 'dataurl', '.ttf': 'binary', '.mcb': 'text' },
 	plugins: [
+		// @ts-ignore
+		ImportGlobPlugin.default(),
 		inlineImage({
 			limit: -1,
 		}),
-		// @ts-ignore
-		ImportGlobPlugin.default(),
 		INFO_PLUGIN,
 		inlineWorkerPlugin({}),
 		yamlPlugin({}),
