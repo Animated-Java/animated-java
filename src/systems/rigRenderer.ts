@@ -23,6 +23,7 @@ import * as crypto from 'crypto'
 import { JsonText } from './minecraft/jsonText'
 import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
 import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
+import { IntentionalExportError } from './exporter'
 
 export interface IRenderedFace {
 	uv: number[]
@@ -690,7 +691,9 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 			const display = renderBlockDisplay(node, rig)
 			if (display) rootNode.children.push(display)
 		} else if (node instanceof Cube) {
-			console.error(`Encountered cube in root of outliner:`, node)
+			throw new IntentionalExportError(
+				`Cubes cannot be exported as root nodes. Please parent them to a bone. (Found '${node.name}' outside of a bone)`
+			)
 		} else {
 			console.warn(`Encountered unknown node type:`, node)
 		}

@@ -10,6 +10,8 @@ import { compileDataPack } from './datapackCompiler'
 import { compileResourcePack } from './resourcepackCompiler'
 import { renderRig, hashRig } from './rigRenderer'
 
+export class IntentionalExportError extends Error {}
+
 async function actuallyExportProject() {
 	const aj = Project!.animated_java
 	const dialog = openExportProgressDialog()
@@ -92,6 +94,14 @@ async function actuallyExportProject() {
 	} catch (e: any) {
 		console.error(e)
 		dialog.close(0)
+		if (e instanceof IntentionalExportError) {
+			Blockbench.showMessageBox({
+				title: translate('misc.failed_to_export.title'),
+				message: e.message,
+				buttons: [translate('misc.failed_to_export.button')],
+			})
+			return
+		}
 		openUnexpectedErrorDialog(e as Error)
 	}
 }
