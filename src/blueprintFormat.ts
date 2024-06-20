@@ -302,6 +302,8 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 				Variant.fromJSON(variantJSON)
 			}
 			Project.variants = Variant.all
+		} else {
+			new Variant('Default', true)
 		}
 
 		if (model.animations) {
