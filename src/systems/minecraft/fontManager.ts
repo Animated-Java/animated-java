@@ -13,6 +13,7 @@ import {
 import { createHash } from 'crypto'
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils'
 import { UnicodeString } from '../../util/unicodeString'
+import { type Alignment } from '../../outliner/textDisplay'
 
 interface IFontProviderBitmap {
 	type: 'bitmap'
@@ -359,12 +360,14 @@ export class MinecraftFont {
 		backgroundColor,
 		backgroundAlpha,
 		shadow,
+		alignment,
 	}: {
 		jsonText: JsonText
 		maxLineWidth: number
 		backgroundColor: string
 		backgroundAlpha: number
 		shadow?: boolean
+		alignment?: Alignment
 	}): Promise<{ mesh: THREE.Mesh; outline: THREE.LineSegments }> {
 		console.time('drawTextToMesh')
 		const mesh = new THREE.Mesh()
@@ -425,8 +428,17 @@ export class MinecraftFont {
 		const geos: THREE.BufferGeometry[] = []
 		const cursor = { x: 0, y: height - 9 }
 		for (const line of lines) {
+			switch (alignment) {
+				case 'center':
+					cursor.x = -width / 2 + Math.ceil((width - line.width) / 2)
+					break
+				case 'right':
+					cursor.x = -width / 2 + width - line.width
+					break
+				default:
+					cursor.x = -width / 2 + 1
+			}
 			// center the line
-			cursor.x = -width / 2 + Math.ceil((width - line.width) / 2)
 			for (const word of line.words) {
 				for (const span of word.styles) {
 					const text = word.text.slice(span.start, span.end)

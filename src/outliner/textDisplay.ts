@@ -30,7 +30,7 @@ interface TextDisplayOptions {
 	align?: Alignment
 	visibility?: boolean
 }
-type Alignment = 'left' | 'center' | 'right'
+export type Alignment = 'left' | 'center' | 'right'
 
 export class TextDisplay extends ResizableOutlinerElement {
 	static type = `${PACKAGE.name}:text_display`
@@ -42,7 +42,6 @@ export class TextDisplay extends ResizableOutlinerElement {
 	public needsUniqueName = true
 
 	// Properties
-	public align: Alignment
 	public config: IBlueprintTextDisplayConfigJSON
 
 	public menu = new Menu([
@@ -70,6 +69,8 @@ export class TextDisplay extends ResizableOutlinerElement {
 	private _newBackgroundAlpha: number | undefined
 	private _shadow = new Valuable(false)
 	private _newShadow: boolean | undefined
+	private _align = new Valuable<Alignment>('center')
+	private _newAlign: Alignment | undefined
 
 	constructor(data: TextDisplayOptions, uuid = guid()) {
 		super(data, uuid)
@@ -110,6 +111,10 @@ export class TextDisplay extends ResizableOutlinerElement {
 		})
 		this._shadow.subscribe(v => {
 			this._newShadow = v
+			void this.updateText()
+		})
+		this._align.subscribe(v => {
+			this._newAlign = v
 			void this.updateText()
 		})
 	}
@@ -202,6 +207,16 @@ export class TextDisplay extends ResizableOutlinerElement {
 		this._shadow.set(value)
 	}
 
+	get align() {
+		if (this._align === undefined) return TextDisplay.properties['align'].default as Alignment
+		return this._align.get()
+	}
+
+	set align(value) {
+		if (this._align === undefined) return
+		this._align.set(value)
+	}
+
 	getUndoCopy() {
 		const copy = new TextDisplay(this)
 
@@ -275,7 +290,8 @@ export class TextDisplay extends ResizableOutlinerElement {
 			this._newLineWidth !== undefined ||
 			this._newBackgroundColor !== undefined ||
 			this._newBackgroundAlpha !== undefined ||
-			this._newShadow !== undefined
+			this._newShadow !== undefined ||
+			this._newAlign !== undefined
 		) {
 			let text: JsonText | undefined
 			this.textError.set('')
@@ -291,6 +307,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 			this._newBackgroundColor = undefined
 			this._newBackgroundAlpha = undefined
 			this._newShadow = undefined
+			this._newAlign = undefined
 			if (!text) continue
 			latestMesh = await this.setText(text)
 		}
@@ -315,6 +332,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 			backgroundColor: this.backgroundColor,
 			backgroundAlpha: this.backgroundAlpha,
 			shadow: this.shadow,
+			alignment: this.align,
 		})
 		mesh.name = this.uuid + '_text'
 		const previousMesh = this.mesh.children.find(v => v.name === mesh.name)

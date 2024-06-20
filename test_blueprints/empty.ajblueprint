@@ -1,7 +1,7 @@
 {
 	"meta": {
 		"format": "animated_java_blueprint",
-		"format_version": "0.5.0",
+		"format_version": "0.5.2",
 		"uuid": "a8205f23-18ae-5c38-fc3c-ad4397b0ed09",
 		"save_location": "D:\\github-repos\\animated-java\\animated-java\\test_blueprints\\empty.ajblueprint",
 		"last_used_export_namespace": "blueprint"
@@ -69,18 +69,18 @@
 		},
 		{
 			"name": "wow",
-			"position": [0, 23, 0],
+			"position": [0, 23, -13],
 			"rotation": [0, 0, 0],
 			"scale": [1, 1, 1],
 			"visibility": true,
 			"item": "minecraft:diamond",
 			"config": {},
 			"block": "minecraft:stone",
-			"text": "\"Wow!\"",
+			"text": "\"Wow!\\nMultiple very different\\nLines!\"",
 			"lineWidth": 200,
 			"backgroundColor": "#000000",
 			"backgroundAlpha": 0.25098,
-			"align": "center",
+			"align": "right",
 			"uuid": "7edf27c8-19bd-8a1a-6c23-888d95c417d8",
 			"type": "animated_java:text_display"
 		},
@@ -202,7 +202,9 @@
 							"uuid": "58eeab35-0b05-ed23-f696-b41f98f5c4f0",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				},
@@ -222,7 +224,9 @@
 							"uuid": "42510118-620c-d795-55bb-c1f8e0841c81",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				}
@@ -260,7 +264,9 @@
 							"uuid": "2369d2a5-0350-c288-393d-cfa8d4faf67a",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				},
@@ -280,7 +286,9 @@
 							"uuid": "7da6acee-57cf-e294-35af-bb74485260bc",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				},
@@ -300,7 +308,9 @@
 							"uuid": "bf25404d-a16c-4bde-ccca-04f3611385e4",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				}
@@ -339,7 +349,9 @@
 							"time": 0,
 							"color": -1,
 							"uniform": false,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				},
@@ -360,7 +372,9 @@
 							"time": 0,
 							"color": -1,
 							"uniform": false,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				},
@@ -380,7 +394,9 @@
 							"uuid": "da69b774-9cfa-d2f4-03b1-2cf48551f7b1",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						},
 						{
 							"channel": "scale",
@@ -395,7 +411,9 @@
 							"time": 0,
 							"color": -1,
 							"uniform": false,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				}

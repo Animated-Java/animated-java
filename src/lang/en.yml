@@ -404,6 +404,12 @@ animated_java.tool.text_display.background_color.description: The color of the b
 animated_java.tool.text_display.text_shadow.title: Text Shadow
 animated_java.tool.text_display.text_shadow.description: Whether or not to display a shadow behind the text.
 
+animated_java.tool.text_display.text_alignment.title: Text Alignment
+animated_java.tool.text_display.text_alignment.description: The alignment of the text.
+animated_java.tool.text_display.text_alignment.options.left: Left
+animated_java.tool.text_display.text_alignment.options.center: Center
+animated_java.tool.text_display.text_alignment.options.right: Right
+
 # Vanilla Item Display Panel
 animated_java.panel.vanilla_item_display.title: Displayed Item
 animated_java.panel.vanilla_item_display.description: The item to display.

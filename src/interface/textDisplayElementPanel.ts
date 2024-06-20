@@ -1,7 +1,7 @@
 import { isCurrentFormat } from '../blueprintFormat'
 import TextDisplayElementPanel from '../components/textDisplayElementPanel.svelte'
 import { PACKAGE } from '../constants'
-import { TextDisplay } from '../outliner/textDisplay'
+import { Alignment, TextDisplay } from '../outliner/textDisplay'
 import { injectSvelteCompomponentMod } from '../util/injectSvelte'
 import { floatToHex } from '../util/misc'
 import { translate } from '../util/translation'
@@ -96,5 +96,39 @@ export const TEXT_DISPLAY_SHADOW_TOGGLE = new Toggle(`${PACKAGE.name}:textDispla
 TEXT_DISPLAY_SHADOW_TOGGLE.set = function (value) {
 	if (this.value === value) return this
 	this.click()
+	return this
+}
+
+export const TEXT_DISPLAY_ALIGNMENT_SELECT = new BarSelect(
+	`${PACKAGE.name}:textDisplayAlignmentSelect`,
+	{
+		name: translate('tool.text_display.text_alignment.title'),
+		icon: 'format_align_left',
+		description: translate('tool.text_display.text_alignment.description'),
+		condition: () => isCurrentFormat() && !!TextDisplay.selected.length,
+		options: {
+			left: translate('tool.text_display.text_alignment.options.left'),
+			center: translate('tool.text_display.text_alignment.options.center'),
+			right: translate('tool.text_display.text_alignment.options.right'),
+		},
+	}
+)
+TEXT_DISPLAY_ALIGNMENT_SELECT.get = function () {
+	const selected = TextDisplay.selected[0]
+	if (!selected) return 'left'
+	return selected.align
+}
+TEXT_DISPLAY_ALIGNMENT_SELECT.set = function (this: BarSelect<Alignment>, value: Alignment) {
+	const selected = TextDisplay.selected[0]
+	if (!selected) return this
+	this.value = value
+	const name = this.getNameFor(value)
+	this.nodes.forEach(node => {
+		$(node).find('bb-select').text(name)
+	})
+	if (!this.nodes.includes(this.node)) {
+		$(this.node).find('bb-select').text(name)
+	}
+	selected.align = value
 	return this
 }

@@ -7,6 +7,7 @@
 		TEXT_DISPLAY_WIDTH_SLIDER,
 		TEXT_DISPLAY_BACKGROUND_COLOR_PICKER,
 		TEXT_DISPLAY_SHADOW_TOGGLE,
+		TEXT_DISPLAY_ALIGNMENT_SELECT,
 	} from '../interface/textDisplayElementPanel'
 	import { floatToHex } from '../util/misc'
 	import { translate } from '../util/translation'
@@ -28,6 +29,7 @@
 	let lineWidthSlot: HTMLDivElement
 	let backgroundColorSlot: HTMLDivElement
 	let shadowSlot: HTMLDivElement
+	let alignmentSlot: HTMLDivElement
 	let codeJar: CodeJar
 
 	events.UPDATE_SELECTION.subscribe(() => {
@@ -43,12 +45,14 @@
 		const color = selected.backgroundColor + floatToHex(selected.backgroundAlpha)
 		TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.set(color)
 		TEXT_DISPLAY_SHADOW_TOGGLE.set(selected.shadow)
+		TEXT_DISPLAY_ALIGNMENT_SELECT.set(selected.align)
 	})
 
 	requestAnimationFrame(() => {
 		lineWidthSlot.appendChild(TEXT_DISPLAY_WIDTH_SLIDER.node)
 		backgroundColorSlot.appendChild(TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.node)
 		shadowSlot.appendChild(TEXT_DISPLAY_SHADOW_TOGGLE.node)
+		alignmentSlot.appendChild(TEXT_DISPLAY_ALIGNMENT_SELECT.node)
 		forceNoWrap()
 	})
 
@@ -67,6 +71,7 @@
 	<div class="content" bind:this={lineWidthSlot}></div>
 	<div class="content" bind:this={backgroundColorSlot}></div>
 	<div class="content" bind:this={shadowSlot}></div>
+	<div class="content" bind:this={alignmentSlot}></div>
 </div>
 
 <div
@@ -127,6 +132,19 @@
 	.custom-toolbar :global(.sp-replacer) {
 		padding: 4px 18px !important;
 		height: 28px !important;
-		margin: 1px 0px !important;
+		margin: 2px 0px !important;
+	}
+	.custom-toolbar :global([toolbar_item='animated_java:textDisplayShadowToggle']) {
+		margin-right: 2px !important;
+	}
+	.custom-toolbar :global(.bar_select) {
+		height: 28px !important;
+		margin: 2px 0px !important;
+	}
+	.custom-toolbar :global(bb-select) {
+		height: 28px !important;
+		display: flex;
+		align-items: center;
+		padding-top: 0;
 	}
 </style>
