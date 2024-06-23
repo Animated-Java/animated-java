@@ -44,6 +44,7 @@ import './mods/saveProjectActionMod'
 import './mods/saveProjectAsActionMod'
 import './mods/variantPreviewCubeFaceMod'
 import './mods/showDefaultPoseMod'
+import './mods/addLocatorActionMod'
 // Outliner
 import './outliner/textDisplay'
 import './outliner/vanillaItemDisplay'
