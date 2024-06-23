@@ -349,7 +349,7 @@ dir <%export_namespace%> {
 									<%%
 										if (frame.variant) global.variant = variants.find(v => v.uuid === frame.variant.uuid)
 									%%>
-									IF (global.variant) {
+									IF (frame.variant && global.variant) {
 										function *<%export_namespace%>/variants/<%global.variant.name%>/apply
 									}
 									REPEAT (frame.nodes.sort(nodeSorter)) as node {
