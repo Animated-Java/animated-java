@@ -11,6 +11,19 @@
 
 	let _value: string = value.get()
 
+	export let valueChecker: DialogItemValueChecker<string> = undefined
+
+	let warning_text = ''
+	let error_text = ''
+
+	function checkValue() {
+		if (!valueChecker) return
+		const result = valueChecker(value.get())
+		result.type === 'error' ? (error_text = result.message) : (error_text = '')
+		result.type === 'warning' ? (warning_text = result.message) : (warning_text = '')
+	}
+	value.subscribe(() => checkValue())
+
 	function onValueChange() {
 		value.set(_value)
 		_value = value.get()
@@ -20,7 +33,7 @@
 		Promise.any([
 			// @ts-ignore
 			electron.dialog.showOpenDialog({
-				properties: ['openFile'],
+				properties: ['openFile', 'promptToCreate'],
 				filters,
 				message: fileSelectMessage,
 			}),
@@ -35,7 +48,7 @@
 	onValueChange()
 </script>
 
-<BaseDialogItem {label} {tooltip}>
+<BaseDialogItem {label} {tooltip} bind:warning_text bind:error_text>
 	<div class="dialog_bar form_bar">
 		<label class="name_space_left" for="name">{label}</label>
 		<input
@@ -43,6 +56,7 @@
 			class="dark_bordered half focusable_input"
 			id="name"
 			bind:value={_value}
+			on:input={onValueChange}
 			on:change={onValueChange}
 		/>
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
