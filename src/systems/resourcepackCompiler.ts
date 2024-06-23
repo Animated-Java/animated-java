@@ -218,9 +218,15 @@ export function compileResourcePack(options: {
 				optifineEmissive
 			)
 	}
+
 	// Transparent texture
+	const transparentTexturePath = PathModule.join(
+		resourcePackFolder,
+		'assets/animated_java/textures/transparent.png'
+	)
+	fs.mkdirSync(PathModule.dirname(transparentTexturePath), { recursive: true })
 	fs.writeFileSync(
-		PathModule.join(resourcePackFolder, 'assets/animated_java/textures/transparent.png'),
+		transparentTexturePath,
 		nativeImage.createFromDataURL(TRANSPARENT_TEXTURE.source).toPNG(),
 		'base64'
 	)
