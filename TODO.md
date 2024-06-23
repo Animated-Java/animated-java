@@ -75,8 +75,8 @@
         -   [x] template_shulker_box
         -   [x] template_skull
         -   [x] banners
-        -   [ ] shield
-        -   [ ] trident
+        -   [x] shield
+        -   [x] trident
 -   [ ] Change the Collection setting type to allow single-click swapping of items between lists.
 -   [ ] Look into adding a color picker for tintable vanilla items.
 -   [ ] Add Variants to the UndoSystem (Blocked by vanilla Blockbench not supporting custom undo actions).
@@ -119,7 +119,7 @@
 
 # Github
 
--   [ ] Reorganize the repo's branches.
+-   [x] Reorganize the repo's branches.
     -   [ ] Create a `release` branch.
     -   [x] Create a `dev` branch.
     -   [x] Create a `legacy-beta` tag.
