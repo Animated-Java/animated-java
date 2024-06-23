@@ -14,15 +14,15 @@ dir global {
 		data modify storage aj:temp args set value {}
 		# Initialize Rigs
 		scoreboard players reset * <%OBJECTIVES.IS_RIG_LOADED()%>
-		function #animated_java:global/on_load
+		function #*global/on_load
 	}
 
 	function on_tick minecraft:tick {
-		execute as @e[type=item_display,tag=<%TAGS.GLOBAL_ROOT()%>] at @s run function #animated_java:global/root/on_tick
+		execute as @e[type=item_display,tag=<%TAGS.GLOBAL_ROOT()%>] at @s run function #*global/root/on_tick
 	}
 
 	tag functions on_load {
-		animated_java:<%export_namespace%>/on_load
+		*<%export_namespace%>/on_load
 	}
 
 	dir root {
@@ -30,11 +30,11 @@ dir global {
 		# That way I can also check if the rig's files still exist, and remove tag entries if they don't.
 		# An entry will be added for each exported rig.
 		tag functions on_tick {
-			animated_java:<%export_namespace%>/root/on_tick
+			*<%export_namespace%>/root/on_tick
 		}
 		# An entry will be added for each exported rig.
 		tag functions on_load {
-			animated_java:<%export_namespace%>/root/on_load
+			*<%export_namespace%>/root/on_load
 		}
 	}
 
@@ -45,7 +45,6 @@ dir global {
 
 	dir errors {
 		function function_not_executed_as_root_entity {
-			# Make this text fancier in the actual implementation.
 			$tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR('$(function_path)', TAGS.PROJECT_ROOT(export_namespace))%>
 		}
 	}
@@ -58,7 +57,7 @@ dir global {
 	}
 
 	dir internal {
-		# Thanks Gibbly for this code! https://github.com/gibbsly/gu
+		# Thanks Gibbsly for this code! https://github.com/gibbsly/gu
 		dir gu {
 			function load minecraft:load {
 				scoreboard players set 256 <%OBJECTIVES.I()%> 256
@@ -129,7 +128,7 @@ dir <%export_namespace%> {
 		}
 		execute as @e[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] \
 			unless score @s <%OBJECTIVES.IS_RIG_LOADED()%> matches 1 at @s run \
-			function animated_java:<%export_namespace%>/root/on_load
+			function *<%export_namespace%>/root/on_load
 	}
 
 	dir root {
@@ -153,9 +152,9 @@ dir <%export_namespace%> {
 		}
 		function on_tick {
 			execute unless entity @s[tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return 0
-			execute unless score @s <%OBJECTIVES.IS_RIG_LOADED()%> matches 1 run function #animated_java:global/root/on_load
+			execute unless score @s <%OBJECTIVES.IS_RIG_LOADED()%> matches 1 run function #*global/root/on_load
 			# Pre tick
-			function #animated_java:<%export_namespace%>/as_root/pre_tick
+			function #*<%export_namespace%>/as_root/pre_tick
 			# Animations
 			REPEAT (animations) as animation {
 				execute if entity @s[tag=<%TAGS.ANIMATION_PLAYING(export_namespace, animation.name)%>] run \
@@ -193,7 +192,7 @@ dir <%export_namespace%> {
 			# Rotation Logic
 			execute at @s on passengers run tp @s ~ ~ ~ ~ ~
 			# Post tick
-			function #animated_java:<%export_namespace%>/as_root/post_tick
+			function #*<%export_namespace%>/as_root/post_tick
 		}
 	}
 
@@ -455,7 +454,7 @@ dir <%export_namespace%> {
 					execute as @e[type=<%locator.config.entity_type%>,tag=<%TAGS.NEW()%>,tag=<%TAGS.GLOBAL_LOCATOR()%>,limit=1,distance=..0.01] run {
 						tag @s remove <%TAGS.NEW()%>
 
-						function animated_java:global/internal/gu/convert_uuid_array_to_string with entity @s
+						function *global/internal/gu/convert_uuid_array_to_string with entity @s
 						execute as @e[type=item_display,tag=<%TAGS.NEW()%>,limit=1,distance=..0.01] on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run {
 							data modify entity @s data.locators.<%locator.name%>.uuid set from storage aj:uuid main.out
 						}
@@ -473,7 +472,7 @@ dir <%export_namespace%> {
 				execute as @e[type=item_display,tag=<%TAGS.NEW()%>,tag=<%TAGS.GLOBAL_CAMERA()%>,limit=1,distance=..0.01] run {
 					tag @s remove <%TAGS.NEW()%>
 
-					function animated_java:global/internal/gu/convert_uuid_array_to_string with entity @s
+					function *global/internal/gu/convert_uuid_array_to_string with entity @s
 					execute as @e[type=item_display,tag=<%TAGS.NEW()%>,limit=1,distance=..0.01] on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run {
 						data modify entity @s data.cameras.<%camera.name%>.uuid set from storage aj:uuid main.out
 					}
@@ -541,7 +540,7 @@ dir <%export_namespace%> {
 			# Custom Summon Commands
 
 			# Run the on_summon function for the root entity.
-			function #animated_java:<%export_namespace%>/as_root/on_summon
+			function #*<%export_namespace%>/as_root/on_summon
 		}
 	}
 
@@ -569,7 +568,6 @@ dir <%export_namespace%> {
 		}
 	}
 
-
 	dir remove {
 		# Removes all instances of this rig from the world.
 		function all {
@@ -582,7 +580,7 @@ dir <%export_namespace%> {
 					{'function_path': 'animated_java:<%export_namespace%>/remove/this'}
 
 			# On Remove Event
-			function #animated_java:<%export_namespace%>/as_root/on_remove
+			function #*<%export_namespace%>/as_root/on_remove
 
 			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run {
 				REPEAT (Object.values(rig.nodeMap).filter(v => v.type === 'locator' && v.config?.use_entity)) as locator {
