@@ -347,11 +347,12 @@ dir <%export_namespace%> {
 							REPEAT (animation.frames) as frame {
 								function <%animation.frames.indexOf(frame)%> {
 									<%%
-										if (frame.variant) global.variant = variants.find(v => v.uuid === frame.variant.uuid)
+										if (frame.variant) {
+											const variant = variants.find(v => v.uuid === frame.variant.uuid)
+											if (!variant) return
+											emit.mcb(`function *${export_namespace}/variants/${variant.name}/apply`)
+										}
 									%%>
-									IF (global.variant) {
-										function *<%export_namespace%>/variants/<%global.variant.name%>/apply
-									}
 									REPEAT (frame.nodes.sort(nodeSorter)) as node {
 										IF (['bone', 'text_display', 'item_display', 'block_display'].includes(node.type)) {
 											<%%
