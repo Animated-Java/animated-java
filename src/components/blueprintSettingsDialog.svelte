@@ -227,6 +227,62 @@
 				return { type: 'success', message: '' }
 		}
 	}
+
+	function advancedResourcePackFileChecker(value: string): { type: string; message: string } {
+		switch (true) {
+			case value === '':
+				return {
+					type: 'error',
+					message: translate(
+						'dialog.blueprint_settings.advanced_resource_pack_file.error.no_file_selected',
+					),
+				}
+			case !fs.existsSync(value):
+				return {
+					type: 'error',
+					message: translate(
+						'dialog.blueprint_settings.advanced_resource_pack_file.error.file_does_not_exist',
+					),
+				}
+			case !fs.statSync(value).isFile():
+				return {
+					type: 'error',
+					message: translate(
+						'dialog.blueprint_settings.advanced_resource_pack_file.error.not_a_file',
+					),
+				}
+			default:
+				return { type: 'success', message: '' }
+		}
+	}
+
+	function advancedResourcePackFolderChecker(value: string): { type: string; message: string } {
+		switch (true) {
+			case value === '':
+				return {
+					type: 'error',
+					message: translate(
+						'dialog.blueprint_settings.advanced_resource_pack_folder.error.no_folder_selected',
+					),
+				}
+			case !fs.existsSync(value):
+				return {
+					type: 'error',
+					message: translate(
+						'dialog.blueprint_settings.advanced_resource_pack_folder.error.folder_does_not_exist',
+					),
+				}
+			case !fs.statSync(value).isDirectory():
+				return {
+					type: 'error',
+					message: translate(
+						'dialog.blueprint_settings.advanced_resource_pack_folder.error.not_a_folder',
+					),
+				}
+			default:
+				return { type: 'success', message: '' }
+		}
+	}
 </script>
 
 <div>
@@ -341,18 +397,21 @@
 					label={translate('dialog.blueprint_settings.display_item_path.title')}
 					tooltip={translate('dialog.blueprint_settings.display_item_path.description')}
 					bind:value={displayItemPath}
+					valueChecker={advancedResourcePackFileChecker}
 				/>
 
 				<FolderSelect
 					label={translate('dialog.blueprint_settings.model_folder.title')}
 					tooltip={translate('dialog.blueprint_settings.model_folder.description')}
 					bind:value={modelFolder}
+					valueChecker={advancedResourcePackFolderChecker}
 				/>
 
 				<FolderSelect
 					label={translate('dialog.blueprint_settings.texture_folder.title')}
 					tooltip={translate('dialog.blueprint_settings.texture_folder.description')}
 					bind:value={textureFolder}
+					valueChecker={advancedResourcePackFolderChecker}
 				/>
 			{:else}
 				<LineInput
