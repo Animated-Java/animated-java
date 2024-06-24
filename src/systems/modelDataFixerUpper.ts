@@ -3,6 +3,7 @@ import { BoneConfig } from '../nodeConfigs'
 import { PACKAGE } from '../constants'
 import { openUnexpectedErrorDialog } from '../interface/unexpectedErrorDialog'
 import { NbtCompound, NbtList, NbtString, NbtTag } from 'deepslate'
+import { toSafeFuntionName } from '../util/minecraftUtil'
 
 export function process(model: any): any {
 	if (model.meta.model_format === 'animatedJava/ajmodel') {

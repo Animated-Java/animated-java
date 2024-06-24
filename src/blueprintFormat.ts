@@ -187,9 +187,7 @@ export function updateBoundingBox() {
 	scene.add(Project.visualBoundingBox)
 }
 
-/**
- * The Animated Java Blueprint codec
- */
+// region Codec
 export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 	name: 'Animated Java Blueprint',
 	extension: 'ajblueprint',
@@ -254,8 +252,10 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 					)
 					if (fs.existsSync(resolvedPath)) {
 						newTexture.fromPath(resolvedPath)
+						continue
 					}
-				} else if (texture.path && fs.existsSync(texture.path) && !model.meta.backup) {
+				}
+				if (texture.path && fs.existsSync(texture.path) && !model.meta.backup) {
 					newTexture.fromPath(texture.path)
 				} else if (texture.source && texture.source.startsWith('data:')) {
 					newTexture.fromDataURL(texture.source)
@@ -495,9 +495,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 	},
 })
 
-/** ANCHOR
- * The Animated Java Blueprint format
- */
+// region Format
 export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 	id: 'animated_java_blueprint',
 	name: 'Animated Java Blueprint',
