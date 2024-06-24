@@ -600,11 +600,11 @@ dir <%export_namespace%> {
 	}
 
 	dir variants {
-		dir default {
+		dir <%defaultVariant.name%> {
 			function apply {
 				execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 					function *global/errors/function_not_executed_as_root_entity \
-						{'function_path': 'animated_java:<%export_namespace%>/variants/default/apply'}
+						{'function_path': 'animated_java:<%export_namespace%>/variants/<%defaultVariant.name%>/apply'}
 				REPEAT (Object.values(rig.nodeMap)) as node {
 					IF (node.type === 'bone') {
 						execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%node.name%>] run {

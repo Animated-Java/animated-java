@@ -566,6 +566,7 @@ export async function compileDataPack(options: {
 		rig,
 		animations,
 		variants: Variant.all,
+		defaultVariant: Variant.getDefault(),
 		export_version: Math.random().toString().substring(2, 10),
 		root_entity_passengers: await generateRootEntityPassengers(rig, rigHash),
 		TAGS,

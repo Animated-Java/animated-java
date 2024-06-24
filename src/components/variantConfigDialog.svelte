@@ -132,91 +132,99 @@
 		{$uuid}
 	</div>
 
-	<div class="toolbar" style="margin: 8px 0;">
-		<div>
-			{translate('dialog.variant_config.texture_map.title')}
+	{#if !variant.isDefault}
+		<div class="toolbar" style="margin: 8px 0;">
+			<div>
+				{translate('dialog.variant_config.texture_map.title')}
+			</div>
+			<div class="spacer" />
+			<!-- svelte-ignore a11y-click-events-have-key-events -->
+			<div
+				class="tool"
+				title={translate('dialog.variant_config.texture_map.create_new_mapping')}
+				on:click={() => {}}
+			>
+				<i class="material-icons icon" on:click={() => createTextureMapping()}>add</i>
+			</div>
+			<!-- svelte-ignore a11y-click-events-have-key-events -->
+			<!-- svelte-ignore missing-declaration -->
+			<i
+				class="fa fa-question dialog_form_description"
+				title={translate('dialog.variant_config.texture_map.description')}
+				on:click={() => {
+					const tooltip = translate('dialog.variant_config.texture_map.description')
+					Blockbench.showQuickMessage(tooltip, 50 * tooltip.length)
+				}}
+			/>
 		</div>
-		<div class="spacer" />
-		<!-- svelte-ignore a11y-click-events-have-key-events -->
-		<div
-			class="tool"
-			title={translate('dialog.variant_config.texture_map.create_new_mapping')}
-			on:click={() => {}}
-		>
-			<i class="material-icons icon" on:click={() => createTextureMapping()}>add</i>
-		</div>
-		<!-- svelte-ignore a11y-click-events-have-key-events -->
-		<!-- svelte-ignore missing-declaration -->
-		<i
-			class="fa fa-question dialog_form_description"
-			title={translate('dialog.variant_config.texture_map.description')}
-			on:click={() => {
-				const tooltip = translate('dialog.variant_config.texture_map.description')
-				Blockbench.showQuickMessage(tooltip, 50 * tooltip.length)
-			}}
+		<lu class="texture_map_container">
+			{#key textureMapUpdated}
+				{#each [...textureMap.map.entries()] as entry, index}
+					<div class="texture_mapping_item"></div>
+					<li class="texture_mapping_item">
+						<div class="texture_mapping_item_dropdown_container">
+							<img src={getTextureSrc(entry[0])} alt="" />
+							<select
+								class="texture_mapping_item_dropdown"
+								on:change={e => selectNewPrimaryTexture(e, entry[0])}
+							>
+								<!-- svelte-ignore missing-declaration -->
+								{#each primaryTextures as texture}
+									<option selected={texture.uuid === entry[0]}>
+										{texture.name}
+									</option>
+								{/each}
+							</select>
+						</div>
+
+						<i class="material-icons icon">east</i>
+
+						<div class="texture_mapping_item_dropdown_container">
+							<img src={getTextureSrc(entry[1])} alt="" />
+							<select
+								class="texture_mapping_item_dropdown"
+								on:change={e => selectNewSecondaryTexture(e, entry[0])}
+							>
+								<!-- svelte-ignore missing-declaration -->
+								{#each secondaryTextures as texture}
+									<option selected={texture.uuid === entry[1]}>
+										{texture.name}
+									</option>
+								{/each}
+							</select>
+						</div>
+
+						<!-- svelte-ignore a11y-click-events-have-key-events -->
+						<i
+							class="material-icons icon tool"
+							on:click={() => deleteTextureMapping(entry[0])}>delete</i
+						>
+					</li>
+				{:else}
+					<div class="no_mappings">
+						{translate('dialog.variant_config.texture_map.no_mappings')}
+					</div>
+				{/each}
+			{/key}
+		</lu>
+		<Collection
+			label={translate('dialog.variant_config.excluded_bones.title')}
+			tooltip={translate('dialog.variant_config.bone_lists.description')}
+			availableItemsColumnLable={translate('dialog.variant_config.included_bones.title')}
+			availableItemsColumnTooltip={translate(
+				'dialog.variant_config.included_bones.description',
+			)}
+			includedItemsColumnLable={translate('dialog.variant_config.excluded_bones.title')}
+			includedItemsColumnTooltip={translate(
+				'dialog.variant_config.excluded_bones.description',
+			)}
+			swapColumnsButtonTooltip={translate(
+				'dialog.variant_config.swap_columns_button.tooltip',
+			)}
+			availableItems={availableBones}
+			bind:includedItems={excludedBones}
 		/>
-	</div>
-	<lu class="texture_map_container">
-		{#key textureMapUpdated}
-			{#each [...textureMap.map.entries()] as entry, index}
-				<div class="texture_mapping_item"></div>
-				<li class="texture_mapping_item">
-					<div class="texture_mapping_item_dropdown_container">
-						<img src={getTextureSrc(entry[0])} alt="" />
-						<select
-							class="texture_mapping_item_dropdown"
-							on:change={e => selectNewPrimaryTexture(e, entry[0])}
-						>
-							<!-- svelte-ignore missing-declaration -->
-							{#each primaryTextures as texture}
-								<option selected={texture.uuid === entry[0]}>
-									{texture.name}
-								</option>
-							{/each}
-						</select>
-					</div>
-
-					<i class="material-icons icon">east</i>
-
-					<div class="texture_mapping_item_dropdown_container">
-						<img src={getTextureSrc(entry[1])} alt="" />
-						<select
-							class="texture_mapping_item_dropdown"
-							on:change={e => selectNewSecondaryTexture(e, entry[0])}
-						>
-							<!-- svelte-ignore missing-declaration -->
-							{#each secondaryTextures as texture}
-								<option selected={texture.uuid === entry[1]}>
-									{texture.name}
-								</option>
-							{/each}
-						</select>
-					</div>
-
-					<!-- svelte-ignore a11y-click-events-have-key-events -->
-					<i
-						class="material-icons icon tool"
-						on:click={() => deleteTextureMapping(entry[0])}>delete</i
-					>
-				</li>
-			{:else}
-				<div class="no_mappings">
-					{translate('dialog.variant_config.texture_map.no_mappings')}
-				</div>
-			{/each}
-		{/key}
-	</lu>
-	<Collection
-		label={translate('dialog.variant_config.excluded_bones.title')}
-		tooltip={translate('dialog.variant_config.bone_lists.description')}
-		availableItemsColumnLable={translate('dialog.variant_config.included_bones.title')}
-		availableItemsColumnTooltip={translate('dialog.variant_config.included_bones.description')}
-		includedItemsColumnLable={translate('dialog.variant_config.excluded_bones.title')}
-		includedItemsColumnTooltip={translate('dialog.variant_config.excluded_bones.description')}
-		swapColumnsButtonTooltip={translate('dialog.variant_config.swap_columns_button.tooltip')}
-		availableItems={availableBones}
-		bind:includedItems={excludedBones}
-	/>
+	{/if}
 </div>
 
 <style>

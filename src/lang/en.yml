@@ -323,6 +323,7 @@ animated_java.panel.variants.tool.duplicate_selected_variant: Duplicate Selected
 animated_java.panel.variants.tool.delete_selected_variant: Delete Selected Variant
 animated_java.panel.variants.tool.variant_visible: Variant Selected
 animated_java.panel.variants.tool.variant_not_visible: Variant Not Selected
+animated_java.panel.variants.tool.cannot_delete_default_variant: Cannot delete the default variant!
 
 animated_java.action.variants.create: Create Variant
 animated_java.action.variants.duplicate: Duplicate Variant
