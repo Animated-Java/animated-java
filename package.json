@@ -2,7 +2,7 @@
 	"type": "module",
 	"name": "animated_java",
 	"title": "Animated Java",
-	"version": "0.5.2",
+	"version": "0.5.3",
 	"display_version": "1.0.0-pre3",
 	"min_blockbench_version": "4.10.0",
 	"author": {
