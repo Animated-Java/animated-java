@@ -33,7 +33,7 @@ createBlockbenchMod(
 			allowExpression,
 			axis
 		) {
-			if (!isCurrentFormat()) {
+			if (!isCurrentFormat() || !allowExpression) {
 				return context.orignalInterpolate.call(this, channel, allowExpression, axis)
 			}
 
