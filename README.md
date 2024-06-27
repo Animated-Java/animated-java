@@ -1,42 +1,16 @@
-<div style="
-	display: flex;
-	justify-content: center;
-	">
-	<div style="
-			display: flex;
-			align-items: center;
-			margin-bottom: 2rem;
-		">
-		<!-- svelte-ignore a11y-missing-attribute -->
-		<img src="https://raw.githubusercontent.com/Animated-Java/animated-java/main/src/assets/animated_java_icon.svg" style="
-			width: 128px;
-			border-radius: 16px;
-			box-shadow: 4px 4px 8px -4px black;
-		"/>
-		<div style="
-				display: flex;
-				flex-direction: column;
-				justify-content: center;
-				margin-left: 2rem;
-			">
-			<span style="font-size:48px; font-weight:bold;">Animated Java</span>
-			<div>
-				<a>
-					<img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FAnimated-Java%2Fanimated-java%2Fmain%2Fpackage.json&query=display_version&prefix=v&style=flat-square&label=%20&color=%2300aced00" width=128>
-				</a>
-			</div>
-		</div>
-	</div>
+<div align=center>
+	<img src="https://raw.githubusercontent.com/Animated-Java/animated-java/main/src/assets/animated_java_icon.svg" width=128/>
+	<h1 >Animated Java
+	</h1>
+</div>
+<div align="center">
+	<img alt="Total Downloads (Last 4 years)" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fblckbn.ch%2Fapi%2Fstats%2Fplugins%3Fweeks%3D192&query=animated_java&style=flat-square&logo=data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAAAXNSR0IArs4c6QAAA6BJREFUeF7tnFFSGzEMhuXkBB0gkLf0JuQmcBLgJMlNmp6keQtkyHCCxJ3NNJ0MTXclW7Js5ucVWfJ%2B38oQYxMIX64Egmt1FCcIcH4JIAACnAk4l0cHQIAzAefy6AAIcCbgXB4dAAHOBJzLowMgwJmAc3l0AAQ4E3Aujw6AABmB1%2B0u9o24m1w19VI1NdkOPATIXlj1aAhQRypLCAEyXurREKCOVJYQAmS81KMhQB2pLCEEyHipR0OAOlJZQgiQ8VKPhgB1pLKEECDjpR4NAepIZQkhQMZLPRoC1JHKEkKAjJd6NASoI5UlhAAZL%2FVoCFBHKksIATJe6tEQoI5UlhACZLxY0W%2Fb3eKwH71Mp9%2FWQwM0BGw2HzMa7%2B%2Bnk%2BvlUD3r77ufinjdvv8gCvdEtI770XxIQq6ADn4Y7xddzUC0vJ1cPVpD7svvKuAM%2FmmOgxJyBJzDPxX0luAmoFt2ItHDhbejV0KqgEvwT7VjpJfp7dWzRye4COiBP9gJKQL64HtLKC6AAb9XglQAB76nhOICNm%2B75xDoidnu%2FyxHEgES%2BN18IsXH0r8ZFRfQPWiOBK6AFuB3LFwE5EjgCGgFvquAVAlhfPjVt3zF%2Fej76fd8zjLnseycz8utA06TkC5HRDTrBxtXfz7YDfL3hu%2FeAYkSBsFyAmqAX42AhOWIw%2Fi%2FMbXAr0pAKQk1wa9OgLWE2uBXKcBKQo3wqxWgLaFW%2BFUL0JJQM%2FzqBeRKqB1%2BEwJSJbQAvxkBUgmtwG9KAFdCS%2FBVBHB2J7M%2Btn4a3Ld3ZAHf%2BvmyN%2BOsJ3hJ3iUJFvC72tbP16SAz8uRFXwIGFi7uk6gENeWf0ZEB2j%2BAEnIBQEJ0DSHQIAmzYRcEJAATXMIBGjSTMgFAQnQNIdAgCbNhFwQkABNc0gLArqDUgNndTSR1JUr9%2F%2BUKmxF%2FL3hUheZArPRuNyRLUB4sq0AlnIlNC525As43rnqP69ZDknZSjEc5tObm1VO1WwBx53J7ftDoLDImUhrY7V2YFUEdPAEN19aY31hvnF1N7meazyImoBjJ8huv2jMv3gOjXX%2FfNKqAo4SNh%2Bz0fjwFCnOuMfEi1OUFVwTxXWM4ScdRsuhe8yy1I43ZKQT%2Farx6h3wVUFZPRcEWJFl5oUAJiirMAiwIsvMCwFMUFZhEGBFlpkXApigrMIgwIosMy8EMEFZhUGAFVlmXghggrIKgwArssy8EMAEZRUGAVZkmXkhgAnKKuw3fJAlf%2F2mKG8AAAAASUVORK5CYII%3D&label=%20&color=%2300aced00">
+	<img alt="Discord" src="https://img.shields.io/discord/785339959518953482?style=flat-square&logo=discord&label=%20&color=%2300aced00">
+<img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FAnimated-Java%2Fanimated-java%2Fmain%2Fpackage.json&query=display_version&prefix=v&style=flat-square&label=%20&color=%2300aced00">
 </div>
 <h3 align="center">
 	A Blockbench plugin that makes complex animation a breeze in Minecraft: Java Edition.
 </h3>
-
-<div align="center">
-	<img alt="Total Downloads (Last 4 years)" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fblckbn.ch%2Fapi%2Fstats%2Fplugins%3Fweeks%3D192&query=animated_java&style=flat-square&logo=data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAAAXNSR0IArs4c6QAAA6BJREFUeF7tnFFSGzEMhuXkBB0gkLf0JuQmcBLgJMlNmp6keQtkyHCCxJ3NNJ0MTXclW7Js5ucVWfJ%2B38oQYxMIX64Egmt1FCcIcH4JIAACnAk4l0cHQIAzAefy6AAIcCbgXB4dAAHOBJzLowMgwJmAc3l0AAQ4E3Aujw6AABmB1%2B0u9o24m1w19VI1NdkOPATIXlj1aAhQRypLCAEyXurREKCOVJYQAmS81KMhQB2pLCEEyHipR0OAOlJZQgiQ8VKPhgB1pLKEECDjpR4NAepIZQkhQMZLPRoC1JHKEkKAjJd6NASoI5UlhAAZL%2FVoCFBHKksIATJe6tEQoI5UlhACZLxY0W%2Fb3eKwH71Mp9%2FWQwM0BGw2HzMa7%2B%2Bnk%2BvlUD3r77ufinjdvv8gCvdEtI770XxIQq6ADn4Y7xddzUC0vJ1cPVpD7svvKuAM%2FmmOgxJyBJzDPxX0luAmoFt2ItHDhbejV0KqgEvwT7VjpJfp7dWzRye4COiBP9gJKQL64HtLKC6AAb9XglQAB76nhOICNm%2B75xDoidnu%2FyxHEgES%2BN18IsXH0r8ZFRfQPWiOBK6AFuB3LFwE5EjgCGgFvquAVAlhfPjVt3zF%2Fej76fd8zjLnseycz8utA06TkC5HRDTrBxtXfz7YDfL3hu%2FeAYkSBsFyAmqAX42AhOWIw%2Fi%2FMbXAr0pAKQk1wa9OgLWE2uBXKcBKQo3wqxWgLaFW%2BFUL0JJQM%2FzqBeRKqB1%2BEwJSJbQAvxkBUgmtwG9KAFdCS%2FBVBHB2J7M%2Btn4a3Ld3ZAHf%2BvmyN%2BOsJ3hJ3iUJFvC72tbP16SAz8uRFXwIGFi7uk6gENeWf0ZEB2j%2BAEnIBQEJ0DSHQIAmzYRcEJAATXMIBGjSTMgFAQnQNIdAgCbNhFwQkABNc0gLArqDUgNndTSR1JUr9%2F%2BUKmxF%2FL3hUheZArPRuNyRLUB4sq0AlnIlNC525As43rnqP69ZDknZSjEc5tObm1VO1WwBx53J7ftDoLDImUhrY7V2YFUEdPAEN19aY31hvnF1N7meazyImoBjJ8huv2jMv3gOjXX%2FfNKqAo4SNh%2Bz0fjwFCnOuMfEi1OUFVwTxXWM4ScdRsuhe8yy1I43ZKQT%2Farx6h3wVUFZPRcEWJFl5oUAJiirMAiwIsvMCwFMUFZhEGBFlpkXApigrMIgwIosMy8EMEFZhUGAFVlmXghggrIKgwArssy8EMAEZRUGAVZkmXkhgAnKKuw3fJAlf%2F2mKG8AAAAASUVORK5CYII%3D&label=%20&color=%2300aced00">
-	<img alt="Discord" src="https://img.shields.io/discord/785339959518953482?style=flat-square&logo=discord&label=%20&color=%2300aced00">
-
-</div>
 
 # What is Animated Java?
 
@@ -93,9 +67,9 @@ Things you'll need installed before you can setup the development environment
 5. Open Blockbench, then go to `File > Plugins > Load Plugin From File` and select the `animated_java.js` file from your local repo (`dist/pluginPackage/animated-java.js`).
 6. That's it! You're ready to start developing.
 
-    Note that whenever you make changes, you must reload Blockbench as a whole for the changes to function as expected.
-
-    You can use `Ctrl + Shift + R` to reload Blockbench.
+    > [!NOTE]
+    > Note that whenever you make changes, you must reload Blockbench as a whole for the changes to function as expected.<br>
+    > You can use `Ctrl + Shift + R` to reload Blockbench.
 
 ## Adding Localizations
 
