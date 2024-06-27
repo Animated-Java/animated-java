@@ -77,6 +77,7 @@ import * as blockModelManager from './systems/minecraft/blockModelManager'
 import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
 import { VanillaBlockDisplay, debugBlockState, debugBlocks } from './outliner/vanillaBlockDisplay'
 import { BLOCKSTATE_REGISTRY } from './systems/minecraft/blockstateManager'
+import { exportProject } from './systems/exporter'
 
 // Show loading popup
 void showLoadingPopup().then(async () => {
@@ -124,6 +125,7 @@ globalThis.AnimatedJava = {
 		debugBlocks,
 		debugBlockState,
 		BLOCKSTATE_REGISTRY,
+		exportProject,
 	},
 }
 
