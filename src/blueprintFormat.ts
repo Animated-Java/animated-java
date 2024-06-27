@@ -467,6 +467,8 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 		if (!Project) throw new Error('No project to export.')
 		Blockbench.export({
 			resource_id: 'animated_java_blueprint.export',
+			name: (Project.name || 'unnamed') + '.ajblueprint',
+			startpath: Project.save_path,
 			type: 'json',
 			extensions: [BLUEPRINT_CODEC.extension],
 			content: BLUEPRINT_CODEC.compile(),
