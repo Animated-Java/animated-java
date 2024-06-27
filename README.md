@@ -1,60 +1,83 @@
-<div align="center">
-	<img src="https://raw.githubusercontent.com/Animated-Java/animated-java/main/src/assets/animated_java_icon.webp"/>
+<div style="
+	display: flex;
+	justify-content: center;
+	">
+	<div style="
+			display: flex;
+			align-items: center;
+			margin-bottom: 2rem;
+		">
+		<!-- svelte-ignore a11y-missing-attribute -->
+		<img src="https://raw.githubusercontent.com/Animated-Java/animated-java/main/src/assets/animated_java_icon.svg" style="
+			width: 128px;
+			border-radius: 16px;
+			box-shadow: 4px 4px 8px -4px black;
+		"/>
+		<div style="
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				margin-left: 2rem;
+			">
+			<span style="font-size:48px; font-weight:bold;">Animated Java</span>
+			<div>
+				<a>
+					<img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FAnimated-Java%2Fanimated-java%2Fmain%2Fpackage.json&query=display_version&prefix=v&style=flat-square&label=%20&color=%2300aced00" width=128>
+				</a>
+			</div>
+		</div>
+	</div>
 </div>
-<h1 align="center">
-	Animated Java
-	<br>
-	<a href="https://animated-java.dev/discord">
-		<img src="https://img.shields.io/discord/785339959518953482?color=5865f2&label=Discord&style=flat" alt="Discord" />
-	</a>
-	<a>
-		<img src="https://img.shields.io/github/package-json/v/animated-java/animated-java" alt="GitHub package.json version" />
-	</a>
-</h1>
 <h3 align="center">
 	A Blockbench plugin that makes complex animation a breeze in Minecraft: Java Edition.
 </h3>
-<br/>
+
+<div align="center">
+	<img alt="Total Downloads (Last 4 years)" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fblckbn.ch%2Fapi%2Fstats%2Fplugins%3Fweeks%3D192&query=animated_java&style=flat-square&logo=data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAAAXNSR0IArs4c6QAAA6BJREFUeF7tnFFSGzEMhuXkBB0gkLf0JuQmcBLgJMlNmp6keQtkyHCCxJ3NNJ0MTXclW7Js5ucVWfJ%2B38oQYxMIX64Egmt1FCcIcH4JIAACnAk4l0cHQIAzAefy6AAIcCbgXB4dAAHOBJzLowMgwJmAc3l0AAQ4E3Aujw6AABmB1%2B0u9o24m1w19VI1NdkOPATIXlj1aAhQRypLCAEyXurREKCOVJYQAmS81KMhQB2pLCEEyHipR0OAOlJZQgiQ8VKPhgB1pLKEECDjpR4NAepIZQkhQMZLPRoC1JHKEkKAjJd6NASoI5UlhAAZL%2FVoCFBHKksIATJe6tEQoI5UlhACZLxY0W%2Fb3eKwH71Mp9%2FWQwM0BGw2HzMa7%2B%2Bnk%2BvlUD3r77ufinjdvv8gCvdEtI770XxIQq6ADn4Y7xddzUC0vJ1cPVpD7svvKuAM%2FmmOgxJyBJzDPxX0luAmoFt2ItHDhbejV0KqgEvwT7VjpJfp7dWzRye4COiBP9gJKQL64HtLKC6AAb9XglQAB76nhOICNm%2B75xDoidnu%2FyxHEgES%2BN18IsXH0r8ZFRfQPWiOBK6AFuB3LFwE5EjgCGgFvquAVAlhfPjVt3zF%2Fej76fd8zjLnseycz8utA06TkC5HRDTrBxtXfz7YDfL3hu%2FeAYkSBsFyAmqAX42AhOWIw%2Fi%2FMbXAr0pAKQk1wa9OgLWE2uBXKcBKQo3wqxWgLaFW%2BFUL0JJQM%2FzqBeRKqB1%2BEwJSJbQAvxkBUgmtwG9KAFdCS%2FBVBHB2J7M%2Btn4a3Ld3ZAHf%2BvmyN%2BOsJ3hJ3iUJFvC72tbP16SAz8uRFXwIGFi7uk6gENeWf0ZEB2j%2BAEnIBQEJ0DSHQIAmzYRcEJAATXMIBGjSTMgFAQnQNIdAgCbNhFwQkABNc0gLArqDUgNndTSR1JUr9%2F%2BUKmxF%2FL3hUheZArPRuNyRLUB4sq0AlnIlNC525As43rnqP69ZDknZSjEc5tObm1VO1WwBx53J7ftDoLDImUhrY7V2YFUEdPAEN19aY31hvnF1N7meazyImoBjJ8huv2jMv3gOjXX%2FfNKqAo4SNh%2Bz0fjwFCnOuMfEi1OUFVwTxXWM4ScdRsuhe8yy1I43ZKQT%2Farx6h3wVUFZPRcEWJFl5oUAJiirMAiwIsvMCwFMUFZhEGBFlpkXApigrMIgwIosMy8EMEFZhUGAFVlmXghggrIKgwArssy8EMAEZRUGAVZkmXkhgAnKKuw3fJAlf%2F2mKG8AAAAASUVORK5CYII%3D&label=%20&color=%2300aced00">
+	<img alt="Discord" src="https://img.shields.io/discord/785339959518953482?style=flat-square&logo=discord&label=%20&color=%2300aced00">
+
+</div>
+
+# What is Animated Java?
+
+Animated Java is a plugin for Blockbench that allows you to create custom animations and models
+for Vanilla Minecraft. It uses the power of Java Edition's Data Pack and Resource Pack systems
+to bring your creations to life!
+
+## Features
+
+-   Variants: Swap between different textures in-game.
+-   Highly optimized: Hours of performance tests and optimization tweaks have gone into Animated
+    Java's Exported Data Pack to make sure it has as little performance impact as possible.
+-   Custom easing functions for keyframes.
+-   Limited Molang support. If Blockbench can render it, Animated Java can bake it.
+-   Text Display previewing and animation support.
+-   Resource Pack-less exporting. Animate Vanilla block and item models!
+-   Locators: Run commands relative to a locators position via keyframes.
+-   Camera Plugin Support: Install the [Official Camera Plugin](https://www.blockbench.net/plugins/cameras) to create cinematic camera paths with ease!
+-   Animation Tweening: Create smooth transitions between animations.
+-   Many different configuration options.
+-   Complete Documentation at https://animated-java.github.io/
+
+And much more!
 
 # How to Install
 
-There are two ways to install Animated Java: through the Official Plugin List, or through a direct link.
-The Direct link is the recommended way to install Animated Java, as it will always be up to date with the latest version the moment it's released. While the Official Plugin List is also up to date, it may take a few days for the latest version to be available.
-
-## Through the Official Plugin List
-
-Open the Plugins menu in Blockbench (File > Plugins)
-![Plugin Menu](https://raw.githubusercontent.com/Animated-Java/animated-java/experimental/src/assets/plugin_menu.png)
-
-Click on the `Available` tab, Then search for Animated Java in the search bar, and click Install.
-![Search](https://raw.githubusercontent.com/Animated-Java/animated-java/experimental/src/assets/search.png)
-
-## Through the Direct Link
-
-Open the Plugins menu in BlockBench (File > Plugins)
-
-![Plugin Menu](https://raw.githubusercontent.com/Animated-Java/animated-java/main/src/assets/plugin_menu.png)
-
-In the Plugins menu, click on `Load Plugin from URL`
-
-![Load Plugin from URL](https://raw.githubusercontent.com/Animated-Java/animated-java/main/src/assets/load_plugin_from_url.png)
-
-Then, paste this URL into the box that appears: https://animated-java.dev/api/builds/main/animated_java.js
-
-![URL](https://raw.githubusercontent.com/Animated-Java/animated-java/main/src/assets/url.png)
-
-Click Confirm, and success! You've just installed Animated Java.
+Follow our guide [here](https://animated-java.github.io/docs/getting-started/installing-animated-java) for detailed instructions on how to install the latest release of Animated Java.
 
 # Getting Started
 
-Check out the [Getting Started](https://animated-java.dev/docs/getting_started) page either online or in-app for detailed information on getting started with Animated Java.
+Check out the [Getting Started](https://animated-java.github.io/docs/getting-started/installing-animated-java) page of our documentation to learn how to use Animated Java.
 
 # Contributing to Animated Java
+
+We welcome contributions to Animated Java! If you're interested in contributing, please make sure to run your ideas by us in our [Discord server](https://discord.com/invite/jFgY4PXZfp) before starting work on them. So that we can ensure that your contributions align with the goals of the project.
 
 ## Prerequisites
 
 Things you'll need installed before you can setup the development environment
 
+-   [Blockbench](https://www.blockbench.net/)
 -   [Node.js](https://nodejs.org/en/)
 -   [Yarn](https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable)
 
@@ -62,16 +85,21 @@ Things you'll need installed before you can setup the development environment
 
 1. Clone the repository.
 2. Run `yarn install` to install dependencies.
-3. Open up `types/blockbench-types.d.ts` and uncomment the first line, then comment out the second line.
-4. Run `yarn build:dev` to start the development environment.
-5. Open Blockbench, then go to `File > Plugins > Load Plugin From File` and select the `animated_java.js` file from your local repo (`dist/animated-java.js`).
+3. Open up `types/blockbench-types.d.ts` and replace the content of the file with the following:
+    ```ts
+    /// <reference types="blockbench-types"/>
+    ```
+4. Run `yarn build:dev` to start the development environment, which will watch for changes and recompile the plugin.
+5. Open Blockbench, then go to `File > Plugins > Load Plugin From File` and select the `animated_java.js` file from your local repo (`dist/pluginPackage/animated-java.js`).
+6. That's it! You're ready to start developing.
+
+    Note that whenever you make changes, you must reload Blockbench as a whole for the changes to function as expected.
+
+    You can use `Ctrl + Shift + R` to reload Blockbench.
 
 ## Adding Localizations
 
-1. Copy the `en.yaml` file in `src/lang/` and rename it to match the language you're translating to.
-2. Translate! Note that you should be testing your translations as you go in Blockbench.
-3. Once you're done translating and testing, open a pull request with your changes.
-
-# Creating a Custom Exporter
-
-We have a guide on how to create an external exporter for Animated Java [here](https://github.com/Animated-Java/animated-java-exporter-plugin-template).
+1. Follow the steps above to set up the development environment.
+2. Duplicate `src/lang/en.yml` and rename it to match the language you're translating to. (e.g. `fr.yml` for French)
+3. Start Translating! Make sure to check your changes in Blockbench to ensure they display correctly.
+4. Once you're done translating, open a pull request with your changes.
