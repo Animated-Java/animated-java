@@ -52,7 +52,7 @@ dir global {
 	dir remove {
 		# Removes all instances of all rigs from the world.
 		function everything {
-			kill @e[type=item_display,tag=aj.rig_entity]
+			kill @e[tag=<%TAGS.GLOBAL_RIG()%>]
 		}
 	}
 
