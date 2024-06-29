@@ -12,7 +12,7 @@ import { renderRig, hashRig } from './rigRenderer'
 
 export class IntentionalExportError extends Error {}
 
-async function actuallyExportProject() {
+async function actuallyExportProject(forceSave = true) {
 	const aj = Project!.animated_java
 	const dialog = openExportProgressDialog()
 	// Wait for the dialog to open
@@ -88,7 +88,7 @@ async function actuallyExportProject() {
 		Project!.last_used_export_namespace = aj.export_namespace
 		console.timeEnd('Exporting project took')
 
-		saveBlueprint()
+		if (forceSave) saveBlueprint()
 		dialog.close(0)
 		Blockbench.showQuickMessage('Project exported successfully!', 2000)
 	} catch (e: any) {
@@ -106,7 +106,7 @@ async function actuallyExportProject() {
 	}
 }
 
-export async function exportProject() {
+export async function exportProject(forceSave = true) {
 	if (!Project) return // TODO: Handle this error better
 	blueprintSettingErrors.set({})
 	const settingsDialog = openBlueprintSettingsDialog()!
@@ -133,5 +133,5 @@ export async function exportProject() {
 	}
 
 	settingsDialog.close(0)
-	await actuallyExportProject()
+	await actuallyExportProject(forceSave)
 }
