@@ -205,7 +205,8 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 	const aj = Project!.animated_java
 	const passengers: NbtList = new NbtList()
 
-	const { locators, cameras } = createPositionStorage(rig)
+	const { locators, cameras, bones } = createPassengerStorage(rig)
+
 	passengers.add(
 		new NbtCompound()
 			.set('id', new NbtString('minecraft:marker'))
@@ -223,6 +224,7 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 					.set('rigHash', new NbtString(rigHash))
 					.set('locators', locators)
 					.set('cameras', cameras)
+					.set('bones', bones)
 			)
 	)
 
@@ -445,24 +447,41 @@ function getRotationFromQuaternion(q: THREE.Quaternion) {
 	return rot
 }
 
-function createPositionStorage(rig: IRenderedRig) {
+function createPassengerStorage(rig: IRenderedRig) {
+	const bones = new NbtCompound()
 	const locators = new NbtCompound()
 	const cameras = new NbtCompound()
+	// Data entity
+	bones.set('data_data', new NbtString(''))
 	for (const node of Object.values(rig.defaultPose)) {
-		if (node.type !== 'locator' && node.type !== 'camera') continue
-		const rot = getRotationFromQuaternion(node.rot)
-		;(node.type === 'locator' ? locators : cameras).set(
-			node.name,
-			new NbtCompound()
-				.set('uuid', new NbtString(''))
-				.set('posx', new NbtFloat(node.pos.x))
-				.set('posy', new NbtFloat(node.pos.y))
-				.set('posz', new NbtFloat(node.pos.z))
-				.set('rotx', new NbtFloat(Math.radToDeg(rot.x)))
-				.set('roty', new NbtFloat(Math.radToDeg(rot.y)))
-		)
+		switch (node.type) {
+			case 'locator':
+			case 'camera': {
+				const rot = getRotationFromQuaternion(node.rot)
+				const data = new NbtCompound()
+					.set('posx', new NbtFloat(node.pos.x))
+					.set('posy', new NbtFloat(node.pos.y))
+					.set('posz', new NbtFloat(node.pos.z))
+					.set('rotx', new NbtFloat(Math.radToDeg(rot.x)))
+					.set('roty', new NbtFloat(Math.radToDeg(rot.y)))
+				if (
+					node.type === 'locator' &&
+					(rig.nodeMap[node.uuid].node as Locator).config.use_entity
+				)
+					data.set('uuid', new NbtString(''))
+				;(node.type === 'camera' ? cameras : locators).set(node.name, data)
+				break
+			}
+			case 'bone':
+			case 'text_display':
+			case 'item_display':
+			case 'block_display': {
+				bones.set(node.type + '_' + node.name, new NbtString(''))
+				break
+			}
+		}
 	}
-	return { locators, cameras }
+	return { locators, cameras, bones }
 }
 
 function nodeSorter(a: AnyRenderedNode, b: AnyRenderedNode): number {

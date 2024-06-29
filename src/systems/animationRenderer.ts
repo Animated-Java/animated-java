@@ -29,9 +29,9 @@ function getNodeMatrix(node: OutlinerElement, scale: number) {
 
 	const scaleVec = new THREE.Vector3().setScalar(scale)
 	// Hacky way to force the matrix to update in-game
-	scaleVec.x += Math.random() * 0.00001
-	scaleVec.y += Math.random() * 0.00001
-	scaleVec.z += Math.random() * 0.00001
+	// scaleVec.x += Math.random() * 0.00001
+	// scaleVec.y += Math.random() * 0.00001
+	// scaleVec.z += Math.random() * 0.00001
 	matrixWorld.scale(scaleVec)
 
 	if (node instanceof TextDisplay) {
@@ -136,7 +136,7 @@ export function getAnimationNodes(
 				matrix = getNodeMatrix(node.node, node.scale)
 				// Only add the frame if the matrix has changed.
 				// NOTE - Disabled because it causes issues with vanilla interpolation.
-				// if (lastFrame && lastFrame.matrix.equals(matrix)) continue
+				if (lastFrame && lastFrame.matrix.equals(matrix)) continue
 				// Inherit instant interpolation from parent
 				if (node.parentNode) {
 					const parentKeyframes = keyframeCache.get(node.parentNode.uuid)
@@ -155,7 +155,7 @@ export function getAnimationNodes(
 					interpolation = 'pre-post'
 				}
 
-				// lastFrameCache.set(uuid, { matrix, keyframe })
+				lastFrameCache.set(uuid, { matrix, keyframe })
 				break
 			}
 			case 'locator': {

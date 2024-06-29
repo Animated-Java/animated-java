@@ -1,7 +1,7 @@
 {
 	"meta": {
 		"format": "animated_java_blueprint",
-		"format_version": "0.5.3",
+		"format_version": "0.5.4",
 		"uuid": "167b27cd-b559-3f13-a97c-0841fe21f1d1",
 		"save_location": "D:\\github-repos\\animated-java\\animated-java\\test_blueprints\\armor_stand.ajblueprint",
 		"last_used_export_namespace": "armor_stand"
@@ -2154,7 +2154,7 @@
 			"name": "walk",
 			"loop": "loop",
 			"override": false,
-			"length": 4,
+			"length": 1,
 			"snapping": 20,
 			"selected": false,
 			"saved": false,
@@ -2467,44 +2467,6 @@
 								}
 							],
 							"uuid": "595b9015-2eea-85a5-4511-da31a5019413",
-							"time": 0,
-							"color": -1,
-							"interpolation": "linear",
-							"easing": "linear",
-							"easingArgs": []
-						}
-					]
-				},
-				"d0076177-a6cf-561c-08d8-efd07677b337": {
-					"name": "camera",
-					"type": "camera",
-					"keyframes": [
-						{
-							"channel": "position",
-							"data_points": [
-								{
-									"x": "math.sin(q.life_time * 90) * 64",
-									"y": "0",
-									"z": "math.cos(q.life_time * 90) * 64"
-								}
-							],
-							"uuid": "979e744a-3717-f899-50ef-585f27a63ec9",
-							"time": 0,
-							"color": -1,
-							"interpolation": "linear",
-							"easing": "linear",
-							"easingArgs": []
-						},
-						{
-							"channel": "rotation",
-							"data_points": [
-								{
-									"x": "12.25",
-									"y": "math.sin(q.life_time * 90) * 90",
-									"z": "0"
-								}
-							],
-							"uuid": "688d6c23-56eb-5488-4243-330fde5e01e6",
 							"time": 0,
 							"color": -1,
 							"interpolation": "linear",
@@ -2962,7 +2924,7 @@
 			"override": false,
 			"length": 4,
 			"snapping": 20,
-			"selected": false,
+			"selected": true,
 			"saved": false,
 			"path": "",
 			"anim_time_update": "",
@@ -2971,28 +2933,6 @@
 			"loop_delay": "",
 			"excluded_bones": [],
 			"animators": {
-				"98a28100-07e8-849a-38b7-f56abc2c2e56": {
-					"name": "waist_pivot",
-					"type": "bone",
-					"keyframes": [
-						{
-							"channel": "position",
-							"data_points": [
-								{
-									"x": "0",
-									"y": "0",
-									"z": 0
-								}
-							],
-							"uuid": "7f72a94b-98e3-20fc-546f-3c6f6ca98c61",
-							"time": 0,
-							"color": -1,
-							"interpolation": "linear",
-							"easing": "linear",
-							"easingArgs": []
-						}
-					]
-				},
 				"49e67c2a-3d1d-792d-9c75-72ecbc0f92e0": {
 					"name": "body_waist_pivot",
 					"type": "bone",
@@ -3056,7 +2996,7 @@
 							"data_points": [
 								{
 									"x": "0",
-									"y": "v.value = q.life_time * 90;\nv.lopside_mag = -30;\n\n-6\n+ (math.sin(v.value + math.cos(v.value) * v.lopside_mag)) * 0.25;\n",
+									"y": "-6",
 									"z": "0"
 								}
 							],
@@ -3219,6 +3159,28 @@
 								}
 							],
 							"uuid": "daa8347d-bcef-d987-c35f-0c25fac8174b",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						}
+					]
+				},
+				"4f000ffc-11d6-3a4b-7c8d-6b5ba483228c": {
+					"name": "baseplate_pivot_a",
+					"type": "bone",
+					"keyframes": [
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "0",
+									"y": "0",
+									"z": -16
+								}
+							],
+							"uuid": "dc1a350e-1698-0c78-125b-874acafc6b8c",
 							"time": 0,
 							"color": -1,
 							"interpolation": "linear",
@@ -3925,7 +3887,7 @@
 			"override": false,
 			"length": 4.95,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"saved": false,
 			"path": "",
 			"anim_time_update": "",

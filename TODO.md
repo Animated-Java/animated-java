@@ -103,8 +103,9 @@
 -   [x] Locator rotation inheritance support - looks like they've supported it all this time...
 -   [x] Apply variant keyframes in animations.
 -   [x] Figure out how cameras will work.
+-   [x] See how much swapping to a static list of UUIDs for selecting bones effects performance.
 -   [ ] Check for references to non-existant functions in merged function tags, and remove them.
--   [ ] When applying variants, remove any bones that have no elements with textured faces.
+-   [ ] When applying variants, remove / replace any bones that have / had no elements with textured faces.
 
 # Resource Pack
 
