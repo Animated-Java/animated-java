@@ -1,4 +1,5 @@
-const VERSION_MANIFEST_URL = 'https://launchermeta.mojang.com/mc/game/version_manifest_v2.json'
+export const VERSION_MANIFEST_URL =
+	'https://launchermeta.mojang.com/mc/game/version_manifest_v2.json'
 
 interface IMinecraftVersion {
 	id: string
@@ -21,6 +22,13 @@ export interface IMinecraftVersionManifest {
 let latestMinecraftVersion: IMinecraftVersion | undefined
 export async function getLatestVersion() {
 	if (latestMinecraftVersion) return latestMinecraftVersion
+	if (!window.navigator.onLine) {
+		console.warn('Not connected to the internet! Using last known latest version.')
+		latestMinecraftVersion = getCurrentVersion()
+		if (!latestMinecraftVersion)
+			throw new Error('No internet connection, and no previous latest version cached!')
+		return latestMinecraftVersion
+	}
 	let response: Response | undefined
 	try {
 		response = await fetch(VERSION_MANIFEST_URL)

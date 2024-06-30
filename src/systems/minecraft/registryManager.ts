@@ -178,7 +178,7 @@ export async function checkForRegistryUpdate() {
 	requestAnimationFrame(() => events.MINECRAFT_REGISTRY_LOADED.dispatch())
 }
 
-events.LOAD.subscribe(() => {
+events.NETWORK_CONNECTED.subscribe(() => {
 	void checkForRegistryUpdate().then(async () => {
 		await checkForAssetsUpdate()
 	})

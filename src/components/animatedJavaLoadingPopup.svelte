@@ -4,14 +4,24 @@
 </script>
 
 <script lang="ts">
+	import { translate } from '../util/translation'
+
 	export let loaded: Valuable<boolean>
+	export let offline: Valuable<boolean>
 </script>
 
-<div class="floating">
-	{#if $loaded}
-		<div>Animated Java Loaded Successfully!</div>
+<div class={`floating ${$offline ? 'red-border' : 'blue-border'}`}>
+	{#if $offline}
+		<div style="display: flex; flex-direction: column;">
+			{@html translate('popup.loading.offline')
+				.split('\n')
+				.map(v => '<p>' + v + '</p>')
+				.join('')}
+		</div>
+	{:else if $loaded}
+		<div>{translate('popup.loading.success')}</div>
 	{:else}
-		<div class="text">Loading Animated Java...</div>
+		<div class="text">{translate('popup.loading.loading')}</div>
 		<img src={RunningArmorStand} alt="Running Armor Stand" />
 	{/if}
 </div>
@@ -23,10 +33,15 @@
 		right: 2rem;
 		background: var(--color-ui);
 		padding: 8px 16px;
-		border: 1px solid var(--color-accent);
 		display: flex;
 		align-items: center;
 		flex-direction: row;
+	}
+	.blue-border {
+		border: 1px solid var(--color-accent);
+	}
+	.red-border {
+		border: 1px solid var(--color-error);
 	}
 	.text {
 		margin-right: 16px;

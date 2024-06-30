@@ -69,7 +69,11 @@ import { openUnexpectedErrorDialog } from './interface/unexpectedErrorDialog'
 import { BLUEPRINT_CODEC, BLUEPRINT_FORMAT } from './blueprintFormat'
 import { TextDisplay } from './outliner/textDisplay'
 import { getLatestVersionClientDownloadUrl } from './systems/minecraft/assetManager'
-import { hideLoadingPopup, showLoadingPopup } from './interface/animatedJavaLoadingPopup'
+import {
+	hideLoadingPopup,
+	showLoadingPopup,
+	showOfflineError,
+} from './interface/animatedJavaLoadingPopup'
 import { getVanillaFont } from './systems/minecraft/fontManager'
 import * as assetManager from './systems/minecraft/assetManager'
 import * as itemModelManager from './systems/minecraft/itemModelManager'
@@ -81,6 +85,12 @@ import { exportProject } from './systems/exporter'
 
 // Show loading popup
 void showLoadingPopup().then(async () => {
+	if (!window.navigator.onLine) {
+		showOfflineError()
+		// return
+	}
+	events.NETWORK_CONNECTED.dispatch()
+
 	await Promise.all([
 		new Promise<void>(resolve => events.MINECRAFT_ASSETS_LOADED.subscribe(() => resolve())),
 		new Promise<void>(resolve => events.MINECRAFT_REGISTRY_LOADED.subscribe(() => resolve())),

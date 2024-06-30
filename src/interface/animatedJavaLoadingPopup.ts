@@ -4,6 +4,7 @@ import { injectSvelteCompomponent } from '../util/injectSvelte'
 import { Valuable } from '../util/stores'
 
 const LOADED = new Valuable(false)
+const OFFLINE = new Valuable(false)
 let activeComponent: SvelteComponent | undefined
 
 export async function showLoadingPopup() {
@@ -12,6 +13,7 @@ export async function showLoadingPopup() {
 		svelteComponent: AnimatedJavaLoadingPopup,
 		svelteComponentProperties: {
 			loaded: LOADED,
+			offline: OFFLINE,
 		},
 		elementSelector() {
 			return document.body
@@ -27,4 +29,15 @@ export function hideLoadingPopup() {
 		activeComponent.$destroy()
 		activeComponent = undefined
 	}, 2000)
+}
+
+export function showOfflineError() {
+	if (!activeComponent) return
+	OFFLINE.set(true)
+	// FIXME - Change this into a X button instead of a timeout.
+	setTimeout(() => {
+		if (!activeComponent) return
+		activeComponent.$destroy()
+		activeComponent = undefined
+	}, 10000)
 }

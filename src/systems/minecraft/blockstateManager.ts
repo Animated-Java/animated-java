@@ -103,5 +103,7 @@ export async function getBlockState(block: string) {
 }
 
 events.LOAD.subscribe(() => {
-	void checkForRegistryUpdate()
+	void checkForRegistryUpdate().catch(err => {
+		console.error(err)
+	})
 })

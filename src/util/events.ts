@@ -20,6 +20,8 @@ export const events = {
 	INJECT_MODS: new PluginEvent('injectMods'),
 	EXTRACT_MODS: new PluginEvent('extractMods'),
 
+	NETWORK_CONNECTED: new PluginEvent('networkConnected'),
+
 	MINECRAFT_ASSETS_LOADED: new PluginEvent('minecraftAssetsLoaded'),
 	MINECRAFT_REGISTRY_LOADED: new PluginEvent('minecraftRegistriesLoaded'),
 	MINECRAFT_FONTS_LOADED: new PluginEvent('minecraftFontsLoaded'),

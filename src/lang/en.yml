@@ -12,6 +12,13 @@ animated_java.action.create_vanilla_block_display.title: Add Vanilla Block Displ
 animated_java.action.open_vanilla_item_display_config.name: Vanilla Item Display Config
 animated_java.action.open_vanilla_block_display_config.name: Vanilla Block Display Config
 
+### Popups
+animated_java.popup.loading.loading: Loading Animated Java...
+animated_java.popup.loading.success: Animated Java Loaded Successfully!
+animated_java.popup.loading.offline: |-
+    Animated Java Failed to Connect!
+    Some features may be unavailable.
+
 ### Dialogs
 
 ## About
