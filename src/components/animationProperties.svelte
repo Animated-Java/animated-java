@@ -1,5 +1,4 @@
 <script lang="ts" , context="module">
-	import Checkbox from './dialogItems/checkbox.svelte'
 	import NumberSlider from './dialogItems/numberSlider.svelte'
 	import LineInput from './dialogItems/lineInput.svelte'
 

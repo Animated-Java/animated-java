@@ -94,7 +94,7 @@ let lastFrameCache = new Map<string, ILastFrameCacheItem>()
  * Map of node UUIDs to a map of times to keyframes
  */
 let keyframeCache = new Map<string, Map<number, _Keyframe | undefined>>()
-let excludedBonesCache = new Set<string>()
+let excludedNodesCache = new Set<string>()
 export function getAnimationNodes(
 	animation: _Animation,
 	nodeMap: IRenderedRig['nodeMap'],
@@ -109,13 +109,13 @@ export function getAnimationNodes(
 			const keyframeMap = new Map(animator.keyframes.map(kf => [kf.time, kf]))
 			keyframeCache.set(uuid, keyframeMap)
 		}
-		excludedBonesCache = new Set(animation.excluded_nodes.map(b => b.value))
+		excludedNodesCache = new Set(animation.excluded_nodes.map(b => b.value))
 	}
 	const nodes: IAnimationNode[] = []
 
 	for (const [uuid, node] of Object.entries(nodeMap)) {
 		if (!node.node.export) continue
-		if (excludedBonesCache.has(uuid)) continue
+		if (excludedNodesCache.has(uuid)) continue
 		const keyframes = keyframeCache.get(uuid)
 		if (!keyframes) continue
 		const keyframe = keyframes.get(time)
