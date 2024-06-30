@@ -10,6 +10,7 @@ import { Valuable } from './util/stores'
 import { TRANSPARENT_TEXTURE, TRANSPARENT_TEXTURE_MATERIAL, Variant } from './variants'
 import FormatPageSvelte from './components/formatPage.svelte'
 import { translate } from './util/translation'
+import { process } from './systems/modelDataFixerUpper'
 
 /**
  * The serialized Variant Bone Config
@@ -95,7 +96,7 @@ export interface IBlueprintVariantJSON {
 	/**
 	 * The list of bones that should be ignored when applying the Variant
 	 */
-	excluded_bones: string[]
+	excluded_nodes: string[]
 }
 
 /**
@@ -137,7 +138,7 @@ export interface IBlueprintFormatJSON {
 	elements: any[]
 	outliner: any[]
 	textures: Texture[]
-	animations: AnimationOptions[]
+	animations: AnimationOptions[] & { excluded_nodes: string[] }
 	animation_controllers?: AnimationControllerOptions[]
 	animation_variable_placeholders: string
 	backgrounds?: Record<string, any>
@@ -200,6 +201,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 	// ANCHOR - Codec:load
 	load(model: IBlueprintFormatJSON, file) {
 		console.log(`Loading Animated Java Blueprint from '${file.name}'...`)
+		model = process(model)
 		setupProject(BLUEPRINT_FORMAT, model.meta.uuid)
 		if (!Project) {
 			throw new Error('Failed to load Animated Java Blueprint')
@@ -425,7 +427,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 			list: Variant.all.filter(v => !v.isDefault).map(v => v.toJSON()),
 		}
 
-		model.animations = []
+		model.animations = [] as any
 		const animationOptions = { bone_names: true, absolute_paths: options.absolute_paths }
 		for (const animation of Blockbench.Animation.all) {
 			if (!animation.getUndoCopy) continue

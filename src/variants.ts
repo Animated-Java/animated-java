@@ -140,7 +140,7 @@ export class Variant {
 			name: this.name,
 			uuid: this.uuid,
 			texture_map: Object.fromEntries(this.textureMap.map),
-			excluded_bones: this.excludedBones.map(item => item.value),
+			excluded_nodes: this.excludedBones.map(item => item.value),
 		}
 	}
 
@@ -160,7 +160,7 @@ export class Variant {
 		for (const [key, value] of Object.entries(json.texture_map)) {
 			variant.textureMap.add(key, value)
 		}
-		variant.excludedBones = json.excluded_bones
+		variant.excludedBones = json.excluded_nodes
 			.map(uuid => {
 				const group = Group.all.find(group => group.uuid === uuid)
 				return group ? { name: group.name, value: uuid } : undefined

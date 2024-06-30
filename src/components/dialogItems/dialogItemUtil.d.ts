@@ -2,4 +2,4 @@ type DialogItemValueChecker<Value> =
 	| ((value: Value) => { type: string; message: string })
 	| undefined
 
-type CollectionItem = { name: string; value: string }
+type CollectionItem = { icon?: string; name: string; value: string }

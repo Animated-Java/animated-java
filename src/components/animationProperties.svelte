@@ -10,20 +10,14 @@
 <script lang="ts">
 	import Collection from './dialogItems/collection.svelte'
 	import Select from './dialogItems/select.svelte'
+	import { getAvailableNodes } from '../util/excludedNodes'
 
 	export let animationName: Valuable<string>
 	export let loopMode: Valuable<string>
 	export let loopDelay: Valuable<number>
 	export let excludedBones: Valuable<Array<{ name: string; value: string }>>
 
-	const availableBones = Group.all.map(group => {
-		const entry = excludedBones.get().find(bone => bone.value === group.uuid)
-		if (entry) {
-			entry.name = group.name
-		}
-
-		return { name: group.name, value: group.uuid }
-	})
+	const availableBones = getAvailableNodes(excludedBones.get())
 
 	function animationNameValueChecker(value: string): { type: string; message: string } {
 		if (value.trim().length === 0) {
@@ -71,15 +65,15 @@
 	/>
 
 	<Collection
-		label={translate('dialog.animation_properties.excluded_bones.title')}
+		label={translate('dialog.animation_properties.excluded_nodes.title')}
 		tooltip={translate('dialog.animation_properties.bone_lists.description')}
-		availableItemsColumnLable={translate('dialog.animation_properties.included_bones.title')}
+		availableItemsColumnLable={translate('dialog.animation_properties.included_nodes.title')}
 		availableItemsColumnTooltip={translate(
-			'dialog.animation_properties.included_bones.description',
+			'dialog.animation_properties.included_nodes.description',
 		)}
-		includedItemsColumnLable={translate('dialog.animation_properties.excluded_bones.title')}
+		includedItemsColumnLable={translate('dialog.animation_properties.excluded_nodes.title')}
 		includedItemsColumnTooltip={translate(
-			'dialog.animation_properties.excluded_bones.description',
+			'dialog.animation_properties.excluded_nodes.description',
 		)}
 		swapColumnsButtonTooltip={translate(
 			'dialog.animation_properties.swap_columns_button.tooltip',

@@ -25,9 +25,9 @@
 	for (let i = 0; i < availableItems.length; i++) {
 		const item = availableItems[i]
 		if (includedItems.get().find(i => i.value === item.value)) {
-			includedItemsList.push({ id: i, title: item.name })
+			includedItemsList.push({ id: i, title: item.name, icon: item.icon })
 		} else {
-			availableItemsList.push({ id: i, title: item.name })
+			availableItemsList.push({ id: i, title: item.name, icon: item.icon })
 		}
 	}
 
@@ -80,7 +80,7 @@
 						{/if}
 						<i
 							class="material-icons notranslate icon"
-							style="color: rgb(162, 235, 255);">folder</i
+							style="color: rgb(162, 235, 255);">{item.icon || 'folder'}</i
 						>
 						<span>{item.title}</span>
 					</div>
@@ -119,7 +119,7 @@
 						{/if}
 						<i
 							class="material-icons notranslate icon"
-							style="color: rgb(162, 235, 255);">folder</i
+							style="color: rgb(162, 235, 255);">{item.icon || 'folder'}</i
 						>
 						<span>{item.title}</span>
 					</div>

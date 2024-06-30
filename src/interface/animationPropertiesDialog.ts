@@ -8,7 +8,7 @@ export function openAnimationPropertiesDialog(animation: _Animation) {
 	const animationName = new Valuable(animation.name)
 	const loopMode = new Valuable(animation.loop)
 	const loopDelay = new Valuable(Number(animation.loop_delay) || 0)
-	const excludedBones = new Valuable(animation.excluded_bones)
+	const excludedBones = new Valuable(animation.excluded_nodes)
 
 	new SvelteDialog({
 		id: `${PACKAGE.name}:animationPropertiesDialog`,
@@ -27,7 +27,7 @@ export function openAnimationPropertiesDialog(animation: _Animation) {
 			animation.createUniqueName(Blockbench.Animation.all)
 			animation.loop = loopMode.get()
 			animation.loop_delay = loopDelay.get().toString()
-			animation.excluded_bones = excludedBones.get()
+			animation.excluded_nodes = excludedBones.get()
 		},
 	}).show()
 }

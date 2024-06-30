@@ -3,19 +3,18 @@ import { BoneConfig } from '../nodeConfigs'
 import { PACKAGE } from '../constants'
 import { openUnexpectedErrorDialog } from '../interface/unexpectedErrorDialog'
 import { NbtCompound, NbtList, NbtString, NbtTag } from 'deepslate'
-import { toSafeFuntionName } from '../util/minecraftUtil'
 
 export function process(model: any): any {
-	if (model.meta.model_format === 'animatedJava/ajmodel') {
+	console.log('Running MDFU...', JSON.parse(JSON.stringify(model)))
+	if (model?.meta?.model_format === 'animatedJava/ajmodel') {
 		model.meta.model_format = 'animated_java/ajmodel'
 		model.meta.format_version = '0.0'
 	}
-	console.log('Processing model', JSON.parse(JSON.stringify(model)))
 
 	try {
 		let needsUpgrade = model.meta.format_version.length === 3
 		needsUpgrade = needsUpgrade || compareVersions(PACKAGE.version, model.meta.format_version)
-		if (!needsUpgrade) return
+		if (!needsUpgrade) return model
 
 		console.log(
 			'Upgrading model from version',
@@ -36,8 +35,10 @@ export function process(model: any): any {
 		}
 		// Versions below this are post 0.3.10. I changed the versioning system to use the AJ version instead of a unique format version.
 		if (compareVersions('0.3.10', model.meta.format_version)) updateModelTo0_3_10(model)
-		// Animated Java 1.0.0-pre1
+		// v1.0.0-pre1
 		if (compareVersions('0.5.0', model.meta.format_version)) model = updateModelTo1_0pre1(model)
+		// v1.0.0-pre6
+		if (compareVersions('0.5.5', model.meta.format_version)) model = updateModelTo1_0pre6(model)
 		console.groupEnd()
 
 		model.meta.format_version = PACKAGE.version
@@ -49,11 +50,7 @@ export function process(model: any): any {
 	}
 }
 
-// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-unused-vars
-function updateModelTo0_3_10(model: any) {
-	console.log('Processing model for AJ 0.3.10', JSON.parse(JSON.stringify(model)))
-}
-
+// region F1.0
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelToOld1_0(model: any) {
 	console.log('Processing model format 1.0', JSON.parse(JSON.stringify(model)))
@@ -126,6 +123,7 @@ function updateModelToOld1_0(model: any) {
 	delete model.meta.uuid
 }
 
+// region F1.1
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelToOld1_1(model: any) {
 	console.log('Processing model format 1.1', JSON.parse(JSON.stringify(model)))
@@ -139,6 +137,7 @@ function updateModelToOld1_1(model: any) {
 	delete animationExporterSettings.datapack_folder
 }
 
+// region F1.2
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelToOld1_2(model: any) {
 	console.log('Processing model format 1.2', JSON.parse(JSON.stringify(model)))
@@ -152,6 +151,7 @@ function updateModelToOld1_2(model: any) {
 	}
 }
 
+// region F1.3
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelToOld1_3(model: any) {
 	console.log('Processing model format 1.3', JSON.parse(JSON.stringify(model)))
@@ -165,6 +165,7 @@ function updateModelToOld1_3(model: any) {
 	}
 }
 
+// region F1.4
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelToOld1_4(model: any) {
 	console.log('Processing model format 1.4', JSON.parse(JSON.stringify(model)))
@@ -181,6 +182,13 @@ function updateModelToOld1_4(model: any) {
 	}
 }
 
+// region v0.3.10
+// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-unused-vars
+function updateModelTo0_3_10(model: any) {
+	console.log('Processing model for AJ 0.3.10', JSON.parse(JSON.stringify(model)))
+}
+
+// region v1.0.0-pre1
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelTo1_0pre1(model: any) {
 	console.log('Processing model format 1.0.0-pre1', JSON.parse(JSON.stringify(model)))
@@ -236,6 +244,7 @@ function updateModelTo1_0pre1(model: any) {
 				display_name: defaultVariant.name || 'Default',
 				uuid: defaultVariant.uuid || guid(),
 				texture_map: defaultVariant.textureMap || {},
+				// @ts-ignore
 				excluded_bones: [],
 			},
 			list: [],
@@ -350,7 +359,7 @@ function updateModelTo1_0pre1(model: any) {
 			display_name: variant.name,
 			uuid: variant.uuid,
 			texture_map: variant.textureMap,
-			excluded_bones: excludedBones,
+			excluded_nodes: excludedBones,
 		})
 	}
 
@@ -427,4 +436,32 @@ function updateModelTo1_0pre1(model: any) {
 
 	console.log('Finished Blueprint:', blueprint)
 	return blueprint
+}
+
+// region v1.0.0-pre6
+// eslint-disable-next-line @typescript-eslint/naming-convention
+function updateModelTo1_0pre6(model: any): IBlueprintFormatJSON {
+	console.log('Processing model format 1.0.0-pre6', JSON.parse(JSON.stringify(model)))
+
+	const defaultVariant = model.variants.default
+	if (defaultVariant?.excluded_bones) {
+		defaultVariant.excluded_nodes = defaultVariant.excluded_bones
+		delete defaultVariant.excluded_bones
+	}
+
+	for (const variant of model?.variants?.list || []) {
+		if (variant?.excluded_bones) {
+			variant.excluded_nodes = variant.excluded_bones
+			delete variant.excluded_bones
+		}
+	}
+
+	for (const animation of model?.animations || []) {
+		if (animation?.excluded_bones) {
+			animation.excluded_nodes = animation.excluded_bones
+			delete animation.excluded_bones
+		}
+	}
+
+	return model as IBlueprintFormatJSON
 }

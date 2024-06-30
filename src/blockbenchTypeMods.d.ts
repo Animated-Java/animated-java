@@ -67,7 +67,7 @@ declare global {
 
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface _Animation {
-		excluded_bones: CollectionItem[]
+		excluded_nodes: CollectionItem[]
 	}
 
 	// eslint-disable-next-line @typescript-eslint/naming-convention

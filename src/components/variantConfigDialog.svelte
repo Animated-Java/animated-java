@@ -9,6 +9,7 @@
 
 <script lang="ts">
 	import Collection from './dialogItems/collection.svelte'
+	import { getAvailableNodes } from '../util/excludedNodes'
 
 	export let variant: Variant
 	export let displayName: Valuable<string>
@@ -16,20 +17,13 @@
 	export let uuid: Valuable<string>
 	export let textureMap: TextureMap
 	export let generateNameFromDisplayName: Valuable<boolean>
-	export let excludedBones: Valuable<Array<{ name: string; value: string }>>
+	export let excludedBones: Valuable<Array<CollectionItem>>
 
 	const availableTextures = [...Texture.all, TRANSPARENT_TEXTURE]
 	const primaryTextures = [...Texture.all]
 	const secondaryTextures = availableTextures
 
-	const availableBones = Group.all.map(group => {
-		const entry = excludedBones.get().find(bone => bone.value === group.uuid)
-		if (entry) {
-			entry.name = group.name
-		}
-
-		return { name: group.name, value: group.uuid }
-	})
+	const availableBones = getAvailableNodes(excludedBones.get())
 
 	let textureMapUpdated = 0
 
@@ -208,15 +202,15 @@
 			{/key}
 		</lu>
 		<Collection
-			label={translate('dialog.variant_config.excluded_bones.title')}
+			label={translate('dialog.variant_config.excluded_nodes.title')}
 			tooltip={translate('dialog.variant_config.bone_lists.description')}
-			availableItemsColumnLable={translate('dialog.variant_config.included_bones.title')}
+			availableItemsColumnLable={translate('dialog.variant_config.included_nodes.title')}
 			availableItemsColumnTooltip={translate(
-				'dialog.variant_config.included_bones.description',
+				'dialog.variant_config.included_nodes.description',
 			)}
-			includedItemsColumnLable={translate('dialog.variant_config.excluded_bones.title')}
+			includedItemsColumnLable={translate('dialog.variant_config.excluded_nodes.title')}
 			includedItemsColumnTooltip={translate(
-				'dialog.variant_config.excluded_bones.description',
+				'dialog.variant_config.excluded_nodes.description',
 			)}
 			swapColumnsButtonTooltip={translate(
 				'dialog.variant_config.swap_columns_button.tooltip',

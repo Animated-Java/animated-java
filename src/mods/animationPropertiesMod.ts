@@ -61,10 +61,10 @@ createBlockbenchMod(
 		context.excludedBonesProperty = new Property(
 			Blockbench.Animation,
 			'array',
-			'excluded_bones',
+			'excluded_nodes',
 			{
 				condition: () => isCurrentFormat(),
-				label: translate('animation.excluded_bones'),
+				label: translate('animation.excluded_nodes'),
 				default: [],
 			}
 		)
