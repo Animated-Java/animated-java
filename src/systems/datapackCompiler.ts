@@ -19,6 +19,8 @@ import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../interface/expor
 import { roundTo } from '../util/misc'
 import { setTimeout } from 'timers'
 
+const BONE_TYPES = ['bone', 'text_display', 'item_display', 'block_display']
+
 namespace TAGS {
 	export const NEW = () => 'aj.new'
 	export const GLOBAL_RIG = () => 'aj.rig_entity'
@@ -421,14 +423,14 @@ function createAnimationStorage(animations: IRenderedAnimation[]) {
 			new NbtCompound(), // This compound is just to make the list 1-indexed
 		])
 		const animStorage = new NbtCompound().set('frames', frames)
-		storage.set(animation.name, animStorage)
+		storage.set(animation.storageSafeName, animStorage)
 		for (const frame of animation.frames) {
 			const frameStorage = new NbtCompound()
 			frames.add(frameStorage)
 			for (const node of frame.nodes) {
-				if (node.type !== 'bone') continue
+				if (!BONE_TYPES.includes(node.type)) continue
 				frameStorage.set(
-					node.name,
+					node.type + '_' + node.name,
 					new NbtCompound()
 						.set('transformation', matrixToNbtFloatArray(node.matrix))
 						.set('start_interpolation', new NbtInt(0))

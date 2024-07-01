@@ -8,6 +8,7 @@ import {
 import { TextDisplay } from '../outliner/textDisplay'
 import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
 import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
+import { toSafeFuntionName } from '../util/minecraftUtil'
 import { roundToNth } from '../util/misc'
 import { AnyRenderedNode, IRenderedRig } from './rigRenderer'
 import * as crypto from 'crypto'
@@ -74,6 +75,7 @@ export interface IRenderedFrame {
 
 export interface IRenderedAnimation {
 	name: string
+	storageSafeName: string
 	loopDelay: number
 	frames: IRenderedFrame[]
 	/**
@@ -250,6 +252,7 @@ export function updatePreview(animation: _Animation, time: number) {
 export function renderAnimation(animation: _Animation, rig: IRenderedRig) {
 	const rendered = {
 		name: animation.name,
+		storageSafeName: toSafeFuntionName(animation.name).replaceAll('.', '_'),
 		loopDelay: Number(animation.loop_delay) || 0,
 		frames: [],
 		duration: 0,

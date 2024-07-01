@@ -324,7 +324,7 @@ dir <%export_namespace%> {
 							#ARGS: {frame: int}
 							REPEAT (animation.includedNodes) as node {
 								IF (['bone', 'text_display', 'item_display', 'block_display'].includes(node.type)) {
-									$execute on passengers run data modify entity @s[tag=<%TAGS.LOCAL_BONE(export_namespace, node.name)%>] {} merge from storage aj.<%export_namespace%>:animations list.<%animation.name%>.frames[$(frame)].<%node.name%>
+									$execute on passengers run data modify entity @s[tag=<%TAGS.LOCAL_BONE(export_namespace, node.name)%>] {} merge from storage aj.<%export_namespace%>:animations list.<%animation.storageSafeName%>.frames[$(frame)].<%node.name%>
 								}
 							}
 							execute on passengers run data modify entity @s[type=!marker] start_interpolation set value -1
@@ -333,7 +333,7 @@ dir <%export_namespace%> {
 							#ARGS: {frame: int}
 							REPEAT (animation.includedNodes) as node {
 								IF (['bone', 'text_display', 'item_display', 'block_display'].includes(node.type)) {
-									$execute on passengers run data modify entity @s[tag=<%TAGS.LOCAL_BONE(export_namespace, node.name)%>] {} merge from storage aj.<%export_namespace%>:animations list.<%animation.name%>.frames[$(frame)].<%node.name%>
+									$execute on passengers run data modify entity @s[tag=<%TAGS.LOCAL_BONE(export_namespace, node.name)%>] {} merge from storage aj.<%export_namespace%>:animations list.<%animation.storageSafeName%>.frames[$(frame)].<%node.name%>
 								}
 							}
 						}
