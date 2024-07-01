@@ -13,7 +13,13 @@ import {
 	sortObjectKeys,
 } from './util'
 import { BoneConfig, TextDisplayConfig } from '../nodeConfigs'
-import { IFunctionTag, mergeTag, parseBlock, parseDataPackPath } from '../util/minecraftUtil'
+import {
+	IFunctionTag,
+	mergeTag,
+	parseBlock,
+	parseDataPackPath,
+	parseResourceLocation,
+} from '../util/minecraftUtil'
 import { JsonText } from './minecraft/jsonText'
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../interface/exportProgressDialog'
 import { roundTo } from '../util/misc'
@@ -531,7 +537,6 @@ export async function compileDataPack(options: {
 	for (const file of ajmeta.oldDatapack.files) {
 		if (!isFunctionTagPath(file)) {
 			if (fs.existsSync(file)) await fs.promises.unlink(file)
-			PROGRESS.set(PROGRESS.get() + 1)
 		} else if (aj.export_namespace !== Project!.last_used_export_namespace) {
 			const resourceLocation = parseDataPackPath(file)!.resourceLocation
 			if (
@@ -550,7 +555,6 @@ export async function compileDataPack(options: {
 				await fs.promises.copyFile(file, newPath)
 				await fs.promises.unlink(file)
 			}
-			PROGRESS.set(PROGRESS.get() + 1)
 		}
 		let folder = PathModule.dirname(file)
 		while (
@@ -562,6 +566,7 @@ export async function compileDataPack(options: {
 			removedFolders.add(folder)
 			folder = PathModule.dirname(folder)
 		}
+		PROGRESS.set(PROGRESS.get() + 1)
 	}
 
 	const exportedFiles = new Map<string, string>()
@@ -618,14 +623,14 @@ export async function compileDataPack(options: {
 
 	PROGRESS_DESCRIPTION.set('Writing Data Pack...')
 	console.time('Writing Files took')
-	await writeFiles(exportedFiles)
+	await writeFiles(exportedFiles, options.dataPackFolder)
 	console.timeEnd('Writing Files took')
 
 	ajmeta.write()
 	console.timeEnd('Data Pack Compilation took')
 }
 
-async function writeFiles(map: Map<string, string>) {
+async function writeFiles(map: Map<string, string>, dataPackFolder: string) {
 	PROGRESS.set(0)
 	MAX_PROGRESS.set(map.size)
 	const aj = Project!.animated_java
@@ -636,6 +641,7 @@ async function writeFiles(map: Map<string, string>) {
 			const oldFile: IFunctionTag = JSON.parse(fs.readFileSync(path, 'utf-8'))
 			const newFile: IFunctionTag = JSON.parse(content)
 			const merged = mergeTag(oldFile, newFile)
+			// console.log('Merged Function Tag:', path, merged)
 			if (aj.export_namespace !== Project!.last_used_export_namespace) {
 				merged.values = merged.values.filter(v => {
 					const value = typeof v === 'string' ? v : v.id
@@ -647,6 +653,28 @@ async function writeFiles(map: Map<string, string>) {
 					)
 				})
 			}
+			merged.values = merged.values.filter(v => {
+				const value = typeof v === 'string' ? v : v.id
+				const isTag = value.startsWith('#')
+				const location = parseResourceLocation(isTag ? value.substring(1) : value)
+				const vPath = PathModule.join(
+					dataPackFolder,
+					'data',
+					location.namespace,
+					isTag ? 'tags/function' : 'function',
+					location.path + (isTag ? '.json' : '.mcfunction')
+				)
+				const exists = map.has(vPath) || fs.existsSync(vPath)
+				if (!exists) {
+					const parentLocation = parseDataPackPath(path)
+					console.warn(
+						`The referenced ${isTag ? 'tag' : 'function'} '${value}' in '${
+							parentLocation?.resourceLocation || path
+						}' does not exist! Removing reference...`
+					)
+				}
+				return exists
+			})
 			content = JSON.stringify(merged)
 		}
 
