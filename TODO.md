@@ -111,6 +111,10 @@
 
 -   [x] Warn the user when they have custom elements in their model, but have disabled the resource pack export.
 
+# Plugin Exporter
+
+-   [x] Add an option to export a JSON file.
+
 # List of numbers to track
 
 -   [ ] Total exports

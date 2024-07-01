@@ -89,6 +89,7 @@
 		"svelte-awesome-color-picker": "^3.0.0-beta.7",
 		"svelte-preprocess": "^5.0.1",
 		"svelte-preprocess-esbuild": "^3.0.1",
+		"ts-json-schema-generator": "^2.3.0",
 		"typescript": "^4.5.5"
 	},
 	"dependencies": {

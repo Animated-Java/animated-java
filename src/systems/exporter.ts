@@ -7,6 +7,7 @@ import { resolveEnvVariables } from '../util/misc'
 import { translate } from '../util/translation'
 import { hashAnimations, renderProjectAnimations } from './animationRenderer'
 import { compileDataPack } from './datapackCompiler'
+import { exportJSON } from './jsonExporter'
 import { compileResourcePack } from './resourcepackCompiler'
 import { renderRig, hashRig } from './rigRenderer'
 
@@ -25,9 +26,20 @@ async function actuallyExportProject(forceSave = true) {
 		const resourcePackFolder = resolveEnvVariables(aj.resource_pack)
 		const dataPackFolder = resolveEnvVariables(aj.data_pack)
 
-		console.log('Exporting to', resourcePackFolder, dataPackFolder)
-
-		if (aj.enable_advanced_resource_pack_settings) {
+		if (aj.enable_plugin_mode) {
+			modelExportFolder = PathModule.join(
+				'assets/animated_java/models/item/',
+				aj.export_namespace
+			)
+			textureExportFolder = PathModule.join(
+				'assets/animated_java/textures/item/',
+				aj.export_namespace
+			)
+			displayItemPath = PathModule.join(
+				'assets/minecraft/models/item/',
+				aj.display_item.split(':').at(-1)! + '.json'
+			)
+		} else if (aj.enable_advanced_resource_pack_settings) {
 			modelExportFolder = aj.model_folder
 			textureExportFolder = aj.texture_folder
 			displayItemPath = aj.display_item_path
@@ -69,23 +81,34 @@ async function actuallyExportProject(forceSave = true) {
 		const rigHash = hashRig(rig)
 		const animationHash = hashAnimations(animations)
 
-		if (aj.enable_resource_pack) {
-			compileResourcePack({
+		if (aj.enable_plugin_mode) {
+			exportJSON({
 				rig,
 				animations,
 				displayItemPath,
-				resourcePackFolder,
 				textureExportFolder,
 				modelExportFolder,
-				dataPackFolder,
 			})
+		} else {
+			if (aj.enable_resource_pack) {
+				compileResourcePack({
+					rig,
+					animations,
+					displayItemPath,
+					resourcePackFolder,
+					textureExportFolder,
+					modelExportFolder,
+					dataPackFolder,
+				})
+			}
+
+			if (aj.enable_data_pack) {
+				await compileDataPack({ rig, animations, dataPackFolder, rigHash, animationHash })
+			}
+
+			Project!.last_used_export_namespace = aj.export_namespace
 		}
 
-		if (aj.enable_data_pack) {
-			await compileDataPack({ rig, animations, dataPackFolder, rigHash, animationHash })
-		}
-
-		Project!.last_used_export_namespace = aj.export_namespace
 		console.timeEnd('Exporting project took')
 
 		if (forceSave) saveBlueprint()

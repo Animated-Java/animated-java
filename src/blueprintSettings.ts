@@ -1,6 +1,6 @@
 import { Valuable } from './util/stores'
 
-export const defaultValues: ModelProject['animated_java'] = {
+export const defaultValues = {
 	export_namespace: 'blueprint',
 	show_bounding_box: false,
 	auto_bounding_box: true,
@@ -24,6 +24,9 @@ export const defaultValues: ModelProject['animated_java'] = {
 	interpolation_duration: 1,
 	teleportation_duration: 1,
 	use_storage_for_animation: false,
+	// Plugin Settings
+	baked_animations: true,
+	json_file: '',
 }
 
 export const blueprintSettingErrors = new Valuable<Record<string, string>>({})

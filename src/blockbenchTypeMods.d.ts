@@ -4,7 +4,7 @@ import type {
 	IBlueprintBoneConfigJSON,
 	IBlueprintLocatorConfigJSON,
 } from './blueprintFormat'
-import { blueprintSettingErrors } from './blueprintSettings'
+import { blueprintSettingErrors, defaultValues } from './blueprintSettings'
 import { openExportProgressDialog } from './interface/exportProgressDialog'
 import { openUnexpectedErrorDialog } from './interface/unexpectedErrorDialog'
 import { TextDisplay } from './outliner/textDisplay'
@@ -29,31 +29,7 @@ declare module 'three' {
 
 declare global {
 	interface ModelProject {
-		animated_java: {
-			export_namespace: string
-			show_bounding_box: boolean
-			auto_bounding_box: boolean
-			bounding_box: [number, number]
-			// Export Settings
-			enable_plugin_mode: boolean
-			enable_resource_pack: boolean
-			enable_data_pack: boolean
-			// Resource Pack Settings
-			display_item: string
-			customModelDataOffset: number
-			enable_advanced_resource_pack_settings: boolean
-			resource_pack: string
-			display_item_path: string
-			model_folder: string
-			texture_folder: string
-			// Data Pack Settings
-			enable_advanced_data_pack_settings: boolean
-			data_pack: string
-			summon_commands: string
-			interpolation_duration: number
-			teleportation_duration: number
-			use_storage_for_animation: boolean
-		}
+		animated_java: { [T in keyof typeof defaultValues]: (typeof defaultValues)[T] }
 		last_used_export_namespace: string
 		visualBoundingBox?: THREE.LineSegments
 		pluginMode: Valuable<boolean>

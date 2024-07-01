@@ -52,3 +52,53 @@ export function makeNotZero(vec: THREE.Vector3 | THREE.Euler) {
 	if (vec.y === 0) vec.y = 0.00001
 	if (vec.z === 0) vec.z = 0.00001
 }
+
+export function scrubUndefined<T extends Record<string, any>>(obj: T) {
+	for (const key in obj) {
+		if (obj[key] === undefined) {
+			delete obj[key]
+		} else if (typeof obj[key] === 'object') {
+			scrubUndefined(obj[key])
+		}
+	}
+	return obj
+}
+
+// Developed by FetchBot 💖
+type LLNode = {
+	parent?: LLNode
+	name: string
+}
+export function detectCircularReferences(obj: any): boolean {
+	const nodes = new Map<any, LLNode>()
+	function itter(obj: any, parent: LLNode) {
+		if (typeof obj !== 'object' || obj === null) return
+		if (nodes.has(obj)) {
+			const node = nodes.get(obj)
+			const stringifyNode = (node?: LLNode): string => {
+				return node
+					? `${node.parent ? `${stringifyNode(node.parent)}.` : ''}${node.name}`
+					: ''
+			}
+			throw `Circular reference detected:\n\tValue at '${stringifyNode(
+				parent
+			)}'\n\tis also at '${stringifyNode(node)}'`
+		}
+		nodes.set(obj, parent)
+		for (const key in obj) {
+			itter(obj[key], {
+				parent,
+				name: key,
+			})
+		}
+		nodes.delete(obj)
+	}
+	try {
+		itter(obj, { name: 'root' })
+		return false
+	} catch (error) {
+		if (typeof error !== 'string') throw error
+		console.warn(error)
+		return true
+	}
+}

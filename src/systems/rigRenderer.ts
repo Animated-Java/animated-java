@@ -317,10 +317,6 @@ function renderGroup(group: Group, rig: IRenderedRig): INodeStructure | undefine
 		throw new Error(`Invalid bone path: ${group.name} -> ${path}`)
 	}
 
-	const displayRotation = 180
-	// if (Project!.animated_java!.target_minecraft_version.selected!.value === '1.20+')
-	// 	displayRotation = 180
-
 	const renderedBone: IRenderedNodes['Bone'] & {
 		model: { elements: IRenderedElement[] }
 	} = {
@@ -334,9 +330,7 @@ function renderGroup(group: Group, rig: IRenderedRig): INodeStructure | undefine
 		model: {
 			textures: {},
 			elements: [],
-			display: {
-				head: { rotation: [0, displayRotation, 0] },
-			},
+			display: { head: { rotation: [0, 180, 0] } },
 		},
 		modelPath: path,
 		customModelData: -1,
@@ -353,35 +347,50 @@ function renderGroup(group: Group, rig: IRenderedRig): INodeStructure | undefine
 
 	for (const node of group.children) {
 		if (!node.export) continue
-		if (node instanceof Group) {
-			const bone = renderGroup(node, rig)
-			if (bone) structure.children.push(bone)
-		} else if (node instanceof Locator) {
-			const locator = renderLocator(node, rig)
-			if (locator) structure.children.push(locator)
-		} else if (node instanceof TextDisplay) {
-			const textDisplay = renderTextDisplay(node, rig)
-			if (textDisplay) structure.children.push(textDisplay)
-		} else if (OutlinerElement.types.camera && node instanceof OutlinerElement.types.camera) {
-			const camera = renderCamera(node as ICamera, rig)
-			if (camera) structure.children.push(camera)
-		} else if (node instanceof VanillaItemDisplay) {
-			const display = renderItemDisplay(node, rig)
-			if (display) structure.children.push(display)
-		} else if (node instanceof VanillaBlockDisplay) {
-			const display = renderBlockDisplay(node, rig)
-			if (display) structure.children.push(display)
-		} else if (node instanceof Cube) {
-			const element = renderCube(node, rig, renderedBone.model)
-			rig.includesCustomModels = true
-			if (element) renderedBone.model.elements.push(element)
-		} else {
-			console.warn(`Encountered unknown node type:`, node)
+		switch (true) {
+			case node instanceof Group: {
+				const bone = renderGroup(node, rig)
+				if (bone) structure.children.push(bone)
+				break
+			}
+			case node instanceof Locator: {
+				const locator = renderLocator(node, rig)
+				if (locator) structure.children.push(locator)
+				break
+			}
+			case node instanceof TextDisplay: {
+				const textDisplay = renderTextDisplay(node, rig)
+				if (textDisplay) structure.children.push(textDisplay)
+				break
+			}
+			case OutlinerElement.types.camera && node instanceof OutlinerElement.types.camera: {
+				const camera = renderCamera(node as ICamera, rig)
+				if (camera) structure.children.push(camera)
+				break
+			}
+			case node instanceof VanillaItemDisplay: {
+				const display = renderItemDisplay(node, rig)
+				if (display) structure.children.push(display)
+				break
+			}
+			case node instanceof VanillaBlockDisplay: {
+				const display = renderBlockDisplay(node, rig)
+				if (display) structure.children.push(display)
+				break
+			}
+			case node instanceof Cube: {
+				const element = renderCube(node, rig, renderedBone.model)
+				rig.includesCustomModels = true
+				if (element) renderedBone.model.elements.push(element)
+				break
+			}
+			default:
+				console.warn(`Encountered unknown node type:`, node)
 		}
 	}
 
 	// Don't export groups without a model.
-	if (group.children.filter(c => c instanceof Cube).length === 0) return
+	if (group.children.filter(c => c instanceof Cube).length === 0) return structure
 
 	const diff = new THREE.Vector3().subVectors(
 		renderedBone.boundingBox.max,
@@ -653,7 +662,7 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 
 	Animator.showDefaultPose()
 
-	const rootNode: INodeStructure = {
+	const structure: INodeStructure = {
 		uuid: 'root',
 		children: [],
 	}
@@ -662,7 +671,7 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 		models: {},
 		variantModels: {},
 		nodeMap: {},
-		nodeStructure: rootNode,
+		nodeStructure: structure,
 		textures: {},
 		defaultPose: [],
 		modelExportFolder,
@@ -670,32 +679,45 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 		includesCustomModels: false,
 	}
 
-	// FIXME - Add a warning if no bones or models are exported
 	for (const node of Outliner.root) {
-		if (node instanceof Group) {
-			const bone = renderGroup(node, rig)
-			if (bone) rootNode.children.push(bone)
-		} else if (node instanceof Locator) {
-			const locator = renderLocator(node, rig)
-			if (locator) rootNode.children.push(locator)
-		} else if (node instanceof TextDisplay) {
-			const textDisplay = renderTextDisplay(node, rig)
-			if (textDisplay) rootNode.children.push(textDisplay)
-		} else if (OutlinerElement.types.camera && node instanceof OutlinerElement.types.camera) {
-			const camera = renderCamera(node as ICamera, rig)
-			if (camera) rootNode.children.push(camera)
-		} else if (node instanceof VanillaItemDisplay) {
-			const display = renderItemDisplay(node, rig)
-			if (display) rootNode.children.push(display)
-		} else if (node instanceof VanillaBlockDisplay) {
-			const display = renderBlockDisplay(node, rig)
-			if (display) rootNode.children.push(display)
-		} else if (node instanceof Cube) {
-			throw new IntentionalExportError(
-				`Cubes cannot be exported as root nodes. Please parent them to a bone. (Found '${node.name}' outside of a bone)`
-			)
-		} else {
-			console.warn(`Encountered unknown node type:`, node)
+		switch (true) {
+			case node instanceof Group: {
+				const bone = renderGroup(node, rig)
+				if (bone) structure.children.push(bone)
+				break
+			}
+			case node instanceof Locator: {
+				const locator = renderLocator(node, rig)
+				if (locator) structure.children.push(locator)
+				break
+			}
+			case node instanceof TextDisplay: {
+				const textDisplay = renderTextDisplay(node, rig)
+				if (textDisplay) structure.children.push(textDisplay)
+				break
+			}
+			case OutlinerElement.types.camera && node instanceof OutlinerElement.types.camera: {
+				const camera = renderCamera(node as ICamera, rig)
+				if (camera) structure.children.push(camera)
+				break
+			}
+			case node instanceof VanillaItemDisplay: {
+				const display = renderItemDisplay(node, rig)
+				if (display) structure.children.push(display)
+				break
+			}
+			case node instanceof VanillaBlockDisplay: {
+				const display = renderBlockDisplay(node, rig)
+				if (display) structure.children.push(display)
+				break
+			}
+			case node instanceof Cube: {
+				throw new IntentionalExportError(
+					`Cubes cannot be exported as root nodes. Please parent them to a bone. (Found '${node.name}' outside of a bone)`
+				)
+			}
+			default:
+				console.warn(`Encountered unknown node type:`, node)
 		}
 	}
 

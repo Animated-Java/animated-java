@@ -198,7 +198,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 		type: 'json',
 	},
 
-	// ANCHOR - Codec:load
+	// region > load
 	load(model: IBlueprintFormatJSON, file) {
 		console.log(`Loading Animated Java Blueprint from '${file.name}'...`)
 		model = process(model)
@@ -211,7 +211,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 		console.log(`Successfully loaded Animated Java Blueprint`)
 	},
 
-	// ANCHOR - Codec:parse
+	// region > parse
 	// Takes the model file and injects it's data into the global Project
 	parse(model: IBlueprintFormatJSON, path) {
 		console.log(`Parsing Animated Java Blueprint from '${path}'...`)
@@ -369,7 +369,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 		BLUEPRINT_CODEC.dispatchEvent('parsed', { model })
 	},
 
-	// ANCHOR - Codec:compile
+	// region > compile
 	compile(options) {
 		if (!options) options = {}
 		console.log(`Compiling Animated Java Blueprint from ${Project!.name}...`)
@@ -463,7 +463,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 		return options.raw ? model : compileJSON(model)
 	},
 
-	// ANCHOR - Codec:export
+	// region > export
 	export() {
 		console.log(`Exporting Animated Java Blueprint for ${Project!.name}...`)
 		if (!Project) throw new Error('No project to export.')

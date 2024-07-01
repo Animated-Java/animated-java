@@ -89,7 +89,7 @@ MenuBar.addAction(
 		category: 'animated_java',
 		name: translate('action.export.name'),
 		condition() {
-			return Format === BLUEPRINT_FORMAT && !Project?.animated_java.enable_plugin_mode
+			return Format === BLUEPRINT_FORMAT
 		},
 		click() {
 			void exportProject()

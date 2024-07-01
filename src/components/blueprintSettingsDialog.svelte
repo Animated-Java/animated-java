@@ -43,6 +43,9 @@
 	export let interpolationDuration: Valuable<number>
 	export let teleportationDuration: Valuable<number>
 	export let useStorageForAnimation: Valuable<boolean>
+	// Plugin Export Settings
+	export let bakedAnimations: Valuable<boolean>
+	export let jsonFile: Valuable<string>
 
 	function exportNamespaceChecker(value: string): { type: string; message: string } {
 		if (value === '') {
@@ -256,6 +259,25 @@
 		}
 	}
 
+	function jsonFileChecker(value: string): { type: string; message: string } {
+		switch (true) {
+			case value === '':
+				return {
+					type: 'error',
+					message: translate(
+						'dialog.blueprint_settings.json_file.error.no_file_selected',
+					),
+				}
+			case fs.existsSync(value) && !fs.statSync(value).isFile():
+				return {
+					type: 'error',
+					message: translate('dialog.blueprint_settings.json_file.error.not_a_file'),
+				}
+			default:
+				return { type: 'success', message: '' }
+		}
+	}
+
 	function advancedResourcePackFolderChecker(value: string): { type: string; message: string } {
 		switch (true) {
 			case value === '':
@@ -350,6 +372,19 @@
 			tooltip={translate('dialog.blueprint_settings.display_item.description')}
 			bind:value={displayItem}
 			valueChecker={displayItemChecker}
+		/>
+
+		<Checkbox
+			label={translate('dialog.blueprint_settings.baked_animations.title')}
+			tooltip={translate('dialog.blueprint_settings.baked_animations.description')}
+			bind:checked={bakedAnimations}
+		/>
+
+		<FileSelect
+			label={translate('dialog.blueprint_settings.json_file.title')}
+			tooltip={translate('dialog.blueprint_settings.json_file.description')}
+			bind:value={jsonFile}
+			valueChecker={jsonFileChecker}
 		/>
 	{:else}
 		<Checkbox

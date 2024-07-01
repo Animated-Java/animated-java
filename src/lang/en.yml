@@ -143,6 +143,18 @@ animated_java.dialog.blueprint_settings.use_storage_for_animation.description: |
     This will vastly reduce the number of functions in the generated Data Pack, but is 33% slower than the function method.
     WARNING: This animation method does not support cameras, or locators!
 
+# Plugin Settings
+animated_java.dialog.blueprint_settings.baked_animations.title: Baked Animations
+animated_java.dialog.blueprint_settings.baked_animations.description: |-
+    Whether or not to bake the exported animations.
+    Baked animations have their frames pre-calculated and stored in the exported JSON file, reducing the complexity of rendering the model in-game.
+    Some Plugins may require this to be enabled to function correctly.
+
+animated_java.dialog.blueprint_settings.json_file.title: JSON File
+animated_java.dialog.blueprint_settings.json_file.description: The path to the JSON file to export the project to.
+animated_java.dialog.blueprint_settings.json_file.error.no_file_selected: No file selected!
+animated_java.dialog.blueprint_settings.json_file.error.not_a_file: The selected path is not a file!
+
 ## Bone Config Dialog
 animated_java.dialog.bone_config.title: Bone Config
 

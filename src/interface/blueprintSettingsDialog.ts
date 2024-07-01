@@ -55,6 +55,9 @@ function getSettings() {
 		interpolationDuration: new Valuable(Project!.animated_java.interpolation_duration),
 		teleportationDuration: new Valuable(Project!.animated_java.teleportation_duration),
 		useStorageForAnimation: new Valuable(Project!.animated_java.use_storage_for_animation),
+		// Plugin Settings
+		bakedAnimations: new Valuable(Project!.animated_java.baked_animations),
+		jsonFile: new Valuable(Project!.animated_java.json_file),
 	}
 }
 
@@ -91,6 +94,9 @@ function setSettings(settings: ReturnType<typeof getSettings>) {
 	Project.animated_java.interpolation_duration = settings.interpolationDuration.get()
 	Project.animated_java.teleportation_duration = settings.teleportationDuration.get()
 	Project.animated_java.use_storage_for_animation = settings.useStorageForAnimation.get()
+	// Plugin Settings
+	Project.animated_java.baked_animations = settings.bakedAnimations.get()
+	Project.animated_java.json_file = settings.jsonFile.get()
 	console.log('Successfully saved project settings', Project)
 }
 
