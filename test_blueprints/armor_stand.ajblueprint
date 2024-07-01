@@ -1,7 +1,7 @@
 {
 	"meta": {
 		"format": "animated_java_blueprint",
-		"format_version": "0.5.4",
+		"format_version": "0.5.5",
 		"uuid": "167b27cd-b559-3f13-a97c-0841fe21f1d1",
 		"save_location": "D:\\github-repos\\animated-java\\animated-java\\test_blueprints\\armor_stand.ajblueprint",
 		"last_used_export_namespace": "armor_stand"
@@ -1569,34 +1569,6 @@
 			"source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAZZJREFUaEPtVruqhDAQjZ1gYSlY+gH+gfZ+sb2fYWEpCDaCgt1eTrhHhlldLsgVNkkajZldmJPzmMh4viLP+zcBgMAAzxEIEvCcAMEEgwSCBDxHIEjAcwKEFAgSCBJQCHRd98KnbdtMkiSmrmunWfLWHACoqsr0fW+GYTBN0/gFQNu2r6IobPNYXgIgVeE8ANQ8dY8ntC994OrMBYZEAACGl+e5GcfRNp+mqQVA75dlsd9xjjMnAIDm0QgAYINZltnmpmmyaQBPwKIvYL/vu63/9pSwDOCNoyGy4YoBEhAA5AQAvHHcMCVA+pPycRxbRnCPpxMMkBJg07xlSkD6g/QAFwalQwK6eeqdjAADyBBpmt8ek28eoCMPzWqT1CnxKSZ1pHLE5v/yXMYuz55ImSMGz7L/L42hhqMzPQJ7mui6rvadqSLrySjW6988YbK353w5OgNE3F5Zlmae5wMEMogyg+lKOV3VP2GytwE4G6TYIG8eJsrU0JKSfqLrAdh/e8xtAJgiB89/hyrdsDzX72cAoeaJlPkBm2JOMHlI974AAAAASUVORK5CYII=",
 			"image_data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAZZJREFUaEPtVruqhDAQjZ1gYSlY+gH+gfZ+sb2fYWEpCDaCgt1eTrhHhlldLsgVNkkajZldmJPzmMh4viLP+zcBgMAAzxEIEvCcAMEEgwSCBDxHIEjAcwKEFAgSCBJQCHRd98KnbdtMkiSmrmunWfLWHACoqsr0fW+GYTBN0/gFQNu2r6IobPNYXgIgVeE8ANQ8dY8ntC994OrMBYZEAACGl+e5GcfRNp+mqQVA75dlsd9xjjMnAIDm0QgAYINZltnmpmmyaQBPwKIvYL/vu63/9pSwDOCNoyGy4YoBEhAA5AQAvHHcMCVA+pPycRxbRnCPpxMMkBJg07xlSkD6g/QAFwalQwK6eeqdjAADyBBpmt8ek28eoCMPzWqT1CnxKSZ1pHLE5v/yXMYuz55ImSMGz7L/L42hhqMzPQJ7mui6rvadqSLrySjW6988YbK353w5OgNE3F5Zlmae5wMEMogyg+lKOV3VP2GytwE4G6TYIG8eJsrU0JKSfqLrAdh/e8xtAJgiB89/hyrdsDzX72cAoeaJlPkBm2JOMHlI974AAAAASUVORK5CYII=",
 			"mode": "bitmap"
-		},
-		{
-			"path": "",
-			"name": "empty.png",
-			"folder": "block",
-			"namespace": "",
-			"id": "3",
-			"width": 64,
-			"height": 64,
-			"uv_width": 64,
-			"uv_height": 64,
-			"particle": false,
-			"use_as_default": false,
-			"layers_enabled": false,
-			"sync_to_project": "",
-			"render_mode": "default",
-			"render_sides": "auto",
-			"frame_time": 1,
-			"frame_order_type": "loop",
-			"frame_order": "",
-			"frame_interpolate": false,
-			"visible": true,
-			"internal": true,
-			"saved": false,
-			"uuid": "a3f6a420-7f66-366f-30dc-58d15dec29b7",
-			"source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAIRJREFUeF7t1QERADAMArHi33SFfOagHBm7+Fv8/hOABsQTQCBeAJ8gAgjEE0AgXgArgAAC8QQQiBfACiCAQDwBBOIFsAIIIBBPAIF4AawAAgjEE0AgXgArgAAC8QQQiBfACiCAQDwBBOIFsAIIIBBPAIF4AawAAgjEE0AgXgArgECdwANo2ABBrP9ggQAAAABJRU5ErkJggg==",
-			"image_data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAIRJREFUeF7t1QERADAMArHi33SFfOagHBm7+Fv8/hOABsQTQCBeAJ8gAgjEE0AgXgArgAAC8QQQiBfACiCAQDwBBOIFsAIIIBBPAIF4AawAAgjEE0AgXgArgAAC8QQQiBfACiCAQDwBBOIFsAIIIBBPAIF4AawAAgjEE0AgXgArgECdwANo2ABBrP9ggQAAAABJRU5ErkJggg==",
-			"mode": "bitmap"
 		}
 	],
 	"variants": {
@@ -1605,7 +1577,7 @@
 			"name": "default",
 			"uuid": "f78e10c0-a4a3-aa2f-43ac-753facebd709",
 			"texture_map": {},
-			"excluded_bones": []
+			"excluded_nodes": []
 		},
 		"list": [
 			{
@@ -1613,19 +1585,19 @@
 				"name": "no_armor",
 				"uuid": "5417306e-2c69-3f36-1e3c-edd904034a36",
 				"texture_map": {
-					"240844f3-f615-fe51-0ada-d208791fbdc0": "a3f6a420-7f66-366f-30dc-58d15dec29b7",
-					"34528a28-3a31-8b47-65bb-ef2b60b02401": "a3f6a420-7f66-366f-30dc-58d15dec29b7"
+					"240844f3-f615-fe51-0ada-d208791fbdc0": "797174ae-5c58-4a83-a630-eefd51007c80",
+					"34528a28-3a31-8b47-65bb-ef2b60b02401": "797174ae-5c58-4a83-a630-eefd51007c80"
 				},
-				"excluded_bones": []
+				"excluded_nodes": []
 			},
 			{
 				"display_name": "no_baseplate",
 				"name": "no_baseplate",
 				"uuid": "bf2a6915-ec63-7ccf-3844-ea8be00b97e6",
 				"texture_map": {
-					"eb6c49b8-8e8e-a039-9a6f-ef6a06bc7924": "a3f6a420-7f66-366f-30dc-58d15dec29b7"
+					"eb6c49b8-8e8e-a039-9a6f-ef6a06bc7924": "797174ae-5c58-4a83-a630-eefd51007c80"
 				},
-				"excluded_bones": [
+				"excluded_nodes": [
 					"98795982-9c43-6e3e-eed9-2c776a957938",
 					"102db36a-eeda-0e6f-d5cc-c186ecda8165",
 					"5e08acae-d6ca-0dfd-9360-8cdb13c7a824",
@@ -1644,7 +1616,7 @@
 				"name": "colors",
 				"uuid": "49521f4b-b970-e4bd-b594-2e05d2d46027",
 				"texture_map": {},
-				"excluded_bones": []
+				"excluded_nodes": []
 			}
 		]
 	},
@@ -1663,7 +1635,7 @@
 			"blend_weight": "",
 			"start_delay": "",
 			"loop_delay": "0",
-			"excluded_bones": [],
+			"excluded_nodes": [],
 			"animators": {
 				"b5b52d2c-097c-08df-6457-372fbae12445": {
 					"name": "left_arm",
@@ -1719,7 +1691,7 @@
 			"blend_weight": "",
 			"start_delay": "",
 			"loop_delay": "",
-			"excluded_bones": [],
+			"excluded_nodes": [],
 			"animators": {
 				"b5b52d2c-097c-08df-6457-372fbae12445": {
 					"name": "left_arm",
@@ -1937,7 +1909,7 @@
 			"blend_weight": "",
 			"start_delay": "",
 			"loop_delay": "",
-			"excluded_bones": [],
+			"excluded_nodes": [],
 			"animators": {
 				"5e08acae-d6ca-0dfd-9360-8cdb13c7a824": {
 					"name": "armor_stand_root",
@@ -2163,7 +2135,7 @@
 			"blend_weight": "",
 			"start_delay": "",
 			"loop_delay": "",
-			"excluded_bones": [
+			"excluded_nodes": [
 				{
 					"name": "baseplate_pivot_a",
 					"value": "4f000ffc-11d6-3a4b-7c8d-6b5ba483228c"
@@ -2491,7 +2463,7 @@
 			"blend_weight": "",
 			"start_delay": "",
 			"loop_delay": "",
-			"excluded_bones": [],
+			"excluded_nodes": [],
 			"animators": {
 				"5e08acae-d6ca-0dfd-9360-8cdb13c7a824": {
 					"name": "armor_stand_root",
@@ -2711,7 +2683,7 @@
 			"blend_weight": "",
 			"start_delay": "",
 			"loop_delay": "",
-			"excluded_bones": [],
+			"excluded_nodes": [],
 			"animators": {
 				"5e08acae-d6ca-0dfd-9360-8cdb13c7a824": {
 					"name": "armor_stand_root",
@@ -2931,7 +2903,7 @@
 			"blend_weight": "",
 			"start_delay": "",
 			"loop_delay": "",
-			"excluded_bones": [],
+			"excluded_nodes": [],
 			"animators": {
 				"49e67c2a-3d1d-792d-9c75-72ecbc0f92e0": {
 					"name": "body_waist_pivot",
@@ -3205,7 +3177,7 @@
 			"blend_weight": "",
 			"start_delay": "",
 			"loop_delay": "",
-			"excluded_bones": [],
+			"excluded_nodes": [],
 			"animators": {
 				"5e08acae-d6ca-0dfd-9360-8cdb13c7a824": {
 					"name": "armor_stand_root",
@@ -3355,7 +3327,7 @@
 			"blend_weight": "",
 			"start_delay": "",
 			"loop_delay": "",
-			"excluded_bones": [],
+			"excluded_nodes": [],
 			"animators": {
 				"5e08acae-d6ca-0dfd-9360-8cdb13c7a824": {
 					"name": "armor_stand_root",
@@ -3673,7 +3645,7 @@
 			"blend_weight": "",
 			"start_delay": "",
 			"loop_delay": "",
-			"excluded_bones": [],
+			"excluded_nodes": [],
 			"animators": {
 				"6c53311f-ffc8-e567-ff1b-65840698e9ba": {
 					"name": "body",
@@ -3713,7 +3685,7 @@
 			"blend_weight": "",
 			"start_delay": "",
 			"loop_delay": "",
-			"excluded_bones": [],
+			"excluded_nodes": [],
 			"animators": {
 				"6c53311f-ffc8-e567-ff1b-65840698e9ba": {
 					"name": "body",
@@ -3836,7 +3808,7 @@
 			"blend_weight": "",
 			"start_delay": "",
 			"loop_delay": "",
-			"excluded_bones": [],
+			"excluded_nodes": [],
 			"animators": {
 				"effects": {
 					"name": "Effects",
@@ -3894,7 +3866,7 @@
 			"blend_weight": "",
 			"start_delay": "",
 			"loop_delay": "",
-			"excluded_bones": [],
+			"excluded_nodes": [],
 			"animators": {
 				"d0076177-a6cf-561c-08d8-efd07677b337": {
 					"name": "camera",

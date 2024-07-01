@@ -23,7 +23,10 @@
 	const primaryTextures = [...Texture.all]
 	const secondaryTextures = availableTextures
 
-	const availableBones = getAvailableNodes(excludedBones.get())
+	const availableBones = getAvailableNodes(excludedBones.get(), {
+		groupsOnly: true,
+		excludeEmptyGroups: true,
+	})
 
 	let textureMapUpdated = 0
 
