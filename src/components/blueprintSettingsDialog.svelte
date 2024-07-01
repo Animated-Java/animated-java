@@ -503,9 +503,11 @@
 </div>
 
 <style>
+	:global(.dialog_wrapper .dialog_content) {
+		overflow-y: auto !important;
+	}
 	div {
 		padding-right: 8px;
-		overflow-y: auto;
 		max-height: 50rem;
 	}
 	.warning {
