@@ -95,7 +95,7 @@
 	}
 </script>
 
-<div class="dialog_container">
+<div class="dialog-container">
 	<LineInput
 		label={translate('dialog.variant_config.variant_display_name')}
 		bind:value={displayName}
@@ -154,15 +154,17 @@
 				}}
 			/>
 		</div>
-		<lu class="texture_map_container">
+		<lu class="texture-map-container">
 			{#key textureMapUpdated}
 				{#each [...textureMap.map.entries()] as entry, index}
-					<div class="texture_mapping_item"></div>
-					<li class="texture_mapping_item">
-						<div class="texture_mapping_item_dropdown_container">
-							<img src={getTextureSrc(entry[0])} alt="" />
+					<div class="texture-mapping-item"></div>
+					<li class="texture-mapping-item">
+						<div class="texture-mapping-item-dropdown-container">
+							<div class="img-container">
+								<img src={getTextureSrc(entry[0])} alt="" />
+							</div>
 							<select
-								class="texture_mapping_item_dropdown"
+								class="texture-mapping-item-dropdown"
 								on:change={e => selectNewPrimaryTexture(e, entry[0])}
 							>
 								<!-- svelte-ignore missing-declaration -->
@@ -176,10 +178,12 @@
 
 						<i class="material-icons icon">east</i>
 
-						<div class="texture_mapping_item_dropdown_container">
-							<img src={getTextureSrc(entry[1])} alt="" />
+						<div class="texture-mapping-item-dropdown-container">
+							<div class="img-container">
+								<img src={getTextureSrc(entry[1])} alt="" />
+							</div>
 							<select
-								class="texture_mapping_item_dropdown"
+								class="texture-mapping-item-dropdown"
 								on:change={e => selectNewSecondaryTexture(e, entry[0])}
 							>
 								<!-- svelte-ignore missing-declaration -->
@@ -198,8 +202,8 @@
 						>
 					</li>
 				{:else}
-					<div class="no_mappings">
-						{translate('dialog.variant_config.texture_map.no_mappings')}
+					<div class="no-mappings">
+						{translate('dialog.variant_config.texture_map.no-mappings')}
 					</div>
 				{/each}
 			{/key}
@@ -225,7 +229,7 @@
 </div>
 
 <style>
-	.dialog_container {
+	.dialog-container {
 		display: flex;
 		flex-direction: column;
 	}
@@ -236,22 +240,30 @@
 		font-size: 14px;
 		user-select: all;
 	}
-	.no_mappings {
+	.no-mappings {
 		color: var(--color-subtle_text);
 		font-style: italic;
 		text-align: center;
 	}
-	img {
+	.img-container {
+		display: flex;
+		align-items: flex-start;
 		width: 128px;
 		height: 128px;
 		pointer-events: none;
+		background: repeating-conic-gradient(var(--color-dark) 0% 25%, transparent 0% 50%) 50% /
+			16px 16px;
 	}
-	.texture_mapping_item {
+	img {
+		width: 128px;
+		pointer-events: none;
+	}
+	.texture-mapping-item {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 	}
-	.texture_mapping_item_dropdown_container {
+	.texture-mapping-item-dropdown-container {
 		position: relative;
 		flex-grow: 1;
 		height: 164px;
@@ -260,13 +272,13 @@
 		align-items: center;
 		justify-content: center;
 	}
-	.texture_mapping_item_dropdown {
+	.texture-mapping-item-dropdown {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		max-width: 128px;
 	}
-	.texture_map_container {
+	.texture-map-container {
 		display: flex;
 		flex-direction: column;
 		border: 1px solid var(--color-border);
