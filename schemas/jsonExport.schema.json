@@ -1,0 +1,669 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$ref": "#/definitions/jsonExport",
+	"definitions": {
+		"jsonExport": {
+			"type": "object",
+			"required": ["blueprint_settings", "resources", "rig", "animations"],
+			"properties": {
+				"blueprint_settings": {
+					"type": "object",
+					"required": [
+						"export_namespace",
+						"show_bounding_box",
+						"auto_bounding_box",
+						"bounding_box",
+						"enable_plugin_mode",
+						"enable_resource_pack",
+						"enable_data_pack",
+						"display_item",
+						"customModelDataOffset",
+						"enable_advanced_resource_pack_settings",
+						"resource_pack",
+						"display_item_path",
+						"model_folder",
+						"texture_folder",
+						"enable_advanced_data_pack_settings",
+						"data_pack",
+						"summon_commands",
+						"interpolation_duration",
+						"teleportation_duration",
+						"use_storage_for_animation",
+						"baked_animations",
+						"json_file",
+						"custom_summon_commands"
+					],
+					"properties": {
+						"export_namespace": { "type": "string", "default": "armor_stand" },
+						"show_bounding_box": { "type": "boolean", "default": false },
+						"auto_bounding_box": { "type": "boolean", "default": true },
+						"bounding_box": {
+							"type": "array",
+							"default": [48, 48],
+							"items": {
+								"type": "integer",
+								"minimum": 0
+							},
+							"minItems": 2,
+							"maxItems": 2
+						},
+						"enable_plugin_mode": { "type": "boolean", "default": false },
+						"enable_resource_pack": { "type": "boolean", "default": true },
+						"enable_data_pack": { "type": "boolean", "default": true },
+						"display_item": { "type": "string", "default": "minecraft:white_dye" },
+						"customModelDataOffset": { "type": "integer", "default": 0 },
+						"enable_advanced_resource_pack_settings": {
+							"type": "boolean",
+							"default": false
+						},
+						"resource_pack": { "type": "string", "default": "" },
+						"display_item_path": { "type": "string", "default": "" },
+						"model_folder": { "type": "string", "default": "" },
+						"texture_folder": { "type": "string", "default": "" },
+						"enable_advanced_data_pack_settings": {
+							"type": "boolean",
+							"default": false
+						},
+						"data_pack": { "type": "string", "default": "" },
+						"summon_commands": { "type": "string", "default": "" },
+						"interpolation_duration": { "type": "number", "default": 1 },
+						"teleportation_duration": { "type": "number", "default": 1 },
+						"use_storage_for_animation": { "type": "boolean", "default": false },
+						"baked_animations": { "type": "boolean", "default": true },
+						"json_file": { "type": "string", "default": "" },
+						"custom_summon_commands": { "type": "string", "default": "" }
+					}
+				},
+				"resources": {
+					"type": "object",
+					"required": [
+						"textureExportFolder",
+						"modelExportFolder",
+						"displayItemPath",
+						"models",
+						"variant_models",
+						"textures"
+					],
+					"properties": {
+						"textureExportFolder": { "type": "string", "default": "" },
+						"modelExportFolder": { "type": "string", "default": "" },
+						"displayItemPath": { "type": "string", "default": "" },
+						"models": {
+							"type": "object",
+							"additionalProperties": false,
+							"patternProperties": {
+								"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
+									"$ref": "#/definitions/vanillaModel"
+								}
+							}
+						},
+						"variant_models": {
+							"type": "object",
+							"description": "A map of variant names to maps of models to use for each bone when that variant is applied. Note that this map only contains included, and modified bones.",
+							"additionalProperties": false,
+							"patternProperties": {
+								"[a-zA-Z0-9_\\.]+": {
+									"type": "object",
+									"additionalProperties": false,
+									"patternProperties": {
+										"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
+											"$ref": "#/definitions/variantModelContainer"
+										}
+									}
+								}
+							}
+						},
+						"textures": {
+							"type": "object",
+							"additionalProperties": false,
+							"patternProperties": {
+								".+": {
+									"type": "object",
+									"required": ["name", "expectedPath", "src"],
+									"properties": {
+										"name": { "type": "string" },
+										"expectedPath": {
+											"type": "string",
+											"description": "The path in the resource pack that the models that reference this texture expect the texture to be at."
+										},
+										"src": {
+											"type": "string",
+											"description": "A data URL containing the texture image."
+										}
+									}
+								},
+								"animated_java:transparent_texture": {
+									"type": "object",
+									"description": "The internal transparent texture used to hide parts of the Rig.",
+									"properties": {
+										"name": { "const": "Transparent" },
+										"expectedPath": {
+											"const": "assets\\animated_java\\textures\\item\\armor_stand\\Transparent.png"
+										},
+										"src": {
+											"const": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABgWlDQ1BJQ0MgcHJvZmlsZQAAKJF9kTtIA0EURY+JokjEwhQiFltEK21UxFKiKIKBkETwV7i7MVHIrmE3YmMp2AYs/DRGLWystbWwFQTBD4i1hZWijcj6ZhNIEOPAMIc7cy9v3oNAKWdabuMoWHbBSUxGtdm5ea35hSaCQIAR3XTzseREirrr844Gdd72q6z67/5cbell14QGTXjUzDsF4SXh4Y1CXvGecNhc0dPCZ8J9jhQo/KB0o8yvirM+B1Rm2EklxoTDwlq2ho0aNlccS3hIOJK2bMkPzJY5rXhTsZVbNyt1qh+Glu2ZpNJldzPJFDHiaBiss0qOAv1y2qK4JOQ+Wsff5fvj4jLEtYopjnHWsNB9P2oGv3vrZgYHykmhKDQ9e957DzTvwHfR876OPO/7GIJPcGlX/WslGPkQvVjVIofQvgXnV1XN2IWLbeh8zOuO7kv+/DMZeDuVMc1Bxw20LpT7Vrnn5B5S0qvpa9g/gN6sZC/W+XdLbd/+fVPp3w9iNHKgdXImZAAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAAuIwAALiMBeKU/dgAAAAd0SU1FB+gFAwAFKkpaLkIAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAEklEQVQ4y2NgGAWjYBSMAggAAAQQAAGFP6pyAAAAAElFTkSuQmCC"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"rig": {
+					"type": "object",
+					"required": ["default_pose", "node_map"],
+					"properties": {
+						"default_pose": {
+							"type": "array",
+							"items": { "$ref": "#/definitions/animationNode" }
+						},
+						"node_map": {
+							"type": "object",
+							"additionalProperties": false,
+							"patternProperties": {
+								"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
+									"$ref": "#/definitions/node"
+								}
+							}
+						},
+						"node_structure": {
+							"type": "object",
+							"required": ["uuid", "children"],
+							"properties": {
+								"uuid": { "const": "root" },
+								"children": {
+									"type": "array",
+									"items": { "$ref": "#/definitions/nodeStructure" }
+								}
+							}
+						}
+					}
+				},
+				"animations": { "$ref": "#/definitions/dynamicAnimations" }
+			},
+			"if": {
+				"properties": {
+					"blueprint_settings": {
+						"properties": {
+							"baked_animations": { "const": true }
+						}
+					}
+				}
+			},
+			"then": {
+				"properties": {
+					"animations": { "$ref": "#/definitions/bakedAnimations" }
+				}
+			}
+		},
+		"vec3": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 },
+		"vanillaModel": {
+			"type": "object",
+			"required": ["textures", "elements", "display"],
+			"properties": {
+				"textures": {
+					"type": "object",
+					"patternProperties": { ".+": { "type": "string" } }
+				},
+				"elements": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"required": ["from", "to", "faces"],
+						"properties": {
+							"from": { "$ref": "#/definitions/vec3" },
+							"to": { "$ref": "#/definitions/vec3" },
+							"faces": {
+								"type": "object",
+								"properties": {
+									"north": {
+										"$ref": "#/definitions/vanillaElementFace"
+									},
+									"east": {
+										"$ref": "#/definitions/vanillaElementFace"
+									},
+									"south": {
+										"$ref": "#/definitions/vanillaElementFace"
+									},
+									"west": {
+										"$ref": "#/definitions/vanillaElementFace"
+									},
+									"up": {
+										"$ref": "#/definitions/vanillaElementFace"
+									},
+									"down": {
+										"$ref": "#/definitions/vanillaElementFace"
+									}
+								}
+							}
+						}
+					}
+				},
+				"display": {
+					"type": "object",
+					"properties": {
+						"head": {
+							"type": "object",
+							"properties": { "rotation": { "$ref": "#/definitions/vec3" } }
+						}
+					}
+				}
+			}
+		},
+		"vanillaElementFace": {
+			"type": "object",
+			"properties": {
+				"uv": {
+					"type": "array",
+					"items": { "type": "number" },
+					"minItems": 4,
+					"maxItems": 4
+				},
+				"texture": { "type": "string" }
+			}
+		},
+		"variantModelContainer": {
+			"type": "object",
+			"required": ["model", "customModelData", "modelPath", "resourceLocation"],
+			"properties": {
+				"model": {
+					"type": "object",
+					"required": ["parent", "textures"],
+					"properties": {
+						"parent": { "type": "string" },
+						"textures": {
+							"type": "object",
+							"patternProperties": { ".+": { "type": "string" } }
+						}
+					}
+				},
+				"customModelData": { "type": "integer" },
+				"modelPath": { "type": "string" },
+				"resourceLocation": { "type": "string" }
+			}
+		},
+		"animationNode": {
+			"type": "object",
+			"description": "The transformation of a node.",
+			"required": ["type", "name", "uuid", "matrix", "pos", "rot", "scale"],
+			"properties": {
+				"type": {
+					"type": "string",
+					"enum": [
+						"bone",
+						"camera",
+						"locator",
+						"text_display",
+						"item_display",
+						"block_display"
+					]
+				},
+				"name": { "type": "string" },
+				"uuid": { "type": "string" },
+				"matrix": {
+					"type": "array",
+					"items": { "type": "number" },
+					"minItems": 16,
+					"maxItems": 16
+				},
+				"pos": { "$ref": "#/definitions/vec3" },
+				"rot": { "$ref": "#/definitions/vec3" },
+				"scale": { "$ref": "#/definitions/vec3" },
+				"interpolation": {
+					"type": "string",
+					"enum": ["pre-post", "step"]
+				},
+				"commands": { "type": "string" },
+				"execute_condition": { "type": "string" }
+			}
+		},
+		"node": {
+			"type": "object",
+			"required": ["type", "name", "uuid"],
+			"properties": {
+				"type": {
+					"type": "string",
+					"enum": [
+						"bone",
+						"camera",
+						"locator",
+						"text_display",
+						"item_display",
+						"block_display"
+					]
+				},
+				"name": { "type": "string" },
+				"uuid": { "type": "string" }
+			},
+			"allOf": [
+				{
+					"if": {
+						"properties": {
+							"type": { "const": "bone" }
+						}
+					},
+					"then": {
+						"required": [
+							"modelPath",
+							"customModelData",
+							"resourceLocation",
+							"boundingBox",
+							"configs",
+							"scale"
+						],
+						"properties": {
+							"modelPath": { "type": "string" },
+							"customModelData": { "type": "integer" },
+							"resourceLocation": { "type": "string" },
+							"boundingBox": {
+								"type": "object",
+								"required": ["min", "max"],
+								"properties": {
+									"min": { "$ref": "#/definitions/vec3" },
+									"max": { "$ref": "#/definitions/vec3" }
+								}
+							},
+							"scale": { "type": "number" },
+							"configs": {
+								"type": "object",
+								"properties": {
+									"default": {
+										"$ref": "#/definitions/boneConfig"
+									},
+									"variants": {
+										"type": "object",
+										"patternProperties": {
+											".+": {
+												"$ref": "#/definitions/boneConfig"
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": { "const": "camera" }
+						}
+					},
+					"then": {}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": { "const": "locator" }
+						}
+					},
+					"then": {
+						"required": ["config"],
+						"properties": {
+							"config": {
+								"$ref": "#/definitions/locatorConfig"
+							}
+						}
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": { "const": "text_display" }
+						}
+					},
+					"then": {
+						"required": [
+							"text",
+							"lineWidth",
+							"backgroundColor",
+							"backgroundAlpha",
+							"align",
+							"scale",
+							"config"
+						],
+						"properties": {
+							"text": {},
+							"lineWidth": { "type": "number" },
+							"backgroundColor": { "type": "string" },
+							"backgroundAlpha": { "type": "number" },
+							"align": {
+								"type": "string",
+								"enum": ["left", "center", "right"]
+							},
+							"scale": { "type": "number" },
+							"config": {
+								"$ref": "#/definitions/boneConfig"
+							}
+						}
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": { "const": "block_display" }
+						}
+					},
+					"then": {
+						"required": ["config", "block", "scale"],
+						"properties": {
+							"block": { "type": "string" },
+							"scale": { "type": "number" },
+							"config": {
+								"$ref": "#/definitions/boneConfig"
+							}
+						}
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": { "const": "item_display" }
+						}
+					},
+					"then": {
+						"required": ["config", "item", "scale"],
+						"properties": {
+							"item": { "type": "string" },
+							"scale": { "type": "number" },
+							"config": {
+								"$ref": "#/definitions/boneConfig"
+							}
+						}
+					}
+				}
+			]
+		},
+		"boneConfig": {
+			"type": "object",
+			"properties": {
+				"billboard": {
+					"type": "string",
+					"enum": ["fixed", "vertical", "horizontal", "center"]
+				},
+				"override_brightness": { "type": "boolean", "default": false },
+				"brightness_override": { "type": "number", "default": 1 },
+				"enchanted": { "type": "boolean", "default": false },
+				"glowing": { "type": "boolean", "default": false },
+				"override_glow_color": { "type": "boolean", "default": false },
+				"glow_color": { "type": "string", "default": "#ffffff" },
+				"inherit_settings": { "type": "boolean", "default": true },
+				"invisible": { "type": "boolean", "default": false },
+				"nbt": { "type": "string", "default": "{}" },
+				"shadow_radius": { "type": "number", "default": 0 },
+				"shadow_strength": { "type": "number", "default": 1 },
+				"use_nbt": { "type": "boolean", "default": false }
+			}
+		},
+		"locatorConfig": {
+			"type": "object",
+			"properties": {
+				"use_entity": { "type": "boolean", "default": false },
+				"entity_type": { "type": "string", "default": "minecraft:pig" },
+				"summon_commands": { "type": "string", "default": "" },
+				"ticking_commands": { "type": "string", "default": "" }
+			}
+		},
+		"nodeStructure": {
+			"type": "object",
+			"required": ["uuid", "children"],
+			"properties": {
+				"uuid": { "type": "string" },
+				"children": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/nodeStructure" }
+				}
+			}
+		},
+		"bakedAnimations": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"required": [
+					"name",
+					"storageSafeName",
+					"duration",
+					"loopDelay",
+					"loopMode",
+					"frames",
+					"includedNodes"
+				],
+				"additionalProperties": false,
+				"properties": {
+					"name": { "type": "string" },
+					"storageSafeName": { "type": "string" },
+					"duration": { "type": "number" },
+					"loopDelay": { "type": "number" },
+					"loopMode": { "type": "string", "enum": ["none", "loop", "ping-pong"] },
+					"includedNodes": { "type": "array", "items": { "type": "string" } },
+					"frames": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"time": { "type": "number" },
+								"nodes": {
+									"type": "array",
+									"items": { "$ref": "#/definitions/animationNode" }
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"dynamicAnimations": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"required": [
+					"uuid",
+					"name",
+					"loop_mode",
+					"duration",
+					"excluded_nodes",
+					"animators"
+				],
+				"additionalProperties": true,
+				"properties": {
+					"uuid": { "type": "string" },
+					"name": { "type": "string" },
+					"loop_mode": { "type": "string", "enum": ["loop", "once", "hold"] },
+					"duration": { "type": "number" },
+					"loop_delay": { "type": "number" },
+					"excluded_nodes": {
+						"type": "array",
+						"items": { "type": "string" }
+					},
+					"animators": {
+						"type": "object",
+						"patternProperties": {
+							"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
+								"type": "object",
+								"required": ["name", "type", "keyframes"],
+								"properties": {
+									"name": { "type": "string" },
+									"type": { "type": "string" },
+									"keyframes": {
+										"type": "array",
+										"items": { "$ref": "#/definitions/keyframe" }
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"keyframe": {
+			"type": "object",
+			"required": ["time", "uuid", "channel", "data_points", "interpolation", "easing"],
+			"properties": {
+				"time": { "type": "number" },
+				"uuid": { "type": "string" },
+				"channel": { "type": "string" },
+				"data_points": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/keyframeDataPoint" }
+				},
+				"interpolation": {
+					"type": "string",
+					"enum": ["linear", "bezier", "catmullrom", "step"]
+				},
+				"easing": {
+					"type": "string",
+					"enum": [
+						"linear",
+						"step",
+						"easeInQuad",
+						"easeOutQuad",
+						"easeInOutQuad",
+						"easeInCubic",
+						"easeOutCubic",
+						"easeInOutCubic",
+						"easeInQuart",
+						"easeOutQuart",
+						"easeInOutQuart",
+						"easeInQuint",
+						"easeOutQuint",
+						"easeInOutQuint",
+						"easeInSine",
+						"easeOutSine",
+						"easeInOutSine",
+						"easeInExpo",
+						"easeOutExpo",
+						"easeInOutExpo",
+						"easeInCirc",
+						"easeOutCirc",
+						"easeInOutCirc",
+						"easeInBack",
+						"easeOutBack",
+						"easeInOutBack",
+						"easeInElastic",
+						"easeOutElastic",
+						"easeInOutElastic",
+						"easeInBounce",
+						"easeOutBounce",
+						"easeInOutBounce"
+					]
+				},
+				"easingArgs": {
+					"type": "array",
+					"items": { "type": "number" }
+				}
+			}
+		},
+		"keyframeDataPoint": {
+			"type": "object",
+			"properties": {
+				"x": { "oneOf": [{ "type": "number" }, { "type": "string" }] },
+				"y": { "oneOf": [{ "type": "number" }, { "type": "string" }] },
+				"z": { "oneOf": [{ "type": "number" }, { "type": "string" }] },
+				"commands": { "type": "string" },
+				"execute_condition": { "type": "string" },
+				"repeat": { "type": "boolean" },
+				"repeat_frequency": { "type": "number", "min": 1 }
+			}
+		}
+	}
+}

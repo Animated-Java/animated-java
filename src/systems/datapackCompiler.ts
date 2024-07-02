@@ -22,7 +22,7 @@ import {
 } from '../util/minecraftUtil'
 import { JsonText } from './minecraft/jsonText'
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../interface/exportProgressDialog'
-import { roundTo } from '../util/misc'
+import { getRotationFromQuaternion, roundTo } from '../util/misc'
 import { setTimeout } from 'timers'
 
 const BONE_TYPES = ['bone', 'text_display', 'item_display', 'block_display']
@@ -445,14 +445,6 @@ function createAnimationStorage(animations: IRenderedAnimation[]) {
 		}
 	}
 	return storage
-}
-
-function getRotationFromQuaternion(q: THREE.Quaternion) {
-	const euler = new THREE.Euler().setFromQuaternion(q, 'YXZ')
-	const rot = new THREE.Vector3(euler.x, euler.y, euler.z).multiplyScalar(180 / Math.PI)
-	rot.x *= -1
-	rot.y = rot.y * -1 + 180
-	return rot
 }
 
 function createPassengerStorage(rig: IRenderedRig) {

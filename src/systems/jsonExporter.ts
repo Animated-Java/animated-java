@@ -3,6 +3,7 @@
 /// <reference path="../global.d.ts"/>
 
 import { type defaultValues } from '../blueprintSettings'
+import { EasingKey } from '../util/easing'
 import { detectCircularReferences, scrubUndefined } from '../util/misc'
 import type { IAnimationNode, IRenderedAnimation, IRenderedFrame } from './animationRenderer'
 import type {
@@ -13,12 +14,48 @@ import type {
 	IRenderedRig,
 } from './rigRenderer'
 
-type ExportedAnimationNode = IAnimationNode & { node: never }
-type ExportedRenderedNode = AnyRenderedNode & { node: never; parentNode: never }
-type ExportedAnimationFrame = IRenderedFrame & { nodes: ExportedAnimationNode[] }
-type ExportedAnimation = IRenderedAnimation & {
+type ExportedAnimationNode = Omit<IAnimationNode, 'node' | 'matrix' | 'pos' | 'rot' | 'scale'> & {
+	matrix: number[]
+	pos: ArrayVector3
+	rot: ArrayVector3
+	scale: ArrayVector3
+}
+type ExportedRenderedNode = Omit<
+	AnyRenderedNode,
+	'node' | 'parentNode' | 'model' | 'boundingBox'
+> & {
+	boundingBox?: { min: ArrayVector3; max: ArrayVector3 }
+}
+type ExportedAnimationFrame = Omit<IRenderedFrame, 'nodes'> & { nodes: ExportedAnimationNode[] }
+type ExportedBakedAnimation = Omit<IRenderedAnimation, 'frames' | 'includedNodes'> & {
 	frames: ExportedAnimationFrame[]
-	includedNodes: ExportedRenderedNode[]
+	includedNodes: string[]
+}
+type ExportedAnimator = {
+	name: string
+	type: string
+	keyframes: Array<{
+		uuid: string
+		time: number
+		channel: string
+		data_points: KeyframeDataPoint[]
+		interpolation: 'linear' | 'bezier' | 'catmullrom' | 'step'
+		bezier_linked?: boolean
+		bezier_left_time?: ArrayVector3
+		bezier_left_value?: ArrayVector3
+		bezier_right_time?: ArrayVector3
+		bezier_right_value?: ArrayVector3
+		easing: EasingKey
+		easingArgs?: number[]
+	}>
+}
+type ExportedDynamicAnimation = {
+	name: string
+	uuid: string
+	loop_mode: 'once' | 'hold' | 'loop'
+	duration: number
+	excluded_nodes: string[]
+	animators: Record<string, ExportedAnimator>
 }
 interface ISerializedTexture {
 	name: string
@@ -44,7 +81,7 @@ export interface IExportedJSON {
 	/**
 	 * If `blueprint_settings.baked_animations` is true, this will be an array of `ExportedAnimation` objects. Otherwise, it will be an array of `AnimationUndoCopy` objects, just like the `.bbmodel`'s animation list.
 	 */
-	animations: ExportedAnimation[] | AnimationUndoCopy[]
+	animations: ExportedBakedAnimation[] | ExportedDynamicAnimation[]
 }
 
 export function exportJSON(options: {
@@ -94,7 +131,35 @@ export function exportJSON(options: {
 		},
 		animations: aj.baked_animations
 			? animations.map(serializeAnimation)
-			: Blockbench.Animation.all.map(a => a.getUndoCopy({ bone_names: true }, true)),
+			: Blockbench.Animation.all.map(a => {
+					const json: ExportedDynamicAnimation = {
+						uuid: a.uuid,
+						name: a.name,
+						loop_mode: a.loop,
+						duration: a.length,
+						excluded_nodes: a.excluded_nodes.map(node => node.value),
+						animators: {},
+					}
+					for (const [uuid, animator] of Object.entries(a.animators)) {
+						json.animators[uuid] = {
+							name: animator.name,
+							type: animator.type as string,
+							keyframes: animator.keyframes.map(kf => {
+								const json: any = kf.getUndoCopy(true)
+								delete json.color
+								if (
+									Array.isArray(json.easingArgs) &&
+									json.easingArgs.length === 0
+								) {
+									delete json.easingArgs
+								}
+								// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+								return json
+							}),
+						}
+					}
+					return json
+			  }),
 	}
 
 	console.log('Exported JSON:', json)
@@ -107,20 +172,45 @@ export function exportJSON(options: {
 }
 
 function serailizeRenderedNode(node: AnyRenderedNode): ExportedRenderedNode {
-	const json = { ...node } as ExportedRenderedNode
+	const json: any = { ...node }
 	delete json.node
 	delete json.parentNode
-	return json
+	delete json.model
+	if (node.type === 'bone') {
+		json.boundingBox = {
+			min: node.boundingBox.min.toArray(),
+			max: node.boundingBox.max.toArray(),
+		}
+	}
+	return json as ExportedRenderedNode
 }
 
 function serailizeAnimationNode(node: IAnimationNode): ExportedAnimationNode {
-	const json = { ...node } as ExportedAnimationNode
-	delete json.node
+	const json: ExportedAnimationNode = {
+		type: node.type,
+		name: node.name,
+		uuid: node.uuid,
+		matrix: node.matrix.elements,
+		pos: [node.pos.x, node.pos.y, node.pos.z],
+		rot: [node.rot.x, node.rot.y, node.rot.z],
+		scale: [node.scale.x, node.scale.y, node.scale.z],
+		interpolation: node.interpolation,
+		commands: node.commands,
+		execute_condition: node.execute_condition,
+	}
 	return json
 }
 
-function serializeAnimation(animation: IRenderedAnimation): ExportedAnimation {
-	const json = { ...animation } as ExportedAnimation
+function serializeAnimation(animation: IRenderedAnimation): ExportedBakedAnimation {
+	const json: ExportedBakedAnimation = {
+		name: animation.name,
+		storageSafeName: animation.storageSafeName,
+		duration: animation.duration,
+		loopDelay: animation.loopDelay,
+		loopMode: animation.loopMode,
+		frames: [],
+		includedNodes: [],
+	}
 
 	const frames: ExportedAnimationFrame[] = []
 	for (const frame of animation.frames) {
@@ -129,7 +219,7 @@ function serializeAnimation(animation: IRenderedAnimation): ExportedAnimation {
 	}
 	json.frames = frames
 
-	json.includedNodes = animation.includedNodes.map(serailizeRenderedNode)
+	json.includedNodes = animation.includedNodes.map(serailizeRenderedNode).map(node => node.uuid)
 
 	return json
 }

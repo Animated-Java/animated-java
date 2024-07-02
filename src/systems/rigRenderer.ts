@@ -5,7 +5,7 @@ import {
 	IBlueprintTextDisplayConfigJSON,
 } from '../blueprintFormat'
 import { BoneConfig } from '../nodeConfigs'
-import { TextDisplay } from '../outliner/textDisplay'
+import { Alignment, TextDisplay } from '../outliner/textDisplay'
 import {
 	IMinecraftResourceLocation,
 	parseResourcePackPath,
@@ -85,7 +85,6 @@ export interface IRenderedNodes {
 	Bone: IRenderedNode & {
 		type: 'bone'
 		node: Group
-		textures: Record<string, Texture>
 		model: IRenderedModel
 		customModelData: number
 		modelPath: string
@@ -113,6 +112,9 @@ export interface IRenderedNodes {
 		node: TextDisplay
 		text?: JsonText
 		lineWidth: number
+		backgroundColor: string
+		backgroundAlpha: number
+		align: Alignment
 		scale: number
 		config?: IBlueprintTextDisplayConfigJSON
 	}
@@ -326,7 +328,6 @@ function renderGroup(group: Group, rig: IRenderedRig): INodeStructure | undefine
 		node: group,
 		name: group.name,
 		uuid: group.uuid,
-		textures: {},
 		model: {
 			textures: {},
 			elements: [],
@@ -501,6 +502,9 @@ function renderTextDisplay(display: TextDisplay, rig: IRenderedRig): INodeStruct
 		uuid: display.uuid,
 		text: JsonText.fromString(display.text),
 		lineWidth: display.lineWidth,
+		backgroundColor: display.backgroundColor,
+		backgroundAlpha: display.backgroundAlpha,
+		align: display.align,
 		scale: 1,
 		config: display.config,
 	}

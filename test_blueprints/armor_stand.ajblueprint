@@ -11,7 +11,7 @@
 		"show_bounding_box": false,
 		"auto_bounding_box": true,
 		"bounding_box": [95, 32],
-		"enable_plugin_mode": false,
+		"enable_plugin_mode": true,
 		"enable_resource_pack": true,
 		"enable_data_pack": true,
 		"display_item": "minecraft:white_dye",
@@ -27,8 +27,8 @@
 		"interpolation_duration": 1,
 		"teleportation_duration": 1,
 		"use_storage_for_animation": false,
-		"baked_animations": true,
-		"json_file": "C:\\Users\\SnaveSutit\\Downloads\\test.json",
+		"baked_animations": false,
+		"json_file": "D:\\github-repos\\animated-java\\animated-java\\dist\\test.json",
 		"custom_summon_commands": ""
 	},
 	"resolution": {
@@ -971,6 +971,23 @@
 			"visibility": true,
 			"type": "camera",
 			"uuid": "d0076177-a6cf-561c-08d8-efd07677b337"
+		},
+		{
+			"name": "vanilla_block_display",
+			"position": [0, 39, 0],
+			"rotation": [0, 0, 0],
+			"scale": [1, 1, 1],
+			"visibility": true,
+			"item": "minecraft:diamond",
+			"config": {},
+			"block": "minecraft:stone",
+			"text": "\"Hello World!\"",
+			"lineWidth": 200,
+			"backgroundColor": "#b12929",
+			"backgroundAlpha": 0.25,
+			"align": "left",
+			"uuid": "a8257e87-1780-81b6-b0e4-c420fa229a69",
+			"type": "animated_java:text_display"
 		}
 	],
 	"outliner": [
@@ -1485,7 +1502,8 @@
 			"autouv": 0,
 			"children": ["a2ebcf74-9f58-df75-9b42-f565d9d6e42c"]
 		},
-		"d0076177-a6cf-561c-08d8-efd07677b337"
+		"d0076177-a6cf-561c-08d8-efd07677b337",
+		"a8257e87-1780-81b6-b0e4-c420fa229a69"
 	],
 	"textures": [
 		{
@@ -3867,8 +3885,124 @@
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",
-			"loop_delay": "",
-			"excluded_nodes": [],
+			"loop_delay": "0",
+			"excluded_nodes": [
+				{
+					"icon": "folder",
+					"name": "root",
+					"value": "98795982-9c43-6e3e-eed9-2c776a957938"
+				},
+				{
+					"icon": "folder",
+					"name": "baseplate_root",
+					"value": "102db36a-eeda-0e6f-d5cc-c186ecda8165"
+				},
+				{
+					"icon": "folder",
+					"name": "baseplate_pivot_a",
+					"value": "4f000ffc-11d6-3a4b-7c8d-6b5ba483228c"
+				},
+				{
+					"icon": "folder",
+					"name": "armor_stand_root",
+					"value": "5e08acae-d6ca-0dfd-9360-8cdb13c7a824"
+				},
+				{
+					"icon": "folder",
+					"name": "waist_pivot",
+					"value": "98a28100-07e8-849a-38b7-f56abc2c2e56"
+				},
+				{
+					"icon": "folder",
+					"name": "body_waist_pivot",
+					"value": "49e67c2a-3d1d-792d-9c75-72ecbc0f92e0"
+				},
+				{
+					"icon": "folder",
+					"name": "body",
+					"value": "6c53311f-ffc8-e567-ff1b-65840698e9ba"
+				},
+				{
+					"icon": "folder",
+					"name": "head",
+					"value": "808e3c26-7285-af3f-a079-d8b899176dd3"
+				},
+				{
+					"icon": "folder",
+					"name": "left_arm",
+					"value": "b5b52d2c-097c-08df-6457-372fbae12445"
+				},
+				{
+					"icon": "folder",
+					"name": "right_arm",
+					"value": "215d1b02-0e64-a794-1b88-a9c5a6d7541c"
+				},
+				{
+					"icon": "folder",
+					"name": "left_leg",
+					"value": "55b812fe-7e4c-b2a5-da5b-3a8c82f9fc69"
+				},
+				{
+					"icon": "folder",
+					"name": "right_leg",
+					"value": "60d50d30-a018-429d-ba78-c5fb5804dd8a"
+				},
+				{
+					"icon": "folder",
+					"name": "pig",
+					"value": "3b35d1a9-befe-066e-60df-e1f3a5ec5a78"
+				},
+				{
+					"icon": "anchor",
+					"name": "left_hand",
+					"value": "7de415a2-9fdd-e4b2-3455-c3bed72eb896"
+				},
+				{
+					"icon": "anchor",
+					"name": "right_hand",
+					"value": "7747736f-85e2-338f-207e-53f8d3d2fa39"
+				},
+				{
+					"icon": "folder",
+					"name": "pig",
+					"value": "3b35d1a9-befe-066e-60df-e1f3a5ec5a78"
+				},
+				{
+					"icon": "text_fields",
+					"name": "vanilla_block_display",
+					"value": "a8257e87-1780-81b6-b0e4-c420fa229a69"
+				},
+				{
+					"icon": "icecream",
+					"name": "egg",
+					"value": "393d1c49-c6fc-d6ba-fa90-901a4ab6787c"
+				},
+				{
+					"icon": "deployed_code",
+					"name": "eye_left",
+					"value": "b69d6d65-370e-c90f-b025-dd7703253850"
+				},
+				{
+					"icon": "deployed_code",
+					"name": "eye_right",
+					"value": "beb6a95e-574c-22c3-2d69-7f55532e6ea8"
+				},
+				{
+					"icon": "deployed_code",
+					"name": "pupil_left",
+					"value": "c6696a60-8f7e-63b4-24f8-dd9bad05cf18"
+				},
+				{
+					"icon": "deployed_code",
+					"name": "pupil_right",
+					"value": "27f26301-9ccd-def2-94ef-577950e84e02"
+				},
+				{
+					"icon": "deployed_code",
+					"name": "chest",
+					"value": "f92184c7-5a28-47b8-8369-7dc7872e358a"
+				}
+			],
 			"animators": {
 				"d0076177-a6cf-561c-08d8-efd07677b337": {
 					"name": "camera",
