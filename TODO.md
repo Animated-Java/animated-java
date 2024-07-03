@@ -126,7 +126,7 @@
 # Github
 
 -   [x] Reorganize the repo's branches.
-    -   [ ] Create a `release` branch.
+    -   [x] Create a `release` branch.
     -   [x] Create a `dev` branch.
     -   [x] Create a `legacy-beta` tag.
     -   [x] Create a `legacy-armorstands` tag.
