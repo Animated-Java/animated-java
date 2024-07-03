@@ -1,4 +1,4 @@
-import { NbtFloat, NbtList } from 'deepslate'
+import { NbtFloat, NbtList } from 'deepslate/lib/nbt'
 import {
 	AsyncZipOptions,
 	AsyncZippable,

@@ -12,7 +12,7 @@
 </script>
 
 <script lang="ts">
-	import { NbtCompound, NbtTag } from 'deepslate'
+	import { NbtCompound, NbtTag } from 'deepslate/lib/nbt'
 
 	const pluginModeEnabled = !!Project?.animated_java?.enable_plugin_mode
 

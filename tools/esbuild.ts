@@ -19,7 +19,7 @@ import ImportGlobPlugin from 'esbuild-plugin-import-glob'
 import packagerPlugin from './plugins/packagerPlugin'
 import inlineWorkerPlugin from './plugins/workerPlugin'
 import assetOverridePlugin from './plugins/assetOverridePlugin'
-
+import path from 'path'
 const PACKAGE = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
 
 const INFO_PLUGIN: esbuild.Plugin = {
@@ -39,6 +39,30 @@ const INFO_PLUGIN: esbuild.Plugin = {
 					result.warnings.length == 1 ? '' : 's'
 				} and ${result.errors.length} error${result.errors.length == 1 ? '' : 's'}.`
 			)
+		})
+		build.onResolve({ filter: /^three/ }, args => {
+			if (args.path === 'three') {
+				return { path: 'three', external: true }
+			} else {
+				return {
+					path: require.resolve(args.path),
+				}
+			}
+		})
+		build.onResolve({ filter: /^deepslate\// }, args => {
+			// esbuild respects the package.json "exports" field
+			// but the version of typescript we're using doesn't
+			// so we need to resolve the path manually
+			const file_path = path.resolve(
+				process.cwd(),
+				path.dirname(require.resolve('deepslate')),
+				'..',
+				args.path.split('/').slice(1).join('/'),
+				'index.js'
+			)
+			return {
+				path: file_path,
+			}
 		})
 	},
 }
@@ -192,6 +216,7 @@ const devConfig: esbuild.BuildOptions = {
 	],
 	format: 'iife',
 	define: DEFINES,
+	treeShaking: true,
 }
 
 const prodConfig: esbuild.BuildOptions = {
@@ -220,6 +245,7 @@ const prodConfig: esbuild.BuildOptions = {
 	drop: ['debugger'],
 	format: 'iife',
 	define: DEFINES,
+	treeShaking: true,
 }
 
 async function buildDev() {
