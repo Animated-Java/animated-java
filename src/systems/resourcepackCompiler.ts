@@ -222,7 +222,7 @@ export function compileResourcePack(options: {
 	// Transparent texture
 	const transparentTexturePath = PathModule.join(
 		resourcePackFolder,
-		'assets/animated_java/textures/transparent.png'
+		'assets/animated_java/textures/item/transparent.png'
 	)
 	fs.mkdirSync(PathModule.dirname(transparentTexturePath), { recursive: true })
 	fs.writeFileSync(

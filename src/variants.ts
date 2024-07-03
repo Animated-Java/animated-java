@@ -15,7 +15,7 @@ export const TRANSPARENT_TEXTURE = new Texture(
 	'797174ae-5c58-4a83-a630-eefd51007c80'
 ).fromDataURL(TransparentTexture)
 export const TRANSPARENT_TEXTURE_MATERIAL = Project!.materials[TRANSPARENT_TEXTURE.uuid]
-export const TRANSPARENT_TEXTURE_RESOURCE_LOCATION = 'animated_java:items/transparent'
+export const TRANSPARENT_TEXTURE_RESOURCE_LOCATION = 'animated_java:item/transparent'
 Project = OLD_PROJECT
 
 export class TextureMap {
