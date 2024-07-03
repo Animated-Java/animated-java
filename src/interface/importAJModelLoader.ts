@@ -52,7 +52,7 @@ export function convertAJModelToBlueprint(path: string) {
 			name: 'Upgrade .ajmodel to Blueprint',
 			path,
 		})
-		blueprint.project_settings!.export_namespace ??= toSafeFuntionName(Project!.name)
+		blueprint.blueprint_settings!.export_namespace ??= toSafeFuntionName(Project!.name)
 
 		requestAnimationFrame(() => {
 			Project!.save_path = ''

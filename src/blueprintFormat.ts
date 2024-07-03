@@ -115,7 +115,7 @@ export interface IBlueprintFormatJSON {
 	/**
 	 * The project settings of the Blueprint
 	 */
-	project_settings?: NonNullable<typeof Project>['animated_java']
+	blueprint_settings?: NonNullable<typeof Project>['animated_java']
 	/**
 	 * The variants of the Blueprint
 	 */
@@ -237,8 +237,8 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 			ModelProject.properties[key].merge(Project, model)
 		}
 
-		if (model.project_settings) {
-			Project.animated_java = { ...Project.animated_java, ...model.project_settings }
+		if (model.blueprint_settings) {
+			Project.animated_java = { ...Project.animated_java, ...model.blueprint_settings }
 		}
 
 		Project.last_used_export_namespace =
@@ -383,7 +383,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 				save_location: Project.save_path,
 				last_used_export_namespace: Project.last_used_export_namespace,
 			},
-			project_settings: Project.animated_java,
+			blueprint_settings: Project.animated_java,
 			resolution: {
 				width: Project.texture_width || 16,
 				height: Project.texture_height || 16,

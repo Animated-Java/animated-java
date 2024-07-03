@@ -41,6 +41,8 @@ export function process(model: any): any {
 		if (compareVersions('0.5.5', model.meta.format_version)) model = updateModelTo1_0pre6(model)
 		// v1.0.0-pre7
 		if (compareVersions('0.5.6', model.meta.format_version)) model = updateModelTo1_0pre7(model)
+		// v1.0.0-pre8
+		if (compareVersions('0.5.7', model.meta.format_version)) model = updateModelTo1_0pre8(model)
 
 		console.groupEnd()
 
@@ -210,7 +212,7 @@ function updateModelTo1_0pre1(model: any) {
 			uuid: model.meta.uuid || guid(),
 			last_used_export_namespace: model.animated_java.settings.project_namespace,
 		},
-		project_settings: {
+		blueprint_settings: {
 			// Blueprint Settings
 			show_bounding_box: defaultSettings.show_bounding_box,
 			auto_bounding_box: defaultSettings.auto_bounding_box,
@@ -437,7 +439,7 @@ function updateModelTo1_0pre1(model: any) {
 		nbt.delete('Tags')
 		if ([...nbt.keys()].length !== 0) commands.push('data merge entity @s ' + nbt.toString())
 		if (tags) commands.push(...tags.map(t => `tag @s add ${t}`))
-		blueprint.project_settings!.summon_commands = commands.join('\n')
+		blueprint.blueprint_settings!.summon_commands = commands.join('\n')
 	}
 
 	console.log('Finished Blueprint:', blueprint)
@@ -477,19 +479,32 @@ function updateModelTo1_0pre6(model: any): IBlueprintFormatJSON {
 function updateModelTo1_0pre7(model: any): IBlueprintFormatJSON {
 	console.log('Processing model format 1.0.0-pre7', JSON.parse(JSON.stringify(model)))
 
-	if (model.blueprint_settings.enable_resource_pack !== undefined) {
-		model.blueprint_settings.resource_pack_export_mode = model.blueprint_settings
+	if (model.project_settings.enable_resource_pack !== undefined) {
+		model.project_settings.resource_pack_export_mode = model.project_settings
 			.enable_resource_pack
 			? 'raw'
 			: 'none'
-		delete model.blueprint_settings.enable_resource_pack
+		delete model.project_settings.enable_resource_pack
 	}
 
-	if (model.blueprint_settings.enable_data_pack !== undefined) {
-		model.blueprint_settings.data_pack_export_mode = model.blueprint_settings.enable_data_pack
+	if (model.project_settings.enable_data_pack !== undefined) {
+		model.project_settings.data_pack_export_mode = model.project_settings.enable_data_pack
 			? 'raw'
 			: 'none'
-		delete model.blueprint_settings.enable_data_pack
+		delete model.project_settings.enable_data_pack
+	}
+
+	return model as IBlueprintFormatJSON
+}
+
+// region v1.0.0-pre8
+// eslint-disable-next-line @typescript-eslint/naming-convention
+function updateModelTo1_0pre8(model: any): IBlueprintFormatJSON {
+	console.log('Processing model format 1.0.0-pre8', JSON.parse(JSON.stringify(model)))
+
+	if (model.project_settings) {
+		model.blueprint_settings = model.project_settings
+		delete model.project_settings
 	}
 
 	return model as IBlueprintFormatJSON
