@@ -37,11 +37,21 @@
 <div class="base_dialog_item">
 	{#if error_text}
 		<div class="error_text">
-			<i class="fa fa-exclamation-circle dialog_form_error text_icon" />{error_text}
+			<i class="fa fa-exclamation-circle dialog_form_error text_icon" />
+			<div class="error_lines">
+				{#each error_text.split('\n') as text}
+					<div>{text}</div>
+				{/each}
+			</div>
 		</div>
 	{:else if warning_text}
 		<div class="warning_text">
-			<i class="fa fa-exclamation-triangle dialog_form_warning text_icon" />{warning_text}
+			<i class="fa fa-exclamation-triangle dialog_form_warning text_icon" />
+			<div class="warning_lines">
+				{#each warning_text.split('\n') as text}
+					<div>{text}</div>
+				{/each}
+			</div>
 		</div>
 	{/if}
 </div>
@@ -57,14 +67,26 @@
 		flex-grow: 1;
 	}
 	.warning_text {
+		display: flex;
+		align-items: center;
 		color: var(--color-warning);
 		font-family: var(--font-code);
 		font-size: 0.8em;
 	}
+	.warning_lines {
+		display: flex;
+		flex-direction: column;
+	}
 	.error_text {
+		display: flex;
+		align-items: center;
 		color: var(--color-error);
 		font-family: var(--font-code);
 		font-size: 0.8em;
+	}
+	.error_lines {
+		display: flex;
+		flex-direction: column;
 	}
 	.text_icon {
 		margin-right: 8px;

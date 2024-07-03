@@ -194,6 +194,10 @@ animated_java.dialog.bone_config.invisible.description: Whether or not the bone 
 
 animated_java.dialog.bone_config.nbt.title: NBT
 animated_java.dialog.bone_config.nbt.description: The NBT to apply to the bone.
+animated_java.dialog.bone_config.nbt.invalid_nbt.not_compound: The NBT must be a compound tag! Eg. {CustomName:'"my name"'}
+animated_java.dialog.bone_config.nbt.invalid_nbt.error: |-
+    Invalid NBT!
+    {0}
 
 animated_java.dialog.bone_config.billboard.title: Billboard
 animated_java.dialog.bone_config.billboard.description: Controls if this bone should pivot to face player when rendered. It can be fixed (both vertical and horizontal angles are fixed), vertical (faces player around vertical axis), horizontal (pivots around horizontal axis), and center (pivots around center point).

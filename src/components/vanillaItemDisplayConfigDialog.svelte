@@ -11,6 +11,8 @@
 </script>
 
 <script lang="ts">
+	import { NbtCompound, NbtTag } from 'deepslate'
+
 	const pluginModeEnabled = !!Project?.animated_java?.enable_plugin_mode
 
 	export let billboard: Valuable<string>
@@ -30,6 +32,26 @@
 		vertical: translate('dialog.bone_config.billboard.options.vertical'),
 		horizontal: translate('dialog.bone_config.billboard.options.horizontal'),
 		center: translate('dialog.bone_config.billboard.options.center'),
+	}
+
+	const nbtChecker: DialogItemValueChecker<string> = value => {
+		let parsedNbt: NbtTag | undefined
+		try {
+			parsedNbt = NbtTag.fromString(value)
+		} catch (e: any) {
+			return {
+				type: 'error',
+				message: translate('dialog.bone_config.nbt.invalid_nbt.error', e.message),
+			}
+		}
+		if (!(parsedNbt instanceof NbtCompound)) {
+			return {
+				type: 'error',
+				message: translate('dialog.bone_config.nbt.invalid_nbt.not_compound'),
+			}
+		}
+
+		return { type: 'success', message: '' }
 	}
 </script>
 
@@ -114,6 +136,7 @@
 				label={translate('dialog.bone_config.nbt.title')}
 				tooltip={translate('dialog.bone_config.nbt.description')}
 				bind:value={nbt}
+				valueChecker={nbtChecker}
 			/>
 		{:else}
 			<Select
