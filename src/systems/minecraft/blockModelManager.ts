@@ -1,3 +1,4 @@
+import { mergeGeometries } from '../../util/bufferGeometryUtils'
 import {
 	IParsedBlock,
 	getPathFromResourceLocation,
@@ -15,7 +16,6 @@ import {
 	IBlockStateVariant,
 } from './model'
 import { TEXTURE_FRAG_SHADER, TEXTURE_VERT_SHADER } from './textureShaders'
-import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils'
 
 type BlockModelMesh = { mesh: THREE.Mesh; outline: THREE.LineSegments; isBlock: true }
 
@@ -340,18 +340,8 @@ async function generateModelMesh(
 		mesh.add(elementMesh)
 	}
 
-	// @ts-expect-error
-	const outlineGeo = BufferGeometryUtils.mergeBufferGeometries(outlineGeos)
+	const outlineGeo = mergeGeometries(outlineGeos)!
 	const outline = new THREE.LineSegments(outlineGeo, Canvas.outlineMaterial)
-
-	// if (variant.y) {
-	// 	mesh.rotateY(Math.degToRad(-variant.y))
-	// 	outline.rotateY(Math.degToRad(-variant.y))
-	// }
-	// if (variant.x) {
-	// 	mesh.rotateX(Math.degToRad(-variant.x))
-	// 	outline.rotateX(Math.degToRad(-variant.x))
-	// }
 
 	outline.no_export = true
 	outline.renderOrder = 2
@@ -456,8 +446,7 @@ export async function parseBlockState(block: IParsedBlock): Promise<BlockModelMe
 			)
 		}
 
-		// @ts-expect-error
-		const outlineGeo = BufferGeometryUtils.mergeBufferGeometries(outlines)
+		const outlineGeo = mergeGeometries(outlines)!
 		const outline = new THREE.LineSegments(outlineGeo, Canvas.outlineMaterial)
 
 		outline.no_export = true

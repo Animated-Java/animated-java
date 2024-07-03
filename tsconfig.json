@@ -9,6 +9,7 @@
 		"strict": true,
 		"types": ["node", "./types/blockbench-types", "svelte"],
 		"resolveJsonModule": true,
-		"allowSyntheticDefaultImports": true
+		"allowSyntheticDefaultImports": true,
+		"allowUmdGlobalAccess": true
 	}
 }

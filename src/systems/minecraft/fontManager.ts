@@ -11,9 +11,9 @@ import {
 	StyleRecord,
 } from './textWrapping'
 import { createHash } from 'crypto'
-import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils'
 import { UnicodeString } from '../../util/unicodeString'
 import { type Alignment } from '../../outliner/textDisplay'
+import { mergeGeometries } from '../../util/bufferGeometryUtils'
 
 interface IFontProviderBitmap {
 	type: 'bitmap'
@@ -459,8 +459,7 @@ export class MinecraftFont {
 
 		let charGeo: THREE.BufferGeometry | undefined
 		if (geos.length > 1) {
-			// @ts-expect-error
-			charGeo = BufferGeometryUtils.mergeBufferGeometries(geos)
+			charGeo = mergeGeometries(geos)!
 			const charMesh = new THREE.Mesh(
 				charGeo,
 				new THREE.MeshBasicMaterial({ vertexColors: true })

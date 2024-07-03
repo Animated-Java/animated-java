@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
 	import { Valuable } from '../util/stores'
-	import ArmorStandRunningGif from '../assets/armor_stand_running.gif'
+	import ArmorStandRunningGif from '../assets/armor_stand_running.webp'
 </script>
 
 <script lang="ts">

@@ -246,6 +246,7 @@ const prodConfig: esbuild.BuildOptions = {
 	format: 'iife',
 	define: DEFINES,
 	treeShaking: true,
+	metafile: true,
 }
 
 async function buildDev() {
@@ -253,9 +254,16 @@ async function buildDev() {
 	await ctx.watch()
 }
 
-function buildProd() {
-	// esbuild.transformSync('function devlog(message) {}')
-	esbuild.build(prodConfig).catch(() => process.exit(1))
+async function buildProd() {
+	const result = await esbuild.build(prodConfig).catch(() => process.exit(1))
+	if (result.errors.length > 0) {
+		console.error(result.errors)
+		process.exit(1)
+	}
+	if (result.warnings.length > 0) {
+		console.warn(result.warnings)
+	}
+	fs.writeFileSync('./dist/meta.json', JSON.stringify(result.metafile, null, '\t'))
 }
 
 async function main() {
@@ -263,7 +271,7 @@ async function main() {
 		await buildDev()
 		return
 	}
-	buildProd()
+	await buildProd()
 }
 
 void main()
