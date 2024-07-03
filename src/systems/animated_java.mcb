@@ -124,7 +124,8 @@ dir <%export_namespace%> {
 
 	function on_load {
 		IF (use_storage_for_animation) {
-			data modify storage aj.<%export_namespace%>:animations list set value <%animationStorage.toString()%>
+			data modify storage aj.<%export_namespace%>:animations list set value {}
+			<%animationStorage.join('\n')%>
 		}
 		execute as @e[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] \
 			unless score @s <%OBJECTIVES.IS_RIG_LOADED()%> matches 1 at @s run \

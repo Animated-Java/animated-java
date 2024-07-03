@@ -423,13 +423,12 @@ class AJMeta {
 }
 
 function createAnimationStorage(animations: IRenderedAnimation[]) {
-	const storage: NbtCompound = new NbtCompound()
+	const storage: string[] = []
 	for (const animation of animations) {
 		const frames = new NbtList([
 			new NbtCompound(), // This compound is just to make the list 1-indexed
 		])
 		const animStorage = new NbtCompound().set('frames', frames)
-		storage.set(animation.storageSafeName, animStorage)
 		for (const frame of animation.frames) {
 			const frameStorage = new NbtCompound()
 			frames.add(frameStorage)
@@ -443,6 +442,16 @@ function createAnimationStorage(animations: IRenderedAnimation[]) {
 				)
 			}
 		}
+		const str = `data modify storage aj.${
+			Project!.animated_java.export_namespace
+		}:animations list.${animation.storageSafeName} set value ${animStorage.toString()}`
+		if (str.length > 2000000) {
+			// FIXME - Temporary patch. Split each animation's storage into multiple commands if it's too large.
+			throw new Error(
+				`The animation storage for '${animation.name}' is too large! The data command must be less than 2000000 characters long. (Currently ${str.length} characters).`
+			)
+		}
+		storage.push(str)
 	}
 	return storage
 }
