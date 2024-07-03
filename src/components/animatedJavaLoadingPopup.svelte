@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-	import RunningArmorStand from '../assets/armor_stand_running.gif'
+	import RunningArmorStand from '../assets/armor_stand_running.webp'
 	import { type Valuable } from '../util/stores'
 </script>
 

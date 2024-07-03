@@ -1,9 +1,9 @@
+import { mergeGeometries } from '../../util/bufferGeometryUtils'
 import { getPathFromResourceLocation, parseResourceLocation } from '../../util/minecraftUtil'
 import { assetsLoaded, getJSONAsset, getPngAssetAsDataUrl } from './assetManager'
 import { parseBlockModel } from './blockModelManager'
 import { IItemModel } from './model'
 import { TEXTURE_FRAG_SHADER, TEXTURE_VERT_SHADER } from './textureShaders'
-import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils'
 
 type ItemModelMesh = { mesh: THREE.Mesh; outline: THREE.LineSegments; isBlock?: boolean }
 
@@ -270,8 +270,7 @@ async function generateItemMesh(location: string, model: IItemModel): Promise<It
 		masterMesh.add(mesh)
 	}
 
-	// @ts-expect-error
-	const outlineGeo = BufferGeometryUtils.mergeBufferGeometries(outlineGeos)
+	const outlineGeo = mergeGeometries(outlineGeos)
 	const outline = new THREE.LineSegments(
 		new THREE.EdgesGeometry(outlineGeo as THREE.BufferGeometry),
 		Canvas.outlineMaterial

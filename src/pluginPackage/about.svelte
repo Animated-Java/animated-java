@@ -24,7 +24,7 @@
 >
 	<h1>Welcome to Animated Java!</h1>
 	<img
-		src="https://github.com/Animated-Java/animated-java/blob/rewrite/src/assets/armor_stand_wave.gif?raw=true"
+		src="https://github.com/Animated-Java/animated-java/blob/main/src/assets/armor_stand_wave.webp?raw=true"
 		alt="Armor Stand Waving"
 		width="80px"
 	/>

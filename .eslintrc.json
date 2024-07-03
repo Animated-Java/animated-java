@@ -9,7 +9,14 @@
 		"plugin:@typescript-eslint/recommended",
 		"plugin:@typescript-eslint/recommended-requiring-type-checking"
 	],
-	"ignorePatterns": ["node_modules/", "dist/", "exporters/", "tools/", "svelte.config.ts"],
+	"ignorePatterns": [
+		"node_modules/",
+		"dist/",
+		"exporters/",
+		"tools/",
+		"svelte.config.ts",
+		"src/util/bufferGeometryUtils.ts"
+	],
 	"overrides": [
 		{
 			"files": ["*.js", "*.d.ts"],
