@@ -1,4 +1,12 @@
 import { NbtFloat, NbtList } from 'deepslate'
+import {
+	AsyncZipOptions,
+	AsyncZippable,
+	unzip as cbUnzip,
+	zip as cbZip,
+	type AsyncUnzipOptions,
+	type Unzipped,
+} from 'fflate/browser'
 
 export function arrayToNbtFloatArray(array: number[]) {
 	return new NbtList(array.map(v => new NbtFloat(v)))
@@ -35,4 +43,30 @@ export function debounce(func: () => void, timeout = 300) {
 		clearTimeout(timer)
 		timer = setTimeout(func, timeout)
 	}
+}
+
+// promisify didn't work 😔
+export const zip = (data: AsyncZippable, options: AsyncZipOptions) => {
+	return new Promise<Uint8Array>((resolve, reject) => {
+		cbZip(data, options, (err, result) => {
+			if (err) {
+				reject(err)
+			} else {
+				resolve(result)
+			}
+		})
+	})
+}
+
+// promisify didn't work 😔
+export const unzip = (data: Uint8Array, options: AsyncUnzipOptions) => {
+	return new Promise<Unzipped>((resolve, reject) => {
+		cbUnzip(data, options, (err, result) => {
+			if (err) {
+				reject(err)
+			} else {
+				resolve(result)
+			}
+		})
+	})
 }

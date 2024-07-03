@@ -25,9 +25,6 @@
 		border-bottom: 2px dashed var(--color-button);
 		height: 0px;
 		margin: 8px;
-		margin-left: 16px;
-	}
-	label {
-		width: auto;
+		margin-left: 0px;
 	}
 </style>

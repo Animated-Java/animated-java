@@ -1,9 +1,8 @@
-import { PROGRESS_DESCRIPTION } from '../interface/exportProgressDialog'
+import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../interface/exportProgressDialog'
 import { isResourcePackPath, toSafeFuntionName } from '../util/minecraftUtil'
 import { TRANSPARENT_TEXTURE } from '../variants'
-import { IRenderedAnimation } from './animationRenderer'
 import { IRenderedNodes, IRenderedRig } from './rigRenderer'
-import { replacePathPart, sortObjectKeys } from './util'
+import { replacePathPart, sortObjectKeys, zip } from './util'
 
 interface IPredicateItemModel {
 	parent: string
@@ -118,34 +117,24 @@ class PredicateItemModel {
 	}
 }
 
-export function compileResourcePack(options: {
+export async function compileResourcePack(options: {
 	rig: IRenderedRig
-	animations: IRenderedAnimation[]
 	displayItemPath: string
 	resourcePackFolder: string
 	textureExportFolder: string
 	modelExportFolder: string
-	dataPackFolder: string
 }) {
-	const {
-		rig,
-		// animations,
-		displayItemPath,
-		resourcePackFolder,
-		textureExportFolder,
-		modelExportFolder,
-		// dataPackFolder,
-	} = options
+	const { rig, displayItemPath, resourcePackFolder, textureExportFolder, modelExportFolder } =
+		options
 	const aj = Project!.animated_java
 	const lastUsedExportNamespace = Project!.last_used_export_namespace
 	PROGRESS_DESCRIPTION.set('Compiling Resource Pack...')
 	console.log('Compiling resource pack...', options)
 
+	const exportedFiles = new Map<string, string | Buffer>()
+
 	// Internal Models
-	fs.mkdirSync(PathModule.join(resourcePackFolder, 'assets/animated_java/models/'), {
-		recursive: true,
-	})
-	fs.writeFileSync(
+	exportedFiles.set(
 		PathModule.join(resourcePackFolder, 'assets/animated_java/models/empty.json'),
 		'{}'
 	)
@@ -162,28 +151,16 @@ export function compileResourcePack(options: {
 	displayItemModel.assertOverride(1, 'animated_java:empty')
 
 	// Models
-	PROGRESS_DESCRIPTION.set('Writing Bone Models...')
-	fs.rmSync(replacePathPart(modelExportFolder, aj.export_namespace, lastUsedExportNamespace), {
-		recursive: true,
-		force: true,
-	})
-	fs.mkdirSync(modelExportFolder, { recursive: true })
 	for (const [boneUuid, model] of Object.entries(rig.models)) {
 		const bone = rig.nodeMap[boneUuid] as IRenderedNodes['Bone']
 		bone.customModelData = displayItemModel.addOverride(bone.resourceLocation)
-		fs.writeFileSync(
+		exportedFiles.set(
 			PathModule.join(modelExportFolder, bone.name + '.json'),
 			autoStringify(model)
 		)
 	}
 
 	// Textures
-	PROGRESS_DESCRIPTION.set('Writing Textures...')
-	fs.rmSync(replacePathPart(textureExportFolder, aj.export_namespace, lastUsedExportNamespace), {
-		recursive: true,
-		force: true,
-	})
-	fs.mkdirSync(textureExportFolder, { recursive: true })
 	for (const texture of Object.values(rig.textures)) {
 		let image: Buffer | undefined
 		let mcmeta: Buffer | undefined
@@ -209,11 +186,11 @@ export function compileResourcePack(options: {
 
 		let textureName = toSafeFuntionName(texture.name)
 		if (!texture.name.endsWith('.png')) textureName += '.png'
-		fs.writeFileSync(PathModule.join(textureExportFolder, textureName), image)
+		exportedFiles.set(PathModule.join(textureExportFolder, textureName), image)
 		if (mcmeta !== undefined)
-			fs.writeFileSync(PathModule.join(textureExportFolder, textureName + '.mcmeta'), mcmeta)
+			exportedFiles.set(PathModule.join(textureExportFolder, textureName + '.mcmeta'), mcmeta)
 		if (optifineEmissive !== undefined)
-			fs.writeFileSync(
+			exportedFiles.set(
 				PathModule.join(textureExportFolder, textureName + '_e.png'),
 				optifineEmissive
 			)
@@ -224,27 +201,19 @@ export function compileResourcePack(options: {
 		resourcePackFolder,
 		'assets/animated_java/textures/item/transparent.png'
 	)
-	fs.mkdirSync(PathModule.dirname(transparentTexturePath), { recursive: true })
-	fs.writeFileSync(
+	exportedFiles.set(
 		transparentTexturePath,
-		nativeImage.createFromDataURL(TRANSPARENT_TEXTURE.source).toPNG(),
-		'base64'
+		nativeImage.createFromDataURL(TRANSPARENT_TEXTURE.source).toPNG()
 	)
-	// Remove texture folder if it's empty - Doing it this way because I'm lazy.
-	if (fs.readdirSync(textureExportFolder).length === 0) {
-		fs.rmdirSync(textureExportFolder)
-	}
 
 	// Variant Models
-	PROGRESS_DESCRIPTION.set('Writing Variant Models...')
 	for (const [variantName, models] of Object.entries(rig.variantModels)) {
-		fs.mkdirSync(PathModule.join(modelExportFolder, variantName), { recursive: true })
 		for (const [boneUuid, variantModel] of Object.entries(models)) {
 			const bone = rig.nodeMap[boneUuid] as IRenderedNodes['Bone']
 			variantModel.customModelData = displayItemModel.addOverride(
 				variantModel.resourceLocation
 			)
-			fs.writeFileSync(
+			exportedFiles.set(
 				PathModule.join(modelExportFolder, variantName, bone.name + '.json'),
 				autoStringify(variantModel.model)
 			)
@@ -252,10 +221,74 @@ export function compileResourcePack(options: {
 	}
 
 	// Write display item model
-	PROGRESS_DESCRIPTION.set('Writing Display Item...')
 	console.log('Display Item Model', displayItemModel.toJSON())
-	fs.mkdirSync(PathModule.dirname(displayItemPath), { recursive: true })
-	fs.writeFileSync(displayItemPath, autoStringify(displayItemModel.toJSON()))
+	exportedFiles.set(displayItemPath, autoStringify(displayItemModel.toJSON()))
+
+	if (aj.resource_pack_export_mode === 'raw') {
+		PROGRESS_DESCRIPTION.set('Removing Old Resource Pack Files...')
+
+		await fs.promises.rm(
+			replacePathPart(modelExportFolder, aj.export_namespace, lastUsedExportNamespace),
+			{
+				recursive: true,
+				force: true,
+			}
+		)
+		await fs.promises.rm(
+			replacePathPart(textureExportFolder, aj.export_namespace, lastUsedExportNamespace),
+			{
+				recursive: true,
+				force: true,
+			}
+		)
+		for (const variant of Object.keys(rig.variantModels)) {
+			await fs.promises.mkdir(PathModule.join(modelExportFolder, variant), {
+				recursive: true,
+			})
+		}
+
+		PROGRESS_DESCRIPTION.set('Writing Resource Pack...')
+		PROGRESS.set(0)
+		MAX_PROGRESS.set(exportedFiles.size)
+		const createdFolderCache = new Set<string>()
+
+		for (const [path, data] of exportedFiles) {
+			const folder = PathModule.dirname(path)
+			if (!createdFolderCache.has(folder)) {
+				await fs.promises.mkdir(folder, { recursive: true })
+				createdFolderCache.add(folder)
+			}
+			await fs.promises.writeFile(path, data)
+			PROGRESS.set(PROGRESS.get() + 1)
+		}
+	} else if (aj.resource_pack_export_mode === 'zip') {
+		exportedFiles.set(
+			PathModule.join(resourcePackFolder, 'pack.mcmeta'),
+			autoStringify({
+				pack: {
+					// FIXME - This should be a setting
+					pack_format: 32,
+					description: `${Project!.name}. Generated with Animated Java`,
+				},
+			})
+		)
+
+		PROGRESS_DESCRIPTION.set('Writing Resource Pack Zip...')
+		const data: Record<string, Uint8Array> = {}
+		for (const [path, file] of exportedFiles) {
+			const relativePath = PathModule.relative(resourcePackFolder, path)
+			if (typeof file === 'string') {
+				data[relativePath] = Buffer.from(file)
+			} else {
+				data[relativePath] = file
+			}
+		}
+		const zipped = await zip(data, {})
+		await fs.promises.writeFile(
+			resourcePackFolder + (resourcePackFolder.endsWith('.zip') ? '' : '.zip'),
+			zipped
+		)
+	}
 
 	console.log('Resource pack compiled!')
 }

@@ -64,7 +64,10 @@ async function actuallyExportProject(forceSave = true) {
 		PROGRESS_DESCRIPTION.set('Rendering Rig...')
 		const rig = renderRig(modelExportFolder, textureExportFolder)
 
-		if (!Project!.animated_java.enable_resource_pack && rig.includesCustomModels) {
+		if (
+			Project!.animated_java.resource_pack_export_mode === 'none' &&
+			rig.includesCustomModels
+		) {
 			Blockbench.showMessageBox({
 				title: translate('misc.failed_to_export.title'),
 				message: translate('misc.failed_to_export.custom_models.message'),
@@ -81,6 +84,15 @@ async function actuallyExportProject(forceSave = true) {
 		const rigHash = hashRig(rig)
 		const animationHash = hashAnimations(animations)
 
+		// Always run the resource pack compiler because it calculates the custom model data.
+		await compileResourcePack({
+			rig,
+			displayItemPath,
+			resourcePackFolder,
+			textureExportFolder,
+			modelExportFolder,
+		})
+
 		if (aj.enable_plugin_mode) {
 			exportJSON({
 				rig,
@@ -90,19 +102,7 @@ async function actuallyExportProject(forceSave = true) {
 				modelExportFolder,
 			})
 		} else {
-			if (aj.enable_resource_pack) {
-				compileResourcePack({
-					rig,
-					animations,
-					displayItemPath,
-					resourcePackFolder,
-					textureExportFolder,
-					modelExportFolder,
-					dataPackFolder,
-				})
-			}
-
-			if (aj.enable_data_pack) {
+			if (aj.data_pack_export_mode !== 'none') {
 				await compileDataPack({ rig, animations, dataPackFolder, rigHash, animationHash })
 			}
 

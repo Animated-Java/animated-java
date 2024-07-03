@@ -39,6 +39,9 @@ export function process(model: any): any {
 		if (compareVersions('0.5.0', model.meta.format_version)) model = updateModelTo1_0pre1(model)
 		// v1.0.0-pre6
 		if (compareVersions('0.5.5', model.meta.format_version)) model = updateModelTo1_0pre6(model)
+		// v1.0.0-pre7
+		if (compareVersions('0.5.6', model.meta.format_version)) model = updateModelTo1_0pre7(model)
+
 		console.groupEnd()
 
 		model.meta.format_version = PACKAGE.version
@@ -215,8 +218,8 @@ function updateModelTo1_0pre1(model: any) {
 			// Export settings
 			export_namespace: model.animated_java.settings.project_namespace,
 			enable_plugin_mode: defaultSettings.enable_plugin_mode,
-			enable_resource_pack: defaultSettings.enable_resource_pack,
-			enable_data_pack: defaultSettings.enable_data_pack,
+			resource_pack_export_mode: defaultSettings.resource_pack_export_mode,
+			data_pack_export_mode: defaultSettings.data_pack_export_mode,
 			// Resource pack settings
 			display_item: model.animated_java.settings.rig_item,
 			customModelDataOffset: 0,
@@ -464,6 +467,29 @@ function updateModelTo1_0pre6(model: any): IBlueprintFormatJSON {
 			animation.excluded_nodes = animation.excluded_bones
 			delete animation.excluded_bones
 		}
+	}
+
+	return model as IBlueprintFormatJSON
+}
+
+// region v1.0.0-pre7
+// eslint-disable-next-line @typescript-eslint/naming-convention
+function updateModelTo1_0pre7(model: any): IBlueprintFormatJSON {
+	console.log('Processing model format 1.0.0-pre7', JSON.parse(JSON.stringify(model)))
+
+	if (model.blueprint_settings.enable_resource_pack !== undefined) {
+		model.blueprint_settings.resource_pack_export_mode = model.blueprint_settings
+			.enable_resource_pack
+			? 'raw'
+			: 'none'
+		delete model.blueprint_settings.enable_resource_pack
+	}
+
+	if (model.blueprint_settings.enable_data_pack !== undefined) {
+		model.blueprint_settings.data_pack_export_mode = model.blueprint_settings.enable_data_pack
+			? 'raw'
+			: 'none'
+		delete model.blueprint_settings.enable_data_pack
 	}
 
 	return model as IBlueprintFormatJSON

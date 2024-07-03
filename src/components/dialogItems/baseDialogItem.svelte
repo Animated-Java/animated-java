@@ -17,43 +17,45 @@
 	}
 </script>
 
-<div class="base_dialog_item" title={tooltip}>
-	<div class="slot_container" style={tooltip ? 'margin-right: 4px' : ''}>
-		<slot />
+<div>
+	<div class="base_dialog_item" title={tooltip}>
+		<div class="slot_container" style={tooltip ? 'margin-right: 4px' : ''}>
+			<slot />
+		</div>
+		{#if tooltip}
+			<!-- svelte-ignore a11y-click-events-have-key-events -->
+			<i
+				class="fa fa-question dialog_form_description dialog-form-description"
+				on:click={onQuestionMarkClick}
+			/>
+		{:else}
+			<i
+				class="fa fa-question dialog_form_description dialog-form-description"
+				style="visibility: hidden"
+			/>
+		{/if}
 	</div>
-	{#if tooltip}
-		<!-- svelte-ignore a11y-click-events-have-key-events -->
-		<i
-			class="fa fa-question dialog_form_description dialog-form-description"
-			on:click={onQuestionMarkClick}
-		/>
-	{:else}
-		<i
-			class="fa fa-question dialog_form_description dialog-form-description"
-			style="visibility: hidden"
-		/>
-	{/if}
-</div>
-<div class="base_dialog_item">
-	{#if error_text}
-		<div class="error_text">
-			<i class="fa fa-exclamation-circle dialog_form_error text_icon" />
-			<div class="error_lines">
-				{#each error_text.split('\n') as text}
-					<div>{text}</div>
-				{/each}
+	<div class="base_dialog_item">
+		{#if error_text}
+			<div class="error_text">
+				<i class="fa fa-exclamation-circle dialog_form_error text_icon" />
+				<div class="error_lines">
+					{#each error_text.split('\n') as text}
+						<div>{text}</div>
+					{/each}
+				</div>
 			</div>
-		</div>
-	{:else if warning_text}
-		<div class="warning_text">
-			<i class="fa fa-exclamation-triangle dialog_form_warning text_icon" />
-			<div class="warning_lines">
-				{#each warning_text.split('\n') as text}
-					<div>{text}</div>
-				{/each}
+		{:else if warning_text}
+			<div class="warning_text">
+				<i class="fa fa-exclamation-triangle dialog_form_warning text_icon" />
+				<div class="warning_lines">
+					{#each warning_text.split('\n') as text}
+						<div>{text}</div>
+					{/each}
+				</div>
 			</div>
-		</div>
-	{/if}
+		{/if}
+	</div>
 </div>
 
 <style>

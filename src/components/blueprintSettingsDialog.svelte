@@ -15,14 +15,16 @@
 </script>
 
 <script lang="ts">
+	import Select from './dialogItems/select.svelte'
+
 	export let blueprintName: Valuable<string>
 	export let textureSizeX: Valuable<number>
 	export let textureSizeY: Valuable<number>
 	// Export Settings
 	export let exportNamespace: Valuable<string>
 	export let enablePluginMode: Valuable<boolean>
-	export let enableResourcePack: Valuable<boolean>
-	export let enableDataPack: Valuable<boolean>
+	export let resourcePackExportMode: Valuable<string>
+	export let dataPackExportMode: Valuable<string>
 	// Bounding Box
 	export let showBoundingBox: Valuable<boolean>
 	export let autoBoundingBox: Valuable<boolean>
@@ -305,6 +307,27 @@
 				return { type: 'success', message: '' }
 		}
 	}
+
+	function zipChecker(value: string): { type: string; message: string } {
+		switch (true) {
+			case value === '':
+				return {
+					type: 'error',
+					message: translate(
+						'dialog.blueprint_settings.resource_pack_zip.error.no_file_selected',
+					),
+				}
+			case fs.existsSync(value) && !fs.statSync(value).isFile():
+				return {
+					type: 'error',
+					message: translate(
+						'dialog.blueprint_settings.resource_pack_zip.error.not_a_file',
+					),
+				}
+			default:
+				return { type: 'success', message: '' }
+		}
+	}
 </script>
 
 <div>
@@ -387,121 +410,151 @@
 			valueChecker={jsonFileChecker}
 		/>
 	{:else}
-		<Checkbox
-			label={translate('dialog.blueprint_settings.enable_resource_pack.title')}
-			tooltip={translate('dialog.blueprint_settings.enable_resource_pack.description')}
-			bind:checked={enableResourcePack}
-		/>
-		<Checkbox
-			label={translate('dialog.blueprint_settings.enable_data_pack.title')}
-			tooltip={translate('dialog.blueprint_settings.enable_data_pack.description')}
-			bind:checked={enableDataPack}
+		<Select
+			label={translate('dialog.blueprint_settings.resource_pack_export_mode.title')}
+			tooltip={translate('dialog.blueprint_settings.resource_pack_export_mode.description')}
+			options={{
+				raw: translate('dialog.blueprint_settings.resource_pack_export_mode.options.raw'),
+				zip: translate('dialog.blueprint_settings.resource_pack_export_mode.options.zip'),
+				none: translate('dialog.blueprint_settings.resource_pack_export_mode.options.none'),
+			}}
+			defaultOption={'raw'}
+			bind:value={resourcePackExportMode}
 		/>
 
-		{#if $enableResourcePack}
+		<Select
+			label={translate('dialog.blueprint_settings.data_pack_export_mode.title')}
+			tooltip={translate('dialog.blueprint_settings.data_pack_export_mode.description')}
+			options={{
+				raw: translate('dialog.blueprint_settings.data_pack_export_mode.options.raw'),
+				zip: translate('dialog.blueprint_settings.data_pack_export_mode.options.zip'),
+				none: translate('dialog.blueprint_settings.data_pack_export_mode.options.none'),
+			}}
+			defaultOption={'raw'}
+			bind:value={dataPackExportMode}
+		/>
+
+		{#if $resourcePackExportMode !== 'none'}
 			<SectionHeader
 				label={translate('dialog.blueprint_settings.resource_pack_settings.title')}
 			/>
-			<Checkbox
-				label={translate(
-					'dialog.blueprint_settings.enable_advanced_resource_pack_settings.title',
-				)}
-				bind:checked={enableAdvancedResourcePackSettings}
-			/>
-			{#if $enableAdvancedResourcePackSettings}
-				<!--  -->
-				<p class="warning">
-					{translate('dialog.blueprint_settings.advanced_settings_warning')}
-				</p>
-				<LineInput
-					label={translate('dialog.blueprint_settings.display_item.title')}
-					tooltip={translate('dialog.blueprint_settings.display_item.description')}
-					bind:value={displayItem}
-					valueChecker={displayItemChecker}
-				/>
-
-				<NumberSlider
-					label={translate('dialog.blueprint_settings.custom_model_data_offset.title')}
-					tooltip={translate(
-						'dialog.blueprint_settings.custom_model_data_offset.description',
+			{#if $resourcePackExportMode === 'raw'}
+				<Checkbox
+					label={translate(
+						'dialog.blueprint_settings.enable_advanced_resource_pack_settings.title',
 					)}
-					bind:value={customModelDataOffset}
+					bind:checked={enableAdvancedResourcePackSettings}
 				/>
+				{#if $enableAdvancedResourcePackSettings}
+					<p class="warning">
+						{translate('dialog.blueprint_settings.advanced_settings_warning')}
+					</p>
+					<LineInput
+						label={translate('dialog.blueprint_settings.display_item.title')}
+						tooltip={translate('dialog.blueprint_settings.display_item.description')}
+						bind:value={displayItem}
+						valueChecker={displayItemChecker}
+					/>
 
+					<NumberSlider
+						label={translate(
+							'dialog.blueprint_settings.custom_model_data_offset.title',
+						)}
+						tooltip={translate(
+							'dialog.blueprint_settings.custom_model_data_offset.description',
+						)}
+						bind:value={customModelDataOffset}
+					/>
+
+					<FileSelect
+						label={translate('dialog.blueprint_settings.display_item_path.title')}
+						tooltip={translate(
+							'dialog.blueprint_settings.display_item_path.description',
+						)}
+						bind:value={displayItemPath}
+						valueChecker={advancedResourcePackFileChecker}
+					/>
+
+					<FolderSelect
+						label={translate('dialog.blueprint_settings.model_folder.title')}
+						tooltip={translate('dialog.blueprint_settings.model_folder.description')}
+						bind:value={modelFolder}
+						valueChecker={advancedResourcePackFolderChecker}
+					/>
+
+					<FolderSelect
+						label={translate('dialog.blueprint_settings.texture_folder.title')}
+						tooltip={translate('dialog.blueprint_settings.texture_folder.description')}
+						bind:value={textureFolder}
+						valueChecker={advancedResourcePackFolderChecker}
+					/>
+				{:else}
+					<LineInput
+						label={translate('dialog.blueprint_settings.display_item.title')}
+						tooltip={translate('dialog.blueprint_settings.display_item.description')}
+						bind:value={displayItem}
+						valueChecker={displayItemChecker}
+					/>
+
+					<NumberSlider
+						label={translate(
+							'dialog.blueprint_settings.custom_model_data_offset.title',
+						)}
+						tooltip={translate(
+							'dialog.blueprint_settings.custom_model_data_offset.description',
+						)}
+						bind:value={customModelDataOffset}
+						min={0}
+						max={2147483647}
+					/>
+
+					<FolderSelect
+						label={translate('dialog.blueprint_settings.resource_pack.title')}
+						tooltip={translate('dialog.blueprint_settings.resource_pack.description')}
+						bind:value={resourcePack}
+						valueChecker={resourcePackFolderChecker}
+					/>
+				{/if}
+			{:else if $resourcePackExportMode === 'zip'}
 				<FileSelect
-					label={translate('dialog.blueprint_settings.display_item_path.title')}
-					tooltip={translate('dialog.blueprint_settings.display_item_path.description')}
-					bind:value={displayItemPath}
-					valueChecker={advancedResourcePackFileChecker}
-				/>
-
-				<FolderSelect
-					label={translate('dialog.blueprint_settings.model_folder.title')}
-					tooltip={translate('dialog.blueprint_settings.model_folder.description')}
-					bind:value={modelFolder}
-					valueChecker={advancedResourcePackFolderChecker}
-				/>
-
-				<FolderSelect
-					label={translate('dialog.blueprint_settings.texture_folder.title')}
-					tooltip={translate('dialog.blueprint_settings.texture_folder.description')}
-					bind:value={textureFolder}
-					valueChecker={advancedResourcePackFolderChecker}
-				/>
-			{:else}
-				<LineInput
-					label={translate('dialog.blueprint_settings.display_item.title')}
-					tooltip={translate('dialog.blueprint_settings.display_item.description')}
-					bind:value={displayItem}
-					valueChecker={displayItemChecker}
-				/>
-
-				<NumberSlider
-					label={translate('dialog.blueprint_settings.custom_model_data_offset.title')}
-					tooltip={translate(
-						'dialog.blueprint_settings.custom_model_data_offset.description',
-					)}
-					bind:value={customModelDataOffset}
-					min={0}
-					max={2147483647}
-				/>
-
-				<FolderSelect
-					label={translate('dialog.blueprint_settings.resource_pack.title')}
-					tooltip={translate('dialog.blueprint_settings.resource_pack.description')}
+					label={translate('dialog.blueprint_settings.resource_pack_zip.title')}
+					tooltip={translate('dialog.blueprint_settings.resource_pack_zip.description')}
 					bind:value={resourcePack}
-					valueChecker={resourcePackFolderChecker}
+					valueChecker={zipChecker}
 				/>
 			{/if}
 		{/if}
 
-		{#if $enableDataPack}
+		{#if $dataPackExportMode !== 'none'}
 			<SectionHeader
 				label={translate('dialog.blueprint_settings.data_pack_settings.title')}
 			/>
-			<!-- <Checkbox
-				label={translate(
-					'dialog.blueprint_settings.enable_advanced_data_pack_settings.title',
-				)}
-				bind:checked={enableAdvancedDataPackSettings}
-			/> -->
-			{#if $enableAdvancedDataPackSettings}
-				<p class="warning">
-					{translate('dialog.blueprint_settings.advanced_settings_warning')}
-				</p>
+			{#if $dataPackExportMode === 'raw'}
+				{#if $enableAdvancedDataPackSettings}
+					<p class="warning">
+						{translate('dialog.blueprint_settings.advanced_settings_warning')}
+					</p>
 
-				<FolderSelect
-					label={translate('dialog.blueprint_settings.data_pack.title')}
-					tooltip={translate('dialog.blueprint_settings.data_pack.description')}
+					<FolderSelect
+						label={translate('dialog.blueprint_settings.data_pack.title')}
+						tooltip={translate('dialog.blueprint_settings.data_pack.description')}
+						bind:value={dataPack}
+						valueChecker={dataPackFolderChecker}
+					/>
+				{:else}
+					<FolderSelect
+						label={translate('dialog.blueprint_settings.data_pack.title')}
+						tooltip={translate('dialog.blueprint_settings.data_pack.description')}
+						bind:value={dataPack}
+						valueChecker={dataPackFolderChecker}
+					/>
+				{/if}
+			{:else if $dataPackExportMode === 'zip'}
+				<FileSelect
+					label={translate('dialog.blueprint_settings.data_pack_zip.title')}
+					tooltip={translate('dialog.blueprint_settings.data_pack_zip.description')}
 					bind:value={dataPack}
-					valueChecker={dataPackFolderChecker}
-				/>
-			{:else}
-				<FolderSelect
-					label={translate('dialog.blueprint_settings.data_pack.title')}
-					tooltip={translate('dialog.blueprint_settings.data_pack.description')}
-					bind:value={dataPack}
-					valueChecker={dataPackFolderChecker}
+					valueChecker={zipChecker}
 				/>
 			{/if}
 			<CodeInput
@@ -551,10 +604,4 @@
 		font-size: 0.8em;
 		margin-bottom: 8px;
 	}
-	/* .error {
-		color: var(--color-error);
-		font-family: var(--font-code);
-		font-size: 0.8em;
-		margin-bottom: 8px;
-	} */
 </style>

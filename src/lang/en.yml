@@ -56,11 +56,25 @@ animated_java.dialog.blueprint_settings.export_namespace.error.invalid_character
 animated_java.dialog.blueprint_settings.enable_plugin_mode.title: Plugin Mode
 animated_java.dialog.blueprint_settings.enable_plugin_mode.description: Whether or not to enable Plugin Mode. Enable when you plan to use the .ajblueprint file in a plugin instead of a Resource Pack and/or Data Pack.
 
-animated_java.dialog.blueprint_settings.enable_resource_pack.title: Export Resources
-animated_java.dialog.blueprint_settings.enable_resource_pack.description: Whether or not to export resources into a Resource Pack.
+animated_java.dialog.blueprint_settings.resource_pack_export_mode.title: Resource Pack Export Mode
+animated_java.dialog.blueprint_settings.resource_pack_export_mode.description: |-
+    Determines how the Resource Pack should be exported.
+    Raw - Exports the Resource Pack as a folder.
+    Zip - Exports the Resource Pack as a .zip file.
+    None - Disables Resource Pack exporting.
+animated_java.dialog.blueprint_settings.resource_pack_export_mode.options.raw: Raw
+animated_java.dialog.blueprint_settings.resource_pack_export_mode.options.zip: Zip
+animated_java.dialog.blueprint_settings.resource_pack_export_mode.options.none: None
 
-animated_java.dialog.blueprint_settings.enable_data_pack.title: Export Data Pack
-animated_java.dialog.blueprint_settings.enable_data_pack.description: Whether or not to export into a Data Pack.
+animated_java.dialog.blueprint_settings.data_pack_export_mode.title: Data Pack Export Mode
+animated_java.dialog.blueprint_settings.data_pack_export_mode.description: |-
+    Determines how the Data Pack should be exported.
+    Raw - Exports the Data Pack as a folder.
+    Zip - Exports the Data Pack as a .zip file.
+    None - Disables Data Pack exporting.
+animated_java.dialog.blueprint_settings.data_pack_export_mode.options.raw: Raw
+animated_java.dialog.blueprint_settings.data_pack_export_mode.options.zip: Zip
+animated_java.dialog.blueprint_settings.data_pack_export_mode.options.none: None
 
 animated_java.dialog.blueprint_settings.show_bounding_box.title: Show Bounding Box
 animated_java.dialog.blueprint_settings.show_bounding_box.description: Whether or not to show the bounding box in the editor.
@@ -97,6 +111,11 @@ animated_java.dialog.blueprint_settings.resource_pack.error.not_a_folder: The se
 animated_java.dialog.blueprint_settings.resource_pack.error.missing_pack_mcmeta: The selected folder is missing a pack.mcmeta file!
 animated_java.dialog.blueprint_settings.resource_pack.error.missing_assets_folder: The selected Resource Pack is missing an assets folder!
 
+animated_java.dialog.blueprint_settings.resource_pack_zip.title: Resource Pack Zip
+animated_java.dialog.blueprint_settings.resource_pack_zip.description: The path to the .zip file to export the project to.
+animated_java.dialog.blueprint_settings.resource_pack_zip.error.no_file_selected: No file selected!
+animated_java.dialog.blueprint_settings.resource_pack_zip.error.not_a_file: The selected path is not a file!
+
 animated_java.dialog.blueprint_settings.display_item_path.title: Display Item Path
 animated_java.dialog.blueprint_settings.display_item_path.description: Where to place the Display Item. This should be a path to a .json file in a Resource Pack.
 animated_java.dialog.blueprint_settings.advanced_resource_pack_file.error.no_file_selected: No file selected!
@@ -125,6 +144,11 @@ animated_java.dialog.blueprint_settings.data_pack.error.folder_does_not_exist: T
 animated_java.dialog.blueprint_settings.data_pack.error.not_a_folder: The selected path is not a folder!
 animated_java.dialog.blueprint_settings.data_pack.error.missing_pack_mcmeta: The selected folder is missing a pack.mcmeta file!
 animated_java.dialog.blueprint_settings.data_pack.error.missing_data_folder: The selected Data Pack is missing a data folder!
+
+animated_java.dialog.blueprint_settings.data_pack_zip.title: Data Pack Zip
+animated_java.dialog.blueprint_settings.data_pack_zip.description: The path to the .zip file to export the project to.
+animated_java.dialog.blueprint_settings.data_pack_zip.error.no_file_selected: No file selected!
+animated_java.dialog.blueprint_settings.data_pack_zip.error.not_a_file: The selected path is not a file!
 
 animated_java.dialog.blueprint_settings.summon_commands.title: On-Summon Commands
 animated_java.dialog.blueprint_settings.summon_commands.description: |-

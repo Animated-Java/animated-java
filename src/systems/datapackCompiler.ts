@@ -11,6 +11,7 @@ import {
 	matrixToNbtFloatArray,
 	replacePathPart,
 	sortObjectKeys,
+	zip,
 } from './util'
 import { BoneConfig, TextDisplayConfig } from '../nodeConfigs'
 import {
@@ -523,51 +524,54 @@ export async function compileDataPack(options: {
 		formatVersion: Infinity, // We are living in the future! 🤖
 	})
 
-	const ajmeta = new AJMeta(
-		PathModule.join(options.dataPackFolder, '.ajmeta'),
-		aj.export_namespace,
-		Project!.last_used_export_namespace,
-		options.dataPackFolder
-	)
-	ajmeta.read()
+	let ajmeta: AJMeta | null = null
+	if (aj.data_pack_export_mode === 'raw') {
+		ajmeta = new AJMeta(
+			PathModule.join(options.dataPackFolder, '.ajmeta'),
+			aj.export_namespace,
+			Project!.last_used_export_namespace,
+			options.dataPackFolder
+		)
+		ajmeta.read()
 
-	PROGRESS_DESCRIPTION.set('Removing Old Data Pack Files...')
-	PROGRESS.set(0)
-	MAX_PROGRESS.set(ajmeta.oldDatapack.files.size)
-	const removedFolders = new Set<string>()
-	for (const file of ajmeta.oldDatapack.files) {
-		if (!isFunctionTagPath(file)) {
-			if (fs.existsSync(file)) await fs.promises.unlink(file)
-		} else if (aj.export_namespace !== Project!.last_used_export_namespace) {
-			const resourceLocation = parseDataPackPath(file)!.resourceLocation
-			if (
-				resourceLocation.startsWith(
-					`animated_java:${Project!.last_used_export_namespace}/`
-				) &&
-				fs.existsSync(file)
-			) {
-				// console.log('Moving old function tag:', file)
-				const newPath = replacePathPart(
-					file,
-					Project!.last_used_export_namespace,
-					aj.export_namespace
-				)
-				await fs.promises.mkdir(PathModule.dirname(newPath), { recursive: true })
-				await fs.promises.copyFile(file, newPath)
-				await fs.promises.unlink(file)
+		PROGRESS_DESCRIPTION.set('Removing Old Data Pack Files...')
+		PROGRESS.set(0)
+		MAX_PROGRESS.set(ajmeta.oldDatapack.files.size)
+		const removedFolders = new Set<string>()
+		for (const file of ajmeta.oldDatapack.files) {
+			if (!isFunctionTagPath(file)) {
+				if (fs.existsSync(file)) await fs.promises.unlink(file)
+			} else if (aj.export_namespace !== Project!.last_used_export_namespace) {
+				const resourceLocation = parseDataPackPath(file)!.resourceLocation
+				if (
+					resourceLocation.startsWith(
+						`animated_java:${Project!.last_used_export_namespace}/`
+					) &&
+					fs.existsSync(file)
+				) {
+					// console.log('Moving old function tag:', file)
+					const newPath = replacePathPart(
+						file,
+						Project!.last_used_export_namespace,
+						aj.export_namespace
+					)
+					await fs.promises.mkdir(PathModule.dirname(newPath), { recursive: true })
+					await fs.promises.copyFile(file, newPath)
+					await fs.promises.unlink(file)
+				}
 			}
+			let folder = PathModule.dirname(file)
+			while (
+				!removedFolders.has(folder) &&
+				fs.existsSync(folder) &&
+				(await fs.promises.readdir(folder)).length === 0
+			) {
+				await fs.promises.rm(folder, { recursive: true })
+				removedFolders.add(folder)
+				folder = PathModule.dirname(folder)
+			}
+			PROGRESS.set(PROGRESS.get() + 1)
 		}
-		let folder = PathModule.dirname(file)
-		while (
-			!removedFolders.has(folder) &&
-			fs.existsSync(folder) &&
-			(await fs.promises.readdir(folder)).length === 0
-		) {
-			await fs.promises.rm(folder, { recursive: true })
-			removedFolders.add(folder)
-			folder = PathModule.dirname(folder)
-		}
-		PROGRESS.set(PROGRESS.get() + 1)
 	}
 
 	const exportedFiles = new Map<string, string>()
@@ -576,7 +580,7 @@ export async function compileDataPack(options: {
 		io.write = (localPath, content) => {
 			const writePath = PathModule.join(options.dataPackFolder, localPath)
 			exportedFiles.set(writePath, content)
-			ajmeta.datapack.files.add(writePath)
+			if (ajmeta) ajmeta.datapack.files.add(writePath)
 		}
 		return io
 	}
@@ -623,12 +627,44 @@ export async function compileDataPack(options: {
 	console.timeEnd('MC-Build Compiler took')
 
 	PROGRESS_DESCRIPTION.set('Writing Data Pack...')
-	console.time('Writing Files took')
-	await writeFiles(exportedFiles, options.dataPackFolder)
-	console.timeEnd('Writing Files took')
+	if (aj.data_pack_export_mode === 'raw') {
+		console.time('Writing Files took')
+		await writeFiles(exportedFiles, options.dataPackFolder)
+		console.timeEnd('Writing Files took')
+		ajmeta!.write()
+	} else if (aj.data_pack_export_mode === 'zip') {
+		exportedFiles.set(
+			PathModule.join(options.dataPackFolder, 'pack.mcmeta'),
+			autoStringify({
+				pack: {
+					pack_format: 48,
+					description: `${Project!.name}. Generated with Animated Java`,
+				},
+			})
+		)
 
-	ajmeta.write()
+		console.time('Writing Zip took')
+		await writeZip(exportedFiles, options.dataPackFolder)
+		console.timeEnd('Writing Zip took')
+	}
+
 	console.timeEnd('Data Pack Compilation took')
+}
+
+async function writeZip(map: Map<string, string>, dataPackPath: string) {
+	const data: Record<string, Uint8Array> = {}
+
+	for (const [path, content] of map) {
+		const relativePath = PathModule.relative(dataPackPath, path)
+		if (typeof content === 'string') {
+			data[relativePath] = Buffer.from(content)
+		} else {
+			data[relativePath] = content
+		}
+	}
+
+	const zipped = await zip(data, {})
+	await fs.promises.writeFile(dataPackPath, zipped)
 }
 
 async function writeFiles(map: Map<string, string>, dataPackFolder: string) {

@@ -104,6 +104,7 @@
 -   [x] Apply variant keyframes in animations.
 -   [x] Figure out how cameras will work.
 -   [x] See how much swapping to a static list of UUIDs for selecting bones effects performance.
+-   [x] Split up animation storage data command to avoid command length limit.
 -   [ ] Check for references to non-existant functions in merged function tags, and remove them.
 -   [ ] When applying variants, remove / replace any bones that have / had no elements with textured faces.
 
@@ -138,4 +139,5 @@
 
 -   [ ] Add support for [block-display.com's API](https://wiki.block-display.com/api/get-api)
 -   [ ] Add support for custom fonts in TextDisplays.
--   [ ] Add support and previewing for interaction entities.
+-   [ ] Add support and previewing for interaction entity based locators.
+-   [ ] Add support for previewing player skins on heads.

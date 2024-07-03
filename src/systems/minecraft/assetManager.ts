@@ -1,23 +1,10 @@
 import { PACKAGE } from '../../constants'
-import { type AsyncUnzipOptions, type Unzipped, unzip as cpUnzip } from 'fflate/browser'
 import { getCurrentVersion, getLatestVersion } from './versionManager'
 import { events } from '../../util/events'
 
-// const VERSION_MANIFEST_URL = 'https://launchermeta.mojang.com/mc/game/version_manifest_v2.json'
-// promisify didn't work 😔
-const unzip = (data: Uint8Array, options: AsyncUnzipOptions) => {
-	return new Promise<Unzipped>((resolve, reject) => {
-		cpUnzip(data, options, (err, result) => {
-			if (err) {
-				reject(err)
-			} else {
-				resolve(result)
-			}
-		})
-	})
-}
-
 import index from '../../assets/vanillaAssetOverrides/index.json'
+import { Unzipped } from 'fflate'
+import { unzip } from '../util'
 const ASSET_OVERRIDES = index as unknown as Record<string, string>
 
 export async function getLatestVersionClientDownloadUrl() {

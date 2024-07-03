@@ -11,9 +11,9 @@
 		"show_bounding_box": false,
 		"auto_bounding_box": true,
 		"bounding_box": [95, 32],
-		"enable_plugin_mode": true,
-		"enable_resource_pack": true,
-		"enable_data_pack": true,
+		"enable_plugin_mode": false,
+		"resource_pack_export_mode": "raw",
+		"data_pack_export_mode": "raw",
 		"display_item": "minecraft:white_dye",
 		"customModelDataOffset": 0,
 		"enable_advanced_resource_pack_settings": false,
@@ -29,6 +29,8 @@
 		"use_storage_for_animation": false,
 		"baked_animations": false,
 		"json_file": "D:\\github-repos\\animated-java\\animated-java\\dist\\test.json",
+		"enable_resource_pack": true,
+		"enable_data_pack": true,
 		"custom_summon_commands": ""
 	},
 	"resolution": {

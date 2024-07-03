@@ -1,5 +1,7 @@
 import { Valuable } from './util/stores'
 
+export type ExportMode = 'raw' | 'zip' | 'none'
+
 export const defaultValues = {
 	export_namespace: 'blueprint',
 	show_bounding_box: false,
@@ -7,8 +9,8 @@ export const defaultValues = {
 	bounding_box: [48, 48],
 	// Export Settings
 	enable_plugin_mode: false,
-	enable_resource_pack: true,
-	enable_data_pack: true,
+	resource_pack_export_mode: 'raw' as ExportMode,
+	data_pack_export_mode: 'raw' as ExportMode,
 	// Resource Pack Settings
 	display_item: 'minecraft:white_dye',
 	customModelDataOffset: 0,
