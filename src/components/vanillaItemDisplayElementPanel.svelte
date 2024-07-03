@@ -6,30 +6,33 @@
 </script>
 
 <script lang="ts">
-	let selected = VanillaItemDisplay.selected.at(0)
+	let selectedDisplay = VanillaItemDisplay.selected.at(0)
 
 	let item = new Valuable<string>('')
 	let error = new Valuable<string>('')
+	let visible = false
 
 	events.UPDATE_SELECTION.subscribe(() => {
-		selected = VanillaItemDisplay.selected.at(0)
-		if (!selected) {
+		selectedDisplay = VanillaItemDisplay.selected.at(0)
+		if (!selectedDisplay || selected.length > 1) {
 			item = new Valuable('')
 			error = new Valuable('')
+			visible = false
 			return
 		}
-		item = selected._item
-		error = selected.error
+		item = selectedDisplay._item
+		error = selectedDisplay.error
+		visible = true
 	})
 </script>
 
-<p class="panel_toolbar_label label" style={!!selected ? '' : 'visibility:hidden; height: 0px;'}>
+<p class="panel_toolbar_label label" style={!!visible ? '' : 'visibility:hidden; height: 0px;'}>
 	{translate('panel.vanilla_item_display.title')}
 </p>
 
 <div
 	class="toolbar custom-toolbar"
-	style={!!selected ? '' : 'visibility:hidden; height: 0px;'}
+	style={!!visible ? '' : 'visibility:hidden; height: 0px;'}
 	title={translate('panel.vanilla_item_display.description')}
 >
 	<div class="content" style="width: 95%;">

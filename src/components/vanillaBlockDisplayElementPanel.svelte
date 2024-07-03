@@ -6,30 +6,33 @@
 </script>
 
 <script lang="ts">
-	let selected = VanillaBlockDisplay.selected.at(0)
+	let selectedDisplay = VanillaBlockDisplay.selected.at(0)
 
 	let block = new Valuable<string>('')
 	let error = new Valuable<string>('')
+	let visible = false
 
 	events.UPDATE_SELECTION.subscribe(() => {
-		selected = VanillaBlockDisplay.selected.at(0)
-		if (!selected) {
+		selectedDisplay = VanillaBlockDisplay.selected.at(0)
+		if (!selectedDisplay || selected.length > 1) {
 			block = new Valuable('')
 			error = new Valuable('')
+			visible = false
 			return
 		}
-		block = selected._block
-		error = selected.error
+		block = selectedDisplay._block
+		error = selectedDisplay.error
+		visible = true
 	})
 </script>
 
-<p class="panel_toolbar_label label" style={!!selected ? '' : 'visibility:hidden; height: 0px;'}>
+<p class="panel_toolbar_label label" style={!!visible ? '' : 'visibility:hidden; height: 0px;'}>
 	{translate('panel.vanilla_block_display.title')}
 </p>
 
 <div
 	class="toolbar custom-toolbar"
-	style={!!selected ? '' : 'visibility:hidden; height: 0px;'}
+	style={!!visible ? '' : 'visibility:hidden; height: 0px;'}
 	title={translate('panel.vanilla_block_display.description')}
 >
 	<div class="content" style="width: 95%;">
