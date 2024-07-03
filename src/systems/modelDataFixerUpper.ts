@@ -208,11 +208,11 @@ function updateModelTo1_0pre1(model: any) {
 	const blueprint: IBlueprintFormatJSON = {
 		meta: {
 			format: 'animated_java_blueprint',
-			format_version: PACKAGE.version,
+			format_version: '0.5.0',
 			uuid: model.meta.uuid || guid(),
 			last_used_export_namespace: model.animated_java.settings.project_namespace,
 		},
-		blueprint_settings: {
+		project_settings: {
 			// Blueprint Settings
 			show_bounding_box: defaultSettings.show_bounding_box,
 			auto_bounding_box: defaultSettings.auto_bounding_box,
@@ -380,13 +380,13 @@ function updateModelTo1_0pre1(model: any) {
 	// Move command keyframes into commands channel on a "root" locator.
 	if (blueprint.animations) {
 		for (const animation of blueprint.animations) {
-			if (animation.animators.effects) {
+			if (animation.animators?.effects) {
 				for (const kf of animation.animators.effects.keyframes) {
 					if (kf.channel === 'variants') kf.channel = 'variant'
 				}
 			}
 			const keyframes: any[] = []
-			const effects = animation.animators.effects
+			const effects = animation.animators?.effects
 			if (!effects || !effects.keyframes) continue
 			for (const keyframe of effects.keyframes) {
 				if (
@@ -439,10 +439,10 @@ function updateModelTo1_0pre1(model: any) {
 		nbt.delete('Tags')
 		if ([...nbt.keys()].length !== 0) commands.push('data merge entity @s ' + nbt.toString())
 		if (tags) commands.push(...tags.map(t => `tag @s add ${t}`))
-		blueprint.blueprint_settings!.summon_commands = commands.join('\n')
+		// @ts-expect-error
+		blueprint.project_settings!.summon_commands = commands.join('\n')
 	}
 
-	console.log('Finished Blueprint:', blueprint)
 	return blueprint
 }
 

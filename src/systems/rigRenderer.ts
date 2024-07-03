@@ -561,7 +561,7 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 
 	for (const [uuid, bone] of Object.entries(rig.nodeMap)) {
 		if (bone.type !== 'bone') continue
-		if (variant.excludedBones.find(v => v.value === uuid)) continue
+		if (variant.excludedNodes.find(v => v.value === uuid)) continue
 		const textures: IRenderedModel['textures'] = {}
 
 		for (const [fromUUID, toUUID] of variant.textureMap.map.entries()) {

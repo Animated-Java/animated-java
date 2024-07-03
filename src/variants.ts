@@ -92,7 +92,7 @@ export class Variant {
 	public textureMap: TextureMap
 	public isDefault = false
 	public generateNameFromDisplayName = true
-	public excludedBones: CollectionItem[] = []
+	public excludedNodes: CollectionItem[] = []
 
 	constructor(displayName: string, isDefault = false) {
 		this.displayName = Variant.makeDisplayNameUnique(this, displayName)
@@ -140,7 +140,7 @@ export class Variant {
 			name: this.name,
 			uuid: this.uuid,
 			texture_map: Object.fromEntries(this.textureMap.map),
-			excluded_nodes: this.excludedBones.map(item => item.value),
+			excluded_nodes: this.excludedNodes.map(item => item.value),
 		}
 	}
 
@@ -150,7 +150,7 @@ export class Variant {
 		variant.isDefault = false
 		variant.generateNameFromDisplayName = this.generateNameFromDisplayName
 		variant.textureMap = this.textureMap.copy()
-		variant.excludedBones = this.excludedBones.map(item => ({ ...item }))
+		variant.excludedNodes = this.excludedNodes.map(item => ({ ...item }))
 		variant.select()
 	}
 
@@ -160,7 +160,7 @@ export class Variant {
 		for (const [key, value] of Object.entries(json.texture_map)) {
 			variant.textureMap.add(key, value)
 		}
-		variant.excludedBones = json.excluded_nodes
+		variant.excludedNodes = json.excluded_nodes
 			.map(uuid => {
 				const group = Group.all.find(group => group.uuid === uuid)
 				return group ? { name: group.name, value: uuid } : undefined

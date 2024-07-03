@@ -15,7 +15,7 @@ createBlockbenchMod(
 				if (
 					variant &&
 					this.cube.parent instanceof Group &&
-					!variant.excludedBones.find(
+					!variant.excludedNodes.find(
 						v => v.value === (this.cube.parent as Group).uuid
 					) &&
 					variant.textureMap.has(this.texture)
