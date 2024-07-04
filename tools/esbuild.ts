@@ -19,7 +19,7 @@ import ImportGlobPlugin from 'esbuild-plugin-import-glob'
 import packagerPlugin from './plugins/packagerPlugin'
 import inlineWorkerPlugin from './plugins/workerPlugin'
 import assetOverridePlugin from './plugins/assetOverridePlugin'
-
+import path from 'path'
 const PACKAGE = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
 
 const INFO_PLUGIN: esbuild.Plugin = {
@@ -42,7 +42,35 @@ const INFO_PLUGIN: esbuild.Plugin = {
 		})
 	},
 }
-
+const DEPENDENCY_QUARKS: esbuild.Plugin = {
+	name: 'dependency-quarks',
+	setup(build) {
+		build.onResolve({ filter: /^three/ }, args => {
+			if (args.path === 'three') {
+				return { path: 'three', external: true }
+			} else {
+				return {
+					path: require.resolve(args.path),
+				}
+			}
+		})
+		build.onResolve({ filter: /^deepslate\// }, args => {
+			// esbuild respects the package.json "exports" field
+			// but the version of typescript we're using doesn't
+			// so we need to resolve the path manually
+			const file_path = path.resolve(
+				process.cwd(),
+				path.dirname(require.resolve('deepslate')),
+				'..',
+				args.path.split('/').slice(1).join('/'),
+				'index.js'
+			)
+			return {
+				path: file_path,
+			}
+		})
+	},
+}
 function createBanner() {
 	function wrap(s: string, width: number) {
 		return s.replace(new RegExp(`(?![^\\n]{1,${width}}$)([^\\n]{1,${width}})\\s`, 'g'), '$1\n')
@@ -189,9 +217,11 @@ const devConfig: esbuild.BuildOptions = {
 		packagerPlugin(),
 		inlineWorkerPlugin(devWorkerConfig),
 		assetOverridePlugin(),
+		DEPENDENCY_QUARKS,
 	],
 	format: 'iife',
 	define: DEFINES,
+	treeShaking: true,
 }
 
 const prodConfig: esbuild.BuildOptions = {
@@ -214,12 +244,14 @@ const prodConfig: esbuild.BuildOptions = {
 		packagerPlugin(),
 		inlineWorkerPlugin({}),
 		assetOverridePlugin(),
+		DEPENDENCY_QUARKS,
 	],
 	keepNames: true,
 	banner: createBanner(),
 	drop: ['debugger'],
 	format: 'iife',
 	define: DEFINES,
+	treeShaking: true,
 	metafile: true,
 }
 

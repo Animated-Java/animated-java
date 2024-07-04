@@ -2,7 +2,7 @@ import { IBlueprintFormatJSON, getDefaultProjectSettings } from '../blueprintFor
 import { BoneConfig } from '../nodeConfigs'
 import { PACKAGE } from '../constants'
 import { openUnexpectedErrorDialog } from '../interface/unexpectedErrorDialog'
-import { NbtCompound, NbtList, NbtString, NbtTag } from 'deepslate'
+import { NbtCompound, NbtList, NbtString, NbtTag } from 'deepslate/lib/nbt'
 
 export function process(model: any): any {
 	console.log('Running MDFU...', JSON.parse(JSON.stringify(model)))

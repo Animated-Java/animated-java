@@ -5,7 +5,7 @@ import datapackTemplate from './animated_java.mcb'
 import { AnyRenderedNode, IRenderedRig } from './rigRenderer'
 import { IRenderedAnimation } from './animationRenderer'
 import { Variant } from '../variants'
-import { NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate'
+import { NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/lib/nbt'
 import {
 	arrayToNbtFloatArray,
 	matrixToNbtFloatArray,
