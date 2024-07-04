@@ -1,7 +1,7 @@
 {
 	"meta": {
 		"format": "animated_java_blueprint",
-		"format_version": "0.5.8",
+		"format_version": "0.5.9",
 		"uuid": "167b27cd-b559-3f13-a97c-0841fe21f1d1",
 		"save_location": "D:\\github-repos\\animated-java\\animated-java\\test_blueprints\\armor_stand.ajblueprint",
 		"last_used_export_namespace": "armor_stand"
@@ -11,11 +11,11 @@
 		"show_bounding_box": false,
 		"auto_bounding_box": true,
 		"bounding_box": [95, 32],
-		"enable_plugin_mode": true,
+		"enable_plugin_mode": false,
 		"resource_pack_export_mode": "raw",
 		"data_pack_export_mode": "raw",
 		"display_item": "minecraft:white_dye",
-		"customModelDataOffset": 0,
+		"custom_model_data_offset": 0,
 		"enable_advanced_resource_pack_settings": false,
 		"resource_pack": "C:\\Users\\SnaveSutit\\AppData\\Roaming\\com.modrinth.theseus\\profiles\\Animated Java Dev\\resourcepacks\\resourcepack",
 		"display_item_path": "",
@@ -29,6 +29,7 @@
 		"use_storage_for_animation": false,
 		"baked_animations": true,
 		"json_file": "D:\\github-repos\\animated-java\\animated-java\\dist\\test.json",
+		"customModelDataOffset": 0,
 		"custom_summon_commands": ""
 	},
 	"resolution": {
@@ -973,7 +974,7 @@
 			"uuid": "d0076177-a6cf-561c-08d8-efd07677b337"
 		},
 		{
-			"name": "vanilla_block_display",
+			"name": "text",
 			"position": [0, 39, 0],
 			"rotation": [0, 0, 0],
 			"scale": [1, 1, 1],
@@ -984,7 +985,7 @@
 			"text": "\"Hello World!\"",
 			"lineWidth": 200,
 			"backgroundColor": "#b12929",
-			"backgroundAlpha": 0.25,
+			"backgroundAlpha": 0.25098,
 			"align": "left",
 			"uuid": "a8257e87-1780-81b6-b0e4-c420fa229a69",
 			"type": "animated_java:text_display"
@@ -3879,7 +3880,7 @@
 			"override": false,
 			"length": 4.95,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"saved": false,
 			"path": "",
 			"anim_time_update": "",
@@ -4101,6 +4102,46 @@
 							"time": 3,
 							"color": -1,
 							"interpolation": "catmullrom",
+							"easing": "linear",
+							"easingArgs": []
+						}
+					]
+				}
+			}
+		},
+		{
+			"uuid": "e7761616-704f-309f-9b63-ded7c7449f4c",
+			"name": "long",
+			"loop": "loop",
+			"override": false,
+			"length": 50,
+			"snapping": 20,
+			"selected": true,
+			"saved": false,
+			"path": "",
+			"anim_time_update": "",
+			"blend_weight": "",
+			"start_delay": "",
+			"loop_delay": "0",
+			"excluded_nodes": [],
+			"animators": {
+				"98795982-9c43-6e3e-eed9-2c776a957938": {
+					"name": "root",
+					"type": "bone",
+					"keyframes": [
+						{
+							"channel": "rotation",
+							"data_points": [
+								{
+									"x": "0",
+									"y": "q.life_time * 12.25",
+									"z": "0"
+								}
+							],
+							"uuid": "387d8220-6ad2-3866-0630-b9f7acc501b6",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
 							"easing": "linear",
 							"easingArgs": []
 						}
