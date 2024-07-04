@@ -224,7 +224,10 @@ export async function compileResourcePack(options: {
 	console.log('Display Item Model', displayItemModel.toJSON())
 	exportedFiles.set(displayItemPath, autoStringify(displayItemModel.toJSON()))
 
-	if (aj.resource_pack_export_mode === 'raw') {
+	if (aj.enable_plugin_mode) {
+		// Do nothing
+		console.log('Plugin mode enabled. Skipping resource pack export.')
+	} else if (aj.resource_pack_export_mode === 'raw') {
 		PROGRESS_DESCRIPTION.set('Removing Old Resource Pack Files...')
 
 		await fs.promises.rm(
