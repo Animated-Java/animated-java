@@ -17,7 +17,7 @@
 						"enable_resource_pack",
 						"enable_data_pack",
 						"display_item",
-						"customModelDataOffset",
+						"custom_model_data_offset",
 						"enable_advanced_resource_pack_settings",
 						"resource_pack",
 						"display_item_path",
@@ -51,7 +51,7 @@
 						"enable_resource_pack": { "type": "boolean", "default": true },
 						"enable_data_pack": { "type": "boolean", "default": true },
 						"display_item": { "type": "string", "default": "minecraft:white_dye" },
-						"customModelDataOffset": { "type": "integer", "default": 0 },
+						"custom_model_data_offset": { "type": "integer", "default": 0 },
 						"enable_advanced_resource_pack_settings": {
 							"type": "boolean",
 							"default": false
