@@ -17,13 +17,13 @@
 	export let uuid: Valuable<string>
 	export let textureMap: TextureMap
 	export let generateNameFromDisplayName: Valuable<boolean>
-	export let excludedBones: Valuable<Array<CollectionItem>>
+	export let excludedNodes: Valuable<Array<CollectionItem>>
 
 	const availableTextures = [...Texture.all, TRANSPARENT_TEXTURE]
 	const primaryTextures = [...Texture.all]
 	const secondaryTextures = availableTextures
 
-	const availableBones = getAvailableNodes(excludedBones.get(), {
+	const availableBones = getAvailableNodes(excludedNodes.get(), {
 		groupsOnly: true,
 		excludeEmptyGroups: true,
 	})
@@ -223,7 +223,7 @@
 				'dialog.variant_config.swap_columns_button.tooltip',
 			)}
 			availableItems={availableBones}
-			bind:includedItems={excludedBones}
+			bind:includedItems={excludedNodes}
 		/>
 	{/if}
 </div>

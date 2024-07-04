@@ -68,6 +68,7 @@ TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.set = function (this: ColorPicker, color: s
 }
 TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.change = function (
 	this: ColorPicker,
+	// @ts-ignore
 	color: tinycolor.Instance
 ) {
 	const selected = TextDisplay.selected[0]

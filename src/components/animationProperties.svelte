@@ -14,9 +14,9 @@
 	export let animationName: Valuable<string>
 	export let loopMode: Valuable<string>
 	export let loopDelay: Valuable<number>
-	export let excludedBones: Valuable<Array<{ name: string; value: string }>>
+	export let excludedNodes: Valuable<Array<{ name: string; value: string }>>
 
-	const availableBones = getAvailableNodes(excludedBones.get())
+	const availableBones = getAvailableNodes(excludedNodes.get())
 
 	function animationNameValueChecker(value: string): { type: string; message: string } {
 		if (value.trim().length === 0) {
@@ -78,7 +78,7 @@
 			'dialog.animation_properties.swap_columns_button.tooltip',
 		)}
 		availableItems={availableBones}
-		bind:includedItems={excludedBones}
+		bind:includedItems={excludedNodes}
 	/>
 </div>
 

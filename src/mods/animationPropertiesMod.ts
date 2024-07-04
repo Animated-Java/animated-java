@@ -55,10 +55,10 @@ createBlockbenchMod(
 createBlockbenchMod(
 	`${PACKAGE.name}:animationPropertiesMod`,
 	{
-		excludedBonesProperty: undefined as ContextProperty<'array'>,
+		excludedNodesProperty: undefined as ContextProperty<'array'>,
 	},
 	context => {
-		context.excludedBonesProperty = new Property(
+		context.excludedNodesProperty = new Property(
 			Blockbench.Animation,
 			'array',
 			'excluded_nodes',
@@ -71,6 +71,6 @@ createBlockbenchMod(
 		return context
 	},
 	context => {
-		context.excludedBonesProperty?.delete()
+		context.excludedNodesProperty?.delete()
 	}
 )
