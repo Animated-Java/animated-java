@@ -524,6 +524,7 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 		},
 	},
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	onSetup(project, newModel) {
 		if (!Project) return
 		console.log('Animated Java Blueprint format setup')
@@ -540,9 +541,6 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 
 		Project.variants ??= []
 		Project.last_used_export_namespace = Project.animated_java.export_namespace
-		if (newModel || Project.variants.length === 0) {
-			new Variant('Default', true)
-		}
 		const updateBoundingBoxIntervalId = setInterval(() => {
 			updateBoundingBox()
 		}, 500)
@@ -569,6 +567,8 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 
 			Project!.materials[TRANSPARENT_TEXTURE.uuid] = TRANSPARENT_TEXTURE_MATERIAL
 			TRANSPARENT_TEXTURE.updateMaterial()
+
+			if (Variant.all.length === 0) new Variant('Default', true)
 			Variant.selectDefault()
 		})
 	},
