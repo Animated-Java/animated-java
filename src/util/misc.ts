@@ -103,7 +103,7 @@ export function detectCircularReferences(obj: any): boolean {
 	}
 }
 
-export function getRotationFromQuaternion(q: THREE.Quaternion) {
+export function eulerFromQuaternion(q: THREE.Quaternion) {
 	const euler = new THREE.Euler().setFromQuaternion(q, 'YXZ')
 	const rot = new THREE.Vector3(euler.x, euler.y, euler.z).multiplyScalar(180 / Math.PI)
 	rot.x *= -1

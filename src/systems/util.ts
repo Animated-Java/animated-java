@@ -1,4 +1,4 @@
-import { NbtFloat, NbtList } from 'deepslate/lib/nbt'
+import { NbtCompound, NbtFloat, NbtList } from 'deepslate/lib/nbt'
 import {
 	AsyncZipOptions,
 	AsyncZippable,
@@ -7,6 +7,7 @@ import {
 	type AsyncUnzipOptions,
 	type Unzipped,
 } from 'fflate/browser'
+import { IAnimationNode } from './animationRenderer'
 
 export function arrayToNbtFloatArray(array: number[]) {
 	return new NbtList(array.map(v => new NbtFloat(v)))
@@ -15,6 +16,14 @@ export function arrayToNbtFloatArray(array: number[]) {
 export function matrixToNbtFloatArray(matrix: THREE.Matrix4) {
 	const matrixArray = new THREE.Matrix4().copy(matrix).transpose().toArray()
 	return arrayToNbtFloatArray(matrixArray)
+}
+
+export function transformationToNbt(transformation: IAnimationNode['transformation']): NbtCompound {
+	const compound = new NbtCompound()
+	compound.set('translation', arrayToNbtFloatArray(transformation.translation.toArray()))
+	compound.set('left_rotation', arrayToNbtFloatArray(transformation.left_rotation.toArray()))
+	compound.set('scale', arrayToNbtFloatArray(transformation.scale.toArray()))
+	return compound
 }
 
 export function replacePathPart(path: string, oldPart: string, newPart: string) {

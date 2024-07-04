@@ -14,8 +14,13 @@ import type {
 	IRenderedRig,
 } from './rigRenderer'
 
-type ExportedAnimationNode = Omit<IAnimationNode, 'node' | 'matrix' | 'pos' | 'rot' | 'scale'> & {
+type ExportedAnimationNode = Omit<IAnimationNode, 'node' | 'matrix' | 'transformation'> & {
 	matrix: number[]
+	transformation: {
+		translation: ArrayVector3
+		left_rotation: ArrayVector4
+		scale: ArrayVector3
+	}
 	pos: ArrayVector3
 	rot: ArrayVector3
 	scale: ArrayVector3
@@ -191,9 +196,14 @@ function serailizeAnimationNode(node: IAnimationNode): ExportedAnimationNode {
 		name: node.name,
 		uuid: node.uuid,
 		matrix: node.matrix.elements,
-		pos: [node.pos.x, node.pos.y, node.pos.z],
-		rot: [node.rot.x, node.rot.y, node.rot.z],
-		scale: [node.scale.x, node.scale.y, node.scale.z],
+		transformation: {
+			translation: node.transformation.translation.toArray(),
+			left_rotation: node.transformation.left_rotation.toArray() as ArrayVector4,
+			scale: node.transformation.scale.toArray(),
+		},
+		pos: node.pos,
+		rot: node.rot,
+		scale: node.scale,
 		interpolation: node.interpolation,
 		commands: node.commands,
 		execute_condition: node.execute_condition,

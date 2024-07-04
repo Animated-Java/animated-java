@@ -378,8 +378,6 @@ dir <%export_namespace%> {
 												global.isStepInterpolation = !!(last?.interpolation === 'step')
 												global.lastActiveFrame[node.uuid] = node
 											%%>
-											# It's actually faster to use an on passeners call that checks tag immediately
-											# than to spread it into a function that runs a bunch of tag checks on each bone.
 											IF (node.interpolation === 'pre-post' || global.isStepInterpolation) {
 												$data merge entity $(<%node.type + '_' + node.name%>) { \
 														transformation: <%matrixToNbtFloatArray(node.matrix).toString()%>, \
@@ -396,24 +394,23 @@ dir <%export_namespace%> {
 										} ELSE IF (node.type === 'locator') {
 											IF (rig.nodeMap[node.uuid]?.config?.use_entity || rig.nodeMap[node.uuid]?.config?.ticking_commands) {
 												<%%
-													global.rot = getRotationFromQuaternion(node.rot)
 													global.merged.locators[node.name] = {
-														posx: node.pos.x,
-														posy: node.pos.y,
-														posz: node.pos.z,
-														rotx: global.rot.x,
-														roty: global.rot.y
+														posx: node.pos[0],
+														posy: node.pos[1],
+														posz: node.pos[2],
+														rotx: node.rot[0],
+														roty: node.rot[1]
 													}
 												%%>
 											}
 											IF (node.commands) {
 												execute on vehicle <%node.execute_condition ? node.execute_condition.trim() + ' ' : ''%>positioned \
-														^<%roundTo(node.pos.x, 10)%> \
-														^<%roundTo(node.pos.y, 10)%> \
-														^<%roundTo(node.pos.z, 10)%> \
+														^<%roundTo(node.pos[0], 10)%> \
+														^<%roundTo(node.pos[1], 10)%> \
+														^<%roundTo(node.pos[2], 10)%> \
 													rotated \
-														~<%roundTo(node.rot.x, 10)%> \
-														~<%roundTo(node.rot.y, 10)%> \
+														~<%roundTo(node.rot[0], 10)%> \
+														~<%roundTo(node.rot[1], 10)%> \
 												run {
 													<%%
 														emit.mcb(node.commands)
@@ -423,13 +420,12 @@ dir <%export_namespace%> {
 										} ELSE IF (node.type === 'camera') {
 											IF (rig.nodeMap[node.uuid]) {
 												<%%
-													global.rot = getRotationFromQuaternion(node.rot)
 													global.merged.cameras[node.name] = {
-														posx: node.pos.x,
-														posy: node.pos.y,
-														posz: node.pos.z,
-														rotx: global.rot.x,
-														roty: global.rot.y
+														posx: node.pos[0],
+														posy: node.pos[1],
+														posz: node.pos[2],
+														rotx: node.rot[0],
+														roty: node.rot[1]
 													}
 												%%>
 											}

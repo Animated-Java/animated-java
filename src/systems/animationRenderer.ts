@@ -9,7 +9,7 @@ import { TextDisplay } from '../outliner/textDisplay'
 import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
 import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
 import { toSafeFuntionName } from '../util/minecraftUtil'
-import { roundToNth } from '../util/misc'
+import { eulerFromQuaternion, roundToNth } from '../util/misc'
 import { AnyRenderedNode, IRenderedRig } from './rigRenderer'
 import * as crypto from 'crypto'
 
@@ -29,10 +29,6 @@ function getNodeMatrix(node: OutlinerElement, scale: number) {
 	matrixWorld.setPosition(pos)
 
 	const scaleVec = new THREE.Vector3().setScalar(scale)
-	// Hacky way to force the matrix to update in-game
-	// scaleVec.x += Math.random() * 0.00001
-	// scaleVec.y += Math.random() * 0.00001
-	// scaleVec.z += Math.random() * 0.00001
 	matrixWorld.scale(scaleVec)
 
 	if (node instanceof TextDisplay) {
@@ -44,15 +40,28 @@ function getNodeMatrix(node: OutlinerElement, scale: number) {
 	return matrixWorld
 }
 
+function getDecomposedTransformation(matrix: THREE.Matrix4) {
+	const translation = new THREE.Vector3()
+	const left_rotation = new THREE.Quaternion()
+	const scale = new THREE.Vector3()
+	matrix.decompose(translation, left_rotation, scale)
+	return { translation, left_rotation, scale }
+}
+
 export interface IAnimationNode {
 	type: 'bone' | 'camera' | 'locator' | 'text_display' | 'item_display' | 'block_display'
 	name: string
 	uuid: string
 	node?: Group | NullObject | Locator | OutlinerElement | TextDisplay
 	matrix: THREE.Matrix4
-	pos: THREE.Vector3
-	rot: THREE.Quaternion
-	scale: THREE.Vector3
+	transformation: {
+		translation: THREE.Vector3
+		left_rotation: THREE.Quaternion
+		scale: THREE.Vector3
+	}
+	pos: ArrayVector3
+	rot: ArrayVector3
+	scale: ArrayVector3
 	interpolation?: 'step' | 'pre-post'
 	/**
 	 * Commands is only set for locator nodes
@@ -190,6 +199,7 @@ export function getAnimationNodes(
 		const rot = new THREE.Quaternion()
 		const scale = new THREE.Vector3()
 		matrix.decompose(pos, rot, scale)
+		const decomposed = getDecomposedTransformation(matrix)
 
 		nodes.push({
 			type: node.type,
@@ -197,9 +207,10 @@ export function getAnimationNodes(
 			uuid,
 			node: node.node,
 			matrix,
-			pos,
-			rot,
-			scale,
+			transformation: decomposed,
+			pos: [pos.x, pos.y, pos.z],
+			rot: eulerFromQuaternion(rot).toArray(),
+			scale: [scale.x, scale.y, scale.z],
 			interpolation,
 			commands,
 			execute_condition: executeCondition,
@@ -291,9 +302,9 @@ export function hashAnimations(animations: IRenderedAnimation[]) {
 			hash.update(';' + frame.time.toString())
 			for (const node of frame.nodes) {
 				hash.update(';' + node.uuid)
-				hash.update(';' + node.pos.toArray().join(';'))
-				hash.update(';' + node.rot.toArray().join(';'))
-				hash.update(';' + node.scale.toArray().join(';'))
+				hash.update(';' + node.pos.join(';'))
+				hash.update(';' + node.rot.join(';'))
+				hash.update(';' + node.scale.join(';'))
 				node.interpolation && hash.update(';' + node.interpolation)
 				if (node.commands) hash.update(';' + node.commands)
 				if (node.execute_condition) hash.update(';' + node.execute_condition)

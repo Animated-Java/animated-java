@@ -11,6 +11,7 @@ import {
 	matrixToNbtFloatArray,
 	replacePathPart,
 	sortObjectKeys,
+	transformationToNbt,
 	zip,
 } from './util'
 import { BoneConfig, TextDisplayConfig } from '../nodeConfigs'
@@ -23,7 +24,7 @@ import {
 } from '../util/minecraftUtil'
 import { JsonText } from './minecraft/jsonText'
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../interface/exportProgressDialog'
-import { getRotationFromQuaternion, roundTo } from '../util/misc'
+import { eulerFromQuaternion, roundTo } from '../util/misc'
 import { setTimeout } from 'timers'
 
 const BONE_TYPES = ['bone', 'text_display', 'item_display', 'block_display']
@@ -467,13 +468,12 @@ function createPassengerStorage(rig: IRenderedRig) {
 		switch (node.type) {
 			case 'locator':
 			case 'camera': {
-				const rot = getRotationFromQuaternion(node.rot)
 				const data = new NbtCompound()
-					.set('posx', new NbtFloat(node.pos.x))
-					.set('posy', new NbtFloat(node.pos.y))
-					.set('posz', new NbtFloat(node.pos.z))
-					.set('rotx', new NbtFloat(Math.radToDeg(rot.x)))
-					.set('roty', new NbtFloat(Math.radToDeg(rot.y)))
+					.set('posx', new NbtFloat(node.pos[0]))
+					.set('posy', new NbtFloat(node.pos[1]))
+					.set('posz', new NbtFloat(node.pos[2]))
+					.set('rotx', new NbtFloat(Math.radToDeg(node.rot[0])))
+					.set('roty', new NbtFloat(Math.radToDeg(node.rot[1])))
 				if (
 					node.type === 'locator' &&
 					(rig.nodeMap[node.uuid].node as Locator).config.use_entity
@@ -605,6 +605,7 @@ export async function compileDataPack(options: {
 		TELLRAW,
 		custom_summon_commands: aj.summon_commands,
 		matrixToNbtFloatArray,
+		transformationToNbt,
 		use_storage_for_animation: aj.use_storage_for_animation,
 		animationStorage: createAnimationStorage(animations),
 		rigHash,
@@ -613,7 +614,7 @@ export async function compileDataPack(options: {
 		BoneConfig,
 		roundTo,
 		nodeSorter,
-		getRotationFromQuaternion,
+		getRotationFromQuaternion: eulerFromQuaternion,
 	}
 	console.log('Compiler Variables:', variables)
 

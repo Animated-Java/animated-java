@@ -197,6 +197,7 @@
 			}
 		},
 		"vec3": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 },
+		"vec4": { "type": "array", "items": { "type": "number" }, "minItems": 4, "maxItems": 4 },
 		"vanillaModel": {
 			"type": "object",
 			"required": ["textures", "elements", "display"],
@@ -305,6 +306,11 @@
 					"items": { "type": "number" },
 					"minItems": 16,
 					"maxItems": 16
+				},
+				"transformation": {
+					"translation": { "$ref": "#/definitions/vec3" },
+					"left_rotation": { "$ref": "#/definitions/vec4" },
+					"scale": { "$ref": "#/definitions/vec3" }
 				},
 				"pos": { "$ref": "#/definitions/vec3" },
 				"rot": { "$ref": "#/definitions/vec3" },
