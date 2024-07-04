@@ -40,6 +40,11 @@ const INFO_PLUGIN: esbuild.Plugin = {
 				} and ${result.errors.length} error${result.errors.length == 1 ? '' : 's'}.`
 			)
 		})
+	},
+}
+const DEPENDENCY_QUARKS: esbuild.Plugin = {
+	name: 'dependency-quarks',
+	setup(build) {
 		build.onResolve({ filter: /^three/ }, args => {
 			if (args.path === 'three') {
 				return { path: 'three', external: true }
@@ -66,7 +71,6 @@ const INFO_PLUGIN: esbuild.Plugin = {
 		})
 	},
 }
-
 function createBanner() {
 	function wrap(s: string, width: number) {
 		return s.replace(new RegExp(`(?![^\\n]{1,${width}}$)([^\\n]{1,${width}})\\s`, 'g'), '$1\n')
@@ -213,6 +217,7 @@ const devConfig: esbuild.BuildOptions = {
 		packagerPlugin(),
 		inlineWorkerPlugin(devWorkerConfig),
 		assetOverridePlugin(),
+		DEPENDENCY_QUARKS,
 	],
 	format: 'iife',
 	define: DEFINES,
@@ -239,6 +244,7 @@ const prodConfig: esbuild.BuildOptions = {
 		packagerPlugin(),
 		inlineWorkerPlugin({}),
 		assetOverridePlugin(),
+		DEPENDENCY_QUARKS,
 	],
 	keepNames: true,
 	banner: createBanner(),
