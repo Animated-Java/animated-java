@@ -38,7 +38,7 @@ function getSettings() {
 			}
 			return value
 		}),
-		customModelDataOffset: new Valuable(Project!.animated_java.customModelDataOffset),
+		customModelDataOffset: new Valuable(Project!.animated_java.custom_model_data_offset),
 		enableAdvancedResourcePackSettings: new Valuable(
 			Project!.animated_java.enable_advanced_resource_pack_settings
 		),
@@ -79,7 +79,7 @@ function setSettings(settings: ReturnType<typeof getSettings>) {
 	Project.animated_java.data_pack_export_mode = settings.dataPackExportMode.get()
 	// Resource Pack Settings
 	Project.animated_java.display_item = settings.displayItem.get()
-	Project.animated_java.customModelDataOffset = settings.customModelDataOffset.get()
+	Project.animated_java.custom_model_data_offset = settings.customModelDataOffset.get()
 	Project.animated_java.enable_advanced_resource_pack_settings =
 		settings.enableAdvancedResourcePackSettings.get()
 	Project.animated_java.resource_pack = settings.resourcePack.get()

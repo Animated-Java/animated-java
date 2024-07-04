@@ -13,7 +13,7 @@ export const defaultValues = {
 	data_pack_export_mode: 'raw' as ExportMode,
 	// Resource Pack Settings
 	display_item: 'minecraft:white_dye',
-	customModelDataOffset: 0,
+	custom_model_data_offset: 0,
 	enable_advanced_resource_pack_settings: false,
 	resource_pack: '',
 	display_item_path: '',
