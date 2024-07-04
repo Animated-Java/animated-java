@@ -164,8 +164,7 @@ animated_java.dialog.blueprint_settings.teleportation_duration.description: The 
 animated_java.dialog.blueprint_settings.use_storage_for_animation.title: Use Storage for Animation
 animated_java.dialog.blueprint_settings.use_storage_for_animation.description: |-
     Whether or not to use NBT storage to store animation data instead of functions.
-    This will vastly reduce the number of functions in the generated Data Pack, but is 33% slower than the function method.
-    WARNING: This animation method does not support cameras, or locators!
+    This will vastly reduce the number of functions in the generated Data Pack, but is 42% slower than the function method.
 
 # Plugin Settings
 animated_java.dialog.blueprint_settings.baked_animations.title: Baked Animations

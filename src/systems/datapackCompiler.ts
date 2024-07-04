@@ -26,6 +26,7 @@ import { JsonText } from './minecraft/jsonText'
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../interface/exportProgressDialog'
 import { eulerFromQuaternion, roundTo } from '../util/misc'
 import { setTimeout } from 'timers'
+import { MSLimiter } from '../util/msLimiter'
 
 const BONE_TYPES = ['bone', 'text_display', 'item_display', 'block_display']
 
@@ -424,39 +425,98 @@ class AJMeta {
 	}
 }
 
-function createAnimationStorage(animations: IRenderedAnimation[]) {
-	const storage: string[] = []
+async function createAnimationStorage(animations: IRenderedAnimation[]) {
+	PROGRESS_DESCRIPTION.set('Creating Animation Storage...')
+	PROGRESS.set(0)
+	MAX_PROGRESS.set(
+		animations.length + animations.reduce((acc, anim) => acc + anim.frames.length, 0)
+	)
+	const dataCommands: string[] = []
+	const limiter = new MSLimiter(16)
+
 	for (const animation of animations) {
-		const frames = new NbtList([
-			new NbtCompound(), // This compound is just to make the list 1-indexed
-		])
-		const animStorage = new NbtCompound().set('frames', frames)
-		for (const frame of animation.frames) {
-			const frameStorage = new NbtCompound()
-			frames.add(frameStorage)
+		PROGRESS_DESCRIPTION.set(`Creating Animation Storage for '${animation.name}'`)
+		let frames = new NbtCompound()
+		const addFrameDataCommand = () => {
+			const str = `data modify storage aj.${
+				Project!.animated_java.export_namespace
+			}:animations ${animation.storageSafeName} merge value ${frames.toString()}`
+			dataCommands.push(str)
+			frames = new NbtCompound()
+		}
+		for (let i = 0; i < animation.frames.length; i++) {
+			const frame = animation.frames[i]
+			const thisFrame = new NbtCompound()
+			frames.set(i.toString(), thisFrame)
 			for (const node of frame.nodes) {
-				if (!BONE_TYPES.includes(node.type)) continue
-				frameStorage.set(
-					node.type + '_' + node.name,
-					new NbtCompound()
-						.set('transformation', matrixToNbtFloatArray(node.matrix))
-						.set('start_interpolation', new NbtInt(0))
-				)
+				if (BONE_TYPES.includes(node.type)) {
+					thisFrame.set(
+						node.type + '_' + node.name,
+						new NbtCompound()
+							.set('transformation', matrixToNbtFloatArray(node.matrix))
+							.set('start_interpolation', new NbtInt(0))
+					)
+				} else {
+					thisFrame.set(
+						node.type + '_' + node.name,
+						new NbtCompound()
+							.set('posx', new NbtFloat(node.pos[0]))
+							.set('posy', new NbtFloat(node.pos[1]))
+							.set('posz', new NbtFloat(node.pos[2]))
+							.set('rotx', new NbtFloat(node.rot[0]))
+							.set('roty', new NbtFloat(node.rot[1]))
+					)
+				}
 			}
+			if (frames.toString().length > 1000000) {
+				addFrameDataCommand()
+			}
+			PROGRESS.set(PROGRESS.get() + 1)
+			await limiter.sync()
 		}
-		const str = `data modify storage aj.${
-			Project!.animated_java.export_namespace
-		}:animations list.${animation.storageSafeName} set value ${animStorage.toString()}`
-		if (str.length > 2000000) {
-			// FIXME - Temporary patch. Split each animation's storage into multiple commands if it's too large.
-			throw new Error(
-				`The animation storage for '${animation.name}' is too large! The data command must be less than 2000000 characters long. (Currently ${str.length} characters).`
-			)
-		}
-		storage.push(str)
+		addFrameDataCommand()
+		PROGRESS.set(PROGRESS.get() + 1)
+		await limiter.sync()
 	}
-	return storage
+
+	return dataCommands
 }
+
+// function createAnimationStorage(animations: IRenderedAnimation[]) {
+// 	const storage: string[] = []
+
+// 	for (const animation of animations) {
+// 		const frames = new NbtList([
+// 			new NbtCompound(), // This compound is just to make the list 1-indexed
+// 		])
+// 		const animStorage = new NbtCompound().set('frames', frames)
+// 		for (const frame of animation.frames) {
+// 			const frameStorage = new NbtCompound()
+// 			frames.add(frameStorage)
+// 			for (const node of frame.nodes) {
+// 				if (!BONE_TYPES.includes(node.type)) continue
+// 				frameStorage.set(
+// 					node.type + '_' + node.name,
+// 					new NbtCompound()
+// 						.set('transformation', matrixToNbtFloatArray(node.matrix))
+// 						.set('start_interpolation', new NbtInt(0))
+// 				)
+// 			}
+// 		}
+
+// 		const str = `data modify storage aj.${
+// 			Project!.animated_java.export_namespace
+// 		}:animations list.${animation.storageSafeName} set value ${animStorage.toString()}`
+// 		if (str.length > 2000000) {
+// 			// FIXME - Temporary patch. Split each animation's storage into multiple commands if it's too large.
+// 			throw new Error(
+// 				`The animation storage for '${animation.name}' is too large! The data command must be less than 2000000 characters long. (Currently ${str.length} characters).`
+// 			)
+// 		}
+// 		storage.push(str)
+// 	}
+// 	return storage
+// }
 
 function createPassengerStorage(rig: IRenderedRig) {
 	const bones = new NbtCompound()
@@ -476,7 +536,7 @@ function createPassengerStorage(rig: IRenderedRig) {
 					.set('roty', new NbtFloat(Math.radToDeg(node.rot[1])))
 				if (
 					node.type === 'locator' &&
-					(rig.nodeMap[node.uuid].node as Locator).config.use_entity
+					(rig.nodeMap[node.uuid].node as Locator).config?.use_entity
 				)
 					data.set('uuid', new NbtString(''))
 				;(node.type === 'camera' ? cameras : locators).set(node.name, data)
@@ -607,7 +667,9 @@ export async function compileDataPack(options: {
 		matrixToNbtFloatArray,
 		transformationToNbt,
 		use_storage_for_animation: aj.use_storage_for_animation,
-		animationStorage: createAnimationStorage(animations),
+		animationStorage: aj.use_storage_for_animation
+			? await createAnimationStorage(animations)
+			: null,
 		rigHash,
 		animationHash,
 		boundingBox: aj.bounding_box,

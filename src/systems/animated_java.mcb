@@ -124,7 +124,9 @@ dir <%export_namespace%> {
 
 	function on_load {
 		IF (use_storage_for_animation) {
-			data modify storage aj.<%export_namespace%>:animations list set value {}
+			REPEAT (animations) as animation {
+				data remove storage aj.<%export_namespace%>:animations <%animation.storageSafeName%>
+			}
 			<%animationStorage.join('\n')%>
 		}
 		execute as @e[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] \
@@ -323,18 +325,26 @@ dir <%export_namespace%> {
 					IF (use_storage_for_animation) {
 						function set_frame {
 							#ARGS: {frame: int}
-							REPEAT (animation.includedNodes) as node {
+							REPEAT (animation.includedNodes.sort(nodeSorter)) as node {
 								IF (['bone', 'text_display', 'item_display', 'block_display'].includes(node.type)) {
-									$execute on passengers run data modify entity @s[tag=<%TAGS.LOCAL_BONE(export_namespace, node.name)%>] {} merge from storage aj.<%export_namespace%>:animations list.<%animation.storageSafeName%>.frames[$(frame)].<%node.name%>
+									$execute on passengers run data modify entity @s[tag=<%TAGS.LOCAL_BONE(export_namespace, node.name)%>] {} merge from \
+										storage aj.<%export_namespace%>:animations <%animation.storageSafeName%>.$(frame).<%node.type + '_' + node.name%>
+								} ELSE IF (['locator', 'camera'].includes(node.type)) {
+									$execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run data modify entity @s data.<%node.type + 's.' + node.name%> merge from \
+										storage aj.<%export_namespace%>:animations <%animation.storageSafeName%>.$(frame).<%node.type + '_' + node.name%>
 								}
 							}
 							execute on passengers run data modify entity @s[type=!marker] start_interpolation set value -1
 						}
 						function apply_frame {
 							#ARGS: {frame: int}
-							REPEAT (animation.includedNodes) as node {
+							REPEAT (animation.includedNodes.sort(nodeSorter)) as node {
 								IF (['bone', 'text_display', 'item_display', 'block_display'].includes(node.type)) {
-									$execute on passengers run data modify entity @s[tag=<%TAGS.LOCAL_BONE(export_namespace, node.name)%>] {} merge from storage aj.<%export_namespace%>:animations list.<%animation.storageSafeName%>.frames[$(frame)].<%node.name%>
+									$execute on passengers if entity @s[tag=<%TAGS.LOCAL_BONE(export_namespace, node.name)%>] run data modify entity @s {} merge from \
+										storage aj.<%export_namespace%>:animations <%animation.storageSafeName%>.$(frame).<%node.type + '_' + node.name%>
+								} ELSE IF (['locator', 'camera'].includes(node.type)) {
+									$execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run data modify entity @s data.<%node.type + 's.' + node.name%> merge from \
+										storage aj.<%export_namespace%>:animations <%animation.storageSafeName%>.$(frame).<%node.type + '_' + node.name%>
 								}
 							}
 						}
