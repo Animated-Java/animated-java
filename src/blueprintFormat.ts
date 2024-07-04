@@ -145,7 +145,8 @@ export interface IBlueprintFormatJSON {
 }
 
 export function convertToBlueprint() {
-	console.error('Blueprint conversion is currently unsupported!')
+	// Convert the current project to a Blueprint
+	// NOTE - Nothing needs to be done here yet. The default functionality is sufficient.
 }
 
 export function getDefaultProjectSettings(): ModelProject['animated_java'] {
@@ -539,7 +540,7 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 
 		Project.variants ??= []
 		Project.last_used_export_namespace = Project.animated_java.export_namespace
-		if (newModel) {
+		if (newModel || Project.variants.length === 0) {
 			new Variant('Default', true)
 		}
 		const updateBoundingBoxIntervalId = setInterval(() => {
