@@ -11,7 +11,7 @@
 		"show_bounding_box": false,
 		"auto_bounding_box": true,
 		"bounding_box": [95, 32],
-		"enable_plugin_mode": true,
+		"enable_plugin_mode": false,
 		"resource_pack_export_mode": "raw",
 		"data_pack_export_mode": "raw",
 		"display_item": "minecraft:white_dye",
@@ -1593,9 +1593,9 @@
 	],
 	"variants": {
 		"default": {
-			"display_name": "default",
+			"display_name": "Default",
 			"name": "default",
-			"uuid": "f78e10c0-a4a3-aa2f-43ac-753facebd709",
+			"uuid": "99583e4c-1e3a-b03f-a802-1b5212a6eedb",
 			"texture_map": {},
 			"excluded_nodes": []
 		},

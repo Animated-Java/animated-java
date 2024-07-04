@@ -5,6 +5,7 @@ import { PROGRESS_DESCRIPTION, openExportProgressDialog } from '../interface/exp
 import { openUnexpectedErrorDialog } from '../interface/unexpectedErrorDialog'
 import { resolveEnvVariables } from '../util/misc'
 import { translate } from '../util/translation'
+import { Variant } from '../variants'
 import { hashAnimations, renderProjectAnimations } from './animationRenderer'
 import { compileDataPack } from './datapackCompiler'
 import { exportJSON } from './jsonExporter'
@@ -18,6 +19,8 @@ async function actuallyExportProject(forceSave = true) {
 	const dialog = openExportProgressDialog()
 	// Wait for the dialog to open
 	await new Promise(resolve => requestAnimationFrame(resolve))
+	const selectedVariant = Variant.selected
+	Variant.getDefault().select()
 	try {
 		console.time('Exporting project took')
 
@@ -112,11 +115,9 @@ async function actuallyExportProject(forceSave = true) {
 		console.timeEnd('Exporting project took')
 
 		if (forceSave) saveBlueprint()
-		dialog.close(0)
 		Blockbench.showQuickMessage('Project exported successfully!', 2000)
 	} catch (e: any) {
 		console.error(e)
-		dialog.close(0)
 		if (e instanceof IntentionalExportError) {
 			Blockbench.showMessageBox({
 				title: translate('misc.failed_to_export.title'),
@@ -126,6 +127,9 @@ async function actuallyExportProject(forceSave = true) {
 			return
 		}
 		openUnexpectedErrorDialog(e as Error)
+	} finally {
+		selectedVariant?.select()
+		dialog.close(0)
 	}
 }
 
