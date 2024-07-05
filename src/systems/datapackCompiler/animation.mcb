@@ -365,7 +365,7 @@ dir <%export_namespace%> {
 										if (frame.variant) {
 											const variant = variants.find(v => v.uuid === frame.variant.uuid)
 											if (!variant) return
-											emit.mcb(`function *${export_namespace}/variants/${variant.name}/apply`)
+											emit.mcb(`execute on vehicle run function *${export_namespace}/variants/${variant.name}/apply`)
 										}
 										global.merged = {
 											locators: {},
