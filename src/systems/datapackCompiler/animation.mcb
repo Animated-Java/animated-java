@@ -38,11 +38,6 @@ dir global {
 		}
 	}
 
-	function help {
-		# This just prints a link to the docs.
-		tellraw @a {"text": "..."}
-	}
-
 	dir errors {
 		function function_not_executed_as_root_entity {
 			$tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR('$(function_path)', TAGS.PROJECT_ROOT(export_namespace))%>
@@ -118,10 +113,6 @@ dir global {
 }
 
 dir <%export_namespace%> {
-	function uninstall {
-		# TODO Remove all scoreboard for this rig from the world.
-	}
-
 	function on_load {
 		IF (use_storage_for_animation) {
 			REPEAT (animations) as animation {

@@ -1,7 +1,7 @@
 import { Compiler, Parser, Tokenizer, SyncIo } from 'mc-build'
 import { VariableMap } from 'mc-build/dist/mcl/Compiler'
 import { isFunctionTagPath } from '../util/fileUtil'
-import datapackTemplate from './animated_java.mcb'
+import animationMcb from './datapackCompiler/animation.mcb'
 import { AnyRenderedNode, IRenderedRig } from './rigRenderer'
 import { IRenderedAnimation } from './animationRenderer'
 import { Variant } from '../variants'
@@ -648,7 +648,7 @@ export async function compileDataPack(options: {
 	PROGRESS.set(0)
 	await new Promise(resolve => setTimeout(resolve, 2000 / framespersecond))
 	console.time('MC-Build Compiler took')
-	const tokens = Tokenizer.tokenize(datapackTemplate, 'src/animated_java.mcb')
+	const tokens = Tokenizer.tokenize(animationMcb, 'src/animated_java.mcb')
 	compiler.addFile('src/animated_java.mcb', Parser.parseMcbFile(tokens))
 	compiler.compile(VariableMap.fromObject(variables))
 	console.timeEnd('MC-Build Compiler took')
