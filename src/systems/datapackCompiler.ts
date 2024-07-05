@@ -482,42 +482,6 @@ async function createAnimationStorage(animations: IRenderedAnimation[]) {
 	return dataCommands
 }
 
-// function createAnimationStorage(animations: IRenderedAnimation[]) {
-// 	const storage: string[] = []
-
-// 	for (const animation of animations) {
-// 		const frames = new NbtList([
-// 			new NbtCompound(), // This compound is just to make the list 1-indexed
-// 		])
-// 		const animStorage = new NbtCompound().set('frames', frames)
-// 		for (const frame of animation.frames) {
-// 			const frameStorage = new NbtCompound()
-// 			frames.add(frameStorage)
-// 			for (const node of frame.nodes) {
-// 				if (!BONE_TYPES.includes(node.type)) continue
-// 				frameStorage.set(
-// 					node.type + '_' + node.name,
-// 					new NbtCompound()
-// 						.set('transformation', matrixToNbtFloatArray(node.matrix))
-// 						.set('start_interpolation', new NbtInt(0))
-// 				)
-// 			}
-// 		}
-
-// 		const str = `data modify storage aj.${
-// 			Project!.animated_java.export_namespace
-// 		}:animations list.${animation.storageSafeName} set value ${animStorage.toString()}`
-// 		if (str.length > 2000000) {
-// 			// FIXME - Temporary patch. Split each animation's storage into multiple commands if it's too large.
-// 			throw new Error(
-// 				`The animation storage for '${animation.name}' is too large! The data command must be less than 2000000 characters long. (Currently ${str.length} characters).`
-// 			)
-// 		}
-// 		storage.push(str)
-// 	}
-// 	return storage
-// }
-
 function createPassengerStorage(rig: IRenderedRig) {
 	const bones = new NbtCompound()
 	const locators = new NbtCompound()
