@@ -5,8 +5,8 @@ import { IRenderedNodes, IRenderedRig } from './rigRenderer'
 import { sortObjectKeys, zip } from './util'
 
 interface IPredicateItemModel {
-	parent: string
-	textures: any
+	parent?: string
+	textures: Record<string, string>
 	overrides: Array<{
 		predicate: { custom_model_data: number }
 		model: string
@@ -19,8 +19,8 @@ class PredicateItemModel {
 	private overrides = new Map<number, string>()
 	private externalOverrides = new Map<number, string>()
 	public rigs: Record<string, number[]> = {}
-
-	// constructor() {}
+	public parent? = 'item/generated'
+	public textures: IPredicateItemModel['textures'] = {}
 
 	setOverride(id: number, model: string) {
 		this.overrides.set(id, model)
@@ -51,6 +51,11 @@ class PredicateItemModel {
 		if (typeof file.animated_java !== 'object') {
 			// TODO Inform the user that they are attempting to merge into a non-animated_java model. And give them the option to cancel.
 		}
+
+		// Assert parent
+		if (file.parent) this.parent = file.parent
+		// Assert textures
+		if (file.textures) this.textures = file.textures
 
 		// Assert important fields
 		file.overrides ??= []
@@ -99,10 +104,13 @@ class PredicateItemModel {
 		const exportNamespace = Project!.animated_java.export_namespace
 
 		return {
-			parent: 'item/generated',
-			textures: {
-				layer0: `${displayItemNamespace}:item/${displayItemName}`,
-			},
+			parent: this.parent,
+			textures:
+				Object.keys(this.textures).length > 0
+					? this.textures
+					: {
+							layer0: `${displayItemNamespace}:item/${displayItemName}`,
+					  },
 			overrides: [...this.externalOverrides.entries(), ...this.overrides.entries()]
 				.sort((a, b) => a[0] - b[0])
 				.map(([id, model]) => ({
@@ -297,16 +305,16 @@ export async function compileResourcePack(options: {
 		}
 	}
 
-	// Write display item model
-	console.log('Display Item Model', displayItemModel.toJSON())
-	exportedFiles.set(displayItemPath, autoStringify(displayItemModel.toJSON()))
-
 	if (aj.enable_plugin_mode) {
 		// Do nothing
 		console.log('Plugin mode enabled. Skipping resource pack export.')
 	} else if (aj.resource_pack_export_mode === 'raw') {
 		ajmeta.files = new Set(exportedFiles.keys())
 		ajmeta.write()
+
+		// Since we don't want to erase the display item every export, we add it's model file after the files have been added to the ajmeta.
+		console.log('Display Item Model', displayItemModel.toJSON())
+		exportedFiles.set(displayItemPath, autoStringify(displayItemModel.toJSON()))
 
 		PROGRESS_DESCRIPTION.set('Writing Resource Pack...')
 		PROGRESS.set(0)
