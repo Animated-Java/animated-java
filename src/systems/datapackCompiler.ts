@@ -374,14 +374,10 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 	return passengers.toString()
 }
 
-class AJMeta {
-	public datapack = {
-		files: new Set<string>(),
-	}
-	public oldDatapack = {
-		files: new Set<string>(),
-	}
-	private oldContent: Record<string, { datapack: { files: string[] } }> = {}
+class DataPackAJMeta {
+	public files = new Set<string>()
+	public oldFiles = new Set<string>()
+	private oldContent: Record<string, { files?: string[] }> = {}
 
 	constructor(
 		public path: string,
@@ -396,14 +392,16 @@ class AJMeta {
 		const data = this.oldContent[this.exportNamespace]
 		const lastData = this.oldContent[this.lastUsedExportNamespace]
 		if (lastData) {
-			for (const file of lastData.datapack.files) {
-				this.oldDatapack.files.add(PathModule.join(this.dataPackFolder, file))
+			if (!Array.isArray(lastData.files)) lastData.files = []
+			for (const file of lastData.files) {
+				this.oldFiles.add(PathModule.join(this.dataPackFolder, file))
 			}
 			delete this.oldContent[this.lastUsedExportNamespace]
 		}
 		if (data) {
-			for (const file of data.datapack.files) {
-				this.oldDatapack.files.add(PathModule.join(this.dataPackFolder, file))
+			if (!Array.isArray(data.files)) data.files = []
+			for (const file of data.files) {
+				this.oldFiles.add(PathModule.join(this.dataPackFolder, file))
 			}
 			delete this.oldContent[this.exportNamespace]
 		}
@@ -411,14 +409,12 @@ class AJMeta {
 
 	write() {
 		const folder = PathModule.dirname(this.path)
-		const content: AJMeta['oldContent'] = {
+		const content: DataPackAJMeta['oldContent'] = {
 			...this.oldContent,
 			[this.exportNamespace]: {
-				datapack: {
-					files: Array.from(this.datapack.files).map(v =>
-						PathModule.relative(folder, v).replace(/\\/g, '/')
-					),
-				},
+				files: Array.from(this.files).map(v =>
+					PathModule.relative(folder, v).replace(/\\/g, '/')
+				),
 			},
 		}
 		fs.writeFileSync(this.path, autoStringify(sortObjectKeys(content)))
@@ -548,10 +544,10 @@ export async function compileDataPack(options: {
 		formatVersion: Infinity, // We are living in the future! 🤖
 	})
 
-	let ajmeta: AJMeta | null = null
+	let ajmeta: DataPackAJMeta | null = null
 	if (aj.data_pack_export_mode === 'raw') {
-		ajmeta = new AJMeta(
-			PathModule.join(options.dataPackFolder, '.ajmeta'),
+		ajmeta = new DataPackAJMeta(
+			PathModule.join(options.dataPackFolder, 'data.ajmeta'),
 			aj.export_namespace,
 			Project!.last_used_export_namespace,
 			options.dataPackFolder
@@ -560,9 +556,9 @@ export async function compileDataPack(options: {
 
 		PROGRESS_DESCRIPTION.set('Removing Old Data Pack Files...')
 		PROGRESS.set(0)
-		MAX_PROGRESS.set(ajmeta.oldDatapack.files.size)
+		MAX_PROGRESS.set(ajmeta.oldFiles.size)
 		const removedFolders = new Set<string>()
-		for (const file of ajmeta.oldDatapack.files) {
+		for (const file of ajmeta.oldFiles) {
 			if (!isFunctionTagPath(file)) {
 				if (fs.existsSync(file)) await fs.promises.unlink(file)
 			} else if (aj.export_namespace !== Project!.last_used_export_namespace) {
@@ -604,7 +600,7 @@ export async function compileDataPack(options: {
 		io.write = (localPath, content) => {
 			const writePath = PathModule.join(options.dataPackFolder, localPath)
 			exportedFiles.set(writePath, content)
-			if (ajmeta) ajmeta.datapack.files.add(writePath)
+			if (ajmeta) ajmeta.files.add(writePath)
 		}
 		return io
 	}

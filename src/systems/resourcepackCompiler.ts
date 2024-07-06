@@ -2,7 +2,7 @@ import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../interface/expor
 import { isResourcePackPath, toSafeFuntionName } from '../util/minecraftUtil'
 import { TRANSPARENT_TEXTURE } from '../variants'
 import { IRenderedNodes, IRenderedRig } from './rigRenderer'
-import { replacePathPart, sortObjectKeys, zip } from './util'
+import { sortObjectKeys, zip } from './util'
 
 interface IPredicateItemModel {
 	parent: string
@@ -117,6 +117,53 @@ class PredicateItemModel {
 	}
 }
 
+class ResourcePackAJMeta {
+	public files = new Set<string>()
+	public oldFiles = new Set<string>()
+	private oldContent: Record<string, { files?: string[] }> = {}
+
+	constructor(
+		public path: string,
+		public exportNamespace: string,
+		public lastUsedExportNamespace: string,
+		public resourcePackFolder: string
+	) {}
+
+	read() {
+		if (!fs.existsSync(this.path)) return
+		this.oldContent = JSON.parse(fs.readFileSync(this.path, 'utf-8'))
+		const data = this.oldContent[this.exportNamespace]
+		const lastData = this.oldContent[this.lastUsedExportNamespace]
+		if (lastData) {
+			if (!Array.isArray(lastData.files)) lastData.files = []
+			for (const file of lastData.files) {
+				this.oldFiles.add(PathModule.join(this.resourcePackFolder, file))
+			}
+			delete this.oldContent[this.lastUsedExportNamespace]
+		}
+		if (data) {
+			if (!Array.isArray(data.files)) data.files = []
+			for (const file of data.files) {
+				this.oldFiles.add(PathModule.join(this.resourcePackFolder, file))
+			}
+			delete this.oldContent[this.exportNamespace]
+		}
+	}
+
+	write() {
+		const folder = PathModule.dirname(this.path)
+		const content: ResourcePackAJMeta['oldContent'] = {
+			...this.oldContent,
+			[this.exportNamespace]: {
+				files: Array.from(this.files).map(v =>
+					PathModule.relative(folder, v).replace(/\\/g, '/')
+				),
+			},
+		}
+		fs.writeFileSync(this.path, autoStringify(sortObjectKeys(content)))
+	}
+}
+
 export async function compileResourcePack(options: {
 	rig: IRenderedRig
 	displayItemPath: string
@@ -130,6 +177,36 @@ export async function compileResourcePack(options: {
 	const lastUsedExportNamespace = Project!.last_used_export_namespace
 	PROGRESS_DESCRIPTION.set('Compiling Resource Pack...')
 	console.log('Compiling resource pack...', options)
+
+	const ajmeta = new ResourcePackAJMeta(
+		PathModule.join(options.resourcePackFolder, 'assets.ajmeta'),
+		aj.export_namespace,
+		lastUsedExportNamespace,
+		options.resourcePackFolder
+	)
+	if (aj.resource_pack_export_mode === 'raw') {
+		ajmeta.read()
+
+		PROGRESS_DESCRIPTION.set('Removing Old Resource Pack Files...')
+		PROGRESS.set(0)
+		MAX_PROGRESS.set(ajmeta.oldFiles.size)
+
+		const removedFolders = new Set<string>()
+		for (const file of ajmeta.oldFiles) {
+			if (fs.existsSync(file)) await fs.promises.unlink(file)
+			let folder = PathModule.dirname(file)
+			while (
+				!removedFolders.has(folder) &&
+				fs.existsSync(folder) &&
+				(await fs.promises.readdir(folder)).length === 0
+			) {
+				await fs.promises.rm(folder, { recursive: true })
+				removedFolders.add(folder)
+				folder = PathModule.dirname(folder)
+			}
+			PROGRESS.set(PROGRESS.get() + 1)
+		}
+	}
 
 	const exportedFiles = new Map<string, string | Buffer>()
 
@@ -228,27 +305,8 @@ export async function compileResourcePack(options: {
 		// Do nothing
 		console.log('Plugin mode enabled. Skipping resource pack export.')
 	} else if (aj.resource_pack_export_mode === 'raw') {
-		PROGRESS_DESCRIPTION.set('Removing Old Resource Pack Files...')
-
-		await fs.promises.rm(
-			replacePathPart(modelExportFolder, aj.export_namespace, lastUsedExportNamespace),
-			{
-				recursive: true,
-				force: true,
-			}
-		)
-		await fs.promises.rm(
-			replacePathPart(textureExportFolder, aj.export_namespace, lastUsedExportNamespace),
-			{
-				recursive: true,
-				force: true,
-			}
-		)
-		for (const variant of Object.keys(rig.variantModels)) {
-			await fs.promises.mkdir(PathModule.join(modelExportFolder, variant), {
-				recursive: true,
-			})
-		}
+		ajmeta.files = new Set(exportedFiles.keys())
+		ajmeta.write()
 
 		PROGRESS_DESCRIPTION.set('Writing Resource Pack...')
 		PROGRESS.set(0)
