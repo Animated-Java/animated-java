@@ -209,7 +209,9 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 		}
 		addProjectToRecentProjects(file)
 		BLUEPRINT_CODEC.parse!(model, file.path)
-		console.log(`Successfully loaded Animated Java Blueprint`)
+		console.log(
+			`Successfully loaded Animated Java Blueprint\n\tProject: ${Project.name}\n\t${Project.uuid}`
+		)
 	},
 
 	// region > parse
@@ -217,10 +219,6 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 	parse(model: IBlueprintFormatJSON, path) {
 		console.log(`Parsing Animated Java Blueprint from '${path}'...`)
 		if (!Project) throw new Error('No project to parse into')
-
-		if (model.meta.uuid !== undefined) {
-			Project.uuid = model.meta.uuid
-		}
 
 		Project.save_path = model.meta.save_location || path
 
@@ -554,8 +552,9 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 			// Custom title
 			void injectSvelteCompomponent({
 				elementSelector: () => {
-					const titles = [...document.querySelectorAll('.project_tab.selected')]
-					titles.filter(title => title.textContent === Project!.name)
+					const titles = [
+						...document.querySelectorAll(`.project_tab[title="${project.name}"]`),
+					]
 					if (titles.length) {
 						return titles[0]
 					}
