@@ -732,6 +732,8 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 		rig.variantModels[variant.name] = renderVariantModels(variant, rig)
 	}
 
+	TEXTURE_RESOURCE_LOCATION_CACHE.clear()
+
 	console.timeEnd('Rendering rig took')
 	console.log('Rendered rig:', rig)
 	return rig

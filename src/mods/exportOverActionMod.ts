@@ -1,7 +1,6 @@
 import { BLUEPRINT_CODEC, BLUEPRINT_FORMAT } from '../blueprintFormat'
 import { PACKAGE } from '../constants'
 import { createBlockbenchMod } from '../util/moddingTools'
-import { translate } from '../util/translation'
 
 createBlockbenchMod(
 	`${PACKAGE.name}:exportOverAction`,
@@ -22,10 +21,7 @@ createBlockbenchMod(
 						console.error(
 							`Failed to export Animated Java Blueprint, file location '${path}' does not exist!`
 						)
-						Blockbench.showMessageBox({
-							title: translate('error.blueprint_export_path_doesnt_exist.title'),
-							message: translate('error.blueprint_export_path_doesnt_exist', path),
-						})
+						BLUEPRINT_CODEC.export()
 					}
 				} else {
 					BLUEPRINT_CODEC.export()

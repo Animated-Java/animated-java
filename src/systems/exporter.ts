@@ -160,5 +160,8 @@ export async function exportProject(forceSave = true) {
 	}
 
 	settingsDialog.close(0)
+
+	// Verify that all textures have unique IDs
+
 	await actuallyExportProject(forceSave)
 }
