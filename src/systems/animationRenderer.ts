@@ -48,6 +48,13 @@ function getDecomposedTransformation(matrix: THREE.Matrix4) {
 	return { translation, left_rotation, scale }
 }
 
+function threeAxisRotationToTwoAxisRotation(rot: THREE.Quaternion): ArrayVector2 {
+	const euler = Reusable.vec3.applyQuaternion(rot)
+	const yaw = Math.atan2(euler.z, euler.x)
+	const pitch = Math.atan2(euler.y, euler.z)
+	return [Math.radToDeg(yaw), Math.radToDeg(pitch)]
+}
+
 export interface IAnimationNode {
 	type: 'bone' | 'camera' | 'locator' | 'text_display' | 'item_display' | 'block_display'
 	name: string
@@ -61,6 +68,8 @@ export interface IAnimationNode {
 	}
 	pos: ArrayVector3
 	rot: ArrayVector3
+	// The two-axis (entity head) rotation of the node.
+	head_rot: ArrayVector2
 	scale: ArrayVector3
 	interpolation?: 'step' | 'pre-post'
 	/**
@@ -214,6 +223,7 @@ export function getAnimationNodes(
 			transformation: decomposed,
 			pos: [pos.x, pos.y, pos.z],
 			rot: eulerFromQuaternion(rot).toArray(),
+			head_rot: threeAxisRotationToTwoAxisRotation(rot),
 			scale: [scale.x, scale.y, scale.z],
 			interpolation,
 			commands,

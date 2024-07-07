@@ -1,7 +1,7 @@
 {
 	"meta": {
 		"format": "animated_java_blueprint",
-		"format_version": "0.5.10",
+		"format_version": "1.0.0",
 		"uuid": "167b27cd-b559-3f13-a97c-0841fe21f1d1",
 		"save_location": "D:\\github-repos\\animated-java\\animated-java\\test_blueprints\\armor_stand.ajblueprint",
 		"last_used_export_namespace": "armor_stand"
@@ -826,7 +826,8 @@
 			"config": {
 				"use_entity": false,
 				"entity_type": "minecraft:pig",
-				"ticking_commands": "particle minecraft:bubble ~ ~ ~"
+				"summon_commands": "",
+				"ticking_commands": "particle minecraft:bubble ^ ^ ^1\ntp @e[tag=test3,limit=1] ~ ~ ~ ~ ~"
 			},
 			"uuid": "7de415a2-9fdd-e4b2-3455-c3bed72eb896",
 			"type": "locator"
@@ -839,7 +840,10 @@
 			"visibility": true,
 			"locked": false,
 			"config": {
-				"ticking_commands": "particle minecraft:bubble ~ ~ ~"
+				"use_entity": false,
+				"entity_type": "minecraft:pig",
+				"summon_commands": "",
+				"ticking_commands": "particle minecraft:bubble ^ ^ ^1\ntp @e[tag=test2,limit=1] ~ ~ ~ ~ ~"
 			},
 			"uuid": "7747736f-85e2-338f-207e-53f8d3d2fa39",
 			"type": "locator"
@@ -1381,7 +1385,7 @@
 													"uuid": "215d1b02-0e64-a794-1b88-a9c5a6d7541c",
 													"export": true,
 													"mirror_uv": false,
-													"isOpen": false,
+													"isOpen": true,
 													"locked": false,
 													"visibility": true,
 													"autouv": 0,
@@ -1795,7 +1799,7 @@
 									"x": 0,
 									"y": 0,
 									"z": 0,
-									"commands": "particle minecraft:flame ~ ~ ~",
+									"commands": "tp @e[tag=test,limit=1] ~ ~ ~ ~ ~",
 									"execute_condition": "",
 									"repeat": true,
 									"repeat_frequency": 1
@@ -4110,11 +4114,11 @@
 			}
 		},
 		{
-			"uuid": "e7761616-704f-309f-9b63-ded7c7449f4c",
-			"name": "long",
+			"uuid": "d7aa15ae-b3c0-6aee-e91c-630ca1fcb825",
+			"name": "locator_test",
 			"loop": "loop",
 			"override": false,
-			"length": 50,
+			"length": 2,
 			"snapping": 20,
 			"selected": true,
 			"saved": false,
@@ -4125,8 +4129,30 @@
 			"loop_delay": "0",
 			"excluded_nodes": [],
 			"animators": {
-				"98795982-9c43-6e3e-eed9-2c776a957938": {
-					"name": "root",
+				"b5b52d2c-097c-08df-6457-372fbae12445": {
+					"name": "left_arm",
+					"type": "bone",
+					"keyframes": [
+						{
+							"channel": "rotation",
+							"data_points": [
+								{
+									"x": "q.life_time * 180",
+									"y": "0",
+									"z": "0"
+								}
+							],
+							"uuid": "4a42399c-2453-77e4-1cb9-6403032576a0",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						}
+					]
+				},
+				"215d1b02-0e64-a794-1b88-a9c5a6d7541c": {
+					"name": "right_arm",
 					"type": "bone",
 					"keyframes": [
 						{
@@ -4134,11 +4160,33 @@
 							"data_points": [
 								{
 									"x": "0",
-									"y": "q.life_time * 12.25",
+									"y": "q.life_time * 180\n",
 									"z": "0"
 								}
 							],
-							"uuid": "387d8220-6ad2-3866-0630-b9f7acc501b6",
+							"uuid": "0a15d863-02b8-eb01-0e46-7da15d8306d7",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						}
+					]
+				},
+				"3b35d1a9-befe-066e-60df-e1f3a5ec5a78": {
+					"name": "pig",
+					"type": "bone",
+					"keyframes": [
+						{
+							"channel": "rotation",
+							"data_points": [
+								{
+									"x": "0",
+									"y": "math.cos(q.life_time * 180) * 45\n",
+									"z": "math.sin(q.life_time * 180) * 45\n"
+								}
+							],
+							"uuid": "74a92a15-fd3d-6e21-564a-8fd79cebda34",
 							"time": 0,
 							"color": -1,
 							"interpolation": "linear",

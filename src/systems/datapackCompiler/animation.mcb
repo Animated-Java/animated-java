@@ -410,8 +410,8 @@ dir <%export_namespace%> {
 														^<%roundTo(node.pos[1], 10)%> \
 														^<%roundTo(node.pos[2], 10)%> \
 													rotated \
-														~<%roundTo(node.rot[0], 10)%> \
-														~<%roundTo(node.rot[1], 10)%> \
+														~<%roundTo(node.head_rot[0], 10)%> \
+														~<%roundTo(node.head_rot[1], 10)%> \
 												run {
 													<%%
 														emit.mcb(node.commands)
@@ -425,8 +425,8 @@ dir <%export_namespace%> {
 														posx: node.pos[0],
 														posy: node.pos[1],
 														posz: node.pos[2],
-														rotx: node.rot[0],
-														roty: node.rot[1]
+														rotx: node.head_rot[0],
+														roty: node.head_rot[1]
 													}
 												%%>
 											}
