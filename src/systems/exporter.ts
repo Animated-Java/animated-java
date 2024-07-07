@@ -8,7 +8,7 @@ import { translate } from '../util/translation'
 import { Variant } from '../variants'
 import { hashAnimations, renderProjectAnimations } from './animationRenderer'
 import { compileDataPack } from './datapackCompiler'
-import { exportJSON } from './jsonExporter'
+import { exportJSON } from './jsonCompiler'
 import { compileResourcePack } from './resourcepackCompiler'
 import { renderRig, hashRig } from './rigRenderer'
 

@@ -154,7 +154,7 @@ export interface IRenderedRig {
 	 */
 	models: Record<string, IRenderedModel>
 	/**
-	 * A map of variant names to maps of rendered models
+	 * A map of variant UUIDs to maps of rendered models
 	 */
 	variantModels: Record<string, Record<string, IRenderedBoneVariant>>
 	/**
@@ -729,7 +729,7 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 
 	for (const variant of Variant.all) {
 		if (variant.isDefault) continue // Don't export the default variant, it's redundant data.
-		rig.variantModels[variant.name] = renderVariantModels(variant, rig)
+		rig.variantModels[variant.uuid] = renderVariantModels(variant, rig)
 	}
 
 	TEXTURE_RESOURCE_LOCATION_CACHE.clear()

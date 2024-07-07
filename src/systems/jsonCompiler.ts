@@ -2,9 +2,11 @@
 /// <reference path="D:/github-repos/snavesutit/blockbench-types/types/index.d.ts"/>
 /// <reference path="../global.d.ts"/>
 
+import { IBlueprintVariantJSON } from '../blueprintFormat'
 import { type defaultValues } from '../blueprintSettings'
 import { EasingKey } from '../util/easing'
 import { detectCircularReferences, scrubUndefined } from '../util/misc'
+import { Variant } from '../variants'
 import type { IAnimationNode, IRenderedAnimation, IRenderedFrame } from './animationRenderer'
 import type {
 	AnyRenderedNode,
@@ -82,6 +84,7 @@ export interface IExportedJSON {
 		default_pose: ExportedAnimationNode[]
 		node_map: Record<string, ExportedRenderedNode>
 		node_structure: INodeStructure
+		variants: Record<string, IBlueprintVariantJSON>
 	}
 	/**
 	 * If `blueprint_settings.baked_animations` is true, this will be an array of `ExportedAnimation` objects. Otherwise, it will be an array of `AnimationUndoCopy` objects, just like the `.bbmodel`'s animation list.
@@ -133,6 +136,9 @@ export function exportJSON(options: {
 				Object.entries(rig.nodeMap).map(([key, node]) => [key, serailizeRenderedNode(node)])
 			),
 			node_structure: rig.nodeStructure,
+			variants: Object.fromEntries(
+				Variant.all.map(variant => [variant.uuid, variant.toJSON()])
+			),
 		},
 		animations: aj.baked_animations
 			? animations.map(serializeAnimation)

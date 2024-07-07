@@ -136,8 +136,8 @@ export class Variant {
 
 	public toJSON(): IBlueprintVariantJSON {
 		return {
-			display_name: this.displayName,
 			name: this.name,
+			display_name: this.displayName,
 			uuid: this.uuid,
 			texture_map: Object.fromEntries(this.textureMap.map),
 			excluded_nodes: this.excludedNodes.map(item => item.value),

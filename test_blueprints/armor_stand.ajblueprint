@@ -1,7 +1,7 @@
 {
 	"meta": {
 		"format": "animated_java_blueprint",
-		"format_version": "0.5.9",
+		"format_version": "0.5.10",
 		"uuid": "167b27cd-b559-3f13-a97c-0841fe21f1d1",
 		"save_location": "D:\\github-repos\\animated-java\\animated-java\\test_blueprints\\armor_stand.ajblueprint",
 		"last_used_export_namespace": "armor_stand"
@@ -11,7 +11,7 @@
 		"show_bounding_box": false,
 		"auto_bounding_box": true,
 		"bounding_box": [95, 32],
-		"enable_plugin_mode": false,
+		"enable_plugin_mode": true,
 		"resource_pack_export_mode": "raw",
 		"data_pack_export_mode": "raw",
 		"display_item": "minecraft:white_dye",
@@ -27,7 +27,7 @@
 		"interpolation_duration": 1,
 		"teleportation_duration": 1,
 		"use_storage_for_animation": false,
-		"baked_animations": true,
+		"baked_animations": false,
 		"json_file": "D:\\github-repos\\animated-java\\animated-java\\dist\\test.json",
 		"customModelDataOffset": 0,
 		"custom_summon_commands": ""
@@ -1594,16 +1594,16 @@
 	],
 	"variants": {
 		"default": {
-			"display_name": "Default",
 			"name": "default",
+			"display_name": "Default",
 			"uuid": "99583e4c-1e3a-b03f-a802-1b5212a6eedb",
 			"texture_map": {},
 			"excluded_nodes": []
 		},
 		"list": [
 			{
-				"display_name": "no_armor",
 				"name": "no_armor",
+				"display_name": "no_armor",
 				"uuid": "5417306e-2c69-3f36-1e3c-edd904034a36",
 				"texture_map": {
 					"240844f3-f615-fe51-0ada-d208791fbdc0": "797174ae-5c58-4a83-a630-eefd51007c80",
@@ -1612,8 +1612,8 @@
 				"excluded_nodes": []
 			},
 			{
-				"display_name": "no_baseplate",
 				"name": "no_baseplate",
+				"display_name": "no_baseplate",
 				"uuid": "bf2a6915-ec63-7ccf-3844-ea8be00b97e6",
 				"texture_map": {
 					"eb6c49b8-8e8e-a039-9a6f-ef6a06bc7924": "797174ae-5c58-4a83-a630-eefd51007c80"
@@ -1633,8 +1633,8 @@
 				]
 			},
 			{
-				"display_name": "colors",
 				"name": "colors",
+				"display_name": "colors",
 				"uuid": "49521f4b-b970-e4bd-b594-2e05d2d46027",
 				"texture_map": {},
 				"excluded_nodes": []

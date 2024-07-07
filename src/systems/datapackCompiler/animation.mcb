@@ -656,10 +656,10 @@ dir <%export_namespace%> {
 							function *global/errors/function_not_executed_as_root_entity \
 								{'function_path': 'animated_java:<%export_namespace%>/variants/<%variant.name%>/apply'}
 						REPEAT (Object.values(rig.nodeMap)) as node {
-							IF (node.type === 'bone' && !Object.values(variant.excludedNodes).find(v => v.value === node.node.uuid) && (rig.variantModels[variant.name][node.node.uuid] !== undefined || node.configs.variants[variant.uuid])) {
+							IF (node.type === 'bone' && !Object.values(variant.excludedNodes).find(v => v.value === node.node.uuid) && (rig.variantModels[variant.uuid][node.node.uuid] !== undefined || node.configs.variants[variant.uuid])) {
 								execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%node.name%>] run {
-									IF (rig.variantModels[variant.name][node.node.uuid] !== undefined) {
-										data modify entity @s item.components.minecraft:custom_model_data set value <%rig.variantModels[variant.name][node.node.uuid].customModelData%>
+									IF (rig.variantModels[variant.uuid][node.node.uuid] !== undefined) {
+										data modify entity @s item.components.minecraft:custom_model_data set value <%rig.variantModels[variant.uuid][node.node.uuid].customModelData%>
 									}
 									IF (node.configs.variants[variant.uuid]) {
 										<%%
