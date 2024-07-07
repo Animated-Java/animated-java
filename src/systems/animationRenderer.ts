@@ -117,10 +117,14 @@ export function getAnimationNodes(
 		keyframeCache = new Map()
 		for (const [uuid, node] of Object.entries(nodeMap)) {
 			const animator = animation.getBoneAnimator(node.node)
-			const keyframeMap = new Map(animator.keyframes.map(kf => [kf.time, kf]))
+			const keyframeMap = animator.keyframes
+				? new Map(animator.keyframes.map(kf => [kf.time, kf]))
+				: new Map<number, _Keyframe>()
 			keyframeCache.set(uuid, keyframeMap)
 		}
-		excludedNodesCache = new Set(animation.excluded_nodes.map(b => b.value))
+		excludedNodesCache = new Set(
+			animation.excluded_nodes ? animation.excluded_nodes.map(b => b.value) : []
+		)
 	}
 	const nodes: IAnimationNode[] = []
 
