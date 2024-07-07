@@ -67,9 +67,9 @@ Things you'll need installed before you can setup the development environment
 5. Open Blockbench, then go to `File > Plugins > Load Plugin From File` and select the `animated_java.js` file from your local repo (`dist/pluginPackage/animated-java.js`).
 6. That's it! You're ready to start developing.
 
-    > [!NOTE]
-    > Note that whenever you make changes, you must reload Blockbench as a whole for the changes to function as expected.<br>
-    > You can use `Ctrl + Shift + R` to reload Blockbench.
+> [!NOTE]
+> Note that whenever you make changes, you must reload Blockbench as a whole for the changes to function as expected.<br>
+> You can use `Ctrl + Shift + R` to reload Blockbench.
 
 ## Adding Localizations
 
