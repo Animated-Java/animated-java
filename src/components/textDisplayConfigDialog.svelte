@@ -178,11 +178,11 @@
 				/>
 			{/if}
 
-			<Checkbox
+			<!-- <Checkbox
 				label={translate('dialog.text_display_config.invisible.title')}
 				tooltip={translate('dialog.text_display_config.invisible.description')}
 				bind:checked={invisible}
-			/>
+			/> -->
 		{/if}
 	{/if}
 </div>
