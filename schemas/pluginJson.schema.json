@@ -13,9 +13,7 @@
 						"show_bounding_box",
 						"auto_bounding_box",
 						"bounding_box",
-						"enable_plugin_mode",
 						"resource_pack_export_mode",
-						"data_pack_export_mode",
 						"display_item",
 						"custom_model_data_offset",
 						"enable_advanced_resource_pack_settings",
@@ -23,23 +21,29 @@
 						"display_item_path",
 						"model_folder",
 						"texture_folder",
-						"enable_advanced_data_pack_settings",
-						"data_pack",
-						"summon_commands",
-						"interpolation_duration",
-						"teleportation_duration",
-						"use_storage_for_animation",
 						"baked_animations",
-						"json_file",
-						"custom_summon_commands"
+						"json_file"
 					],
 					"properties": {
-						"export_namespace": { "type": "string", "default": "armor_stand" },
-						"show_bounding_box": { "type": "boolean", "default": false },
-						"auto_bounding_box": { "type": "boolean", "default": true },
+						"export_namespace": {
+							"type": "string",
+							"default": "armor_stand",
+							"description": "The namespace to export the project to. This is the namespace that will be used in the exported Resource Pack and Data Pack."
+						},
+						"show_bounding_box": {
+							"type": "boolean",
+							"default": false,
+							"description": "Whether or not to show the bounding box in the editor."
+						},
+						"auto_bounding_box": {
+							"type": "boolean",
+							"default": true,
+							"description": "Whether or not to automatically calculate the bounding box based on the model's geometry. \n\nNOTE: The auto bounding box will NOT take bone offsets from animations into account, so the bounding box may be smaller than needed in some cases."
+						},
 						"bounding_box": {
 							"type": "array",
 							"default": [48, 48],
+							"description": "Determines the culling box of the model. The model will stop rendering when this box is off-screen.",
 							"items": {
 								"type": "integer",
 								"minimum": 0
@@ -47,39 +51,53 @@
 							"minItems": 2,
 							"maxItems": 2
 						},
-						"enable_plugin_mode": { "type": "boolean", "default": false },
 						"resource_pack_export_mode": {
 							"type": "string",
 							"default": "raw",
+							"description": "Determines how the Resource Pack should be exported.\n\nRaw - Exports the Resource Pack as a folder.\n\nZip - Exports the Resource Pack as a .zip file.\n\nNone - Disables Resource Pack exporting.",
 							"enum": ["raw", "zip", "none"]
 						},
-						"data_pack_export_mode": {
+						"display_item": {
 							"type": "string",
-							"default": "raw",
-							"enum": ["raw", "zip", "none"]
+							"default": "minecraft:white_dye",
+							"description": "The item to display the Blueprints models in-game. Multiple Blueprints can be placed on the same item and they will be merged automatically."
 						},
-						"display_item": { "type": "string", "default": "minecraft:white_dye" },
-						"custom_model_data_offset": { "type": "integer", "default": 0 },
+						"custom_model_data_offset": {
+							"type": "integer",
+							"default": 0,
+							"description": "The offset to use for the Custom Model Data of the Display Item. Allows multiple Blueprints on the same item, but in separate, unaffiliated Resource Packs."
+						},
 						"enable_advanced_resource_pack_settings": {
 							"type": "boolean",
-							"default": false
+							"default": false,
+							"description": "Whether or not to enable the advanced Resource Pack settings. (Individual RP Folder Selection)"
 						},
-						"resource_pack": { "type": "string", "default": "" },
-						"display_item_path": { "type": "string", "default": "" },
-						"model_folder": { "type": "string", "default": "" },
-						"texture_folder": { "type": "string", "default": "" },
-						"enable_advanced_data_pack_settings": {
+						"resource_pack": {
+							"type": "string",
+							"default": "",
+							"description": "The root folder of the Resource Pack to export the project into."
+						},
+						"display_item_path": {
+							"type": "string",
+							"default": "",
+							"description": "Where to place the Display Item. This should be a path to a .json file in a Resource Pack."
+						},
+						"model_folder": {
+							"type": "string",
+							"default": "",
+							"description": "Where to place all of the exported models. This should be a path to a folder in a Resource Pack."
+						},
+						"texture_folder": {
+							"type": "string",
+							"default": "",
+							"description": "Where to place all of the exported textures. This should be a path to a folder in a Resource Pack."
+						},
+						"baked_animations": {
 							"type": "boolean",
-							"default": false
+							"default": true,
+							"description": "Whether or not to bake the exported animations.\n\nBaked animations have their frames pre-calculated and stored in the exported JSON file, reducing the complexity of rendering the model in-game.\n\nSome Plugins may require this to be enabled to function correctly."
 						},
-						"data_pack": { "type": "string", "default": "" },
-						"summon_commands": { "type": "string", "default": "" },
-						"interpolation_duration": { "type": "number", "default": 1 },
-						"teleportation_duration": { "type": "number", "default": 1 },
-						"use_storage_for_animation": { "type": "boolean", "default": false },
-						"baked_animations": { "type": "boolean", "default": true },
-						"json_file": { "type": "string", "default": "" },
-						"custom_summon_commands": { "type": "string", "default": "" }
+						"json_file": { "type": "string", "default": "", "description": "" }
 					}
 				},
 				"resources": {
@@ -98,6 +116,7 @@
 						"displayItemPath": { "type": "string", "default": "" },
 						"models": {
 							"type": "object",
+							"description": "A map of bone UUIDs to custom bone models. This will be empty if no custom models are used.",
 							"additionalProperties": false,
 							"patternProperties": {
 								"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
@@ -107,7 +126,7 @@
 						},
 						"variant_models": {
 							"type": "object",
-							"description": "A map of variant names to maps of models to use for each bone when that variant is applied. Note that this map only contains included, and modified bones.",
+							"description": "A map of variant UUIDS to maps of models to use for each bone when that variant is applied. Note that this map only contains bones modified and not excluded by the variant.",
 							"additionalProperties": false,
 							"patternProperties": {
 								"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
@@ -125,6 +144,19 @@
 							"type": "object",
 							"additionalProperties": false,
 							"patternProperties": {
+								"animated_java:transparent_texture": {
+									"type": "object",
+									"description": "The internal transparent texture used to hide parts of the Rig.",
+									"properties": {
+										"name": { "const": "Transparent" },
+										"expectedPath": {
+											"const": "assets\\animated_java\\textures\\item\\armor_stand\\Transparent.png"
+										},
+										"src": {
+											"const": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABgWlDQ1BJQ0MgcHJvZmlsZQAAKJF9kTtIA0EURY+JokjEwhQiFltEK21UxFKiKIKBkETwV7i7MVHIrmE3YmMp2AYs/DRGLWystbWwFQTBD4i1hZWijcj6ZhNIEOPAMIc7cy9v3oNAKWdabuMoWHbBSUxGtdm5ea35hSaCQIAR3XTzseREirrr844Gdd72q6z67/5cbell14QGTXjUzDsF4SXh4Y1CXvGecNhc0dPCZ8J9jhQo/KB0o8yvirM+B1Rm2EklxoTDwlq2ho0aNlccS3hIOJK2bMkPzJY5rXhTsZVbNyt1qh+Glu2ZpNJldzPJFDHiaBiss0qOAv1y2qK4JOQ+Wsff5fvj4jLEtYopjnHWsNB9P2oGv3vrZgYHykmhKDQ9e957DzTvwHfR876OPO/7GIJPcGlX/WslGPkQvVjVIofQvgXnV1XN2IWLbeh8zOuO7kv+/DMZeDuVMc1Bxw20LpT7Vrnn5B5S0qvpa9g/gN6sZC/W+XdLbd/+fVPp3w9iNHKgdXImZAAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAAuIwAALiMBeKU/dgAAAAd0SU1FB+gFAwAFKkpaLkIAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAEklEQVQ4y2NgGAWjYBSMAggAAAQQAAGFP6pyAAAAAElFTkSuQmCC"
+										}
+									}
+								},
 								".+": {
 									"type": "object",
 									"required": ["name", "expectedPath", "src"],
@@ -139,19 +171,6 @@
 											"description": "A data URL containing the texture image."
 										}
 									}
-								},
-								"animated_java:transparent_texture": {
-									"type": "object",
-									"description": "The internal transparent texture used to hide parts of the Rig.",
-									"properties": {
-										"name": { "const": "Transparent" },
-										"expectedPath": {
-											"const": "assets\\animated_java\\textures\\item\\armor_stand\\Transparent.png"
-										},
-										"src": {
-											"const": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABgWlDQ1BJQ0MgcHJvZmlsZQAAKJF9kTtIA0EURY+JokjEwhQiFltEK21UxFKiKIKBkETwV7i7MVHIrmE3YmMp2AYs/DRGLWystbWwFQTBD4i1hZWijcj6ZhNIEOPAMIc7cy9v3oNAKWdabuMoWHbBSUxGtdm5ea35hSaCQIAR3XTzseREirrr844Gdd72q6z67/5cbell14QGTXjUzDsF4SXh4Y1CXvGecNhc0dPCZ8J9jhQo/KB0o8yvirM+B1Rm2EklxoTDwlq2ho0aNlccS3hIOJK2bMkPzJY5rXhTsZVbNyt1qh+Glu2ZpNJldzPJFDHiaBiss0qOAv1y2qK4JOQ+Wsff5fvj4jLEtYopjnHWsNB9P2oGv3vrZgYHykmhKDQ9e957DzTvwHfR876OPO/7GIJPcGlX/WslGPkQvVjVIofQvgXnV1XN2IWLbeh8zOuO7kv+/DMZeDuVMc1Bxw20LpT7Vrnn5B5S0qvpa9g/gN6sZC/W+XdLbd/+fVPp3w9iNHKgdXImZAAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAAuIwAALiMBeKU/dgAAAAd0SU1FB+gFAwAFKkpaLkIAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAEklEQVQ4y2NgGAWjYBSMAggAAAQQAAGFP6pyAAAAAElFTkSuQmCC"
-										}
-									}
 								}
 							}
 						}
@@ -159,11 +178,11 @@
 				},
 				"rig": {
 					"type": "object",
-					"required": ["default_pose", "node_map"],
+					"required": ["default_transforms", "node_map"],
 					"properties": {
-						"default_pose": {
+						"default_transforms": {
 							"type": "array",
-							"items": { "$ref": "#/definitions/animationNode" }
+							"items": { "$ref": "#/definitions/nodeTransform" }
 						},
 						"node_map": {
 							"type": "object",
@@ -214,6 +233,7 @@
 				}
 			}
 		},
+		"vec2": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
 		"vec3": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 },
 		"vec4": { "type": "array", "items": { "type": "number" }, "minItems": 4, "maxItems": 4 },
 		"vanillaModel": {
@@ -301,9 +321,9 @@
 				"resourceLocation": { "type": "string" }
 			}
 		},
-		"animationNode": {
+		"nodeTransform": {
 			"type": "object",
-			"description": "The transformation of a node.",
+			"description": "The transformation of a node. Includes several different storage methods for the transformation. All of these methods contain the same data, it's up to the plugin developer to choose which method to use.",
 			"required": ["type", "name", "uuid", "matrix", "pos", "rot", "scale"],
 			"properties": {
 				"type": {
@@ -321,20 +341,46 @@
 				"uuid": { "type": "string" },
 				"matrix": {
 					"type": "array",
+					"description": "The transformation matrix of the node. The matrix is a 4x4 matrix in row-major order.",
 					"items": { "type": "number" },
 					"minItems": 16,
 					"maxItems": 16
 				},
 				"transformation": {
-					"translation": { "$ref": "#/definitions/vec3" },
-					"left_rotation": { "$ref": "#/definitions/vec4" },
-					"scale": { "$ref": "#/definitions/vec3" }
+					"type": "object",
+					"description": "The decomposed matrix transformation of the node.",
+					"translation": {
+						"$ref": "#/definitions/vec3",
+						"description": "A vector3 representing the translation of the node."
+					},
+					"left_rotation": {
+						"$ref": "#/definitions/vec4",
+						"description": "A quaternion representing the left rotation of the node."
+					},
+					"scale": {
+						"$ref": "#/definitions/vec3",
+						"description": "A vector3 representing the scale of the node."
+					}
 				},
-				"pos": { "$ref": "#/definitions/vec3" },
-				"rot": { "$ref": "#/definitions/vec3" },
-				"scale": { "$ref": "#/definitions/vec3" },
+				"pos": {
+					"$ref": "#/definitions/vec3",
+					"description": "A vector3 representing the position of the node."
+				},
+				"rot": {
+					"$ref": "#/definitions/vec3",
+					"description": "A vector3 representing the rotation of the node."
+				},
+				"head_rot": {
+					"$ref": "#/definitions/vec2",
+					"description": "A vector2 representing the head rotation of the node.\n\nUsed for correctly rotating located entities, and cameras, as they don't have access to a Z axis."
+				},
+				"scale": {
+					"$ref": "#/definitions/vec3",
+					"description": "A vector3 representing the scale of the node."
+				},
 				"interpolation": {
 					"type": "string",
+					"description": "The instant-interpolation mode of the node.\n\n- `pre-post`",
 					"enum": ["pre-post", "step"]
 				},
 				"commands": { "type": "string" },
@@ -564,11 +610,23 @@
 						"type": "array",
 						"items": {
 							"type": "object",
+							"required": ["time", "node_transforms"],
 							"properties": {
 								"time": { "type": "number" },
-								"nodes": {
+								"node_transforms": {
 									"type": "array",
-									"items": { "$ref": "#/definitions/animationNode" }
+									"items": { "$ref": "#/definitions/nodeTransform" }
+								},
+								"variant": {
+									"type": "object",
+									"description": "If included, this frame should change the variant of the model to the specified variant.",
+									"properties": {
+										"uuid": {
+											"type": "string",
+											"pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+										},
+										"execute_condition": { "type": "string" }
+									}
 								}
 							}
 						}

@@ -7,7 +7,7 @@ import {
 	type AsyncUnzipOptions,
 	type Unzipped,
 } from 'fflate/browser'
-import { IAnimationNode } from './animationRenderer'
+import { INodeTransform } from './animationRenderer'
 
 export function arrayToNbtFloatArray(array: number[]) {
 	return new NbtList(array.map(v => new NbtFloat(v)))
@@ -18,7 +18,7 @@ export function matrixToNbtFloatArray(matrix: THREE.Matrix4) {
 	return arrayToNbtFloatArray(matrixArray)
 }
 
-export function transformationToNbt(transformation: IAnimationNode['transformation']): NbtCompound {
+export function transformationToNbt(transformation: INodeTransform['transformation']): NbtCompound {
 	const compound = new NbtCompound()
 	compound.set('translation', arrayToNbtFloatArray(transformation.translation.toArray()))
 	compound.set('left_rotation', arrayToNbtFloatArray(transformation.left_rotation.toArray()))

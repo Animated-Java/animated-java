@@ -7,7 +7,7 @@ import { type defaultValues } from '../blueprintSettings'
 import { EasingKey } from '../util/easing'
 import { detectCircularReferences, scrubUndefined } from '../util/misc'
 import { Variant } from '../variants'
-import type { IAnimationNode, IRenderedAnimation, IRenderedFrame } from './animationRenderer'
+import type { INodeTransform, IRenderedAnimation, IRenderedFrame } from './animationRenderer'
 import type {
 	AnyRenderedNode,
 	INodeStructure,
@@ -16,7 +16,7 @@ import type {
 	IRenderedRig,
 } from './rigRenderer'
 
-type ExportedAnimationNode = Omit<IAnimationNode, 'node' | 'matrix' | 'transformation'> & {
+type ExportedNodetransform = Omit<INodeTransform, 'node' | 'matrix' | 'transformation'> & {
 	matrix: number[]
 	transformation: {
 		translation: ArrayVector3
@@ -33,7 +33,9 @@ type ExportedRenderedNode = Omit<
 > & {
 	boundingBox?: { min: ArrayVector3; max: ArrayVector3 }
 }
-type ExportedAnimationFrame = Omit<IRenderedFrame, 'nodes'> & { nodes: ExportedAnimationNode[] }
+type ExportedAnimationFrame = Omit<IRenderedFrame, 'nodes' | 'node_transforms'> & {
+	node_transforms: ExportedNodetransform[]
+}
 type ExportedBakedAnimation = Omit<IRenderedAnimation, 'frames' | 'includedNodes'> & {
 	frames: ExportedAnimationFrame[]
 	includedNodes: string[]
@@ -71,7 +73,25 @@ interface ISerializedTexture {
 }
 
 export interface IExportedJSON {
-	blueprint_settings: { [T in keyof typeof defaultValues]: (typeof defaultValues)[T] }
+	blueprint_settings: {
+		export_namespace: (typeof defaultValues)['export_namespace']
+		show_bounding_box: (typeof defaultValues)['show_bounding_box']
+		auto_bounding_box: (typeof defaultValues)['auto_bounding_box']
+		bounding_box: (typeof defaultValues)['bounding_box']
+		// Export Settings
+		resource_pack_export_mode: (typeof defaultValues)['resource_pack_export_mode']
+		// Resource Pack Settings
+		display_item: (typeof defaultValues)['display_item']
+		custom_model_data_offset: (typeof defaultValues)['custom_model_data_offset']
+		enable_advanced_resource_pack_settings: (typeof defaultValues)['enable_advanced_resource_pack_settings']
+		resource_pack: (typeof defaultValues)['resource_pack']
+		display_item_path: (typeof defaultValues)['display_item_path']
+		model_folder: (typeof defaultValues)['model_folder']
+		texture_folder: (typeof defaultValues)['texture_folder']
+		// Plugin Settings
+		baked_animations: (typeof defaultValues)['baked_animations']
+		json_file: (typeof defaultValues)['json_file']
+	}
 	resources: {
 		textureExportFolder: string
 		modelExportFolder: string
@@ -81,7 +101,7 @@ export interface IExportedJSON {
 		textures: Record<string, ISerializedTexture>
 	}
 	rig: {
-		default_pose: ExportedAnimationNode[]
+		default_transforms: ExportedNodetransform[]
 		node_map: Record<string, ExportedRenderedNode>
 		node_structure: INodeStructure
 		variants: Record<string, IBlueprintVariantJSON>
@@ -115,8 +135,18 @@ export function exportJSON(options: {
 		}
 	}
 
+	const blueprintSettings = { ...aj } as any
+	delete blueprintSettings.enable_plugin_mode
+	delete blueprintSettings.data_pack_export_mode
+	delete blueprintSettings.enable_advanced_data_pack_settings
+	delete blueprintSettings.data_pack
+	delete blueprintSettings.summon_commands
+	delete blueprintSettings.interpolation_duration
+	delete blueprintSettings.teleportation_duration
+	delete blueprintSettings.use_storage_for_animation
+
 	const json: IExportedJSON = {
-		blueprint_settings: aj,
+		blueprint_settings: blueprintSettings,
 		resources: {
 			textureExportFolder,
 			modelExportFolder,
@@ -131,7 +161,7 @@ export function exportJSON(options: {
 			),
 		},
 		rig: {
-			default_pose: rig.defaultPose.map(serailizeAnimationNode),
+			default_transforms: rig.defaultTransforms.map(serailizeAnimationNode),
 			node_map: Object.fromEntries(
 				Object.entries(rig.nodeMap).map(([key, node]) => [key, serailizeRenderedNode(node)])
 			),
@@ -196,8 +226,8 @@ function serailizeRenderedNode(node: AnyRenderedNode): ExportedRenderedNode {
 	return json as ExportedRenderedNode
 }
 
-function serailizeAnimationNode(node: IAnimationNode): ExportedAnimationNode {
-	const json: ExportedAnimationNode = {
+function serailizeAnimationNode(node: INodeTransform): ExportedNodetransform {
+	const json: ExportedNodetransform = {
 		type: node.type,
 		name: node.name,
 		uuid: node.uuid,
@@ -231,8 +261,9 @@ function serializeAnimation(animation: IRenderedAnimation): ExportedBakedAnimati
 
 	const frames: ExportedAnimationFrame[] = []
 	for (const frame of animation.frames) {
-		const nodes: ExportedAnimationNode[] = frame.nodes.map(serailizeAnimationNode)
-		frames.push({ ...frame, nodes })
+		const node_transforms: ExportedNodetransform[] =
+			frame.node_transforms.map(serailizeAnimationNode)
+		frames.push({ ...frame, node_transforms })
 	}
 	json.frames = frames
 

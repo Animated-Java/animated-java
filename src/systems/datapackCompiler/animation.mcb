@@ -372,7 +372,7 @@ dir <%export_namespace%> {
 											cameras: {}
 										}
 									%%>
-									REPEAT (frame.nodes.sort(nodeSorter)) as node {
+									REPEAT (frame.node_transforms.sort(nodeSorter)) as node {
 										IF (['bone', 'text_display', 'item_display', 'block_display'].includes(node.type)) {
 											<%%
 												const last = global.lastActiveFrame[node.uuid]
@@ -683,7 +683,7 @@ dir <%export_namespace%> {
 		execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 			function *global/errors/function_not_executed_as_root_entity \
 				{'function_path': 'animated_java:<%export_namespace%>/apply_default_pose'}
-		REPEAT (rig.defaultPose) as node {
+		REPEAT (rig.defaultTransforms) as node {
 			IF (['bone', 'text_display', 'item_display', 'block_display'].includes(node.type)) {
 				execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%node.name%>] run \
 					data merge entity @s {transformation: <%matrixToNbtFloatArray(node.matrix).toString()%>, start_interpolation: 0}
@@ -695,7 +695,7 @@ dir <%export_namespace%> {
 		execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 			function *global/errors/function_not_executed_as_root_entity \
 				{'function_path': 'animated_java:<%export_namespace%>/set_default_pose'}
-		REPEAT (rig.defaultPose) as node {
+		REPEAT (rig.defaultTransforms) as node {
 			IF (['bone', 'text_display', 'item_display', 'block_display'].includes(node.type)) {
 				execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%node.name%>] run \
 					data merge entity @s {transformation: <%matrixToNbtFloatArray(node.matrix).toString()%>, start_interpolation: -1}

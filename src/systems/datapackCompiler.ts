@@ -444,7 +444,7 @@ async function createAnimationStorage(animations: IRenderedAnimation[]) {
 			const frame = animation.frames[i]
 			const thisFrame = new NbtCompound()
 			frames.set(i.toString(), thisFrame)
-			for (const node of frame.nodes) {
+			for (const node of frame.node_transforms) {
 				if (BONE_TYPES.includes(node.type)) {
 					thisFrame.set(
 						node.type + '_' + node.name,
@@ -484,7 +484,7 @@ function createPassengerStorage(rig: IRenderedRig) {
 	const cameras = new NbtCompound()
 	// Data entity
 	bones.set('data_data', new NbtString(''))
-	for (const node of Object.values(rig.defaultPose)) {
+	for (const node of Object.values(rig.defaultTransforms)) {
 		switch (node.type) {
 			case 'locator':
 			case 'camera': {

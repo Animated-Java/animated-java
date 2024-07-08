@@ -15,7 +15,7 @@ import { TRANSPARENT_TEXTURE, TRANSPARENT_TEXTURE_RESOURCE_LOCATION, Variant } f
 import {
 	correctSceneAngle,
 	getAnimationNodes,
-	IAnimationNode,
+	INodeTransform,
 	restoreSceneAngle,
 	updatePreview,
 } from './animationRenderer'
@@ -170,9 +170,9 @@ export interface IRenderedRig {
 	 */
 	textures: Record<string, Texture>
 	/**
-	 * The default pose of the rig as an Animation frame
+	 * The default transform of the rig as an Animation frame
 	 */
-	defaultPose: IAnimationNode[]
+	defaultTransforms: INodeTransform[]
 	/**
 	 * The export folder for the rig models
 	 */
@@ -607,7 +607,7 @@ function getDefaultPose(rig: IRenderedRig) {
 	const anim = new Blockbench.Animation()
 	correctSceneAngle()
 	updatePreview(anim, 0)
-	rig.defaultPose = getAnimationNodes(anim, rig.nodeMap)
+	rig.defaultTransforms = getAnimationNodes(anim, rig.nodeMap)
 	restoreSceneAngle()
 }
 
@@ -677,7 +677,7 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 		nodeMap: {},
 		nodeStructure: structure,
 		textures: {},
-		defaultPose: [],
+		defaultTransforms: [],
 		modelExportFolder,
 		textureExportFolder,
 		includesCustomModels: false,

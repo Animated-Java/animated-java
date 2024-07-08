@@ -55,7 +55,7 @@ function threeAxisRotationToTwoAxisRotation(rot: THREE.Quaternion): ArrayVector2
 	return [Math.radToDeg(yaw), Math.radToDeg(pitch)]
 }
 
-export interface IAnimationNode {
+export interface INodeTransform {
 	type: 'bone' | 'camera' | 'locator' | 'text_display' | 'item_display' | 'block_display'
 	name: string
 	uuid: string
@@ -84,7 +84,7 @@ export interface IAnimationNode {
 
 export interface IRenderedFrame {
 	time: number
-	nodes: IAnimationNode[]
+	node_transforms: INodeTransform[]
 	variant?: {
 		uuid: string
 		executeCondition?: string
@@ -135,7 +135,7 @@ export function getAnimationNodes(
 			animation.excluded_nodes ? animation.excluded_nodes.map(b => b.value) : []
 		)
 	}
-	const nodes: IAnimationNode[] = []
+	const nodes: INodeTransform[] = []
 
 	for (const [uuid, node] of Object.entries(nodeMap)) {
 		if (!node.node.export) continue
@@ -147,7 +147,7 @@ export function getAnimationNodes(
 		const lastFrame = lastFrameCache.get(uuid)
 
 		let matrix: THREE.Matrix4
-		let interpolation: IAnimationNode['interpolation']
+		let interpolation: INodeTransform['interpolation']
 		let commands,
 			executeCondition: string | undefined,
 			repeat: boolean | undefined,
@@ -290,12 +290,12 @@ export function renderAnimation(animation: _Animation, rig: IRenderedRig) {
 
 	for (let time = 0; time <= animation.length; time = roundToNth(time + 0.05, 20)) {
 		updatePreview(animation, time)
-		const frame = {
+		const frame: IRenderedFrame = {
 			time,
-			nodes: getAnimationNodes(animation, rig.nodeMap, time),
+			node_transforms: getAnimationNodes(animation, rig.nodeMap, time),
 			variant: getVariantKeyframe(animation, time),
 		}
-		frame.nodes.forEach(n => includedNodes.add(n.uuid))
+		frame.node_transforms.forEach(n => includedNodes.add(n.uuid))
 		rendered.frames.push(frame)
 	}
 	rendered.duration = rendered.frames.length
@@ -314,7 +314,7 @@ export function hashAnimations(animations: IRenderedAnimation[]) {
 		hash.update(';' + animation.includedNodes.map(n => n.uuid).join(';'))
 		for (const frame of animation.frames) {
 			hash.update(';' + frame.time.toString())
-			for (const node of frame.nodes) {
+			for (const node of frame.node_transforms) {
 				hash.update(';' + node.uuid)
 				hash.update(';' + node.pos.join(';'))
 				hash.update(';' + node.rot.join(';'))
