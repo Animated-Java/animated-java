@@ -6,16 +6,16 @@
 		"save_location": "D:\\github-repos\\animated-java\\animated-java\\test_blueprints\\blockstates.ajblueprint",
 		"last_used_export_namespace": "blueprint"
 	},
-	"project_settings": {
+	"blueprint_settings": {
 		"export_namespace": "blueprint",
 		"show_bounding_box": false,
 		"auto_bounding_box": true,
 		"bounding_box": [48, 48],
 		"enable_plugin_mode": false,
-		"enable_resource_pack": true,
-		"enable_data_pack": true,
+		"resource_pack_export_mode": "raw",
+		"data_pack_export_mode": "raw",
 		"display_item": "minecraft:white_dye",
-		"customModelDataOffset": 0,
+		"custom_model_data_offset": 0,
 		"enable_advanced_resource_pack_settings": false,
 		"resource_pack": "",
 		"display_item_path": "",
@@ -26,7 +26,9 @@
 		"summon_commands": "",
 		"interpolation_duration": 1,
 		"teleportation_duration": 1,
-		"use_storage_for_animation": false
+		"use_storage_for_animation": false,
+		"baked_animations": true,
+		"json_file": ""
 	},
 	"resolution": {
 		"width": 16,
@@ -35,7 +37,7 @@
 	"elements": [
 		{
 			"name": "vanilla_block_display",
-			"position": [4.5, 8, 0],
+			"position": [3.5, 0, -8],
 			"rotation": [0, -90, 0],
 			"scale": [1, 1, 1],
 			"visibility": true,
@@ -52,7 +54,7 @@
 		},
 		{
 			"name": "vanilla_block_display2",
-			"position": [-4.5, 8.05, 0.075],
+			"position": [-3.5, 0.05, 8.075],
 			"rotation": [0, 90, 0],
 			"scale": [1, 1, 1],
 			"visibility": true,
@@ -69,41 +71,7 @@
 		},
 		{
 			"name": "vanilla_block_display",
-			"position": [0, 8, -5],
-			"rotation": [0, 0, 0],
-			"scale": [1, 0.75, 1],
-			"visibility": true,
-			"item": "minecraft:diamond",
-			"config": {},
-			"block": "glass_pane[east=true,west=true]",
-			"text": "\"Hello World!\"",
-			"lineWidth": 200,
-			"backgroundColor": "#000000",
-			"backgroundAlpha": 0.25,
-			"align": "center",
-			"uuid": "c0fa5ccd-c87a-32dd-5aa8-24477ad3a904",
-			"type": "animated_java:vanilla_block_display"
-		},
-		{
-			"name": "vanilla_block_display3",
-			"position": [0, 8, 5],
-			"rotation": [0, 0, 0],
-			"scale": [1, 0.75, 1],
-			"visibility": true,
-			"item": "minecraft:diamond",
-			"config": {},
-			"block": "glass_pane[east=true,west=true]",
-			"text": "\"Hello World!\"",
-			"lineWidth": 200,
-			"backgroundColor": "#000000",
-			"backgroundAlpha": 0.25,
-			"align": "center",
-			"uuid": "7245da3a-1e38-ba79-85c4-03d6c24522d7",
-			"type": "animated_java:vanilla_block_display"
-		},
-		{
-			"name": "vanilla_block_display",
-			"position": [-4, 4, -8],
+			"position": [-5, 2, -8],
 			"rotation": [0, 0, 0],
 			"scale": [0.25, 0.25, 0.25],
 			"visibility": true,
@@ -120,7 +88,7 @@
 		},
 		{
 			"name": "vanilla_block_display4",
-			"position": [-4, 8, -8],
+			"position": [-5, 6, -8],
 			"rotation": [0, 0, 0],
 			"scale": [0.25, 0.25, 0.25],
 			"visibility": true,
@@ -137,7 +105,7 @@
 		},
 		{
 			"name": "vanilla_block_display",
-			"position": [9, 7, -5],
+			"position": [6, 1, -7],
 			"rotation": [0, 0, 0],
 			"scale": [0.25, 0.75, 0.25],
 			"visibility": true,
@@ -154,7 +122,7 @@
 		},
 		{
 			"name": "vanilla_block_display5",
-			"position": [-9, 7, -5],
+			"position": [-9.75, 2, -7],
 			"rotation": [0, 0, 0],
 			"scale": [0.25, 0.75, 0.25],
 			"visibility": true,
@@ -171,7 +139,7 @@
 		},
 		{
 			"name": "vanilla_block_display6",
-			"position": [-9, 7, 5],
+			"position": [-9.75, 2, 3],
 			"rotation": [0, 0, 0],
 			"scale": [0.25, 0.75, 0.25],
 			"visibility": true,
@@ -188,7 +156,7 @@
 		},
 		{
 			"name": "vanilla_block_display7",
-			"position": [9, 7, 5],
+			"position": [6, 1, 3],
 			"rotation": [0, 0, 0],
 			"scale": [0.25, 0.75, 0.25],
 			"visibility": true,
@@ -239,7 +207,7 @@
 		},
 		{
 			"name": "vanilla_block_display",
-			"position": [4, 8, -8],
+			"position": [1, 6, -4.75],
 			"rotation": [0, 0, 0],
 			"scale": [0.25, 0.25, 0.25],
 			"visibility": true,
@@ -256,7 +224,7 @@
 		},
 		{
 			"name": "vanilla_block_display",
-			"position": [-7, 18, 3],
+			"position": [-9, 14, 1],
 			"rotation": [0, 0, 0],
 			"scale": [0.25, 0.5, 0.25],
 			"visibility": true,
@@ -272,25 +240,8 @@
 			"type": "animated_java:vanilla_block_display"
 		},
 		{
-			"name": "vanilla_block_display8",
-			"position": [-7, 22, 3],
-			"rotation": [0, 0, 0],
-			"scale": [0.225, 0.225, 0.225],
-			"visibility": true,
-			"item": "minecraft:diamond",
-			"config": {},
-			"block": "campfire",
-			"text": "\"Hello World!\"",
-			"lineWidth": 200,
-			"backgroundColor": "#000000",
-			"backgroundAlpha": 0.25,
-			"align": "center",
-			"uuid": "62838c4b-3782-a509-f80d-055fa2933300",
-			"type": "animated_java:vanilla_block_display"
-		},
-		{
 			"name": "vanilla_block_display",
-			"position": [-7, 24, 3],
+			"position": [-9, 22, 1],
 			"rotation": [0, 0, 0],
 			"scale": [0.25, 0.25, 0.25],
 			"visibility": true,
@@ -307,7 +258,7 @@
 		},
 		{
 			"name": "vanilla_block_display",
-			"position": [9, 2, -10],
+			"position": [6, 3, -11],
 			"rotation": [0, 0, 0],
 			"scale": [0.25, 0.25, 0.25],
 			"visibility": true,
@@ -324,7 +275,7 @@
 		},
 		{
 			"name": "vanilla_block_display9",
-			"position": [9, 4, -10],
+			"position": [6, 5, -11],
 			"rotation": [0, 0, 0],
 			"scale": [0.25, 0.25, 0.25],
 			"visibility": true,
@@ -341,7 +292,7 @@
 		},
 		{
 			"name": "vanilla_block_display10",
-			"position": [-9, 4, -10],
+			"position": [-9.75, 5, -11],
 			"rotation": [0, 0, 0],
 			"scale": [0.25, 0.25, 0.25],
 			"visibility": true,
@@ -358,7 +309,7 @@
 		},
 		{
 			"name": "vanilla_block_display11",
-			"position": [-9, 2, -10],
+			"position": [-9.75, 3, -11],
 			"rotation": [0, 0, 0],
 			"scale": [0.25, 0.25, 0.25],
 			"visibility": true,
@@ -377,8 +328,6 @@
 	"outliner": [
 		"5843fce5-a1cd-aa36-0491-1eef0260d24e",
 		"3ea4a7a2-f0c5-0109-2c93-80bb5fd9feb6",
-		"c0fa5ccd-c87a-32dd-5aa8-24477ad3a904",
-		"7245da3a-1e38-ba79-85c4-03d6c24522d7",
 		"d58e6993-bc81-0cd1-20fa-bd2b11a0525d",
 		"2744407b-b74b-4797-75c5-a84107d26db2",
 		"716d5f87-0ac8-e260-4646-5fce28b29a66",
@@ -389,7 +338,6 @@
 		"93952a66-0e38-4b01-151a-8faa801a914f",
 		"5db9e364-e7c6-8eee-ec47-027b07408a9a",
 		"9d2ba671-d9a1-5d55-b841-f1eea4b7dc63",
-		"62838c4b-3782-a509-f80d-055fa2933300",
 		"beb4992e-2d95-7ef0-44b6-4efeeebea187",
 		"dea933e7-4568-aae1-86c4-f761f5d0f2e2",
 		"42bafea5-d05a-8106-0db4-0d1b0067a68e",
@@ -399,11 +347,11 @@
 	"textures": [],
 	"variants": {
 		"default": {
-			"display_name": "Default",
 			"name": "default",
+			"display_name": "Default",
 			"uuid": "c79ede10-67d7-8730-033c-de43ab658b53",
 			"texture_map": {},
-			"excluded_bones": []
+			"excluded_nodes": []
 		},
 		"list": []
 	},

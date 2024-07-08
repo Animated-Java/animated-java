@@ -967,17 +967,6 @@
 			"type": "locator"
 		},
 		{
-			"name": "camera",
-			"path": "",
-			"position": [0, 40, 0],
-			"rotation": [0, 0, 0],
-			"linked_preview": "",
-			"camera_linked": false,
-			"visibility": true,
-			"type": "camera",
-			"uuid": "d0076177-a6cf-561c-08d8-efd07677b337"
-		},
-		{
 			"name": "text",
 			"position": [0, 39, 0],
 			"rotation": [0, 0, 0],
@@ -993,6 +982,17 @@
 			"align": "left",
 			"uuid": "a8257e87-1780-81b6-b0e4-c420fa229a69",
 			"type": "animated_java:text_display"
+		},
+		{
+			"name": "camera",
+			"path": "",
+			"position": [0, 52, 0],
+			"rotation": [0, 0, 0],
+			"linked_preview": "",
+			"camera_linked": false,
+			"visibility": true,
+			"type": "camera",
+			"uuid": "d0076177-a6cf-561c-08d8-efd07677b337"
 		}
 	],
 	"outliner": [
@@ -4120,7 +4120,7 @@
 			"override": false,
 			"length": 2,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"saved": false,
 			"path": "",
 			"anim_time_update": "",

@@ -209,6 +209,7 @@ function serailizeAnimationNode(node: IAnimationNode): ExportedAnimationNode {
 		},
 		pos: node.pos,
 		rot: node.rot,
+		head_rot: node.head_rot,
 		scale: node.scale,
 		interpolation: node.interpolation,
 		commands: node.commands,

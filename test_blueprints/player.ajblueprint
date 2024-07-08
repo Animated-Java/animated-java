@@ -6,16 +6,16 @@
 		"save_location": "D:\\github-repos\\animated-java\\animated-java\\test_blueprints\\player.ajblueprint",
 		"last_used_export_namespace": "player"
 	},
-	"project_settings": {
+	"blueprint_settings": {
 		"export_namespace": "player",
 		"show_bounding_box": false,
 		"auto_bounding_box": true,
 		"bounding_box": [48, 48],
 		"enable_plugin_mode": false,
-		"enable_resource_pack": true,
-		"enable_data_pack": true,
+		"resource_pack_export_mode": "raw",
+		"data_pack_export_mode": "raw",
 		"display_item": "minecraft:white_dye",
-		"customModelDataOffset": 0,
+		"custom_model_data_offset": 0,
 		"enable_advanced_resource_pack_settings": false,
 		"resource_pack": "C:\\Users\\SnaveSutit\\AppData\\Roaming\\com.modrinth.theseus\\profiles\\Animated Java Dev\\resourcepacks\\resourcepack",
 		"display_item_path": "",
@@ -26,7 +26,10 @@
 		"summon_commands": "",
 		"interpolation_duration": 1,
 		"teleportation_duration": 1,
-		"use_storage_for_animation": false
+		"use_storage_for_animation": false,
+		"baked_animations": true,
+		"json_file": "",
+		"customModelDataOffset": 0
 	},
 	"resolution": {
 		"width": 64,
@@ -1063,141 +1066,30 @@
 	],
 	"variants": {
 		"default": {
-			"display_name": "default",
 			"name": "default",
+			"display_name": "default",
 			"uuid": "3719347c-5b6a-0357-cb23-e9fe95bf2ecb",
 			"texture_map": {},
-			"excluded_bones": []
+			"excluded_nodes": []
 		},
 		"list": [
 			{
-				"display_name": "Transparent",
-				"name": "transparent",
-				"uuid": "b8189cb6-a3ac-928e-4cd6-258c731cf692",
-				"texture_map": {
-					"1909ead3-7e92-313f-7489-3c40abc1811d": "797174ae-5c58-4a83-a630-eefd51007c80"
-				},
-				"excluded_bones": []
-			},
-			{
-				"display_name": "SnaveSutit",
 				"name": "snavesutit",
+				"display_name": "SnaveSutit",
 				"uuid": "d0221cc3-7cda-4d3f-684a-362794528b2d",
 				"texture_map": {
 					"1909ead3-7e92-313f-7489-3c40abc1811d": "217be0f0-f604-eb6b-d3e3-b854c44a03c0"
 				},
-				"excluded_bones": []
+				"excluded_nodes": []
 			},
 			{
-				"display_name": "FetchBot",
 				"name": "fetchbot",
+				"display_name": "FetchBot",
 				"uuid": "425b2b19-3b95-4850-93cf-3a42913ed7d9",
 				"texture_map": {
 					"1909ead3-7e92-313f-7489-3c40abc1811d": "c064d146-a9c0-869b-e72f-fc632c726803"
 				},
-				"excluded_bones": []
-			},
-			{
-				"display_name": "Takeover1",
-				"name": "takeover1",
-				"uuid": "953d47d6-1f3c-56c4-9f53-5c41f8ad129d",
-				"texture_map": {
-					"1909ead3-7e92-313f-7489-3c40abc1811d": "c064d146-a9c0-869b-e72f-fc632c726803"
-				},
-				"excluded_bones": [
-					"000eddba-124d-d59d-3864-54478ed23530",
-					"b10ca338-dd64-e6d8-4eea-777727db6562",
-					"bbc6831c-4111-a7e3-6b9e-4b3f79f976ca",
-					"85a240ec-688d-aa16-4a19-23fa08380dad",
-					"50e188c1-fc06-c84b-e966-0a700043c9f2",
-					"4411adba-9c6a-76af-7083-7b92064256ee",
-					"02999a03-41c2-0837-e31b-a4dc619ebd4a"
-				]
-			},
-			{
-				"display_name": "Takeover2",
-				"name": "takeover2",
-				"uuid": "3a7214ba-6bda-0e2f-bdbf-61b984abaa4a",
-				"texture_map": {
-					"1909ead3-7e92-313f-7489-3c40abc1811d": "c064d146-a9c0-869b-e72f-fc632c726803"
-				},
-				"excluded_bones": [
-					"02d71484-1250-ceea-32f5-6bfa901fa363",
-					"000eddba-124d-d59d-3864-54478ed23530",
-					"b10ca338-dd64-e6d8-4eea-777727db6562",
-					"85a240ec-688d-aa16-4a19-23fa08380dad",
-					"50e188c1-fc06-c84b-e966-0a700043c9f2",
-					"4411adba-9c6a-76af-7083-7b92064256ee",
-					"02999a03-41c2-0837-e31b-a4dc619ebd4a"
-				]
-			},
-			{
-				"display_name": "Takeover3",
-				"name": "takeover3",
-				"uuid": "384be109-5185-c839-31a2-d371669f77a0",
-				"texture_map": {
-					"1909ead3-7e92-313f-7489-3c40abc1811d": "c064d146-a9c0-869b-e72f-fc632c726803"
-				},
-				"excluded_bones": [
-					"02d71484-1250-ceea-32f5-6bfa901fa363",
-					"bbc6831c-4111-a7e3-6b9e-4b3f79f976ca",
-					"000eddba-124d-d59d-3864-54478ed23530",
-					"b10ca338-dd64-e6d8-4eea-777727db6562",
-					"50e188c1-fc06-c84b-e966-0a700043c9f2",
-					"4411adba-9c6a-76af-7083-7b92064256ee",
-					"02999a03-41c2-0837-e31b-a4dc619ebd4a"
-				]
-			},
-			{
-				"display_name": "Takeover4",
-				"name": "takeover4",
-				"uuid": "e66d68a1-f79b-97ce-c93a-f9b64e048af6",
-				"texture_map": {
-					"1909ead3-7e92-313f-7489-3c40abc1811d": "c064d146-a9c0-869b-e72f-fc632c726803"
-				},
-				"excluded_bones": [
-					"000eddba-124d-d59d-3864-54478ed23530",
-					"b10ca338-dd64-e6d8-4eea-777727db6562",
-					"bbc6831c-4111-a7e3-6b9e-4b3f79f976ca",
-					"02d71484-1250-ceea-32f5-6bfa901fa363",
-					"85a240ec-688d-aa16-4a19-23fa08380dad",
-					"4411adba-9c6a-76af-7083-7b92064256ee",
-					"02999a03-41c2-0837-e31b-a4dc619ebd4a"
-				]
-			},
-			{
-				"display_name": "Takeover5",
-				"name": "takeover5",
-				"uuid": "9cf1a30c-669e-e682-01ff-fb09f2418eac",
-				"texture_map": {
-					"1909ead3-7e92-313f-7489-3c40abc1811d": "c064d146-a9c0-869b-e72f-fc632c726803"
-				},
-				"excluded_bones": [
-					"000eddba-124d-d59d-3864-54478ed23530",
-					"b10ca338-dd64-e6d8-4eea-777727db6562",
-					"bbc6831c-4111-a7e3-6b9e-4b3f79f976ca",
-					"02d71484-1250-ceea-32f5-6bfa901fa363",
-					"85a240ec-688d-aa16-4a19-23fa08380dad",
-					"50e188c1-fc06-c84b-e966-0a700043c9f2",
-					"02999a03-41c2-0837-e31b-a4dc619ebd4a"
-				]
-			},
-			{
-				"display_name": "Takeover6",
-				"name": "takeover6",
-				"uuid": "b5064131-3d4b-eb54-5dc3-3776089ac2b6",
-				"texture_map": {
-					"1909ead3-7e92-313f-7489-3c40abc1811d": "c064d146-a9c0-869b-e72f-fc632c726803"
-				},
-				"excluded_bones": [
-					"000eddba-124d-d59d-3864-54478ed23530",
-					"b10ca338-dd64-e6d8-4eea-777727db6562",
-					"bbc6831c-4111-a7e3-6b9e-4b3f79f976ca",
-					"02d71484-1250-ceea-32f5-6bfa901fa363",
-					"85a240ec-688d-aa16-4a19-23fa08380dad",
-					"50e188c1-fc06-c84b-e966-0a700043c9f2",
-					"4411adba-9c6a-76af-7083-7b92064256ee"
-				]
+				"excluded_nodes": []
 			}
 		]
 	},
@@ -1216,7 +1108,7 @@
 			"blend_weight": "",
 			"start_delay": "",
 			"loop_delay": "",
-			"excluded_bones": [],
+			"excluded_nodes": [],
 			"animators": {
 				"85a240ec-688d-aa16-4a19-23fa08380dad": {
 					"name": "rightarm",
@@ -1234,7 +1126,9 @@
 							"uuid": "19942e68-517b-e54e-1179-ec0cc758f34c",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						},
 						{
 							"channel": "rotation",
@@ -1248,7 +1142,9 @@
 							"uuid": "f50845f4-c3ed-797b-4f93-7ff4f6808ac0",
 							"time": 5,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				},
@@ -1268,7 +1164,9 @@
 							"uuid": "9b973c96-f5f2-0a5b-8ca0-7df10d427058",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						},
 						{
 							"channel": "rotation",
@@ -1282,7 +1180,9 @@
 							"uuid": "dc5bc31b-784b-f7f6-c32d-0fb9e2b0a005",
 							"time": 5,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				}
@@ -1302,7 +1202,7 @@
 			"blend_weight": "",
 			"start_delay": "",
 			"loop_delay": "",
-			"excluded_bones": [],
+			"excluded_nodes": [],
 			"animators": {
 				"85a240ec-688d-aa16-4a19-23fa08380dad": {
 					"name": "rightarm",
@@ -1320,7 +1220,9 @@
 							"uuid": "484c4293-d48b-59e2-8d34-93c53b022ca3",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						},
 						{
 							"channel": "rotation",
@@ -1334,7 +1236,9 @@
 							"uuid": "9e9c244f-8b47-279d-eedc-f02d7831bb37",
 							"time": 4.9,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				},
@@ -1354,7 +1258,9 @@
 							"uuid": "9a30c146-a197-848f-8c1a-d8560c5c6099",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						},
 						{
 							"channel": "rotation",
@@ -1368,7 +1274,9 @@
 							"uuid": "2ecfb17b-0d4e-0883-4bc9-b3d0cd08bad6",
 							"time": 4.9,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				},
@@ -1388,7 +1296,9 @@
 							"uuid": "bf34069e-da81-15b4-9202-de2ca69ab34c",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				},
@@ -1408,7 +1318,9 @@
 							"uuid": "12dff02a-72df-dbf5-6bc5-a843fe44dfef",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				}
@@ -1428,7 +1340,7 @@
 			"blend_weight": "",
 			"start_delay": "",
 			"loop_delay": "",
-			"excluded_bones": [],
+			"excluded_nodes": [],
 			"animators": {
 				"85a240ec-688d-aa16-4a19-23fa08380dad": {
 					"name": "rightarm",
@@ -1446,7 +1358,9 @@
 							"uuid": "29ce974b-b810-aa09-3d67-9efdfe311465",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						},
 						{
 							"channel": "rotation",
@@ -1460,7 +1374,9 @@
 							"uuid": "7c20ae2a-c306-02a5-4acc-2c9901198738",
 							"time": 5,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				},
@@ -1480,7 +1396,9 @@
 							"uuid": "809b5978-cd2e-a2bd-de3b-64f77ea41c44",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						},
 						{
 							"channel": "rotation",
@@ -1494,7 +1412,9 @@
 							"uuid": "b2a7d640-d052-13bf-e533-569396ec9401",
 							"time": 5,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				},
@@ -1514,7 +1434,9 @@
 							"uuid": "53e8fe08-007d-8e98-9c41-02a175513081",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				},
@@ -1534,7 +1456,9 @@
 							"uuid": "84142d99-c49a-1d24-e072-6c0b845be15f",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				}
@@ -1554,7 +1478,7 @@
 			"blend_weight": "",
 			"start_delay": "",
 			"loop_delay": "",
-			"excluded_bones": [],
+			"excluded_nodes": [],
 			"animators": {
 				"85a240ec-688d-aa16-4a19-23fa08380dad": {
 					"name": "rightarm",
@@ -1572,7 +1496,9 @@
 							"uuid": "83c47c98-d7c6-870c-ee1d-2a4bcd012ca4",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						},
 						{
 							"channel": "rotation",
@@ -1586,7 +1512,9 @@
 							"uuid": "424dc3c0-046d-1782-d486-f0333abec54c",
 							"time": 5,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						},
 						{
 							"channel": "position",
@@ -1600,7 +1528,9 @@
 							"uuid": "4597ec36-da5d-75f8-fcb1-d1841c543896",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				},
@@ -1620,7 +1550,9 @@
 							"uuid": "0f999cc8-5b10-2c36-d299-7c4851cd3b47",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						},
 						{
 							"channel": "rotation",
@@ -1634,7 +1566,9 @@
 							"uuid": "04b7297b-b877-b1d0-0edd-641ac9b5c6fe",
 							"time": 5,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						},
 						{
 							"channel": "position",
@@ -1648,7 +1582,9 @@
 							"uuid": "6db47e03-b0eb-9fcc-0906-d97c791123bc",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				},
@@ -1668,7 +1604,9 @@
 							"uuid": "a9933f6a-2b5d-971f-caff-03cea98efd16",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				},
@@ -1688,7 +1626,9 @@
 							"uuid": "640581d3-f278-b6e8-1fb7-70eed421484d",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						},
 						{
 							"channel": "position",
@@ -1702,7 +1642,9 @@
 							"uuid": "d5227d05-aa99-4060-ddb0-07ce7c636de1",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				},
@@ -1722,7 +1664,9 @@
 							"uuid": "ec44b470-01db-069c-4b2f-2e72ddeee460",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						},
 						{
 							"channel": "position",
@@ -1736,7 +1680,9 @@
 							"uuid": "620e066e-f052-63f8-c531-a73f9a0886d2",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				},
@@ -1756,7 +1702,9 @@
 							"uuid": "079d9afb-ca67-6a76-a4ff-7261dbc2425c",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				},
@@ -1776,18 +1724,20 @@
 							"uuid": "eb08a88f-086f-ca67-03a6-204c4d12c653",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				}
 			}
 		},
 		{
-			"uuid": "708a3024-4bbd-4011-1fc6-dab5ba06539c",
-			"name": "takeover",
+			"uuid": "51b43cae-6147-c67d-8f5c-30afafd49e84",
+			"name": "easing_demo",
 			"loop": "loop",
 			"override": false,
-			"length": 4,
+			"length": 1.5,
 			"snapping": 20,
 			"selected": true,
 			"saved": false,
@@ -1795,194 +1745,60 @@
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",
-			"loop_delay": "",
-			"excluded_bones": [],
+			"loop_delay": "0",
+			"excluded_nodes": [],
 			"animators": {
-				"effects": {
-					"name": "Effects",
-					"type": "effect",
+				"50e188c1-fc06-c84b-e966-0a700043c9f2": {
+					"name": "leftarm",
+					"type": "bone",
 					"keyframes": [
 						{
-							"channel": "variant",
+							"channel": "position",
 							"data_points": [
 								{
-									"variant": "3719347c-5b6a-0357-cb23-e9fe95bf2ecb",
-									"execute_condition": ""
+									"x": "0",
+									"y": "0",
+									"z": "0"
 								}
 							],
-							"uuid": "02b43bc1-bf15-a9c4-88ef-bc445d3496a3",
+							"uuid": "c5d50198-1427-d5ee-9db1-383dc54a7864",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						},
 						{
-							"channel": "variant",
+							"channel": "position",
 							"data_points": [
 								{
-									"variant": "953d47d6-1f3c-56c4-9f53-5c41f8ad129d",
-									"execute_condition": ""
+									"x": "5",
+									"y": 0,
+									"z": 0
 								}
 							],
-							"uuid": "8c85ef4b-6654-c1c5-d4fd-d9a80fbf78d5",
-							"time": 0.25,
-							"color": -1,
-							"interpolation": "linear"
-						},
-						{
-							"channel": "variant",
-							"data_points": [
-								{
-									"variant": "3a7214ba-6bda-0e2f-bdbf-61b984abaa4a",
-									"execute_condition": ""
-								}
-							],
-							"uuid": "68ed5879-3e7f-18bd-2c25-574d48d4b1c1",
-							"time": 0.5,
-							"color": -1,
-							"interpolation": "linear"
-						},
-						{
-							"channel": "variant",
-							"data_points": [
-								{
-									"variant": "384be109-5185-c839-31a2-d371669f77a0",
-									"execute_condition": ""
-								}
-							],
-							"uuid": "97659c29-f589-b991-de6a-4d6e5bdb45c4",
-							"time": 0.75,
-							"color": -1,
-							"interpolation": "linear"
-						},
-						{
-							"channel": "variant",
-							"data_points": [
-								{
-									"variant": "e66d68a1-f79b-97ce-c93a-f9b64e048af6",
-									"execute_condition": ""
-								}
-							],
-							"uuid": "9c571862-d46f-0c3a-9cdb-42ff18578be2",
+							"uuid": "e776b9a3-72e4-ed63-921c-93193212ec2e",
 							"time": 1,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "easeInBounce",
+							"easingArgs": [0.25]
 						},
 						{
-							"channel": "variant",
+							"channel": "position",
 							"data_points": [
 								{
-									"variant": "b5064131-3d4b-eb54-5dc3-3776089ac2b6",
-									"execute_condition": ""
+									"x": "0",
+									"y": 0,
+									"z": 0
 								}
 							],
-							"uuid": "91d52844-a23e-f051-9e3b-1a16dbfa8f9c",
+							"uuid": "f5285789-4ad8-7613-35e9-60a643829593",
 							"time": 1.5,
 							"color": -1,
-							"interpolation": "linear"
-						},
-						{
-							"channel": "variant",
-							"data_points": [
-								{
-									"variant": "9cf1a30c-669e-e682-01ff-fb09f2418eac",
-									"execute_condition": ""
-								}
-							],
-							"uuid": "1ec0b9d7-2cc1-b512-dea1-459085928408",
-							"time": 1.25,
-							"color": -1,
-							"interpolation": "linear"
-						},
-						{
-							"channel": "variant",
-							"data_points": [
-								{
-									"variant": "d0221cc3-7cda-4d3f-684a-362794528b2d",
-									"execute_condition": ""
-								}
-							],
-							"uuid": "26728500-2e0b-1538-33ac-3b385a92d98d",
-							"time": 1.75,
-							"color": -1,
-							"interpolation": "linear"
-						},
-						{
-							"channel": "variant",
-							"data_points": [
-								{
-									"variant": "953d47d6-1f3c-56c4-9f53-5c41f8ad129d",
-									"execute_condition": ""
-								}
-							],
-							"uuid": "66001e46-a1bc-bc84-f4d5-c3bc2e8dafa9",
-							"time": 2,
-							"color": -1,
-							"interpolation": "linear"
-						},
-						{
-							"channel": "variant",
-							"data_points": [
-								{
-									"variant": "3a7214ba-6bda-0e2f-bdbf-61b984abaa4a",
-									"execute_condition": ""
-								}
-							],
-							"uuid": "2bb1d5ec-d91f-c4cf-decb-fce65a30d1f8",
-							"time": 2.25,
-							"color": -1,
-							"interpolation": "linear"
-						},
-						{
-							"channel": "variant",
-							"data_points": [
-								{
-									"variant": "384be109-5185-c839-31a2-d371669f77a0",
-									"execute_condition": ""
-								}
-							],
-							"uuid": "11861084-0511-669a-d01b-c4f56039210e",
-							"time": 2.5,
-							"color": -1,
-							"interpolation": "linear"
-						},
-						{
-							"channel": "variant",
-							"data_points": [
-								{
-									"variant": "e66d68a1-f79b-97ce-c93a-f9b64e048af6",
-									"execute_condition": ""
-								}
-							],
-							"uuid": "12ba3096-af1b-3328-0f5e-2fa0e5569585",
-							"time": 2.75,
-							"color": -1,
-							"interpolation": "linear"
-						},
-						{
-							"channel": "variant",
-							"data_points": [
-								{
-									"variant": "b5064131-3d4b-eb54-5dc3-3776089ac2b6",
-									"execute_condition": ""
-								}
-							],
-							"uuid": "d767bb3a-a877-a0e0-3ee2-a4175733673b",
-							"time": 3.25,
-							"color": -1,
-							"interpolation": "linear"
-						},
-						{
-							"channel": "variant",
-							"data_points": [
-								{
-									"variant": "9cf1a30c-669e-e682-01ff-fb09f2418eac",
-									"execute_condition": ""
-								}
-							],
-							"uuid": "f1891a5d-d710-387b-224b-3e61509bbdf3",
-							"time": 3,
-							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "easeInOutExpo",
+							"easingArgs": [1]
 						}
 					]
 				}
