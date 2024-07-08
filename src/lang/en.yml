@@ -292,7 +292,7 @@ animated_java.dialog.text_display_config.brightness_override.title: Brightness
 animated_java.dialog.text_display_config.brightness_override.description: The brightness of the text display. This should be a value between 0 and 15.
 
 animated_java.dialog.text_display_config.invisible.title: Invisible
-animated_java.dialog.text_display_config.invisible.description: Whether or not the bone should be invisible.
+animated_java.dialog.text_display_config.invisible.description: Whether or not the text display should be invisible.
 
 animated_java.dialog.text_display_config.nbt.title: NBT
 animated_java.dialog.text_display_config.nbt.description: The NBT to apply to the text display.
@@ -493,7 +493,7 @@ animated_java.misc.failed_to_export.button: Ok
 animated_java.format_category.animated_java: Animated Java
 
 # Model Manager Warnings
-animated_java.block_model_manager.mob_head_warning: Mob Heads are don't render in Block Displays. Use an Item Display instead.
+animated_java.block_model_manager.mob_head_warning: Mob Heads don't render in Block Displays. Use an Item Display instead.
 
 # Project Errors
 animated_java.error.blueprint_export_path_doesnt_exist.title: Blueprint Export Path Doesn't Exist
