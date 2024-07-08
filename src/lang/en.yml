@@ -54,7 +54,7 @@ animated_java.dialog.blueprint_settings.export_namespace.error.reserved: The exp
 animated_java.dialog.blueprint_settings.export_namespace.error.invalid_characters: The export namespace contains invalid characters! Namespaces can only contain letters, numbers, and underscores.
 
 animated_java.dialog.blueprint_settings.enable_plugin_mode.title: Plugin Mode
-animated_java.dialog.blueprint_settings.enable_plugin_mode.description: Whether or not to enable Plugin Mode. Enable when you plan to use the .ajblueprint file in a plugin instead of a Resource Pack and/or Data Pack.
+animated_java.dialog.blueprint_settings.enable_plugin_mode.description: Whether or not to enable Plugin Mode. Enable when you plan to use a Plugin-based solution instead of a Resource Pack and/or Data Pack.
 
 animated_java.dialog.blueprint_settings.resource_pack_export_mode.title: Resource Pack Export Mode
 animated_java.dialog.blueprint_settings.resource_pack_export_mode.description: |-
@@ -155,7 +155,7 @@ animated_java.dialog.blueprint_settings.summon_commands.description: |-
     Commands to run as the root entity when summoned.
     Treat this text input as a .mcfunction file. (Also supports MC-Build syntax!)
 
-animated_java.dialog.blueprint_settings.interpolation_duration.title: Interp Duration
+animated_java.dialog.blueprint_settings.interpolation_duration.title: Interpolation Duration
 animated_java.dialog.blueprint_settings.interpolation_duration.description: The duration of the smoothing between keyframes in ticks. This is the time it takes for the model to transition from one keyframe to the next. Higher values will cause animations to lose precision. Generally, you want this to have a value of 1 or 2.
 
 animated_java.dialog.blueprint_settings.teleportation_duration.title: Teleport Duration
