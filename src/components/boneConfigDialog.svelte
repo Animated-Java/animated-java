@@ -62,15 +62,15 @@
 
 <div>
 	<div class="selected_variant_title">
-		Selected Variant: {variant.displayName}
+		{translate('dialog.bone_config.selected_variant', variant.displayName)}
 	</div>
 	{#if variant.isDefault}
 		<div class="selected_variant_subtitle">
-			The settings below will be applied to this bone by default.
+			{translate('dialog.bone_config.default_variant_subtitle')}
 		</div>
 	{:else}
 		<div class="selected_variant_subtitle">
-			The settings below will be applied to this bone only when this variant is applied.
+			{translate('dialog.bone_config.selected_variant_subtitle')}
 		</div>
 	{/if}
 
