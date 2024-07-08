@@ -77,7 +77,7 @@ MenuBar.addAction(
 			return Format === BLUEPRINT_FORMAT
 		},
 		click() {
-			Blockbench.openLink('https://animated-java.github.io/')
+			Blockbench.openLink('https://animated-java.github.io/docs')
 		},
 	}),
 	MENU.id
