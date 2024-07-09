@@ -181,6 +181,10 @@ animated_java.dialog.blueprint_settings.json_file.error.not_a_file: Der ausgewä
 ## Bone Config Dialog
 animated_java.dialog.bone_config.title: Knochen-Konfiguration
 
+animated_java.dialog.bone_config.selected_variant: 'Ausgewählte Variante: {1}'
+animated_java.dialog.bone_config.default_variant_subtitle: Die folgenden Einstellungen werden standardmäßig auf diesen Knochen angewendet.
+animated_java.dialog.bone_config.selected_variant_subtitle: Die folgenden Einstellungen werden nur auf diesen Knochen angewendet, wenn diese Variante verwendet wird.
+
 animated_java.dialog.bone_config.use_nbt.title: NBT benutzen
 animated_java.dialog.bone_config.use_nbt.description: Ob NBT zur Konfiguration des Knochens anstelle von Einstellungen verwendet werden soll oder nicht.
 animated_java.dialog.bone_config.use_nbt.use_nbt_warning: Die Verwendung von NBT setzt alle anderen Einstellungen außer Kraft, und alle Änderungen, die Sie vornehmen, sind im Editor nicht sichtbar. Verwenden Sie dies nur, wenn Sie wissen, was Sie tun!
