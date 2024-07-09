@@ -347,6 +347,13 @@
 		localStorage.setItem('animated_java_settings_support_me_popup', 'false')
 		showSupportMePopup = false
 	}
+
+	function hoverCloseButton(e: MouseEvent) {
+		;(e.target as HTMLElement).textContent = 'sentiment_sad'
+	}
+	function leaveCloseButton(e: MouseEvent) {
+		;(e.target as HTMLElement).textContent = 'close'
+	}
 </script>
 
 <div>
@@ -616,7 +623,14 @@
 				<img class="heart" src={HeartIcon} alt="❤️" />
 				<span>Animated Java?</span>
 				<!-- svelte-ignore a11y-click-events-have-key-events -->
-				<i class="material-icons icon" on:click={clickSupportMeXButton}>close</i>
+				<i
+					class="material-icons icon"
+					on:click={clickSupportMeXButton}
+					on:mouseenter={hoverCloseButton}
+					on:mouseleave={leaveCloseButton}
+				>
+					close
+				</i>
 			</div>
 			<a href="https://ko-fi.com/snavesutit" class="ko-fi-button">
 				<img src={KoFiImage} alt="" />
@@ -629,6 +643,7 @@
 <style>
 	i {
 		cursor: pointer;
+		height: fit-content;
 		transition:
 			transform 0.2s ease 0s,
 			color 0.2s ease 0s;
@@ -636,7 +651,6 @@
 	}
 	i:hover {
 		transform: scale(1.25);
-		color: var(--color-error);
 	}
 
 	.ko-fi-popup-container {
