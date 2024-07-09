@@ -12,6 +12,18 @@
 	import FileSelect from './dialogItems/fileSelect.svelte'
 	import FolderSelect from './dialogItems/folderSelect.svelte'
 	import CodeInput from './dialogItems/codeInput.svelte'
+
+	import HeartIcon from '../assets/heart.png'
+	import KoFiImage from '../assets/kofi_s_tag_white.webp'
+
+	import fontUrl from '../assets/MinecraftFull.ttf'
+	if (![...document.fonts.keys()].some(v => v.family === 'MinecraftFull')) {
+		void new FontFace('MinecraftFull', fontUrl, {}).load().then(font => {
+			document.fonts.add(font)
+		})
+	}
+
+	localStorage.setItem('animated_java_settings_support_me_popup', 'true')
 </script>
 
 <script lang="ts">
@@ -328,6 +340,13 @@
 				return { type: 'success', message: '' }
 		}
 	}
+
+	let showSupportMePopup =
+		localStorage.getItem('animated_java_settings_support_me_popup') === 'true'
+	function clickSupportMeXButton() {
+		localStorage.setItem('animated_java_settings_support_me_popup', 'false')
+		showSupportMePopup = false
+	}
 </script>
 
 <div>
@@ -590,7 +609,127 @@
 	{/if}
 </div>
 
+{#if showSupportMePopup}
+	<div class="ko-fi-popup-container">
+		<div class="ko-fi-popup">
+			<div class="title">
+				<img class="heart" src={HeartIcon} alt="❤️" />
+				<span>Animated Java?</span>
+				<!-- svelte-ignore a11y-click-events-have-key-events -->
+				<i class="material-icons icon" on:click={clickSupportMeXButton}>close</i>
+			</div>
+			<a href="https://ko-fi.com/snavesutit" class="ko-fi-button">
+				<img src={KoFiImage} alt="" />
+			</a>
+		</div>
+		<div class="shadow" />
+	</div>
+{/if}
+
 <style>
+	i {
+		cursor: pointer;
+		transition:
+			transform 0.2s ease 0s,
+			color 0.2s ease 0s;
+		text-shadow: 1.5px 1.5px 0px rgba(0, 0, 0, 0.25);
+	}
+	i:hover {
+		transform: scale(1.25);
+		color: var(--color-error);
+	}
+
+	.ko-fi-popup-container {
+		position: absolute;
+		top: 30px;
+		right: -23.8vw;
+		font-family: 'MinecraftFull';
+		font-size: 20px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-direction: column;
+		color: white;
+		overflow: hidden;
+	}
+	.ko-fi-popup {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-direction: column;
+		padding: 8px;
+		padding-right: 0px;
+
+		background-color: #00aced;
+		border-radius: 0 8px 8px 0;
+		box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2);
+		animation: slideIn 0.75s;
+	}
+	.heart {
+		width: 28px;
+		height: 28px;
+		animation: beat 2s ease infinite;
+	}
+	@keyframes beat {
+		0% {
+			transform: scale(1);
+		}
+		10% {
+			transform: scale(1.2);
+		}
+		20% {
+			transform: scale(1);
+		}
+	}
+	.ko-fi-popup span {
+		text-shadow: 2.4px 2.4px 0px rgba(0, 0, 0, 0.25);
+	}
+	.ko-fi-button img {
+		width: 100%;
+		image-rendering: auto;
+		border-radius: 12px;
+	}
+	.ko-fi-button {
+		width: 18vw;
+		margin-right: 1vw;
+		margin-top: 1vw;
+		transition: transform 0.2s ease;
+	}
+	.ko-fi-button:hover {
+		transform: scale(1.05);
+		transition: transform 0.2s ease;
+	}
+	.ko-fi-popup .title {
+		display: flex;
+		justify-content: center;
+		gap: 0.75rem;
+	}
+	.shadow {
+		position: absolute;
+		top: 0;
+		left: 0;
+		height: 100%;
+		background: linear-gradient(90deg, #00000066, #00000000);
+		width: 0px;
+	}
+	@keyframes slideIn {
+		0% {
+			right: 23.8vw;
+		}
+		100% {
+			right: 0px;
+		}
+	}
+	@keyframes slideInPanel {
+		0% {
+			right: 0vw;
+		}
+		100% {
+			right: -23.8vw;
+		}
+	}
+
 	:global(.dialog_wrapper .dialog_content) {
 		overflow-y: auto !important;
 	}
