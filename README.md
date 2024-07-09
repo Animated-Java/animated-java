@@ -31,17 +31,17 @@ to bring your creations to life!
 -   Camera Plugin Support: Install the [Official Camera Plugin](https://www.blockbench.net/plugins/cameras) to create cinematic camera paths with ease!
 -   Animation Tweening: Create smooth transitions between animations.
 -   Many different configuration options.
--   Complete Documentation at https://animated-java.github.io/
+-   Complete Documentation at https://animated-java.dev
 
 And much more!
 
 # How to Install
 
-Follow our guide [here](https://animated-java.github.io/docs/getting-started/installing-animated-java) for detailed instructions on how to install the latest release of Animated Java.
+Follow our guide [here](https://animated-java.dev/docs/getting-started/installing-animated-java) for detailed instructions on how to install the latest release of Animated Java.
 
 # Getting Started
 
-Check out the [Getting Started](https://animated-java.github.io/docs/getting-started/installing-animated-java) page of our documentation to learn how to use Animated Java.
+Check out the [Getting Started](https://animated-java.dev/docs/getting-started/installing-animated-java) page of our documentation to learn how to use Animated Java.
 
 # Contributing to Animated Java
 

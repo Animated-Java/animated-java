@@ -15,7 +15,7 @@
 	</div>
 
 	<div class="socials">
-		<a href="https://animated-java.github.io" class="open-in-browser">
+		<a href="https://animated-java.dev" class="open-in-browser">
 			<!-- svelte-ignore a11y-missing-attribute -->
 			<img src={AnimatedJavaIconNoBackground} />
 			<!-- svelte-ignore a11y-label-has-associated-control -->
@@ -31,7 +31,7 @@
 			<!-- svelte-ignore a11y-label-has-associated-control -->
 			<label>GitHub</label>
 		</a>
-		<a href="https://animated-java.github.io/docs" class="open-in-browser"
+		<a href="https://animated-java.dev/docs" class="open-in-browser"
 			><i class="icon fas fa-book"></i>
 			<!-- svelte-ignore a11y-label-has-associated-control -->
 			<label>Wiki</label>
