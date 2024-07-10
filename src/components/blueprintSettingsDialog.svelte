@@ -656,7 +656,7 @@
 	.ko-fi-popup-container {
 		position: absolute;
 		top: 30px;
-		right: -23.8vw;
+		right: -287px;
 		font-family: 'MinecraftFull';
 		font-size: 20px;
 		display: flex;
@@ -705,9 +705,9 @@
 		border-radius: 12px;
 	}
 	.ko-fi-button {
-		width: 18vw;
-		margin-right: 1vw;
-		margin-top: 1vw;
+		width: 250px;
+		margin-right: 8px;
+		margin-top: 12px;
 		transition: transform 0.2s ease;
 	}
 	.ko-fi-button:hover {
@@ -729,18 +729,18 @@
 	}
 	@keyframes slideIn {
 		0% {
-			right: 23.8vw;
+			right: 287px;
 		}
 		100% {
-			right: 0px;
+			right: 0;
 		}
 	}
 	@keyframes slideInPanel {
 		0% {
-			right: 0vw;
+			right: 0;
 		}
 		100% {
-			right: -23.8vw;
+			right: -287px;
 		}
 	}
 
