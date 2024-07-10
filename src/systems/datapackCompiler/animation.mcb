@@ -353,7 +353,7 @@ dir <%export_namespace%> {
 							$execute on passengers if entity @s[type=marker] run \
 								function ./frames/$(frame) with entity @s data.bones
 							<%%
-								// A record of node uuid to IAnimationNode.
+								// A record of node uuid to INodeTransform.
 								// Keeps track of the last time a bone was updated.
 								// Only used for step keyframe interpolation.
 								global.lastActiveFrame = {}

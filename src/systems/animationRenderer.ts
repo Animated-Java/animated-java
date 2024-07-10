@@ -115,7 +115,7 @@ let lastFrameCache = new Map<string, ILastFrameCacheItem>()
  */
 let keyframeCache = new Map<string, Map<number, _Keyframe | undefined>>()
 let excludedNodesCache = new Set<string>()
-export function getAnimationNodes(
+export function getNodeTransforms(
 	animation: _Animation,
 	nodeMap: IRenderedRig['nodeMap'],
 	time = 0
@@ -292,7 +292,7 @@ export function renderAnimation(animation: _Animation, rig: IRenderedRig) {
 		updatePreview(animation, time)
 		const frame: IRenderedFrame = {
 			time,
-			node_transforms: getAnimationNodes(animation, rig.nodeMap, time),
+			node_transforms: getNodeTransforms(animation, rig.nodeMap, time),
 			variant: getVariantKeyframe(animation, time),
 		}
 		frame.node_transforms.forEach(n => includedNodes.add(n.uuid))

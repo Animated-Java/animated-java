@@ -161,7 +161,7 @@ export function exportJSON(options: {
 			),
 		},
 		rig: {
-			default_transforms: rig.defaultTransforms.map(serailizeAnimationNode),
+			default_transforms: rig.defaultTransforms.map(serailizeNodeTransform),
 			node_map: Object.fromEntries(
 				Object.entries(rig.nodeMap).map(([key, node]) => [key, serailizeRenderedNode(node)])
 			),
@@ -226,7 +226,7 @@ function serailizeRenderedNode(node: AnyRenderedNode): ExportedRenderedNode {
 	return json as ExportedRenderedNode
 }
 
-function serailizeAnimationNode(node: INodeTransform): ExportedNodetransform {
+function serailizeNodeTransform(node: INodeTransform): ExportedNodetransform {
 	const json: ExportedNodetransform = {
 		type: node.type,
 		name: node.name,
@@ -262,7 +262,7 @@ function serializeAnimation(animation: IRenderedAnimation): ExportedBakedAnimati
 	const frames: ExportedAnimationFrame[] = []
 	for (const frame of animation.frames) {
 		const node_transforms: ExportedNodetransform[] =
-			frame.node_transforms.map(serailizeAnimationNode)
+			frame.node_transforms.map(serailizeNodeTransform)
 		frames.push({ ...frame, node_transforms })
 	}
 	json.frames = frames

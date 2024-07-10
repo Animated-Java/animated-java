@@ -14,7 +14,7 @@ import {
 import { TRANSPARENT_TEXTURE, TRANSPARENT_TEXTURE_RESOURCE_LOCATION, Variant } from '../variants'
 import {
 	correctSceneAngle,
-	getAnimationNodes,
+	getNodeTransforms,
 	INodeTransform,
 	restoreSceneAngle,
 	updatePreview,
@@ -607,7 +607,7 @@ function getDefaultPose(rig: IRenderedRig) {
 	const anim = new Blockbench.Animation()
 	correctSceneAngle()
 	updatePreview(anim, 0)
-	rig.defaultTransforms = getAnimationNodes(anim, rig.nodeMap)
+	rig.defaultTransforms = getNodeTransforms(anim, rig.nodeMap)
 	restoreSceneAngle()
 }
 
