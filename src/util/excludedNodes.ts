@@ -30,7 +30,7 @@ export function getAvailableNodes(
 	const availableNodes = allNodes.map(node => {
 		const entry = excludedNodes.find(n => n.value === node.uuid)
 		if (entry) {
-			entry.name === node.name
+			entry.name = node.name
 		}
 
 		let icon: string
