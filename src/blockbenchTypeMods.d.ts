@@ -39,6 +39,8 @@ declare global {
 		textDisplays: TextDisplay[]
 		vanillaItemDisplays: VanillaItemDisplay[]
 		vanillaBlockDisplays: VanillaBlockDisplay[]
+
+		loadingPromises?: Array<Promise<unknown>>
 	}
 
 	// eslint-disable-next-line @typescript-eslint/naming-convention

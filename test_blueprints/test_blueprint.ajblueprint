@@ -6,16 +6,16 @@
 		"save_location": "D:\\github-repos\\animated-java\\animated-java\\test_blueprints\\test_blueprint.ajblueprint",
 		"last_used_export_namespace": "test_blueprint"
 	},
-	"project_settings": {
+	"blueprint_settings": {
 		"export_namespace": "test_blueprint",
 		"show_bounding_box": false,
 		"auto_bounding_box": true,
 		"bounding_box": [48, 48],
 		"enable_plugin_mode": false,
-		"enable_resource_pack": true,
-		"enable_data_pack": true,
+		"resource_pack_export_mode": "raw",
+		"data_pack_export_mode": "raw",
 		"display_item": "minecraft:white_dye",
-		"customModelDataOffset": 0,
+		"custom_model_data_offset": 0,
 		"enable_advanced_resource_pack_settings": false,
 		"resource_pack": "D:\\github-repos\\animated-java\\debug_packs\\resourcepack",
 		"display_item_path": "",
@@ -27,6 +27,9 @@
 		"interpolation_duration": 1,
 		"teleportation_duration": 1,
 		"use_storage_for_animation": false,
+		"baked_animations": true,
+		"json_file": "",
+		"customModelDataOffset": 0,
 		"custom_summon_commands": "say Hello World!\ntellraw @a \"I was summoned!\""
 	},
 	"resolution": {
@@ -83,12 +86,7 @@
 			"ignore_inherited_scale": false,
 			"visibility": true,
 			"locked": false,
-			"configs": {
-				"default": {
-					"ticking_commands": ""
-				},
-				"variants": {}
-			},
+			"config": null,
 			"uuid": "834b3b7a-51ef-00de-b4c2-a3819903c148",
 			"type": "locator"
 		},
@@ -455,48 +453,48 @@
 	],
 	"variants": {
 		"default": {
+			"name": "default",
 			"display_name": "Default",
-			"name": "Default",
 			"uuid": "c7310d5a-add7-89d1-bf21-eb7ce78063e2",
 			"texture_map": {},
-			"excluded_bones": []
+			"excluded_nodes": []
 		},
 		"list": [
 			{
+				"name": "puffy_boi",
 				"display_name": "Puffy Boi",
-				"name": "Puffy Boi",
 				"uuid": "ed8d4165-96f2-35f9-9d4d-45aed3409b97",
 				"texture_map": {
 					"69e2e536-1405-7521-d208-e4961dddabd1": "0d1b5455-f6a7-5678-c6c1-60e1cbed1c6b"
 				},
-				"excluded_bones": []
+				"excluded_nodes": []
 			},
 			{
+				"name": "green_snave",
 				"display_name": "Green Snave",
-				"name": "Green Snave",
 				"uuid": "7342b836-5512-51e4-cd80-385d511c0d19",
 				"texture_map": {
 					"69e2e536-1405-7521-d208-e4961dddabd1": "5aca03f5-e226-2841-68f4-9866ecbf17b1"
 				},
-				"excluded_bones": []
+				"excluded_nodes": []
 			},
 			{
+				"name": "bronze_aged",
 				"display_name": "Bronze Aged",
-				"name": "Bronze Aged",
 				"uuid": "f56e614f-a753-9d6f-277b-1729796d745c",
 				"texture_map": {
 					"69e2e536-1405-7521-d208-e4961dddabd1": "7954a232-d411-498d-45f7-4a42b7161f99"
 				},
-				"excluded_bones": []
+				"excluded_nodes": []
 			},
 			{
+				"name": "snave_tweaked",
 				"display_name": "Snave Tweaked",
-				"name": "Snave Tweaked",
 				"uuid": "25569e27-550b-4e98-d165-12d9f4b0f021",
 				"texture_map": {
 					"69e2e536-1405-7521-d208-e4961dddabd1": "97d65b00-ef06-9243-ce2d-237d8b4fedc9"
 				},
-				"excluded_bones": []
+				"excluded_nodes": []
 			}
 		]
 	},
@@ -515,7 +513,7 @@
 			"blend_weight": "",
 			"start_delay": "",
 			"loop_delay": "",
-			"excluded_bones": [],
+			"excluded_nodes": [],
 			"animators": {
 				"effects": {
 					"name": "Effects",
@@ -532,72 +530,77 @@
 							"uuid": "7c485c60-a411-f83d-c87e-e93c138876d2",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						},
 						{
 							"channel": "variant",
 							"data_points": [
 								{
 									"variant": "ed8d4165-96f2-35f9-9d4d-45aed3409b97",
-									"execute_condition": ""
+									"execute_condition": "",
+									"repeat": false,
+									"repeat_frequency": 1
 								}
 							],
 							"uuid": "75416d8f-d46e-a000-abc4-c51bcfb43369",
 							"time": 0.25,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						},
 						{
 							"channel": "variant",
 							"data_points": [
 								{
 									"variant": "c7310d5a-add7-89d1-bf21-eb7ce78063e2",
-									"execute_condition": ""
+									"execute_condition": "",
+									"repeat": false,
+									"repeat_frequency": 1
 								}
 							],
 							"uuid": "45590f6b-c8a0-b469-1ac1-71db4c7c4747",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						},
 						{
 							"channel": "variant",
 							"data_points": [
 								{
 									"variant": "7342b836-5512-51e4-cd80-385d511c0d19",
-									"execute_condition": ""
+									"execute_condition": "",
+									"repeat": false,
+									"repeat_frequency": 1
 								}
 							],
 							"uuid": "0c3c9934-744c-4965-24a4-ee2757cedbfe",
 							"time": 0.5,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						},
 						{
 							"channel": "variant",
 							"data_points": [
 								{
 									"variant": "f56e614f-a753-9d6f-277b-1729796d745c",
-									"execute_condition": ""
+									"execute_condition": "",
+									"repeat": false,
+									"repeat_frequency": 1
 								}
 							],
 							"uuid": "367bab70-9ace-43ce-024d-c2e27ee5ef68",
 							"time": 0.75,
 							"color": -1,
-							"interpolation": "linear"
-						},
-						{
-							"channel": "commands",
-							"data_points": [
-								{
-									"commands": "say Hello World!",
-									"execute_condition": "default"
-								}
-							],
-							"uuid": "92a961e8-936d-dc4e-fc83-c1c47d08918a",
-							"time": 0,
-							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				}
@@ -617,7 +620,7 @@
 			"blend_weight": "",
 			"start_delay": "",
 			"loop_delay": "",
-			"excluded_bones": [
+			"excluded_nodes": [
 				{
 					"name": "bone2",
 					"value": "14df2e83-0f77-6ef5-947c-6531822c5618"
@@ -652,7 +655,9 @@
 							"uuid": "8528ef31-6027-101e-40f2-483704cba3bd",
 							"time": 0.25,
 							"color": -1,
-							"interpolation": "catmullrom"
+							"interpolation": "catmullrom",
+							"easing": "linear",
+							"easingArgs": []
 						},
 						{
 							"channel": "position",
@@ -666,7 +671,9 @@
 							"uuid": "b417966c-dc38-5386-10da-6962d17e2621",
 							"time": 0.5,
 							"color": -1,
-							"interpolation": "catmullrom"
+							"interpolation": "catmullrom",
+							"easing": "linear",
+							"easingArgs": []
 						},
 						{
 							"channel": "position",
@@ -680,7 +687,9 @@
 							"uuid": "772826a1-6123-0143-1cad-946c364b62bd",
 							"time": 0.75,
 							"color": -1,
-							"interpolation": "catmullrom"
+							"interpolation": "catmullrom",
+							"easing": "linear",
+							"easingArgs": []
 						},
 						{
 							"channel": "position",
@@ -694,7 +703,9 @@
 							"uuid": "e355afe4-cb91-b66f-b62f-e21f6975f617",
 							"time": 1,
 							"color": -1,
-							"interpolation": "catmullrom"
+							"interpolation": "catmullrom",
+							"easing": "linear",
+							"easingArgs": []
 						},
 						{
 							"channel": "position",
@@ -708,7 +719,9 @@
 							"uuid": "1bda3d39-d89b-3b9a-3fa2-d435b8d98cbc",
 							"time": 0,
 							"color": -1,
-							"interpolation": "catmullrom"
+							"interpolation": "catmullrom",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				}
@@ -728,7 +741,7 @@
 			"blend_weight": "",
 			"start_delay": "",
 			"loop_delay": "",
-			"excluded_bones": [],
+			"excluded_nodes": [],
 			"animators": {
 				"c4c4eb26-3da5-e050-4aa5-cfa1335d78f7": {
 					"name": "bone",
@@ -746,7 +759,9 @@
 							"uuid": "164de794-d470-7e40-1ed5-8747d8d20331",
 							"time": 0,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						},
 						{
 							"channel": "scale",
@@ -761,7 +776,9 @@
 							"time": 0,
 							"color": -1,
 							"uniform": false,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				}
@@ -774,14 +791,14 @@
 			"override": false,
 			"length": 1,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"saved": false,
 			"path": "",
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",
 			"loop_delay": "",
-			"excluded_bones": [],
+			"excluded_nodes": [],
 			"animators": {
 				"c4c4eb26-3da5-e050-4aa5-cfa1335d78f7": {
 					"name": "bone",
@@ -799,7 +816,9 @@
 							"uuid": "d6a17349-8c8e-9395-974f-319adac403a7",
 							"time": 0,
 							"color": -1,
-							"interpolation": "step"
+							"interpolation": "step",
+							"easing": "linear",
+							"easingArgs": []
 						},
 						{
 							"channel": "position",
@@ -813,7 +832,9 @@
 							"uuid": "60a2c3d9-b13e-04ed-6a3d-d92f7242c1cc",
 							"time": 0.5,
 							"color": -1,
-							"interpolation": "linear"
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				}

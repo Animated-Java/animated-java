@@ -220,6 +220,8 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 		console.log(`Parsing Animated Java Blueprint from '${path}'...`)
 		if (!Project) throw new Error('No project to parse into')
 
+		Project.loadingPromises = []
+
 		Project.save_path = model.meta.save_location || path
 
 		if (model.meta.box_uv !== undefined) {
@@ -268,22 +270,32 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 			const defaultTexture = Texture.getDefault()
 			for (const element of model.elements) {
 				const newElement = OutlinerElement.fromSave(element, true)
-				if (newElement instanceof Cube) {
-					for (const face in newElement.faces) {
-						if (element.faces) {
-							const texture =
-								element.faces[face].texture !== undefined &&
-								Texture.all[element.faces[face].texture]
-							if (texture) {
-								newElement.faces[face].texture = texture.uuid
+				switch (true) {
+					case newElement instanceof Cube: {
+						for (const face in newElement.faces) {
+							if (element.faces) {
+								const texture =
+									element.faces[face].texture !== undefined &&
+									Texture.all[element.faces[face].texture]
+								if (texture) {
+									newElement.faces[face].texture = texture.uuid
+								}
+							} else if (
+								defaultTexture &&
+								newElement.faces &&
+								newElement.faces[face].texture !== undefined
+							) {
+								newElement.faces[face].texture = defaultTexture.uuid
 							}
-						} else if (
-							defaultTexture &&
-							newElement.faces &&
-							newElement.faces[face].texture !== undefined
-						) {
-							newElement.faces[face].texture = defaultTexture.uuid
 						}
+						break
+					}
+					case newElement instanceof AnimatedJava.API.TextDisplay:
+					case newElement instanceof AnimatedJava.API.VanillaItemDisplay:
+					case newElement instanceof AnimatedJava.API.VanillaBlockDisplay: {
+						// ES-Lint doesn't like the types here for some reason, so I'm casing them to please it.
+						Project.loadingPromises.push(newElement.waitForReady() as Promise<void>)
+						break
 					}
 				}
 			}
@@ -537,6 +549,7 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 			}
 		}
 
+		const thisProject = Project
 		Project.variants ??= []
 		Project.last_used_export_namespace = Project.animated_java.export_namespace
 		const updateBoundingBoxIntervalId = setInterval(() => {
@@ -544,32 +557,43 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 		}, 500)
 		events.UNLOAD.subscribe(() => clearInterval(updateBoundingBoxIntervalId), true)
 		events.UNINSTALL.subscribe(() => clearInterval(updateBoundingBoxIntervalId), true)
-		requestAnimationFrame(() => {
-			Project!.pluginMode = new Valuable(Project!.animated_java.enable_plugin_mode)
-			// Remove the default title
-			const element = document.querySelector('#tab_bar_list .icon-armor_stand.icon')
-			element?.remove()
-			// Custom title
-			void injectSvelteCompomponent({
-				elementSelector: () => {
-					const titles = [
-						...document.querySelectorAll(`.project_tab[title="${project.name}"]`),
-					]
-					if (titles.length) {
-						return titles[0]
-					}
-				},
-				prepend: true,
-				svelteComponent: ProjectTitleSvelte,
-				svelteComponentProperties: { pluginMode: Project!.pluginMode },
+
+		thisProject.materials[TRANSPARENT_TEXTURE.uuid] = TRANSPARENT_TEXTURE_MATERIAL
+		TRANSPARENT_TEXTURE.updateMaterial()
+
+		Project.loadingPromises ??= []
+		Project.loadingPromises.push(
+			new Promise<void>(resolve => {
+				requestAnimationFrame(() => {
+					thisProject.pluginMode = new Valuable(
+						thisProject.animated_java.enable_plugin_mode
+					)
+					// Remove the default title
+					const element = document.querySelector('#tab_bar_list .icon-armor_stand.icon')
+					element?.remove()
+					// Custom title
+					void injectSvelteCompomponent({
+						elementSelector: () => {
+							const titles = [
+								...document.querySelectorAll(
+									`.project_tab[title="${project.name}"]`
+								),
+							]
+							if (titles.length) {
+								return titles[0]
+							}
+						},
+						prepend: true,
+						svelteComponent: ProjectTitleSvelte,
+						svelteComponentProperties: { pluginMode: thisProject.pluginMode },
+					})
+
+					if (Variant.all.length === 0) new Variant('Default', true)
+					Variant.selectDefault()
+				})
+				resolve()
 			})
-
-			Project!.materials[TRANSPARENT_TEXTURE.uuid] = TRANSPARENT_TEXTURE_MATERIAL
-			TRANSPARENT_TEXTURE.updateMaterial()
-
-			if (Variant.all.length === 0) new Variant('Default', true)
-			Variant.selectDefault()
-		})
+		)
 	},
 
 	onActivation() {

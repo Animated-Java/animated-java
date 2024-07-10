@@ -49,6 +49,8 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	public preview_controller = PREVIEW_CONTROLLER
 
+	public ready = false
+
 	constructor(data: VanillaItemDisplayOptions, uuid = guid()) {
 		super(data, uuid)
 		VanillaItemDisplay.all.push(this)
@@ -102,6 +104,12 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 	set item(value: string) {
 		if (this._item === undefined) return
 		this._item.set(value)
+	}
+
+	async waitForReady() {
+		while (!this.ready) {
+			await new Promise(resolve => setTimeout(resolve, 1000 / framespersecond))
+		}
 	}
 
 	public sanitizeName(): string {
@@ -229,6 +237,8 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, 
 				el.preview_controller.updateTransform(el)
 				el.mesh.visible = el.visibility
 				TickUpdates.selection = true
+
+				el.ready = true
 			})
 			.catch(err => {
 				if (typeof err.message === 'string') {

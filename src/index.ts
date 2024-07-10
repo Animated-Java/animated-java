@@ -44,6 +44,7 @@ import './mods/saveProjectAsActionMod'
 import './mods/variantPreviewCubeFaceMod'
 import './mods/showDefaultPoseMod'
 import './mods/addLocatorActionMod'
+import './mods/blockbenchReadMod'
 // Outliner
 import './outliner/textDisplay'
 import './outliner/vanillaItemDisplay'
@@ -81,6 +82,7 @@ import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
 import { VanillaBlockDisplay, debugBlockState, debugBlocks } from './outliner/vanillaBlockDisplay'
 import { BLOCKSTATE_REGISTRY } from './systems/minecraft/blockstateManager'
 import { exportProject } from './systems/exporter'
+import { openBlueprintLoadingDialog } from './interface/blueprintLoadingPopup'
 
 // Show loading popup
 void showLoadingPopup().then(async () => {
@@ -135,6 +137,7 @@ globalThis.AnimatedJava = {
 		debugBlockState,
 		BLOCKSTATE_REGISTRY,
 		exportProject,
+		openBlueprintLoadingDialog,
 	},
 }
 

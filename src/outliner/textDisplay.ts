@@ -317,7 +317,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 
 	async waitForReady() {
 		while (!this.ready) {
-			await new Promise(resolve => setTimeout(resolve, 100))
+			await new Promise(resolve => setTimeout(resolve, 1000 / framespersecond))
 		}
 	}
 

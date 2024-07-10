@@ -366,6 +366,9 @@ animated_java.dialog.animation_properties.swap_columns_button.tooltip: Swap List
 ## Export Progress Dialog
 animated_java.dialog.export_progress.title: Exporting...
 
+## Blueprint Loading Dialog
+animated_java.dialog.blueprint_loading.title: Loading Blueprint...
+
 ### Panels
 
 ## Variants Panel
