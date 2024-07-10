@@ -20,6 +20,7 @@
 		height: 20px;
 		margin-top: 2px;
 		margin-right: 2px;
-		border-radius: 10px;
+		border-radius: 2px;
+		box-shadow: 1px 1px 1px #000000aa;
 	}
 </style>

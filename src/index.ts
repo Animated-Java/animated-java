@@ -45,6 +45,7 @@ import './mods/variantPreviewCubeFaceMod'
 import './mods/showDefaultPoseMod'
 import './mods/addLocatorActionMod'
 import './mods/blockbenchReadMod'
+import './mods/formatIconMod'
 // Outliner
 import './outliner/textDisplay'
 import './outliner/vanillaItemDisplay'

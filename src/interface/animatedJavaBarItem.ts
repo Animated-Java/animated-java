@@ -18,8 +18,9 @@ function createIconImg() {
 	Object.assign(IMG.style, {
 		position: 'relative',
 		top: '2px',
-		borderRadius: '8px',
+		borderRadius: '2px',
 		marginRight: '6px',
+		boxShadow: '1px 1px 1px #000000aa',
 	})
 	return IMG
 }
@@ -36,6 +37,9 @@ BLOCKBENCH_MENU_BAR.appendChild(MENU.label)
 
 events.SELECT_PROJECT.subscribe(project => {
 	MENU.label.style.display = project.format === BLUEPRINT_FORMAT ? 'inline-block' : 'none'
+})
+events.UNSELECT_AJ_PROJECT.subscribe(() => {
+	MENU.label.style.display = 'none'
 })
 
 MenuBar.addAction(
