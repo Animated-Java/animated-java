@@ -33,6 +33,8 @@ const BONE_TYPES = ['bone', 'text_display', 'item_display', 'block_display']
 namespace TAGS {
 	export const NEW = () => 'aj.new'
 	export const GLOBAL_RIG = () => 'aj.rig_entity'
+	// Used to tell the set and apply frame functions to only apply the bone transforms, and ignore command/variant keyframes
+	export const TRANSFORMS_ONLY = () => 'aj.transforms_only'
 
 	export const GLOBAL_ROOT = () => 'aj.rig_root'
 	export const PROJECT_ROOT = (exportNamespace: string) => `aj.${exportNamespace}.root`
@@ -69,7 +71,7 @@ namespace TAGS {
 namespace OBJECTIVES {
 	export const I = () => 'aj.i'
 	export const ID = () => 'aj.id'
-	export const FRAME = () => 'aj.frame'
+	export const FRAME = (animationName: string) => `aj.${animationName}.frame`
 	export const IS_RIG_LOADED = () => 'aj.is_rig_loaded'
 	export const TWEEN_DURATION = () => 'aj.tween_duration'
 }
