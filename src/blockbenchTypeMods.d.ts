@@ -48,6 +48,14 @@ declare global {
 		excluded_nodes: CollectionItem[]
 	}
 
+	interface AnimationUndoCopy {
+		excluded_nodes: string[]
+	}
+
+	interface AnimationOptions {
+		excluded_nodes: string[]
+	}
+
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface _Keyframe {
 		easing?: EasingKey

@@ -138,7 +138,7 @@ export interface IBlueprintFormatJSON {
 	elements: any[]
 	outliner: any[]
 	textures: Texture[]
-	animations: AnimationOptions[] & { excluded_nodes: string[] }
+	animations: AnimationOptions[]
 	animation_controllers?: AnimationControllerOptions[]
 	animation_variable_placeholders: string
 	backgrounds?: Record<string, any>
