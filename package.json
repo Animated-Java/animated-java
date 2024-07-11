@@ -63,8 +63,8 @@
 	"private": true,
 	"scripts": {
 		"build:scripts": "esbuild --bundle --platform=node --outfile=dist/build.cjs --packages=external ./tools/esbuild.ts",
-		"build:dev": "yarn build:scripts && node ./dist/build.cjs --mode=dev",
-		"build:prod": "yarn build:scripts && node ./dist/build.cjs",
+		"dev": "yarn build:scripts && node ./dist/build.cjs --mode=dev",
+		"prod": "yarn build:scripts && node ./dist/build.cjs",
 		"format": "prettier --write ."
 	},
 	"devDependencies": {

@@ -7,7 +7,6 @@ if (process.argv.includes('--mode=dev')) {
 process.env.FLAVOR ??= `local`
 
 import * as fs from 'fs'
-import { readFile } from 'fs-extra'
 import { isAbsolute, join } from 'path'
 import { TextDecoder } from 'util'
 import { load } from 'js-yaml'
@@ -19,7 +18,7 @@ import ImportGlobPlugin from 'esbuild-plugin-import-glob'
 import packagerPlugin from './plugins/packagerPlugin'
 import inlineWorkerPlugin from './plugins/workerPlugin'
 import assetOverridePlugin from './plugins/assetOverridePlugin'
-import path from 'path'
+import * as path from 'path'
 const PACKAGE = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
 
 const INFO_PLUGIN: esbuild.Plugin = {
@@ -161,7 +160,7 @@ const yamlPlugin: (opts: {
 			}
 		})
 		build.onLoad({ filter: /.*/, namespace: 'yaml' }, async args => {
-			const yamlContent = await readFile(args.path)
+			const yamlContent = await fs.promises.readFile(args.path)
 			let parsed = load(new TextDecoder().decode(yamlContent), options?.loadOptions)
 			if (options?.transform && options.transform(parsed, args.path) !== void 0)
 				parsed = options.transform(parsed, args.path)
