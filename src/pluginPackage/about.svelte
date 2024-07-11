@@ -56,7 +56,7 @@
 	<li>Animation Tweening: Create smooth transitions between animations.</li>
 	<li>Many different configuration options.</li>
 	<li>
-		Complete Documentation at <a href="https://animated-java.dev/documentation/"
+		Complete Documentation at <a href="https://animated-java.dev/docs"
 			>animated-java.dev/documentation/</a
 		>
 	</li>
@@ -67,7 +67,8 @@
 
 <p>
 	To learn the basics of Animated Java, check out our <a
-		href="https://animated-java.dev/docs/getting_started">Getting Started</a
+		href="https://animated-java.dev/docs/getting-started/installing-animated-java"
+		>Getting Started</a
 	> guide.
 </p>
 
@@ -91,8 +92,7 @@
 <h3 class="animated-java-plugin-page-h3">Found a bug?</h3>
 
 <p>
-	If you find a bug, please report it on our <a
-		href="https://github.com/Animated-Java/animated-java">GitHub</a
+	If you find a bug, please report it on our <a href="https://animated-java.dev/source">GitHub</a
 	>. It only takes a few moments of your time, and improves the quality of the project for
 	everyone!
 </p>
