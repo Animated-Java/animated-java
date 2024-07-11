@@ -147,6 +147,7 @@ export interface IBlueprintFormatJSON {
 export function convertToBlueprint() {
 	// Convert the current project to a Blueprint
 	// NOTE - Nothing needs to be done here yet. The default functionality is sufficient.
+	Project!.save_path = ''
 }
 
 export function getDefaultProjectSettings(): ModelProject['animated_java'] {
@@ -222,7 +223,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 
 		Project.loadingPromises = []
 
-		Project.save_path = model.meta.save_location || path
+		Project.save_path = path
 
 		if (model.meta.box_uv !== undefined) {
 			Project.box_uv = model.meta.box_uv
