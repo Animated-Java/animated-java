@@ -4,7 +4,6 @@
 	import { translate } from '../util/translation'
 	import { events } from '../util/events'
 	import { getEasingArgDefault, hasArgs } from '../util/easing'
-	import NumberSlider from './dialogItems/numberSlider.svelte'
 	import { Valuable } from '../util/stores'
 
 	const ICONS = Object.fromEntries(
@@ -18,7 +17,6 @@
 		out: ICONS['out'],
 		inout: ICONS['inout'],
 	}
-	console.log(ICONS, EASING_MODE_ICONS)
 </script>
 
 <script lang="ts">
