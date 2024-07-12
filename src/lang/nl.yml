@@ -440,7 +440,7 @@ animated_java.panel.keyframe.easing_mode.title: Versoepling Modus
 animated_java.panel.keyframe.easing_mode.description: De versoepelingsmodus die moet worden toegepast op het keyframe.
 animated_java.panel.keyframe.easing_mode.options.in: In
 animated_java.panel.keyframe.easing_mode.options.out: Out
-animated_java.panel.keyframe.easing_mode.options.in-out: In-Out
+animated_java.panel.keyframe.easing_mode.options.inout: In-Out
 
 animated_java.panel.keyframe.easing_args.title: Versoepeling Argumenten
 animated_java.panel.keyframe.easing_args.description: De argumenten die moeten worden toegepast op de versoepelings functie.
