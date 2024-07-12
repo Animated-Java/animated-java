@@ -444,7 +444,7 @@ animated_java.panel.keyframe.easing_mode.title: Easing Mode
 animated_java.panel.keyframe.easing_mode.description: The easing mode to apply to the keyframe.
 animated_java.panel.keyframe.easing_mode.options.in: In
 animated_java.panel.keyframe.easing_mode.options.out: Out
-animated_java.panel.keyframe.easing_mode.options.in-out: In-Out
+animated_java.panel.keyframe.easing_mode.options.inout: In-Out
 
 animated_java.panel.keyframe.easing_args.title: Easing Args
 animated_java.panel.keyframe.easing_args.description: The arguments to apply to the easing function.
