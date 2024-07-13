@@ -6,11 +6,6 @@ dir global {
 		scoreboard objectives add <%OBJECTIVES.ID()%> dummy
 		scoreboard objectives add <%OBJECTIVES.IS_RIG_LOADED()%> dummy
 		scoreboard objectives add <%OBJECTIVES.TWEEN_DURATION()%> dummy
-		<%%
-			animations.forEach(animation => {
-				emit(`scoreboard objectives add ${OBJECTIVES.FRAME(animation.name)} dummy`)
-			})
-		%%>
 
 		scoreboard players add aj.last_id <%OBJECTIVES.ID()%> 0
 
@@ -119,6 +114,12 @@ dir global {
 
 dir <%export_namespace%> {
 	function on_load {
+		<%%
+			animations.forEach(animation => {
+				emit(`scoreboard objectives add ${OBJECTIVES.FRAME(animation.name)} dummy`)
+			})
+		%%>
+
 		IF (use_storage_for_animation) {
 			REPEAT (animations) as animation {
 				data remove storage aj.<%export_namespace%>:animations <%animation.storageSafeName%>

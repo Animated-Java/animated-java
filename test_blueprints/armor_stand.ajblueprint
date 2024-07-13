@@ -1601,88 +1601,6 @@
 						}
 					]
 				},
-				"c6696a60-8f7e-63b4-24f8-dd9bad05cf18": {
-					"name": "pupil_left",
-					"type": "animated_java:vanilla_block_display",
-					"keyframes": [
-						{
-							"channel": "position",
-							"data_points": [
-								{
-									"x": "0.35 + math.cos(q.life_time * 180)",
-									"y": "0.7 + math.sin(q.life_time * 180)",
-									"z": "0"
-								}
-							],
-							"uuid": "1ed8db81-057d-ac42-3066-e5513808e8b3",
-							"time": 0,
-							"color": -1,
-							"interpolation": "linear",
-							"easing": "linear",
-							"easingArgs": []
-						}
-					]
-				},
-				"27f26301-9ccd-def2-94ef-577950e84e02": {
-					"name": "pupil_right",
-					"type": "animated_java:vanilla_block_display",
-					"keyframes": [
-						{
-							"channel": "position",
-							"data_points": [
-								{
-									"x": "-0.35 - math.cos(q.life_time * 180)",
-									"y": "0.7 - math.sin(q.life_time * 180)",
-									"z": "0"
-								}
-							],
-							"uuid": "d7201c93-1fc8-5f10-4e00-9efc9f1445b9",
-							"time": 0,
-							"color": -1,
-							"interpolation": "linear",
-							"easing": "linear",
-							"easingArgs": []
-						}
-					]
-				},
-				"d0076177-a6cf-561c-08d8-efd07677b337": {
-					"name": "camera",
-					"type": "camera",
-					"keyframes": [
-						{
-							"channel": "position",
-							"data_points": [
-								{
-									"x": "math.cos(q.life_time * 180) * 32",
-									"y": "math.sin(q.life_time * 360) * 8",
-									"z": "0"
-								}
-							],
-							"uuid": "2eeda6db-5dca-27ba-8d94-6935720845fb",
-							"time": 0,
-							"color": -1,
-							"interpolation": "linear",
-							"easing": "linear",
-							"easingArgs": []
-						},
-						{
-							"channel": "rotation",
-							"data_points": [
-								{
-									"x": "math.cos(q.life_time * 360) * 16",
-									"y": "-math.sin(q.life_time * 180) * 32",
-									"z": "0"
-								}
-							],
-							"uuid": "01848b41-27ed-45c5-168f-64a1623fa350",
-							"time": 0,
-							"color": -1,
-							"interpolation": "linear",
-							"easing": "linear",
-							"easingArgs": []
-						}
-					]
-				},
 				"3b35d1a9-befe-066e-60df-e1f3a5ec5a78": {
 					"name": "pig",
 					"type": "bone",
@@ -2214,50 +2132,6 @@
 							"easingArgs": []
 						}
 					]
-				},
-				"c6696a60-8f7e-63b4-24f8-dd9bad05cf18": {
-					"name": "pupil_left",
-					"type": "animated_java:vanilla_block_display",
-					"keyframes": [
-						{
-							"channel": "position",
-							"data_points": [
-								{
-									"x": "1 - easeinoutexpo(\n  linear_wave(q.life_time * v.walk_speed + 180)\n) * 1.25\n",
-									"y": "0",
-									"z": "0"
-								}
-							],
-							"uuid": "a9b1c34b-a0ce-c1a2-73e5-8f11591b6e1a",
-							"time": 0,
-							"color": -1,
-							"interpolation": "linear",
-							"easing": "linear",
-							"easingArgs": []
-						}
-					]
-				},
-				"27f26301-9ccd-def2-94ef-577950e84e02": {
-					"name": "pupil_right",
-					"type": "animated_java:vanilla_block_display",
-					"keyframes": [
-						{
-							"channel": "position",
-							"data_points": [
-								{
-									"x": "0.5 - easeinoutexpo(\n  linear_wave(q.life_time * v.walk_speed + 180)\n) * 1.25\n",
-									"y": "0",
-									"z": "0"
-								}
-							],
-							"uuid": "595b9015-2eea-85a5-4511-da31a5019413",
-							"time": 0,
-							"color": -1,
-							"interpolation": "linear",
-							"easing": "linear",
-							"easingArgs": []
-						}
-					]
 				}
 			}
 		},
@@ -2708,7 +2582,7 @@
 			"override": false,
 			"length": 4,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"saved": false,
 			"path": "",
 			"anim_time_update": "",
@@ -3132,7 +3006,7 @@
 			"override": false,
 			"length": 0.8,
 			"snapping": 20,
-			"selected": false,
+			"selected": true,
 			"saved": false,
 			"path": "",
 			"anim_time_update": "",
@@ -3394,13 +3268,7 @@
 							"interpolation": "linear",
 							"easing": "linear",
 							"easingArgs": []
-						}
-					]
-				},
-				"c6696a60-8f7e-63b4-24f8-dd9bad05cf18": {
-					"name": "pupil_left",
-					"type": "animated_java:vanilla_block_display",
-					"keyframes": [
+						},
 						{
 							"channel": "position",
 							"data_points": [
@@ -3416,13 +3284,7 @@
 							"interpolation": "linear",
 							"easing": "linear",
 							"easingArgs": []
-						}
-					]
-				},
-				"27f26301-9ccd-def2-94ef-577950e84e02": {
-					"name": "pupil_right",
-					"type": "animated_java:vanilla_block_display",
-					"keyframes": [
+						},
 						{
 							"channel": "position",
 							"data_points": [
