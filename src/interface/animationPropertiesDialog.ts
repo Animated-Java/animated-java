@@ -4,6 +4,8 @@ import { Valuable } from '../util/stores'
 import { SvelteDialog } from '../util/svelteDialog'
 import { translate } from '../util/translation'
 
+export const DIALOG_ID = `${PACKAGE.name}:animationPropertiesDialog`
+
 export function openAnimationPropertiesDialog(animation: _Animation) {
 	const animationName = new Valuable(animation.name)
 	const loopMode = new Valuable(animation.loop)
@@ -11,7 +13,7 @@ export function openAnimationPropertiesDialog(animation: _Animation) {
 	const excludedNodes = new Valuable(animation.excluded_nodes)
 
 	new SvelteDialog({
-		id: `${PACKAGE.name}:animationPropertiesDialog`,
+		id: DIALOG_ID,
 		title: translate('dialog.animation_properties.title', animation.name),
 		width: 600,
 		svelteComponent: AniamtionPropertiesSvelteComponent,

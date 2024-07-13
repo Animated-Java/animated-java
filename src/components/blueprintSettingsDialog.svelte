@@ -12,6 +12,8 @@
 	import FileSelect from './dialogItems/fileSelect.svelte'
 	import FolderSelect from './dialogItems/folderSelect.svelte'
 	import CodeInput from './dialogItems/codeInput.svelte'
+	import Select from './dialogItems/select.svelte'
+	import { DIALOG_ID } from '../interface/animationPropertiesDialog'
 
 	import HeartIcon from '../assets/heart.png'
 	import KoFiImage from '../assets/kofi_s_tag_white.webp'
@@ -27,8 +29,6 @@
 </script>
 
 <script lang="ts">
-	import Select from './dialogItems/select.svelte'
-
 	export let blueprintName: Valuable<string>
 	export let textureSizeX: Valuable<number>
 	export let textureSizeY: Valuable<number>
@@ -355,6 +355,8 @@
 		;(e.target as HTMLElement).textContent = 'close'
 	}
 </script>
+
+<div style="--aj-dialog-id: '{DIALOG_ID}';" />
 
 <div>
 	<LineInput
@@ -744,7 +746,7 @@
 		}
 	}
 
-	:global(.dialog_wrapper .dialog_content) {
+	:global(dialog#animated_java\:blueprintSettingsDialog .dialog_wrapper .dialog_content) {
 		overflow-y: auto !important;
 	}
 	div {
