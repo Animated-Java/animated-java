@@ -49,10 +49,8 @@ function getDecomposedTransformation(matrix: THREE.Matrix4) {
 }
 
 function threeAxisRotationToTwoAxisRotation(rot: THREE.Quaternion): ArrayVector2 {
-	const euler = Reusable.vec3.applyQuaternion(rot)
-	const yaw = Math.atan2(euler.z, euler.x)
-	const pitch = Math.atan2(euler.y, euler.z)
-	return [Math.radToDeg(yaw), Math.radToDeg(pitch)]
+	const euler = new THREE.Euler().setFromQuaternion(rot, 'YXZ')
+	return [Math.radToDeg(-euler.x), Math.radToDeg(-euler.y) + 180]
 }
 
 export interface INodeTransform {
