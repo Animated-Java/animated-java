@@ -274,7 +274,7 @@ export function updatePreview(animation: _Animation, time: number) {
 
 export function renderAnimation(animation: _Animation, rig: IRenderedRig) {
 	const rendered = {
-		name: animation.name,
+		name: toSafeFuntionName(animation.name),
 		storageSafeName: toSafeFuntionName(animation.name).replaceAll('.', '_'),
 		loopDelay: Number(animation.loop_delay) || 0,
 		frames: [],
