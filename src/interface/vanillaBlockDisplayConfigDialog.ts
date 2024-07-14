@@ -29,7 +29,7 @@ export function openVanillaBlockDisplayConfigDialog(display: VanillaBlockDisplay
 
 	new SvelteDialog({
 		id: `${PACKAGE.name}:vanillaItemDisplayConfigDialog`,
-		title: translate('dialog.vanilla_item_display_config.title'),
+		title: translate('dialog.vanilla_block_display_config.title'),
 		width: 400,
 		svelteComponent: VanillaBlockDisplayConfigDialog,
 		svelteComponentProperties: {

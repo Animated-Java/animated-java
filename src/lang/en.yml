@@ -308,6 +308,12 @@ animated_java.dialog.text_display_config.billboard.options.vertical: Vertical
 animated_java.dialog.text_display_config.billboard.options.horizontal: Horizontal
 animated_java.dialog.text_display_config.billboard.options.center: Center
 
+## Vanilla Block Display Config Dialog
+animated_java.dialog.vanilla_block_display_config.title: Vanilla Block Display Config
+
+## Vanilla Item Display Config Dialog
+animated_java.dialog.vanilla_item_display_config.title: Vanilla Item Display Config
+
 ## Variant Config Dialog
 animated_java.dialog.variant_config.title: Variant Config
 
