@@ -1,22 +1,8 @@
 <script lang="ts" context="module">
-	import { onDestroy } from 'svelte'
 	import AnimatedJavaIcon from '../assets/animated_java_icon.svg'
 </script>
 
-<script lang="ts">
-	let selected = false
-
-	const parent = document.querySelector('[format=animated_java_blueprint]')!
-	const interval = setInterval(() => {
-		selected = parent.classList.contains('selected')
-	}, 16)
-
-	onDestroy(() => {
-		clearInterval(interval)
-	})
-</script>
-
-<span class="icon_wrapper f_left">
+<span class="icon_wrapper f_left" id="animated_java:icon">
 	<img src={AnimatedJavaIcon} alt="" />
 </span>
 
