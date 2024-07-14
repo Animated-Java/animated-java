@@ -23,8 +23,8 @@ const LOADER = new THREE.TextureLoader()
 const BLOCK_MODEL_CACHE = new Map<string, BlockModelMesh>()
 
 const BLACKLISTED_BLOCKS = new Map([
-	['water', "Fluids are don't render in Block Displays."],
-	['lava', "Fluids are don't render in Block Displays."],
+	['water', translate('block_model_manager.fluid_warning')],
+	['lava', translate('block_model_manager.fluid_warning')],
 
 	['player_head', translate('block_model_manager.mob_head_warning')],
 	['player_wall_head', translate('block_model_manager.mob_head_warning')],
