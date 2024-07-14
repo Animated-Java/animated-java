@@ -70,9 +70,26 @@
 			"align": "center",
 			"uuid": "60e1e4ef-c0b0-398d-d0f8-c4cebf7b6bc6",
 			"type": "animated_java:vanilla_block_display"
+		},
+		{
+			"name": "text_display",
+			"position": [0, 25, 0],
+			"rotation": [0, 0, 0],
+			"scale": [1, 1, 1],
+			"visibility": true,
+			"item": "minecraft:diamond",
+			"config": {},
+			"block": "minecraft:stone",
+			"text": "\"Hello World!\"a",
+			"lineWidth": 200,
+			"backgroundColor": "#000000",
+			"backgroundAlpha": 0.25098,
+			"align": "center",
+			"uuid": "3933fe0e-a2c7-cd01-5715-352ecaad8339",
+			"type": "animated_java:text_display"
 		}
 	],
-	"outliner": ["20111574-9011-ebad-1b5d-aa047391c5c1", "60e1e4ef-c0b0-398d-d0f8-c4cebf7b6bc6"],
+	"outliner": ["20111574-9011-ebad-1b5d-aa047391c5c1", "60e1e4ef-c0b0-398d-d0f8-c4cebf7b6bc6", "3933fe0e-a2c7-cd01-5715-352ecaad8339"],
 	"textures": [],
 	"variants": {
 		"default": {
