@@ -5,6 +5,7 @@
 	import { events } from '../util/events'
 	import { getEasingArgDefault, hasArgs } from '../util/easing'
 	import { Valuable } from '../util/stores'
+	import { isCurrentFormat } from '../blueprintFormat'
 
 	const ICONS = Object.fromEntries(
 		(ICON_IMPORTS as unknown as any[]).map((icon, i) => [
@@ -105,6 +106,7 @@
 
 	events.SELECT_KEYFRAME.subscribe((keyframe?: _Keyframe) => {
 		if (
+			isCurrentFormat() &&
 			keyframe &&
 			['position', 'rotation', 'scale'].includes(keyframe.channel) &&
 			!isFirstKeyframe(keyframe)
@@ -122,6 +124,10 @@
 	})
 
 	events.UNSELECT_KEYFRAME.subscribe(() => {
+		selectedKeyframe = undefined
+	})
+
+	events.UNSELECT_AJ_PROJECT.subscribe(() => {
 		selectedKeyframe = undefined
 	})
 </script>
