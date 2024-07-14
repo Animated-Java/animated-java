@@ -38,7 +38,7 @@
 
 	let easingType: string = 'linear'
 	let easingMode: string | undefined
-	let easingArg: Valuable<number>
+	let easingArg: Valuable<number> | undefined
 
 	function getSelectedEasing() {
 		if (!selectedKeyframe?.easing) return
@@ -67,26 +67,23 @@
 				mode && mode !== 'inout' ? mode[0].toUpperCase() + mode.slice(1) : 'InOut'
 			}${type[0].toUpperCase() + type.slice(1)}`
 		}
-		easingType = type
-		easingMode = mode
-		console.log(selectedKeyframe.easing, easingType, easingMode)
-		if (hasArgs(selectedKeyframe.easing)) {
+		if (easingType !== type) {
 			getEasingArgs()
 		}
+		easingType = type
+		easingMode = mode
 	}
 
 	let unsub: () => void
 	function getEasingArgs() {
 		if (!selectedKeyframe) return
-		if (selectedKeyframe.easingArgs) {
-			easingArg = new Valuable(
-				selectedKeyframe.easingArgs[0] || getEasingArgDefault(selectedKeyframe) || 0,
-			)
-		} else {
-			easingArg = new Valuable(getEasingArgDefault(selectedKeyframe) || 0)
-		}
 		unsub && unsub()
-		unsub = easingArg.subscribe(value => setEasingArgs(value))
+		if (hasArgs(selectedKeyframe.easing)) {
+			easingArg = new Valuable(getEasingArgDefault(selectedKeyframe) || 0)
+			unsub = easingArg.subscribe(value => setEasingArgs(value))
+		} else {
+			easingArg = undefined
+		}
 	}
 
 	function setEasingArgs(arg: number) {
