@@ -14,9 +14,6 @@ import { ResizableOutlinerElement } from './resizableOutlinerElement'
 import { TextDisplay } from './textDisplay'
 import { VanillaBlockDisplay } from './vanillaBlockDisplay'
 
-const ERROR_OUTLINE_MATERIAL = Canvas.outlineMaterial.clone()
-ERROR_OUTLINE_MATERIAL.color.set('#ff0000')
-
 interface VanillaItemDisplayOptions {
 	name?: string
 	item?: string
@@ -240,18 +237,13 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, 
 				el.preview_controller.updateTransform(el)
 				el.mesh.visible = el.visibility
 				TickUpdates.selection = true
+
+				el.ready = true
 			})
 			.catch(err => {
 				if (typeof err.message === 'string') {
 					el.error.set(err.message as string)
 				}
-			})
-			.finally(() => {
-				if (el.mesh?.outline instanceof THREE.LineSegments) {
-					if (el.error.get()) el.mesh.outline.material = ERROR_OUTLINE_MATERIAL
-					else el.mesh.outline.material = Canvas.outlineMaterial
-				}
-				el.ready = true
 			})
 	},
 	updateTransform(el: VanillaItemDisplay) {

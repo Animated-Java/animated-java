@@ -42,14 +42,11 @@ const BLACKLISTED_BLOCKS = new Map([
 	['piglin_wall_head', translate('block_model_manager.mob_head_warning')],
 ])
 
-const BLACKLISTED_BLOCKSTATES = new Map([
-	['facing', translate('block_model_manager.facing_warning')],
-])
-
 export async function getBlockModel(block: string): Promise<BlockModelMesh | undefined> {
 	await assetsLoaded()
 	let result = BLOCK_MODEL_CACHE.get(block)
 	if (!result) {
+		// console.warn(`Found no cached item model mesh for '${block}'`)
 		const parsed = await parseBlock(block)
 		if (!parsed) return undefined
 		if (BLACKLISTED_BLOCKS.has(block)) {
@@ -176,9 +173,9 @@ async function generateModelMesh(
 		}
 
 		geometry.translate(-8, -8, -8)
-		geometry.rotateY(Math.degToRad(180))
-		if (variant.y) geometry.rotateY(Math.degToRad(variant.y))
+		// geometry.rotateY(Math.degToRad(180))
 		if (variant.x) geometry.rotateX(Math.degToRad(variant.x))
+		if (variant.y) geometry.rotateY(-Math.degToRad(variant.y))
 		if (variant.isItemModel) {
 			geometry.translate(0, 8, 0)
 		} else {
@@ -385,9 +382,6 @@ export async function parseBlockState(block: IParsedBlock): Promise<BlockModelMe
 			throw new Error(`Invalid block state '${k}' for '${block.resource.name}' `)
 		} else if (!block.blockStateRegistryEntry.stateValues[k].includes(v)) {
 			throw new Error(`Invalid block state value '${v.toString()}' for '${k}'`)
-		}
-		if (BLACKLISTED_BLOCKSTATES.has(k)) {
-			block.states[k] = block.blockStateRegistryEntry.defaultStates[k]
 		}
 	}
 
