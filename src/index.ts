@@ -84,6 +84,7 @@ import { VanillaBlockDisplay, debugBlockState, debugBlocks } from './outliner/va
 import { BLOCKSTATE_REGISTRY } from './systems/minecraft/blockstateManager'
 import { exportProject } from './systems/exporter'
 import { openBlueprintLoadingDialog } from './interface/blueprintLoadingPopup'
+import { openInstallPopup } from './interface/installedPopup'
 
 // Show loading popup
 void showLoadingPopup().then(async () => {
@@ -139,6 +140,7 @@ globalThis.AnimatedJava = {
 		BLOCKSTATE_REGISTRY,
 		exportProject,
 		openBlueprintLoadingDialog,
+		openInstallPopup,
 	},
 }
 
@@ -166,8 +168,14 @@ BBPlugin.register(PACKAGE.name, {
 	},
 	oninstall() {
 		events.INSTALL.dispatch()
+		openInstallPopup()
 	},
 	onuninstall() {
 		events.UNINSTALL.dispatch()
+		Blockbench.showMessageBox({
+			title: 'Animated Java has Been Uninstalled!',
+			message: 'In order to fully uninstall Animated Java, please restart Blockbench.',
+			buttons: ['OK'],
+		})
 	},
 })

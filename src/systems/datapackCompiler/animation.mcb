@@ -6,11 +6,6 @@ dir global {
 		scoreboard objectives add <%OBJECTIVES.ID()%> dummy
 		scoreboard objectives add <%OBJECTIVES.IS_RIG_LOADED()%> dummy
 		scoreboard objectives add <%OBJECTIVES.TWEEN_DURATION()%> dummy
-		<%%
-			animations.forEach(animation => {
-				emit(`scoreboard objectives add ${OBJECTIVES.FRAME(animation.name)} dummy`)
-			})
-		%%>
 
 		scoreboard players add aj.last_id <%OBJECTIVES.ID()%> 0
 
@@ -119,6 +114,12 @@ dir global {
 
 dir <%export_namespace%> {
 	function on_load {
+		<%%
+			animations.forEach(animation => {
+				emit(`scoreboard objectives add ${OBJECTIVES.FRAME(animation.name)} dummy`)
+			})
+		%%>
+
 		IF (use_storage_for_animation) {
 			REPEAT (animations) as animation {
 				data remove storage aj.<%export_namespace%>:animations <%animation.storageSafeName%>
@@ -143,7 +144,7 @@ dir <%export_namespace%> {
 				}
 				data modify entity @s data.rigHash set value '<%rigHash%>'
 				execute on passengers run data merge entity @s {Glowing: 1b, glow_color_override: <%0xff0000%>}
-				summon minecraft:text_display ~ ~ ~ {Tags:['<%TAGS.GLOBAL_RIG()%>', '<%TAGS.OUTDATED_RIG_TEXT_DISPLAY()%>', '<%TAGS.NEW()%>'], text:'<%TELLRAW.RIG_OUTDATED_TEXT_DISPLAY()%>', billboard: "vertical", transformation:{translation:[0,<%boundingBox[1]/16%>,0],left_rotation:[0,0,0,1],right_rotation:[0,0,0,1],scale:[1,1,1]}}
+				summon minecraft:text_display ~ ~ ~ {Tags:['<%TAGS.GLOBAL_RIG()%>', '<%TAGS.OUTDATED_RIG_TEXT_DISPLAY()%>', '<%TAGS.NEW()%>'], text:'<%TELLRAW.RIG_OUTDATED_TEXT_DISPLAY()%>', billboard: "vertical", transformation:{translation:[0f,<%boundingBox[1]/16%>f,0f],left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],scale:[1f,1f,1f]}}
 				ride @e[type=minecraft:text_display,tag=<%TAGS.NEW()%>,limit=1,distance=..0.01] mount @s
 				tag @e[type=minecraft:text_display,tag=<%TAGS.NEW()%>,limit=1,distance=..0.01] remove <%TAGS.NEW()%>
 			}
@@ -410,8 +411,8 @@ dir <%export_namespace%> {
 														posx: node.pos[0],
 														posy: node.pos[1],
 														posz: node.pos[2],
-														rotx: node.rot[0],
-														roty: node.rot[1]
+														rotx: node.head_rot[1],
+														roty: node.head_rot[0]
 													}
 												%%>
 											}
@@ -421,8 +422,8 @@ dir <%export_namespace%> {
 														^<%roundTo(node.pos[1], 10)%> \
 														^<%roundTo(node.pos[2], 10)%> \
 													rotated \
-														~<%roundTo(node.head_rot[0], 10)%> \
 														~<%roundTo(node.head_rot[1], 10)%> \
+														~<%roundTo(node.head_rot[0], 10)%> \
 												run {
 													<%%
 														emit.mcb(node.commands)

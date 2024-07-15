@@ -23,8 +23,8 @@ const LOADER = new THREE.TextureLoader()
 const BLOCK_MODEL_CACHE = new Map<string, BlockModelMesh>()
 
 const BLACKLISTED_BLOCKS = new Map([
-	['water', "Fluids are don't render in Block Displays."],
-	['lava', "Fluids are don't render in Block Displays."],
+	['water', translate('block_model_manager.fluid_warning')],
+	['lava', translate('block_model_manager.fluid_warning')],
 
 	['player_head', translate('block_model_manager.mob_head_warning')],
 	['player_wall_head', translate('block_model_manager.mob_head_warning')],
@@ -173,9 +173,9 @@ async function generateModelMesh(
 		}
 
 		geometry.translate(-8, -8, -8)
-		geometry.rotateY(Math.degToRad(180))
-		if (variant.y) geometry.rotateY(Math.degToRad(variant.y))
+		// geometry.rotateY(Math.degToRad(180))
 		if (variant.x) geometry.rotateX(Math.degToRad(variant.x))
+		if (variant.y) geometry.rotateY(-Math.degToRad(variant.y))
 		if (variant.isItemModel) {
 			geometry.translate(0, 8, 0)
 		} else {

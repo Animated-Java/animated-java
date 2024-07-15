@@ -1,5 +1,11 @@
 import { BLUEPRINT_FORMAT } from '../blueprintFormat'
 
+import { ComponentConstructorOptions } from 'svelte'
+
+export type SvelteComponentConstructor<T, U extends ComponentConstructorOptions> = new (
+	options: U
+) => T
+
 export function addProjectToRecentProjects(file: FileResult) {
 	if (!Project || !file.path) return
 	const name = pathToName(file.path, true)

@@ -15,7 +15,7 @@ export function openVanillaItemDisplayConfigDialog(display: VanillaItemDisplay) 
 		(display.config ??= new TextDisplayConfig().toJSON())
 	)
 
-	const billboard = new Valuable(oldConfig.billboard)
+	const billboard = new Valuable(oldConfig.billboard as string)
 	const overrideBrightness = new Valuable(oldConfig.overrideBrightness)
 	const brightnessOverride = new Valuable(oldConfig.brightnessOverride)
 	const glowing = new Valuable(oldConfig.glowing)
@@ -31,8 +31,8 @@ export function openVanillaItemDisplayConfigDialog(display: VanillaItemDisplay) 
 		id: `${PACKAGE.name}:vanillaItemDisplayConfigDialog`,
 		title: translate('dialog.vanilla_item_display_config.title'),
 		width: 400,
-		svelteComponent: VanillaItemDisplayConfigDialog,
-		svelteComponentProperties: {
+		component: VanillaItemDisplayConfigDialog,
+		props: {
 			variant: Variant.selected,
 			billboard,
 			overrideBrightness,
@@ -50,7 +50,7 @@ export function openVanillaItemDisplayConfigDialog(display: VanillaItemDisplay) 
 		onConfirm() {
 			const newConfig = new TextDisplayConfig()
 
-			newConfig.billboard = billboard.get()
+			newConfig.billboard = billboard.get() as any
 			newConfig.overrideBrightness = overrideBrightness.get()
 			newConfig.brightnessOverride = brightnessOverride.get()
 			newConfig.glowing = glowing.get()

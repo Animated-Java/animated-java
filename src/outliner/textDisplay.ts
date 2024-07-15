@@ -80,7 +80,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 			TextDisplay.properties[key].reset(this)
 		}
 
-		this.name = 'vanilla_block_display'
+		this.name = 'text_display'
 		this.extend(data)
 
 		this.name ??= 'text_display'

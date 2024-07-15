@@ -30,28 +30,30 @@ export const MENU = createBarMenu(
 	[],
 	() => Format === BLUEPRINT_FORMAT
 ) as BarMenu & { label: HTMLDivElement }
-MENU.label.style.display = 'none'
+MENU.label.style.display = 'inline-block'
 MENU.label.innerHTML = 'Animated Java'
 MENU.label.prepend(createIconImg())
 BLOCKBENCH_MENU_BAR.appendChild(MENU.label)
-
-events.SELECT_PROJECT.subscribe(project => {
-	MENU.label.style.display = project.format === BLUEPRINT_FORMAT ? 'inline-block' : 'none'
-})
-events.UNSELECT_AJ_PROJECT.subscribe(() => {
-	MENU.label.style.display = 'none'
-})
 
 MenuBar.addAction(
 	createAction(`${PACKAGE.name}:about`, {
 		icon: 'info',
 		category: 'animated_java',
 		name: translate('action.open_about.name'),
-		condition() {
-			return Format === BLUEPRINT_FORMAT
-		},
 		click() {
 			openAboutDialog()
+		},
+	}),
+	MENU.id
+)
+
+MenuBar.addAction(
+	createAction(`${PACKAGE.name}:documentation`, {
+		icon: 'find_in_page',
+		category: 'animated_java',
+		name: translate('action.open_documentation.name'),
+		click() {
+			Blockbench.openLink('https://animated-java.dev/docs')
 		},
 	}),
 	MENU.id
@@ -67,21 +69,6 @@ MenuBar.addAction(
 		},
 		click() {
 			openBlueprintSettingsDialog()
-		},
-	}),
-	MENU.id
-)
-
-MenuBar.addAction(
-	createAction(`${PACKAGE.name}:documentation`, {
-		icon: 'find_in_page',
-		category: 'animated_java',
-		name: translate('action.open_documentation.name'),
-		condition() {
-			return Format === BLUEPRINT_FORMAT
-		},
-		click() {
-			Blockbench.openLink('https://animated-java.dev/docs')
 		},
 	}),
 	MENU.id

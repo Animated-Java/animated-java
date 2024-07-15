@@ -1,7 +1,7 @@
 import { SvelteComponentDev } from 'svelte/internal'
 import ImportAjModelLoaderDialog from '../components/importAJModelLoaderDialog.svelte'
 import { PACKAGE } from '../constants'
-import { injectSvelteCompomponent } from '../util/injectSvelte'
+import { injectSvelteCompomponent } from '../util/injectSvelteComponent'
 import { createModelLoader } from '../util/moddingTools'
 import { translate } from '../util/translation'
 import { openUnexpectedErrorDialog } from './unexpectedErrorDialog'
@@ -28,8 +28,8 @@ createModelLoader(`${PACKAGE.name}-upgradeAJModelLoader`, {
 			activeComponent.$destroy()
 		}
 		void injectSvelteCompomponent({
-			svelteComponent: ImportAjModelLoaderDialog,
-			svelteComponentProperties: {},
+			component: ImportAjModelLoaderDialog,
+			props: {},
 			elementSelector() {
 				return document.querySelector(`#${PACKAGE.name}-upgradeAJModelLoader-target`)
 			},

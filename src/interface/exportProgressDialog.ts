@@ -28,8 +28,8 @@ export function openExportProgressDialog(debug?: boolean) {
 		id: `${PACKAGE.name}:exportProgressDialog`,
 		title: translate('dialog.export_progress.title'),
 		width: 512,
-		svelteComponent: ExportProgressDialogSvelteComponent,
-		svelteComponentProperties: {
+		component: ExportProgressDialogSvelteComponent,
+		props: {
 			progress: PROGRESS,
 			maxProgress: MAX_PROGRESS,
 			progressDescription: PROGRESS_DESCRIPTION,

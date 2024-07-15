@@ -703,7 +703,6 @@ async function writeFiles(map: Map<string, string>, dataPackFolder: string) {
 			const oldFile: IFunctionTag = JSON.parse(fs.readFileSync(path, 'utf-8'))
 			const newFile: IFunctionTag = JSON.parse(content)
 			const merged = mergeTag(oldFile, newFile)
-			// console.log('Merged Function Tag:', path, merged)
 			if (aj.export_namespace !== Project!.last_used_export_namespace) {
 				merged.values = merged.values.filter(v => {
 					const value = typeof v === 'string' ? v : v.id

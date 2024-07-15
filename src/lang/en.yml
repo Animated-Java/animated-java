@@ -19,6 +19,9 @@ animated_java.popup.loading.offline: |-
     Animated Java Failed to Connect!
     Some features may be unavailable.
 
+animated_java.dialog.installed_popup.title: Thank you for installing!
+animated_java.dialog.installed_popup.close_button: Let's Get Animating!
+
 ### Dialogs
 
 ## About
@@ -308,6 +311,12 @@ animated_java.dialog.text_display_config.billboard.options.vertical: Vertical
 animated_java.dialog.text_display_config.billboard.options.horizontal: Horizontal
 animated_java.dialog.text_display_config.billboard.options.center: Center
 
+## Vanilla Block Display Config Dialog
+animated_java.dialog.vanilla_block_display_config.title: Vanilla Block Display Config
+
+## Vanilla Item Display Config Dialog
+animated_java.dialog.vanilla_item_display_config.title: Vanilla Item Display Config
+
 ## Variant Config Dialog
 animated_java.dialog.variant_config.title: Variant Config
 
@@ -444,7 +453,7 @@ animated_java.panel.keyframe.easing_mode.title: Easing Mode
 animated_java.panel.keyframe.easing_mode.description: The easing mode to apply to the keyframe.
 animated_java.panel.keyframe.easing_mode.options.in: In
 animated_java.panel.keyframe.easing_mode.options.out: Out
-animated_java.panel.keyframe.easing_mode.options.in-out: In-Out
+animated_java.panel.keyframe.easing_mode.options.inout: In-Out
 
 animated_java.panel.keyframe.easing_args.title: Easing Args
 animated_java.panel.keyframe.easing_args.description: The arguments to apply to the easing function.
@@ -454,6 +463,10 @@ animated_java.panel.keyframe.easing_args.easing_arg.back.title: Overshoot
 animated_java.panel.keyframe.easing_args.easing_arg.back.description: The amount of overshoot to apply to the easing function.
 animated_java.panel.keyframe.easing_args.easing_arg.bounce.title: Bounciness
 animated_java.panel.keyframe.easing_args.easing_arg.bounce.description: The bounciness of the easing function.
+
+animated_java.panel.keyframe.nonlinear_interpolation: |-
+    Advanced easing options are disabled.
+    Change the keyframe's interpolation mode to 'linear' to enable them.
 
 # Text Display Panel
 animated_java.panel.text_display.title: Text Display
@@ -500,7 +513,9 @@ animated_java.misc.failed_to_export.button: Ok
 animated_java.format_category.animated_java: Animated Java
 
 # Model Manager Warnings
+animated_java.block_model_manager.fluid_warning: Fluids don't render in Block Displays.
 animated_java.block_model_manager.mob_head_warning: Mob Heads don't render in Block Displays. Use an Item Display instead.
+animated_java.block_model_manager.facing_warning: The "facing" blockstate key is not supported in Block Displays.
 
 # Project Errors
 animated_java.error.blueprint_export_path_doesnt_exist.title: Blueprint Export Path Doesn't Exist

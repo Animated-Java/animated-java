@@ -4,8 +4,10 @@
 	import { translate } from '../util/translation'
 	import { events } from '../util/events'
 	import { getEasingArgDefault, hasArgs } from '../util/easing'
-	import NumberSlider from './dialogItems/numberSlider.svelte'
 	import { Valuable } from '../util/stores'
+	import { isCurrentFormat } from '../blueprintFormat'
+	import { createPropertySubscribable } from '../util/moddingTools'
+	import { Subscribable } from '../util/subscribable'
 
 	const ICONS = Object.fromEntries(
 		(ICON_IMPORTS as unknown as any[]).map((icon, i) => [
@@ -18,7 +20,6 @@
 		out: ICONS['out'],
 		inout: ICONS['inout'],
 	}
-	console.log(ICONS, EASING_MODE_ICONS)
 </script>
 
 <script lang="ts">
@@ -39,7 +40,7 @@
 
 	let easingType: string = 'linear'
 	let easingMode: string | undefined
-	let easingArg: Valuable<number>
+	let easingArg: Valuable<number> | undefined
 
 	function getSelectedEasing() {
 		if (!selectedKeyframe?.easing) return
@@ -68,26 +69,23 @@
 				mode && mode !== 'inout' ? mode[0].toUpperCase() + mode.slice(1) : 'InOut'
 			}${type[0].toUpperCase() + type.slice(1)}`
 		}
-		easingType = type
-		easingMode = mode
-		console.log(selectedKeyframe.easing, easingType, easingMode)
-		if (hasArgs(selectedKeyframe.easing)) {
+		if (easingType !== type) {
 			getEasingArgs()
 		}
+		easingType = type
+		easingMode = mode
 	}
 
 	let unsub: () => void
 	function getEasingArgs() {
 		if (!selectedKeyframe) return
-		if (selectedKeyframe.easingArgs) {
-			easingArg = new Valuable(
-				selectedKeyframe.easingArgs[0] || getEasingArgDefault(selectedKeyframe) || 0,
-			)
-		} else {
-			easingArg = new Valuable(getEasingArgDefault(selectedKeyframe) || 0)
-		}
 		unsub && unsub()
-		unsub = easingArg.subscribe(value => setEasingArgs(value))
+		if (hasArgs(selectedKeyframe.easing)) {
+			easingArg = new Valuable(getEasingArgDefault(selectedKeyframe) || 0)
+			unsub = easingArg.subscribe(value => setEasingArgs(value))
+		} else {
+			easingArg = undefined
+		}
 	}
 
 	function setEasingArgs(arg: number) {
@@ -106,7 +104,9 @@
 	}
 
 	events.SELECT_KEYFRAME.subscribe((keyframe?: _Keyframe) => {
+		console.log('selected keyframe', keyframe)
 		if (
+			isCurrentFormat() &&
 			keyframe &&
 			['position', 'rotation', 'scale'].includes(keyframe.channel) &&
 			!isFirstKeyframe(keyframe)
@@ -126,89 +126,110 @@
 	events.UNSELECT_KEYFRAME.subscribe(() => {
 		selectedKeyframe = undefined
 	})
+
+	events.UNSELECT_AJ_PROJECT.subscribe(() => {
+		selectedKeyframe = undefined
+	})
 </script>
 
 {#if selectedKeyframe}
-	<div class="bar flex">
-		<label
-			for="easing_type_input"
-			class="undefined"
-			style="font-weight: unset; width: 100px; text-align: left;"
-			title={translate('panel.keyframe.easing_type.description')}
-		>
-			{translate('panel.keyframe.easing_type.title')}
-		</label>
-		{#key easingType}
-			<div id="easing_type_input" class="easing-container">
-				{#each easingTypes as ease}
-					<button
-						class="easing-type"
-						title={translate(`panel.keyframe.easing_type.options.${ease}`)}
-						on:click={() => setSelectedEasing(ease, easingMode)}
-					>
-						<img
-							class={easingType === ease ? 'selected-keyframe-icon' : ''}
-							src={ICONS[ease]}
-							alt={ease}
-						/>
-					</button>
-				{/each}
-			</div>
-		{/key}
-	</div>
-	{#if selectedKeyframe.easing !== 'linear'}
+	{#if selectedKeyframe?.interpolation === 'linear'}
 		<div class="bar flex">
 			<label
-				for="easing_mode_input"
+				for="easing_type_input"
 				class="undefined"
 				style="font-weight: unset; width: 100px; text-align: left;"
-				title={translate('panel.keyframe.easing_mode.description')}
+				title={translate('panel.keyframe.easing_type.description')}
 			>
-				{translate('panel.keyframe.easing_mode.title')}
+				{translate('panel.keyframe.easing_type.title')}
 			</label>
-			{#key easingMode}
-				<div id="easing_mode_input" class="easing-container">
-					{#each easingModes as mode}
+			{#key easingType}
+				<div id="easing_type_input" class="easing-container">
+					{#each easingTypes as ease}
 						<button
 							class="easing-type"
-							title={translate(`panel.keyframe.easing_mode.options.${mode}`)}
-							on:click={() => setSelectedEasing(easingType, mode)}
+							title={translate(`panel.keyframe.easing_type.options.${ease}`)}
+							on:click={() => setSelectedEasing(ease, easingMode)}
 						>
 							<img
-								class={easingMode === mode ? 'selected-keyframe-icon' : ''}
-								src={EASING_MODE_ICONS[mode]}
-								alt={mode}
+								class={easingType === ease ? 'selected-keyframe-icon' : ''}
+								src={ICONS[ease]}
+								alt={ease}
 							/>
 						</button>
 					{/each}
 				</div>
 			{/key}
 		</div>
-	{/if}
-	{#if hasArgs(selectedKeyframe?.easing)}
-		<div class="bar flex">
-			<label
-				for="easing_arg_input"
-				class="undefined"
-				style="font-weight: unset; width: 100px; text-align: left;"
-				title={translate(`panel.keyframe.easing_args.easing_arg.${easingType}.description`)}
-			>
-				{translate(`panel.keyframe.easing_args.easing_arg.${easingType}.title`)}
-			</label>
-			<input
-				id="easing_arg_input"
-				class="dark_bordered tab_target"
-				style="width: 66px; margin-left: 2px;"
-				type="number"
-				step="0.1"
-				min="0"
-				bind:value={$easingArg}
-			/>
+		{#if selectedKeyframe.easing !== 'linear'}
+			<div class="bar flex">
+				<label
+					for="easing_mode_input"
+					class="undefined"
+					style="font-weight: unset; width: 100px; text-align: left;"
+					title={translate('panel.keyframe.easing_mode.description')}
+				>
+					{translate('panel.keyframe.easing_mode.title')}
+				</label>
+				{#key easingMode}
+					<div id="easing_mode_input" class="easing-container">
+						{#each easingModes as mode}
+							<button
+								class="easing-type"
+								title={translate(`panel.keyframe.easing_mode.options.${mode}`)}
+								on:click={() => setSelectedEasing(easingType, mode)}
+							>
+								<img
+									class={easingMode === mode ? 'selected-keyframe-icon' : ''}
+									src={EASING_MODE_ICONS[mode]}
+									alt={mode}
+								/>
+							</button>
+						{/each}
+					</div>
+				{/key}
+			</div>
+		{/if}
+		{#if hasArgs(selectedKeyframe?.easing)}
+			<div class="bar flex">
+				<label
+					for="easing_arg_input"
+					class="undefined"
+					style="font-weight: unset; width: 100px; text-align: left;"
+					title={translate(
+						`panel.keyframe.easing_args.easing_arg.${easingType}.description`,
+					)}
+				>
+					{translate(`panel.keyframe.easing_args.easing_arg.${easingType}.title`)}
+				</label>
+				<input
+					id="easing_arg_input"
+					class="dark_bordered tab_target"
+					style="width: 66px; margin-left: 2px;"
+					type="number"
+					step="0.1"
+					min="0"
+					bind:value={$easingArg}
+				/>
+			</div>
+		{/if}
+	{:else}
+		<div class="easings-disabled">
+			{translate('panel.keyframe.nonlinear_interpolation')}
 		</div>
 	{/if}
 {/if}
 
 <style>
+	.easings-disabled {
+		margin-left: 16px;
+		font-size: 16px;
+		color: var(--color-subtle_text);
+		text-wrap: balance;
+		margin-bottom: 1rem;
+		font-style: italic;
+	}
+
 	.easing-container {
 		display: flex;
 		flex-direction: row;

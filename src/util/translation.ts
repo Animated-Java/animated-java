@@ -4,11 +4,10 @@ import { default as LANGUAGES, filenames as filepaths } from '../lang/*.yml'
 const FILE_NAMES = filepaths.map((path: string) => PathModule.basename(path, '.yml'))
 
 export function translate(key: string, ...args: string[]) {
-	const languageIndex = FILE_NAMES.indexOf(settings.language.value)
+	let languageIndex = FILE_NAMES.indexOf(settings.language.value)
 	if (languageIndex === -1) {
 		console.warn(`Could not find language '${settings.language.value as string}'`)
-		console.log(`Available languages: ${FILE_NAMES.join(', ') as string}`)
-		return key
+		languageIndex = FILE_NAMES.indexOf('en')
 	}
 	const lang = LANGUAGES[languageIndex] as Record<string, string>
 	if (!key.startsWith('animated_java.')) {

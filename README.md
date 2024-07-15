@@ -63,7 +63,7 @@ Things you'll need installed before you can setup the development environment
     ```ts
     /// <reference types="blockbench-types"/>
     ```
-4. Run `yarn build:dev` to start the development environment, which will watch for changes and recompile the plugin.
+4. Run `yarn dev` to start the development environment, which will watch for changes and recompile the plugin.
 5. Open Blockbench, then go to `File > Plugins > Load Plugin From File` and select the `animated_java.js` file from your local repo (`dist/pluginPackage/animated-java.js`).
 6. That's it! You're ready to start developing.
 

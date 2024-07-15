@@ -441,7 +441,7 @@ animated_java.panel.keyframe.easing_mode.title: Glättungs-Modus
 animated_java.panel.keyframe.easing_mode.description: Die Glättungs-Modus, die bei diesem Keyframe angewendet wird.
 animated_java.panel.keyframe.easing_mode.options.in: Ein
 animated_java.panel.keyframe.easing_mode.options.out: Aus
-animated_java.panel.keyframe.easing_mode.options.in-out: Ein-Aus
+animated_java.panel.keyframe.easing_mode.options.inout: Ein-Aus
 
 animated_java.panel.keyframe.easing_args.title: Glättungs-Argumente
 animated_java.panel.keyframe.easing_args.description: Die Argumente, die auf die Glättungsfunktion angewendet werden soll.

@@ -1,28 +1,33 @@
-import type { SvelteComponent } from 'svelte'
-import * as PACKAGE from '../../package.json'
+import type { ComponentConstructorOptions } from 'svelte'
+import type { SvelteComponentDev } from 'svelte/internal'
+import type { SvelteComponentConstructor } from './misc'
 
-const DIALOG_STACK: SvelteDialog[] = []
+const DIALOG_STACK: Array<SvelteDialog<unknown, any>> = []
 
-export class SvelteDialog extends Dialog {
-	instance?: SvelteComponent | undefined
-	constructor(
-		options: DialogOptions & {
-			id: string
-			// @ts-ignore
-			svelteComponent: SvelteComponentConstructor<SvelteComponent, any>
-			svelteComponentProperties: Record<string, any>
-			lines?: never
-			preventKeybinds?: boolean
-			preventKeybindConfirm?: boolean
-			preventKeybindCancel?: boolean
-			onClose?: () => void
-			stackable?: boolean
-		}
-	) {
-		const mount = document.createComment(`${PACKAGE.name}-svelte-dialog-` + guid())
+type SvelteDialogOptions<T, U extends ComponentConstructorOptions> = Omit<
+	DialogOptions,
+	'lines'
+> & {
+	id: string
+	component: SvelteComponentConstructor<T, U>
+	props: U['props']
+	preventKeybinds?: boolean
+	preventKeybindConfirm?: boolean
+	preventKeybindCancel?: boolean
+	onClose?: () => void
+	stackable?: boolean
+}
+
+export class SvelteDialog<T, U extends Record<string, any>> extends Dialog {
+	instance?: SvelteComponentDev | undefined
+	constructor(options: SvelteDialogOptions<T, ComponentConstructorOptions<U>>) {
+		const mount = document.createComment(`svelte-dialog-` + guid())
+
+		const dialogOptions = { ...options }
+		delete dialogOptions.component
 
 		super(options.id, {
-			...options,
+			...dialogOptions,
 			lines: [mount],
 		})
 
@@ -30,9 +35,10 @@ export class SvelteDialog extends Dialog {
 			const parentElement = mount.parentElement
 			if (this.instance || !parentElement) return
 			parentElement.style.overflow = 'visible'
-			this.instance = new options.svelteComponent({
+			// @ts-ignore
+			this.instance = new options.component({
 				target: parentElement,
-				props: options.svelteComponentProperties,
+				props: options.props,
 			})
 			if (options.onOpen) options.onOpen()
 			if (!options.stackable) {

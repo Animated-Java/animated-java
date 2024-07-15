@@ -65,7 +65,7 @@ export function openBoneConfigDialog(bone: Group) {
 
 	const oldConfig = BoneConfig.fromJSON(boneConfigJSON)
 
-	const billboard = new Valuable(oldConfig.billboard)
+	const billboard = new Valuable(oldConfig.billboard as string)
 	const overrideBrightness = new Valuable(oldConfig.overrideBrightness)
 	const brightnessOverride = new Valuable(oldConfig.brightnessOverride)
 	const enchanted = new Valuable(oldConfig.enchanted)
@@ -83,9 +83,9 @@ export function openBoneConfigDialog(bone: Group) {
 		id: `${PACKAGE.name}:boneConfig`,
 		title: translate('dialog.bone_config.title'),
 		width: 400,
-		svelteComponent: BoneConfigDialogSvelteComponent,
-		svelteComponentProperties: {
-			variant: Variant.selected,
+		component: BoneConfigDialogSvelteComponent,
+		props: {
+			variant: Variant.selected!,
 			billboard,
 			overrideBrightness,
 			brightnessOverride,
@@ -104,7 +104,7 @@ export function openBoneConfigDialog(bone: Group) {
 		onConfirm() {
 			const newConfig = new BoneConfig()
 
-			newConfig.billboard = billboard.get()
+			newConfig.billboard = billboard.get() as any
 			newConfig.overrideBrightness = overrideBrightness.get()
 			newConfig.brightnessOverride = brightnessOverride.get()
 			newConfig.enchanted = enchanted.get()

@@ -3,7 +3,7 @@ import { BillboardMode, BoneConfig, LocatorConfig } from './nodeConfigs'
 import ProjectTitleSvelte from './components/projectTitle.svelte'
 import { PACKAGE } from './constants'
 import { events } from './util/events'
-import { injectSvelteCompomponent } from './util/injectSvelte'
+import { injectSvelteCompomponent } from './util/injectSvelteComponent'
 import { toSafeFuntionName } from './util/minecraftUtil'
 import { addProjectToRecentProjects } from './util/misc'
 import { Valuable } from './util/stores'
@@ -147,6 +147,7 @@ export interface IBlueprintFormatJSON {
 export function convertToBlueprint() {
 	// Convert the current project to a Blueprint
 	// NOTE - Nothing needs to be done here yet. The default functionality is sufficient.
+	Project!.save_path = ''
 }
 
 export function getDefaultProjectSettings(): ModelProject['animated_java'] {
@@ -222,7 +223,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 
 		Project.loadingPromises = []
 
-		Project.save_path = model.meta.save_location || path
+		Project.save_path = path
 
 		if (model.meta.box_uv !== undefined) {
 			Project.box_uv = model.meta.box_uv
@@ -526,8 +527,8 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 			created() {
 				void injectSvelteCompomponent({
 					elementSelector: () => $('#format_page_animated_java_blueprint_mount')[0],
-					svelteComponent: FormatPageSvelte,
-					svelteComponentProperties: { format: BLUEPRINT_FORMAT },
+					component: FormatPageSvelte,
+					props: {},
 				})
 			},
 			template: `<div id="format_page_animated_java_blueprint_mount" style="display: flex; flex-direction: column; flex-grow: 1;"></div>`,
@@ -584,8 +585,8 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 							}
 						},
 						prepend: true,
-						svelteComponent: ProjectTitleSvelte,
-						svelteComponentProperties: { pluginMode: thisProject.pluginMode },
+						component: ProjectTitleSvelte,
+						props: { pluginMode: thisProject.pluginMode },
 					})
 
 					if (Variant.all.length === 0) new Variant('Default', true)

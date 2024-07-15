@@ -81,6 +81,7 @@
 -   [ ] Look into adding a color picker for tintable vanilla items.
 -   [ ] Add Variants to the UndoSystem (Blocked by vanilla Blockbench not supporting custom undo actions).
 -   [ ] Remove `easingArgs` and `easingMode` from saved keyframes if `easingType` is `linear`.
+-   [ ] Add an option to generate a `damage_flash` variant for mob-type entities.
 
 # Data Pack Compiler
 

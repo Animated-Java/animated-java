@@ -15,7 +15,7 @@ export function openVanillaBlockDisplayConfigDialog(display: VanillaBlockDisplay
 		(display.config ??= new TextDisplayConfig().toJSON())
 	)
 
-	const billboard = new Valuable(oldConfig.billboard)
+	const billboard = new Valuable(oldConfig.billboard as string)
 	const overrideBrightness = new Valuable(oldConfig.overrideBrightness)
 	const brightnessOverride = new Valuable(oldConfig.brightnessOverride)
 	const glowing = new Valuable(oldConfig.glowing)
@@ -29,10 +29,10 @@ export function openVanillaBlockDisplayConfigDialog(display: VanillaBlockDisplay
 
 	new SvelteDialog({
 		id: `${PACKAGE.name}:vanillaItemDisplayConfigDialog`,
-		title: translate('dialog.vanilla_item_display_config.title'),
+		title: translate('dialog.vanilla_block_display_config.title'),
 		width: 400,
-		svelteComponent: VanillaBlockDisplayConfigDialog,
-		svelteComponentProperties: {
+		component: VanillaBlockDisplayConfigDialog,
+		props: {
 			variant: Variant.selected,
 			billboard,
 			overrideBrightness,
@@ -50,7 +50,7 @@ export function openVanillaBlockDisplayConfigDialog(display: VanillaBlockDisplay
 		onConfirm() {
 			const newConfig = new TextDisplayConfig()
 
-			newConfig.billboard = billboard.get()
+			newConfig.billboard = billboard.get() as any
 			newConfig.overrideBrightness = overrideBrightness.get()
 			newConfig.brightnessOverride = brightnessOverride.get()
 			newConfig.glowing = glowing.get()

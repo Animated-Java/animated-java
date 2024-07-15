@@ -19,8 +19,8 @@ createBlockbenchMod(
 			data: AnimationOptions
 		) {
 			context.originalExtend.call(this, data)
-			this.snapping = DEFAULT_SNAPPING_VALUE
 			if (isCurrentFormat()) {
+				this.snapping = DEFAULT_SNAPPING_VALUE
 				this.length = Math.max(this.length, MINIMUM_ANIMATION_LENGTH)
 				for (const animator of Object.values(this.animators)) {
 					if (!animator) continue
