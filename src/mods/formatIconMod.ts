@@ -1,6 +1,6 @@
 import Icon from '../components/icon.svelte'
 import { PACKAGE } from '../constants'
-import { injectSvelteCompomponent } from '../util/injectSvelte'
+import { injectSvelteCompomponent } from '../util/injectSvelteComponent'
 import { createBlockbenchMod } from '../util/moddingTools'
 
 createBlockbenchMod(
@@ -9,8 +9,8 @@ createBlockbenchMod(
 	() => {
 		void injectSvelteCompomponent({
 			elementSelector: () => document.querySelector('[format=animated_java_blueprint]'),
-			svelteComponent: Icon,
-			svelteComponentProperties: {},
+			component: Icon,
+			props: {},
 			prepend: true,
 			postMount: () => {
 				document

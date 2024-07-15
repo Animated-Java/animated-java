@@ -20,8 +20,8 @@ export function openLocatorConfigDialog(locator: Locator) {
 		id: `${PACKAGE.name}:locatorConfig`,
 		title: translate('dialog.locator_config.title'),
 		width: 600,
-		svelteComponent: LocatorConfigDialog,
-		svelteComponentProperties: {
+		component: LocatorConfigDialog,
+		props: {
 			useEntity,
 			entityType,
 			summonCommands,

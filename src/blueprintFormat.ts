@@ -3,7 +3,7 @@ import { BillboardMode, BoneConfig, LocatorConfig } from './nodeConfigs'
 import ProjectTitleSvelte from './components/projectTitle.svelte'
 import { PACKAGE } from './constants'
 import { events } from './util/events'
-import { injectSvelteCompomponent } from './util/injectSvelte'
+import { injectSvelteCompomponent } from './util/injectSvelteComponent'
 import { toSafeFuntionName } from './util/minecraftUtil'
 import { addProjectToRecentProjects } from './util/misc'
 import { Valuable } from './util/stores'
@@ -527,8 +527,8 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 			created() {
 				void injectSvelteCompomponent({
 					elementSelector: () => $('#format_page_animated_java_blueprint_mount')[0],
-					svelteComponent: FormatPageSvelte,
-					svelteComponentProperties: { format: BLUEPRINT_FORMAT },
+					component: FormatPageSvelte,
+					props: {},
 				})
 			},
 			template: `<div id="format_page_animated_java_blueprint_mount" style="display: flex; flex-direction: column; flex-grow: 1;"></div>`,
@@ -585,8 +585,8 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 							}
 						},
 						prepend: true,
-						svelteComponent: ProjectTitleSvelte,
-						svelteComponentProperties: { pluginMode: thisProject.pluginMode },
+						component: ProjectTitleSvelte,
+						props: { pluginMode: thisProject.pluginMode },
 					})
 
 					if (Variant.all.length === 0) new Variant('Default', true)

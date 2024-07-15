@@ -1,9 +1,9 @@
 import KeyframeEasingsSvelte from '../components/keyframeEasings.svelte'
-import { injectSvelteCompomponentMod } from '../util/injectSvelte'
+import { injectSvelteCompomponentMod } from '../util/injectSvelteComponent'
 
 injectSvelteCompomponentMod({
-	svelteComponent: KeyframeEasingsSvelte,
-	svelteComponentProperties: {},
+	component: KeyframeEasingsSvelte,
+	props: {},
 	elementSelector() {
 		return $('#panel_keyframe')[0]
 	},

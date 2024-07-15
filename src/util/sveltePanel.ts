@@ -1,18 +1,20 @@
-import { SvelteComponent } from 'svelte'
+import { ComponentConstructorOptions, SvelteComponent } from 'svelte'
+import { SvelteComponentConstructor } from './misc'
 import * as PACKAGE from '../../package.json'
 import { pollPromise } from '../util/promises'
 
+type SveltePanelOptions<T, U extends ComponentConstructorOptions> = Omit<
+	PanelOptions,
+	'component'
+> & {
+	id: string
+	component: SvelteComponentConstructor<T, U>
+	props: Record<string, any>
+}
+
 export class SveltePanel extends Panel {
 	instance?: SvelteComponent | undefined
-	constructor(
-		options: PanelOptions & {
-			id: string
-			// @ts-ignore
-			svelteComponent: SvelteComponentConstructor<SvelteComponent, any>
-			svelteComponentProperties: Record<string, any>
-			component?: never
-		}
-	) {
+	constructor(options: SveltePanelOptions<any, any>) {
 		const mountId = `${PACKAGE.name}-svelte-panel-` + guid()
 
 		super(options.id, {
@@ -24,9 +26,9 @@ export class SveltePanel extends Panel {
 		})
 
 		void pollPromise(() => document.querySelector(`#${mountId}`)).then(el => {
-			this.instance = new options.svelteComponent({
+			this.instance = new options.component({
 				target: el.parentElement,
-				props: options.svelteComponentProperties,
+				props: options.props,
 			})
 		})
 	}

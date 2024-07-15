@@ -8,8 +8,8 @@ export function openAboutDialog() {
 		id: `${PACKAGE.name}:aboutDialog`,
 		title: translate('dialog.about.title'),
 		width: 700,
-		svelteComponent: AboutSvelte,
-		svelteComponentProperties: {},
+		component: AboutSvelte,
+		props: {},
 		buttons: [translate('dialog.about.close_button')],
 		preventKeybinds: true,
 	}).show()

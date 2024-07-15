@@ -1,9 +1,9 @@
 import VanillaItemDisplayElementPanel from '../components/vanillaItemDisplayElementPanel.svelte'
-import { injectSvelteCompomponentMod } from '../util/injectSvelte'
+import { injectSvelteCompomponentMod } from '../util/injectSvelteComponent'
 
 injectSvelteCompomponentMod({
-	svelteComponent: VanillaItemDisplayElementPanel,
-	svelteComponentProperties: {},
+	component: VanillaItemDisplayElementPanel,
+	props: {},
 	elementSelector() {
 		return document.querySelector('#panel_element')
 	},

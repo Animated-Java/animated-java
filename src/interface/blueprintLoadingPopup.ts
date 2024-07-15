@@ -7,7 +7,7 @@ import { translate } from '../util/translation'
 export const PROGRESS = new Valuable(0)
 export const MAX_PROGRESS = new Valuable(1)
 
-let instance: SvelteDialog | null = null
+let instance: SvelteDialog<any, any> | null = null
 
 export function openBlueprintLoadingDialog() {
 	PROGRESS.set(0)
@@ -17,8 +17,8 @@ export function openBlueprintLoadingDialog() {
 		id: `${PACKAGE.name}:blueprintLoadingPopup`,
 		title: translate('dialog.blueprint_loading.title'),
 		width: 128,
-		svelteComponent: BlueprintLoadingPopup,
-		svelteComponentProperties: {
+		component: BlueprintLoadingPopup,
+		props: {
 			progress: PROGRESS,
 			maxProgress: MAX_PROGRESS,
 		},

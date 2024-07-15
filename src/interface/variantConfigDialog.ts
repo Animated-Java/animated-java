@@ -18,8 +18,8 @@ export function openVariantConfigDialog(variant: Variant) {
 		id: `${PACKAGE.name}:variantConfig`,
 		title: translate('dialog.variant_config.title'),
 		width: 512,
-		svelteComponent: VariantConfigDialogSvelteComponent,
-		svelteComponentProperties: {
+		component: VariantConfigDialogSvelteComponent,
+		props: {
 			variant,
 			displayName,
 			name,

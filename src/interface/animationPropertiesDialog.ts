@@ -8,7 +8,7 @@ export const DIALOG_ID = `${PACKAGE.name}:animationPropertiesDialog`
 
 export function openAnimationPropertiesDialog(animation: _Animation) {
 	const animationName = new Valuable(animation.name)
-	const loopMode = new Valuable(animation.loop)
+	const loopMode = new Valuable(animation.loop as string)
 	const loopDelay = new Valuable(Number(animation.loop_delay) || 0)
 	const excludedNodes = new Valuable(animation.excluded_nodes)
 
@@ -16,8 +16,8 @@ export function openAnimationPropertiesDialog(animation: _Animation) {
 		id: DIALOG_ID,
 		title: translate('dialog.animation_properties.title', animation.name),
 		width: 600,
-		svelteComponent: AniamtionPropertiesSvelteComponent,
-		svelteComponentProperties: {
+		component: AniamtionPropertiesSvelteComponent,
+		props: {
 			animationName,
 			loopMode,
 			loopDelay,
@@ -27,7 +27,7 @@ export function openAnimationPropertiesDialog(animation: _Animation) {
 		onConfirm() {
 			animation.name = animationName.get()
 			animation.createUniqueName(Blockbench.Animation.all)
-			animation.loop = loopMode.get()
+			animation.loop = loopMode.get() as any
 			animation.loop_delay = loopDelay.get().toString()
 			animation.excluded_nodes = excludedNodes.get()
 		},

@@ -13,7 +13,7 @@ export function openBoneConfigDialog(bone: TextDisplay) {
 	// Blockbench's JSON stringifier doesn't handle custom toJSON functions, so I'm storing the config JSON in the bone instead of the actual BoneConfig object
 	const oldConfig = TextDisplayConfig.fromJSON((bone.config ??= new TextDisplayConfig().toJSON()))
 
-	const billboard = new Valuable(oldConfig.billboard)
+	const billboard = new Valuable(oldConfig.billboard as string)
 	const overrideBrightness = new Valuable(oldConfig.overrideBrightness)
 	const brightnessOverride = new Valuable(oldConfig.brightnessOverride)
 	const glowing = new Valuable(oldConfig.glowing)
@@ -29,8 +29,8 @@ export function openBoneConfigDialog(bone: TextDisplay) {
 		id: `${PACKAGE.name}:textDisplayConfigDialog`,
 		title: translate('dialog.text_display_config.title'),
 		width: 400,
-		svelteComponent: TextDisplayConfigDialog,
-		svelteComponentProperties: {
+		component: TextDisplayConfigDialog,
+		props: {
 			variant: Variant.selected,
 			billboard,
 			overrideBrightness,
@@ -48,7 +48,7 @@ export function openBoneConfigDialog(bone: TextDisplay) {
 		onConfirm() {
 			const newConfig = new TextDisplayConfig()
 
-			newConfig.billboard = billboard.get()
+			newConfig.billboard = billboard.get() as any
 			newConfig.overrideBrightness = overrideBrightness.get()
 			newConfig.brightnessOverride = brightnessOverride.get()
 			newConfig.glowing = glowing.get()

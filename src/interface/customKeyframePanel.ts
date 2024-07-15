@@ -1,7 +1,7 @@
 import CustomKeyframePanelSvelteComponent from '../components/customKeyframePanel.svelte'
 import { CUSTOM_CHANNELS } from '../mods/customKeyframesMod'
 import { events } from '../util/events'
-import { injectSvelteCompomponent } from '../util/injectSvelte'
+import { injectSvelteCompomponent } from '../util/injectSvelteComponent'
 import { Valuable } from '../util/stores'
 import { translate } from '../util/translation'
 
@@ -24,8 +24,11 @@ export function injectCustomKeyframePanel(selectedKeyframe: _Keyframe) {
 	}
 
 	void injectSvelteCompomponent({
-		svelteComponent: CustomKeyframePanelSvelteComponent,
-		svelteComponentProperties: { currentPanel: CURRENT_PANEL, selectedKeyframe },
+		component: CustomKeyframePanelSvelteComponent,
+		props: {
+			currentPanel: CURRENT_PANEL as Valuable<HTMLDivElement>,
+			selectedKeyframe,
+		},
 		elementSelector() {
 			return element
 		},

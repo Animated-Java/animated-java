@@ -8,8 +8,8 @@ export function openUnexpectedErrorDialog(error: Error) {
 		id: `${PACKAGE.name}:unexpectedError`,
 		title: translate('dialog.unexpected_error.title'),
 		width: 600,
-		svelteComponent: UnexpectedErrorDialog,
-		svelteComponentProperties: {
+		component: UnexpectedErrorDialog,
+		props: {
 			error,
 		},
 		preventKeybinds: true,

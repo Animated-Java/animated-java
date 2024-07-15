@@ -3,7 +3,7 @@ import { SvelteDialog } from '../util/svelteDialog'
 import { Valuable } from '../util/stores'
 import BlueprintSettingsDialogSvelteComponent from '../components/blueprintSettingsDialog.svelte'
 import { toSafeFuntionName } from '../util/minecraftUtil'
-import { defaultValues } from '../blueprintSettings'
+import { defaultValues, ExportMode } from '../blueprintSettings'
 import { translate } from '../util/translation'
 import { updateBoundingBox } from '../blueprintFormat'
 
@@ -29,8 +29,10 @@ function getSettings() {
 			}
 			return toSafeFuntionName(value)
 		}),
-		resourcePackExportMode: new Valuable(Project!.animated_java.resource_pack_export_mode),
-		dataPackExportMode: new Valuable(Project!.animated_java.data_pack_export_mode),
+		resourcePackExportMode: new Valuable(
+			Project!.animated_java.resource_pack_export_mode as string
+		),
+		dataPackExportMode: new Valuable(Project!.animated_java.data_pack_export_mode as string),
 		// Resource Pack Settings
 		displayItem: new Valuable(Project!.animated_java.display_item, value => {
 			if (!value) {
@@ -75,8 +77,9 @@ function setSettings(settings: ReturnType<typeof getSettings>) {
 	Project.animated_java.enable_plugin_mode = settings.enablePluginMode.get()
 	Project.pluginMode.set(settings.enablePluginMode.get()) // Required to update the project title.
 	Project.animated_java.export_namespace = settings.exportNamespace.get()
-	Project.animated_java.resource_pack_export_mode = settings.resourcePackExportMode.get()
-	Project.animated_java.data_pack_export_mode = settings.dataPackExportMode.get()
+	Project.animated_java.resource_pack_export_mode =
+		settings.resourcePackExportMode.get() as ExportMode
+	Project.animated_java.data_pack_export_mode = settings.dataPackExportMode.get() as ExportMode
 	// Resource Pack Settings
 	Project.animated_java.display_item = settings.displayItem.get()
 	Project.animated_java.custom_model_data_offset = settings.customModelDataOffset.get()
@@ -109,8 +112,8 @@ export function openBlueprintSettingsDialog() {
 		id: `${PACKAGE.name}:blueprintSettingsDialog`,
 		title: translate('dialog.blueprint_settings.title'),
 		width: 512,
-		svelteComponent: BlueprintSettingsDialogSvelteComponent,
-		svelteComponentProperties: settings,
+		component: BlueprintSettingsDialogSvelteComponent,
+		props: settings,
 		preventKeybinds: true,
 		onConfirm() {
 			setSettings(settings)
