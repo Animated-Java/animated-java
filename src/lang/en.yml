@@ -464,6 +464,10 @@ animated_java.panel.keyframe.easing_args.easing_arg.back.description: The amount
 animated_java.panel.keyframe.easing_args.easing_arg.bounce.title: Bounciness
 animated_java.panel.keyframe.easing_args.easing_arg.bounce.description: The bounciness of the easing function.
 
+animated_java.panel.keyframe.nonlinear_interpolation: |-
+    Advanced easing options are disabled.
+    Change the keyframe's interpolation mode to 'linear' to enable them.
+
 # Text Display Panel
 animated_java.panel.text_display.title: Text Display
 
