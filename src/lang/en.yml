@@ -19,6 +19,9 @@ animated_java.popup.loading.offline: |-
     Animated Java Failed to Connect!
     Some features may be unavailable.
 
+animated_java.dialog.installed_popup.title: Thank you for installing!
+animated_java.dialog.installed_popup.close_button: Let's Get Animating!
+
 ### Dialogs
 
 ## About
