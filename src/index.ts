@@ -162,8 +162,6 @@ BBPlugin.register(PACKAGE.name, {
 	await_loading: true,
 	onload() {
 		events.LOAD.dispatch()
-		// FIXME - Remove this
-		openInstallPopup()
 	},
 	onunload() {
 		events.UNLOAD.dispatch()
@@ -174,5 +172,10 @@ BBPlugin.register(PACKAGE.name, {
 	},
 	onuninstall() {
 		events.UNINSTALL.dispatch()
+		Blockbench.showMessageBox({
+			title: 'Animated Java has Been Uninstalled!',
+			message: 'In order to fully uninstall Animated Java, please restart Blockbench.',
+			buttons: ['OK'],
+		})
 	},
 })
