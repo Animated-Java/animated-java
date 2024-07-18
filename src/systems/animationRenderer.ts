@@ -54,7 +54,14 @@ function threeAxisRotationToTwoAxisRotation(rot: THREE.Quaternion): ArrayVector2
 }
 
 export interface INodeTransform {
-	type: 'bone' | 'camera' | 'locator' | 'text_display' | 'item_display' | 'block_display'
+	type:
+		| 'bone'
+		| 'struct'
+		| 'camera'
+		| 'locator'
+		| 'text_display'
+		| 'item_display'
+		| 'block_display'
 	name: string
 	uuid: string
 	node?: Group | NullObject | Locator | OutlinerElement | TextDisplay
@@ -201,6 +208,10 @@ export function getNodeTransforms(
 				break
 			}
 			case 'camera': {
+				matrix = getNodeMatrix(node.node, 1)
+				break
+			}
+			case 'struct': {
 				matrix = getNodeMatrix(node.node, 1)
 				break
 			}

@@ -144,24 +144,15 @@
 							"type": "object",
 							"additionalProperties": false,
 							"patternProperties": {
-								"animated_java:transparent_texture": {
-									"type": "object",
-									"description": "The internal transparent texture used to hide parts of the Rig.",
-									"properties": {
-										"name": { "const": "Transparent" },
-										"expectedPath": {
-											"const": "assets\\animated_java\\textures\\item\\armor_stand\\Transparent.png"
-										},
-										"src": {
-											"const": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABgWlDQ1BJQ0MgcHJvZmlsZQAAKJF9kTtIA0EURY+JokjEwhQiFltEK21UxFKiKIKBkETwV7i7MVHIrmE3YmMp2AYs/DRGLWystbWwFQTBD4i1hZWijcj6ZhNIEOPAMIc7cy9v3oNAKWdabuMoWHbBSUxGtdm5ea35hSaCQIAR3XTzseREirrr844Gdd72q6z67/5cbell14QGTXjUzDsF4SXh4Y1CXvGecNhc0dPCZ8J9jhQo/KB0o8yvirM+B1Rm2EklxoTDwlq2ho0aNlccS3hIOJK2bMkPzJY5rXhTsZVbNyt1qh+Glu2ZpNJldzPJFDHiaBiss0qOAv1y2qK4JOQ+Wsff5fvj4jLEtYopjnHWsNB9P2oGv3vrZgYHykmhKDQ9e957DzTvwHfR876OPO/7GIJPcGlX/WslGPkQvVjVIofQvgXnV1XN2IWLbeh8zOuO7kv+/DMZeDuVMc1Bxw20LpT7Vrnn5B5S0qvpa9g/gN6sZC/W+XdLbd/+fVPp3w9iNHKgdXImZAAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAAuIwAALiMBeKU/dgAAAAd0SU1FB+gFAwAFKkpaLkIAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAEklEQVQ4y2NgGAWjYBSMAggAAAQQAAGFP6pyAAAAAElFTkSuQmCC"
-										}
-									}
-								},
-								".+": {
+								"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
 									"type": "object",
 									"required": ["name", "expectedPath", "src"],
 									"properties": {
 										"name": { "type": "string" },
+										"id": {
+											"type": "string",
+											"description": "The ID of the texture used when making vanilla models."
+										},
 										"expectedPath": {
 											"type": "string",
 											"description": "The path in the resource pack that the models that reference this texture expect the texture to be at."
@@ -330,6 +321,7 @@
 					"type": "string",
 					"enum": [
 						"bone",
+						"struct",
 						"camera",
 						"locator",
 						"text_display",
@@ -395,6 +387,7 @@
 					"type": "string",
 					"enum": [
 						"bone",
+						"struct",
 						"camera",
 						"locator",
 						"text_display",
@@ -403,7 +396,8 @@
 					]
 				},
 				"name": { "type": "string" },
-				"uuid": { "type": "string" }
+				"uuid": { "type": "string" },
+				"parent": { "type": "string" }
 			},
 			"allOf": [
 				{
@@ -436,22 +430,22 @@
 							"scale": { "type": "number" },
 							"configs": {
 								"type": "object",
-								"properties": {
-									"default": {
+								"patternProperties": {
+									"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
 										"$ref": "#/definitions/boneConfig"
-									},
-									"variants": {
-										"type": "object",
-										"patternProperties": {
-											".+": {
-												"$ref": "#/definitions/boneConfig"
-											}
-										}
 									}
 								}
 							}
 						}
 					}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": { "const": "struct" }
+						}
+					},
+					"then": {}
 				},
 				{
 					"if": {
@@ -775,6 +769,10 @@
 					"type": "array",
 					"description": "A list of node UUIDs that should be excluded / ignored when this variant is applied.",
 					"items": { "type": "string" }
+				},
+				"is_default": {
+					"type": "boolean",
+					"description": "Whether or not this variant is the default variant."
 				}
 			}
 		}

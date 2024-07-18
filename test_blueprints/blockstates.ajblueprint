@@ -1,7 +1,7 @@
 {
 	"meta": {
 		"format": "animated_java_blueprint",
-		"format_version": "1.0.0",
+		"format_version": "1.1.0",
 		"uuid": "0184ff74-4557-e0db-2ecc-efe8a7011a46",
 		"save_location": "D:\\github-repos\\animated-java\\animated-java\\test_blueprints\\blockstates.ajblueprint",
 		"last_used_export_namespace": "blueprint"
@@ -37,7 +37,7 @@
 	"elements": [
 		{
 			"name": "vanilla_block_display",
-			"position": [3.5, 0, -8],
+			"position": [12.5, 0, -8],
 			"rotation": [0, -90, 0],
 			"scale": [1, 1, 1],
 			"visibility": true,
@@ -54,7 +54,7 @@
 		},
 		{
 			"name": "vanilla_block_display2",
-			"position": [-3.5, 0.05, 8.075],
+			"position": [-12.5, 0.05, 8.075],
 			"rotation": [0, 90, 0],
 			"scale": [1, 1, 1],
 			"visibility": true,
@@ -207,7 +207,7 @@
 		},
 		{
 			"name": "vanilla_block_display",
-			"position": [1, 6, -4.75],
+			"position": [1, 6, -7.75],
 			"rotation": [0, 0, 0],
 			"scale": [0.25, 0.25, 0.25],
 			"visibility": true,

@@ -2,7 +2,7 @@
 /// <reference path="D:/github-repos/snavesutit/blockbench-types/types/index.d.ts"/>
 /// <reference path="../global.d.ts"/>
 
-import { IBlueprintVariantJSON } from '../blueprintFormat'
+import type { IBlueprintBoneConfigJSON, IBlueprintVariantJSON } from '../blueprintFormat'
 import { type defaultValues } from '../blueprintSettings'
 import { EasingKey } from '../util/easing'
 import { detectCircularReferences, scrubUndefined } from '../util/misc'
@@ -29,9 +29,10 @@ type ExportedNodetransform = Omit<INodeTransform, 'node' | 'matrix' | 'transform
 }
 type ExportedRenderedNode = Omit<
 	AnyRenderedNode,
-	'node' | 'parentNode' | 'model' | 'boundingBox'
+	'node' | 'parentNode' | 'model' | 'boundingBox' | 'configs'
 > & {
 	boundingBox?: { min: ArrayVector3; max: ArrayVector3 }
+	configs?: Record<string, IBlueprintBoneConfigJSON>
 }
 type ExportedAnimationFrame = Omit<IRenderedFrame, 'nodes' | 'node_transforms'> & {
 	node_transforms: ExportedNodetransform[]
@@ -68,6 +69,7 @@ type ExportedDynamicAnimation = {
 }
 interface ISerializedTexture {
 	name: string
+	id: string
 	expectedPath: string
 	src: string
 }
@@ -124,9 +126,10 @@ export function exportJSON(options: {
 
 	console.log('Exporting JSON...', options)
 
-	function serializeTexture(texture: Texture): ISerializedTexture {
+	function serializeTexture(id: string, texture: Texture): ISerializedTexture {
 		return {
 			name: texture.name,
+			id,
 			expectedPath: PathModule.join(
 				textureExportFolder,
 				texture.name.endsWith('.png') ? texture.name : texture.name + '.png'
@@ -154,9 +157,9 @@ export function exportJSON(options: {
 			models: rig.models,
 			variant_models: rig.variantModels,
 			textures: Object.fromEntries(
-				Object.entries(rig.textures).map(([key, texture]) => [
-					key,
-					serializeTexture(texture),
+				Object.entries(rig.textures).map(([id, texture]) => [
+					texture.uuid,
+					serializeTexture(id, texture),
 				])
 			),
 		},
@@ -221,6 +224,12 @@ function serailizeRenderedNode(node: AnyRenderedNode): ExportedRenderedNode {
 		json.boundingBox = {
 			min: node.boundingBox.min.toArray(),
 			max: node.boundingBox.max.toArray(),
+		}
+		delete json.configs
+		json.configs = { ...node.configs.variants }
+		const defaultVariant = Variant.getDefault()
+		if (node.configs.default && defaultVariant) {
+			json.configs[defaultVariant.uuid] = node.configs.default
 		}
 	}
 	return json as ExportedRenderedNode

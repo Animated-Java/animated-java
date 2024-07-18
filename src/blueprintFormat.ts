@@ -97,6 +97,10 @@ export interface IBlueprintVariantJSON {
 	 * The list of bones that should be ignored when applying the Variant
 	 */
 	excluded_nodes: string[]
+	/**
+	 * Whether or not this is the default Variant
+	 */
+	is_default?: true
 }
 
 /**
