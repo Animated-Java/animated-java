@@ -326,7 +326,7 @@
 		},
 		{
 			"name": "text_display",
-			"position": [0, 27, 0],
+			"position": [0, 27, 11],
 			"rotation": [0, 0, 0],
 			"scale": [1, 1, 1],
 			"visibility": true,
@@ -340,6 +340,23 @@
 			"align": "center",
 			"uuid": "3988627b-b0c6-8a09-9d3f-230adeb648f8",
 			"type": "animated_java:text_display"
+		},
+		{
+			"name": "vanilla_item_display1",
+			"position": [0, 25, 0],
+			"rotation": [90, 0, 0],
+			"scale": [1, 1, 1],
+			"visibility": true,
+			"item": "minecraft:diamond",
+			"config": {},
+			"block": "minecraft:stone",
+			"text": "\"Hello World!\"",
+			"lineWidth": 200,
+			"backgroundColor": "#000000",
+			"backgroundAlpha": 0.25,
+			"align": "center",
+			"uuid": "c6e25715-1cda-c39f-9693-be44241e1d48",
+			"type": "animated_java:vanilla_item_display"
 		}
 	],
 	"outliner": [
@@ -360,7 +377,8 @@
 		"42bafea5-d05a-8106-0db4-0d1b0067a68e",
 		"e1a16324-658b-a9af-1095-ca2a83c80595",
 		"215cf9b7-1949-5e9b-b7b1-a35f59e58b2d",
-		"3988627b-b0c6-8a09-9d3f-230adeb648f8"
+		"3988627b-b0c6-8a09-9d3f-230adeb648f8",
+		"c6e25715-1cda-c39f-9693-be44241e1d48"
 	],
 	"textures": [],
 	"variants": {

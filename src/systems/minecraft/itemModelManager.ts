@@ -129,34 +129,13 @@ async function generateItemMesh(location: string, model: IItemModel): Promise<It
 
 		const positionArray: number[] = []
 		const indices: number[] = []
-		const uvs = [1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1]
+		const uvs: number[] = []
 		const normals: number[] = []
-		const colors = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+		const colors: number[] = []
 		const addNormal = (x: number, y: number, z: number) => {
 			normals.push(x, y, z, x, y, z, x, y, z, x, y, z)
 		}
 
-		const corners: number[][] = [
-			[-texture.image.width, 0, 0],
-			[-texture.image.width, 0, texture.image.height],
-			[0, 0, texture.image.height],
-			[0, 0, 0],
-		]
-		corners.push(
-			...corners.map(corner => {
-				return [corner[0], -1, corner[2]]
-			})
-		)
-
-		corners.forEach(corner => {
-			positionArray.push(...corner)
-		})
-
-		indices.push(0, 1, 2, 0, 2, 3)
-		indices.push(4 + 0, 4 + 2, 4 + 1, 4 + 0, 4 + 3, 4 + 2)
-
-		addNormal(0, 1, 0)
-		addNormal(0, -1, 0)
 		if (texture && texture.image.width) {
 			const canvas = document.createElement('canvas')
 			const ctx = canvas.getContext('2d')!
@@ -164,7 +143,38 @@ async function generateItemMesh(location: string, model: IItemModel): Promise<It
 			canvas.height = texture.image.height
 			ctx.drawImage(texture.image as HTMLImageElement, 0, 0)
 
-			const addFace = (
+			const addFace = (x: number, z: number, w: number, h: number, dir: number) => {
+				const s = positionArray.length / 3
+				const y = dir === 1 ? -1 : 0
+				// prettier-ignore
+				positionArray.push(
+					-x, y, z,
+					-x, y, z + 1,
+					-x - w, y, z + h,
+					-x - w, y, z + h - 1
+				)
+
+				if (dir === 1) {
+					indices.push(s + 0, s + 1, s + 2, s + 0, s + 2, s + 3)
+				} else if (dir === -1) {
+					indices.push(s + 0, s + 2, s + 1, s + 0, s + 3, s + 2)
+				}
+
+				addNormal(dir, 0, 0)
+				uvs.push(
+					(x + w) / canvas.width,
+					1 - z / canvas.height,
+					(x + w) / canvas.width,
+					1 - (z + h) / canvas.height,
+					x / canvas.width,
+					1 - (z + h) / canvas.height,
+					x / canvas.width,
+					1 - z / canvas.height
+				)
+				colors.push(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+			}
+
+			const addEdge = (
 				startX: number,
 				startY: number,
 				endX: number,
@@ -214,6 +224,7 @@ async function generateItemMesh(location: string, model: IItemModel): Promise<It
 			}
 
 			const result = ctx.getImageData(0, 0, canvas.width, canvas.height)
+
 			const matrix1 = []
 			for (let i = 0; i < result.data.length; i += 4) {
 				matrix1.push(result.data[i + 3] > 140 ? 1 : 0)
@@ -221,11 +232,25 @@ async function generateItemMesh(location: string, model: IItemModel): Promise<It
 			const matrix2 = matrix1.slice()
 
 			for (let y = 0; y < canvas.height; y++) {
+				let lengthX = 0
+				for (let x = 0; x < canvas.width; x++) {
+					const pixel = x == 0 ? 0 : matrix1[y * canvas.width + x]
+					if (pixel) {
+						lengthX++
+					} else if (lengthX) {
+						addFace(x - lengthX, y, lengthX, 1, 1)
+						addFace(x - lengthX, y, lengthX, 1, -1)
+						lengthX = 0
+					}
+				}
+			}
+
+			for (let y = 0; y < canvas.height; y++) {
 				for (let x = 0; x <= canvas.width; x++) {
 					const px0 = x == 0 ? 0 : matrix1[y * canvas.width + x - 1]
 					const px1 = x == canvas.width ? 0 : matrix1[y * canvas.width + x]
 					if (!px0 !== !px1) {
-						addFace(x, y, x, y + 1, px0 ? 1 : -1)
+						addEdge(x, y, x, y + 1, px0 ? 1 : -1)
 					}
 				}
 			}
@@ -235,7 +260,7 @@ async function generateItemMesh(location: string, model: IItemModel): Promise<It
 					const px0 = y == 0 ? 0 : matrix2[(y - 1) * canvas.width + x]
 					const px1 = y == canvas.height ? 0 : matrix2[y * canvas.width + x]
 					if (!px0 !== !px1) {
-						addFace(x, y, x + 1, y, px0 ? -1 : 1)
+						addEdge(x, y, x + 1, y, px0 ? -1 : 1)
 					}
 				}
 			}
