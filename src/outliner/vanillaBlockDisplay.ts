@@ -231,8 +231,8 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay,
 
 				const mesh = el.mesh as THREE.Mesh
 				mesh.name = el.uuid
-				mesh.material = Canvas.wireframeMaterial
 				mesh.geometry = result.boundingBox
+				mesh.material = Canvas.transparentMaterial
 
 				mesh.clear()
 				result.outline.name = el.uuid + '_outline'

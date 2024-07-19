@@ -230,7 +230,7 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, 
 				const mesh = el.mesh as THREE.Mesh
 				mesh.name = el.uuid
 				mesh.geometry = result.boundingBox
-				mesh.material = Canvas.wireframeMaterial
+				mesh.material = Canvas.transparentMaterial
 				mesh.clear()
 				mesh.add(result.mesh)
 				mesh.add(result.outline)
