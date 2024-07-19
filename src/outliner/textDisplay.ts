@@ -326,7 +326,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 		const font = await getVanillaFont()
 		// Hide the geo while rendering
 
-		const { mesh, outline } = await font.generateTextMesh({
+		const { mesh: newMesh, outline } = await font.generateTextMesh({
 			jsonText,
 			maxLineWidth: this.lineWidth,
 			backgroundColor: this.backgroundColor,
@@ -334,19 +334,32 @@ export class TextDisplay extends ResizableOutlinerElement {
 			shadow: this.shadow,
 			alignment: this.align,
 		})
-		mesh.name = this.uuid + '_text'
-		const previousMesh = this.mesh.children.find(v => v.name === mesh.name)
+		newMesh.name = this.uuid + '_text'
+		const previousMesh = this.mesh.children.find(v => v.name === newMesh.name)
 		if (previousMesh) this.mesh.remove(previousMesh)
-		this.mesh.add(mesh)
+
+		const mesh = this.mesh as THREE.Mesh
+		mesh.name = this.uuid
+		mesh.geometry = (newMesh.children[0] as THREE.Mesh).geometry.clone()
+		mesh.geometry.translate(
+			newMesh.children[0].position.x,
+			newMesh.children[0].position.y,
+			newMesh.children[0].position.z
+		)
+		mesh.geometry.rotateY(Math.PI)
+		mesh.geometry.scale(newMesh.scale.x, newMesh.scale.y, newMesh.scale.z)
+		mesh.material = Canvas.transparentMaterial
+
+		mesh.add(newMesh)
 
 		outline.name = this.uuid + '_outline'
 		outline.visible = this.selected
-		this.mesh.outline = outline
-		const previousOutline = this.mesh.children.find(v => v.name === outline.name)
-		if (previousOutline) this.mesh.remove(previousOutline)
-		this.mesh.add(outline)
-		this.mesh.visible = this.visibility
-		return mesh
+		mesh.outline = outline
+		const previousOutline = mesh.children.find(v => v.name === outline.name)
+		if (previousOutline) mesh.remove(previousOutline)
+		mesh.add(outline)
+		mesh.visible = this.visibility
+		return newMesh
 	}
 }
 new Property(TextDisplay, 'string', 'text', { default: '"Hello World!"' })

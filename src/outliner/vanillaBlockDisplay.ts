@@ -229,16 +229,21 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay,
 			.then(result => {
 				if (!result?.mesh) return
 
-				el.mesh.clear()
+				const mesh = el.mesh as THREE.Mesh
+				mesh.name = el.uuid
+				mesh.material = Canvas.wireframeMaterial
+				mesh.geometry = result.boundingBox
+
+				mesh.clear()
 				result.outline.name = el.uuid + '_outline'
 				result.outline.visible = el.selected
-				el.mesh.outline = result.outline
-				el.mesh.add(result.mesh)
-				el.mesh.add(result.outline)
+				mesh.outline = result.outline
+				mesh.add(result.mesh)
+				mesh.add(result.outline)
 
 				el.preview_controller.updateHighlight(el)
 				el.preview_controller.updateTransform(el)
-				el.mesh.visible = el.visibility
+				mesh.visible = el.visibility
 				TickUpdates.selection = true
 
 				el.ready = true

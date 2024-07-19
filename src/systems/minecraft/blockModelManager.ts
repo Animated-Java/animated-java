@@ -17,7 +17,12 @@ import {
 } from './model'
 import { TEXTURE_FRAG_SHADER, TEXTURE_VERT_SHADER } from './textureShaders'
 
-type BlockModelMesh = { mesh: THREE.Mesh; outline: THREE.LineSegments; isBlock: true }
+type BlockModelMesh = {
+	mesh: THREE.Mesh
+	outline: THREE.LineSegments
+	boundingBox: THREE.BufferGeometry
+	isBlock: true
+}
 
 const LOADER = new THREE.TextureLoader()
 const BLOCK_MODEL_CACHE = new Map<string, BlockModelMesh>()
@@ -59,6 +64,7 @@ export async function getBlockModel(block: string): Promise<BlockModelMesh | und
 	result = {
 		mesh: result.mesh.clone(true),
 		outline: result.outline.clone(true),
+		boundingBox: result.boundingBox.clone(),
 		isBlock: true,
 	}
 	for (const child of result.mesh.children as THREE.Mesh[]) {
@@ -112,6 +118,7 @@ async function generateModelMesh(
 	}
 
 	const mesh: THREE.Mesh = new THREE.Mesh()
+	const boundingBoxes: THREE.BufferGeometry[] = []
 	const outlineGeos: THREE.BufferGeometry[] = []
 
 	for (const element of model.elements) {
@@ -334,6 +341,7 @@ async function generateModelMesh(
 		geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2))
 		geometry.attributes.uv.needsUpdate = true
 
+		boundingBoxes.push(geometry.clone())
 		const outlineGeo = new THREE.EdgesGeometry(geometry)
 		outlineGeos.push(outlineGeo)
 		const elementMesh = new THREE.Mesh(geometry, materials)
@@ -342,12 +350,13 @@ async function generateModelMesh(
 
 	const outlineGeo = mergeGeometries(outlineGeos)!
 	const outline = new THREE.LineSegments(outlineGeo, Canvas.outlineMaterial)
+	const boundingBox = mergeGeometries(boundingBoxes)!
 
 	outline.no_export = true
 	outline.renderOrder = 2
 	outline.frustumCulled = false
 
-	return { mesh, outline, isBlock: true }
+	return { mesh, outline, boundingBox, isBlock: true }
 }
 
 const TEXTURE_CACHE = new Map<string, THREE.Texture>()
@@ -423,6 +432,7 @@ export async function parseBlockState(block: IParsedBlock): Promise<BlockModelMe
 	} else if (blockstate.multipart) {
 		// throw new Error(`Multipart block states are not supported yet`)
 		const mesh = new THREE.Mesh()
+		const boundingBoxes: THREE.BufferGeometry[] = []
 		const outlines: THREE.BufferGeometry[] = []
 		for (const c of blockstate.multipart) {
 			const result = await parseMultipartCase(block, c)
@@ -433,6 +443,10 @@ export async function parseBlockState(block: IParsedBlock): Promise<BlockModelMe
 				newChild.rotateY(result.mesh.rotation.y)
 				newChild.rotateX(result.mesh.rotation.x)
 				mesh.add(newChild)
+				const boundingBox = result.boundingBox.clone()
+				boundingBox.rotateY(result.mesh.rotation.y)
+				boundingBox.rotateX(result.mesh.rotation.x)
+				boundingBoxes.push(boundingBox)
 			}
 			const outlineGeo = result.outline.geometry.clone()
 			outlineGeo.rotateY(result.mesh.rotation.y)
@@ -448,12 +462,13 @@ export async function parseBlockState(block: IParsedBlock): Promise<BlockModelMe
 
 		const outlineGeo = mergeGeometries(outlines)!
 		const outline = new THREE.LineSegments(outlineGeo, Canvas.outlineMaterial)
+		const boundingBox = mergeGeometries(boundingBoxes)!
 
 		outline.no_export = true
 		outline.renderOrder = 2
 		outline.frustumCulled = false
 
-		return { mesh, outline, isBlock: true }
+		return { mesh, outline, boundingBox, isBlock: true }
 	}
 
 	throw new Error(`Unsupported block state '${block.resourceLocation}'`)

@@ -323,6 +323,23 @@
 			"align": "center",
 			"uuid": "e1a16324-658b-a9af-1095-ca2a83c80595",
 			"type": "animated_java:vanilla_block_display"
+		},
+		{
+			"name": "text_display",
+			"position": [0, 27, 0],
+			"rotation": [0, 0, 0],
+			"scale": [1, 1, 1],
+			"visibility": true,
+			"item": "minecraft:diamond",
+			"config": {},
+			"block": "minecraft:stone",
+			"text": "\"My House!\"",
+			"lineWidth": 200,
+			"backgroundColor": "#000000",
+			"backgroundAlpha": 0.25098,
+			"align": "center",
+			"uuid": "3988627b-b0c6-8a09-9d3f-230adeb648f8",
+			"type": "animated_java:text_display"
 		}
 	],
 	"outliner": [
@@ -342,7 +359,8 @@
 		"dea933e7-4568-aae1-86c4-f761f5d0f2e2",
 		"42bafea5-d05a-8106-0db4-0d1b0067a68e",
 		"e1a16324-658b-a9af-1095-ca2a83c80595",
-		"215cf9b7-1949-5e9b-b7b1-a35f59e58b2d"
+		"215cf9b7-1949-5e9b-b7b1-a35f59e58b2d",
+		"3988627b-b0c6-8a09-9d3f-230adeb648f8"
 	],
 	"textures": [],
 	"variants": {
@@ -351,7 +369,8 @@
 			"display_name": "Default",
 			"uuid": "c79ede10-67d7-8730-033c-de43ab658b53",
 			"texture_map": {},
-			"excluded_nodes": []
+			"excluded_nodes": [],
+			"is_default": true
 		},
 		"list": []
 	},

@@ -5,7 +5,12 @@ import { parseBlockModel } from './blockModelManager'
 import { IItemModel } from './model'
 import { TEXTURE_FRAG_SHADER, TEXTURE_VERT_SHADER } from './textureShaders'
 
-type ItemModelMesh = { mesh: THREE.Mesh; outline: THREE.LineSegments; isBlock?: boolean }
+type ItemModelMesh = {
+	mesh: THREE.Mesh
+	outline: THREE.LineSegments
+	boundingBox: THREE.BufferGeometry
+	isBlock?: boolean
+}
 
 const LOADER = new THREE.TextureLoader()
 const ITEM_MODEL_CACHE = new Map<string, ItemModelMesh>()
@@ -22,6 +27,7 @@ export async function getItemModel(item: string): Promise<ItemModelMesh | undefi
 	result = {
 		mesh: result.mesh.clone(true),
 		outline: result.outline.clone(true),
+		boundingBox: result.boundingBox.clone(),
 		isBlock: result.isBlock,
 	}
 
@@ -81,6 +87,7 @@ async function parseItemModel(location: string, childModel?: IItemModel): Promis
 
 async function generateItemMesh(location: string, model: IItemModel): Promise<ItemModelMesh> {
 	const masterMesh = new THREE.Mesh()
+	const boundingBoxes: THREE.BufferGeometry[] = []
 	const outlineGeos: THREE.BufferGeometry[] = []
 
 	for (const textureResourceLoc of Object.values(model.textures)) {
@@ -267,14 +274,16 @@ async function generateItemMesh(location: string, model: IItemModel): Promise<It
 			new THREE.BufferAttribute(new Float32Array(outlineVerts), 3)
 		)
 		outlineGeos.push(outlineGeo)
+		boundingBoxes.push(mesh.geometry.clone())
 		masterMesh.add(mesh)
 	}
 
 	const outlineGeo = mergeGeometries(outlineGeos)
+	const boundingBox = mergeGeometries(boundingBoxes)!
 	const outline = new THREE.LineSegments(
 		new THREE.EdgesGeometry(outlineGeo as THREE.BufferGeometry),
 		Canvas.outlineMaterial
 	)
 
-	return { mesh: masterMesh, outline }
+	return { mesh: masterMesh, outline, boundingBox }
 }

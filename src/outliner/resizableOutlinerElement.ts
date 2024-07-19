@@ -115,6 +115,7 @@ new Property(ResizableOutlinerElement, 'string', 'visibility', { default: true }
 export const PREVIEW_CONTROLLER = new NodePreviewController(ResizableOutlinerElement, {
 	setup(el: ResizableOutlinerElement) {
 		const mesh = new THREE.Mesh()
+		mesh.isElement = true
 		mesh.fix_rotation = new THREE.Euler(0, 0, 0, 'ZYX')
 		mesh.fix_rotation.x = Math.degToRad(el.rotation[0])
 		mesh.fix_rotation.y = Math.degToRad(el.rotation[1])
