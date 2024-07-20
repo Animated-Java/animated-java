@@ -376,41 +376,41 @@ export class MinecraftFont {
 		const { lines, backgroundWidth } = await computeTextWrapping(words, maxLineWidth)
 		const width = backgroundWidth + 1
 		const height = lines.length * 10 + 1
-		// Debug output
-		const wordWidths = words.map(word => this.getWordWidth(word))
-		for (const word of words) {
-			console.log(
-				`${words.indexOf(word)} '${word.text.toString()}' width: ${
-					wordWidths[words.indexOf(word)]
-				}`
-			)
-			for (const span of word.styles) {
-				console.log(
-					`'${word.text.slice(span.start, span.end).toString()}' ${span.start}-${
-						span.end
-					} = `,
-					span.style
-				)
-			}
-		}
-		console.log('Lines:', lines, 'CanvasWidth:', maxLineWidth)
-		for (const line of lines) {
-			console.log('Line', lines.indexOf(line), line.width)
-			for (const word of line.words) {
-				console.log(
-					'Word',
-					line.words.indexOf(word),
-					`'${word.text.toString()}'`,
-					word.styles.map(span => span.style),
-					word.styles.map(
-						span =>
-							`${span.start}-${span.end} '${word.text
-								.slice(span.start, span.end)
-								.toString()}'`
-					)
-				)
-			}
-		}
+		// // Debug output
+		// const wordWidths = words.map(word => this.getWordWidth(word))
+		// for (const word of words) {
+		// 	console.log(
+		// 		`${words.indexOf(word)} '${word.text.toString()}' width: ${
+		// 			wordWidths[words.indexOf(word)]
+		// 		}`
+		// 	)
+		// 	for (const span of word.styles) {
+		// 		console.log(
+		// 			`'${word.text.slice(span.start, span.end).toString()}' ${span.start}-${
+		// 				span.end
+		// 			} = `,
+		// 			span.style
+		// 		)
+		// 	}
+		// }
+		// console.log('Lines:', lines, 'CanvasWidth:', maxLineWidth)
+		// for (const line of lines) {
+		// 	console.log('Line', lines.indexOf(line), line.width)
+		// 	for (const word of line.words) {
+		// 		console.log(
+		// 			'Word',
+		// 			line.words.indexOf(word),
+		// 			`'${word.text.toString()}'`,
+		// 			word.styles.map(span => span.style),
+		// 			word.styles.map(
+		// 				span =>
+		// 					`${span.start}-${span.end} '${word.text
+		// 						.slice(span.start, span.end)
+		// 						.toString()}'`
+		// 			)
+		// 		)
+		// 	}
+		// }
 
 		const backgroundGeo = new THREE.PlaneBufferGeometry(width, height)
 		const backgroundMesh = new THREE.Mesh(
