@@ -1,7 +1,6 @@
 <script lang="ts" context="module">
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
-	import { resolveEnvVariables } from '../util/misc'
 	import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
 
 	import Checkbox from './dialogItems/checkbox.svelte'
@@ -19,6 +18,7 @@
 	import KoFiImage from '../assets/kofi_s_tag_white.webp'
 
 	import fontUrl from '../assets/MinecraftFull.ttf'
+	import { resolvePath } from '../util/fileUtil'
 	if (![...document.fonts.keys()].some(v => v.family === 'MinecraftFull')) {
 		void new FontFace('MinecraftFull', fontUrl, {}).load().then(font => {
 			document.fonts.add(font)
@@ -163,7 +163,19 @@
 	}
 
 	function dataPackFolderChecker(value: string): { type: string; message: string } {
-		value = resolveEnvVariables(value)
+		let path: string
+		try {
+			path = resolvePath(value)
+		} catch (e) {
+			console.error(e)
+			return {
+				type: 'error',
+				message: translate(
+					'dialog.blueprint_settings.data_pack.error.folder_does_not_exist',
+				),
+			}
+		}
+		console.log(path)
 		switch (true) {
 			case value === '':
 				return {
@@ -172,26 +184,26 @@
 						'dialog.blueprint_settings.data_pack.error.no_folder_selected',
 					),
 				}
-			case !fs.existsSync(value):
+			case !fs.existsSync(path):
 				return {
 					type: 'error',
 					message: translate(
 						'dialog.blueprint_settings.data_pack.error.folder_does_not_exist',
 					),
 				}
-			case !fs.statSync(value).isDirectory():
+			case !fs.statSync(path).isDirectory():
 				return {
 					type: 'error',
 					message: translate('dialog.blueprint_settings.data_pack.error.not_a_folder'),
 				}
-			case !fs.existsSync(PathModule.join(value, 'pack.mcmeta')):
+			case !fs.existsSync(PathModule.join(path, 'pack.mcmeta')):
 				return {
 					type: 'error',
 					message: translate(
 						'dialog.blueprint_settings.data_pack.error.missing_pack_mcmeta',
 					),
 				}
-			case !fs.existsSync(PathModule.join(value, 'data')):
+			case !fs.existsSync(PathModule.join(path, 'data')):
 				return {
 					type: 'error',
 					message: translate(
@@ -204,6 +216,19 @@
 	}
 
 	function resourcePackFolderChecker(value: string): { type: string; message: string } {
+		let path: string
+		try {
+			path = resolvePath(value)
+		} catch (e) {
+			console.error(e)
+			return {
+				type: 'error',
+				message: translate(
+					'dialog.blueprint_settings.resource_pack.error.folder_does_not_exist',
+				),
+			}
+		}
+		console.log(path)
 		switch (true) {
 			case value === '':
 				return {
@@ -212,28 +237,28 @@
 						'dialog.blueprint_settings.resource_pack.error.no_folder_selected',
 					),
 				}
-			case !fs.existsSync(value):
+			case !fs.existsSync(path):
 				return {
 					type: 'error',
 					message: translate(
 						'dialog.blueprint_settings.resource_pack.error.folder_does_not_exist',
 					),
 				}
-			case !fs.statSync(value).isDirectory():
+			case !fs.statSync(path).isDirectory():
 				return {
 					type: 'error',
 					message: translate(
 						'dialog.blueprint_settings.resource_pack.error.not_a_folder',
 					),
 				}
-			case !fs.existsSync(PathModule.join(value, 'pack.mcmeta')):
+			case !fs.existsSync(PathModule.join(path, 'pack.mcmeta')):
 				return {
 					type: 'error',
 					message: translate(
 						'dialog.blueprint_settings.resource_pack.error.missing_pack_mcmeta',
 					),
 				}
-			case !fs.existsSync(PathModule.join(value, 'assets')):
+			case !fs.existsSync(PathModule.join(path, 'assets')):
 				return {
 					type: 'error',
 					message: translate(
@@ -246,6 +271,19 @@
 	}
 
 	function advancedResourcePackFileChecker(value: string): { type: string; message: string } {
+		let path: string
+		try {
+			path = resolvePath(value)
+		} catch (e) {
+			console.error(e)
+			return {
+				type: 'error',
+				message: translate(
+					'dialog.blueprint_settings.advanced_resource_pack_file.error.file_does_not_exist',
+				),
+			}
+		}
+		console.log(path)
 		switch (true) {
 			case value === '':
 				return {
@@ -254,14 +292,14 @@
 						'dialog.blueprint_settings.advanced_resource_pack_file.error.no_file_selected',
 					),
 				}
-			case !fs.existsSync(value):
+			case !fs.existsSync(path):
 				return {
 					type: 'error',
 					message: translate(
 						'dialog.blueprint_settings.advanced_resource_pack_file.error.file_does_not_exist',
 					),
 				}
-			case !fs.statSync(value).isFile():
+			case !fs.statSync(path).isFile():
 				return {
 					type: 'error',
 					message: translate(
@@ -274,6 +312,17 @@
 	}
 
 	function jsonFileChecker(value: string): { type: string; message: string } {
+		let path: string
+		try {
+			path = resolvePath(value)
+		} catch (e) {
+			console.error(e)
+			return {
+				type: 'error',
+				message: translate('dialog.blueprint_settings.json_file.error.file_does_not_exist'),
+			}
+		}
+		console.log(path)
 		switch (true) {
 			case value === '':
 				return {
@@ -282,7 +331,7 @@
 						'dialog.blueprint_settings.json_file.error.no_file_selected',
 					),
 				}
-			case fs.existsSync(value) && !fs.statSync(value).isFile():
+			case fs.existsSync(path) && !fs.statSync(path).isFile():
 				return {
 					type: 'error',
 					message: translate('dialog.blueprint_settings.json_file.error.not_a_file'),
@@ -293,6 +342,19 @@
 	}
 
 	function advancedResourcePackFolderChecker(value: string): { type: string; message: string } {
+		let path: string
+		try {
+			path = resolvePath(value)
+		} catch (e) {
+			console.error(e)
+			return {
+				type: 'error',
+				message: translate(
+					'dialog.blueprint_settings.advanced_resource_pack_folder.error.folder_does_not_exist',
+				),
+			}
+		}
+		console.log(path)
 		switch (true) {
 			case value === '':
 				return {
@@ -301,14 +363,14 @@
 						'dialog.blueprint_settings.advanced_resource_pack_folder.error.no_folder_selected',
 					),
 				}
-			case !fs.existsSync(value):
+			case !fs.existsSync(path):
 				return {
 					type: 'error',
 					message: translate(
 						'dialog.blueprint_settings.advanced_resource_pack_folder.error.folder_does_not_exist',
 					),
 				}
-			case !fs.statSync(value).isDirectory():
+			case !fs.statSync(path).isDirectory():
 				return {
 					type: 'error',
 					message: translate(
@@ -321,6 +383,19 @@
 	}
 
 	function zipChecker(value: string): { type: string; message: string } {
+		let path: string
+		try {
+			path = resolvePath(value)
+		} catch (e) {
+			console.error(e)
+			return {
+				type: 'error',
+				message: translate(
+					'dialog.blueprint_settings.data_pack_zip.error.file_does_not_exist',
+				),
+			}
+		}
+		console.log(path)
 		switch (true) {
 			case value === '':
 				return {
@@ -329,7 +404,7 @@
 						'dialog.blueprint_settings.resource_pack_zip.error.no_file_selected',
 					),
 				}
-			case fs.existsSync(value) && !fs.statSync(value).isFile():
+			case fs.existsSync(path) && !fs.statSync(path).isFile():
 				return {
 					type: 'error',
 					message: translate(
