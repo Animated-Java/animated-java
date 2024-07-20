@@ -632,6 +632,11 @@ dir <%export_namespace%> {
 						}
 					}
 				}
+				REPEAT (Object.values(rig.nodeMap).filter(v => v.type === 'camera' && v.config?.use_entity)) as camera {
+					block zzz/kill { with entity @s data.cameras.<%camera.name%>
+						$execute as $(uuid) run kill @s
+					}
+				}
 			}
 
 			execute on passengers run kill @s

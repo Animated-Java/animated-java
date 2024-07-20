@@ -3,7 +3,7 @@ import { blueprintSettingErrors } from '../blueprintSettings'
 import { openBlueprintSettingsDialog } from '../interface/blueprintSettingsDialog'
 import { PROGRESS_DESCRIPTION, openExportProgressDialog } from '../interface/exportProgressDialog'
 import { openUnexpectedErrorDialog } from '../interface/unexpectedErrorDialog'
-import { resolveEnvVariables } from '../util/misc'
+import { resolvePath } from '../util/fileUtil'
 import { translate } from '../util/translation'
 import { Variant } from '../variants'
 import { hashAnimations, renderProjectAnimations } from './animationRenderer'
@@ -26,8 +26,8 @@ async function actuallyExportProject(forceSave = true) {
 
 		let textureExportFolder: string, modelExportFolder: string, displayItemPath: string
 
-		const resourcePackFolder = resolveEnvVariables(aj.resource_pack)
-		const dataPackFolder = resolveEnvVariables(aj.data_pack)
+		const resourcePackFolder = resolvePath(aj.resource_pack)
+		const dataPackFolder = resolvePath(aj.data_pack)
 
 		if (aj.enable_plugin_mode) {
 			modelExportFolder = PathModule.join(

@@ -14,7 +14,7 @@ animated_java.action.open_vanilla_block_display_config.name: Vanilla Blockanzeig
 
 ### Popups
 animated_java.popup.loading.loading: Animated Java wird geladen...
-animated_java.popup.loading.success: Animated Java wurde erfolgreich geladet!
+animated_java.popup.loading.success: Animated Java wurde erfolgreich geladen!
 animated_java.popup.loading.offline: |-
     Animated Java konnte sich nicht verbinden!
     Einige Funktionen sind möglicherweise nicht verfügbar.
@@ -308,6 +308,12 @@ animated_java.dialog.text_display_config.billboard.options.vertical: Vertikal
 animated_java.dialog.text_display_config.billboard.options.horizontal: Horizontal
 animated_java.dialog.text_display_config.billboard.options.center: Zentriert
 
+## Vanilla Block Display Config Dialog
+animated_java.dialog.vanilla_block_display_config.title: Vanilla Blockanzeige-Konfiguration
+
+## Vanilla Item Display Config Dialog
+animated_java.dialog.vanilla_item_display_config.title: Vanilla Itemanzeige-Konfiguration
+
 ## Variant Config Dialog
 animated_java.dialog.variant_config.title: Variante-Konfiguration
 
@@ -365,6 +371,9 @@ animated_java.dialog.animation_properties.swap_columns_button.tooltip: Listen ta
 
 ## Export Progress Dialog
 animated_java.dialog.export_progress.title: Projekt wird exportiert...
+
+## Blueprint Loading Dialog
+animated_java.dialog.blueprint_loading.title: Blaupause wird geladen...
 
 ### Panels
 
@@ -497,7 +506,9 @@ animated_java.misc.failed_to_export.button: Ok
 animated_java.format_category.animated_java: Animated Java
 
 # Model Manager Warnings
+animated_java.block_model_manager.fluid_warning: Flüssigkeiten renderen nicht in Blockanzeigen.
 animated_java.block_model_manager.mob_head_warning: Mob-Köpfe renderen nicht in Blockanzeigen. Benutzen Sie stattdessen Itemanzeigen.
+animated_java.block_model_manager.facing_warning: Der Blockzustand "facing" wird in Blockanzeigen nicht unterstützt.
 
 # Project Errors
 animated_java.error.blueprint_export_path_doesnt_exist.title: Blaupause-Exportpfad Existiert Nicht

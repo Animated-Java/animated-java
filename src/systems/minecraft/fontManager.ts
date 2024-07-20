@@ -393,7 +393,7 @@ export class MinecraftFont {
 		// 		)
 		// 	}
 		// }
-		// console.log('Lines:', lines, 'CanvasWidth:', canvasWidth)
+		// console.log('Lines:', lines, 'CanvasWidth:', maxLineWidth)
 		// for (const line of lines) {
 		// 	console.log('Line', lines.indexOf(line), line.width)
 		// 	for (const word of line.words) {
@@ -438,7 +438,6 @@ export class MinecraftFont {
 				default:
 					cursor.x = -width / 2 + 1
 			}
-			// center the line
 			for (const word of line.words) {
 				for (const span of word.styles) {
 					const text = word.text.slice(span.start, span.end)
@@ -458,7 +457,7 @@ export class MinecraftFont {
 		}
 
 		let charGeo: THREE.BufferGeometry | undefined
-		if (geos.length > 1) {
+		if (geos.length > 0) {
 			charGeo = mergeGeometries(geos)!
 			const charMesh = new THREE.Mesh(
 				charGeo,

@@ -49,19 +49,11 @@
 			bind:checked={glowing}
 		/>
 
-		<Checkbox
-			label={translate('dialog.text_display_config.override_glow_color.title')}
-			tooltip={translate('dialog.text_display_config.override_glow_color.description')}
-			bind:checked={overrideGlowColor}
+		<ColorPicker
+			label={translate('dialog.text_display_config.glow_color.title')}
+			tooltip={translate('dialog.text_display_config.glow_color.description')}
+			bind:value={glowColor}
 		/>
-
-		{#if $overrideGlowColor}
-			<ColorPicker
-				label={translate('dialog.text_display_config.glow_color.title')}
-				tooltip={translate('dialog.text_display_config.glow_color.description')}
-				bind:value={glowColor}
-			/>
-		{/if}
 
 		<NumberSlider
 			label={translate('dialog.text_display_config.shadow_radius.title')}

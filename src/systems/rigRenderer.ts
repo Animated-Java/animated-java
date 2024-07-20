@@ -96,6 +96,10 @@ export interface IRenderedNodes {
 			variants: Record<string, IBlueprintBoneConfigJSON>
 		}
 	}
+	Struct: IRenderedNode & {
+		type: 'struct'
+		node: Group
+	}
 	Camera: IRenderedNode & {
 		type: 'camera'
 		name: string
@@ -166,7 +170,7 @@ export interface IRenderedRig {
 	 */
 	nodeStructure: INodeStructure
 	/**
-	 * A map of texture UUIDs to textures
+	 * A map of texture IDs to textures
 	 */
 	textures: Record<string, Texture>
 	/**
@@ -390,8 +394,19 @@ function renderGroup(group: Group, rig: IRenderedRig): INodeStructure | undefine
 		}
 	}
 
-	// Don't export groups without a model.
-	if (group.children.filter(c => c instanceof Cube).length === 0) return structure
+	// Export a struct instead of a bone if no cubes are present
+	if (group.children.filter(c => c instanceof Cube).length === 0) {
+		const struct: IRenderedNodes['Struct'] = {
+			type: 'struct',
+			parent: parentId,
+			parentNode: group.parent instanceof Group ? group.parent : null,
+			node: group,
+			name: group.name,
+			uuid: group.uuid,
+		}
+		rig.nodeMap[group.uuid] = struct
+		return structure
+	}
 
 	const diff = new THREE.Vector3().subVectors(
 		renderedBone.boundingBox.max,

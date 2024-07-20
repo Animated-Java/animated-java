@@ -38,15 +38,6 @@ export function roundToNth(n: number, x: number) {
 	return Math.round(n * x) / x
 }
 
-export function resolveEnvVariables(path: string) {
-	return path.replace(/%([^%]+)%/g, function (_, key: string) {
-		if (!process.env[key]) {
-			throw new Error('Environment variable ' + key + ' does not exist.')
-		}
-		return process.env[key]!
-	})
-}
-
 export function floatToHex(n: number) {
 	return Number((255 * n).toFixed(0))
 		.toString(16)

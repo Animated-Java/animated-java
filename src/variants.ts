@@ -134,14 +134,18 @@ export class Variant {
 		events.DELETE_VARIANT.dispatch(this)
 	}
 
-	public toJSON(): IBlueprintVariantJSON {
-		return {
+	public toJSON() {
+		const json: IBlueprintVariantJSON = {
 			name: this.name,
 			display_name: this.displayName,
 			uuid: this.uuid,
 			texture_map: Object.fromEntries(this.textureMap.map),
 			excluded_nodes: this.excludedNodes.map(item => item.value),
 		}
+		if (this.isDefault) {
+			json.is_default = true
+		}
+		return json
 	}
 
 	public duplicate() {
