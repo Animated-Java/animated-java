@@ -5,6 +5,7 @@
 import type { IBlueprintBoneConfigJSON, IBlueprintVariantJSON } from '../blueprintFormat'
 import { type defaultValues } from '../blueprintSettings'
 import { EasingKey } from '../util/easing'
+import { resolvePath } from '../util/fileUtil'
 import { detectCircularReferences, scrubUndefined } from '../util/misc'
 import { Variant } from '../variants'
 import type { INodeTransform, IRenderedAnimation, IRenderedFrame } from './animationRenderer'
@@ -212,7 +213,16 @@ export function exportJSON(options: {
 	}
 	console.log('Scrubbed:', scrubUndefined(json))
 
-	fs.writeFileSync(aj.json_file, compileJSON(json).toString())
+	let exportPath: string
+	try {
+		exportPath = resolvePath(aj.json_file)
+	} catch (e) {
+		console.log(`Failed to resolve export path '${aj.json_file}'`)
+		console.error(e)
+		return
+	}
+
+	fs.writeFileSync(exportPath, compileJSON(json).toString())
 }
 
 function serailizeRenderedNode(node: AnyRenderedNode): ExportedRenderedNode {
