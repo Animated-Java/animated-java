@@ -16,6 +16,10 @@ createBlockbenchMod(
 				document
 					.querySelector('[format=animated_java_blueprint] span i')
 					?.parentElement?.remove()
+				const duplicates = [...document.querySelectorAll('#animated_java\\:icon')]
+				if (duplicates.length > 1) {
+					duplicates.slice(1).forEach(d => d.remove())
+				}
 			},
 		})
 	},
