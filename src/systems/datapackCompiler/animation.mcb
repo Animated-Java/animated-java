@@ -116,7 +116,7 @@ dir <%export_namespace%> {
 	function on_load {
 		<%%
 			animations.forEach(animation => {
-				emit(`scoreboard objectives add ${OBJECTIVES.FRAME(animation.name)} dummy`)
+				emit(`scoreboard objectives add ${OBJECTIVES.FRAME(animation.safeName)} dummy`)
 			})
 		%%>
 
@@ -157,8 +157,8 @@ dir <%export_namespace%> {
 			function #*<%export_namespace%>/as_root/pre_tick
 			# Animations
 			REPEAT (animations) as animation {
-				execute if entity @s[tag=<%TAGS.ANIMATION_PLAYING(export_namespace, animation.name)%>] run \
-					function *<%export_namespace%>/animations/<%animation.name%>/zzz/on_tick
+				execute if entity @s[tag=<%TAGS.ANIMATION_PLAYING(export_namespace, animation.safeName)%>] run \
+					function *<%export_namespace%>/animations/<%animation.safeName%>/zzz/on_tick
 			}
 			execute on passengers if entity @s[tag=<%TAGS.PROJECT_DATA(export_namespace)%>] run {
 				REPEAT (Object.values(rig.nodeMap).filter(v => v.type === 'locator')) as node {
@@ -218,14 +218,14 @@ dir <%export_namespace%> {
 
 	dir animations {
 		REPEAT (animations) as animation {
-			dir <%animation.name%> {
+			dir <%animation.safeName%> {
 				# TODO: Maybe add an exclusive argument to the play function that will pause all other animations before playing this one.
 				function play {
 					execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 						function *global/errors/function_not_executed_as_root_entity \
-							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/play'}
-					tag @s add <%TAGS.ANIMATION_PLAYING(export_namespace, animation.name)%>
-					scoreboard players set @s <%OBJECTIVES.FRAME(animation.name)%> 0
+							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.safeName%>/play'}
+					tag @s add <%TAGS.ANIMATION_PLAYING(export_namespace, animation.safeName)%>
+					scoreboard players set @s <%OBJECTIVES.FRAME(animation.safeName)%> 0
 					tag @s add <%TAGS.TRANSFORMS_ONLY()%>
 					execute at @s run function ./zzz/set_frame {frame: 0}
 					tag @s remove <%TAGS.TRANSFORMS_ONLY()%>
@@ -233,9 +233,9 @@ dir <%export_namespace%> {
 				function stop {
 					execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 						function *global/errors/function_not_executed_as_root_entity \
-							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/stop'}
-					tag @s remove <%TAGS.ANIMATION_PLAYING(export_namespace, animation.name)%>
-					scoreboard players set @s <%OBJECTIVES.FRAME(animation.name)%> 0
+							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.safeName%>/stop'}
+					tag @s remove <%TAGS.ANIMATION_PLAYING(export_namespace, animation.safeName)%>
+					scoreboard players set @s <%OBJECTIVES.FRAME(animation.safeName)%> 0
 					tag @s add <%TAGS.TRANSFORMS_ONLY()%>
 					execute at @s run function ./zzz/set_frame {frame: 0}
 					tag @s remove <%TAGS.TRANSFORMS_ONLY()%>
@@ -243,39 +243,39 @@ dir <%export_namespace%> {
 				function pause {
 					execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 						function *global/errors/function_not_executed_as_root_entity \
-							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/pause'}
-					tag @s remove <%TAGS.ANIMATION_PLAYING(export_namespace, animation.name)%>
+							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.safeName%>/pause'}
+					tag @s remove <%TAGS.ANIMATION_PLAYING(export_namespace, animation.safeName)%>
 				}
 				function resume {
 					execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 						function *global/errors/function_not_executed_as_root_entity \
-							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/resume'}
-					tag @s add <%TAGS.ANIMATION_PLAYING(export_namespace, animation.name)%>
+							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.safeName%>/resume'}
+					tag @s add <%TAGS.ANIMATION_PLAYING(export_namespace, animation.safeName)%>
 				}
 				function next_frame {
 					execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 						function *global/errors/function_not_executed_as_root_entity \
-							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/next_frame'}
-					execute if score @s <%OBJECTIVES.FRAME(animation.name)%> matches <%animation.duration%>.. run scoreboard players set @s <%OBJECTIVES.FRAME(animation.name)%> 1
-					execute store result storage aj:temp frame int 1 run scoreboard players get @s <%OBJECTIVES.FRAME(animation.name)%>
+							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.safeName%>/next_frame'}
+					execute if score @s <%OBJECTIVES.FRAME(animation.safeName)%> matches <%animation.duration%>.. run scoreboard players set @s <%OBJECTIVES.FRAME(animation.safeName)%> 1
+					execute store result storage aj:temp frame int 1 run scoreboard players get @s <%OBJECTIVES.FRAME(animation.safeName)%>
 					execute at @s run function ./zzz/apply_frame with storage aj:temp
-					scoreboard players add @s <%OBJECTIVES.FRAME(animation.name)%> 1
+					scoreboard players add @s <%OBJECTIVES.FRAME(animation.safeName)%> 1
 				}
 				function set_frame {
 					# Sets the frame without interpolation
 					#ARGS: {frame: int}
 					execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 						function *global/errors/function_not_executed_as_root_entity \
-							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/set_frame'}
-					$execute store result storage aj:temp frame int 1 run scoreboard players set @s <%OBJECTIVES.FRAME(animation.name)%> $(frame)
+							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.safeName%>/set_frame'}
+					$execute store result storage aj:temp frame int 1 run scoreboard players set @s <%OBJECTIVES.FRAME(animation.safeName)%> $(frame)
 					execute at @s run function ./zzz/set_frame with storage aj:temp
 				}
 				function apply_frame {
 					# ARGS: {frame: int}
 					execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 						function *global/errors/function_not_executed_as_root_entity \
-							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/apply_frame'}
-					$execute store result storage aj:temp frame int 1 run scoreboard players set @s <%OBJECTIVES.FRAME(animation.name)%> $(frame)
+							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.safeName%>/apply_frame'}
+					$execute store result storage aj:temp frame int 1 run scoreboard players set @s <%OBJECTIVES.FRAME(animation.safeName)%> $(frame)
 					execute at @s run function ./zzz/apply_frame with storage aj:temp
 				}
 				function tween {
@@ -283,12 +283,12 @@ dir <%export_namespace%> {
 					#ARGS: {duration: int, to_frame: int}
 					execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 						function *global/errors/function_not_executed_as_root_entity \
-							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.name%>/tween_play'}
+							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.safeName%>/tween_play'}
 					function *<%export_namespace%>/animations/pause_all
 
-					tag @s add <%TAGS.ANIMATION_PLAYING(export_namespace, animation.name)%>
+					tag @s add <%TAGS.ANIMATION_PLAYING(export_namespace, animation.safeName)%>
 					$scoreboard players set @s <%OBJECTIVES.TWEEN_DURATION()%> $(duration)
-					$scoreboard players set @s <%OBJECTIVES.FRAME(animation.name)%> $(to_frame)
+					$scoreboard players set @s <%OBJECTIVES.FRAME(animation.safeName)%> $(to_frame)
 
 					scoreboard players operation #this <%OBJECTIVES.I()%> = @s <%OBJECTIVES.TWEEN_DURATION()%>
 					scoreboard players add @s <%OBJECTIVES.TWEEN_DURATION()%> 1
@@ -305,25 +305,25 @@ dir <%export_namespace%> {
 						execute if score @s <%OBJECTIVES.TWEEN_DURATION()%> matches 1.. run return 1
 						execute if score @s <%OBJECTIVES.TWEEN_DURATION()%> matches 0 on passengers run data modify entity @s interpolation_duration set value <%interpolation_duration%>
 						# Animation logic
-						execute store result storage aj:temp frame int 1 run scoreboard players get @s <%OBJECTIVES.FRAME(animation.name)%>
+						execute store result storage aj:temp frame int 1 run scoreboard players get @s <%OBJECTIVES.FRAME(animation.safeName)%>
 						IF (animation.loopMode === 'loop' && animation.loopDelay === 0) {
 							# Makes sure commands in the last frame of the animation is run.
-							execute if score @s <%OBJECTIVES.FRAME(animation.name)%> matches -1 run {
+							execute if score @s <%OBJECTIVES.FRAME(animation.safeName)%> matches -1 run {
 								function ./apply_frame {frame: <%animation.duration-1%>}
-								scoreboard players add @s <%OBJECTIVES.FRAME(animation.name)%> 1
+								scoreboard players add @s <%OBJECTIVES.FRAME(animation.safeName)%> 1
 							}
 						}
 						function ./apply_frame with storage aj:temp
 						IF (animation.loopMode === 'loop') {
-							execute if score @s <%OBJECTIVES.FRAME(animation.name)%> matches <%animation.duration-2 + animation.loopDelay%>.. run return run {
-								scoreboard players set @s <%OBJECTIVES.FRAME(animation.name)%> <%animation.loopDelay === 0 ? -1 : 0%>
+							execute if score @s <%OBJECTIVES.FRAME(animation.safeName)%> matches <%animation.duration-2 + animation.loopDelay%>.. run return run {
+								scoreboard players set @s <%OBJECTIVES.FRAME(animation.safeName)%> <%animation.loopDelay === 0 ? -1 : 0%>
 							}
 						} ELSE IF (animation.loopMode === 'hold') {
-							execute if score @s <%OBJECTIVES.FRAME(animation.name)%> matches <%animation.duration-1%>.. run return run function ../pause
+							execute if score @s <%OBJECTIVES.FRAME(animation.safeName)%> matches <%animation.duration-1%>.. run return run function ../pause
 						} ELSE IF (animation.loopMode === 'once') {
-							execute if score @s <%OBJECTIVES.FRAME(animation.name)%> matches <%animation.duration-1%> run return run function ../stop
+							execute if score @s <%OBJECTIVES.FRAME(animation.safeName)%> matches <%animation.duration-1%> run return run function ../stop
 						}
-						scoreboard players add @s <%OBJECTIVES.FRAME(animation.name)%> 1
+						scoreboard players add @s <%OBJECTIVES.FRAME(animation.safeName)%> 1
 					}
 					IF (use_storage_for_animation) {
 						function set_frame {
@@ -460,7 +460,7 @@ dir <%export_namespace%> {
 				function *global/errors/function_not_executed_as_root_entity \
 					{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/pause_all'}
 			REPEAT (animations) as animation {
-				tag @s remove <%TAGS.ANIMATION_PLAYING(export_namespace, animation.name)%>
+				tag @s remove <%TAGS.ANIMATION_PLAYING(export_namespace, animation.safeName)%>
 			}
 		}
 	}

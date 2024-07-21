@@ -270,7 +270,7 @@ function serailizeNodeTransform(node: INodeTransform): ExportedNodetransform {
 function serializeAnimation(animation: IRenderedAnimation): ExportedBakedAnimation {
 	const json: ExportedBakedAnimation = {
 		name: animation.name,
-		storageSafeName: animation.storageSafeName,
+		safeName: animation.safeName,
 		duration: animation.duration,
 		loopDelay: animation.loopDelay,
 		loopMode: animation.loopMode,

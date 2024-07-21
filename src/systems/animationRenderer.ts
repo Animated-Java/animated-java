@@ -98,7 +98,7 @@ export interface IRenderedFrame {
 
 export interface IRenderedAnimation {
 	name: string
-	storageSafeName: string
+	safeName: string
 	loopDelay: number
 	frames: IRenderedFrame[]
 	/**
@@ -285,8 +285,8 @@ export function updatePreview(animation: _Animation, time: number) {
 
 export function renderAnimation(animation: _Animation, rig: IRenderedRig) {
 	const rendered = {
-		name: toSafeFuntionName(animation.name),
-		storageSafeName: toSafeFuntionName(animation.name).replaceAll('.', '_'),
+		name: animation.name,
+		safeName: toSafeFuntionName(animation.name).replaceAll('.', '_'),
 		loopDelay: Number(animation.loop_delay) || 0,
 		frames: [],
 		duration: 0,
