@@ -181,7 +181,7 @@ animated_java.dialog.blueprint_settings.json_file.error.not_a_file: Het geselect
 ## Bone Config Dialog
 animated_java.dialog.bone_config.title: Bot Configuratie
 
-animated_java.dialog.bone_config.selected_variant: 'Geselecteerde Variant: {1}'
+animated_java.dialog.bone_config.selected_variant: 'Geselecteerde Variant: {0}'
 animated_java.dialog.bone_config.default_variant_subtitle: De onderstaande instellingen worden standaard toegepast op dit bot.
 animated_java.dialog.bone_config.selected_variant_subtitle: De onderstaande instellingen worden alleen op dit bot toegepast wanneer deze variant wordt toegepast.
 

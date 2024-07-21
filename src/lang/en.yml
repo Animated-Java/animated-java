@@ -184,7 +184,7 @@ animated_java.dialog.blueprint_settings.json_file.error.not_a_file: The selected
 ## Bone Config Dialog
 animated_java.dialog.bone_config.title: Bone Config
 
-animated_java.dialog.bone_config.selected_variant: 'Selected Variant: {1}'
+animated_java.dialog.bone_config.selected_variant: 'Selected Variant: {0}'
 animated_java.dialog.bone_config.default_variant_subtitle: The settings below will be applied to this bone by default.
 animated_java.dialog.bone_config.selected_variant_subtitle: The settings below will be applied to this bone only when this variant is applied.
 
