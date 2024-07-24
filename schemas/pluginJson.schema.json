@@ -169,12 +169,8 @@
 				},
 				"rig": {
 					"type": "object",
-					"required": ["default_transforms", "node_map"],
+					"required": ["node_map", "node_structure", "variants"],
 					"properties": {
-						"default_transforms": {
-							"type": "array",
-							"items": { "$ref": "#/definitions/nodeTransform" }
-						},
 						"node_map": {
 							"type": "object",
 							"additionalProperties": false,
@@ -315,22 +311,8 @@
 		"nodeTransform": {
 			"type": "object",
 			"description": "The transformation of a node. Includes several different storage methods for the transformation. All of these methods contain the same data, it's up to the plugin developer to choose which method to use.",
-			"required": ["type", "name", "uuid", "matrix", "pos", "rot", "scale"],
+			"required": ["matrix", "pos", "rot", "scale"],
 			"properties": {
-				"type": {
-					"type": "string",
-					"enum": [
-						"bone",
-						"struct",
-						"camera",
-						"locator",
-						"text_display",
-						"item_display",
-						"block_display"
-					]
-				},
-				"name": { "type": "string" },
-				"uuid": { "type": "string" },
 				"matrix": {
 					"type": "array",
 					"description": "The transformation matrix of the node. The matrix is a 4x4 matrix in row-major order.",
@@ -397,7 +379,11 @@
 				},
 				"name": { "type": "string" },
 				"uuid": { "type": "string" },
-				"parent": { "type": "string" }
+				"parent": { "type": "string" },
+				"defaultTransform": {
+					"$ref": "#/definitions/nodeTransform",
+					"description": "The default transformation of the node."
+				}
 			},
 			"allOf": [
 				{
@@ -580,46 +566,52 @@
 			}
 		},
 		"bakedAnimations": {
-			"type": "array",
-			"items": {
-				"type": "object",
-				"required": [
-					"name",
-					"storageSafeName",
-					"duration",
-					"loopDelay",
-					"loopMode",
-					"frames",
-					"includedNodes"
-				],
-				"additionalProperties": false,
-				"properties": {
-					"name": { "type": "string" },
-					"storageSafeName": { "type": "string" },
-					"duration": { "type": "number" },
-					"loopDelay": { "type": "number" },
-					"loopMode": { "type": "string", "enum": ["none", "loop", "ping-pong"] },
-					"includedNodes": { "type": "array", "items": { "type": "string" } },
-					"frames": {
-						"type": "array",
-						"items": {
-							"type": "object",
-							"required": ["time", "node_transforms"],
-							"properties": {
-								"time": { "type": "number" },
-								"node_transforms": {
-									"type": "array",
-									"items": { "$ref": "#/definitions/nodeTransform" }
-								},
-								"variant": {
-									"type": "object",
-									"description": "If included, this frame should change the variant of the model to the specified variant.",
-									"properties": {
-										"uuid": {
-											"type": "string",
-											"pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
-										},
-										"execute_condition": { "type": "string" }
+			"type": "object",
+			"patternProperties": {
+				"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
+					"type": "object",
+					"required": [
+						"name",
+						"safeName",
+						"duration",
+						"loopDelay",
+						"loopMode",
+						"frames",
+						"includedNodes"
+					],
+					"additionalProperties": false,
+					"properties": {
+						"name": { "type": "string" },
+						"safeName": { "type": "string" },
+						"duration": { "type": "number" },
+						"loopDelay": { "type": "number" },
+						"loopMode": { "type": "string", "enum": ["none", "loop", "ping-pong"] },
+						"includedNodes": { "type": "array", "items": { "type": "string" } },
+						"frames": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"required": ["time", "node_transforms"],
+								"properties": {
+									"time": { "type": "number" },
+									"node_transforms": {
+										"type": "object",
+										"patternProperties": {
+											"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
+												"$ref": "#/definitions/nodeTransform"
+											}
+										}
+									},
+									"variant": {
+										"type": "object",
+										"description": "If included, this frame should change the variant of the model to the specified variant.",
+										"properties": {
+											"uuid": {
+												"type": "string",
+												"pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+											},
+											"execute_condition": { "type": "string" }
+										}
 									}
 								}
 							}
@@ -629,41 +621,28 @@
 			}
 		},
 		"dynamicAnimations": {
-			"type": "array",
-			"items": {
-				"type": "object",
-				"required": [
-					"uuid",
-					"name",
-					"loop_mode",
-					"duration",
-					"excluded_nodes",
-					"animators"
-				],
-				"additionalProperties": true,
-				"properties": {
-					"uuid": { "type": "string" },
-					"name": { "type": "string" },
-					"loop_mode": { "type": "string", "enum": ["loop", "once", "hold"] },
-					"duration": { "type": "number" },
-					"loop_delay": { "type": "number" },
-					"excluded_nodes": {
-						"type": "array",
-						"items": { "type": "string" }
-					},
-					"animators": {
-						"type": "object",
-						"patternProperties": {
-							"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
-								"type": "object",
-								"required": ["name", "type", "keyframes"],
-								"properties": {
-									"name": { "type": "string" },
-									"type": { "type": "string" },
-									"keyframes": {
-										"type": "array",
-										"items": { "$ref": "#/definitions/keyframe" }
-									}
+			"type": "object",
+			"patternProperties": {
+				"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
+					"type": "object",
+					"required": ["name", "loop_mode", "duration", "excluded_nodes", "animators"],
+					"additionalProperties": true,
+					"properties": {
+						"uuid": { "type": "string" },
+						"name": { "type": "string" },
+						"loop_mode": { "type": "string", "enum": ["loop", "once", "hold"] },
+						"duration": { "type": "number" },
+						"loop_delay": { "type": "number" },
+						"excluded_nodes": {
+							"type": "array",
+							"items": { "type": "string" }
+						},
+						"animators": {
+							"type": "object",
+							"patternProperties": {
+								"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
+									"type": "array",
+									"items": { "$ref": "#/definitions/keyframe" }
 								}
 							}
 						}
@@ -732,9 +711,9 @@
 		"keyframeDataPoint": {
 			"type": "object",
 			"properties": {
-				"x": { "oneOf": [{ "type": "number" }, { "type": "string" }] },
-				"y": { "oneOf": [{ "type": "number" }, { "type": "string" }] },
-				"z": { "oneOf": [{ "type": "number" }, { "type": "string" }] },
+				"x": { "type": "string" },
+				"y": { "type": "string" },
+				"z": { "type": "string" },
 				"commands": { "type": "string" },
 				"execute_condition": { "type": "string" },
 				"repeat": { "type": "boolean" },

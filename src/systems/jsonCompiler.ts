@@ -17,7 +17,10 @@ import type {
 	IRenderedRig,
 } from './rigRenderer'
 
-type ExportedNodetransform = Omit<INodeTransform, 'node' | 'matrix' | 'transformation'> & {
+type ExportedNodetransform = Omit<
+	INodeTransform,
+	'type' | 'name' | 'uuid' | 'node' | 'matrix' | 'transformation'
+> & {
 	matrix: number[]
 	transformation: {
 		translation: ArrayVector3
@@ -32,37 +35,33 @@ type ExportedRenderedNode = Omit<
 	AnyRenderedNode,
 	'node' | 'parentNode' | 'model' | 'boundingBox' | 'configs'
 > & {
+	defaultTransform: ExportedNodetransform
 	boundingBox?: { min: ArrayVector3; max: ArrayVector3 }
 	configs?: Record<string, IBlueprintBoneConfigJSON>
 }
 type ExportedAnimationFrame = Omit<IRenderedFrame, 'nodes' | 'node_transforms'> & {
-	node_transforms: ExportedNodetransform[]
+	node_transforms: Record<string, ExportedNodetransform>
 }
-type ExportedBakedAnimation = Omit<IRenderedAnimation, 'frames' | 'includedNodes'> & {
+type ExportedBakedAnimation = Omit<IRenderedAnimation, 'uuid' | 'frames' | 'includedNodes'> & {
 	frames: ExportedAnimationFrame[]
 	includedNodes: string[]
 }
-type ExportedAnimator = {
-	name: string
-	type: string
-	keyframes: Array<{
-		uuid: string
-		time: number
-		channel: string
-		data_points: KeyframeDataPoint[]
-		interpolation: 'linear' | 'bezier' | 'catmullrom' | 'step'
-		bezier_linked?: boolean
-		bezier_left_time?: ArrayVector3
-		bezier_left_value?: ArrayVector3
-		bezier_right_time?: ArrayVector3
-		bezier_right_value?: ArrayVector3
-		easing: EasingKey
-		easingArgs?: number[]
-	}>
-}
+type ExportedAnimator = Array<{
+	uuid: string
+	time: number
+	channel: string
+	data_points: KeyframeDataPoint[]
+	interpolation: 'linear' | 'bezier' | 'catmullrom' | 'step'
+	bezier_linked?: boolean
+	bezier_left_time?: ArrayVector3
+	bezier_left_value?: ArrayVector3
+	bezier_right_time?: ArrayVector3
+	bezier_right_value?: ArrayVector3
+	easing: EasingKey
+	easingArgs?: number[]
+}>
 type ExportedDynamicAnimation = {
 	name: string
-	uuid: string
 	loop_mode: 'once' | 'hold' | 'loop'
 	duration: number
 	excluded_nodes: string[]
@@ -104,7 +103,6 @@ export interface IExportedJSON {
 		textures: Record<string, ISerializedTexture>
 	}
 	rig: {
-		default_transforms: ExportedNodetransform[]
 		node_map: Record<string, ExportedRenderedNode>
 		node_structure: INodeStructure
 		variants: Record<string, IBlueprintVariantJSON>
@@ -112,7 +110,7 @@ export interface IExportedJSON {
 	/**
 	 * If `blueprint_settings.baked_animations` is true, this will be an array of `ExportedAnimation` objects. Otherwise, it will be an array of `AnimationUndoCopy` objects, just like the `.bbmodel`'s animation list.
 	 */
-	animations: ExportedBakedAnimation[] | ExportedDynamicAnimation[]
+	animations: Record<string, ExportedBakedAnimation> | Record<string, ExportedDynamicAnimation>
 }
 
 export function exportJSON(options: {
@@ -149,6 +147,10 @@ export function exportJSON(options: {
 	delete blueprintSettings.teleportation_duration
 	delete blueprintSettings.use_storage_for_animation
 
+	const defaultTransforms = Object.fromEntries(
+		rig.defaultTransforms.map(v => [v.uuid, serailizeNodeTransform(v)])
+	)
+
 	const json: IExportedJSON = {
 		blueprint_settings: blueprintSettings,
 		resources: {
@@ -165,46 +167,67 @@ export function exportJSON(options: {
 			),
 		},
 		rig: {
-			default_transforms: rig.defaultTransforms.map(serailizeNodeTransform),
 			node_map: Object.fromEntries(
-				Object.entries(rig.nodeMap).map(([key, node]) => [key, serailizeRenderedNode(node)])
+				Object.entries(rig.nodeMap).map(([key, node]) => [
+					key,
+					serailizeRenderedNode(node, defaultTransforms),
+				])
 			),
 			node_structure: rig.nodeStructure,
 			variants: Object.fromEntries(
 				Variant.all.map(variant => [variant.uuid, variant.toJSON()])
 			),
 		},
-		animations: aj.baked_animations
-			? animations.map(serializeAnimation)
-			: Blockbench.Animation.all.map(a => {
-					const json: ExportedDynamicAnimation = {
-						uuid: a.uuid,
-						name: a.name,
-						loop_mode: a.loop,
-						duration: a.length,
-						excluded_nodes: a.excluded_nodes.map(node => node.value),
-						animators: {},
+		animations: {},
+	}
+
+	if (aj.baked_animations) {
+		for (const animation of animations) {
+			json.animations[animation.uuid] = serializeAnimation(animation)
+		}
+	} else {
+		for (const animation of Blockbench.Animation.all) {
+			const animJSON: ExportedDynamicAnimation = {
+				name: animation.name,
+				loop_mode: animation.loop,
+				duration: animation.length,
+				excluded_nodes: animation.excluded_nodes.map(node => node.value),
+				animators: {},
+			}
+			for (const [uuid, animator] of Object.entries(animation.animators)) {
+				const keyframes = animator.keyframes.map(kf => {
+					const keyframeJSON: any = kf.getUndoCopy(true)
+					delete keyframeJSON.color
+					if (
+						Array.isArray(keyframeJSON.easingArgs) &&
+						keyframeJSON.easingArgs.length === 0
+					) {
+						delete keyframeJSON.easingArgs
 					}
-					for (const [uuid, animator] of Object.entries(a.animators)) {
-						json.animators[uuid] = {
-							name: animator.name,
-							type: animator.type as string,
-							keyframes: animator.keyframes.map(kf => {
-								const json: any = kf.getUndoCopy(true)
-								delete json.color
-								if (
-									Array.isArray(json.easingArgs) &&
-									json.easingArgs.length === 0
-								) {
-									delete json.easingArgs
-								}
-								// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-								return json
-							}),
+					if (keyframeJSON.data_points?.length) {
+						const isCustomChannel = ['commands', 'variant'].includes(kf.channel)
+						for (const dp of keyframeJSON.data_points) {
+							if (isCustomChannel) {
+								delete dp.x
+								delete dp.y
+								delete dp.z
+								continue
+							}
+							if (dp.x !== undefined) dp.x = String(dp.x)
+							if (dp.y !== undefined) dp.y = String(dp.y)
+							if (dp.z !== undefined) dp.z = String(dp.z)
 						}
 					}
-					return json
-			  }),
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+					return keyframeJSON
+				})
+				// Only include animators with keyframes
+				if (keyframes.length > 0) {
+					animJSON.animators[uuid] = keyframes
+				}
+			}
+			json.animations[animation.uuid] = animJSON
+		}
 	}
 
 	console.log('Exported JSON:', json)
@@ -225,7 +248,10 @@ export function exportJSON(options: {
 	fs.writeFileSync(exportPath, compileJSON(json).toString())
 }
 
-function serailizeRenderedNode(node: AnyRenderedNode): ExportedRenderedNode {
+function serailizeRenderedNode(
+	node: AnyRenderedNode,
+	defaultTransforms?: Record<string, ExportedNodetransform>
+): ExportedRenderedNode {
 	const json: any = { ...node }
 	delete json.node
 	delete json.parentNode
@@ -242,14 +268,14 @@ function serailizeRenderedNode(node: AnyRenderedNode): ExportedRenderedNode {
 			json.configs[defaultVariant.uuid] = node.configs.default
 		}
 	}
+	if (defaultTransforms) {
+		json.defaultTransform = defaultTransforms[node.uuid]
+	}
 	return json as ExportedRenderedNode
 }
 
 function serailizeNodeTransform(node: INodeTransform): ExportedNodetransform {
 	const json: ExportedNodetransform = {
-		type: node.type,
-		name: node.name,
-		uuid: node.uuid,
 		matrix: node.matrix.elements,
 		transformation: {
 			translation: node.transformation.translation.toArray(),
@@ -280,13 +306,16 @@ function serializeAnimation(animation: IRenderedAnimation): ExportedBakedAnimati
 
 	const frames: ExportedAnimationFrame[] = []
 	for (const frame of animation.frames) {
-		const node_transforms: ExportedNodetransform[] =
-			frame.node_transforms.map(serailizeNodeTransform)
+		const node_transforms: Record<string, ExportedNodetransform> = Object.fromEntries(
+			frame.node_transforms.map(v => [v.uuid, serailizeNodeTransform(v)])
+		)
 		frames.push({ ...frame, node_transforms })
 	}
 	json.frames = frames
 
-	json.includedNodes = animation.includedNodes.map(serailizeRenderedNode).map(node => node.uuid)
+	json.includedNodes = animation.includedNodes
+		.map(v => serailizeRenderedNode(v))
+		.map(node => node.uuid)
 
 	return json
 }

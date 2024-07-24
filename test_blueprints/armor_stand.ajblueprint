@@ -11,7 +11,7 @@
 		"show_bounding_box": false,
 		"auto_bounding_box": true,
 		"bounding_box": [95, 32],
-		"enable_plugin_mode": false,
+		"enable_plugin_mode": true,
 		"resource_pack_export_mode": "raw",
 		"data_pack_export_mode": "raw",
 		"display_item": "minecraft:white_dye",
@@ -859,8 +859,8 @@
 			"block": "minecraft:stone",
 			"text": "\"Armor Stand\"",
 			"lineWidth": 200,
-			"backgroundColor": "#c91515",
-			"backgroundAlpha": 0.51,
+			"backgroundColor": "#ffffff",
+			"backgroundAlpha": 0.25,
 			"align": "center",
 			"shadow": true,
 			"seeThrough": true,
@@ -2142,14 +2142,16 @@
 					"type": "effect",
 					"keyframes": [
 						{
-							"channel": "sound",
+							"channel": "variant",
 							"data_points": [
 								{
-									"effect": "",
-									"file": ""
+									"variant": "5417306e-2c69-3f36-1e3c-edd904034a36",
+									"execute_condition": "",
+									"repeat": false,
+									"repeat_frequency": 1
 								}
 							],
-							"uuid": "3c7a1e34-e89d-9bb3-2b5b-11594c26e1bc",
+							"uuid": "1baa095b-e941-62df-a215-698b50c93524",
 							"time": 0,
 							"color": -1,
 							"interpolation": "linear",
