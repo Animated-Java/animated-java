@@ -987,7 +987,9 @@
 									"shadow_strength": 1,
 									"use_nbt": false
 								},
-								"variants": {}
+								"variants": {
+									"5417306e-2c69-3f36-1e3c-edd904034a36": {}
+								}
 							},
 							"uuid": "98a28100-07e8-849a-38b7-f56abc2c2e56",
 							"export": true,
@@ -1017,7 +1019,9 @@
 											"shadow_strength": 1,
 											"use_nbt": false
 										},
-										"variants": {}
+										"variants": {
+											"5417306e-2c69-3f36-1e3c-edd904034a36": {}
+										}
 									},
 									"uuid": "49e67c2a-3d1d-792d-9c75-72ecbc0f92e0",
 									"export": true,
@@ -1561,7 +1565,7 @@
 									"x": 0,
 									"y": 0,
 									"z": 0,
-									"commands": "particle minecraft:flame ~ ~ ~",
+									"commands": "particle minecraft:flame ^ ^ ^1",
 									"execute_condition": "",
 									"repeat": true,
 									"repeat_frequency": 5
@@ -1587,7 +1591,7 @@
 									"x": 0,
 									"y": 0,
 									"z": 0,
-									"commands": "tp @e[tag=test,limit=1] ~ ~ ~ ~ ~",
+									"commands": "particle minecraft:flame ^ ^ ^1",
 									"execute_condition": "",
 									"repeat": true,
 									"repeat_frequency": 1

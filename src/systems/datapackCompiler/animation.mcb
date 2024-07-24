@@ -411,8 +411,8 @@ dir <%export_namespace%> {
 														posx: node.pos[0],
 														posy: node.pos[1],
 														posz: node.pos[2],
-														rotx: node.head_rot[1],
-														roty: node.head_rot[0]
+														roty: node.head_rot[1],
+														rotx: node.head_rot[0]
 													}
 												%%>
 											}
@@ -425,6 +425,9 @@ dir <%export_namespace%> {
 														~<%roundTo(node.head_rot[1], 10)%> \
 														~<%roundTo(node.head_rot[0], 10)%> \
 												run {
+													REPEAT(0, 10) as i {
+														particle bubble ^ ^ ^<%i/10%>
+													}
 													<%%
 														emit.mcb(node.commands)
 													%%>
@@ -437,8 +440,8 @@ dir <%export_namespace%> {
 														posx: node.pos[0],
 														posy: node.pos[1],
 														posz: node.pos[2],
-														rotx: node.head_rot[0],
-														roty: node.head_rot[1]
+														roty: node.head_rot[1],
+														rotx: node.head_rot[0]
 													}
 												%%>
 											}

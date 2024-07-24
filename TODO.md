@@ -82,6 +82,7 @@
 -   [ ] Add Variants to the UndoSystem (Blocked by vanilla Blockbench not supporting custom undo actions).
 -   [ ] Remove `easingArgs` and `easingMode` from saved keyframes if `easingType` is `linear`.
 -   [ ] Add an option to generate a `damage_flash` variant for mob-type entities.
+-   [ ] Add a fix for 360 rotation snap by using `set_frame` instead of `apply_frame` for the first frame of the animation.
 
 # Data Pack Compiler
 
