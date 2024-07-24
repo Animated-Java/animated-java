@@ -76,7 +76,8 @@ export type JsonTextObject = {
 					tag?: string
 			  }
 	}
-	tl?: string
+	translate?: string
+	fallback?: string
 	with?: JsonTextArray
 	score?: {
 		name: string
@@ -181,7 +182,7 @@ class JsonTextParser {
 		let result: JsonTextComponent
 		this.consumeWhitespace()
 		if (this.s.item === '{') {
-			result = this.parseObject()
+			result = this.parseTextObject()
 		} else if (this.s.item === '[') {
 			result = this.parseArray()
 		} else if (this.s.item === '"') {
@@ -206,7 +207,7 @@ class JsonTextParser {
 		const { line, column } = this.s
 		this.consumeWhitespace()
 		if (this.s.item === '{') {
-			return this.parseObject()
+			return this.parseTextObject()
 		} else if (this.s.item === '[') {
 			return this.parseArray()
 		} else if (this.s.item === '"') {
@@ -230,18 +231,55 @@ class JsonTextParser {
 		}
 	}
 
-	parseObject(): JsonTextObject {
+	parseObject(valueParser: (key: string, obj: any) => void, validator?: (obj: any) => void): any {
 		const { line, column } = this.s
 		try {
+			// TS attempts to incorrectly infer the type of this.item.s as '{' after this if statement.
+			// Casting it to string here fixes the issue.
+			if ((this.s.item as string) !== '{') {
+				throw new ParserError(
+					`Unexpected '${this.s.item as string}' in JsonTextObject`,
+					this.s
+				)
+			}
 			this.s.consume() // {
 			this.consumeWhitespace()
-			const obj: JsonTextObject = {}
+			const obj: any = {}
 			while (this.s.item !== '}') {
 				const key = this.parseString()
 				this.consumeWhitespace()
 				this.s.consume() // :
 				this.consumeWhitespace()
+				valueParser(key, obj)
+				this.consumeWhitespace()
+				if (this.s.item === ',') {
+					this.s.consume()
+					this.consumeWhitespace()
+				} else if (this.s.item === '}') {
+					break
+				} else if (this.s.item === undefined) {
+					throw new ParserError('Unexpected EOF in JsonTextObject', this.s)
+				} else {
+					throw new ParserError(`Unexpected '${this.s.item}' in JsonTextObject`, this.s)
+				}
+			}
+			this.s.consume() // }
+			if (validator) validator(obj)
+			return obj
+		} catch (e: any) {
+			throw new ParserError(
+				'Failed to parse JsonTextObject',
+				this.s,
+				e as Error,
+				line,
+				column
+			)
+		}
+	}
 
+	parseTextObject() {
+		return this.parseObject(
+			(key, obj: JsonTextObject) => {
 				switch (key) {
 					case 'block':
 					case 'entity':
@@ -253,7 +291,8 @@ class JsonTextParser {
 					case 'separator':
 					case 'storage':
 					case 'text':
-					case 'tl':
+					case 'translate':
+					case 'fallback':
 						obj[key] = this.parseString()
 						break
 					case 'color': {
@@ -276,41 +315,219 @@ class JsonTextParser {
 						obj[key] = this.parseArray()
 						break
 					case 'score':
+						obj[key] = this.parseScoreObject()
+						break
 					case 'clickEvent':
+						obj[key] = this.parseClickEventObject()
+						break
 					case 'hoverEvent':
-						obj[key] = this.parseObject() as any
+						obj[key] = this.parseHoverEventObject()
 						break
 					default:
 						throw new ParserError(`Unknown key '${key}' in JsonTextObject`, this.s)
 				}
-				this.consumeWhitespace()
-				if (this.s.item === ',') {
-					this.s.consume()
-					this.consumeWhitespace()
-				} else if (this.s.item === '}') {
-					break
-				} else {
+			},
+			obj => {
+				// Make sure the object has at least one of the required keys
+				if (
+					obj.text === undefined &&
+					obj.translate === undefined &&
+					obj.score === undefined &&
+					obj.selector === undefined &&
+					obj.keybind === undefined &&
+					obj.nbt === undefined
+				) {
 					throw new ParserError(
-						`Unexpected '${this.s.item as string}' in JsonTextObject`,
+						`JsonTextObject does not include one of 'text', 'translate', 'score', 'selector', 'keybind', or 'nbt'.`,
+						this.s
+					)
+				}
+
+				// Validate the NBT key
+				if (
+					obj.nbt !== undefined &&
+					obj.block === undefined &&
+					obj.entity === undefined &&
+					obj.storage === undefined
+				) {
+					throw new ParserError(
+						`JsonTextObject includes 'nbt' but does not include one of 'block', 'entity', or 'storage'.`,
 						this.s
 					)
 				}
 			}
-			this.s.consume() // }
-			return obj
-		} catch (e: any) {
-			throw new ParserError(
-				'Failed to parse JsonTextObject',
-				this.s,
-				e as Error,
-				line,
-				column
-			)
-		}
+		) as JsonTextObject
+	}
+
+	parseScoreObject() {
+		return this.parseObject(
+			(key, obj: NonNullable<JsonTextObject['score']>) => {
+				switch (key) {
+					case 'name':
+					case 'objective':
+						obj[key] = this.parseString()
+						break
+					case 'value':
+						obj[key] = this.parseNumber()
+						break
+					default:
+						throw new ParserError(
+							`Unknown key '${key}' in JsonTextObject.score`,
+							this.s
+						)
+				}
+			},
+			obj => {
+				if (obj.name === undefined || obj.objective === undefined) {
+					throw new ParserError(
+						`JsonTextObject.score must include 'name' and 'objective'`,
+						this.s
+					)
+				}
+			}
+		) as JsonTextObject['score']
+	}
+
+	parseClickEventObject() {
+		return this.parseObject(
+			(key, obj: NonNullable<JsonTextObject['clickEvent']>) => {
+				switch (key) {
+					case 'action':
+						obj[key] = this.parseString([
+							'open_url',
+							'open_file',
+							'run_command',
+							'suggest_command',
+							'change_page',
+							'copy_to_clipboard',
+						])
+						break
+					case 'value':
+						obj[key] = this.parseString()
+						break
+					default:
+						throw new ParserError(
+							`Unknown key '${key}' in JsonTextObject.clickEvent`,
+							this.s
+						)
+				}
+			},
+			obj => {
+				if (obj.action === undefined) {
+					throw new ParserError(`JsonTextObject.clickEvent must include 'action'`, this.s)
+				} else if (obj.value === undefined) {
+					throw new ParserError(`JsonTextObject.clickEvent must include 'value'`, this.s)
+				}
+			}
+		) as JsonTextObject['clickEvent']
+	}
+
+	parseHoverEventObject() {
+		return this.parseObject(
+			(key, obj: NonNullable<JsonTextObject['hoverEvent']>) => {
+				switch (key) {
+					case 'action':
+						obj[key] = this.parseString(['show_text', 'show_item', 'show_entity'])
+						break
+					case 'contents':
+						switch (obj.action) {
+							case undefined: {
+								throw new ParserError(
+									`HoverEvent 'action' is required, and must be defined before 'contents'.`,
+									this.s
+								)
+							}
+							case 'show_text': {
+								obj[key] = this.parseTextComponent()
+								break
+							}
+							case 'show_item': {
+								obj[key] = this.parseObject(
+									(key, item) => {
+										switch (key) {
+											case 'id':
+												item[key] = this.parseString()
+												break
+											case 'count':
+												item[key] = this.parseNumber()
+												break
+											case 'tag':
+												item[key] = this.parseString()
+												break
+											default:
+												throw new ParserError(
+													`Unknown key '${key}' in JsonTextObject.itemHoverEvent.contents`,
+													this.s
+												)
+										}
+									},
+									obj => {
+										if (obj.id === undefined) {
+											throw new ParserError(
+												`JsonTextObject.itemHoverEvent.contents must include 'id'`,
+												this.s
+											)
+										}
+									}
+								)
+								break
+							}
+							case 'show_entity': {
+								obj[key] = this.parseObject(
+									(key, entity) => {
+										switch (key) {
+											case 'type':
+												entity[key] = this.parseString()
+												break
+											case 'id':
+												entity[key] = this.parseString()
+												break
+											case 'name':
+												entity[key] = this.parseString()
+												break
+											default:
+												throw new ParserError(
+													`Unknown key '${key}' in JsonTextObject.entityHoverEvent.contents`,
+													this.s
+												)
+										}
+									},
+									obj => {
+										if (obj.type === undefined) {
+											throw new ParserError(
+												`JsonTextObject.entityHoverEvent.contents must include 'type'`,
+												this.s
+											)
+										}
+									}
+								)
+								break
+							}
+						}
+						break
+					default:
+						throw new ParserError(
+							`Unknown key '${key}' in JsonTextObject.hoverEvent`,
+							this.s
+						)
+				}
+			},
+			obj => {
+				if (obj.action === undefined) {
+					throw new ParserError(`JsonTextObject.hoverEvent must include 'action'`, this.s)
+				} else if (obj.contents === undefined) {
+					throw new ParserError(
+						`JsonTextObject.hoverEvent must include 'contents'`,
+						this.s
+					)
+				}
+			}
+		) as JsonTextObject['hoverEvent']
 	}
 
 	parseArray(): JsonTextArray {
 		this.s.consume() // [
+		this.consumeWhitespace()
 		const arr: JsonTextArray = []
 		while (this.s.item !== ']') {
 			this.consumeWhitespace()
@@ -332,7 +549,9 @@ class JsonTextParser {
 		return arr
 	}
 
-	parseString(): string {
+	parseString(): string
+	parseString<T>(allowedValues: T[]): T
+	parseString(allowedValues?: string[]): string {
 		if (this.s.item !== '"') {
 			throw new ParserError(`Unexpected '${this.s.item as string}' in string`, this.s)
 		}
@@ -346,7 +565,6 @@ class JsonTextParser {
 					this.s.consume() // n
 					continue
 				} else {
-					str += this.s.item
 					this.s.consume() // \
 					str += this.s.item
 					this.s.consume() // Escaped character
@@ -365,6 +583,12 @@ class JsonTextParser {
 			throw new ParserError('Unexpected EOF in string', this.s)
 		}
 		this.s.consume() // "
+		if (allowedValues && !allowedValues.includes(str)) {
+			throw new ParserError(
+				`Unexpected string value '${str}'. Expected one of ${allowedValues.join(', ')}`,
+				this.s
+			)
+		}
 		return str
 	}
 

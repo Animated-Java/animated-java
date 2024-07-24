@@ -80,8 +80,21 @@ function flattenTextComponent(input: JsonTextComponent): JsonTextObject[] {
 function getText(component: JsonTextObject) {
 	if (typeof component === 'string') return new UnicodeString(component)
 	else if (component.text) return new UnicodeString(component.text)
-	else if (component.tl) return new UnicodeString(`{${component.tl}}`)
-	else return new UnicodeString('')
+	else if (component.translate) return new UnicodeString(`{${component.translate}}`)
+	else if (component.selector) return new UnicodeString(`{${component.selector}}`)
+	else if (component.score) {
+		if (component.score.value) return new UnicodeString(`{${component.score.value}}`)
+		return new UnicodeString(`{${component.score.name}:${component.score.objective}}`)
+	} else if (component.keybind) return new UnicodeString(`{${component.keybind}}`)
+	else if (component.nbt) {
+		if (component.block) return new UnicodeString(`{${component.block}:${component.nbt}}`)
+		else if (component.entity)
+			return new UnicodeString(`{${component.entity}:${component.nbt}}`)
+		else if (component.storage)
+			return new UnicodeString(`{${component.storage}:${component.nbt}}`)
+		return new UnicodeString(`{${component.nbt}}`)
+	}
+	return new UnicodeString('')
 }
 
 export interface IStyleSpan {

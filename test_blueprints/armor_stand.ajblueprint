@@ -1,7 +1,7 @@
 {
 	"meta": {
 		"format": "animated_java_blueprint",
-		"format_version": "1.1.0",
+		"format_version": "1.3.0",
 		"uuid": "167b27cd-b559-3f13-a97c-0841fe21f1d1",
 		"save_location": "D:\\github-repos\\animated-java\\animated-java\\test_blueprints\\armor_stand.ajblueprint",
 		"last_used_export_namespace": "armor_stand"
@@ -857,10 +857,10 @@
 			"item": "minecraft:diamond",
 			"config": {},
 			"block": "minecraft:stone",
-			"text": "\"Armor Stand\"",
+			"text": "\"\\\"Hello World!\\\"\"\n",
 			"lineWidth": 200,
 			"backgroundColor": "#ffffff",
-			"backgroundAlpha": 0.25,
+			"backgroundAlpha": 0.25098,
 			"align": "center",
 			"shadow": true,
 			"seeThrough": true,
@@ -3033,7 +3033,7 @@
 			"override": false,
 			"length": 0.8,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"saved": false,
 			"path": "",
 			"anim_time_update": "",

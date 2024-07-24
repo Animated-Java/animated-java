@@ -106,12 +106,13 @@
 				overflow-y: auto;
 				white-space: nowrap;
 				margin-top: 0px;
+				margin-left: 2px;
 			"
 		/>
-		{#if $error}
-			<textarea readonly>{$error}</textarea>
-		{/if}
 	</div>
+	{#if $error}
+		<textarea readonly>{$error}</textarea>
+	{/if}
 </div>
 
 <style>
@@ -119,11 +120,12 @@
 		margin-bottom: -3px !important;
 	}
 	textarea {
+		margin-right: 20px;
+		margin-left: 2px;
 		color: var(--color-error);
 		background-color: var(--color-back);
 		padding: 4px 8px;
-		word-wrap: unset;
-		text-wrap: nowrap;
+		text-wrap: pretty;
 		overflow: scroll;
 		height: 10rem;
 		font-size: small;

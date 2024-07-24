@@ -302,6 +302,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 				console.error(e)
 				this.textError.set(e.message as string)
 				this._updating = false
+				text = new JsonText({ text: 'Invalid JSON Text!', color: 'red' })
 			}
 			this._newText = undefined
 			this._newLineWidth = undefined
