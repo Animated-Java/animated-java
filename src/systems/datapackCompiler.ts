@@ -662,14 +662,17 @@ export async function compileDataPack(options: {
 			PathModule.join(options.dataPackFolder, 'pack.mcmeta'),
 			autoStringify({
 				pack: {
+					// FIXME - This number should be a config option.
 					pack_format: 48,
 					description: `${Project!.name}. Generated with Animated Java`,
 				},
 			})
 		)
 
+		const exportPath =
+			options.dataPackFolder + (options.dataPackFolder.endsWith('.zip') ? '' : '.zip')
 		console.time('Writing Zip took')
-		await writeZip(exportedFiles, options.dataPackFolder)
+		await writeZip(exportedFiles, exportPath)
 		console.timeEnd('Writing Zip took')
 	}
 
