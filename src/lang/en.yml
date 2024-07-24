@@ -486,6 +486,9 @@ animated_java.tool.text_display.text_alignment.options.left: Left
 animated_java.tool.text_display.text_alignment.options.center: Center
 animated_java.tool.text_display.text_alignment.options.right: Right
 
+animated_java.tool.text_display.see_through.title: See Through
+animated_java.tool.text_display.see_through.description: Whether or not the text display should be visible through blocks.
+
 # Vanilla Item Display Panel
 animated_java.panel.vanilla_item_display.title: Displayed Item
 animated_java.panel.vanilla_item_display.description: The item to display.

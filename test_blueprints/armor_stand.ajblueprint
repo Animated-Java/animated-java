@@ -847,6 +847,25 @@
 			},
 			"uuid": "7747736f-85e2-338f-207e-53f8d3d2fa39",
 			"type": "locator"
+		},
+		{
+			"name": "text_display",
+			"position": [0, 38, 0],
+			"rotation": [0, 0, 0],
+			"scale": [1, 1, 1],
+			"visibility": true,
+			"item": "minecraft:diamond",
+			"config": {},
+			"block": "minecraft:stone",
+			"text": "\"Armor Stand\"",
+			"lineWidth": 200,
+			"backgroundColor": "#c91515",
+			"backgroundAlpha": 0.51,
+			"align": "center",
+			"shadow": true,
+			"seeThrough": true,
+			"uuid": "c2e217f1-b50a-5c9a-b342-71a35e984046",
+			"type": "animated_java:text_display"
 		}
 	],
 	"outliner": [
@@ -1355,7 +1374,8 @@
 			"visibility": true,
 			"autouv": 0,
 			"children": []
-		}
+		},
+		"c2e217f1-b50a-5c9a-b342-71a35e984046"
 	],
 	"textures": [
 		{

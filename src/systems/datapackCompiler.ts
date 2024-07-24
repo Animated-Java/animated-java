@@ -5,7 +5,7 @@ import animationMcb from './datapackCompiler/animation.mcb'
 import { AnyRenderedNode, IRenderedRig } from './rigRenderer'
 import { IRenderedAnimation } from './animationRenderer'
 import { Variant } from '../variants'
-import { NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/lib/nbt'
+import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/lib/nbt'
 import {
 	arrayToNbtFloatArray,
 	matrixToNbtFloatArray,
@@ -24,7 +24,7 @@ import {
 } from '../util/minecraftUtil'
 import { JsonText } from './minecraft/jsonText'
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../interface/exportProgressDialog'
-import { eulerFromQuaternion, roundTo } from '../util/misc'
+import { eulerFromQuaternion, floatToHex, roundTo, tinycolorToDecimal } from '../util/misc'
 import { setTimeout } from 'timers'
 import { MSLimiter } from '../util/msLimiter'
 
@@ -316,7 +316,12 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 					'text',
 					new NbtString(node.text ? node.text.toString() : '"Invalid Text Component"')
 				)
+
+				const color = new tinycolor(node.backgroundColor + floatToHex(node.backgroundAlpha))
+				passenger.set('background', new NbtInt(tinycolorToDecimal(color)))
 				passenger.set('line_width', new NbtInt(node.lineWidth))
+				passenger.set('shadow', new NbtByte(node.shadow ? 1 : 0))
+				passenger.set('see_through', new NbtByte(node.seeThrough ? 1 : 0))
 
 				if (node.config) {
 					TextDisplayConfig.fromJSON(node.config).toNBT(passenger)

@@ -44,6 +44,11 @@ export function floatToHex(n: number) {
 		.padStart(2, '0')
 }
 
+export function tinycolorToDecimal(color: InstanceType<typeof tinycolor>) {
+	const rgba = color.toRgb()
+	return ((rgba.a * 255) << 24) | (rgba.r << 16) | (rgba.g << 8) | rgba.b
+}
+
 export function makeNotZero(vec: THREE.Vector3 | THREE.Euler) {
 	if (vec.x === 0) vec.x = 0.00001
 	if (vec.y === 0) vec.y = 0.00001

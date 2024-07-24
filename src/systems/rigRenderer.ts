@@ -119,6 +119,8 @@ export interface IRenderedNodes {
 		backgroundColor: string
 		backgroundAlpha: number
 		align: Alignment
+		shadow: boolean
+		seeThrough: boolean
 		scale: number
 		config?: IBlueprintTextDisplayConfigJSON
 	}
@@ -520,6 +522,8 @@ function renderTextDisplay(display: TextDisplay, rig: IRenderedRig): INodeStruct
 		backgroundColor: display.backgroundColor,
 		backgroundAlpha: display.backgroundAlpha,
 		align: display.align,
+		shadow: display.shadow,
+		seeThrough: display.seeThrough,
 		scale: 1,
 		config: display.config,
 	}
