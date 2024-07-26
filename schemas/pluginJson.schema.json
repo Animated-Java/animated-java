@@ -222,6 +222,12 @@
 		},
 		"vec2": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
 		"vec3": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 },
+		"vec3String": {
+			"type": "array",
+			"items": { "type": "string" },
+			"minItems": 3,
+			"maxItems": 3
+		},
 		"vec4": { "type": "array", "items": { "type": "number" }, "minItems": 4, "maxItems": 4 },
 		"vanillaModel": {
 			"type": "object",
@@ -652,73 +658,72 @@
 		},
 		"keyframe": {
 			"type": "object",
-			"required": ["time", "uuid", "channel", "data_points", "interpolation", "easing"],
+			"required": ["time", "channel"],
 			"properties": {
 				"time": { "type": "number" },
-				"uuid": { "type": "string" },
-				"channel": { "type": "string" },
-				"data_points": {
-					"type": "array",
-					"items": { "$ref": "#/definitions/keyframeDataPoint" }
+				"channel": { "type": "string" }
+			},
+			"oneOf": [
+				{
+					"required": ["value", "interpolation"],
+					"properties": {
+						"channel": { "enum": ["position", "rotation", "scale"] },
+						"value": { "$ref": "#/definitions/vec3String" },
+						"post": { "$ref": "#/definitions/vec3String" },
+						"interpolation": {
+							"oneOf": [
+								{
+									"type": "object",
+									"properties": {
+										"type": { "const": "linear" },
+										"easing": { "$ref": "#/definitions/easing" },
+										"easingArgs": {
+											"type": "array",
+											"items": { "type": "number" }
+										}
+									}
+								},
+								{
+									"type": "object",
+									"properties": {
+										"type": { "const": "bezier" }
+									}
+								},
+								{
+									"type": "object",
+									"properties": {
+										"type": { "const": "catmullrom" }
+									}
+								},
+								{
+									"type": "object",
+									"properties": {
+										"type": { "const": "step" }
+									}
+								}
+							]
+						}
+					}
 				},
-				"interpolation": {
-					"type": "string",
-					"enum": ["linear", "bezier", "catmullrom", "step"]
+				{
+					"required": ["variant"],
+					"properties": {
+						"channel": { "const": "variant" },
+						"variant": { "type": "string" },
+						"execute_condition": { "type": "string" }
+					}
 				},
-				"easing": {
-					"type": "string",
-					"enum": [
-						"linear",
-						"step",
-						"easeInQuad",
-						"easeOutQuad",
-						"easeInOutQuad",
-						"easeInCubic",
-						"easeOutCubic",
-						"easeInOutCubic",
-						"easeInQuart",
-						"easeOutQuart",
-						"easeInOutQuart",
-						"easeInQuint",
-						"easeOutQuint",
-						"easeInOutQuint",
-						"easeInSine",
-						"easeOutSine",
-						"easeInOutSine",
-						"easeInExpo",
-						"easeOutExpo",
-						"easeInOutExpo",
-						"easeInCirc",
-						"easeOutCirc",
-						"easeInOutCirc",
-						"easeInBack",
-						"easeOutBack",
-						"easeInOutBack",
-						"easeInElastic",
-						"easeOutElastic",
-						"easeInOutElastic",
-						"easeInBounce",
-						"easeOutBounce",
-						"easeInOutBounce"
-					]
-				},
-				"easingArgs": {
-					"type": "array",
-					"items": { "type": "number" }
+				{
+					"required": ["commands"],
+					"properties": {
+						"channel": { "const": "commands" },
+						"commands": { "type": "string" },
+						"execute_condition": { "type": "string" },
+						"repeat": { "type": "boolean" },
+						"repeat_frequency": { "type": "number", "min": 1 }
+					}
 				}
-			}
-		},
-		"keyframeDataPoint": {
-			"type": "object",
-			"properties": {
-				"x": { "type": "string" },
-				"y": { "type": "string" },
-				"z": { "type": "string" },
-				"commands": { "type": "string" },
-				"execute_condition": { "type": "string" },
-				"repeat": { "type": "boolean" },
-				"repeat_frequency": { "type": "number", "min": 1 }
-			}
+			]
 		},
 		"variant": {
 			"type": "object",
@@ -754,6 +759,43 @@
 					"description": "Whether or not this variant is the default variant."
 				}
 			}
+		},
+		"easing": {
+			"type": "string",
+			"enum": [
+				"linear",
+				"step",
+				"easeInQuad",
+				"easeOutQuad",
+				"easeInOutQuad",
+				"easeInCubic",
+				"easeOutCubic",
+				"easeInOutCubic",
+				"easeInQuart",
+				"easeOutQuart",
+				"easeInOutQuart",
+				"easeInQuint",
+				"easeOutQuint",
+				"easeInOutQuint",
+				"easeInSine",
+				"easeOutSine",
+				"easeInOutSine",
+				"easeInExpo",
+				"easeOutExpo",
+				"easeInOutExpo",
+				"easeInCirc",
+				"easeOutCirc",
+				"easeInOutCirc",
+				"easeInBack",
+				"easeOutBack",
+				"easeInOutBack",
+				"easeInElastic",
+				"easeOutElastic",
+				"easeInOutElastic",
+				"easeInBounce",
+				"easeOutBounce",
+				"easeInOutBounce"
+			]
 		}
 	}
 }

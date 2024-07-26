@@ -4,6 +4,13 @@
 
 import type { IBlueprintBoneConfigJSON, IBlueprintVariantJSON } from '../blueprintFormat'
 import { type defaultValues } from '../blueprintSettings'
+import {
+	getKeyframeCommands,
+	getKeyframeExecuteCondition,
+	getKeyframeRepeat,
+	getKeyframeRepeatFrequency,
+	getKeyframeVariant,
+} from '../mods/customKeyframesMod'
 import { EasingKey } from '../util/easing'
 import { resolvePath } from '../util/fileUtil'
 import { detectCircularReferences, scrubUndefined } from '../util/misc'
@@ -46,20 +53,38 @@ type ExportedBakedAnimation = Omit<IRenderedAnimation, 'uuid' | 'frames' | 'incl
 	frames: ExportedAnimationFrame[]
 	includedNodes: string[]
 }
-type ExportedAnimator = Array<{
-	uuid: string
+type ExportedKeyframe = {
 	time: number
 	channel: string
-	data_points: KeyframeDataPoint[]
-	interpolation: 'linear' | 'bezier' | 'catmullrom' | 'step'
-	bezier_linked?: boolean
-	bezier_left_time?: ArrayVector3
-	bezier_left_value?: ArrayVector3
-	bezier_right_time?: ArrayVector3
-	bezier_right_value?: ArrayVector3
-	easing: EasingKey
-	easingArgs?: number[]
-}>
+	value?: [string, string, string]
+	post?: [string, string, string]
+	interpolation?:
+		| {
+				type: 'linear'
+				easing: EasingKey
+				easingArgs?: number[]
+		  }
+		| {
+				type: 'bezier'
+				bezier_linked?: boolean
+				bezier_left_time?: ArrayVector3
+				bezier_left_value?: ArrayVector3
+				bezier_right_time?: ArrayVector3
+				bezier_right_value?: ArrayVector3
+		  }
+		| {
+				type: 'catmullrom'
+		  }
+		| {
+				type: 'step'
+		  }
+	commands?: string
+	variant?: string
+	execute_condition?: string
+	repeat?: boolean
+	repeat_frequency?: number
+}
+type ExportedAnimator = ExportedKeyframe[]
 type ExportedDynamicAnimation = {
 	name: string
 	loop_mode: 'once' | 'hold' | 'loop'
@@ -111,6 +136,67 @@ export interface IExportedJSON {
 	 * If `blueprint_settings.baked_animations` is true, this will be an array of `ExportedAnimation` objects. Otherwise, it will be an array of `AnimationUndoCopy` objects, just like the `.bbmodel`'s animation list.
 	 */
 	animations: Record<string, ExportedBakedAnimation> | Record<string, ExportedDynamicAnimation>
+}
+
+function serailizeKeyframe(kf: _Keyframe): ExportedKeyframe {
+	const json = {
+		time: kf.time,
+		channel: kf.channel,
+		commands: getKeyframeCommands(kf),
+		variant: getKeyframeVariant(kf),
+		execute_condition: getKeyframeExecuteCondition(kf),
+		repeat: getKeyframeRepeat(kf),
+		repeat_frequency: getKeyframeRepeatFrequency(kf),
+	} as ExportedKeyframe
+
+	switch (json.channel) {
+		case 'variant':
+		case 'commands':
+			break
+		default: {
+			json.value = [
+				kf.get('x', 0).toString(),
+				kf.get('y', 0).toString(),
+				kf.get('z', 0).toString(),
+			]
+			json.interpolation = { type: kf.interpolation } as any
+		}
+	}
+
+	if (json.interpolation) {
+		switch (json.interpolation.type) {
+			case 'linear': {
+				json.interpolation.easing = kf.easing!
+				if (kf.easingArgs?.length) json.interpolation.easingArgs = kf.easingArgs
+				break
+			}
+			case 'bezier': {
+				json.interpolation.bezier_linked = kf.bezier_linked
+				json.interpolation.bezier_left_time = kf.bezier_left_time.slice() as ArrayVector3
+				json.interpolation.bezier_left_value = kf.bezier_left_value.slice() as ArrayVector3
+				json.interpolation.bezier_right_time = kf.bezier_right_time.slice() as ArrayVector3
+				json.interpolation.bezier_right_value =
+					kf.bezier_right_value.slice() as ArrayVector3
+				break
+			}
+			case 'catmullrom': {
+				break
+			}
+			case 'step': {
+				break
+			}
+		}
+	}
+
+	if (kf.data_points.length === 2) {
+		json.post = [
+			kf.get('x', 1).toString(),
+			kf.get('y', 1).toString(),
+			kf.get('z', 1).toString(),
+		]
+	}
+
+	return json
 }
 
 export function exportJSON(options: {
@@ -195,36 +281,9 @@ export function exportJSON(options: {
 				animators: {},
 			}
 			for (const [uuid, animator] of Object.entries(animation.animators)) {
-				const keyframes = animator.keyframes.map(kf => {
-					const keyframeJSON: any = kf.getUndoCopy(true)
-					delete keyframeJSON.color
-					if (
-						Array.isArray(keyframeJSON.easingArgs) &&
-						keyframeJSON.easingArgs.length === 0
-					) {
-						delete keyframeJSON.easingArgs
-					}
-					if (keyframeJSON.data_points?.length) {
-						const isCustomChannel = ['commands', 'variant'].includes(kf.channel)
-						for (const dp of keyframeJSON.data_points) {
-							if (isCustomChannel) {
-								delete dp.x
-								delete dp.y
-								delete dp.z
-								continue
-							}
-							if (dp.x !== undefined) dp.x = String(dp.x)
-							if (dp.y !== undefined) dp.y = String(dp.y)
-							if (dp.z !== undefined) dp.z = String(dp.z)
-						}
-					}
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-					return keyframeJSON
-				})
 				// Only include animators with keyframes
-				if (keyframes.length > 0) {
-					animJSON.animators[uuid] = keyframes
-				}
+				if (animator.keyframes.length === 0) continue
+				animJSON.animators[uuid] = animator.keyframes.map(serailizeKeyframe)
 			}
 			json.animations[animation.uuid] = animJSON
 		}
