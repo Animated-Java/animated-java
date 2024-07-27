@@ -405,7 +405,7 @@
 							"resourceLocation",
 							"boundingBox",
 							"configs",
-							"scale"
+							"baseScale"
 						],
 						"properties": {
 							"modelPath": { "type": "string" },
@@ -419,7 +419,10 @@
 									"max": { "$ref": "#/definitions/vec3" }
 								}
 							},
-							"scale": { "type": "number" },
+							"baseScale": {
+								"type": "number",
+								"description": "The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit."
+							},
 							"configs": {
 								"type": "object",
 								"patternProperties": {
@@ -475,7 +478,7 @@
 							"backgroundColor",
 							"backgroundAlpha",
 							"align",
-							"scale",
+							"baseScale",
 							"config"
 						],
 						"properties": {
@@ -487,7 +490,10 @@
 								"type": "string",
 								"enum": ["left", "center", "right"]
 							},
-							"scale": { "type": "number" },
+							"baseScale": {
+								"type": "number",
+								"description": "The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit."
+							},
 							"config": {
 								"$ref": "#/definitions/boneConfig"
 							}
@@ -501,10 +507,13 @@
 						}
 					},
 					"then": {
-						"required": ["config", "block", "scale"],
+						"required": ["config", "block", "baseScale"],
 						"properties": {
 							"block": { "type": "string" },
-							"scale": { "type": "number" },
+							"baseScale": {
+								"type": "number",
+								"description": "The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit."
+							},
 							"config": {
 								"$ref": "#/definitions/boneConfig"
 							}
@@ -518,10 +527,13 @@
 						}
 					},
 					"then": {
-						"required": ["config", "item", "scale"],
+						"required": ["config", "item", "baseScale"],
 						"properties": {
 							"item": { "type": "string" },
-							"scale": { "type": "number" },
+							"baseScale": {
+								"type": "number",
+								"description": "The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit."
+							},
 							"config": {
 								"$ref": "#/definitions/boneConfig"
 							}

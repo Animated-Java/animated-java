@@ -163,7 +163,7 @@ export function getNodeTransforms(
 			case 'item_display':
 			case 'block_display':
 			case 'bone': {
-				matrix = getNodeMatrix(node.node, node.scale)
+				matrix = getNodeMatrix(node.node, node.baseScale)
 				// Only add the frame if the matrix has changed.
 				// NOTE - Disabled because it causes issues with vanilla interpolation.
 				if (lastFrame && lastFrame.matrix.equals(matrix)) continue

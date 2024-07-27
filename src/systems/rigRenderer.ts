@@ -90,7 +90,10 @@ export interface IRenderedNodes {
 		modelPath: string
 		resourceLocation: string
 		boundingBox: THREE.Box3
-		scale: number
+		/**
+		 * The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit.
+		 */
+		baseScale: number
 		configs: {
 			default?: IBlueprintBoneConfigJSON
 			variants: Record<string, IBlueprintBoneConfigJSON>
@@ -121,21 +124,30 @@ export interface IRenderedNodes {
 		align: Alignment
 		shadow: boolean
 		seeThrough: boolean
-		scale: number
+		/**
+		 * The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit.
+		 */
+		baseScale: number
 		config?: IBlueprintTextDisplayConfigJSON
 	}
 	ItemDisplay: IRenderedNode & {
 		type: 'item_display'
 		node: VanillaItemDisplay
 		item: string
-		scale: number
+		/**
+		 * The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit.
+		 */
+		baseScale: number
 		config?: IBlueprintBoneConfigJSON
 	}
 	BlockDisplay: IRenderedNode & {
 		type: 'block_display'
 		node: VanillaBlockDisplay
 		block: string
-		scale: number
+		/**
+		 * The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit.
+		 */
+		baseScale: number
 		config?: IBlueprintBoneConfigJSON
 	}
 }
@@ -343,7 +355,7 @@ function renderGroup(group: Group, rig: IRenderedRig): INodeStructure | undefine
 		customModelData: -1,
 		resourceLocation: parsed.resourceLocation,
 		boundingBox: getBoneBoundingBox(group),
-		scale: 1,
+		baseScale: 1,
 		configs: group.configs,
 	}
 
@@ -424,7 +436,7 @@ function renderGroup(group: Group, rig: IRenderedRig): INodeStructure | undefine
 		}
 	}
 
-	renderedBone.scale = 1 / scale
+	renderedBone.baseScale = 1 / scale
 	rig.models[group.uuid] = renderedBone.model
 	rig.nodeMap[group.uuid] = renderedBone
 	return structure
@@ -453,7 +465,7 @@ function renderItemDisplay(
 		name: display.name,
 		uuid: display.uuid,
 		item: display.item,
-		scale: 1,
+		baseScale: 1,
 		config: display.config,
 	}
 
@@ -487,7 +499,7 @@ function renderBlockDisplay(
 		name: display.name,
 		uuid: display.uuid,
 		block: display.block,
-		scale: 1,
+		baseScale: 1,
 		config: display.config,
 	}
 
@@ -524,7 +536,7 @@ function renderTextDisplay(display: TextDisplay, rig: IRenderedRig): INodeStruct
 		align: display.align,
 		shadow: display.shadow,
 		seeThrough: display.seeThrough,
-		scale: 1,
+		baseScale: 1,
 		config: display.config,
 	}
 
