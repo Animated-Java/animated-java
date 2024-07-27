@@ -283,7 +283,7 @@ dir <%export_namespace%> {
 					#ARGS: {duration: int, to_frame: int}
 					execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 						function *global/errors/function_not_executed_as_root_entity \
-							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.safeName%>/tween_play'}
+							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.safeName%>/tween'}
 					function *<%export_namespace%>/animations/pause_all
 
 					tag @s add <%TAGS.ANIMATION_PLAYING(export_namespace, animation.safeName)%>
