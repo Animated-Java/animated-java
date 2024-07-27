@@ -75,6 +75,14 @@
 			<p>For showing off the power of AJ with his boss fights.</p>
 		</div>
 	</div>
+
+	<h4>Ko-fi Supporters</h4>
+	<div class="grid2">
+		{#each PACKAGE.subscription_supporters.sort() as special}
+			<p>{special}</p>
+		{/each}
+	</div>
+
 	<h4>Cool People who helped make AJ what it is today</h4>
 	<div class="grid2">
 		{#each PACKAGE.special_thanks.sort() as special}
@@ -88,14 +96,14 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		/* overflow-y: scroll;
+		overflow-y: scroll;
 		max-height: 55rem;
-		padding-right: 16px; */
+		padding-right: 16px;
 	}
 	.header-container {
 		display: flex;
 		align-items: center;
-		margin-bottom: 2rem;
+		margin-bottom: 1.5rem;
 	}
 	.header-container div {
 		display: flex;
@@ -186,5 +194,16 @@
 		display: grid;
 		grid-template-columns: 1fr 1fr 1fr 1fr;
 		justify-items: center;
+		gap: 4px 8px;
+		margin-bottom: 8px;
+	}
+
+	.grid2 p {
+		text-align: center;
+		width: 100%;
+		box-shadow: 2px 2px 4px var(--color-back);
+		background: var(--color-button);
+		padding: 0px 4px;
+		border-radius: 4px;
 	}
 </style>
