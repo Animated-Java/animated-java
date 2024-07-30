@@ -69,7 +69,7 @@ async function actuallyExportProject(forceSave = true) {
 
 		if (
 			Project!.animated_java.resource_pack_export_mode === 'none' &&
-			rig.includesCustomModels
+			rig.includes_custom_models
 		) {
 			Blockbench.showMessageBox({
 				title: translate('misc.failed_to_export.title'),

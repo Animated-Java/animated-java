@@ -2,7 +2,7 @@
 /// <reference path="D:/github-repos/snavesutit/blockbench-types/types/index.d.ts"/>
 /// <reference path="../global.d.ts"/>
 
-import type { IBlueprintBoneConfigJSON, IBlueprintVariantJSON } from '../blueprintFormat'
+import type { IBlueprintBoneConfigJSON } from '../blueprintFormat'
 import { type defaultValues } from '../blueprintSettings'
 import {
 	getKeyframeCommands,
@@ -13,23 +13,23 @@ import {
 } from '../mods/customKeyframesMod'
 import { EasingKey } from '../util/easing'
 import { resolvePath } from '../util/fileUtil'
-import { detectCircularReferences, scrubUndefined } from '../util/misc'
+import { detectCircularReferences, mapObjEntries, scrubUndefined } from '../util/misc'
 import { Variant } from '../variants'
 import type { INodeTransform, IRenderedAnimation, IRenderedFrame } from './animationRenderer'
 import type {
 	AnyRenderedNode,
-	INodeStructure,
-	IRenderedBoneVariant,
 	IRenderedModel,
 	IRenderedRig,
+	IRenderedVariant,
+	IRenderedVariantModel,
 } from './rigRenderer'
 
 type ExportedNodetransform = Omit<
 	INodeTransform,
-	'type' | 'name' | 'uuid' | 'node' | 'matrix' | 'transformation'
+	'type' | 'name' | 'uuid' | 'node' | 'matrix' | 'decomposed' | 'executeCondition'
 > & {
 	matrix: number[]
-	transformation: {
+	decomposed: {
 		translation: ArrayVector3
 		left_rotation: ArrayVector4
 		scale: ArrayVector3
@@ -37,21 +37,22 @@ type ExportedNodetransform = Omit<
 	pos: ArrayVector3
 	rot: ArrayVector3
 	scale: ArrayVector3
+	execute_condition?: string
 }
 type ExportedRenderedNode = Omit<
 	AnyRenderedNode,
-	'node' | 'parentNode' | 'model' | 'boundingBox' | 'configs'
+	'node' | 'parentNode' | 'model' | 'boundingBox' | 'configs' | 'baseScale'
 > & {
-	defaultTransform: ExportedNodetransform
-	boundingBox?: { min: ArrayVector3; max: ArrayVector3 }
+	default_transform: ExportedNodetransform
+	bounding_box?: { min: ArrayVector3; max: ArrayVector3 }
 	configs?: Record<string, IBlueprintBoneConfigJSON>
 }
 type ExportedAnimationFrame = Omit<IRenderedFrame, 'nodes' | 'node_transforms'> & {
 	node_transforms: Record<string, ExportedNodetransform>
 }
-type ExportedBakedAnimation = Omit<IRenderedAnimation, 'uuid' | 'frames' | 'includedNodes'> & {
+type ExportedBakedAnimation = Omit<IRenderedAnimation, 'uuid' | 'frames' | 'modified_nodes'> & {
 	frames: ExportedAnimationFrame[]
-	includedNodes: string[]
+	modified_nodes: string[]
 }
 type ExportedKeyframe = {
 	time: number
@@ -92,15 +93,27 @@ type ExportedDynamicAnimation = {
 	excluded_nodes: string[]
 	animators: Record<string, ExportedAnimator>
 }
-interface ISerializedTexture {
+interface ExportedTexture {
 	name: string
 	id: string
-	expectedPath: string
 	src: string
+}
+type ExportedVariantModel = Omit<IRenderedVariantModel, 'model_path' | 'resource_location'> & {
+	model: IRenderedModel
+	custom_model_data: number
+}
+type ExportedVariant = Omit<IRenderedVariant, 'models'> & {
+	/**
+	 * A map of bone UUID -> IRenderedVariantModel
+	 */
+	models: Record<string, ExportedVariantModel>
 }
 
 export interface IExportedJSON {
-	blueprint_settings: {
+	/**
+	 * The Blueprint's Settings
+	 */
+	settings: {
 		export_namespace: (typeof defaultValues)['export_namespace']
 		show_bounding_box: (typeof defaultValues)['show_bounding_box']
 		auto_bounding_box: (typeof defaultValues)['auto_bounding_box']
@@ -119,23 +132,18 @@ export interface IExportedJSON {
 		baked_animations: (typeof defaultValues)['baked_animations']
 		json_file: (typeof defaultValues)['json_file']
 	}
-	resources: {
-		textureExportFolder: string
-		modelExportFolder: string
-		displayItemPath: string
-		models: Record<string, IRenderedModel>
-		variant_models: Record<string, Record<string, IRenderedBoneVariant>>
-		textures: Record<string, ISerializedTexture>
-	}
-	rig: {
-		node_map: Record<string, ExportedRenderedNode>
-		node_structure: INodeStructure
-		variants: Record<string, IBlueprintVariantJSON>
-	}
+	textures: Record<string, ExportedTexture>
+	nodes: Record<string, ExportedRenderedNode>
+	variants: Record<string, ExportedVariant>
 	/**
 	 * If `blueprint_settings.baked_animations` is true, this will be an array of `ExportedAnimation` objects. Otherwise, it will be an array of `AnimationUndoCopy` objects, just like the `.bbmodel`'s animation list.
 	 */
 	animations: Record<string, ExportedBakedAnimation> | Record<string, ExportedDynamicAnimation>
+}
+
+function transferKey(obj: any, oldKey: string, newKey: string) {
+	obj[newKey] = obj[oldKey]
+	delete obj[oldKey]
 }
 
 function serailizeKeyframe(kf: _Keyframe): ExportedKeyframe {
@@ -199,6 +207,20 @@ function serailizeKeyframe(kf: _Keyframe): ExportedKeyframe {
 	return json
 }
 
+function serializeVariant(variant: IRenderedVariant): ExportedVariant {
+	const json: ExportedVariant = {
+		...variant,
+		models: mapObjEntries(variant.models, (uuid, model) => {
+			const json: ExportedVariantModel = {
+				model: model.model,
+				custom_model_data: model.custom_model_data,
+			}
+			return [uuid, json]
+		}),
+	}
+	return json
+}
+
 export function exportJSON(options: {
 	rig: IRenderedRig
 	animations: IRenderedAnimation[]
@@ -207,18 +229,14 @@ export function exportJSON(options: {
 	modelExportFolder: string
 }) {
 	const aj = Project!.animated_java
-	const { rig, animations, displayItemPath, textureExportFolder, modelExportFolder } = options
+	const { rig, animations } = options
 
 	console.log('Exporting JSON...', options)
 
-	function serializeTexture(id: string, texture: Texture): ISerializedTexture {
+	function serializeTexture(id: string, texture: Texture): ExportedTexture {
 		return {
 			name: texture.name,
 			id,
-			expectedPath: PathModule.join(
-				textureExportFolder,
-				texture.name.endsWith('.png') ? texture.name : texture.name + '.png'
-			),
 			src: texture.getDataURL(),
 		}
 	}
@@ -233,37 +251,14 @@ export function exportJSON(options: {
 	delete blueprintSettings.teleportation_duration
 	delete blueprintSettings.use_storage_for_animation
 
-	const defaultTransforms = Object.fromEntries(
-		rig.defaultTransforms.map(v => [v.uuid, serailizeNodeTransform(v)])
-	)
-
 	const json: IExportedJSON = {
-		blueprint_settings: blueprintSettings,
-		resources: {
-			textureExportFolder,
-			modelExportFolder,
-			displayItemPath,
-			models: rig.models,
-			variant_models: rig.variantModels,
-			textures: Object.fromEntries(
-				Object.entries(rig.textures).map(([id, texture]) => [
-					texture.uuid,
-					serializeTexture(id, texture),
-				])
-			),
-		},
-		rig: {
-			node_map: Object.fromEntries(
-				Object.entries(rig.nodeMap).map(([key, node]) => [
-					key,
-					serailizeRenderedNode(node, defaultTransforms),
-				])
-			),
-			node_structure: rig.nodeStructure,
-			variants: Object.fromEntries(
-				Variant.all.map(variant => [variant.uuid, variant.toJSON()])
-			),
-		},
+		settings: blueprintSettings,
+		textures: mapObjEntries(rig.textures, (id, texture) => [
+			texture.uuid,
+			serializeTexture(id, texture),
+		]),
+		nodes: mapObjEntries(rig.nodes, (uuid, node) => [uuid, serailizeRenderedNode(node)]),
+		variants: mapObjEntries(rig.variants, (uuid, variant) => [uuid, serializeVariant(variant)]),
 		animations: {},
 	}
 
@@ -307,39 +302,13 @@ export function exportJSON(options: {
 	fs.writeFileSync(exportPath, compileJSON(json).toString())
 }
 
-function serailizeRenderedNode(
-	node: AnyRenderedNode,
-	defaultTransforms?: Record<string, ExportedNodetransform>
-): ExportedRenderedNode {
-	const json: any = { ...node }
-	delete json.node
-	delete json.parentNode
-	delete json.model
-	if (node.type === 'bone') {
-		json.boundingBox = {
-			min: node.boundingBox.min.toArray(),
-			max: node.boundingBox.max.toArray(),
-		}
-		delete json.configs
-		json.configs = { ...node.configs.variants }
-		const defaultVariant = Variant.getDefault()
-		if (node.configs.default && defaultVariant) {
-			json.configs[defaultVariant.uuid] = node.configs.default
-		}
-	}
-	if (defaultTransforms) {
-		json.defaultTransform = defaultTransforms[node.uuid]
-	}
-	return json as ExportedRenderedNode
-}
-
 function serailizeNodeTransform(node: INodeTransform): ExportedNodetransform {
 	const json: ExportedNodetransform = {
 		matrix: node.matrix.elements,
-		transformation: {
-			translation: node.transformation.translation.toArray(),
-			left_rotation: node.transformation.left_rotation.toArray() as ArrayVector4,
-			scale: node.transformation.scale.toArray(),
+		decomposed: {
+			translation: node.decomposed.translation.toArray(),
+			left_rotation: node.decomposed.left_rotation.toArray() as ArrayVector4,
+			scale: node.decomposed.scale.toArray(),
 		},
 		pos: node.pos,
 		rot: node.rot,
@@ -352,29 +321,53 @@ function serailizeNodeTransform(node: INodeTransform): ExportedNodetransform {
 	return json
 }
 
+function serailizeRenderedNode(node: AnyRenderedNode): ExportedRenderedNode {
+	const json: any = { ...node }
+	delete json.node
+	delete json.parentNode
+	delete json.model
+	delete json.uuid
+	transferKey(json, 'lineWidth', 'line_width')
+	transferKey(json, 'backgroundColor', 'background_color')
+	transferKey(json, 'backgroundAlpha', 'background_alpha')
+
+	json.default_transform = serailizeNodeTransform(json.default_transform as INodeTransform)
+	if (node.type === 'bone') {
+		delete json.boundingBox
+		json.bounding_box = {
+			min: node.bounding_box.min.toArray(),
+			max: node.bounding_box.max.toArray(),
+		}
+		delete json.configs
+		json.configs = { ...node.configs.variants }
+		const defaultVariant = Variant.getDefault()
+		if (node.configs.default && defaultVariant) {
+			json.configs[defaultVariant.uuid] = node.configs.default
+		}
+	}
+	return json as ExportedRenderedNode
+}
+
 function serializeAnimation(animation: IRenderedAnimation): ExportedBakedAnimation {
 	const json: ExportedBakedAnimation = {
 		name: animation.name,
-		safeName: animation.safeName,
+		safe_name: animation.safe_name,
 		duration: animation.duration,
-		loopDelay: animation.loopDelay,
-		loopMode: animation.loopMode,
+		loop_delay: animation.loop_delay,
+		loop_mode: animation.loop_mode,
 		frames: [],
-		includedNodes: [],
+		modified_nodes: Object.keys(animation.modified_nodes),
 	}
 
 	const frames: ExportedAnimationFrame[] = []
 	for (const frame of animation.frames) {
-		const node_transforms: Record<string, ExportedNodetransform> = Object.fromEntries(
-			frame.node_transforms.map(v => [v.uuid, serailizeNodeTransform(v)])
-		)
-		frames.push({ ...frame, node_transforms })
+		const nodeTransforms: Record<string, ExportedNodetransform> = {}
+		for (const [uuid, nodeTransform] of Object.entries(frame.node_transforms)) {
+			nodeTransforms[uuid] = serailizeNodeTransform(nodeTransform)
+		}
+		frames.push({ ...frame, node_transforms: nodeTransforms })
 	}
 	json.frames = frames
-
-	json.includedNodes = animation.includedNodes
-		.map(v => serailizeRenderedNode(v))
-		.map(node => node.uuid)
 
 	return json
 }

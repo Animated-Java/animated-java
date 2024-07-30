@@ -54,63 +54,50 @@ function threeAxisRotationToTwoAxisRotation(rot: THREE.Quaternion): ArrayVector2
 }
 
 export interface INodeTransform {
-	type:
-		| 'bone'
-		| 'struct'
-		| 'camera'
-		| 'locator'
-		| 'text_display'
-		| 'item_display'
-		| 'block_display'
-	name: string
-	uuid: string
-	node?: Group | NullObject | Locator | OutlinerElement | TextDisplay
 	matrix: THREE.Matrix4
-	transformation: {
+	decomposed: {
 		translation: THREE.Vector3
 		left_rotation: THREE.Quaternion
 		scale: THREE.Vector3
 	}
 	pos: ArrayVector3
 	rot: ArrayVector3
+	scale: ArrayVector3
 	// The two-axis (entity head) rotation of the node.
 	head_rot: ArrayVector2
-	scale: ArrayVector3
 	interpolation?: 'step' | 'pre-post'
-	/**
-	 * Commands is only set for locator nodes
-	 */
+
 	commands?: string
-	/**
-	 * Execute condition is only set for locator nodes
-	 */
 	execute_condition?: string
 }
 
 export interface IRenderedFrame {
 	time: number
-	node_transforms: INodeTransform[]
+	node_transforms: Record<string, INodeTransform>
 	variant?: {
 		uuid: string
-		executeCondition?: string
+		execute_condition?: string
 	}
 }
 
 export interface IRenderedAnimation {
 	name: string
 	uuid: string
-	safeName: string
-	loopDelay: number
+	safe_name: string
+	loop_delay: number
 	frames: IRenderedFrame[]
 	/**
 	 * Duration of the animation in ticks (AKA frames). Same as animation.frames.length
 	 */
 	duration: number
-	loopMode: 'loop' | 'once' | 'hold'
-	includedNodes: AnyRenderedNode[]
+	loop_mode: 'loop' | 'once' | 'hold'
+	/**
+	 * Nodes that were modified by the animation
+	 */
+	modified_nodes: Record<string, AnyRenderedNode>
 }
 
-let lastAnimation: _Animation
+let lastAnimation: _Animation | undefined
 interface ILastFrameCacheItem {
 	matrix: THREE.Matrix4
 	keyframe?: _Keyframe
@@ -121,17 +108,25 @@ let lastFrameCache = new Map<string, ILastFrameCacheItem>()
  */
 let keyframeCache = new Map<string, Map<number, _Keyframe | undefined>>()
 let excludedNodesCache = new Set<string>()
-export function getNodeTransforms(
+let nodeCache = new Map<string, OutlinerElement>()
+export function getFrame(
 	animation: _Animation,
-	nodeMap: IRenderedRig['nodeMap'],
+	nodeMap: IRenderedRig['nodes'],
 	time = 0
-) {
+): IRenderedFrame {
+	const frame: IRenderedFrame = {
+		time,
+		node_transforms: {},
+		variant: getVariantKeyframe(animation, time),
+	}
+
 	if (lastAnimation !== animation) {
 		lastAnimation = animation
 		lastFrameCache = new Map()
 		keyframeCache = new Map()
-		for (const [uuid, node] of Object.entries(nodeMap)) {
-			const animator = animation.getBoneAnimator(node.node)
+		for (const uuid of Object.keys(nodeMap)) {
+			const animator: GeneralAnimator | undefined = animation.animators[uuid]
+			if (!animator) continue
 			const keyframeMap = animator.keyframes
 				? new Map(animator.keyframes.map(kf => [kf.time, kf]))
 				: new Map<number, _Keyframe>()
@@ -140,11 +135,15 @@ export function getNodeTransforms(
 		excludedNodesCache = new Set(
 			animation.excluded_nodes ? animation.excluded_nodes.map(b => b.value) : []
 		)
+		nodeCache = new Map()
+		for (const node of getAnimatableNodes()) {
+			nodeCache.set(node.uuid, node)
+		}
 	}
-	const nodes: INodeTransform[] = []
 
 	for (const [uuid, node] of Object.entries(nodeMap)) {
-		if (!node.node.export) continue
+		const outlinerNode = nodeCache.get(uuid)
+		if (!outlinerNode) continue
 		if (excludedNodesCache.has(uuid)) continue
 		const keyframes = keyframeCache.get(uuid)
 		if (!keyframes) continue
@@ -154,22 +153,23 @@ export function getNodeTransforms(
 
 		let matrix: THREE.Matrix4
 		let interpolation: INodeTransform['interpolation']
-		let commands,
-			executeCondition: string | undefined,
-			repeat: boolean | undefined,
-			repeatFrequency: number | undefined
+		let commands: string | undefined
+		let executeCondition: string | undefined
+		let repeat: boolean | undefined
+		let repeatFrequency: number | undefined
+
 		switch (node.type) {
 			case 'text_display':
 			case 'item_display':
 			case 'block_display':
 			case 'bone': {
-				matrix = getNodeMatrix(node.node, node.baseScale)
+				matrix = getNodeMatrix(outlinerNode, node.base_scale)
 				// Only add the frame if the matrix has changed.
 				// NOTE - Disabled because it causes issues with vanilla interpolation.
 				if (lastFrame && lastFrame.matrix.equals(matrix)) continue
 				// Inherit instant interpolation from parent
-				if (node.parentNode) {
-					const parentKeyframes = keyframeCache.get(node.parentNode.uuid)
+				if (node.parent && node.parent !== 'root') {
+					const parentKeyframes = keyframeCache.get(node.parent)
 					const parentKeyframe = parentKeyframes?.get(time)
 					const prevParentKeyframe = parentKeyframes?.get(time - 0.05)
 					if (parentKeyframe?.interpolation === 'step') {
@@ -189,7 +189,7 @@ export function getNodeTransforms(
 				break
 			}
 			case 'locator': {
-				matrix = getNodeMatrix(node.node, 1)
+				matrix = getNodeMatrix(outlinerNode, 1)
 				if (keyframe) {
 					commands = getKeyframeCommands(keyframe)
 					executeCondition = getKeyframeExecuteCondition(keyframe)
@@ -209,11 +209,11 @@ export function getNodeTransforms(
 				break
 			}
 			case 'camera': {
-				matrix = getNodeMatrix(node.node, 1)
+				matrix = getNodeMatrix(outlinerNode, 1)
 				break
 			}
 			case 'struct': {
-				matrix = getNodeMatrix(node.node, 1)
+				matrix = getNodeMatrix(outlinerNode, 1)
 				break
 			}
 		}
@@ -224,24 +224,20 @@ export function getNodeTransforms(
 		matrix.decompose(pos, rot, scale)
 		const decomposed = getDecomposedTransformation(matrix)
 
-		nodes.push({
-			type: node.type,
-			name: node.name,
-			uuid,
-			node: node.node,
+		frame.node_transforms[uuid] = {
 			matrix,
-			transformation: decomposed,
+			decomposed,
 			pos: [pos.x, pos.y, pos.z],
 			rot: eulerFromQuaternion(rot).toArray(),
-			head_rot: threeAxisRotationToTwoAxisRotation(rot),
 			scale: [scale.x, scale.y, scale.z],
+			head_rot: threeAxisRotationToTwoAxisRotation(rot),
 			interpolation,
 			commands,
 			execute_condition: executeCondition,
-		})
+		}
 	}
 
-	return nodes
+	return frame
 }
 
 function getVariantKeyframe(animation: _Animation, time: number) {
@@ -288,12 +284,12 @@ export function renderAnimation(animation: _Animation, rig: IRenderedRig) {
 	const rendered = {
 		name: animation.name,
 		uuid: animation.uuid,
-		safeName: toSafeFuntionName(animation.name).replaceAll('.', '_'),
-		loopDelay: Number(animation.loop_delay) || 0,
+		safe_name: toSafeFuntionName(animation.name).replaceAll('.', '_'),
+		loop_delay: Number(animation.loop_delay) || 0,
 		frames: [],
 		duration: 0,
-		loopMode: animation.loop,
-		includedNodes: [],
+		loop_mode: animation.loop,
+		modified_nodes: {},
 	} as IRenderedAnimation
 	animation.select()
 
@@ -301,17 +297,14 @@ export function renderAnimation(animation: _Animation, rig: IRenderedRig) {
 
 	for (let time = 0; time <= animation.length; time = roundToNth(time + 0.05, 20)) {
 		updatePreview(animation, time)
-		const frame: IRenderedFrame = {
-			time,
-			node_transforms: getNodeTransforms(animation, rig.nodeMap, time),
-			variant: getVariantKeyframe(animation, time),
-		}
-		frame.node_transforms.forEach(n => includedNodes.add(n.uuid))
+		const frame: IRenderedFrame = getFrame(animation, rig.nodes, time)
+		Object.keys(frame.node_transforms).forEach(n => includedNodes.add(n))
 		rendered.frames.push(frame)
 	}
 	rendered.duration = rendered.frames.length
-
-	rendered.includedNodes = Object.values(rig.nodeMap).filter(n => includedNodes.has(n.uuid))
+	rendered.modified_nodes = Object.fromEntries(
+		Array.from(includedNodes).map(uuid => [uuid, rig.nodes[uuid]])
+	)
 
 	return rendered
 }
@@ -321,12 +314,12 @@ export function hashAnimations(animations: IRenderedAnimation[]) {
 	for (const animation of animations) {
 		hash.update('anim;' + animation.name)
 		hash.update(';' + animation.duration.toString())
-		hash.update(';' + animation.loopMode)
-		hash.update(';' + animation.includedNodes.map(n => n.uuid).join(';'))
+		hash.update(';' + animation.loop_mode)
+		hash.update(';' + Object.keys(animation.modified_nodes).join(';'))
 		for (const frame of animation.frames) {
 			hash.update(';' + frame.time.toString())
-			for (const node of frame.node_transforms) {
-				hash.update(';' + node.uuid)
+			for (const [uuid, node] of Object.entries(frame.node_transforms)) {
+				hash.update(';' + uuid)
 				hash.update(';' + node.pos.join(';'))
 				hash.update(';' + node.rot.join(';'))
 				hash.update(';' + node.scale.join(';'))
@@ -336,15 +329,33 @@ export function hashAnimations(animations: IRenderedAnimation[]) {
 			}
 			if (frame.variant) {
 				hash.update(';' + frame.variant.uuid)
-				if (frame.variant.executeCondition)
-					hash.update(';' + frame.variant.executeCondition)
+				if (frame.variant.execute_condition)
+					hash.update(';' + frame.variant.execute_condition)
 			}
 		}
 	}
 	return hash.digest('hex')
 }
 
+export function getAnimatableNodes(): OutlinerElement[] {
+	return [
+		...Group.all,
+		...NullObject.all,
+		...Locator.all,
+		...TextDisplay.all,
+		...VanillaBlockDisplay.all,
+		...VanillaItemDisplay.all,
+	]
+}
+
 export function renderProjectAnimations(project: ModelProject, rig: IRenderedRig) {
+	// Clear the cache
+	lastAnimation = undefined
+	lastFrameCache = new Map()
+	keyframeCache = new Map()
+	excludedNodesCache = new Set()
+	nodeCache = new Map()
+
 	console.time('Rendering animations took')
 	let selectedAnimation: _Animation | undefined
 	let currentTime = 0
@@ -372,5 +383,6 @@ export function renderProjectAnimations(project: ModelProject, rig: IRenderedRig
 	}
 
 	console.timeEnd('Rendering animations took')
+	console.log('Animations:', animations)
 	return animations
 }

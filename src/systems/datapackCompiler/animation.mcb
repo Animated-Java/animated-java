@@ -161,7 +161,7 @@ dir <%export_namespace%> {
 					function *<%export_namespace%>/animations/<%animation.safeName%>/zzz/on_tick
 			}
 			execute on passengers if entity @s[tag=<%TAGS.PROJECT_DATA(export_namespace)%>] run {
-				REPEAT (Object.values(rig.nodeMap).filter(v => v.type === 'locator')) as node {
+				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator')) as node {
 					IF (node.config?.use_entity) {
 						block { with entity @s data.locators.<%node.name%>
 							$execute as $(uuid) positioned ^$(posx) ^$(posy) ^$(posz) rotated ~$(roty) ~$(rotx) run {
@@ -185,7 +185,7 @@ dir <%export_namespace%> {
 						}
 					}
 				}
-				REPEAT (Object.values(rig.nodeMap).filter(v => v.type === 'camera')) as node {
+				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'camera')) as node {
 					block { with entity @s data.cameras.<%node.name%>
 						$execute as $(uuid) positioned ^$(posx) ^$(posy) ^$(posz) rotated ~$(roty) ~$(rotx) run tp @s ~ ~ ~ ~ ~
 					}
@@ -328,26 +328,26 @@ dir <%export_namespace%> {
 					IF (use_storage_for_animation) {
 						function set_frame {
 							#ARGS: {frame: int}
-							REPEAT (animation.includedNodes.sort(nodeSorter)) as node {
+							REPEAT (animation.modified_nodes.sort(nodeSorter)) as node {
 								IF (['bone', 'text_display', 'item_display', 'block_display'].includes(node.type)) {
 									$execute on passengers run data modify entity @s[tag=<%TAGS.LOCAL_BONE(export_namespace, node.name)%>] {} merge from \
-										storage aj.<%export_namespace%>:animations <%animation.storageSafeName%>.$(frame).<%node.type + '_' + node.name%>
+										storage aj.<%export_namespace%>:animations <%animation.safeName%>.$(frame).<%node.type + '_' + node.name%>
 								} ELSE IF (['locator', 'camera'].includes(node.type)) {
 									$execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run data modify entity @s data.<%node.type + 's.' + node.name%> merge from \
-										storage aj.<%export_namespace%>:animations <%animation.storageSafeName%>.$(frame).<%node.type + '_' + node.name%>
+										storage aj.<%export_namespace%>:animations <%animation.safeName%>.$(frame).<%node.type + '_' + node.name%>
 								}
 							}
 							execute on passengers run data modify entity @s[type=!marker] start_interpolation set value -1
 						}
 						function apply_frame {
 							#ARGS: {frame: int}
-							REPEAT (animation.includedNodes.sort(nodeSorter)) as node {
+							REPEAT (animation.modified_nodes.sort(nodeSorter)) as node {
 								IF (['bone', 'text_display', 'item_display', 'block_display'].includes(node.type)) {
 									$execute on passengers if entity @s[tag=<%TAGS.LOCAL_BONE(export_namespace, node.name)%>] run data modify entity @s {} merge from \
-										storage aj.<%export_namespace%>:animations <%animation.storageSafeName%>.$(frame).<%node.type + '_' + node.name%>
+										storage aj.<%export_namespace%>:animations <%animation.safeName%>.$(frame).<%node.type + '_' + node.name%>
 								} ELSE IF (['locator', 'camera'].includes(node.type)) {
 									$execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run data modify entity @s data.<%node.type + 's.' + node.name%> merge from \
-										storage aj.<%export_namespace%>:animations <%animation.storageSafeName%>.$(frame).<%node.type + '_' + node.name%>
+										storage aj.<%export_namespace%>:animations <%animation.safeName%>.$(frame).<%node.type + '_' + node.name%>
 								}
 							}
 						}
@@ -375,7 +375,7 @@ dir <%export_namespace%> {
 								function <%animation.frames.indexOf(frame)%> {
 									<%%
 										if (frame.variant) {
-											const variant = variants.find(v => v.uuid === frame.variant.uuid)
+											const variant = rig.variants[frame.variant.uuid]
 											if (!variant) return
 											emit.mcb(`execute on vehicle unless entity @s[tag=<%TAGS.TRANSFORMS_ONLY()%>] run function *${export_namespace}/variants/${variant.name}/apply`)
 										}
@@ -384,66 +384,71 @@ dir <%export_namespace%> {
 											cameras: {}
 										}
 									%%>
-									REPEAT (frame.node_transforms.sort(nodeSorter)) as node {
-										IF (['bone', 'text_display', 'item_display', 'block_display'].includes(node.type)) {
-											<%%
-												const last = global.lastActiveFrame[node.uuid]
-												global.isStepInterpolation = !!(last?.interpolation === 'step')
-												global.lastActiveFrame[node.uuid] = node
-											%%>
-											IF (node.interpolation === 'pre-post' || global.isStepInterpolation) {
-												$data merge entity $(<%node.type + '_' + node.name%>) { \
-														transformation: <%matrixToNbtFloatArray(node.matrix).toString()%>, \
-														start_interpolation: -1, \
-														interpolation_duration: 0 \
-													}
-											} ELSE {
-												$data merge entity $(<%node.type + '_' + node.name%>) { \
-														transformation: <%matrixToNbtFloatArray(node.matrix).toString()%>, \
-														start_interpolation: 0, \
-														interpolation_duration: <%interpolation_duration%> \
-													}
-											}
-										} ELSE IF (node.type === 'locator') {
-											IF (rig.nodeMap[node.uuid]?.config?.use_entity || rig.nodeMap[node.uuid]?.config?.ticking_commands) {
+									REPEAT (Object.entries(animation.modified_nodes).sort(nodeSorter)) as node {
+										<%%
+											global.transform = frame.node_transforms[node[0]]
+										%%>
+										IF (global.transform) {
+											IF (['bone', 'text_display', 'item_display', 'block_display'].includes(node[1].type)) {
 												<%%
-													global.merged.locators[node.name] = {
-														posx: node.pos[0],
-														posy: node.pos[1],
-														posz: node.pos[2],
-														roty: node.head_rot[1],
-														rotx: node.head_rot[0]
-													}
+													const last = global.lastActiveFrame[node[0]]
+													global.isStepInterpolation = !!(last?.interpolation === 'step')
+													global.lastActiveFrame[node[0]] = node
 												%%>
-											}
-											IF (node.commands) {
-												execute on vehicle unless entity @s[tag=<%TAGS.TRANSFORMS_ONLY()%>] <%node.execute_condition ? node.execute_condition.trim() + ' ' : ''%>positioned \
-														^<%roundTo(node.pos[0], 10)%> \
-														^<%roundTo(node.pos[1], 10)%> \
-														^<%roundTo(node.pos[2], 10)%> \
-													rotated \
-														~<%roundTo(node.head_rot[1], 10)%> \
-														~<%roundTo(node.head_rot[0], 10)%> \
-												run {
-													REPEAT(0, 10) as i {
-														particle bubble ^ ^ ^<%i/10%>
-													}
+												IF (node[1].interpolation === 'pre-post' || global.isStepInterpolation) {
+													$data merge entity $(<%node[1].type + '_' + node[1].name%>) { \
+															transformation: <%matrixToNbtFloatArray(global.transform.matrix).toString()%>, \
+															start_interpolation: -1, \
+															interpolation_duration: 0 \
+														}
+												} ELSE {
+													$data merge entity $(<%node[1].type + '_' + node[1].name%>) { \
+															transformation: <%matrixToNbtFloatArray(global.transform.matrix).toString()%>, \
+															start_interpolation: 0, \
+															interpolation_duration: <%interpolation_duration%> \
+														}
+												}
+											} ELSE IF (node[1].type === 'locator') {
+												IF (node[1].config?.use_entity || node[1].config?.ticking_commands) {
 													<%%
-														emit.mcb(node.commands)
+														global.merged.locators[node[1].name] = {
+															posx: global.transform.pos[0],
+															posy: global.transform.pos[1],
+															posz: global.transform.pos[2],
+															roty: global.transform.head_rot[1],
+															rotx: global.transform.head_rot[0]
+														}
 													%%>
 												}
-											}
-										} ELSE IF (node.type === 'camera') {
-											IF (rig.nodeMap[node.uuid]) {
-												<%%
-													global.merged.cameras[node.name] = {
-														posx: node.pos[0],
-														posy: node.pos[1],
-														posz: node.pos[2],
-														roty: node.head_rot[1],
-														rotx: node.head_rot[0]
+												IF (node[1].commands) {
+													execute on vehicle unless entity @s[tag=<%TAGS.TRANSFORMS_ONLY()%>] <%global.transform.execute_condition ? global.transform.execute_condition.trim() + ' ' : ''%>positioned \
+															^<%roundTo(global.transform.pos[0], 10)%> \
+															^<%roundTo(global.transform.pos[1], 10)%> \
+															^<%roundTo(global.transform.pos[2], 10)%> \
+														rotated \
+															~<%roundTo(global.transform.head_rot[1], 10)%> \
+															~<%roundTo(global.transform.head_rot[0], 10)%> \
+													run {
+														REPEAT(0, 10) as i {
+															particle bubble ^ ^ ^<%i/10%>
+														}
+														<%%
+															emit.mcb(global.transform.commands)
+														%%>
 													}
-												%%>
+												}
+											} ELSE IF (node[1].type === 'camera') {
+												IF (rig.nodeMap[node[0]]) {
+													<%%
+														global.merged.cameras[node[1].name] = {
+															posx: global.transform.pos[0],
+															posy: global.transform.pos[1],
+															posz: global.transform.pos[2],
+															roty: global.transform.head_rot[1],
+															rotx: global.transform.head_rot[0]
+														}
+													%%>
+												}
 											}
 										}
 									}
@@ -488,7 +493,7 @@ dir <%export_namespace%> {
 				function *global/internal/gu/convert_uuid_array_to_string with entity @s
 				data modify entity @s data.bones.data_data set from storage aj:uuid main.out
 
-				REPEAT (Object.values(rig.nodeMap).filter(v => v.type === 'locator')) as locator {
+				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator')) as locator {
 					IF (locator.config && locator.config.use_entity) {
 						summon <%locator.config.entity_type%> ~ ~ ~ {Tags:['<%TAGS.NEW()%>', '<%TAGS.GLOBAL_LOCATOR()%>', '<%TAGS.PROJECT_LOCATOR(export_namespace)%>', '<%TAGS.LOCAL_LOCATOR(export_namespace, locator.name)%>']}
 						execute as @e[type=<%locator.config.entity_type%>,tag=<%TAGS.NEW()%>,tag=<%TAGS.GLOBAL_LOCATOR()%>,limit=1,distance=..0.01] run {
@@ -505,7 +510,7 @@ dir <%export_namespace%> {
 					}
 				}
 
-				REPEAT (Object.values(rig.nodeMap).filter(v => v.type === 'camera')) as camera {
+				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'camera')) as camera {
 					summon item_display ~ ~ ~ {Tags:['<%TAGS.NEW()%>', '<%TAGS.GLOBAL_CAMERA()%>', '<%TAGS.PROJECT_CAMERA(export_namespace)%>', '<%TAGS.LOCAL_CAMERA(export_namespace, camera.name)%>'], teleport_duration: 2}
 					execute as @e[type=item_display,tag=<%TAGS.NEW()%>,tag=<%TAGS.GLOBAL_CAMERA()%>,limit=1,distance=..0.01] run {
 						tag @s remove <%TAGS.NEW()%>
@@ -515,7 +520,7 @@ dir <%export_namespace%> {
 					data modify entity @s data.cameras.<%camera.name%>.uuid set from storage aj:uuid main.out
 				}
 
-				REPEAT (Object.values(rig.nodeMap).filter(v => ['bone', 'text_display', 'item_display', 'block_display'].includes(v.type))) as bone {
+				REPEAT (Object.values(rig.nodes).filter(v => ['bone', 'text_display', 'item_display', 'block_display'].includes(v.type))) as bone {
 					execute on vehicle on passengers if entity @s[tag=<%TAGS.LOCAL_BONE(export_namespace, bone.name)%>] run \
 						function *global/internal/gu/convert_uuid_array_to_string with entity @s
 					data modify entity @s data.bones.<%bone.type + '_' + bone.name%> set from storage aj:uuid main.out
@@ -537,7 +542,7 @@ dir <%export_namespace%> {
 					return fail
 				}
 				execute unless score #success <%OBJECTIVES.I()%> matches 1 run return run { with storage aj:temp args
-					$tellraw @a <%TELLRAW.INVALID_VARIANT('$(variant)', variants)%>
+					$tellraw @a <%TELLRAW.INVALID_VARIANT('$(variant)', rig.variants)%>
 					function *<%export_namespace%>/remove/this
 				}
 			}
@@ -588,7 +593,7 @@ dir <%export_namespace%> {
 	}
 
 	dir summon {
-		REPEAT (variants) as variant {
+		REPEAT (Object.values(rig.variants)) as variant {
 			function <%variant.name%> {
 				function *<%export_namespace%>/summon {args:{variant: '<%variant.name%>'}}
 			}
@@ -602,7 +607,7 @@ dir <%export_namespace%> {
 				{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/as_all_locators'}
 		$data modify storage aj:temp command set value '$(command)'
 		execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run {
-			REPEAT (Object.values(rig.nodeMap).filter(v => v.type === 'locator')) as locator {
+			REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator')) as locator {
 				data modify storage aj:temp uuid set from entity @s data.locators.<%locator.name%>.uuid
 				block zzz/execute { with storage aj:temp
 					$execute as $(uuid) run $(command)
@@ -626,7 +631,7 @@ dir <%export_namespace%> {
 			function #*<%export_namespace%>/as_root/on_remove
 
 			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run {
-				REPEAT (Object.values(rig.nodeMap).filter(v => v.type === 'locator' && v.config?.use_entity)) as locator {
+				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator' && v.config?.use_entity)) as locator {
 					block zzz/kill { with entity @s data.locators.<%locator.name%>
 						# Recursively remove any stacked locator entities
 						$execute as $(uuid) run block kill_passengers {
@@ -635,7 +640,7 @@ dir <%export_namespace%> {
 						}
 					}
 				}
-				REPEAT (Object.values(rig.nodeMap).filter(v => v.type === 'camera' && v.config?.use_entity)) as camera {
+				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'camera' && v.config?.use_entity)) as camera {
 					block zzz/kill { with entity @s data.cameras.<%camera.name%>
 						$execute as $(uuid) run kill @s
 					}
@@ -648,46 +653,24 @@ dir <%export_namespace%> {
 	}
 
 	dir variants {
-		dir <%defaultVariant.name%> {
-			function apply {
-				execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-					function *global/errors/function_not_executed_as_root_entity \
-						{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/variants/<%defaultVariant.name%>/apply'}
-				REPEAT (Object.values(rig.nodeMap)) as node {
-					IF (node.type === 'bone') {
-						execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%node.name%>] run {
-							data modify entity @s item.components.minecraft:custom_model_data set value <%node.customModelData%>
-							<%%
-								if (node.configs.default) {
-									global.config = BoneConfig.fromJSON(node.configs.default)
-									emit.mcb(`data merge entity @s <%global.config.toNBT(undefined, true)%>`)
+		REPEAT (Object.values(rig.variants)) as variant {
+			dir <%variant.name%> {
+				function apply {
+					execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+						function *global/errors/function_not_executed_as_root_entity \
+							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/variants/<%variant.name%>/apply'}
+					REPEAT (Object.entries(rig.nodes)) as node {
+						IF (node[1].type === 'bone' && !Object.values(variant.excluded_nodes).find(v => v.value === node[0]) && (variant.models[node[0]] !== undefined || node[1].configs.variants[variant.uuid])) {
+							execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%node[1].name%>] run {
+								IF (variant.models[node[0]] !== undefined) {
+									data modify entity @s item.components.minecraft:custom_model_data set value <%variant.models[node[0]].custom_model_data%>
 								}
-							%%>
-						}
-					}
-				}
-			}
-		}
-		REPEAT (variants) as variant {
-			IF (!variant.isDefault) {
-				dir <%variant.name%> {
-					function apply {
-						execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-							function *global/errors/function_not_executed_as_root_entity \
-								{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/variants/<%variant.name%>/apply'}
-						REPEAT (Object.values(rig.nodeMap)) as node {
-							IF (node.type === 'bone' && !Object.values(variant.excludedNodes).find(v => v.value === node.node.uuid) && (rig.variantModels[variant.uuid][node.node.uuid] !== undefined || node.configs.variants[variant.uuid])) {
-								execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%node.name%>] run {
-									IF (rig.variantModels[variant.uuid][node.node.uuid] !== undefined) {
-										data modify entity @s item.components.minecraft:custom_model_data set value <%rig.variantModels[variant.uuid][node.node.uuid].customModelData%>
-									}
-									IF (node.configs.variants[variant.uuid]) {
-										<%%
-											global.config = BoneConfig.fromJSON(node.configs.variants[variant.uuid])
-										%%>
-										IF (!global.config.isDefault()) {
-											data merge entity @s <%global.config.toNBT()%>
-										}
+								IF (node[1].configs.variants[variant.uuid]) {
+									<%%
+										global.config = BoneConfig.fromJSON(node[1].configs.variants[variant.uuid])
+									%%>
+									IF (!global.config.isDefault()) {
+										data merge entity @s <%global.config.toNBT(undefined, variant.is_default)%>
 									}
 								}
 							}
@@ -703,10 +686,13 @@ dir <%export_namespace%> {
 		execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 			function *global/errors/function_not_executed_as_root_entity \
 				{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/apply_default_pose'}
-		REPEAT (rig.defaultTransforms) as node {
+		REPEAT (Object.values(rig.nodes)) as node {
 			IF (['bone', 'text_display', 'item_display', 'block_display'].includes(node.type)) {
+				<%%
+					console.log(node)
+				%%>
 				execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%node.name%>] run \
-					data merge entity @s {transformation: <%matrixToNbtFloatArray(node.matrix).toString()%>, start_interpolation: 0}
+					data merge entity @s {transformation: <%matrixToNbtFloatArray(node.default_transform.matrix).toString()%>, start_interpolation: 0}
 			}
 		}
 	}
@@ -715,10 +701,10 @@ dir <%export_namespace%> {
 		execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 			function *global/errors/function_not_executed_as_root_entity \
 				{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/set_default_pose'}
-		REPEAT (rig.defaultTransforms) as node {
+		REPEAT (Object.values(rig.nodes)) as node {
 			IF (['bone', 'text_display', 'item_display', 'block_display'].includes(node.type)) {
 				execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%node.name%>] run \
-					data merge entity @s {transformation: <%matrixToNbtFloatArray(node.matrix).toString()%>, start_interpolation: -1}
+					data merge entity @s {transformation: <%matrixToNbtFloatArray(node.default_transform.matrix).toString()%>, start_interpolation: -1}
 			}
 		}
 	}

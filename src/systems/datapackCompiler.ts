@@ -2,7 +2,7 @@ import { Compiler, Parser, Tokenizer, SyncIo } from 'mc-build'
 import { VariableMap } from 'mc-build/dist/mcl/Compiler'
 import { isFunctionTagPath } from '../util/fileUtil'
 import animationMcb from './datapackCompiler/animation.mcb'
-import { AnyRenderedNode, IRenderedRig } from './rigRenderer'
+import { AnyRenderedNode, IRenderedRig, IRenderedVariant } from './rigRenderer'
 import { IRenderedAnimation } from './animationRenderer'
 import { Variant } from '../variants'
 import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/lib/nbt'
@@ -152,7 +152,10 @@ namespace TELLRAW {
 			{ text: 'variant', color: 'yellow' },
 			{ text: ' cannot be an empty string.', color: 'red' },
 		])
-	export const INVALID_VARIANT = (variantName: string, variants: Variant[]) =>
+	export const INVALID_VARIANT = (
+		variantName: string,
+		variants: Record<string, IRenderedVariant>
+	) =>
 		new JsonText([
 			'',
 			TELLRAW_PREFIX,
@@ -163,7 +166,7 @@ namespace TELLRAW {
 			'\n ',
 			{ text: ' ≡ ', color: 'white' },
 			{ text: 'Available Variants:', color: 'green' },
-			...variants.map(
+			...Object.values(variants).map(
 				variant =>
 					new JsonText([
 						'\n ',
@@ -241,7 +244,7 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 			)
 	)
 
-	for (const node of Object.values(rig.nodeMap)) {
+	for (const [uuid, node] of Object.entries(rig.nodes)) {
 		const passenger = new NbtCompound()
 		// TODO Maybe add components setting to blueprint settings?
 		const useComponents = true
@@ -271,6 +274,10 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 				passenger.set('teleport_duration', new NbtInt(0))
 				passenger.set('item_display', new NbtString('head'))
 				const item = new NbtCompound()
+				const variantModel = rig.variants[Variant.getDefault().uuid].models[uuid]
+				if (!variantModel) {
+					throw new Error(`Model for bone '${node.name}' not found!`)
+				}
 				passenger.set(
 					'item',
 					item
@@ -280,7 +287,7 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 							useComponents ? 'components' : 'tag',
 							new NbtCompound().set(
 								useComponents ? 'minecraft:custom_model_data' : 'CustomModelData',
-								new NbtInt(node.customModelData)
+								new NbtInt(variantModel.custom_model_data)
 							)
 						)
 				)
@@ -317,11 +324,13 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 					new NbtString(node.text ? node.text.toString() : '"Invalid Text Component"')
 				)
 
-				const color = new tinycolor(node.backgroundColor + floatToHex(node.backgroundAlpha))
+				const color = new tinycolor(
+					node.background_color + floatToHex(node.background_alpha)
+				)
 				passenger.set('background', new NbtInt(tinycolorToDecimal(color)))
-				passenger.set('line_width', new NbtInt(node.lineWidth))
+				passenger.set('line_width', new NbtInt(node.line_width))
 				passenger.set('shadow', new NbtByte(node.shadow ? 1 : 0))
-				passenger.set('see_through', new NbtByte(node.seeThrough ? 1 : 0))
+				passenger.set('see_through', new NbtByte(node.see_through ? 1 : 0))
 
 				if (node.config) {
 					TextDisplayConfig.fromJSON(node.config).toNBT(passenger)
@@ -428,7 +437,7 @@ class DataPackAJMeta {
 	}
 }
 
-async function createAnimationStorage(animations: IRenderedAnimation[]) {
+async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAnimation[]) {
 	PROGRESS_DESCRIPTION.set('Creating Animation Storage...')
 	PROGRESS.set(0)
 	MAX_PROGRESS.set(
@@ -443,7 +452,7 @@ async function createAnimationStorage(animations: IRenderedAnimation[]) {
 		const addFrameDataCommand = () => {
 			const str = `data modify storage aj.${
 				Project!.animated_java.export_namespace
-			}:animations ${animation.safeName} merge value ${frames.toString()}`
+			}:animations ${animation.safe_name} merge value ${frames.toString()}`
 			dataCommands.push(str)
 			frames = new NbtCompound()
 		}
@@ -451,23 +460,24 @@ async function createAnimationStorage(animations: IRenderedAnimation[]) {
 			const frame = animation.frames[i]
 			const thisFrame = new NbtCompound()
 			frames.set(i.toString(), thisFrame)
-			for (const node of frame.node_transforms) {
+			for (const [uuid, node] of Object.entries(rig.nodes)) {
+				const transform = frame.node_transforms[uuid]
 				if (BONE_TYPES.includes(node.type)) {
 					thisFrame.set(
 						node.type + '_' + node.name,
 						new NbtCompound()
-							.set('transformation', matrixToNbtFloatArray(node.matrix))
+							.set('transformation', matrixToNbtFloatArray(transform.matrix))
 							.set('start_interpolation', new NbtInt(0))
 					)
 				} else {
 					thisFrame.set(
 						node.type + '_' + node.name,
 						new NbtCompound()
-							.set('posx', new NbtFloat(node.pos[0]))
-							.set('posy', new NbtFloat(node.pos[1]))
-							.set('posz', new NbtFloat(node.pos[2]))
-							.set('rotx', new NbtFloat(node.rot[0]))
-							.set('roty', new NbtFloat(node.rot[1]))
+							.set('posx', new NbtFloat(transform.pos[0]))
+							.set('posy', new NbtFloat(transform.pos[1]))
+							.set('posz', new NbtFloat(transform.pos[2]))
+							.set('rotx', new NbtFloat(transform.rot[0]))
+							.set('roty', new NbtFloat(transform.rot[1]))
 					)
 				}
 			}
@@ -491,20 +501,17 @@ function createPassengerStorage(rig: IRenderedRig) {
 	const cameras = new NbtCompound()
 	// Data entity
 	bones.set('data_data', new NbtString(''))
-	for (const node of Object.values(rig.defaultTransforms)) {
+	for (const node of Object.values(rig.nodes)) {
 		switch (node.type) {
 			case 'locator':
 			case 'camera': {
 				const data = new NbtCompound()
-					.set('posx', new NbtFloat(node.pos[0]))
-					.set('posy', new NbtFloat(node.pos[1]))
-					.set('posz', new NbtFloat(node.pos[2]))
-					.set('rotx', new NbtFloat(Math.radToDeg(node.rot[0])))
-					.set('roty', new NbtFloat(Math.radToDeg(node.rot[1])))
-				if (
-					node.type === 'locator' &&
-					(rig.nodeMap[node.uuid].node as Locator).config?.use_entity
-				)
+					.set('posx', new NbtFloat(node.default_transform.pos[0]))
+					.set('posy', new NbtFloat(node.default_transform.pos[1]))
+					.set('posz', new NbtFloat(node.default_transform.pos[2]))
+					.set('rotx', new NbtFloat(Math.radToDeg(node.default_transform.rot[0])))
+					.set('roty', new NbtFloat(Math.radToDeg(node.default_transform.rot[1])))
+				if (node.type === 'locator' && node.config.use_entity)
 					data.set('uuid', new NbtString(''))
 				;(node.type === 'camera' ? cameras : locators).set(node.name, data)
 				break
@@ -623,8 +630,6 @@ export async function compileDataPack(options: {
 		display_item: aj.display_item,
 		rig,
 		animations,
-		variants: Variant.all,
-		defaultVariant: Variant.getDefault(),
 		export_version: Math.random().toString().substring(2, 10),
 		root_entity_passengers: await generateRootEntityPassengers(rig, rigHash),
 		TAGS,
@@ -635,7 +640,7 @@ export async function compileDataPack(options: {
 		transformationToNbt,
 		use_storage_for_animation: aj.use_storage_for_animation,
 		animationStorage: aj.use_storage_for_animation
-			? await createAnimationStorage(animations)
+			? await createAnimationStorage(rig, animations)
 			: null,
 		rigHash,
 		animationHash,

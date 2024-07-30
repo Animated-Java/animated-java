@@ -3,6 +3,7 @@ import {
 	type IBlueprintBoneConfigJSON,
 	IBlueprintLocatorConfigJSON,
 	IBlueprintTextDisplayConfigJSON,
+	IBlueprintVariantJSON,
 } from '../blueprintFormat'
 import { BoneConfig } from '../nodeConfigs'
 import { Alignment, TextDisplay } from '../outliner/textDisplay'
@@ -14,10 +15,10 @@ import {
 import { TRANSPARENT_TEXTURE, TRANSPARENT_TEXTURE_RESOURCE_LOCATION, Variant } from '../variants'
 import {
 	correctSceneAngle,
-	getNodeTransforms,
-	INodeTransform,
+	getFrame,
 	restoreSceneAngle,
 	updatePreview,
+	type INodeTransform,
 } from './animationRenderer'
 import * as crypto from 'crypto'
 import { JsonText } from './minecraft/jsonText'
@@ -56,17 +57,20 @@ export interface IRenderedModel {
 	textures: Record<string, string>
 	elements?: IRenderedElement[]
 	display?: {
-		head: { rotation: [0, number, 0] }
+		head: { rotation: [0, 180, 0] }
 	}
 }
 
 export interface IRenderedNode {
 	type: string
-	parent: string
-	parentNode: Group | null
 	name: string
-	node: OutlinerNode
-	uuid: string
+	// node: OutlinerNode
+	parent: string
+	// parentNode: Group | null
+	/**
+	 * The default transformation of the node
+	 */
+	default_transform: INodeTransform
 }
 
 export interface ICamera extends OutlinerElement {
@@ -84,16 +88,11 @@ export interface ICamera extends OutlinerElement {
 export interface IRenderedNodes {
 	Bone: IRenderedNode & {
 		type: 'bone'
-		node: Group
-		model: IRenderedModel
-		customModelData: number
-		modelPath: string
-		resourceLocation: string
-		boundingBox: THREE.Box3
+		bounding_box: THREE.Box3
 		/**
 		 * The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit.
 		 */
-		baseScale: number
+		base_scale: number
 		configs: {
 			default?: IBlueprintBoneConfigJSON
 			variants: Record<string, IBlueprintBoneConfigJSON>
@@ -101,64 +100,58 @@ export interface IRenderedNodes {
 	}
 	Struct: IRenderedNode & {
 		type: 'struct'
-		node: Group
 	}
 	Camera: IRenderedNode & {
 		type: 'camera'
 		name: string
-		node: ICamera
 		config: IBlueprintCameraConfigJSON
 	}
 	Locator: IRenderedNode & {
 		type: 'locator'
-		node: Locator
 		config: IBlueprintLocatorConfigJSON
 	}
 	TextDisplay: IRenderedNode & {
 		type: 'text_display'
-		node: TextDisplay
 		text?: JsonText
-		lineWidth: number
-		backgroundColor: string
-		backgroundAlpha: number
+		line_width: number
+		background_color: string
+		background_alpha: number
 		align: Alignment
 		shadow: boolean
-		seeThrough: boolean
+		see_through: boolean
 		/**
 		 * The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit.
 		 */
-		baseScale: number
+		base_scale: number
 		config?: IBlueprintTextDisplayConfigJSON
 	}
 	ItemDisplay: IRenderedNode & {
 		type: 'item_display'
-		node: VanillaItemDisplay
 		item: string
 		/**
 		 * The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit.
 		 */
-		baseScale: number
+		base_scale: number
 		config?: IBlueprintBoneConfigJSON
 	}
 	BlockDisplay: IRenderedNode & {
 		type: 'block_display'
-		node: VanillaBlockDisplay
 		block: string
 		/**
 		 * The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit.
 		 */
-		baseScale: number
+		base_scale: number
 		config?: IBlueprintBoneConfigJSON
 	}
 }
 
 export type AnyRenderedNode = IRenderedNodes[keyof IRenderedNodes]
 
-export interface IRenderedBoneVariant {
+export interface IRenderedVariantModel {
 	model: IRenderedModel
-	customModelData: number
-	modelPath: string
-	resourceLocation: string
+	custom_model_data: number
+	model_path: string
+	resource_location: string
 }
 
 export interface INodeStructure {
@@ -166,43 +159,38 @@ export interface INodeStructure {
 	children: INodeStructure[]
 }
 
+export type IRenderedVariant = Omit<IBlueprintVariantJSON, 'uuid'> & {
+	/**
+	 * A map of bone UUID -> IRenderedVariantModel
+	 */
+	models: Record<string, IRenderedVariantModel>
+}
+
 export interface IRenderedRig {
-	/**
-	 * A map of bone UUIDs to rendered models
-	 */
-	models: Record<string, IRenderedModel>
-	/**
-	 * A map of variant UUIDs to maps of rendered models
-	 */
-	variantModels: Record<string, Record<string, IRenderedBoneVariant>>
 	/**
 	 * A map of outliner node UUIDs to rendered bones
 	 */
-	nodeMap: Record<string, AnyRenderedNode>
+	nodes: Record<string, AnyRenderedNode>
 	/**
-	 * The recursive structure of node UUIDs
+	 * A map of Variant UUID -> IRenderedVariant
 	 */
-	nodeStructure: INodeStructure
+	variants: Record<string, IRenderedVariant>
 	/**
 	 * A map of texture IDs to textures
 	 */
 	textures: Record<string, Texture>
 	/**
-	 * The default transform of the rig as an Animation frame
-	 */
-	defaultTransforms: INodeTransform[]
-	/**
 	 * The export folder for the rig models
 	 */
-	modelExportFolder: string
+	model_export_folder: string
 	/**
 	 * The export folder for the rig textures
 	 */
-	textureExportFolder: string
+	texture_export_folder: string
 	/**
 	 * Whether or not this rig includes Cubes
 	 */
-	includesCustomModels: boolean
+	includes_custom_models: boolean
 }
 
 function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
@@ -275,7 +263,8 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 	}
 
 	if (Object.keys(element.faces).length === 0) return
-	return element
+	model.elements ??= []
+	model.elements.push(element)
 }
 
 const TEXTURE_RESOURCE_LOCATION_CACHE = new Map<string, IMinecraftResourceLocation>()
@@ -291,7 +280,7 @@ export function getTextureResourceLocation(texture: Texture, rig: IRenderedRig) 
 			return parsed
 		}
 	}
-	const path = PathModule.join(rig.textureExportFolder, toSafeFuntionName(texture.name))
+	const path = PathModule.join(rig.texture_export_folder, toSafeFuntionName(texture.name))
 	const parsed = parseResourcePackPath(path)
 	if (parsed) {
 		TEXTURE_RESOURCE_LOCATION_CACHE.set(texture.uuid, parsed)
@@ -325,11 +314,15 @@ function getBoneBoundingBox(group: Group) {
 	return box
 }
 
-function renderGroup(group: Group, rig: IRenderedRig): INodeStructure | undefined {
+function renderGroup(
+	group: Group,
+	rig: IRenderedRig,
+	defaultVariant: IRenderedVariant
+): INodeStructure | undefined {
 	if (!group.export) return
 	const parentId = (group.parent instanceof Group ? group.parent.uuid : group.parent)!
 
-	const path = PathModule.join(rig.modelExportFolder, group.name + `.json`)
+	const path = PathModule.join(rig.model_export_folder, group.name + `.json`)
 	const parsed = parseResourcePackPath(path)
 
 	if (!parsed) {
@@ -337,70 +330,59 @@ function renderGroup(group: Group, rig: IRenderedRig): INodeStructure | undefine
 		throw new Error(`Invalid bone path: ${group.name} -> ${path}`)
 	}
 
-	const renderedBone: IRenderedNodes['Bone'] & {
-		model: { elements: IRenderedElement[] }
-	} = {
+	const renderedBone: IRenderedNodes['Bone'] = {
 		type: 'bone',
-		parent: parentId,
-		parentNode: group.parent instanceof Group ? group.parent : null,
-		node: group,
 		name: group.name,
-		uuid: group.uuid,
-		model: {
-			textures: {},
-			elements: [],
-			display: { head: { rotation: [0, 180, 0] } },
-		},
-		modelPath: path,
-		customModelData: -1,
-		resourceLocation: parsed.resourceLocation,
-		boundingBox: getBoneBoundingBox(group),
-		baseScale: 1,
+		parent: parentId,
+		bounding_box: getBoneBoundingBox(group),
+		base_scale: 1,
 		configs: group.configs,
+		// This is a placeholder value that will be updated later once the animation renderer is run.
+		default_transform: {} as INodeTransform,
 	}
-
-	const structure: INodeStructure = {
-		uuid: group.uuid,
-		children: [],
+	let groupModel = defaultVariant.models[group.uuid]
+	if (!groupModel) {
+		groupModel = defaultVariant.models[group.uuid] = {
+			model: {
+				textures: {},
+				display: { head: { rotation: [0, 180, 0] } },
+			},
+			custom_model_data: -1, // This is calculated when constructing the resource pack.
+			model_path: path,
+			resource_location: parsed.resourceLocation,
+		}
 	}
 
 	for (const node of group.children) {
 		if (!node.export) continue
 		switch (true) {
 			case node instanceof Group: {
-				const bone = renderGroup(node, rig)
-				if (bone) structure.children.push(bone)
+				renderGroup(node, rig, defaultVariant)
 				break
 			}
 			case node instanceof Locator: {
-				const locator = renderLocator(node, rig)
-				if (locator) structure.children.push(locator)
+				renderLocator(node, rig)
 				break
 			}
 			case node instanceof TextDisplay: {
-				const textDisplay = renderTextDisplay(node, rig)
-				if (textDisplay) structure.children.push(textDisplay)
+				renderTextDisplay(node, rig)
 				break
 			}
 			case OutlinerElement.types.camera && node instanceof OutlinerElement.types.camera: {
-				const camera = renderCamera(node as ICamera, rig)
-				if (camera) structure.children.push(camera)
+				renderCamera(node as ICamera, rig)
 				break
 			}
 			case node instanceof VanillaItemDisplay: {
-				const display = renderItemDisplay(node, rig)
-				if (display) structure.children.push(display)
+				renderItemDisplay(node, rig)
 				break
 			}
 			case node instanceof VanillaBlockDisplay: {
-				const display = renderBlockDisplay(node, rig)
-				if (display) structure.children.push(display)
+				renderBlockDisplay(node, rig)
 				break
 			}
 			case node instanceof Cube: {
-				const element = renderCube(node, rig, renderedBone.model)
-				rig.includesCustomModels = true
-				if (element) renderedBone.model.elements.push(element)
+				renderCube(node, rig, groupModel.model)
+				rig.includes_custom_models = true
 				break
 			}
 			default:
@@ -408,27 +390,26 @@ function renderGroup(group: Group, rig: IRenderedRig): INodeStructure | undefine
 		}
 	}
 
-	// Export a struct instead of a bone if no cubes are present
-	if (group.children.filter(c => c instanceof Cube).length === 0) {
+	// Export a struct instead of a bone if no elements are present
+	if (!groupModel.model.elements || groupModel.model.elements.length === 0) {
+		delete defaultVariant.models[group.uuid]
 		const struct: IRenderedNodes['Struct'] = {
 			type: 'struct',
-			parent: parentId,
-			parentNode: group.parent instanceof Group ? group.parent : null,
-			node: group,
 			name: group.name,
-			uuid: group.uuid,
+			parent: parentId,
+			default_transform: {} as INodeTransform,
 		}
-		rig.nodeMap[group.uuid] = struct
-		return structure
+		rig.nodes[group.uuid] = struct
+		return
 	}
 
 	const diff = new THREE.Vector3().subVectors(
-		renderedBone.boundingBox.max,
-		renderedBone.boundingBox.min
+		renderedBone.bounding_box.max,
+		renderedBone.bounding_box.min
 	)
 	const max = Math.max(diff.x, diff.y, diff.z)
 	const scale = Math.min(1, 24 / max)
-	for (const element of renderedBone.model.elements) {
+	for (const element of groupModel.model.elements) {
 		element.from = element.from.map(v => v * scale + 8)
 		element.to = element.to.map(v => v * scale + 8)
 		if (element.rotation && !Array.isArray(element.rotation)) {
@@ -436,20 +417,15 @@ function renderGroup(group: Group, rig: IRenderedRig): INodeStructure | undefine
 		}
 	}
 
-	renderedBone.baseScale = 1 / scale
-	rig.models[group.uuid] = renderedBone.model
-	rig.nodeMap[group.uuid] = renderedBone
-	return structure
+	renderedBone.base_scale = 1 / scale
+	rig.nodes[group.uuid] = renderedBone
 }
 
-function renderItemDisplay(
-	display: VanillaItemDisplay,
-	rig: IRenderedRig
-): INodeStructure | undefined {
+function renderItemDisplay(display: VanillaItemDisplay, rig: IRenderedRig) {
 	if (!display.export) return
 	const parentId = (display.parent instanceof Group ? display.parent.uuid : display.parent)!
 
-	const path = PathModule.join(rig.modelExportFolder, display.name + `.json`)
+	const path = PathModule.join(rig.model_export_folder, display.name + `.json`)
 	const parsed = parseResourcePackPath(path)
 
 	if (!parsed) {
@@ -460,30 +436,21 @@ function renderItemDisplay(
 	const renderedBone: IRenderedNodes['ItemDisplay'] = {
 		type: 'item_display',
 		parent: parentId,
-		parentNode: display.parent instanceof Group ? display.parent : null,
-		node: display,
 		name: display.name,
-		uuid: display.uuid,
 		item: display.item,
-		baseScale: 1,
+		base_scale: 1,
 		config: display.config,
+		default_transform: {} as INodeTransform,
 	}
 
-	rig.nodeMap[display.uuid] = renderedBone
-	return {
-		uuid: display.uuid,
-		children: [],
-	}
+	rig.nodes[display.uuid] = renderedBone
 }
 
-function renderBlockDisplay(
-	display: VanillaBlockDisplay,
-	rig: IRenderedRig
-): INodeStructure | undefined {
+function renderBlockDisplay(display: VanillaBlockDisplay, rig: IRenderedRig) {
 	if (!display.export) return
 	const parentId = (display.parent instanceof Group ? display.parent.uuid : display.parent)!
 
-	const path = PathModule.join(rig.modelExportFolder, display.name + `.json`)
+	const path = PathModule.join(rig.model_export_folder, display.name + `.json`)
 	const parsed = parseResourcePackPath(path)
 
 	if (!parsed) {
@@ -494,27 +461,21 @@ function renderBlockDisplay(
 	const renderedBone: IRenderedNodes['BlockDisplay'] = {
 		type: 'block_display',
 		parent: parentId,
-		parentNode: display.parent instanceof Group ? display.parent : null,
-		node: display,
 		name: display.name,
-		uuid: display.uuid,
 		block: display.block,
-		baseScale: 1,
+		base_scale: 1,
 		config: display.config,
+		default_transform: {} as INodeTransform,
 	}
 
-	rig.nodeMap[display.uuid] = renderedBone
-	return {
-		uuid: display.uuid,
-		children: [],
-	}
+	rig.nodes[display.uuid] = renderedBone
 }
 
 function renderTextDisplay(display: TextDisplay, rig: IRenderedRig): INodeStructure | undefined {
 	if (!display.export) return
 	const parentId = (display.parent instanceof Group ? display.parent.uuid : display.parent)!
 
-	const path = PathModule.join(rig.modelExportFolder, display.name + `.json`)
+	const path = PathModule.join(rig.model_export_folder, display.name + `.json`)
 	const parsed = parseResourcePackPath(path)
 
 	if (!parsed) {
@@ -525,72 +486,60 @@ function renderTextDisplay(display: TextDisplay, rig: IRenderedRig): INodeStruct
 	const renderedBone: IRenderedNodes['TextDisplay'] = {
 		type: 'text_display',
 		parent: parentId,
-		parentNode: display.parent instanceof Group ? display.parent : null,
-		node: display,
 		name: display.name,
-		uuid: display.uuid,
 		text: JsonText.fromString(display.text),
-		lineWidth: display.lineWidth,
-		backgroundColor: display.backgroundColor,
-		backgroundAlpha: display.backgroundAlpha,
+		line_width: display.lineWidth,
+		background_color: display.backgroundColor,
+		background_alpha: display.backgroundAlpha,
 		align: display.align,
 		shadow: display.shadow,
-		seeThrough: display.seeThrough,
-		baseScale: 1,
+		see_through: display.seeThrough,
+		base_scale: 1,
 		config: display.config,
+		default_transform: {} as INodeTransform,
 	}
 
-	rig.nodeMap[display.uuid] = renderedBone
+	rig.nodes[display.uuid] = renderedBone
 	return {
 		uuid: display.uuid,
 		children: [],
 	}
 }
 
-function renderLocator(locator: Locator, rig: IRenderedRig): INodeStructure {
+function renderLocator(locator: Locator, rig: IRenderedRig) {
+	if (!locator.export) return
 	const parentId = (locator.parent instanceof Group ? locator.parent.uuid : locator.parent)!
 
 	const renderedLocator: IRenderedNodes['Locator'] = {
 		type: 'locator',
 		parent: parentId,
-		parentNode: locator.parent instanceof Group ? locator.parent : null,
-		node: locator,
 		name: locator.name,
-		uuid: locator.uuid,
 		config: locator.config,
+		default_transform: {} as INodeTransform,
 	}
 
-	rig.nodeMap[locator.uuid] = renderedLocator
-	return {
-		uuid: locator.uuid,
-		children: [],
-	}
+	rig.nodes[locator.uuid] = renderedLocator
 }
 
-function renderCamera(camera: ICamera, rig: IRenderedRig): INodeStructure {
+function renderCamera(camera: ICamera, rig: IRenderedRig) {
+	if (!camera.export) return
 	const parentId = (camera.parent instanceof Group ? camera.parent.uuid : camera.parent)!
 
 	const renderedCamera: IRenderedNodes['Camera'] = {
 		type: 'camera',
 		parent: parentId,
-		parentNode: camera.parent instanceof Group ? camera.parent : null,
-		node: camera,
 		name: camera.name,
-		uuid: camera.uuid,
 		config: camera.config,
+		default_transform: {} as INodeTransform,
 	}
 
-	rig.nodeMap[camera.uuid] = renderedCamera
-	return {
-		uuid: camera.uuid,
-		children: [],
-	}
+	rig.nodes[camera.uuid] = renderedCamera
 }
 
 function renderVariantModels(variant: Variant, rig: IRenderedRig) {
-	const bones: Record<string, IRenderedBoneVariant> = {}
+	const models: Record<string, IRenderedVariantModel> = {}
 
-	for (const [uuid, bone] of Object.entries(rig.nodeMap)) {
+	for (const [uuid, bone] of Object.entries(rig.nodes)) {
 		if (bone.type !== 'bone') continue
 		if (variant.excludedNodes.find(v => v.value === uuid)) continue
 		const textures: IRenderedModel['textures'] = {}
@@ -612,44 +561,46 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 			}
 		}
 
-		const parsed = PathModule.parse(bone.modelPath)
-		const modelPath = PathModule.join(parsed.dir, variant.name, `${bone.name}.json`)
-		const parsedModelPath = parseResourcePackPath(modelPath)
-		if (!parsedModelPath) throw new Error(`Invalid variant model path: ${modelPath}`)
-
 		// Don't export models without any texture changes
 		if (Object.keys(textures).length === 0) continue
 
-		bones[uuid] = {
+		const modelParent = PathModule.join(rig.model_export_folder, bone.name)
+		const parsed = parseResourcePackPath(modelParent)
+		if (!parsed) {
+			throw new Error(`Invalid Bone Name: '${bone.name}' -> '${modelParent}'`)
+		}
+
+		const modelPath = PathModule.join(modelParent, variant.name + '.json')
+		const parsedModelPath = parseResourcePackPath(modelPath)
+		if (!parsedModelPath) {
+			throw new Error(`Invalid Variant Name: '${variant.name}' -> '${modelPath}'`)
+		}
+
+		models[uuid] = {
 			model: {
-				parent: bone.resourceLocation,
+				parent: parsed.resourceLocation,
 				textures,
 			},
-			customModelData: -1,
-			modelPath,
-			resourceLocation: parsedModelPath.resourceLocation,
+			custom_model_data: -1, // This is calculated when constructing the resource pack.
+			model_path: modelPath,
+			resource_location: parsedModelPath.resourceLocation,
 		}
 	}
 
-	return bones
-}
-
-function getDefaultPose(rig: IRenderedRig) {
-	const anim = new Blockbench.Animation()
-	correctSceneAngle()
-	updatePreview(anim, 0)
-	rig.defaultTransforms = getNodeTransforms(anim, rig.nodeMap)
-	restoreSceneAngle()
+	return models
 }
 
 export function hashRig(rig: IRenderedRig) {
 	const hash = crypto.createHash('sha256')
-	for (const [nodeUuid, node] of Object.entries(rig.nodeMap)) {
+	for (const [nodeUuid, node] of Object.entries(rig.nodes)) {
 		hash.update('node;')
 		hash.update(nodeUuid)
 		hash.update(node.name)
+		hash.update(node.default_transform.matrix.elements.toString())
 		switch (node.type) {
 			case 'bone': {
+				const model = rig.variants[Variant.getDefault().uuid].models[nodeUuid]
+				hash.update(';' + JSON.stringify(model) || '')
 				if (node.configs.default) {
 					const defaultConfig = BoneConfig.fromJSON(node.configs.default)
 					if (!defaultConfig.isDefault()) {
@@ -691,59 +642,68 @@ export function hashRig(rig: IRenderedRig) {
 	return hash.digest('hex')
 }
 
+function renderVariant(variant: Variant, rig: IRenderedRig): IRenderedVariant {
+	return {
+		...variant.toJSON(),
+		models: renderVariantModels(variant, rig),
+	}
+}
+
+function getDefaultTransforms(rig: IRenderedRig) {
+	const anim = new Blockbench.Animation()
+	correctSceneAngle()
+	updatePreview(anim, 0)
+	const transforms = getFrame(anim, rig.nodes).node_transforms
+	restoreSceneAngle()
+	return transforms
+}
+
 export function renderRig(modelExportFolder: string, textureExportFolder: string): IRenderedRig {
 	console.time('Rendering rig took')
 	Texture.all.forEach((t, i) => (t.id = String(i)))
 
 	Animator.showDefaultPose()
 
-	const structure: INodeStructure = {
-		uuid: 'root',
-		children: [],
+	const rig: IRenderedRig = {
+		nodes: {},
+		variants: {},
+		textures: {},
+		model_export_folder: modelExportFolder,
+		texture_export_folder: textureExportFolder,
+		includes_custom_models: false,
 	}
 
-	const rig: IRenderedRig = {
+	const defaultVariant = Variant.getDefault()
+	rig.variants[defaultVariant.uuid] = {
+		...defaultVariant.toJSON(),
 		models: {},
-		variantModels: {},
-		nodeMap: {},
-		nodeStructure: structure,
-		textures: {},
-		defaultTransforms: [],
-		modelExportFolder,
-		textureExportFolder,
-		includesCustomModels: false,
 	}
 
 	for (const node of Outliner.root) {
 		switch (true) {
 			case node instanceof Group: {
-				const bone = renderGroup(node, rig)
-				if (bone) structure.children.push(bone)
+				renderGroup(node, rig, rig.variants[defaultVariant.uuid])
 				break
 			}
 			case node instanceof Locator: {
-				const locator = renderLocator(node, rig)
-				if (locator) structure.children.push(locator)
+				renderLocator(node, rig)
+
 				break
 			}
 			case node instanceof TextDisplay: {
-				const textDisplay = renderTextDisplay(node, rig)
-				if (textDisplay) structure.children.push(textDisplay)
+				renderTextDisplay(node, rig)
 				break
 			}
 			case OutlinerElement.types.camera && node instanceof OutlinerElement.types.camera: {
-				const camera = renderCamera(node as ICamera, rig)
-				if (camera) structure.children.push(camera)
+				renderCamera(node as ICamera, rig)
 				break
 			}
 			case node instanceof VanillaItemDisplay: {
-				const display = renderItemDisplay(node, rig)
-				if (display) structure.children.push(display)
+				renderItemDisplay(node, rig)
 				break
 			}
 			case node instanceof VanillaBlockDisplay: {
-				const display = renderBlockDisplay(node, rig)
-				if (display) structure.children.push(display)
+				renderBlockDisplay(node, rig)
 				break
 			}
 			case node instanceof Cube: {
@@ -756,11 +716,14 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 		}
 	}
 
-	getDefaultPose(rig)
+	const defaultTransforms = getDefaultTransforms(rig)
+	for (const [uuid, node] of Object.entries(rig.nodes)) {
+		node.default_transform = defaultTransforms[uuid]
+	}
 
 	for (const variant of Variant.all) {
-		if (variant.isDefault) continue // Don't export the default variant, it's redundant data.
-		rig.variantModels[variant.uuid] = renderVariantModels(variant, rig)
+		if (variant.isDefault) continue
+		rig.variants[variant.uuid] = renderVariant(variant, rig)
 	}
 
 	TEXTURE_RESOURCE_LOCATION_CACHE.clear()

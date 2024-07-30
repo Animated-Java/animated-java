@@ -28,7 +28,7 @@
 		"teleportation_duration": 1,
 		"use_storage_for_animation": false,
 		"baked_animations": false,
-		"json_file": "D:\\github-repos\\animated-java\\animated-java\\dist\\test.json",
+		"json_file": "../testPluginExport.json",
 		"customModelDataOffset": 0,
 		"custom_summon_commands": ""
 	},

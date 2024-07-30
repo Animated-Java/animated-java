@@ -4,9 +4,9 @@
 	"definitions": {
 		"jsonExport": {
 			"type": "object",
-			"required": ["blueprint_settings", "resources", "rig", "animations"],
+			"required": ["settings", "nodes", "variants", "textures", "animations"],
 			"properties": {
-				"blueprint_settings": {
+				"settings": {
 					"type": "object",
 					"required": [
 						"export_namespace",
@@ -100,106 +100,31 @@
 						"json_file": { "type": "string", "default": "", "description": "" }
 					}
 				},
-				"resources": {
+				"nodes": {
 					"type": "object",
-					"required": [
-						"textureExportFolder",
-						"modelExportFolder",
-						"displayItemPath",
-						"models",
-						"variant_models",
-						"textures"
-					],
-					"properties": {
-						"textureExportFolder": { "type": "string", "default": "" },
-						"modelExportFolder": { "type": "string", "default": "" },
-						"displayItemPath": { "type": "string", "default": "" },
-						"models": {
-							"type": "object",
-							"description": "A map of bone UUIDs to custom bone models. This will be empty if no custom models are used.",
-							"additionalProperties": false,
-							"patternProperties": {
-								"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
-									"$ref": "#/definitions/vanillaModel"
-								}
-							}
-						},
-						"variant_models": {
-							"type": "object",
-							"description": "A map of variant UUIDS to maps of models to use for each bone when that variant is applied. Note that this map only contains bones modified and not excluded by the variant.",
-							"additionalProperties": false,
-							"patternProperties": {
-								"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
-									"type": "object",
-									"additionalProperties": false,
-									"patternProperties": {
-										"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
-											"$ref": "#/definitions/variantModelContainer"
-										}
-									}
-								}
-							}
-						},
-						"textures": {
-							"type": "object",
-							"additionalProperties": false,
-							"patternProperties": {
-								"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
-									"type": "object",
-									"required": ["name", "expectedPath", "src"],
-									"properties": {
-										"name": { "type": "string" },
-										"id": {
-											"type": "string",
-											"description": "The ID of the texture used when making vanilla models."
-										},
-										"expectedPath": {
-											"type": "string",
-											"description": "The path in the resource pack that the models that reference this texture expect the texture to be at."
-										},
-										"src": {
-											"type": "string",
-											"description": "A data URL containing the texture image."
-										}
-									}
-								}
-							}
+					"additionalProperties": false,
+					"patternProperties": {
+						"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
+							"$ref": "#/definitions/node"
 						}
 					}
 				},
-				"rig": {
+				"variants": {
 					"type": "object",
-					"required": ["node_map", "node_structure", "variants"],
-					"properties": {
-						"node_map": {
-							"type": "object",
-							"additionalProperties": false,
-							"patternProperties": {
-								"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
-									"$ref": "#/definitions/node"
-								}
-							}
-						},
-						"node_structure": {
-							"type": "object",
-							"required": ["uuid", "children"],
-							"properties": {
-								"uuid": { "const": "root" },
-								"children": {
-									"type": "array",
-									"items": { "$ref": "#/definitions/nodeStructure" }
-								}
-							}
-						},
-						"variants": {
-							"type": "object",
-							"additionalProperties": false,
-							"description": "A map of variant UUIDs to variant objects.",
-							"patternProperties": {
-								"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
-									"$ref": "#/definitions/variant"
-								}
-							}
+					"description": "The Rig's Variants",
+					"additionalProperties": false,
+					"patternProperties": {
+						"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
+							"$ref": "#/definitions/variant"
+						}
+					}
+				},
+				"textures": {
+					"type": "object",
+					"additionalProperties": false,
+					"patternProperties": {
+						"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
+							"$ref": "#/definitions/texture"
 						}
 					}
 				},
@@ -207,7 +132,7 @@
 			},
 			"if": {
 				"properties": {
-					"blueprint_settings": {
+					"settings": {
 						"properties": {
 							"baked_animations": { "const": true }
 						}
@@ -294,24 +219,28 @@
 				"texture": { "type": "string" }
 			}
 		},
+		"variantModel": {
+			"type": "object",
+			"required": ["parent", "textures"],
+			"properties": {
+				"parent": { "type": "string" },
+				"textures": {
+					"type": "object",
+					"patternProperties": { ".+": { "type": "string" } }
+				}
+			}
+		},
 		"variantModelContainer": {
 			"type": "object",
-			"required": ["model", "customModelData", "modelPath", "resourceLocation"],
+			"required": ["model", "custom_model_data"],
 			"properties": {
 				"model": {
-					"type": "object",
-					"required": ["parent", "textures"],
-					"properties": {
-						"parent": { "type": "string" },
-						"textures": {
-							"type": "object",
-							"patternProperties": { ".+": { "type": "string" } }
-						}
-					}
+					"oneOf": [
+						{ "$ref": "#/definitions/vanillaModel" },
+						{ "$ref": "#/definitions/variantModel" }
+					]
 				},
-				"customModelData": { "type": "integer" },
-				"modelPath": { "type": "string" },
-				"resourceLocation": { "type": "string" }
+				"custom_model_data": { "type": "integer" }
 			}
 		},
 		"nodeTransform": {
@@ -369,7 +298,7 @@
 		},
 		"node": {
 			"type": "object",
-			"required": ["type", "name", "uuid"],
+			"required": ["type", "name", "default_transform"],
 			"properties": {
 				"type": {
 					"type": "string",
@@ -384,9 +313,8 @@
 					]
 				},
 				"name": { "type": "string" },
-				"uuid": { "type": "string" },
 				"parent": { "type": "string" },
-				"defaultTransform": {
+				"default_transform": {
 					"$ref": "#/definitions/nodeTransform",
 					"description": "The default transformation of the node."
 				}
@@ -399,29 +327,16 @@
 						}
 					},
 					"then": {
-						"required": [
-							"modelPath",
-							"customModelData",
-							"resourceLocation",
-							"boundingBox",
-							"configs",
-							"baseScale"
-						],
+						"required": ["bounding_box", "configs"],
 						"properties": {
 							"modelPath": { "type": "string" },
-							"customModelData": { "type": "integer" },
-							"resourceLocation": { "type": "string" },
-							"boundingBox": {
+							"bounding_box": {
 								"type": "object",
 								"required": ["min", "max"],
 								"properties": {
 									"min": { "$ref": "#/definitions/vec3" },
 									"max": { "$ref": "#/definitions/vec3" }
 								}
-							},
-							"baseScale": {
-								"type": "number",
-								"description": "The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit."
 							},
 							"configs": {
 								"type": "object",
@@ -472,27 +387,15 @@
 						}
 					},
 					"then": {
-						"required": [
-							"text",
-							"lineWidth",
-							"backgroundColor",
-							"backgroundAlpha",
-							"align",
-							"baseScale",
-							"config"
-						],
+						"required": ["text", "align", "config"],
 						"properties": {
 							"text": {},
-							"lineWidth": { "type": "number" },
-							"backgroundColor": { "type": "string" },
-							"backgroundAlpha": { "type": "number" },
+							"line_width": { "type": "number" },
+							"background_color": { "type": "string" },
+							"background_alpha": { "type": "number" },
 							"align": {
 								"type": "string",
 								"enum": ["left", "center", "right"]
-							},
-							"baseScale": {
-								"type": "number",
-								"description": "The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit."
 							},
 							"config": {
 								"$ref": "#/definitions/boneConfig"
@@ -507,13 +410,9 @@
 						}
 					},
 					"then": {
-						"required": ["config", "block", "baseScale"],
+						"required": ["config", "block"],
 						"properties": {
 							"block": { "type": "string" },
-							"baseScale": {
-								"type": "number",
-								"description": "The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit."
-							},
 							"config": {
 								"$ref": "#/definitions/boneConfig"
 							}
@@ -527,13 +426,9 @@
 						}
 					},
 					"then": {
-						"required": ["config", "item", "baseScale"],
+						"required": ["config", "item"],
 						"properties": {
 							"item": { "type": "string" },
-							"baseScale": {
-								"type": "number",
-								"description": "The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit."
-							},
 							"config": {
 								"$ref": "#/definitions/boneConfig"
 							}
@@ -590,21 +485,21 @@
 					"type": "object",
 					"required": [
 						"name",
-						"safeName",
+						"safe_name",
 						"duration",
-						"loopDelay",
-						"loopMode",
+						"loop_delay",
+						"loop_mode",
 						"frames",
-						"includedNodes"
+						"modified_nodes"
 					],
 					"additionalProperties": false,
 					"properties": {
 						"name": { "type": "string" },
-						"safeName": { "type": "string" },
+						"safe_name": { "type": "string" },
 						"duration": { "type": "number" },
-						"loopDelay": { "type": "number" },
-						"loopMode": { "type": "string", "enum": ["none", "loop", "ping-pong"] },
-						"includedNodes": { "type": "array", "items": { "type": "string" } },
+						"loop_delay": { "type": "number" },
+						"loop_mode": { "type": "string", "enum": ["none", "loop", "ping-pong"] },
+						"modified_nodes": { "type": "array", "items": { "type": "string" } },
 						"frames": {
 							"type": "array",
 							"items": {
@@ -740,7 +635,7 @@
 		"variant": {
 			"type": "object",
 			"description": "A variant of the rig. Variants are used to change the appearance of the rig by swapping out different textures at runtime.",
-			"required": ["name", "display_name", "uuid", "texture_map", "excluded_nodes"],
+			"required": ["name", "display_name", "models", "texture_map", "excluded_nodes"],
 			"properties": {
 				"name": {
 					"type": "string",
@@ -750,7 +645,6 @@
 					"type": "string",
 					"description": "The display name of the variant. Only used for fancy display purposes such as UI elements."
 				},
-				"uuid": { "type": "string" },
 				"texture_map": {
 					"type": "object",
 					"description": "A map of default texture UUID -> variant texture UUID. If a texture is not in this map, it will be assumed to be the same as the default texture.",
@@ -758,6 +652,15 @@
 						"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
 							"type": "string",
 							"pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+						}
+					}
+				},
+				"models": {
+					"type": "object",
+					"additionalProperties": false,
+					"patternProperties": {
+						"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
+							"$ref": "#/definitions/variantModelContainer"
 						}
 					}
 				},
@@ -808,6 +711,21 @@
 				"easeOutBounce",
 				"easeInOutBounce"
 			]
+		},
+		"texture": {
+			"type": "object",
+			"required": ["name", "id", "src"],
+			"properties": {
+				"name": { "type": "string" },
+				"id": {
+					"type": "string",
+					"description": "The ID of the texture used when making vanilla models."
+				},
+				"src": {
+					"type": "string",
+					"description": "A data URL containing the texture image."
+				}
+			}
 		}
 	}
 }

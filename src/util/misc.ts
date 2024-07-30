@@ -112,3 +112,10 @@ export function eulerFromQuaternion(q: THREE.Quaternion) {
 	rot.y = rot.y * -1 + 180
 	return rot
 }
+
+export function mapObjEntries<V, RV>(
+	obj: Record<string, V>,
+	cb: (k: string, v: V) => [string, RV]
+): Record<string, RV> {
+	return Object.fromEntries(Object.entries(obj).map(([k, v]) => cb(k, v)))
+}
