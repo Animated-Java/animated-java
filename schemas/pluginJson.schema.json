@@ -10,35 +10,15 @@
 					"type": "object",
 					"required": [
 						"export_namespace",
-						"show_bounding_box",
-						"auto_bounding_box",
 						"bounding_box",
-						"resource_pack_export_mode",
 						"display_item",
-						"custom_model_data_offset",
-						"enable_advanced_resource_pack_settings",
-						"resource_pack",
-						"display_item_path",
-						"model_folder",
-						"texture_folder",
-						"baked_animations",
-						"json_file"
+						"baked_animations"
 					],
 					"properties": {
 						"export_namespace": {
 							"type": "string",
 							"default": "armor_stand",
 							"description": "The namespace to export the project to. This is the namespace that will be used in the exported Resource Pack and Data Pack."
-						},
-						"show_bounding_box": {
-							"type": "boolean",
-							"default": false,
-							"description": "Whether or not to show the bounding box in the editor."
-						},
-						"auto_bounding_box": {
-							"type": "boolean",
-							"default": true,
-							"description": "Whether or not to automatically calculate the bounding box based on the model's geometry. \n\nNOTE: The auto bounding box will NOT take bone offsets from animations into account, so the bounding box may be smaller than needed in some cases."
 						},
 						"bounding_box": {
 							"type": "array",
@@ -51,53 +31,16 @@
 							"minItems": 2,
 							"maxItems": 2
 						},
-						"resource_pack_export_mode": {
-							"type": "string",
-							"default": "raw",
-							"description": "Determines how the Resource Pack should be exported.\n\nRaw - Exports the Resource Pack as a folder.\n\nZip - Exports the Resource Pack as a .zip file.\n\nNone - Disables Resource Pack exporting.",
-							"enum": ["raw", "zip", "none"]
-						},
 						"display_item": {
 							"type": "string",
 							"default": "minecraft:white_dye",
 							"description": "The item to display the Blueprints models in-game. Multiple Blueprints can be placed on the same item and they will be merged automatically."
 						},
-						"custom_model_data_offset": {
-							"type": "integer",
-							"default": 0,
-							"description": "The offset to use for the Custom Model Data of the Display Item. Allows multiple Blueprints on the same item, but in separate, unaffiliated Resource Packs."
-						},
-						"enable_advanced_resource_pack_settings": {
-							"type": "boolean",
-							"default": false,
-							"description": "Whether or not to enable the advanced Resource Pack settings. (Individual RP Folder Selection)"
-						},
-						"resource_pack": {
-							"type": "string",
-							"default": "",
-							"description": "The root folder of the Resource Pack to export the project into."
-						},
-						"display_item_path": {
-							"type": "string",
-							"default": "",
-							"description": "Where to place the Display Item. This should be a path to a .json file in a Resource Pack."
-						},
-						"model_folder": {
-							"type": "string",
-							"default": "",
-							"description": "Where to place all of the exported models. This should be a path to a folder in a Resource Pack."
-						},
-						"texture_folder": {
-							"type": "string",
-							"default": "",
-							"description": "Where to place all of the exported textures. This should be a path to a folder in a Resource Pack."
-						},
 						"baked_animations": {
 							"type": "boolean",
 							"default": true,
 							"description": "Whether or not to bake the exported animations.\n\nBaked animations have their frames pre-calculated and stored in the exported JSON file, reducing the complexity of rendering the model in-game.\n\nSome Plugins may require this to be enabled to function correctly."
-						},
-						"json_file": { "type": "string", "default": "", "description": "" }
+						}
 					}
 				},
 				"nodes": {
@@ -298,7 +241,7 @@
 		},
 		"node": {
 			"type": "object",
-			"required": ["type", "name", "default_transform"],
+			"required": ["type", "name", "safe_name", "uuid", "default_transform"],
 			"properties": {
 				"type": {
 					"type": "string",
@@ -313,6 +256,8 @@
 					]
 				},
 				"name": { "type": "string" },
+				"safe_name": { "type": "string" },
+				"uuid": { "type": "string" },
 				"parent": { "type": "string" },
 				"default_transform": {
 					"$ref": "#/definitions/nodeTransform",

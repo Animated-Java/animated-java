@@ -208,10 +208,7 @@ export function getFrame(
 				}
 				break
 			}
-			case 'camera': {
-				matrix = getNodeMatrix(outlinerNode, 1)
-				break
-			}
+			case 'camera':
 			case 'struct': {
 				matrix = getNodeMatrix(outlinerNode, 1)
 				break
@@ -340,11 +337,11 @@ export function hashAnimations(animations: IRenderedAnimation[]) {
 export function getAnimatableNodes(): OutlinerElement[] {
 	return [
 		...Group.all,
-		...NullObject.all,
 		...Locator.all,
 		...TextDisplay.all,
 		...VanillaBlockDisplay.all,
 		...VanillaItemDisplay.all,
+		...(OutlinerElement.types.camera ? OutlinerElement.types.camera.all : []),
 	]
 }
 

@@ -866,6 +866,17 @@
 			"seeThrough": true,
 			"uuid": "c2e217f1-b50a-5c9a-b342-71a35e984046",
 			"type": "animated_java:text_display"
+		},
+		{
+			"name": "camera",
+			"path": "",
+			"position": [0, 0, 0],
+			"rotation": [0, 0, 0],
+			"linked_preview": "",
+			"camera_linked": false,
+			"visibility": true,
+			"type": "camera",
+			"uuid": "466f9f1f-08f4-d683-a8c5-f808d290d691"
 		}
 	],
 	"outliner": [
@@ -920,7 +931,7 @@
 					"uuid": "102db36a-eeda-0e6f-d5cc-c186ecda8165",
 					"export": true,
 					"mirror_uv": false,
-					"isOpen": true,
+					"isOpen": false,
 					"locked": false,
 					"visibility": true,
 					"autouv": 0,
@@ -981,7 +992,7 @@
 					"uuid": "5e08acae-d6ca-0dfd-9360-8cdb13c7a824",
 					"export": true,
 					"mirror_uv": false,
-					"isOpen": true,
+					"isOpen": false,
 					"locked": false,
 					"visibility": true,
 					"autouv": 0,
@@ -1356,7 +1367,8 @@
 							]
 						}
 					]
-				}
+				},
+				"466f9f1f-08f4-d683-a8c5-f808d290d691"
 			]
 		},
 		{

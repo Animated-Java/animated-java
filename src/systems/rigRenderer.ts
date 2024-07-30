@@ -64,9 +64,9 @@ export interface IRenderedModel {
 export interface IRenderedNode {
 	type: string
 	name: string
-	// node: OutlinerNode
+	safe_name: string
+	uuid: string
 	parent: string
-	// parentNode: Group | null
 	/**
 	 * The default transformation of the node
 	 */
@@ -333,6 +333,8 @@ function renderGroup(
 	const renderedBone: IRenderedNodes['Bone'] = {
 		type: 'bone',
 		name: group.name,
+		safe_name: toSafeFuntionName(group.name),
+		uuid: group.uuid,
 		parent: parentId,
 		bounding_box: getBoneBoundingBox(group),
 		base_scale: 1,
@@ -396,6 +398,8 @@ function renderGroup(
 		const struct: IRenderedNodes['Struct'] = {
 			type: 'struct',
 			name: group.name,
+			safe_name: renderedBone.safe_name,
+			uuid: group.uuid,
 			parent: parentId,
 			default_transform: {} as INodeTransform,
 		}
@@ -435,8 +439,10 @@ function renderItemDisplay(display: VanillaItemDisplay, rig: IRenderedRig) {
 
 	const renderedBone: IRenderedNodes['ItemDisplay'] = {
 		type: 'item_display',
-		parent: parentId,
 		name: display.name,
+		safe_name: toSafeFuntionName(display.name),
+		uuid: display.uuid,
+		parent: parentId,
 		item: display.item,
 		base_scale: 1,
 		config: display.config,
@@ -460,9 +466,11 @@ function renderBlockDisplay(display: VanillaBlockDisplay, rig: IRenderedRig) {
 
 	const renderedBone: IRenderedNodes['BlockDisplay'] = {
 		type: 'block_display',
-		parent: parentId,
 		name: display.name,
+		safe_name: toSafeFuntionName(display.name),
+		uuid: display.uuid,
 		block: display.block,
+		parent: parentId,
 		base_scale: 1,
 		config: display.config,
 		default_transform: {} as INodeTransform,
@@ -485,8 +493,10 @@ function renderTextDisplay(display: TextDisplay, rig: IRenderedRig): INodeStruct
 
 	const renderedBone: IRenderedNodes['TextDisplay'] = {
 		type: 'text_display',
-		parent: parentId,
 		name: display.name,
+		safe_name: toSafeFuntionName(display.name),
+		uuid: display.uuid,
+		parent: parentId,
 		text: JsonText.fromString(display.text),
 		line_width: display.lineWidth,
 		background_color: display.backgroundColor,
@@ -512,8 +522,10 @@ function renderLocator(locator: Locator, rig: IRenderedRig) {
 
 	const renderedLocator: IRenderedNodes['Locator'] = {
 		type: 'locator',
-		parent: parentId,
 		name: locator.name,
+		safe_name: toSafeFuntionName(locator.name),
+		uuid: locator.uuid,
+		parent: parentId,
 		config: locator.config,
 		default_transform: {} as INodeTransform,
 	}
@@ -527,8 +539,10 @@ function renderCamera(camera: ICamera, rig: IRenderedRig) {
 
 	const renderedCamera: IRenderedNodes['Camera'] = {
 		type: 'camera',
-		parent: parentId,
 		name: camera.name,
+		safe_name: toSafeFuntionName(camera.name),
+		uuid: camera.uuid,
+		parent: parentId,
 		config: camera.config,
 		default_transform: {} as INodeTransform,
 	}

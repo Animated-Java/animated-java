@@ -115,22 +115,11 @@ export interface IExportedJSON {
 	 */
 	settings: {
 		export_namespace: (typeof defaultValues)['export_namespace']
-		show_bounding_box: (typeof defaultValues)['show_bounding_box']
-		auto_bounding_box: (typeof defaultValues)['auto_bounding_box']
 		bounding_box: (typeof defaultValues)['bounding_box']
-		// Export Settings
-		resource_pack_export_mode: (typeof defaultValues)['resource_pack_export_mode']
 		// Resource Pack Settings
 		display_item: (typeof defaultValues)['display_item']
-		custom_model_data_offset: (typeof defaultValues)['custom_model_data_offset']
-		enable_advanced_resource_pack_settings: (typeof defaultValues)['enable_advanced_resource_pack_settings']
-		resource_pack: (typeof defaultValues)['resource_pack']
-		display_item_path: (typeof defaultValues)['display_item_path']
-		model_folder: (typeof defaultValues)['model_folder']
-		texture_folder: (typeof defaultValues)['texture_folder']
 		// Plugin Settings
 		baked_animations: (typeof defaultValues)['baked_animations']
-		json_file: (typeof defaultValues)['json_file']
 	}
 	textures: Record<string, ExportedTexture>
 	nodes: Record<string, ExportedRenderedNode>
@@ -332,17 +321,24 @@ function serailizeRenderedNode(node: AnyRenderedNode): ExportedRenderedNode {
 	transferKey(json, 'backgroundAlpha', 'background_alpha')
 
 	json.default_transform = serailizeNodeTransform(json.default_transform as INodeTransform)
-	if (node.type === 'bone') {
-		delete json.boundingBox
-		json.bounding_box = {
-			min: node.bounding_box.min.toArray(),
-			max: node.bounding_box.max.toArray(),
+	switch (node.type) {
+		case 'bone': {
+			delete json.boundingBox
+			json.bounding_box = {
+				min: node.bounding_box.min.toArray(),
+				max: node.bounding_box.max.toArray(),
+			}
+			delete json.configs
+			json.configs = { ...node.configs.variants }
+			const defaultVariant = Variant.getDefault()
+			if (node.configs.default && defaultVariant) {
+				json.configs[defaultVariant.uuid] = node.configs.default
+			}
+			break
 		}
-		delete json.configs
-		json.configs = { ...node.configs.variants }
-		const defaultVariant = Variant.getDefault()
-		if (node.configs.default && defaultVariant) {
-			json.configs[defaultVariant.uuid] = node.configs.default
+		case 'text_display': {
+			json.text = node.text?.toJSON()
+			break
 		}
 	}
 	return json as ExportedRenderedNode
