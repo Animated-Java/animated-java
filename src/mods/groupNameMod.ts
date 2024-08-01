@@ -7,6 +7,7 @@ createBlockbenchMod(
 	`${PACKAGE.name}:groupNameMod`,
 	{
 		originalRename: Group.prototype.saveName,
+		originalSanitize: Group.prototype.sanitizeName,
 	},
 	context => {
 		Group.prototype.saveName = function (this: Group, save?: boolean) {
@@ -14,6 +15,12 @@ createBlockbenchMod(
 				this.name = toSafeFuntionName(this.name)
 			}
 			return context.originalRename.call(this, save)
+		}
+		Group.prototype.sanitizeName = function (this: Group) {
+			if (isCurrentFormat()) {
+				this.name = toSafeFuntionName(this.name)
+			}
+			return context.originalSanitize.call(this)
 		}
 		return context
 	},

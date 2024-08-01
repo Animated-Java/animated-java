@@ -150,8 +150,16 @@ export interface IBlueprintFormatJSON {
 
 export function convertToBlueprint() {
 	// Convert the current project to a Blueprint
-	// NOTE - Nothing needs to be done here yet. The default functionality is sufficient.
 	Project!.save_path = ''
+
+	for (const group of Group.all) {
+		group.createUniqueName(Group.all.filter(g => g !== group))
+		group.sanitizeName()
+	}
+	for (const animation of Blockbench.Animation.all) {
+		animation.createUniqueName(Blockbench.Animation.all.filter(a => a !== animation))
+		animation.name = toSafeFuntionName(animation.name)
+	}
 }
 
 export function getDefaultProjectSettings(): ModelProject['animated_java'] {

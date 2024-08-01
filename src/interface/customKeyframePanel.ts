@@ -1,3 +1,4 @@
+import { isCurrentFormat } from '../blueprintFormat'
 import CustomKeyframePanelSvelteComponent from '../components/customKeyframePanel.svelte'
 import { CUSTOM_CHANNELS } from '../mods/customKeyframesMod'
 import { events } from '../util/events'
@@ -8,7 +9,12 @@ import { translate } from '../util/translation'
 const CURRENT_PANEL = new Valuable<HTMLDivElement | undefined>(undefined)
 
 export function injectCustomKeyframePanel(selectedKeyframe: _Keyframe) {
-	if (!CUSTOM_CHANNELS.includes(selectedKeyframe.channel)) return
+	if (
+		!isCurrentFormat() ||
+		!selectedKeyframe ||
+		!CUSTOM_CHANNELS.includes(selectedKeyframe.channel)
+	)
+		return
 
 	const element = document.querySelector(
 		'#panel_keyframe .panel_vue_wrapper .keyframe_data_point'
