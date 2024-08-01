@@ -12,6 +12,7 @@
 						"export_namespace",
 						"bounding_box",
 						"display_item",
+						"custom_model_data_offset",
 						"baked_animations"
 					],
 					"properties": {
@@ -35,6 +36,11 @@
 							"type": "string",
 							"default": "minecraft:white_dye",
 							"description": "The item to display the Blueprints models in-game. Multiple Blueprints can be placed on the same item and they will be merged automatically."
+						},
+						"custom_model_data_offset": {
+							"type": "number",
+							"default": 0,
+							"description": "The offset to use for the Custom Model Data of the Display Item. Allows multiple Blueprints on the same item, but in separate, unaffiliated Resource Packs."
 						},
 						"baked_animations": {
 							"type": "boolean",

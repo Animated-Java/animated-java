@@ -500,6 +500,12 @@
 			valueChecker={displayItemChecker}
 		/>
 
+		<NumberSlider
+			label={translate('dialog.blueprint_settings.custom_model_data_offset.title',)}
+			tooltip={translate('dialog.blueprint_settings.custom_model_data_offset.description')}
+			bind:value={customModelDataOffset}
+		/>
+
 		<Checkbox
 			label={translate('dialog.blueprint_settings.baked_animations.title')}
 			tooltip={translate('dialog.blueprint_settings.baked_animations.description')}
