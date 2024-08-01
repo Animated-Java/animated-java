@@ -118,6 +118,7 @@ export interface IExportedJSON {
 		bounding_box: (typeof defaultValues)['bounding_box']
 		// Resource Pack Settings
 		display_item: (typeof defaultValues)['display_item']
+		custom_model_data_offset: (typeof defaultValues)['custom_model_data_offset']
 		// Plugin Settings
 		baked_animations: (typeof defaultValues)['baked_animations']
 	}
@@ -230,18 +231,14 @@ export function exportJSON(options: {
 		}
 	}
 
-	const blueprintSettings = { ...aj } as any
-	delete blueprintSettings.enable_plugin_mode
-	delete blueprintSettings.data_pack_export_mode
-	delete blueprintSettings.enable_advanced_data_pack_settings
-	delete blueprintSettings.data_pack
-	delete blueprintSettings.summon_commands
-	delete blueprintSettings.interpolation_duration
-	delete blueprintSettings.teleportation_duration
-	delete blueprintSettings.use_storage_for_animation
-
 	const json: IExportedJSON = {
-		settings: blueprintSettings,
+		settings: {
+			export_namespace: aj.export_namespace,
+			bounding_box: aj.bounding_box,
+			display_item: options.displayItemPath,
+			custom_model_data_offset: aj.custom_model_data_offset,
+			baked_animations: aj.baked_animations,
+		},
 		textures: mapObjEntries(rig.textures, (id, texture) => [
 			texture.uuid,
 			serializeTexture(id, texture),
