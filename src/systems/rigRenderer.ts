@@ -103,7 +103,6 @@ export interface IRenderedNodes {
 	}
 	Camera: IRenderedNode & {
 		type: 'camera'
-		name: string
 		config: IBlueprintCameraConfigJSON
 	}
 	Locator: IRenderedNode & {

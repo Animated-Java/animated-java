@@ -312,7 +312,6 @@ function serailizeRenderedNode(node: AnyRenderedNode): ExportedRenderedNode {
 	delete json.node
 	delete json.parentNode
 	delete json.model
-	delete json.uuid
 	transferKey(json, 'lineWidth', 'line_width')
 	transferKey(json, 'backgroundColor', 'background_color')
 	transferKey(json, 'backgroundAlpha', 'background_alpha')
