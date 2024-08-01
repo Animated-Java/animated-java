@@ -126,7 +126,7 @@ animated_java.dialog.blueprint_settings.advanced_resource_pack_file.error.file_d
 animated_java.dialog.blueprint_settings.advanced_resource_pack_file.error.not_a_file: The selected path is not a file!
 
 animated_java.dialog.blueprint_settings.model_folder.title: Model Folder
-animated_java.dialog.blueprint_settings.advanced_resource_pack_folder.description: Where to place all of the exported models. This should be a path to a folder in a Resource Pack.
+animated_java.dialog.blueprint_settings.model_folder.description: Where to place all of the exported models. This should be a path to a folder in a Resource Pack.
 animated_java.dialog.blueprint_settings.advanced_resource_pack_folder.error.no_folder_selected: No folder selected!
 animated_java.dialog.blueprint_settings.advanced_resource_pack_folder.error.folder_does_not_exist: The selected folder does not exist!
 animated_java.dialog.blueprint_settings.advanced_resource_pack_folder.error.not_a_folder: The selected path is not a folder!
