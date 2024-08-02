@@ -438,7 +438,7 @@ dir <%export_namespace%> {
 													}
 												}
 											} ELSE IF (node.type === 'camera') {
-												IF (rig.nodeMap[node.uuid]) {
+												IF (rig.nodes[node.uuid]) {
 													<%%
 														global.merged.cameras[node.safe_name] = {
 															posx: global.transform.pos[0],
