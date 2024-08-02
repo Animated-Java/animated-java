@@ -68,8 +68,7 @@ TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.set = function (this: ColorPicker, color: s
 }
 TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.change = function (
 	this: ColorPicker,
-	// @ts-ignore
-	color: tinycolor.Instance
+	color: InstanceType<typeof tinycolor>
 ) {
 	const selected = TextDisplay.selected[0]
 	if (!selected) return this
@@ -131,5 +130,30 @@ TEXT_DISPLAY_ALIGNMENT_SELECT.set = function (this: BarSelect<Alignment>, value:
 		$(this.node).find('bb-select').text(name)
 	}
 	selected.align = value
+	return this
+}
+
+export const TEXT_DISPLAY_SEE_THROUGH_TOGGLE = new Toggle(
+	`${PACKAGE.name}:textDisplaySeeThroughToggle`,
+	{
+		name: translate('tool.text_display.see_through.title'),
+		icon: 'check_box_outline_blank',
+		description: translate('tool.text_display.see_through.description'),
+		condition: () => isCurrentFormat() && !!TextDisplay.selected.length,
+		click() {
+			//
+		},
+		onChange() {
+			const scope = TEXT_DISPLAY_SEE_THROUGH_TOGGLE
+			scope.setIcon(scope.value ? 'check_box' : 'check_box_outline_blank')
+			const selected = TextDisplay.selected[0]
+			if (!selected) return
+			selected.seeThrough = TEXT_DISPLAY_SEE_THROUGH_TOGGLE.value
+		},
+	}
+)
+TEXT_DISPLAY_SEE_THROUGH_TOGGLE.set = function (value) {
+	if (this.value === value) return this
+	this.click()
 	return this
 }

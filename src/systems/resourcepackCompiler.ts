@@ -1,6 +1,6 @@
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../interface/exportProgressDialog'
 import { isResourcePackPath, toSafeFuntionName } from '../util/minecraftUtil'
-import { TRANSPARENT_TEXTURE, Variant } from '../variants'
+import { TRANSPARENT_TEXTURE } from '../variants'
 import { IRenderedNodes, IRenderedRig } from './rigRenderer'
 import { sortObjectKeys, zip } from './util'
 
@@ -235,16 +235,6 @@ export async function compileResourcePack(options: {
 	// Empty model for hiding bones / snowballs
 	displayItemModel.assertOverride(1, 'animated_java:empty')
 
-	// Models
-	for (const [boneUuid, model] of Object.entries(rig.models)) {
-		const bone = rig.nodeMap[boneUuid] as IRenderedNodes['Bone']
-		bone.customModelData = displayItemModel.addOverride(bone.resourceLocation)
-		exportedFiles.set(
-			PathModule.join(modelExportFolder, bone.name + '.json'),
-			autoStringify(model)
-		)
-	}
-
 	// Textures
 	for (const texture of Object.values(rig.textures)) {
 		let image: Buffer | undefined
@@ -292,19 +282,11 @@ export async function compileResourcePack(options: {
 	)
 
 	// Variant Models
-	for (const [variantUUID, models] of Object.entries(rig.variantModels)) {
-		const variant = Variant.all.find(v => v.uuid === variantUUID)
-		if (!variant) {
-			console.error(
-				`Variant ${variantUUID} not found while exporting variant models:`,
-				models
-			)
-			continue
-		}
-		for (const [boneUuid, variantModel] of Object.entries(models)) {
-			const bone = rig.nodeMap[boneUuid] as IRenderedNodes['Bone']
-			variantModel.customModelData = displayItemModel.addOverride(
-				variantModel.resourceLocation
+	for (const variant of Object.values(rig.variants)) {
+		for (const [boneUuid, variantModel] of Object.entries(variant.models)) {
+			const bone = rig.nodes[boneUuid] as IRenderedNodes['Bone']
+			variantModel.custom_model_data = displayItemModel.addOverride(
+				variantModel.resource_location
 			)
 			exportedFiles.set(
 				PathModule.join(modelExportFolder, variant.name, bone.name + '.json'),

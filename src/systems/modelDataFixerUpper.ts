@@ -224,7 +224,7 @@ function updateModelTo1_0pre1(model: any) {
 			data_pack_export_mode: defaultSettings.data_pack_export_mode,
 			// Resource pack settings
 			display_item: model.animated_java.settings.rig_item,
-			customModelDataOffset: 0,
+			custom_model_data_offset: 0,
 			enable_advanced_resource_pack_settings:
 				model.animated_java.settings.enable_advanced_resource_pack_settings,
 			resource_pack: model.animated_java.settings.resource_pack_mcmeta

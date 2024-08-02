@@ -181,7 +181,7 @@ animated_java.dialog.blueprint_settings.json_file.error.not_a_file: Der ausgewä
 ## Bone Config Dialog
 animated_java.dialog.bone_config.title: Knochen-Konfiguration
 
-animated_java.dialog.bone_config.selected_variant: 'Ausgewählte Variante: {1}'
+animated_java.dialog.bone_config.selected_variant: 'Ausgewählte Variante: {0}'
 animated_java.dialog.bone_config.default_variant_subtitle: Die folgenden Einstellungen werden standardmäßig auf diesen Knochen angewendet.
 animated_java.dialog.bone_config.selected_variant_subtitle: Die folgenden Einstellungen werden nur auf diesen Knochen angewendet, wenn diese Variante verwendet wird.
 

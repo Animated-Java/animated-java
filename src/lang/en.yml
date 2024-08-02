@@ -126,7 +126,7 @@ animated_java.dialog.blueprint_settings.advanced_resource_pack_file.error.file_d
 animated_java.dialog.blueprint_settings.advanced_resource_pack_file.error.not_a_file: The selected path is not a file!
 
 animated_java.dialog.blueprint_settings.model_folder.title: Model Folder
-animated_java.dialog.blueprint_settings.advanced_resource_pack_folder.description: Where to place all of the exported models. This should be a path to a folder in a Resource Pack.
+animated_java.dialog.blueprint_settings.model_folder.description: Where to place all of the exported models. This should be a path to a folder in a Resource Pack.
 animated_java.dialog.blueprint_settings.advanced_resource_pack_folder.error.no_folder_selected: No folder selected!
 animated_java.dialog.blueprint_settings.advanced_resource_pack_folder.error.folder_does_not_exist: The selected folder does not exist!
 animated_java.dialog.blueprint_settings.advanced_resource_pack_folder.error.not_a_folder: The selected path is not a folder!
@@ -184,7 +184,7 @@ animated_java.dialog.blueprint_settings.json_file.error.not_a_file: The selected
 ## Bone Config Dialog
 animated_java.dialog.bone_config.title: Bone Config
 
-animated_java.dialog.bone_config.selected_variant: 'Selected Variant: {1}'
+animated_java.dialog.bone_config.selected_variant: 'Selected Variant: {0}'
 animated_java.dialog.bone_config.default_variant_subtitle: The settings below will be applied to this bone by default.
 animated_java.dialog.bone_config.selected_variant_subtitle: The settings below will be applied to this bone only when this variant is applied.
 
@@ -485,6 +485,9 @@ animated_java.tool.text_display.text_alignment.description: The alignment of the
 animated_java.tool.text_display.text_alignment.options.left: Left
 animated_java.tool.text_display.text_alignment.options.center: Center
 animated_java.tool.text_display.text_alignment.options.right: Right
+
+animated_java.tool.text_display.see_through.title: See Through
+animated_java.tool.text_display.see_through.description: Whether or not the text display should be visible through blocks.
 
 # Vanilla Item Display Panel
 animated_java.panel.vanilla_item_display.title: Displayed Item

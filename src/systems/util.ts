@@ -18,7 +18,7 @@ export function matrixToNbtFloatArray(matrix: THREE.Matrix4) {
 	return arrayToNbtFloatArray(matrixArray)
 }
 
-export function transformationToNbt(transformation: INodeTransform['transformation']): NbtCompound {
+export function transformationToNbt(transformation: INodeTransform['decomposed']): NbtCompound {
 	const compound = new NbtCompound()
 	compound.set('translation', arrayToNbtFloatArray(transformation.translation.toArray()))
 	compound.set('left_rotation', arrayToNbtFloatArray(transformation.left_rotation.toArray()))

@@ -4,41 +4,22 @@
 	"definitions": {
 		"jsonExport": {
 			"type": "object",
-			"required": ["blueprint_settings", "resources", "rig", "animations"],
+			"required": ["settings", "nodes", "variants", "textures", "animations"],
 			"properties": {
-				"blueprint_settings": {
+				"settings": {
 					"type": "object",
 					"required": [
 						"export_namespace",
-						"show_bounding_box",
-						"auto_bounding_box",
 						"bounding_box",
-						"resource_pack_export_mode",
 						"display_item",
 						"custom_model_data_offset",
-						"enable_advanced_resource_pack_settings",
-						"resource_pack",
-						"display_item_path",
-						"model_folder",
-						"texture_folder",
-						"baked_animations",
-						"json_file"
+						"baked_animations"
 					],
 					"properties": {
 						"export_namespace": {
 							"type": "string",
 							"default": "armor_stand",
 							"description": "The namespace to export the project to. This is the namespace that will be used in the exported Resource Pack and Data Pack."
-						},
-						"show_bounding_box": {
-							"type": "boolean",
-							"default": false,
-							"description": "Whether or not to show the bounding box in the editor."
-						},
-						"auto_bounding_box": {
-							"type": "boolean",
-							"default": true,
-							"description": "Whether or not to automatically calculate the bounding box based on the model's geometry. \n\nNOTE: The auto bounding box will NOT take bone offsets from animations into account, so the bounding box may be smaller than needed in some cases."
 						},
 						"bounding_box": {
 							"type": "array",
@@ -51,159 +32,48 @@
 							"minItems": 2,
 							"maxItems": 2
 						},
-						"resource_pack_export_mode": {
-							"type": "string",
-							"default": "raw",
-							"description": "Determines how the Resource Pack should be exported.\n\nRaw - Exports the Resource Pack as a folder.\n\nZip - Exports the Resource Pack as a .zip file.\n\nNone - Disables Resource Pack exporting.",
-							"enum": ["raw", "zip", "none"]
-						},
 						"display_item": {
 							"type": "string",
 							"default": "minecraft:white_dye",
 							"description": "The item to display the Blueprints models in-game. Multiple Blueprints can be placed on the same item and they will be merged automatically."
 						},
 						"custom_model_data_offset": {
-							"type": "integer",
+							"type": "number",
 							"default": 0,
 							"description": "The offset to use for the Custom Model Data of the Display Item. Allows multiple Blueprints on the same item, but in separate, unaffiliated Resource Packs."
-						},
-						"enable_advanced_resource_pack_settings": {
-							"type": "boolean",
-							"default": false,
-							"description": "Whether or not to enable the advanced Resource Pack settings. (Individual RP Folder Selection)"
-						},
-						"resource_pack": {
-							"type": "string",
-							"default": "",
-							"description": "The root folder of the Resource Pack to export the project into."
-						},
-						"display_item_path": {
-							"type": "string",
-							"default": "",
-							"description": "Where to place the Display Item. This should be a path to a .json file in a Resource Pack."
-						},
-						"model_folder": {
-							"type": "string",
-							"default": "",
-							"description": "Where to place all of the exported models. This should be a path to a folder in a Resource Pack."
-						},
-						"texture_folder": {
-							"type": "string",
-							"default": "",
-							"description": "Where to place all of the exported textures. This should be a path to a folder in a Resource Pack."
 						},
 						"baked_animations": {
 							"type": "boolean",
 							"default": true,
 							"description": "Whether or not to bake the exported animations.\n\nBaked animations have their frames pre-calculated and stored in the exported JSON file, reducing the complexity of rendering the model in-game.\n\nSome Plugins may require this to be enabled to function correctly."
-						},
-						"json_file": { "type": "string", "default": "", "description": "" }
-					}
-				},
-				"resources": {
-					"type": "object",
-					"required": [
-						"textureExportFolder",
-						"modelExportFolder",
-						"displayItemPath",
-						"models",
-						"variant_models",
-						"textures"
-					],
-					"properties": {
-						"textureExportFolder": { "type": "string", "default": "" },
-						"modelExportFolder": { "type": "string", "default": "" },
-						"displayItemPath": { "type": "string", "default": "" },
-						"models": {
-							"type": "object",
-							"description": "A map of bone UUIDs to custom bone models. This will be empty if no custom models are used.",
-							"additionalProperties": false,
-							"patternProperties": {
-								"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
-									"$ref": "#/definitions/vanillaModel"
-								}
-							}
-						},
-						"variant_models": {
-							"type": "object",
-							"description": "A map of variant UUIDS to maps of models to use for each bone when that variant is applied. Note that this map only contains bones modified and not excluded by the variant.",
-							"additionalProperties": false,
-							"patternProperties": {
-								"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
-									"type": "object",
-									"additionalProperties": false,
-									"patternProperties": {
-										"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
-											"$ref": "#/definitions/variantModelContainer"
-										}
-									}
-								}
-							}
-						},
-						"textures": {
-							"type": "object",
-							"additionalProperties": false,
-							"patternProperties": {
-								"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
-									"type": "object",
-									"required": ["name", "expectedPath", "src"],
-									"properties": {
-										"name": { "type": "string" },
-										"id": {
-											"type": "string",
-											"description": "The ID of the texture used when making vanilla models."
-										},
-										"expectedPath": {
-											"type": "string",
-											"description": "The path in the resource pack that the models that reference this texture expect the texture to be at."
-										},
-										"src": {
-											"type": "string",
-											"description": "A data URL containing the texture image."
-										}
-									}
-								}
-							}
 						}
 					}
 				},
-				"rig": {
+				"nodes": {
 					"type": "object",
-					"required": ["default_transforms", "node_map"],
-					"properties": {
-						"default_transforms": {
-							"type": "array",
-							"items": { "$ref": "#/definitions/nodeTransform" }
-						},
-						"node_map": {
-							"type": "object",
-							"additionalProperties": false,
-							"patternProperties": {
-								"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
-									"$ref": "#/definitions/node"
-								}
-							}
-						},
-						"node_structure": {
-							"type": "object",
-							"required": ["uuid", "children"],
-							"properties": {
-								"uuid": { "const": "root" },
-								"children": {
-									"type": "array",
-									"items": { "$ref": "#/definitions/nodeStructure" }
-								}
-							}
-						},
-						"variants": {
-							"type": "object",
-							"additionalProperties": false,
-							"description": "A map of variant UUIDs to variant objects.",
-							"patternProperties": {
-								"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
-									"$ref": "#/definitions/variant"
-								}
-							}
+					"additionalProperties": false,
+					"patternProperties": {
+						"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
+							"$ref": "#/definitions/node"
+						}
+					}
+				},
+				"variants": {
+					"type": "object",
+					"description": "The Rig's Variants",
+					"additionalProperties": false,
+					"patternProperties": {
+						"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
+							"$ref": "#/definitions/variant"
+						}
+					}
+				},
+				"textures": {
+					"type": "object",
+					"additionalProperties": false,
+					"patternProperties": {
+						"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
+							"$ref": "#/definitions/texture"
 						}
 					}
 				},
@@ -211,7 +81,7 @@
 			},
 			"if": {
 				"properties": {
-					"blueprint_settings": {
+					"settings": {
 						"properties": {
 							"baked_animations": { "const": true }
 						}
@@ -226,6 +96,12 @@
 		},
 		"vec2": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
 		"vec3": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 },
+		"vec3String": {
+			"type": "array",
+			"items": { "type": "string" },
+			"minItems": 3,
+			"maxItems": 3
+		},
 		"vec4": { "type": "array", "items": { "type": "number" }, "minItems": 4, "maxItems": 4 },
 		"vanillaModel": {
 			"type": "object",
@@ -292,45 +168,35 @@
 				"texture": { "type": "string" }
 			}
 		},
+		"variantModel": {
+			"type": "object",
+			"required": ["parent", "textures"],
+			"properties": {
+				"parent": { "type": "string" },
+				"textures": {
+					"type": "object",
+					"patternProperties": { ".+": { "type": "string" } }
+				}
+			}
+		},
 		"variantModelContainer": {
 			"type": "object",
-			"required": ["model", "customModelData", "modelPath", "resourceLocation"],
+			"required": ["model", "custom_model_data"],
 			"properties": {
 				"model": {
-					"type": "object",
-					"required": ["parent", "textures"],
-					"properties": {
-						"parent": { "type": "string" },
-						"textures": {
-							"type": "object",
-							"patternProperties": { ".+": { "type": "string" } }
-						}
-					}
+					"oneOf": [
+						{ "$ref": "#/definitions/vanillaModel" },
+						{ "$ref": "#/definitions/variantModel" }
+					]
 				},
-				"customModelData": { "type": "integer" },
-				"modelPath": { "type": "string" },
-				"resourceLocation": { "type": "string" }
+				"custom_model_data": { "type": "integer" }
 			}
 		},
 		"nodeTransform": {
 			"type": "object",
 			"description": "The transformation of a node. Includes several different storage methods for the transformation. All of these methods contain the same data, it's up to the plugin developer to choose which method to use.",
-			"required": ["type", "name", "uuid", "matrix", "pos", "rot", "scale"],
+			"required": ["matrix", "pos", "rot", "scale"],
 			"properties": {
-				"type": {
-					"type": "string",
-					"enum": [
-						"bone",
-						"struct",
-						"camera",
-						"locator",
-						"text_display",
-						"item_display",
-						"block_display"
-					]
-				},
-				"name": { "type": "string" },
-				"uuid": { "type": "string" },
 				"matrix": {
 					"type": "array",
 					"description": "The transformation matrix of the node. The matrix is a 4x4 matrix in row-major order.",
@@ -381,7 +247,7 @@
 		},
 		"node": {
 			"type": "object",
-			"required": ["type", "name", "uuid"],
+			"required": ["type", "name", "safe_name", "uuid", "default_transform"],
 			"properties": {
 				"type": {
 					"type": "string",
@@ -396,8 +262,13 @@
 					]
 				},
 				"name": { "type": "string" },
+				"safe_name": { "type": "string" },
 				"uuid": { "type": "string" },
-				"parent": { "type": "string" }
+				"parent": { "type": "string" },
+				"default_transform": {
+					"$ref": "#/definitions/nodeTransform",
+					"description": "The default transformation of the node."
+				}
 			},
 			"allOf": [
 				{
@@ -407,19 +278,10 @@
 						}
 					},
 					"then": {
-						"required": [
-							"modelPath",
-							"customModelData",
-							"resourceLocation",
-							"boundingBox",
-							"configs",
-							"scale"
-						],
+						"required": ["bounding_box", "configs"],
 						"properties": {
 							"modelPath": { "type": "string" },
-							"customModelData": { "type": "integer" },
-							"resourceLocation": { "type": "string" },
-							"boundingBox": {
+							"bounding_box": {
 								"type": "object",
 								"required": ["min", "max"],
 								"properties": {
@@ -427,7 +289,6 @@
 									"max": { "$ref": "#/definitions/vec3" }
 								}
 							},
-							"scale": { "type": "number" },
 							"configs": {
 								"type": "object",
 								"patternProperties": {
@@ -477,25 +338,16 @@
 						}
 					},
 					"then": {
-						"required": [
-							"text",
-							"lineWidth",
-							"backgroundColor",
-							"backgroundAlpha",
-							"align",
-							"scale",
-							"config"
-						],
+						"required": ["text", "align", "config"],
 						"properties": {
 							"text": {},
-							"lineWidth": { "type": "number" },
-							"backgroundColor": { "type": "string" },
-							"backgroundAlpha": { "type": "number" },
+							"line_width": { "type": "number" },
+							"background_color": { "type": "string" },
+							"background_alpha": { "type": "number" },
 							"align": {
 								"type": "string",
 								"enum": ["left", "center", "right"]
 							},
-							"scale": { "type": "number" },
 							"config": {
 								"$ref": "#/definitions/boneConfig"
 							}
@@ -509,10 +361,9 @@
 						}
 					},
 					"then": {
-						"required": ["config", "block", "scale"],
+						"required": ["config", "block"],
 						"properties": {
 							"block": { "type": "string" },
-							"scale": { "type": "number" },
 							"config": {
 								"$ref": "#/definitions/boneConfig"
 							}
@@ -526,10 +377,9 @@
 						}
 					},
 					"then": {
-						"required": ["config", "item", "scale"],
+						"required": ["config", "item"],
 						"properties": {
 							"item": { "type": "string" },
-							"scale": { "type": "number" },
 							"config": {
 								"$ref": "#/definitions/boneConfig"
 							}
@@ -580,46 +430,52 @@
 			}
 		},
 		"bakedAnimations": {
-			"type": "array",
-			"items": {
-				"type": "object",
-				"required": [
-					"name",
-					"storageSafeName",
-					"duration",
-					"loopDelay",
-					"loopMode",
-					"frames",
-					"includedNodes"
-				],
-				"additionalProperties": false,
-				"properties": {
-					"name": { "type": "string" },
-					"storageSafeName": { "type": "string" },
-					"duration": { "type": "number" },
-					"loopDelay": { "type": "number" },
-					"loopMode": { "type": "string", "enum": ["none", "loop", "ping-pong"] },
-					"includedNodes": { "type": "array", "items": { "type": "string" } },
-					"frames": {
-						"type": "array",
-						"items": {
-							"type": "object",
-							"required": ["time", "node_transforms"],
-							"properties": {
-								"time": { "type": "number" },
-								"node_transforms": {
-									"type": "array",
-									"items": { "$ref": "#/definitions/nodeTransform" }
-								},
-								"variant": {
-									"type": "object",
-									"description": "If included, this frame should change the variant of the model to the specified variant.",
-									"properties": {
-										"uuid": {
-											"type": "string",
-											"pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
-										},
-										"execute_condition": { "type": "string" }
+			"type": "object",
+			"patternProperties": {
+				"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
+					"type": "object",
+					"required": [
+						"name",
+						"safe_name",
+						"duration",
+						"loop_delay",
+						"loop_mode",
+						"frames",
+						"modified_nodes"
+					],
+					"additionalProperties": false,
+					"properties": {
+						"name": { "type": "string" },
+						"safe_name": { "type": "string" },
+						"duration": { "type": "number" },
+						"loop_delay": { "type": "number" },
+						"loop_mode": { "type": "string", "enum": ["none", "loop", "ping-pong"] },
+						"modified_nodes": { "type": "array", "items": { "type": "string" } },
+						"frames": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"required": ["time", "node_transforms"],
+								"properties": {
+									"time": { "type": "number" },
+									"node_transforms": {
+										"type": "object",
+										"patternProperties": {
+											"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
+												"$ref": "#/definitions/nodeTransform"
+											}
+										}
+									},
+									"variant": {
+										"type": "object",
+										"description": "If included, this frame should change the variant of the model to the specified variant.",
+										"properties": {
+											"uuid": {
+												"type": "string",
+												"pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+											},
+											"execute_condition": { "type": "string" }
+										}
 									}
 								}
 							}
@@ -629,41 +485,28 @@
 			}
 		},
 		"dynamicAnimations": {
-			"type": "array",
-			"items": {
-				"type": "object",
-				"required": [
-					"uuid",
-					"name",
-					"loop_mode",
-					"duration",
-					"excluded_nodes",
-					"animators"
-				],
-				"additionalProperties": true,
-				"properties": {
-					"uuid": { "type": "string" },
-					"name": { "type": "string" },
-					"loop_mode": { "type": "string", "enum": ["loop", "once", "hold"] },
-					"duration": { "type": "number" },
-					"loop_delay": { "type": "number" },
-					"excluded_nodes": {
-						"type": "array",
-						"items": { "type": "string" }
-					},
-					"animators": {
-						"type": "object",
-						"patternProperties": {
-							"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
-								"type": "object",
-								"required": ["name", "type", "keyframes"],
-								"properties": {
-									"name": { "type": "string" },
-									"type": { "type": "string" },
-									"keyframes": {
-										"type": "array",
-										"items": { "$ref": "#/definitions/keyframe" }
-									}
+			"type": "object",
+			"patternProperties": {
+				"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
+					"type": "object",
+					"required": ["name", "loop_mode", "duration", "excluded_nodes", "animators"],
+					"additionalProperties": true,
+					"properties": {
+						"uuid": { "type": "string" },
+						"name": { "type": "string" },
+						"loop_mode": { "type": "string", "enum": ["loop", "once", "hold"] },
+						"duration": { "type": "number" },
+						"loop_delay": { "type": "number" },
+						"excluded_nodes": {
+							"type": "array",
+							"items": { "type": "string" }
+						},
+						"animators": {
+							"type": "object",
+							"patternProperties": {
+								"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
+									"type": "array",
+									"items": { "$ref": "#/definitions/keyframe" }
 								}
 							}
 						}
@@ -673,78 +516,77 @@
 		},
 		"keyframe": {
 			"type": "object",
-			"required": ["time", "uuid", "channel", "data_points", "interpolation", "easing"],
+			"required": ["time", "channel"],
 			"properties": {
 				"time": { "type": "number" },
-				"uuid": { "type": "string" },
-				"channel": { "type": "string" },
-				"data_points": {
-					"type": "array",
-					"items": { "$ref": "#/definitions/keyframeDataPoint" }
+				"channel": { "type": "string" }
+			},
+			"oneOf": [
+				{
+					"required": ["value", "interpolation"],
+					"properties": {
+						"channel": { "enum": ["position", "rotation", "scale"] },
+						"value": { "$ref": "#/definitions/vec3String" },
+						"post": { "$ref": "#/definitions/vec3String" },
+						"interpolation": {
+							"oneOf": [
+								{
+									"type": "object",
+									"properties": {
+										"type": { "const": "linear" },
+										"easing": { "$ref": "#/definitions/easing" },
+										"easingArgs": {
+											"type": "array",
+											"items": { "type": "number" }
+										}
+									}
+								},
+								{
+									"type": "object",
+									"properties": {
+										"type": { "const": "bezier" }
+									}
+								},
+								{
+									"type": "object",
+									"properties": {
+										"type": { "const": "catmullrom" }
+									}
+								},
+								{
+									"type": "object",
+									"properties": {
+										"type": { "const": "step" }
+									}
+								}
+							]
+						}
+					}
 				},
-				"interpolation": {
-					"type": "string",
-					"enum": ["linear", "bezier", "catmullrom", "step"]
+				{
+					"required": ["variant"],
+					"properties": {
+						"channel": { "const": "variant" },
+						"variant": { "type": "string" },
+						"execute_condition": { "type": "string" }
+					}
 				},
-				"easing": {
-					"type": "string",
-					"enum": [
-						"linear",
-						"step",
-						"easeInQuad",
-						"easeOutQuad",
-						"easeInOutQuad",
-						"easeInCubic",
-						"easeOutCubic",
-						"easeInOutCubic",
-						"easeInQuart",
-						"easeOutQuart",
-						"easeInOutQuart",
-						"easeInQuint",
-						"easeOutQuint",
-						"easeInOutQuint",
-						"easeInSine",
-						"easeOutSine",
-						"easeInOutSine",
-						"easeInExpo",
-						"easeOutExpo",
-						"easeInOutExpo",
-						"easeInCirc",
-						"easeOutCirc",
-						"easeInOutCirc",
-						"easeInBack",
-						"easeOutBack",
-						"easeInOutBack",
-						"easeInElastic",
-						"easeOutElastic",
-						"easeInOutElastic",
-						"easeInBounce",
-						"easeOutBounce",
-						"easeInOutBounce"
-					]
-				},
-				"easingArgs": {
-					"type": "array",
-					"items": { "type": "number" }
+				{
+					"required": ["commands"],
+					"properties": {
+						"channel": { "const": "commands" },
+						"commands": { "type": "string" },
+						"execute_condition": { "type": "string" },
+						"repeat": { "type": "boolean" },
+						"repeat_frequency": { "type": "number", "min": 1 }
+					}
 				}
-			}
-		},
-		"keyframeDataPoint": {
-			"type": "object",
-			"properties": {
-				"x": { "oneOf": [{ "type": "number" }, { "type": "string" }] },
-				"y": { "oneOf": [{ "type": "number" }, { "type": "string" }] },
-				"z": { "oneOf": [{ "type": "number" }, { "type": "string" }] },
-				"commands": { "type": "string" },
-				"execute_condition": { "type": "string" },
-				"repeat": { "type": "boolean" },
-				"repeat_frequency": { "type": "number", "min": 1 }
-			}
+			]
 		},
 		"variant": {
 			"type": "object",
 			"description": "A variant of the rig. Variants are used to change the appearance of the rig by swapping out different textures at runtime.",
-			"required": ["name", "display_name", "uuid", "texture_map", "excluded_nodes"],
+			"required": ["name", "display_name", "models", "texture_map", "excluded_nodes"],
 			"properties": {
 				"name": {
 					"type": "string",
@@ -754,7 +596,6 @@
 					"type": "string",
 					"description": "The display name of the variant. Only used for fancy display purposes such as UI elements."
 				},
-				"uuid": { "type": "string" },
 				"texture_map": {
 					"type": "object",
 					"description": "A map of default texture UUID -> variant texture UUID. If a texture is not in this map, it will be assumed to be the same as the default texture.",
@@ -762,6 +603,15 @@
 						"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
 							"type": "string",
 							"pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+						}
+					}
+				},
+				"models": {
+					"type": "object",
+					"additionalProperties": false,
+					"patternProperties": {
+						"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
+							"$ref": "#/definitions/variantModelContainer"
 						}
 					}
 				},
@@ -773,6 +623,58 @@
 				"is_default": {
 					"type": "boolean",
 					"description": "Whether or not this variant is the default variant."
+				}
+			}
+		},
+		"easing": {
+			"type": "string",
+			"enum": [
+				"linear",
+				"step",
+				"easeInQuad",
+				"easeOutQuad",
+				"easeInOutQuad",
+				"easeInCubic",
+				"easeOutCubic",
+				"easeInOutCubic",
+				"easeInQuart",
+				"easeOutQuart",
+				"easeInOutQuart",
+				"easeInQuint",
+				"easeOutQuint",
+				"easeInOutQuint",
+				"easeInSine",
+				"easeOutSine",
+				"easeInOutSine",
+				"easeInExpo",
+				"easeOutExpo",
+				"easeInOutExpo",
+				"easeInCirc",
+				"easeOutCirc",
+				"easeInOutCirc",
+				"easeInBack",
+				"easeOutBack",
+				"easeInOutBack",
+				"easeInElastic",
+				"easeOutElastic",
+				"easeInOutElastic",
+				"easeInBounce",
+				"easeOutBounce",
+				"easeInOutBounce"
+			]
+		},
+		"texture": {
+			"type": "object",
+			"required": ["name", "id", "src"],
+			"properties": {
+				"name": { "type": "string" },
+				"id": {
+					"type": "string",
+					"description": "The ID of the texture used when making vanilla models."
+				},
+				"src": {
+					"type": "string",
+					"description": "A data URL containing the texture image."
 				}
 			}
 		}

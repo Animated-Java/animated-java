@@ -107,3 +107,4 @@ dist
 .tern-port
 out/linecounter.txt
 out/linecounter.json
+testPluginExport.json

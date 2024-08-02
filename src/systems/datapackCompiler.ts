@@ -2,10 +2,10 @@ import { Compiler, Parser, Tokenizer, SyncIo } from 'mc-build'
 import { VariableMap } from 'mc-build/dist/mcl/Compiler'
 import { isFunctionTagPath } from '../util/fileUtil'
 import animationMcb from './datapackCompiler/animation.mcb'
-import { AnyRenderedNode, IRenderedRig } from './rigRenderer'
+import { AnyRenderedNode, IRenderedRig, IRenderedVariant } from './rigRenderer'
 import { IRenderedAnimation } from './animationRenderer'
 import { Variant } from '../variants'
-import { NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/lib/nbt'
+import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/lib/nbt'
 import {
 	arrayToNbtFloatArray,
 	matrixToNbtFloatArray,
@@ -24,7 +24,7 @@ import {
 } from '../util/minecraftUtil'
 import { JsonText } from './minecraft/jsonText'
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../interface/exportProgressDialog'
-import { eulerFromQuaternion, roundTo } from '../util/misc'
+import { eulerFromQuaternion, floatToHex, roundTo, tinycolorToDecimal } from '../util/misc'
 import { setTimeout } from 'timers'
 import { MSLimiter } from '../util/msLimiter'
 
@@ -152,7 +152,10 @@ namespace TELLRAW {
 			{ text: 'variant', color: 'yellow' },
 			{ text: ' cannot be an empty string.', color: 'red' },
 		])
-	export const INVALID_VARIANT = (variantName: string, variants: Variant[]) =>
+	export const INVALID_VARIANT = (
+		variantName: string,
+		variants: Record<string, IRenderedVariant>
+	) =>
 		new JsonText([
 			'',
 			TELLRAW_PREFIX,
@@ -163,7 +166,7 @@ namespace TELLRAW {
 			'\n ',
 			{ text: ' ≡ ', color: 'white' },
 			{ text: 'Available Variants:', color: 'green' },
-			...variants.map(
+			...Object.values(variants).map(
 				variant =>
 					new JsonText([
 						'\n ',
@@ -208,7 +211,7 @@ namespace TELLRAW {
 						' ',
 						' ',
 						{ text: ' ● ', color: 'gray' },
-						{ text: anim.name, color: 'yellow' },
+						{ text: anim.safe_name, color: 'yellow' },
 					])
 			),
 		])
@@ -241,7 +244,7 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 			)
 	)
 
-	for (const node of Object.values(rig.nodeMap)) {
+	for (const [uuid, node] of Object.entries(rig.nodes)) {
 		const passenger = new NbtCompound()
 		// TODO Maybe add components setting to blueprint settings?
 		const useComponents = true
@@ -254,7 +257,7 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 				passenger.set('id', new NbtString('minecraft:item_display'))
 				tags.add(new NbtString(TAGS.GLOBAL_BONE()))
 				tags.add(new NbtString(TAGS.PROJECT_BONE(aj.export_namespace)))
-				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.export_namespace, node.name)))
+				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.export_namespace, node.safe_name)))
 				passenger.set(
 					'transformation',
 					new NbtCompound()
@@ -263,14 +266,14 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 						.set('right_rotation', arrayToNbtFloatArray([0, 0, 0, 1]))
 						.set('scale', arrayToNbtFloatArray([0, 0, 0]))
 				)
-				// passenger.set(
-				// 	'transformation',
-				// 	matrixToNbtFloatArray(rig.defaultPose.find(v => v.name === node.name)!.matrix)
-				// )
 				passenger.set('interpolation_duration', new NbtInt(aj.interpolation_duration))
 				passenger.set('teleport_duration', new NbtInt(0))
 				passenger.set('item_display', new NbtString('head'))
 				const item = new NbtCompound()
+				const variantModel = rig.variants[Variant.getDefault().uuid].models[uuid]
+				if (!variantModel) {
+					throw new Error(`Model for bone '${node.safe_name}' not found!`)
+				}
 				passenger.set(
 					'item',
 					item
@@ -280,7 +283,7 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 							useComponents ? 'components' : 'tag',
 							new NbtCompound().set(
 								useComponents ? 'minecraft:custom_model_data' : 'CustomModelData',
-								new NbtInt(node.customModelData)
+								new NbtInt(variantModel.custom_model_data)
 							)
 						)
 				)
@@ -297,7 +300,7 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 				passenger.set('id', new NbtString('minecraft:text_display'))
 				tags.add(new NbtString(TAGS.GLOBAL_BONE()))
 				tags.add(new NbtString(TAGS.PROJECT_BONE(aj.export_namespace)))
-				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.export_namespace, node.name)))
+				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.export_namespace, node.safe_name)))
 				passenger.set(
 					'transformation',
 					new NbtCompound()
@@ -316,7 +319,14 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 					'text',
 					new NbtString(node.text ? node.text.toString() : '"Invalid Text Component"')
 				)
-				passenger.set('line_width', new NbtInt(node.lineWidth))
+
+				const color = new tinycolor(
+					node.background_color + floatToHex(node.background_alpha)
+				)
+				passenger.set('background', new NbtInt(tinycolorToDecimal(color)))
+				passenger.set('line_width', new NbtInt(node.line_width))
+				passenger.set('shadow', new NbtByte(node.shadow ? 1 : 0))
+				passenger.set('see_through', new NbtByte(node.see_through ? 1 : 0))
 
 				if (node.config) {
 					TextDisplayConfig.fromJSON(node.config).toNBT(passenger)
@@ -327,7 +337,7 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 				passenger.set('id', new NbtString('minecraft:item_display'))
 				tags.add(new NbtString(TAGS.GLOBAL_BONE()))
 				tags.add(new NbtString(TAGS.PROJECT_BONE(aj.export_namespace)))
-				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.export_namespace, node.name)))
+				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.export_namespace, node.safe_name)))
 				passenger.set(
 					'item',
 					new NbtCompound()
@@ -344,11 +354,13 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 				passenger.set('id', new NbtString('minecraft:block_display'))
 				tags.add(new NbtString(TAGS.GLOBAL_BONE()))
 				tags.add(new NbtString(TAGS.PROJECT_BONE(aj.export_namespace)))
-				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.export_namespace, node.name)))
+				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.export_namespace, node.safe_name)))
 
 				const parsed = await parseBlock(node.block)
 				if (!parsed) {
-					throw new Error(`Invalid Blockstate '${node.block}' in node '${node.name}'!`)
+					throw new Error(
+						`Invalid Blockstate '${node.block}' in node '${node.safe_name}'!`
+					)
 				}
 
 				const states = new NbtCompound()
@@ -423,7 +435,7 @@ class DataPackAJMeta {
 	}
 }
 
-async function createAnimationStorage(animations: IRenderedAnimation[]) {
+async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAnimation[]) {
 	PROGRESS_DESCRIPTION.set('Creating Animation Storage...')
 	PROGRESS.set(0)
 	MAX_PROGRESS.set(
@@ -433,12 +445,12 @@ async function createAnimationStorage(animations: IRenderedAnimation[]) {
 	const limiter = new MSLimiter(16)
 
 	for (const animation of animations) {
-		PROGRESS_DESCRIPTION.set(`Creating Animation Storage for '${animation.name}'`)
+		PROGRESS_DESCRIPTION.set(`Creating Animation Storage for '${animation.safe_name}'`)
 		let frames = new NbtCompound()
 		const addFrameDataCommand = () => {
 			const str = `data modify storage aj.${
 				Project!.animated_java.export_namespace
-			}:animations ${animation.storageSafeName} merge value ${frames.toString()}`
+			}:animations ${animation.safe_name} merge value ${frames.toString()}`
 			dataCommands.push(str)
 			frames = new NbtCompound()
 		}
@@ -446,23 +458,24 @@ async function createAnimationStorage(animations: IRenderedAnimation[]) {
 			const frame = animation.frames[i]
 			const thisFrame = new NbtCompound()
 			frames.set(i.toString(), thisFrame)
-			for (const node of frame.node_transforms) {
+			for (const [uuid, node] of Object.entries(rig.nodes)) {
+				const transform = frame.node_transforms[uuid]
 				if (BONE_TYPES.includes(node.type)) {
 					thisFrame.set(
-						node.type + '_' + node.name,
+						node.type + '_' + node.safe_name,
 						new NbtCompound()
-							.set('transformation', matrixToNbtFloatArray(node.matrix))
+							.set('transformation', matrixToNbtFloatArray(transform.matrix))
 							.set('start_interpolation', new NbtInt(0))
 					)
 				} else {
 					thisFrame.set(
-						node.type + '_' + node.name,
+						node.type + '_' + node.safe_name,
 						new NbtCompound()
-							.set('posx', new NbtFloat(node.pos[0]))
-							.set('posy', new NbtFloat(node.pos[1]))
-							.set('posz', new NbtFloat(node.pos[2]))
-							.set('rotx', new NbtFloat(node.rot[0]))
-							.set('roty', new NbtFloat(node.rot[1]))
+							.set('posx', new NbtFloat(transform.pos[0]))
+							.set('posy', new NbtFloat(transform.pos[1]))
+							.set('posz', new NbtFloat(transform.pos[2]))
+							.set('rotx', new NbtFloat(transform.rot[0]))
+							.set('roty', new NbtFloat(transform.rot[1]))
 					)
 				}
 			}
@@ -486,29 +499,26 @@ function createPassengerStorage(rig: IRenderedRig) {
 	const cameras = new NbtCompound()
 	// Data entity
 	bones.set('data_data', new NbtString(''))
-	for (const node of Object.values(rig.defaultTransforms)) {
+	for (const node of Object.values(rig.nodes)) {
 		switch (node.type) {
 			case 'locator':
 			case 'camera': {
 				const data = new NbtCompound()
-					.set('posx', new NbtFloat(node.pos[0]))
-					.set('posy', new NbtFloat(node.pos[1]))
-					.set('posz', new NbtFloat(node.pos[2]))
-					.set('rotx', new NbtFloat(Math.radToDeg(node.rot[0])))
-					.set('roty', new NbtFloat(Math.radToDeg(node.rot[1])))
-				if (
-					node.type === 'locator' &&
-					(rig.nodeMap[node.uuid].node as Locator).config?.use_entity
-				)
+					.set('posx', new NbtFloat(node.default_transform.pos[0]))
+					.set('posy', new NbtFloat(node.default_transform.pos[1]))
+					.set('posz', new NbtFloat(node.default_transform.pos[2]))
+					.set('rotx', new NbtFloat(Math.radToDeg(node.default_transform.rot[0])))
+					.set('roty', new NbtFloat(Math.radToDeg(node.default_transform.rot[1])))
+				if (node.type === 'locator' && node.config.use_entity)
 					data.set('uuid', new NbtString(''))
-				;(node.type === 'camera' ? cameras : locators).set(node.name, data)
+				;(node.type === 'camera' ? cameras : locators).set(node.safe_name, data)
 				break
 			}
 			case 'bone':
 			case 'text_display':
 			case 'item_display':
 			case 'block_display': {
-				bones.set(node.type + '_' + node.name, new NbtString(''))
+				bones.set(node.type + '_' + node.safe_name, new NbtString(''))
 				break
 			}
 		}
@@ -571,7 +581,6 @@ export async function compileDataPack(options: {
 					) &&
 					fs.existsSync(file)
 				) {
-					// console.log('Moving old function tag:', file)
 					const newPath = replacePathPart(
 						file,
 						Project!.last_used_export_namespace,
@@ -618,8 +627,6 @@ export async function compileDataPack(options: {
 		display_item: aj.display_item,
 		rig,
 		animations,
-		variants: Variant.all,
-		defaultVariant: Variant.getDefault(),
 		export_version: Math.random().toString().substring(2, 10),
 		root_entity_passengers: await generateRootEntityPassengers(rig, rigHash),
 		TAGS,
@@ -630,7 +637,7 @@ export async function compileDataPack(options: {
 		transformationToNbt,
 		use_storage_for_animation: aj.use_storage_for_animation,
 		animationStorage: aj.use_storage_for_animation
-			? await createAnimationStorage(animations)
+			? await createAnimationStorage(rig, animations)
 			: null,
 		rigHash,
 		animationHash,
@@ -662,14 +669,17 @@ export async function compileDataPack(options: {
 			PathModule.join(options.dataPackFolder, 'pack.mcmeta'),
 			autoStringify({
 				pack: {
+					// FIXME - This number should be a config option.
 					pack_format: 48,
 					description: `${Project!.name}. Generated with Animated Java`,
 				},
 			})
 		)
 
+		const exportPath =
+			options.dataPackFolder + (options.dataPackFolder.endsWith('.zip') ? '' : '.zip')
 		console.time('Writing Zip took')
-		await writeZip(exportedFiles, options.dataPackFolder)
+		await writeZip(exportedFiles, exportPath)
 		console.timeEnd('Writing Zip took')
 	}
 

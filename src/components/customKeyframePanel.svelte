@@ -4,14 +4,12 @@
 		setKeyframeExecuteCondition,
 	} from '../mods/customKeyframesMod'
 	import { Valuable } from '../util/stores'
-</script>
-
-<script lang="ts">
 	import { translate } from '../util/translation'
 	import CommandsKeyframePanel from './keyframePanels/commandsKeyframePanel.svelte'
 	import VariantKeyframePanel from './keyframePanels/variantKeyframePanel.svelte'
+</script>
 
-	export let currentPanel: Valuable<HTMLDivElement>
+<script lang="ts">
 	export let selectedKeyframe: _Keyframe
 
 	const executeCondition = new Valuable<string>(
@@ -23,7 +21,7 @@
 	})
 </script>
 
-<div class="container" bind:this={$currentPanel}>
+<div class="container">
 	{#if selectedKeyframe.channel === 'variant'}
 		<VariantKeyframePanel {selectedKeyframe} />
 	{:else if selectedKeyframe.channel === 'commands'}

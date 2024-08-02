@@ -8,6 +8,7 @@
 		TEXT_DISPLAY_BACKGROUND_COLOR_PICKER,
 		TEXT_DISPLAY_SHADOW_TOGGLE,
 		TEXT_DISPLAY_ALIGNMENT_SELECT,
+		TEXT_DISPLAY_SEE_THROUGH_TOGGLE,
 	} from '../interface/textDisplayElementPanel'
 	import { floatToHex } from '../util/misc'
 	import { translate } from '../util/translation'
@@ -30,6 +31,7 @@
 	let backgroundColorSlot: HTMLDivElement
 	let shadowSlot: HTMLDivElement
 	let alignmentSlot: HTMLDivElement
+	let seeThroughSlot: HTMLDivElement
 	let codeJar: CodeJar
 
 	events.UPDATE_SELECTION.subscribe(() => {
@@ -46,6 +48,7 @@
 		TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.set(color)
 		TEXT_DISPLAY_SHADOW_TOGGLE.set(selected.shadow)
 		TEXT_DISPLAY_ALIGNMENT_SELECT.set(selected.align)
+		TEXT_DISPLAY_SEE_THROUGH_TOGGLE.set(selected.seeThrough)
 	})
 
 	requestAnimationFrame(() => {
@@ -53,6 +56,7 @@
 		backgroundColorSlot.appendChild(TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.node)
 		shadowSlot.appendChild(TEXT_DISPLAY_SHADOW_TOGGLE.node)
 		alignmentSlot.appendChild(TEXT_DISPLAY_ALIGNMENT_SELECT.node)
+		seeThroughSlot.appendChild(TEXT_DISPLAY_SEE_THROUGH_TOGGLE.node)
 		forceNoWrap()
 	})
 
@@ -72,6 +76,7 @@
 	<div class="content" bind:this={backgroundColorSlot}></div>
 	<div class="content" bind:this={shadowSlot}></div>
 	<div class="content" bind:this={alignmentSlot}></div>
+	<div class="content" bind:this={seeThroughSlot}></div>
 </div>
 
 <div
@@ -101,12 +106,13 @@
 				overflow-y: auto;
 				white-space: nowrap;
 				margin-top: 0px;
+				margin-left: 2px;
 			"
 		/>
-		{#if $error}
-			<textarea readonly>{$error}</textarea>
-		{/if}
 	</div>
+	{#if $error}
+		<textarea readonly>{$error}</textarea>
+	{/if}
 </div>
 
 <style>
@@ -114,11 +120,12 @@
 		margin-bottom: -3px !important;
 	}
 	textarea {
+		margin-right: 20px;
+		margin-left: 2px;
 		color: var(--color-error);
 		background-color: var(--color-back);
 		padding: 4px 8px;
-		word-wrap: unset;
-		text-wrap: nowrap;
+		text-wrap: pretty;
 		overflow: scroll;
 		height: 10rem;
 		font-size: small;

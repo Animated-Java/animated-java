@@ -71,6 +71,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 	private _newShadow: boolean | undefined
 	private _align = new Valuable<Alignment>('center')
 	private _newAlign: Alignment | undefined
+	public seeThrough = false
 
 	constructor(data: TextDisplayOptions, uuid = guid()) {
 		super(data, uuid)
@@ -301,6 +302,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 				console.error(e)
 				this.textError.set(e.message as string)
 				this._updating = false
+				text = new JsonText({ text: 'Invalid JSON Text!', color: 'red' })
 			}
 			this._newText = undefined
 			this._newLineWidth = undefined
@@ -367,11 +369,14 @@ new Property(TextDisplay, 'number', 'lineWidth', { default: 200 })
 new Property(TextDisplay, 'string', 'backgroundColor', { default: '#000000' })
 new Property(TextDisplay, 'number', 'backgroundAlpha', { default: 0.25 })
 new Property(TextDisplay, 'string', 'align', { default: 'center' })
+new Property(TextDisplay, 'boolean', 'shadow', { default: false })
+new Property(TextDisplay, 'boolean', 'seeThrough', { default: false })
 new Property(TextDisplay, 'object', 'config', {
 	get default() {
 		return new TextDisplayConfig().toJSON()
 	},
 })
+
 OutlinerElement.registerType(TextDisplay, TextDisplay.type)
 
 export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
