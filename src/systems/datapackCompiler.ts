@@ -509,7 +509,7 @@ function createPassengerStorage(rig: IRenderedRig) {
 					.set('posz', new NbtFloat(node.default_transform.pos[2]))
 					.set('rotx', new NbtFloat(Math.radToDeg(node.default_transform.rot[0])))
 					.set('roty', new NbtFloat(Math.radToDeg(node.default_transform.rot[1])))
-				if (node.type === 'locator' && node.config.use_entity)
+				if (node.type === 'locator' && node.config?.use_entity)
 					data.set('uuid', new NbtString(''))
 				;(node.type === 'camera' ? cameras : locators).set(node.safe_name, data)
 				break
