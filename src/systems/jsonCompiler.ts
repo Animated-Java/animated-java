@@ -41,7 +41,7 @@ type ExportedNodetransform = Omit<
 }
 type ExportedRenderedNode = Omit<
 	AnyRenderedNode,
-	'node' | 'parentNode' | 'model' | 'boundingBox' | 'configs' | 'baseScale'
+	'node' | 'parentNode' | 'model' | 'boundingBox' | 'configs' | 'baseScale' | 'safe_name'
 > & {
 	default_transform: ExportedNodetransform
 	bounding_box?: { min: ArrayVector3; max: ArrayVector3 }
@@ -50,7 +50,10 @@ type ExportedRenderedNode = Omit<
 type ExportedAnimationFrame = Omit<IRenderedFrame, 'nodes' | 'node_transforms'> & {
 	node_transforms: Record<string, ExportedNodetransform>
 }
-type ExportedBakedAnimation = Omit<IRenderedAnimation, 'uuid' | 'frames' | 'modified_nodes'> & {
+type ExportedBakedAnimation = Omit<
+	IRenderedAnimation,
+	'uuid' | 'frames' | 'modified_nodes' | 'safe_name'
+> & {
 	frames: ExportedAnimationFrame[]
 	modified_nodes: string[]
 }
@@ -95,7 +98,6 @@ type ExportedDynamicAnimation = {
 }
 interface ExportedTexture {
 	name: string
-	id: string
 	src: string
 }
 type ExportedVariantModel = Omit<IRenderedVariantModel, 'model_path' | 'resource_location'> & {
@@ -117,7 +119,6 @@ export interface IExportedJSON {
 		export_namespace: (typeof defaultValues)['export_namespace']
 		bounding_box: (typeof defaultValues)['bounding_box']
 		// Resource Pack Settings
-		display_item: (typeof defaultValues)['display_item']
 		custom_model_data_offset: (typeof defaultValues)['custom_model_data_offset']
 		// Plugin Settings
 		baked_animations: (typeof defaultValues)['baked_animations']
@@ -197,12 +198,19 @@ function serailizeKeyframe(kf: _Keyframe): ExportedKeyframe {
 	return json
 }
 
-function serializeVariant(variant: IRenderedVariant): ExportedVariant {
+function serializeVariant(rig: IRenderedRig, variant: IRenderedVariant): ExportedVariant {
 	const json: ExportedVariant = {
 		...variant,
 		models: mapObjEntries(variant.models, (uuid, model) => {
 			const json: ExportedVariantModel = {
-				model: model.model,
+				model: {
+					...model.model,
+					// textures: mapObjEntries(model.model.textures, (id, path) => {
+					// 	const actualTexture = rig.textures[id]
+					// 	if (!actualTexture) return [id, path]
+					// 	return [id, actualTexture.uuid]
+					// }),
+				},
 				custom_model_data: model.custom_model_data,
 			}
 			return [uuid, json]
@@ -223,10 +231,9 @@ export function exportJSON(options: {
 
 	console.log('Exporting JSON...', options)
 
-	function serializeTexture(id: string, texture: Texture): ExportedTexture {
+	function serializeTexture(texture: Texture): ExportedTexture {
 		return {
 			name: texture.name,
-			id,
 			src: texture.getDataURL(),
 		}
 	}
@@ -235,16 +242,18 @@ export function exportJSON(options: {
 		settings: {
 			export_namespace: aj.export_namespace,
 			bounding_box: aj.bounding_box,
-			display_item: options.displayItemPath,
 			custom_model_data_offset: aj.custom_model_data_offset,
 			baked_animations: aj.baked_animations,
 		},
-		textures: mapObjEntries(rig.textures, (id, texture) => [
+		textures: mapObjEntries(rig.textures, (_, texture) => [
 			texture.uuid,
-			serializeTexture(id, texture),
+			serializeTexture(texture),
 		]),
 		nodes: mapObjEntries(rig.nodes, (uuid, node) => [uuid, serailizeRenderedNode(node)]),
-		variants: mapObjEntries(rig.variants, (uuid, variant) => [uuid, serializeVariant(variant)]),
+		variants: mapObjEntries(rig.variants, (uuid, variant) => [
+			uuid,
+			serializeVariant(rig, variant),
+		]),
 		animations: {},
 	}
 
@@ -311,6 +320,7 @@ function serailizeRenderedNode(node: AnyRenderedNode): ExportedRenderedNode {
 	const json: any = { ...node }
 	delete json.node
 	delete json.parentNode
+	delete json.safe_name
 	delete json.model
 	transferKey(json, 'lineWidth', 'line_width')
 	transferKey(json, 'backgroundColor', 'background_color')
@@ -343,7 +353,6 @@ function serailizeRenderedNode(node: AnyRenderedNode): ExportedRenderedNode {
 function serializeAnimation(animation: IRenderedAnimation): ExportedBakedAnimation {
 	const json: ExportedBakedAnimation = {
 		name: animation.name,
-		safe_name: animation.safe_name,
 		duration: animation.duration,
 		loop_delay: animation.loop_delay,
 		loop_mode: animation.loop_mode,

@@ -321,7 +321,7 @@ function renderGroup(
 	if (!group.export) return
 	const parentId = (group.parent instanceof Group ? group.parent.uuid : group.parent)!
 
-	const path = PathModule.join(rig.model_export_folder, group.name + `.json`)
+	const path = PathModule.join(rig.model_export_folder, 'default', group.name + `.json`)
 	const parsed = parseResourcePackPath(path)
 
 	if (!parsed) {
@@ -577,13 +577,21 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 		// Don't export models without any texture changes
 		if (Object.keys(textures).length === 0) continue
 
-		const modelParent = PathModule.join(rig.model_export_folder, bone.name)
+		const modelParent = PathModule.join(
+			rig.model_export_folder,
+			'default',
+			bone.safe_name + '.json'
+		)
 		const parsed = parseResourcePackPath(modelParent)
 		if (!parsed) {
-			throw new Error(`Invalid Bone Name: '${bone.name}' -> '${modelParent}'`)
+			throw new Error(`Invalid Bone Name: '${bone.safe_name}' -> '${modelParent}'`)
 		}
 
-		const modelPath = PathModule.join(modelParent, variant.name + '.json')
+		const modelPath = PathModule.join(
+			rig.model_export_folder,
+			variant.name,
+			bone.safe_name + '.json'
+		)
 		const parsedModelPath = parseResourcePackPath(modelPath)
 		if (!parsedModelPath) {
 			throw new Error(`Invalid Variant Name: '${variant.name}' -> '${modelPath}'`)
