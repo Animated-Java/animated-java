@@ -102,6 +102,8 @@ animated_java.dialog.blueprint_settings.display_item.error.no_item_selected: No 
 animated_java.dialog.blueprint_settings.display_item.error.invalid_item_id.no_namespace: The provided item ID is invalid! Item IDs should be in the format namespace:item_id.
 animated_java.dialog.blueprint_settings.display_item.error.invalid_item_id.whitespace: The provided item ID is invalid! Item IDs should not contain any whitespace.
 animated_java.dialog.blueprint_settings.display_item.warning.item_does_not_exist: The selected item does not exist in vanilla!
+animated_java.dialog.blueprint_settings.display_item.warning.item_model_not_generated: The selected item does not use 'minecraft:item/generated' as its parent. This may cause model issues in-game.
+animated_java.dialog.blueprint_settings.display_item.error.item_model_not_found: The selected item does not have a model file in the vanilla resource pack!
 
 animated_java.dialog.blueprint_settings.custom_model_data_offset.title: CMD Offset
 animated_java.dialog.blueprint_settings.custom_model_data_offset.description: The offset to use for the Custom Model Data of the Display Item. Allows multiple Blueprints on the same item, but in separate, unaffiliated Resource Packs.

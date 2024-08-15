@@ -19,6 +19,9 @@
 
 	import fontUrl from '../assets/MinecraftFull.ttf'
 	import { resolvePath } from '../util/fileUtil'
+	import { getJSONAsset } from '../systems/minecraft/assetManager'
+	import type { IItemModel } from '../systems/minecraft/model'
+
 	if (![...document.fonts.keys()].some(v => v.family === 'MinecraftFull')) {
 		void new FontFace('MinecraftFull', fontUrl, {}).load().then(font => {
 			document.fonts.add(font)
@@ -118,6 +121,32 @@
 				),
 			}
 		} else {
+			let asset: IItemModel
+			try {
+				asset = getJSONAsset(
+					'assets/minecraft/models/item/' + value.replace('minecraft:', '') + '.json',
+				)
+			} catch (e) {
+				console.error(e)
+				return {
+					type: 'error',
+					message: translate(
+						'dialog.blueprint_settings.display_item.error.item_model_not_found',
+					),
+				}
+			}
+
+			if (
+				!(asset.parent === 'item/generated' || asset.parent === 'minecraft:item/generated')
+			) {
+				return {
+					type: 'warning',
+					message: translate(
+						'dialog.blueprint_settings.display_item.warning.item_model_not_generated',
+					),
+				}
+			}
+
 			return { type: 'success', message: '' }
 		}
 	}
@@ -501,7 +530,7 @@
 		/>
 
 		<NumberSlider
-			label={translate('dialog.blueprint_settings.custom_model_data_offset.title',)}
+			label={translate('dialog.blueprint_settings.custom_model_data_offset.title')}
 			tooltip={translate('dialog.blueprint_settings.custom_model_data_offset.description')}
 			bind:value={customModelDataOffset}
 		/>
