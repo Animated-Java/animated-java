@@ -5,7 +5,32 @@ import { events } from '../../util/events'
 import index from '../../assets/vanillaAssetOverrides/index.json'
 import { Unzipped } from 'fflate'
 import { unzip } from '../util'
+import EasyDl from 'easydl'
+import {
+	updateLoadingProgress,
+	updateLoadingProgressLabel,
+} from '../../interface/animatedJavaLoadingPopup'
 const ASSET_OVERRIDES = index as unknown as Record<string, string>
+
+async function downloadJar(url: string, savePath: string) {
+	updateLoadingProgressLabel('Downloading Minecraft Assets...')
+	await new EasyDl(url, savePath, {
+		existBehavior: 'overwrite',
+		maxRetry: 3,
+		reportInterval: 100,
+	})
+		.on('progress', progress => {
+			updateLoadingProgress(progress.total.percentage)
+		})
+		.on('error', error => {
+			console.error('Failed to download Minecraft client:', error)
+		})
+		.on('end', () => {
+			updateLoadingProgress(100)
+			updateLoadingProgressLabel('')
+		})
+		.wait()
+}
 
 export async function getLatestVersionClientDownloadUrl() {
 	let retries = 3
@@ -36,14 +61,14 @@ function getCachedJarFilePath() {
 }
 
 export async function updateAssets() {
+	localStorage.setItem('assetsLoaded', 'false')
+
 	const downloadUrl = await getLatestVersionClientDownloadUrl()
 	console.log('Downloading latest Minecraft client:', downloadUrl)
-	const response = await fetch(downloadUrl)
 
 	const cachedJarFilePath = getCachedJarFilePath()
 	await fs.promises.mkdir(PathModule.dirname(cachedJarFilePath), { recursive: true })
-	const data = new Uint8Array(await response.arrayBuffer())
-	await fs.promises.writeFile(cachedJarFilePath, data)
+	await downloadJar(downloadUrl, cachedJarFilePath)
 	console.log('Downloaded latest Minecraft client:', cachedJarFilePath)
 }
 
@@ -65,13 +90,14 @@ export async function checkForAssetsUpdate() {
 	}
 
 	const cachedJarFilePath = getCachedJarFilePath()
-	if (!fs.existsSync(cachedJarFilePath)) {
+	if (!fs.existsSync(cachedJarFilePath) || !(localStorage.getItem('assetsLoaded') === 'true')) {
 		console.log('No cached Minecraft client found, updating assets...')
 		await updateAssets()
 	}
 
 	await extractAssets()
 	console.log('Minecraft assets are up to date!')
+	localStorage.setItem('assetsLoaded', 'true')
 	requestAnimationFrame(() => events.MINECRAFT_ASSETS_LOADED.dispatch())
 }
 

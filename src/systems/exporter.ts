@@ -4,6 +4,7 @@ import { openBlueprintSettingsDialog } from '../interface/blueprintSettingsDialo
 import { PROGRESS_DESCRIPTION, openExportProgressDialog } from '../interface/exportProgressDialog'
 import { openUnexpectedErrorDialog } from '../interface/unexpectedErrorDialog'
 import { resolvePath } from '../util/fileUtil'
+import { isResourcePackPath } from '../util/minecraftUtil'
 import { translate } from '../util/translation'
 import { Variant } from '../variants'
 import { hashAnimations, renderProjectAnimations } from './animationRenderer'
@@ -24,6 +25,22 @@ async function actuallyExportProject(forceSave = true) {
 	try {
 		console.time('Exporting project took')
 
+		// Verify that all variant texture maps are valid
+		for (const variant of Variant.all) {
+			variant.verifyTextureMap()
+		}
+
+		// Verify that all non-external textures have unique names
+		for (const texture of Texture.all) {
+			if (texture.path && isResourcePackPath(texture.path) && fs.existsSync(texture.path))
+				continue
+			if (Texture.all.some(t => t !== texture && t.name === texture.name)) {
+				throw new IntentionalExportError(
+					`Texture name "${texture.name}" is used more than once. Please make sure all textures have unique names.`
+				)
+			}
+		}
+
 		let textureExportFolder: string, modelExportFolder: string, displayItemPath: string
 
 		const resourcePackFolder = resolvePath(aj.resource_pack)
@@ -42,7 +59,7 @@ async function actuallyExportProject(forceSave = true) {
 				'assets/minecraft/models/item/',
 				aj.display_item.split(':').at(-1)! + '.json'
 			)
-		} else if (aj.enable_advanced_resource_pack_settings) {
+		} else if (aj.enable_advanced_resource_pack_folders) {
 			modelExportFolder = aj.model_folder
 			textureExportFolder = aj.texture_folder
 			displayItemPath = aj.display_item_path
@@ -160,8 +177,6 @@ export async function exportProject(forceSave = true) {
 	}
 
 	settingsDialog.close(0)
-
-	// Verify that all textures have unique IDs
 
 	await actuallyExportProject(forceSave)
 }

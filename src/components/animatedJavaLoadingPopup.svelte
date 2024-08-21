@@ -1,4 +1,5 @@
 <script lang="ts" context="module">
+	import { onMount } from 'svelte'
 	import RunningArmorStand from '../assets/armor_stand_running.webp'
 	import { type Valuable } from '../util/stores'
 </script>
@@ -8,6 +9,8 @@
 
 	export let loaded: Valuable<boolean>
 	export let offline: Valuable<boolean>
+	export let progress: Valuable<number>
+	export let progressLabel: Valuable<string>
 </script>
 
 <div class={`floating ${$offline ? 'red-border' : 'blue-border'}`}>
@@ -21,8 +24,14 @@
 	{:else if $loaded}
 		<div>{translate('popup.loading.success')}</div>
 	{:else}
-		<div class="text">{translate('popup.loading.loading')}</div>
-		<img src={RunningArmorStand} alt="Running Armor Stand" />
+		<div style="display: flex; flex-direction:row;">
+			<div class="text">{translate('popup.loading.loading')}</div>
+			<img src={RunningArmorStand} alt="Running Armor Stand" />
+		</div>
+		{#if $progressLabel !== '' || $progress !== 0}
+			<div>{$progressLabel}</div>
+			<progress value={$progress} max="100"></progress>
+		{/if}
 	{/if}
 </div>
 
@@ -35,7 +44,7 @@
 		padding: 8px 16px;
 		display: flex;
 		align-items: center;
-		flex-direction: row;
+		flex-direction: column;
 	}
 	.blue-border {
 		border: 1px solid var(--color-accent);
@@ -49,6 +58,9 @@
 	img {
 		width: 32px;
 		height: 32px;
-		margin: -16px -10px;
+		margin: -4px -10px;
+	}
+	progress {
+		width: 100%;
 	}
 </style>

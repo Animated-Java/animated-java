@@ -65,6 +65,8 @@ export function openBoneConfigDialog(bone: Group) {
 
 	const oldConfig = BoneConfig.fromJSON(boneConfigJSON)
 
+	const customName = new Valuable(oldConfig.customName)
+	const customNameVisible = new Valuable(oldConfig.customNameVisible)
 	const billboard = new Valuable(oldConfig.billboard as string)
 	const overrideBrightness = new Valuable(oldConfig.overrideBrightness)
 	const brightnessOverride = new Valuable(oldConfig.brightnessOverride)
@@ -86,6 +88,8 @@ export function openBoneConfigDialog(bone: Group) {
 		component: BoneConfigDialogSvelteComponent,
 		props: {
 			variant: Variant.selected!,
+			customName,
+			customNameVisible,
 			billboard,
 			overrideBrightness,
 			brightnessOverride,
@@ -104,6 +108,8 @@ export function openBoneConfigDialog(bone: Group) {
 		onConfirm() {
 			const newConfig = new BoneConfig()
 
+			newConfig.customName = customName.get()
+			newConfig.customNameVisible = customNameVisible.get()
 			newConfig.billboard = billboard.get() as any
 			newConfig.overrideBrightness = overrideBrightness.get()
 			newConfig.brightnessOverride = brightnessOverride.get()
@@ -118,6 +124,10 @@ export function openBoneConfigDialog(bone: Group) {
 			newConfig.shadowStrength = shadowStrength.get()
 			newConfig.useNBT = useNBT.get()
 
+			// Remove properties that are the same as the parent's
+			newConfig.customName === parentConfig.customName && (newConfig.customName = undefined)
+			newConfig.customNameVisible === parentConfig.customNameVisible &&
+				(newConfig.customNameVisible = undefined)
 			newConfig.billboard === parentConfig.billboard && (newConfig.billboard = undefined)
 			newConfig.overrideBrightness === parentConfig.overrideBrightness &&
 				(newConfig.overrideBrightness = undefined)

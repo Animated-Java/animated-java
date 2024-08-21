@@ -66,7 +66,7 @@ export interface IRenderedNode {
 	name: string
 	safe_name: string
 	uuid: string
-	parent: string
+	parent?: string
 	/**
 	 * The default transformation of the node
 	 */
@@ -127,6 +127,7 @@ export interface IRenderedNodes {
 	ItemDisplay: IRenderedNode & {
 		type: 'item_display'
 		item: string
+		itme_display: string
 		/**
 		 * The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit.
 		 */
@@ -319,7 +320,7 @@ function renderGroup(
 	defaultVariant: IRenderedVariant
 ): INodeStructure | undefined {
 	if (!group.export) return
-	const parentId = (group.parent instanceof Group ? group.parent.uuid : group.parent)!
+	const parentId = group.parent instanceof Group ? group.parent.uuid : undefined
 
 	const path = PathModule.join(rig.model_export_folder, 'default', group.name + `.json`)
 	const parsed = parseResourcePackPath(path)
@@ -426,7 +427,7 @@ function renderGroup(
 
 function renderItemDisplay(display: VanillaItemDisplay, rig: IRenderedRig) {
 	if (!display.export) return
-	const parentId = (display.parent instanceof Group ? display.parent.uuid : display.parent)!
+	const parentId = display.parent instanceof Group ? display.parent.uuid : undefined
 
 	const path = PathModule.join(rig.model_export_folder, display.name + `.json`)
 	const parsed = parseResourcePackPath(path)
@@ -443,6 +444,7 @@ function renderItemDisplay(display: VanillaItemDisplay, rig: IRenderedRig) {
 		uuid: display.uuid,
 		parent: parentId,
 		item: display.item,
+		itme_display: display.itemDisplay,
 		base_scale: 1,
 		config: display.config,
 		default_transform: {} as INodeTransform,
@@ -453,7 +455,7 @@ function renderItemDisplay(display: VanillaItemDisplay, rig: IRenderedRig) {
 
 function renderBlockDisplay(display: VanillaBlockDisplay, rig: IRenderedRig) {
 	if (!display.export) return
-	const parentId = (display.parent instanceof Group ? display.parent.uuid : display.parent)!
+	const parentId = display.parent instanceof Group ? display.parent.uuid : undefined
 
 	const path = PathModule.join(rig.model_export_folder, display.name + `.json`)
 	const parsed = parseResourcePackPath(path)
@@ -480,7 +482,7 @@ function renderBlockDisplay(display: VanillaBlockDisplay, rig: IRenderedRig) {
 
 function renderTextDisplay(display: TextDisplay, rig: IRenderedRig): INodeStructure | undefined {
 	if (!display.export) return
-	const parentId = (display.parent instanceof Group ? display.parent.uuid : display.parent)!
+	const parentId = display.parent instanceof Group ? display.parent.uuid : undefined
 
 	const path = PathModule.join(rig.model_export_folder, display.name + `.json`)
 	const parsed = parseResourcePackPath(path)
@@ -622,6 +624,7 @@ export function hashRig(rig: IRenderedRig) {
 			case 'bone': {
 				const model = rig.variants[Variant.getDefault().uuid].models[nodeUuid]
 				hash.update(';' + JSON.stringify(model) || '')
+				if (!node.configs) break // Skip if there are no configs
 				if (node.configs.default) {
 					const defaultConfig = BoneConfig.fromJSON(node.configs.default)
 					if (!defaultConfig.isDefault()) {

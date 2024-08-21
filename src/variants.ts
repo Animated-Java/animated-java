@@ -66,10 +66,18 @@ export class TextureMap {
 		return textureMap
 	}
 
-	copy() {
+	public copy() {
 		const textureMap = new TextureMap()
 		textureMap.map = new Map(this.map)
 		return textureMap
+	}
+
+	public verifyTextures() {
+		for (const [key, value] of this.map) {
+			if (!Texture.all.some(t => t.uuid === value)) {
+				this.map.delete(key)
+			}
+		}
 	}
 }
 
@@ -156,6 +164,10 @@ export class Variant {
 		variant.textureMap = this.textureMap.copy()
 		variant.excludedNodes = this.excludedNodes.map(item => ({ ...item }))
 		variant.select()
+	}
+
+	public verifyTextureMap() {
+		this.textureMap.verifyTextures()
 	}
 
 	public static fromJSON(json: IBlueprintVariantJSON, isDefault = false): Variant {

@@ -5,6 +5,8 @@ import { Valuable } from '../util/stores'
 
 const LOADED = new Valuable(false)
 const OFFLINE = new Valuable(false)
+const PROGRESS = new Valuable(0)
+const PROGRESS_LABEL = new Valuable('')
 let activeComponent: SvelteComponent | undefined
 
 export async function showLoadingPopup() {
@@ -14,6 +16,8 @@ export async function showLoadingPopup() {
 		props: {
 			loaded: LOADED,
 			offline: OFFLINE,
+			progress: PROGRESS,
+			progressLabel: PROGRESS_LABEL,
 		},
 		elementSelector() {
 			return document.body
@@ -40,4 +44,12 @@ export function showOfflineError() {
 		activeComponent.$destroy()
 		activeComponent = undefined
 	}, 10000)
+}
+
+export function updateLoadingProgress(progress: number) {
+	PROGRESS.set(progress)
+}
+
+export function updateLoadingProgressLabel(label: string) {
+	PROGRESS_LABEL.set(label)
 }

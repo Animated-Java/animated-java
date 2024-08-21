@@ -646,6 +646,7 @@ export async function compileDataPack(options: {
 		roundTo,
 		nodeSorter,
 		getRotationFromQuaternion: eulerFromQuaternion,
+		root_ticking_commands: aj.ticking_commands,
 	}
 	console.log('Compiler Variables:', variables)
 

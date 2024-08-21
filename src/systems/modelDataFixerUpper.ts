@@ -43,6 +43,8 @@ export function process(model: any): any {
 		if (compareVersions('0.5.6', model.meta.format_version)) model = updateModelTo1_0pre7(model)
 		// v1.0.0-pre8
 		if (compareVersions('0.5.7', model.meta.format_version)) model = updateModelTo1_0pre8(model)
+		// v1.4.0
+		if (compareVersions('1.4.0', model.meta.format_version)) model = updateModelTo1_4_0(model)
 
 		console.groupEnd()
 
@@ -371,60 +373,7 @@ function updateModelTo1_0pre1(model: any) {
 		})
 	}
 
-	const commandsLocator = new Locator({
-		name: 'commands',
-		from: [0, 0, 0],
-	}).getSaveCopy!()
-	let commandKeyframeCount = 0
-
-	// Move command keyframes into commands channel on a "root" locator.
-	if (blueprint.animations) {
-		for (const animation of blueprint.animations) {
-			if (animation.animators?.effects) {
-				for (const kf of animation.animators.effects.keyframes) {
-					if (kf.channel === 'variants') kf.channel = 'variant'
-				}
-			}
-			const keyframes: any[] = []
-			const effects = animation.animators?.effects
-			if (!effects || !effects.keyframes) continue
-			for (const keyframe of effects.keyframes) {
-				if (
-					!keyframe ||
-					keyframe.channel !== 'commands' ||
-					(keyframe.data_points && keyframe.data_points.length < 1)
-				)
-					continue
-
-				for (const datapoint of keyframe.data_points) {
-					if (!datapoint.commands) continue
-					keyframes.push({
-						...keyframe,
-						data_points: [
-							{
-								commands: datapoint.commands,
-								time: datapoint.time,
-							},
-						],
-					})
-				}
-			}
-			if (keyframes.length > 0) {
-				animation.animators[commandsLocator.uuid] ??= {
-					type: 'locator',
-					name: 'commands',
-					keyframes: [],
-				}
-				const animator = animation.animators[commandsLocator.uuid]
-				for (const keyframe of keyframes) {
-					// animator.addKeyframe(keyframe as KeyframeOptions)
-					animator.keyframes.push(keyframe)
-					commandKeyframeCount++
-				}
-			}
-		}
-	}
-	if (commandKeyframeCount > 0) blueprint.elements.push(commandsLocator)
+	// The Effects animator commands to locator commands code has been removed as 1.4.0 supports effect commands keyframes natively again.
 
 	// Convert rig nbt into data merge command
 	if (
@@ -505,6 +454,27 @@ function updateModelTo1_0pre8(model: any): IBlueprintFormatJSON {
 	if (model.project_settings) {
 		model.blueprint_settings = model.project_settings
 		delete model.project_settings
+	}
+
+	return model as IBlueprintFormatJSON
+}
+
+// region v1.4.0
+// eslint-disable-next-line @typescript-eslint/naming-convention
+function updateModelTo1_4_0(model: any): IBlueprintFormatJSON {
+	console.log('Processing model format 1.4.0', JSON.parse(JSON.stringify(model)))
+
+	// Separated advanced folders from advanced settings
+	if (model.blueprint_settings.enable_advanced_resource_pack_settings) {
+		model.blueprint_settings.enable_advanced_resource_pack_folders = true
+	}
+
+	// Custom model data is now hidden behind advanced settings
+	if (
+		model.blueprint_settings.custom_model_data_offset !== undefined &&
+		model.blueprint_settings.custom_model_data_offset !== 0
+	) {
+		model.blueprint_settings.enable_advanced_resource_pack_settings = true
 	}
 
 	return model as IBlueprintFormatJSON

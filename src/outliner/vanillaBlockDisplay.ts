@@ -63,7 +63,7 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 			VanillaBlockDisplay.properties[key].reset(this)
 		}
 
-		this.name = 'vanilla_block_display'
+		this.name = 'block_display'
 		this.extend(data)
 
 		this.block ??= 'minecraft:stone'

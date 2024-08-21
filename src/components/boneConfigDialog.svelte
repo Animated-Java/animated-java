@@ -13,11 +13,15 @@
 
 <script lang="ts">
 	import { NbtCompound, NbtTag } from 'deepslate/lib/nbt'
+	import { JsonText } from '../systems/minecraft/jsonText'
+	import { prototype } from 'events'
 
 	const pluginModeEnabled = !!Project?.animated_java?.enable_plugin_mode
 
 	export let variant: Variant
 
+	export let customName: Valuable<string>
+	export let customNameVisible: Valuable<boolean>
 	export let billboard: Valuable<string>
 	export let overrideBrightness: Valuable<NonNullable<BoneConfig['_overrideBrightness']>>
 	export let brightnessOverride: Valuable<NonNullable<BoneConfig['_brightnessOverride']>>
@@ -58,6 +62,21 @@
 
 		return { type: 'success', message: '' }
 	}
+
+	const customNameChecker: DialogItemValueChecker<string> = value => {
+		if (value === '') return { type: 'success', message: '' }
+
+		try {
+			JsonText.fromString(value)
+		} catch (e: any) {
+			return {
+				type: 'error',
+				message: translate('dialog.bone_config.custom_name.invalid_json.error', e.message),
+			}
+		}
+
+		return { type: 'success', message: '' }
+	}
 </script>
 
 <div>
@@ -79,6 +98,22 @@
 			label={translate('dialog.bone_config.inherit_settings.title')}
 			tooltip={translate('dialog.bone_config.inherit_settings.description')}
 			bind:checked={inheritSettings}
+			defaultValue={BoneConfig.prototype.inheritSettings}
+		/>
+
+		<LineInput
+			label={translate('dialog.bone_config.custom_name.title')}
+			tooltip={translate('dialog.bone_config.custom_name.description')}
+			bind:value={customName}
+			defaultValue={BoneConfig.prototype.customName}
+			valueChecker={customNameChecker}
+		/>
+
+		<Checkbox
+			label={translate('dialog.bone_config.custom_name_visible.title')}
+			tooltip={translate('dialog.bone_config.custom_name_visible.description')}
+			bind:checked={customNameVisible}
+			defaultValue={BoneConfig.prototype.customNameVisible}
 		/>
 
 		<Select
@@ -93,6 +128,7 @@
 			label={translate('dialog.bone_config.glowing.title')}
 			tooltip={translate('dialog.bone_config.glowing.description')}
 			bind:checked={glowing}
+			defaultValue={BoneConfig.prototype.glowing}
 		/>
 
 		<ColorPicker
@@ -105,6 +141,7 @@
 			label={translate('dialog.bone_config.shadow_radius.title')}
 			tooltip={translate('dialog.bone_config.shadow_radius.description')}
 			bind:value={shadowRadius}
+			defaultValue={BoneConfig.prototype.shadowRadius}
 			min={0}
 			max={64}
 		/>
@@ -113,6 +150,7 @@
 			label={translate('dialog.bone_config.shadow_strength.title')}
 			tooltip={translate('dialog.bone_config.shadow_strength.description')}
 			bind:value={shadowStrength}
+			defaultValue={BoneConfig.prototype.shadowStrength}
 			min={0}
 		/>
 
@@ -120,6 +158,7 @@
 			label={translate('dialog.bone_config.override_brightness.title')}
 			tooltip={translate('dialog.bone_config.override_brightness.description')}
 			bind:checked={overrideBrightness}
+			defaultValue={BoneConfig.prototype.overrideBrightness}
 		/>
 
 		{#if $overrideBrightness}
@@ -127,6 +166,7 @@
 				label={translate('dialog.bone_config.brightness_override.title')}
 				tooltip={translate('dialog.bone_config.brightness_override.description')}
 				bind:value={brightnessOverride}
+				defaultValue={BoneConfig.prototype.brightnessOverride}
 				min={0}
 				max={15}
 			/>
@@ -136,24 +176,43 @@
 			label={translate('dialog.bone_config.enchanted.title')}
 			tooltip={translate('dialog.bone_config.enchanted.description')}
 			bind:checked={enchanted}
+			defaultValue={BoneConfig.prototype.enchanted}
 		/>
 
 		<Checkbox
 			label={translate('dialog.bone_config.invisible.title')}
 			tooltip={translate('dialog.bone_config.invisible.description')}
 			bind:checked={invisible}
+			defaultValue={BoneConfig.prototype.invisible}
 		/>
 	{:else}
 		<Checkbox
 			label={translate('dialog.bone_config.inherit_settings.title')}
 			tooltip={translate('dialog.bone_config.inherit_settings.description')}
 			bind:checked={inheritSettings}
+			defaultValue={BoneConfig.prototype.inheritSettings}
+		/>
+
+		<LineInput
+			label={translate('dialog.bone_config.custom_name.title')}
+			tooltip={translate('dialog.bone_config.custom_name.description')}
+			bind:value={customName}
+			defaultValue={BoneConfig.prototype.customName}
+			valueChecker={customNameChecker}
+		/>
+
+		<Checkbox
+			label={translate('dialog.bone_config.custom_name_visible.title')}
+			tooltip={translate('dialog.bone_config.custom_name_visible.description')}
+			bind:checked={customNameVisible}
+			defaultValue={BoneConfig.prototype.customNameVisible}
 		/>
 
 		<Checkbox
 			label={translate('dialog.bone_config.use_nbt.title')}
 			tooltip={translate('dialog.bone_config.use_nbt.description')}
 			bind:checked={useNBT}
+			defaultValue={BoneConfig.prototype.useNBT}
 		/>
 
 		{#if $useNBT}
@@ -164,6 +223,7 @@
 				label={translate('dialog.bone_config.nbt.title')}
 				tooltip={translate('dialog.bone_config.nbt.description')}
 				bind:value={nbt}
+				defaultValue={BoneConfig.prototype.nbt}
 				valueChecker={nbtChecker}
 			/>
 		{:else}
@@ -179,12 +239,14 @@
 				label={translate('dialog.bone_config.glowing.title')}
 				tooltip={translate('dialog.bone_config.glowing.description')}
 				bind:checked={glowing}
+				defaultValue={BoneConfig.prototype.glowing}
 			/>
 
 			<Checkbox
 				label={translate('dialog.bone_config.override_glow_color.title')}
 				tooltip={translate('dialog.bone_config.override_glow_color.description')}
 				bind:checked={overrideGlowColor}
+				defaultValue={BoneConfig.prototype.overrideGlowColor}
 			/>
 
 			{#if $overrideGlowColor}
@@ -199,6 +261,7 @@
 				label={translate('dialog.bone_config.shadow_radius.title')}
 				tooltip={translate('dialog.bone_config.shadow_radius.description')}
 				bind:value={shadowRadius}
+				defaultValue={BoneConfig.prototype.shadowRadius}
 				min={0}
 				max={15}
 			/>
@@ -207,6 +270,7 @@
 				label={translate('dialog.bone_config.shadow_strength.title')}
 				tooltip={translate('dialog.bone_config.shadow_strength.description')}
 				bind:value={shadowStrength}
+				defaultValue={BoneConfig.prototype.shadowStrength}
 				min={0}
 				max={15}
 			/>
@@ -215,6 +279,7 @@
 				label={translate('dialog.bone_config.override_brightness.title')}
 				tooltip={translate('dialog.bone_config.override_brightness.description')}
 				bind:checked={overrideBrightness}
+				defaultValue={BoneConfig.prototype.overrideBrightness}
 			/>
 
 			{#if $overrideBrightness}
@@ -222,6 +287,7 @@
 					label={translate('dialog.bone_config.brightness_override.title')}
 					tooltip={translate('dialog.bone_config.brightness_override.description')}
 					bind:value={brightnessOverride}
+					defaultValue={BoneConfig.prototype.brightnessOverride}
 					min={0}
 					max={15}
 				/>
@@ -231,6 +297,7 @@
 				label={translate('dialog.bone_config.enchanted.title')}
 				tooltip={translate('dialog.bone_config.enchanted.description')}
 				bind:checked={enchanted}
+				defaultValue={BoneConfig.prototype.enchanted}
 			/>
 
 			<!-- <Checkbox

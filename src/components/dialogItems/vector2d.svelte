@@ -8,10 +8,12 @@
 	export let step: number | undefined = undefined
 
 	export let valueX: Valuable<number>
+	export let defaultValueX: number
 	export let minX: number | undefined = undefined
 	export let maxX: number | undefined = undefined
 
 	export let valueY: Valuable<number>
+	export let defaultValueY: number
 	export let minY: number | undefined = undefined
 	export let maxY: number | undefined = undefined
 
@@ -79,20 +81,25 @@
 		})
 	}
 
+	function onReset() {
+		valueX.set(defaultValueX)
+		valueY.set(defaultValueY)
+	}
+
 	requestAnimationFrame(() => {
 		eventListenerFactory(sliderX, valueX, minX, maxX)
 		eventListenerFactory(sliderY, valueY, minY, maxY)
 	})
 </script>
 
-<BaseDialogItem {label} {tooltip} bind:warning_text bind:error_text>
+<BaseDialogItem {label} {tooltip} {onReset} bind:warning_text bind:error_text let:id>
 	<div class="dialog_bar form_bar">
-		<label class="name_space_left" for="name">{label}</label>
-		<div class="dialog_vector_group half">
+		<label class="name_space_left" for={id}>{label}</label>
+		<div class="dialog_vector_group half" style="max-width: 256px;">
 			<div class="numeric_input">
 				<input
 					bind:this={inputX}
-					id="snapping"
+					{id}
 					class="dark_bordered focusable_input"
 					bind:value={$valueX}
 					inputmode="decimal"
@@ -104,7 +111,7 @@
 			<div class="numeric_input">
 				<input
 					bind:this={inputY}
-					id="snapping"
+					{id}
 					class="dark_bordered focusable_input"
 					bind:value={$valueY}
 					inputmode="decimal"

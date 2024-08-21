@@ -193,6 +193,11 @@ dir <%export_namespace%> {
 			}
 			# Rotation Logic
 			execute at @s on passengers run tp @s ~ ~ ~ ~ ~
+			IF (root_ticking_commands) {
+				<%%
+					emit.mcb(root_ticking_commands)
+				%%>
+			}
 			# Post tick
 			function #*<%export_namespace%>/as_root/post_tick
 		}
@@ -375,9 +380,11 @@ dir <%export_namespace%> {
 								function <%animation.frames.indexOf(frame)%> {
 									<%%
 										if (frame.variant) {
+											console.log('Variant:', frame.variant)
 											const variant = rig.variants[frame.variant.uuid]
 											if (!variant) return
-											emit.mcb(`execute on vehicle unless entity @s[tag=<%TAGS.TRANSFORMS_ONLY()%>] run function *${export_namespace}/variants/${variant.name}/apply`)
+											const execute_condition = variant.execute_condition ? variant.execute_condition.trim() + ' ' : ''
+											emit.mcb(`execute ${execute_condition}on vehicle unless entity @s[tag=<%TAGS.TRANSFORMS_ONLY()%>] run function *${export_namespace}/variants/${variant.name}/apply`)
 										}
 										global.merged = {
 											locators: {},
@@ -420,7 +427,7 @@ dir <%export_namespace%> {
 														}
 													%%>
 												}
-												IF (node.commands) {
+												IF (global.transform.commands) {
 													execute on vehicle unless entity @s[tag=<%TAGS.TRANSFORMS_ONLY()%>] <%global.transform.execute_condition ? global.transform.execute_condition.trim() + ' ' : ''%>positioned \
 															^<%roundTo(global.transform.pos[0], 10)%> \
 															^<%roundTo(global.transform.pos[1], 10)%> \
@@ -429,9 +436,6 @@ dir <%export_namespace%> {
 															~<%roundTo(global.transform.head_rot[1], 10)%> \
 															~<%roundTo(global.transform.head_rot[0], 10)%> \
 													run {
-														REPEAT(0, 10) as i {
-															particle bubble ^ ^ ^<%i/10%>
-														}
 														<%%
 															emit.mcb(global.transform.commands)
 														%%>
@@ -659,8 +663,8 @@ dir <%export_namespace%> {
 					execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 						function *global/errors/function_not_executed_as_root_entity \
 							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/variants/<%variant.name%>/apply'}
-					REPEAT (Object.entries(rig.nodes)) as node {
-						IF (node.type === 'bone' && !Object.values(variant.excluded_nodes).find(v => v.value === node.uuid) && (variant.models[node.uuid] !== undefined || node.configs.variants[variant.uuid])) {
+					REPEAT (Object.values(rig.nodes)) as node {
+						IF (node.type === 'bone' && !variant.excluded_nodes.includes(node.uuid) && (variant.models[node.uuid] !== undefined || node.configs.variants[variant.uuid] !== undefined)) {
 							execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%node.safe_name%>] run {
 								IF (variant.models[node.uuid] !== undefined) {
 									data modify entity @s item.components.minecraft:custom_model_data set value <%variant.models[node.uuid].custom_model_data%>

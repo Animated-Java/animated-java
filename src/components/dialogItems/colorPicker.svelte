@@ -22,14 +22,18 @@
 		colorPicker.set(value.get())
 	}
 
+	function onReset() {
+		value.set('#ffffff')
+	}
+
 	onDestroy(() => {
 		colorPicker.delete()
 	})
 </script>
 
-<BaseDialogItem {label} {tooltip}>
+<BaseDialogItem {label} {tooltip} {onReset} let:id>
 	<div class="dialog_bar form_bar">
-		<label class="name_space_left" for="export">{label}</label>
+		<label class="name_space_left" for={id}>{label}</label>
 		<div bind:this={colorPickerMount} use:onLoad />
 	</div>
 </BaseDialogItem>

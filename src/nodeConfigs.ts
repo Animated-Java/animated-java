@@ -10,7 +10,8 @@ export type BillboardMode = 'fixed' | 'vertical' | 'horizontal' | 'center'
 
 // TODO: Refactor these configs to inherit from a base class
 export class BoneConfig {
-	private _vanillaModel?: string
+	private _customName?: string
+	private _customNameVisible?: boolean
 	private _billboard?: BillboardMode
 	private _overrideBrightness?: boolean
 	private _brightnessOverride?: number
@@ -27,6 +28,8 @@ export class BoneConfig {
 
 	static getDefault(): BoneConfig {
 		return BoneConfig.fromJSON({
+			custom_name: '',
+			custom_name_visible: false,
 			billboard: 'fixed',
 			override_brightness: false,
 			brightness_override: 0,
@@ -41,6 +44,24 @@ export class BoneConfig {
 			shadow_strength: 1,
 			use_nbt: false,
 		})
+	}
+
+	get customName(): NonNullable<BoneConfig['_customName']> {
+		if (this._customName !== undefined) return this._customName
+		const defaultConfig = BoneConfig.getDefault()
+		return defaultConfig.customName
+	}
+	set customName(value: BoneConfig['_customName']) {
+		this._customName = value
+	}
+
+	get customNameVisible(): NonNullable<BoneConfig['_customNameVisible']> {
+		if (this._customNameVisible !== undefined) return this._customNameVisible
+		const defaultConfig = BoneConfig.getDefault()
+		return defaultConfig.customNameVisible
+	}
+	set customNameVisible(value: BoneConfig['_customNameVisible']) {
+		this._customNameVisible = value
 	}
 
 	get billboard(): NonNullable<BoneConfig['_billboard']> {
@@ -162,7 +183,8 @@ export class BoneConfig {
 
 	public checkIfEqual(other: BoneConfig) {
 		return (
-			this._vanillaModel === other._vanillaModel &&
+			this._customName === other._customName &&
+			this._customNameVisible === other._customNameVisible &&
 			this._billboard === other._billboard &&
 			this._overrideBrightness === other._overrideBrightness &&
 			this._brightnessOverride === other._brightnessOverride &&
@@ -185,6 +207,8 @@ export class BoneConfig {
 
 	public toJSON(): IBlueprintBoneConfigJSON {
 		return {
+			custom_name: this._customName,
+			custom_name_visible: this._customNameVisible,
 			billboard: this._billboard,
 			override_brightness: this._overrideBrightness,
 			brightness_override: this._brightnessOverride,
@@ -202,6 +226,8 @@ export class BoneConfig {
 	}
 
 	inheritFrom(other: BoneConfig) {
+		if (other._customName !== undefined) this.customName = other.customName
+		if (other._customNameVisible !== undefined) this.customNameVisible = other.customNameVisible
 		if (other._billboard !== undefined) this.billboard = other.billboard
 		if (other._overrideBrightness !== undefined)
 			this.overrideBrightness = other.overrideBrightness
@@ -221,6 +247,9 @@ export class BoneConfig {
 
 	public static fromJSON(json: IBlueprintBoneConfigJSON): BoneConfig {
 		const config = new BoneConfig()
+		if (json.custom_name !== undefined) config._customName = json.custom_name
+		if (json.custom_name_visible !== undefined)
+			config._customNameVisible = json.custom_name_visible
 		if (json.billboard !== undefined) config._billboard = json.billboard
 		if (json.override_brightness !== undefined)
 			config._overrideBrightness = json.override_brightness
@@ -241,18 +270,20 @@ export class BoneConfig {
 	}
 
 	public toNBT(compound: NbtCompound = new NbtCompound()): NbtCompound {
-		// if (this.vanillaItemModel) {
-		// 	const item = (compound.get('item') as NbtCompound) || new NbtCompound()
-		// 	compound.set('item', item.set('id', new NbtString(this.vanillaItemModel)))
-		// 	compound.set('item_display', new NbtString('none'))
-		// }
-
 		if (this.useNBT) {
 			const newData = NbtTag.fromString(this.nbt) as NbtCompound
 			for (const key of newData.keys()) {
 				compound.set(key, newData.get(key)!)
 			}
 			return compound
+		}
+
+		if (this._customName) {
+			compound.set('CustomName', new NbtString(this.customName))
+		}
+
+		if (this._customNameVisible) {
+			compound.set('CustomNameVisible', new NbtByte(Number(this.customNameVisible)))
 		}
 
 		if (this._billboard) {

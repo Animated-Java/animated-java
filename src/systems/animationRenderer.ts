@@ -78,6 +78,10 @@ export interface IRenderedFrame {
 		uuid: string
 		execute_condition?: string
 	}
+	commands?: {
+		commands: string
+		execute_condition?: string
+	}
 }
 
 export interface IRenderedAnimation {
@@ -118,6 +122,7 @@ export function getFrame(
 		time,
 		node_transforms: {},
 		variant: getVariantKeyframe(animation, time),
+		commands: getCommandsKeyframe(animation, time),
 	}
 
 	if (lastAnimation !== animation) {
@@ -237,17 +242,30 @@ export function getFrame(
 	return frame
 }
 
-function getVariantKeyframe(animation: _Animation, time: number) {
+function getVariantKeyframe(animation: _Animation, time: number): IRenderedFrame['variant'] {
 	const variantKeyframes = animation.animators.effects?.variant as _Keyframe[]
 	if (!variantKeyframes) return
 	for (const kf of variantKeyframes) {
 		if (kf.time !== time) continue
 		const uuid = getKeyframeVariant(kf)
 		if (!uuid) return
-		const executeCondition = getKeyframeExecuteCondition(kf)
 		return {
 			uuid,
-			executeCondition,
+			execute_condition: getKeyframeExecuteCondition(kf),
+		}
+	}
+}
+
+function getCommandsKeyframe(animation: _Animation, time: number): IRenderedFrame['commands'] {
+	const commandsKeyframes = animation.animators.effects?.commands as _Keyframe[]
+	if (!commandsKeyframes) return
+	for (const kf of commandsKeyframes) {
+		if (kf.time !== time) continue
+		const commands = getKeyframeCommands(kf)
+		if (!commands) return
+		return {
+			commands,
+			execute_condition: getKeyframeExecuteCondition(kf),
 		}
 	}
 }

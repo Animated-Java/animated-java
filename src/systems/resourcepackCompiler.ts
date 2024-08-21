@@ -230,7 +230,11 @@ export async function compileResourcePack(options: {
 		console.warn('Display item already exists! Attempting to merge...')
 		displayItemModel.readExisting(displayItemPath)
 	}
-	displayItemModel.lastOverrideId = Math.max(1, aj.custom_model_data_offset)
+
+	displayItemModel.lastOverrideId = Math.max(
+		1,
+		aj.enable_advanced_resource_pack_settings ? aj.custom_model_data_offset : 0
+	)
 
 	// Empty model for hiding bones / snowballs
 	displayItemModel.assertOverride(1, 'animated_java:empty')

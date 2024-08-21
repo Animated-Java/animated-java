@@ -1,7 +1,7 @@
 {
 	"meta": {
 		"format": "animated_java_blueprint",
-		"format_version": "1.3.0",
+		"format_version": "1.4.0",
 		"uuid": "167b27cd-b559-3f13-a97c-0841fe21f1d1",
 		"save_location": "D:\\github-repos\\animated-java\\animated-java\\test_blueprints\\armor_stand.ajblueprint",
 		"last_used_export_namespace": "armor_stand"
@@ -17,13 +17,15 @@
 		"display_item": "minecraft:white_dye",
 		"custom_model_data_offset": 0,
 		"enable_advanced_resource_pack_settings": false,
-		"resource_pack": "C:\\Users\\SnaveSutit\\AppData\\Roaming\\com.modrinth.theseus\\profiles\\Animated Java Dev\\resourcepacks\\resourcepack",
+		"enable_advanced_resource_pack_folders": false,
+		"resource_pack": "%APPDATA%\\com.modrinth.theseus\\profiles\\Animated Java Dev\\resourcepacks\\resourcepack",
 		"display_item_path": "",
 		"model_folder": "",
 		"texture_folder": "",
 		"enable_advanced_data_pack_settings": false,
-		"data_pack": "C:\\Users\\SnaveSutit\\AppData\\Roaming\\com.modrinth.theseus\\profiles\\Animated Java Dev\\saves\\Animated Java Dev\\datapacks\\datapack",
+		"data_pack": "%APPDATA%\\com.modrinth.theseus\\profiles\\Animated Java Dev\\saves\\Animated Java Dev\\datapacks\\datapack",
 		"summon_commands": "",
+		"ticking_commands": "",
 		"interpolation_duration": 1,
 		"teleportation_duration": 1,
 		"use_storage_for_animation": false,
@@ -855,6 +857,7 @@
 			"scale": [1, 1, 1],
 			"visibility": true,
 			"item": "minecraft:diamond",
+			"item_display": "none",
 			"config": {},
 			"block": "minecraft:stone",
 			"text": "\"\\\"Hello World!\\\"\"\n",
@@ -973,7 +976,6 @@
 					"color": 0,
 					"configs": {
 						"default": {
-							"vanilla_item_model": "",
 							"billboard": "fixed",
 							"brightness_override": 0,
 							"enchanted": false,
@@ -1003,7 +1005,6 @@
 							"color": 0,
 							"configs": {
 								"default": {
-									"vanilla_item_model": "",
 									"billboard": "fixed",
 									"brightness_override": 0,
 									"enchanted": false,
@@ -1035,7 +1036,6 @@
 									"color": 0,
 									"configs": {
 										"default": {
-											"vanilla_item_model": "",
 											"billboard": "fixed",
 											"brightness_override": 0,
 											"enchanted": false,
@@ -1067,9 +1067,7 @@
 											"color": 0,
 											"configs": {
 												"default": {
-													"vanilla_item_model": "",
 													"billboard": "fixed",
-													"override_brightness": false,
 													"brightness_override": 0,
 													"enchanted": false,
 													"glowing": false,
@@ -1489,19 +1487,14 @@
 				"name": "no_armor",
 				"display_name": "no_armor",
 				"uuid": "5417306e-2c69-3f36-1e3c-edd904034a36",
-				"texture_map": {
-					"240844f3-f615-fe51-0ada-d208791fbdc0": "797174ae-5c58-4a83-a630-eefd51007c80",
-					"34528a28-3a31-8b47-65bb-ef2b60b02401": "797174ae-5c58-4a83-a630-eefd51007c80"
-				},
+				"texture_map": {},
 				"excluded_nodes": []
 			},
 			{
 				"name": "no_baseplate",
 				"display_name": "no_baseplate",
 				"uuid": "bf2a6915-ec63-7ccf-3844-ea8be00b97e6",
-				"texture_map": {
-					"eb6c49b8-8e8e-a039-9a6f-ef6a06bc7924": "797174ae-5c58-4a83-a630-eefd51007c80"
-				},
+				"texture_map": {},
 				"excluded_nodes": [
 					"98795982-9c43-6e3e-eed9-2c776a957938",
 					"102db36a-eeda-0e6f-d5cc-c186ecda8165",
@@ -1597,7 +1590,7 @@
 									"x": 0,
 									"y": 0,
 									"z": 0,
-									"commands": "particle minecraft:flame ^ ^ ^1",
+									"commands": "particle minecraft:flame ^ ^ ^",
 									"execute_condition": "",
 									"repeat": true,
 									"repeat_frequency": 5
@@ -1623,7 +1616,7 @@
 									"x": 0,
 									"y": 0,
 									"z": 0,
-									"commands": "particle minecraft:flame ^ ^ ^1",
+									"commands": "particle minecraft:flame ^ ^ ^",
 									"execute_condition": "",
 									"repeat": true,
 									"repeat_frequency": 1
@@ -1652,6 +1645,29 @@
 								}
 							],
 							"uuid": "08083fab-35c8-d8f0-44b0-000f720cf533",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						}
+					]
+				},
+				"effects": {
+					"name": "Effects",
+					"type": "effect",
+					"keyframes": [
+						{
+							"channel": "commands",
+							"data_points": [
+								{
+									"commands": "say hi",
+									"execute_condition": "",
+									"repeat": false,
+									"repeat_frequency": 1
+								}
+							],
+							"uuid": "e8054bec-122c-6f34-6781-a4a58d46a5a6",
 							"time": 0,
 							"color": -1,
 							"interpolation": "linear",
@@ -3045,7 +3061,7 @@
 			"override": false,
 			"length": 0.8,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"saved": false,
 			"path": "",
 			"anim_time_update": "",
