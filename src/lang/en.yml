@@ -206,6 +206,15 @@ animated_java.dialog.bone_config.use_nbt.use_nbt_warning: Using NBT will overrid
 animated_java.dialog.bone_config.inherit_settings.title: Inherit Settings
 animated_java.dialog.bone_config.inherit_settings.description: Whether or not to inherit the settings from the parent bone.
 
+animated_java.dialog.bone_config.custom_name.title: Custom Name
+animated_java.dialog.bone_config.custom_name.description: The custom name of the bone.
+animated_java.dialog.bone_config.custom_name.invalid_json.error: |-
+    Invalid JSON Text!
+    {0}
+
+animated_java.dialog.bone_config.custom_name_visible.title: Custom Name Visible
+animated_java.dialog.bone_config.custom_name_visible.description: Whether or not the custom name should always be visible.
+
 animated_java.dialog.bone_config.glowing.title: Glowing
 animated_java.dialog.bone_config.glowing.description: Whether or not the bone should glow in-game.
 
@@ -324,9 +333,25 @@ animated_java.dialog.text_display_config.billboard.options.center: Center
 
 ## Block Display Config Dialog
 animated_java.dialog.vanilla_block_display_config.title: Block Display Config
+animated_java.dialog.vanilla_block_display.custom_name.title: Custom Name
+animated_java.dialog.vanilla_block_display.custom_name.description: The custom name of the block display.
+animated_java.dialog.vanilla_block_display.custom_name.invalid_json.error: |-
+    Invalid JSON Text!
+    {0}
+
+animated_java.dialog.vanilla_block_display.custom_name_visible.title: Custom Name Visible
+animated_java.dialog.vanilla_block_display.custom_name_visible.description: Whether or not the custom name should always be visible.
 
 ## Item Display Config Dialog
 animated_java.dialog.vanilla_item_display_config.title: Item Display Config
+animated_java.dialog.vanilla_item_display.custom_name.title: Custom Name
+animated_java.dialog.vanilla_item_display.custom_name.description: The custom name of the item display.
+animated_java.dialog.vanilla_item_display.custom_name.invalid_json.error: |-
+    Invalid JSON Text!
+    {0}
+
+animated_java.dialog.vanilla_item_display.custom_name_visible.title: Custom Name Visible
+animated_java.dialog.vanilla_item_display.custom_name_visible.description: Whether or not the custom name should always be visible.
 
 ## Variant Config Dialog
 animated_java.dialog.variant_config.title: Variant Config

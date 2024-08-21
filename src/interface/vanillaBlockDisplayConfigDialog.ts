@@ -1,5 +1,5 @@
 import { isCurrentFormat } from '../blueprintFormat'
-import { TextDisplayConfig } from '../nodeConfigs'
+import { BoneConfig } from '../nodeConfigs'
 import { PACKAGE } from '../constants'
 import { createAction } from '../util/moddingTools'
 import { Valuable } from '../util/stores'
@@ -11,10 +11,10 @@ import VanillaBlockDisplayConfigDialog from '../components/vanillaBlockDisplayCo
 
 export function openVanillaBlockDisplayConfigDialog(display: VanillaBlockDisplay) {
 	// Blockbench's JSON stringifier doesn't handle custom toJSON functions, so I'm storing the config JSON in the bone instead of the actual BoneConfig object
-	const oldConfig = TextDisplayConfig.fromJSON(
-		(display.config ??= new TextDisplayConfig().toJSON())
-	)
+	const oldConfig = BoneConfig.fromJSON((display.config ??= new BoneConfig().toJSON()))
 
+	const customName = new Valuable(oldConfig.customName)
+	const customNameVisible = new Valuable(oldConfig.customNameVisible)
 	const billboard = new Valuable(oldConfig.billboard as string)
 	const overrideBrightness = new Valuable(oldConfig.overrideBrightness)
 	const brightnessOverride = new Valuable(oldConfig.brightnessOverride)
@@ -34,6 +34,8 @@ export function openVanillaBlockDisplayConfigDialog(display: VanillaBlockDisplay
 		component: VanillaBlockDisplayConfigDialog,
 		props: {
 			variant: Variant.selected,
+			customName,
+			customNameVisible,
 			billboard,
 			overrideBrightness,
 			brightnessOverride,
@@ -48,8 +50,10 @@ export function openVanillaBlockDisplayConfigDialog(display: VanillaBlockDisplay
 		},
 		preventKeybinds: true,
 		onConfirm() {
-			const newConfig = new TextDisplayConfig()
+			const newConfig = new BoneConfig()
 
+			newConfig.customName = customName.get()
+			newConfig.customNameVisible = customNameVisible.get()
 			newConfig.billboard = billboard.get() as any
 			newConfig.overrideBrightness = overrideBrightness.get()
 			newConfig.brightnessOverride = brightnessOverride.get()
@@ -62,8 +66,11 @@ export function openVanillaBlockDisplayConfigDialog(display: VanillaBlockDisplay
 			newConfig.shadowStrength = shadowStrength.get()
 			newConfig.useNBT = useNBT.get()
 
-			const defaultConfig = TextDisplayConfig.getDefault()
+			const defaultConfig = BoneConfig.getDefault()
 
+			newConfig.customName === defaultConfig.customName && (newConfig.customName = undefined)
+			newConfig.customNameVisible === defaultConfig.customNameVisible &&
+				(newConfig.customNameVisible = undefined)
 			newConfig.billboard === defaultConfig.billboard && (newConfig.billboard = undefined)
 			newConfig.overrideBrightness === defaultConfig.overrideBrightness &&
 				(newConfig.overrideBrightness = undefined)

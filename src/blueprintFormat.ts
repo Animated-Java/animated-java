@@ -16,6 +16,8 @@ import { process } from './systems/modelDataFixerUpper'
  * The serialized Variant Bone Config
  */
 export interface IBlueprintBoneConfigJSON {
+	custom_name?: BoneConfig['customName']
+	custom_name_visible?: BoneConfig['customNameVisible']
 	billboard?: BoneConfig['billboard']
 	override_brightness?: BoneConfig['overrideBrightness']
 	brightness_override?: BoneConfig['brightnessOverride']

@@ -13,11 +13,14 @@
 
 <script lang="ts">
 	import { NbtCompound, NbtTag } from 'deepslate/lib/nbt'
+	import { JsonText } from '../systems/minecraft/jsonText'
 
 	const pluginModeEnabled = !!Project?.animated_java?.enable_plugin_mode
 
 	export let variant: Variant
 
+	export let customName: Valuable<string>
+	export let customNameVisible: Valuable<boolean>
 	export let billboard: Valuable<string>
 	export let overrideBrightness: Valuable<NonNullable<BoneConfig['_overrideBrightness']>>
 	export let brightnessOverride: Valuable<NonNullable<BoneConfig['_brightnessOverride']>>
@@ -58,6 +61,21 @@
 
 		return { type: 'success', message: '' }
 	}
+
+	const customNameChecker: DialogItemValueChecker<string> = value => {
+		if (value === '') return { type: 'success', message: '' }
+
+		try {
+			JsonText.fromString(value)
+		} catch (e: any) {
+			return {
+				type: 'error',
+				message: translate('dialog.bone_config.custom_name.invalid_json.error', e.message),
+			}
+		}
+
+		return { type: 'success', message: '' }
+	}
 </script>
 
 <div>
@@ -79,6 +97,19 @@
 			label={translate('dialog.bone_config.inherit_settings.title')}
 			tooltip={translate('dialog.bone_config.inherit_settings.description')}
 			bind:checked={inheritSettings}
+		/>
+
+		<LineInput
+			label={translate('dialog.bone_config.custom_name.title')}
+			tooltip={translate('dialog.bone_config.custom_name.description')}
+			bind:value={customName}
+			valueChecker={customNameChecker}
+		/>
+
+		<Checkbox
+			label={translate('dialog.bone_config.custom_name_visible.title')}
+			tooltip={translate('dialog.bone_config.custom_name_visible.description')}
+			bind:checked={customNameVisible}
 		/>
 
 		<Select
@@ -148,6 +179,19 @@
 			label={translate('dialog.bone_config.inherit_settings.title')}
 			tooltip={translate('dialog.bone_config.inherit_settings.description')}
 			bind:checked={inheritSettings}
+		/>
+
+		<LineInput
+			label={translate('dialog.bone_config.custom_name.title')}
+			tooltip={translate('dialog.bone_config.custom_name.description')}
+			bind:value={customName}
+			valueChecker={customNameChecker}
+		/>
+
+		<Checkbox
+			label={translate('dialog.bone_config.custom_name_visible.title')}
+			tooltip={translate('dialog.bone_config.custom_name_visible.description')}
+			bind:checked={customNameVisible}
 		/>
 
 		<Checkbox
