@@ -857,6 +857,7 @@
 			"scale": [1, 1, 1],
 			"visibility": true,
 			"item": "minecraft:diamond",
+			"item_display": "none",
 			"config": {},
 			"block": "minecraft:stone",
 			"text": "\"\\\"Hello World!\\\"\"\n",
@@ -975,7 +976,6 @@
 					"color": 0,
 					"configs": {
 						"default": {
-							"vanilla_item_model": "",
 							"billboard": "fixed",
 							"brightness_override": 0,
 							"enchanted": false,
@@ -1005,7 +1005,6 @@
 							"color": 0,
 							"configs": {
 								"default": {
-									"vanilla_item_model": "",
 									"billboard": "fixed",
 									"brightness_override": 0,
 									"enchanted": false,
@@ -1037,7 +1036,6 @@
 									"color": 0,
 									"configs": {
 										"default": {
-											"vanilla_item_model": "",
 											"billboard": "fixed",
 											"brightness_override": 0,
 											"enchanted": false,
@@ -1069,7 +1067,6 @@
 											"color": 0,
 											"configs": {
 												"default": {
-													"vanilla_item_model": "",
 													"billboard": "fixed",
 													"override_brightness": false,
 													"brightness_override": 0,
@@ -3070,7 +3067,7 @@
 			"override": false,
 			"length": 0.8,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"saved": false,
 			"path": "",
 			"anim_time_update": "",
