@@ -59,7 +59,7 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 			VanillaItemDisplay.properties[key].reset(this)
 		}
 
-		this.name = 'vanilla_item_display'
+		this.name = 'item_display'
 		this.extend(data)
 
 		this.item ??= 'minecraft:diamond'

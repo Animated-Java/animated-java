@@ -7,10 +7,10 @@ animated_java.action.open_locator_config.name: Locator Config
 animated_java.action.open_text_display_config.name: Text Display Config
 animated_java.action.export.name: Export
 animated_java.action.create_text_display.title: Add Text Display
-animated_java.action.create_vanilla_item_display.title: Add Vanilla Item Display
-animated_java.action.create_vanilla_block_display.title: Add Vanilla Block Display
-animated_java.action.open_vanilla_item_display_config.name: Vanilla Item Display Config
-animated_java.action.open_vanilla_block_display_config.name: Vanilla Block Display Config
+animated_java.action.create_vanilla_item_display.title: Add Item Display
+animated_java.action.create_vanilla_block_display.title: Add Block Display
+animated_java.action.open_vanilla_item_display_config.name: Item Display Config
+animated_java.action.open_vanilla_block_display_config.name: Block Display Config
 
 ### Popups
 animated_java.popup.loading.loading: Loading Animated Java...
@@ -322,11 +322,11 @@ animated_java.dialog.text_display_config.billboard.options.vertical: Vertical
 animated_java.dialog.text_display_config.billboard.options.horizontal: Horizontal
 animated_java.dialog.text_display_config.billboard.options.center: Center
 
-## Vanilla Block Display Config Dialog
-animated_java.dialog.vanilla_block_display_config.title: Vanilla Block Display Config
+## Block Display Config Dialog
+animated_java.dialog.vanilla_block_display_config.title: Block Display Config
 
-## Vanilla Item Display Config Dialog
-animated_java.dialog.vanilla_item_display_config.title: Vanilla Item Display Config
+## Item Display Config Dialog
+animated_java.dialog.vanilla_item_display_config.title: Item Display Config
 
 ## Variant Config Dialog
 animated_java.dialog.variant_config.title: Variant Config
@@ -500,19 +500,19 @@ animated_java.tool.text_display.text_alignment.options.right: Right
 animated_java.tool.text_display.see_through.title: See Through
 animated_java.tool.text_display.see_through.description: Whether or not the text display should be visible through blocks.
 
-# Vanilla Item Display Panel
+# Item Display Panel
 animated_java.panel.vanilla_item_display.title: Displayed Item
 animated_java.panel.vanilla_item_display.description: The item to display.
 
-# Vanilla Block Display Panel
+# Block Display Panel
 animated_java.panel.vanilla_block_display.title: Displayed Block
 animated_java.panel.vanilla_block_display.description: The block to display. Supports block states!
 
 ### Custom Elements
-## Vanilla Item Display
-animated_java.vanilla_item_display.title: Vanilla Item Display
+## Item Display
+animated_java.vanilla_item_display.title: Item Display
 
-## Vanilla Block Display
+## Block Display
 
 ### Misc
 
