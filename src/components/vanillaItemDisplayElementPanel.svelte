@@ -1,4 +1,5 @@
 <script lang="ts" context="module">
+	import { ITEM_DISPLAY_ITEM_DISPLAY_SELECT } from '../interface/vanillaItemDisplayElementPanel'
 	import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
 	import { events } from '../util/events'
 	import { Valuable } from '../util/stores'
@@ -10,6 +11,7 @@
 
 	let item = new Valuable<string>('')
 	let error = new Valuable<string>('')
+	let itemDisplaySlot: HTMLDivElement
 	let visible = false
 
 	events.UPDATE_SELECTION.subscribe(() => {
@@ -22,7 +24,12 @@
 		}
 		item = selectedDisplay._item
 		error = selectedDisplay.error
+		ITEM_DISPLAY_ITEM_DISPLAY_SELECT.set(selectedDisplay.itemDisplay)
 		visible = true
+	})
+
+	requestAnimationFrame(() => {
+		itemDisplaySlot.appendChild(ITEM_DISPLAY_ITEM_DISPLAY_SELECT.node)
 	})
 </script>
 
@@ -38,6 +45,7 @@
 	<div class="content" style="width: 95%;">
 		<input type="text" bind:value={$item} />
 	</div>
+	<div class="content" bind:this={itemDisplaySlot}></div>
 </div>
 
 <div
@@ -70,5 +78,8 @@
 		margin: 2px 8px;
 		font-size: 14px;
 		color: var(--color-error);
+	}
+	.custom-toolbar :global([toolbar_item='animated_java:itemDisplayAlignmentSelect']) {
+		margin: 0px 2px !important;
 	}
 </style>

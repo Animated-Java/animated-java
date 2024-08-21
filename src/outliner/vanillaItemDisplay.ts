@@ -17,6 +17,7 @@ import { VanillaBlockDisplay } from './vanillaBlockDisplay'
 interface VanillaItemDisplayOptions {
 	name?: string
 	item?: string
+	item_display?: string
 	position?: ArrayVector3
 	rotation?: ArrayVector3
 	scale?: ArrayVector3
@@ -34,6 +35,7 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 
 	// Properties
 	public _item = new Valuable('minecraft:diamond')
+	public _itemDisplay = new Valuable('none')
 	public config: IBlueprintBoneConfigJSON
 
 	public error = new Valuable('')
@@ -63,6 +65,7 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 		this.extend(data)
 
 		this.item ??= 'minecraft:diamond'
+		this.itemDisplay ??= 'none'
 		this.position ??= [0, 0, 0]
 		this.rotation ??= [0, 0, 0]
 		this.scale ??= [1, 1, 1]
@@ -104,6 +107,15 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 	set item(value: string) {
 		if (this._item === undefined) return
 		this._item.set(value)
+	}
+
+	get itemDisplay() {
+		if (this._itemDisplay === undefined) return 'none'
+		return this._itemDisplay.get()
+	}
+	set itemDisplay(value: string) {
+		if (this._itemDisplay === undefined) return
+		this._itemDisplay.set(value)
 	}
 
 	async waitForReady() {
@@ -210,6 +222,7 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 	}
 }
 new Property(VanillaItemDisplay, 'string', 'item', { default: 'minecraft:diamond' })
+new Property(VanillaItemDisplay, 'string', 'item_display', { default: 'none' })
 new Property(VanillaItemDisplay, 'object', 'config', {
 	get default() {
 		return new BoneConfig().toJSON()

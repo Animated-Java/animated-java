@@ -503,6 +503,17 @@ animated_java.tool.text_display.see_through.description: Whether or not the text
 # Item Display Panel
 animated_java.panel.vanilla_item_display.title: Displayed Item
 animated_java.panel.vanilla_item_display.description: The item to display.
+animated_java.tool.item_display.item_display.title: Item Display Mode
+animated_java.tool.item_display.item_display.description: Which item model transform to apply to the item (as defined in display field in model JSON).
+animated_java.tool.item_display.item_display.options.none: None
+animated_java.tool.item_display.item_display.options.thirdperson_lefthand: Third Person Left Hand
+animated_java.tool.item_display.item_display.options.thirdperson_righthand: Third Person Right Hand
+animated_java.tool.item_display.item_display.options.firstperson_lefthand: First Person Left Hand
+animated_java.tool.item_display.item_display.options.firstperson_righthand: First Person Right Hand
+animated_java.tool.item_display.item_display.options.head: Head
+animated_java.tool.item_display.item_display.options.gui: GUI
+animated_java.tool.item_display.item_display.options.ground: Ground
+animated_java.tool.item_display.item_display.options.fixed: Fixed
 
 # Block Display Panel
 animated_java.panel.vanilla_block_display.title: Displayed Block

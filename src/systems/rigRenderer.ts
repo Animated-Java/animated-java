@@ -127,6 +127,7 @@ export interface IRenderedNodes {
 	ItemDisplay: IRenderedNode & {
 		type: 'item_display'
 		item: string
+		itme_display: string
 		/**
 		 * The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit.
 		 */
@@ -443,6 +444,7 @@ function renderItemDisplay(display: VanillaItemDisplay, rig: IRenderedRig) {
 		uuid: display.uuid,
 		parent: parentId,
 		item: display.item,
+		itme_display: display.itemDisplay,
 		base_scale: 1,
 		config: display.config,
 		default_transform: {} as INodeTransform,
