@@ -66,7 +66,7 @@ export interface IRenderedNode {
 	name: string
 	safe_name: string
 	uuid: string
-	parent: string
+	parent?: string
 	/**
 	 * The default transformation of the node
 	 */
@@ -320,7 +320,7 @@ function renderGroup(
 	defaultVariant: IRenderedVariant
 ): INodeStructure | undefined {
 	if (!group.export) return
-	const parentId = (group.parent instanceof Group ? group.parent.uuid : group.parent)!
+	const parentId = group.parent instanceof Group ? group.parent.uuid : undefined
 
 	const path = PathModule.join(rig.model_export_folder, 'default', group.name + `.json`)
 	const parsed = parseResourcePackPath(path)
@@ -427,7 +427,7 @@ function renderGroup(
 
 function renderItemDisplay(display: VanillaItemDisplay, rig: IRenderedRig) {
 	if (!display.export) return
-	const parentId = (display.parent instanceof Group ? display.parent.uuid : display.parent)!
+	const parentId = display.parent instanceof Group ? display.parent.uuid : undefined
 
 	const path = PathModule.join(rig.model_export_folder, display.name + `.json`)
 	const parsed = parseResourcePackPath(path)
@@ -455,7 +455,7 @@ function renderItemDisplay(display: VanillaItemDisplay, rig: IRenderedRig) {
 
 function renderBlockDisplay(display: VanillaBlockDisplay, rig: IRenderedRig) {
 	if (!display.export) return
-	const parentId = (display.parent instanceof Group ? display.parent.uuid : display.parent)!
+	const parentId = display.parent instanceof Group ? display.parent.uuid : undefined
 
 	const path = PathModule.join(rig.model_export_folder, display.name + `.json`)
 	const parsed = parseResourcePackPath(path)
@@ -482,7 +482,7 @@ function renderBlockDisplay(display: VanillaBlockDisplay, rig: IRenderedRig) {
 
 function renderTextDisplay(display: TextDisplay, rig: IRenderedRig): INodeStructure | undefined {
 	if (!display.export) return
-	const parentId = (display.parent instanceof Group ? display.parent.uuid : display.parent)!
+	const parentId = display.parent instanceof Group ? display.parent.uuid : undefined
 
 	const path = PathModule.join(rig.model_export_folder, display.name + `.json`)
 	const parsed = parseResourcePackPath(path)
