@@ -93,8 +93,11 @@ animated_java.dialog.blueprint_settings.bounding_box.description: Determines the
 # Resource Pack Settings
 animated_java.dialog.blueprint_settings.resource_pack_settings.title: Resource Pack Settings
 
-animated_java.dialog.blueprint_settings.enable_advanced_resource_pack_settings.title: Use Advanced Settings
+animated_java.dialog.blueprint_settings.enable_advanced_resource_pack_settings.title: Advanced Settings
 animated_java.dialog.blueprint_settings.enable_advanced_resource_pack_settings.description: Whether or not to enable the advanced Resource Pack settings.
+
+animated_java.dialog.blueprint_settings.enable_advanced_resource_pack_folders.title: Advanced Folders
+animated_java.dialog.blueprint_settings.enable_advanced_resource_pack_folders.description: Whether or not to enable the advanced Resource Pack folder settings.
 
 animated_java.dialog.blueprint_settings.display_item.title: Display Item
 animated_java.dialog.blueprint_settings.display_item.description: The item to display the Blueprints models in-game. Multiple Blueprints can be placed on the same item and they will be merged automatically.
@@ -159,6 +162,12 @@ animated_java.dialog.blueprint_settings.summon_commands.title: On-Summon Command
 animated_java.dialog.blueprint_settings.summon_commands.description: |-
     Commands to run as the root entity when summoned.
     Treat this text input as a .mcfunction file. (Also supports MC-Build syntax!)
+
+animated_java.dialog.blueprint_settings.ticking_commands.title: Ticking Commands
+animated_java.dialog.blueprint_settings.ticking_commands.description: |-
+    Commands to run every tick at the root entity's position.
+    Treat this text input as a .mcfunction file. (Also supports MC-Build syntax!)
+    These commands will run after the animation logic.
 
 animated_java.dialog.blueprint_settings.interpolation_duration.title: Interpolation Duration
 animated_java.dialog.blueprint_settings.interpolation_duration.description: The duration of the smoothing between keyframes in ticks. This is the time it takes for the model to transition from one keyframe to the next. Higher values will cause animations to lose precision. Generally, you want this to have a value of 1 or 2.

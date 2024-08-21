@@ -1,7 +1,7 @@
 {
 	"meta": {
 		"format": "animated_java_blueprint",
-		"format_version": "1.3.0",
+		"format_version": "1.4.0",
 		"uuid": "167b27cd-b559-3f13-a97c-0841fe21f1d1",
 		"save_location": "D:\\github-repos\\animated-java\\animated-java\\test_blueprints\\armor_stand.ajblueprint",
 		"last_used_export_namespace": "armor_stand"
@@ -17,13 +17,15 @@
 		"display_item": "minecraft:white_dye",
 		"custom_model_data_offset": 0,
 		"enable_advanced_resource_pack_settings": false,
-		"resource_pack": "C:\\Users\\SnaveSutit\\AppData\\Roaming\\com.modrinth.theseus\\profiles\\Animated Java Dev\\resourcepacks\\resourcepack",
+		"enable_advanced_resource_pack_folders": false,
+		"resource_pack": "%APPDATA%\\com.modrinth.theseus\\profiles\\Animated Java Dev\\resourcepacks\\resourcepack",
 		"display_item_path": "",
 		"model_folder": "",
 		"texture_folder": "",
 		"enable_advanced_data_pack_settings": false,
-		"data_pack": "C:\\Users\\SnaveSutit\\AppData\\Roaming\\com.modrinth.theseus\\profiles\\Animated Java Dev\\saves\\Animated Java Dev\\datapacks\\datapack",
+		"data_pack": "%APPDATA%\\com.modrinth.theseus\\profiles\\Animated Java Dev\\saves\\Animated Java Dev\\datapacks\\datapack",
 		"summon_commands": "",
+		"ticking_commands": "",
 		"interpolation_duration": 1,
 		"teleportation_duration": 1,
 		"use_storage_for_animation": false,
@@ -1597,7 +1599,7 @@
 									"x": 0,
 									"y": 0,
 									"z": 0,
-									"commands": "particle minecraft:flame ^ ^ ^1",
+									"commands": "particle minecraft:flame ^ ^ ^",
 									"execute_condition": "",
 									"repeat": true,
 									"repeat_frequency": 5
@@ -1623,7 +1625,7 @@
 									"x": 0,
 									"y": 0,
 									"z": 0,
-									"commands": "particle minecraft:flame ^ ^ ^1",
+									"commands": "particle minecraft:flame ^ ^ ^",
 									"execute_condition": "",
 									"repeat": true,
 									"repeat_frequency": 1
@@ -1652,6 +1654,29 @@
 								}
 							],
 							"uuid": "08083fab-35c8-d8f0-44b0-000f720cf533",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						}
+					]
+				},
+				"effects": {
+					"name": "Effects",
+					"type": "effect",
+					"keyframes": [
+						{
+							"channel": "commands",
+							"data_points": [
+								{
+									"commands": "say hi",
+									"execute_condition": "",
+									"repeat": false,
+									"repeat_frequency": 1
+								}
+							],
+							"uuid": "e8054bec-122c-6f34-6781-a4a58d46a5a6",
 							"time": 0,
 							"color": -1,
 							"interpolation": "linear",

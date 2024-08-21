@@ -42,7 +42,7 @@ async function actuallyExportProject(forceSave = true) {
 				'assets/minecraft/models/item/',
 				aj.display_item.split(':').at(-1)! + '.json'
 			)
-		} else if (aj.enable_advanced_resource_pack_settings) {
+		} else if (aj.enable_advanced_resource_pack_folders) {
 			modelExportFolder = aj.model_folder
 			textureExportFolder = aj.texture_folder
 			displayItemPath = aj.display_item_path

@@ -7,11 +7,11 @@
 	export let checked: Valuable<boolean>
 </script>
 
-<BaseDialogItem {label} {tooltip}>
+<BaseDialogItem {label} {tooltip} let:id>
 	<div class="dialog_bar form_bar checkbox_bar">
-		<label class="name_space_left" for="export">{label}</label>
+		<label class="name_space_left" for={id}>{label}</label>
 		<div class="spacer" />
-		<input type="checkbox" class="focusable_input" id="export" bind:checked={$checked} />
+		<input type="checkbox" class="focusable_input" {id} bind:checked={$checked} />
 	</div>
 </BaseDialogItem>
 

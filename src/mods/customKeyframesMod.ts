@@ -5,7 +5,6 @@ import { Variant } from '../variants'
 
 const DEFAULT_CHANNELS = { ...EffectAnimator.prototype.channels }
 const DEFAULT_EFFECT_DISPLAY_FRAME = EffectAnimator.prototype.displayFrame
-// const DEFAULT_BONE_DISPLAY_FRAME = BoneAnimator.prototype.displayFrame
 export const CUSTOM_CHANNELS = ['variant', 'commands']
 
 let installed = false
@@ -19,17 +18,11 @@ function injectCustomKeyframes() {
 		mutable: true,
 		max_data_points: 1,
 	})
-	// EffectAnimator.addChannel('commands', {
-	// 	name: translate('effect_animator.timeline.commands'),
-	// 	mutable: true,
-	// 	max_data_points: 1,
-	// })
-	// BoneAnimator.addChannel('commands', {
-	// 	name: translate('effect_animator.timeline.commands'),
-	// 	mutable: true,
-	// 	transform: true,
-	// 	max_data_points: 1,
-	// })
+	EffectAnimator.addChannel('commands', {
+		name: translate('effect_animator.timeline.commands'),
+		mutable: true,
+		max_data_points: 1,
+	})
 
 	// Add custom keyframe properties to the KeyframeDataPoint class
 	const variantKeyframeDataPoint = new Property(KeyframeDataPoint, 'string', 'variant', {
@@ -165,13 +158,12 @@ function extractCustomKeyframes() {
 
 	delete EffectAnimator.prototype.channels.variant
 	delete EffectAnimator.prototype.variant
-	// delete EffectAnimator.prototype.channels.commands
-	// delete EffectAnimator.prototype.commands
+	delete EffectAnimator.prototype.channels.commands
+	delete EffectAnimator.prototype.commands
 	delete BoneAnimator.prototype.channels.commands
 	delete BoneAnimator.prototype.commands
 
 	EffectAnimator.prototype.displayFrame = DEFAULT_EFFECT_DISPLAY_FRAME
-	// BoneAnimator.prototype.displayFrame = DEFAULT_BONE_DISPLAY_FRAME
 
 	installed = false
 }

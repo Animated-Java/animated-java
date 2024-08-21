@@ -14,13 +14,13 @@
 	}
 </script>
 
-<BaseDialogItem {label} {tooltip}>
+<BaseDialogItem {label} {tooltip} let:id>
 	<div class="dialog_bar form_bar checkbox_bar">
-		<label class="name_space_left" for="export">{label}</label>
+		<label class="name_space_left" for={id}>{label}</label>
 		<div class="spacer" />
 		<div>
 			{#each $selection as value, i}
-				<input type="checkbox" class="focusable_input" id="export" bind:checked={value} />
+				<input type="checkbox" class="focusable_input" {id} bind:checked={value} />
 			{/each}
 		</div>
 	</div>

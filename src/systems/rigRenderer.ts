@@ -622,6 +622,7 @@ export function hashRig(rig: IRenderedRig) {
 			case 'bone': {
 				const model = rig.variants[Variant.getDefault().uuid].models[nodeUuid]
 				hash.update(';' + JSON.stringify(model) || '')
+				if (!node.configs) break // Skip if there are no configs
 				if (node.configs.default) {
 					const defaultConfig = BoneConfig.fromJSON(node.configs.default)
 					if (!defaultConfig.isDefault()) {

@@ -44,6 +44,9 @@ function getSettings() {
 		enableAdvancedResourcePackSettings: new Valuable(
 			Project!.animated_java.enable_advanced_resource_pack_settings
 		),
+		enableAdvancedResourcePackFolders: new Valuable(
+			Project!.animated_java.enable_advanced_resource_pack_folders
+		),
 		resourcePack: new Valuable(Project!.animated_java.resource_pack),
 		displayItemPath: new Valuable(Project!.animated_java.display_item_path),
 		modelFolder: new Valuable(Project!.animated_java.model_folder),
@@ -54,6 +57,7 @@ function getSettings() {
 		),
 		dataPack: new Valuable(Project!.animated_java.data_pack),
 		summonCommands: new Valuable(Project!.animated_java.summon_commands),
+		tickingCommands: new Valuable(Project!.animated_java.ticking_commands),
 		interpolationDuration: new Valuable(Project!.animated_java.interpolation_duration),
 		teleportationDuration: new Valuable(Project!.animated_java.teleportation_duration),
 		useStorageForAnimation: new Valuable(Project!.animated_java.use_storage_for_animation),
@@ -85,6 +89,8 @@ function setSettings(settings: ReturnType<typeof getSettings>) {
 	Project.animated_java.custom_model_data_offset = settings.customModelDataOffset.get()
 	Project.animated_java.enable_advanced_resource_pack_settings =
 		settings.enableAdvancedResourcePackSettings.get()
+	Project.animated_java.enable_advanced_resource_pack_folders =
+		settings.enableAdvancedResourcePackFolders.get()
 	Project.animated_java.resource_pack = settings.resourcePack.get()
 	Project.animated_java.display_item_path = settings.displayItemPath.get()
 	Project.animated_java.model_folder = settings.modelFolder.get()
@@ -94,6 +100,7 @@ function setSettings(settings: ReturnType<typeof getSettings>) {
 		settings.enableAdvancedDataPackSettings.get()
 	Project.animated_java.data_pack = settings.dataPack.get()
 	Project.animated_java.summon_commands = settings.summonCommands.get()
+	Project.animated_java.ticking_commands = settings.tickingCommands.get()
 	Project.animated_java.interpolation_duration = settings.interpolationDuration.get()
 	Project.animated_java.teleportation_duration = settings.teleportationDuration.get()
 	Project.animated_java.use_storage_for_animation = settings.useStorageForAnimation.get()

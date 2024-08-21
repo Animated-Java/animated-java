@@ -52,13 +52,13 @@
 	})
 </script>
 
-<BaseDialogItem {label} {tooltip}>
+<BaseDialogItem {label} {tooltip} let:id>
 	<div class="dialog_bar form_bar">
-		<label class="name_space_left" for="name">{label}</label>
+		<label class="name_space_left" for={id}>{label}</label>
 		<div class="numeric_input">
 			<input
 				bind:this={input}
-				id="snapping"
+				{id}
 				class="dark_bordered focusable_input"
 				bind:value={$value}
 				inputmode="decimal"

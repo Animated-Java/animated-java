@@ -85,14 +85,14 @@
 	})
 </script>
 
-<BaseDialogItem {label} {tooltip} bind:warning_text bind:error_text>
+<BaseDialogItem {label} {tooltip} bind:warning_text bind:error_text let:id>
 	<div class="dialog_bar form_bar">
-		<label class="name_space_left" for="name">{label}</label>
+		<label class="name_space_left" for={id}>{label}</label>
 		<div class="dialog_vector_group half">
 			<div class="numeric_input">
 				<input
 					bind:this={inputX}
-					id="snapping"
+					{id}
 					class="dark_bordered focusable_input"
 					bind:value={$valueX}
 					inputmode="decimal"
@@ -104,7 +104,7 @@
 			<div class="numeric_input">
 				<input
 					bind:this={inputY}
-					id="snapping"
+					{id}
 					class="dark_bordered focusable_input"
 					bind:value={$valueY}
 					inputmode="decimal"

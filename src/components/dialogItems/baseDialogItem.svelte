@@ -8,6 +8,8 @@
 	export let warning_text: string = ''
 	export let error_text: string = ''
 
+	let id = guid()
+
 	$: if (error_text) {
 		blueprintSettingErrors.get()[label] = error_text
 	}
@@ -20,7 +22,7 @@
 <div>
 	<div class="base_dialog_item" title={tooltip}>
 		<div class="slot_container" style={tooltip ? 'margin-right: 4px' : ''}>
-			<slot />
+			<slot {id} />
 		</div>
 		{#if tooltip}
 			<!-- svelte-ignore a11y-click-events-have-key-events -->

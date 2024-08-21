@@ -48,13 +48,13 @@
 	onValueChange()
 </script>
 
-<BaseDialogItem {label} {tooltip} bind:warning_text bind:error_text>
+<BaseDialogItem {label} {tooltip} bind:warning_text bind:error_text let:id>
 	<div class="dialog_bar form_bar">
-		<label class="name_space_left" for="name">{label}</label>
+		<label class="name_space_left" for={id}>{label}</label>
 		<input
 			type="text"
 			class="dark_bordered half focusable_input"
-			id="name"
+			{id}
 			bind:value={_value}
 			on:input={onValueChange}
 			on:change={onValueChange}

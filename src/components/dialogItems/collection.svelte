@@ -53,7 +53,7 @@
 	}
 </script>
 
-<BaseDialogItem {label} {tooltip}>
+<BaseDialogItem {label} {tooltip} let:id>
 	<div class="main-column-container">
 		<div class="column" title={availableItemsColumnTooltip}>
 			<h3>{availableItemsColumnLable}</h3>

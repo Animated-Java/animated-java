@@ -49,6 +49,7 @@
 	export let displayItem: Valuable<string>
 	export let customModelDataOffset: Valuable<number>
 	export let enableAdvancedResourcePackSettings: Valuable<boolean>
+	export let enableAdvancedResourcePackFolders: Valuable<boolean>
 	export let resourcePack: Valuable<string>
 	export let displayItemPath: Valuable<string>
 	export let modelFolder: Valuable<string>
@@ -57,6 +58,7 @@
 	export let enableAdvancedDataPackSettings: Valuable<boolean>
 	export let dataPack: Valuable<string>
 	export let summonCommands: Valuable<string>
+	export let tickingCommands: Valuable<string>
 	export let interpolationDuration: Valuable<number>
 	export let teleportationDuration: Valuable<number>
 	export let useStorageForAnimation: Valuable<boolean>
@@ -529,12 +531,6 @@
 			valueChecker={displayItemChecker}
 		/>
 
-		<NumberSlider
-			label={translate('dialog.blueprint_settings.custom_model_data_offset.title')}
-			tooltip={translate('dialog.blueprint_settings.custom_model_data_offset.description')}
-			bind:value={customModelDataOffset}
-		/>
-
 		<Checkbox
 			label={translate('dialog.blueprint_settings.baked_animations.title')}
 			tooltip={translate('dialog.blueprint_settings.baked_animations.description')}
@@ -576,33 +572,49 @@
 			<SectionHeader
 				label={translate('dialog.blueprint_settings.resource_pack_settings.title')}
 			/>
+
+			<LineInput
+				label={translate('dialog.blueprint_settings.display_item.title')}
+				tooltip={translate('dialog.blueprint_settings.display_item.description')}
+				bind:value={displayItem}
+				valueChecker={displayItemChecker}
+			/>
+
+			<Checkbox
+				label={translate(
+					'dialog.blueprint_settings.enable_advanced_resource_pack_settings.title',
+				)}
+				bind:checked={enableAdvancedResourcePackSettings}
+			/>
+
+			{#if $enableAdvancedResourcePackSettings}
+				<p class="warning">
+					{translate('dialog.blueprint_settings.advanced_settings_warning')}
+				</p>
+
+				<NumberSlider
+					label={translate('dialog.blueprint_settings.custom_model_data_offset.title')}
+					tooltip={translate(
+						'dialog.blueprint_settings.custom_model_data_offset.description',
+					)}
+					bind:value={customModelDataOffset}
+					min={0}
+					max={2147483647}
+				/>
+			{/if}
+
 			{#if $resourcePackExportMode === 'raw'}
 				<Checkbox
 					label={translate(
-						'dialog.blueprint_settings.enable_advanced_resource_pack_settings.title',
+						'dialog.blueprint_settings.enable_advanced_resource_pack_folders.title',
 					)}
-					bind:checked={enableAdvancedResourcePackSettings}
+					bind:checked={enableAdvancedResourcePackFolders}
 				/>
-				{#if $enableAdvancedResourcePackSettings}
+
+				{#if $enableAdvancedResourcePackFolders}
 					<p class="warning">
 						{translate('dialog.blueprint_settings.advanced_settings_warning')}
 					</p>
-					<LineInput
-						label={translate('dialog.blueprint_settings.display_item.title')}
-						tooltip={translate('dialog.blueprint_settings.display_item.description')}
-						bind:value={displayItem}
-						valueChecker={displayItemChecker}
-					/>
-
-					<NumberSlider
-						label={translate(
-							'dialog.blueprint_settings.custom_model_data_offset.title',
-						)}
-						tooltip={translate(
-							'dialog.blueprint_settings.custom_model_data_offset.description',
-						)}
-						bind:value={customModelDataOffset}
-					/>
 
 					<FileSelect
 						label={translate('dialog.blueprint_settings.display_item_path.title')}
@@ -627,25 +639,6 @@
 						valueChecker={advancedResourcePackFolderChecker}
 					/>
 				{:else}
-					<LineInput
-						label={translate('dialog.blueprint_settings.display_item.title')}
-						tooltip={translate('dialog.blueprint_settings.display_item.description')}
-						bind:value={displayItem}
-						valueChecker={displayItemChecker}
-					/>
-
-					<NumberSlider
-						label={translate(
-							'dialog.blueprint_settings.custom_model_data_offset.title',
-						)}
-						tooltip={translate(
-							'dialog.blueprint_settings.custom_model_data_offset.description',
-						)}
-						bind:value={customModelDataOffset}
-						min={0}
-						max={2147483647}
-					/>
-
 					<FolderSelect
 						label={translate('dialog.blueprint_settings.resource_pack.title')}
 						tooltip={translate('dialog.blueprint_settings.resource_pack.description')}
@@ -667,6 +660,7 @@
 			<SectionHeader
 				label={translate('dialog.blueprint_settings.data_pack_settings.title')}
 			/>
+
 			{#if $dataPackExportMode === 'raw'}
 				{#if $enableAdvancedDataPackSettings}
 					<p class="warning">
@@ -695,10 +689,17 @@
 					valueChecker={zipChecker}
 				/>
 			{/if}
+
 			<CodeInput
 				label={translate('dialog.blueprint_settings.summon_commands.title')}
 				tooltip={translate('dialog.blueprint_settings.summon_commands.description')}
 				bind:value={summonCommands}
+			/>
+
+			<CodeInput
+				label={translate('dialog.blueprint_settings.ticking_commands.title')}
+				tooltip={translate('dialog.blueprint_settings.ticking_commands.description')}
+				bind:value={tickingCommands}
 			/>
 
 			<NumberSlider

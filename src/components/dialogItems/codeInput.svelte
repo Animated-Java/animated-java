@@ -27,12 +27,12 @@
 	onValueChange()
 </script>
 
-<BaseDialogItem {label} {tooltip} {warning_text} {error_text}>
+<BaseDialogItem {label} {tooltip} {warning_text} {error_text} let:id>
 	<div class="dialog_bar form_bar">
-		<label class="name_space_left" for="name">{label}</label>
+		<label class="name_space_left" for={id}>{label}</label>
 		<textarea
 			class="dark_bordered half focusable_input"
-			id="name"
+			{id}
 			bind:value={_value}
 			on:change={onValueChange}
 			{disabled}
