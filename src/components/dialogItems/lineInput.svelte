@@ -5,6 +5,7 @@
 	export let label: string
 	export let tooltip: string = ''
 	export let value: Valuable<string>
+	export let defaultValue: string
 	export let disabled: boolean = false
 	export let valueChecker: DialogItemValueChecker<string> = undefined
 
@@ -24,10 +25,15 @@
 		_value = value.get()
 	}
 
+	function onReset() {
+		_value = defaultValue
+		onValueChange()
+	}
+
 	onValueChange()
 </script>
 
-<BaseDialogItem {label} {tooltip} {warning_text} {error_text} let:id>
+<BaseDialogItem {label} {tooltip} {warning_text} {error_text} {onReset} let:id>
 	<div class="dialog_bar form_bar">
 		<label class="name_space_left" for={id}>{label}</label>
 		<input

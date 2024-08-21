@@ -21,12 +21,19 @@
 		},
 	})
 
+	function onReset() {
+		value.set(defaultOption)
+		if (selectInput.node) {
+			selectInput.set(defaultOption)
+		}
+	}
+
 	requestAnimationFrame(() => {
 		container.appendChild(selectInput.node)
 	})
 </script>
 
-<BaseDialogItem {label} {tooltip} let:id>
+<BaseDialogItem {label} {tooltip} {onReset} let:id>
 	<div bind:this={container} class="dialog_bar form_bar">
 		<label class="name_space_left" for={id}>{label}</label>
 	</div>

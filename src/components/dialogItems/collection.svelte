@@ -51,9 +51,13 @@
 		includedItemsList = temp
 		finalizeSort()
 	}
+
+	function onReset() {
+		includedItems.set([])
+	}
 </script>
 
-<BaseDialogItem {label} {tooltip} let:id>
+<BaseDialogItem {label} {tooltip} {onReset} let:id>
 	<div class="main-column-container">
 		<div class="column" title={availableItemsColumnTooltip}>
 			<h3>{availableItemsColumnLable}</h3>

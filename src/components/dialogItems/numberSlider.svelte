@@ -5,6 +5,7 @@
 	export let label: string
 	export let tooltip: string = ''
 	export let value: Valuable<number>
+	export let defaultValue: number
 	export let min: number | undefined = undefined
 	export let max: number | undefined = undefined
 	export let step: number | undefined = undefined
@@ -50,9 +51,13 @@
 			)
 		})
 	})
+
+	function onReset() {
+		value.set(defaultValue)
+	}
 </script>
 
-<BaseDialogItem {label} {tooltip} let:id>
+<BaseDialogItem {label} {tooltip} {onReset} let:id>
 	<div class="dialog_bar form_bar">
 		<label class="name_space_left" for={id}>{label}</label>
 		<div class="numeric_input">

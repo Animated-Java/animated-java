@@ -23,6 +23,7 @@ animated_java.dialog.installed_popup.title: Thank you for installing!
 animated_java.dialog.installed_popup.close_button: Let's Get Animating!
 
 ### Dialogs
+animated_java.dialog.reset: Reset to Default
 
 ## About
 animated_java.dialog.about.title: About Animated Java

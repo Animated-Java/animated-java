@@ -1,12 +1,12 @@
-<script lang="ts" context="module">
-	import { blueprintSettingErrors } from '../../blueprintSettings'
-</script>
-
 <script lang="ts">
+	import { blueprintSettingErrors } from '../../blueprintSettings'
+	import { translate } from '../../util/translation'
+
 	export let label: string
 	export let tooltip: string = ''
 	export let warning_text: string = ''
 	export let error_text: string = ''
+	export let onReset: () => void
 
 	let id = guid()
 
@@ -36,6 +36,12 @@
 				style="visibility: hidden"
 			/>
 		{/if}
+		<!-- svelte-ignore a11y-click-events-have-key-events -->
+		<i
+			on:click={onReset}
+			class="fa fa-trash-can dialog_form_description dialog-form-description reset-button"
+			title={translate('dialog.reset')}
+		/>
 	</div>
 	<div class="base_dialog_item">
 		{#if error_text}
@@ -97,5 +103,13 @@
 	}
 	.dialog-form-description {
 		padding-top: 12px;
+	}
+	.reset-button {
+		padding-top: 12px;
+		margin-left: 4px;
+	}
+	.reset-button:hover {
+		color: var(--color-error);
+		transition: unset;
 	}
 </style>

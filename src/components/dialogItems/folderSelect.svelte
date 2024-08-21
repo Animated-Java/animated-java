@@ -6,6 +6,7 @@
 	export let label: string
 	export let tooltip: string = ''
 	export let value: Valuable<string>
+	export let defaultValue: string
 	export let filters: FileFilter[] = []
 	export let fileSelectMessage: string = 'Select Folder'
 
@@ -45,10 +46,15 @@
 		})
 	}
 
+	function onReset() {
+		_value = defaultValue
+		onValueChange()
+	}
+
 	onValueChange()
 </script>
 
-<BaseDialogItem {label} {tooltip} bind:warning_text bind:error_text let:id>
+<BaseDialogItem {label} {tooltip} {onReset} bind:warning_text bind:error_text let:id>
 	<div class="dialog_bar form_bar">
 		<label class="name_space_left" for={id}>{label}</label>
 		<input
