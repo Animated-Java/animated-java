@@ -98,11 +98,13 @@
 	},
 	"dependencies": {
 		"deepslate": "^0.19.2",
+		"easydl": "^1.2.0",
 		"fflate": "^0.8.2",
 		"generic-stream": "^1.2.6",
 		"marked": "^4.3.0",
 		"marked-gfm-heading-id": "^3.0.0",
 		"mc-build": "3.3.12",
+		"request-progress": "^3.0.0",
 		"svelte-ace": "^1.0.21",
 		"svelte-dnd-action": "^0.9.38"
 	}
