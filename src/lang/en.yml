@@ -237,6 +237,12 @@ animated_java.dialog.bone_config.override_brightness.description: Whether or not
 animated_java.dialog.bone_config.brightness_override.title: Brightness
 animated_java.dialog.bone_config.brightness_override.description: The brightness of the bone. This should be a value between 0 and 15.
 
+animated_java.dialog.bone_config.use_custom_brightness.title: Use Custom Brightness
+animated_java.dialog.bone_config.use_custom_brightness.description: Whether or not to enable the custom brightness override for the bone.
+
+animated_java.dialog.bone_config.custom_brightness.title: Custom Brightness
+animated_java.dialog.bone_config.custom_brightness.description: The custom brightness of the bone. This should be a value between 0 and 15.
+
 animated_java.dialog.bone_config.enchanted.title: Enchanted
 animated_java.dialog.bone_config.enchanted.description: Whether or not the bone should be enchanted.
 
@@ -318,6 +324,12 @@ animated_java.dialog.text_display_config.override_brightness.description: Whethe
 
 animated_java.dialog.text_display_config.brightness_override.title: Brightness
 animated_java.dialog.text_display_config.brightness_override.description: The brightness of the text display. This should be a value between 0 and 15.
+
+animated_java.dialog.text_display_config.use_custom_brightness.title: Use Custom Brightness
+animated_java.dialog.text_display_config.use_custom_brightness.description: Whether or not to enable the custom brightness override for the bone.
+
+animated_java.dialog.text_display_config.custom_brightness.title: Custom Brightness
+animated_java.dialog.text_display_config.custom_brightness.description: The custom brightness of the bone. This should be a value between 0 and 15.
 
 animated_java.dialog.text_display_config.invisible.title: Invisible
 animated_java.dialog.text_display_config.invisible.description: Whether or not the text display should be invisible.

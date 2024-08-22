@@ -155,22 +155,20 @@
 		/>
 
 		<Checkbox
-			label={translate('dialog.bone_config.override_brightness.title')}
-			tooltip={translate('dialog.bone_config.override_brightness.description')}
+			label={translate('dialog.bone_config.use_custom_brightness.title')}
+			tooltip={translate('dialog.bone_config.use_custom_brightness.description')}
 			bind:checked={overrideBrightness}
 			defaultValue={BoneConfig.prototype.overrideBrightness}
 		/>
 
-		{#if $overrideBrightness}
-			<NumberSlider
-				label={translate('dialog.bone_config.brightness_override.title')}
-				tooltip={translate('dialog.bone_config.brightness_override.description')}
-				bind:value={brightnessOverride}
-				defaultValue={BoneConfig.prototype.brightnessOverride}
-				min={0}
-				max={15}
-			/>
-		{/if}
+		<NumberSlider
+			label={translate('dialog.bone_config.custom_brightness.title')}
+			tooltip={translate('dialog.bone_config.custom_brightness.description')}
+			bind:value={brightnessOverride}
+			defaultValue={BoneConfig.prototype.brightnessOverride}
+			min={0}
+			max={15}
+		/>
 
 		<Checkbox
 			label={translate('dialog.bone_config.enchanted.title')}
