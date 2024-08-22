@@ -665,9 +665,14 @@ dir <%export_namespace%> {
 							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/variants/<%variant.name%>/apply'}
 					REPEAT (Object.values(rig.nodes)) as node {
 						IF (node.type === 'bone' && !variant.excluded_nodes.includes(node.uuid) && (variant.models[node.uuid] !== undefined || node.configs.variants[variant.uuid] !== undefined)) {
+
 							execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%node.safe_name%>] run {
 								IF (variant.models[node.uuid] !== undefined) {
-									data modify entity @s item.components.minecraft:custom_model_data set value <%variant.models[node.uuid].custom_model_data%>
+									IF (variant.models[node.uuid].model === null) {
+										data modify entity @s item.components.minecraft:custom_model_data set value 1
+									} ELSE {
+										data modify entity @s item.components.minecraft:custom_model_data set value <%variant.models[node.uuid].custom_model_data%>
+									}
 								}
 								IF (node.configs.variants[variant.uuid]) {
 									<%%

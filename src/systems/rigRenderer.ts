@@ -148,7 +148,7 @@ export interface IRenderedNodes {
 export type AnyRenderedNode = IRenderedNodes[keyof IRenderedNodes]
 
 export interface IRenderedVariantModel {
-	model: IRenderedModel
+	model: IRenderedModel | null
 	custom_model_data: number
 	model_path: string
 	resource_location: string
@@ -383,7 +383,7 @@ function renderGroup(
 				break
 			}
 			case node instanceof Cube: {
-				renderCube(node, rig, groupModel.model)
+				renderCube(node, rig, groupModel.model!)
 				rig.includes_custom_models = true
 				break
 			}
@@ -393,7 +393,7 @@ function renderGroup(
 	}
 
 	// Export a struct instead of a bone if no elements are present
-	if (!groupModel.model.elements || groupModel.model.elements.length === 0) {
+	if (!groupModel.model || !groupModel.model.elements || groupModel.model.elements.length === 0) {
 		delete defaultVariant.models[group.uuid]
 		const struct: IRenderedNodes['Struct'] = {
 			type: 'struct',
@@ -559,6 +559,9 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 		if (variant.excludedNodes.find(v => v.value === uuid)) continue
 		const textures: IRenderedModel['textures'] = {}
 
+		// Is set false if any texture other than the internal transparency texture is found.
+		let isTransparent = true
+
 		for (const [fromUUID, toUUID] of variant.textureMap.map.entries()) {
 			const fromTexture = Texture.all.find(t => t.uuid === fromUUID)
 			if (!fromTexture) throw new Error(`From texture not found: ${fromUUID}`)
@@ -573,11 +576,12 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 					rig
 				).resourceLocation
 				rig.textures[toTexture.id] = toTexture
+				isTransparent = false
 			}
 		}
 
-		// Don't export models without any texture changes
-		if (Object.keys(textures).length === 0) continue
+		// Don't export models without any texture changes, or that are fully transparent.
+		if (isTransparent || Object.keys(textures).length === 0) continue
 
 		const modelParent = PathModule.join(
 			rig.model_export_folder,
