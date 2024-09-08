@@ -11,7 +11,7 @@
 		"show_bounding_box": false,
 		"auto_bounding_box": true,
 		"bounding_box": [95, 32],
-		"enable_plugin_mode": true,
+		"enable_plugin_mode": false,
 		"resource_pack_export_mode": "raw",
 		"data_pack_export_mode": "raw",
 		"display_item": "minecraft:white_dye",
@@ -1669,6 +1669,23 @@
 							],
 							"uuid": "e8054bec-122c-6f34-6781-a4a58d46a5a6",
 							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						},
+						{
+							"channel": "commands",
+							"data_points": [
+								{
+									"commands": "say bye",
+									"execute_condition": "",
+									"repeat": false,
+									"repeat_frequency": 1
+								}
+							],
+							"uuid": "523673ac-dff1-1729-8064-4d0258e2de2a",
+							"time": 2,
 							"color": -1,
 							"interpolation": "linear",
 							"easing": "linear",

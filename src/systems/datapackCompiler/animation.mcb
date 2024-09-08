@@ -379,13 +379,6 @@ dir <%export_namespace%> {
 							REPEAT (animation.frames) as frame {
 								function <%animation.frames.indexOf(frame)%> {
 									<%%
-										if (frame.variant) {
-											console.log('Variant:', frame.variant)
-											const variant = rig.variants[frame.variant.uuid]
-											if (!variant) return
-											const execute_condition = variant.execute_condition ? variant.execute_condition.trim() + ' ' : ''
-											emit.mcb(`execute ${execute_condition}on vehicle unless entity @s[tag=<%TAGS.TRANSFORMS_ONLY()%>] run function *${export_namespace}/variants/${variant.name}/apply`)
-										}
 										global.merged = {
 											locators: {},
 											cameras: {}
@@ -459,6 +452,19 @@ dir <%export_namespace%> {
 									IF (Object.keys(global.merged.locators).length > 0 || Object.keys(global.merged.cameras).length > 0) {
 										data modify entity @s data merge value <%JSON.stringify(global.merged)%>
 									}
+									<%%
+										if (frame.variant) {
+											const variant = rig.variants[frame.variant.uuid]
+											if (!variant) return
+											const execute_condition = variant.execute_condition ? variant.execute_condition.trim() + ' ' : ''
+											emit.mcb(`execute on vehicle unless entity @s[tag=!<%TAGS.TRANSFORMS_ONLY()%>] ${execute_condition}run function *${export_namespace}/variants/${variant.name}/apply`)
+										}
+										if (frame.commands) {
+											const commands = frame.commands
+											const execute_condition = commands.execute_condition ? commands.execute_condition.trim() + ' ' : ''
+											emit.mcb(`execute on vehicle unless entity @s[tag=!<%TAGS.TRANSFORMS_ONLY()%>] ${execute_condition}run {\n${commands.commands}\n}`)
+										}
+									%%>
 								}
 							}
 						}
