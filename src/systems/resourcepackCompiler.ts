@@ -4,127 +4,6 @@ import { TRANSPARENT_TEXTURE } from '../variants'
 import { IRenderedNodes, IRenderedRig } from './rigRenderer'
 import { sortObjectKeys, zip } from './util'
 
-interface IPredicateItemModel {
-	parent?: string
-	textures: Record<string, string>
-	overrides: Array<{
-		predicate: { custom_model_data: number }
-		model: string
-	}>
-	animated_java: Record<string /* Rig Name */, number[]>
-}
-
-class PredicateItemModel {
-	public lastOverrideId = 1
-	private overrides = new Map<number, string>()
-	private externalOverrides = new Map<number, string>()
-	public rigs: Record<string, number[]> = {}
-	public parent? = 'item/generated'
-	public textures: IPredicateItemModel['textures'] = {}
-
-	setOverride(id: number, model: string) {
-		this.overrides.set(id, model)
-	}
-
-	addOverride(model: string) {
-		let id = this.lastOverrideId
-		while (this.overrides.has(id) || this.externalOverrides.has(id)) id++
-		this.lastOverrideId = id
-		this.overrides.set(id, model)
-		return id
-	}
-
-	assertOverride(id: number, model: string) {
-		if (!(this.overrides.has(id) || this.externalOverrides.has(id))) this.setOverride(id, model)
-	}
-
-	readExisting(path: string) {
-		const aj = Project!.animated_java
-		let file: IPredicateItemModel
-		try {
-			file = JSON.parse(fs.readFileSync(path, 'utf-8'))
-		} catch (e) {
-			console.error('Failed to read existing display item model:', e)
-			return
-		}
-
-		if (typeof file.animated_java !== 'object') {
-			// TODO Inform the user that they are attempting to merge into a non-animated_java model. And give them the option to cancel.
-		}
-
-		// Assert parent
-		if (file.parent) this.parent = file.parent
-		// Assert textures
-		if (file.textures) this.textures = file.textures
-
-		// Assert important fields
-		file.overrides ??= []
-		file.animated_java ??= {}
-		// Update pre-1.0.0 format
-		if (
-			typeof file.animated_java.rigs === 'object' &&
-			!Array.isArray(file.animated_java.rigs)
-		) {
-			const oldFormat = file.animated_java.rigs as unknown as Record<
-				string,
-				{ used_ids: number[] }
-			>
-			file.animated_java = {}
-			for (const name of Object.keys(oldFormat)) {
-				file.animated_java[name] = oldFormat[name].used_ids
-			}
-		}
-
-		file.animated_java[aj.export_namespace] ??= []
-
-		for (const [name, ownedIds] of Object.entries(file.animated_java)) {
-			const namespace = aj.export_namespace
-			const lastNamespace = Project!.last_used_export_namespace
-			if (name === namespace || name === lastNamespace) {
-				file.overrides = file.overrides.filter(
-					override => !ownedIds.includes(override.predicate.custom_model_data)
-				)
-				if (name === lastNamespace && namespace !== lastNamespace)
-					delete file.animated_java[lastNamespace]
-				continue
-			} else {
-				for (const id of ownedIds) {
-					const override = file.overrides.find(o => o.predicate.custom_model_data === id)!
-					this.externalOverrides.set(id, override.model)
-				}
-			}
-
-			this.rigs[name] = ownedIds
-		}
-	}
-
-	toJSON(): IPredicateItemModel {
-		const [displayItemNamespace, displayItemName] =
-			Project!.animated_java.display_item.split(':')
-		const exportNamespace = Project!.animated_java.export_namespace
-
-		return {
-			parent: this.parent,
-			textures:
-				Object.keys(this.textures).length > 0
-					? this.textures
-					: {
-							layer0: `${displayItemNamespace}:item/${displayItemName}`,
-					  },
-			overrides: [...this.externalOverrides.entries(), ...this.overrides.entries()]
-				.sort((a, b) => a[0] - b[0])
-				.map(([id, model]) => ({
-					predicate: { custom_model_data: id },
-					model,
-				})),
-			animated_java: sortObjectKeys({
-				...this.rigs,
-				[exportNamespace]: [...this.overrides.keys()],
-			}),
-		}
-	}
-}
-
 class ResourcePackAJMeta {
 	public files = new Set<string>()
 	public oldFiles = new Set<string>()
@@ -174,13 +53,11 @@ class ResourcePackAJMeta {
 
 export async function compileResourcePack(options: {
 	rig: IRenderedRig
-	displayItemPath: string
 	resourcePackFolder: string
 	textureExportFolder: string
 	modelExportFolder: string
 }) {
-	const { rig, displayItemPath, resourcePackFolder, textureExportFolder, modelExportFolder } =
-		options
+	const { rig, resourcePackFolder, textureExportFolder, modelExportFolder } = options
 	const aj = Project!.animated_java
 	const lastUsedExportNamespace = Project!.last_used_export_namespace
 	PROGRESS_DESCRIPTION.set('Compiling Resource Pack...')
@@ -188,7 +65,7 @@ export async function compileResourcePack(options: {
 
 	const ajmeta = new ResourcePackAJMeta(
 		PathModule.join(options.resourcePackFolder, 'assets.ajmeta'),
-		aj.export_namespace,
+		aj.id,
 		lastUsedExportNamespace,
 		options.resourcePackFolder
 	)
@@ -223,21 +100,6 @@ export async function compileResourcePack(options: {
 		PathModule.join(resourcePackFolder, 'assets/animated_java/models/empty.json'),
 		'{}'
 	)
-
-	// Display Item
-	const displayItemModel = new PredicateItemModel()
-	if (fs.existsSync(displayItemPath)) {
-		console.warn('Display item already exists! Attempting to merge...')
-		displayItemModel.readExisting(displayItemPath)
-	}
-
-	displayItemModel.lastOverrideId = Math.max(
-		1,
-		aj.enable_advanced_resource_pack_settings ? aj.custom_model_data_offset : 0
-	)
-
-	// Empty model for hiding bones / snowballs
-	displayItemModel.assertOverride(1, 'animated_java:empty')
 
 	// Textures
 	for (const texture of Object.values(rig.textures)) {
@@ -289,9 +151,6 @@ export async function compileResourcePack(options: {
 	for (const variant of Object.values(rig.variants)) {
 		for (const [boneUuid, variantModel] of Object.entries(variant.models)) {
 			const bone = rig.nodes[boneUuid] as IRenderedNodes['Bone']
-			variantModel.custom_model_data = displayItemModel.addOverride(
-				variantModel.resource_location
-			)
 			exportedFiles.set(
 				PathModule.join(modelExportFolder, variant.name, bone.name + '.json'),
 				autoStringify(variantModel.model)
@@ -305,10 +164,6 @@ export async function compileResourcePack(options: {
 	} else if (aj.resource_pack_export_mode === 'raw') {
 		ajmeta.files = new Set(exportedFiles.keys())
 		ajmeta.write()
-
-		// Since we don't want to erase the display item every export, we add it's model file after the files have been added to the ajmeta.
-		console.log('Display Item Model', displayItemModel.toJSON())
-		exportedFiles.set(displayItemPath, autoStringify(displayItemModel.toJSON()))
 
 		PROGRESS_DESCRIPTION.set('Writing Resource Pack...')
 		PROGRESS.set(0)

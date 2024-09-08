@@ -2,8 +2,7 @@ import { PACKAGE } from '../constants'
 import { SvelteDialog } from '../util/svelteDialog'
 import { Valuable } from '../util/stores'
 import BlueprintSettingsDialogSvelteComponent from '../components/blueprintSettingsDialog.svelte'
-import { toSafeFuntionName } from '../util/minecraftUtil'
-import { defaultValues, ExportMode } from '../blueprintSettings'
+import { ExportMode } from '../blueprintSettings'
 import { translate } from '../util/translation'
 import { updateBoundingBox } from '../blueprintFormat'
 
@@ -23,23 +22,11 @@ function getSettings() {
 		boundingBoxY: new Valuable(Project!.animated_java.bounding_box[1]),
 		// Export Settings
 		enablePluginMode: new Valuable(Project!.animated_java.enable_plugin_mode),
-		exportNamespace: new Valuable(Project!.animated_java.export_namespace, value => {
-			if (!value) {
-				return defaultValues.export_namespace
-			}
-			return toSafeFuntionName(value)
-		}),
+		id: new Valuable(Project!.animated_java.id),
 		resourcePackExportMode: new Valuable(
 			Project!.animated_java.resource_pack_export_mode as string
 		),
 		dataPackExportMode: new Valuable(Project!.animated_java.data_pack_export_mode as string),
-		// Resource Pack Settings
-		displayItem: new Valuable(Project!.animated_java.display_item, value => {
-			if (!value) {
-				return defaultValues.display_item
-			}
-			return value
-		}),
 		customModelDataOffset: new Valuable(Project!.animated_java.custom_model_data_offset),
 		enableAdvancedResourcePackSettings: new Valuable(
 			Project!.animated_java.enable_advanced_resource_pack_settings
@@ -48,7 +35,6 @@ function getSettings() {
 			Project!.animated_java.enable_advanced_resource_pack_folders
 		),
 		resourcePack: new Valuable(Project!.animated_java.resource_pack),
-		displayItemPath: new Valuable(Project!.animated_java.display_item_path),
 		modelFolder: new Valuable(Project!.animated_java.model_folder),
 		textureFolder: new Valuable(Project!.animated_java.texture_folder),
 		// Data Pack Settings
@@ -62,7 +48,7 @@ function getSettings() {
 		teleportationDuration: new Valuable(Project!.animated_java.teleportation_duration),
 		useStorageForAnimation: new Valuable(Project!.animated_java.use_storage_for_animation),
 		// Plugin Settings
-		bakedAnimations: new Valuable(Project!.animated_java.baked_animations),
+		bakedAnimations: new Valuable(Project!.animated_java.bake_animations),
 		jsonFile: new Valuable(Project!.animated_java.json_file),
 	}
 }
@@ -80,19 +66,17 @@ function setSettings(settings: ReturnType<typeof getSettings>) {
 	// Export Settings
 	Project.animated_java.enable_plugin_mode = settings.enablePluginMode.get()
 	Project.pluginMode.set(settings.enablePluginMode.get()) // Required to update the project title.
-	Project.animated_java.export_namespace = settings.exportNamespace.get()
+	Project.animated_java.id = settings.id.get()
 	Project.animated_java.resource_pack_export_mode =
 		settings.resourcePackExportMode.get() as ExportMode
 	Project.animated_java.data_pack_export_mode = settings.dataPackExportMode.get() as ExportMode
 	// Resource Pack Settings
-	Project.animated_java.display_item = settings.displayItem.get()
 	Project.animated_java.custom_model_data_offset = settings.customModelDataOffset.get()
 	Project.animated_java.enable_advanced_resource_pack_settings =
 		settings.enableAdvancedResourcePackSettings.get()
 	Project.animated_java.enable_advanced_resource_pack_folders =
 		settings.enableAdvancedResourcePackFolders.get()
 	Project.animated_java.resource_pack = settings.resourcePack.get()
-	Project.animated_java.display_item_path = settings.displayItemPath.get()
 	Project.animated_java.model_folder = settings.modelFolder.get()
 	Project.animated_java.texture_folder = settings.textureFolder.get()
 	// Data Pack Settings
@@ -105,7 +89,7 @@ function setSettings(settings: ReturnType<typeof getSettings>) {
 	Project.animated_java.teleportation_duration = settings.teleportationDuration.get()
 	Project.animated_java.use_storage_for_animation = settings.useStorageForAnimation.get()
 	// Plugin Settings
-	Project.animated_java.baked_animations = settings.bakedAnimations.get()
+	Project.animated_java.bake_animations = settings.bakedAnimations.get()
 	Project.animated_java.json_file = settings.jsonFile.get()
 	console.log('Successfully saved project settings', Project)
 }

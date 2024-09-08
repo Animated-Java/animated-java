@@ -149,7 +149,6 @@ export type AnyRenderedNode = IRenderedNodes[keyof IRenderedNodes]
 
 export interface IRenderedVariantModel {
 	model: IRenderedModel | null
-	custom_model_data: number
 	model_path: string
 	resource_location: string
 }
@@ -349,7 +348,6 @@ function renderGroup(
 				textures: {},
 				display: { head: { rotation: [0, 180, 0] } },
 			},
-			custom_model_data: -1, // This is calculated when constructing the resource pack.
 			model_path: path,
 			resource_location: parsed.resourceLocation,
 		}
@@ -608,7 +606,6 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 				parent: parsed.resourceLocation,
 				textures,
 			},
-			custom_model_data: -1, // This is calculated when constructing the resource pack.
 			model_path: modelPath,
 			resource_location: parsedModelPath.resourceLocation,
 		}

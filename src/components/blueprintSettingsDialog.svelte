@@ -1,7 +1,6 @@
 <script lang="ts" context="module">
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
-	import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
 
 	import Checkbox from './dialogItems/checkbox.svelte'
 	import NumberSlider from './dialogItems/numberSlider.svelte'
@@ -19,8 +18,6 @@
 
 	import fontUrl from '../assets/MinecraftFull.ttf'
 	import { resolvePath } from '../util/fileUtil'
-	import { getJSONAsset } from '../systems/minecraft/assetManager'
-	import type { IItemModel } from '../systems/minecraft/model'
 
 	if (![...document.fonts.keys()].some(v => v.family === 'MinecraftFull')) {
 		void new FontFace('MinecraftFull', fontUrl, {}).load().then(font => {
@@ -33,12 +30,13 @@
 
 <script lang="ts">
 	import { defaultValues } from '../blueprintSettings'
+	import { parseResourceLocation } from '../util/minecraftUtil'
 
 	export let blueprintName: Valuable<string>
 	export let textureSizeX: Valuable<number>
 	export let textureSizeY: Valuable<number>
 	// Export Settings
-	export let exportNamespace: Valuable<string>
+	export let id: Valuable<string>
 	export let enablePluginMode: Valuable<boolean>
 	export let resourcePackExportMode: Valuable<string>
 	export let dataPackExportMode: Valuable<string>
@@ -48,12 +46,10 @@
 	export let boundingBoxX: Valuable<number>
 	export let boundingBoxY: Valuable<number>
 	// Resource Pack Settings
-	export let displayItem: Valuable<string>
 	export let customModelDataOffset: Valuable<number>
 	export let enableAdvancedResourcePackSettings: Valuable<boolean>
 	export let enableAdvancedResourcePackFolders: Valuable<boolean>
 	export let resourcePack: Valuable<string>
-	export let displayItemPath: Valuable<string>
 	export let modelFolder: Valuable<string>
 	export let textureFolder: Valuable<string>
 	// Data Pack Settings
@@ -68,91 +64,30 @@
 	export let bakedAnimations: Valuable<boolean>
 	export let jsonFile: Valuable<string>
 
-	function exportNamespaceChecker(value: string): { type: string; message: string } {
+	function idChecker(value: string): { type: string; message: string } {
 		if (value === '') {
 			return {
 				type: 'error',
-				message: translate('dialog.blueprint_settings.export_namespace.error.empty'),
+				message: translate('dialog.blueprint_settings.id.error.empty'),
 			}
-		} else if (value.trim().match('[^a-zA-Z0-9_]')) {
-			return {
-				type: 'error',
-				message: translate(
-					'dialog.blueprint_settings.export_namespace.error.invalid_characters',
-				),
-			}
-		} else if (['global', 'animated_java'].includes(value)) {
-			return {
-				type: 'error',
-				message: translate(
-					'dialog.blueprint_settings.export_namespace.error.reserved',
-					value,
-				),
-			}
-		} else {
-			return { type: 'success', message: '' }
 		}
-	}
-
-	function displayItemChecker(value: string): { type: string; message: string } {
-		if (value === '') {
+		let parsed: ReturnType<typeof parseResourceLocation>
+		try {
+			parsed = parseResourceLocation(value)
+		} catch (e: any) {
 			return {
 				type: 'error',
-				message: translate('dialog.blueprint_settings.display_item.error.no_item_selected'),
+				message: translate('dialog.blueprint_settings.id.error.invalid', e.message),
 			}
-		} else if (value.split(':').length !== 2) {
-			return {
-				type: 'error',
-				message: translate(
-					'dialog.blueprint_settings.display_item.error.invalid_item_id.no_namespace',
-				),
-			}
-		} else if (value.includes(' ')) {
-			return {
-				type: 'error',
-				message: translate(
-					'dialog.blueprint_settings.display_item.error.invalid_item_id.whitespace',
-				),
-			}
-		} else if (
-			MINECRAFT_REGISTRY.item &&
-			!MINECRAFT_REGISTRY.item.has(value.replace('minecraft:', ''))
-		) {
-			return {
-				type: 'warning',
-				message: translate(
-					'dialog.blueprint_settings.display_item.warning.item_does_not_exist',
-				),
-			}
-		} else {
-			let asset: IItemModel
-			try {
-				asset = getJSONAsset(
-					'assets/minecraft/models/item/' + value.replace('minecraft:', '') + '.json',
-				)
-			} catch (e) {
-				console.error(e)
-				return {
-					type: 'error',
-					message: translate(
-						'dialog.blueprint_settings.display_item.error.item_model_not_found',
-					),
-				}
-			}
-
-			if (
-				!(asset.parent === 'item/generated' || asset.parent === 'minecraft:item/generated')
-			) {
-				return {
-					type: 'warning',
-					message: translate(
-						'dialog.blueprint_settings.display_item.warning.item_model_not_generated',
-					),
-				}
-			}
-
-			return { type: 'success', message: '' }
 		}
+		console.log('parsed namespace:', parsed)
+		if (parsed.namespace === 'animated_java' && parsed.path === 'global') {
+			return {
+				type: 'error',
+				message: translate('dialog.blueprint_settings.id.error.reserved.global', value),
+			}
+		}
+		return { type: 'success', message: '' }
 	}
 
 	function textureSizeChecker(value: { x: number; y: number }): {
@@ -520,11 +455,11 @@
 	<SectionHeader label={translate('dialog.blueprint_settings.export_settings.title')} />
 
 	<LineInput
-		label={translate('dialog.blueprint_settings.export_namespace.title')}
-		tooltip={translate('dialog.blueprint_settings.export_namespace.description')}
-		bind:value={exportNamespace}
-		defaultValue={defaultValues.export_namespace}
-		valueChecker={exportNamespaceChecker}
+		label={translate('dialog.blueprint_settings.id.title')}
+		tooltip={translate('dialog.blueprint_settings.id.description')}
+		bind:value={id}
+		defaultValue={defaultValues.id}
+		valueChecker={idChecker}
 	/>
 
 	<Checkbox
@@ -535,19 +470,11 @@
 	/>
 
 	{#if $enablePluginMode}
-		<LineInput
-			label={translate('dialog.blueprint_settings.display_item.title')}
-			tooltip={translate('dialog.blueprint_settings.display_item.description')}
-			bind:value={displayItem}
-			defaultValue={defaultValues.display_item}
-			valueChecker={displayItemChecker}
-		/>
-
 		<Checkbox
 			label={translate('dialog.blueprint_settings.baked_animations.title')}
 			tooltip={translate('dialog.blueprint_settings.baked_animations.description')}
 			bind:checked={bakedAnimations}
-			defaultValue={defaultValues.baked_animations}
+			defaultValue={defaultValues.bake_animations}
 		/>
 
 		<FileSelect
@@ -585,14 +512,6 @@
 		{#if $resourcePackExportMode !== 'none'}
 			<SectionHeader
 				label={translate('dialog.blueprint_settings.resource_pack_settings.title')}
-			/>
-
-			<LineInput
-				label={translate('dialog.blueprint_settings.display_item.title')}
-				tooltip={translate('dialog.blueprint_settings.display_item.description')}
-				bind:value={displayItem}
-				defaultValue={defaultValues.display_item}
-				valueChecker={displayItemChecker}
 			/>
 
 			<Checkbox
@@ -633,16 +552,6 @@
 					<p class="warning">
 						{translate('dialog.blueprint_settings.advanced_settings_warning')}
 					</p>
-
-					<FileSelect
-						label={translate('dialog.blueprint_settings.display_item_path.title')}
-						tooltip={translate(
-							'dialog.blueprint_settings.display_item_path.description',
-						)}
-						bind:value={displayItemPath}
-						defaultValue={defaultValues.display_item_path}
-						valueChecker={advancedResourcePackFileChecker}
-					/>
 
 					<FolderSelect
 						label={translate('dialog.blueprint_settings.model_folder.title')}

@@ -3,7 +3,7 @@ import { Valuable } from './util/stores'
 export type ExportMode = 'raw' | 'zip' | 'none'
 
 export const defaultValues = {
-	export_namespace: 'blueprint',
+	id: 'aj:new_blueprint',
 	show_bounding_box: false,
 	auto_bounding_box: true,
 	bounding_box: [48, 48],
@@ -12,12 +12,10 @@ export const defaultValues = {
 	resource_pack_export_mode: 'raw' as ExportMode,
 	data_pack_export_mode: 'raw' as ExportMode,
 	// Resource Pack Settings
-	display_item: 'minecraft:white_dye',
 	custom_model_data_offset: 0,
 	enable_advanced_resource_pack_settings: false,
 	enable_advanced_resource_pack_folders: false,
 	resource_pack: '',
-	display_item_path: '',
 	model_folder: '',
 	texture_folder: '',
 	// Data Pack Settings
@@ -29,7 +27,7 @@ export const defaultValues = {
 	teleportation_duration: 1,
 	use_storage_for_animation: false,
 	// Plugin Settings
-	baked_animations: true,
+	bake_animations: false,
 	json_file: '',
 }
 

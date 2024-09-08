@@ -41,43 +41,27 @@ async function actuallyExportProject(forceSave = true) {
 			}
 		}
 
-		let textureExportFolder: string, modelExportFolder: string, displayItemPath: string
+		let textureExportFolder: string, modelExportFolder: string
 
 		const resourcePackFolder = resolvePath(aj.resource_pack)
 		const dataPackFolder = resolvePath(aj.data_pack)
 
 		if (aj.enable_plugin_mode) {
-			modelExportFolder = PathModule.join(
-				'assets/animated_java/models/item/',
-				aj.export_namespace
-			)
-			textureExportFolder = PathModule.join(
-				'assets/animated_java/textures/item/',
-				aj.export_namespace
-			)
-			displayItemPath = PathModule.join(
-				'assets/minecraft/models/item/',
-				aj.display_item.split(':').at(-1)! + '.json'
-			)
+			modelExportFolder = PathModule.join('assets/animated_java/models/item/', aj.id)
+			textureExportFolder = PathModule.join('assets/animated_java/textures/item/', aj.id)
 		} else if (aj.enable_advanced_resource_pack_folders) {
 			modelExportFolder = aj.model_folder
 			textureExportFolder = aj.texture_folder
-			displayItemPath = aj.display_item_path
 		} else {
 			modelExportFolder = PathModule.join(
 				resourcePackFolder,
 				'assets/animated_java/models/item/',
-				aj.export_namespace
+				aj.id
 			)
 			textureExportFolder = PathModule.join(
 				resourcePackFolder,
 				'assets/animated_java/textures/item/',
-				aj.export_namespace
-			)
-			displayItemPath = PathModule.join(
-				resourcePackFolder,
-				'assets/minecraft/models/item/',
-				aj.display_item.split(':').at(-1)! + '.json'
+				aj.id
 			)
 		}
 
@@ -107,7 +91,6 @@ async function actuallyExportProject(forceSave = true) {
 		// Always run the resource pack compiler because it calculates the custom model data.
 		await compileResourcePack({
 			rig,
-			displayItemPath,
 			resourcePackFolder,
 			textureExportFolder,
 			modelExportFolder,
@@ -117,7 +100,6 @@ async function actuallyExportProject(forceSave = true) {
 			exportJSON({
 				rig,
 				animations,
-				displayItemPath,
 				textureExportFolder,
 				modelExportFolder,
 			})
@@ -126,7 +108,7 @@ async function actuallyExportProject(forceSave = true) {
 				await compileDataPack({ rig, animations, dataPackFolder, rigHash, animationHash })
 			}
 
-			Project!.last_used_export_namespace = aj.export_namespace
+			Project!.last_used_export_namespace = aj.id
 		}
 
 		console.timeEnd('Exporting project took')

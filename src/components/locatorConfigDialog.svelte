@@ -9,6 +9,8 @@
 </script>
 
 <script lang="ts">
+	import { LocatorConfig } from '../nodeConfigs'
+
 	const pluginModeEnabled = !!Project?.animated_java?.enable_plugin_mode
 
 	export let useEntity: Valuable<boolean>
@@ -47,6 +49,7 @@
 			label={translate('dialog.locator_config.use_entity.title')}
 			tooltip={translate('dialog.locator_config.use_entity.description')}
 			bind:checked={useEntity}
+			defaultValue={LocatorConfig.prototype.useEntity}
 		/>
 
 		{#if $useEntity}
@@ -55,12 +58,14 @@
 				tooltip={translate('dialog.locator_config.entity_type.description')}
 				bind:value={entityType}
 				valueChecker={entityTypeValidator}
+				defaultValue={LocatorConfig.prototype.entityType}
 			/>
 
 			<CodeInput
 				label={translate('dialog.locator_config.summon_commands.title')}
 				tooltip={translate('dialog.locator_config.summon_commands.description')}
 				bind:value={summonCommands}
+				defaultValue={LocatorConfig.prototype.summonCommands}
 			/>
 		{/if}
 
@@ -68,6 +73,7 @@
 			label={translate('dialog.locator_config.ticking_commands.title')}
 			tooltip={translate('dialog.locator_config.ticking_commands.description')}
 			bind:value={tickingCommands}
+			defaultValue={LocatorConfig.prototype.tickingCommands}
 		/>
 	{/if}
 </div>

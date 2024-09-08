@@ -258,7 +258,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 		}
 
 		Project.last_used_export_namespace =
-			model.meta.last_used_export_namespace || Project.animated_java.export_namespace
+			model.meta.last_used_export_namespace || Project.animated_java.id
 
 		if (model.textures) {
 			for (const texture of model.textures) {
@@ -566,7 +566,7 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 
 		const thisProject = Project
 		Project.variants ??= []
-		Project.last_used_export_namespace = Project.animated_java.export_namespace
+		Project.last_used_export_namespace = Project.animated_java.id
 		const updateBoundingBoxIntervalId = setInterval(() => {
 			updateBoundingBox()
 		}, 500)

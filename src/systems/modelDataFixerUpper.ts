@@ -245,7 +245,7 @@ function updateModelTo1_0pre1(model: any) {
 			teleportation_duration: defaultSettings.teleportation_duration,
 			use_storage_for_animation: defaultSettings.use_storage_for_animation,
 			// Plugin settings
-			baked_animations: defaultSettings.baked_animations,
+			baked_animations: defaultSettings.bake_animations,
 			json_file: defaultSettings.json_file,
 		},
 		variants: {

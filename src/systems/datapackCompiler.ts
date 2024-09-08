@@ -231,7 +231,7 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 				new NbtList([
 					new NbtString(TAGS.GLOBAL_RIG()),
 					new NbtString(TAGS.GLOBAL_DATA()),
-					new NbtString(TAGS.PROJECT_DATA(aj.export_namespace)),
+					new NbtString(TAGS.PROJECT_DATA(aj.id)),
 				])
 			)
 			.set(
@@ -246,8 +246,6 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 
 	for (const [uuid, node] of Object.entries(rig.nodes)) {
 		const passenger = new NbtCompound()
-		// TODO Maybe add components setting to blueprint settings?
-		const useComponents = true
 
 		const tags = new NbtList([new NbtString(TAGS.GLOBAL_RIG())])
 		passenger.set('Tags', tags)
@@ -256,8 +254,8 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 			case 'bone': {
 				passenger.set('id', new NbtString('minecraft:item_display'))
 				tags.add(new NbtString(TAGS.GLOBAL_BONE()))
-				tags.add(new NbtString(TAGS.PROJECT_BONE(aj.export_namespace)))
-				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.export_namespace, node.safe_name)))
+				tags.add(new NbtString(TAGS.PROJECT_BONE(aj.id)))
+				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.id, node.safe_name)))
 				passenger.set(
 					'transformation',
 					new NbtCompound()
@@ -277,13 +275,13 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 				passenger.set(
 					'item',
 					item
-						.set('id', new NbtString(aj.display_item))
-						.set(useComponents ? 'count' : 'Count', new NbtInt(1))
+						.set('id', new NbtString('minecraft:pufferfish_spawn_egg'))
+						.set('count', new NbtInt(1))
 						.set(
-							useComponents ? 'components' : 'tag',
+							'components',
 							new NbtCompound().set(
-								useComponents ? 'minecraft:custom_model_data' : 'CustomModelData',
-								new NbtInt(variantModel.custom_model_data)
+								'minecraft:item_model',
+								new NbtString(variantModel.resource_location)
 							)
 						)
 				)
@@ -299,8 +297,8 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 			case 'text_display': {
 				passenger.set('id', new NbtString('minecraft:text_display'))
 				tags.add(new NbtString(TAGS.GLOBAL_BONE()))
-				tags.add(new NbtString(TAGS.PROJECT_BONE(aj.export_namespace)))
-				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.export_namespace, node.safe_name)))
+				tags.add(new NbtString(TAGS.PROJECT_BONE(aj.id)))
+				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.id, node.safe_name)))
 				passenger.set(
 					'transformation',
 					new NbtCompound()
@@ -336,8 +334,8 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 			case 'item_display': {
 				passenger.set('id', new NbtString('minecraft:item_display'))
 				tags.add(new NbtString(TAGS.GLOBAL_BONE()))
-				tags.add(new NbtString(TAGS.PROJECT_BONE(aj.export_namespace)))
-				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.export_namespace, node.safe_name)))
+				tags.add(new NbtString(TAGS.PROJECT_BONE(aj.id)))
+				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.id, node.safe_name)))
 				passenger.set(
 					'item',
 					new NbtCompound()
@@ -353,8 +351,8 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 			case 'block_display': {
 				passenger.set('id', new NbtString('minecraft:block_display'))
 				tags.add(new NbtString(TAGS.GLOBAL_BONE()))
-				tags.add(new NbtString(TAGS.PROJECT_BONE(aj.export_namespace)))
-				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.export_namespace, node.safe_name)))
+				tags.add(new NbtString(TAGS.PROJECT_BONE(aj.id)))
+				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.id, node.safe_name)))
 
 				const parsed = await parseBlock(node.block)
 				if (!parsed) {
@@ -448,9 +446,9 @@ async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAn
 		PROGRESS_DESCRIPTION.set(`Creating Animation Storage for '${animation.safe_name}'`)
 		let frames = new NbtCompound()
 		const addFrameDataCommand = () => {
-			const str = `data modify storage aj.${
-				Project!.animated_java.export_namespace
-			}:animations ${animation.safe_name} merge value ${frames.toString()}`
+			const str = `data modify storage aj.${Project!.animated_java.id}:animations ${
+				animation.safe_name
+			} merge value ${frames.toString()}`
 			dataCommands.push(str)
 			frames = new NbtCompound()
 		}
@@ -560,7 +558,7 @@ export async function compileDataPack(options: {
 	if (aj.data_pack_export_mode === 'raw') {
 		ajmeta = new DataPackAJMeta(
 			PathModule.join(options.dataPackFolder, 'data.ajmeta'),
-			aj.export_namespace,
+			aj.id,
 			Project!.last_used_export_namespace,
 			options.dataPackFolder
 		)
@@ -573,7 +571,7 @@ export async function compileDataPack(options: {
 		for (const file of ajmeta.oldFiles) {
 			if (!isFunctionTagPath(file)) {
 				if (fs.existsSync(file)) await fs.promises.unlink(file)
-			} else if (aj.export_namespace !== Project!.last_used_export_namespace) {
+			} else if (aj.id !== Project!.last_used_export_namespace) {
 				const resourceLocation = parseDataPackPath(file)!.resourceLocation
 				if (
 					resourceLocation.startsWith(
@@ -584,7 +582,7 @@ export async function compileDataPack(options: {
 					const newPath = replacePathPart(
 						file,
 						Project!.last_used_export_namespace,
-						aj.export_namespace
+						aj.id
 					)
 					await fs.promises.mkdir(PathModule.dirname(newPath), { recursive: true })
 					await fs.promises.copyFile(file, newPath)
@@ -621,10 +619,9 @@ export async function compileDataPack(options: {
 	compiler.templateParsingEnabled = false
 
 	const variables = {
-		export_namespace: aj.export_namespace,
+		resource_location: aj.id,
 		interpolation_duration: aj.interpolation_duration,
 		teleportation_duration: aj.teleportation_duration,
-		display_item: aj.display_item,
 		rig,
 		animations,
 		export_version: Math.random().toString().substring(2, 10),
@@ -714,7 +711,7 @@ async function writeFiles(map: Map<string, string>, dataPackFolder: string) {
 			const oldFile: IFunctionTag = JSON.parse(fs.readFileSync(path, 'utf-8'))
 			const newFile: IFunctionTag = JSON.parse(content)
 			const merged = mergeTag(oldFile, newFile)
-			if (aj.export_namespace !== Project!.last_used_export_namespace) {
+			if (aj.id !== Project!.last_used_export_namespace) {
 				merged.values = merged.values.filter(v => {
 					const value = typeof v === 'string' ? v : v.id
 					return (

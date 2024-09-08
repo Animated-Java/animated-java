@@ -102,7 +102,6 @@ interface ExportedTexture {
 }
 type ExportedVariantModel = Omit<IRenderedVariantModel, 'model_path' | 'resource_location'> & {
 	model: IRenderedModel | null
-	custom_model_data: number
 }
 type ExportedVariant = Omit<IRenderedVariant, 'models'> & {
 	/**
@@ -116,12 +115,12 @@ export interface IExportedJSON {
 	 * The Blueprint's Settings
 	 */
 	settings: {
-		export_namespace: (typeof defaultValues)['export_namespace']
+		export_namespace: (typeof defaultValues)['id']
 		bounding_box: (typeof defaultValues)['bounding_box']
 		// Resource Pack Settings
 		custom_model_data_offset: (typeof defaultValues)['custom_model_data_offset']
 		// Plugin Settings
-		baked_animations: (typeof defaultValues)['baked_animations']
+		baked_animations: (typeof defaultValues)['bake_animations']
 	}
 	textures: Record<string, ExportedTexture>
 	nodes: Record<string, ExportedRenderedNode>
@@ -204,7 +203,6 @@ function serializeVariant(rig: IRenderedRig, variant: IRenderedVariant): Exporte
 		models: mapObjEntries(variant.models, (uuid, model) => {
 			const json: ExportedVariantModel = {
 				model: model.model,
-				custom_model_data: model.custom_model_data,
 			}
 			return [uuid, json]
 		}),
@@ -215,7 +213,6 @@ function serializeVariant(rig: IRenderedRig, variant: IRenderedVariant): Exporte
 export function exportJSON(options: {
 	rig: IRenderedRig
 	animations: IRenderedAnimation[]
-	displayItemPath: string
 	textureExportFolder: string
 	modelExportFolder: string
 }) {
@@ -233,10 +230,10 @@ export function exportJSON(options: {
 
 	const json: IExportedJSON = {
 		settings: {
-			export_namespace: aj.export_namespace,
+			export_namespace: aj.id,
 			bounding_box: aj.bounding_box,
 			custom_model_data_offset: aj.custom_model_data_offset,
-			baked_animations: aj.baked_animations,
+			baked_animations: aj.bake_animations,
 		},
 		textures: mapObjEntries(rig.textures, (_, texture) => [
 			texture.uuid,
@@ -250,7 +247,7 @@ export function exportJSON(options: {
 		animations: {},
 	}
 
-	if (aj.baked_animations) {
+	if (aj.bake_animations) {
 		for (const animation of animations) {
 			json.animations[animation.uuid] = serializeAnimation(animation)
 		}
