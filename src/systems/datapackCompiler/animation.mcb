@@ -457,12 +457,12 @@ dir <%export_namespace%> {
 											const variant = rig.variants[frame.variant.uuid]
 											if (!variant) return
 											const execute_condition = variant.execute_condition ? variant.execute_condition.trim() + ' ' : ''
-											emit.mcb(`execute on vehicle unless entity @s[tag=!<%TAGS.TRANSFORMS_ONLY()%>] ${execute_condition}run function *${export_namespace}/variants/${variant.name}/apply`)
+											emit.mcb(`execute on vehicle unless entity @s[tag=<%TAGS.TRANSFORMS_ONLY()%>] ${execute_condition}run function *${export_namespace}/variants/${variant.name}/apply`)
 										}
 										if (frame.commands) {
 											const commands = frame.commands
 											const execute_condition = commands.execute_condition ? commands.execute_condition.trim() + ' ' : ''
-											emit.mcb(`execute on vehicle unless entity @s[tag=!<%TAGS.TRANSFORMS_ONLY()%>] ${execute_condition}run {\n${commands.commands}\n}`)
+											emit.mcb(`execute on vehicle unless entity @s[tag=<%TAGS.TRANSFORMS_ONLY()%>] at @s ${execute_condition}run {\n${commands.commands}\n}`)
 										}
 									%%>
 								}
