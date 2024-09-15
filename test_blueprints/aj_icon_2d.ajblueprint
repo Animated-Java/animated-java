@@ -14,9 +14,9 @@
 		"enable_plugin_mode": false,
 		"resource_pack_export_mode": "raw",
 		"data_pack_export_mode": "raw",
-		"display_item": "minecraft:white_dye",
-		"custom_model_data_offset": 0,
-		"enable_advanced_resource_pack_settings": false,
+		"display_item": "minecraft:light_blue_dye",
+		"custom_model_data_offset": 80085,
+		"enable_advanced_resource_pack_settings": true,
 		"enable_advanced_resource_pack_folders": false,
 		"resource_pack": "C:\\Users\\SnaveSutit\\AppData\\Roaming\\com.modrinth.theseus\\profiles\\Animated Java Dev\\resourcepacks\\animated_java_booth_rp",
 		"display_item_path": "",
@@ -556,8 +556,8 @@
 	],
 	"textures": [
 		{
-			"path": "D:\\Dropbox\\Pictures\\Animated Java Images\\Icons\\2023\\parts\\all.png",
-			"name": "all.png",
+			"path": "C:\\Users\\SnaveSutit\\AppData\\Roaming\\com.modrinth.theseus\\profiles\\Animated Java Dev\\resourcepacks\\animated_java_booth_rp\\assets\\animated_java_booth\\textures\\item\\2d_logo_parts.png",
+			"name": "2d_logo_parts.png",
 			"folder": "",
 			"namespace": "",
 			"id": "0",

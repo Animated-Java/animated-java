@@ -10,13 +10,16 @@
 		"export_namespace": "aj_booth_doors",
 		"show_bounding_box": false,
 		"auto_bounding_box": true,
-		"bounding_box": [48, 48],
+		"bounding_box": [
+			48,
+			48
+		],
 		"enable_plugin_mode": false,
 		"resource_pack_export_mode": "raw",
 		"data_pack_export_mode": "raw",
-		"display_item": "minecraft:white_dye",
-		"custom_model_data_offset": 0,
-		"enable_advanced_resource_pack_settings": false,
+		"display_item": "minecraft:light_blue_dye",
+		"custom_model_data_offset": 80085,
+		"enable_advanced_resource_pack_settings": true,
 		"enable_advanced_resource_pack_folders": false,
 		"resource_pack": "C:\\Users\\SnaveSutit\\AppData\\Roaming\\com.modrinth.theseus\\profiles\\Animated Java Dev\\resourcepacks\\animated_java_booth_rp",
 		"display_item_path": "",
@@ -44,34 +47,76 @@
 			"locked": false,
 			"render_order": "default",
 			"allow_mirror_modeling": true,
-			"from": [-24, 0, 0],
-			"to": [0, 48, 0],
+			"from": [
+				-24,
+				0,
+				0
+			],
+			"to": [
+				0,
+				48,
+				0
+			],
 			"autouv": 0,
 			"color": 0,
-			"origin": [-12, 24, -0.5],
+			"origin": [
+				-12,
+				24,
+				-0.5
+			],
 			"faces": {
 				"north": {
-					"uv": [24, 0, 48, 48],
+					"uv": [
+						24,
+						0,
+						48,
+						48
+					],
 					"texture": 0
 				},
 				"east": {
-					"uv": [0, 0, 0, 0],
+					"uv": [
+						0,
+						0,
+						0,
+						0
+					],
 					"texture": null
 				},
 				"south": {
-					"uv": [0, 0, 24, 48],
+					"uv": [
+						0,
+						0,
+						24,
+						48
+					],
 					"texture": 0
 				},
 				"west": {
-					"uv": [0, 0, 0, 0],
+					"uv": [
+						0,
+						0,
+						0,
+						0
+					],
 					"texture": null
 				},
 				"up": {
-					"uv": [0, 0, 0, 0],
+					"uv": [
+						0,
+						0,
+						0,
+						0
+					],
 					"texture": null
 				},
 				"down": {
-					"uv": [0, 0, 0, 0],
+					"uv": [
+						0,
+						0,
+						0,
+						0
+					],
 					"texture": null
 				}
 			},
@@ -85,34 +130,76 @@
 			"locked": false,
 			"render_order": "default",
 			"allow_mirror_modeling": true,
-			"from": [0, 0, 0],
-			"to": [24, 48, 0],
+			"from": [
+				0,
+				0,
+				0
+			],
+			"to": [
+				24,
+				48,
+				0
+			],
 			"autouv": 0,
 			"color": 0,
-			"origin": [12, 24, -0.5],
+			"origin": [
+				12,
+				24,
+				-0.5
+			],
 			"faces": {
 				"north": {
-					"uv": [0, 0, 24, 48],
+					"uv": [
+						0,
+						0,
+						24,
+						48
+					],
 					"texture": 0
 				},
 				"east": {
-					"uv": [0, 0, 0, 0],
+					"uv": [
+						0,
+						0,
+						0,
+						0
+					],
 					"texture": null
 				},
 				"south": {
-					"uv": [24, 0, 48, 48],
+					"uv": [
+						24,
+						0,
+						48,
+						48
+					],
 					"texture": 0
 				},
 				"west": {
-					"uv": [0, 0, 0, 0],
+					"uv": [
+						0,
+						0,
+						0,
+						0
+					],
 					"texture": null
 				},
 				"up": {
-					"uv": [0, 0, 0, 0],
+					"uv": [
+						0,
+						0,
+						0,
+						0
+					],
 					"texture": null
 				},
 				"down": {
-					"uv": [0, 0, 0, 0],
+					"uv": [
+						0,
+						0,
+						0,
+						0
+					],
 					"texture": null
 				}
 			},
@@ -121,8 +208,16 @@
 		},
 		{
 			"name": "locator",
-			"position": [0, 0, 0],
-			"rotation": [0, 0, 0],
+			"position": [
+				0,
+				0,
+				0
+			],
+			"rotation": [
+				0,
+				0,
+				0
+			],
 			"ignore_inherited_scale": false,
 			"visibility": true,
 			"locked": false,
@@ -137,35 +232,80 @@
 			"locked": false,
 			"render_order": "default",
 			"allow_mirror_modeling": true,
-			"from": [-8, 23, -0.5],
-			"to": [0, 39, 0.5],
+			"from": [
+				-8,
+				23,
+				-0.5
+			],
+			"to": [
+				0,
+				39,
+				0.5
+			],
 			"autouv": 0,
 			"color": 0,
-			"origin": [-8, 23, -0.5],
-			"uv_offset": [-7, 0],
+			"origin": [
+				-8,
+				23,
+				-0.5
+			],
+			"uv_offset": [
+				-7,
+				0
+			],
 			"faces": {
 				"north": {
-					"uv": [32, 0, 64, 64],
+					"uv": [
+						32,
+						0,
+						64,
+						64
+					],
 					"texture": 1
 				},
 				"east": {
-					"uv": [0.5, 0.5, 1.5, 1.5],
+					"uv": [
+						0.5,
+						0.5,
+						1.5,
+						1.5
+					],
 					"texture": 1
 				},
 				"south": {
-					"uv": [0, 0, 32, 64],
+					"uv": [
+						0,
+						0,
+						32,
+						64
+					],
 					"texture": 1
 				},
 				"west": {
-					"uv": [0.5, 0.5, 1.5, 1.5],
+					"uv": [
+						0.5,
+						0.5,
+						1.5,
+						1.5
+					],
 					"texture": 1
 				},
 				"up": {
-					"uv": [0.5, 0.5, 1.5, 1.5],
+					"uv": [
+						0.5,
+						0.5,
+						1.5,
+						1.5
+					],
 					"texture": 1
 				},
 				"down": {
-					"uv": [0.5, 0.5, 1.5, 1.5],
+					"uv": [
+						0.5,
+						0.5,
+						1.5,
+						1.5
+					],
 					"texture": 1
 				}
 			},
@@ -179,35 +319,80 @@
 			"locked": false,
 			"render_order": "default",
 			"allow_mirror_modeling": true,
-			"from": [0, 23, -0.5],
-			"to": [8, 39, 0.5],
+			"from": [
+				0,
+				23,
+				-0.5
+			],
+			"to": [
+				8,
+				39,
+				0.5
+			],
 			"autouv": 0,
 			"color": 0,
-			"origin": [8, 23, -0.5],
-			"uv_offset": [-7, 0],
+			"origin": [
+				8,
+				23,
+				-0.5
+			],
+			"uv_offset": [
+				-7,
+				0
+			],
 			"faces": {
 				"north": {
-					"uv": [0, 0, 32, 64],
+					"uv": [
+						0,
+						0,
+						32,
+						64
+					],
 					"texture": 1
 				},
 				"east": {
-					"uv": [1.5, 0.5, 0.5, 1.5],
+					"uv": [
+						1.5,
+						0.5,
+						0.5,
+						1.5
+					],
 					"texture": 1
 				},
 				"south": {
-					"uv": [32, 0, 64, 64],
+					"uv": [
+						32,
+						0,
+						64,
+						64
+					],
 					"texture": 1
 				},
 				"west": {
-					"uv": [1.5, 0.5, 0.5, 1.5],
+					"uv": [
+						1.5,
+						0.5,
+						0.5,
+						1.5
+					],
 					"texture": 1
 				},
 				"up": {
-					"uv": [1.5, 0.5, 0.5, 1.5],
+					"uv": [
+						1.5,
+						0.5,
+						0.5,
+						1.5
+					],
 					"texture": 1
 				},
 				"down": {
-					"uv": [1.5, 0.5, 0.5, 1.5],
+					"uv": [
+						1.5,
+						0.5,
+						0.5,
+						1.5
+					],
 					"texture": 1
 				}
 			},
@@ -218,7 +403,11 @@
 	"outliner": [
 		{
 			"name": "left_door",
-			"origin": [-8, 27.5, 0],
+			"origin": [
+				-8,
+				27.5,
+				0
+			],
 			"color": 0,
 			"configs": {
 				"variants": {}
@@ -230,11 +419,18 @@
 			"locked": false,
 			"visibility": true,
 			"autouv": 0,
-			"children": ["36378218-97d9-0bed-d916-63d2a57fdc0f", "dba40c3d-1ea8-e530-e791-b56639d0615d"]
+			"children": [
+				"36378218-97d9-0bed-d916-63d2a57fdc0f",
+				"dba40c3d-1ea8-e530-e791-b56639d0615d"
+			]
 		},
 		{
 			"name": "right_door",
-			"origin": [8, 27.5, 0],
+			"origin": [
+				8,
+				27.5,
+				0
+			],
 			"color": 0,
 			"configs": {
 				"variants": {}
@@ -246,7 +442,10 @@
 			"locked": false,
 			"visibility": true,
 			"autouv": 0,
-			"children": ["1bce197e-dc74-3dd6-1c88-262c2f00448a", "77845cb1-9a3c-917f-b682-113fd197cd77"]
+			"children": [
+				"1bce197e-dc74-3dd6-1c88-262c2f00448a",
+				"77845cb1-9a3c-917f-b682-113fd197cd77"
+			]
 		},
 		"68832102-4ca0-3ccc-2f5f-f91a963b9d19"
 	],
@@ -325,7 +524,7 @@
 			"override": false,
 			"length": 0.5,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"saved": false,
 			"path": "",
 			"anim_time_update": "",
@@ -368,7 +567,9 @@
 							"color": -1,
 							"interpolation": "linear",
 							"easing": "easeInOutCubic",
-							"easingArgs": [0.05]
+							"easingArgs": [
+								0.05
+							]
 						}
 					]
 				},
@@ -406,7 +607,9 @@
 							"color": -1,
 							"interpolation": "linear",
 							"easing": "easeInOutCubic",
-							"easingArgs": [0.05]
+							"easingArgs": [
+								0.05
+							]
 						}
 					]
 				},
@@ -465,7 +668,7 @@
 			"override": false,
 			"length": 0.5,
 			"snapping": 20,
-			"selected": false,
+			"selected": true,
 			"saved": false,
 			"path": "",
 			"anim_time_update": "",
@@ -508,7 +711,9 @@
 							"color": -1,
 							"interpolation": "linear",
 							"easing": "easeInOutCubic",
-							"easingArgs": [0.05]
+							"easingArgs": [
+								0.05
+							]
 						}
 					]
 				},
@@ -546,7 +751,9 @@
 							"color": -1,
 							"interpolation": "linear",
 							"easing": "easeInOutCubic",
-							"easingArgs": [0.05]
+							"easingArgs": [
+								0.05
+							]
 						}
 					]
 				},

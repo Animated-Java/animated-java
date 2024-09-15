@@ -456,7 +456,7 @@ async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAn
 			const frame = animation.frames[i]
 			const thisFrame = new NbtCompound()
 			frames.set(i.toString(), thisFrame)
-			for (const [uuid, node] of Object.entries(rig.nodes)) {
+			for (const [uuid, node] of Object.entries(animation.modified_nodes)) {
 				const transform = frame.node_transforms[uuid]
 				if (BONE_TYPES.includes(node.type)) {
 					thisFrame.set(

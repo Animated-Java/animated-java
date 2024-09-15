@@ -53,7 +53,6 @@
 
 		if (hasArgs(selectedKeyframe.easing)) getEasingArgs()
 
-		console.log(match[2].toLowerCase(), match[1].toLowerCase())
 		return {
 			type: match?.[2].toLowerCase(),
 			mode: match?.[1].toLowerCase(),
@@ -76,20 +75,26 @@
 		easingMode = mode
 	}
 
-	let unsub: () => void
+	let unsub: (() => void) | undefined
 	function getEasingArgs() {
 		if (!selectedKeyframe) return
 		unsub && unsub()
 		if (hasArgs(selectedKeyframe.easing)) {
-			easingArg = new Valuable(getEasingArgDefault(selectedKeyframe) || 0)
-			unsub = easingArg.subscribe(value => setEasingArgs(value))
+			easingArg = new Valuable(
+				selectedKeyframe.easingArgs?.[0] || getEasingArgDefault(selectedKeyframe) || 0,
+			)
+			unsub = easingArg?.subscribe(value => setEasingArgs(value))
 		} else {
 			easingArg = undefined
 		}
 	}
 
-	function setEasingArgs(arg: number) {
+	function setEasingArgs(arg: number | undefined) {
 		if (!selectedKeyframe) return
+		if (!arg) {
+			selectedKeyframe.easingArgs = undefined
+			return
+		}
 		selectedKeyframe.easingArgs = [arg]
 	}
 
@@ -111,7 +116,6 @@
 			['position', 'rotation', 'scale'].includes(keyframe.channel) &&
 			!isFirstKeyframe(keyframe)
 		) {
-			console.log(keyframe)
 			selectedKeyframe = keyframe
 			const easing = getSelectedEasing()
 			if (easing) {
@@ -124,10 +128,12 @@
 	})
 
 	events.UNSELECT_KEYFRAME.subscribe(() => {
+		setEasingArgs($easingArg)
 		selectedKeyframe = undefined
 	})
 
 	events.UNSELECT_AJ_PROJECT.subscribe(() => {
+		setEasingArgs($easingArg)
 		selectedKeyframe = undefined
 	})
 </script>

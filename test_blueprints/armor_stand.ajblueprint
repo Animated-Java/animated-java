@@ -1675,6 +1675,23 @@
 							"interpolation": "linear",
 							"easing": "linear",
 							"easingArgs": []
+						},
+						{
+							"channel": "commands",
+							"data_points": [
+								{
+									"commands": "say bye",
+									"execute_condition": "",
+									"repeat": false,
+									"repeat_frequency": 1
+								}
+							],
+							"uuid": "523673ac-dff1-1729-8064-4d0258e2de2a",
+							"time": 2,
+							"color": -1,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
 						}
 					]
 				}
