@@ -1,13 +1,15 @@
 import { Valuable } from './util/stores'
 
 export type ExportMode = 'raw' | 'zip' | 'none'
+export type ExportEnvironment = 'vanilla' | 'plugin'
 
 export const defaultValues = {
-	id: 'aj:new_blueprint',
+	id: 'animated_java:new_blueprint',
 	show_bounding_box: false,
 	auto_bounding_box: true,
 	bounding_box: [48, 48],
 	// Export Settings
+	environment: 'vanilla' as ExportEnvironment,
 	enable_plugin_mode: false,
 	resource_pack_export_mode: 'raw' as ExportMode,
 	data_pack_export_mode: 'raw' as ExportMode,

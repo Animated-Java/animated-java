@@ -119,3 +119,9 @@ export function mapObjEntries<V, RV>(
 ): Record<string, RV> {
 	return Object.fromEntries(Object.entries(obj).map(([k, v]) => cb(k, v)))
 }
+
+export function markdownToHTML(markdown: string) {
+	return markdown
+		.replace('\n', '<br/>')
+		.replace(/`(.+?)`/, '<code class="animated-java-code">$1</code>')
+}

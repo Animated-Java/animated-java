@@ -530,7 +530,7 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 	id: 'animated_java_blueprint',
 	name: 'Animated Java Blueprint',
 	icon: 'icon-armor_stand',
-	category: 'minecraft',
+	category: 'animated_java',
 	target: 'Minecraft: Java Edition',
 	confidential: false,
 	condition: () => true,

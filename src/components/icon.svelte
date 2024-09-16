@@ -15,4 +15,21 @@
 		margin-top: 2px;
 		box-shadow: 1px 1px 1px #000000aa;
 	}
+	:global([format='animated_java_blueprint'] label) {
+		color: #00aced;
+	}
+	:global([format='animated_java_blueprint']:hover label) {
+		color: #68c8eb;
+	}
+	:global(.selected[format='animated_java_blueprint'] label) {
+		color: var(--color-accent_text) !important;
+	}
+	:global(code.animated-java-code) {
+		background-color: var(--color-back);
+		border-radius: 4px;
+		padding: 2px 4px;
+		font-size: 15px;
+		font-family: var(--font-code);
+		align-self: end;
+	}
 </style>

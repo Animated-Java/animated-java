@@ -6,7 +6,7 @@ const DIALOG_STACK: Array<SvelteDialog<unknown, any>> = []
 
 type SvelteDialogOptions<T, U extends ComponentConstructorOptions> = Omit<
 	DialogOptions,
-	'lines'
+	'lines' | 'sidebar'
 > & {
 	id: string
 	component: SvelteComponentConstructor<T, U>
@@ -40,6 +40,127 @@ export class SvelteDialog<T, U extends Record<string, any>> extends Dialog {
 				target: parentElement,
 				props: options.props,
 			})
+			if (options.onOpen) options.onOpen()
+			if (!options.stackable) {
+				DIALOG_STACK.forEach(v => v.cancel())
+				DIALOG_STACK.empty()
+			}
+			DIALOG_STACK.push(this)
+		}
+
+		this.confirm = (e: Event) => {
+			if (e instanceof KeyboardEvent) {
+				if (options.preventKeybinds) {
+					e.preventDefault()
+					e.stopPropagation()
+					return
+				} else if (
+					options.preventKeybindConfirm &&
+					e.key === Keybinds.extra.confirm.keybind.getCode()
+				) {
+					e.preventDefault()
+					e.stopPropagation()
+					return
+				} else if (
+					options.preventKeybindCancel &&
+					e.key === Keybinds.extra.cancel.keybind.getCode()
+				) {
+					e.preventDefault()
+					e.stopPropagation()
+					return
+				}
+			}
+			this.close(this.confirmIndex, e)
+		}
+
+		this.onButton = (...args) => {
+			if (!this.instance) return
+			this.instance.$destroy()
+			this.instance = undefined
+			if (options.onButton) options.onButton(...args)
+			if (options.onClose) options.onClose()
+		}
+
+		this.onCancel = (...args) => {
+			if (!this.instance) return
+			this.instance.$destroy()
+			this.instance = undefined
+			if (options.onCancel) options.onCancel(...args)
+			if (options.onClose) options.onClose()
+		}
+	}
+}
+
+interface SidebarDialogPage<T, U extends ComponentConstructorOptions> {
+	icon: string
+	label: string
+	component: SvelteComponentConstructor<T, U>
+	props: U['props']
+}
+
+interface SidebarDialogOptions<T, U extends ComponentConstructorOptions> {
+	pages: Record<string, SidebarDialogPage<T, U>>
+	defaultPage?: string
+	onPageSwitch?(page: string): void
+}
+
+type SvelteSidebarDialogOptions = Omit<DialogOptions, 'lines' | 'sidebar'> & {
+	id: string
+	sidebar: SidebarDialogOptions<any, any>
+	preventKeybinds?: boolean
+	preventKeybindConfirm?: boolean
+	preventKeybindCancel?: boolean
+	onClose?: () => void
+	stackable?: boolean
+}
+
+export class SvelteSidebarDialog extends Dialog {
+	instance?: SvelteComponentDev | undefined
+	pages: Record<string, SidebarDialogPage<any, any>>
+	defaultPage: string
+	constructor(options: SvelteSidebarDialogOptions) {
+		const mount = document.createComment(`svelte-dialog-` + guid())
+
+		const dialogOptions = { ...options }
+		delete dialogOptions.component
+
+		const userOnPageSwitch = options.sidebar.onPageSwitch
+		options.sidebar.onPageSwitch = (page: string) => {
+			console.log('Switching to page', page)
+			this.instance?.$destroy()
+			this.instance = new this.pages[page].component({
+				target: mount.parentElement,
+				props: this.pages[page].props,
+			}) as SvelteComponentDev
+			userOnPageSwitch?.(page)
+		}
+
+		super(options.id, {
+			...dialogOptions,
+			lines: [mount],
+		})
+
+		this.pages = options.sidebar.pages
+
+		if (Object.keys(this.pages).length === 0) {
+			throw new Error('No pages provided for sidebar dialog!')
+		}
+
+		this.defaultPage = Object.keys(options.sidebar.pages)[0]
+		if (options.sidebar.defaultPage) {
+			this.defaultPage = options.sidebar.defaultPage
+		}
+
+		this.onOpen = () => {
+			const parentElement = mount.parentElement
+			if (this.instance || !parentElement) return
+			parentElement.style.overflow = 'visible'
+
+			this.instance = new this.pages[this.defaultPage].component({
+				target: parentElement,
+				props: this.pages[this.defaultPage].props,
+			}) as SvelteComponentDev
+
 			if (options.onOpen) options.onOpen()
 			if (!options.stackable) {
 				DIALOG_STACK.forEach(v => v.cancel())

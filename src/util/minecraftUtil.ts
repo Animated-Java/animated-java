@@ -21,6 +21,10 @@ export function toSafeFuntionName(name: string): string {
 		.replace(/_+/g, '_')
 }
 
+export function isSafeFunctionName(name: string): boolean {
+	return name === toSafeFuntionName(name)
+}
+
 /**
  * Get the path of a resource location, e.g. 'minecraft:block/stone' -> 'assets/minecraft/models/block/stone'
  * @param resourceLocation The resource location, e.g. 'minecraft:block/stone'
@@ -46,6 +50,7 @@ export function isResourcePackPath(path: string) {
 
 export function parseResourcePackPath(path: string): IMinecraftResourceLocation | undefined {
 	path = path.replaceAll(/\\/g, '/')
+
 	const parts = path.split('/')
 
 	const assetsIndex = parts.indexOf('assets')
@@ -72,12 +77,20 @@ export function parseResourcePackPath(path: string): IMinecraftResourceLocation 
 	}
 }
 
+export function containsInvalidResourceLocationCharacters(resourceLocation: string) {
+	if (resourceLocation.match(/[^a-z0-9_/.:]/g)) return true
+	return false
+}
+
 export function parseResourceLocation(resourceLocation: string) {
 	let [namespace, ...parts] = resourceLocation.split(':')
 	if (parts.length === 0) {
 		parts = [namespace]
-		namespace = 'minecraft'
+		namespace = ''
 	}
+
+	if (containsInvalidResourceLocationCharacters(namespace)) return
+
 	const path = parts.join('')
 	const resourceType = path.split('/')[0]
 	const parsed = PathModule.parse(path)
@@ -200,6 +213,7 @@ export async function parseBlock(block: string): Promise<IParsedBlock | undefine
 	}
 
 	const resource = parseResourceLocation(block)
+	if (!resource) return
 	return {
 		resource,
 		resourceLocation: resource.namespace + ':' + resource.path,

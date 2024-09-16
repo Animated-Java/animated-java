@@ -46,6 +46,7 @@ import { BLOCKSTATE_REGISTRY } from './systems/minecraft/blockstateManager'
 import { exportProject } from './systems/exporter'
 import { openBlueprintLoadingDialog } from './interface/blueprintLoadingPopup'
 import { openInstallPopup } from './interface/installedPopup'
+import { openBlueprintSettingsDialog } from './interface/blueprintSettingsDialog'
 
 // Show loading popup
 void showLoadingPopup().then(async () => {
@@ -102,6 +103,7 @@ globalThis.AnimatedJava = {
 		exportProject,
 		openBlueprintLoadingDialog,
 		openInstallPopup,
+		openBlueprintSettingsDialog,
 	},
 }
 
