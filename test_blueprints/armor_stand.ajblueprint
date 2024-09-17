@@ -1487,14 +1487,19 @@
 				"name": "no_armor",
 				"display_name": "no_armor",
 				"uuid": "5417306e-2c69-3f36-1e3c-edd904034a36",
-				"texture_map": {},
+				"texture_map": {
+					"240844f3-f615-fe51-0ada-d208791fbdc0": "797174ae-5c58-4a83-a630-eefd51007c80",
+					"34528a28-3a31-8b47-65bb-ef2b60b02401": "797174ae-5c58-4a83-a630-eefd51007c80"
+				},
 				"excluded_nodes": []
 			},
 			{
 				"name": "no_baseplate",
 				"display_name": "no_baseplate",
 				"uuid": "bf2a6915-ec63-7ccf-3844-ea8be00b97e6",
-				"texture_map": {},
+				"texture_map": {
+					"eb6c49b8-8e8e-a039-9a6f-ef6a06bc7924": "797174ae-5c58-4a83-a630-eefd51007c80"
+				},
 				"excluded_nodes": [
 					"98795982-9c43-6e3e-eed9-2c776a957938",
 					"102db36a-eeda-0e6f-d5cc-c186ecda8165",

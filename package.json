@@ -2,8 +2,8 @@
 	"type": "module",
 	"name": "animated_java",
 	"title": "Animated Java",
-	"version": "1.4.0",
-	"display_version": "1.4.0",
+	"version": "1.4.1",
+	"display_version": "1.4.1",
 	"min_blockbench_version": "4.10.0",
 	"author": {
 		"name": "Titus Evans (SnaveSutit)",
@@ -70,7 +70,7 @@
 	"scripts": {
 		"build:scripts": "esbuild --bundle --platform=node --outfile=dist/build.cjs --packages=external ./tools/esbuild.ts",
 		"dev": "yarn build:scripts && node ./dist/build.cjs --mode=dev",
-		"prod": "yarn build:scripts && node ./dist/build.cjs",
+		"prod": "node ./tools/cleanupDist.cjs && yarn build:scripts && node ./dist/build.cjs",
 		"format": "prettier --write ."
 	},
 	"devDependencies": {
