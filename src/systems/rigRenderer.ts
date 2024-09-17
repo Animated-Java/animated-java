@@ -150,7 +150,6 @@ export type AnyRenderedNode = IRenderedNodes[keyof IRenderedNodes]
 export interface IRenderedVariantModel {
 	model: IRenderedModel | null
 	custom_model_data: number
-	model_path: string
 	resource_location: string
 }
 
@@ -350,7 +349,6 @@ function renderGroup(
 				display: { head: { rotation: [0, 180, 0] } },
 			},
 			custom_model_data: -1, // This is calculated when constructing the resource pack.
-			model_path: path,
 			resource_location: parsed.resourceLocation,
 		}
 	}
@@ -554,13 +552,17 @@ function renderCamera(camera: ICamera, rig: IRenderedRig) {
 function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 	const models: Record<string, IRenderedVariantModel> = {}
 
+	const defaultVariant = Variant.getDefault()
+	const defaultModels = rig.variants[defaultVariant.uuid].models
+
+	// debugger
 	for (const [uuid, bone] of Object.entries(rig.nodes)) {
 		if (bone.type !== 'bone') continue
 		if (variant.excludedNodes.find(v => v.value === uuid)) continue
 		const textures: IRenderedModel['textures'] = {}
 
-		// Is set false if any texture other than the internal transparency texture is found.
-		let isTransparent = true
+		let isOnlyTransparent = true
+		const unreplacedTextures = new Set<string>(Object.keys(defaultModels[uuid].model!.textures))
 
 		for (const [fromUUID, toUUID] of variant.textureMap.map.entries()) {
 			const fromTexture = Texture.all.find(t => t.uuid === fromUUID)
@@ -568,6 +570,7 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 			if (toUUID === TRANSPARENT_TEXTURE.uuid) {
 				textures[fromTexture.id] = TRANSPARENT_TEXTURE_RESOURCE_LOCATION
 				rig.textures[TRANSPARENT_TEXTURE.id] = TRANSPARENT_TEXTURE
+				unreplacedTextures.delete(fromTexture.id)
 			} else {
 				const toTexture = Texture.all.find(t => t.uuid === toUUID)
 				if (!toTexture) throw new Error(`To texture not found: ${toUUID}`)
@@ -576,12 +579,22 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 					rig
 				).resourceLocation
 				rig.textures[toTexture.id] = toTexture
-				isTransparent = false
+				isOnlyTransparent = false
 			}
 		}
 
-		// Don't export models without any texture changes, or that are fully transparent.
-		if (isTransparent || Object.keys(textures).length === 0) continue
+		// Don't export models without any texture changes
+		if (Object.keys(textures).length === 0) continue
+
+		// Use empty model if all textures are transparent
+		if (isOnlyTransparent && unreplacedTextures.size === 0) {
+			models[uuid] = {
+				model: null,
+				custom_model_data: 1,
+				resource_location: 'animated_java:empty',
+			}
+			continue
+		}
 
 		const modelParent = PathModule.join(
 			rig.model_export_folder,
@@ -609,7 +622,6 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 				textures,
 			},
 			custom_model_data: -1, // This is calculated when constructing the resource pack.
-			model_path: modelPath,
 			resource_location: parsedModelPath.resourceLocation,
 		}
 	}

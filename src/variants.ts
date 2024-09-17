@@ -74,6 +74,7 @@ export class TextureMap {
 
 	public verifyTextures() {
 		for (const [key, value] of this.map) {
+			if (value === TRANSPARENT_TEXTURE.uuid) continue
 			if (!Texture.all.some(t => t.uuid === value)) {
 				this.map.delete(key)
 			}
