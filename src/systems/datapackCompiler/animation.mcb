@@ -296,7 +296,6 @@ dir <%export_namespace%> {
 					$scoreboard players set @s <%OBJECTIVES.FRAME(animation.safe_name)%> $(to_frame)
 
 					scoreboard players operation #this <%OBJECTIVES.I()%> = @s <%OBJECTIVES.TWEEN_DURATION()%>
-					scoreboard players add @s <%OBJECTIVES.TWEEN_DURATION()%> 1
 					tag @s add <%TAGS.TRANSFORMS_ONLY()%>
 					execute at @s run function ./zzz/apply_frame {frame: 0}
 					$execute at @s run function ./zzz/apply_frame {frame: $(to_frame)}
