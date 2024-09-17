@@ -170,7 +170,6 @@ export function getFrame(
 			case 'bone': {
 				matrix = getNodeMatrix(outlinerNode, node.base_scale)
 				// Only add the frame if the matrix has changed.
-				// NOTE - Disabled because it causes issues with vanilla interpolation.
 				if (lastFrame && lastFrame.matrix.equals(matrix)) continue
 				// Inherit instant interpolation from parent
 				if (node.parent && node.parent !== 'root') {
@@ -188,6 +187,11 @@ export function getFrame(
 					interpolation = 'step'
 				} else if (prevKeyframe?.data_points.length === 2) {
 					interpolation = 'pre-post'
+					updatePreview(animation, time + 0.001)
+					const postMatrix = getNodeMatrix(outlinerNode, node.base_scale)
+					console.warn('pre-post', matrix.equals(postMatrix), matrix, postMatrix)
+					matrix = postMatrix
+					updatePreview(animation, time)
 				}
 
 				lastFrameCache.set(uuid, { matrix, keyframe })

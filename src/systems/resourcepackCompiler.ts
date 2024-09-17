@@ -289,6 +289,7 @@ export async function compileResourcePack(options: {
 	for (const variant of Object.values(rig.variants)) {
 		for (const [boneUuid, variantModel] of Object.entries(variant.models)) {
 			const bone = rig.nodes[boneUuid] as IRenderedNodes['Bone']
+			if (variantModel.custom_model_data !== -1) continue
 			variantModel.custom_model_data = displayItemModel.addOverride(
 				variantModel.resource_location
 			)

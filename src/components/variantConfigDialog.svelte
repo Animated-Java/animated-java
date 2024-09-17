@@ -100,6 +100,7 @@
 		label={translate('dialog.variant_config.variant_display_name')}
 		bind:value={displayName}
 		tooltip={translate('dialog.variant_config.variant_display_name.description')}
+		defaultValue={'New Variant'}
 	/>
 
 	{#key $name}
@@ -109,12 +110,14 @@
 				bind:value={name}
 				tooltip={translate('dialog.variant_config.variant_name.description')}
 				disabled
+				defaultValue={'new_variant'}
 			/>
 		{:else}
 			<LineInput
 				label={translate('dialog.variant_config.variant_name')}
 				bind:value={name}
 				tooltip={translate('dialog.variant_config.variant_name.description')}
+				defaultValue={'new_variant'}
 			/>
 		{/if}
 	{/key}
@@ -123,6 +126,7 @@
 		label={translate('dialog.variant_config.generate_name_from_display_name')}
 		bind:checked={generateNameFromDisplayName}
 		tooltip={translate('dialog.variant_config.generate_name_from_display_name.description')}
+		defaultValue={true}
 	/>
 
 	<div class="uuid">

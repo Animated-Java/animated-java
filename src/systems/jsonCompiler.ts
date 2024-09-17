@@ -101,7 +101,7 @@ interface ExportedTexture {
 	src: string
 }
 type ExportedVariantModel = Omit<IRenderedVariantModel, 'model_path' | 'resource_location'> & {
-	model: IRenderedModel
+	model: IRenderedModel | null
 	custom_model_data: number
 }
 type ExportedVariant = Omit<IRenderedVariant, 'models'> & {
@@ -203,14 +203,7 @@ function serializeVariant(rig: IRenderedRig, variant: IRenderedVariant): Exporte
 		...variant,
 		models: mapObjEntries(variant.models, (uuid, model) => {
 			const json: ExportedVariantModel = {
-				model: {
-					...model.model,
-					// textures: mapObjEntries(model.model.textures, (id, path) => {
-					// 	const actualTexture = rig.textures[id]
-					// 	if (!actualTexture) return [id, path]
-					// 	return [id, actualTexture.uuid]
-					// }),
-				},
+				model: model.model,
 				custom_model_data: model.custom_model_data,
 			}
 			return [uuid, json]

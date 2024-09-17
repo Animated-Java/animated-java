@@ -1,4 +1,4 @@
-import { SvelteComponent } from 'svelte'
+import { SvelteComponentDev } from 'svelte/internal'
 import AnimatedJavaLoadingPopup from '../components/animatedJavaLoadingPopup.svelte'
 import { injectSvelteCompomponent } from '../util/injectSvelteComponent'
 import { Valuable } from '../util/stores'
@@ -7,7 +7,7 @@ const LOADED = new Valuable(false)
 const OFFLINE = new Valuable(false)
 const PROGRESS = new Valuable(0)
 const PROGRESS_LABEL = new Valuable('')
-let activeComponent: SvelteComponent | undefined
+let activeComponent: SvelteComponentDev | undefined
 
 export async function showLoadingPopup() {
 	if (activeComponent) return

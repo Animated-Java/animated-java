@@ -41,6 +41,7 @@
 		label={translate('dialog.animation_properties.animation_name.title')}
 		tooltip={translate('dialog.animation_properties.animation_name.description')}
 		bind:value={animationName}
+		defaultValue={'new'}
 		valueChecker={animationNameValueChecker}
 	/>
 
@@ -61,6 +62,7 @@
 		tooltip={translate('dialog.animation_properties.loop_delay.description')}
 		min={0}
 		bind:value={loopDelay}
+		defaultValue={0}
 	/>
 
 	<Collection

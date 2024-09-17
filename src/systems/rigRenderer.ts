@@ -127,7 +127,7 @@ export interface IRenderedNodes {
 	ItemDisplay: IRenderedNode & {
 		type: 'item_display'
 		item: string
-		itme_display: string
+		item_display: string
 		/**
 		 * The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit.
 		 */
@@ -148,9 +148,8 @@ export interface IRenderedNodes {
 export type AnyRenderedNode = IRenderedNodes[keyof IRenderedNodes]
 
 export interface IRenderedVariantModel {
-	model: IRenderedModel
+	model: IRenderedModel | null
 	custom_model_data: number
-	model_path: string
 	resource_location: string
 }
 
@@ -350,7 +349,6 @@ function renderGroup(
 				display: { head: { rotation: [0, 180, 0] } },
 			},
 			custom_model_data: -1, // This is calculated when constructing the resource pack.
-			model_path: path,
 			resource_location: parsed.resourceLocation,
 		}
 	}
@@ -383,7 +381,7 @@ function renderGroup(
 				break
 			}
 			case node instanceof Cube: {
-				renderCube(node, rig, groupModel.model)
+				renderCube(node, rig, groupModel.model!)
 				rig.includes_custom_models = true
 				break
 			}
@@ -393,7 +391,7 @@ function renderGroup(
 	}
 
 	// Export a struct instead of a bone if no elements are present
-	if (!groupModel.model.elements || groupModel.model.elements.length === 0) {
+	if (!groupModel.model || !groupModel.model.elements || groupModel.model.elements.length === 0) {
 		delete defaultVariant.models[group.uuid]
 		const struct: IRenderedNodes['Struct'] = {
 			type: 'struct',
@@ -444,7 +442,7 @@ function renderItemDisplay(display: VanillaItemDisplay, rig: IRenderedRig) {
 		uuid: display.uuid,
 		parent: parentId,
 		item: display.item,
-		itme_display: display.itemDisplay,
+		item_display: display.itemDisplay,
 		base_scale: 1,
 		config: display.config,
 		default_transform: {} as INodeTransform,
@@ -554,10 +552,17 @@ function renderCamera(camera: ICamera, rig: IRenderedRig) {
 function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 	const models: Record<string, IRenderedVariantModel> = {}
 
+	const defaultVariant = Variant.getDefault()
+	const defaultModels = rig.variants[defaultVariant.uuid].models
+
+	// debugger
 	for (const [uuid, bone] of Object.entries(rig.nodes)) {
 		if (bone.type !== 'bone') continue
 		if (variant.excludedNodes.find(v => v.value === uuid)) continue
 		const textures: IRenderedModel['textures'] = {}
+
+		let isOnlyTransparent = true
+		const unreplacedTextures = new Set<string>(Object.keys(defaultModels[uuid].model!.textures))
 
 		for (const [fromUUID, toUUID] of variant.textureMap.map.entries()) {
 			const fromTexture = Texture.all.find(t => t.uuid === fromUUID)
@@ -565,6 +570,7 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 			if (toUUID === TRANSPARENT_TEXTURE.uuid) {
 				textures[fromTexture.id] = TRANSPARENT_TEXTURE_RESOURCE_LOCATION
 				rig.textures[TRANSPARENT_TEXTURE.id] = TRANSPARENT_TEXTURE
+				unreplacedTextures.delete(fromTexture.id)
 			} else {
 				const toTexture = Texture.all.find(t => t.uuid === toUUID)
 				if (!toTexture) throw new Error(`To texture not found: ${toUUID}`)
@@ -573,11 +579,22 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 					rig
 				).resourceLocation
 				rig.textures[toTexture.id] = toTexture
+				isOnlyTransparent = false
 			}
 		}
 
 		// Don't export models without any texture changes
 		if (Object.keys(textures).length === 0) continue
+
+		// Use empty model if all textures are transparent
+		if (isOnlyTransparent && unreplacedTextures.size === 0) {
+			models[uuid] = {
+				model: null,
+				custom_model_data: 1,
+				resource_location: 'animated_java:empty',
+			}
+			continue
+		}
 
 		const modelParent = PathModule.join(
 			rig.model_export_folder,
@@ -605,7 +622,6 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 				textures,
 			},
 			custom_model_data: -1, // This is calculated when constructing the resource pack.
-			model_path: modelPath,
 			resource_location: parsedModelPath.resourceLocation,
 		}
 	}

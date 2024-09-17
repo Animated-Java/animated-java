@@ -11,7 +11,6 @@
 					"required": [
 						"export_namespace",
 						"bounding_box",
-						"display_item",
 						"custom_model_data_offset",
 						"baked_animations"
 					],
@@ -185,6 +184,10 @@
 			"properties": {
 				"model": {
 					"oneOf": [
+						{
+							"type": "null",
+							"description": "If the model is null it means all of the textures for this model were replaced with the internal transparency texture"
+						},
 						{ "$ref": "#/definitions/vanillaModel" },
 						{ "$ref": "#/definitions/variantModel" }
 					]
@@ -247,7 +250,7 @@
 		},
 		"node": {
 			"type": "object",
-			"required": ["type", "name", "safe_name", "uuid", "default_transform"],
+			"required": ["type", "name", "uuid", "default_transform"],
 			"properties": {
 				"type": {
 					"type": "string",
@@ -262,7 +265,6 @@
 					]
 				},
 				"name": { "type": "string" },
-				"safe_name": { "type": "string" },
 				"uuid": { "type": "string" },
 				"parent": { "type": "string" },
 				"default_transform": {
@@ -436,7 +438,6 @@
 					"type": "object",
 					"required": [
 						"name",
-						"safe_name",
 						"duration",
 						"loop_delay",
 						"loop_mode",
@@ -446,7 +447,6 @@
 					"additionalProperties": false,
 					"properties": {
 						"name": { "type": "string" },
-						"safe_name": { "type": "string" },
 						"duration": { "type": "number" },
 						"loop_delay": { "type": "number" },
 						"loop_mode": { "type": "string", "enum": ["none", "loop", "ping-pong"] },
@@ -665,13 +665,9 @@
 		},
 		"texture": {
 			"type": "object",
-			"required": ["name", "id", "src"],
+			"required": ["name", "src"],
 			"properties": {
 				"name": { "type": "string" },
-				"id": {
-					"type": "string",
-					"description": "The ID of the texture used when making vanilla models."
-				},
 				"src": {
 					"type": "string",
 					"description": "A data URL containing the texture image."

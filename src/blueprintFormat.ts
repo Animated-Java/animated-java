@@ -620,6 +620,7 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 	animated_textures: true,
 	animation_controllers: true,
 	animation_files: true,
+	texture_mcmeta: true,
 	animation_mode: true,
 	bone_binding_expression: true,
 	bone_rig: true,

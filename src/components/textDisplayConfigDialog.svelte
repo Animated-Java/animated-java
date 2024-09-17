@@ -47,6 +47,7 @@
 			label={translate('dialog.text_display_config.glowing.title')}
 			tooltip={translate('dialog.text_display_config.glowing.description')}
 			bind:checked={glowing}
+			defaultValue={TextDisplayConfig.prototype.glowing}
 		/>
 
 		<ColorPicker
@@ -59,6 +60,7 @@
 			label={translate('dialog.text_display_config.shadow_radius.title')}
 			tooltip={translate('dialog.text_display_config.shadow_radius.description')}
 			bind:value={shadowRadius}
+			defaultValue={TextDisplayConfig.prototype.shadowRadius}
 			min={0}
 			max={64}
 		/>
@@ -67,35 +69,38 @@
 			label={translate('dialog.text_display_config.shadow_strength.title')}
 			tooltip={translate('dialog.text_display_config.shadow_strength.description')}
 			bind:value={shadowStrength}
+			defaultValue={TextDisplayConfig.prototype.shadowStrength}
 			min={0}
 		/>
 
 		<Checkbox
-			label={translate('dialog.text_display_config.override_brightness.title')}
-			tooltip={translate('dialog.text_display_config.override_brightness.description')}
+			label={translate('dialog.bone_config.use_custom_brightness.title')}
+			tooltip={translate('dialog.bone_config.use_custom_brightness.description')}
 			bind:checked={overrideBrightness}
+			defaultValue={TextDisplayConfig.prototype.overrideBrightness}
 		/>
 
-		{#if $overrideBrightness}
-			<NumberSlider
-				label={translate('dialog.text_display_config.brightness_override.title')}
-				tooltip={translate('dialog.text_display_config.brightness_override.description')}
-				bind:value={brightnessOverride}
-				min={0}
-				max={15}
-			/>
-		{/if}
+		<NumberSlider
+			label={translate('dialog.bone_config.custom_brightness.title')}
+			tooltip={translate('dialog.bone_config.custom_brightness.description')}
+			bind:value={brightnessOverride}
+			defaultValue={TextDisplayConfig.prototype.brightnessOverride}
+			min={0}
+			max={15}
+		/>
 
 		<Checkbox
 			label={translate('dialog.text_display_config.invisible.title')}
 			tooltip={translate('dialog.text_display_config.invisible.description')}
 			bind:checked={invisible}
+			defaultValue={TextDisplayConfig.prototype.invisible}
 		/>
 	{:else}
 		<Checkbox
 			label={translate('dialog.text_display_config.use_nbt.title')}
 			tooltip={translate('dialog.text_display_config.use_nbt.description')}
 			bind:checked={useNBT}
+			defaultValue={TextDisplayConfig.prototype.useNBT}
 		/>
 
 		{#if $useNBT}
@@ -106,6 +111,7 @@
 				label={translate('dialog.text_display_config.nbt.title')}
 				tooltip={translate('dialog.text_display_config.nbt.description')}
 				bind:value={nbt}
+				defaultValue={TextDisplayConfig.prototype.nbt}
 			/>
 		{:else}
 			<Select
@@ -120,12 +126,14 @@
 				label={translate('dialog.text_display_config.glowing.title')}
 				tooltip={translate('dialog.text_display_config.glowing.description')}
 				bind:checked={glowing}
+				defaultValue={TextDisplayConfig.prototype.glowing}
 			/>
 
 			<Checkbox
 				label={translate('dialog.text_display_config.override_glow_color.title')}
 				tooltip={translate('dialog.text_display_config.override_glow_color.description')}
 				bind:checked={overrideGlowColor}
+				defaultValue={TextDisplayConfig.prototype.overrideGlowColor}
 			/>
 
 			{#if $overrideGlowColor}
@@ -140,6 +148,7 @@
 				label={translate('dialog.text_display_config.shadow_radius.title')}
 				tooltip={translate('dialog.text_display_config.shadow_radius.description')}
 				bind:value={shadowRadius}
+				defaultValue={TextDisplayConfig.prototype.shadowRadius}
 				min={0}
 				max={15}
 			/>
@@ -148,6 +157,7 @@
 				label={translate('dialog.text_display_config.shadow_strength.title')}
 				tooltip={translate('dialog.text_display_config.shadow_strength.description')}
 				bind:value={shadowStrength}
+				defaultValue={TextDisplayConfig.prototype.shadowStrength}
 				min={0}
 				max={15}
 			/>
@@ -156,6 +166,7 @@
 				label={translate('dialog.text_display_config.override_brightness.title')}
 				tooltip={translate('dialog.text_display_config.override_brightness.description')}
 				bind:checked={overrideBrightness}
+				defaultValue={TextDisplayConfig.prototype.overrideBrightness}
 			/>
 
 			{#if $overrideBrightness}
@@ -165,6 +176,7 @@
 						'dialog.text_display_config.brightness_override.description',
 					)}
 					bind:value={brightnessOverride}
+					defaultValue={TextDisplayConfig.prototype.brightnessOverride}
 					min={0}
 					max={15}
 				/>
