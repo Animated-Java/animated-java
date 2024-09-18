@@ -4,12 +4,15 @@ import * as pathjs from 'path'
 import * as c from 'svelte/compiler'
 import { mkdirSync, readFileSync, writeFileSync } from 'fs'
 import * as svelteInternal from 'svelte/internal'
+import * as prettier from 'prettier'
 
 const PACKAGE = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
 const PLUGIN_PACKAGE_PATH = './src/pluginPackage/'
 const SVELTE_FILE = './src/pluginPackage/about.svelte'
 const README_DIST_PATH = './dist/pluginPackage/about.md'
 const DIST_PATH = './dist/pluginPackage/'
+const PLUGIN_REPO_PATH = 'D:/github-repos/snavesutit/blockbench-plugins/plugins/animated_java'
+const PLUGIN_MANIFEST_PATH = 'D:/github-repos/snavesutit/blockbench-plugins/plugins.json'
 
 function plugin(): Plugin {
 	return {
@@ -40,6 +43,21 @@ function plugin(): Plugin {
 				writeFileSync(README_DIST_PATH, html)
 				if (fs.existsSync(pathjs.join(DIST_PATH, 'about.svelte')))
 					fs.unlinkSync(pathjs.join(DIST_PATH, 'about.svelte'))
+
+				if (fs.existsSync(PLUGIN_REPO_PATH)) {
+					console.log('📋 Copying to plugin repo')
+					fs.rmSync(PLUGIN_REPO_PATH, { recursive: true, force: true })
+					fs.cpSync(DIST_PATH, PLUGIN_REPO_PATH, { recursive: true })
+					const manifest = JSON.parse(fs.readFileSync(PLUGIN_MANIFEST_PATH, 'utf-8'))
+					manifest.animated_java.version = PACKAGE.version
+					fs.writeFileSync(
+						PLUGIN_MANIFEST_PATH,
+						prettier.format(JSON.stringify(manifest, null, '\t'), {
+							useTabs: true,
+							parser: 'json',
+						})
+					)
+				}
 			})
 		},
 	}
