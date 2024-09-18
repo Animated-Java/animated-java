@@ -232,9 +232,7 @@ dir <%export_namespace%> {
 					tag @s add <%TAGS.ANIMATION_PLAYING(export_namespace, animation.safe_name)%>
 					scoreboard players set @s <%OBJECTIVES.FRAME(animation.safe_name)%> 0
 					tag @s add <%TAGS.TRANSFORMS_ONLY()%>
-					say pre
 					execute at @s run function ./zzz/set_frame {frame: 0}
-					say post
 					tag @s remove <%TAGS.TRANSFORMS_ONLY()%>
 				}
 				function stop {
