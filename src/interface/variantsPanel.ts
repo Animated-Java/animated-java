@@ -38,7 +38,7 @@ export const DELETE_VARIANT_ACTION = createAction(`${PACKAGE.name}:deleteVariant
 export const OPEN_VARIANT_CONFIG_ACTION = createAction(`${PACKAGE.name}:openVariantConfig`, {
 	name: translate('action.variants.open_config'),
 	icon: 'settings',
-	condition: () => !!Variant.selected,
+	condition: () => !!Variant.selected && !Variant.selected.isDefault,
 	click() {
 		if (!Variant.selected) return
 		openVariantConfigDialog(Variant.selected)
@@ -47,9 +47,10 @@ export const OPEN_VARIANT_CONFIG_ACTION = createAction(`${PACKAGE.name}:openVari
 
 export const VARIANT_PANEL_CONTEXT_MENU = createMenu(
 	[
+		OPEN_VARIANT_CONFIG_ACTION.id,
+		new MenuSeparator(),
 		CREATE_VARIANT_ACTION.id,
 		DUPLICATE_VARIANT_ACTION.id,
-		OPEN_VARIANT_CONFIG_ACTION.id,
 		new MenuSeparator(),
 		DELETE_VARIANT_ACTION.id,
 	],
