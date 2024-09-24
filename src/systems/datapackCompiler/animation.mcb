@@ -126,9 +126,6 @@ dir <%export_namespace%> {
 			}
 			<%animationStorage.join('\n')%>
 		}
-		execute as @e[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] \
-			unless score @s <%OBJECTIVES.IS_RIG_LOADED()%> matches 1 at @s run \
-			function *<%export_namespace%>/root/on_load
 	}
 
 	dir root {
