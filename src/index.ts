@@ -102,6 +102,15 @@ globalThis.AnimatedJava = {
 		exportProject,
 		openBlueprintLoadingDialog,
 		openInstallPopup,
+		removeCubesAssociatedWithTexture(texture: Texture) {
+			const cubes = Cube.all.filter(cube =>
+				Object.values(cube.faces).some(face => face.texture === texture.uuid)
+			)
+			Undo.initEdit({ elements: cubes, outliner: true, textures: [texture] })
+			cubes.forEach(cube => cube.remove())
+			texture.remove()
+			Undo.finishEdit('Remove Cubes Associated With Texture')
+		},
 	},
 }
 
