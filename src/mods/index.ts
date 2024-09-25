@@ -1,3 +1,4 @@
+import './assetSetupMod'
 import './addLocatorActionMod'
 import './animationControllerMod'
 import './animationPropertiesAction'
