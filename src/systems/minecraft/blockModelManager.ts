@@ -388,9 +388,17 @@ export async function parseBlockState(block: IParsedBlock): Promise<BlockModelMe
 
 	for (const [k, v] of Object.entries(block.states)) {
 		if (!block.blockStateRegistryEntry.stateValues[k]) {
-			throw new Error(`Invalid block state '${k}' for '${block.resource.name}' `)
+			throw new Error(
+				`Invalid block state '${k}' for '${block.resource.name}'` +
+					` Expected one of: ${Object.keys(
+						block.blockStateRegistryEntry.stateValues
+					).join(', ')}`
+			)
 		} else if (!block.blockStateRegistryEntry.stateValues[k].includes(v)) {
-			throw new Error(`Invalid block state value '${v.toString()}' for '${k}'`)
+			throw new Error(
+				`Invalid block state value '${v.toString()}' for '${k}'.` +
+					` Expected one of: ${block.blockStateRegistryEntry.stateValues[k].join(', ')}`
+			)
 		}
 	}
 
