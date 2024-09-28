@@ -1,6 +1,7 @@
 import { BLUEPRINT_FORMAT } from '../blueprintFormat'
 
 import { ComponentConstructorOptions } from 'svelte'
+import { Valuable } from './stores'
 
 export type SvelteComponentConstructor<T, U extends ComponentConstructorOptions> = new (
 	options: U
@@ -124,4 +125,16 @@ export function markdownToHTML(markdown: string) {
 	return markdown
 		.replace('\n', '<br/>')
 		.replace(/`(.+?)`/, '<code class="animated-java-code">$1</code>')
+}
+
+export function makeValuable<O extends Record<string, any>>(obj: O) {
+	return mapObjEntries(obj, (k, v) => [k, new Valuable(v)]) as {
+		[Key in keyof O]: Valuable<O[Key]>
+	}
+}
+
+export function makeNotValueable<O extends Record<string, Valuable<any>>>(obj: O) {
+	return mapObjEntries(obj, (k, v) => [k, v.get()]) as {
+		[Key in keyof O]: ReturnType<O[Key]['get']>
+	}
 }

@@ -14,7 +14,7 @@
 	import { NbtCompound, NbtTag } from 'deepslate/lib/nbt'
 	import { JsonText } from '../systems/minecraft/jsonText'
 
-	const pluginModeEnabled = !!Project?.animated_java?.enable_plugin_mode
+	const pluginModeEnabled = !!Project?.animated_java?.environment
 
 	export let customName: Valuable<string>
 	export let customNameVisible: Valuable<boolean>

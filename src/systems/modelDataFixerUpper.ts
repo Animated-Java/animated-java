@@ -221,7 +221,7 @@ function updateModelTo1_0pre1(model: any) {
 			bounding_box: defaultSettings.bounding_box,
 			// Export settings
 			export_namespace: model.animated_java.settings.project_namespace,
-			enable_plugin_mode: defaultSettings.enable_plugin_mode,
+			enable_plugin_mode: defaultSettings.environment,
 			resource_pack_export_mode: defaultSettings.resource_pack_export_mode,
 			data_pack_export_mode: defaultSettings.data_pack_export_mode,
 			// Resource pack settings
@@ -243,7 +243,7 @@ function updateModelTo1_0pre1(model: any) {
 			summon_commands: defaultSettings.summon_commands,
 			interpolation_duration: defaultSettings.interpolation_duration,
 			teleportation_duration: defaultSettings.teleportation_duration,
-			use_storage_for_animation: defaultSettings.use_storage_for_animation,
+			use_storage_for_animation: defaultSettings.animation_system,
 			// Plugin settings
 			baked_animations: defaultSettings.bake_animations,
 			json_file: defaultSettings.json_file,

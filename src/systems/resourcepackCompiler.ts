@@ -69,7 +69,7 @@ export async function compileResourcePack(options: {
 		lastUsedExportNamespace,
 		options.resourcePackFolder
 	)
-	if (aj.resource_pack_export_mode === 'raw') {
+	if (aj.resource_pack_export_mode === 'folder') {
 		ajmeta.read()
 
 		PROGRESS_DESCRIPTION.set('Removing Old Resource Pack Files...')
@@ -158,10 +158,10 @@ export async function compileResourcePack(options: {
 		}
 	}
 
-	if (aj.enable_plugin_mode) {
+	if (aj.environment) {
 		// Do nothing
 		console.log('Plugin mode enabled. Skipping resource pack export.')
-	} else if (aj.resource_pack_export_mode === 'raw') {
+	} else if (aj.resource_pack_export_mode === 'folder') {
 		ajmeta.files = new Set(exportedFiles.keys())
 		ajmeta.write()
 

@@ -555,7 +555,7 @@ export async function compileDataPack(options: {
 	})
 
 	let ajmeta: DataPackAJMeta | null = null
-	if (aj.data_pack_export_mode === 'raw') {
+	if (aj.data_pack_export_mode === 'folder') {
 		ajmeta = new DataPackAJMeta(
 			PathModule.join(options.dataPackFolder, 'data.ajmeta'),
 			aj.id,
@@ -632,8 +632,8 @@ export async function compileDataPack(options: {
 		custom_summon_commands: aj.summon_commands,
 		matrixToNbtFloatArray,
 		transformationToNbt,
-		use_storage_for_animation: aj.use_storage_for_animation,
-		animationStorage: aj.use_storage_for_animation
+		use_storage_for_animation: aj.animation_system,
+		animationStorage: aj.animation_system
 			? await createAnimationStorage(rig, animations)
 			: null,
 		rigHash,
@@ -657,7 +657,7 @@ export async function compileDataPack(options: {
 	console.timeEnd('MC-Build Compiler took')
 
 	PROGRESS_DESCRIPTION.set('Writing Data Pack...')
-	if (aj.data_pack_export_mode === 'raw') {
+	if (aj.data_pack_export_mode === 'folder') {
 		console.time('Writing Files took')
 		await writeFiles(exportedFiles, options.dataPackFolder)
 		console.timeEnd('Writing Files took')

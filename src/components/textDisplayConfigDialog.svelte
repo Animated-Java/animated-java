@@ -11,7 +11,7 @@
 </script>
 
 <script lang="ts">
-	const pluginModeEnabled = !!Project?.animated_java?.enable_plugin_mode
+	const pluginModeEnabled = !!Project?.animated_java?.environment
 
 	export let billboard: Valuable<string>
 	export let overrideBrightness: Valuable<NonNullable<TextDisplayConfig['_overrideBrightness']>>

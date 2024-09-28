@@ -46,7 +46,7 @@ async function actuallyExportProject(forceSave = true) {
 		const resourcePackFolder = resolvePath(aj.resource_pack)
 		const dataPackFolder = resolvePath(aj.data_pack)
 
-		if (aj.enable_plugin_mode) {
+		if (aj.environment) {
 			modelExportFolder = PathModule.join('assets/animated_java/models/item/', aj.id)
 			textureExportFolder = PathModule.join('assets/animated_java/textures/item/', aj.id)
 		} else if (aj.enable_advanced_resource_pack_folders) {
@@ -96,7 +96,7 @@ async function actuallyExportProject(forceSave = true) {
 			modelExportFolder,
 		})
 
-		if (aj.enable_plugin_mode) {
+		if (aj.environment) {
 			exportJSON({
 				rig,
 				animations,

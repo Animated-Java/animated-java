@@ -16,7 +16,7 @@
 	import { JsonText } from '../systems/minecraft/jsonText'
 	import { prototype } from 'events'
 
-	const pluginModeEnabled = !!Project?.animated_java?.enable_plugin_mode
+	const pluginModeEnabled = !!Project?.animated_java?.environment
 
 	export let variant: Variant
 

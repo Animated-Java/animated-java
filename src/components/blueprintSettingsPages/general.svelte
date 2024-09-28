@@ -1,34 +1,16 @@
 <script lang="ts">
 	import { defaultValues } from '../../blueprintSettings'
-	import type { BlueprintSettings } from '../../interface/blueprintSettingsDialog'
+	import type { ValuableBlueprintSettings } from '../../interface/blueprintSettingsDialog'
 	import BoxSelect from '../sidebarDialogItems/boxSelect.svelte'
 	import LineEdit from '../sidebarDialogItems/lineEdit.svelte'
 	import ImpulseCommandBlock from '../../assets/impulse_command_block.png'
 	import PaperIcon from '../../assets/papermc.svg'
 	import {
 		containsInvalidResourceLocationCharacters,
-		isSafeFunctionName,
 		parseResourceLocation,
 	} from '../../util/minecraftUtil'
-	import Checkbox from '../sidebarDialogItems/checkbox.svelte'
 
-	export let settings: BlueprintSettings
-	const projectNameChecker: DialogItemValueChecker<string> = (value: string) => {
-		if (value === '') {
-			return {
-				type: 'error',
-				message: 'The project name cannot be empty!',
-			}
-		} else if (!isSafeFunctionName(value)) {
-			return {
-				type: 'error',
-				message:
-					'The project name contains invalid characters. Only letters, numbers, and underscores are allowed.',
-			}
-		}
-
-		return { type: 'success' }
-	}
+	export let settings: ValuableBlueprintSettings
 
 	const blueprintIDChecker: DialogItemValueChecker<string> = (value: string) => {
 		if (value === '') {
@@ -72,13 +54,15 @@
 <BoxSelect
 	label="Environment"
 	description="Choose the environment you will be using to run your project."
-	bind:selected={settings.environment}
+	selected={settings.environment}
 	options={{
 		vanilla: {
+			type: 'image',
 			label: 'Data Pack &\nResource Pack',
 			src: ImpulseCommandBlock,
 		},
 		plugin: {
+			type: 'image',
 			label: 'Paper Plugin',
 			src: PaperIcon,
 		},
@@ -88,7 +72,7 @@
 <LineEdit
 	label="Project Name"
 	description="Choose the name of your project file."
-	bind:value={settings.project_name}
+	value={settings.project_name}
 	placeholder="My Project"
 	required
 />
@@ -96,7 +80,7 @@
 <LineEdit
 	label="Blueprint ID"
 	description="Choose a unique identifier for your blueprint."
-	bind:value={settings.id}
+	value={settings.id}
 	defaultValue={defaultValues.id}
 	placeholder="animated_java:unnamed_project"
 	required

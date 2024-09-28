@@ -11,7 +11,7 @@
 <script lang="ts">
 	import { LocatorConfig } from '../nodeConfigs'
 
-	const pluginModeEnabled = !!Project?.animated_java?.enable_plugin_mode
+	const pluginModeEnabled = !!Project?.animated_java?.environment
 
 	export let useEntity: Valuable<boolean>
 	export let entityType: Valuable<string>

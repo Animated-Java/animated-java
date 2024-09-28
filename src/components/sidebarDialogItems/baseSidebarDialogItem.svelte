@@ -25,12 +25,12 @@
 <slot />
 
 {#if error}
-	<div class="message error" transition:slide={{ duration: 100, axis: 'y' }}>
+	<div class="message error" transition:slide|local={{ duration: 100, axis: 'y' }}>
 		<i class="fa fa-exclamation-circle text_icon" />
 		{@html markdownToHTML(error)}
 	</div>
 {:else if warning}
-	<div class="message warning" transition:slide={{ duration: 100, axis: 'y' }}>
+	<div class="message warning" transition:slide|local={{ duration: 100, axis: 'y' }}>
 		<i class="fa fa-exclamation-triangle text_icon" />
 		{@html markdownToHTML(warning)}
 	</div>

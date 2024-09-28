@@ -35,7 +35,7 @@
 
 <BaseSidebarDialogItem {label} {required} {description} {warning} {error}>
 	<div class="input-container">
-		<input type="text" class="dark_bordered {alertBorder}" {placeholder} bind:value={$value} />
+		<textarea class="dark_bordered {alertBorder}" {placeholder} bind:value={$value} />
 		{#if defaultValue !== '' && $value !== defaultValue}
 			<!-- svelte-ignore a11y-click-events-have-key-events -->
 			<i
@@ -53,8 +53,9 @@
 		width: 100%;
 		position: relative;
 	}
-	input {
+	textarea {
 		flex: 1;
+		height: 8em;
 		transition: border 0.1s cubic-bezier(0.25, 0.68, 0.53, 1.3);
 	}
 	i {

@@ -96,6 +96,7 @@ interface SidebarDialogPage<T, U extends ComponentConstructorOptions> {
 	label: string
 	component: SvelteComponentConstructor<T, U>
 	props: U['props']
+	condition?: () => boolean
 }
 
 interface SidebarDialogOptions<T, U extends ComponentConstructorOptions> {
@@ -118,6 +119,9 @@ export class SvelteSidebarDialog extends Dialog {
 	instance?: SvelteComponentDev | undefined
 	pages: Record<string, SidebarDialogPage<any, any>>
 	defaultPage: string
+
+	private conditionInterval: ReturnType<typeof setInterval>
+
 	constructor(options: SvelteSidebarDialogOptions) {
 		const mount = document.createComment(`svelte-dialog-` + guid())
 
@@ -126,12 +130,12 @@ export class SvelteSidebarDialog extends Dialog {
 
 		const userOnPageSwitch = options.sidebar.onPageSwitch
 		options.sidebar.onPageSwitch = (page: string) => {
-			console.log('Switching to page', page)
 			this.instance?.$destroy()
 			this.instance = new this.pages[page].component({
 				target: mount.parentElement,
 				props: this.pages[page].props,
 			}) as SvelteComponentDev
+
 			userOnPageSwitch?.(page)
 		}
 
@@ -139,6 +143,13 @@ export class SvelteSidebarDialog extends Dialog {
 			...dialogOptions,
 			lines: [mount],
 		})
+
+		this.conditionInterval = setInterval(() => {
+			for (const [key, other] of Object.entries(this.pages)) {
+				if (other.condition === undefined) continue
+				this.sidebar!.page_menu[key].style.display = other.condition?.() ? '' : 'none'
+			}
+		}, 1000 / 60)
 
 		this.pages = options.sidebar.pages
 
@@ -156,10 +167,7 @@ export class SvelteSidebarDialog extends Dialog {
 			if (this.instance || !parentElement) return
 			parentElement.style.overflow = 'visible'
 
-			this.instance = new this.pages[this.defaultPage].component({
-				target: parentElement,
-				props: this.pages[this.defaultPage].props,
-			}) as SvelteComponentDev
+			this.sidebar!.onPageSwitch(this.defaultPage)
 
 			if (options.onOpen) options.onOpen()
 			if (!options.stackable) {
@@ -209,5 +217,7 @@ export class SvelteSidebarDialog extends Dialog {
 			if (options.onCancel) options.onCancel(...args)
 			if (options.onClose) options.onClose()
 		}
+
+		console.log(this)
 	}
 }

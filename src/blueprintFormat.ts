@@ -580,9 +580,7 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 		Project.loadingPromises.push(
 			new Promise<void>(resolve => {
 				requestAnimationFrame(() => {
-					thisProject.pluginMode = new Valuable(
-						thisProject.animated_java.enable_plugin_mode
-					)
+					thisProject.pluginMode = new Valuable(thisProject.animated_java.environment)
 					// Remove the default title
 					const element = document.querySelector('#tab_bar_list .icon-armor_stand.icon')
 					element?.remove()

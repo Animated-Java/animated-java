@@ -363,7 +363,6 @@
 				),
 			}
 		}
-		console.log(path)
 		switch (true) {
 			case value === '':
 				return {
@@ -466,7 +465,7 @@
 		label={translate('dialog.blueprint_settings.enable_plugin_mode.title')}
 		tooltip={translate('dialog.blueprint_settings.enable_plugin_mode.description')}
 		bind:checked={enablePluginMode}
-		defaultValue={defaultValues.enable_plugin_mode}
+		defaultValue={defaultValues.environment}
 	/>
 
 	{#if $enablePluginMode}
@@ -656,7 +655,7 @@
 					'dialog.blueprint_settings.use_storage_for_animation.description',
 				)}
 				bind:checked={useStorageForAnimation}
-				defaultValue={defaultValues.use_storage_for_animation}
+				defaultValue={defaultValues.animation_system}
 			/>
 		{/if}
 	{/if}

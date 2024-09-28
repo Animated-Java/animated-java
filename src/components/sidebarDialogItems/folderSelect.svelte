@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { FileFilter } from 'electron'
 	import { Valuable } from '../../util/stores'
 	import BaseSidebarDialogItem from './baseSidebarDialogItem.svelte'
 	export let label: string
@@ -8,12 +9,13 @@
 	export let defaultValue: string = ''
 	export let placeholder: string = ''
 	export let valueChecker: DialogItemValueChecker<string> = undefined
+	export let filters: FileFilter[] = []
+	export let fileSelectMessage: string = 'Select a Folder'
 
 	let warning = ''
 	let error = ''
 
 	let alertBorder = ''
-
 	$: {
 		if (error) {
 			alertBorder = 'error-border'
@@ -31,18 +33,30 @@
 			result.type === 'error' ? (error = result.message) : (error = '')
 		}
 	}
+
+	function selectFile() {
+		Promise.any([
+			// @ts-ignore
+			electron.dialog.showOpenDialog({
+				properties: ['openDirectory'],
+				filters,
+				message: fileSelectMessage,
+			}),
+		]).then(result => {
+			if (!result.canceled) $value = result.filePaths[0]
+		})
+	}
 </script>
 
 <BaseSidebarDialogItem {label} {required} {description} {warning} {error}>
-	<div class="input-container">
-		<input type="text" class="dark_bordered {alertBorder}" {placeholder} bind:value={$value} />
+	<div class="input-container dark_bordered {alertBorder}">
+		<input type="text" {placeholder} bind:value={$value} />
 		{#if defaultValue !== '' && $value !== defaultValue}
 			<!-- svelte-ignore a11y-click-events-have-key-events -->
-			<i
-				class="fa fa-arrow-rotate-left text_icon reset-button"
-				on:click={() => ($value = defaultValue)}
-			/>
+			<i class="fa fa-arrow-rotate-left text_icon" on:click={() => ($value = defaultValue)} />
 		{/if}
+		<!-- svelte-ignore a11y-click-events-have-key-events -->
+		<i class="fa fa-folder text_icon" on:click={() => selectFile()} />
 	</div>
 </BaseSidebarDialogItem>
 
@@ -55,21 +69,17 @@
 	}
 	input {
 		flex: 1;
+		border: 0px;
 		transition: border 0.1s cubic-bezier(0.25, 0.68, 0.53, 1.3);
 	}
 	i {
 		align-content: center;
 		text-align: center;
 		width: 32px;
-	}
-	.reset-button {
 		cursor: pointer;
-		position: absolute;
-		right: 0;
-		top: 0;
 		height: 100%;
 	}
-	.reset-button:hover {
+	i:hover {
 		color: var(--color-light);
 	}
 	.error-border {

@@ -1,13 +1,14 @@
 <script lang="ts">
+	import { Valuable } from '../../util/stores'
 	import BaseSidebarDialogItem from './baseSidebarDialogItem.svelte'
 	export let label: string
 	export let description: string
-	export let checked: boolean
+	export let checked: Valuable<boolean>
 </script>
 
 <BaseSidebarDialogItem {label} {description}>
 	<div class="input-container" slot="before">
-		<input type="checkbox" bind:checked />
+		<input type="checkbox" bind:checked={$checked} />
 	</div>
 </BaseSidebarDialogItem>
 
