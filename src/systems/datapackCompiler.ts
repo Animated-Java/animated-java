@@ -2,6 +2,7 @@ import { Compiler, Parser, Tokenizer, SyncIo } from 'mc-build'
 import { VariableMap } from 'mc-build/dist/mcl/Compiler'
 import { isFunctionTagPath } from '../util/fileUtil'
 import animationMcb from './datapackCompiler/animation.mcb'
+import staticMcb from './datapackCompiler/static.mcb'
 import { AnyRenderedNode, IRenderedRig, IRenderedVariant } from './rigRenderer'
 import { IRenderedAnimation } from './animationRenderer'
 import { Variant } from '../variants'
@@ -214,6 +215,13 @@ namespace TELLRAW {
 						{ text: anim.safe_name, color: 'yellow' },
 					])
 			),
+		])
+	export const NO_VARIANTS = () =>
+		new JsonText([
+			'',
+			TELLRAW_PREFIX,
+			{ text: 'Error: ', color: 'red' },
+			{ text: 'No variants are available.', color: 'red' },
 		])
 }
 
@@ -647,14 +655,23 @@ export async function compileDataPack(options: {
 		nodeSorter,
 		getRotationFromQuaternion: eulerFromQuaternion,
 		root_ticking_commands: aj.ticking_commands,
+		show_function_errors: aj.show_function_errors,
+		show_outdated_warning: aj.show_outdated_warning,
+		has_locators: Object.values(rig.nodes).filter(n => n.type === 'locator').length > 0,
+		has_entity_locators:
+			Object.values(rig.nodes).filter(n => n.type === 'locator' && n.config?.use_entity)
+				.length > 0,
+		has_cameras: Object.values(rig.nodes).filter(n => n.type === 'camera').length > 0,
 	}
 	console.log('Compiler Variables:', variables)
+
+	const mcbFile = animations.length === 0 ? staticMcb : animationMcb
 
 	PROGRESS_DESCRIPTION.set('Compiling Data Pack...')
 	PROGRESS.set(0)
 	await new Promise(resolve => setTimeout(resolve, 2000 / framespersecond))
 	console.time('MC-Build Compiler took')
-	const tokens = Tokenizer.tokenize(animationMcb, 'src/animated_java.mcb')
+	const tokens = Tokenizer.tokenize(mcbFile, 'src/animated_java.mcb')
 	compiler.addFile('src/animated_java.mcb', Parser.parseMcbFile(tokens))
 	compiler.compile(VariableMap.fromObject(variables))
 	console.timeEnd('MC-Build Compiler took')

@@ -11,8 +11,10 @@ dir global {
 
 		# Initialize Storage
 		data modify storage aj:temp args set value {}
-		# Initialize Rigs
-		scoreboard players reset * <%OBJECTIVES.IS_RIG_LOADED()%>
+		IF (show_outdated_warning) {
+			# Initialize Rigs
+			scoreboard players reset * <%OBJECTIVES.IS_RIG_LOADED()%>
+		}
 		function #*global/on_load
 	}
 
@@ -32,15 +34,19 @@ dir global {
 			*<%export_namespace%>/root/on_tick
 		}
 		# An entry will be added for each exported rig.
-		tag functions on_load {
-			*<%export_namespace%>/root/on_load
+		IF (show_outdated_warning) {
+			tag functions on_load {
+				*<%export_namespace%>/root/on_load
+			}
 		}
 	}
 
-	dir errors {
-		function function_not_executed_as_root_entity {
-			#ARGS: {export_namespace: string, function_path: string}
-			$tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR('$(function_path)', TAGS.PROJECT_ROOT('$(export_namespace)'))%>
+	IF (show_function_errors) {
+		dir errors {
+			function function_not_executed_as_root_entity {
+				#ARGS: {export_namespace: string, function_path: string}
+				$tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR('$(function_path)', TAGS.PROJECT_ROOT('$(export_namespace)'))%>
+			}
 		}
 	}
 
@@ -114,42 +120,46 @@ dir global {
 
 dir <%export_namespace%> {
 	function on_load {
-		<%%
-			animations.forEach(animation => {
-				emit(`scoreboard objectives add ${OBJECTIVES.FRAME(animation.safe_name)} dummy`)
-			})
-		%%>
-
 		IF (use_storage_for_animation) {
 			REPEAT (animations) as animation {
 				data remove storage aj.<%export_namespace%>:animations <%animation.storageSafeName%>
 			}
 			<%animationStorage.join('\n')%>
+		} ELSE {
+			<%%
+				animations.forEach(animation => {
+					emit(`scoreboard objectives add ${OBJECTIVES.FRAME(animation.safe_name)} dummy`)
+				})
+			%%>
 		}
 	}
 
 	dir root {
-		function on_load {
-			execute unless entity @s[tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return 0
-			execute on passengers if entity @s[tag=<%TAGS.PROJECT_DATA(export_namespace)%>] \
-					unless data entity @s {data:{rigHash: '<%rigHash%>'}} on vehicle run {
-				execute store result storage aj:temp x int 1 store result score #this.x aj.i run data get entity @s Pos[0] 1
-				execute store result storage aj:temp y int 1 store result score #this.y aj.i run data get entity @s Pos[1] 1
-				execute store result storage aj:temp z int 1 store result score #this.z aj.i run data get entity @s Pos[2] 1
-				block outdated_tellraw { with storage aj:temp
-					$tellraw @a <%TELLRAW.RIG_OUTDATED(export_namespace)%>
+		IF (show_outdated_warning) {
+			function on_load {
+				execute unless entity @s[tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return 0
+				execute on passengers if entity @s[tag=<%TAGS.PROJECT_DATA(export_namespace)%>] \
+						unless data entity @s {data:{rigHash: '<%rigHash%>'}} on vehicle run {
+					execute store result storage aj:temp x int 1 store result score #this.x aj.i run data get entity @s Pos[0] 1
+					execute store result storage aj:temp y int 1 store result score #this.y aj.i run data get entity @s Pos[1] 1
+					execute store result storage aj:temp z int 1 store result score #this.z aj.i run data get entity @s Pos[2] 1
+					block outdated_tellraw { with storage aj:temp
+						$tellraw @a <%TELLRAW.RIG_OUTDATED(export_namespace)%>
+					}
+					data modify entity @s data.rigHash set value '<%rigHash%>'
+					execute on passengers run data merge entity @s {Glowing: 1b, glow_color_override: <%0xff0000%>}
+					summon minecraft:text_display ~ ~ ~ {Tags:['<%TAGS.GLOBAL_RIG()%>', '<%TAGS.OUTDATED_RIG_TEXT_DISPLAY()%>', '<%TAGS.NEW()%>'], text:'<%TELLRAW.RIG_OUTDATED_TEXT_DISPLAY()%>', billboard: "vertical", transformation:{translation:[0f,<%boundingBox[1]/16%>f,0f],left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],scale:[1f,1f,1f]}}
+					ride @e[type=minecraft:text_display,tag=<%TAGS.NEW()%>,limit=1,distance=..0.01] mount @s
+					tag @e[type=minecraft:text_display,tag=<%TAGS.NEW()%>,limit=1,distance=..0.01] remove <%TAGS.NEW()%>
 				}
-				data modify entity @s data.rigHash set value '<%rigHash%>'
-				execute on passengers run data merge entity @s {Glowing: 1b, glow_color_override: <%0xff0000%>}
-				summon minecraft:text_display ~ ~ ~ {Tags:['<%TAGS.GLOBAL_RIG()%>', '<%TAGS.OUTDATED_RIG_TEXT_DISPLAY()%>', '<%TAGS.NEW()%>'], text:'<%TELLRAW.RIG_OUTDATED_TEXT_DISPLAY()%>', billboard: "vertical", transformation:{translation:[0f,<%boundingBox[1]/16%>f,0f],left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],scale:[1f,1f,1f]}}
-				ride @e[type=minecraft:text_display,tag=<%TAGS.NEW()%>,limit=1,distance=..0.01] mount @s
-				tag @e[type=minecraft:text_display,tag=<%TAGS.NEW()%>,limit=1,distance=..0.01] remove <%TAGS.NEW()%>
+				scoreboard players set @s <%OBJECTIVES.IS_RIG_LOADED()%> 1
 			}
-			scoreboard players set @s <%OBJECTIVES.IS_RIG_LOADED()%> 1
 		}
 		function on_tick {
 			execute unless entity @s[tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return 0
-			execute unless score @s <%OBJECTIVES.IS_RIG_LOADED()%> matches 1 run function #*global/root/on_load
+			IF (show_outdated_warning) {
+				execute unless score @s <%OBJECTIVES.IS_RIG_LOADED()%> matches 1 run function #*global/root/on_load
+			}
 			# Pre tick
 			function #*<%export_namespace%>/as_root/pre_tick
 			# Animations
@@ -157,34 +167,36 @@ dir <%export_namespace%> {
 				execute if entity @s[tag=<%TAGS.ANIMATION_PLAYING(export_namespace, animation.safe_name)%>] run \
 					function *<%export_namespace%>/animations/<%animation.safe_name%>/zzz/on_tick
 			}
-			execute on passengers if entity @s[tag=<%TAGS.PROJECT_DATA(export_namespace)%>] run {
-				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator')) as node {
-					IF (node.config?.use_entity) {
-						block { with entity @s data.locators.<%node.safe_name%>
-							$execute as $(uuid) positioned ^$(posx) ^$(posy) ^$(posz) rotated ~$(roty) ~$(rotx) run {
-								tp @s ~ ~ ~ ~ ~
-								<%%
-									if (node.config?.ticking_commands) {
-										emit.mcb(node.config.ticking_commands)
-									}
-								%%>
+			IF (has_locators || has_cameras) {
+				execute on passengers if entity @s[tag=<%TAGS.PROJECT_DATA(export_namespace)%>] run {
+					REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator')) as node {
+						IF (node.config?.use_entity) {
+							block { with entity @s data.locators.<%node.safe_name%>
+								$execute as $(uuid) positioned ^$(posx) ^$(posy) ^$(posz) rotated ~$(roty) ~$(rotx) run {
+									tp @s ~ ~ ~ ~ ~
+									<%%
+										if (node.config?.ticking_commands) {
+											emit.mcb(node.config.ticking_commands)
+										}
+									%%>
+								}
 							}
-						}
-					} ELSE IF (node.config?.ticking_commands) {
-						block { with entity @s data.locators.<%node.safe_name%>
-							$execute positioned ^$(posx) ^$(posy) ^$(posz) rotated ~$(roty) ~$(rotx) run {
-								<%%
-									if (node.config?.ticking_commands) {
-										emit.mcb(node.config.ticking_commands)
-									}
-								%%>
+						} ELSE IF (node.config?.ticking_commands) {
+							block { with entity @s data.locators.<%node.safe_name%>
+								$execute positioned ^$(posx) ^$(posy) ^$(posz) rotated ~$(roty) ~$(rotx) run {
+									<%%
+										if (node.config?.ticking_commands) {
+											emit.mcb(node.config.ticking_commands)
+										}
+									%%>
+								}
 							}
 						}
 					}
-				}
-				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'camera')) as node {
-					block { with entity @s data.cameras.<%node.safe_name%>
-						$execute as $(uuid) positioned ^$(posx) ^$(posy) ^$(posz) rotated ~$(roty) ~$(rotx) run tp @s ~ ~ ~ ~ ~
+					REPEAT (Object.values(rig.nodes).filter(v => v.type === 'camera')) as node {
+						block { with entity @s data.cameras.<%node.safe_name%>
+							$execute as $(uuid) positioned ^$(posx) ^$(posy) ^$(posz) rotated ~$(roty) ~$(rotx) run tp @s ~ ~ ~ ~ ~
+						}
 					}
 				}
 			}
@@ -223,9 +235,11 @@ dir <%export_namespace%> {
 			dir <%animation.safe_name%> {
 				# TODO: Maybe add an exclusive argument to the play function that will pause all other animations before playing this one.
 				function play {
-					execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-						function *global/errors/function_not_executed_as_root_entity \
-							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.safe_name%>/play'}
+					IF (show_function_errors) {
+						execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+							function *global/errors/function_not_executed_as_root_entity \
+								{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.safe_name%>/play'}
+					}
 					tag @s add <%TAGS.ANIMATION_PLAYING(export_namespace, animation.safe_name)%>
 					scoreboard players set @s <%OBJECTIVES.FRAME(animation.safe_name)%> 0
 					tag @s add <%TAGS.TRANSFORMS_ONLY()%>
@@ -233,9 +247,11 @@ dir <%export_namespace%> {
 					tag @s remove <%TAGS.TRANSFORMS_ONLY()%>
 				}
 				function stop {
-					execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-						function *global/errors/function_not_executed_as_root_entity \
-							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.safe_name%>/stop'}
+					IF (show_function_errors) {
+						execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+							function *global/errors/function_not_executed_as_root_entity \
+								{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.safe_name%>/stop'}
+					}
 					tag @s remove <%TAGS.ANIMATION_PLAYING(export_namespace, animation.safe_name)%>
 					scoreboard players set @s <%OBJECTIVES.FRAME(animation.safe_name)%> 0
 					tag @s add <%TAGS.TRANSFORMS_ONLY()%>
@@ -243,21 +259,27 @@ dir <%export_namespace%> {
 					tag @s remove <%TAGS.TRANSFORMS_ONLY()%>
 				}
 				function pause {
-					execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-						function *global/errors/function_not_executed_as_root_entity \
-							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.safe_name%>/pause'}
+					IF (show_function_errors) {
+						execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+							function *global/errors/function_not_executed_as_root_entity \
+								{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.safe_name%>/pause'}
+					}
 					tag @s remove <%TAGS.ANIMATION_PLAYING(export_namespace, animation.safe_name)%>
 				}
 				function resume {
-					execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-						function *global/errors/function_not_executed_as_root_entity \
-							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.safe_name%>/resume'}
+					IF (show_function_errors) {
+						execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+							function *global/errors/function_not_executed_as_root_entity \
+								{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.safe_name%>/resume'}
+					}
 					tag @s add <%TAGS.ANIMATION_PLAYING(export_namespace, animation.safe_name)%>
 				}
 				function next_frame {
-					execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-						function *global/errors/function_not_executed_as_root_entity \
-							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.safe_name%>/next_frame'}
+					IF (show_function_errors) {
+						execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+							function *global/errors/function_not_executed_as_root_entity \
+								{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.safe_name%>/next_frame'}
+					}
 					execute if score @s <%OBJECTIVES.FRAME(animation.safe_name)%> matches <%animation.duration%>.. run scoreboard players set @s <%OBJECTIVES.FRAME(animation.safe_name)%> 1
 					execute store result storage aj:temp frame int 1 run scoreboard players get @s <%OBJECTIVES.FRAME(animation.safe_name)%>
 					execute at @s run function ./zzz/apply_frame with storage aj:temp
@@ -266,26 +288,32 @@ dir <%export_namespace%> {
 				function set_frame {
 					# Sets the frame without interpolation
 					#ARGS: {frame: int}
-					execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-						function *global/errors/function_not_executed_as_root_entity \
-							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.safe_name%>/set_frame'}
+					IF (show_function_errors) {
+						execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+							function *global/errors/function_not_executed_as_root_entity \
+								{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.safe_name%>/set_frame'}
+					}
 					$execute store result storage aj:temp frame int 1 run scoreboard players set @s <%OBJECTIVES.FRAME(animation.safe_name)%> $(frame)
 					execute at @s run function ./zzz/set_frame with storage aj:temp
 				}
 				function apply_frame {
 					# ARGS: {frame: int}
-					execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-						function *global/errors/function_not_executed_as_root_entity \
-							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.safe_name%>/apply_frame'}
+					IF (show_function_errors) {
+						execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+							function *global/errors/function_not_executed_as_root_entity \
+								{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.safe_name%>/apply_frame'}
+					}
 					$execute store result storage aj:temp frame int 1 run scoreboard players set @s <%OBJECTIVES.FRAME(animation.safe_name)%> $(frame)
 					execute at @s run function ./zzz/apply_frame with storage aj:temp
 				}
 				function tween {
 					# Attempts to smoothly transition from the currently playing animation into this one.
 					#ARGS: {duration: int, to_frame: int}
-					execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-						function *global/errors/function_not_executed_as_root_entity \
-							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.safe_name%>/tween'}
+					IF (show_function_errors) {
+						execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+							function *global/errors/function_not_executed_as_root_entity \
+								{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/animations/<%animation.safe_name%>/tween'}
+					}
 					function *<%export_namespace%>/animations/pause_all
 
 					tag @s add <%TAGS.ANIMATION_PLAYING(export_namespace, animation.safe_name)%>
@@ -536,19 +564,26 @@ dir <%export_namespace%> {
 			tag @s remove <%TAGS.NEW()%>
 
 			# Variant Arguement
-			execute if data storage aj:temp args.variant run { with storage aj:temp args
-				execute if data storage aj:temp {args:{variant:''}} run return run {
-					tellraw @a <%TELLRAW.VARIANT_CANNOT_BE_EMPTY()%>
-					function *<%export_namespace%>/remove/this
+			IF (Object.keys(rig.variants).length > 1) {
+				execute if data storage aj:temp args.variant run { with storage aj:temp args
+					execute if data storage aj:temp {args:{variant:''}} run return run {
+						tellraw @a <%TELLRAW.VARIANT_CANNOT_BE_EMPTY()%>
+						function *<%export_namespace%>/remove/this
+					}
+					# Attempt to apply the variant, if it fails, print an error.
+					execute store success score #success <%OBJECTIVES.I()%> run { with storage aj:temp args
+						$execute store success score #success <%OBJECTIVES.I()%> run function *<%export_namespace%>/variants/$(variant)/apply
+						execute if score #success <%OBJECTIVES.I()%> matches 1 run return 1
+						return fail
+					}
+					execute unless score #success <%OBJECTIVES.I()%> matches 1 run return run { with storage aj:temp args
+						$tellraw @a <%TELLRAW.INVALID_VARIANT('$(variant)', rig.variants)%>
+						function *<%export_namespace%>/remove/this
+					}
 				}
-				# Attempt to apply the variant, if it fails, print an error.
-				execute store success score #success <%OBJECTIVES.I()%> run { with storage aj:temp args
-					$execute store success score #success <%OBJECTIVES.I()%> run function *<%export_namespace%>/variants/$(variant)/apply
-					execute if score #success <%OBJECTIVES.I()%> matches 1 run return 1
-					return fail
-				}
-				execute unless score #success <%OBJECTIVES.I()%> matches 1 run return run { with storage aj:temp args
-					$tellraw @a <%TELLRAW.INVALID_VARIANT('$(variant)', rig.variants)%>
+			} ELSE {
+				execute if data storage aj:temp args.variant run {
+					tellraw @a <%TELLRAW.NO_VARIANTS()%>
 					function *<%export_namespace%>/remove/this
 				}
 			}
@@ -600,25 +635,31 @@ dir <%export_namespace%> {
 		}
 	}
 
-	dir summon {
-		REPEAT (Object.values(rig.variants)) as variant {
-			function <%variant.name%> {
-				function *<%export_namespace%>/summon {args:{variant: '<%variant.name%>'}}
+	IF (Object.keys(rig.variants).length > 1) {
+		dir summon {
+			REPEAT (Object.values(rig.variants)) as variant {
+				function <%variant.name%> {
+					function *<%export_namespace%>/summon {args:{variant: '<%variant.name%>'}}
+				}
 			}
 		}
 	}
 
-	function as_own_locator_entities {
-		#ARGS: {command: string}
-		execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-			function *global/errors/function_not_executed_as_root_entity \
-				{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/as_all_locators'}
-		$data modify storage aj:temp command set value '$(command)'
-		execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run {
-			REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator')) as locator {
-				data modify storage aj:temp uuid set from entity @s data.locators.<%locator.name%>.uuid
-				block zzz/execute { with storage aj:temp
-					$execute as $(uuid) run $(command)
+	IF (has_entity_locators) {
+		function as_own_locator_entities {
+			#ARGS: {command: string}
+			IF (show_function_errors) {
+				execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+					function *global/errors/function_not_executed_as_root_entity \
+						{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/as_all_locators'}
+			}
+			$data modify storage aj:temp command set value '$(command)'
+			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run {
+				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator')) as locator {
+					data modify storage aj:temp uuid set from entity @s data.locators.<%locator.name%>.uuid
+					block zzz/execute { with storage aj:temp
+						$execute as $(uuid) run $(command)
+					}
 				}
 			}
 		}
@@ -631,26 +672,30 @@ dir <%export_namespace%> {
 		}
 		# Removes the rig this function is executed as.
 		function this {
-			execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-				function *global/errors/function_not_executed_as_root_entity \
-					{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/remove/this'}
+			IF (show_function_errors) {
+				execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+					function *global/errors/function_not_executed_as_root_entity \
+						{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/remove/this'}
+			}
 
 			# On Remove Event
 			function #*<%export_namespace%>/as_root/on_remove
 
-			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run {
-				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator' && v.config?.use_entity)) as locator {
-					block zzz/kill { with entity @s data.locators.<%locator.name%>
-						# Recursively remove any stacked locator entities
-						$execute as $(uuid) run block kill_passengers {
-							execute on passengers run function ^0
-							kill @s
+			IF (has_entity_locators || has_cameras) {
+				execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run {
+					REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator' && v.config?.use_entity)) as locator {
+						block zzz/kill { with entity @s data.locators.<%locator.name%>
+							# Recursively remove any stacked locator entities
+							$execute as $(uuid) run block kill_passengers {
+								execute on passengers run function ^0
+								kill @s
+							}
 						}
 					}
-				}
-				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'camera' && v.config?.use_entity)) as camera {
-					block zzz/kill { with entity @s data.cameras.<%camera.name%>
-						$execute as $(uuid) run kill @s
+					REPEAT (Object.values(rig.nodes).filter(v => v.type === 'camera')) as camera {
+						block zzz/kill { with entity @s data.cameras.<%camera.name%>
+							$execute as $(uuid) run kill @s
+						}
 					}
 				}
 			}
@@ -660,30 +705,31 @@ dir <%export_namespace%> {
 		}
 	}
 
-	dir variants {
-		REPEAT (Object.values(rig.variants)) as variant {
-			dir <%variant.name%> {
-				function apply {
-					execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-						function *global/errors/function_not_executed_as_root_entity \
-							{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/variants/<%variant.name%>/apply'}
-					REPEAT (Object.values(rig.nodes)) as node {
-						IF (node.type === 'bone' && !variant.excluded_nodes.includes(node.uuid) && (variant.models[node.uuid] !== undefined || node.configs.variants[variant.uuid] !== undefined)) {
-
-							execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%node.safe_name%>] run {
-								IF (variant.models[node.uuid] !== undefined) {
-									IF (variant.models[node.uuid].model === null) {
-										data modify entity @s item.components.minecraft:custom_model_data set value 1
-									} ELSE {
-										data modify entity @s item.components.minecraft:custom_model_data set value <%variant.models[node.uuid].custom_model_data%>
+	IF (Object.keys(rig.variants).length > 1) {
+		dir variants {
+			REPEAT (Object.values(rig.variants)) as variant {
+				dir <%variant.name%> {
+					function apply {
+						execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+							function *global/errors/function_not_executed_as_root_entity \
+								{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/variants/<%variant.name%>/apply'}
+						REPEAT (Object.values(rig.nodes)) as node {
+							IF (node.type === 'bone' && !variant.excluded_nodes.includes(node.uuid) && (variant.models[node.uuid] !== undefined || node.configs.variants[variant.uuid] !== undefined)) {
+								execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%node.safe_name%>] run {
+									IF (variant.models[node.uuid] !== undefined) {
+										IF (variant.models[node.uuid].model === null) {
+											data modify entity @s item.components.minecraft:custom_model_data set value 1
+										} ELSE {
+											data modify entity @s item.components.minecraft:custom_model_data set value <%variant.models[node.uuid].custom_model_data%>
+										}
 									}
-								}
-								IF (node.configs.variants[variant.uuid]) {
-									<%%
-										global.config = BoneConfig.fromJSON(node.configs.variants[variant.uuid])
-									%%>
-									IF (!global.config.isDefault()) {
-										data merge entity @s <%global.config.toNBT(undefined, variant.is_default)%>
+									IF (node.configs.variants[variant.uuid]) {
+										<%%
+											global.config = BoneConfig.fromJSON(node.configs.variants[variant.uuid])
+										%%>
+										IF (!global.config.isDefault()) {
+											data merge entity @s <%global.config.toNBT(undefined, variant.is_default)%>
+										}
 									}
 								}
 							}
@@ -706,6 +752,7 @@ dir <%export_namespace%> {
 			}
 		}
 	}
+
 	function set_default_pose {
 		# Changes the pose of the rig to the the default pose without interpolation
 		execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \

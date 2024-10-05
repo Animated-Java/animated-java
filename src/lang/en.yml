@@ -183,6 +183,12 @@ animated_java.dialog.blueprint_settings.use_storage_for_animation.description: |
     Whether or not to use NBT storage to store animation data instead of functions.
     This will vastly reduce the number of functions in the generated Data Pack, but is 42% slower than the function method.
 
+animated_java.dialog.blueprint_settings.show_function_errors.title: Show Function Errors
+animated_java.dialog.blueprint_settings.show_function_errors.description: Whether or not to show errors in chat when running functions in-game if they're used incorrectly.
+
+animated_java.dialog.blueprint_settings.show_outdated_warning.title: Show Outdated Warning
+animated_java.dialog.blueprint_settings.show_outdated_warning.description: Whether or not to show a warning in chat when a Rig Instance is outdated.
+
 # Plugin Settings
 animated_java.dialog.blueprint_settings.baked_animations.title: Baked Animations
 animated_java.dialog.blueprint_settings.baked_animations.description: |-

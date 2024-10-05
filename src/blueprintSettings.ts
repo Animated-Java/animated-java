@@ -28,6 +28,8 @@ export const defaultValues = {
 	interpolation_duration: 1,
 	teleportation_duration: 1,
 	use_storage_for_animation: false,
+	show_function_errors: true,
+	show_outdated_warning: true,
 	// Plugin Settings
 	baked_animations: true,
 	json_file: '',

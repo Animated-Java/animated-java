@@ -64,6 +64,8 @@
 	export let interpolationDuration: Valuable<number>
 	export let teleportationDuration: Valuable<number>
 	export let useStorageForAnimation: Valuable<boolean>
+	export let showFunctionErrors: Valuable<boolean>
+	export let showOutdatedWarning: Valuable<boolean>
 	// Plugin Export Settings
 	export let bakedAnimations: Valuable<boolean>
 	export let jsonFile: Valuable<string>
@@ -685,13 +687,6 @@
 			/>
 
 			{#if $dataPackExportMode === 'raw'}
-				<!-- {#if $enableAdvancedDataPackSettings}
-					<p class="warning">
-						{translate('dialog.blueprint_settings.advanced_settings_warning')}
-					</p>
-				{:else}
-				{/if} -->
-
 				<FolderSelect
 					label={translate('dialog.blueprint_settings.data_pack.title')}
 					tooltip={translate('dialog.blueprint_settings.data_pack.description')}
@@ -748,6 +743,20 @@
 				)}
 				bind:checked={useStorageForAnimation}
 				defaultValue={defaultValues.use_storage_for_animation}
+			/>
+
+			<Checkbox
+				label={translate('dialog.blueprint_settings.show_function_errors.title')}
+				tooltip={translate('dialog.blueprint_settings.show_function_errors.description')}
+				bind:checked={showFunctionErrors}
+				defaultValue={defaultValues.show_function_errors}
+			/>
+
+			<Checkbox
+				label={translate('dialog.blueprint_settings.show_outdated_warning.title')}
+				tooltip={translate('dialog.blueprint_settings.show_outdated_warning.description')}
+				bind:checked={showOutdatedWarning}
+				defaultValue={defaultValues.show_outdated_warning}
 			/>
 		{/if}
 	{/if}
