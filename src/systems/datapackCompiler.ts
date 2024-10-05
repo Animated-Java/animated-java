@@ -388,6 +388,9 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 				}
 				break
 			}
+			default: {
+				continue
+			}
 		}
 
 		passengers.add(passenger)
