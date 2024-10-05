@@ -16,7 +16,7 @@ export const defaultValues = {
 	// Resource Pack Settings
 	custom_model_data_offset: 0,
 	enable_advanced_resource_pack_settings: false,
-	enable_advanced_resource_pack_folders: false,
+	advanced_resource_pack_folders: false,
 	resource_pack: '',
 	model_folder: '',
 	texture_folder: '',

@@ -4,7 +4,7 @@ import type {
 	IBlueprintBoneConfigJSON,
 	IBlueprintLocatorConfigJSON,
 } from './blueprintFormat'
-import { blueprintSettingErrors, defaultValues } from './blueprintSettings'
+import { blueprintSettingErrors, defaultValues, type ExportEnvironment } from './blueprintSettings'
 import { openExportProgressDialog } from './interface/exportProgressDialog'
 import { openUnexpectedErrorDialog } from './interface/unexpectedErrorDialog'
 import { TextDisplay } from './outliner/textDisplay'
@@ -32,7 +32,7 @@ declare global {
 		animated_java: { [T in keyof typeof defaultValues]: (typeof defaultValues)[T] }
 		last_used_export_namespace: string
 		visualBoundingBox?: THREE.LineSegments
-		pluginMode: Valuable<boolean>
+		environment: Valuable<ExportEnvironment>
 		transparentTexture: Texture
 
 		variants: Variant[]

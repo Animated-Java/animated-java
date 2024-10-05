@@ -2,27 +2,37 @@
 	import { slide } from 'svelte/transition'
 	import { markdownToHTML } from '../../util/misc'
 
-	export let label: string
+	export let label: string = ''
+	export let description: string = ''
 	export let required: boolean = false
-	export let description: string
 	export let warning: string = ''
 	export let error: string = ''
+
+	let id = guid()
 </script>
 
-<div class="before">
-	<slot name="before" />
-	<div class="label">
-		<h3>
-			{label}
-			{#if required}
-				<span>*</span>
+<div class="dialog-container">
+	<div class="before">
+		<slot name="before" />
+		<div class="label">
+			{#if label}
+				<div class="header">
+					<h3>
+						{label}
+						{#if required}
+							<span>*</span>
+						{/if}
+					</h3>
+				</div>
 			{/if}
-		</h3>
-		<p>{description}</p>
+			{#if description}
+				<p>{@html markdownToHTML(description)}</p>
+			{/if}
+		</div>
 	</div>
-</div>
 
-<slot />
+	<slot {id} />
+</div>
 
 {#if error}
 	<div class="message error" transition:slide|local={{ duration: 100, axis: 'y' }}>
@@ -40,6 +50,20 @@
 <div class="spacer" />
 
 <style>
+	.header {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+	}
+	.dialog-container {
+		background-color: var(--color-ui);
+		padding: 8px;
+		padding-bottom: 0px;
+	}
+	.dialog-container:has(.docs-link:hover) {
+		background-color: var(--color-button);
+	}
 	p {
 		color: var(--color-subtle_text);
 		padding-bottom: 8px;
@@ -47,7 +71,10 @@
 	.message {
 		background-color: var(--color-button);
 		padding: 4px 8px;
+		margin-top: 2px;
 		border-radius: 0px 0px 4px 4px;
+		width: calc(100% - 16px);
+		margin-left: 8px;
 	}
 	.error {
 		color: var(--color-error);
@@ -59,6 +86,7 @@
 	h3 {
 		margin: 0px;
 		margin-bottom: -4px;
+		margin-top: -8px;
 	}
 	i {
 		align-content: center;

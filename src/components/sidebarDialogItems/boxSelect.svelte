@@ -13,8 +13,8 @@
 		description: string
 	}
 
-	export let label: string
-	export let description: string
+	export let label: string = ''
+	export let description: string = ''
 	export let selected: Valuable<any>
 	export let options: Record<any, ImageItem | TextItem>
 	export let required: boolean = false
@@ -52,20 +52,21 @@
 		background-color: var(--color-back);
 		position: relative;
 		overflow: hidden;
-		border: 0px;
-		border: 0px solid var(--color-back);
-		transition: border 0.1s cubic-bezier(0.25, 0.68, 0.53, 1.3);
+		outline: 0px;
+		outline: 0px solid var(--color-back);
+		transition: outline 0.1s cubic-bezier(0.25, 0.68, 0.53, 1.3);
 	}
 	.mode-option:hover .mode-option-title {
 		color: var(--color-light);
 	}
 	.mode-option-selected {
-		border: 2px solid var(--color-accent);
-		border-bottom: 8px solid var(--color-accent);
+		outline: 2px solid var(--color-accent);
+		/* outline-bottom: 8px solid var(--color-accent); */
 	}
 	.mode-option-title {
 		margin: 0;
 		padding: 8px 14px;
+		padding-bottom: 0px;
 		color: var(--color-text);
 		font-size: large;
 	}

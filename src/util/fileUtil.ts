@@ -43,3 +43,11 @@ export function resolvePath(path: string): string {
 
 	return normalizePath(resolveEnvVariables(path))
 }
+
+export function directoryExists(path: string): boolean {
+	return fs.existsSync(path) && !!fs.lstatSync(path, { throwIfNoEntry: false })?.isDirectory()
+}
+
+export function fileExists(path: string): boolean {
+	return fs.existsSync(path) && !!fs.lstatSync(path, { throwIfNoEntry: false })?.isFile()
+}

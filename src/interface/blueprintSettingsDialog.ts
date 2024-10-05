@@ -10,8 +10,19 @@ import Resourcepack from '../components/blueprintSettingsPages/resourcepack.svel
 import { makeNotValueable, makeValuable } from '../util/misc'
 import { Valuable } from '../util/stores'
 import Plugin from '../components/blueprintSettingsPages/plugin.svelte'
+import {
+	EXPORT_PROJECT_ACTION,
+	OPEN_ABOUT_ACTION,
+	OPEN_DOCUMENTATION_ACTION,
+} from './animatedJavaBarItem'
 
-export type BlueprintSettings = typeof defaultValues & { project_name: string }
+interface AdditionalSettings {
+	project_name: string
+	texture_width: number
+	texture_height: number
+}
+
+export type BlueprintSettings = typeof defaultValues & AdditionalSettings
 export type ValuableBlueprintSettings = {
 	[Key in keyof BlueprintSettings]: Valuable<BlueprintSettings[Key]>
 }
@@ -22,12 +33,15 @@ export function openBlueprintSettingsDialog() {
 	const settings: ValuableBlueprintSettings = makeValuable({
 		...defaultValues,
 		project_name: Project.name,
+		texture_width: Project.texture_width,
+		texture_height: Project.texture_height,
 	})
 
 	return new SvelteSidebarDialog({
 		id: `${PACKAGE.name}:blueprintSettingsDialog`,
 		title: translate('dialog.blueprint_settings.title'),
 		sidebar: {
+			actions: [OPEN_DOCUMENTATION_ACTION, OPEN_ABOUT_ACTION, EXPORT_PROJECT_ACTION],
 			pages: {
 				general: {
 					icon: 'settings',
@@ -54,7 +68,7 @@ export function openBlueprintSettingsDialog() {
 					},
 				},
 				plugin: {
-					icon: 'power',
+					icon: 'extension',
 					label: 'Plugin',
 					component: Plugin,
 					props: { settings },
@@ -80,8 +94,12 @@ export function openBlueprintSettingsDialog() {
 				'.dialog[id="animated_java:blueprintSettingsDialog"] .dialog_content'
 			)[0]
 			if (dialogContent) {
-				dialogContent.style.overflowY = 'auto'
-				dialogContent.style.maxHeight = '80vh'
+				dialogContent.style.overflowY = 'scroll'
+				dialogContent.style.overflowX = 'hidden'
+				dialogContent.style.maxHeight = '60vh'
+				dialogContent.style.minHeight = '60vh'
+				dialogContent.style.maskImage =
+					'linear-gradient(to bottom, black calc(100% - 16px), transparent 100%)'
 			}
 		},
 		onConfirm() {

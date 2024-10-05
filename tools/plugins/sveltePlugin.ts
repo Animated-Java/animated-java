@@ -1,7 +1,6 @@
 // A MODIFIED VERSION OF THE SVELTE PLUGIN FOR ESBUILD (esbuild-plugin-svelte)
 
 // CHANGELOG:
-
 // made it so that css can be emmitted directly as js instead of as an import
 
 'use strict'
@@ -10,6 +9,8 @@ import { readFile } from 'fs/promises'
 import { preprocess, compile } from 'svelte/compiler'
 import { relative } from 'path'
 import { Plugin } from 'esbuild'
+import { PreprocessorGroup } from 'svelte-preprocess/dist/types'
+import { CompileOptions } from 'svelte/types/compiler'
 /**
  * Convert a warning or error emitted from the svelte compiler for esbuild.
  */
@@ -50,9 +51,13 @@ function esbuildPluginSvelte(
 				let source = await readFile(path, 'utf-8')
 				const filename = relative(process.cwd(), path)
 				if (opts.preprocess) {
-					const processed = await preprocess(source, opts.preprocess, {
-						filename,
-					})
+					const processed = await preprocess(
+						source,
+						opts.preprocess as PreprocessorGroup,
+						{
+							filename,
+						}
+					)
 					source = processed.code
 				}
 				const compilerOptions = {
@@ -61,7 +66,7 @@ function esbuildPluginSvelte(
 				}
 				let res
 				try {
-					res = compile(source, { ...compilerOptions, filename })
+					res = compile(source, { ...compilerOptions, filename } as CompileOptions)
 				} catch (err) {
 					return { errors: [convertWarning(source, err as any)] }
 				}

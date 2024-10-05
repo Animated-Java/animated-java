@@ -49,7 +49,7 @@ async function actuallyExportProject(forceSave = true) {
 		if (aj.environment) {
 			modelExportFolder = PathModule.join('assets/animated_java/models/item/', aj.id)
 			textureExportFolder = PathModule.join('assets/animated_java/textures/item/', aj.id)
-		} else if (aj.enable_advanced_resource_pack_folders) {
+		} else if (aj.advanced_resource_pack_folders) {
 			modelExportFolder = aj.model_folder
 			textureExportFolder = aj.texture_folder
 		} else {

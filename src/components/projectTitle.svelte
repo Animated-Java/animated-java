@@ -1,14 +1,15 @@
 <script lang="ts" context="module">
 	import AnimatedJavaIcon from '../assets/animated_java_icon.svg'
 	import AnimatedPaperIcon from '../assets/animated_paper_icon.svg'
+	import { type ExportEnvironment } from '../blueprintSettings'
 	import { Valuable } from '../util/stores'
 </script>
 
 <script lang="ts">
-	export let pluginMode: Valuable<boolean>
+	export let environment: Valuable<ExportEnvironment>
 </script>
 
-{#if $pluginMode}
+{#if $environment === 'plugin'}
 	<img src={AnimatedPaperIcon} alt="" />
 {:else}
 	<img src={AnimatedJavaIcon} alt="" />

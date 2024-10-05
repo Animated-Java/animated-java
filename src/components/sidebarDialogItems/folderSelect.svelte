@@ -69,8 +69,8 @@
 	}
 	input {
 		flex: 1;
-		border: 0px;
-		transition: border 0.1s cubic-bezier(0.25, 0.68, 0.53, 1.3);
+		outline: 0px;
+		transition: outline 0.1s cubic-bezier(0.25, 0.68, 0.53, 1.3);
 	}
 	i {
 		align-content: center;
@@ -83,9 +83,9 @@
 		color: var(--color-light);
 	}
 	.error-border {
-		border: 2px solid var(--color-error);
+		outline: 2px solid var(--color-error);
 	}
 	.warning-border {
-		border: 2px solid var(--color-warning);
+		outline: 2px solid var(--color-warning);
 	}
 </style>

@@ -2,10 +2,12 @@
 	import type { ValuableBlueprintSettings } from '../../interface/blueprintSettingsDialog'
 	import FolderSelect from '../sidebarDialogItems/folderSelect.svelte'
 	import BoxSelect from '../sidebarDialogItems/boxSelect.svelte'
-	import { resolvePath } from '../../util/fileUtil'
+	import { directoryExists, fileExists, resolvePath } from '../../util/fileUtil'
 	import { translate } from '../../util/translation'
 	import FileSelect from '../sidebarDialogItems/fileSelect.svelte'
 	import CodeBox from '../sidebarDialogItems/codeBox.svelte'
+	import NumberSlider from '../sidebarDialogItems/numberSlider.svelte'
+	import { defaultValues } from '../../blueprintSettings'
 
 	export let settings: ValuableBlueprintSettings
 	let datapackExportMode = settings.data_pack_export_mode
@@ -44,18 +46,18 @@
 					type: 'error',
 					message: translate('dialog.blueprint_settings.data_pack.error.not_a_folder'),
 				}
-			case !fs.existsSync(PathModule.join(path, 'pack.mcmeta')):
+			case !fileExists(PathModule.join(path, 'pack.mcmeta')):
 				return {
 					type: 'error',
 					message: translate(
 						'dialog.blueprint_settings.data_pack.error.missing_pack_mcmeta',
 					),
 				}
-			case !fs.existsSync(PathModule.join(path, 'data')):
+			case !directoryExists(PathModule.join(path, 'data')):
 				return {
-					type: 'error',
+					type: 'warning',
 					message: translate(
-						'dialog.blueprint_settings.data_pack.error.missing_data_folder',
+						'dialog.blueprint_settings.data_pack.warning.missing_data_folder',
 					),
 				}
 			default:
@@ -76,21 +78,18 @@
 				),
 			}
 		}
-		console.log(path)
 		switch (true) {
 			case value === '':
 				return {
 					type: 'error',
 					message: translate(
-						'dialog.blueprint_settings.resource_pack_zip.error.no_file_selected',
+						'dialog.blueprint_settings.data_pack_zip.error.no_file_selected',
 					),
 				}
 			case fs.existsSync(path) && !fs.statSync(path).isFile():
 				return {
 					type: 'error',
-					message: translate(
-						'dialog.blueprint_settings.resource_pack_zip.error.not_a_file',
-					),
+					message: translate('dialog.blueprint_settings.data_pack_zip.error.not_a_file'),
 				}
 			default:
 				return { type: 'success', message: '' }
@@ -99,8 +98,6 @@
 </script>
 
 <BoxSelect
-	label="Export Mode"
-	description="Choose the environment you will be using to run your project."
 	selected={datapackExportMode}
 	options={{
 		folder: {
@@ -131,7 +128,7 @@
 			required
 			valueChecker={dataPackFolderChecker}
 		/>
-	{:else if $datapackExportMode === 'zip'}
+	{:else}
 		<FileSelect
 			label="Export File"
 			description="Choose the file to export the Data Pack to."
@@ -144,14 +141,34 @@
 
 	<CodeBox
 		label="On Summon Commands"
-		description="Commands that will be run as the root entity when the model is summoned. This input is treated as a function file, and supports MC-Build syntax."
+		description="Commands that will be run as the root entity when the model is summoned. This input is treated as a function file, and supports [MC-Build](https://mcbuild.dev/) syntax."
 		value={settings.summon_commands}
 	/>
 
 	<CodeBox
 		label="Ticking Commands"
-		description="Commands that will be run as the root entity every tick. This input is treated as a function file, and supports MC-Build syntax."
+		description="Commands that will be run as the root entity every tick. This input is treated as a function file, and supports [MC-Build](https://mcbuild.dev/) syntax."
 		value={settings.ticking_commands}
+	/>
+
+	<NumberSlider
+		label="Interpolation Duration"
+		description="How much time it takes for the model to transition from one frame to the next. Higher values will cause animations to lose precision. Usually you want this to have a value of 1 or 2."
+		value={settings.interpolation_duration}
+		defaultValue={defaultValues.interpolation_duration}
+		min={0}
+		max={100}
+		step={1}
+	/>
+
+	<NumberSlider
+		label="Teleportation Duration"
+		description="How much time over which the model will visually interpolate between it's old position to it's new position when teleported."
+		value={settings.teleportation_duration}
+		defaultValue={defaultValues.teleportation_duration}
+		min={0}
+		max={100}
+		step={1}
 	/>
 
 	<BoxSelect

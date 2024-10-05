@@ -9,6 +9,8 @@
 		containsInvalidResourceLocationCharacters,
 		parseResourceLocation,
 	} from '../../util/minecraftUtil'
+	import Vector2d from '../sidebarDialogItems/vector2d.svelte'
+	import { translate } from '../../util/translation'
 
 	export let settings: ValuableBlueprintSettings
 
@@ -49,6 +51,47 @@
 
 		return { type: 'success' }
 	}
+
+	const textureSizeChecker: DialogItemValueChecker<{ x: number; y: number }> = value => {
+		const x = Number(value.x)
+		const y = Number(value.y)
+		const largestHeight: number = Number(
+			Texture.all
+				.map(t => (t.frameCount ? t.width : t.height))
+				.reduce((max, cur) => Math.max(max, cur), 0),
+		)
+		const largestWidth: number = Number(
+			Texture.all
+				.map(t => (t.frameCount ? t.width : t.height))
+				.reduce((max, cur) => Math.max(max, cur), 0),
+		)
+
+		if (!(x === largestWidth && y === largestHeight)) {
+			return {
+				type: 'warning',
+				message: translate(
+					'dialog.blueprint_settings.texture_size.warning.does_not_match_largest_texture',
+				),
+			}
+		} else if (x !== 2 ** Math.floor(Math.log2(x)) || y !== 2 ** Math.floor(Math.log2(y))) {
+			return {
+				type: 'warning',
+				message: translate(
+					'dialog.blueprint_settings.texture_size.warning.not_a_power_of_2',
+				),
+			}
+		} else if (x !== y) {
+			return {
+				type: 'warning',
+				message: translate('dialog.blueprint_settings.texture_size.warning.not_square'),
+			}
+		} else {
+			return {
+				type: 'success',
+				message: '',
+			}
+		}
+	}
 </script>
 
 <BoxSelect
@@ -87,5 +130,17 @@
 	valueChecker={blueprintIDChecker}
 />
 
-<style>
-</style>
+<Vector2d
+	label="Texture Size"
+	description="The size of the largest texture used for the blueprint."
+	valueX={settings.texture_width}
+	defaultValueX={16}
+	valueY={settings.texture_height}
+	defaultValueY={16}
+	minX={1}
+	minY={1}
+	maxX={4096}
+	maxY={4096}
+	required
+	valueChecker={textureSizeChecker}
+/>

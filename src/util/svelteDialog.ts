@@ -99,7 +99,8 @@ interface SidebarDialogPage<T, U extends ComponentConstructorOptions> {
 	condition?: () => boolean
 }
 
-interface SidebarDialogOptions<T, U extends ComponentConstructorOptions> {
+interface SidebarDialogOptions<T, U extends ComponentConstructorOptions>
+	extends DialogSidebarOptions {
 	pages: Record<string, SidebarDialogPage<T, U>>
 	defaultPage?: string
 	onPageSwitch?(page: string): void

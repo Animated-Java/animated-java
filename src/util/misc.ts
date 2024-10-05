@@ -125,6 +125,10 @@ export function markdownToHTML(markdown: string) {
 	return markdown
 		.replace('\n', '<br/>')
 		.replace(/`(.+?)`/, '<code class="animated-java-code">$1</code>')
+		.replace(/\*\*(.+?)\*\*/, '<strong>$1</strong>')
+		.replace(/\*(.+?)\*/, '<em>$1</em>')
+		.replace(/~~(.+?)~~/, '<del>$1</del>')
+		.replace(/\[(.+?)\]\((.+?)\)/, '<a href="$2">$1</a>')
 }
 
 export function makeValuable<O extends Record<string, any>>(obj: O) {

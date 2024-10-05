@@ -124,6 +124,10 @@ BBPlugin.register(PACKAGE.name, {
 	tags: ['Minecraft: Java Edition', 'Animation', 'Display Entities'],
 	await_loading: true,
 	onload() {
+		console.log(
+			`%cAnimated Java ${PACKAGE.display_version}`,
+			'border: 2px solid #00aced; padding: 4px 8px; font-size: 1.2em; color: white; border-radius: 4px;'
+		)
 		events.LOAD.dispatch()
 	},
 	onunload() {

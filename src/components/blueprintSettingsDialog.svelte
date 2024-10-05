@@ -544,7 +544,7 @@
 						'dialog.blueprint_settings.enable_advanced_resource_pack_folders.title',
 					)}
 					bind:checked={enableAdvancedResourcePackFolders}
-					defaultValue={defaultValues.enable_advanced_resource_pack_folders}
+					defaultValue={defaultValues.advanced_resource_pack_folders}
 				/>
 
 				{#if $enableAdvancedResourcePackFolders}

@@ -18,6 +18,7 @@ import ImportGlobPlugin from 'esbuild-plugin-import-glob'
 import packagerPlugin from './plugins/packagerPlugin'
 import inlineWorkerPlugin from './plugins/workerPlugin'
 import assetOverridePlugin from './plugins/assetOverridePlugin'
+import YAMLPlugin from './plugins/yamlPlugin.js'
 import * as path from 'path'
 const PACKAGE = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
 
@@ -146,20 +147,20 @@ Object.entries(process.env).forEach(([key, value]) => {
 	DEFINES[`process.env.${key}`] = JSON.stringify(value)
 })
 
-const yamlPlugin: (opts: {
+const molangPlugin: (opts: {
 	loadOptions?: jsyaml.LoadOptions
 	transform?: any
 }) => esbuild.Plugin = options => ({
-	name: 'yaml',
+	name: 'molang',
 	setup(build) {
-		build.onResolve({ filter: /\.(yml|yaml|molang)$/ }, args => {
+		build.onResolve({ filter: /\.(molang)$/ }, args => {
 			if (args.resolveDir === '') return
 			return {
 				path: isAbsolute(args.path) ? args.path : join(args.resolveDir, args.path),
-				namespace: 'yaml',
+				namespace: 'molang',
 			}
 		})
-		build.onLoad({ filter: /.*/, namespace: 'yaml' }, async args => {
+		build.onLoad({ filter: /.*/, namespace: 'molang' }, async args => {
 			const yamlContent = await fs.promises.readFile(args.path)
 			let parsed = load(new TextDecoder().decode(yamlContent), options?.loadOptions)
 			if (options?.transform && options.transform(parsed, args.path) !== void 0)
@@ -211,7 +212,8 @@ const devConfig: esbuild.BuildOptions = {
 			limit: -1,
 		}),
 		INFO_PLUGIN,
-		yamlPlugin({}),
+		YAMLPlugin({}),
+		molangPlugin({}),
 		sveltePlugin(svelteConfig),
 		packagerPlugin(),
 		inlineWorkerPlugin(devWorkerConfig),
@@ -238,7 +240,8 @@ const prodConfig: esbuild.BuildOptions = {
 		}),
 		INFO_PLUGIN,
 		inlineWorkerPlugin({}),
-		yamlPlugin({}),
+		YAMLPlugin({}),
+		molangPlugin({}),
 		sveltePlugin(svelteConfig),
 		packagerPlugin(),
 		inlineWorkerPlugin({}),
