@@ -646,6 +646,9 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 	texture_meshes: false,
 	uv_rotation: true,
 	vertex_color_ambient_occlusion: true,
+	java_cube_shading_properties: true,
+	box_uv_float_size: false,
+	cullfaces: true,
 })
 BLUEPRINT_CODEC.format = BLUEPRINT_FORMAT
 
@@ -662,11 +665,11 @@ export function saveBlueprint() {
 export function updateRotationLock() {
 	if (!isCurrentFormat()) return
 	BLUEPRINT_FORMAT.rotation_limit = !(
-		Group.selected ||
+		!!Group.selected ||
 		!!AnimatedJava.API.TextDisplay.selected.length ||
 		!!AnimatedJava.API.VanillaItemDisplay.selected.length ||
 		!!AnimatedJava.API.VanillaBlockDisplay.selected.length ||
-		!!OutlinerElement.types.camera?.all.length
+		!!(OutlinerElement.types.camera?.selected && OutlinerElement.types.camera?.selected.length)
 	)
 	BLUEPRINT_FORMAT.rotation_snap = BLUEPRINT_FORMAT.rotation_limit
 }
