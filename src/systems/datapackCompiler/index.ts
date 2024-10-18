@@ -1,11 +1,10 @@
 import { Compiler, Parser, Tokenizer, SyncIo } from 'mc-build'
 import { VariableMap } from 'mc-build/dist/mcl/Compiler'
-import { isFunctionTagPath } from '../util/fileUtil'
-import animationMcb from './datapackCompiler/animation.mcb'
-import staticMcb from './datapackCompiler/static.mcb'
-import { AnyRenderedNode, IRenderedRig, IRenderedVariant } from './rigRenderer'
-import { IRenderedAnimation } from './animationRenderer'
-import { Variant } from '../variants'
+import { isFunctionTagPath } from '../../util/fileUtil'
+import mcbFiles from '../datapackCompiler/mcbFiles'
+import { AnyRenderedNode, IRenderedRig, IRenderedVariant } from '../rigRenderer'
+import { IRenderedAnimation } from '../animationRenderer'
+import { Variant } from '../../variants'
 import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/lib/nbt'
 import {
 	arrayToNbtFloatArray,
@@ -14,20 +13,21 @@ import {
 	sortObjectKeys,
 	transformationToNbt,
 	zip,
-} from './util'
-import { BoneConfig, TextDisplayConfig } from '../nodeConfigs'
+} from '../util'
+import { BoneConfig, TextDisplayConfig } from '../../nodeConfigs'
 import {
+	getDataPackFormat,
 	IFunctionTag,
 	mergeTag,
 	parseBlock,
 	parseDataPackPath,
 	parseResourceLocation,
-} from '../util/minecraftUtil'
-import { JsonText } from './minecraft/jsonText'
-import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../interface/exportProgressDialog'
-import { eulerFromQuaternion, floatToHex, roundTo, tinycolorToDecimal } from '../util/misc'
+} from '../../util/minecraftUtil'
+import { JsonText } from '../minecraft/jsonText'
+import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/exportProgressDialog'
+import { eulerFromQuaternion, floatToHex, roundTo, tinycolorToDecimal } from '../../util/misc'
 import { setTimeout } from 'timers'
-import { MSLimiter } from '../util/msLimiter'
+import { MSLimiter } from '../../util/msLimiter'
 
 const BONE_TYPES = ['bone', 'text_display', 'item_display', 'block_display']
 
@@ -254,8 +254,6 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 
 	for (const [uuid, node] of Object.entries(rig.nodes)) {
 		const passenger = new NbtCompound()
-		// TODO Maybe add components setting to blueprint settings?
-		const useComponents = true
 
 		const tags = new NbtList([new NbtString(TAGS.GLOBAL_RIG())])
 		passenger.set('Tags', tags)
@@ -282,21 +280,44 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 				if (!variantModel) {
 					throw new Error(`Model for bone '${node.safe_name}' not found!`)
 				}
-				passenger.set(
-					'item',
-					item
-						.set('id', new NbtString(aj.display_item))
-						.set(useComponents ? 'count' : 'Count', new NbtInt(1))
-						.set(
-							useComponents ? 'components' : 'tag',
+				passenger.set('item', item.set('id', new NbtString(aj.display_item)))
+				switch (aj.target_minecraft_version) {
+					case '1.20.4': {
+						item.set(
+							'tag',
 							new NbtCompound().set(
-								useComponents ? 'minecraft:custom_model_data' : 'CustomModelData',
+								'CustomModelData',
 								new NbtInt(variantModel.custom_model_data)
 							)
 						)
-				)
+						item.set('Count', new NbtInt(1))
+						break
+					}
+					case '1.20.5': {
+						item.set(
+							'components',
+							new NbtCompound().set(
+								'minecraft:custom_model_data',
+								new NbtInt(variantModel.custom_model_data)
+							)
+						)
+						item.set('count', new NbtInt(1))
+						break
+					}
+					case '1.21.2': {
+						item.set(
+							'components',
+							new NbtCompound().set(
+								'minecraft:item_model',
+								new NbtString(variantModel.item_model)
+							)
+						)
+						item.set('count', new NbtInt(1))
+						break
+					}
+				}
 
-				if (node.configs.default) {
+				if (node.configs?.default) {
 					BoneConfig.fromJSON(node.configs.default).toNBT(passenger)
 				}
 
@@ -540,7 +561,7 @@ function nodeSorter(a: AnyRenderedNode, b: AnyRenderedNode): number {
 	return 0
 }
 
-export async function compileDataPack(options: {
+export default async function compileDataPack(options: {
 	rig: IRenderedRig
 	animations: IRenderedAnimation[]
 	dataPackFolder: string
@@ -561,7 +582,7 @@ export async function compileDataPack(options: {
 		ioThreadCount: null,
 		dontEmitComments: true,
 		setup: null,
-		formatVersion: Infinity, // We are living in the future! 🤖
+		formatVersion: getDataPackFormat(aj.target_minecraft_version),
 	})
 
 	let ajmeta: DataPackAJMeta | null = null
@@ -665,7 +686,10 @@ export async function compileDataPack(options: {
 	}
 	console.log('Compiler Variables:', variables)
 
-	const mcbFile = animations.length === 0 ? staticMcb : animationMcb
+	const mcbFile =
+		animations.length === 0
+			? mcbFiles[aj.target_minecraft_version].static
+			: mcbFiles[aj.target_minecraft_version].animation
 
 	PROGRESS_DESCRIPTION.set('Compiling Data Pack...')
 	PROGRESS.set(0)
@@ -687,7 +711,6 @@ export async function compileDataPack(options: {
 			PathModule.join(options.dataPackFolder, 'pack.mcmeta'),
 			autoStringify({
 				pack: {
-					// FIXME - This number should be a config option.
 					pack_format: 48,
 					description: `${Project!.name}. Generated with Animated Java`,
 				},

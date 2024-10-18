@@ -8,9 +8,9 @@ import { isResourcePackPath } from '../util/minecraftUtil'
 import { translate } from '../util/translation'
 import { Variant } from '../variants'
 import { hashAnimations, renderProjectAnimations } from './animationRenderer'
-import { compileDataPack } from './datapackCompiler'
+import datapackCompiler from './datapackCompiler'
 import { exportJSON } from './jsonCompiler'
-import { compileResourcePack } from './resourcepackCompiler'
+import resourcepackCompiler from './resourcepackCompiler'
 import { renderRig, hashRig } from './rigRenderer'
 
 export class IntentionalExportError extends Error {}
@@ -105,7 +105,7 @@ async function actuallyExportProject(forceSave = true) {
 		const animationHash = hashAnimations(animations)
 
 		// Always run the resource pack compiler because it calculates the custom model data.
-		await compileResourcePack({
+		await resourcepackCompiler[aj.target_minecraft_version]({
 			rig,
 			displayItemPath,
 			resourcePackFolder,
@@ -123,7 +123,7 @@ async function actuallyExportProject(forceSave = true) {
 			})
 		} else {
 			if (aj.data_pack_export_mode !== 'none') {
-				await compileDataPack({ rig, animations, dataPackFolder, rigHash, animationHash })
+				await datapackCompiler({ rig, animations, dataPackFolder, rigHash, animationHash })
 			}
 
 			Project!.last_used_export_namespace = aj.export_namespace

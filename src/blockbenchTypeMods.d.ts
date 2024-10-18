@@ -8,8 +8,8 @@ import { blueprintSettingErrors, defaultValues } from './blueprintSettings'
 import { openExportProgressDialog } from './interface/exportProgressDialog'
 import { openUnexpectedErrorDialog } from './interface/unexpectedErrorDialog'
 import { TextDisplay } from './outliner/textDisplay'
-import { compileDataPack } from './systems/datapackCompiler'
-import { compileResourcePack } from './systems/resourcepackCompiler'
+import datapackCompiler from './systems/datapackCompiler'
+import resourcepackCompiler from './systems/resourcepackCompiler'
 import { MINECRAFT_REGISTRY } from './systems/minecraft/registryManager'
 import { isDataPackPath, isResourcePackPath } from './util/minecraftUtil'
 import { Valuable } from './util/stores'
@@ -87,8 +87,8 @@ declare global {
 
 	const AnimatedJava: {
 		API: {
-			compileDataPack: typeof compileDataPack
-			compileResourcePack: typeof compileResourcePack
+			compileDataPack: typeof datapackCompiler
+			compileResourcePack: typeof resourcepackCompiler
 			Variant: typeof Variant
 			MINECRAFT_REGISTRY: typeof MINECRAFT_REGISTRY
 			openExportProgressDialog: typeof openExportProgressDialog

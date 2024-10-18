@@ -1,3 +1,4 @@
+import { type MinecraftVersion } from './systems/datapackCompiler/mcbFiles'
 import { Valuable } from './util/stores'
 
 export type ExportMode = 'raw' | 'zip' | 'none'
@@ -11,6 +12,7 @@ export const defaultValues = {
 	enable_plugin_mode: false,
 	resource_pack_export_mode: 'raw' as ExportMode,
 	data_pack_export_mode: 'raw' as ExportMode,
+	target_minecraft_version: '1.21.2' as MinecraftVersion,
 	// Resource Pack Settings
 	display_item: 'minecraft:white_dye',
 	custom_model_data_offset: 0,

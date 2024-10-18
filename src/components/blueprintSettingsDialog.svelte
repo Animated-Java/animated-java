@@ -33,6 +33,7 @@
 
 <script lang="ts">
 	import { defaultValues } from '../blueprintSettings'
+	import mcbFiles from '../systems/datapackCompiler/mcbFiles'
 
 	export let blueprintName: Valuable<string>
 	export let textureSizeX: Valuable<number>
@@ -42,6 +43,7 @@
 	export let enablePluginMode: Valuable<boolean>
 	export let resourcePackExportMode: Valuable<string>
 	export let dataPackExportMode: Valuable<string>
+	export let targetMinecraftVersion: Valuable<string>
 	// Bounding Box
 	export let showBoundingBox: Valuable<boolean>
 	export let autoBoundingBox: Valuable<boolean>
@@ -561,11 +563,19 @@
 		/>
 	{:else}
 		<Select
+			label={translate('dialog.blueprint_settings.target_minecraft_version.title')}
+			tooltip={translate('dialog.blueprint_settings.target_minecraft_version.description')}
+			options={Object.fromEntries(Object.keys(mcbFiles).map(v => [v, v]))}
+			defaultOption={Object.keys(mcbFiles).at(-1) || '1.21.1'}
+			bind:value={targetMinecraftVersion}
+		/>
+
+		<Select
 			label={translate('dialog.blueprint_settings.resource_pack_export_mode.title')}
 			tooltip={translate('dialog.blueprint_settings.resource_pack_export_mode.description')}
 			options={{
 				raw: translate('dialog.blueprint_settings.resource_pack_export_mode.options.raw'),
-				zip: translate('dialog.blueprint_settings.resource_pack_export_mode.options.zip'),
+				// zip: translate('dialog.blueprint_settings.resource_pack_export_mode.options.zip'),
 				none: translate('dialog.blueprint_settings.resource_pack_export_mode.options.none'),
 			}}
 			defaultOption={'raw'}
@@ -577,7 +587,7 @@
 			tooltip={translate('dialog.blueprint_settings.data_pack_export_mode.description')}
 			options={{
 				raw: translate('dialog.blueprint_settings.data_pack_export_mode.options.raw'),
-				zip: translate('dialog.blueprint_settings.data_pack_export_mode.options.zip'),
+				// zip: translate('dialog.blueprint_settings.data_pack_export_mode.options.zip'),
 				none: translate('dialog.blueprint_settings.data_pack_export_mode.options.none'),
 			}}
 			defaultOption={'raw'}

@@ -47,6 +47,7 @@
 			label={translate('dialog.locator_config.use_entity.title')}
 			tooltip={translate('dialog.locator_config.use_entity.description')}
 			bind:checked={useEntity}
+			defaultValue={false}
 		/>
 
 		{#if $useEntity}
@@ -55,12 +56,14 @@
 				tooltip={translate('dialog.locator_config.entity_type.description')}
 				bind:value={entityType}
 				valueChecker={entityTypeValidator}
+				defaultValue="minecraft:item_display"
 			/>
 
 			<CodeInput
 				label={translate('dialog.locator_config.summon_commands.title')}
 				tooltip={translate('dialog.locator_config.summon_commands.description')}
 				bind:value={summonCommands}
+				defaultValue=""
 			/>
 		{/if}
 
@@ -68,6 +71,7 @@
 			label={translate('dialog.locator_config.ticking_commands.title')}
 			tooltip={translate('dialog.locator_config.ticking_commands.description')}
 			bind:value={tickingCommands}
+			defaultValue=""
 		/>
 	{/if}
 </div>

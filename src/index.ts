@@ -12,7 +12,7 @@ import './outliner/textDisplay'
 import './outliner/vanillaItemDisplay'
 import './outliner/vanillaBlockDisplay'
 // Compilers
-import { compileDataPack } from './systems/datapackCompiler'
+import datapackCompiler from './systems/datapackCompiler'
 // Minecraft Systems
 import './systems/minecraft/versionManager'
 import './systems/minecraft/registryManager'
@@ -23,19 +23,14 @@ import './systems/minecraft/fontManager'
 import { TRANSPARENT_TEXTURE, Variant } from './variants'
 import './systems/minecraft/registryManager'
 import { MINECRAFT_REGISTRY } from './systems/minecraft/registryManager'
-import { compileResourcePack } from './systems/resourcepackCompiler'
+import resourcepackCompiler from './systems/resourcepackCompiler'
 import { openExportProgressDialog } from './interface/exportProgressDialog'
-import { isDataPackPath, isResourcePackPath } from './util/minecraftUtil'
+import { isDataPackPath, isResourcePackPath, parseResourcePackPath } from './util/minecraftUtil'
 import { blueprintSettingErrors } from './blueprintSettings'
 import { openUnexpectedErrorDialog } from './interface/unexpectedErrorDialog'
 import { BLUEPRINT_CODEC, BLUEPRINT_FORMAT } from './blueprintFormat'
 import { TextDisplay } from './outliner/textDisplay'
 import { getLatestVersionClientDownloadUrl } from './systems/minecraft/assetManager'
-import {
-	hideLoadingPopup,
-	showLoadingPopup,
-	showOfflineError,
-} from './interface/animatedJavaLoadingPopup'
 import { getVanillaFont } from './systems/minecraft/fontManager'
 import * as assetManager from './systems/minecraft/assetManager'
 import * as itemModelManager from './systems/minecraft/itemModelManager'
@@ -46,13 +41,13 @@ import { BLOCKSTATE_REGISTRY } from './systems/minecraft/blockstateManager'
 import { exportProject } from './systems/exporter'
 import { openBlueprintLoadingDialog } from './interface/blueprintLoadingPopup'
 import { openInstallPopup } from './interface/installedPopup'
-import { createBlockbenchMod } from './util/moddingTools'
 
 // @ts-ignore
 globalThis.AnimatedJava = {
 	API: {
-		compileDataPack,
-		compileResourcePack,
+		parseResourcePackPath,
+		datapackCompiler,
+		resourcepackCompiler,
 		Variant,
 		MINECRAFT_REGISTRY,
 		openExportProgressDialog,

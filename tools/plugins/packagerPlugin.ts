@@ -44,8 +44,7 @@ function plugin(): Plugin {
 				if (fs.existsSync(pathjs.join(DIST_PATH, 'about.svelte')))
 					fs.unlinkSync(pathjs.join(DIST_PATH, 'about.svelte'))
 
-				if (fs.existsSync(PLUGIN_REPO_PATH)) {
-					console.log('📋 Copying to plugin repo')
+				if (process.env.NODE_ENV === 'production' && fs.existsSync(PLUGIN_REPO_PATH)) {
 					fs.rmSync(PLUGIN_REPO_PATH, { recursive: true, force: true })
 					fs.cpSync(DIST_PATH, PLUGIN_REPO_PATH, { recursive: true })
 					const manifest = JSON.parse(fs.readFileSync(PLUGIN_MANIFEST_PATH, 'utf-8'))
@@ -57,6 +56,7 @@ function plugin(): Plugin {
 							parser: 'json',
 						})
 					)
+					console.log('📋 Copied to Plugin Repo!')
 				}
 			})
 		},

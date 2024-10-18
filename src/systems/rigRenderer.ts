@@ -93,7 +93,7 @@ export interface IRenderedNodes {
 		 * The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit.
 		 */
 		base_scale: number
-		configs: {
+		configs?: {
 			default?: IBlueprintBoneConfigJSON
 			variants: Record<string, IBlueprintBoneConfigJSON>
 		}
@@ -103,11 +103,11 @@ export interface IRenderedNodes {
 	}
 	Camera: IRenderedNode & {
 		type: 'camera'
-		config: IBlueprintCameraConfigJSON
+		config?: IBlueprintCameraConfigJSON
 	}
 	Locator: IRenderedNode & {
 		type: 'locator'
-		config: IBlueprintLocatorConfigJSON
+		config?: IBlueprintLocatorConfigJSON
 	}
 	TextDisplay: IRenderedNode & {
 		type: 'text_display'
@@ -151,6 +151,7 @@ export interface IRenderedVariantModel {
 	model: IRenderedModel | null
 	custom_model_data: number
 	resource_location: string
+	item_model: string
 }
 
 export interface INodeStructure {
@@ -350,6 +351,7 @@ function renderGroup(
 			},
 			custom_model_data: -1, // This is calculated when constructing the resource pack.
 			resource_location: parsed.resourceLocation,
+			item_model: parsed.namespace + ':' + parsed.subtypelessPath.replace('.json', ''),
 		}
 	}
 
@@ -591,7 +593,8 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 			models[uuid] = {
 				model: null,
 				custom_model_data: 1,
-				resource_location: 'animated_java:empty',
+				resource_location: 'animated_java:item/empty',
+				item_model: 'animated_java:empty',
 			}
 			continue
 		}
@@ -623,6 +626,10 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 			},
 			custom_model_data: -1, // This is calculated when constructing the resource pack.
 			resource_location: parsedModelPath.resourceLocation,
+			item_model:
+				parsedModelPath.namespace +
+				':' +
+				parsedModelPath.subtypelessPath.replace('.json', ''),
 		}
 	}
 
