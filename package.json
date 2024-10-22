@@ -2,9 +2,9 @@
 	"type": "module",
 	"name": "animated_java",
 	"title": "Animated Java",
-	"version": "1.4.2",
-	"display_version": "1.4.2",
-	"min_blockbench_version": "4.10.0",
+	"version": "1.5.0",
+	"display_version": "1.5.0",
+	"min_blockbench_version": "4.11.1",
 	"author": {
 		"name": "Titus Evans (SnaveSutit)",
 		"email": "snavesutit@gmail.com",
