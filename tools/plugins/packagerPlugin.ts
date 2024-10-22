@@ -48,7 +48,15 @@ function plugin(): Plugin {
 					fs.rmSync(PLUGIN_REPO_PATH, { recursive: true, force: true })
 					fs.cpSync(DIST_PATH, PLUGIN_REPO_PATH, { recursive: true })
 					const manifest = JSON.parse(fs.readFileSync(PLUGIN_MANIFEST_PATH, 'utf-8'))
+					manifest.animated_java.title = PACKAGE.title
+					manifest.animated_java.author = PACKAGE.author.name
+					manifest.animated_java.icon = PACKAGE.icon
+					manifest.animated_java.description = PACKAGE.description
 					manifest.animated_java.version = PACKAGE.version
+					manifest.animated_java.min_version = PACKAGE.min_version
+					manifest.animated_java.variant = PACKAGE.variant
+					manifest.animated_java.tags = PACKAGE.tags
+
 					fs.writeFileSync(
 						PLUGIN_MANIFEST_PATH,
 						prettier.format(JSON.stringify(manifest, null, '\t'), {
