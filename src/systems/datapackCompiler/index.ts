@@ -293,7 +293,8 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 						item.set('Count', new NbtInt(1))
 						break
 					}
-					case '1.20.5': {
+					case '1.20.5':
+					case '1.21.0': {
 						item.set(
 							'components',
 							new NbtCompound().set(
@@ -408,6 +409,10 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 					BoneConfig.fromJSON(node.config).toNBT(passenger)
 				}
 				break
+			}
+			default: {
+				// Skips nodes that are not actually riding the root entity.
+				continue
 			}
 		}
 

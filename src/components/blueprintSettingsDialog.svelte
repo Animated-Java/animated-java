@@ -566,7 +566,7 @@
 			label={translate('dialog.blueprint_settings.target_minecraft_version.title')}
 			tooltip={translate('dialog.blueprint_settings.target_minecraft_version.description')}
 			options={Object.fromEntries(Object.keys(mcbFiles).map(v => [v, v]))}
-			defaultOption={Object.keys(mcbFiles).at(-1) || '1.21.1'}
+			defaultOption={Object.keys(mcbFiles).at(-1) || '1.21.2'}
 			bind:value={targetMinecraftVersion}
 		/>
 
