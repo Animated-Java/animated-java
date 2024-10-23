@@ -621,7 +621,7 @@ dir <%export_namespace%> {
 				}
 			}
 			tp @s ~ ~ ~ ~ ~
-			execute at @s on passengers run tp @s ~ ~ ~ ~ ~
+			execute at @s on passengers run rotate @s ~ ~
 			data modify entity @s teleport_duration set value <%teleportation_duration%>
 			execute on passengers run data modify entity @s teleport_duration set value <%teleportation_duration%>
 			# Custom Summon Commands

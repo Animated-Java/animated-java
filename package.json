@@ -4,8 +4,8 @@
 	"title": "Animated Java",
 	"icon": "icon.svg",
 	"description": "A Blockbench plugin that makes complex animation a breeze in Minecraft: Java Edition.",
-	"version": "1.5.0",
-	"display_version": "1.5.0",
+	"version": "1.5.1",
+	"display_version": "1.5.1",
 	"min_blockbench_version": "4.11.1",
 	"author": {
 		"name": "Titus Evans (SnaveSutit)",
