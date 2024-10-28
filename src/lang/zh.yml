@@ -91,11 +91,14 @@ animated_java.dialog.blueprint_settings.auto_bounding_box.description: |-
 animated_java.dialog.blueprint_settings.bounding_box.title: 边界框
 animated_java.dialog.blueprint_settings.bounding_box.description: 确定模型的剔除框，当该框离开屏幕时将停止该模型的渲染。
 
+animated_java.dialog.blueprint_settings.target_minecraft_version.title: 目标 Minecraft 版本
+animated_java.dialog.blueprint_settings.target_minecraft_version.description: 项目导出时适配的 Minecraft 版本。这将决定导出的资源包与数据包的格式。
+
 # Resource Pack Settings
 animated_java.dialog.blueprint_settings.resource_pack_settings.title: 资源包设置
 
 animated_java.dialog.blueprint_settings.enable_advanced_resource_pack_settings.title: 高级设置
-animated_java.dialog.blueprint_settings.enable_advanced_resource_pack_settings.description: 是否启用资源包的高级设置。
+animated_java.dialog.blueprint_settings.enable_advanced_resource_pack_settings.description: 是否启用高级资源包设置。
 
 animated_java.dialog.blueprint_settings.enable_advanced_resource_pack_folders.title: 高级文件夹
 animated_java.dialog.blueprint_settings.enable_advanced_resource_pack_folders.description: 是否启用高级资源包文件夹设置。
@@ -107,7 +110,9 @@ animated_java.dialog.blueprint_settings.display_item.error.invalid_item_id.no_na
 animated_java.dialog.blueprint_settings.display_item.error.invalid_item_id.whitespace: 所提供的物品ID无效！物品ID不应包含空格。
 animated_java.dialog.blueprint_settings.display_item.warning.item_does_not_exist: 原版不存在所指定的物品！
 animated_java.dialog.blueprint_settings.display_item.warning.item_model_not_generated: 所选物品并未使用 'minecraft:item/generated' 为父类。可能会导致游戏中的模型出现问题。
-animated_java.dialog.blueprint_settings.display_item.error.item_model_not_found: 所选物品在原版资源包中不存在模型文件！
+animated_java.dialog.blueprint_settings.display_item.error.item_model_not_found: |-
+    所选物品在原版资源包中不存在模型文件！
+    如果您认为此报错有误，可尝试重新打开 Blockbench，等待 AJ 弹出的加载窗口消失后再次打开项目蓝图。
 
 animated_java.dialog.blueprint_settings.custom_model_data_offset.title: CMD 偏位
 animated_java.dialog.blueprint_settings.custom_model_data_offset.description: 承载物的 Custom Model Data 所使用的偏移量。允许互相独立的资源包内的多个蓝图使用相同的物品为承载物。
@@ -144,7 +149,7 @@ animated_java.dialog.blueprint_settings.texture_folder.description: 所有导出
 animated_java.dialog.blueprint_settings.data_pack_settings.title: 数据包设置
 
 animated_java.dialog.blueprint_settings.enable_advanced_data_pack_settings.title: 启用高级设置
-animated_java.dialog.blueprint_settings.enable_advanced_data_pack_settings.description: 是否启用数据包的高级设置。
+animated_java.dialog.blueprint_settings.enable_advanced_data_pack_settings.description: 是否启用高级数据包设置。
 
 animated_java.dialog.blueprint_settings.data_pack.title: 数据包
 animated_java.dialog.blueprint_settings.data_pack.description: 项目导出到的数据包的根文件夹。
@@ -180,6 +185,12 @@ animated_java.dialog.blueprint_settings.use_storage_for_animation.title: 使用 
 animated_java.dialog.blueprint_settings.use_storage_for_animation.description: |-
     是否使用 NBT storage 代替函数进行动画数据存储。
     将会大大减少数据包生成时的函数文件数量，相对的这会比使用函数存储的办法慢42%。
+
+animated_java.dialog.blueprint_settings.show_function_errors.title: 显示函数错误
+animated_java.dialog.blueprint_settings.show_function_errors.description: 是否在非正确执行函数时，在聊天栏显示错误信息。
+
+animated_java.dialog.blueprint_settings.show_outdated_warning.title: 显示过期警告
+animated_java.dialog.blueprint_settings.show_outdated_warning.description: 是否当存在过期的骨骼实例时，在聊天栏显示警告提示。
 
 # Plugin Settings
 animated_java.dialog.blueprint_settings.baked_animations.title: 烘培动画
@@ -438,6 +449,7 @@ animated_java.panel.variants.tool.delete_selected_variant: 删除所选变体
 animated_java.panel.variants.tool.variant_visible: 已选择变体
 animated_java.panel.variants.tool.variant_not_visible: 未选择变体
 animated_java.panel.variants.tool.cannot_delete_default_variant: 不可删除默认变体！
+animated_java.panel.variants.tool.cannot_edit_default_variant: 不可编辑默认变体！
 
 animated_java.action.variants.create: 创建变体
 animated_java.action.variants.duplicate: 复制变体
@@ -535,7 +547,7 @@ animated_java.tool.text_display.text_alignment.options.left: 靠左
 animated_java.tool.text_display.text_alignment.options.center: 居中
 animated_java.tool.text_display.text_alignment.options.right: 靠右
 
-animated_java.tool.text_display.see_through.title: 穿透
+animated_java.tool.text_display.see_through.title: 透视
 animated_java.tool.text_display.see_through.description: 文本展示是否在方块后依然可见。
 
 # Item Display Panel
@@ -558,10 +570,10 @@ animated_java.panel.vanilla_block_display.title: 显示方块
 animated_java.panel.vanilla_block_display.description: 所显示的方块。支持输入方块状态！
 
 ### Custom Elements
-## Vanilla Item Display
-animated_java.vanilla_item_display.title: 原版物品展示
+## Item Display
+animated_java.vanilla_item_display.title: 物品展示
 
-## Vanilla Block Display
+## Block Display
 
 ### Misc
 
