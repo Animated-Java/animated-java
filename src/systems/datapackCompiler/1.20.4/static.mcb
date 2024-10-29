@@ -229,6 +229,12 @@ dir <%export_namespace%> {
 							tag @s remove <%TAGS.NEW()%>
 
 							function *global/internal/gu/convert_uuid_array_to_string with entity @s
+							tp @s \
+								^<%roundTo(locator.default_transform.pos[0], 10)%> \
+								^<%roundTo(locator.default_transform.pos[1], 10)%> \
+								^<%roundTo(locator.default_transform.pos[2], 10)%> \
+								~<%roundTo(locator.default_transform.head_rot[1], 10)%> \
+								~<%roundTo(locator.default_transform.head_rot[0], 10)%>
 							<%%
 								if (locator.config.summon_commands) {
 									emit.mcb(locator.config.summon_commands)
@@ -245,6 +251,12 @@ dir <%export_namespace%> {
 						tag @s remove <%TAGS.NEW()%>
 
 						function *global/internal/gu/convert_uuid_array_to_string with entity @s
+						tp @s \
+							^<%roundTo(camera.default_transform.pos[0], 10)%> \
+							^<%roundTo(camera.default_transform.pos[1], 10)%> \
+							^<%roundTo(camera.default_transform.pos[2], 10)%> \
+							~<%roundTo(camera.default_transform.head_rot[1], 10)%> \
+							~<%roundTo(camera.default_transform.head_rot[0], 10)%>
 					}
 					data modify entity @s data.cameras.<%camera.name%>.uuid set from storage aj:uuid main.out
 				}
