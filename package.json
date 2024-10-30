@@ -7,6 +7,12 @@
 	"version": "1.5.1",
 	"display_version": "1.5.1",
 	"min_blockbench_version": "4.11.1",
+	"variant": "desktop",
+	"tags": [
+		"Minecraft: Java Edition",
+		"Animation",
+		"Display Entities"
+	],
 	"author": {
 		"name": "Titus Evans (SnaveSutit)",
 		"email": "snavesutit@gmail.com",
