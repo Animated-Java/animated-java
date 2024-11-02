@@ -146,8 +146,6 @@ namespace TELLRAW {
 				color: 'aqua',
 				underlined: true,
 			},
-			// '\n',
-			// TELLRAW_LEARN_MORE_LINK(''),
 			TELLRAW_SUFFIX(),
 		])
 	export const RIG_OUTDATED_TEXT_DISPLAY = () =>
