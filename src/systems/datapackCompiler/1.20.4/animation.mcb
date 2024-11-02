@@ -45,7 +45,7 @@ dir global {
 		dir errors {
 			function function_not_executed_as_root_entity {
 				#ARGS: {export_namespace: string, function_path: string}
-				$tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR('$(function_path)', TAGS.PROJECT_ROOT('$(export_namespace)'))%>
+				$tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR('$(function_path)')%>
 			}
 		}
 	}
@@ -144,7 +144,7 @@ dir <%export_namespace%> {
 					execute store result storage aj:temp y int 1 store result score #this.y aj.i run data get entity @s Pos[1] 1
 					execute store result storage aj:temp z int 1 store result score #this.z aj.i run data get entity @s Pos[2] 1
 					block outdated_tellraw { with storage aj:temp
-						$tellraw @a <%TELLRAW.RIG_OUTDATED(export_namespace)%>
+						$tellraw @a <%TELLRAW.RIG_OUTDATED()%>
 					}
 					data modify entity @s data.rigHash set value '<%rigHash%>'
 					execute on passengers run data merge entity @s {Glowing: 1b, glow_color_override: <%0xff0000%>}

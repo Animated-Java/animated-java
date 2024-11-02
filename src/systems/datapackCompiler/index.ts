@@ -85,20 +85,43 @@ namespace OBJECTIVES {
 // ▓ □〓≡ ╝╚╔╗╬ ╓ ╩┌ ┐└ ┘ ↑ ↓ → ← ↔ ▀▐ ░ ▒▬ ♦ ◘
 // → ✎ ❣ ✚ ✔ ✖ ▁ ▂ ▃ ▄ ▅ ▆ ▇ █ ⊻ ⊼ ⊽ ⋃ ⌀ ⌂
 
-const TELLRAW_PREFIX = new JsonText([
-	{ text: '[', color: 'gray' },
-	{ text: 'AJ', color: 'aqua' },
-	{ text: '] ' },
-])
+const TELLRAW_PREFIX = () =>
+	new JsonText([
+		{ text: '\n[', color: 'gray' },
+		{ text: 'AJ', color: 'aqua' },
+		'] ',
+		[
+			{ text: '(from ', color: 'gray', italic: true },
+			Project!.animated_java.export_namespace,
+			')',
+		],
+		' -> ',
+	])
+
+const TELLRAW_ERROR_PREFIX = () =>
+	new JsonText([TELLRAW_PREFIX(), { text: 'ERROR: ', color: 'red' }, '\n '])
+
+const TELLRAW_SUFFIX = () => new JsonText(['\n'])
+
+const TELLRAW_LEARN_MORE_LINK = (url: string) =>
+	new JsonText([
+		'\n ',
+		{
+			text: 'Click here to learn more',
+			color: 'blue',
+			underlined: true,
+			italic: true,
+			clickEvent: { action: 'open_url', value: url },
+		},
+	])
 
 namespace TELLRAW {
-	export const RIG_OUTDATED = (exportNamespace: string) =>
+	export const RIG_OUTDATED = () =>
 		new JsonText([
 			'',
-			TELLRAW_PREFIX,
-			{ text: 'Error: ', color: 'red' },
+			TELLRAW_ERROR_PREFIX(),
 			{ text: 'The ', color: 'red' },
-			{ text: exportNamespace, color: 'yellow' },
+			{ text: Project!.animated_java.export_namespace, color: 'yellow' },
 			{ text: ' rig instance at', color: 'red' },
 			[
 				{ text: ' [', color: 'yellow' },
@@ -123,6 +146,7 @@ namespace TELLRAW {
 				color: 'aqua',
 				underlined: true,
 			},
+			TELLRAW_SUFFIX(),
 		])
 	export const RIG_OUTDATED_TEXT_DISPLAY = () =>
 		new JsonText([
@@ -132,26 +156,34 @@ namespace TELLRAW {
 				color: 'red',
 			},
 		])
-	export const FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR = (functionName: string, rootTag: string) =>
+	export const FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR = (functionName: string) =>
 		new JsonText([
 			'',
-			TELLRAW_PREFIX,
-			{ text: 'Error: ', color: 'red' },
-			{ text: 'The function ', color: 'red' },
-			{ text: functionName, color: 'yellow' },
-			{ text: ' must be executed as the root entity.', color: 'red' },
-			{ text: '\n You can use ', color: 'red' },
-			{ text: `execute as @e[tag=${rootTag}] run ...`, color: 'aqua' },
-			{ text: ' to run the function as the root.', color: 'red' },
+			TELLRAW_ERROR_PREFIX(),
+			{
+				text: 'This function',
+				color: 'blue',
+				underlined: true,
+				hoverEvent: {
+					action: 'show_text',
+					contents: [{ text: functionName, color: 'yellow' }],
+				},
+			},
+			{ text: " must be executed as the rig's root entity.", color: 'red' },
+			'\n',
+			TELLRAW_LEARN_MORE_LINK(
+				'https://animated-java.dev/docs/exported-rigs/controlling-a-rig-instance'
+			),
+			TELLRAW_SUFFIX(),
 		])
 	// Summon Function
 	export const VARIANT_CANNOT_BE_EMPTY = () =>
 		new JsonText([
 			'',
-			TELLRAW_PREFIX,
-			{ text: 'Error: ', color: 'red' },
+			TELLRAW_ERROR_PREFIX(),
 			{ text: 'variant', color: 'yellow' },
 			{ text: ' cannot be an empty string.', color: 'red' },
+			TELLRAW_SUFFIX(),
 		])
 	export const INVALID_VARIANT = (
 		variantName: string,
@@ -159,8 +191,7 @@ namespace TELLRAW {
 	) =>
 		new JsonText([
 			'',
-			TELLRAW_PREFIX,
-			{ text: 'Error: ', color: 'red' },
+			TELLRAW_ERROR_PREFIX(),
 			{ text: 'The variant ', color: 'red' },
 			{ text: variantName, color: 'yellow' },
 			{ text: ' does not exist.', color: 'red' },
@@ -177,28 +208,28 @@ namespace TELLRAW {
 						{ text: variant.name, color: 'yellow' },
 					])
 			),
+			TELLRAW_SUFFIX(),
 		])
 	export const ANIMATION_CANNOT_BE_EMPTY = () =>
 		new JsonText([
 			'',
-			TELLRAW_PREFIX,
-			{ text: 'Error: ', color: 'red' },
+			TELLRAW_ERROR_PREFIX(),
 			{ text: 'animation', color: 'yellow' },
 			{ text: ' cannot be an empty string.', color: 'red' },
+			TELLRAW_SUFFIX(),
 		])
 	export const FRAME_CANNOT_BE_NEGATIVE = () =>
 		new JsonText([
 			'',
-			TELLRAW_PREFIX,
-			{ text: 'Error: ', color: 'red' },
+			TELLRAW_ERROR_PREFIX(),
 			{ text: 'frame', color: 'yellow' },
 			{ text: ' must be a non-negative integer.', color: 'red' },
+			TELLRAW_SUFFIX(),
 		])
 	export const INVALID_ANIMATION = (animationName: string, animations: IRenderedAnimation[]) =>
 		new JsonText([
 			'',
-			TELLRAW_PREFIX,
-			{ text: 'Error: ', color: 'red' },
+			TELLRAW_ERROR_PREFIX(),
 			{ text: 'The animation ', color: 'red' },
 			{ text: animationName, color: 'yellow' },
 			{ text: ' does not exist.', color: 'red' },
@@ -215,13 +246,14 @@ namespace TELLRAW {
 						{ text: anim.safe_name, color: 'yellow' },
 					])
 			),
+			TELLRAW_SUFFIX(),
 		])
 	export const NO_VARIANTS = () =>
 		new JsonText([
 			'',
-			TELLRAW_PREFIX,
-			{ text: 'Error: ', color: 'red' },
+			TELLRAW_ERROR_PREFIX(),
 			{ text: 'No variants are available.', color: 'red' },
+			TELLRAW_SUFFIX(),
 		])
 }
 

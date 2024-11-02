@@ -53,7 +53,7 @@ function plugin(): Plugin {
 					manifest.animated_java.icon = PACKAGE.icon
 					manifest.animated_java.description = PACKAGE.description
 					manifest.animated_java.version = PACKAGE.version
-					manifest.animated_java.min_version = PACKAGE.min_version
+					manifest.animated_java.min_version = PACKAGE.min_blockbench_version
 					manifest.animated_java.variant = PACKAGE.variant
 					manifest.animated_java.tags = PACKAGE.tags
 

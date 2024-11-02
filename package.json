@@ -4,9 +4,15 @@
 	"title": "Animated Java",
 	"icon": "icon.svg",
 	"description": "A Blockbench plugin that makes complex animation a breeze in Minecraft: Java Edition.",
-	"version": "1.5.1",
-	"display_version": "1.5.1",
+	"version": "1.5.2",
+	"display_version": "1.5.2",
 	"min_blockbench_version": "4.11.1",
+	"variant": "desktop",
+	"tags": [
+		"Minecraft: Java Edition",
+		"Animation",
+		"Display Entities"
+	],
 	"author": {
 		"name": "Titus Evans (SnaveSutit)",
 		"email": "snavesutit@gmail.com",
@@ -76,6 +82,7 @@
 	},
 	"devDependencies": {
 		"@novacbn/svelte-codejar": "^0.1.2",
+		"@types/download": "^8.0.5",
 		"@types/eslint": "^8.21.1",
 		"@types/js-yaml": "^4.0.5",
 		"@types/node": "^17.0.21",
@@ -99,7 +106,7 @@
 	},
 	"dependencies": {
 		"deepslate": "^0.19.2",
-		"easydl": "^1.2.0",
+		"download": "^8.0.0",
 		"fflate": "^0.8.2",
 		"generic-stream": "^1.2.6",
 		"marked": "^4.3.0",

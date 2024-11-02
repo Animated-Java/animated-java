@@ -38,7 +38,7 @@ dir global {
 		dir errors {
 			function function_not_executed_as_root_entity {
 				#ARGS: {export_namespace: string, function_path: string}
-				$tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR('$(function_path)', TAGS.PROJECT_ROOT('$(export_namespace)'))%>
+				$tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR('$(function_path)')%>
 			}
 		}
 	}
@@ -122,7 +122,7 @@ dir <%export_namespace%> {
 					execute store result storage aj:temp y int 1 store result score #this.y aj.i run data get entity @s Pos[1] 1
 					execute store result storage aj:temp z int 1 store result score #this.z aj.i run data get entity @s Pos[2] 1
 					block outdated_tellraw { with storage aj:temp
-						$tellraw @a <%TELLRAW.RIG_OUTDATED(export_namespace)%>
+						$tellraw @a <%TELLRAW.RIG_OUTDATED()%>
 					}
 					data modify entity @s data.rigHash set value '<%rigHash%>'
 					execute on passengers run data merge entity @s {Glowing: 1b, glow_color_override: <%0xff0000%>}
@@ -174,7 +174,7 @@ dir <%export_namespace%> {
 				}
 			}
 			# Rotation Logic
-			execute at @s on passengers run tp @s ~ ~ ~ ~ ~
+			execute at @s on passengers run rotate @s ~ ~
 			IF (root_ticking_commands) {
 				<%%
 					emit.mcb(root_ticking_commands)
@@ -224,11 +224,17 @@ dir <%export_namespace%> {
 
 				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator')) as locator {
 					IF (locator.config && locator.config.use_entity) {
-						summon <%locator.config.entity_type%> ~ ~ ~ {Tags:['<%TAGS.NEW()%>', '<%TAGS.GLOBAL_LOCATOR()%>', '<%TAGS.PROJECT_LOCATOR(export_namespace)%>', '<%TAGS.LOCAL_LOCATOR(export_namespace, locator.name)%>']}
+						summon <%locator.config.entity_type%> ^<%locator.default_transform.pos[0]%> ^<%locator.default_transform.pos[1]%> ^<%locator.default_transform.pos[2]%> {Tags:['<%TAGS.NEW()%>', '<%TAGS.GLOBAL_LOCATOR()%>', '<%TAGS.PROJECT_LOCATOR(export_namespace)%>', '<%TAGS.LOCAL_LOCATOR(export_namespace, locator.name)%>']}
 						execute as @e[type=<%locator.config.entity_type%>,tag=<%TAGS.NEW()%>,tag=<%TAGS.GLOBAL_LOCATOR()%>,limit=1,distance=..0.01] run {
 							tag @s remove <%TAGS.NEW()%>
 
 							function *global/internal/gu/convert_uuid_array_to_string with entity @s
+							tp @s \
+								^<%roundTo(locator.default_transform.pos[0], 10)%> \
+								^<%roundTo(locator.default_transform.pos[1], 10)%> \
+								^<%roundTo(locator.default_transform.pos[2], 10)%> \
+								~<%roundTo(locator.default_transform.head_rot[1], 10)%> \
+								~<%roundTo(locator.default_transform.head_rot[0], 10)%>
 							<%%
 								if (locator.config.summon_commands) {
 									emit.mcb(locator.config.summon_commands)
@@ -245,6 +251,12 @@ dir <%export_namespace%> {
 						tag @s remove <%TAGS.NEW()%>
 
 						function *global/internal/gu/convert_uuid_array_to_string with entity @s
+						tp @s \
+							^<%roundTo(camera.default_transform.pos[0], 10)%> \
+							^<%roundTo(camera.default_transform.pos[1], 10)%> \
+							^<%roundTo(camera.default_transform.pos[2], 10)%> \
+							~<%roundTo(camera.default_transform.head_rot[1], 10)%> \
+							~<%roundTo(camera.default_transform.head_rot[0], 10)%>
 					}
 					data modify entity @s data.cameras.<%camera.name%>.uuid set from storage aj:uuid main.out
 				}
@@ -286,7 +298,7 @@ dir <%export_namespace%> {
 			function *<%export_namespace%>/set_default_pose
 
 			tp @s ~ ~ ~ ~ ~
-			execute at @s on passengers run tp @s ~ ~ ~ ~ ~
+			execute at @s on passengers run rotate @s ~ ~
 			data modify entity @s teleport_duration set value <%teleportation_duration%>
 			execute on passengers run data modify entity @s teleport_duration set value <%teleportation_duration%>
 			# Custom Summon Commands

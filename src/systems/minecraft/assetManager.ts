@@ -5,8 +5,9 @@ import { events } from '../../util/events'
 import index from '../../assets/vanillaAssetOverrides/index.json'
 import { Unzipped } from 'fflate'
 import { unzip } from '../util'
-import EasyDl from 'easydl'
+import download from 'download'
 import {
+	showOfflineError,
 	updateLoadingProgress,
 	updateLoadingProgressLabel,
 } from '../../interface/animatedJavaLoadingPopup'
@@ -14,22 +15,21 @@ const ASSET_OVERRIDES = index as unknown as Record<string, string>
 
 async function downloadJar(url: string, savePath: string) {
 	updateLoadingProgressLabel('Downloading Minecraft Assets...')
-	await new EasyDl(url, savePath, {
-		existBehavior: 'overwrite',
-		maxRetry: 3,
-		reportInterval: 100,
-	})
-		.on('progress', progress => {
-			updateLoadingProgress(progress.total.percentage)
+
+	const data = await download(url, { retry: { retries: 3 } })
+		.on('downloadProgress', progress => {
+			updateLoadingProgress(progress.percent * 100)
 		})
-		.on('error', error => {
+		.catch((error: any) => {
 			console.error('Failed to download Minecraft client:', error)
 		})
-		.on('end', () => {
-			updateLoadingProgress(100)
-			updateLoadingProgressLabel('')
-		})
-		.wait()
+
+	if (!data) {
+		showOfflineError()
+		throw new Error('Failed to download Minecraft client after 3 retries.')
+	}
+
+	await fs.promises.writeFile(savePath, data)
 }
 
 export async function getLatestVersionClientDownloadUrl() {
@@ -74,8 +74,6 @@ export async function updateAssets() {
 
 export async function checkForAssetsUpdate() {
 	console.log('Checking for Minecraft assets update...')
-	// DEBUG
-	// await updateAssets()
 
 	const currentVersion = getCurrentVersion()
 	if (!currentVersion) {
@@ -94,6 +92,9 @@ export async function checkForAssetsUpdate() {
 		console.log('No cached Minecraft client found, updating assets...')
 		await updateAssets()
 	}
+
+	console.log('Does file exist?', fs.existsSync(cachedJarFilePath))
+	console.log('Are assets loaded?', localStorage.getItem('assetsLoaded') === 'true')
 
 	await extractAssets()
 	console.log('Minecraft assets are up to date!')
