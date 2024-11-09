@@ -11,6 +11,8 @@
 	} from '../../util/minecraftUtil'
 	import Vector2d from '../sidebarDialogItems/vector2d.svelte'
 	import { translate } from '../../util/translation'
+	import OptionSelect from '../sidebarDialogItems/optionSelect.svelte'
+	import { Valuable } from '../../util/stores'
 
 	export let settings: ValuableBlueprintSettings
 
@@ -143,4 +145,18 @@
 	maxY={4096}
 	required
 	valueChecker={textureSizeChecker}
+/>
+
+<OptionSelect
+	label="Target Minecraft Version"
+	description="Choose the version of Minecraft you are exporting this project for.<br/>If your exact version is not listed, choose the closest version before the one you are using."
+	selected={settings.target_minecraft_version}
+	options={{
+		'1.20.4': '1.20.4',
+		'1.20.5': '1.20.5',
+		'1.21.0': '1.21.0',
+		'1.21.2': '1.21.2',
+		'1.21.3': '1.21.3',
+	}}
+	required
 />

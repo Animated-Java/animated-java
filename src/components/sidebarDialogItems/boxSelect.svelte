@@ -21,20 +21,20 @@
 </script>
 
 <BaseSidebarDialogItem {label} {required} {description}>
-	<div class="mode-options-container">
+	<div class="options-container">
 		{#each Object.entries(options) as [key, option]}
 			<!-- svelte-ignore a11y-click-events-have-key-events -->
 			<div
-				class="mode-option {key === $selected ? 'mode-option-selected' : ''}"
+				class="option {key === $selected ? 'option-selected' : ''}"
 				on:click={() => {
 					$selected = key
 				}}
 			>
-				<p class="mode-option-title">{@html option.label.replace('\n', '<br/>')}</p>
+				<p class="option-title">{@html option.label.replace('\n', '<br/>')}</p>
 				{#if option.type === 'image'}
 					<img src={option.src} alt="" />
 				{:else}
-					<p class="mode-option-description">{option.description}</p>
+					<p class="option-description">{option.description}</p>
 				{/if}
 			</div>
 		{/each}
@@ -42,12 +42,12 @@
 </BaseSidebarDialogItem>
 
 <style>
-	.mode-options-container {
+	.options-container {
 		display: grid;
 		gap: 12px;
 		grid-template-columns: 1fr 1fr 1fr;
 	}
-	.mode-option {
+	.option {
 		height: 128px;
 		background-color: var(--color-back);
 		position: relative;
@@ -56,21 +56,21 @@
 		outline: 0px solid var(--color-back);
 		transition: outline 0.1s cubic-bezier(0.25, 0.68, 0.53, 1.3);
 	}
-	.mode-option:hover .mode-option-title {
+	.option:hover .option-title {
 		color: var(--color-light);
 	}
-	.mode-option-selected {
+	.option-selected {
 		outline: 2px solid var(--color-accent);
 		/* outline-bottom: 8px solid var(--color-accent); */
 	}
-	.mode-option-title {
+	.option-title {
 		margin: 0;
 		padding: 8px 14px;
 		padding-bottom: 0px;
 		color: var(--color-text);
 		font-size: large;
 	}
-	.mode-option img {
+	.option img {
 		width: 110px;
 		height: 110px;
 		position: absolute;
@@ -80,7 +80,7 @@
 		pointer-events: none;
 		user-select: none;
 	}
-	.mode-option-description {
+	.option-description {
 		font-size: 0.9em;
 		padding: 0px 14px;
 		color: var(--color-subtle_text);
