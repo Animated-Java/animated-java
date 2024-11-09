@@ -74,6 +74,7 @@ export class TextureMap {
 
 	public verifyTextures() {
 		for (const [key, value] of this.map) {
+			if (value === TRANSPARENT_TEXTURE.uuid) continue
 			if (!Texture.all.some(t => t.uuid === value)) {
 				this.map.delete(key)
 			}
@@ -105,12 +106,16 @@ export class Variant {
 	constructor(displayName: string, isDefault = false) {
 		this.displayName = Variant.makeDisplayNameUnique(this, displayName)
 		this.name = Variant.makeNameUnique(this, this.displayName)
-		this.uuid = guid()
 		this.isDefault = isDefault
+		this.uuid = guid()
 		this.textureMap = new TextureMap()
 		this.id = Variant.all.length
+		if (this.isDefault) {
+			this.displayName = 'Default'
+			this.name = 'default'
+		}
 		Variant.all.push(this)
-		this.select()
+		// this.select()
 		events.CREATE_VARIANT.dispatch(this)
 	}
 
@@ -172,6 +177,9 @@ export class Variant {
 
 	public static fromJSON(json: IBlueprintVariantJSON, isDefault = false): Variant {
 		const variant = new Variant(json.display_name, isDefault)
+		if (json.is_default) {
+			return variant
+		}
 		variant.uuid = json.uuid
 		for (const [key, value] of Object.entries(json.texture_map)) {
 			variant.textureMap.add(key, value)

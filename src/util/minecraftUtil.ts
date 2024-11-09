@@ -4,14 +4,17 @@ import {
 	BlockStateValue,
 	getBlockState,
 } from '../systems/minecraft/blockstateManager'
+import { MinecraftVersion } from '../systems/datapackCompiler/mcbFiles'
 
 export interface IMinecraftResourceLocation {
 	resourcePackRoot: string
 	namespace: string
 	resourcePath: string
 	resourceLocation: string
+	subtypelessPath: string
 	fileName: string
 	fileExtension: string
+	type: string
 }
 
 export function toSafeFuntionName(name: string): string {
@@ -58,7 +61,7 @@ export function parseResourcePackPath(path: string): IMinecraftResourceLocation 
 
 	const resourcePackRoot = parts.slice(0, assetsIndex).join('/')
 	const namespace = parts[assetsIndex + 1]
-	// const type = parts[assetsIndex + 2]
+	const type = parts[assetsIndex + 2]
 	const resourcePath = parts.slice(assetsIndex + 3, -1).join('/')
 	const fileName = pathjs.basename(path).split('.').slice(0, -1).join('.')
 	if (fileName !== fileName.toLowerCase()) return undefined
@@ -66,14 +69,17 @@ export function parseResourcePackPath(path: string): IMinecraftResourceLocation 
 		/\\/g,
 		'/'
 	)
+	const subtypelessPath = parts.slice(assetsIndex + 4).join('/')
 
 	return {
 		resourcePackRoot,
 		namespace,
 		resourcePath,
 		resourceLocation,
+		subtypelessPath,
 		fileName,
 		fileExtension: pathjs.extname(path),
+		type,
 	}
 }
 
@@ -133,13 +139,17 @@ export function parseDataPackPath(path: string): IMinecraftResourceLocation | un
 		/\\/g,
 		'/'
 	)
+	const subtypelessPath = parts.slice(assetsIndex + 4).join('/')
+
 	return {
 		resourcePackRoot,
 		namespace,
 		resourcePath,
 		resourceLocation,
+		subtypelessPath,
 		fileName,
 		fileExtension: pathjs.extname(path),
+		type,
 	}
 }
 
@@ -219,5 +229,20 @@ export async function parseBlock(block: string): Promise<IParsedBlock | undefine
 		resourceLocation: resource.namespace + ':' + resource.path,
 		states,
 		blockStateRegistryEntry: await getBlockState(resource.name),
+	}
+}
+
+export function getDataPackFormat(version: MinecraftVersion): number {
+	switch (version) {
+		case '1.20.4':
+			return 26
+		case '1.20.5':
+			return 41
+		case '1.21.0':
+			return 48
+		case '1.21.2':
+			return 57
+		default:
+			return Infinity
 	}
 }

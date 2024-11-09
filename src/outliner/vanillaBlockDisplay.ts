@@ -245,8 +245,6 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay,
 				el.preview_controller.updateTransform(el)
 				mesh.visible = el.visibility
 				TickUpdates.selection = true
-
-				el.ready = true
 			})
 			.catch(err => {
 				console.error(err)
@@ -259,6 +257,7 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay,
 					if (el.error.get()) el.mesh.outline.material = ERROR_OUTLINE_MATERIAL
 					else el.mesh.outline.material = Canvas.outlineMaterial
 				}
+				el.ready = true
 			})
 	},
 	updateTransform(el: VanillaBlockDisplay) {

@@ -1,10 +1,10 @@
 import { Compiler, Parser, Tokenizer, SyncIo } from 'mc-build'
 import { VariableMap } from 'mc-build/dist/mcl/Compiler'
-import { isFunctionTagPath } from '../util/fileUtil'
-import animationMcb from './datapackCompiler/animation.mcb'
-import { AnyRenderedNode, IRenderedRig, IRenderedVariant } from './rigRenderer'
-import { IRenderedAnimation } from './animationRenderer'
-import { Variant } from '../variants'
+import { isFunctionTagPath } from '../../util/fileUtil'
+import mcbFiles from '../datapackCompiler/mcbFiles'
+import { AnyRenderedNode, IRenderedRig, IRenderedVariant } from '../rigRenderer'
+import { IRenderedAnimation } from '../animationRenderer'
+import { Variant } from '../../variants'
 import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/lib/nbt'
 import {
 	arrayToNbtFloatArray,
@@ -13,20 +13,21 @@ import {
 	sortObjectKeys,
 	transformationToNbt,
 	zip,
-} from './util'
-import { BoneConfig, TextDisplayConfig } from '../nodeConfigs'
+} from '../util'
+import { BoneConfig, TextDisplayConfig } from '../../nodeConfigs'
 import {
+	getDataPackFormat,
 	IFunctionTag,
 	mergeTag,
 	parseBlock,
 	parseDataPackPath,
 	parseResourceLocation,
-} from '../util/minecraftUtil'
-import { JsonText } from './minecraft/jsonText'
-import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../interface/exportProgressDialog'
-import { eulerFromQuaternion, floatToHex, roundTo, tinycolorToDecimal } from '../util/misc'
+} from '../../util/minecraftUtil'
+import { JsonText } from '../minecraft/jsonText'
+import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/exportProgressDialog'
+import { eulerFromQuaternion, floatToHex, roundTo, tinycolorToDecimal } from '../../util/misc'
 import { setTimeout } from 'timers'
-import { MSLimiter } from '../util/msLimiter'
+import { MSLimiter } from '../../util/msLimiter'
 
 const BONE_TYPES = ['bone', 'text_display', 'item_display', 'block_display']
 
@@ -84,20 +85,43 @@ namespace OBJECTIVES {
 // ▓ □〓≡ ╝╚╔╗╬ ╓ ╩┌ ┐└ ┘ ↑ ↓ → ← ↔ ▀▐ ░ ▒▬ ♦ ◘
 // → ✎ ❣ ✚ ✔ ✖ ▁ ▂ ▃ ▄ ▅ ▆ ▇ █ ⊻ ⊼ ⊽ ⋃ ⌀ ⌂
 
-const TELLRAW_PREFIX = new JsonText([
-	{ text: '[', color: 'gray' },
-	{ text: 'AJ', color: 'aqua' },
-	{ text: '] ' },
-])
+const TELLRAW_PREFIX = () =>
+	new JsonText([
+		{ text: '\n[', color: 'gray' },
+		{ text: 'AJ', color: 'aqua' },
+		'] ',
+		[
+			{ text: '(from ', color: 'gray', italic: true },
+			Project!.animated_java.export_namespace,
+			')',
+		],
+		' -> ',
+	])
+
+const TELLRAW_ERROR_PREFIX = () =>
+	new JsonText([TELLRAW_PREFIX(), { text: 'ERROR: ', color: 'red' }, '\n '])
+
+const TELLRAW_SUFFIX = () => new JsonText(['\n'])
+
+const TELLRAW_LEARN_MORE_LINK = (url: string) =>
+	new JsonText([
+		'\n ',
+		{
+			text: 'Click here to learn more',
+			color: 'blue',
+			underlined: true,
+			italic: true,
+			clickEvent: { action: 'open_url', value: url },
+		},
+	])
 
 namespace TELLRAW {
-	export const RIG_OUTDATED = (exportNamespace: string) =>
+	export const RIG_OUTDATED = () =>
 		new JsonText([
 			'',
-			TELLRAW_PREFIX,
-			{ text: 'Error: ', color: 'red' },
+			TELLRAW_ERROR_PREFIX(),
 			{ text: 'The ', color: 'red' },
-			{ text: exportNamespace, color: 'yellow' },
+			{ text: Project!.animated_java.export_namespace, color: 'yellow' },
 			{ text: ' rig instance at', color: 'red' },
 			[
 				{ text: ' [', color: 'yellow' },
@@ -122,6 +146,7 @@ namespace TELLRAW {
 				color: 'aqua',
 				underlined: true,
 			},
+			TELLRAW_SUFFIX(),
 		])
 	export const RIG_OUTDATED_TEXT_DISPLAY = () =>
 		new JsonText([
@@ -131,26 +156,34 @@ namespace TELLRAW {
 				color: 'red',
 			},
 		])
-	export const FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR = (functionName: string, rootTag: string) =>
+	export const FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR = (functionName: string) =>
 		new JsonText([
 			'',
-			TELLRAW_PREFIX,
-			{ text: 'Error: ', color: 'red' },
-			{ text: 'The function ', color: 'red' },
-			{ text: functionName, color: 'yellow' },
-			{ text: ' must be executed as the root entity.', color: 'red' },
-			{ text: '\n You can use ', color: 'red' },
-			{ text: `execute as @e[tag=${rootTag}] run ...`, color: 'aqua' },
-			{ text: ' to run the function as the root.', color: 'red' },
+			TELLRAW_ERROR_PREFIX(),
+			{
+				text: 'This function',
+				color: 'blue',
+				underlined: true,
+				hoverEvent: {
+					action: 'show_text',
+					contents: [{ text: functionName, color: 'yellow' }],
+				},
+			},
+			{ text: " must be executed as the rig's root entity.", color: 'red' },
+			'\n',
+			TELLRAW_LEARN_MORE_LINK(
+				'https://animated-java.dev/docs/exported-rigs/controlling-a-rig-instance'
+			),
+			TELLRAW_SUFFIX(),
 		])
 	// Summon Function
 	export const VARIANT_CANNOT_BE_EMPTY = () =>
 		new JsonText([
 			'',
-			TELLRAW_PREFIX,
-			{ text: 'Error: ', color: 'red' },
+			TELLRAW_ERROR_PREFIX(),
 			{ text: 'variant', color: 'yellow' },
 			{ text: ' cannot be an empty string.', color: 'red' },
+			TELLRAW_SUFFIX(),
 		])
 	export const INVALID_VARIANT = (
 		variantName: string,
@@ -158,8 +191,7 @@ namespace TELLRAW {
 	) =>
 		new JsonText([
 			'',
-			TELLRAW_PREFIX,
-			{ text: 'Error: ', color: 'red' },
+			TELLRAW_ERROR_PREFIX(),
 			{ text: 'The variant ', color: 'red' },
 			{ text: variantName, color: 'yellow' },
 			{ text: ' does not exist.', color: 'red' },
@@ -176,28 +208,28 @@ namespace TELLRAW {
 						{ text: variant.name, color: 'yellow' },
 					])
 			),
+			TELLRAW_SUFFIX(),
 		])
 	export const ANIMATION_CANNOT_BE_EMPTY = () =>
 		new JsonText([
 			'',
-			TELLRAW_PREFIX,
-			{ text: 'Error: ', color: 'red' },
+			TELLRAW_ERROR_PREFIX(),
 			{ text: 'animation', color: 'yellow' },
 			{ text: ' cannot be an empty string.', color: 'red' },
+			TELLRAW_SUFFIX(),
 		])
 	export const FRAME_CANNOT_BE_NEGATIVE = () =>
 		new JsonText([
 			'',
-			TELLRAW_PREFIX,
-			{ text: 'Error: ', color: 'red' },
+			TELLRAW_ERROR_PREFIX(),
 			{ text: 'frame', color: 'yellow' },
 			{ text: ' must be a non-negative integer.', color: 'red' },
+			TELLRAW_SUFFIX(),
 		])
 	export const INVALID_ANIMATION = (animationName: string, animations: IRenderedAnimation[]) =>
 		new JsonText([
 			'',
-			TELLRAW_PREFIX,
-			{ text: 'Error: ', color: 'red' },
+			TELLRAW_ERROR_PREFIX(),
 			{ text: 'The animation ', color: 'red' },
 			{ text: animationName, color: 'yellow' },
 			{ text: ' does not exist.', color: 'red' },
@@ -214,6 +246,14 @@ namespace TELLRAW {
 						{ text: anim.safe_name, color: 'yellow' },
 					])
 			),
+			TELLRAW_SUFFIX(),
+		])
+	export const NO_VARIANTS = () =>
+		new JsonText([
+			'',
+			TELLRAW_ERROR_PREFIX(),
+			{ text: 'No variants are available.', color: 'red' },
+			TELLRAW_SUFFIX(),
 		])
 }
 
@@ -231,7 +271,7 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 				new NbtList([
 					new NbtString(TAGS.GLOBAL_RIG()),
 					new NbtString(TAGS.GLOBAL_DATA()),
-					new NbtString(TAGS.PROJECT_DATA(aj.id)),
+					new NbtString(TAGS.PROJECT_DATA(aj.export_namespace)),
 				])
 			)
 			.set(
@@ -254,8 +294,8 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 			case 'bone': {
 				passenger.set('id', new NbtString('minecraft:item_display'))
 				tags.add(new NbtString(TAGS.GLOBAL_BONE()))
-				tags.add(new NbtString(TAGS.PROJECT_BONE(aj.id)))
-				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.id, node.safe_name)))
+				tags.add(new NbtString(TAGS.PROJECT_BONE(aj.export_namespace)))
+				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.export_namespace, node.safe_name)))
 				passenger.set(
 					'transformation',
 					new NbtCompound()
@@ -272,21 +312,45 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 				if (!variantModel) {
 					throw new Error(`Model for bone '${node.safe_name}' not found!`)
 				}
-				passenger.set(
-					'item',
-					item
-						.set('id', new NbtString('minecraft:pufferfish_spawn_egg'))
-						.set('count', new NbtInt(1))
-						.set(
+				passenger.set('item', item.set('id', new NbtString(aj.display_item)))
+				switch (aj.target_minecraft_version) {
+					case '1.20.4': {
+						item.set(
+							'tag',
+							new NbtCompound().set(
+								'CustomModelData',
+								new NbtInt(variantModel.custom_model_data)
+							)
+						)
+						item.set('Count', new NbtInt(1))
+						break
+					}
+					case '1.20.5':
+					case '1.21.0': {
+						item.set(
+							'components',
+							new NbtCompound().set(
+								'minecraft:custom_model_data',
+								new NbtInt(variantModel.custom_model_data)
+							)
+						)
+						item.set('count', new NbtInt(1))
+						break
+					}
+					case '1.21.2': {
+						item.set(
 							'components',
 							new NbtCompound().set(
 								'minecraft:item_model',
-								new NbtString(variantModel.resource_location)
+								new NbtString(variantModel.item_model)
 							)
 						)
-				)
+						item.set('count', new NbtInt(1))
+						break
+					}
+				}
 
-				if (node.configs.default) {
+				if (node.configs?.default) {
 					BoneConfig.fromJSON(node.configs.default).toNBT(passenger)
 				}
 
@@ -297,8 +361,8 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 			case 'text_display': {
 				passenger.set('id', new NbtString('minecraft:text_display'))
 				tags.add(new NbtString(TAGS.GLOBAL_BONE()))
-				tags.add(new NbtString(TAGS.PROJECT_BONE(aj.id)))
-				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.id, node.safe_name)))
+				tags.add(new NbtString(TAGS.PROJECT_BONE(aj.export_namespace)))
+				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.export_namespace, node.safe_name)))
 				passenger.set(
 					'transformation',
 					new NbtCompound()
@@ -334,8 +398,8 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 			case 'item_display': {
 				passenger.set('id', new NbtString('minecraft:item_display'))
 				tags.add(new NbtString(TAGS.GLOBAL_BONE()))
-				tags.add(new NbtString(TAGS.PROJECT_BONE(aj.id)))
-				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.id, node.safe_name)))
+				tags.add(new NbtString(TAGS.PROJECT_BONE(aj.export_namespace)))
+				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.export_namespace, node.safe_name)))
 				passenger.set(
 					'item',
 					new NbtCompound()
@@ -351,8 +415,8 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 			case 'block_display': {
 				passenger.set('id', new NbtString('minecraft:block_display'))
 				tags.add(new NbtString(TAGS.GLOBAL_BONE()))
-				tags.add(new NbtString(TAGS.PROJECT_BONE(aj.id)))
-				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.id, node.safe_name)))
+				tags.add(new NbtString(TAGS.PROJECT_BONE(aj.export_namespace)))
+				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.export_namespace, node.safe_name)))
 
 				const parsed = await parseBlock(node.block)
 				if (!parsed) {
@@ -377,6 +441,10 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 					BoneConfig.fromJSON(node.config).toNBT(passenger)
 				}
 				break
+			}
+			default: {
+				// Skips nodes that are not actually riding the root entity.
+				continue
 			}
 		}
 
@@ -446,9 +514,9 @@ async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAn
 		PROGRESS_DESCRIPTION.set(`Creating Animation Storage for '${animation.safe_name}'`)
 		let frames = new NbtCompound()
 		const addFrameDataCommand = () => {
-			const str = `data modify storage aj.${Project!.animated_java.id}:animations ${
-				animation.safe_name
-			} merge value ${frames.toString()}`
+			const str = `data modify storage aj.${
+				Project!.animated_java.export_namespace
+			}:animations ${animation.safe_name} merge value ${frames.toString()}`
 			dataCommands.push(str)
 			frames = new NbtCompound()
 		}
@@ -530,7 +598,7 @@ function nodeSorter(a: AnyRenderedNode, b: AnyRenderedNode): number {
 	return 0
 }
 
-export async function compileDataPack(options: {
+export default async function compileDataPack(options: {
 	rig: IRenderedRig
 	animations: IRenderedAnimation[]
 	dataPackFolder: string
@@ -551,14 +619,14 @@ export async function compileDataPack(options: {
 		ioThreadCount: null,
 		dontEmitComments: true,
 		setup: null,
-		formatVersion: Infinity, // We are living in the future! 🤖
+		formatVersion: getDataPackFormat(aj.target_minecraft_version),
 	})
 
 	let ajmeta: DataPackAJMeta | null = null
-	if (aj.data_pack_export_mode === 'folder') {
+	if (aj.data_pack_export_mode === 'raw') {
 		ajmeta = new DataPackAJMeta(
 			PathModule.join(options.dataPackFolder, 'data.ajmeta'),
-			aj.id,
+			aj.export_namespace,
 			Project!.last_used_export_namespace,
 			options.dataPackFolder
 		)
@@ -571,7 +639,7 @@ export async function compileDataPack(options: {
 		for (const file of ajmeta.oldFiles) {
 			if (!isFunctionTagPath(file)) {
 				if (fs.existsSync(file)) await fs.promises.unlink(file)
-			} else if (aj.id !== Project!.last_used_export_namespace) {
+			} else if (aj.export_namespace !== Project!.last_used_export_namespace) {
 				const resourceLocation = parseDataPackPath(file)!.resourceLocation
 				if (
 					resourceLocation.startsWith(
@@ -582,7 +650,7 @@ export async function compileDataPack(options: {
 					const newPath = replacePathPart(
 						file,
 						Project!.last_used_export_namespace,
-						aj.id
+						aj.export_namespace
 					)
 					await fs.promises.mkdir(PathModule.dirname(newPath), { recursive: true })
 					await fs.promises.copyFile(file, newPath)
@@ -619,9 +687,10 @@ export async function compileDataPack(options: {
 	compiler.templateParsingEnabled = false
 
 	const variables = {
-		resource_location: aj.id,
+		export_namespace: aj.export_namespace,
 		interpolation_duration: aj.interpolation_duration,
 		teleportation_duration: aj.teleportation_duration,
+		display_item: aj.display_item,
 		rig,
 		animations,
 		export_version: Math.random().toString().substring(2, 10),
@@ -632,8 +701,8 @@ export async function compileDataPack(options: {
 		custom_summon_commands: aj.summon_commands,
 		matrixToNbtFloatArray,
 		transformationToNbt,
-		use_storage_for_animation: aj.animation_system,
-		animationStorage: aj.animation_system
+		use_storage_for_animation: aj.use_storage_for_animation,
+		animationStorage: aj.use_storage_for_animation
 			? await createAnimationStorage(rig, animations)
 			: null,
 		rigHash,
@@ -644,20 +713,32 @@ export async function compileDataPack(options: {
 		nodeSorter,
 		getRotationFromQuaternion: eulerFromQuaternion,
 		root_ticking_commands: aj.ticking_commands,
+		show_function_errors: aj.show_function_errors,
+		show_outdated_warning: aj.show_outdated_warning,
+		has_locators: Object.values(rig.nodes).filter(n => n.type === 'locator').length > 0,
+		has_entity_locators:
+			Object.values(rig.nodes).filter(n => n.type === 'locator' && n.config?.use_entity)
+				.length > 0,
+		has_cameras: Object.values(rig.nodes).filter(n => n.type === 'camera').length > 0,
 	}
 	console.log('Compiler Variables:', variables)
+
+	const mcbFile =
+		animations.length === 0
+			? mcbFiles[aj.target_minecraft_version].static
+			: mcbFiles[aj.target_minecraft_version].animation
 
 	PROGRESS_DESCRIPTION.set('Compiling Data Pack...')
 	PROGRESS.set(0)
 	await new Promise(resolve => setTimeout(resolve, 2000 / framespersecond))
 	console.time('MC-Build Compiler took')
-	const tokens = Tokenizer.tokenize(animationMcb, 'src/animated_java.mcb')
+	const tokens = Tokenizer.tokenize(mcbFile, 'src/animated_java.mcb')
 	compiler.addFile('src/animated_java.mcb', Parser.parseMcbFile(tokens))
 	compiler.compile(VariableMap.fromObject(variables))
 	console.timeEnd('MC-Build Compiler took')
 
 	PROGRESS_DESCRIPTION.set('Writing Data Pack...')
-	if (aj.data_pack_export_mode === 'folder') {
+	if (aj.data_pack_export_mode === 'raw') {
 		console.time('Writing Files took')
 		await writeFiles(exportedFiles, options.dataPackFolder)
 		console.timeEnd('Writing Files took')
@@ -667,7 +748,6 @@ export async function compileDataPack(options: {
 			PathModule.join(options.dataPackFolder, 'pack.mcmeta'),
 			autoStringify({
 				pack: {
-					// FIXME - This number should be a config option.
 					pack_format: 48,
 					description: `${Project!.name}. Generated with Animated Java`,
 				},
@@ -711,7 +791,7 @@ async function writeFiles(map: Map<string, string>, dataPackFolder: string) {
 			const oldFile: IFunctionTag = JSON.parse(fs.readFileSync(path, 'utf-8'))
 			const newFile: IFunctionTag = JSON.parse(content)
 			const merged = mergeTag(oldFile, newFile)
-			if (aj.id !== Project!.last_used_export_namespace) {
+			if (aj.export_namespace !== Project!.last_used_export_namespace) {
 				merged.values = merged.values.filter(v => {
 					const value = typeof v === 'string' ? v : v.id
 					return (

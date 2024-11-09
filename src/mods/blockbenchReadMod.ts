@@ -26,17 +26,24 @@ createBlockbenchMod(
 						for (const promise of Project.loadingPromises) {
 							promises.push(
 								new Promise<void>(r => {
-									promise.finally(() => {
-										PROGRESS.set(PROGRESS.get() + 1)
-										r()
-									})
+									promise
+										.catch((err: any) => console.error(err))
+										.finally(() => {
+											PROGRESS.set(PROGRESS.get() + 1)
+											r()
+										})
 								})
 							)
 						}
-						void Promise.all(promises).finally(() => {
-							closeBlueprintLoadingDialog()
-							r()
-						})
+						void Promise.all(promises)
+							.catch(err => {
+								console.error('Failed to load project')
+								console.error(err)
+							})
+							.finally(() => {
+								closeBlueprintLoadingDialog()
+								r()
+							})
 						return
 					}
 					r()

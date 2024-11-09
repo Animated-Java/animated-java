@@ -14,6 +14,7 @@
 
 # Data Pack Compiler
 
+-   [x] Add a toast notification for when the model has invalid rotations.
 # Resource Pack
 
 # Plugin Exporter

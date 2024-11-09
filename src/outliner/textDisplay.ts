@@ -385,12 +385,15 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 		// Minecraft's transparency is funky 😭
 		Project!.nodes_3d[el.uuid].renderOrder = -1
 
-		void getVanillaFont().then(() => {
-			el.ready = true
-			el.preview_controller.updateTransform(el)
-			el.preview_controller.updateGeometry(el)
-			el.preview_controller.dispatchEvent('setup', { element: el })
-		})
+		void getVanillaFont()
+			.then(() => {
+				el.preview_controller.updateTransform(el)
+				el.preview_controller.updateGeometry(el)
+				el.preview_controller.dispatchEvent('setup', { element: el })
+			})
+			.finally(() => {
+				el.ready = true
+			})
 	},
 	updateGeometry(el: TextDisplay) {
 		void el.updateText().then(() => {

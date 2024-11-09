@@ -100,7 +100,10 @@ interface ExportedTexture {
 	name: string
 	src: string
 }
-type ExportedVariantModel = Omit<IRenderedVariantModel, 'model_path' | 'resource_location'> & {
+type ExportedVariantModel = Omit<
+	IRenderedVariantModel,
+	'model_path' | 'resource_location' | 'item_model'
+> & {
 	model: IRenderedModel | null
 }
 type ExportedVariant = Omit<IRenderedVariant, 'models'> & {
@@ -325,9 +328,9 @@ function serailizeRenderedNode(node: AnyRenderedNode): ExportedRenderedNode {
 				max: node.bounding_box.max.toArray(),
 			}
 			delete json.configs
-			json.configs = { ...node.configs.variants }
+			json.configs = { ...node.configs?.variants }
 			const defaultVariant = Variant.getDefault()
-			if (node.configs.default && defaultVariant) {
+			if (node.configs?.default && defaultVariant) {
 				json.configs[defaultVariant.uuid] = node.configs.default
 			}
 			break

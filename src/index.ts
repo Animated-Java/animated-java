@@ -12,7 +12,7 @@ import './outliner/textDisplay'
 import './outliner/vanillaItemDisplay'
 import './outliner/vanillaBlockDisplay'
 // Compilers
-import { compileDataPack } from './systems/datapackCompiler'
+import datapackCompiler from './systems/datapackCompiler'
 // Minecraft Systems
 import './systems/minecraft/versionManager'
 import './systems/minecraft/registryManager'
@@ -23,19 +23,14 @@ import './systems/minecraft/fontManager'
 import { TRANSPARENT_TEXTURE, Variant } from './variants'
 import './systems/minecraft/registryManager'
 import { MINECRAFT_REGISTRY } from './systems/minecraft/registryManager'
-import { compileResourcePack } from './systems/resourcepackCompiler'
+import resourcepackCompiler from './systems/resourcepackCompiler'
 import { openExportProgressDialog } from './interface/exportProgressDialog'
-import { isDataPackPath, isResourcePackPath } from './util/minecraftUtil'
+import { isDataPackPath, isResourcePackPath, parseResourcePackPath } from './util/minecraftUtil'
 import { blueprintSettingErrors } from './blueprintSettings'
 import { openUnexpectedErrorDialog } from './interface/unexpectedErrorDialog'
 import { BLUEPRINT_CODEC, BLUEPRINT_FORMAT } from './blueprintFormat'
 import { TextDisplay } from './outliner/textDisplay'
 import { getLatestVersionClientDownloadUrl } from './systems/minecraft/assetManager'
-import {
-	hideLoadingPopup,
-	showLoadingPopup,
-	showOfflineError,
-} from './interface/animatedJavaLoadingPopup'
 import { getVanillaFont } from './systems/minecraft/fontManager'
 import * as assetManager from './systems/minecraft/assetManager'
 import * as itemModelManager from './systems/minecraft/itemModelManager'
@@ -48,37 +43,12 @@ import { openBlueprintLoadingDialog } from './interface/blueprintLoadingPopup'
 import { openInstallPopup } from './interface/installedPopup'
 import { openBlueprintSettingsDialog } from './interface/blueprintSettingsDialog'
 
-// Show loading popup
-void showLoadingPopup().then(async () => {
-	if (!window.navigator.onLine) {
-		showOfflineError()
-		// return
-	}
-	events.NETWORK_CONNECTED.dispatch()
-
-	await Promise.all([
-		new Promise<void>(resolve => events.MINECRAFT_ASSETS_LOADED.subscribe(() => resolve())),
-		new Promise<void>(resolve => events.MINECRAFT_REGISTRY_LOADED.subscribe(() => resolve())),
-		new Promise<void>(resolve => events.MINECRAFT_FONTS_LOADED.subscribe(() => resolve())),
-		new Promise<void>(resolve => events.BLOCKSTATE_REGISTRY_LOADED.subscribe(() => resolve())),
-	])
-		.then(() => {
-			hideLoadingPopup()
-		})
-		.catch(error => {
-			console.error(error)
-			Blockbench.showToastNotification({
-				text: 'Animated Java failed to load! Please restart Blockbench',
-				color: 'var(--color-error)',
-			})
-		})
-})
-
 // @ts-ignore
 globalThis.AnimatedJava = {
 	API: {
-		compileDataPack,
-		compileResourcePack,
+		parseResourcePackPath,
+		datapackCompiler,
+		resourcepackCompiler,
 		Variant,
 		MINECRAFT_REGISTRY,
 		openExportProgressDialog,
@@ -104,6 +74,15 @@ globalThis.AnimatedJava = {
 		openBlueprintLoadingDialog,
 		openInstallPopup,
 		openBlueprintSettingsDialog,
+		removeCubesAssociatedWithTexture(texture: Texture) {
+			const cubes = Cube.all.filter(cube =>
+				Object.values(cube.faces).some(face => face.texture === texture.uuid)
+			)
+			Undo.initEdit({ elements: cubes, outliner: true, textures: [texture] })
+			cubes.forEach(cube => cube.remove())
+			texture.remove()
+			Undo.finishEdit('Remove Cubes Associated With Texture')
+		},
 	},
 }
 

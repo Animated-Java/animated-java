@@ -1,57 +1,11 @@
-import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../interface/exportProgressDialog'
-import { isResourcePackPath, toSafeFuntionName } from '../util/minecraftUtil'
-import { TRANSPARENT_TEXTURE } from '../variants'
-import { IRenderedNodes, IRenderedRig } from './rigRenderer'
-import { sortObjectKeys, zip } from './util'
+import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/exportProgressDialog'
+import { isResourcePackPath, toSafeFuntionName } from '../../util/minecraftUtil'
+import { TRANSPARENT_TEXTURE } from '../../variants'
+import { IRenderedNodes, IRenderedRig } from '../rigRenderer'
+import { zip } from '../util'
+import { ResourcePackAJMeta } from './global'
 
-class ResourcePackAJMeta {
-	public files = new Set<string>()
-	public oldFiles = new Set<string>()
-	private oldContent: Record<string, { files?: string[] }> = {}
-
-	constructor(
-		public path: string,
-		public exportNamespace: string,
-		public lastUsedExportNamespace: string,
-		public resourcePackFolder: string
-	) {}
-
-	read() {
-		if (!fs.existsSync(this.path)) return
-		this.oldContent = JSON.parse(fs.readFileSync(this.path, 'utf-8'))
-		const data = this.oldContent[this.exportNamespace]
-		const lastData = this.oldContent[this.lastUsedExportNamespace]
-		if (lastData) {
-			if (!Array.isArray(lastData.files)) lastData.files = []
-			for (const file of lastData.files) {
-				this.oldFiles.add(PathModule.join(this.resourcePackFolder, file))
-			}
-			delete this.oldContent[this.lastUsedExportNamespace]
-		}
-		if (data) {
-			if (!Array.isArray(data.files)) data.files = []
-			for (const file of data.files) {
-				this.oldFiles.add(PathModule.join(this.resourcePackFolder, file))
-			}
-			delete this.oldContent[this.exportNamespace]
-		}
-	}
-
-	write() {
-		const folder = PathModule.dirname(this.path)
-		const content: ResourcePackAJMeta['oldContent'] = {
-			...this.oldContent,
-			[this.exportNamespace]: {
-				files: Array.from(this.files).map(v =>
-					PathModule.relative(folder, v).replace(/\\/g, '/')
-				),
-			},
-		}
-		fs.writeFileSync(this.path, autoStringify(sortObjectKeys(content)))
-	}
-}
-
-export async function compileResourcePack(options: {
+export default async function compileResourcePack(options: {
 	rig: IRenderedRig
 	resourcePackFolder: string
 	textureExportFolder: string
@@ -65,11 +19,11 @@ export async function compileResourcePack(options: {
 
 	const ajmeta = new ResourcePackAJMeta(
 		PathModule.join(options.resourcePackFolder, 'assets.ajmeta'),
-		aj.id,
+		aj.export_namespace,
 		lastUsedExportNamespace,
 		options.resourcePackFolder
 	)
-	if (aj.resource_pack_export_mode === 'folder') {
+	if (aj.resource_pack_export_mode === 'raw') {
 		ajmeta.read()
 
 		PROGRESS_DESCRIPTION.set('Removing Old Resource Pack Files...')
@@ -97,7 +51,7 @@ export async function compileResourcePack(options: {
 
 	// Internal Models
 	exportedFiles.set(
-		PathModule.join(resourcePackFolder, 'assets/animated_java/models/empty.json'),
+		PathModule.join(resourcePackFolder, 'assets/animated_java/models/item/empty.json'),
 		'{}'
 	)
 
@@ -151,6 +105,7 @@ export async function compileResourcePack(options: {
 	for (const variant of Object.values(rig.variants)) {
 		for (const [boneUuid, variantModel] of Object.entries(variant.models)) {
 			const bone = rig.nodes[boneUuid] as IRenderedNodes['Bone']
+			if (variantModel.custom_model_data !== -1) continue
 			exportedFiles.set(
 				PathModule.join(modelExportFolder, variant.name, bone.name + '.json'),
 				autoStringify(variantModel.model)
@@ -158,10 +113,10 @@ export async function compileResourcePack(options: {
 		}
 	}
 
-	if (aj.environment) {
+	if (aj.enable_plugin_mode) {
 		// Do nothing
 		console.log('Plugin mode enabled. Skipping resource pack export.')
-	} else if (aj.resource_pack_export_mode === 'folder') {
+	} else if (aj.resource_pack_export_mode === 'raw') {
 		ajmeta.files = new Set(exportedFiles.keys())
 		ajmeta.write()
 
