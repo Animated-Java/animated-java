@@ -93,9 +93,6 @@ export async function checkForAssetsUpdate() {
 		await updateAssets()
 	}
 
-	console.log('Does file exist?', fs.existsSync(cachedJarFilePath))
-	console.log('Are assets loaded?', localStorage.getItem('assetsLoaded') === 'true')
-
 	await extractAssets()
 	console.log('Minecraft assets are up to date!')
 	localStorage.setItem('assetsLoaded', 'true')

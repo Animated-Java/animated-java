@@ -35,6 +35,8 @@ declare global {
 		pluginMode: Valuable<boolean>
 		transparentTexture: Texture
 
+		showingInvalidCubeRotations: boolean
+
 		variants: Variant[]
 		textDisplays: TextDisplay[]
 		vanillaItemDisplays: VanillaItemDisplay[]
