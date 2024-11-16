@@ -150,6 +150,7 @@ export interface IBlueprintFormatJSON {
 	backgrounds?: Record<string, any>
 }
 
+//region > Convert
 export function convertToBlueprint() {
 	// Convert the current project to a Blueprint
 	Project!.save_path = ''
@@ -161,6 +162,9 @@ export function convertToBlueprint() {
 	for (const animation of Blockbench.Animation.all) {
 		animation.createUniqueName(Blockbench.Animation.all.filter(a => a !== animation))
 		animation.name = toSafeFuntionName(animation.name)
+	}
+	for (const cube of Cube.all) {
+		cube.setUVMode(false)
 	}
 }
 
