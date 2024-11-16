@@ -526,6 +526,10 @@ async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAn
 			frames.set(i.toString(), thisFrame)
 			for (const [uuid, node] of Object.entries(animation.modified_nodes)) {
 				const transform = frame.node_transforms[uuid]
+				if (!transform) {
+					console.warn('No transform found for node:', node)
+					continue
+				}
 				if (BONE_TYPES.includes(node.type)) {
 					thisFrame.set(
 						node.type + '_' + node.safe_name,
