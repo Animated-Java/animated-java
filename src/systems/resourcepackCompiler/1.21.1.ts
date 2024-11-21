@@ -1,6 +1,8 @@
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/exportProgressDialog'
 import { isResourcePackPath, toSafeFuntionName } from '../../util/minecraftUtil'
 import { TRANSPARENT_TEXTURE } from '../../variants'
+import { IntentionalExportError } from '../exporter'
+import { ITextureAtlas } from '../minecraft/textureAtlas'
 import { IRenderedNodes, IRenderedRig } from '../rigRenderer'
 import { sortObjectKeys, zip } from '../util'
 import { ResourcePackAJMeta } from './global'
@@ -228,6 +230,44 @@ export default async function compileResourcePack(options: {
 			)
 	}
 
+	// Texture atlas
+	const blockAtlasFile = PathModule.join(
+		resourcePackFolder,
+		'assets/minecraft/atlases/blocks.json'
+	)
+	let blockAtlas: ITextureAtlas = { sources: [] }
+	if (fs.existsSync(blockAtlasFile)) {
+		const content = await fs.promises.readFile(blockAtlasFile, 'utf-8').catch(() => {
+			throw new IntentionalExportError(
+				'Failed to read block atlas file after it was confirmed to exist!'
+			)
+		})
+		try {
+			blockAtlas = JSON.parse(content)
+		} catch (e: any) {
+			throw new IntentionalExportError(
+				`Failed to parse block atlas file: ${e.message as string}`
+			)
+		}
+	}
+	if (
+		blockAtlas.sources.some(
+			source =>
+				source.type === 'directory' &&
+				source.source === 'blueprint' &&
+				source.prefix === 'blueprint/'
+		)
+	) {
+		// Do nothing. The blueprint directory is already there.
+	} else {
+		blockAtlas.sources.push({
+			type: 'directory',
+			source: 'blueprint',
+			prefix: 'blueprint/',
+		})
+	}
+	exportedFiles.set(blockAtlasFile, autoStringify(blockAtlas))
+
 	// Transparent texture
 	const transparentTexturePath = PathModule.join(
 		resourcePackFolder,
@@ -246,10 +286,10 @@ export default async function compileResourcePack(options: {
 			variantModel.custom_model_data = displayItemModel.addOverride(
 				variantModel.resource_location
 			)
-			exportedFiles.set(
-				PathModule.join(modelExportFolder, variant.name, bone.name + '.json'),
-				autoStringify(variantModel.model)
-			)
+			const exportPath = variant.is_default
+				? PathModule.join(modelExportFolder, bone.name + '.json')
+				: PathModule.join(modelExportFolder, variant.name, bone.name + '.json')
+			exportedFiles.set(PathModule.join(exportPath), autoStringify(variantModel.model))
 		}
 	}
 

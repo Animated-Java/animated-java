@@ -322,7 +322,7 @@ function renderGroup(
 	if (!group.export) return
 	const parentId = group.parent instanceof Group ? group.parent.uuid : undefined
 
-	const path = PathModule.join(rig.model_export_folder, 'default', group.name + `.json`)
+	const path = PathModule.join(rig.model_export_folder, group.name + `.json`)
 	const parsed = parseResourcePackPath(path)
 
 	if (!parsed) {
@@ -351,7 +351,7 @@ function renderGroup(
 			},
 			custom_model_data: -1, // This is calculated when constructing the resource pack.
 			resource_location: parsed.resourceLocation,
-			item_model: parsed.namespace + ':' + parsed.subtypelessPath.replace('.json', ''),
+			item_model: parsed.resourceLocation,
 		}
 	}
 
@@ -593,27 +593,21 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 			models[uuid] = {
 				model: null,
 				custom_model_data: 1,
-				resource_location: 'animated_java:item/empty',
+				resource_location: 'animated_java:empty',
 				item_model: 'animated_java:empty',
 			}
 			continue
 		}
 
-		const modelParent = PathModule.join(
-			rig.model_export_folder,
-			'default',
-			bone.safe_name + '.json'
-		)
+		const modelParent = PathModule.join(rig.model_export_folder, bone.safe_name + '.json')
 		const parsed = parseResourcePackPath(modelParent)
 		if (!parsed) {
 			throw new Error(`Invalid Bone Name: '${bone.safe_name}' -> '${modelParent}'`)
 		}
 
-		const modelPath = PathModule.join(
-			rig.model_export_folder,
-			variant.name,
-			bone.safe_name + '.json'
-		)
+		const modelPath = variant.isDefault
+			? PathModule.join(rig.model_export_folder, bone.safe_name + '.json')
+			: PathModule.join(rig.model_export_folder, variant.name, bone.safe_name + '.json')
 		const parsedModelPath = parseResourcePackPath(modelPath)
 		if (!parsedModelPath) {
 			throw new Error(`Invalid Variant Name: '${variant.name}' -> '${modelPath}'`)
@@ -626,10 +620,7 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 			},
 			custom_model_data: -1, // This is calculated when constructing the resource pack.
 			resource_location: parsedModelPath.resourceLocation,
-			item_model:
-				parsedModelPath.namespace +
-				':' +
-				parsedModelPath.subtypelessPath.replace('.json', ''),
+			item_model: parsedModelPath.resourceLocation,
 		}
 	}
 

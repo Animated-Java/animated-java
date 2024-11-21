@@ -337,13 +337,19 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 						item.set('count', new NbtInt(1))
 						break
 					}
-					case '1.21.2': {
+					case '1.21.2':
+					case '1.21.4': {
 						item.set(
 							'components',
-							new NbtCompound().set(
-								'minecraft:item_model',
-								new NbtString(variantModel.item_model)
-							)
+							new NbtCompound()
+								.set('minecraft:item_model', new NbtString(variantModel.item_model))
+								.set(
+									'minecraft:custom_model_data',
+									new NbtCompound().set(
+										'strings',
+										new NbtList([new NbtString('default')])
+									)
+								)
 						)
 						item.set('count', new NbtInt(1))
 						break
@@ -454,7 +460,7 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 	return passengers.toString()
 }
 
-class DataPackAJMeta {
+export class DataPackAJMeta {
 	public files = new Set<string>()
 	public oldFiles = new Set<string>()
 	private oldContent: Record<string, { files?: string[] }> = {}
@@ -641,25 +647,38 @@ export default async function compileDataPack(options: {
 		MAX_PROGRESS.set(ajmeta.oldFiles.size)
 		const removedFolders = new Set<string>()
 		for (const file of ajmeta.oldFiles) {
-			if (!isFunctionTagPath(file)) {
-				if (fs.existsSync(file)) await fs.promises.unlink(file)
-			} else if (aj.export_namespace !== Project!.last_used_export_namespace) {
-				const resourceLocation = parseDataPackPath(file)!.resourceLocation
-				if (
-					resourceLocation.startsWith(
-						`animated_java:${Project!.last_used_export_namespace}/`
-					) &&
-					fs.existsSync(file)
-				) {
-					const newPath = replacePathPart(
-						file,
-						Project!.last_used_export_namespace,
-						aj.export_namespace
-					)
-					await fs.promises.mkdir(PathModule.dirname(newPath), { recursive: true })
-					await fs.promises.copyFile(file, newPath)
-					await fs.promises.unlink(file)
+			if (isFunctionTagPath(file) && fs.existsSync(file)) {
+				if (aj.export_namespace !== Project!.last_used_export_namespace) {
+					const resourceLocation = parseDataPackPath(file)!.resourceLocation
+					if (
+						resourceLocation.startsWith(
+							`animated_java:${Project!.last_used_export_namespace}/`
+						)
+					) {
+						const newPath = replacePathPart(
+							file,
+							Project!.last_used_export_namespace,
+							aj.export_namespace
+						)
+						await fs.promises.mkdir(PathModule.dirname(newPath), { recursive: true })
+						await fs.promises.copyFile(file, newPath)
+						await fs.promises.unlink(file)
+					}
 				}
+				// Remove mentions of the export namespace from the file
+				const content: IFunctionTag = JSON.parse(
+					(await fs.promises.readFile(file)).toString()
+				)
+				content.values = content.values.filter(
+					v =>
+						typeof v === 'string' &&
+						(!v.startsWith(`animated_java:${aj.export_namespace}/`) ||
+							!v.startsWith(`animated_java:${Project!.last_used_export_namespace}/`))
+				)
+				await fs.promises.writeFile(file, autoStringify(content))
+			} else {
+				// Delete the file
+				if (fs.existsSync(file)) await fs.promises.unlink(file)
 			}
 			let folder = PathModule.dirname(file)
 			while (

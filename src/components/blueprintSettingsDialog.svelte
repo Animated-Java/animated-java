@@ -242,7 +242,7 @@
 				}
 			case !fs.existsSync(PathModule.join(path, 'data')):
 				return {
-					type: 'error',
+					type: 'warning',
 					message: translate(
 						'dialog.blueprint_settings.data_pack.error.missing_data_folder',
 					),
@@ -297,7 +297,7 @@
 				}
 			case !fs.existsSync(PathModule.join(path, 'assets')):
 				return {
-					type: 'error',
+					type: 'warning',
 					message: translate(
 						'dialog.blueprint_settings.resource_pack.error.missing_assets_folder',
 					),
