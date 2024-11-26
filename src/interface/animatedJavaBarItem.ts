@@ -1,8 +1,8 @@
 import AnimatedJavaIcon from '../assets/animated_java_icon.svg'
 import { BLUEPRINT_FORMAT } from '../blueprintFormat'
 import { PACKAGE } from '../constants'
+import { cleanupExportedFiles } from '../systems/cleaner'
 import { exportProject } from '../systems/exporter'
-import { events } from '../util/events'
 import { createAction, createBarMenu } from '../util/moddingTools'
 import { translate } from '../util/translation'
 import { openAboutDialog } from './aboutDialog'
@@ -69,6 +69,21 @@ MenuBar.addAction(
 		},
 		click() {
 			openBlueprintSettingsDialog()
+		},
+	}),
+	MENU.id
+)
+
+MenuBar.addAction(
+	createAction(`${PACKAGE.name}:extract`, {
+		icon: 'fa-trash-can',
+		category: 'animated_java',
+		name: translate('action.extract.name'),
+		condition() {
+			return Format === BLUEPRINT_FORMAT
+		},
+		click() {
+			void cleanupExportedFiles()
 		},
 	}),
 	MENU.id

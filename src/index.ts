@@ -41,6 +41,7 @@ import { BLOCKSTATE_REGISTRY } from './systems/minecraft/blockstateManager'
 import { exportProject } from './systems/exporter'
 import { openBlueprintLoadingDialog } from './interface/blueprintLoadingPopup'
 import { openInstallPopup } from './interface/installedPopup'
+import { cleanupExportedFiles } from './systems/cleaner'
 
 // @ts-ignore
 globalThis.AnimatedJava = {
@@ -81,6 +82,7 @@ globalThis.AnimatedJava = {
 			texture.remove()
 			Undo.finishEdit('Remove Cubes Associated With Texture')
 		},
+		cleanupExportedFiles,
 	},
 }
 

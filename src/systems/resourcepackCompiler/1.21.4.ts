@@ -1,7 +1,8 @@
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/exportProgressDialog'
 import { isResourcePackPath, toSafeFuntionName } from '../../util/minecraftUtil'
-import { TRANSPARENT_TEXTURE } from '../../variants'
+import { TRANSPARENT_TEXTURE, Variant } from '../../variants'
 import { IntentionalExportError } from '../exporter'
+import { IItemDefinition } from '../minecraft/itemDefinitions'
 import { type ITextureAtlas } from '../minecraft/textureAtlas'
 import { IRenderedNodes, IRenderedRig } from '../rigRenderer'
 import { zip } from '../util'
@@ -51,6 +52,13 @@ export default async function compileResourcePack(options: {
 
 	const exportedFiles = new Map<string, string | Buffer>()
 
+	const globalModelsFolder = PathModule.join(resourcePackFolder, 'assets/animated_java/models/')
+	const itemModelDefinitionsFolder = PathModule.join(
+		resourcePackFolder,
+		'assets/animated_java/items/blueprint/',
+		aj.export_namespace
+	)
+
 	// Texture atlas
 	const blockAtlasFile = PathModule.join(
 		resourcePackFolder,
@@ -90,10 +98,7 @@ export default async function compileResourcePack(options: {
 	exportedFiles.set(blockAtlasFile, autoStringify(blockAtlas))
 
 	// Internal Models
-	exportedFiles.set(
-		PathModule.join(resourcePackFolder, 'assets/animated_java/models/item/empty.json'),
-		'{}'
-	)
+	exportedFiles.set(PathModule.join(globalModelsFolder, 'empty.json'), '{}')
 
 	// Textures
 	for (const texture of Object.values(rig.textures)) {
@@ -134,12 +139,52 @@ export default async function compileResourcePack(options: {
 	// Transparent texture
 	const transparentTexturePath = PathModule.join(
 		resourcePackFolder,
-		'assets/animated_java/textures/item/transparent.png'
+		'assets/animated_java/textures/blueprint/transparent.png'
 	)
 	exportedFiles.set(
 		transparentTexturePath,
 		nativeImage.createFromDataURL(TRANSPARENT_TEXTURE.source).toPNG()
 	)
+
+	// Item Model Definitions
+	const defaultVariant = Variant.getDefault()
+	for (const [boneUuid, model] of Object.entries(rig.variants[defaultVariant.uuid].models)) {
+		const bone = rig.nodes[boneUuid] as IRenderedNodes['Bone']
+		const exportPath = PathModule.join(itemModelDefinitionsFolder, bone.name + '.json')
+		const modelDefinition = {
+			model: {
+				type: 'minecraft:select',
+				property: 'minecraft:custom_model_data',
+				cases: [],
+				fallback: {
+					type: 'minecraft:model',
+					model: model.resource_location,
+				},
+				tints: [
+					{
+						type: 'minecraft:dye',
+						default: [1, 1, 1],
+					},
+				],
+			},
+		} as IItemDefinition & {
+			model: { type: 'minecraft:select'; property: 'minecraft:custom_model_data' }
+		}
+
+		for (const variant of Object.values(rig.variants)) {
+			const variantModel = variant.models[boneUuid]
+			if (!variantModel || variant.is_default) continue
+			modelDefinition.model.cases.push({
+				when: variant.name,
+				model: {
+					type: 'minecraft:model',
+					model: variantModel.resource_location,
+				},
+			} as (typeof modelDefinition.model.cases)[0])
+		}
+
+		exportedFiles.set(exportPath, autoStringify(modelDefinition))
+	}
 
 	// Variant Models
 	for (const variant of Object.values(rig.variants)) {

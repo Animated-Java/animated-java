@@ -6,6 +6,7 @@ animated_java.action.open_bone_config.name: Bone Config
 animated_java.action.open_locator_config.name: Locator Config
 animated_java.action.open_text_display_config.name: Text Display Config
 animated_java.action.export.name: Export
+animated_java.action.extract.name: Extract
 animated_java.action.create_text_display.title: Add Text Display
 animated_java.action.create_vanilla_item_display.title: Add Item Display
 animated_java.action.create_vanilla_block_display.title: Add Block Display
@@ -583,6 +584,12 @@ animated_java.misc.failed_to_export.custom_models.message: You have disabled res
 animated_java.misc.failed_to_export.blueprint_settings.message: There are errors in your blueprint settings! Please fix them before exporting.
 animated_java.misc.failed_to_export.blueprint_settings.error_item: 'Found an issue with {0}:'
 animated_java.misc.failed_to_export.button: Ok
+misc.failed_to_export.invalid_rotation.message: |-
+    Some cubes in your model have an invalid rotations.
+    Cubes must have a rotation of -45, -22.5, 0, 22.5, or 45 degrees, and can only be rotated on a single axis at a time.
+    If you want to rotate a cube more precisely, or on multiple axes, you must put it into a bone and rotate the bone instead.
+    All of the invalid cubes are outlined in red in the editor.
+    Please fix these issues before exporting.
 
 # Format Category
 animated_java.format_category.animated_java: Animated Java

@@ -12,8 +12,61 @@ import datapackCompiler from './datapackCompiler'
 import { exportJSON } from './jsonCompiler'
 import resourcepackCompiler from './resourcepackCompiler'
 import { renderRig, hashRig } from './rigRenderer'
+import { isCubeValid } from './util'
 
 export class IntentionalExportError extends Error {}
+
+export function getExportPaths() {
+	const aj = Project!.animated_java
+
+	const resourcePackFolder = resolvePath(aj.resource_pack)
+	const dataPackFolder = resolvePath(aj.data_pack)
+
+	let textureExportFolder: string, modelExportFolder: string, displayItemPath: string
+
+	if (aj.enable_plugin_mode) {
+		modelExportFolder = PathModule.join(
+			'assets/animated_java/models/blueprint/',
+			aj.export_namespace
+		)
+		textureExportFolder = PathModule.join(
+			'assets/animated_java/textures/blueprint/',
+			aj.export_namespace
+		)
+		displayItemPath = PathModule.join(
+			'assets/minecraft/models/item/',
+			aj.display_item.split(':').at(-1)! + '.json'
+		)
+	} else if (aj.enable_advanced_resource_pack_folders) {
+		modelExportFolder = aj.model_folder
+		textureExportFolder = aj.texture_folder
+		displayItemPath = aj.display_item_path
+	} else {
+		modelExportFolder = PathModule.join(
+			resourcePackFolder,
+			'assets/animated_java/models/blueprint/',
+			aj.export_namespace
+		)
+		textureExportFolder = PathModule.join(
+			resourcePackFolder,
+			'assets/animated_java/textures/blueprint/',
+			aj.export_namespace
+		)
+		displayItemPath = PathModule.join(
+			resourcePackFolder,
+			'assets/minecraft/models/item/',
+			aj.display_item.split(':').at(-1)! + '.json'
+		)
+	}
+
+	return {
+		resourcePackFolder,
+		dataPackFolder,
+		textureExportFolder,
+		modelExportFolder,
+		displayItemPath,
+	}
+}
 
 async function actuallyExportProject(forceSave = true) {
 	const aj = Project!.animated_java
@@ -41,45 +94,13 @@ async function actuallyExportProject(forceSave = true) {
 			}
 		}
 
-		let textureExportFolder: string, modelExportFolder: string, displayItemPath: string
-
-		const resourcePackFolder = resolvePath(aj.resource_pack)
-		const dataPackFolder = resolvePath(aj.data_pack)
-
-		if (aj.enable_plugin_mode) {
-			modelExportFolder = PathModule.join(
-				'assets/animated_java/models/item/',
-				aj.export_namespace
-			)
-			textureExportFolder = PathModule.join(
-				'assets/animated_java/textures/item/',
-				aj.export_namespace
-			)
-			displayItemPath = PathModule.join(
-				'assets/minecraft/models/item/',
-				aj.display_item.split(':').at(-1)! + '.json'
-			)
-		} else if (aj.enable_advanced_resource_pack_folders) {
-			modelExportFolder = aj.model_folder
-			textureExportFolder = aj.texture_folder
-			displayItemPath = aj.display_item_path
-		} else {
-			modelExportFolder = PathModule.join(
-				resourcePackFolder,
-				'assets/animated_java/models/item/',
-				aj.export_namespace
-			)
-			textureExportFolder = PathModule.join(
-				resourcePackFolder,
-				'assets/animated_java/textures/item/',
-				aj.export_namespace
-			)
-			displayItemPath = PathModule.join(
-				resourcePackFolder,
-				'assets/minecraft/models/item/',
-				aj.display_item.split(':').at(-1)! + '.json'
-			)
-		}
+		const {
+			resourcePackFolder,
+			dataPackFolder,
+			textureExportFolder,
+			modelExportFolder,
+			displayItemPath,
+		} = getExportPaths()
 
 		PROGRESS_DESCRIPTION.set('Rendering Rig...')
 		const rig = renderRig(modelExportFolder, textureExportFolder)
@@ -152,6 +173,20 @@ async function actuallyExportProject(forceSave = true) {
 
 export async function exportProject(forceSave = true) {
 	if (!Project) return // TODO: Handle this error better
+
+	if (
+		// Check if 1.21.3 is newer than the target version
+		compareVersions('1.21.3', Project.animated_java.target_minecraft_version) &&
+		!Cube.all.allAre(c => isCubeValid(c))
+	) {
+		Blockbench.showMessageBox({
+			title: translate('misc.failed_to_export.title'),
+			message: translate('misc.failed_to_export.invalid_rotation.message'),
+			buttons: [translate('misc.failed_to_export.button')],
+		})
+		return
+	}
+
 	blueprintSettingErrors.set({})
 	const settingsDialog = openBlueprintSettingsDialog()!
 	// Wait for the dialog to open
