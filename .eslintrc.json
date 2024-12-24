@@ -15,7 +15,9 @@
 		"exporters/",
 		"tools/",
 		"svelte.config.ts",
-		"src/util/bufferGeometryUtils.ts"
+		"vitest.config.ts",
+		"src/util/bufferGeometryUtils.ts",
+		"tests/**/*"
 	],
 	"overrides": [
 		{

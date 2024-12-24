@@ -42,6 +42,7 @@ import { exportProject } from './systems/exporter'
 import { openBlueprintLoadingDialog } from './interface/blueprintLoadingPopup'
 import { openInstallPopup } from './interface/installedPopup'
 import { cleanupExportedFiles } from './systems/cleaner'
+import mcbFiles from './systems/datapackCompiler/mcbFiles'
 
 // @ts-ignore
 globalThis.AnimatedJava = {
@@ -83,6 +84,7 @@ globalThis.AnimatedJava = {
 			Undo.finishEdit('Remove Cubes Associated With Texture')
 		},
 		cleanupExportedFiles,
+		mcbFiles,
 	},
 }
 

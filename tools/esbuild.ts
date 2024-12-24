@@ -18,6 +18,7 @@ import ImportGlobPlugin from 'esbuild-plugin-import-glob'
 import packagerPlugin from './plugins/packagerPlugin'
 import inlineWorkerPlugin from './plugins/workerPlugin'
 import assetOverridePlugin from './plugins/assetOverridePlugin'
+import mcbCompressionPlugin from './plugins/mcbCompressionPlugin'
 import * as path from 'path'
 const PACKAGE = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
 
@@ -216,6 +217,7 @@ const devConfig: esbuild.BuildOptions = {
 		packagerPlugin(),
 		inlineWorkerPlugin(devWorkerConfig),
 		assetOverridePlugin(),
+		mcbCompressionPlugin(),
 		DEPENDENCY_QUARKS,
 	],
 	format: 'iife',
@@ -243,6 +245,7 @@ const prodConfig: esbuild.BuildOptions = {
 		packagerPlugin(),
 		inlineWorkerPlugin({}),
 		assetOverridePlugin(),
+		mcbCompressionPlugin(),
 		DEPENDENCY_QUARKS,
 	],
 	keepNames: true,
