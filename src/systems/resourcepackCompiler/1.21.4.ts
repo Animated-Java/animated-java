@@ -26,29 +26,7 @@ export default async function compileResourcePack(options: {
 		lastUsedExportNamespace,
 		options.resourcePackFolder
 	)
-	if (aj.resource_pack_export_mode === 'raw') {
-		ajmeta.read()
-
-		PROGRESS_DESCRIPTION.set('Removing Old Resource Pack Files...')
-		PROGRESS.set(0)
-		MAX_PROGRESS.set(ajmeta.oldFiles.size)
-
-		const removedFolders = new Set<string>()
-		for (const file of ajmeta.oldFiles) {
-			if (fs.existsSync(file)) await fs.promises.unlink(file)
-			let folder = PathModule.dirname(file)
-			while (
-				!removedFolders.has(folder) &&
-				fs.existsSync(folder) &&
-				(await fs.promises.readdir(folder)).length === 0
-			) {
-				await fs.promises.rm(folder, { recursive: true })
-				removedFolders.add(folder)
-				folder = PathModule.dirname(folder)
-			}
-			PROGRESS.set(PROGRESS.get() + 1)
-		}
-	}
+	ajmeta.read()
 
 	const exportedFiles = new Map<string, string | Buffer>()
 
@@ -65,6 +43,7 @@ export default async function compileResourcePack(options: {
 		'assets/minecraft/atlases/blocks.json'
 	)
 	let blockAtlas: ITextureAtlas = { sources: [] }
+	console.log('Block atlas file:', blockAtlasFile, fs.existsSync(blockAtlasFile))
 	if (fs.existsSync(blockAtlasFile)) {
 		const content = await fs.promises.readFile(blockAtlasFile, 'utf-8').catch(() => {
 			throw new IntentionalExportError(
@@ -78,6 +57,9 @@ export default async function compileResourcePack(options: {
 				`Failed to parse block atlas file: ${e.message as string}`
 			)
 		}
+		console.log('Pre-existing Block atlas:', blockAtlas)
+	} else {
+		console.log('Block atlas file does not exist. Creating a new one.')
 	}
 	if (
 		blockAtlas.sources.some(
@@ -95,6 +77,7 @@ export default async function compileResourcePack(options: {
 			prefix: 'blueprint/',
 		})
 	}
+	console.log('Block atlas:', blockAtlas)
 	exportedFiles.set(blockAtlasFile, autoStringify(blockAtlas))
 
 	// Internal Models
@@ -180,6 +163,28 @@ export default async function compileResourcePack(options: {
 		// Do nothing
 		console.log('Plugin mode enabled. Skipping resource pack export.')
 	} else if (aj.resource_pack_export_mode === 'raw') {
+		// Clean up old files
+		PROGRESS_DESCRIPTION.set('Removing Old Resource Pack Files...')
+		PROGRESS.set(0)
+		MAX_PROGRESS.set(ajmeta.oldFiles.size)
+
+		const removedFolders = new Set<string>()
+		for (const file of ajmeta.oldFiles) {
+			if (fs.existsSync(file)) await fs.promises.unlink(file)
+			let folder = PathModule.dirname(file)
+			while (
+				!removedFolders.has(folder) &&
+				fs.existsSync(folder) &&
+				(await fs.promises.readdir(folder)).length === 0
+			) {
+				await fs.promises.rm(folder, { recursive: true })
+				removedFolders.add(folder)
+				folder = PathModule.dirname(folder)
+			}
+			PROGRESS.set(PROGRESS.get() + 1)
+		}
+
+		// Write new files
 		ajmeta.files = new Set(exportedFiles.keys())
 		ajmeta.write()
 
