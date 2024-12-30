@@ -17,9 +17,10 @@
 	<div class="another-container">
 		<h2>Not Sure Where to Start?</h2>
 		<p>
-			Check out our <a href="https://animated-java.dev/docs/getting-started"
+			Check out our <a
+				href="https://animated-java.dev/docs/getting-started/creating-a-blueprint"
 				>getting started</a
-			> page to learn how to use Animated Java.
+			> page to learn how to use Animated Java!
 		</p>
 		<p>
 			You can open our docs at any time via the Animated Java menu at the top of the screen.
