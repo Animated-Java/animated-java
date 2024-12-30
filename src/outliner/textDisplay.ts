@@ -270,6 +270,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 			this.textError.set('')
 			try {
 				text = JsonText.fromString(this.text)
+				console.log(text)
 			} catch (e: any) {
 				console.error(e)
 				this.textError.set(e.message as string)
@@ -282,7 +283,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 			this._newBackgroundAlpha = undefined
 			this._newShadow = undefined
 			this._newAlign = undefined
-			if (!text) continue
+			if (text === undefined) continue
 			latestMesh = await this.setText(text)
 		}
 		this._updating = false

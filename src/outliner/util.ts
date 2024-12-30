@@ -12,7 +12,7 @@ export function sanitizeOutlinerElementName(name: string, elementUUID: string): 
 		...VanillaItemDisplay.all,
 	]
 	if (OutlinerElement.types.camera) {
-		otherNodes.push(OutlinerElement.types.camera)
+		otherNodes.push(...OutlinerElement.types.camera.all)
 	}
 	const otherNames = new Set(otherNodes.map(v => v.name))
 
