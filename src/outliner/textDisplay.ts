@@ -17,6 +17,7 @@ import { translate } from '../util/translation'
 import { ResizableOutlinerElement } from './resizableOutlinerElement'
 import { VanillaBlockDisplay } from './vanillaBlockDisplay'
 import { VanillaItemDisplay } from './vanillaItemDisplay'
+import { sanitizeOutlinerElementName } from './util'
 
 interface TextDisplayOptions {
 	name?: string
@@ -121,37 +122,8 @@ export class TextDisplay extends ResizableOutlinerElement {
 	}
 
 	public sanitizeName(): string {
-		this.name = toSafeFuntionName(this.name)
-		const otherNodes = [
-			...TextDisplay.all.filter(v => v.uuid !== this.uuid),
-			...Group.all,
-			...VanillaBlockDisplay.all,
-			...VanillaItemDisplay.all,
-		]
-		const otherNames = new Set(otherNodes.map(v => v.name))
-
-		if (!otherNames.has(this.name)) {
-			return this.name
-		}
-
-		let i = 1
-		const match = this.name.match(/\d+$/)
-		if (match) {
-			i = parseInt(match[0])
-			this.name = this.name.slice(0, -match[0].length)
-		}
-
-		let maxTries = 10000
-		while (maxTries-- > 0) {
-			const newName = `${this.name}${i}`
-			if (!otherNames.has(newName)) {
-				this.name = newName
-				return newName
-			}
-			i++
-		}
-
-		throw new Error('Could not make TextDisplay name unique!')
+		this.name = sanitizeOutlinerElementName(this.name, this.uuid)
+		return this.name
 	}
 
 	get text() {

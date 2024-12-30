@@ -673,7 +673,7 @@ export function updateRotationLock() {
 		!!AnimatedJava.API.TextDisplay.selected.length ||
 		!!AnimatedJava.API.VanillaItemDisplay.selected.length ||
 		!!AnimatedJava.API.VanillaBlockDisplay.selected.length ||
-		!!(OutlinerElement.types.camera?.selected && OutlinerElement.types.camera?.selected.length)
+		!!(OutlinerElement.types.camera?.selected && OutlinerElement.types.camera?.selected)
 	)
 	BLUEPRINT_FORMAT.rotation_snap = BLUEPRINT_FORMAT.rotation_limit
 }

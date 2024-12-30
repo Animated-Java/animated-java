@@ -41,15 +41,15 @@
 	},
 	"elements": [
 		{
-			"name": "block_display",
-			"position": [-8, 0, -8],
+			"name": "block_display1",
+			"position": [0, 0, 0],
 			"rotation": [0, 0, 0],
 			"scale": [1, 1, 1],
 			"visibility": true,
+			"block": "minecraft:cobblestone_wall",
+			"config": {},
 			"item": "minecraft:diamond",
 			"item_display": "none",
-			"config": {},
-			"block": "cobblestone_wall[west=none]",
 			"text": "\"Hello World!\"",
 			"lineWidth": 200,
 			"backgroundColor": "#000000",
@@ -57,11 +57,11 @@
 			"align": "center",
 			"shadow": false,
 			"seeThrough": false,
-			"uuid": "31411dd2-b8c3-79b4-8437-db3c8c27da55",
+			"uuid": "31d45ef8-ad50-c3aa-10fd-184027b767da",
 			"type": "animated_java:vanilla_block_display"
 		}
 	],
-	"outliner": ["31411dd2-b8c3-79b4-8437-db3c8c27da55"],
+	"outliner": ["31d45ef8-ad50-c3aa-10fd-184027b767da"],
 	"textures": [
 		{
 			"path": "D:\\Dropbox\\Pictures\\memes\\images.png",
@@ -96,7 +96,7 @@
 		"default": {
 			"name": "default",
 			"display_name": "Default",
-			"uuid": "5730fca2-be35-b294-f099-094000c29544",
+			"uuid": "291e925e-0d30-297a-dd08-40e0dd69ec24",
 			"texture_map": {},
 			"excluded_nodes": [],
 			"is_default": true
