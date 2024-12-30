@@ -4,7 +4,7 @@ import { TRANSPARENT_TEXTURE, Variant } from '../../variants'
 import { IntentionalExportError } from '../exporter'
 import { IItemDefinition } from '../minecraft/itemDefinitions'
 import { type ITextureAtlas } from '../minecraft/textureAtlas'
-import { IRenderedNodes, IRenderedRig } from '../rigRenderer'
+import { IRenderedNodes, IRenderedRig, IRenderedVariantModel } from '../rigRenderer'
 import { zip } from '../util'
 import { ResourcePackAJMeta } from './global'
 
@@ -148,42 +148,20 @@ export default async function compileResourcePack(options: {
 
 	// Item Model Definitions
 	const defaultVariant = Variant.getDefault()
+
 	for (const [boneUuid, model] of Object.entries(rig.variants[defaultVariant.uuid].models)) {
 		const bone = rig.nodes[boneUuid] as IRenderedNodes['Bone']
 		const exportPath = PathModule.join(itemModelDefinitionsFolder, bone.name + '.json')
-		const modelDefinition = {
-			model: {
-				type: 'minecraft:select',
-				property: 'minecraft:custom_model_data',
-				cases: [],
-				fallback: {
-					type: 'minecraft:model',
-					model: model.resource_location,
-				},
-				tints: [
-					{
-						type: 'minecraft:dye',
-						default: [1, 1, 1],
-					},
-				],
-			},
-		} as IItemDefinition & {
-			model: { type: 'minecraft:select'; property: 'minecraft:custom_model_data' }
+
+		let itemDefinition: IItemDefinition
+
+		if (Object.values(rig.variants).length === 1) {
+			itemDefinition = createSingleVariantItemDefinition(model)
+		} else {
+			itemDefinition = createMultiVariantItemDefinition(boneUuid, model, rig)
 		}
 
-		for (const variant of Object.values(rig.variants)) {
-			const variantModel = variant.models[boneUuid]
-			if (!variantModel || variant.is_default) continue
-			modelDefinition.model.cases.push({
-				when: variant.name,
-				model: {
-					type: 'minecraft:model',
-					model: variantModel.resource_location,
-				},
-			} as (typeof modelDefinition.model.cases)[0])
-		}
-
-		exportedFiles.set(exportPath, autoStringify(modelDefinition))
+		exportedFiles.set(exportPath, autoStringify(itemDefinition))
 	}
 
 	// Variant Models
@@ -249,4 +227,59 @@ export default async function compileResourcePack(options: {
 	}
 
 	console.log('Resource pack compiled!')
+}
+
+function createSingleVariantItemDefinition(model: IRenderedVariantModel): IItemDefinition {
+	return {
+		model: {
+			type: 'minecraft:model',
+			model: model.resource_location,
+			tints: [
+				{
+					type: 'minecraft:dye',
+					default: [1, 1, 1],
+				},
+			],
+		},
+	}
+}
+
+function createMultiVariantItemDefinition(
+	boneUUID: string,
+	model: IRenderedVariantModel,
+	rig: IRenderedRig
+): IItemDefinition {
+	const itemDefinition: IItemDefinition & {
+		model: { type: 'minecraft:select'; property: 'minecraft:custom_model_data' }
+	} = {
+		model: {
+			type: 'minecraft:select',
+			property: 'minecraft:custom_model_data',
+			cases: [],
+			fallback: {
+				type: 'minecraft:model',
+				model: model.resource_location,
+			},
+			tints: [
+				{
+					type: 'minecraft:dye',
+					default: [1, 1, 1],
+				},
+			],
+		},
+	}
+
+	for (const variant of Object.values(rig.variants)) {
+		const variantModel = variant.models[boneUUID]
+		if (!variantModel || variant.is_default) continue
+		itemDefinition.model.cases.push({
+			when: variant.name,
+			model: {
+				type: 'minecraft:model',
+				model: variantModel.resource_location,
+			},
+		} as (typeof itemDefinition.model.cases)[0])
+	}
+
+	return itemDefinition
 }
