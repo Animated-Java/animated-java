@@ -69,6 +69,8 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 		this.block ??= 'minecraft:stone'
 		this.config ??= {}
 
+		this.sanitizeName()
+
 		const updateBlock = async (newBlock: string) => {
 			if (!MINECRAFT_REGISTRY.block) {
 				requestAnimationFrame(() => void updateBlock(newBlock))
