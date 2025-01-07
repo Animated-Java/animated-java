@@ -1502,7 +1502,7 @@
 		"default": {
 			"name": "default",
 			"display_name": "Default",
-			"uuid": "646a10f7-499f-3875-2a76-70898d364798",
+			"uuid": "76aede3a-8293-ba9b-f2ca-247a75dc1ea6",
 			"texture_map": {},
 			"excluded_nodes": [],
 			"is_default": true
@@ -3108,7 +3108,7 @@
 			"override": false,
 			"length": 0.8,
 			"snapping": 20,
-			"selected": false,
+			"selected": true,
 			"saved": false,
 			"path": "",
 			"anim_time_update": "",

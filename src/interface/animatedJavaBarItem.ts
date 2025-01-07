@@ -24,12 +24,11 @@ function createIconImg() {
 	})
 	return IMG
 }
+const MENU_ID = `${PACKAGE.name}:menu` as `animated_java:menu`
 const BLOCKBENCH_MENU_BAR = document.querySelector('#menu_bar') as HTMLDivElement
-export const MENU = createBarMenu(
-	`${PACKAGE.name}:menu`,
-	[],
-	() => Format === BLUEPRINT_FORMAT
-) as BarMenu & { label: HTMLDivElement }
+export const MENU = createBarMenu(MENU_ID, [], () => Format === BLUEPRINT_FORMAT) as BarMenu & {
+	label: HTMLDivElement
+}
 MENU.label.style.display = 'inline-block'
 MENU.label.innerHTML = 'Animated Java'
 MENU.label.prepend(createIconImg())
@@ -74,11 +73,22 @@ MenuBar.addAction(
 	MENU.id
 )
 
+MenuBar.menus[MENU_ID].structure.push({
+	id: 'animated_java:extract-open',
+	name: translate('action.extract.name'),
+	icon: 'fa-trash-can',
+	searchable: false,
+	children: [],
+	condition() {
+		return Format === BLUEPRINT_FORMAT
+	},
+})
+
 MenuBar.addAction(
 	createAction(`${PACKAGE.name}:extract`, {
 		icon: 'fa-trash-can',
 		category: 'animated_java',
-		name: translate('action.extract.name'),
+		name: translate('action.extract.confirm'),
 		condition() {
 			return Format === BLUEPRINT_FORMAT
 		},
@@ -86,7 +96,7 @@ MenuBar.addAction(
 			void cleanupExportedFiles()
 		},
 	}),
-	MENU.id
+	MENU_ID + '.animated_java:extract-open'
 )
 
 MenuBar.addAction(
