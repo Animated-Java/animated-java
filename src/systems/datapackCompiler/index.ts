@@ -771,7 +771,7 @@ export default async function compileDataPack(options: {
 				color: 'red',
 			},
 			{ text: `Minecraft ${aj.target_minecraft_version}`, color: 'aqua' },
-			{ text: ' in an different version!', color: 'red' },
+			{ text: ' in the wrong version!', color: 'red' },
 			{
 				text: '\n Please ensure that the data pack is loaded in the correct version, or that your blueprint settings are configured to target the correct version(s) of Minecraft.',
 				color: 'yellow',

@@ -7,6 +7,7 @@ import { createAction, createBarMenu } from '../util/moddingTools'
 import { translate } from '../util/translation'
 import { openAboutDialog } from './aboutDialog'
 import { openBlueprintSettingsDialog } from './blueprintSettingsDialog'
+import { openChangelogDialog } from './changelogDialog'
 
 function createIconImg() {
 	const IMG = document.createElement('img')
@@ -57,6 +58,20 @@ MenuBar.addAction(
 	}),
 	MENU.id
 )
+
+MenuBar.addAction(
+	createAction(`${PACKAGE.name}:changelog`, {
+		icon: 'history',
+		category: 'animated_java',
+		name: translate('action.open_changelog.name'),
+		click() {
+			openChangelogDialog()
+		},
+	}),
+	MENU.id
+)
+
+MENU.structure.push(new MenuSeparator())
 
 MenuBar.addAction(
 	createAction(`${PACKAGE.name}:blueprint_settings`, {

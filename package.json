@@ -4,8 +4,8 @@
 	"title": "Animated Java",
 	"icon": "icon.svg",
 	"description": "A Blockbench plugin that makes complex animation a breeze in Minecraft: Java Edition.",
-	"version": "1.5.2",
-	"display_version": "1.5.2",
+	"version": "1.6.0",
+	"display_version": "1.6.0",
 	"min_blockbench_version": "4.11.1",
 	"variant": "desktop",
 	"tags": [

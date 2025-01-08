@@ -43,6 +43,7 @@ import { openBlueprintLoadingDialog } from './interface/blueprintLoadingPopup'
 import { openInstallPopup } from './interface/installedPopup'
 import { cleanupExportedFiles } from './systems/cleaner'
 import mcbFiles from './systems/datapackCompiler/mcbFiles'
+import { openChangelogDialog } from './interface/changelogDialog'
 
 // @ts-ignore
 globalThis.AnimatedJava = {
@@ -85,8 +86,17 @@ globalThis.AnimatedJava = {
 		},
 		cleanupExportedFiles,
 		mcbFiles,
+		openChangelogDialog,
 	},
 }
+
+requestAnimationFrame(() => {
+	const lastVersion = localStorage.getItem('animated-java-last-version')
+	if (lastVersion !== PACKAGE.version) {
+		localStorage.setItem('animated-java-last-version', PACKAGE.version)
+		openChangelogDialog()
+	}
+})
 
 // Uninstall events
 events.EXTRACT_MODS.subscribe(() => {
