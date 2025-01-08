@@ -9,6 +9,7 @@
 				"list": [
 					"Added changelog popup! (You're looking at it right now!)",
 					"Added an export target for Minecraft 1.21.4",
+					"Added warning for loading Animated Java Data Packs in the wrong version.",
 					"Improved internal MCB File compression",
 					"Slightly improved empty JSON text rendering ([#322](https://github.com/Animated-Java/animated-java/issues/322)",
 					"Added an Extract action to remove exported files from the Resource Pack and Data Pack",
