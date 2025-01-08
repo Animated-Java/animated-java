@@ -829,11 +829,16 @@ async function writeFiles(map: Map<string, string>, dataPackFolder: string) {
 				const value = typeof v === 'string' ? v : v.id
 				const isTag = value.startsWith('#')
 				const location = parseResourceLocation(isTag ? value.substring(1) : value)
+				// If the target version is 1.21.0 or higher, use the 'function' namespace instead of 'functions'
+				const functionNamespace = compareVersions(aj.target_minecraft_version, '1.21.0')
+					? 'function'
+					: 'functions'
+				console.log('Checking:', value, location, functionNamespace)
 				const vPath = PathModule.join(
 					dataPackFolder,
 					'data',
 					location.namespace,
-					isTag ? 'tags/function' : 'function',
+					isTag ? 'tags/' + functionNamespace : functionNamespace,
 					location.path + (isTag ? '.json' : '.mcfunction')
 				)
 				const exists = map.has(vPath) || fs.existsSync(vPath)

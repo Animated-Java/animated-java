@@ -510,7 +510,7 @@ dir <%export_namespace%> {
 		#Args: {args:{variant: string, animation: string, frame: int, start_animation: boolean}}
 		# frame is ignored unless animation is specified.
 
-		data modify storage aj:temp args set value {variant:'', animation:'', frame: 0}
+		data modify storage aj:temp args set value {frame: 0}
 		$execute store success score #success <%OBJECTIVES.I()%> run data modify storage aj:temp args set value $(args)
 
 		summon minecraft:item_display ~ ~ ~ { \
