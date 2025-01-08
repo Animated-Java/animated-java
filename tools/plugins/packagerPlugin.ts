@@ -56,6 +56,7 @@ function plugin(): Plugin {
 					manifest.animated_java.min_version = PACKAGE.min_blockbench_version
 					manifest.animated_java.variant = PACKAGE.variant
 					manifest.animated_java.tags = PACKAGE.tags
+					manifest.animated_java.has_changelog = true
 
 					fs.writeFileSync(
 						PLUGIN_MANIFEST_PATH,
