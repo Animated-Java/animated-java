@@ -47,6 +47,7 @@
 		"@typescript-eslint/consistent-indexed-object-style": ["warn", "record"],
 		"@typescript-eslint/consistent-generic-constructors": "warn",
 		"@typescript-eslint/no-namespace": "off",
+		"@typescript-eslint/restrict-template-expressions": "off",
 		"@typescript-eslint/naming-convention": [
 			"warn",
 			{
