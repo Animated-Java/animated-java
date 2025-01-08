@@ -7,6 +7,7 @@ import { createAction, createBarMenu } from '../util/moddingTools'
 import { translate } from '../util/translation'
 import { openAboutDialog } from './aboutDialog'
 import { openBlueprintSettingsDialog } from './blueprintSettingsDialog'
+import { openChangelogDialog } from './changelogDialog'
 
 function createIconImg() {
 	const IMG = document.createElement('img')
@@ -24,12 +25,11 @@ function createIconImg() {
 	})
 	return IMG
 }
+const MENU_ID = `${PACKAGE.name}:menu` as `animated_java:menu`
 const BLOCKBENCH_MENU_BAR = document.querySelector('#menu_bar') as HTMLDivElement
-export const MENU = createBarMenu(
-	`${PACKAGE.name}:menu`,
-	[],
-	() => Format === BLUEPRINT_FORMAT
-) as BarMenu & { label: HTMLDivElement }
+export const MENU = createBarMenu(MENU_ID, [], () => Format === BLUEPRINT_FORMAT) as BarMenu & {
+	label: HTMLDivElement
+}
 MENU.label.style.display = 'inline-block'
 MENU.label.innerHTML = 'Animated Java'
 MENU.label.prepend(createIconImg())
@@ -60,6 +60,20 @@ MenuBar.addAction(
 )
 
 MenuBar.addAction(
+	createAction(`${PACKAGE.name}:changelog`, {
+		icon: 'history',
+		category: 'animated_java',
+		name: translate('action.open_changelog.name'),
+		click() {
+			openChangelogDialog()
+		},
+	}),
+	MENU.id
+)
+
+MENU.structure.push(new MenuSeparator())
+
+MenuBar.addAction(
 	createAction(`${PACKAGE.name}:blueprint_settings`, {
 		icon: 'settings',
 		category: 'animated_java',
@@ -72,6 +86,32 @@ MenuBar.addAction(
 		},
 	}),
 	MENU.id
+)
+
+MenuBar.menus[MENU_ID].structure.push({
+	id: 'animated_java:extract-open',
+	name: translate('action.extract.name'),
+	icon: 'fa-trash-can',
+	searchable: false,
+	children: [],
+	condition() {
+		return Format === BLUEPRINT_FORMAT
+	},
+})
+
+MenuBar.addAction(
+	createAction(`${PACKAGE.name}:extract`, {
+		icon: 'fa-trash-can',
+		category: 'animated_java',
+		name: translate('action.extract.confirm'),
+		condition() {
+			return Format === BLUEPRINT_FORMAT
+		},
+		click() {
+			void cleanupExportedFiles()
+		},
+	}),
+	MENU_ID + '.animated_java:extract-open'
 )
 
 MenuBar.addAction(

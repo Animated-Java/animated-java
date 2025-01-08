@@ -125,13 +125,12 @@ dir <%export_namespace%> {
 				data remove storage aj.<%export_namespace%>:animations <%animation.storageSafeName%>
 			}
 			<%animationStorage.join('\n')%>
-		} ELSE {
-			<%%
-				animations.forEach(animation => {
-					emit(`scoreboard objectives add ${OBJECTIVES.FRAME(animation.safe_name)} dummy`)
-				})
-			%%>
 		}
+		<%%
+			animations.forEach(animation => {
+				emit(`scoreboard objectives add ${OBJECTIVES.FRAME(animation.safe_name)} dummy`)
+			})
+		%%>
 	}
 
 	dir root {
@@ -511,7 +510,7 @@ dir <%export_namespace%> {
 		#Args: {args:{variant: string, animation: string, frame: int, start_animation: boolean}}
 		# frame is ignored unless animation is specified.
 
-		data modify storage aj:temp args set value {variant:'', animation:'', frame: 0}
+		data modify storage aj:temp args set value {frame: 0}
 		$execute store success score #success <%OBJECTIVES.I()%> run data modify storage aj:temp args set value $(args)
 
 		summon minecraft:item_display ~ ~ ~ { \

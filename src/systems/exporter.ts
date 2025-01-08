@@ -105,6 +105,16 @@ async function actuallyExportProject(forceSave = true) {
 		PROGRESS_DESCRIPTION.set('Rendering Rig...')
 		const rig = renderRig(modelExportFolder, textureExportFolder)
 
+		if (!rig.includes_custom_models && Texture.all.length !== 0) {
+			throw new IntentionalExportError(
+				translate('misc.failed_to_export.rig_has_textures_but_no_custom_models.message')
+			)
+		} else if (rig.includes_custom_models && Texture.all.length === 0) {
+			throw new IntentionalExportError(
+				translate('misc.failed_to_export.rig_has_custom_models_but_no_textures.message')
+			)
+		}
+
 		if (
 			Project!.animated_java.resource_pack_export_mode === 'none' &&
 			rig.includes_custom_models

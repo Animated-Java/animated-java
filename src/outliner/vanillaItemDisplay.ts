@@ -12,6 +12,7 @@ import { Valuable } from '../util/stores'
 import { translate } from '../util/translation'
 import { ResizableOutlinerElement } from './resizableOutlinerElement'
 import { TextDisplay } from './textDisplay'
+import { sanitizeOutlinerElementName } from './util'
 import { VanillaBlockDisplay } from './vanillaBlockDisplay'
 
 interface VanillaItemDisplayOptions {
@@ -125,37 +126,8 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 	}
 
 	public sanitizeName(): string {
-		this.name = toSafeFuntionName(this.name)
-		const otherNodes = [
-			...VanillaItemDisplay.all.filter(v => v.uuid !== this.uuid),
-			...Group.all,
-			...TextDisplay.all,
-			...VanillaBlockDisplay.all,
-		]
-		const otherNames = new Set(otherNodes.map(v => v.name))
-
-		if (!otherNames.has(this.name)) {
-			return this.name
-		}
-
-		let i = 1
-		const match = this.name.match(/\d+$/)
-		if (match) {
-			i = parseInt(match[0])
-			this.name = this.name.slice(0, -match[0].length)
-		}
-
-		let maxTries = 10000
-		while (maxTries-- > 0) {
-			const newName = `${this.name}${i}`
-			if (!otherNames.has(newName)) {
-				this.name = newName
-				return newName
-			}
-			i++
-		}
-
-		throw new Error('Could not make VanillaItemDisplay name unique!')
+		this.name = sanitizeOutlinerElementName(this.name, this.uuid)
+		return this.name
 	}
 
 	getUndoCopy() {

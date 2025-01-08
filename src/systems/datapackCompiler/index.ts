@@ -8,11 +8,11 @@ import { Variant } from '../../variants'
 import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/lib/nbt'
 import {
 	arrayToNbtFloatArray,
+	getFunctionNamespace,
 	matrixToNbtFloatArray,
 	replacePathPart,
 	sortObjectKeys,
 	transformationToNbt,
-	zip,
 } from '../util'
 import { BoneConfig, TextDisplayConfig } from '../../nodeConfigs'
 import {
@@ -26,7 +26,6 @@ import {
 import { JsonText } from '../minecraft/jsonText'
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/exportProgressDialog'
 import { eulerFromQuaternion, floatToHex, roundTo, tinycolorToDecimal } from '../../util/misc'
-import { setTimeout } from 'timers'
 import { MSLimiter } from '../../util/msLimiter'
 
 const BONE_TYPES = ['bone', 'text_display', 'item_display', 'block_display']
@@ -616,7 +615,9 @@ export default async function compileDataPack(options: {
 	animationHash: string
 }) {
 	console.time('Data Pack Compilation took')
-	const { rig, animations, rigHash, animationHash } = options
+	const { rig, animations, rigHash, animationHash, dataPackFolder } = options
+	const overrideFolder = PathModule.join(dataPackFolder, 'animated_java')
+
 	const aj = Project!.animated_java
 	console.log('Compiling Data Pack...', options)
 	const compiler = new Compiler('src/', {
@@ -635,10 +636,10 @@ export default async function compileDataPack(options: {
 	let ajmeta: DataPackAJMeta | null = null
 	if (aj.data_pack_export_mode === 'raw') {
 		ajmeta = new DataPackAJMeta(
-			PathModule.join(options.dataPackFolder, 'data.ajmeta'),
+			PathModule.join(dataPackFolder, 'data.ajmeta'),
 			aj.export_namespace,
 			Project!.last_used_export_namespace,
-			options.dataPackFolder
+			dataPackFolder
 		)
 		ajmeta.read()
 
@@ -698,7 +699,7 @@ export default async function compileDataPack(options: {
 	function createSyncIO(): SyncIo {
 		const io = new SyncIo()
 		io.write = (localPath, content) => {
-			const writePath = PathModule.join(options.dataPackFolder, localPath)
+			const writePath = PathModule.join(overrideFolder, localPath)
 			exportedFiles.set(writePath, content)
 			if (ajmeta) ajmeta.files.add(writePath)
 		}
@@ -753,54 +754,129 @@ export default async function compileDataPack(options: {
 
 	PROGRESS_DESCRIPTION.set('Compiling Data Pack...')
 	PROGRESS.set(0)
-	await new Promise(resolve => setTimeout(resolve, 2000 / framespersecond))
+	await new Promise(resolve => requestAnimationFrame(resolve))
 	console.time('MC-Build Compiler took')
 	const tokens = Tokenizer.tokenize(mcbFile, 'src/animated_java.mcb')
 	compiler.addFile('src/animated_java.mcb', Parser.parseMcbFile(tokens))
 	compiler.compile(VariableMap.fromObject(variables))
 	console.timeEnd('MC-Build Compiler took')
 
-	PROGRESS_DESCRIPTION.set('Writing Data Pack...')
-	if (aj.data_pack_export_mode === 'raw') {
-		console.time('Writing Files took')
-		await writeFiles(exportedFiles, options.dataPackFolder)
-		console.timeEnd('Writing Files took')
-		ajmeta!.write()
-	} else if (aj.data_pack_export_mode === 'zip') {
-		exportedFiles.set(
-			PathModule.join(options.dataPackFolder, 'pack.mcmeta'),
-			autoStringify({
-				pack: {
-					pack_format: 48,
-					description: `${Project!.name}. Generated with Animated Java`,
-				},
-			})
-		)
+	// Incorrect version warning
+	const functionNamespace = getFunctionNamespace(aj.target_minecraft_version)
+	const invalidVersionMessage = new JsonText([
+		TELLRAW_ERROR_PREFIX(),
+		[
+			{
+				text: 'Attempting to load an Animated Java Data Pack that was exported for ',
+				color: 'red',
+			},
+			{ text: `Minecraft ${aj.target_minecraft_version}`, color: 'aqua' },
+			{ text: ' in the wrong version!', color: 'red' },
+			{
+				text: '\n Please ensure that the data pack is loaded in the correct version, or that your blueprint settings are configured to target the correct version(s) of Minecraft.',
+				color: 'yellow',
+			},
+		],
+		TELLRAW_SUFFIX(),
+	])
+	exportedFiles.set(
+		PathModule.join(
+			dataPackFolder,
+			`data/animated_java/${functionNamespace}/global/on_load.mcfunction`
+		),
+		`tellraw @a ${invalidVersionMessage}`
+	)
+	exportedFiles.set(
+		PathModule.join(dataPackFolder, `data/minecraft/tags/${functionNamespace}/load.json`),
+		autoStringify({
+			replace: false,
+			values: ['animated_java:global/on_load'],
+		})
+	)
 
-		const exportPath =
-			options.dataPackFolder + (options.dataPackFolder.endsWith('.zip') ? '' : '.zip')
-		console.time('Writing Zip took')
-		await writeZip(exportedFiles, exportPath)
-		console.timeEnd('Writing Zip took')
-	}
-
-	console.timeEnd('Data Pack Compilation took')
-}
-
-async function writeZip(map: Map<string, string>, dataPackPath: string) {
-	const data: Record<string, Uint8Array> = {}
-
-	for (const [path, content] of map) {
-		const relativePath = PathModule.relative(dataPackPath, path)
-		if (typeof content === 'string') {
-			data[relativePath] = Buffer.from(content)
-		} else {
-			data[relativePath] = content
+	type Formats = number | number[] | { min_inclusive: number; max_inclusive: number }
+	interface IPackMeta {
+		pack?: {
+			pack_format?: number
+			description?: string
+		}
+		overlays?: {
+			entries?: Array<{
+				directory?: string
+				formats?: Formats
+			}>
 		}
 	}
 
-	const zipped = await zip(data, {})
-	await fs.promises.writeFile(dataPackPath, zipped)
+	// pack.mcmeta
+	const packMetaPath = PathModule.join(dataPackFolder, 'pack.mcmeta')
+	let packMeta = {} as IPackMeta
+	if (fs.existsSync(packMetaPath)) {
+		try {
+			const content = fs.readFileSync(packMetaPath, 'utf-8')
+			packMeta = JSON.parse(content)
+		} catch (e) {
+			console.error('Failed to parse pack.mcmeta:', e)
+		}
+	}
+	packMeta.pack ??= {}
+	packMeta.pack.pack_format = getDataPackFormat(aj.target_minecraft_version)
+	packMeta.pack.description ??= `Animated Java Data Pack for ${aj.target_minecraft_version}`
+	packMeta.overlays ??= {}
+	packMeta.overlays.entries ??= []
+	let formats: Formats
+	switch (aj.target_minecraft_version) {
+		case '1.20.5': {
+			formats = {
+				min_inclusive: getDataPackFormat('1.20.5'),
+				max_inclusive: getDataPackFormat('1.21.0') - 1,
+			}
+			break
+		}
+		case '1.21.0': {
+			formats = {
+				min_inclusive: getDataPackFormat('1.21.0'),
+				max_inclusive: getDataPackFormat('1.21.2') - 1,
+			}
+			break
+		}
+		case '1.21.2': {
+			formats = {
+				min_inclusive: getDataPackFormat('1.21.2'),
+				max_inclusive: getDataPackFormat('1.21.4') - 1,
+			}
+			break
+		}
+		case '1.21.4': {
+			formats = getDataPackFormat('1.21.4')
+			break
+		}
+		default: {
+			formats = getDataPackFormat(aj.target_minecraft_version)
+			break
+		}
+	}
+	const overlay = packMeta.overlays.entries.find(e => e.directory === 'animated_java')
+	if (!overlay) {
+		packMeta.overlays.entries.push({
+			directory: 'animated_java',
+			formats,
+		})
+	} else {
+		overlay.formats = formats
+	}
+
+	exportedFiles.set(PathModule.join(dataPackFolder, 'pack.mcmeta'), autoStringify(packMeta))
+
+	PROGRESS_DESCRIPTION.set('Writing Data Pack...')
+	if (aj.data_pack_export_mode === 'raw') {
+		console.time('Writing Files took')
+		await writeFiles(exportedFiles, overrideFolder)
+		console.timeEnd('Writing Files took')
+		ajmeta!.write()
+	}
+
+	console.timeEnd('Data Pack Compilation took')
 }
 
 async function writeFiles(map: Map<string, string>, dataPackFolder: string) {
@@ -829,11 +905,13 @@ async function writeFiles(map: Map<string, string>, dataPackFolder: string) {
 				const value = typeof v === 'string' ? v : v.id
 				const isTag = value.startsWith('#')
 				const location = parseResourceLocation(isTag ? value.substring(1) : value)
+				const functionNamespace = getFunctionNamespace(aj.target_minecraft_version)
+				console.log('Checking:', value, location, functionNamespace)
 				const vPath = PathModule.join(
 					dataPackFolder,
 					'data',
 					location.namespace,
-					isTag ? 'tags/function' : 'function',
+					isTag ? 'tags/' + functionNamespace : functionNamespace,
 					location.path + (isTag ? '.json' : '.mcfunction')
 				)
 				const exists = map.has(vPath) || fs.existsSync(vPath)

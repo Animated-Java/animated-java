@@ -1,0 +1,41 @@
+{
+	"1.6.0": {
+		"title": "v1.6.0",
+		"author": "Titus Evans (SnaveSutit)",
+		"date": "2025-01-08",
+		"categories": [
+			{
+				"title": "Changes",
+				"list": [
+					"Added changelog popup! (You're looking at it right now!)",
+					"Added an export target for Minecraft 1.21.4",
+					"Added warning for loading Animated Java Data Packs in the wrong version.",
+					"Improved internal MCB File compression",
+					"Slightly improved empty JSON text rendering ([#322](https://github.com/Animated-Java/animated-java/issues/322)",
+					"Added an Extract action to remove exported files from the Resource Pack and Data Pack",
+					"Added 1.21.4 target MC version",
+					"Changed missing assets and data folder for resource and data pack folder settings errors into warnings",
+					"Added support for item definitions (1.21.4)",
+					"Changed default resource pack structure: `animated_java:textures/item/export_namespace/` -> `animated_java:textures/blueprint/export_namespace/` & `animated_java:models/item/export_namespace/` -> `animated_java:models/blueprint/export_namespace/`",
+					"Added a dialog and exception for exporting a blueprint with invalid cube rotations."
+				]
+			},
+			{
+				"title": "Fixes",
+				"list": [
+					"Fixed tags getting cleared out in old exports",
+					"Fixed incorrect export location for transparent texture.",
+					"Fixed Per-Face UV not being enforced when converting",
+					"Fixed [#348](https://github.com/Animated-Java/animated-java/issues/348)",
+					"Fixed [#349](https://github.com/Animated-Java/animated-java/issues/349)",
+					"Fixed [#347](https://github.com/Animated-Java/animated-java/issues/347)",
+					"Fixed [#345](https://github.com/Animated-Java/animated-java/issues/345)",
+					"Fixed [#341](https://github.com/Animated-Java/animated-java/issues/341)",
+					"Fixed [#343](https://github.com/Animated-Java/animated-java/issues/343)",
+					"Fixed [#340](https://github.com/Animated-Java/animated-java/issues/340)",
+					"Fixed [#342](https://github.com/Animated-Java/animated-java/issues/342)"
+				]
+			}
+		]
+	}
+}

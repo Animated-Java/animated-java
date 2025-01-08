@@ -271,7 +271,7 @@ export default async function compileResourcePack(options: {
 	// Transparent texture
 	const transparentTexturePath = PathModule.join(
 		resourcePackFolder,
-		'assets/animated_java/textures/item/transparent.png'
+		'assets/animated_java/textures/blueprint/transparent.png'
 	)
 	exportedFiles.set(
 		transparentTexturePath,

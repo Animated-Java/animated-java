@@ -346,7 +346,9 @@ function renderGroup(
 	if (!groupModel) {
 		groupModel = defaultVariant.models[group.uuid] = {
 			model: {
-				textures: {},
+				textures: {
+					particle: 'minecraft:item/pufferfish',
+				},
 				display: { head: { rotation: [0, 180, 0] } },
 			},
 			custom_model_data: -1, // This is calculated when constructing the resource pack.
@@ -557,7 +559,6 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 	const defaultVariant = Variant.getDefault()
 	const defaultModels = rig.variants[defaultVariant.uuid].models
 
-	// debugger
 	for (const [uuid, bone] of Object.entries(rig.nodes)) {
 		if (bone.type !== 'bone') continue
 		if (variant.excludedNodes.find(v => v.value === uuid)) continue

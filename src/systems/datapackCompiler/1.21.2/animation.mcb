@@ -125,13 +125,12 @@ dir <%export_namespace%> {
 				data remove storage aj.<%export_namespace%>:animations <%animation.storageSafeName%>
 			}
 			<%animationStorage.join('\n')%>
-		} ELSE {
-			<%%
-				animations.forEach(animation => {
-					emit(`scoreboard objectives add ${OBJECTIVES.FRAME(animation.safe_name)} dummy`)
-				})
-			%%>
 		}
+		<%%
+			animations.forEach(animation => {
+				emit(`scoreboard objectives add ${OBJECTIVES.FRAME(animation.safe_name)} dummy`)
+			})
+		%%>
 	}
 
 	dir root {

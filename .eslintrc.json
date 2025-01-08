@@ -15,7 +15,9 @@
 		"exporters/",
 		"tools/",
 		"svelte.config.ts",
-		"src/util/bufferGeometryUtils.ts"
+		"vitest.config.ts",
+		"src/util/bufferGeometryUtils.ts",
+		"tests/**/*"
 	],
 	"overrides": [
 		{
@@ -45,6 +47,7 @@
 		"@typescript-eslint/consistent-indexed-object-style": ["warn", "record"],
 		"@typescript-eslint/consistent-generic-constructors": "warn",
 		"@typescript-eslint/no-namespace": "off",
+		"@typescript-eslint/restrict-template-expressions": "off",
 		"@typescript-eslint/naming-convention": [
 			"warn",
 			{

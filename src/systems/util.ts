@@ -108,3 +108,8 @@ export function isCubeValid(cube: Cube) {
 	}
 	return false
 }
+
+export function getFunctionNamespace(version: string): 'function' | 'functions' {
+	// If the target version is 1.21.0 or higher, use the 'function' namespace instead of 'functions'
+	return compareVersions(version, '1.21.0') ? 'function' : 'functions'
+}

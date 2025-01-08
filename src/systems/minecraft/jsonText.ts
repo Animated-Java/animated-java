@@ -162,7 +162,7 @@ class JsonTextParser {
 		this.s = new StringStream(str)
 	}
 
-	parse(): JsonText | undefined {
+	parse(): JsonText {
 		let text: JsonTextComponent | undefined
 		try {
 			text = this.parseTextComponent(true)
@@ -172,6 +172,7 @@ class JsonTextParser {
 		if (text) {
 			return new JsonText(text)
 		}
+		return new JsonText('')
 	}
 
 	consumeWhitespace() {

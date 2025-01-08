@@ -575,7 +575,6 @@
 			tooltip={translate('dialog.blueprint_settings.resource_pack_export_mode.description')}
 			options={{
 				raw: translate('dialog.blueprint_settings.resource_pack_export_mode.options.raw'),
-				// zip: translate('dialog.blueprint_settings.resource_pack_export_mode.options.zip'),
 				none: translate('dialog.blueprint_settings.resource_pack_export_mode.options.none'),
 			}}
 			defaultOption={'raw'}
@@ -587,7 +586,6 @@
 			tooltip={translate('dialog.blueprint_settings.data_pack_export_mode.description')}
 			options={{
 				raw: translate('dialog.blueprint_settings.data_pack_export_mode.options.raw'),
-				// zip: translate('dialog.blueprint_settings.data_pack_export_mode.options.zip'),
 				none: translate('dialog.blueprint_settings.data_pack_export_mode.options.none'),
 			}}
 			defaultOption={'raw'}

@@ -22,6 +22,13 @@ createBlockbenchMod(
 				} else if (!cube.rotationInvalid && !isValid) {
 					cube.mesh.outline.material = ERROR_OUTLINE_MATERIAL
 					cube.rotationInvalid = true
+					if (!Project!.showingInvalidCubeRotations) {
+						Blockbench.showToastNotification({
+							text: 'Invalid Cube Rotation!\nCubes can only be rotated in 22.5 degree increments (45, 22.5, 0, -22.5, -45) and can only be rotated on a single axis.\nThe offending cubes have been highlighted in red.',
+							color: 'var(--color-error)',
+						})
+						Project!.showingInvalidCubeRotations = true
+					}
 				}
 			}
 			context.originalUpdateTransform.call(this, cube)
