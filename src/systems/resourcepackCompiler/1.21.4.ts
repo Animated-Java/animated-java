@@ -286,5 +286,9 @@ function createMultiVariantItemDefinition(
 		} as (typeof itemDefinition.model.cases)[0])
 	}
 
+	if (itemDefinition.model.cases.length === 0) {
+		return createSingleVariantItemDefinition(model)
+	}
+
 	return itemDefinition
 }

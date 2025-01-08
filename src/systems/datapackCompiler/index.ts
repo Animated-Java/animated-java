@@ -794,6 +794,7 @@ export default async function compileDataPack(options: {
 		})
 	)
 
+	type Formats = number | number[] | { min_inclusive: number; max_inclusive: number }
 	interface IPackMeta {
 		pack?: {
 			pack_format?: number
@@ -802,7 +803,7 @@ export default async function compileDataPack(options: {
 		overlays?: {
 			entries?: Array<{
 				directory?: string
-				formats?: number | number[] | { min_inclusive: number; max_inclusive: number }
+				formats?: Formats
 			}>
 		}
 	}
@@ -823,14 +824,46 @@ export default async function compileDataPack(options: {
 	packMeta.pack.description ??= `Animated Java Data Pack for ${aj.target_minecraft_version}`
 	packMeta.overlays ??= {}
 	packMeta.overlays.entries ??= []
+	let formats: Formats
+	switch (aj.target_minecraft_version) {
+		case '1.20.5': {
+			formats = {
+				min_inclusive: getDataPackFormat('1.20.5'),
+				max_inclusive: getDataPackFormat('1.21.0') - 1,
+			}
+			break
+		}
+		case '1.21.0': {
+			formats = {
+				min_inclusive: getDataPackFormat('1.21.0'),
+				max_inclusive: getDataPackFormat('1.21.2') - 1,
+			}
+			break
+		}
+		case '1.21.2': {
+			formats = {
+				min_inclusive: getDataPackFormat('1.21.2'),
+				max_inclusive: getDataPackFormat('1.21.4') - 1,
+			}
+			break
+		}
+		case '1.21.4': {
+			formats = getDataPackFormat('1.21.4')
+			break
+		}
+		default: {
+			formats = getDataPackFormat(aj.target_minecraft_version)
+			break
+		}
+	}
 	const overlay = packMeta.overlays.entries.find(e => e.directory === 'animated_java')
 	if (!overlay) {
 		packMeta.overlays.entries.push({
 			directory: 'animated_java',
-			formats: getDataPackFormat(aj.target_minecraft_version),
+			formats,
 		})
 	} else {
-		overlay.formats = getDataPackFormat(aj.target_minecraft_version)
+		overlay.formats = formats
 	}
 
 	exportedFiles.set(PathModule.join(dataPackFolder, 'pack.mcmeta'), autoStringify(packMeta))
