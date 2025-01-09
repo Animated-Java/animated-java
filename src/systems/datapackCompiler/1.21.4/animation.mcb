@@ -365,6 +365,11 @@ dir <%export_namespace%> {
 										storage aj.<%export_namespace%>:animations <%animation.safe_name%>.$(frame).<%node.type + '_' + node.safe_name%>
 								}
 							}
+							IF (animation.frames.some(v => v.variant)) {
+								$execute if data storage aj.<%export_namespace%>:animations <%animation.safe_name%>.$(frame).variant unless entity @s[tag=<%TAGS.TRANSFORMS_ONLY()%>] run data modify storage aj:temp variant set from storage aj.<%export_namespace%>:animations <%animation.safe_name%>.$(frame).variant
+								$execute if data storage aj.<%export_namespace%>:animations <%animation.safe_name%>.$(frame).variant unless entity @s[tag=<%TAGS.TRANSFORMS_ONLY()%>] run function *<%export_namespace%>/animations/<%animation.safe_name%>/zzz/apply_variant with storage aj:temp variant
+								$execute if data storage aj.<%export_namespace%>:animations <%animation.safe_name%>.$(frame).variant unless entity @s[tag=<%TAGS.TRANSFORMS_ONLY()%>] run data remove storage aj:temp variant
+							}
 							execute on passengers run data modify entity @s[type=!marker] start_interpolation set value -1
 						}
 						function apply_frame {
@@ -377,6 +382,17 @@ dir <%export_namespace%> {
 									$execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run data modify entity @s data.<%node.type + 's.' + node.safe_name%> merge from \
 										storage aj.<%export_namespace%>:animations <%animation.safe_name%>.$(frame).<%node.type + '_' + node.safe_name%>
 								}
+							}
+							IF (animation.frames.some(v => v.variant)) {
+								$execute if data storage aj.<%export_namespace%>:animations <%animation.safe_name%>.$(frame).variant unless entity @s[tag=<%TAGS.TRANSFORMS_ONLY()%>] run data modify storage aj:temp variant set from storage aj.<%export_namespace%>:animations <%animation.safe_name%>.$(frame).variant
+								$execute if data storage aj.<%export_namespace%>:animations <%animation.safe_name%>.$(frame).variant unless entity @s[tag=<%TAGS.TRANSFORMS_ONLY()%>] run function *<%export_namespace%>/animations/<%animation.safe_name%>/zzz/apply_variant with storage aj:temp variant
+								$execute if data storage aj.<%export_namespace%>:animations <%animation.safe_name%>.$(frame).variant unless entity @s[tag=<%TAGS.TRANSFORMS_ONLY()%>] run data remove storage aj:temp variant
+							}
+						}
+						IF (animation.frames.some(v => v.variant)) {
+							function apply_variant {
+								#ARGS: {name: string, condition: string}
+								$execute $(condition)run function *<%export_namespace%>/variants/$(name)/apply
 							}
 						}
 					} ELSE {
