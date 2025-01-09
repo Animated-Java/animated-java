@@ -122,7 +122,7 @@ dir <%export_namespace%> {
 	function on_load {
 		IF (use_storage_for_animation) {
 			REPEAT (animations) as animation {
-				data remove storage aj.<%export_namespace%>:animations <%animation.storageSafeName%>
+				data remove storage aj.<%export_namespace%>:animations <%animation.safe_name%>
 			}
 			<%animationStorage.join('\n')%>
 		}
