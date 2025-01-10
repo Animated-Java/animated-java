@@ -559,7 +559,14 @@ async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAn
 					'variant',
 					new NbtCompound()
 						.set('name', new NbtString(rig.variants[frame.variant.uuid].name))
-						.set('condition', new NbtString(frame.variant.execute_condition ? `${frame.variant.execute_condition} ` : ''))
+						.set(
+							'condition',
+							new NbtString(
+								frame.variant.execute_condition
+									? `${frame.variant.execute_condition} `
+									: ''
+							)
+						)
 				)
 			}
 			if (frames.toString().length > 1000000) {

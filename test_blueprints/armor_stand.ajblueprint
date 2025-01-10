@@ -1,7 +1,7 @@
 {
 	"meta": {
 		"format": "animated_java_blueprint",
-		"format_version": "1.5.2",
+		"format_version": "1.6.0",
 		"uuid": "167b27cd-b559-3f13-a97c-0841fe21f1d1",
 		"save_location": "D:\\github-repos\\animated-java\\animated-java\\test_blueprints\\armor_stand.ajblueprint",
 		"last_used_export_namespace": "armor_stand"
@@ -29,7 +29,7 @@
 		"ticking_commands": "",
 		"interpolation_duration": 1,
 		"teleportation_duration": 1,
-		"use_storage_for_animation": false,
+		"use_storage_for_animation": true,
 		"show_function_errors": true,
 		"show_outdated_warning": true,
 		"baked_animations": false,
@@ -1502,7 +1502,7 @@
 		"default": {
 			"name": "default",
 			"display_name": "Default",
-			"uuid": "d08528a6-bb3d-0203-485d-1727f5ff2ff7",
+			"uuid": "8b21ef0e-2651-7284-337b-7e5fddc16bb7",
 			"texture_map": {},
 			"excluded_nodes": [],
 			"is_default": true
