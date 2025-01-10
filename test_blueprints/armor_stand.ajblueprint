@@ -1,7 +1,7 @@
 {
 	"meta": {
 		"format": "animated_java_blueprint",
-		"format_version": "1.5.2",
+		"format_version": "1.6.0",
 		"uuid": "167b27cd-b559-3f13-a97c-0841fe21f1d1",
 		"save_location": "D:\\github-repos\\animated-java\\animated-java\\test_blueprints\\armor_stand.ajblueprint",
 		"last_used_export_namespace": "armor_stand"
@@ -1427,6 +1427,7 @@
 			"sync_to_project": "",
 			"render_mode": "default",
 			"render_sides": "auto",
+			"pbr_channel": "color",
 			"frame_time": 1,
 			"frame_order_type": "loop",
 			"frame_order": "",
@@ -1456,6 +1457,7 @@
 			"sync_to_project": "",
 			"render_mode": "default",
 			"render_sides": "auto",
+			"pbr_channel": "color",
 			"frame_time": 1,
 			"frame_order_type": "loop",
 			"frame_order": "",
@@ -1485,6 +1487,7 @@
 			"sync_to_project": "",
 			"render_mode": "default",
 			"render_sides": "auto",
+			"pbr_channel": "color",
 			"frame_time": 1,
 			"frame_order_type": "loop",
 			"frame_order": "",
@@ -1502,7 +1505,7 @@
 		"default": {
 			"name": "default",
 			"display_name": "Default",
-			"uuid": "d08528a6-bb3d-0203-485d-1727f5ff2ff7",
+			"uuid": "9fc70e14-4ade-83f7-8603-6264ba99f862",
 			"texture_map": {},
 			"excluded_nodes": [],
 			"is_default": true
@@ -1512,19 +1515,14 @@
 				"name": "no_armor",
 				"display_name": "no_armor",
 				"uuid": "5417306e-2c69-3f36-1e3c-edd904034a36",
-				"texture_map": {
-					"240844f3-f615-fe51-0ada-d208791fbdc0": "797174ae-5c58-4a83-a630-eefd51007c80",
-					"34528a28-3a31-8b47-65bb-ef2b60b02401": "797174ae-5c58-4a83-a630-eefd51007c80"
-				},
+				"texture_map": {},
 				"excluded_nodes": []
 			},
 			{
 				"name": "no_baseplate",
 				"display_name": "no_baseplate",
 				"uuid": "bf2a6915-ec63-7ccf-3844-ea8be00b97e6",
-				"texture_map": {
-					"eb6c49b8-8e8e-a039-9a6f-ef6a06bc7924": "797174ae-5c58-4a83-a630-eefd51007c80"
-				},
+				"texture_map": {},
 				"excluded_nodes": [
 					"98795982-9c43-6e3e-eed9-2c776a957938",
 					"102db36a-eeda-0e6f-d5cc-c186ecda8165",
@@ -1617,9 +1615,9 @@
 							"channel": "commands",
 							"data_points": [
 								{
-									"x": 0,
-									"y": 0,
-									"z": 0,
+									"x": "0",
+									"y": "0",
+									"z": "0",
 									"commands": "particle minecraft:flame ^ ^ ^",
 									"execute_condition": "",
 									"repeat": true,
@@ -1643,9 +1641,9 @@
 							"channel": "commands",
 							"data_points": [
 								{
-									"x": 0,
-									"y": 0,
-									"z": 0,
+									"x": "0",
+									"y": "0",
+									"z": "0",
 									"commands": "particle minecraft:flame ^ ^ ^",
 									"execute_condition": "",
 									"repeat": true,
@@ -1749,7 +1747,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": 90,
+									"x": "90",
 									"y": "0",
 									"z": "0"
 								}
@@ -1766,8 +1764,8 @@
 							"data_points": [
 								{
 									"x": "0",
-									"y": 0,
-									"z": 13
+									"y": "0",
+									"z": "13"
 								}
 							],
 							"uuid": "76d2f009-56ee-aced-904d-622f9cef4131",
@@ -2262,7 +2260,7 @@
 							"data_points": [
 								{
 									"x": "0",
-									"y": -1,
+									"y": "-1",
 									"z": "0"
 								}
 							],
@@ -2701,7 +2699,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": -10,
+									"x": "-10",
 									"y": "0",
 									"z": "0"
 								}
@@ -2718,8 +2716,8 @@
 							"data_points": [
 								{
 									"x": "0",
-									"y": -2,
-									"z": -2
+									"y": "-2",
+									"z": "-2"
 								}
 							],
 							"uuid": "1bf12e49-e6fc-2486-46d4-24b5e3e4869d",
@@ -2739,7 +2737,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": 22.5,
+									"x": "22.5",
 									"y": "0",
 									"z": "0"
 								}
@@ -2777,7 +2775,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": -5,
+									"x": "-5",
 									"y": "0",
 									"z": "0"
 								}
@@ -2800,8 +2798,8 @@
 							"data_points": [
 								{
 									"x": "v.value = q.life_time * 360;\nv.lopside_mag = -30;\n\n14.6772\n+ (math.sin(v.value + math.cos(v.value) * v.lopside_mag)) * 6;",
-									"y": 24.92619,
-									"z": 166.58275
+									"y": "24.92619",
+									"z": "166.58275"
 								}
 							],
 							"uuid": "180754f2-076d-8223-6f07-96432287d256",
@@ -2815,9 +2813,9 @@
 							"channel": "position",
 							"data_points": [
 								{
-									"x": 0,
-									"y": -6,
-									"z": -5
+									"x": "0",
+									"y": "-6",
+									"z": "-5"
 								}
 							],
 							"uuid": "e79890cb-b84f-8a72-336a-07744584de8a",
@@ -2838,8 +2836,8 @@
 							"data_points": [
 								{
 									"x": "\nv.value = q.life_time * 90;\nv.lopside_mag = -30;\n\n-67.1224\n+ (math.sin(v.value + math.cos(v.value) * v.lopside_mag)) * 2;\n",
-									"y": -66.97934,
-									"z": -11.88242
+									"y": "-66.97934",
+									"z": "-11.88242"
 								}
 							],
 							"uuid": "b4868b12-c0af-d7b7-439d-21545df10d41",
@@ -2853,9 +2851,9 @@
 							"channel": "position",
 							"data_points": [
 								{
-									"x": -1,
-									"y": -1,
-									"z": -1
+									"x": "-1",
+									"y": "-1",
+									"z": "-1"
 								}
 							],
 							"uuid": "407256a9-7a9b-4c27-d269-1a3cab56639b",
@@ -2875,7 +2873,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": 90,
+									"x": "90",
 									"y": "0",
 									"z": "0"
 								}
@@ -2892,8 +2890,8 @@
 							"data_points": [
 								{
 									"x": "0",
-									"y": -11,
-									"z": 0
+									"y": "-11",
+									"z": "0"
 								}
 							],
 							"uuid": "e827700b-3cd5-e75a-4aca-d4b37f42dfbb",
@@ -2914,8 +2912,8 @@
 							"data_points": [
 								{
 									"x": "0",
-									"y": -1,
-									"z": -3
+									"y": "-1",
+									"z": "-3"
 								}
 							],
 							"uuid": "daa8347d-bcef-d987-c35f-0c25fac8174b",
@@ -2937,7 +2935,7 @@
 								{
 									"x": "0",
 									"y": "0",
-									"z": -16
+									"z": "-16"
 								}
 							],
 							"uuid": "dc1a350e-1698-0c78-125b-874acafc6b8c",
@@ -2976,7 +2974,7 @@
 							"data_points": [
 								{
 									"x": "0",
-									"y": -1,
+									"y": "-1",
 									"z": "0"
 								}
 							],
@@ -2998,8 +2996,8 @@
 							"data_points": [
 								{
 									"x": "0",
-									"y": -10,
-									"z": 5
+									"y": "-10",
+									"z": "5"
 								}
 							],
 							"uuid": "67edfa7d-e3d3-37ab-a835-0502b26a1a5a",
@@ -3019,9 +3017,9 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": -22.01816,
-									"y": 4.75113,
-									"z": 11.57518
+									"x": "-22.01816",
+									"y": "4.75113",
+									"z": "11.57518"
 								}
 							],
 							"uuid": "e1c75221-694e-1a74-3d48-6c43d76bad40",
@@ -3041,9 +3039,9 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": -22.01816,
-									"y": -4.75113,
-									"z": -11.57518
+									"x": "-22.01816",
+									"y": "-4.75113",
+									"z": "-11.57518"
 								}
 							],
 							"uuid": "8eac688f-1ccc-fa1a-0222-0660cd3cf7de",
@@ -3063,9 +3061,9 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": -90,
-									"y": 22.5,
-									"z": 0
+									"x": "-90",
+									"y": "22.5",
+									"z": "0"
 								}
 							],
 							"uuid": "089c0129-9144-84ac-82b8-71827952c08d",
@@ -3085,9 +3083,9 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": -90,
-									"y": -22.5,
-									"z": 0
+									"x": "-90",
+									"y": "-22.5",
+									"z": "0"
 								}
 							],
 							"uuid": "314f088e-560a-4819-2b87-3bdfd1930772",

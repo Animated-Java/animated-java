@@ -174,6 +174,7 @@ export const BONE_CONFIG_ACTION = createAction(`${PACKAGE.name}:bone_config`, {
 	name: translate('action.open_bone_config.name'),
 	condition: () => Format === BLUEPRINT_FORMAT,
 	click: () => {
-		openBoneConfigDialog(Group.selected)
+		if (!Group.first_selected) return
+		openBoneConfigDialog(Group.first_selected)
 	},
 })

@@ -98,7 +98,6 @@ declare global {
 			isDataPackPath: typeof isDataPackPath
 			blueprintSettingErrors: typeof blueprintSettingErrors
 			openUnexpectedErrorDialog: typeof openUnexpectedErrorDialog
-			TRANSPARENT_TEXTURE: Texture
 			BLUEPRINT_FORMAT: typeof BLUEPRINT_FORMAT
 			BLUEPRINT_CODEC: typeof BLUEPRINT_CODEC
 			TextDisplay: typeof TextDisplay

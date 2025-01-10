@@ -20,7 +20,7 @@ import './systems/minecraft/blockstateManager'
 import './systems/minecraft/assetManager'
 import './systems/minecraft/fontManager'
 // Misc imports
-import { TRANSPARENT_TEXTURE, Variant } from './variants'
+import { Variant } from './variants'
 import './systems/minecraft/registryManager'
 import { MINECRAFT_REGISTRY } from './systems/minecraft/registryManager'
 import resourcepackCompiler from './systems/resourcepackCompiler'
@@ -58,7 +58,6 @@ globalThis.AnimatedJava = {
 		isDataPackPath,
 		blueprintSettingErrors,
 		openUnexpectedErrorDialog,
-		TRANSPARENT_TEXTURE,
 		BLUEPRINT_FORMAT,
 		BLUEPRINT_CODEC,
 		TextDisplay,

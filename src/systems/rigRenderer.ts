@@ -12,7 +12,7 @@ import {
 	parseResourcePackPath,
 	toSafeFuntionName,
 } from '../util/minecraftUtil'
-import { TRANSPARENT_TEXTURE, TRANSPARENT_TEXTURE_RESOURCE_LOCATION, Variant } from '../variants'
+import { Variant } from '../variants'
 import {
 	correctSceneAngle,
 	getFrame,
@@ -240,8 +240,7 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 
 	element.faces = {}
 	for (const [face, data] of Object.entries(cube.faces)) {
-		if (!data) continue
-		if (!data.texture || data.getTexture()?.uuid === TRANSPARENT_TEXTURE.uuid) continue
+		if (!data?.texture) continue
 		const renderedFace = {} as IRenderedFace
 		if (data.enabled) {
 			renderedFace.uv = data.uv
@@ -570,20 +569,11 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 		for (const [fromUUID, toUUID] of variant.textureMap.map.entries()) {
 			const fromTexture = Texture.all.find(t => t.uuid === fromUUID)
 			if (!fromTexture) throw new Error(`From texture not found: ${fromUUID}`)
-			if (toUUID === TRANSPARENT_TEXTURE.uuid) {
-				textures[fromTexture.id] = TRANSPARENT_TEXTURE_RESOURCE_LOCATION
-				rig.textures[TRANSPARENT_TEXTURE.id] = TRANSPARENT_TEXTURE
-				unreplacedTextures.delete(fromTexture.id)
-			} else {
-				const toTexture = Texture.all.find(t => t.uuid === toUUID)
-				if (!toTexture) throw new Error(`To texture not found: ${toUUID}`)
-				textures[fromTexture.id] = getTextureResourceLocation(
-					toTexture,
-					rig
-				).resourceLocation
-				rig.textures[toTexture.id] = toTexture
-				isOnlyTransparent = false
-			}
+			const toTexture = Texture.all.find(t => t.uuid === toUUID)
+			if (!toTexture) throw new Error(`To texture not found: ${toUUID}`)
+			textures[fromTexture.id] = getTextureResourceLocation(toTexture, rig).resourceLocation
+			rig.textures[toTexture.id] = toTexture
+			isOnlyTransparent = false
 		}
 
 		// Don't export models without any texture changes
