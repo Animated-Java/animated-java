@@ -115,21 +115,6 @@ MenuBar.addAction(
 )
 
 MenuBar.addAction(
-	createAction(`${PACKAGE.name}:extract`, {
-		icon: 'fa-trash-can',
-		category: 'animated_java',
-		name: translate('action.extract.name'),
-		condition() {
-			return Format === BLUEPRINT_FORMAT
-		},
-		click() {
-			void cleanupExportedFiles()
-		},
-	}),
-	MENU.id
-)
-
-MenuBar.addAction(
 	createAction(`${PACKAGE.name}:export`, {
 		icon: 'insert_drive_file',
 		category: 'animated_java',

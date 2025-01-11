@@ -1,5 +1,6 @@
 <script lang="ts">
 	import changelog from '../pluginPackage/changelog.json'
+	import AnimatedJavaIcon from '../assets/animated_java_icon.svg'
 
 	function formatDateFull(date: string) {
 		// @ts-expect-error
@@ -40,10 +41,13 @@
 </script>
 
 <div class="content plugin_browser_tabbed_page" id="plugin_browser_changelog">
-	{#each Object.values(changelog) as versions}
-		<h3>
-			{versions.title}
-		</h3>
+	{#each Object.values(changelog).reverse() as versions}
+		<div class="title-container">
+			<img src={AnimatedJavaIcon} alt="" />
+			<h3>
+				{versions.title}
+			</h3>
+		</div>
 		<!-- svelte-ignore a11y-label-has-associated-control -->
 		<label class="plugin_changelog_author">{versions.author}</label>
 		<!-- svelte-ignore a11y-label-has-associated-control -->
@@ -82,5 +86,23 @@
 		padding: 0.2em 0.4em;
 		border-radius: 3px;
 		font-size: 0.8em;
+	}
+	img {
+		border-radius: 4px;
+		width: 24px;
+		height: 24px;
+		margin-left: 0.5px;
+		box-shadow: 1px 1px 1px #000000aa;
+	}
+	.title-container h3 {
+		margin-left: 8px;
+		margin-top: 0;
+	}
+	.title-container {
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-start;
+		align-items: center;
+		margin-top: 8px;
 	}
 </style>

@@ -37,5 +37,24 @@
 				]
 			}
 		]
+	},
+	"1.6.1": {
+		"title": "v1.6.1",
+		"author": "Titus Evans (SnaveSutit)",
+		"date": "2025-01-10",
+		"categories": [
+			{
+				"title": "Changes",
+				"list": ["Slightly improved the changelog."]
+			},
+			{
+				"title": "Fixes",
+				"list": [
+					"Fixed overlays breaking custom function tags.",
+					"Fixed [#350](https://github.com/Animated-Java/animated-java/issues/350)",
+					"Fixed [#353](https://github.com/Animated-Java/animated-java/issues/353)"
+				]
+			}
+		]
 	}
 }
