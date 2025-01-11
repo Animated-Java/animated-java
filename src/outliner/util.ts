@@ -5,15 +5,18 @@ import { VanillaItemDisplay } from './vanillaItemDisplay'
 
 export function sanitizeOutlinerElementName(name: string, elementUUID: string): string {
 	name = toSafeFuntionName(name)
-	const otherNodes: OutlinerElement[] = [
-		...VanillaBlockDisplay.all.filter(v => v.uuid !== elementUUID),
+	let otherNodes: OutlinerElement[] = [
+		...VanillaBlockDisplay.all,
 		...Group.all,
 		...TextDisplay.all,
 		...VanillaItemDisplay.all,
+		...Locator.all,
 	]
 	if (OutlinerElement.types.camera) {
 		otherNodes.push(...OutlinerElement.types.camera.all)
 	}
+	otherNodes = otherNodes.filter(v => v.uuid !== elementUUID)
+
 	const otherNames = new Set(otherNodes.map(v => v.name))
 
 	if (!otherNames.has(name)) {
