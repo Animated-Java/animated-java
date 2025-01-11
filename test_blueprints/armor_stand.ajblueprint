@@ -29,7 +29,7 @@
 		"ticking_commands": "",
 		"interpolation_duration": 1,
 		"teleportation_duration": 1,
-		"use_storage_for_animation": true,
+		"use_storage_for_animation": false,
 		"show_function_errors": true,
 		"show_outdated_warning": true,
 		"baked_animations": false,
@@ -1502,7 +1502,7 @@
 		"default": {
 			"name": "default",
 			"display_name": "Default",
-			"uuid": "8b21ef0e-2651-7284-337b-7e5fddc16bb7",
+			"uuid": "aac00620-0822-f892-856c-635a4439bbd4",
 			"texture_map": {},
 			"excluded_nodes": [],
 			"is_default": true
