@@ -48,13 +48,7 @@ function getSettings() {
 		enableAdvancedResourcePackSettings: new Valuable(
 			Project!.animated_java.enable_advanced_resource_pack_settings
 		),
-		enableAdvancedResourcePackFolders: new Valuable(
-			Project!.animated_java.enable_advanced_resource_pack_folders
-		),
 		resourcePack: new Valuable(Project!.animated_java.resource_pack),
-		displayItemPath: new Valuable(Project!.animated_java.display_item_path),
-		modelFolder: new Valuable(Project!.animated_java.model_folder),
-		textureFolder: new Valuable(Project!.animated_java.texture_folder),
 		// Data Pack Settings
 		enableAdvancedDataPackSettings: new Valuable(
 			Project!.animated_java.enable_advanced_data_pack_settings
@@ -97,12 +91,7 @@ function setSettings(settings: ReturnType<typeof getSettings>) {
 	Project.animated_java.custom_model_data_offset = settings.customModelDataOffset.get()
 	Project.animated_java.enable_advanced_resource_pack_settings =
 		settings.enableAdvancedResourcePackSettings.get()
-	Project.animated_java.enable_advanced_resource_pack_folders =
-		settings.enableAdvancedResourcePackFolders.get()
 	Project.animated_java.resource_pack = settings.resourcePack.get()
-	Project.animated_java.display_item_path = settings.displayItemPath.get()
-	Project.animated_java.model_folder = settings.modelFolder.get()
-	Project.animated_java.texture_folder = settings.textureFolder.get()
 	// Data Pack Settings
 	Project.animated_java.enable_advanced_data_pack_settings =
 		settings.enableAdvancedDataPackSettings.get()

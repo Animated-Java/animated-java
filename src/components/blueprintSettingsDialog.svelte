@@ -53,11 +53,7 @@
 	export let displayItem: Valuable<string>
 	export let customModelDataOffset: Valuable<number>
 	export let enableAdvancedResourcePackSettings: Valuable<boolean>
-	export let enableAdvancedResourcePackFolders: Valuable<boolean>
 	export let resourcePack: Valuable<string>
-	export let displayItemPath: Valuable<string>
-	export let modelFolder: Valuable<string>
-	export let textureFolder: Valuable<string>
 	// Data Pack Settings
 	// export let enableAdvancedDataPackSettings: Valuable<boolean>
 	export let dataPack: Valuable<string>
@@ -631,53 +627,13 @@
 			{/if}
 
 			{#if $resourcePackExportMode === 'raw'}
-				<Checkbox
-					label={translate(
-						'dialog.blueprint_settings.enable_advanced_resource_pack_folders.title',
-					)}
-					bind:checked={enableAdvancedResourcePackFolders}
-					defaultValue={defaultValues.enable_advanced_resource_pack_folders}
+				<FolderSelect
+					label={translate('dialog.blueprint_settings.resource_pack.title')}
+					tooltip={translate('dialog.blueprint_settings.resource_pack.description')}
+					bind:value={resourcePack}
+					defaultValue={defaultValues.resource_pack}
+					valueChecker={resourcePackFolderChecker}
 				/>
-
-				{#if $enableAdvancedResourcePackFolders}
-					<p class="warning">
-						{translate('dialog.blueprint_settings.advanced_settings_warning')}
-					</p>
-
-					<FileSelect
-						label={translate('dialog.blueprint_settings.display_item_path.title')}
-						tooltip={translate(
-							'dialog.blueprint_settings.display_item_path.description',
-						)}
-						bind:value={displayItemPath}
-						defaultValue={defaultValues.display_item_path}
-						valueChecker={advancedResourcePackFileChecker}
-					/>
-
-					<FolderSelect
-						label={translate('dialog.blueprint_settings.model_folder.title')}
-						tooltip={translate('dialog.blueprint_settings.model_folder.description')}
-						bind:value={modelFolder}
-						defaultValue={defaultValues.model_folder}
-						valueChecker={advancedResourcePackFolderChecker}
-					/>
-
-					<FolderSelect
-						label={translate('dialog.blueprint_settings.texture_folder.title')}
-						tooltip={translate('dialog.blueprint_settings.texture_folder.description')}
-						bind:value={textureFolder}
-						defaultValue={defaultValues.texture_folder}
-						valueChecker={advancedResourcePackFolderChecker}
-					/>
-				{:else}
-					<FolderSelect
-						label={translate('dialog.blueprint_settings.resource_pack.title')}
-						tooltip={translate('dialog.blueprint_settings.resource_pack.description')}
-						bind:value={resourcePack}
-						defaultValue={defaultValues.resource_pack}
-						valueChecker={resourcePackFolderChecker}
-					/>
-				{/if}
 			{:else if $resourcePackExportMode === 'zip'}
 				<FileSelect
 					label={translate('dialog.blueprint_settings.resource_pack_zip.title')}

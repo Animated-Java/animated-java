@@ -17,11 +17,7 @@ export const defaultValues = {
 	display_item: 'minecraft:white_dye',
 	custom_model_data_offset: 0,
 	enable_advanced_resource_pack_settings: false,
-	enable_advanced_resource_pack_folders: false,
 	resource_pack: '',
-	display_item_path: '',
-	model_folder: '',
-	texture_folder: '',
 	// Data Pack Settings
 	enable_advanced_data_pack_settings: false,
 	data_pack: '',
