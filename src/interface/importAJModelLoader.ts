@@ -12,7 +12,7 @@ import { toSafeFuntionName } from '../util/minecraftUtil'
 let activeComponent: SvelteComponentDev | null = null
 
 createModelLoader(`${PACKAGE.name}-upgradeAJModelLoader`, {
-	icon: 'folder_open',
+	icon: 'upload_file',
 	category: 'animated_java',
 	name: translate('action.upgrade_old_aj_model_loader.name'),
 	condition() {

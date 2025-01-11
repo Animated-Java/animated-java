@@ -389,11 +389,6 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 			})
 		}
 
-		// if (model.history) {
-		// 	Undo.history = model.history.slice()
-		// 	Undo.index = model.history_index || 0
-		// }
-
 		Canvas.updateAll()
 		Validator.validate()
 		BLUEPRINT_CODEC.dispatchEvent('parsed', { model })
@@ -534,7 +529,7 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 	id: 'animated_java_blueprint',
 	name: 'Animated Java Blueprint',
 	icon: 'icon-armor_stand',
-	category: 'minecraft',
+	category: 'animated_java',
 	target: 'Minecraft: Java Edition',
 	confidential: false,
 	condition: () => true,
