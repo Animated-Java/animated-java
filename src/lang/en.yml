@@ -22,8 +22,15 @@ animated_java.popup.loading.offline: |-
     Animated Java Failed to Connect!
     Some features may be unavailable.
 
-animated_java.dialog.installed_popup.title: Thank you for installing!
-animated_java.dialog.installed_popup.close_button: Let's Get Animating!
+animated_java.popup.installed_popup.title: Thank you for installing!
+animated_java.popup.installed_popup.close_button: Let's Get Animating!
+
+animated_java.popup.incompatability_popup.title: Incompatible Plugin Detected!
+animated_java.popup.incompatability_popup.description: |-
+    Animated Java has detected incompatible plugin(s)!
+    Please disable / uninstall the following plugin(s) and restart Blockbench to use Animated Java:
+animated_java.popup.incompatability_popup.disable_button: Disable Plugin
+animated_java.dialog.incompatability_notice: This plugin is not compatible with Animated Java!
 
 ### Dialogs
 animated_java.dialog.reset: Reset to Default

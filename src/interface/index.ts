@@ -17,6 +17,11 @@ import './panel/vanillaBlockDisplayElement'
 import './panel/vanillaItemDisplayElement'
 import './panel/variants'
 
+import './popup/animatedJavaLoading'
+import './popup/blueprintLoading'
+import './popup/incompatabilityPopup'
+import './popup/installed'
+
 import './importAJModelLoader'
 import './animatedJavaBarItem'
 import './keyframeEasings'

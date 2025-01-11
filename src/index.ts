@@ -44,6 +44,7 @@ import { openInstallPopup } from './interface/popup/installed'
 import { cleanupExportedFiles } from './systems/cleaner'
 import mcbFiles from './systems/datapackCompiler/mcbFiles'
 import { openChangelogDialog } from './interface/changelogDialog'
+import { checkForIncompatabilities } from './interface/popup/incompatabilityPopup'
 
 // @ts-ignore
 globalThis.AnimatedJava = {
@@ -87,10 +88,13 @@ globalThis.AnimatedJava = {
 		cleanupExportedFiles,
 		mcbFiles,
 		openChangelogDialog,
+		checkForIncompatabilities,
 	},
 }
 
 requestAnimationFrame(() => {
+	if (checkForIncompatabilities()) return
+
 	const lastVersion = localStorage.getItem('animated-java-last-version')
 	if (lastVersion !== PACKAGE.version) {
 		localStorage.setItem('animated-java-last-version', PACKAGE.version)
