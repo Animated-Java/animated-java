@@ -1,5 +1,5 @@
 import { PACKAGE } from '../constants'
-import { BONE_CONFIG_ACTION } from '../interface/boneConfigDialog'
+import { BONE_CONFIG_ACTION } from '../interface/dialog/boneConfig'
 import { createBlockbenchMod } from '../util/moddingTools'
 
 createBlockbenchMod(

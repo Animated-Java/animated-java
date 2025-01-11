@@ -1,8 +1,8 @@
-import AniamtionPropertiesSvelteComponent from '../components/animationProperties.svelte'
-import { PACKAGE } from '../constants'
-import { Valuable } from '../util/stores'
-import { SvelteDialog } from '../util/svelteDialog'
-import { translate } from '../util/translation'
+import AniamtionPropertiesSvelteComponent from '../../components/animationProperties.svelte'
+import { PACKAGE } from '../../constants'
+import { Valuable } from '../../util/stores'
+import { SvelteDialog } from '../../util/svelteDialog'
+import { translate } from '../../util/translation'
 
 export const DIALOG_ID = `${PACKAGE.name}:animationPropertiesDialog`
 

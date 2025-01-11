@@ -4,7 +4,7 @@
 	import { SHADOW_ITEM_MARKER_PROPERTY_NAME, dndzone } from 'svelte-dnd-action'
 	import { Variant } from '../variants'
 	import { events } from '../util/events'
-	import { openVariantConfigDialog } from '../interface/variantConfigDialog'
+	import { openVariantConfigDialog } from '../interface/dialog/variantConfig'
 	import { fade } from 'svelte/transition'
 	import { cubicIn } from 'svelte/easing'
 	import {
@@ -12,7 +12,7 @@
 		DELETE_VARIANT_ACTION,
 		DUPLICATE_VARIANT_ACTION,
 		VARIANT_PANEL_CONTEXT_MENU,
-	} from '../interface/variantsPanel'
+	} from '../interface/panel/variants'
 
 	type LocalVariant = { id: number; value: Variant }
 

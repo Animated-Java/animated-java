@@ -3,7 +3,7 @@ import {
 	hideLoadingPopup,
 	showLoadingPopup,
 	showOfflineError,
-} from '../interface/animatedJavaLoadingPopup'
+} from '../interface/popup/animatedJavaLoading'
 import { events } from '../util/events'
 import { createBlockbenchMod } from '../util/moddingTools'
 

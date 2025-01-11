@@ -10,7 +10,7 @@ createBlockbenchMod(
 	context => {
 		const originalFilesFunction = context.panel.inside_vue.$options.computed.files
 
-		context.panel.inside_vue.$options.computed.files = function (this: Vue) {
+		context.panel.inside_vue.$options.computed.files = function (this) {
 			if (Format.id === BLUEPRINT_FORMAT.id) {
 				return {
 					'': {

@@ -1,11 +1,11 @@
-import { BLUEPRINT_FORMAT } from '../blueprintFormat'
-import { LocatorConfig } from '../nodeConfigs'
-import LocatorConfigDialog from '../components/locatorConfigDialog.svelte'
-import { PACKAGE } from '../constants'
-import { createAction } from '../util/moddingTools'
-import { Valuable } from '../util/stores'
-import { SvelteDialog } from '../util/svelteDialog'
-import { translate } from '../util/translation'
+import { BLUEPRINT_FORMAT } from '../../blueprintFormat'
+import { LocatorConfig } from '../../nodeConfigs'
+import LocatorConfigDialog from '../../components/locatorConfigDialog.svelte'
+import { PACKAGE } from '../../constants'
+import { createAction } from '../../util/moddingTools'
+import { Valuable } from '../../util/stores'
+import { SvelteDialog } from '../../util/svelteDialog'
+import { translate } from '../../util/translation'
 
 export function openLocatorConfigDialog(locator: Locator) {
 	// Blockbench's JSON stringifier doesn't handle custom toJSON functions, so I'm storing the config JSON in the locator instead of the actual LocatorConfig object

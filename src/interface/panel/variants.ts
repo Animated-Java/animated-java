@@ -1,11 +1,11 @@
-import { isCurrentFormat } from '../blueprintFormat'
-import VariantsPanel from '../components/variantsPanel.svelte'
-import { PACKAGE } from '../constants'
-import { createAction, createMenu } from '../util/moddingTools'
-import { SveltePanel } from '../util/sveltePanel'
-import { translate } from '../util/translation'
-import { Variant } from '../variants'
-import { openVariantConfigDialog } from './variantConfigDialog'
+import { isCurrentFormat } from '../../blueprintFormat'
+import VariantsPanel from '../../components/variantsPanel.svelte'
+import { PACKAGE } from '../../constants'
+import { createAction, createMenu } from '../../util/moddingTools'
+import { SveltePanel } from '../../util/sveltePanel'
+import { translate } from '../../util/translation'
+import { Variant } from '../../variants'
+import { openVariantConfigDialog } from '../dialog/variantConfig'
 
 export const CREATE_VARIANT_ACTION = createAction(`${PACKAGE.name}:createVariant`, {
 	name: translate('action.variants.create'),

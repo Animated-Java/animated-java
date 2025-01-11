@@ -1,7 +1,7 @@
 import { SvelteComponentDev } from 'svelte/internal'
-import AnimatedJavaLoadingPopup from '../components/animatedJavaLoadingPopup.svelte'
-import { injectSvelteCompomponent } from '../util/injectSvelteComponent'
-import { Valuable } from '../util/stores'
+import AnimatedJavaLoadingPopup from '../../components/animatedJavaLoadingPopup.svelte'
+import { injectSvelteCompomponent } from '../../util/injectSvelteComponent'
+import { Valuable } from '../../util/stores'
 
 const LOADED = new Valuable(false)
 const OFFLINE = new Valuable(false)

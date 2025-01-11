@@ -1,7 +1,7 @@
 import { IBlueprintFormatJSON, getDefaultProjectSettings } from '../blueprintFormat'
 import { BoneConfig } from '../nodeConfigs'
 import { PACKAGE } from '../constants'
-import { openUnexpectedErrorDialog } from '../interface/unexpectedErrorDialog'
+import { openUnexpectedErrorDialog } from '../interface/dialog/unexpectedError'
 import { NbtCompound, NbtList, NbtString, NbtTag } from 'deepslate/lib/nbt'
 
 export function process(model: any): any {

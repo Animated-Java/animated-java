@@ -1,7 +1,7 @@
-import { PACKAGE } from '../constants'
-import AboutSvelte from '../components/about.svelte'
-import { SvelteDialog } from '../util/svelteDialog'
-import { translate } from '../util/translation'
+import { PACKAGE } from '../../constants'
+import AboutSvelte from '../../components/about.svelte'
+import { SvelteDialog } from '../../util/svelteDialog'
+import { translate } from '../../util/translation'
 
 export function openAboutDialog() {
 	new SvelteDialog({

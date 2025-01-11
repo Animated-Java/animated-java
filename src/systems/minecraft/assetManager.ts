@@ -10,7 +10,7 @@ import {
 	showOfflineError,
 	updateLoadingProgress,
 	updateLoadingProgressLabel,
-} from '../../interface/animatedJavaLoadingPopup'
+} from '../../interface/popup/animatedJavaLoading'
 const ASSET_OVERRIDES = index as unknown as Record<string, string>
 
 async function downloadJar(url: string, savePath: string) {

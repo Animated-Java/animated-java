@@ -1,5 +1,5 @@
 import { PACKAGE } from '../constants'
-import { LOCATOR_CONFIG_ACTION } from '../interface/locatorConfigDialog'
+import { LOCATOR_CONFIG_ACTION } from '../interface/dialog/locatorConfig'
 import { createBlockbenchMod } from '../util/moddingTools'
 
 createBlockbenchMod(
