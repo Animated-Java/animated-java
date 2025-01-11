@@ -9,14 +9,11 @@ import { createAction, createBlockbenchMod } from '../util/moddingTools'
 import { getVanillaFont } from '../systems/minecraft/fontManager'
 import { JsonText } from '../systems/minecraft/jsonText'
 import { Valuable } from '../util/stores'
-import { toSafeFuntionName } from '../util/minecraftUtil'
 import { TextDisplayConfig } from '../nodeConfigs'
-import { TEXT_DISPLAY_CONFIG_ACTION } from '../interface/textDisplayConfigDialog'
+import { TEXT_DISPLAY_CONFIG_ACTION } from '../interface/dialog/textDisplayConfig'
 import { events } from '../util/events'
 import { translate } from '../util/translation'
 import { ResizableOutlinerElement } from './resizableOutlinerElement'
-import { VanillaBlockDisplay } from './vanillaBlockDisplay'
-import { VanillaItemDisplay } from './vanillaItemDisplay'
 import { sanitizeOutlinerElementName } from './util'
 
 interface TextDisplayOptions {
@@ -292,7 +289,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 
 	async waitForReady() {
 		while (!this.ready) {
-			await new Promise(resolve => setTimeout(resolve, 1000 / framespersecond))
+			await new Promise(resolve => requestAnimationFrame(resolve))
 		}
 	}
 

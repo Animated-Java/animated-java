@@ -22,7 +22,7 @@ import {
 	parseResourceLocation,
 } from '../../util/minecraftUtil'
 import { JsonText } from '../minecraft/jsonText'
-import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/exportProgressDialog'
+import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
 import { eulerFromQuaternion, floatToHex, roundTo, tinycolorToDecimal } from '../../util/misc'
 import { MSLimiter } from '../../util/msLimiter'
 import { compile } from './compiler'
