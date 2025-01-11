@@ -140,13 +140,13 @@
 					{#if item.value.isDefault}
 						<i
 							class="material-icons icon in_list_button in_list_button_disabled"
-							title={translate('panel.variants.tool.edit_variant')}
-							on:click={() => openVariantConfigDialog(item.value)}>edit</i
+							title={translate('panel.variants.tool.cannot_edit_default_variant')}
+							>edit</i
 						>
 					{:else}
 						<i
 							class="material-icons icon in_list_button"
-							title={translate('panel.variants.tool.cannot_edit_default_variant')}
+							title={translate('panel.variants.tool.edit_variant')}
 							on:click={() => openVariantConfigDialog(item.value)}>edit</i
 						>
 					{/if}
