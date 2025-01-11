@@ -1,16 +1,19 @@
 import { IBlueprintBoneConfigJSON, isCurrentFormat } from '../blueprintFormat'
 import { PACKAGE } from '../constants'
-import { VANILLA_ITEM_DISPLAY_CONFIG_ACTION } from '../interface/dialog/vanillaItemDisplayConfig'
+import { VANILLA_ITEM_DISPLAY_CONFIG_ACTION } from '../interface/vanillaItemDisplayConfigDialog'
 import { BoneConfig } from '../nodeConfigs'
 import { getItemModel } from '../systems/minecraft/itemModelManager'
 import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
 import { getCurrentVersion } from '../systems/minecraft/versionManager'
 import { events } from '../util/events'
+import { toSafeFuntionName } from '../util/minecraftUtil'
 import { createAction, createBlockbenchMod } from '../util/moddingTools'
 import { Valuable } from '../util/stores'
 import { translate } from '../util/translation'
 import { ResizableOutlinerElement } from './resizableOutlinerElement'
+import { TextDisplay } from './textDisplay'
 import { sanitizeOutlinerElementName } from './util'
+import { VanillaBlockDisplay } from './vanillaBlockDisplay'
 
 interface VanillaItemDisplayOptions {
 	name?: string
@@ -118,7 +121,7 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 
 	async waitForReady() {
 		while (!this.ready) {
-			await new Promise(resolve => requestAnimationFrame(resolve))
+			await new Promise(resolve => setTimeout(resolve, 1000 / framespersecond))
 		}
 	}
 

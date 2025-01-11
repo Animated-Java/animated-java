@@ -22,7 +22,7 @@ import {
 	parseResourceLocation,
 } from '../../util/minecraftUtil'
 import { JsonText } from '../minecraft/jsonText'
-import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
+import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/exportProgressDialog'
 import { eulerFromQuaternion, floatToHex, roundTo, tinycolorToDecimal } from '../../util/misc'
 import { MSLimiter } from '../../util/msLimiter'
 import { compile } from './compiler'
@@ -344,8 +344,7 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 						break
 					}
 					case '1.20.5':
-					case '1.21.0':
-					case '1.21.2': {
+					case '1.21.0': {
 						item.set(
 							'components',
 							new NbtCompound().set(
@@ -356,6 +355,7 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 						item.set('count', new NbtInt(1))
 						break
 					}
+					case '1.21.2':
 					case '1.21.4': {
 						item.set(
 							'components',

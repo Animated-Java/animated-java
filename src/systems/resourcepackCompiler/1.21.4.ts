@@ -1,4 +1,4 @@
-import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
+import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/exportProgressDialog'
 import { isResourcePackPath, toSafeFuntionName } from '../../util/minecraftUtil'
 import { TRANSPARENT_TEXTURE, Variant } from '../../variants'
 import { IntentionalExportError } from '../exporter'

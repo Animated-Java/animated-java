@@ -1,18 +1,20 @@
 import { IBlueprintBoneConfigJSON, isCurrentFormat } from '../blueprintFormat'
 import { PACKAGE } from '../constants'
-import { VANILLA_BLOCK_DISPLAY_CONFIG_ACTION } from '../interface/dialog/vanillaBlockDisplayConfig'
+import { VANILLA_BLOCK_DISPLAY_CONFIG_ACTION } from '../interface/vanillaBlockDisplayConfigDialog'
 import { BoneConfig } from '../nodeConfigs'
 import { getBlockModel } from '../systems/minecraft/blockModelManager'
 import { BlockStateValue, getBlockState } from '../systems/minecraft/blockstateManager'
 import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
 import { getCurrentVersion } from '../systems/minecraft/versionManager'
 import { events } from '../util/events'
-import { parseBlock } from '../util/minecraftUtil'
+import { parseBlock, toSafeFuntionName } from '../util/minecraftUtil'
 import { createAction, createBlockbenchMod } from '../util/moddingTools'
 import { Valuable } from '../util/stores'
 import { translate } from '../util/translation'
 import { ResizableOutlinerElement } from './resizableOutlinerElement'
+import { TextDisplay } from './textDisplay'
 import { sanitizeOutlinerElementName } from './util'
+import { VanillaItemDisplay } from './vanillaItemDisplay'
 
 const ERROR_OUTLINE_MATERIAL = Canvas.outlineMaterial.clone()
 ERROR_OUTLINE_MATERIAL.color.set('#ff0000')
@@ -110,7 +112,7 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 
 	async waitForReady() {
 		while (!this.ready) {
-			await new Promise(resolve => requestAnimationFrame(resolve))
+			await new Promise(resolve => setTimeout(resolve, 1000 / framespersecond))
 		}
 	}
 

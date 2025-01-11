@@ -5,9 +5,9 @@ import { cleanupExportedFiles } from '../systems/cleaner'
 import { exportProject } from '../systems/exporter'
 import { createAction, createBarMenu } from '../util/moddingTools'
 import { translate } from '../util/translation'
-import { openAboutDialog } from './dialog/about'
-import { openBlueprintSettingsDialog } from './dialog/blueprintSettings'
-import { openChangelogDialog } from './dialog/changelog'
+import { openAboutDialog } from './aboutDialog'
+import { openBlueprintSettingsDialog } from './blueprintSettingsDialog'
+import { openChangelogDialog } from './changelogDialog'
 
 function createIconImg() {
 	const IMG = document.createElement('img')
