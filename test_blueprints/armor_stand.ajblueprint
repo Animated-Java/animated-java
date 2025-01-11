@@ -1,7 +1,7 @@
 {
 	"meta": {
 		"format": "animated_java_blueprint",
-		"format_version": "1.6.0",
+		"format_version": "1.6.1",
 		"uuid": "167b27cd-b559-3f13-a97c-0841fe21f1d1",
 		"save_location": "D:\\github-repos\\animated-java\\animated-java\\test_blueprints\\armor_stand.ajblueprint",
 		"last_used_export_namespace": "armor_stand"
@@ -18,11 +18,7 @@
 		"display_item": "minecraft:white_dye",
 		"custom_model_data_offset": 0,
 		"enable_advanced_resource_pack_settings": false,
-		"enable_advanced_resource_pack_folders": false,
 		"resource_pack": "C:\\Users\\SnaveSutit\\AppData\\Roaming\\.modrinth\\profiles\\Animated Java Dev\\resourcepacks\\resourcepack",
-		"display_item_path": "",
-		"model_folder": "",
-		"texture_folder": "",
 		"enable_advanced_data_pack_settings": false,
 		"data_pack": "C:\\Users\\SnaveSutit\\AppData\\Roaming\\.modrinth\\profiles\\Animated Java Dev\\saves\\Animated Java Dev\\datapacks\\datapack",
 		"summon_commands": "",
@@ -34,6 +30,10 @@
 		"show_outdated_warning": true,
 		"baked_animations": false,
 		"json_file": "../testPluginExport.json",
+		"enable_advanced_resource_pack_folders": false,
+		"display_item_path": "",
+		"model_folder": "",
+		"texture_folder": "",
 		"customModelDataOffset": 0,
 		"custom_summon_commands": ""
 	},

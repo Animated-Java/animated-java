@@ -26,46 +26,10 @@ import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/di
 import { eulerFromQuaternion, floatToHex, roundTo, tinycolorToDecimal } from '../../util/misc'
 import { MSLimiter } from '../../util/msLimiter'
 import { compile } from './compiler'
+import { TAGS } from './tags'
+import { IntentionalExportError } from '../exporter'
 
 const BONE_TYPES = ['bone', 'text_display', 'item_display', 'block_display']
-
-namespace TAGS {
-	export const NEW = () => 'aj.new'
-	export const GLOBAL_RIG = () => 'aj.rig_entity'
-	// Used to tell the set and apply frame functions to only apply the bone transforms, and ignore command/variant keyframes
-	export const TRANSFORMS_ONLY = () => 'aj.transforms_only'
-
-	export const GLOBAL_ROOT = () => 'aj.rig_root'
-	export const PROJECT_ROOT = (exportNamespace: string) => `aj.${exportNamespace}.root`
-
-	export const OUTDATED_RIG_TEXT_DISPLAY = () => 'aj.outdated_rig_text_display'
-
-	export const GLOBAL_BONE = () => 'aj.bone'
-	export const GLOBAL_CAMERA = () => 'aj.camera'
-	export const GLOBAL_LOCATOR = () => 'aj.locator'
-	export const GLOBAL_DATA = () => 'aj.data'
-
-	export const PROJECT_BONE = (exportNamespace: string) => `aj.${exportNamespace}.bone`
-	export const PROJECT_CAMERA = (exportNamespace: string) => `aj.${exportNamespace}.camera`
-	export const PROJECT_LOCATOR = (exportNamespace: string) => `aj.${exportNamespace}.locator`
-	export const PROJECT_DATA = (exportNamespace: string) => `aj.${exportNamespace}.data`
-
-	export const LOCAL_BONE = (exportNamespace: string, boneName: string) =>
-		`aj.${exportNamespace}.bone.${boneName}`
-	export const LOCAL_CAMERA = (exportNamespace: string, cameraName: string) =>
-		`aj.${exportNamespace}.camera.${cameraName}`
-	export const LOCAL_LOCATOR = (exportNamespace: string, locatorName: string) =>
-		`aj.${exportNamespace}.locator.${locatorName}`
-
-	export const ANIMATION_PLAYING = (exportNamespace: string, animationName: string) =>
-		`aj.${exportNamespace}.animation.${animationName}.playing`
-
-	export const TWEENING = (exportNamespace: string, animationName: string) =>
-		`aj.${exportNamespace}.animation.${animationName}.tween_playing`
-
-	export const VARIANT_APPLIED = (exportNamespace: string, variantName: string) =>
-		`aj.${exportNamespace}.variant.${variantName}.applied`
-}
 
 namespace OBJECTIVES {
 	export const I = () => 'aj.i'
@@ -82,6 +46,344 @@ namespace OBJECTIVES {
 // Ⓓ Ⓔ Ⓕ Ⓖ Ⓗ Ⓘ Ⓙ Ⓚ Ⓛ Ⓜ Ⓝ Ⓞ Ⓟ Ⓠ Ⓡ Ⓢ Ⓣ Ⓤ Ⓥ Ⓦ Ⓧ Ⓨ Ⓩ ⓐ ⓑ ⓒ ⓓ ⓔ ⓕ ⓖ ⓗ ⓘ ⓙ ⓚ ⓛ ⓜ ⓝ ⓞ ⓟ ⓠ ⓡ ⓢ ⓣ ⓤ ⓥ ⓦ ⓧ ⓨ ⓩ
 // ▓ □〓≡ ╝╚╔╗╬ ╓ ╩┌ ┐└ ┘ ↑ ↓ → ← ↔ ▀▐ ░ ▒▬ ♦ ◘
 // → ✎ ❣ ✚ ✔ ✖ ▁ ▂ ▃ ▄ ▅ ▆ ▇ █ ⊻ ⊼ ⊽ ⋃ ⌀ ⌂
+
+function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
+	const tags: string[] = []
+
+	const parentNames: Array<{ name: string; type: string }> = []
+
+	function recurseParents(node: AnyRenderedNode) {
+		if (node.parent) {
+			console.log('Parent:', node.parent)
+			parentNames.push({
+				name: rig.nodes[node.parent].safe_name,
+				type: rig.nodes[node.parent].type,
+			})
+			recurseParents(rig.nodes[node.parent])
+		}
+	}
+	recurseParents(node)
+
+	tags.push(
+		// Global
+		TAGS.GLOBAL_ENTITY(),
+		TAGS.GLOBAL_NODE(),
+		TAGS.GLOBAL_NODE_NAMED(node.safe_name),
+		// Project
+		TAGS.PROJECT_ENTITY(Project!.animated_java.export_namespace),
+		TAGS.PROJECT_NODE(Project!.animated_java.export_namespace),
+		TAGS.PROJECT_NODE_NAMED(Project!.animated_java.export_namespace, node.safe_name)
+	)
+
+	if (!node.parent) {
+		tags.push(TAGS.GLOBAL_ROOT_CHILD())
+	}
+	switch (node.type) {
+		case 'bone': {
+			tags.push(
+				// Global
+				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.safe_name),
+				TAGS.GLOBAL_BONE(),
+				TAGS.GLOBAL_BONE_TREE(node.safe_name), // Tree includes self
+				TAGS.GLOBAL_BONE_TREE_BONE(node.safe_name), // Tree includes self
+				// Project
+				TAGS.PROJECT_DISPLAY_NODE_NAMED(
+					Project!.animated_java.export_namespace,
+					node.safe_name
+				),
+				TAGS.PROJECT_BONE(Project!.animated_java.export_namespace),
+				TAGS.PROJECT_BONE_NAMED(Project!.animated_java.export_namespace, node.safe_name),
+				TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_namespace, node.safe_name), // Tree includes self
+				TAGS.PROJECT_BONE_TREE_BONE(Project!.animated_java.export_namespace, node.safe_name) // Tree includes self
+			)
+			if (!node.parent) {
+				// Nodes without parents are assumed to be root nodes
+				tags.push(TAGS.GLOBAL_ROOT_CHILD_BONE())
+			} else {
+				tags.push(
+					// Global
+					TAGS.GLOBAL_BONE_CHILD(parentNames[0].name),
+					TAGS.GLOBAL_BONE_CHILD_BONE(parentNames[0].name),
+					// Project
+					TAGS.PROJECT_BONE_CHILD(
+						Project!.animated_java.export_namespace,
+						parentNames[0].name
+					),
+					TAGS.PROJECT_BONE_CHILD_BONE(
+						Project!.animated_java.export_namespace,
+						parentNames[0].name
+					)
+				)
+			}
+			for (const { name } of parentNames) {
+				tags.push(
+					// Global
+					TAGS.GLOBAL_BONE_DECENDANT(name),
+					TAGS.GLOBAL_BONE_DECENDANT_BONE(name),
+					TAGS.GLOBAL_BONE_TREE(name),
+					TAGS.GLOBAL_BONE_TREE_BONE(name),
+					// Project
+					TAGS.PROJECT_BONE_DECENDANT(Project!.animated_java.export_namespace, name),
+					TAGS.PROJECT_BONE_DECENDANT_BONE(Project!.animated_java.export_namespace, name),
+					TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_namespace, name),
+					TAGS.PROJECT_BONE_TREE_BONE(Project!.animated_java.export_namespace, name)
+				)
+			}
+			break
+		}
+		case 'item_display': {
+			tags.push(
+				// Global
+				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.safe_name),
+				TAGS.GLOBAL_ITEM_DISPLAY(),
+				// Project
+				TAGS.PROJECT_DISPLAY_NODE_NAMED(
+					Project!.animated_java.export_namespace,
+					node.safe_name
+				),
+				TAGS.PROJECT_ITEM_DISPLAY(Project!.animated_java.export_namespace),
+				TAGS.PROJECT_ITEM_DISPLAY_NAMED(
+					Project!.animated_java.export_namespace,
+					node.safe_name
+				)
+			)
+			if (!node.parent) {
+				// Nodes without parents are assumed to be root nodes
+				tags.push(TAGS.GLOBAL_ROOT_CHILD_ITEM_DISPLAY())
+			} else {
+				tags.push(
+					// Global
+					TAGS.GLOBAL_BONE_CHILD(parentNames[0].name),
+					TAGS.GLOBAL_BONE_CHILD_ITEM_DISPLAY(parentNames[0].name),
+					// Project
+					TAGS.PROJECT_BONE_CHILD(
+						Project!.animated_java.export_namespace,
+						parentNames[0].name
+					),
+					TAGS.PROJECT_BONE_CHILD_ITEM_DISPLAY(
+						Project!.animated_java.export_namespace,
+						parentNames[0].name
+					)
+				)
+			}
+			for (const { name } of parentNames) {
+				tags.push(
+					// Global
+					TAGS.GLOBAL_BONE_DECENDANT(name),
+					TAGS.GLOBAL_BONE_DECENDANT_ITEM_DISPLAY(name),
+					TAGS.GLOBAL_BONE_TREE(name),
+					// Project
+					TAGS.PROJECT_BONE_DECENDANT(Project!.animated_java.export_namespace, name),
+					TAGS.PROJECT_BONE_DECENDANT_ITEM_DISPLAY(
+						Project!.animated_java.export_namespace,
+						name
+					),
+					TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_namespace, name)
+				)
+			}
+			break
+		}
+		case 'block_display': {
+			tags.push(
+				// Global
+				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.safe_name),
+				TAGS.GLOBAL_BLOCK_DISPLAY(),
+				// Project
+				TAGS.PROJECT_DISPLAY_NODE_NAMED(
+					Project!.animated_java.export_namespace,
+					node.safe_name
+				),
+				TAGS.PROJECT_BLOCK_DISPLAY(Project!.animated_java.export_namespace),
+				TAGS.PROJECT_BLOCK_DISPLAY_NAMED(
+					Project!.animated_java.export_namespace,
+					node.safe_name
+				)
+			)
+			if (!node.parent) {
+				// Nodes without parents are assumed to be root nodes
+				tags.push(TAGS.GLOBAL_ROOT_CHILD_BLOCK_DISPLAY())
+			} else {
+				tags.push(
+					// Global
+					TAGS.GLOBAL_BONE_CHILD(parentNames[0].name),
+					TAGS.GLOBAL_BONE_CHILD_BLOCK_DISPLAY(parentNames[0].name),
+					// Project
+					TAGS.PROJECT_BONE_CHILD(
+						Project!.animated_java.export_namespace,
+						parentNames[0].name
+					),
+					TAGS.PROJECT_BONE_CHILD_BLOCK_DISPLAY(
+						Project!.animated_java.export_namespace,
+						parentNames[0].name
+					)
+				)
+			}
+			for (const { name } of parentNames) {
+				tags.push(
+					// Global
+					TAGS.GLOBAL_BONE_DECENDANT(name),
+					TAGS.GLOBAL_BONE_DECENDANT_BLOCK_DISPLAY(name),
+					TAGS.GLOBAL_BONE_TREE(name),
+					// Project
+					TAGS.PROJECT_BONE_DECENDANT(Project!.animated_java.export_namespace, name),
+					TAGS.PROJECT_BONE_DECENDANT_BLOCK_DISPLAY(
+						Project!.animated_java.export_namespace,
+						name
+					),
+					TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_namespace, name)
+				)
+			}
+			break
+		}
+		case 'text_display': {
+			tags.push(
+				// Global
+				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.safe_name),
+				TAGS.GLOBAL_TEXT_DISPLAY(),
+				// Project
+				TAGS.PROJECT_DISPLAY_NODE_NAMED(
+					Project!.animated_java.export_namespace,
+					node.safe_name
+				),
+				TAGS.PROJECT_TEXT_DISPLAY(Project!.animated_java.export_namespace),
+				TAGS.PROJECT_TEXT_DISPLAY_NAMED(
+					Project!.animated_java.export_namespace,
+					node.safe_name
+				)
+			)
+			if (!node.parent) {
+				// Nodes without parents are assumed to be root nodes
+				tags.push(TAGS.GLOBAL_ROOT_CHILD_TEXT_DISPLAY())
+			} else {
+				tags.push(
+					// Global
+					TAGS.GLOBAL_BONE_CHILD(parentNames[0].name),
+					TAGS.GLOBAL_BONE_CHILD_TEXT_DISPLAY(parentNames[0].name),
+					// Project
+					TAGS.PROJECT_BONE_CHILD(
+						Project!.animated_java.export_namespace,
+						parentNames[0].name
+					),
+					TAGS.PROJECT_BONE_CHILD_TEXT_DISPLAY(
+						Project!.animated_java.export_namespace,
+						parentNames[0].name
+					)
+				)
+			}
+			for (const { name } of parentNames) {
+				tags.push(
+					// Global
+					TAGS.GLOBAL_BONE_DECENDANT(name),
+					TAGS.GLOBAL_BONE_DECENDANT_TEXT_DISPLAY(name),
+					TAGS.GLOBAL_BONE_TREE(name),
+					// Project
+					TAGS.PROJECT_BONE_DECENDANT(Project!.animated_java.export_namespace, name),
+					TAGS.PROJECT_BONE_DECENDANT_TEXT_DISPLAY(
+						Project!.animated_java.export_namespace,
+						name
+					),
+					TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_namespace, name)
+				)
+			}
+			break
+		}
+		case 'locator': {
+			tags.push(
+				// Global
+				TAGS.GLOBAL_LOCATOR(),
+				// Project
+				TAGS.PROJECT_LOCATOR(Project!.animated_java.export_namespace),
+				TAGS.PROJECT_LOCATOR_NAMED(Project!.animated_java.export_namespace, node.safe_name)
+			)
+			if (!node.parent) {
+				// Nodes without parents are assumed to be root nodes
+				tags.push(TAGS.GLOBAL_ROOT_CHILD_LOCATOR())
+			} else {
+				tags.push(
+					// Global
+					TAGS.GLOBAL_BONE_CHILD(parentNames[0].name),
+					TAGS.GLOBAL_BONE_CHILD_LOCATOR(parentNames[0].name),
+					// Project
+					TAGS.PROJECT_BONE_CHILD(
+						Project!.animated_java.export_namespace,
+						parentNames[0].name
+					),
+					TAGS.PROJECT_BONE_CHILD_LOCATOR(
+						Project!.animated_java.export_namespace,
+						parentNames[0].name
+					)
+				)
+			}
+			for (const { name } of parentNames) {
+				tags.push(
+					// Global
+					TAGS.GLOBAL_BONE_DECENDANT(name),
+					TAGS.GLOBAL_BONE_DECENDANT_LOCATOR(name),
+					TAGS.GLOBAL_BONE_TREE(name),
+					// Project
+					TAGS.PROJECT_BONE_DECENDANT(Project!.animated_java.export_namespace, name),
+					TAGS.PROJECT_BONE_DECENDANT_LOCATOR(
+						Project!.animated_java.export_namespace,
+						name
+					),
+					TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_namespace, name)
+				)
+			}
+			break
+		}
+		case 'camera': {
+			tags.push(
+				// Global
+				TAGS.GLOBAL_CAMERA(),
+				// Project
+				TAGS.PROJECT_CAMERA(Project!.animated_java.export_namespace),
+				TAGS.PROJECT_CAMERA_NAMED(Project!.animated_java.export_namespace, node.safe_name)
+			)
+			if (!node.parent) {
+				// Nodes without parents are assumed to be root nodes
+				tags.push(TAGS.GLOBAL_ROOT_CHILD_CAMERA())
+			} else {
+				tags.push(
+					// Global
+					TAGS.GLOBAL_BONE_CHILD(parentNames[0].name),
+					TAGS.GLOBAL_BONE_CHILD_CAMERA(parentNames[0].name),
+					// Project
+					TAGS.PROJECT_BONE_CHILD(
+						Project!.animated_java.export_namespace,
+						parentNames[0].name
+					),
+					TAGS.PROJECT_BONE_CHILD_CAMERA(
+						Project!.animated_java.export_namespace,
+						parentNames[0].name
+					)
+				)
+			}
+			for (const { name } of parentNames) {
+				tags.push(
+					// Global
+					TAGS.GLOBAL_BONE_DECENDANT(name),
+					TAGS.GLOBAL_BONE_DECENDANT_CAMERA(name),
+					TAGS.GLOBAL_BONE_TREE(name),
+					// Project
+					TAGS.PROJECT_BONE_DECENDANT(Project!.animated_java.export_namespace, name),
+					TAGS.PROJECT_BONE_DECENDANT_CAMERA(
+						Project!.animated_java.export_namespace,
+						name
+					),
+					TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_namespace, name)
+				)
+			}
+			break
+		}
+		default: {
+			throw new IntentionalExportError(
+				`Attempted to get tags for an unknown node type: '${node.type}'!`
+			)
+		}
+	}
+
+	return new NbtList(tags.sort().map(v => new NbtString(v)))
+}
 
 const TELLRAW_PREFIX = () =>
 	new JsonText([
@@ -287,7 +589,7 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 			.set(
 				'Tags',
 				new NbtList([
-					new NbtString(TAGS.GLOBAL_RIG()),
+					new NbtString(TAGS.GLOBAL_NODE()),
 					new NbtString(TAGS.GLOBAL_DATA()),
 					new NbtString(TAGS.PROJECT_DATA(aj.export_namespace)),
 				])
@@ -303,17 +605,16 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 	)
 
 	for (const [uuid, node] of Object.entries(rig.nodes)) {
+		if (node.type === 'struct') continue
+
 		const passenger = new NbtCompound()
 
-		const tags = new NbtList([new NbtString(TAGS.GLOBAL_RIG())])
+		const tags = getNodeTags(node, rig)
 		passenger.set('Tags', tags)
 
 		switch (node.type) {
 			case 'bone': {
 				passenger.set('id', new NbtString('minecraft:item_display'))
-				tags.add(new NbtString(TAGS.GLOBAL_BONE()))
-				tags.add(new NbtString(TAGS.PROJECT_BONE(aj.export_namespace)))
-				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.export_namespace, node.safe_name)))
 				passenger.set(
 					'transformation',
 					new NbtCompound()
@@ -330,7 +631,10 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 				if (!variantModel) {
 					throw new Error(`Model for bone '${node.safe_name}' not found!`)
 				}
-				passenger.set('item', item.set('id', new NbtString(aj.display_item)))
+				passenger.set(
+					'item',
+					item.set('id', new NbtString(aj.display_item)).set('Count', new NbtInt(1))
+				)
 				switch (aj.target_minecraft_version) {
 					case '1.20.4': {
 						item.set(
@@ -340,12 +644,10 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 								new NbtInt(variantModel.custom_model_data)
 							)
 						)
-						item.set('Count', new NbtInt(1))
 						break
 					}
 					case '1.20.5':
-					case '1.21.0':
-					case '1.21.2': {
+					case '1.21.0': {
 						item.set(
 							'components',
 							new NbtCompound().set(
@@ -353,7 +655,16 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 								new NbtInt(variantModel.custom_model_data)
 							)
 						)
-						item.set('count', new NbtInt(1))
+						break
+					}
+					case '1.21.2': {
+						item.set(
+							'components',
+							new NbtCompound().set(
+								'minecraft:item_model',
+								new NbtString(variantModel.item_model)
+							)
+						)
 						break
 					}
 					case '1.21.4': {
@@ -369,7 +680,6 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 									)
 								)
 						)
-						item.set('count', new NbtInt(1))
 						break
 					}
 				}
@@ -384,9 +694,6 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 			}
 			case 'text_display': {
 				passenger.set('id', new NbtString('minecraft:text_display'))
-				tags.add(new NbtString(TAGS.GLOBAL_BONE()))
-				tags.add(new NbtString(TAGS.PROJECT_BONE(aj.export_namespace)))
-				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.export_namespace, node.safe_name)))
 				passenger.set(
 					'transformation',
 					new NbtCompound()
@@ -422,9 +729,6 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 			}
 			case 'item_display': {
 				passenger.set('id', new NbtString('minecraft:item_display'))
-				tags.add(new NbtString(TAGS.GLOBAL_BONE()))
-				tags.add(new NbtString(TAGS.PROJECT_BONE(aj.export_namespace)))
-				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.export_namespace, node.safe_name)))
 				passenger.set(
 					'item',
 					new NbtCompound()
@@ -439,9 +743,6 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 			}
 			case 'block_display': {
 				passenger.set('id', new NbtString('minecraft:block_display'))
-				tags.add(new NbtString(TAGS.GLOBAL_BONE()))
-				tags.add(new NbtString(TAGS.PROJECT_BONE(aj.export_namespace)))
-				tags.add(new NbtString(TAGS.LOCAL_BONE(aj.export_namespace, node.safe_name)))
 
 				const parsed = await parseBlock(node.block)
 				if (!parsed) {
