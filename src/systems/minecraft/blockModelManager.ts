@@ -6,7 +6,7 @@ import {
 	resolveBlockstateValueType,
 } from '../../util/minecraftUtil'
 import { translate } from '../../util/translation'
-import { assetsLoaded, getJSONAsset, getPngAssetAsDataUrl } from './assetManager'
+import { assetsLoaded, getJSONAsset, getPngAssetAsDataUrl, hasAsset } from './assetManager'
 import { BlockStateValue } from './blockstateManager'
 import {
 	IBlockModel,
@@ -366,14 +366,36 @@ async function loadTexture(textures: IBlockModel['textures'], key: string): Prom
 	if (resourceLocation?.at(0) === '#') {
 		return await loadTexture(textures, resourceLocation.slice(1))
 	}
-	const textureUrl = getPathFromResourceLocation(resourceLocation, 'textures') + '.png'
-	if (TEXTURE_CACHE.has(textureUrl)) {
-		return TEXTURE_CACHE.get(textureUrl)!
+	const texturePath = getPathFromResourceLocation(resourceLocation, 'textures') + '.png'
+	if (TEXTURE_CACHE.has(texturePath)) {
+		return TEXTURE_CACHE.get(texturePath)!
 	}
-	const texture = await LOADER.loadAsync(getPngAssetAsDataUrl(textureUrl))
+	let texture: THREE.Texture
+	if (hasAsset(texturePath + '.mcmeta')) {
+		console.log(`Found mcmeta for texture '${texturePath}'`)
+
+		const img = new Image()
+		img.src = getPngAssetAsDataUrl(texturePath)
+		const canvas = document.createElement('canvas')
+		const ctx = canvas.getContext('2d')!
+		await new Promise<void>(resolve => {
+			img.onload = () => {
+				canvas.width = img.width
+				canvas.height = img.width
+				ctx.drawImage(img, 0, 0)
+				resolve()
+			}
+		})
+		texture = new THREE.CanvasTexture(canvas)
+	} else {
+		texture = await LOADER.loadAsync(getPngAssetAsDataUrl(texturePath))
+	}
+
 	texture.magFilter = THREE.NearestFilter
 	texture.minFilter = THREE.NearestFilter
-	TEXTURE_CACHE.set(textureUrl, texture)
+
+	TEXTURE_CACHE.set(texturePath, texture)
+
 	return texture
 }
 

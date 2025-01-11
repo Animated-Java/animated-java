@@ -121,6 +121,11 @@ export async function assetsLoaded() {
 	})
 }
 
+export function hasAsset(path: string) {
+	if (!loadedAssets) throw new Error('Assets not loaded')
+	return !!loadedAssets[path]
+}
+
 export function getRawAsset(path: string) {
 	if (!loadedAssets) throw new Error('Assets not loaded')
 
