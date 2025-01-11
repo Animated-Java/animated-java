@@ -413,6 +413,7 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 				passenger.set('line_width', new NbtInt(node.line_width))
 				passenger.set('shadow', new NbtByte(node.shadow ? 1 : 0))
 				passenger.set('see_through', new NbtByte(node.see_through ? 1 : 0))
+				passenger.set('alignment', new NbtString(node.align))
 
 				if (node.config) {
 					TextDisplayConfig.fromJSON(node.config).toNBT(passenger)
