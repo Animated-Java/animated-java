@@ -1,8 +1,8 @@
-import BlueprintLoadingPopup from '../components/blueprintLoadingPopup.svelte'
-import { PACKAGE } from '../constants'
-import { Valuable } from '../util/stores'
-import { SvelteDialog } from '../util/svelteDialog'
-import { translate } from '../util/translation'
+import BlueprintLoadingPopup from '../../components/blueprintLoadingPopup.svelte'
+import { PACKAGE } from '../../constants'
+import { Valuable } from '../../util/stores'
+import { SvelteDialog } from '../../util/svelteDialog'
+import { translate } from '../../util/translation'
 
 export const PROGRESS = new Valuable(0)
 export const MAX_PROGRESS = new Valuable(1)

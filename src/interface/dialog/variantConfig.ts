@@ -1,10 +1,10 @@
-import VariantConfigDialogSvelteComponent from '../components/variantConfigDialog.svelte'
-import { PACKAGE } from '../constants'
-import { events } from '../util/events'
-import { Valuable } from '../util/stores'
-import { SvelteDialog } from '../util/svelteDialog'
-import { translate } from '../util/translation'
-import { Variant } from '../variants'
+import VariantConfigDialogSvelteComponent from '../../components/variantConfigDialog.svelte'
+import { PACKAGE } from '../../constants'
+import { events } from '../../util/events'
+import { Valuable } from '../../util/stores'
+import { SvelteDialog } from '../../util/svelteDialog'
+import { translate } from '../../util/translation'
+import { Variant } from '../../variants'
 
 export function openVariantConfigDialog(variant: Variant) {
 	const displayName = new Valuable(variant.displayName)

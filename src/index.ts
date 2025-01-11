@@ -24,10 +24,10 @@ import { TRANSPARENT_TEXTURE, Variant } from './variants'
 import './systems/minecraft/registryManager'
 import { MINECRAFT_REGISTRY } from './systems/minecraft/registryManager'
 import resourcepackCompiler from './systems/resourcepackCompiler'
-import { openExportProgressDialog } from './interface/exportProgressDialog'
+import { openExportProgressDialog } from './interface/dialog/exportProgress'
 import { isDataPackPath, isResourcePackPath, parseResourcePackPath } from './util/minecraftUtil'
 import { blueprintSettingErrors } from './blueprintSettings'
-import { openUnexpectedErrorDialog } from './interface/unexpectedErrorDialog'
+import { openUnexpectedErrorDialog } from './interface/dialog/unexpectedError'
 import { BLUEPRINT_CODEC, BLUEPRINT_FORMAT } from './blueprintFormat'
 import { TextDisplay } from './outliner/textDisplay'
 import { getLatestVersionClientDownloadUrl } from './systems/minecraft/assetManager'
@@ -39,11 +39,10 @@ import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
 import { VanillaBlockDisplay, debugBlockState, debugBlocks } from './outliner/vanillaBlockDisplay'
 import { BLOCKSTATE_REGISTRY } from './systems/minecraft/blockstateManager'
 import { exportProject } from './systems/exporter'
-import { openBlueprintLoadingDialog } from './interface/blueprintLoadingPopup'
-import { openInstallPopup } from './interface/installedPopup'
+import { openInstallPopup } from './interface/popup/installed'
 import { cleanupExportedFiles } from './systems/cleaner'
 import mcbFiles from './systems/datapackCompiler/mcbFiles'
-import { openChangelogDialog } from './interface/changelogDialog'
+import { openChangelogDialog } from './interface/dialog/changelog'
 
 // @ts-ignore
 globalThis.AnimatedJava = {
@@ -73,7 +72,6 @@ globalThis.AnimatedJava = {
 		debugBlockState,
 		BLOCKSTATE_REGISTRY,
 		exportProject,
-		openBlueprintLoadingDialog,
 		openInstallPopup,
 		removeCubesAssociatedWithTexture(texture: Texture) {
 			const cubes = Cube.all.filter(cube =>

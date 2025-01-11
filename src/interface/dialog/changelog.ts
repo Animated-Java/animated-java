@@ -1,7 +1,7 @@
-import ChangelogDialog from '../components/changelogDialog.svelte'
-import { PACKAGE } from '../constants'
-import { SvelteDialog } from '../util/svelteDialog'
-import { translate } from '../util/translation'
+import ChangelogDialog from '../../components/changelogDialog.svelte'
+import { PACKAGE } from '../../constants'
+import { SvelteDialog } from '../../util/svelteDialog'
+import { translate } from '../../util/translation'
 
 export const DIALOG_ID = `${PACKAGE.name}:animationPropertiesDialog`
 

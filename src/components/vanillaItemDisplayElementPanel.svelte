@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-	import { ITEM_DISPLAY_ITEM_DISPLAY_SELECT } from '../interface/vanillaItemDisplayElementPanel'
+	import { ITEM_DISPLAY_ITEM_DISPLAY_SELECT } from '../interface/panel/vanillaItemDisplayElement'
 	import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
 	import { events } from '../util/events'
 	import { Valuable } from '../util/stores'

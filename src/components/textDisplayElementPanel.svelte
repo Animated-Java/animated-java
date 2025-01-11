@@ -9,7 +9,7 @@
 		TEXT_DISPLAY_SHADOW_TOGGLE,
 		TEXT_DISPLAY_ALIGNMENT_SELECT,
 		TEXT_DISPLAY_SEE_THROUGH_TOGGLE,
-	} from '../interface/textDisplayElementPanel'
+	} from '../interface/panel/textDisplayElement'
 	import { floatToHex } from '../util/misc'
 	import { translate } from '../util/translation'
 

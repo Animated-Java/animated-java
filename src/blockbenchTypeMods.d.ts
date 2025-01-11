@@ -5,8 +5,8 @@ import type {
 	IBlueprintLocatorConfigJSON,
 } from './blueprintFormat'
 import { blueprintSettingErrors, defaultValues } from './blueprintSettings'
-import { openExportProgressDialog } from './interface/exportProgressDialog'
-import { openUnexpectedErrorDialog } from './interface/unexpectedErrorDialog'
+import { openExportProgressDialog } from './interface/dialog/exportProgress'
+import { openUnexpectedErrorDialog } from './interface/dialog/unexpectedError'
 import { TextDisplay } from './outliner/textDisplay'
 import datapackCompiler from './systems/datapackCompiler'
 import resourcepackCompiler from './systems/resourcepackCompiler'

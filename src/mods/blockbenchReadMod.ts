@@ -3,7 +3,7 @@ import {
 	closeBlueprintLoadingDialog,
 	openBlueprintLoadingDialog,
 	PROGRESS,
-} from '../interface/blueprintLoadingPopup'
+} from '../interface/popup/blueprintLoading'
 import { createBlockbenchMod } from '../util/moddingTools'
 
 createBlockbenchMod(

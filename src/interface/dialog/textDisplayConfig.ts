@@ -1,20 +1,18 @@
-import { isCurrentFormat } from '../blueprintFormat'
-import { BoneConfig } from '../nodeConfigs'
-import { PACKAGE } from '../constants'
-import { createAction } from '../util/moddingTools'
-import { Valuable } from '../util/stores'
-import { SvelteDialog } from '../util/svelteDialog'
-import { translate } from '../util/translation'
-import { Variant } from '../variants'
-import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
-import VanillaItemDisplayConfigDialog from '../components/vanillaItemDisplayConfigDialog.svelte'
+import { isCurrentFormat } from '../../blueprintFormat'
+import { TextDisplayConfig } from '../../nodeConfigs'
+import { PACKAGE } from '../../constants'
+import { createAction } from '../../util/moddingTools'
+import { Valuable } from '../../util/stores'
+import { SvelteDialog } from '../../util/svelteDialog'
+import { translate } from '../../util/translation'
+import { Variant } from '../../variants'
+import TextDisplayConfigDialog from '../../components/textDisplayConfigDialog.svelte'
+import { TextDisplay } from '../../outliner/textDisplay'
 
-export function openVanillaItemDisplayConfigDialog(display: VanillaItemDisplay) {
+export function openBoneConfigDialog(bone: TextDisplay) {
 	// Blockbench's JSON stringifier doesn't handle custom toJSON functions, so I'm storing the config JSON in the bone instead of the actual BoneConfig object
-	const oldConfig = BoneConfig.fromJSON((display.config ??= new BoneConfig().toJSON()))
+	const oldConfig = TextDisplayConfig.fromJSON((bone.config ??= new TextDisplayConfig().toJSON()))
 
-	const customName = new Valuable(oldConfig.customName)
-	const customNameVisible = new Valuable(oldConfig.customNameVisible)
 	const billboard = new Valuable(oldConfig.billboard as string)
 	const overrideBrightness = new Valuable(oldConfig.overrideBrightness)
 	const brightnessOverride = new Valuable(oldConfig.brightnessOverride)
@@ -28,14 +26,12 @@ export function openVanillaItemDisplayConfigDialog(display: VanillaItemDisplay) 
 	const useNBT = new Valuable(oldConfig.useNBT)
 
 	new SvelteDialog({
-		id: `${PACKAGE.name}:vanillaItemDisplayConfigDialog`,
-		title: translate('dialog.vanilla_item_display_config.title'),
+		id: `${PACKAGE.name}:textDisplayConfigDialog`,
+		title: translate('dialog.text_display_config.title'),
 		width: 400,
-		component: VanillaItemDisplayConfigDialog,
+		component: TextDisplayConfigDialog,
 		props: {
 			variant: Variant.selected,
-			customName,
-			customNameVisible,
 			billboard,
 			overrideBrightness,
 			brightnessOverride,
@@ -50,10 +46,8 @@ export function openVanillaItemDisplayConfigDialog(display: VanillaItemDisplay) 
 		},
 		preventKeybinds: true,
 		onConfirm() {
-			const newConfig = new BoneConfig()
+			const newConfig = new TextDisplayConfig()
 
-			newConfig.customName = customName.get()
-			newConfig.customNameVisible = customNameVisible.get()
 			newConfig.billboard = billboard.get() as any
 			newConfig.overrideBrightness = overrideBrightness.get()
 			newConfig.brightnessOverride = brightnessOverride.get()
@@ -66,11 +60,8 @@ export function openVanillaItemDisplayConfigDialog(display: VanillaItemDisplay) 
 			newConfig.shadowStrength = shadowStrength.get()
 			newConfig.useNBT = useNBT.get()
 
-			const defaultConfig = BoneConfig.getDefault()
+			const defaultConfig = TextDisplayConfig.getDefault()
 
-			newConfig.customName === defaultConfig.customName && (newConfig.customName = undefined)
-			newConfig.customNameVisible === defaultConfig.customNameVisible &&
-				(newConfig.customNameVisible = undefined)
 			newConfig.billboard === defaultConfig.billboard && (newConfig.billboard = undefined)
 			newConfig.overrideBrightness === defaultConfig.overrideBrightness &&
 				(newConfig.overrideBrightness = undefined)
@@ -88,20 +79,17 @@ export function openVanillaItemDisplayConfigDialog(display: VanillaItemDisplay) 
 				(newConfig.shadowStrength = undefined)
 			newConfig.useNBT === defaultConfig.useNBT && (newConfig.useNBT = undefined)
 
-			display.config = newConfig.toJSON()
+			bone.config = newConfig.toJSON()
 		},
 	}).show()
 }
 
-export const VANILLA_ITEM_DISPLAY_CONFIG_ACTION = createAction(
-	`${PACKAGE.name}:open_vanilla_item_display_config`,
-	{
-		icon: 'settings',
-		name: translate('action.open_vanilla_item_display_config.name'),
-		condition: () => isCurrentFormat(),
-		click: () => {
-			if (VanillaItemDisplay.selected.length === 0) return
-			openVanillaItemDisplayConfigDialog(VanillaItemDisplay.selected[0])
-		},
-	}
-)
+export const TEXT_DISPLAY_CONFIG_ACTION = createAction(`${PACKAGE.name}:text_display_config`, {
+	icon: 'settings',
+	name: translate('action.open_text_display_config.name'),
+	condition: () => isCurrentFormat(),
+	click: () => {
+		if (TextDisplay.selected.length === 0) return
+		openBoneConfigDialog(TextDisplay.selected[0])
+	},
+})

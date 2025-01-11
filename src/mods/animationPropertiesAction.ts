@@ -1,6 +1,6 @@
 import { isCurrentFormat } from '../blueprintFormat'
 import { PACKAGE } from '../constants'
-import { openAnimationPropertiesDialog } from '../interface/animationPropertiesDialog'
+import { openAnimationPropertiesDialog } from '../interface/dialog/animationProperties'
 import { createBlockbenchMod } from '../util/moddingTools'
 
 createBlockbenchMod(

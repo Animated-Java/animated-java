@@ -1,15 +1,15 @@
-import { isCurrentFormat } from '../blueprintFormat'
-import { BoneConfig } from '../nodeConfigs'
-import { PACKAGE } from '../constants'
-import { createAction } from '../util/moddingTools'
-import { Valuable } from '../util/stores'
-import { SvelteDialog } from '../util/svelteDialog'
-import { translate } from '../util/translation'
-import { Variant } from '../variants'
-import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
-import VanillaBlockDisplayConfigDialog from '../components/vanillaBlockDisplayConfigDialog.svelte'
+import { isCurrentFormat } from '../../blueprintFormat'
+import { BoneConfig } from '../../nodeConfigs'
+import { PACKAGE } from '../../constants'
+import { createAction } from '../../util/moddingTools'
+import { Valuable } from '../../util/stores'
+import { SvelteDialog } from '../../util/svelteDialog'
+import { translate } from '../../util/translation'
+import { Variant } from '../../variants'
+import { VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
+import VanillaItemDisplayConfigDialog from '../../components/vanillaItemDisplayConfigDialog.svelte'
 
-export function openVanillaBlockDisplayConfigDialog(display: VanillaBlockDisplay) {
+export function openVanillaItemDisplayConfigDialog(display: VanillaItemDisplay) {
 	// Blockbench's JSON stringifier doesn't handle custom toJSON functions, so I'm storing the config JSON in the bone instead of the actual BoneConfig object
 	const oldConfig = BoneConfig.fromJSON((display.config ??= new BoneConfig().toJSON()))
 
@@ -29,9 +29,9 @@ export function openVanillaBlockDisplayConfigDialog(display: VanillaBlockDisplay
 
 	new SvelteDialog({
 		id: `${PACKAGE.name}:vanillaItemDisplayConfigDialog`,
-		title: translate('dialog.vanilla_block_display_config.title'),
+		title: translate('dialog.vanilla_item_display_config.title'),
 		width: 400,
-		component: VanillaBlockDisplayConfigDialog,
+		component: VanillaItemDisplayConfigDialog,
 		props: {
 			variant: Variant.selected,
 			customName,
@@ -93,15 +93,15 @@ export function openVanillaBlockDisplayConfigDialog(display: VanillaBlockDisplay
 	}).show()
 }
 
-export const VANILLA_BLOCK_DISPLAY_CONFIG_ACTION = createAction(
-	`${PACKAGE.name}:open_vanilla_block_display_config`,
+export const VANILLA_ITEM_DISPLAY_CONFIG_ACTION = createAction(
+	`${PACKAGE.name}:open_vanilla_item_display_config`,
 	{
 		icon: 'settings',
-		name: translate('action.open_vanilla_block_display_config.name'),
+		name: translate('action.open_vanilla_item_display_config.name'),
 		condition: () => isCurrentFormat(),
 		click: () => {
-			if (VanillaBlockDisplay.selected.length === 0) return
-			openVanillaBlockDisplayConfigDialog(VanillaBlockDisplay.selected[0])
+			if (VanillaItemDisplay.selected.length === 0) return
+			openVanillaItemDisplayConfigDialog(VanillaItemDisplay.selected[0])
 		},
 	}
 )

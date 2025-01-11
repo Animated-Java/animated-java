@@ -12,7 +12,7 @@
 	import FolderSelect from './dialogItems/folderSelect.svelte'
 	import CodeInput from './dialogItems/codeInput.svelte'
 	import Select from './dialogItems/select.svelte'
-	import { DIALOG_ID } from '../interface/animationPropertiesDialog'
+	import { DIALOG_ID } from '../interface/dialog/animationProperties'
 
 	import HeartIcon from '../assets/heart.png'
 	import KoFiImage from '../assets/kofi_s_tag_white.webp'

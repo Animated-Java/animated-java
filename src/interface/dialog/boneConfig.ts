@@ -1,12 +1,12 @@
-import { BLUEPRINT_FORMAT } from '../blueprintFormat'
-import { BoneConfig } from '../nodeConfigs'
-import BoneConfigDialogSvelteComponent from '../components/boneConfigDialog.svelte'
-import { PACKAGE } from '../constants'
-import { createAction } from '../util/moddingTools'
-import { Valuable } from '../util/stores'
-import { SvelteDialog } from '../util/svelteDialog'
-import { translate } from '../util/translation'
-import { Variant } from '../variants'
+import { BLUEPRINT_FORMAT } from '../../blueprintFormat'
+import { BoneConfig } from '../../nodeConfigs'
+import BoneConfigDialogSvelteComponent from '../../components/boneConfigDialog.svelte'
+import { PACKAGE } from '../../constants'
+import { createAction } from '../../util/moddingTools'
+import { Valuable } from '../../util/stores'
+import { SvelteDialog } from '../../util/svelteDialog'
+import { translate } from '../../util/translation'
+import { Variant } from '../../variants'
 
 // TODO: These should probably be part of the BoneConfig class
 function propagateInheritanceUp(group: Group, config: BoneConfig, variant?: string): void {
