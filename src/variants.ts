@@ -177,10 +177,10 @@ export class Variant {
 
 	public static fromJSON(json: IBlueprintVariantJSON, isDefault = false): Variant {
 		const variant = new Variant(json.display_name, isDefault)
+		variant.uuid = json.uuid
 		if (json.is_default) {
 			return variant
 		}
-		variant.uuid = json.uuid
 		for (const [key, value] of Object.entries(json.texture_map)) {
 			variant.textureMap.add(key, value)
 		}
