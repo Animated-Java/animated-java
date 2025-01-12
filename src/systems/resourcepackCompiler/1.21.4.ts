@@ -38,31 +38,20 @@ export default async function compileResourcePack(options: {
 	)
 
 	// Texture atlas
-	const blockAtlasFile = PathModule.join(
+	const blockAtlasPath = PathModule.join(
 		resourcePackFolder,
 		'assets/minecraft/atlases/blocks.json'
 	)
-	let blockAtlas: ITextureAtlas = { sources: [] }
-	console.log('Block atlas file:', blockAtlasFile, fs.existsSync(blockAtlasFile))
-	if (fs.existsSync(blockAtlasFile)) {
-		const content = await fs.promises.readFile(blockAtlasFile, 'utf-8').catch(() => {
-			throw new IntentionalExportError(
-				'Failed to read block atlas file after it was confirmed to exist!'
-			)
+	const blockAtlas: ITextureAtlas = await fs.promises
+		.readFile(blockAtlasPath, 'utf-8')
+		.catch(() => {
+			console.log('Creating new block atlas...')
+			return '{ sources: [] }'
 		})
-		try {
-			blockAtlas = JSON.parse(content)
-		} catch (e: any) {
-			throw new IntentionalExportError(
-				`Failed to parse block atlas file: ${e.message as string}`
-			)
-		}
-		console.log('Pre-existing Block atlas:', blockAtlas)
-	} else {
-		console.log('Block atlas file does not exist. Creating a new one.')
-	}
+		.then(content => JSON.parse(content) as ITextureAtlas)
+
 	if (
-		blockAtlas.sources.some(
+		blockAtlas.sources?.some(
 			source =>
 				source.type === 'directory' &&
 				source.source === 'blueprint' &&
@@ -71,14 +60,14 @@ export default async function compileResourcePack(options: {
 	) {
 		// Do nothing. The blueprint directory is already there.
 	} else {
+		blockAtlas.sources ??= []
 		blockAtlas.sources.push({
 			type: 'directory',
 			source: 'blueprint',
 			prefix: 'blueprint/',
 		})
 	}
-	console.log('Block atlas:', blockAtlas)
-	exportedFiles.set(blockAtlasFile, autoStringify(blockAtlas))
+	exportedFiles.set(blockAtlasPath, autoStringify(blockAtlas))
 
 	// Internal Models
 	exportedFiles.set(PathModule.join(globalModelsFolder, 'empty.json'), '{}')
@@ -186,6 +175,7 @@ export default async function compileResourcePack(options: {
 
 		// Write new files
 		ajmeta.files = new Set(exportedFiles.keys())
+		ajmeta.files.delete(blockAtlasPath)
 		ajmeta.write()
 
 		PROGRESS_DESCRIPTION.set('Writing Resource Pack...')

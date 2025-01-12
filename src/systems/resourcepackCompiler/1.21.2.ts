@@ -31,52 +31,25 @@ export default async function compileResourcePack(options: {
 	)
 	if (aj.resource_pack_export_mode === 'raw') {
 		ajmeta.read()
-
-		PROGRESS_DESCRIPTION.set('Removing Old Resource Pack Files...')
-		PROGRESS.set(0)
-		MAX_PROGRESS.set(ajmeta.oldFiles.size)
-
-		const removedFolders = new Set<string>()
-		for (const file of ajmeta.oldFiles) {
-			if (fs.existsSync(file)) await fs.promises.unlink(file)
-			let folder = PathModule.dirname(file)
-			while (
-				!removedFolders.has(folder) &&
-				fs.existsSync(folder) &&
-				(await fs.promises.readdir(folder)).length === 0
-			) {
-				await fs.promises.rm(folder, { recursive: true })
-				removedFolders.add(folder)
-				folder = PathModule.dirname(folder)
-			}
-			PROGRESS.set(PROGRESS.get() + 1)
-		}
 	}
 
 	const exportedFiles = new Map<string, string | Buffer>()
 
 	// Texture atlas
-	const blockAtlasFile = PathModule.join(
+	const blockAtlasPath = PathModule.join(
 		resourcePackFolder,
 		'assets/minecraft/atlases/blocks.json'
 	)
-	let blockAtlas: ITextureAtlas = { sources: [] }
-	if (fs.existsSync(blockAtlasFile)) {
-		const content = await fs.promises.readFile(blockAtlasFile, 'utf-8').catch(() => {
-			throw new IntentionalExportError(
-				'Failed to read block atlas file after it was confirmed to exist!'
-			)
+	const blockAtlas: ITextureAtlas = await fs.promises
+		.readFile(blockAtlasPath, 'utf-8')
+		.catch(() => {
+			console.log('Creating new block atlas...')
+			return '{ sources: [] }'
 		})
-		try {
-			blockAtlas = JSON.parse(content)
-		} catch (e: any) {
-			throw new IntentionalExportError(
-				`Failed to parse block atlas file: ${e.message as string}`
-			)
-		}
-	}
+		.then(content => JSON.parse(content) as ITextureAtlas)
+
 	if (
-		blockAtlas.sources.some(
+		blockAtlas.sources?.some(
 			source =>
 				source.type === 'directory' &&
 				source.source === 'blueprint' &&
@@ -85,13 +58,14 @@ export default async function compileResourcePack(options: {
 	) {
 		// Do nothing. The blueprint directory is already there.
 	} else {
+		blockAtlas.sources ??= []
 		blockAtlas.sources.push({
 			type: 'directory',
 			source: 'blueprint',
 			prefix: 'blueprint/',
 		})
 	}
-	exportedFiles.set(blockAtlasFile, autoStringify(blockAtlas))
+	exportedFiles.set(blockAtlasPath, autoStringify(blockAtlas))
 
 	// Internal Models
 	exportedFiles.set(
@@ -154,6 +128,12 @@ export default async function compileResourcePack(options: {
 				? PathModule.join(correctedModelExportFolder, bone.name + '.json')
 				: PathModule.join(correctedModelExportFolder, variant.name, bone.name + '.json')
 			// Hacky workaround for this version enforcing the `item` namespace.
+			if (variantModel.model?.parent) {
+				variantModel.model.parent = variantModel.model.parent.replace(
+					'animated_java:blueprint/',
+					'animated_java:item/'
+				)
+			}
 			variantModel.item_model = variantModel.item_model.replace(
 				'animated_java:blueprint/',
 				'animated_java:'
@@ -167,7 +147,30 @@ export default async function compileResourcePack(options: {
 		// Do nothing
 		console.log('Plugin mode enabled. Skipping resource pack export.')
 	} else if (aj.resource_pack_export_mode === 'raw') {
+		// Clean up old files
+		PROGRESS_DESCRIPTION.set('Removing Old Resource Pack Files...')
+		PROGRESS.set(0)
+		MAX_PROGRESS.set(ajmeta.oldFiles.size)
+
+		const removedFolders = new Set<string>()
+		for (const file of ajmeta.oldFiles) {
+			if (fs.existsSync(file)) await fs.promises.unlink(file)
+			let folder = PathModule.dirname(file)
+			while (
+				!removedFolders.has(folder) &&
+				fs.existsSync(folder) &&
+				(await fs.promises.readdir(folder)).length === 0
+			) {
+				await fs.promises.rm(folder, { recursive: true })
+				removedFolders.add(folder)
+				folder = PathModule.dirname(folder)
+			}
+			PROGRESS.set(PROGRESS.get() + 1)
+		}
+
+		// Write new files
 		ajmeta.files = new Set(exportedFiles.keys())
+		ajmeta.files.delete(blockAtlasPath)
 		ajmeta.write()
 
 		PROGRESS_DESCRIPTION.set('Writing Resource Pack...')

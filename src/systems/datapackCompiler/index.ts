@@ -54,7 +54,6 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 
 	function recurseParents(node: AnyRenderedNode) {
 		if (node.parent) {
-			console.log('Parent:', node.parent)
 			parentNames.push({
 				name: rig.nodes[node.parent].safe_name,
 				type: rig.nodes[node.parent].type,
