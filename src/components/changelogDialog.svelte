@@ -15,7 +15,8 @@
 
 	async function formatMarkdown(text: string) {
 		const issues: Record<number, { title: string; url: string }> = {}
-		text = text.replace(/\[(.*?)\]\((.*?)\)/g, (match, title, url) => {
+		text = text.replace('[BREAKING]', '<span class="breaking">BREAKING</span>')
+		text = text.replace(/\[([^\]]+?)\]\(([^)]+?)\)/gm, (match, title, url) => {
 			const issueMatch = url.match(/issues\/(\d+)/)
 			if (issueMatch) {
 				const issueNumber = parseInt(issueMatch[1])
@@ -86,6 +87,14 @@
 		padding: 0.2em 0.4em;
 		border-radius: 3px;
 		font-size: 0.8em;
+	}
+	:global(.plugin_browser_tabbed_page .breaking) {
+		background-color: var(--color-error);
+		color: var(--color-back);
+		padding: 0 0.3em;
+		border-radius: 3px;
+		font-size: 0.8em;
+		font-weight: 700;
 	}
 	img {
 		border-radius: 4px;

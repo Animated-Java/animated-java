@@ -56,5 +56,37 @@
 				]
 			}
 		]
+	},
+	"1.6.2": {
+		"title": "v1.6.2",
+		"author": "Titus Evans (SnaveSutit)",
+		"date": "2025-01-12",
+		"categories": [
+			{
+				"title": "Changes",
+				"list": [
+					"[BREAKING] Implemented improved scoreboard tag system. Please visit [this docs page](https://animated-java.dev/docs/rigs/tags) on the Animated Java website to learn more.",
+					"[BREAKING] Removed individual variant summon functions. (`animated_java:namespace/summon/variant_name`) in favor of `animated_java:namespace/summon {args:{variant: 'variant_name'}}`.",
+					"[BREAKING] Removed advanced folder options for Resource Packs. ",
+					"Re-organized the file structure of AJ's UI files.",
+					"Updated the model format order on the start menu to be organized alphabetically.",
+					"Added incomptaibility warnings for installing, or having installed, plugins that are incompatible with Animated Java."
+				]
+			},
+			{
+				"title": "Fixes",
+				"list": [
+					"Fixed some visual and interactivity issues with the Variants panel.",
+					"Fixed default Variant UUID changing every time a model is opened.",
+					"Fixed \"Display entity is not a string\" console spam",
+					"Fixed 1.21.2 using `custom_model_data` instead of `item_model`",
+					"Fixed [#304](https://github.com/Animated-Java/animated-java/issues/304)",
+					"Fixed [#356](https://github.com/Animated-Java/animated-java/issues/356)",
+					"Fixed [#357](https://github.com/Animated-Java/animated-java/issues/357)",
+					"Fixed [#358](https://github.com/Animated-Java/animated-java/issues/358)",
+					"Fixed [#359](https://github.com/Animated-Java/animated-java/issues/359)"
+				]
+			}
+		]
 	}
 }
