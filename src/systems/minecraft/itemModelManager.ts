@@ -231,16 +231,13 @@ async function generateItemMesh(location: string, model: IItemModel): Promise<It
 			}
 			const matrix2 = matrix1.slice()
 
+			let pixel = 0
 			for (let y = 0; y < canvas.height; y++) {
-				let lengthX = 0
 				for (let x = 0; x < canvas.width; x++) {
-					const pixel = x == 0 ? 0 : matrix1[y * canvas.width + x]
+					pixel = matrix1[y * canvas.width + x]
 					if (pixel) {
-						lengthX++
-					} else if (lengthX) {
-						addFace(x - lengthX, y, lengthX, 1, 1)
-						addFace(x - lengthX, y, lengthX, 1, -1)
-						lengthX = 0
+						addFace(x, y, 1, 1, 1)
+						addFace(x, y, 1, 1, -1)
 					}
 				}
 			}
