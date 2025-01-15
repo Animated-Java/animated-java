@@ -10,7 +10,7 @@ import { Alignment, TextDisplay } from '../outliner/textDisplay'
 import {
 	IMinecraftResourceLocation,
 	parseResourcePackPath,
-	toSafeFuntionName,
+	toSafeFunctionName,
 } from '../util/minecraftUtil'
 import { TRANSPARENT_TEXTURE, TRANSPARENT_TEXTURE_RESOURCE_LOCATION, Variant } from '../variants'
 import {
@@ -280,7 +280,7 @@ export function getTextureResourceLocation(texture: Texture, rig: IRenderedRig) 
 			return parsed
 		}
 	}
-	const path = PathModule.join(rig.texture_export_folder, toSafeFuntionName(texture.name))
+	const path = PathModule.join(rig.texture_export_folder, toSafeFunctionName(texture.name))
 	const parsed = parseResourcePackPath(path)
 	if (parsed) {
 		TEXTURE_RESOURCE_LOCATION_CACHE.set(texture.uuid, parsed)
@@ -333,7 +333,7 @@ function renderGroup(
 	const renderedBone: IRenderedNodes['Bone'] = {
 		type: 'bone',
 		name: group.name,
-		safe_name: toSafeFuntionName(group.name),
+		safe_name: toSafeFunctionName(group.name),
 		uuid: group.uuid,
 		parent: parentId,
 		bounding_box: getBoneBoundingBox(group),
@@ -442,7 +442,7 @@ function renderItemDisplay(display: VanillaItemDisplay, rig: IRenderedRig) {
 	const renderedBone: IRenderedNodes['ItemDisplay'] = {
 		type: 'item_display',
 		name: display.name,
-		safe_name: toSafeFuntionName(display.name),
+		safe_name: toSafeFunctionName(display.name),
 		uuid: display.uuid,
 		parent: parentId,
 		item: display.item,
@@ -470,7 +470,7 @@ function renderBlockDisplay(display: VanillaBlockDisplay, rig: IRenderedRig) {
 	const renderedBone: IRenderedNodes['BlockDisplay'] = {
 		type: 'block_display',
 		name: display.name,
-		safe_name: toSafeFuntionName(display.name),
+		safe_name: toSafeFunctionName(display.name),
 		uuid: display.uuid,
 		block: display.block,
 		parent: parentId,
@@ -497,7 +497,7 @@ function renderTextDisplay(display: TextDisplay, rig: IRenderedRig): INodeStruct
 	const renderedBone: IRenderedNodes['TextDisplay'] = {
 		type: 'text_display',
 		name: display.name,
-		safe_name: toSafeFuntionName(display.name),
+		safe_name: toSafeFunctionName(display.name),
 		uuid: display.uuid,
 		parent: parentId,
 		text: JsonText.fromString(display.text),
@@ -526,7 +526,7 @@ function renderLocator(locator: Locator, rig: IRenderedRig) {
 	const renderedLocator: IRenderedNodes['Locator'] = {
 		type: 'locator',
 		name: locator.name,
-		safe_name: toSafeFuntionName(locator.name),
+		safe_name: toSafeFunctionName(locator.name),
 		uuid: locator.uuid,
 		parent: parentId,
 		config: locator.config,
@@ -543,7 +543,7 @@ function renderCamera(camera: ICamera, rig: IRenderedRig) {
 	const renderedCamera: IRenderedNodes['Camera'] = {
 		type: 'camera',
 		name: camera.name,
-		safe_name: toSafeFuntionName(camera.name),
+		safe_name: toSafeFunctionName(camera.name),
 		uuid: camera.uuid,
 		parent: parentId,
 		config: camera.config,

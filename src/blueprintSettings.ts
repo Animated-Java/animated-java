@@ -5,6 +5,7 @@ export type ExportMode = 'raw' | 'zip' | 'none'
 
 export const defaultValues = {
 	export_namespace: 'blueprint',
+	export_safe_namespace: 'blueprint',
 	show_bounding_box: false,
 	auto_bounding_box: true,
 	bounding_box: [48, 48],

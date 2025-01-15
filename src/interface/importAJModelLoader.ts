@@ -7,7 +7,7 @@ import { translate } from '../util/translation'
 import { openUnexpectedErrorDialog } from './dialog/unexpectedError'
 import * as ModelDatFixerUpper from '../systems/modelDataFixerUpper'
 import { BLUEPRINT_CODEC, IBlueprintFormatJSON } from '../blueprintFormat'
-import { toSafeFuntionName } from '../util/minecraftUtil'
+import { toSafeFunctionName } from '../util/minecraftUtil'
 
 let activeComponent: SvelteComponentDev | null = null
 
@@ -52,7 +52,7 @@ export function convertAJModelToBlueprint(path: string) {
 			name: 'Upgrade .ajmodel to Blueprint',
 			path,
 		})
-		blueprint.blueprint_settings!.export_namespace ??= toSafeFuntionName(Project!.name)
+		blueprint.blueprint_settings!.export_namespace ??= toSafeFunctionName(Project!.name)
 
 		requestAnimationFrame(() => {
 			Project!.save_path = ''

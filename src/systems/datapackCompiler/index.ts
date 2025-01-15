@@ -69,9 +69,9 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 		TAGS.GLOBAL_NODE(),
 		TAGS.GLOBAL_NODE_NAMED(node.safe_name),
 		// Project
-		TAGS.PROJECT_ENTITY(Project!.animated_java.export_namespace),
-		TAGS.PROJECT_NODE(Project!.animated_java.export_namespace),
-		TAGS.PROJECT_NODE_NAMED(Project!.animated_java.export_namespace, node.safe_name)
+		TAGS.PROJECT_ENTITY(Project!.animated_java.export_safe_namespace),
+		TAGS.PROJECT_NODE(Project!.animated_java.export_safe_namespace),
+		TAGS.PROJECT_NODE_NAMED(Project!.animated_java.export_safe_namespace, node.safe_name)
 	)
 
 	if (!node.parent) {
@@ -87,13 +87,13 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 				TAGS.GLOBAL_BONE_TREE_BONE(node.safe_name), // Tree includes self
 				// Project
 				TAGS.PROJECT_DISPLAY_NODE_NAMED(
-					Project!.animated_java.export_namespace,
+					Project!.animated_java.export_safe_namespace,
 					node.safe_name
 				),
-				TAGS.PROJECT_BONE(Project!.animated_java.export_namespace),
-				TAGS.PROJECT_BONE_NAMED(Project!.animated_java.export_namespace, node.safe_name),
-				TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_namespace, node.safe_name), // Tree includes self
-				TAGS.PROJECT_BONE_TREE_BONE(Project!.animated_java.export_namespace, node.safe_name) // Tree includes self
+				TAGS.PROJECT_BONE(Project!.animated_java.export_safe_namespace),
+				TAGS.PROJECT_BONE_NAMED(Project!.animated_java.export_safe_namespace, node.safe_name),
+				TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_safe_namespace, node.safe_name), // Tree includes self
+				TAGS.PROJECT_BONE_TREE_BONE(Project!.animated_java.export_safe_namespace, node.safe_name) // Tree includes self
 			)
 			if (!node.parent) {
 				// Nodes without parents are assumed to be root nodes
@@ -105,11 +105,11 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 					TAGS.GLOBAL_BONE_CHILD_BONE(parentNames[0].name),
 					// Project
 					TAGS.PROJECT_BONE_CHILD(
-						Project!.animated_java.export_namespace,
+						Project!.animated_java.export_safe_namespace,
 						parentNames[0].name
 					),
 					TAGS.PROJECT_BONE_CHILD_BONE(
-						Project!.animated_java.export_namespace,
+						Project!.animated_java.export_safe_namespace,
 						parentNames[0].name
 					)
 				)
@@ -122,10 +122,10 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 					TAGS.GLOBAL_BONE_TREE(name),
 					TAGS.GLOBAL_BONE_TREE_BONE(name),
 					// Project
-					TAGS.PROJECT_BONE_DECENDANT(Project!.animated_java.export_namespace, name),
-					TAGS.PROJECT_BONE_DECENDANT_BONE(Project!.animated_java.export_namespace, name),
-					TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_namespace, name),
-					TAGS.PROJECT_BONE_TREE_BONE(Project!.animated_java.export_namespace, name)
+					TAGS.PROJECT_BONE_DECENDANT(Project!.animated_java.export_safe_namespace, name),
+					TAGS.PROJECT_BONE_DECENDANT_BONE(Project!.animated_java.export_safe_namespace, name),
+					TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_safe_namespace, name),
+					TAGS.PROJECT_BONE_TREE_BONE(Project!.animated_java.export_safe_namespace, name)
 				)
 			}
 			break
@@ -137,12 +137,12 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 				TAGS.GLOBAL_ITEM_DISPLAY(),
 				// Project
 				TAGS.PROJECT_DISPLAY_NODE_NAMED(
-					Project!.animated_java.export_namespace,
+					Project!.animated_java.export_safe_namespace,
 					node.safe_name
 				),
-				TAGS.PROJECT_ITEM_DISPLAY(Project!.animated_java.export_namespace),
+				TAGS.PROJECT_ITEM_DISPLAY(Project!.animated_java.export_safe_namespace),
 				TAGS.PROJECT_ITEM_DISPLAY_NAMED(
-					Project!.animated_java.export_namespace,
+					Project!.animated_java.export_safe_namespace,
 					node.safe_name
 				)
 			)
@@ -156,11 +156,11 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 					TAGS.GLOBAL_BONE_CHILD_ITEM_DISPLAY(parentNames[0].name),
 					// Project
 					TAGS.PROJECT_BONE_CHILD(
-						Project!.animated_java.export_namespace,
+						Project!.animated_java.export_safe_namespace,
 						parentNames[0].name
 					),
 					TAGS.PROJECT_BONE_CHILD_ITEM_DISPLAY(
-						Project!.animated_java.export_namespace,
+						Project!.animated_java.export_safe_namespace,
 						parentNames[0].name
 					)
 				)
@@ -172,12 +172,12 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 					TAGS.GLOBAL_BONE_DECENDANT_ITEM_DISPLAY(name),
 					TAGS.GLOBAL_BONE_TREE(name),
 					// Project
-					TAGS.PROJECT_BONE_DECENDANT(Project!.animated_java.export_namespace, name),
+					TAGS.PROJECT_BONE_DECENDANT(Project!.animated_java.export_safe_namespace, name),
 					TAGS.PROJECT_BONE_DECENDANT_ITEM_DISPLAY(
-						Project!.animated_java.export_namespace,
+						Project!.animated_java.export_safe_namespace,
 						name
 					),
-					TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_namespace, name)
+					TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_safe_namespace, name)
 				)
 			}
 			break
@@ -189,12 +189,12 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 				TAGS.GLOBAL_BLOCK_DISPLAY(),
 				// Project
 				TAGS.PROJECT_DISPLAY_NODE_NAMED(
-					Project!.animated_java.export_namespace,
+					Project!.animated_java.export_safe_namespace,
 					node.safe_name
 				),
-				TAGS.PROJECT_BLOCK_DISPLAY(Project!.animated_java.export_namespace),
+				TAGS.PROJECT_BLOCK_DISPLAY(Project!.animated_java.export_safe_namespace),
 				TAGS.PROJECT_BLOCK_DISPLAY_NAMED(
-					Project!.animated_java.export_namespace,
+					Project!.animated_java.export_safe_namespace,
 					node.safe_name
 				)
 			)
@@ -208,11 +208,11 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 					TAGS.GLOBAL_BONE_CHILD_BLOCK_DISPLAY(parentNames[0].name),
 					// Project
 					TAGS.PROJECT_BONE_CHILD(
-						Project!.animated_java.export_namespace,
+						Project!.animated_java.export_safe_namespace,
 						parentNames[0].name
 					),
 					TAGS.PROJECT_BONE_CHILD_BLOCK_DISPLAY(
-						Project!.animated_java.export_namespace,
+						Project!.animated_java.export_safe_namespace,
 						parentNames[0].name
 					)
 				)
@@ -224,12 +224,12 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 					TAGS.GLOBAL_BONE_DECENDANT_BLOCK_DISPLAY(name),
 					TAGS.GLOBAL_BONE_TREE(name),
 					// Project
-					TAGS.PROJECT_BONE_DECENDANT(Project!.animated_java.export_namespace, name),
+					TAGS.PROJECT_BONE_DECENDANT(Project!.animated_java.export_safe_namespace, name),
 					TAGS.PROJECT_BONE_DECENDANT_BLOCK_DISPLAY(
-						Project!.animated_java.export_namespace,
+						Project!.animated_java.export_safe_namespace,
 						name
 					),
-					TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_namespace, name)
+					TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_safe_namespace, name)
 				)
 			}
 			break
@@ -241,12 +241,12 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 				TAGS.GLOBAL_TEXT_DISPLAY(),
 				// Project
 				TAGS.PROJECT_DISPLAY_NODE_NAMED(
-					Project!.animated_java.export_namespace,
+					Project!.animated_java.export_safe_namespace,
 					node.safe_name
 				),
-				TAGS.PROJECT_TEXT_DISPLAY(Project!.animated_java.export_namespace),
+				TAGS.PROJECT_TEXT_DISPLAY(Project!.animated_java.export_safe_namespace),
 				TAGS.PROJECT_TEXT_DISPLAY_NAMED(
-					Project!.animated_java.export_namespace,
+					Project!.animated_java.export_safe_namespace,
 					node.safe_name
 				)
 			)
@@ -260,11 +260,11 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 					TAGS.GLOBAL_BONE_CHILD_TEXT_DISPLAY(parentNames[0].name),
 					// Project
 					TAGS.PROJECT_BONE_CHILD(
-						Project!.animated_java.export_namespace,
+						Project!.animated_java.export_safe_namespace,
 						parentNames[0].name
 					),
 					TAGS.PROJECT_BONE_CHILD_TEXT_DISPLAY(
-						Project!.animated_java.export_namespace,
+						Project!.animated_java.export_safe_namespace,
 						parentNames[0].name
 					)
 				)
@@ -276,12 +276,12 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 					TAGS.GLOBAL_BONE_DECENDANT_TEXT_DISPLAY(name),
 					TAGS.GLOBAL_BONE_TREE(name),
 					// Project
-					TAGS.PROJECT_BONE_DECENDANT(Project!.animated_java.export_namespace, name),
+					TAGS.PROJECT_BONE_DECENDANT(Project!.animated_java.export_safe_namespace, name),
 					TAGS.PROJECT_BONE_DECENDANT_TEXT_DISPLAY(
-						Project!.animated_java.export_namespace,
+						Project!.animated_java.export_safe_namespace,
 						name
 					),
-					TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_namespace, name)
+					TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_safe_namespace, name)
 				)
 			}
 			break
@@ -291,8 +291,8 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 				// Global
 				TAGS.GLOBAL_LOCATOR(),
 				// Project
-				TAGS.PROJECT_LOCATOR(Project!.animated_java.export_namespace),
-				TAGS.PROJECT_LOCATOR_NAMED(Project!.animated_java.export_namespace, node.safe_name)
+				TAGS.PROJECT_LOCATOR(Project!.animated_java.export_safe_namespace),
+				TAGS.PROJECT_LOCATOR_NAMED(Project!.animated_java.export_safe_namespace, node.safe_name)
 			)
 			if (!node.parent) {
 				// Nodes without parents are assumed to be root nodes
@@ -304,11 +304,11 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 					TAGS.GLOBAL_BONE_CHILD_LOCATOR(parentNames[0].name),
 					// Project
 					TAGS.PROJECT_BONE_CHILD(
-						Project!.animated_java.export_namespace,
+						Project!.animated_java.export_safe_namespace,
 						parentNames[0].name
 					),
 					TAGS.PROJECT_BONE_CHILD_LOCATOR(
-						Project!.animated_java.export_namespace,
+						Project!.animated_java.export_safe_namespace,
 						parentNames[0].name
 					)
 				)
@@ -320,12 +320,12 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 					TAGS.GLOBAL_BONE_DECENDANT_LOCATOR(name),
 					TAGS.GLOBAL_BONE_TREE(name),
 					// Project
-					TAGS.PROJECT_BONE_DECENDANT(Project!.animated_java.export_namespace, name),
+					TAGS.PROJECT_BONE_DECENDANT(Project!.animated_java.export_safe_namespace, name),
 					TAGS.PROJECT_BONE_DECENDANT_LOCATOR(
-						Project!.animated_java.export_namespace,
+						Project!.animated_java.export_safe_namespace,
 						name
 					),
-					TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_namespace, name)
+					TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_safe_namespace, name)
 				)
 			}
 			break
@@ -335,8 +335,8 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 				// Global
 				TAGS.GLOBAL_CAMERA(),
 				// Project
-				TAGS.PROJECT_CAMERA(Project!.animated_java.export_namespace),
-				TAGS.PROJECT_CAMERA_NAMED(Project!.animated_java.export_namespace, node.safe_name)
+				TAGS.PROJECT_CAMERA(Project!.animated_java.export_safe_namespace),
+				TAGS.PROJECT_CAMERA_NAMED(Project!.animated_java.export_safe_namespace, node.safe_name)
 			)
 			if (!node.parent) {
 				// Nodes without parents are assumed to be root nodes
@@ -348,11 +348,11 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 					TAGS.GLOBAL_BONE_CHILD_CAMERA(parentNames[0].name),
 					// Project
 					TAGS.PROJECT_BONE_CHILD(
-						Project!.animated_java.export_namespace,
+						Project!.animated_java.export_safe_namespace,
 						parentNames[0].name
 					),
 					TAGS.PROJECT_BONE_CHILD_CAMERA(
-						Project!.animated_java.export_namespace,
+						Project!.animated_java.export_safe_namespace,
 						parentNames[0].name
 					)
 				)
@@ -364,12 +364,12 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 					TAGS.GLOBAL_BONE_DECENDANT_CAMERA(name),
 					TAGS.GLOBAL_BONE_TREE(name),
 					// Project
-					TAGS.PROJECT_BONE_DECENDANT(Project!.animated_java.export_namespace, name),
+					TAGS.PROJECT_BONE_DECENDANT(Project!.animated_java.export_safe_namespace, name),
 					TAGS.PROJECT_BONE_DECENDANT_CAMERA(
-						Project!.animated_java.export_namespace,
+						Project!.animated_java.export_safe_namespace,
 						name
 					),
-					TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_namespace, name)
+					TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_safe_namespace, name)
 				)
 			}
 			break
@@ -590,7 +590,7 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 				new NbtList([
 					new NbtString(TAGS.GLOBAL_NODE()),
 					new NbtString(TAGS.GLOBAL_DATA()),
-					new NbtString(TAGS.PROJECT_DATA(aj.export_namespace)),
+					new NbtString(TAGS.PROJECT_DATA(aj.export_safe_namespace)),
 				])
 			)
 			.set(
@@ -840,7 +840,7 @@ async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAn
 		let frames = new NbtCompound()
 		const addFrameDataCommand = () => {
 			const str = `data modify storage aj.${
-				Project!.animated_java.export_namespace
+				Project!.animated_java.export_safe_namespace
 			}:animations ${animation.safe_name} merge value ${frames.toString()}`
 			dataCommands.push(str)
 			frames = new NbtCompound()
@@ -1022,6 +1022,7 @@ export default async function compileDataPack(options: {
 
 	const variables = {
 		export_namespace: aj.export_namespace,
+		export_safe_namespace: aj.export_safe_namespace,
 		interpolation_duration: aj.interpolation_duration,
 		teleportation_duration: aj.teleportation_duration,
 		display_item: aj.display_item,

@@ -17,11 +17,15 @@ export interface IMinecraftResourceLocation {
 	type: string
 }
 
-export function toSafeFuntionName(name: string): string {
+export function toSafeFunctionName(name: string): string {
 	return name
 		.toLowerCase()
-		.replace(/[^a-z0-9_\\.]/g, '_')
+		.replace(/[^a-z0-9_\\./]/g, '_')
 		.replace(/_+/g, '_')
+}
+
+export function toSafeTagName(name: string): string {
+	return toSafeFunctionName(name).replace(/\//g, '.')
 }
 
 /**
