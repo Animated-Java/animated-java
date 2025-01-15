@@ -46,7 +46,7 @@ export default async function compileResourcePack(options: {
 		.readFile(blockAtlasPath, 'utf-8')
 		.catch(() => {
 			console.log('Creating new block atlas...')
-			return '{ sources: [] }'
+			return '{ "sources": [] }'
 		})
 		.then(content => JSON.parse(content) as ITextureAtlas)
 
