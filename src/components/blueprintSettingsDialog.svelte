@@ -74,7 +74,7 @@
 				type: 'error',
 				message: translate('dialog.blueprint_settings.export_namespace.error.empty'),
 			}
-		} else if (value.trim().match('[^a-zA-Z0-9_]')) {
+		} else if (value.trim().match('[^a-zA-Z0-9_\/]')) {
 			return {
 				type: 'error',
 				message: translate(

@@ -1,5 +1,5 @@
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
-import { isResourcePackPath, toSafeFuntionName } from '../../util/minecraftUtil'
+import { isResourcePackPath, toSafeFunctionName } from '../../util/minecraftUtil'
 import { TRANSPARENT_TEXTURE, Variant } from '../../variants'
 import { IntentionalExportError } from '../exporter'
 import { IItemDefinition } from '../minecraft/itemDefinitions'
@@ -96,7 +96,7 @@ export default async function compileResourcePack(options: {
 			throw new Error(`Texture ${texture.name} is missing it's image data.`)
 		}
 
-		let textureName = toSafeFuntionName(texture.name)
+		let textureName = toSafeFunctionName(texture.name)
 		if (!texture.name.endsWith('.png')) textureName += '.png'
 		exportedFiles.set(PathModule.join(textureExportFolder, textureName), image)
 		if (mcmeta !== undefined)

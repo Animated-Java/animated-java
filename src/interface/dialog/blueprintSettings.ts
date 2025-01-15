@@ -2,7 +2,7 @@ import { PACKAGE } from '../../constants'
 import { SvelteDialog } from '../../util/svelteDialog'
 import { Valuable } from '../../util/stores'
 import BlueprintSettingsDialogSvelteComponent from '../../components/blueprintSettingsDialog.svelte'
-import { toSafeFuntionName } from '../../util/minecraftUtil'
+import { toSafeFunctionName, toSafeTagName } from '../../util/minecraftUtil'
 import { defaultValues, ExportMode } from '../../blueprintSettings'
 import { translate } from '../../util/translation'
 import { updateBoundingBox } from '../../blueprintFormat'
@@ -28,7 +28,13 @@ function getSettings() {
 			if (!value) {
 				return defaultValues.export_namespace
 			}
-			return toSafeFuntionName(value)
+			return toSafeFunctionName(value)
+		}),
+		exportSafeNamespace: new Valuable(Project!.animated_java.export_namespace, value => {
+			if (!value) {
+				return defaultValues.export_safe_namespace
+			}
+			return toSafeTagName(value)
 		}),
 		resourcePackExportMode: new Valuable(
 			Project!.animated_java.resource_pack_export_mode as string
@@ -81,6 +87,7 @@ function setSettings(settings: ReturnType<typeof getSettings>) {
 	Project.animated_java.enable_plugin_mode = settings.enablePluginMode.get()
 	Project.pluginMode.set(settings.enablePluginMode.get()) // Required to update the project title.
 	Project.animated_java.export_namespace = settings.exportNamespace.get()
+	Project.animated_java.export_safe_namespace = settings.exportSafeNamespace.get()
 	Project.animated_java.resource_pack_export_mode =
 		settings.resourcePackExportMode.get() as ExportMode
 	Project.animated_java.data_pack_export_mode = settings.dataPackExportMode.get() as ExportMode

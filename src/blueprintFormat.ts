@@ -4,7 +4,7 @@ import ProjectTitleSvelte from './components/projectTitle.svelte'
 import { PACKAGE } from './constants'
 import { events } from './util/events'
 import { injectSvelteCompomponent } from './util/injectSvelteComponent'
-import { toSafeFuntionName } from './util/minecraftUtil'
+import { toSafeFunctionName } from './util/minecraftUtil'
 import { addProjectToRecentProjects } from './util/misc'
 import { Valuable } from './util/stores'
 import { TRANSPARENT_TEXTURE, TRANSPARENT_TEXTURE_MATERIAL, Variant } from './variants'
@@ -161,7 +161,7 @@ export function convertToBlueprint() {
 	}
 	for (const animation of Blockbench.Animation.all) {
 		animation.createUniqueName(Blockbench.Animation.all.filter(a => a !== animation))
-		animation.name = toSafeFuntionName(animation.name)
+		animation.name = toSafeFunctionName(animation.name)
 	}
 	for (const cube of Cube.all) {
 		cube.setUVMode(false)
@@ -324,7 +324,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 			parseGroups(model.outliner)
 
 			for (const group of Group.all) {
-				group.name = toSafeFuntionName(group.name)
+				group.name = toSafeFunctionName(group.name)
 			}
 		}
 
