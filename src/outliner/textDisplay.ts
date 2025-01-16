@@ -212,8 +212,8 @@ export class TextDisplay extends ResizableOutlinerElement {
 	}
 
 	select() {
-		if (Group.selected) {
-			Group.selected.unselect()
+		if (Group.first_selected) {
+			Group.first_selected.unselect()
 		}
 
 		if (!Pressing.ctrl && !Pressing.shift) {
@@ -548,7 +548,7 @@ export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_text_display`,
 		}
 
 		selected.forEachReverse(el => el.unselect())
-		Group.selected && Group.selected.unselect()
+		Group.first_selected && Group.first_selected.unselect()
 		textDisplay.select()
 
 		Undo.finishEdit('Create Text Display', {

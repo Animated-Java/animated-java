@@ -1,22 +1,6 @@
 import { IBlueprintVariantJSON } from './blueprintFormat'
-import { PACKAGE } from './constants'
 import { events } from './util/events'
-import TransparentTexture from './assets/transparent.png'
 import { toSafeFuntionName } from './util/minecraftUtil'
-
-const OLD_PROJECT = Project
-// @ts-ignore
-Project = { materials: {} }
-export const TRANSPARENT_TEXTURE = new Texture(
-	{
-		id: `${PACKAGE.name}:transparent_texture`,
-		name: 'Transparent',
-	},
-	'797174ae-5c58-4a83-a630-eefd51007c80'
-).fromDataURL(TransparentTexture)
-export const TRANSPARENT_TEXTURE_MATERIAL = Project!.materials[TRANSPARENT_TEXTURE.uuid]
-export const TRANSPARENT_TEXTURE_RESOURCE_LOCATION = 'animated_java:blueprint/transparent'
-Project = OLD_PROJECT
 
 export class TextureMap {
 	map: Map<string, string>
@@ -46,7 +30,6 @@ export class TextureMap {
 	 */
 	public getMappedTexture(texture: Texture | string): Texture | undefined {
 		const uuid = this.map.get(texture instanceof Texture ? texture.uuid : texture)
-		if (uuid === TRANSPARENT_TEXTURE.uuid) return TRANSPARENT_TEXTURE
 		return Texture.all.find(t => t.uuid === uuid)
 	}
 
@@ -74,7 +57,6 @@ export class TextureMap {
 
 	public verifyTextures() {
 		for (const [key, value] of this.map) {
-			if (value === TRANSPARENT_TEXTURE.uuid) continue
 			if (!Texture.all.some(t => t.uuid === value)) {
 				this.map.delete(key)
 			}

@@ -7,7 +7,7 @@ import { injectSvelteCompomponent } from './util/injectSvelteComponent'
 import { toSafeFuntionName } from './util/minecraftUtil'
 import { addProjectToRecentProjects } from './util/misc'
 import { Valuable } from './util/stores'
-import { TRANSPARENT_TEXTURE, TRANSPARENT_TEXTURE_MATERIAL, Variant } from './variants'
+import { Variant } from './variants'
 import FormatPageSvelte from './components/formatPage.svelte'
 import { translate } from './util/translation'
 import { process } from './systems/modelDataFixerUpper'
@@ -572,9 +572,6 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 		events.UNLOAD.subscribe(() => clearInterval(updateBoundingBoxIntervalId), true)
 		events.UNINSTALL.subscribe(() => clearInterval(updateBoundingBoxIntervalId), true)
 
-		thisProject.materials[TRANSPARENT_TEXTURE.uuid] = TRANSPARENT_TEXTURE_MATERIAL
-		TRANSPARENT_TEXTURE.updateMaterial()
-
 		Project.loadingPromises ??= []
 		Project.loadingPromises.push(
 			new Promise<void>(resolve => {
@@ -664,7 +661,7 @@ export function saveBlueprint() {
 export function updateRotationLock() {
 	if (!isCurrentFormat()) return
 	BLUEPRINT_FORMAT.rotation_limit = !(
-		!!Group.selected ||
+		!!Group.first_selected ||
 		!!AnimatedJava.API.TextDisplay.selected.length ||
 		!!AnimatedJava.API.VanillaItemDisplay.selected.length ||
 		!!AnimatedJava.API.VanillaBlockDisplay.selected.length ||

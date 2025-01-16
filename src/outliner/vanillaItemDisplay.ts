@@ -151,8 +151,8 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 	}
 
 	select() {
-		if (Group.selected) {
-			Group.selected.unselect()
+		if (Group.first_selected) {
+			Group.first_selected.unselect()
 		}
 		if (!Pressing.ctrl && !Pressing.shift) {
 			if (Cube.selected.length) {
@@ -425,7 +425,7 @@ export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_vanilla_item_d
 		}
 
 		selected.forEachReverse(el => el.unselect())
-		Group.selected && Group.selected.unselect()
+		Group.first_selected && Group.first_selected.unselect()
 		vanillaItemDisplay.select()
 
 		Undo.finishEdit('Create Vanilla Item Display', {

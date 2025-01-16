@@ -1,6 +1,6 @@
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
 import { isResourcePackPath, toSafeFuntionName } from '../../util/minecraftUtil'
-import { TRANSPARENT_TEXTURE, Variant } from '../../variants'
+import { Variant } from '../../variants'
 import { IntentionalExportError } from '../exporter'
 import { IItemDefinition } from '../minecraft/itemDefinitions'
 import { type ITextureAtlas } from '../minecraft/textureAtlas'
@@ -107,16 +107,6 @@ export default async function compileResourcePack(options: {
 				optifineEmissive
 			)
 	}
-
-	// Transparent texture
-	const transparentTexturePath = PathModule.join(
-		resourcePackFolder,
-		'assets/animated_java/textures/blueprint/transparent.png'
-	)
-	exportedFiles.set(
-		transparentTexturePath,
-		nativeImage.createFromDataURL(TRANSPARENT_TEXTURE.source).toPNG()
-	)
 
 	// Item Model Definitions
 	const defaultVariant = Variant.getDefault()

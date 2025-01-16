@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
 	import { type Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
-	import { TRANSPARENT_TEXTURE, TextureMap, Variant } from '../variants'
+	import { TextureMap, Variant } from '../variants'
 	import Checkbox from './dialogItems/checkbox.svelte'
 	import LineInput from './dialogItems/lineInput.svelte'
 	import MissingTexture from '../assets/missing_texture.png'
@@ -19,7 +19,7 @@
 	export let generateNameFromDisplayName: Valuable<boolean>
 	export let excludedNodes: Valuable<Array<CollectionItem>>
 
-	const availableTextures = [...Texture.all, TRANSPARENT_TEXTURE]
+	const availableTextures = [...Texture.all]
 	const primaryTextures = [...Texture.all]
 	const secondaryTextures = availableTextures
 
