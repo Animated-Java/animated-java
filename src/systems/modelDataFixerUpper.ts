@@ -3,6 +3,7 @@ import { BoneConfig } from '../nodeConfigs'
 import { PACKAGE } from '../constants'
 import { openUnexpectedErrorDialog } from '../interface/dialog/unexpectedError'
 import { NbtCompound, NbtList, NbtString, NbtTag } from 'deepslate/lib/nbt'
+import TransparentTexture from '../assets/transparent.png'
 
 export function process(model: any): any {
 	console.log('Running MDFU...', JSON.parse(JSON.stringify(model)))
@@ -45,6 +46,9 @@ export function process(model: any): any {
 		if (compareVersions('0.5.7', model.meta.format_version)) model = updateModelTo1_0pre8(model)
 		// v1.4.0
 		if (compareVersions('1.4.0', model.meta.format_version)) model = updateModelTo1_4_0(model)
+		// v1.6.3
+		if (compareVersions('1.6.3', model.meta.format_version))
+			model = updateModelTo1_6_3(model as IBlueprintFormatJSON)
 
 		console.groupEnd()
 
@@ -478,4 +482,25 @@ function updateModelTo1_4_0(model: any): IBlueprintFormatJSON {
 	}
 
 	return model as IBlueprintFormatJSON
+}
+
+// region v1.6.3
+// eslint-disable-next-line @typescript-eslint/naming-convention
+function updateModelTo1_6_3(model: IBlueprintFormatJSON): IBlueprintFormatJSON {
+	console.log('Processing model format 1.6.3', JSON.parse(JSON.stringify(model)))
+
+	// Automatically add a transparent texture to the model if it uses the old transparent texture in any of it's variants.
+	for (const variant of model.variants.list) {
+		if (Object.values(variant.texture_map).includes('797174ae-5c58-4a83-a630-eefd51007c80')) {
+			const texture = new Texture(
+				{ name: 'transparent' },
+				'797174ae-5c58-4a83-a630-eefd51007c80'
+			).fromDataURL(TransparentTexture)
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+			model.textures.push(texture.getSaveCopy())
+			break
+		}
+	}
+
+	return model
 }

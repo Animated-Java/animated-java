@@ -7,16 +7,15 @@
 			{
 				"title": "Changes",
 				"list": [
+					"[BREAKING] Changed default resource pack structure: `animated_java:textures/item/export_namespace/` -> `animated_java:textures/blueprint/export_namespace/` & `animated_java:models/item/export_namespace/` -> `animated_java:models/blueprint/export_namespace/`",
 					"Added changelog popup! (You're looking at it right now!)",
 					"Added an export target for Minecraft 1.21.4",
+					"Added support for item definitions (1.21.4)",
 					"Added warning for loading Animated Java Data Packs in the wrong version.",
 					"Improved internal MCB File compression",
 					"Slightly improved empty JSON text rendering ([#322](https://github.com/Animated-Java/animated-java/issues/322)",
 					"Added an Extract action to remove exported files from the Resource Pack and Data Pack",
-					"Added 1.21.4 target MC version",
 					"Changed missing assets and data folder for resource and data pack folder settings errors into warnings",
-					"Added support for item definitions (1.21.4)",
-					"Changed default resource pack structure: `animated_java:textures/item/export_namespace/` -> `animated_java:textures/blueprint/export_namespace/` & `animated_java:models/item/export_namespace/` -> `animated_java:models/blueprint/export_namespace/`",
 					"Added a dialog and exception for exporting a blueprint with invalid cube rotations."
 				]
 			},
@@ -67,7 +66,7 @@
 				"list": [
 					"[BREAKING] Implemented improved scoreboard tag system. Please visit [this docs page](https://animated-java.dev/docs/rigs/tags) on the Animated Java website to learn more.",
 					"[BREAKING] Removed individual variant summon functions. (`animated_java:namespace/summon/variant_name`) in favor of `animated_java:namespace/summon {args:{variant: 'variant_name'}}`.",
-					"[BREAKING] Removed advanced folder options for Resource Packs. ",
+					"[BREAKING] Removed advanced folder options for Resource Packs.",
 					"Re-organized the file structure of AJ's UI files.",
 					"Updated the model format order on the start menu to be organized alphabetically.",
 					"Added incomptaibility warnings for installing, or having installed, plugins that are incompatible with Animated Java."
@@ -85,6 +84,26 @@
 					"Fixed [#357](https://github.com/Animated-Java/animated-java/issues/357)",
 					"Fixed [#358](https://github.com/Animated-Java/animated-java/issues/358)",
 					"Fixed [#359](https://github.com/Animated-Java/animated-java/issues/359)"
+				]
+			}
+		]
+	},
+	"1.6.3": {
+		"title": "v1.6.3",
+		"author": "Titus Evans (SnaveSutit)",
+		"date": "2025-01-15",
+		"categories": [
+			{
+				"title": "Changes",
+				"list": [
+					"Updated to Blockbench 4.12.0",
+					"Removed internal Transparent texture. The plugin will automatically create a transparent texture in your model's texture list if you previously used the internal one in any of your variants."
+				]
+			},
+			{
+				"title": "Fixes",
+				"list": [
+					"Fixed invalid JSON error when exporting into a resource pack without a block texture atlas."
 				]
 			}
 		]
