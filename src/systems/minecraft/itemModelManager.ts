@@ -45,7 +45,7 @@ export async function getItemModel(item: string): Promise<ItemModelMesh | undefi
 
 function getItemResourceLocation(item: string) {
 	const resource = parseResourceLocation(item)
-	return resource.namespace + ':' + 'item/' + resource.path
+	return resource.namespace + ':' + 'item/' + resource.subpath
 }
 
 async function parseItemModel(location: string, childModel?: IItemModel): Promise<ItemModelMesh> {
@@ -72,7 +72,7 @@ async function parseItemModel(location: string, childModel?: IItemModel): Promis
 		if (resource.type === 'block') {
 			return await parseBlockModel({ model: model.parent, isItemModel: true }, model)
 		}
-		if (resource.path === 'item/generated') {
+		if (resource.subpath === 'item/generated') {
 			return await generateItemMesh(location, model)
 		} else {
 			return await parseItemModel(model.parent, model)

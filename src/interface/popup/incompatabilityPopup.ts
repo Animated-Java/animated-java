@@ -1,4 +1,4 @@
-import IncompatabilityPopup from '../../components/incompatabilityPopup.svelte'
+import IncompatabilityPopup from '../../svelte/incompatabilityPopup.svelte'
 import { PACKAGE } from '../../constants'
 import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'

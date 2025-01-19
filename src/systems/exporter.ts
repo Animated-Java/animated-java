@@ -1,6 +1,6 @@
 import { saveBlueprint } from '../blueprintFormat'
 import { blueprintSettingErrors } from '../blueprintSettings'
-import { openBlueprintSettingsDialog } from '../interface/dialog/blueprintSettings'
+import { openBlueprintSettingsDialog } from '../svelte/blueprintSettings'
 import { PROGRESS_DESCRIPTION, openExportProgressDialog } from '../interface/dialog/exportProgress'
 import { openUnexpectedErrorDialog } from '../interface/dialog/unexpectedError'
 import { resolvePath } from '../util/fileUtil'

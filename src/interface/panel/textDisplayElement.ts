@@ -1,5 +1,5 @@
 import { isCurrentFormat } from '../../blueprintFormat'
-import TextDisplayElementPanel from '../../components/textDisplayElementPanel.svelte'
+import TextDisplayElementPanel from '../../svelte/textDisplayElementPanel.svelte'
 import { PACKAGE } from '../../constants'
 import { Alignment, TextDisplay } from '../../outliner/textDisplay'
 import { injectSvelteCompomponentMod } from '../../util/injectSvelteComponent'

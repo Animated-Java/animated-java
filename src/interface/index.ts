@@ -1,6 +1,5 @@
 import './dialog/about'
 import './dialog/animationProperties'
-import './dialog/blueprintSettings'
 import './dialog/boneConfig'
 import './dialog/changelog'
 import './dialog/exportProgress'

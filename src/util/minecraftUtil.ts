@@ -17,7 +17,7 @@ export interface IMinecraftResourceLocation {
 	type: string
 }
 
-export function toSafeFuntionName(name: string): string {
+export function toSafeFunctionName(name: string): string {
 	return name
 		.toLowerCase()
 		.replace(/[^a-z0-9_.]/g, '_')
@@ -40,6 +40,24 @@ export function getPathFromResourceLocation(resourceLocation: string, type: stri
 		namespace = 'minecraft'
 	}
 	return `assets/${namespace}/${type}/${path.join('/')}`
+}
+
+export function createTagPrefixFromBlueprintID(id: string) {
+	const parsed = parseResourceLocation(id)
+	if (parsed) {
+		const namespace = parsed.namespace === 'animated_java' ? 'aj' : parsed.namespace
+		return namespace + '.' + parsed.subpath.replaceAll('/', '.')
+	}
+}
+
+export function containsInvalidScoreboardTagCharacters(tag: string) {
+	if (tag.match(/[^a-zA-Z0-9_\-.]/g)) return true
+	return false
+}
+
+export function containsInvalidResourceLocationCharacters(resourceLocation: string) {
+	if (resourceLocation.match(/[^a-z0-9_/.:]/g)) return true
+	return false
 }
 
 export function isResourcePackPath(path: string) {
@@ -84,12 +102,13 @@ export function parseResourceLocation(resourceLocation: string) {
 		parts = [namespace]
 		namespace = 'minecraft'
 	}
-	const path = parts.join('')
-	const resourceType = path.split('/')[0]
-	const parsed = PathModule.parse(path)
+	const subpath = parts.join('')
+	const resourceType = subpath.split('/')[0]
+	const parsed = PathModule.parse(subpath)
 	return {
 		namespace,
-		path,
+		subpath,
+		path: PathModule.join(namespace, parsed.name),
 		type: resourceType,
 		dir: parsed.dir,
 		name: parsed.name,
@@ -212,7 +231,7 @@ export async function parseBlock(block: string): Promise<IParsedBlock | undefine
 	const resource = parseResourceLocation(block)
 	return {
 		resource,
-		resourceLocation: resource.namespace + ':' + resource.path,
+		resourceLocation: resource.namespace + ':' + resource.subpath,
 		states,
 		blockStateRegistryEntry: await getBlockState(resource.name),
 	}

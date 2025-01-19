@@ -1,4 +1,4 @@
-import AniamtionPropertiesSvelteComponent from '../../components/animationProperties.svelte'
+import AniamtionPropertiesSvelteComponent from '../../svelte/animationProperties.svelte'
 import { PACKAGE } from '../../constants'
 import { Valuable } from '../../util/stores'
 import { SvelteDialog } from '../../util/svelteDialog'
