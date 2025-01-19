@@ -107,5 +107,19 @@
 				]
 			}
 		]
+	},
+	"1.6.4": {
+		"title": "v1.6.4",
+		"author": "Titus Evans (SnaveSutit)",
+		"date": "2025-01-19",
+		"categories": [
+			{
+				"title": "Fixes",
+				"list": [
+					"Fixed \"safe_name\" export crash.",
+					"Fixed double v prefix in About dialog."
+				]
+			}
+		]
 	}
 }
