@@ -79,6 +79,12 @@
 		transform: rotate(345deg);
 		pointer-events: none;
 		user-select: none;
+		/* prettier-ignore */
+		filter:
+			drop-shadow(-2px 0px 1px var(--color-dark))
+			drop-shadow(2px 0px 1px var(--color-dark))
+			drop-shadow(0px -2px 0px var(--color-dark))
+			drop-shadow(0px 2px 1px var(--color-dark));
 	}
 	.option-description {
 		font-size: 0.9em;
