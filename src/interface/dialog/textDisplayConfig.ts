@@ -6,7 +6,7 @@ import { Valuable } from '../../util/stores'
 import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
 import { Variant } from '../../variants'
-import TextDisplayConfigDialog from '../../components/textDisplayConfigDialog.svelte'
+import TextDisplayConfigDialog from '../../svelte/textDisplayConfigDialog.svelte'
 import { TextDisplay } from '../../outliner/textDisplay'
 
 export function openBoneConfigDialog(bone: TextDisplay) {

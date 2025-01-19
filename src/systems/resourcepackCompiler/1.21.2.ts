@@ -1,10 +1,9 @@
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
-import { isResourcePackPath, toSafeFuntionName } from '../../util/minecraftUtil'
-import { IntentionalExportError } from '../exporter'
+import { isResourcePackPath, toSafeFunctionName } from '../../util/minecraftUtil'
+import { AJMeta } from '../ajmeta'
 import { type ITextureAtlas } from '../minecraft/textureAtlas'
 import { IRenderedNodes, IRenderedRig } from '../rigRenderer'
 import { zip } from '../util'
-import { ResourcePackAJMeta } from './global'
 
 export default async function compileResourcePack(options: {
 	rig: IRenderedRig
@@ -22,7 +21,7 @@ export default async function compileResourcePack(options: {
 	PROGRESS_DESCRIPTION.set('Compiling Resource Pack...')
 	console.log('Compiling resource pack...', options)
 
-	const ajmeta = new ResourcePackAJMeta(
+	const ajmeta = new AJMeta(
 		PathModule.join(options.resourcePackFolder, 'assets.ajmeta'),
 		aj.export_namespace,
 		lastUsedExportNamespace,
@@ -96,7 +95,7 @@ export default async function compileResourcePack(options: {
 			throw new Error(`Texture ${texture.name} is missing it's image data.`)
 		}
 
-		let textureName = toSafeFuntionName(texture.name)
+		let textureName = toSafeFunctionName(texture.name)
 		if (!texture.name.endsWith('.png')) textureName += '.png'
 		exportedFiles.set(PathModule.join(textureExportFolder, textureName), image)
 		if (mcmeta !== undefined)

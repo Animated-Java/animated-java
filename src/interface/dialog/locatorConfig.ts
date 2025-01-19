@@ -1,6 +1,6 @@
 import { BLUEPRINT_FORMAT } from '../../blueprintFormat'
 import { LocatorConfig } from '../../nodeConfigs'
-import LocatorConfigDialog from '../../components/locatorConfigDialog.svelte'
+import LocatorConfigDialog from '../../svelte/locatorConfigDialog.svelte'
 import { PACKAGE } from '../../constants'
 import { createAction } from '../../util/moddingTools'
 import { Valuable } from '../../util/stores'

@@ -1,5 +1,5 @@
 import { SvelteComponentDev } from 'svelte/internal'
-import AnimatedJavaLoadingPopup from '../../components/animatedJavaLoadingPopup.svelte'
+import AnimatedJavaLoadingPopup from '../../svelte/animatedJavaLoadingPopup.svelte'
 import { injectSvelteCompomponent } from '../../util/injectSvelteComponent'
 import { Valuable } from '../../util/stores'
 

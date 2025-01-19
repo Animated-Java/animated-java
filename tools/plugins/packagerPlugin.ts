@@ -26,7 +26,6 @@ function plugin(): Plugin {
 		name: 'packagerPlugin',
 		setup(build) {
 			build.onEnd(() => {
-				console.log('📦 Packaging...')
 				fs.rmSync(DIST_PACKAGE_PATH, { recursive: true, force: true })
 				fs.cpSync(PLUGIN_PACKAGE_PATH, DIST_PACKAGE_PATH, { recursive: true })
 				fs.copyFileSync(
@@ -51,6 +50,8 @@ function plugin(): Plugin {
 				writeFileSync(README_DIST_PATH, html)
 				if (fs.existsSync(pathjs.join(DIST_PACKAGE_PATH, 'about.svelte')))
 					fs.unlinkSync(pathjs.join(DIST_PACKAGE_PATH, 'about.svelte'))
+
+				console.log('📦 Packaged')
 
 				if (process.env.NODE_ENV === 'production') {
 					console.log('📝 Creating changelogs...')

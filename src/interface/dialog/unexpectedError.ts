@@ -1,4 +1,4 @@
-import UnexpectedErrorDialog from '../../components/unexpectedErrorDialog.svelte'
+import UnexpectedErrorDialog from '../../svelte/unexpectedErrorDialog.svelte'
 import { PACKAGE } from '../../constants'
 import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'

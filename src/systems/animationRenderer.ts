@@ -8,7 +8,7 @@ import {
 import { TextDisplay } from '../outliner/textDisplay'
 import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
 import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
-import { toSafeFuntionName } from '../util/minecraftUtil'
+import { toSafeFunctionName } from '../util/minecraftUtil'
 import { eulerFromQuaternion, roundToNth } from '../util/misc'
 import { AnyRenderedNode, IRenderedRig } from './rigRenderer'
 import * as crypto from 'crypto'
@@ -303,7 +303,7 @@ export function renderAnimation(animation: _Animation, rig: IRenderedRig) {
 	const rendered = {
 		name: animation.name,
 		uuid: animation.uuid,
-		safe_name: toSafeFuntionName(animation.name).replaceAll('.', '_'),
+		safe_name: toSafeFunctionName(animation.name).replaceAll('.', '_'),
 		loop_delay: Number(animation.loop_delay) || 0,
 		frames: [],
 		duration: 0,

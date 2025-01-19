@@ -84,16 +84,28 @@ export function createBlockbenchMod<InjectContext = any, ExtractContext = any>(
 	})
 }
 
+type CreateActionOptions = ActionOptions & {
+	/**
+	 * @param path Path pointing to the location. Use the ID of each level of the menu, or index or group within a level, separated by a period. For example; `file.export.0` places the action at the top position of the Export submenu in the File menu.
+	 */
+	menu_path?: string
+}
 /** Creates a new Blockbench.Action and automatically handles it's deletion on the plugin unload and uninstall events.
  * See https://www.blockbench.net/wiki/api/action for more information on the Blockbench.Action class.
  * @param id A namespaced ID ('my-plugin-id:my-action')
  * @param options The options for the action.
  * @returns The created action.
  */
-export function createAction(id: NamespacedString, options: ActionOptions) {
+export function createAction(id: NamespacedString, options: CreateActionOptions) {
 	const action = new Action(id, options)
+	if (options.menu_path !== undefined) {
+		MenuBar.addAction(action, options.menu_path)
+	}
 
 	events.EXTRACT_MODS.subscribe(() => {
+		if (options.menu_path !== undefined) {
+			MenuBar.removeAction(options.menu_path)
+		}
 		action.delete()
 	}, true)
 

@@ -1,4 +1,4 @@
-import IncompatiblePluginNotice from '../components/incompatiblePluginNotice.svelte'
+import IncompatiblePluginNotice from '../svelte/incompatiblePluginNotice.svelte'
 import { PACKAGE } from '../constants'
 import { injectSvelteCompomponentMod } from '../util/injectSvelteComponent'
 import { createBlockbenchMod } from '../util/moddingTools'

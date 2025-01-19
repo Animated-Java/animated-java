@@ -1,0 +1,942 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "mc-build",
+	"scopeName": "source.mc-build",
+	"patterns": [
+		{
+			"include": "#folder_context"
+		}
+	],
+	"repository": {
+		"folder_context": {
+			"patterns": [
+				{
+					"include": "#comment"
+				},
+				{
+					"include": "#import"
+				},
+				{
+					"include": "#multiline_js"
+				},
+				{
+					"include": "#dir_definition"
+				},
+				{
+					"include": "#clock_definition"
+				},
+				{
+					"include": "#function_definition"
+				},
+
+				{
+					"include": "#advancement_definition"
+				},
+				{
+					"include": "#enchantment_definition"
+				},
+				{
+					"include": "#item_modifier_definition"
+				},
+				{
+					"include": "#loot_table_definition"
+				},
+				{
+					"include": "#predicate_definition"
+				},
+				{
+					"include": "#recipe_definition"
+				},
+				{
+					"include": "#chat_type_definition"
+				},
+				{
+					"include": "#damage_type_definition"
+				},
+				{
+					"include": "#dimension_definition"
+				},
+				{
+					"include": "#dimension_type_definition"
+				},
+				{
+					"include": "#worldgen_definition"
+				},
+
+				{
+					"include": "#tag_definition"
+				},
+
+				{
+					"include": "#folder_context.compile_if_else"
+				},
+				{
+					"include": "#folder_context.compile_repeat"
+				}
+			]
+		},
+		"function_context": {
+			"patterns": [
+				{
+					"include": "#inline_js"
+				},
+				{
+					"include": "#multiline_js"
+				},
+				{
+					"include": "#special_function_call"
+				},
+				{
+					"include": "#function_context.compile_if_else"
+				},
+				{
+					"include": "#function_context.compile_repeat"
+				},
+				{
+					"include": "#tick/load_block"
+				},
+				{
+					"include": "#schedule_block"
+				},
+				{
+					"include": "#function_block"
+				},
+				{
+					"include": "#execute"
+				},
+				{
+					"include": "#execute_if_function"
+				},
+				{
+					"include": "#multiline_command"
+				},
+				{
+					"include": "source.injected-mcfunction"
+				}
+			]
+		},
+		"import": {
+			"match": "^[ \t]*(import)\\s*(.+)$",
+			"name": "entity.name.function",
+			"captures": {
+				"1": {
+					"name": "keyword.control"
+				},
+				"2": {
+					"name": "string"
+				}
+			}
+		},
+
+		"macro_argument_embed": {
+			"match": "(\\$)\\((\\w+)\\)",
+			"captures": {
+				"1": {
+					"name": "keyword.control"
+				},
+				"2": {
+					"name": "variable.name"
+				}
+			}
+		},
+
+		"dir_definition": {
+			"name": "meta.dir_definition",
+			"begin": "^[ \t]*(dir) (.+?) ?{",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.dir"
+				},
+				"2": {
+					"name": "entity.name.function",
+					"patterns": [
+						{
+							"include": "#inline_js"
+						}
+					]
+				}
+			},
+			"end": "^[ \t]*}$",
+			"patterns": [
+				{
+					"include": "#folder_context"
+				}
+			]
+		},
+		"function_definition": {
+			"name": "meta.function_definition",
+			"begin": "^[ \t]*(function) (.+?)(?: (tick|load))? ?{",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.function"
+				},
+				"2": {
+					"name": "entity.name.function",
+					"patterns": [
+						{
+							"include": "#inline_js"
+						}
+					]
+				},
+				"3": {
+					"name": "keyword.other"
+				}
+			},
+			"end": "^[ \t]*}$",
+			"patterns": [
+				{
+					"include": "#function_context"
+				}
+			]
+		},
+
+		"tick/load_block": {
+			"name": "meta.tick/load_block",
+			"begin": "^[ \t]*(tick|load) ?{",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.function"
+				}
+			},
+			"end": "^[ \t]*}$",
+			"patterns": [
+				{
+					"include": "#function_context"
+				}
+			]
+		},
+
+		"comment": {
+			"match": "^[ \t]*(#.+)$",
+			"captures": {
+				"1": {
+					"patterns": [
+						{
+							"include": "#inline_js"
+						}
+					]
+				}
+			},
+			"name": "comment.line"
+		},
+
+		"inline_js": {
+			"match": "<%(.+)%>",
+			"name": "meta.inline_js",
+			"captures": {
+				"0": {
+					"name": "keyword.operator"
+				},
+				"1": {
+					"patterns": [
+						{
+							"include": "source.js"
+						}
+					]
+				}
+			}
+		},
+		"multiline_js": {
+			"begin": "<%%",
+			"end": "%%>",
+			"name": "meta.multiline_js",
+			"captures": {
+				"0": {
+					"name": "keyword.operator"
+				}
+			},
+			"patterns": [
+				{
+					"include": "source.js"
+				}
+			]
+		},
+
+		"folder_context.compile_repeat": {
+			"begin": "^[ \t]*(REPEAT) ?\\((.+?)\\)( ?(as) (\\w+)) ?{$",
+			"end": "^[ \t]*}$",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control"
+				},
+				"2": {
+					"patterns": [
+						{
+							"match": "-?(\\d+) ?(,) ?-?(\\d+)",
+							"captures": {
+								"1": {
+									"name": "constant.numeric"
+								},
+								"2": {
+									"name": "keyword.operator"
+								},
+								"3": {
+									"name": "constant.numeric"
+								}
+							}
+						},
+						{
+							"match": "(-?[\\d\\.]+) ?(,) ?(-?[\\d\\.]+) ?(,) ?(-?[\\d\\.]+)",
+							"captures": {
+								"1": {
+									"name": "constant.numeric"
+								},
+								"2": {
+									"name": "keyword.operator"
+								},
+								"3": {
+									"name": "constant.numeric"
+								},
+								"4": {
+									"name": "keyword.operator"
+								},
+								"5": {
+									"name": "constant.numeric"
+								}
+							}
+						},
+						{
+							"include": "source.js"
+						}
+					]
+				},
+				"4": {
+					"name": "entity.name"
+				},
+				"5": {
+					"name": "string.other"
+				}
+			},
+			"name": "folder_context.compile_repeat",
+			"patterns": [
+				{
+					"include": "#folder_context"
+				}
+			]
+		},
+		"function_context.compile_repeat": {
+			"begin": "^[ \t]*(REPEAT) ?\\((.+?)\\)( ?(as) (\\w+)) ?{$",
+			"end": "^[ \t]*}$",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control"
+				},
+				"2": {
+					"patterns": [
+						{
+							"match": "-?(\\d+) ?(,) ?-?(\\d+)",
+							"captures": {
+								"1": {
+									"name": "constant.numeric"
+								},
+								"2": {
+									"name": "keyword.operator"
+								},
+								"3": {
+									"name": "constant.numeric"
+								}
+							}
+						},
+						{
+							"match": "(-?[\\d\\.]+) ?(,) ?(-?[\\d\\.]+) ?(,) ?(-?[\\d\\.]+)",
+							"captures": {
+								"1": {
+									"name": "constant.numeric"
+								},
+								"2": {
+									"name": "keyword.operator"
+								},
+								"3": {
+									"name": "constant.numeric"
+								},
+								"4": {
+									"name": "keyword.operator"
+								},
+								"5": {
+									"name": "constant.numeric"
+								}
+							}
+						},
+						{
+							"include": "source.js"
+						}
+					]
+				},
+				"4": {
+					"name": "entity.name"
+				},
+				"5": {
+					"name": "string.other"
+				}
+			},
+			"name": "function_context.compile_repeat",
+			"patterns": [
+				{
+					"include": "#function_context"
+				}
+			]
+		},
+
+		"folder_context.compile_if_else": {
+			"name": "meta.folder_context.compile_if_else.if",
+			"begin": "^[ \t]*(IF) ?(.+) ?{$",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.function"
+				},
+				"2": {
+					"patterns": [
+						{
+							"include": "source.js"
+						}
+					]
+				}
+			},
+			"end": "^[ \t]*}$",
+			"patterns": [
+				{
+					"include": "#folder_context.compile_if_else.else"
+				},
+				{
+					"include": "#folder_context"
+				}
+			]
+		},
+		"folder_context.compile_if_else.else": {
+			"name": "meta.folder_context.compile_if_else.else",
+			"begin": "^[ \t]*} ?(ELSE IF ?(.+) ?{|ELSE ?{|)$",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.function"
+				},
+				"2": {
+					"patterns": [
+						{
+							"include": "source.js"
+						}
+					]
+				}
+			},
+			"end": "^[ \t]*}$",
+			"patterns": [
+				{
+					"include": "#folder_context.compile_if_else.else"
+				},
+				{
+					"include": "#folder_context"
+				}
+			]
+		},
+
+		"function_context.compile_if_else": {
+			"name": "meta.function_context.compile_if_else.if",
+			"begin": "^[ \t]*(IF) ?(.+) ?{$",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.function"
+				},
+				"2": {
+					"patterns": [
+						{
+							"include": "source.js"
+						}
+					]
+				}
+			},
+			"end": "^[ \t]*}$",
+			"patterns": [
+				{
+					"include": "#function_context.compile_if_else.else"
+				},
+				{
+					"include": "#function_context"
+				}
+			]
+		},
+		"function_context.compile_if_else.else": {
+			"name": "meta.function_context.compile_if_else.else",
+			"begin": "^[ \t]*} ?(ELSE IF ?(.+) ?{|ELSE ?{|)$",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.function"
+				},
+				"2": {
+					"patterns": [
+						{
+							"include": "source.js"
+						}
+					]
+				}
+			},
+			"end": "^[ \t]*}$",
+			"patterns": [
+				{
+					"include": "#function_context.compile_if_else.else"
+				},
+				{
+					"include": "#function_context"
+				}
+			]
+		},
+
+		"advancement_definition": {
+			"begin": "^[ \t]*(advancement) (.+?) ?{",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.function"
+				},
+				"2": {
+					"name": "entity.name.function",
+					"patterns": [
+						{
+							"include": "#inline_js"
+						}
+					]
+				}
+			},
+			"end": "^[ \t]*}$",
+			"patterns": [
+				{
+					"include": "source.json"
+				}
+			]
+		},
+		"enchantment_definition": {
+			"begin": "^[ \t]*(enchantment) (.+?) ?{",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.function"
+				},
+				"2": {
+					"name": "entity.name.function",
+					"patterns": [
+						{
+							"include": "#inline_js"
+						}
+					]
+				}
+			},
+			"end": "^[ \t]*}$",
+			"patterns": [
+				{
+					"include": "source.json"
+				}
+			]
+		},
+		"item_modifier_definition": {
+			"begin": "^[ \t]*(item_modifier) (.+?) ?{",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.function"
+				},
+				"2": {
+					"name": "entity.name.function",
+					"patterns": [
+						{
+							"include": "#inline_js"
+						}
+					]
+				}
+			},
+			"end": "^[ \t]*}$",
+			"patterns": [
+				{
+					"include": "source.json"
+				}
+			]
+		},
+		"loot_table_definition": {
+			"begin": "^[ \t]*(loot_table) (.+?) ?{",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.function"
+				},
+				"2": {
+					"name": "entity.name.function",
+					"patterns": [
+						{
+							"include": "#inline_js"
+						}
+					]
+				}
+			},
+			"end": "^[ \t]*}$",
+			"patterns": [
+				{
+					"include": "source.json"
+				}
+			]
+		},
+		"predicate_definition": {
+			"begin": "^[ \t]*(predicate) (.+?) ?{",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.function"
+				},
+				"2": {
+					"name": "entity.name.function",
+					"patterns": [
+						{
+							"include": "#inline_js"
+						}
+					]
+				}
+			},
+			"end": "^[ \t]*}$",
+			"patterns": [
+				{
+					"include": "source.json"
+				}
+			]
+		},
+		"recipe_definition": {
+			"begin": "^[ \t]*(recipe) (.+?) ?{",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.function"
+				},
+				"2": {
+					"name": "entity.name.function",
+					"patterns": [
+						{
+							"include": "#inline_js"
+						}
+					]
+				}
+			},
+			"end": "^[ \t]*}$",
+			"patterns": [
+				{
+					"include": "source.json"
+				}
+			]
+		},
+		"chat_type_definition": {
+			"begin": "^[ \t]*(chat_type) (.+?) ?{",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.function"
+				},
+				"2": {
+					"name": "entity.name.function",
+					"patterns": [
+						{
+							"include": "#inline_js"
+						}
+					]
+				}
+			},
+			"end": "^[ \t]*}$",
+			"patterns": [
+				{
+					"include": "source.json"
+				}
+			]
+		},
+		"damage_type_definition": {
+			"begin": "^[ \t]*(damage_type) (.+?) ?{",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.function"
+				},
+				"2": {
+					"name": "entity.name.function",
+					"patterns": [
+						{
+							"include": "#inline_js"
+						}
+					]
+				}
+			},
+			"end": "^[ \t]*}$",
+			"patterns": [
+				{
+					"include": "source.json"
+				}
+			]
+		},
+		"dimension_definition": {
+			"begin": "^[ \t]*(dimension) (.+?) ?{",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.function"
+				},
+				"2": {
+					"name": "entity.name.function",
+					"patterns": [
+						{
+							"include": "#inline_js"
+						}
+					]
+				}
+			},
+			"end": "^[ \t]*}$",
+			"patterns": [
+				{
+					"include": "source.json"
+				}
+			]
+		},
+		"dimension_type_definition": {
+			"begin": "^[ \t]*(dimension_type) (.+?) ?{",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.function"
+				},
+				"2": {
+					"name": "entity.name.function",
+					"patterns": [
+						{
+							"include": "#inline_js"
+						}
+					]
+				}
+			},
+			"end": "^[ \t]*}$",
+			"patterns": [
+				{
+					"include": "source.json"
+				}
+			]
+		},
+		"worldgen_definition": {
+			"begin": "^[ \t]*(worldgen) (biome|configured_carver|configured_feature|density_function|noise|noise_settings|placed_feature|processor_list|structure|structure_set|template_pool|world_preset|flat_level_generator_preset) (.+?) ?{",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.function"
+				},
+				"2": {
+					"name": "entity.name"
+				},
+				"3": {
+					"name": "entity.name.function"
+				}
+			},
+			"end": "^[ \t]*}$",
+			"patterns": [
+				{
+					"include": "source.json"
+				}
+			]
+		},
+
+		"tag_definition": {
+			"name": "meta.tag_definition",
+			"begin": "^[ \t]*(tag) ([a-z]+) (.+?)( replace)? ?{",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.function"
+				},
+				"2": {
+					"name": "entity.name"
+				},
+				"3": {
+					"name": "entity.name.function",
+					"patterns": [
+						{
+							"include": "#inline_js"
+						}
+					]
+				},
+				"4": {
+					"name": "keyword.other"
+				}
+			},
+			"end": "^[ \t]*}$",
+			"patterns": [
+				{
+					"match": "^[ \t]*(.+?)(:[a-z0-9_]+)?( replace)?$",
+					"captures": {
+						"1": {
+							"name": "entity.name.function"
+						},
+						"2": {
+							"name": "entity.name.function"
+						},
+						"3": {
+							"name": "keyword.other"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#inline_js"
+						}
+					]
+				}
+			]
+		},
+
+		"clock_definition": {
+			"name": "meta.clock_definition",
+			"begin": "^[ \t]*(clock) (.+?) (\\d+(?:t|s|d)) ?{",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.function"
+				},
+				"2": {
+					"name": "entity.name.function",
+					"patterns": [
+						{
+							"include": "#inline_js"
+						}
+					]
+				},
+				"3": {
+					"name": "constant.numeric"
+				}
+			},
+			"end": "^[ \t]*}$",
+			"patterns": [
+				{
+					"include": "#function_context"
+				}
+			]
+		},
+
+		"schedule_block": {
+			"name": "schedule_block",
+			"begin": "^[ \t]*(\\$?)(schedule)( [^ \n\t]+)(?: (replace|append))? ?{",
+			"beginCaptures": {
+				"1": {
+					"name": "markup.italic"
+				},
+				"2": {
+					"name": "keyword.control.function"
+				},
+				"3": {
+					"name": "constant.numeric",
+					"patterns": [
+						{
+							"include": "#macro_argument_embed"
+						}
+					]
+				},
+				"4": {
+					"name": "keyword.other"
+				}
+			},
+			"end": "^[ \t]*}$",
+			"patterns": [
+				{
+					"include": "#function_context"
+				}
+			]
+		},
+
+		"function_block": {
+			"name": "meta.function_block",
+			"begin": "(block( [a-z0-9_]+)?)? ?{(?:$| ({.+|with .+)$)",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.function"
+				},
+				"2": {
+					"name": "entity.name.function",
+					"patterns": [
+						{
+							"include": "#inline_js"
+						}
+					]
+				},
+				"3": {
+					"patterns": [
+						{
+							"include": "source.injected-mcfunction"
+						}
+					]
+				}
+			},
+			"end": "^[ \t]*}$",
+			"patterns": [
+				{
+					"include": "#function_context"
+				}
+			]
+		},
+
+		"execute": {
+			"name": "meta.execute",
+			"begin": "((?: |^[ \t]*)(\\$?)(execute\\b)|(\\belse (\\$?)execute\\b)|(else))",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control"
+				},
+				"2": {
+					"name": "markup.italic"
+				},
+				"5": {
+					"name": "markup.italic"
+				}
+			},
+			"end": "(?: |^[ \t]*)(\\$?)(run\\b)",
+			"endCaptures": {
+				"1": {
+					"name": "markup.italic"
+				},
+				"2": {
+					"name": "keyword.control"
+				}
+			},
+			"patterns": [
+				{
+					"include": "#execute"
+				},
+				{
+					"include": "#execute_if_function"
+				},
+				{
+					"include": "source.injected-mcfunction"
+				}
+			]
+		},
+
+		"execute_if_function": {
+			"name": "execute_if_function",
+			"begin": "(if|unless) (function) ?{$",
+			"beginCaptures": {
+				"1": {
+					"name": "entity.name"
+				},
+				"2": {
+					"name": "entity.name"
+				}
+			},
+			"end": "^[ \t]*}",
+			"patterns": [
+				{
+					"include": "#function_context"
+				}
+			]
+		},
+
+		"special_function_call": {
+			"name": "meta.special_function_call",
+			"match": "^[ \t]*(function) (#?)(?:(\\*|\\.?\\./)(.+?(?: |$))|(\\^)(\\d+))",
+			"captures": {
+				"1": {
+					"name": "keyword.control.function"
+				},
+				"2": {
+					"name": "entity.name.function"
+				},
+				"3": {
+					"name": "keyword.operator"
+				},
+				"4": {
+					"name": "entity.name.function",
+					"patterns": [
+						{
+							"include": "#inline_js"
+						}
+					]
+				},
+				"5": {
+					"name": "keyword.operator"
+				},
+				"6": {
+					"name": "constant.numeric"
+				}
+			}
+		}
+	}
+}

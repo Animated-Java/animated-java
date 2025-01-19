@@ -1,4 +1,4 @@
-import VanillaBlockDisplayElementPanel from '../../components/vanillaBlockDisplayElementPanel.svelte'
+import VanillaBlockDisplayElementPanel from '../../svelte/vanillaBlockDisplayElementPanel.svelte'
 import { injectSvelteCompomponentMod } from '../../util/injectSvelteComponent'
 
 injectSvelteCompomponentMod({

@@ -1,6 +1,6 @@
 import { IBlueprintVariantJSON } from './blueprintFormat'
 import { events } from './util/events'
-import { toSafeFuntionName } from './util/minecraftUtil'
+import { toSafeFunctionName } from './util/minecraftUtil'
 
 export class TextureMap {
 	map: Map<string, string>
@@ -200,7 +200,7 @@ export class Variant {
 	}
 
 	public static makeNameUnique(variant: Variant, name: string): string {
-		name = toSafeFuntionName(name)
+		name = toSafeFunctionName(name)
 		if (!Variant.all.some(v => v !== variant && v.name === name)) {
 			return name
 		}
