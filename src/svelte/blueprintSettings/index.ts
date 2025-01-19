@@ -10,6 +10,7 @@ import { makeNotValueable, makeValuable, Valuable } from '../../util/stores'
 import { SvelteSidebarDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
 import Datapack from './pages/datapack.svelte'
+import Export from './pages/export.svelte'
 import General from './pages/general.svelte'
 import Plugin from './pages/plugin.svelte'
 import Resourcepack from './pages/resourcepack.svelte'
@@ -47,6 +48,15 @@ export function openBlueprintSettingsDialog() {
 					label: 'General',
 					component: General,
 					props: { settings },
+				},
+				export: {
+					icon: 'save',
+					label: 'Export',
+					component: Export,
+					props: { settings },
+					condition() {
+						return settings.environment.get() === 'vanilla'
+					},
 				},
 				datapack: {
 					icon: 'folder',
