@@ -1,23 +1,27 @@
 import { MinecraftVersion } from './systems/global'
 import { Valuable } from './util/stores'
 
-export type ExportMode = 'raw' | 'zip' | 'none'
+export type ExportMode = 'folder' | 'zip' | 'none'
+export type ExportEnvironment = 'vanilla' | 'plugin'
+export type DataPackAnimationSystem = 'functions' | 'storage'
 
 export const defaultValues = {
-	export_namespace: 'blueprint',
+	id: 'animated_java:new_blueprint',
+	tag_prefix: `aj.new_blueprint`,
+	auto_generate_tag_prefix: true,
 	show_bounding_box: false,
 	auto_bounding_box: true,
 	bounding_box: [48, 48],
 	// Export Settings
-	enable_plugin_mode: false,
-	resource_pack_export_mode: 'raw' as ExportMode,
-	data_pack_export_mode: 'raw' as ExportMode,
+	environment: 'vanilla' as ExportEnvironment,
+	resource_pack_export_mode: 'folder' as ExportMode,
+	data_pack_export_mode: 'folder' as ExportMode,
 	target_minecraft_versions: ['1.21.4'] as MinecraftVersion[],
 	// Resource Pack Settings
-	display_item: 'minecraft:white_dye',
 	custom_model_data_offset: 0,
 	enable_advanced_resource_pack_settings: false,
 	resource_pack: '',
+	display_item: 'minecraft:white_dye',
 	// Data Pack Settings
 	enable_advanced_data_pack_settings: false,
 	data_pack: '',
@@ -26,11 +30,11 @@ export const defaultValues = {
 	ticking_commands: '',
 	interpolation_duration: 1,
 	teleportation_duration: 1,
-	use_storage_for_animation: false,
+	animation_system: 'functions' as DataPackAnimationSystem,
 	show_function_errors: true,
 	show_outdated_warning: true,
 	// Plugin Settings
-	baked_animations: true,
+	bake_animations: false,
 	json_file: '',
 }
 

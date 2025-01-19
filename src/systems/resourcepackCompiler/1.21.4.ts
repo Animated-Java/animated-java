@@ -2,6 +2,7 @@ import type { ResourcePackCompiler } from '.'
 import { PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
 import { isResourcePackPath, sanitizePathName } from '../../util/minecraftUtil'
 import { Variant } from '../../variants'
+import { AJMeta } from '../ajmeta'
 import { IItemDefinition } from '../minecraft/itemDefinitions'
 import { type ITextureAtlas } from '../minecraft/textureAtlas'
 import { IRenderedNodes, IRenderedRig, IRenderedVariantModel } from '../rigRenderer'
@@ -16,11 +17,17 @@ const compileResourcePack: ResourcePackCompiler = async ({
 	const aj = Project!.animated_java
 
 	PROGRESS_DESCRIPTION.set('Compiling Resource Pack...')
-	console.log('Compiling resource pack...', {
-		rig,
-		textureExportFolder,
-		modelExportFolder,
-	})
+	console.log('Compiling resource pack...', options)
+
+	const ajmeta = new AJMeta(
+		PathModule.join(options.resourcePackFolder, 'assets.ajmeta'),
+		aj.export_namespace,
+		lastUsedExportNamespace,
+		options.resourcePackFolder
+	)
+	ajmeta.read()
+
+	const exportedFiles = new Map<string, string | Buffer>()
 
 	const globalModelsFolder = PathModule.join('assets/animated_java/models/')
 	const itemModelDefinitionsFolder = PathModule.join(

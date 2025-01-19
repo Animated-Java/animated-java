@@ -7,7 +7,7 @@ import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
 import { Variant } from '../../variants'
 import { VanillaBlockDisplay } from '../../outliner/vanillaBlockDisplay'
-import VanillaBlockDisplayConfigDialog from '../../components/vanillaBlockDisplayConfigDialog.svelte'
+import VanillaBlockDisplayConfigDialog from '../../svelte/vanillaBlockDisplayConfigDialog.svelte'
 
 export function openVanillaBlockDisplayConfigDialog(display: VanillaBlockDisplay) {
 	// Blockbench's JSON stringifier doesn't handle custom toJSON functions, so I'm storing the config JSON in the bone instead of the actual BoneConfig object

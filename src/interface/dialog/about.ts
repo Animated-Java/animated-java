@@ -1,5 +1,5 @@
 import { PACKAGE } from '../../constants'
-import AboutSvelte from '../../components/about.svelte'
+import AboutSvelte from '../../svelte/about.svelte'
 import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
 

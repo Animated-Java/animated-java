@@ -1,5 +1,5 @@
 import { isCurrentFormat } from '../../blueprintFormat'
-import VariantsPanel from '../../components/variantsPanel.svelte'
+import VariantsPanel from '../../svelte/variantsPanel.svelte'
 import { PACKAGE } from '../../constants'
 import { createAction, createMenu } from '../../util/moddingTools'
 import { SveltePanel } from '../../util/sveltePanel'

@@ -1,6 +1,7 @@
 import type { ResourcePackCompiler } from '.'
-import { PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
+import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
 import { isResourcePackPath, sanitizePathName } from '../../util/minecraftUtil'
+import { AJMeta } from '../ajmeta'
 import { ITextureAtlas } from '../minecraft/textureAtlas'
 import { IRenderedNodes } from '../rigRenderer'
 import { sortObjectKeys } from '../util'
@@ -76,10 +77,10 @@ class PredicateItemModel {
 			}
 		}
 
-		file.animated_java[aj.export_namespace] ??= []
+		file.animated_java[aj.id] ??= []
 
 		for (const [name, ownedIds] of Object.entries(file.animated_java)) {
-			const namespace = aj.export_namespace
+			const namespace = aj.id
 			const lastNamespace = Project!.last_used_export_namespace
 			if (name === namespace || name === lastNamespace) {
 				file.overrides = file.overrides.filter(
@@ -102,7 +103,7 @@ class PredicateItemModel {
 	toJSON(): IPredicateItemModel {
 		const [displayItemNamespace, displayItemName] =
 			Project!.animated_java.display_item.split(':')
-		const exportNamespace = Project!.animated_java.export_namespace
+		const exportNamespace = Project!.animated_java.id
 
 		return {
 			parent: this.parent,
@@ -137,12 +138,19 @@ const compileResourcePack: ResourcePackCompiler = async ({
 	const aj = Project!.animated_java
 
 	PROGRESS_DESCRIPTION.set('Compiling Resource Pack...')
-	console.log('Compiling resource pack...', {
-		rig,
-		displayItemPath,
-		textureExportFolder,
-		modelExportFolder,
-	})
+	console.log('Compiling resource pack...', options)
+
+	const ajmeta = new AJMeta(
+		PathModule.join(options.resourcePackFolder, 'assets.ajmeta'),
+		aj.export_namespace,
+		lastUsedExportNamespace,
+		options.resourcePackFolder
+	)
+	if (aj.resource_pack_export_mode === 'raw') {
+		ajmeta.read()
+	}
+
+	const exportedFiles = new Map<string, string | Buffer>()
 
 	// Empty Model
 	versionedFiles.set(PathModule.join('assets/animated_java/models/empty.json'), { content: '{}' })

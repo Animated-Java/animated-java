@@ -1,4 +1,4 @@
-import BlueprintLoadingPopup from '../../components/blueprintLoadingPopup.svelte'
+import BlueprintLoadingPopup from '../../svelte/blueprintLoadingPopup.svelte'
 import { PACKAGE } from '../../constants'
 import { Valuable } from '../../util/stores'
 import { SvelteDialog } from '../../util/svelteDialog'

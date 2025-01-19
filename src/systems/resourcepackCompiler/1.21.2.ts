@@ -1,8 +1,18 @@
 import type { ResourcePackCompiler } from '.'
-import { PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
-import { safeReadSync } from '../../util/fileUtil'
+import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
 import { isResourcePackPath, sanitizePathName } from '../../util/minecraftUtil'
+import { AJMeta } from '../ajmeta'
 import { type ITextureAtlas } from '../minecraft/textureAtlas'
+import { IRenderedNodes, IRenderedRig } from '../rigRenderer'
+import { zip } from '../util'
+
+export default async function compileResourcePack(options: {
+	rig: IRenderedRig
+	resourcePackFolder: string
+	textureExportFolder: string
+	modelExportFolder: string
+}) {
+	const { rig, resourcePackFolder, textureExportFolder, modelExportFolder } = options
 import { IRenderedNodes } from '../rigRenderer'
 
 const compileResourcePack: ResourcePackCompiler = async ({
@@ -18,11 +28,19 @@ const compileResourcePack: ResourcePackCompiler = async ({
 	)
 
 	PROGRESS_DESCRIPTION.set('Compiling Resource Pack...')
-	console.log('Compiling resource pack...', {
-		rig,
-		textureExportFolder,
-		modelExportFolder,
-	})
+	console.log('Compiling resource pack...', options)
+
+	const ajmeta = new AJMeta(
+		PathModule.join(options.resourcePackFolder, 'assets.ajmeta'),
+		aj.id,
+		lastUsedExportNamespace,
+		options.resourcePackFolder
+	)
+	if (aj.resource_pack_export_mode === 'raw') {
+		ajmeta.read()
+	}
+
+	const exportedFiles = new Map<string, string | Buffer>()
 
 	// Texture atlas
 	const blockAtlasPath = PathModule.join('assets/minecraft/atlases/blocks.json')

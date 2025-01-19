@@ -25,7 +25,12 @@ import './systems/minecraft/registryManager'
 import { MINECRAFT_REGISTRY } from './systems/minecraft/registryManager'
 import resourcepackCompiler from './systems/resourcepackCompiler'
 import { openExportProgressDialog } from './interface/dialog/exportProgress'
-import { isDataPackPath, isResourcePackPath, parseResourcePackPath } from './util/minecraftUtil'
+import {
+	isDataPackPath,
+	isResourcePackPath,
+	parseResourceLocation,
+	parseResourcePackPath,
+} from './util/minecraftUtil'
 import { blueprintSettingErrors } from './blueprintSettings'
 import { openUnexpectedErrorDialog } from './interface/dialog/unexpectedError'
 import { BLUEPRINT_CODEC, BLUEPRINT_FORMAT } from './blueprintFormat'
@@ -50,6 +55,7 @@ import { checkForIncompatabilities } from './interface/popup/incompatabilityPopu
 globalThis.AnimatedJava = {
 	API: {
 		parseResourcePackPath,
+		parseResourceLocation,
 		datapackCompiler,
 		resourcepackCompiler,
 		Variant,
