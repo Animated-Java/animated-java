@@ -55,6 +55,24 @@ export function getPathFromResourceLocation(resourceLocation: string, type: stri
 	return `assets/${namespace}/${type}/${path.join('/')}`
 }
 
+export function createTagPrefixFromBlueprintID(id: string) {
+	const parsed = parseResourceLocation(id)
+	if (parsed) {
+		const namespace = parsed.namespace === 'animated_java' ? 'aj' : parsed.namespace
+		return namespace + '.' + parsed.subpath.replaceAll('/', '.')
+	}
+}
+
+export function containsInvalidScoreboardTagCharacters(tag: string) {
+	if (tag.match(/[^a-zA-Z0-9_\-.]/g)) return true
+	return false
+}
+
+export function containsInvalidResourceLocationCharacters(resourceLocation: string) {
+	if (resourceLocation.match(/[^a-z0-9_/.:]/g)) return true
+	return false
+}
+
 export function isResourcePackPath(path: string) {
 	const parsed = parseResourcePackPath(path)
 	return !!(parsed && parsed.namespace && parsed.resourcePath)
@@ -97,14 +115,13 @@ export function parseResourceLocation(resourceLocation: string) {
 		parts = [namespace]
 		namespace = 'minecraft'
 	}
-	const path = parts.join('')
-	const resourceType = path.split('/')[0]
-	const parsed = PathModule.parse(path)
-	const fullPath = PathModule.join(namespace, path)
+	const subpath = parts.join('')
+	const resourceType = subpath.split('/')[0]
+	const parsed = PathModule.parse(subpath)
 	return {
 		namespace,
-		path,
-		fullPath,
+		subpath,
+		path: PathModule.join(namespace, parsed.name),
 		type: resourceType,
 		dir: parsed.dir,
 		name: parsed.name,
@@ -227,7 +244,7 @@ export async function parseBlock(block: string): Promise<IParsedBlock | undefine
 	const resource = parseResourceLocation(block)
 	return {
 		resource,
-		resourceLocation: resource.namespace + ':' + resource.path,
+		resourceLocation: resource.namespace + ':' + resource.subpath,
 		states,
 		blockStateRegistryEntry: await getBlockState(resource.name),
 	}
@@ -287,7 +304,7 @@ export function functionReferenceExists(dataPackRoot: string, resourceLocation: 
 		const dataFolder = PathModule.join(dataPackRoot, folder)
 		if (!fs.statSync(dataFolder).isDirectory()) continue
 
-		const path = PathModule.join(dataFolder, parsed.fullPath)
+		const path = PathModule.join(dataFolder, parsed.path)
 		if (!fs.existsSync(path)) continue
 		return true
 	}

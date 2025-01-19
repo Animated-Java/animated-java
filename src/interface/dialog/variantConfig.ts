@@ -1,4 +1,4 @@
-import VariantConfigDialogSvelteComponent from '../../components/variantConfigDialog.svelte'
+import VariantConfigDialogSvelteComponent from '../../svelte/variantConfigDialog.svelte'
 import { PACKAGE } from '../../constants'
 import { events } from '../../util/events'
 import { Valuable } from '../../util/stores'

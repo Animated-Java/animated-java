@@ -1,6 +1,6 @@
 import { BLUEPRINT_FORMAT } from '../../blueprintFormat'
 import { BoneConfig } from '../../nodeConfigs'
-import BoneConfigDialogSvelteComponent from '../../components/boneConfigDialog.svelte'
+import BoneConfigDialogSvelteComponent from '../../svelte/boneConfigDialog.svelte'
 import { PACKAGE } from '../../constants'
 import { createAction } from '../../util/moddingTools'
 import { Valuable } from '../../util/stores'

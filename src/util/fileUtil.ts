@@ -68,3 +68,11 @@ export function safeReadSync(path: string): Buffer | undefined {
 export async function safeRead(path: string) {
 	return fs.promises.readFile(path).catch(() => undefined)
 }
+
+export function directoryExists(path: string): boolean {
+	return fs.existsSync(path) && !!fs.lstatSync(path, { throwIfNoEntry: false })?.isDirectory()
+}
+
+export function fileExists(path: string): boolean {
+	return fs.existsSync(path) && !!fs.lstatSync(path, { throwIfNoEntry: false })?.isFile()
+}

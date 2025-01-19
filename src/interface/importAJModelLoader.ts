@@ -1,13 +1,13 @@
 import { SvelteComponentDev } from 'svelte/internal'
-import { BLUEPRINT_CODEC, IBlueprintFormatJSON } from '../blueprintFormat'
-import ImportAjModelLoaderDialog from '../components/importAJModelLoaderDialog.svelte'
+import ImportAjModelLoaderDialog from '../svelte/importAJModelLoaderDialog.svelte'
 import { PACKAGE } from '../constants'
-import * as ModelDatFixerUpper from '../systems/modelDataFixerUpper'
 import { injectSvelteCompomponent } from '../util/injectSvelteComponent'
 import { sanitizePathName } from '../util/minecraftUtil'
 import { createModelLoader } from '../util/moddingTools'
 import { translate } from '../util/translation'
 import { openUnexpectedErrorDialog } from './dialog/unexpectedError'
+import * as ModelDatFixerUpper from '../systems/modelDataFixerUpper'
+import { BLUEPRINT_CODEC, IBlueprintFormatJSON } from '../blueprintFormat'
 
 let activeComponent: SvelteComponentDev | null = null
 

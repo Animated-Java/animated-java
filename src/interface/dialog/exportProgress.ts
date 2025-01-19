@@ -1,4 +1,4 @@
-import ExportProgressDialogSvelteComponent from '../../components/exportProgressDialog.svelte'
+import ExportProgressDialogSvelteComponent from '../../svelte/exportProgressDialog.svelte'
 import { PACKAGE } from '../../constants'
 import { Valuable } from '../../util/stores'
 import { SvelteDialog } from '../../util/svelteDialog'
