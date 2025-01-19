@@ -14,11 +14,11 @@ export async function cleanupExportedFiles() {
 		// displayItemPath,
 	} = getExportPaths()
 
-	if (aj.resource_pack_export_mode === 'raw') {
+	if (aj.resource_pack_export_mode === 'folder') {
 		const assetsMetaPath = PathModule.join(resourcePackFolder, 'assets.ajmeta')
 		const assetsMeta = new AJMeta(
 			assetsMetaPath,
-			aj.export_namespace,
+			aj.id,
 			Project!.last_used_export_namespace,
 			resourcePackFolder
 		)
@@ -31,7 +31,7 @@ export async function cleanupExportedFiles() {
 		for (const file of assetsMeta.previousVersionedFiles) {
 			if (!isFunctionTagPath(file)) {
 				if (fs.existsSync(file)) await fs.promises.unlink(file)
-			} else if (aj.export_namespace !== Project!.last_used_export_namespace) {
+			} else if (aj.id !== Project!.last_used_export_namespace) {
 				const resourceLocation = parseDataPackPath(file)!.resourceLocation
 				if (
 					resourceLocation.startsWith(
@@ -42,7 +42,7 @@ export async function cleanupExportedFiles() {
 					const newPath = replacePathPart(
 						file,
 						Project!.last_used_export_namespace,
-						aj.export_namespace
+						aj.id
 					)
 					await fs.promises.mkdir(PathModule.dirname(newPath), { recursive: true })
 					await fs.promises.copyFile(file, newPath)
@@ -66,11 +66,11 @@ export async function cleanupExportedFiles() {
 		assetsMeta.write()
 	}
 
-	if (aj.data_pack_export_mode === 'raw') {
+	if (aj.data_pack_export_mode === 'folder') {
 		const dataMetaPath = PathModule.join(dataPackFolder, 'data.ajmeta')
 		const dataMeta = new AJMeta(
 			dataMetaPath,
-			aj.export_namespace,
+			aj.id,
 			Project!.last_used_export_namespace,
 			dataPackFolder
 		)
@@ -82,7 +82,7 @@ export async function cleanupExportedFiles() {
 		const removedFolders = new Set<string>()
 		for (const file of [...dataMeta.previousCoreFiles, ...dataMeta.previousVersionedFiles]) {
 			if (isFunctionTagPath(file) && fs.existsSync(file)) {
-				if (aj.export_namespace !== Project!.last_used_export_namespace) {
+				if (aj.id !== Project!.last_used_export_namespace) {
 					const resourceLocation = parseDataPackPath(file)!.resourceLocation
 					if (
 						resourceLocation.startsWith(
@@ -92,7 +92,7 @@ export async function cleanupExportedFiles() {
 						const newPath = replacePathPart(
 							file,
 							Project!.last_used_export_namespace,
-							aj.export_namespace
+							aj.id
 						)
 						await fs.promises.mkdir(PathModule.dirname(newPath), { recursive: true })
 						await fs.promises.copyFile(file, newPath)
@@ -106,7 +106,7 @@ export async function cleanupExportedFiles() {
 				content.values = content.values.filter(
 					v =>
 						typeof v === 'string' &&
-						(!v.startsWith(`animated_java:${aj.export_namespace}/`) ||
+						(!v.startsWith(`animated_java:${aj.id}/`) ||
 							!v.startsWith(`animated_java:${Project!.last_used_export_namespace}/`))
 				)
 				await fs.promises.writeFile(file, autoStringify(content))

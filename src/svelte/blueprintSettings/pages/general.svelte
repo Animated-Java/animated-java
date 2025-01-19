@@ -19,27 +19,7 @@
 
 	export let settings: ValuableBlueprintSettings
 
-	const blueprintID = settings.id
-	const tagPrefix = settings.tag_prefix
-	const autoGenerateTagPrefix = settings.auto_generate_tag_prefix
-
-	// Defining this here to get TS errors when the values are not updated.
-	const versions: Record<MinecraftVersion, MinecraftVersion> = {
-		'1.20.4': '1.20.4',
-		'1.20.5': '1.20.5',
-		'1.21.0': '1.21.0',
-		'1.21.2': '1.21.2',
-		'1.21.4': '1.21.4',
-	}
-
-	$: if ($autoGenerateTagPrefix) {
-		const tag = createTagPrefixFromBlueprintID($blueprintID)
-		if (tag) {
-			$tagPrefix = tag
-		}
-	}
-
-	const blueprintIDChecker: DialogItemValueChecker<string> = (value: string) => {
+	const blueprintIDChecker: DialogItemValueChecker<string> = value => {
 		if (value === '') {
 			return {
 				type: 'error',
@@ -71,22 +51,6 @@
 			return {
 				type: 'error',
 				message: "The ID's `path` cannot be empty",
-			}
-		}
-
-		return { type: 'success' }
-	}
-
-	const tagPrefexChecker: DialogItemValueChecker<string> = value => {
-		if (value === '') {
-			return {
-				type: 'error',
-				message: 'The Tag Prefix cannot be empty!',
-			}
-		} else if (containsInvalidScoreboardTagCharacters(value)) {
-			return {
-				type: 'error',
-				message: 'The Tag Prefix contains invalid characters!',
 			}
 		}
 
@@ -171,22 +135,6 @@
 	valueChecker={blueprintIDChecker}
 />
 
-<LineEdit
-	label="Tag Prefix"
-	description="Choose a prefix for the tags used in your project."
-	value={settings.tag_prefix}
-	defaultValue={defaultValues.tag_prefix}
-	required
-	disabled={$autoGenerateTagPrefix}
-	valueChecker={tagPrefexChecker}
-/>
-
-<Checkbox
-	label="Auto-Generate Tag Prefix"
-	description="Automatically generate a tag prefix based on the blueprint ID."
-	checked={settings.auto_generate_tag_prefix}
-/>
-
 <Vector2d
 	label="Texture Size"
 	description="The size of the largest texture used for the blueprint."
@@ -200,12 +148,4 @@
 	maxY={4096}
 	required
 	valueChecker={textureSizeChecker}
-/>
-
-<OptionSelect
-	label="Target Minecraft Version"
-	description="Choose the version of Minecraft you are exporting this project for.<br/>If your exact version is not listed, choose the closest version before the one you are using."
-	selected={settings.target_minecraft_version}
-	options={versions}
-	required
 />
