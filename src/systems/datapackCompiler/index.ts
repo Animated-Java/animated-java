@@ -53,7 +53,9 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 	const parentNames: Array<{ name: string; type: string }> = []
 
 	function recurseParents(node: AnyRenderedNode) {
-		if (node.parent) {
+		if (node.parent === 'root') {
+			// Root is ignored
+		} else if (node.parent) {
 			parentNames.push({
 				name: rig.nodes[node.parent].safe_name,
 				type: rig.nodes[node.parent].type,
@@ -62,6 +64,8 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 		}
 	}
 	recurseParents(node)
+
+	const hasParent = node.parent && node.parent !== 'root'
 
 	tags.push(
 		// Global
@@ -74,7 +78,7 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 		TAGS.PROJECT_NODE_NAMED(Project!.animated_java.export_namespace, node.safe_name)
 	)
 
-	if (!node.parent) {
+	if (!hasParent) {
 		tags.push(TAGS.GLOBAL_ROOT_CHILD())
 	}
 	switch (node.type) {
@@ -95,7 +99,7 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 				TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_namespace, node.safe_name), // Tree includes self
 				TAGS.PROJECT_BONE_TREE_BONE(Project!.animated_java.export_namespace, node.safe_name) // Tree includes self
 			)
-			if (!node.parent) {
+			if (!hasParent) {
 				// Nodes without parents are assumed to be root nodes
 				tags.push(TAGS.GLOBAL_ROOT_CHILD_BONE())
 			} else {
@@ -146,7 +150,7 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 					node.safe_name
 				)
 			)
-			if (!node.parent) {
+			if (!hasParent) {
 				// Nodes without parents are assumed to be root nodes
 				tags.push(TAGS.GLOBAL_ROOT_CHILD_ITEM_DISPLAY())
 			} else {
@@ -198,7 +202,7 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 					node.safe_name
 				)
 			)
-			if (!node.parent) {
+			if (!hasParent) {
 				// Nodes without parents are assumed to be root nodes
 				tags.push(TAGS.GLOBAL_ROOT_CHILD_BLOCK_DISPLAY())
 			} else {
@@ -250,7 +254,7 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 					node.safe_name
 				)
 			)
-			if (!node.parent) {
+			if (!hasParent) {
 				// Nodes without parents are assumed to be root nodes
 				tags.push(TAGS.GLOBAL_ROOT_CHILD_TEXT_DISPLAY())
 			} else {
@@ -294,7 +298,7 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 				TAGS.PROJECT_LOCATOR(Project!.animated_java.export_namespace),
 				TAGS.PROJECT_LOCATOR_NAMED(Project!.animated_java.export_namespace, node.safe_name)
 			)
-			if (!node.parent) {
+			if (!hasParent) {
 				// Nodes without parents are assumed to be root nodes
 				tags.push(TAGS.GLOBAL_ROOT_CHILD_LOCATOR())
 			} else {
@@ -338,7 +342,7 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 				TAGS.PROJECT_CAMERA(Project!.animated_java.export_namespace),
 				TAGS.PROJECT_CAMERA_NAMED(Project!.animated_java.export_namespace, node.safe_name)
 			)
-			if (!node.parent) {
+			if (!hasParent) {
 				// Nodes without parents are assumed to be root nodes
 				tags.push(TAGS.GLOBAL_ROOT_CHILD_CAMERA())
 			} else {
