@@ -1,8 +1,7 @@
 import { isFunctionTagPath } from '../util/fileUtil'
 import { IFunctionTag, parseDataPackPath } from '../util/minecraftUtil'
-import { DataPackAJMeta } from './datapackCompiler'
+import { AJMeta } from './ajmeta'
 import { getExportPaths } from './exporter'
-import { ResourcePackAJMeta } from './resourcepackCompiler/global'
 import { replacePathPart } from './util'
 
 export async function cleanupExportedFiles() {
@@ -17,7 +16,7 @@ export async function cleanupExportedFiles() {
 
 	if (aj.resource_pack_export_mode === 'raw') {
 		const assetsMetaPath = PathModule.join(resourcePackFolder, 'assets.ajmeta')
-		const assetsMeta = new ResourcePackAJMeta(
+		const assetsMeta = new AJMeta(
 			assetsMetaPath,
 			aj.export_namespace,
 			Project!.last_used_export_namespace,
@@ -69,7 +68,7 @@ export async function cleanupExportedFiles() {
 
 	if (aj.data_pack_export_mode === 'raw') {
 		const dataMetaPath = PathModule.join(dataPackFolder, 'data.ajmeta')
-		const dataMeta = new DataPackAJMeta(
+		const dataMeta = new AJMeta(
 			dataMetaPath,
 			aj.export_namespace,
 			Project!.last_used_export_namespace,
