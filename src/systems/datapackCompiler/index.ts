@@ -995,10 +995,18 @@ export default async function compileDataPack(options: {
 						await fs.promises.unlink(file)
 					}
 				}
+				let content: IFunctionTag
 				// Remove mentions of the export namespace from the file
-				const content: IFunctionTag = JSON.parse(
-					(await fs.promises.readFile(file)).toString()
-				)
+				try {
+					content = JSON.parse((await fs.promises.readFile(file)).toString())
+				} catch (e) {
+					if (e instanceof SyntaxError) {
+						throw new IntentionalExportError(
+							`Failed to parse function tag file: '${file}'. Please ensure that the file is valid JSON.`
+						)
+					}
+					continue
+				}
 				content.values = content.values.filter(
 					v =>
 						typeof v === 'string' &&
