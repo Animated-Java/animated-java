@@ -592,8 +592,9 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 			.set(
 				'Tags',
 				new NbtList([
-					new NbtString(TAGS.GLOBAL_NODE()),
+					new NbtString(TAGS.GLOBAL_ENTITY()),
 					new NbtString(TAGS.GLOBAL_DATA()),
+					new NbtString(TAGS.PROJECT_ENTITY(aj.export_namespace)),
 					new NbtString(TAGS.PROJECT_DATA(aj.export_namespace)),
 				])
 			)
