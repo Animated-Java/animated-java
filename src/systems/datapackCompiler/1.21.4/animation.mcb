@@ -417,7 +417,13 @@ dir <%export_namespace%> {
 		$execute store success score #success <%OBJECTIVES.I()%> run data modify storage aj:temp args set value $(args)
 
 		summon minecraft:item_display ~ ~ ~ { \
-			Tags:['<%TAGS.NEW()%>','<%TAGS.GLOBAL_ENTITY()%>','<%TAGS.GLOBAL_ROOT()%>','<%TAGS.PROJECT_ROOT(export_namespace)%>'], \
+			Tags:[ \
+				'<%TAGS.NEW()%>', \
+				'<%TAGS.GLOBAL_ENTITY()%>', \
+				'<%TAGS.GLOBAL_ROOT()%>', \
+				'<%TAGS.PROJECT_ENTITY(export_namespace)%>' \
+				'<%TAGS.PROJECT_ROOT(export_namespace)%>' \
+			], \
 			teleport_duration: 0, \
 			interpolation_duration: <%interpolation_duration%>, \
 			Passengers:<%root_entity_passengers%>, \
