@@ -32,10 +32,8 @@ dir global {
 		# TODO Maybe instead of merging tags, I should just generate it from the .ajmeta data every time a rig is exported?
 		# That way I can also check if the rig's files still exist, and remove tag entries if they don't.
 		# An entry will be added for each exported rig.
-		IF (!is_static) {
-			tag functions on_tick {
-				*<%export_namespace%>/root/on_tick
-			}
+		tag functions on_tick {
+			*<%export_namespace%>/root/on_tick
 		}
 		# An entry will be added for each exported rig.
 		IF (show_outdated_warning) {
