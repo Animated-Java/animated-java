@@ -19,6 +19,7 @@ const STYLE_KEYS = [
 	'obfuscated',
 	'color',
 	'font',
+	'shadow_color',
 ] as const
 
 export type StyleRecord = Partial<Record<(typeof STYLE_KEYS)[number], boolean | string>>

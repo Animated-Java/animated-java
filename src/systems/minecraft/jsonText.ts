@@ -44,6 +44,7 @@ export type JsonTextObject = {
 	text?: string
 	font?: string
 	color?: JsonTextColor
+	shadow_color?: JsonTextColor
 	extra?: JsonTextArray
 	bold?: true | false
 	italic?: true | false
@@ -296,12 +297,17 @@ class JsonTextParser {
 					case 'fallback':
 						obj[key] = this.parseString()
 						break
-					case 'color': {
+					case 'color':
+					case 'shadow_color': {
 						const color = this.parseString() as JsonTextColor
 						if (!(color.startsWith('#') || COLOR_MAP[color])) {
 							throw new ParserError(`Unknown color '${color}'`, this.s)
 						}
-						obj.color = color
+						if (key === 'color') {
+							obj.color = color
+						} else {
+							obj.shadow_color = color
+						}
 						break
 					}
 					case 'bold':

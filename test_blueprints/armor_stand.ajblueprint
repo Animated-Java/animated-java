@@ -1,7 +1,7 @@
 {
 	"meta": {
 		"format": "animated_java_blueprint",
-		"format_version": "1.6.1",
+		"format_version": "1.6.4",
 		"uuid": "167b27cd-b559-3f13-a97c-0841fe21f1d1",
 		"save_location": "D:\\github-repos\\animated-java\\animated-java\\test_blueprints\\armor_stand.ajblueprint",
 		"last_used_export_namespace": "armor_stand"
@@ -882,7 +882,7 @@
 			"config": {},
 			"item": "minecraft:diamond",
 			"item_display": "none",
-			"text": "\"Hello, World!\"\n",
+			"text": "{\n\t\"text\": \"Hello, World!\",\n\t\"color\": \"green\",\n\t\"shadow_color\":\"red\"\n}\n",
 			"lineWidth": 200,
 			"backgroundColor": "#ffffff",
 			"backgroundAlpha": 0.25098,
@@ -932,6 +932,7 @@
 			"locked": false,
 			"visibility": true,
 			"autouv": 0,
+			"selected": false,
 			"children": [
 				{
 					"name": "baseplate_root",
@@ -960,6 +961,7 @@
 					"locked": false,
 					"visibility": true,
 					"autouv": 0,
+					"selected": false,
 					"children": [
 						{
 							"name": "baseplate_pivot_a",
@@ -988,6 +990,7 @@
 							"locked": false,
 							"visibility": true,
 							"autouv": 0,
+							"selected": false,
 							"children": ["46624743-e0ef-5e97-e6d8-ba5dc100baf4"]
 						}
 					]
@@ -1020,6 +1023,7 @@
 					"locked": false,
 					"visibility": true,
 					"autouv": 0,
+					"selected": false,
 					"children": [
 						{
 							"name": "waist_pivot",
@@ -1051,6 +1055,7 @@
 							"locked": false,
 							"visibility": true,
 							"autouv": 0,
+							"selected": false,
 							"children": [
 								{
 									"name": "body_waist_pivot",
@@ -1082,6 +1087,7 @@
 									"locked": false,
 									"visibility": true,
 									"autouv": 0,
+									"selected": false,
 									"children": [
 										{
 											"name": "body",
@@ -1142,6 +1148,7 @@
 											"locked": false,
 											"visibility": true,
 											"autouv": 0,
+											"selected": false,
 											"children": [
 												"55829f3d-26dc-8f49-39b8-5ba2c0159a24",
 												"9d16df18-0574-58bb-e0f9-f799946257c9",
@@ -1194,6 +1201,7 @@
 													"locked": false,
 													"visibility": true,
 													"autouv": 0,
+													"selected": false,
 													"children": ["a23d9259-0d9a-4e16-1b42-47e5bedba00f", "a302b268-1699-4013-011f-211bd85806d4"]
 												},
 												{
@@ -1241,6 +1249,7 @@
 													"locked": false,
 													"visibility": true,
 													"autouv": 0,
+													"selected": false,
 													"children": ["c219cb9b-53a7-6a5b-7b47-dce0a1e6ec14", "967c77d0-2607-0ecb-8093-416d237cdb85", "7de415a2-9fdd-e4b2-3455-c3bed72eb896"]
 												},
 												{
@@ -1288,6 +1297,7 @@
 													"locked": false,
 													"visibility": true,
 													"autouv": 0,
+													"selected": false,
 													"children": ["13293700-7f42-2279-6a1f-4e0a6a4d89b3", "98475898-cfc8-f67b-3145-abaf659deb3e", "7747736f-85e2-338f-207e-53f8d3d2fa39"]
 												}
 											]
@@ -1337,6 +1347,7 @@
 									"locked": false,
 									"visibility": true,
 									"autouv": 0,
+									"selected": false,
 									"children": ["d29efa52-def5-a311-7438-1fc73aac804c", "71bfec99-5014-21d3-739b-6512074212db", "41413d23-edf5-3fdc-2ddb-5fd45ea99a89"]
 								},
 								{
@@ -1382,6 +1393,7 @@
 									"locked": false,
 									"visibility": true,
 									"autouv": 0,
+									"selected": false,
 									"children": ["60766231-bd45-cb3f-0a4f-c6c066e86f54", "4dd0c5f1-828f-d559-6496-16e2fbe6276d", "11976d8b-3994-df35-0fb9-b92ac5012141"]
 								}
 							]
@@ -1405,6 +1417,7 @@
 			"locked": false,
 			"visibility": true,
 			"autouv": 0,
+			"selected": false,
 			"children": []
 		},
 		"c2e217f1-b50a-5c9a-b342-71a35e984046"
@@ -1427,6 +1440,7 @@
 			"sync_to_project": "",
 			"render_mode": "default",
 			"render_sides": "auto",
+			"pbr_channel": "color",
 			"frame_time": 1,
 			"frame_order_type": "loop",
 			"frame_order": "",
@@ -1456,6 +1470,7 @@
 			"sync_to_project": "",
 			"render_mode": "default",
 			"render_sides": "auto",
+			"pbr_channel": "color",
 			"frame_time": 1,
 			"frame_order_type": "loop",
 			"frame_order": "",
@@ -1485,6 +1500,7 @@
 			"sync_to_project": "",
 			"render_mode": "default",
 			"render_sides": "auto",
+			"pbr_channel": "color",
 			"frame_time": 1,
 			"frame_order_type": "loop",
 			"frame_order": "",
@@ -1495,6 +1511,36 @@
 			"uuid": "34528a28-3a31-8b47-65bb-ef2b60b02401",
 			"source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAZZJREFUaEPtVruqhDAQjZ1gYSlY+gH+gfZ+sb2fYWEpCDaCgt1eTrhHhlldLsgVNkkajZldmJPzmMh4viLP+zcBgMAAzxEIEvCcAMEEgwSCBDxHIEjAcwKEFAgSCBJQCHRd98KnbdtMkiSmrmunWfLWHACoqsr0fW+GYTBN0/gFQNu2r6IobPNYXgIgVeE8ANQ8dY8ntC994OrMBYZEAACGl+e5GcfRNp+mqQVA75dlsd9xjjMnAIDm0QgAYINZltnmpmmyaQBPwKIvYL/vu63/9pSwDOCNoyGy4YoBEhAA5AQAvHHcMCVA+pPycRxbRnCPpxMMkBJg07xlSkD6g/QAFwalQwK6eeqdjAADyBBpmt8ek28eoCMPzWqT1CnxKSZ1pHLE5v/yXMYuz55ImSMGz7L/L42hhqMzPQJ7mui6rvadqSLrySjW6988YbK353w5OgNE3F5Zlmae5wMEMogyg+lKOV3VP2GytwE4G6TYIG8eJsrU0JKSfqLrAdh/e8xtAJgiB89/hyrdsDzX72cAoeaJlPkBm2JOMHlI974AAAAASUVORK5CYII=",
 			"image_data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAZZJREFUaEPtVruqhDAQjZ1gYSlY+gH+gfZ+sb2fYWEpCDaCgt1eTrhHhlldLsgVNkkajZldmJPzmMh4viLP+zcBgMAAzxEIEvCcAMEEgwSCBDxHIEjAcwKEFAgSCBJQCHRd98KnbdtMkiSmrmunWfLWHACoqsr0fW+GYTBN0/gFQNu2r6IobPNYXgIgVeE8ANQ8dY8ntC994OrMBYZEAACGl+e5GcfRNp+mqQVA75dlsd9xjjMnAIDm0QgAYINZltnmpmmyaQBPwKIvYL/vu63/9pSwDOCNoyGy4YoBEhAA5AQAvHHcMCVA+pPycRxbRnCPpxMMkBJg07xlSkD6g/QAFwalQwK6eeqdjAADyBBpmt8ek28eoCMPzWqT1CnxKSZ1pHLE5v/yXMYuz55ImSMGz7L/L42hhqMzPQJ7mui6rvadqSLrySjW6988YbK353w5OgNE3F5Zlmae5wMEMogyg+lKOV3VP2GytwE4G6TYIG8eJsrU0JKSfqLrAdh/e8xtAJgiB89/hyrdsDzX72cAoeaJlPkBm2JOMHlI974AAAAASUVORK5CYII=",
+			"mode": "bitmap"
+		},
+		{
+			"path": "",
+			"name": "transparent",
+			"folder": "",
+			"namespace": "",
+			"id": "0",
+			"group": "",
+			"width": 16,
+			"height": 16,
+			"uv_width": 16,
+			"uv_height": 16,
+			"particle": false,
+			"use_as_default": false,
+			"layers_enabled": false,
+			"sync_to_project": "",
+			"render_mode": "default",
+			"render_sides": "auto",
+			"pbr_channel": "color",
+			"frame_time": 1,
+			"frame_order_type": "loop",
+			"frame_order": "",
+			"frame_interpolate": false,
+			"visible": true,
+			"internal": true,
+			"saved": false,
+			"uuid": "797174ae-5c58-4a83-a630-eefd51007c80",
+			"source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABgWlDQ1BJQ0MgcHJvZmlsZQAAKJF9kTtIA0EURY+JokjEwhQiFltEK21UxFKiKIKBkETwV7i7MVHIrmE3YmMp2AYs/DRGLWystbWwFQTBD4i1hZWijcj6ZhNIEOPAMIc7cy9v3oNAKWdabuMoWHbBSUxGtdm5ea35hSaCQIAR3XTzseREirrr844Gdd72q6z67/5cbell14QGTXjUzDsF4SXh4Y1CXvGecNhc0dPCZ8J9jhQo/KB0o8yvirM+B1Rm2EklxoTDwlq2ho0aNlccS3hIOJK2bMkPzJY5rXhTsZVbNyt1qh+Glu2ZpNJldzPJFDHiaBiss0qOAv1y2qK4JOQ+Wsff5fvj4jLEtYopjnHWsNB9P2oGv3vrZgYHykmhKDQ9e957DzTvwHfR876OPO/7GIJPcGlX/WslGPkQvVjVIofQvgXnV1XN2IWLbeh8zOuO7kv+/DMZeDuVMc1Bxw20LpT7Vrnn5B5S0qvpa9g/gN6sZC/W+XdLbd/+fVPp3w9iNHKgdXImZAAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAAuIwAALiMBeKU/dgAAAAd0SU1FB+gFAwAFKkpaLkIAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAEklEQVQ4y2NgGAWjYBSMAggAAAQQAAGFP6pyAAAAAElFTkSuQmCC",
+			"image_data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABgWlDQ1BJQ0MgcHJvZmlsZQAAKJF9kTtIA0EURY+JokjEwhQiFltEK21UxFKiKIKBkETwV7i7MVHIrmE3YmMp2AYs/DRGLWystbWwFQTBD4i1hZWijcj6ZhNIEOPAMIc7cy9v3oNAKWdabuMoWHbBSUxGtdm5ea35hSaCQIAR3XTzseREirrr844Gdd72q6z67/5cbell14QGTXjUzDsF4SXh4Y1CXvGecNhc0dPCZ8J9jhQo/KB0o8yvirM+B1Rm2EklxoTDwlq2ho0aNlccS3hIOJK2bMkPzJY5rXhTsZVbNyt1qh+Glu2ZpNJldzPJFDHiaBiss0qOAv1y2qK4JOQ+Wsff5fvj4jLEtYopjnHWsNB9P2oGv3vrZgYHykmhKDQ9e957DzTvwHfR876OPO/7GIJPcGlX/WslGPkQvVjVIofQvgXnV1XN2IWLbeh8zOuO7kv+/DMZeDuVMc1Bxw20LpT7Vrnn5B5S0qvpa9g/gN6sZC/W+XdLbd/+fVPp3w9iNHKgdXImZAAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAAuIwAALiMBeKU/dgAAAAd0SU1FB+gFAwAFKkpaLkIAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAEklEQVQ4y2NgGAWjYBSMAggAAAQQAAGFP6pyAAAAAElFTkSuQmCC",
 			"mode": "bitmap"
 		}
 	],
@@ -1617,9 +1663,9 @@
 							"channel": "commands",
 							"data_points": [
 								{
-									"x": 0,
-									"y": 0,
-									"z": 0,
+									"x": "0",
+									"y": "0",
+									"z": "0",
 									"commands": "particle minecraft:flame ^ ^ ^",
 									"execute_condition": "",
 									"repeat": true,
@@ -1643,9 +1689,9 @@
 							"channel": "commands",
 							"data_points": [
 								{
-									"x": 0,
-									"y": 0,
-									"z": 0,
+									"x": "0",
+									"y": "0",
+									"z": "0",
 									"commands": "particle minecraft:flame ^ ^ ^",
 									"execute_condition": "",
 									"repeat": true,
@@ -1749,7 +1795,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": 90,
+									"x": "90",
 									"y": "0",
 									"z": "0"
 								}
@@ -1766,8 +1812,8 @@
 							"data_points": [
 								{
 									"x": "0",
-									"y": 0,
-									"z": 13
+									"y": "0",
+									"z": "13"
 								}
 							],
 							"uuid": "76d2f009-56ee-aced-904d-622f9cef4131",
@@ -2262,7 +2308,7 @@
 							"data_points": [
 								{
 									"x": "0",
-									"y": -1,
+									"y": "-1",
 									"z": "0"
 								}
 							],
@@ -2701,7 +2747,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": -10,
+									"x": "-10",
 									"y": "0",
 									"z": "0"
 								}
@@ -2718,8 +2764,8 @@
 							"data_points": [
 								{
 									"x": "0",
-									"y": -2,
-									"z": -2
+									"y": "-2",
+									"z": "-2"
 								}
 							],
 							"uuid": "1bf12e49-e6fc-2486-46d4-24b5e3e4869d",
@@ -2739,7 +2785,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": 22.5,
+									"x": "22.5",
 									"y": "0",
 									"z": "0"
 								}
@@ -2777,7 +2823,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": -5,
+									"x": "-5",
 									"y": "0",
 									"z": "0"
 								}
@@ -2800,8 +2846,8 @@
 							"data_points": [
 								{
 									"x": "v.value = q.life_time * 360;\nv.lopside_mag = -30;\n\n14.6772\n+ (math.sin(v.value + math.cos(v.value) * v.lopside_mag)) * 6;",
-									"y": 24.92619,
-									"z": 166.58275
+									"y": "24.92619",
+									"z": "166.58275"
 								}
 							],
 							"uuid": "180754f2-076d-8223-6f07-96432287d256",
@@ -2815,9 +2861,9 @@
 							"channel": "position",
 							"data_points": [
 								{
-									"x": 0,
-									"y": -6,
-									"z": -5
+									"x": "0",
+									"y": "-6",
+									"z": "-5"
 								}
 							],
 							"uuid": "e79890cb-b84f-8a72-336a-07744584de8a",
@@ -2838,8 +2884,8 @@
 							"data_points": [
 								{
 									"x": "\nv.value = q.life_time * 90;\nv.lopside_mag = -30;\n\n-67.1224\n+ (math.sin(v.value + math.cos(v.value) * v.lopside_mag)) * 2;\n",
-									"y": -66.97934,
-									"z": -11.88242
+									"y": "-66.97934",
+									"z": "-11.88242"
 								}
 							],
 							"uuid": "b4868b12-c0af-d7b7-439d-21545df10d41",
@@ -2853,9 +2899,9 @@
 							"channel": "position",
 							"data_points": [
 								{
-									"x": -1,
-									"y": -1,
-									"z": -1
+									"x": "-1",
+									"y": "-1",
+									"z": "-1"
 								}
 							],
 							"uuid": "407256a9-7a9b-4c27-d269-1a3cab56639b",
@@ -2875,7 +2921,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": 90,
+									"x": "90",
 									"y": "0",
 									"z": "0"
 								}
@@ -2892,8 +2938,8 @@
 							"data_points": [
 								{
 									"x": "0",
-									"y": -11,
-									"z": 0
+									"y": "-11",
+									"z": "0"
 								}
 							],
 							"uuid": "e827700b-3cd5-e75a-4aca-d4b37f42dfbb",
@@ -2914,8 +2960,8 @@
 							"data_points": [
 								{
 									"x": "0",
-									"y": -1,
-									"z": -3
+									"y": "-1",
+									"z": "-3"
 								}
 							],
 							"uuid": "daa8347d-bcef-d987-c35f-0c25fac8174b",
@@ -2937,7 +2983,7 @@
 								{
 									"x": "0",
 									"y": "0",
-									"z": -16
+									"z": "-16"
 								}
 							],
 							"uuid": "dc1a350e-1698-0c78-125b-874acafc6b8c",
@@ -2976,7 +3022,7 @@
 							"data_points": [
 								{
 									"x": "0",
-									"y": -1,
+									"y": "-1",
 									"z": "0"
 								}
 							],
@@ -2998,8 +3044,8 @@
 							"data_points": [
 								{
 									"x": "0",
-									"y": -10,
-									"z": 5
+									"y": "-10",
+									"z": "5"
 								}
 							],
 							"uuid": "67edfa7d-e3d3-37ab-a835-0502b26a1a5a",
@@ -3019,9 +3065,9 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": -22.01816,
-									"y": 4.75113,
-									"z": 11.57518
+									"x": "-22.01816",
+									"y": "4.75113",
+									"z": "11.57518"
 								}
 							],
 							"uuid": "e1c75221-694e-1a74-3d48-6c43d76bad40",
@@ -3041,9 +3087,9 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": -22.01816,
-									"y": -4.75113,
-									"z": -11.57518
+									"x": "-22.01816",
+									"y": "-4.75113",
+									"z": "-11.57518"
 								}
 							],
 							"uuid": "8eac688f-1ccc-fa1a-0222-0660cd3cf7de",
@@ -3063,9 +3109,9 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": -90,
-									"y": 22.5,
-									"z": 0
+									"x": "-90",
+									"y": "22.5",
+									"z": "0"
 								}
 							],
 							"uuid": "089c0129-9144-84ac-82b8-71827952c08d",
@@ -3085,9 +3131,9 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": -90,
-									"y": -22.5,
-									"z": 0
+									"x": "-90",
+									"y": "-22.5",
+									"z": "0"
 								}
 							],
 							"uuid": "314f088e-560a-4819-2b87-3bdfd1930772",
@@ -3108,7 +3154,7 @@
 			"override": false,
 			"length": 0.8,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"saved": false,
 			"path": "",
 			"anim_time_update": "",
