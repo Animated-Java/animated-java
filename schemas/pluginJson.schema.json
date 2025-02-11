@@ -118,6 +118,19 @@
 						"properties": {
 							"from": { "$ref": "#/definitions/vec3" },
 							"to": { "$ref": "#/definitions/vec3" },
+							"rotation": {
+								"type": "object",
+								"required": ["angle", "axis", "origin"],
+								"properties": {
+									"angle": { "type": "number" },
+									"axis": {
+										"type": "string",
+										"enum": ["x", "y", "z"]
+									},
+									"origin": { "$ref": "#/definitions/vec3" },
+									"rescale": { "type": "boolean", "default": false }
+								}
+							},
 							"faces": {
 								"type": "object",
 								"properties": {
@@ -280,7 +293,7 @@
 						}
 					},
 					"then": {
-						"required": ["bounding_box", "configs"],
+						"required": ["bounding_box", "base_scale", "configs"],
 						"properties": {
 							"modelPath": { "type": "string" },
 							"bounding_box": {
@@ -290,6 +303,10 @@
 									"min": { "$ref": "#/definitions/vec3" },
 									"max": { "$ref": "#/definitions/vec3" }
 								}
+							},
+							"base_scale": {
+								"type": "number",
+								"description": "The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit."
 							},
 							"configs": {
 								"type": "object",
@@ -340,15 +357,21 @@
 						}
 					},
 					"then": {
-						"required": ["text", "align", "config"],
+						"required": ["text", "align", "shadow", "see_through", "base_scale", "config"],
 						"properties": {
 							"text": {},
-							"line_width": { "type": "number" },
+							"line_width": { "type": "integer" },
 							"background_color": { "type": "string" },
 							"background_alpha": { "type": "number" },
 							"align": {
 								"type": "string",
 								"enum": ["left", "center", "right"]
+							},
+							"shadow": { "type": "boolean" },
+							"see_through": { "type": "boolean" },
+							"base_scale": {
+								"type": "number",
+								"description": "The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit."
 							},
 							"config": {
 								"$ref": "#/definitions/boneConfig"
@@ -363,9 +386,13 @@
 						}
 					},
 					"then": {
-						"required": ["config", "block"],
+						"required": ["block", "base_scale", "config"],
 						"properties": {
 							"block": { "type": "string" },
+							"base_scale": {
+								"type": "number",
+								"description": "The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit."
+							},
 							"config": {
 								"$ref": "#/definitions/boneConfig"
 							}
@@ -379,9 +406,27 @@
 						}
 					},
 					"then": {
-						"required": ["config", "item"],
+						"required": ["item", "item_display", "base_scale", "config"],
 						"properties": {
 							"item": { "type": "string" },
+							"item_display": {
+								"type": "string",
+								"enum": [
+									"none",
+									"thirdperson_righthand",
+									"thirdperson_lefthand",
+									"firstperson_righthand",
+									"firstperson_lefthand",
+									"gui",
+									"head",
+									"ground",
+									"fixed"
+								]
+							},
+							"base_scale": {
+								"type": "number",
+								"description": "The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit."
+							},
 							"config": {
 								"$ref": "#/definitions/boneConfig"
 							}
@@ -449,7 +494,7 @@
 						"name": { "type": "string" },
 						"duration": { "type": "number" },
 						"loop_delay": { "type": "number" },
-						"loop_mode": { "type": "string", "enum": ["none", "loop", "ping-pong"] },
+						"loop_mode": { "type": "string", "enum": ["once", "hold", "loop"] },
 						"modified_nodes": { "type": "array", "items": { "type": "string" } },
 						"frames": {
 							"type": "array",
@@ -468,6 +513,7 @@
 									},
 									"variant": {
 										"type": "object",
+										"requires": ["uuid"],
 										"description": "If included, this frame should change the variant of the model to the specified variant.",
 										"properties": {
 											"uuid": {
@@ -586,7 +632,7 @@
 		"variant": {
 			"type": "object",
 			"description": "A variant of the rig. Variants are used to change the appearance of the rig by swapping out different textures at runtime.",
-			"required": ["name", "display_name", "models", "texture_map", "excluded_nodes"],
+			"required": ["name", "display_name", "texture_map", "excluded_nodes", "models"],
 			"properties": {
 				"name": {
 					"type": "string",
@@ -606,15 +652,6 @@
 						}
 					}
 				},
-				"models": {
-					"type": "object",
-					"additionalProperties": false,
-					"patternProperties": {
-						"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
-							"$ref": "#/definitions/variantModelContainer"
-						}
-					}
-				},
 				"excluded_nodes": {
 					"type": "array",
 					"description": "A list of node UUIDs that should be excluded / ignored when this variant is applied.",
@@ -623,6 +660,15 @@
 				"is_default": {
 					"type": "boolean",
 					"description": "Whether or not this variant is the default variant."
+				},
+				"models": {
+					"type": "object",
+					"additionalProperties": false,
+					"patternProperties": {
+						"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
+							"$ref": "#/definitions/variantModelContainer"
+						}
+					}
 				}
 			}
 		},
