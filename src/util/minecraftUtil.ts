@@ -1,10 +1,10 @@
 import * as pathjs from 'path'
+import { type MinecraftVersion } from '../systems/datapack-compiler/versions'
 import {
 	BlockStateRegistryEntry,
-	BlockStateValue,
+	type BlockStateValue,
 	getBlockState,
-} from '../systems/minecraft/blockstateManager'
-import { MinecraftVersion } from '../systems/datapackCompiler/mcbFiles'
+} from '../systems/minecraft-temp/blockstateManager'
 
 export interface IMinecraftResourceLocation {
 	resourcePackRoot: string
@@ -62,7 +62,7 @@ export function containsInvalidResourceLocationCharacters(resourceLocation: stri
 
 export function isResourcePackPath(path: string) {
 	const parsed = parseResourcePackPath(path)
-	return !!(parsed && parsed.namespace && parsed.resourcePath)
+	return !!(parsed?.namespace && parsed.resourcePath)
 }
 
 export function parseResourcePackPath(path: string): IMinecraftResourceLocation | undefined {
@@ -117,7 +117,7 @@ export function parseResourceLocation(resourceLocation: string) {
 
 export function isDataPackPath(path: string) {
 	const parsed = parseDataPackPath(path)
-	return !!(parsed && parsed.namespace && parsed.resourcePath)
+	return !!(parsed?.namespace && parsed.resourcePath)
 }
 
 export function parseDataPackPath(path: string): IMinecraftResourceLocation | undefined {
@@ -216,7 +216,7 @@ export interface IParsedBlock {
 export async function parseBlock(block: string): Promise<IParsedBlock | undefined> {
 	const states: Record<string, ReturnType<typeof resolveBlockstateValueType>> = {}
 	if (block.includes('[')) {
-		const match = block.match(/(.+?)\[((?:[^,=[\]]+=[^,=[\]]+,?)+)?]/)
+		const match = /(.+?)\[((?:[^,=[\]]+=[^,=[\]]+,?)+)?]/.exec(block)
 		if (!match) return
 		if (match[2] !== undefined) {
 			const args = match[2].split(',')
@@ -252,4 +252,9 @@ export function getDataPackFormat(version: MinecraftVersion): number {
 		default:
 			return Infinity
 	}
+}
+
+export function getFunctionNamespace(version: string): 'function' | 'functions' {
+	// If the target version is 1.21.0 or higher, use the 'function' namespace instead of 'functions'
+	return compareVersions(version, '1.20.10000') ? 'function' : 'functions'
 }

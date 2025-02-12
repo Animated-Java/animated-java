@@ -1,0 +1,35 @@
+// Action
+import './action/addLocator'
+import './action/animationProperties'
+import './action/exportOver'
+import './action/projectSettings'
+import './action/saveAllAnimationsActionMod'
+import './action/saveProject'
+import './action/saveProjectAs'
+// Class Properties
+import './class-properties/animationProperties'
+// Function Overwrites
+import './function-overwrites/blockbenchRead'
+import './function-overwrites/reverseKeyframes'
+import './function-overwrites/showDefaultPose'
+// Prototype
+import './prototype/animationController'
+import './prototype/boneInterpolation'
+import './prototype/cameraName'
+import './prototype/cubeOutline'
+import './prototype/groupContextMenu'
+import './prototype/groupName'
+import './prototype/keyframeGetLerp'
+import './prototype/keyframeSelectEvents'
+import './prototype/locatorContextMenu'
+import './prototype/modelFormatEvents'
+import './prototype/variantPreviewCubeFace'
+// UI
+import './ui/animationsPanel'
+import './ui/formatIcon'
+import './ui/formatOrder'
+import './ui/incompatiblePluginNotice'
+// Misc
+import './misc/customKeyframes'
+import './misc/locatorAnimator'
+import './misc/prismLanguages'

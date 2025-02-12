@@ -1,3 +1,36 @@
 {
-	"typescript.tsdk": "node_modules\\typescript\\lib"
+	"typescript.tsdk": "node_modules\\typescript\\lib",
+	"eslint.enable": true,
+	"editor.formatOnSave": true,
+	"prettier.enable": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": "explicit",
+		"source.fixAll.ts": "explicit",
+		"source.fixAll.sortJSON": "explicit",
+		"source.addMissingImports.ts": "explicit",
+		"source.organizeImports": "explicit",
+		"source.sortImports": "explicit",
+		"source.removeUnused.ts": "never",
+		"source.removeUnusedImports": "explicit",
+		"source.organizeLinkDefinitions": "explicit"
+	},
+	"files.exclude": {
+		"**/.git": true,
+		"**/.svn": true,
+		"**/.hg": true,
+		"**/CVS": true,
+		"**/.DS_Store": true,
+		"**/Thumbs.db": true,
+		"**/node_modules": true
+	},
+	"npm.exclude": ["**/node_modules"],
+	"svelte.plugin.svelte.compilerWarnings": {
+		"a11y-click-events-have-key-events": "ignore",
+		"a11y-no-static-element-interactions": "ignore"
+	},
+	"errorLens.excludePatterns": ["**/node_modules/**/*"],
+	"eslint.validate": ["javascript", "javascriptreact", "svelte"],
+	"eslint.useFlatConfig": true,
+	"eslint.problems.shortenToSingleLine": true
 }

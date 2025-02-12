@@ -22,6 +22,18 @@ dialog:
         general:
         plugin:
 
+        export:
+            target_minecraft_version:
+                label: Target Minecraft Version
+                description: |-
+                    Choose the version of Minecraft you are exporting this project for. If your exact version is not listed, choose the next oldest version. For example, if you are using Minecraft `1.21.3`, choose `1.21.2`.
+            tag_prefix:
+                label: Tag Prefix
+                description: The prefix to use for all tags in the exported Data Pack.
+            auto_generate_tag_prefix:
+                label: Auto-Generate Tag Prefix
+                description: Automatically generate a tag prefix based on the BlueprintID.
+
         resourcepack:
             error:
                 missing_assets_folder: The selected Resource Pack is missing an assets folder!

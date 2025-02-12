@@ -1,4 +1,4 @@
-import { type Writable, type Subscriber, type Unsubscriber, writable, get } from 'svelte/store'
+import { get, type Subscriber, type Unsubscriber, type Writable, writable } from 'svelte/store'
 import { mapObjEntries } from './misc'
 
 export class Valuable<T> implements Writable<T> {
@@ -9,7 +9,7 @@ export class Valuable<T> implements Writable<T> {
 
 	constructor(value: T, valueValidator?: Valuable<T>['valueValidator']) {
 		this.store = writable(value)
-		this.valueValidator = valueValidator || ((value: T) => value)
+		this.valueValidator = valueValidator ?? ((value: T) => value)
 		Valuable.all.push(this)
 	}
 

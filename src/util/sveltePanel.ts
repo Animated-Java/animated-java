@@ -1,7 +1,7 @@
-import { ComponentConstructorOptions, SvelteComponent } from 'svelte'
-import { SvelteComponentConstructor } from './misc'
-import * as PACKAGE from '../../package.json'
+import { type ComponentConstructorOptions, SvelteComponent } from 'svelte'
+import PACKAGE from '../../package.json'
 import { pollPromise } from '../util/promises'
+import { type SvelteComponentConstructor } from './misc'
 
 type SveltePanelOptions<T, U extends ComponentConstructorOptions> = Omit<
 	PanelOptions,

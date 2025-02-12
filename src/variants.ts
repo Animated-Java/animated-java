@@ -1,5 +1,5 @@
-import { IBlueprintVariantJSON } from './blueprintFormat'
-import { events } from './util/events'
+import { type IBlueprintVariantJSON } from './blockbench-additions/model-formats/ajblueprint'
+import EVENTS from './util/events'
 import { toSafeFunctionName } from './util/minecraftUtil'
 
 export class TextureMap {
@@ -98,14 +98,14 @@ export class Variant {
 		}
 		Variant.all.push(this)
 		// this.select()
-		events.CREATE_VARIANT.dispatch(this)
+		EVENTS.CREATE_VARIANT.dispatch(this)
 	}
 
 	public select() {
 		if (Variant.selected) Variant.selected.unselect()
 		Variant.selected = this
 		Canvas.updateAllFaces()
-		events.SELECT_VARIANT.dispatch(this)
+		EVENTS.SELECT_VARIANT.dispatch(this)
 	}
 
 	public unselect() {
@@ -126,7 +126,7 @@ export class Variant {
 			Variant.selectDefault()
 		}
 
-		events.DELETE_VARIANT.dispatch(this)
+		EVENTS.DELETE_VARIANT.dispatch(this)
 	}
 
 	public toJSON() {
@@ -181,7 +181,7 @@ export class Variant {
 		}
 
 		let i = 1
-		const match = displayName.match(/\d+$/)
+		const match = /\d+$/.exec(displayName)
 		if (match) {
 			i = parseInt(match[0])
 			displayName = displayName.slice(0, -match[0].length)
@@ -206,7 +206,7 @@ export class Variant {
 		}
 
 		let i = 1
-		const match = name.match(/\d+$/)
+		const match = /\d+$/.exec(name)
 		if (match) {
 			i = parseInt(match[0])
 			name = name.slice(0, -match[0].length)
@@ -234,10 +234,10 @@ export class Variant {
 	}
 }
 
-events.SELECT_PROJECT.subscribe(project => {
+EVENTS.SELECT_PROJECT.subscribe(project => {
 	project.variants ??= []
 	Variant.all = project.variants
 })
-events.UNSELECT_PROJECT.subscribe(() => {
+EVENTS.UNSELECT_PROJECT.subscribe(() => {
 	Variant.all = []
 })
