@@ -1,10 +1,10 @@
-import type { PACKAGE } from '../../../../constants'
+import type { PACKAGE } from '@aj/constants'
 import {
 	CameraConfig,
 	TextDisplayConfig,
 	type BoneConfig,
 	type LocatorConfig,
-} from '../../../../nodeConfigs'
+} from '@aj/nodeConfigs'
 
 namespace v1_6_4 {
 	type SerializeConfig<T> = {

@@ -5,11 +5,11 @@ import {
 	type IBlueprintTextDisplayConfigJSON,
 	isCurrentFormat,
 } from '../model-formats/ajblueprint'
-// import * as MinecraftFull from '../assets/MinecraftFull.json'
+// import * as MinecraftFull from '@assets/MinecraftFull.json'
+import { getVanillaFont } from '@aj/systems/minecraft-temp/fontManager'
+import { JsonText } from '@aj/systems/minecraft-temp/jsonText'
 import THREE from 'three'
 import { TextDisplayConfig } from '../../nodeConfigs'
-import { getVanillaFont } from '../../systems/minecraft-temp/fontManager'
-import { JsonText } from '../../systems/minecraft-temp/jsonText'
 import { TEXT_DISPLAY_CONFIG_ACTION } from '../../ui/dialogs/text-display-config'
 import EVENTS from '../../util/events'
 import { Valuable } from '../../util/stores'

@@ -18,13 +18,13 @@ import './systems/minecraft-temp/registryManager'
 import './systems/minecraft-temp/versionManager'
 // Misc imports
 import { BLUEPRINT_CODEC, BLUEPRINT_FORMAT } from './blockbench-additions/model-formats/ajblueprint'
-import { TextDisplay } from './blockbench-additions/outliner-elements/textDisplay'
 import {
 	VanillaBlockDisplay,
 	debugBlockState,
 	debugBlocks,
-} from './blockbench-additions/outliner-elements/vanillaBlockDisplay'
-import { VanillaItemDisplay } from './blockbench-additions/outliner-elements/vanillaItemDisplay'
+} from './blockbench-additions/outliner-elements/blockDisplay'
+import { VanillaItemDisplay } from './blockbench-additions/outliner-elements/itemDisplay'
+import { TextDisplay } from './blockbench-additions/outliner-elements/textDisplay'
 import { blueprintSettingErrors } from './blueprintSettings'
 import { cleanupExportedFiles } from './systems/cleaner'
 import mcbFiles from './systems/datapack-compiler/versions'

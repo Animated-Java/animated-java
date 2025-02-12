@@ -1,10 +1,10 @@
 <script lang="ts">
+	import BoxSelect from '@svelte-components/sidebar-dialog-items/boxSelect.svelte'
+	import FileSelect from '@svelte-components/sidebar-dialog-items/fileSelect.svelte'
+	import FolderSelect from '@svelte-components/sidebar-dialog-items/folderSelect.svelte'
+	import LineEdit from '@svelte-components/sidebar-dialog-items/lineEdit.svelte'
 	import type { ValuableBlueprintSettings } from '../'
 	import { defaultValues } from '../../../../blueprintSettings'
-	import BoxSelect from '../../../../svelte-components/sidebar-dialog-items/boxSelect.svelte'
-	import FileSelect from '../../../../svelte-components/sidebar-dialog-items/fileSelect.svelte'
-	import FolderSelect from '../../../../svelte-components/sidebar-dialog-items/folderSelect.svelte'
-	import LineEdit from '../../../../svelte-components/sidebar-dialog-items/lineEdit.svelte'
 	import { directoryExists, fileExists, resolvePath } from '../../../../util/fileUtil'
 	import { translate } from '../../../../util/translation'
 	export let settings: ValuableBlueprintSettings

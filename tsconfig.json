@@ -18,6 +18,11 @@
 		"verbatimModuleSyntax": true,
 		"isolatedModules": true,
 		"alwaysStrict": true,
-		"experimentalDecorators": true
+		"experimentalDecorators": true,
+		"paths": {
+			"@svelte-components/*": ["./src/svelte-components/*"],
+			"@aj/*": ["./src/*"],
+			"@assets/*": ["./src/assets/*"]
+		}
 	}
 }

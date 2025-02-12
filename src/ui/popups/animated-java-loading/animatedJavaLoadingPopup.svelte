@@ -1,6 +1,6 @@
 <script lang="ts">
+	import RunningArmorStand from '@assets/armor_stand_running.webp'
 	import { type Valuable } from '../../../util/stores'
-	import RunningArmorStand from '../assets/armor_stand_running.webp'
 
 	import { translate } from '../../../util/translation'
 

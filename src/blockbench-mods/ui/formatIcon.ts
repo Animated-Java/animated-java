@@ -1,5 +1,5 @@
+import Icon from '@svelte-components/icon.svelte'
 import { PACKAGE } from '../../constants'
-import Icon from '../../svelte-components/icon.svelte'
 import { injectSvelteCompomponent } from '../../util/injectSvelteComponent'
 import { createBlockbenchMod } from '../../util/moddingTools'
 

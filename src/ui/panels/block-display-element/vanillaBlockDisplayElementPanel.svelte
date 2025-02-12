@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { VanillaBlockDisplay } from '../../../blockbench-additions/outliner-elements/vanillaBlockDisplay'
-	import EVENTS from '../../../util/events'
-	import { Valuable } from '../../../util/stores'
-	import { translate } from '../../../util/translation'
+	import { VanillaBlockDisplay } from '@aj/blockbench-additions/outliner-elements/blockDisplay'
+	import EVENTS from '@aj/util/events'
+	import { Valuable } from '@aj/util/stores'
+	import { translate } from '@aj/util/translation'
 
 	let selectedDisplay = VanillaBlockDisplay.selected.at(0)
 	let block = new Valuable<string>('')

@@ -1,7 +1,7 @@
 <script lang="ts">
+	import AnimatedJavaIcon from '@assets/animated_java_icon.svg'
+	import AnimatedPaperIcon from '@assets/animated_paper_icon.svg'
 	import { Valuable } from '../../../util/stores'
-	import AnimatedJavaIcon from '../assets/animated_java_icon.svg'
-	import AnimatedPaperIcon from '../assets/animated_paper_icon.svg'
 
 	export let pluginMode: Valuable<boolean>
 </script>

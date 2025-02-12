@@ -1,9 +1,9 @@
 <script lang="ts">
-	import CheckBox from '../../../svelte-components/dialog-items/checkbox.svelte'
-	import CodeInput from '../../../svelte-components/dialog-items/codeInput.svelte'
-	import LineInput from '../../../svelte-components/dialog-items/lineInput.svelte'
+	import CheckBox from '@svelte-components/dialog-items/checkbox.svelte'
+	import CodeInput from '@svelte-components/dialog-items/codeInput.svelte'
+	import LineInput from '@svelte-components/dialog-items/lineInput.svelte'
 
-	import { MINECRAFT_REGISTRY } from '../../../systems/minecraft-temp/registryManager'
+	import { MINECRAFT_REGISTRY } from '@aj/systems/minecraft-temp/registryManager'
 	import { Valuable } from '../../../util/stores'
 	import { translate } from '../../../util/translation'
 

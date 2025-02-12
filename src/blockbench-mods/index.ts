@@ -3,7 +3,7 @@ import './action/addLocator'
 import './action/animationProperties'
 import './action/exportOver'
 import './action/projectSettings'
-import './action/saveAllAnimationsActionMod'
+import './action/saveAllAnimations'
 import './action/saveProject'
 import './action/saveProjectAs'
 // Class Properties

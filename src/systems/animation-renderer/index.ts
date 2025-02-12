@@ -1,5 +1,7 @@
 import * as crypto from 'crypto'
-import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../interface/dialog/exportProgress'
+import { VanillaBlockDisplay } from '../../blockbench-additions/outliner-elements/blockDisplay'
+import { VanillaItemDisplay } from '../../blockbench-additions/outliner-elements/itemDisplay'
+import { TextDisplay } from '../../blockbench-additions/outliner-elements/textDisplay'
 import {
 	getKeyframeCommands,
 	getKeyframeExecuteCondition,

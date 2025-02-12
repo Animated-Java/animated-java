@@ -1,13 +1,11 @@
+import { getItemModel } from '@aj/systems/minecraft-temp/itemModelManager'
+import { MINECRAFT_REGISTRY } from '@aj/systems/minecraft-temp/registryManager'
+import { getCurrentVersion } from '@aj/systems/minecraft-temp/versionManager'
 import THREE from 'three'
 import { PACKAGE } from '../../constants'
 import { BoneConfig } from '../../nodeConfigs'
-import { getBlockModel } from '../../systems/minecraft-temp/blockModelManager'
-import { type BlockStateValue, getBlockState } from '../../systems/minecraft-temp/blockstateManager'
-import { MINECRAFT_REGISTRY } from '../../systems/minecraft-temp/registryManager'
-import { getCurrentVersion } from '../../systems/minecraft-temp/versionManager'
-import { VANILLA_BLOCK_DISPLAY_CONFIG_ACTION } from '../../ui/dialogs/block-display-config'
+import { VANILLA_ITEM_DISPLAY_CONFIG_ACTION } from '../../ui/dialogs/item-display-config'
 import EVENTS from '../../util/events'
-import { parseBlock } from '../../util/minecraftUtil'
 import { createAction, createBlockbenchMod } from '../../util/moddingTools'
 import { Valuable } from '../../util/stores'
 import { translate } from '../../util/translation'
@@ -15,36 +13,35 @@ import { type IBlueprintBoneConfigJSON, isCurrentFormat } from '../model-formats
 import { ResizableOutlinerElement } from './resizableOutlinerElement'
 import { sanitizeOutlinerElementName } from './util'
 
-const ERROR_OUTLINE_MATERIAL = Canvas.outlineMaterial.clone()
-ERROR_OUTLINE_MATERIAL.color.set('#ff0000')
-
-interface VanillaBlockDisplayOptions {
+interface VanillaItemDisplayOptions {
 	name?: string
-	block?: string
+	item?: string
+	item_display?: string
 	position?: ArrayVector3
 	rotation?: ArrayVector3
 	scale?: ArrayVector3
 	visibility?: boolean
 }
 
-export class VanillaBlockDisplay extends ResizableOutlinerElement {
-	static type = `${PACKAGE.name}:vanilla_block_display`
-	static selected: VanillaBlockDisplay[] = []
-	static all: VanillaBlockDisplay[] = []
+export class VanillaItemDisplay extends ResizableOutlinerElement {
+	static type = `${PACKAGE.name}:vanilla_item_display`
+	static selected: VanillaItemDisplay[] = []
+	static all: VanillaItemDisplay[] = []
 
-	public type = VanillaBlockDisplay.type
-	public icon = 'deployed_code'
+	public type = VanillaItemDisplay.type
+	public icon = 'icecream'
 	public needsUniqueName = true
 
 	// Properties
-	public _block = new Valuable('minecraft:stone')
+	public _item = new Valuable('minecraft:diamond')
+	public _itemDisplay = new Valuable('none')
 	public config: IBlueprintBoneConfigJSON
 
 	public error = new Valuable('')
 
 	public menu = new Menu([
 		...Outliner.control_menu_group,
-		VANILLA_BLOCK_DISPLAY_CONFIG_ACTION,
+		VANILLA_ITEM_DISPLAY_CONFIG_ACTION,
 		'_',
 		'rename',
 		'delete',
@@ -55,58 +52,69 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 
 	public ready = false
 
-	constructor(data: VanillaBlockDisplayOptions, uuid = guid()) {
+	constructor(data: VanillaItemDisplayOptions, uuid = guid()) {
 		super(data, uuid)
-		VanillaBlockDisplay.all.push(this)
+		VanillaItemDisplay.all.push(this)
 
-		for (const key in VanillaBlockDisplay.properties) {
-			VanillaBlockDisplay.properties[key].reset(this)
+		for (const key in VanillaItemDisplay.properties) {
+			VanillaItemDisplay.properties[key].reset(this)
 		}
 
-		this.name = 'block_display'
+		this.name = 'item_display'
 		this.extend(data)
 
-		this.block ??= 'minecraft:stone'
+		this.item ??= 'minecraft:diamond'
+		this.itemDisplay ??= 'none'
+		this.position ??= [0, 0, 0]
+		this.rotation ??= [0, 0, 0]
+		this.scale ??= [1, 1, 1]
+		this.visibility ??= true
 		this.config ??= {}
 
 		this.sanitizeName()
 
-		const updateBlock = async (newBlock: string) => {
-			if (!MINECRAFT_REGISTRY.block) {
-				requestAnimationFrame(() => void updateBlock(newBlock))
+		const updateItem = (newItem: string) => {
+			if (!MINECRAFT_REGISTRY.item) {
+				requestAnimationFrame(() => updateItem(newItem))
 				return
 			}
-			const parsed = await parseBlock(newBlock)
-			if (!parsed) {
-				this.error.set('Invalid block ID.')
-			} else if (
-				(parsed.resource.namespace === 'minecraft' || parsed.resource.namespace === '') &&
-				MINECRAFT_REGISTRY.block.has(parsed.resource.name)
+			let [namespace, id] = newItem.split(':')
+			if (!id) {
+				id = namespace
+				namespace = 'minecraft'
+			}
+			if (
+				(namespace === 'minecraft' || namespace === '') &&
+				MINECRAFT_REGISTRY.item.has(id)
 			) {
 				this.error.set('')
 				this.preview_controller.updateGeometry(this)
 			} else {
-				this.error.set(`This block does not exist in Minecraft ${getCurrentVersion()!.id}.`)
-			}
-			if (this.mesh?.outline instanceof THREE.LineSegments) {
-				if (this.error.get()) this.mesh.outline.material = ERROR_OUTLINE_MATERIAL
-				else this.mesh.outline.material = Canvas.outlineMaterial
+				this.error.set(`This item does not exist in Minecraft ${getCurrentVersion()!.id}.`)
 			}
 		}
 
-		this._block.subscribe(value => {
-			void updateBlock(value)
+		this._item.subscribe(value => {
+			updateItem(value)
 		})
 	}
 
-	get block() {
-		if (this._block === undefined) return 'minecraft:stone'
-		return this._block.get()
+	get item() {
+		if (this._item === undefined) return 'minecraft:diamond'
+		return this._item.get()
 	}
-	set block(value: string) {
-		if (this._block === undefined) return
-		if (this.block === value) return
-		this._block.set(value)
+	set item(value: string) {
+		if (this._item === undefined) return
+		this._item.set(value)
+	}
+
+	get itemDisplay() {
+		if (this._itemDisplay === undefined) return 'none'
+		return this._itemDisplay.get()
+	}
+	set itemDisplay(value: string) {
+		if (this._itemDisplay === undefined) return
+		this._itemDisplay.set(value)
 	}
 
 	async waitForReady() {
@@ -121,10 +129,10 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 	}
 
 	getUndoCopy() {
-		const copy = {} as VanillaBlockDisplayOptions & { uuid: string; type: string }
+		const copy = {} as VanillaItemDisplayOptions & { uuid: string; type: string }
 
-		for (const key in VanillaBlockDisplay.properties) {
-			VanillaBlockDisplay.properties[key].copy(this, copy)
+		for (const key in VanillaItemDisplay.properties) {
+			VanillaItemDisplay.properties[key].copy(this, copy)
 		}
 
 		copy.uuid = this.uuid
@@ -134,8 +142,8 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 
 	getSaveCopy() {
 		const el: any = {}
-		for (const key in VanillaBlockDisplay.properties) {
-			VanillaBlockDisplay.properties[key].copy(this, el)
+		for (const key in VanillaItemDisplay.properties) {
+			VanillaItemDisplay.properties[key].copy(this, el)
 		}
 		el.uuid = this.uuid
 		el.type = this.type
@@ -155,7 +163,7 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 			}
 		}
 
-		VanillaBlockDisplay.selected.safePush(this)
+		VanillaItemDisplay.selected.safePush(this)
 		this.selectLow()
 		this.showInOutliner()
 		updateSelection()
@@ -176,42 +184,39 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 			Timeline.selected.empty()
 		}
 		Project!.selected_elements.remove(this)
-		VanillaBlockDisplay.selected.remove(this)
+		VanillaItemDisplay.selected.remove(this)
 		this.selected = false
 		TickUpdates.selection = true
 		this.preview_controller.updateHighlight(this)
 	}
 }
-new Property(VanillaBlockDisplay, 'string', 'block', { default: 'minecraft:stone' })
-new Property(VanillaBlockDisplay, 'object', 'config', {
+new Property(VanillaItemDisplay, 'string', 'item', { default: 'minecraft:diamond' })
+new Property(VanillaItemDisplay, 'string', 'item_display', { default: 'none' })
+new Property(VanillaItemDisplay, 'object', 'config', {
 	get default() {
 		return new BoneConfig().toJSON()
 	},
 })
-OutlinerElement.registerType(VanillaBlockDisplay, VanillaBlockDisplay.type)
+OutlinerElement.registerType(VanillaItemDisplay, VanillaItemDisplay.type)
 
-export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay, {
-	setup(el: VanillaBlockDisplay) {
+export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, {
+	setup(el: VanillaItemDisplay) {
 		ResizableOutlinerElement.prototype.preview_controller.setup(el)
 	},
-	updateGeometry(el: VanillaBlockDisplay) {
+	updateGeometry(el: VanillaItemDisplay) {
 		if (!el.mesh) return
 
-		void getBlockModel(el.block)
+		void getItemModel(el.item)
 			.then(result => {
-				if (!result?.mesh) return
-
+				if (!result) return
 				const mesh = el.mesh as THREE.Mesh
 				mesh.name = el.uuid
 				mesh.geometry = result.boundingBox
 				mesh.material = Canvas.transparentMaterial
-
 				mesh.clear()
-				result.outline.name = el.uuid + '_outline'
-				result.outline.visible = el.selected
-				mesh.outline = result.outline
 				mesh.add(result.mesh)
 				mesh.add(result.outline)
+				mesh.outline = result.outline
 
 				el.preview_controller.updateHighlight(el)
 				el.preview_controller.updateTransform(el)
@@ -219,29 +224,24 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay,
 				TickUpdates.selection = true
 			})
 			.catch(err => {
-				console.error(err)
 				if (typeof err.message === 'string') {
 					el.error.set(err.message as string)
 				}
 			})
 			.finally(() => {
-				if (el.mesh?.outline instanceof THREE.LineSegments) {
-					if (el.error.get()) el.mesh.outline.material = ERROR_OUTLINE_MATERIAL
-					else el.mesh.outline.material = Canvas.outlineMaterial
-				}
 				el.ready = true
 			})
 	},
-	updateTransform(el: VanillaBlockDisplay) {
+	updateTransform(el: VanillaItemDisplay) {
 		ResizableOutlinerElement.prototype.preview_controller.updateTransform(el)
 	},
-	updateHighlight(el: VanillaBlockDisplay, force?: boolean | VanillaBlockDisplay) {
+	updateHighlight(el: VanillaItemDisplay, force?: boolean | VanillaItemDisplay) {
 		if (!isCurrentFormat() || !el?.mesh) return
 		const highlighted = Modes.edit && (force === true || force === el || el.selected) ? 1 : 0
 
-		const blockModel = el.mesh.children.at(0) as THREE.Mesh
-		if (!blockModel) return
-		for (const child of blockModel.children) {
+		const itemModel = el.mesh.children.at(0) as THREE.Mesh
+		if (!itemModel) return
+		for (const child of itemModel.children) {
 			if (!(child instanceof THREE.Mesh)) continue
 			const highlight = child.geometry.attributes.highlight
 
@@ -254,11 +254,11 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay,
 	},
 })
 
-class VanillaBlockDisplayAnimator extends BoneAnimator {
+class VanillaItemDisplayAnimator extends BoneAnimator {
 	private _name: string
 
 	public uuid: string
-	public element: VanillaBlockDisplay | undefined
+	public element: VanillaItemDisplay | undefined
 
 	constructor(uuid: string, animation: _Animation, name: string) {
 		super(uuid, animation, name)
@@ -267,7 +267,7 @@ class VanillaBlockDisplayAnimator extends BoneAnimator {
 	}
 
 	getElement() {
-		this.element = OutlinerNode.uuids[this.uuid] as VanillaBlockDisplay
+		this.element = OutlinerNode.uuids[this.uuid] as VanillaItemDisplay
 		return this.element
 	}
 
@@ -332,8 +332,8 @@ class VanillaBlockDisplayAnimator extends BoneAnimator {
 				bone.rotation.y -= addedRotation.y * multiplier
 				bone.rotation.z += addedRotation.z * multiplier
 			} else {
-				bone.rotation.x -= Math.degToRad(arr[0]) * multiplier
-				bone.rotation.y -= Math.degToRad(arr[1]) * multiplier
+				bone.rotation.x += Math.degToRad(-arr[0]) * multiplier
+				bone.rotation.y += Math.degToRad(-arr[1]) * multiplier
 				bone.rotation.z += Math.degToRad(arr[2]) * multiplier
 			}
 		}
@@ -365,18 +365,17 @@ class VanillaBlockDisplayAnimator extends BoneAnimator {
 		if (bone.fix_scale) {
 			bone.scale.copy(bone.fix_scale)
 		}
-
-		bone.scale.x *= 1 + (arr[0] - 1) * multiplier || 0.00001
-		bone.scale.y *= 1 + (arr[1] - 1) * multiplier || 0.00001
-		bone.scale.z *= 1 + (arr[2] - 1) * multiplier || 0.00001
+		bone.scale.x = 1 + (arr[0] - 1) * multiplier || 0.00001
+		bone.scale.y = 1 + (arr[1] - 1) * multiplier || 0.00001
+		bone.scale.z = 1 + (arr[2] - 1) * multiplier || 0.00001
 		return this
 	}
 }
-VanillaBlockDisplayAnimator.prototype.type = VanillaBlockDisplay.type
-VanillaBlockDisplay.animator = VanillaBlockDisplayAnimator as any
+VanillaItemDisplayAnimator.prototype.type = VanillaItemDisplay.type
+VanillaItemDisplay.animator = VanillaItemDisplayAnimator as any
 
 createBlockbenchMod(
-	`${PACKAGE.name}:vanillaBlockDisplay`,
+	`${PACKAGE.name}:vanillaItemDisplay`,
 	{
 		subscriptions: [] as Array<() => void>,
 	},
@@ -387,13 +386,13 @@ createBlockbenchMod(
 
 		context.subscriptions.push(
 			EVENTS.SELECT_PROJECT.subscribe(project => {
-				project.vanillaBlockDisplays ??= []
-				VanillaBlockDisplay.all.empty()
-				VanillaBlockDisplay.all.push(...project.vanillaBlockDisplays)
+				project.vanillaItemDisplays ??= []
+				VanillaItemDisplay.all.empty()
+				VanillaItemDisplay.all.push(...project.vanillaItemDisplays)
 			}),
 			EVENTS.UNSELECT_PROJECT.subscribe(project => {
-				project.vanillaBlockDisplays = [...VanillaBlockDisplay.all]
-				VanillaBlockDisplay.all.empty()
+				project.vanillaItemDisplays = [...VanillaItemDisplay.all]
+				VanillaItemDisplay.all.empty()
 			})
 		)
 		return context
@@ -407,9 +406,9 @@ createBlockbenchMod(
 	}
 )
 
-export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_vanilla_block_display`, {
-	name: translate('action.create_vanilla_block_display.title'),
-	icon: 'deployed_code',
+export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_vanilla_item_display`, {
+	name: translate('action.create_vanilla_item_display.title'),
+	icon: 'icecream',
 	category: 'animated_java',
 	condition() {
 		return isCurrentFormat() && Mode.selected.id === Modes.options.edit.id
@@ -417,75 +416,24 @@ export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_vanilla_block_
 	click() {
 		Undo.initEdit({ outliner: true, elements: [], selection: true })
 
-		const vanillaBlockDisplay = new VanillaBlockDisplay({}).init()
+		const vanillaItemDisplay = new VanillaItemDisplay({}).init()
 		const group = getCurrentGroup()
 
 		if (group instanceof Group) {
-			vanillaBlockDisplay.addTo(group)
-			vanillaBlockDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
+			vanillaItemDisplay.addTo(group)
+			vanillaItemDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
 		}
 
 		selected.forEachReverse(el => el.unselect())
 		Group.first_selected && Group.first_selected.unselect()
-		vanillaBlockDisplay.select()
+		vanillaItemDisplay.select()
 
-		Undo.finishEdit('Create Vanilla Block Display', {
+		Undo.finishEdit('Create Vanilla Item Display', {
 			outliner: true,
 			elements: selected,
 			selection: true,
 		})
 
-		return vanillaBlockDisplay
+		return vanillaItemDisplay
 	},
 })
-
-export function debugBlocks() {
-	const maxX = Math.floor(Math.sqrt(MINECRAFT_REGISTRY.block.items.length))
-	for (let i = 0; i < MINECRAFT_REGISTRY.block.items.length; i++) {
-		const block = MINECRAFT_REGISTRY.block.items[i]
-		const x = (i % maxX) * 32
-		const y = Math.floor(i / maxX) * 32
-		new VanillaBlockDisplay({ name: block, block, position: [x, 8, y] }).init()
-	}
-}
-
-export async function debugBlockState(block: string) {
-	const blockState = await getBlockState(block)
-	if (!blockState) return
-
-	const permutations = computeAllStatePermutations(blockState.stateValues)
-
-	const maxX = Math.floor(Math.sqrt(permutations.length))
-	for (let i = 0; i < permutations.length; i++) {
-		const x = (i % maxX) * 32
-		const y = Math.floor(i / maxX) * 32
-		const str = generateBlockStateString(permutations[i])
-		new VanillaBlockDisplay({
-			name: block + str,
-			block: block + str,
-			position: [x, 8, y],
-		}).init()
-	}
-}
-
-function generateBlockStateString(state: Record<string, BlockStateValue>) {
-	const str = Object.entries(state).map(([k, v]) => `${k}=${v.toString()}`)
-	return `[${str.join(',')}]`
-}
-
-// FetchBot is the GOAT 🐐
-function computeAllStatePermutations(state: Record<string, BlockStateValue[]>) {
-	const maxPermutation = Object.values(state).reduce((acc, cur) => acc * cur.length, 1)
-	const permutations: Array<Record<string, string>> = []
-	for (let i = 0; i < maxPermutation; i++) {
-		const permutation: Record<string, string> = {}
-		let i2 = i
-		Object.entries(state).forEach(([key, value]) => {
-			const index = i2 % value.length
-			permutation[key] = String(value[index])
-			i2 = Math.floor(i2 / value.length)
-		})
-		permutations.push(permutation)
-	}
-	return permutations
-}

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { ITEM_DISPLAY_ITEM_DISPLAY_SELECT } from '.'
-	import { VanillaItemDisplay } from '../../../blockbench-additions/outliner-elements/vanillaItemDisplay'
+	import { VanillaItemDisplay } from '../../../blockbench-additions/outliner-elements/itemDisplay'
 	import EVENTS from '../../../util/events'
 	import { Valuable } from '../../../util/stores'
 	import { translate } from '../../../util/translation'

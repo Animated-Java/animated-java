@@ -1,5 +1,5 @@
 import { isCurrentFormat } from '../../../blockbench-additions/model-formats/ajblueprint'
-import { VanillaBlockDisplay } from '../../../blockbench-additions/outliner-elements/vanillaBlockDisplay'
+import { VanillaBlockDisplay } from '../../../blockbench-additions/outliner-elements/blockDisplay'
 import { PACKAGE } from '../../../constants'
 import { BoneConfig } from '../../../nodeConfigs'
 import { createAction } from '../../../util/moddingTools'
