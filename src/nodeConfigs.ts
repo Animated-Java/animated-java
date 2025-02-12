@@ -1,16 +1,16 @@
 import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtString, NbtTag } from 'deepslate/lib/nbt'
-import {
+import type {
 	IBlueprintBoneConfigJSON,
 	IBlueprintCameraConfigJSON,
 	IBlueprintLocatorConfigJSON,
 	IBlueprintTextDisplayConfigJSON,
-} from './blueprintFormat'
+} from './blockbench-additions/model-formats/ajblueprint'
 
 export type BillboardMode = 'fixed' | 'vertical' | 'horizontal' | 'center'
 
 // TODO: Refactor these configs to inherit from a base class
 export class BoneConfig {
-	private _customName?: string
+	private _customName?: BoneConfig['customName']
 	private _customNameVisible?: boolean
 	private _billboard?: BillboardMode
 	private _overrideBrightness?: boolean
@@ -46,12 +46,12 @@ export class BoneConfig {
 		})
 	}
 
-	get customName(): NonNullable<BoneConfig['_customName']> {
+	get customName(): string {
 		if (this._customName !== undefined) return this._customName
 		const defaultConfig = BoneConfig.getDefault()
 		return defaultConfig.customName
 	}
-	set customName(value: BoneConfig['_customName']) {
+	set customName(value: string) {
 		this._customName = value
 	}
 

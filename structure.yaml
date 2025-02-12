@@ -1,0 +1,116 @@
+naming-conventions:
+  - folders: Folders should be named in kebab-case
+  - files: |-
+      Most files should be in camelCase. (e.g. myFile.ts)
+      Files with versions should use underscore instead of a period in version numbers. (e.g. v1_0_0.ts).
+      Files that are the entry point for a folder should be named index.ts
+
+repo-folder-structure:
+  - src:
+      - assets: # Contains any assets used by the plugin
+
+      - ui: # Contains most of the UI components and their entry index.ts files
+          - index.ts # Exports all the UI components so the plugin index can import './ui'
+          - dialogs:
+              - dialog-example:
+                  - index.ts
+                  - dialogExample.svelte
+              - sidebar-dialog-example:
+                  - index.ts
+                  - sidebarDialogExample.svelte
+                  - pages:
+                      - page1.svelte
+                      - page2.svelte
+          - panels:
+          - popups:
+
+      - svelte-components: # Generic Svelte components that can be used in multiple places
+          - dialog-items:
+          - sidebar-dialog-items:
+
+      - lang: # Contains the language files
+          - en.yml
+
+      - blockbench-mods: # Contains any mods made to Blockbench by the plugin
+          - action:
+          - class-properties:
+          - function-overwrites:
+          - global:
+          - prototype:
+          - ui:
+          - misc: # Contains any other mods that don't fit into the other categories
+              - modName.ts # If the mod only uses one file, it can be placed directly in the mod's folder.
+              - mod-name:
+                  # Each mod should globally declare any type modifications it makes to Blockbench classes, interfaces, and functions.
+                  # This keeps the global.d.ts file clean and keeps a mod's changes all in one place.
+                  - index.ts
+
+      - blockbench-additions: # Contains any additions to Blockbench by the plugin
+          - class-properties:
+          - outliner-elements:
+              - resizeableOutlinerElement.ts
+              - textDisplay.ts
+              - itemDisplay.ts
+              - blockDisplay.ts
+          - model-formats: # Contains model format additions
+              - ajblueprint:
+                  - versions:
+                      - v0_0_0.ts # Each version of the model format, typed, and with an upgrade function as the default export
+                  - index.ts
+                  - codec.ts
+                  - settings.ts
+                  - converter.ts
+                  - dfu.ts # Data Fixer Upper
+
+      - systems: # Contains the systems used by the plugin
+          # The data and resource pack compilers should be updated to only export to a virtual file system, and not write to disk.
+          # The disk writing should be handled after all compilation is complete.
+          - data-pack-compiler: # Contains the datapack compiler system
+              - index.ts
+              - versions:
+                  - mc-1_20_4.ts
+          - resource-pack-compiler: # Contains the datapack compiler system
+              - index.ts
+              - versions:
+                  - mc-1_20_4.ts
+          - plugin-json-compiler: # Contains the Plugin JSON compiler system
+              - index.ts
+              - versions:
+                  - v0.ts
+          - minecraft-assets: # Contains Minecraft-specific systems
+              # A resource pack that contains overrides for vanilla assets that are either missing in vanilla,
+              # or need to be changed to work with AJ's rendering system.
+              - vanilla-asset-overrides:
+              - models:
+                  - index.ts
+                  - itemModel.ts
+                  - blockModel.ts
+                  - blockstate.ts
+              - versions.ts
+          - minecraft-text-components:
+          - minecraft-fonts:
+              - index.ts
+              - fontRenderer.ts
+          - rig-renderer:
+          - animation-renderer:
+
+      - util: # Contains general utilities
+          - blockbench: # Contains Blockbench specific utilities
+          - minecraft: # Contains Minecraft specific utilities
+
+      - plugin:
+          - index.ts # Defines the plugin instance and registers it with Blockbench
+          - package: # The unprocessed plugin package for the Blockbench plugin repo
+              - about.svelte
+              - changelog.json
+              - icon.svg
+              - members.yml
+
+      - index.ts # Main entry point for the plugin, imports everything.
+      - global.d.ts
+      - blockbench-types.d.ts # Contains any global type modifications to blockbench-types
+
+  - tests:
+  - tools:
+      - esbuild-plugins:
+      - esbuild.ts

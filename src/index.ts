@@ -1,58 +1,61 @@
 import { PACKAGE } from './constants'
-import { events } from './util/events'
 import './util/translation'
 // Blueprint Format
-import './blueprintFormat'
+import './blockbench-additions/model-formats/ajblueprint'
 // Interface
-import './interface'
+import './ui'
 // Blockbench Mods
-import './mods'
-// Outliner
-import './outliner/textDisplay'
-import './outliner/vanillaItemDisplay'
-import './outliner/vanillaBlockDisplay'
+import './blockbench-mods'
+// Blockbench Additions
+import './blockbench-additions'
 // Compilers
-import datapackCompiler from './systems/datapackCompiler'
+import datapackCompiler from './systems/datapack-compiler'
 // Minecraft Systems
-import './systems/minecraft/versionManager'
-import './systems/minecraft/registryManager'
-import './systems/minecraft/blockstateManager'
-import './systems/minecraft/assetManager'
-import './systems/minecraft/fontManager'
+import './systems/minecraft-temp/assetManager'
+import './systems/minecraft-temp/blockstateManager'
+import './systems/minecraft-temp/fontManager'
+import './systems/minecraft-temp/registryManager'
+import './systems/minecraft-temp/versionManager'
 // Misc imports
-import { Variant } from './variants'
-import './systems/minecraft/registryManager'
-import { MINECRAFT_REGISTRY } from './systems/minecraft/registryManager'
-import resourcepackCompiler from './systems/resourcepackCompiler'
-import { openExportProgressDialog } from './interface/dialog/exportProgress'
+import { BLUEPRINT_CODEC, BLUEPRINT_FORMAT } from './blockbench-additions/model-formats/ajblueprint'
+import { TextDisplay } from './blockbench-additions/outliner-elements/textDisplay'
+import {
+	VanillaBlockDisplay,
+	debugBlockState,
+	debugBlocks,
+} from './blockbench-additions/outliner-elements/vanillaBlockDisplay'
+import { VanillaItemDisplay } from './blockbench-additions/outliner-elements/vanillaItemDisplay'
+import { blueprintSettingErrors } from './blueprintSettings'
+import { cleanupExportedFiles } from './systems/cleaner'
+import mcbFiles from './systems/datapack-compiler/versions'
+import { exportProject } from './systems/exporter'
+import * as assetManager from './systems/minecraft-temp/assetManager'
+import { getLatestVersionClientDownloadUrl } from './systems/minecraft-temp/assetManager'
+import * as blockModelManager from './systems/minecraft-temp/blockModelManager'
+import { BLOCKSTATE_REGISTRY } from './systems/minecraft-temp/blockstateManager'
+import { getVanillaFont } from './systems/minecraft-temp/fontManager'
+import * as itemModelManager from './systems/minecraft-temp/itemModelManager'
+import './systems/minecraft-temp/registryManager'
+import { MINECRAFT_REGISTRY } from './systems/minecraft-temp/registryManager'
+import resourcepackCompiler from './systems/resourcepack-compiler'
+import { openChangelogDialog } from './ui/dialogs/changelog'
+import { openExportProgressDialog } from './ui/dialogs/export-progress'
+import { openUnexpectedErrorDialog } from './ui/dialogs/unexpected-error'
+import { openBlueprintLoadingDialog } from './ui/popups/blueprint-loading'
+import { checkForIncompatabilities } from './ui/popups/incompatability'
+import { openInstallPopup } from './ui/popups/installed'
 import {
 	isDataPackPath,
 	isResourcePackPath,
 	parseResourceLocation,
 	parseResourcePackPath,
 } from './util/minecraftUtil'
-import { blueprintSettingErrors } from './blueprintSettings'
-import { openUnexpectedErrorDialog } from './interface/dialog/unexpectedError'
-import { BLUEPRINT_CODEC, BLUEPRINT_FORMAT } from './blueprintFormat'
-import { TextDisplay } from './outliner/textDisplay'
-import { getLatestVersionClientDownloadUrl } from './systems/minecraft/assetManager'
-import { getVanillaFont } from './systems/minecraft/fontManager'
-import * as assetManager from './systems/minecraft/assetManager'
-import * as itemModelManager from './systems/minecraft/itemModelManager'
-import * as blockModelManager from './systems/minecraft/blockModelManager'
-import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
-import { VanillaBlockDisplay, debugBlockState, debugBlocks } from './outliner/vanillaBlockDisplay'
-import { BLOCKSTATE_REGISTRY } from './systems/minecraft/blockstateManager'
-import { exportProject } from './systems/exporter'
-import { openBlueprintLoadingDialog } from './interface/popup/blueprintLoading'
-import { openInstallPopup } from './interface/popup/installed'
-import { cleanupExportedFiles } from './systems/cleaner'
-import mcbFiles from './systems/datapackCompiler/mcbFiles'
-import { openChangelogDialog } from './interface/changelogDialog'
-import { checkForIncompatabilities } from './interface/popup/incompatabilityPopup'
+import { Variant } from './variants'
 
-// @ts-ignore
-globalThis.AnimatedJava = {
+import registerPlugin from './plugin'
+import { createBlockbenchMod } from './util/moddingTools'
+
+const PLUGIN_API = {
 	API: {
 		parseResourcePackPath,
 		parseResourceLocation,
@@ -97,6 +100,23 @@ globalThis.AnimatedJava = {
 	},
 }
 
+declare global {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, no-var
+	var AnimatedJava: typeof PLUGIN_API
+}
+
+createBlockbenchMod(
+	`${PACKAGE.name}:global/api`,
+	undefined,
+	() => {
+		globalThis.AnimatedJava = PLUGIN_API
+	},
+	() => {
+		// @ts-expect-error: AnimatedJava type is not optional, but we want to delete it when uninstalling
+		delete globalThis.AnimatedJava
+	}
+)
+
 requestAnimationFrame(() => {
 	if (checkForIncompatabilities()) return
 
@@ -107,38 +127,4 @@ requestAnimationFrame(() => {
 	}
 })
 
-// Uninstall events
-events.EXTRACT_MODS.subscribe(() => {
-	// @ts-ignore
-	globalThis.AnimatedJava = undefined
-})
-
-BBPlugin.register(PACKAGE.name, {
-	title: PACKAGE.title,
-	author: PACKAGE.author.name,
-	description: PACKAGE.description,
-	icon: 'icon.svg',
-	variant: 'desktop',
-	version: PACKAGE.version,
-	min_version: PACKAGE.min_blockbench_version,
-	tags: ['Minecraft: Java Edition', 'Animation', 'Display Entities'],
-	await_loading: true,
-	onload() {
-		events.LOAD.dispatch()
-	},
-	onunload() {
-		events.UNLOAD.dispatch()
-	},
-	oninstall() {
-		events.INSTALL.dispatch()
-		openInstallPopup()
-	},
-	onuninstall() {
-		events.UNINSTALL.dispatch()
-		Blockbench.showMessageBox({
-			title: 'Animated Java has Been Uninstalled!',
-			message: 'In order to fully uninstall Animated Java, please restart Blockbench.',
-			buttons: ['OK'],
-		})
-	},
-})
+registerPlugin()

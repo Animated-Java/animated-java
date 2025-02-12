@@ -1,5 +1,5 @@
 import { isFunctionTagPath } from '../util/fileUtil'
-import { IFunctionTag, parseDataPackPath } from '../util/minecraftUtil'
+import { type IFunctionTag, parseDataPackPath } from '../util/minecraftUtil'
 import { getExportPaths } from './exporter'
 import { AJMeta } from './global'
 import { replacePathPart } from './util'

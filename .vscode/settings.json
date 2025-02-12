@@ -25,6 +25,10 @@
 		"**/node_modules": true
 	},
 	"npm.exclude": ["**/node_modules"],
+	"svelte.plugin.svelte.compilerWarnings": {
+		"a11y-click-events-have-key-events": "ignore",
+		"a11y-no-static-element-interactions": "ignore"
+	},
 	"errorLens.excludePatterns": ["**/node_modules/**/*"],
 	"eslint.validate": ["javascript", "typescript", "svelte"],
 	"eslint.useFlatConfig": true,

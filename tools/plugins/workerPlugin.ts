@@ -4,9 +4,11 @@ import findCacheDir from 'find-cache-dir'
 import * as fs from 'fs'
 import * as path from 'path'
 
-export { inlineWorkerPlugin as default }
+type InlineWorkerPluginConfig = esbuild.BuildOptions & {
+	workerName?: string
+}
 
-function inlineWorkerPlugin(extraConfig) {
+export default function inlineWorkerPlugin(extraConfig: InlineWorkerPluginConfig): esbuild.Plugin {
 	return {
 		name: 'esbuild-plugin-inline-worker',
 
@@ -16,13 +18,13 @@ function inlineWorkerPlugin(extraConfig) {
 				//   encoding: 'utf-8',
 				// });
 
-				let workerCode = await buildWorker(workerPath, extraConfig)
+				const workerCode = await buildWorker(workerPath, extraConfig)
 				return {
 					contents: `import inlineWorker from '__inline-worker'
-export default function Worker() {
-  return inlineWorker(${JSON.stringify(workerCode)});
-}
-`,
+						export default function Worker() {
+						return inlineWorker(${JSON.stringify(workerCode)});
+						}
+					`,
 					loader: 'js',
 				}
 			})
@@ -30,15 +32,14 @@ export default function Worker() {
 			const name = extraConfig.workerName ? { name: extraConfig.workerName } : {}
 
 			const inlineWorkerFunctionCode = `
-export default function inlineWorker(scriptText) {
-  let blob = new Blob([scriptText], {type: 'text/javascript'});
-  let url = URL.createObjectURL(blob);
-  let worker = new Worker(url, ${JSON.stringify(name)});
-  URL.revokeObjectURL(url);
-  return worker;
-}
-`
-
+				export default function inlineWorker(scriptText) {
+				let blob = new Blob([scriptText], {type: 'text/javascript'});
+				let url = URL.createObjectURL(blob);
+				let worker = new Worker(url, ${JSON.stringify(name)});
+				URL.revokeObjectURL(url);
+				return worker;
+				}
+			`
 			build.onResolve({ filter: /^__inline-worker$/ }, ({ path }) => {
 				return { path, namespace: 'inline-worker' }
 			})
@@ -49,17 +50,17 @@ export default function inlineWorker(scriptText) {
 	}
 }
 
-let cacheDir = findCacheDir({
+const CACHE_DIR = findCacheDir({
 	name: 'esbuild-plugin-inline-worker',
 	create: true,
-})
+})!
 
-async function buildWorker(workerPath, extraConfig) {
-	let scriptNameParts = path.basename(workerPath).split('.')
+async function buildWorker(workerPath: string, extraConfig: any) {
+	const scriptNameParts = path.basename(workerPath).split('.')
 	scriptNameParts.pop()
 	scriptNameParts.push('js')
-	let scriptName = scriptNameParts.join('.')
-	let bundlePath = path.resolve(cacheDir, scriptName)
+	const scriptName = scriptNameParts.join('.')
+	const bundlePath = path.resolve(CACHE_DIR, scriptName)
 
 	if (extraConfig) {
 		delete extraConfig.entryPoints

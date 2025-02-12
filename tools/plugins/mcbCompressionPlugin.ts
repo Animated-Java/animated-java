@@ -1,7 +1,7 @@
-import { Plugin } from 'esbuild'
+import { type Plugin } from 'esbuild'
+import * as fflate from 'fflate'
 import * as fs from 'fs/promises'
 import * as pathjs from 'path'
-import * as fflate from 'fflate'
 
 function zip(data: fflate.AsyncZippable): Promise<Uint8Array> {
 	return new Promise((resolve, reject) => {
@@ -25,9 +25,9 @@ export default function plugin(): Plugin {
 
 				return {
 					contents: `
-import getZipFile from '__MCB_ZIP_DATA'
-export default getZipFile('${localPath}')
-`,
+						import getZipFile from '__MCB_ZIP_DATA'
+						export default getZipFile('${localPath}')
+					`,
 					loader: 'js',
 				}
 			})
@@ -39,17 +39,17 @@ export default getZipFile('${localPath}')
 				}
 			})
 
-			build.onLoad({ filter: /.*/, namespace: 'mcbZipData' }, async ({ path }) => {
+			build.onLoad({ filter: /.*/, namespace: 'mcbZipData' }, async () => {
 				const zipped = await zip(Object.fromEntries(mcbFiles.entries()))
 				const data = Buffer.from(zipped).toString('base64')
 				return {
 					contents: `
-import * as fflate from 'fflate'
-const unzipped = fflate.unzipSync(Uint8Array.from(atob('${data}'), c => c.charCodeAt(0)))
-export default function getFile(path) {
-	return Buffer.from(unzipped[path]).toString('utf-8')
-}
-`,
+						import * as fflate from 'fflate'
+						const unzipped = fflate.unzipSync(Uint8Array.from(atob('${data}'), c => c.charCodeAt(0)))
+						export default function getFile(path) {
+							return Buffer.from(unzipped[path]).toString('utf-8')
+						}
+					`,
 					resolveDir: process.cwd(),
 					loader: 'js',
 				}

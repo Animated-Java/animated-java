@@ -1,6 +1,4 @@
 import type {
-	BLUEPRINT_CODEC,
-	BLUEPRINT_FORMAT,
 	IBlueprintBoneConfigJSON,
 	IBlueprintLocatorConfigJSON,
 } from './blueprintFormat'
@@ -85,24 +83,5 @@ declare global {
 
 	interface CubeFace {
 		lastVariant: Variant | undefined
-	}
-
-	const AnimatedJava: {
-		API: {
-			compileDataPack: typeof datapackCompiler
-			compileResourcePack: typeof resourcepackCompiler
-			Variant: typeof Variant
-			MINECRAFT_REGISTRY: typeof MINECRAFT_REGISTRY
-			openExportProgressDialog: typeof openExportProgressDialog
-			isResourcePackPath: typeof isResourcePackPath
-			isDataPackPath: typeof isDataPackPath
-			blueprintSettingErrors: typeof blueprintSettingErrors
-			openUnexpectedErrorDialog: typeof openUnexpectedErrorDialog
-			BLUEPRINT_FORMAT: typeof BLUEPRINT_FORMAT
-			BLUEPRINT_CODEC: typeof BLUEPRINT_CODEC
-			TextDisplay: typeof TextDisplay
-			VanillaItemDisplay: typeof VanillaItemDisplay
-			VanillaBlockDisplay: typeof VanillaBlockDisplay
-		}
 	}
 }

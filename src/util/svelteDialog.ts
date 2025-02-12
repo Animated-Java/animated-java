@@ -6,7 +6,7 @@ const DIALOG_STACK: Array<SvelteDialog<unknown, any>> = []
 
 type SvelteDialogOptions<T, U extends ComponentConstructorOptions> = Omit<
 	DialogOptions,
-	'lines' | 'sidebar'
+	'lines' | 'sidebar' | 'component'
 > & {
 	id: string
 	component: SvelteComponentConstructor<T, U>
@@ -24,11 +24,10 @@ export class SvelteDialog<T, U extends Record<string, any>> extends Dialog {
 		const mount = document.createComment(`svelte-dialog-` + guid())
 
 		const dialogOptions = { ...options }
-		delete dialogOptions.component
-
-		super(options.id, {
+		super({
 			...dialogOptions,
 			lines: [mount],
+			component: undefined,
 		})
 
 		this.onOpen = () => {
@@ -127,7 +126,6 @@ export class SvelteSidebarDialog extends Dialog {
 		const mount = document.createComment(`svelte-dialog-` + guid())
 
 		const dialogOptions = { ...options }
-		delete dialogOptions.component
 
 		const userOnPageSwitch = options.sidebar.onPageSwitch
 		options.sidebar.onPageSwitch = (page: string) => {
@@ -143,6 +141,7 @@ export class SvelteSidebarDialog extends Dialog {
 		super(options.id, {
 			...dialogOptions,
 			lines: [mount],
+			component: undefined,
 		})
 
 		this.conditionInterval = setInterval(() => {

@@ -1,6 +1,6 @@
-import { TextDisplay } from '../outliner/textDisplay'
-import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
-import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
+import { TextDisplay } from '../blockbench-additions/outliner-elements/textDisplay'
+import { VanillaBlockDisplay } from '../blockbench-additions/outliner-elements/vanillaBlockDisplay'
+import { VanillaItemDisplay } from '../blockbench-additions/outliner-elements/vanillaItemDisplay'
 
 export function getAvailableNodes(
 	excludedNodes: CollectionItem[],

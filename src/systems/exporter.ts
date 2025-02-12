@@ -1,8 +1,8 @@
-import { saveBlueprint } from '../blueprintFormat'
+import { saveBlueprint } from '../blockbench-additions/model-formats/ajblueprint'
 import { blueprintSettingErrors } from '../blueprintSettings'
-import { openBlueprintSettingsDialog } from '../svelte/blueprintSettings'
-import { PROGRESS_DESCRIPTION, openExportProgressDialog } from '../interface/dialog/exportProgress'
-import { openUnexpectedErrorDialog } from '../interface/dialog/unexpectedError'
+import { openBlueprintSettingsDialog } from '../ui/dialogs/blueprint-settings'
+import { openExportProgressDialog, PROGRESS_DESCRIPTION } from '../ui/dialogs/export-progress'
+import { openUnexpectedErrorDialog } from '../ui/dialogs/unexpected-error'
 import { resolvePath } from '../util/fileUtil'
 import { isResourcePackPath, sortMCVersions } from '../util/minecraftUtil'
 import { translate } from '../util/translation'
@@ -24,11 +24,11 @@ export function getExportPaths() {
 	// These paths are all relative to the resource pack folder
 	const modelExportFolder = PathModule.join(
 		'assets/animated_java/models/blueprint/',
-		aj.export_namespace
+		aj.id
 	)
 	const textureExportFolder = PathModule.join(
 		'assets/animated_java/textures/blueprint/',
-		aj.export_namespace
+		aj.id
 	)
 	const displayItemPath = PathModule.join(
 		'assets/minecraft/models/item/',
@@ -143,7 +143,7 @@ async function actuallyExportProject(forceSave = true) {
 			})
 		}
 
-		Project!.last_used_export_namespace = aj.export_namespace
+		Project!.last_used_export_namespace = aj.id
 		console.timeEnd('Exporting project took')
 
 		if (forceSave) saveBlueprint()

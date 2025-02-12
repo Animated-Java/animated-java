@@ -1,11 +1,7 @@
 import { resolve } from 'path'
-import prep from 'svelte-preprocess'
+import sveltePreprocess from 'svelte-preprocess'
 import { typescript } from 'svelte-preprocess-esbuild'
-
-export const compilerOptions = {
-	dev: process.env.NODE_ENV === 'development',
-	css: true,
-}
+import type { ISvelteESBuildPluginOptions } from './tools/plugins/sveltePlugin'
 
 export const preprocess = [
 	typescript({
@@ -14,14 +10,17 @@ export const preprocess = [
 			'process.browser': 'true',
 		},
 	}),
-	prep({ typescript: false }),
+	sveltePreprocess({
+		typescript: false,
+		sourceMap: process.env.NODE_ENV === 'development',
+	}),
 ]
 
 const IMPORT_PATH = resolve(__dirname, '../src/util/', 'events.ts')
 
-export const transformCssToJs = (
-	css: string
-) => `import { events as SVELTE_EVENTS } from ${JSON.stringify(IMPORT_PATH)};
+export const transformCssToJs = (css: string) => `import SVELTE_EVENTS from ${JSON.stringify(
+	IMPORT_PATH
+)};
 (() => {
 	const $deletable = Blockbench.addCSS(${JSON.stringify(css)});
 	function DELETE_SVELTE_CSS() { $deletable?.delete() }
@@ -29,4 +28,12 @@ export const transformCssToJs = (
 	SVELTE_EVENTS.UNINSTALL.subscribe(DELETE_SVELTE_CSS, true);
 })()`
 
-export default { preprocess, transformCssToJs }
+export default {
+	preprocess,
+	transformCssToJs,
+	compilerOptions: {
+		dev: process.env.NODE_ENV === 'development',
+		css: true,
+		errorMode: process.env.NODE_ENV === 'development' ? 'warn' : 'throw',
+	},
+} satisfies ISvelteESBuildPluginOptions
