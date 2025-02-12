@@ -1,7 +1,7 @@
 import { resolve } from 'path'
 import sveltePreprocess from 'svelte-preprocess'
 import { typescript } from 'svelte-preprocess-esbuild'
-import type { ISvelteESBuildPluginOptions } from './tools/plugins/sveltePlugin'
+import type { ISvelteESBuildPluginOptions } from './tools/esbuild-plugins/svelte'
 
 export const preprocess = [
 	typescript({
