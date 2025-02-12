@@ -1,4 +1,4 @@
-import KeyframeEasingsSvelte from '../svelte-components/keyframeEasings.svelte'
+import KeyframeEasingsSvelte from '@svelte-components/keyframeEasings.svelte'
 import { injectSvelteCompomponentMod } from '../util/injectSvelteComponent'
 
 injectSvelteCompomponentMod({

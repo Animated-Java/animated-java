@@ -6,12 +6,12 @@ import type {
 	IBlueprintTextDisplayConfigJSON,
 	IBlueprintVariantJSON,
 } from '../../blockbench-additions/model-formats/ajblueprint'
+import { VanillaBlockDisplay } from '../../blockbench-additions/outliner-elements/blockDisplay'
+import { VanillaItemDisplay } from '../../blockbench-additions/outliner-elements/itemDisplay'
 import {
 	type Alignment,
 	TextDisplay,
 } from '../../blockbench-additions/outliner-elements/textDisplay'
-import { VanillaBlockDisplay } from '../../blockbench-additions/outliner-elements/vanillaBlockDisplay'
-import { VanillaItemDisplay } from '../../blockbench-additions/outliner-elements/vanillaItemDisplay'
 import { BoneConfig } from '../../nodeConfigs'
 import {
 	type IMinecraftResourceLocation,

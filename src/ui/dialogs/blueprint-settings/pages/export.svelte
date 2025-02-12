@@ -1,10 +1,10 @@
 <script lang="ts">
+	import { type MinecraftVersion } from '@aj/systems/datapack-compiler/versions'
+	import Checkbox from '@svelte-components/sidebar-dialog-items/checkbox.svelte'
+	import LineEdit from '@svelte-components/sidebar-dialog-items/lineEdit.svelte'
+	import OptionSelect from '@svelte-components/sidebar-dialog-items/optionSelect.svelte'
 	import type { ValuableBlueprintSettings } from '..'
 	import { defaultValues } from '../../../../blueprintSettings'
-	import Checkbox from '../../../../svelte-components/sidebar-dialog-items/checkbox.svelte'
-	import LineEdit from '../../../../svelte-components/sidebar-dialog-items/lineEdit.svelte'
-	import OptionSelect from '../../../../svelte-components/sidebar-dialog-items/optionSelect.svelte'
-	import { type MinecraftVersion } from '../../../../systems/datapackCompiler/mcbFiles'
 	import {
 		containsInvalidScoreboardTagCharacters,
 		createTagPrefixFromBlueprintID,

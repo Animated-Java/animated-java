@@ -1,10 +1,10 @@
-import * as pathjs from 'path'
-import { type MinecraftVersion } from '../systems/datapack-compiler/versions'
+import { type MinecraftVersion } from '@aj/systems/datapack-compiler/versions'
 import {
 	BlockStateRegistryEntry,
 	type BlockStateValue,
 	getBlockState,
-} from '../systems/minecraft-temp/blockstateManager'
+} from '@aj/systems/minecraft-temp/blockstateManager'
+import * as pathjs from 'path'
 
 export interface IMinecraftResourceLocation {
 	resourcePackRoot: string

@@ -1,17 +1,17 @@
 <script lang="ts">
-	import Checkbox from '../../../svelte-components/dialog-items/checkbox.svelte'
-	import ColorPicker from '../../../svelte-components/dialog-items/colorPicker.svelte'
-	import LineInput from '../../../svelte-components/dialog-items/lineInput.svelte'
-	import NumberSlider from '../../../svelte-components/dialog-items/numberSlider.svelte'
-	import Select from '../../../svelte-components/dialog-items/select.svelte'
+	import Checkbox from '@svelte-components/dialog-items/checkbox.svelte'
+	import ColorPicker from '@svelte-components/dialog-items/colorPicker.svelte'
+	import LineInput from '@svelte-components/dialog-items/lineInput.svelte'
+	import NumberSlider from '@svelte-components/dialog-items/numberSlider.svelte'
+	import Select from '@svelte-components/dialog-items/select.svelte'
 
 	import { BoneConfig } from '../../../nodeConfigs'
 	import { Valuable } from '../../../util/stores'
 	import { translate } from '../../../util/translation'
 	import { Variant } from '../../../variants'
 
+	import { JsonText } from '@aj/systems/minecraft-temp/jsonText'
 	import { NbtCompound, NbtTag } from 'deepslate/lib/nbt'
-	import { JsonText } from '../../../systems/minecraft-temp/jsonText'
 
 	const IS_PLUGIN_MODE = Project?.animated_java?.environment === 'plugin'
 

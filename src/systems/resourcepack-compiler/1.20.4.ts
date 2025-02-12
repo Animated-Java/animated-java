@@ -1,9 +1,10 @@
+import { sortObjectKeys } from '@aj/util/misc'
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../ui/dialogs/export-progress'
 import { isResourcePackPath, toSafeFunctionName } from '../../util/minecraftUtil'
 import { AJMeta } from '../ajmeta'
 import { type ITextureAtlas } from '../minecraft-temp/textureAtlas'
 import type { IRenderedNodes, IRenderedRig } from '../rig-renderer'
-import { sortObjectKeys, zip } from '../util'
+import { zip } from '../util'
 
 interface IPredicateItemModel {
 	parent?: string

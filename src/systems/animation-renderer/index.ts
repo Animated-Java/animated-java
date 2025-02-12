@@ -1,7 +1,7 @@
 import * as crypto from 'crypto'
+import { VanillaBlockDisplay } from '../../blockbench-additions/outliner-elements/blockDisplay'
+import { VanillaItemDisplay } from '../../blockbench-additions/outliner-elements/itemDisplay'
 import { TextDisplay } from '../../blockbench-additions/outliner-elements/textDisplay'
-import { VanillaBlockDisplay } from '../../blockbench-additions/outliner-elements/vanillaBlockDisplay'
-import { VanillaItemDisplay } from '../../blockbench-additions/outliner-elements/vanillaItemDisplay'
 import {
 	getKeyframeCommands,
 	getKeyframeExecuteCondition,

@@ -1,6 +1,6 @@
+import MissingCharacter from '@assets/missing_character.png'
 import { createHash } from 'crypto'
 import THREE from 'three'
-import MissingCharacter from '../../assets/missing_character.png'
 import { type Alignment } from '../../blockbench-additions/outliner-elements/textDisplay'
 import { mergeGeometries } from '../../util/bufferGeometryUtils'
 import EVENTS from '../../util/events'

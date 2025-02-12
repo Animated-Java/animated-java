@@ -1,5 +1,5 @@
 import { isCurrentFormat } from '../../../blockbench-additions/model-formats/ajblueprint'
-import { VanillaItemDisplay } from '../../../blockbench-additions/outliner-elements/vanillaItemDisplay'
+import { VanillaItemDisplay } from '../../../blockbench-additions/outliner-elements/itemDisplay'
 import { PACKAGE } from '../../../constants'
 import { injectSvelteCompomponentMod } from '../../../util/injectSvelteComponent'
 import { translate } from '../../../util/translation'

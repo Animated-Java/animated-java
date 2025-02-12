@@ -1,9 +1,9 @@
 <script lang="ts">
-	import Checkbox from '../../../svelte-components/dialog-items/checkbox.svelte'
-	import ColorPicker from '../../../svelte-components/dialog-items/colorPicker.svelte'
-	import LineInput from '../../../svelte-components/dialog-items/lineInput.svelte'
-	import NumberSlider from '../../../svelte-components/dialog-items/numberSlider.svelte'
-	import Select from '../../../svelte-components/dialog-items/select.svelte'
+	import Checkbox from '@svelte-components/dialog-items/checkbox.svelte'
+	import ColorPicker from '@svelte-components/dialog-items/colorPicker.svelte'
+	import LineInput from '@svelte-components/dialog-items/lineInput.svelte'
+	import NumberSlider from '@svelte-components/dialog-items/numberSlider.svelte'
+	import Select from '@svelte-components/dialog-items/select.svelte'
 
 	import { TextDisplayConfig } from '../../../nodeConfigs'
 	import { Valuable } from '../../../util/stores'

@@ -1,15 +1,15 @@
-import ANIMATION_1_20_4 from './versions/1.20.4/animation.mcb'
-import CORE_1_20_4 from './versions/1.20.4/core.mcb'
-import STATIC_1_20_4 from './versions/1.20.4/static.mcb'
+import ANIMATION_1_20_4 from './1.20.4/animation.mcb'
+import CORE_1_20_4 from './1.20.4/core.mcb'
+import STATIC_1_20_4 from './1.20.4/static.mcb'
 
-import ANIMATION_1_20_5 from './versions/1.20.5/animation.mcb'
-import STATIC_1_20_5 from './versions/1.20.5/static.mcb'
+import ANIMATION_1_20_5 from './1.20.5/animation.mcb'
+import STATIC_1_20_5 from './1.20.5/static.mcb'
 
-import ANIMATION_1_21_2 from './versions/1.21.2/animation.mcb'
-import STATIC_1_21_2 from './versions/1.21.2/static.mcb'
+import ANIMATION_1_21_2 from './1.21.2/animation.mcb'
+import STATIC_1_21_2 from './1.21.2/static.mcb'
 
-import ANIMATION_1_21_4 from './versions/1.21.4/animation.mcb'
-import STATIC_1_21_4 from './versions/1.21.4/static.mcb'
+import ANIMATION_1_21_4 from './1.21.4/animation.mcb'
+import STATIC_1_21_4 from './1.21.4/static.mcb'
 
 export type MinecraftVersion = '1.20.4' | '1.20.5' | '1.21.0' | '1.21.2' | '1.21.4'
 

@@ -1,16 +1,16 @@
 <script lang="ts">
+	import ImpulseCommandBlock from '@assets/impulse_command_block.png'
+	import PaperIcon from '@assets/papermc.svg'
+	import BoxSelect from '@svelte-components/sidebar-dialog-items/boxSelect.svelte'
+	import LineEdit from '@svelte-components/sidebar-dialog-items/lineEdit.svelte'
+	import Vector2d from '@svelte-components/sidebar-dialog-items/vector2d.svelte'
 	import type { ValuableBlueprintSettings } from '../'
 	import { defaultValues } from '../../../../blueprintSettings'
-	import BoxSelect from '../../../../svelte-components/sidebar-dialog-items/boxSelect.svelte'
-	import LineEdit from '../../../../svelte-components/sidebar-dialog-items/lineEdit.svelte'
-	import Vector2d from '../../../../svelte-components/sidebar-dialog-items/vector2d.svelte'
 	import {
 		containsInvalidResourceLocationCharacters,
 		parseResourceLocation,
 	} from '../../../../util/minecraftUtil'
 	import { translate } from '../../../../util/translation'
-	import ImpulseCommandBlock from '../../../assets/impulse_command_block.png'
-	import PaperIcon from '../../../assets/papermc.svg'
 
 	export let settings: ValuableBlueprintSettings
 

@@ -1,8 +1,8 @@
 // REVIEW - This file should be moved somewhere else
 import { toSafeFunctionName } from '../../util/minecraftUtil'
+import { VanillaBlockDisplay } from './blockDisplay'
+import { VanillaItemDisplay } from './itemDisplay'
 import { TextDisplay } from './textDisplay'
-import { VanillaBlockDisplay } from './vanillaBlockDisplay'
-import { VanillaItemDisplay } from './vanillaItemDisplay'
 
 export function sanitizeOutlinerElementName(name: string, elementUUID: string): string {
 	name = toSafeFunctionName(name)

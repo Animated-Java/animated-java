@@ -1,6 +1,6 @@
 <script lang="ts">
+	import AnimatedJavaIcon from '@assets/animated_java_icon.svg'
 	import { BLUEPRINT_FORMAT } from '.'
-	import AnimatedJavaIcon from '../assets/animated_java_icon.svg'
 
 	const TITLE = document.querySelector('#format_page_animated_java_blueprint')
 		?.children[1] as HTMLHeadingElement
