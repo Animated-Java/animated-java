@@ -8,15 +8,18 @@ import * as svelteInternal from 'svelte/internal'
 import type PackageType from '../../package.json'
 import type ChangelogType from '../../src/plugin/package/changelog.json'
 
-const PLUGIN_PACKAGE_PATH = './src/pluginPackage/'
-const SVELTE_FILE = './src/pluginPackage/about.svelte'
-const README_DIST_PATH = './dist/pluginPackage/about.md'
-const DIST_PATH = './dist/'
-const DIST_PACKAGE_PATH = './dist/pluginPackage/'
+const SRC = './src/'
+const SRC_PACKAGE = pathjs.join(SRC, 'plugin/package/')
+const SRC_ABOUT = pathjs.join(SRC_PACKAGE, 'about.svelte')
+const SRC_CHANGELOG = pathjs.join(SRC_PACKAGE, 'changelog.json')
+
+const DIST = './dist/'
+const DIST_PACKAGE = pathjs.join(DIST, 'package/')
+const DIST_README = pathjs.join(DIST_PACKAGE, 'about.md')
+
 const PLUGIN_REPO_PATH = 'D:/github-repos/snavesutit/blockbench-plugins/plugins/animated_java'
 const PLUGIN_MANIFEST_PATH = 'D:/github-repos/snavesutit/blockbench-plugins/plugins.json'
-const CHANGELOG_PATH = './src/pluginPackage/changelog.json'
-const RELEASE_NOTES_TEMPLATES = './tools/plugins/releaseNoteTemplates/'
+const RELEASE_NOTES_TEMPLATES = './tools/esbuild-plugins/release-note-templates/'
 
 function replaceTemplateVars(str: string, items: Record<string, string | undefined>) {
 	return str.replace(/\{(.+?)\}/g, str => items[str.replace(/[\{\}]/g, '')] ?? str)
@@ -32,14 +35,18 @@ function plugin(): Plugin {
 				const packageJSON: typeof PackageType = JSON.parse(
 					fs.readFileSync('./package.json', 'utf-8')
 				)
-
-				fs.rmSync(DIST_PACKAGE_PATH, { recursive: true, force: true })
-				fs.cpSync(PLUGIN_PACKAGE_PATH, DIST_PACKAGE_PATH, { recursive: true })
+				fs.rmSync(DIST_PACKAGE, { recursive: true, force: true })
+				fs.cpSync(SRC_PACKAGE, DIST_PACKAGE, { recursive: true })
+				const pluginBuildPath = `./dist/${packageJSON.name}.js`
+				if (!fs.existsSync(pluginBuildPath)) {
+					console.error('❌ Plugin build not found while packaging!')
+					return
+				}
 				fs.copyFileSync(
-					`./dist/${packageJSON.name}.js`,
-					pathjs.join(DIST_PACKAGE_PATH, packageJSON.name + '.js')
+					pluginBuildPath,
+					pathjs.join(DIST_PACKAGE, packageJSON.name + '.js')
 				)
-				const svelteResult = c.compile(readFileSync(SVELTE_FILE, 'utf-8'), {
+				const svelteResult = c.compile(readFileSync(SRC_ABOUT, 'utf-8'), {
 					generate: 'ssr',
 					cssHash({ hash, css }) {
 						return `animated-java-plugin-page-${hash(css)}`
@@ -54,17 +61,15 @@ function plugin(): Plugin {
 				)
 				const result = component(svelteInternal).render()
 				const html = `${result.html}\n<style>${result.css.code}</style>`
-				writeFileSync(README_DIST_PATH, html)
-				if (fs.existsSync(pathjs.join(DIST_PACKAGE_PATH, 'about.svelte')))
-					fs.unlinkSync(pathjs.join(DIST_PACKAGE_PATH, 'about.svelte'))
+				writeFileSync(DIST_README, html)
+				if (fs.existsSync(pathjs.join(DIST_PACKAGE, 'about.svelte')))
+					fs.unlinkSync(pathjs.join(DIST_PACKAGE, 'about.svelte'))
 
 				console.log('📦 Packaged')
 
 				if (process.env.NODE_ENV === 'production') {
 					console.log('📝 Creating changelogs...')
-					const changelog: Changelog = JSON.parse(
-						fs.readFileSync(CHANGELOG_PATH, 'utf-8')
-					)
+					const changelog: Changelog = JSON.parse(fs.readFileSync(SRC_CHANGELOG, 'utf-8'))
 					for (const file of fs.readdirSync(RELEASE_NOTES_TEMPLATES)) {
 						let content = fs.readFileSync(
 							pathjs.join(RELEASE_NOTES_TEMPLATES, file),
@@ -82,12 +87,12 @@ function plugin(): Plugin {
 								?.list.map(v => '- ' + v)
 								.join('\n'),
 						})
-						fs.writeFileSync(pathjs.join(DIST_PATH, file), content)
+						fs.writeFileSync(pathjs.join(DIST, file), content)
 					}
 
 					if (fs.existsSync(PLUGIN_REPO_PATH)) {
 						fs.rmSync(PLUGIN_REPO_PATH, { recursive: true, force: true })
-						fs.cpSync(DIST_PACKAGE_PATH, PLUGIN_REPO_PATH, { recursive: true })
+						fs.cpSync(DIST_PACKAGE, PLUGIN_REPO_PATH, { recursive: true })
 						const manifest = JSON.parse(fs.readFileSync(PLUGIN_MANIFEST_PATH, 'utf-8'))
 						manifest.animated_java.title = packageJSON.title
 						manifest.animated_java.author = packageJSON.author.name

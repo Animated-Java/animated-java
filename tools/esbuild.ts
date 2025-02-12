@@ -16,13 +16,13 @@ import * as path from 'path'
 import { isAbsolute, join } from 'path'
 import { TextDecoder } from 'util'
 import svelteConfig from '../svelte.config.js'
-import assetOverridePlugin from './plugins/assetOverridePlugin'
-import mcbCompressionPlugin from './plugins/mcbCompressionPlugin'
-import pluginPackagerPlugin from './plugins/pluginPackagerPlugin.js'
-import sveltePlugin from './plugins/sveltePlugin'
-import inlineWorkerPlugin from './plugins/workerPlugin'
-const PACKAGE = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
+import assetOverridePlugin from './esbuild-plugins/assetOverride.js'
+import mcbCompressionPlugin from './esbuild-plugins/mcbCompression.js'
+import pluginPackagerPlugin from './esbuild-plugins/pluginPackager.js'
+import sveltePlugin from './esbuild-plugins/svelte.js'
+import inlineWorkerPlugin from './esbuild-plugins/worker.js'
 
+const PACKAGE = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
 console.log(vsCodeProblemsPatchPlugin)
 
 const INFO_PLUGIN: esbuild.Plugin = {
