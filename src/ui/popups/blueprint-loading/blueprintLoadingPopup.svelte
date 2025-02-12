@@ -1,6 +1,6 @@
 <script lang="ts">
+	import ArmorStandRunningGif from '@assets/armor_stand_running.webp'
 	import { Valuable } from '../../../util/stores'
-	import ArmorStandRunningGif from '../assets/armor_stand_running.webp'
 
 	export let progress: Valuable<number>
 	export let maxProgress: Valuable<number>

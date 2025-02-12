@@ -1,6 +1,6 @@
 <script lang="ts">
+	import AnimatedJavaIcon from '@assets/animated_java_icon.svg'
 	import changelog from '../../../plugin/package/changelog.json'
-	import AnimatedJavaIcon from '../assets/animated_java_icon.svg'
 
 	function formatDateFull(date: string) {
 		// @ts-expect-error

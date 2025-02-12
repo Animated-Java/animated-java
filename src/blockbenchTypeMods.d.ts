@@ -1,16 +1,11 @@
 import type {
 	IBlueprintBoneConfigJSON,
 	IBlueprintLocatorConfigJSON,
-} from './blueprintFormat'
-import { blueprintSettingErrors, defaultValues } from './blueprintSettings'
-import { openExportProgressDialog } from './interface/dialog/exportProgress'
-import { openUnexpectedErrorDialog } from './interface/dialog/unexpectedError'
-import { TextDisplay } from './outliner/textDisplay'
-import { VanillaBlockDisplay } from './outliner/vanillaBlockDisplay'
-import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
-import datapackCompiler from './systems/datapackCompiler'
-import { MINECRAFT_REGISTRY } from './systems/minecraft/registryManager'
-import resourcepackCompiler from './systems/resourcepackCompiler'
+} from './blockbench-additions/model-formats/ajblueprint'
+import { VanillaBlockDisplay } from './blockbench-additions/outliner-elements/blockDisplay'
+import { VanillaItemDisplay } from './blockbench-additions/outliner-elements/itemDisplay'
+import { TextDisplay } from './blockbench-additions/outliner-elements/textDisplay'
+import { defaultValues } from './blueprintSettings'
 import { EasingKey } from './util/easing'
 import { isDataPackPath, isResourcePackPath } from './util/minecraftUtil'
 import { Valuable } from './util/stores'

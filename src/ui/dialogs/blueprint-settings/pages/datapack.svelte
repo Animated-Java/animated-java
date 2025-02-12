@@ -1,10 +1,10 @@
 <script lang="ts">
+	import BoxSelect from '@svelte-components/sidebar-dialog-items/boxSelect.svelte'
+	import CodeBox from '@svelte-components/sidebar-dialog-items/codeBox.svelte'
+	import FileSelect from '@svelte-components/sidebar-dialog-items/fileSelect.svelte'
+	import FolderSelect from '@svelte-components/sidebar-dialog-items/folderSelect.svelte'
+	import NumberSlider from '@svelte-components/sidebar-dialog-items/numberSlider.svelte'
 	import type { ValuableBlueprintSettings } from '../'
-	import BoxSelect from '../../../../svelte-components/sidebar-dialog-items/boxSelect.svelte'
-	import CodeBox from '../../../../svelte-components/sidebar-dialog-items/codeBox.svelte'
-	import FileSelect from '../../../../svelte-components/sidebar-dialog-items/fileSelect.svelte'
-	import FolderSelect from '../../../../svelte-components/sidebar-dialog-items/folderSelect.svelte'
-	import NumberSlider from '../../../../svelte-components/sidebar-dialog-items/numberSlider.svelte'
 	import { directoryExists, fileExists, resolvePath } from '../../../../util/fileUtil'
 	import { translate } from '../../../../util/translation'
 

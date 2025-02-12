@@ -1,5 +1,5 @@
 <script lang="ts">
-	import AnimatedJavaIcon from '../assets/animated_java_icon.svg'
+	import AnimatedJavaIcon from '@assets/animated_java_icon.svg'
 </script>
 
 <span class="icon_wrapper f_left" id="animated_java:icon">

@@ -1,9 +1,9 @@
+import TransparentTexture from '@assets/transparent.png'
 import { NbtCompound, NbtList, NbtString, NbtTag } from 'deepslate/lib/nbt'
 import { type IBlueprintFormatJSON, getDefaultProjectSettings } from '.'
 import { PACKAGE } from '../../../constants'
 import { BoneConfig } from '../../../nodeConfigs'
 import { openUnexpectedErrorDialog } from '../../../ui/dialogs/unexpected-error'
-import TransparentTexture from '../assets/transparent.png'
 
 export function process(model: any): any {
 	console.log('Running MDFU...', JSON.parse(JSON.stringify(model)))

@@ -1,10 +1,10 @@
-import type { ResourcePackCompiler } from '.'
-import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
-import { isResourcePackPath, sanitizePathName } from '../../util/minecraftUtil'
+import { sortObjectKeys } from '@aj/util/misc'
+import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../ui/dialogs/export-progress'
+import { isResourcePackPath, toSafeFunctionName } from '../../util/minecraftUtil'
 import { AJMeta } from '../ajmeta'
-import { ITextureAtlas } from '../minecraft/textureAtlas'
-import { IRenderedNodes } from '../rigRenderer'
-import { sortObjectKeys } from '../util'
+import { type ITextureAtlas } from '../minecraft-temp/textureAtlas'
+import type { IRenderedNodes, IRenderedRig } from '../rig-renderer'
+import { zip } from '../util'
 
 interface IPredicateItemModel {
 	parent?: string

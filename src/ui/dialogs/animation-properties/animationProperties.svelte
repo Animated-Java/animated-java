@@ -1,8 +1,8 @@
 <script lang="ts">
-	import Collection from '../../../svelte-components/dialog-items/collection.svelte'
-	import LineInput from '../../../svelte-components/dialog-items/lineInput.svelte'
-	import NumberSlider from '../../../svelte-components/dialog-items/numberSlider.svelte'
-	import Select from '../../../svelte-components/dialog-items/select.svelte'
+	import Collection from '@svelte-components/dialog-items/collection.svelte'
+	import LineInput from '@svelte-components/dialog-items/lineInput.svelte'
+	import NumberSlider from '@svelte-components/dialog-items/numberSlider.svelte'
+	import Select from '@svelte-components/dialog-items/select.svelte'
 	import { getAvailableNodes } from '../../../util/excludedNodes'
 	import { Valuable } from '../../../util/stores'
 	import { translate } from '../../../util/translation'

@@ -1,7 +1,7 @@
 import { sanitizePathName } from '../util/minecraftUtil'
+import { VanillaBlockDisplay } from './blockDisplay'
+import { VanillaItemDisplay } from './itemDisplay'
 import { TextDisplay } from './textDisplay'
-import { VanillaBlockDisplay } from './vanillaBlockDisplay'
-import { VanillaItemDisplay } from './vanillaItemDisplay'
 
 export function sanitizeOutlinerElementName(name: string, elementUUID: string): string {
 	name = sanitizePathName(name)

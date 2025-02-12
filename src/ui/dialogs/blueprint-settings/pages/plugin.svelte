@@ -1,6 +1,6 @@
 <script lang="ts">
+	import FileSelect from '@svelte-components/sidebar-dialog-items/fileSelect.svelte'
 	import type { ValuableBlueprintSettings } from '../'
-	import FileSelect from '../../../../svelte-components/sidebar-dialog-items/fileSelect.svelte'
 	import { resolvePath } from '../../../../util/fileUtil'
 	import { translate } from '../../../../util/translation'
 	export let settings: ValuableBlueprintSettings
