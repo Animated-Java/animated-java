@@ -1,10 +1,9 @@
-import { NbtCompound, NbtFloat, NbtList } from 'deepslate/lib/nbt'
 import {
-	AsyncZipOptions,
-	AsyncZippable,
 	unzip as cbUnzip,
 	zip as cbZip,
 	type AsyncUnzipOptions,
+	type AsyncZipOptions,
+	type AsyncZippable,
 	type Unzipped,
 } from 'fflate/browser'
 import { roundTo } from '../util/misc'
@@ -42,19 +41,6 @@ export function replacePathPart(path: string, oldPart: string, newPart: string) 
 		.split(PathModule.sep)
 		.map(v => (v === oldPart ? newPart : v))
 		.join(PathModule.sep)
-}
-
-/**
- * Returns a new object with the keys sorted alphabetically
- */
-export function sortObjectKeys<T extends Record<string, any>>(obj: T): T {
-	const sorted: Record<string, any> = {}
-	Object.keys(obj)
-		.sort()
-		.forEach(key => {
-			sorted[key] = obj[key]
-		})
-	return sorted as T
 }
 
 export function debounce(func: () => void, timeout = 300) {

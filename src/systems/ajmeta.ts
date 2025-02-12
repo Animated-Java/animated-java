@@ -1,4 +1,4 @@
-import { sortObjectKeys } from './util'
+import { sortObjectKeys } from '../util/misc'
 
 export class AJMeta {
 	public files = new Set<string>()

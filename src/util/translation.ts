@@ -1,5 +1,6 @@
 // @ts-ignore
 import { default as LANGUAGES, filenames as filepaths } from '../lang/*.yml'
+import { markdownToHTML } from './misc'
 
 const FILE_NAMES = filepaths.map((path: string) => PathModule.basename(path, '.yml'))
 
@@ -37,7 +38,7 @@ export function translate(key: string, ...args: string[]) {
 		translation = lang[`animated_java.${key}`]
 	}
 	if (translation) {
-		return translation.replace(/\{(\d+)\}/g, (str, index) => args[index] || '')
+		return markdownToHTML(translation.replace(/\{(\d+)\}/g, (str, index) => args[index] || ''))
 	} else {
 		console.warn(`Could not find translation for '${key}' or 'animated_java.${key}'`)
 		return key

@@ -1,4 +1,4 @@
-import * as PACKAGE from '../../package.json'
+import { name as pluginID } from '../../package.json'
 import { Variant } from '../variants'
 import { Subscribable } from './subscribable'
 
@@ -11,7 +11,7 @@ export class PluginEvent<EventData = void> extends Subscribable<EventData> {
 }
 
 // Plugin Events
-export const events = {
+const EVENTS = {
 	LOAD: new PluginEvent('load'),
 	UNLOAD: new PluginEvent('unload'),
 	INSTALL: new PluginEvent('install'),
@@ -48,29 +48,31 @@ export const events = {
 	REDO: new PluginEvent<UndoEntry>('redo'),
 }
 
+export default EVENTS
+
 function injectionHandler() {
-	console.groupCollapsed(`Injecting BlockbenchMods added by '${PACKAGE.name}'`)
-	events.INJECT_MODS.dispatch()
+	console.groupCollapsed(`Injecting BlockbenchMods added by '${pluginID}'`)
+	EVENTS.INJECT_MODS.dispatch()
 	console.groupEnd()
 }
 
 function extractionHandler() {
-	console.groupCollapsed(`Extracting BlockbenchMods added by '${PACKAGE.name}'`)
-	events.EXTRACT_MODS.dispatch()
+	console.groupCollapsed(`Extracting BlockbenchMods added by '${pluginID}'`)
+	EVENTS.EXTRACT_MODS.dispatch()
 	console.groupEnd()
 }
 
-events.LOAD.subscribe(injectionHandler)
-events.UNLOAD.subscribe(extractionHandler)
-events.INSTALL.subscribe(injectionHandler)
-events.UNINSTALL.subscribe(extractionHandler)
+EVENTS.LOAD.subscribe(injectionHandler)
+EVENTS.UNLOAD.subscribe(extractionHandler)
+EVENTS.INSTALL.subscribe(injectionHandler)
+EVENTS.UNINSTALL.subscribe(extractionHandler)
 
 Blockbench.on<EventName>('select_project', ({ project }: { project: ModelProject }) => {
-	events.SELECT_PROJECT.dispatch(project)
+	EVENTS.SELECT_PROJECT.dispatch(project)
 })
 Blockbench.on<EventName>('unselect_project', ({ project }: { project: ModelProject }) => {
-	events.UNSELECT_PROJECT.dispatch(project)
+	EVENTS.UNSELECT_PROJECT.dispatch(project)
 })
-Blockbench.on<EventName>('update_selection', () => events.UPDATE_SELECTION.dispatch())
-Blockbench.on<EventName>('undo', (entry: UndoEntry) => events.UNDO.dispatch(entry))
-Blockbench.on<EventName>('redo', (entry: UndoEntry) => events.REDO.dispatch(entry))
+Blockbench.on<EventName>('update_selection', () => EVENTS.UPDATE_SELECTION.dispatch())
+Blockbench.on<EventName>('undo', (entry: UndoEntry) => EVENTS.UNDO.dispatch(entry))
+Blockbench.on<EventName>('redo', (entry: UndoEntry) => EVENTS.REDO.dispatch(entry))

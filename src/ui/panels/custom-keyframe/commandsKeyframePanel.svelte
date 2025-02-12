@@ -1,0 +1,95 @@
+<script lang="ts">
+	import {
+		getKeyframeCommands,
+		getKeyframeRepeat,
+		getKeyframeRepeatFrequency,
+		setKeyframeCommands,
+		setKeyframeRepeat,
+		setKeyframeRepeatFrequency,
+	} from '../../../blockbench-mods/misc/customKeyframes'
+	import { Valuable } from '../../../util/stores'
+	import { translate } from '../../../util/translation'
+
+	export let selectedKeyframe: _Keyframe
+
+	const COMMANDS = new Valuable<string>(getKeyframeCommands(selectedKeyframe) ?? '')
+	const REPEAT = new Valuable<boolean>(getKeyframeRepeat(selectedKeyframe) ?? false)
+	const REPEAT_FREQUENCY = new Valuable<number>(getKeyframeRepeatFrequency(selectedKeyframe) ?? 1)
+
+	COMMANDS.subscribe(value => {
+		setKeyframeCommands(selectedKeyframe, value)
+	})
+	REPEAT.subscribe(value => {
+		setKeyframeRepeat(selectedKeyframe, value)
+	})
+	REPEAT_FREQUENCY.subscribe(value => {
+		if (value < 1) value = 1
+		REPEAT_FREQUENCY.set(value)
+		setKeyframeRepeatFrequency(selectedKeyframe, value)
+	})
+</script>
+
+<div class="bar flex">
+	<label
+		for="commands_input"
+		class="undefined"
+		style="font-weight: unset;"
+		title={translate('panel.keyframe.commands.description')}
+	>
+		{translate('panel.keyframe.commands.title')}
+	</label>
+	<textarea
+		id="commands_input"
+		class="dark_bordered code keyframe_input tab_target"
+		bind:value={$COMMANDS}
+	/>
+</div>
+
+<div class="bar flex">
+	<label
+		for="repeat_input"
+		class="undefined"
+		style="font-weight: unset;"
+		title={translate('animated_java.panel.keyframe.repeat.description')}
+	>
+		{translate('panel.keyframe.repeat.title')}
+	</label>
+	<input
+		id="repeat_input"
+		class="dark_bordered tab_target"
+		type="checkbox"
+		bind:checked={$REPEAT}
+	/>
+</div>
+
+<div class="bar flex">
+	<label
+		for="repeat_frequency_input"
+		class="undefined"
+		style="font-weight: unset;"
+		title={translate('animated_java.panel.keyframe.repeat_frequency.description')}
+	>
+		{translate('panel.keyframe.repeat_frequency.title')}
+	</label>
+	<input
+		id="repeat_frequency_input"
+		class="dark_bordered tab_target"
+		type="number"
+		bind:value={$REPEAT_FREQUENCY}
+	/>
+</div>
+
+<style>
+	textarea {
+		min-height: 90px;
+		height: 30px;
+		resize: vertical;
+		text-wrap: nowrap;
+	}
+	input[type='checkbox'] {
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		padding-left: 8px;
+	}
+</style>

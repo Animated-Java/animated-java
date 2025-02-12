@@ -230,13 +230,13 @@ class Easing {
 	}
 }
 
-const quart = Easing.poly(4)
-const quint = Easing.poly(5)
-const back = (direction: DirectionFunction, scalar: number, t: number) =>
+const QUART = Easing.poly(4)
+const QUINT = Easing.poly(5)
+const BACK = (direction: DirectionFunction, scalar: number, t: number) =>
 	direction(Easing.back(1.70158 * scalar))(t)
-const elastic = (direction: DirectionFunction, bounciness: number, t: number) =>
+const ELASTIC = (direction: DirectionFunction, bounciness: number, t: number) =>
 	direction(Easing.elastic(bounciness))(t)
-const bounce = (direction: DirectionFunction, bounciness: number, t: number) =>
+const BOUNCE = (direction: DirectionFunction, bounciness: number, t: number) =>
 	direction(Easing.bounce(bounciness))(t)
 
 export const easingFunctions: Record<string, EasingFunction> = {
@@ -251,12 +251,12 @@ export const easingFunctions: Record<string, EasingFunction> = {
 	easeInCubic: Easing.in(Easing.cubic),
 	easeOutCubic: Easing.out(Easing.cubic),
 	easeInOutCubic: Easing.inOut(Easing.cubic),
-	easeInQuart: Easing.in(quart),
-	easeOutQuart: Easing.out(quart),
-	easeInOutQuart: Easing.inOut(quart),
-	easeInQuint: Easing.in(quint),
-	easeOutQuint: Easing.out(quint),
-	easeInOutQuint: Easing.inOut(quint),
+	easeInQuart: Easing.in(QUART),
+	easeOutQuart: Easing.out(QUART),
+	easeInOutQuart: Easing.inOut(QUART),
+	easeInQuint: Easing.in(QUINT),
+	easeOutQuint: Easing.out(QUINT),
+	easeInOutQuint: Easing.inOut(QUINT),
 	easeInSine: Easing.in(Easing.sin),
 	easeOutSine: Easing.out(Easing.sin),
 	easeInOutSine: Easing.inOut(Easing.sin),
@@ -266,15 +266,15 @@ export const easingFunctions: Record<string, EasingFunction> = {
 	easeInCirc: Easing.in(Easing.circle),
 	easeOutCirc: Easing.out(Easing.circle),
 	easeInOutCirc: Easing.inOut(Easing.circle),
-	easeInBack: back.bind(null, Easing.in),
-	easeOutBack: back.bind(null, Easing.out),
-	easeInOutBack: back.bind(null, Easing.inOut),
-	easeInElastic: elastic.bind(null, Easing.in),
-	easeOutElastic: elastic.bind(null, Easing.out),
-	easeInOutElastic: elastic.bind(null, Easing.inOut),
-	easeInBounce: bounce.bind(null, Easing.in),
-	easeOutBounce: bounce.bind(null, Easing.out),
-	easeInOutBounce: bounce.bind(null, Easing.inOut),
+	easeInBack: BACK.bind(null, Easing.in),
+	easeOutBack: BACK.bind(null, Easing.out),
+	easeInOutBack: BACK.bind(null, Easing.inOut),
+	easeInElastic: ELASTIC.bind(null, Easing.in),
+	easeOutElastic: ELASTIC.bind(null, Easing.out),
+	easeInOutElastic: ELASTIC.bind(null, Easing.inOut),
+	easeInBounce: BOUNCE.bind(null, Easing.in),
+	easeOutBounce: BOUNCE.bind(null, Easing.out),
+	easeInOutBounce: BOUNCE.bind(null, Easing.inOut),
 }
 
 export type EasingKey = keyof typeof easingFunctions
