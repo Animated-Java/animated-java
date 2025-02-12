@@ -1,3 +1,4 @@
+import checkFile from 'eslint-plugin-check-file'
 import svelteEslint from 'eslint-plugin-svelte'
 import svelteParser from 'svelte-eslint-parser'
 import tsESLint, { type ConfigWithExtends } from 'typescript-eslint'
@@ -43,6 +44,21 @@ const CUSTOM_RULES: ConfigWithExtends['rules'] = {
 	'svelte/html-quotes': ['warn', { prefer: 'double' }],
 	'svelte/block-lang': ['error', { script: ['ts', null], style: null }],
 	'svelte/comment-directive': ['error', { reportUnusedDisableDirectives: true }],
+	// Check File
+	'check-file/filename-naming-convention': [
+		'error',
+		{
+			'src/**/*.{ts.d.ts}': 'CAMEL_CASE',
+			'tools/**/*.{ts.d.ts}': 'CAMEL_CASE',
+		},
+	],
+	'check-file/folder-naming-convention': [
+		'error',
+		{
+			'src/**': 'KEBAB_CASE',
+			'tools/**': 'KEBAB_CASE',
+		},
+	],
 	// TypeScript
 	'@typescript-eslint/no-explicit-any': 'off',
 	'@typescript-eslint/no-floating-promises': ['error', { ignoreVoid: true }],
@@ -166,6 +182,7 @@ export default tsESLint.config(
 		plugins: {
 			'@typescript-eslint': tsESLint.plugin,
 			svelte: svelteEslint,
+			'check-file': checkFile,
 		},
 	},
 	{
