@@ -5,7 +5,7 @@
 	import NumberSlider from '@svelte-components/dialog-items/numberSlider.svelte'
 	import Select from '@svelte-components/dialog-items/select.svelte'
 
-	import { TextDisplayConfig } from '../../../nodeConfigs'
+	import { TextDisplayConfig } from '../../../util/serializableConfig'
 	import { Valuable } from '../../../util/stores'
 	import { translate } from '../../../util/translation'
 

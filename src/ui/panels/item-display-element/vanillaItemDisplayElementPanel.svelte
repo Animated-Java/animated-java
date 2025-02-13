@@ -19,7 +19,7 @@
 			visible = false
 			return
 		}
-		item = selectedDisplay._item
+		item = selectedDisplay.__item
 		error = selectedDisplay.error
 		ITEM_DISPLAY_ITEM_DISPLAY_SELECT.set(selectedDisplay.itemDisplay)
 		visible = true

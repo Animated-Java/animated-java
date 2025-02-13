@@ -2,15 +2,15 @@ import { getBlockModel } from '@aj/systems/minecraft-temp/blockModelManager'
 import { type BlockStateValue, getBlockState } from '@aj/systems/minecraft-temp/blockstateManager'
 import { MINECRAFT_REGISTRY } from '@aj/systems/minecraft-temp/registryManager'
 import { getCurrentVersion } from '@aj/systems/minecraft-temp/versionManager'
+import { GenericDisplayConfig, type Serialized } from '@aj/systems/node-configs'
 import EVENTS from '@events'
 import { PACKAGE } from '../../constants'
 import { VANILLA_BLOCK_DISPLAY_CONFIG_ACTION } from '../../ui/dialogs/block-display-config'
 import { parseBlock } from '../../util/minecraftUtil'
 import { createAction, createBlockbenchMod } from '../../util/moddingTools'
-import { BoneConfig } from '../../util/serializableConfig'
 import { Valuable } from '../../util/stores'
 import { translate } from '../../util/translation'
-import { type IBlueprintBoneConfigJSON, isCurrentFormat } from '../model-formats/ajblueprint'
+import { isCurrentFormat } from '../model-formats/ajblueprint'
 import { ResizableOutlinerElement } from './resizableOutlinerElement'
 import { sanitizeOutlinerElementName } from './util'
 
@@ -47,8 +47,8 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 	public needsUniqueName = true
 
 	// Properties
-	public _block = new Valuable('minecraft:stone')
-	public config: IBlueprintBoneConfigJSON
+	private __block = new Valuable('minecraft:stone')
+	public config: Serialized<GenericDisplayConfig>
 
 	public error = new Valuable('')
 
@@ -104,19 +104,19 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 			}
 		}
 
-		this._block.subscribe(value => {
+		this.__block.subscribe(value => {
 			void updateBlock(value)
 		})
 	}
 
 	get block() {
-		if (this._block === undefined) return 'minecraft:stone'
-		return this._block.get()
+		if (this.__block === undefined) return 'minecraft:stone'
+		return this.__block.get()
 	}
 	set block(value: string) {
-		if (this._block === undefined) return
+		if (this.__block === undefined) return
 		if (this.block === value) return
-		this._block.set(value)
+		this.__block.set(value)
 	}
 
 	async waitForReady() {
@@ -195,7 +195,7 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 new Property(VanillaBlockDisplay, 'string', 'block', { default: 'minecraft:stone' })
 new Property(VanillaBlockDisplay, 'object', 'config', {
 	get default() {
-		return new BoneConfig().toJSON()
+		return new GenericDisplayConfig().toJSON()
 	},
 })
 OutlinerElement.registerType(VanillaBlockDisplay, VanillaBlockDisplay.type)
@@ -265,7 +265,7 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay,
 })
 
 class VanillaBlockDisplayAnimator extends BoneAnimator {
-	private _name: string
+	private __name: string
 
 	public uuid: string
 	public element: VanillaBlockDisplay | undefined
@@ -273,7 +273,7 @@ class VanillaBlockDisplayAnimator extends BoneAnimator {
 	constructor(uuid: string, animation: _Animation, name: string) {
 		super(uuid, animation, name)
 		this.uuid = uuid
-		this._name = name
+		this.__name = name
 	}
 
 	getElement() {

@@ -1,8 +1,8 @@
+import { GenericDisplayConfig } from '@aj/systems/node-configs'
 import TransparentTexture from '@assets/transparent.png'
 import { NbtCompound, NbtList, NbtString, NbtTag } from 'deepslate/lib/nbt'
 import { type IBlueprintFormatJSON, getDefaultProjectSettings } from '.'
 import { PACKAGE } from '../../../constants'
-import { BoneConfig } from '../../../nodeConfigs'
 import { openUnexpectedErrorDialog } from '../../../ui/dialogs/unexpected-error'
 
 export function process(model: any): any {
@@ -280,7 +280,7 @@ function updateModelTo1_0pre1(model: any) {
 		if (typeof node === 'string') return
 		bones.push(node.uuid as string)
 		node.configs = {
-			default: new BoneConfig().toJSON(),
+			default: new GenericDisplayConfig().toJSON(),
 			variants: {},
 		}
 		node.children.forEach((child: any) => {

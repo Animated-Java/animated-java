@@ -453,7 +453,7 @@ dir <%export_namespace%> {
 									}
 									IF (node.configs.variants[variant.uuid]) {
 										<%%
-											global.config = BoneConfig.fromJSON(node.configs.variants[variant.uuid])
+											global.config = GenericDisplayConfig.fromJSON(node.configs.variants[variant.uuid])
 										%%>
 										IF (!global.config.isDefault()) {
 											data merge entity @s <%global.config.toNBT(undefined, variant.is_default)%>

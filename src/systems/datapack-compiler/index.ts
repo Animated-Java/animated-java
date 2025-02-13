@@ -19,12 +19,12 @@ import {
 } from '../../util/minecraftUtil'
 import { eulerFromQuaternion, floatToHex, roundTo, tinycolorToDecimal } from '../../util/misc'
 import { MSLimiter } from '../../util/msLimiter'
-import { BoneConfig, TextDisplayConfig } from '../../util/serializableConfig'
 import { Variant } from '../../variants'
 import { AJMeta } from '../ajmeta'
 import type { IRenderedAnimation } from '../animation-renderer'
 import { IntentionalExportError } from '../exporter'
 import { PackMeta, type PackMetaFormats } from '../global'
+import { GenericDisplayConfig, TextDisplayConfig } from '../node-configs'
 import type { AnyRenderedNode, IRenderedRig } from '../rig-renderer'
 import {
 	matrixToNbtFloatArray,
@@ -178,7 +178,7 @@ async function generateRootEntityPassengers(
 				}
 
 				if (node.configs?.default) {
-					BoneConfig.fromJSON(node.configs.default).toNBT(passenger)
+					new GenericDisplayConfig().fromJSON(node.configs.default).toNBT(passenger)
 				}
 
 				passenger.set('height', new NbtFloat(aj.bounding_box[1]))
@@ -241,7 +241,7 @@ async function generateRootEntityPassengers(
 				passenger.set('alignment', new NbtString(node.align))
 
 				if (node.config) {
-					TextDisplayConfig.fromJSON(node.config).toNBT(passenger)
+					new TextDisplayConfig().fromJSON(node.config).toNBT(passenger)
 				}
 				break
 			}
@@ -255,7 +255,7 @@ async function generateRootEntityPassengers(
 				)
 
 				if (node.config) {
-					BoneConfig.fromJSON(node.config).toNBT(passenger)
+					new GenericDisplayConfig().fromJSON(node.config).toNBT(passenger)
 				}
 				break
 			}
@@ -282,7 +282,7 @@ async function generateRootEntityPassengers(
 				)
 
 				if (node.config) {
-					BoneConfig.fromJSON(node.config).toNBT(passenger)
+					new GenericDisplayConfig().fromJSON(node.config).toNBT(passenger)
 				}
 				break
 			}
