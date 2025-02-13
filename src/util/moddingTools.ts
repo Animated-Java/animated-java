@@ -1,4 +1,4 @@
-import { events } from './events'
+import EVENTS from '@events'
 import { Subscribable } from './subscribable'
 
 export type NamespacedString = `${string}${string}:${string}${string}`
@@ -59,7 +59,7 @@ export function createBlockbenchMod<InjectContext = any, ExtractContext = any>(
 	let installed = false
 	let extractContext: ExtractContext
 
-	events.INJECT_MODS.subscribe(() => {
+	EVENTS.INJECT_MODS.subscribe(() => {
 		console.log(`Injecting BBMod '${id}'`)
 		try {
 			if (installed) new Error('Mod is already installed!')
@@ -71,7 +71,7 @@ export function createBlockbenchMod<InjectContext = any, ExtractContext = any>(
 		console.log('Sucess!')
 	})
 
-	events.EXTRACT_MODS.subscribe(() => {
+	EVENTS.EXTRACT_MODS.subscribe(() => {
 		console.log(`Extracting BBMod '${id}'`)
 		try {
 			if (!installed) new Error('Mod is not installed!')
@@ -84,16 +84,28 @@ export function createBlockbenchMod<InjectContext = any, ExtractContext = any>(
 	})
 }
 
-/** Creates a new Blockbench.Action and automatically handles it's deletion on the plugin unload and uninstall events.
+type CreateActionOptions = ActionOptions & {
+	/**
+	 * @param path Path pointing to the location. Use the ID of each level of the menu, or index or group within a level, separated by a period. For example; `file.export.0` places the action at the top position of the Export submenu in the File menu.
+	 */
+	menu_path?: string
+}
+/** Creates a new Blockbench.Action and automatically handles it's deletion on the plugin unload and uninstall EVENTS.
  * See https://www.blockbench.net/wiki/api/action for more information on the Blockbench.Action class.
  * @param id A namespaced ID ('my-plugin-id:my-action')
  * @param options The options for the action.
  * @returns The created action.
  */
-export function createAction(id: NamespacedString, options: ActionOptions) {
+export function createAction(id: NamespacedString, options: CreateActionOptions) {
 	const action = new Action(id, options)
+	if (options.menu_path !== undefined) {
+		MenuBar.addAction(action, options.menu_path)
+	}
 
-	events.EXTRACT_MODS.subscribe(() => {
+	EVENTS.EXTRACT_MODS.subscribe(() => {
+		if (options.menu_path !== undefined) {
+			MenuBar.removeAction(options.menu_path)
+		}
 		action.delete()
 	}, true)
 
@@ -101,7 +113,7 @@ export function createAction(id: NamespacedString, options: ActionOptions) {
 }
 
 /**
- * Creates a new Blockbench.ModelLoader and automatically handles it's deletion on the plugin unload and uninstall events.
+ * Creates a new Blockbench.ModelLoader and automatically handles it's deletion on the plugin unload and uninstall EVENTS.
  * @param id A namespaced ID ('my-plugin-id:my-model-loader')
  * @param options The options for the model loader.
  * @returns The created model loader.
@@ -109,7 +121,7 @@ export function createAction(id: NamespacedString, options: ActionOptions) {
 export function createModelLoader(id: string, options: ModelLoaderOptions): ModelLoader {
 	const modelLoader = new ModelLoader(id, options)
 
-	events.EXTRACT_MODS.subscribe(() => {
+	EVENTS.EXTRACT_MODS.subscribe(() => {
 		modelLoader.delete()
 	}, true)
 
@@ -117,7 +129,7 @@ export function createModelLoader(id: string, options: ModelLoaderOptions): Mode
 }
 
 /**
- * Creates a new Blockbench.Menu and automatically handles it's deletion on the plugin unload and uninstall events.
+ * Creates a new Blockbench.Menu and automatically handles it's deletion on the plugin unload and uninstall EVENTS.
  * See https://www.blockbench.net/wiki/api/menu for more information on the Blockbench.Menu class.
  * @param template The menu template.
  * @param options The options for the menu.
@@ -126,7 +138,7 @@ export function createModelLoader(id: string, options: ModelLoaderOptions): Mode
 export function createMenu(template: MenuItem[], options?: MenuOptions) {
 	const menu = new Menu(template, options)
 
-	// events.EXTRACT_MODS.subscribe(() => {
+	// EVENTS.EXTRACT_MODS.subscribe(() => {
 	// 	menu.delete()
 	// }, true)
 
@@ -134,7 +146,7 @@ export function createMenu(template: MenuItem[], options?: MenuOptions) {
 }
 
 /**
- * Creates a new Blockbench.BarMenu and automatically handles it's deletion on the plugin unload and uninstall events.
+ * Creates a new Blockbench.BarMenu and automatically handles it's deletion on the plugin unload and uninstall EVENTS.
  * @param id A namespaced ID ('my-plugin-id:my-menu')
  * @param structure The menu structure.
  * @param condition The condition for the menu to be visible.
@@ -147,7 +159,7 @@ export function createBarMenu(
 ) {
 	const menu = new BarMenu(id, structure, condition)
 
-	// events.EXTRACT_MODS.subscribe(() => {
+	// EVENTS.EXTRACT_MODS.subscribe(() => {
 	// 	menu.delete()
 	// }, true)
 
@@ -161,7 +173,7 @@ const SUBSCRIBABLES = new Map<
 	any,
 	[
 		Subscribable<{ storage: Storage<any>; value: any }>,
-		Subscribable<{ storage: Storage<any>; newValue: any }>
+		Subscribable<{ storage: Storage<any>; newValue: any }>,
 	]
 >()
 
@@ -171,7 +183,7 @@ const SUBSCRIBABLES = new Map<
  * @param key The key of the property on the object.
  * @returns A tuple of {@link Subscribable | Subscribables} [onGet, onSet]
  * @example
- * Using the subscribables as simple events.
+ * Using the subscribables as simple EVENTS.
  * ```ts
  * const [onGet, onSet] = createPropertySubscribable(Blockbench, 'version')
  * onGet.subscribe(({ value }) => console.log('Blockbench version:', value))
@@ -215,7 +227,7 @@ export function createPropertySubscribable<Value = any>(object: any, key: string
 			configurable: true,
 		})
 
-		events.EXTRACT_MODS.subscribe(() => {
+		EVENTS.EXTRACT_MODS.subscribe(() => {
 			const value = object[key]
 			delete object[key]
 			Object.defineProperty(object, key, {

@@ -1,10 +1,10 @@
-import * as pathjs from 'path'
+import { type MinecraftVersion } from '@aj/systems/datapack-compiler/versions'
 import {
 	BlockStateRegistryEntry,
-	BlockStateValue,
+	type BlockStateValue,
 	getBlockState,
-} from '../systems/minecraft/blockstateManager'
-import { MinecraftVersion } from '../systems/datapackCompiler/mcbFiles'
+} from '@aj/systems/minecraft-temp/blockstateManager'
+import * as pathjs from 'path'
 
 export interface IMinecraftResourceLocation {
 	resourcePackRoot: string
@@ -17,7 +17,7 @@ export interface IMinecraftResourceLocation {
 	type: string
 }
 
-export function toSafeFuntionName(name: string): string {
+export function toSafeFunctionName(name: string): string {
 	return name
 		.toLowerCase()
 		.replace(/[^a-z0-9_.]/g, '_')
@@ -42,9 +42,27 @@ export function getPathFromResourceLocation(resourceLocation: string, type: stri
 	return `assets/${namespace}/${type}/${path.join('/')}`
 }
 
+export function createTagPrefixFromBlueprintID(id: string) {
+	const parsed = parseResourceLocation(id)
+	if (parsed) {
+		const namespace = parsed.namespace === 'animated_java' ? 'aj' : parsed.namespace
+		return namespace + '.' + parsed.subpath.replaceAll('/', '.')
+	}
+}
+
+export function containsInvalidScoreboardTagCharacters(tag: string) {
+	if (tag.match(/[^a-zA-Z0-9_\-.]/g)) return true
+	return false
+}
+
+export function containsInvalidResourceLocationCharacters(resourceLocation: string) {
+	if (resourceLocation.match(/[^a-z0-9_/.:]/g)) return true
+	return false
+}
+
 export function isResourcePackPath(path: string) {
 	const parsed = parseResourcePackPath(path)
-	return !!(parsed && parsed.namespace && parsed.resourcePath)
+	return !!(parsed?.namespace && parsed.resourcePath)
 }
 
 export function parseResourcePackPath(path: string): IMinecraftResourceLocation | undefined {
@@ -84,12 +102,13 @@ export function parseResourceLocation(resourceLocation: string) {
 		parts = [namespace]
 		namespace = 'minecraft'
 	}
-	const path = parts.join('')
-	const resourceType = path.split('/')[0]
-	const parsed = PathModule.parse(path)
+	const subpath = parts.join('')
+	const resourceType = subpath.split('/')[0]
+	const parsed = PathModule.parse(subpath)
 	return {
 		namespace,
-		path,
+		subpath,
+		path: PathModule.join(namespace, parsed.name),
 		type: resourceType,
 		dir: parsed.dir,
 		name: parsed.name,
@@ -98,7 +117,7 @@ export function parseResourceLocation(resourceLocation: string) {
 
 export function isDataPackPath(path: string) {
 	const parsed = parseDataPackPath(path)
-	return !!(parsed && parsed.namespace && parsed.resourcePath)
+	return !!(parsed?.namespace && parsed.resourcePath)
 }
 
 export function parseDataPackPath(path: string): IMinecraftResourceLocation | undefined {
@@ -197,7 +216,7 @@ export interface IParsedBlock {
 export async function parseBlock(block: string): Promise<IParsedBlock | undefined> {
 	const states: Record<string, ReturnType<typeof resolveBlockstateValueType>> = {}
 	if (block.includes('[')) {
-		const match = block.match(/(.+?)\[((?:[^,=[\]]+=[^,=[\]]+,?)+)?]/)
+		const match = /(.+?)\[((?:[^,=[\]]+=[^,=[\]]+,?)+)?]/.exec(block)
 		if (!match) return
 		if (match[2] !== undefined) {
 			const args = match[2].split(',')
@@ -212,7 +231,7 @@ export async function parseBlock(block: string): Promise<IParsedBlock | undefine
 	const resource = parseResourceLocation(block)
 	return {
 		resource,
-		resourceLocation: resource.namespace + ':' + resource.path,
+		resourceLocation: resource.namespace + ':' + resource.subpath,
 		states,
 		blockStateRegistryEntry: await getBlockState(resource.name),
 	}
@@ -233,4 +252,9 @@ export function getDataPackFormat(version: MinecraftVersion): number {
 		default:
 			return Infinity
 	}
+}
+
+export function getFunctionNamespace(version: string): 'function' | 'functions' {
+	// If the target version is 1.21.0 or higher, use the 'function' namespace instead of 'functions'
+	return compareVersions(version, '1.20.10000') ? 'function' : 'functions'
 }

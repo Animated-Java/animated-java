@@ -1,4 +1,5 @@
-import { type Writable, type Subscriber, type Unsubscriber, writable, get } from 'svelte/store'
+import { get, type Subscriber, type Unsubscriber, type Writable, writable } from 'svelte/store'
+import { mapObjEntries } from './misc'
 
 export class Valuable<T> implements Writable<T> {
 	static all: Array<Valuable<any>> = []
@@ -8,7 +9,7 @@ export class Valuable<T> implements Writable<T> {
 
 	constructor(value: T, valueValidator?: Valuable<T>['valueValidator']) {
 		this.store = writable(value)
-		this.valueValidator = valueValidator || ((value: T) => value)
+		this.valueValidator = valueValidator ?? ((value: T) => value)
 		Valuable.all.push(this)
 	}
 
@@ -44,5 +45,17 @@ export class SetStore<T> extends Valuable<Set<T>> {
 		const set = this.get()
 		set.delete(value)
 		this.set(set)
+	}
+}
+
+export function makeValuable<O extends Record<string, any>>(obj: O) {
+	return mapObjEntries(obj, (k, v) => [k, new Valuable(v)]) as {
+		[Key in keyof O]: Valuable<O[Key]>
+	}
+}
+
+export function makeNotValueable<O extends Record<string, Valuable<any>>>(obj: O) {
+	return mapObjEntries(obj, (k, v) => [k, v.get()]) as {
+		[Key in keyof O]: ReturnType<O[Key]['get']>
 	}
 }

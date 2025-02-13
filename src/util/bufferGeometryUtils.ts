@@ -1,3 +1,4 @@
+/* eslint-disable */
 const {
 	BufferAttribute,
 	BufferGeometry,
@@ -12,7 +13,7 @@ const {
 } = THREE
 
 function computeMikkTSpaceTangents(geometry: any, MikkTSpace: any, negateSign = true) {
-	if (!MikkTSpace || !MikkTSpace.isReady) {
+	if (!MikkTSpace?.isReady) {
 		throw new Error('BufferGeometryUtils: Initialized MikkTSpace library required.')
 	}
 
@@ -1177,13 +1178,13 @@ function toCreasedNormals(geometry: any, creaseAngle = Math.PI / 3 /* 60 degrees
 
 export {
 	computeMikkTSpaceTangents,
-	mergeGeometries,
-	mergeAttributes,
-	interleaveAttributes,
-	estimateBytesUsed,
-	mergeVertices,
-	toTrianglesDrawMode,
 	computeMorphedAttributes,
+	estimateBytesUsed,
+	interleaveAttributes,
+	mergeAttributes,
+	mergeGeometries,
 	mergeGroups,
+	mergeVertices,
 	toCreasedNormals,
+	toTrianglesDrawMode,
 }

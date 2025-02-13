@@ -1,22 +1,11 @@
-import type {
-	BLUEPRINT_CODEC,
-	BLUEPRINT_FORMAT,
-	IBlueprintBoneConfigJSON,
-	IBlueprintLocatorConfigJSON,
-} from './blueprintFormat'
-import { blueprintSettingErrors, defaultValues } from './blueprintSettings'
-import { openExportProgressDialog } from './interface/dialog/exportProgress'
-import { openUnexpectedErrorDialog } from './interface/dialog/unexpectedError'
-import { TextDisplay } from './outliner/textDisplay'
-import datapackCompiler from './systems/datapackCompiler'
-import resourcepackCompiler from './systems/resourcepackCompiler'
-import { MINECRAFT_REGISTRY } from './systems/minecraft/registryManager'
-import { isDataPackPath, isResourcePackPath } from './util/minecraftUtil'
+import { BlockDisplay } from './blockbench-additions/outliner-elements/blockDisplay'
+import { ItemDisplay } from './blockbench-additions/outliner-elements/itemDisplay'
+import { TextDisplay } from './blockbench-additions/outliner-elements/textDisplay'
+import { defaultValues } from './blueprintSettings'
+import type { GenericDisplayConfig, LocatorConfig, Serialized } from './systems/node-configs'
+import { EasingKey } from './util/easing'
 import { Valuable } from './util/stores'
 import { type Variant } from './variants'
-import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
-import { VanillaBlockDisplay } from './outliner/vanillaBlockDisplay'
-import { EasingKey } from './util/easing'
 
 declare module 'three' {
 	interface Object3D {
@@ -39,8 +28,8 @@ declare global {
 
 		variants: Variant[]
 		textDisplays: TextDisplay[]
-		vanillaItemDisplays: VanillaItemDisplay[]
-		vanillaBlockDisplays: VanillaBlockDisplay[]
+		vanillaItemDisplays: ItemDisplay[]
+		vanillaBlockDisplays: BlockDisplay[]
 
 		loadingPromises?: Array<Promise<unknown>>
 	}
@@ -66,17 +55,12 @@ declare global {
 
 	interface Group {
 		configs: {
-			default: IBlueprintBoneConfigJSON
-			/**
-			 * @key Variant UUID
-			 * @value Variant Bone Config
-			 */
-			variants: Record<string, IBlueprintBoneConfigJSON>
+			default: Serialized<GenericDisplayConfig>
 		}
 	}
 
 	interface Locator {
-		config: IBlueprintLocatorConfigJSON
+		config: Serialized<LocatorConfig>
 	}
 
 	interface Cube {
@@ -85,24 +69,5 @@ declare global {
 
 	interface CubeFace {
 		lastVariant: Variant | undefined
-	}
-
-	const AnimatedJava: {
-		API: {
-			compileDataPack: typeof datapackCompiler
-			compileResourcePack: typeof resourcepackCompiler
-			Variant: typeof Variant
-			MINECRAFT_REGISTRY: typeof MINECRAFT_REGISTRY
-			openExportProgressDialog: typeof openExportProgressDialog
-			isResourcePackPath: typeof isResourcePackPath
-			isDataPackPath: typeof isDataPackPath
-			blueprintSettingErrors: typeof blueprintSettingErrors
-			openUnexpectedErrorDialog: typeof openUnexpectedErrorDialog
-			BLUEPRINT_FORMAT: typeof BLUEPRINT_FORMAT
-			BLUEPRINT_CODEC: typeof BLUEPRINT_CODEC
-			TextDisplay: typeof TextDisplay
-			VanillaItemDisplay: typeof VanillaItemDisplay
-			VanillaBlockDisplay: typeof VanillaBlockDisplay
-		}
 	}
 }
