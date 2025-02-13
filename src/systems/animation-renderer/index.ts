@@ -1,6 +1,6 @@
 import * as crypto from 'crypto'
-import { VanillaBlockDisplay } from '../../blockbench-additions/outliner-elements/blockDisplay'
-import { VanillaItemDisplay } from '../../blockbench-additions/outliner-elements/itemDisplay'
+import { BlockDisplay } from '../../blockbench-additions/outliner-elements/blockDisplay'
+import { ItemDisplay } from '../../blockbench-additions/outliner-elements/itemDisplay'
 import { TextDisplay } from '../../blockbench-additions/outliner-elements/textDisplay'
 import {
 	getKeyframeCommands,
@@ -313,8 +313,8 @@ export function updatePreview(animation: _Animation, time: number) {
 		...NullObject.all,
 		...Locator.all,
 		...TextDisplay.all,
-		...VanillaBlockDisplay.all,
-		...VanillaItemDisplay.all,
+		...BlockDisplay.all,
+		...ItemDisplay.all,
 	]
 	if (OutlinerElement.types.camera) {
 		nodes.push(...OutlinerElement.types.camera.all)
@@ -397,8 +397,8 @@ export function getAnimatableNodes(): OutlinerElement[] {
 		...Group.all,
 		...Locator.all,
 		...TextDisplay.all,
-		...VanillaBlockDisplay.all,
-		...VanillaItemDisplay.all,
+		...BlockDisplay.all,
+		...ItemDisplay.all,
 		...(OutlinerElement.types.camera ? OutlinerElement.types.camera.all : []),
 	]
 }

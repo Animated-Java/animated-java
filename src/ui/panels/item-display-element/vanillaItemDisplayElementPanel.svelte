@@ -1,18 +1,18 @@
 <script lang="ts">
 	import EVENTS from '@events'
 	import { ITEM_DISPLAY_ITEM_DISPLAY_SELECT } from '.'
-	import { VanillaItemDisplay } from '../../../blockbench-additions/outliner-elements/itemDisplay'
+	import { ItemDisplay } from '../../../blockbench-additions/outliner-elements/itemDisplay'
 	import { Valuable } from '../../../util/stores'
 	import { translate } from '../../../util/translation'
 
-	let selectedDisplay = VanillaItemDisplay.selected.at(0)
+	let selectedDisplay = ItemDisplay.selected.at(0)
 	let item = new Valuable<string>('')
 	let error = new Valuable<string>('')
 	let itemDisplaySlot: HTMLDivElement
 	let visible = false
 
 	EVENTS.UPDATE_SELECTION.subscribe(() => {
-		selectedDisplay = VanillaItemDisplay.selected.at(0)
+		selectedDisplay = ItemDisplay.selected.at(0)
 		if (!selectedDisplay || selected.length > 1) {
 			item = new Valuable('')
 			error = new Valuable('')

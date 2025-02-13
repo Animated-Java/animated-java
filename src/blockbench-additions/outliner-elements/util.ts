@@ -1,15 +1,15 @@
 import { sanitizePathName } from '../util/minecraftUtil'
-import { VanillaBlockDisplay } from './blockDisplay'
-import { VanillaItemDisplay } from './itemDisplay'
+import { BlockDisplay } from './blockDisplay'
+import { ItemDisplay } from './itemDisplay'
 import { TextDisplay } from './textDisplay'
 
 export function sanitizeOutlinerElementName(name: string, elementUUID: string): string {
 	name = sanitizePathName(name)
 	let otherNodes: OutlinerElement[] = [
-		...VanillaBlockDisplay.all,
+		...BlockDisplay.all,
 		...Group.all,
 		...TextDisplay.all,
-		...VanillaItemDisplay.all,
+		...ItemDisplay.all,
 		...Locator.all,
 	]
 	if (OutlinerElement.types.camera) {

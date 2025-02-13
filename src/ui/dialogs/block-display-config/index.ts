@@ -1,17 +1,17 @@
+import { GenericDisplayConfig } from '@aj/systems/node-configs'
 import { isCurrentFormat } from '../../../blockbench-additions/model-formats/ajblueprint'
-import { VanillaBlockDisplay } from '../../../blockbench-additions/outliner-elements/blockDisplay'
+import { BlockDisplay } from '../../../blockbench-additions/outliner-elements/blockDisplay'
 import { PACKAGE } from '../../../constants'
-import { GenericDisplayConfig } from '../../../systems/node-configs/serializableConfig'
 import { createAction } from '../../../util/moddingTools'
 import { Valuable } from '../../../util/stores'
 import { SvelteDialog } from '../../../util/svelteDialog'
 import { translate } from '../../../util/translation'
 import { Variant } from '../../../variants'
-import VanillaBlockDisplayConfigDialog from './vanillaBlockDisplayConfigDialog.svelte'
+import BlockDisplayConfigDialog from './vanillaBlockDisplayConfigDialog.svelte'
 
-export function openVanillaBlockDisplayConfigDialog(display: VanillaBlockDisplay) {
+export function openBlockDisplayConfigDialog(display: BlockDisplay) {
 	// Blockbench's JSON stringifier doesn't handle custom toJSON functions, so I'm storing the config JSON in the bone instead of the actual GenericDisplayConfig object
-	const oldConfig = GenericDisplayConfig.fromJSON(
+	const oldConfig = new GenericDisplayConfig().fromJSON(
 		(display.config ??= new GenericDisplayConfig().toJSON())
 	)
 
@@ -33,7 +33,7 @@ export function openVanillaBlockDisplayConfigDialog(display: VanillaBlockDisplay
 		id: `${PACKAGE.name}:vanillaItemDisplayConfigDialog`,
 		title: translate('dialog.vanilla_block_display_config.title'),
 		width: 400,
-		component: VanillaBlockDisplayConfigDialog,
+		component: BlockDisplayConfigDialog,
 		props: {
 			variant: Variant.selected,
 			customName,
@@ -102,8 +102,8 @@ export const VANILLA_BLOCK_DISPLAY_CONFIG_ACTION = createAction(
 		name: translate('action.open_vanilla_block_display_config.name'),
 		condition: () => isCurrentFormat(),
 		click: () => {
-			if (VanillaBlockDisplay.selected.length === 0) return
-			openVanillaBlockDisplayConfigDialog(VanillaBlockDisplay.selected[0])
+			if (BlockDisplay.selected.length === 0) return
+			openBlockDisplayConfigDialog(BlockDisplay.selected[0])
 		},
 	}
 )

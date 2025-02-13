@@ -5,11 +5,11 @@
 	import NumberSlider from '@svelte-components/dialog-items/numberSlider.svelte'
 	import Select from '@svelte-components/dialog-items/select.svelte'
 
-	import { GenericDisplayConfig } from '../../../util/serializableConfig'
 	import { Valuable } from '../../../util/stores'
 	import { translate } from '../../../util/translation'
 
 	import { JsonText } from '@aj/systems/minecraft-temp/jsonText'
+	import { GenericDisplayConfig } from '@aj/systems/node-configs'
 	import { NbtCompound, NbtTag } from 'deepslate/lib/nbt'
 
 	const IS_PLUGIN_MODE = Project?.animated_java?.environment === 'plugin'

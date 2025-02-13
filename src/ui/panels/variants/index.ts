@@ -71,12 +71,7 @@ export const VARIANTS_PANEL = new SveltePanel({
 	},
 	icon: 'settings',
 	condition: () =>
-		!!(
-			isCurrentFormat() &&
-			Modes.selected &&
-			(Modes.selected.id === Modes.options.edit.id ||
-				Modes.selected.id === Modes.options.paint.id)
-		),
+		!!((isCurrentFormat() && Mode.selected?.id === 'edit') || Mode.selected?.id === 'paint'),
 	component: VariantsPanel,
 	props: {},
 })
