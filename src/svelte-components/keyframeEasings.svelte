@@ -1,9 +1,9 @@
 <script lang="ts">
 	// @ts-expect-error
 	import { default as ICON_IMPORTS, filenames } from '@assets/easingIcons/*.svg'
+	import EVENTS from '@events'
 	import { isCurrentFormat } from '../blockbench-additions/model-formats/ajblueprint'
 	import { getEasingArgDefault, hasArgs } from '../util/easing'
-	import EVENTS from '../util/events'
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
 

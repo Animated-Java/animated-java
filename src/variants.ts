@@ -1,5 +1,5 @@
+import EVENTS from '@events'
 import { type IBlueprintVariantJSON } from './blockbench-additions/model-formats/ajblueprint'
-import EVENTS from './util/events'
 import { toSafeFunctionName } from './util/minecraftUtil'
 
 export class TextureMap {

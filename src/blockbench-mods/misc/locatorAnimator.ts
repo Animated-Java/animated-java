@@ -1,5 +1,5 @@
+import EVENTS from '@events'
 import { BLUEPRINT_FORMAT } from '../../blockbench-additions/model-formats/ajblueprint'
-import EVENTS from '../../util/events'
 import { translate } from '../../util/translation'
 
 const DEFAULT_SHOW_MOTION_TRAIL = Animator.showMotionTrail
