@@ -1,4 +1,4 @@
-import { GenericDisplayConfig } from '@aj/systems/node-configs/boneConfig'
+import { GenericDisplayConfig } from '@aj/systems/node-configs'
 import { BLUEPRINT_FORMAT } from '../../../blockbench-additions/model-formats/ajblueprint'
 import { PACKAGE } from '../../../constants'
 import { createAction } from '../../../util/moddingTools'

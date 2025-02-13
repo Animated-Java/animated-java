@@ -544,13 +544,13 @@ export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_text_display`,
 			textDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
 		}
 
-		selected.forEachReverse(el => el.unselect())
+		textDisplay.forEachReverse(el => el.unselect())
 		Group.first_selected && Group.first_selected.unselect()
 		textDisplay.select()
 
 		Undo.finishEdit('Create Text Display', {
 			outliner: true,
-			elements: selected,
+			elements: textDisplay,
 			selection: true,
 		})
 

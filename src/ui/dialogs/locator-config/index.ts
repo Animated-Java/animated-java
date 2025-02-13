@@ -1,15 +1,17 @@
-import { BLUEPRINT_FORMAT } from '../../blueprintFormat'
-import LocatorConfigDialog from '../../svelte/locatorConfigDialog.svelte'
-import { PACKAGE } from '../../constants'
-import { LocatorConfig } from '../../nodeConfigs'
-import { createAction } from '../../util/moddingTools'
-import { Valuable } from '../../util/stores'
-import { SvelteDialog } from '../../util/svelteDialog'
-import { translate } from '../../util/translation'
+import { LocatorConfig } from '@aj/systems/node-configs'
+import { BLUEPRINT_FORMAT } from '../../../blockbench-additions/model-formats/ajblueprint'
+import { PACKAGE } from '../../../constants'
+import { createAction } from '../../../util/moddingTools'
+import { Valuable } from '../../../util/stores'
+import { SvelteDialog } from '../../../util/svelteDialog'
+import { translate } from '../../../util/translation'
+import LocatorConfigDialog from './locatorConfigDialog.svelte'
 
 export function openLocatorConfigDialog(locator: Locator) {
 	// Blockbench's JSON stringifier doesn't handle custom toJSON functions, so I'm storing the config JSON in the locator instead of the actual LocatorConfig object
-	const locatorConfig = LocatorConfig.fromJSON((locator.config ??= new LocatorConfig().toJSON()))
+	const locatorConfig = new LocatorConfig().fromJSON(
+		(locator.config ??= new LocatorConfig().toJSON())
+	)
 
 	const useEntity = new Valuable(locatorConfig.useEntity)
 	const entityType = new Valuable(locatorConfig.entityType)

@@ -260,8 +260,8 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 						break
 					}
 					case newElement instanceof AnimatedJava.API.TextDisplay:
-					case newElement instanceof AnimatedJava.API.VanillaItemDisplay:
-					case newElement instanceof AnimatedJava.API.VanillaBlockDisplay: {
+					case newElement instanceof AnimatedJava.API.ItemDisplay:
+					case newElement instanceof AnimatedJava.API.BlockDisplay: {
 						// ES-Lint doesn't like the types here for some reason, so I'm casing them to please it.
 						Project.loadingPromises.push(newElement.waitForReady() as Promise<void>)
 						break
@@ -620,8 +620,8 @@ export function updateRotationLock() {
 	BLUEPRINT_FORMAT.rotation_limit = !(
 		!!Group.first_selected ||
 		!!AnimatedJava.API.TextDisplay.selected.length ||
-		!!AnimatedJava.API.VanillaItemDisplay.selected.length ||
-		!!AnimatedJava.API.VanillaBlockDisplay.selected.length ||
+		!!AnimatedJava.API.ItemDisplay.selected.length ||
+		!!AnimatedJava.API.BlockDisplay.selected.length ||
 		!!(OutlinerElement.types.camera?.selected && OutlinerElement.types.camera?.selected)
 	)
 	BLUEPRINT_FORMAT.rotation_snap = BLUEPRINT_FORMAT.rotation_limit

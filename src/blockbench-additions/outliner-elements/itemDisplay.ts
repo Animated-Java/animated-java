@@ -12,7 +12,7 @@ import { isCurrentFormat } from '../model-formats/ajblueprint'
 import { ResizableOutlinerElement } from './resizableOutlinerElement'
 import { sanitizeOutlinerElementName } from './util'
 
-interface VanillaItemDisplayOptions {
+interface ItemDisplayOptions {
 	name?: string
 	item?: string
 	item_display?: string
@@ -22,12 +22,12 @@ interface VanillaItemDisplayOptions {
 	visibility?: boolean
 }
 
-export class VanillaItemDisplay extends ResizableOutlinerElement {
+export class ItemDisplay extends ResizableOutlinerElement {
 	static type = `${PACKAGE.name}:vanilla_item_display`
-	static selected: VanillaItemDisplay[] = []
-	static all: VanillaItemDisplay[] = []
+	static selected: ItemDisplay[] = []
+	static all: ItemDisplay[] = []
 
-	public type = VanillaItemDisplay.type
+	public type = ItemDisplay.type
 	public icon = 'icecream'
 	public needsUniqueName = true
 
@@ -51,12 +51,12 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 
 	public ready = false
 
-	constructor(data: VanillaItemDisplayOptions, uuid = guid()) {
+	constructor(data: ItemDisplayOptions, uuid = guid()) {
 		super(data, uuid)
-		VanillaItemDisplay.all.push(this)
+		ItemDisplay.all.push(this)
 
-		for (const key in VanillaItemDisplay.properties) {
-			VanillaItemDisplay.properties[key].reset(this)
+		for (const key in ItemDisplay.properties) {
+			ItemDisplay.properties[key].reset(this)
 		}
 
 		this.name = 'item_display'
@@ -128,10 +128,10 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 	}
 
 	getUndoCopy() {
-		const copy = {} as VanillaItemDisplayOptions & { uuid: string; type: string }
+		const copy = {} as ItemDisplayOptions & { uuid: string; type: string }
 
-		for (const key in VanillaItemDisplay.properties) {
-			VanillaItemDisplay.properties[key].copy(this, copy)
+		for (const key in ItemDisplay.properties) {
+			ItemDisplay.properties[key].copy(this, copy)
 		}
 
 		copy.uuid = this.uuid
@@ -141,8 +141,8 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 
 	getSaveCopy() {
 		const el: any = {}
-		for (const key in VanillaItemDisplay.properties) {
-			VanillaItemDisplay.properties[key].copy(this, el)
+		for (const key in ItemDisplay.properties) {
+			ItemDisplay.properties[key].copy(this, el)
 		}
 		el.uuid = this.uuid
 		el.type = this.type
@@ -162,7 +162,7 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 			}
 		}
 
-		VanillaItemDisplay.selected.safePush(this)
+		ItemDisplay.selected.safePush(this)
 		this.selectLow()
 		this.showInOutliner()
 		updateSelection()
@@ -183,26 +183,26 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 			Timeline.selected.empty()
 		}
 		Project!.selected_elements.remove(this)
-		VanillaItemDisplay.selected.remove(this)
+		ItemDisplay.selected.remove(this)
 		this.selected = false
 		TickUpdates.selection = true
 		this.preview_controller.updateHighlight(this)
 	}
 }
-new Property(VanillaItemDisplay, 'string', 'item', { default: 'minecraft:diamond' })
-new Property(VanillaItemDisplay, 'string', 'item_display', { default: 'none' })
-new Property(VanillaItemDisplay, 'object', 'config', {
+new Property(ItemDisplay, 'string', 'item', { default: 'minecraft:diamond' })
+new Property(ItemDisplay, 'string', 'item_display', { default: 'none' })
+new Property(ItemDisplay, 'object', 'config', {
 	get default() {
 		return new GenericDisplayConfig().toJSON()
 	},
 })
-OutlinerElement.registerType(VanillaItemDisplay, VanillaItemDisplay.type)
+OutlinerElement.registerType(ItemDisplay, ItemDisplay.type)
 
-export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, {
-	setup(el: VanillaItemDisplay) {
+export const PREVIEW_CONTROLLER = new NodePreviewController(ItemDisplay, {
+	setup(el: ItemDisplay) {
 		ResizableOutlinerElement.prototype.preview_controller.setup(el)
 	},
-	updateGeometry(el: VanillaItemDisplay) {
+	updateGeometry(el: ItemDisplay) {
 		if (!el.mesh) return
 
 		void getItemModel(el.item)
@@ -231,10 +231,10 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, 
 				el.ready = true
 			})
 	},
-	updateTransform(el: VanillaItemDisplay) {
+	updateTransform(el: ItemDisplay) {
 		ResizableOutlinerElement.prototype.preview_controller.updateTransform(el)
 	},
-	updateHighlight(el: VanillaItemDisplay, force?: boolean | VanillaItemDisplay) {
+	updateHighlight(el: ItemDisplay, force?: boolean | ItemDisplay) {
 		if (!isCurrentFormat() || !el?.mesh) return
 		const highlighted = Modes.edit && (force === true || force === el || el.selected) ? 1 : 0
 
@@ -253,11 +253,11 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, 
 	},
 })
 
-class VanillaItemDisplayAnimator extends BoneAnimator {
+class ItemDisplayAnimator extends BoneAnimator {
 	private __name: string
 
 	public uuid: string
-	public element: VanillaItemDisplay | undefined
+	public element: ItemDisplay | undefined
 
 	constructor(uuid: string, animation: _Animation, name: string) {
 		super(uuid, animation, name)
@@ -266,7 +266,7 @@ class VanillaItemDisplayAnimator extends BoneAnimator {
 	}
 
 	getElement() {
-		this.element = OutlinerNode.uuids[this.uuid] as VanillaItemDisplay
+		this.element = OutlinerNode.uuids[this.uuid] as ItemDisplay
 		return this.element
 	}
 
@@ -370,8 +370,8 @@ class VanillaItemDisplayAnimator extends BoneAnimator {
 		return this
 	}
 }
-VanillaItemDisplayAnimator.prototype.type = VanillaItemDisplay.type
-VanillaItemDisplay.animator = VanillaItemDisplayAnimator as any
+ItemDisplayAnimator.prototype.type = ItemDisplay.type
+ItemDisplay.animator = ItemDisplayAnimator as any
 
 createBlockbenchMod(
 	`${PACKAGE.name}:vanillaItemDisplay`,
@@ -386,12 +386,12 @@ createBlockbenchMod(
 		context.subscriptions.push(
 			EVENTS.SELECT_PROJECT.subscribe(project => {
 				project.vanillaItemDisplays ??= []
-				VanillaItemDisplay.all.empty()
-				VanillaItemDisplay.all.push(...project.vanillaItemDisplays)
+				ItemDisplay.all.empty()
+				ItemDisplay.all.push(...project.vanillaItemDisplays)
 			}),
 			EVENTS.UNSELECT_PROJECT.subscribe(project => {
-				project.vanillaItemDisplays = [...VanillaItemDisplay.all]
-				VanillaItemDisplay.all.empty()
+				project.vanillaItemDisplays = [...ItemDisplay.all]
+				ItemDisplay.all.empty()
 			})
 		)
 		return context
@@ -415,7 +415,7 @@ export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_vanilla_item_d
 	click() {
 		Undo.initEdit({ outliner: true, elements: [], selection: true })
 
-		const vanillaItemDisplay = new VanillaItemDisplay({}).init()
+		const vanillaItemDisplay = new ItemDisplay({}).init()
 		const group = getCurrentGroup()
 
 		if (group instanceof Group) {
