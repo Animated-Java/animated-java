@@ -1,3 +1,4 @@
+// @ts-expect-error
 import checkFile from 'eslint-plugin-check-file'
 import svelteEslint from 'eslint-plugin-svelte'
 import svelteParser from 'svelte-eslint-parser'
@@ -107,11 +108,14 @@ const CUSTOM_RULES: ConfigWithExtends['rules'] = {
 		},
 		{
 			selector: ['classProperty', 'classMethod'],
-			filter: {
-				regex: '^_.*$',
-				match: true,
-			},
-			prefix: ['_'],
+			leadingUnderscore: 'allow',
+			format: ['camelCase'],
+		},
+		{
+			selector: ['classProperty', 'classMethod'],
+			modifiers: ['private'],
+			leadingUnderscore: 'allowDouble',
+			trailingUnderscore: 'allowDouble',
 			format: ['camelCase'],
 		},
 		{
