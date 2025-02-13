@@ -1,10 +1,10 @@
 import EVENTS from '@events'
+import THREE from 'three'
 import * as blueprintSettings from '../../../blueprintSettings'
 import { PACKAGE } from '../../../constants'
 import { injectSvelteCompomponent } from '../../../util/injectSvelteComponent'
 import { toSafeFunctionName } from '../../../util/minecraftUtil'
 import { addProjectToRecentProjects } from '../../../util/misc'
-import { type BillboardMode, BoneConfig, LocatorConfig } from '../../../util/serializableConfig'
 import { Valuable } from '../../../util/stores'
 import { translate } from '../../../util/translation'
 import { Variant } from '../../../variants'
@@ -12,69 +12,6 @@ import { process } from './dfu'
 import FormatPageSvelte from './formatPage.svelte'
 import ProjectTitleSvelte from './projectTitle.svelte'
 let boundingBoxUpdateIntervalId: ReturnType<typeof setInterval> | undefined
-
-/**
- * The serialized Variant Bone Config
- */
-export interface IBlueprintBoneConfigJSON {
-	custom_name?: BoneConfig['customName']
-	custom_name_visible?: BoneConfig['customNameVisible']
-	billboard?: BoneConfig['billboard']
-	override_brightness?: BoneConfig['overrideBrightness']
-	brightness_override?: BoneConfig['brightnessOverride']
-	enchanted?: BoneConfig['enchanted']
-	glowing?: BoneConfig['glowing']
-	override_glow_color?: BoneConfig['overrideGlowColor']
-	glow_color?: BoneConfig['glowColor']
-	inherit_settings?: BoneConfig['inheritSettings']
-	invisible?: BoneConfig['invisible']
-	/**
-	 * Custom NBT for the bone that will be merged when this Variant is applied
-	 */
-	nbt?: BoneConfig['nbt']
-	shadow_radius?: BoneConfig['shadowRadius']
-	shadow_strength?: BoneConfig['shadowStrength']
-	use_nbt?: BoneConfig['useNBT']
-}
-
-/**
- * The serialized Variant Locator Config
- */
-export interface IBlueprintLocatorConfigJSON {
-	use_entity?: LocatorConfig['useEntity']
-	entity_type?: LocatorConfig['entityType']
-	summon_commands?: LocatorConfig['_summonCommands']
-	ticking_commands?: LocatorConfig['tickingCommands']
-}
-
-/**
- * The serialized Variant Camera Config
- */
-export interface IBlueprintCameraConfigJSON {
-	entity_type?: string
-	nbt?: string
-	ticking_commands?: string
-}
-
-/**
- * The serialized Variant Locator Config
- */
-export interface IBlueprintTextDisplayConfigJSON {
-	billboard?: BillboardMode
-	override_brightness?: BoneConfig['overrideBrightness']
-	brightness_override?: BoneConfig['brightnessOverride']
-	glowing?: BoneConfig['glowing']
-	override_glow_color?: BoneConfig['overrideGlowColor']
-	glow_color?: BoneConfig['glowColor']
-	invisible?: BoneConfig['invisible']
-	shadow_radius?: BoneConfig['shadowRadius']
-	shadow_strength?: BoneConfig['shadowStrength']
-	use_nbt?: BoneConfig['useNBT']
-	/**
-	 * Custom NBT for the bone that will be merged when this Variant is applied
-	 */
-	nbt?: BoneConfig['nbt']
-}
 
 /**
  * The serialized Variant

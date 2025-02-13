@@ -48,3 +48,8 @@ declare module '*.molang' {
 declare module 'fflate/browser' {
 	export * from 'fflate'
 }
+
+/**
+ * Display entity billboard mode
+ */
+type BillboardMode = 'fixed' | 'vertical' | 'horizontal' | 'center'

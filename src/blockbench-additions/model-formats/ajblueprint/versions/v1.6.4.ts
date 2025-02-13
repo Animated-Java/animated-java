@@ -1,20 +1,17 @@
 import type { PACKAGE } from '@aj/constants'
-import {
+import type {
 	CameraConfig,
+	GenericDisplayConfig,
+	LocatorConfig,
+	Serialized,
 	TextDisplayConfig,
-	type BoneConfig,
-	type LocatorConfig,
-} from '@aj/nodeConfigs'
+} from '@aj/systems/node-configs'
 
 namespace v1_6_4 {
-	type SerializeConfig<T> = {
-		[Key in keyof T as T[Key] extends Function ? never : Key]: T[Key] | undefined
-	}
-
-	export type IBlueprintBoneConfigJSON = SerializeConfig<BoneConfig>
-	export type IBlueprintLocatorConfigJSON = SerializeConfig<LocatorConfig>
-	export type IBlueprintCameraConfigJSON = SerializeConfig<CameraConfig>
-	export type IBlueprintTextDisplayConfigJSON = SerializeConfig<TextDisplayConfig>
+	export type IBlueprintBoneConfigJSON = Serialized<GenericDisplayConfig>
+	export type IBlueprintLocatorConfigJSON = Serialized<LocatorConfig>
+	export type IBlueprintCameraConfigJSON = Serialized<CameraConfig>
+	export type IBlueprintTextDisplayConfigJSON = Serialized<TextDisplayConfig>
 
 	/**
 	 * The serialized Variant

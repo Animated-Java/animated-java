@@ -1,16 +1,13 @@
 import { PACKAGE } from '../../constants'
 import { createAction, createBlockbenchMod } from '../../util/moddingTools'
-import {
-	BLUEPRINT_FORMAT,
-	type IBlueprintTextDisplayConfigJSON,
-	isCurrentFormat,
-} from '../model-formats/ajblueprint'
+import { BLUEPRINT_FORMAT, isCurrentFormat } from '../model-formats/ajblueprint'
 // import * as MinecraftFull from '@assets/MinecraftFull.json'
 import { getVanillaFont } from '@aj/systems/minecraft-temp/fontManager'
 import { JsonText } from '@aj/systems/minecraft-temp/jsonText'
+import { TextDisplayConfig, type Serialized } from '@aj/systems/node-configs'
 import EVENTS from '@events'
+import THREE from 'three'
 import { TEXT_DISPLAY_CONFIG_ACTION } from '../../ui/dialogs/text-display-config'
-import { TextDisplayConfig } from '../../util/serializableConfig'
 import { Valuable } from '../../util/stores'
 import { translate } from '../../util/translation'
 import { ResizableOutlinerElement } from './resizableOutlinerElement'
@@ -40,7 +37,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 	public needsUniqueName = true
 
 	// Properties
-	public config: IBlueprintTextDisplayConfigJSON
+	public config: Serialized<TextDisplayConfig>
 
 	public menu = new Menu([
 		...Outliner.control_menu_group,
@@ -56,19 +53,19 @@ export class TextDisplay extends ResizableOutlinerElement {
 	public ready = false
 	public textError = new Valuable('')
 
-	private _updating = false
-	private _text = new Valuable('Hello World!')
-	private _newText: string | undefined
-	private _lineWidth = new Valuable(200)
-	private _newLineWidth: number | undefined
-	private _backgroundColor = new Valuable('#000000')
-	private _newBackgroundColor: string | undefined
-	private _backgroundAlpha = new Valuable(0.25)
-	private _newBackgroundAlpha: number | undefined
-	private _shadow = new Valuable(false)
-	private _newShadow: boolean | undefined
-	private _align = new Valuable<Alignment>('center')
-	private _newAlign: Alignment | undefined
+	private __updating = false
+	private __text = new Valuable('Hello World!')
+	private __newText: string | undefined
+	private __lineWidth = new Valuable(200)
+	private __newLineWidth: number | undefined
+	private __backgroundColor = new Valuable('#000000')
+	private __newBackgroundColor: string | undefined
+	private __backgroundAlpha = new Valuable(0.25)
+	private __newBackgroundAlpha: number | undefined
+	private __shadow = new Valuable(false)
+	private __newShadow: boolean | undefined
+	private __align = new Valuable<Alignment>('center')
+	private __newAlign: Alignment | undefined
 	public seeThrough = false
 
 	constructor(data: TextDisplayOptions, uuid = guid()) {
@@ -92,28 +89,28 @@ export class TextDisplay extends ResizableOutlinerElement {
 
 		this.sanitizeName()
 
-		this._text.subscribe(v => {
-			this._newText = v
+		this.__text.subscribe(v => {
+			this.__newText = v
 			void this.updateText()
 		})
-		this._lineWidth.subscribe(v => {
-			this._newLineWidth = v
+		this.__lineWidth.subscribe(v => {
+			this.__newLineWidth = v
 			void this.updateText()
 		})
-		this._backgroundColor.subscribe(v => {
-			this._newBackgroundColor = v
+		this.__backgroundColor.subscribe(v => {
+			this.__newBackgroundColor = v
 			void this.updateText()
 		})
-		this._backgroundAlpha.subscribe(v => {
-			this._newBackgroundAlpha = v
+		this.__backgroundAlpha.subscribe(v => {
+			this.__newBackgroundAlpha = v
 			void this.updateText()
 		})
-		this._shadow.subscribe(v => {
-			this._newShadow = v
+		this.__shadow.subscribe(v => {
+			this.__newShadow = v
 			void this.updateText()
 		})
-		this._align.subscribe(v => {
-			this._newAlign = v
+		this.__align.subscribe(v => {
+			this.__newAlign = v
 			void this.updateText()
 		})
 	}
@@ -124,66 +121,67 @@ export class TextDisplay extends ResizableOutlinerElement {
 	}
 
 	get text() {
-		if (this._text === undefined) return TextDisplay.properties.text.default as string
-		return this._text.get()
+		if (this.__text === undefined) return TextDisplay.properties.text.default as string
+		return this.__text.get()
 	}
 
 	set text(value) {
-		if (this._text === undefined) return
+		if (this.__text === undefined) return
 		if (value === this.text) return
-		this._text.set(value)
+		this.__text.set(value)
 	}
 
 	get lineWidth() {
-		if (this._lineWidth === undefined) return TextDisplay.properties.lineWidth.default as number
-		return this._lineWidth.get()
+		if (this.__lineWidth === undefined)
+			return TextDisplay.properties.lineWidth.default as number
+		return this.__lineWidth.get()
 	}
 
 	set lineWidth(value) {
-		if (this._lineWidth === undefined) return
-		this._lineWidth.set(value)
+		if (this.__lineWidth === undefined) return
+		this.__lineWidth.set(value)
 	}
 
 	get backgroundColor() {
-		if (this._backgroundColor === undefined)
+		if (this.__backgroundColor === undefined)
 			return TextDisplay.properties.backgroundColor.default as string
-		return this._backgroundColor.get()
+		return this.__backgroundColor.get()
 	}
 
 	set backgroundColor(value) {
-		if (this._backgroundColor === undefined) return
-		this._backgroundColor.set(value)
+		if (this.__backgroundColor === undefined) return
+		this.__backgroundColor.set(value)
 	}
 
 	get backgroundAlpha() {
-		if (this._backgroundAlpha === undefined)
+		if (this.__backgroundAlpha === undefined)
 			return TextDisplay.properties.backgroundAlpha.default as number
-		return this._backgroundAlpha.get()
+		return this.__backgroundAlpha.get()
 	}
 
 	set backgroundAlpha(value) {
-		if (this._backgroundAlpha === undefined) return
-		this._backgroundAlpha.set(value)
+		if (this.__backgroundAlpha === undefined) return
+		this.__backgroundAlpha.set(value)
 	}
 
 	get shadow() {
-		if (this._shadow === undefined) return TextDisplay.properties.shadow.default as boolean
-		return this._shadow.get()
+		if (this.__shadow === undefined) return TextDisplay.properties.shadow.default as boolean
+		return this.__shadow.get()
 	}
 
 	set shadow(value) {
-		if (this._shadow === undefined) return
-		this._shadow.set(value)
+		if (this.__shadow === undefined) return
+		this.__shadow.set(value)
 	}
 
 	get align() {
-		if (this._align === undefined) return TextDisplay.properties.align.default as Alignment
-		return this._align.get()
+		if (this.__align === undefined) return TextDisplay.properties.align.default as Alignment
+		return this.__align.get()
 	}
 
 	set align(value) {
-		if (this._align === undefined) return
-		this._align.set(value)
+		if (this.__align === undefined) return
+		this.__align.set(value)
 	}
 
 	getUndoCopy() {
@@ -251,16 +249,16 @@ export class TextDisplay extends ResizableOutlinerElement {
 	}
 
 	async updateText() {
-		if (this._updating) return
-		this._updating = true
+		if (this.__updating) return
+		this.__updating = true
 		let latestMesh: THREE.Mesh | undefined
 		while (
-			this._newText !== undefined ||
-			this._newLineWidth !== undefined ||
-			this._newBackgroundColor !== undefined ||
-			this._newBackgroundAlpha !== undefined ||
-			this._newShadow !== undefined ||
-			this._newAlign !== undefined
+			this.__newText !== undefined ||
+			this.__newLineWidth !== undefined ||
+			this.__newBackgroundColor !== undefined ||
+			this.__newBackgroundAlpha !== undefined ||
+			this.__newShadow !== undefined ||
+			this.__newAlign !== undefined
 		) {
 			let text: JsonText | undefined
 			this.textError.set('')
@@ -270,19 +268,19 @@ export class TextDisplay extends ResizableOutlinerElement {
 			} catch (e: any) {
 				console.error(e)
 				this.textError.set(e.message as string)
-				this._updating = false
+				this.__updating = false
 				text = new JsonText({ text: 'Invalid JSON Text!', color: 'red' })
 			}
-			this._newText = undefined
-			this._newLineWidth = undefined
-			this._newBackgroundColor = undefined
-			this._newBackgroundAlpha = undefined
-			this._newShadow = undefined
-			this._newAlign = undefined
+			this.__newText = undefined
+			this.__newLineWidth = undefined
+			this.__newBackgroundColor = undefined
+			this.__newBackgroundAlpha = undefined
+			this.__newShadow = undefined
+			this.__newAlign = undefined
 			if (text === undefined) continue
 			latestMesh = await this.setText(text)
 		}
-		this._updating = false
+		this.__updating = false
 		return latestMesh
 	}
 
@@ -375,7 +373,7 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 })
 
 class TextDisplayAnimator extends BoneAnimator {
-	private _name: string
+	private __name: string
 
 	public uuid: string
 	public element: TextDisplay | undefined
@@ -383,7 +381,7 @@ class TextDisplayAnimator extends BoneAnimator {
 	constructor(uuid: string, animation: _Animation, name: string) {
 		super(uuid, animation, name)
 		this.uuid = uuid
-		this._name = name
+		this.__name = name
 	}
 
 	getElement() {
