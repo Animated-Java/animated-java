@@ -1,5 +1,5 @@
 import { name as pluginID } from '../../package.json'
-import { Variant } from '../variants'
+import type { Variant } from '../variants'
 import { Subscribable } from './subscribable'
 
 export class PluginEvent<EventData = void> extends Subscribable<EventData> {
