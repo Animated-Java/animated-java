@@ -1,4 +1,5 @@
 import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/lib/nbt'
+import THREE from 'three'
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../ui/dialogs/export-progress'
 import { isFunctionTagPath } from '../../util/fileUtil'
 import {
@@ -12,11 +13,11 @@ import {
 } from '../../util/minecraftUtil'
 import { eulerFromQuaternion, floatToHex, roundTo, tinycolorToDecimal } from '../../util/misc'
 import { MSLimiter } from '../../util/msLimiter'
-import { BoneConfig, TextDisplayConfig } from '../../util/serializableConfig'
 import { Variant } from '../../variants'
 import { AJMeta } from '../ajmeta'
 import type { INodeTransform, IRenderedAnimation } from '../animation-renderer'
 import { IntentionalExportError } from '../exporter'
+import { GenericDisplayConfig, TextDisplayConfig } from '../node-configs'
 import type { AnyRenderedNode, IRenderedRig } from '../rig-renderer'
 import { replacePathPart } from '../util'
 import { compile } from './compiler'
@@ -161,7 +162,7 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 				}
 
 				if (node.configs?.default) {
-					BoneConfig.fromJSON(node.configs.default).toNBT(passenger)
+					new GenericDisplayConfig().fromJSON(node.configs.default).toNBT(passenger)
 				}
 
 				passenger.set('height', new NbtFloat(aj.bounding_box[1]))
@@ -199,7 +200,7 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 				passenger.set('alignment', new NbtString(node.align))
 
 				if (node.config) {
-					TextDisplayConfig.fromJSON(node.config).toNBT(passenger)
+					new TextDisplayConfig().fromJSON(node.config).toNBT(passenger)
 				}
 				break
 			}
@@ -213,7 +214,7 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 				)
 
 				if (node.config) {
-					BoneConfig.fromJSON(node.config).toNBT(passenger)
+					new GenericDisplayConfig().fromJSON(node.config).toNBT(passenger)
 				}
 				break
 			}
@@ -240,7 +241,7 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 				)
 
 				if (node.config) {
-					BoneConfig.fromJSON(node.config).toNBT(passenger)
+					new GenericDisplayConfig().fromJSON(node.config).toNBT(passenger)
 				}
 				break
 			}
@@ -405,7 +406,7 @@ async function gatherCompilerVariables(options: {
 		rigHash,
 		animationHash,
 		boundingBox: aj.bounding_box,
-		BoneConfig,
+		GenericDisplayConfig,
 		roundTo,
 		nodeSorter,
 		getRotationFromQuaternion: eulerFromQuaternion,
@@ -660,7 +661,7 @@ async function writeFiles(map: Map<string, string>, dataPackFolder: string) {
 						`The referenced ${
 							isTag ? 'tag' : 'function'
 						} '${value}' (${dataPath}) in '${
-							parentLocation?.resourceLocation || path
+							parentLocation?.resourceLocation ?? path
 						}' does not exist! Removing reference...`
 					)
 				}

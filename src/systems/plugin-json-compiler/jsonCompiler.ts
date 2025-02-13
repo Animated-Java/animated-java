@@ -294,7 +294,7 @@ function serailizeNodeTransform(node: INodeTransform): ExportedNodetransform {
 		matrix: node.matrix.elements,
 		decomposed: {
 			translation: node.decomposed.translation.toArray(),
-			left_rotation: node.decomposed.leftRotation.toArray() as ArrayVector4,
+			left_rotation: node.decomposed.left_rotation.toArray() as ArrayVector4,
 			scale: node.decomposed.scale.toArray(),
 		},
 		pos: node.pos,

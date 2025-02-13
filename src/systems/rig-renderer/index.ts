@@ -12,7 +12,6 @@ import {
 	type Alignment,
 	TextDisplay,
 } from '../../blockbench-additions/outliner-elements/textDisplay'
-import { BoneConfig } from '../../nodeConfigs'
 import {
 	type IMinecraftResourceLocation,
 	parseResourcePackPath,
@@ -28,6 +27,7 @@ import {
 } from '../animation-renderer'
 import { IntentionalExportError } from '../exporter'
 import { JsonText } from '../minecraft-temp/jsonText'
+import { GenericDisplayConfig } from '../node-configs/serializableConfig'
 
 export interface IRenderedFace {
 	uv: number[]
@@ -634,14 +634,14 @@ export function hashRig(rig: IRenderedRig) {
 				hash.update(';' + JSON.stringify(model) || '')
 				if (!node.configs) break // Skip if there are no configs
 				if (node.configs.default) {
-					const defaultConfig = BoneConfig.fromJSON(node.configs.default)
+					const defaultConfig = GenericDisplayConfig.fromJSON(node.configs.default)
 					if (!defaultConfig.isDefault()) {
 						hash.update('defaultconfig;')
 						hash.update(defaultConfig.toNBT().toString())
 					}
 				}
 				for (const [variantName, config] of Object.entries(node.configs.variants)) {
-					const variantConfig = BoneConfig.fromJSON(config)
+					const variantConfig = GenericDisplayConfig.fromJSON(config)
 					if (!variantConfig.isDefault()) {
 						hash.update('variantconfig;')
 						hash.update(variantName)

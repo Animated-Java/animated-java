@@ -1,6 +1,6 @@
 import { BLUEPRINT_FORMAT } from '../../../blockbench-additions/model-formats/ajblueprint'
 import { PACKAGE } from '../../../constants'
-import { LocatorConfig } from '../../../nodeConfigs'
+import { LocatorConfig } from '../../../systems/node-configs/serializableConfig'
 import { createAction } from '../../../util/moddingTools'
 import { Valuable } from '../../../util/stores'
 import { SvelteDialog } from '../../../util/svelteDialog'

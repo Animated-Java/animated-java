@@ -1,14 +1,15 @@
 import { getItemModel } from '@aj/systems/minecraft-temp/itemModelManager'
 import { MINECRAFT_REGISTRY } from '@aj/systems/minecraft-temp/registryManager'
 import { getCurrentVersion } from '@aj/systems/minecraft-temp/versionManager'
+import { GenericDisplayConfig, type Serialized } from '@aj/systems/node-configs'
 import EVENTS from '@events'
+import THREE from 'three'
 import { PACKAGE } from '../../constants'
 import { VANILLA_ITEM_DISPLAY_CONFIG_ACTION } from '../../ui/dialogs/item-display-config'
 import { createAction, createBlockbenchMod } from '../../util/moddingTools'
-import { BoneConfig } from '../../util/serializableConfig'
 import { Valuable } from '../../util/stores'
 import { translate } from '../../util/translation'
-import { type IBlueprintBoneConfigJSON, isCurrentFormat } from '../model-formats/ajblueprint'
+import { isCurrentFormat } from '../model-formats/ajblueprint'
 import { ResizableOutlinerElement } from './resizableOutlinerElement'
 import { sanitizeOutlinerElementName } from './util'
 
@@ -32,9 +33,9 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 	public needsUniqueName = true
 
 	// Properties
-	public _item = new Valuable('minecraft:diamond')
-	public _itemDisplay = new Valuable('none')
-	public config: IBlueprintBoneConfigJSON
+	private __item = new Valuable('minecraft:diamond')
+	private __itemDisplay = new Valuable('none')
+	public config: Serialized<GenericDisplayConfig>
 
 	public error = new Valuable('')
 
@@ -93,27 +94,27 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 			}
 		}
 
-		this._item.subscribe(value => {
+		this.__item.subscribe(value => {
 			updateItem(value)
 		})
 	}
 
 	get item() {
-		if (this._item === undefined) return 'minecraft:diamond'
-		return this._item.get()
+		if (this.__item === undefined) return 'minecraft:diamond'
+		return this.__item.get()
 	}
 	set item(value: string) {
-		if (this._item === undefined) return
-		this._item.set(value)
+		if (this.__item === undefined) return
+		this.__item.set(value)
 	}
 
 	get itemDisplay() {
-		if (this._itemDisplay === undefined) return 'none'
-		return this._itemDisplay.get()
+		if (this.__itemDisplay === undefined) return 'none'
+		return this.__itemDisplay.get()
 	}
 	set itemDisplay(value: string) {
-		if (this._itemDisplay === undefined) return
-		this._itemDisplay.set(value)
+		if (this.__itemDisplay === undefined) return
+		this.__itemDisplay.set(value)
 	}
 
 	async waitForReady() {
@@ -193,7 +194,7 @@ new Property(VanillaItemDisplay, 'string', 'item', { default: 'minecraft:diamond
 new Property(VanillaItemDisplay, 'string', 'item_display', { default: 'none' })
 new Property(VanillaItemDisplay, 'object', 'config', {
 	get default() {
-		return new BoneConfig().toJSON()
+		return new GenericDisplayConfig().toJSON()
 	},
 })
 OutlinerElement.registerType(VanillaItemDisplay, VanillaItemDisplay.type)
@@ -254,7 +255,7 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, 
 })
 
 class VanillaItemDisplayAnimator extends BoneAnimator {
-	private _name: string
+	private __name: string
 
 	public uuid: string
 	public element: VanillaItemDisplay | undefined
@@ -262,7 +263,7 @@ class VanillaItemDisplayAnimator extends BoneAnimator {
 	constructor(uuid: string, animation: _Animation, name: string) {
 		super(uuid, animation, name)
 		this.uuid = uuid
-		this._name = name
+		this.__name = name
 	}
 
 	getElement() {

@@ -17,7 +17,7 @@
 			visible = false
 			return
 		}
-		block = selectedDisplay._block
+		block = selectedDisplay.__block
 		error = selectedDisplay.error
 		visible = true
 	})

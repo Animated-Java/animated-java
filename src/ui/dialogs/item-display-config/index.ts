@@ -1,7 +1,7 @@
 import { isCurrentFormat } from '../../../blockbench-additions/model-formats/ajblueprint'
 import { VanillaItemDisplay } from '../../../blockbench-additions/outliner-elements/itemDisplay'
 import { PACKAGE } from '../../../constants'
-import { BoneConfig } from '../../../nodeConfigs'
+import { GenericDisplayConfig } from '../../../systems/node-configs/serializableConfig'
 import { createAction } from '../../../util/moddingTools'
 import { Valuable } from '../../../util/stores'
 import { SvelteDialog } from '../../../util/svelteDialog'
@@ -10,8 +10,10 @@ import { Variant } from '../../../variants'
 import VanillaItemDisplayConfigDialog from './vanillaItemDisplayConfigDialog.svelte'
 
 export function openVanillaItemDisplayConfigDialog(display: VanillaItemDisplay) {
-	// Blockbench's JSON stringifier doesn't handle custom toJSON functions, so I'm storing the config JSON in the bone instead of the actual BoneConfig object
-	const oldConfig = BoneConfig.fromJSON((display.config ??= new BoneConfig().toJSON()))
+	// Blockbench's JSON stringifier doesn't handle custom toJSON functions, so I'm storing the config JSON in the bone instead of the actual GenericDisplayConfig object
+	const oldConfig = GenericDisplayConfig.fromJSON(
+		(display.config ??= new GenericDisplayConfig().toJSON())
+	)
 
 	const customName = new Valuable(oldConfig.customName)
 	const customNameVisible = new Valuable(oldConfig.customNameVisible)
@@ -50,7 +52,7 @@ export function openVanillaItemDisplayConfigDialog(display: VanillaItemDisplay) 
 		},
 		preventKeybinds: true,
 		onConfirm() {
-			const newConfig = new BoneConfig()
+			const newConfig = new GenericDisplayConfig()
 
 			newConfig.customName = customName.get()
 			newConfig.customNameVisible = customNameVisible.get()
@@ -66,7 +68,7 @@ export function openVanillaItemDisplayConfigDialog(display: VanillaItemDisplay) 
 			newConfig.shadowStrength = shadowStrength.get()
 			newConfig.useNBT = useNBT.get()
 
-			const defaultConfig = BoneConfig.getDefault()
+			const defaultConfig = GenericDisplayConfig.getDefault()
 
 			newConfig.customName === defaultConfig.customName && (newConfig.customName = undefined)
 			newConfig.customNameVisible === defaultConfig.customNameVisible &&
