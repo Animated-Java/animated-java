@@ -1,5 +1,4 @@
 import EVENTS from '@events'
-import THREE from 'three'
 import * as blueprintSettings from '../../../blueprintSettings'
 import { PACKAGE } from '../../../constants'
 import { injectSvelteCompomponent } from '../../../util/injectSvelteComponent'
