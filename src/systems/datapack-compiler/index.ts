@@ -1,5 +1,5 @@
 import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/lib/nbt'
-import THREE from 'three'
+
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../ui/dialogs/export-progress'
 import { isFunctionTagPath } from '../../util/fileUtil'
 import {

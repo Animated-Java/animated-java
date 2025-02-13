@@ -6,7 +6,7 @@ import { getVanillaFont } from '@aj/systems/minecraft-temp/fontManager'
 import { JsonText } from '@aj/systems/minecraft-temp/jsonText'
 import { TextDisplayConfig, type Serialized } from '@aj/systems/node-configs'
 import EVENTS from '@events'
-import THREE from 'three'
+
 import { TEXT_DISPLAY_CONFIG_ACTION } from '../../ui/dialogs/text-display-config'
 import { Valuable } from '../../util/stores'
 import { translate } from '../../util/translation'
