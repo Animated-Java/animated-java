@@ -2,92 +2,92 @@
 # NEW TRANSLATIONS
 # ----------------------------------------
 dialog:
-    error:
-        # Generic Errors
-        function_file.no_leading_slash: Commands inside of function files cannot start with a leading slash!
-        no_folder_selected: No folder selected!
-        folder_does_not_exist: The selected folder does not exist!
-        not_a_folder: The selected path is not a folder!
-        no_file_selected: No file selected!
-        file_does_not_exist: The selected file does not exist!
-        not_a_file: The selected path is not a file!
-        not_a_zip_file: The selected file is not a `.zip` file!
+  error:
+    # Generic Errors
+    function_file.no_leading_slash: Commands inside of function files cannot start with a leading slash!
+    no_folder_selected: No folder selected!
+    folder_does_not_exist: The selected folder does not exist!
+    not_a_folder: The selected path is not a folder!
+    no_file_selected: No file selected!
+    file_does_not_exist: The selected file does not exist!
+    not_a_file: The selected path is not a file!
+    not_a_zip_file: The selected file is not a `.zip` file!
 
-    placeholder:
-        select_a_folder: Select a folder...
-        select_a_file: Select a file...
+  placeholder:
+    select_a_folder: Select a folder...
+    select_a_file: Select a file...
 
-    blueprint_settings:
-        title: Blueprint Settings
-        general:
-        plugin:
+  blueprint_settings:
+    title: Blueprint Settings
+    general:
+    plugin:
 
-        export:
-            target_minecraft_version:
-                label: Target Minecraft Version
-                description: |-
-                    Choose the version of Minecraft you are exporting this project for. If your exact version is not listed, choose the next oldest version. For example, if you are using Minecraft `1.21.3`, choose `1.21.2`.
-            tag_prefix:
-                label: Tag Prefix
-                description: The prefix to use for all tags in the exported Data Pack.
-            auto_generate_tag_prefix:
-                label: Auto-Generate Tag Prefix
-                description: Automatically generate a tag prefix based on the BlueprintID.
+    export:
+      target_minecraft_version:
+        label: Target Minecraft Version
+        description: |-
+          Choose the version of Minecraft you are exporting this project for. If your exact version is not listed, choose the next oldest version. For example, if you are using Minecraft `1.21.3`, choose `1.21.2`.
+      tag_prefix:
+        label: Tag Prefix
+        description: The prefix to use for all tags in the exported Data Pack.
+      auto_generate_tag_prefix:
+        label: Auto-Generate Tag Prefix
+        description: Automatically generate a tag prefix based on the BlueprintID.
 
-        resourcepack:
-            error:
-                missing_assets_folder: The selected Resource Pack is missing an assets folder!
+    resourcepack:
+      error:
+        missing_assets_folder: The selected Resource Pack is missing an assets folder!
 
-        datapack:
-            error:
-                missing_pack_mcmeta: The selected folder is missing a pack.mcmeta file!
-            warning:
-                missing_data_folder: The selected Data Pack is missing a data folder!
+    datapack:
+      error:
+        missing_pack_mcmeta: The selected folder is missing a pack.mcmeta file!
+      warning:
+        missing_data_folder: The selected Data Pack is missing a data folder!
 
-            export_mode.folder:
-                label: Export to Folder
-                description: Export the generated Data Pack to a folder.
-            export_mode.zip:
-                label: Export to Zip
-                description: Export the generated Data Pack to a `.zip` file.
-            export_mode.none:
-                label: Do Not Export
-                description: Do not export the generated Data Pack.
+      export_mode.folder:
+        label: Export to Folder
+        description: Export the generated Data Pack to a folder.
+      export_mode.zip:
+        label: Export to Zip
+        description: Export the generated Data Pack to a `.zip` file.
+      export_mode.none:
+        label: Do Not Export
+        description: Do not export the generated Data Pack.
 
-            export_folder.label: Export Folder
-            export_folder.description: Choose the folder to export the Data Pack into.
+      export_folder.label: Export Folder
+      export_folder.description: Choose the folder to export the Data Pack into.
 
-            export_zip.label: Export Zip
-            export_zip.description: Choose the `.zip` file to export the Data Pack into.
+      export_zip.label: Export Zip
+      export_zip.description: Choose the `.zip` file to export the Data Pack into.
 
-            on_summon_commands.label: On-Summon Commands
-            on_summon_commands.description: |-
-                Commands that will be run as the root entity when the model is summoned.
-                This input is treated as a function file, and supports [MC-Build](https://mcbuild.dev/) syntax.
+      on_summon_commands.label: On-Summon Commands
+      on_summon_commands.description: |-
+        Commands that will be run as the root entity when the model is summoned.
+        This input is treated as a function file, and supports [MC-Build](https://mcbuild.dev/) syntax.
 
-            on_tick_commands.label: On-Tick Commands
-            on_tick_commands.description: |-
-                Commands that will be run as the root entity every tick.
-                This input is treated as a function file, and supports [MC-Build](https://mcbuild.dev/) syntax.
+      on_tick_commands.label: On-Tick Commands
+      on_tick_commands.description: |-
+        Commands that will be run as the root entity every tick.
+        This input is treated as a function file, and supports [MC-Build](https://mcbuild.dev/) syntax.
 
-            interpolation_duration.label: Interpolation Duration
-            interpolation_duration.description: |-
-                How much time it takes for the model to transition from one frame to the next. Higher values will cause animations to lose precision.
-                Usually you want this to have a value of 1 or 2.
+      interpolation_duration.label: Interpolation Duration
+      interpolation_duration.description: |-
+        How much time it takes for the model to transition from one frame to the next. Higher values will cause animations to lose precision.
+        Usually you want this to have a value of 1 or 2.
 
-            teleportation_duration.label: Teleport Duration
-            teleportation_duration.description: |-
-                How much time over which the model will visually interpolate between it's old position to it's new position when teleported.
+      teleportation_duration.label: Teleport Duration
+      teleportation_duration.description: |-
+        How much time over which the model will visually interpolate between it's old position to it's new position when teleported.
 
-            animation_system.label: Animation System
-            animation_system.description: |-
-                Choose the animation system to use for the project.
-            animation_system.functions:
-                label: Function-based
-                description: Fast and simple, but creates a lot of function files.
-            animation_system.storage:
-                label: Storage-based
-                description: 42% Slower than function-based, but creates far fewer function files.
+      animation_system.label: Animation System
+      animation_system.description: |-
+        Choose the animation system to use for the project.
+      animation_system.functions:
+        label: Function-based
+        description: Fast and simple, but creates a lot of function files.
+      animation_system.storage:
+        label: Storage-based
+        description: 42% Slower than function-based, but creates far fewer function files.
 
 # ----------------------------------------
 # OLD TRANSLATIONS
