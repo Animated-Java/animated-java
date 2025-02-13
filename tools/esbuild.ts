@@ -23,7 +23,6 @@ import sveltePlugin from './esbuild-plugins/svelte.js'
 import inlineWorkerPlugin from './esbuild-plugins/worker.js'
 
 const PACKAGE = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
-console.log(vsCodeProblemsPatchPlugin)
 
 const INFO_PLUGIN: esbuild.Plugin = {
 	name: 'infoPlugin',

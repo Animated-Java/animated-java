@@ -1,5 +1,5 @@
 {
-	"type": "commonjs",
+	"type": "module",
 	"name": "animated_java",
 	"title": "Animated Java",
 	"icon": "icon.svg",
