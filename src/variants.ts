@@ -1,6 +1,6 @@
+import EVENTS from '@events'
 import { type IBlueprintVariantJSON } from './blockbench-additions/model-formats/ajblueprint'
 import { getKeyframeVariant, setKeyframeVariant } from './blockbench-mods/misc/customKeyframes'
-import EVENTS from './util/events'
 import { sanitizePathName } from './util/minecraftUtil'
 
 export class TextureMap {

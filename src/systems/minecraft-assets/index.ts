@@ -1,9 +1,9 @@
+import EVENTS from '@events'
 import {
 	hideLoadingPopup,
 	showLoadingPopup,
 	showOfflineError,
 } from '../../ui/popups/animated-java-loading'
-import EVENTS from '../../util/events'
 
 EVENTS.LOAD.subscribe(() => {
 	// Show loading popup

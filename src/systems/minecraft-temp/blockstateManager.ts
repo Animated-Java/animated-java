@@ -1,4 +1,4 @@
-import EVENTS from '../../util/events'
+import EVENTS from '@events'
 import { resolveBlockstateValueType } from '../../util/minecraftUtil'
 import { getLatestVersion } from './versionManager'
 

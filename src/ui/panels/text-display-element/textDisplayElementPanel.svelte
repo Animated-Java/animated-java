@@ -1,4 +1,5 @@
 <script lang="ts">
+	import EVENTS from '@events'
 	import { CodeJar } from '@novacbn/svelte-codejar'
 	import {
 		TEXT_DISPLAY_ALIGNMENT_SELECT,
@@ -8,7 +9,6 @@
 		TEXT_DISPLAY_WIDTH_SLIDER,
 	} from '.'
 	import { TextDisplay } from '../../../blockbench-additions/outliner-elements/textDisplay'
-	import EVENTS from '../../../util/events'
 	import { floatToHex } from '../../../util/misc'
 	import { Valuable } from '../../../util/stores'
 	import { translate } from '../../../util/translation'

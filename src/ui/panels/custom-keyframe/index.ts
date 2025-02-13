@@ -1,7 +1,7 @@
+import EVENTS from '@events'
 import type { SvelteComponentDev } from 'svelte/internal'
 import { isCurrentFormat } from '../../../blockbench-additions/model-formats/ajblueprint'
 import { CUSTOM_CHANNELS } from '../../../blockbench-mods/misc/customKeyframes'
-import EVENTS from '../../../util/events'
 import { injectSvelteCompomponent } from '../../../util/injectSvelteComponent'
 import { translate } from '../../../util/translation'
 import CustomKeyframePanelSvelteComponent from './customKeyframePanel.svelte'

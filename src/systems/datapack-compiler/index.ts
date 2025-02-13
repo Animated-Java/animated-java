@@ -7,7 +7,6 @@ import {
 	NbtString,
 	NbtTag,
 } from 'deepslate/lib/nbt'
-import { BoneConfig, TextDisplayConfig } from '../../nodeConfigs'
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../ui/dialogs/export-progress'
 import { isFunctionTagPath } from '../../util/fileUtil'
 import {
@@ -20,6 +19,7 @@ import {
 } from '../../util/minecraftUtil'
 import { eulerFromQuaternion, floatToHex, roundTo, tinycolorToDecimal } from '../../util/misc'
 import { MSLimiter } from '../../util/msLimiter'
+import { BoneConfig, TextDisplayConfig } from '../../util/serializableConfig'
 import { Variant } from '../../variants'
 import { AJMeta } from '../ajmeta'
 import type { IRenderedAnimation } from '../animation-renderer'

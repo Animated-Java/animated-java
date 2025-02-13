@@ -1,8 +1,8 @@
+import EVENTS from '@events'
 import {
 	BLUEPRINT_FORMAT,
 	isCurrentFormat,
 } from '../../blockbench-additions/model-formats/ajblueprint'
-import EVENTS from '../../util/events'
 import { translate } from '../../util/translation'
 import { Variant } from '../../variants'
 

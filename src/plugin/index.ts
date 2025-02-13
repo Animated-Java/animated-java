@@ -1,6 +1,6 @@
+import EVENTS from '@events'
 import { PACKAGE } from '../constants'
 import { openInstallPopup } from '../ui/popups/installed'
-import EVENTS from '../util/events'
 
 export default function register() {
 	BBPlugin.register(PACKAGE.name, {

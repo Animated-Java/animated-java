@@ -1,6 +1,6 @@
+import EVENTS from '@events'
 import { isCurrentFormat } from '../../blockbench-additions/model-formats/ajblueprint'
 import { PACKAGE } from '../../constants'
-import EVENTS from '../../util/events'
 import { createBlockbenchMod } from '../../util/moddingTools'
 
 /**

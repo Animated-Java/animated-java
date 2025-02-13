@@ -1,4 +1,4 @@
-import EVENTS from './events'
+import EVENTS from '@events'
 import { Subscribable } from './subscribable'
 
 export type NamespacedString = `${string}${string}:${string}${string}`
@@ -173,7 +173,7 @@ const SUBSCRIBABLES = new Map<
 	any,
 	[
 		Subscribable<{ storage: Storage<any>; value: any }>,
-		Subscribable<{ storage: Storage<any>; newValue: any }>
+		Subscribable<{ storage: Storage<any>; newValue: any }>,
 	]
 >()
 

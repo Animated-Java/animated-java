@@ -1,5 +1,5 @@
+import EVENTS from '@events'
 import { PACKAGE } from '../../../constants'
-import EVENTS from '../../../util/events'
 import { Valuable } from '../../../util/stores'
 import { SvelteDialog } from '../../../util/svelteDialog'
 import { translate } from '../../../util/translation'

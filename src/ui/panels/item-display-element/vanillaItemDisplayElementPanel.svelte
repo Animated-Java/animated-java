@@ -1,7 +1,7 @@
 <script lang="ts">
+	import EVENTS from '@events'
 	import { ITEM_DISPLAY_ITEM_DISPLAY_SELECT } from '.'
 	import { VanillaItemDisplay } from '../../../blockbench-additions/outliner-elements/itemDisplay'
-	import EVENTS from '../../../util/events'
 	import { Valuable } from '../../../util/stores'
 	import { translate } from '../../../util/translation'
 
