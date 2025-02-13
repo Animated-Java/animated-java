@@ -217,7 +217,5 @@ export class SvelteSidebarDialog extends Dialog {
 			if (options.onCancel) options.onCancel(...args)
 			if (options.onClose) options.onClose()
 		}
-
-		console.log(this)
 	}
 }
