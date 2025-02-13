@@ -1,12 +1,12 @@
 import { isCurrentFormat } from '../../../blockbench-additions/model-formats/ajblueprint'
-import { VanillaItemDisplay } from '../../../blockbench-additions/outliner-elements/itemDisplay'
+import { ItemDisplay } from '../../../blockbench-additions/outliner-elements/itemDisplay'
 import { PACKAGE } from '../../../constants'
 import { injectSvelteCompomponentMod } from '../../../util/injectSvelteComponent'
 import { translate } from '../../../util/translation'
-import VanillaItemDisplayElementPanel from './vanillaItemDisplayElementPanel.svelte'
+import ItemDisplayElementPanel from './vanillaItemDisplayElementPanel.svelte'
 
 injectSvelteCompomponentMod({
-	component: VanillaItemDisplayElementPanel,
+	component: ItemDisplayElementPanel,
 	props: {},
 	elementSelector() {
 		return document.querySelector('#panel_element')
@@ -19,7 +19,7 @@ export const ITEM_DISPLAY_ITEM_DISPLAY_SELECT = new BarSelect(
 		name: translate('tool.item_display.item_display.title'),
 		icon: 'format_align_left',
 		description: translate('tool.item_display.item_display.description'),
-		condition: () => isCurrentFormat() && !!VanillaItemDisplay.selected.length,
+		condition: () => isCurrentFormat() && !!ItemDisplay.selected.length,
 		options: {
 			none: translate('tool.item_display.item_display.options.none'),
 			thirdperson_lefthand: translate(
@@ -42,12 +42,12 @@ export const ITEM_DISPLAY_ITEM_DISPLAY_SELECT = new BarSelect(
 	}
 )
 ITEM_DISPLAY_ITEM_DISPLAY_SELECT.get = function () {
-	const selected = VanillaItemDisplay.selected[0]
+	const selected = ItemDisplay.selected[0]
 	if (!selected) return 'left'
 	return selected.itemDisplay
 }
 ITEM_DISPLAY_ITEM_DISPLAY_SELECT.set = function (this: BarSelect<string>, value: string) {
-	const selected = VanillaItemDisplay.selected[0]
+	const selected = ItemDisplay.selected[0]
 	if (!selected) return this
 	this.value = value
 	const name = this.getNameFor(value)

@@ -1,5 +1,5 @@
-import { VanillaBlockDisplay } from '../blockbench-additions/outliner-elements/blockDisplay'
-import { VanillaItemDisplay } from '../blockbench-additions/outliner-elements/itemDisplay'
+import { BlockDisplay } from '../blockbench-additions/outliner-elements/blockDisplay'
+import { ItemDisplay } from '../blockbench-additions/outliner-elements/itemDisplay'
 import { TextDisplay } from '../blockbench-additions/outliner-elements/textDisplay'
 
 export function getAvailableNodes(
@@ -7,7 +7,7 @@ export function getAvailableNodes(
 	options: { groupsOnly?: boolean; excludeEmptyGroups?: boolean } = {}
 ): CollectionItem[] {
 	const allNodes: Array<
-		Group | Locator | TextDisplay | VanillaItemDisplay | VanillaBlockDisplay | OutlinerElement
+		Group | Locator | TextDisplay | ItemDisplay | BlockDisplay | OutlinerElement
 	> = []
 	if (options?.excludeEmptyGroups) {
 		allNodes.push(
@@ -22,8 +22,8 @@ export function getAvailableNodes(
 		allNodes.push(
 			...Locator.all,
 			...TextDisplay.all,
-			...VanillaItemDisplay.all,
-			...VanillaBlockDisplay.all,
+			...ItemDisplay.all,
+			...BlockDisplay.all,
 			...(OutlinerElement.types.camera?.all || [])
 		)
 	}
@@ -42,8 +42,8 @@ export function getAvailableNodes(
 				icon = 'anchor'
 				break
 			case node instanceof TextDisplay:
-			case node instanceof VanillaItemDisplay:
-			case node instanceof VanillaBlockDisplay:
+			case node instanceof ItemDisplay:
+			case node instanceof BlockDisplay:
 				icon = node.icon
 				break
 			case node instanceof OutlinerElement.types.camera:

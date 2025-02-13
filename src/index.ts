@@ -19,11 +19,10 @@ import './systems/minecraft-temp/versionManager'
 // Misc imports
 import { BLUEPRINT_CODEC, BLUEPRINT_FORMAT } from './blockbench-additions/model-formats/ajblueprint'
 import {
-	VanillaBlockDisplay,
+	BlockDisplay,
 	debugBlockState,
 	debugBlocks,
 } from './blockbench-additions/outliner-elements/blockDisplay'
-import { VanillaItemDisplay } from './blockbench-additions/outliner-elements/itemDisplay'
 import { TextDisplay } from './blockbench-additions/outliner-elements/textDisplay'
 import { blueprintSettingErrors } from './blueprintSettings'
 import { cleanupExportedFiles } from './systems/cleaner'
@@ -52,6 +51,7 @@ import {
 } from './util/minecraftUtil'
 import { Variant } from './variants'
 
+import { ItemDisplay } from './blockbench-additions/outliner-elements/itemDisplay'
 import registerPlugin from './plugin'
 import { createBlockbenchMod } from './util/moddingTools'
 
@@ -76,8 +76,8 @@ const PLUGIN_API = {
 		assetManager,
 		itemModelManager,
 		blockModelManager,
-		VanillaItemDisplay,
-		VanillaBlockDisplay,
+		ItemDisplay,
+		BlockDisplay,
 		debugBlocks,
 		debugBlockState,
 		BLOCKSTATE_REGISTRY,

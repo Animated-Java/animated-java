@@ -1,17 +1,17 @@
+import { GenericDisplayConfig } from '@aj/systems/node-configs'
 import { isCurrentFormat } from '../../../blockbench-additions/model-formats/ajblueprint'
-import { VanillaItemDisplay } from '../../../blockbench-additions/outliner-elements/itemDisplay'
+import { ItemDisplay } from '../../../blockbench-additions/outliner-elements/itemDisplay'
 import { PACKAGE } from '../../../constants'
-import { GenericDisplayConfig } from '../../../systems/node-configs/serializableConfig'
 import { createAction } from '../../../util/moddingTools'
 import { Valuable } from '../../../util/stores'
 import { SvelteDialog } from '../../../util/svelteDialog'
 import { translate } from '../../../util/translation'
 import { Variant } from '../../../variants'
-import VanillaItemDisplayConfigDialog from './vanillaItemDisplayConfigDialog.svelte'
+import ItemDisplayConfigDialog from './vanillaItemDisplayConfigDialog.svelte'
 
-export function openVanillaItemDisplayConfigDialog(display: VanillaItemDisplay) {
+export function openItemDisplayConfigDialog(display: ItemDisplay) {
 	// Blockbench's JSON stringifier doesn't handle custom toJSON functions, so I'm storing the config JSON in the bone instead of the actual GenericDisplayConfig object
-	const oldConfig = GenericDisplayConfig.fromJSON(
+	const oldConfig = new GenericDisplayConfig().fromJSON(
 		(display.config ??= new GenericDisplayConfig().toJSON())
 	)
 
@@ -33,7 +33,7 @@ export function openVanillaItemDisplayConfigDialog(display: VanillaItemDisplay) 
 		id: `${PACKAGE.name}:vanillaItemDisplayConfigDialog`,
 		title: translate('dialog.vanilla_item_display_config.title'),
 		width: 400,
-		component: VanillaItemDisplayConfigDialog,
+		component: ItemDisplayConfigDialog,
 		props: {
 			variant: Variant.selected,
 			customName,
@@ -102,8 +102,8 @@ export const VANILLA_ITEM_DISPLAY_CONFIG_ACTION = createAction(
 		name: translate('action.open_vanilla_item_display_config.name'),
 		condition: () => isCurrentFormat(),
 		click: () => {
-			if (VanillaItemDisplay.selected.length === 0) return
-			openVanillaItemDisplayConfigDialog(VanillaItemDisplay.selected[0])
+			if (ItemDisplay.selected.length === 0) return
+			openItemDisplayConfigDialog(ItemDisplay.selected[0])
 		},
 	}
 )

@@ -1,11 +1,8 @@
-import type {
-	IBlueprintBoneConfigJSON,
-	IBlueprintLocatorConfigJSON,
-} from './blockbench-additions/model-formats/ajblueprint'
-import { VanillaBlockDisplay } from './blockbench-additions/outliner-elements/blockDisplay'
-import { VanillaItemDisplay } from './blockbench-additions/outliner-elements/itemDisplay'
+import { BlockDisplay } from './blockbench-additions/outliner-elements/blockDisplay'
+import { ItemDisplay } from './blockbench-additions/outliner-elements/itemDisplay'
 import { TextDisplay } from './blockbench-additions/outliner-elements/textDisplay'
 import { defaultValues } from './blueprintSettings'
+import type { GenericDisplayConfig, LocatorConfig, Serialized } from './systems/node-configs'
 import { EasingKey } from './util/easing'
 import { Valuable } from './util/stores'
 import { type Variant } from './variants'
@@ -31,8 +28,8 @@ declare global {
 
 		variants: Variant[]
 		textDisplays: TextDisplay[]
-		vanillaItemDisplays: VanillaItemDisplay[]
-		vanillaBlockDisplays: VanillaBlockDisplay[]
+		vanillaItemDisplays: ItemDisplay[]
+		vanillaBlockDisplays: BlockDisplay[]
 
 		loadingPromises?: Array<Promise<unknown>>
 	}
@@ -58,17 +55,12 @@ declare global {
 
 	interface Group {
 		configs: {
-			default: IBlueprintBoneConfigJSON
-			/**
-			 * @key Variant UUID
-			 * @value Variant Bone Config
-			 */
-			variants: Record<string, IBlueprintBoneConfigJSON>
+			default: Serialized<GenericDisplayConfig>
 		}
 	}
 
 	interface Locator {
-		config: IBlueprintLocatorConfigJSON
+		config: Serialized<LocatorConfig>
 	}
 
 	interface Cube {

@@ -1,7 +1,7 @@
+import { TextDisplayConfig } from '@aj/systems/node-configs'
 import { isCurrentFormat } from '../../../blockbench-additions/model-formats/ajblueprint'
 import { TextDisplay } from '../../../blockbench-additions/outliner-elements/textDisplay'
 import { PACKAGE } from '../../../constants'
-import { TextDisplayConfig } from '../../../systems/node-configs/serializableConfig'
 import { createAction } from '../../../util/moddingTools'
 import { Valuable } from '../../../util/stores'
 import { SvelteDialog } from '../../../util/svelteDialog'
@@ -11,7 +11,7 @@ import TextDisplayConfigDialog from './textDisplayConfigDialog.svelte'
 
 export function openBoneConfigDialog(bone: TextDisplay) {
 	// Blockbench's JSON stringifier doesn't handle custom toJSON functions, so I'm storing the config JSON in the bone instead of the actual GenericDisplayConfig object
-	const oldConfig = TextDisplayConfig.fromJSON((bone.config ??= new TextDisplayConfig().toJSON()))
+	const oldConfig = new TextDisplayConfig().fromJSON((bone.config ??= {}))
 
 	const billboard = new Valuable(oldConfig.billboard as string)
 	const overrideBrightness = new Valuable(oldConfig.overrideBrightness)

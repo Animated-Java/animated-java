@@ -1,8 +1,8 @@
 import { injectSvelteCompomponentMod } from '../../../util/injectSvelteComponent'
-import VanillaBlockDisplayElementPanel from './vanillaBlockDisplayElementPanel.svelte'
+import BlockDisplayElementPanel from './vanillaBlockDisplayElementPanel.svelte'
 
 injectSvelteCompomponentMod({
-	component: VanillaBlockDisplayElementPanel,
+	component: BlockDisplayElementPanel,
 	props: {},
 	elementSelector() {
 		return document.querySelector('#panel_element')

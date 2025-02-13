@@ -1,16 +1,16 @@
 // REVIEW - This file should be moved somewhere else
 import { toSafeFunctionName } from '../../util/minecraftUtil'
-import { VanillaBlockDisplay } from './blockDisplay'
-import { VanillaItemDisplay } from './itemDisplay'
+import { BlockDisplay } from './blockDisplay'
+import { ItemDisplay } from './itemDisplay'
 import { TextDisplay } from './textDisplay'
 
 export function sanitizeOutlinerElementName(name: string, elementUUID: string): string {
 	name = toSafeFunctionName(name)
 	let otherNodes: OutlinerElement[] = [
-		...VanillaBlockDisplay.all,
+		...BlockDisplay.all,
 		...Group.all,
 		...TextDisplay.all,
-		...VanillaItemDisplay.all,
+		...ItemDisplay.all,
 		...Locator.all,
 	]
 	if (OutlinerElement.types.camera) {

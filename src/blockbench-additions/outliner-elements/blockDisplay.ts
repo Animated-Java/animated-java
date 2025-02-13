@@ -17,7 +17,7 @@ import { sanitizeOutlinerElementName } from './util'
 const ERROR_OUTLINE_MATERIAL = Canvas.outlineMaterial.clone()
 ERROR_OUTLINE_MATERIAL.color.set('#ff0000')
 
-interface VanillaBlockDisplayOptions {
+interface BlockDisplayOptions {
 	name?: string
 	block?: string
 	position?: ArrayVector3
@@ -26,12 +26,12 @@ interface VanillaBlockDisplayOptions {
 	visibility?: boolean
 }
 
-export class VanillaBlockDisplay extends ResizableOutlinerElement {
+export class BlockDisplay extends ResizableOutlinerElement {
 	static type = `${PACKAGE.name}:vanilla_block_display`
-	static selected: VanillaBlockDisplay[] = []
-	static all: VanillaBlockDisplay[] = []
+	static selected: BlockDisplay[] = []
+	static all: BlockDisplay[] = []
 
-	public type = VanillaBlockDisplay.type
+	public type = BlockDisplay.type
 	public icon = 'deployed_code'
 	public needsUniqueName = true
 
@@ -54,12 +54,12 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 
 	public ready = false
 
-	constructor(data: VanillaBlockDisplayOptions, uuid = guid()) {
+	constructor(data: BlockDisplayOptions, uuid = guid()) {
 		super(data, uuid)
-		VanillaBlockDisplay.all.push(this)
+		BlockDisplay.all.push(this)
 
-		for (const key in VanillaBlockDisplay.properties) {
-			VanillaBlockDisplay.properties[key].reset(this)
+		for (const key in BlockDisplay.properties) {
+			BlockDisplay.properties[key].reset(this)
 		}
 
 		this.name = 'block_display'
@@ -120,10 +120,10 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 	}
 
 	getUndoCopy() {
-		const copy = {} as VanillaBlockDisplayOptions & { uuid: string; type: string }
+		const copy = {} as BlockDisplayOptions & { uuid: string; type: string }
 
-		for (const key in VanillaBlockDisplay.properties) {
-			VanillaBlockDisplay.properties[key].copy(this, copy)
+		for (const key in BlockDisplay.properties) {
+			BlockDisplay.properties[key].copy(this, copy)
 		}
 
 		copy.uuid = this.uuid
@@ -133,8 +133,8 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 
 	getSaveCopy() {
 		const el: any = {}
-		for (const key in VanillaBlockDisplay.properties) {
-			VanillaBlockDisplay.properties[key].copy(this, el)
+		for (const key in BlockDisplay.properties) {
+			BlockDisplay.properties[key].copy(this, el)
 		}
 		el.uuid = this.uuid
 		el.type = this.type
@@ -154,7 +154,7 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 			}
 		}
 
-		VanillaBlockDisplay.selected.safePush(this)
+		BlockDisplay.selected.safePush(this)
 		this.selectLow()
 		this.showInOutliner()
 		updateSelection()
@@ -175,25 +175,25 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 			Timeline.selected.empty()
 		}
 		Project!.selected_elements.remove(this)
-		VanillaBlockDisplay.selected.remove(this)
+		BlockDisplay.selected.remove(this)
 		this.selected = false
 		TickUpdates.selection = true
 		this.preview_controller.updateHighlight(this)
 	}
 }
-new Property(VanillaBlockDisplay, 'string', 'block', { default: 'minecraft:stone' })
-new Property(VanillaBlockDisplay, 'object', 'config', {
+new Property(BlockDisplay, 'string', 'block', { default: 'minecraft:stone' })
+new Property(BlockDisplay, 'object', 'config', {
 	get default() {
 		return new GenericDisplayConfig().toJSON()
 	},
 })
-OutlinerElement.registerType(VanillaBlockDisplay, VanillaBlockDisplay.type)
+OutlinerElement.registerType(BlockDisplay, BlockDisplay.type)
 
-export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay, {
-	setup(el: VanillaBlockDisplay) {
+export const PREVIEW_CONTROLLER = new NodePreviewController(BlockDisplay, {
+	setup(el: BlockDisplay) {
 		ResizableOutlinerElement.prototype.preview_controller.setup(el)
 	},
-	updateGeometry(el: VanillaBlockDisplay) {
+	updateGeometry(el: BlockDisplay) {
 		if (!el.mesh) return
 
 		void getBlockModel(el.block)
@@ -231,10 +231,10 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay,
 				el.ready = true
 			})
 	},
-	updateTransform(el: VanillaBlockDisplay) {
+	updateTransform(el: BlockDisplay) {
 		ResizableOutlinerElement.prototype.preview_controller.updateTransform(el)
 	},
-	updateHighlight(el: VanillaBlockDisplay, force?: boolean | VanillaBlockDisplay) {
+	updateHighlight(el: BlockDisplay, force?: boolean | BlockDisplay) {
 		if (!isCurrentFormat() || !el?.mesh) return
 		const highlighted = Modes.edit && (force === true || force === el || el.selected) ? 1 : 0
 
@@ -253,11 +253,11 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay,
 	},
 })
 
-class VanillaBlockDisplayAnimator extends BoneAnimator {
+class BlockDisplayAnimator extends BoneAnimator {
 	private __name: string
 
 	public uuid: string
-	public element: VanillaBlockDisplay | undefined
+	public element: BlockDisplay | undefined
 
 	constructor(uuid: string, animation: _Animation, name: string) {
 		super(uuid, animation, name)
@@ -266,7 +266,7 @@ class VanillaBlockDisplayAnimator extends BoneAnimator {
 	}
 
 	getElement() {
-		this.element = OutlinerNode.uuids[this.uuid] as VanillaBlockDisplay
+		this.element = OutlinerNode.uuids[this.uuid] as BlockDisplay
 		return this.element
 	}
 
@@ -371,8 +371,8 @@ class VanillaBlockDisplayAnimator extends BoneAnimator {
 		return this
 	}
 }
-VanillaBlockDisplayAnimator.prototype.type = VanillaBlockDisplay.type
-VanillaBlockDisplay.animator = VanillaBlockDisplayAnimator as any
+BlockDisplayAnimator.prototype.type = BlockDisplay.type
+BlockDisplay.animator = BlockDisplayAnimator as any
 
 createBlockbenchMod(
 	`${PACKAGE.name}:vanillaBlockDisplay`,
@@ -387,12 +387,12 @@ createBlockbenchMod(
 		context.subscriptions.push(
 			EVENTS.SELECT_PROJECT.subscribe(project => {
 				project.vanillaBlockDisplays ??= []
-				VanillaBlockDisplay.all.empty()
-				VanillaBlockDisplay.all.push(...project.vanillaBlockDisplays)
+				BlockDisplay.all.empty()
+				BlockDisplay.all.push(...project.vanillaBlockDisplays)
 			}),
 			EVENTS.UNSELECT_PROJECT.subscribe(project => {
-				project.vanillaBlockDisplays = [...VanillaBlockDisplay.all]
-				VanillaBlockDisplay.all.empty()
+				project.vanillaBlockDisplays = [...BlockDisplay.all]
+				BlockDisplay.all.empty()
 			})
 		)
 		return context
@@ -416,7 +416,7 @@ export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_vanilla_block_
 	click() {
 		Undo.initEdit({ outliner: true, elements: [], selection: true })
 
-		const vanillaBlockDisplay = new VanillaBlockDisplay({}).init()
+		const vanillaBlockDisplay = new BlockDisplay({}).init()
 		const group = getCurrentGroup()
 
 		if (group instanceof Group) {
@@ -444,7 +444,7 @@ export function debugBlocks() {
 		const block = MINECRAFT_REGISTRY.block.items[i]
 		const x = (i % maxX) * 32
 		const y = Math.floor(i / maxX) * 32
-		new VanillaBlockDisplay({ name: block, block, position: [x, 8, y] }).init()
+		new BlockDisplay({ name: block, block, position: [x, 8, y] }).init()
 	}
 }
 
@@ -459,7 +459,7 @@ export async function debugBlockState(block: string) {
 		const x = (i % maxX) * 32
 		const y = Math.floor(i / maxX) * 32
 		const str = generateBlockStateString(permutations[i])
-		new VanillaBlockDisplay({
+		new BlockDisplay({
 			name: block + str,
 			block: block + str,
 			position: [x, 8, y],
