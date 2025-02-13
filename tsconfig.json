@@ -20,8 +20,9 @@
 		"alwaysStrict": true,
 		"experimentalDecorators": true,
 		"paths": {
-			"@svelte-components/*": ["./src/svelte-components/*"],
 			"@aj/*": ["./src/*"],
+			"@events": ["./src/util/events.ts"],
+			"@svelte-components/*": ["./src/svelte-components/*"],
 			"@assets/*": ["./src/assets/*"]
 		}
 	}

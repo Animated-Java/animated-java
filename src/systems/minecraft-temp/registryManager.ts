@@ -1,4 +1,4 @@
-import EVENTS from '../../util/events'
+import EVENTS from '@events'
 import { checkForAssetsUpdate } from './assetManager'
 import { getLatestVersion } from './versionManager'
 

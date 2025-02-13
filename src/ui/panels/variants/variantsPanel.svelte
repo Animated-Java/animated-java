@@ -1,4 +1,5 @@
 <script lang="ts">
+	import EVENTS from '@events'
 	import { SHADOW_ITEM_MARKER_PROPERTY_NAME, dndzone } from 'svelte-dnd-action'
 	import { flip } from 'svelte/animate'
 	import { cubicIn } from 'svelte/easing'
@@ -9,7 +10,6 @@
 		DUPLICATE_VARIANT_ACTION,
 		VARIANT_PANEL_CONTEXT_MENU,
 	} from '.'
-	import EVENTS from '../../../util/events'
 	import { translate } from '../../../util/translation'
 	import { Variant } from '../../../variants'
 	import { openVariantConfigDialog } from '../../dialogs/variant-config'

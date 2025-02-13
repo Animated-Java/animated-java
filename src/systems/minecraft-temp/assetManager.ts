@@ -1,6 +1,7 @@
 import { PACKAGE } from '../../constants'
 import { getCurrentVersion, getLatestVersion } from './versionManager'
 
+import EVENTS from '@events'
 import download from 'download'
 import { type Unzipped } from 'fflate'
 import {
@@ -8,7 +9,6 @@ import {
 	updateLoadingProgress,
 	updateLoadingProgressLabel,
 } from '../../ui/popups/animated-java-loading'
-import EVENTS from '../../util/events'
 import { unzip } from '../util'
 const ASSET_OVERRIDES: Record<string, string> = {}
 
