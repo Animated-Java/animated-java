@@ -1,5 +1,11 @@
 {
-	"include": ["./src/**/*", "./tools/esbuild.ts", "./eslint.config.ts", "./vitest.config.ts"],
+	"include": [
+		"./src/**/*",
+		"./tools/esbuild.ts",
+		"./eslint.config.ts",
+		"./vitest.config.ts",
+		"./tests/**/*"
+	],
 	"exclude": ["**/node_modules/**"],
 	"compilerOptions": {
 		"outDir": "./dist/",
