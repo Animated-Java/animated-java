@@ -11,7 +11,7 @@
 	const UUID = guid()
 
 	$: if (errorText) {
-		console.log(label, errorText)
+		console.error(label, errorText)
 		// blueprintSettingErrors.get()[label] = error_text
 	}
 

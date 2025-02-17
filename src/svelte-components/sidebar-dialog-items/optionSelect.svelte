@@ -13,7 +13,6 @@
 		options,
 		value: $selected,
 		onChange: value => {
-			console.log(value)
 			$selected = value
 		},
 	})

@@ -1,7 +1,7 @@
 import { updateBoundingBox } from '../../../blockbench-additions/model-formats/ajblueprint'
 import { defaultValues } from '../../../blueprintSettings'
 import { PACKAGE } from '../../../constants'
-import { makeNotValueable, makeValuable, Valuable } from '../../../util/stores'
+import { makeValuable, Valuable } from '../../../util/stores'
 import { SvelteSidebarDialog } from '../../../util/svelteDialog'
 import { translate } from '../../../util/translation'
 import {
@@ -112,7 +112,6 @@ export function openBlueprintSettingsDialog() {
 			}
 		},
 		onConfirm() {
-			console.log(makeNotValueable(settings))
 			updateBoundingBox()
 		},
 	}).show()

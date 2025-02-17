@@ -90,8 +90,6 @@ export class TextDisplay extends ResizableOutlinerElement {
 
 	public extend(data: any) {
 		for (const key in TextDisplay.properties) {
-			// @ts-expect-error
-			console.log('extend', key, this[key], data[key])
 			TextDisplay.properties[key].merge(this, data)
 		}
 		return this

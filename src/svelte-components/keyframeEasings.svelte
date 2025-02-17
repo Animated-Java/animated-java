@@ -105,7 +105,6 @@
 	}
 
 	EVENTS.SELECT_KEYFRAME.subscribe((keyframe?: _Keyframe) => {
-		console.log('selected keyframe', keyframe)
 		if (
 			isCurrentFormat() &&
 			keyframe &&
