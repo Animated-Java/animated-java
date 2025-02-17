@@ -151,9 +151,8 @@ export class ItemDisplay extends ResizableOutlinerElement {
 	}
 
 	select() {
-		if (Group.first_selected) {
-			Group.first_selected.unselect()
-		}
+		Group.all.forEachReverse(el => el.unselect())
+
 		if (!Pressing.ctrl && !Pressing.shift) {
 			if (Cube.selected.length) {
 				Cube.selected.forEachReverse(el => el.unselect())
@@ -425,7 +424,7 @@ export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_item_display`,
 		}
 
 		selected.forEachReverse(el => el.unselect())
-		Group.first_selected && Group.first_selected.unselect()
+		Group.all.forEachReverse(el => el.unselect())
 		vanillaItemDisplay.select()
 
 		Undo.finishEdit('Create Vanilla Item Display', {
