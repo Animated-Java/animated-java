@@ -22,7 +22,7 @@ export namespace TAGS {
 
 	export const GLOBAL_NODE = () => 'aj.global.node'
 	export const GLOBAL_DISPLAY_NODE = () => 'aj.global.display_node'
-	export const GLOBAL_VANILLA_DISPLAY_NODE = () => 'aj.global.vanilla_display_node'
+	export const GLOBAL_VANILLA_DISPLAY_NODE = () => 'aj.global.display_node'
 	export const GLOBAL_BONE = () => 'aj.global.bone'
 	export const GLOBAL_ITEM_DISPLAY = () => 'aj.global.item_display'
 	export const GLOBAL_BLOCK_DISPLAY = () => 'aj.global.block_display'
@@ -97,7 +97,7 @@ export namespace TAGS {
 	export const PROJECT_DISPLAY_NODE = () =>
 		`aj.${createTagPrefixFromBlueprintID(Project!.animated_java.id)}.display_node`
 	export const PROJECT_VANILLA_DISPLAY_NODE = () =>
-		`aj.${createTagPrefixFromBlueprintID(Project!.animated_java.id)}.vanilla_display_node`
+		`aj.${createTagPrefixFromBlueprintID(Project!.animated_java.id)}.display_node`
 	export const PROJECT_BONE = () =>
 		`aj.${createTagPrefixFromBlueprintID(Project!.animated_java.id)}.bone`
 	export const PROJECT_ITEM_DISPLAY = () =>
