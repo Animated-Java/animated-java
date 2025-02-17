@@ -31,13 +31,13 @@
 </script>
 
 <p class="panel_toolbar_label label" style={!!visible ? '' : 'visibility:hidden; height: 0px;'}>
-	{translate('panel.vanilla_item_display.title')}
+	{translate('panel.item_display.title')}
 </p>
 
 <div
 	class="toolbar custom-toolbar"
 	style={!!visible ? '' : 'visibility:hidden; height: 0px;'}
-	title={translate('panel.vanilla_item_display.description')}
+	title={translate('panel.item_display.description')}
 >
 	<div class="content" style="width: 95%;">
 		<input type="text" bind:value={$item} />

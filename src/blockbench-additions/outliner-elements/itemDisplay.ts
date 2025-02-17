@@ -22,8 +22,9 @@ interface ItemDisplayOptions {
 	visibility?: boolean
 }
 
+@fixClassPropertyInheritance
 export class ItemDisplay extends ResizableOutlinerElement {
-	static type = `${PACKAGE.name}:vanilla_item_display`
+	static type = `${PACKAGE.name}:item_display`
 	static selected: ItemDisplay[] = []
 	static all: ItemDisplay[] = []
 
@@ -405,8 +406,8 @@ createBlockbenchMod(
 	}
 )
 
-export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_vanilla_item_display`, {
-	name: translate('action.create_vanilla_item_display.title'),
+export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_item_display`, {
+	name: translate('action.create_item_display.title'),
 	icon: 'icecream',
 	category: 'animated_java',
 	condition() {

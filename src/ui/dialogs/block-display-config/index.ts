@@ -31,7 +31,7 @@ export function openBlockDisplayConfigDialog(display: BlockDisplay) {
 
 	new SvelteDialog({
 		id: `${PACKAGE.name}:vanillaItemDisplayConfigDialog`,
-		title: translate('dialog.vanilla_block_display_config.title'),
+		title: translate('dialog.block_display_config.title'),
 		width: 400,
 		component: BlockDisplayConfigDialog,
 		props: {
@@ -96,10 +96,10 @@ export function openBlockDisplayConfigDialog(display: BlockDisplay) {
 }
 
 export const VANILLA_BLOCK_DISPLAY_CONFIG_ACTION = createAction(
-	`${PACKAGE.name}:open_vanilla_block_display_config`,
+	`${PACKAGE.name}:open_block_display_config`,
 	{
 		icon: 'settings',
-		name: translate('action.open_vanilla_block_display_config.name'),
+		name: translate('action.open_block_display_config.name'),
 		condition: () => isCurrentFormat(),
 		click: () => {
 			if (BlockDisplay.selected.length === 0) return

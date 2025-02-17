@@ -37,8 +37,9 @@ interface BlockDisplayOptions {
 	visibility?: boolean
 }
 
+@fixClassPropertyInheritance
 export class BlockDisplay extends ResizableOutlinerElement {
-	static type = `${PACKAGE.name}:vanilla_block_display`
+	static type = `${PACKAGE.name}:block_display`
 	static selected: BlockDisplay[] = []
 	static all: BlockDisplay[] = []
 
@@ -417,8 +418,8 @@ createBlockbenchMod(
 	}
 )
 
-export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_vanilla_block_display`, {
-	name: translate('action.create_vanilla_block_display.title'),
+export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_block_display`, {
+	name: translate('action.create_block_display.title'),
 	icon: 'deployed_code',
 	category: 'animated_java',
 	condition() {

@@ -1,13 +1,13 @@
 import { isCurrentFormat } from '../../blueprintFormat'
-import VanillaItemDisplayElementPanel from '../../svelte/vanillaItemDisplayElementPanel.svelte'
+import ItemDisplayElementPanel from '../../svelte/itemDisplayElementPanel.svelte'
 import { PACKAGE } from '../../constants'
-import { ItemDisplayMode, VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
+import { ItemDisplayMode, ItemDisplay } from '../../outliner/itemDisplay'
 import { events } from '../../util/events'
 import { injectSvelteCompomponentMod } from '../../util/injectSvelteComponent'
 import { translate } from '../../util/translation'
 
 injectSvelteCompomponentMod({
-	component: VanillaItemDisplayElementPanel,
+	component: ItemDisplayElementPanel,
 	props: {},
 	elementSelector() {
 		return document.querySelector('#panel_element')
@@ -20,7 +20,7 @@ export const ITEM_DISPLAY_ITEM_DISPLAY_SELECT = new BarSelect(
 		name: translate('tool.item_display.item_display.title'),
 		icon: 'format_align_left',
 		description: translate('tool.item_display.item_display.description'),
-		condition: () => isCurrentFormat() && !!VanillaItemDisplay.selected.length,
+		condition: () => isCurrentFormat() && !!ItemDisplay.selected.length,
 		options: {
 			none: translate('tool.item_display.item_display.options.none'),
 			thirdperson_lefthand: translate(
@@ -43,7 +43,7 @@ export const ITEM_DISPLAY_ITEM_DISPLAY_SELECT = new BarSelect(
 	}
 )
 ITEM_DISPLAY_ITEM_DISPLAY_SELECT.get = function () {
-	const selected = VanillaItemDisplay.selected[0]
+	const selected = ItemDisplay.selected[0]
 	if (!selected) return 'left'
 	return selected.itemDisplay
 }
@@ -51,7 +51,7 @@ ITEM_DISPLAY_ITEM_DISPLAY_SELECT.set = function (
 	this: BarSelect<ItemDisplayMode>,
 	value: ItemDisplayMode
 ) {
-	const selected = VanillaItemDisplay.selected.at(0)
+	const selected = ItemDisplay.selected.at(0)
 	if (!selected) return this
 	this.value = value
 	const name = this.getNameFor(value)
@@ -64,9 +64,9 @@ ITEM_DISPLAY_ITEM_DISPLAY_SELECT.set = function (
 
 	if (selected.itemDisplay === value) return this
 
-	Undo.initEdit({ elements: VanillaItemDisplay.selected })
-	if (VanillaItemDisplay.selected.length > 1) {
-		for (const display of VanillaItemDisplay.selected) {
+	Undo.initEdit({ elements: ItemDisplay.selected })
+	if (ItemDisplay.selected.length > 1) {
+		for (const display of ItemDisplay.selected) {
 			display.itemDisplay = value
 		}
 	} else {
@@ -74,13 +74,13 @@ ITEM_DISPLAY_ITEM_DISPLAY_SELECT.set = function (
 	}
 	Project!.saved = false
 	Undo.finishEdit(`Change Item Display Node's Item Display Mode to ${value}`, {
-		elements: VanillaItemDisplay.selected,
+		elements: ItemDisplay.selected,
 	})
 	return this
 }
 function updateItemDisplaySelect() {
 	console.log('updateItemDisplaySelect')
-	let value = VanillaItemDisplay.selected.at(0)?.itemDisplay
+	let value = ItemDisplay.selected.at(0)?.itemDisplay
 	value ??= 'none'
 	ITEM_DISPLAY_ITEM_DISPLAY_SELECT.set(value)
 }
