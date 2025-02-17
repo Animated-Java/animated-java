@@ -21,6 +21,10 @@ export class Valuable<T> implements Writable<T> {
 		return this.store.set(this.valueValidator(value))
 	}
 
+	forceUpdate() {
+		return this.store.set(this.get())
+	}
+
 	update(fn: (value: T) => T) {
 		return this.store.update((value: T) => this.valueValidator(fn(value)))
 	}
