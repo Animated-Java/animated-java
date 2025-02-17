@@ -1,9 +1,9 @@
 import { PACKAGE } from '../../constants'
-import {
-	closeBlueprintLoadingDialog,
-	openBlueprintLoadingDialog,
-	PROGRESS,
-} from '../../ui/popups/blueprint-loading'
+// import {
+// 	closeBlueprintLoadingDialog,
+// 	openBlueprintLoadingDialog,
+// 	PROGRESS,
+// } from '../../ui/popups/blueprint-loading'
 import { createBlockbenchMod } from '../../util/moddingTools'
 
 createBlockbenchMod(
@@ -19,9 +19,9 @@ createBlockbenchMod(
 		) {
 			for (const file of files) {
 				context.original([file], options, cb)
-				await new Promise<void>(r => {
+				await new Promise<void>(resolve => {
 					if (Project?.loadingPromises) {
-						openBlueprintLoadingDialog()
+						// openBlueprintLoadingDialog()
 						const promises: Array<Promise<unknown>> = []
 						for (const promise of Project.loadingPromises) {
 							promises.push(
@@ -29,7 +29,7 @@ createBlockbenchMod(
 									promise
 										.catch((err: any) => console.error(err))
 										.finally(() => {
-											PROGRESS.set(PROGRESS.get() + 1)
+											// PROGRESS.set(PROGRESS.get() + 1)
 											r()
 										})
 								})
@@ -41,12 +41,12 @@ createBlockbenchMod(
 								console.error(err)
 							})
 							.finally(() => {
-								closeBlueprintLoadingDialog()
-								r()
+								// closeBlueprintLoadingDialog()
+								resolve()
 							})
 						return
 					}
-					r()
+					resolve()
 				})
 			}
 		}

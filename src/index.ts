@@ -40,7 +40,6 @@ import resourcepackCompiler from './systems/resourcepack-compiler'
 import { openChangelogDialog } from './ui/dialogs/changelog'
 import { openExportProgressDialog } from './ui/dialogs/export-progress'
 import { openUnexpectedErrorDialog } from './ui/dialogs/unexpected-error'
-import { openBlueprintLoadingDialog } from './ui/popups/blueprint-loading'
 import { checkForIncompatabilities } from './ui/popups/incompatability'
 import { openInstallPopup } from './ui/popups/installed'
 import {
@@ -82,7 +81,6 @@ const PLUGIN_API = {
 		debugBlockState,
 		BLOCKSTATE_REGISTRY,
 		exportProject,
-		openBlueprintLoadingDialog,
 		openInstallPopup,
 		removeCubesAssociatedWithTexture(texture: Texture) {
 			const cubes = Cube.all.filter(cube =>

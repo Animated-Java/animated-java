@@ -19,7 +19,8 @@ import './panels/display-panel'
 import './panels/variants'
 
 import './popups/animated-java-loading'
-import './popups/blueprint-loading'
+// FIXME - Temporarily disabled for debugging purposes!
+// import './popups/blueprint-loading'
 import './popups/incompatability'
 import './popups/installed'
 
