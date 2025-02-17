@@ -24,7 +24,7 @@ import { AJMeta } from '../ajmeta'
 import type { IRenderedAnimation } from '../animation-renderer'
 import { IntentionalExportError } from '../exporter'
 import { PackMeta, type PackMetaFormats } from '../global'
-import { GenericDisplayConfig, TextDisplayConfig } from '../node-configs'
+import { CommonDisplayConfig, TextDisplayConfig } from '../node-configs'
 import type { AnyRenderedNode, IRenderedRig } from '../rig-renderer'
 import {
 	matrixToNbtFloatArray,
@@ -178,7 +178,7 @@ async function generateRootEntityPassengers(
 				}
 
 				if (node.configs?.default) {
-					new GenericDisplayConfig().fromJSON(node.configs.default).toNBT(passenger)
+					new CommonDisplayConfig().fromJSON(node.configs.default).toNBT(passenger)
 				}
 
 				passenger.set('height', new NbtFloat(aj.bounding_box[1]))
@@ -255,7 +255,7 @@ async function generateRootEntityPassengers(
 				)
 
 				if (node.config) {
-					new GenericDisplayConfig().fromJSON(node.config).toNBT(passenger)
+					new CommonDisplayConfig().fromJSON(node.config).toNBT(passenger)
 				}
 				break
 			}
@@ -282,7 +282,7 @@ async function generateRootEntityPassengers(
 				)
 
 				if (node.config) {
-					new GenericDisplayConfig().fromJSON(node.config).toNBT(passenger)
+					new CommonDisplayConfig().fromJSON(node.config).toNBT(passenger)
 				}
 				break
 			}

@@ -1,4 +1,4 @@
-import { GenericDisplayConfig } from '@aj/systems/node-configs'
+import { CommonDisplayConfig } from '@aj/systems/node-configs'
 import TransparentTexture from '@assets/transparent.png'
 import { NbtCompound, NbtList, NbtString, NbtTag } from 'deepslate/lib/nbt'
 import { type IBlueprintFormatJSON, getDefaultProjectSettings } from '.'
@@ -280,7 +280,7 @@ function updateModelTo1_0pre1(model: any) {
 		if (typeof node === 'string') return
 		bones.push(node.uuid as string)
 		node.configs = {
-			default: new GenericDisplayConfig().toJSON(),
+			default: new CommonDisplayConfig().toJSON(),
 			variants: {},
 		}
 		node.children.forEach((child: any) => {

@@ -1,10 +1,14 @@
 import { PACKAGE } from '../../constants'
-import { createAction, createBlockbenchMod } from '../../util/moddingTools'
+import {
+	createAction,
+	createBlockbenchMod,
+	fixClassPropertyInheritance,
+	ObjectProperty,
+} from '../../util/moddingTools'
 import { BLUEPRINT_FORMAT, isCurrentFormat } from '../model-formats/ajblueprint'
 // import * as MinecraftFull from '@assets/MinecraftFull.json'
 import { getVanillaFont } from '@aj/systems/minecraft-temp/fontManager'
-import { JsonText } from '@aj/systems/minecraft-temp/jsonText'
-import { TextDisplayConfig, type Serialized } from '@aj/systems/node-configs'
+import { CommonDisplayConfig, TextDisplayConfig, type Serialized } from '@aj/systems/node-configs'
 import EVENTS from '@events'
 
 import { TEXT_DISPLAY_CONFIG_ACTION } from '../../ui/dialogs/text-display-config'
@@ -27,6 +31,7 @@ interface TextDisplayOptions {
 }
 export type Alignment = 'left' | 'center' | 'right'
 
+@fixClassPropertyInheritance
 export class TextDisplay extends ResizableOutlinerElement {
 	static type = `${PACKAGE.name}:text_display`
 	static selected: TextDisplay[] = []
@@ -38,6 +43,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 
 	// Properties
 	public config: Serialized<TextDisplayConfig>
+	public commonConfig: Serialized<CommonDisplayConfig>
 
 	public menu = new Menu([
 		...Outliner.control_menu_group,
@@ -53,24 +59,11 @@ export class TextDisplay extends ResizableOutlinerElement {
 	public ready = false
 	public textError = new Valuable('')
 
-	private __updating = false
-	private __text = new Valuable('Hello World!')
-	private __newText: string | undefined
-	private __lineWidth = new Valuable(200)
-	private __newLineWidth: number | undefined
-	private __backgroundColor = new Valuable('#000000')
-	private __newBackgroundColor: string | undefined
-	private __backgroundAlpha = new Valuable(0.25)
-	private __newBackgroundAlpha: number | undefined
-	private __shadow = new Valuable(false)
-	private __newShadow: boolean | undefined
-	private __align = new Valuable<Alignment>('center')
-	private __newAlign: Alignment | undefined
-	public seeThrough = false
+	private __renderingTextComponent = false
 
 	constructor(data: TextDisplayOptions, uuid = guid()) {
 		super(data, uuid)
-		TextDisplay.all.push(this)
+		TextDisplay.all.safePush(this)
 
 		for (const key in TextDisplay.properties) {
 			TextDisplay.properties[key].reset(this)
@@ -83,36 +76,11 @@ export class TextDisplay extends ResizableOutlinerElement {
 		this.position ??= [0, 0, 0]
 		this.rotation ??= [0, 0, 0]
 		this.scale ??= [1, 1, 1]
-		this.align ??= 'center'
 		this.visibility ??= true
 		this.config ??= {}
+		this.commonConfig ??= {}
 
 		this.sanitizeName()
-
-		this.__text.subscribe(v => {
-			this.__newText = v
-			void this.updateText()
-		})
-		this.__lineWidth.subscribe(v => {
-			this.__newLineWidth = v
-			void this.updateText()
-		})
-		this.__backgroundColor.subscribe(v => {
-			this.__newBackgroundColor = v
-			void this.updateText()
-		})
-		this.__backgroundAlpha.subscribe(v => {
-			this.__newBackgroundAlpha = v
-			void this.updateText()
-		})
-		this.__shadow.subscribe(v => {
-			this.__newShadow = v
-			void this.updateText()
-		})
-		this.__align.subscribe(v => {
-			this.__newAlign = v
-			void this.updateText()
-		})
 	}
 
 	public sanitizeName(): string {
@@ -120,68 +88,13 @@ export class TextDisplay extends ResizableOutlinerElement {
 		return this.name
 	}
 
-	get text() {
-		if (this.__text === undefined) return TextDisplay.properties.text.default as string
-		return this.__text.get()
-	}
-
-	set text(value) {
-		if (this.__text === undefined) return
-		if (value === this.text) return
-		this.__text.set(value)
-	}
-
-	get lineWidth() {
-		if (this.__lineWidth === undefined)
-			return TextDisplay.properties.lineWidth.default as number
-		return this.__lineWidth.get()
-	}
-
-	set lineWidth(value) {
-		if (this.__lineWidth === undefined) return
-		this.__lineWidth.set(value)
-	}
-
-	get backgroundColor() {
-		if (this.__backgroundColor === undefined)
-			return TextDisplay.properties.backgroundColor.default as string
-		return this.__backgroundColor.get()
-	}
-
-	set backgroundColor(value) {
-		if (this.__backgroundColor === undefined) return
-		this.__backgroundColor.set(value)
-	}
-
-	get backgroundAlpha() {
-		if (this.__backgroundAlpha === undefined)
-			return TextDisplay.properties.backgroundAlpha.default as number
-		return this.__backgroundAlpha.get()
-	}
-
-	set backgroundAlpha(value) {
-		if (this.__backgroundAlpha === undefined) return
-		this.__backgroundAlpha.set(value)
-	}
-
-	get shadow() {
-		if (this.__shadow === undefined) return TextDisplay.properties.shadow.default as boolean
-		return this.__shadow.get()
-	}
-
-	set shadow(value) {
-		if (this.__shadow === undefined) return
-		this.__shadow.set(value)
-	}
-
-	get align() {
-		if (this.__align === undefined) return TextDisplay.properties.align.default as Alignment
-		return this.__align.get()
-	}
-
-	set align(value) {
-		if (this.__align === undefined) return
-		this.__align.set(value)
+	public extend(data: any) {
+		for (const key in TextDisplay.properties) {
+			// @ts-expect-error
+			console.log('extend', key, this[key], data[key])
+			TextDisplay.properties[key].merge(this, data)
+		}
+		return this
 	}
 
 	getUndoCopy() {
@@ -246,99 +159,65 @@ export class TextDisplay extends ResizableOutlinerElement {
 		TickUpdates.selection = true
 	}
 
-	async updateText() {
-		if (this.__updating) return
-		this.__updating = true
-		let latestMesh: THREE.Mesh | undefined
-		while (
-			this.__newText !== undefined ||
-			this.__newLineWidth !== undefined ||
-			this.__newBackgroundColor !== undefined ||
-			this.__newBackgroundAlpha !== undefined ||
-			this.__newShadow !== undefined ||
-			this.__newAlign !== undefined
-		) {
-			let text: JsonText | undefined
-			this.textError.set('')
-			try {
-				text = JsonText.fromString(this.text)
-				console.log(text)
-			} catch (e: any) {
-				console.error(e)
-				this.textError.set(e.message as string)
-				this.__updating = false
-				text = new JsonText({ text: 'Invalid JSON Text!', color: 'red' })
-			}
-			this.__newText = undefined
-			this.__newLineWidth = undefined
-			this.__newBackgroundColor = undefined
-			this.__newBackgroundAlpha = undefined
-			this.__newShadow = undefined
-			this.__newAlign = undefined
-			if (text === undefined) continue
-			latestMesh = await this.setText(text)
-		}
-		this.__updating = false
-		return latestMesh
-	}
-
 	async waitForReady() {
 		while (!this.ready) {
 			await new Promise(resolve => requestAnimationFrame(resolve))
 		}
 	}
 
-	private async setText(jsonText: JsonText) {
-		await this.waitForReady()
-		const font = await getVanillaFont()
-		// Hide the geo while rendering
+	async updateText() {
+		if (this.__renderingTextComponent) return
+		try {
+			this.__renderingTextComponent = true
+			await this.waitForReady()
+			const font = await getVanillaFont()
+			const config = new TextDisplayConfig().fromJSON(
+				this.config
+			) as Required<TextDisplayConfig>
+			const { mesh: newMesh, outline } = await font.generateTextMesh(config)
+			newMesh.name = this.uuid + '_text'
+			const previousMesh = this.mesh.children.find(v => v.name === newMesh.name)
+			if (previousMesh) this.mesh.remove(previousMesh)
 
-		const { mesh: newMesh, outline } = await font.generateTextMesh({
-			jsonText,
-			maxLineWidth: this.lineWidth,
-			backgroundColor: this.backgroundColor,
-			backgroundAlpha: this.backgroundAlpha,
-			shadow: this.shadow,
-			alignment: this.align,
-		})
-		newMesh.name = this.uuid + '_text'
-		const previousMesh = this.mesh.children.find(v => v.name === newMesh.name)
-		if (previousMesh) this.mesh.remove(previousMesh)
+			const mesh = this.mesh as THREE.Mesh
+			mesh.name = this.uuid
+			mesh.geometry = (newMesh.children[0] as THREE.Mesh).geometry.clone()
+			mesh.geometry.translate(
+				newMesh.children[0].position.x,
+				newMesh.children[0].position.y,
+				newMesh.children[0].position.z
+			)
+			mesh.geometry.rotateY(Math.PI)
+			mesh.geometry.scale(newMesh.scale.x, newMesh.scale.y, newMesh.scale.z)
+			mesh.material = Canvas.transparentMaterial
 
-		const mesh = this.mesh as THREE.Mesh
-		mesh.name = this.uuid
-		mesh.geometry = (newMesh.children[0] as THREE.Mesh).geometry.clone()
-		mesh.geometry.translate(
-			newMesh.children[0].position.x,
-			newMesh.children[0].position.y,
-			newMesh.children[0].position.z
-		)
-		mesh.geometry.rotateY(Math.PI)
-		mesh.geometry.scale(newMesh.scale.x, newMesh.scale.y, newMesh.scale.z)
-		mesh.material = Canvas.transparentMaterial
+			mesh.add(newMesh)
 
-		mesh.add(newMesh)
-
-		outline.name = this.uuid + '_outline'
-		outline.visible = this.selected
-		mesh.outline = outline
-		const previousOutline = mesh.children.find(v => v.name === outline.name)
-		if (previousOutline) mesh.remove(previousOutline)
-		mesh.add(outline)
-		mesh.visible = this.visibility
-		return newMesh
+			outline.name = this.uuid + '_outline'
+			outline.visible = this.selected
+			mesh.outline = outline
+			const previousOutline = mesh.children.find(v => v.name === outline.name)
+			if (previousOutline) mesh.remove(previousOutline)
+			mesh.add(outline)
+			mesh.visible = this.visibility
+			return newMesh
+		} catch (err: any) {
+			console.error(err)
+			this.textError.set(err.message)
+		} finally {
+			this.__renderingTextComponent = false
+		}
 	}
 }
-new Property(TextDisplay, 'string', 'text', { default: '"Hello World!"' })
-new Property(TextDisplay, 'number', 'lineWidth', { default: 200 })
-new Property(TextDisplay, 'string', 'backgroundColor', { default: '#000000' })
-new Property(TextDisplay, 'number', 'backgroundAlpha', { default: 0.25 })
-new Property(TextDisplay, 'string', 'align', { default: 'center' })
-new Property(TextDisplay, 'boolean', 'shadow', { default: false })
-new Property(TextDisplay, 'boolean', 'seeThrough', { default: false })
-new Property(TextDisplay, 'object', 'config', {
+new ObjectProperty(TextDisplay, 'config', {
 	get default() {
 		return new TextDisplayConfig().toJSON()
+	},
+})
+
+new ObjectProperty(TextDisplay, 'commonConfig', {
+	get default() {
+		return new CommonDisplayConfig().toJSON()
 	},
 })
 

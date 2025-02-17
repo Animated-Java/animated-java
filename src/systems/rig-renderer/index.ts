@@ -1,18 +1,11 @@
+import type { IBlueprintVariantJSON } from '@aj/blockbench-additions/model-formats/ajblueprint'
+import { BlockDisplay } from '@aj/blockbench-additions/outliner-elements/blockDisplay'
+import { ItemDisplay } from '@aj/blockbench-additions/outliner-elements/itemDisplay'
 import * as crypto from 'crypto'
-import type {
-	IBlueprintBoneConfigJSON,
-	IBlueprintCameraConfigJSON,
-	IBlueprintLocatorConfigJSON,
-	IBlueprintTextDisplayConfigJSON,
-	IBlueprintVariantJSON,
-} from '../../blockbench-additions/model-formats/ajblueprint'
 import {
 	type Alignment,
 	TextDisplay,
 } from '../../blockbench-additions/outliner-elements/textDisplay'
-import { VanillaBlockDisplay } from '../../blockbench-additions/outliner-elements/vanillaBlockDisplay'
-import { VanillaItemDisplay } from '../../blockbench-additions/outliner-elements/vanillaItemDisplay'
-import { BoneConfig } from '../../nodeConfigs'
 import {
 	type IMinecraftResourceLocation,
 	parseResourcePackPath,
@@ -28,6 +21,13 @@ import {
 } from '../animation-renderer'
 import { IntentionalExportError } from '../exporter'
 import { JsonText } from '../minecraft-temp/jsonText'
+import {
+	CameraConfig,
+	CommonDisplayConfig,
+	LocatorConfig,
+	type Serialized,
+	TextDisplayConfig,
+} from '../node-configs'
 
 export interface IRenderedFace {
 	uv: number[]
@@ -94,7 +94,7 @@ export interface ICamera extends OutlinerElement {
 	linked_preview: string
 	camera_linked: boolean
 	visibility: boolean
-	config: IBlueprintCameraConfigJSON
+	config: Serialized<CameraConfig>
 	preview_controller: NodePreviewController
 }
 
@@ -107,8 +107,8 @@ export interface IRenderedNodes {
 		 */
 		base_scale: number
 		configs?: {
-			default?: IBlueprintBoneConfigJSON
-			variants: Record<string, IBlueprintBoneConfigJSON>
+			default?: Serialized<CommonDisplayConfig>
+			variants: Record<string, Serialized<CommonDisplayConfig>>
 		}
 	}
 	Struct: IRenderedNode & {
@@ -116,15 +116,15 @@ export interface IRenderedNodes {
 	}
 	Camera: IRenderedNode & {
 		type: 'camera'
-		config?: IBlueprintCameraConfigJSON
+		config?: Serialized<CameraConfig>
 		/** The maximum distance this node travels away from the root entity while animating. */
 		max_distance: number
 	}
 	Locator: IRenderedNode & {
 		type: 'locator'
+		config?: Serialized<LocatorConfig>
 		/** The maximum distance this node travels away from the root entity while animating. */
 		max_distance: number
-		config?: IBlueprintLocatorConfigJSON
 	}
 	TextDisplay: IRenderedNode & {
 		type: 'text_display'
@@ -139,7 +139,7 @@ export interface IRenderedNodes {
 		 * The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit.
 		 */
 		base_scale: number
-		config?: IBlueprintTextDisplayConfigJSON
+		config?: Serialized<TextDisplayConfig>
 	}
 	ItemDisplay: IRenderedNode & {
 		type: 'item_display'
@@ -149,7 +149,7 @@ export interface IRenderedNodes {
 		 * The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit.
 		 */
 		base_scale: number
-		config?: IBlueprintBoneConfigJSON
+		config?: Serialized<CommonDisplayConfig>
 	}
 	BlockDisplay: IRenderedNode & {
 		type: 'block_display'
@@ -158,7 +158,7 @@ export interface IRenderedNodes {
 		 * The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit.
 		 */
 		base_scale: number
-		config?: IBlueprintBoneConfigJSON
+		config?: Serialized<CommonDisplayConfig>
 	}
 }
 
@@ -393,11 +393,11 @@ function renderGroup(
 				renderCamera(node as ICamera, rig)
 				break
 			}
-			case node instanceof VanillaItemDisplay: {
+			case node instanceof ItemDisplay: {
 				renderItemDisplay(node, rig)
 				break
 			}
-			case node instanceof VanillaBlockDisplay: {
+			case node instanceof BlockDisplay: {
 				renderBlockDisplay(node, rig)
 				break
 			}
@@ -445,7 +445,7 @@ function renderGroup(
 	rig.nodes[group.uuid] = renderedBone
 }
 
-function renderItemDisplay(display: VanillaItemDisplay, rig: IRenderedRig) {
+function renderItemDisplay(display: ItemDisplay, rig: IRenderedRig) {
 	if (!display.export) return
 	const parentId = display.parent instanceof Group ? display.parent.uuid : undefined
 
@@ -474,7 +474,7 @@ function renderItemDisplay(display: VanillaItemDisplay, rig: IRenderedRig) {
 	rig.nodes[display.uuid] = renderedBone
 }
 
-function renderBlockDisplay(display: VanillaBlockDisplay, rig: IRenderedRig) {
+function renderBlockDisplay(display: BlockDisplay, rig: IRenderedRig) {
 	if (!display.export) return
 	const parentId = display.parent instanceof Group ? display.parent.uuid : undefined
 
@@ -657,14 +657,14 @@ export function hashRig(rig: IRenderedRig) {
 				hash.update(';' + JSON.stringify(model) || '')
 				if (!node.configs) break // Skip if there are no configs
 				if (node.configs.default) {
-					const defaultConfig = BoneConfig.fromJSON(node.configs.default)
+					const defaultConfig = new CommonDisplayConfig().fromJSON(node.configs.default)
 					if (!defaultConfig.isDefault()) {
 						hash.update('defaultconfig;')
 						hash.update(defaultConfig.toNBT().toString())
 					}
 				}
 				for (const [variantName, config] of Object.entries(node.configs.variants)) {
-					const variantConfig = BoneConfig.fromJSON(config)
+					const variantConfig = new CommonDisplayConfig().fromJSON(config)
 					if (!variantConfig.isDefault()) {
 						hash.update('variantconfig;')
 						hash.update(variantName)
@@ -753,11 +753,11 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 				renderCamera(node as ICamera, rig)
 				break
 			}
-			case node instanceof VanillaItemDisplay: {
+			case node instanceof ItemDisplay: {
 				renderItemDisplay(node, rig)
 				break
 			}
-			case node instanceof VanillaBlockDisplay: {
+			case node instanceof BlockDisplay: {
 				renderBlockDisplay(node, rig)
 				break
 			}

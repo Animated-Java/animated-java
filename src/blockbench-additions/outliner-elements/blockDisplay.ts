@@ -2,12 +2,16 @@ import { getBlockModel } from '@aj/systems/minecraft-temp/blockModelManager'
 import { type BlockStateValue, getBlockState } from '@aj/systems/minecraft-temp/blockstateManager'
 import { MINECRAFT_REGISTRY } from '@aj/systems/minecraft-temp/registryManager'
 import { getCurrentVersion } from '@aj/systems/minecraft-temp/versionManager'
-import { GenericDisplayConfig, type Serialized } from '@aj/systems/node-configs'
+import { BlockDisplayConfig, CommonDisplayConfig, type Serialized } from '@aj/systems/node-configs'
 import EVENTS from '@events'
 import { PACKAGE } from '../../constants'
 import { VANILLA_BLOCK_DISPLAY_CONFIG_ACTION } from '../../ui/dialogs/block-display-config'
 import { parseBlock } from '../../util/minecraftUtil'
-import { createAction, createBlockbenchMod } from '../../util/moddingTools'
+import {
+	createAction,
+	createBlockbenchMod,
+	fixClassPropertyInheritance,
+} from '../../util/moddingTools'
 import { Valuable } from '../../util/stores'
 import { translate } from '../../util/translation'
 import { isCurrentFormat } from '../model-formats/ajblueprint'
@@ -49,7 +53,8 @@ export class BlockDisplay extends ResizableOutlinerElement {
 
 	// Properties
 	private __block = new Valuable('minecraft:stone')
-	public config: Serialized<GenericDisplayConfig>
+	public config: Serialized<BlockDisplayConfig>
+	public commonConfig: Serialized<CommonDisplayConfig>
 
 	public error = new Valuable('')
 
@@ -79,6 +84,7 @@ export class BlockDisplay extends ResizableOutlinerElement {
 
 		this.block ??= 'minecraft:stone'
 		this.config ??= {}
+		this.commonConfig ??= {}
 
 		this.sanitizeName()
 
@@ -195,7 +201,7 @@ export class BlockDisplay extends ResizableOutlinerElement {
 new Property(BlockDisplay, 'string', 'block', { default: 'minecraft:stone' })
 new Property(BlockDisplay, 'object', 'config', {
 	get default() {
-		return new GenericDisplayConfig().toJSON()
+		return new CommonDisplayConfig().toJSON()
 	},
 })
 OutlinerElement.registerType(BlockDisplay, BlockDisplay.type)
