@@ -8,6 +8,8 @@ import './action/saveProject'
 import './action/saveProjectAs'
 // Class Properties
 import './class-properties/animationProperties'
+// CSS
+import './css/panelTitleTextWrap'
 // Function Overwrites
 import './function-overwrites/blockbenchRead'
 import './function-overwrites/reverseKeyframes'
