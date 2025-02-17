@@ -1,4 +1,4 @@
-import { GenericDisplayConfig } from '@aj/systems/node-configs'
+import { CommonDisplayConfig } from '@aj/systems/node-configs'
 import { BLUEPRINT_FORMAT } from '../../../blockbench-additions/model-formats/ajblueprint'
 import { PACKAGE } from '../../../constants'
 import { createAction } from '../../../util/moddingTools'
@@ -8,7 +8,7 @@ import BoneConfigDialogSvelteComponent from './boneConfig.svelte'
 
 export function openBoneConfigDialog(bone: Group) {
 	// Blockbench's JSON stringifier doesn't handle custom toJSON functions, so I'm storing the config JSON in the bone instead of the actual GenericDisplayConfig object
-	const boneConfig = new GenericDisplayConfig().fromJSON(bone.configs.default ?? {})
+	const boneConfig = new CommonDisplayConfig().fromJSON(bone.configs.default ?? {})
 
 	new SvelteDialog({
 		id: `${PACKAGE.name}:boneConfig`,

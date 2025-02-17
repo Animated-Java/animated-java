@@ -2,7 +2,7 @@ import { BlockDisplay } from './blockbench-additions/outliner-elements/blockDisp
 import { ItemDisplay } from './blockbench-additions/outliner-elements/itemDisplay'
 import { TextDisplay } from './blockbench-additions/outliner-elements/textDisplay'
 import { defaultValues } from './blueprintSettings'
-import type { GenericDisplayConfig, LocatorConfig, Serialized } from './systems/node-configs'
+import type { CommonDisplayConfig, LocatorConfig, Serialized } from './systems/node-configs'
 import { EasingKey } from './util/easing'
 import { isDataPackPath, isResourcePackPath } from './util/minecraftUtil'
 import { Valuable } from './util/stores'
@@ -55,9 +55,7 @@ declare global {
 	}
 
 	interface Group {
-		configs: {
-			default: Serialized<GenericDisplayConfig>
-		}
+		commonConfig: Serialized<CommonDisplayConfig>
 	}
 
 	interface Locator {

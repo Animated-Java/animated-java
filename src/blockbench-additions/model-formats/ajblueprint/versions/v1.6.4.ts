@@ -1,14 +1,14 @@
 import type { PACKAGE } from '@aj/constants'
 import type {
 	CameraConfig,
-	GenericDisplayConfig,
+	CommonDisplayConfig,
 	LocatorConfig,
 	Serialized,
 	TextDisplayConfig,
 } from '@aj/systems/node-configs'
 
 namespace v1_6_4 {
-	export type IBlueprintBoneConfigJSON = Serialized<GenericDisplayConfig>
+	export type IBlueprintBoneConfigJSON = Serialized<CommonDisplayConfig>
 	export type IBlueprintLocatorConfigJSON = Serialized<LocatorConfig>
 	export type IBlueprintCameraConfigJSON = Serialized<CameraConfig>
 	export type IBlueprintTextDisplayConfigJSON = Serialized<TextDisplayConfig>

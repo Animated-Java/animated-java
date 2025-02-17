@@ -5,7 +5,7 @@
 	import NumberSlider from '@svelte-components/dialog-items/numberSlider.svelte'
 	import Select from '@svelte-components/dialog-items/select.svelte'
 
-	import { GenericDisplayConfig } from '@aj/systems/node-configs'
+	import { CommonDisplayConfig } from '@aj/systems/node-configs'
 	import { Valuable } from '../../../util/stores'
 	import { translate } from '../../../util/translation'
 
@@ -17,22 +17,18 @@
 	export let customName: Valuable<string>
 	export let customNameVisible: Valuable<boolean>
 	export let billboard: Valuable<string>
-	export let overrideBrightness: Valuable<
-		NonNullable<GenericDisplayConfig['_overrideBrightness']>
-	>
-	export let brightnessOverride: Valuable<
-		NonNullable<GenericDisplayConfig['_brightnessOverride']>
-	>
-	export let glowing: Valuable<NonNullable<GenericDisplayConfig['_glowing']>>
-	export let overrideGlowColor: Valuable<NonNullable<GenericDisplayConfig['_overrideGlowColor']>>
-	export let glowColor: Valuable<NonNullable<GenericDisplayConfig['_glowColor']>>
-	export let invisible: Valuable<NonNullable<GenericDisplayConfig['_invisible']>>
-	export let nbt: Valuable<NonNullable<GenericDisplayConfig['_nbt']>>
-	export let shadowRadius: Valuable<NonNullable<GenericDisplayConfig['_shadowRadius']>>
-	export let shadowStrength: Valuable<NonNullable<GenericDisplayConfig['_shadowStrength']>>
-	export let useNBT: Valuable<NonNullable<GenericDisplayConfig['_useNBT']>>
+	export let overrideBrightness: Valuable<NonNullable<CommonDisplayConfig['_overrideBrightness']>>
+	export let brightnessOverride: Valuable<NonNullable<CommonDisplayConfig['_brightnessOverride']>>
+	export let glowing: Valuable<NonNullable<CommonDisplayConfig['_glowing']>>
+	export let overrideGlowColor: Valuable<NonNullable<CommonDisplayConfig['_overrideGlowColor']>>
+	export let glowColor: Valuable<NonNullable<CommonDisplayConfig['_glowColor']>>
+	export let invisible: Valuable<NonNullable<CommonDisplayConfig['_invisible']>>
+	export let nbt: Valuable<NonNullable<CommonDisplayConfig['_nbt']>>
+	export let shadowRadius: Valuable<NonNullable<CommonDisplayConfig['_shadowRadius']>>
+	export let shadowStrength: Valuable<NonNullable<CommonDisplayConfig['_shadowStrength']>>
+	export let useNBT: Valuable<NonNullable<CommonDisplayConfig['_useNBT']>>
 
-	const BILLBOARD_OPTIONS: Record<GenericDisplayConfig['billboard'], string> = {
+	const BILLBOARD_OPTIONS: Record<CommonDisplayConfig['billboard'], string> = {
 		fixed: translate('dialog.bone_config.billboard.options.fixed'),
 		vertical: translate('dialog.bone_config.billboard.options.vertical'),
 		horizontal: translate('dialog.bone_config.billboard.options.horizontal'),
@@ -81,7 +77,7 @@
 			label={translate('dialog.bone_config.billboard.title')}
 			tooltip={translate('dialog.bone_config.billboard.description')}
 			options={BILLBOARD_OPTIONS}
-			defaultOption={GenericDisplayConfig.prototype.billboard}
+			defaultOption={CommonDisplayConfig.prototype.billboard}
 			bind:value={billboard}
 		/>
 
@@ -89,7 +85,7 @@
 			label={translate('dialog.bone_config.custom_name.title')}
 			tooltip={translate('dialog.bone_config.custom_name.description')}
 			bind:value={customName}
-			defaultValue={GenericDisplayConfig.prototype.customName}
+			defaultValue={CommonDisplayConfig.prototype.customName}
 			valueChecker={customNameChecker}
 		/>
 
@@ -97,14 +93,14 @@
 			label={translate('dialog.bone_config.custom_name_visible.title')}
 			tooltip={translate('dialog.bone_config.custom_name_visible.description')}
 			bind:checked={customNameVisible}
-			defaultValue={GenericDisplayConfig.prototype.customNameVisible}
+			defaultValue={CommonDisplayConfig.prototype.customNameVisible}
 		/>
 
 		<Checkbox
 			label={translate('dialog.bone_config.glowing.title')}
 			tooltip={translate('dialog.bone_config.glowing.description')}
 			bind:checked={glowing}
-			defaultValue={GenericDisplayConfig.prototype.glowing}
+			defaultValue={CommonDisplayConfig.prototype.glowing}
 		/>
 
 		<ColorPicker
@@ -117,7 +113,7 @@
 			label={translate('dialog.bone_config.shadow_radius.title')}
 			tooltip={translate('dialog.bone_config.shadow_radius.description')}
 			bind:value={shadowRadius}
-			defaultValue={GenericDisplayConfig.prototype.shadowRadius}
+			defaultValue={CommonDisplayConfig.prototype.shadowRadius}
 			min={0}
 			max={64}
 		/>
@@ -126,7 +122,7 @@
 			label={translate('dialog.bone_config.shadow_strength.title')}
 			tooltip={translate('dialog.bone_config.shadow_strength.description')}
 			bind:value={shadowStrength}
-			defaultValue={GenericDisplayConfig.prototype.shadowStrength}
+			defaultValue={CommonDisplayConfig.prototype.shadowStrength}
 			min={0}
 		/>
 
@@ -134,14 +130,14 @@
 			label={translate('dialog.bone_config.use_custom_brightness.title')}
 			tooltip={translate('dialog.bone_config.use_custom_brightness.description')}
 			bind:checked={overrideBrightness}
-			defaultValue={GenericDisplayConfig.prototype.overrideBrightness}
+			defaultValue={CommonDisplayConfig.prototype.overrideBrightness}
 		/>
 
 		<NumberSlider
 			label={translate('dialog.bone_config.custom_brightness.title')}
 			tooltip={translate('dialog.bone_config.custom_brightness.description')}
 			bind:value={brightnessOverride}
-			defaultValue={GenericDisplayConfig.prototype.brightnessOverride}
+			defaultValue={CommonDisplayConfig.prototype.brightnessOverride}
 			min={0}
 			max={15}
 		/>
@@ -150,14 +146,14 @@
 			label={translate('dialog.bone_config.invisible.title')}
 			tooltip={translate('dialog.bone_config.invisible.description')}
 			bind:checked={invisible}
-			defaultValue={GenericDisplayConfig.prototype.invisible}
+			defaultValue={CommonDisplayConfig.prototype.invisible}
 		/>
 	{:else}
 		<Checkbox
 			label={translate('dialog.bone_config.use_nbt.title')}
 			tooltip={translate('dialog.bone_config.use_nbt.description')}
 			bind:checked={useNBT}
-			defaultValue={GenericDisplayConfig.prototype.useNBT}
+			defaultValue={CommonDisplayConfig.prototype.useNBT}
 		/>
 
 		{#if $useNBT}
@@ -168,7 +164,7 @@
 				label={translate('dialog.bone_config.nbt.title')}
 				tooltip={translate('dialog.bone_config.nbt.description')}
 				bind:value={nbt}
-				defaultValue={GenericDisplayConfig.prototype.nbt}
+				defaultValue={CommonDisplayConfig.prototype.nbt}
 				valueChecker={nbtChecker}
 			/>
 		{:else}
@@ -176,7 +172,7 @@
 				label={translate('dialog.bone_config.custom_name.title')}
 				tooltip={translate('dialog.bone_config.custom_name.description')}
 				bind:value={customName}
-				defaultValue={GenericDisplayConfig.prototype.customName}
+				defaultValue={CommonDisplayConfig.prototype.customName}
 				valueChecker={customNameChecker}
 			/>
 
@@ -184,14 +180,14 @@
 				label={translate('dialog.bone_config.custom_name_visible.title')}
 				tooltip={translate('dialog.bone_config.custom_name_visible.description')}
 				bind:checked={customNameVisible}
-				defaultValue={GenericDisplayConfig.prototype.customNameVisible}
+				defaultValue={CommonDisplayConfig.prototype.customNameVisible}
 			/>
 
 			<Select
 				label={translate('dialog.bone_config.billboard.title')}
 				tooltip={translate('dialog.bone_config.billboard.description')}
 				options={BILLBOARD_OPTIONS}
-				defaultOption={GenericDisplayConfig.prototype.billboard}
+				defaultOption={CommonDisplayConfig.prototype.billboard}
 				bind:value={billboard}
 			/>
 
@@ -199,14 +195,14 @@
 				label={translate('dialog.bone_config.glowing.title')}
 				tooltip={translate('dialog.bone_config.glowing.description')}
 				bind:checked={glowing}
-				defaultValue={GenericDisplayConfig.prototype.glowing}
+				defaultValue={CommonDisplayConfig.prototype.glowing}
 			/>
 
 			<Checkbox
 				label={translate('dialog.bone_config.override_glow_color.title')}
 				tooltip={translate('dialog.bone_config.override_glow_color.description')}
 				bind:checked={overrideGlowColor}
-				defaultValue={GenericDisplayConfig.prototype.overrideGlowColor}
+				defaultValue={CommonDisplayConfig.prototype.overrideGlowColor}
 			/>
 
 			{#if $overrideGlowColor}
@@ -221,7 +217,7 @@
 				label={translate('dialog.bone_config.shadow_radius.title')}
 				tooltip={translate('dialog.bone_config.shadow_radius.description')}
 				bind:value={shadowRadius}
-				defaultValue={GenericDisplayConfig.prototype.shadowRadius}
+				defaultValue={CommonDisplayConfig.prototype.shadowRadius}
 				min={0}
 				max={15}
 			/>
@@ -230,7 +226,7 @@
 				label={translate('dialog.bone_config.shadow_strength.title')}
 				tooltip={translate('dialog.bone_config.shadow_strength.description')}
 				bind:value={shadowStrength}
-				defaultValue={GenericDisplayConfig.prototype.shadowStrength}
+				defaultValue={CommonDisplayConfig.prototype.shadowStrength}
 				min={0}
 				max={15}
 			/>
@@ -239,7 +235,7 @@
 				label={translate('dialog.bone_config.override_brightness.title')}
 				tooltip={translate('dialog.bone_config.override_brightness.description')}
 				bind:checked={overrideBrightness}
-				defaultValue={GenericDisplayConfig.prototype.overrideBrightness}
+				defaultValue={CommonDisplayConfig.prototype.overrideBrightness}
 			/>
 
 			{#if $overrideBrightness}
@@ -247,7 +243,7 @@
 					label={translate('dialog.bone_config.brightness_override.title')}
 					tooltip={translate('dialog.bone_config.brightness_override.description')}
 					bind:value={brightnessOverride}
-					defaultValue={GenericDisplayConfig.prototype.brightnessOverride}
+					defaultValue={CommonDisplayConfig.prototype.brightnessOverride}
 					min={0}
 					max={15}
 				/>

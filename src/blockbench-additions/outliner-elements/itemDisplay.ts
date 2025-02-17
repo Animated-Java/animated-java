@@ -1,11 +1,15 @@
 import { getItemModel } from '@aj/systems/minecraft-temp/itemModelManager'
 import { MINECRAFT_REGISTRY } from '@aj/systems/minecraft-temp/registryManager'
 import { getCurrentVersion } from '@aj/systems/minecraft-temp/versionManager'
-import { GenericDisplayConfig, type Serialized } from '@aj/systems/node-configs'
+import { CommonDisplayConfig, ItemDisplayConfig, type Serialized } from '@aj/systems/node-configs'
 import EVENTS from '@events'
 import { PACKAGE } from '../../constants'
 import { VANILLA_ITEM_DISPLAY_CONFIG_ACTION } from '../../ui/dialogs/item-display-config'
-import { createAction, createBlockbenchMod } from '../../util/moddingTools'
+import {
+	createAction,
+	createBlockbenchMod,
+	fixClassPropertyInheritance,
+} from '../../util/moddingTools'
 import { Valuable } from '../../util/stores'
 import { translate } from '../../util/translation'
 import { isCurrentFormat } from '../model-formats/ajblueprint'
@@ -35,7 +39,8 @@ export class ItemDisplay extends ResizableOutlinerElement {
 	// Properties
 	private __item = new Valuable('minecraft:diamond')
 	private __itemDisplay = new Valuable('none')
-	public config: Serialized<GenericDisplayConfig>
+	public config: Serialized<ItemDisplayConfig>
+	public commonConfig: Serialized<CommonDisplayConfig>
 
 	public error = new Valuable('')
 
@@ -70,6 +75,7 @@ export class ItemDisplay extends ResizableOutlinerElement {
 		this.scale ??= [1, 1, 1]
 		this.visibility ??= true
 		this.config ??= {}
+		this.commonConfig ??= {}
 
 		this.sanitizeName()
 
@@ -193,7 +199,7 @@ new Property(ItemDisplay, 'string', 'item', { default: 'minecraft:diamond' })
 new Property(ItemDisplay, 'string', 'item_display', { default: 'none' })
 new Property(ItemDisplay, 'object', 'config', {
 	get default() {
-		return new GenericDisplayConfig().toJSON()
+		return new CommonDisplayConfig().toJSON()
 	},
 })
 OutlinerElement.registerType(ItemDisplay, ItemDisplay.type)

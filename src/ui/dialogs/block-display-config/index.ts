@@ -1,4 +1,4 @@
-import { GenericDisplayConfig } from '@aj/systems/node-configs'
+import { CommonDisplayConfig } from '@aj/systems/node-configs'
 import { isCurrentFormat } from '../../../blockbench-additions/model-formats/ajblueprint'
 import { BlockDisplay } from '../../../blockbench-additions/outliner-elements/blockDisplay'
 import { PACKAGE } from '../../../constants'
@@ -11,8 +11,8 @@ import BlockDisplayConfigDialog from './vanillaBlockDisplayConfigDialog.svelte'
 
 export function openBlockDisplayConfigDialog(display: BlockDisplay) {
 	// Blockbench's JSON stringifier doesn't handle custom toJSON functions, so I'm storing the config JSON in the bone instead of the actual GenericDisplayConfig object
-	const oldConfig = new GenericDisplayConfig().fromJSON(
-		(display.config ??= new GenericDisplayConfig().toJSON())
+	const oldConfig = new CommonDisplayConfig().fromJSON(
+		(display.config ??= new CommonDisplayConfig().toJSON())
 	)
 
 	const customName = new Valuable(oldConfig.customName)
@@ -52,7 +52,7 @@ export function openBlockDisplayConfigDialog(display: BlockDisplay) {
 		},
 		preventKeybinds: true,
 		onConfirm() {
-			const newConfig = new GenericDisplayConfig()
+			const newConfig = new CommonDisplayConfig()
 
 			newConfig.customName = customName.get()
 			newConfig.customNameVisible = customNameVisible.get()
@@ -68,7 +68,7 @@ export function openBlockDisplayConfigDialog(display: BlockDisplay) {
 			newConfig.shadowStrength = shadowStrength.get()
 			newConfig.useNBT = useNBT.get()
 
-			const defaultConfig = GenericDisplayConfig.getDefault()
+			const defaultConfig = CommonDisplayConfig.getDefault()
 
 			newConfig.customName === defaultConfig.customName && (newConfig.customName = undefined)
 			newConfig.customNameVisible === defaultConfig.customNameVisible &&
