@@ -260,3 +260,35 @@ export function createPropertySubscribable<Value = any>(object: any, key: string
 // ) {
 // 	//
 // }
+
+/**
+ * A wrapper for the Blockbench.Property class that deep-clones the property value when copying or merging.
+ */
+export class ObjectProperty extends Property<'object'> {
+	constructor(target: any, name: string, options: PropertyOptions) {
+		super(target, 'object', name, options)
+	}
+
+	copy(instance: any, target: any) {
+		console.log('Copying', this.name)
+		if (instance[this.name] == undefined) {
+			target[this.name] = instance[this.name]
+		} else {
+			target[this.name] = JSON.parse(JSON.stringify(instance[this.name]))
+		}
+	}
+
+	merge(instance: any, data: any) {
+		console.log('Merging', this.name, instance[this.name], data[this.name])
+		if (data[this.name] == undefined) {
+			instance[this.name] = this.default
+		} else {
+			instance[this.name] = JSON.parse(JSON.stringify(data[this.name]))
+		}
+	}
+}
+
+export const fixClassPropertyInheritance: ClassDecorator = target => {
+	target.properties = { ...target.properties }
+	return target
+}
