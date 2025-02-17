@@ -209,9 +209,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 	}
 
 	select() {
-		if (Group.first_selected) {
-			Group.first_selected.unselect()
-		}
+		Group.all.forEachReverse(el => el.unselect())
 
 		if (!Pressing.ctrl && !Pressing.shift) {
 			if (Cube.selected.length) {
@@ -544,13 +542,13 @@ export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_text_display`,
 			textDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
 		}
 
-		textDisplay.forEachReverse(el => el.unselect())
-		Group.first_selected && Group.first_selected.unselect()
+		selected.forEachReverse(el => el.unselect())
+		Group.all.forEachReverse(el => el.unselect())
 		textDisplay.select()
 
 		Undo.finishEdit('Create Text Display', {
 			outliner: true,
-			elements: textDisplay,
+			elements: selected,
 			selection: true,
 		})
 
