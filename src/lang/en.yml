@@ -89,6 +89,42 @@ dialog:
         label: Storage-based
         description: 42% Slower than function-based, but creates far fewer function files.
 
+panel:
+  display:
+    title: Display
+
+    common:
+      label: Common
+      options:
+        billboard: Billboard
+        brightnessOverride: Brightness
+        glowColor: Glow Color
+        glowing: Glowing
+        inheritSettings: Inherit Settings
+        invisible: Invisible
+        nbt: NBT
+        overrideBrightness: Override Brightness
+        overrideGlowColor: Override Glow Color
+        shadowRadius: Shadow Radius
+        shadowStrength: Shadow Strength
+        useNBT: Use NBT
+
+    animated_java:text_display:
+      label: Text Display
+      options:
+        alignment: Alignment
+        backgroundColor: Background Color
+        lineWidth: Line Width
+        seeThrough: See Through
+        shadow: Shadow
+        textComponent: Text Component
+
+    animated_java:item_display:
+      label: Item Display
+
+    animated_java:block_display:
+      label: Block Display
+
 # ----------------------------------------
 # OLD TRANSLATIONS
 # ----------------------------------------
@@ -105,10 +141,10 @@ animated_java.action.export.name: Export
 animated_java.action.extract.name: Extract
 animated_java.action.extract.confirm: Confirm Extraction
 animated_java.action.create_text_display.title: Add Text Display
-animated_java.action.create_vanilla_item_display.title: Add Item Display
-animated_java.action.create_vanilla_block_display.title: Add Block Display
-animated_java.action.open_vanilla_item_display_config.name: Item Display Config
-animated_java.action.open_vanilla_block_display_config.name: Block Display Config
+animated_java.action.create_item_display.title: Add Item Display
+animated_java.action.create_block_display.title: Add Block Display
+animated_java.action.open_item_display_config.name: Item Display Config
+animated_java.action.open_block_display_config.name: Block Display Config
 
 ### Popups
 animated_java.popup.loading.loading: Loading Animated Java...
@@ -423,8 +459,8 @@ animated_java.dialog.locator_config.ticking_commands.description: |-
 ## Text Display Config Dialog
 animated_java.dialog.text_display_config.title: Text Display Config
 
-animated_java.dialog.bone_config.vanilla_item_model.title: Vanilla Item Model
-animated_java.dialog.bone_config.vanilla_item_model.description: |-
+animated_java.dialog.bone_config.item_model.title: Vanilla Item Model
+animated_java.dialog.bone_config.item_model.description: |-
   If set, the bone will render as a vanilla item model.
   This will overwrite the bone's existing cubes.
 
@@ -476,26 +512,26 @@ animated_java.dialog.text_display_config.billboard.options.horizontal: Horizonta
 animated_java.dialog.text_display_config.billboard.options.center: Center
 
 ## Block Display Config Dialog
-animated_java.dialog.vanilla_block_display_config.title: Block Display Config
-animated_java.dialog.vanilla_block_display.custom_name.title: Custom Name
-animated_java.dialog.vanilla_block_display.custom_name.description: The custom name of the block display.
-animated_java.dialog.vanilla_block_display.custom_name.invalid_json.error: |-
+animated_java.dialog.block_display_config.title: Block Display Config
+animated_java.dialog.block_display.custom_name.title: Custom Name
+animated_java.dialog.block_display.custom_name.description: The custom name of the block display.
+animated_java.dialog.block_display.custom_name.invalid_json.error: |-
   Invalid JSON Text!
   {0}
 
-animated_java.dialog.vanilla_block_display.custom_name_visible.title: Custom Name Visible
-animated_java.dialog.vanilla_block_display.custom_name_visible.description: Whether or not the custom name should always be visible.
+animated_java.dialog.block_display.custom_name_visible.title: Custom Name Visible
+animated_java.dialog.block_display.custom_name_visible.description: Whether or not the custom name should always be visible.
 
 ## Item Display Config Dialog
-animated_java.dialog.vanilla_item_display_config.title: Item Display Config
-animated_java.dialog.vanilla_item_display.custom_name.title: Custom Name
-animated_java.dialog.vanilla_item_display.custom_name.description: The custom name of the item display.
-animated_java.dialog.vanilla_item_display.custom_name.invalid_json.error: |-
+animated_java.dialog.item_display_config.title: Item Display Config
+animated_java.dialog.item_display.custom_name.title: Custom Name
+animated_java.dialog.item_display.custom_name.description: The custom name of the item display.
+animated_java.dialog.item_display.custom_name.invalid_json.error: |-
   Invalid JSON Text!
   {0}
 
-animated_java.dialog.vanilla_item_display.custom_name_visible.title: Custom Name Visible
-animated_java.dialog.vanilla_item_display.custom_name_visible.description: Whether or not the custom name should always be visible.
+animated_java.dialog.item_display.custom_name_visible.title: Custom Name Visible
+animated_java.dialog.item_display.custom_name_visible.description: Whether or not the custom name should always be visible.
 
 ## Variant Config Dialog
 animated_java.dialog.variant_config.title: Variant Config
@@ -671,8 +707,8 @@ animated_java.tool.text_display.see_through.title: See Through
 animated_java.tool.text_display.see_through.description: Whether or not the text display should be visible through blocks.
 
 # Item Display Panel
-animated_java.panel.vanilla_item_display.title: Displayed Item
-animated_java.panel.vanilla_item_display.description: The item to display.
+animated_java.panel.item_display.title: Displayed Item
+animated_java.panel.item_display.description: The item to display.
 animated_java.tool.item_display.item_display.title: Item Display Mode
 animated_java.tool.item_display.item_display.description: Which item model transform to apply to the item (as defined in display field in model JSON).
 animated_java.tool.item_display.item_display.options.none: None
@@ -686,12 +722,12 @@ animated_java.tool.item_display.item_display.options.ground: Ground
 animated_java.tool.item_display.item_display.options.fixed: Fixed
 
 # Block Display Panel
-animated_java.panel.vanilla_block_display.title: Displayed Block
-animated_java.panel.vanilla_block_display.description: The block to display. Supports block states!
+animated_java.panel.block_display.title: Displayed Block
+animated_java.panel.block_display.description: The block to display. Supports block states!
 
 ### Custom Elements
 ## Item Display
-animated_java.vanilla_item_display.title: Item Display
+animated_java.item_display.title: Item Display
 
 ## Block Display
 
