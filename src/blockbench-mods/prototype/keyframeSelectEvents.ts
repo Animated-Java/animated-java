@@ -46,7 +46,6 @@ createBlockbenchMod(
 			})
 
 			if (Timeline.selected) {
-				console.log('Selected keyframe:', Timeline.selected[0])
 				EVENTS.SELECT_KEYFRAME.dispatch(Timeline.selected[0])
 			}
 

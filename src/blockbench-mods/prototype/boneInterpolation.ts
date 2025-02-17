@@ -54,7 +54,6 @@ createBlockbenchMod(
 					Math.lerp(before[1], after[1], diff),
 					Math.lerp(before[2], after[2], diff),
 				]
-				// console.log(diff)
 
 				return result
 

@@ -187,7 +187,6 @@ export async function exportProject(forceSave = true) {
 	const settingsDialog = openBlueprintSettingsDialog()!
 	// Wait for the dialog to open
 	await new Promise(resolve => requestAnimationFrame(resolve))
-	console.log('Blueprint Setting Errors', blueprintSettingErrors.get())
 	if (Object.keys(blueprintSettingErrors.get()).length > 0) {
 		Blockbench.showMessageBox({
 			title: translate('misc.failed_to_export.title'),
