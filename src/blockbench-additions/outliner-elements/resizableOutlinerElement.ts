@@ -110,7 +110,7 @@ new Property(ResizableOutlinerElement, 'string', 'name', { default: 'resizable_o
 new Property(ResizableOutlinerElement, 'vector', 'position', { default: [0, 0, 0] })
 new Property(ResizableOutlinerElement, 'vector', 'rotation', { default: [0, 0, 0] })
 new Property(ResizableOutlinerElement, 'vector', 'scale', { default: [1, 1, 1] })
-new Property(ResizableOutlinerElement, 'string', 'visibility', { default: true })
+new Property(ResizableOutlinerElement, 'boolean', 'visibility', { default: true })
 
 export const PREVIEW_CONTROLLER = new NodePreviewController(ResizableOutlinerElement, {
 	setup(el: ResizableOutlinerElement) {
