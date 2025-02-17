@@ -171,6 +171,10 @@ const CUSTOM_RULES: ConfigWithExtends['rules'] = {
 		},
 		{
 			selector: 'enumMember',
+			format: ['camelCase', 'PascalCase', 'UPPER_CASE'],
+		},
+		{
+			selector: 'enum',
 			format: ['UPPER_CASE'],
 		},
 	] satisfies NamingConventionRule,
