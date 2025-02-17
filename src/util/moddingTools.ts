@@ -270,7 +270,6 @@ export class ObjectProperty extends Property<'object'> {
 	}
 
 	copy(instance: any, target: any) {
-		console.log('Copying', this.name)
 		if (instance[this.name] == undefined) {
 			target[this.name] = instance[this.name]
 		} else {
@@ -279,7 +278,6 @@ export class ObjectProperty extends Property<'object'> {
 	}
 
 	merge(instance: any, data: any) {
-		console.log('Merging', this.name, instance[this.name], data[this.name])
 		if (data[this.name] == undefined) {
 			instance[this.name] = this.default
 		} else {
