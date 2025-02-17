@@ -1,10 +1,10 @@
 import MissingCharacter from '@assets/missing_character.png'
 import EVENTS from '@events'
 import { createHash } from 'crypto'
-import { type Alignment } from '../../blockbench-additions/outliner-elements/textDisplay'
 import { mergeGeometries } from '../../util/bufferGeometryUtils'
 import { getPathFromResourceLocation } from '../../util/minecraftUtil'
 import { UnicodeString } from '../../util/unicodeString'
+import type { TextDisplayConfig } from '../node-configs'
 import * as assets from './assetManager'
 import { COLOR_MAP, JsonText } from './jsonText'
 import {
@@ -354,27 +354,21 @@ export class MinecraftFont {
 	}
 
 	async generateTextMesh({
-		jsonText,
-		maxLineWidth,
+		textComponent,
+		lineWidth,
 		backgroundColor,
-		backgroundAlpha,
 		shadow,
 		alignment,
-	}: {
-		jsonText: JsonText
-		maxLineWidth: number
-		backgroundColor: string
-		backgroundAlpha: number
-		shadow?: boolean
-		alignment?: Alignment
-	}): Promise<{ mesh: THREE.Mesh; outline: THREE.LineSegments }> {
+	}: Required<TextDisplayConfig>): Promise<{ mesh: THREE.Mesh; outline: THREE.LineSegments }> {
 		console.time('drawTextToMesh')
 		const mesh = new THREE.Mesh()
 
+		const jsonText = new JsonText(textComponent)
 		const words = getComponentWords(jsonText)
-		const { lines, backgroundWidth } = await computeTextWrapping(words, maxLineWidth)
+		const { lines, backgroundWidth } = await computeTextWrapping(words, lineWidth)
 		const width = backgroundWidth + 1
 		const height = lines.length * 10 + 1
+
 		// // Debug output
 		// const wordWidths = words.map(word => this.getWordWidth(word))
 		// for (const word of words) {
@@ -392,7 +386,7 @@ export class MinecraftFont {
 		// 		)
 		// 	}
 		// }
-		// console.log('Lines:', lines, 'CanvasWidth:', maxLineWidth)
+		// console.log('Lines:', lines, 'CanvasWidth:', lineWidth)
 		// for (const line of lines) {
 		// 	console.log('Line', lines.indexOf(line), line.width)
 		// 	for (const word of line.words) {
@@ -411,11 +405,15 @@ export class MinecraftFont {
 		// 	}
 		// }
 
+		const color = tinycolor(backgroundColor)
+		const backgroundHex = color.toHexString()
+		const backgroundAlpha = color.getAlpha()
+
 		const backgroundGeo = new THREE.PlaneBufferGeometry(width, height)
 		const backgroundMesh = new THREE.Mesh(
 			backgroundGeo,
 			new THREE.MeshBasicMaterial({
-				color: backgroundColor,
+				color: backgroundHex,
 				transparent: true,
 				opacity: backgroundAlpha,
 			})
@@ -535,6 +533,7 @@ export class MinecraftFont {
 			if (style.underlined) hash.update('underlined')
 			if (style.strikethrough) hash.update('strikethrough')
 			if (style.font) hash.update(';' + font.id)
+			// I'm not rendering this...
 			// if (style.obfuscated) hash.update('obfuscated')
 			const digest = hash.digest('hex')
 
