@@ -93,6 +93,7 @@
 		"@typescript-eslint/eslint-plugin": "^8.24.0",
 		"@typescript-eslint/parser": "^8.24.0",
 		"blockbench-types": "https://github.com/SnaveSutit/blockbench-types.git",
+		"envbench": "^3.0.2",
 		"esbuild": "^0.24.2",
 		"esbuild-plugin-import-glob": "^0.1.1",
 		"esbuild-plugin-inline-image": "^0.0.9",
