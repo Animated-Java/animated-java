@@ -5,32 +5,31 @@
 	import { CommonDisplayConfig } from '@aj/systems/node-configs'
 	import EVENTS from '@aj/util/events'
 	import { translate } from '@aj/util/translation'
-	import { slide } from 'svelte/transition'
 	import { MODE_ICONS, type CommonOptionMode } from '.'
 	import TextDisplayPage from './textDisplayPage.svelte'
 
-	let selectedThing: TextDisplay | BlockDisplay | ItemDisplay | Group | undefined
+	let selectedNode: TextDisplay | BlockDisplay | ItemDisplay | Group | undefined
 	let commonConfig: CommonDisplayConfig | undefined
 	let commonOptionModes: Map<string, CommonOptionMode>
 	let commonTabSelected: boolean
 
 	EVENTS.UPDATE_SELECTION.subscribe(() => {
-		selectedThing = undefined
+		selectedNode = undefined
 		commonConfig = undefined
 		commonOptionModes = new Map()
 
 		if (Group.first_selected) {
-			selectedThing = Group.first_selected
+			selectedNode = Group.first_selected
 		} else if (TextDisplay.selected.length > 0) {
-			selectedThing = TextDisplay.selected.at(0)
+			selectedNode = TextDisplay.selected.at(0)
 		} else if (BlockDisplay.selected.length > 0) {
-			selectedThing = BlockDisplay.selected.at(0)
+			selectedNode = BlockDisplay.selected.at(0)
 		} else if (ItemDisplay.selected.length > 0) {
-			selectedThing = ItemDisplay.selected.at(0)
+			selectedNode = ItemDisplay.selected.at(0)
 		}
 
-		if (selectedThing) {
-			commonConfig = new CommonDisplayConfig().fromJSON(selectedThing?.commonConfig)
+		if (selectedNode?.commonConfig) {
+			commonConfig = new CommonDisplayConfig().fromJSON(selectedNode.commonConfig)
 			commonOptionModes = new Map<string, CommonOptionMode>(
 				commonConfig.keys().map(key => {
 					if (commonConfig!.getKeyInheritance(key)) {
@@ -46,7 +45,7 @@
 
 	// Key is a string, but I need it to be any to make TypeScript happy when indexing into the config object.
 	function cycleCommonMode(key: any) {
-		if (!selectedThing) {
+		if (!selectedNode) {
 			console.error('Attempted to cycle common mode without a selected thing')
 			return
 		}
@@ -70,10 +69,10 @@
 		}
 
 		console.log('Set', key, 'inheritance mode to', mode?.toUpperCase())
-		Undo.initEdit({ elements: [selectedThing] })
-		selectedThing.commonConfig = commonConfig.toJSON()
+		Undo.initEdit({ elements: [selectedNode] })
+		selectedNode.commonConfig = commonConfig.toJSON()
 		Undo.finishEdit(`Set ${key} inheritance mode to ${mode?.toUpperCase()}`, {
-			elements: [selectedThing],
+			elements: [selectedNode],
 		})
 
 		commonConfig = commonConfig
@@ -82,8 +81,8 @@
 
 <!-- Make sure that we update the panel every time selected thing is assigned, even if it's the same value. -->
 <!-- This makes certain that we have the most up-to-date properties of the text display from undo / redo events -->
-{#if selectedThing}
-	<div class="tab-buttons" in:slide={{ duration: 200 }}>
+{#if selectedNode}
+	<div class="tab-buttons">
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<p
 			class={'tab-button' + (!commonTabSelected ? ' tab-button-selected' : '')}
@@ -92,7 +91,7 @@
 			}}
 		>
 			{translate(
-				`panel.display.${selectedThing && Object.getPrototypeOf(selectedThing).constructor.type}.label`
+				`panel.display.${selectedNode && Object.getPrototypeOf(selectedNode).constructor.type}.label`
 			)}
 		</p>
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -134,15 +133,15 @@
 					{/each}
 				</ul>
 			{:else}
-				{#key selectedThing}
+				{#key selectedNode}
 					<!-- svelte-ignore missing-declaration -->
-					{#if selectedThing instanceof Group}
+					{#if selectedNode instanceof Group}
 						<!-- <div>{selectedThing.name}</div> -->
-					{:else if selectedThing instanceof TextDisplay}
-						<TextDisplayPage textDisplay={selectedThing} />
-					{:else if selectedThing instanceof BlockDisplay}
+					{:else if selectedNode instanceof TextDisplay}
+						<TextDisplayPage textDisplay={selectedNode} />
+					{:else if selectedNode instanceof BlockDisplay}
 						<!-- <div>{selectedThing.name}</div> -->
-					{:else if selectedThing instanceof ItemDisplay}
+					{:else if selectedNode instanceof ItemDisplay}
 						<!-- <div>{selectedThing.name}</div> -->
 					{:else}
 						<div>Selection has no Display Options</div>
