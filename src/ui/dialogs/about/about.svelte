@@ -1,6 +1,6 @@
 <script lang="ts">
-	import AnimatedJavaIcon from '@assets/animated_java_icon.svg'
-	import AnimatedJavaIconNoBackground from '@assets/animated_java_icon_no_background.svg'
+	import AnimatedJavaIcon from '@assets/icons/animated_java_icon.svg'
+	import AnimatedJavaIconNoBackground from '@assets/icons/animated_java_icon_no_background.svg'
 	import { PACKAGE } from '../../../constants'
 </script>
 

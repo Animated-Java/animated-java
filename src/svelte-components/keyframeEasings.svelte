@@ -1,6 +1,6 @@
 <script lang="ts">
 	// @ts-expect-error
-	import { default as ICON_IMPORTS, filenames } from '@assets/easingIcons/*.svg'
+	import { default as ICON_IMPORTS, filenames } from '@assets/icons/easings/*.svg'
 	import EVENTS from '@events'
 	import { isCurrentFormat } from '../blockbench-additions/model-formats/ajblueprint'
 	import { getEasingArgDefault, hasArgs } from '../util/easing'

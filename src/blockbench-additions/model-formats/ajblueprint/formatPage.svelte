@@ -1,5 +1,5 @@
 <script lang="ts">
-	import AnimatedJavaIcon from '@assets/animated_java_icon.svg'
+	import AnimatedJavaIcon from '@assets/icons/animated_java_icon.svg'
 	import { BLUEPRINT_FORMAT } from '.'
 
 	const TITLE = document.querySelector('#format_page_animated_java_blueprint')
