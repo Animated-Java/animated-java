@@ -108,7 +108,7 @@
 		"js-yaml": "^4.1.0",
 		"node-modules-vscode-problems-patch": "^1.0.8",
 		"prettier": "^3.5.0",
-		"svelte": "^3.55.1",
+		"svelte": "3.59.2",
 		"svelte-awesome-color-picker": "^3.0.0-beta.7",
 		"svelte-eslint-parser": "^0.43.0",
 		"svelte-preprocess": "^5.0.1",
