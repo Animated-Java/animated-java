@@ -1,6 +1,6 @@
 import { cleanupExportedFiles } from '@aj/systems/cleaner'
 import { exportProject } from '@aj/systems/exporter'
-import AnimatedJavaIcon from '@assets/animated_java_icon.svg'
+import AnimatedJavaIcon from '@assets/icons/animated_java_icon.svg'
 import { BLUEPRINT_FORMAT } from '../blockbench-additions/model-formats/ajblueprint'
 import { PACKAGE } from '../constants'
 import { createAction, createBarMenu } from '../util/moddingTools'
