@@ -39,28 +39,34 @@
 <h3 class="animated-java-plugin-page-h3">Features</h3>
 
 <ul>
-	<li>Variants: Swap between different textures in-game.</li>
 	<li>
-		Highly optimized: Hours of performance tests and optimization tweaks have gone into Animated
-		Java's Exported Data Pack to make sure it has as little performance impact as possible.
+		<b>Function API</b> - Simple, yet powerful, API for summoning, and controlling animated models.
 	</li>
-	<li>Limited Molang support. If Blockbench can render it, Animated Java can animate it.</li>
-	<li>Text Display previewing and animation support.</li>
-	<li>Resource Pack-less exporting. Animate Vanilla block and item models!</li>
-	<li>Locators: Run commands relative to a locators position via keyframes.</li>
+	<li><b>Variants</b> - Swap between different textures in-game.</li>
+	<li><b>Text Displays</b> - Preview, edit, and animate text displays in Blockbench.</li>
+	<li><b>Keyframe Easing Curves</b> - Create smooth animations with ease.</li>
 	<li>
-		Camera Plugin Support: Install the <a href="https://www.blockbench.net/plugins/cameras"
-			>Official Camera Plugin</a
-		> to create cinematic camera paths with ease!
+		<b>Locators</b> - Execute commands using Command Keyframes, teleport entities in an animation,
+		and more.
 	</li>
-	<li>Animation Tweening: Create smooth transitions between animations.</li>
-	<li>Many different configuration options.</li>
+	<li><b>Animation Tweening</b> - Smoothly transition between animations.</li>
 	<li>
-		Complete Documentation at <a href="https://animated-java.dev/docs"
-			>animated-java.dev/documentation/</a
-		>
+		<b>Camera Support</b> - Install the
+		<a href="https://www.blockbench.net/plugins/cameras">Official Camera Plugin</a> to create cinematic
+		camera paths with ease.
 	</li>
-	<li>And much more!</li>
+	<li>
+		<b>Well Optimized</b> - Hours of effort have been poured into making Animated Java's Data Pack
+		as low-impact as possible.
+	</li>
+	<li>
+		<b>Resource Packs are Optional</b> - Animate Vanilla block and item models using Item and Block
+		Display entities.
+	</li>
+	<li>
+		<b>Molang Support</b> - If Blockbench can render your Molang expressions in the preview, you
+		can use it in Animated Java.
+	</li>
 </ul>
 
 <h3 class="animated-java-plugin-page-h3">Getting started</h3>
