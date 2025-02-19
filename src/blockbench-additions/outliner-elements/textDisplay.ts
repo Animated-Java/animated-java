@@ -39,6 +39,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 
 	public type = TextDisplay.type
 	public icon = 'text_fields'
+	public title = translate('node.text_display.title')
 	public needsUniqueName = true
 
 	// Properties

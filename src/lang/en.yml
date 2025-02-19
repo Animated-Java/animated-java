@@ -125,6 +125,15 @@ panel:
     animated_java:block_display:
       label: Block Display
 
+node:
+  structure.title: |-
+    Structure - (Animated Java)
+    A Group will become a Structure if it doesn't have Cube children.
+    Structures will not create an entity in-game, but can be used to organize your model, and effect the animation.
+  item_display.title: Item Display
+  block_display.title: Block Display
+  text_display.title: Text Display
+
 # ----------------------------------------
 # OLD TRANSLATIONS
 # ----------------------------------------
