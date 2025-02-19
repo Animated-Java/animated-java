@@ -49,6 +49,7 @@ export class BlockDisplay extends ResizableOutlinerElement {
 
 	public type = BlockDisplay.type
 	public icon = 'deployed_code'
+	public title = translate('node.block_display.title')
 	public needsUniqueName = true
 
 	// Properties

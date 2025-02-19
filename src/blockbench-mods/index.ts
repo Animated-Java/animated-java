@@ -31,6 +31,7 @@ import './ui/animationsPanel'
 import './ui/formatIcon'
 import './ui/formatOrder'
 import './ui/incompatiblePluginNotice'
+import './ui/structureNodeIcons'
 // Misc
 import './misc/customKeyframes'
 import './misc/locatorAnimator'

@@ -34,6 +34,7 @@ export class ItemDisplay extends ResizableOutlinerElement {
 
 	public type = ItemDisplay.type
 	public icon = 'icecream'
+	public title = translate('node.item_display.title')
 	public needsUniqueName = true
 
 	// Properties
