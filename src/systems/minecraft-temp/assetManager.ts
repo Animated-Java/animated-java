@@ -1,8 +1,8 @@
 import { PACKAGE } from '../../constants'
 import { getCurrentVersion, getLatestVersion } from './versionManager'
 
-import EVENTS from '@events'
-import download from 'download'
+import EVENTS from '@aj/util/events'
+import { app } from 'electron'
 import { type Unzipped } from 'fflate'
 import {
 	showOfflineError,
@@ -15,20 +15,48 @@ const ASSET_OVERRIDES: Record<string, string> = {}
 async function downloadJar(url: string, savePath: string) {
 	updateLoadingProgressLabel('Downloading Minecraft Assets...')
 
-	const data = await download(url, { retry: { retries: 3 } })
-		.on('downloadProgress', progress => {
-			updateLoadingProgress(progress.percent * 100)
-		})
-		.catch((error: any) => {
-			console.error('Failed to download Minecraft client:', error)
-		})
+	let attempts = 3
+	let failed = false
+	let sink: Uint8Array
+	do {
+		try {
+			const res = await fetch(url)
+			if (!res) throw new Error('Failed to fetch Minecraft client.')
+			const reader = res.body?.getReader()
+			if (!reader) throw new Error('Failed to get reader from Minecraft client response.')
+			const length = parseInt(res.headers.get('Content-Length') ?? '0')
+			sink = new Uint8Array(length)
+			let offset = 0
+			while (true) {
+				const { done, value } = await reader.read()
+				if (done) break
+				if (!value) throw new Error('Failed to read Minecraft client response.')
+				sink.set(value, offset)
+				offset += value.length
+				updateLoadingProgress((offset / length) * 100)
+			}
+			failed = false
+		} catch (e) {
+			console.error('Failed to download Minecraft client:', e)
+			failed = true
+		} finally {
+			attempts--
+		}
+	} while (attempts > 0)
+	// const data = await download(url, { retry: { retries: 3 } })
+	// 	.on('downloadProgress', progress => {
+	// 		updateLoadingProgress(progress.percent * 100)
+	// 	})
+	// 	.catch((error: any) => {
+	// 		console.error('Failed to download Minecraft client:', error)
+	// 	})
 
-	if (!data) {
+	if (failed) {
 		showOfflineError()
 		throw new Error('Failed to download Minecraft client after 3 retries.')
 	}
 
-	await fs.promises.writeFile(savePath, data)
+	await fs.promises.writeFile(savePath, sink!)
 }
 
 export async function getLatestVersionClientDownloadUrl() {
@@ -55,7 +83,7 @@ export async function getLatestVersionClientDownloadUrl() {
 }
 
 function getCachedJarFilePath() {
-	const userDataPath = electron.app.getPath('userData')
+	const userDataPath = (electron?.app ?? app).getPath('userData')
 	return PathModule.join(userDataPath, `${PACKAGE.name}/latest.jar`)
 }
 
