@@ -12,8 +12,7 @@ import inlineImage from 'esbuild-plugin-inline-image'
 import * as fs from 'fs'
 import { load } from 'js-yaml'
 import vsCodeProblemsPatchPlugin from 'node-modules-vscode-problems-patch'
-import * as path from 'path'
-import { isAbsolute, join } from 'path'
+import path, { isAbsolute, join } from 'path'
 import { TextDecoder } from 'util'
 import svelteConfig from '../svelte.config.js'
 import assetOverridePlugin from './esbuild-plugins/assetOverride.js'
@@ -169,8 +168,8 @@ const yamlPlugin: (opts: {
 			if (options?.transform && options.transform(parsed, args.path) !== void 0)
 				parsed = options.transform(parsed, args.path)
 			return {
-				contents: JSON.stringify(parsed),
-				loader: 'json',
+				contents: `export default ${JSON.stringify(parsed)}`,
+				loader: 'js',
 				watchFiles: [args.path],
 			}
 		})
