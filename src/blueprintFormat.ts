@@ -1,16 +1,16 @@
 import * as blueprintSettings from './blueprintSettings'
-import { BillboardMode, BoneConfig, LocatorConfig } from './nodeConfigs'
+import FormatPageSvelte from './components/formatPage.svelte'
 import ProjectTitleSvelte from './components/projectTitle.svelte'
 import { PACKAGE } from './constants'
+import { BillboardMode, BoneConfig, LocatorConfig } from './nodeConfigs'
+import { process } from './systems/modelDataFixerUpper'
 import { events } from './util/events'
 import { injectSvelteCompomponent } from './util/injectSvelteComponent'
 import { toSafeFuntionName } from './util/minecraftUtil'
 import { addProjectToRecentProjects } from './util/misc'
 import { Valuable } from './util/stores'
-import { Variant } from './variants'
-import FormatPageSvelte from './components/formatPage.svelte'
 import { translate } from './util/translation'
-import { process } from './systems/modelDataFixerUpper'
+import { Variant } from './variants'
 
 /**
  * The serialized Variant Bone Config
@@ -355,7 +355,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 		}
 
 		if (model.animation_variable_placeholders) {
-			Interface.Panels.variable_placeholders.inside_vue._data.text =
+			Interface.Panels.variable_placeholders.inside_vue.$data.text =
 				model.animation_variable_placeholders
 		}
 
@@ -435,15 +435,23 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 
 		model.textures = []
 		for (const texture of Texture.all) {
-			const save = texture.getUndoCopy() as Texture
+			const save = texture.getSaveCopy() as Texture
 			delete save.selected
-			if (Project.save_path && texture.path) {
-				const relative = PathModule.relative(Project.save_path, texture.path)
-				texture.relative_path = relative.replace(/\\/g, '/')
+			if (isApp && Project.save_path && texture.path && PathModule.isAbsolute(texture.path)) {
+				const relative = PathModule.relative(
+					PathModule.dirname(Project.save_path),
+					texture.path
+				)
+				save.relative_path = relative.replace(/\\/g, '/')
 			}
-			save.source = 'data:image/png;base64,' + texture.getBase64()
-			save.mode = 'bitmap'
-			if (options.absolute_paths === false) delete save.path
+			if (
+				options.bitmaps != false &&
+				(Settings.get('embed_textures') || options.backup || options.bitmaps == true)
+			) {
+				save.source = texture.getDataURL()
+				save.internal = true
+			}
+			if (options.absolute_paths == false) delete save.path
 			model.textures.push(save)
 		}
 
@@ -465,9 +473,9 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 			model.animation_controllers.push(controller.getUndoCopy(animationOptions, true))
 		}
 
-		if (Interface.Panels.variable_placeholders.inside_vue._data.text) {
+		if (Interface.Panels.variable_placeholders.inside_vue.$data.text) {
 			model.animation_variable_placeholders =
-				Interface.Panels.variable_placeholders.inside_vue._data.text
+				Interface.Panels.variable_placeholders.inside_vue.$data.text
 		}
 
 		if (!options.backup) {
