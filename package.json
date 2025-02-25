@@ -119,7 +119,6 @@
 	},
 	"dependencies": {
 		"deepslate": "^0.19.2",
-		"download": "^8.0.0",
 		"fflate": "^0.8.2",
 		"generic-stream": "^1.2.6",
 		"marked": "^4.3.0",
