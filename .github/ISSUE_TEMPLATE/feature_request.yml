@@ -1,0 +1,71 @@
+name: ✨ Feature Request
+description: Suggest a new feature or enhancement for Animated Java!
+title: ✨ [FEATURE TITLE]
+labels:
+  - ✨ Enhancement
+assignees:
+  - SnaveSutit
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        # 👋 Thank You for Opening a Feature Request!
+
+        Please fill out the following information to the best of your ability.
+        Providing clear, and concise information will greatly improve the
+        chances of your request getting implemented!
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: 🛑 Before you Start
+      description: >-
+        Please confirm you have taken the following steps *before* creating a
+        new issue!
+      options:
+        - label: >-
+            I have searched [existing
+            feature requests](https://github.com/Animated-Java/animated-java/labels/%E2%9C%A8%20Enhancement) for
+            my feature.
+          required: true
+        - label: >-
+            I have read [the documentation](https://animated-java.dev/docs/), and I am sure this feature is not already implemented.
+          required: true
+        - label: >-
+            I am using the [latest
+            version](https://builds.animated-java.dev/latest) of Animated Java.
+          required: true
+        - label: >-
+            I will only request a single feature in this request. If I have multiple
+            feature requests, I will create a separate request for each one.
+          required: true
+
+  - type: markdown
+    attributes:
+      value: '---'
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 📝 Description
+      description: A clear and concise description of the problem or missing capability.
+      placeholder: My lawnmower doesn't work on mars.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: 💡 Describe the solution you'd like
+      description: If you have a solution in mind, please describe it.
+      placeholder: >-
+        Combustion engines don't work without enough oxygen, so maybe we could
+        use an electric engine instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 🧪 Describe alternatives you've considered
+      description: Have you considered any alternative solutions or workarounds?
