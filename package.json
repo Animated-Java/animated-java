@@ -80,7 +80,8 @@
 		"lint": "eslint . --max-warnings=0",
 		"format": "prettier --write .",
 		"test": "yarn build:scripts && vitest run",
-		"coverage": "yarn build:scripts && vitest run --coverage"
+		"coverage": "yarn build:scripts && vitest run --coverage",
+		"postinstall": "patch-package"
 	},
 	"devDependencies": {
 		"@novacbn/svelte-codejar": "^0.1.2",
@@ -107,6 +108,7 @@
 		"jiti": "^2.4.2",
 		"js-yaml": "^4.1.0",
 		"node-modules-vscode-problems-patch": "^1.0.8",
+		"patch-package": "^8.0.0",
 		"prettier": "^3.5.0",
 		"svelte": "3.59.2",
 		"svelte-awesome-color-picker": "^3.0.0-beta.7",
