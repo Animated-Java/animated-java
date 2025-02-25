@@ -1,0 +1,13 @@
+diff --git a/node_modules/deepslate/lib/nbt/index.js b/node_modules/deepslate/lib/nbt/index.js
+index 5906e50..7f8d204 100644
+--- a/node_modules/deepslate/lib/nbt/index.js
++++ b/node_modules/deepslate/lib/nbt/index.js
+@@ -1,7 +1,4 @@
+ export * from './io/DataInput.js';
+ export * from './io/DataOutput.js';
+-export * from './NbtChunk.js';
+-export * from './NbtFile.js';
+-export * from './NbtRegion.js';
+ export * from './tags/index.js';
+ //# sourceMappingURL=index.js.map
+\ No newline at end of file

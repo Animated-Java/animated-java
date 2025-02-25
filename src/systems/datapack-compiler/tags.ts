@@ -1,4 +1,4 @@
-import { NbtList, NbtString } from 'deepslate'
+import { NbtList, NbtString } from 'deepslate/lib/nbt'
 import { createTagPrefixFromBlueprintID } from '../../util/minecraftUtil'
 import { IntentionalExportError } from '../exporter'
 import type { AnyRenderedNode, IRenderedRig } from '../rigRenderer'

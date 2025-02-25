@@ -1,5 +1,5 @@
 import type { Alignment } from '@aj/blockbench-additions/outliner-elements/textDisplay'
-import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtString, NbtTag } from 'deepslate'
+import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtString, NbtTag } from 'deepslate/lib/nbt'
 import { SerializableConfig } from './serializableConfig'
 export type { Serialized } from './serializableConfig'
 
