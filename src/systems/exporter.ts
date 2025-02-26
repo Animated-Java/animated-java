@@ -7,11 +7,11 @@ import { resolvePath } from '../util/fileUtil'
 import { isResourcePackPath, sortMCVersions } from '../util/minecraftUtil'
 import { translate } from '../util/translation'
 import { Variant } from '../variants'
-import { hashAnimations, renderProjectAnimations } from './animationRenderer'
-import compileDataPack from './datapackCompiler'
-import resourcepackCompiler from './resourcepackCompiler'
-import { hashRig, renderRig } from './rigRenderer'
-import { isCubeValid } from './util'
+import { hashAnimations, renderProjectAnimations } from './animation-renderer'
+import datapackCompiler from './datapack-compiler'
+import { exportJSON } from './plugin-json-compiler'
+import resourcepackCompiler from './resourcepack-compiler'
+import { hashRig, renderRig } from './rig-renderer'
 
 export class IntentionalExportError extends Error {}
 
