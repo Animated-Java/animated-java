@@ -12,6 +12,8 @@ import { Valuable } from './util/stores'
 import { translate } from './util/translation'
 import { Variant } from './variants'
 
+let boundingBoxUpdateIntervalId: ReturnType<typeof setInterval> | undefined
+
 /**
  * The serialized Variant Bone Config
  */
