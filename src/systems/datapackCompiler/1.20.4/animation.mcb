@@ -251,9 +251,13 @@ dir <%export_namespace%> {
 								}
 							}
 							IF (animation.frames.some(v => v.variant)) {
-								$execute if data storage aj.<%export_namespace%>:animations <%animation.safe_name%>.$(frame).variant unless entity @s[tag=<%TAGS.TRANSFORMS_ONLY()%>] run data modify storage aj:temp variant set from storage aj.<%export_namespace%>:animations <%animation.safe_name%>.$(frame).variant
-								$execute if data storage aj.<%export_namespace%>:animations <%animation.safe_name%>.$(frame).variant unless entity @s[tag=<%TAGS.TRANSFORMS_ONLY()%>] run function *<%export_namespace%>/animations/<%animation.safe_name%>/zzz/apply_variant with storage aj:temp variant
-								$execute if data storage aj.<%export_namespace%>:animations <%animation.safe_name%>.$(frame).variant unless entity @s[tag=<%TAGS.TRANSFORMS_ONLY()%>] run data remove storage aj:temp variant
+								$execute \
+									if data storage aj.<%export_namespace%>:animations <%animation.safe_name%>.$(frame).variant \
+									unless entity @s[tag=<%TAGS.TRANSFORMS_ONLY()%>] \
+								run { with storage aj.<%export_namespace%>:animations <%animation.safe_name%>.$(frame).variant
+									#ARGS: {name: string, condition: string}
+									$execute $(condition)run function *<%export_namespace%>/variants/$(name)/apply
+								}
 							}
 							execute on passengers run data modify entity @s[type=!marker] start_interpolation set value -1
 						}
@@ -269,15 +273,13 @@ dir <%export_namespace%> {
 								}
 							}
 							IF (animation.frames.some(v => v.variant)) {
-								$execute if data storage aj.<%export_namespace%>:animations <%animation.safe_name%>.$(frame).variant unless entity @s[tag=<%TAGS.TRANSFORMS_ONLY()%>] run data modify storage aj:temp variant set from storage aj.<%export_namespace%>:animations <%animation.safe_name%>.$(frame).variant
-								$execute if data storage aj.<%export_namespace%>:animations <%animation.safe_name%>.$(frame).variant unless entity @s[tag=<%TAGS.TRANSFORMS_ONLY()%>] run function *<%export_namespace%>/animations/<%animation.safe_name%>/zzz/apply_variant with storage aj:temp variant
-								$execute if data storage aj.<%export_namespace%>:animations <%animation.safe_name%>.$(frame).variant unless entity @s[tag=<%TAGS.TRANSFORMS_ONLY()%>] run data remove storage aj:temp variant
-							}
-						}
-						IF (animation.frames.some(v => v.variant)) {
-							function apply_variant {
-								#ARGS: {name: string, condition: string}
-								$execute $(condition)run function *<%export_namespace%>/variants/$(name)/apply
+								$execute \
+									if data storage aj.<%export_namespace%>:animations <%animation.safe_name%>.$(frame).variant \
+									unless entity @s[tag=<%TAGS.TRANSFORMS_ONLY()%>] \
+								run { with storage aj.<%export_namespace%>:animations <%animation.safe_name%>.$(frame).variant
+									#ARGS: {name: string, condition: string}
+									$execute $(condition)run function *<%export_namespace%>/variants/$(name)/apply
+								}
 							}
 						}
 					} ELSE {
@@ -411,7 +413,7 @@ dir <%export_namespace%> {
 		#Args: {args:{variant: string, animation: string, frame: int, start_animation: boolean}}
 		# frame is ignored unless animation is specified.
 
-		data modify storage aj:temp args set value {frame: 0}
+		data modify storage aj:temp args set value {variant:'', animation:'', frame: 0}
 		$execute store success score #success <%OBJECTIVES.I()%> run data modify storage aj:temp args set value $(args)
 
 		summon minecraft:item_display ~ ~ ~ { \
@@ -435,11 +437,21 @@ dir <%export_namespace%> {
 
 				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator')) as locator {
 					IF (locator.config && locator.config.use_entity) {
-						summon <%locator.config.entity_type%> ~ ~ ~ {Tags:['<%TAGS.NEW()%>', '<%TAGS.GLOBAL_LOCATOR()%>', '<%TAGS.PROJECT_LOCATOR(export_namespace)%>', '<%TAGS.PROJECT_LOCATOR_NAMED(export_namespace, locator.name)%>']}
+						summon <%locator.config.entity_type%> \
+							^<%locator.default_transform.pos[0]%> \
+							^<%locator.default_transform.pos[1]%> \
+							^<%locator.default_transform.pos[2]%> \
+							{Tags:<%getNodeTags(locator, rig)%>}
 						execute as @e[type=<%locator.config.entity_type%>,tag=<%TAGS.NEW()%>,tag=<%TAGS.GLOBAL_LOCATOR()%>,limit=1,distance=..0.01] run {
 							tag @s remove <%TAGS.NEW()%>
 
 							function *global/internal/gu/convert_uuid_array_to_string with entity @s
+							tp @s \
+								^<%roundTo(locator.default_transform.pos[0], 10)%> \
+								^<%roundTo(locator.default_transform.pos[1], 10)%> \
+								^<%roundTo(locator.default_transform.pos[2], 10)%> \
+								~<%roundTo(locator.default_transform.head_rot[1], 10)%> \
+								~<%roundTo(locator.default_transform.head_rot[0], 10)%>
 							<%%
 								if (locator.config.summon_commands) {
 									emit.mcb(locator.config.summon_commands)
@@ -451,23 +463,30 @@ dir <%export_namespace%> {
 				}
 
 				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'camera')) as camera {
-					summon item_display ~ ~ ~ {Tags:['<%TAGS.NEW()%>', '<%TAGS.GLOBAL_CAMERA()%>', '<%TAGS.PROJECT_CAMERA(export_namespace)%>', '<%TAGS.PROJECT_CAMERA(export_namespace, camera.name)%>'], teleport_duration: 2}
+					summon item_display \
+						^<%camera.default_transform.pos[0]%> \
+						^<%camera.default_transform.pos[1]%> \
+						^<%camera.default_transform.pos[2]%> \
+						{Tags:<%getNodeTags(camera, rig)%>, teleport_duration: 2}
 					execute as @e[type=item_display,tag=<%TAGS.NEW()%>,tag=<%TAGS.GLOBAL_CAMERA()%>,limit=1,distance=..0.01] run {
 						tag @s remove <%TAGS.NEW()%>
-
 						function *global/internal/gu/convert_uuid_array_to_string with entity @s
+						tp @s \
+							^<%roundTo(camera.default_transform.pos[0], 10)%> \
+							^<%roundTo(camera.default_transform.pos[1], 10)%> \
+							^<%roundTo(camera.default_transform.pos[2], 10)%> \
+							~<%roundTo(camera.default_transform.head_rot[1], 10)%> \
+							~<%roundTo(camera.default_transform.head_rot[0], 10)%>
 					}
 					data modify entity @s data.cameras.<%camera.name%>.uuid set from storage aj:uuid main.out
 				}
 
-				REPEAT (Object.values(rig.nodes).filter(v => ['bone', 'text_display', 'item_display', 'block_display'].includes(v.type))) as bone {
-					execute on vehicle on passengers if entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(export_namespace, bone.name)%>] run \
+				REPEAT (Object.values(rig.nodes).filter(v => ['bone', 'text_display', 'item_display', 'block_display'].includes(v.type))) as node {
+					execute on vehicle on passengers if entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(export_namespace, node.name)%>] run \
 						function *global/internal/gu/convert_uuid_array_to_string with entity @s
-					data modify entity @s data.bones.<%bone.type + '_' + bone.name%> set from storage aj:uuid main.out
+					data modify entity @s data.bones.<%node.type + '_' + node.name%> set from storage aj:uuid main.out
 				}
 			}
-
-			tag @s remove <%TAGS.NEW()%>
 
 			# Variant Arguement
 			IF (Object.keys(rig.variants).length > 1) {
@@ -535,6 +554,9 @@ dir <%export_namespace%> {
 				if (custom_summon_commands) emit.mcb(custom_summon_commands)
 			%%>
 			# Custom Summon Commands
+
+			tag @s remove <%TAGS.NEW()%>
+			execute on passengers run tag @s remove <%TAGS.NEW()%>
 
 			# Run the on_summon function for the root entity.
 			function #*<%export_namespace%>/as_root/on_summon
@@ -606,9 +628,11 @@ dir <%export_namespace%> {
 			REPEAT (Object.values(rig.variants)) as variant {
 				dir <%variant.name%> {
 					function apply {
-						execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-							function *global/errors/function_not_executed_as_root_entity \
-								{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/variants/<%variant.name%>/apply'}
+						IF (show_function_errors) {
+							execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+								function *global/errors/function_not_executed_as_root_entity \
+									{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/variants/<%variant.name%>/apply'}
+						}
 						REPEAT (Object.values(rig.nodes)) as node {
 							IF (node.type === 'bone' && !variant.excluded_nodes.includes(node.uuid) && (variant.models[node.uuid] !== undefined || node.configs.variants[variant.uuid] !== undefined)) {
 								execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%node.safe_name%>] run {
