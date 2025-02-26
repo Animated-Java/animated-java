@@ -1,12 +1,12 @@
-import { PACKAGE } from '../../constants'
-import { SvelteDialog } from '../../util/svelteDialog'
-import { Valuable } from '../../util/stores'
-import BlueprintSettingsDialogSvelteComponent from '../../components/blueprintSettingsDialog.svelte'
-import { toSafeFuntionName } from '../../util/minecraftUtil'
-import { defaultValues, ExportMode } from '../../blueprintSettings'
-import { translate } from '../../util/translation'
 import { updateBoundingBox } from '../../blueprintFormat'
+import { defaultValues, ExportMode } from '../../blueprintSettings'
+import BlueprintSettingsDialogSvelteComponent from '../../components/blueprintSettingsDialog.svelte'
+import { PACKAGE } from '../../constants'
 import { MinecraftVersion } from '../../systems/datapackCompiler/mcbFiles'
+import { toSafeFuntionName } from '../../util/minecraftUtil'
+import { Valuable } from '../../util/stores'
+import { SvelteDialog } from '../../util/svelteDialog'
+import { translate } from '../../util/translation'
 
 function getSettings() {
 	return {

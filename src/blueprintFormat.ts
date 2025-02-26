@@ -123,7 +123,7 @@ export interface IBlueprintFormatJSON {
 	/**
 	 * The project settings of the Blueprint
 	 */
-	blueprint_settings?: NonNullable<typeof Project>['animated_java']
+	blueprint_settings?: Partial<NonNullable<typeof Project>['animated_java']>
 	/**
 	 * The variants of the Blueprint
 	 */
@@ -156,6 +156,7 @@ export interface IBlueprintFormatJSON {
 export function convertToBlueprint() {
 	// Convert the current project to a Blueprint
 	Project!.save_path = ''
+	Project!.last_used_export_namespace = ''
 
 	for (const group of Group.all) {
 		group.createUniqueName(Group.all.filter(g => g !== group))
@@ -171,7 +172,17 @@ export function convertToBlueprint() {
 }
 
 export function getDefaultProjectSettings(): ModelProject['animated_java'] {
-	return blueprintSettings.defaultValues
+	return { ...blueprintSettings.defaultValues }
+}
+
+function initializeBoundingBoxUpdate() {
+	if (boundingBoxUpdateIntervalId == undefined) {
+		boundingBoxUpdateIntervalId = setInterval(() => {
+			updateBoundingBox()
+		}, 500)
+		events.UNLOAD.subscribe(() => clearInterval(boundingBoxUpdateIntervalId), true)
+		events.UNINSTALL.subscribe(() => clearInterval(boundingBoxUpdateIntervalId), true)
+	}
 }
 
 export function updateBoundingBox() {
@@ -260,11 +271,14 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 		}
 
 		if (model.blueprint_settings) {
-			Project.animated_java = { ...Project.animated_java, ...model.blueprint_settings }
+			Project.animated_java = {
+				...blueprintSettings.defaultValues,
+				...model.blueprint_settings,
+			}
 		}
 
 		Project.last_used_export_namespace =
-			model.meta.last_used_export_namespace || Project.animated_java.export_namespace
+			model.meta.last_used_export_namespace ?? Project.animated_java.export_namespace
 
 		if (model.textures) {
 			for (const texture of model.textures) {
@@ -410,7 +424,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 				save_location: Project.save_path,
 				last_used_export_namespace: Project.last_used_export_namespace,
 			},
-			blueprint_settings: Project.animated_java,
+			blueprint_settings: { ...Project.animated_java },
 			resolution: {
 				width: Project.texture_width || 16,
 				height: Project.texture_height || 16,
@@ -562,25 +576,19 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 	onSetup(project, newModel) {
 		if (!Project) return
 		console.log('Animated Java Blueprint format setup')
+
 		const defaults = getDefaultProjectSettings()
-		Project.animated_java ??= defaults
-		for (const [key, value] of Object.entries(defaults) as Array<
-			[keyof ModelProject['animated_java'], any]
-		>) {
-			if (Project.animated_java[key] === undefined) {
-				// @ts-ignore
-				Project.animated_java[key] = value
-			}
+		if (newModel) {
+			Project.animated_java = defaults
+			Project.last_used_export_namespace = ''
+		} else {
+			Project.animated_java = { ...defaults, ...Project!.animated_java }
 		}
 
 		const thisProject = Project
 		Project.variants ??= []
-		Project.last_used_export_namespace = Project.animated_java.export_namespace
-		const updateBoundingBoxIntervalId = setInterval(() => {
-			updateBoundingBox()
-		}, 500)
-		events.UNLOAD.subscribe(() => clearInterval(updateBoundingBoxIntervalId), true)
-		events.UNINSTALL.subscribe(() => clearInterval(updateBoundingBoxIntervalId), true)
+
+		initializeBoundingBoxUpdate()
 
 		Project.loadingPromises ??= []
 		Project.loadingPromises.push(
@@ -617,9 +625,13 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 		)
 	},
 
-	onActivation() {
-		console.log('Animated Java Blueprint format activated')
-	},
+	// onActivation() {
+	// 	console.group('Animated Java Blueprint format activated')
+	// },
+
+	// onDeactivation() {
+	// 	console.group('Animated Java Blueprint format deactivated')
+	// },
 
 	codec: BLUEPRINT_CODEC,
 
