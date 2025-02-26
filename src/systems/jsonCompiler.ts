@@ -41,7 +41,14 @@ type ExportedNodetransform = Omit<
 }
 type ExportedRenderedNode = Omit<
 	AnyRenderedNode,
-	'node' | 'parentNode' | 'model' | 'boundingBox' | 'configs' | 'baseScale' | 'safe_name'
+	| 'node'
+	| 'parentNode'
+	| 'model'
+	| 'boundingBox'
+	| 'configs'
+	| 'baseScale'
+	| 'path_name'
+	| 'storage_name'
 > & {
 	default_transform: ExportedNodetransform
 	bounding_box?: { min: ArrayVector3; max: ArrayVector3 }
@@ -52,7 +59,7 @@ type ExportedAnimationFrame = Omit<IRenderedFrame, 'nodes' | 'node_transforms'> 
 }
 type ExportedBakedAnimation = Omit<
 	IRenderedAnimation,
-	'uuid' | 'frames' | 'modified_nodes' | 'safe_name'
+	'uuid' | 'frames' | 'modified_nodes' | 'path_name' | 'storage_name'
 > & {
 	frames: ExportedAnimationFrame[]
 	modified_nodes: string[]
@@ -316,7 +323,8 @@ function serailizeRenderedNode(node: AnyRenderedNode): ExportedRenderedNode {
 	const json: any = { ...node }
 	delete json.node
 	delete json.parentNode
-	delete json.safe_name
+	delete json.path_name
+	delete json.storage_name
 	delete json.model
 	transferKey(json, 'lineWidth', 'line_width')
 	transferKey(json, 'backgroundColor', 'background_color')

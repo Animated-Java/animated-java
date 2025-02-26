@@ -1,10 +1,10 @@
 import * as pathjs from 'path'
+import { MinecraftVersion } from '../systems/datapackCompiler/mcbFiles'
 import {
 	BlockStateRegistryEntry,
 	BlockStateValue,
 	getBlockState,
 } from '../systems/minecraft/blockstateManager'
-import { MinecraftVersion } from '../systems/datapackCompiler/mcbFiles'
 
 export interface IMinecraftResourceLocation {
 	resourcePackRoot: string
@@ -17,11 +17,24 @@ export interface IMinecraftResourceLocation {
 	type: string
 }
 
-export function toSafeFuntionName(name: string): string {
-	return name
-		.toLowerCase()
-		.replace(/[^a-z0-9_.]/g, '_')
-		.replace(/_+/g, '_')
+/**
+ * Return a sanitized version of {@param str} that is safe to use as a path name in a data pack or resource pack.
+ *
+ * Function names can only contain lowercase letters, numbers, underscores, and periods.
+ * All other characters are replaced with underscores.
+ */
+export function sanitizePathName(str: string): string {
+	return str.toLowerCase().replace(/[^a-z0-9_.]+/g, '_')
+}
+
+/**
+ * Return a sanitized version of {@param str} that is safe to use as a storage object key.
+ *
+ * Storage names can only contain lowercase letters, numbers, and underscores.
+ * All other characters are replaced with underscores.
+ */
+export function sanitizeStorageKey(str: string): string {
+	return str.toLowerCase().replace(/[^a-z0-9_]+/g, '_')
 }
 
 /**

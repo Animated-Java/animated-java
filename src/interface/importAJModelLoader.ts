@@ -1,13 +1,13 @@
 import { SvelteComponentDev } from 'svelte/internal'
+import { BLUEPRINT_CODEC, IBlueprintFormatJSON } from '../blueprintFormat'
 import ImportAjModelLoaderDialog from '../components/importAJModelLoaderDialog.svelte'
 import { PACKAGE } from '../constants'
+import * as ModelDatFixerUpper from '../systems/modelDataFixerUpper'
 import { injectSvelteCompomponent } from '../util/injectSvelteComponent'
+import { sanitizePathName } from '../util/minecraftUtil'
 import { createModelLoader } from '../util/moddingTools'
 import { translate } from '../util/translation'
 import { openUnexpectedErrorDialog } from './dialog/unexpectedError'
-import * as ModelDatFixerUpper from '../systems/modelDataFixerUpper'
-import { BLUEPRINT_CODEC, IBlueprintFormatJSON } from '../blueprintFormat'
-import { toSafeFuntionName } from '../util/minecraftUtil'
 
 let activeComponent: SvelteComponentDev | null = null
 
@@ -52,7 +52,7 @@ export function convertAJModelToBlueprint(path: string) {
 			name: 'Upgrade .ajmodel to Blueprint',
 			path,
 		})
-		blueprint.blueprint_settings!.export_namespace ??= toSafeFuntionName(Project!.name)
+		blueprint.blueprint_settings!.export_namespace ??= sanitizePathName(Project!.name)
 
 		requestAnimationFrame(() => {
 			Project!.save_path = ''

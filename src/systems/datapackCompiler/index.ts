@@ -52,15 +52,15 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 
 	const parentNames: Array<{ name: string; type: string }> = []
 
-	function recurseParents(node: AnyRenderedNode) {
-		if (node.parent === 'root') {
+	function recurseParents(n: AnyRenderedNode) {
+		if (n.parent === 'root') {
 			// Root is ignored
-		} else if (node.parent) {
+		} else if (n.parent) {
 			parentNames.push({
-				name: rig.nodes[node.parent].safe_name,
-				type: rig.nodes[node.parent].type,
+				name: rig.nodes[n.parent].path_name,
+				type: rig.nodes[n.parent].type,
 			})
-			recurseParents(rig.nodes[node.parent])
+			recurseParents(rig.nodes[n.parent])
 		}
 	}
 	recurseParents(node)
@@ -72,11 +72,11 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 		TAGS.NEW(),
 		TAGS.GLOBAL_ENTITY(),
 		TAGS.GLOBAL_NODE(),
-		TAGS.GLOBAL_NODE_NAMED(node.safe_name),
+		TAGS.GLOBAL_NODE_NAMED(node.path_name),
 		// Project
 		TAGS.PROJECT_ENTITY(Project!.animated_java.export_namespace),
 		TAGS.PROJECT_NODE(Project!.animated_java.export_namespace),
-		TAGS.PROJECT_NODE_NAMED(Project!.animated_java.export_namespace, node.safe_name)
+		TAGS.PROJECT_NODE_NAMED(Project!.animated_java.export_namespace, node.path_name)
 	)
 
 	if (!hasParent) {
@@ -86,19 +86,19 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 		case 'bone': {
 			tags.push(
 				// Global
-				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.safe_name),
+				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.path_name),
 				TAGS.GLOBAL_BONE(),
-				TAGS.GLOBAL_BONE_TREE(node.safe_name), // Tree includes self
-				TAGS.GLOBAL_BONE_TREE_BONE(node.safe_name), // Tree includes self
+				TAGS.GLOBAL_BONE_TREE(node.path_name), // Tree includes self
+				TAGS.GLOBAL_BONE_TREE_BONE(node.path_name), // Tree includes self
 				// Project
 				TAGS.PROJECT_DISPLAY_NODE_NAMED(
 					Project!.animated_java.export_namespace,
-					node.safe_name
+					node.path_name
 				),
 				TAGS.PROJECT_BONE(Project!.animated_java.export_namespace),
-				TAGS.PROJECT_BONE_NAMED(Project!.animated_java.export_namespace, node.safe_name),
-				TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_namespace, node.safe_name), // Tree includes self
-				TAGS.PROJECT_BONE_TREE_BONE(Project!.animated_java.export_namespace, node.safe_name) // Tree includes self
+				TAGS.PROJECT_BONE_NAMED(Project!.animated_java.export_namespace, node.path_name),
+				TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_namespace, node.path_name), // Tree includes self
+				TAGS.PROJECT_BONE_TREE_BONE(Project!.animated_java.export_namespace, node.path_name) // Tree includes self
 			)
 			if (!hasParent) {
 				// Nodes without parents are assumed to be root nodes
@@ -138,17 +138,17 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 		case 'item_display': {
 			tags.push(
 				// Global
-				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.safe_name),
+				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.path_name),
 				TAGS.GLOBAL_ITEM_DISPLAY(),
 				// Project
 				TAGS.PROJECT_DISPLAY_NODE_NAMED(
 					Project!.animated_java.export_namespace,
-					node.safe_name
+					node.path_name
 				),
 				TAGS.PROJECT_ITEM_DISPLAY(Project!.animated_java.export_namespace),
 				TAGS.PROJECT_ITEM_DISPLAY_NAMED(
 					Project!.animated_java.export_namespace,
-					node.safe_name
+					node.path_name
 				)
 			)
 			if (!hasParent) {
@@ -190,17 +190,17 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 		case 'block_display': {
 			tags.push(
 				// Global
-				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.safe_name),
+				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.path_name),
 				TAGS.GLOBAL_BLOCK_DISPLAY(),
 				// Project
 				TAGS.PROJECT_DISPLAY_NODE_NAMED(
 					Project!.animated_java.export_namespace,
-					node.safe_name
+					node.path_name
 				),
 				TAGS.PROJECT_BLOCK_DISPLAY(Project!.animated_java.export_namespace),
 				TAGS.PROJECT_BLOCK_DISPLAY_NAMED(
 					Project!.animated_java.export_namespace,
-					node.safe_name
+					node.path_name
 				)
 			)
 			if (!hasParent) {
@@ -242,17 +242,17 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 		case 'text_display': {
 			tags.push(
 				// Global
-				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.safe_name),
+				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.path_name),
 				TAGS.GLOBAL_TEXT_DISPLAY(),
 				// Project
 				TAGS.PROJECT_DISPLAY_NODE_NAMED(
 					Project!.animated_java.export_namespace,
-					node.safe_name
+					node.path_name
 				),
 				TAGS.PROJECT_TEXT_DISPLAY(Project!.animated_java.export_namespace),
 				TAGS.PROJECT_TEXT_DISPLAY_NAMED(
 					Project!.animated_java.export_namespace,
-					node.safe_name
+					node.path_name
 				)
 			)
 			if (!hasParent) {
@@ -297,7 +297,7 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 				TAGS.GLOBAL_LOCATOR(),
 				// Project
 				TAGS.PROJECT_LOCATOR(Project!.animated_java.export_namespace),
-				TAGS.PROJECT_LOCATOR_NAMED(Project!.animated_java.export_namespace, node.safe_name)
+				TAGS.PROJECT_LOCATOR_NAMED(Project!.animated_java.export_namespace, node.path_name)
 			)
 			if (!hasParent) {
 				// Nodes without parents are assumed to be root nodes
@@ -341,7 +341,7 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 				TAGS.GLOBAL_CAMERA(),
 				// Project
 				TAGS.PROJECT_CAMERA(Project!.animated_java.export_namespace),
-				TAGS.PROJECT_CAMERA_NAMED(Project!.animated_java.export_namespace, node.safe_name)
+				TAGS.PROJECT_CAMERA_NAMED(Project!.animated_java.export_namespace, node.path_name)
 			)
 			if (!hasParent) {
 				// Nodes without parents are assumed to be root nodes
@@ -547,7 +547,7 @@ namespace TELLRAW {
 						' ',
 						' ',
 						{ text: ' ● ', color: 'gray' },
-						{ text: anim.safe_name, color: 'yellow' },
+						{ text: anim.path_name, color: 'yellow' },
 					])
 			),
 			TELLRAW_SUFFIX(),
@@ -635,7 +635,7 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 				const item = new NbtCompound()
 				const variantModel = rig.variants[Variant.getDefault().uuid].models[uuid]
 				if (!variantModel) {
-					throw new Error(`Model for bone '${node.safe_name}' not found!`)
+					throw new Error(`Model for bone '${node.path_name}' not found!`)
 				}
 				passenger.set(
 					'item',
@@ -753,7 +753,7 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 				const parsed = await parseBlock(node.block)
 				if (!parsed) {
 					throw new Error(
-						`Invalid Blockstate '${node.block}' in node '${node.safe_name}'!`
+						`Invalid Blockstate '${node.block}' in node '${node.path_name}'!`
 					)
 				}
 
@@ -843,12 +843,12 @@ async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAn
 	const limiter = new MSLimiter(16)
 
 	for (const animation of animations) {
-		PROGRESS_DESCRIPTION.set(`Creating Animation Storage for '${animation.safe_name}'`)
+		PROGRESS_DESCRIPTION.set(`Creating Animation Storage for '${animation.storage_name}'`)
 		let frames = new NbtCompound()
 		const addFrameDataCommand = () => {
 			const str = `data modify storage aj.${
 				Project!.animated_java.export_namespace
-			}:animations ${animation.safe_name} merge value ${frames.toString()}`
+			}:animations ${animation.storage_name} merge value ${frames.toString()}`
 			dataCommands.push(str)
 			frames = new NbtCompound()
 		}
@@ -864,14 +864,14 @@ async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAn
 				}
 				if (BONE_TYPES.includes(node.type)) {
 					thisFrame.set(
-						node.type + '_' + node.safe_name,
+						node.type + '_' + node.storage_name,
 						new NbtCompound()
 							.set('transformation', matrixToNbtFloatArray(transform.matrix))
 							.set('start_interpolation', new NbtInt(0))
 					)
 				} else {
 					thisFrame.set(
-						node.type + '_' + node.safe_name,
+						node.type + '_' + node.storage_name,
 						new NbtCompound()
 							.set('posx', new NbtFloat(transform.pos[0]))
 							.set('posy', new NbtFloat(transform.pos[1]))
@@ -928,14 +928,18 @@ function createPassengerStorage(rig: IRenderedRig) {
 					.set('roty', new NbtFloat(Math.radToDeg(node.default_transform.rot[1])))
 				if (node.type === 'locator' && node.config?.use_entity)
 					data.set('uuid', new NbtString(''))
-				;(node.type === 'camera' ? cameras : locators).set(node.safe_name, data)
+				if (node.type === 'camera') {
+					cameras.set(node.storage_name, data)
+				} else {
+					locators.set(node.storage_name, data)
+				}
 				break
 			}
 			case 'bone':
 			case 'text_display':
 			case 'item_display':
 			case 'block_display': {
-				bones.set(node.type + '_' + node.safe_name, new NbtString(''))
+				bones.set(node.type + '_' + node.storage_name, new NbtString(''))
 				break
 			}
 		}

@@ -1,6 +1,5 @@
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
-import { isResourcePackPath, toSafeFuntionName } from '../../util/minecraftUtil'
-import { IntentionalExportError } from '../exporter'
+import { isResourcePackPath, sanitizePathName } from '../../util/minecraftUtil'
 import { type ITextureAtlas } from '../minecraft/textureAtlas'
 import { IRenderedNodes, IRenderedRig } from '../rigRenderer'
 import { zip } from '../util'
@@ -96,7 +95,7 @@ export default async function compileResourcePack(options: {
 			throw new Error(`Texture ${texture.name} is missing it's image data.`)
 		}
 
-		let textureName = toSafeFuntionName(texture.name)
+		let textureName = sanitizePathName(texture.name)
 		if (!texture.name.endsWith('.png')) textureName += '.png'
 		exportedFiles.set(PathModule.join(textureExportFolder, textureName), image)
 		if (mcmeta !== undefined)

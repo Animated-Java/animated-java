@@ -1,16 +1,20 @@
+import * as crypto from 'crypto'
 import {
 	IBlueprintCameraConfigJSON,
-	type IBlueprintBoneConfigJSON,
 	IBlueprintLocatorConfigJSON,
 	IBlueprintTextDisplayConfigJSON,
 	IBlueprintVariantJSON,
+	type IBlueprintBoneConfigJSON,
 } from '../blueprintFormat'
 import { BoneConfig } from '../nodeConfigs'
 import { Alignment, TextDisplay } from '../outliner/textDisplay'
+import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
+import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
 import {
 	IMinecraftResourceLocation,
 	parseResourcePackPath,
-	toSafeFuntionName,
+	sanitizePathName,
+	sanitizeStorageKey,
 } from '../util/minecraftUtil'
 import { Variant } from '../variants'
 import {
@@ -20,11 +24,8 @@ import {
 	updatePreview,
 	type INodeTransform,
 } from './animationRenderer'
-import * as crypto from 'crypto'
-import { JsonText } from './minecraft/jsonText'
-import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
-import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
 import { IntentionalExportError } from './exporter'
+import { JsonText } from './minecraft/jsonText'
 
 export interface IRenderedFace {
 	uv: number[]
@@ -63,9 +64,19 @@ export interface IRenderedModel {
 
 export interface IRenderedNode {
 	type: string
+	/** The origin name of the node */
 	name: string
-	safe_name: string
+	/** A sanitized version of {@link IRenderedNode.name} that is safe to use in a path in a data pack or resource pack.*/
+	path_name: string
+	/** A sanitized version of {@link IRenderedNode.name} that is safe to use as a key in a storage object. */
+	storage_name: string
+	/**
+	 * The UUID of the node
+	 *
+	 * Corresponds to the UUID of the OutlinerElement from which this node was rendered.
+	 */
 	uuid: string
+	/** The UUID of the parent node */
 	parent?: string
 	/**
 	 * The default transformation of the node
@@ -279,7 +290,7 @@ export function getTextureResourceLocation(texture: Texture, rig: IRenderedRig) 
 			return parsed
 		}
 	}
-	const path = PathModule.join(rig.texture_export_folder, toSafeFuntionName(texture.name))
+	const path = PathModule.join(rig.texture_export_folder, sanitizePathName(texture.name))
 	const parsed = parseResourcePackPath(path)
 	if (parsed) {
 		TEXTURE_RESOURCE_LOCATION_CACHE.set(texture.uuid, parsed)
@@ -332,7 +343,8 @@ function renderGroup(
 	const renderedBone: IRenderedNodes['Bone'] = {
 		type: 'bone',
 		name: group.name,
-		safe_name: toSafeFuntionName(group.name),
+		path_name: sanitizePathName(group.name),
+		storage_name: sanitizeStorageKey(group.name),
 		uuid: group.uuid,
 		parent: parentId,
 		bounding_box: getBoneBoundingBox(group),
@@ -399,7 +411,8 @@ function renderGroup(
 		const struct: IRenderedNodes['Struct'] = {
 			type: 'struct',
 			name: group.name,
-			safe_name: renderedBone.safe_name,
+			path_name: sanitizePathName(group.name),
+			storage_name: sanitizeStorageKey(group.name),
 			uuid: group.uuid,
 			parent: parentId,
 			default_transform: {} as INodeTransform,
@@ -441,7 +454,8 @@ function renderItemDisplay(display: VanillaItemDisplay, rig: IRenderedRig) {
 	const renderedBone: IRenderedNodes['ItemDisplay'] = {
 		type: 'item_display',
 		name: display.name,
-		safe_name: toSafeFuntionName(display.name),
+		path_name: sanitizePathName(display.name),
+		storage_name: sanitizeStorageKey(display.name),
 		uuid: display.uuid,
 		parent: parentId,
 		item: display.item,
@@ -469,7 +483,8 @@ function renderBlockDisplay(display: VanillaBlockDisplay, rig: IRenderedRig) {
 	const renderedBone: IRenderedNodes['BlockDisplay'] = {
 		type: 'block_display',
 		name: display.name,
-		safe_name: toSafeFuntionName(display.name),
+		path_name: sanitizePathName(display.name),
+		storage_name: sanitizeStorageKey(display.name),
 		uuid: display.uuid,
 		block: display.block,
 		parent: parentId,
@@ -496,7 +511,8 @@ function renderTextDisplay(display: TextDisplay, rig: IRenderedRig): INodeStruct
 	const renderedBone: IRenderedNodes['TextDisplay'] = {
 		type: 'text_display',
 		name: display.name,
-		safe_name: toSafeFuntionName(display.name),
+		path_name: sanitizePathName(display.name),
+		storage_name: sanitizeStorageKey(display.name),
 		uuid: display.uuid,
 		parent: parentId,
 		text: JsonText.fromString(display.text),
@@ -525,7 +541,8 @@ function renderLocator(locator: Locator, rig: IRenderedRig) {
 	const renderedLocator: IRenderedNodes['Locator'] = {
 		type: 'locator',
 		name: locator.name,
-		safe_name: toSafeFuntionName(locator.name),
+		path_name: sanitizePathName(locator.name),
+		storage_name: sanitizeStorageKey(locator.name),
 		uuid: locator.uuid,
 		parent: parentId,
 		config: locator.config,
@@ -542,7 +559,8 @@ function renderCamera(camera: ICamera, rig: IRenderedRig) {
 	const renderedCamera: IRenderedNodes['Camera'] = {
 		type: 'camera',
 		name: camera.name,
-		safe_name: toSafeFuntionName(camera.name),
+		path_name: sanitizePathName(camera.name),
+		storage_name: sanitizeStorageKey(camera.name),
 		uuid: camera.uuid,
 		parent: parentId,
 		config: camera.config,
@@ -590,15 +608,15 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 			continue
 		}
 
-		const modelParent = PathModule.join(rig.model_export_folder, bone.safe_name + '.json')
+		const modelParent = PathModule.join(rig.model_export_folder, bone.path_name + '.json')
 		const parsed = parseResourcePackPath(modelParent)
 		if (!parsed) {
-			throw new Error(`Invalid Bone Name: '${bone.safe_name}' -> '${modelParent}'`)
+			throw new Error(`Invalid Bone Name: '${bone.path_name}' -> '${modelParent}'`)
 		}
 
 		const modelPath = variant.isDefault
-			? PathModule.join(rig.model_export_folder, bone.safe_name + '.json')
-			: PathModule.join(rig.model_export_folder, variant.name, bone.safe_name + '.json')
+			? PathModule.join(rig.model_export_folder, bone.path_name + '.json')
+			: PathModule.join(rig.model_export_folder, variant.name, bone.path_name + '.json')
 		const parsedModelPath = parseResourcePackPath(modelPath)
 		if (!parsedModelPath) {
 			throw new Error(`Invalid Variant Name: '${variant.name}' -> '${modelPath}'`)
