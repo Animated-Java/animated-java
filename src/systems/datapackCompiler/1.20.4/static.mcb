@@ -120,7 +120,7 @@ dir <%export_namespace%> {
 				function *global/internal/gu/convert_uuid_array_to_string with entity @s
 				data modify entity @s data.bones.data_data set from storage aj:uuid main.out
 
-				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator')) as locator {
+				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator' && v.config?.use_entity)) as locator {
 					IF (locator.config && locator.config.use_entity) {
 						summon <%locator.config.entity_type%> \
 							^<%locator.default_transform.pos[0]%> \
@@ -229,7 +229,7 @@ dir <%export_namespace%> {
 			}
 			$data modify storage aj:temp command set value '$(command)'
 			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run {
-				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator')) as locator {
+				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator' && v.config?.use_entity)) as locator {
 					data modify storage aj:temp uuid set from entity @s data.locators.<%locator.name%>.uuid
 					block zzz/execute { with storage aj:temp
 						$execute as $(uuid) run $(command)
