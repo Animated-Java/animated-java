@@ -51,7 +51,6 @@
 
 	import { TextDisplay } from '@aj/blockbench-additions/outliner-elements/textDisplay'
 	import { TextDisplayConfig } from '@aj/systems/node-configs'
-	import { translate } from '@aj/util/translation'
 	import { MODE_ICONS, type OptionMode } from '.'
 
 	export let textDisplay: TextDisplay
@@ -100,10 +99,11 @@
 
 <ul class="option-list">
 	{#each config.keys(true) as key}
+		{@const display = config.getPropertyDescription(key)}
 		<li>
 			<div>
 				<div class="option-title">
-					{translate(`panel.display.animated_java:text_display.options.${key}`)}
+					{display?.displayName}
 				</div>
 				<div class="option-mode">{OPTION_MODES.get(key)}</div>
 				<!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -115,9 +115,15 @@
 				</i>
 			</div>
 			{#if OPTION_MODES.get(key) === 'custom'}
-				<div class="option-value">
-					<input type="text" value={config[key]} />
-				</div>
+				{#if display?.displayMode === 'checkbox'}
+					<div class="option-value">
+						<input type="checkbox" checked={!!config[key]} />
+					</div>
+				{:else}
+					<div class="option-value">
+						<input type="text" value={config[key]} />
+					</div>
+				{/if}
 			{/if}
 		</li>
 	{/each}

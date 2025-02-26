@@ -1,12 +1,10 @@
 <script lang="ts">
-	import Checkbox from '@svelte-components/dialog-items/checkbox.svelte'
-
+	
 	import { Valuable } from '../../../util/stores'
 	import { translate } from '../../../util/translation'
 
 	import { JsonText } from '@aj/systems/minecraft-temp/jsonText'
 	import { NbtCompound, NbtTag } from 'deepslate/lib/nbt'
-	import NodeConfigOption from './nodeConfigOption.svelte'
 
 	const IS_PLUGIN_MODE = Project?.animated_java?.environment === 'plugin'
 

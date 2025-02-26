@@ -42,6 +42,8 @@ export class SerializableConfig<
 		__inheritedKeys__: Array<keyof T>
 	},
 > {
+	private static __propertyDisplayConfigs__: Partial<Record<string, PropertyDisplayConfig>> = {}
+
 	private __defaultValues__ = {} as Record<string, any>
 	private __inheritedKeys__ = new Set<keyof T>()
 	private __getLocal__ = false
@@ -301,6 +303,10 @@ export class SerializableConfig<
 		return entries
 	}
 
+	getPropertyDescription<Key extends keyof T>(key: Key): PropertyDisplayConfig | undefined {
+		return this.constructor.prototype.__propertyDisplayConfigs__?.[key]
+	}
+
 	/**
 	 * Decorator to make a class a serializable config.
 	 */
@@ -316,4 +322,34 @@ export class SerializableConfig<
 			},
 		})
 	}
+
+	static configurePropertyDisplay(options: PropertyDisplayConfig) {
+		return ((target, key) => {
+			target.constructor.prototype.__propertyDisplayConfigs__ ??= {}
+			target.constructor.prototype.__propertyDisplayConfigs__[key] = options
+		}) satisfies PropertyDecorator
+	}
 }
+
+interface IPropertyDisplayConfig {
+	displayName: string
+}
+
+interface IPropertyDisplayConfigs {
+	select: IPropertyDisplayConfig & {
+		displayMode: 'select'
+		options: string[]
+	}
+	color: IPropertyDisplayConfig & {
+		displayMode: 'color'
+	}
+	checkbox: IPropertyDisplayConfig & {
+		displayMode: 'checkbox'
+	}
+	code_editor: IPropertyDisplayConfig & {
+		displayMode: 'code_editor'
+		syntax: string
+	}
+}
+
+export type PropertyDisplayConfig = IPropertyDisplayConfigs[keyof IPropertyDisplayConfigs]

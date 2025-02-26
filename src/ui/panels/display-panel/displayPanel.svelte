@@ -91,7 +91,7 @@
 			}}
 		>
 			{translate(
-				`panel.display.${selectedNode && Object.getPrototypeOf(selectedNode).constructor.type}.label`
+				`config.${selectedNode && Object.getPrototypeOf(selectedNode).constructor.type}.label`
 			)}
 		</p>
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -101,7 +101,7 @@
 				commonTabSelected = true
 			}}
 		>
-			{translate('panel.display.common.label')}
+			{translate('config.common.label')}
 		</p>
 	</div>
 
@@ -113,7 +113,7 @@
 						<li>
 							<div>
 								<div class="option-title">
-									{translate(`panel.display.common.options.${key}`)}
+									{translate(`config.common.options.${key}`)}
 								</div>
 								<div class="option-mode">{commonOptionModes.get(key)}</div>
 								<!-- svelte-ignore a11y-click-events-have-key-events -->
