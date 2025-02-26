@@ -127,11 +127,54 @@ export class BlockDisplayConfig extends SerializableConfig<BlockDisplayConfig> {
 
 @SerializableConfig.decorate
 export class TextDisplayConfig extends SerializableConfig<TextDisplayConfig> {
-	alignment: Alignment = 'center'
+	@SerializableConfig.configurePropertyDisplay({
+		get displayName() {
+			return translate('config.animated_java:text_display.options.alignment')
+		},
+		displayMode: 'select',
+		options: ['center', 'left', 'right'],
+	})
+	alignment?: Alignment = 'center'
+
+	@SerializableConfig.configurePropertyDisplay({
+		get displayName() {
+			return translate('config.animated_java:text_display.options.backgroundColor')
+		},
+		displayMode: 'color',
+	})
 	backgroundColor = '#0000003f'
+
+	@SerializableConfig.configurePropertyDisplay({
+		get displayName() {
+			return translate('config.animated_java:text_display.options.lineWidth')
+		},
+		displayMode: 'color',
+	})
 	lineWidth? = 200
-	seeThrough = false
-	shadow = false
+
+	@SerializableConfig.configurePropertyDisplay({
+		get displayName() {
+			return translate('config.animated_java:text_display.options.seeThrough')
+		},
+		displayMode: 'checkbox',
+	})
+	seeThrough? = false
+
+	@SerializableConfig.configurePropertyDisplay({
+		get displayName() {
+			return translate('config.animated_java:text_display.options.shadow')
+		},
+		displayMode: 'checkbox',
+	})
+	shadow? = false
+
+	@SerializableConfig.configurePropertyDisplay({
+		get displayName() {
+			return translate('config.animated_java:text_display.options.textComponent')
+		},
+		displayMode: 'code_editor',
+		syntax: 'json',
+	})
 	textComponent?: string
 
 	public toNBT(compound = new NbtCompound()) {
@@ -139,3 +182,6 @@ export class TextDisplayConfig extends SerializableConfig<TextDisplayConfig> {
 		return compound
 	}
 }
+
+const TEST = new TextDisplayConfig()
+console.log(TEST, TEST.getPropertyDescription('alignment'))

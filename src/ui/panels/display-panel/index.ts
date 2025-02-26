@@ -144,7 +144,7 @@ TEXT_DISPLAY_ALIGNMENT_SELECT.get = function () {
 	const selected = TextDisplay.selected[0]
 	if (!selected) return 'left'
 	const config = new TextDisplayConfig().fromJSON(selected.config)
-	return config.alignment
+	return config.alignment!
 }
 TEXT_DISPLAY_ALIGNMENT_SELECT.set = function (this: BarSelect<Alignment>, value: Alignment) {
 	const selected = TextDisplay.selected[0]

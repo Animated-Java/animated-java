@@ -89,41 +89,42 @@ dialog:
         label: Storage-based
         description: 42% Slower than function-based, but creates far fewer function files.
 
+config:
+  common:
+    label: Common
+    options:
+      billboard: Billboard
+      brightnessOverride: Brightness
+      glowColor: Glow Color
+      glowing: Glowing
+      inheritSettings: Inherit Settings
+      invisible: Invisible
+      nbt: NBT
+      overrideBrightness: Override Brightness
+      overrideGlowColor: Override Glow Color
+      shadowRadius: Shadow Radius
+      shadowStrength: Shadow Strength
+      useNBT: Use NBT
+
+  animated_java:text_display:
+    label: Text Display
+    options:
+      alignment: Alignment
+      backgroundColor: Background Color
+      lineWidth: Line Width
+      seeThrough: See Through
+      shadow: Shadow
+      textComponent: Text Component
+
+  animated_java:item_display:
+    label: Item Display
+
+  animated_java:block_display:
+    label: Block Display
+
 panel:
   display:
     title: Display
-
-    common:
-      label: Common
-      options:
-        billboard: Billboard
-        brightnessOverride: Brightness
-        glowColor: Glow Color
-        glowing: Glowing
-        inheritSettings: Inherit Settings
-        invisible: Invisible
-        nbt: NBT
-        overrideBrightness: Override Brightness
-        overrideGlowColor: Override Glow Color
-        shadowRadius: Shadow Radius
-        shadowStrength: Shadow Strength
-        useNBT: Use NBT
-
-    animated_java:text_display:
-      label: Text Display
-      options:
-        alignment: Alignment
-        backgroundColor: Background Color
-        lineWidth: Line Width
-        seeThrough: See Through
-        shadow: Shadow
-        textComponent: Text Component
-
-    animated_java:item_display:
-      label: Item Display
-
-    animated_java:block_display:
-      label: Block Display
 
 node:
   structure.title: |-
