@@ -432,17 +432,26 @@ dir <%export_namespace%> {
 			execute store result score @s <%OBJECTIVES.ID()%> run scoreboard players add aj.last_id <%OBJECTIVES.ID()%> 1
 
 			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run {
-
 				function *global/internal/gu/convert_uuid_array_to_string with entity @s
 				data modify entity @s data.bones.data_data set from storage aj:uuid main.out
 
 				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator')) as locator {
 					IF (locator.config && locator.config.use_entity) {
-						summon <%locator.config.entity_type%> ~ ~ ~ {Tags:<%getNodeTags(locator, rig)%>}
+						summon <%locator.config.entity_type%> \
+							^<%locator.default_transform.pos[0]%> \
+							^<%locator.default_transform.pos[1]%> \
+							^<%locator.default_transform.pos[2]%> \
+							{Tags:<%getNodeTags(locator, rig)%>}
 						execute as @e[type=<%locator.config.entity_type%>,tag=<%TAGS.NEW()%>,tag=<%TAGS.GLOBAL_LOCATOR()%>,limit=1,distance=..0.01] run {
 							tag @s remove <%TAGS.NEW()%>
 
 							function *global/internal/gu/convert_uuid_array_to_string with entity @s
+							tp @s \
+								^<%roundTo(locator.default_transform.pos[0], 10)%> \
+								^<%roundTo(locator.default_transform.pos[1], 10)%> \
+								^<%roundTo(locator.default_transform.pos[2], 10)%> \
+								~<%roundTo(locator.default_transform.head_rot[1], 10)%> \
+								~<%roundTo(locator.default_transform.head_rot[0], 10)%>
 							<%%
 								if (locator.config.summon_commands) {
 									emit.mcb(locator.config.summon_commands)
@@ -454,10 +463,20 @@ dir <%export_namespace%> {
 				}
 
 				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'camera')) as camera {
-					summon item_display ~ ~ ~ {Tags:<%getNodeTags(camera, rig)%>, teleport_duration: 2}
+					summon item_display \
+						^<%camera.default_transform.pos[0]%> \
+						^<%camera.default_transform.pos[1]%> \
+						^<%camera.default_transform.pos[2]%> \
+						{Tags:<%getNodeTags(camera, rig)%>, teleport_duration: 2}
 					execute as @e[type=item_display,tag=<%TAGS.NEW()%>,tag=<%TAGS.GLOBAL_CAMERA()%>,limit=1,distance=..0.01] run {
 						tag @s remove <%TAGS.NEW()%>
 						function *global/internal/gu/convert_uuid_array_to_string with entity @s
+						tp @s \
+							^<%roundTo(camera.default_transform.pos[0], 10)%> \
+							^<%roundTo(camera.default_transform.pos[1], 10)%> \
+							^<%roundTo(camera.default_transform.pos[2], 10)%> \
+							~<%roundTo(camera.default_transform.head_rot[1], 10)%> \
+							~<%roundTo(camera.default_transform.head_rot[0], 10)%>
 					}
 					data modify entity @s data.cameras.<%camera.name%>.uuid set from storage aj:uuid main.out
 				}
@@ -609,9 +628,11 @@ dir <%export_namespace%> {
 			REPEAT (Object.values(rig.variants)) as variant {
 				dir <%variant.name%> {
 					function apply {
-						execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-							function *global/errors/function_not_executed_as_root_entity \
-								{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/variants/<%variant.name%>/apply'}
+						IF (show_function_errors) {
+							execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+								function *global/errors/function_not_executed_as_root_entity \
+									{'export_namespace': '<%export_namespace%>', 'function_path': 'animated_java:<%export_namespace%>/variants/<%variant.name%>/apply'}
+						}
 						REPEAT (Object.values(rig.nodes)) as node {
 							IF (node.type === 'bone' && !variant.excluded_nodes.includes(node.uuid) && (variant.models[node.uuid] !== undefined || node.configs.variants[variant.uuid] !== undefined)) {
 								execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%node.safe_name%>] run {
