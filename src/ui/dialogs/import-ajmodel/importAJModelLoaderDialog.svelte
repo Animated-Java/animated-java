@@ -4,7 +4,6 @@
 
 	function openAJModel() {
 		void Promise.any([
-			// @ts-ignore
 			electron.dialog.showOpenDialog({
 				properties: ['openFile'],
 				filters: [{ name: '.ajmodel', extensions: ['ajmodel'] }],

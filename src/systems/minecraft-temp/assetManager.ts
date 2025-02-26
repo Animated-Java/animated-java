@@ -2,7 +2,6 @@ import { PACKAGE } from '../../constants'
 import { getCurrentVersion, getLatestVersion } from './versionManager'
 
 import EVENTS from '@aj/util/events'
-import { app } from 'electron'
 import { type Unzipped } from 'fflate'
 import {
 	showOfflineError,
@@ -83,7 +82,7 @@ export async function getLatestVersionClientDownloadUrl() {
 }
 
 function getCachedJarFilePath() {
-	const userDataPath = (electron?.app ?? app).getPath('userData')
+	const userDataPath = electron.app.getPath('userData')
 	return PathModule.join(userDataPath, `${PACKAGE.name}/latest.jar`)
 }
 
