@@ -297,17 +297,20 @@ class JsonTextParser {
 					case 'fallback':
 						obj[key] = this.parseString()
 						break
-					case 'color':
+					case 'color': {
+						const color = this.parseString() as JsonTextColor
+						if (!(color.startsWith('#') || COLOR_MAP[color])) {
+							throw new ParserError(`Unknown color '${color}'`, this.s)
+						}
+						obj.color = color
+						break
+					}
 					case 'shadow_color': {
 						const color = this.parseString() as JsonTextColor
 						if (!(color.startsWith('#') || COLOR_MAP[color])) {
 							throw new ParserError(`Unknown color '${color}'`, this.s)
 						}
-						if (key === 'color') {
-							obj.color = color
-						} else {
-							obj.shadow_color = color
-						}
+						obj.shadow_color = color
 						break
 					}
 					case 'bold':

@@ -1,7 +1,7 @@
 {
 	"meta": {
 		"format": "animated_java_blueprint",
-		"format_version": "1.6.4",
+		"format_version": "1.6.5",
 		"uuid": "167b27cd-b559-3f13-a97c-0841fe21f1d1",
 		"save_location": "D:\\github-repos\\animated-java\\animated-java\\test_blueprints\\armor_stand.ajblueprint",
 		"last_used_export_namespace": "armor_stand"
@@ -882,7 +882,7 @@
 			"config": {},
 			"item": "minecraft:diamond",
 			"item_display": "none",
-			"text": "{\n\t\"text\": \"Hello, World!\",\n\t\"color\": \"green\"\n}\n",
+			"text": "{\n\t\"text\": \"Hello, World!\",\n\t\"color\": \"green\",\n\t\"shadow_color\": \"red\",\n}\n",
 			"lineWidth": 200,
 			"backgroundColor": "#ffffff",
 			"backgroundAlpha": 0.25098,
@@ -894,15 +894,44 @@
 		},
 		{
 			"name": "camera",
-			"path": "",
-			"position": [0, 0, 0],
-			"rotation": [0, 0, 0],
-			"fov": 70,
-			"aspect_ratio": [16, 9],
-			"linked_preview": "",
-			"camera_linked": false,
-			"visibility": true,
-			"type": "camera",
+			"box_uv": false,
+			"rescale": false,
+			"locked": false,
+			"light_emission": 0,
+			"render_order": "default",
+			"allow_mirror_modeling": true,
+			"from": [0, 0, 0],
+			"to": [1, 1, 1],
+			"autouv": 0,
+			"color": 0,
+			"origin": [0, 0, 0],
+			"faces": {
+				"north": {
+					"uv": [0, 0, 1, 1],
+					"texture": 0
+				},
+				"east": {
+					"uv": [0, 0, 1, 1],
+					"texture": 0
+				},
+				"south": {
+					"uv": [0, 0, 1, 1],
+					"texture": 0
+				},
+				"west": {
+					"uv": [0, 0, 1, 1],
+					"texture": 0
+				},
+				"up": {
+					"uv": [0, 0, 1, 1],
+					"texture": 0
+				},
+				"down": {
+					"uv": [0, 0, 1, 1],
+					"texture": 0
+				}
+			},
+			"type": "cube",
 			"uuid": "3f916352-b0e1-f1e4-0e09-308cc68f96e6"
 		}
 	],
@@ -3148,7 +3177,7 @@
 			"override": false,
 			"length": 0.8,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"saved": false,
 			"path": "",
 			"anim_time_update": "",
