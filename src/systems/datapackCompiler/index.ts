@@ -1,18 +1,7 @@
-import { isFunctionTagPath } from '../../util/fileUtil'
-import mcbFiles from '../datapackCompiler/mcbFiles'
-import { AnyRenderedNode, IRenderedRig, IRenderedVariant } from '../rigRenderer'
-import { IRenderedAnimation } from '../animationRenderer'
-import { Variant } from '../../variants'
 import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/lib/nbt'
-import {
-	arrayToNbtFloatArray,
-	getFunctionNamespace,
-	matrixToNbtFloatArray,
-	replacePathPart,
-	sortObjectKeys,
-	transformationToNbt,
-} from '../util'
+import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
 import { BoneConfig, TextDisplayConfig } from '../../nodeConfigs'
+import { isFunctionTagPath } from '../../util/fileUtil'
 import {
 	getDataPackFormat,
 	IFunctionTag,
@@ -21,13 +10,24 @@ import {
 	parseDataPackPath,
 	parseResourceLocation,
 } from '../../util/minecraftUtil'
-import { JsonText } from '../minecraft/jsonText'
-import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
 import { eulerFromQuaternion, floatToHex, roundTo, tinycolorToDecimal } from '../../util/misc'
 import { MSLimiter } from '../../util/msLimiter'
+import { Variant } from '../../variants'
+import { IRenderedAnimation } from '../animationRenderer'
+import mcbFiles from '../datapackCompiler/mcbFiles'
+import { IntentionalExportError } from '../exporter'
+import { JsonText } from '../minecraft/jsonText'
+import { AnyRenderedNode, IRenderedRig, IRenderedVariant } from '../rigRenderer'
+import {
+	arrayToNbtFloatArray,
+	getFunctionNamespace,
+	matrixToNbtFloatArray,
+	replacePathPart,
+	sortObjectKeys,
+	transformationToNbt,
+} from '../util'
 import { compile } from './compiler'
 import { TAGS } from './tags'
-import { IntentionalExportError } from '../exporter'
 
 const BONE_TYPES = ['bone', 'text_display', 'item_display', 'block_display']
 
@@ -69,6 +69,7 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 
 	tags.push(
 		// Global
+		TAGS.NEW(),
 		TAGS.GLOBAL_ENTITY(),
 		TAGS.GLOBAL_NODE(),
 		TAGS.GLOBAL_NODE_NAMED(node.safe_name),
@@ -592,6 +593,7 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 			.set(
 				'Tags',
 				new NbtList([
+					new NbtString(TAGS.NEW()),
 					new NbtString(TAGS.GLOBAL_ENTITY()),
 					new NbtString(TAGS.GLOBAL_DATA()),
 					new NbtString(TAGS.PROJECT_ENTITY(aj.export_namespace)),
@@ -1069,6 +1071,7 @@ export default async function compileDataPack(options: {
 				.length > 0,
 		has_cameras: Object.values(rig.nodes).filter(n => n.type === 'camera').length > 0,
 		is_static,
+		getNodeTags,
 	}
 
 	const mcbFile = is_static
