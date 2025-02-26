@@ -1,7 +1,6 @@
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
 import { isResourcePackPath, toSafeFuntionName } from '../../util/minecraftUtil'
 import { Variant } from '../../variants'
-import { IntentionalExportError } from '../exporter'
 import { IItemDefinition } from '../minecraft/itemDefinitions'
 import { type ITextureAtlas } from '../minecraft/textureAtlas'
 import { IRenderedNodes, IRenderedRig, IRenderedVariantModel } from '../rigRenderer'
@@ -219,12 +218,7 @@ function createSingleVariantItemDefinition(model: IRenderedVariantModel): IItemD
 		model: {
 			type: 'minecraft:model',
 			model: model.resource_location,
-			tints: [
-				{
-					type: 'minecraft:dye',
-					default: [1, 1, 1],
-				},
-			],
+			tints: [new oneLiner({ type: 'minecraft:dye', default: [1, 1, 1] })],
 		},
 	}
 }
@@ -244,13 +238,8 @@ function createMultiVariantItemDefinition(
 			fallback: {
 				type: 'minecraft:model',
 				model: model.resource_location,
+				tints: [new oneLiner({ type: 'minecraft:dye', default: [1, 1, 1] })],
 			},
-			tints: [
-				{
-					type: 'minecraft:dye',
-					default: [1, 1, 1],
-				},
-			],
 		},
 	}
 
@@ -262,6 +251,7 @@ function createMultiVariantItemDefinition(
 			model: {
 				type: 'minecraft:model',
 				model: variantModel.resource_location,
+				tints: [new oneLiner({ type: 'minecraft:dye', default: [1, 1, 1] })],
 			},
 		} as (typeof itemDefinition.model.cases)[0])
 	}

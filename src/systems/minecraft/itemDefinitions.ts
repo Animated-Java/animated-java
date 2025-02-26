@@ -34,12 +34,11 @@ type TintSource =
 			default: [number, number, number]
 	  }
 
-type ItemModel = {
-	tints?: TintSource[]
-} & (
+type ItemModel =
 	| {
 			type: 'minecraft:model'
 			model: string
+			tints?: TintSource[]
 	  }
 	| {
 			type: 'minecraft:composite'
@@ -47,7 +46,6 @@ type ItemModel = {
 	  }
 	| ConditionModel
 	| SelectModel
-)
 // 'minecraft:select': SelectModel
 // 'minecraft:range_dispatch': {}
 // 'minecraft:bundle/selected_item': {}
