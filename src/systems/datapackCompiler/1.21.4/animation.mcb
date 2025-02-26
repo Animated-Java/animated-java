@@ -432,12 +432,13 @@ dir <%export_namespace%> {
 			execute store result score @s <%OBJECTIVES.ID()%> run scoreboard players add aj.last_id <%OBJECTIVES.ID()%> 1
 
 			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run {
+
 				function *global/internal/gu/convert_uuid_array_to_string with entity @s
 				data modify entity @s data.bones.data_data set from storage aj:uuid main.out
 
 				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator')) as locator {
 					IF (locator.config && locator.config.use_entity) {
-						summon <%locator.config.entity_type%> ~ ~ ~ {Tags:['<%TAGS.NEW()%>', '<%TAGS.GLOBAL_LOCATOR()%>', '<%TAGS.PROJECT_LOCATOR(export_namespace)%>', '<%TAGS.PROJECT_LOCATOR(export_namespace, locator.name)%>']}
+						summon <%locator.config.entity_type%> ~ ~ ~ {Tags:<%getNodeTags(locator, rig)%>}
 						execute as @e[type=<%locator.config.entity_type%>,tag=<%TAGS.NEW()%>,tag=<%TAGS.GLOBAL_LOCATOR()%>,limit=1,distance=..0.01] run {
 							tag @s remove <%TAGS.NEW()%>
 
@@ -453,7 +454,7 @@ dir <%export_namespace%> {
 				}
 
 				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'camera')) as camera {
-					summon item_display ~ ~ ~ {Tags:['<%TAGS.NEW()%>', '<%TAGS.GLOBAL_CAMERA()%>', '<%TAGS.PROJECT_CAMERA(export_namespace)%>', '<%TAGS.PROJECT_CAMERA(export_namespace, camera.name)%>'], teleport_duration: 2}
+					summon item_display ~ ~ ~ {Tags:<%getNodeTags(camera, rig)%>, teleport_duration: 2}
 					execute as @e[type=item_display,tag=<%TAGS.NEW()%>,tag=<%TAGS.GLOBAL_CAMERA()%>,limit=1,distance=..0.01] run {
 						tag @s remove <%TAGS.NEW()%>
 						function *global/internal/gu/convert_uuid_array_to_string with entity @s
@@ -467,8 +468,6 @@ dir <%export_namespace%> {
 					data modify entity @s data.bones.<%node.type + '_' + node.name%> set from storage aj:uuid main.out
 				}
 			}
-
-			tag @s remove <%TAGS.NEW()%>
 
 			# Variant Arguement
 			IF (Object.keys(rig.variants).length > 1) {
@@ -536,6 +535,9 @@ dir <%export_namespace%> {
 				if (custom_summon_commands) emit.mcb(custom_summon_commands)
 			%%>
 			# Custom Summon Commands
+
+			tag @s remove <%TAGS.NEW()%>
+			execute on passengers run tag @s remove <%TAGS.NEW()%>
 
 			# Run the on_summon function for the root entity.
 			function #*<%export_namespace%>/as_root/on_summon
