@@ -637,10 +637,7 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 				if (!variantModel) {
 					throw new Error(`Model for bone '${node.path_name}' not found!`)
 				}
-				passenger.set(
-					'item',
-					item.set('id', new NbtString(aj.display_item)).set('Count', new NbtInt(1))
-				)
+				passenger.set('item', item.set('id', new NbtString(aj.display_item)))
 				switch (aj.target_minecraft_version) {
 					case '1.20.4': {
 						item.set(
@@ -650,6 +647,8 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 								new NbtInt(variantModel.custom_model_data)
 							)
 						)
+						// Count defaults to 1, but only in versions above 1.20.4
+						item.set('Count', new NbtInt(1))
 						break
 					}
 					case '1.20.5':
