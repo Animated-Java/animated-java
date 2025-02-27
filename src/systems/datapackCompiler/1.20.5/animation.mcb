@@ -582,12 +582,18 @@ dir <%export_namespace%> {
 	}
 
 	dir remove {
-		# Removes all instances of this rig from the world.
 		function all {
+			# Removes all instances of this rig from the world.
 			execute as @e[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run function *<%export_namespace%>/remove/this
 		}
-		# Removes the rig this function is executed as.
+
+		function entities {
+			# Removes all entities related to this rig from the world.
+			kill @e[tag=<%TAGS.PROJECT_ENTITY(export_namespace)%>]
+		}
+
 		function this {
+			# Removes the rig this function is executed as.
 			IF (show_function_errors) {
 				execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 					function *global/errors/function_not_executed_as_root_entity \
