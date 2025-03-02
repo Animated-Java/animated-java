@@ -44,6 +44,7 @@ export interface IBlueprintBoneConfigJSON {
 export interface IBlueprintLocatorConfigJSON {
 	use_entity?: LocatorConfig['useEntity']
 	entity_type?: LocatorConfig['entityType']
+	sync_passenger_rotation?: LocatorConfig['syncPassengerRotation']
 	summon_commands?: LocatorConfig['_summonCommands']
 	ticking_commands?: LocatorConfig['tickingCommands']
 }

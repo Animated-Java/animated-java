@@ -303,6 +303,9 @@ animated_java.dialog.locator_config.entity_type.description: The type of entity 
 animated_java.dialog.locator_config.entity_type.error.empty: Entity Type cannot be empty!
 animated_java.dialog.locator_config.entity_type.warning.invalid: The selected entity type doesn't exist in Minecraft {0}
 
+animated_java.dialog.locator_config.sync_passenger_rotation.title: Sync Passenger Rotation
+animated_java.dialog.locator_config.sync_passenger_rotation.description: Automatically sync the rotation of the Locator's passenger entities.
+
 animated_java.dialog.locator_config.summon_commands.title: On-Summon Commands
 animated_java.dialog.locator_config.summon_commands.description: |-
     Commands to run as the Locator's entity when summoned.
