@@ -6,15 +6,6 @@ import { SveltePanel } from '@aj/util/sveltePanel'
 import { translate } from '@aj/util/translation'
 import DisplayPanel from './displayPanel.svelte'
 
-export type OptionMode = 'default' | 'custom'
-export type CommonOptionMode = OptionMode | 'inherit'
-
-export enum MODE_ICONS {
-	'default' = 'home',
-	'custom' = 'edit',
-	'inherit' = 'supervisor_account',
-}
-
 export const DISPLAY_PANEL = new SveltePanel({
 	id: `${PACKAGE.name}:display_panel`,
 	icon: 'visibility',

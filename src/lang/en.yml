@@ -117,13 +117,20 @@ config:
 
   animated_java:item_display:
     label: Item Display
+    description: Properties specific to Item Displays.
 
   animated_java:block_display:
     label: Block Display
+    description: Properties specific to Block Displays.
 
 panel:
   display:
     title: Display
+    linked.tooltip: Linked - This display option will be inherited from the parent node.
+    unlinked.tooltip: Unlinked - This display option is unique to this node.
+    set_all_linked.tooltip: Set All Linked - Set all display options to inherit the display properties from the parent node.
+    set_all_unlinked.tooltip: Set All Unlinked - Set all display options to be unique to this node.
+    reset_all.tooltip: Reset All - Reset all display options to their default values.
 
 node:
   structure.title: |-
