@@ -1,43 +1,113 @@
 import type { Alignment } from '@aj/blockbench-additions/outliner-elements/textDisplay'
 import { translate } from '@aj/util/translation'
-import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtString, NbtTag } from 'deepslate/lib/nbt'
+import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtString } from 'deepslate/lib/nbt'
 import { SerializableConfig } from './serializableConfig'
 export type { Serialized } from './serializableConfig'
 
 @SerializableConfig.decorate
 export class CommonDisplayConfig extends SerializableConfig<CommonDisplayConfig> {
+	@SerializableConfig.configurePropertyDisplay({
+		get displayName() {
+			return translate('config.common.options.billboard')
+		},
+		displayMode: 'select',
+		options: ['fixed', 'vertical', 'horizontal', 'center'],
+	})
 	billboard?: BillboardMode = 'fixed'
+
+	@SerializableConfig.configurePropertyDisplay({
+		get displayName() {
+			return translate('config.common.options.overrideBrightness')
+		},
+		displayMode: 'checkbox',
+	})
 	overrideBrightness? = false
-	brightnessOverride? = 0
+
+	@SerializableConfig.configurePropertyDisplay({
+		get displayName() {
+			return translate('config.common.options.brightness')
+		},
+		displayMode: 'slider',
+		min: 0,
+		max: 15,
+		step: 1,
+	})
+	brightness? = 0
+
+	@SerializableConfig.configurePropertyDisplay({
+		get displayName() {
+			return translate('config.common.options.glowing')
+		},
+		displayMode: 'checkbox',
+	})
 	glowing? = false
+
+	@SerializableConfig.configurePropertyDisplay({
+		get displayName() {
+			return translate('config.common.options.overrideGlowColor')
+		},
+		displayMode: 'checkbox',
+	})
 	overrideGlowColor? = false
+
+	@SerializableConfig.configurePropertyDisplay({
+		get displayName() {
+			return translate('config.common.options.glowColor')
+		},
+		displayMode: 'color',
+	})
 	glowColor? = '#ffffff'
-	inheritSettings? = false
+
+	@SerializableConfig.configurePropertyDisplay({
+		get displayName() {
+			return translate('config.common.options.invisible')
+		},
+		displayMode: 'checkbox',
+	})
 	invisible? = false
-	nbt? = ''
+
+	@SerializableConfig.configurePropertyDisplay({
+		get displayName() {
+			return translate('config.common.options.shadowRadius')
+		},
+		displayMode: 'number',
+		min: 0,
+		max: 64,
+		step: 0.1,
+	})
 	shadowRadius? = 0
+
+	@SerializableConfig.configurePropertyDisplay({
+		get displayName() {
+			return translate('config.common.options.shadowStrength')
+		},
+		displayMode: 'number',
+		min: 0,
+		max: 1,
+		step: 0.1,
+	})
 	shadowStrength? = 1
-	useNBT? = false
+
+	@SerializableConfig.configurePropertyDisplay({
+		get displayName() {
+			return translate('config.common.options.onSummonCommands')
+		},
+		displayMode: 'code_editor',
+		syntax: 'mc-build',
+	})
+	onSummonCommands? = ''
 
 	public toNBT(compound: NbtCompound = new NbtCompound()): NbtCompound {
-		if (this.useNBT && this.nbt?.length) {
-			const newData = NbtTag.fromString(this.nbt) as NbtCompound
-			for (const key of newData.keys()) {
-				compound.set(key, newData.get(key)!)
-			}
-			return compound
-		}
-
 		if (this.billboard) {
 			compound.set('billboard', new NbtString(this.billboard))
 		}
 
-		if (this.overrideBrightness && this.brightnessOverride != undefined) {
+		if (this.overrideBrightness && this.brightness != undefined) {
 			compound.set(
 				'brightness',
 				new NbtCompound()
-					.set('block', new NbtFloat(this.brightnessOverride))
-					.set('sky', new NbtFloat(this.brightnessOverride))
+					.set('block', new NbtFloat(this.brightness))
+					.set('sky', new NbtFloat(this.brightness))
 			)
 		}
 
@@ -176,13 +246,10 @@ export class TextDisplayConfig extends SerializableConfig<TextDisplayConfig> {
 		displayMode: 'code_editor',
 		syntax: 'json',
 	})
-	textComponent?: string
+	textComponent? = ''
 
 	public toNBT(compound = new NbtCompound()) {
 		console.error('toNBT not implemented for TextDisplayConfig!')
 		return compound
 	}
 }
-
-const TEST = new TextDisplayConfig()
-console.log(TEST, TEST.getPropertyDescription('alignment'))

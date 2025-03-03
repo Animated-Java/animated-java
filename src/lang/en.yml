@@ -92,22 +92,21 @@ dialog:
 config:
   common:
     label: Common
+    description: Properties common to all nodes.
     options:
       billboard: Billboard
-      brightnessOverride: Brightness
-      glowColor: Glow Color
-      glowing: Glowing
-      inheritSettings: Inherit Settings
-      invisible: Invisible
-      nbt: NBT
       overrideBrightness: Override Brightness
+      brightness: Brightness
+      glowing: Glowing
       overrideGlowColor: Override Glow Color
+      glowColor: Glow Color
+      invisible: Invisible
       shadowRadius: Shadow Radius
       shadowStrength: Shadow Strength
-      useNBT: Use NBT
 
   animated_java:text_display:
     label: Text Display
+    description: Properties specific to Text Displays.
     options:
       alignment: Alignment
       backgroundColor: Background Color
