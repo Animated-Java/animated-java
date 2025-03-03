@@ -20,7 +20,7 @@ export const flavorQuotes = [
 	`This is why we can't have nice things. :(`,
 	`Have you tried turning it off and on again?`,
 	`What if I put my command block next to yours? Haha just kidding... Unless?`,
-	`If at first you don't succeed, Try, try again!`,
+	`If at first you don't succeed, try, try again!`,
 	`B:01010111 01100101 00100000 01100100 01101111 00100000 01100001 00100000 01101100 01101001 01110100 01110100 01101100 01100101 00100000 01110100 01110010 01101111 01101100 01101100 01101001 01101110 01100111`,
 	`<div style="display: flex; flex-direction: column; padding: 16px;">
 			<p>SnaveSutit would like to know your location</p>
@@ -39,6 +39,7 @@ export const flavorQuotes = [
 	`<a href="https://youtu.be/dQw4w9WgXcQ">Click here to find a solution!</a>`,
 	`<img src="https://i.kym-cdn.com/photos/images/original/000/296/199/9ff.gif" alt="roflcopter">`,
 	`Failed to find global 'pandemic'`,
+	`I'm sorry, Dave. I'm afraid I can't do that.`,
 ]
 
 export function openUnexpectedErrorDialog(error: Error) {
