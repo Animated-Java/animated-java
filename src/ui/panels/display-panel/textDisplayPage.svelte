@@ -51,77 +51,81 @@
 
 	import { TextDisplay } from '@aj/blockbench-additions/outliner-elements/textDisplay'
 	import { TextDisplayConfig } from '@aj/systems/node-configs'
-	import { MODE_ICONS, type OptionMode } from '.'
+	import EVENTS from '@aj/util/events'
 
 	export let textDisplay: TextDisplay
 
-	let config = new TextDisplayConfig().fromJSON(textDisplay.config)
-	const OPTION_MODES = new Map<string, OptionMode>(
-		config.keys().map(key => {
-			if (config.get(key, 'local') != undefined) {
-				return [key, 'custom']
-			}
-			return [key, 'default']
+	const CONFIG = new TextDisplayConfig().fromJSON(textDisplay.config)
+	const LINK_STATES = CONFIG.getAllLinkedStates()
+
+	export const resetUniqueOptions = () => {
+		for (const key of CONFIG.keys()) {
+			CONFIG.set(key, undefined)
+			CONFIG.setKeyInheritance(key, true)
+			LINK_STATES.set(key, true)
+		}
+
+		Undo.initEdit({ elements: [textDisplay] })
+		textDisplay.config = CONFIG.toJSON()
+		Undo.finishEdit(`Reset Text Display config`, {
+			elements: [textDisplay],
 		})
-	)
+
+		EVENTS.UPDATE_SELECTION.dispatch()
+	}
 
 	// Key is a string, but I need it to be any to make TypeScript happy when indexing into the config object.
-	function cycleMode(key: any) {
-		if (!textDisplay) {
-			console.error('Attempted to cycle common mode without a selected thing')
-			return
-		}
-		if (!config || !OPTION_MODES) {
+	function toggleLinked(key: any) {
+		if (!CONFIG || !LINK_STATES) {
 			console.error('Attempted to cycle common mode without a common config')
 			return
 		}
 
-		const mode = OPTION_MODES.get(key)
-		if (mode === 'default') {
-			OPTION_MODES.set(key, 'custom')
-			config.makeDefault(key)
+		const mode = LINK_STATES.get(key)
+		if (mode) {
+			CONFIG.makeDefault(key)
+			CONFIG.setKeyInheritance(key, false)
+			LINK_STATES.set(key, false)
 		} else {
-			OPTION_MODES.set(key, 'default')
-			config.set(key, undefined)
-			config.setKeyInheritance(key, false)
+			CONFIG.set(key, undefined)
+			CONFIG.setKeyInheritance(key, true)
+			LINK_STATES.set(key, true)
 		}
 
-		console.log('Set', key, 'inheritance mode to', mode?.toUpperCase())
 		Undo.initEdit({ elements: [textDisplay] })
-		textDisplay.config = config.toJSON()
-		Undo.finishEdit(`Set ${key} inheritance mode to ${mode?.toUpperCase()}`, {
+		textDisplay.config = CONFIG.toJSON()
+		Undo.finishEdit(`Set ${key} inheritance mode to ${mode}`, {
 			elements: [textDisplay],
 		})
 
-		config = config
+		EVENTS.UPDATE_SELECTION.dispatch()
 	}
 </script>
 
 <ul class="option-list">
-	{#each config.keys(true) as key}
-		{@const display = config.getPropertyDescription(key)}
+	{#each CONFIG.keys() as key}
+		{@const display = CONFIG.getPropertyDescription(key)}
 		<li>
 			<div>
 				<div class="option-title">
 					{display?.displayName}
 				</div>
-				<div class="option-mode">{OPTION_MODES.get(key)}</div>
 				<!-- svelte-ignore a11y-click-events-have-key-events -->
 				<i
-					on:click={() => cycleMode(key)}
+					on:click={() => toggleLinked(key)}
 					class="material-icons notranslate icon option-mode-toggle"
 				>
-					{MODE_ICONS[OPTION_MODES.get(key) ?? 'default']}
+					{LINK_STATES.get(key) ? 'edit' : 'delete'}
 				</i>
 			</div>
-			{#if OPTION_MODES.get(key) === 'custom'}
+			{#if LINK_STATES.get(key) === false}
 				{#if display?.displayMode === 'checkbox'}
 					<div class="option-value">
-						<input type="checkbox" checked={!!config[key]} />
+						<input type="checkbox" checked={!!CONFIG[key]} />
 					</div>
 				{:else}
 					<div class="option-value">
-						<input type="text" value={config[key]} />
+						<input type="text" value={CONFIG[key]} />
 					</div>
 				{/if}
 			{/if}
