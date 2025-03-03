@@ -1,12 +1,12 @@
 import { PACKAGE } from '../../../constants'
-import { Valuable } from '../../../util/stores'
+import { Syncable } from '../../../util/stores'
 import { SvelteDialog } from '../../../util/svelteDialog'
 import { translate } from '../../../util/translation'
 import ExportProgressDialogSvelteComponent from './exportProgressDialog.svelte'
 
-export const PROGRESS = new Valuable(0)
-export const MAX_PROGRESS = new Valuable(1)
-export const PROGRESS_DESCRIPTION = new Valuable('')
+export const PROGRESS = new Syncable(0)
+export const MAX_PROGRESS = new Syncable(1)
+export const PROGRESS_DESCRIPTION = new Syncable('')
 
 export function openExportProgressDialog(debug?: boolean) {
 	PROGRESS.set(0)

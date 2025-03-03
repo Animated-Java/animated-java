@@ -1,13 +1,13 @@
 <script lang="ts">
 	import RunningArmorStand from '@assets/armor_stand_running.webp'
-	import { type Valuable } from '../../../util/stores'
+	import { type Syncable } from '../../../util/stores'
 
 	import { translate } from '../../../util/translation'
 
-	export let loaded: Valuable<boolean>
-	export let offline: Valuable<boolean>
-	export let progress: Valuable<number>
-	export let progressLabel: Valuable<string>
+	export let loaded: Syncable<boolean>
+	export let offline: Syncable<boolean>
+	export let progress: Syncable<number>
+	export let progressLabel: Syncable<string>
 </script>
 
 <div class={`floating ${$offline ? 'red-border' : 'blue-border'}`}>

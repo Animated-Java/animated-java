@@ -4,15 +4,15 @@
 	import LineInput from '@svelte-components/dialog-items/lineInput.svelte'
 
 	import { MINECRAFT_REGISTRY } from '@aj/systems/minecraft-temp/registryManager'
-	import { Valuable } from '../../../util/stores'
+	import { Syncable } from '../../../util/stores'
 	import { translate } from '../../../util/translation'
 
 	const IS_PLUGIN_MODE = Project?.animated_java?.environment === 'plugin'
 
-	export let useEntity: Valuable<boolean>
-	export let entityType: Valuable<string>
-	export let summonCommands: Valuable<string>
-	export let tickingCommands: Valuable<string>
+	export let useEntity: Syncable<boolean>
+	export let entityType: Syncable<string>
+	export let summonCommands: Syncable<string>
+	export let tickingCommands: Syncable<string>
 
 	const entityTypeValidator: DialogItemValueChecker<string> = (value: string) => {
 		if (value.length === 0) {

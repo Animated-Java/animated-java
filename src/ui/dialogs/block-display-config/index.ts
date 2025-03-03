@@ -3,7 +3,7 @@ import { isCurrentFormat } from '../../../blockbench-additions/model-formats/ajb
 import { BlockDisplay } from '../../../blockbench-additions/outliner-elements/blockDisplay'
 import { PACKAGE } from '../../../constants'
 import { createAction } from '../../../util/moddingTools'
-import { Valuable } from '../../../util/stores'
+import { Syncable } from '../../../util/stores'
 import { SvelteDialog } from '../../../util/svelteDialog'
 import { translate } from '../../../util/translation'
 import { Variant } from '../../../variants'
@@ -15,19 +15,19 @@ export function openBlockDisplayConfigDialog(display: BlockDisplay) {
 		(display.config ??= new CommonDisplayConfig().toJSON())
 	)
 
-	const customName = new Valuable(oldConfig.customName)
-	const customNameVisible = new Valuable(oldConfig.customNameVisible)
-	const billboard = new Valuable(oldConfig.billboard as string)
-	const overrideBrightness = new Valuable(oldConfig.overrideBrightness)
-	const brightnessOverride = new Valuable(oldConfig.brightnessOverride)
-	const glowing = new Valuable(oldConfig.glowing)
-	const overrideGlowColor = new Valuable(oldConfig.overrideGlowColor)
-	const glowColor = new Valuable(oldConfig.glowColor)
-	const invisible = new Valuable(oldConfig.invisible)
-	const nbt = new Valuable(oldConfig.nbt)
-	const shadowRadius = new Valuable(oldConfig.shadowRadius)
-	const shadowStrength = new Valuable(oldConfig.shadowStrength)
-	const useNBT = new Valuable(oldConfig.useNBT)
+	const customName = new Syncable(oldConfig.customName)
+	const customNameVisible = new Syncable(oldConfig.customNameVisible)
+	const billboard = new Syncable(oldConfig.billboard as string)
+	const overrideBrightness = new Syncable(oldConfig.overrideBrightness)
+	const brightnessOverride = new Syncable(oldConfig.brightness)
+	const glowing = new Syncable(oldConfig.glowing)
+	const overrideGlowColor = new Syncable(oldConfig.overrideGlowColor)
+	const glowColor = new Syncable(oldConfig.glowColor)
+	const invisible = new Syncable(oldConfig.invisible)
+	const nbt = new Syncable(oldConfig.nbt)
+	const shadowRadius = new Syncable(oldConfig.shadowRadius)
+	const shadowStrength = new Syncable(oldConfig.shadowStrength)
+	const useNBT = new Syncable(oldConfig.useNBT)
 
 	new SvelteDialog({
 		id: `${PACKAGE.name}:vanillaItemDisplayConfigDialog`,
@@ -58,7 +58,7 @@ export function openBlockDisplayConfigDialog(display: BlockDisplay) {
 			newConfig.customNameVisible = customNameVisible.get()
 			newConfig.billboard = billboard.get() as any
 			newConfig.overrideBrightness = overrideBrightness.get()
-			newConfig.brightnessOverride = brightnessOverride.get()
+			newConfig.brightness = brightnessOverride.get()
 			newConfig.glowing = glowing.get()
 			newConfig.overrideGlowColor = overrideGlowColor.get()
 			newConfig.glowColor = glowColor.get()
@@ -76,8 +76,8 @@ export function openBlockDisplayConfigDialog(display: BlockDisplay) {
 			newConfig.billboard === defaultConfig.billboard && (newConfig.billboard = undefined)
 			newConfig.overrideBrightness === defaultConfig.overrideBrightness &&
 				(newConfig.overrideBrightness = undefined)
-			newConfig.brightnessOverride === defaultConfig.brightnessOverride &&
-				(newConfig.brightnessOverride = undefined)
+			newConfig.brightness === defaultConfig.brightnessOverride &&
+				(newConfig.brightness = undefined)
 			newConfig.glowing === defaultConfig.glowing && (newConfig.glowing = undefined)
 			newConfig.overrideGlowColor === defaultConfig.overrideGlowColor &&
 				(newConfig.overrideGlowColor = undefined)

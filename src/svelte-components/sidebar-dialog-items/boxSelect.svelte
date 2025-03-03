@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Valuable } from '../../util/stores'
+	import type { Syncable } from '../../util/stores'
 	import BaseSidebarDialogItem from './baseSidebarDialogItem.svelte'
 
 	interface ImageItem {
@@ -15,7 +15,7 @@
 
 	export let label = ''
 	export let description = ''
-	export let selected: Valuable<any>
+	export let selected: Syncable<any>
 	export let options: Record<any, ImageItem | TextItem>
 	export let required = false
 </script>

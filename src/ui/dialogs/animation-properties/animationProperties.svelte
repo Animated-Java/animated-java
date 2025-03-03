@@ -4,13 +4,13 @@
 	import NumberSlider from '@svelte-components/dialog-items/numberSlider.svelte'
 	import Select from '@svelte-components/dialog-items/select.svelte'
 	import { getAvailableNodes } from '../../../util/excludedNodes'
-	import { Valuable } from '../../../util/stores'
+	import { Syncable } from '../../../util/stores'
 	import { translate } from '../../../util/translation'
 
-	export let animationName: Valuable<string>
-	export let loopMode: Valuable<string>
-	export let loopDelay: Valuable<number>
-	export let excludedNodes: Valuable<Array<{ name: string; value: string }>>
+	export let animationName: Syncable<string>
+	export let loopMode: Syncable<string>
+	export let loopDelay: Syncable<number>
+	export let excludedNodes: Syncable<Array<{ name: string; value: string }>>
 
 	const AVAILABLE_BONES = getAvailableNodes(excludedNodes.get())
 

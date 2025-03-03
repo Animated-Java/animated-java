@@ -1,11 +1,11 @@
 import { PACKAGE } from '../../../constants'
-import { Valuable } from '../../../util/stores'
+import { Syncable } from '../../../util/stores'
 import { SvelteDialog } from '../../../util/svelteDialog'
 import { translate } from '../../../util/translation'
 import BlueprintLoadingPopup from './blueprintLoadingPopup.svelte'
 
-export const PROGRESS = new Valuable(0)
-export const MAX_PROGRESS = new Valuable(1)
+export const PROGRESS = new Syncable(0)
+export const MAX_PROGRESS = new Syncable(1)
 
 let instance: SvelteDialog<any, any> | null = null
 

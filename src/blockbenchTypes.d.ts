@@ -5,7 +5,7 @@ import { defaultValues } from './blueprintSettings'
 import type { CommonDisplayConfig, LocatorConfig, Serialized } from './systems/node-configs'
 import { EasingKey } from './util/easing'
 import { isDataPackPath, isResourcePackPath } from './util/minecraftUtil'
-import { Valuable } from './util/stores'
+import { Syncable } from './util/stores'
 import { type Variant } from './variants'
 
 declare module 'three' {
@@ -22,7 +22,7 @@ declare global {
 		animated_java: { [T in keyof typeof defaultValues]: (typeof defaultValues)[T] }
 		last_used_export_namespace: string
 		visualBoundingBox?: THREE.LineSegments
-		pluginMode: Valuable<boolean>
+		pluginMode: Syncable<boolean>
 		transparentTexture: Texture
 
 		showingInvalidCubeRotations: boolean

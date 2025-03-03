@@ -10,7 +10,7 @@
 	} from '.'
 	import { TextDisplay } from '../../../blockbench-additions/outliner-elements/textDisplay'
 	import { floatToHex } from '../../../util/misc'
-	import { Valuable } from '../../../util/stores'
+	import { Syncable } from '../../../util/stores'
 	import { translate } from '../../../util/translation'
 
 	function highlight(code: string, syntax?: string) {
@@ -21,9 +21,9 @@
 	let selected = TextDisplay.selected.at(0)
 
 	// @ts-expect-error
-	let text = selected?._text ?? new Valuable('')
+	let text = selected?._text ?? new Syncable('')
 	// @ts-expect-error
-	let error = selected?._textError ?? new Valuable('')
+	let error = selected?._textError ?? new Syncable('')
 
 	let lineWidthSlot: HTMLDivElement
 	let backgroundColorSlot: HTMLDivElement

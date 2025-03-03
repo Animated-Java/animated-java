@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte'
 	import { PACKAGE } from '../../constants'
-	import { Valuable } from '../../util/stores'
+	import { Syncable } from '../../util/stores'
 	import BaseDialogItem from './baseDialogItem.svelte'
 
 	export let label: string
 	export let tooltip = ''
-	export let value: Valuable<string>
+	export let value: Syncable<string>
 
 	const COLOR_PICKER = new ColorPicker(`${PACKAGE.name}:${label}-color_picker`, {
 		onChange() {

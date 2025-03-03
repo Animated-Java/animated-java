@@ -1,6 +1,5 @@
 <script lang="ts">
-	
-	import { Valuable } from '../../../util/stores'
+	import { Syncable } from '../../../util/stores'
 	import { translate } from '../../../util/translation'
 
 	import { JsonText } from '@aj/systems/minecraft-temp/jsonText'
@@ -10,21 +9,21 @@
 
 	export let boneConfig: GenericDisplayConfig
 
-	const customName = new Valuable(boneConfig.customName!)
-	const customNameVisible = new Valuable(boneConfig.customNameVisible!)
-	const billboard = new Valuable(boneConfig.billboard!)
-	const overrideBrightness = new Valuable(boneConfig.overrideBrightness!)
-	const brightnessOverride = new Valuable(boneConfig.brightnessOverride!)
-	const enchanted = new Valuable(boneConfig.enchanted!)
-	const glowing = new Valuable(boneConfig.glowing!)
-	const overrideGlowColor = new Valuable(boneConfig.overrideGlowColor!)
-	const glowColor = new Valuable(boneConfig.glowColor!)
-	const inheritSettings = new Valuable(boneConfig.inheritSettings!)
-	const invisible = new Valuable(boneConfig.invisible!)
-	const nbt = new Valuable(boneConfig.nbt!)
-	const shadowRadius = new Valuable(boneConfig.shadowRadius!)
-	const shadowStrength = new Valuable(boneConfig.shadowStrength!)
-	const useNBT = new Valuable(boneConfig.useNBT!)
+	const customName = new Syncable(boneConfig.customName!)
+	const customNameVisible = new Syncable(boneConfig.customNameVisible!)
+	const billboard = new Syncable(boneConfig.billboard!)
+	const overrideBrightness = new Syncable(boneConfig.overrideBrightness!)
+	const brightnessOverride = new Syncable(boneConfig.brightnessOverride!)
+	const enchanted = new Syncable(boneConfig.enchanted!)
+	const glowing = new Syncable(boneConfig.glowing!)
+	const overrideGlowColor = new Syncable(boneConfig.overrideGlowColor!)
+	const glowColor = new Syncable(boneConfig.glowColor!)
+	const inheritSettings = new Syncable(boneConfig.inheritSettings!)
+	const invisible = new Syncable(boneConfig.invisible!)
+	const nbt = new Syncable(boneConfig.nbt!)
+	const shadowRadius = new Syncable(boneConfig.shadowRadius!)
+	const shadowStrength = new Syncable(boneConfig.shadowStrength!)
+	const useNBT = new Syncable(boneConfig.useNBT!)
 
 	const BILLBOARD_OPTIONS: Record<BillboardMode, string> = {
 		fixed: translate('dialog.bone_config.billboard.options.fixed'),

@@ -4,7 +4,7 @@
 	import EVENTS from '@events'
 	import { isCurrentFormat } from '../blockbench-additions/model-formats/ajblueprint'
 	import { getEasingArgDefault, hasArgs } from '../util/easing'
-	import { Valuable } from '../util/stores'
+	import { Syncable } from '../util/stores'
 	import { translate } from '../util/translation'
 
 	const ICONS = Object.fromEntries(
@@ -36,7 +36,7 @@
 
 	let easingType = 'linear'
 	let easingMode: string | undefined
-	let easingArg: Valuable<number> | undefined
+	let easingArg: Syncable<number> | undefined
 
 	function getSelectedEasing() {
 		if (!selectedKeyframe?.easing) return
@@ -76,7 +76,7 @@
 		if (!selectedKeyframe) return
 		unsub && unsub()
 		if (hasArgs(selectedKeyframe.easing)) {
-			easingArg = new Valuable(
+			easingArg = new Syncable(
 				selectedKeyframe.easingArgs?.[0] ?? getEasingArgDefault(selectedKeyframe) ?? 0
 			)
 			unsub = easingArg?.subscribe(value => setEasingArgs(value))

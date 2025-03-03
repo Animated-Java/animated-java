@@ -12,7 +12,7 @@ import { CommonDisplayConfig, TextDisplayConfig, type Serialized } from '@aj/sys
 import EVENTS from '@events'
 
 import { TEXT_DISPLAY_CONFIG_ACTION } from '../../ui/dialogs/text-display-config'
-import { Valuable } from '../../util/stores'
+import { Syncable } from '../../util/stores'
 import { translate } from '../../util/translation'
 import { ResizableOutlinerElement } from './resizableOutlinerElement'
 import { sanitizeOutlinerElementName } from './util'
@@ -58,7 +58,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 	public preview_controller = PREVIEW_CONTROLLER
 
 	public ready = false
-	public textError = new Valuable('')
+	public textError = new Syncable('')
 
 	private __renderingTextComponent = false
 

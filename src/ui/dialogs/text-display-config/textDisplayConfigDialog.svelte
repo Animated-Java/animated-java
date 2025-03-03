@@ -6,22 +6,22 @@
 	import Select from '@svelte-components/dialog-items/select.svelte'
 
 	import { TextDisplayConfig } from '@aj/systems/node-configs'
-	import { Valuable } from '../../../util/stores'
+	import { Syncable } from '../../../util/stores'
 	import { translate } from '../../../util/translation'
 
 	const IS_PLUGIN_MODE = Project?.animated_java?.environment === 'plugin'
 
-	export let billboard: Valuable<string>
-	export let overrideBrightness: Valuable<NonNullable<TextDisplayConfig['_overrideBrightness']>>
-	export let brightnessOverride: Valuable<NonNullable<TextDisplayConfig['_brightnessOverride']>>
-	export let glowing: Valuable<NonNullable<TextDisplayConfig['_glowing']>>
-	export let overrideGlowColor: Valuable<NonNullable<TextDisplayConfig['_overrideGlowColor']>>
-	export let glowColor: Valuable<NonNullable<TextDisplayConfig['_glowColor']>>
-	export let invisible: Valuable<NonNullable<TextDisplayConfig['_invisible']>>
-	export let nbt: Valuable<NonNullable<TextDisplayConfig['_nbt']>>
-	export let shadowRadius: Valuable<NonNullable<TextDisplayConfig['_shadowRadius']>>
-	export let shadowStrength: Valuable<NonNullable<TextDisplayConfig['_shadowStrength']>>
-	export let useNBT: Valuable<NonNullable<TextDisplayConfig['_useNBT']>>
+	export let billboard: Syncable<string>
+	export let overrideBrightness: Syncable<NonNullable<TextDisplayConfig['_overrideBrightness']>>
+	export let brightnessOverride: Syncable<NonNullable<TextDisplayConfig['_brightnessOverride']>>
+	export let glowing: Syncable<NonNullable<TextDisplayConfig['_glowing']>>
+	export let overrideGlowColor: Syncable<NonNullable<TextDisplayConfig['_overrideGlowColor']>>
+	export let glowColor: Syncable<NonNullable<TextDisplayConfig['_glowColor']>>
+	export let invisible: Syncable<NonNullable<TextDisplayConfig['_invisible']>>
+	export let nbt: Syncable<NonNullable<TextDisplayConfig['_nbt']>>
+	export let shadowRadius: Syncable<NonNullable<TextDisplayConfig['_shadowRadius']>>
+	export let shadowStrength: Syncable<NonNullable<TextDisplayConfig['_shadowStrength']>>
+	export let useNBT: Syncable<NonNullable<TextDisplayConfig['_useNBT']>>
 
 	const BILLBOARD_OPTIONS: Record<TextDisplayConfig['billboard'], string> = {
 		fixed: translate('dialog.text_display_config.billboard.options.fixed'),

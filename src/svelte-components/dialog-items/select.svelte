@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { Valuable } from '../../util/stores'
+	import { Syncable } from '../../util/stores'
 	import BaseDialogItem from './baseDialogItem.svelte'
 
 	export let label: string
 	export let tooltip = ''
 	export let options: Record<string, string>
 	export let defaultOption: string
-	export let value: Valuable<string>
+	export let value: Syncable<string>
 
 	let container: HTMLDivElement
 

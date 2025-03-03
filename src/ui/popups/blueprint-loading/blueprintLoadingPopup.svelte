@@ -1,9 +1,9 @@
 <script lang="ts">
 	import ArmorStandRunningGif from '@assets/armor_stand_running.webp'
-	import { Valuable } from '../../../util/stores'
+	import { Syncable } from '../../../util/stores'
 
-	export let progress: Valuable<number>
-	export let maxProgress: Valuable<number>
+	export let progress: Syncable<number>
+	export let maxProgress: Syncable<number>
 </script>
 
 <div>
