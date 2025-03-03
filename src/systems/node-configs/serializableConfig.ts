@@ -1,11 +1,14 @@
 /**
  * Returns the "serialized" version of a class.
  *
- * Simply strips all functions from the class type, and makes all properties optional.
+ * Strips all properties with keys with values of type {@link Function} from the {@link T}, and makes all properties optional.
  */
 export type Serialized<T> = {
 	[Key in keyof T as T[Key] extends Function ? never : Key]?: T[Key]
 }
+
+// interface Stupid extends SerializableConfig<SerializableConfig<Stupid>> {}
+
 /**
  * A class that can be serialized to JSON.
  *
@@ -36,38 +39,36 @@ export type Serialized<T> = {
  * ```
  */
 export class SerializableConfig<
-	Config,
-	T extends Record<string, any> = Serialized<Config>,
-	JSON extends T & { __inheritedKeys__: Array<keyof T> } = T & {
-		__inheritedKeys__: Array<keyof T>
+	const Config extends Record<string, any>,
+	const Object extends Serialized<Config> = Serialized<Config>,
+	const JsonObject extends Object & {
+		__inheritedKeys__?: Array<string & keyof Object>
+	} = Object & {
+		__inheritedKeys__?: Array<string & keyof Object>
 	},
 > {
 	private static __propertyDisplayConfigs__: Partial<Record<string, PropertyDisplayConfig>> = {}
-
 	private __defaultValues__ = {} as Record<string, any>
-	private __inheritedKeys__ = new Set<keyof T>()
+	private __inheritedKeys__ = new Set<string & keyof Object>()
 	private __getLocal__ = false
 	/** The actual instance of {@link Config} (No proxies) */
 	private __origin__: SerializableConfig<Config>
 	private __parent__?: Config
-
 	constructor() {
 		// @ts-expect-error
 		this.__origin__ = this
 		const origin = this
 		return new Proxy(this, {
-			get(target, key: string) {
+			get(target, key: string & keyof Object) {
 				// Return the value if it's set in this config
 				// @ts-expect-error
 				if (target[key] != undefined) {
-					// @ts-expect-error
 					return target[key]
 				}
 				// Check inheritance / default value if we're not expecting a local value.
 				if (!origin.__getLocal__) {
 					// If the key is inherited, return the value from the parent if it's set there
 					if (origin.__inheritedKeys__.has(key)) {
-						// @ts-expect-error
 						const parentValue = target.__parent__?.[key]
 						if (parentValue != undefined) {
 							return parentValue
@@ -86,9 +87,8 @@ export class SerializableConfig<
 			},
 		})
 	}
-
 	private __postInitialize() {
-		for (const key of Object.getOwnPropertyNames(this)) {
+		for (const key of Object.getOwnPropertyNames(this) as Array<string & keyof Object>) {
 			if (key.startsWith('_')) continue
 			// @ts-expect-error
 			this.__defaultValues__[key] = this[key]
@@ -96,40 +96,39 @@ export class SerializableConfig<
 			this[key] = undefined
 		}
 	}
-
 	/**
 	 * Serialize the config to a JSON object.
 	 * @param metaData If true, include metadata such as inherited keys.
 	 */
-	toJSON(metaData = true): JSON {
-		const result = {} as JSON
-		for (const key of Object.getOwnPropertyNames(this)) {
+	toJSON(metaData = true): JsonObject {
+		const result = {} as JsonObject
+		for (const key of Object.getOwnPropertyNames(this) as Array<string & keyof Object>) {
 			if (key.startsWith('_')) continue
 			const value = this.get(key, 'local-inherited')
 			if (value != undefined) {
-				// @ts-expect-error
 				result[key] = value
 			}
 		}
 		if (metaData && this.__inheritedKeys__.size > 0) {
-			result.__inheritedKeys__ = Array.from(this.__inheritedKeys__)
+			result.__inheritedKeys__ = Array.from(this.__inheritedKeys__) as Array<
+				string & keyof Object
+			>
 		}
 		return JSON.parse(JSON.stringify(result))
 	}
-
 	/**
 	 * Initialize the config from a JSON object.
 	 * @param json The JSON object to initialize the config from.
 	 * @param partial If true, only set the properties that are present in the JSON object. Otherwise, clear all properties that are not present in the JSON object.
 	 */
-	fromJSON(json: Partial<JSON>, partial = false): this {
+	fromJSON(json: Partial<JsonObject>, partial = false): this {
 		json = JSON.parse(JSON.stringify(json))
 		if (json.__inheritedKeys__) {
 			this.__inheritedKeys__ = new Set(json.__inheritedKeys__)
 		} else if (!partial) {
 			this.__inheritedKeys__ = new Set()
 		}
-		for (const key of Object.getOwnPropertyNames(this)) {
+		for (const key of Object.getOwnPropertyNames(this) as Array<string & keyof Object>) {
 			if (key.startsWith('_')) continue
 			// Explicitly check for nullish, and use undefined if the key is not present in the JSON.
 			if (json[key] != undefined) {
@@ -142,7 +141,6 @@ export class SerializableConfig<
 		}
 		return this
 	}
-
 	isDefault(): boolean {
 		return Object.getOwnPropertyNames(this).every(key => {
 			if (key.startsWith('_')) return true
@@ -150,17 +148,15 @@ export class SerializableConfig<
 			return this[key] == undefined
 		})
 	}
-
 	/**
 	 * Explicitly set the value of {@link key} to its default.
 	 *
 	 * Note that this is different from setting it to `undefined`.
 	 */
-	makeDefault<Key extends keyof T>(key: Key): void {
+	makeDefault(key: string & keyof Object): void {
 		// @ts-expect-error
 		this[key] = this.__defaultValues__[key]
 	}
-
 	/**
 	 * Checks whether two configs are equal.
 	 */
@@ -172,13 +168,12 @@ export class SerializableConfig<
 		}
 		return true
 	}
-
 	/**
 	 * Set the value of {@link key} to be (or not to be) inherited from the parent if it's not set locally.
 	 * @param key The key to set the inheritance of.
 	 * @param inherit Whether or not to inherit the value from the parent.
 	 */
-	setKeyInheritance<Key extends keyof T>(key: Key, inherit = true): this {
+	setKeyInheritance(key: string & keyof Object, inherit = true): this {
 		if (inherit) {
 			this.__inheritedKeys__.add(key)
 		} else {
@@ -186,31 +181,30 @@ export class SerializableConfig<
 		}
 		return this
 	}
-
 	/**
 	 * Get the inheritance status of {@link key}.
 	 * @returns Whether or not the key is inherited from the parent.
 	 */
-	getKeyInheritance<Key extends keyof T>(key: Key): boolean {
+	getKeyInheritance(key: string & keyof Object): boolean {
 		return this.__inheritedKeys__.has(key)
 	}
-
 	/**
 	 * Gets the value of {@link key} based on {@link getMode}
 	 * @returns If {@link getMode} is `local`, returns the explicitly set value of property {@link key} on this instance. If {@link getMode} is `local-inherited`
 	 * and the local value is `undefined`, it attempts to return the parent's explicitly set `local-inherited` value. If {@link getMode} is `default` it will return the `key`'s default value.
 	 */
-	get<Key extends keyof T>(key: Key, getMode: 'local' | 'local-inherited'): T[Key] | undefined
-	get<Key extends keyof T>(key: Key, getMode: 'default'): T[Key]
-	get<Key extends keyof T>(
-		key: Key,
+	get(
+		key: string & keyof Object,
+		getMode: 'local' | 'local-inherited'
+	): Object[string & keyof Object] | undefined
+	get(key: string & keyof Object, getMode: 'default'): Object[string & keyof Object]
+	get(
+		key: string & keyof Object,
 		getMode: 'local' | 'local-inherited' | 'default'
-	): T[Key] | undefined {
+	): Object[string & keyof Object] | undefined {
 		if (getMode === 'default') {
-			// @ts-expect-error
 			return this.__defaultValues__[key]
 		}
-
 		// @ts-expect-error
 		const local = this.__origin__[key]
 		if (local != undefined) {
@@ -218,28 +212,24 @@ export class SerializableConfig<
 			return local
 		}
 		if (getMode === 'local') return undefined
-
 		if (this.__inheritedKeys__.has(key) && this.__parent__) {
 			// Return the inherited value if it's explicitly set.
-			// @ts-expect-error
 			const inherited = this.__parent__.get(key)
 			if (inherited != undefined) {
 				return inherited
 			}
 		}
 	}
-
 	/**
 	 * Set the value of {@link key} to {@link value}.
 	 *
 	 * Convenience method for `config[key] = value` typing issues.
 	 */
-	set<Key extends keyof T>(key: Key, value: T[Key]): this {
+	set(key: string & keyof Object, value: Object[string & keyof Object]): this {
 		// @ts-expect-error
 		this[key] = value
 		return this
 	}
-
 	/**
 	 * Set the parent of this config.
 	 *
@@ -249,15 +239,15 @@ export class SerializableConfig<
 		this.__parent__ = parent
 		return this
 	}
-
 	/**
 	 * @param sort If true, sort the keys alphabetically. If a function, sort the keys using the function. The function
 	 * uses the same implementation as {@link Array.prototype.sort}.
 	 */
-	keys(sort?: boolean): Array<keyof T>
-	keys(sort?: (a: string, b: string) => number): Array<keyof T>
-	keys(sort?: boolean | ((a: string, b: string) => number)): Array<keyof T> {
-		const keys: Array<keyof T> = []
+	// FIXME - The Key type keeps reurning a union of string | number even though the only valid keys should be strings...
+	keys(sort?: boolean): Array<string & keyof Object>
+	keys(sort?: (a: string, b: string) => number): Array<string & keyof Object>
+	keys(sort?: boolean | ((a: string, b: string) => number)): Array<string & keyof Object> {
+		const keys: Array<string & keyof Object> = []
 		const names = Object.getOwnPropertyNames(this)
 		if (sort === true) {
 			names.sort()
@@ -266,13 +256,12 @@ export class SerializableConfig<
 		}
 		for (const key of names) {
 			if (key.startsWith('_')) continue
-			keys.push(key as keyof T)
+			keys.push(key as string & keyof Object)
 		}
 		return keys
 	}
-
-	values(): Array<T[keyof T]> {
-		const values: Array<T[keyof T]> = []
+	values(): Array<Object[string & keyof Object]> {
+		const values: Array<Object[string & keyof Object]> = []
 		for (const key of Object.getOwnPropertyNames(this)) {
 			if (key.startsWith('_')) continue
 			// @ts-expect-error
@@ -280,15 +269,40 @@ export class SerializableConfig<
 		}
 		return values
 	}
-
+	/**
+	 * Get the linked status of a key.
+	 *
+	 * Indicates if {@link key} can be inherited from the parent.
+	 * Returns false if the key is explicitly set locally.
+	 */
+	getLinkedState(key: string & keyof Object): boolean {
+		return this.get(key, 'local') == undefined
+	}
+	/**
+	 * Get the linked status of all keys.
+	 *
+	 * A key's linked status Indicates if that key can be inherited from the parent.
+	 * Returns false if the key is explicitly set locally.
+	 */
+	getAllLinkedStates(): Map<string & keyof Object, boolean> {
+		const map = new Map<string & keyof Object, boolean>()
+		for (const key of this.keys()) {
+			map.set(key, this.get(key, 'local') == undefined)
+		}
+		return map
+	}
 	/**
 	 * @param sort If true, sort the entries alphabetically. If a function, sort the entries using the function. The function
 	 * uses the same implementation as {@link Array.prototype.sort}.
 	 */
-	entries(sort?: boolean): Array<[keyof T, T[keyof T]]>
-	entries(sort?: (a: string, b: string) => number): Array<[keyof T, T[keyof T]]>
-	entries(sort?: boolean | ((a: string, b: string) => number)): Array<[keyof T, T[keyof T]]> {
-		const entries: Array<[keyof T, T[keyof T]]> = []
+	entries(sort?: boolean): Array<[string & keyof Object, Object[string & keyof Object]]>
+	entries(
+		sort?: (a: string, b: string) => number
+	): Array<[string & keyof Object, Object[string & keyof Object]]>
+	entries(
+		sort?: boolean | ((a: string, b: string) => number)
+	): Array<[string & keyof Object, Object[string & keyof Object]]> {
+		const entries: Array<[string & keyof Object, Object[string & keyof Object]]> = []
 		const names = Object.getOwnPropertyNames(this)
 		if (sort === true) {
 			names.sort()
@@ -302,11 +316,9 @@ export class SerializableConfig<
 		}
 		return entries
 	}
-
-	getPropertyDescription<Key extends keyof T>(key: Key): PropertyDisplayConfig | undefined {
+	getPropertyDescription(key: string & keyof Object): PropertyDisplayConfig | undefined {
 		return this.constructor.prototype.__propertyDisplayConfigs__?.[key]
 	}
-
 	/**
 	 * Decorator to make a class a serializable config.
 	 */
@@ -322,7 +334,6 @@ export class SerializableConfig<
 			},
 		})
 	}
-
 	static configurePropertyDisplay(options: PropertyDisplayConfig) {
 		return ((target, key) => {
 			target.constructor.prototype.__propertyDisplayConfigs__ ??= {}
@@ -349,6 +360,18 @@ interface IPropertyDisplayConfigs {
 	code_editor: IPropertyDisplayConfig & {
 		displayMode: 'code_editor'
 		syntax: string
+	}
+	slider: IPropertyDisplayConfig & {
+		displayMode: 'slider'
+		min?: number
+		max?: number
+		step: number
+	}
+	number: IPropertyDisplayConfig & {
+		displayMode: 'number'
+		min?: number
+		max?: number
+		step: number
 	}
 }
 
