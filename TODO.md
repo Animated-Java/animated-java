@@ -1,3 +1,7 @@
+# Misc.
+
+- [ ] Remove direct NBT editing in favor of on-summon commands with the `data` command.
+
 # Blockbench
 
 - [ ] Change the Collection setting type to allow single-click swapping of items between lists.
