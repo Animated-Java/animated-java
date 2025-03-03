@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type Valuable } from '@aj/util/stores'
+	import { type Syncable } from '@aj/util/stores'
 	import { translate } from '@aj/util/translation'
 	import { TextureMap, Variant } from '@aj/variants'
 	import MissingTexture from '@assets/missing_texture.png'
@@ -9,12 +9,12 @@
 	import { getAvailableNodes } from '../../../util/excludedNodes'
 
 	export let variant: Variant
-	export let displayName: Valuable<string>
-	export let name: Valuable<string>
-	export let uuid: Valuable<string>
+	export let displayName: Syncable<string>
+	export let name: Syncable<string>
+	export let uuid: Syncable<string>
 	export let textureMap: TextureMap
-	export let generateNameFromDisplayName: Valuable<boolean>
-	export let excludedNodes: Valuable<CollectionItem[]>
+	export let generateNameFromDisplayName: Syncable<boolean>
+	export let excludedNodes: Syncable<CollectionItem[]>
 
 	const AVAILABLE_TEXTURES = [...Texture.all]
 	const PRIMARY_TEXTURES = [...Texture.all]

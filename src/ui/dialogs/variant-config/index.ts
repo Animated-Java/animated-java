@@ -1,18 +1,18 @@
 import EVENTS from '@events'
 import { PACKAGE } from '../../../constants'
-import { Valuable } from '../../../util/stores'
+import { Syncable } from '../../../util/stores'
 import { SvelteDialog } from '../../../util/svelteDialog'
 import { translate } from '../../../util/translation'
 import type { Variant } from '../../../variants'
 import VariantConfigDialogSvelteComponent from './variantConfigDialog.svelte'
 
 export function openVariantConfigDialog(variant: Variant) {
-	const displayName = new Valuable(variant.displayName)
-	const name = new Valuable(variant.name)
-	const uuid = new Valuable(variant.uuid)
+	const displayName = new Syncable(variant.displayName)
+	const name = new Syncable(variant.name)
+	const uuid = new Syncable(variant.uuid)
 	const textureMap = variant.textureMap.copy()
-	const generateNameFromDisplayName = new Valuable(variant.generateNameFromDisplayName)
-	const excludedNodes = new Valuable(variant.excludedNodes)
+	const generateNameFromDisplayName = new Syncable(variant.generateNameFromDisplayName)
+	const excludedNodes = new Syncable(variant.excludedNodes)
 
 	new SvelteDialog({
 		id: `${PACKAGE.name}:variantConfig`,

@@ -2,20 +2,20 @@
 	import EVENTS from '@events'
 	import { ITEM_DISPLAY_ITEM_DISPLAY_SELECT } from '.'
 	import { ItemDisplay } from '../../../blockbench-additions/outliner-elements/itemDisplay'
-	import { Valuable } from '../../../util/stores'
+	import { Syncable } from '../../../util/stores'
 	import { translate } from '../../../util/translation'
 
 	let selectedDisplay = ItemDisplay.selected.at(0)
-	let item = new Valuable<string>('')
-	let error = new Valuable<string>('')
+	let item = new Syncable<string>('')
+	let error = new Syncable<string>('')
 	let itemDisplaySlot: HTMLDivElement
 	let visible = false
 
 	EVENTS.UPDATE_SELECTION.subscribe(() => {
 		selectedDisplay = ItemDisplay.selected.at(0)
 		if (!selectedDisplay || selected.length > 1) {
-			item = new Valuable('')
-			error = new Valuable('')
+			item = new Syncable('')
+			error = new Syncable('')
 			visible = false
 			return
 		}

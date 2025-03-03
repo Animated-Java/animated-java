@@ -1,10 +1,10 @@
 <script lang="ts">
 	import type { FileFilter } from 'electron'
-	import type { Valuable } from '../../util/stores'
+	import type { Syncable } from '../../util/stores'
 	import BaseSidebarDialogItem from './baseSidebarDialogItem.svelte'
 	export let label: string
 	export let description: string
-	export let value: Valuable<string>
+	export let value: Syncable<string>
 	export let required = false
 	export let defaultValue = ''
 	export let placeholder = ''

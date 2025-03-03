@@ -1,12 +1,12 @@
 import type { SvelteComponentDev } from 'svelte/internal'
 import { injectSvelteCompomponent } from '../../../util/injectSvelteComponent'
-import { Valuable } from '../../../util/stores'
+import { Syncable } from '../../../util/stores'
 import AnimatedJavaLoadingPopup from './animatedJavaLoadingPopup.svelte'
 
-const LOADED = new Valuable(false)
-const OFFLINE = new Valuable(false)
-const PROGRESS = new Valuable(0)
-const PROGRESS_LABEL = new Valuable('')
+const LOADED = new Syncable(false)
+const OFFLINE = new Syncable(false)
+const PROGRESS = new Syncable(0)
+const PROGRESS_LABEL = new Syncable('')
 let activeComponent: SvelteComponentDev | undefined
 
 export async function showLoadingPopup() {

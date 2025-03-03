@@ -1,5 +1,5 @@
 import { MinecraftVersion } from './systems/global'
-import { Valuable } from './util/stores'
+import { Syncable } from './util/stores'
 
 export type ExportMode = 'folder' | 'zip' | 'none'
 export type ExportEnvironment = 'vanilla' | 'plugin'
@@ -38,4 +38,4 @@ export const defaultValues = {
 	json_file: '',
 }
 
-export const blueprintSettingErrors = new Valuable<Record<string, string>>({})
+export const blueprintSettingErrors = new Syncable<Record<string, string>>({})

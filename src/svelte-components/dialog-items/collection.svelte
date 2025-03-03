@@ -3,7 +3,7 @@
 	import { flip } from 'svelte/animate'
 	import { cubicIn } from 'svelte/easing'
 	import { fade } from 'svelte/transition'
-	import type { Valuable } from '../../util/stores'
+	import type { Syncable } from '../../util/stores'
 	import BaseDialogItem from './baseDialogItem.svelte'
 
 	// An editable list of unique items, with a button to add new items from a list of options.
@@ -15,7 +15,7 @@
 	export let includedItemsColumnTooltip: string
 	export let swapColumnsButtonTooltip: string
 	export let availableItems: CollectionItem[]
-	export let includedItems: Valuable<CollectionItem[]>
+	export let includedItems: Syncable<CollectionItem[]>
 
 	let includedItemsList: Array<{ id: number; title: string; [key: string]: any }> = []
 	let availableItemsList: Array<{ id: number; title: string; [key: string]: any }> = []

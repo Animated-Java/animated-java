@@ -1,5 +1,5 @@
 import { PACKAGE } from '../../../constants'
-import { Valuable } from '../../../util/stores'
+import { Syncable } from '../../../util/stores'
 import { SvelteDialog } from '../../../util/svelteDialog'
 import { translate } from '../../../util/translation'
 import AniamtionPropertiesSvelteComponent from './animationProperties.svelte'
@@ -7,10 +7,10 @@ import AniamtionPropertiesSvelteComponent from './animationProperties.svelte'
 export const DIALOG_ID = `${PACKAGE.name}:animationPropertiesDialog`
 
 export function openAnimationPropertiesDialog(animation: _Animation) {
-	const animationName = new Valuable(animation.name)
-	const loopMode = new Valuable(animation.loop as string)
-	const loopDelay = new Valuable(Number(animation.loop_delay) || 0)
-	const excludedNodes = new Valuable(animation.excluded_nodes)
+	const animationName = new Syncable(animation.name)
+	const loopMode = new Syncable(animation.loop as string)
+	const loopDelay = new Syncable(Number(animation.loop_delay) || 0)
+	const excludedNodes = new Syncable(animation.excluded_nodes)
 
 	new SvelteDialog({
 		id: DIALOG_ID,

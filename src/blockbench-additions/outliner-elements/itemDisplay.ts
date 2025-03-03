@@ -10,7 +10,7 @@ import {
 	createBlockbenchMod,
 	fixClassPropertyInheritance,
 } from '../../util/moddingTools'
-import { Valuable } from '../../util/stores'
+import { Syncable } from '../../util/stores'
 import { translate } from '../../util/translation'
 import { isCurrentFormat } from '../model-formats/ajblueprint'
 import { ResizableOutlinerElement } from './resizableOutlinerElement'
@@ -38,12 +38,12 @@ export class ItemDisplay extends ResizableOutlinerElement {
 	public needsUniqueName = true
 
 	// Properties
-	private __item = new Valuable('minecraft:diamond')
-	private __itemDisplay = new Valuable('none')
+	private __item = new Syncable('minecraft:diamond')
+	private __itemDisplay = new Syncable('none')
 	public config: Serialized<ItemDisplayConfig>
 	public commonConfig: Serialized<CommonDisplayConfig>
 
-	public error = new Valuable('')
+	public error = new Syncable('')
 
 	public menu = new Menu([
 		...Outliner.control_menu_group,

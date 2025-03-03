@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { isIncompatiblePlugin } from '../ui/popups/incompatability'
-	import { Valuable } from '../util/stores'
+	import { Syncable } from '../util/stores'
 	import { translate } from '../util/translation'
 
-	export let selectedPlugin: Valuable<BBPlugin | null>
+	export let selectedPlugin: Syncable<BBPlugin | null>
 </script>
 
 {#if $selectedPlugin && isIncompatiblePlugin($selectedPlugin)}

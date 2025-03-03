@@ -6,7 +6,7 @@
 	import Select from '@svelte-components/dialog-items/select.svelte'
 
 	import { CommonDisplayConfig } from '@aj/systems/node-configs'
-	import { Valuable } from '../../../util/stores'
+	import { Syncable } from '../../../util/stores'
 	import { translate } from '../../../util/translation'
 
 	import { JsonText } from '@aj/systems/minecraft-temp/jsonText'
@@ -14,19 +14,19 @@
 
 	const IS_PLUGIN_MODE = Project?.animated_java?.environment === 'plugin'
 
-	export let customName: Valuable<string>
-	export let customNameVisible: Valuable<boolean>
-	export let billboard: Valuable<string>
-	export let overrideBrightness: Valuable<NonNullable<CommonDisplayConfig['_overrideBrightness']>>
-	export let brightnessOverride: Valuable<NonNullable<CommonDisplayConfig['_brightnessOverride']>>
-	export let glowing: Valuable<NonNullable<CommonDisplayConfig['_glowing']>>
-	export let overrideGlowColor: Valuable<NonNullable<CommonDisplayConfig['_overrideGlowColor']>>
-	export let glowColor: Valuable<NonNullable<CommonDisplayConfig['_glowColor']>>
-	export let invisible: Valuable<NonNullable<CommonDisplayConfig['_invisible']>>
-	export let nbt: Valuable<NonNullable<CommonDisplayConfig['_nbt']>>
-	export let shadowRadius: Valuable<NonNullable<CommonDisplayConfig['_shadowRadius']>>
-	export let shadowStrength: Valuable<NonNullable<CommonDisplayConfig['_shadowStrength']>>
-	export let useNBT: Valuable<NonNullable<CommonDisplayConfig['_useNBT']>>
+	export let customName: Syncable<string>
+	export let customNameVisible: Syncable<boolean>
+	export let billboard: Syncable<string>
+	export let overrideBrightness: Syncable<NonNullable<CommonDisplayConfig['_overrideBrightness']>>
+	export let brightnessOverride: Syncable<NonNullable<CommonDisplayConfig['_brightnessOverride']>>
+	export let glowing: Syncable<NonNullable<CommonDisplayConfig['_glowing']>>
+	export let overrideGlowColor: Syncable<NonNullable<CommonDisplayConfig['_overrideGlowColor']>>
+	export let glowColor: Syncable<NonNullable<CommonDisplayConfig['_glowColor']>>
+	export let invisible: Syncable<NonNullable<CommonDisplayConfig['_invisible']>>
+	export let nbt: Syncable<NonNullable<CommonDisplayConfig['_nbt']>>
+	export let shadowRadius: Syncable<NonNullable<CommonDisplayConfig['_shadowRadius']>>
+	export let shadowStrength: Syncable<NonNullable<CommonDisplayConfig['_shadowStrength']>>
+	export let useNBT: Syncable<NonNullable<CommonDisplayConfig['_useNBT']>>
 
 	const BILLBOARD_OPTIONS: Record<CommonDisplayConfig['billboard'], string> = {
 		fixed: translate('dialog.bone_config.billboard.options.fixed'),
@@ -137,7 +137,7 @@
 			label={translate('dialog.bone_config.custom_brightness.title')}
 			tooltip={translate('dialog.bone_config.custom_brightness.description')}
 			bind:value={brightnessOverride}
-			defaultValue={CommonDisplayConfig.prototype.brightnessOverride}
+			defaultValue={CommonDisplayConfig.prototype.brightness}
 			min={0}
 			max={15}
 		/>
@@ -243,7 +243,7 @@
 					label={translate('dialog.bone_config.brightness_override.title')}
 					tooltip={translate('dialog.bone_config.brightness_override.description')}
 					bind:value={brightnessOverride}
-					defaultValue={CommonDisplayConfig.prototype.brightnessOverride}
+					defaultValue={CommonDisplayConfig.prototype.brightness}
 					min={0}
 					max={15}
 				/>

@@ -1,7 +1,7 @@
 import { updateBoundingBox } from '../../../blockbench-additions/model-formats/ajblueprint'
 import { defaultValues } from '../../../blueprintSettings'
 import { PACKAGE } from '../../../constants'
-import { makeValuable, Valuable } from '../../../util/stores'
+import { makeSyncable, Syncable } from '../../../util/stores'
 import { SvelteSidebarDialog } from '../../../util/svelteDialog'
 import { translate } from '../../../util/translation'
 import {
@@ -24,13 +24,13 @@ interface AdditionalSettings {
 
 export type BlueprintSettings = typeof defaultValues & AdditionalSettings
 export type ValuableBlueprintSettings = {
-	[Key in keyof BlueprintSettings]: Valuable<BlueprintSettings[Key]>
+	[Key in keyof BlueprintSettings]: Syncable<BlueprintSettings[Key]>
 }
 
 export function openBlueprintSettingsDialog() {
 	if (!Project) return
 
-	const settings: ValuableBlueprintSettings = makeValuable({
+	const settings: ValuableBlueprintSettings = makeSyncable({
 		...defaultValues,
 		project_name: Project.name,
 		texture_width: Project.texture_width,

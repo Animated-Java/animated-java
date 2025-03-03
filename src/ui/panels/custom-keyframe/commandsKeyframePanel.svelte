@@ -7,14 +7,14 @@
 		setKeyframeRepeat,
 		setKeyframeRepeatFrequency,
 	} from '../../../blockbench-mods/misc/customKeyframes'
-	import { Valuable } from '../../../util/stores'
+	import { Syncable } from '../../../util/stores'
 	import { translate } from '../../../util/translation'
 
 	export let selectedKeyframe: _Keyframe
 
-	const COMMANDS = new Valuable<string>(getKeyframeCommands(selectedKeyframe) ?? '')
-	const REPEAT = new Valuable<boolean>(getKeyframeRepeat(selectedKeyframe) ?? false)
-	const REPEAT_FREQUENCY = new Valuable<number>(getKeyframeRepeatFrequency(selectedKeyframe) ?? 1)
+	const COMMANDS = new Syncable<string>(getKeyframeCommands(selectedKeyframe) ?? '')
+	const REPEAT = new Syncable<boolean>(getKeyframeRepeat(selectedKeyframe) ?? false)
+	const REPEAT_FREQUENCY = new Syncable<number>(getKeyframeRepeatFrequency(selectedKeyframe) ?? 1)
 
 	COMMANDS.subscribe(value => {
 		setKeyframeCommands(selectedKeyframe, value)

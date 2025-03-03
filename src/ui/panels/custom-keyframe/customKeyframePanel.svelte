@@ -3,14 +3,14 @@
 		getKeyframeExecuteCondition,
 		setKeyframeExecuteCondition,
 	} from '../../../blockbench-mods/misc/customKeyframes'
-	import { Valuable } from '../../../util/stores'
+	import { Syncable } from '../../../util/stores'
 	import { translate } from '../../../util/translation'
 	import CommandsKeyframePanel from './commandsKeyframePanel.svelte'
 	import VariantKeyframePanel from './variantKeyframePanel.svelte'
 
 	export let selectedKeyframe: _Keyframe
 
-	const EXECUTE_CONDITION = new Valuable<string>(
+	const EXECUTE_CONDITION = new Syncable<string>(
 		getKeyframeExecuteCondition(selectedKeyframe) ?? ''
 	)
 

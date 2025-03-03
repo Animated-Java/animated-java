@@ -2,9 +2,9 @@ import IncompatiblePluginNotice from '@svelte-components/incompatiblePluginNotic
 import { PACKAGE } from '../../constants'
 import { injectSvelteCompomponentMod } from '../../util/injectSvelteComponent'
 import { createBlockbenchMod } from '../../util/moddingTools'
-import { Valuable } from '../../util/stores'
+import { Syncable } from '../../util/stores'
 
-const SELECTED_PLUGIN = new Valuable<BBPlugin | null>(null)
+const SELECTED_PLUGIN = new Syncable<BBPlugin | null>(null)
 
 injectSvelteCompomponentMod({
 	component: IncompatiblePluginNotice,

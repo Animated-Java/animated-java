@@ -1,9 +1,9 @@
 <script lang="ts">
-	import type { Valuable } from '../../util/stores'
+	import type { Syncable } from '../../util/stores'
 	import BaseSidebarDialogItem from './baseSidebarDialogItem.svelte'
 	export let label: string
 	export let description: string
-	export let checked: Valuable<boolean>
+	export let checked: Syncable<boolean>
 </script>
 
 <BaseSidebarDialogItem {label} {description}>

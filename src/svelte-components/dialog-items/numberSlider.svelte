@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { Valuable } from '../../util/stores'
+	import { Syncable } from '../../util/stores'
 	import BaseDialogItem from './baseDialogItem.svelte'
 
 	export let label: string
 	export let tooltip = ''
-	export let value: Valuable<number>
+	export let value: Syncable<number>
 	export let defaultValue: number
 	export let min: number | undefined = undefined
 	export let max: number | undefined = undefined
@@ -34,8 +34,8 @@
 				}
 			}
 			function stop() {
-				removeEventListeners(document, 'mousemove touchmove', move, null)
-				removeEventListeners(document, 'mouseup touchend', stop, null)
+				removeEventListeners(document, 'mousemove touchmove', move)
+				removeEventListeners(document, 'mouseup touchend', stop)
 			}
 			addEventListeners(document as unknown as any, 'mousemove touchmove', move)
 			addEventListeners(document as unknown as any, 'mouseup touchend', stop)

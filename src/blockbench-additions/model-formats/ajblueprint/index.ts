@@ -4,7 +4,7 @@ import { PACKAGE } from '../../../constants'
 import { injectSvelteCompomponent } from '../../../util/injectSvelteComponent'
 import { toSafeFunctionName } from '../../../util/minecraftUtil'
 import { addProjectToRecentProjects } from '../../../util/misc'
-import { Valuable } from '../../../util/stores'
+import { Syncable } from '../../../util/stores'
 import { translate } from '../../../util/translation'
 import { Variant } from '../../../variants'
 import { process } from './dfu'
@@ -527,7 +527,7 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 		Project.loadingPromises.push(
 			new Promise<void>(resolve => {
 				requestAnimationFrame(() => {
-					thisProject.pluginMode = new Valuable(
+					thisProject.pluginMode = new Syncable(
 						thisProject.animated_java.enable_plugin_mode
 					)
 					// Remove the default title

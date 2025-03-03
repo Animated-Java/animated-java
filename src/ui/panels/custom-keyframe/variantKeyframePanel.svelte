@@ -3,12 +3,12 @@
 		getKeyframeVariant,
 		setKeyframeVariant,
 	} from '../../../blockbench-mods/misc/customKeyframes'
-	import { Valuable } from '../../../util/stores'
+	import { Syncable } from '../../../util/stores'
 	import { translate } from '../../../util/translation'
 	import { Variant } from '../../../variants'
 
 	export let selectedKeyframe: _Keyframe
-	const KEYFRAME_VALUE = new Valuable<string>(getKeyframeVariant(selectedKeyframe)!)
+	const KEYFRAME_VALUE = new Syncable<string>(getKeyframeVariant(selectedKeyframe)!)
 	let selectContainer: HTMLDivElement
 
 	KEYFRAME_VALUE.subscribe(value => {

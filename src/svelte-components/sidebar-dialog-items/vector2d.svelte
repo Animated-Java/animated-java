@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Valuable } from '../../util/stores'
+	import type { Syncable } from '../../util/stores'
 	import BaseSidebarDialogItem from './baseSidebarDialogItem.svelte'
 	export let label: string
 	export let description: string
@@ -7,11 +7,11 @@
 
 	export let step: number | undefined = undefined
 
-	export let valueX: Valuable<number>
+	export let valueX: Syncable<number>
 	export let minX: number | undefined = undefined
 	export let maxX: number | undefined = undefined
 
-	export let valueY: Valuable<number>
+	export let valueY: Syncable<number>
 	export let minY: number | undefined = undefined
 	export let maxY: number | undefined = undefined
 
@@ -50,7 +50,7 @@
 
 	function eventListenerFactory(
 		target: HTMLElement,
-		value: Valuable<number>,
+		value: Syncable<number>,
 		min?: number,
 		max?: number
 	) {

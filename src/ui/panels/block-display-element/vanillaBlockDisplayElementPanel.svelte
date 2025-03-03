@@ -1,19 +1,19 @@
 <script lang="ts">
 	import { BlockDisplay } from '@aj/blockbench-additions/outliner-elements/blockDisplay'
-	import { Valuable } from '@aj/util/stores'
+	import { Syncable } from '@aj/util/stores'
 	import { translate } from '@aj/util/translation'
 	import EVENTS from '@events'
 
 	let selectedDisplay = BlockDisplay.selected.at(0)
-	let block = new Valuable<string>('')
-	let error = new Valuable<string>('')
+	let block = new Syncable<string>('')
+	let error = new Syncable<string>('')
 	let visible = false
 
 	EVENTS.UPDATE_SELECTION.subscribe(() => {
 		selectedDisplay = BlockDisplay.selected.at(0)
 		if (!selectedDisplay || selected.length > 1) {
-			block = new Valuable('')
-			error = new Valuable('')
+			block = new Syncable('')
+			error = new Syncable('')
 			visible = false
 			return
 		}
