@@ -1,6 +1,6 @@
+import { Parser, SyncIo, Tokenizer } from 'mc-build'
 import { Compiler, VariableMap } from 'mc-build/dist/mcl/Compiler'
 import { getDataPackFormat } from '../../util/minecraftUtil'
-import { Parser, SyncIo, Tokenizer } from 'mc-build'
 
 export function compile(
 	path: string,
