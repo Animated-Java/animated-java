@@ -17,7 +17,12 @@
 		options,
 		value: value.get(),
 		onChange() {
-			value.set(selectInput.node.getAttribute('value'))
+			const v = selectInput.node.getAttribute('value')
+			if (v == undefined) {
+				console.warn('Select value is undefined')
+				return
+			}
+			value.set(v)
 		},
 	})
 
