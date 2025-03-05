@@ -476,7 +476,7 @@ namespace TELLRAW {
 			{ text: " must be executed as the rig's root entity.", color: 'red' },
 			'\n',
 			TELLRAW_LEARN_MORE_LINK(
-				'https://animated-java.dev/docs/exported-rigs/controlling-a-rig-instance'
+				'https://animated-java.dev/docs/rigs/controlling-a-rig-instance'
 			),
 			TELLRAW_SUFFIX(),
 		])
@@ -880,16 +880,17 @@ async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAn
 					)
 				}
 			}
-			if (frame.variant) {
+			if (frame.variants?.length) {
+				const uuid = frame.variants[0]
 				thisFrame.set(
 					'variant',
 					new NbtCompound()
-						.set('name', new NbtString(rig.variants[frame.variant.uuid].name))
+						.set('name', new NbtString(rig.variants[uuid].name))
 						.set(
 							'condition',
 							new NbtString(
-								frame.variant.execute_condition
-									? `${frame.variant.execute_condition} `
+								frame.variants_execute_condition
+									? `${frame.variants_execute_condition} `
 									: ''
 							)
 						)

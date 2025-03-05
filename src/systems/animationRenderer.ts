@@ -68,20 +68,20 @@ export interface INodeTransform {
 	interpolation?: 'step' | 'pre-post'
 
 	commands?: string
-	execute_condition?: string
+	commands_execute_condition?: string
 }
 
 export interface IRenderedFrame {
 	time: number
 	node_transforms: Record<string, INodeTransform>
-	variant?: {
-		uuid: string
-		execute_condition?: string
-	}
-	commands?: {
-		commands: string
-		execute_condition?: string
-	}
+	/** A list of Variants (by UUID) to apply this frame */
+	variants?: string[]
+	/** The condition to check before applying variants */
+	variants_execute_condition?: string
+	/** A mcfunction to run as the root on this frame. (Supports MCB syntax) */
+	commands?: string
+	/** The condition to check before running commands */
+	commands_execute_condition?: string
 }
 
 export interface IRenderedAnimation {
@@ -124,8 +124,8 @@ export function getFrame(
 	const frame: IRenderedFrame = {
 		time,
 		node_transforms: {},
-		variant: getVariantKeyframe(animation, time),
-		commands: getCommandsKeyframe(animation, time),
+		...getVariantKeyframe(animation, time),
+		...getCommandsKeyframe(animation, time),
 	}
 
 	if (lastAnimation !== animation) {
@@ -242,39 +242,52 @@ export function getFrame(
 			head_rot: threeAxisRotationToTwoAxisRotation(rot),
 			interpolation,
 			commands,
-			execute_condition: executeCondition,
+			commands_execute_condition: executeCondition?.trim(),
 		}
 	}
 
 	return frame
 }
 
-function getVariantKeyframe(animation: _Animation, time: number): IRenderedFrame['variant'] {
+function getVariantKeyframe(
+	animation: _Animation,
+	time: number
+): Pick<IRenderedFrame, 'variants' | 'variants_execute_condition'> {
 	const variantKeyframes = animation.animators.effects?.variant as _Keyframe[]
-	if (!variantKeyframes) return
-	for (const kf of variantKeyframes) {
-		if (kf.time !== time) continue
-		const uuid = getKeyframeVariant(kf)
-		if (!uuid) return
-		return {
-			uuid,
-			execute_condition: getKeyframeExecuteCondition(kf),
+	if (variantKeyframes) {
+		const kf = variantKeyframes.find(kf => kf.time === time)
+		if (kf) {
+			// REVIEW - Variant keyframes do not support multiple variants yet.
+			const uuid = getKeyframeVariant(kf)
+			if (uuid) {
+				return {
+					variants: [uuid],
+					variants_execute_condition: getKeyframeExecuteCondition(kf)?.trim(),
+				}
+			}
 		}
 	}
+	return {}
 }
 
-function getCommandsKeyframe(animation: _Animation, time: number): IRenderedFrame['commands'] {
+function getCommandsKeyframe(
+	animation: _Animation,
+	time: number
+): Pick<IRenderedFrame, 'commands' | 'commands_execute_condition'> {
 	const commandsKeyframes = animation.animators.effects?.commands as _Keyframe[]
-	if (!commandsKeyframes) return
-	for (const kf of commandsKeyframes) {
-		if (kf.time !== time) continue
-		const commands = getKeyframeCommands(kf)
-		if (!commands) return
-		return {
-			commands,
-			execute_condition: getKeyframeExecuteCondition(kf),
+	if (commandsKeyframes) {
+		const kf = commandsKeyframes.find(kf => kf.time === time)
+		if (kf) {
+			const commands = getKeyframeCommands(kf)?.trim()
+			if (commands) {
+				return {
+					commands,
+					commands_execute_condition: getKeyframeExecuteCondition(kf)?.trim(),
+				}
+			}
 		}
 	}
+	return {}
 }
 
 export function updatePreview(animation: _Animation, time: number) {
@@ -348,13 +361,17 @@ export function hashAnimations(animations: IRenderedAnimation[]) {
 				hash.update(';' + node.scale.join(';'))
 				node.interpolation && hash.update(';' + node.interpolation)
 				if (node.commands) hash.update(';' + node.commands)
-				if (node.execute_condition) hash.update(';' + node.execute_condition)
+				if (node.commands_execute_condition)
+					hash.update(';' + node.commands_execute_condition)
 			}
-			if (frame.variant) {
-				hash.update(';' + frame.variant.uuid)
-				if (frame.variant.execute_condition)
-					hash.update(';' + frame.variant.execute_condition)
+			if (frame.variants) {
+				hash.update(';' + frame.variants)
+				if (frame.variants_execute_condition)
+					hash.update(';' + frame.variants_execute_condition)
 			}
+			if (frame.commands) hash.update(';' + frame.commands)
+			if (frame.commands_execute_condition)
+				hash.update(';' + frame.commands_execute_condition)
 		}
 	}
 	return hash.digest('hex')

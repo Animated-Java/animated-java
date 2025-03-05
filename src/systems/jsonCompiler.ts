@@ -314,7 +314,7 @@ function serailizeNodeTransform(node: INodeTransform): ExportedNodetransform {
 		scale: node.scale,
 		interpolation: node.interpolation,
 		commands: node.commands,
-		execute_condition: node.execute_condition,
+		commands_execute_condition: node.commands_execute_condition,
 	}
 	return json
 }
