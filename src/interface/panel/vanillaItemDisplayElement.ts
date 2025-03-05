@@ -1,7 +1,8 @@
 import { isCurrentFormat } from '../../blueprintFormat'
 import VanillaItemDisplayElementPanel from '../../components/vanillaItemDisplayElementPanel.svelte'
 import { PACKAGE } from '../../constants'
-import { VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
+import { ItemDisplayMode, VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
+import { events } from '../../util/events'
 import { injectSvelteCompomponentMod } from '../../util/injectSvelteComponent'
 import { translate } from '../../util/translation'
 
@@ -46,8 +47,11 @@ ITEM_DISPLAY_ITEM_DISPLAY_SELECT.get = function () {
 	if (!selected) return 'left'
 	return selected.itemDisplay
 }
-ITEM_DISPLAY_ITEM_DISPLAY_SELECT.set = function (this: BarSelect<string>, value: string) {
-	const selected = VanillaItemDisplay.selected[0]
+ITEM_DISPLAY_ITEM_DISPLAY_SELECT.set = function (
+	this: BarSelect<ItemDisplayMode>,
+	value: ItemDisplayMode
+) {
+	const selected = VanillaItemDisplay.selected.at(0)
 	if (!selected) return this
 	this.value = value
 	const name = this.getNameFor(value)
@@ -57,6 +61,32 @@ ITEM_DISPLAY_ITEM_DISPLAY_SELECT.set = function (this: BarSelect<string>, value:
 	if (!this.nodes.includes(this.node)) {
 		$(this.node).find('bb-select').text(name)
 	}
-	selected.itemDisplay = value
+
+	if (selected.itemDisplay === value) return this
+
+	Undo.initEdit({ elements: VanillaItemDisplay.selected })
+	if (VanillaItemDisplay.selected.length > 1) {
+		for (const display of VanillaItemDisplay.selected) {
+			display.itemDisplay = value
+		}
+	} else {
+		selected.itemDisplay = value
+	}
+	Project!.saved = false
+	Undo.finishEdit(`Change Item Display Node's Item Display Mode to ${value}`, {
+		elements: VanillaItemDisplay.selected,
+	})
 	return this
 }
+function updateItemDisplaySelect() {
+	console.log('updateItemDisplaySelect')
+	let value = VanillaItemDisplay.selected.at(0)?.itemDisplay
+	value ??= 'none'
+	ITEM_DISPLAY_ITEM_DISPLAY_SELECT.set(value)
+}
+events.UNDO.subscribe(() => {
+	updateItemDisplaySelect()
+})
+events.REDO.subscribe(() => {
+	updateItemDisplaySelect()
+})
