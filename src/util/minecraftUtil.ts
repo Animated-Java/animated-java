@@ -100,9 +100,11 @@ export function parseResourceLocation(resourceLocation: string) {
 	const path = parts.join('')
 	const resourceType = path.split('/')[0]
 	const parsed = PathModule.parse(path)
+	const fullPath = PathModule.join(namespace, path)
 	return {
 		namespace,
 		path,
+		fullPath,
 		type: resourceType,
 		dir: parsed.dir,
 		name: parsed.name,
