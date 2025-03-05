@@ -1,28 +1,55 @@
-<script lang="ts" context="module">
+<script lang="ts">
 	import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
 	import { events } from '../util/events'
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
-</script>
 
-<script lang="ts">
 	let selectedDisplay = VanillaBlockDisplay.selected.at(0)
+	let lastSelected = selectedDisplay
 
 	let block = new Valuable<string>('')
 	let error = new Valuable<string>('')
 	let visible = false
 
+	let unsub: (() => void) | undefined
+
 	events.UPDATE_SELECTION.subscribe(() => {
+		unsub?.()
+
+		lastSelected = selectedDisplay
 		selectedDisplay = VanillaBlockDisplay.selected.at(0)
-		if (!selectedDisplay || selected.length > 1) {
-			block = new Valuable('')
-			error = new Valuable('')
+
+		if (!selectedDisplay) {
 			visible = false
 			return
 		}
-		block = selectedDisplay._block
+
+		$block = selectedDisplay.block
 		error = selectedDisplay.error
 		visible = true
+
+		unsub = block.subscribe(value => {
+			if (selectedDisplay == undefined || selectedDisplay !== lastSelected) {
+				lastSelected = selectedDisplay
+				return
+			}
+			if (value === selectedDisplay.block) return
+
+			Undo.initEdit({ elements: VanillaBlockDisplay.selected })
+
+			if (VanillaBlockDisplay.selected.length > 1) {
+				for (const display of VanillaBlockDisplay.selected) {
+					display.block = value
+				}
+			} else {
+				selectedDisplay.block = value
+			}
+			Project!.saved = false
+
+			Undo.finishEdit(`Change Block Display Block to "${$block}"`, {
+				elements: VanillaBlockDisplay.selected,
+			})
+		})
 	})
 </script>
 
