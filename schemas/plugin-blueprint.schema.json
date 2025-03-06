@@ -1,7 +1,7 @@
 {
 	"$schema": "http://json-schema.org/draft-07/schema#",
-	"title": "Animated Java Plugin Rig",
-	"description": "A schema of the JSON file a Blueprint creates when exported for a Plugin environment.",
+	"title": "Animated Java Plugin Blueprint",
+	"description": "A schema of the JSON file an Blueprint Project creates when exported for a Plugin environment.",
 	"type": "object",
 	"required": ["format_version", "settings"],
 	"properties": {
