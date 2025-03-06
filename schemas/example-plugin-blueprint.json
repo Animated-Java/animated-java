@@ -1,0 +1,240 @@
+{
+	"$schema": "./plugin-rig.schema.json",
+	"format_version": 1,
+	"settings": {
+		"id": "animated_java:blueprint"
+	},
+	"textures": {
+		"custom_texture": {
+			"type": "custom",
+			"base64_string": "iVBORw0KGgoAAAANSUhEUgAAAAUA",
+			"animation": {
+				"frametime": 3,
+				"interpolate": true,
+				"frames": [0, 2, { "index": 1, "time": 10 }, 3]
+			}
+		},
+		"reference_texture": {
+			"type": "reference",
+			"resource_location": "minecraft:block/stone"
+		}
+	},
+	"texture_palettes": {
+		"default_palette": {
+			"active_state": "default",
+			"states": {
+				"default": { "texture": "custom_texture" },
+				"alternative": { "texture": "reference_texture" }
+			}
+		}
+	},
+	"nodes": {
+		"bone_node": {
+			"type": "bone",
+			"default_transformation": {
+				"matrix": [1, 0, 0, 0, 0, 0.99619, -0.08716, 0, 0, 0.08716, 0.99619, 0, 0, 0, 0, 1],
+				"decomposed": {
+					"left_rotation": [-0.04362, 0, 0, 0.99905]
+				},
+				"rotation": [5, 180, 0],
+				"head_rotation": [5, 180]
+			},
+			"display_properties": {
+				"billboard": "vertical",
+				"custom_brightness": 10,
+				"custom_name": "'Bone Node'",
+				"glow_color_override": 12345678,
+				"is_custom_name_visible": true,
+				"is_glowing": true,
+				"shadow_radius": 5.0,
+				"shadow_strength": 0.5,
+				"is_enchanted": true
+			},
+			"elements": [
+				{
+					"from": [0.0, 0.0, 0.0],
+					"to": [1.0, 1.0, 1.0],
+					"rotation": {
+						"angle": 0.0,
+						"axis": "y",
+						"origin": [0.5, 0.5, 0.5]
+					},
+					"faces": {
+						"north": {
+							"uv": [0, 0, 16, 16],
+							"texture_provider": { "type": "texture", "texture": "custom_texture" }
+						},
+						"east": {
+							"uv": [0, 0, 16, 16],
+							"texture_provider": {
+								"type": "texture",
+								"texture": "reference_texture"
+							}
+						},
+						"south": {
+							"uv": [0, 0, 16, 16],
+							"texture_provider": { "type": "texture", "texture": "custom_texture" },
+							"rotation": 90
+						},
+						"west": {
+							"uv": [0, 0, 16, 16],
+							"texture_provider": {
+								"type": "texture",
+								"texture": "reference_texture"
+							}
+						},
+						"up": {
+							"uv": [0, 0, 16, 16],
+							"texture_provider": { "type": "texture", "texture": "custom_texture" }
+						},
+						"down": {
+							"uv": [0, 0, 16, 16],
+							"texture_provider": {
+								"type": "texture_palette",
+								"texture_palette": "default_palette"
+							}
+						}
+					},
+					"display_rotation": [90.0, 20.0, 0.0]
+				}
+			]
+		},
+		"item_display_node": {
+			"type": "item_display",
+			"default_transformation": {
+				"matrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1.625, 0, 1],
+				"decomposed": {
+					"translation": [0, 1.625, 0]
+				},
+				"position": [0, 1.625, 0]
+			},
+			"display_properties": {
+				"billboard": "vertical",
+				"is_glowing": true,
+				"shadow_radius": 3.0,
+				"shadow_strength": 0.8,
+				"item": "minecraft:diamond_sword[damage=3]",
+				"item_display": "gui"
+			}
+		},
+		"block_display_node": {
+			"type": "block_display",
+			"default_transformation": {
+				"matrix": [
+					0.97789, 0.12755, 0.39544, 0, -0.09059, 1.11318, -0.13506, 0, -0.38268, 0.08052,
+					0.92036, 0, -0.625, 0, 0, 1
+				],
+				"decomposed": {
+					"translation": [-0.625, 0, 0],
+					"left_rotation": [-0.05124, -0.19285, 0.05124, 0.97855],
+					"scale": [1.0625, 1.125, 1]
+				},
+				"position": [-0.625, 0, 0],
+				"rotation": [4.61854, 202.57734, 6.91757],
+				"head_rotation": [4.61854, 202.57734],
+				"scale": [1.0625, 1.125, 1]
+			},
+			"display_properties": {
+				"billboard": "horizontal",
+				"custom_brightness": 15,
+				"custom_name": "'Block Display Node'",
+				"is_custom_brightness_enabled": true,
+				"is_custom_name_visible": true,
+				"block_state": "minecraft:cake[bites=3]"
+			}
+		},
+		"text_display_node": {
+			"type": "text_display",
+			"display_properties": {
+				"custom_brightness": 5,
+				"is_custom_brightness_enabled": true,
+				"is_glowing": true,
+				"alignment": "left",
+				"background_color": 16711680,
+				"is_default_background": true,
+				"is_see_through": true,
+				"is_shadowed": true,
+				"line_width": 500,
+				"text": "{\"text\":\"This is a text display node\",\"bold\":true}",
+				"text_opacity": 12
+			}
+		}
+	},
+	"animations": {
+		"test_animation": {
+			"loop_mode": {
+				"type": "loop",
+				"loop_delay": "0.5"
+			},
+			"blend_weight": "1.2",
+			"start_delay": "0.0",
+			"length": 3.0,
+			"global_keyframes": {
+				"texture": {
+					"0.0": { "default_palette": "default" },
+					"1.5": { "default_palette": "alternative" }
+				},
+				"event": {
+					"1.5": { "events": ["event_1", "event_2"] },
+					"3.0": { "events": ["event_1"] }
+				}
+			},
+			"node_keyframes": {
+				"bone_node": {
+					"position": {
+						"0.0": {
+							"value": ["0.0", "0.0", "0.0"],
+							"interpolation": {
+								"type": "linear",
+								"easing": "linear"
+							}
+						},
+						"3.0": {
+							"value": ["2.0", "2.0", "2.0"],
+							"interpolation": {
+								"type": "linear",
+								"easing": "ease_in_out_quad"
+							}
+						}
+					},
+					"rotation": {
+						"0.0": {
+							"value": ["0.0", "0.0", "0.0"],
+							"interpolation": {
+								"type": "linear",
+								"easing": "linear"
+							}
+						},
+						"3.0": {
+							"value": ["90.0", "90.0", "90.0"],
+							"interpolation": {
+								"type": "bezier",
+								"left_handle_time": [-0.1, -0.1, -0.1],
+								"left_handle_value": [0, 0, 0],
+								"right_handle_time": [0.1, 0.1, 0.1],
+								"right_handle_value": [0, 0, 0]
+							}
+						}
+					},
+					"scale": {
+						"1.5": {
+							"value": ["1.0", "1.0", "1.0"],
+							"interpolation": {
+								"type": "linear",
+								"easing": "linear"
+							}
+						},
+						"3.0": {
+							"value": ["0.5", "0.5", "0.5"],
+							"interpolation": {
+								"type": "linear",
+								"easing": "ease_out_elastic",
+								"easing_arguments": [1.2]
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
