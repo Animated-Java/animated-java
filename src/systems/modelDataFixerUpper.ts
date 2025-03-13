@@ -1,9 +1,9 @@
-import { IBlueprintFormatJSON, getDefaultProjectSettings } from '../blueprintFormat'
-import { BoneConfig } from '../nodeConfigs'
-import { PACKAGE } from '../constants'
-import { openUnexpectedErrorDialog } from '../interface/dialog/unexpectedError'
 import { NbtCompound, NbtList, NbtString, NbtTag } from 'deepslate/lib/nbt'
 import TransparentTexture from '../assets/transparent.png'
+import { IBlueprintFormatJSON, getDefaultProjectSettings } from '../blueprintFormat'
+import { PACKAGE } from '../constants'
+import { openUnexpectedErrorDialog } from '../interface/dialog/unexpectedError'
+import { BoneConfig } from '../nodeConfigs'
 
 export function process(model: any): any {
 	console.log('Running MDFU...', JSON.parse(JSON.stringify(model)))
@@ -49,6 +49,9 @@ export function process(model: any): any {
 		// v1.6.3
 		if (compareVersions('1.6.3', model.meta.format_version))
 			model = updateModelTo1_6_3(model as IBlueprintFormatJSON)
+		// v1.6.5
+		if (compareVersions('1.6.5', model.meta.format_version))
+			model = updateModelTo1_6_5(model as IBlueprintFormatJSON)
 
 		console.groupEnd()
 
@@ -500,6 +503,20 @@ function updateModelTo1_6_3(model: IBlueprintFormatJSON): IBlueprintFormatJSON {
 			model.textures.push(texture.getSaveCopy())
 			break
 		}
+	}
+
+	return model
+}
+
+// region v1.6.5
+function updateModelTo1_6_5(model: IBlueprintFormatJSON): IBlueprintFormatJSON {
+	console.log('Processing model format 1.6.5', JSON.parse(JSON.stringify(model)))
+
+	// Update target_minecraft_version to an array if it's a string
+	if (typeof model.blueprint_settings?.target_minecraft_versions === 'string') {
+		model.blueprint_settings.target_minecraft_versions = [
+			model.blueprint_settings.target_minecraft_versions,
+		]
 	}
 
 	return model

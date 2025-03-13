@@ -34,9 +34,7 @@ function getSettings() {
 			Project!.animated_java.resource_pack_export_mode as string
 		),
 		dataPackExportMode: new Valuable(Project!.animated_java.data_pack_export_mode as string),
-		targetMinecraftVersion: new Valuable(
-			Project!.animated_java.target_minecraft_version as string
-		),
+		targetMinecraftVersions: new Valuable(Project!.animated_java.target_minecraft_versions),
 		// Resource Pack Settings
 		displayItem: new Valuable(Project!.animated_java.display_item, value => {
 			if (!value) {
@@ -84,8 +82,8 @@ function setSettings(settings: ReturnType<typeof getSettings>) {
 	Project.animated_java.resource_pack_export_mode =
 		settings.resourcePackExportMode.get() as ExportMode
 	Project.animated_java.data_pack_export_mode = settings.dataPackExportMode.get() as ExportMode
-	Project.animated_java.target_minecraft_version =
-		settings.targetMinecraftVersion.get() as MinecraftVersion
+	Project.animated_java.target_minecraft_versions =
+		settings.targetMinecraftVersions.get() as MinecraftVersion[]
 	// Resource Pack Settings
 	Project.animated_java.display_item = settings.displayItem.get()
 	Project.animated_java.custom_model_data_offset = settings.customModelDataOffset.get()
@@ -113,7 +111,6 @@ export function openBlueprintSettingsDialog() {
 	if (!Project) return
 
 	const settings = getSettings()
-
 	return new SvelteDialog({
 		id: `${PACKAGE.name}:blueprintSettingsDialog`,
 		title: translate('dialog.blueprint_settings.title'),

@@ -43,3 +43,25 @@ export function resolvePath(path: string): string {
 
 	return normalizePath(resolveEnvVariables(path))
 }
+
+export function swapPathRoot(path: string, oldRoot: string, newRoot: string) {
+	path = normalizePath(path)
+	oldRoot = normalizePath(oldRoot)
+	newRoot = normalizePath(newRoot)
+	if (path.startsWith(oldRoot)) {
+		return PathModule.join(newRoot, path.slice(oldRoot.length))
+	}
+	throw new Error(`Cannot swap path root! Path "${path}" does not start with "${oldRoot}"`)
+}
+
+export function safeReadSync(path: string): Buffer | undefined {
+	try {
+		return fs.readFileSync(path)
+	} catch (e) {
+		return undefined
+	}
+}
+
+export async function safeRead(path: string) {
+	return fs.promises.readFile(path).catch(() => undefined)
+}

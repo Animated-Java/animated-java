@@ -29,7 +29,7 @@ export async function cleanupExportedFiles() {
 		// PROGRESS.set(0)
 		// MAX_PROGRESS.set(assetsMeta.oldFiles.size)
 		const removedFolders = new Set<string>()
-		for (const file of assetsMeta.oldFiles) {
+		for (const file of assetsMeta.previousVersionedFiles) {
 			if (!isFunctionTagPath(file)) {
 				if (fs.existsSync(file)) await fs.promises.unlink(file)
 			} else if (aj.export_namespace !== Project!.last_used_export_namespace) {

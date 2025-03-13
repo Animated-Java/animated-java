@@ -249,3 +249,20 @@ export function getDataPackFormat(version: MinecraftVersion): number {
 			return Infinity
 	}
 }
+
+export function getResourcePackFormat(version: MinecraftVersion): number {
+	switch (version) {
+		case '1.20.4':
+			return 22
+		case '1.20.5':
+			return 32
+		case '1.21.0':
+			return 34
+		case '1.21.2':
+			return 42
+		case '1.21.4':
+			return 46
+		default:
+			return Infinity
+	}
+}

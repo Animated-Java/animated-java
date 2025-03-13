@@ -1,9 +1,9 @@
-import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
+import type { ResourcePackCompiler } from '.'
+import { PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
 import { isResourcePackPath, sanitizePathName } from '../../util/minecraftUtil'
 import { ITextureAtlas } from '../minecraft/textureAtlas'
-import { IRenderedNodes, IRenderedRig } from '../rigRenderer'
-import { sortObjectKeys, zip } from '../util'
-import { ResourcePackAJMeta } from './global'
+import { IRenderedNodes } from '../rigRenderer'
+import { sortObjectKeys } from '../util'
 
 interface IPredicateItemModel {
 	parent?: string
@@ -125,37 +125,27 @@ class PredicateItemModel {
 		}
 	}
 }
-export default async function compileResourcePack(options: {
-	rig: IRenderedRig
-	displayItemPath: string
-	resourcePackFolder: string
-	textureExportFolder: string
-	modelExportFolder: string
-}) {
-	const { rig, displayItemPath, resourcePackFolder, textureExportFolder, modelExportFolder } =
-		options
+
+const compileResourcePack: ResourcePackCompiler = async ({
+	coreFiles,
+	versionedFiles,
+	rig,
+	displayItemPath,
+	textureExportFolder,
+	modelExportFolder,
+}) => {
 	const aj = Project!.animated_java
-	const lastUsedExportNamespace = Project!.last_used_export_namespace
+
 	PROGRESS_DESCRIPTION.set('Compiling Resource Pack...')
-	console.log('Compiling resource pack...', options)
+	console.log('Compiling resource pack...', {
+		rig,
+		displayItemPath,
+		textureExportFolder,
+		modelExportFolder,
+	})
 
-	const ajmeta = new ResourcePackAJMeta(
-		PathModule.join(options.resourcePackFolder, 'assets.ajmeta'),
-		aj.export_namespace,
-		lastUsedExportNamespace,
-		options.resourcePackFolder
-	)
-	if (aj.resource_pack_export_mode === 'raw') {
-		ajmeta.read()
-	}
-
-	const exportedFiles = new Map<string, string | Buffer>()
-
-	// Internal Models
-	exportedFiles.set(
-		PathModule.join(resourcePackFolder, 'assets/animated_java/models/empty.json'),
-		'{}'
-	)
+	// Empty Model
+	versionedFiles.set(PathModule.join('assets/animated_java/models/empty.json'), { content: '{}' })
 
 	// Display Item
 	const displayItemModel = new PredicateItemModel()
@@ -198,21 +188,19 @@ export default async function compileResourcePack(options: {
 
 		let textureName = sanitizePathName(texture.name)
 		if (!texture.name.endsWith('.png')) textureName += '.png'
-		exportedFiles.set(PathModule.join(textureExportFolder, textureName), image)
+		versionedFiles.set(PathModule.join(textureExportFolder, textureName), { content: image })
 		if (mcmeta !== undefined)
-			exportedFiles.set(PathModule.join(textureExportFolder, textureName + '.mcmeta'), mcmeta)
+			versionedFiles.set(PathModule.join(textureExportFolder, textureName + '.mcmeta'), {
+				content: mcmeta,
+			})
 		if (optifineEmissive !== undefined)
-			exportedFiles.set(
-				PathModule.join(textureExportFolder, textureName + '_e.png'),
-				optifineEmissive
-			)
+			versionedFiles.set(PathModule.join(textureExportFolder, textureName + '_e.png'), {
+				content: optifineEmissive,
+			})
 	}
 
 	// Texture atlas
-	const blockAtlasPath = PathModule.join(
-		resourcePackFolder,
-		'assets/minecraft/atlases/blocks.json'
-	)
+	const blockAtlasPath = PathModule.join('assets/minecraft/atlases/blocks.json')
 	const blockAtlas: ITextureAtlas = await fs.promises
 		.readFile(blockAtlasPath, 'utf-8')
 		.catch(() => {
@@ -238,7 +226,9 @@ export default async function compileResourcePack(options: {
 			prefix: 'blueprint/',
 		})
 	}
-	exportedFiles.set(blockAtlasPath, autoStringify(blockAtlas))
+	coreFiles.set(blockAtlasPath, {
+		content: autoStringify(blockAtlas),
+	})
 
 	// Variant Models
 	for (const variant of Object.values(rig.variants)) {
@@ -251,86 +241,20 @@ export default async function compileResourcePack(options: {
 			const exportPath = variant.is_default
 				? PathModule.join(modelExportFolder, bone.name + '.json')
 				: PathModule.join(modelExportFolder, variant.name, bone.name + '.json')
-			exportedFiles.set(PathModule.join(exportPath), autoStringify(variantModel.model))
-		}
-	}
-
-	if (aj.enable_plugin_mode) {
-		// Do nothing
-		console.log('Plugin mode enabled. Skipping resource pack export.')
-	} else if (aj.resource_pack_export_mode === 'raw') {
-		// Cleanup old files
-		PROGRESS_DESCRIPTION.set('Removing Old Resource Pack Files...')
-		PROGRESS.set(0)
-		MAX_PROGRESS.set(ajmeta.oldFiles.size)
-
-		const removedFolders = new Set<string>()
-		for (const file of ajmeta.oldFiles) {
-			if (fs.existsSync(file)) await fs.promises.unlink(file)
-			let folder = PathModule.dirname(file)
-			while (
-				!removedFolders.has(folder) &&
-				fs.existsSync(folder) &&
-				(await fs.promises.readdir(folder)).length === 0
-			) {
-				await fs.promises.rm(folder, { recursive: true })
-				removedFolders.add(folder)
-				folder = PathModule.dirname(folder)
-			}
-			PROGRESS.set(PROGRESS.get() + 1)
-		}
-
-		// Write new files
-		ajmeta.files = new Set(exportedFiles.keys())
-		ajmeta.files.delete(blockAtlasPath)
-		ajmeta.write()
-
-		// Since we don't want to erase the display item every export, we add it's model file after the files have been added to the ajmeta.
-		console.log('Display Item Model', displayItemModel.toJSON())
-		exportedFiles.set(displayItemPath, autoStringify(displayItemModel.toJSON()))
-
-		PROGRESS_DESCRIPTION.set('Writing Resource Pack...')
-		PROGRESS.set(0)
-		MAX_PROGRESS.set(exportedFiles.size)
-		const createdFolderCache = new Set<string>()
-
-		for (const [path, data] of exportedFiles) {
-			const folder = PathModule.dirname(path)
-			if (!createdFolderCache.has(folder)) {
-				await fs.promises.mkdir(folder, { recursive: true })
-				createdFolderCache.add(folder)
-			}
-			await fs.promises.writeFile(path, data)
-			PROGRESS.set(PROGRESS.get() + 1)
-		}
-	} else if (aj.resource_pack_export_mode === 'zip') {
-		exportedFiles.set(
-			PathModule.join(resourcePackFolder, 'pack.mcmeta'),
-			autoStringify({
-				pack: {
-					// FIXME - This should be a setting
-					pack_format: 32,
-					description: `${Project!.name}. Generated with Animated Java`,
-				},
+			versionedFiles.set(PathModule.join(exportPath), {
+				content: autoStringify(variantModel.model),
 			})
-		)
-
-		PROGRESS_DESCRIPTION.set('Writing Resource Pack Zip...')
-		const data: Record<string, Uint8Array> = {}
-		for (const [path, file] of exportedFiles) {
-			const relativePath = PathModule.relative(resourcePackFolder, path)
-			if (typeof file === 'string') {
-				data[relativePath] = Buffer.from(file)
-			} else {
-				data[relativePath] = file
-			}
 		}
-		const zipped = await zip(data, {})
-		await fs.promises.writeFile(
-			resourcePackFolder + (resourcePackFolder.endsWith('.zip') ? '' : '.zip'),
-			zipped
-		)
 	}
+
+	console.log('Display Item Model', displayItemModel.toJSON())
+	versionedFiles.set(displayItemPath, {
+		content: autoStringify(displayItemModel.toJSON()),
+		// Don't include the display item in the AJMeta file, it has it's own system to handle merging.
+		includeInAJMeta: false,
+	})
 
 	console.log('Resource pack compiled!')
 }
+
+export default compileResourcePack

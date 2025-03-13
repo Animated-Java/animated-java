@@ -121,5 +121,35 @@
 				]
 			}
 		]
+	},
+	"1.6.5": {
+		"title": "v1.6.5",
+		"author": "Titus Evans (SnaveSutit)",
+		"date": "2025-02-26",
+		"categories": [
+			{
+				"title": "Changes",
+				"list": [
+					"Added a new function (`animated_java:<export_namespace>/remove/entities`) that kills all entities owned by a rig, whether they are attached to a root entity or not.",
+					"Added support for `shadow_color` JSON Text Components."
+				]
+			},
+			{
+				"title": "Fixes",
+				"list": [
+					"Fixed project settings leaking between opened `.ajblueprints`.",
+					"Fixed textures being forcfully set as internal when saving an `.ajblueprint`.",
+					"Fixed `tints` field being placed in the wrong location in exported item model definitions.",
+					"Fixed bone rotation not being synced with the root entity when a rig is exported without animations.",
+					"Fixed data entity being tagged with GLOBAL_NODE instead of GLOBAL_ENTITY.",
+					"Fixed added missing tag PROJECT_ENTITY to data entities.",
+					"Fixed locators and cameras missing most of their tags.",
+					"Fixed missing PROJECT_ENTITY tag on root entities.",
+					"Fixed backslash (\\\\) being allowed in node names.",
+					"Fixed locators not being removed when calling `animated_java:global/remove/everything`.",
+					"Fixed crash while exporting when encountering an invalid JSON file in the target data pack."
+				]
+			}
+		]
 	}
 }

@@ -6,20 +6,20 @@ if (process.argv.includes('--mode=dev')) {
 
 process.env.FLAVOR ??= `local`
 
+import * as esbuild from 'esbuild'
+import ImportGlobPlugin from 'esbuild-plugin-import-glob'
+import inlineImage from 'esbuild-plugin-inline-image'
 import * as fs from 'fs'
+import { load } from 'js-yaml'
+import * as path from 'path'
 import { isAbsolute, join } from 'path'
 import { TextDecoder } from 'util'
-import { load } from 'js-yaml'
-import * as esbuild from 'esbuild'
-import sveltePlugin from './plugins/sveltePlugin'
 import svelteConfig from '../svelte.config.js'
-import inlineImage from 'esbuild-plugin-inline-image'
-import ImportGlobPlugin from 'esbuild-plugin-import-glob'
-import packagerPlugin from './plugins/packagerPlugin'
-import inlineWorkerPlugin from './plugins/workerPlugin'
 import assetOverridePlugin from './plugins/assetOverridePlugin'
 import mcbCompressionPlugin from './plugins/mcbCompressionPlugin'
-import * as path from 'path'
+import packagerPlugin from './plugins/packagerPlugin'
+import sveltePlugin from './plugins/sveltePlugin'
+import inlineWorkerPlugin from './plugins/workerPlugin'
 const PACKAGE = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
 
 const INFO_PLUGIN: esbuild.Plugin = {
@@ -220,6 +220,7 @@ const devConfig: esbuild.BuildOptions = {
 		mcbCompressionPlugin(),
 		DEPENDENCY_QUARKS,
 	],
+	alias: { svelte: 'svelte' },
 	format: 'iife',
 	define: DEFINES,
 	treeShaking: true,
@@ -248,6 +249,7 @@ const prodConfig: esbuild.BuildOptions = {
 		mcbCompressionPlugin(),
 		DEPENDENCY_QUARKS,
 	],
+	alias: { svelte: 'svelte' },
 	keepNames: true,
 	banner: createBanner(),
 	drop: ['debugger'],

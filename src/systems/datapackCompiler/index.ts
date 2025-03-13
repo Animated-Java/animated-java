@@ -21,7 +21,9 @@ import { AnyRenderedNode, IRenderedRig, IRenderedVariant } from '../rigRenderer'
 import {
 	arrayToNbtFloatArray,
 	getFunctionNamespace,
+	IPackMeta,
 	matrixToNbtFloatArray,
+	PackMetaFormats,
 	replacePathPart,
 	sortObjectKeys,
 	transformationToNbt,
@@ -568,7 +570,7 @@ namespace TELLRAW {
 					color: 'red',
 				},
 				{
-					text: `Minecraft ${Project!.animated_java.target_minecraft_version}`,
+					text: `Minecraft ${Project!.animated_java.target_minecraft_versions}`,
 					color: 'aqua',
 				},
 				{ text: ' in the wrong version!', color: 'red' },
@@ -638,7 +640,7 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 					throw new Error(`Model for bone '${node.path_name}' not found!`)
 				}
 				passenger.set('item', item.set('id', new NbtString(aj.display_item)))
-				switch (aj.target_minecraft_version) {
+				switch (aj.target_minecraft_versions) {
 					case '1.20.4': {
 						item.set(
 							'tag',
@@ -1079,13 +1081,13 @@ export default async function compileDataPack(options: {
 	}
 
 	const mcbFile = is_static
-		? mcbFiles[aj.target_minecraft_version].static
-		: mcbFiles[aj.target_minecraft_version].animation
+		? mcbFiles[aj.target_minecraft_versions].static
+		: mcbFiles[aj.target_minecraft_versions].animation
 
 	const overrideFiles = compile('src/animated_java.mcb', mcbFile, overrideFolder, variables)
 	const coreFiles = compile(
 		'src/animated_java.mcb',
-		mcbFiles[aj.target_minecraft_version].core,
+		mcbFiles[aj.target_minecraft_versions].core,
 		dataPackFolder,
 		variables
 	)
@@ -1093,20 +1095,6 @@ export default async function compileDataPack(options: {
 	const exportedFiles = new Map<string, string>([...overrideFiles, ...coreFiles])
 	if (aj.data_pack_export_mode === 'raw') {
 		ajmeta!.files = new Set(exportedFiles.keys())
-	}
-
-	type Formats = number | number[] | { min_inclusive: number; max_inclusive: number }
-	interface IPackMeta {
-		pack?: {
-			pack_format?: number
-			description?: string
-		}
-		overlays?: {
-			entries?: Array<{
-				directory?: string
-				formats?: Formats
-			}>
-		}
 	}
 
 	// pack.mcmeta
@@ -1121,12 +1109,12 @@ export default async function compileDataPack(options: {
 		}
 	}
 	packMeta.pack ??= {}
-	packMeta.pack.pack_format = getDataPackFormat(aj.target_minecraft_version)
-	packMeta.pack.description ??= `Animated Java Data Pack for ${aj.target_minecraft_version}`
+	packMeta.pack.pack_format = getDataPackFormat(aj.target_minecraft_versions)
+	packMeta.pack.description ??= `Animated Java Data Pack for ${aj.target_minecraft_versions}`
 	packMeta.overlays ??= {}
 	packMeta.overlays.entries ??= []
-	let formats: Formats
-	switch (aj.target_minecraft_version) {
+	let formats: PackMetaFormats
+	switch (aj.target_minecraft_versions) {
 		case '1.20.5': {
 			formats = {
 				min_inclusive: getDataPackFormat('1.20.5'),
@@ -1153,7 +1141,7 @@ export default async function compileDataPack(options: {
 			break
 		}
 		default: {
-			formats = getDataPackFormat(aj.target_minecraft_version)
+			formats = getDataPackFormat(aj.target_minecraft_versions)
 			break
 		}
 	}
@@ -1206,7 +1194,7 @@ async function writeFiles(map: Map<string, string>, dataPackFolder: string) {
 				const value = typeof v === 'string' ? v : v.id
 				const isTag = value.startsWith('#')
 				const location = parseResourceLocation(isTag ? value.substring(1) : value)
-				const functionNamespace = getFunctionNamespace(aj.target_minecraft_version)
+				const functionNamespace = getFunctionNamespace(aj.target_minecraft_versions)
 				console.log('Checking:', value, location, functionNamespace)
 				const overridePath = PathModule.join(
 					dataPackFolder,

@@ -1,4 +1,3 @@
-import { saveBlueprint } from '../blueprintFormat'
 import { blueprintSettingErrors } from '../blueprintSettings'
 import { openBlueprintSettingsDialog } from '../interface/dialog/blueprintSettings'
 import { PROGRESS_DESCRIPTION, openExportProgressDialog } from '../interface/dialog/exportProgress'
@@ -8,10 +7,8 @@ import { isResourcePackPath } from '../util/minecraftUtil'
 import { translate } from '../util/translation'
 import { Variant } from '../variants'
 import { hashAnimations, renderProjectAnimations } from './animationRenderer'
-import datapackCompiler from './datapackCompiler'
-import { exportJSON } from './jsonCompiler'
 import resourcepackCompiler from './resourcepackCompiler'
-import { renderRig, hashRig } from './rigRenderer'
+import { hashRig, renderRig } from './rigRenderer'
 import { isCubeValid } from './util'
 
 export class IntentionalExportError extends Error {}
@@ -22,38 +19,19 @@ export function getExportPaths() {
 	const resourcePackFolder = resolvePath(aj.resource_pack)
 	const dataPackFolder = resolvePath(aj.data_pack)
 
-	let textureExportFolder: string, modelExportFolder: string, displayItemPath: string
-
-	if (aj.enable_plugin_mode) {
-		modelExportFolder = PathModule.join(
-			'assets/animated_java/models/blueprint/',
-			aj.export_namespace
-		)
-		textureExportFolder = PathModule.join(
-			'assets/animated_java/textures/blueprint/',
-			aj.export_namespace
-		)
-		displayItemPath = PathModule.join(
-			'assets/minecraft/models/item/',
-			aj.display_item.split(':').at(-1)! + '.json'
-		)
-	} else {
-		modelExportFolder = PathModule.join(
-			resourcePackFolder,
-			'assets/animated_java/models/blueprint/',
-			aj.export_namespace
-		)
-		textureExportFolder = PathModule.join(
-			resourcePackFolder,
-			'assets/animated_java/textures/blueprint/',
-			aj.export_namespace
-		)
-		displayItemPath = PathModule.join(
-			resourcePackFolder,
-			'assets/minecraft/models/item/',
-			aj.display_item.split(':').at(-1)! + '.json'
-		)
-	}
+	// These paths are all relative to the resource pack folder
+	const modelExportFolder = PathModule.join(
+		'assets/animated_java/models/blueprint/',
+		aj.export_namespace
+	)
+	const textureExportFolder = PathModule.join(
+		'assets/animated_java/textures/blueprint/',
+		aj.export_namespace
+	)
+	const displayItemPath = PathModule.join(
+		'assets/minecraft/models/item/',
+		aj.display_item.split(':').at(-1)! + '.json'
+	)
 
 	return {
 		resourcePackFolder,
@@ -132,7 +110,7 @@ async function actuallyExportProject(forceSave = true) {
 		const animationHash = hashAnimations(animations)
 
 		// Always run the resource pack compiler because it calculates the custom model data.
-		await resourcepackCompiler[aj.target_minecraft_version]({
+		await resourcepackCompiler(aj.target_minecraft_versions, {
 			rig,
 			displayItemPath,
 			resourcePackFolder,
@@ -140,26 +118,28 @@ async function actuallyExportProject(forceSave = true) {
 			modelExportFolder,
 		})
 
-		if (aj.enable_plugin_mode) {
-			exportJSON({
-				rig,
-				animations,
-				displayItemPath,
-				textureExportFolder,
-				modelExportFolder,
-			})
-		} else {
-			if (aj.data_pack_export_mode !== 'none') {
-				await datapackCompiler({ rig, animations, dataPackFolder, rigHash, animationHash })
-			}
+		// if (aj.enable_plugin_mode) {
+		// 	exportJSON({
+		// 		rig,
+		// 		animations,
+		// 		displayItemPath,
+		// 		textureExportFolder,
+		// 		modelExportFolder,
+		// 	})
+		// } else {
+		// 	if (aj.data_pack_export_mode !== 'none') {
+		// 		await datapackCompiler({ rig, animations, dataPackFolder, rigHash, animationHash })
+		// 	}
 
-			Project!.last_used_export_namespace = aj.export_namespace
-		}
+		// 	Project!.last_used_export_namespace = aj.export_namespace
+		// }
 
-		console.timeEnd('Exporting project took')
+		// console.timeEnd('Exporting project took')
 
-		if (forceSave) saveBlueprint()
-		Blockbench.showQuickMessage('Project exported successfully!', 2000)
+		// if (forceSave) saveBlueprint()
+		// Blockbench.showQuickMessage('Project exported successfully!', 2000)
+
+		return
 	} catch (e: any) {
 		console.error(e)
 		if (e instanceof IntentionalExportError) {
@@ -182,7 +162,7 @@ export async function exportProject(forceSave = true) {
 
 	if (
 		// Check if 1.21.3 is newer than the target version
-		compareVersions('1.21.3', Project.animated_java.target_minecraft_version) &&
+		// compareVersions('1.21.3', Project.animated_java.target_minecraft_versions) &&
 		!Cube.all.allAre(c => isCubeValid(c))
 	) {
 		Blockbench.showMessageBox({

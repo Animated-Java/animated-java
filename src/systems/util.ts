@@ -9,6 +9,21 @@ import {
 } from 'fflate/browser'
 import { INodeTransform } from './animationRenderer'
 
+export type PackMetaFormats = number | number[] | { min_inclusive: number; max_inclusive: number }
+export interface IPackMeta {
+	pack?: {
+		pack_format?: number
+		supported_formats?: PackMetaFormats[]
+		description?: string
+	}
+	overlays?: {
+		entries?: Array<{
+			directory?: string
+			formats?: PackMetaFormats
+		}>
+	}
+}
+
 export function arrayToNbtFloatArray(array: number[]) {
 	return new NbtList(array.map(v => new NbtFloat(v)))
 }

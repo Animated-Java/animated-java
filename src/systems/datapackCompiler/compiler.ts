@@ -22,7 +22,7 @@ export function compile(
 		ioThreadCount: null,
 		dontEmitComments: true,
 		setup: null,
-		formatVersion: getDataPackFormat(Project!.animated_java.target_minecraft_version),
+		formatVersion: getDataPackFormat(Project!.animated_java.target_minecraft_versions),
 	})
 	compiler.disableRequire = true
 	compiler.templateParsingEnabled = false
@@ -42,7 +42,8 @@ export function compile(
 	compiler.addFile(path, Parser.parseMcbFile(tokens))
 	compiler.compile(VariableMap.fromObject(variables))
 	console.timeEnd('MC-Build compiled in')
-
+	console.log('Exported files:', exportedFiles.keys())
 	console.groupEnd()
+
 	return exportedFiles
 }
