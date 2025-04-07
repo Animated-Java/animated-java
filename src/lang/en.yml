@@ -188,26 +188,25 @@ animated_java.dialog.blueprint_settings.summon_commands.description: |-
 
 animated_java.dialog.blueprint_settings.ticking_commands.title: Ticking Commands
 animated_java.dialog.blueprint_settings.ticking_commands.description: |-
-    Commands to run every tick at the root entity's position.
+    Commands to run every tick at the root entity's position and after the animation logic.
     Treat this text input as a .mcfunction file. (Also supports MC-Build syntax!)
-    These commands will run after the animation logic.
 
 animated_java.dialog.blueprint_settings.interpolation_duration.title: Interpolation Duration
-animated_java.dialog.blueprint_settings.interpolation_duration.description: The duration of the smoothing between keyframes in ticks. This is the time it takes for the model to transition from one keyframe to the next. Higher values will cause animations to lose precision. Generally, you want this to have a value of 1 or 2.
+animated_java.dialog.blueprint_settings.interpolation_duration.description: How many ticks it takes for the model to transition from one frame to the next. Higher values will cause animations to lose precision. Generally, you want this to have a value of 1 or 2.
 
 animated_java.dialog.blueprint_settings.teleportation_duration.title: Teleport Duration
-animated_java.dialog.blueprint_settings.teleportation_duration.description: The duration of the teleportation between keyframes in ticks. This is the time over which the model will visually interpolate between it's old position to it's new position. Higher values will cause animations to lose precision.
+animated_java.dialog.blueprint_settings.teleportation_duration.description: How many ticks it takes for the entity to move from it's old position to it's new position when teleported. Higher values will cause animated locators with "Use Entity" enabled to lose precision.
 
 animated_java.dialog.blueprint_settings.use_storage_for_animation.title: Use Storage for Animation
 animated_java.dialog.blueprint_settings.use_storage_for_animation.description: |-
     Whether or not to use NBT storage to store animation data instead of functions.
     This will vastly reduce the number of functions in the generated Data Pack, but is 42% slower than the function method.
 
-animated_java.dialog.blueprint_settings.show_function_errors.title: Show Function Errors
-animated_java.dialog.blueprint_settings.show_function_errors.description: Whether or not to show errors in chat when running functions in-game if they're used incorrectly.
+animated_java.dialog.blueprint_settings.show_function_errors.title: Function Errors
+animated_java.dialog.blueprint_settings.show_function_errors.description: Whether or not to show errors in chat when incorrectly using functions.
 
-animated_java.dialog.blueprint_settings.show_outdated_warning.title: Show Outdated Warning
-animated_java.dialog.blueprint_settings.show_outdated_warning.description: Whether or not to show a warning in chat when a Rig Instance is outdated.
+animated_java.dialog.blueprint_settings.show_outdated_warning.title: Outdated Warning
+animated_java.dialog.blueprint_settings.show_outdated_warning.description: Whether or not to show a warning in chat when a Rig Instance is outdated, and needs to be resummoned.
 
 # Plugin Settings
 animated_java.dialog.blueprint_settings.baked_animations.title: Baked Animations

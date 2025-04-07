@@ -114,7 +114,7 @@ export function openBlueprintSettingsDialog() {
 	return new SvelteDialog({
 		id: `${PACKAGE.name}:blueprintSettingsDialog`,
 		title: translate('dialog.blueprint_settings.title'),
-		width: 512,
+		width: 700,
 		component: BlueprintSettingsDialogSvelteComponent,
 		props: settings,
 		preventKeybinds: true,
