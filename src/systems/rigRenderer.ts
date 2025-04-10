@@ -38,6 +38,7 @@ export interface IRenderedElement {
 	from: number[]
 	to: number[]
 	shade?: boolean
+	light_emission?: number
 	rotation?:
 		| {
 				angle: number
@@ -201,6 +202,9 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 	element.from = cube.from.slice()
 	element.to = cube.to.slice()
 
+	
+	
+
 	if (cube.inflate) {
 		element.from = element.from.map(v => v - cube.inflate)
 		element.to = element.to.map(v => v + cube.inflate)
@@ -262,7 +266,13 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 	}
 
 	if (Object.keys(element.faces).length === 0) return
+
+	if (cube.light_emission != null && Number.isInteger(cube.light_emission)) {
+		element.light_emission = cube.light_emission
+	}
+
 	model.elements ??= []
+	
 	model.elements.push(element)
 }
 

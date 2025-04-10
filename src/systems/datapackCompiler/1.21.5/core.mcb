@@ -1,0 +1,133 @@
+dir global {
+
+	function on_load minecraft:load {
+		# Initialize Scoreboards
+		scoreboard objectives add <%OBJECTIVES.I()%> dummy
+		scoreboard objectives add <%OBJECTIVES.ID()%> dummy
+		scoreboard objectives add <%OBJECTIVES.IS_RIG_LOADED()%> dummy
+		scoreboard objectives add <%OBJECTIVES.TWEEN_DURATION()%> dummy
+
+		scoreboard players add aj.last_id <%OBJECTIVES.ID()%> 0
+
+		# Initialize Storage
+		data modify storage aj:temp args set value {}
+		IF (show_outdated_warning) {
+			# Initialize Rigs
+			scoreboard players reset * <%OBJECTIVES.IS_RIG_LOADED()%>
+		}
+		function #*global/on_load
+	}
+
+	IF (!is_static || show_outdated_warning) {
+		function on_tick minecraft:tick {
+			execute as @e[type=item_display,tag=<%TAGS.GLOBAL_ROOT()%>] at @s run function #*global/root/on_tick
+		}
+	}
+
+	tag functions on_load {
+		*<%export_namespace%>/on_load
+	}
+
+	dir root {
+		# TODO Maybe instead of merging tags, I should just generate it from the .ajmeta data every time a rig is exported?
+		# That way I can also check if the rig's files still exist, and remove tag entries if they don't.
+		# An entry will be added for each exported rig.
+		IF (!is_static) {
+			tag functions on_tick {
+				*<%export_namespace%>/root/on_tick
+			}
+		}
+		# An entry will be added for each exported rig.
+		IF (show_outdated_warning) {
+			tag functions on_load {
+				*<%export_namespace%>/root/on_load
+			}
+		}
+	}
+
+	IF (show_function_errors) {
+		dir errors {
+			function function_not_executed_as_root_entity {
+				#ARGS: {export_namespace: string, function_path: string}
+				$tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR('$(function_path)')%>
+			}
+		}
+	}
+
+	dir remove {
+		# Removes all instances of all rigs from the world.
+		function everything {
+			kill @e[tag=<%TAGS.GLOBAL_ENTITY()%>]
+		}
+	}
+
+	dir internal {
+		# Thanks Gibbsly for this code! https://github.com/gibbsly/gu
+		dir gu {
+			function load minecraft:load {
+				scoreboard players set 256 <%OBJECTIVES.I()%> 256
+				data modify storage aj:uuid main.hex_chars set value \
+					<%JSON.stringify([...Array(0x100).keys()].map(v => {const x = v.toString(16); return x.length > 1 ? x : '0' + x}))%>
+			}
+
+			function convert_uuid_array_to_string {
+				#ARGS: {UUID: [int, int, int, int]}
+
+				data modify storage aj:uuid temp set value {0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,a:0,b:0,c:0,d:0,e:0,f:0}
+				$data modify storage aj:uuid main.in set value $(UUID)
+
+				execute store result score 0= <%OBJECTIVES.I()%> store result score 1= <%OBJECTIVES.I()%> run data get storage aj:uuid main.in[0]
+				execute store result storage aj:uuid temp.0 int 1 run scoreboard players operation 0= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+				execute store result score 2= <%OBJECTIVES.I()%> run scoreboard players operation 1= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+				execute store result storage aj:uuid temp.1 int 1 run scoreboard players operation 1= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+				execute store result score 3= <%OBJECTIVES.I()%> run scoreboard players operation 2= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+				execute store result storage aj:uuid temp.2 int 1 run scoreboard players operation 2= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+				execute store result storage aj:uuid temp.3 int 1 run scoreboard players operation 3= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+
+				execute store result score 0= <%OBJECTIVES.I()%> store result score 1= <%OBJECTIVES.I()%> run data get storage aj:uuid main.in[1]
+				execute store result storage aj:uuid temp.4 int 1 run scoreboard players operation 0= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+				execute store result score 2= <%OBJECTIVES.I()%> run scoreboard players operation 1= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+				execute store result storage aj:uuid temp.5 int 1 run scoreboard players operation 1= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+				execute store result score 3= <%OBJECTIVES.I()%> run scoreboard players operation 2= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+				execute store result storage aj:uuid temp.6 int 1 run scoreboard players operation 2= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+				execute store result storage aj:uuid temp.7 int 1 run scoreboard players operation 3= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+
+				execute store result score 0= <%OBJECTIVES.I()%> store result score 1= <%OBJECTIVES.I()%> run data get storage aj:uuid main.in[2]
+				execute store result storage aj:uuid temp.8 int 1 run scoreboard players operation 0= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+				execute store result score 2= <%OBJECTIVES.I()%> run scoreboard players operation 1= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+				execute store result storage aj:uuid temp.9 int 1 run scoreboard players operation 1= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+				execute store result score 3= <%OBJECTIVES.I()%> run scoreboard players operation 2= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+				execute store result storage aj:uuid temp.a int 1 run scoreboard players operation 2= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+				execute store result storage aj:uuid temp.b int 1 run scoreboard players operation 3= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+
+				execute store result score 0= <%OBJECTIVES.I()%> store result score 1= <%OBJECTIVES.I()%> run data get storage aj:uuid main.in[3]
+				execute store result storage aj:uuid temp.c int 1 run scoreboard players operation 0= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+				execute store result score 2= <%OBJECTIVES.I()%> run scoreboard players operation 1= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+				execute store result storage aj:uuid temp.d int 1 run scoreboard players operation 1= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+				execute store result score 3= <%OBJECTIVES.I()%> run scoreboard players operation 2= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+				execute store result storage aj:uuid temp.e int 1 run scoreboard players operation 2= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+				execute store result storage aj:uuid temp.f int 1 run scoreboard players operation 3= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+
+				block { with storage aj:uuid temp
+					REPEAT (0, 15) as i {
+						$data modify storage aj:uuid temp.<%i.toString(16)%> set from storage aj:uuid main.hex_chars[$(<%i.toString(16)%>)]
+					}
+				}
+
+				block { with storage aj:uuid temp
+					$data modify storage aj:uuid main.out set value "$(3)$(2)$(1)$(0)-$(7)$(6)-$(5)$(4)-$(b)$(a)-$(9)$(8)$(f)$(e)$(d)$(c)"
+				}
+			}
+		}
+	}
+}
+
+dir <%export_namespace%> {
+	function on_load {
+		function *<%export_namespace%>/invalid_version_warning
+	}
+
+	function invalid_version_warning {
+		tellraw @a <%TELLRAW.INVALID_VERSION()%>
+	}
+}
