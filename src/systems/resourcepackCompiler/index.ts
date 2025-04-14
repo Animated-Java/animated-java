@@ -1,13 +1,13 @@
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
 import { getResourcePackFormat } from '../../util/minecraftUtil'
-import { MinecraftVersion } from '../datapackCompiler/mcbFiles'
+import { IntentionalExportError } from '../exporter'
 import { type IRenderedRig } from '../rigRenderer'
-import { IPackMeta, PackMetaFormats } from '../util'
+import { ExportedFile } from '../util'
 
+import { AJMeta, MinecraftVersion, PackMeta, PackMetaFormats } from '../global'
 import _1_20_4 from './1.20.4'
 import _1_21_2 from './1.21.2'
 import _1_21_4 from './1.21.4'
-import { ResourcePackAJMeta } from './global'
 
 const VERSIONS = {
 	'1.20.4': _1_20_4,
@@ -15,10 +15,11 @@ const VERSIONS = {
 	'1.21.0': _1_20_4,
 	'1.21.2': _1_21_2,
 	'1.21.4': _1_21_4,
+	'1.21.5': _1_21_4,
 }
 
 interface ResourcePackCompilerOptions {
-	ajmeta: ResourcePackAJMeta
+	ajmeta: AJMeta
 	coreFiles: Map<string, ExportedFile>
 	versionedFiles: Map<string, ExportedFile>
 	rig: IRenderedRig
@@ -28,12 +29,6 @@ interface ResourcePackCompilerOptions {
 }
 
 export type ResourcePackCompiler = (options: ResourcePackCompilerOptions) => Promise<void>
-
-interface ExportedFile {
-	content: string | Buffer
-	includeInAJMeta?: boolean
-	writeHandler?: (path: string, content: string | Buffer) => Promise<void>
-}
 
 export interface CompileResourcePackOptions {
 	rig: IRenderedRig
@@ -49,7 +44,7 @@ export default async function compileResourcePack(
 ) {
 	const aj = Project!.animated_java
 
-	const ajmeta = new ResourcePackAJMeta(
+	const ajmeta = new AJMeta(
 		PathModule.join(options.resourcePackFolder, 'assets.ajmeta'),
 		aj.export_namespace,
 		Project!.last_used_export_namespace,
@@ -102,38 +97,29 @@ export default async function compileResourcePack(
 		console.groupEnd()
 	}
 
-	console.log('Exported files:', globalVersionSpecificFiles.size)
+	console.log('Exported files:', globalCoreFiles.size + globalVersionSpecificFiles.size)
 
 	// pack.mcmeta
 	const packMetaPath = PathModule.join(options.resourcePackFolder, 'pack.mcmeta')
-	let packMeta = {} as IPackMeta
-	if (fs.existsSync(packMetaPath)) {
-		try {
-			const content = fs.readFileSync(packMetaPath, 'utf-8')
-			packMeta = JSON.parse(content)
-		} catch (e) {
-			console.error('Failed to parse pack.mcmeta:', e)
-		}
-	}
-	packMeta.pack ??= {}
-	// Latest pack format
-	packMeta.pack.pack_format = getResourcePackFormat(aj.target_minecraft_versions[0])
-	packMeta.pack.supported_formats = []
-	packMeta.pack.description ??= `Animated Java Data Pack for ${aj.target_minecraft_versions.join(
-		', '
-	)}`
-	packMeta.overlays ??= {}
-	packMeta.overlays.entries ??= []
+	const packMeta = new PackMeta(
+		packMetaPath,
+		0,
+		[],
+		`Animated Java Data Pack for ${targetVersions.join(', ')}`
+	)
+	packMeta.read()
+	packMeta.pack_format = getResourcePackFormat(targetVersions[0])
+	packMeta.supportedFormats = []
 
-	for (const version of aj.target_minecraft_versions) {
+	for (const version of targetVersions) {
 		let format: PackMetaFormats = getResourcePackFormat(version)
-		packMeta.pack.supported_formats.push(format)
+		packMeta.supportedFormats.push(format)
 
-		const existingOverlay = packMeta.overlays.entries.find(
+		const existingOverlay = [...packMeta.overlayEntries].find(
 			e => e.directory === `animated_java_${version.replaceAll('.', '_')}`
 		)
 		if (!existingOverlay) {
-			packMeta.overlays.entries.push({
+			packMeta.overlayEntries.add({
 				directory: `animated_java_${version.replaceAll('.', '_')}`,
 				formats: format,
 			})
@@ -143,7 +129,7 @@ export default async function compileResourcePack(
 	}
 
 	globalCoreFiles.set(PathModule.join(options.resourcePackFolder, 'pack.mcmeta'), {
-		content: autoStringify(packMeta),
+		content: autoStringify(packMeta.toJSON()),
 	})
 
 	if (aj.enable_plugin_mode) {
@@ -200,7 +186,7 @@ export default async function compileResourcePack(
 			PROGRESS.set(PROGRESS.get() + 1)
 		}
 	} else if (aj.resource_pack_export_mode === 'zip') {
-		throw new Error('ZIP export is not yet implemented.')
+		throw new IntentionalExportError('ZIP export is not yet implemented.')
 		// exportedFiles.set(
 		// 	PathModule.join(options.resourcePackFolder, 'pack.mcmeta'),
 		// 	autoStringify({

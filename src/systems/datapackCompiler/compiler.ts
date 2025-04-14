@@ -1,17 +1,29 @@
 import { Parser, SyncIo, Tokenizer } from 'mc-build'
 import { Compiler, VariableMap } from 'mc-build/dist/mcl/Compiler'
 import { getDataPackFormat } from '../../util/minecraftUtil'
+import { MinecraftVersion } from '../global'
+import { ExportedFile } from '../util'
 
-export function compile(
-	path: string,
-	mcbFile: string,
-	destPath: string,
+interface CompilerOptions {
+	path: string
+	mcbFile: string
+	destPath: string
 	variables: Record<string, any>
-) {
+	version: MinecraftVersion
+	exportedFiles: Map<string, ExportedFile>
+}
+
+export function compile({
+	path,
+	mcbFile,
+	destPath,
+	variables,
+	version,
+	exportedFiles,
+}: CompilerOptions) {
 	console.group('Compiling', path)
 	console.log('Variables:', variables)
 
-	const exportedFiles = new Map<string, string>()
 	const compiler = new Compiler('src/', {
 		libDir: null,
 		generatedDirName: 'zzz',
@@ -22,7 +34,7 @@ export function compile(
 		ioThreadCount: null,
 		dontEmitComments: true,
 		setup: null,
-		formatVersion: getDataPackFormat(Project!.animated_java.target_minecraft_versions),
+		formatVersion: getDataPackFormat(version),
 	})
 	compiler.disableRequire = true
 	compiler.templateParsingEnabled = false
@@ -31,7 +43,10 @@ export function compile(
 		const io = new SyncIo()
 		io.write = (localPath, content) => {
 			const writePath = PathModule.join(destPath, localPath)
-			exportedFiles.set(writePath, content)
+			exportedFiles.set(writePath, {
+				content,
+				includeInAJMeta: true,
+			})
 		}
 		return io
 	}

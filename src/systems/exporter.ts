@@ -1,12 +1,14 @@
+import { saveBlueprint } from '../blueprintFormat'
 import { blueprintSettingErrors } from '../blueprintSettings'
 import { openBlueprintSettingsDialog } from '../interface/dialog/blueprintSettings'
 import { PROGRESS_DESCRIPTION, openExportProgressDialog } from '../interface/dialog/exportProgress'
 import { openUnexpectedErrorDialog } from '../interface/dialog/unexpectedError'
 import { resolvePath } from '../util/fileUtil'
-import { isResourcePackPath } from '../util/minecraftUtil'
+import { isResourcePackPath, sortMCVersions } from '../util/minecraftUtil'
 import { translate } from '../util/translation'
 import { Variant } from '../variants'
 import { hashAnimations, renderProjectAnimations } from './animationRenderer'
+import compileDataPack from './datapackCompiler'
 import resourcepackCompiler from './resourcepackCompiler'
 import { hashRig, renderRig } from './rigRenderer'
 import { isCubeValid } from './util'
@@ -68,6 +70,11 @@ async function actuallyExportProject(forceSave = true) {
 			}
 		}
 
+		// Sort target versions
+		console.log('Target Minecraft Versions', aj.target_minecraft_versions)
+		aj.target_minecraft_versions = sortMCVersions(aj.target_minecraft_versions)
+		console.log('Sorted Target Minecraft Versions', aj.target_minecraft_versions)
+
 		const {
 			resourcePackFolder,
 			dataPackFolder,
@@ -102,8 +109,7 @@ async function actuallyExportProject(forceSave = true) {
 			return
 		}
 
-		PROGRESS_DESCRIPTION.set('Rendering Animations...')
-		const animations = renderProjectAnimations(Project!, rig)
+		const animations = await renderProjectAnimations(Project!, rig)
 
 		PROGRESS_DESCRIPTION.set('Hashing Rendered Objects...')
 		const rigHash = hashRig(rig)
@@ -127,17 +133,21 @@ async function actuallyExportProject(forceSave = true) {
 		// 		modelExportFolder,
 		// 	})
 		// } else {
-		// 	if (aj.data_pack_export_mode !== 'none') {
-		// 		await datapackCompiler({ rig, animations, dataPackFolder, rigHash, animationHash })
-		// 	}
+		if (aj.data_pack_export_mode !== 'none') {
+			await compileDataPack(aj.target_minecraft_versions, {
+				rig,
+				animations,
+				dataPackFolder,
+				rigHash,
+				animationHash,
+			})
+		}
 
-		// 	Project!.last_used_export_namespace = aj.export_namespace
-		// }
+		Project!.last_used_export_namespace = aj.export_namespace
+		console.timeEnd('Exporting project took')
 
-		// console.timeEnd('Exporting project took')
-
-		// if (forceSave) saveBlueprint()
-		// Blockbench.showQuickMessage('Project exported successfully!', 2000)
+		if (forceSave) saveBlueprint()
+		Blockbench.showQuickMessage('Project exported successfully!', 2000)
 
 		return
 	} catch (e: any) {

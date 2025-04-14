@@ -1,4 +1,5 @@
 import * as crypto from 'crypto'
+import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../interface/dialog/exportProgress'
 import {
 	getKeyframeCommands,
 	getKeyframeExecuteCondition,
@@ -12,6 +13,7 @@ import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
 import { sanitizePathName, sanitizeStorageKey } from '../util/minecraftUtil'
 import { eulerFromQuaternion, roundToNth } from '../util/misc'
 import { AnyRenderedNode, IRenderedRig } from './rigRenderer'
+import { sleepForAnimationFrame } from './util'
 
 export function correctSceneAngle() {
 	main_preview.controls.rotateLeft(Math.PI)
@@ -388,13 +390,17 @@ export function getAnimatableNodes(): OutlinerElement[] {
 	]
 }
 
-export function renderProjectAnimations(project: ModelProject, rig: IRenderedRig) {
+export async function renderProjectAnimations(project: ModelProject, rig: IRenderedRig) {
 	// Clear the cache
 	lastAnimation = undefined
 	lastFrameCache = new Map()
 	keyframeCache = new Map()
 	excludedNodesCache = new Set()
 	nodeCache = new Map()
+
+	PROGRESS_DESCRIPTION.set('Rendering Animations...')
+	PROGRESS.set(0)
+	MAX_PROGRESS.set(project.animations.length)
 
 	console.time('Rendering animations took')
 	let selectedAnimation: _Animation | undefined
@@ -410,6 +416,8 @@ export function renderProjectAnimations(project: ModelProject, rig: IRenderedRig
 	const animations: IRenderedAnimation[] = []
 	for (const animation of project.animations) {
 		animations.push(renderAnimation(animation, rig))
+		PROGRESS.set(PROGRESS.get() + 1)
+		await sleepForAnimationFrame()
 	}
 	restoreSceneAngle()
 

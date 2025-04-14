@@ -1,5 +1,5 @@
 import * as pathjs from 'path'
-import { MinecraftVersion } from '../systems/datapackCompiler/mcbFiles'
+import { MinecraftVersion } from '../systems/global'
 import {
 	BlockStateRegistryEntry,
 	BlockStateValue,
@@ -7,7 +7,7 @@ import {
 } from '../systems/minecraft/blockstateManager'
 
 export interface IMinecraftResourceLocation {
-	resourcePackRoot: string
+	packRoot: string
 	namespace: string
 	resourcePath: string
 	resourceLocation: string
@@ -67,7 +67,7 @@ export function parseResourcePackPath(path: string): IMinecraftResourceLocation 
 	const assetsIndex = parts.indexOf('assets')
 	if (assetsIndex === -1) return undefined
 
-	const resourcePackRoot = parts.slice(0, assetsIndex).join('/')
+	const packRoot = parts.slice(0, assetsIndex).join('/')
 	const namespace = parts[assetsIndex + 1]
 	const type = parts[assetsIndex + 2]
 	const resourcePath = parts.slice(assetsIndex + 3, -1).join('/')
@@ -80,7 +80,7 @@ export function parseResourcePackPath(path: string): IMinecraftResourceLocation 
 	const subtypelessPath = parts.slice(assetsIndex + 4).join('/')
 
 	return {
-		resourcePackRoot,
+		packRoot,
 		namespace,
 		resourcePath,
 		resourceLocation,
@@ -123,7 +123,7 @@ export function parseDataPackPath(path: string): IMinecraftResourceLocation | un
 	const assetsIndex = parts.indexOf('data')
 	if (assetsIndex === -1) return undefined
 
-	const resourcePackRoot = parts.slice(0, assetsIndex).join('/')
+	const packRoot = parts.slice(0, assetsIndex).join('/')
 	const namespace = parts[assetsIndex + 1]
 	const type = parts[assetsIndex + 2]
 	let resourcePath: string
@@ -144,7 +144,7 @@ export function parseDataPackPath(path: string): IMinecraftResourceLocation | un
 	const subtypelessPath = parts.slice(assetsIndex + 4).join('/')
 
 	return {
-		resourcePackRoot,
+		packRoot,
 		namespace,
 		resourcePath,
 		resourceLocation,
@@ -233,6 +233,12 @@ export async function parseBlock(block: string): Promise<IParsedBlock | undefine
 	}
 }
 
+export function sortMCVersions(versions: MinecraftVersion[]): MinecraftVersion[] {
+	return versions.sort((a, b) => {
+		return compareVersions(a, b) ? -1 : 1
+	})
+}
+
 export function getDataPackFormat(version: MinecraftVersion): number {
 	switch (version) {
 		case '1.20.4':
@@ -265,4 +271,22 @@ export function getResourcePackFormat(version: MinecraftVersion): number {
 		default:
 			return Infinity
 	}
+}
+
+export function functionReferenceExists(dataPackRoot: string, resourceLocation: string): boolean {
+	const parsed = parseResourceLocation(resourceLocation)
+	if (!parsed) return false
+	if (parsed.type !== 'tags' && parsed.type !== 'function' && parsed.type !== 'functions')
+		return false
+
+	for (const folder of fs.readdirSync(dataPackRoot)) {
+		const dataFolder = PathModule.join(dataPackRoot, folder)
+		if (!fs.statSync(dataFolder).isDirectory()) continue
+
+		const path = PathModule.join(dataFolder, parsed.fullPath)
+		if (!fs.existsSync(path)) continue
+		return true
+	}
+
+	return false
 }

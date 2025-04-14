@@ -7,21 +7,13 @@ import {
 	type AsyncUnzipOptions,
 	type Unzipped,
 } from 'fflate/browser'
+import { roundTo } from '../util/misc'
 import { INodeTransform } from './animationRenderer'
 
-export type PackMetaFormats = number | number[] | { min_inclusive: number; max_inclusive: number }
-export interface IPackMeta {
-	pack?: {
-		pack_format?: number
-		supported_formats?: PackMetaFormats[]
-		description?: string
-	}
-	overlays?: {
-		entries?: Array<{
-			directory?: string
-			formats?: PackMetaFormats
-		}>
-	}
+export interface ExportedFile {
+	content: string | Buffer
+	includeInAJMeta?: boolean
+	writeHandler?: (path: string, content: string | Buffer) => Promise<void>
 }
 
 export function arrayToNbtFloatArray(array: number[]) {
@@ -127,4 +119,8 @@ export function isCubeValid(cube: Cube) {
 export function getFunctionNamespace(version: string): 'function' | 'functions' {
 	// If the target version is 1.21.0 or higher, use the 'function' namespace instead of 'functions'
 	return compareVersions(version, '1.20.10000') ? 'function' : 'functions'
+}
+
+export async function sleepForAnimationFrame() {
+	return new Promise(resolve => requestAnimationFrame(resolve))
 }

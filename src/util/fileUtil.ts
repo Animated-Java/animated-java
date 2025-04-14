@@ -9,7 +9,10 @@ export function isJsonPath(path: string): boolean {
 export function isFunctionTagPath(path: string): boolean {
 	return (
 		path.endsWith('.json') &&
-		(path.includes(`tags\\function`) || path.includes(`tags/function`))
+		(path.includes(`tags\\function`) ||
+			path.includes(`tags/function`) ||
+			path.includes(`tags\\functions`) ||
+			path.includes(`tags/functions`))
 	)
 }
 
