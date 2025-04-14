@@ -21,7 +21,11 @@ export function arrayToNbtFloatArray(array: number[]) {
 }
 
 export function matrixToNbtFloatArray(matrix: THREE.Matrix4) {
-	const matrixArray = new THREE.Matrix4().copy(matrix).transpose().toArray()
+	const matrixArray = new THREE.Matrix4()
+		.copy(matrix)
+		.transpose()
+		.toArray()
+		.map(v => roundTo(v, 4))
 	return arrayToNbtFloatArray(matrixArray)
 }
 

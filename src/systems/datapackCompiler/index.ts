@@ -822,20 +822,20 @@ async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAn
 				}
 				if (BONE_TYPES.includes(node.type)) {
 					thisFrame.set(
-						node.type + '_' + node.storage_name,
+						node.type.charAt(0) + '_' + node.storage_name,
 						new NbtCompound()
 							.set('transformation', matrixToNbtFloatArray(transform.matrix))
 							.set('start_interpolation', new NbtInt(0))
 					)
 				} else {
 					thisFrame.set(
-						node.type + '_' + node.storage_name,
+						node.type.charAt(0) + '_' + node.storage_name,
 						new NbtCompound()
-							.set('posx', new NbtFloat(transform.pos[0]))
-							.set('posy', new NbtFloat(transform.pos[1]))
-							.set('posz', new NbtFloat(transform.pos[2]))
-							.set('rotx', new NbtFloat(transform.rot[0]))
-							.set('roty', new NbtFloat(transform.rot[1]))
+							.set('posx', new NbtFloat(roundTo(transform.pos[0], 4)))
+							.set('posy', new NbtFloat(roundTo(transform.pos[1], 4)))
+							.set('posz', new NbtFloat(roundTo(transform.pos[2], 4)))
+							.set('rotx', new NbtFloat(roundTo(transform.rot[0], 4)))
+							.set('roty', new NbtFloat(roundTo(transform.rot[1], 4)))
 					)
 				}
 			}

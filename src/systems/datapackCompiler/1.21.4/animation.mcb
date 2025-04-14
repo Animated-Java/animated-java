@@ -314,11 +314,11 @@ dir <%export_namespace%> {
 								IF (['bone', 'text_display', 'item_display', 'block_display'].includes(node.type)) {
 									$execute on passengers run \
 										data modify entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(export_namespace, node.path_name)%>] {} merge from \
-										storage aj.<%export_namespace%>:animations <%animation.storage_name%>.$(frame).<%node.type + '_' + node.storage_name%>
+										storage aj.<%export_namespace%>:animations <%animation.storage_name%>.$(frame).<%node.type.charAt(0) + '_' + node.storage_name%>
 								} ELSE IF (['locator', 'camera'].includes(node.type)) {
 									$execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run \
 										data modify entity @s data.<%node.type + 's.' + node.storage_name%> merge from \
-										storage aj.<%export_namespace%>:animations <%animation.storage_name%>.$(frame).<%node.type + '_' + node.storage_name%>
+										storage aj.<%export_namespace%>:animations <%animation.storage_name%>.$(frame).<%node.type.charAt(0) + '_' + node.storage_name%>
 								}
 							}
 							IF (animation.frames.some(v => v.variant)) {
@@ -339,11 +339,11 @@ dir <%export_namespace%> {
 								IF (['bone', 'text_display', 'item_display', 'block_display'].includes(node.type)) {
 									$execute on passengers if entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(export_namespace, node.path_name)%>] run \
 										data modify entity @s {} merge from \
-										storage aj.<%export_namespace%>:animations <%animation.storage_name%>.$(frame).<%node.type + '_' + node.storage_name%>
+										storage aj.<%export_namespace%>:animations <%animation.storage_name%>.$(frame).<%node.type.charAt(0) + '_' + node.storage_name%>
 								} ELSE IF (['locator', 'camera'].includes(node.type)) {
 									$execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run \
 										data modify entity @s data.<%node.type + 's.' + node.storage_name%> merge from \
-										storage aj.<%export_namespace%>:animations <%animation.storage_name%>.$(frame).<%node.type + '_' + node.storage_name%>
+										storage aj.<%export_namespace%>:animations <%animation.storage_name%>.$(frame).<%node.type.charAt(0) + '_' + node.storage_name%>
 								}
 							}
 							IF (animation.frames.some(v => v.variant)) {
