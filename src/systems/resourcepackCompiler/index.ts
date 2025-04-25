@@ -111,20 +111,22 @@ export default async function compileResourcePack(
 	packMeta.pack_format = getResourcePackFormat(targetVersions[0])
 	packMeta.supportedFormats = []
 
-	for (const version of targetVersions) {
-		let format: PackMetaFormats = getResourcePackFormat(version)
-		packMeta.supportedFormats.push(format)
+	if (targetVersions.length > 1) {
+		for (const version of targetVersions) {
+			let format: PackMetaFormats = getResourcePackFormat(version)
+			packMeta.supportedFormats.push(format)
 
-		const existingOverlay = [...packMeta.overlayEntries].find(
-			e => e.directory === `animated_java_${version.replaceAll('.', '_')}`
-		)
-		if (!existingOverlay) {
-			packMeta.overlayEntries.add({
-				directory: `animated_java_${version.replaceAll('.', '_')}`,
-				formats: format,
-			})
-		} else {
-			existingOverlay.formats = format
+			const existingOverlay = [...packMeta.overlayEntries].find(
+				e => e.directory === `animated_java_${version.replaceAll('.', '_')}`
+			)
+			if (!existingOverlay) {
+				packMeta.overlayEntries.add({
+					directory: `animated_java_${version.replaceAll('.', '_')}`,
+					formats: format,
+				})
+			} else {
+				existingOverlay.formats = format
+			}
 		}
 	}
 

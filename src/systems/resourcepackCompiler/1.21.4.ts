@@ -59,8 +59,16 @@ const compileResourcePack: ResourcePackCompiler = async ({
 		content: autoStringify(blockAtlas),
 	})
 
-	// Empt
+	// Empty
 	versionedFiles.set(PathModule.join(globalModelsFolder, 'empty.json'), { content: '{}' })
+	versionedFiles.set(PathModule.join('assets/animated_java/items', 'empty.json'), {
+		content: autoStringify({
+			model: {
+				type: 'minecraft:model',
+				model: 'animated_java:empty',
+			},
+		}),
+	})
 
 	// Textures
 	for (const texture of Object.values(rig.textures)) {

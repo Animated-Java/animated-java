@@ -1,4 +1,12 @@
-import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/lib/nbt'
+import {
+	NbtByte,
+	NbtCompound,
+	NbtFloat,
+	NbtInt,
+	NbtList,
+	NbtString,
+	NbtTag,
+} from 'deepslate/lib/nbt'
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
 import { BoneConfig, TextDisplayConfig } from '../../nodeConfigs'
 import { isFunctionTagPath } from '../../util/fileUtil'
@@ -593,7 +601,7 @@ async function generateRootEntityPassengers(
 
 	passengers.add(
 		new NbtCompound()
-			.set('id', new NbtString('minecraft:marker'))
+			.set('id', new NbtString('minecraft:item_display'))
 			.set(
 				'Tags',
 				new NbtList([
@@ -605,12 +613,22 @@ async function generateRootEntityPassengers(
 				])
 			)
 			.set(
-				'data',
+				'item',
 				new NbtCompound()
-					.set('rigHash', new NbtString(rigHash))
-					.set('locators', locators)
-					.set('cameras', cameras)
-					.set('bones', bones)
+					.set('id', new NbtString('minecraft:pufferfish'))
+					.set(
+						'components',
+						new NbtCompound()
+							.set(
+								'minecraft:custom_data',
+								new NbtCompound()
+									.set('rigHash', new NbtString(rigHash))
+									.set('locators', locators)
+									.set('cameras', cameras)
+									.set('bones', bones)
+							)
+							.set('minecraft:item_model', new NbtString('animated_java:empty'))
+					)
 			)
 	)
 
@@ -720,7 +738,9 @@ async function generateRootEntityPassengers(
 
 				passenger.set(
 					'text',
-					new NbtString(node.text ? node.text.toString() : '"Invalid Text Component"')
+					NbtTag.fromString(
+						node.text ? node.text.toString() : "{ text: 'Invalid Text Component' }"
+					)
 				)
 
 				const color = new tinycolor(
@@ -1007,20 +1027,22 @@ export default async function compileDataPack(
 	packMeta.pack_format = getDataPackFormat(targetVersions[0])
 	packMeta.supportedFormats = []
 
-	for (const version of targetVersions) {
-		let format: PackMetaFormats = getDataPackFormat(version)
-		packMeta.supportedFormats.push(format)
+	if (targetVersions.length > 1) {
+		for (const version of targetVersions) {
+			let format: PackMetaFormats = getDataPackFormat(version)
+			packMeta.supportedFormats.push(format)
 
-		const existingOverlay = [...packMeta.overlayEntries].find(
-			e => e.directory === `animated_java_${version.replaceAll('.', '_')}`
-		)
-		if (!existingOverlay) {
-			packMeta.overlayEntries.add({
-				directory: `animated_java_${version.replaceAll('.', '_')}`,
-				formats: format,
-			})
-		} else {
-			existingOverlay.formats = format
+			const existingOverlay = [...packMeta.overlayEntries].find(
+				e => e.directory === `animated_java_${version.replaceAll('.', '_')}`
+			)
+			if (!existingOverlay) {
+				packMeta.overlayEntries.add({
+					directory: `animated_java_${version.replaceAll('.', '_')}`,
+					formats: format,
+				})
+			} else {
+				existingOverlay.formats = format
+			}
 		}
 	}
 

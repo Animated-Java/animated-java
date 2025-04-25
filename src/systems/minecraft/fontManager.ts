@@ -516,11 +516,9 @@ export class MinecraftFont {
 		}
 
 		let shadowColor: THREE.Color
-		if (typeof style.shadow_color === 'string') {
-			shadowColor =
-				style.shadow_color.startsWith('#') && style.shadow_color.length === 7
-					? new THREE.Color(style.shadow_color)
-					: new THREE.Color(COLOR_MAP[style.shadow_color]) || color
+		if (Array.isArray(style.shadow_color)) {
+			console.log('Shadow color:', style.shadow_color)
+			shadowColor = new THREE.Color().fromArray(style.shadow_color)
 		} else {
 			shadowColor = color.clone().multiplyScalar(0.25)
 		}

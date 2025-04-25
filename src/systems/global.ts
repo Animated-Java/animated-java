@@ -152,15 +152,19 @@ export class PackMeta {
 	}
 
 	toJSON(): SerializedPackMeta {
-		return {
+		const json: SerializedPackMeta = {
 			pack: {
 				pack_format: this.pack_format,
-				supported_formats: this.supportedFormats,
+				supported_formats:
+					this.supportedFormats.length > 0 ? this.supportedFormats : undefined,
 				description: this.description,
 			},
-			overlays: {
-				entries: Array.from(this.overlayEntries),
-			},
 		}
+		if (this.overlayEntries.size > 0) {
+			json.overlays = {
+				entries: Array.from(this.overlayEntries),
+			}
+		}
+		return json
 	}
 }

@@ -1,4 +1,4 @@
-import { type MinecraftVersion } from './systems/datapackCompiler/mcbFiles'
+import { MinecraftVersion } from './systems/global'
 import { Valuable } from './util/stores'
 
 export type ExportMode = 'raw' | 'zip' | 'none'
