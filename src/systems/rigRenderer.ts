@@ -115,9 +115,13 @@ export interface IRenderedNodes {
 	Camera: IRenderedNode & {
 		type: 'camera'
 		config?: IBlueprintCameraConfigJSON
+		/** The maximum distance this node travels away from the root entity while animating. */
+		max_distance: number
 	}
 	Locator: IRenderedNode & {
 		type: 'locator'
+		/** The maximum distance this node travels away from the root entity while animating. */
+		max_distance: number
 		config?: IBlueprintLocatorConfigJSON
 	}
 	TextDisplay: IRenderedNode & {
@@ -546,6 +550,7 @@ function renderLocator(locator: Locator, rig: IRenderedRig) {
 		uuid: locator.uuid,
 		parent: parentId,
 		config: locator.config,
+		max_distance: 0,
 		default_transform: {} as INodeTransform,
 	}
 
@@ -564,6 +569,7 @@ function renderCamera(camera: ICamera, rig: IRenderedRig) {
 		uuid: camera.uuid,
 		parent: parentId,
 		config: camera.config,
+		max_distance: 0,
 		default_transform: {} as INodeTransform,
 	}
 

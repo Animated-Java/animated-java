@@ -165,7 +165,15 @@ function createMultiVariantItemDefinition(
 		model: {
 			type: 'minecraft:select',
 			property: 'minecraft:custom_model_data',
-			cases: [],
+			cases: [
+				{
+					when: 'AJ_INTERNAL_EMPTY',
+					model: {
+						type: 'minecraft:model',
+						model: 'animated_java:empty',
+					},
+				},
+			],
 			fallback: {
 				type: 'minecraft:model',
 				model: model.resource_location,

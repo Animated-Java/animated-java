@@ -15,6 +15,15 @@ dir <%export_namespace%> {
 		%%>
 	}
 
+	function remove_animation_objectives {
+		<%%
+			animations.forEach(animation => {
+				emit(`scoreboard objectives remove ${OBJECTIVES.FRAME(animation.path_name)}`)
+			})
+		%%>
+		tellraw @a <%TELLRAW.UNINSTALL()%>
+	}
+
 	function invalid_version_warning {
 		# This function will contain a tellraw if the datapack is loaded in the wrong version.
 	}
@@ -28,16 +37,17 @@ dir <%export_namespace%> {
 				execute \
 					on passengers \
 					if entity @s[tag=<%TAGS.PROJECT_DATA(export_namespace)%>] \
-					unless data entity @s {item:{components:{"minecraft:custom_data":{rigHash: '<%rigHash%>'}}}} \
+					unless data entity @s {data:{rigHash: '<%rigHash%>'}} \
 					on vehicle \
 				run block zzz/check_rig_hash {
-					execute store result storage aj:temp x int 1 store result score #this.x aj.i run data get entity @s Pos[0] 1
-					execute store result storage aj:temp y int 1 store result score #this.y aj.i run data get entity @s Pos[1] 1
-					execute store result storage aj:temp z int 1 store result score #this.z aj.i run data get entity @s Pos[2] 1
-					block show_outdated_warning { with storage aj:temp
+					data remove storage aj:temp args
+					execute store result storage aj:temp args.x int 1 store result score #this.x aj.i run data get entity @s Pos[0] 1
+					execute store result storage aj:temp args.y int 1 store result score #this.y aj.i run data get entity @s Pos[1] 1
+					execute store result storage aj:temp args.z int 1 store result score #this.z aj.i run data get entity @s Pos[2] 1
+					block show_outdated_warning { with storage aj:temp args
 						$tellraw @a <%TELLRAW.RIG_OUTDATED()%>
 					}
-					data modify entity @s item.components."minecraft:custom_data".rigHash set value '<%rigHash%>'
+					data modify entity @s data.rigHash set value '<%rigHash%>'
 					execute on passengers run data merge entity @s {Glowing: 1b, glow_color_override: <%0xff0000%>}
 					summon minecraft:text_display ~ ~ ~ { \
 						Tags:['<%TAGS.GLOBAL_ENTITY()%>', '<%TAGS.OUTDATED_RIG_TEXT_DISPLAY()%>', '<%TAGS.NEW()%>'], \
@@ -62,8 +72,6 @@ dir <%export_namespace%> {
 			IF (show_outdated_warning) {
 				execute unless score @s <%OBJECTIVES.IS_RIG_LOADED()%> matches 1 run function #*global/root/on_load
 			}
-			# Run `pre_tick` function hooks
-			function #*<%export_namespace%>/as_root/pre_tick
 			# Tick Playing Animations
 			REPEAT (animations) as animation {
 				execute if entity @s[tag=<%TAGS.ANIMATION_PLAYING(export_namespace, animation.path_name)%>] run \
@@ -76,7 +84,7 @@ dir <%export_namespace%> {
 					if entity @s[tag=<%TAGS.PROJECT_DATA(export_namespace)%>] \
 				run block zzz/on_tick/locators_and_cameras {
 					REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator')) as node {
-						block select_locator_<%node.path_name%> { with entity @s item.components."minecraft:custom_data".locators.<%node.path_name%>
+						block select_locator_<%node.path_name%> { with entity @s data.locators.<%node.storage_name%>
 							IF (node.config?.use_entity) {
 								$execute \
 									as $(uuid) \
@@ -108,7 +116,7 @@ dir <%export_namespace%> {
 						}
 					}
 					REPEAT (Object.values(rig.nodes).filter(v => v.type === 'camera')) as node {
-						block select_camera_<%node.path_name%> { with entity @s item.components."minecraft:custom_data".cameras.<%node.path_name%>
+						block select_camera_<%node.path_name%> { with entity @s data.cameras.<%node.storage_name%>
 							$execute \
 								as $(uuid) \
 								positioned ^$(posx) ^$(posy) ^$(posz) \
@@ -118,34 +126,14 @@ dir <%export_namespace%> {
 					}
 				}
 			}
-
 			# Rotation Logic
 			execute at @s on passengers run rotate @s ~ ~
+			# Custom tick commands
 			IF (root_ticking_commands) {
 				<%%
 					emit.mcb(root_ticking_commands)
 				%%>
 			}
-			# Run `post_tick` function hooks
-			function #*<%export_namespace%>/as_root/post_tick
-		}
-	}
-
-	# FIXME - Maybe remove these in favor of the new options-based system?
-	# Function Tag Hooks
-	dir as_root {
-		# All child functions of this folder run as the root entity
-		# Runs before the rig is ticked.
-		tag functions pre_tick {
-		}
-		# Runs after the rig is ticked.
-		tag functions post_tick {
-		}
-		# Runs when the rig is summoned.
-		tag functions on_summon {
-		}
-		# Runs when the rig is removed.
-		tag functions on_remove {
 		}
 	}
 
@@ -209,8 +197,9 @@ dir <%export_namespace%> {
 								{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 					}
 					execute if score @s <%OBJECTIVES.FRAME(animation.path_name)%> matches <%animation.duration%>.. run scoreboard players set @s <%OBJECTIVES.FRAME(animation.path_name)%> 1
-					execute store result storage aj:temp frame int 1 run scoreboard players get @s <%OBJECTIVES.FRAME(animation.path_name)%>
-					execute at @s run function ./zzz/apply_frame with storage aj:temp
+					data remove storage aj:temp args
+					execute store result storage aj:temp args.frame int 1 run scoreboard players get @s <%OBJECTIVES.FRAME(animation.path_name)%>
+					execute at @s run function ./zzz/apply_frame with storage aj:temp args
 					scoreboard players add @s <%OBJECTIVES.FRAME(animation.path_name)%> 1
 				}
 
@@ -223,8 +212,9 @@ dir <%export_namespace%> {
 							function *global/errors/function_not_executed_as_root_entity \
 								{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 					}
-					$execute store result storage aj:temp frame int 1 run scoreboard players set @s <%OBJECTIVES.FRAME(animation.path_name)%> $(frame)
-					execute at @s run function ./zzz/set_frame with storage aj:temp
+					data remove storage aj:temp args
+					$execute store result storage aj:temp args.frame int 1 run scoreboard players set @s <%OBJECTIVES.FRAME(animation.path_name)%> $(frame)
+					execute at @s run function ./zzz/set_frame with storage aj:temp args
 				}
 
 				function apply_frame {
@@ -235,8 +225,9 @@ dir <%export_namespace%> {
 							function *global/errors/function_not_executed_as_root_entity \
 								{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 					}
-					$execute store result storage aj:temp frame int 1 run scoreboard players set @s <%OBJECTIVES.FRAME(animation.path_name)%> $(frame)
-					execute at @s run function ./zzz/apply_frame with storage aj:temp
+					data remove storage aj:temp args
+					$execute store result storage aj:temp args.frame int 1 run scoreboard players set @s <%OBJECTIVES.FRAME(animation.path_name)%> $(frame)
+					execute at @s run function ./zzz/apply_frame with storage aj:temp args
 				}
 
 				function tween {
@@ -278,9 +269,10 @@ dir <%export_namespace%> {
 									scoreboard players add @s <%OBJECTIVES.FRAME(animation.path_name)%> 1
 								}
 						}
-						execute store result storage aj:temp frame int 1 run \
+						data remove storage aj:temp args
+						execute store result storage aj:temp args.frame int 1 run \
 							scoreboard players get @s <%OBJECTIVES.FRAME(animation.path_name)%>
-						function ./apply_frame with storage aj:temp
+						function ./apply_frame with storage aj:temp args
 						IF (animation.loop_mode === 'loop') {
 							# Loop the animation back to the start once it reaches the last frame.
 							# If loop_delay is 0, the animation will loop instantly, otherwise, it will wait for the specified amount of ticks.
@@ -317,7 +309,7 @@ dir <%export_namespace%> {
 										storage aj.<%export_namespace%>:animations <%animation.storage_name%>.$(frame).<%node.type.charAt(0) + '_' + node.storage_name%>
 								} ELSE IF (['locator', 'camera'].includes(node.type)) {
 									$execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run \
-										data modify entity @s data.<%node.type + 's.' + node.storage_name%> merge from \
+										data modify entity @s data.uuids.<%node.type + '_' + node.storage_name%> merge from \
 										storage aj.<%export_namespace%>:animations <%animation.storage_name%>.$(frame).<%node.type.charAt(0) + '_' + node.storage_name%>
 								}
 							}
@@ -331,6 +323,7 @@ dir <%export_namespace%> {
 								}
 							}
 							execute on passengers run data modify entity @s[type=!marker] start_interpolation set value -1
+							return 1
 						}
 
 						function apply_frame {
@@ -342,7 +335,7 @@ dir <%export_namespace%> {
 										storage aj.<%export_namespace%>:animations <%animation.storage_name%>.$(frame).<%node.type.charAt(0) + '_' + node.storage_name%>
 								} ELSE IF (['locator', 'camera'].includes(node.type)) {
 									$execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run \
-										data modify entity @s data.<%node.type + 's.' + node.storage_name%> merge from \
+										data modify entity @s data.uuids.<%node.type + '_' + node.storage_name%> merge from \
 										storage aj.<%export_namespace%>:animations <%animation.storage_name%>.$(frame).<%node.type.charAt(0) + '_' + node.storage_name%>
 								}
 							}
@@ -355,21 +348,24 @@ dir <%export_namespace%> {
 									$execute $(condition)run function *<%export_namespace%>/variants/$(name)/apply
 								}
 							}
+							return 1
 						}
 					} ELSE {
 						function set_frame {
 							# Sets the frame without interpolation
 							#ARGS: {frame: int}
 							$execute on passengers if entity @s[tag=aj.global.data] run \
-								function ./frames/$(frame) with entity @s item.components."minecraft:custom_data".bones
+								function ./frames/$(frame) with entity @s data.uuids
 							execute on passengers run \
 								data modify entity @s[tag=aj.global.data] start_interpolation set value -1
+							return 1
 						}
 
 						function apply_frame {
 							#ARGS: {frame: int}
 							$execute on passengers if entity @s[tag=aj.global.data] run \
-								function ./frames/$(frame) with entity @s item.components."minecraft:custom_data".bones
+								function ./frames/$(frame) with entity @s data.uuids
+							return 1
 						}
 						# FIXME - %NEWLINE_PATCH% is a temporary solution to temporarily fix an MCB bug where extra newlines are being added to the output.
 						dir frames {
@@ -377,11 +373,12 @@ dir <%export_namespace%> {
 								// A record of node uuid to INodeTransform.
 								// Keeps track of the last time a bone was updated.
 								// Only used for step keyframe interpolation.
+								let hasCommands = false
 								const lastActiveFrame = {}
-								const modifiedNodes = Object.values(animation.modified_nodes).sort(nodeSorter);
+								const modifiedNodes = Object.values(animation.modified_nodes).filter(n => n.type !== 'struct').sort(nodeSorter);
 								for (const [frameIndex, frame] of animation.frames.entries()) {
-									const merged = { locators: {}, cameras: {} }
-									let frameFunc = `function ${frameIndex}%NEWLINE_PATCH%{`;
+									const to_merge = {cameras: {}, locators: {}}
+									let frameFunc = ``;
 									for (const node of modifiedNodes) {
 										const transform = frame.node_transforms[node.uuid]
 										// Skip if the node doesn't have a transform for this frame.
@@ -397,59 +394,79 @@ dir <%export_namespace%> {
 
 												if (transform.interpolation === 'pre-post' || isStepInterpolation) {
 													frameFunc +=
-														`\n$data merge entity $(${node.type + '_' + node.path_name})%NEWLINE_PATCH%{`
+														`\n$data merge entity $(${node.type + '_' + node.storage_name})%NEWLINE_PATCH%{`
 															+ `transformation: ${matrixToNbtFloatArray(transform.matrix).toString()},`
 															+ `start_interpolation: ${isStepInterpolation ? -1 : 0},`
 															+ `interpolation_duration: ${isStepInterpolation ? 0 : interpolation_duration}`
 														+ `}`
-												}
-												else {
+												} else {
 													frameFunc +=
-														`\n$data merge entity $(${node.type + '_' + node.path_name})%NEWLINE_PATCH%{`
+														`\n$data merge entity $(${node.type + '_' + node.storage_name})%NEWLINE_PATCH%{`
 															+ `transformation: ${matrixToNbtFloatArray(transform.matrix).toString()},`
 															+ `start_interpolation: 0,`
 															+ `interpolation_duration: ${interpolation_duration}`
 														+ `}`
 												}
+												;hasCommands = true
 												break
 											}
 											case 'locator': {
-												if (node.config?.use_entity || node.config?.ticking_commands) {
-													merged.locators[node.path_name] = {
+												const lastFrame = lastActiveFrame[node.uuid]
+												lastActiveFrame[node.uuid] = transform
+												;if (!lastFrame || matrixToNbtFloatArray(transform.matrix).toString() !== matrixToNbtFloatArray(lastFrame.matrix).toString()) {
+													to_merge.locators[node.storage_name] = {
 														posx: transform.pos[0],
 														posy: transform.pos[1],
 														posz: transform.pos[2],
 														roty: transform.head_rot[1],
 														rotx: transform.head_rot[0]
-													}
+													};
 												}
+
 												if (transform.commands) {
-													frameFunc +=
-														`\nexecute on vehicle unless entity @s[tag=${TAGS.TRANSFORMS_ONLY()}] `
-														+ `positioned ^${roundTo(transform.pos[0], 10)} ^${roundTo(transform.pos[1], 10)} ^${roundTo(transform.pos[2], 10)} `
-														+ `rotated ~${roundTo(transform.head_rot[1], 10)} ~${roundTo(transform.head_rot[0], 10)} `
-														+ `${transform.commands_execute_condition ? transform.commands_execute_condition + ' ' : ''}run `
-														+ `block ${frameIndex}_locator_commands%NEWLINE_PATCH%{\n`
-															+ `${transform.commands}`
-														+ `\n}`
+													if (node.config?.use_entity) {
+														frameFunc +=
+															`\n$execute on vehicle unless entity @s[tag=${TAGS.TRANSFORMS_ONLY()}] as $(${node.type + '_' + node.path_name}) `
+															+ `positioned ^${roundTo(transform.pos[0], 10)} ^${roundTo(transform.pos[1], 10)} ^${roundTo(transform.pos[2], 10)} `
+															+ `rotated ~${roundTo(transform.head_rot[1], 10)} ~${roundTo(transform.head_rot[0], 10)} `
+															+ `${transform.commands_execute_condition ? transform.commands_execute_condition + ' ' : ''}run `
+															+ `block ${frameIndex}_locator_commands%NEWLINE_PATCH%{\n`
+																+ `tp @s ~ ~ ~ ~ ~\n`
+																+ `${transform.commands}`
+															+ `\n}`
+													} else {
+														frameFunc +=
+															`\nexecute on vehicle unless entity @s[tag=${TAGS.TRANSFORMS_ONLY()}] `
+															+ `positioned ^${roundTo(transform.pos[0], 10)} ^${roundTo(transform.pos[1], 10)} ^${roundTo(transform.pos[2], 10)} `
+															+ `rotated ~${roundTo(transform.head_rot[1], 10)} ~${roundTo(transform.head_rot[0], 10)} `
+															+ `${transform.commands_execute_condition ? transform.commands_execute_condition + ' ' : ''}run `
+															+ `block ${frameIndex}_locator_commands%NEWLINE_PATCH%{\n`
+																+ `${transform.commands}`
+															+ `\n}`
+													}
 												}
 												break
 											}
 											case 'camera': {
-												merged.cameras[node.path_name] = {
-													posx: transform.pos[0],
-													posy: transform.pos[1],
-													posz: transform.pos[2],
-													roty: transform.head_rot[1],
-													rotx: transform.head_rot[0]
+												const lastFrame = lastActiveFrame[node.uuid]
+												lastActiveFrame[node.uuid] = transform
+												;if (!lastFrame || matrixToNbtFloatArray(transform.matrix).toString() !== matrixToNbtFloatArray(lastFrame.matrix).toString()) {
+													to_merge.cameras[node.storage_name] = {
+														posx: transform.pos[0],
+														posy: transform.pos[1],
+														posz: transform.pos[2],
+														roty: transform.head_rot[1],
+														rotx: transform.head_rot[0]
+													};
 												}
 												;break
 											}
 										}
 									}
 
-									if (Object.keys(merged.locators).length > 0 || Object.keys(merged.cameras).length > 0) {
-										frameFunc += `\ndata modify entity @s data merge value ${JSON.stringify(merged)}`
+									if (Object.keys(to_merge.locators).length > 0 || Object.keys(to_merge.cameras).length > 0) {
+										frameFunc += `\ndata modify entity @s data merge value ${JSON.stringify(to_merge)}`
+										;hasCommands = true
 									}
 
 									if (frame.variants?.length) {
@@ -459,15 +476,20 @@ dir <%export_namespace%> {
 										}
 										const execute_condition = frame.variants_execute_condition ? frame.variants_execute_condition + ' ' : ''
 										frameFunc += `\nexecute on vehicle unless entity @s[tag=${TAGS.TRANSFORMS_ONLY()}] ${execute_condition}run function *${export_namespace}/variants/${variant.name}/apply`
+										;hasCommands = true
 									}
 
 									// Root commands keyframes.
 									if (frame.commands) {
 										const execute_condition = frame.commands_execute_condition ? frame.commands_execute_condition + ' ' : ''
 										frameFunc += `\nexecute on vehicle unless entity @s[tag=${TAGS.TRANSFORMS_ONLY()}] at @s ${execute_condition}run block ${frameIndex}_root_commands%NEWLINE_PATCH%{\n${frame.commands}\n}`
+										;hasCommands = true
 									}
-									frameFunc += `\n}`
-									emit.mcb(frameFunc.replaceAll(/%NEWLINE_PATCH%\n?/g, ' '))
+									;if (frameFunc.length > 0) {
+										console.log('frameFunc', frameFunc)
+										frameFunc = `function ${frameIndex}%NEWLINE_PATCH%{${frameFunc}\n}`
+										emit.mcb(frameFunc.replaceAll(/%NEWLINE_PATCH%\n?/g, ' '))
+									}
 								}
 							%%>
 						}
@@ -512,8 +534,8 @@ dir <%export_namespace%> {
 			execute store result score @s <%OBJECTIVES.ID()%> run scoreboard players add aj.last_id <%OBJECTIVES.ID()%> 1
 
 			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block as_data_entity {
-				function *global/internal/gu/convert_uuid_array_to_string with entity @s
-				data modify entity @s item.components."minecraft:custom_data".bones.data_data set from storage aj:uuid main.out
+				function *global/internal/gu/convert_uuid_array_to_string
+				data modify entity @s data.uuids.data_data set from storage aj:uuid main.out
 
 				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator' && v.config?.use_entity)) as locator {
 					summon <%locator.config.entity_type%> \
@@ -522,17 +544,17 @@ dir <%export_namespace%> {
 						^<%roundTo(locator.default_transform.pos[2], 10)%> \
 						{Tags:<%getNodeTags(locator, rig)%>}
 					execute \
-						as @e[ \
+						as @n[ \
 							type=<%locator.config.entity_type%>, \
-							tag=<%TAGS.NEW()%>,tag=<%TAGS.GLOBAL_LOCATOR()%>, \
-							limit=1, \
-							distance=..0.01 \
+							tag=<%TAGS.NEW()%>, \
+							tag=<%TAGS.PROJECT_LOCATOR_NAMED(export_namespace, locator.storage_name)%>, \
+							distance=..<%locator.max_distance + 1%> \
 						] \
 					run block as_locator/<%locator.path_name%> {
-						# run block ../as_locator/<%locator.path_name%> {
+					# run block ../as_locator/<%locator.path_name%> {
 						tag @s remove <%TAGS.NEW()%>
 
-						function *global/internal/gu/convert_uuid_array_to_string with entity @s
+						function *global/internal/gu/convert_uuid_array_to_string
 						tp @s \
 							^<%roundTo(locator.default_transform.pos[0], 10)%> \
 							^<%roundTo(locator.default_transform.pos[1], 10)%> \
@@ -545,6 +567,7 @@ dir <%export_namespace%> {
 							}
 						%%>
 					}
+					data modify entity @s data.uuids.<%locator.type + '_' + locator.name%> set from storage aj:uuid main.out
 					data modify entity @s data.locators.<%locator.name%>.uuid set from storage aj:uuid main.out
 				}
 
@@ -555,16 +578,15 @@ dir <%export_namespace%> {
 						^<%roundTo(camera.default_transform.pos[2], 10)%> \
 						{Tags:<%getNodeTags(camera, rig)%>, teleport_duration: 2}
 					execute \
-						as @e[ \
+						as @n[ \
 							type=item_display, \
 							tag=<%TAGS.NEW()%>, \
-							tag=<%TAGS.GLOBAL_CAMERA()%>, \
-							limit=1, \
-							distance=..0.01 \
+							tag=<%TAGS.PROJECT_CAMERA_NAMED(export_namespace, camera.storage_name)%>, \
+							distance=..<%camera.max_distance + 1%> \
 						] \
 					run block ../as_camera/<%camera.path_name%> {
 						tag @s remove <%TAGS.NEW()%>
-						function *global/internal/gu/convert_uuid_array_to_string with entity @s
+						function *global/internal/gu/convert_uuid_array_to_string
 						tp @s \
 							^<%roundTo(camera.default_transform.pos[0], 10)%> \
 							^<%roundTo(camera.default_transform.pos[1], 10)%> \
@@ -572,13 +594,14 @@ dir <%export_namespace%> {
 							~<%roundTo(camera.default_transform.head_rot[1], 10)%> \
 							~<%roundTo(camera.default_transform.head_rot[0], 10)%>
 					}
+					data modify entity @s data.uuids.<%camera.type + '_' + camera.name%> set from storage aj:uuid main.out
 					data modify entity @s data.cameras.<%camera.name%>.uuid set from storage aj:uuid main.out
 				}
 
 				REPEAT (Object.values(rig.nodes).filter(v => ['bone', 'text_display', 'item_display', 'block_display'].includes(v.type))) as node {
 					execute on vehicle on passengers if entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(export_namespace, node.name)%>] run \
-						function *global/internal/gu/convert_uuid_array_to_string with entity @s
-					data modify entity @s item.components."minecraft:custom_data".bones.<%node.type + '_' + node.name%> set from storage aj:uuid main.out
+						function *global/internal/gu/convert_uuid_array_to_string
+					data modify entity @s data.uuids.<%node.type + '_' + node.name%> set from storage aj:uuid main.out
 				}
 			}
 
@@ -594,7 +617,7 @@ dir <%export_namespace%> {
 					# Attempt to apply the requested variant.
 					# We get the success of the `try_apply` function in just in case the user's arguments are *very* wrong.
 					execute store success score #success <%OBJECTIVES.I()%> run block try_apply { with storage aj:temp args
-						$execute if function *<%export_namespace%>/variants/$(variant)/apply run return 1
+						$execute if function animated_java:<%export_namespace%>/variants/$(variant)/apply run return 1
 						# If the apply function fails, the variant doesn't exist, so we return an error.
 						return fail
 					}
@@ -612,9 +635,8 @@ dir <%export_namespace%> {
 				}
 			}
 
+			function *<%export_namespace%>/set_default_pose
 			# Animation Argument
-			# If the animation argument is not provided, set the default pose.
-			execute unless data storage aj:temp args.animation run function *<%export_namespace%>/set_default_pose
 			# If the animation argument is provided, attempt to apply the animation.
 			execute if data storage aj:temp args.animation run block animation_arg/process { with storage aj:temp args
 				# If the animation argument is *explicitly* set to an empty string, return an error.
@@ -639,7 +661,7 @@ dir <%export_namespace%> {
 				execute store success score #success <%OBJECTIVES.I()%> run block try_set_frame { with storage aj:temp args
 					# Make sure we're only applying transforms when setting the summon pose.
 					tag @s add <%TAGS.TRANSFORMS_ONLY()%>
-					$execute store success score #success <%OBJECTIVES.I()%> run function *<%export_namespace%>/animations/$(animation)/set_frame with storage aj:temp args
+					$execute store success score #success <%OBJECTIVES.I()%> run function *<%export_namespace%>/animations/$(animation)/zzz/set_frame with storage aj:temp args
 					tag @s remove <%TAGS.TRANSFORMS_ONLY()%>
 					execute if score #success <%OBJECTIVES.I()%> matches 1 run return 1
 					# If the set_frame function fails, the animation doesn't exist, so we return an error.
@@ -671,14 +693,31 @@ dir <%export_namespace%> {
 			# Remove the NEW tag from the root entity, and it's passengers.
 			tag @s remove <%TAGS.NEW()%>
 			execute on passengers run tag @s remove <%TAGS.NEW()%>
-
-			# Run `on_summon` function tag hooks
-			function #*<%export_namespace%>/as_root/on_summon
 		}
 	}
 
 	IF (has_entity_locators) {
-		function as_own_locator_entities {
+		function as_locator {
+			#ARGS: {name: string, command: string}
+			IF (show_function_errors) {
+				# Assert that the function is being run as the root entity.
+				execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+					function *global/errors/function_not_executed_as_root_entity \
+						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
+			}
+			$data modify storage aj:temp args.command set value '$(command)'
+			$execute \
+				on passengers \
+				if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] \
+			run block zzz/as_locator/as_data { {name: $(name)}
+				$data modify storage aj:temp args.uuid set from entity @s data.uuids.locator_$(name)
+				block execute_as_uuid { with storage aj:temp args
+					$execute as $(uuid) run $(command)
+				}
+			}
+		}
+
+		function as_all_locators {
 			#ARGS: {command: string}
 			IF (show_function_errors) {
 				# Assert that the function is being run as the root entity.
@@ -686,13 +725,14 @@ dir <%export_namespace%> {
 					function *global/errors/function_not_executed_as_root_entity \
 						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 			}
-			$data modify storage aj:temp command set value '$(command)'
-			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block zzz/as_own_locator_entities/as_data {
+			data remove storage aj:temp args
+			$data modify storage aj:temp args.command set value '$(command)'
+			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block zzz/as_all_locators/as_data {
 				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator' && v.config?.use_entity)) as locator {
-					data modify storage aj:temp uuid set from entity @s data.locators.<%locator.name%>.uuid
-				}
-				block execute_as_uuid { with storage aj:temp
-					$execute as $(uuid) run $(command)
+					data modify storage aj:temp args.uuid set from entity @s data.uuids.<%locator.type + '_' + locator.name%>
+					block execute_as_uuid { with storage aj:temp args
+						$execute as $(uuid) run $(command)
+					}
 				}
 			}
 		}
@@ -718,17 +758,18 @@ dir <%export_namespace%> {
 						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 			}
 
-			# Run `on_remove` function tag hooks
-			function #*<%export_namespace%>/as_root/on_remove
+			<%%
+				if (custom_remove_commands) emit.mcb(custom_remove_commands)
+			%%>
 
 			IF (has_entity_locators || has_cameras) {
 				execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block zzz/this/as_data {
 					REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator' && v.config?.use_entity)) as locator {
 						# REVIEW - This will not kill locators or cameras that have been summoned using an old export of the rig.
-						function ./zzz/this/kill_locator with entity @s data.locators.<%locator.name%>
+						function ./zzz/this/kill_locator with entity @s data.locators.<%locator.type + '_' + locator.name%>
 					}
 					REPEAT (Object.values(rig.nodes).filter(v => v.type === 'camera')) as camera {
-						function ./zzz/this/kill_camera with entity @s data.cameras.<%camera.name%>
+						function ./zzz/this/kill_camera with entity @s data.locators.<%camera.type + '_' + camera.name%>
 					}
 				}
 			}
@@ -770,7 +811,11 @@ dir <%export_namespace%> {
 							IF (node.type === 'bone' && !variant.excluded_nodes.includes(node.uuid) && (variant.models[node.uuid] !== undefined || node.configs.variants[variant.uuid] !== undefined)) {
 								execute on passengers if entity @s[tag=aj.<%export_namespace%>.bone.<%node.path_name%>] run block zzz/apply_to_bone_<%node.path_name%> {
 									IF (variant.models[node.uuid] !== undefined) {
-										data modify entity @s item.components.minecraft:custom_model_data.strings[0] set value "<%variant.name%>"
+										IF (variant.models[node.uuid].model === null) {
+											data modify entity @s item.components."minecraft:custom_model_data".strings[0] set value "AJ_INTERNAL_EMPTY"
+										} ELSE {
+											data modify entity @s item.components."minecraft:custom_model_data".strings[0] set value "<%variant.name%>"
+										}
 									}
 									IF (node.configs.variants[variant.uuid]) {
 										<%%

@@ -587,6 +587,17 @@ namespace TELLRAW {
 			],
 			TELLRAW_SUFFIX(),
 		])
+	export const UNINSTALL = () =>
+		new JsonText([
+			TELLRAW_PREFIX(),
+			{ text: 'Successfully removed known animation scoreboard objectives.', color: 'red' },
+			{
+				text: "\nIf you have exported multiple times you may have to manually remove some objectives from previous exports manually, as Animated Java can only remove the latest export's objectives.",
+				color: 'gray',
+				italic: true,
+			},
+			TELLRAW_SUFFIX(),
+		])
 }
 
 async function generateRootEntityPassengers(
@@ -597,7 +608,7 @@ async function generateRootEntityPassengers(
 	const aj = Project!.animated_java
 	const passengers: NbtList = new NbtList()
 
-	const { locators, cameras, bones } = createPassengerStorage(rig)
+	const { locators, cameras, uuids } = createPassengerStorage(rig)
 
 	passengers.add(
 		new NbtCompound()
@@ -613,22 +624,12 @@ async function generateRootEntityPassengers(
 				])
 			)
 			.set(
-				'item',
+				'data',
 				new NbtCompound()
-					.set('id', new NbtString('minecraft:pufferfish'))
-					.set(
-						'components',
-						new NbtCompound()
-							.set(
-								'minecraft:custom_data',
-								new NbtCompound()
-									.set('rigHash', new NbtString(rigHash))
-									.set('locators', locators)
-									.set('cameras', cameras)
-									.set('bones', bones)
-							)
-							.set('minecraft:item_model', new NbtString('animated_java:empty'))
-					)
+					.set('rigHash', new NbtString(rigHash))
+					.set('locators', locators)
+					.set('cameras', cameras)
+					.set('uuids', uuids)
 			)
 	)
 
@@ -890,11 +891,11 @@ async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAn
 }
 
 function createPassengerStorage(rig: IRenderedRig) {
-	const bones = new NbtCompound()
+	const uuids = new NbtCompound()
 	const locators = new NbtCompound()
 	const cameras = new NbtCompound()
 	// Data entity
-	bones.set('data_data', new NbtString(''))
+	uuids.set('data_data', new NbtString(''))
 	for (const node of Object.values(rig.nodes)) {
 		switch (node.type) {
 			case 'locator':
@@ -912,18 +913,19 @@ function createPassengerStorage(rig: IRenderedRig) {
 				} else {
 					locators.set(node.storage_name, data)
 				}
+				uuids.set(node.type + '_' + node.storage_name, new NbtString(''))
 				break
 			}
 			case 'bone':
 			case 'text_display':
 			case 'item_display':
 			case 'block_display': {
-				bones.set(node.type + '_' + node.storage_name, new NbtString(''))
+				uuids.set(node.type + '_' + node.storage_name, new NbtString(''))
 				break
 			}
 		}
 	}
-	return { locators, cameras, bones }
+	return { locators, cameras, uuids }
 }
 
 function nodeSorter(a: AnyRenderedNode, b: AnyRenderedNode): number {
@@ -1164,6 +1166,7 @@ const dataPackCompiler: DataPackCompiler = async ({
 		OBJECTIVES,
 		TELLRAW,
 		custom_summon_commands: aj.summon_commands,
+		custom_remove_commands: aj.remove_commands,
 		matrixToNbtFloatArray,
 		transformationToNbt,
 		use_storage_for_animation: aj.use_storage_for_animation,
@@ -1220,6 +1223,7 @@ async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFold
 	async function writeFile(path: string, file: ExportedFile) {
 		if (isFunctionTagPath(path) && fs.existsSync(path)) {
 			functionTagQueue.set(path, file)
+			return
 		}
 
 		const folder = PathModule.dirname(path)
@@ -1263,60 +1267,62 @@ async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFold
 				)
 			})
 		}
-		merged.values = merged.values.filter(v => {
-			const value = typeof v === 'string' ? v : v.id
-			const isTag = value.startsWith('#')
-			const location = parseResourceLocation(isTag ? value.substring(1) : value)
+		merged.values = merged.values
+			.filter(v => {
+				const value = typeof v === 'string' ? v : v.id
+				const isTag = value.startsWith('#')
+				const location = parseResourceLocation(isTag ? value.substring(1) : value)
 
-			console.log('Checking:', value, location)
+				console.log('Checking:', value, location)
 
-			let exists = false
-			for (const folder of fs.readdirSync(dataPackFolder)) {
-				const overrideFolder = PathModule.join(dataPackFolder, folder)
-				if (!fs.statSync(overrideFolder).isDirectory()) continue
-				const dataFolder =
-					folder === 'data' ? overrideFolder : PathModule.join(overrideFolder, 'data')
+				let exists = false
+				for (const folder of fs.readdirSync(dataPackFolder)) {
+					const overrideFolder = PathModule.join(dataPackFolder, folder)
+					if (!fs.statSync(overrideFolder).isDirectory()) continue
+					const dataFolder =
+						folder === 'data' ? overrideFolder : PathModule.join(overrideFolder, 'data')
 
-				const path = isTag
-					? PathModule.join(
-							dataFolder,
-							location.namespace,
-							'tags/functions',
-							location.path + '.json'
-					  )
-					: PathModule.join(
-							dataFolder,
-							location.namespace,
-							'functions',
-							location.path + '.mcfunction'
-					  )
-				console.log('Checking path:', path)
-				if (
-					!(
-						fs.existsSync(path) ||
-						fs.existsSync(
-							path.replace(
-								`${PathModule.sep}functions${PathModule.sep}`,
-								`${PathModule.sep}function${PathModule.sep}`
+					const path = isTag
+						? PathModule.join(
+								dataFolder,
+								location.namespace,
+								'tags/functions',
+								location.path + '.json'
+						  )
+						: PathModule.join(
+								dataFolder,
+								location.namespace,
+								'functions',
+								location.path + '.mcfunction'
+						  )
+					console.log('Checking path:', path)
+					if (
+						!(
+							fs.existsSync(path) ||
+							fs.existsSync(
+								path.replace(
+									`${PathModule.sep}functions${PathModule.sep}`,
+									`${PathModule.sep}function${PathModule.sep}`
+								)
 							)
 						)
 					)
-				)
-					continue
-				exists = true
-				break
-			}
+						continue
+					exists = true
+					break
+				}
 
-			if (!exists) {
-				const parentLocation = parseDataPackPath(path)
-				console.warn(
-					`The referenced ${isTag ? 'tag' : 'function'} '${value}' in '${
-						parentLocation?.resourceLocation || path
-					}' does not exist! Removing reference...`
-				)
-			}
-			return exists
-		})
+				if (!exists) {
+					const parentLocation = parseDataPackPath(path)
+					console.warn(
+						`The referenced ${isTag ? 'tag' : 'function'} '${value}' in '${
+							parentLocation?.resourceLocation || path
+						}' does not exist! Removing reference...`
+					)
+				}
+				return exists
+			})
+			.sort()
 
 		await fs.promises.writeFile(path, autoStringify(merged))
 	}

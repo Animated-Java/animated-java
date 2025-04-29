@@ -59,6 +59,7 @@
 	// export let enableAdvancedDataPackSettings: Valuable<boolean>
 	export let dataPack: Valuable<string>
 	export let summonCommands: Valuable<string>
+	export let removeCommands: Valuable<string>
 	export let tickingCommands: Valuable<string>
 	export let interpolationDuration: Valuable<number>
 	export let teleportationDuration: Valuable<number>
@@ -676,6 +677,13 @@
 				tooltip={translate('dialog.blueprint_settings.summon_commands.description')}
 				bind:value={summonCommands}
 				defaultValue={defaultValues.summon_commands}
+			/>
+
+			<CodeInput
+				label={translate('dialog.blueprint_settings.remove_commands.title')}
+				tooltip={translate('dialog.blueprint_settings.remove_commands.description')}
+				bind:value={removeCommands}
+				defaultValue={defaultValues.remove_commands}
 			/>
 
 			<CodeInput

@@ -22,6 +22,7 @@ export const defaultValues = {
 	enable_advanced_data_pack_settings: false,
 	data_pack: '',
 	summon_commands: '',
+	remove_commands: '',
 	ticking_commands: '',
 	interpolation_duration: 1,
 	teleportation_duration: 1,

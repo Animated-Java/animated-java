@@ -53,6 +53,7 @@ function getSettings() {
 		),
 		dataPack: new Valuable(Project!.animated_java.data_pack),
 		summonCommands: new Valuable(Project!.animated_java.summon_commands),
+		removeCommands: new Valuable(Project!.animated_java.remove_commands),
 		tickingCommands: new Valuable(Project!.animated_java.ticking_commands),
 		interpolationDuration: new Valuable(Project!.animated_java.interpolation_duration),
 		teleportationDuration: new Valuable(Project!.animated_java.teleportation_duration),
@@ -95,6 +96,7 @@ function setSettings(settings: ReturnType<typeof getSettings>) {
 		settings.enableAdvancedDataPackSettings.get()
 	Project.animated_java.data_pack = settings.dataPack.get()
 	Project.animated_java.summon_commands = settings.summonCommands.get()
+	Project.animated_java.remove_commands = settings.removeCommands.get()
 	Project.animated_java.ticking_commands = settings.tickingCommands.get()
 	Project.animated_java.interpolation_duration = settings.interpolationDuration.get()
 	Project.animated_java.teleportation_duration = settings.teleportationDuration.get()

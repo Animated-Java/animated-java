@@ -174,8 +174,6 @@ export function getFrame(
 			case 'block_display':
 			case 'bone': {
 				matrix = getNodeMatrix(outlinerNode, node.base_scale)
-				// Only add the frame if the matrix has changed.
-				if (lastFrame && lastFrame.matrix.equals(matrix)) continue
 				// Inherit instant interpolation from parent
 				if (node.parent && node.parent !== 'root') {
 					const parentKeyframes = keyframeCache.get(node.parent)
@@ -187,6 +185,9 @@ export function getFrame(
 						interpolation = 'pre-post'
 					}
 				}
+				// Only add the frame if the matrix has changed, this is the first frame, or there is an interpolation change.
+				if (lastFrame && lastFrame.matrix.equals(matrix) && interpolation == undefined)
+					continue
 				// Instant interpolation
 				if (keyframe?.interpolation === 'step') {
 					interpolation = 'step'
@@ -204,6 +205,8 @@ export function getFrame(
 			}
 			case 'locator': {
 				matrix = getNodeMatrix(outlinerNode, 1)
+				// // Only add the frame if the matrix has changed, or this is the first frame
+				// if (lastFrame && lastFrame.matrix.equals(matrix)) continue
 				if (keyframe) {
 					commands = getKeyframeCommands(keyframe)
 					executeCondition = getKeyframeExecuteCondition(keyframe)
@@ -220,11 +223,15 @@ export function getFrame(
 						executeCondition = getKeyframeExecuteCondition(lastFrame.keyframe)
 					}
 				}
+				// lastFrameCache.set(uuid, { matrix, keyframe })
 				break
 			}
 			case 'camera':
 			case 'struct': {
 				matrix = getNodeMatrix(outlinerNode, 1)
+				// Only add the frame if the matrix has changed, or this is the first frame
+				if (lastFrame && lastFrame.matrix.equals(matrix)) continue
+				lastFrameCache.set(uuid, { matrix, keyframe })
 				break
 			}
 		}
@@ -234,6 +241,10 @@ export function getFrame(
 		const scale = new THREE.Vector3()
 		matrix.decompose(pos, rot, scale)
 		const decomposed = getDecomposedTransformation(matrix)
+
+		if (node.type === 'locator' || node.type === 'camera') {
+			node.max_distance = Math.max(node.max_distance, pos.length())
+		}
 
 		frame.node_transforms[uuid] = {
 			matrix,
