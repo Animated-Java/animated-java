@@ -122,16 +122,27 @@
 			}
 		]
 	},
-	"1.6.5": {
-		"title": "v1.6.5",
+	"1.7.0": {
+		"title": "v1.7.0",
 		"author": "Titus Evans (SnaveSutit)",
-		"date": "2025-02-26",
+		"date": "2025-04-30",
 		"categories": [
 			{
 				"title": "Changes",
 				"list": [
-					"Added a new function (`animated_java:<export_namespace>/remove/entities`) that kills all entities owned by a rig, whether they are attached to a root entity or not.",
-					"Added support for `shadow_color` JSON Text Components."
+					"[BREAKING] Overhauled internal functions and data structures. This may cause some issues with older exports, so you should clean out your old AJ exports and re-export them.",
+					"[BREAKING] Renamed `animated_java:<export_namespace>/as_own_locator_entities` to `animated_java:<export_namespace>/as_all_locators`.",
+					"Added support for Minecraft 1.21.5.",
+					"Added support for exporting to multiple target Minecraft versions at once.",
+					"Reduced the size of exported Data Packs by about 50%.",
+					"Added `Sync Passenger Rotation` config option to Locators.",
+					"Added a new function: `animated_java:<export_namespace>/at_all_locators {command: string}` that runs a command at all of a rig's entity-less locator positions.",
+					"Added a new function: `animated_java:<export_namespace>/as_locator {name: string, command: string}` that runs a command as and at a named locator's entity.",
+					"Added a new function: `animated_java:<export_namespace>/at_locator {name: string, command: string}` that runs a command at an entity-less locator's position.",
+					"Added a new function: `animated_java:<export_namespace>/remove/entities` that kills all entities owned by a rig, whether they are attached to a root entity or not.",
+					"Added a new Blueprint setting: `On-Remove Commands`.",
+					"Added support for `shadow_color` to JSON Text Components.",
+					"Temporarily made all descriptions of settings appear below settings."
 				]
 			},
 			{
@@ -145,9 +156,11 @@
 					"Fixed added missing tag PROJECT_ENTITY to data entities.",
 					"Fixed locators and cameras missing most of their tags.",
 					"Fixed missing PROJECT_ENTITY tag on root entities.",
-					"Fixed backslash (\\\\) being allowed in node names.",
+					"Fixed backslash (\\) being allowed in node names.",
 					"Fixed locators not being removed when calling `animated_java:global/remove/everything`.",
-					"Fixed crash while exporting when encountering an invalid JSON file in the target data pack."
+					"Fixed crash while exporting when encountering an invalid JSON file in the target data pack.",
+					"Fixed [#389](https://github.com/Animated-Java/animated-java/issues/389)",
+					"Fixed custom outliner element changes not marking a project as changed."
 				]
 			}
 		]
