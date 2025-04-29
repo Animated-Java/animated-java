@@ -117,7 +117,7 @@ dir <%export_namespace%> {
 			execute store result score @s <%OBJECTIVES.ID()%> run scoreboard players add aj.last_id <%OBJECTIVES.ID()%> 1
 
 			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run {
-				function *global/internal/gu/convert_uuid_array_to_string with entity @s
+				function *global/internal/gu/convert_uuid_array_to_string
 				data modify entity @s data.bones.data_data set from storage aj:uuid main.out
 
 				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator' && v.config?.use_entity)) as locator {
@@ -129,7 +129,7 @@ dir <%export_namespace%> {
 					execute as @e[type=<%locator.config.entity_type%>,tag=<%TAGS.NEW()%>,tag=<%TAGS.GLOBAL_LOCATOR()%>,limit=1,distance=..0.01] run {
 						tag @s remove <%TAGS.NEW()%>
 
-						function *global/internal/gu/convert_uuid_array_to_string with entity @s
+						function *global/internal/gu/convert_uuid_array_to_string
 						tp @s \
 							^<%roundTo(locator.default_transform.pos[0], 10)%> \
 							^<%roundTo(locator.default_transform.pos[1], 10)%> \
@@ -153,7 +153,7 @@ dir <%export_namespace%> {
 						{Tags:<%getNodeTags(camera, rig)%>, teleport_duration: 2}
 					execute as @e[type=item_display,tag=<%TAGS.NEW()%>,tag=<%TAGS.GLOBAL_CAMERA()%>,limit=1,distance=..0.01] run {
 						tag @s remove <%TAGS.NEW()%>
-						function *global/internal/gu/convert_uuid_array_to_string with entity @s
+						function *global/internal/gu/convert_uuid_array_to_string
 						tp @s \
 							^<%roundTo(camera.default_transform.pos[0], 10)%> \
 							^<%roundTo(camera.default_transform.pos[1], 10)%> \
@@ -166,7 +166,7 @@ dir <%export_namespace%> {
 
 				REPEAT (Object.values(rig.nodes).filter(v => ['bone', 'text_display', 'item_display', 'block_display'].includes(v.type))) as node {
 					execute on vehicle on passengers if entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(export_namespace, node.name)%>] run \
-						function *global/internal/gu/convert_uuid_array_to_string with entity @s
+						function *global/internal/gu/convert_uuid_array_to_string
 					data modify entity @s data.bones.<%node.type + '_' + node.name%> set from storage aj:uuid main.out
 				}
 			}
