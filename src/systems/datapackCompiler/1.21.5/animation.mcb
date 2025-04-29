@@ -705,15 +705,19 @@ dir <%export_namespace%> {
 					function *global/errors/function_not_executed_as_root_entity \
 						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 			}
-			$data modify storage aj:temp args.command set value '$(command)'
+			data remove storage aj:temp args
+			$data modify storage aj:temp args merge value {name:'$(name)', command:'$(command)'}
 			$execute \
 				on passengers \
 				if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] \
 			run block zzz/as_locator/as_data { {name: $(name)}
 				$data modify storage aj:temp args.uuid set from entity @s data.uuids.locator_$(name)
+				scoreboard players set #aj.check <%OBJECTIVES.I()%> 0
 				block execute_as_uuid { with storage aj:temp args
-					$execute as $(uuid) run $(command)
+					$execute as $(uuid) at @s run $(command)
+					scoreboard players set #aj.check <%OBJECTIVES.I()%> 1
 				}
+				execute if score #aj.check <%OBJECTIVES.I()%> matches 0 run tellraw @a <%TELLRAW.LOCATOR_NOT_FOUND_ENTITY()%>
 			}
 		}
 
@@ -731,7 +735,57 @@ dir <%export_namespace%> {
 				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator' && v.config?.use_entity)) as locator {
 					data modify storage aj:temp args.uuid set from entity @s data.uuids.<%locator.type + '_' + locator.name%>
 					block execute_as_uuid { with storage aj:temp args
-						$execute as $(uuid) run $(command)
+						$execute as $(uuid) at @s run $(command)
+					}
+				}
+			}
+		}
+	}
+
+	IF (has_locators) {
+		function at_locator {
+			#ARGS: {name: string, command: string}
+			IF (show_function_errors) {
+				# Assert that the function is being run as the root entity.
+				execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+					function *global/errors/function_not_executed_as_root_entity \
+						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
+			}
+			data remove storage aj:temp args
+			$data modify storage aj:temp args merge value {name:'$(name)', command:'$(command)'}
+			$execute \
+				on passengers \
+				if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] \
+			run block zzz/at_locator/as_data { {name: $(name)}
+				$execute unless data entity @s {data:{locators:{$(name):{}}}} run return run tellraw @a <%TELLRAW.LOCATOR_NOT_FOUND()%>
+				$data modify storage aj:temp args merge from entity @s data.locators.$(name)
+				block execute_at_transform { with storage aj:temp args
+					$execute \
+						positioned ^$(posx) ^$(posy) ^$(posz) \
+						rotated ~$(roty) ~$(rotx) \
+					run $(command)
+				}
+			}
+		}
+
+		function at_all_locators {
+			#ARGS: {command: string}
+			IF (show_function_errors) {
+				# Assert that the function is being run as the root entity.
+				execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+					function *global/errors/function_not_executed_as_root_entity \
+						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
+			}
+			data remove storage aj:temp args
+			$data modify storage aj:temp args.command set value '$(command)'
+			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block zzz/at_all_locators/as_data { 
+				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator' && v.config?.use_entity)) as locator {
+					data modify storage aj:temp args merge from entity @s data.locators.<%locator.name%>
+					block execute_at_transform { with storage aj:temp args
+						$execute \
+							positioned ^$(posx) ^$(posy) ^$(posz) \
+							rotated ~$(roty) ~$(rotx) \
+						run $(command)
 					}
 				}
 			}

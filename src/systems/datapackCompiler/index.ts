@@ -598,6 +598,42 @@ namespace TELLRAW {
 			},
 			TELLRAW_SUFFIX(),
 		])
+	export const LOCATOR_NOT_FOUND = () =>
+		new JsonText([
+			TELLRAW_PREFIX(),
+			{ text: 'Locator ', color: 'red' },
+			{ nbt: 'args.name', storage: 'aj:temp', color: 'aqua' },
+			{ text: ' not found!', color: 'red' },
+			{
+				text: "\nPlease ensure that it's name is spelled correctly.",
+				color: 'gray',
+				italic: true,
+			},
+			TELLRAW_SUFFIX(),
+		])
+	export const LOCATOR_NOT_FOUND_ENTITY = () =>
+		new JsonText([
+			TELLRAW_PREFIX(),
+			{ text: 'Locator ', color: 'red' },
+			{ nbt: 'args.name', storage: 'aj:temp', color: 'aqua' },
+			{ text: ' not found!', color: 'red' },
+			{
+				text: '\nPlease ensure that the locator has ',
+				color: 'gray',
+				italic: true,
+			},
+			{
+				text: 'Use Entity',
+				color: 'yellow',
+				italic: true,
+			},
+			{
+				text: " enabled in it's config, and it's name is spelled correctly.",
+				color: 'gray',
+				italic: true,
+			},
+			TELLRAW_SUFFIX(),
+		])
 }
 
 async function generateRootEntityPassengers(
