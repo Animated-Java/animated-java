@@ -132,8 +132,9 @@ export class PackMeta {
 	read() {
 		if (!fs.existsSync(this.path)) return
 
+		const raw = fs.readFileSync(this.path, 'utf-8')
 		try {
-			const content = JSON.parse(fs.readFileSync(this.path, 'utf-8'))
+			const content = JSON.parse(raw)
 			if (content.pack) {
 				this.pack_format = content.pack.pack_format ?? this.pack_format
 				this.description = content.pack.description ?? this.description
@@ -146,7 +147,7 @@ export class PackMeta {
 			}
 		} catch (e) {
 			throw new IntentionalExportError(
-				`Failed to read existing Data Pack's pack.mcmeta file: ${e}`
+				`Failed to read existing pack.mcmeta file at ${this.path}: ${e}\n\nFile content:\n${raw}`
 			)
 		}
 	}

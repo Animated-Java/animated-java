@@ -105,7 +105,7 @@ export default async function compileResourcePack(
 		packMetaPath,
 		0,
 		[],
-		`Animated Java Data Pack for ${targetVersions.join(', ')}`
+		`Animated Java Resource Pack for ${targetVersions.join(', ')}`
 	)
 	packMeta.read()
 	packMeta.pack_format = getResourcePackFormat(targetVersions[0])
