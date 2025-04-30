@@ -7,7 +7,7 @@ dir <%export_namespace%> {
 	dir root {
 		IF (show_outdated_warning) {
 			function on_load {
-				execute if entity @s[tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return 0
+				return 0
 				execute unless data entity @s {data:{rigHash: '<%rigHash%>'}} run {
 					execute store result storage aj:temp x int 1 store result score #this.x aj.i run data get entity @s Pos[0] 1
 					execute store result storage aj:temp y int 1 store result score #this.y aj.i run data get entity @s Pos[1] 1

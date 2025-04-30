@@ -51,6 +51,16 @@ export type JsonTextObject = {
 	strikethrough?: true | false
 	obfuscated?: true | false
 	insertion?: string
+	click_event?: {
+		action:
+			| 'open_url'
+			| 'open_file'
+			| 'run_command'
+			| 'suggest_command'
+			| 'change_page'
+			| 'copy_to_clipboard'
+		value: string
+	}
 	clickEvent?: {
 		action:
 			| 'open_url'
@@ -60,6 +70,14 @@ export type JsonTextObject = {
 			| 'change_page'
 			| 'copy_to_clipboard'
 		value: string
+	}
+	hover_event?: {
+		action: 'show_text' | 'show_item' | 'show_entity'
+		value?: JsonTextComponent
+		id?: string
+		uuid?: string
+		count?: number
+		components?: string
 	}
 	hoverEvent?: {
 		action: 'show_text' | 'show_item' | 'show_entity'
