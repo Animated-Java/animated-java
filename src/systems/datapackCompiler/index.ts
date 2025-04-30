@@ -584,28 +584,30 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 	const aj = Project!.animated_java
 	const passengers: NbtList = new NbtList()
 
-	const { locators, cameras, bones } = createPassengerStorage(rig)
+	if (aj.target_minecraft_version != '1.21.5') {
+		const { locators, cameras, bones } = createPassengerStorage(rig)
 
-	passengers.add(
-		new NbtCompound()
-			.set('id', new NbtString('minecraft:marker'))
-			.set(
-				'Tags',
-				new NbtList([
-					new NbtString(TAGS.GLOBAL_NODE()),
-					new NbtString(TAGS.GLOBAL_DATA()),
-					new NbtString(TAGS.PROJECT_DATA(aj.export_namespace)),
-				])
+		passengers.add(
+			new NbtCompound()
+				.set('id', new NbtString('minecraft:marker'))
+				.set(
+					'Tags',
+					new NbtList([
+						new NbtString(TAGS.GLOBAL_NODE()),
+						new NbtString(TAGS.GLOBAL_DATA()),
+						new NbtString(TAGS.PROJECT_DATA(aj.export_namespace)),
+					])
 			)
-			.set(
-				'data',
-				new NbtCompound()
-					.set('rigHash', new NbtString(rigHash))
-					.set('locators', locators)
-					.set('cameras', cameras)
-					.set('bones', bones)
+				.set(
+					'data',
+					new NbtCompound()
+						.set('rigHash', new NbtString(rigHash))
+						.set('locators', locators)
+						.set('cameras', cameras)
+						.set('bones', bones)
 			)
-	)
+		)
+	}
 
 	for (const [uuid, node] of Object.entries(rig.nodes)) {
 		if (node.type === 'struct') continue
@@ -671,6 +673,21 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 						break
 					}
 					case '1.21.4': {
+						item.set(
+							'components',
+							new NbtCompound()
+								.set('minecraft:item_model', new NbtString(variantModel.item_model))
+								.set(
+									'minecraft:custom_model_data',
+									new NbtCompound().set(
+										'strings',
+										new NbtList([new NbtString('default')])
+									)
+								)
+						)
+						break
+					}
+					case '1.21.5': {
 						item.set(
 							'components',
 							new NbtCompound()
@@ -1133,6 +1150,10 @@ export default async function compileDataPack(options: {
 		}
 		case '1.21.4': {
 			formats = getDataPackFormat('1.21.4')
+			break
+		}
+		case '1.21.5': {
+			formats = getDataPackFormat('1.21.5')
 			break
 		}
 		default: {

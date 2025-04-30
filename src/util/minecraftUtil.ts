@@ -230,6 +230,8 @@ export function getDataPackFormat(version: MinecraftVersion): number {
 			return 57
 		case '1.21.4':
 			return 61
+		case '1.21.5':
+			return 71
 		default:
 			return Infinity
 	}
