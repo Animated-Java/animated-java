@@ -139,6 +139,7 @@
 					"Added a new function: `animated_java:<export_namespace>/at_all_locators {command: string}` that runs a command at all of a rig's entity-less locator positions.",
 					"Added a new function: `animated_java:<export_namespace>/as_locator {name: string, command: string}` that runs a command as and at a named locator's entity.",
 					"Added a new function: `animated_java:<export_namespace>/at_locator {name: string, command: string}` that runs a command at an entity-less locator's position.",
+					"Added a new function: `animated_java:<export_namespace>/as_camera {name: string, command: string}` that runs a command as and at a camera's entity.",
 					"Added a new function: `animated_java:<export_namespace>/remove/entities` that kills all entities owned by a rig, whether they are attached to a root entity or not.",
 					"Added a new Blueprint setting: `On-Remove Commands`.",
 					"Added support for `shadow_color` to JSON Text Components.",

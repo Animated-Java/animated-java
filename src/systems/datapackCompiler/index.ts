@@ -634,6 +634,19 @@ namespace TELLRAW {
 			},
 			TELLRAW_SUFFIX(),
 		])
+	export const CAMERA_NOT_FOUND_ENTITY = () =>
+		new JsonText([
+			TELLRAW_PREFIX(),
+			{ text: 'Camera ', color: 'red' },
+			{ nbt: 'args.name', storage: 'aj:temp', color: 'aqua' },
+			{ text: ' not found!', color: 'red' },
+			{
+				text: "\nPlease ensure that it's name is spelled correctly.",
+				color: 'gray',
+				italic: true,
+			},
+			TELLRAW_SUFFIX(),
+		])
 }
 
 async function generateRootEntityPassengers(

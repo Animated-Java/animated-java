@@ -792,6 +792,32 @@ dir <%export_namespace%> {
 		}
 	}
 
+	IF (has_cameras) {
+		function as_camera {
+			#ARGS: {name: string, command: string}
+			IF (show_function_errors) {
+				# Assert that the function is being run as the root entity.
+				execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+					function *global/errors/function_not_executed_as_root_entity \
+						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
+			}
+			data remove storage aj:temp args
+			$data modify storage aj:temp args merge value {name:'$(name)', command:'$(command)'}
+			$execute \
+				on passengers \
+				if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] \
+			run block zzz/as_camera/as_data { {name: $(name)}
+				data modify storage aj:temp args.uuid set from entity @s data.cameras.$(name)
+				scoreboard players set #aj.check <%OBJECTIVES.I()%> 0
+				block execute_as_uuid { with storage aj:temp args
+					$execute as $(uuid) at @s run $(command)
+					scoreboard players set #aj.check <%OBJECTIVES.I()%> 1
+				}
+				execute if score #aj.check <%OBJECTIVES.I()%> matches 0 run tellraw @a <%TELLRAW.CAMERA_NOT_FOUND_ENTITY()%>
+			}
+		}
+	}
+
 	dir remove {
 		function all {
 			# Removes all instances of this rig from the world.
