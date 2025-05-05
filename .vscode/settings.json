@@ -24,6 +24,11 @@
 		"**/Thumbs.db": true,
 		"**/node_modules": true
 	},
+	"[yaml]": {
+		"editor.tabSize": 2,
+		"editor.insertSpaces": true,
+		"editor.detectIndentation": false
+	},
 	"npm.exclude": ["**/node_modules"],
 	"errorLens.excludePatterns": ["**/node_modules/**/*"],
 	"eslint.validate": ["javascript", "typescript", "svelte"],

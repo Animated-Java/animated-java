@@ -1,3 +1,9 @@
 {
-	"recommendations": ["esbenp.prettier-vscode", "dbaeumer.vscode-eslint", "svelte.svelte-vscode"]
+	"recommendations": [
+		"esbenp.prettier-vscode",
+		"dbaeumer.vscode-eslint",
+		"svelte.svelte-vscode",
+		"ExodiusStudios.comment-anchors",
+		"SuperAnt.mc-dp-icons"
+	]
 }

@@ -8,7 +8,7 @@ import { events } from './util/events'
 import { injectSvelteCompomponent } from './util/injectSvelteComponent'
 import { sanitizePathName } from './util/minecraftUtil'
 import { addProjectToRecentProjects } from './util/misc'
-import { Valuable } from './util/stores'
+import { Syncable } from './util/stores'
 import { translate } from './util/translation'
 import { Variant } from './variants'
 
@@ -595,7 +595,7 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 		Project.loadingPromises.push(
 			new Promise<void>(resolve => {
 				requestAnimationFrame(() => {
-					thisProject.pluginMode = new Valuable(
+					thisProject.pluginMode = new Syncable(
 						thisProject.animated_java.enable_plugin_mode
 					)
 					// Remove the default title

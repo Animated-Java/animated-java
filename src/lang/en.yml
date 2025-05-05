@@ -1,3 +1,150 @@
+# ----------------------------------------
+# NEW TRANSLATIONS
+# ----------------------------------------
+dialog:
+  error:
+    # Generic Errors
+    function_file.no_leading_slash: Commands inside of function files cannot start with a leading slash!
+    no_folder_selected: No folder selected!
+    folder_does_not_exist: The selected folder does not exist!
+    not_a_folder: The selected path is not a folder!
+    no_file_selected: No file selected!
+    file_does_not_exist: The selected file does not exist!
+    not_a_file: The selected path is not a file!
+    not_a_zip_file: The selected file is not a `.zip` file!
+
+  placeholder:
+    select_a_folder: Select a folder...
+    select_a_file: Select a file...
+
+  blueprint_settings:
+    title: Blueprint Settings
+    general:
+    plugin:
+
+    export:
+      target_minecraft_version:
+        label: Target Minecraft Version
+        description: |-
+          Choose the version of Minecraft you are exporting this project for. If your exact version is not listed, choose the next oldest version. For example, if you are using Minecraft `1.21.3`, choose `1.21.2`.
+      tag_prefix:
+        label: Tag Prefix
+        description: The prefix to use for all tags in the exported Data Pack.
+      auto_generate_tag_prefix:
+        label: Auto-Generate Tag Prefix
+        description: Automatically generate a tag prefix based on the BlueprintID.
+
+    resourcepack:
+      error:
+        missing_assets_folder: The selected Resource Pack is missing an assets folder!
+
+    datapack:
+      error:
+        missing_pack_mcmeta: The selected folder is missing a pack.mcmeta file!
+      warning:
+        missing_data_folder: The selected Data Pack is missing a data folder!
+
+      export_mode.folder:
+        label: Export to Folder
+        description: Export the generated Data Pack to a folder.
+      export_mode.zip:
+        label: Export to Zip
+        description: Export the generated Data Pack to a `.zip` file.
+      export_mode.none:
+        label: Do Not Export
+        description: Do not export the generated Data Pack.
+
+      export_folder.label: Export Folder
+      export_folder.description: Choose the folder to export the Data Pack into.
+
+      export_zip.label: Export Zip
+      export_zip.description: Choose the `.zip` file to export the Data Pack into.
+
+      on_summon_commands.label: On-Summon Commands
+      on_summon_commands.description: |-
+        Commands that will be run as the root entity when the model is summoned.
+        This input is treated as a function file, and supports [MC-Build](https://mcbuild.dev/) syntax.
+
+      on_tick_commands.label: On-Tick Commands
+      on_tick_commands.description: |-
+        Commands that will be run as the root entity every tick.
+        This input is treated as a function file, and supports [MC-Build](https://mcbuild.dev/) syntax.
+
+      interpolation_duration.label: Interpolation Duration
+      interpolation_duration.description: |-
+        How much time it takes for the model to transition from one frame to the next. Higher values will cause animations to lose precision.
+        Usually you want this to have a value of 1 or 2.
+
+      teleportation_duration.label: Teleport Duration
+      teleportation_duration.description: |-
+        How much time over which the model will visually interpolate between it's old position to it's new position when teleported.
+
+      animation_system.label: Animation System
+      animation_system.description: |-
+        Choose the animation system to use for the project.
+      animation_system.functions:
+        label: Function-based
+        description: Fast and simple, but creates a lot of function files.
+      animation_system.storage:
+        label: Storage-based
+        description: 42% Slower than function-based, but creates far fewer function files.
+
+config:
+  common:
+    label: Common
+    description: Properties common to all nodes.
+    options:
+      billboard: Billboard
+      overrideBrightness: Override Brightness
+      brightness: Brightness
+      glowing: Glowing
+      overrideGlowColor: Override Glow Color
+      glowColor: Glow Color
+      invisible: Invisible
+      shadowRadius: Shadow Radius
+      shadowStrength: Shadow Strength
+
+  animated_java:text_display:
+    label: Text Display
+    description: Properties specific to Text Displays.
+    options:
+      alignment: Alignment
+      backgroundColor: Background Color
+      lineWidth: Line Width
+      seeThrough: See Through
+      shadow: Shadow
+      textComponent: Text Component
+
+  animated_java:item_display:
+    label: Item Display
+    description: Properties specific to Item Displays.
+
+  animated_java:block_display:
+    label: Block Display
+    description: Properties specific to Block Displays.
+
+panel:
+  display:
+    title: Display
+    linked.tooltip: Linked - This display option will be inherited from the parent node.
+    unlinked.tooltip: Unlinked - This display option is unique to this node.
+    set_all_linked.tooltip: Set All Linked - Set all display options to inherit the display properties from the parent node.
+    set_all_unlinked.tooltip: Set All Unlinked - Set all display options to be unique to this node.
+    reset_all.tooltip: Reset All - Reset all display options to their default values.
+
+node:
+  structure.title: |-
+    Structure - (Animated Java)
+    A Group will become a Structure if it doesn't have Cube children.
+    Structures will not create an entity in-game, but can be used to organize your model, and effect the animation.
+  item_display.title: Item Display
+  block_display.title: Block Display
+  text_display.title: Text Display
+
+# ----------------------------------------
+# OLD TRANSLATIONS
+# ----------------------------------------
+
 ### Actions
 animated_java.action.open_blueprint_settings.name: Blueprint Settings
 animated_java.action.open_documentation.name: Documentation
@@ -10,10 +157,10 @@ animated_java.action.export.name: Export
 animated_java.action.extract.name: Extract
 animated_java.action.extract.confirm: Confirm Extraction
 animated_java.action.create_text_display.title: Add Text Display
-animated_java.action.create_vanilla_item_display.title: Add Item Display
-animated_java.action.create_vanilla_block_display.title: Add Block Display
-animated_java.action.open_vanilla_item_display_config.name: Item Display Config
-animated_java.action.open_vanilla_block_display_config.name: Block Display Config
+animated_java.action.create_item_display.title: Add Item Display
+animated_java.action.create_block_display.title: Add Block Display
+animated_java.action.open_item_display_config.name: Item Display Config
+animated_java.action.open_block_display_config.name: Block Display Config
 
 ### Popups
 animated_java.popup.loading.loading: Loading Animated Java...
@@ -328,8 +475,8 @@ animated_java.dialog.locator_config.ticking_commands.description: |-
 ## Text Display Config Dialog
 animated_java.dialog.text_display_config.title: Text Display Config
 
-animated_java.dialog.bone_config.vanilla_item_model.title: Vanilla Item Model
-animated_java.dialog.bone_config.vanilla_item_model.description: |-
+animated_java.dialog.bone_config.item_model.title: Vanilla Item Model
+animated_java.dialog.bone_config.item_model.description: |-
   If set, the bone will render as a vanilla item model.
   This will overwrite the bone's existing cubes.
 
@@ -381,26 +528,26 @@ animated_java.dialog.text_display_config.billboard.options.horizontal: Horizonta
 animated_java.dialog.text_display_config.billboard.options.center: Center
 
 ## Block Display Config Dialog
-animated_java.dialog.vanilla_block_display_config.title: Block Display Config
-animated_java.dialog.vanilla_block_display.custom_name.title: Custom Name
-animated_java.dialog.vanilla_block_display.custom_name.description: The custom name of the block display.
-animated_java.dialog.vanilla_block_display.custom_name.invalid_json.error: |-
+animated_java.dialog.block_display_config.title: Block Display Config
+animated_java.dialog.block_display.custom_name.title: Custom Name
+animated_java.dialog.block_display.custom_name.description: The custom name of the block display.
+animated_java.dialog.block_display.custom_name.invalid_json.error: |-
   Invalid JSON Text!
   {0}
 
-animated_java.dialog.vanilla_block_display.custom_name_visible.title: Custom Name Visible
-animated_java.dialog.vanilla_block_display.custom_name_visible.description: Whether or not the custom name should always be visible.
+animated_java.dialog.block_display.custom_name_visible.title: Custom Name Visible
+animated_java.dialog.block_display.custom_name_visible.description: Whether or not the custom name should always be visible.
 
 ## Item Display Config Dialog
-animated_java.dialog.vanilla_item_display_config.title: Item Display Config
-animated_java.dialog.vanilla_item_display.custom_name.title: Custom Name
-animated_java.dialog.vanilla_item_display.custom_name.description: The custom name of the item display.
-animated_java.dialog.vanilla_item_display.custom_name.invalid_json.error: |-
+animated_java.dialog.item_display_config.title: Item Display Config
+animated_java.dialog.item_display.custom_name.title: Custom Name
+animated_java.dialog.item_display.custom_name.description: The custom name of the item display.
+animated_java.dialog.item_display.custom_name.invalid_json.error: |-
   Invalid JSON Text!
   {0}
 
-animated_java.dialog.vanilla_item_display.custom_name_visible.title: Custom Name Visible
-animated_java.dialog.vanilla_item_display.custom_name_visible.description: Whether or not the custom name should always be visible.
+animated_java.dialog.item_display.custom_name_visible.title: Custom Name Visible
+animated_java.dialog.item_display.custom_name_visible.description: Whether or not the custom name should always be visible.
 
 ## Variant Config Dialog
 animated_java.dialog.variant_config.title: Variant Config
@@ -576,8 +723,8 @@ animated_java.tool.text_display.see_through.title: See Through
 animated_java.tool.text_display.see_through.description: Whether or not the text display should be visible through blocks.
 
 # Item Display Panel
-animated_java.panel.vanilla_item_display.title: Displayed Item
-animated_java.panel.vanilla_item_display.description: The item to display.
+animated_java.panel.item_display.title: Displayed Item
+animated_java.panel.item_display.description: The item to display.
 animated_java.tool.item_display.item_display.title: Item Display Mode
 animated_java.tool.item_display.item_display.description: Which item model transform to apply to the item (as defined in display field in model JSON).
 animated_java.tool.item_display.item_display.options.none: None
@@ -591,12 +738,12 @@ animated_java.tool.item_display.item_display.options.ground: Ground
 animated_java.tool.item_display.item_display.options.fixed: Fixed
 
 # Block Display Panel
-animated_java.panel.vanilla_block_display.title: Displayed Block
-animated_java.panel.vanilla_block_display.description: The block to display. Supports block states!
+animated_java.panel.block_display.title: Displayed Block
+animated_java.panel.block_display.description: The block to display. Supports block states!
 
 ### Custom Elements
 ## Item Display
-animated_java.vanilla_item_display.title: Item Display
+animated_java.item_display.title: Item Display
 
 ## Block Display
 

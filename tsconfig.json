@@ -1,5 +1,12 @@
 {
-	"include": ["./src/**/*"],
+	"include": [
+		"./src/**/*",
+		"./tools/esbuild.ts",
+		"./eslint.config.ts",
+		"./vitest.config.ts",
+		"./tests/**/*"
+	],
+	"exclude": ["**/node_modules/**"],
 	"compilerOptions": {
 		"outDir": "./dist/",
 		"noImplicitAny": true,
@@ -7,9 +14,22 @@
 		"target": "ES2022",
 		"moduleResolution": "node",
 		"strict": true,
-		"types": ["node", "./types/blockbench-types", "svelte"],
+		"types": ["node"],
 		"resolveJsonModule": true,
 		"allowSyntheticDefaultImports": true,
-		"allowUmdGlobalAccess": true
+		"allowUmdGlobalAccess": true,
+		"allowUnreachableCode": true,
+		"esModuleInterop": true,
+		"noEmit": true,
+		"verbatimModuleSyntax": true,
+		"isolatedModules": true,
+		"alwaysStrict": true,
+		"experimentalDecorators": true,
+		"paths": {
+			"@aj/*": ["./src/*"],
+			"@events": ["./src/util/events.ts"],
+			"@svelte-components/*": ["./src/svelte-components/*"],
+			"@assets/*": ["./src/assets/*"]
+		}
 	}
 }

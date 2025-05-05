@@ -1,17 +1,17 @@
-import { saveBlueprint } from '../blueprintFormat'
+import { saveBlueprint } from '../blockbench-additions/model-formats/ajblueprint'
 import { blueprintSettingErrors } from '../blueprintSettings'
-import { openBlueprintSettingsDialog } from '../interface/dialog/blueprintSettings'
-import { PROGRESS_DESCRIPTION, openExportProgressDialog } from '../interface/dialog/exportProgress'
-import { openUnexpectedErrorDialog } from '../interface/dialog/unexpectedError'
+import { openBlueprintSettingsDialog } from '../ui/dialogs/blueprint-settings'
+import { openExportProgressDialog, PROGRESS_DESCRIPTION } from '../ui/dialogs/export-progress'
+import { openUnexpectedErrorDialog } from '../ui/dialogs/unexpected-error'
 import { resolvePath } from '../util/fileUtil'
 import { isResourcePackPath, sortMCVersions } from '../util/minecraftUtil'
 import { translate } from '../util/translation'
 import { Variant } from '../variants'
-import { hashAnimations, renderProjectAnimations } from './animationRenderer'
-import compileDataPack from './datapackCompiler'
-import resourcepackCompiler from './resourcepackCompiler'
-import { hashRig, renderRig } from './rigRenderer'
-import { isCubeValid } from './util'
+import { hashAnimations, renderProjectAnimations } from './animation-renderer'
+import datapackCompiler from './datapack-compiler'
+import { exportJSON } from './plugin-json-compiler'
+import resourcepackCompiler from './resourcepack-compiler'
+import { hashRig, renderRig } from './rig-renderer'
 
 export class IntentionalExportError extends Error {}
 
@@ -24,11 +24,11 @@ export function getExportPaths() {
 	// These paths are all relative to the resource pack folder
 	const modelExportFolder = PathModule.join(
 		'assets/animated_java/models/blueprint/',
-		aj.export_namespace
+		aj.id
 	)
 	const textureExportFolder = PathModule.join(
 		'assets/animated_java/textures/blueprint/',
-		aj.export_namespace
+		aj.id
 	)
 	const displayItemPath = PathModule.join(
 		'assets/minecraft/models/item/',
@@ -143,7 +143,7 @@ async function actuallyExportProject(forceSave = true) {
 			})
 		}
 
-		Project!.last_used_export_namespace = aj.export_namespace
+		Project!.last_used_export_namespace = aj.id
 		console.timeEnd('Exporting project took')
 
 		if (forceSave) saveBlueprint()
@@ -187,7 +187,6 @@ export async function exportProject(forceSave = true) {
 	const settingsDialog = openBlueprintSettingsDialog()!
 	// Wait for the dialog to open
 	await new Promise(resolve => requestAnimationFrame(resolve))
-	console.log('Blueprint Setting Errors', blueprintSettingErrors.get())
 	if (Object.keys(blueprintSettingErrors.get()).length > 0) {
 		Blockbench.showMessageBox({
 			title: translate('misc.failed_to_export.title'),

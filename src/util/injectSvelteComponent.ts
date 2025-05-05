@@ -1,9 +1,9 @@
-import type { SvelteComponentConstructor } from './misc'
 import type { ComponentConstructorOptions, SvelteComponentDev } from 'svelte/internal'
-import { pollPromise } from './promises'
+import type { SvelteComponentConstructor } from './misc'
 import { createBlockbenchMod } from './moddingTools'
+import { pollPromise } from './promises'
 
-type InjectSvelteComponentOptions<T, U extends ComponentConstructorOptions> = {
+interface InjectSvelteComponentOptions<T, U extends ComponentConstructorOptions> {
 	/**
 	 * The svelte component constructor.
 	 */

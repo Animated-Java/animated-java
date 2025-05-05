@@ -1,0 +1,36 @@
+diff --git a/lib/nbt/index.d.ts b/lib/nbt/index.d.ts
+index 69843e7fc1b7c47c89bcd58270289736d2ef1a71..e3bbf5213144a5249a22b351ac6feeee6dd66972 100644
+--- a/lib/nbt/index.d.ts
++++ b/lib/nbt/index.d.ts
+@@ -1,7 +1,7 @@
+-export * from './io/DataInput.js';
+-export * from './io/DataOutput.js';
+-export * from './NbtChunk.js';
+-export * from './NbtFile.js';
+-export * from './NbtRegion.js';
+-export * from './tags/index.js';
++export * from './io/DataInput.js'
++export * from './io/DataOutput.js'
++// export * from './NbtChunk.js';
++// export * from './NbtFile.js';
++// export * from './NbtRegion.js';
++export * from './tags/index.js'
+ //# sourceMappingURL=index.d.ts.map
+diff --git a/lib/nbt/index.js b/lib/nbt/index.js
+index 5906e500f45d93439fc3c683a4cd11135980535b..15de3352ccbfb6f09b266edb0250e7b349324d8a 100644
+--- a/lib/nbt/index.js
++++ b/lib/nbt/index.js
+@@ -1,7 +1,7 @@
+-export * from './io/DataInput.js';
+-export * from './io/DataOutput.js';
+-export * from './NbtChunk.js';
+-export * from './NbtFile.js';
+-export * from './NbtRegion.js';
+-export * from './tags/index.js';
++export * from './io/DataInput.js'
++export * from './io/DataOutput.js'
++// export * from './NbtChunk.js';
++// export * from './NbtFile.js';
++// export * from './NbtRegion.js';
++export * from './tags/index.js'
+ //# sourceMappingURL=index.js.map

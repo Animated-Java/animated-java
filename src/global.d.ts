@@ -1,4 +1,5 @@
-/// <reference path="blockbenchTypeMods.d.ts" />
+//// <reference types="blockbench-types"/>
+/// <reference path="D:/github-repos/snavesutit/blockbench-types/types/index.d.ts"/>
 
 declare module '*.png' {
 	const value: string
@@ -47,3 +48,8 @@ declare module '*.molang' {
 declare module 'fflate/browser' {
 	export * from 'fflate'
 }
+
+/**
+ * Display entity billboard mode
+ */
+type BillboardMode = 'fixed' | 'vertical' | 'horizontal' | 'center'
