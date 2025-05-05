@@ -32,9 +32,13 @@ export const TEXT_DISPLAY_WIDTH_SLIDER = new NumSlider(
 			return selected.lineWidth
 		},
 		change(value) {
+			if (!Project) return
 			const selected = TextDisplay.selected[0]
 			if (!selected) return
-			selected.lineWidth = Math.clamp(value(selected.lineWidth), 1, 10000)
+			const newLineWidth = Math.clamp(value(selected.lineWidth), 1, 10000)
+			if (selected.lineWidth === newLineWidth) return
+			selected.lineWidth = newLineWidth
+			Project.saved = false
 		},
 	}
 )
@@ -70,10 +74,16 @@ TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.change = function (
 	this: ColorPicker,
 	color: InstanceType<typeof tinycolor>
 ) {
+	if (!Project) return this
 	const selected = TextDisplay.selected[0]
 	if (!selected) return this
-	selected.backgroundColor = color.toHexString()
-	selected.backgroundAlpha = color.getAlpha()
+	const newBackground = color.toHexString()
+	const newAlpha = color.getAlpha()
+	if (selected.backgroundColor === newBackground && selected.backgroundAlpha === newAlpha)
+		return this
+	selected.backgroundColor = newBackground
+	selected.backgroundAlpha = newAlpha
+	Project!.saved = false
 	return this
 }
 
@@ -86,11 +96,14 @@ export const TEXT_DISPLAY_SHADOW_TOGGLE = new Toggle(`${PACKAGE.name}:textDispla
 		//
 	},
 	onChange() {
+		if (!Project) return
 		const scope = TEXT_DISPLAY_SHADOW_TOGGLE
 		scope.setIcon(scope.value ? 'check_box' : 'check_box_outline_blank')
 		const selected = TextDisplay.selected[0]
 		if (!selected) return
+		if (selected.shadow === TEXT_DISPLAY_SHADOW_TOGGLE.value) return
 		selected.shadow = TEXT_DISPLAY_SHADOW_TOGGLE.value
+		Project!.saved = false
 	},
 })
 TEXT_DISPLAY_SHADOW_TOGGLE.set = function (value) {
@@ -144,11 +157,14 @@ export const TEXT_DISPLAY_SEE_THROUGH_TOGGLE = new Toggle(
 			//
 		},
 		onChange() {
+			if (!Project) return
 			const scope = TEXT_DISPLAY_SEE_THROUGH_TOGGLE
 			scope.setIcon(scope.value ? 'check_box' : 'check_box_outline_blank')
 			const selected = TextDisplay.selected[0]
 			if (!selected) return
+			if (selected.seeThrough === TEXT_DISPLAY_SEE_THROUGH_TOGGLE.value) return
 			selected.seeThrough = TEXT_DISPLAY_SEE_THROUGH_TOGGLE.value
+			Project!.saved = false
 		},
 	}
 )

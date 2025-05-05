@@ -1,0 +1,192 @@
+name: 🐛 Bug Report
+description: Report a problem or bug you encountered while using Animated Java
+title: 🐛 [BUG TITLE]
+labels:
+  - 🐛 Bug
+assignees:
+  - SnaveSutit
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        # 👋 Thank You for Creating a Bug Report!
+
+        Every issue that gets reported and fixed is an improvement for everyone
+        using Animated Java!
+
+        Please fill out the following information to the best of your ability.
+        Providing clear, and concise information will greatly improve the
+        chances of your issue getting resolved!
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: 🛑 Before you Start
+      description: >-
+        Please confirm you have taken the following steps *before* creating a
+        new issue!
+      options:
+        - label: >-
+            I have searched [existing
+            bug reports](https://github.com/Animated-Java/animated-java/labels/%F0%9F%90%9B%20Bug) for
+            my problem.
+          required: true
+        - label: >-
+            I have read the
+            [F-A-Q](https://animated-java.dev/docs/resources/faq).
+          required: true
+        - label: >-
+            I am using the [latest
+            version](https://builds.animated-java.dev/latest) of Animated Java
+          required: true
+        - label: >-
+            I will only report a single bug in this report. If I have found multiple
+            bugs, I will create a separate report for each one.
+          required: true
+
+  - type: markdown
+    attributes:
+      value: '---'
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 🗣️ Describe the bug
+      description: >-
+        A clear and concise description of the bug. You may include screenshots,
+        videos, and other media as needed.
+      placeholder: My lawnmower is producing large clumps of grass.
+    validations:
+      required: true
+
+  - type: textarea
+    id: error
+    attributes:
+      label: ⚠️ Error Message
+      description: The error message provided by Animated Java (If applicable)
+      render: javascript
+      placeholder: >-
+        If you received an error message, please paste it here. If not, you can
+        leave this field blank.
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: 🔄️ How to Reproduce
+      description: >-
+        A short explanation of how to reproduce the issue. Please include and
+        `.ajblueprint` files that produce the issue if applicable.
+      placeholder: |-
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: ✅ Expected Behavior
+      description: What you expected to happen when performing the above steps.
+      placeholder: >-
+        My lawnmower should produce small grass clippings that easily filter
+        into the lawn.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solutions
+    attributes:
+      label: 💡 Solutions & Alternatives
+      description: >-
+        Any alternative solutions, or workarounds you've considered, and why
+        they're not ideal.
+      placeholder: >-
+        - I could use a lawnmower bag, but I would need to purchase a bag, and
+        empty it periodically while mowing.
+
+  - type: markdown
+    attributes:
+      value: |-
+        # ⛰️ Environment
+
+        Provide details about your system and setup to help diagnose the issue.
+
+  - type: dropdown
+    id: mc-version
+    attributes:
+      label: 🟩 Minecraft Version
+      description: >-
+        The version of Minecraft you're using. (Only versions supported by the
+        latest version of Animated Java are listed).
+      options:
+        - 1.20.4
+        - 1.20.5
+        - 1.20.6
+        - 1.21.1
+        - 1.21.2
+        - 1.21.3
+        - 1.21.4
+    validations:
+      required: true
+
+  - type: input
+    id: bb-version
+    attributes:
+      label: 🟦 Blockbench Version
+      description: The version of Blockbench you're using.
+      placeholder: E.g. 4.12.2
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: 💻 Operating System
+      description: The operating system of the computer you're using Animated Java on.
+      options:
+        - Windows
+        - Linux
+        - MacOS
+    validations:
+      required: true
+
+  - type: textarea
+    id: installed-bb-plugins
+    attributes:
+      label: 📃 Installed Blockbench Plugins
+      description: Any Blockbench Plugins you have installed other than Animated Java.
+      placeholder: |-
+        - Geckolib Animation Utils
+        - Cameras
+        - Double Sided Cubes
+        - etc...
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: ⛰️ Minecraft Environment
+      description: >-
+        A description of the Minecraft environment you're using, if it's not
+        strictly a vanilla single-player world or server.
+      placeholder: |
+        ## Server environment
+
+        I'm using a Paper server
+        - Paper build #174 for MC 1.20.1
+
+        I have the following plugins installed:
+        - Essentials
+        - Slimefun
+        - etc...
+
+        ## Client Environment
+
+        I'm using a Fabric modded client.
+        - Fabric loader 0.16.10 for Minecraft 1.20.1
+
+        I have the following mods installed:
+        - Sodium 1.0.0
+        - Starlight 1.0.0
+        - Create 1.0.0

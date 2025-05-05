@@ -1,26 +1,26 @@
 <script lang="ts" context="module">
+	import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
-	import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
 
+	import { DIALOG_ID } from '../interface/dialog/animationProperties'
 	import Checkbox from './dialogItems/checkbox.svelte'
-	import NumberSlider from './dialogItems/numberSlider.svelte'
-	import LineInput from './dialogItems/lineInput.svelte'
-	import Vector2D from './dialogItems/vector2d.svelte'
-	import SectionHeader from './dialogItems/sectionHeader.svelte'
+	import CodeInput from './dialogItems/codeInput.svelte'
 	import FileSelect from './dialogItems/fileSelect.svelte'
 	import FolderSelect from './dialogItems/folderSelect.svelte'
-	import CodeInput from './dialogItems/codeInput.svelte'
+	import LineInput from './dialogItems/lineInput.svelte'
+	import NumberSlider from './dialogItems/numberSlider.svelte'
+	import SectionHeader from './dialogItems/sectionHeader.svelte'
 	import Select from './dialogItems/select.svelte'
-	import { DIALOG_ID } from '../interface/dialog/animationProperties'
+	import Vector2D from './dialogItems/vector2d.svelte'
 
 	import HeartIcon from '../assets/heart.png'
 	import KoFiImage from '../assets/kofi_s_tag_white.webp'
 
 	import fontUrl from '../assets/MinecraftFull.ttf'
-	import { resolvePath } from '../util/fileUtil'
 	import { getJSONAsset } from '../systems/minecraft/assetManager'
 	import type { IItemModel } from '../systems/minecraft/model'
+	import { resolvePath } from '../util/fileUtil'
 
 	if (![...document.fonts.keys()].some(v => v.family === 'MinecraftFull')) {
 		void new FontFace('MinecraftFull', fontUrl, {}).load().then(font => {
@@ -34,6 +34,7 @@
 <script lang="ts">
 	import { defaultValues } from '../blueprintSettings'
 	import mcbFiles from '../systems/datapackCompiler/mcbFiles'
+	import MultiSelect from './dialogItems/multiSelect.svelte'
 
 	export let blueprintName: Valuable<string>
 	export let textureSizeX: Valuable<number>
@@ -43,7 +44,7 @@
 	export let enablePluginMode: Valuable<boolean>
 	export let resourcePackExportMode: Valuable<string>
 	export let dataPackExportMode: Valuable<string>
-	export let targetMinecraftVersion: Valuable<string>
+	export let targetMinecraftVersions: Valuable<string[]>
 	// Bounding Box
 	export let showBoundingBox: Valuable<boolean>
 	export let autoBoundingBox: Valuable<boolean>
@@ -58,6 +59,7 @@
 	// export let enableAdvancedDataPackSettings: Valuable<boolean>
 	export let dataPack: Valuable<string>
 	export let summonCommands: Valuable<string>
+	export let removeCommands: Valuable<string>
 	export let tickingCommands: Valuable<string>
 	export let interpolationDuration: Valuable<number>
 	export let teleportationDuration: Valuable<number>
@@ -67,6 +69,8 @@
 	// Plugin Export Settings
 	export let bakedAnimations: Valuable<boolean>
 	export let jsonFile: Valuable<string>
+
+	const TARGETABLE_VERSIONS = Object.keys(mcbFiles).map(v => ({ label: v, value: v }))
 
 	function exportNamespaceChecker(value: string): { type: string; message: string } {
 		if (value === '') {
@@ -78,7 +82,7 @@
 			return {
 				type: 'error',
 				message: translate(
-					'dialog.blueprint_settings.export_namespace.error.invalid_characters',
+					'dialog.blueprint_settings.export_namespace.error.invalid_characters'
 				),
 			}
 		} else if (['global', 'animated_java'].includes(value)) {
@@ -86,7 +90,7 @@
 				type: 'error',
 				message: translate(
 					'dialog.blueprint_settings.export_namespace.error.reserved',
-					value,
+					value
 				),
 			}
 		} else {
@@ -104,14 +108,14 @@
 			return {
 				type: 'error',
 				message: translate(
-					'dialog.blueprint_settings.display_item.error.invalid_item_id.no_namespace',
+					'dialog.blueprint_settings.display_item.error.invalid_item_id.no_namespace'
 				),
 			}
 		} else if (value.includes(' ')) {
 			return {
 				type: 'error',
 				message: translate(
-					'dialog.blueprint_settings.display_item.error.invalid_item_id.whitespace',
+					'dialog.blueprint_settings.display_item.error.invalid_item_id.whitespace'
 				),
 			}
 		} else if (
@@ -121,21 +125,21 @@
 			return {
 				type: 'warning',
 				message: translate(
-					'dialog.blueprint_settings.display_item.warning.item_does_not_exist',
+					'dialog.blueprint_settings.display_item.warning.item_does_not_exist'
 				),
 			}
 		} else {
 			let asset: IItemModel
 			try {
 				asset = getJSONAsset(
-					'assets/minecraft/models/item/' + value.replace('minecraft:', '') + '.json',
+					'assets/minecraft/models/item/' + value.replace('minecraft:', '') + '.json'
 				)
 			} catch (e) {
 				console.error(e)
 				return {
 					type: 'error',
 					message: translate(
-						'dialog.blueprint_settings.display_item.error.item_model_not_found',
+						'dialog.blueprint_settings.display_item.error.item_model_not_found'
 					),
 				}
 			}
@@ -146,7 +150,7 @@
 				return {
 					type: 'warning',
 					message: translate(
-						'dialog.blueprint_settings.display_item.warning.item_model_not_generated',
+						'dialog.blueprint_settings.display_item.warning.item_model_not_generated'
 					),
 				}
 			}
@@ -162,17 +166,17 @@
 		const x = Number(value.x)
 		const y = Number(value.y)
 		const largestHeight: number = Number(
-			Texture.all.map(t => t.height).reduce((max, cur) => Math.max(max, cur), 0),
+			Texture.all.map(t => t.height).reduce((max, cur) => Math.max(max, cur), 0)
 		)
 		const largestWidth: number = Number(
-			Texture.all.map(t => t.width).reduce((max, cur) => Math.max(max, cur), 0),
+			Texture.all.map(t => t.width).reduce((max, cur) => Math.max(max, cur), 0)
 		)
 
 		if (!(x === largestWidth && y === largestHeight)) {
 			return {
 				type: 'warning',
 				message: translate(
-					'dialog.blueprint_settings.texture_size.warning.does_not_match_largest_texture',
+					'dialog.blueprint_settings.texture_size.warning.does_not_match_largest_texture'
 				),
 			}
 		} else if (x !== y) {
@@ -184,7 +188,7 @@
 			return {
 				type: 'warning',
 				message: translate(
-					'dialog.blueprint_settings.texture_size.warning.not_a_power_of_2',
+					'dialog.blueprint_settings.texture_size.warning.not_a_power_of_2'
 				),
 			}
 		} else {
@@ -204,7 +208,7 @@
 			return {
 				type: 'error',
 				message: translate(
-					'dialog.blueprint_settings.data_pack.error.folder_does_not_exist',
+					'dialog.blueprint_settings.data_pack.error.folder_does_not_exist'
 				),
 			}
 		}
@@ -214,14 +218,14 @@
 				return {
 					type: 'error',
 					message: translate(
-						'dialog.blueprint_settings.data_pack.error.no_folder_selected',
+						'dialog.blueprint_settings.data_pack.error.no_folder_selected'
 					),
 				}
 			case !fs.existsSync(path):
 				return {
 					type: 'error',
 					message: translate(
-						'dialog.blueprint_settings.data_pack.error.folder_does_not_exist',
+						'dialog.blueprint_settings.data_pack.error.folder_does_not_exist'
 					),
 				}
 			case !fs.statSync(path).isDirectory():
@@ -233,14 +237,14 @@
 				return {
 					type: 'error',
 					message: translate(
-						'dialog.blueprint_settings.data_pack.error.missing_pack_mcmeta',
+						'dialog.blueprint_settings.data_pack.error.missing_pack_mcmeta'
 					),
 				}
 			case !fs.existsSync(PathModule.join(path, 'data')):
 				return {
 					type: 'warning',
 					message: translate(
-						'dialog.blueprint_settings.data_pack.error.missing_data_folder',
+						'dialog.blueprint_settings.data_pack.error.missing_data_folder'
 					),
 				}
 			default:
@@ -257,7 +261,7 @@
 			return {
 				type: 'error',
 				message: translate(
-					'dialog.blueprint_settings.resource_pack.error.folder_does_not_exist',
+					'dialog.blueprint_settings.resource_pack.error.folder_does_not_exist'
 				),
 			}
 		}
@@ -267,35 +271,35 @@
 				return {
 					type: 'error',
 					message: translate(
-						'dialog.blueprint_settings.resource_pack.error.no_folder_selected',
+						'dialog.blueprint_settings.resource_pack.error.no_folder_selected'
 					),
 				}
 			case !fs.existsSync(path):
 				return {
 					type: 'error',
 					message: translate(
-						'dialog.blueprint_settings.resource_pack.error.folder_does_not_exist',
+						'dialog.blueprint_settings.resource_pack.error.folder_does_not_exist'
 					),
 				}
 			case !fs.statSync(path).isDirectory():
 				return {
 					type: 'error',
 					message: translate(
-						'dialog.blueprint_settings.resource_pack.error.not_a_folder',
+						'dialog.blueprint_settings.resource_pack.error.not_a_folder'
 					),
 				}
 			case !fs.existsSync(PathModule.join(path, 'pack.mcmeta')):
 				return {
 					type: 'error',
 					message: translate(
-						'dialog.blueprint_settings.resource_pack.error.missing_pack_mcmeta',
+						'dialog.blueprint_settings.resource_pack.error.missing_pack_mcmeta'
 					),
 				}
 			case !fs.existsSync(PathModule.join(path, 'assets')):
 				return {
 					type: 'warning',
 					message: translate(
-						'dialog.blueprint_settings.resource_pack.error.missing_assets_folder',
+						'dialog.blueprint_settings.resource_pack.error.missing_assets_folder'
 					),
 				}
 			default:
@@ -312,7 +316,7 @@
 			return {
 				type: 'error',
 				message: translate(
-					'dialog.blueprint_settings.advanced_resource_pack_file.error.file_does_not_exist',
+					'dialog.blueprint_settings.advanced_resource_pack_file.error.file_does_not_exist'
 				),
 			}
 		}
@@ -322,21 +326,21 @@
 				return {
 					type: 'error',
 					message: translate(
-						'dialog.blueprint_settings.advanced_resource_pack_file.error.no_file_selected',
+						'dialog.blueprint_settings.advanced_resource_pack_file.error.no_file_selected'
 					),
 				}
 			case !fs.existsSync(path):
 				return {
 					type: 'error',
 					message: translate(
-						'dialog.blueprint_settings.advanced_resource_pack_file.error.file_does_not_exist',
+						'dialog.blueprint_settings.advanced_resource_pack_file.error.file_does_not_exist'
 					),
 				}
 			case !fs.statSync(path).isFile():
 				return {
 					type: 'error',
 					message: translate(
-						'dialog.blueprint_settings.advanced_resource_pack_file.error.not_a_file',
+						'dialog.blueprint_settings.advanced_resource_pack_file.error.not_a_file'
 					),
 				}
 			default:
@@ -361,7 +365,7 @@
 				return {
 					type: 'error',
 					message: translate(
-						'dialog.blueprint_settings.json_file.error.no_file_selected',
+						'dialog.blueprint_settings.json_file.error.no_file_selected'
 					),
 				}
 			case fs.existsSync(path) && !fs.statSync(path).isFile():
@@ -383,7 +387,7 @@
 			return {
 				type: 'error',
 				message: translate(
-					'dialog.blueprint_settings.advanced_resource_pack_folder.error.folder_does_not_exist',
+					'dialog.blueprint_settings.advanced_resource_pack_folder.error.folder_does_not_exist'
 				),
 			}
 		}
@@ -393,21 +397,21 @@
 				return {
 					type: 'error',
 					message: translate(
-						'dialog.blueprint_settings.advanced_resource_pack_folder.error.no_folder_selected',
+						'dialog.blueprint_settings.advanced_resource_pack_folder.error.no_folder_selected'
 					),
 				}
 			case !fs.existsSync(path):
 				return {
 					type: 'error',
 					message: translate(
-						'dialog.blueprint_settings.advanced_resource_pack_folder.error.folder_does_not_exist',
+						'dialog.blueprint_settings.advanced_resource_pack_folder.error.folder_does_not_exist'
 					),
 				}
 			case !fs.statSync(path).isDirectory():
 				return {
 					type: 'error',
 					message: translate(
-						'dialog.blueprint_settings.advanced_resource_pack_folder.error.not_a_folder',
+						'dialog.blueprint_settings.advanced_resource_pack_folder.error.not_a_folder'
 					),
 				}
 			default:
@@ -424,7 +428,7 @@
 			return {
 				type: 'error',
 				message: translate(
-					'dialog.blueprint_settings.data_pack_zip.error.file_does_not_exist',
+					'dialog.blueprint_settings.data_pack_zip.error.file_does_not_exist'
 				),
 			}
 		}
@@ -434,14 +438,14 @@
 				return {
 					type: 'error',
 					message: translate(
-						'dialog.blueprint_settings.resource_pack_zip.error.no_file_selected',
+						'dialog.blueprint_settings.resource_pack_zip.error.no_file_selected'
 					),
 				}
 			case fs.existsSync(path) && !fs.statSync(path).isFile():
 				return {
 					type: 'error',
 					message: translate(
-						'dialog.blueprint_settings.resource_pack_zip.error.not_a_file',
+						'dialog.blueprint_settings.resource_pack_zip.error.not_a_file'
 					),
 				}
 			default:
@@ -558,12 +562,12 @@
 			valueChecker={jsonFileChecker}
 		/>
 	{:else}
-		<Select
-			label={translate('dialog.blueprint_settings.target_minecraft_version.title')}
-			tooltip={translate('dialog.blueprint_settings.target_minecraft_version.description')}
-			options={Object.fromEntries(Object.keys(mcbFiles).map(v => [v, v]))}
-			defaultOption={Object.keys(mcbFiles).at(-1) || '1.21.2'}
-			bind:value={targetMinecraftVersion}
+		<MultiSelect
+			label={translate('dialog.blueprint_settings.target_minecraft_versions.title')}
+			tooltip={translate('dialog.blueprint_settings.target_minecraft_versions.description')}
+			options={TARGETABLE_VERSIONS}
+			defaultValue={[TARGETABLE_VERSIONS[0]]}
+			bind:value={targetMinecraftVersions}
 		/>
 
 		<Select
@@ -603,7 +607,7 @@
 
 			<Checkbox
 				label={translate(
-					'dialog.blueprint_settings.enable_advanced_resource_pack_settings.title',
+					'dialog.blueprint_settings.enable_advanced_resource_pack_settings.title'
 				)}
 				bind:checked={enableAdvancedResourcePackSettings}
 				defaultValue={defaultValues.enable_advanced_resource_pack_settings}
@@ -617,7 +621,7 @@
 				<NumberSlider
 					label={translate('dialog.blueprint_settings.custom_model_data_offset.title')}
 					tooltip={translate(
-						'dialog.blueprint_settings.custom_model_data_offset.description',
+						'dialog.blueprint_settings.custom_model_data_offset.description'
 					)}
 					bind:value={customModelDataOffset}
 					defaultValue={defaultValues.custom_model_data_offset}
@@ -676,6 +680,13 @@
 			/>
 
 			<CodeInput
+				label={translate('dialog.blueprint_settings.remove_commands.title')}
+				tooltip={translate('dialog.blueprint_settings.remove_commands.description')}
+				bind:value={removeCommands}
+				defaultValue={defaultValues.remove_commands}
+			/>
+
+			<CodeInput
 				label={translate('dialog.blueprint_settings.ticking_commands.title')}
 				tooltip={translate('dialog.blueprint_settings.ticking_commands.description')}
 				bind:value={tickingCommands}
@@ -703,7 +714,7 @@
 			<Checkbox
 				label={translate('dialog.blueprint_settings.use_storage_for_animation.title')}
 				tooltip={translate(
-					'dialog.blueprint_settings.use_storage_for_animation.description',
+					'dialog.blueprint_settings.use_storage_for_animation.description'
 				)}
 				bind:checked={useStorageForAnimation}
 				defaultValue={defaultValues.use_storage_for_animation}

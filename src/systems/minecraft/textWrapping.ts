@@ -19,6 +19,7 @@ const STYLE_KEYS = [
 	'obfuscated',
 	'color',
 	'font',
+	'shadow_color',
 ] as const
 
 export type StyleRecord = Partial<Record<(typeof STYLE_KEYS)[number], boolean | string>>
@@ -28,7 +29,7 @@ function getStylesFromComponent(
 ): StyleRecord {
 	for (const key of STYLE_KEYS) {
 		if (component[key]) {
-			parent[key] = component[key]
+			parent[key] = component[key] as any
 		}
 	}
 	return parent

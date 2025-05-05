@@ -32,10 +32,8 @@ dir global {
 		# TODO Maybe instead of merging tags, I should just generate it from the .ajmeta data every time a rig is exported?
 		# That way I can also check if the rig's files still exist, and remove tag entries if they don't.
 		# An entry will be added for each exported rig.
-		IF (!is_static) {
-			tag functions on_tick {
-				*<%export_namespace%>/root/on_tick
-			}
+		tag functions on_tick {
+			*<%export_namespace%>/root/on_tick
 		}
 		# An entry will be added for each exported rig.
 		IF (show_outdated_warning) {
@@ -71,10 +69,8 @@ dir global {
 			}
 
 			function convert_uuid_array_to_string {
-				#ARGS: {UUID: [int, int, int, int]}
-
 				data modify storage aj:uuid temp set value {0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,a:0,b:0,c:0,d:0,e:0,f:0}
-				$data modify storage aj:uuid main.in set value $(UUID)
+				data modify storage aj:uuid main.in set from entity @s UUID
 
 				execute store result score 0= <%OBJECTIVES.I()%> store result score 1= <%OBJECTIVES.I()%> run data get storage aj:uuid main.in[0]
 				execute store result storage aj:uuid temp.0 int 1 run scoreboard players operation 0= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>

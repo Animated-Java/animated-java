@@ -19,9 +19,11 @@ injectSvelteCompomponentMod({
 createBlockbenchMod(
 	`${PACKAGE.name}:pluginsDialogMod`,
 	{
+		// @ts-expect-error
 		originalSelect: Plugins.dialog.component.methods.selectPlugin,
 	},
 	context => {
+		// @ts-expect-error
 		Plugins.dialog.component.methods.selectPlugin = function (this, plugin: BBPlugin) {
 			const result = context.originalSelect.call(this, plugin)
 			SELECTED_PLUGIN.set(plugin)
@@ -32,6 +34,7 @@ createBlockbenchMod(
 		return context
 	},
 	context => {
+		// @ts-expect-error
 		Plugins.dialog.component.methods.selectPlugin = context.originalSelect
 	}
 )

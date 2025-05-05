@@ -346,6 +346,7 @@ export class BoneConfig {
 export class LocatorConfig {
 	private _useEntity?: boolean
 	private _entityType?: string
+	private _syncPassengerRotation?: boolean
 	private _summonCommands?: string
 	private _tickingCommands?: string
 
@@ -353,6 +354,7 @@ export class LocatorConfig {
 		return LocatorConfig.fromJSON({
 			use_entity: false,
 			entity_type: 'minecraft:pig',
+			sync_passenger_rotation: false,
 			summon_commands: '',
 			ticking_commands: '',
 		})
@@ -374,6 +376,15 @@ export class LocatorConfig {
 	}
 	set entityType(value: NonNullable<LocatorConfig['_entityType']>) {
 		this._entityType = value
+	}
+
+	get syncPassengerRotation(): NonNullable<LocatorConfig['_syncPassengerRotation']> {
+		if (this._syncPassengerRotation !== undefined) return this._syncPassengerRotation
+		const defaultConfig = this.getDefault()
+		return defaultConfig.syncPassengerRotation
+	}
+	set syncPassengerRotation(value: NonNullable<LocatorConfig['_syncPassengerRotation']>) {
+		this._syncPassengerRotation = value
 	}
 
 	get summonCommands(): NonNullable<LocatorConfig['_summonCommands']> {
@@ -398,6 +409,7 @@ export class LocatorConfig {
 		return {
 			use_entity: this._useEntity,
 			entity_type: this._entityType,
+			sync_passenger_rotation: this._syncPassengerRotation,
 			summon_commands: this._summonCommands,
 			ticking_commands: this._tickingCommands,
 		}
@@ -407,6 +419,8 @@ export class LocatorConfig {
 		const config = new LocatorConfig()
 		if (json.use_entity !== undefined) config._useEntity = json.use_entity
 		if (json.entity_type !== undefined) config._entityType = json.entity_type
+		if (json.sync_passenger_rotation !== undefined)
+			config._syncPassengerRotation = json.sync_passenger_rotation
 		if (json.summon_commands !== undefined) config._summonCommands = json.summon_commands
 		if (json.ticking_commands !== undefined) config._tickingCommands = json.ticking_commands
 		return config
@@ -420,6 +434,7 @@ export class LocatorConfig {
 		return (
 			this.useEntity === other.useEntity &&
 			this.entityType === other.entityType &&
+			this.syncPassengerRotation === other.syncPassengerRotation &&
 			this.summonCommands === other.summonCommands &&
 			this.tickingCommands === other.tickingCommands
 		)

@@ -14,7 +14,7 @@
 		align-items: center;
 	}
 	h4 {
-		padding: 0px 8px;
+		padding: 4px 8px;
 		flex-grow: 1;
 		font-size: 1.12em;
 		border-bottom: 2px solid var(--color-back);

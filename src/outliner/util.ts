@@ -1,10 +1,10 @@
-import { toSafeFuntionName } from '../util/minecraftUtil'
+import { sanitizePathName } from '../util/minecraftUtil'
 import { TextDisplay } from './textDisplay'
 import { VanillaBlockDisplay } from './vanillaBlockDisplay'
 import { VanillaItemDisplay } from './vanillaItemDisplay'
 
 export function sanitizeOutlinerElementName(name: string, elementUUID: string): string {
-	name = toSafeFuntionName(name)
+	name = sanitizePathName(name)
 	let otherNodes: OutlinerElement[] = [
 		...VanillaBlockDisplay.all,
 		...Group.all,

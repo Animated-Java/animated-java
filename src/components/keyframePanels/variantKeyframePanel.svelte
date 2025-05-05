@@ -1,11 +1,8 @@
-<script lang="ts" context="module">
+<script lang="ts">
+	import { getKeyframeVariant, setKeyframeVariant } from '../../mods/customKeyframesMod'
 	import { Valuable } from '../../util/stores'
 	import { translate } from '../../util/translation'
 	import { Variant } from '../../variants'
-	import { getKeyframeVariant, setKeyframeVariant } from '../../mods/customKeyframesMod'
-</script>
-
-<script lang="ts">
 	export let selectedKeyframe: _Keyframe
 	const keyframeValue = new Valuable<string>(getKeyframeVariant(selectedKeyframe) as string)
 	let selectContainer: HTMLDivElement
@@ -15,7 +12,7 @@
 	})
 
 	const options = Object.fromEntries(
-		Variant.all.map(variant => [variant.uuid, variant.displayName]),
+		Variant.all.map(variant => [variant.uuid, variant.displayName])
 	)
 
 	// @ts-ignore
@@ -23,7 +20,12 @@
 		options,
 		value: keyframeValue.get(),
 		onChange() {
-			keyframeValue.set(selectInput.node.getAttribute('value'))
+			const value = selectInput.node.getAttribute('value')
+			if (value == undefined) {
+				console.warn('Variant value is undefined')
+				return
+			}
+			keyframeValue.set(value)
 			Animator.preview()
 		},
 	})

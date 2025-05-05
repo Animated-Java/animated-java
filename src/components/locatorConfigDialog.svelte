@@ -1,18 +1,16 @@
-<script lang="ts" , context="module">
-	import CodeInput from './dialogItems/codeInput.svelte'
-	import CheckBox from './dialogItems/checkbox.svelte'
-	import LineInput from './dialogItems/lineInput.svelte'
-
-	import { Valuable } from '../util/stores'
-	import { translate } from '../util/translation'
-	import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
-</script>
-
 <script lang="ts">
 	const pluginModeEnabled = !!Project?.animated_java?.enable_plugin_mode
 
+	import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
+	import { Valuable } from '../util/stores'
+	import { translate } from '../util/translation'
+	import CheckBox from './dialogItems/checkbox.svelte'
+	import CodeInput from './dialogItems/codeInput.svelte'
+	import LineInput from './dialogItems/lineInput.svelte'
+
 	export let useEntity: Valuable<boolean>
 	export let entityType: Valuable<string>
+	export let syncPassengerRotation: Valuable<boolean>
 	export let summonCommands: Valuable<string>
 	export let tickingCommands: Valuable<string>
 
@@ -57,6 +55,13 @@
 				bind:value={entityType}
 				valueChecker={entityTypeValidator}
 				defaultValue="minecraft:item_display"
+			/>
+
+			<CheckBox
+				label={translate('dialog.locator_config.sync_passenger_rotation.title')}
+				tooltip={translate('dialog.locator_config.sync_passenger_rotation.description')}
+				bind:checked={syncPassengerRotation}
+				defaultValue={false}
 			/>
 
 			<CodeInput

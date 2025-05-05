@@ -1,18 +1,19 @@
-<script lang="ts" context="module">
+<script lang="ts">
 	import { ITEM_DISPLAY_ITEM_DISPLAY_SELECT } from '../interface/panel/vanillaItemDisplayElement'
 	import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
 	import { events } from '../util/events'
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
-</script>
 
-<script lang="ts">
 	let selectedDisplay = VanillaItemDisplay.selected.at(0)
+	let lastSelected = selectedDisplay
 
 	let item = new Valuable<string>('')
 	let error = new Valuable<string>('')
 	let itemDisplaySlot: HTMLDivElement
 	let visible = false
+
+	let unsub: (() => void) | undefined
 
 	events.UPDATE_SELECTION.subscribe(() => {
 		selectedDisplay = VanillaItemDisplay.selected.at(0)
@@ -22,10 +23,49 @@
 			visible = false
 			return
 		}
-		item = selectedDisplay._item
+		$item = selectedDisplay.item
+		error = selectedDisplay.error
+		visible = true
+	})
+
+	events.UPDATE_SELECTION.subscribe(() => {
+		unsub?.()
+
+		lastSelected = selectedDisplay
+		selectedDisplay = VanillaItemDisplay.selected.at(0)
+
+		if (!selectedDisplay) {
+			visible = false
+			return
+		}
+
+		$item = selectedDisplay.item
 		error = selectedDisplay.error
 		ITEM_DISPLAY_ITEM_DISPLAY_SELECT.set(selectedDisplay.itemDisplay)
 		visible = true
+
+		unsub = item.subscribe(value => {
+			if (selectedDisplay == undefined || selectedDisplay !== lastSelected) {
+				lastSelected = selectedDisplay
+				return
+			}
+			if (value === selectedDisplay.item) return
+
+			Undo.initEdit({ elements: VanillaItemDisplay.selected })
+
+			if (VanillaItemDisplay.selected.length > 1) {
+				for (const display of VanillaItemDisplay.selected) {
+					display.item = value
+				}
+			} else {
+				selectedDisplay.item = value
+			}
+			Project!.saved = false
+
+			Undo.finishEdit(`Change Item Display's Item to "${$item}"`, {
+				elements: VanillaItemDisplay.selected,
+			})
+		})
 	})
 
 	requestAnimationFrame(() => {
