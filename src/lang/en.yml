@@ -19,16 +19,16 @@ animated_java.action.open_vanilla_block_display_config.name: Block Display Confi
 animated_java.popup.loading.loading: Loading Animated Java...
 animated_java.popup.loading.success: Animated Java Loaded Successfully!
 animated_java.popup.loading.offline: |-
-    Animated Java Failed to Connect!
-    Some features may be unavailable.
+  Animated Java Failed to Connect!
+  Some features may be unavailable.
 
 animated_java.popup.installed_popup.title: Thank you for installing!
 animated_java.popup.installed_popup.close_button: Let's Get Animating!
 
 animated_java.popup.incompatability_popup.title: Incompatible Plugin Detected!
 animated_java.popup.incompatability_popup.description: |-
-    Animated Java has detected incompatible plugin(s)!
-    Please disable / uninstall the following plugin(s) and restart Blockbench to use Animated Java:
+  Animated Java has detected incompatible plugin(s)!
+  Please disable / uninstall the following plugin(s) and restart Blockbench to use Animated Java:
 animated_java.popup.incompatability_popup.disable_button: Disable Plugin
 animated_java.dialog.incompatability_notice: This plugin is not compatible with Animated Java!
 
@@ -52,8 +52,9 @@ animated_java.dialog.unexpected_error.paragraph: 'Please report this error by jo
 ## Blueprint Settings Dialog
 animated_java.dialog.blueprint_settings.title: Blueprint Settings
 animated_java.dialog.blueprint_settings.advanced_settings_warning: Advanced settings should only be used if absolutely needed!
+
 animated_java.dialog.blueprint_settings.blueprint_name.title: Blueprint Name
-animated_java.dialog.blueprint_settings.blueprint_name.description: The name of the Blueprint. Only used to identify the project in the workspace.
+animated_java.dialog.blueprint_settings.blueprint_name.description: The filename of the Blueprint.
 
 animated_java.dialog.blueprint_settings.texture_size.title: Texture Size
 animated_java.dialog.blueprint_settings.texture_size.description: The resolution of the UV editor. This should be the same size as the largest texture. For best results use a square texture, and make sure it's size is a power of 2.
@@ -75,20 +76,20 @@ animated_java.dialog.blueprint_settings.enable_plugin_mode.description: Whether 
 
 animated_java.dialog.blueprint_settings.resource_pack_export_mode.title: Resource Pack Export Mode
 animated_java.dialog.blueprint_settings.resource_pack_export_mode.description: |-
-    Determines how the Resource Pack should be exported.
-    Raw - Exports the Resource Pack as a folder.
-    Zip - Exports the Resource Pack as a .zip file.
-    None - Disables Resource Pack exporting.
+  Determines how the Resource Pack should be exported.
+  Raw - Exports the Resource Pack as a folder.
+  Zip - Exports the Resource Pack as a .zip file.
+  None - Disables Resource Pack exporting.
 animated_java.dialog.blueprint_settings.resource_pack_export_mode.options.raw: Raw
 animated_java.dialog.blueprint_settings.resource_pack_export_mode.options.zip: Zip
 animated_java.dialog.blueprint_settings.resource_pack_export_mode.options.none: None
 
 animated_java.dialog.blueprint_settings.data_pack_export_mode.title: Data Pack Export Mode
 animated_java.dialog.blueprint_settings.data_pack_export_mode.description: |-
-    Determines how the Data Pack should be exported.
-    Raw - Exports the Data Pack as a folder.
-    Zip - Exports the Data Pack as a .zip file.
-    None - Disables Data Pack exporting.
+  Determines how the Data Pack should be exported.
+  Raw - Exports the Data Pack as a folder.
+  Zip - Exports the Data Pack as a .zip file.
+  None - Disables Data Pack exporting.
 animated_java.dialog.blueprint_settings.data_pack_export_mode.options.raw: Raw
 animated_java.dialog.blueprint_settings.data_pack_export_mode.options.zip: Zip
 animated_java.dialog.blueprint_settings.data_pack_export_mode.options.none: None
@@ -98,14 +99,18 @@ animated_java.dialog.blueprint_settings.show_bounding_box.description: Whether o
 
 animated_java.dialog.blueprint_settings.auto_bounding_box.title: Auto Bounding Box
 animated_java.dialog.blueprint_settings.auto_bounding_box.description: |-
-    Whether or not to automatically calculate the bounding box based on the model's geometry.
-    NOTE: The auto bounding box will NOT take bone offsets from animations into account, so the bounding box may be smaller than needed in some cases.
+  Whether or not to automatically calculate the bounding box based on the model's geometry.
+  NOTE: The auto bounding box will NOT take bone offsets from animations into account, so the bounding box may be smaller than needed in some cases.
 
 animated_java.dialog.blueprint_settings.bounding_box.title: Bounding Box
 animated_java.dialog.blueprint_settings.bounding_box.description: Determines the culling box of the model. The model will stop rendering when this box is off-screen.
 
-animated_java.dialog.blueprint_settings.target_minecraft_version.title: Target Minecraft Version
-animated_java.dialog.blueprint_settings.target_minecraft_version.description: The version of Minecraft to target when exporting the project. This will determine the format of the exported Resource Pack and Data Pack.
+animated_java.dialog.blueprint_settings.target_minecraft_versions.title: Target Minecraft Versions
+animated_java.dialog.blueprint_settings.target_minecraft_versions.description: The versions of Minecraft to target when exporting the project. This will determine the format of the exported Resource Pack and Data Pack.
+animated_java.dialog.blueprint_settings.target_minecraft_versions.warning.multiple_versions: |-
+  Selecting multiple target versions will multiply the size of the exported Data Pack by the number of versions selected.
+  E.g. Selecting two versions will double the size of the exported Resource and Data Packs.
+  This will be improved in a future update.
 
 # Resource Pack Settings
 animated_java.dialog.blueprint_settings.resource_pack_settings.title: Resource Pack Settings
@@ -124,8 +129,8 @@ animated_java.dialog.blueprint_settings.display_item.error.invalid_item_id.white
 animated_java.dialog.blueprint_settings.display_item.warning.item_does_not_exist: The selected item does not exist in vanilla!
 animated_java.dialog.blueprint_settings.display_item.warning.item_model_not_generated: The selected item does not use 'minecraft:item/generated' as its parent. This may cause model issues in-game.
 animated_java.dialog.blueprint_settings.display_item.error.item_model_not_found: |-
-    The selected item does not have a model file in the vanilla resource pack!
-    If you believe this is an error, try restarting Blockbench, and waiting for the AJ loading popup to disappear before opening a Blueprint.
+  The selected item does not have a model file in the vanilla resource pack!
+  If you believe this is an error, try restarting Blockbench, and waiting for the AJ loading popup to disappear before opening a Blueprint.
 
 animated_java.dialog.blueprint_settings.custom_model_data_offset.title: CMD Offset
 animated_java.dialog.blueprint_settings.custom_model_data_offset.description: The offset to use for the Custom Model Data of the Display Item. Allows multiple Blueprints on the same item, but in separate, unaffiliated Resource Packs.
@@ -179,38 +184,42 @@ animated_java.dialog.blueprint_settings.data_pack_zip.error.not_a_file: The sele
 
 animated_java.dialog.blueprint_settings.summon_commands.title: On-Summon Commands
 animated_java.dialog.blueprint_settings.summon_commands.description: |-
-    Commands to run as the root entity when summoned.
-    Treat this text input as a .mcfunction file. (Also supports MC-Build syntax!)
+  Commands to run as the root entity when summoned.
+  Treat this text input as a .mcfunction file. (Also supports MC-Build syntax!)
+
+animated_java.dialog.blueprint_settings.remove_commands.title: On-Remove Commands
+animated_java.dialog.blueprint_settings.remove_commands.description: |-
+  Commands to run as the root entity when removed via a built-in remove function such as /remove/this or /remove/all.
+  Treat this text input as a .mcfunction file. (Also supports MC-Build syntax!)
 
 animated_java.dialog.blueprint_settings.ticking_commands.title: Ticking Commands
 animated_java.dialog.blueprint_settings.ticking_commands.description: |-
-    Commands to run every tick at the root entity's position.
-    Treat this text input as a .mcfunction file. (Also supports MC-Build syntax!)
-    These commands will run after the animation logic.
+  Commands to run every tick at the root entity's position and after the animation logic.
+  Treat this text input as a .mcfunction file. (Also supports MC-Build syntax!)
 
 animated_java.dialog.blueprint_settings.interpolation_duration.title: Interpolation Duration
-animated_java.dialog.blueprint_settings.interpolation_duration.description: The duration of the smoothing between keyframes in ticks. This is the time it takes for the model to transition from one keyframe to the next. Higher values will cause animations to lose precision. Generally, you want this to have a value of 1 or 2.
+animated_java.dialog.blueprint_settings.interpolation_duration.description: How many ticks it takes for the model to transition from one frame to the next. Higher values will cause animations to lose precision. Generally, you want this to have a value of 1 or 2.
 
 animated_java.dialog.blueprint_settings.teleportation_duration.title: Teleport Duration
-animated_java.dialog.blueprint_settings.teleportation_duration.description: The duration of the teleportation between keyframes in ticks. This is the time over which the model will visually interpolate between it's old position to it's new position. Higher values will cause animations to lose precision.
+animated_java.dialog.blueprint_settings.teleportation_duration.description: How many ticks it takes for the entity to move from it's old position to it's new position when teleported. Higher values will cause animated locators with "Use Entity" enabled to lose precision.
 
 animated_java.dialog.blueprint_settings.use_storage_for_animation.title: Use Storage for Animation
 animated_java.dialog.blueprint_settings.use_storage_for_animation.description: |-
-    Whether or not to use NBT storage to store animation data instead of functions.
-    This will vastly reduce the number of functions in the generated Data Pack, but is 42% slower than the function method.
+  Whether or not to use NBT storage to store animation data instead of functions.
+  This will vastly reduce the number of functions in the generated Data Pack, but is 42% slower than the function method.
 
-animated_java.dialog.blueprint_settings.show_function_errors.title: Show Function Errors
-animated_java.dialog.blueprint_settings.show_function_errors.description: Whether or not to show errors in chat when running functions in-game if they're used incorrectly.
+animated_java.dialog.blueprint_settings.show_function_errors.title: Function Errors
+animated_java.dialog.blueprint_settings.show_function_errors.description: Whether or not to show errors in chat when incorrectly using functions.
 
-animated_java.dialog.blueprint_settings.show_outdated_warning.title: Show Outdated Warning
-animated_java.dialog.blueprint_settings.show_outdated_warning.description: Whether or not to show a warning in chat when a Rig Instance is outdated.
+animated_java.dialog.blueprint_settings.show_outdated_warning.title: Outdated Warning
+animated_java.dialog.blueprint_settings.show_outdated_warning.description: Whether or not to show a warning in chat when a Rig Instance is outdated, and needs to be resummoned.
 
 # Plugin Settings
 animated_java.dialog.blueprint_settings.baked_animations.title: Baked Animations
 animated_java.dialog.blueprint_settings.baked_animations.description: |-
-    Whether or not to bake the exported animations.
-    Baked animations have their frames pre-calculated and stored in the exported JSON file, reducing the complexity of rendering the model in-game.
-    Some Plugins may require this to be enabled to function correctly.
+  Whether or not to bake the exported animations.
+  Baked animations have their frames pre-calculated and stored in the exported JSON file, reducing the complexity of rendering the model in-game.
+  Some Plugins may require this to be enabled to function correctly.
 
 animated_java.dialog.blueprint_settings.json_file.title: JSON File
 animated_java.dialog.blueprint_settings.json_file.description: The path to the JSON file to export the project to.
@@ -234,8 +243,8 @@ animated_java.dialog.bone_config.inherit_settings.description: Whether or not to
 animated_java.dialog.bone_config.custom_name.title: Custom Name
 animated_java.dialog.bone_config.custom_name.description: The custom name of the bone.
 animated_java.dialog.bone_config.custom_name.invalid_json.error: |-
-    Invalid JSON Text!
-    {0}
+  Invalid JSON Text!
+  {0}
 
 animated_java.dialog.bone_config.custom_name_visible.title: Custom Name Visible
 animated_java.dialog.bone_config.custom_name_visible.description: Whether or not the custom name should always be visible.
@@ -277,8 +286,8 @@ animated_java.dialog.bone_config.nbt.title: NBT
 animated_java.dialog.bone_config.nbt.description: The NBT to apply to the bone.
 animated_java.dialog.bone_config.nbt.invalid_nbt.not_compound: The NBT must be a compound tag! Eg. {CustomName:'"my name"'}
 animated_java.dialog.bone_config.nbt.invalid_nbt.error: |-
-    Invalid NBT!
-    {0}
+  Invalid NBT!
+  {0}
 
 animated_java.dialog.bone_config.billboard.title: Billboard
 animated_java.dialog.bone_config.billboard.description: Controls if this bone should pivot to face player when rendered. It can be fixed (both vertical and horizontal angles are fixed), vertical (faces player around vertical axis), horizontal (pivots around horizontal axis), and center (pivots around center point).
@@ -291,9 +300,9 @@ animated_java.dialog.bone_config.billboard.options.center: Center
 animated_java.dialog.locator_config.title: Locator Config
 
 animated_java.dialog.locator_config.plugin_mode_warning: |-
-    Plugin Mode is enabled! Locators have no configuration in Plugin Mode.
-    Instead, use the Plugin API to add custom functionality to your Locators.
-    For more information, see the Official Plugin API documentation for more information.
+  Plugin Mode is enabled! Locators have no configuration in Plugin Mode.
+  Instead, use the Plugin API to add custom functionality to your Locators.
+  For more information, see the Official Plugin API documentation for more information.
 
 animated_java.dialog.locator_config.use_entity.title: Use Entity
 animated_java.dialog.locator_config.use_entity.description: Whether or not to attach an entity to the Locator.
@@ -303,23 +312,26 @@ animated_java.dialog.locator_config.entity_type.description: The type of entity 
 animated_java.dialog.locator_config.entity_type.error.empty: Entity Type cannot be empty!
 animated_java.dialog.locator_config.entity_type.warning.invalid: The selected entity type doesn't exist in Minecraft {0}
 
+animated_java.dialog.locator_config.sync_passenger_rotation.title: Sync Passenger Rotation
+animated_java.dialog.locator_config.sync_passenger_rotation.description: Automatically sync the rotation of the Locator's passenger entities.
+
 animated_java.dialog.locator_config.summon_commands.title: On-Summon Commands
 animated_java.dialog.locator_config.summon_commands.description: |-
-    Commands to run as the Locator's entity when summoned.
-    Treat this text input as a .mcfunction file. (Also supports MC-Build syntax!)
+  Commands to run as the Locator's entity when summoned.
+  Treat this text input as a .mcfunction file. (Also supports MC-Build syntax!)
 
 animated_java.dialog.locator_config.ticking_commands.title: Ticking Commands
 animated_java.dialog.locator_config.ticking_commands.description: |-
-    Commands to run every tick at the Locator's position.
-    Treat this text input as a .mcfunction file. (Also supports MC-Build syntax!)
+  Commands to run every tick at the Locator's position.
+  Treat this text input as a .mcfunction file. (Also supports MC-Build syntax!)
 
 ## Text Display Config Dialog
 animated_java.dialog.text_display_config.title: Text Display Config
 
 animated_java.dialog.bone_config.vanilla_item_model.title: Vanilla Item Model
 animated_java.dialog.bone_config.vanilla_item_model.description: |-
-    If set, the bone will render as a vanilla item model.
-    This will overwrite the bone's existing cubes.
+  If set, the bone will render as a vanilla item model.
+  This will overwrite the bone's existing cubes.
 
 animated_java.dialog.text_display_config.use_nbt.title: Use NBT
 animated_java.dialog.text_display_config.use_nbt.description: Whether or not to use NBT to configure the text display instead of settings.
@@ -373,8 +385,8 @@ animated_java.dialog.vanilla_block_display_config.title: Block Display Config
 animated_java.dialog.vanilla_block_display.custom_name.title: Custom Name
 animated_java.dialog.vanilla_block_display.custom_name.description: The custom name of the block display.
 animated_java.dialog.vanilla_block_display.custom_name.invalid_json.error: |-
-    Invalid JSON Text!
-    {0}
+  Invalid JSON Text!
+  {0}
 
 animated_java.dialog.vanilla_block_display.custom_name_visible.title: Custom Name Visible
 animated_java.dialog.vanilla_block_display.custom_name_visible.description: Whether or not the custom name should always be visible.
@@ -384,8 +396,8 @@ animated_java.dialog.vanilla_item_display_config.title: Item Display Config
 animated_java.dialog.vanilla_item_display.custom_name.title: Custom Name
 animated_java.dialog.vanilla_item_display.custom_name.description: The custom name of the item display.
 animated_java.dialog.vanilla_item_display.custom_name.invalid_json.error: |-
-    Invalid JSON Text!
-    {0}
+  Invalid JSON Text!
+  {0}
 
 animated_java.dialog.vanilla_item_display.custom_name_visible.title: Custom Name Visible
 animated_java.dialog.vanilla_item_display.custom_name_visible.description: Whether or not the custom name should always be visible.
@@ -492,22 +504,22 @@ animated_java.panel.keyframe.variant.description: The Variant to apply to the ke
 
 animated_java.panel.keyframe.commands.title: Commands
 animated_java.panel.keyframe.commands.description: |-
-    Commands to run when the keyframe is reached.
-    Treat this text input as a .mcfunction file. (Also supports MC-Build syntax!)
+  Commands to run when the keyframe is reached.
+  Treat this text input as a .mcfunction file. (Also supports MC-Build syntax!)
 animated_java.panel.keyframe.execute_condition.title: Execute Condition
 animated_java.panel.keyframe.execute_condition.description: A condition that must be met for the keyframe to execute. Treat this text input as the sub-commands of an execute command.
 
 animated_java.panel.keyframe.repeat.title: Repeat?
 animated_java.panel.keyframe.repeat.description: |-
-    Whether or not to run the commands in this keyframe repeatedly.
-    If enabled, the commands will run every Repeat Frequency ticks.
+  Whether or not to run the commands in this keyframe repeatedly.
+  If enabled, the commands will run every Repeat Frequency ticks.
 
 animated_java.panel.keyframe.repeat_frequency.title: Repeat Frequency
 animated_java.panel.keyframe.repeat_frequency.description: |-
-    How many ticks to wait before running the commands in this keyframe again.
-    Setting this to 1 will run the commands every tick.
-    NOTE: If the animation is not evenly divisible by this value, the interval may be slightly off when the animation loops.
-    If this is set to a value larger than the length of the animation, the commands will run as if repeat was disabled (Once when the keyframe is reached).
+  How many ticks to wait before running the commands in this keyframe again.
+  Setting this to 1 will run the commands every tick.
+  NOTE: If the animation is not evenly divisible by this value, the interval may be slightly off when the animation loops.
+  If this is set to a value larger than the length of the animation, the commands will run as if repeat was disabled (Once when the keyframe is reached).
 
 animated_java.panel.keyframe.easing_type.title: Easing Type
 animated_java.panel.keyframe.easing_type.description: The type of easing to apply to the keyframe.
@@ -539,8 +551,8 @@ animated_java.panel.keyframe.easing_args.easing_arg.bounce.title: Bounciness
 animated_java.panel.keyframe.easing_args.easing_arg.bounce.description: The bounciness of the easing function.
 
 animated_java.panel.keyframe.nonlinear_interpolation: |-
-    Advanced easing options are disabled.
-    Change the keyframe's interpolation mode to 'linear' to enable them.
+  Advanced easing options are disabled.
+  Change the keyframe's interpolation mode to 'linear' to enable them.
 
 # Text Display Panel
 animated_java.panel.text_display.title: Text Display
@@ -597,17 +609,17 @@ animated_java.misc.failed_to_export.blueprint_settings.message: There are errors
 animated_java.misc.failed_to_export.blueprint_settings.error_item: 'Found an issue with {0}:'
 animated_java.misc.failed_to_export.button: Ok
 animated_java.misc.failed_to_export.invalid_rotation.message: |-
-    Some cubes in your model have an invalid rotations.
-    Cubes must have a rotation of -45, -22.5, 0, 22.5, or 45 degrees, and can only be rotated on a single axis at a time.
-    If you want to rotate a cube more precisely, or on multiple axes, you must put it into a bone and rotate the bone instead.
-    All of the invalid cubes are outlined in red in the editor.
-    Please fix these issues before exporting.
+  Some cubes in your model have an invalid rotations.
+  Cubes must have a rotation of -45, -22.5, 0, 22.5, or 45 degrees, and can only be rotated on a single axis at a time.
+  If you want to rotate a cube more precisely, or on multiple axes, you must put it into a bone and rotate the bone instead.
+  All of the invalid cubes are outlined in red in the editor.
+  Please fix these issues before exporting.
 animated_java.misc.failed_to_export.rig_has_textures_but_no_custom_models.message: |-
-    You have textures applied to your model, but have no custom models (Cubes) to use them!
-    Please create some Cubes to use these textures, or remove the textures before exporting.
+  You have textures applied to your model, but have no custom models (Cubes) to use them!
+  Please create some Cubes to use these textures, or remove the textures before exporting.
 animated_java.misc.failed_to_export.rig_has_custom_models_but_no_textures.message: |-
-    You have custom models (Cubes) in your model, but have no textures applied to them!
-    Please apply textures to your Cubes, or remove the Cubes before exporting.
+  You have custom models (Cubes) in your model, but have no textures applied to them!
+  Please apply textures to your Cubes, or remove the Cubes before exporting.
 
 # Format Category
 animated_java.format_category.animated_java: Animated Java
@@ -620,5 +632,5 @@ animated_java.block_model_manager.facing_warning: The "facing" blockstate key is
 # Project Errors
 animated_java.error.blueprint_export_path_doesnt_exist.title: Blueprint Export Path Doesn't Exist
 animated_java.error.blueprint_export_path_doesnt_exist.description: |-
-    The export path '{0}' does not exist!
-    Make sure the folder you're saving to exists and try again.
+  The export path '{0}' does not exist!
+  Make sure the folder you're saving to exists and try again.

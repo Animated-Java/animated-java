@@ -44,7 +44,7 @@ export type JsonTextObject = {
 	text?: string
 	font?: string
 	color?: JsonTextColor
-	shadow_color?: JsonTextColor
+	shadow_color?: [number, number, number, number]
 	extra?: JsonTextArray
 	bold?: true | false
 	italic?: true | false
@@ -297,17 +297,23 @@ class JsonTextParser {
 					case 'fallback':
 						obj[key] = this.parseString()
 						break
-					case 'color':
+					case 'color': {
+						const color = this.parseString() as JsonTextColor
+						if (!(color.startsWith('#') || COLOR_MAP[color])) {
+							throw new ParserError(`Unknown color '${color}'`, this.s)
+						}
+						obj.color = color
+						break
+					}
 					case 'shadow_color': {
 						const color = this.parseString() as JsonTextColor
 						if (!(color.startsWith('#') || COLOR_MAP[color])) {
 							throw new ParserError(`Unknown color '${color}'`, this.s)
 						}
-						if (key === 'color') {
-							obj.color = color
-						} else {
-							obj.shadow_color = color
-						}
+						const hex = color.startsWith('#') ? color : COLOR_MAP[color]
+						const rgba = new tinycolor(hex).toRgb()
+						// Apparently shadow color is actually a rgba value now... Dumb.
+						obj.shadow_color = [rgba.r / 255, rgba.g / 255, rgba.b / 255, rgba.a / 255]
 						break
 					}
 					case 'bold':

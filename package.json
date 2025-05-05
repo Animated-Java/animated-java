@@ -4,8 +4,7 @@
 	"title": "Animated Java",
 	"icon": "icon.svg",
 	"description": "A Blockbench plugin that makes complex animation a breeze in Minecraft: Java Edition.",
-	"version": "1.6.4",
-	"display_version": "v1.6.4",
+	"version": "1.7.0",
 	"min_blockbench_version": "4.12.0",
 	"variant": "desktop",
 	"tags": [
@@ -103,6 +102,7 @@
 		"prettier": "^2.5.1",
 		"svelte": "^3.55.1",
 		"svelte-awesome-color-picker": "^3.0.0-beta.7",
+		"svelte-multiselect": "^11.0.0-rc.1",
 		"svelte-preprocess": "^5.0.1",
 		"svelte-preprocess-esbuild": "^3.0.1",
 		"typescript": "^4.5.5",

@@ -7,14 +7,25 @@ import {
 	type AsyncUnzipOptions,
 	type Unzipped,
 } from 'fflate/browser'
+import { roundTo } from '../util/misc'
 import { INodeTransform } from './animationRenderer'
+
+export interface ExportedFile {
+	content: string | Buffer
+	includeInAJMeta?: boolean
+	writeHandler?: (path: string, content: string | Buffer) => Promise<void>
+}
 
 export function arrayToNbtFloatArray(array: number[]) {
 	return new NbtList(array.map(v => new NbtFloat(v)))
 }
 
 export function matrixToNbtFloatArray(matrix: THREE.Matrix4) {
-	const matrixArray = new THREE.Matrix4().copy(matrix).transpose().toArray()
+	const matrixArray = new THREE.Matrix4()
+		.copy(matrix)
+		.transpose()
+		.toArray()
+		.map(v => roundTo(v, 4))
 	return arrayToNbtFloatArray(matrixArray)
 }
 
@@ -112,4 +123,8 @@ export function isCubeValid(cube: Cube) {
 export function getFunctionNamespace(version: string): 'function' | 'functions' {
 	// If the target version is 1.21.0 or higher, use the 'function' namespace instead of 'functions'
 	return compareVersions(version, '1.20.10000') ? 'function' : 'functions'
+}
+
+export async function sleepForAnimationFrame() {
+	return new Promise(resolve => requestAnimationFrame(resolve))
 }

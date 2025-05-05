@@ -12,10 +12,21 @@ import { translate } from '../util/translation'
 import { ResizableOutlinerElement } from './resizableOutlinerElement'
 import { sanitizeOutlinerElementName } from './util'
 
+export type ItemDisplayMode =
+	| 'none'
+	| 'thirdperson_lefthand'
+	| 'thirdperson_righthand'
+	| 'firstperson_lefthand'
+	| 'firstperson_righthand'
+	| 'head'
+	| 'gui'
+	| 'ground'
+	| 'fixed'
+
 interface VanillaItemDisplayOptions {
 	name?: string
 	item?: string
-	item_display?: string
+	itemDisplay?: ItemDisplayMode
 	position?: ArrayVector3
 	rotation?: ArrayVector3
 	scale?: ArrayVector3
@@ -33,7 +44,7 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 
 	// Properties
 	public _item = new Valuable('minecraft:diamond')
-	public _itemDisplay = new Valuable('none')
+	public _itemDisplay = new Valuable<ItemDisplayMode>('none')
 	public config: IBlueprintBoneConfigJSON
 
 	public error = new Valuable('')
@@ -111,7 +122,7 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 		if (this._itemDisplay === undefined) return 'none'
 		return this._itemDisplay.get()
 	}
-	set itemDisplay(value: string) {
+	set itemDisplay(value: ItemDisplayMode) {
 		if (this._itemDisplay === undefined) return
 		this._itemDisplay.set(value)
 	}
@@ -191,7 +202,7 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 	}
 }
 new Property(VanillaItemDisplay, 'string', 'item', { default: 'minecraft:diamond' })
-new Property(VanillaItemDisplay, 'string', 'item_display', { default: 'none' })
+new Property(VanillaItemDisplay, 'string', 'itemDisplay', { default: 'none' })
 new Property(VanillaItemDisplay, 'object', 'config', {
 	get default() {
 		return new BoneConfig().toJSON()

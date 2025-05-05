@@ -1,3 +1,5 @@
+import * as crypto from 'crypto'
+import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../interface/dialog/exportProgress'
 import {
 	getKeyframeCommands,
 	getKeyframeExecuteCondition,
@@ -8,10 +10,10 @@ import {
 import { TextDisplay } from '../outliner/textDisplay'
 import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
 import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
-import { toSafeFuntionName } from '../util/minecraftUtil'
+import { sanitizePathName, sanitizeStorageKey } from '../util/minecraftUtil'
 import { eulerFromQuaternion, roundToNth } from '../util/misc'
 import { AnyRenderedNode, IRenderedRig } from './rigRenderer'
-import * as crypto from 'crypto'
+import { sleepForAnimationFrame } from './util'
 
 export function correctSceneAngle() {
 	main_preview.controls.rotateLeft(Math.PI)
@@ -68,26 +70,29 @@ export interface INodeTransform {
 	interpolation?: 'step' | 'pre-post'
 
 	commands?: string
-	execute_condition?: string
+	commands_execute_condition?: string
 }
 
 export interface IRenderedFrame {
 	time: number
 	node_transforms: Record<string, INodeTransform>
-	variant?: {
-		uuid: string
-		execute_condition?: string
-	}
-	commands?: {
-		commands: string
-		execute_condition?: string
-	}
+	/** A list of Variants (by UUID) to apply this frame */
+	variants?: string[]
+	/** The condition to check before applying variants */
+	variants_execute_condition?: string
+	/** A mcfunction to run as the root on this frame. (Supports MCB syntax) */
+	commands?: string
+	/** The condition to check before running commands */
+	commands_execute_condition?: string
 }
 
 export interface IRenderedAnimation {
 	name: string
+	/** A sanitized version of {@link IRenderedAnimation.name} that is safe to use in a path in a data pack or resource pack.*/
+	path_name: string
+	/** A sanitized version of {@link IRenderedAnimation.name} that is safe to use as a key in a storage object. */
+	storage_name: string
 	uuid: string
-	safe_name: string
 	loop_delay: number
 	frames: IRenderedFrame[]
 	/**
@@ -121,8 +126,8 @@ export function getFrame(
 	const frame: IRenderedFrame = {
 		time,
 		node_transforms: {},
-		variant: getVariantKeyframe(animation, time),
-		commands: getCommandsKeyframe(animation, time),
+		...getVariantKeyframe(animation, time),
+		...getCommandsKeyframe(animation, time),
 	}
 
 	if (lastAnimation !== animation) {
@@ -169,8 +174,6 @@ export function getFrame(
 			case 'block_display':
 			case 'bone': {
 				matrix = getNodeMatrix(outlinerNode, node.base_scale)
-				// Only add the frame if the matrix has changed.
-				if (lastFrame && lastFrame.matrix.equals(matrix)) continue
 				// Inherit instant interpolation from parent
 				if (node.parent && node.parent !== 'root') {
 					const parentKeyframes = keyframeCache.get(node.parent)
@@ -182,6 +185,9 @@ export function getFrame(
 						interpolation = 'pre-post'
 					}
 				}
+				// Only add the frame if the matrix has changed, this is the first frame, or there is an interpolation change.
+				if (lastFrame && lastFrame.matrix.equals(matrix) && interpolation == undefined)
+					continue
 				// Instant interpolation
 				if (keyframe?.interpolation === 'step') {
 					interpolation = 'step'
@@ -199,6 +205,8 @@ export function getFrame(
 			}
 			case 'locator': {
 				matrix = getNodeMatrix(outlinerNode, 1)
+				// // Only add the frame if the matrix has changed, or this is the first frame
+				// if (lastFrame && lastFrame.matrix.equals(matrix)) continue
 				if (keyframe) {
 					commands = getKeyframeCommands(keyframe)
 					executeCondition = getKeyframeExecuteCondition(keyframe)
@@ -215,11 +223,15 @@ export function getFrame(
 						executeCondition = getKeyframeExecuteCondition(lastFrame.keyframe)
 					}
 				}
+				// lastFrameCache.set(uuid, { matrix, keyframe })
 				break
 			}
 			case 'camera':
 			case 'struct': {
 				matrix = getNodeMatrix(outlinerNode, 1)
+				// Only add the frame if the matrix has changed, or this is the first frame
+				if (lastFrame && lastFrame.matrix.equals(matrix)) continue
+				lastFrameCache.set(uuid, { matrix, keyframe })
 				break
 			}
 		}
@@ -230,6 +242,10 @@ export function getFrame(
 		matrix.decompose(pos, rot, scale)
 		const decomposed = getDecomposedTransformation(matrix)
 
+		if (node.type === 'locator' || node.type === 'camera') {
+			node.max_distance = Math.max(node.max_distance, pos.length())
+		}
+
 		frame.node_transforms[uuid] = {
 			matrix,
 			decomposed,
@@ -239,39 +255,52 @@ export function getFrame(
 			head_rot: threeAxisRotationToTwoAxisRotation(rot),
 			interpolation,
 			commands,
-			execute_condition: executeCondition,
+			commands_execute_condition: executeCondition?.trim(),
 		}
 	}
 
 	return frame
 }
 
-function getVariantKeyframe(animation: _Animation, time: number): IRenderedFrame['variant'] {
+function getVariantKeyframe(
+	animation: _Animation,
+	time: number
+): Pick<IRenderedFrame, 'variants' | 'variants_execute_condition'> {
 	const variantKeyframes = animation.animators.effects?.variant as _Keyframe[]
-	if (!variantKeyframes) return
-	for (const kf of variantKeyframes) {
-		if (kf.time !== time) continue
-		const uuid = getKeyframeVariant(kf)
-		if (!uuid) return
-		return {
-			uuid,
-			execute_condition: getKeyframeExecuteCondition(kf),
+	if (variantKeyframes) {
+		const kf = variantKeyframes.find(kf => kf.time === time)
+		if (kf) {
+			// REVIEW - Variant keyframes do not support multiple variants yet.
+			const uuid = getKeyframeVariant(kf)
+			if (uuid) {
+				return {
+					variants: [uuid],
+					variants_execute_condition: getKeyframeExecuteCondition(kf)?.trim(),
+				}
+			}
 		}
 	}
+	return {}
 }
 
-function getCommandsKeyframe(animation: _Animation, time: number): IRenderedFrame['commands'] {
+function getCommandsKeyframe(
+	animation: _Animation,
+	time: number
+): Pick<IRenderedFrame, 'commands' | 'commands_execute_condition'> {
 	const commandsKeyframes = animation.animators.effects?.commands as _Keyframe[]
-	if (!commandsKeyframes) return
-	for (const kf of commandsKeyframes) {
-		if (kf.time !== time) continue
-		const commands = getKeyframeCommands(kf)
-		if (!commands) return
-		return {
-			commands,
-			execute_condition: getKeyframeExecuteCondition(kf),
+	if (commandsKeyframes) {
+		const kf = commandsKeyframes.find(kf => kf.time === time)
+		if (kf) {
+			const commands = getKeyframeCommands(kf)?.trim()
+			if (commands) {
+				return {
+					commands,
+					commands_execute_condition: getKeyframeExecuteCondition(kf)?.trim(),
+				}
+			}
 		}
 	}
+	return {}
 }
 
 export function updatePreview(animation: _Animation, time: number) {
@@ -302,8 +331,9 @@ export function updatePreview(animation: _Animation, time: number) {
 export function renderAnimation(animation: _Animation, rig: IRenderedRig) {
 	const rendered = {
 		name: animation.name,
+		path_name: sanitizePathName(animation.name),
+		storage_name: sanitizeStorageKey(animation.name),
 		uuid: animation.uuid,
-		safe_name: toSafeFuntionName(animation.name).replaceAll('.', '_'),
 		loop_delay: Number(animation.loop_delay) || 0,
 		frames: [],
 		duration: 0,
@@ -344,13 +374,17 @@ export function hashAnimations(animations: IRenderedAnimation[]) {
 				hash.update(';' + node.scale.join(';'))
 				node.interpolation && hash.update(';' + node.interpolation)
 				if (node.commands) hash.update(';' + node.commands)
-				if (node.execute_condition) hash.update(';' + node.execute_condition)
+				if (node.commands_execute_condition)
+					hash.update(';' + node.commands_execute_condition)
 			}
-			if (frame.variant) {
-				hash.update(';' + frame.variant.uuid)
-				if (frame.variant.execute_condition)
-					hash.update(';' + frame.variant.execute_condition)
+			if (frame.variants) {
+				hash.update(';' + frame.variants)
+				if (frame.variants_execute_condition)
+					hash.update(';' + frame.variants_execute_condition)
 			}
+			if (frame.commands) hash.update(';' + frame.commands)
+			if (frame.commands_execute_condition)
+				hash.update(';' + frame.commands_execute_condition)
 		}
 	}
 	return hash.digest('hex')
@@ -367,13 +401,17 @@ export function getAnimatableNodes(): OutlinerElement[] {
 	]
 }
 
-export function renderProjectAnimations(project: ModelProject, rig: IRenderedRig) {
+export async function renderProjectAnimations(project: ModelProject, rig: IRenderedRig) {
 	// Clear the cache
 	lastAnimation = undefined
 	lastFrameCache = new Map()
 	keyframeCache = new Map()
 	excludedNodesCache = new Set()
 	nodeCache = new Map()
+
+	PROGRESS_DESCRIPTION.set('Rendering Animations...')
+	PROGRESS.set(0)
+	MAX_PROGRESS.set(project.animations.length)
 
 	console.time('Rendering animations took')
 	let selectedAnimation: _Animation | undefined
@@ -389,6 +427,8 @@ export function renderProjectAnimations(project: ModelProject, rig: IRenderedRig
 	const animations: IRenderedAnimation[] = []
 	for (const animation of project.animations) {
 		animations.push(renderAnimation(animation, rig))
+		PROGRESS.set(PROGRESS.get() + 1)
+		await sleepForAnimationFrame()
 	}
 	restoreSceneAngle()
 

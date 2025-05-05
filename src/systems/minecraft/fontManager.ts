@@ -1,19 +1,19 @@
-import { events } from '../../util/events'
-import { COLOR_MAP, JsonText } from './jsonText'
-import { getPathFromResourceLocation } from '../../util/minecraftUtil'
-import * as assets from './assetManager'
-import MissingCharacter from '../../assets/missing_character.png'
-import {
-	IComponentWord,
-	IStyleSpan,
-	getComponentWords,
-	computeTextWrapping,
-	StyleRecord,
-} from './textWrapping'
 import { createHash } from 'crypto'
-import { UnicodeString } from '../../util/unicodeString'
+import MissingCharacter from '../../assets/missing_character.png'
 import { type Alignment } from '../../outliner/textDisplay'
 import { mergeGeometries } from '../../util/bufferGeometryUtils'
+import { events } from '../../util/events'
+import { getPathFromResourceLocation } from '../../util/minecraftUtil'
+import { UnicodeString } from '../../util/unicodeString'
+import * as assets from './assetManager'
+import { COLOR_MAP, JsonText } from './jsonText'
+import {
+	computeTextWrapping,
+	getComponentWords,
+	IComponentWord,
+	IStyleSpan,
+	StyleRecord,
+} from './textWrapping'
 
 interface IFontProviderBitmap {
 	type: 'bitmap'
@@ -516,11 +516,9 @@ export class MinecraftFont {
 		}
 
 		let shadowColor: THREE.Color
-		if (typeof style.shadow_color === 'string') {
-			shadowColor =
-				style.shadow_color.startsWith('#') && style.shadow_color.length === 7
-					? new THREE.Color(style.shadow_color)
-					: new THREE.Color(COLOR_MAP[style.shadow_color]) || color
+		if (Array.isArray(style.shadow_color)) {
+			console.log('Shadow color:', style.shadow_color)
+			shadowColor = new THREE.Color().fromArray(style.shadow_color)
 		} else {
 			shadowColor = color.clone().multiplyScalar(0.25)
 		}
@@ -530,12 +528,13 @@ export class MinecraftFont {
 		if (charData.type === 'bitmap') {
 			const hash = createHash('sha256')
 			hash.update(char)
-			hash.update(color.getHexString())
+			hash.update(';' + color.getHexString())
 			if (shadow) hash.update('shadow')
 			if (style.bold) hash.update('bold')
 			if (style.italic) hash.update('italic')
 			if (style.underlined) hash.update('underlined')
 			if (style.strikethrough) hash.update('strikethrough')
+			if (style.shadow_color) hash.update(';' + shadowColor.getHexString())
 			if (style.font) hash.update(';' + font.id)
 			// if (style.obfuscated) hash.update('obfuscated')
 			const digest = hash.digest('hex')

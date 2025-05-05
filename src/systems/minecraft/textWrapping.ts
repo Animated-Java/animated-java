@@ -29,7 +29,7 @@ function getStylesFromComponent(
 ): StyleRecord {
 	for (const key of STYLE_KEYS) {
 		if (component[key]) {
-			parent[key] = component[key]
+			parent[key] = component[key] as any
 		}
 	}
 	return parent

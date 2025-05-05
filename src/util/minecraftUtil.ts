@@ -1,13 +1,13 @@
 import * as pathjs from 'path'
+import { MinecraftVersion } from '../systems/global'
 import {
 	BlockStateRegistryEntry,
 	BlockStateValue,
 	getBlockState,
 } from '../systems/minecraft/blockstateManager'
-import { MinecraftVersion } from '../systems/datapackCompiler/mcbFiles'
 
 export interface IMinecraftResourceLocation {
-	resourcePackRoot: string
+	packRoot: string
 	namespace: string
 	resourcePath: string
 	resourceLocation: string
@@ -17,11 +17,24 @@ export interface IMinecraftResourceLocation {
 	type: string
 }
 
-export function toSafeFuntionName(name: string): string {
-	return name
-		.toLowerCase()
-		.replace(/[^a-z0-9_.]/g, '_')
-		.replace(/_+/g, '_')
+/**
+ * Return a sanitized version of {@param str} that is safe to use as a path name in a data pack or resource pack.
+ *
+ * Function names can only contain lowercase letters, numbers, underscores, and periods.
+ * All other characters are replaced with underscores.
+ */
+export function sanitizePathName(str: string): string {
+	return str.toLowerCase().replace(/[^a-z0-9_.]+/g, '_')
+}
+
+/**
+ * Return a sanitized version of {@param str} that is safe to use as a storage object key.
+ *
+ * Storage names can only contain lowercase letters, numbers, and underscores.
+ * All other characters are replaced with underscores.
+ */
+export function sanitizeStorageKey(str: string): string {
+	return str.toLowerCase().replace(/[^a-z0-9_]+/g, '_')
 }
 
 /**
@@ -54,7 +67,7 @@ export function parseResourcePackPath(path: string): IMinecraftResourceLocation 
 	const assetsIndex = parts.indexOf('assets')
 	if (assetsIndex === -1) return undefined
 
-	const resourcePackRoot = parts.slice(0, assetsIndex).join('/')
+	const packRoot = parts.slice(0, assetsIndex).join('/')
 	const namespace = parts[assetsIndex + 1]
 	const type = parts[assetsIndex + 2]
 	const resourcePath = parts.slice(assetsIndex + 3, -1).join('/')
@@ -67,7 +80,7 @@ export function parseResourcePackPath(path: string): IMinecraftResourceLocation 
 	const subtypelessPath = parts.slice(assetsIndex + 4).join('/')
 
 	return {
-		resourcePackRoot,
+		packRoot,
 		namespace,
 		resourcePath,
 		resourceLocation,
@@ -87,9 +100,11 @@ export function parseResourceLocation(resourceLocation: string) {
 	const path = parts.join('')
 	const resourceType = path.split('/')[0]
 	const parsed = PathModule.parse(path)
+	const fullPath = PathModule.join(namespace, path)
 	return {
 		namespace,
 		path,
+		fullPath,
 		type: resourceType,
 		dir: parsed.dir,
 		name: parsed.name,
@@ -108,7 +123,7 @@ export function parseDataPackPath(path: string): IMinecraftResourceLocation | un
 	const assetsIndex = parts.indexOf('data')
 	if (assetsIndex === -1) return undefined
 
-	const resourcePackRoot = parts.slice(0, assetsIndex).join('/')
+	const packRoot = parts.slice(0, assetsIndex).join('/')
 	const namespace = parts[assetsIndex + 1]
 	const type = parts[assetsIndex + 2]
 	let resourcePath: string
@@ -129,7 +144,7 @@ export function parseDataPackPath(path: string): IMinecraftResourceLocation | un
 	const subtypelessPath = parts.slice(assetsIndex + 4).join('/')
 
 	return {
-		resourcePackRoot,
+		packRoot,
 		namespace,
 		resourcePath,
 		resourceLocation,
@@ -218,6 +233,12 @@ export async function parseBlock(block: string): Promise<IParsedBlock | undefine
 	}
 }
 
+export function sortMCVersions(versions: MinecraftVersion[]): MinecraftVersion[] {
+	return versions.sort((a, b) => {
+		return compareVersions(a, b) ? -1 : 1
+	})
+}
+
 export function getDataPackFormat(version: MinecraftVersion): number {
 	switch (version) {
 		case '1.20.4':
@@ -230,7 +251,46 @@ export function getDataPackFormat(version: MinecraftVersion): number {
 			return 57
 		case '1.21.4':
 			return 61
+		case '1.21.5':
+			return 71
 		default:
 			return Infinity
 	}
+}
+
+export function getResourcePackFormat(version: MinecraftVersion): number {
+	switch (version) {
+		case '1.20.4':
+			return 22
+		case '1.20.5':
+			return 32
+		case '1.21.0':
+			return 34
+		case '1.21.2':
+			return 42
+		case '1.21.4':
+			return 46
+		case '1.21.5':
+			return 55
+		default:
+			return Infinity
+	}
+}
+
+export function functionReferenceExists(dataPackRoot: string, resourceLocation: string): boolean {
+	const parsed = parseResourceLocation(resourceLocation)
+	if (!parsed) return false
+	if (parsed.type !== 'tags' && parsed.type !== 'function' && parsed.type !== 'functions')
+		return false
+
+	for (const folder of fs.readdirSync(dataPackRoot)) {
+		const dataFolder = PathModule.join(dataPackRoot, folder)
+		if (!fs.statSync(dataFolder).isDirectory()) continue
+
+		const path = PathModule.join(dataFolder, parsed.fullPath)
+		if (!fs.existsSync(path)) continue
+		return true
+	}
+
+	return false
 }
