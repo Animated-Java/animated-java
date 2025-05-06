@@ -107,7 +107,6 @@ dir <%export_namespace%> {
 			}
 		}
 	}
-}
 
 	function summon {
 		#Args: {args:{variant: string}}
