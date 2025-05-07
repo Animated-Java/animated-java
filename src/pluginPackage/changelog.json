@@ -165,5 +165,16 @@
 				]
 			}
 		]
+	},
+	"1.7.1": {
+		"title": "v1.7.1",
+		"author": "Titus Evans (SnaveSutit)",
+		"date": "2025-05-06",
+		"categories": [
+			{
+				"title": "Fixes",
+				"list": ["Fixed [#412](https://github.com/Animated-Java/animated-java/issues/409)"]
+			}
+		]
 	}
 }
