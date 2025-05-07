@@ -144,7 +144,7 @@ dir <%export_namespace%> {
 				function play {
 					IF (show_function_errors) {
 						# Assert that the function is being run as the root entity.
-						execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+						execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 							function *global/errors/function_not_executed_as_root_entity \
 								{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 					}
@@ -158,7 +158,7 @@ dir <%export_namespace%> {
 				function stop {
 					IF (show_function_errors) {
 						# Assert that the function is being run as the root entity.
-						execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+						execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 							function *global/errors/function_not_executed_as_root_entity \
 								{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 					}
@@ -172,7 +172,7 @@ dir <%export_namespace%> {
 				function pause {
 					IF (show_function_errors) {
 						# Assert that the function is being run as the root entity.
-						execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+						execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 							function *global/errors/function_not_executed_as_root_entity \
 								{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 					}
@@ -182,7 +182,7 @@ dir <%export_namespace%> {
 				function resume {
 					IF (show_function_errors) {
 						# Assert that the function is being run as the root entity.
-						execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+						execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 							function *global/errors/function_not_executed_as_root_entity \
 								{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 					}
@@ -192,7 +192,7 @@ dir <%export_namespace%> {
 				function next_frame {
 					IF (show_function_errors) {
 						# Assert that the function is being run as the root entity.
-						execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+						execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 							function *global/errors/function_not_executed_as_root_entity \
 								{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 					}
@@ -208,7 +208,7 @@ dir <%export_namespace%> {
 					#ARGS: {frame: int}
 					IF (show_function_errors) {
 						# Assert that the function is being run as the root entity.
-						execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+						execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 							function *global/errors/function_not_executed_as_root_entity \
 								{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 					}
@@ -221,7 +221,7 @@ dir <%export_namespace%> {
 					#ARGS: {frame: int}
 					IF (show_function_errors) {
 						# Assert that the function is being run as the root entity.
-						execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+						execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 							function *global/errors/function_not_executed_as_root_entity \
 								{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 					}
@@ -235,7 +235,7 @@ dir <%export_namespace%> {
 					#ARGS: {duration: int, to_frame: int}
 					IF (show_function_errors) {
 						# Assert that the function is being run as the root entity.
-						execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+						execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 							function *global/errors/function_not_executed_as_root_entity \
 								{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 					}
@@ -322,7 +322,7 @@ dir <%export_namespace%> {
 									$execute $(condition)run function *<%export_namespace%>/variants/$(name)/apply
 								}
 							}
-							execute on passengers run data modify entity @s[type=!marker] start_interpolation set value -1
+							execute on passengers run data modify entity @s[tag=!<%TAGS.GLOBAL_DATA()%>] start_interpolation set value -1
 							return 1
 						}
 
@@ -501,7 +501,7 @@ dir <%export_namespace%> {
 			# Pauses all animations
 			IF (show_function_errors) {
 				# Assert that the function is being run as the root entity.
-				execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+				execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 					function *global/errors/function_not_executed_as_root_entity \
 						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 			}
@@ -530,7 +530,7 @@ dir <%export_namespace%> {
 			interpolation_duration: <%interpolation_duration%>, \
 			Passengers:<%root_entity_passengers%>, \
 		}
-		execute as @e[type=item_display,tag=<%TAGS.NEW()%>,limit=1,distance=..0.01] run block zzz/summon/as_root_entity {
+		execute as @e[type=minecraft:item_display,tag=<%TAGS.NEW()%>,limit=1,distance=..0.01] run block zzz/summon/as_root_entity {
 			execute store result score @s <%OBJECTIVES.ID()%> run scoreboard players add aj.last_id <%OBJECTIVES.ID()%> 1
 
 			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block as_data_entity {
@@ -572,14 +572,14 @@ dir <%export_namespace%> {
 				}
 
 				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'camera')) as camera {
-					summon item_display \
+					summon minecraft:item_display \
 						^<%roundTo(camera.default_transform.pos[0], 10)%> \
 						^<%roundTo(camera.default_transform.pos[1], 10)%> \
 						^<%roundTo(camera.default_transform.pos[2], 10)%> \
 						{Tags:<%getNodeTags(camera, rig)%>, teleport_duration: 2}
 					execute \
 						as @n[ \
-							type=item_display, \
+							type=minecraft:item_display, \
 							tag=<%TAGS.NEW()%>, \
 							tag=<%TAGS.PROJECT_CAMERA_NAMED(export_namespace, camera.storage_name)%>, \
 							distance=..<%camera.max_distance + 1%> \
@@ -701,7 +701,7 @@ dir <%export_namespace%> {
 			#ARGS: {name: string, command: string}
 			IF (show_function_errors) {
 				# Assert that the function is being run as the root entity.
-				execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+				execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 					function *global/errors/function_not_executed_as_root_entity \
 						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 			}
@@ -725,7 +725,7 @@ dir <%export_namespace%> {
 			#ARGS: {command: string}
 			IF (show_function_errors) {
 				# Assert that the function is being run as the root entity.
-				execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+				execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 					function *global/errors/function_not_executed_as_root_entity \
 						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 			}
@@ -747,7 +747,7 @@ dir <%export_namespace%> {
 			#ARGS: {name: string, command: string}
 			IF (show_function_errors) {
 				# Assert that the function is being run as the root entity.
-				execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+				execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 					function *global/errors/function_not_executed_as_root_entity \
 						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 			}
@@ -772,7 +772,7 @@ dir <%export_namespace%> {
 			#ARGS: {command: string}
 			IF (show_function_errors) {
 				# Assert that the function is being run as the root entity.
-				execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+				execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 					function *global/errors/function_not_executed_as_root_entity \
 						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 			}
@@ -797,7 +797,7 @@ dir <%export_namespace%> {
 			#ARGS: {name: string, command: string}
 			IF (show_function_errors) {
 				# Assert that the function is being run as the root entity.
-				execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+				execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 					function *global/errors/function_not_executed_as_root_entity \
 						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 			}
@@ -821,7 +821,7 @@ dir <%export_namespace%> {
 	dir remove {
 		function all {
 			# Removes all instances of this rig from the world.
-			execute as @e[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run function *<%export_namespace%>/remove/this
+			execute as @e[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run function *<%export_namespace%>/remove/this
 		}
 
 		function entities {
@@ -833,7 +833,7 @@ dir <%export_namespace%> {
 			# Removes the rig this function is executed as.
 			IF (show_function_errors) {
 				# Assert that the function is being executed as the root entity.
-				execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+				execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 					function *global/errors/function_not_executed_as_root_entity \
 						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 			}
@@ -883,7 +883,7 @@ dir <%export_namespace%> {
 					function apply {
 						IF (show_function_errors) {
 							# Assert that the function is being executed as the root entity.
-							execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+							execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 								function *global/errors/function_not_executed_as_root_entity \
 									{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 						}
@@ -920,7 +920,7 @@ dir <%export_namespace%> {
 		# Changes the pose of the rig to the the default pose with interpolation
 		IF (show_function_errors) {
 			# Assert that the function is being run as the root entity.
-			execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+			execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 				function *global/errors/function_not_executed_as_root_entity \
 					{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 		}
@@ -936,7 +936,7 @@ dir <%export_namespace%> {
 		# Changes the pose of the rig to the the default pose without interpolation
 		IF (show_function_errors) {
 			# Assert that the function is being run as the root entity.
-			execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+			execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 				function *global/errors/function_not_executed_as_root_entity \
 					{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 		}

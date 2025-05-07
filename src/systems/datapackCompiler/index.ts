@@ -659,9 +659,21 @@ async function generateRootEntityPassengers(
 
 	const { locators, cameras, uuids } = createPassengerStorage(rig)
 
+	const dataEntity = new NbtCompound()
+
+	switch (version) {
+		case '1.20.4':
+		case '1.20.5':
+		case '1.21.0':
+		case '1.21.2':
+		case '1.21.4':
+			dataEntity.set('id', new NbtString('minecraft:marker'))
+			break
+		case '1.21.5':
+			dataEntity.set('id', new NbtString('minecraft:item_display'))
+	}
 	passengers.add(
-		new NbtCompound()
-			.set('id', new NbtString('minecraft:item_display'))
+		dataEntity
 			.set(
 				'Tags',
 				new NbtList([
@@ -760,6 +772,11 @@ async function generateRootEntityPassengers(
 						)
 						break
 					}
+					default: {
+						throw new Error(
+							`Unsupported Minecraft version '${version}' for item display!`
+						)
+					}
 				}
 
 				if (node.configs?.default) {
@@ -786,12 +803,35 @@ async function generateRootEntityPassengers(
 				passenger.set('height', new NbtFloat(aj.bounding_box[1]))
 				passenger.set('width', new NbtFloat(aj.bounding_box[0]))
 
-				passenger.set(
-					'text',
-					NbtTag.fromString(
-						node.text ? node.text.toString() : "{ text: 'Invalid Text Component' }"
-					)
-				)
+				switch (version) {
+					case '1.20.4':
+					case '1.20.5':
+					case '1.21.0':
+					case '1.21.2':
+					case '1.21.4':
+						passenger.set(
+							'text_display',
+							new NbtString(
+								node.text?.toString() ?? `{ "text": "Invalid Text Component" }`
+							)
+						)
+						break
+					case '1.21.5':
+						passenger.set(
+							'text',
+							NbtTag.fromString(
+								node.text
+									? node.text.toString()
+									: "{ text: 'Invalid Text Component' }"
+							)
+						)
+						break
+					default: {
+						throw new Error(
+							`Unsupported Minecraft version '${version}' for text display!`
+						)
+					}
+				}
 
 				const color = new tinycolor(
 					node.background_color + floatToHex(node.background_alpha)
