@@ -176,5 +176,20 @@
 				"list": ["Fixed [#412](https://github.com/Animated-Java/animated-java/issues/409)"]
 			}
 		]
+	},
+	"1.7.2": {
+		"title": "v1.7.2",
+		"author": "Titus Evans (SnaveSutit)",
+		"date": "2025-05-07",
+		"categories": [
+			{
+				"title": "Fixes",
+				"list": [
+					"Fixed incorrect entity type for data entities on versions below 1.21.5.",
+					"Fixed missing `as_...` functions in exported data packs below 1.21.5.",
+					"Improved .mcb code consistency."
+				]
+			}
+		]
 	}
 }
