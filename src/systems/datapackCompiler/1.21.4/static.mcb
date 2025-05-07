@@ -17,24 +17,25 @@ dir <%export_namespace%> {
 					unless data entity @s {data:{rigHash: '<%rigHash%>'}} \
 					on vehicle \
 				run block zzz/check_rig_hash {
-					execute store result storage aj:temp x int 1 store result score #this.x aj.i run data get entity @s Pos[0] 1
-					execute store result storage aj:temp y int 1 store result score #this.y aj.i run data get entity @s Pos[1] 1
-					execute store result storage aj:temp z int 1 store result score #this.z aj.i run data get entity @s Pos[2] 1
-					block show_outdated_warning { with storage aj:temp
+					data remove storage aj:temp args
+					execute store result storage aj:temp args.x int 1 store result score #this.x aj.i run data get entity @s Pos[0] 1
+					execute store result storage aj:temp args.y int 1 store result score #this.y aj.i run data get entity @s Pos[1] 1
+					execute store result storage aj:temp args.z int 1 store result score #this.z aj.i run data get entity @s Pos[2] 1
+					block show_outdated_warning { with storage aj:temp args
 						$tellraw @a <%TELLRAW.RIG_OUTDATED()%>
 					}
 					data modify entity @s data.rigHash set value '<%rigHash%>'
 					execute on passengers run data merge entity @s {Glowing: 1b, glow_color_override: <%0xff0000%>}
 					summon minecraft:text_display ~ ~ ~ { \
-					Tags:['<%TAGS.GLOBAL_ENTITY()%>', '<%TAGS.OUTDATED_RIG_TEXT_DISPLAY()%>', '<%TAGS.NEW()%>'], \
-					text:<%TELLRAW.RIG_OUTDATED_TEXT_DISPLAY()%>, \
-					alignment: 'center', \
-					billboard: 'vertical', \
-					transformation:{ \
-						translation:[0f,<%boundingBox[1]/16%>f,0f], \
-						left_rotation:[0f,0f,0f,1f], \
-						right_rotation:[0f,0f,0f,1f], \
-						scale:[1f,1f,1f] \
+						Tags:['<%TAGS.GLOBAL_ENTITY()%>', '<%TAGS.OUTDATED_RIG_TEXT_DISPLAY()%>', '<%TAGS.NEW()%>'], \
+						text:'<%TELLRAW.RIG_OUTDATED_TEXT_DISPLAY()%>', \
+						alignment: 'center', \
+						billboard: 'vertical', \
+						transformation:{ \
+							translation:[0f,<%boundingBox[1]/16%>f,0f], \
+							left_rotation:[0f,0f,0f,1f], \
+							right_rotation:[0f,0f,0f,1f], \
+							scale:[1f,1f,1f] \
 						} \
 					}
 					ride @e[type=minecraft:text_display,tag=<%TAGS.NEW()%>,limit=1,distance=..0.01] mount @s
@@ -126,7 +127,7 @@ dir <%export_namespace%> {
 			interpolation_duration: <%interpolation_duration%>, \
 			Passengers:<%root_entity_passengers%>, \
 		}
-		execute as @e[type=item_display,tag=<%TAGS.NEW()%>,limit=1,distance=..0.01] run block zzz/summon/as_root_entity {
+		execute as @e[type=minecraft:item_display,tag=<%TAGS.NEW()%>,limit=1,distance=..0.01] run block zzz/summon/as_root_entity {
 			execute store result score @s <%OBJECTIVES.ID()%> run scoreboard players add aj.last_id <%OBJECTIVES.ID()%> 1
 
 			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block as_data_entity {
@@ -168,14 +169,14 @@ dir <%export_namespace%> {
 				}
 
 				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'camera')) as camera {
-					summon item_display \
+					summon minecraft:item_display \
 						^<%roundTo(camera.default_transform.pos[0], 10)%> \
 						^<%roundTo(camera.default_transform.pos[1], 10)%> \
 						^<%roundTo(camera.default_transform.pos[2], 10)%> \
 						{Tags:<%getNodeTags(camera, rig)%>, teleport_duration: 2}
 					execute \
 						as @n[ \
-							type=item_display, \
+							type=minecraft:item_display, \
 							tag=<%TAGS.NEW()%>, \
 							tag=<%TAGS.PROJECT_CAMERA_NAMED(export_namespace, camera.storage_name)%>, \
 							distance=..<%camera.max_distance + 1%> \
@@ -254,19 +255,23 @@ dir <%export_namespace%> {
 			#ARGS: {name: string, command: string}
 			IF (show_function_errors) {
 				# Assert that the function is being run as the root entity.
-				execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+				execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 					function *global/errors/function_not_executed_as_root_entity \
 						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 			}
-			$data modify storage aj:temp args.command set value '$(command)'
+			data remove storage aj:temp args
+			$data modify storage aj:temp args merge value {name:'$(name)', command:'$(command)'}
 			$execute \
 				on passengers \
 				if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] \
 			run block zzz/as_locator/as_data { {name: $(name)}
 				$data modify storage aj:temp args.uuid set from entity @s data.uuids.locator_$(name)
+				scoreboard players set #aj.check <%OBJECTIVES.I()%> 0
 				block execute_as_uuid { with storage aj:temp args
-					$execute as $(uuid) run $(command)
+					$execute as $(uuid) at @s run $(command)
+					scoreboard players set #aj.check <%OBJECTIVES.I()%> 1
 				}
+				execute if score #aj.check <%OBJECTIVES.I()%> matches 0 run tellraw @a <%TELLRAW.LOCATOR_NOT_FOUND_ENTITY()%>
 			}
 		}
 
@@ -274,7 +279,7 @@ dir <%export_namespace%> {
 			#ARGS: {command: string}
 			IF (show_function_errors) {
 				# Assert that the function is being run as the root entity.
-				execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+				execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 					function *global/errors/function_not_executed_as_root_entity \
 						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 			}
@@ -284,9 +289,85 @@ dir <%export_namespace%> {
 				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator' && v.config?.use_entity)) as locator {
 					data modify storage aj:temp args.uuid set from entity @s data.uuids.<%locator.type + '_' + locator.name%>
 					block execute_as_uuid { with storage aj:temp args
-						$execute as $(uuid) run $(command)
+						$execute as $(uuid) at @s run $(command)
 					}
 				}
+			}
+		}
+	}
+
+	IF (has_locators) {
+		function at_locator {
+			#ARGS: {name: string, command: string}
+			IF (show_function_errors) {
+				# Assert that the function is being run as the root entity.
+				execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+					function *global/errors/function_not_executed_as_root_entity \
+						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
+			}
+			data remove storage aj:temp args
+			$data modify storage aj:temp args merge value {name:'$(name)', command:'$(command)'}
+			$execute \
+				on passengers \
+				if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] \
+			run block zzz/at_locator/as_data { {name: $(name)}
+				$execute unless data entity @s {data:{locators:{$(name):{}}}} run return run tellraw @a <%TELLRAW.LOCATOR_NOT_FOUND()%>
+				$data modify storage aj:temp args merge from entity @s data.locators.$(name)
+				block execute_at_transform { with storage aj:temp args
+					$execute \
+						positioned ^$(posx) ^$(posy) ^$(posz) \
+						rotated ~$(roty) ~$(rotx) \
+					run $(command)
+				}
+			}
+		}
+
+		function at_all_locators {
+			#ARGS: {command: string}
+			IF (show_function_errors) {
+				# Assert that the function is being run as the root entity.
+				execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+					function *global/errors/function_not_executed_as_root_entity \
+						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
+			}
+			data remove storage aj:temp args
+			$data modify storage aj:temp args.command set value '$(command)'
+			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block zzz/at_all_locators/as_data { 
+				REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator' && v.config?.use_entity)) as locator {
+					data modify storage aj:temp args merge from entity @s data.locators.<%locator.name%>
+					block execute_at_transform { with storage aj:temp args
+						$execute \
+							positioned ^$(posx) ^$(posy) ^$(posz) \
+							rotated ~$(roty) ~$(rotx) \
+						run $(command)
+					}
+				}
+			}
+		}
+	}
+
+	IF (has_cameras) {
+		function as_camera {
+			#ARGS: {name: string, command: string}
+			IF (show_function_errors) {
+				# Assert that the function is being run as the root entity.
+				execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+					function *global/errors/function_not_executed_as_root_entity \
+						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
+			}
+			data remove storage aj:temp args
+			$data modify storage aj:temp args merge value {name:'$(name)', command:'$(command)'}
+			$execute \
+				on passengers \
+				if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] \
+			run block zzz/as_camera/as_data { {name: $(name)}
+				data modify storage aj:temp args.uuid set from entity @s data.cameras.$(name)
+				scoreboard players set #aj.check <%OBJECTIVES.I()%> 0
+				block execute_as_uuid { with storage aj:temp args
+					$execute as $(uuid) at @s run $(command)
+					scoreboard players set #aj.check <%OBJECTIVES.I()%> 1
+				}
+				execute if score #aj.check <%OBJECTIVES.I()%> matches 0 run tellraw @a <%TELLRAW.CAMERA_NOT_FOUND_ENTITY()%>
 			}
 		}
 	}
@@ -294,7 +375,7 @@ dir <%export_namespace%> {
 	dir remove {
 		function all {
 			# Removes all instances of this rig from the world.
-			execute as @e[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run function *<%export_namespace%>/remove/this
+			execute as @e[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run function *<%export_namespace%>/remove/this
 		}
 
 		function entities {
@@ -306,7 +387,7 @@ dir <%export_namespace%> {
 			# Removes the rig this function is executed as.
 			IF (show_function_errors) {
 				# Assert that the function is being executed as the root entity.
-				execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+				execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 					function *global/errors/function_not_executed_as_root_entity \
 						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 			}
@@ -356,7 +437,7 @@ dir <%export_namespace%> {
 					function apply {
 						IF (show_function_errors) {
 							# Assert that the function is being executed as the root entity.
-							execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+							execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 								function *global/errors/function_not_executed_as_root_entity \
 									{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 						}
@@ -393,7 +474,7 @@ dir <%export_namespace%> {
 		# Changes the pose of the rig to the the default pose without interpolation
 		IF (show_function_errors) {
 			# Assert that the function is being run as the root entity.
-			execute unless entity @s[type=item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+			execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 				function *global/errors/function_not_executed_as_root_entity \
 					{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 		}
