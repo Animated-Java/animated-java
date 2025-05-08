@@ -192,4 +192,18 @@
 			}
 		]
 	}
+	"1.7.3": {
+		"title": "v1.7.3",
+		"author": "Titus Evans (SnaveSutit)",
+		"date": "2025-05-08",
+		"categories": [
+			{
+				"title": "Fixes",
+				"list": [
+					"Fixed adding cameras to a rig causing the data entity to dismount root.",
+					"Make variant keyframes reset to default if their variant doesn't exist anymore"
+				]
+			}
+		]
+	}
 }
