@@ -7,6 +7,13 @@
 	const keyframeValue = new Valuable<string>(getKeyframeVariant(selectedKeyframe) as string)
 	let selectContainer: HTMLDivElement
 
+	if (!Variant.all.find(v => v.uuid === keyframeValue.get())) {
+		console.warn('Keyframe variant not found. Resetting to default.')
+		const uuid = Variant.getDefault().uuid
+		setKeyframeVariant(selectedKeyframe, uuid)
+		keyframeValue.set(uuid)
+	}
+
 	keyframeValue.subscribe(value => {
 		setKeyframeVariant(selectedKeyframe, value)
 	})
