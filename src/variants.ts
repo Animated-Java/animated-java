@@ -1,4 +1,5 @@
 import { IBlueprintVariantJSON } from './blueprintFormat'
+import { getKeyframeVariant, setKeyframeVariant } from './mods/customKeyframesMod'
 import { events } from './util/events'
 import { sanitizePathName } from './util/minecraftUtil'
 
@@ -115,6 +116,17 @@ export class Variant {
 	public delete() {
 		// Cannot delete default variant
 		if (this.isDefault) return
+
+		for (const animation of Blockbench.Animation.all) {
+			for (const animator of Object.values(animation.animators)) {
+				for (const keyframe of animator.keyframes) {
+					const uuid = getKeyframeVariant(keyframe)
+					if (uuid != undefined && this.uuid === uuid) {
+						setKeyframeVariant(keyframe, Variant.getDefault().uuid)
+					}
+				}
+			}
+		}
 
 		const index = Variant.all.indexOf(this)
 		if (index > -1) {
