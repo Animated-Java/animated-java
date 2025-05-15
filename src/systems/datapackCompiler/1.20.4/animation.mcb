@@ -548,7 +548,7 @@ dir <%export_namespace%> {
 							type=<%locator.config.entity_type%>, \
 							tag=<%TAGS.NEW()%>, \
 							tag=<%TAGS.PROJECT_LOCATOR_NAMED(export_namespace, locator.storage_name)%>, \
-							distance=..<%locator.max_distance + 1%> \
+							distance=..<%Math.ceil(locator.max_distance)%> \
 						] \
 					run block as_locator/<%locator.path_name%> {
 					# run block ../as_locator/<%locator.path_name%> {
@@ -582,9 +582,10 @@ dir <%export_namespace%> {
 							type=minecraft:item_display, \
 							tag=<%TAGS.NEW()%>, \
 							tag=<%TAGS.PROJECT_CAMERA_NAMED(export_namespace, camera.storage_name)%>, \
-							distance=..<%camera.max_distance + 1%> \
+							distance=..<%Math.ceil(camera.max_distance)%> \
 						] \
-					run block ../as_camera/<%camera.path_name%> {
+					run block as_camera/<%camera.path_name%> {
+					# run block ../as_camera/<%camera.path_name%> {
 						tag @s remove <%TAGS.NEW()%>
 						function *global/internal/gu/convert_uuid_array_to_string
 						tp @s \
