@@ -5,6 +5,7 @@
 		"noImplicitAny": true,
 		"module": "ES2022",
 		"target": "ES2022",
+		"lib": ["ES2024"],
 		"moduleResolution": "node",
 		"strict": true,
 		"types": ["node", "./types/blockbench-types", "svelte"],
