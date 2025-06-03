@@ -708,8 +708,15 @@ async function generateRootEntityPassengers(rig: IRenderedRig, rigHash: string) 
 					BoneConfig.fromJSON(node.configs.default).toNBT(passenger)
 				}
 
-				passenger.set('height', new NbtFloat(aj.bounding_box[1]))
-				passenger.set('width', new NbtFloat(aj.bounding_box[0]))
+				if (aj.bounding_box[1] > 2) {
+					passenger.set('height', new NbtFloat(aj.bounding_box[1]))
+				}
+
+				if (aj.bounding_box[0] > 2) {
+					passenger.set('width', new NbtFloat(aj.bounding_box[0]))
+				}
+				
+
 				break
 			}
 			case 'text_display': {
