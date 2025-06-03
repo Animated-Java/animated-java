@@ -1,12 +1,12 @@
-import { PACKAGE } from '../../constants'
-import { SvelteDialog } from '../../util/svelteDialog'
-import { Valuable } from '../../util/stores'
-import BlueprintSettingsDialogSvelteComponent from '../../components/blueprintSettingsDialog.svelte'
-import { toSafeFuntionName } from '../../util/minecraftUtil'
-import { defaultValues, ExportMode } from '../../blueprintSettings'
-import { translate } from '../../util/translation'
 import { updateBoundingBox } from '../../blueprintFormat'
-import { MinecraftVersion } from '../../systems/datapackCompiler/mcbFiles'
+import { defaultValues, ExportMode } from '../../blueprintSettings'
+import BlueprintSettingsDialogSvelteComponent from '../../components/blueprintSettingsDialog.svelte'
+import { PACKAGE } from '../../constants'
+import { MinecraftVersion } from '../../systems/global'
+import { sanitizePathName } from '../../util/minecraftUtil'
+import { Valuable } from '../../util/stores'
+import { SvelteDialog } from '../../util/svelteDialog'
+import { translate } from '../../util/translation'
 
 function getSettings() {
 	return {
@@ -28,15 +28,13 @@ function getSettings() {
 			if (!value) {
 				return defaultValues.export_namespace
 			}
-			return toSafeFuntionName(value)
+			return sanitizePathName(value)
 		}),
 		resourcePackExportMode: new Valuable(
 			Project!.animated_java.resource_pack_export_mode as string
 		),
 		dataPackExportMode: new Valuable(Project!.animated_java.data_pack_export_mode as string),
-		targetMinecraftVersion: new Valuable(
-			Project!.animated_java.target_minecraft_version as string
-		),
+		targetMinecraftVersions: new Valuable(Project!.animated_java.target_minecraft_versions),
 		// Resource Pack Settings
 		displayItem: new Valuable(Project!.animated_java.display_item, value => {
 			if (!value) {
@@ -55,6 +53,7 @@ function getSettings() {
 		),
 		dataPack: new Valuable(Project!.animated_java.data_pack),
 		summonCommands: new Valuable(Project!.animated_java.summon_commands),
+		removeCommands: new Valuable(Project!.animated_java.remove_commands),
 		tickingCommands: new Valuable(Project!.animated_java.ticking_commands),
 		interpolationDuration: new Valuable(Project!.animated_java.interpolation_duration),
 		teleportationDuration: new Valuable(Project!.animated_java.teleportation_duration),
@@ -84,8 +83,8 @@ function setSettings(settings: ReturnType<typeof getSettings>) {
 	Project.animated_java.resource_pack_export_mode =
 		settings.resourcePackExportMode.get() as ExportMode
 	Project.animated_java.data_pack_export_mode = settings.dataPackExportMode.get() as ExportMode
-	Project.animated_java.target_minecraft_version =
-		settings.targetMinecraftVersion.get() as MinecraftVersion
+	Project.animated_java.target_minecraft_versions =
+		settings.targetMinecraftVersions.get() as MinecraftVersion[]
 	// Resource Pack Settings
 	Project.animated_java.display_item = settings.displayItem.get()
 	Project.animated_java.custom_model_data_offset = settings.customModelDataOffset.get()
@@ -97,6 +96,7 @@ function setSettings(settings: ReturnType<typeof getSettings>) {
 		settings.enableAdvancedDataPackSettings.get()
 	Project.animated_java.data_pack = settings.dataPack.get()
 	Project.animated_java.summon_commands = settings.summonCommands.get()
+	Project.animated_java.remove_commands = settings.removeCommands.get()
 	Project.animated_java.ticking_commands = settings.tickingCommands.get()
 	Project.animated_java.interpolation_duration = settings.interpolationDuration.get()
 	Project.animated_java.teleportation_duration = settings.teleportationDuration.get()
@@ -113,11 +113,10 @@ export function openBlueprintSettingsDialog() {
 	if (!Project) return
 
 	const settings = getSettings()
-
 	return new SvelteDialog({
 		id: `${PACKAGE.name}:blueprintSettingsDialog`,
 		title: translate('dialog.blueprint_settings.title'),
-		width: 512,
+		width: 700,
 		component: BlueprintSettingsDialogSvelteComponent,
 		props: settings,
 		preventKeybinds: true,

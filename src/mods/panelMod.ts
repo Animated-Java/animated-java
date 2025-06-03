@@ -8,9 +8,9 @@ createBlockbenchMod(
 		panel: Interface.Panels.animations,
 	},
 	context => {
-		const originalFilesFunction = context.panel.inside_vue.$options.computed.files
+		const originalFilesFunction = context.panel.inside_vue.$options.computed!.files as () => any
 
-		context.panel.inside_vue.$options.computed.files = function (this) {
+		context.panel.inside_vue.$options.computed!.files = function (this) {
 			if (Format.id === BLUEPRINT_FORMAT.id) {
 				return {
 					'': {
@@ -23,13 +23,12 @@ createBlockbenchMod(
 					},
 				}
 			}
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 			return originalFilesFunction.call(this)
 		}
 
 		return { ...context, originalFilesFunction }
 	},
 	context => {
-		context.panel.inside_vue.$options.computed.files = context.originalFilesFunction
+		context.panel.inside_vue.$options.computed!.files = context.originalFilesFunction
 	}
 )

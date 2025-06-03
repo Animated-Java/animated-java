@@ -20,26 +20,14 @@
 </script>
 
 <div>
-	<div class="base_dialog_item" title={tooltip}>
-		<div class="slot_container" style={tooltip ? 'margin-right: 4px' : ''}>
+	<div class="base_dialog_item">
+		<div class="slot_container">
 			<slot {id} />
 		</div>
-		{#if tooltip}
-			<!-- svelte-ignore a11y-click-events-have-key-events -->
-			<i
-				class="fa fa-question dialog_form_description dialog-form-description"
-				on:click={onQuestionMarkClick}
-			/>
-		{:else}
-			<i
-				class="fa fa-question dialog_form_description dialog-form-description"
-				style="visibility: hidden"
-			/>
-		{/if}
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<i
 			on:click={onReset}
-			class="fa fa-trash-can dialog_form_description dialog-form-description reset-button"
+			class="fa fa-rotate-left dialog_form_description dialog-form-description reset-button"
 			title={translate('dialog.reset')}
 		/>
 	</div>
@@ -64,6 +52,11 @@
 			</div>
 		{/if}
 	</div>
+	{#if tooltip}
+		<div class="description">
+			{tooltip}
+		</div>
+	{/if}
 </div>
 
 <style>
@@ -75,6 +68,7 @@
 	}
 	.slot_container {
 		flex-grow: 1;
+		margin-right: 4px;
 	}
 	.warning_text {
 		display: flex;
@@ -86,6 +80,12 @@
 	.warning_lines {
 		display: flex;
 		flex-direction: column;
+	}
+	.description {
+		font-size: 0.9em;
+		color: var(--color-subtle_text);
+		margin-top: 4px;
+		margin-bottom: 16px;
 	}
 	.error_text {
 		display: flex;

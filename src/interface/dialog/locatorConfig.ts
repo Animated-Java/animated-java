@@ -1,7 +1,7 @@
 import { BLUEPRINT_FORMAT } from '../../blueprintFormat'
-import { LocatorConfig } from '../../nodeConfigs'
 import LocatorConfigDialog from '../../components/locatorConfigDialog.svelte'
 import { PACKAGE } from '../../constants'
+import { LocatorConfig } from '../../nodeConfigs'
 import { createAction } from '../../util/moddingTools'
 import { Valuable } from '../../util/stores'
 import { SvelteDialog } from '../../util/svelteDialog'
@@ -13,6 +13,7 @@ export function openLocatorConfigDialog(locator: Locator) {
 
 	const useEntity = new Valuable(locatorConfig.useEntity)
 	const entityType = new Valuable(locatorConfig.entityType)
+	const syncPassengerRotation = new Valuable(locatorConfig.syncPassengerRotation)
 	const summonCommands = new Valuable(locatorConfig.summonCommands)
 	const tickingCommands = new Valuable(locatorConfig.tickingCommands)
 
@@ -24,6 +25,7 @@ export function openLocatorConfigDialog(locator: Locator) {
 		props: {
 			useEntity,
 			entityType,
+			syncPassengerRotation,
 			summonCommands,
 			tickingCommands,
 		},
@@ -31,6 +33,7 @@ export function openLocatorConfigDialog(locator: Locator) {
 		onConfirm() {
 			locatorConfig.useEntity = useEntity.get()
 			locatorConfig.entityType = entityType.get()
+			locatorConfig.syncPassengerRotation = syncPassengerRotation.get()
 			locatorConfig.summonCommands = summonCommands.get()
 			locatorConfig.tickingCommands = tickingCommands.get()
 

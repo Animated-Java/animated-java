@@ -1,16 +1,18 @@
 import * as blueprintSettings from './blueprintSettings'
-import { BillboardMode, BoneConfig, LocatorConfig } from './nodeConfigs'
+import FormatPageSvelte from './components/formatPage.svelte'
 import ProjectTitleSvelte from './components/projectTitle.svelte'
 import { PACKAGE } from './constants'
+import { BillboardMode, BoneConfig, LocatorConfig } from './nodeConfigs'
+import { process } from './systems/modelDataFixerUpper'
 import { events } from './util/events'
 import { injectSvelteCompomponent } from './util/injectSvelteComponent'
-import { toSafeFuntionName } from './util/minecraftUtil'
+import { sanitizePathName } from './util/minecraftUtil'
 import { addProjectToRecentProjects } from './util/misc'
 import { Valuable } from './util/stores'
-import { Variant } from './variants'
-import FormatPageSvelte from './components/formatPage.svelte'
 import { translate } from './util/translation'
-import { process } from './systems/modelDataFixerUpper'
+import { Variant } from './variants'
+
+let boundingBoxUpdateIntervalId: ReturnType<typeof setInterval> | undefined
 
 /**
  * The serialized Variant Bone Config
@@ -42,6 +44,7 @@ export interface IBlueprintBoneConfigJSON {
 export interface IBlueprintLocatorConfigJSON {
 	use_entity?: LocatorConfig['useEntity']
 	entity_type?: LocatorConfig['entityType']
+	sync_passenger_rotation?: LocatorConfig['syncPassengerRotation']
 	summon_commands?: LocatorConfig['_summonCommands']
 	ticking_commands?: LocatorConfig['tickingCommands']
 }
@@ -121,7 +124,7 @@ export interface IBlueprintFormatJSON {
 	/**
 	 * The project settings of the Blueprint
 	 */
-	blueprint_settings?: NonNullable<typeof Project>['animated_java']
+	blueprint_settings?: Partial<NonNullable<typeof Project>['animated_java']>
 	/**
 	 * The variants of the Blueprint
 	 */
@@ -154,6 +157,7 @@ export interface IBlueprintFormatJSON {
 export function convertToBlueprint() {
 	// Convert the current project to a Blueprint
 	Project!.save_path = ''
+	Project!.last_used_export_namespace = ''
 
 	for (const group of Group.all) {
 		group.createUniqueName(Group.all.filter(g => g !== group))
@@ -161,7 +165,7 @@ export function convertToBlueprint() {
 	}
 	for (const animation of Blockbench.Animation.all) {
 		animation.createUniqueName(Blockbench.Animation.all.filter(a => a !== animation))
-		animation.name = toSafeFuntionName(animation.name)
+		animation.name = sanitizePathName(animation.name)
 	}
 	for (const cube of Cube.all) {
 		cube.setUVMode(false)
@@ -169,7 +173,17 @@ export function convertToBlueprint() {
 }
 
 export function getDefaultProjectSettings(): ModelProject['animated_java'] {
-	return blueprintSettings.defaultValues
+	return { ...blueprintSettings.defaultValues }
+}
+
+function initializeBoundingBoxUpdate() {
+	if (boundingBoxUpdateIntervalId == undefined) {
+		boundingBoxUpdateIntervalId = setInterval(() => {
+			updateBoundingBox()
+		}, 500)
+		events.UNLOAD.subscribe(() => clearInterval(boundingBoxUpdateIntervalId), true)
+		events.UNINSTALL.subscribe(() => clearInterval(boundingBoxUpdateIntervalId), true)
+	}
 }
 
 export function updateBoundingBox() {
@@ -258,11 +272,14 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 		}
 
 		if (model.blueprint_settings) {
-			Project.animated_java = { ...Project.animated_java, ...model.blueprint_settings }
+			Project.animated_java = {
+				...blueprintSettings.defaultValues,
+				...model.blueprint_settings,
+			}
 		}
 
 		Project.last_used_export_namespace =
-			model.meta.last_used_export_namespace || Project.animated_java.export_namespace
+			model.meta.last_used_export_namespace ?? Project.animated_java.export_namespace
 
 		if (model.textures) {
 			for (const texture of model.textures) {
@@ -324,7 +341,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 			parseGroups(model.outliner)
 
 			for (const group of Group.all) {
-				group.name = toSafeFuntionName(group.name)
+				group.name = sanitizePathName(group.name)
 			}
 		}
 
@@ -355,7 +372,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 		}
 
 		if (model.animation_variable_placeholders) {
-			Interface.Panels.variable_placeholders.inside_vue._data.text =
+			Interface.Panels.variable_placeholders.inside_vue.$data.text =
 				model.animation_variable_placeholders
 		}
 
@@ -408,7 +425,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 				save_location: Project.save_path,
 				last_used_export_namespace: Project.last_used_export_namespace,
 			},
-			blueprint_settings: Project.animated_java,
+			blueprint_settings: { ...Project.animated_java },
 			resolution: {
 				width: Project.texture_width || 16,
 				height: Project.texture_height || 16,
@@ -435,15 +452,23 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 
 		model.textures = []
 		for (const texture of Texture.all) {
-			const save = texture.getUndoCopy() as Texture
+			const save = texture.getSaveCopy() as Texture
 			delete save.selected
-			if (Project.save_path && texture.path) {
-				const relative = PathModule.relative(Project.save_path, texture.path)
-				texture.relative_path = relative.replace(/\\/g, '/')
+			if (isApp && Project.save_path && texture.path && PathModule.isAbsolute(texture.path)) {
+				const relative = PathModule.relative(
+					PathModule.dirname(Project.save_path),
+					texture.path
+				)
+				save.relative_path = relative.replace(/\\/g, '/')
 			}
-			save.source = 'data:image/png;base64,' + texture.getBase64()
-			save.mode = 'bitmap'
-			if (options.absolute_paths === false) delete save.path
+			if (
+				options.bitmaps != false &&
+				(Settings.get('embed_textures') || options.backup || options.bitmaps == true)
+			) {
+				save.source = texture.getDataURL()
+				save.internal = true
+			}
+			if (options.absolute_paths == false) delete save.path
 			model.textures.push(save)
 		}
 
@@ -465,9 +490,9 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 			model.animation_controllers.push(controller.getUndoCopy(animationOptions, true))
 		}
 
-		if (Interface.Panels.variable_placeholders.inside_vue._data.text) {
+		if (Interface.Panels.variable_placeholders.inside_vue.$data.text) {
 			model.animation_variable_placeholders =
-				Interface.Panels.variable_placeholders.inside_vue._data.text
+				Interface.Panels.variable_placeholders.inside_vue.$data.text
 		}
 
 		if (!options.backup) {
@@ -552,25 +577,19 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 	onSetup(project, newModel) {
 		if (!Project) return
 		console.log('Animated Java Blueprint format setup')
+
 		const defaults = getDefaultProjectSettings()
-		Project.animated_java ??= defaults
-		for (const [key, value] of Object.entries(defaults) as Array<
-			[keyof ModelProject['animated_java'], any]
-		>) {
-			if (Project.animated_java[key] === undefined) {
-				// @ts-ignore
-				Project.animated_java[key] = value
-			}
+		if (newModel) {
+			Project.animated_java = defaults
+			Project.last_used_export_namespace = ''
+		} else {
+			Project.animated_java = { ...defaults, ...Project!.animated_java }
 		}
 
 		const thisProject = Project
 		Project.variants ??= []
-		Project.last_used_export_namespace = Project.animated_java.export_namespace
-		const updateBoundingBoxIntervalId = setInterval(() => {
-			updateBoundingBox()
-		}, 500)
-		events.UNLOAD.subscribe(() => clearInterval(updateBoundingBoxIntervalId), true)
-		events.UNINSTALL.subscribe(() => clearInterval(updateBoundingBoxIntervalId), true)
+
+		initializeBoundingBoxUpdate()
 
 		Project.loadingPromises ??= []
 		Project.loadingPromises.push(
@@ -607,9 +626,13 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 		)
 	},
 
-	onActivation() {
-		console.log('Animated Java Blueprint format activated')
-	},
+	// onActivation() {
+	// 	console.group('Animated Java Blueprint format activated')
+	// },
+
+	// onDeactivation() {
+	// 	console.group('Animated Java Blueprint format deactivated')
+	// },
 
 	codec: BLUEPRINT_CODEC,
 

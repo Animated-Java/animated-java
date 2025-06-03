@@ -1,4 +1,4 @@
-import { type Writable, type Subscriber, type Unsubscriber, writable, get } from 'svelte/store'
+import { get, type Subscriber, type Unsubscriber, type Writable, writable } from 'svelte/store'
 
 export class Valuable<T> implements Writable<T> {
 	static all: Array<Valuable<any>> = []

@@ -1,29 +1,31 @@
-<script lang="ts" context="module">
+<script lang="ts">
+	import { CodeJar } from '@novacbn/svelte-codejar'
+	import { onDestroy } from 'svelte'
+	import { type Unsubscriber } from 'svelte/store'
+	import {
+		TEXT_DISPLAY_ALIGNMENT_SELECT,
+		TEXT_DISPLAY_BACKGROUND_COLOR_PICKER,
+		TEXT_DISPLAY_SEE_THROUGH_TOGGLE,
+		TEXT_DISPLAY_SHADOW_TOGGLE,
+		TEXT_DISPLAY_WIDTH_SLIDER,
+	} from '../interface/panel/textDisplayElement'
 	import { TextDisplay } from '../outliner/textDisplay'
 	import { events } from '../util/events'
-	import { Valuable } from '../util/stores'
-	import { CodeJar } from '@novacbn/svelte-codejar'
-	import {
-		TEXT_DISPLAY_WIDTH_SLIDER,
-		TEXT_DISPLAY_BACKGROUND_COLOR_PICKER,
-		TEXT_DISPLAY_SHADOW_TOGGLE,
-		TEXT_DISPLAY_ALIGNMENT_SELECT,
-		TEXT_DISPLAY_SEE_THROUGH_TOGGLE,
-	} from '../interface/panel/textDisplayElement'
 	import { floatToHex } from '../util/misc'
+	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
 
 	function highlight(code: string, syntax?: string) {
 		if (!syntax) return code
 		return Prism.highlight(code, Prism.languages[syntax], syntax)
 	}
-</script>
 
-<script lang="ts">
+	let lastSelected: TextDisplay | undefined
 	let selected = TextDisplay.selected.at(0)
 
 	// @ts-expect-error
 	let text = selected?._text ?? new Valuable('')
+	let lastText: string | undefined = selected?.text
 	// @ts-expect-error
 	let error = selected?._textError ?? new Valuable('')
 
@@ -34,12 +36,18 @@
 	let seeThroughSlot: HTMLDivElement
 	let codeJar: CodeJar
 
-	events.UPDATE_SELECTION.subscribe(() => {
+	let unsubFromText: Unsubscriber | undefined
+
+	const unsubFromEvent = events.UPDATE_SELECTION.subscribe(() => {
+		unsubFromText?.()
+
+		lastSelected = selected
 		selected = TextDisplay.selected.at(0)
 		if (!selected) return
 		// This might be a bit hacky, but svelte seems to handle it fine.
 		// @ts-ignore
 		text = selected._text
+		lastText = selected.text
 		error = selected.textError
 
 		// Force the inputs to update
@@ -49,6 +57,18 @@
 		TEXT_DISPLAY_SHADOW_TOGGLE.set(selected.shadow)
 		TEXT_DISPLAY_ALIGNMENT_SELECT.set(selected.align)
 		TEXT_DISPLAY_SEE_THROUGH_TOGGLE.set(selected.seeThrough)
+
+		unsubFromText = text.subscribe(value => {
+			if (!Project) return
+			if (lastSelected !== selected || lastSelected === undefined) {
+				lastSelected = selected
+				return
+			}
+			if (lastText === value) return
+			console.log('Text changed')
+			lastText = value
+			Project.saved = false
+		})
 	})
 
 	requestAnimationFrame(() => {
@@ -65,6 +85,11 @@
 		codeJar.$$.ctx[0].style.overflowWrap = 'unset'
 		codeJar.$$.ctx[0].style.whiteSpace = 'nowrap'
 	}
+
+	onDestroy(() => {
+		unsubFromEvent()
+		unsubFromText?.()
+	})
 </script>
 
 <p class="panel_toolbar_label label" style={!!selected ? '' : 'visibility:hidden; height: 0px;'}>

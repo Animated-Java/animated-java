@@ -1,6 +1,6 @@
-import { Subscribable } from './subscribable'
 import * as PACKAGE from '../../package.json'
 import { Variant } from '../variants'
+import { Subscribable } from './subscribable'
 
 export class PluginEvent<EventData = void> extends Subscribable<EventData> {
 	protected static events: Record<string, PluginEvent<any>> = {}
@@ -43,6 +43,9 @@ export const events = {
 	UNSELECT_KEYFRAME: new PluginEvent('unselectKeyframe'),
 
 	UPDATE_SELECTION: new PluginEvent('updateSelection'),
+
+	UNDO: new PluginEvent<UndoEntry>('undo'),
+	REDO: new PluginEvent<UndoEntry>('redo'),
 }
 
 function injectionHandler() {
@@ -69,3 +72,5 @@ Blockbench.on<EventName>('unselect_project', ({ project }: { project: ModelProje
 	events.UNSELECT_PROJECT.dispatch(project)
 })
 Blockbench.on<EventName>('update_selection', () => events.UPDATE_SELECTION.dispatch())
+Blockbench.on<EventName>('undo', (entry: UndoEntry) => events.UNDO.dispatch(entry))
+Blockbench.on<EventName>('redo', (entry: UndoEntry) => events.REDO.dispatch(entry))
