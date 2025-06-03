@@ -41,13 +41,13 @@ export interface IRenderedElement {
 	shade?: boolean
 	light_emission?: number
 	rotation?:
-		| {
-				angle: number
-				axis: string
-				origin: number[]
-				rescale?: boolean
-		  }
-		| number[]
+	| {
+		angle: number
+		axis: string
+		origin: number[]
+		rescale?: boolean
+	}
+	| number[]
 	faces?: Record<string, IRenderedFace>
 }
 
@@ -217,9 +217,6 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 	element.from = cube.from.slice()
 	element.to = cube.to.slice()
 
-	
-	
-
 	if (cube.inflate) {
 		element.from = element.from.map(v => v - cube.inflate)
 		element.to = element.to.map(v => v + cube.inflate)
@@ -287,7 +284,7 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 	}
 
 	model.elements ??= []
-	
+
 	model.elements.push(element)
 }
 

@@ -400,10 +400,10 @@ dir <%export_namespace%> {
 				execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block zzz/this/as_data {
 					REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator' && v.config?.use_entity)) as locator {
 						# REVIEW - This will not kill locators or cameras that have been summoned using an old export of the rig.
-						function ./zzz/this/kill_locator with entity @s data.locators.<%locator.type + '_' + locator.name%>
+						function ./zzz/this/kill_locator with entity @s data.uuids
 					}
 					REPEAT (Object.values(rig.nodes).filter(v => v.type === 'camera')) as camera {
-						function ./zzz/this/kill_camera with entity @s data.locators.<%camera.type + '_' + camera.name%>
+						function ./zzz/this/kill_camera with entity @s data.uuids
 					}
 				}
 			}
@@ -415,16 +415,16 @@ dir <%export_namespace%> {
 		dir zzz {
 			dir this {
 				function kill_locator {
-					#ARGS: {uuid: string}
+					#ARGS: {<%locator.type + '_' + locator.name%>: string}
 					# Recursively remove stacked locator entities
-					$execute as $(uuid) run block recursively_kill_passengers {
+					$execute as $(<%locator.type + '_' + locator.name%>) run block recursively_kill_passengers {
 						execute on passengers run function ^0
 						kill @s
 					}
 				}
 				function kill_camera {
-					#ARGS: {uuid: string}
-					$kill $(uuid)
+					#ARGS: {<%camera.type + '_' + camera.name%>: string}
+					$kill $(<%camera.type + '_' + camera.name%>)
 				}
 			}
 		}
