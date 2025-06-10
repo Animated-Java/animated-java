@@ -12,8 +12,12 @@ import static_1_21_2 from './1.21.2/static.mcb'
 import animation_1_21_4 from './1.21.4/animation.mcb'
 import static_1_21_4 from './1.21.4/static.mcb'
 
+<<<<<<< HEAD
 import animation_1_21_5 from './1.21.5/animation.mcb'
 import static_1_21_5 from './1.21.5/static.mcb'
+=======
+export type MinecraftVersion = '1.20.4' | '1.20.5' | '1.21.0' | '1.21.2' | '1.21.4'
+>>>>>>> parent of 4ae2383 (Bumped to 1.21.5, removed marker passanger on instances, as on Minecraft 1.21.5 any Entity can have the "data" entity component.)
 
 // The core is content that always goes in the `data` folder directly,
 // while other files are in the `animated_java/data` folder to be overlayed when the correct version is loaded.
@@ -29,6 +33,7 @@ export default {
 		static: static_1_21_4,
 		core: core_1_20_4,
 	},
+<<<<<<< HEAD
 	'1.21.2': {
 		animation: animation_1_21_2,
 		static: static_1_21_2,
@@ -50,3 +55,6 @@ export default {
 		core: core_1_20_4,
 	},
 } as Record<MinecraftVersion, { animation: string; static: string; core: string }>
+=======
+}
+>>>>>>> parent of 4ae2383 (Bumped to 1.21.5, removed marker passanger on instances, as on Minecraft 1.21.5 any Entity can have the "data" entity component.)

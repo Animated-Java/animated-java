@@ -657,6 +657,7 @@ async function generateRootEntityPassengers(
 	const aj = Project!.animated_java
 	const passengers: NbtList = new NbtList()
 
+<<<<<<< HEAD
 	const { locators, cameras, uuids } = createPassengerStorage(rig)
 
 	const dataEntity = new NbtCompound()
@@ -681,6 +682,18 @@ async function generateRootEntityPassengers(
 					new NbtString(TAGS.GLOBAL_ENTITY()),
 					new NbtString(TAGS.GLOBAL_DATA()),
 					new NbtString(TAGS.PROJECT_ENTITY(aj.export_namespace)),
+=======
+	const { locators, cameras, bones } = createPassengerStorage(rig)
+
+	passengers.add(
+		new NbtCompound()
+			.set('id', new NbtString('minecraft:marker'))
+			.set(
+				'Tags',
+				new NbtList([
+					new NbtString(TAGS.GLOBAL_NODE()),
+					new NbtString(TAGS.GLOBAL_DATA()),
+>>>>>>> parent of 4ae2383 (Bumped to 1.21.5, removed marker passanger on instances, as on Minecraft 1.21.5 any Entity can have the "data" entity component.)
 					new NbtString(TAGS.PROJECT_DATA(aj.export_namespace)),
 				])
 			)
@@ -690,7 +703,11 @@ async function generateRootEntityPassengers(
 					.set('rigHash', new NbtString(rigHash))
 					.set('locators', locators)
 					.set('cameras', cameras)
+<<<<<<< HEAD
 					.set('uuids', uuids)
+=======
+					.set('bones', bones)
+>>>>>>> parent of 4ae2383 (Bumped to 1.21.5, removed marker passanger on instances, as on Minecraft 1.21.5 any Entity can have the "data" entity component.)
 			)
 	)
 
@@ -756,8 +773,12 @@ async function generateRootEntityPassengers(
 						)
 						break
 					}
+<<<<<<< HEAD
 					case '1.21.4':
 					case '1.21.5': {
+=======
+					case '1.21.4': {
+>>>>>>> parent of 4ae2383 (Bumped to 1.21.5, removed marker passanger on instances, as on Minecraft 1.21.5 any Entity can have the "data" entity component.)
 						item.set(
 							'components',
 							new NbtCompound()
@@ -772,11 +793,14 @@ async function generateRootEntityPassengers(
 						)
 						break
 					}
+<<<<<<< HEAD
 					default: {
 						throw new Error(
 							`Unsupported Minecraft version '${version}' for item display!`
 						)
 					}
+=======
+>>>>>>> parent of 4ae2383 (Bumped to 1.21.5, removed marker passanger on instances, as on Minecraft 1.21.5 any Entity can have the "data" entity component.)
 				}
 
 				if (node.configs?.default) {
@@ -1297,6 +1321,7 @@ const dataPackCompiler: DataPackCompiler = async ({
 		exportedFiles: versionedFiles,
 	})
 
+<<<<<<< HEAD
 	compile({
 		path: 'src/animated_java.mcb',
 		mcbFile: mcbFiles[version].core,
@@ -1305,6 +1330,104 @@ const dataPackCompiler: DataPackCompiler = async ({
 		version,
 		exportedFiles: coreFiles,
 	})
+=======
+	const overrideFiles = compile('src/animated_java.mcb', mcbFile, overrideFolder, variables)
+	const coreFiles = compile(
+		'src/animated_java.mcb',
+		mcbFiles[aj.target_minecraft_version].core,
+		dataPackFolder,
+		variables
+	)
+
+	const exportedFiles = new Map<string, string>([...overrideFiles, ...coreFiles])
+	if (aj.data_pack_export_mode === 'raw') {
+		ajmeta!.files = new Set(exportedFiles.keys())
+	}
+
+	type Formats = number | number[] | { min_inclusive: number; max_inclusive: number }
+	interface IPackMeta {
+		pack?: {
+			pack_format?: number
+			description?: string
+		}
+		overlays?: {
+			entries?: Array<{
+				directory?: string
+				formats?: Formats
+			}>
+		}
+	}
+
+	// pack.mcmeta
+	const packMetaPath = PathModule.join(dataPackFolder, 'pack.mcmeta')
+	let packMeta = {} as IPackMeta
+	if (fs.existsSync(packMetaPath)) {
+		try {
+			const content = fs.readFileSync(packMetaPath, 'utf-8')
+			packMeta = JSON.parse(content)
+		} catch (e) {
+			console.error('Failed to parse pack.mcmeta:', e)
+		}
+	}
+	packMeta.pack ??= {}
+	packMeta.pack.pack_format = getDataPackFormat(aj.target_minecraft_version)
+	packMeta.pack.description ??= `Animated Java Data Pack for ${aj.target_minecraft_version}`
+	packMeta.overlays ??= {}
+	packMeta.overlays.entries ??= []
+	let formats: Formats
+	switch (aj.target_minecraft_version) {
+		case '1.20.5': {
+			formats = {
+				min_inclusive: getDataPackFormat('1.20.5'),
+				max_inclusive: getDataPackFormat('1.21.0') - 1,
+			}
+			break
+		}
+		case '1.21.0': {
+			formats = {
+				min_inclusive: getDataPackFormat('1.21.0'),
+				max_inclusive: getDataPackFormat('1.21.2') - 1,
+			}
+			break
+		}
+		case '1.21.2': {
+			formats = {
+				min_inclusive: getDataPackFormat('1.21.2'),
+				max_inclusive: getDataPackFormat('1.21.4') - 1,
+			}
+			break
+		}
+		case '1.21.4': {
+			formats = getDataPackFormat('1.21.4')
+			break
+		}
+		default: {
+			formats = getDataPackFormat(aj.target_minecraft_version)
+			break
+		}
+	}
+	const overlay = packMeta.overlays.entries.find(e => e.directory === 'animated_java')
+	if (!overlay) {
+		packMeta.overlays.entries.push({
+			directory: 'animated_java',
+			formats,
+		})
+	} else {
+		overlay.formats = formats
+	}
+
+	exportedFiles.set(PathModule.join(dataPackFolder, 'pack.mcmeta'), autoStringify(packMeta))
+
+	PROGRESS_DESCRIPTION.set('Writing Data Pack...')
+	if (aj.data_pack_export_mode === 'raw') {
+		console.time('Writing Files took')
+		await writeFiles(exportedFiles, dataPackFolder)
+		console.timeEnd('Writing Files took')
+		ajmeta!.write()
+	}
+
+	console.timeEnd('Data Pack Compilation took')
+>>>>>>> parent of 4ae2383 (Bumped to 1.21.5, removed marker passanger on instances, as on Minecraft 1.21.5 any Entity can have the "data" entity component.)
 }
 
 async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFolder: string) {

@@ -15,6 +15,7 @@ const VERSIONS = {
 	'1.21.0': _1_20_4,
 	'1.21.2': _1_21_2,
 	'1.21.4': _1_21_4,
+<<<<<<< HEAD
 	'1.21.5': _1_21_4,
 }
 
@@ -216,4 +217,6 @@ export default async function compileResourcePack(
 		// 	zipped
 		// )
 	}
+=======
+>>>>>>> parent of 4ae2383 (Bumped to 1.21.5, removed marker passanger on instances, as on Minecraft 1.21.5 any Entity can have the "data" entity component.)
 }
