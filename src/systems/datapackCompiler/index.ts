@@ -647,6 +647,14 @@ namespace TELLRAW {
 			},
 			TELLRAW_SUFFIX(),
 		])
+	export const COMMAND_RUN_FAILED = () =>
+		new JsonText([
+			TELLRAW_PREFIX(),
+			{ text: 'Command ', color: 'red' },
+			{ nbt: 'args.command', storage: 'aj:temp', color: 'aqua' },
+			{ text: ' run failed!', color: 'red' },
+			TELLRAW_SUFFIX(),
+		])
 }
 
 async function generateRootEntityPassengers(
