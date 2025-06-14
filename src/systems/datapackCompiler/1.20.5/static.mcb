@@ -361,13 +361,19 @@ dir <%export_namespace%> {
 				on passengers \
 				if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] \
 			run block zzz/as_camera/as_data { {name: $(name)}
-				data modify storage aj:temp args.uuid set from entity @s data.cameras.$(name)
+				$data modify storage aj:temp args.uuid set from entity @s data.cameras.$(name).uuid
 				scoreboard players set #aj.check <%OBJECTIVES.I()%> 0
 				block execute_as_uuid { with storage aj:temp args
 					$execute as $(uuid) at @s run $(command)
 					scoreboard players set #aj.check <%OBJECTIVES.I()%> 1
 				}
-				execute if score #aj.check <%OBJECTIVES.I()%> matches 0 run tellraw @a <%TELLRAW.CAMERA_NOT_FOUND_ENTITY()%>
+				execute if score #aj.check <%OBJECTIVES.I()%> matches 0 run block if_failed {
+					block check_existence { with storage aj:temp args
+						$execute at $(uuid) run scoreboard players set #aj.check <%OBJECTIVES.I()%> 2
+					}
+					execute if score #aj.check <%OBJECTIVES.I()%> matches 0 run tellraw @a <%TELLRAW.CAMERA_NOT_FOUND_ENTITY()%>
+					execute if score #aj.check <%OBJECTIVES.I()%> matches 2 run tellraw @a <%TELLRAW.COMMAND_RUN_FAILED()%>
+				}
 			}
 		}
 	}
