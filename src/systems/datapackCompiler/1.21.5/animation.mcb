@@ -567,7 +567,7 @@ dir <%export_namespace%> {
 							}
 						%%>
 					}
-					data modify entity @s data.uuids.<%locator.type + '_' + locator.name%> set from storage aj:uuid main.out
+					data modify entity @s data.uuids.<%locator.name%> set from storage aj:uuid main.out
 					data modify entity @s data.locators.<%locator.name%>.uuid set from storage aj:uuid main.out
 				}
 
