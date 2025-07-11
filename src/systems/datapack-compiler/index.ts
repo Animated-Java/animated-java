@@ -22,11 +22,9 @@ import { MSLimiter } from '../../util/msLimiter'
 import { Variant } from '../../variants'
 import { AJMeta } from '../ajmeta'
 import type { IRenderedAnimation } from '../animation-renderer'
-import { getNodeTags, TAGS } from '../datapack-compiler/tags'
-import versions from '../datapack-compiler/versions'
 import { IntentionalExportError } from '../exporter'
-import { PackMeta, type PackMetaFormats } from '../global'
-import { CommonDisplayConfig, TextDisplayConfig } from '../node-configs'
+import { PackMeta, type MinecraftVersion, type PackMetaFormats } from '../global'
+import { BoneConfig, CommonDisplayConfig, TextDisplayConfig } from '../node-configs'
 import type { AnyRenderedNode, IRenderedRig } from '../rig-renderer'
 import {
 	matrixToNbtFloatArray,

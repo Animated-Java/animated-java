@@ -1,22 +1,22 @@
 <script lang="ts">
 	import MultiSelect, { type ObjectOption } from 'svelte-multiselect'
-	import { Valuable } from '../../util/stores'
+	import { Syncable } from '../../util/stores'
 	import { translate } from '../../util/translation'
 	import BaseDialogItem from './baseDialogItem.svelte'
 
 	type StringOption = ObjectOption & { value: string }
 
 	export let label: string
-	export let tooltip: string = ''
+	export let tooltip = ''
 	export let options: StringOption[]
 	export let defaultValue: StringOption[]
-	export let value: Valuable<string[]>
+	export let value: Syncable<string[]>
 
 	let selected: StringOption[] = $value
 		.filter(v => options.find(o => o.value == v))
 		.map(v => options.find(o => o.value == v)!)
 
-	let warning_text = ''
+	let warningText = ''
 
 	if (selected.length === 0) {
 		selected = defaultValue
@@ -31,11 +31,11 @@
 		// FIXME - This warning is unique to the targeted minecraft version setting.
 		// Since the only use of this component is in the targeted minecraft version setting, this is fine... for now.
 		if (selected.length > 1) {
-			warning_text = translate(
+			warningText = translate(
 				'dialog.blueprint_settings.target_minecraft_versions.warning.multiple_versions'
 			)
 		} else {
-			warning_text = ''
+			warningText = ''
 		}
 	}
 
@@ -48,7 +48,7 @@
 	}
 </script>
 
-<BaseDialogItem {label} {tooltip} {onReset} let:id {warning_text}>
+<BaseDialogItem {label} {tooltip} {onReset} let:id {warningText}>
 	<div class="dialog_bar form_bar multi-select-container">
 		<label class="name_space_left" for={id}>{label}</label>
 		<MultiSelect

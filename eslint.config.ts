@@ -1,4 +1,3 @@
-// @ts-expect-error
 import checkFile from 'eslint-plugin-check-file'
 import svelteEslint from 'eslint-plugin-svelte'
 import svelteParser from 'svelte-eslint-parser'
@@ -64,7 +63,7 @@ const CUSTOM_RULES: ConfigWithExtends['rules'] = {
 	'@typescript-eslint/no-explicit-any': 'off',
 	'@typescript-eslint/no-floating-promises': ['error', { ignoreVoid: true }],
 	'@typescript-eslint/array-type': ['warn', { default: 'array-simple' }],
-	'@typescript-eslint/consistent-indexed-object-style': ['warn', 'record'],
+	'@typescript-eslint/consistent-indexed-object-style': ['warn', 'interface'],
 	'@typescript-eslint/consistent-generic-constructors': 'warn',
 	'@typescript-eslint/no-namespace': 'off',
 	'@typescript-eslint/restrict-template-expressions': 'off',

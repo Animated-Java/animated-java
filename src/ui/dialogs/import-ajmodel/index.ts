@@ -1,13 +1,13 @@
+import * as modelDataFixerUpper from '@aj/blockbench-additions/model-formats/ajblueprint/dfu'
+import { BLUEPRINT_CODEC, type IBlueprintFormatJSON } from '@aj/blueprintFormat'
+import { PACKAGE } from '@aj/constants'
+import { injectSvelteCompomponent } from '@aj/util/injectSvelteComponent'
+import { sanitizePathName } from '@aj/util/minecraftUtil'
+import { createModelLoader } from '@aj/util/moddingTools'
+import { translate } from '@aj/util/translation'
 import { SvelteComponentDev } from 'svelte/internal'
-import ImportAjModelLoaderDialog from '../svelte/importAJModelLoaderDialog.svelte'
-import { PACKAGE } from '../constants'
-import { injectSvelteCompomponent } from '../util/injectSvelteComponent'
-import { sanitizePathName } from '../util/minecraftUtil'
-import { createModelLoader } from '../util/moddingTools'
-import { translate } from '../util/translation'
-import { openUnexpectedErrorDialog } from './dialog/unexpectedError'
-import * as ModelDatFixerUpper from '../systems/modelDataFixerUpper'
-import { BLUEPRINT_CODEC, IBlueprintFormatJSON } from '../blueprintFormat'
+import { openUnexpectedErrorDialog } from '../unexpected-error'
+import ImportAjModelLoaderDialog from './importAJModelLoaderDialog.svelte'
 
 let activeComponent: SvelteComponentDev | null = null
 
@@ -44,7 +44,7 @@ createModelLoader(`${PACKAGE.name}-upgradeAJModelLoader`, {
 export function convertAJModelToBlueprint(path: string) {
 	try {
 		console.log(`Convert .ajmodel: ${path}`)
-		const blueprint = ModelDatFixerUpper.process(
+		const blueprint = modelDataFixerUpper.process(
 			JSON.parse(fs.readFileSync(path, 'utf8'))
 		) as IBlueprintFormatJSON
 
@@ -52,7 +52,8 @@ export function convertAJModelToBlueprint(path: string) {
 			name: 'Upgrade .ajmodel to Blueprint',
 			path,
 		})
-		blueprint.blueprint_settings!.export_namespace ??= sanitizePathName(Project!.name)
+		// FIXME: This needs to be updated to the new ID system.
+		blueprint.blueprint_settings!.id ??= sanitizePathName(Project!.name)
 
 		requestAnimationFrame(() => {
 			Project!.save_path = ''

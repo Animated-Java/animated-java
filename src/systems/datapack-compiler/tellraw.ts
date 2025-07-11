@@ -164,7 +164,7 @@ export namespace TELLRAW {
 						' ',
 						' ',
 						{ text: ' ● ', color: 'gray' },
-						{ text: anim.safe_name, color: 'yellow' },
+						{ text: anim.path_name, color: 'yellow' },
 					])
 			),
 			SUFFIX(),
@@ -187,7 +187,7 @@ export namespace TELLRAW {
 					color: 'red',
 				},
 				{
-					text: `Minecraft ${Project!.animated_java.target_minecraft_version}`,
+					text: `Minecraft ${Project!.animated_java.target_minecraft_versions[0]}`,
 					color: 'aqua',
 				},
 				{ text: ' in the wrong version!', color: 'red' },

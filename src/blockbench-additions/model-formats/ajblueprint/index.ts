@@ -2,7 +2,7 @@ import EVENTS from '@aj/util/events'
 import * as blueprintSettings from '../../../blueprintSettings'
 import { PACKAGE } from '../../../constants'
 import { injectSvelteCompomponent } from '../../../util/injectSvelteComponent'
-import { toSafeFunctionName } from '../../../util/minecraftUtil'
+import { sanitizePathName } from '../../../util/minecraftUtil'
 import { addProjectToRecentProjects } from '../../../util/misc'
 import { Syncable } from '../../../util/stores'
 import { translate } from '../../../util/translation'
@@ -99,7 +99,7 @@ export function convertToBlueprint() {
 	}
 	for (const animation of Blockbench.Animation.all) {
 		animation.createUniqueName(Blockbench.Animation.all.filter(a => a !== animation))
-		animation.name = toSafeFunctionName(animation.name)
+		animation.name = sanitizePathName(animation.name)
 	}
 	for (const cube of Cube.all) {
 		cube.setUVMode(false)
@@ -274,7 +274,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 			parseGroups(model.outliner)
 
 			for (const group of Group.all) {
-				group.name = toSafeFunctionName(group.name)
+				group.name = sanitizePathName(group.name)
 			}
 		}
 
@@ -346,7 +346,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 
 	// region > compile
 	compile(options) {
-		if (!options) options = {}
+		options ??= {}
 		console.log(`Compiling Animated Java Blueprint from ${Project!.name}...`)
 		if (!Project) throw new Error('No project to compile.')
 

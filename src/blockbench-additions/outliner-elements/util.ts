@@ -1,4 +1,4 @@
-import { sanitizePathName } from '../util/minecraftUtil'
+import { sanitizePathName } from '@aj/util/minecraftUtil'
 import { BlockDisplay } from './blockDisplay'
 import { ItemDisplay } from './itemDisplay'
 import { TextDisplay } from './textDisplay'

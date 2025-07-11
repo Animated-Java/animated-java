@@ -66,8 +66,8 @@
 				}
 			}
 			function stop() {
-				removeEventListeners(document, 'mousemove touchmove', move, null)
-				removeEventListeners(document, 'mouseup touchend', stop, null)
+				removeEventListeners(document, 'mousemove touchmove', move, undefined)
+				removeEventListeners(document, 'mouseup touchend', stop, undefined)
 			}
 			addEventListeners(document as unknown as any, 'mousemove touchmove', move)
 			addEventListeners(document as unknown as any, 'mouseup touchend', stop)

@@ -4,7 +4,6 @@ import { getCurrentVersion } from '@aj/systems/minecraft-temp/versionManager'
 import { CommonDisplayConfig, ItemDisplayConfig, type Serialized } from '@aj/systems/node-configs'
 import EVENTS from '@events'
 import { PACKAGE } from '../../constants'
-import { VANILLA_ITEM_DISPLAY_CONFIG_ACTION } from '../../ui/dialogs/item-display-config'
 import {
 	createAction,
 	createBlockbenchMod,
@@ -47,7 +46,7 @@ export class ItemDisplay extends ResizableOutlinerElement {
 
 	public menu = new Menu([
 		...Outliner.control_menu_group,
-		VANILLA_ITEM_DISPLAY_CONFIG_ACTION,
+		ITEM_DISPLAY_CONFIG_ACTION,
 		'_',
 		'rename',
 		'delete',

@@ -1,10 +1,11 @@
-import { isCurrentFormat } from '../../blueprintFormat'
-import ItemDisplayElementPanel from '../../svelte/itemDisplayElementPanel.svelte'
-import { PACKAGE } from '../../constants'
-import { ItemDisplayMode, ItemDisplay } from '../../outliner/itemDisplay'
-import { events } from '../../util/events'
-import { injectSvelteCompomponentMod } from '../../util/injectSvelteComponent'
-import { translate } from '../../util/translation'
+import type { ItemDisplayMode } from '@aj/blockbench-additions/outliner-elements/blockDisplay'
+import { ItemDisplay } from '@aj/blockbench-additions/outliner-elements/itemDisplay'
+import { isCurrentFormat } from '@aj/blueprintFormat'
+import { PACKAGE } from '@aj/constants'
+import EVENTS from '@aj/util/events'
+import { injectSvelteCompomponentMod } from '@aj/util/injectSvelteComponent'
+import { translate } from '@aj/util/translation'
+import ItemDisplayElementPanel from './vanillaItemDisplayConfigDialog.svelte'
 
 injectSvelteCompomponentMod({
 	component: ItemDisplayElementPanel,
@@ -14,7 +15,7 @@ injectSvelteCompomponentMod({
 	},
 })
 
-export const ITEM_DISPLAY_ITEM_DISPLAY_SELECT = new BarSelect(
+export const ITEM_DISPLAY_ALIGNMENT_SELECT = new BarSelect(
 	`${PACKAGE.name}:itemDisplayAlignmentSelect`,
 	{
 		name: translate('tool.item_display.item_display.title'),
@@ -42,12 +43,12 @@ export const ITEM_DISPLAY_ITEM_DISPLAY_SELECT = new BarSelect(
 		},
 	}
 )
-ITEM_DISPLAY_ITEM_DISPLAY_SELECT.get = function () {
+ITEM_DISPLAY_ALIGNMENT_SELECT.get = function () {
 	const selected = ItemDisplay.selected[0]
 	if (!selected) return 'left'
 	return selected.itemDisplay
 }
-ITEM_DISPLAY_ITEM_DISPLAY_SELECT.set = function (
+ITEM_DISPLAY_ALIGNMENT_SELECT.set = function (
 	this: BarSelect<ItemDisplayMode>,
 	value: ItemDisplayMode
 ) {
@@ -82,11 +83,11 @@ function updateItemDisplaySelect() {
 	console.log('updateItemDisplaySelect')
 	let value = ItemDisplay.selected.at(0)?.itemDisplay
 	value ??= 'none'
-	ITEM_DISPLAY_ITEM_DISPLAY_SELECT.set(value)
+	ITEM_DISPLAY_ALIGNMENT_SELECT.set(value)
 }
-events.UNDO.subscribe(() => {
+EVENTS.UNDO.subscribe(() => {
 	updateItemDisplaySelect()
 })
-events.REDO.subscribe(() => {
+EVENTS.REDO.subscribe(() => {
 	updateItemDisplaySelect()
 })

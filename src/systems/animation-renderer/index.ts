@@ -1,21 +1,19 @@
-import * as crypto from 'crypto'
-import { BlockDisplay } from '../../blockbench-additions/outliner-elements/blockDisplay'
-import { ItemDisplay } from '../../blockbench-additions/outliner-elements/itemDisplay'
-import { TextDisplay } from '../../blockbench-additions/outliner-elements/textDisplay'
 import {
 	getKeyframeCommands,
 	getKeyframeExecuteCondition,
 	getKeyframeRepeat,
 	getKeyframeRepeatFrequency,
 	getKeyframeVariant,
-} from '../mods/customKeyframesMod'
-import { TextDisplay } from '../outliner/textDisplay'
-import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
-import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
-import { sanitizePathName, sanitizeStorageKey } from '../util/minecraftUtil'
-import { eulerFromQuaternion, roundToNth } from '../util/misc'
-import { AnyRenderedNode, IRenderedRig } from './rigRenderer'
-import { sleepForAnimationFrame } from './util'
+} from '@aj/blockbench-mods/misc/customKeyframes'
+import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '@aj/ui/dialogs/export-progress'
+import { sanitizePathName, sanitizeStorageKey } from '@aj/util/minecraftUtil'
+import { eulerFromQuaternion, roundToNth } from '@aj/util/misc'
+import * as crypto from 'crypto'
+import { BlockDisplay } from '../../blockbench-additions/outliner-elements/blockDisplay'
+import { ItemDisplay } from '../../blockbench-additions/outliner-elements/itemDisplay'
+import { TextDisplay } from '../../blockbench-additions/outliner-elements/textDisplay'
+import type { AnyRenderedNode, IRenderedRig } from '../rig-renderer'
+import { sleepForAnimationFrame } from '../util'
 
 export function correctSceneAngle() {
 	main_preview.controls.rotateLeft(Math.PI)
@@ -46,10 +44,10 @@ function getNodeMatrix(node: OutlinerElement, scale: number) {
 
 function getDecomposedTransformation(matrix: THREE.Matrix4) {
 	const translation = new THREE.Vector3()
-	const left_rotation = new THREE.Quaternion()
+	const leftRotation = new THREE.Quaternion()
 	const scale = new THREE.Vector3()
-	matrix.decompose(translation, left_rotation, scale)
-	return { translation, left_rotation, scale }
+	matrix.decompose(translation, leftRotation, scale)
+	return { translation, left_rotation: leftRotation, scale }
 }
 
 function threeAxisRotationToTwoAxisRotation(rot: THREE.Quaternion): ArrayVector2 {
@@ -232,7 +230,7 @@ export function getFrame(
 			case 'struct': {
 				matrix = getNodeMatrix(outlinerNode, 1)
 				// Only add the frame if the matrix has changed, or this is the first frame
-				if (lastFrame && lastFrame.matrix.equals(matrix)) continue
+				if (lastFrame?.matrix.equals(matrix)) continue
 				lastFrameCache.set(uuid, { matrix, keyframe })
 				break
 			}

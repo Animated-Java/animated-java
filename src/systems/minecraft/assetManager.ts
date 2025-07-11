@@ -1,22 +1,22 @@
 import { PACKAGE } from '../../constants'
 import { getCurrentVersion, getLatestVersion } from './versionManager'
-import { events } from '../../util/events'
 
-import index from '../../assets/vanillaAssetOverrides/index.json'
-import { Unzipped } from 'fflate'
-import { unzip } from '../util'
-import download from 'download'
+import index from '@aj/assets/vanillaAssetOverrides/index.json'
 import {
 	showOfflineError,
 	updateLoadingProgress,
 	updateLoadingProgressLabel,
-} from '../../interface/popup/animatedJavaLoading'
+} from '@aj/ui/popups/animated-java-loading'
+import EVENTS from '@aj/util/events'
+import download from 'download'
+import type { Unzipped } from 'fflate'
+import { unzip } from '../util'
 const ASSET_OVERRIDES = index as unknown as Record<string, string>
 
 async function downloadJar(url: string, savePath: string) {
 	updateLoadingProgressLabel('Downloading Minecraft Assets...')
 
-	const data = await download(url, { retry: { retries: 3 } })
+	const data = await download(url, savePath)
 		.on('downloadProgress', progress => {
 			updateLoadingProgress(progress.percent * 100)
 		})
@@ -99,7 +99,7 @@ export async function checkForAssetsUpdate() {
 	await extractAssets()
 	console.log('Minecraft assets are up to date!')
 	localStorage.setItem('assetsLoaded', 'true')
-	requestAnimationFrame(() => events.MINECRAFT_ASSETS_LOADED.dispatch())
+	requestAnimationFrame(() => EVENTS.MINECRAFT_ASSETS_LOADED.dispatch())
 }
 
 let loadedAssets: Unzipped | undefined
@@ -116,7 +116,7 @@ export async function assetsLoaded() {
 		if (loadedAssets !== undefined) {
 			resolve()
 		} else {
-			events.MINECRAFT_ASSETS_LOADED.subscribe(() => resolve(), true)
+			EVENTS.MINECRAFT_ASSETS_LOADED.subscribe(() => resolve(), true)
 		}
 	})
 }

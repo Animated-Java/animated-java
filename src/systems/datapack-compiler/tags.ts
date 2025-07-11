@@ -1,7 +1,7 @@
 import { NbtList, NbtString } from 'deepslate/lib/nbt'
 import { createTagPrefixFromBlueprintID } from '../../util/minecraftUtil'
 import { IntentionalExportError } from '../exporter'
-import type { AnyRenderedNode, IRenderedRig } from '../rigRenderer'
+import type { AnyRenderedNode, IRenderedRig } from '../rig-renderer'
 
 export namespace TAGS {
 	// --------------------------------
