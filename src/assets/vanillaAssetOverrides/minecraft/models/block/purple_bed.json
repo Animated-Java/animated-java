@@ -1,6 +1,0 @@
-{
-	"parent": "block/bed",
-	"textures": {
-		"0": "entity/bed/purple"
-	}
-}

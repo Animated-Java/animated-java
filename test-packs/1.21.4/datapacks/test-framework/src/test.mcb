@@ -1,9 +1,0 @@
-function on_load minecraft:load {
-	tellraw @a {text:'Test Framework loaded!', color:green}
-}
-
-function summon {
-	#ARGS: {args:{...}}
-	function animated_java:armor_stand/remove/all
-	$execute positioned 0 -63 0 rotated 0 0 run function animated_java:armor_stand/summon {args:$(args)}
-}
