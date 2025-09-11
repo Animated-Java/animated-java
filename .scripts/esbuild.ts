@@ -9,6 +9,7 @@ process.env.FLAVOR ??= `local`
 import * as esbuild from 'esbuild'
 import ImportGlobPlugin from 'esbuild-plugin-import-glob'
 import inlineImage from 'esbuild-plugin-inline-image'
+// import sveltePlugin from 'esbuild-svelte'
 import * as fs from 'fs'
 import { load } from 'js-yaml'
 import vsCodeProblemsPatchPlugin from 'node-modules-vscode-problems-patch'
@@ -18,11 +19,10 @@ import svelteConfig from '../svelte.config.js'
 import assetOverridePlugin from './esbuild-plugins/assetOverride.js'
 import mcbCompressionPlugin from './esbuild-plugins/mcbCompression.js'
 import pluginPackagerPlugin from './esbuild-plugins/pluginPackager.js'
-import sveltePlugin from './esbuild-plugins/svelte.js'
+import sveltePlugin from './esbuild-plugins/svelte'
 import inlineWorkerPlugin from './esbuild-plugins/worker.js'
 
 const PACKAGE = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
-console.log(vsCodeProblemsPatchPlugin)
 
 const INFO_PLUGIN: esbuild.Plugin = {
 	name: 'infoPlugin',
@@ -74,13 +74,7 @@ const DEPENDENCY_QUARKS: esbuild.Plugin = {
 	},
 }
 function createBanner() {
-	function wrap(s: string, width: number) {
-		return s.replace(new RegExp(`(?![^\\n]{1,${width}}$)([^\\n]{1,${width}})\\s`, 'g'), '$1\n')
-	}
-
 	const license = fs.readFileSync('./LICENSE').toString()
-	const fetchbot = PACKAGE.contributors[0]
-	const dominexis = PACKAGE.contributors[1]
 	let lines: string[] = [
 		String.raw`____ _  _ _ _  _ ____ ___ ____ ___      _ ____ _  _ ____`,
 		String.raw`|__| |\ | | |\/| |__|  |  |___ |  \     | |__| |  | |__|`,
@@ -93,18 +87,6 @@ function createBanner() {
 		`Created by ${PACKAGE.author.name as string}`,
 		`(${PACKAGE.author.email as string}) [${PACKAGE.author.url as string}]`,
 		``,
-		`With AMAZING help from`,
-		``,
-		`${fetchbot.name as string}`,
-		`(${fetchbot.email as string}) [${fetchbot.url as string}]`,
-		``,
-		`and ${dominexis.name as string}`,
-		`(${dominexis.email as string}) [${dominexis.url as string}]`,
-		``,
-		`[ SPECIAL THANKS ]`,
-		``,
-		`$INSERT_SPECIAL_THANKS_HERE`,
-		``,
 		`[ SOURCE ]`,
 		`${PACKAGE.repository.url as string}`,
 		``,
@@ -113,14 +95,6 @@ function createBanner() {
 	]
 
 	const maxLength = Math.max(...lines.map(line => line.length))
-
-	lines.splice(
-		lines.indexOf('$INSERT_SPECIAL_THANKS_HERE'),
-		1,
-		...wrap(PACKAGE.special_thanks.join(', ') as string, Math.floor(maxLength / 1.5)).split(
-			'\n'
-		)
-	)
 
 	const leftBuffer = Math.floor(maxLength / 2)
 	const rightBuffer = Math.ceil(maxLength / 2)
@@ -203,7 +177,7 @@ const DEV_CONFIG: esbuild.BuildOptions = {
 	outfile: `./dist/${PACKAGE.name as string}.js`,
 	bundle: true,
 	minify: false,
-	platform: 'node',
+	platform: 'browser',
 	sourcemap: 'inline',
 	sourceRoot: 'http://animated-java/',
 	loader: { '.svg': 'dataurl', '.ttf': 'binary', '.mcb': 'text' },

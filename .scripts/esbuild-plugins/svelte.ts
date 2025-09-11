@@ -5,12 +5,12 @@
 
 'use strict'
 Object.defineProperty(exports, '__esModule', { value: true })
-import type { Plugin } from 'esbuild'
+import type { Plugin, TransformOptions } from 'esbuild'
 import { readFile } from 'fs/promises'
 import { relative } from 'path'
 import type { PreprocessorGroup } from 'svelte-preprocess/dist/types'
-import { compile, preprocess } from 'svelte/compiler'
-import type { CompileOptions } from 'svelte/types/compiler'
+import type { CompileResult, ModuleCompileOptions } from 'svelte/compiler'
+import { type CompileOptions, compile, preprocess } from 'svelte/compiler'
 /**
  * Convert a warning or error emitted from the svelte compiler for esbuild.
  */
@@ -30,19 +30,43 @@ function convertWarning(source: any, { message, filename, start, end }: any) {
 	return { text: message, location }
 }
 
+type Warning = CompileResult['warnings'][number]
 export interface ISvelteESBuildPluginOptions {
 	/**
-	 * The preprocessors to run on the Svelte files.
+	 * Svelte compiler options
 	 */
-	preprocess?: PreprocessorGroup[]
+	compilerOptions?: CompileOptions
+	/**
+	 * Svelte compiler options for module files (*.svelte.js and *.svelte.ts)
+	 */
+	moduleCompilerOptions?: ModuleCompileOptions
 	/**
 	 * A function that transforms CSS into JS.
 	 */
 	transformCssToJs: (css: string) => string
 	/**
-	 * The compiler options to use when compiling the Svelte files.
+	 * esbuild transform options for ts module files (.svelte.ts)
 	 */
-	compilerOptions: CompileOptions
+	esbuildTsTransformOptions?: TransformOptions
+	/**
+	 * The preprocessor(s) to run the Svelte code through before compiling
+	 */
+	preprocess?: PreprocessorGroup | PreprocessorGroup[]
+	/**
+	 * Attempts to cache compiled files if the mtime of the file hasn't changed since last run.
+	 *
+	 */
+	cache?: boolean
+	/**
+	 * The regex filter to use when filtering files to compile
+	 * Defaults to `/\.svelte$/`
+	 */
+	include?: RegExp
+	/**
+	 * A function to filter out warnings
+	 * Defaults to a constant function that returns `true`
+	 */
+	filterWarnings?: (warning: Warning) => boolean
 }
 
 function esbuildPluginSvelte(opts: ISvelteESBuildPluginOptions): Plugin {
@@ -66,26 +90,32 @@ function esbuildPluginSvelte(opts: ISvelteESBuildPluginOptions): Plugin {
 					const processed = await preprocess(source, opts.preprocess, { filename })
 					source = processed.code
 				}
-				const compilerOptions = { css: false, ...opts.compilerOptions }
+				const compilerOptions: CompileOptions = {
+					...opts.compilerOptions,
+					css: 'external',
+					generate: 'client',
+				}
 				let res
 				try {
 					res = compile(source, { ...compilerOptions, filename })
 				} catch (err: any) {
 					return { errors: [convertWarning(source, err)] }
 				}
+				console.log('res', res)
+				console.log(res.js.code)
 				const { js, css, warnings } = res
-				let code = `${js.code}\n//# sourceMappingURL=${js.map.toUrl()}`
+				let contents = `${js.code}\n//# sourceMappingURL=${js.map.toUrl()}`
 				// Emit CSS, otherwise it will be included in the JS and injected at runtime.
-				if (css.code && opts.transformCssToJs) {
-					code = `${code}\n${opts.transformCssToJs(css.code)}`
-				} else if (css.code && !compilerOptions.css) {
+				if (css?.code && opts.transformCssToJs) {
+					contents = `${contents}\n${opts.transformCssToJs(css.code)}`
+				} else if (css?.code && !compilerOptions.css) {
 					const cssPath = `${path}.css`
 					cache.set(cssPath, `${css.code}/*# sourceMappingURL=${css.map.toUrl()}*/`)
-					code = `${code}\nimport ${JSON.stringify(cssPath)}`
+					contents = `${contents}\nimport ${JSON.stringify(cssPath)}`
 				}
 
 				return {
-					contents: code,
+					contents,
 					warnings: warnings.map(w => convertWarning(source, w)),
 				}
 			})

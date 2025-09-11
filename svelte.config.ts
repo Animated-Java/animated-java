@@ -1,5 +1,5 @@
 import { resolve } from 'path'
-// import { sveltePreprocess } from 'svelte-preprocess'
+import { sveltePreprocess } from 'svelte-preprocess'
 import { typescript } from 'svelte-preprocess-esbuild'
 import type { ISvelteESBuildPluginOptions } from './.scripts/esbuild-plugins/svelte'
 
@@ -10,10 +10,10 @@ export const preprocess = [
 			'process.browser': 'true',
 		},
 	}),
-	// sveltePreprocess({
-	// 	typescript: false,
-	// 	sourceMap: process.env.NODE_ENV === 'development',
-	// }),
+	sveltePreprocess({
+		typescript: false,
+		sourceMap: process.env.NODE_ENV === 'development',
+	}),
 ]
 
 const IMPORT_PATH = resolve(__dirname, '../src/util/', 'events.ts')
@@ -33,6 +33,6 @@ export default {
 	transformCssToJs,
 	compilerOptions: {
 		dev: process.env.NODE_ENV === 'development',
-		errorMode: process.env.NODE_ENV === 'development' ? 'warn' : 'throw',
+		// errorMode: process.env.NODE_ENV === 'development' ? 'warn' : 'throw',
 	},
 } satisfies ISvelteESBuildPluginOptions

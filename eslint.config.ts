@@ -3,7 +3,6 @@ import svelteEslint from 'eslint-plugin-svelte'
 import svelteParser from 'svelte-eslint-parser'
 import tsESLint, { type ConfigWithExtends } from 'typescript-eslint'
 import type { NamingConventionRule } from './.scripts/tslintNamingConventionRule'
-import svelteConfig from './svelte.config'
 
 console.log(`[${new Date().toLocaleTimeString()}] Loading ESLint config`)
 
@@ -242,7 +241,7 @@ export default tsESLint.config(
 			parser: svelteParser,
 			parserOptions: {
 				parser: tsESLint.parser,
-				svelteConfig: svelteConfig,
+				// svelteConfig: svelteConfig,
 				extraFileExtensions: ['.svelte'],
 			},
 			globals: {

@@ -3,13 +3,14 @@ import * as fs from 'fs'
 import { readFileSync, writeFileSync } from 'fs'
 import * as pathjs from 'path'
 import * as prettier from 'prettier'
-import * as c from 'svelte/compiler'
-import * as svelteInternal from 'svelte/internal'
+import { compile } from 'svelte/compiler'
+// @ts-expect-error
+import * as svelteServer from 'svelte/internal/server'
 import type PackageType from '../../package.json'
-import type ChangelogType from '../../src/plugin/package/changelog.json'
+import type ChangelogType from '../../src/plugin-package/changelog.json'
 
 const SRC = './src/'
-const SRC_PACKAGE = pathjs.join(SRC, 'plugin/package/')
+const SRC_PACKAGE = pathjs.join(SRC, 'plugin-package/')
 const SRC_ABOUT = pathjs.join(SRC_PACKAGE, 'about.svelte')
 const SRC_CHANGELOG = pathjs.join(SRC_PACKAGE, 'changelog.json')
 
@@ -46,21 +47,23 @@ function plugin(): Plugin {
 					pluginBuildPath,
 					pathjs.join(DIST_PACKAGE, packageJSON.name + '.js')
 				)
-				const svelteResult = c.compile(readFileSync(SRC_ABOUT, 'utf-8'), {
-					generate: 'ssr',
+				const svelteResult = compile(readFileSync(SRC_ABOUT, 'utf-8'), {
+					generate: 'server',
 					cssHash({ hash, css }) {
 						return `animated-java-plugin-page-${hash(css)}`
 					},
 				})
 				const component = new Function(
-					'svelteInternal',
+					'svelteServer',
 					svelteResult.js.code
-						.replace(/from "svelte\/internal"/g, ' = svelteInternal')
+						.replace(
+							"import * as $ from 'svelte/internal/server';",
+							'const $ = svelteServer;'
+						)
 						.replace('export default', 'return')
-						.replace('import', 'const')
-				)
-				const result = component(svelteInternal).render()
-				const html = `${result.html}\n<style>${result.css.code}</style>`
+				)(svelteServer)
+				const result = svelteServer.render(component)
+				const html = `${result.html.replace(/^\t+/gm, '')}\n<style>${svelteResult.css!.code}</style>`
 				writeFileSync(DIST_README, html)
 				if (fs.existsSync(pathjs.join(DIST_PACKAGE, 'about.svelte')))
 					fs.unlinkSync(pathjs.join(DIST_PACKAGE, 'about.svelte'))
