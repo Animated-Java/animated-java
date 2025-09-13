@@ -1,5 +1,5 @@
+import { SerializableConfig } from '@aj/util/serializableConfig'
 import { describe, expect, it } from 'vitest'
-import { SerializableConfig } from '../src/systems/node-configs/serializableConfig'
 
 @SerializableConfig.decorate
 export class TestConfig extends SerializableConfig<TestConfig> {
