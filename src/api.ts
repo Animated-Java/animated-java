@@ -1,22 +1,41 @@
 import { PACKAGE } from './constants'
 import { createBlockbenchMod } from './util/moddingTools'
 
-import { mount } from 'svelte'
-import Test from './svelte-components/test.svelte'
-
-console.log(Test)
+import Test from '@components/test.svelte'
+import { mount, unmount } from 'svelte'
+import { openBlueprintSettings } from './dialogs/blueprint-settings'
+import { SvelteDialog } from './svelte/dialog'
 
 const PLUGIN_API = {
 	API: {
-		test() {
-			mount(Test, { target: document.querySelector('div.button_bar')! })
+		svelte: {
+			mount,
+			unmount,
+		},
+		openBlueprintSettings,
+		openTestDialog: () => {
+			new SvelteDialog({
+				id: 'animated-java:test-dialog',
+				title: 'Test Dialog',
+				component: Test,
+				props: {},
+				stackable: false,
+				onOpen: () => console.log('Dialog opened'),
+				onButton: index => console.log('Button clicked', index),
+				onFormChange: data => console.log('Form changed', data),
+				onConfirm: () => console.log('Dialog confirmed'),
+				onCancel: () => console.log('Dialog canceled'),
+				onClose: () => console.log('Dialog closed'),
+			}).show()
 		},
 	},
 }
+
 declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	var AnimatedJava: typeof PLUGIN_API
 }
+
 window.AnimatedJava = PLUGIN_API
 
 createBlockbenchMod(

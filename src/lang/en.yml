@@ -1,0 +1,10 @@
+dialog:
+  blueprint-settings:
+    title: Blueprint Settings
+    pages:
+      general:
+        label: General
+      data-pack:
+        label: Data Pack
+      resource-pack:
+        label: Resource Pack

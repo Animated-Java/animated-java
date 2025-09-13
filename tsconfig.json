@@ -26,10 +26,10 @@
 		"alwaysStrict": true,
 		"experimentalDecorators": true,
 		"paths": {
-			"@aj/*": ["./src/*"],
+			"@components/*": ["./src/svelte-components/*"],
 			"@events": ["./src/util/events.ts"],
-			"@svelte-components/*": ["./src/svelte-components/*"],
-			"@assets/*": ["./src/assets/*"]
+			"@assets/*": ["./src/assets/*"],
+			"@aj/*": ["./src/*"]
 		}
 	}
 }

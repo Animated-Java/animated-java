@@ -1,12 +1,18 @@
 <script lang="ts">
-	let test = $state(0)
+	interface Props {
+		value?: number
+	}
+
+	const { value = 0 }: Props = $props()
+
+	let count = $state(value)
 
 	function add() {
-		test++
+		count++
 	}
 </script>
 
-<button onclick={add}>{test}</button>
+<button onclick={add}>{count}</button>
 
 <style>
 	button {
