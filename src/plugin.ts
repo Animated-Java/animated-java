@@ -1,6 +1,5 @@
 import EVENTS from '@events'
 import { PACKAGE } from './constants'
-// import { openInstallPopup } from '../ui/popups/installed'
 
 export default function register() {
 	BBPlugin.register(PACKAGE.name, {
@@ -21,7 +20,6 @@ export default function register() {
 		},
 		oninstall() {
 			EVENTS.INSTALL.dispatch()
-			// openInstallPopup()
 		},
 		onuninstall() {
 			EVENTS.UNINSTALL.dispatch()

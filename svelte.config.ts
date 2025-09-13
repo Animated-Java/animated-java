@@ -33,6 +33,6 @@ export default {
 	transformCssToJs,
 	compilerOptions: {
 		dev: process.env.NODE_ENV === 'development',
-		// errorMode: process.env.NODE_ENV === 'development' ? 'warn' : 'throw',
+		runes: true,
 	},
 } satisfies ISvelteESBuildPluginOptions
