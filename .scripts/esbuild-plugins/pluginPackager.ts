@@ -1,6 +1,14 @@
 import { type Plugin } from 'esbuild'
-import * as fs from 'fs'
-import { readFileSync, writeFileSync } from 'fs'
+import {
+	copyFileSync,
+	cpSync,
+	existsSync,
+	readdirSync,
+	readFileSync,
+	rmSync,
+	unlinkSync,
+	writeFileSync,
+} from 'fs'
 import * as pathjs from 'path'
 import * as prettier from 'prettier'
 import { compile } from 'svelte/compiler'
@@ -33,20 +41,20 @@ function plugin(): Plugin {
 		name: 'packagerPlugin',
 		setup(build) {
 			build.onEnd(async () => {
+				await new Promise(r => setTimeout(r, 1000)) // Wait for file writes to finish
+				const startTime = Date.now()
+
 				const packageJSON: typeof PackageType = JSON.parse(
-					fs.readFileSync('./package.json', 'utf-8')
+					readFileSync('./package.json', 'utf-8')
 				)
-				fs.rmSync(DIST_PACKAGE, { recursive: true, force: true })
-				fs.cpSync(SRC_PACKAGE, DIST_PACKAGE, { recursive: true })
+				rmSync(DIST_PACKAGE, { recursive: true, force: true })
+				cpSync(SRC_PACKAGE, DIST_PACKAGE, { recursive: true })
 				const pluginBuildPath = `./dist/${packageJSON.name}.js`
-				if (!fs.existsSync(pluginBuildPath)) {
+				if (!existsSync(pluginBuildPath)) {
 					console.error('❌ Plugin build not found while packaging!')
 					return
 				}
-				fs.copyFileSync(
-					pluginBuildPath,
-					pathjs.join(DIST_PACKAGE, packageJSON.name + '.js')
-				)
+				copyFileSync(pluginBuildPath, pathjs.join(DIST_PACKAGE, packageJSON.name + '.js'))
 				const svelteResult = compile(readFileSync(SRC_ABOUT, 'utf-8'), {
 					generate: 'server',
 					cssHash({ hash, css }) {
@@ -65,57 +73,53 @@ function plugin(): Plugin {
 				const result = svelteServer.render(component)
 				const html = `${result.html.replace(/^\t+/gm, '')}\n<style>${svelteResult.css!.code}</style>`
 				writeFileSync(DIST_README, html)
-				if (fs.existsSync(pathjs.join(DIST_PACKAGE, 'about.svelte')))
-					fs.unlinkSync(pathjs.join(DIST_PACKAGE, 'about.svelte'))
+				if (existsSync(pathjs.join(DIST_PACKAGE, 'about.svelte')))
+					unlinkSync(pathjs.join(DIST_PACKAGE, 'about.svelte'))
 
-				console.log('📦 Packaged')
+				console.log(`📦 Package completed in ${Date.now() - startTime}ms`)
 
-				if (process.env.NODE_ENV === 'production') {
-					console.log('📝 Creating changelogs...')
-					const changelog: Changelog = JSON.parse(fs.readFileSync(SRC_CHANGELOG, 'utf-8'))
-					for (const file of fs.readdirSync(RELEASE_NOTES_TEMPLATES)) {
-						let content = fs.readFileSync(
-							pathjs.join(RELEASE_NOTES_TEMPLATES, file),
-							'utf-8'
-						)
-						const version = packageJSON.version as keyof Changelog
-						content = replaceTemplateVars(content, {
-							version: packageJSON.version,
-							changes: changelog[version].categories
-								.find(c => c.title === 'Changes')
-								?.list.map(v => '- ' + v)
-								.join('\n'),
-							fixes: changelog[version].categories
-								.find(c => c.title === 'Fixes')
-								?.list.map(v => '- ' + v)
-								.join('\n'),
+				if (process.env.NODE_ENV !== 'production') return
+				console.log('📝 Creating changelogs...')
+				const changelog: Changelog = JSON.parse(readFileSync(SRC_CHANGELOG, 'utf-8'))
+				for (const file of readdirSync(RELEASE_NOTES_TEMPLATES)) {
+					let content = readFileSync(pathjs.join(RELEASE_NOTES_TEMPLATES, file), 'utf-8')
+					const version = packageJSON.version as keyof Changelog
+					content = replaceTemplateVars(content, {
+						version: packageJSON.version,
+						changes: changelog[version].categories
+							.find(c => c.title === 'Changes')
+							?.list.map(v => '- ' + v)
+							.join('\n'),
+						fixes: changelog[version].categories
+							.find(c => c.title === 'Fixes')
+							?.list.map(v => '- ' + v)
+							.join('\n'),
+					})
+					writeFileSync(pathjs.join(DIST, file), content)
+				}
+
+				if (existsSync(PLUGIN_REPO_PATH)) {
+					rmSync(PLUGIN_REPO_PATH, { recursive: true, force: true })
+					cpSync(DIST_PACKAGE, PLUGIN_REPO_PATH, { recursive: true })
+					const manifest = JSON.parse(readFileSync(PLUGIN_MANIFEST_PATH, 'utf-8'))
+					manifest.animated_java.title = packageJSON.title
+					manifest.animated_java.author = packageJSON.author.name
+					manifest.animated_java.icon = packageJSON.icon
+					manifest.animated_java.description = packageJSON.description
+					manifest.animated_java.version = packageJSON.version
+					manifest.animated_java.min_version = packageJSON.min_blockbench_version
+					manifest.animated_java.variant = packageJSON.variant
+					manifest.animated_java.tags = packageJSON.tags
+					manifest.animated_java.has_changelog = true
+
+					writeFileSync(
+						PLUGIN_MANIFEST_PATH,
+						await prettier.format(JSON.stringify(manifest), {
+							useTabs: true,
+							parser: 'json',
 						})
-						fs.writeFileSync(pathjs.join(DIST, file), content)
-					}
-
-					if (fs.existsSync(PLUGIN_REPO_PATH)) {
-						fs.rmSync(PLUGIN_REPO_PATH, { recursive: true, force: true })
-						fs.cpSync(DIST_PACKAGE, PLUGIN_REPO_PATH, { recursive: true })
-						const manifest = JSON.parse(fs.readFileSync(PLUGIN_MANIFEST_PATH, 'utf-8'))
-						manifest.animated_java.title = packageJSON.title
-						manifest.animated_java.author = packageJSON.author.name
-						manifest.animated_java.icon = packageJSON.icon
-						manifest.animated_java.description = packageJSON.description
-						manifest.animated_java.version = packageJSON.version
-						manifest.animated_java.min_version = packageJSON.min_blockbench_version
-						manifest.animated_java.variant = packageJSON.variant
-						manifest.animated_java.tags = packageJSON.tags
-						manifest.animated_java.has_changelog = true
-
-						fs.writeFileSync(
-							PLUGIN_MANIFEST_PATH,
-							await prettier.format(JSON.stringify(manifest), {
-								useTabs: true,
-								parser: 'json',
-							})
-						)
-						console.log('📋 Copied to Plugin Repo!')
-					}
+					)
+					console.log('📋 Copied to Plugin Repo!')
 				}
 			})
 		},
