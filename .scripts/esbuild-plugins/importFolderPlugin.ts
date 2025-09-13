@@ -124,7 +124,11 @@ const plugin: Plugin = {
 				.join('\n')
 
 			console.log(
-				`📃 ${normalizePathToPosix(pathjs.relative(process.cwd(), args.pluginData.importer))} imports folder ./${normalizePathToPosix(pathjs.relative(process.cwd(), args.path))} ${args.pluginData.recursive ? 'recursively' : ''}.`
+				`📃 ${normalizePathToPosix(
+					pathjs.relative(process.cwd(), args.pluginData.importer)
+				)} imports folder ${normalizePathToPosix(
+					pathjs.relative(process.cwd(), args.path)
+				)}${args.pluginData.recursive ? ' recursively' : ''}.`
 			)
 
 			return {
