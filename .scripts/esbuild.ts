@@ -9,7 +9,6 @@ process.env.FLAVOR ??= `local`
 import * as esbuild from 'esbuild'
 import ImportGlobPlugin from 'esbuild-plugin-import-glob'
 import inlineImage from 'esbuild-plugin-inline-image'
-// import sveltePlugin from 'esbuild-svelte'
 import * as fs from 'fs'
 import { load } from 'js-yaml'
 import vsCodeProblemsPatchPlugin from 'node-modules-vscode-problems-patch'

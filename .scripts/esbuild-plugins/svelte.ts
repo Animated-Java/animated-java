@@ -85,24 +85,26 @@ function esbuildPluginSvelte(opts: ISvelteESBuildPluginOptions): Plugin {
 			//
 			build.onLoad({ filter: /\.svelte$/ }, async ({ path }) => {
 				let source = await readFile(path, 'utf-8')
+				let sourcemap: any
 				const filename = relative(process.cwd(), path)
 				if (opts.preprocess) {
 					const processed = await preprocess(source, opts.preprocess, { filename })
 					source = processed.code
+					sourcemap = processed.map
 				}
 				const compilerOptions: CompileOptions = {
 					...opts.compilerOptions,
+					filename,
+					sourcemap,
 					css: 'external',
 					generate: 'client',
 				}
-				let res
+				let res: CompileResult
 				try {
-					res = compile(source, { ...compilerOptions, filename })
+					res = compile(source, compilerOptions)
 				} catch (err: any) {
 					return { errors: [convertWarning(source, err)] }
 				}
-				console.log('res', res)
-				console.log(res.js.code)
 				const { js, css, warnings } = res
 				let contents = `${js.code}\n//# sourceMappingURL=${js.map.toUrl()}`
 				// Emit CSS, otherwise it will be included in the JS and injected at runtime.

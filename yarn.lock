@@ -634,7 +634,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jridgewell/trace-mapping@npm:^0.3.19, @jridgewell/trace-mapping@npm:^0.3.24":
+"@jridgewell/trace-mapping@npm:^0.3.24":
   version: 0.3.30
   resolution: "@jridgewell/trace-mapping@npm:0.3.30"
   dependencies:
@@ -1411,7 +1411,6 @@ __metadata:
     esbuild-plugin-import-glob: "npm:^0.1.1"
     esbuild-plugin-inline-image: "npm:^0.0.9"
     esbuild-plugin-inline-worker: "npm:^0.1.1"
-    esbuild-svelte: "npm:^0.9.3"
     eslint: "npm:^9.33.0"
     eslint-plugin-check-file: "npm:^3.3.0"
     eslint-plugin-svelte: "npm:^3.11.0"
@@ -2104,18 +2103,6 @@ __metadata:
     esbuild: "npm:latest"
     find-cache-dir: "npm:^3.3.1"
   checksum: 10c0/7d8f1828b0550b329be8e5c2e95b4dd90be41dbf6cc7e0a8971c53461182b0fc8b43499bd3bac55ca720b5d18d0f053de4ef10a085087d6ffdcfafde765de467
-  languageName: node
-  linkType: hard
-
-"esbuild-svelte@npm:^0.9.3":
-  version: 0.9.3
-  resolution: "esbuild-svelte@npm:0.9.3"
-  dependencies:
-    "@jridgewell/trace-mapping": "npm:^0.3.19"
-  peerDependencies:
-    esbuild: ">=0.17.0"
-    svelte: ">=4.2.1 <6"
-  checksum: 10c0/50c0b90ce8f2446da51f6a8ecf22666116781ed0dc3342f17b317fc47b46388998490f1382870f0dc3dde323d6dd75b6ae6444c965ad3c8f28192234e1a9cf8a
   languageName: node
   linkType: hard
 

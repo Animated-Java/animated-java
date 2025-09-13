@@ -49,7 +49,6 @@
 		"esbuild-plugin-import-glob": "^0.1.1",
 		"esbuild-plugin-inline-image": "^0.0.9",
 		"esbuild-plugin-inline-worker": "^0.1.1",
-		"esbuild-svelte": "^0.9.3",
 		"eslint": "^9.33.0",
 		"eslint-plugin-check-file": "^3.3.0",
 		"eslint-plugin-svelte": "^3.11.0",
