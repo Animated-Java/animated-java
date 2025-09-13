@@ -4,7 +4,7 @@ import svelteParser from 'svelte-eslint-parser'
 import tsESLint, { type ConfigWithExtends } from 'typescript-eslint'
 import type { NamingConventionRule } from './.scripts/tslintNamingConventionRule'
 
-console.log(`[${new Date().toLocaleTimeString()}] Loading ESLint config`)
+console.log(`⚙️ Loading ESLint config...`)
 
 const IGNORE_PATTERNS = [
 	'.DS_Store',
@@ -47,8 +47,11 @@ const CUSTOM_RULES: ConfigWithExtends['rules'] = {
 	'check-file/filename-naming-convention': [
 		'error',
 		{
-			'src/**/*.{ts.d.ts}': 'CAMEL_CASE',
-			'tools/**/*.{ts.d.ts}': 'CAMEL_CASE',
+			'src/**/*.{ts,svelte}': 'CAMEL_CASE',
+			'tools/**': 'CAMEL_CASE',
+		},
+		{
+			ignoreMiddleExtensions: true,
 		},
 	],
 	'check-file/folder-naming-convention': [
@@ -146,17 +149,16 @@ const CUSTOM_RULES: ConfigWithExtends['rules'] = {
 		{
 			selector: 'variableLike',
 			format: ['camelCase'],
+			leadingUnderscore: 'forbid',
 		},
-		{ selector: 'interface', format: ['PascalCase'] },
 		{
 			selector: 'interface',
-			modifiers: ['exported'],
 			format: ['PascalCase'],
-			prefix: ['I'],
+			leadingUnderscore: 'forbid',
 		},
 		{ selector: 'typeLike', format: ['PascalCase'] },
 		{ selector: 'objectLiteralProperty', format: null },
-		{ selector: 'default', format: ['camelCase'] },
+		{ selector: 'default', format: ['camelCase'], leadingUnderscore: 'forbid' },
 		{
 			selector: 'parameter',
 			modifiers: ['unused'],
@@ -226,6 +228,11 @@ export default tsESLint.config(
 				},
 				{
 					selector: 'variable',
+					modifiers: ['const', 'global', 'destructured'],
+					format: ['camelCase', 'UPPER_CASE'],
+				},
+				{
+					selector: 'variable',
 					modifiers: ['const', 'global'],
 					types: ['function'],
 					format: ['camelCase'],
@@ -265,3 +272,4 @@ export default tsESLint.config(
 		},
 	}
 )
+console.log(`✅ ESLint config loaded successfully.`)
