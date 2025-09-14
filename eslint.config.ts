@@ -47,8 +47,7 @@ const CUSTOM_RULES: ConfigWithExtends['rules'] = {
 	'check-file/filename-naming-convention': [
 		'error',
 		{
-			'src/**/*.{ts,svelte}': 'CAMEL_CASE',
-			'tools/**': 'CAMEL_CASE',
+			'**/!(versions)/*.{ts,svelte}': 'CAMEL_CASE',
 		},
 		{
 			ignoreMiddleExtensions: true,
@@ -57,8 +56,7 @@ const CUSTOM_RULES: ConfigWithExtends['rules'] = {
 	'check-file/folder-naming-convention': [
 		'error',
 		{
-			'src/**': 'KEBAB_CASE',
-			'tools/**': 'KEBAB_CASE',
+			'**/!(.scripts)/*': 'KEBAB_CASE',
 		},
 	],
 	// TypeScript

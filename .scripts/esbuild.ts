@@ -16,10 +16,10 @@ import path, { isAbsolute, join } from 'path'
 import { TextDecoder } from 'util'
 import svelteConfig from '../svelte.config.js'
 import assetOverridePlugin from './esbuild-plugins/assetOverride.js'
+import importFolderPlugin from './esbuild-plugins/importFolderPlugin.js'
 import mcbCompressionPlugin from './esbuild-plugins/mcbCompression.js'
 import pluginPackagerPlugin from './esbuild-plugins/pluginPackager.js'
 import sveltePlugin from './esbuild-plugins/svelte'
-import inlineWorkerPlugin from './esbuild-plugins/worker.js'
 
 const PACKAGE = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
 
@@ -149,38 +149,15 @@ const yamlPlugin: (opts: {
 	},
 })
 
-const DEV_WORKER_CONFIG: esbuild.BuildOptions = {
-	bundle: true,
-	minify: false,
-	platform: 'node',
-	sourcemap: 'inline',
-	sourceRoot: 'http://animated-java/',
-	loader: { '.svg': 'dataurl', '.ttf': 'binary', '.mcb': 'text' },
-	plugins: [
-		// inlineImage({
-		// 	limit: -1,
-		// }),
-		// @ts-ignore
-		// ImportGlobPlugin.default(),
-		// INFO_PLUGIN,
-		// yamlPlugin({}),
-		// sveltePlugin(svelteConfig),
-		// packagerPlugin(),
-	],
-	// format: 'iife',
-	// define: DEFINES,
-}
-const DEV_CONFIG: esbuild.BuildOptions = {
+const COMMON_CONFIG: esbuild.BuildOptions = {
 	banner: createBanner(),
 	entryPoints: ['./src/index.ts'],
 	outfile: `./dist/${PACKAGE.name as string}.js`,
 	bundle: true,
-	minify: false,
 	platform: 'browser',
-	sourcemap: 'inline',
-	sourceRoot: 'http://animated-java/',
 	loader: { '.svg': 'dataurl', '.ttf': 'binary', '.mcb': 'text' },
 	plugins: [
+		importFolderPlugin,
 		ImportGlobPlugin(),
 		vsCodeProblemsPatchPlugin(),
 		inlineImage({
@@ -190,7 +167,6 @@ const DEV_CONFIG: esbuild.BuildOptions = {
 		yamlPlugin({}),
 		sveltePlugin(svelteConfig),
 		pluginPackagerPlugin(),
-		inlineWorkerPlugin(DEV_WORKER_CONFIG),
 		assetOverridePlugin(),
 		mcbCompressionPlugin(),
 		DEPENDENCY_QUARKS,
@@ -201,34 +177,20 @@ const DEV_CONFIG: esbuild.BuildOptions = {
 	treeShaking: true,
 }
 
+const DEV_CONFIG: esbuild.BuildOptions = {
+	...COMMON_CONFIG,
+	minify: false,
+	platform: 'browser',
+	sourcemap: 'inline',
+	sourceRoot: 'http://animated-java/',
+}
+
 const PROD_CONFIG: esbuild.BuildOptions = {
-	entryPoints: ['./src/index.ts'],
-	outfile: `./dist/${PACKAGE.name as string}.js`,
-	bundle: true,
+	...COMMON_CONFIG,
 	minify: true,
-	platform: 'node',
-	loader: { '.svg': 'dataurl', '.ttf': 'binary', '.mcb': 'text' },
-	plugins: [
-		ImportGlobPlugin(),
-		inlineImage({
-			limit: -1,
-		}),
-		INFO_PLUGIN,
-		inlineWorkerPlugin({}),
-		yamlPlugin({}),
-		sveltePlugin(svelteConfig),
-		pluginPackagerPlugin(),
-		inlineWorkerPlugin({}),
-		assetOverridePlugin(),
-		mcbCompressionPlugin(),
-		DEPENDENCY_QUARKS,
-	],
-	alias: { svelte: 'svelte' },
 	keepNames: true,
-	banner: createBanner(),
+	platform: 'browser',
 	drop: ['debugger'],
-	format: 'iife',
-	define: DEFINES,
 	treeShaking: true,
 	metafile: true,
 }
