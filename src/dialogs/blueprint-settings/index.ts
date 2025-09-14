@@ -1,32 +1,39 @@
+import { BlueprintSettings } from '@aj/formats/ajblueprint/settings'
 import { SvelteDialogSidebar } from '@aj/svelte/dialog'
 import { formatFaIcon } from '@aj/util/iconUtils'
 import { translate } from '@aj/util/lang'
-import { pickKeys } from '@aj/util/objUtils'
-import { makeValuesSyncable, resolveSyncableValues } from '@aj/util/stores'
+import { resolveSyncableValues, syncable } from '@aj/util/stores'
 import Footer from './footer.svelte'
 import DataPackPage from './pages/dataPack.svelte'
 import GeneralPage from './pages/general.svelte'
 import ResourcePackPage from './pages/resourcePack.svelte'
 import Title from './title.svelte'
 
-export interface BlueprintSettings {
-	// General
-	bool: boolean
-	// Data Pack
-	// Resource Pack
-}
-
 export function openBlueprintSettings() {
-	const blueprintSettings: BlueprintSettings = {
-		bool: true,
+	const blueprintSettings = new BlueprintSettings()
+	console.log('Opening Blueprint Settings', blueprintSettings)
+
+	const generalSettings = {
+		exportEnvironment: syncable(blueprintSettings.exportEnvironment),
+		targetMinecraftVersion: syncable(blueprintSettings.targetMinecraftVersion),
+		id: syncable(blueprintSettings.id),
+		tagPrefix: syncable(blueprintSettings.tagPrefix),
+		autoGenerateTagPrefix: syncable(blueprintSettings.autoGenerateTagPrefix),
+		showRenderBox: syncable(blueprintSettings.showRenderBox),
+		autoRenderBox: syncable(blueprintSettings.autoRenderBox),
+		renderBoxWidth: syncable(blueprintSettings.renderBoxWidth),
+		renderBoxHeight: syncable(blueprintSettings.renderBoxHeight),
 	}
 
-	const generalSettings = makeValuesSyncable(pickKeys(blueprintSettings, ['bool']))
-
 	function onClose() {
-		console.log('Blueprint Settings closed', {
+		const newSettings = {
 			...resolveSyncableValues(generalSettings),
-		})
+		}
+		console.log(
+			'Blueprint Settings closed',
+			newSettings,
+			new BlueprintSettings().fromJSON(newSettings)
+		)
 	}
 
 	new SvelteDialogSidebar({

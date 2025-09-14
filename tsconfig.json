@@ -29,6 +29,7 @@
 			"@components/*": ["./src/svelte-components/*"],
 			"@events": ["./src/util/events.ts"],
 			"@assets/*": ["./src/assets/*"],
+			"@package": ["./package.json"],
 			"@aj/*": ["./src/*"]
 		}
 	}

@@ -1,8 +1,8 @@
-import { SerializableConfig } from '@aj/util/serializableConfig'
+import { JsonConfig } from '@aj/util/jsonConfig'
 import { describe, expect, it } from 'vitest'
 
-@SerializableConfig.decorate
-export class TestConfig extends SerializableConfig<TestConfig> {
+@JsonConfig.decorate
+export class TestConfig extends JsonConfig<TestConfig> {
 	foo? = 'string'
 	bar? = 42
 	baz? = false

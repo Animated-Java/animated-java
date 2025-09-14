@@ -1,7 +1,7 @@
 import EVENTS from '@events'
-import { Subscribable } from './subscribable'
+import type { ValidateResourceLocation } from './namespacedId'
+import { subscribable, type Subscribable } from './subscribable'
 
-export type NamespacedString = `${string}${string}:${string}${string}`
 // Useful for describing context variables that will become BlochBench class properties in the inject function.
 export type ContextProperty<Type extends keyof IPropertyType> = Property<Type> | undefined
 
@@ -19,69 +19,86 @@ class BlockbenchModUninstallError extends Error {
 	}
 }
 
+interface BlockbenchMod {
+	applied: boolean
+	install: () => void
+	uninstall: () => void
+}
+
 /**
- * A simple helper function to make modifing Blockbench easier.
- * @param id A namespaced ID ('my-plugin-id:my-mod')
- * @param context The context of the mod. This is passed to the inject function.
- * @param inject The function that is called to install the mod.
- * @param extract The function that is called to uninstall the mod.
- * @template InjectContext The type of the context passed to the inject function.
- * @template ExtractContext The type of the context returned from the inject function and passed to the extract function.
+ * A framework for creating Blockbench mods that automatically handles installation and uninstallation on the appropriate Blockbench EVENTS.
  * @example
  * ```ts
- * createBlockbenchMod(
- * 	'my-plugin-id:my-mod',
- * 	{
+ * createBlockbenchMod({
+ * 	id: 'my-plugin-id:my-mod',
+ * 	collectContext: () => ({
  * 		original: Blockbench.Animation.prototype.select
- * 	},
- * 	context => {
- * 		// Inject code here
+ * 	}),
+ * 	apply: ctx => {
+ * 		// Apply changes
  * 		Blockbench.Animation.prototype.select = function(this: _Animation) {
  * 			if (Format.id === myFormat.id) {
  * 				// Do something here
  * 			}
- * 			return context.original.call(this)
+ * 			return ctx.original.call(this)
  * 		}
- * 		return context
- * 	})
- * 	context => {
- * 		// Extract code here
- * 		Blockbench.Animation.prototype.select = context.original
- * 	})
+ * 		return ctx
+ * 	},
+ * 	revert: ctx => {
+ * 		// Revert changes
+ * 		Blockbench.Animation.prototype.select = ctx.original
+ * 	}
+ * }
  * ```
  */
-export function createBlockbenchMod<InjectContext = any, ExtractContext = any>(
-	id: NamespacedString,
-	context: InjectContext,
-	inject: (context: InjectContext) => ExtractContext,
-	extract: (context: ExtractContext) => void
-) {
-	let installed = false
-	let extractContext: ExtractContext
+export function createBlockbenchMod<
+	ID extends string,
+	ApplyContext extends any,
+	RevertContext extends ApplyContext | void,
+>({
+	id,
+	collectContext,
+	apply,
+	revert,
+	autoInstall = true,
+}: {
+	id: ValidateResourceLocation<ID>
+	collectContext?: () => ApplyContext
+	apply: (ctx: ApplyContext) => RevertContext
+	revert: (ctx: RevertContext) => void
+	autoInstall?: boolean
+}) {
+	let applyContext: RevertContext
 
-	EVENTS.INJECT_MODS.subscribe(() => {
-		console.log(`Injecting BBMod '${id}'`)
-		try {
-			if (installed) new Error('Mod is already installed!')
-			extractContext = inject(context)
-			installed = true
-		} catch (err) {
-			throw new BlockbenchModInstallError(id, err as Error)
-		}
-		console.log('Sucess!')
-	})
+	const handle: BlockbenchMod = {
+		applied: false,
+		install() {
+			try {
+				if (this.applied) throw new Error('Mod is already installed!')
+				const context = collectContext?.()!
+				applyContext = apply(context)
+				this.applied = true
+			} catch (err) {
+				throw new BlockbenchModInstallError(id, err as Error)
+			}
+		},
+		uninstall() {
+			try {
+				if (!this.applied) throw new Error('Mod is not installed!')
+				revert(applyContext)
+				this.applied = false
+			} catch (err) {
+				throw new BlockbenchModUninstallError(id, err as Error)
+			}
+		},
+	}
 
-	EVENTS.EXTRACT_MODS.subscribe(() => {
-		console.log(`Extracting BBMod '${id}'`)
-		try {
-			if (!installed) new Error('Mod is not installed!')
-			extract(extractContext)
-			installed = false
-		} catch (err) {
-			throw new BlockbenchModUninstallError(id, err as Error)
-		}
-		console.log('Sucess!')
-	})
+	if (autoInstall) {
+		EVENTS.INSTALL_MODS.subscribe(handle.install.bind(handle))
+	}
+	EVENTS.UNINSTALL_MODS.subscribe(handle.uninstall.bind(handle))
+
+	return handle
 }
 
 type CreateActionOptions = ActionOptions & {
@@ -96,13 +113,16 @@ type CreateActionOptions = ActionOptions & {
  * @param options The options for the action.
  * @returns The created action.
  */
-export function createAction(id: NamespacedString, options: CreateActionOptions) {
+export function createAction<ID extends string>(
+	id: ValidateResourceLocation<ID>,
+	options: CreateActionOptions
+) {
 	const action = new Action(id, options)
 	if (options.menu_path !== undefined) {
 		MenuBar.addAction(action, options.menu_path)
 	}
 
-	EVENTS.EXTRACT_MODS.subscribe(() => {
+	EVENTS.UNINSTALL_MODS.subscribe(() => {
 		if (options.menu_path !== undefined) {
 			MenuBar.removeAction(options.menu_path)
 		}
@@ -121,7 +141,7 @@ export function createAction(id: NamespacedString, options: CreateActionOptions)
 export function createModelLoader(id: string, options: ModelLoaderOptions): ModelLoader {
 	const modelLoader = new ModelLoader(id, options)
 
-	EVENTS.EXTRACT_MODS.subscribe(() => {
+	EVENTS.UNINSTALL_MODS.subscribe(() => {
 		modelLoader.delete()
 	}, true)
 
@@ -152,8 +172,8 @@ export function createMenu(template: MenuItem[], options?: MenuOptions) {
  * @param condition The condition for the menu to be visible.
  * @returns The created menu.
  */
-export function createBarMenu(
-	id: NamespacedString,
+export function createBarMenu<ID extends string>(
+	id: ValidateResourceLocation<ID>,
 	structure: MenuItem[],
 	condition: ConditionResolvable
 ) {
@@ -207,27 +227,27 @@ export function createPropertySubscribable<Value = any>(object: any, key: string
 	const storage: Storage<Value> = { value: object[key] }
 
 	if (subscribables === undefined) {
-		const onGet = new Subscribable<{
+		const onGet = subscribable<{
 			storage: Storage<Value>
 			value: Value
 		}>()
-		const onSet = new Subscribable<{ storage: Storage<Value>; newValue: Value }>()
+		const onSet = subscribable<{ storage: Storage<Value>; newValue: Value }>()
 		subscribables = [onGet, onSet]
 		SUBSCRIBABLES.set(object, subscribables)
 
 		Object.defineProperty(object, key, {
 			get() {
-				onGet.dispatch({ storage, value: storage.value })
+				onGet.publish({ storage, value: storage.value })
 				return storage.value
 			},
 			set(newValue: Value) {
 				storage.value = newValue
-				onSet.dispatch({ storage, newValue })
+				onSet.publish({ storage, newValue })
 			},
 			configurable: true,
 		})
 
-		EVENTS.EXTRACT_MODS.subscribe(() => {
+		EVENTS.UNINSTALL_MODS.subscribe(() => {
 			const value = object[key]
 			delete object[key]
 			Object.defineProperty(object, key, {

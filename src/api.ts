@@ -1,10 +1,10 @@
-import { PACKAGE } from './constants'
-import { createBlockbenchMod } from './util/moddingTools'
-
 import Test from '@components/test.svelte'
 import { mount, unmount } from 'svelte'
 import { openBlueprintSettings } from './dialogs/blueprint-settings'
+import { BlueprintSettings } from './formats/ajblueprint/settings'
 import { SvelteDialog } from './svelte/dialog'
+import { JsonConfig } from './util/jsonConfig'
+import { createBlockbenchMod } from './util/moddingTools'
 
 const PLUGIN_API = {
 	API: {
@@ -12,6 +12,8 @@ const PLUGIN_API = {
 			mount,
 			unmount,
 		},
+		JsonConfig,
+		BlueprintSettings,
 		openBlueprintSettings,
 		openTestDialog: () => {
 			new SvelteDialog({
@@ -38,15 +40,13 @@ declare global {
 
 window.AnimatedJava = PLUGIN_API
 
-createBlockbenchMod(
-	`${PACKAGE.name}:inject/global-api`,
-	undefined,
-	() => {
-		// @ts-expect-error
-		globalThis[PACKAGE.name] = PLUGIN_API
+createBlockbenchMod({
+	id: `animated-java:global-api`,
+	apply: () => {
+		globalThis.AnimatedJava = PLUGIN_API
 	},
-	() => {
+	revert: () => {
 		// @ts-expect-error: AnimatedJava type is not optional, but we want to delete it when uninstalling
-		delete globalThis[PACKAGE.name]
-	}
-)
+		delete globalThis.AnimatedJava
+	},
+})

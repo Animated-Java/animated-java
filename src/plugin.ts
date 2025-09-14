@@ -1,5 +1,5 @@
 import EVENTS from '@events'
-import { PACKAGE } from './constants'
+import PACKAGE from '@package'
 
 export default function register() {
 	BBPlugin.register(PACKAGE.name, {
@@ -13,16 +13,16 @@ export default function register() {
 		tags: ['Minecraft: Java Edition', 'Animation', 'Display Entities'],
 		await_loading: true,
 		onload() {
-			EVENTS.LOAD.dispatch()
+			EVENTS.LOAD.publish()
 		},
 		onunload() {
-			EVENTS.UNLOAD.dispatch()
+			EVENTS.UNLOAD.publish()
 		},
 		oninstall() {
-			EVENTS.INSTALL.dispatch()
+			EVENTS.INSTALL.publish()
 		},
 		onuninstall() {
-			EVENTS.UNINSTALL.dispatch()
+			EVENTS.UNINSTALL.publish()
 			Blockbench.showMessageBox({
 				title: 'Animated Java has Been Uninstalled!',
 				message: 'In order to fully uninstall Animated Java, please restart Blockbench.',

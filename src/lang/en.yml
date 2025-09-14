@@ -8,3 +8,20 @@ dialog:
         label: Data Pack
       resource-pack:
         label: Resource Pack
+
+config:
+  blueprint-settings:
+    export-environment:
+      label: Export Environment
+      description: Choose the environment you will export the Blueprint for.
+      options:
+        vanilla: Data Pack & Resource Pack
+        plugin: Plugin
+
+    show-render-box:
+      label: Show Render Box
+      description: Toggle the visibility of the render box
+
+    auto-render-box:
+      label: Auto Render Box
+      description: Automatically adjust the render box to fit the model
