@@ -34,5 +34,9 @@
 		"commandCenter.foreground": "#ffffffdd",
 		"commandCenter.background": "#00aced77",
 		"commandCenter.border": "#00aced"
+	},
+	"svelte.plugin.svelte.compilerWarnings": {
+		"a11y_click_events_have_key_events": "ignore",
+		"a11y_no_static_element_interactions": "ignore"
 	}
 }

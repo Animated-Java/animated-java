@@ -1,5 +1,5 @@
 import EVENTS from '@events'
-import type { ValidateResourceLocation } from './namespacedId'
+import type { ValidateResourceLocation } from './resourceLocation'
 import { subscribable, type Subscribable } from './subscribable'
 
 // Useful for describing context variables that will become BlochBench class properties in the inject function.

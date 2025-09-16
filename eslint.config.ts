@@ -43,6 +43,7 @@ const CUSTOM_RULES: ConfigWithExtends['rules'] = {
 	'svelte/html-quotes': ['warn', { prefer: 'double' }],
 	'svelte/block-lang': ['error', { script: ['ts', null], style: null }],
 	'svelte/comment-directive': ['error', { reportUnusedDisableDirectives: true }],
+	'svelte/valid-compile': ['error', { ignoreWarnings: true }],
 	// Check File
 	'check-file/filename-naming-convention': [
 		'error',
@@ -212,6 +213,8 @@ export default tsESLint.config(
 		rules: {
 			// Causes issues with Svelte and global types
 			'no-undef': 'off',
+			// Annoying when destructuring props
+			'prefer-const': 'off',
 			'@typescript-eslint/naming-convention': [
 				'warn',
 				{

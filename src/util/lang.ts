@@ -1,59 +1,62 @@
-// @ts-ignore
-import { default as LANGUAGES, filenames as filepaths } from '../lang/*.yml'
+/// <reference path="../../.scripts/esbuild-plugins/lang.d.ts"/>
 
-interface TranslationFile {
-	[key: string]: string | TranslationFile
-}
+import { LANGUAGES } from 'LANGUAGES'
 
-function flattenTranslationStructure(
-	translations: TranslationFile,
-	path: string[] = []
-): Record<string, string> {
-	const result: Record<string, string> = {}
-	for (const key in translations) {
-		const value = translations[key]
-		if (typeof value === 'string') {
-			result[[...path, key].join('.')] = value
-		} else {
-			Object.assign(result, flattenTranslationStructure(value, [...path, key]))
-		}
-	}
-	return result
-}
+console.log('Available languages:', LANGUAGES)
 
-const FILE_NAMES: string[] = filepaths.map((path: string) => PathModule.basename(path, '.yml'))
-const TRANSLATIONS: Record<string, Record<string, string>> = Object.fromEntries(
-	LANGUAGES.map((v: { default: TranslationFile }, i: number) => [
-		FILE_NAMES[i],
-		flattenTranslationStructure(v.default),
-	])
-)
-
-export function translate(key: string, ...args: string[]): string {
+function getCurrentLanguage() {
 	const langName = settings.language.value
-	let lang = TRANSLATIONS[langName]
+	let lang = LANGUAGES[langName]
 	if (!lang) {
 		console.warn(`Unknown language '${langName}'`)
-		lang = TRANSLATIONS.en
+		lang = LANGUAGES.en
 	}
+	return lang
+}
 
-	const localizedText = lang[key]
+function replaceLocalizationPlaceholders(template: string, ...args: string[]) {
+	return template.replace(/%s/g, () => args.shift() ?? '')
+}
+
+/**
+ * Translates a key using the current language, formatting it with any additional arguments.
+ *
+ * Localization placeholders in the form of `%s` are replaced with the provided arguments.
+ *
+ * If the localized text starts with `[Markdown]`, it will be parsed as Markdown.
+ *
+ * @returns The localized string, or the key itself if no translation is found.
+ */
+export function localize(key: string, ...args: string[]): string {
+	const lang = getCurrentLanguage()
+
+	let localizedText = lang.flattened[key]
 	if (!localizedText) {
-		console.warn(`Could not find translation for '${key}' in language '${langName}'`)
+		console.warn(`Could not find translation for '${key}' in language '${lang.name}'`)
 		return key
 	}
 
-	return localizedText.replace(/\{(\d+)\}/g, (str, index) => {
-		const replacement = args.at(Number(index))
-		if (replacement === undefined) {
-			console.warn(`Missing replacement for argument {${index}} in translation '${key}'`)
-		}
-		return replacement ?? ''
-	})
+	if (args.length > 0) {
+		localizedText = replaceLocalizationPlaceholders(localizedText, ...args)
+	}
+
+	if (localizedText.startsWith('[Markdown]')) {
+		return pureMarked(localizedText.replace('[Markdown]', '').trim())
+	}
+
+	return localizedText
 }
 
-export function translateMarkdown(key: string, ...args: string[]): string {
-	return pureMarked(translate(key, ...args))
-}
+/**
+ * Creates a scoped translator function that prefixes all keys with {@link prefix}.
+ * @example
+ * const localize = createScopedTranslator('panel.arm_rotation')
+ * localize('title') // Translates 'panel.arm_rotation.title'
+ */
+export function createScopedTranslator(prefix: string): typeof localize {
+	if (!prefix || prefix.endsWith('.') || prefix.startsWith('.')) {
+		throw new Error(`Invalid translation key prefix '${prefix}'`)
+	}
 
-Language.data['format_category.animated-java'] = translate('format_category.animated-java')
+	return (key, ...args) => localize(prefix + '.' + key, ...args)
+}

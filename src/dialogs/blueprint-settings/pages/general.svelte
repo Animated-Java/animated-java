@@ -1,9 +1,13 @@
-<script lang="ts">
+<script lang="ts" module>
 	import { BlueprintSettings } from '@aj/formats/ajblueprint/settings'
-	import { translate } from '@aj/util/lang'
+	import { createScopedTranslator } from '@aj/util/lang'
 	import type { Syncable } from '@aj/util/stores'
 	import Checkbox from '@components/sidebar-dialog/checkbox.svelte'
 
+	const localize = createScopedTranslator('dialog.blueprint_settings')
+</script>
+
+<script lang="ts">
 	type GeneralSettings = Pick<
 		BlueprintSettings,
 		| 'exportEnvironment'
@@ -26,14 +30,14 @@
 
 <div>
 	<Checkbox
-		label={translate('config.blueprint-settings.show-render-box.label')}
-		description={translate('config.blueprint-settings.show-render-box.description')}
+		label={localize('show_render_box.label')}
+		description={localize('show_render_box.description')}
 		value={generalSettings.showRenderBox}
 	/>
 
 	<Checkbox
-		label={translate('config.blueprint-settings.auto-render-box.label')}
-		description={translate('config.blueprint-settings.auto-render-box.description')}
+		label={localize('auto_render_box.label')}
+		description={localize('auto_render_box.description')}
 		value={generalSettings.autoRenderBox}
 	/>
 </div>

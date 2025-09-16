@@ -1,13 +1,15 @@
 import { BlueprintSettings } from '@aj/formats/ajblueprint/settings'
 import { SvelteDialogSidebar } from '@aj/svelte/dialog'
 import { formatFaIcon } from '@aj/util/iconUtils'
-import { translate } from '@aj/util/lang'
+import { createScopedTranslator } from '@aj/util/lang'
 import { resolveSyncableValues, syncable } from '@aj/util/stores'
 import Footer from './footer.svelte'
 import DataPackPage from './pages/dataPack.svelte'
 import GeneralPage from './pages/general.svelte'
 import ResourcePackPage from './pages/resourcePack.svelte'
 import Title from './title.svelte'
+
+const localize = createScopedTranslator('dialog.blueprint_settings')
 
 export function openBlueprintSettings() {
 	const blueprintSettings = new BlueprintSettings()
@@ -44,21 +46,21 @@ export function openBlueprintSettings() {
 		id: 'animated-java:blueprint-settings',
 		pages: {
 			general: {
-				label: translate('dialog.blueprint-settings.pages.general.label'),
+				label: localize('pages.general.label'),
 				icon: formatFaIcon('fa:cog'),
 				component: GeneralPage,
 				props: {
 					generalSettings,
 				},
 			},
-			'data-pack': {
-				label: translate('dialog.blueprint-settings.pages.data-pack.label'),
+			data_pack: {
+				label: localize('pages.data_pack.label'),
 				icon: formatFaIcon('fa:database'),
 				component: DataPackPage,
 				props: {},
 			},
-			'resource-pack': {
-				label: translate('dialog.blueprint-settings.pages.resource-pack.label'),
+			resource_pack: {
+				label: localize('pages.resource_pack.label'),
 				icon: formatFaIcon('fa:image'),
 				component: ResourcePackPage,
 				props: {},

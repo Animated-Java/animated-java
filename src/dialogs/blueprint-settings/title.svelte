@@ -1,13 +1,13 @@
 <script lang="ts">
 	import Icon from '@aj/assets/icons/animated-java-icon.svg'
-	import { translate } from '@aj/util/lang'
+	import { localize } from '@aj/util/lang'
 </script>
 
 <div class="container">
 	<!-- svelte-ignore a11y_missing_attribute -->
 	<img src={Icon} />
 	<div class="dialog_title dialog-title-mod">
-		{translate('dialog.blueprint-settings.title')}
+		{localize('dialog.blueprint_settings.title')}
 	</div>
 </div>
 
