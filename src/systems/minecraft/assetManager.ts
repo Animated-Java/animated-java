@@ -1,16 +1,16 @@
 import { PACKAGE } from '../../constants'
-import { getCurrentVersion, getLatestVersion } from './versionManager'
 import { events } from '../../util/events'
+import { getCurrentVersion, getLatestVersion } from './versionManager'
 
-import index from '../../assets/vanillaAssetOverrides/index.json'
-import { Unzipped } from 'fflate'
-import { unzip } from '../util'
 import download from 'download'
+import type { Unzipped } from 'fflate'
+import index from '../../assets/vanillaAssetOverrides/index.json'
 import {
 	showOfflineError,
 	updateLoadingProgress,
 	updateLoadingProgressLabel,
 } from '../../interface/popup/animatedJavaLoading'
+import { unzip } from '../util'
 const ASSET_OVERRIDES = index as unknown as Record<string, string>
 
 async function downloadJar(url: string, savePath: string) {

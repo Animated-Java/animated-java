@@ -16,6 +16,7 @@ import { isAbsolute, join } from 'path'
 import { TextDecoder } from 'util'
 import svelteConfig from '../svelte.config.js'
 import assetOverridePlugin from './plugins/assetOverridePlugin'
+import bufferPatchPlugin from './plugins/bufferPatchFunction.js'
 import mcbCompressionPlugin from './plugins/mcbCompressionPlugin'
 import packagerPlugin from './plugins/packagerPlugin'
 import sveltePlugin from './plugins/sveltePlugin'
@@ -208,6 +209,7 @@ const devConfig: esbuild.BuildOptions = {
 	plugins: [
 		// @ts-ignore
 		ImportGlobPlugin.default(),
+		bufferPatchPlugin(),
 		inlineImage({
 			limit: -1,
 		}),
@@ -236,6 +238,7 @@ const prodConfig: esbuild.BuildOptions = {
 	plugins: [
 		// @ts-ignore
 		ImportGlobPlugin.default(),
+		bufferPatchPlugin(),
 		inlineImage({
 			limit: -1,
 		}),

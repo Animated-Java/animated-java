@@ -1,16 +1,23 @@
 {
-	"include": ["./src/**/*"],
+	"include": ["src/**/*", "tools/**/*"],
+	"exclude": ["**/node_modules/**"],
 	"compilerOptions": {
 		"outDir": "./dist/",
 		"noImplicitAny": true,
 		"module": "ES2022",
 		"target": "ES2022",
-		"lib": ["ES2022"],
 		"moduleResolution": "node",
 		"strict": true,
-		"types": ["node", "./types/blockbench-types", "svelte"],
+		"types": ["node"],
 		"resolveJsonModule": true,
 		"allowSyntheticDefaultImports": true,
-		"allowUmdGlobalAccess": true
+		"allowUmdGlobalAccess": true,
+		"allowUnreachableCode": true,
+		"esModuleInterop": true,
+		"noEmit": true,
+		"verbatimModuleSyntax": true,
+		"isolatedModules": true,
+		"alwaysStrict": true,
+		"baseUrl": "."
 	}
 }
