@@ -1,6 +1,6 @@
 import {
 	BLUEPRINT_FORMAT,
-	IBlueprintTextDisplayConfigJSON,
+	type IBlueprintTextDisplayConfigJSON,
 	isCurrentFormat,
 } from '../blueprintFormat'
 import { PACKAGE } from '../constants'

@@ -2,9 +2,9 @@ import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/di
 import { getResourcePackFormat } from '../../util/minecraftUtil'
 import { IntentionalExportError } from '../exporter'
 import { type IRenderedRig } from '../rigRenderer'
-import { ExportedFile } from '../util'
+import type { ExportedFile } from '../util'
 
-import { AJMeta, MinecraftVersion, PackMeta, PackMetaFormats } from '../global'
+import { AJMeta, type MinecraftVersion, PackMeta, type PackMetaFormats } from '../global'
 import _1_20_4 from './1.20.4'
 import _1_21_2 from './1.21.2'
 import _1_21_4 from './1.21.4'
@@ -183,7 +183,12 @@ export default async function compileResourcePack(
 			if (file.writeHandler) {
 				await file.writeHandler(path, file.content)
 			} else {
-				await fs.promises.writeFile(path, file.content)
+				await fs.promises.writeFile(
+					path,
+					new Uint8Array(
+						Buffer.isBuffer(file.content) ? file.content : Buffer.from(file.content)
+					)
+				)
 			}
 			PROGRESS.set(PROGRESS.get() + 1)
 		}

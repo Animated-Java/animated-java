@@ -2,7 +2,7 @@ import { mergeGeometries } from '../../util/bufferGeometryUtils'
 import { getPathFromResourceLocation, parseResourceLocation } from '../../util/minecraftUtil'
 import { assetsLoaded, getJSONAsset, getPngAssetAsDataUrl } from './assetManager'
 import { parseBlockModel } from './blockModelManager'
-import { IItemModel } from './model'
+import type { IItemModel } from './model'
 import { TEXTURE_FRAG_SHADER, TEXTURE_VERT_SHADER } from './textureShaders'
 
 type ItemModelMesh = {

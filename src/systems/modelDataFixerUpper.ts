@@ -1,6 +1,6 @@
 import { NbtCompound, NbtList, NbtString, NbtTag } from 'deepslate/lib/nbt'
 import TransparentTexture from '../assets/transparent.png'
-import { IBlueprintFormatJSON, getDefaultProjectSettings } from '../blueprintFormat'
+import { type IBlueprintFormatJSON, getDefaultProjectSettings } from '../blueprintFormat'
 import { PACKAGE } from '../constants'
 import { openUnexpectedErrorDialog } from '../interface/dialog/unexpectedError'
 import { BoneConfig } from '../nodeConfigs'

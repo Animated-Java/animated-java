@@ -1,6 +1,11 @@
 import { UnicodeString } from '../../util/unicodeString'
 import { getVanillaFont } from './fontManager'
-import { JsonText, JsonTextArray, JsonTextComponent, JsonTextObject } from './jsonText'
+import {
+	JsonText,
+	type JsonTextArray,
+	type JsonTextComponent,
+	type JsonTextObject,
+} from './jsonText'
 
 // @ts-ignore
 // import TestWorker from './textWrapping.worker.ts'

@@ -29,7 +29,7 @@ async function downloadJar(url: string, savePath: string) {
 		throw new Error('Failed to download Minecraft client after 3 retries.')
 	}
 
-	await fs.promises.writeFile(savePath, data)
+	await fs.promises.writeFile(savePath, new Uint8Array(data))
 }
 
 export async function getLatestVersionClientDownloadUrl() {
@@ -144,12 +144,12 @@ export function getRawAsset(path: string) {
 export function getPngAssetAsDataUrl(path: string) {
 	const asset = getRawAsset(path)
 	if (!asset) throw new Error(`Asset not found: ${path}`)
-	return `data:image/png;base64,${Buffer.from(asset).toString('base64')}`
+	return `data:image/png;base64,${asset.toString('base64')}`
 }
 
 export function getJSONAsset(path: string): any {
 	const asset = getRawAsset(path)
 	if (!asset) throw new Error(`Asset not found: ${path}`)
-	const json = JSON.parse(Buffer.from(asset).toString('utf-8'))
+	const json = JSON.parse(asset.toString('utf-8'))
 	return json
 }

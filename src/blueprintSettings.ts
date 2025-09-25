@@ -1,4 +1,4 @@
-import { MinecraftVersion } from './systems/global'
+import type { MinecraftVersion } from './systems/global'
 import { Valuable } from './util/stores'
 
 export type ExportMode = 'raw' | 'zip' | 'none'

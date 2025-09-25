@@ -12,7 +12,7 @@ import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
 import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
 import { sanitizePathName, sanitizeStorageKey } from '../util/minecraftUtil'
 import { eulerFromQuaternion, roundToNth } from '../util/misc'
-import { AnyRenderedNode, IRenderedRig } from './rigRenderer'
+import type { AnyRenderedNode, IRenderedRig } from './rigRenderer'
 import { sleepForAnimationFrame } from './util'
 
 export function correctSceneAngle() {

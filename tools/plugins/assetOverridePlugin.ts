@@ -1,4 +1,4 @@
-import { Plugin } from 'esbuild'
+import type { Plugin } from 'esbuild'
 import * as fs from 'fs/promises'
 import * as pathjs from 'path'
 
@@ -20,7 +20,6 @@ function plugin(): Plugin {
 						if (path.endsWith('.json') || path.endsWith('.png')) {
 							const key = pathjs
 								.join('assets', dir, path)
-								// @ts-expect-error
 								.replaceAll(pathjs.sep, '/')
 								.replace(ASSET_OVERRIDES_PATH, '')
 							if (path.endsWith('.json')) {

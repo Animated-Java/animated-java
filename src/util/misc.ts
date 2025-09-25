@@ -1,6 +1,6 @@
 import { BLUEPRINT_FORMAT } from '../blueprintFormat'
 
-import { ComponentConstructorOptions } from 'svelte'
+import { type ComponentConstructorOptions } from 'svelte'
 
 export type SvelteComponentConstructor<T, U extends ComponentConstructorOptions> = new (
 	options: U

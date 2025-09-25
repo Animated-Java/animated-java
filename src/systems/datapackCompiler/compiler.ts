@@ -1,8 +1,8 @@
 import { Parser, SyncIo, Tokenizer } from 'mc-build'
 import { Compiler, VariableMap } from 'mc-build/dist/mcl/Compiler'
 import { getDataPackFormat } from '../../util/minecraftUtil'
-import { MinecraftVersion } from '../global'
-import { ExportedFile } from '../util'
+import type { MinecraftVersion } from '../global'
+import type { ExportedFile } from '../util'
 
 interface CompilerOptions {
 	path: string

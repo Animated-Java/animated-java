@@ -1,10 +1,10 @@
-import { ContextProperty, createBlockbenchMod } from '../util/moddingTools'
 import { isCurrentFormat } from '../blueprintFormat'
 import { PACKAGE } from '../constants'
+import { type ContextProperty, createBlockbenchMod } from '../util/moddingTools'
 
 import {
 	EASING_DEFAULT,
-	EasingKey,
+	type EasingKey,
 	easingFunctions,
 	getEasingArgDefault,
 	hasArgs,

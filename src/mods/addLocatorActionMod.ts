@@ -11,7 +11,7 @@ createBlockbenchMod(
 	context => {
 		context.action.condition = () => {
 			if (isCurrentFormat()) return true
-			return !!context.originalCondition?.()
+			return Condition(context.originalCondition)
 		}
 
 		Toolbars.outliner.add(context.action, 0)

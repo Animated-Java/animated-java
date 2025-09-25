@@ -10,9 +10,9 @@ import { COLOR_MAP, JsonText } from './jsonText'
 import {
 	computeTextWrapping,
 	getComponentWords,
-	IComponentWord,
-	IStyleSpan,
-	StyleRecord,
+	type IComponentWord,
+	type IStyleSpan,
+	type StyleRecord,
 } from './textWrapping'
 
 interface IFontProviderBitmap {

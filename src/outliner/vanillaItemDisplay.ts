@@ -1,4 +1,4 @@
-import { IBlueprintBoneConfigJSON, isCurrentFormat } from '../blueprintFormat'
+import { type IBlueprintBoneConfigJSON, isCurrentFormat } from '../blueprintFormat'
 import { PACKAGE } from '../constants'
 import { VANILLA_ITEM_DISPLAY_CONFIG_ACTION } from '../interface/dialog/vanillaItemDisplayConfig'
 import { BoneConfig } from '../nodeConfigs'

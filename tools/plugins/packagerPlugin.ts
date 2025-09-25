@@ -1,8 +1,9 @@
-import { Plugin } from 'esbuild'
+import type { Plugin } from 'esbuild'
 import * as fs from 'fs'
 import { readFileSync, writeFileSync } from 'fs'
 import { Octokit } from 'octokit'
 import * as pathjs from 'path'
+// @ts-expect-error
 import * as prettier from 'prettier'
 import * as c from 'svelte/compiler'
 import * as svelteInternal from 'svelte/internal'
@@ -81,6 +82,11 @@ function plugin(): Plugin {
 							)
 							let pings = ''
 							const version = getVersionNumbers(PACKAGE.version)
+							if (!version) {
+								throw new Error(
+									`Version ${PACKAGE.version} in package.json is not valid semver!`
+								)
+							}
 							const latestRelease = getVersionNumbers(
 								(
 									await octokit.request('GET /repos/{owner}/{repo}/releases', {
@@ -121,26 +127,26 @@ function plugin(): Plugin {
 							}
 
 							const changeList = versionChangelog.categories.find(
-								c => c.title === 'Changes'
+								(c: any) => c.title === 'Changes'
 							)
 							let changes = ''
 							if (changeList) {
 								changes =
 									'### Changes\n\n' +
 									changeList.list
-										.map(v => '- ' + v)
+										.map((v: any) => '- ' + v)
 										.join('\n')
 										.replace('[BREAKING]', '⚠️ **BREAKING CHANGE** — ')
 							}
 							const fixList = versionChangelog.categories.find(
-								c => c.title === 'Fixes'
+								(c: any) => c.title === 'Fixes'
 							)
 							let fixes = ''
 							if (fixList) {
 								fixes =
 									'### Fixes\n\n' +
 									fixList.list
-										.map(v => '- ' + v)
+										.map((v: any) => '- ' + v)
 										.join('\n')
 										.replace('[BREAKING]', '⚠️ **BREAKING CHANGE** — ')
 							}
@@ -155,7 +161,6 @@ function plugin(): Plugin {
 							if (content.includes('[[ESCAPE_URLS]]')) {
 								content = content
 									.replace('[[ESCAPE_URLS]]', '')
-									// @ts-expect-error
 									.replaceAll(URL_REGEX, (match: string) => '<' + match + '>')
 							}
 

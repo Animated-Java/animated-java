@@ -1,14 +1,14 @@
 import { NbtCompound, NbtFloat, NbtList } from 'deepslate/lib/nbt'
 import {
-	AsyncZipOptions,
-	AsyncZippable,
 	unzip as cbUnzip,
 	zip as cbZip,
 	type AsyncUnzipOptions,
+	type AsyncZipOptions,
+	type AsyncZippable,
 	type Unzipped,
 } from 'fflate/browser'
 import { roundTo } from '../util/misc'
-import { INodeTransform } from './animationRenderer'
+import type { INodeTransform } from './animationRenderer'
 
 export interface ExportedFile {
 	content: string | Buffer

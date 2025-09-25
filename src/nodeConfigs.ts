@@ -1,5 +1,5 @@
 import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtString, NbtTag } from 'deepslate/lib/nbt'
-import {
+import type {
 	IBlueprintBoneConfigJSON,
 	IBlueprintCameraConfigJSON,
 	IBlueprintLocatorConfigJSON,

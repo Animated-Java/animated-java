@@ -1,4 +1,4 @@
-import { MinecraftVersion } from '../global'
+import { type MinecraftVersion } from '../global'
 import animation_1_20_4 from './1.20.4/animation.mcb'
 import core_1_20_4 from './1.20.4/core.mcb'
 import static_1_20_4 from './1.20.4/static.mcb'

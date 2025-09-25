@@ -1,14 +1,14 @@
 import { mergeGeometries } from '../../util/bufferGeometryUtils'
 import {
-	IParsedBlock,
+	type IParsedBlock,
 	getPathFromResourceLocation,
 	parseBlock,
 	resolveBlockstateValueType,
 } from '../../util/minecraftUtil'
 import { translate } from '../../util/translation'
 import { assetsLoaded, getJSONAsset, getPngAssetAsDataUrl, hasAsset } from './assetManager'
-import { BlockStateValue } from './blockstateManager'
-import {
+import type { BlockStateValue } from './blockstateManager'
+import type {
 	IBlockModel,
 	IBlockState,
 	IBlockStateMultipartCase,

@@ -1,8 +1,8 @@
 import * as pathjs from 'path'
-import { MinecraftVersion } from '../systems/global'
+import type { MinecraftVersion } from '../systems/global'
 import {
 	BlockStateRegistryEntry,
-	BlockStateValue,
+	type BlockStateValue,
 	getBlockState,
 } from '../systems/minecraft/blockstateManager'
 

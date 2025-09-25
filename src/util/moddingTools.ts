@@ -137,15 +137,15 @@ export function createMenu(template: MenuItem[], options?: MenuOptions) {
  * Creates a new Blockbench.BarMenu and automatically handles it's deletion on the plugin unload and uninstall events.
  * @param id A namespaced ID ('my-plugin-id:my-menu')
  * @param structure The menu structure.
- * @param condition The condition for the menu to be visible.
+ * @param options The condition for the menu to be visible.
  * @returns The created menu.
  */
 export function createBarMenu(
 	id: NamespacedString,
 	structure: MenuItem[],
-	condition: ConditionResolvable
+	options?: BarMenuOptions
 ) {
-	const menu = new BarMenu(id, structure, condition)
+	const menu = new BarMenu(id, structure, options)
 
 	// events.EXTRACT_MODS.subscribe(() => {
 	// 	menu.delete()

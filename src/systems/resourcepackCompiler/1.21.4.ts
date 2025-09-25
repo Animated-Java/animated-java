@@ -2,9 +2,9 @@ import type { ResourcePackCompiler } from '.'
 import { PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
 import { isResourcePackPath, sanitizePathName } from '../../util/minecraftUtil'
 import { Variant } from '../../variants'
-import { IItemDefinition } from '../minecraft/itemDefinitions'
+import type { IItemDefinition } from '../minecraft/itemDefinitions'
 import { type ITextureAtlas } from '../minecraft/textureAtlas'
-import { IRenderedNodes, IRenderedRig, IRenderedVariantModel } from '../rigRenderer'
+import type { IRenderedNodes, IRenderedRig, IRenderedVariantModel } from '../rigRenderer'
 
 const compileResourcePack: ResourcePackCompiler = async ({
 	coreFiles,

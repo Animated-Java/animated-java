@@ -24,6 +24,7 @@ export class SvelteDialog<T, U extends Record<string, any>> extends Dialog {
 		const mount = document.createComment(`svelte-dialog-` + guid())
 
 		const dialogOptions = { ...options }
+		// @ts-expect-error
 		delete dialogOptions.component
 
 		super(options.id, {

@@ -3,7 +3,7 @@ import { PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
 import { safeReadSync } from '../../util/fileUtil'
 import { isResourcePackPath, sanitizePathName } from '../../util/minecraftUtil'
 import { type ITextureAtlas } from '../minecraft/textureAtlas'
-import { IRenderedNodes } from '../rigRenderer'
+import type { IRenderedNodes } from '../rigRenderer'
 
 const compileResourcePack: ResourcePackCompiler = async ({
 	coreFiles,

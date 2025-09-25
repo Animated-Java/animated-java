@@ -12,7 +12,7 @@ import { BoneConfig, TextDisplayConfig } from '../../nodeConfigs'
 import { isFunctionTagPath } from '../../util/fileUtil'
 import {
 	getDataPackFormat,
-	IFunctionTag,
+	type IFunctionTag,
 	mergeTag,
 	parseBlock,
 	parseDataPackPath,
@@ -21,15 +21,15 @@ import {
 import { eulerFromQuaternion, floatToHex, roundTo, tinycolorToDecimal } from '../../util/misc'
 import { MSLimiter } from '../../util/msLimiter'
 import { Variant } from '../../variants'
-import { IRenderedAnimation } from '../animationRenderer'
+import type { IRenderedAnimation } from '../animationRenderer'
 import mcbFiles from '../datapackCompiler/mcbFiles'
 import { IntentionalExportError } from '../exporter'
-import { AJMeta, MinecraftVersion, PackMeta, PackMetaFormats } from '../global'
+import { AJMeta, type MinecraftVersion, PackMeta, type PackMetaFormats } from '../global'
 import { JsonText } from '../minecraft/jsonText'
-import { AnyRenderedNode, IRenderedRig, IRenderedVariant } from '../rigRenderer'
+import type { AnyRenderedNode, IRenderedRig, IRenderedVariant } from '../rigRenderer'
 import {
 	arrayToNbtFloatArray,
-	ExportedFile,
+	type ExportedFile,
 	matrixToNbtFloatArray,
 	replacePathPart,
 	transformationToNbt,
@@ -1323,7 +1323,12 @@ async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFold
 		if (file.writeHandler) {
 			await file.writeHandler(path, file.content)
 		} else {
-			await fs.promises.writeFile(path, file.content)
+			await fs.promises.writeFile(
+				path,
+				new Uint8Array(
+					Buffer.isBuffer(file.content) ? file.content : Buffer.from(file.content)
+				)
+			)
 		}
 		PROGRESS.set(PROGRESS.get() + 1)
 	}

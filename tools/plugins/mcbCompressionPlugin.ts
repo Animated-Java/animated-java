@@ -1,7 +1,7 @@
-import { Plugin } from 'esbuild'
+import type { Plugin } from 'esbuild'
+import * as fflate from 'fflate'
 import * as fs from 'fs/promises'
 import * as pathjs from 'path'
-import * as fflate from 'fflate'
 
 function zip(data: fflate.AsyncZippable): Promise<Uint8Array> {
 	return new Promise((resolve, reject) => {
@@ -21,7 +21,7 @@ export default function plugin(): Plugin {
 			build.onLoad({ filter: /\.mcb$/ }, async ({ path }) => {
 				const localPath = pathjs.relative(process.cwd(), path).replace(/\\/g, '/')
 				const data = await fs.readFile(path)
-				mcbFiles.set(localPath, data)
+				mcbFiles.set(localPath, new Uint8Array(data))
 
 				return {
 					contents: `

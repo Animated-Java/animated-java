@@ -1,7 +1,7 @@
 import { isCurrentFormat } from '../blueprintFormat'
 import { PACKAGE } from '../constants'
 import { roundToNth } from '../util/misc'
-import { ContextProperty, createBlockbenchMod } from '../util/moddingTools'
+import { type ContextProperty, createBlockbenchMod } from '../util/moddingTools'
 import { translate } from '../util/translation'
 
 export const DEFAULT_SNAPPING_VALUE = 20

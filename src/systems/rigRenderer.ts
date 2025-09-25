@@ -1,17 +1,17 @@
 import * as crypto from 'crypto'
-import {
+import type {
+	IBlueprintBoneConfigJSON,
 	IBlueprintCameraConfigJSON,
 	IBlueprintLocatorConfigJSON,
 	IBlueprintTextDisplayConfigJSON,
 	IBlueprintVariantJSON,
-	type IBlueprintBoneConfigJSON,
 } from '../blueprintFormat'
 import { BoneConfig } from '../nodeConfigs'
-import { Alignment, TextDisplay } from '../outliner/textDisplay'
+import { type Alignment, TextDisplay } from '../outliner/textDisplay'
 import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
 import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
 import {
-	IMinecraftResourceLocation,
+	type IMinecraftResourceLocation,
 	parseResourcePackPath,
 	sanitizePathName,
 	sanitizeStorageKey,
@@ -20,9 +20,9 @@ import { Variant } from '../variants'
 import {
 	correctSceneAngle,
 	getFrame,
+	type INodeTransform,
 	restoreSceneAngle,
 	updatePreview,
-	type INodeTransform,
 } from './animationRenderer'
 import { IntentionalExportError } from './exporter'
 import { JsonText } from './minecraft/jsonText'

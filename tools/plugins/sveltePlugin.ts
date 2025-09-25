@@ -6,10 +6,10 @@
 
 'use strict'
 Object.defineProperty(exports, '__esModule', { value: true })
+import type { Plugin } from 'esbuild'
 import { readFile } from 'fs/promises'
-import { preprocess, compile } from 'svelte/compiler'
 import { relative } from 'path'
-import { Plugin } from 'esbuild'
+import { compile, preprocess } from 'svelte/compiler'
 /**
  * Convert a warning or error emitted from the svelte compiler for esbuild.
  */

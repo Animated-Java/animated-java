@@ -1,8 +1,8 @@
 import type { ResourcePackCompiler } from '.'
 import { PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
 import { isResourcePackPath, sanitizePathName } from '../../util/minecraftUtil'
-import { ITextureAtlas } from '../minecraft/textureAtlas'
-import { IRenderedNodes } from '../rigRenderer'
+import type { ITextureAtlas } from '../minecraft/textureAtlas'
+import type { IRenderedNodes } from '../rigRenderer'
 import { sortObjectKeys } from '../util'
 
 interface IPredicateItemModel {
