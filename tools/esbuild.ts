@@ -20,7 +20,6 @@ import bufferPatchPlugin from './plugins/bufferPatchFunction.js'
 import mcbCompressionPlugin from './plugins/mcbCompressionPlugin'
 import packagerPlugin from './plugins/packagerPlugin'
 import sveltePlugin from './plugins/sveltePlugin'
-import inlineWorkerPlugin from './plugins/workerPlugin'
 const PACKAGE = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
 
 const INFO_PLUGIN: esbuild.Plugin = {
@@ -163,7 +162,10 @@ const yamlPlugin: (opts: {
 		})
 		build.onLoad({ filter: /.*/, namespace: 'yaml' }, async args => {
 			const yamlContent = await fs.promises.readFile(args.path)
-			let parsed = load(new TextDecoder().decode(yamlContent), options?.loadOptions)
+			let parsed = load(
+				new TextDecoder().decode(new Uint8Array(yamlContent)),
+				options?.loadOptions
+			)
 			if (options?.transform && options.transform(parsed, args.path) !== void 0)
 				parsed = options.transform(parsed, args.path)
 			return {
@@ -217,7 +219,6 @@ const devConfig: esbuild.BuildOptions = {
 		yamlPlugin({}),
 		sveltePlugin(svelteConfig),
 		packagerPlugin(),
-		inlineWorkerPlugin(devWorkerConfig),
 		assetOverridePlugin(),
 		mcbCompressionPlugin(),
 		DEPENDENCY_QUARKS,
@@ -243,11 +244,9 @@ const prodConfig: esbuild.BuildOptions = {
 			limit: -1,
 		}),
 		INFO_PLUGIN,
-		inlineWorkerPlugin({}),
 		yamlPlugin({}),
 		sveltePlugin(svelteConfig),
 		packagerPlugin(),
-		inlineWorkerPlugin({}),
 		assetOverridePlugin(),
 		mcbCompressionPlugin(),
 		DEPENDENCY_QUARKS,
