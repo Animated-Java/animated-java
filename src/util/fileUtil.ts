@@ -26,7 +26,12 @@ export function resolveEnvVariables(path: string) {
 }
 
 export function isRelativePath(path: string) {
-	return path.startsWith('./') || path.startsWith('../')
+	return (
+		path.startsWith('./') ||
+		path.startsWith('../') ||
+		path.startsWith('.\\') ||
+		path.startsWith('..\\')
+	)
 }
 
 export function resolveRelativePath(path: string) {
