@@ -847,10 +847,10 @@ dir <%export_namespace%> {
 				execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block zzz/this/as_data {
 					REPEAT (Object.values(rig.nodes).filter(v => v.type === 'locator' && v.config?.use_entity)) as locator {
 						# REVIEW - This will not kill locators or cameras that have been summoned using an old export of the rig.
-						function ./zzz/this/kill_locator with entity @s data.locators.<%locator.type + '_' + locator.name%>
+						function ./zzz/this/kill_locator with entity @s data.locators.<%locator.storage_name%>
 					}
 					REPEAT (Object.values(rig.nodes).filter(v => v.type === 'camera')) as camera {
-						function ./zzz/this/kill_camera with entity @s data.locators.<%camera.type + '_' + camera.name%>
+						function ./zzz/this/kill_camera with entity @s data.cameras.<%camera.storage_name%>
 					}
 				}
 			}
