@@ -1,7 +1,7 @@
 import type { IBlueprintVariantJSON } from './blueprintFormat'
 import { getKeyframeVariant, setKeyframeVariant } from './mods/customKeyframesMod'
 import { events } from './util/events'
-import { sanitizePathName } from './util/minecraftUtil'
+import { sanitizeStorageKey } from './util/minecraftUtil'
 
 export class TextureMap {
 	map: Map<string, string>
@@ -212,7 +212,7 @@ export class Variant {
 	}
 
 	public static makeNameUnique(variant: Variant, name: string): string {
-		name = sanitizePathName(name)
+		name = sanitizeStorageKey(name)
 		if (!Variant.all.some(v => v !== variant && v.name === name)) {
 			return name
 		}

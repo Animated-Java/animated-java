@@ -1,6 +1,6 @@
 import type { ResourcePackCompiler } from '.'
 import { PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
-import { isResourcePackPath, sanitizePathName } from '../../util/minecraftUtil'
+import { isResourcePackPath, sanitizeStorageKey } from '../../util/minecraftUtil'
 import type { ITextureAtlas } from '../minecraft/textureAtlas'
 import type { IRenderedNodes } from '../rigRenderer'
 import { sortObjectKeys } from '../util'
@@ -186,7 +186,7 @@ const compileResourcePack: ResourcePackCompiler = async ({
 			throw new Error(`Texture ${texture.name} is missing it's image data.`)
 		}
 
-		let textureName = sanitizePathName(texture.name)
+		let textureName = sanitizeStorageKey(texture.name)
 		if (!texture.name.endsWith('.png')) textureName += '.png'
 		versionedFiles.set(PathModule.join(textureExportFolder, textureName), { content: image })
 		if (mcmeta !== undefined)

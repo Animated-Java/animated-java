@@ -18,16 +18,6 @@ export interface IMinecraftResourceLocation {
 }
 
 /**
- * Return a sanitized version of {@param str} that is safe to use as a path name in a data pack or resource pack.
- *
- * Function names can only contain lowercase letters, numbers, underscores, and periods.
- * All other characters are replaced with underscores.
- */
-export function sanitizePathName(str: string): string {
-	return str.toLowerCase().replace(/[^a-z0-9_.]+/g, '_')
-}
-
-/**
  * Return a sanitized version of {@param str} that is safe to use as a storage object key.
  *
  * Storage names can only contain lowercase letters, numbers, and underscores.

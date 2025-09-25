@@ -6,7 +6,7 @@ import { type BillboardMode, BoneConfig, LocatorConfig } from './nodeConfigs'
 import { process } from './systems/modelDataFixerUpper'
 import { events } from './util/events'
 import { injectSvelteCompomponent } from './util/injectSvelteComponent'
-import { sanitizePathName } from './util/minecraftUtil'
+import { sanitizeStorageKey } from './util/minecraftUtil'
 import { addProjectToRecentProjects } from './util/misc'
 import { Valuable } from './util/stores'
 import { translate } from './util/translation'
@@ -165,7 +165,7 @@ export function convertToBlueprint() {
 	}
 	for (const animation of Blockbench.Animation.all) {
 		animation.createUniqueName(Blockbench.Animation.all.filter(a => a !== animation))
-		animation.name = sanitizePathName(animation.name)
+		animation.name = sanitizeStorageKey(animation.name)
 	}
 	for (const cube of Cube.all) {
 		cube.setUVMode(false)
@@ -341,7 +341,7 @@ export const BLUEPRINT_CODEC = new Blockbench.Codec('animated_java_blueprint', {
 			parseGroups(model.outliner)
 
 			for (const group of Group.all) {
-				group.name = sanitizePathName(group.name)
+				group.name = sanitizeStorageKey(group.name)
 			}
 		}
 

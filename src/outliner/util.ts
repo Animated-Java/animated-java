@@ -1,10 +1,10 @@
-import { sanitizePathName } from '../util/minecraftUtil'
+import { sanitizeStorageKey } from '../util/minecraftUtil'
 import { TextDisplay } from './textDisplay'
 import { VanillaBlockDisplay } from './vanillaBlockDisplay'
 import { VanillaItemDisplay } from './vanillaItemDisplay'
 
 export function sanitizeOutlinerElementName(name: string, elementUUID: string): string {
-	name = sanitizePathName(name)
+	name = sanitizeStorageKey(name)
 	let otherNodes: OutlinerElement[] = [
 		...VanillaBlockDisplay.all,
 		...Group.all,

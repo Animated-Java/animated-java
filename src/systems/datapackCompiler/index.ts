@@ -65,7 +65,7 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 			// Root is ignored
 		} else if (n.parent) {
 			parentNames.push({
-				name: rig.nodes[n.parent].path_name,
+				name: rig.nodes[n.parent].storage_name,
 				type: rig.nodes[n.parent].type,
 			})
 			recurseParents(rig.nodes[n.parent])
@@ -80,11 +80,11 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 		TAGS.NEW(),
 		TAGS.GLOBAL_ENTITY(),
 		TAGS.GLOBAL_NODE(),
-		TAGS.GLOBAL_NODE_NAMED(node.path_name),
+		TAGS.GLOBAL_NODE_NAMED(node.storage_name),
 		// Project
 		TAGS.PROJECT_ENTITY(Project!.animated_java.export_namespace),
 		TAGS.PROJECT_NODE(Project!.animated_java.export_namespace),
-		TAGS.PROJECT_NODE_NAMED(Project!.animated_java.export_namespace, node.path_name)
+		TAGS.PROJECT_NODE_NAMED(Project!.animated_java.export_namespace, node.storage_name)
 	)
 
 	if (!hasParent) {
@@ -94,19 +94,22 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 		case 'bone': {
 			tags.push(
 				// Global
-				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.path_name),
+				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.storage_name),
 				TAGS.GLOBAL_BONE(),
-				TAGS.GLOBAL_BONE_TREE(node.path_name), // Tree includes self
-				TAGS.GLOBAL_BONE_TREE_BONE(node.path_name), // Tree includes self
+				TAGS.GLOBAL_BONE_TREE(node.storage_name), // Tree includes self
+				TAGS.GLOBAL_BONE_TREE_BONE(node.storage_name), // Tree includes self
 				// Project
 				TAGS.PROJECT_DISPLAY_NODE_NAMED(
 					Project!.animated_java.export_namespace,
-					node.path_name
+					node.storage_name
 				),
 				TAGS.PROJECT_BONE(Project!.animated_java.export_namespace),
-				TAGS.PROJECT_BONE_NAMED(Project!.animated_java.export_namespace, node.path_name),
-				TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_namespace, node.path_name), // Tree includes self
-				TAGS.PROJECT_BONE_TREE_BONE(Project!.animated_java.export_namespace, node.path_name) // Tree includes self
+				TAGS.PROJECT_BONE_NAMED(Project!.animated_java.export_namespace, node.storage_name),
+				TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_namespace, node.storage_name), // Tree includes self
+				TAGS.PROJECT_BONE_TREE_BONE(
+					Project!.animated_java.export_namespace,
+					node.storage_name
+				) // Tree includes self
 			)
 			if (!hasParent) {
 				// Nodes without parents are assumed to be root nodes
@@ -146,17 +149,17 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 		case 'item_display': {
 			tags.push(
 				// Global
-				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.path_name),
+				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.storage_name),
 				TAGS.GLOBAL_ITEM_DISPLAY(),
 				// Project
 				TAGS.PROJECT_DISPLAY_NODE_NAMED(
 					Project!.animated_java.export_namespace,
-					node.path_name
+					node.storage_name
 				),
 				TAGS.PROJECT_ITEM_DISPLAY(Project!.animated_java.export_namespace),
 				TAGS.PROJECT_ITEM_DISPLAY_NAMED(
 					Project!.animated_java.export_namespace,
-					node.path_name
+					node.storage_name
 				)
 			)
 			if (!hasParent) {
@@ -198,17 +201,17 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 		case 'block_display': {
 			tags.push(
 				// Global
-				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.path_name),
+				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.storage_name),
 				TAGS.GLOBAL_BLOCK_DISPLAY(),
 				// Project
 				TAGS.PROJECT_DISPLAY_NODE_NAMED(
 					Project!.animated_java.export_namespace,
-					node.path_name
+					node.storage_name
 				),
 				TAGS.PROJECT_BLOCK_DISPLAY(Project!.animated_java.export_namespace),
 				TAGS.PROJECT_BLOCK_DISPLAY_NAMED(
 					Project!.animated_java.export_namespace,
-					node.path_name
+					node.storage_name
 				)
 			)
 			if (!hasParent) {
@@ -250,17 +253,17 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 		case 'text_display': {
 			tags.push(
 				// Global
-				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.path_name),
+				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.storage_name),
 				TAGS.GLOBAL_TEXT_DISPLAY(),
 				// Project
 				TAGS.PROJECT_DISPLAY_NODE_NAMED(
 					Project!.animated_java.export_namespace,
-					node.path_name
+					node.storage_name
 				),
 				TAGS.PROJECT_TEXT_DISPLAY(Project!.animated_java.export_namespace),
 				TAGS.PROJECT_TEXT_DISPLAY_NAMED(
 					Project!.animated_java.export_namespace,
-					node.path_name
+					node.storage_name
 				)
 			)
 			if (!hasParent) {
@@ -305,7 +308,10 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 				TAGS.GLOBAL_LOCATOR(),
 				// Project
 				TAGS.PROJECT_LOCATOR(Project!.animated_java.export_namespace),
-				TAGS.PROJECT_LOCATOR_NAMED(Project!.animated_java.export_namespace, node.path_name)
+				TAGS.PROJECT_LOCATOR_NAMED(
+					Project!.animated_java.export_namespace,
+					node.storage_name
+				)
 			)
 			if (!hasParent) {
 				// Nodes without parents are assumed to be root nodes
@@ -349,7 +355,10 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 				TAGS.GLOBAL_CAMERA(),
 				// Project
 				TAGS.PROJECT_CAMERA(Project!.animated_java.export_namespace),
-				TAGS.PROJECT_CAMERA_NAMED(Project!.animated_java.export_namespace, node.path_name)
+				TAGS.PROJECT_CAMERA_NAMED(
+					Project!.animated_java.export_namespace,
+					node.storage_name
+				)
 			)
 			if (!hasParent) {
 				// Nodes without parents are assumed to be root nodes
@@ -555,7 +564,7 @@ namespace TELLRAW {
 						' ',
 						' ',
 						{ text: ' ● ', color: 'gray' },
-						{ text: anim.path_name, color: 'yellow' },
+						{ text: anim.storage_name, color: 'yellow' },
 					])
 			),
 			TELLRAW_SUFFIX(),
@@ -719,7 +728,7 @@ async function generateRootEntityPassengers(
 				const item = new NbtCompound()
 				const variantModel = rig.variants[Variant.getDefault().uuid].models[uuid]
 				if (!variantModel) {
-					throw new Error(`Model for bone '${node.path_name}' not found!`)
+					throw new Error(`Model for bone '${node.storage_name}' not found!`)
 				}
 				passenger.set('item', item.set('id', new NbtString(aj.display_item)))
 				switch (version) {
@@ -867,7 +876,7 @@ async function generateRootEntityPassengers(
 				const parsed = await parseBlock(node.block)
 				if (!parsed) {
 					throw new Error(
-						`Invalid Blockstate '${node.block}' in node '${node.path_name}'!`
+						`Invalid Blockstate '${node.block}' in node '${node.storage_name}'!`
 					)
 				}
 

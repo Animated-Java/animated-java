@@ -13,7 +13,6 @@ import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
 import {
 	type IMinecraftResourceLocation,
 	parseResourcePackPath,
-	sanitizePathName,
 	sanitizeStorageKey,
 } from '../util/minecraftUtil'
 import { Variant } from '../variants'
@@ -66,8 +65,6 @@ export interface IRenderedNode {
 	type: string
 	/** The origin name of the node */
 	name: string
-	/** A sanitized version of {@link IRenderedNode.name} that is safe to use in a path in a data pack or resource pack.*/
-	path_name: string
 	/** A sanitized version of {@link IRenderedNode.name} that is safe to use as a key in a storage object. */
 	storage_name: string
 	/**
@@ -294,7 +291,7 @@ export function getTextureResourceLocation(texture: Texture, rig: IRenderedRig) 
 			return parsed
 		}
 	}
-	const path = PathModule.join(rig.texture_export_folder, sanitizePathName(texture.name))
+	const path = PathModule.join(rig.texture_export_folder, sanitizeStorageKey(texture.name))
 	const parsed = parseResourcePackPath(path)
 	if (parsed) {
 		TEXTURE_RESOURCE_LOCATION_CACHE.set(texture.uuid, parsed)
@@ -347,7 +344,6 @@ function renderGroup(
 	const renderedBone: IRenderedNodes['Bone'] = {
 		type: 'bone',
 		name: group.name,
-		path_name: sanitizePathName(group.name),
 		storage_name: sanitizeStorageKey(group.name),
 		uuid: group.uuid,
 		parent: parentId,
@@ -415,7 +411,6 @@ function renderGroup(
 		const struct: IRenderedNodes['Struct'] = {
 			type: 'struct',
 			name: group.name,
-			path_name: sanitizePathName(group.name),
 			storage_name: sanitizeStorageKey(group.name),
 			uuid: group.uuid,
 			parent: parentId,
@@ -458,7 +453,6 @@ function renderItemDisplay(display: VanillaItemDisplay, rig: IRenderedRig) {
 	const renderedBone: IRenderedNodes['ItemDisplay'] = {
 		type: 'item_display',
 		name: display.name,
-		path_name: sanitizePathName(display.name),
 		storage_name: sanitizeStorageKey(display.name),
 		uuid: display.uuid,
 		parent: parentId,
@@ -487,7 +481,6 @@ function renderBlockDisplay(display: VanillaBlockDisplay, rig: IRenderedRig) {
 	const renderedBone: IRenderedNodes['BlockDisplay'] = {
 		type: 'block_display',
 		name: display.name,
-		path_name: sanitizePathName(display.name),
 		storage_name: sanitizeStorageKey(display.name),
 		uuid: display.uuid,
 		block: display.block,
@@ -515,7 +508,6 @@ function renderTextDisplay(display: TextDisplay, rig: IRenderedRig): INodeStruct
 	const renderedBone: IRenderedNodes['TextDisplay'] = {
 		type: 'text_display',
 		name: display.name,
-		path_name: sanitizePathName(display.name),
 		storage_name: sanitizeStorageKey(display.name),
 		uuid: display.uuid,
 		parent: parentId,
@@ -545,7 +537,6 @@ function renderLocator(locator: Locator, rig: IRenderedRig) {
 	const renderedLocator: IRenderedNodes['Locator'] = {
 		type: 'locator',
 		name: locator.name,
-		path_name: sanitizePathName(locator.name),
 		storage_name: sanitizeStorageKey(locator.name),
 		uuid: locator.uuid,
 		parent: parentId,
@@ -564,7 +555,6 @@ function renderCamera(camera: ICamera, rig: IRenderedRig) {
 	const renderedCamera: IRenderedNodes['Camera'] = {
 		type: 'camera',
 		name: camera.name,
-		path_name: sanitizePathName(camera.name),
 		storage_name: sanitizeStorageKey(camera.name),
 		uuid: camera.uuid,
 		parent: parentId,
@@ -614,15 +604,15 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 			continue
 		}
 
-		const modelParent = PathModule.join(rig.model_export_folder, bone.path_name + '.json')
+		const modelParent = PathModule.join(rig.model_export_folder, bone.storage_name + '.json')
 		const parsed = parseResourcePackPath(modelParent)
 		if (!parsed) {
-			throw new Error(`Invalid Bone Name: '${bone.path_name}' -> '${modelParent}'`)
+			throw new Error(`Invalid Bone Name: '${bone.storage_name}' -> '${modelParent}'`)
 		}
 
 		const modelPath = variant.isDefault
-			? PathModule.join(rig.model_export_folder, bone.path_name + '.json')
-			: PathModule.join(rig.model_export_folder, variant.name, bone.path_name + '.json')
+			? PathModule.join(rig.model_export_folder, bone.storage_name + '.json')
+			: PathModule.join(rig.model_export_folder, variant.name, bone.storage_name + '.json')
 		const parsedModelPath = parseResourcePackPath(modelPath)
 		if (!parsedModelPath) {
 			throw new Error(`Invalid Variant Name: '${variant.name}' -> '${modelPath}'`)
