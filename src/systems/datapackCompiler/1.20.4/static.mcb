@@ -19,7 +19,7 @@ dir <%export_namespace%> {
 				run block zzz/check_rig_hash {
 					data remove storage aj:temp args
 					# Get uuid
-					function *global/internal/gu/convert_uuid_array_to_string
+					function *global/internal/gu/get_entity_uuid_string
 					data modify storage aj:temp args.uuid set from storage aj:uuid main.out
 					# Get position
 					execute store result storage aj:temp args.x double 1 run data get entity @s Pos[0] 1
