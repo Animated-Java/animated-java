@@ -165,11 +165,12 @@ dir <%export_namespace%> {
 						^<%roundTo(locator.default_transform.pos[2], 10)%> \
 						{Tags:<%getNodeTags(locator, rig)%>}
 					execute \
-						as @n[ \
+						as @e[ \
 							type=<%locator.config.entity_type%>, \
-							tag=<%TAGS.NEW()%>, \
 							tag=<%TAGS.PROJECT_LOCATOR_NAMED(export_namespace, locator.storage_name)%>, \
-							distance=..<%locator.max_distance + 1%> \
+							tag=<%TAGS.NEW()%>, \
+							distance=..<%Math.ceil(locator.max_distance)%>, \
+							limit=1 \
 						] \
 					run block as_locator/<%locator.storage_name%> {
 					# run block ../as_locator/<%locator.storage_name%> {
@@ -199,11 +200,12 @@ dir <%export_namespace%> {
 						^<%roundTo(camera.default_transform.pos[2], 10)%> \
 						{Tags:<%getNodeTags(camera, rig)%>, teleport_duration: 2}
 					execute \
-						as @n[ \
+						as @e[ \
 							type=minecraft:item_display, \
-							tag=<%TAGS.NEW()%>, \
 							tag=<%TAGS.PROJECT_CAMERA_NAMED(export_namespace, camera.storage_name)%>, \
-							distance=..<%camera.max_distance + 1%> \
+							tag=<%TAGS.NEW()%>, \
+							distance=..<%Math.ceil(camera.max_distance)%>, \
+							limit=1 \
 						] \
 					run block ../as_camera/<%camera.storage_name%> {
 						tag @s remove <%TAGS.NEW()%>
