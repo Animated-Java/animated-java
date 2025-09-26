@@ -1,8 +1,8 @@
 import { updateBoundingBox } from '../../blueprintFormat'
-import { defaultValues, ExportMode } from '../../blueprintSettings'
+import type { MinecraftVersion } from 'src/systems/global'
+import { defaultValues, type ExportMode } from '../../blueprintSettings'
 import BlueprintSettingsDialogSvelteComponent from '../../components/blueprintSettingsDialog.svelte'
 import { PACKAGE } from '../../constants'
-import { MinecraftVersion } from '../../systems/global'
 import { sanitizeStorageKey } from '../../util/minecraftUtil'
 import { Valuable } from '../../util/stores'
 import { SvelteDialog } from '../../util/svelteDialog'
@@ -34,7 +34,9 @@ function getSettings() {
 			Project!.animated_java.resource_pack_export_mode as string
 		),
 		dataPackExportMode: new Valuable(Project!.animated_java.data_pack_export_mode as string),
-		targetMinecraftVersions: new Valuable(Project!.animated_java.target_minecraft_versions),
+		targetMinecraftVersions: new Valuable(
+			Project!.animated_java.target_minecraft_versions as string[]
+		),
 		// Resource Pack Settings
 		displayItem: new Valuable(Project!.animated_java.display_item, value => {
 			if (!value) {

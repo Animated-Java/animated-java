@@ -1,7 +1,7 @@
 import { isCurrentFormat } from '../../blueprintFormat'
 import VanillaItemDisplayElementPanel from '../../components/vanillaItemDisplayElementPanel.svelte'
 import { PACKAGE } from '../../constants'
-import { ItemDisplayMode, VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
+import { type ItemDisplayMode, VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
 import { events } from '../../util/events'
 import { injectSvelteCompomponentMod } from '../../util/injectSvelteComponent'
 import { translate } from '../../util/translation'
