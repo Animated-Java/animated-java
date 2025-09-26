@@ -18,12 +18,17 @@ dir <%export_namespace%> {
 					on vehicle \
 				run block zzz/check_rig_hash {
 					data remove storage aj:temp args
-					execute store result storage aj:temp args.x int 1 store result score #this.x aj.i run data get entity @s Pos[0] 1
-					execute store result storage aj:temp args.y int 1 store result score #this.y aj.i run data get entity @s Pos[1] 1
-					execute store result storage aj:temp args.z int 1 store result score #this.z aj.i run data get entity @s Pos[2] 1
-					block show_outdated_warning { with storage aj:temp args
+					# Get uuid
+					function *global/internal/gu/convert_uuid_array_to_string
+					data modify storage aj:temp args.uuid set from storage aj:uuid main.out
+					# Get position
+					execute store result storage aj:temp args.x double 1 run data get entity @s Pos[0] 1
+					execute store result storage aj:temp args.y double 1 run data get entity @s Pos[1] 1
+					execute store result storage aj:temp args.z double 1 run data get entity @s Pos[2] 1
+					block print_outdated_warning { with storage aj:temp args
 						$tellraw @a <%TELLRAW.RIG_OUTDATED()%>
 					}
+					# Overwrite the rig hash so the warning doesn't show again.
 					data modify entity @s data.rigHash set value '<%rigHash%>'
 					execute on passengers run data merge entity @s {Glowing: 1b, glow_color_override: <%0xff0000%>}
 					summon minecraft:text_display ~ ~ ~ { \
@@ -36,6 +41,7 @@ dir <%export_namespace%> {
 						text:'<%TELLRAW.RIG_OUTDATED_TEXT_DISPLAY()%>', \
 						alignment: 'center', \
 						billboard: 'vertical', \
+						shadow: true, \
 						transformation:{ \
 							translation:[0f,<%boundingBox[1]/16%>f,0f], \
 							left_rotation:[0f,0f,0f,1f], \
