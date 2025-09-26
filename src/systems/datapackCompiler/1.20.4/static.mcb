@@ -488,32 +488,44 @@ dir <%export_namespace%> {
 				if (custom_remove_commands) emit.mcb(custom_remove_commands)
 			%%>
 
-			IF (has_entity_locators || has_cameras) {
-				execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block zzz/this/as_data {
-						# REVIEW - This will not kill locators or cameras that have been summoned using an old export of the rig.
-						function ./zzz/this/kill_locator with entity @s data.locators.<%locator.storage_name%>
-					}
-						function ./zzz/this/kill_camera with entity @s data.cameras.<%camera.storage_name%>
-						REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator' && node.config?.use_entity)) as locator {
-						REPEAT (Object.values(rig.nodes).filter(node => node.type === 'camera')) as camera {
-					}
-				}
-			}
-
-			execute on passengers run kill @s
-			kill @s
+			function ./this/without_on_remove_commands
 		}
 
-		dir zzz {
-			dir this {
-				function kill_locator {
-					#ARGS: {uuid: string}
-					# Recursively remove stacked locator entities
-					$execute as $(uuid) run block recursively_kill_passengers {
-						execute on passengers run function ^0
-						kill @s
+		dir this {
+			function without_on_remove_commands {
+				IF (show_function_errors) {
+					# Assert that the function is being executed as the root entity.
+					execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+						function *global/errors/function_not_executed_as_root_entity \
+							{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
+				}
+
+				IF (has_entity_locators || has_cameras) {
+					execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block zzz/as_data {
+						REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator' && node.config?.use_entity)) as locator {
+							# REVIEW - This will not kill locators or cameras that have been summoned using an old export of the rig.
+							function ./zzz/kill_locator with entity @s data.locators.<%locator.storage_name%>
+						}
+						REPEAT (Object.values(rig.nodes).filter(node => node.type === 'camera')) as camera {
+							function ./zzz/kill_camera with entity @s data.cameras.<%camera.storage_name%>
+						}
 					}
 				}
+
+				function ./zzz/kill_entity_stack
+			}
+
+			dir zzz {
+				function kill_entity_stack {
+					execute on passengers run function ^0
+					kill @s
+				}
+
+				function kill_locator {
+					#ARGS: {uuid: string}
+					$execute as $(uuid) run function ./kill_entity_stack
+				}
+
 				function kill_camera {
 					#ARGS: {uuid: string}
 					$kill $(uuid)
