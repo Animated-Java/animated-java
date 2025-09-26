@@ -1,4 +1,4 @@
-import { saveBlueprint } from '../blueprintFormat'
+import { checkTargetVersionsMeetRequirement, saveBlueprint } from '../blueprintFormat'
 import { blueprintSettingErrors } from '../blueprintSettings'
 import { openBlueprintSettingsDialog } from '../interface/dialog/blueprintSettings'
 import { PROGRESS_DESCRIPTION, openExportProgressDialog } from '../interface/dialog/exportProgress'
@@ -170,14 +170,14 @@ async function actuallyExportProject(forceSave = true) {
 export async function exportProject(forceSave = true) {
 	if (!Project) return // TODO: Handle this error better
 
-	if (
-		// Check if 1.21.3 is newer than the target version
-		// compareVersions('1.21.3', Project.animated_java.target_minecraft_versions) &&
-		!Cube.all.allAre(c => isCubeValid(c))
-	) {
+	if (Cube.all.some(cube => isCubeValid(cube) === 'invalid')) {
 		Blockbench.showMessageBox({
 			title: translate('misc.failed_to_export.title'),
-			message: translate('misc.failed_to_export.invalid_rotation.message'),
+			message: translate(
+				checkTargetVersionsMeetRequirement('1.21.4')
+					? 'misc.failed_to_export.invalid_rotation.message_post_1_21_4'
+					: 'misc.failed_to_export.invalid_rotation.message'
+			),
 			buttons: [translate('misc.failed_to_export.button')],
 		})
 		return

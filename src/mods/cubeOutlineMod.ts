@@ -1,10 +1,50 @@
-import { isCurrentFormat } from '../blueprintFormat'
+import { translate } from 'src/util/translation'
+import { checkTargetVersionsMeetRequirement, isCurrentFormat } from '../blueprintFormat'
 import { PACKAGE } from '../constants'
 import { isCubeValid } from '../systems/util'
 import { createBlockbenchMod, createPropertySubscribable } from '../util/moddingTools'
 
 const ERROR_OUTLINE_MATERIAL = Canvas.outlineMaterial.clone()
 ERROR_OUTLINE_MATERIAL.color.set('#ff0000')
+
+export function updateAllCubeOutlines() {
+	for (const cube of Cube.all) {
+		Cube.preview_controller.updateTransform(cube)
+	}
+}
+
+function updateCubeValidity(cube: Cube, isValid: boolean) {
+	if (cube.isRotationValid === isValid) return
+	cube.mesh.outline.material = isValid ? Canvas.outlineMaterial : ERROR_OUTLINE_MATERIAL
+	cube.isRotationValid = isValid
+}
+
+let toastNotification: Deletable | null = null
+
+function showToastNotification() {
+	if (!toastNotification) {
+		toastNotification = Blockbench.showToastNotification({
+			text: translate(
+				checkTargetVersionsMeetRequirement('1.21.4')
+					? 'toast.invalid_rotations_post_1_21_4'
+					: 'toast.invalid_rotations'
+			),
+			color: 'var(--color-error)',
+			click: () => false,
+		})
+		const intervalId = setInterval(() => {
+			if (
+				Cube.all.some(cube => isCubeValid(cube) === 'invalid') &&
+				document.querySelector('li.toast_notification')
+			)
+				return
+			clearInterval(intervalId)
+			toastNotification?.delete()
+			toastNotification = null
+			requestAnimationFrame(updateAllCubeOutlines)
+		}, 1000)
+	}
+}
 
 createBlockbenchMod(
 	`${PACKAGE.name}:cubeOutlineMod`,
@@ -15,19 +55,24 @@ createBlockbenchMod(
 	context => {
 		Cube.preview_controller.updateTransform = function (cube: Cube) {
 			if (isCurrentFormat()) {
-				const isValid = isCubeValid(cube)
-				if (cube.rotationInvalid && isValid) {
-					cube.mesh.outline.material = Canvas.outlineMaterial
-					cube.rotationInvalid = false
-				} else if (!cube.rotationInvalid && !isValid) {
-					cube.mesh.outline.material = ERROR_OUTLINE_MATERIAL
-					cube.rotationInvalid = true
-					if (!Project!.showingInvalidCubeRotations) {
-						Blockbench.showToastNotification({
-							text: 'Invalid Cube Rotation!\nCubes can only be rotated in 22.5 degree increments (45, 22.5, 0, -22.5, -45) and can only be rotated on a single axis.\nThe offending cubes have been highlighted in red.',
-							color: 'var(--color-error)',
-						})
-						Project!.showingInvalidCubeRotations = true
+				const validity = isCubeValid(cube)
+
+				switch (validity) {
+					case 'valid': {
+						updateCubeValidity(cube, true)
+						break
+					}
+					case '1.21.4+': {
+						if (checkTargetVersionsMeetRequirement('1.21.4')) {
+							updateCubeValidity(cube, true)
+							break
+						}
+						// Fallthrough to invalid if the target version is below 1.21.4
+					}
+					case 'invalid': {
+						updateCubeValidity(cube, false)
+						showToastNotification()
+						break
 					}
 				}
 			}
@@ -37,11 +82,12 @@ createBlockbenchMod(
 		Cube.prototype.init = function (this: Cube) {
 			const cube = context.originalInit.call(this)
 
-			cube.rotationInvalid = false
+			cube.isRotationValid = true
 
-			const [get] = createPropertySubscribable(this.mesh.outline, 'visible')
-			get.subscribe(({ storage }) => {
-				if (isCurrentFormat()) storage.value = this.rotationInvalid || storage.value
+			const [, setVisible] = createPropertySubscribable(cube.mesh.outline, 'visible')
+			setVisible.subscribe(({ storage }) => {
+				if (!isCurrentFormat()) return
+				storage.value = !cube.isRotationValid || storage.value
 			})
 
 			return cube

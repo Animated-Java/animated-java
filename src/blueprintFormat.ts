@@ -681,15 +681,40 @@ export function saveBlueprint() {
 	BLUEPRINT_CODEC.write(BLUEPRINT_CODEC.compile(), Project.save_path)
 }
 
-export function updateRotationLock() {
-	if (!isCurrentFormat()) return
-	BLUEPRINT_FORMAT.rotation_limit = !(
+export function checkTargetVersionsMeetRequirement(version: string): boolean {
+	return !!Project?.animated_java.target_minecraft_versions.every(
+		v => !compareVersions(version, v)
+	)
+}
+
+export function shouldEnableRotationLock(): boolean {
+	if (!isCurrentFormat()) return false
+
+	if (checkTargetVersionsMeetRequirement('1.21.4')) {
+		return false
+	}
+
+	return !(
 		!!Group.first_selected ||
 		!!AnimatedJava.API.TextDisplay.selected.length ||
 		!!AnimatedJava.API.VanillaItemDisplay.selected.length ||
 		!!AnimatedJava.API.VanillaBlockDisplay.selected.length ||
-		!!(OutlinerElement.types.camera?.selected && OutlinerElement.types.camera?.selected)
+		!!(
+			Array.isArray(OutlinerElement.types.locator?.selected) &&
+			OutlinerElement.types.locator.selected.length
+		) ||
+		!!(
+			Array.isArray(OutlinerElement.types.camera?.selected) &&
+			OutlinerElement.types.camera.selected.length
+		)
 	)
+}
+
+export function updateRotationLock() {
+	if (!isCurrentFormat()) return
+
+	// If any of these node types are selected, we disable rotation lock.
+	BLUEPRINT_FORMAT.rotation_limit = shouldEnableRotationLock()
 	BLUEPRINT_FORMAT.rotation_snap = BLUEPRINT_FORMAT.rotation_limit
 }
 

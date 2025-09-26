@@ -7,6 +7,7 @@ import {
 	type AsyncZippable,
 	type Unzipped,
 } from 'fflate/browser'
+import { checkTargetVersionsMeetRequirement } from 'src/blueprintFormat'
 import { roundTo } from '../util/misc'
 import type { INodeTransform } from './animationRenderer'
 
@@ -91,33 +92,28 @@ export const unzip = (data: Uint8Array, options: AsyncUnzipOptions) => {
 	})
 }
 
-export function isCubeValid(cube: Cube) {
-	// Cube is automatically valid if it has no rotation
-	if (cube.rotation[0] === 0 && cube.rotation[1] === 0 && cube.rotation[2] === 0) {
-		return true
-	}
-	const rotation = cube.rotation[0] + cube.rotation[1] + cube.rotation[2]
-	// prettier-ignore
-	if (
-		// Make sure the cube is rotated in only one axis by adding all the rotations together, and checking if the sum is equal to one of the rotations.
-		(
-			rotation === cube.rotation[0] ||
-			rotation === cube.rotation[1] ||
-			rotation === cube.rotation[2]
-		)
-		&&
-		// Make sure the cube is rotated in one of the allowed 22.5 degree increments
-		(
-			rotation === -45   ||
-			rotation === -22.5 ||
-			rotation === 0     ||
-			rotation === 22.5  ||
-			rotation === 45
-		)
-	) {
-		return true
-	}
-	return false
+export function isCubeValid(cube: Cube): '1.21.4+' | 'valid' | 'invalid' {
+	const totalRotation = cube.rotation[0] + cube.rotation[1] + cube.rotation[2]
+
+	if (totalRotation === 0) return 'valid'
+
+	const isSingleAxisRotation =
+		totalRotation === cube.rotation[0] ||
+		totalRotation === cube.rotation[1] ||
+		totalRotation === cube.rotation[2]
+
+	if (isSingleAxisRotation && checkTargetVersionsMeetRequirement('1.21.4')) return '1.21.4+'
+
+	const isRotationInAllowedSteps =
+		totalRotation === -45 ||
+		totalRotation === -22.5 ||
+		totalRotation === 0 ||
+		totalRotation === 22.5 ||
+		totalRotation === 45
+
+	if (isSingleAxisRotation && isRotationInAllowedSteps) return 'valid'
+
+	return 'invalid'
 }
 
 export function getFunctionNamespace(version: string): 'function' | 'functions' {
