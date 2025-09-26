@@ -250,7 +250,14 @@ export class MinecraftFont {
 	constructor(id: string, assetPath: string, fallback?: MinecraftFont) {
 		this.id = id
 		this.fallback = fallback
-		const fontJSON = assets.getJSONAsset(assetPath) as IFont
+
+		let fontJSON: IFont
+		try {
+			fontJSON = assets.getJSONAsset(assetPath) as IFont
+		} catch (error) {
+			console.error(`Failed to load font JSON from ${assetPath}:`, error)
+			throw error
+		}
 
 		for (const providerJSON of fontJSON.providers) {
 			switch (providerJSON.type) {
@@ -517,7 +524,6 @@ export class MinecraftFont {
 
 		let shadowColor: THREE.Color
 		if (Array.isArray(style.shadow_color)) {
-			console.log('Shadow color:', style.shadow_color)
 			shadowColor = new THREE.Color().fromArray(style.shadow_color)
 		} else {
 			shadowColor = color.clone().multiplyScalar(0.25)

@@ -106,7 +106,9 @@ let loadedAssets: Unzipped | undefined
 export async function extractAssets() {
 	const cachedJarFilePath = getCachedJarFilePath()
 
-	loadedAssets = await unzip(new Uint8Array(await fs.promises.readFile(cachedJarFilePath)), {
+	const data = await fs.promises.readFile(cachedJarFilePath)
+
+	loadedAssets = await unzip(new Uint8Array(data), {
 		filter: v => v.name.startsWith('assets/'),
 	})
 }
@@ -126,19 +128,16 @@ export function hasAsset(path: string) {
 	return !!loadedAssets[path]
 }
 
-export function getRawAsset(path: string) {
+export function getRawAsset(path: string): Buffer {
 	if (!loadedAssets) throw new Error('Assets not loaded')
 
 	if (ASSET_OVERRIDES[path]) {
-		if (path.endsWith('.png')) {
-			return Buffer.from(ASSET_OVERRIDES[path], 'base64')
-		}
-		return ASSET_OVERRIDES[path]
+		return Buffer.from(ASSET_OVERRIDES[path])
 	}
 
 	const asset = loadedAssets[path]
 	if (!asset) throw new Error(`Asset not found: ${path}`)
-	return asset
+	return Buffer.from(asset)
 }
 
 export function getPngAssetAsDataUrl(path: string) {
@@ -147,9 +146,14 @@ export function getPngAssetAsDataUrl(path: string) {
 	return `data:image/png;base64,${asset.toString('base64')}`
 }
 
-export function getJSONAsset(path: string): any {
+export function getJSONAsset(path: string) {
 	const asset = getRawAsset(path)
 	if (!asset) throw new Error(`Asset not found: ${path}`)
-	const json = JSON.parse(asset.toString('utf-8'))
-	return json
+	const assetString = asset.toString('utf-8')
+	try {
+		return JSON.parse(assetString)
+	} catch (error) {
+		console.error(`Failed to parse JSON asset from ${path}:`, assetString, error)
+		throw error
+	}
 }
