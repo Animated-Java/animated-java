@@ -408,7 +408,7 @@ dir <%export_namespace%> {
 			}
 
 			execute at @s on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block zzz/at_all_locators/as_data {
-				REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator' && node.config?.use_entity)) as locator {
+				REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator')) as locator {
 					data modify storage aj:temp args merge from entity @s data.locators.<%locator.storage_name%>
 					block execute_at_transform { with storage aj:temp args
 						$execute \
