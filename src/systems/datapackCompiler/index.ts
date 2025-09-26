@@ -728,10 +728,13 @@ async function generateRootEntityPassengers(
 		const tags = getNodeTags(node, rig)
 		passenger.set('Tags', tags)
 
-		switch (node.type) {
-			case 'bone': {
-				passenger.set('id', new NbtString('minecraft:item_display'))
-				passenger.set(
+		if (BONE_TYPES.includes(node.type)) {
+			passenger
+				.set('height', new NbtFloat(aj.bounding_box[1]))
+				.set('width', new NbtFloat(aj.bounding_box[0]))
+				.set('teleport_duration', new NbtInt(0))
+				.set('interpolation_duration', new NbtInt(aj.interpolation_duration))
+				.set(
 					'transformation',
 					new NbtCompound()
 						.set('translation', arrayToNbtFloatArray([0, 0, 0]))
@@ -739,15 +742,21 @@ async function generateRootEntityPassengers(
 						.set('right_rotation', arrayToNbtFloatArray([0, 0, 0, 1]))
 						.set('scale', arrayToNbtFloatArray([0, 0, 0]))
 				)
-				passenger.set('interpolation_duration', new NbtInt(aj.interpolation_duration))
-				passenger.set('teleport_duration', new NbtInt(0))
-				passenger.set('item_display', new NbtString('head'))
-				const item = new NbtCompound()
+		}
+
+		switch (node.type) {
+			case 'bone': {
+				const item = new NbtCompound().set('id', new NbtString(aj.display_item))
+				passenger
+					.set('id', new NbtString('minecraft:item_display'))
+					.set('item', item)
+					.set('item_display', new NbtString('head'))
+
 				const variantModel = rig.variants[Variant.getDefault().uuid].models[uuid]
 				if (!variantModel) {
 					throw new Error(`Model for bone '${node.storage_name}' not found!`)
 				}
-				passenger.set('item', item.set('id', new NbtString(aj.display_item)))
+
 				switch (version) {
 					case '1.20.4': {
 						item.set(
@@ -808,26 +817,12 @@ async function generateRootEntityPassengers(
 				if (node.configs?.default) {
 					BoneConfig.fromJSON(node.configs.default).toNBT(passenger)
 				}
-
-				passenger.set('height', new NbtFloat(aj.bounding_box[1]))
-				passenger.set('width', new NbtFloat(aj.bounding_box[0]))
 				break
 			}
 			case 'text_display': {
 				passenger.set('id', new NbtString('minecraft:text_display'))
-				passenger.set(
-					'transformation',
-					new NbtCompound()
-						.set('translation', arrayToNbtFloatArray([0, 0, 0]))
-						.set('left_rotation', arrayToNbtFloatArray([0, 0, 0, 1]))
-						.set('right_rotation', arrayToNbtFloatArray([0, 0, 0, 1]))
-						.set('scale', arrayToNbtFloatArray([0, 0, 0]))
 				)
-				passenger.set('interpolation_duration', new NbtInt(aj.interpolation_duration))
-				passenger.set('teleport_duration', new NbtInt(0))
 
-				passenger.set('height', new NbtFloat(aj.bounding_box[1]))
-				passenger.set('width', new NbtFloat(aj.bounding_box[0]))
 
 				switch (version) {
 					case '1.20.4':
@@ -1305,6 +1300,7 @@ const dataPackCompiler: DataPackCompiler = async ({
 		has_cameras: Object.values(rig.nodes).filter(n => n.type === 'camera').length > 0,
 		is_static,
 		getNodeTags,
+		BONE_TYPES,
 	}
 
 	compile({
