@@ -26,7 +26,7 @@ function injectCustomKeyframes() {
 
 	// Add custom keyframe properties to the KeyframeDataPoint class
 	const variantKeyframeDataPoint = new Property(KeyframeDataPoint, 'string', 'variant', {
-		label: translate('effect_animator.keyframe.variant'),
+		label: translate('effect_animator.keyframe_data_point.variant'),
 		condition: datapoint => datapoint.keyframe.channel === 'variant',
 		exposed: false,
 	})
@@ -36,25 +36,25 @@ function injectCustomKeyframes() {
 		},
 	})
 	new Property(KeyframeDataPoint, 'string', 'commands', {
-		label: translate('effect_animator.timeline.commands'),
+		label: translate('effect_animator.keyframe_data_point.commands'),
 		default: '',
 		condition: datapoint => datapoint.keyframe.channel === 'commands',
 		exposed: false,
 	})
 	new Property(KeyframeDataPoint, 'string', 'execute_condition', {
-		label: translate('effect_animator.timeline.execute_condition'),
+		label: translate('effect_animator.keyframe_data_point.execute_condition'),
 		default: '',
 		condition: datapoint => CUSTOM_CHANNELS.includes(datapoint.keyframe.channel as string),
 		exposed: false,
 	})
 	new Property(KeyframeDataPoint, 'boolean', 'repeat', {
-		label: translate('effect_animator.timeline.repeat'),
+		label: translate('effect_animator.keyframe_data_point.repeat'),
 		default: false,
 		condition: datapoint => CUSTOM_CHANNELS.includes(datapoint.keyframe.channel as string),
 		exposed: false,
 	})
 	new Property(KeyframeDataPoint, 'number', 'repeat_frequency', {
-		label: translate('effect_animator.timeline.repeat_frequency'),
+		label: translate('effect_animator.keyframe_data_point.repeat_frequency'),
 		default: 1,
 		condition: datapoint => CUSTOM_CHANNELS.includes(datapoint.keyframe.channel as string),
 		exposed: false,

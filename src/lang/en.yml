@@ -492,9 +492,11 @@ animated_java.effect_animator.timeline.variant: Variant
 animated_java.effect_animator.timeline.commands: Commands
 
 ## Keyframes
-animated_java.effect_animator.keyframes.variant: Variant
-animated_java.effect_animator.keyframes.commands: Commands
-animated_java.effect_animator.keyframes.execute_condition: Execute Condition
+animated_java.effect_animator.keyframe_data_point.variant: Variant
+animated_java.effect_animator.keyframe_data_point.commands: Commands
+animated_java.effect_animator.keyframe_data_point.execute_condition: Execute Condition
+animated_java.effect_animator.keyframe_data_point.repeat: Repeat
+animated_java.effect_animator.keyframe_data_point.repeat_frequency: Repeat Frequency
 
 # Keyframe Panel
 animated_java.panel.keyframe.keyframe_title: Keyframe ({0})
@@ -609,17 +611,37 @@ animated_java.misc.failed_to_export.blueprint_settings.message: There are errors
 animated_java.misc.failed_to_export.blueprint_settings.error_item: 'Found an issue with {0}:'
 animated_java.misc.failed_to_export.button: Ok
 animated_java.misc.failed_to_export.invalid_rotation.message: |-
-  Some cubes in your model have an invalid rotations.
+  Some cubes in your model have an invalid rotations!
+
   Cubes must have a rotation of -45, -22.5, 0, 22.5, or 45 degrees, and can only be rotated on a single axis at a time.
-  If you want to rotate a cube more precisely, or on multiple axes, you must put it into a bone and rotate the bone instead.
-  All of the invalid cubes are outlined in red in the editor.
-  Please fix these issues before exporting.
+
+  If you want to rotate a cube more precisely, or on multiple axes, put it in a bone and rotate the bone instead.
+
+  All of the invalid cubes are outlined in red in the editor. Please fix them before exporting.
+animated_java.misc.failed_to_export.invalid_rotation.message_post_1_21_4: |-
+  Some cubes in your model have an invalid rotations!
+
+  Cubes can only be rotated on a single axis at a time.
+
+  If you want to rotate a cube on multiple axes, put it in a bone and rotate the bone instead.
+
+  All of the invalid cubes are outlined in red in the editor. Please fix them before exporting.
 animated_java.misc.failed_to_export.rig_has_textures_but_no_custom_models.message: |-
   You have textures applied to your model, but have no custom models (Cubes) to use them!
   Please create some Cubes to use these textures, or remove the textures before exporting.
 animated_java.misc.failed_to_export.rig_has_custom_models_but_no_textures.message: |-
   You have custom models (Cubes) in your model, but have no textures applied to them!
   Please apply textures to your Cubes, or remove the Cubes before exporting.
+
+animated_java.toast.invalid_rotations: |-
+  Invalid Cube Rotations!
+  Cubes must have a rotation of: 45, 22.5, 0, -22.5, or -45, and can only be rotated on a single axis at a time.
+  All cubes with invalid rotations are outlined in red.
+
+animated_java.toast.invalid_rotations_post_1_21_4: |-
+  Invalid Cube Rotations!
+  Cubes can only be rotated on a single axis at a time.
+  All cubes with invalid rotations are outlined in red.
 
 # Format Category
 animated_java.format_category.animated_java: Animated Java
