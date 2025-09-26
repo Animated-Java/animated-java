@@ -47,6 +47,7 @@ export interface IRenderedElement {
 		  }
 		| number[]
 	faces?: Record<string, IRenderedFace>
+	light_emission?: number
 }
 
 /**
@@ -274,6 +275,11 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 	}
 
 	if (Object.keys(element.faces).length === 0) return
+
+	if (cube.light_emission) {
+		element.light_emission = cube.light_emission
+	}
+
 	model.elements ??= []
 	model.elements.push(element)
 }

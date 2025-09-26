@@ -511,7 +511,7 @@
 			"box_uv": false,
 			"rescale": false,
 			"locked": false,
-			"light_emission": 0,
+			"light_emission": 15,
 			"render_order": "default",
 			"allow_mirror_modeling": true,
 			"from": [-5, 11.25, -3],
