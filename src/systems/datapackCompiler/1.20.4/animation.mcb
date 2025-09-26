@@ -42,7 +42,7 @@ dir <%export_namespace%> {
 				run block zzz/check_rig_hash {
 					data remove storage aj:temp args
 					# Get uuid
-					function *global/internal/gu/convert_uuid_array_to_string
+					function *global/internal/gu/get_entity_uuid_string
 					data modify storage aj:temp args.uuid set from storage aj:uuid main.out
 					# Get position
 					execute store result storage aj:temp args.x double 1 run data get entity @s Pos[0] 1
@@ -559,7 +559,7 @@ dir <%export_namespace%> {
 			execute store result score @s <%OBJECTIVES.ID()%> run scoreboard players add aj.last_id <%OBJECTIVES.ID()%> 1
 
 			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block as_data_entity {
-				function *global/internal/gu/convert_uuid_array_to_string
+				function *global/internal/gu/get_entity_uuid_string
 				data modify entity @s data.uuids.data_data set from storage aj:uuid main.out
 
 				REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator' && node.config?.use_entity)) as locator {
@@ -579,7 +579,7 @@ dir <%export_namespace%> {
 					run block as_locator/<%locator.storage_name%> {
 					# run block ../as_locator/<%locator.storage_name%> {
 						tag @s remove <%TAGS.NEW()%>
-						function *global/internal/gu/convert_uuid_array_to_string
+						function *global/internal/gu/get_entity_uuid_string
 					}
 					data modify entity @s data.uuids.<%locator.type + '_' + locator.storage_name%> set from storage aj:uuid main.out
 					data modify entity @s data.locators.<%locator.storage_name%>.uuid set from storage aj:uuid main.out
@@ -602,7 +602,7 @@ dir <%export_namespace%> {
 					run block as_camera/<%camera.storage_name%> {
 					# run block ../as_camera/<%camera.storage_name%> {
 						tag @s remove <%TAGS.NEW()%>
-						function *global/internal/gu/convert_uuid_array_to_string
+						function *global/internal/gu/get_entity_uuid_string
 					}
 					data modify entity @s data.uuids.<%camera.type + '_' + camera.storage_name%> set from storage aj:uuid main.out
 					data modify entity @s data.cameras.<%camera.storage_name%>.uuid set from storage aj:uuid main.out
@@ -610,7 +610,7 @@ dir <%export_namespace%> {
 
 				REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
 					execute on vehicle on passengers if entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(export_namespace, node.storage_name)%>] run \
-						function *global/internal/gu/convert_uuid_array_to_string
+						function *global/internal/gu/get_entity_uuid_string
 					data modify entity @s data.uuids.<%node.type + '_' + node.storage_name%> set from storage aj:uuid main.out
 				}
 			}

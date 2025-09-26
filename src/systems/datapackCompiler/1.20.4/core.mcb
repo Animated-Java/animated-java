@@ -68,7 +68,7 @@ dir global {
 					<%JSON.stringify([...Array(0x100).keys()].map(v => {const x = v.toString(16); return x.length > 1 ? x : '0' + x}))%>
 			}
 
-			function convert_uuid_array_to_string {
+			function get_entity_uuid_string {
 				data modify storage aj:uuid temp set value {0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,a:0,b:0,c:0,d:0,e:0,f:0}
 				data modify storage aj:uuid main.in set from entity @s UUID
 
