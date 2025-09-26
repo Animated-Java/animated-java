@@ -1,9 +1,12 @@
 <script lang="ts" context="module">
+	import { defaultValues } from '../blueprintSettings'
+	import { DIALOG_ID } from '../interface/dialog/animationProperties'
+	import mcbFiles from '../systems/datapackCompiler/mcbFiles'
 	import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
+	import MultiSelect from './dialogItems/multiSelect.svelte'
 
-	import { DIALOG_ID } from '../interface/dialog/animationProperties'
 	import Checkbox from './dialogItems/checkbox.svelte'
 	import CodeInput from './dialogItems/codeInput.svelte'
 	import FileSelect from './dialogItems/fileSelect.svelte'
@@ -32,10 +35,6 @@
 </script>
 
 <script lang="ts">
-	import { defaultValues } from '../blueprintSettings'
-	import mcbFiles from '../systems/datapackCompiler/mcbFiles'
-	import MultiSelect from './dialogItems/multiSelect.svelte'
-
 	export let blueprintName: Valuable<string>
 	export let textureSizeX: Valuable<number>
 	export let textureSizeY: Valuable<number>
@@ -69,6 +68,14 @@
 	// Plugin Export Settings
 	export let bakedAnimations: Valuable<boolean>
 	export let jsonFile: Valuable<string>
+
+	const requiresDisplayItem = new Valuable(false)
+	$: {
+		$requiresDisplayItem = $targetMinecraftVersions.some(version => {
+			// If any of the selected versions is older than 1.20.5, display item is required.
+			return compareVersions('1.20.5', version)
+		})
+	}
 
 	const TARGETABLE_VERSIONS = Object.keys(mcbFiles).map(v => ({ label: v, value: v }))
 
@@ -597,13 +604,15 @@
 				label={translate('dialog.blueprint_settings.resource_pack_settings.title')}
 			/>
 
-			<LineInput
-				label={translate('dialog.blueprint_settings.display_item.title')}
-				tooltip={translate('dialog.blueprint_settings.display_item.description')}
-				bind:value={displayItem}
-				defaultValue={defaultValues.display_item}
-				valueChecker={displayItemChecker}
-			/>
+			{#if $requiresDisplayItem}
+				<LineInput
+					label={translate('dialog.blueprint_settings.display_item.title')}
+					tooltip={translate('dialog.blueprint_settings.display_item.description')}
+					bind:value={displayItem}
+					defaultValue={defaultValues.display_item}
+					valueChecker={displayItemChecker}
+				/>
+			{/if}
 
 			<Checkbox
 				label={translate(
