@@ -47,6 +47,7 @@ import {
 	isDataPackPath,
 	isResourcePackPath,
 	parseResourcePackPath,
+	toSmallCaps,
 } from './util/minecraftUtil'
 import { Variant } from './variants'
 
@@ -92,6 +93,7 @@ globalThis.AnimatedJava = {
 		mcbFiles,
 		openChangelogDialog,
 		checkForIncompatabilities,
+		toSmallCharacters: toSmallCaps,
 	},
 }
 

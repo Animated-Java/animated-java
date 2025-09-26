@@ -17,6 +17,22 @@ export interface IMinecraftResourceLocation {
 	type: string
 }
 
+const CHARACTERS = 'abcdefghijklmnopqrstuvwxyz0123456789'
+const SMALL_CAPS_CHARACTERS = 'ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘꞯʀꜱᴛᴜᴠᴡxʏᴢ⁰¹²³⁴⁵⁶⁷⁸⁹'
+
+export function toSmallCaps(str: string): string {
+	let result = ''
+	for (const char of str) {
+		const index = CHARACTERS.indexOf(char.toLowerCase())
+		if (index !== -1) {
+			result += SMALL_CAPS_CHARACTERS[index]
+		} else {
+			result += char
+		}
+	}
+	return result
+}
+
 /**
  * Return a sanitized version of {@param str} that is safe to use as a storage object key.
  *
