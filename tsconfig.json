@@ -15,7 +15,6 @@
 		"allowUnreachableCode": true,
 		"esModuleInterop": true,
 		"noEmit": true,
-		"verbatimModuleSyntax": true,
 		"isolatedModules": true,
 		"alwaysStrict": true,
 		"baseUrl": "."
