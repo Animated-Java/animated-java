@@ -50,7 +50,12 @@ dir <%export_namespace%> {
 					data modify entity @s data.rigHash set value '<%rigHash%>'
 					execute on passengers run data merge entity @s {Glowing: 1b, glow_color_override: <%0xff0000%>}
 					summon minecraft:text_display ~ ~ ~ { \
-						Tags:['<%TAGS.GLOBAL_ENTITY()%>', '<%TAGS.OUTDATED_RIG_TEXT_DISPLAY()%>', '<%TAGS.NEW()%>'], \
+						Tags:[ \
+							'<%TAGS.GLOBAL_ENTITY()%>', \
+							'<%TAGS.PROJECT_ENTITY(export_namespace)%>', \
+							'<%TAGS.OUTDATED_RIG_TEXT_DISPLAY()%>', \
+							'<%TAGS.NEW()%>' \
+						], \
 						text:'<%TELLRAW.RIG_OUTDATED_TEXT_DISPLAY()%>', \
 						alignment: 'center', \
 						billboard: 'vertical', \
@@ -61,8 +66,18 @@ dir <%export_namespace%> {
 							scale:[1f,1f,1f] \
 						} \
 					}
-					ride @e[type=minecraft:text_display,tag=<%TAGS.NEW()%>,limit=1,distance=..0.01] mount @s
-					tag @e[type=minecraft:text_display,tag=<%TAGS.NEW()%>,limit=1,distance=..0.01] remove <%TAGS.NEW()%>
+
+					ride @e[ \
+						type=minecraft:text_display, \
+						tag=<%TAGS.OUTDATED_RIG_TEXT_DISPLAY()%>, tag=<%TAGS.NEW()%>, \
+						limit=1, distance=..1 \
+					] mount @s
+
+					tag @e[ \
+						type=minecraft:text_display, \
+						tag=<%TAGS.OUTDATED_RIG_TEXT_DISPLAY()%>, tag=<%TAGS.NEW()%>, \
+						limit=1, distance=..1 \
+					] remove <%TAGS.NEW()%>
 				}
 				scoreboard players set @s <%OBJECTIVES.IS_RIG_LOADED()%> 1
 			}
