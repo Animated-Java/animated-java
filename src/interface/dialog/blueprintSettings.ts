@@ -3,7 +3,7 @@ import { defaultValues, ExportMode } from '../../blueprintSettings'
 import BlueprintSettingsDialogSvelteComponent from '../../components/blueprintSettingsDialog.svelte'
 import { PACKAGE } from '../../constants'
 import { MinecraftVersion } from '../../systems/global'
-import { sanitizePathName } from '../../util/minecraftUtil'
+import { sanitizeStorageKey } from '../../util/minecraftUtil'
 import { Valuable } from '../../util/stores'
 import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
@@ -28,7 +28,7 @@ function getSettings() {
 			if (!value) {
 				return defaultValues.export_namespace
 			}
-			return sanitizePathName(value)
+			return sanitizeStorageKey(value)
 		}),
 		resourcePackExportMode: new Valuable(
 			Project!.animated_java.resource_pack_export_mode as string

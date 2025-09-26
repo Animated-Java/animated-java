@@ -9,7 +9,7 @@ import type {
 import { BoneConfig } from '../nodeConfigs'
 import { type Alignment, TextDisplay } from '../outliner/textDisplay'
 import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
-import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
+import { type ItemDisplayMode, VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
 import {
 	type IMinecraftResourceLocation,
 	parseResourcePackPath,
@@ -139,7 +139,7 @@ export interface IRenderedNodes {
 	ItemDisplay: IRenderedNode & {
 		type: 'item_display'
 		item: string
-		item_display: string
+		item_display: ItemDisplayMode
 		/**
 		 * The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit.
 		 */

@@ -1,7 +1,7 @@
 import { isCurrentFormat } from '../../blueprintFormat'
 import TextDisplayElementPanel from '../../components/textDisplayElementPanel.svelte'
 import { PACKAGE } from '../../constants'
-import { Alignment, TextDisplay } from '../../outliner/textDisplay'
+import { type Alignment, TextDisplay } from '../../outliner/textDisplay'
 import { injectSvelteCompomponentMod } from '../../util/injectSvelteComponent'
 import { floatToHex } from '../../util/misc'
 import { translate } from '../../util/translation'
@@ -92,9 +92,6 @@ export const TEXT_DISPLAY_SHADOW_TOGGLE = new Toggle(`${PACKAGE.name}:textDispla
 	icon: 'check_box_outline_blank',
 	description: translate('tool.text_display.text_shadow.description'),
 	condition: () => isCurrentFormat() && !!TextDisplay.selected.length,
-	click() {
-		//
-	},
 	onChange() {
 		if (!Project) return
 		const scope = TEXT_DISPLAY_SHADOW_TOGGLE
@@ -153,9 +150,6 @@ export const TEXT_DISPLAY_SEE_THROUGH_TOGGLE = new Toggle(
 		icon: 'check_box_outline_blank',
 		description: translate('tool.text_display.see_through.description'),
 		condition: () => isCurrentFormat() && !!TextDisplay.selected.length,
-		click() {
-			//
-		},
 		onChange() {
 			if (!Project) return
 			const scope = TEXT_DISPLAY_SEE_THROUGH_TOGGLE
