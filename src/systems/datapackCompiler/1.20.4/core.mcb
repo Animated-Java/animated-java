@@ -15,6 +15,8 @@ dir global {
 			# Initialize Rigs
 			scoreboard players reset * <%OBJECTIVES.IS_RIG_LOADED()%>
 		}
+		# Purposefully load gu first, as other functions depend on it.
+		function animated_java:global/internal/gu/load
 		function #*global/on_load
 	}
 
@@ -62,7 +64,7 @@ dir global {
 	dir internal {
 		# Thanks Gibbsly for this code! https://github.com/gibbsly/gu
 		dir gu {
-			function load minecraft:load {
+			function load {
 				scoreboard players set 256 <%OBJECTIVES.I()%> 256
 				data modify storage aj:uuid main.hex_chars set value \
 					<%JSON.stringify([...Array(0x100).keys()].map(v => {const x = v.toString(16); return x.length > 1 ? x : '0' + x}))%>
