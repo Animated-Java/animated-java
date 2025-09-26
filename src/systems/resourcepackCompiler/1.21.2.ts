@@ -84,13 +84,16 @@ const compileResourcePack: ResourcePackCompiler = async ({
 			throw new Error(`Texture ${texture.name} is missing it's image data.`)
 		}
 
-		let textureName = sanitizeStorageKey(texture.name)
-		if (!texture.name.endsWith('.png')) textureName += '.png'
+		let textureName = texture.name.replace(/\.png$/, '')
+		textureName = sanitizeStorageKey(textureName) + '.png'
+
 		versionedFiles.set(PathModule.join(textureExportFolder, textureName), { content: image })
+
 		if (mcmeta !== undefined)
 			versionedFiles.set(PathModule.join(textureExportFolder, textureName + '.mcmeta'), {
 				content: mcmeta,
 			})
+
 		if (optifineEmissive !== undefined)
 			versionedFiles.set(PathModule.join(textureExportFolder, textureName + '_e.png'), {
 				content: optifineEmissive,

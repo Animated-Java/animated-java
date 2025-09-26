@@ -283,16 +283,24 @@ export function getTextureResourceLocation(texture: Texture, rig: IRenderedRig) 
 	if (TEXTURE_RESOURCE_LOCATION_CACHE.has(texture.uuid)) {
 		return TEXTURE_RESOURCE_LOCATION_CACHE.get(texture.uuid)!
 	}
-	if (!texture.name.endsWith('.png')) texture.name += '.png'
+
+	let textureName = texture.name.replace(/\.png$/, '')
+	textureName = sanitizeStorageKey(textureName) + '.png'
+
 	if (texture.path && fs.existsSync(texture.path) && fs.statSync(texture.path).isFile()) {
 		const parsed = parseResourcePackPath(texture.path)
 		if (parsed) {
 			TEXTURE_RESOURCE_LOCATION_CACHE.set(texture.uuid, parsed)
 			return parsed
 		}
+		console.warn(
+			`Texture ${texture.name} has a custom path that is not in a valid resource pack location: ${texture.path}`
+		)
 	}
-	const path = PathModule.join(rig.texture_export_folder, sanitizeStorageKey(texture.name))
+
+	const path = PathModule.join(rig.texture_export_folder, textureName)
 	const parsed = parseResourcePackPath(path)
+
 	if (parsed) {
 		TEXTURE_RESOURCE_LOCATION_CACHE.set(texture.uuid, parsed)
 		return parsed
