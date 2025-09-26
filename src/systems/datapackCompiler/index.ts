@@ -831,7 +831,8 @@ async function generateRootEntityPassengers(
 					case '1.21.2':
 					case '1.21.4':
 						passenger.set(
-							'text_display',
+							'text',
+							// String JSON text format
 							new NbtString(
 								node.text?.toString() ?? `{ "text": "Invalid Text Component" }`
 							)
@@ -840,10 +841,9 @@ async function generateRootEntityPassengers(
 					case '1.21.5':
 						passenger.set(
 							'text',
+							// SNBT JSON text format
 							NbtTag.fromString(
-								node.text
-									? node.text.toString()
-									: "{ text: 'Invalid Text Component' }"
+								node.text?.toString() ?? "{ text: 'Invalid Text Component' }"
 							)
 						)
 						break
