@@ -1,5 +1,6 @@
-import { updateBoundingBox } from '../../blueprintFormat'
+import { updateAllCubeOutlines } from 'src/mods/cubeOutlineMod'
 import type { MinecraftVersion } from 'src/systems/global'
+import { updateBoundingBox, updateRotationLock } from '../../blueprintFormat'
 import { defaultValues, type ExportMode } from '../../blueprintSettings'
 import BlueprintSettingsDialogSvelteComponent from '../../components/blueprintSettingsDialog.svelte'
 import { PACKAGE } from '../../constants'
@@ -125,6 +126,8 @@ export function openBlueprintSettingsDialog() {
 		onConfirm() {
 			setSettings(settings)
 			updateBoundingBox()
+			updateRotationLock()
+			updateAllCubeOutlines()
 		},
 	}).show()
 }
