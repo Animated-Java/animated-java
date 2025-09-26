@@ -155,8 +155,8 @@ dir <%export_namespace%> {
 			type=minecraft:item_display, \
 			tag=<%TAGS.PROJECT_ROOT(export_namespace)%>, \
 			tag=<%TAGS.NEW()%>, \
-			distance=..0.01 \
-			limit=1, \
+			distance=..0.01, \
+			limit=1 \
 		] run block zzz/summon/as_root_entity {
 			execute store result score @s <%OBJECTIVES.ID()%> run scoreboard players add aj.last_id <%OBJECTIVES.ID()%> 1
 
