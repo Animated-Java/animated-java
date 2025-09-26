@@ -151,7 +151,13 @@ dir <%export_namespace%> {
 			interpolation_duration: <%interpolation_duration%>, \
 			Passengers:<%root_entity_passengers%>, \
 		}
-		execute as @e[type=minecraft:item_display,tag=<%TAGS.NEW()%>,limit=1,distance=..0.01] run block zzz/summon/as_root_entity {
+		execute as @e[ \
+			type=minecraft:item_display, \
+			tag=<%TAGS.PROJECT_ROOT(export_namespace)%>, \
+			tag=<%TAGS.NEW()%>, \
+			distance=..0.01 \
+			limit=1, \
+		] run block zzz/summon/as_root_entity {
 			execute store result score @s <%OBJECTIVES.ID()%> run scoreboard players add aj.last_id <%OBJECTIVES.ID()%> 1
 
 			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block as_data_entity {
