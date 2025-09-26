@@ -821,9 +821,17 @@ async function generateRootEntityPassengers(
 				break
 			}
 			case 'text_display': {
-				passenger.set('id', new NbtString('minecraft:text_display'))
+				const color = new tinycolor(
+					node.background_color + floatToHex(node.background_alpha)
 				)
 
+				passenger
+					.set('id', new NbtString('minecraft:text_display'))
+					.set('background', new NbtInt(tinycolorToDecimal(color)))
+					.set('line_width', new NbtInt(node.line_width))
+					.set('shadow', new NbtByte(node.shadow ? 1 : 0))
+					.set('see_through', new NbtByte(node.see_through ? 1 : 0))
+					.set('alignment', new NbtString(node.align))
 
 				switch (version) {
 					case '1.20.4':
@@ -854,15 +862,6 @@ async function generateRootEntityPassengers(
 						)
 					}
 				}
-
-				const color = new tinycolor(
-					node.background_color + floatToHex(node.background_alpha)
-				)
-				passenger.set('background', new NbtInt(tinycolorToDecimal(color)))
-				passenger.set('line_width', new NbtInt(node.line_width))
-				passenger.set('shadow', new NbtByte(node.shadow ? 1 : 0))
-				passenger.set('see_through', new NbtByte(node.see_through ? 1 : 0))
-				passenger.set('alignment', new NbtString(node.align))
 
 				if (node.config) {
 					TextDisplayConfig.fromJSON(node.config).toNBT(passenger)
@@ -903,26 +902,25 @@ async function generateRootEntityPassengers(
 				break
 			}
 			case 'block_display': {
-				passenger.set('id', new NbtString('minecraft:block_display'))
-
+				const states = new NbtCompound()
 				const parsed = await parseBlock(node.block)
 				if (!parsed) {
 					throw new Error(
 						`Invalid Blockstate '${node.block}' in node '${node.storage_name}'!`
 					)
 				}
-
-				const states = new NbtCompound()
 				for (const [k, v] of Object.entries(parsed.states)) {
 					states.set(k, new NbtString(v.toString()))
 				}
 
-				passenger.set(
-					'block_state',
-					new NbtCompound()
-						.set('Name', new NbtString(parsed.resource.name))
-						.set('Properties', states)
-				)
+				passenger
+					.set('id', new NbtString('minecraft:block_display'))
+					.set(
+						'block_state',
+						new NbtCompound()
+							.set('Name', new NbtString(parsed.resource.name))
+							.set('Properties', states)
+					)
 
 				if (node.config) {
 					BoneConfig.fromJSON(node.config).toNBT(passenger)
