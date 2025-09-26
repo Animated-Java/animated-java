@@ -559,8 +559,7 @@ dir <%export_namespace%> {
 			type=minecraft:item_display, \
 			tag=<%TAGS.PROJECT_ROOT(export_namespace)%>, \
 			tag=<%TAGS.NEW()%>, \
-			distance=..0.01, \
-			limit=1 \
+			limit=1, distance=..0.01 \
 		] run block zzz/summon/as_root_entity {
 			execute store result score @s <%OBJECTIVES.ID()%> run scoreboard players add aj.last_id <%OBJECTIVES.ID()%> 1
 
@@ -579,8 +578,7 @@ dir <%export_namespace%> {
 							type=<%locator.config.entity_type%>, \
 							tag=<%TAGS.PROJECT_LOCATOR_NAMED(export_namespace, locator.storage_name)%>, \
 							tag=<%TAGS.NEW()%>, \
-							distance=..<%Math.ceil(locator.max_distance)%>, \
-							limit=1 \
+							limit=1, distance=..<%Math.ceil(locator.max_distance)%> \
 						] \
 					run block as_locator/<%locator.storage_name%> {
 					# run block ../as_locator/<%locator.storage_name%> {
@@ -602,8 +600,7 @@ dir <%export_namespace%> {
 							type=minecraft:item_display, \
 							tag=<%TAGS.PROJECT_CAMERA_NAMED(export_namespace, camera.storage_name)%>, \
 							tag=<%TAGS.NEW()%>, \
-							distance=..<%Math.ceil(camera.max_distance)%>, \
-							limit=1 \
+							limit=1, distance=..<%Math.ceil(camera.max_distance)%> \
 						] \
 					run block as_camera/<%camera.storage_name%> {
 					# run block ../as_camera/<%camera.storage_name%> {
