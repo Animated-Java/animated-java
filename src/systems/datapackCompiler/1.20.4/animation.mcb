@@ -379,16 +379,16 @@ dir <%export_namespace%> {
 						function set_frame {
 							# Sets the frame without interpolation
 							#ARGS: {frame: int}
-							$execute on passengers if entity @s[tag=aj.global.data] run \
+							$execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run \
 								function ./frames/$(frame) with entity @s data.uuids
 							execute on passengers run \
-								data modify entity @s[tag=aj.global.data] start_interpolation set value -1
+								data modify entity @s[tag=<%TAGS.GLOBAL_DATA()%>] start_interpolation set value -1
 							return 1
 						}
 
 						function apply_frame {
 							#ARGS: {frame: int}
-							$execute on passengers if entity @s[tag=aj.global.data] run \
+							$execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run \
 								function ./frames/$(frame) with entity @s data.uuids
 							return 1
 						}
