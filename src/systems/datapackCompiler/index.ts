@@ -766,7 +766,8 @@ async function generateRootEntityPassengers(
 								new NbtInt(variantModel.custom_model_data)
 							)
 						)
-						// Count defaults to 1, but only in versions above 1.20.4
+						// `Count` does not default to 1.
+						// However, `count` does default to 1 in later versions, so we only need this for 1.20.4.
 						item.set('Count', new NbtInt(1))
 						break
 					}
@@ -869,13 +870,31 @@ async function generateRootEntityPassengers(
 				break
 			}
 			case 'item_display': {
-				passenger.set('id', new NbtString('minecraft:item_display'))
-				passenger.set(
-					'item',
-					new NbtCompound()
-						.set('id', new NbtString(node.item))
-						.set('count', new NbtInt(1))
-				)
+				const item = new NbtCompound().set('id', new NbtString(node.item))
+				passenger
+					.set('id', new NbtString('minecraft:item_display'))
+					.set('item', item)
+
+				switch (version) {
+					case '1.20.4': {
+						// `Count` does not default to 1.
+						item.set('Count', new NbtInt(1))
+						break
+					}
+					case '1.20.5':
+					case '1.21.0':
+					case '1.21.2':
+					case '1.21.4':
+					case '1.21.5': {
+						// `count` defaults to 1, so we can omit it.
+						break
+					}
+					default: {
+						throw new Error(
+							`Unsupported Minecraft version '${version}' for item display!`
+						)
+					}
+				}
 
 				if (node.config) {
 					BoneConfig.fromJSON(node.config).toNBT(passenger)
