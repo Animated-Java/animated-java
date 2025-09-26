@@ -874,6 +874,7 @@ async function generateRootEntityPassengers(
 				passenger
 					.set('id', new NbtString('minecraft:item_display'))
 					.set('item', item)
+					.set('item_display', new NbtString(node.item_display))
 
 				switch (version) {
 					case '1.20.4': {
