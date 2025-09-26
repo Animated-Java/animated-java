@@ -208,8 +208,8 @@ dir <%export_namespace%> {
 					# If the variant argument is *explicitly* set to an empty string, return an error.
 					execute if data storage aj:temp {args:{variant:''}} run return run block if_empty {
 						# Tell the user that the variant cannot be empty.
-						tellraw @a <%TELLRAW.VARIANT_CANNOT_BE_EMPTY()%>
 						function *<%export_namespace%>/remove/this
+						tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('variant')%>
 					}
 					# Attempt to apply the requested variant.
 					# We get the success of the `try_apply` function in just in case the user's arguments are *very* wrong.
@@ -219,10 +219,10 @@ dir <%export_namespace%> {
 						return fail
 					}
 					# If the apply function failed, return an error.
-					execute unless score #success <%OBJECTIVES.I()%> matches 1 run return run block invalid_variant { with storage aj:temp args
+					execute unless score #success <%OBJECTIVES.I()%> matches 1 run return run block invalid_variant {
 						# Tell the user that the provided variant doesn't exist, remove the rig, and list all available variants for this rig.
-						$tellraw @a <%TELLRAW.INVALID_VARIANT('$(variant)', rig.variants)%>
 						function *<%export_namespace%>/remove/this
+						tellraw @a <%TELLRAW.INVALID_VARIANT(rig.variants)%>
 					}
 				}
 			} ELSE {
@@ -270,8 +270,8 @@ dir <%export_namespace%> {
 				block execute_as_uuid { with storage aj:temp args
 					$execute as $(uuid) at @s run $(command)
 					scoreboard players set #aj.check <%OBJECTIVES.I()%> 1
+					execute if score #aj.check <%OBJECTIVES.I()%> matches 0 run tellraw @a <%TELLRAW.LOCATOR_COMMAND_FAILED_TO_EXECUTE()%>
 				}
-				execute if score #aj.check <%OBJECTIVES.I()%> matches 0 run tellraw @a <%TELLRAW.LOCATOR_NOT_FOUND_ENTITY()%>
 			}
 		}
 
@@ -366,8 +366,8 @@ dir <%export_namespace%> {
 				block execute_as_uuid { with storage aj:temp args
 					$execute as $(uuid) at @s run $(command)
 					scoreboard players set #aj.check <%OBJECTIVES.I()%> 1
+					execute if score #aj.check <%OBJECTIVES.I()%> matches 0 run tellraw @a <%TELLRAW.CAMERA_COMMAND_FAILED_TO_EXECUTE()%>
 				}
-				execute if score #aj.check <%OBJECTIVES.I()%> matches 0 run tellraw @a <%TELLRAW.CAMERA_NOT_FOUND_ENTITY()%>
 			}
 		}
 	}

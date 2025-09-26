@@ -17,6 +17,7 @@ import {
 	parseBlock,
 	parseDataPackPath,
 	parseResourceLocation,
+	toSmallCaps,
 } from '../../util/minecraftUtil'
 import { eulerFromQuaternion, floatToHex, roundTo, tinycolorToDecimal } from '../../util/misc'
 import { MSLimiter } from '../../util/msLimiter'
@@ -398,182 +399,180 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 	return new NbtList(tags.sort().map(v => new NbtString(v)))
 }
 
-const TELLRAW_PREFIX = () =>
-	new JsonText([
-		{ text: '\n[', color: 'gray' },
-		{ text: 'AJ', color: 'aqua' },
-		'] ',
-		[
-			{ text: '(from ', color: 'gray', italic: true },
-			Project!.animated_java.export_namespace,
-			')',
-		],
-		' -> ',
-	])
-
-const TELLRAW_ERROR_PREFIX = () =>
-	new JsonText([TELLRAW_PREFIX(), { text: 'ERROR: ', color: 'red' }, '\n '])
-
-const TELLRAW_SUFFIX = () => new JsonText(['\n'])
-
-const TELLRAW_LEARN_MORE_LINK = (url: string) =>
-	new JsonText([
-		'\n ',
-		{
-			text: 'Click here to learn more',
-			color: 'blue',
-			underlined: true,
-			italic: true,
-			clickEvent: { action: 'open_url', value: url },
-		},
-	])
-
 namespace TELLRAW {
-	export const RIG_OUTDATED = () =>
+	const TELLRAW_PREFIX = () =>
 		new JsonText([
-			'',
-			TELLRAW_ERROR_PREFIX(),
-			{ text: 'The ', color: 'red' },
-			{ text: Project!.animated_java.export_namespace, color: 'yellow' },
-			{ text: ' rig instance at', color: 'red' },
-			[
-				{ text: ' [', color: 'yellow' },
-				{ score: { name: '#this.x', objective: OBJECTIVES.I() } },
-				', ',
-				{ score: { name: '#this.y', objective: OBJECTIVES.I() } },
-				', ',
-				{ score: { name: '#this.z', objective: OBJECTIVES.I() } },
-				']',
-			],
+			{ text: '\n ', color: 'gray' },
+			{ text: 'ᴀɴɪᴍᴀᴛᴇᴅ ᴊᴀᴠᴀ', color: '#00aced' },
+			{ text: ' ' },
 			{
-				text: ' is outdated! It will not function correctly and should be removed or re-summoned.',
-				color: 'red',
+				text: `\n (animated_java:${Project!.animated_java.export_namespace})`,
+				color: 'dark_gray',
+				italic: true,
 			},
-			'\n ',
-			{
-				text: '[Click Here to Teleport to the Rig Instance]',
-				clickEvent: {
-					action: 'suggest_command',
-					value: '/tp @s $(x) $(y) $(z)',
-				},
-				color: 'aqua',
-				underlined: true,
-			},
+			{ text: '\n → ' },
+		])
+
+	const TELLRAW_SUFFIX = () => new JsonText(['\n'])
+
+	const TELLRAW_ERROR = (errorName: string, details: JsonText) =>
+		new JsonText([
+			TELLRAW_PREFIX(),
+			{ text: 'ᴇʀʀᴏʀ: ', color: 'red' },
+			{ text: errorName, color: 'red', underlined: true },
+			{ text: '\n\n ' },
+			[details],
 			TELLRAW_SUFFIX(),
 		])
-	export const RIG_OUTDATED_TEXT_DISPLAY = () =>
+
+	const TELLRAW_LEARN_MORE_LINK = (url: string) =>
 		new JsonText([
-			'',
+			'\n ',
 			{
-				text: 'This rig instance is outdated!\\nIt will not function correctly and should be removed or re-summoned.',
-				color: 'red',
-			},
-		])
-	export const FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR = (functionName: string) =>
-		new JsonText([
-			'',
-			TELLRAW_ERROR_PREFIX(),
-			{
-				text: 'This function',
+				text: 'Click here to learn more',
 				color: 'blue',
 				underlined: true,
-				hoverEvent: {
-					action: 'show_text',
-					contents: [{ text: functionName, color: 'yellow' }],
-				},
+				italic: true,
+				clickEvent: { action: 'open_url', value: url },
 			},
-			{ text: " must be executed as the rig's root entity.", color: 'red' },
-			'\n',
-			TELLRAW_LEARN_MORE_LINK(
-				'https://animated-java.dev/docs/rigs/controlling-a-rig-instance'
-			),
-			TELLRAW_SUFFIX(),
 		])
-	// Summon Function
-	export const VARIANT_CANNOT_BE_EMPTY = () =>
-		new JsonText([
-			'',
-			TELLRAW_ERROR_PREFIX(),
-			{ text: 'variant', color: 'yellow' },
-			{ text: ' cannot be an empty string.', color: 'red' },
-			TELLRAW_SUFFIX(),
-		])
-	export const INVALID_VARIANT = (
-		variantName: string,
-		variants: Record<string, IRenderedVariant>
-	) =>
-		new JsonText([
-			'',
-			TELLRAW_ERROR_PREFIX(),
-			{ text: 'The variant ', color: 'red' },
-			{ text: variantName, color: 'yellow' },
-			{ text: ' does not exist.', color: 'red' },
-			'\n ',
-			{ text: ' ≡ ', color: 'white' },
-			{ text: 'Available Variants:', color: 'green' },
-			...Object.values(variants).map(
-				variant =>
-					new JsonText([
-						'\n ',
-						' ',
-						' ',
-						{ text: ' ● ', color: 'gray' },
-						{ text: variant.name, color: 'yellow' },
-					])
-			),
-			TELLRAW_SUFFIX(),
-		])
-	export const ANIMATION_CANNOT_BE_EMPTY = () =>
-		new JsonText([
-			'',
-			TELLRAW_ERROR_PREFIX(),
-			{ text: 'animation', color: 'yellow' },
-			{ text: ' cannot be an empty string.', color: 'red' },
-			TELLRAW_SUFFIX(),
-		])
-	export const FRAME_CANNOT_BE_NEGATIVE = () =>
-		new JsonText([
-			'',
-			TELLRAW_ERROR_PREFIX(),
-			{ text: 'frame', color: 'yellow' },
-			{ text: ' must be a non-negative integer.', color: 'red' },
-			TELLRAW_SUFFIX(),
-		])
-	export const INVALID_ANIMATION = (animationName: string, animations: IRenderedAnimation[]) =>
-		new JsonText([
-			'',
-			TELLRAW_ERROR_PREFIX(),
-			{ text: 'The animation ', color: 'red' },
-			{ text: animationName, color: 'yellow' },
-			{ text: ' does not exist.', color: 'red' },
-			'\n ',
-			{ text: ' ≡ ', color: 'white' },
-			{ text: 'Available Animations:', color: 'green' },
-			...animations.map(
-				anim =>
-					new JsonText([
-						'\n ',
-						' ',
-						' ',
-						{ text: ' ● ', color: 'gray' },
-						{ text: anim.storage_name, color: 'yellow' },
-					])
-			),
-			TELLRAW_SUFFIX(),
-		])
-	export const NO_VARIANTS = () =>
-		new JsonText([
-			'',
-			TELLRAW_ERROR_PREFIX(),
-			{ text: 'No variants are available.', color: 'red' },
-			TELLRAW_SUFFIX(),
-		])
-	export const INVALID_VERSION = () =>
-		new JsonText([
-			TELLRAW_ERROR_PREFIX(),
-			[
+
+	export const RIG_OUTDATED = () =>
+		TELLRAW_ERROR(
+			'Outdated Rig Instance',
+			new JsonText([
+				{ text: 'The instance of ', color: 'red' },
+				{ text: Project!.animated_java.export_namespace, color: 'yellow' },
+				{ text: ' at ' },
+				{ text: '$(x), $(y), $(z)', color: 'yellow' },
+				{ text: ' was summoned using an older export of its Blueprint.' },
+				{ text: ' It should be removed and re-summoned to ensure it functions correctly.' },
+				{ text: '\n\n ≡ ', color: 'white' },
 				{
-					text: 'Attempting to load an Animated Java Data Pack that was exported for ',
+					text: toSmallCaps('Teleport to Instance'),
+					clickEvent: {
+						action: 'suggest_command',
+						value: '/tp @s $(uuid)',
+					},
+					color: 'aqua',
+					underlined: true,
+				},
+				{ text: '\n ≡ ', color: 'white' },
+				{
+					text: toSmallCaps('Remove Instance'),
+					clickEvent: {
+						action: 'suggest_command',
+						value: `/execute as $(uuid) run function animated_java:${
+							Project!.animated_java.export_namespace
+						}/remove/this`,
+					},
+					color: 'aqua',
+					underlined: true,
+				},
+			])
+		)
+
+	export const RIG_OUTDATED_TEXT_DISPLAY = () =>
+		new JsonText([
+			{ text: '⚠ This rig instance is outdated! ', color: 'red' },
+			{ text: '\\n It should be removed and re-summoned to ensure it functions correctly.' },
+		])
+
+	export const FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR = (functionName: string) =>
+		TELLRAW_ERROR(
+			'Function Not Executed as Root Entity',
+			new JsonText([
+				{ text: '', color: 'red' },
+				{
+					text: 'This function',
+					color: 'yellow',
+					underlined: true,
+					hoverEvent: {
+						action: 'show_text',
+						contents: [{ text: functionName, color: 'yellow' }],
+					},
+				},
+				{ text: " must be executed as the rig's root entity.\n" },
+				TELLRAW_LEARN_MORE_LINK(
+					'https://animated-java.dev/docs/rigs/controlling-a-rig-instance'
+				),
+			])
+		)
+
+	export const INVALID_VARIANT = (variants: Record<string, IRenderedVariant>) =>
+		TELLRAW_ERROR(
+			'Invalid Variant',
+			new JsonText([
+				{ text: 'The variant ', color: 'red' },
+				{ nbt: 'args.variant', storage: 'aj:temp', color: 'yellow' },
+				{ text: ' does not exist.', color: 'red' },
+				'\n ',
+				{ text: ' ≡ ', color: 'white' },
+				{ text: 'Available Variants:', color: 'green' },
+				...Object.values(variants).map(
+					variant =>
+						new JsonText([
+							{ text: '\n ', color: 'gray' },
+							{ text: ' ' },
+							{ text: ' ' },
+							{ text: ' ' },
+							{ text: ' ● ' },
+							{ text: variant.name, color: 'yellow' },
+						])
+				),
+			])
+		)
+
+	export const FRAME_CANNOT_BE_NEGATIVE = () =>
+		TELLRAW_ERROR(
+			'Frame cannot be negative',
+			new JsonText([
+				{ text: 'frame', color: 'yellow' },
+				{ text: ' must be a non-negative integer.', color: 'red' },
+			])
+		)
+
+	export const INVALID_ANIMATION = (animations: IRenderedAnimation[]) =>
+		TELLRAW_ERROR(
+			'Invalid Animation',
+			new JsonText([
+				{ text: 'The animation ', color: 'red' },
+				{ nbt: 'args.animation', storage: 'aj:temp', color: 'yellow' },
+				{ text: ' does not exist.', color: 'red' },
+				'\n ',
+				{ text: ' ≡ ', color: 'white' },
+				{ text: 'Available Animations:', color: 'green' },
+				...animations.map(
+					anim =>
+						new JsonText([
+							{ text: '\n ', color: 'gray' },
+							{ text: ' ' },
+							{ text: ' ' },
+							{ text: ' ' },
+							{ text: ' ● ' },
+							{ text: anim.storage_name, color: 'yellow' },
+						])
+				),
+			])
+		)
+
+	export const NO_VARIANTS = () =>
+		TELLRAW_ERROR(
+			'No Variants',
+			new JsonText([
+				{
+					text: 'This Blueprint has no variants to switch between.',
+					color: 'red',
+				},
+			])
+		)
+
+	export const INVALID_VERSION = () =>
+		TELLRAW_ERROR(
+			'Invalid Minecraft Version',
+			new JsonText([
+				{
+					text: 'Attempted to load an Animated Java Data Pack that was exported for ',
 					color: 'red',
 				},
 				{
@@ -582,72 +581,98 @@ namespace TELLRAW {
 				},
 				{ text: ' in the wrong version!', color: 'red' },
 				{
-					text: '\n Please ensure that the data pack is loaded in the correct version, or that your blueprint settings are configured to target the correct version(s) of Minecraft.',
-					color: 'yellow',
+					text: '\n Please ensure that the data pack is loaded in the correct version, or that your Blueprint settings are configured to target the correct version(s) of Minecraft.',
+					color: 'red',
+				},
+			])
+		)
+
+	export const UNINSTALL = () =>
+		new JsonText([
+			TELLRAW_PREFIX(),
+			[
+				{ text: 'Successfully uninstalled ', color: 'green' },
+				{ text: Project!.animated_java.export_namespace, color: 'yellow' },
+				{ text: '!' },
+				{
+					text: '\n If you have exported multiple times, you may have to remove objectives from previous exports manually, as Animated Java only knows about the objectives from the most recent export.',
+					color: 'gray',
+					italic: true,
 				},
 			],
 			TELLRAW_SUFFIX(),
 		])
-	export const UNINSTALL = () =>
-		new JsonText([
-			TELLRAW_PREFIX(),
-			{ text: 'Successfully removed known animation scoreboard objectives.', color: 'red' },
-			{
-				text: "\nIf you have exported multiple times you may have to manually remove some objectives from previous exports manually, as Animated Java can only remove the latest export's objectives.",
-				color: 'gray',
-				italic: true,
-			},
-			TELLRAW_SUFFIX(),
-		])
+
+	export const ARGUMENT_CANNOT_BE_EMPTY = (name: string) =>
+		TELLRAW_ERROR(
+			'Argument Cannot Be Empty',
+			new JsonText([
+				{ text: 'Argument ', color: 'red' },
+				{ text: name, color: 'yellow' },
+				{ text: ' cannot be an empty string.', color: 'red' },
+			])
+		)
+
 	export const LOCATOR_NOT_FOUND = () =>
-		new JsonText([
-			TELLRAW_PREFIX(),
-			{ text: 'Locator ', color: 'red' },
-			{ nbt: 'args.name', storage: 'aj:temp', color: 'aqua' },
-			{ text: ' not found!', color: 'red' },
-			{
-				text: "\nPlease ensure that it's name is spelled correctly.",
-				color: 'gray',
-				italic: true,
-			},
-			TELLRAW_SUFFIX(),
-		])
-	export const LOCATOR_NOT_FOUND_ENTITY = () =>
-		new JsonText([
-			TELLRAW_PREFIX(),
-			{ text: 'Locator ', color: 'red' },
-			{ nbt: 'args.name', storage: 'aj:temp', color: 'aqua' },
-			{ text: ' not found!', color: 'red' },
-			{
-				text: '\nPlease ensure that the locator has ',
-				color: 'gray',
-				italic: true,
-			},
-			{
-				text: 'Use Entity',
-				color: 'yellow',
-				italic: true,
-			},
-			{
-				text: " enabled in it's config, and it's name is spelled correctly.",
-				color: 'gray',
-				italic: true,
-			},
-			TELLRAW_SUFFIX(),
-		])
-	export const CAMERA_NOT_FOUND_ENTITY = () =>
-		new JsonText([
-			TELLRAW_PREFIX(),
-			{ text: 'Camera ', color: 'red' },
-			{ nbt: 'args.name', storage: 'aj:temp', color: 'aqua' },
-			{ text: ' not found!', color: 'red' },
-			{
-				text: "\nPlease ensure that it's name is spelled correctly.",
-				color: 'gray',
-				italic: true,
-			},
-			TELLRAW_SUFFIX(),
-		])
+		TELLRAW_ERROR(
+			'Locator Not Found',
+			new JsonText([
+				{ text: 'Locator ', color: 'red' },
+				{ nbt: 'args.name', storage: 'aj:temp', color: 'aqua' },
+				{ text: ' not found!' },
+				{ text: '\n Please ensure that the name is spelled correctly.' },
+			])
+		)
+
+	export const LOCATOR_ENTITY_NOT_FOUND = () =>
+		TELLRAW_ERROR(
+			'Locator Not Found',
+			new JsonText([
+				{ text: 'Locator ', color: 'red' },
+				{ nbt: 'args.name', storage: 'aj:temp', color: 'aqua' },
+				{ text: ' does not exist!' },
+				{ text: '\n Please ensure that the name is spelled correctly, and ' },
+				{ text: '"Use Entity"', color: 'yellow' },
+				{ text: " is enabled in the locator's config." },
+			])
+		)
+
+	export const LOCATOR_COMMAND_FAILED_TO_EXECUTE = () =>
+		TELLRAW_ERROR(
+			'Failed to Execute Command as Locator',
+			new JsonText([
+				{ text: 'Failed to execute command ', color: 'red' },
+				{ nbt: 'args.command', storage: 'aj:temp', color: 'yellow' },
+				{ text: ' as Locator ' },
+				{ nbt: 'args.name', storage: 'aj:temp', color: 'aqua' },
+				{ text: '.' },
+				{ text: '\n Please ensure the command is valid.' },
+			])
+		)
+
+	export const CAMERA_ENTITY_NOT_FOUND = () =>
+		TELLRAW_ERROR(
+			'Camera Not Found',
+			new JsonText([
+				{ text: 'Camera ', color: 'red' },
+				{ nbt: 'args.name', storage: 'aj:temp', color: 'aqua' },
+				{ text: ' does not exist!' },
+				{ text: '\n Please ensure that its name is spelled correctly.' },
+			])
+		)
+
+	export const CAMERA_COMMAND_FAILED_TO_EXECUTE = () =>
+		TELLRAW_ERROR(
+			'Failed to Execute Command as Camera',
+			new JsonText([
+				{ text: 'Failed to execute command ', color: 'red' },
+				{ nbt: 'args.command', storage: 'aj:temp', color: 'yellow' },
+				{ text: ' as Camera ' },
+				{ nbt: 'args.name', storage: 'aj:temp', color: 'aqua' },
+				{ text: '.' },
+				{ text: '\n Please ensure the command is valid.' },
+			])
+		)
 }
 
 async function generateRootEntityPassengers(
