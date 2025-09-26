@@ -1,20 +1,19 @@
 <script lang="ts" , context="module">
 	import Checkbox from './dialogItems/checkbox.svelte'
-	import NumberSlider from './dialogItems/numberSlider.svelte'
-	import LineInput from './dialogItems/lineInput.svelte'
 	import ColorPicker from './dialogItems/colorPicker.svelte'
+	import LineInput from './dialogItems/lineInput.svelte'
+	import NumberSlider from './dialogItems/numberSlider.svelte'
 	import Select from './dialogItems/select.svelte'
 
-	import { Variant } from '../variants'
+	import { BoneConfig } from '../nodeConfigs'
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
-	import { BoneConfig } from '../nodeConfigs'
+	import { Variant } from '../variants'
 </script>
 
 <script lang="ts">
 	import { NbtCompound, NbtTag } from 'deepslate/lib/nbt'
 	import { JsonText } from '../systems/minecraft/jsonText'
-	import { prototype } from 'events'
 
 	const pluginModeEnabled = !!Project?.animated_java?.enable_plugin_mode
 
@@ -79,7 +78,7 @@
 	}
 </script>
 
-<div>
+<div class="dialog_content">
 	<div class="selected_variant_title">
 		{translate('dialog.bone_config.selected_variant', variant.displayName)}
 	</div>
@@ -308,6 +307,11 @@
 </div>
 
 <style>
+	.dialog_content {
+		overflow-y: auto;
+		max-height: 75vh;
+		padding-right: 8px;
+	}
 	.use_nbt_warning {
 		color: var(--color-warning);
 		font-family: var(--font-code);
