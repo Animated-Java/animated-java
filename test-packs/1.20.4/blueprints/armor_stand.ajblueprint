@@ -3,7 +3,7 @@
 		"format": "animated_java_blueprint",
 		"format_version": "1.7.3",
 		"uuid": "167b27cd-b559-3f13-a97c-0841fe21f1d1",
-		"save_location": "D:\\github-repos\\animated-java\\animated-java\\test-packs\\1.20.4\\blueprints\\armor_stand.ajblueprint",
+		"save_location": "D:\\github-repos\\animated-java\\old-animated-java\\test-packs\\1.20.4\\blueprints\\armor_stand.ajblueprint",
 		"last_used_export_namespace": "armor_stand"
 	},
 	"blueprint_settings": {
@@ -853,7 +853,7 @@
 				"use_entity": true,
 				"entity_type": "minecraft:item_display",
 				"sync_passenger_rotation": true,
-				"summon_commands": "",
+				"summon_commands": "say Left Hand!",
 				"ticking_commands": "particle minecraft:bubble ^ ^ ^1\ntp @e[tag=test3,limit=1] ~ ~ ~ ~ ~"
 			},
 			"uuid": "7de415a2-9fdd-e4b2-3455-c3bed72eb896",
@@ -870,7 +870,7 @@
 				"use_entity": true,
 				"entity_type": "minecraft:item_display",
 				"sync_passenger_rotation": false,
-				"summon_commands": "",
+				"summon_commands": "say Right Hand!",
 				"ticking_commands": "particle minecraft:bubble ^ ^ ^1\ntp @e[tag=test2,limit=1] ~ ~ ~ ~ ~"
 			},
 			"uuid": "7747736f-85e2-338f-207e-53f8d3d2fa39",
@@ -886,11 +886,11 @@
 			"config": {},
 			"item": "minecraft:diamond",
 			"itemDisplay": "none",
-			"text": "{\n\t\"text\": \"Hello, World!\",\n\t\"color\": \"green\"\n}\n",
-			"lineWidth": 200,
-			"backgroundColor": "#ffffff",
-			"backgroundAlpha": 0.25098,
-			"align": "center",
+			"text": "[\n\t{ \"text\": \" ≡ \", \"color\": \"white\" },\n\t{\n\t\t\"text\":\"ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ɪɴsᴛᴀɴᴄᴇ\",\n\t\t\"underlined\": true,\n\t\t\"color\": \"aqua\"\n\t},\n\t{ \"text\": \"\\n ≡ \" },\n\t{\n\t\t\"text\":\"ʀᴇᴍᴏᴠᴇ ɪɴꜱᴛᴀɴᴄᴇ\",\n\t\t\"underlined\": true,\n\t\t\"color\": \"aqua\"\n\t}\n]\n",
+			"lineWidth": 400,
+			"backgroundColor": "#000000",
+			"backgroundAlpha": 0.12941,
+			"align": "left",
 			"shadow": true,
 			"seeThrough": true,
 			"uuid": "c2e217f1-b50a-5c9a-b342-71a35e984046",
@@ -898,45 +898,35 @@
 		},
 		{
 			"name": "camera",
-			"box_uv": false,
-			"rescale": false,
-			"locked": false,
-			"light_emission": 0,
-			"render_order": "default",
-			"allow_mirror_modeling": true,
-			"from": [0, 0, 0],
-			"to": [1, 1, 1],
-			"autouv": 0,
-			"color": 0,
-			"origin": [0, 0, 0],
-			"faces": {
-				"north": {
-					"uv": [0, 0, 1, 1],
-					"texture": 0
-				},
-				"east": {
-					"uv": [0, 0, 1, 1],
-					"texture": 0
-				},
-				"south": {
-					"uv": [0, 0, 1, 1],
-					"texture": 0
-				},
-				"west": {
-					"uv": [0, 0, 1, 1],
-					"texture": 0
-				},
-				"up": {
-					"uv": [0, 0, 1, 1],
-					"texture": 0
-				},
-				"down": {
-					"uv": [0, 0, 1, 1],
-					"texture": 0
-				}
-			},
-			"type": "cube",
-			"uuid": "3f916352-b0e1-f1e4-0e09-308cc68f96e6"
+			"position": [0, 27, 0],
+			"rotation": [0, 0, 0],
+			"fov": 70,
+			"aspect_ratio": [16, 9],
+			"linked_preview": "",
+			"camera_linked": false,
+			"visibility": true,
+			"type": "camera",
+			"uuid": "3ffeee76-901e-f8a2-c29a-82f90e16fd1e"
+		},
+		{
+			"name": "item_display",
+			"position": [6, 12, -4],
+			"rotation": [-90, 0, 0],
+			"scale": [0.5, 0.5, 0.5],
+			"visibility": true,
+			"block": "minecraft:stone",
+			"config": {},
+			"item": "minecraft:diamond",
+			"itemDisplay": "none",
+			"text": "\"Hello World!\"",
+			"lineWidth": 200,
+			"backgroundColor": "#000000",
+			"backgroundAlpha": 0.25,
+			"align": "center",
+			"shadow": false,
+			"seeThrough": false,
+			"uuid": "bc141119-7f51-9690-7e21-e119b34fb3a2",
+			"type": "animated_java:vanilla_item_display"
 		}
 	],
 	"outliner": [
@@ -992,7 +982,7 @@
 					"uuid": "102db36a-eeda-0e6f-d5cc-c186ecda8165",
 					"export": true,
 					"mirror_uv": false,
-					"isOpen": false,
+					"isOpen": true,
 					"locked": false,
 					"visibility": true,
 					"autouv": 0,
@@ -1237,7 +1227,7 @@
 													"visibility": true,
 													"autouv": 0,
 													"selected": false,
-													"children": ["a23d9259-0d9a-4e16-1b42-47e5bedba00f", "a302b268-1699-4013-011f-211bd85806d4"]
+													"children": ["a23d9259-0d9a-4e16-1b42-47e5bedba00f", "a302b268-1699-4013-011f-211bd85806d4", "3ffeee76-901e-f8a2-c29a-82f90e16fd1e"]
 												},
 												{
 													"name": "left_arm",
@@ -1333,7 +1323,12 @@
 													"visibility": true,
 													"autouv": 0,
 													"selected": false,
-													"children": ["13293700-7f42-2279-6a1f-4e0a6a4d89b3", "98475898-cfc8-f67b-3145-abaf659deb3e", "7747736f-85e2-338f-207e-53f8d3d2fa39"]
+													"children": [
+														"13293700-7f42-2279-6a1f-4e0a6a4d89b3",
+														"98475898-cfc8-f67b-3145-abaf659deb3e",
+														"7747736f-85e2-338f-207e-53f8d3d2fa39",
+														"bc141119-7f51-9690-7e21-e119b34fb3a2"
+													]
 												}
 											]
 										}
@@ -1434,8 +1429,7 @@
 							]
 						}
 					]
-				},
-				"3f916352-b0e1-f1e4-0e09-308cc68f96e6"
+				}
 			]
 		},
 		"c2e217f1-b50a-5c9a-b342-71a35e984046"
