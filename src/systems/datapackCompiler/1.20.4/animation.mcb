@@ -618,11 +618,12 @@ dir <%export_namespace%> {
 			# Variant Arguement
 			IF (Object.keys(rig.variants).length > 1) {
 				execute if data storage aj:temp args.variant run block variant_arg/process { with storage aj:temp args
+					scoreboard players set #success <%OBJECTIVES.I()%> 0
 					# If the variant argument is *explicitly* set to an empty string, return an error.
 					execute if data storage aj:temp {args:{variant:''}} run return run block if_empty {
 						# Tell the user that the variant cannot be empty.
-						function *<%export_namespace%>/remove/this
 						tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('variant')%>
+						function *<%export_namespace%>/remove/this/without_on_remove_commands
 					}
 					# Attempt to apply the requested variant.
 					# We get the success of the `try_apply` function in just in case the user's arguments are *very* wrong.
@@ -634,25 +635,30 @@ dir <%export_namespace%> {
 					# If the apply function failed, return an error.
 					execute unless score #success <%OBJECTIVES.I()%> matches 1 run return run block invalid_variant {
 						# Tell the user that the provided variant doesn't exist, remove the rig, and list all available variants for this rig.
-						function *<%export_namespace%>/remove/this
 						tellraw @a <%TELLRAW.INVALID_VARIANT(rig.variants)%>
+						function *<%export_namespace%>/remove/this/without_on_remove_commands
 					}
+					scoreboard players set #success <%OBJECTIVES.I()%> 1
 				}
 			} ELSE {
 				execute if data storage aj:temp args.variant run block zzz/variant_arg/no_variants_warning {
 					tellraw @a <%TELLRAW.NO_VARIANTS()%>
-					function *<%export_namespace%>/remove/this
+					function *<%export_namespace%>/remove/this/without_on_remove_commands
+					scoreboard players set #success <%OBJECTIVES.I()%> 0
 				}
 			}
+			execute if score #success <%OBJECTIVES.I()%> matches 0 run return fail
 
 			function *<%export_namespace%>/set_default_pose
+
 			# Animation Argument
 			# If the animation argument is provided, attempt to apply the animation.
 			execute if data storage aj:temp args.animation run block animation_arg/process { with storage aj:temp args
+				scoreboard players set #success <%OBJECTIVES.I()%> 0
 				# If the animation argument is *explicitly* set to an empty string, return an error.
 				execute if data storage aj:temp {args:{animation:''}} run return run block if_empty {
-					function *<%export_namespace%>/remove/this
 					tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('animation')%>
+					function *<%export_namespace%>/remove/this/without_on_remove_commands
 				}
 				# Automatically set the frame argument to 0 if the frame argument is not provided.
 				# Takes advantage of `store result score` setting the score to 0 if the command fails.
@@ -665,7 +671,7 @@ dir <%export_namespace%> {
 				execute if score #frame <%OBJECTIVES.I()%> matches ..-1 run return run block no_negative {
 					# Tell the user that the frame argument cannot be negative.
 					tellraw @a <%TELLRAW.FRAME_CANNOT_BE_NEGATIVE()%>
-					function *<%export_namespace%>/remove/this
+					function *<%export_namespace%>/remove/this/without_on_remove_commands
 				}
 				# Attempt to apply the animation frame.
 				execute store success score #success <%OBJECTIVES.I()%> run block try_set_frame { with storage aj:temp args
@@ -678,17 +684,20 @@ dir <%export_namespace%> {
 					return fail
 				}
 				# If the set_frame function failed, return an error.
-				execute unless score #success <%OBJECTIVES.I()%> matches 1 run return run block invalid_animation { with storage aj:temp args
+				execute unless score #success <%OBJECTIVES.I()%> matches 1 run return run block invalid_animation {
 					# Tell the user that the provided animation doesn't exist, remove the rig, and list all available animations for this rig.
-					function *<%export_namespace%>/remove/this
 					tellraw @a <%TELLRAW.INVALID_ANIMATION(animations)%>
+					function *<%export_namespace%>/remove/this/without_on_remove_commands
 				}
 
 				# If the animation is successfully applied, and the start_animation argument is set to true, start the animation.
 				execute if data storage aj:temp {args:{start_animation: true}} run block start_animation { with storage aj:temp args
 					$function *<%export_namespace%>/animations/$(animation)/resume
 				}
+				scoreboard players set #success <%OBJECTIVES.I()%> 1
 			}
+			execute if score #success <%OBJECTIVES.I()%> matches 0 run return fail
+
 			# Align the position and rotation of the root with the summon context, then align the passengers with the root.
 			tp @s ~ ~ ~ ~ ~
 			execute at @s on passengers run tp @s ~ ~ ~ ~ ~
@@ -734,16 +743,33 @@ dir <%export_namespace%> {
 						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 			}
 			data remove storage aj:temp args
-			$data modify storage aj:temp args merge value {name:'$(name)', command:'$(command)'}
-			$execute \
+			$data modify storage aj:temp args merge value {name:'$(name)', command:'$(command)', uuid:'+MISSING_UUID+'}
+
+			IF (show_function_errors) {
+				execute if data storage aj:temp {args:{name:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('name')%>
+				execute if data storage aj:temp {args:{command:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('command')%>
+			}
+
+			execute \
 				on passengers \
 				if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] \
-			run block zzz/as_locator/as_data { {name: $(name)}
-				$data modify storage aj:temp args.uuid set from entity @s data.uuids.locator_$(name)
-				scoreboard players set #aj.check <%OBJECTIVES.I()%> 0
+			run block zzz/as_locator/as_data { with storage aj:temp args
+				$data modify storage aj:temp args.uuid set from entity @s data.locators.$(name).uuid
+				IF (show_function_errors) {
+					scoreboard players set #aj.check <%OBJECTIVES.I()%> 0
+				}
 				block execute_as_uuid { with storage aj:temp args
-					$execute as $(uuid) at @s run $(command)
-					scoreboard players set #aj.check <%OBJECTIVES.I()%> 1
+					IF (show_function_errors) {
+						# If the function successfully instantiated, the provided command is valid.
+						scoreboard players set #aj.check <%OBJECTIVES.I()%> 1
+					}
+					$execute as $(uuid) at @s run return run $(command)
+					IF (show_function_errors) {
+						# If the entity with the provided UUID doesn't exist, the locator wasn't found.
+						tellraw @a <%TELLRAW.LOCATOR_ENTITY_NOT_FOUND()%>
+					}
+				}
+				IF (show_function_errors) {
 					execute if score #aj.check <%OBJECTIVES.I()%> matches 0 run tellraw @a <%TELLRAW.LOCATOR_COMMAND_FAILED_TO_EXECUTE()%>
 				}
 			}
@@ -758,7 +784,12 @@ dir <%export_namespace%> {
 						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 			}
 			data remove storage aj:temp args
-			$data modify storage aj:temp args.command set value '$(command)'
+			$data modify storage aj:temp args merge value {command:'$(command)'}
+
+			IF (show_function_errors) {
+				execute if data storage aj:temp {args:{command:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('command')%>
+			}
+
 			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block zzz/as_all_locators/as_data {
 				REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator' && node.config?.use_entity)) as locator {
 					data modify storage aj:temp args.uuid set from entity @s data.locators.<%locator.storage_name%>.uuid
@@ -781,17 +812,33 @@ dir <%export_namespace%> {
 			}
 			data remove storage aj:temp args
 			$data modify storage aj:temp args merge value {name:'$(name)', command:'$(command)'}
-			$execute \
+
+			IF (show_function_errors) {
+				execute if data storage aj:temp {args:{name:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('name')%>
+				execute if data storage aj:temp {args:{command:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('command')%>
+			}
+
+			execute \
 				on passengers \
 				if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] \
-			run block zzz/at_locator/as_data { {name: $(name)}
-				$execute unless data entity @s {data:{locators:{$(name):{}}}} run return run tellraw @a <%TELLRAW.LOCATOR_NOT_FOUND()%>
+			run block zzz/at_locator/as_data { with storage aj:temp args
 				$data modify storage aj:temp args merge from entity @s data.locators.$(name)
+				IF (show_function_errors) {
+					execute unless data storage aj:temp args.uuid run return run tellraw @a <%TELLRAW.LOCATOR_NOT_FOUND()%>
+					scoreboard players set #aj.check <%OBJECTIVES.I()%> 0
+				}
 				block execute_at_transform { with storage aj:temp args
+					IF (show_function_errors) {
+						# If the function successfully instantiated, the provided command is valid.
+						scoreboard players set #aj.check <%OBJECTIVES.I()%> 1
+					}
 					$execute \
 						positioned ^$(posx) ^$(posy) ^$(posz) \
 						rotated ~$(roty) ~$(rotx) \
 					run $(command)
+				}
+				IF (show_function_errors) {
+					execute if score #aj.check <%OBJECTIVES.I()%> matches 0 run tellraw @a <%TELLRAW.LOCATOR_COMMAND_FAILED_TO_EXECUTE()%>
 				}
 			}
 		}
@@ -805,8 +852,13 @@ dir <%export_namespace%> {
 						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 			}
 			data remove storage aj:temp args
-			$data modify storage aj:temp args.command set value '$(command)'
-			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block zzz/at_all_locators/as_data { 
+			$data modify storage aj:temp args merge value {command:'$(command)'}
+
+			IF (show_function_errors) {
+				execute if data storage aj:temp {args:{command:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('command')%>
+			}
+
+			execute at @s on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block zzz/at_all_locators/as_data {
 				REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator' && node.config?.use_entity)) as locator {
 					data modify storage aj:temp args merge from entity @s data.locators.<%locator.storage_name%>
 					block execute_at_transform { with storage aj:temp args
@@ -830,16 +882,33 @@ dir <%export_namespace%> {
 						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 			}
 			data remove storage aj:temp args
-			$data modify storage aj:temp args merge value {name:'$(name)', command:'$(command)'}
-			$execute \
+			$data modify storage aj:temp args merge value {name:'$(name)', command:'$(command)', uuid:'+MISSING_UUID+'}
+
+			IF (show_function_errors) {
+				execute if data storage aj:temp {args:{name:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('name')%>
+				execute if data storage aj:temp {args:{command:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('command')%>
+			}
+
+			execute \
 				on passengers \
 				if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] \
-			run block zzz/as_camera/as_data { {name: $(name)}
-				data modify storage aj:temp args.uuid set from entity @s data.cameras.$(name)
-				scoreboard players set #aj.check <%OBJECTIVES.I()%> 0
+			run block zzz/as_camera/as_data { with storage aj:temp args
+				$data modify storage aj:temp args.uuid set from entity @s data.cameras.$(name).uuid
+				IF (show_function_errors) {
+					scoreboard players set #aj.check <%OBJECTIVES.I()%> 0
+				}
 				block execute_as_uuid { with storage aj:temp args
-					$execute as $(uuid) at @s run $(command)
-					scoreboard players set #aj.check <%OBJECTIVES.I()%> 1
+					IF (show_function_errors) {
+						# If the function successfully instantiated, the provided command is valid.
+						scoreboard players set #aj.check <%OBJECTIVES.I()%> 1
+					}
+					$execute as $(uuid) at @s run return run $(command)
+					IF (show_function_errors) {
+						# If the entity with the provided UUID doesn't exist, the camera wasn't found.
+						tellraw @a <%TELLRAW.CAMERA_ENTITY_NOT_FOUND()%>
+					}
+				}
+				IF (show_function_errors) {
 					execute if score #aj.check <%OBJECTIVES.I()%> matches 0 run tellraw @a <%TELLRAW.CAMERA_COMMAND_FAILED_TO_EXECUTE()%>
 				}
 			}
