@@ -5,9 +5,9 @@ import { cleanupExportedFiles } from '../systems/cleaner'
 import { exportProject } from '../systems/exporter'
 import { createAction, createBarMenu } from '../util/moddingTools'
 import { translate } from '../util/translation'
+import { openChangelogDialog } from './changelogDialog'
 import { openAboutDialog } from './dialog/about'
 import { openBlueprintSettingsDialog } from './dialog/blueprintSettings'
-import { openChangelogDialog } from './changelogDialog'
 
 function createIconImg() {
 	const IMG = document.createElement('img')
@@ -27,7 +27,9 @@ function createIconImg() {
 }
 const MENU_ID = `${PACKAGE.name}:menu` as `animated_java:menu`
 const BLOCKBENCH_MENU_BAR = document.querySelector('#menu_bar') as HTMLDivElement
-export const MENU = createBarMenu(MENU_ID, [], () => Format === BLUEPRINT_FORMAT) as BarMenu & {
+export const MENU = createBarMenu(MENU_ID, [], {
+	condition: () => Format === BLUEPRINT_FORMAT,
+}) as BarMenu & {
 	label: HTMLDivElement
 }
 MENU.label.style.display = 'inline-block'
