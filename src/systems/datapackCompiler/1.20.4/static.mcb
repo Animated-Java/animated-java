@@ -175,19 +175,7 @@ dir <%export_namespace%> {
 					run block as_locator/<%locator.storage_name%> {
 					# run block ../as_locator/<%locator.storage_name%> {
 						tag @s remove <%TAGS.NEW()%>
-
 						function *global/internal/gu/convert_uuid_array_to_string
-						tp @s \
-							^<%roundTo(locator.default_transform.pos[0], 10)%> \
-							^<%roundTo(locator.default_transform.pos[1], 10)%> \
-							^<%roundTo(locator.default_transform.pos[2], 10)%> \
-							~<%roundTo(locator.default_transform.head_rot[1], 10)%> \
-							~<%roundTo(locator.default_transform.head_rot[0], 10)%>
-						<%%
-							if (locator.config.summon_commands) {
-								emit.mcb(locator.config.summon_commands)
-							}
-						%%>
 					}
 					data modify entity @s data.uuids.<%locator.type + '_' + locator.storage_name%> set from storage aj:uuid main.out
 					data modify entity @s data.locators.<%locator.storage_name%>.uuid set from storage aj:uuid main.out
@@ -210,12 +198,6 @@ dir <%export_namespace%> {
 					run block ../as_camera/<%camera.storage_name%> {
 						tag @s remove <%TAGS.NEW()%>
 						function *global/internal/gu/convert_uuid_array_to_string
-						tp @s \
-							^<%roundTo(camera.default_transform.pos[0], 10)%> \
-							^<%roundTo(camera.default_transform.pos[1], 10)%> \
-							^<%roundTo(camera.default_transform.pos[2], 10)%> \
-							~<%roundTo(camera.default_transform.head_rot[1], 10)%> \
-							~<%roundTo(camera.default_transform.head_rot[0], 10)%>
 					}
 					data modify entity @s data.uuids.<%camera.type + '_' + camera.storage_name%> set from storage aj:uuid main.out
 					data modify entity @s data.cameras.<%camera.storage_name%>.uuid set from storage aj:uuid main.out
@@ -265,10 +247,28 @@ dir <%export_namespace%> {
 			# Apply teleport duration
 			data modify entity @s teleport_duration set value <%teleportation_duration%>
 			execute on passengers run data modify entity @s teleport_duration set value <%teleportation_duration%>
-			# Add in User-defined `On-Summon Commands`
-			<%%
-				if (custom_summon_commands) emit.mcb(custom_summon_commands)
-			%%>
+
+			IF (has_entity_locators) {
+				execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block locators_on_summon {
+					REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator' && node.config?.use_entity && node.config.summon_commands)) as locator {
+						block { with entity @s data.locators.<%locator.storage_name%>
+							$execute as $(uuid) at @s run {
+								<%%
+									emit.mcb(locator.config.summon_commands)
+								%%>
+							}
+						}
+					}
+				}
+			}
+
+			IF (custom_summon_commands) {
+				block rig_on_summon {
+					<%%
+						emit.mcb(custom_summon_commands)
+					%%>
+				}
+			}
 
 			# Remove the NEW tag from the root entity, and it's passengers.
 			tag @s remove <%TAGS.NEW()%>
@@ -504,6 +504,11 @@ dir <%export_namespace%> {
 				function *global/errors/function_not_executed_as_root_entity \
 					{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
 		}
+
+		IF (has_locators || has_cameras) {
+			function ./zzz/reset_locators_and_cameras
+		}
+
 		REPEAT (Object.values(rig.nodes).filter(node => node.type !== 'locator' && node.type !== 'camera')) as node {
 			execute \
 				on passengers \
@@ -512,6 +517,61 @@ dir <%export_namespace%> {
 				data merge entity @s { \
 					transformation: <%matrixToNbtFloatArray(node.default_transform.matrix).toString()%>, \
 					start_interpolation: -1 \
+				}
+		}
+	}
+
+	IF (has_locators || has_cameras) {
+		dir zzz {
+			function reset_locators_and_cameras {
+				IF (has_locators) {
+					REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator')) as locator {
+						execute \
+							at @s \
+							on passengers \
+							if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] \
+						run block zzz/set_default_pose/as_data/locator_<%locator.storage_name%> { with entity @s data.locators.<%locator.storage_name%>
+							IF (locator.config?.use_entity) {
+								$tp $(uuid) \
+									^<%roundTo(locator.default_transform.pos[0], 10)%> \
+									^<%roundTo(locator.default_transform.pos[1], 10)%> \
+									^<%roundTo(locator.default_transform.pos[2], 10)%> \
+									~<%roundTo(locator.default_transform.head_rot[1], 10)%> \
+									~<%roundTo(locator.default_transform.head_rot[0], 10)%>
+							}
+							data modify entity @s data.locators.<%locator.storage_name%> merge value { \
+								posx: <%roundTo(locator.default_transform.pos[0], 10)%>, \
+								posy: <%roundTo(locator.default_transform.pos[1], 10)%>, \
+								posz: <%roundTo(locator.default_transform.pos[2], 10)%>, \
+								roty: <%roundTo(locator.default_transform.head_rot[1], 10)%>, \
+								rotx: <%roundTo(locator.default_transform.head_rot[0], 10)%> \
+							}
+						}
+					}
+				}
+
+				IF (has_cameras) {
+					REPEAT (Object.values(rig.nodes).filter(node => node.type === 'camera')) as camera {
+						execute \
+							at @s \
+							on passengers \
+							if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] \
+						run block zzz/set_default_pose/as_data/camera_<%camera.storage_name%> { with entity @s data.cameras.<%camera.storage_name%>
+							$tp $(uuid) \
+								^<%roundTo(camera.default_transform.pos[0], 10)%> \
+								^<%roundTo(camera.default_transform.pos[1], 10)%> \
+								^<%roundTo(camera.default_transform.pos[2], 10)%> \
+								~<%roundTo(camera.default_transform.head_rot[1], 10)%> \
+								~<%roundTo(camera.default_transform.head_rot[0], 10)%>
+							data modify entity @s data.cameras.<%camera.storage_name%> merge value { \
+								posx: <%roundTo(camera.default_transform.pos[0], 10)%>, \
+								posy: <%roundTo(camera.default_transform.pos[1], 10)%>, \
+								posz: <%roundTo(camera.default_transform.pos[2], 10)%>, \
+								roty: <%roundTo(camera.default_transform.head_rot[1], 10)%>, \
+								rotx: <%roundTo(camera.default_transform.head_rot[0], 10)%> \
+							}
+						}
+					}
 				}
 			}
 		}
