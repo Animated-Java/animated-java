@@ -12,6 +12,7 @@ import compileDataPack from './datapackCompiler'
 import resourcepackCompiler from './resourcepackCompiler'
 import { hashRig, renderRig } from './rigRenderer'
 import { isCubeValid } from './util'
+import { exportJSON } from './jsonCompiler'
 
 export class IntentionalExportError extends Error {}
 
@@ -124,16 +125,15 @@ async function actuallyExportProject(forceSave = true) {
 			modelExportFolder,
 		})
 
-		// if (aj.enable_plugin_mode) {
-		// 	exportJSON({
-		// 		rig,
-		// 		animations,
-		// 		displayItemPath,
-		// 		textureExportFolder,
-		// 		modelExportFolder,
-		// 	})
-		// } else {
-		if (aj.data_pack_export_mode !== 'none') {
+		if (aj.enable_plugin_mode) {
+			exportJSON({
+				rig,
+				animations,
+				displayItemPath,
+				textureExportFolder,
+				modelExportFolder,
+			})
+		} else if (aj.data_pack_export_mode !== 'none') {
 			await compileDataPack(aj.target_minecraft_versions, {
 				rig,
 				animations,
