@@ -43,7 +43,7 @@
 
 		lastSelected = selected
 		selected = TextDisplay.selected.at(0)
-		if (!selected) return
+		if (!selected || Group.first_selected) return
 		// This might be a bit hacky, but svelte seems to handle it fine.
 		// @ts-ignore
 		text = selected._text
