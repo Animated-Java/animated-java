@@ -17,7 +17,7 @@ export function openVariantConfigDialog(variant: Variant) {
 	new SvelteDialog({
 		id: `${PACKAGE.name}:variantConfig`,
 		title: translate('dialog.variant_config.title'),
-		width: 512,
+		width: 700,
 		component: VariantConfigDialogSvelteComponent,
 		props: {
 			variant,
@@ -38,6 +38,8 @@ export function openVariantConfigDialog(variant: Variant) {
 			variant.excludedNodes = excludedNodes.get()
 			events.UPDATE_VARIANT.dispatch(variant)
 			variant.select()
+
+			Project!.saved = false
 		},
 	}).show()
 }

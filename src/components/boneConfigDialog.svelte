@@ -14,6 +14,8 @@
 </script>
 
 <script lang="ts">
+	import CodeInput from './dialogItems/codeInput.svelte'
+
 	const pluginModeEnabled = !!Project?.animated_java?.enable_plugin_mode
 
 	export let variant: Variant
@@ -189,7 +191,7 @@
 			defaultValue={BoneConfig.prototype.inheritSettings}
 		/>
 
-		<LineInput
+		<CodeInput
 			label={translate('dialog.bone_config.custom_name.title')}
 			tooltip={translate('dialog.bone_config.custom_name.description')}
 			bind:value={customName}
@@ -215,7 +217,7 @@
 			<p class="use_nbt_warning">
 				{translate('dialog.bone_config.use_nbt.use_nbt_warning')}
 			</p>
-			<LineInput
+			<CodeInput
 				label={translate('dialog.bone_config.nbt.title')}
 				tooltip={translate('dialog.bone_config.nbt.description')}
 				bind:value={nbt}

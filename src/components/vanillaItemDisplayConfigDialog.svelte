@@ -1,7 +1,6 @@
 <script lang="ts" , context="module">
 	import Checkbox from './dialogItems/checkbox.svelte'
 	import ColorPicker from './dialogItems/colorPicker.svelte'
-	import LineInput from './dialogItems/lineInput.svelte'
 	import NumberSlider from './dialogItems/numberSlider.svelte'
 	import Select from './dialogItems/select.svelte'
 
@@ -13,6 +12,8 @@
 </script>
 
 <script lang="ts">
+	import CodeInput from './dialogItems/codeInput.svelte'
+
 	const pluginModeEnabled = !!Project?.animated_java?.enable_plugin_mode
 
 	export let customName: Valuable<string>
@@ -82,7 +83,7 @@
 			bind:value={billboard}
 		/>
 
-		<LineInput
+		<CodeInput
 			label={translate('dialog.bone_config.custom_name.title')}
 			tooltip={translate('dialog.bone_config.custom_name.description')}
 			bind:value={customName}
@@ -161,7 +162,7 @@
 			<p class="use_nbt_warning">
 				{translate('dialog.bone_config.use_nbt.use_nbt_warning')}
 			</p>
-			<LineInput
+			<CodeInput
 				label={translate('dialog.bone_config.nbt.title')}
 				tooltip={translate('dialog.bone_config.nbt.description')}
 				bind:value={nbt}
@@ -169,7 +170,7 @@
 				valueChecker={nbtChecker}
 			/>
 		{:else}
-			<LineInput
+			<CodeInput
 				label={translate('dialog.bone_config.custom_name.title')}
 				tooltip={translate('dialog.bone_config.custom_name.description')}
 				bind:value={customName}
@@ -260,4 +261,9 @@
 </div>
 
 <style>
+	div {
+		overflow-y: auto;
+		max-height: 75vh;
+		padding-right: 8px;
+	}
 </style>

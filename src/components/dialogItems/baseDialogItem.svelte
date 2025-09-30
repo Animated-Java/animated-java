@@ -13,10 +13,6 @@
 	$: if (error_text) {
 		blueprintSettingErrors.get()[label] = error_text
 	}
-
-	function onQuestionMarkClick() {
-		Blockbench.showQuickMessage(tooltip, 50 * tooltip.length)
-	}
 </script>
 
 <div>
@@ -54,7 +50,8 @@
 	</div>
 	{#if tooltip}
 		<div class="description">
-			{tooltip}
+			<!-- svelte-ignore missing-declaration -->
+			{@html pureMarked(tooltip)}
 		</div>
 	{/if}
 </div>
@@ -63,8 +60,9 @@
 	.base_dialog_item {
 		display: flex;
 		flex-direction: row;
-		/* align-items: center; */
-		justify-content: space-between;
+	}
+	.base_dialog_item :global(label) {
+		--max_label_width: 200px !important;
 	}
 	.slot_container {
 		flex-grow: 1;
@@ -86,6 +84,11 @@
 		color: var(--color-subtle_text);
 		margin-top: 4px;
 		margin-bottom: 16px;
+		max-width: 80%;
+	}
+	.description :global(li) {
+		list-style: circle;
+		margin-left: 2em;
 	}
 	.error_text {
 		display: flex;

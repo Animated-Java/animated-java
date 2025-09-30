@@ -1,15 +1,15 @@
 <script lang="ts" context="module">
+	import MissingTexture from '../assets/missing_texture.png'
 	import { type Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
 	import { TextureMap, Variant } from '../variants'
 	import Checkbox from './dialogItems/checkbox.svelte'
 	import LineInput from './dialogItems/lineInput.svelte'
-	import MissingTexture from '../assets/missing_texture.png'
 </script>
 
 <script lang="ts">
-	import Collection from './dialogItems/collection.svelte'
 	import { getAvailableNodes } from '../util/excludedNodes'
+	import Collection from './dialogItems/collection.svelte'
 
 	export let variant: Variant
 	export let displayName: Valuable<string>
@@ -129,10 +129,6 @@
 		defaultValue={true}
 	/>
 
-	<div class="uuid">
-		{$uuid}
-	</div>
-
 	{#if !variant.isDefault}
 		<div class="toolbar" style="margin: 8px 0;">
 			<div>
@@ -147,19 +143,12 @@
 			>
 				<i class="material-icons icon" on:click={() => createTextureMapping()}>add</i>
 			</div>
-			<!-- svelte-ignore a11y-click-events-have-key-events -->
-			<!-- svelte-ignore missing-declaration -->
-			<i
-				class="fa fa-question dialog_form_description"
-				title={translate('dialog.variant_config.texture_map.description')}
-				on:click={() => {
-					const tooltip = translate('dialog.variant_config.texture_map.description')
-					Blockbench.showQuickMessage(tooltip, 50 * tooltip.length)
-				}}
-			/>
 		</div>
-		<lu class="texture-map-container">
-			{#key textureMapUpdated}
+		{#key textureMapUpdated}
+			<ul
+				class="texture-map-container"
+				style={[...textureMap.map.entries()].length === 0 ? 'min-height: 2rem;' : ''}
+			>
 				{#each [...textureMap.map.entries()] as entry, index}
 					<div class="texture-mapping-item"></div>
 					<li class="texture-mapping-item">
@@ -207,35 +196,45 @@
 					</li>
 				{:else}
 					<div class="no-mappings">
-						{translate('dialog.variant_config.texture_map.no-mappings')}
+						{translate('dialog.variant_config.texture_map.no_mappings')}
 					</div>
 				{/each}
-			{/key}
-		</lu>
+			</ul>
+		{/key}
+		<div class="texture-map-description">
+			{@html translate('dialog.variant_config.texture_map.description')}
+		</div>
+
 		<Collection
 			label={translate('dialog.variant_config.excluded_nodes.title')}
 			tooltip={translate('dialog.variant_config.bone_lists.description')}
 			availableItemsColumnLable={translate('dialog.variant_config.included_nodes.title')}
 			availableItemsColumnTooltip={translate(
-				'dialog.variant_config.included_nodes.description',
+				'dialog.variant_config.included_nodes.description'
 			)}
 			includedItemsColumnLable={translate('dialog.variant_config.excluded_nodes.title')}
 			includedItemsColumnTooltip={translate(
-				'dialog.variant_config.excluded_nodes.description',
+				'dialog.variant_config.excluded_nodes.description'
 			)}
 			swapColumnsButtonTooltip={translate(
-				'dialog.variant_config.swap_columns_button.tooltip',
+				'dialog.variant_config.swap_columns_button.tooltip'
 			)}
 			availableItems={availableBones}
 			bind:includedItems={excludedNodes}
 		/>
 	{/if}
+
+	<div class="uuid">
+		{$uuid}
+	</div>
 </div>
 
 <style>
 	.dialog-container {
 		display: flex;
 		flex-direction: column;
+		overflow-y: auto;
+		max-height: 75vh;
 	}
 	.uuid {
 		color: var(--color-subtle_text);
@@ -292,6 +291,7 @@
 		max-height: 600px;
 		overflow-y: auto;
 		max-height: 16rem;
+		min-height: 12rem;
 	}
 	.spacer {
 		flex-grow: 1;
@@ -300,5 +300,12 @@
 		display: flex;
 		flex-direction: row;
 		align-items: center;
+	}
+	.texture-map-description {
+		font-size: 0.9em;
+		color: var(--color-subtle_text);
+		margin-top: 4px;
+		margin-bottom: 16px;
+		max-width: 80%;
 	}
 </style>

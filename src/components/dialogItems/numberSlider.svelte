@@ -77,9 +77,18 @@
 				bind:value={$value}
 				inputmode="decimal"
 			/>
-			<div bind:this={slider} class="tool numaric_input_slider">
+			<div bind:this={slider} class="tool numaric_input_slider slider-fix">
 				<i class="material-icons icon">code</i>
 			</div>
 		</div>
 	</div>
 </BaseDialogItem>
+
+<style>
+	input {
+		padding: 0 8px !important;
+	}
+	.slider-fix {
+		right: 8px !important;
+	}
+</style>

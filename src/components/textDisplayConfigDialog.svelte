@@ -1,16 +1,17 @@
 <script lang="ts" , context="module">
 	import Checkbox from './dialogItems/checkbox.svelte'
-	import NumberSlider from './dialogItems/numberSlider.svelte'
-	import LineInput from './dialogItems/lineInput.svelte'
 	import ColorPicker from './dialogItems/colorPicker.svelte'
+	import NumberSlider from './dialogItems/numberSlider.svelte'
 	import Select from './dialogItems/select.svelte'
 
+	import { TextDisplayConfig } from '../nodeConfigs'
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
-	import { TextDisplayConfig } from '../nodeConfigs'
 </script>
 
 <script lang="ts">
+	import CodeInput from './dialogItems/codeInput.svelte'
+
 	const pluginModeEnabled = !!Project?.animated_java?.enable_plugin_mode
 
 	export let billboard: Valuable<string>
@@ -107,7 +108,7 @@
 			<p class="use_nbt_warning">
 				{translate('dialog.text_display_config.use_nbt.use_nbt_warning')}
 			</p>
-			<LineInput
+			<CodeInput
 				label={translate('dialog.text_display_config.nbt.title')}
 				tooltip={translate('dialog.text_display_config.nbt.description')}
 				bind:value={nbt}
@@ -173,7 +174,7 @@
 				<NumberSlider
 					label={translate('dialog.text_display_config.brightness_override.title')}
 					tooltip={translate(
-						'dialog.text_display_config.brightness_override.description',
+						'dialog.text_display_config.brightness_override.description'
 					)}
 					bind:value={brightnessOverride}
 					defaultValue={TextDisplayConfig.prototype.brightnessOverride}
@@ -192,4 +193,15 @@
 </div>
 
 <style>
+	div {
+		overflow-y: auto;
+		max-height: 75vh;
+		padding-right: 8px;
+	}
+	.use_nbt_warning {
+		color: var(--color-warning);
+		font-family: var(--font-ui);
+		font-size: 0.9em;
+		margin: 8px 0;
+	}
 </style>

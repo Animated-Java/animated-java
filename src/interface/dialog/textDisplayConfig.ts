@@ -1,13 +1,13 @@
 import { isCurrentFormat } from '../../blueprintFormat'
-import { TextDisplayConfig } from '../../nodeConfigs'
+import TextDisplayConfigDialog from '../../components/textDisplayConfigDialog.svelte'
 import { PACKAGE } from '../../constants'
+import { TextDisplayConfig } from '../../nodeConfigs'
+import { TextDisplay } from '../../outliner/textDisplay'
 import { createAction } from '../../util/moddingTools'
 import { Valuable } from '../../util/stores'
 import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
 import { Variant } from '../../variants'
-import TextDisplayConfigDialog from '../../components/textDisplayConfigDialog.svelte'
-import { TextDisplay } from '../../outliner/textDisplay'
 
 export function openBoneConfigDialog(bone: TextDisplay) {
 	// Blockbench's JSON stringifier doesn't handle custom toJSON functions, so I'm storing the config JSON in the bone instead of the actual BoneConfig object
@@ -28,7 +28,7 @@ export function openBoneConfigDialog(bone: TextDisplay) {
 	new SvelteDialog({
 		id: `${PACKAGE.name}:textDisplayConfigDialog`,
 		title: translate('dialog.text_display_config.title'),
-		width: 400,
+		width: 600,
 		component: TextDisplayConfigDialog,
 		props: {
 			variant: Variant.selected,
@@ -80,6 +80,8 @@ export function openBoneConfigDialog(bone: TextDisplay) {
 			newConfig.useNBT === defaultConfig.useNBT && (newConfig.useNBT = undefined)
 
 			bone.config = newConfig.toJSON()
+
+			Project!.saved = false
 		},
 	}).show()
 }

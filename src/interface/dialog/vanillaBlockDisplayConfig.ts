@@ -1,13 +1,13 @@
 import { isCurrentFormat } from '../../blueprintFormat'
-import { BoneConfig } from '../../nodeConfigs'
+import VanillaBlockDisplayConfigDialog from '../../components/vanillaBlockDisplayConfigDialog.svelte'
 import { PACKAGE } from '../../constants'
+import { BoneConfig } from '../../nodeConfigs'
+import { VanillaBlockDisplay } from '../../outliner/vanillaBlockDisplay'
 import { createAction } from '../../util/moddingTools'
 import { Valuable } from '../../util/stores'
 import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
 import { Variant } from '../../variants'
-import { VanillaBlockDisplay } from '../../outliner/vanillaBlockDisplay'
-import VanillaBlockDisplayConfigDialog from '../../components/vanillaBlockDisplayConfigDialog.svelte'
 
 export function openVanillaBlockDisplayConfigDialog(display: VanillaBlockDisplay) {
 	// Blockbench's JSON stringifier doesn't handle custom toJSON functions, so I'm storing the config JSON in the bone instead of the actual BoneConfig object
@@ -30,7 +30,7 @@ export function openVanillaBlockDisplayConfigDialog(display: VanillaBlockDisplay
 	new SvelteDialog({
 		id: `${PACKAGE.name}:vanillaItemDisplayConfigDialog`,
 		title: translate('dialog.vanilla_block_display_config.title'),
-		width: 400,
+		width: 600,
 		component: VanillaBlockDisplayConfigDialog,
 		props: {
 			variant: Variant.selected,
@@ -89,6 +89,8 @@ export function openVanillaBlockDisplayConfigDialog(display: VanillaBlockDisplay
 			newConfig.useNBT === defaultConfig.useNBT && (newConfig.useNBT = undefined)
 
 			display.config = newConfig.toJSON()
+
+			Project!.saved = false
 		},
 	}).show()
 }

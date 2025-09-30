@@ -34,7 +34,7 @@
 </script>
 
 <BaseDialogItem {label} {tooltip} {warning_text} {error_text} {onReset} let:id>
-	<div class="dialog_bar form_bar">
+	<div class="dialog_bar form_bar custom">
 		<label class="name_space_left" for={id}>{label}</label>
 		<textarea
 			class="dark_bordered half focusable_input"
@@ -48,10 +48,17 @@
 </BaseDialogItem>
 
 <style>
+	label {
+		margin-bottom: 8px;
+	}
+	.custom {
+		flex-direction: column;
+	}
 	textarea {
 		resize: vertical;
 		text-wrap: nowrap;
-		min-height: 60px;
+		min-height: 4em;
 		font-family: var(--font-code);
+		width: 100%;
 	}
 </style>

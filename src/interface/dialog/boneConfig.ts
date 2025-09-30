@@ -1,7 +1,7 @@
 import { BLUEPRINT_FORMAT } from '../../blueprintFormat'
-import { BoneConfig } from '../../nodeConfigs'
 import BoneConfigDialogSvelteComponent from '../../components/boneConfigDialog.svelte'
 import { PACKAGE } from '../../constants'
+import { BoneConfig } from '../../nodeConfigs'
 import { createAction } from '../../util/moddingTools'
 import { Valuable } from '../../util/stores'
 import { SvelteDialog } from '../../util/svelteDialog'
@@ -84,7 +84,7 @@ export function openBoneConfigDialog(bone: Group) {
 	new SvelteDialog({
 		id: `${PACKAGE.name}:boneConfig`,
 		title: translate('dialog.bone_config.title'),
-		width: 400,
+		width: 600,
 		component: BoneConfigDialogSvelteComponent,
 		props: {
 			variant: Variant.selected!,
@@ -165,6 +165,8 @@ export function openBoneConfigDialog(bone: Group) {
 				bone.configs.default = newConfig.toJSON()
 				propagateInheritanceDown(bone, newConfig)
 			}
+
+			Project!.saved = false
 		},
 	}).show()
 }

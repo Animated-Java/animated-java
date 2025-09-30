@@ -77,9 +77,11 @@ animated_java.dialog.blueprint_settings.enable_plugin_mode.description: Whether 
 animated_java.dialog.blueprint_settings.resource_pack_export_mode.title: Resource Pack Export Mode
 animated_java.dialog.blueprint_settings.resource_pack_export_mode.description: |-
   Determines how the Resource Pack should be exported.
-  Raw - Exports the Resource Pack as a folder.
-  Zip - Exports the Resource Pack as a .zip file.
-  None - Disables Resource Pack exporting.
+
+  - Raw - Exports the Resource Pack as a folder.
+
+  - None - Disables Resource Pack exporting.
+
 animated_java.dialog.blueprint_settings.resource_pack_export_mode.options.raw: Raw
 animated_java.dialog.blueprint_settings.resource_pack_export_mode.options.zip: Zip
 animated_java.dialog.blueprint_settings.resource_pack_export_mode.options.none: None
@@ -87,9 +89,10 @@ animated_java.dialog.blueprint_settings.resource_pack_export_mode.options.none: 
 animated_java.dialog.blueprint_settings.data_pack_export_mode.title: Data Pack Export Mode
 animated_java.dialog.blueprint_settings.data_pack_export_mode.description: |-
   Determines how the Data Pack should be exported.
-  Raw - Exports the Data Pack as a folder.
-  Zip - Exports the Data Pack as a .zip file.
-  None - Disables Data Pack exporting.
+
+  - Raw - Exports the Data Pack as a folder.
+
+  - None - Disables Data Pack exporting.
 animated_java.dialog.blueprint_settings.data_pack_export_mode.options.raw: Raw
 animated_java.dialog.blueprint_settings.data_pack_export_mode.options.zip: Zip
 animated_java.dialog.blueprint_settings.data_pack_export_mode.options.none: None
