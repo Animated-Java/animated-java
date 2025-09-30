@@ -1,0 +1,138 @@
+{
+	"meta": {
+		"format": "animated_java_blueprint",
+		"format_version": "1.8.0",
+		"uuid": "8feda3a8-b93a-47e8-39bf-afd91f5f4f37",
+		"save_location": "D:\\github-repos\\animated-java\\old-animated-java\\test-packs\\1.21.8\\blueprints\\text.ajblueprint",
+		"last_used_export_namespace": "text"
+	},
+	"blueprint_settings": {
+		"export_namespace": "text",
+		"show_bounding_box": false,
+		"auto_bounding_box": true,
+		"bounding_box": [48, 48],
+		"enable_plugin_mode": false,
+		"resource_pack_export_mode": "raw",
+		"data_pack_export_mode": "raw",
+		"target_minecraft_version": "1.21.5",
+		"display_item": "minecraft:white_dye",
+		"custom_model_data_offset": 0,
+		"enable_advanced_resource_pack_settings": false,
+		"resource_pack": "../resources",
+		"enable_advanced_data_pack_settings": false,
+		"data_pack": "../datapacks/animated_java",
+		"summon_commands": "",
+		"remove_commands": "",
+		"ticking_commands": "",
+		"interpolation_duration": 1,
+		"teleportation_duration": 1,
+		"use_storage_for_animation": false,
+		"show_function_errors": true,
+		"show_outdated_warning": true,
+		"baked_animations": true,
+		"json_file": ""
+	},
+	"resolution": {
+		"width": 16,
+		"height": 16
+	},
+	"elements": [
+		{
+			"name": "text_display",
+			"position": [0, 0, 0],
+			"rotation": [0, 0, 0],
+			"scale": [1, 1, 1],
+			"visibility": true,
+			"block": "minecraft:stone",
+			"config": {},
+			"item": "minecraft:diamond",
+			"itemDisplay": "none",
+			"text": "[\n\t'',\n\t[\n\t\t[{ text:'', color: yellow }, yellow ],\n\t\tmore_yellow,\n\t\t{ text:'', extra: [ yellow_again ]\n\t}],\n\t{ text: \"\\nsomeone's string\\N{HORIZONTAL ELLIPSIS}\\n\" },\n\t{ \"text\": \"\\x40 \\u0042 \\U00000061 \\N{Snowman}\" },\n\t{ text: 'A     B', color: red, underlined: true, strikethrough: true },\n\t{ text: 'test', hover_event: {\n\t\taction:show_item,\n\t\tid:'minecraft:stone'\n\t}},\n\t'\"',\n\t\"'\", \n\t\"\\\"\",\n\t'\\'',\n\t'\\'\"',\n\t'\\n\\N{Comet}\\n',\n\tno_quotes_on_me,\n\t'\\n',\n\t{\n\t\ttext: orange,\n\t\tcolor: '#ffaa00',\n\t\titalic: true,\n\t\tunderlined: \"true\",\n\t\tstrikethrough: TRUE\n\t}\n]",
+			"lineWidth": 200,
+			"backgroundColor": "#000000",
+			"backgroundAlpha": 0.25098,
+			"align": "center",
+			"shadow": false,
+			"seeThrough": false,
+			"uuid": "258206d2-8f2e-9db4-eabb-dbe1124b2673",
+			"type": "animated_java:text_display"
+		},
+		{
+			"name": "block_display",
+			"position": [-8, 0, -24],
+			"rotation": [0, 0, 0],
+			"scale": [1, 1, 1],
+			"visibility": true,
+			"block": "minecraft:stone_button[facing=south]",
+			"config": {},
+			"item": "minecraft:diamond",
+			"itemDisplay": "none",
+			"text": "\"Hello World!\"",
+			"lineWidth": 200,
+			"backgroundColor": "#000000",
+			"backgroundAlpha": 0.25,
+			"align": "center",
+			"shadow": false,
+			"seeThrough": false,
+			"uuid": "96d72eda-6134-0064-6dd2-40d52d58d704",
+			"type": "animated_java:vanilla_block_display"
+		}
+	],
+	"outliner": ["258206d2-8f2e-9db4-eabb-dbe1124b2673", "96d72eda-6134-0064-6dd2-40d52d58d704"],
+	"textures": [],
+	"variants": {
+		"default": {
+			"name": "default",
+			"display_name": "Default",
+			"uuid": "ed09517b-56aa-7c7b-0d31-8a402d9bfaa1",
+			"texture_map": {},
+			"excluded_nodes": [],
+			"is_default": true
+		},
+		"list": []
+	},
+	"animations": [
+		{
+			"uuid": "98cbf0d9-038a-3b36-fb96-52b84ddceafb",
+			"name": "test",
+			"loop": "loop",
+			"override": false,
+			"length": 2,
+			"snapping": 20,
+			"selected": false,
+			"saved": false,
+			"path": "",
+			"anim_time_update": "",
+			"blend_weight": "",
+			"start_delay": "",
+			"loop_delay": "0",
+			"excluded_nodes": [],
+			"animators": {
+				"258206d2-8f2e-9db4-eabb-dbe1124b2673": {
+					"name": "text_display",
+					"type": "animated_java:text_display",
+					"keyframes": [
+						{
+							"channel": "scale",
+							"data_points": [
+								{
+									"x": "1 + math.cos(q.life_time * 180) * 0.1",
+									"y": "1 + math.sin(q.life_time * 180) * 0.1",
+									"z": "1"
+								}
+							],
+							"uuid": "9d682e60-5c04-13dd-8636-2ab8f335c647",
+							"time": 0,
+							"color": -1,
+							"uniform": false,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						}
+					]
+				}
+			}
+		}
+	],
+	"animation_controllers": []
+}

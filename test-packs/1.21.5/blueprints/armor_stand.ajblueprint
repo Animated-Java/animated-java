@@ -1,9 +1,9 @@
 {
 	"meta": {
 		"format": "animated_java_blueprint",
-		"format_version": "1.7.2",
+		"format_version": "1.8.0",
 		"uuid": "167b27cd-b559-3f13-a97c-0841fe21f1d1",
-		"save_location": "D:\\github-repos\\animated-java\\animated-java\\test-packs\\1.21.5\\blueprints\\armor_stand.ajblueprint",
+		"save_location": "D:\\github-repos\\animated-java\\old-animated-java\\test-packs\\1.20.4\\blueprints\\armor_stand.ajblueprint",
 		"last_used_export_namespace": "armor_stand"
 	},
 	"blueprint_settings": {
@@ -14,7 +14,7 @@
 		"enable_plugin_mode": false,
 		"resource_pack_export_mode": "raw",
 		"data_pack_export_mode": "raw",
-		"target_minecraft_versions": ["1.21.5"],
+		"target_minecraft_version": "1.21.5",
 		"display_item": "minecraft:white_dye",
 		"custom_model_data_offset": 0,
 		"enable_advanced_resource_pack_settings": false,
@@ -31,7 +31,6 @@
 		"show_outdated_warning": true,
 		"baked_animations": false,
 		"json_file": "../testPluginExport.json",
-		"target_minecraft_version": "1.21.4",
 		"enable_advanced_resource_pack_folders": false,
 		"display_item_path": "",
 		"model_folder": "",
@@ -511,7 +510,7 @@
 			"box_uv": false,
 			"rescale": false,
 			"locked": false,
-			"light_emission": 0,
+			"light_emission": 15,
 			"render_order": "default",
 			"allow_mirror_modeling": true,
 			"from": [-5, 11.25, -3],
@@ -853,7 +852,7 @@
 				"use_entity": true,
 				"entity_type": "minecraft:item_display",
 				"sync_passenger_rotation": true,
-				"summon_commands": "",
+				"summon_commands": "say Left Hand!",
 				"ticking_commands": "particle minecraft:bubble ^ ^ ^1\ntp @e[tag=test3,limit=1] ~ ~ ~ ~ ~"
 			},
 			"uuid": "7de415a2-9fdd-e4b2-3455-c3bed72eb896",
@@ -870,7 +869,7 @@
 				"use_entity": true,
 				"entity_type": "minecraft:item_display",
 				"sync_passenger_rotation": false,
-				"summon_commands": "",
+				"summon_commands": "say Right Hand!",
 				"ticking_commands": "particle minecraft:bubble ^ ^ ^1\ntp @e[tag=test2,limit=1] ~ ~ ~ ~ ~"
 			},
 			"uuid": "7747736f-85e2-338f-207e-53f8d3d2fa39",
@@ -886,10 +885,10 @@
 			"config": {},
 			"item": "minecraft:diamond",
 			"itemDisplay": "none",
-			"text": "{\n\t\"text\": \"Hello, World!\",\n\t\"color\": \"green\"\n}\n",
-			"lineWidth": 200,
-			"backgroundColor": "#ffffff",
-			"backgroundAlpha": 0.25098,
+			"text": "[\n\t{ text: \"someone's string\\N{HORIZONTAL ELLIPSIS}\\n\" },\n\t{ \"text\": \"\\x40 \\u0042 \\U00000061 \\N{Snowman}\" },\n\t{text: 'test', hover_event: {\n\t\taction:show_item,\n\t\tid:'minecraft:stone'\n\t}},\n\t'awd\"',\n\t\"awd'\", \n\t\"awd\\\"\",\n\t'awd\\'',\n\t'awd\\'\"',\n\t'\\n\\N{Comet}\\n',\n\tno_quotes_on_me,\n\t'\\n',\n\t{\n\t\ttext: orange,\n\t\tcolor: '#ffaa00',\n\t\titalic: true,\n\t\tunderlined: \"true\",\n\t\tstrikethrough: TRUE\n\t}\n]",
+			"lineWidth": 400,
+			"backgroundColor": "#000000",
+			"backgroundAlpha": 0.12941,
 			"align": "center",
 			"shadow": true,
 			"seeThrough": true,
@@ -898,45 +897,35 @@
 		},
 		{
 			"name": "camera",
-			"box_uv": false,
-			"rescale": false,
-			"locked": false,
-			"light_emission": 0,
-			"render_order": "default",
-			"allow_mirror_modeling": true,
-			"from": [0, 0, 0],
-			"to": [1, 1, 1],
-			"autouv": 0,
-			"color": 0,
-			"origin": [0, 0, 0],
-			"faces": {
-				"north": {
-					"uv": [0, 0, 1, 1],
-					"texture": 0
-				},
-				"east": {
-					"uv": [0, 0, 1, 1],
-					"texture": 0
-				},
-				"south": {
-					"uv": [0, 0, 1, 1],
-					"texture": 0
-				},
-				"west": {
-					"uv": [0, 0, 1, 1],
-					"texture": 0
-				},
-				"up": {
-					"uv": [0, 0, 1, 1],
-					"texture": 0
-				},
-				"down": {
-					"uv": [0, 0, 1, 1],
-					"texture": 0
-				}
-			},
-			"type": "cube",
-			"uuid": "3f916352-b0e1-f1e4-0e09-308cc68f96e6"
+			"position": [0, 27, 0],
+			"rotation": [0, 0, 0],
+			"fov": 70,
+			"aspect_ratio": [16, 9],
+			"linked_preview": "",
+			"camera_linked": false,
+			"visibility": true,
+			"type": "camera",
+			"uuid": "3ffeee76-901e-f8a2-c29a-82f90e16fd1e"
+		},
+		{
+			"name": "item_display",
+			"position": [6, 12, -4],
+			"rotation": [-90, 0, 0],
+			"scale": [0.5, 0.5, 0.5],
+			"visibility": true,
+			"block": "minecraft:stone",
+			"config": {},
+			"item": "minecraft:diamond",
+			"itemDisplay": "none",
+			"text": "\"Hello World!\"",
+			"lineWidth": 200,
+			"backgroundColor": "#000000",
+			"backgroundAlpha": 0.25,
+			"align": "center",
+			"shadow": false,
+			"seeThrough": false,
+			"uuid": "bc141119-7f51-9690-7e21-e119b34fb3a2",
+			"type": "animated_java:vanilla_item_display"
 		}
 	],
 	"outliner": [
@@ -992,7 +981,7 @@
 					"uuid": "102db36a-eeda-0e6f-d5cc-c186ecda8165",
 					"export": true,
 					"mirror_uv": false,
-					"isOpen": false,
+					"isOpen": true,
 					"locked": false,
 					"visibility": true,
 					"autouv": 0,
@@ -1183,7 +1172,7 @@
 											"locked": false,
 											"visibility": true,
 											"autouv": 0,
-											"selected": true,
+											"selected": false,
 											"children": [
 												"55829f3d-26dc-8f49-39b8-5ba2c0159a24",
 												"9d16df18-0574-58bb-e0f9-f799946257c9",
@@ -1237,7 +1226,7 @@
 													"visibility": true,
 													"autouv": 0,
 													"selected": false,
-													"children": ["a23d9259-0d9a-4e16-1b42-47e5bedba00f", "a302b268-1699-4013-011f-211bd85806d4"]
+													"children": ["a23d9259-0d9a-4e16-1b42-47e5bedba00f", "a302b268-1699-4013-011f-211bd85806d4", "3ffeee76-901e-f8a2-c29a-82f90e16fd1e"]
 												},
 												{
 													"name": "left_arm",
@@ -1333,7 +1322,12 @@
 													"visibility": true,
 													"autouv": 0,
 													"selected": false,
-													"children": ["13293700-7f42-2279-6a1f-4e0a6a4d89b3", "98475898-cfc8-f67b-3145-abaf659deb3e", "7747736f-85e2-338f-207e-53f8d3d2fa39"]
+													"children": [
+														"13293700-7f42-2279-6a1f-4e0a6a4d89b3",
+														"98475898-cfc8-f67b-3145-abaf659deb3e",
+														"7747736f-85e2-338f-207e-53f8d3d2fa39",
+														"bc141119-7f51-9690-7e21-e119b34fb3a2"
+													]
 												}
 											]
 										}
@@ -1434,8 +1428,7 @@
 							]
 						}
 					]
-				},
-				"3f916352-b0e1-f1e4-0e09-308cc68f96e6"
+				}
 			]
 		},
 		"c2e217f1-b50a-5c9a-b342-71a35e984046"
@@ -1606,189 +1599,13 @@
 	},
 	"animations": [
 		{
-			"uuid": "baae8403-f2ab-6a7a-acb5-97d80bf8e31a",
-			"name": "wizard",
-			"loop": "loop",
-			"override": false,
-			"length": 2,
-			"snapping": 20,
-			"selected": false,
-			"saved": false,
-			"path": "",
-			"anim_time_update": "",
-			"blend_weight": "",
-			"start_delay": "",
-			"loop_delay": "0",
-			"excluded_nodes": [],
-			"animators": {
-				"b5b52d2c-097c-08df-6457-372fbae12445": {
-					"name": "left_arm",
-					"type": "bone",
-					"keyframes": [
-						{
-							"channel": "rotation",
-							"data_points": [
-								{
-									"x": "-90\n+ math.sin(q.life_time * 360) * 30",
-									"y": "-22.5\n+ math.cos(q.life_time * 360) * 30",
-									"z": "0"
-								}
-							],
-							"uuid": "df1fbae1-9b41-d0f4-5f6c-473441c294ff",
-							"time": 0,
-							"color": -1,
-							"interpolation": "linear",
-							"easing": "linear",
-							"easingArgs": []
-						}
-					]
-				},
-				"215d1b02-0e64-a794-1b88-a9c5a6d7541c": {
-					"name": "right_arm",
-					"type": "bone",
-					"keyframes": [
-						{
-							"channel": "rotation",
-							"data_points": [
-								{
-									"x": "-90\n+ math.sin(q.life_time * 360) * 30",
-									"y": "22.5\n- math.cos(q.life_time * 360) * 30",
-									"z": "0"
-								}
-							],
-							"uuid": "53b169b5-69f4-45a9-288a-de94ad2b3b90",
-							"time": 0,
-							"color": -1,
-							"interpolation": "linear",
-							"easing": "linear",
-							"easingArgs": []
-						}
-					]
-				},
-				"7de415a2-9fdd-e4b2-3455-c3bed72eb896": {
-					"name": "left_hand",
-					"type": "locator",
-					"keyframes": [
-						{
-							"channel": "commands",
-							"data_points": [
-								{
-									"x": "0",
-									"y": "0",
-									"z": "0",
-									"commands": "particle minecraft:flame ^ ^ ^",
-									"execute_condition": "",
-									"repeat": true,
-									"repeat_frequency": 5
-								}
-							],
-							"uuid": "923a41b4-3218-552c-06cb-582ead7ce8e8",
-							"time": 0,
-							"color": -1,
-							"interpolation": "linear",
-							"easing": "linear",
-							"easingArgs": []
-						}
-					]
-				},
-				"7747736f-85e2-338f-207e-53f8d3d2fa39": {
-					"name": "right_hand",
-					"type": "locator",
-					"keyframes": [
-						{
-							"channel": "commands",
-							"data_points": [
-								{
-									"x": "0",
-									"y": "0",
-									"z": "0",
-									"commands": "particle minecraft:flame ^ ^ ^",
-									"execute_condition": "",
-									"repeat": true,
-									"repeat_frequency": 1
-								}
-							],
-							"uuid": "fe357d53-5802-876b-c5d0-9eb8a19f573b",
-							"time": 0,
-							"color": -1,
-							"interpolation": "linear",
-							"easing": "linear",
-							"easingArgs": []
-						}
-					]
-				},
-				"3b35d1a9-befe-066e-60df-e1f3a5ec5a78": {
-					"name": "pig",
-					"type": "bone",
-					"keyframes": [
-						{
-							"channel": "position",
-							"data_points": [
-								{
-									"x": "16 - math.cos(q.life_time * 180) * 16",
-									"y": "16 + math.sin(q.life_time * 360) * 8",
-									"z": "-32"
-								}
-							],
-							"uuid": "08083fab-35c8-d8f0-44b0-000f720cf533",
-							"time": 0,
-							"color": -1,
-							"interpolation": "linear",
-							"easing": "linear",
-							"easingArgs": []
-						}
-					]
-				},
-				"effects": {
-					"name": "Effects",
-					"type": "effect",
-					"keyframes": [
-						{
-							"channel": "commands",
-							"data_points": [
-								{
-									"commands": "say hi",
-									"execute_condition": "",
-									"repeat": false,
-									"repeat_frequency": 1
-								}
-							],
-							"uuid": "e8054bec-122c-6f34-6781-a4a58d46a5a6",
-							"time": 0,
-							"color": -1,
-							"interpolation": "linear",
-							"easing": "linear",
-							"easingArgs": []
-						},
-						{
-							"channel": "commands",
-							"data_points": [
-								{
-									"commands": "say bye",
-									"execute_condition": "",
-									"repeat": false,
-									"repeat_frequency": 1
-								}
-							],
-							"uuid": "523673ac-dff1-1729-8064-4d0258e2de2a",
-							"time": 2,
-							"color": -1,
-							"interpolation": "linear",
-							"easing": "linear",
-							"easingArgs": []
-						}
-					]
-				}
-			}
-		},
-		{
 			"uuid": "bd510bbf-d10c-d05a-44cb-7f116627ad9f",
 			"name": "walk",
 			"loop": "loop",
 			"override": false,
 			"length": 1,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"saved": false,
 			"path": "",
 			"anim_time_update": "",
@@ -2058,6 +1875,182 @@
 							],
 							"uuid": "1baa095b-e941-62df-a215-698b50c93524",
 							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						}
+					]
+				}
+			}
+		},
+		{
+			"uuid": "baae8403-f2ab-6a7a-acb5-97d80bf8e31a",
+			"name": "wizard",
+			"loop": "loop",
+			"override": false,
+			"length": 2,
+			"snapping": 20,
+			"selected": true,
+			"saved": false,
+			"path": "",
+			"anim_time_update": "",
+			"blend_weight": "",
+			"start_delay": "",
+			"loop_delay": "0",
+			"excluded_nodes": [],
+			"animators": {
+				"b5b52d2c-097c-08df-6457-372fbae12445": {
+					"name": "left_arm",
+					"type": "bone",
+					"keyframes": [
+						{
+							"channel": "rotation",
+							"data_points": [
+								{
+									"x": "-90\n+ math.sin(q.life_time * 360) * 30",
+									"y": "-22.5\n+ math.cos(q.life_time * 360) * 30",
+									"z": "0"
+								}
+							],
+							"uuid": "df1fbae1-9b41-d0f4-5f6c-473441c294ff",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						}
+					]
+				},
+				"215d1b02-0e64-a794-1b88-a9c5a6d7541c": {
+					"name": "right_arm",
+					"type": "bone",
+					"keyframes": [
+						{
+							"channel": "rotation",
+							"data_points": [
+								{
+									"x": "-90\n+ math.sin(q.life_time * 360) * 30",
+									"y": "22.5\n- math.cos(q.life_time * 360) * 30",
+									"z": "0"
+								}
+							],
+							"uuid": "53b169b5-69f4-45a9-288a-de94ad2b3b90",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						}
+					]
+				},
+				"7de415a2-9fdd-e4b2-3455-c3bed72eb896": {
+					"name": "left_hand",
+					"type": "locator",
+					"keyframes": [
+						{
+							"channel": "commands",
+							"data_points": [
+								{
+									"x": "0",
+									"y": "0",
+									"z": "0",
+									"commands": "particle minecraft:flame ^ ^ ^",
+									"execute_condition": "",
+									"repeat": true,
+									"repeat_frequency": 5
+								}
+							],
+							"uuid": "923a41b4-3218-552c-06cb-582ead7ce8e8",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						}
+					]
+				},
+				"7747736f-85e2-338f-207e-53f8d3d2fa39": {
+					"name": "right_hand",
+					"type": "locator",
+					"keyframes": [
+						{
+							"channel": "commands",
+							"data_points": [
+								{
+									"x": "0",
+									"y": "0",
+									"z": "0",
+									"commands": "particle minecraft:flame ^ ^ ^",
+									"execute_condition": "",
+									"repeat": true,
+									"repeat_frequency": 1
+								}
+							],
+							"uuid": "fe357d53-5802-876b-c5d0-9eb8a19f573b",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						}
+					]
+				},
+				"3b35d1a9-befe-066e-60df-e1f3a5ec5a78": {
+					"name": "pig",
+					"type": "bone",
+					"keyframes": [
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "16 - math.cos(q.life_time * 180) * 16",
+									"y": "16 + math.sin(q.life_time * 360) * 8",
+									"z": "-32"
+								}
+							],
+							"uuid": "08083fab-35c8-d8f0-44b0-000f720cf533",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						}
+					]
+				},
+				"effects": {
+					"name": "Effects",
+					"type": "effect",
+					"keyframes": [
+						{
+							"channel": "commands",
+							"data_points": [
+								{
+									"commands": "say hi",
+									"execute_condition": "",
+									"repeat": false,
+									"repeat_frequency": 1
+								}
+							],
+							"uuid": "e8054bec-122c-6f34-6781-a4a58d46a5a6",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						},
+						{
+							"channel": "commands",
+							"data_points": [
+								{
+									"commands": "say bye",
+									"execute_condition": "",
+									"repeat": false,
+									"repeat_frequency": 1
+								}
+							],
+							"uuid": "523673ac-dff1-1729-8064-4d0258e2de2a",
+							"time": 2,
 							"color": -1,
 							"interpolation": "linear",
 							"easing": "linear",
