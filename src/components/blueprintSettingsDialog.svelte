@@ -5,7 +5,6 @@
 	import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
-	import MultiSelect from './dialogItems/multiSelect.svelte'
 
 	import Checkbox from './dialogItems/checkbox.svelte'
 	import CodeInput from './dialogItems/codeInput.svelte'
@@ -43,7 +42,7 @@
 	export let enablePluginMode: Valuable<boolean>
 	export let resourcePackExportMode: Valuable<string>
 	export let dataPackExportMode: Valuable<string>
-	export let targetMinecraftVersions: Valuable<string[]>
+	export let targetMinecraftVersion: Valuable<string>
 	// Bounding Box
 	export let showBoundingBox: Valuable<boolean>
 	export let autoBoundingBox: Valuable<boolean>
@@ -71,13 +70,12 @@
 
 	const requiresDisplayItem = new Valuable(false)
 	$: {
-		$requiresDisplayItem = $targetMinecraftVersions.some(version => {
-			// If any of the selected versions is older than 1.20.5, display item is required.
-			return compareVersions('1.20.5', version)
-		})
+		$requiresDisplayItem = compareVersions('1.21.2', $targetMinecraftVersion)
 	}
 
-	const TARGETABLE_VERSIONS = Object.keys(mcbFiles).map(v => ({ label: v, value: v }))
+	const TARGETABLE_VERSIONS = Object.fromEntries(
+		Object.entries(mcbFiles).map(([key]) => [key, key])
+	)
 
 	function exportNamespaceChecker(value: string): { type: string; message: string } {
 		if (value === '') {
@@ -569,12 +567,12 @@
 			valueChecker={jsonFileChecker}
 		/>
 	{:else}
-		<MultiSelect
-			label={translate('dialog.blueprint_settings.target_minecraft_versions.title')}
-			tooltip={translate('dialog.blueprint_settings.target_minecraft_versions.description')}
+		<Select
+			label={translate('dialog.blueprint_settings.target_minecraft_version.title')}
+			tooltip={translate('dialog.blueprint_settings.target_minecraft_version.description')}
 			options={TARGETABLE_VERSIONS}
-			defaultValue={[TARGETABLE_VERSIONS[0]]}
-			bind:value={targetMinecraftVersions}
+			defaultOption={Object.keys(TARGETABLE_VERSIONS).at(-1) ?? '1.20.4'}
+			bind:value={targetMinecraftVersion}
 		/>
 
 		<Select

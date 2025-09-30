@@ -12,7 +12,7 @@ export const defaultValues = {
 	enable_plugin_mode: false,
 	resource_pack_export_mode: 'raw' as ExportMode,
 	data_pack_export_mode: 'raw' as ExportMode,
-	target_minecraft_versions: ['1.21.4'] as MinecraftVersion[],
+	target_minecraft_version: '1.21.5' as MinecraftVersion,
 	// Resource Pack Settings
 	display_item: 'minecraft:white_dye',
 	custom_model_data_offset: 0,

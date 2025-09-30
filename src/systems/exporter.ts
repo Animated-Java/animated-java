@@ -1,10 +1,10 @@
-import { checkTargetVersionsMeetRequirement, saveBlueprint } from '../blueprintFormat'
+import { checkTargetVersionMeetsRequirement, saveBlueprint } from '../blueprintFormat'
 import { blueprintSettingErrors } from '../blueprintSettings'
 import { openBlueprintSettingsDialog } from '../interface/dialog/blueprintSettings'
 import { PROGRESS_DESCRIPTION, openExportProgressDialog } from '../interface/dialog/exportProgress'
 import { openUnexpectedErrorDialog } from '../interface/dialog/unexpectedError'
 import { resolvePath } from '../util/fileUtil'
-import { isResourcePackPath, sortMCVersions } from '../util/minecraftUtil'
+import { isResourcePackPath } from '../util/minecraftUtil'
 import { translate } from '../util/translation'
 import { Variant } from '../variants'
 import { hashAnimations, renderProjectAnimations } from './animationRenderer'
@@ -116,7 +116,7 @@ async function actuallyExportProject(forceSave = true) {
 		const animationHash = hashAnimations(animations)
 
 		// Always run the resource pack compiler because it calculates the custom model data.
-		await resourcepackCompiler(aj.target_minecraft_versions, {
+		await resourcepackCompiler([aj.target_minecraft_version], {
 			rig,
 			displayItemPath,
 			resourcePackFolder,
@@ -134,7 +134,7 @@ async function actuallyExportProject(forceSave = true) {
 		// 	})
 		// } else {
 		if (aj.data_pack_export_mode !== 'none') {
-			await compileDataPack(aj.target_minecraft_versions, {
+			await compileDataPack([aj.target_minecraft_version], {
 				rig,
 				animations,
 				dataPackFolder,
@@ -174,7 +174,7 @@ export async function exportProject(forceSave = true) {
 		Blockbench.showMessageBox({
 			title: translate('misc.failed_to_export.title'),
 			message: translate(
-				checkTargetVersionsMeetRequirement('1.21.4')
+				checkTargetVersionMeetsRequirement('1.21.4')
 					? 'misc.failed_to_export.invalid_rotation.message_post_1_21_4'
 					: 'misc.failed_to_export.invalid_rotation.message'
 			),

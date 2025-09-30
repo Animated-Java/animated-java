@@ -681,16 +681,15 @@ export function saveBlueprint() {
 	BLUEPRINT_CODEC.write(BLUEPRINT_CODEC.compile(), Project.save_path)
 }
 
-export function checkTargetVersionsMeetRequirement(version: string): boolean {
-	return !!Project?.animated_java.target_minecraft_versions.every(
-		v => !compareVersions(version, v)
-	)
+export function checkTargetVersionMeetsRequirement(version: string): boolean {
+	// true if target version is >= version
+	return !compareVersions(version, Project!.animated_java.target_minecraft_version)
 }
 
 export function shouldEnableRotationLock(): boolean {
 	if (!isCurrentFormat()) return false
 
-	if (checkTargetVersionsMeetRequirement('1.21.4')) {
+	if (checkTargetVersionMeetsRequirement('1.21.4')) {
 		return false
 	}
 

@@ -4,6 +4,7 @@ import { type IBlueprintFormatJSON, getDefaultProjectSettings } from '../bluepri
 import { PACKAGE } from '../constants'
 import { openUnexpectedErrorDialog } from '../interface/dialog/unexpectedError'
 import { BoneConfig } from '../nodeConfigs'
+import { MinecraftVersion } from './global'
 
 export function process(model: any): any {
 	console.log('Running MDFU...', JSON.parse(JSON.stringify(model)))
@@ -52,11 +53,14 @@ export function process(model: any): any {
 		// v1.6.5
 		if (compareVersions('1.6.5', model.meta.format_version))
 			model = updateModelTo1_6_5(model as IBlueprintFormatJSON)
+		// v1.8.0
+		if (compareVersions('1.8.0', model.meta.format_version))
+			model = updateModelTo1_8_0(model as IBlueprintFormatJSON)
 
 		console.groupEnd()
 
 		model.meta.format_version = PACKAGE.version
-		console.log('Upgrade complete')
+		console.log('Upgrade complete', JSON.parse(JSON.stringify(model)))
 		return model
 	} catch (e: any) {
 		openUnexpectedErrorDialog(e as Error)
@@ -513,10 +517,26 @@ function updateModelTo1_6_5(model: IBlueprintFormatJSON): IBlueprintFormatJSON {
 	console.log('Processing model format 1.6.5', JSON.parse(JSON.stringify(model)))
 
 	// Update target_minecraft_version to an array if it's a string
-	if (typeof model.blueprint_settings?.target_minecraft_versions === 'string') {
-		model.blueprint_settings.target_minecraft_versions = [
-			model.blueprint_settings.target_minecraft_versions,
+	if (typeof model.blueprint_settings?.target_minecraft_version === 'string') {
+		// @ts-expect-error
+		model.blueprint_settings.target_minecraft_version = [
+			model.blueprint_settings.target_minecraft_version,
 		]
+	}
+
+	return model
+}
+
+// region v1.8.0
+function updateModelTo1_8_0(model: any): IBlueprintFormatJSON {
+	console.log('Processing model format 1.8.0', JSON.parse(JSON.stringify(model)))
+
+	// Update target_minecraft_version to an array if it's a string
+	if (Array.isArray(model.blueprint_settings?.target_minecraft_versions)) {
+		model.blueprint_settings.target_minecraft_version =
+			(model.blueprint_settings.target_minecraft_versions.at(0) as MinecraftVersion) ??
+			'1.21.5'
+		delete model.blueprint_settings.target_minecraft_versions
 	}
 
 	return model

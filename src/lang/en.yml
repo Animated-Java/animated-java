@@ -105,12 +105,8 @@ animated_java.dialog.blueprint_settings.auto_bounding_box.description: |-
 animated_java.dialog.blueprint_settings.bounding_box.title: Bounding Box
 animated_java.dialog.blueprint_settings.bounding_box.description: Determines the culling box of the model. The model will stop rendering when this box is off-screen.
 
-animated_java.dialog.blueprint_settings.target_minecraft_versions.title: Target Minecraft Versions
-animated_java.dialog.blueprint_settings.target_minecraft_versions.description: The versions of Minecraft to target when exporting the project. This will determine the format of the exported Resource Pack and Data Pack.
-animated_java.dialog.blueprint_settings.target_minecraft_versions.warning.multiple_versions: |-
-  Selecting multiple target versions will multiply the size of the exported Data Pack by the number of versions selected.
-  E.g. Selecting two versions will double the size of the exported Resource and Data Packs.
-  This will be improved in a future update.
+animated_java.dialog.blueprint_settings.target_minecraft_version.title: Target Minecraft Version
+animated_java.dialog.blueprint_settings.target_minecraft_version.description: The version of Minecraft to target when exporting the project. This will determine the format of the exported Resource Pack and Data Pack.
 
 # Resource Pack Settings
 animated_java.dialog.blueprint_settings.resource_pack_settings.title: Resource Pack Settings

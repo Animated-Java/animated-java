@@ -1,5 +1,5 @@
 import { translate } from 'src/util/translation'
-import { checkTargetVersionsMeetRequirement, isCurrentFormat } from '../blueprintFormat'
+import { checkTargetVersionMeetsRequirement, isCurrentFormat } from '../blueprintFormat'
 import { PACKAGE } from '../constants'
 import { isCubeValid } from '../systems/util'
 import { createBlockbenchMod, createPropertySubscribable } from '../util/moddingTools'
@@ -25,7 +25,7 @@ function showToastNotification() {
 	if (!toastNotification) {
 		toastNotification = Blockbench.showToastNotification({
 			text: translate(
-				checkTargetVersionsMeetRequirement('1.21.4')
+				checkTargetVersionMeetsRequirement('1.21.4')
 					? 'toast.invalid_rotations_post_1_21_4'
 					: 'toast.invalid_rotations'
 			),
@@ -63,7 +63,7 @@ createBlockbenchMod(
 						break
 					}
 					case '1.21.4+': {
-						if (checkTargetVersionsMeetRequirement('1.21.4')) {
+						if (checkTargetVersionMeetsRequirement('1.21.4')) {
 							updateCubeValidity(cube, true)
 							break
 						}
