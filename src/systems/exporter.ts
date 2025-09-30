@@ -70,11 +70,6 @@ async function actuallyExportProject(forceSave = true) {
 			}
 		}
 
-		// Sort target versions
-		console.log('Target Minecraft Versions', aj.target_minecraft_versions)
-		aj.target_minecraft_versions = sortMCVersions(aj.target_minecraft_versions)
-		console.log('Sorted Target Minecraft Versions', aj.target_minecraft_versions)
-
 		const {
 			resourcePackFolder,
 			dataPackFolder,

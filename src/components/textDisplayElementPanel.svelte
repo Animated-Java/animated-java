@@ -127,8 +127,8 @@
 >
 	<div class="content codejar-container" on:keydown={onKeydown}>
 		<CodeJar
-			syntax="json"
 			bind:element={codeJarElement}
+			syntax="snbtTextComponent"
 			{highlight}
 			bind:value={$text}
 			on:change={() => forceNoWrap()}

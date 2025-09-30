@@ -14,6 +14,71 @@ injectSvelteCompomponentMod({
 	},
 })
 
+type Grammar = ReturnType<typeof Prism.languages.extend>
+type GrammarValue = NonNullable<Grammar['property']>
+
+function addPrismSyntaxForSnbtTextComponents() {
+	const quotes: GrammarValue = {
+		pattern: /^['"]|['"]$/,
+		alias: 'quotation',
+	}
+
+	Prism.languages.snbtTextComponent = Prism.languages.extend('json', {
+		punctuation: /[,:]/,
+		brackets: {
+			pattern: /[{}[\]]/g,
+		},
+		property: [
+			{
+				pattern: /('|")?\w+\1\s*(?=\s*:)/,
+				inside: {
+					punctuation: quotes,
+				},
+			},
+		],
+		string: [
+			{
+				pattern: /("|')(?:\\(?:\r\n?|\n|.)|(?!\1)[^\\\r\n])*\1/,
+				greedy: true,
+				inside: {
+					punctuation: quotes,
+					'named-unicode-escape-sequence': {
+						pattern: /\\N\{ *[\w ]+ *\}/,
+						alias: 'escape-sequence',
+						inside: {
+							constant: {
+								pattern: /(\\N\{ *)[\w ]+?(?= *\})/,
+								lookbehind: true,
+							},
+						},
+					},
+					'unicode-escape-sequence': {
+						pattern: /\\(?:x[\da-fA-F]{2}|u[\da-fA-F]{4}|U[\da-fA-F]{8})/,
+						alias: 'escape-sequence',
+						inside: {
+							constant: { pattern: /(?:[\da-fA-F]+)/ },
+						},
+					},
+					'escape-sequence': {
+						pattern: /\\(?:n|s|t|b|f|r|'|"|\\)/,
+					},
+				},
+			},
+			{
+				pattern: /([:,]\s*)\b(?!true|false)\w+\b/i,
+				inside: { punctuation: quotes },
+				lookbehind: true,
+			},
+		],
+		boolean: {
+			pattern: /\b(?:true|false|0b|1b)\b/i,
+		},
+		number: /[-]?(?:\b\d+(?:\.\d*)?|\B\.\d+)(?:[eE][+-]?\d+\b)?/,
+	})
+}
+
+addPrismSyntaxForSnbtTextComponents()
+
 export const TEXT_DISPLAY_WIDTH_SLIDER = new NumSlider(
 	`${PACKAGE.name}:textDisplayLineWidthSlider`,
 	{

@@ -33,7 +33,9 @@ import { VanillaBlockDisplay, debugBlockState, debugBlocks } from './outliner/va
 import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
 import { cleanupExportedFiles } from './systems/cleaner'
 import mcbFiles from './systems/datapackCompiler/mcbFiles'
+import TELLRAW from './systems/datapackCompiler/tellraw'
 import { exportProject } from './systems/exporter'
+import { JsonText } from './systems/jsonText'
 import * as assetManager from './systems/minecraft/assetManager'
 import { getLatestVersionClientDownloadUrl } from './systems/minecraft/assetManager'
 import * as blockModelManager from './systems/minecraft/blockModelManager'
@@ -99,6 +101,16 @@ const AnimatedJavaApi = {
 		openChangelogDialog,
 		checkForIncompatabilities,
 		toSmallCharacters: toSmallCaps,
+		printMinecraftFontSheet: () => {
+			const fontJson = AnimatedJava.API.assetManager.getJSONAsset(
+				'assets/minecraft/font/include/default.json'
+			)
+			return fontJson.providers[0].chars.map(
+				(characters: string, i: number) => `${i}: ` + characters.split('').join(' ')
+			)
+		},
+		TELLRAW,
+		JsonText,
 	},
 }
 window.AnimatedJava = AnimatedJavaApi

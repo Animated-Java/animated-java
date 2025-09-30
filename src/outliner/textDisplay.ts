@@ -6,10 +6,11 @@ import {
 import { PACKAGE } from '../constants'
 import { createAction, createBlockbenchMod } from '../util/moddingTools'
 // import * as MinecraftFull from '../assets/MinecraftFull.json'
+import { JsonParserError } from 'src/systems/jsonText/parser'
 import { TEXT_DISPLAY_CONFIG_ACTION } from '../interface/dialog/textDisplayConfig'
 import { TextDisplayConfig } from '../nodeConfigs'
+import { JsonText } from '../systems/jsonText'
 import { getVanillaFont } from '../systems/minecraft/fontManager'
-import { JsonText } from '../systems/minecraft/jsonText'
 import { events } from '../util/events'
 import { Valuable } from '../util/stores'
 import { translate } from '../util/translation'
@@ -56,19 +57,13 @@ export class TextDisplay extends ResizableOutlinerElement {
 	public ready = false
 	public textError = new Valuable('')
 
-	private _updating = false
+	private _isUpdating = false
 	private _text = new Valuable('Hello World!')
-	private _newText: string | undefined
 	private _lineWidth = new Valuable(200)
-	private _newLineWidth: number | undefined
 	private _backgroundColor = new Valuable('#000000')
-	private _newBackgroundColor: string | undefined
 	private _backgroundAlpha = new Valuable(0.25)
-	private _newBackgroundAlpha: number | undefined
 	private _shadow = new Valuable(false)
-	private _newShadow: boolean | undefined
 	private _align = new Valuable<Alignment>('center')
-	private _newAlign: Alignment | undefined
 	public seeThrough = false
 
 	constructor(data: TextDisplayOptions, uuid = guid()) {
@@ -92,30 +87,12 @@ export class TextDisplay extends ResizableOutlinerElement {
 
 		this.sanitizeName()
 
-		this._text.subscribe(v => {
-			this._newText = v
-			void this.updateText()
-		})
-		this._lineWidth.subscribe(v => {
-			this._newLineWidth = v
-			void this.updateText()
-		})
-		this._backgroundColor.subscribe(v => {
-			this._newBackgroundColor = v
-			void this.updateText()
-		})
-		this._backgroundAlpha.subscribe(v => {
-			this._newBackgroundAlpha = v
-			void this.updateText()
-		})
-		this._shadow.subscribe(v => {
-			this._newShadow = v
-			void this.updateText()
-		})
-		this._align.subscribe(v => {
-			this._newAlign = v
-			void this.updateText()
-		})
+		this._text.subscribe(() => this.updateText())
+		this._lineWidth.subscribe(() => this.updateText())
+		this._backgroundColor.subscribe(() => this.updateText())
+		this._backgroundAlpha.subscribe(() => this.updateText())
+		this._shadow.subscribe(() => this.updateText())
+		this._align.subscribe(() => this.updateText())
 	}
 
 	public sanitizeName(): string {
@@ -252,38 +229,40 @@ export class TextDisplay extends ResizableOutlinerElement {
 	}
 
 	async updateText() {
-		if (this._updating) return
-		this._updating = true
+		if (this._isUpdating) return
+		this._isUpdating = true
+
+		if (Project?.loadingPromises) {
+			// Wait to render text until after the project is done loading
+			await Promise.all(Project?.loadingPromises)
+		}
+
 		let latestMesh: THREE.Mesh | undefined
-		while (
-			this._newText !== undefined ||
-			this._newLineWidth !== undefined ||
-			this._newBackgroundColor !== undefined ||
-			this._newBackgroundAlpha !== undefined ||
-			this._newShadow !== undefined ||
-			this._newAlign !== undefined
-		) {
+		while (this._isUpdating) {
 			let text: JsonText | undefined
 			this.textError.set('')
 			try {
-				text = JsonText.fromString(this.text)
-				console.log(text)
+				text = JsonText.fromString(
+					this.text,
+					Project!.animated_java.target_minecraft_version
+				)
+				console.log('Text updated:', text)
 			} catch (e: any) {
 				console.error(e)
-				this.textError.set(e.message as string)
-				this._updating = false
+				if (e instanceof JsonParserError) {
+					this.textError.set(e.getOriginErrorMessage())
+				} else {
+					this.textError.set(e.message as string)
+				}
 				text = new JsonText({ text: 'Invalid JSON Text!', color: 'red' })
 			}
-			this._newText = undefined
-			this._newLineWidth = undefined
-			this._newBackgroundColor = undefined
-			this._newBackgroundAlpha = undefined
-			this._newShadow = undefined
-			this._newAlign = undefined
-			if (text === undefined) continue
+			this._isUpdating = false
+			if (text === undefined) {
+				console.warn('Text is undefined, using fallback text')
+				continue
+			}
 			latestMesh = await this.setText(text)
 		}
-		this._updating = false
 		return latestMesh
 	}
 

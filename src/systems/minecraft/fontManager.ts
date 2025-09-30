@@ -5,88 +5,95 @@ import { mergeGeometries } from '../../util/bufferGeometryUtils'
 import { events } from '../../util/events'
 import { getPathFromResourceLocation } from '../../util/minecraftUtil'
 import { UnicodeString } from '../../util/unicodeString'
+import { COLOR_MAP, ComponentStyle, JsonText } from '../jsonText'
 import * as assets from './assetManager'
-import { COLOR_MAP, JsonText } from './jsonText'
 import {
 	computeTextWrapping,
 	getComponentWords,
 	type IComponentWord,
 	type IStyleSpan,
-	type StyleRecord,
 } from './textWrapping'
 
-interface IFontProviderBitmap {
-	type: 'bitmap'
-	file: string
-	height?: number
-	// FIXME This isn't actually used for anything yet...
-	ascent: number
-	chars: string[]
-}
+namespace MinecraftJson {
+	export interface FontProviderBitmap {
+		type: 'bitmap'
+		file: string
+		height?: number
+		ascent: number
+		chars: string[]
+	}
 
-interface IFontProviderReference {
-	type: 'reference'
-	id: string
-	filter?: {
-		uniform?: boolean
+	export interface FontProviderReference {
+		type: 'reference'
+		id: string
+		filter?: {
+			uniform?: boolean
+		}
+	}
+
+	export interface FontProviderSpace {
+		type: 'space'
+		advances: Record<string, number>
+	}
+
+	export type FontProvider = FontProviderBitmap | FontProviderReference | FontProviderSpace
+
+	export interface Font {
+		providers: FontProvider[]
 	}
 }
 
-interface IFontProviderSpace {
-	type: 'space'
-	advances: Record<string, number>
-}
-
-type IFontProvider = IFontProviderBitmap | IFontProviderReference | IFontProviderSpace
-
-interface IFont {
-	providers: IFontProvider[]
-}
-
-interface ICachedBitmapChar {
+interface CachedBitmapChar {
 	type: 'bitmap'
 	ascent: number
 	width: number
 	atlas: THREE.Texture
-	pixelUV: [number, number, number, number]
-	uv: [number, number, number, number]
+	bitmapUV: {
+		x: number
+		y: number
+		width: number
+		height: number
+	}
 }
 
-interface ICachedSpaceChar {
+interface CachedSpaceChar {
 	type: 'space'
 	width: number
 }
 
-type ICachedChar = ICachedBitmapChar | ICachedSpaceChar
+type CachedChar = CachedBitmapChar | CachedSpaceChar
 
-type ICachedCharMesh = {
+type CachedCharMesh = {
 	geo?: THREE.BufferGeometry
 	width: number
 }
 
-class FontProvider {
+const MISSING_CHARACTER_TEXTURE = new THREE.TextureLoader().load(MissingCharacter)
+function createMissingCharacter(): CachedBitmapChar {
+	return {
+		type: 'bitmap',
+		ascent: 7,
+		width: 6,
+		atlas: MISSING_CHARACTER_TEXTURE,
+		bitmapUV: { x: 0, y: 0, width: 8, height: 8 },
+	}
+}
+
+abstract class FontProvider {
 	public type: 'bitmap' | 'reference' | 'space'
 	public loaded = false
 
-	constructor(providerJSON: IFontProvider) {
+	constructor(providerJSON: MinecraftJson.FontProvider) {
 		this.type = providerJSON.type
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await
-	async load() {
-		if (this.loaded) return this
-		this.loaded = true
-		return this
-	}
+	abstract load(): Promise<this> | this
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	getChar(_char: string, top = true): ICachedChar | undefined {
-		return undefined
-	}
+	abstract getChar(char: string): CachedChar | undefined
 
 	static fromAssetPath(assetPath: string) {
 		if (!assetPath.endsWith('.json')) assetPath += '.json'
-		const providerJSON = assets.getJSONAsset(assetPath) as IFontProvider
+		const providerJSON = assets.getJSONAsset(assetPath) as MinecraftJson.FontProvider
 		switch (providerJSON.type) {
 			case 'bitmap':
 				return new BitmapFontProvider(providerJSON)
@@ -105,7 +112,7 @@ class FontProvider {
 class ReferenceFontProvider extends FontProvider {
 	public reference: MinecraftFont
 
-	constructor(providerJSON: IFontProviderReference) {
+	constructor(providerJSON: MinecraftJson.FontProviderReference) {
 		super(providerJSON)
 		const path = getPathFromResourceLocation(providerJSON.id, 'font')
 		this.reference = new MinecraftFont(providerJSON.id, path + '.json')
@@ -118,20 +125,30 @@ class ReferenceFontProvider extends FontProvider {
 		return this
 	}
 
-	getChar(char: string, top = true) {
-		return this.reference.getChar(char, top)
+	getChar(char: string): CachedChar | undefined {
+		const cached = this.reference.getChar(char)
+		if (cached.type === 'bitmap' && cached.atlas === MISSING_CHARACTER_TEXTURE) {
+			return undefined
+		}
+		return cached
 	}
 }
 
 class SpaceFontProvider extends FontProvider {
 	public advances: Record<string, number>
 
-	constructor(providerJSON: IFontProviderSpace) {
+	constructor(providerJSON: MinecraftJson.FontProviderSpace) {
 		super(providerJSON)
 		this.advances = providerJSON.advances
 	}
 
-	getChar(char: string): ICachedChar | undefined {
+	load() {
+		if (this.loaded) return this
+		this.loaded = true
+		return this
+	}
+
+	getChar(char: string): CachedChar | undefined {
 		if (this.advances[char] !== undefined) {
 			return {
 				type: 'space',
@@ -151,9 +168,9 @@ class BitmapFontProvider extends FontProvider {
 	public atlas: THREE.Texture = THREE.Texture.DEFAULT_IMAGE
 	public canvas: HTMLCanvasElement = document.createElement('canvas')
 
-	private charCache = new Map<string, ICachedChar>()
+	private charCache = new Map<string, CachedChar>()
 
-	constructor(providerJSON: IFontProviderBitmap) {
+	constructor(providerJSON: MinecraftJson.FontProviderBitmap) {
 		super(providerJSON)
 		this.type = providerJSON.type
 		this.bitmapPath = getPathFromResourceLocation(providerJSON.file, 'textures')
@@ -182,7 +199,7 @@ class BitmapFontProvider extends FontProvider {
 		return this
 	}
 
-	private getCharIndex(char: string): [number, number] {
+	private getCharIndex(char: string): ArrayVector2 {
 		for (const row of this.chars) {
 			if (row.includes(char)) {
 				return [this.chars.indexOf(row), row.indexOf(char)]
@@ -191,69 +208,70 @@ class BitmapFontProvider extends FontProvider {
 		return [-1, -1]
 	}
 
-	getChar(char: string) {
-		if (!this.charCache.has(char)) {
-			const charPos = this.getCharIndex(char)
-			if (charPos[0] === -1) return
-			// Figure out how wide the character is by checking for the last non-transparent pixel
-			const startX = charPos[1] * this.charWidth
-			const startY = charPos[0] * this.charHeight
-			const data = this.canvas
-				.getContext('2d')!
-				.getImageData(startX, startY, this.charWidth, this.charHeight)
+	getChar(char: string): CachedChar | undefined {
+		const cached = this.charCache.get(char)
+		if (cached) return cached
 
-			let width = 0
-			for (let x = 0; x < this.charWidth; x++) {
-				for (let y = 0; y < this.charHeight; y++) {
-					const i = (y * this.charWidth + x) * 4
-					if (data.data[i + 3] > 0) {
-						width = x + 1
-						break
-					}
+		const charPos = this.getCharIndex(char)
+		if (charPos[0] === -1) return
+
+		const startX = charPos[1] * this.charWidth
+		const startY = charPos[0] * this.charHeight
+		const data = this.canvas
+			.getContext('2d')!
+			.getImageData(startX, startY, this.charWidth, this.charHeight)
+		// Figure out how wide the character is by checking for the last non-transparent pixel
+		let width = 0
+		for (let x = 0; x < this.charWidth; x++) {
+			for (let y = 0; y < this.charHeight; y++) {
+				const i = (y * this.charWidth + x) * 4
+				if (data.data[i + 3] > 0) {
+					width = x + 1
+					break
 				}
 			}
-
-			// eslint-disable-next-line @typescript-eslint/no-this-alias
-			const scope = this
-			this.charCache.set(char, {
-				type: 'bitmap',
-				ascent: this.ascent,
-				width: width + 1, // Add 1 pixel of spacing between characters
-				get atlas() {
-					return scope.atlas
-				},
-				pixelUV: [startX, startY, width, this.charHeight],
-				uv: [
-					startX / scope.atlas.image.width,
-					startY / scope.atlas.image.height,
-					width / scope.atlas.image.width,
-					this.charHeight / scope.atlas.image.height,
-				],
-			})
 		}
+
+		if (width === 0) {
+			// Character is completely transparent, treat it as missing
+			return createMissingCharacter()
+		}
+
+		this.charCache.set(char, {
+			type: 'bitmap',
+			ascent: this.ascent,
+			width: width + 1, // Add 1 pixel of spacing between characters
+			atlas: this.atlas,
+			bitmapUV: {
+				x: startX,
+				y: startY,
+				width,
+				height: this.charHeight,
+			},
+		})
+
 		return this.charCache.get(char)!
 	}
 }
 
 export class MinecraftFont {
 	static all: MinecraftFont[] = []
-	static missingCharacterAtlas = new THREE.TextureLoader().load(MissingCharacter)
 
 	public id: string
 	public providers: FontProvider[] = []
 	public fallback: MinecraftFont | undefined
 
-	private charCache = new Map<string, ICachedChar>()
+	private charCache = new Map<string, CachedChar>()
 	private loaded = false
-	private characterMeshCache = new Map<string, ICachedCharMesh>()
+	private characterMeshCache = new Map<string, CachedCharMesh>()
 
 	constructor(id: string, assetPath: string, fallback?: MinecraftFont) {
 		this.id = id
 		this.fallback = fallback
 
-		let fontJSON: IFont
+		let fontJSON: MinecraftJson.Font
 		try {
-			fontJSON = assets.getJSONAsset(assetPath) as IFont
+			fontJSON = assets.getJSONAsset(assetPath) as MinecraftJson.Font
 		} catch (error) {
 			console.error(`Failed to load font JSON from ${assetPath}:`, error)
 			throw error
@@ -296,52 +314,43 @@ export class MinecraftFont {
 		return this
 	}
 
-	/**
-	 * @returns The character data for the given character, or undefined if the character is not found.
-	 */
-	getChar(char: string, top = true): ICachedChar | undefined {
-		if (!this.charCache.has(char)) {
-			for (const provider of this.providers) {
-				const data = provider.getChar(char, false)
-				if (data) {
-					this.charCache.set(char, data)
-					return data
-				}
-			}
-			if (top) {
-				return {
-					type: 'bitmap',
-					ascent: 7,
-					width: 6,
-					atlas: MinecraftFont.missingCharacterAtlas,
-					pixelUV: [0, 0, 8, 8],
-					uv: [0, 0, (1 / 8) * 6, 1],
-				}
+	getChar(char: string): CachedChar {
+		const cached = this.charCache.get(char)
+		if (cached) return cached
+
+		for (const provider of this.providers) {
+			const data = provider.getChar(char)
+			if (data) {
+				this.charCache.set(char, data)
+				return data
 			}
 		}
-		return this.charCache.get(char)
+
+		return createMissingCharacter()
 	}
 
-	getTextWidth(text: UnicodeString, span: IStyleSpan) {
+	getTextWidth(text: UnicodeString, span?: IStyleSpan) {
 		let width = 0
-		const boldExtra = span.style.bold ? 1 : 0
+		const boldExtra = span?.style.bold ? 1 : 0
 		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		let font: MinecraftFont = this
-		if (span.style.font && span.style.font !== this.id) {
-			const newFont = MinecraftFont.getById(span.style.font as string)
+
+		if (span?.style.font && span.style.font !== this.id) {
+			const newFont = MinecraftFont.getById(span.style.font)
 			if (newFont) font = newFont
 		}
+
 		for (const char of text) {
 			if (char === '\n') break
 			const charData = font.getChar(char)
-			// TODO: Handle missing characters better
 			if (!charData) {
-				console.warn(`Missing character: '${char}'`)
+				console.warn('Encountered unknown character while getting text width:', char)
 				continue
 			}
 
 			width += charData.width + boldExtra
 		}
+
 		return Math.max(width, 0)
 	}
 
@@ -349,15 +358,17 @@ export class MinecraftFont {
 		let width = 0
 		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		let font: MinecraftFont = this
+
 		for (const span of word.styles) {
 			if (span.style.font && span.style.font !== this.id) {
-				const newFont = MinecraftFont.getById(span.style.font as string)
+				const newFont = MinecraftFont.getById(span.style.font)
 				if (newFont) font = newFont
 			}
 			const text = word.text.slice(span.start, span.end)
 			const textWidth = font.getTextWidth(text, span)
 			width += textWidth
 		}
+
 		return Math.max(width, 0)
 	}
 
@@ -379,10 +390,11 @@ export class MinecraftFont {
 		console.time('drawTextToMesh')
 		const mesh = new THREE.Mesh()
 
-		const words = getComponentWords(jsonText)
+		const words = getComponentWords(jsonText.toJSON())
 		const { lines, backgroundWidth } = await computeTextWrapping(words, maxLineWidth)
 		const width = backgroundWidth + 1
 		const height = lines.length * 10 + 1
+
 		// // Debug output
 		// const wordWidths = words.map(word => this.getWordWidth(word))
 		// for (const word of words) {
@@ -445,21 +457,29 @@ export class MinecraftFont {
 				default:
 					cursor.x = -width / 2 + 1
 			}
+
 			for (const word of line.words) {
 				for (const span of word.styles) {
 					const text = word.text.slice(span.start, span.end)
 					for (const char of text) {
-						const charMesh = this.generateCharMesh(char, span.style, shadow)
-						if (!charMesh) continue
+						const charMesh = this.getCharMesh(char, span.style, shadow)
+
+						if (!charMesh) {
+							console.error('Failed to get character mesh while drawing text:', char)
+							continue
+						}
+
 						if (charMesh.geo) {
 							const clone = charMesh.geo.clone()
 							clone.translate(cursor.x, cursor.y, 0)
 							geos.push(clone)
 						}
+
 						cursor.x += charMesh.width
 					}
 				}
 			}
+
 			cursor.y -= 10
 		}
 
@@ -496,23 +516,14 @@ export class MinecraftFont {
 		return { mesh, outline }
 	}
 
-	generateCharMesh(
-		char: string,
-		style: StyleRecord,
-		shadow?: boolean
-	): ICachedCharMesh | undefined {
+	getCharMesh(char: string, style: ComponentStyle, shadow?: boolean): CachedCharMesh {
 		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		let font: MinecraftFont = this
 		if (style.font) {
-			const newFont = MinecraftFont.getById(style.font as string)
+			const newFont = MinecraftFont.getById(style.font)
 			if (newFont) font = newFont
 		}
-		const charData = font.getChar(char)
-		if (!charData) {
-			// Technically this should never happen, but just in case...
-			console.error('Unknown character:', char)
-			return
-		}
+		let charData = font.getChar(char)
 
 		let color = new THREE.Color('#ffffff')
 		if (typeof style.color === 'string') {
@@ -531,103 +542,110 @@ export class MinecraftFont {
 
 		const boldExtra = style.bold ? 1 : 0
 
-		if (charData.type === 'bitmap') {
-			const hash = createHash('sha256')
-			hash.update(char)
-			hash.update(';' + color.getHexString())
-			if (shadow) hash.update('shadow')
-			if (style.bold) hash.update('bold')
-			if (style.italic) hash.update('italic')
-			if (style.underlined) hash.update('underlined')
-			if (style.strikethrough) hash.update('strikethrough')
-			if (style.shadow_color) hash.update(';' + shadowColor.getHexString())
-			if (style.font) hash.update(';' + font.id)
-			// if (style.obfuscated) hash.update('obfuscated')
-			const digest = hash.digest('hex')
+		const hash = createHash('sha256')
+		hash.update(char)
+		hash.update(';' + color.getHexString())
+		if (shadow) hash.update('shadow')
+		if (style.bold) hash.update('bold')
+		if (style.italic) hash.update('italic')
+		if (style.underlined) hash.update('underlined')
+		if (style.strikethrough) hash.update('strikethrough')
+		if (style.shadow_color) hash.update(';' + shadowColor.getHexString())
+		if (style.font) hash.update(';' + font.id)
+		const digest = hash.digest('hex')
 
-			let charMesh = this.characterMeshCache.get(digest)
+		let charMesh = this.characterMeshCache.get(digest)
 
-			if (charMesh === undefined) {
-				// If no mesh is found, create a new one
-				const canvas = document.createElement('canvas')
-				const ctx = canvas.getContext('2d', { willReadFrequently: true })!
-				canvas.width = charData.pixelUV[2]
-				canvas.height = charData.pixelUV[3]
-				ctx.imageSmoothingEnabled = false
-				ctx.clearRect(0, 0, canvas.width, canvas.height)
+		if (charMesh === undefined) {
+			const canvas = document.createElement('canvas')
+			if (charData.type === 'space') {
+				canvas.width = charData.width
+				canvas.height = 7
+			} else {
+				canvas.width = charData.bitmapUV.width
+				canvas.height = charData.bitmapUV.height
+			}
 
+			const ctx = canvas.getContext('2d', { willReadFrequently: true })!
+			ctx.imageSmoothingEnabled = false
+			ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+			if (charData.type !== 'space') {
 				ctx.drawImage(
-					charData.atlas.image as HTMLImageElement,
-					charData.pixelUV[0],
-					charData.pixelUV[1],
-					charData.pixelUV[2],
-					charData.pixelUV[3],
+					charData.atlas.image,
+					charData.bitmapUV.x,
+					charData.bitmapUV.y,
+					charData.bitmapUV.width,
+					charData.bitmapUV.height,
 					0,
 					0,
 					canvas.width,
 					canvas.height
 				)
-				const data = ctx.getImageData(0, 0, canvas.width, canvas.height)
+			}
 
-				const geo = new THREE.BufferGeometry()
-				let colors: number[] = []
-				let vertices: number[] = []
-				let indices: number[] = []
+			const data = ctx.getImageData(0, 0, canvas.width, canvas.height)
 
-				const createQuad = (x: number, y: number, w: number, h: number) => {
-					const vertIndex = vertices.length / 3
+			const geo = new THREE.BufferGeometry()
+			let colors: number[] = []
+			let vertices: number[] = []
+			let indices: number[] = []
+
+			const createQuad = (x: number, y: number, w: number, h: number) => {
+				const vertIndex = vertices.length / 3
+				// prettier-ignore
+				vertices.push(
+					x,     y,     0,
+					x + w, y,     0,
+					x + w, y + h, 0,
+					x,     y + h, 0
+				)
+				indices.push(
+					vertIndex,
+					vertIndex + 1,
+					vertIndex + 2,
+					vertIndex,
+					vertIndex + 2,
+					vertIndex + 3
+				)
+				// prettier-ignore
+				colors.push(
+					color.r, color.g, color.b,
+					color.r, color.g, color.b,
+					color.r, color.g, color.b,
+					color.r, color.g, color.b
+				)
+				if (shadow) {
+					const shadowVertIndex = vertices.length / 3
+					x += 1
+					y -= 1
+					const z = -0.01
 					// prettier-ignore
 					vertices.push(
-						x, y, 0,
-						x + w, y, 0,
-						x + w, y + h, 0,
-						x, y + h, 0
+						x,     y,     z,
+						x + w, y,     z,
+						x + w, y + h, z,
+						x,     y + h, z
 					)
 					indices.push(
-						vertIndex,
-						vertIndex + 1,
-						vertIndex + 2,
-						vertIndex,
-						vertIndex + 2,
-						vertIndex + 3
+						shadowVertIndex,
+						shadowVertIndex + 1,
+						shadowVertIndex + 2,
+						shadowVertIndex,
+						shadowVertIndex + 2,
+						shadowVertIndex + 3
 					)
 					// prettier-ignore
 					colors.push(
-						color.r, color.g, color.b,
-						color.r, color.g, color.b,
-						color.r, color.g, color.b,
-						color.r, color.g, color.b
+						shadowColor.r, shadowColor.g, shadowColor.b,
+						shadowColor.r, shadowColor.g, shadowColor.b,
+						shadowColor.r, shadowColor.g, shadowColor.b,
+						shadowColor.r, shadowColor.g, shadowColor.b
 					)
-					if (shadow) {
-						const shadowVertIndex = vertices.length / 3
-						x += 1
-						y -= 1
-						const z = -0.01
-						// prettier-ignore
-						vertices.push(
-							x, y, z,
-							x + w, y, z,
-							x + w, y + h, z,
-							x, y + h, z
-						)
-						indices.push(
-							shadowVertIndex,
-							shadowVertIndex + 1,
-							shadowVertIndex + 2,
-							shadowVertIndex,
-							shadowVertIndex + 2,
-							shadowVertIndex + 3
-						)
-						// prettier-ignore
-						colors.push(
-							shadowColor.r, shadowColor.g, shadowColor.b,
-							shadowColor.r, shadowColor.g, shadowColor.b,
-							shadowColor.r, shadowColor.g, shadowColor.b,
-							shadowColor.r, shadowColor.g, shadowColor.b
-						)
-					}
 				}
+			}
 
+			if (charData.type !== 'space') {
 				// Generate a quad for each pixel in the character
 				// This also attempts to make a single quad for each horizontal line of connected pixels
 				for (let y = 0; y < canvas.height; y++) {
@@ -650,54 +668,51 @@ export class MinecraftFont {
 						createQuad(canvas.width - width, ascent, width + boldExtra, 1)
 					}
 				}
+			}
 
-				geo.setIndex(indices)
-				geo.setAttribute(
-					'position',
-					new THREE.BufferAttribute(new Float32Array(vertices), 3)
-				)
-				geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(colors), 3))
+			geo.setIndex(indices)
+			geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), 3))
+			geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(colors), 3))
 
-				if (style.italic) {
-					geo.applyMatrix4(new THREE.Matrix4().makeShear(0, 0, 0.2, 0, 0, 0))
-					geo.translate(-1, 0, 0)
-				}
+			if (style.italic) {
+				geo.applyMatrix4(new THREE.Matrix4().makeShear(0, 0, 0.2, 0, 0, 0))
+				geo.translate(-1, 0, 0)
+			}
 
-				vertices = Array.from(geo.getAttribute('position').array)
-				colors = Array.from(geo.getAttribute('color').array)
-				indices = Array.from(geo.getIndex()!.array)
+			vertices = Array.from(geo.getAttribute('position').array)
+			colors = Array.from(geo.getAttribute('color').array)
+			indices = Array.from(geo.getIndex()!.array)
 
-				if (style.underlined) {
-					createQuad(-1, -1, canvas.width + 2, 1)
-				}
+			if (style.underlined) {
+				createQuad(-1, -1, canvas.width + 2, 1)
+			}
 
+			if (charData.type === 'space') {
 				if (style.strikethrough) {
-					const ascent = charData.ascent / 2 + 1
+					const ascent = 7 / 2
 					createQuad(-1, ascent, canvas.width + 2, 1)
 				}
-
-				geo.setIndex(indices)
-				geo.setAttribute(
-					'position',
-					new THREE.BufferAttribute(new Float32Array(vertices), 3)
-				)
-				geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(colors), 3))
-
-				geo.attributes.position.needsUpdate = true
-				geo.attributes.color.needsUpdate = true
-				charMesh = {
-					geo,
-					width: charData.width + boldExtra,
+			} else {
+				if (style.strikethrough) {
+					const ascent = charData.ascent / 2
+					createQuad(-1, ascent, canvas.width + 2, 1)
 				}
+			}
 
-				this.characterMeshCache.set(digest, charMesh)
+			geo.setIndex(indices)
+			geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), 3))
+			geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(colors), 3))
+
+			geo.attributes.position.needsUpdate = true
+			geo.attributes.color.needsUpdate = true
+			charMesh = {
+				geo,
+				width: charData.width + boldExtra,
 			}
-			return charMesh
-		} else {
-			return {
-				width: charData.width,
-			}
+
+			this.characterMeshCache.set(digest, charMesh)
 		}
+		return charMesh
 	}
 }
 

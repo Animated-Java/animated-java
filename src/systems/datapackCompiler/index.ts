@@ -1,12 +1,4 @@
-import {
-	NbtByte,
-	NbtCompound,
-	NbtFloat,
-	NbtInt,
-	NbtList,
-	NbtString,
-	NbtTag,
-} from 'deepslate/lib/nbt'
+import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/lib/nbt'
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
 import { BoneConfig, TextDisplayConfig } from '../../nodeConfigs'
 import { isFunctionTagPath } from '../../util/fileUtil'
@@ -17,7 +9,6 @@ import {
 	parseBlock,
 	parseDataPackPath,
 	parseResourceLocation,
-	toSmallCaps,
 } from '../../util/minecraftUtil'
 import { eulerFromQuaternion, floatToHex, roundTo, tinycolorToDecimal } from '../../util/misc'
 import { MSLimiter } from '../../util/msLimiter'
@@ -26,8 +17,8 @@ import type { IRenderedAnimation } from '../animationRenderer'
 import mcbFiles from '../datapackCompiler/mcbFiles'
 import { IntentionalExportError } from '../exporter'
 import { AJMeta, type MinecraftVersion, PackMeta, type PackMetaFormats } from '../global'
-import { JsonText } from '../minecraft/jsonText'
-import type { AnyRenderedNode, IRenderedRig, IRenderedVariant } from '../rigRenderer'
+import { JsonText } from '../jsonText'
+import type { AnyRenderedNode, IRenderedRig } from '../rigRenderer'
 import {
 	arrayToNbtFloatArray,
 	type ExportedFile,
@@ -37,6 +28,7 @@ import {
 } from '../util'
 import { compile } from './compiler'
 import { TAGS } from './tags'
+import TELLRAW from './tellraw'
 
 const BONE_TYPES = ['bone', 'text_display', 'item_display', 'block_display']
 
@@ -399,282 +391,6 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 	return new NbtList(tags.sort().map(v => new NbtString(v)))
 }
 
-namespace TELLRAW {
-	const TELLRAW_PREFIX = () =>
-		new JsonText([
-			{ text: '\n ', color: 'gray' },
-			{ text: 'ᴀɴɪᴍᴀᴛᴇᴅ ᴊᴀᴠᴀ', color: '#00aced' },
-			{ text: ' ' },
-			{
-				text: `\n (animated_java:${Project!.animated_java.export_namespace})`,
-				color: 'dark_gray',
-				italic: true,
-			},
-			{ text: '\n → ' },
-		])
-
-	const TELLRAW_SUFFIX = () => new JsonText(['\n'])
-
-	const TELLRAW_ERROR = (errorName: string, details: JsonText) =>
-		new JsonText([
-			TELLRAW_PREFIX(),
-			{ text: 'ᴇʀʀᴏʀ: ', color: 'red' },
-			{ text: errorName, color: 'red', underlined: true },
-			{ text: '\n\n ' },
-			[details],
-			TELLRAW_SUFFIX(),
-		])
-
-	const TELLRAW_LEARN_MORE_LINK = (url: string) =>
-		new JsonText([
-			'\n ',
-			{
-				text: 'Click here to learn more',
-				color: 'blue',
-				underlined: true,
-				italic: true,
-				clickEvent: { action: 'open_url', value: url },
-			},
-		])
-
-	export const RIG_OUTDATED = () =>
-		TELLRAW_ERROR(
-			'Outdated Rig Instance',
-			new JsonText([
-				{ text: 'The instance of ', color: 'red' },
-				{ text: Project!.animated_java.export_namespace, color: 'yellow' },
-				{ text: ' at ' },
-				{ text: '$(x), $(y), $(z)', color: 'yellow' },
-				{ text: ' was summoned using an older export of its Blueprint.' },
-				{ text: ' It should be removed and re-summoned to ensure it functions correctly.' },
-				{ text: '\n\n ≡ ', color: 'white' },
-				{
-					text: toSmallCaps('Teleport to Instance'),
-					clickEvent: {
-						action: 'suggest_command',
-						value: '/tp @s $(uuid)',
-					},
-					color: 'aqua',
-					underlined: true,
-				},
-				{ text: '\n ≡ ', color: 'white' },
-				{
-					text: toSmallCaps('Remove Instance'),
-					clickEvent: {
-						action: 'suggest_command',
-						value: `/execute as $(uuid) run function animated_java:${
-							Project!.animated_java.export_namespace
-						}/remove/this`,
-					},
-					color: 'aqua',
-					underlined: true,
-				},
-			])
-		)
-
-	export const RIG_OUTDATED_TEXT_DISPLAY = () =>
-		new JsonText([
-			{ text: '⚠ This rig instance is outdated! ', color: 'red' },
-			{ text: '\\n It should be removed and re-summoned to ensure it functions correctly.' },
-		])
-
-	export const FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR = (functionName: string) =>
-		TELLRAW_ERROR(
-			'Function Not Executed as Root Entity',
-			new JsonText([
-				{ text: '', color: 'red' },
-				{
-					text: 'This function',
-					color: 'yellow',
-					underlined: true,
-					hoverEvent: {
-						action: 'show_text',
-						contents: [{ text: functionName, color: 'yellow' }],
-					},
-				},
-				{ text: " must be executed as the rig's root entity.\n" },
-				TELLRAW_LEARN_MORE_LINK(
-					'https://animated-java.dev/docs/rigs/controlling-a-rig-instance'
-				),
-			])
-		)
-
-	export const INVALID_VARIANT = (variants: Record<string, IRenderedVariant>) =>
-		TELLRAW_ERROR(
-			'Invalid Variant',
-			new JsonText([
-				{ text: 'The variant ', color: 'red' },
-				{ nbt: 'args.variant', storage: 'aj:temp', color: 'yellow' },
-				{ text: ' does not exist.', color: 'red' },
-				'\n ',
-				{ text: ' ≡ ', color: 'white' },
-				{ text: 'Available Variants:', color: 'green' },
-				...Object.values(variants).map(
-					variant =>
-						new JsonText([
-							{ text: '\n ', color: 'gray' },
-							{ text: ' ' },
-							{ text: ' ' },
-							{ text: ' ' },
-							{ text: ' ● ' },
-							{ text: variant.name, color: 'yellow' },
-						])
-				),
-			])
-		)
-
-	export const FRAME_CANNOT_BE_NEGATIVE = () =>
-		TELLRAW_ERROR(
-			'Frame cannot be negative',
-			new JsonText([
-				{ text: 'frame', color: 'yellow' },
-				{ text: ' must be a non-negative integer.', color: 'red' },
-			])
-		)
-
-	export const INVALID_ANIMATION = (animations: IRenderedAnimation[]) =>
-		TELLRAW_ERROR(
-			'Invalid Animation',
-			new JsonText([
-				{ text: 'The animation ', color: 'red' },
-				{ nbt: 'args.animation', storage: 'aj:temp', color: 'yellow' },
-				{ text: ' does not exist.', color: 'red' },
-				'\n ',
-				{ text: ' ≡ ', color: 'white' },
-				{ text: 'Available Animations:', color: 'green' },
-				...animations.map(
-					anim =>
-						new JsonText([
-							{ text: '\n ', color: 'gray' },
-							{ text: ' ' },
-							{ text: ' ' },
-							{ text: ' ' },
-							{ text: ' ● ' },
-							{ text: anim.storage_name, color: 'yellow' },
-						])
-				),
-			])
-		)
-
-	export const NO_VARIANTS = () =>
-		TELLRAW_ERROR(
-			'No Variants',
-			new JsonText([
-				{
-					text: 'This Blueprint has no variants to switch between.',
-					color: 'red',
-				},
-			])
-		)
-
-	export const INVALID_VERSION = () =>
-		TELLRAW_ERROR(
-			'Invalid Minecraft Version',
-			new JsonText([
-				{
-					text: 'Attempted to load an Animated Java Data Pack that was exported for ',
-					color: 'red',
-				},
-				{
-					text: `Minecraft ${Project!.animated_java.target_minecraft_versions}`,
-					color: 'aqua',
-				},
-				{ text: ' in the wrong version!', color: 'red' },
-				{
-					text: '\n Please ensure that the data pack is loaded in the correct version, or that your Blueprint settings are configured to target the correct version(s) of Minecraft.',
-					color: 'red',
-				},
-			])
-		)
-
-	export const UNINSTALL = () =>
-		new JsonText([
-			TELLRAW_PREFIX(),
-			[
-				{ text: 'Successfully uninstalled ', color: 'green' },
-				{ text: Project!.animated_java.export_namespace, color: 'yellow' },
-				{ text: '!' },
-				{
-					text: '\n If you have exported multiple times, you may have to remove objectives from previous exports manually, as Animated Java only knows about the objectives from the most recent export.',
-					color: 'gray',
-					italic: true,
-				},
-			],
-			TELLRAW_SUFFIX(),
-		])
-
-	export const ARGUMENT_CANNOT_BE_EMPTY = (name: string) =>
-		TELLRAW_ERROR(
-			'Argument Cannot Be Empty',
-			new JsonText([
-				{ text: 'Argument ', color: 'red' },
-				{ text: name, color: 'yellow' },
-				{ text: ' cannot be an empty string.', color: 'red' },
-			])
-		)
-
-	export const LOCATOR_NOT_FOUND = () =>
-		TELLRAW_ERROR(
-			'Locator Not Found',
-			new JsonText([
-				{ text: 'Locator ', color: 'red' },
-				{ nbt: 'args.name', storage: 'aj:temp', color: 'aqua' },
-				{ text: ' not found!' },
-				{ text: '\n Please ensure that the name is spelled correctly.' },
-			])
-		)
-
-	export const LOCATOR_ENTITY_NOT_FOUND = () =>
-		TELLRAW_ERROR(
-			'Locator Not Found',
-			new JsonText([
-				{ text: 'Locator ', color: 'red' },
-				{ nbt: 'args.name', storage: 'aj:temp', color: 'aqua' },
-				{ text: ' does not exist!' },
-				{ text: '\n Please ensure that the name is spelled correctly, and ' },
-				{ text: '"Use Entity"', color: 'yellow' },
-				{ text: " is enabled in the locator's config." },
-			])
-		)
-
-	export const LOCATOR_COMMAND_FAILED_TO_EXECUTE = () =>
-		TELLRAW_ERROR(
-			'Failed to Execute Command as Locator',
-			new JsonText([
-				{ text: 'Failed to execute command ', color: 'red' },
-				{ nbt: 'args.command', storage: 'aj:temp', color: 'yellow' },
-				{ text: ' as Locator ' },
-				{ nbt: 'args.name', storage: 'aj:temp', color: 'aqua' },
-				{ text: '.' },
-				{ text: '\n Please ensure the command is valid.' },
-			])
-		)
-
-	export const CAMERA_ENTITY_NOT_FOUND = () =>
-		TELLRAW_ERROR(
-			'Camera Not Found',
-			new JsonText([
-				{ text: 'Camera ', color: 'red' },
-				{ nbt: 'args.name', storage: 'aj:temp', color: 'aqua' },
-				{ text: ' does not exist!' },
-				{ text: '\n Please ensure that its name is spelled correctly.' },
-			])
-		)
-
-	export const CAMERA_COMMAND_FAILED_TO_EXECUTE = () =>
-		TELLRAW_ERROR(
-			'Failed to Execute Command as Camera',
-			new JsonText([
-				{ text: 'Failed to execute command ', color: 'red' },
-				{ nbt: 'args.command', storage: 'aj:temp', color: 'yellow' },
-				{ text: ' as Camera ' },
-				{ nbt: 'args.name', storage: 'aj:temp', color: 'aqua' },
-				{ text: '.' },
-				{ text: '\n Please ensure the command is valid.' },
-			])
-		)
-}
-
 async function generateRootEntityPassengers(
 	version: MinecraftVersion,
 	rig: IRenderedRig,
@@ -843,7 +559,8 @@ async function generateRootEntityPassengers(
 							'text',
 							// String JSON text format
 							new NbtString(
-								node.text?.toString() ?? `{ "text": "Invalid Text Component" }`
+								node.text?.toString(version) ??
+									`{ "text": "Invalid Text Component" }`
 							)
 						)
 						break
@@ -851,8 +568,9 @@ async function generateRootEntityPassengers(
 						passenger.set(
 							'text',
 							// SNBT JSON text format
-							NbtTag.fromString(
-								node.text?.toString() ?? "{ text: 'Invalid Text Component' }"
+							// Hacky workaround for deepslate not supporting MC's new escape sequences.
+							new NbtString(
+								'$$$' + node.type + '_' + node.storage_name + '_text_placeholder$$$'
 							)
 						)
 						break
@@ -936,7 +654,16 @@ async function generateRootEntityPassengers(
 		passengers.add(passenger)
 	}
 
-	return passengers.toString()
+	let result = passengers.toString()
+
+	for (const display of Object.values(rig.nodes).filter(n => n.type === 'text_display')) {
+		result = result.replace(
+			'"$$$' + display.type + '_' + display.storage_name + '_text_placeholder$$$"',
+			display.text?.toString(version) ?? `{ "text": "Invalid Text Component" }`
+		)
+	}
+
+	return result
 }
 
 async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAnimation[]) {
@@ -1279,6 +1006,8 @@ const dataPackCompiler: DataPackCompiler = async ({
 	rigHash,
 	animationHash,
 }) => {
+	JsonText.defaultTargetVersion = version
+
 	const aj = Project!.animated_java
 	const is_static = animations.length === 0
 	const variables = {

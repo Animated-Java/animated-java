@@ -1,110 +1,53 @@
 import { UnicodeString } from '../../util/unicodeString'
+import { Component, ComponentStyle, CompositeComponent, JsonText } from '../jsonText'
 import { getVanillaFont } from './fontManager'
-import {
-	JsonText,
-	type JsonTextArray,
-	type JsonTextComponent,
-	type JsonTextObject,
-} from './jsonText'
-
-// @ts-ignore
-// import TestWorker from './textWrapping.worker.ts'
-// const WORKER: Worker = new TestWorker()
-// WORKER.onmessage = ({ data }) => {
-// 	console.log(data)
-// }
 
 // Jumpstarted by @IanSSenne (FetchBot) and refactored by @SnaveSutit to do line wrapping on JSON Text Components.
 // THANK U IAN <3 - SnaveSutit
-const STYLE_KEYS = [
-	'bold',
-	'italic',
-	'underlined',
-	'strikethrough',
-	'obfuscated',
-	'color',
-	'font',
-	'shadow_color',
-] as const
 
-export type StyleRecord = Partial<Record<(typeof STYLE_KEYS)[number], boolean | string>>
-function getStylesFromComponent(
-	component: JsonTextObject,
-	parent: StyleRecord = { color: 'white' }
-): StyleRecord {
-	for (const key of STYLE_KEYS) {
-		if (component[key]) {
-			parent[key] = component[key] as any
-		}
+function getText(component: string | CompositeComponent): UnicodeString {
+	if (typeof component === 'string') {
+		return new UnicodeString(component)
 	}
-	return parent
-}
 
-function getFirstItemStyle(input: JsonTextArray): StyleRecord {
-	let item = input.at(0)
-	if (Array.isArray(item)) {
-		return getFirstItemStyle(item)
-	} else if (item instanceof JsonText) {
-		item = item.toJSON() as JsonTextObject | JsonTextArray
-		if (Array.isArray(item)) return getFirstItemStyle(item)
-		else return getStylesFromComponent(item)
-	} else if (typeof item === 'object') {
-		return getStylesFromComponent(item)
-	}
-	return {}
-}
+	switch (true) {
+		case component.text !== undefined:
+			return new UnicodeString(component.text)
 
-function flattenTextComponent(input: JsonTextComponent): JsonTextObject[] {
-	const output: JsonTextObject[] = []
-	function flattenComponent(component: JsonTextComponent, parentStyle: StyleRecord = {}) {
-		if (Array.isArray(component)) {
-			// The items of an array inherit the first item's style
-			parentStyle = Object.assign({}, parentStyle, getFirstItemStyle(component))
-			for (const subcomponent of component) {
-				flattenComponent(subcomponent, parentStyle)
+		case component.translate !== undefined:
+			return new UnicodeString(`{${component.translate}}`)
+
+		case component.selector !== undefined:
+			return new UnicodeString(`{${component.selector}}`)
+
+		case component.score !== undefined:
+			return new UnicodeString(`{${component.score.name}:${component.score.objective}}`)
+
+		case component.keybind !== undefined:
+			return new UnicodeString(`{${component.keybind}}`)
+
+		case component.nbt !== undefined:
+			switch (true) {
+				case component.block !== undefined:
+					return new UnicodeString(`{${component.block}:${component.nbt}}`)
+
+				case component.entity !== undefined:
+					return new UnicodeString(`{${component.entity}:${component.nbt}}`)
+
+				case component.storage !== undefined:
+					return new UnicodeString(`{${component.storage}:${component.nbt}}`)
+
+				default:
+					return new UnicodeString(`{${component.nbt}}`)
 			}
-		} else if (typeof component === 'string') {
-			output.push(
-				Object.assign({}, parentStyle, {
-					text: component,
-				}) as JsonTextObject
-			)
-		} else if (component instanceof JsonText) {
-			flattenComponent(component.toJSON(), parentStyle)
-		} else if (typeof component === 'object') {
-			output.push(Object.assign({}, parentStyle, component, { extra: undefined }))
-			if (component.extra) {
-				const childStyles = getStylesFromComponent(component)
-				flattenComponent(component.extra, childStyles)
-			}
-		}
-	}
-	flattenComponent(input)
-	return output
-}
 
-function getText(component: JsonTextObject) {
-	if (typeof component === 'string') return new UnicodeString(component)
-	else if (component.text) return new UnicodeString(component.text)
-	else if (component.translate) return new UnicodeString(`{${component.translate}}`)
-	else if (component.selector) return new UnicodeString(`{${component.selector}}`)
-	else if (component.score) {
-		if (component.score.value) return new UnicodeString(`{${component.score.value}}`)
-		return new UnicodeString(`{${component.score.name}:${component.score.objective}}`)
-	} else if (component.keybind) return new UnicodeString(`{${component.keybind}}`)
-	else if (component.nbt) {
-		if (component.block) return new UnicodeString(`{${component.block}:${component.nbt}}`)
-		else if (component.entity)
-			return new UnicodeString(`{${component.entity}:${component.nbt}}`)
-		else if (component.storage)
-			return new UnicodeString(`{${component.storage}:${component.nbt}}`)
-		return new UnicodeString(`{${component.nbt}}`)
+		default:
+			return new UnicodeString('')
 	}
-	return new UnicodeString('')
 }
 
 export interface IStyleSpan {
-	style: StyleRecord
+	style: ComponentStyle
 	start: number
 	end: number
 }
@@ -123,45 +66,51 @@ interface IComponentLine {
 	words: IComponentWord[]
 	width: number
 }
+
+const defaultStyle: ComponentStyle = { color: 'white' }
 /**
  * Gets the words from a JSON Text Component, while keeping track of the styles applied to each word.
  *
  * WARNING: Word width is not calculated by this function.
  */
-export function getComponentWords(input: JsonTextComponent) {
-	console.time('getComponentWords')
-	const flattenedComponents = flattenTextComponent(input)
+export function getComponentWords(input: Component) {
+	const flattenedComponents = new JsonText(input).flatten()
 	if (!flattenedComponents.length) return []
 	const words: IComponentWord[] = []
+
 	let word: IComponentWord | undefined
-	let component: JsonTextObject | undefined = flattenedComponents.shift()
-	let componentText = getText(component!)
-	let style: IStyleSpan = {
-		style: getStylesFromComponent(component!),
+	let component = flattenedComponents.shift()
+	if (component === undefined) return words
+
+	let componentText = getText(component)
+	let span: IStyleSpan = {
+		style: JsonText.getComponentStyle(component, defaultStyle),
 		start: 0,
 		end: 0,
 	}
 
-	while (component) {
+	console.time('getComponentWords')
+
+	while (component !== undefined) {
 		for (const char of componentText) {
 			if (char === ' ') {
 				// A group of multiple spaces is treated as a word.
 				if (word && !(word.text.at(-1) === ' ')) {
-					style.end++
-					if (Object.keys(style.style).length) {
-						word.styles.push({ ...style })
-						style.start = 0
-						style.end = 0
+					span.end++
+					if (Object.keys(span.style).length) {
+						word.styles.push({ ...span })
+						span.start = 0
+						span.end = 0
 					}
 					words.push(word)
 					word = undefined
 				}
 			} else if (char === '\n') {
 				if (word) {
-					if (Object.keys(style.style).length) {
-						word.styles.push({ ...style })
-						style.start = 0
-						style.end = 0
+					if (Object.keys(span.style).length) {
+						word.styles.push({ ...span })
+						span.start = 0
+						span.end = 0
 					}
 					words.push(word)
 				}
@@ -174,11 +123,11 @@ export function getComponentWords(input: JsonTextComponent) {
 				word = undefined
 				continue
 			} else if (char !== ' ' && word?.text.at(-1) === ' ') {
-				style.end++
-				if (Object.keys(style.style).length) {
-					word.styles.push({ ...style })
-					style.start = 0
-					style.end = 0
+				span.end++
+				if (Object.keys(span.style).length) {
+					word.styles.push({ ...span })
+					span.start = 0
+					span.end = 0
 				}
 				words.push(word)
 				word = undefined
@@ -188,27 +137,33 @@ export function getComponentWords(input: JsonTextComponent) {
 				word = { styles: [], text: new UnicodeString(''), width: 0 }
 			}
 			word.text.append(char)
-			style.end++
+			span.end++
 		}
+
 		component = flattenedComponents.shift()
-		if (component) {
+
+		if (component !== undefined) {
 			componentText = getText(component)
 			if (word) {
-				word.styles.push(style)
-				style = {
-					style: getStylesFromComponent(component),
-					start: style.end,
-					end: style.end,
+				word.styles.push(span)
+				span = {
+					style: JsonText.getComponentStyle(component, defaultStyle),
+					start: span.end,
+					end: span.end,
 				}
 			} else {
-				style = { style: getStylesFromComponent(component), start: 0, end: 0 }
+				span = {
+					style: JsonText.getComponentStyle(component, defaultStyle),
+					start: 0,
+					end: 0,
+				}
 			}
 		}
 	}
 
 	if (word) {
-		if (Object.keys(style.style).length) {
-			word.styles.push(style)
+		if (Object.keys(span.style).length) {
+			word.styles.push(span)
 		}
 		words.push(word)
 	}

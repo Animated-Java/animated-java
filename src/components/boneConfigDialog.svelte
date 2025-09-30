@@ -5,16 +5,15 @@
 	import NumberSlider from './dialogItems/numberSlider.svelte'
 	import Select from './dialogItems/select.svelte'
 
+	import { NbtCompound, NbtTag } from 'deepslate/lib/nbt'
 	import { BoneConfig } from '../nodeConfigs'
+	import { JsonText } from '../systems/jsonText'
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
 	import { Variant } from '../variants'
 </script>
 
 <script lang="ts">
-	import { NbtCompound, NbtTag } from 'deepslate/lib/nbt'
-	import { JsonText } from '../systems/minecraft/jsonText'
-
 	const pluginModeEnabled = !!Project?.animated_java?.enable_plugin_mode
 
 	export let variant: Variant
@@ -66,7 +65,7 @@
 		if (value === '') return { type: 'success', message: '' }
 
 		try {
-			JsonText.fromString(value)
+			JsonText.fromString(value, Project!.animated_java.target_minecraft_version)
 		} catch (e: any) {
 			return {
 				type: 'error',
