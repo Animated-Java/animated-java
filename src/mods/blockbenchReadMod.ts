@@ -42,6 +42,7 @@ createBlockbenchMod(
 							})
 							.finally(() => {
 								closeBlueprintLoadingDialog()
+								delete Project.loadingPromises
 								r()
 							})
 						return
