@@ -51,8 +51,13 @@ import {
 } from './util/minecraftUtil'
 import { Variant } from './variants'
 
-// @ts-ignore
-globalThis.AnimatedJava = {
+declare global {
+	interface Window {
+		AnimatedJava: typeof AnimatedJavaApi
+	}
+	const AnimatedJava: typeof AnimatedJavaApi
+}
+const AnimatedJavaApi = {
 	API: {
 		parseResourcePackPath,
 		datapackCompiler,
@@ -96,6 +101,7 @@ globalThis.AnimatedJava = {
 		toSmallCharacters: toSmallCaps,
 	},
 }
+window.AnimatedJava = AnimatedJavaApi
 
 requestAnimationFrame(() => {
 	if (checkForIncompatabilities()) return

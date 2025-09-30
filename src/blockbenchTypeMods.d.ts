@@ -1,20 +1,9 @@
-import type {
-	BLUEPRINT_CODEC,
-	BLUEPRINT_FORMAT,
-	IBlueprintBoneConfigJSON,
-	IBlueprintLocatorConfigJSON,
-} from './blueprintFormat'
-import { blueprintSettingErrors, defaultValues } from './blueprintSettings'
-import { openExportProgressDialog } from './interface/dialog/exportProgress'
-import { openUnexpectedErrorDialog } from './interface/dialog/unexpectedError'
+import type { IBlueprintBoneConfigJSON, IBlueprintLocatorConfigJSON } from './blueprintFormat'
+import { defaultValues } from './blueprintSettings'
 import { TextDisplay } from './outliner/textDisplay'
 import { VanillaBlockDisplay } from './outliner/vanillaBlockDisplay'
 import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
-import datapackCompiler from './systems/datapackCompiler'
-import { MINECRAFT_REGISTRY } from './systems/minecraft/registryManager'
-import resourcepackCompiler from './systems/resourcepackCompiler'
 import { EasingKey } from './util/easing'
-import { isDataPackPath, isResourcePackPath } from './util/minecraftUtil'
 import { Valuable } from './util/stores'
 import { type Variant } from './variants'
 
@@ -83,24 +72,5 @@ declare global {
 
 	interface CubeFace {
 		lastVariant: Variant | undefined
-	}
-
-	const AnimatedJava: {
-		API: {
-			compileDataPack: typeof datapackCompiler
-			compileResourcePack: typeof resourcepackCompiler
-			Variant: typeof Variant
-			MINECRAFT_REGISTRY: typeof MINECRAFT_REGISTRY
-			openExportProgressDialog: typeof openExportProgressDialog
-			isResourcePackPath: typeof isResourcePackPath
-			isDataPackPath: typeof isDataPackPath
-			blueprintSettingErrors: typeof blueprintSettingErrors
-			openUnexpectedErrorDialog: typeof openUnexpectedErrorDialog
-			BLUEPRINT_FORMAT: typeof BLUEPRINT_FORMAT
-			BLUEPRINT_CODEC: typeof BLUEPRINT_CODEC
-			TextDisplay: typeof TextDisplay
-			VanillaItemDisplay: typeof VanillaItemDisplay
-			VanillaBlockDisplay: typeof VanillaBlockDisplay
-		}
 	}
 }
