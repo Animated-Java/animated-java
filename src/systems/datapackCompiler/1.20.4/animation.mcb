@@ -352,9 +352,9 @@ dir <%export_namespace%> {
 							# Sets the frame without interpolation
 							#ARGS: {frame: int}
 							$execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run \
-							execute on passengers run \
-								data modify entity @s[tag=<%TAGS.GLOBAL_DATA()%>] start_interpolation set value -1
 								function ./frames/$(frame) with entity @s data.uuids_by_name
+							execute on passengers if entity @s[tag=!<%TAGS.GLOBAL_DATA()%>] run \
+								data modify entity @s start_interpolation set value -1
 							return 1
 						}
 
