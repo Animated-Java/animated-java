@@ -4,7 +4,7 @@ dir <%export_namespace%> {
 	function on_load {
 		IF (use_storage_for_animation) {
 			REPEAT (animations) as animation {
-				data remove storage aj.<%export_namespace%>:animations <%animation.storage_name%>
+				data remove storage <%project_storage%>/animations <%animation.storage_name%>
 			}
 			<%animationStorage.join('\n')%>
 		}
@@ -37,18 +37,17 @@ dir <%export_namespace%> {
 				execute \
 					on passengers \
 					if entity @s[tag=<%TAGS.PROJECT_DATA(export_namespace)%>] \
-					unless data entity @s {data:{rigHash: '<%rigHash%>'}} \
+					unless data entity @s {data:{rig_hash: '<%rig_hash%>'}} \
 					on vehicle \
-				run block zzz/check_rig_hash {
-					data remove storage aj:temp args
-					# Get uuid
-					function *global/internal/gu/get_entity_uuid_string
-					data modify storage aj:temp args.uuid set from storage aj:uuid main.out
+				run block outdated_warning/modify_rig {
+					data remove storage animated_java:temp args
+					function *global/gu/get_entity_uuid_string
+					data modify storage animated_java:temp args.uuid set from storage animated_java:uuid out
 					# Get position
-					execute store result storage aj:temp args.x double 1 run data get entity @s Pos[0] 1
-					execute store result storage aj:temp args.y double 1 run data get entity @s Pos[1] 1
-					execute store result storage aj:temp args.z double 1 run data get entity @s Pos[2] 1
-					block print_outdated_warning { with storage aj:temp args
+					execute store result storage animated_java:temp args.x double 1 run data get entity @s Pos[0] 1
+					execute store result storage animated_java:temp args.y double 1 run data get entity @s Pos[1] 1
+					execute store result storage animated_java:temp args.z double 1 run data get entity @s Pos[2] 1
+					block print { with storage animated_java:temp args
 						$tellraw @a <%TELLRAW.RIG_OUTDATED()%>
 					}
 					# Overwrite the rig hash so the warning doesn't show again.
@@ -217,9 +216,9 @@ dir <%export_namespace%> {
 							tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
 					}
 					execute if score @s <%OBJECTIVES.FRAME(animation.storage_name)%> matches <%animation.duration%>.. run scoreboard players set @s <%OBJECTIVES.FRAME(animation.storage_name)%> 1
-					data remove storage aj:temp args
-					execute store result storage aj:temp args.frame int 1 run scoreboard players get @s <%OBJECTIVES.FRAME(animation.storage_name)%>
-					execute at @s run function ./zzz/apply_frame with storage aj:temp args
+					data remove storage animated_java:temp args
+					execute store result storage animated_java:temp args.frame int 1 run scoreboard players get @s <%OBJECTIVES.FRAME(animation.storage_name)%>
+					execute at @s run function ./zzz/apply_frame with storage animated_java:temp args
 					scoreboard players add @s <%OBJECTIVES.FRAME(animation.storage_name)%> 1
 				}
 
@@ -231,9 +230,9 @@ dir <%export_namespace%> {
 						execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 							tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
 					}
-					data remove storage aj:temp args
-					$execute store result storage aj:temp args.frame int 1 run scoreboard players set @s <%OBJECTIVES.FRAME(animation.storage_name)%> $(frame)
-					execute at @s run function ./zzz/set_frame with storage aj:temp args
+					data remove storage animated_java:temp args
+					$execute store result storage animated_java:temp args.frame int 1 run scoreboard players set @s <%OBJECTIVES.FRAME(animation.storage_name)%> $(frame)
+					execute at @s run function ./zzz/set_frame with storage animated_java:temp args
 				}
 
 				function apply_frame {
@@ -243,9 +242,9 @@ dir <%export_namespace%> {
 						execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 							tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
 					}
-					data remove storage aj:temp args
-					$execute store result storage aj:temp args.frame int 1 run scoreboard players set @s <%OBJECTIVES.FRAME(animation.storage_name)%> $(frame)
-					execute at @s run function ./zzz/apply_frame with storage aj:temp args
+					data remove storage animated_java:temp args
+					$execute store result storage animated_java:temp args.frame int 1 run scoreboard players set @s <%OBJECTIVES.FRAME(animation.storage_name)%> $(frame)
+					execute at @s run function ./zzz/apply_frame with storage animated_java:temp args
 				}
 
 				function tween {
@@ -286,10 +285,10 @@ dir <%export_namespace%> {
 									scoreboard players add @s <%OBJECTIVES.FRAME(animation.storage_name)%> 1
 								}
 						}
-						data remove storage aj:temp args
-						execute store result storage aj:temp args.frame int 1 run \
+						data remove storage animated_java:temp args
+						execute store result storage animated_java:temp args.frame int 1 run \
 							scoreboard players get @s <%OBJECTIVES.FRAME(animation.storage_name)%>
-						function ./apply_frame with storage aj:temp args
+						function ./apply_frame with storage animated_java:temp args
 						IF (animation.loop_mode === 'loop') {
 							# Loop the animation back to the start once it reaches the last frame.
 							# If loop_delay is 0, the animation will loop instantly, otherwise, it will wait for the specified amount of ticks.
@@ -349,18 +348,18 @@ dir <%export_namespace%> {
 								IF (BONE_TYPES.includes(node.type)) {
 									$execute on passengers if entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(export_namespace, node.storage_name)%>] run \
 										data modify entity @s {} merge from \
-										storage aj.<%export_namespace%>:animations <%animation.storage_name%>.$(frame).<%node.type.charAt(0) + '_' + node.storage_name%>
+											storage <%project_storage%>/animations <%animation.storage_name%>.$(frame).<%node.type.charAt(0) + '_' + node.storage_name%>
 								} ELSE IF (node.type === 'locator' || node.type === 'camera') {
 									$execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run \
 										data modify entity @s data.uuids.<%node.type + '_' + node.storage_name%> merge from \
-										storage aj.<%export_namespace%>:animations <%animation.storage_name%>.$(frame).<%node.type.charAt(0) + '_' + node.storage_name%>
+											storage <%project_storage%>/animations <%animation.storage_name%>.$(frame).<%node.type.charAt(0) + '_' + node.storage_name%>
 								}
 							}
 							IF (animation.frames.some(anim => anim.variant)) {
 								$execute \
-									if data storage aj.<%export_namespace%>:animations <%animation.storage_name%>.$(frame).variant \
+									if data storage <%project_storage%>/animations <%animation.storage_name%>.$(frame).variant \
 									unless entity @s[tag=<%TAGS.TRANSFORMS_ONLY()%>] \
-								run { with storage aj.<%export_namespace%>:animations <%animation.storage_name%>.$(frame).variant
+								run { with storage <%project_storage%>/animations <%animation.storage_name%>.$(frame).variant
 									#ARGS: {name: string, condition: string}
 									$execute $(condition)run function *<%export_namespace%>/variants/$(name)/apply
 								}
@@ -531,8 +530,8 @@ dir <%export_namespace%> {
 		#Args: {args:{variant: string, animation: string, frame: int, start_animation: boolean}}
 		# frame is ignored unless animation is specified.
 
-		data modify storage aj:temp args set value {variant:'', animation:'', frame: 0}
-		$execute store success score #success <%OBJECTIVES.I()%> run data modify storage aj:temp args set value $(args)
+		data modify storage animated_java:temp args set value {variant:'', animation:'', frame: 0}
+		$execute store success score #success <%OBJECTIVES.I()%> run data modify storage animated_java:temp args set value $(args)
 
 		summon minecraft:item_display ~ ~ ~ { \
 			Tags:[ \
@@ -555,8 +554,9 @@ dir <%export_namespace%> {
 			execute store result score @s <%OBJECTIVES.ID()%> run scoreboard players add aj.last_id <%OBJECTIVES.ID()%> 1
 
 			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block as_data_entity {
-				function *global/internal/gu/get_entity_uuid_string
-				data modify entity @s data.uuids.data_data set from storage aj:uuid main.out
+				function *global/gu/get_entity_uuid_string
+				data modify entity @s data.uuids append from storage animated_java:uuid out
+				data modify entity @s data.uuids_by_name.data_data set from storage animated_java:uuid out
 
 				REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator' && node.config?.use_entity)) as locator {
 					summon <%locator.config.entity_type%> \
@@ -574,10 +574,11 @@ dir <%export_namespace%> {
 					run block as_locator/<%locator.storage_name%> {
 					# run block ../as_locator/<%locator.storage_name%> {
 						tag @s remove <%TAGS.NEW()%>
-						function *global/internal/gu/get_entity_uuid_string
+						function *global/gu/get_entity_uuid_string
 					}
-					data modify entity @s data.uuids.<%locator.type + '_' + locator.storage_name%> set from storage aj:uuid main.out
-					data modify entity @s data.locators.<%locator.storage_name%>.uuid set from storage aj:uuid main.out
+					data modify entity @s data.uuids append from storage animated_java:uuid out
+					data modify entity @s data.uuids_by_name.<%locator.type + '_' + locator.storage_name%> set from storage animated_java:uuid out
+					data modify entity @s data.locators.<%locator.storage_name%>.uuid set from storage animated_java:uuid out
 				}
 
 				REPEAT (Object.values(rig.nodes).filter(node => node.type === 'camera')) as camera {
@@ -596,32 +597,39 @@ dir <%export_namespace%> {
 					run block as_camera/<%camera.storage_name%> {
 					# run block ../as_camera/<%camera.storage_name%> {
 						tag @s remove <%TAGS.NEW()%>
-						function *global/internal/gu/get_entity_uuid_string
+						function *global/gu/get_entity_uuid_string
 					}
-					data modify entity @s data.uuids.<%camera.type + '_' + camera.storage_name%> set from storage aj:uuid main.out
-					data modify entity @s data.cameras.<%camera.storage_name%>.uuid set from storage aj:uuid main.out
+					data modify entity @s data.uuids append from storage animated_java:uuid out
+					data modify entity @s data.uuids_by_name.<%camera.type + '_' + camera.storage_name%> set from storage animated_java:uuid out
+					data modify entity @s data.cameras.<%camera.storage_name%>.uuid set from storage animated_java:uuid out
 				}
 
 				REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
-					execute on vehicle on passengers if entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(export_namespace, node.storage_name)%>] run \
-						function *global/internal/gu/get_entity_uuid_string
-					data modify entity @s data.uuids.<%node.type + '_' + node.storage_name%> set from storage aj:uuid main.out
+					execute \
+						on vehicle \
+						on passengers \
+						if entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(export_namespace, node.storage_name)%>] \
+					run \
+						function *global/gu/get_entity_uuid_string
+
+					data modify entity @s data.uuids append from storage animated_java:uuid out
+					data modify entity @s data.uuids_by_name.<%node.type + '_' + node.storage_name%> set from storage animated_java:uuid out
 				}
 			}
 
 			# Variant Arguement
 			IF (Object.keys(rig.variants).length > 1) {
-				execute if data storage aj:temp args.variant run block variant_arg/process { with storage aj:temp args
+				execute if data storage animated_java:temp args.variant run block variant_arg/process { with storage animated_java:temp args
 					scoreboard players set #success <%OBJECTIVES.I()%> 0
 					# If the variant argument is *explicitly* set to an empty string, return an error.
-					execute if data storage aj:temp {args:{variant:''}} run return run block if_empty {
+					execute if data storage animated_java:temp {args:{variant:''}} run return run block if_empty {
 						# Tell the user that the variant cannot be empty.
 						tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('variant')%>
 						function *<%export_namespace%>/remove/this/without_on_remove_commands
 					}
 					# Attempt to apply the requested variant.
 					# We get the success of the `try_apply` function in just in case the user's arguments are *very* wrong.
-					execute store success score #success <%OBJECTIVES.I()%> run block try_apply { with storage aj:temp args
+					execute store success score #success <%OBJECTIVES.I()%> run block try_apply { with storage animated_java:temp args
 						$execute if function animated_java:<%export_namespace%>/variants/$(variant)/apply run return 1
 						# If the apply function fails, the variant doesn't exist, so we return an error.
 						return fail
@@ -635,7 +643,7 @@ dir <%export_namespace%> {
 					scoreboard players set #success <%OBJECTIVES.I()%> 1
 				}
 			} ELSE {
-				execute if data storage aj:temp args.variant run block zzz/variant_arg/no_variants_warning {
+				execute if data storage animated_java:temp args.variant run block zzz/variant_arg/no_variants_warning {
 					tellraw @a <%TELLRAW.NO_VARIANTS()%>
 					function *<%export_namespace%>/remove/this/without_on_remove_commands
 					scoreboard players set #success <%OBJECTIVES.I()%> 0
@@ -647,20 +655,20 @@ dir <%export_namespace%> {
 
 			# Animation Argument
 			# If the animation argument is provided, attempt to apply the animation.
-			execute if data storage aj:temp args.animation run block animation_arg/process { with storage aj:temp args
+			execute if data storage animated_java:temp args.animation run block animation_arg/process { with storage animated_java:temp args
 				scoreboard players set #success <%OBJECTIVES.I()%> 0
 				# If the animation argument is *explicitly* set to an empty string, return an error.
-				execute if data storage aj:temp {args:{animation:''}} run return run block if_empty {
+				execute if data storage animated_java:temp {args:{animation:''}} run return run block if_empty {
 					tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('animation')%>
 					function *<%export_namespace%>/remove/this/without_on_remove_commands
 				}
 				# Automatically set the frame argument to 0 if the frame argument is not provided.
 				# Takes advantage of `store result score` setting the score to 0 if the command fails.
 				execute \
-					store result storage aj:temp args.frame int 1 \
+					store result storage animated_java:temp args.frame int 1 \
 					store result score #frame <%OBJECTIVES.I()%> \
 				run \
-					data get storage aj:temp args.frame
+					data get storage animated_java:temp args.frame
 				# If the frame argument is negative, return an error.
 				execute if score #frame <%OBJECTIVES.I()%> matches ..-1 run return run block no_negative {
 					# Tell the user that the frame argument cannot be negative.
@@ -668,10 +676,10 @@ dir <%export_namespace%> {
 					function *<%export_namespace%>/remove/this/without_on_remove_commands
 				}
 				# Attempt to apply the animation frame.
-				execute store success score #success <%OBJECTIVES.I()%> run block try_set_frame { with storage aj:temp args
+				execute store success score #success <%OBJECTIVES.I()%> run block try_set_frame { with storage animated_java:temp args
 					# Make sure we're only applying transforms when setting the summon pose.
 					tag @s add <%TAGS.TRANSFORMS_ONLY()%>
-					$execute store success score #success <%OBJECTIVES.I()%> run function *<%export_namespace%>/animations/$(animation)/zzz/set_frame with storage aj:temp args
+					$execute store success score #success <%OBJECTIVES.I()%> run function *<%export_namespace%>/animations/$(animation)/zzz/set_frame with storage animated_java:temp args
 					tag @s remove <%TAGS.TRANSFORMS_ONLY()%>
 					execute if score #success <%OBJECTIVES.I()%> matches 1 run return 1
 					# If the set_frame function fails, the animation doesn't exist, so we return an error.
@@ -685,7 +693,7 @@ dir <%export_namespace%> {
 				}
 
 				# If the animation is successfully applied, and the start_animation argument is set to true, start the animation.
-				execute if data storage aj:temp {args:{start_animation: true}} run block start_animation { with storage aj:temp args
+				execute if data storage animated_java:temp {args:{start_animation: true}} run block start_animation { with storage animated_java:temp args
 					$function *<%export_namespace%>/animations/$(animation)/resume
 				}
 				scoreboard players set #success <%OBJECTIVES.I()%> 1
@@ -735,23 +743,23 @@ dir <%export_namespace%> {
 				execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 					tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
 			}
-			data remove storage aj:temp args
-			$data modify storage aj:temp args merge value {name:'$(name)', command:'$(command)', uuid:'+MISSING_UUID+'}
+			data remove storage animated_java:temp args
+			$data modify storage animated_java:temp args merge value {name:'$(name)', command:'$(command)', uuid:'+MISSING_UUID+'}
 
 			IF (show_function_errors) {
-				execute if data storage aj:temp {args:{name:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('name')%>
-				execute if data storage aj:temp {args:{command:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('command')%>
+				execute if data storage animated_java:temp {args:{name:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('name')%>
+				execute if data storage animated_java:temp {args:{command:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('command')%>
 			}
 
 			execute \
 				on passengers \
 				if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] \
-			run block zzz/as_locator/as_data { with storage aj:temp args
-				$data modify storage aj:temp args.uuid set from entity @s data.locators.$(name).uuid
+			run block zzz/as_locator/as_data { with storage animated_java:temp args
+				$data modify storage animated_java:temp args.uuid set from entity @s data.locators.$(name).uuid
 				IF (show_function_errors) {
 					scoreboard players set #aj.check <%OBJECTIVES.I()%> 0
 				}
-				block execute_as_uuid { with storage aj:temp args
+				block execute_as_uuid { with storage animated_java:temp args
 					IF (show_function_errors) {
 						# If the function successfully instantiated, the provided command is valid.
 						scoreboard players set #aj.check <%OBJECTIVES.I()%> 1
@@ -775,17 +783,17 @@ dir <%export_namespace%> {
 				execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 					tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
 			}
-			data remove storage aj:temp args
-			$data modify storage aj:temp args merge value {command:'$(command)'}
+			data remove storage animated_java:temp args
+			$data modify storage animated_java:temp args merge value {command:'$(command)'}
 
 			IF (show_function_errors) {
-				execute if data storage aj:temp {args:{command:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('command')%>
+				execute if data storage animated_java:temp {args:{command:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('command')%>
 			}
 
 			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block zzz/as_all_locators/as_data {
 				REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator' && node.config?.use_entity)) as locator {
-					data modify storage aj:temp args.uuid set from entity @s data.locators.<%locator.storage_name%>.uuid
-					block execute_as_uuid { with storage aj:temp args
+					data modify storage animated_java:temp args.uuid set from entity @s data.locators.<%locator.storage_name%>.uuid
+					block execute_as_uuid { with storage animated_java:temp args
 						$execute as $(uuid) at @s run $(command)
 					}
 				}
@@ -801,34 +809,38 @@ dir <%export_namespace%> {
 				execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 					tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
 			}
-			data remove storage aj:temp args
-			$data modify storage aj:temp args merge value {name:'$(name)', command:'$(command)'}
+			data remove storage animated_java:temp args
+			$data modify storage animated_java:temp args merge value {name:'$(name)', command:'$(command)'}
 
 			IF (show_function_errors) {
-				execute if data storage aj:temp {args:{name:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('name')%>
-				execute if data storage aj:temp {args:{command:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('command')%>
+				execute if data storage animated_java:temp {args:{name:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('name')%>
+				execute if data storage animated_java:temp {args:{command:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('command')%>
 			}
 
 			execute \
 				at @s \
 				on passengers \
 				if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] \
-			run block zzz/at_locator/as_data { with storage aj:temp args
-				$data modify storage aj:temp args merge from entity @s data.locators.$(name)
+			run block zzz/at_locator/as_data { with storage animated_java:temp args
+				$data modify storage animated_java:temp args merge from entity @s data.locators.$(name)
+
 				IF (show_function_errors) {
-					execute unless data storage aj:temp args.uuid run return run tellraw @a <%TELLRAW.LOCATOR_NOT_FOUND()%>
+					execute unless data storage animated_java:temp args.uuid run return run tellraw @a <%TELLRAW.LOCATOR_NOT_FOUND()%>
 					scoreboard players set #aj.check <%OBJECTIVES.I()%> 0
 				}
-				block execute_at_transform { with storage aj:temp args
+
+				block execute_at_transform { with storage animated_java:temp args
 					IF (show_function_errors) {
 						# If the function successfully instantiated, the provided command is valid.
 						scoreboard players set #aj.check <%OBJECTIVES.I()%> 1
 					}
+
 					$execute \
 						positioned ^$(posx) ^$(posy) ^$(posz) \
 						rotated ~$(roty) ~$(rotx) \
 					run $(command)
 				}
+
 				IF (show_function_errors) {
 					execute if score #aj.check <%OBJECTIVES.I()%> matches 0 run tellraw @a <%TELLRAW.LOCATOR_COMMAND_FAILED_TO_EXECUTE()%>
 				}
@@ -842,17 +854,17 @@ dir <%export_namespace%> {
 				execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 					tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
 			}
-			data remove storage aj:temp args
-			$data modify storage aj:temp args merge value {command:'$(command)'}
+			data remove storage animated_java:temp args
+			$data modify storage animated_java:temp args merge value {command:'$(command)'}
 
 			IF (show_function_errors) {
-				execute if data storage aj:temp {args:{command:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('command')%>
+				execute if data storage animated_java:temp {args:{command:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('command')%>
 			}
 
 			execute at @s on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block zzz/at_all_locators/as_data {
 				REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator')) as locator {
-					data modify storage aj:temp args merge from entity @s data.locators.<%locator.storage_name%>
-					block execute_at_transform { with storage aj:temp args
+					data modify storage animated_java:temp args merge from entity @s data.locators.<%locator.storage_name%>
+					block execute_at_transform { with storage animated_java:temp args
 						$execute \
 							positioned ^$(posx) ^$(posy) ^$(posz) \
 							rotated ~$(roty) ~$(rotx) \
@@ -871,33 +883,38 @@ dir <%export_namespace%> {
 				execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
 					tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
 			}
-			data remove storage aj:temp args
-			$data modify storage aj:temp args merge value {name:'$(name)', command:'$(command)', uuid:'+MISSING_UUID+'}
+			data remove storage animated_java:temp args
+			$data modify storage animated_java:temp args merge value {name:'$(name)', command:'$(command)', uuid:'+MISSING_UUID+'}
 
 			IF (show_function_errors) {
-				execute if data storage aj:temp {args:{name:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('name')%>
-				execute if data storage aj:temp {args:{command:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('command')%>
+				execute if data storage animated_java:temp {args:{name:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('name')%>
+				execute if data storage animated_java:temp {args:{command:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('command')%>
 			}
 
 			execute \
 				on passengers \
 				if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] \
-			run block zzz/as_camera/as_data { with storage aj:temp args
-				$data modify storage aj:temp args.uuid set from entity @s data.cameras.$(name).uuid
+			run block zzz/as_camera/as_data { with storage animated_java:temp args
+				$data modify storage animated_java:temp args.uuid set from entity @s data.cameras.$(name).uuid
+
 				IF (show_function_errors) {
 					scoreboard players set #aj.check <%OBJECTIVES.I()%> 0
 				}
-				block execute_as_uuid { with storage aj:temp args
+
+				block execute_as_uuid { with storage animated_java:temp args
 					IF (show_function_errors) {
 						# If the function successfully instantiated, the provided command is valid.
 						scoreboard players set #aj.check <%OBJECTIVES.I()%> 1
 					}
+
 					$execute as $(uuid) at @s run return run $(command)
+
 					IF (show_function_errors) {
 						# If the entity with the provided UUID doesn't exist, the camera wasn't found.
 						tellraw @a <%TELLRAW.CAMERA_ENTITY_NOT_FOUND()%>
 					}
 				}
+
 				IF (show_function_errors) {
 					execute if score #aj.check <%OBJECTIVES.I()%> matches 0 run tellraw @a <%TELLRAW.CAMERA_COMMAND_FAILED_TO_EXECUTE()%>
 				}

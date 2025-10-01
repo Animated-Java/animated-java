@@ -10,7 +10,7 @@ dir global {
 		scoreboard players add aj.last_id <%OBJECTIVES.ID()%> 0
 
 		# Initialize Storage
-		data modify storage aj:temp args set value {}
+		data modify storage animated_java:temp args set value {}
 		IF (show_outdated_warning) {
 			# Initialize Rigs
 			scoreboard players reset * <%OBJECTIVES.IS_RIG_LOADED()%>
