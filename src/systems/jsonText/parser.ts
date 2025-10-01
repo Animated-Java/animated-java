@@ -1030,17 +1030,51 @@ export class JsonTextParser {
 			item === "'" ||
 			item === '"' ||
 			item === 'n' ||
-			item === 's' ||
-			item === 't' ||
 			item === 'b' ||
-			item === 'f' ||
-			item === 'r'
+			item === 'r' ||
+			item === 't' ||
+			item === 'f'
 		) {
 			this.s.consume()
 			return '\\' + item
-		} else if (item === 'u' || item === 'U' || item === 'x') {
+		} else if (item === 's') {
+			if (compareVersions('1.21.5', this.targetMinecraftVersion)) {
+				throw new JsonParserError(
+					`Minecraft ${this.targetMinecraftVersion} does not support space escape sequences ('\\s').`,
+					this.s
+				)
+			}
+
+			this.s.consume()
+			return '\\s'
+		} else if (item === 'u') {
+			return this.parseUnicodeEscapeSequence()
+		} else if (item === 'x') {
+			if (compareVersions('1.21.5', this.targetMinecraftVersion)) {
+				throw new JsonParserError(
+					`Minecraft ${this.targetMinecraftVersion} does not support hex unicode escape sequences ('\\x00').`,
+					this.s
+				)
+			}
+
+			return this.parseUnicodeEscapeSequence()
+		} else if (item === 'U') {
+			if (compareVersions('1.21.5', this.targetMinecraftVersion)) {
+				throw new JsonParserError(
+					`Minecraft ${this.targetMinecraftVersion} does not support 8-digit unicode escape sequences ('\\U00000000').`,
+					this.s
+				)
+			}
+
 			return this.parseUnicodeEscapeSequence()
 		} else if (item === 'N') {
+			if (compareVersions('1.21.5', this.targetMinecraftVersion)) {
+				throw new JsonParserError(
+					`Minecraft ${this.targetMinecraftVersion} does not support named unicode escape sequences ('\\${item}{Name}').`,
+					this.s
+				)
+			}
+
 			return this.parseNamedUnicodeEscapeSequence()
 		} else {
 			throw new JsonParserError(`Unknown escape sequence '\\${item!}'`, this.s)

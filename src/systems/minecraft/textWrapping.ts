@@ -1,5 +1,5 @@
-import { UnicodeString } from '../../util/unicodeString'
 import { Component, ComponentStyle, CompositeComponent, JsonText } from '../jsonText'
+import { UnicodeString } from '../jsonText/unicodeString'
 import { getVanillaFont } from './fontManager'
 
 // Jumpstarted by @IanSSenne (FetchBot) and refactored by @SnaveSutit to do line wrapping on JSON Text Components.

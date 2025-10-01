@@ -553,7 +553,7 @@ async function generateRootEntityPassengers(
 							// String JSON text format
 							new NbtString(
 								node.text?.toString(version) ??
-									`{ "text": "Invalid Text Component" }`
+									`{ "text": "Invalid Text Component", "color": "red" }`
 							)
 						)
 						break
@@ -652,7 +652,8 @@ async function generateRootEntityPassengers(
 	for (const display of Object.values(rig.nodes).filter(n => n.type === 'text_display')) {
 		result = result.replace(
 			'"$$$' + display.type + '_' + display.storage_name + '_text_placeholder$$$"',
-			display.text?.toString(version) ?? `{ "text": "Invalid Text Component" }`
+			display.text?.toString(version) ??
+				`{ "text": "Invalid Text Component", "color": "red" }`
 		)
 	}
 

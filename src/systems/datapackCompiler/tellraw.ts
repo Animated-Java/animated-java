@@ -2,6 +2,7 @@ import { toSmallCaps } from 'src/util/minecraftUtil'
 import { type IRenderedAnimation } from '../animationRenderer'
 import { Component, JsonText } from '../jsonText'
 import { type IRenderedVariant } from '../rigRenderer'
+import { TAGS } from './tags'
 
 namespace TELLRAW {
 	const TELLRAW_PREFIX = () =>
@@ -19,29 +20,32 @@ namespace TELLRAW {
 	const TELLRAW_SUFFIX = () => '\n'
 
 	const TELLRAW_ERROR = (errorName: string, details: Component) =>
-		new JsonText([
-			{ text: '', color: 'red' },
-			TELLRAW_PREFIX(),
-			'ᴇʀʀᴏʀ: ',
-			{ text: errorName, underlined: true },
-			'\n\n ',
-			details,
-			TELLRAW_SUFFIX(),
-		])
+		new JsonText({
+			text: '',
+			color: 'red',
+			extra: [
+				TELLRAW_PREFIX(),
+				'ᴇʀʀᴏʀ: ',
+				{ text: errorName, underlined: true },
+				'\n\n ',
+				...(Array.isArray(details) ? details : [details]),
+				TELLRAW_SUFFIX(),
+			],
+		})
 
-	const TELLRAW_LEARN_MORE_LINK = (url: string) =>
+	const CREATE_TELLRAW_HELP_LINK = (url: string) =>
 		new JsonText([
-			'\n ',
+			'\n\n ',
 			!compareVersions('1.21.5', Project!.animated_java.target_minecraft_version)
 				? {
-						text: 'Click here to learn more',
+						text: '▶ Learn More ◀',
 						color: 'blue',
 						underlined: true,
 						italic: true,
 						click_event: { action: 'open_url', url },
 				  }
 				: {
-						text: 'Click here to learn more',
+						text: '▶ Learn More ◀',
 						color: 'blue',
 						underlined: true,
 						italic: true,
@@ -105,36 +109,57 @@ namespace TELLRAW {
 
 	export const RIG_OUTDATED_TEXT_DISPLAY = () =>
 		new JsonText([
-			{ text: '⚠ This rig instance is outdated! ', color: 'red' },
+			{ text: '⚠ This rig instance is outdated! ⚠', color: 'red' },
 			'\n It should be removed and re-summoned to ensure it functions correctly.',
 		])
+			// Because this is used as NBT in a summon command, we need to double-escape the newlines.
+			.toString()
+			.replaceAll('\\n', '\\\\n')
 
-	export const FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR = (functionName: string) =>
-		TELLRAW_ERROR('Function Not Executed as Root Entity', [
+	export const FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR = (functionPath: string) => {
+		const hoverText = new JsonText([{ text: functionPath, color: 'yellow' }, '']).flatten()
+
+		const exampleCommand = `/execute as @e[tag=${TAGS.PROJECT_ROOT(
+			Project!.animated_java.export_namespace
+		)}] run function ${functionPath}`
+
+		return TELLRAW_ERROR('Function Not Executed as Root Entity', [
 			!compareVersions('1.21.5', Project!.animated_java.target_minecraft_version)
 				? {
-						text: 'This function',
+						text: '[This Function]',
 						color: 'yellow',
-						underlined: true,
-						hover_event: {
-							action: 'show_text',
-							value: [{ text: functionName, color: 'yellow' }],
-						},
+						hover_event: { action: 'show_text', value: hoverText },
 				  }
 				: {
-						text: 'This function',
+						text: '[This Function]',
 						color: 'yellow',
-						underlined: true,
-						hoverEvent: {
-							action: 'show_text',
-							contents: [{ text: functionName, color: 'yellow' }],
-						},
+						hoverEvent: { action: 'show_text', contents: hoverText },
 				  },
-			" must be executed as the rig's root entity.\n",
-			TELLRAW_LEARN_MORE_LINK(
+			" must be executed as the rig's root entity.",
+			{
+				text: '\n\n ≡ ',
+				color: 'white',
+				extra: [
+					!compareVersions('1.21.5', Project!.animated_java.target_minecraft_version)
+						? {
+								text: toSmallCaps('Show Example Command'),
+								color: 'aqua',
+								underlined: true,
+								click_event: { action: 'suggest_command', command: exampleCommand },
+						  }
+						: {
+								text: toSmallCaps('Show Example Command'),
+								color: 'aqua',
+								underlined: true,
+								clickEvent: { action: 'suggest_command', value: exampleCommand },
+						  },
+				],
+			},
+			CREATE_TELLRAW_HELP_LINK(
 				'https://animated-java.dev/docs/rigs/controlling-a-rig-instance'
 			),
 		])
+	}
 
 	export const INVALID_VARIANT = (variants: Record<string, IRenderedVariant>) =>
 		TELLRAW_ERROR('Invalid Variant', [
