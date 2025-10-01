@@ -45,15 +45,6 @@ dir global {
 		}
 	}
 
-	IF (show_function_errors) {
-		dir errors {
-			function function_not_executed_as_root_entity {
-				#ARGS: {export_namespace: string, function_path: string}
-				$tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR('$(function_path)')%>
-			}
-		}
-	}
-
 	dir remove {
 		# Removes all instances of all rigs from the world.
 		function everything {

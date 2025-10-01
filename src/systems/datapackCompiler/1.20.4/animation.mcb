@@ -170,8 +170,7 @@ dir <%export_namespace%> {
 					IF (show_function_errors) {
 						# Assert that the function is being run as the root entity.
 						execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-							function *global/errors/function_not_executed_as_root_entity \
-								{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
+							tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
 					}
 					tag @s add <%TAGS.ANIMATION_PLAYING(export_namespace, animation.storage_name)%>
 					scoreboard players set @s <%OBJECTIVES.FRAME(animation.storage_name)%> 0
@@ -184,8 +183,7 @@ dir <%export_namespace%> {
 					IF (show_function_errors) {
 						# Assert that the function is being run as the root entity.
 						execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-							function *global/errors/function_not_executed_as_root_entity \
-								{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
+							tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
 					}
 					tag @s remove <%TAGS.ANIMATION_PLAYING(export_namespace, animation.storage_name)%>
 					scoreboard players set @s <%OBJECTIVES.FRAME(animation.storage_name)%> 0
@@ -198,8 +196,7 @@ dir <%export_namespace%> {
 					IF (show_function_errors) {
 						# Assert that the function is being run as the root entity.
 						execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-							function *global/errors/function_not_executed_as_root_entity \
-								{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
+							tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
 					}
 					tag @s remove <%TAGS.ANIMATION_PLAYING(export_namespace, animation.storage_name)%>
 				}
@@ -208,8 +205,7 @@ dir <%export_namespace%> {
 					IF (show_function_errors) {
 						# Assert that the function is being run as the root entity.
 						execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-							function *global/errors/function_not_executed_as_root_entity \
-								{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
+							tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
 					}
 					tag @s add <%TAGS.ANIMATION_PLAYING(export_namespace, animation.storage_name)%>
 				}
@@ -218,8 +214,7 @@ dir <%export_namespace%> {
 					IF (show_function_errors) {
 						# Assert that the function is being run as the root entity.
 						execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-							function *global/errors/function_not_executed_as_root_entity \
-								{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
+							tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
 					}
 					execute if score @s <%OBJECTIVES.FRAME(animation.storage_name)%> matches <%animation.duration%>.. run scoreboard players set @s <%OBJECTIVES.FRAME(animation.storage_name)%> 1
 					data remove storage aj:temp args
@@ -234,8 +229,7 @@ dir <%export_namespace%> {
 					IF (show_function_errors) {
 						# Assert that the function is being run as the root entity.
 						execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-							function *global/errors/function_not_executed_as_root_entity \
-								{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
+							tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
 					}
 					data remove storage aj:temp args
 					$execute store result storage aj:temp args.frame int 1 run scoreboard players set @s <%OBJECTIVES.FRAME(animation.storage_name)%> $(frame)
@@ -247,8 +241,7 @@ dir <%export_namespace%> {
 					IF (show_function_errors) {
 						# Assert that the function is being run as the root entity.
 						execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-							function *global/errors/function_not_executed_as_root_entity \
-								{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
+							tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
 					}
 					data remove storage aj:temp args
 					$execute store result storage aj:temp args.frame int 1 run scoreboard players set @s <%OBJECTIVES.FRAME(animation.storage_name)%> $(frame)
@@ -261,8 +254,7 @@ dir <%export_namespace%> {
 					IF (show_function_errors) {
 						# Assert that the function is being run as the root entity.
 						execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-							function *global/errors/function_not_executed_as_root_entity \
-								{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
+							tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
 					}
 					function *<%export_namespace%>/animations/pause_all
 
@@ -527,8 +519,7 @@ dir <%export_namespace%> {
 			IF (show_function_errors) {
 				# Assert that the function is being run as the root entity.
 				execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-					function *global/errors/function_not_executed_as_root_entity \
-						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
+					tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
 			}
 			REPEAT (animations) as animation {
 				tag @s remove <%TAGS.ANIMATION_PLAYING(export_namespace, animation.storage_name)%>
@@ -742,8 +733,7 @@ dir <%export_namespace%> {
 			IF (show_function_errors) {
 				# Assert that the function is being run as the root entity.
 				execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-					function *global/errors/function_not_executed_as_root_entity \
-						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
+					tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
 			}
 			data remove storage aj:temp args
 			$data modify storage aj:temp args merge value {name:'$(name)', command:'$(command)', uuid:'+MISSING_UUID+'}
@@ -783,8 +773,7 @@ dir <%export_namespace%> {
 			IF (show_function_errors) {
 				# Assert that the function is being run as the root entity.
 				execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-					function *global/errors/function_not_executed_as_root_entity \
-						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
+					tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
 			}
 			data remove storage aj:temp args
 			$data modify storage aj:temp args merge value {command:'$(command)'}
@@ -810,8 +799,7 @@ dir <%export_namespace%> {
 			IF (show_function_errors) {
 				# Assert that the function is being run as the root entity.
 				execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-					function *global/errors/function_not_executed_as_root_entity \
-						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
+					tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
 			}
 			data remove storage aj:temp args
 			$data modify storage aj:temp args merge value {name:'$(name)', command:'$(command)'}
@@ -852,8 +840,7 @@ dir <%export_namespace%> {
 			IF (show_function_errors) {
 				# Assert that the function is being run as the root entity.
 				execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-					function *global/errors/function_not_executed_as_root_entity \
-						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
+					tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
 			}
 			data remove storage aj:temp args
 			$data modify storage aj:temp args merge value {command:'$(command)'}
@@ -882,8 +869,7 @@ dir <%export_namespace%> {
 			IF (show_function_errors) {
 				# Assert that the function is being run as the root entity.
 				execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-					function *global/errors/function_not_executed_as_root_entity \
-						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
+					tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
 			}
 			data remove storage aj:temp args
 			$data modify storage aj:temp args merge value {name:'$(name)', command:'$(command)', uuid:'+MISSING_UUID+'}
@@ -935,8 +921,7 @@ dir <%export_namespace%> {
 			IF (show_function_errors) {
 				# Assert that the function is being executed as the root entity.
 				execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-					function *global/errors/function_not_executed_as_root_entity \
-						{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
+					tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
 			}
 
 			<%%
@@ -951,8 +936,7 @@ dir <%export_namespace%> {
 				IF (show_function_errors) {
 					# Assert that the function is being executed as the root entity.
 					execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-						function *global/errors/function_not_executed_as_root_entity \
-							{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
+						tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
 				}
 
 				IF (has_entity_locators || has_cameras) {
@@ -997,8 +981,7 @@ dir <%export_namespace%> {
 						IF (show_function_errors) {
 							# Assert that the function is being executed as the root entity.
 							execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-								function *global/errors/function_not_executed_as_root_entity \
-									{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
+								tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
 						}
 
 						<%%
@@ -1049,8 +1032,7 @@ dir <%export_namespace%> {
 		IF (show_function_errors) {
 			# Assert that the function is being run as the root entity.
 			execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-				function *global/errors/function_not_executed_as_root_entity \
-					{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
+				tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
 		}
 
 		IF (has_locators || has_cameras) {
@@ -1074,8 +1056,7 @@ dir <%export_namespace%> {
 		IF (show_function_errors) {
 			# Assert that the function is being run as the root entity.
 			execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
-				function *global/errors/function_not_executed_as_root_entity \
-					{'export_namespace': '<%export_namespace%>', 'function_path': '<%arguments[1].functions.at(-1)%>'}
+				tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
 		}
 
 		IF (has_locators || has_cameras) {
