@@ -318,26 +318,7 @@ dir <%export_namespace%> {
 					IF (use_storage_for_animation) {
 						function set_frame {
 							#ARGS: {frame: int}
-							REPEAT (Object.values(animation.modified_nodes).sort(nodeSorter)) as node {
-								IF (BONE_TYPES.includes(node.type)) {
-									$execute on passengers run \
-										data modify entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(export_namespace, node.storage_name)%>] {} merge from \
-										storage aj.<%export_namespace%>:animations <%animation.storage_name%>.$(frame).<%node.type.charAt(0) + '_' + node.storage_name%>
-								} ELSE IF (node.type === 'locator' || node.type === 'camera') {
-									$execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run \
-										data modify entity @s data.uuids.<%node.type + '_' + node.storage_name%> merge from \
-										storage aj.<%export_namespace%>:animations <%animation.storage_name%>.$(frame).<%node.type.charAt(0) + '_' + node.storage_name%>
-								}
-							}
-							IF (animation.frames.some(anim => anim.variant)) {
-								$execute \
-									if data storage aj.<%export_namespace%>:animations <%animation.storage_name%>.$(frame).variant \
-									unless entity @s[tag=<%TAGS.TRANSFORMS_ONLY()%>] \
-								run { with storage aj.<%export_namespace%>:animations <%animation.storage_name%>.$(frame).variant
-									#ARGS: {name: string, condition: string}
-									$execute $(condition)run function *<%export_namespace%>/variants/$(name)/apply
-								}
-							}
+							$function ./apply_frame {frame: $(frame)}
 							execute on passengers run data modify entity @s[tag=!<%TAGS.GLOBAL_DATA()%>] start_interpolation set value -1
 							return 1
 						}
