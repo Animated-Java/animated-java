@@ -985,8 +985,8 @@ const dataPackCompiler: DataPackCompiler = async ({
 		animationStorage: aj.use_storage_for_animation
 			? await createAnimationStorage(rig, animations)
 			: null,
-		rigHash,
-		animationHash,
+		rig_hash: rigHash,
+		animation_hash: animationHash,
 		boundingBox: aj.bounding_box,
 		BoneConfig,
 		roundTo,
@@ -1003,6 +1003,7 @@ const dataPackCompiler: DataPackCompiler = async ({
 		is_static,
 		getNodeTags,
 		BONE_TYPES,
+		project_storage: `animated_java:${aj.export_namespace}`,
 	}
 
 	compile({
