@@ -33,7 +33,7 @@ dir <%export_namespace%> {
 			function on_load {
 				# Only run if the entity is an instance of this rig.
 				execute unless entity @s[tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return 0
-				# Check if the rig is outdated by comparing the function's rigHash of the rig to the rigHash stored in the entity data.
+				# Check if the rig is outdated by comparing the function's rig_hash of the rig to the rig_hash stored in the entity data.
 				execute \
 					on passengers \
 					if entity @s[tag=<%TAGS.PROJECT_DATA(export_namespace)%>] \
@@ -51,7 +51,7 @@ dir <%export_namespace%> {
 						$tellraw @a <%TELLRAW.RIG_OUTDATED()%>
 					}
 					# Overwrite the rig hash so the warning doesn't show again.
-					data modify entity @s data.rigHash set value '<%rigHash%>'
+					data modify entity @s data.rig_hash set value '<%rig_hash%>'
 					execute on passengers run data merge entity @s {Glowing: 1b, glow_color_override: <%0xff0000%>}
 					summon minecraft:text_display ~ ~ ~ { \
 						Tags:[ \
@@ -351,7 +351,7 @@ dir <%export_namespace%> {
 											storage <%project_storage%>/animations <%animation.storage_name%>.$(frame).<%node.type.charAt(0) + '_' + node.storage_name%>
 								} ELSE IF (node.type === 'locator' || node.type === 'camera') {
 									$execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run \
-										data modify entity @s data.uuids.<%node.type + '_' + node.storage_name%> merge from \
+										$data modify entity @s data.uuids_by_name.<%node.type + '_' + node.storage_name%> merge from \
 											storage <%project_storage%>/animations <%animation.storage_name%>.$(frame).<%node.type.charAt(0) + '_' + node.storage_name%>
 								}
 							}
@@ -371,18 +371,19 @@ dir <%export_namespace%> {
 							# Sets the frame without interpolation
 							#ARGS: {frame: int}
 							$execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run \
-								function ./frames/$(frame) with entity @s data.uuids
 							execute on passengers run \
 								data modify entity @s[tag=<%TAGS.GLOBAL_DATA()%>] start_interpolation set value -1
+								function ./frames/$(frame) with entity @s data.uuids_by_name
 							return 1
 						}
 
 						function apply_frame {
 							#ARGS: {frame: int}
 							$execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run \
-								function ./frames/$(frame) with entity @s data.uuids
+								function ./frames/$(frame) with entity @s data.uuids_by_name
 							return 1
 						}
+
 						# FIXME - %NEWLINE_PATCH% is a temporary solution to temporarily fix an MCB bug where extra newlines are being added to the output.
 						dir frames {
 							<%%
@@ -957,35 +958,25 @@ dir <%export_namespace%> {
 				}
 
 				IF (has_entity_locators || has_cameras) {
-					execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block zzz/as_data {
+					execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block as_data {
 						REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator' && node.config?.use_entity)) as locator {
-							# REVIEW - This will not kill locators or cameras that have been summoned using an old export of the rig.
-							function ./zzz/kill_locator with entity @s data.locators.<%locator.storage_name%>
+							function animated_java:global/remove/entity_stack_by_uuid with entity @s data.locators.<%locator.storage_name%>
 						}
 						REPEAT (Object.values(rig.nodes).filter(node => node.type === 'camera')) as camera {
-							function ./zzz/kill_camera with entity @s data.cameras.<%camera.storage_name%>
+							function animated_java:global/remove/entity_stack_by_uuid with entity @s data.cameras.<%camera.storage_name%>
 						}
 					}
 				}
 
-				function ./zzz/kill_entity_stack
-			}
+				# Remove the rig using the more expensive & thorough method if the rig_hash doesn't match.
+				execute \
+					on passengers \
+					if entity @s[tag=<%TAGS.PROJECT_DATA(export_namespace)%>] \
+					unless data entity @s {data:{rig_hash: '<%rig_hash%>'}} \
+					on vehicle \
+				run function animated_java:global/remove/outdated_rig
 
-			dir zzz {
-				function kill_entity_stack {
-					execute on passengers run function ^0
-					kill @s
-				}
-
-				function kill_locator {
-					#ARGS: {uuid: string}
-					$execute as $(uuid) run function ./kill_entity_stack
-				}
-
-				function kill_camera {
-					#ARGS: {uuid: string}
-					$kill $(uuid)
-				}
+				function animated_java:global/remove/entity_stack
 			}
 		}
 	}

@@ -46,9 +46,43 @@ dir global {
 	}
 
 	dir remove {
-		# Removes all instances of all rigs from the world.
+		# Removes every entity related to Animated Java.
 		function everything {
 			kill @e[tag=<%TAGS.GLOBAL_ENTITY()%>]
+		}
+
+		function entity_stack {
+			execute on passengers if entity @s[type=!player] run function ^0
+			kill @s
+		}
+
+		function entity_stack_by_uuid {
+			#ARGS: {uuid: string}
+			$execute as $(uuid) run function ./entity_stack
+		}
+
+		# Removes locators and cameras owned by the rig, even if they're not included in the currently loaded export.
+		function outdated_rig {
+			# Assert that the function is being executed as the root entity.
+			execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return fail
+
+			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block as_data {
+				data remove storage animated_java:temp args
+				data remove storage animated_java:temp uuids
+				data modify storage animated_java:temp uuids set from entity @s data.uuids
+				execute store result score #aj.length <%OBJECTIVES.I()%> run data get storage animated_java:temp uuids
+
+				execute if score #aj.length <%OBJECTIVES.I()%> matches 1.. run block loop_over_uuids {
+					data modify storage animated_java:temp args.current_uuid set from storage animated_java:temp uuids[-1].uuid
+					data remove storage animated_java:temp uuids[-1]
+					function ./entity_stack_by_uuid with storage animated_java:temp args
+
+					scoreboard players remove #aj.length <%OBJECTIVES.I()%> 1
+					execute if score #aj.length <%OBJECTIVES.I()%> matches 1.. run function ^0
+				}
+			}
+
+			function ./entity_stack
 		}
 	}
 
