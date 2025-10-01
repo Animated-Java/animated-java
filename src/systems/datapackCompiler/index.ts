@@ -399,10 +399,7 @@ async function generateRootEntityPassengers(
 	const aj = Project!.animated_java
 	const passengers: NbtList = new NbtList()
 
-	const { locators, cameras, uuids } = createPassengerStorage(rig)
-
 	const dataEntity = new NbtCompound()
-
 	switch (version) {
 		case '1.20.4':
 		case '1.20.5':
@@ -412,8 +409,11 @@ async function generateRootEntityPassengers(
 			dataEntity.set('id', new NbtString('minecraft:marker'))
 			break
 		case '1.21.5':
+		default:
 			dataEntity.set('id', new NbtString('minecraft:item_display'))
 	}
+
+	// const nodeStorage = createNodeStorage(rig)
 	passengers.add(
 		dataEntity
 			.set(
@@ -426,14 +426,7 @@ async function generateRootEntityPassengers(
 					new NbtString(TAGS.PROJECT_DATA(aj.export_namespace)),
 				])
 			)
-			.set(
-				'data',
-				new NbtCompound()
-					.set('rigHash', new NbtString(rigHash))
-					.set('locators', locators)
-					.set('cameras', cameras)
-					.set('uuids', uuids)
-			)
+			.set('data', new NbtCompound().set('rig_hash', new NbtString(rigHash)))
 	)
 
 	for (const [uuid, node] of Object.entries(rig.nodes)) {
@@ -679,9 +672,9 @@ async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAn
 		PROGRESS_DESCRIPTION.set(`Creating Animation Storage for '${animation.storage_name}'`)
 		let frames = new NbtCompound()
 		const addFrameDataCommand = () => {
-			const str = `data modify storage aj.${
+			const str = `data modify storage animated_java:${
 				Project!.animated_java.export_namespace
-			}:animations ${animation.storage_name} merge value ${frames.toString()}`
+			}/animations ${animation.storage_name} merge value ${frames.toString()}`
 			dataCommands.push(str)
 			frames = new NbtCompound()
 		}
@@ -707,11 +700,11 @@ async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAn
 					thisFrame.set(
 						node.type.charAt(0) + '_' + node.storage_name,
 						new NbtCompound()
-							.set('posx', new NbtFloat(roundTo(transform.pos[0], 4)))
-							.set('posy', new NbtFloat(roundTo(transform.pos[1], 4)))
-							.set('posz', new NbtFloat(roundTo(transform.pos[2], 4)))
-							.set('rotx', new NbtFloat(roundTo(transform.rot[0], 4)))
-							.set('roty', new NbtFloat(roundTo(transform.rot[1], 4)))
+							.set('px', new NbtFloat(roundTo(transform.pos[0], 4)))
+							.set('py', new NbtFloat(roundTo(transform.pos[1], 4)))
+							.set('pz', new NbtFloat(roundTo(transform.pos[2], 4)))
+							.set('rx', new NbtFloat(roundTo(transform.rot[0], 4)))
+							.set('ry', new NbtFloat(roundTo(transform.rot[1], 4)))
 					)
 				}
 			}
@@ -743,44 +736,6 @@ async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAn
 	}
 
 	return dataCommands
-}
-
-function createPassengerStorage(rig: IRenderedRig) {
-	const uuids = new NbtCompound()
-	const locators = new NbtCompound()
-	const cameras = new NbtCompound()
-	// Data entity
-	uuids.set('data_data', new NbtString(''))
-	for (const node of Object.values(rig.nodes)) {
-		switch (node.type) {
-			case 'locator':
-			case 'camera': {
-				const data = new NbtCompound()
-					.set('posx', new NbtFloat(node.default_transform.pos[0]))
-					.set('posy', new NbtFloat(node.default_transform.pos[1]))
-					.set('posz', new NbtFloat(node.default_transform.pos[2]))
-					.set('rotx', new NbtFloat(Math.radToDeg(node.default_transform.rot[0])))
-					.set('roty', new NbtFloat(Math.radToDeg(node.default_transform.rot[1])))
-				if (node.type === 'locator' && node.config?.use_entity)
-					data.set('uuid', new NbtString(''))
-				if (node.type === 'camera') {
-					cameras.set(node.storage_name, data)
-				} else {
-					locators.set(node.storage_name, data)
-				}
-				uuids.set(node.type + '_' + node.storage_name, new NbtString(''))
-				break
-			}
-			case 'bone':
-			case 'text_display':
-			case 'item_display':
-			case 'block_display': {
-				uuids.set(node.type + '_' + node.storage_name, new NbtString(''))
-				break
-			}
-		}
-	}
-	return { locators, cameras, uuids }
 }
 
 function nodeSorter(a: AnyRenderedNode, b: AnyRenderedNode): number {

@@ -111,8 +111,8 @@ dir <%export_namespace%> {
 							IF (locator.config?.use_entity) {
 								$execute \
 									as $(uuid) \
-									positioned ^$(posx) ^$(posy) ^$(posz) \
-									rotated ~$(roty) ~$(rotx) \
+									positioned ^$(px) ^$(py) ^$(pz) \
+									rotated ~$(ry) ~$(rx) \
 								run block as_locator_<%locator.storage_name%> {
 									tp @s ~ ~ ~ ~ ~
 
@@ -128,9 +128,9 @@ dir <%export_namespace%> {
 								}
 							} ELSE IF (locator.config?.ticking_commands) {
 								$execute \
-									positioned ^$(posx) ^$(posy) ^$(posz) \
-									rotated ~$(roty) ~$(rotx) \
-								run block as_locator_<%locator.storage_name%> {
+									positioned ^$(px) ^$(py) ^$(pz) \
+									rotated ~$(ry) ~$(rx) \
+								run block at_locator_<%locator.storage_name%> {
 									<%%
 										emit.mcb(locator.config.ticking_commands)
 									%%>
@@ -143,8 +143,8 @@ dir <%export_namespace%> {
 						block select_camera_<%camera.storage_name%> { with entity @s data.cameras.<%camera.storage_name%>
 							$execute \
 								as $(uuid) \
-								positioned ^$(posx) ^$(posy) ^$(posz) \
-								rotated ~$(roty) ~$(rotx) \
+								positioned ^$(px) ^$(py) ^$(pz) \
+								rotated ~$(ry) ~$(rx) \
 							run tp @s ~ ~ ~ ~ ~
 						}
 					}
@@ -413,11 +413,11 @@ dir <%export_namespace%> {
 												lastActiveFrame[node.uuid] = transform
 												;if (!lastFrame || matrixToNbtFloatArray(transform.matrix).toString() !== matrixToNbtFloatArray(lastFrame.matrix).toString()) {
 													to_merge.locators[node.storage_name] = {
-														posx: transform.pos[0],
-														posy: transform.pos[1],
-														posz: transform.pos[2],
-														roty: transform.head_rot[1],
-														rotx: transform.head_rot[0]
+														px: transform.pos[0],
+														py: transform.pos[1],
+														pz: transform.pos[2],
+														ry: transform.head_rot[1],
+														rx: transform.head_rot[0]
 													};
 												}
 
@@ -450,11 +450,11 @@ dir <%export_namespace%> {
 												lastActiveFrame[node.uuid] = transform
 												;if (!lastFrame || matrixToNbtFloatArray(transform.matrix).toString() !== matrixToNbtFloatArray(lastFrame.matrix).toString()) {
 													to_merge.cameras[node.storage_name] = {
-														posx: transform.pos[0],
-														posy: transform.pos[1],
-														posz: transform.pos[2],
-														roty: transform.head_rot[1],
-														rotx: transform.head_rot[0]
+														px: transform.pos[0],
+														py: transform.pos[1],
+														pz: transform.pos[2],
+														ry: transform.head_rot[1],
+														rx: transform.head_rot[0]
 													};
 												}
 												;break
@@ -818,8 +818,8 @@ dir <%export_namespace%> {
 					}
 
 					$execute \
-						positioned ^$(posx) ^$(posy) ^$(posz) \
-						rotated ~$(roty) ~$(rotx) \
+						positioned ^$(px) ^$(py) ^$(pz) \
+						rotated ~$(ry) ~$(rx) \
 					run $(command)
 				}
 
@@ -848,8 +848,8 @@ dir <%export_namespace%> {
 					data modify storage animated_java:temp args merge from entity @s data.locators.<%locator.storage_name%>
 					block execute_at_transform { with storage animated_java:temp args
 						$execute \
-							positioned ^$(posx) ^$(posy) ^$(posz) \
-							rotated ~$(roty) ~$(rotx) \
+							positioned ^$(px) ^$(py) ^$(pz) \
+							rotated ~$(ry) ~$(rx) \
 						run $(command)
 					}
 				}
@@ -1073,7 +1073,7 @@ dir <%export_namespace%> {
 							at @s \
 							on passengers \
 							if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] \
-						run block zzz/set_default_pose/as_data/locator_<%locator.storage_name%> { with entity @s data.locators.<%locator.storage_name%>
+						run block zzz/set_default_pose/as_locator_<%locator.storage_name%> { with entity @s data.locators.<%locator.storage_name%>
 							IF (locator.config?.use_entity) {
 								$tp $(uuid) \
 									^<%roundTo(locator.default_transform.pos[0], 10)%> \
@@ -1082,12 +1082,13 @@ dir <%export_namespace%> {
 									~<%roundTo(locator.default_transform.head_rot[1], 10)%> \
 									~<%roundTo(locator.default_transform.head_rot[0], 10)%>
 							}
-							data modify entity @s data.locators.<%locator.storage_name%> merge value { \
-								posx: <%roundTo(locator.default_transform.pos[0], 10)%>, \
-								posy: <%roundTo(locator.default_transform.pos[1], 10)%>, \
-								posz: <%roundTo(locator.default_transform.pos[2], 10)%>, \
-								roty: <%roundTo(locator.default_transform.head_rot[1], 10)%>, \
-								rotx: <%roundTo(locator.default_transform.head_rot[0], 10)%> \
+
+							$data modify storage <%project_storage%>/$(rig_uuid) locators.<%locator.storage_name%> merge value { \
+								px: <%roundTo(locator.default_transform.pos[0], 10)%>, \
+								py: <%roundTo(locator.default_transform.pos[1], 10)%>, \
+								pz: <%roundTo(locator.default_transform.pos[2], 10)%>, \
+								ry: <%roundTo(locator.default_transform.head_rot[1], 10)%>, \
+								rx: <%roundTo(locator.default_transform.head_rot[0], 10)%> \
 							}
 						}
 					}
@@ -1099,19 +1100,20 @@ dir <%export_namespace%> {
 							at @s \
 							on passengers \
 							if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] \
-						run block zzz/set_default_pose/as_data/camera_<%camera.storage_name%> { with entity @s data.cameras.<%camera.storage_name%>
+						run block zzz/set_default_pose/as_camera_<%camera.storage_name%> { with entity @s data.cameras.<%camera.storage_name%>
 							$tp $(uuid) \
 								^<%roundTo(camera.default_transform.pos[0], 10)%> \
 								^<%roundTo(camera.default_transform.pos[1], 10)%> \
 								^<%roundTo(camera.default_transform.pos[2], 10)%> \
 								~<%roundTo(camera.default_transform.head_rot[1], 10)%> \
 								~<%roundTo(camera.default_transform.head_rot[0], 10)%>
-							data modify entity @s data.cameras.<%camera.storage_name%> merge value { \
-								posx: <%roundTo(camera.default_transform.pos[0], 10)%>, \
-								posy: <%roundTo(camera.default_transform.pos[1], 10)%>, \
-								posz: <%roundTo(camera.default_transform.pos[2], 10)%>, \
-								roty: <%roundTo(camera.default_transform.head_rot[1], 10)%>, \
-								rotx: <%roundTo(camera.default_transform.head_rot[0], 10)%> \
+
+							$data modify storage <%project_storage%>/$(rig_uuid) cameras.<%camera.storage_name%> merge value { \
+								px: <%roundTo(camera.default_transform.pos[0], 10)%>, \
+								py: <%roundTo(camera.default_transform.pos[1], 10)%>, \
+								pz: <%roundTo(camera.default_transform.pos[2], 10)%>, \
+								ry: <%roundTo(camera.default_transform.head_rot[1], 10)%>, \
+								rx: <%roundTo(camera.default_transform.head_rot[0], 10)%> \
 							}
 						}
 					}
