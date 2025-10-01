@@ -3,7 +3,7 @@
 		"format": "animated_java_blueprint",
 		"format_version": "1.8.0",
 		"uuid": "167b27cd-b559-3f13-a97c-0841fe21f1d1",
-		"save_location": "D:\\github-repos\\animated-java\\old-animated-java\\test-packs\\1.21.8\\blueprints\\armor_stand.ajblueprint",
+		"save_location": "D:\\github-repos\\animated-java\\old-animated-java\\test-packs\\1.20.4\\blueprints\\armor_stand_1.20.4.ajblueprint",
 		"last_used_export_namespace": "armor_stand"
 	},
 	"blueprint_settings": {
@@ -14,7 +14,7 @@
 		"enable_plugin_mode": false,
 		"resource_pack_export_mode": "raw",
 		"data_pack_export_mode": "raw",
-		"target_minecraft_version": "1.21.5",
+		"target_minecraft_version": "1.20.4",
 		"display_item": "minecraft:white_dye",
 		"custom_model_data_offset": 0,
 		"enable_advanced_resource_pack_settings": false,
@@ -885,7 +885,7 @@
 			"config": {},
 			"item": "minecraft:diamond",
 			"itemDisplay": "none",
-			"text": "[\n\t{ text: \"someone's string\\N{HORIZONTAL ELLIPSIS}\\n\" },\n\t{ \"text\": \"\\x40 \\u0042 \\U00000061 \\N{Snowman}\" },\n\t{text: 'test', hover_event: {\n\t\taction:show_item,\n\t\tid:'minecraft:stone'\n\t}},\n\t'awd\"',\n\t\"awd'\", \n\t\"awd\\\"\",\n\t'awd\\'',\n\t'awd\\'\"',\n\t'\\n\\N{Comet}\\n',\n\tno_quotes_on_me,\n\t'\\n',\n\t{\n\t\ttext: orange,\n\t\tcolor: '#ffaa00',\n\t\titalic: true,\n\t\tunderlined: \"true\",\n\t\tstrikethrough: TRUE\n\t}\n]",
+			"text": "[\n\t{ text: \"someone's string...\\n\" },\n\t{ \"text\": \"\\u2603\" },\n\t{text: 'test', hoverEvent: {\n\t\taction:show_item,\n\t\tcontents: {id:'minecraft:stone'}\n\t}},\n\t'awd\"',\n\t\"awd'\", \n\t\"awd\\\"\",\n\t'awd\\'',\n\t'awd\\'\"',\n\t'\\n\\u2604\\n',\n\tno_quotes_on_me,\n\t'\\n',\n\t{\n\t\ttext: orange,\n\t\tcolor: '#ffaa00',\n\t\titalic: true,\n\t\tunderlined: \"true\",\n\t\tstrikethrough: TRUE\n\t}\n]",
 			"lineWidth": 400,
 			"backgroundColor": "#000000",
 			"backgroundAlpha": 0.12941,
@@ -2051,6 +2051,46 @@
 							],
 							"uuid": "523673ac-dff1-1729-8064-4d0258e2de2a",
 							"time": 2,
+							"color": -1,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						}
+					]
+				}
+			}
+		},
+		{
+			"uuid": "791551a5-7e73-8e04-068e-fc13614050d9",
+			"name": "test",
+			"loop": "loop",
+			"override": false,
+			"length": 1,
+			"snapping": 20,
+			"selected": true,
+			"saved": false,
+			"path": "",
+			"anim_time_update": "",
+			"blend_weight": "",
+			"start_delay": "",
+			"loop_delay": "0",
+			"excluded_nodes": [],
+			"animators": {
+				"bc141119-7f51-9690-7e21-e119b34fb3a2": {
+					"name": "item_display",
+					"type": "animated_java:vanilla_item_display",
+					"keyframes": [
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "math.sin(q.life_time * 360 * 8) * 32",
+									"y": "0",
+									"z": "math.cos(q.life_time * 360 * 8) * 32"
+								}
+							],
+							"uuid": "a69ba6a4-665c-ec76-2a8c-8b8e131069ce",
+							"time": 0,
 							"color": -1,
 							"interpolation": "linear",
 							"easing": "linear",
