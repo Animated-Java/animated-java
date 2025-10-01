@@ -2,11 +2,11 @@ import { isCurrentFormat } from '../../blueprintFormat'
 import TextDisplayElementPanel from '../../components/textDisplayElementPanel.svelte'
 import { PACKAGE } from '../../constants'
 import { type Alignment, TextDisplay } from '../../outliner/textDisplay'
-import { injectSvelteCompomponentMod } from '../../util/injectSvelteComponent'
+import { injectSvelteComponentMod } from '../../util/injectSvelteComponent'
 import { floatToHex } from '../../util/misc'
 import { translate } from '../../util/translation'
 
-injectSvelteCompomponentMod({
+injectSvelteComponentMod({
 	component: TextDisplayElementPanel,
 	props: {},
 	elementSelector() {

@@ -1,31 +1,27 @@
 import { isCurrentFormat } from '../blueprintFormat'
-import { PACKAGE } from '../constants'
-import { events } from '../util/events'
-import { createBlockbenchMod } from '../util/moddingTools'
+import EVENTS from '../util/events'
+import { registerMod } from '../util/moddingTools'
 
-createBlockbenchMod(
-	`${PACKAGE.name}:keyframeSelectEventMod`,
-	{
-		originalKeyframeSelect: Blockbench.Keyframe.prototype.select,
-		originalUpdateKeyframeSelection: updateKeyframeSelection,
-		barItem: BarItems.keyframe_interpolation as BarSelect<string>,
-		originalChange: (BarItems.keyframe_interpolation as BarSelect<string>).set,
-	},
-	context => {
+registerMod({
+	id: `animated-java:keyframe-select-event-mod`,
+
+	apply: () => {
+		const originalKeyframeSelect = Blockbench.Keyframe.prototype.select
 		Blockbench.Keyframe.prototype.select = function (this: _Keyframe, event: any) {
-			if (!isCurrentFormat()) return context.originalKeyframeSelect.call(this, event)
-			const kf = context.originalKeyframeSelect.call(this, event)
-			events.SELECT_KEYFRAME.dispatch(kf)
+			if (!isCurrentFormat()) return originalKeyframeSelect.call(this, event)
+			const kf = originalKeyframeSelect.call(this, event)
+			EVENTS.SELECT_KEYFRAME.publish(kf)
 			return kf
 		}
 
+		const originalUpdateKeyframeSelection = updateKeyframeSelection
 		globalThis.updateKeyframeSelection = function () {
-			if (isCurrentFormat()) return context.originalUpdateKeyframeSelection()
+			if (isCurrentFormat()) return originalUpdateKeyframeSelection()
 
 			Timeline.keyframes.forEach(kf => {
 				if (kf.selected && Timeline.selected && !Timeline.selected.includes(kf)) {
 					kf.selected = false
-					events.UNSELECT_KEYFRAME.dispatch()
+					EVENTS.UNSELECT_KEYFRAME.publish()
 				}
 				let hasExpressions = false
 				if (kf.transform) {
@@ -44,31 +40,39 @@ createBlockbenchMod(
 
 			if (Timeline.selected) {
 				console.log('Selected keyframe:', Timeline.selected[0])
-				events.SELECT_KEYFRAME.dispatch(Timeline.selected[0])
+				EVENTS.SELECT_KEYFRAME.publish(Timeline.selected[0])
 			}
 
-			return context.originalUpdateKeyframeSelection()
+			return originalUpdateKeyframeSelection()
 		}
 
-		context.barItem.set = function (this: BarSelect<string>, value) {
-			const result = context.originalChange.call(this, value)
+		const barItem = BarItems.keyframe_interpolation as BarSelect<string>
+		const originalChange = (BarItems.keyframe_interpolation as BarSelect<string>).set
+		barItem.set = function (this: BarSelect<string>, value) {
+			const result = originalChange.call(this, value)
 
 			if (isCurrentFormat()) {
 				if (Timeline.selected && Timeline.selected.length > 0) {
-					events.SELECT_KEYFRAME.dispatch(Timeline.selected[0])
+					EVENTS.SELECT_KEYFRAME.publish(Timeline.selected[0])
 				} else {
-					events.UNSELECT_KEYFRAME.dispatch()
+					EVENTS.UNSELECT_KEYFRAME.publish()
 				}
 			}
 
 			return result
 		}
 
-		return context
+		return { originalKeyframeSelect, originalUpdateKeyframeSelection, barItem, originalChange }
 	},
-	context => {
-		Blockbench.Keyframe.prototype.select = context.originalKeyframeSelect
-		globalThis.updateKeyframeSelection = context.originalUpdateKeyframeSelection
-		context.barItem.change = context.originalChange
-	}
-)
+
+	revert: ({
+		originalKeyframeSelect,
+		originalUpdateKeyframeSelection,
+		barItem,
+		originalChange,
+	}) => {
+		Blockbench.Keyframe.prototype.select = originalKeyframeSelect
+		globalThis.updateKeyframeSelection = originalUpdateKeyframeSelection
+		barItem.change = originalChange
+	},
+})

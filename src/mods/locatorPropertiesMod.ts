@@ -1,20 +1,19 @@
 import { isCurrentFormat as condition } from '../blueprintFormat'
-import { PACKAGE } from '../constants'
-import { type ContextProperty, createBlockbenchMod } from '../util/moddingTools'
+import { registerMod } from '../util/moddingTools'
 
-createBlockbenchMod(
-	`${PACKAGE.name}:locatorProperties`,
-	{
-		config: undefined as ContextProperty<'instance'>,
-	},
-	context => {
-		context.config = new Property(Locator, 'instance', 'config', {
+registerMod({
+	id: `animated-java:locator-properties`,
+
+	apply: () => {
+		const config = new Property(Locator, 'instance', 'config', {
 			condition,
 			default: undefined,
 		})
-		return context
+
+		return { config }
 	},
-	context => {
-		context.config?.delete()
-	}
-)
+
+	revert: ({ config }) => {
+		config?.delete()
+	},
+})

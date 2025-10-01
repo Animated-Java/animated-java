@@ -1,8 +1,8 @@
+import { registerAction } from 'src/util/moddingTools'
 import { BLUEPRINT_FORMAT } from '../../blueprintFormat'
 import BoneConfigDialogSvelteComponent from '../../components/boneConfigDialog.svelte'
 import { PACKAGE } from '../../constants'
 import { BoneConfig } from '../../nodeConfigs'
-import { createAction } from '../../util/moddingTools'
 import { Valuable } from '../../util/stores'
 import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
@@ -171,7 +171,7 @@ export function openBoneConfigDialog(bone: Group) {
 	}).show()
 }
 
-export const BONE_CONFIG_ACTION = createAction(`${PACKAGE.name}:bone_config`, {
+export const BONE_CONFIG_ACTION = registerAction(`animated-java:bone-config`, {
 	icon: 'settings',
 	name: translate('action.open_bone_config.name'),
 	condition: () => Format === BLUEPRINT_FORMAT,

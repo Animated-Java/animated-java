@@ -1,11 +1,6 @@
+import { registerProjectMod } from 'src/util/moddingTools'
 import { BLUEPRINT_FORMAT } from '../blueprintFormat'
-import { events } from '../util/events'
 import { translate } from '../util/translation'
-
-const DEFAULT_SHOW_MOTION_TRAIL = Animator.showMotionTrail
-const DEFAULT_PREVIEW = Animator.preview
-const DEFAULT_UPDATE_SELECTION = globalThis.updateSelection
-const DEFAULT_SELECT = Locator.prototype.select
 
 export class LocatorAnimator extends BoneAnimator {
 	private _name: string
@@ -101,66 +96,78 @@ LocatorAnimator.prototype.channels = {
 	},
 }
 
-let installed = false
+registerProjectMod({
+	id: 'animated-java:locator-animator',
 
-function inject() {
-	if (installed) return
+	condition: project => project.format === BLUEPRINT_FORMAT,
 
-	Locator.animator = LocatorAnimator as any
+	apply: () => {
+		Locator.animator = LocatorAnimator as any
 
-	Animator.showMotionTrail = function (target?: Group) {
-		if (!target || target instanceof Locator) return
-		DEFAULT_SHOW_MOTION_TRAIL(target)
-	}
-	Animator.preview = function (inLoop?: boolean) {
-		DEFAULT_PREVIEW(inLoop)
-		if (
-			Mode.selected.id === Modes.options.animate.id &&
-			Outliner.selected[0] instanceof Locator
+		const originalShowMotionTrail = Animator.showMotionTrail
+		Animator.showMotionTrail = function (target?: Group) {
+			if (!target || target instanceof Locator) return
+			originalShowMotionTrail(target)
+		}
+
+		const originalPreview = Animator.preview
+		Animator.preview = function (inLoop?: boolean) {
+			originalPreview(inLoop)
+			if (
+				Mode.selected.id === Modes.options.animate.id &&
+				Outliner.selected[0] instanceof Locator
+			) {
+				// @ts-ignore
+				Canvas.gizmos[0].visible = false
+				Transformer.visible = false
+			}
+		}
+
+		const originalUpdateSelection = globalThis.updateSelection
+		globalThis.updateSelection = function () {
+			originalUpdateSelection()
+			if (
+				Mode.selected.id === Modes.options.animate.id &&
+				Outliner.selected[0] instanceof Locator
+			) {
+				// @ts-ignore
+				Canvas.gizmos[0].visible = false
+				Transformer.visible = false
+			}
+		}
+
+		const originalSelect = Locator.prototype.select
+		Locator.prototype.select = function (
+			this: Locator,
+			event?: any,
+			isOutlinerClick?: boolean
 		) {
-			// @ts-ignore
-			Canvas.gizmos[0].visible = false
-			Transformer.visible = false
+			const result = originalSelect.call(this, event, isOutlinerClick)
+			if (Animator.open && Blockbench.Animation.selected) {
+				Blockbench.Animation.selected.getBoneAnimator().select()
+			}
+			return result
 		}
-	}
-	globalThis.updateSelection = function () {
-		DEFAULT_UPDATE_SELECTION()
-		if (
-			Mode.selected.id === Modes.options.animate.id &&
-			Outliner.selected[0] instanceof Locator
-		) {
-			// @ts-ignore
-			Canvas.gizmos[0].visible = false
-			Transformer.visible = false
+
+		return {
+			originalShowMotionTrail,
+			originalPreview,
+			originalUpdateSelection,
+			originalSelect,
 		}
-	}
-	Locator.prototype.select = function (this: Locator, event?: any, isOutlinerClick?: boolean) {
-		const result = DEFAULT_SELECT.call(this, event, isOutlinerClick)
-		if (Animator.open && Blockbench.Animation.selected) {
-			Blockbench.Animation.selected.getBoneAnimator().select()
-		}
-		return result
-	}
+	},
 
-	installed = true
-}
+	revert: ({
+		originalShowMotionTrail,
+		originalPreview,
+		originalUpdateSelection,
+		originalSelect,
+	}) => {
+		Locator.animator = undefined
 
-function extract() {
-	if (!installed) return
-	Locator.animator = undefined
-
-	Animator.showMotionTrail = DEFAULT_SHOW_MOTION_TRAIL
-	Animator.preview = DEFAULT_PREVIEW
-	globalThis.updateSelection = DEFAULT_UPDATE_SELECTION
-	Locator.prototype.select = DEFAULT_SELECT
-
-	installed = false
-}
-
-events.PRE_SELECT_PROJECT.subscribe(project => {
-	if (project.format.id === BLUEPRINT_FORMAT.id) {
-		inject()
-	} else {
-		extract()
-	}
+		Animator.showMotionTrail = originalShowMotionTrail
+		Animator.preview = originalPreview
+		globalThis.updateSelection = originalUpdateSelection
+		Locator.prototype.select = originalSelect
+	},
 })

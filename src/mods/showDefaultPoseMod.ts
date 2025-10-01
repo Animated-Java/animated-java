@@ -1,15 +1,14 @@
 import { isCurrentFormat } from '../blueprintFormat'
-import { PACKAGE } from '../constants'
-import { createBlockbenchMod } from '../util/moddingTools'
+import { registerMod } from '../util/moddingTools'
 
-createBlockbenchMod(
-	`${PACKAGE.name}:showDefaultPose`,
-	{
-		original: Animator.showDefaultPose,
-	},
-	context => {
+registerMod({
+	id: `animated-java:show-default-pose`,
+
+	apply: () => {
+		const original = Animator.showDefaultPose
+
 		Animator.showDefaultPose = function (noMatrixUpdate?: boolean) {
-			if (!isCurrentFormat()) return context.original(noMatrixUpdate)
+			if (!isCurrentFormat()) return original(noMatrixUpdate)
 
 			const nodes = [...Group.all, ...Outliner.elements]
 			for (const node of nodes) {
@@ -31,9 +30,10 @@ createBlockbenchMod(
 			if (!noMatrixUpdate) scene.updateMatrixWorld()
 		}
 
-		return context
+		return { original }
 	},
-	context => {
-		Animator.showDefaultPose = context.original
-	}
-)
+
+	revert: ({ original }) => {
+		Animator.showDefaultPose = original
+	},
+})

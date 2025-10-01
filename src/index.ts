@@ -1,12 +1,12 @@
 import { PACKAGE } from './constants'
-import { events } from './util/events'
+import EVENTS from './util/events'
 import './util/translation'
 // Blueprint Format
 import './blueprintFormat'
 // Interface
 import './interface'
 // Blockbench Mods
-import './mods'
+import './mods/**'
 // Outliner
 import './outliner/textDisplay'
 import './outliner/vanillaBlockDisplay'
@@ -126,7 +126,7 @@ requestAnimationFrame(() => {
 })
 
 // Uninstall events
-events.EXTRACT_MODS.subscribe(() => {
+EVENTS.EXTRACT_MODS.subscribe(() => {
 	// @ts-ignore
 	globalThis.AnimatedJava = undefined
 })
@@ -142,17 +142,17 @@ BBPlugin.register(PACKAGE.name, {
 	tags: ['Minecraft: Java Edition', 'Animation', 'Display Entities'],
 	await_loading: true,
 	onload() {
-		events.LOAD.dispatch()
+		EVENTS.PLUGIN_LOAD.publish()
 	},
 	onunload() {
-		events.UNLOAD.dispatch()
+		EVENTS.PLUGIN_UNLOAD.publish()
 	},
 	oninstall() {
-		events.INSTALL.dispatch()
+		EVENTS.PLUGIN_INSTALL.publish()
 		openInstallPopup()
 	},
 	onuninstall() {
-		events.UNINSTALL.dispatch()
+		EVENTS.PLUGIN_UNINSTALL.publish()
 		Blockbench.showMessageBox({
 			title: 'Animated Java has Been Uninstalled!',
 			message: 'In order to fully uninstall Animated Java, please restart Blockbench.',

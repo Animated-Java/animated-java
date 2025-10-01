@@ -1,8 +1,8 @@
+import { registerAction } from 'src/util/moddingTools'
 import { BLUEPRINT_FORMAT } from '../../blueprintFormat'
 import LocatorConfigDialog from '../../components/locatorConfigDialog.svelte'
 import { PACKAGE } from '../../constants'
 import { LocatorConfig } from '../../nodeConfigs'
-import { createAction } from '../../util/moddingTools'
 import { Valuable } from '../../util/stores'
 import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
@@ -42,7 +42,7 @@ export function openLocatorConfigDialog(locator: Locator) {
 	}).show()
 }
 
-export const LOCATOR_CONFIG_ACTION = createAction(`${PACKAGE.name}:locator_config`, {
+export const LOCATOR_CONFIG_ACTION = registerAction(`animated-java:locator-config`, {
 	icon: 'settings',
 	name: translate('action.open_locator_config.name'),
 	condition: () => Format === BLUEPRINT_FORMAT,

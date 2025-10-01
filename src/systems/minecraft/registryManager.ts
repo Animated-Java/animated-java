@@ -1,6 +1,6 @@
+import EVENTS from '../../util/events'
 import { checkForAssetsUpdate } from './assetManager'
 import { getLatestVersion } from './versionManager'
-import { events } from '../../util/events'
 
 interface IRegistryJSON {
 	activity: string[]
@@ -175,10 +175,10 @@ export async function checkForRegistryUpdate() {
 
 	console.log('Minecraft Registry is up to date!')
 	updateMemoryRegistry()
-	requestAnimationFrame(() => events.MINECRAFT_REGISTRY_LOADED.dispatch())
+	requestAnimationFrame(() => EVENTS.MINECRAFT_REGISTRY_LOADED.publish())
 }
 
-events.NETWORK_CONNECTED.subscribe(() => {
+EVENTS.NETWORK_CONNECTED.subscribe(() => {
 	void checkForRegistryUpdate().then(async () => {
 		await checkForAssetsUpdate()
 	})

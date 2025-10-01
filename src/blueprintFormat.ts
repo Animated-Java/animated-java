@@ -4,8 +4,8 @@ import ProjectTitleSvelte from './components/projectTitle.svelte'
 import { PACKAGE } from './constants'
 import { type BillboardMode, BoneConfig, LocatorConfig } from './nodeConfigs'
 import { process } from './systems/modelDataFixerUpper'
-import { events } from './util/events'
-import { injectSvelteCompomponent } from './util/injectSvelteComponent'
+import EVENTS from './util/events'
+import { injectSvelteComponent } from './util/injectSvelteComponent'
 import { sanitizeStorageKey } from './util/minecraftUtil'
 import { addProjectToRecentProjects } from './util/misc'
 import { Valuable } from './util/stores'
@@ -181,8 +181,8 @@ function initializeBoundingBoxUpdate() {
 		boundingBoxUpdateIntervalId = setInterval(() => {
 			updateBoundingBox()
 		}, 500)
-		events.UNLOAD.subscribe(() => clearInterval(boundingBoxUpdateIntervalId), true)
-		events.UNINSTALL.subscribe(() => clearInterval(boundingBoxUpdateIntervalId), true)
+		EVENTS.PLUGIN_UNLOAD.subscribe(() => clearInterval(boundingBoxUpdateIntervalId), true)
+		EVENTS.PLUGIN_UNINSTALL.subscribe(() => clearInterval(boundingBoxUpdateIntervalId), true)
 	}
 }
 
@@ -563,7 +563,7 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 		component: {
 			methods: {},
 			created() {
-				void injectSvelteCompomponent({
+				void injectSvelteComponent({
 					elementSelector: () => $('#format_page_animated_java_blueprint_mount')[0],
 					component: FormatPageSvelte,
 					props: {},
@@ -602,7 +602,7 @@ export const BLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 					const element = document.querySelector('#tab_bar_list .icon-armor_stand.icon')
 					element?.remove()
 					// Custom title
-					void injectSvelteCompomponent({
+					void injectSvelteComponent({
 						elementSelector: () => {
 							const titles = [
 								...document.querySelectorAll(
@@ -723,24 +723,24 @@ export function disableRotationLock() {
 	BLUEPRINT_FORMAT.rotation_snap = false
 }
 
-events.SELECT_PROJECT.subscribe(project => {
+EVENTS.SELECT_PROJECT.subscribe(project => {
 	if (project.format.id === BLUEPRINT_FORMAT.id) {
-		events.SELECT_AJ_PROJECT.dispatch(project)
+		EVENTS.SELECT_AJ_PROJECT.publish(project)
 	}
 })
-events.UNSELECT_PROJECT.subscribe(project => {
+EVENTS.UNSELECT_PROJECT.subscribe(project => {
 	if (project.format.id === BLUEPRINT_FORMAT.id) {
-		events.UNSELECT_AJ_PROJECT.dispatch(project)
+		EVENTS.UNSELECT_AJ_PROJECT.publish(project)
 	}
 })
-events.UPDATE_SELECTION.subscribe(updateRotationLock)
-events.SELECT_AJ_PROJECT.subscribe(() => {
+EVENTS.UPDATE_SELECTION.subscribe(updateRotationLock)
+EVENTS.SELECT_AJ_PROJECT.subscribe(() => {
 	requestAnimationFrame(() => {
 		updateBoundingBox()
 		updateRotationLock()
 	})
 })
-events.UNSELECT_AJ_PROJECT.subscribe(project => {
+EVENTS.UNSELECT_AJ_PROJECT.subscribe(project => {
 	if (project.visualBoundingBox) scene.remove(project.visualBoundingBox)
 	disableRotationLock()
 })

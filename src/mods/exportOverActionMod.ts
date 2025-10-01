@@ -1,15 +1,14 @@
 import { BLUEPRINT_CODEC, BLUEPRINT_FORMAT } from '../blueprintFormat'
-import { PACKAGE } from '../constants'
-import { createBlockbenchMod } from '../util/moddingTools'
+import { registerMod } from '../util/moddingTools'
 
-createBlockbenchMod(
-	`${PACKAGE.name}:exportOverAction`,
-	{
-		action: BarItems.export_over as Action,
-		originalClick: (BarItems.export_over as Action).click,
-	},
-	context => {
-		context.action.click = (event: Event) => {
+registerMod({
+	id: `animated-java:export-over-action`,
+
+	apply: () => {
+		const action = BarItems.export_over as Action
+
+		const originalClick = (BarItems.export_over as Action).click
+		action.click = (event: Event) => {
 			if (!Project || !Format) return
 			if (Format.id === BLUEPRINT_FORMAT.id) {
 				const path = Project.save_path || Project.export_path
@@ -27,12 +26,14 @@ createBlockbenchMod(
 					BLUEPRINT_CODEC.export()
 				}
 			} else {
-				context.originalClick.call(context.action, event)
+				originalClick.call(action, event)
 			}
 		}
-		return context
+
+		return { action, originalClick }
 	},
-	context => {
-		context.action.click = context.originalClick
-	}
-)
+
+	revert: ({ action, originalClick }) => {
+		action.click = originalClick
+	},
+})

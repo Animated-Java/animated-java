@@ -1,20 +1,21 @@
-import { BLUEPRINT_FORMAT } from '../blueprintFormat'
-import { PACKAGE } from '../constants'
-import { createBlockbenchMod, createPropertySubscribable } from '../util/moddingTools'
+import { createPropertySubscribable, registerMod } from 'src/util/moddingTools'
+import { isCurrentFormat } from '../blueprintFormat'
 
-createBlockbenchMod(
-	`${PACKAGE.name}:animationControllerMod`,
-	undefined,
-	() => {
+registerMod({
+	id: `animated-java:animation-controller-mod`,
+
+	apply: () => {
 		const [, set] = createPropertySubscribable(AnimationController.prototype, 'saved')
 		const unsubSet = set.subscribe(({ storage }) => {
-			if (Format.id === BLUEPRINT_FORMAT.id) {
+			if (isCurrentFormat()) {
 				storage.value = true
 			}
 		})
+
 		return { unsubSet }
 	},
-	context => {
-		context.unsubSet()
-	}
-)
+
+	revert: ({ unsubSet }) => {
+		unsubSet()
+	},
+})

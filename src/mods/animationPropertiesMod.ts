@@ -1,24 +1,21 @@
+import { registerMod } from 'src/util/moddingTools'
 import { isCurrentFormat } from '../blueprintFormat'
-import { PACKAGE } from '../constants'
 import { roundToNth } from '../util/misc'
-import { type ContextProperty, createBlockbenchMod } from '../util/moddingTools'
 import { translate } from '../util/translation'
 
 export const DEFAULT_SNAPPING_VALUE = 20
 export const MINIMUM_ANIMATION_LENGTH = 0.05
 
-createBlockbenchMod(
-	`${PACKAGE.name}:animationDefaultPropertiesMod`,
-	{
-		originalExtend: Blockbench.Animation.prototype.extend,
-		originalSetLength: Blockbench.Animation.prototype.setLength,
-	},
-	context => {
+registerMod({
+	id: `animated-java:animation-properties-mod`,
+
+	apply: () => {
+		const originalExtend = Blockbench.Animation.prototype.extend
 		Blockbench.Animation.prototype.extend = function (
 			this: _Animation,
 			data: AnimationOptions
 		) {
-			context.originalExtend.call(this, data)
+			originalExtend.call(this, data)
 			if (isCurrentFormat()) {
 				this.snapping = DEFAULT_SNAPPING_VALUE
 				this.length = Math.max(this.length, MINIMUM_ANIMATION_LENGTH)
@@ -37,28 +34,15 @@ createBlockbenchMod(
 			return this
 		}
 
+		const originalSetLength = Blockbench.Animation.prototype.setLength
 		Blockbench.Animation.prototype.setLength = function (this: _Animation, length?: number) {
 			if (isCurrentFormat()) {
 				length = Math.max(length || this.length, MINIMUM_ANIMATION_LENGTH)
 			}
-			return context.originalSetLength.call(this, length)
+			return originalSetLength.call(this, length)
 		}
 
-		return context
-	},
-	context => {
-		Blockbench.Animation.prototype.extend = context.originalExtend
-		Blockbench.Animation.prototype.setLength = context.originalSetLength
-	}
-)
-
-createBlockbenchMod(
-	`${PACKAGE.name}:animationPropertiesMod`,
-	{
-		excludedNodesProperty: undefined as ContextProperty<'array'>,
-	},
-	context => {
-		context.excludedNodesProperty = new Property(
+		const excludedNodesProperty = new Property(
 			Blockbench.Animation,
 			'array',
 			'excluded_nodes',
@@ -68,9 +52,13 @@ createBlockbenchMod(
 				default: [],
 			}
 		)
-		return context
+
+		return { originalExtend, originalSetLength, excludedNodesProperty }
 	},
-	context => {
-		context.excludedNodesProperty?.delete()
-	}
-)
+
+	revert: ({ originalExtend, originalSetLength, excludedNodesProperty }) => {
+		Blockbench.Animation.prototype.extend = originalExtend
+		Blockbench.Animation.prototype.setLength = originalSetLength
+		excludedNodesProperty.delete()
+	},
+})

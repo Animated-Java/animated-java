@@ -1,6 +1,6 @@
 import { StringStream } from 'generic-stream'
 import { TextDisplay } from 'src/outliner/textDisplay'
-import { events } from 'src/util/events'
+import EVENTS from 'src/util/events'
 
 const ESCAPE_SEQUENCES = {
 	'\\': '\\',
@@ -38,7 +38,7 @@ async function loadUnicodeCharMappings() {
 	}
 }
 
-events.NETWORK_CONNECTED.subscribe(() => {
+EVENTS.NETWORK_CONNECTED.subscribe(() => {
 	void loadUnicodeCharMappings()
 })
 

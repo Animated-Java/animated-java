@@ -2,11 +2,11 @@ import { isCurrentFormat } from '../../blueprintFormat'
 import VanillaItemDisplayElementPanel from '../../components/vanillaItemDisplayElementPanel.svelte'
 import { PACKAGE } from '../../constants'
 import { type ItemDisplayMode, VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
-import { events } from '../../util/events'
-import { injectSvelteCompomponentMod } from '../../util/injectSvelteComponent'
+import EVENTS from '../../util/events'
+import { injectSvelteComponentMod } from '../../util/injectSvelteComponent'
 import { translate } from '../../util/translation'
 
-injectSvelteCompomponentMod({
+injectSvelteComponentMod({
 	component: VanillaItemDisplayElementPanel,
 	props: {},
 	elementSelector() {
@@ -84,9 +84,9 @@ function updateItemDisplaySelect() {
 	value ??= 'none'
 	ITEM_DISPLAY_ITEM_DISPLAY_SELECT.set(value)
 }
-events.UNDO.subscribe(() => {
+EVENTS.UNDO.subscribe(() => {
 	updateItemDisplaySelect()
 })
-events.REDO.subscribe(() => {
+EVENTS.REDO.subscribe(() => {
 	updateItemDisplaySelect()
 })

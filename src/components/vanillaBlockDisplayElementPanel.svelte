@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
-	import { events } from '../util/events'
+	import EVENTS from '../util/events'
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
 
@@ -13,7 +13,7 @@
 
 	let unsub: (() => void) | undefined
 
-	events.UPDATE_SELECTION.subscribe(() => {
+	EVENTS.UPDATE_SELECTION.subscribe(() => {
 		unsub?.()
 
 		lastSelected = selectedDisplay

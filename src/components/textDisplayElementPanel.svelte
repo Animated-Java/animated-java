@@ -10,7 +10,7 @@
 		TEXT_DISPLAY_WIDTH_SLIDER,
 	} from '../interface/panel/textDisplayElement'
 	import { TextDisplay } from '../outliner/textDisplay'
-	import { events } from '../util/events'
+	import EVENTS from '../util/events'
 	import { floatToHex } from '../util/misc'
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
@@ -39,7 +39,7 @@
 
 	let unsubFromText: Unsubscriber | undefined
 
-	const unsubFromEvent = events.UPDATE_SELECTION.subscribe(() => {
+	const unsubFromEvent = EVENTS.UPDATE_SELECTION.subscribe(() => {
 		unsubFromText?.()
 
 		lastSelected = selected

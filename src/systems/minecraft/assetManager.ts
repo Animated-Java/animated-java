@@ -1,11 +1,14 @@
 import { PACKAGE } from '../../constants'
-import { events } from '../../util/events'
+import EVENTS from '../../util/events'
 import { getCurrentVersion, getLatestVersion } from './versionManager'
 
 import download from 'download'
 import type { Unzipped } from 'fflate'
 import index from '../../assets/vanillaAssetOverrides/index.json'
+
 import {
+	hideLoadingPopup,
+	showLoadingPopup,
 	showOfflineError,
 	updateLoadingProgress,
 	updateLoadingProgressLabel,
@@ -99,7 +102,7 @@ export async function checkForAssetsUpdate() {
 	await extractAssets()
 	console.log('Minecraft assets are up to date!')
 	localStorage.setItem('assetsLoaded', 'true')
-	requestAnimationFrame(() => events.MINECRAFT_ASSETS_LOADED.dispatch())
+	requestAnimationFrame(() => EVENTS.MINECRAFT_ASSETS_LOADED.publish())
 }
 
 let loadedAssets: Unzipped | undefined
@@ -118,7 +121,7 @@ export async function assetsLoaded() {
 		if (loadedAssets !== undefined) {
 			resolve()
 		} else {
-			events.MINECRAFT_ASSETS_LOADED.subscribe(() => resolve(), true)
+			EVENTS.MINECRAFT_ASSETS_LOADED.subscribe(() => resolve(), true)
 		}
 	})
 }
@@ -157,3 +160,29 @@ export function getJSONAsset(path: string) {
 		throw error
 	}
 }
+
+EVENTS.PLUGIN_LOAD.subscribe(() => {
+	void showLoadingPopup().then(async () => {
+		if (!window.navigator.onLine) {
+			showOfflineError()
+		}
+		EVENTS.NETWORK_CONNECTED.publish()
+
+		await Promise.all([
+			new Promise<void>(resolve => EVENTS.MINECRAFT_ASSETS_LOADED.subscribe(resolve)),
+			new Promise<void>(resolve => EVENTS.MINECRAFT_REGISTRY_LOADED.subscribe(resolve)),
+			new Promise<void>(resolve => EVENTS.MINECRAFT_FONTS_LOADED.subscribe(resolve)),
+			new Promise<void>(resolve => EVENTS.BLOCKSTATE_REGISTRY_LOADED.subscribe(resolve)),
+		])
+			.then(() => {
+				hideLoadingPopup()
+			})
+			.catch(error => {
+				console.error(error)
+				Blockbench.showToastNotification({
+					text: 'Animated Java failed to load! Please restart Blockbench',
+					color: 'var(--color-error)',
+				})
+			})
+	})
+})

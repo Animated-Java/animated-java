@@ -1,9 +1,9 @@
+import { registerAction } from 'src/util/moddingTools'
 import { isCurrentFormat } from '../../blueprintFormat'
 import TextDisplayConfigDialog from '../../components/textDisplayConfigDialog.svelte'
 import { PACKAGE } from '../../constants'
 import { TextDisplayConfig } from '../../nodeConfigs'
 import { TextDisplay } from '../../outliner/textDisplay'
-import { createAction } from '../../util/moddingTools'
 import { Valuable } from '../../util/stores'
 import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
@@ -86,7 +86,7 @@ export function openBoneConfigDialog(bone: TextDisplay) {
 	}).show()
 }
 
-export const TEXT_DISPLAY_CONFIG_ACTION = createAction(`${PACKAGE.name}:text_display_config`, {
+export const TEXT_DISPLAY_CONFIG_ACTION = registerAction(`animated-java:text-display-config`, {
 	icon: 'settings',
 	name: translate('action.open_text_display_config.name'),
 	condition: () => isCurrentFormat(),

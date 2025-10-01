@@ -1,6 +1,5 @@
+import { registerMod } from 'src/util/moddingTools'
 import { isCurrentFormat } from '../blueprintFormat'
-import { PACKAGE } from '../constants'
-import { type ContextProperty, createBlockbenchMod } from '../util/moddingTools'
 
 import {
 	EASING_DEFAULT,
@@ -19,22 +18,22 @@ function lerp(start: number, stop: number, amt: number): number {
 	return amt * (stop - start) + start
 }
 
-createBlockbenchMod(
-	`${PACKAGE.name}:keyframeEasingMod`,
-	{
-		originalGetLerp: Blockbench.Keyframe.prototype.getLerp,
-		easingProperty: undefined as ContextProperty<'string'>,
-		easingArgsProperty: undefined as ContextProperty<'array'>,
-	},
-	context => {
-		context.easingProperty = new Property(Blockbench.Keyframe, 'string', 'easing', {
-			default: EASING_DEFAULT,
-			condition: isCurrentFormat(),
-		})
-		context.easingArgsProperty = new Property(Blockbench.Keyframe, 'array', 'easingArgs', {
-			condition: isCurrentFormat(),
-		})
+registerMod({
+	id: `animated-java:keyframe-easing-mod`,
 
+	apply: () => {
+		const properties = [
+			new Property(Blockbench.Keyframe, 'string', 'easing', {
+				default: EASING_DEFAULT,
+				condition: isCurrentFormat(),
+			}),
+
+			new Property(Blockbench.Keyframe, 'array', 'easingArgs', {
+				condition: isCurrentFormat(),
+			}),
+		]
+
+		const originalGetLerp = Blockbench.Keyframe.prototype.getLerp
 		Blockbench.Keyframe.prototype.getLerp = function (
 			this: _Keyframe,
 			other,
@@ -45,7 +44,7 @@ createBlockbenchMod(
 			const easing = other.easing || 'linear'
 
 			if (!isCurrentFormat() || easing === 'linear')
-				return context.originalGetLerp.call(this, other, axis, amount, allowExpression)
+				return originalGetLerp.call(this, other, axis, amount, allowExpression)
 
 			let easingFunc = easingFunctions[easing]
 			if (hasArgs(easing)) {
@@ -67,14 +66,16 @@ createBlockbenchMod(
 			return result
 		}
 
-		return context
+		return { properties, originalGetLerp }
 	},
-	context => {
-		context.easingProperty?.delete()
-		context.easingArgsProperty?.delete()
-		Blockbench.Keyframe.prototype.getLerp = context.originalGetLerp
-	}
-)
+	revert: ({ properties, originalGetLerp }) => {
+		for (const prop of properties) {
+			prop.delete()
+		}
+
+		Blockbench.Keyframe.prototype.getLerp = originalGetLerp
+	},
+})
 
 export function reverseEasing(easing?: EasingKey): EasingKey | undefined {
 	if (!easing) return easing
@@ -84,15 +85,14 @@ export function reverseEasing(easing?: EasingKey): EasingKey | undefined {
 	return easing
 }
 
-createBlockbenchMod(
-	`${PACKAGE.name}:reverseKeyframesMod`,
-	{
-		action: BarItems.reverse_keyframes as Action,
-		originalClick: (BarItems.reverse_keyframes as Action).click,
-	},
-	context => {
-		context.action.click = function (event?: Event) {
-			context.originalClick.call(this, event)
+registerMod({
+	id: `animated-java:reverse-keyframes-mod`,
+	apply: () => {
+		const action = BarItems.reverse_keyframes as Action
+
+		const originalClick = action.click
+		action.click = function (event?: Event) {
+			originalClick.call(this, event)
 			// There's not really an easy way to merge our undo operation with the original one so we'll make a new one instead
 			Undo.initEdit({ keyframes: Timeline.selected || undefined })
 
@@ -139,9 +139,11 @@ createBlockbenchMod(
 			updateKeyframeSelection()
 			Animator.preview()
 		}
-		return context
+
+		return { action, originalClick }
 	},
-	context => {
-		context.action.click = context.originalClick
-	}
-)
+
+	revert: ({ action, originalClick }) => {
+		action.click = originalClick
+	},
+})

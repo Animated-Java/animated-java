@@ -1,12 +1,11 @@
+import { registerMod } from 'src/util/moddingTools'
 import IncompatiblePluginNotice from '../components/incompatiblePluginNotice.svelte'
-import { PACKAGE } from '../constants'
-import { injectSvelteCompomponentMod } from '../util/injectSvelteComponent'
-import { createBlockbenchMod } from '../util/moddingTools'
+import { injectSvelteComponentMod } from '../util/injectSvelteComponent'
 import { Valuable } from '../util/stores'
 
 const SELECTED_PLUGIN = new Valuable<BBPlugin | null>(null)
 
-injectSvelteCompomponentMod({
+injectSvelteComponentMod({
 	component: IncompatiblePluginNotice,
 	props: {
 		selectedPlugin: SELECTED_PLUGIN,
@@ -16,25 +15,26 @@ injectSvelteCompomponentMod({
 	},
 })
 
-createBlockbenchMod(
-	`${PACKAGE.name}:pluginsDialogMod`,
-	{
+registerMod({
+	id: `animated-java:plugins-dialog-mod`,
+
+	apply: () => {
 		// @ts-expect-error
-		originalSelect: Plugins.dialog.component.methods.selectPlugin,
-	},
-	context => {
+		const original = Plugins.dialog.component.methods.selectPlugin
+
 		// @ts-expect-error
 		Plugins.dialog.component.methods.selectPlugin = function (this, plugin: BBPlugin) {
-			const result = context.originalSelect.call(this, plugin)
+			const result = original.call(this, plugin)
 			SELECTED_PLUGIN.set(plugin)
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 			return result
 		}
 
-		return context
+		return { original }
 	},
-	context => {
+
+	revert: ({ original }) => {
 		// @ts-expect-error
-		Plugins.dialog.component.methods.selectPlugin = context.originalSelect
-	}
-)
+		Plugins.dialog.component.methods.selectPlugin = original
+	},
+})

@@ -1,15 +1,24 @@
 /**
- * Returns a promise that resolves when the given resolver function returns a non-null value
- * @param resolver A function that returns a value or null
- * @param interval The interval in milliseconds to check the resolver function
+ * Polls {@link fn} until it returns a non-nullish value, then resolves the promise with that value.
+ *
+ * if {@link cancelCondition} returns true while polling, the promise is rejected.
  */
-export function pollPromise<T = any>(resolver: () => T | undefined | null, interval?: 250) {
-	return new Promise<T>(resolve => {
-		const id = setInterval(() => {
-			const result = resolver()
-			if (result === null || result === undefined) return
-			clearInterval(id)
-			resolve(result)
+export function pollUntilResult<T>(
+	fn: () => T | undefined | null,
+	cancelCondition: () => boolean,
+	interval = 100
+): Promise<T> {
+	return new Promise<T>((resolve, reject) => {
+		const intervalId = setInterval(() => {
+			if (cancelCondition()) {
+				clearInterval(intervalId)
+				return reject('pollUntilResult Cancelled')
+			}
+			const result = fn()
+			if (result != undefined) {
+				clearInterval(intervalId)
+				resolve(result)
+			}
 		}, interval)
 	})
 }

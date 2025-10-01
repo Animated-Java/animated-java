@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { ITEM_DISPLAY_ITEM_DISPLAY_SELECT } from '../interface/panel/vanillaItemDisplayElement'
 	import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
-	import { events } from '../util/events'
+	import EVENTS from '../util/events'
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
 
@@ -15,7 +15,7 @@
 
 	let unsub: (() => void) | undefined
 
-	events.UPDATE_SELECTION.subscribe(() => {
+	EVENTS.UPDATE_SELECTION.subscribe(() => {
 		selectedDisplay = VanillaItemDisplay.selected.at(0)
 		if (!selectedDisplay || selected.length > 1) {
 			item = new Valuable('')
@@ -28,7 +28,7 @@
 		visible = true
 	})
 
-	events.UPDATE_SELECTION.subscribe(() => {
+	EVENTS.UPDATE_SELECTION.subscribe(() => {
 		unsub?.()
 
 		lastSelected = selectedDisplay

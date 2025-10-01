@@ -2,8 +2,8 @@ import type { SvelteComponentDev } from 'svelte/internal'
 import { isCurrentFormat } from '../../blueprintFormat'
 import CustomKeyframePanelSvelteComponent from '../../components/customKeyframePanel.svelte'
 import { CUSTOM_CHANNELS } from '../../mods/customKeyframesMod'
-import { events } from '../../util/events'
-import { injectSvelteCompomponent } from '../../util/injectSvelteComponent'
+import EVENTS from '../../util/events'
+import { injectSvelteComponent } from '../../util/injectSvelteComponent'
 import { translate } from '../../util/translation'
 
 let currentPanel: SvelteComponentDev | undefined = undefined
@@ -29,7 +29,7 @@ export function injectCustomKeyframePanel(selectedKeyframe: _Keyframe) {
 		child.remove()
 	}
 
-	void injectSvelteCompomponent({
+	void injectSvelteComponent({
 		component: CustomKeyframePanelSvelteComponent,
 		props: {
 			selectedKeyframe,
@@ -49,6 +49,6 @@ export function injectCustomKeyframePanel(selectedKeyframe: _Keyframe) {
 	})
 }
 
-events.SELECT_KEYFRAME.subscribe(kf => {
+EVENTS.SELECT_KEYFRAME.subscribe(kf => {
 	injectCustomKeyframePanel(kf)
 })

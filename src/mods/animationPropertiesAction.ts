@@ -1,14 +1,12 @@
+import { registerMod } from 'src/util/moddingTools'
 import { isCurrentFormat } from '../blueprintFormat'
-import { PACKAGE } from '../constants'
 import { openAnimationPropertiesDialog } from '../interface/dialog/animationProperties'
-import { createBlockbenchMod } from '../util/moddingTools'
 
-createBlockbenchMod(
-	`${PACKAGE.name}:animationPropertiesAction`,
-	{
-		originalOpen: Blockbench.Animation.prototype.propertiesDialog,
-	},
-	context => {
+registerMod({
+	id: `animated-java:animation-properties-action`,
+
+	apply: () => {
+		const originalOpen = Blockbench.Animation.prototype.propertiesDialog
 		Blockbench.Animation.prototype.propertiesDialog = function (this: _Animation) {
 			if (isCurrentFormat()) {
 				if (!Blockbench.Animation.selected) {
@@ -17,12 +15,13 @@ createBlockbenchMod(
 				}
 				openAnimationPropertiesDialog(Blockbench.Animation.selected)
 			} else {
-				context.originalOpen.call(this)
+				originalOpen.call(this)
 			}
 		}
-		return context
+		return { originalOpen }
 	},
-	context => {
-		Blockbench.Animation.prototype.propertiesDialog = context.originalOpen
-	}
-)
+
+	revert: ({ originalOpen }) => {
+		Blockbench.Animation.prototype.propertiesDialog = originalOpen
+	},
+})

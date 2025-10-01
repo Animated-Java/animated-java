@@ -1,6 +1,6 @@
 import type { IBlueprintVariantJSON } from './blueprintFormat'
 import { getKeyframeVariant, setKeyframeVariant } from './mods/customKeyframesMod'
-import { events } from './util/events'
+import EVENTS from './util/events'
 import { sanitizeStorageKey } from './util/minecraftUtil'
 
 export class TextureMap {
@@ -99,14 +99,14 @@ export class Variant {
 		}
 		Variant.all.push(this)
 		// this.select()
-		events.CREATE_VARIANT.dispatch(this)
+		EVENTS.CREATE_VARIANT.publish(this)
 	}
 
 	public select() {
 		if (Variant.selected) Variant.selected.unselect()
 		Variant.selected = this
 		Canvas.updateAllFaces()
-		events.SELECT_VARIANT.dispatch(this)
+		EVENTS.SELECT_VARIANT.publish(this)
 	}
 
 	public unselect() {
@@ -138,7 +138,7 @@ export class Variant {
 			Variant.selectDefault()
 		}
 
-		events.DELETE_VARIANT.dispatch(this)
+		EVENTS.DELETE_VARIANT.publish(this)
 	}
 
 	public toJSON() {
@@ -246,10 +246,10 @@ export class Variant {
 	}
 }
 
-events.SELECT_PROJECT.subscribe(project => {
+EVENTS.SELECT_PROJECT.subscribe(project => {
 	project.variants ??= []
 	Variant.all = project.variants
 })
-events.UNSELECT_PROJECT.subscribe(() => {
+EVENTS.UNSELECT_PROJECT.subscribe(() => {
 	Variant.all = []
 })

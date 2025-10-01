@@ -1,23 +1,24 @@
 import { BLUEPRINT_FORMAT } from '../blueprintFormat'
-import { PACKAGE } from '../constants'
-import { createBlockbenchMod } from '../util/moddingTools'
+import { registerMod } from '../util/moddingTools'
 
-createBlockbenchMod(
-	`${PACKAGE.name}:saveAllAnimationsActionMod`,
-	{
-		action: BarItems.save_all_animations as Action,
-	},
-	context => {
-		const originalCondition = context.action.condition!
-		context.action.condition = function (this: Action) {
+registerMod({
+	id: `animated-java:save-all-animations-action-mod`,
+
+	apply: () => {
+		const action = BarItems.save_all_animations as Action
+
+		const originalCondition = action.condition
+		action.condition = function (this: Action) {
 			if (Format.id === BLUEPRINT_FORMAT.id) {
 				return false
 			}
 			return Condition(originalCondition)
 		}
-		return { ...context, originalCondition }
+
+		return { action, originalCondition }
 	},
-	context => {
-		context.action.condition = context.originalCondition
-	}
-)
+
+	revert: ({ action, originalCondition }) => {
+		action.condition = originalCondition
+	},
+})

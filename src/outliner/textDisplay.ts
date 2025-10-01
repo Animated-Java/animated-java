@@ -4,14 +4,14 @@ import {
 	isCurrentFormat,
 } from '../blueprintFormat'
 import { PACKAGE } from '../constants'
-import { createAction, createBlockbenchMod } from '../util/moddingTools'
+import { registerAction } from '../util/moddingTools'
 // import * as MinecraftFull from '../assets/MinecraftFull.json'
 import { JsonParserError } from 'src/systems/jsonText/parser'
 import { TEXT_DISPLAY_CONFIG_ACTION } from '../interface/dialog/textDisplayConfig'
 import { TextDisplayConfig } from '../nodeConfigs'
 import { JsonText } from '../systems/jsonText'
 import { getVanillaFont } from '../systems/minecraft/fontManager'
-import { events } from '../util/events'
+import EVENTS from '../util/events'
 import { Valuable } from '../util/stores'
 import { translate } from '../util/translation'
 import { ResizableOutlinerElement } from './resizableOutlinerElement'
@@ -474,41 +474,7 @@ class TextDisplayAnimator extends BoneAnimator {
 TextDisplayAnimator.prototype.type = TextDisplay.type
 TextDisplay.animator = TextDisplayAnimator as any
 
-createBlockbenchMod(
-	`${PACKAGE.name}:textDisplay`,
-	{
-		subscriptions: [] as Array<() => void>,
-	},
-	context => {
-		Interface.Panels.outliner.menu.addAction(CREATE_ACTION, 3)
-		Toolbars.outliner.add(CREATE_ACTION, 0)
-		MenuBar.menus.edit.addAction(CREATE_ACTION, 8)
-
-		context.subscriptions.push(
-			events.SELECT_PROJECT.subscribe(project => {
-				if (project.format.id !== BLUEPRINT_FORMAT.id) return
-				project.textDisplays ??= []
-				TextDisplay.all.empty()
-				TextDisplay.all.push(...project.textDisplays)
-			}),
-			events.UNSELECT_PROJECT.subscribe(project => {
-				if (project.format.id !== BLUEPRINT_FORMAT.id) return
-				project.textDisplays = [...TextDisplay.all]
-				TextDisplay.all.empty()
-			})
-		)
-		return context
-	},
-	context => {
-		Interface.Panels.outliner.menu.removeAction(CREATE_ACTION.id)
-		Toolbars.outliner.remove(CREATE_ACTION)
-		MenuBar.menus.edit.removeAction(CREATE_ACTION.id)
-
-		context.subscriptions.forEach(unsub => unsub())
-	}
-)
-
-export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_text_display`, {
+export const CREATE_ACTION = registerAction(`animated-java:create-text-display`, {
 	name: translate('action.create_text_display.title'),
 	icon: 'text_fields',
 	category: 'animated_java',
@@ -538,4 +504,35 @@ export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_text_display`,
 
 		return textDisplay
 	},
+})
+
+const unsubscribers: Array<() => void> = []
+
+CREATE_ACTION.onCreated(action => {
+	Interface.Panels.outliner.menu.addAction(action, 3)
+	Toolbars.outliner.add(action, 0)
+	MenuBar.menus.edit.addAction(action, 8)
+
+	unsubscribers.push(
+		EVENTS.SELECT_PROJECT.subscribe(project => {
+			if (project.format.id !== BLUEPRINT_FORMAT.id) return
+			project.textDisplays ??= []
+			TextDisplay.all.empty()
+			TextDisplay.all.push(...project.textDisplays)
+		}),
+
+		EVENTS.UNSELECT_PROJECT.subscribe(project => {
+			if (project.format.id !== BLUEPRINT_FORMAT.id) return
+			project.textDisplays = [...TextDisplay.all]
+			TextDisplay.all.empty()
+		})
+	)
+})
+
+CREATE_ACTION.onDeleted(action => {
+	Interface.Panels.outliner.menu.removeAction(action)
+	Toolbars.outliner.remove(action)
+	MenuBar.menus.edit.removeAction(action)
+
+	unsubscribers.forEach(unsub => unsub())
 })

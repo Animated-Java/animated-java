@@ -1,15 +1,16 @@
+import { registerPluginMod } from 'src/util/moddingTools'
 import { isCurrentFormat } from '../blueprintFormat'
-import { PACKAGE } from '../constants'
 import { sanitizeOutlinerElementName } from '../outliner/util'
-import { createBlockbenchMod } from '../util/moddingTools'
 
-createBlockbenchMod(
-	`${PACKAGE.name}:cameraNameMod`,
-	{
-		originalRename: OutlinerElement.types.camera?.prototype.saveName,
-		originalSanitize: OutlinerElement.types.camera?.prototype.sanitizeName,
-	},
-	context => {
+registerPluginMod({
+	id: `animated-java:camera-name-mod`,
+
+	condition: plugin => plugin.id === 'cameras',
+
+	apply: () => {
+		const originalRename = OutlinerElement.types.camera?.prototype.saveName
+		const originalSanitize = OutlinerElement.types.camera?.prototype.sanitizeName
+
 		if (OutlinerElement.types.camera) {
 			OutlinerElement.types.camera.prototype.saveName = function (
 				this: OutlinerElement,
@@ -18,20 +19,24 @@ createBlockbenchMod(
 				if (isCurrentFormat()) {
 					this.name = sanitizeOutlinerElementName(this.name, this.uuid)
 				}
-				return context.originalRename.call(this, save)
+				return originalRename.call(this, save)
 			}
+
 			OutlinerElement.types.camera.prototype.sanitizeName = function (this: OutlinerElement) {
 				if (isCurrentFormat()) {
 					this.name = sanitizeOutlinerElementName(this.name, this.uuid)
 				}
-				return context.originalSanitize.call(this)
+				return originalSanitize.call(this)
 			}
 		}
-		return context
+
+		return { originalRename, originalSanitize }
 	},
-	context => {
+
+	revert: ({ originalRename, originalSanitize }) => {
 		if (OutlinerElement.types.camera) {
-			OutlinerElement.types.camera.prototype.rename = context.originalRename
+			OutlinerElement.types.camera.prototype.rename = originalRename
+			OutlinerElement.types.camera.prototype.sanitizeName = originalSanitize
 		}
-	}
-)
+	},
+})

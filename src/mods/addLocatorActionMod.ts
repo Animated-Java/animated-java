@@ -1,25 +1,24 @@
+import { registerMod } from 'src/util/moddingTools'
 import { isCurrentFormat } from '../blueprintFormat'
-import { PACKAGE } from '../constants'
-import { createBlockbenchMod } from '../util/moddingTools'
 
-createBlockbenchMod(
-	`${PACKAGE.name}:addLocatorAction`,
-	{
-		action: BarItems.add_locator as Action,
-		originalCondition: (BarItems.add_locator as Action).condition,
-	},
-	context => {
-		context.action.condition = () => {
+registerMod({
+	id: `animated-java:add-locator-action`,
+
+	apply: () => {
+		const action = BarItems.add_locator as Action
+		const originalCondition = (BarItems.add_locator as Action).condition
+		action.condition = () => {
 			if (isCurrentFormat()) return true
-			return Condition(context.originalCondition)
+			return Condition(originalCondition)
 		}
 
-		Toolbars.outliner.add(context.action, 0)
+		Toolbars.outliner.add(action, 0)
 
-		return context
+		return { action, originalCondition }
 	},
-	context => {
-		context.action.condition = context.originalCondition
-		Toolbars.outliner.remove(context.action)
-	}
-)
+
+	revert: ({ action, originalCondition }) => {
+		action.condition = originalCondition
+		Toolbars.outliner.remove(action)
+	},
+})

@@ -1,9 +1,9 @@
+import { registerAction } from 'src/util/moddingTools'
 import { isCurrentFormat } from '../../blueprintFormat'
 import VanillaBlockDisplayConfigDialog from '../../components/vanillaBlockDisplayConfigDialog.svelte'
 import { PACKAGE } from '../../constants'
 import { BoneConfig } from '../../nodeConfigs'
 import { VanillaBlockDisplay } from '../../outliner/vanillaBlockDisplay'
-import { createAction } from '../../util/moddingTools'
 import { Valuable } from '../../util/stores'
 import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
@@ -95,8 +95,8 @@ export function openVanillaBlockDisplayConfigDialog(display: VanillaBlockDisplay
 	}).show()
 }
 
-export const VANILLA_BLOCK_DISPLAY_CONFIG_ACTION = createAction(
-	`${PACKAGE.name}:open_vanilla_block_display_config`,
+export const VANILLA_BLOCK_DISPLAY_CONFIG_ACTION = registerAction(
+	`animated-java:open-vanilla-block-display-config`,
 	{
 		icon: 'settings',
 		name: translate('action.open_vanilla_block_display_config.name'),

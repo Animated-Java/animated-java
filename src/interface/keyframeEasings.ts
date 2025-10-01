@@ -1,7 +1,7 @@
 import KeyframeEasingsSvelte from '../components/keyframeEasings.svelte'
-import { injectSvelteCompomponentMod } from '../util/injectSvelteComponent'
+import { injectSvelteComponentMod } from '../util/injectSvelteComponent'
 
-injectSvelteCompomponentMod({
+injectSvelteComponentMod({
 	component: KeyframeEasingsSvelte,
 	props: {},
 	elementSelector() {

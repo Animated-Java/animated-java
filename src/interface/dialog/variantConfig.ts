@@ -1,6 +1,6 @@
 import VariantConfigDialogSvelteComponent from '../../components/variantConfigDialog.svelte'
 import { PACKAGE } from '../../constants'
-import { events } from '../../util/events'
+import EVENTS from '../../util/events'
 import { Valuable } from '../../util/stores'
 import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
@@ -36,7 +36,7 @@ export function openVariantConfigDialog(variant: Variant) {
 			variant.textureMap = textureMap
 			variant.generateNameFromDisplayName = generateNameFromDisplayName.get()
 			variant.excludedNodes = excludedNodes.get()
-			events.UPDATE_VARIANT.dispatch(variant)
+			EVENTS.UPDATE_VARIANT.publish(variant)
 			variant.select()
 
 			Project!.saved = false

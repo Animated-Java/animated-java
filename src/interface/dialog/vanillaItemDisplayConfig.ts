@@ -1,9 +1,9 @@
+import { registerAction } from 'src/util/moddingTools'
 import { isCurrentFormat } from '../../blueprintFormat'
 import VanillaItemDisplayConfigDialog from '../../components/vanillaItemDisplayConfigDialog.svelte'
 import { PACKAGE } from '../../constants'
 import { BoneConfig } from '../../nodeConfigs'
 import { VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
-import { createAction } from '../../util/moddingTools'
 import { Valuable } from '../../util/stores'
 import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
@@ -95,8 +95,8 @@ export function openVanillaItemDisplayConfigDialog(display: VanillaItemDisplay) 
 	}).show()
 }
 
-export const VANILLA_ITEM_DISPLAY_CONFIG_ACTION = createAction(
-	`${PACKAGE.name}:open_vanilla_item_display_config`,
+export const VANILLA_ITEM_DISPLAY_CONFIG_ACTION = registerAction(
+	`animated-java:open-vanilla-item-display-config`,
 	{
 		icon: 'settings',
 		name: translate('action.open_vanilla_item_display_config.name'),

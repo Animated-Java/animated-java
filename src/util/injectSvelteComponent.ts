@@ -1,7 +1,7 @@
-import type { SvelteComponentConstructor } from './misc'
 import type { ComponentConstructorOptions, SvelteComponentDev } from 'svelte/internal'
-import { pollPromise } from './promises'
-import { createBlockbenchMod } from './moddingTools'
+import type { SvelteComponentConstructor } from './misc'
+import { registerMod } from './moddingTools'
+import { pollUntilResult } from './promises'
 
 type InjectSvelteComponentOptions<T, U extends ComponentConstructorOptions> = {
 	/**
@@ -39,10 +39,10 @@ type InjectSvelteComponentOptions<T, U extends ComponentConstructorOptions> = {
 /**
  * Injects a svelte component into the DOM.
  */
-export async function injectSvelteCompomponent<T, U extends Record<string, any>>(
+export async function injectSvelteComponent<T, U extends Record<string, any>>(
 	options: InjectSvelteComponentOptions<T, ComponentConstructorOptions<U>>
 ) {
-	return pollPromise(options.elementSelector).then(el => {
+	return pollUntilResult(options.elementSelector, () => false).then(el => {
 		let anchor = undefined
 		if (options.prepend) {
 			anchor = el.children[0]
@@ -59,13 +59,13 @@ export async function injectSvelteCompomponent<T, U extends Record<string, any>>
 	})
 }
 
-export function injectSvelteCompomponentMod(options: InjectSvelteComponentOptions<any, any>) {
-	createBlockbenchMod(
-		`animated_java:injected_svelte_component[${options.component.name}](${guid()})`,
-		{},
-		() => {
+export function injectSvelteComponentMod(options: InjectSvelteComponentOptions<any, any>) {
+	registerMod({
+		id: `animated-java:injected-svelte-component/${options.component.name}/${guid()}` as any,
+
+		apply: () => {
 			let instance: SvelteComponentDev | undefined
-			void pollPromise(options.elementSelector).then(el => {
+			void pollUntilResult(options.elementSelector, () => false).then(el => {
 				let anchor = undefined
 				if (options.prepend) {
 					anchor = el.children[0]
@@ -79,8 +79,9 @@ export function injectSvelteCompomponentMod(options: InjectSvelteComponentOption
 			})
 			return instance
 		},
-		context => {
-			if (context) context.$destroy()
-		}
-	)
+
+		revert: ctx => {
+			if (ctx) ctx.$destroy()
+		},
+	})
 }

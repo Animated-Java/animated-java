@@ -1,14 +1,12 @@
 import { isCurrentFormat } from '../blueprintFormat'
-import { PACKAGE } from '../constants'
 import { roundToNth } from '../util/misc'
-import { createBlockbenchMod } from '../util/moddingTools'
+import { registerMod } from '../util/moddingTools'
 
-createBlockbenchMod(
-	`${PACKAGE.name}:boneInterpolationMod`,
-	{
-		orignalInterpolate: BoneAnimator.prototype.interpolate,
-	},
-	context => {
+registerMod({
+	id: `animated-java:bone-interpolation-mod`,
+
+	apply: () => {
+		const original = BoneAnimator.prototype.interpolate
 		BoneAnimator.prototype.interpolate = function (
 			this: BoneAnimator,
 			channel,
@@ -16,7 +14,7 @@ createBlockbenchMod(
 			axis
 		) {
 			if (!isCurrentFormat() || !allowExpression) {
-				return context.orignalInterpolate.call(this, channel, allowExpression, axis)
+				return original.call(this, channel, allowExpression, axis)
 			}
 
 			const actualTime = this.animation.time
@@ -30,21 +28,21 @@ createBlockbenchMod(
 
 				if (Timeline.time < actualTime) {
 					beforeTime = Timeline.time
-					before = context.orignalInterpolate.call(this, channel, allowExpression, axis)
+					before = original.call(this, channel, allowExpression, axis)
 					if (!before) return false
 
 					afterTime = roundToNth(Timeline.time + 0.05, 20)
 					Timeline.time = afterTime
-					after = context.orignalInterpolate.call(this, channel, allowExpression, axis)
+					after = original.call(this, channel, allowExpression, axis)
 					if (!after) return false
 				} else {
 					afterTime = Timeline.time
-					after = context.orignalInterpolate.call(this, channel, allowExpression, axis)
+					after = original.call(this, channel, allowExpression, axis)
 					if (!after) return false
 
 					beforeTime = roundToNth(Timeline.time - 0.05, 20)
 					Timeline.time = beforeTime
-					before = context.orignalInterpolate.call(this, channel, allowExpression, axis)
+					before = original.call(this, channel, allowExpression, axis)
 					if (!before) return false
 				}
 				const diff = (actualTime - beforeTime) / (afterTime - beforeTime)
@@ -54,19 +52,17 @@ createBlockbenchMod(
 					Math.lerp(before[1], after[1], diff),
 					Math.lerp(before[2], after[2], diff),
 				]
-				// console.log(diff)
 
 				return result
-
-				// context.orignalInterpolate.call(this, channel, allowExpression, axis)
 			} finally {
 				Timeline.time = actualTime
 			}
 		}
 
-		return context
+		return { original }
 	},
-	context => {
-		context.orignalInterpolate = BoneAnimator.prototype.interpolate
-	}
-)
+
+	revert: ({ original }) => {
+		BoneAnimator.prototype.interpolate = original
+	},
+})

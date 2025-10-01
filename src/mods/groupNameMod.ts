@@ -1,30 +1,32 @@
+import { registerMod } from 'src/util/moddingTools'
 import { isCurrentFormat } from '../blueprintFormat'
-import { PACKAGE } from '../constants'
 import { sanitizeOutlinerElementName } from '../outliner/util'
-import { createBlockbenchMod } from '../util/moddingTools'
 
-createBlockbenchMod(
-	`${PACKAGE.name}:groupNameMod`,
-	{
-		originalRename: Group.prototype.saveName,
-		originalSanitize: Group.prototype.sanitizeName,
-	},
-	context => {
+registerMod({
+	id: `animated-java:group-name-mod`,
+
+	apply: () => {
+		const originalRename = Group.prototype.saveName
 		Group.prototype.saveName = function (this: Group, save?: boolean) {
 			if (isCurrentFormat()) {
 				this.name = sanitizeOutlinerElementName(this.name, this.uuid)
 			}
-			return context.originalRename.call(this, save)
+			return originalRename.call(this, save)
 		}
+
+		const originalSanitize = Group.prototype.sanitizeName
 		Group.prototype.sanitizeName = function (this: Group) {
 			if (isCurrentFormat()) {
 				this.name = sanitizeOutlinerElementName(this.name, this.uuid)
 			}
-			return context.originalSanitize.call(this)
+			return originalSanitize.call(this)
 		}
-		return context
+
+		return { originalRename, originalSanitize }
 	},
-	context => {
-		Group.prototype.rename = context.originalRename
-	}
-)
+
+	revert: ({ originalRename, originalSanitize }) => {
+		Group.prototype.rename = originalRename
+		Group.prototype.sanitizeName = originalSanitize
+	},
+})

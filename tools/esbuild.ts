@@ -17,6 +17,7 @@ import { TextDecoder } from 'util'
 import svelteConfig from '../svelte.config.js'
 import assetOverridePlugin from './plugins/assetOverridePlugin'
 import bufferPatchPlugin from './plugins/bufferPatchFunction.js'
+import importFolderPlugin from './plugins/importFolder'
 import mcbCompressionPlugin from './plugins/mcbCompressionPlugin'
 import packagerPlugin from './plugins/packagerPlugin'
 import sveltePlugin from './plugins/sveltePlugin'
@@ -209,6 +210,7 @@ const devConfig: esbuild.BuildOptions = {
 	sourceRoot: 'http://animated-java/',
 	loader: { '.svg': 'dataurl', '.ttf': 'binary', '.mcb': 'text' },
 	plugins: [
+		importFolderPlugin,
 		// @ts-ignore
 		ImportGlobPlugin.default(),
 		bufferPatchPlugin(),
@@ -237,6 +239,7 @@ const prodConfig: esbuild.BuildOptions = {
 	platform: 'node',
 	loader: { '.svg': 'dataurl', '.ttf': 'binary', '.mcb': 'text' },
 	plugins: [
+		importFolderPlugin,
 		// @ts-ignore
 		ImportGlobPlugin.default(),
 		bufferPatchPlugin(),

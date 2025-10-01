@@ -1,20 +1,20 @@
-import { PACKAGE } from '../constants'
 import { BONE_CONFIG_ACTION } from '../interface/dialog/boneConfig'
-import { createBlockbenchMod } from '../util/moddingTools'
+import { registerMod } from '../util/moddingTools'
 
-createBlockbenchMod(
-	`${PACKAGE.name}:groupContextMenu`,
-	{
-		menuStructure: Group.prototype.menu!.structure,
-	},
-	context => {
-		const structure = [...context.menuStructure]
-		structure.splice(6, 0, BONE_CONFIG_ACTION)
-		Group.prototype.menu!.structure = structure
+registerMod({
+	id: `animated-java:group-context-menu`,
 
-		return context
+	apply: () => {
+		const menuStructure = Group.prototype.menu!.structure
+
+		const originalStructure = [...menuStructure]
+		originalStructure.splice(6, 0, BONE_CONFIG_ACTION)
+		Group.prototype.menu!.structure = originalStructure
+
+		return { originalStructure }
 	},
-	context => {
-		Group.prototype.menu!.structure = context.menuStructure
-	}
-)
+
+	revert: ({ originalStructure }) => {
+		Group.prototype.menu!.structure = originalStructure
+	},
+})

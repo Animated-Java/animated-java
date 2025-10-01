@@ -1,20 +1,19 @@
 <script lang="ts" context="module">
 	// @ts-expect-error
 	import { default as ICON_IMPORTS, filenames } from '../assets/easingIcons/*.svg'
-	import { translate } from '../util/translation'
-	import { events } from '../util/events'
-	import { getEasingArgDefault, hasArgs } from '../util/easing'
-	import { Valuable } from '../util/stores'
 	import { isCurrentFormat } from '../blueprintFormat'
-	import { createPropertySubscribable } from '../util/moddingTools'
-	import { Subscribable } from '../util/subscribable'
+	import { getEasingArgDefault, hasArgs } from '../util/easing'
+	import EVENTS from '../util/events'
+	import { Valuable } from '../util/stores'
+	import { translate } from '../util/translation'
 
 	const ICONS = Object.fromEntries(
-		(ICON_IMPORTS as unknown as any[]).map((icon, i) => [
+		(ICON_IMPORTS as unknown as Array<{ default: string }>).map((icon, i) => [
 			PathModule.basename(filenames[i]).replace('.svg', '').toLowerCase(),
 			icon.default,
-		]) as [string, string][],
+		])
 	)
+
 	const EASING_MODE_ICONS: Record<string, string> = {
 		in: ICONS['expo'],
 		out: ICONS['out'],
@@ -81,7 +80,7 @@
 		unsub && unsub()
 		if (hasArgs(selectedKeyframe.easing)) {
 			easingArg = new Valuable(
-				selectedKeyframe.easingArgs?.[0] || getEasingArgDefault(selectedKeyframe) || 0,
+				selectedKeyframe.easingArgs?.[0] || getEasingArgDefault(selectedKeyframe) || 0
 			)
 			unsub = easingArg?.subscribe(value => setEasingArgs(value))
 		} else {
@@ -108,7 +107,7 @@
 		)
 	}
 
-	events.SELECT_KEYFRAME.subscribe((keyframe?: _Keyframe) => {
+	EVENTS.SELECT_KEYFRAME.subscribe((keyframe?: _Keyframe) => {
 		console.log('selected keyframe', keyframe)
 		if (
 			isCurrentFormat() &&
@@ -127,12 +126,12 @@
 		}
 	})
 
-	events.UNSELECT_KEYFRAME.subscribe(() => {
+	EVENTS.UNSELECT_KEYFRAME.subscribe(() => {
 		setEasingArgs($easingArg)
 		selectedKeyframe = undefined
 	})
 
-	events.UNSELECT_AJ_PROJECT.subscribe(() => {
+	EVENTS.UNSELECT_AJ_PROJECT.subscribe(() => {
 		setEasingArgs($easingArg)
 		selectedKeyframe = undefined
 	})
@@ -203,7 +202,7 @@
 					class="undefined"
 					style="font-weight: unset; width: 100px; text-align: left;"
 					title={translate(
-						`panel.keyframe.easing_args.easing_arg.${easingType}.description`,
+						`panel.keyframe.easing_args.easing_arg.${easingType}.description`
 					)}
 				>
 					{translate(`panel.keyframe.easing_args.easing_arg.${easingType}.title`)}

@@ -1,3 +1,4 @@
+import { registerAction } from 'src/util/moddingTools'
 import { type IBlueprintBoneConfigJSON, isCurrentFormat } from '../blueprintFormat'
 import { PACKAGE } from '../constants'
 import { VANILLA_BLOCK_DISPLAY_CONFIG_ACTION } from '../interface/dialog/vanillaBlockDisplayConfig'
@@ -6,9 +7,8 @@ import { getBlockModel } from '../systems/minecraft/blockModelManager'
 import { type BlockStateValue, getBlockState } from '../systems/minecraft/blockstateManager'
 import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
 import { getCurrentVersion } from '../systems/minecraft/versionManager'
-import { events } from '../util/events'
+import EVENTS from '../util/events'
 import { parseBlock } from '../util/minecraftUtil'
-import { createAction, createBlockbenchMod } from '../util/moddingTools'
 import { Valuable } from '../util/stores'
 import { translate } from '../util/translation'
 import { ResizableOutlinerElement } from './resizableOutlinerElement'
@@ -375,39 +375,7 @@ class VanillaBlockDisplayAnimator extends BoneAnimator {
 VanillaBlockDisplayAnimator.prototype.type = VanillaBlockDisplay.type
 VanillaBlockDisplay.animator = VanillaBlockDisplayAnimator as any
 
-createBlockbenchMod(
-	`${PACKAGE.name}:vanillaBlockDisplay`,
-	{
-		subscriptions: [] as Array<() => void>,
-	},
-	context => {
-		Interface.Panels.outliner.menu.addAction(CREATE_ACTION, 3)
-		Toolbars.outliner.add(CREATE_ACTION, 0)
-		MenuBar.menus.edit.addAction(CREATE_ACTION, 8)
-
-		context.subscriptions.push(
-			events.SELECT_PROJECT.subscribe(project => {
-				project.vanillaBlockDisplays ??= []
-				VanillaBlockDisplay.all.empty()
-				VanillaBlockDisplay.all.push(...project.vanillaBlockDisplays)
-			}),
-			events.UNSELECT_PROJECT.subscribe(project => {
-				project.vanillaBlockDisplays = [...VanillaBlockDisplay.all]
-				VanillaBlockDisplay.all.empty()
-			})
-		)
-		return context
-	},
-	context => {
-		Interface.Panels.outliner.menu.removeAction(CREATE_ACTION.id)
-		Toolbars.outliner.remove(CREATE_ACTION)
-		MenuBar.menus.edit.removeAction(CREATE_ACTION.id)
-
-		context.subscriptions.forEach(unsub => unsub())
-	}
-)
-
-export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_vanilla_block_display`, {
+export const CREATE_ACTION = registerAction(`animated-java:create-vanilla-block-display`, {
 	name: translate('action.create_vanilla_block_display.title'),
 	icon: 'deployed_code',
 	category: 'animated_java',
@@ -437,6 +405,35 @@ export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_vanilla_block_
 
 		return vanillaBlockDisplay
 	},
+})
+
+const unsubscribers: Array<() => void> = []
+
+CREATE_ACTION.onCreated(action => {
+	Interface.Panels.outliner.menu.addAction(action, 3)
+	Toolbars.outliner.add(action, 0)
+	MenuBar.menus.edit.addAction(action, 8)
+
+	unsubscribers.push(
+		EVENTS.SELECT_PROJECT.subscribe(project => {
+			project.vanillaBlockDisplays ??= []
+			VanillaBlockDisplay.all.empty()
+			VanillaBlockDisplay.all.push(...project.vanillaBlockDisplays)
+		}),
+
+		EVENTS.UNSELECT_PROJECT.subscribe(project => {
+			project.vanillaBlockDisplays = [...VanillaBlockDisplay.all]
+			VanillaBlockDisplay.all.empty()
+		})
+	)
+})
+
+CREATE_ACTION.onDeleted(action => {
+	Interface.Panels.outliner.menu.removeAction(action)
+	Toolbars.outliner.remove(action)
+	MenuBar.menus.edit.removeAction(action)
+
+	unsubscribers.forEach(unsub => unsub())
 })
 
 export function debugBlocks() {

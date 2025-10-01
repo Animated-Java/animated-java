@@ -1,19 +1,18 @@
 <script lang="ts" context="module">
-	import { translate } from '../util/translation'
-	import { flip } from 'svelte/animate'
 	import { SHADOW_ITEM_MARKER_PROPERTY_NAME, dndzone } from 'svelte-dnd-action'
-	import { Variant } from '../variants'
-	import { events } from '../util/events'
-	import { openVariantConfigDialog } from '../interface/dialog/variantConfig'
-	import { fade } from 'svelte/transition'
+	import { flip } from 'svelte/animate'
 	import { cubicIn } from 'svelte/easing'
+	import { fade } from 'svelte/transition'
+	import { openVariantConfigDialog } from '../interface/dialog/variantConfig'
 	import {
 		CREATE_VARIANT_ACTION,
 		DELETE_VARIANT_ACTION,
 		DUPLICATE_VARIANT_ACTION,
 		VARIANT_PANEL_CONTEXT_MENU,
 	} from '../interface/panel/variants'
-
+	import EVENTS from '../util/events'
+	import { translate } from '../util/translation'
+	import { Variant } from '../variants'
 	type LocalVariant = { id: number; value: Variant }
 
 	const flipDurationMs = 100
@@ -26,33 +25,33 @@
 		localVariants = Variant.all.map((v, i) => ({ id: i, value: v }))
 	}
 
-	events.CREATE_VARIANT.subscribe(() => {
+	EVENTS.CREATE_VARIANT.subscribe(() => {
 		updateLocalVariants()
 	})
 
-	events.UPDATE_VARIANT.subscribe(() => {
+	EVENTS.UPDATE_VARIANT.subscribe(() => {
 		updateLocalVariants()
 	})
 
-	events.DELETE_VARIANT.subscribe(() => {
+	EVENTS.DELETE_VARIANT.subscribe(() => {
 		updateLocalVariants()
 	})
 
-	events.SELECT_PROJECT.subscribe(() => {
+	EVENTS.SELECT_PROJECT.subscribe(() => {
 		Variant.selectDefault()
 		updateLocalVariants()
 	})
 
-	events.SELECT_VARIANT.subscribe(() => {
+	EVENTS.SELECT_VARIANT.subscribe(() => {
 		updateLocalVariants()
 	})
 
 	function createVariant(e: Event) {
-		CREATE_VARIANT_ACTION.click(e)
+		CREATE_VARIANT_ACTION.get()?.click(e)
 	}
 
 	function duplicateVariant(e: Event) {
-		DUPLICATE_VARIANT_ACTION.click(e)
+		DUPLICATE_VARIANT_ACTION.get()?.click(e)
 	}
 
 	function selectVariant(variant: Variant) {
@@ -61,7 +60,7 @@
 	}
 
 	function deleteVariant(e: Event) {
-		DELETE_VARIANT_ACTION.click(e)
+		DELETE_VARIANT_ACTION.get()?.click(e)
 	}
 
 	function handleSort(e: any) {
@@ -123,7 +122,7 @@
 				on:click={() => selectVariant(item.value)}
 				on:contextmenu|stopPropagation={e => {
 					item.value.select()
-					VARIANT_PANEL_CONTEXT_MENU.open(e)
+					VARIANT_PANEL_CONTEXT_MENU.get()?.open(e)
 				}}
 			>
 				{#if item[SHADOW_ITEM_MARKER_PROPERTY_NAME]}

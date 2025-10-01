@@ -1,6 +1,6 @@
-import { getLatestVersion } from './versionManager'
-import { events } from '../../util/events'
+import EVENTS from '../../util/events'
 import { resolveBlockstateValueType } from '../../util/minecraftUtil'
+import { getLatestVersion } from './versionManager'
 
 type BlockStateRegistryJSON = Record<string, BlockStateRegistryData>
 
@@ -88,13 +88,13 @@ export async function checkForRegistryUpdate() {
 
 	console.log('BlockState Registry is up to date!')
 	updateMemoryRegistry()
-	requestAnimationFrame(() => events.BLOCKSTATE_REGISTRY_LOADED.dispatch())
+	requestAnimationFrame(() => EVENTS.BLOCKSTATE_REGISTRY_LOADED.publish())
 }
 
 export async function getBlockState(block: string) {
 	if (Object.keys(BLOCKSTATE_REGISTRY).length === 0) {
 		return new Promise<BlockStateRegistryEntry | undefined>(resolve => {
-			events.BLOCKSTATE_REGISTRY_LOADED.subscribe(() => {
+			EVENTS.BLOCKSTATE_REGISTRY_LOADED.subscribe(() => {
 				resolve(BLOCKSTATE_REGISTRY[block])
 			}, true)
 		})
@@ -102,7 +102,7 @@ export async function getBlockState(block: string) {
 	return BLOCKSTATE_REGISTRY[block]
 }
 
-events.LOAD.subscribe(() => {
+EVENTS.PLUGIN_LOAD.subscribe(() => {
 	void checkForRegistryUpdate().catch(err => {
 		console.error(err)
 	})

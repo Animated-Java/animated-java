@@ -1,13 +1,12 @@
+import { registerMod } from 'src/util/moddingTools'
 import Icon from '../components/icon.svelte'
-import { PACKAGE } from '../constants'
-import { injectSvelteCompomponent } from '../util/injectSvelteComponent'
-import { createBlockbenchMod } from '../util/moddingTools'
+import { injectSvelteComponent } from '../util/injectSvelteComponent'
 
-createBlockbenchMod(
-	`${PACKAGE.name}:formatIconMod`,
-	undefined,
-	() => {
-		void injectSvelteCompomponent({
+registerMod({
+	id: `aniamted-java:format-icon-mod`,
+
+	apply: () => {
+		void injectSvelteComponent({
 			elementSelector: () => document.querySelector('[format=animated_java_blueprint]'),
 			component: Icon,
 			props: {},
@@ -23,15 +22,16 @@ createBlockbenchMod(
 			},
 		})
 	},
-	() => {
-		document.querySelector('#animated_java\\:icon')?.remove()
-	}
-)
 
-createBlockbenchMod(
-	`${PACKAGE.name}:prioritizeAnimatedJavaFormats`,
-	undefined,
-	() => {
+	revert: () => {
+		document.querySelector('#animated_java\\:icon')?.remove()
+	},
+})
+
+registerMod({
+	id: `animated-java:prioritize-animated-java-formats`,
+
+	apply: () => {
 		const interval = setInterval(() => {
 			const ajFormats = $("li.format_category > label:contains('Animated Java')")
 				.first()
@@ -45,7 +45,8 @@ createBlockbenchMod(
 			clearInterval(interval)
 		}, 16)
 	},
-	() => {
-		// Pass
-	}
-)
+
+	revert: () => {
+		// Nothing to do here. The AJ format list entry will be deleted when AJ is unloaded.
+	},
+})

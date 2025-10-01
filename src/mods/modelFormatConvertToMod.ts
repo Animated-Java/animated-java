@@ -1,21 +1,22 @@
 import { BLUEPRINT_FORMAT, convertToBlueprint } from '../blueprintFormat'
-import { PACKAGE } from '../constants'
-import { createBlockbenchMod } from '../util/moddingTools'
+import { registerMod } from '../util/moddingTools'
 
-createBlockbenchMod(
-	`${PACKAGE.name}:modelFormatConvertToMod`,
-	{
-		original: ModelFormat.prototype.convertTo,
-	},
-	context => {
+registerMod({
+	id: `animated-java:model-format-convert-to-mod`,
+
+	apply: () => {
+		const original = ModelFormat.prototype.convertTo
+
 		ModelFormat.prototype.convertTo = function (this: ModelFormat) {
-			const result = context.original.call(this)
+			const result = original.call(this)
 			if (this === BLUEPRINT_FORMAT) convertToBlueprint()
 			return result
 		}
-		return context
+
+		return { original }
 	},
-	context => {
-		ModelFormat.prototype.convertTo = context.original
-	}
-)
+
+	revert: ({ original }) => {
+		ModelFormat.prototype.convertTo = original
+	},
+})

@@ -2,7 +2,7 @@ import { createHash } from 'crypto'
 import MissingCharacter from '../../assets/missing_character.png'
 import { type Alignment } from '../../outliner/textDisplay'
 import { mergeGeometries } from '../../util/bufferGeometryUtils'
-import { events } from '../../util/events'
+import EVENTS from '../../util/events'
 import { getPathFromResourceLocation } from '../../util/minecraftUtil'
 import { COLOR_MAP, ComponentStyle, JsonText } from '../jsonText'
 import { UnicodeString } from '../jsonText/unicodeString'
@@ -739,20 +739,20 @@ function loadMinecraftFonts() {
 		standardGalacticAlphabetFont.load(),
 	]).then(() => {
 		console.log('Minecraft fonts loaded!')
-		requestAnimationFrame(() => events.MINECRAFT_FONTS_LOADED.dispatch())
+		requestAnimationFrame(() => EVENTS.MINECRAFT_FONTS_LOADED.publish())
 	})
 }
 
 export async function getVanillaFont() {
 	if (!vanillaFont) {
 		await new Promise<void>(resolve => {
-			events.MINECRAFT_FONTS_LOADED.subscribe(() => resolve())
+			EVENTS.MINECRAFT_FONTS_LOADED.subscribe(() => resolve())
 		})
 	}
 	return vanillaFont.load()
 }
 
-events.MINECRAFT_ASSETS_LOADED.subscribe(() => {
+EVENTS.MINECRAFT_ASSETS_LOADED.subscribe(() => {
 	loadMinecraftFonts()
 })
 

@@ -1,8 +1,7 @@
 import { translate } from 'src/util/translation'
 import { checkTargetVersionMeetsRequirement, isCurrentFormat } from '../blueprintFormat'
-import { PACKAGE } from '../constants'
 import { isCubeValid } from '../systems/util'
-import { createBlockbenchMod, createPropertySubscribable } from '../util/moddingTools'
+import { createPropertySubscribable, registerMod } from '../util/moddingTools'
 
 const ERROR_OUTLINE_MATERIAL = Canvas.outlineMaterial.clone()
 ERROR_OUTLINE_MATERIAL.color.set('#ff0000')
@@ -46,13 +45,11 @@ function showToastNotification() {
 	}
 }
 
-createBlockbenchMod(
-	`${PACKAGE.name}:cubeOutlineMod`,
-	{
-		originalUpdateTransform: Cube.preview_controller.updateTransform,
-		originalInit: Cube.prototype.init,
-	},
-	context => {
+registerMod({
+	id: `animated-java:cube-outline-mod`,
+
+	apply: () => {
+		const originalUpdateTransform = Cube.preview_controller.updateTransform
 		Cube.preview_controller.updateTransform = function (cube: Cube) {
 			if (isCurrentFormat()) {
 				const validity = isCubeValid(cube)
@@ -76,11 +73,12 @@ createBlockbenchMod(
 					}
 				}
 			}
-			context.originalUpdateTransform.call(this, cube)
+			originalUpdateTransform.call(this, cube)
 		}
 
+		const originalInit = Cube.prototype.init
 		Cube.prototype.init = function (this: Cube) {
-			const cube = context.originalInit.call(this)
+			const cube = originalInit.call(this)
 
 			cube.isRotationValid = true
 
@@ -93,10 +91,11 @@ createBlockbenchMod(
 			return cube
 		}
 
-		return context
+		return { originalUpdateTransform, originalInit }
 	},
-	context => {
-		Cube.preview_controller.updateTransform = context.originalUpdateTransform
-		Cube.prototype.init = context.originalInit
-	}
-)
+
+	revert: ({ originalUpdateTransform, originalInit }) => {
+		Cube.preview_controller.updateTransform = originalUpdateTransform
+		Cube.prototype.init = originalInit
+	},
+})

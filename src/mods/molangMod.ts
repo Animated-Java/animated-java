@@ -1,6 +1,5 @@
-import { PACKAGE } from '../constants'
-import { events } from '../util/events'
-import { createBlockbenchMod } from '../util/moddingTools'
+import { BLUEPRINT_FORMAT } from 'src/blueprintFormat'
+import { registerProjectMod } from 'src/util/moddingTools'
 import MolangFunctionFile from './functions.molang'
 
 const GLOBAL_VARIABLES = Animator.MolangParser.global_variables
@@ -382,101 +381,86 @@ function filterAndSortList(
 	})
 }
 
-createBlockbenchMod(
-	`${PACKAGE.name}:molangMod`,
-	{
-		originalAutocompleteMolang: Animator.autocompleteMolang,
-		unsubscribeSelectAjProject: undefined as (() => void) | undefined,
-		unsuscribeUnselectAjProject: undefined as (() => void) | undefined,
-	},
-	context => {
-		context.unsubscribeSelectAjProject = events.SELECT_AJ_PROJECT.subscribe(() => {
-			Object.assign(GLOBAL_VARIABLES, CUSTOM_FUNCTIONS)
+registerProjectMod({
+	id: `animated-java:molang-mod`,
 
-			Animator.autocompleteMolang = function (text, position, type) {
-				let beginning = text
-					.substring(0, position)
-					.split(/[^a-zA-Z_.]\.*/g)
-					.last()
-				if (!beginning) return []
+	condition: project => project.format === BLUEPRINT_FORMAT,
 
-				beginning = beginning.toLowerCase()
-				if (beginning.includes('.')) {
-					const [namespace, dir] = beginning.split('.')
-					if (namespace == 'math') {
-						return filterAndSortList(
-							MATH_FUNCTIONS,
-							dir,
-							undefined,
-							MATH_FUNCTION_LABELS
-						)
-					}
-					if (namespace == 'query' || namespace == 'q') {
-						return filterAndSortList(
-							MOLANG_QUERIES,
-							dir,
-							type !== 'controller' && [
-								'all_animations_finished',
-								'any_animation_finished',
-							],
-							MOLANG_QUERY_LABELS
-						)
-					}
-					if (namespace == 'temp' || namespace == 't') {
-						const temps = text.match(/([^a-z]|^)t(emp)?\.\w+/gi)
-						if (temps) {
-							const temps2 = temps.map(t => t.split('.')[1])
-							const temps3 = temps2.filter(
-								(t, i) => t !== dir && temps2.indexOf(t) === i
-							)
-							return filterAndSortList(temps3, dir)
-						}
-					}
-					if (namespace == 'context' || namespace == 'c') {
-						return filterAndSortList([...DEFAULT_CONTEXT], dir)
-					}
-					if (namespace == 'variable' || namespace == 'v') {
-						const options = [...getProjectVariables(dir)]
-						options.safePush(...DEFAULT_VARIABLES)
-						return filterAndSortList(options, dir)
-					}
-				} else {
-					const root_tokens = ROOT_TOKENS.slice()
-					let labels = {}
-					if (type === 'placeholders') {
-						labels = {
-							'toggle()': 'toggle( name )',
-							'slider()': 'slider( name, step?, min?, max? )',
-							'impulse()': 'impulse( name, duration )',
-						}
-						root_tokens.push(...Object.keys(labels))
-					}
+	apply: () => {
+		Object.assign(GLOBAL_VARIABLES, CUSTOM_FUNCTIONS)
+
+		const originalAutocompleteMolang = Animator.autocompleteMolang
+		Animator.autocompleteMolang = function (text, position, type) {
+			let beginning = text
+				.substring(0, position)
+				.split(/[^a-zA-Z_.]\.*/g)
+				.last()
+			if (!beginning) return []
+
+			beginning = beginning.toLowerCase()
+			if (beginning.includes('.')) {
+				const [namespace, dir] = beginning.split('.')
+				if (namespace == 'math') {
+					return filterAndSortList(MATH_FUNCTIONS, dir, undefined, MATH_FUNCTION_LABELS)
+				}
+				if (namespace == 'query' || namespace == 'q') {
 					return filterAndSortList(
-						[...root_tokens, ...Object.keys(CUSTOM_FUNCTION_LABELS)],
-						beginning,
-						undefined,
-						{ ...labels, ...CUSTOM_FUNCTION_LABELS }
+						MOLANG_QUERIES,
+						dir,
+						type !== 'controller' && [
+							'all_animations_finished',
+							'any_animation_finished',
+						],
+						MOLANG_QUERY_LABELS
 					)
 				}
-				return []
+				if (namespace == 'temp' || namespace == 't') {
+					const temps = text.match(/([^a-z]|^)t(emp)?\.\w+/gi)
+					if (temps) {
+						const temps2 = temps.map(t => t.split('.')[1])
+						const temps3 = temps2.filter((t, i) => t !== dir && temps2.indexOf(t) === i)
+						return filterAndSortList(temps3, dir)
+					}
+				}
+				if (namespace == 'context' || namespace == 'c') {
+					return filterAndSortList([...DEFAULT_CONTEXT], dir)
+				}
+				if (namespace == 'variable' || namespace == 'v') {
+					const options = [...getProjectVariables(dir)]
+					options.safePush(...DEFAULT_VARIABLES)
+					return filterAndSortList(options, dir)
+				}
+			} else {
+				const root_tokens = ROOT_TOKENS.slice()
+				let labels = {}
+				if (type === 'placeholders') {
+					labels = {
+						'toggle()': 'toggle( name )',
+						'slider()': 'slider( name, step?, min?, max? )',
+						'impulse()': 'impulse( name, duration )',
+					}
+					root_tokens.push(...Object.keys(labels))
+				}
+				return filterAndSortList(
+					[...root_tokens, ...Object.keys(CUSTOM_FUNCTION_LABELS)],
+					beginning,
+					undefined,
+					{ ...labels, ...CUSTOM_FUNCTION_LABELS }
+				)
 			}
-		})
+			return []
+		}
 
-		context.unsuscribeUnselectAjProject = events.UNSELECT_AJ_PROJECT.subscribe(() => {
-			for (const key of Object.keys(CUSTOM_FUNCTIONS)) {
-				delete GLOBAL_VARIABLES[key]
-			}
-			Animator.autocompleteMolang = context.originalAutocompleteMolang
-		})
-
-		return context
+		return {
+			originalAutocompleteMolang,
+		}
 	},
-	context => {
+
+	revert: ({ originalAutocompleteMolang }) => {
 		for (const key of Object.keys(CUSTOM_FUNCTIONS)) {
 			delete GLOBAL_VARIABLES[key]
 		}
-		Animator.autocompleteMolang = context.originalAutocompleteMolang
-		context.unsubscribeSelectAjProject?.()
-		context.unsuscribeUnselectAjProject?.()
-	}
-)
+
+		Animator.autocompleteMolang = originalAutocompleteMolang
+	},
+})

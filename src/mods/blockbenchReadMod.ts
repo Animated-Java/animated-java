@@ -1,24 +1,22 @@
-import { PACKAGE } from '../constants'
+import { registerMod } from 'src/util/moddingTools'
 import {
 	closeBlueprintLoadingDialog,
 	openBlueprintLoadingDialog,
 	PROGRESS,
 } from '../interface/popup/blueprintLoading'
-import { createBlockbenchMod } from '../util/moddingTools'
 
-createBlockbenchMod(
-	`${PACKAGE.name}:blockbenchReadMod`,
-	{
-		original: Blockbench.read,
-	},
-	context => {
+registerMod({
+	id: `animated-java:blockbench-read-mod`,
+
+	apply: () => {
+		const original = Blockbench.read
 		async function asyncRead(
 			files: Parameters<typeof Blockbench.read>['0'],
 			options: Parameters<typeof Blockbench.read>['1'],
 			cb: Parameters<typeof Blockbench.read>['2']
 		) {
 			for (const file of files) {
-				context.original([file], options, cb)
+				original([file], options, cb)
 				await new Promise<void>(r => {
 					if (Project?.loadingPromises) {
 						openBlueprintLoadingDialog()
@@ -55,9 +53,10 @@ createBlockbenchMod(
 		Blockbench.read = function (files, options, cb) {
 			void asyncRead(files, options, cb).catch(console.error)
 		}
-		return context
+		return { original }
 	},
-	context => {
-		Blockbench.read = context.original
-	}
-)
+
+	revert: ({ original }) => {
+		Blockbench.read = original
+	},
+})

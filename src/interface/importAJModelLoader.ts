@@ -1,37 +1,35 @@
+import { registerModelLoader } from 'src/util/moddingTools'
 import { SvelteComponentDev } from 'svelte/internal'
 import { BLUEPRINT_CODEC, type IBlueprintFormatJSON } from '../blueprintFormat'
 import ImportAjModelLoaderDialog from '../components/importAJModelLoaderDialog.svelte'
-import { PACKAGE } from '../constants'
 import * as ModelDatFixerUpper from '../systems/modelDataFixerUpper'
-import { injectSvelteCompomponent } from '../util/injectSvelteComponent'
+import { injectSvelteComponent } from '../util/injectSvelteComponent'
 import { sanitizeStorageKey } from '../util/minecraftUtil'
-import { createModelLoader } from '../util/moddingTools'
 import { translate } from '../util/translation'
 import { openUnexpectedErrorDialog } from './dialog/unexpectedError'
 
 let activeComponent: SvelteComponentDev | null = null
 
-createModelLoader(`${PACKAGE.name}-upgradeAJModelLoader`, {
+registerModelLoader(`animated-java:upgrade-aj-model-loader`, {
 	icon: 'upload_file',
 	category: 'animated_java',
 	name: translate('action.upgrade_old_aj_model_loader.name'),
-	condition() {
-		return true
-	},
+	condition: true,
 	format_page: {
 		component: {
-			template: `<div id="${PACKAGE.name}-upgradeAJModelLoader-target" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;"></div>`,
+			template: `<div id="animated-java:upgrade-aj-model-loader-target" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;"></div>`,
 		},
 	},
 	onFormatPage() {
 		if (activeComponent) {
 			activeComponent.$destroy()
 		}
-		void injectSvelteCompomponent({
+
+		void injectSvelteComponent({
 			component: ImportAjModelLoaderDialog,
 			props: {},
 			elementSelector() {
-				return document.querySelector(`#${PACKAGE.name}-upgradeAJModelLoader-target`)
+				return document.querySelector(`#animated-java\\:upgrade-aj-model-loader-target`)
 			},
 			postMount(el) {
 				activeComponent = el

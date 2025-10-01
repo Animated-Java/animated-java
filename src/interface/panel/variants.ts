@@ -1,13 +1,12 @@
-import { isCurrentFormat } from '../../blueprintFormat'
+import { registerAction, registerMenu } from 'src/util/moddingTools'
+import { BLUEPRINT_FORMAT } from '../../blueprintFormat'
 import VariantsPanel from '../../components/variantsPanel.svelte'
-import { PACKAGE } from '../../constants'
-import { createAction, createMenu } from '../../util/moddingTools'
 import { SveltePanel } from '../../util/sveltePanel'
 import { translate } from '../../util/translation'
 import { Variant } from '../../variants'
 import { openVariantConfigDialog } from '../dialog/variantConfig'
 
-export const CREATE_VARIANT_ACTION = createAction(`${PACKAGE.name}:createVariant`, {
+export const CREATE_VARIANT_ACTION = registerAction(`animated-java:create-variant`, {
 	name: translate('action.variants.create'),
 	icon: 'add',
 	click() {
@@ -15,7 +14,7 @@ export const CREATE_VARIANT_ACTION = createAction(`${PACKAGE.name}:createVariant
 	},
 })
 
-export const DUPLICATE_VARIANT_ACTION = createAction(`${PACKAGE.name}:duplicateVariant`, {
+export const DUPLICATE_VARIANT_ACTION = registerAction(`animated-java:duplicate-variant`, {
 	name: translate('action.variants.duplicate'),
 	icon: 'content_copy',
 	condition: () => !!Variant.selected,
@@ -25,7 +24,7 @@ export const DUPLICATE_VARIANT_ACTION = createAction(`${PACKAGE.name}:duplicateV
 	},
 })
 
-export const DELETE_VARIANT_ACTION = createAction(`${PACKAGE.name}:deleteVariant`, {
+export const DELETE_VARIANT_ACTION = registerAction(`animated-java:delete-variant`, {
 	name: translate('action.variants.delete'),
 	icon: 'delete',
 	condition: () => !!Variant.selected && !Variant.selected.isDefault,
@@ -35,7 +34,7 @@ export const DELETE_VARIANT_ACTION = createAction(`${PACKAGE.name}:deleteVariant
 	},
 })
 
-export const OPEN_VARIANT_CONFIG_ACTION = createAction(`${PACKAGE.name}:openVariantConfig`, {
+export const OPEN_VARIANT_CONFIG_ACTION = registerAction(`animated-java:open-variant-config`, {
 	name: translate('action.variants.open_config'),
 	icon: 'settings',
 	condition: () => !!Variant.selected && !Variant.selected.isDefault,
@@ -45,20 +44,27 @@ export const OPEN_VARIANT_CONFIG_ACTION = createAction(`${PACKAGE.name}:openVari
 	},
 })
 
-export const VARIANT_PANEL_CONTEXT_MENU = createMenu(
-	[
-		OPEN_VARIANT_CONFIG_ACTION.id,
-		new MenuSeparator(),
-		CREATE_VARIANT_ACTION.id,
-		DUPLICATE_VARIANT_ACTION.id,
-		new MenuSeparator(),
-		DELETE_VARIANT_ACTION.id,
-	],
+export const VARIANT_PANEL_CONTEXT_MENU = registerMenu(
+	'animated-java:variant-panel-context-menu',
+	() => {
+		const items = [
+			OPEN_VARIANT_CONFIG_ACTION.get(),
+			new MenuSeparator(),
+			CREATE_VARIANT_ACTION.get(),
+			DUPLICATE_VARIANT_ACTION.get(),
+			new MenuSeparator(),
+			DELETE_VARIANT_ACTION.get(),
+		]
+
+		if (items.every(i => i != undefined)) return items
+
+		return []
+	},
 	{}
 )
 
 export const VARIANTS_PANEL = new SveltePanel({
-	id: `${PACKAGE.name}:variantsPanel`,
+	id: `animated-java:variants-panel`,
 	name: translate('panel.variants.title'),
 	expand_button: true,
 	default_side: 'right',
@@ -70,13 +76,10 @@ export const VARIANTS_PANEL = new SveltePanel({
 		folded: false,
 	},
 	icon: 'settings',
-	condition: () =>
-		!!(
-			isCurrentFormat() &&
-			Modes.selected &&
-			(Modes.selected.id === Modes.options.edit.id ||
-				Modes.selected.id === Modes.options.paint.id)
-		),
+	condition: {
+		formats: [BLUEPRINT_FORMAT.id],
+		modes: [Modes.options.edit.id, Modes.options.paint.id],
+	},
 	component: VariantsPanel,
 	props: {},
 })

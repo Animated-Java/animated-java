@@ -1,23 +1,24 @@
 import { BLUEPRINT_FORMAT } from '../blueprintFormat'
-import { PACKAGE } from '../constants'
-import { events } from '../util/events'
-import { createBlockbenchMod } from '../util/moddingTools'
+import EVENTS from '../util/events'
+import { registerMod } from '../util/moddingTools'
 
-createBlockbenchMod(
-	`${PACKAGE.name}:modelFormatPreSelectProjectEvent`,
-	{
-		originalSelect: ModelProject.prototype.select,
-	},
-	context => {
+registerMod({
+	id: `animated-java:model-format-pre-select-project-event`,
+
+	apply: () => {
+		const original = ModelProject.prototype.select
+
 		ModelProject.prototype.select = function (this: ModelProject) {
 			if (this.format.id === BLUEPRINT_FORMAT.id) {
-				events.PRE_SELECT_PROJECT.dispatch(this)
+				EVENTS.PRE_SELECT_PROJECT.publish(this)
 			}
-			return context.originalSelect.call(this)
+			return original.call(this)
 		}
-		return context
+
+		return { original }
 	},
-	context => {
-		ModelProject.prototype.select = context.originalSelect
-	}
-)
+
+	revert: ({ original }) => {
+		ModelProject.prototype.select = original
+	},
+})
