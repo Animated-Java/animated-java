@@ -1,4 +1,5 @@
 import * as crypto from 'crypto'
+import { BONE_INTERPOLATION_ENABLED } from 'src/mods/boneInterpolationMod'
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../interface/dialog/exportProgress'
 import {
 	getKeyframeCommands,
@@ -326,7 +327,7 @@ export function updatePreview(animation: _Animation, time: number) {
 	// Blockbench.dispatchEvent('display_animation_frame')
 }
 
-export function renderAnimation(animation: _Animation, rig: IRenderedRig) {
+async function renderAnimation(animation: _Animation, rig: IRenderedRig) {
 	const rendered = {
 		name: animation.name,
 		storage_name: sanitizeStorageKey(animation.name),
@@ -347,6 +348,7 @@ export function renderAnimation(animation: _Animation, rig: IRenderedRig) {
 		Object.keys(frame.node_transforms).forEach(n => includedNodes.add(n))
 		rendered.frames.push(frame)
 	}
+
 	rendered.duration = rendered.frames.length
 	rendered.modified_nodes = Object.fromEntries(
 		Array.from(includedNodes).map(uuid => [uuid, rig.nodes[uuid]])
@@ -406,6 +408,8 @@ export async function renderProjectAnimations(project: ModelProject, rig: IRende
 	excludedNodesCache = new Set()
 	nodeCache = new Map()
 
+	BONE_INTERPOLATION_ENABLED.set(false)
+
 	PROGRESS_DESCRIPTION.set('Rendering Animations...')
 	PROGRESS.set(0)
 	MAX_PROGRESS.set(project.animations.length)
@@ -423,11 +427,13 @@ export async function renderProjectAnimations(project: ModelProject, rig: IRende
 	correctSceneAngle()
 	const animations: IRenderedAnimation[] = []
 	for (const animation of project.animations) {
-		animations.push(renderAnimation(animation, rig))
+		animations.push(await renderAnimation(animation, rig))
 		PROGRESS.set(PROGRESS.get() + 1)
 		await sleepForAnimationFrame()
 	}
 	restoreSceneAngle()
+
+	BONE_INTERPOLATION_ENABLED.set(true)
 
 	// Restore selected animation
 	if (Mode.selected.id === 'animate' && selectedAnimation) {

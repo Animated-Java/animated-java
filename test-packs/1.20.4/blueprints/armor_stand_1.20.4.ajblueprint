@@ -878,7 +878,7 @@
 		{
 			"name": "text_display",
 			"position": [0, 38, 0],
-			"rotation": [45, 0, 0],
+			"rotation": [22.5, 0, 0],
 			"scale": [1, 1, 1],
 			"visibility": true,
 			"block": "minecraft:stone",
@@ -2084,14 +2084,69 @@
 							"channel": "position",
 							"data_points": [
 								{
-									"x": "math.sin(q.life_time * 360 * 2) * 32",
+									"x": "math.sin(q.life_time * 360 * 8) * 32",
 									"y": "0",
-									"z": "math.cos(q.life_time * 360 * 2) * 32"
+									"z": "math.cos(q.life_time * 360 * 8) * 32"
 								}
 							],
 							"uuid": "a69ba6a4-665c-ec76-2a8c-8b8e131069ce",
 							"time": 0,
 							"color": -1,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						}
+					]
+				},
+				"c2e217f1-b50a-5c9a-b342-71a35e984046": {
+					"name": "text_display",
+					"type": "animated_java:text_display",
+					"keyframes": [
+						{
+							"channel": "rotation",
+							"data_points": [
+								{
+									"x": "math.sin(q.life_time * 360) * 2",
+									"y": "math.cos(q.life_time * 360) * 2",
+									"z": "0"
+								}
+							],
+							"uuid": "c1567f01-545a-acab-0f30-60be7926f8ad",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						},
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "0",
+									"y": "-math.cos(q.life_time * 360) * 1",
+									"z": "0"
+								}
+							],
+							"uuid": "0ef7b645-7023-abf3-6de5-1273f9531880",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						},
+						{
+							"channel": "scale",
+							"data_points": [
+								{
+									"x": "1 + math.cos(q.life_time * 360) * 0.05",
+									"y": "1 + math.sin(q.life_time * 360) * 0.05",
+									"z": "1"
+								}
+							],
+							"uuid": "cc319bc4-2caf-bd79-01a4-fbfa78d8b859",
+							"time": 0,
+							"color": -1,
+							"uniform": false,
 							"interpolation": "linear",
 							"easing": "linear",
 							"easingArgs": []

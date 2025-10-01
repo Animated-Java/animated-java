@@ -1,6 +1,9 @@
+import { Valuable } from 'src/util/stores'
 import { isCurrentFormat } from '../blueprintFormat'
 import { roundToNth } from '../util/misc'
 import { registerMod } from '../util/moddingTools'
+
+export const BONE_INTERPOLATION_ENABLED = new Valuable(true)
 
 registerMod({
 	id: `animated-java:bone-interpolation-mod`,
@@ -13,11 +16,15 @@ registerMod({
 			allowExpression,
 			axis
 		) {
-			if (!isCurrentFormat() || allowExpression === false) {
+			if (
+				!BONE_INTERPOLATION_ENABLED.get() ||
+				!isCurrentFormat() ||
+				allowExpression === false
+			) {
 				return original.call(this, channel, allowExpression, axis)
 			}
 
-			const actualTime = this.animation.time
+			const realTime = this.animation.time
 			try {
 				Timeline.time = roundToNth(this.animation.time, 20)
 
@@ -26,7 +33,7 @@ registerMod({
 				let beforeTime: number
 				let afterTime: number
 
-				if (Timeline.time < actualTime) {
+				if (Timeline.time < realTime) {
 					beforeTime = Timeline.time
 					before = original.call(this, channel, allowExpression, axis)
 					if (!before) return false
@@ -45,7 +52,7 @@ registerMod({
 					before = original.call(this, channel, allowExpression, axis)
 					if (!before) return false
 				}
-				const diff = (actualTime - beforeTime) / (afterTime - beforeTime)
+				const diff = (realTime - beforeTime) / (afterTime - beforeTime)
 
 				const result: ArrayVector3 = [
 					Math.lerp(before[0], after[0], diff),
@@ -55,7 +62,7 @@ registerMod({
 
 				return result
 			} finally {
-				Timeline.time = actualTime
+				Timeline.time = realTime
 			}
 		}
 
