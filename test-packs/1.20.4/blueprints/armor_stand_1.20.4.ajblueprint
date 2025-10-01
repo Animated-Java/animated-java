@@ -2084,9 +2084,9 @@
 							"channel": "position",
 							"data_points": [
 								{
-									"x": "math.sin(q.life_time * 360 * 8) * 32",
+									"x": "math.sin(q.life_time * 360 * 2) * 32",
 									"y": "0",
-									"z": "math.cos(q.life_time * 360 * 8) * 32"
+									"z": "math.cos(q.life_time * 360 * 2) * 32"
 								}
 							],
 							"uuid": "a69ba6a4-665c-ec76-2a8c-8b8e131069ce",

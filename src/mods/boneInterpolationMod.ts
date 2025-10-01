@@ -13,7 +13,7 @@ registerMod({
 			allowExpression,
 			axis
 		) {
-			if (!isCurrentFormat() || !allowExpression) {
+			if (!isCurrentFormat() || allowExpression === false) {
 				return original.call(this, channel, allowExpression, axis)
 			}
 
