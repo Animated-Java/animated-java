@@ -16,7 +16,7 @@ dir global {
 			scoreboard players reset * <%OBJECTIVES.IS_RIG_LOADED()%>
 		}
 		# Purposefully load gu first, as other functions depend on it.
-		function animated_java:global/internal/gu/load
+		function animated_java:global/gu/on_load
 		function #*global/on_load
 	}
 
@@ -52,60 +52,58 @@ dir global {
 		}
 	}
 
-	dir internal {
-		# Thanks Gibbsly for this code! https://github.com/gibbsly/gu
-		dir gu {
-			function load {
-				scoreboard players set 256 <%OBJECTIVES.I()%> 256
-				data modify storage aj:uuid main.hex_chars set value \
-					<%JSON.stringify([...Array(0x100).keys()].map(v => {const x = v.toString(16); return x.length > 1 ? x : '0' + x}))%>
+	# Thanks Gibbsly for this code! https://github.com/gibbsly/gu
+	dir gu {
+		function on_load {
+			scoreboard players set 256 <%OBJECTIVES.I()%> 256
+			data modify storage animated_java:uuid hex_chars set value \
+				<%JSON.stringify([...Array(0x100).keys()].map(v => {const x = v.toString(16); return x.length > 1 ? x : '0' + x}))%>
+		}
+
+		function get_entity_uuid_string {
+			data modify storage animated_java:uuid temp set value {0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,a:0,b:0,c:0,d:0,e:0,f:0}
+			data modify storage animated_java:uuid in set from entity @s UUID
+
+			execute store result score 0= <%OBJECTIVES.I()%> store result score 1= <%OBJECTIVES.I()%> run data get storage animated_java:uuid in[0]
+			execute store result storage animated_java:uuid temp.0 int 1 run scoreboard players operation 0= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+			execute store result score 2= <%OBJECTIVES.I()%> run scoreboard players operation 1= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+			execute store result storage animated_java:uuid temp.1 int 1 run scoreboard players operation 1= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+			execute store result score 3= <%OBJECTIVES.I()%> run scoreboard players operation 2= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+			execute store result storage animated_java:uuid temp.2 int 1 run scoreboard players operation 2= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+			execute store result storage animated_java:uuid temp.3 int 1 run scoreboard players operation 3= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+
+			execute store result score 0= <%OBJECTIVES.I()%> store result score 1= <%OBJECTIVES.I()%> run data get storage animated_java:uuid in[1]
+			execute store result storage animated_java:uuid temp.4 int 1 run scoreboard players operation 0= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+			execute store result score 2= <%OBJECTIVES.I()%> run scoreboard players operation 1= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+			execute store result storage animated_java:uuid temp.5 int 1 run scoreboard players operation 1= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+			execute store result score 3= <%OBJECTIVES.I()%> run scoreboard players operation 2= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+			execute store result storage animated_java:uuid temp.6 int 1 run scoreboard players operation 2= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+			execute store result storage animated_java:uuid temp.7 int 1 run scoreboard players operation 3= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+
+			execute store result score 0= <%OBJECTIVES.I()%> store result score 1= <%OBJECTIVES.I()%> run data get storage animated_java:uuid in[2]
+			execute store result storage animated_java:uuid temp.8 int 1 run scoreboard players operation 0= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+			execute store result score 2= <%OBJECTIVES.I()%> run scoreboard players operation 1= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+			execute store result storage animated_java:uuid temp.9 int 1 run scoreboard players operation 1= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+			execute store result score 3= <%OBJECTIVES.I()%> run scoreboard players operation 2= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+			execute store result storage animated_java:uuid temp.a int 1 run scoreboard players operation 2= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+			execute store result storage animated_java:uuid temp.b int 1 run scoreboard players operation 3= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+
+			execute store result score 0= <%OBJECTIVES.I()%> store result score 1= <%OBJECTIVES.I()%> run data get storage animated_java:uuid in[3]
+			execute store result storage animated_java:uuid temp.c int 1 run scoreboard players operation 0= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+			execute store result score 2= <%OBJECTIVES.I()%> run scoreboard players operation 1= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+			execute store result storage animated_java:uuid temp.d int 1 run scoreboard players operation 1= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+			execute store result score 3= <%OBJECTIVES.I()%> run scoreboard players operation 2= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+			execute store result storage animated_java:uuid temp.e int 1 run scoreboard players operation 2= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
+			execute store result storage animated_java:uuid temp.f int 1 run scoreboard players operation 3= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
+
+			block { with storage animated_java:uuid temp
+				REPEAT (0, 15) as i {
+					$data modify storage animated_java:uuid temp.<%i.toString(16)%> set from storage animated_java:uuid hex_chars[$(<%i.toString(16)%>)]
+				}
 			}
 
-			function get_entity_uuid_string {
-				data modify storage aj:uuid temp set value {0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,a:0,b:0,c:0,d:0,e:0,f:0}
-				data modify storage aj:uuid main.in set from entity @s UUID
-
-				execute store result score 0= <%OBJECTIVES.I()%> store result score 1= <%OBJECTIVES.I()%> run data get storage aj:uuid main.in[0]
-				execute store result storage aj:uuid temp.0 int 1 run scoreboard players operation 0= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
-				execute store result score 2= <%OBJECTIVES.I()%> run scoreboard players operation 1= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
-				execute store result storage aj:uuid temp.1 int 1 run scoreboard players operation 1= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
-				execute store result score 3= <%OBJECTIVES.I()%> run scoreboard players operation 2= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
-				execute store result storage aj:uuid temp.2 int 1 run scoreboard players operation 2= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
-				execute store result storage aj:uuid temp.3 int 1 run scoreboard players operation 3= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
-
-				execute store result score 0= <%OBJECTIVES.I()%> store result score 1= <%OBJECTIVES.I()%> run data get storage aj:uuid main.in[1]
-				execute store result storage aj:uuid temp.4 int 1 run scoreboard players operation 0= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
-				execute store result score 2= <%OBJECTIVES.I()%> run scoreboard players operation 1= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
-				execute store result storage aj:uuid temp.5 int 1 run scoreboard players operation 1= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
-				execute store result score 3= <%OBJECTIVES.I()%> run scoreboard players operation 2= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
-				execute store result storage aj:uuid temp.6 int 1 run scoreboard players operation 2= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
-				execute store result storage aj:uuid temp.7 int 1 run scoreboard players operation 3= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
-
-				execute store result score 0= <%OBJECTIVES.I()%> store result score 1= <%OBJECTIVES.I()%> run data get storage aj:uuid main.in[2]
-				execute store result storage aj:uuid temp.8 int 1 run scoreboard players operation 0= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
-				execute store result score 2= <%OBJECTIVES.I()%> run scoreboard players operation 1= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
-				execute store result storage aj:uuid temp.9 int 1 run scoreboard players operation 1= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
-				execute store result score 3= <%OBJECTIVES.I()%> run scoreboard players operation 2= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
-				execute store result storage aj:uuid temp.a int 1 run scoreboard players operation 2= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
-				execute store result storage aj:uuid temp.b int 1 run scoreboard players operation 3= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
-
-				execute store result score 0= <%OBJECTIVES.I()%> store result score 1= <%OBJECTIVES.I()%> run data get storage aj:uuid main.in[3]
-				execute store result storage aj:uuid temp.c int 1 run scoreboard players operation 0= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
-				execute store result score 2= <%OBJECTIVES.I()%> run scoreboard players operation 1= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
-				execute store result storage aj:uuid temp.d int 1 run scoreboard players operation 1= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
-				execute store result score 3= <%OBJECTIVES.I()%> run scoreboard players operation 2= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
-				execute store result storage aj:uuid temp.e int 1 run scoreboard players operation 2= <%OBJECTIVES.I()%> %= 256 <%OBJECTIVES.I()%>
-				execute store result storage aj:uuid temp.f int 1 run scoreboard players operation 3= <%OBJECTIVES.I()%> /= 256 <%OBJECTIVES.I()%>
-
-				block { with storage aj:uuid temp
-					REPEAT (0, 15) as i {
-						$data modify storage aj:uuid temp.<%i.toString(16)%> set from storage aj:uuid main.hex_chars[$(<%i.toString(16)%>)]
-					}
-				}
-
-				block { with storage aj:uuid temp
-					$data modify storage aj:uuid main.out set value "$(3)$(2)$(1)$(0)-$(7)$(6)-$(5)$(4)-$(b)$(a)-$(9)$(8)$(f)$(e)$(d)$(c)"
-				}
+			block { with storage animated_java:uuid temp
+				$data modify storage animated_java:uuid out set value "$(3)$(2)$(1)$(0)-$(7)$(6)-$(5)$(4)-$(b)$(a)-$(9)$(8)$(f)$(e)$(d)$(c)"
 			}
 		}
 	}
