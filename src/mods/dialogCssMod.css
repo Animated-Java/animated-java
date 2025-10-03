@@ -9,4 +9,5 @@ dialog.dialog pre:has(code) {
 	padding: 4px 7px;
 	font-size: smaller;
 	user-select: text;
+	white-space: pre-wrap;
 }

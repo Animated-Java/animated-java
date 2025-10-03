@@ -81,8 +81,8 @@
 				on:change={() => forceNoWrap()}
 				preserveIdent
 				history
+				class={'language-' + (syntax ?? 'plaintext')}
 				style="
-					background-color: var(--color-back);
 					font-family: var(--font-code);
 					font-size: 14px;
 					padding: 3px 6px;

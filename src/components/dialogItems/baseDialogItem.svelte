@@ -65,6 +65,7 @@
 	.slot_container {
 		flex-grow: 1;
 		margin-right: 4px;
+		max-width: 96%;
 	}
 	.warning_text i {
 		font-size: 1.2em;
