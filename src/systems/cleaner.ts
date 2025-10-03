@@ -1,5 +1,5 @@
 import { isFunctionTagPath } from '../util/fileUtil'
-import { type IFunctionTag, parseDataPackPath } from '../util/minecraftUtil'
+import { type FunctionTagJSON, parseDataPackPath } from '../util/minecraftUtil'
 import { getExportPaths } from './exporter'
 import { AJMeta } from './global'
 import { replacePathPart } from './util'
@@ -100,7 +100,7 @@ export async function cleanupExportedFiles() {
 					}
 				}
 				// Remove mentions of the export namespace from the file
-				const content: IFunctionTag = JSON.parse(
+				const content: FunctionTagJSON = JSON.parse(
 					(await fs.promises.readFile(file)).toString()
 				)
 				content.values = content.values.filter(

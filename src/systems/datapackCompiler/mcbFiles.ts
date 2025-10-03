@@ -1,7 +1,7 @@
 import { type MinecraftVersion } from '../global'
 import animation_1_20_4 from './1.20.4/animation.mcb'
-import core_1_20_4 from './1.20.4/core.mcb'
-import coreTemplates_1_20_4 from './1.20.4/core.mcbt'
+import core_1_20_4 from './1.20.4/global.mcb'
+import coreTemplates_1_20_4 from './1.20.4/global.mcbt'
 import static_1_20_4 from './1.20.4/static.mcb'
 
 import animation_1_20_5 from './1.20.5/animation.mcb'

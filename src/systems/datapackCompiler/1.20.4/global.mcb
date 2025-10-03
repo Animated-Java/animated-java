@@ -1,5 +1,6 @@
-dir global {
+import ./global.mcbt
 
+dir global {
 	function on_load minecraft:load {
 		# Initialize Scoreboards
 		scoreboard objectives add <%OBJECTIVES.I()%> dummy
@@ -33,18 +34,11 @@ dir global {
 	}
 
 	dir root {
-		# TODO Maybe instead of merging tags, I should just generate it from the .ajmeta data every time a rig is exported?
-		# That way I can also check if the rig's files still exist, and remove tag entries if they don't.
-
 		tag functions on_tick {
 			*<%export_namespace%>/root/on_tick
 		}
 
 		IF (debug_mode) {
-			tag functions on_load {
-				*<%export_namespace%>/root/on_load
-			}
-
 			function on_tick {
 				execute unless score @s <%OBJECTIVES.IS_RIG_LOADED()%> matches 1 run function *global/root/on_load
 				function #*global/root/on_tick
@@ -124,7 +118,7 @@ dir global {
 		# Removes locators and cameras owned by the rig, even if they're not included in the currently loaded export.
 		function outdated_rig {
 			# Assert that the function is being executed as a root entity.
-			execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.GLOBAL_ROOT()%>] run return fail
+			debug assert executed_as_root_entity
 
 			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block as_data {
 				data remove storage <%temp_storage%> args
