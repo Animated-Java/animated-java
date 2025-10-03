@@ -738,7 +738,6 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 			}
 			case node instanceof Locator: {
 				renderLocator(node, rig)
-
 				break
 			}
 			case node instanceof TextDisplay: {

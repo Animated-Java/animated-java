@@ -108,7 +108,13 @@ async function generateModelMesh(
 	variant: IBlockStateVariant,
 	model: IBlockModel
 ): Promise<BlockModelMesh> {
-	console.log(`Generating block mesh for '${variant.model}' from `, variant, model)
+	console.log(
+		`Generating block mesh for '${variant.model}':`,
+		'\n - Variant',
+		variant,
+		'\n - Model',
+		model
+	)
 
 	if (!model.elements) {
 		throw new Error(`No elements defined in block model '${variant.model}'`)
@@ -180,9 +186,10 @@ async function generateModelMesh(
 		}
 
 		geometry.translate(-8, -8, -8)
-		// geometry.rotateY(Math.degToRad(180))
+		geometry.rotateY(Math.degToRad(180)) // Blockbench's rotation is mirrored compared to MC
 		if (variant.x) geometry.rotateX(Math.degToRad(variant.x))
 		if (variant.y) geometry.rotateY(-Math.degToRad(variant.y))
+		geometry.rotateY(Math.degToRad(-180)) // Rotate back after mirroring
 		if (variant.isItemModel) {
 			geometry.translate(0, 8, 0)
 		} else {
@@ -407,6 +414,14 @@ export async function parseBlockState(block: IParsedBlock): Promise<BlockModelMe
 	}
 	// Make sure the block has all the default states
 	block.states = Object.assign({}, block.blockStateRegistryEntry.defaultStates, block.states)
+	console.log(
+		'Block states for',
+		block.resourceLocation,
+		'\n - States',
+		block.states,
+		'\n - Registry entry',
+		block.blockStateRegistryEntry
+	)
 
 	for (const [k, v] of Object.entries(block.states)) {
 		if (!block.blockStateRegistryEntry.stateValues[k]) {
@@ -428,6 +443,9 @@ export async function parseBlockState(block: IParsedBlock): Promise<BlockModelMe
 		const singleVariant = blockstate.variants['']
 		if (singleVariant) {
 			if (Array.isArray(singleVariant)) {
+				console.warn(
+					`Multiple weighted variants found for '${block.resourceLocation}' default variant. Using the first one.`
+				)
 				return await parseBlockModel(singleVariant[0])
 			} else {
 				return await parseBlockModel(singleVariant)
@@ -453,6 +471,9 @@ export async function parseBlockState(block: IParsedBlock): Promise<BlockModelMe
 
 			let model: BlockModelMesh
 			if (Array.isArray(variant)) {
+				console.warn(
+					`Multiple weighted variants found for '${block.resourceLocation}' variant '${name}'. Using the first one.`
+				)
 				model = await parseBlockModel(variant[0])
 			} else {
 				model = await parseBlockModel(variant)
@@ -549,7 +570,7 @@ function checkIfBlockStateMatches(
 	}
 
 	if (typeof value === 'boolean') {
-		return !!block.states[key] === value
+		return block.states[key] === value
 	} else if (typeof value === 'string') {
 		return block.states[key] === value
 	} else if (typeof value === 'number') {
