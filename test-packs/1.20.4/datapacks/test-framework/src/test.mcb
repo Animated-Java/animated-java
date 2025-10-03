@@ -2,8 +2,8 @@ function on_load minecraft:load {
 	tellraw @a {"text":"Test Framework loaded!", "color":"green"}
 }
 
-function tick minecraft:tick {
-	execute store result score #count aj.i if entity @e[tag=aj.global.root]
+clock 1s 1t {
+	execute store result score #count aj.i if entity @e[type=item_display,tag=aj.global.root]
 	title @a actionbar [{"text":"Rig Count: "}, {"score":{"name":"#count","objective":"aj.i"}}]
 }
 
@@ -23,11 +23,9 @@ dir armor_stand {
 	function summon_many {
 		data remove storage test:temp args
 		$data modify storage test:temp args set value {args:$(args)}
-		REPEAT (0, 9) as y {
-			REPEAT (0, 9) as x {
-				schedule 1t {
-					execute positioned <%x%> 1 <%y%> rotated 0 0 run function animated_java:armor_stand/summon with storage test:temp args
-				}
+		REPEAT (0, 199) as i {
+			schedule 1t {
+				execute positioned <%i % 16%> 1 <%Math.floor(i / 16)%> rotated 0 0 run function animated_java:armor_stand/summon with storage test:temp args
 			}
 		}
 	}
@@ -35,11 +33,9 @@ dir armor_stand {
 	function summon_many_minimal {
 		data remove storage test:temp args
 		$data modify storage test:temp args set value {args:$(args)}
-		REPEAT (0, 9) as y {
-			REPEAT (0, 9) as x {
-				schedule 1t {
-					execute positioned <%x%> 1 <%y%> rotated 0 0 run function animated_java:armor_stand_minimal/summon with storage test:temp args
-				}
+		REPEAT (0, 199) as i {
+			schedule 1t {
+				execute positioned <%i % 16%> 1 <%Math.floor(i / 16)%> rotated 0 0 run function animated_java:armor_stand_minimal/summon with storage test:temp args
 			}
 		}
 	}

@@ -6,18 +6,19 @@
 		"save_location": "D:\\github-repos\\animated-java\\old-animated-java\\test-packs\\1.20.4\\blueprints\\armor_stand_minimal_1.20.4.ajblueprint",
 		"last_used_export_namespace": "armor_stand_minimal"
 	},
+	"resolution": {
+		"width": 64,
+		"height": 64
+	},
 	"blueprint_settings": {
 		"export_namespace": "armor_stand_minimal",
 		"render_box": [48, 48],
 		"target_minecraft_version": "1.20.4",
 		"resource_pack": "../resources",
 		"data_pack": "../datapacks/animated_java",
+		"auto_update_rig_orientation": false,
 		"baked_animations": false,
 		"json_file": "../testPluginExport.json"
-	},
-	"resolution": {
-		"width": 64,
-		"height": 64
 	},
 	"elements": [
 		{
@@ -1015,13 +1016,13 @@
 			"override": false,
 			"length": 1,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"saved": false,
 			"path": "",
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",
-			"loop_delay": "20",
+			"loop_delay": "0",
 			"excluded_nodes": [
 				{
 					"name": "baseplate_pivot_a",

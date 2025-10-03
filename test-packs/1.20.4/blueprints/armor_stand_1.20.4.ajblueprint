@@ -6,6 +6,10 @@
 		"save_location": "D:\\github-repos\\animated-java\\old-animated-java\\test-packs\\1.20.4\\blueprints\\armor_stand_1.20.4.ajblueprint",
 		"last_used_export_namespace": "armor_stand"
 	},
+	"resolution": {
+		"width": 64,
+		"height": 64
+	},
 	"blueprint_settings": {
 		"export_namespace": "armor_stand",
 		"render_box": [95, 32],
@@ -18,10 +22,6 @@
 		"on_post_tick_function": "say Post-Tick!",
 		"baked_animations": false,
 		"json_file": "../testPluginExport.json"
-	},
-	"resolution": {
-		"width": 64,
-		"height": 64
 	},
 	"elements": [
 		{
@@ -866,7 +866,7 @@
 			"config": {},
 			"item": "minecraft:diamond",
 			"itemDisplay": "none",
-			"text": "[\n\t{ text: \"someone's string...\\n\" },\n\t{ \"text\": \"\\u2603\" },\n\t{text: 'test', hoverEvent: {\n\t\taction:show_item,\n\t\tcontents: {id:'minecraft:stone'}\n\t}},\n\t'awd\"',\n\t\"awd'\", \n\t\"awd\\\"\",\n\t'awd\\'',\n\t'awd\\'\"',\n\t'\\n\\u2604\\n',\n\tno_quotes_on_me,\n\t'\\n',\n\t{\n\t\ttext: orange,\n\t\tcolor: '#ffaa00',\n\t\titalic: true,\n\t\tunderlined: \"true\",\n\t\tstrikethrough: TRUE\n\t}\n]",
+			"text": "[\n\t{ text: \"someone's string\\n\" },\n\t{ \"text\": \"\\u2603\" },\n\t{text: 'test', hoverEvent: {\n\t\taction:show_item,\n\t\tcontents: {id:'minecraft:stone'}\n\t}},\n\t'awd\"',\n\t\"awd'\", \n\t\"awd\\\"\",\n\t'awd\\'',\n\t'awd\\'\"',\n\t'\\n\\u2604\\n',\n\tno_quotes_on_me,\n\t'\\n',\n\t{\n\t\ttext: orange,\n\t\tcolor: '#ffaa00',\n\t\titalic: true,\n\t\tunderlined: \"true\",\n\t\tstrikethrough: TRUE\n\t}\n]",
 			"lineWidth": 400,
 			"backgroundColor": "#000000",
 			"backgroundAlpha": 0.12941,
