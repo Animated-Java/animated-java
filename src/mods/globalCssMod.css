@@ -12,3 +12,6 @@ dialog.dialog pre:has(code) {
 	white-space: pre-wrap;
 }
 
+#collection_properties_vue > ul > li {
+	max-width: unset !important;
+}
