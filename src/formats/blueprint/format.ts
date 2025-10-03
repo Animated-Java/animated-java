@@ -1,5 +1,3 @@
-import type { BlueprintSettings } from '../../blueprintSettings'
-import * as blueprintSettings from '../../blueprintSettings'
 import FormatPageSvelte from '../../components/formatPage.svelte'
 import ProjectTitleSvelte from '../../components/projectTitle.svelte'
 import { type BillboardMode, BoneConfig, LocatorConfig } from '../../nodeConfigs'
@@ -11,6 +9,8 @@ import { Valuable } from '../../util/stores'
 import { translate } from '../../util/translation'
 import { Variant } from '../../variants'
 import { BLUEPRINT_CODEC } from './codec'
+import type { BlueprintSettings } from './settings'
+import * as blueprintSettings from './settings'
 
 let boundingBoxUpdateIntervalId: ReturnType<typeof setInterval> | undefined
 

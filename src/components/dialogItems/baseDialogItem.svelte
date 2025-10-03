@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { blueprintSettingErrors } from '../../blueprintSettings'
+	import { blueprintSettingErrors } from '../../formats/blueprint/settings'
 	import { translate } from '../../util/translation'
 
 	export let label: string

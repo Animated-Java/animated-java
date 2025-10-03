@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-	import { defaultValues } from '../blueprintSettings'
+	import { defaultValues } from '../formats/blueprint/settings'
 	import mcbFiles from '../systems/datapackCompiler/mcbFiles'
 	import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
 	import { Valuable } from '../util/stores'

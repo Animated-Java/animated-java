@@ -1,5 +1,5 @@
-import type { MinecraftVersion } from './systems/global'
-import { Valuable } from './util/stores'
+import type { MinecraftVersion } from '../../systems/global'
+import { Valuable } from '../../util/stores'
 
 export type ExportMode = 'folder' | 'zip' | 'none'
 

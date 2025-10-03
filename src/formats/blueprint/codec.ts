@@ -2,15 +2,15 @@ import { sanitizeStorageKey } from 'src/util/minecraftUtil'
 import { registerCodec } from 'src/util/moddingTools'
 import { translate } from 'src/util/translation'
 import { Variant } from 'src/variants'
-import * as blueprintSettings from '../../blueprintSettings'
 import { PACKAGE } from '../../constants'
-import * as ModelDatFixerUpper from '../../systems/modelDataFixerUpper'
+import * as ModelDatFixerUpper from './dfu'
 import {
 	BLUEPRINT_FORMAT,
 	BLUEPRINT_FORMAT_ID,
 	getDefaultProjectSettings,
 	IBlueprintFormatJSON,
 } from './format'
+import * as blueprintSettings from './settings'
 
 // region Codec
 export const BLUEPRINT_CODEC = registerCodec(
