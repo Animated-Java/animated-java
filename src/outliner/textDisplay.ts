@@ -169,14 +169,11 @@ export class TextDisplay extends ResizableOutlinerElement {
 	}
 
 	getSaveCopy() {
-		const el: any = {}
+		const save = super.getSaveCopy?.() ?? {}
 		for (const key in TextDisplay.properties) {
-			TextDisplay.properties[key].copy(this, el)
+			TextDisplay.properties[key].copy(this, save)
 		}
-		el.uuid = this.uuid
-		el.type = this.type
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-		return el
+		return save
 	}
 
 	select() {

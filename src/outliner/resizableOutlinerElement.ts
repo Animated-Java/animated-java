@@ -1,6 +1,7 @@
 import { makeNotZero } from '../util/misc'
 
 export class ResizableOutlinerElement extends OutlinerElement {
+	public type: string = 'resizable'
 	// Properties
 	public name: string
 	public position: ArrayVector3
@@ -44,8 +45,6 @@ export class ResizableOutlinerElement extends OutlinerElement {
 		this.rotation ??= [0, 0, 0]
 		this.scale ??= [1, 1, 1]
 		this.visibility ??= true
-
-		// this.sanitizeName()
 	}
 
 	get origin() {
@@ -105,12 +104,21 @@ export class ResizableOutlinerElement extends OutlinerElement {
 		this.preview_controller.updateGeometry?.(this)
 		this.preview_controller.updateTransform(this)
 	}
+
+	getSaveCopy() {
+		const save = super.getSaveCopy?.() ?? {}
+		save.uuid = this.uuid
+		save.type = this.type
+		return save
+	}
 }
 new Property(ResizableOutlinerElement, 'string', 'name', { default: 'resizable_outliner_element' })
 new Property(ResizableOutlinerElement, 'vector', 'position', { default: [0, 0, 0] })
 new Property(ResizableOutlinerElement, 'vector', 'rotation', { default: [0, 0, 0] })
 new Property(ResizableOutlinerElement, 'vector', 'scale', { default: [1, 1, 1] })
-new Property(ResizableOutlinerElement, 'string', 'visibility', { default: true })
+new Property(ResizableOutlinerElement, 'boolean', 'visibility', { default: true })
+new Property(ResizableOutlinerElement, 'boolean', 'locked', { default: false })
+new Property(ResizableOutlinerElement, 'boolean', 'export', { default: false })
 
 export const PREVIEW_CONTROLLER = new NodePreviewController(ResizableOutlinerElement, {
 	setup(el: ResizableOutlinerElement) {

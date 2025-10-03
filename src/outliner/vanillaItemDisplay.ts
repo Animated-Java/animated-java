@@ -143,14 +143,11 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 	}
 
 	getSaveCopy() {
-		const el: any = {}
+		const save = super.getSaveCopy?.() ?? {}
 		for (const key in VanillaItemDisplay.properties) {
-			VanillaItemDisplay.properties[key].copy(this, el)
+			VanillaItemDisplay.properties[key].copy(this, save)
 		}
-		el.uuid = this.uuid
-		el.type = this.type
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-		return el
+		return save
 	}
 
 	select() {
