@@ -9,6 +9,7 @@ import {
 	BLUEPRINT_FORMAT_ID,
 	getDefaultProjectSettings,
 	IBlueprintFormatJSON,
+	ICollectionJSON,
 } from './format'
 import * as blueprintSettings from './settings'
 
@@ -232,6 +233,12 @@ export const BLUEPRINT_CODEC = registerCodec(
 				})
 			}
 
+			if (Array.isArray(model.collections)) {
+				for (const collectionJSON of model.collections) {
+					new Collection(collectionJSON, collectionJSON.uuid).add()
+				}
+			}
+
 			Canvas.updateAll()
 			Validator.validate()
 
@@ -351,6 +358,12 @@ export const BLUEPRINT_CODEC = registerCodec(
 				if (Object.keys(backgrounds).length) {
 					model.backgrounds = backgrounds
 				}
+			}
+
+			if (Collection.all.length > 0) {
+				model.collections = Collection.all.map(
+					collection => collection.getSaveCopy() as ICollectionJSON
+				)
 			}
 
 			previouslySelectedVariant?.select()

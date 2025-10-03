@@ -101,6 +101,15 @@ export interface IBlueprintVariantJSON {
 	is_default?: true
 }
 
+export interface ICollectionJSON {
+	name?: string
+	uuid?: string
+	export_codec?: string
+	export_path?: string
+	children?: string[]
+	visibility?: boolean
+}
+
 /**
  * The serialized Blueprint
  */
@@ -144,6 +153,7 @@ export interface IBlueprintFormatJSON {
 	animation_controllers?: AnimationControllerOptions[]
 	animation_variable_placeholders?: string
 	backgrounds?: Record<string, any>
+	collections?: ICollectionJSON[]
 }
 
 //region > Convert
