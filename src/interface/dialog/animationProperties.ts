@@ -32,6 +32,8 @@ export function openAnimationPropertiesDialog(animation: _Animation) {
 			animation.loop = loopMode.get() as any
 			animation.loop_delay = loopDelay.get().toString()
 			animation.excluded_nodes = excludedNodes.get()
+
+			Project!.saved = false
 		},
 	}).show()
 }
