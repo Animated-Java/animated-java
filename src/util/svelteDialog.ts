@@ -57,11 +57,11 @@ export class SvelteDialog<
 	DialogContent extends SvelteComponent = any,
 	DialogExtra extends SvelteComponent = any
 > extends Dialog {
-	wrapperElement?: HTMLDivElement
-	contentElement?: HTMLDivElement
+	wrapperElement: HTMLDivElement | null = null
+	contentElement: HTMLDivElement | null = null
 
-	contentComponent?: SvelteComponent<DialogContent>
-	extraComponent?: SvelteComponent<DialogExtra>
+	contentComponent: SvelteComponent<DialogContent> | null = null
+	extraComponent: SvelteComponent<DialogExtra> | null = null
 
 	constructor(options: SvelteDialogOptions<DialogContent, DialogExtra>) {
 		const mount = document.createComment(`svelte-dialog-` + guid())
@@ -96,13 +96,13 @@ export class SvelteDialog<
 
 			this.contentComponent = new options.content.component({
 				target: this.contentElement,
-				props: options.content.props,
+				props: options.content.props!,
 			})
 
 			if (options.extra) {
 				this.extraComponent = new options.extra.component({
 					target: this.object!,
-					props: options.extra.props,
+					props: options.extra.props!,
 				})
 			}
 
@@ -152,7 +152,7 @@ export class SvelteDialog<
 			if (!this.contentComponent) return
 			this.extraComponent?.$destroy()
 			this.contentComponent.$destroy()
-			this.contentComponent = undefined
+			this.contentComponent = null
 			if (options.onButton) options.onButton(...args)
 			if (options.onClose) options.onClose()
 		}
@@ -161,7 +161,7 @@ export class SvelteDialog<
 			if (!this.contentComponent) return
 			this.extraComponent?.$destroy()
 			this.contentComponent.$destroy()
-			this.contentComponent = undefined
+			this.contentComponent = null
 			if (options.onCancel) options.onCancel(...args)
 			if (options.onClose) options.onClose()
 		}

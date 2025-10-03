@@ -17,7 +17,6 @@
 		"noEmit": true,
 		"isolatedModules": true,
 		"alwaysStrict": true,
-		"baseUrl": ".",
-		"exactOptionalPropertyTypes": true
+		"baseUrl": "."
 	}
 }

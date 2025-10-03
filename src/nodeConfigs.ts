@@ -4,6 +4,7 @@ import type {
 	IBlueprintLocatorConfigJSON,
 	IBlueprintTextDisplayConfigJSON,
 } from './blueprintFormat'
+import { scrubUndefined } from './util/misc'
 
 export type BillboardMode = 'fixed' | 'vertical' | 'horizontal' | 'center'
 
@@ -205,7 +206,7 @@ export class BoneConfig {
 	}
 
 	public toJSON(): IBlueprintBoneConfigJSON {
-		return {
+		return scrubUndefined({
 			custom_name: this._customName,
 			custom_name_visible: this._customNameVisible,
 			billboard: this._billboard,
@@ -221,7 +222,7 @@ export class BoneConfig {
 			shadow_radius: this._shadowRadius,
 			shadow_strength: this._shadowStrength,
 			use_nbt: this._useNBT,
-		}
+		})
 	}
 
 	inheritFrom(other: BoneConfig) {
@@ -405,13 +406,13 @@ export class LocatorConfig {
 	}
 
 	public toJSON(): IBlueprintLocatorConfigJSON {
-		return {
+		return scrubUndefined({
 			use_entity: this._useEntity,
 			entity_type: this._entityType,
 			sync_passenger_rotation: this._syncPassengerRotation,
 			on_summon_function: this._onSummonFunction,
 			on_tick_function: this._onTickFunction,
-		}
+		})
 	}
 
 	public static fromJSON(json: IBlueprintLocatorConfigJSON): LocatorConfig {
@@ -585,7 +586,7 @@ export class TextDisplayConfig {
 	}
 
 	public toJSON(): IBlueprintTextDisplayConfigJSON {
-		return {
+		return scrubUndefined({
 			billboard: this._billboard,
 			override_brightness: this._overrideBrightness,
 			brightness_override: this._brightnessOverride,
@@ -597,7 +598,7 @@ export class TextDisplayConfig {
 			shadow_radius: this._shadowRadius,
 			shadow_strength: this._shadowStrength,
 			use_nbt: this._useNBT,
-		}
+		})
 	}
 
 	public static fromJSON(json: IBlueprintTextDisplayConfigJSON): TextDisplayConfig {

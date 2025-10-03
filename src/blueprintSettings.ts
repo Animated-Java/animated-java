@@ -3,7 +3,39 @@ import { Valuable } from './util/stores'
 
 export type ExportMode = 'folder' | 'zip' | 'none'
 
-export const defaultValues = {
+export interface BlueprintSettings {
+	export_namespace: string
+
+	show_render_box: boolean
+	auto_render_box: boolean
+	render_box: ArrayVector2
+	// Export Settings
+	enable_plugin_mode: boolean
+	resource_pack_export_mode: ExportMode
+	data_pack_export_mode: ExportMode
+	target_minecraft_version: MinecraftVersion
+	// Resource Pack Settings
+	display_item: string
+	custom_model_data_offset: number
+	enable_advanced_resource_pack_settings: boolean
+	resource_pack: string
+	// Data Pack Settings
+	enable_advanced_data_pack_settings: boolean
+	data_pack: string
+	on_summon_function: string
+	on_remove_function: string
+	on_pre_tick_function: string
+	on_post_tick_function: string
+	interpolation_duration: number
+	teleportation_duration: number
+	auto_update_rig_orientation: boolean
+	use_storage_for_animation: boolean
+	// Plugin Settings
+	baked_animations: boolean
+	json_file: string
+}
+
+export const defaultValues: BlueprintSettings = {
 	export_namespace: 'blueprint',
 
 	show_render_box: false,

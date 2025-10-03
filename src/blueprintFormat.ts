@@ -1,3 +1,4 @@
+import type { BlueprintSettings } from './blueprintSettings'
 import * as blueprintSettings from './blueprintSettings'
 import FormatPageSvelte from './components/formatPage.svelte'
 import ProjectTitleSvelte from './components/projectTitle.svelte'
@@ -117,7 +118,7 @@ export interface IBlueprintFormatJSON {
 	/**
 	 * The project settings of the Blueprint
 	 */
-	blueprint_settings?: Partial<typeof blueprintSettings.defaultValues>
+	blueprint_settings?: Partial<BlueprintSettings>
 	/**
 	 * The variants of the Blueprint
 	 */
@@ -165,7 +166,7 @@ export function convertToBlueprint() {
 	}
 }
 
-export function getDefaultProjectSettings(): ModelProject['animated_java'] {
+export function getDefaultProjectSettings() {
 	return { ...blueprintSettings.defaultValues }
 }
 
@@ -459,7 +460,6 @@ export const BLUEPRINT_CODEC = registerCodec(
 					save_location: Project.save_path,
 					last_used_export_namespace: Project.last_used_export_namespace,
 				},
-				blueprint_settings: {},
 				resolution: {
 					width: Project.texture_width ?? 16,
 					height: Project.texture_height ?? 16,
@@ -467,13 +467,15 @@ export const BLUEPRINT_CODEC = registerCodec(
 			}
 
 			const defaultSettings = getDefaultProjectSettings()
-			for (const key of Object.keys(defaultSettings) as Array<keyof typeof defaultSettings>) {
-				if (
-					Project.animated_java[key] == undefined ||
-					Project.animated_java[key] === defaultSettings[key]
-				)
-					continue
-				model.blueprint_settings![key] = Project.animated_java[key] as any
+
+			for (const key of Object.keys(Project.animated_java) as Array<
+				keyof typeof Project.animated_java
+			>) {
+				const value = Project.animated_java[key]
+				if (value == undefined || value === defaultSettings[key]) continue
+				model.blueprint_settings ??= {}
+				// @ts-expect-error
+				model.blueprint_settings[key] = value
 			}
 
 			for (const key in ModelProject.properties) {

@@ -1,5 +1,5 @@
 import type { IBlueprintBoneConfigJSON, IBlueprintLocatorConfigJSON } from './blueprintFormat'
-import { defaultValues } from './blueprintSettings'
+import { BlueprintSettings } from './blueprintSettings'
 import { TextDisplay } from './outliner/textDisplay'
 import { VanillaBlockDisplay } from './outliner/vanillaBlockDisplay'
 import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
@@ -18,7 +18,7 @@ declare module 'three' {
 
 declare global {
 	interface ModelProject {
-		animated_java: { [T in keyof typeof defaultValues]: (typeof defaultValues)[T] }
+		animated_java: BlueprintSettings
 		last_used_export_namespace: string
 		visualBoundingBox?: THREE.LineSegments
 		pluginMode: Valuable<boolean>

@@ -43,7 +43,7 @@ export function scrubUndefined<T extends Record<string, any>>(obj: T) {
 			scrubUndefined(obj[key])
 		}
 	}
-	return obj
+	return obj as { [K in keyof T]: Exclude<T[K], undefined> }
 }
 
 // Developed by FetchBot 💖
