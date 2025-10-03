@@ -1011,7 +1011,7 @@ IF (has_locators || has_cameras) {
 								~<%roundTo(locator.default_transform.head_rot[0], 10)%>
 						}
 
-						$data modify storage <%project_storage%>/$(rig_uuid) locators.<%locator.storage_name%> merge value { \
+						data modify entity @s data.locators.<%locator.storage_name%> merge value { \
 							px: <%roundTo(locator.default_transform.pos[0], 10)%>, \
 							py: <%roundTo(locator.default_transform.pos[1], 10)%>, \
 							pz: <%roundTo(locator.default_transform.pos[2], 10)%>, \
@@ -1036,7 +1036,7 @@ IF (has_locators || has_cameras) {
 							~<%roundTo(camera.default_transform.head_rot[1], 10)%> \
 							~<%roundTo(camera.default_transform.head_rot[0], 10)%>
 
-						$data modify storage <%project_storage%>/$(rig_uuid) cameras.<%camera.storage_name%> merge value { \
+						data modify entity @s data.cameras.<%camera.storage_name%> merge value { \
 							px: <%roundTo(camera.default_transform.pos[0], 10)%>, \
 							py: <%roundTo(camera.default_transform.pos[1], 10)%>, \
 							pz: <%roundTo(camera.default_transform.pos[2], 10)%>, \
