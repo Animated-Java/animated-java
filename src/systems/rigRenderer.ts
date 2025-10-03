@@ -1,7 +1,6 @@
 import * as crypto from 'crypto'
 import type {
 	IBlueprintBoneConfigJSON,
-	IBlueprintCameraConfigJSON,
 	IBlueprintLocatorConfigJSON,
 	IBlueprintTextDisplayConfigJSON,
 	IBlueprintVariantJSON,
@@ -90,7 +89,6 @@ export interface ICamera extends OutlinerElement {
 	linked_preview: string
 	camera_linked: boolean
 	visibility: boolean
-	config: IBlueprintCameraConfigJSON
 	preview_controller: NodePreviewController
 }
 
@@ -112,7 +110,6 @@ export interface IRenderedNodes {
 	}
 	Camera: IRenderedNode & {
 		type: 'camera'
-		config?: IBlueprintCameraConfigJSON
 		/** The maximum distance this node travels away from the root entity while animating. */
 		max_distance: number
 	}
@@ -572,7 +569,6 @@ function renderCamera(camera: ICamera, rig: IRenderedRig) {
 		storage_name: sanitizeStorageKey(camera.name),
 		uuid: camera.uuid,
 		parent: parentId,
-		config: camera.config,
 		max_distance: 0,
 		default_transform: {} as INodeTransform,
 	}
@@ -681,12 +677,8 @@ export function hashRig(rig: IRenderedRig) {
 				}
 				break
 			}
-			case 'camera': {
-				if (node.config) {
-					hash.update(';' + JSON.stringify(node.config))
-				}
+			case 'camera':
 				break
-			}
 			case 'text_display': {
 				hash.update(
 					`;${node.text?.toString(Project!.animated_java.target_minecraft_version)}`

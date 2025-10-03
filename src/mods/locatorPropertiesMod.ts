@@ -1,4 +1,4 @@
-import { isCurrentFormat as condition } from '../blueprintFormat'
+import { activeProjectIsBlueprintFormat as condition } from '../blueprintFormat'
 import { registerMod } from '../util/moddingTools'
 
 registerMod({

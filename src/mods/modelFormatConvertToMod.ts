@@ -1,4 +1,4 @@
-import { BLUEPRINT_FORMAT, convertToBlueprint } from '../blueprintFormat'
+import { BLUEPRINT_FORMAT_ID, convertToBlueprint } from '../blueprintFormat'
 import { registerMod } from '../util/moddingTools'
 
 registerMod({
@@ -9,7 +9,7 @@ registerMod({
 
 		ModelFormat.prototype.convertTo = function (this: ModelFormat) {
 			const result = original.call(this)
-			if (this === BLUEPRINT_FORMAT) convertToBlueprint()
+			if (this.id === BLUEPRINT_FORMAT_ID) convertToBlueprint()
 			return result
 		}
 

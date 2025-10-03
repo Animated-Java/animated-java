@@ -8,8 +8,9 @@ export function openInstallPopup() {
 		id: `${PACKAGE.name}:installedPopup`,
 		title: translate('popup.installed_popup.title'),
 		width: 700,
-		component: InstalledPopup,
-		props: {},
+		content: {
+			component: InstalledPopup,
+		},
 		preventKeybinds: true,
 		buttons: [translate('popup.installed_popup.close_button')],
 	}).show()

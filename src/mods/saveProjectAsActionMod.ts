@@ -1,5 +1,5 @@
 import { registerMod } from 'src/util/moddingTools'
-import { BLUEPRINT_CODEC, BLUEPRINT_FORMAT } from '../blueprintFormat'
+import { BLUEPRINT_CODEC, activeProjectIsBlueprintFormat } from '../blueprintFormat'
 
 registerMod({
 	id: `animated-java:save-project-as`,
@@ -10,8 +10,8 @@ registerMod({
 		const originalClick = action.click
 		action.click = (event: Event) => {
 			if (!Project || !Format) return
-			if (Format === BLUEPRINT_FORMAT) {
-				BLUEPRINT_CODEC.export()
+			if (activeProjectIsBlueprintFormat()) {
+				BLUEPRINT_CODEC.get()!.export()
 			} else {
 				originalClick.call(action, event)
 			}

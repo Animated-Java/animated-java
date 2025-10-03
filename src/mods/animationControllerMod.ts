@@ -1,5 +1,5 @@
 import { createPropertySubscribable, registerMod } from 'src/util/moddingTools'
-import { isCurrentFormat } from '../blueprintFormat'
+import { activeProjectIsBlueprintFormat } from '../blueprintFormat'
 
 registerMod({
 	id: `animated-java:animation-controller-mod`,
@@ -7,7 +7,7 @@ registerMod({
 	apply: () => {
 		const [, set] = createPropertySubscribable(AnimationController.prototype, 'saved')
 		const unsubSet = set.subscribe(({ storage }) => {
-			if (isCurrentFormat()) {
+			if (activeProjectIsBlueprintFormat()) {
 				storage.value = true
 			}
 		})

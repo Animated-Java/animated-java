@@ -42,7 +42,7 @@ type InjectSvelteComponentOptions<T, U extends ComponentConstructorOptions> = {
 export async function injectSvelteComponent<T, U extends Record<string, any>>(
 	options: InjectSvelteComponentOptions<T, ComponentConstructorOptions<U>>
 ) {
-	return pollUntilResult(options.elementSelector, () => false).then(el => {
+	return pollUntilResult(options.elementSelector, () => false, 16).then(el => {
 		let anchor = undefined
 		if (options.prepend) {
 			anchor = el.children[0]

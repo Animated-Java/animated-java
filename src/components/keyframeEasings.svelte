@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
 	// @ts-expect-error
 	import { default as ICON_IMPORTS, filenames } from '../assets/easingIcons/*.svg'
-	import { isCurrentFormat } from '../blueprintFormat'
+	import { activeProjectIsBlueprintFormat } from '../blueprintFormat'
 	import { getEasingArgDefault, hasArgs } from '../util/easing'
 	import EVENTS from '../util/events'
 	import { Valuable } from '../util/stores'
@@ -91,7 +91,7 @@
 	function setEasingArgs(arg: number | undefined) {
 		if (!selectedKeyframe) return
 		if (!arg) {
-			selectedKeyframe.easingArgs = undefined
+			delete selectedKeyframe.easingArgs
 			return
 		}
 		selectedKeyframe.easingArgs = [arg]
@@ -110,7 +110,7 @@
 	EVENTS.SELECT_KEYFRAME.subscribe((keyframe?: _Keyframe) => {
 		console.log('selected keyframe', keyframe)
 		if (
-			isCurrentFormat() &&
+			activeProjectIsBlueprintFormat() &&
 			keyframe &&
 			['position', 'rotation', 'scale'].includes(keyframe.channel) &&
 			!isFirstKeyframe(keyframe)

@@ -1,5 +1,5 @@
 import { registerMod } from 'src/util/moddingTools'
-import { isCurrentFormat } from '../blueprintFormat'
+import { activeProjectIsBlueprintFormat } from '../blueprintFormat'
 
 import {
 	EASING_DEFAULT,
@@ -25,11 +25,11 @@ registerMod({
 		const properties = [
 			new Property(Blockbench.Keyframe, 'string', 'easing', {
 				default: EASING_DEFAULT,
-				condition: isCurrentFormat(),
+				condition: () => activeProjectIsBlueprintFormat(),
 			}),
 
 			new Property(Blockbench.Keyframe, 'array', 'easingArgs', {
-				condition: isCurrentFormat(),
+				condition: () => activeProjectIsBlueprintFormat(),
 			}),
 		]
 
@@ -43,7 +43,7 @@ registerMod({
 		): number {
 			const easing = other.easing || 'linear'
 
-			if (!isCurrentFormat() || easing === 'linear')
+			if (!activeProjectIsBlueprintFormat() || easing === 'linear')
 				return originalGetLerp.call(this, other, axis, amount, allowExpression)
 
 			let easingFunc = easingFunctions[easing]

@@ -1,5 +1,5 @@
 import { registerMod } from 'src/util/moddingTools'
-import { isCurrentFormat } from '../blueprintFormat'
+import { activeProjectIsBlueprintFormat } from '../blueprintFormat'
 import { openAnimationPropertiesDialog } from '../interface/dialog/animationProperties'
 
 registerMod({
@@ -8,7 +8,7 @@ registerMod({
 	apply: () => {
 		const originalOpen = Blockbench.Animation.prototype.propertiesDialog
 		Blockbench.Animation.prototype.propertiesDialog = function (this: _Animation) {
-			if (isCurrentFormat()) {
+			if (activeProjectIsBlueprintFormat()) {
 				if (!Blockbench.Animation.selected) {
 					Blockbench.showQuickMessage('No animation selected')
 					return

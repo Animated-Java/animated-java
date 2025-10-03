@@ -1,7 +1,6 @@
 import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtString, NbtTag } from 'deepslate/lib/nbt'
 import type {
 	IBlueprintBoneConfigJSON,
-	IBlueprintCameraConfigJSON,
 	IBlueprintLocatorConfigJSON,
 	IBlueprintTextDisplayConfigJSON,
 } from './blueprintFormat'
@@ -347,16 +346,16 @@ export class LocatorConfig {
 	private _useEntity?: boolean
 	private _entityType?: string
 	private _syncPassengerRotation?: boolean
-	private _summonCommands?: string
-	private _tickingCommands?: string
+	private _onSummonFunction?: string
+	private _onTickFunction?: string
 
 	getDefault(): LocatorConfig {
 		return LocatorConfig.fromJSON({
 			use_entity: false,
 			entity_type: 'minecraft:pig',
 			sync_passenger_rotation: false,
-			summon_commands: '',
-			ticking_commands: '',
+			on_summon_function: '',
+			on_tick_function: '',
 		})
 	}
 
@@ -387,22 +386,22 @@ export class LocatorConfig {
 		this._syncPassengerRotation = value
 	}
 
-	get summonCommands(): NonNullable<LocatorConfig['_summonCommands']> {
-		if (this._summonCommands !== undefined) return this._summonCommands
+	get onSummonFunction(): NonNullable<LocatorConfig['_onSummonFunction']> {
+		if (this._onSummonFunction !== undefined) return this._onSummonFunction
 		const defaultConfig = this.getDefault()
-		return defaultConfig.summonCommands
+		return defaultConfig.onSummonFunction
 	}
-	set summonCommands(value: NonNullable<LocatorConfig['_summonCommands']>) {
-		this._summonCommands = value
+	set onSummonFunction(value: NonNullable<LocatorConfig['_onSummonFunction']>) {
+		this._onSummonFunction = value
 	}
 
-	get tickingCommands(): NonNullable<LocatorConfig['_tickingCommands']> {
-		if (this._tickingCommands !== undefined) return this._tickingCommands
+	get onTickFunction(): NonNullable<LocatorConfig['_onTickFunction']> {
+		if (this._onTickFunction !== undefined) return this._onTickFunction
 		const defaultConfig = this.getDefault()
-		return defaultConfig.tickingCommands
+		return defaultConfig.onTickFunction
 	}
-	set tickingCommands(value: NonNullable<LocatorConfig['_tickingCommands']>) {
-		this._tickingCommands = value
+	set onTickFunction(value: NonNullable<LocatorConfig['_onTickFunction']>) {
+		this._onTickFunction = value
 	}
 
 	public toJSON(): IBlueprintLocatorConfigJSON {
@@ -410,8 +409,8 @@ export class LocatorConfig {
 			use_entity: this._useEntity,
 			entity_type: this._entityType,
 			sync_passenger_rotation: this._syncPassengerRotation,
-			summon_commands: this._summonCommands,
-			ticking_commands: this._tickingCommands,
+			on_summon_function: this._onSummonFunction,
+			on_tick_function: this._onTickFunction,
 		}
 	}
 
@@ -421,8 +420,9 @@ export class LocatorConfig {
 		if (json.entity_type !== undefined) config._entityType = json.entity_type
 		if (json.sync_passenger_rotation !== undefined)
 			config._syncPassengerRotation = json.sync_passenger_rotation
-		if (json.summon_commands !== undefined) config._summonCommands = json.summon_commands
-		if (json.ticking_commands !== undefined) config._tickingCommands = json.ticking_commands
+		if (json.on_summon_function !== undefined)
+			config._onSummonFunction = json.on_summon_function
+		if (json.on_tick_function !== undefined) config._onTickFunction = json.on_tick_function
 		return config
 	}
 
@@ -435,77 +435,8 @@ export class LocatorConfig {
 			this.useEntity === other.useEntity &&
 			this.entityType === other.entityType &&
 			this.syncPassengerRotation === other.syncPassengerRotation &&
-			this.summonCommands === other.summonCommands &&
-			this.tickingCommands === other.tickingCommands
-		)
-	}
-}
-
-export class CameraConfig {
-	private _entityType?: string
-	private _nbt?: string
-	private _tickingCommands?: string
-
-	getDefault(): CameraConfig {
-		return CameraConfig.fromJSON({
-			entity_type: 'minecraft:item_display',
-			nbt: '{}',
-			ticking_commands: '',
-		})
-	}
-
-	get entityType(): NonNullable<CameraConfig['_entityType']> {
-		if (this._entityType !== undefined) return this._entityType
-		const defaultConfig = this.getDefault()
-		return defaultConfig.entityType
-	}
-	set entityType(value: NonNullable<CameraConfig['_entityType']>) {
-		this._entityType = value
-	}
-
-	get nbt(): NonNullable<CameraConfig['_nbt']> {
-		if (this._nbt !== undefined) return this._nbt
-		const defaultConfig = this.getDefault()
-		return defaultConfig.nbt
-	}
-	set nbt(value: NonNullable<CameraConfig['_nbt']>) {
-		this._nbt = value
-	}
-
-	get tickingCommands(): NonNullable<CameraConfig['_tickingCommands']> {
-		if (this._tickingCommands !== undefined) return this._tickingCommands
-		const defaultConfig = this.getDefault()
-		return defaultConfig.tickingCommands
-	}
-	set tickingCommands(value: NonNullable<CameraConfig['_tickingCommands']>) {
-		this._tickingCommands = value
-	}
-
-	public toJSON(): IBlueprintCameraConfigJSON {
-		return {
-			entity_type: this.entityType,
-			nbt: this.nbt,
-			ticking_commands: this.tickingCommands,
-		}
-	}
-
-	public static fromJSON(json: IBlueprintCameraConfigJSON): CameraConfig {
-		const config = new CameraConfig()
-		if (json.entity_type != undefined) config.entityType = json.entity_type
-		if (json.nbt != undefined) config.nbt = json.nbt
-		if (json.ticking_commands != undefined) config.tickingCommands = json.ticking_commands
-		return config
-	}
-
-	public isDefault(): boolean {
-		return this.checkIfEqual(new CameraConfig())
-	}
-
-	public checkIfEqual(other: CameraConfig) {
-		return (
-			this.entityType === other.entityType &&
-			this.nbt === other.nbt &&
-			this.tickingCommands === other.tickingCommands
+			this.onSummonFunction === other.onSummonFunction &&
+			this.onTickFunction === other.onTickFunction
 		)
 	}
 }

@@ -127,7 +127,7 @@ export interface IExportedJSON {
 	 */
 	settings: {
 		export_namespace: (typeof defaultValues)['export_namespace']
-		bounding_box: (typeof defaultValues)['bounding_box']
+		bounding_box: (typeof defaultValues)['render_box']
 		// Resource Pack Settings
 		custom_model_data_offset: (typeof defaultValues)['custom_model_data_offset']
 		// Plugin Settings
@@ -244,7 +244,7 @@ export function exportJSON(options: {
 	const json: IExportedJSON = {
 		settings: {
 			export_namespace: aj.export_namespace,
-			bounding_box: aj.bounding_box,
+			bounding_box: aj.render_box,
 			custom_model_data_offset: aj.custom_model_data_offset,
 			baked_animations: aj.baked_animations,
 		},

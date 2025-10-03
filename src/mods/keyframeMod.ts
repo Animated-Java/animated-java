@@ -1,4 +1,4 @@
-import { isCurrentFormat } from '../blueprintFormat'
+import { activeProjectIsBlueprintFormat } from '../blueprintFormat'
 import EVENTS from '../util/events'
 import { registerMod } from '../util/moddingTools'
 
@@ -8,7 +8,7 @@ registerMod({
 	apply: () => {
 		const originalKeyframeSelect = Blockbench.Keyframe.prototype.select
 		Blockbench.Keyframe.prototype.select = function (this: _Keyframe, event: any) {
-			if (!isCurrentFormat()) return originalKeyframeSelect.call(this, event)
+			if (!activeProjectIsBlueprintFormat()) return originalKeyframeSelect.call(this, event)
 			const kf = originalKeyframeSelect.call(this, event)
 			EVENTS.SELECT_KEYFRAME.publish(kf)
 			return kf
@@ -16,7 +16,7 @@ registerMod({
 
 		const originalUpdateKeyframeSelection = updateKeyframeSelection
 		globalThis.updateKeyframeSelection = function () {
-			if (isCurrentFormat()) return originalUpdateKeyframeSelection()
+			if (activeProjectIsBlueprintFormat()) return originalUpdateKeyframeSelection()
 
 			Timeline.keyframes.forEach(kf => {
 				if (kf.selected && Timeline.selected && !Timeline.selected.includes(kf)) {
@@ -51,7 +51,7 @@ registerMod({
 		barItem.set = function (this: BarSelect<string>, value) {
 			const result = originalChange.call(this, value)
 
-			if (isCurrentFormat()) {
+			if (activeProjectIsBlueprintFormat()) {
 				if (Timeline.selected && Timeline.selected.length > 0) {
 					EVENTS.SELECT_KEYFRAME.publish(Timeline.selected[0])
 				} else {

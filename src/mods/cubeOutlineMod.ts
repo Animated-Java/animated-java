@@ -1,5 +1,5 @@
 import { translate } from 'src/util/translation'
-import { checkTargetVersionMeetsRequirement, isCurrentFormat } from '../blueprintFormat'
+import { activeProjectIsBlueprintFormat, projectTargetVersionIsAtLeast } from '../blueprintFormat'
 import { isCubeValid } from '../systems/util'
 import { createPropertySubscribable, registerMod } from '../util/moddingTools'
 
@@ -24,7 +24,7 @@ function showToastNotification() {
 	if (!toastNotification) {
 		toastNotification = Blockbench.showToastNotification({
 			text: translate(
-				checkTargetVersionMeetsRequirement('1.21.4')
+				projectTargetVersionIsAtLeast('1.21.4')
 					? 'toast.invalid_rotations_post_1_21_4'
 					: 'toast.invalid_rotations'
 			),
@@ -51,7 +51,7 @@ registerMod({
 	apply: () => {
 		const originalUpdateTransform = Cube.preview_controller.updateTransform
 		Cube.preview_controller.updateTransform = function (cube: Cube) {
-			if (isCurrentFormat()) {
+			if (activeProjectIsBlueprintFormat()) {
 				const validity = isCubeValid(cube)
 
 				switch (validity) {
@@ -60,7 +60,7 @@ registerMod({
 						break
 					}
 					case '1.21.4+': {
-						if (checkTargetVersionMeetsRequirement('1.21.4')) {
+						if (projectTargetVersionIsAtLeast('1.21.4')) {
 							updateCubeValidity(cube, true)
 							break
 						}
@@ -84,7 +84,7 @@ registerMod({
 
 			const [, setVisible] = createPropertySubscribable(cube.mesh.outline, 'visible')
 			setVisible.subscribe(({ storage }) => {
-				if (!isCurrentFormat()) return
+				if (!activeProjectIsBlueprintFormat()) return
 				storage.value = !cube.isRotationValid || storage.value
 			})
 

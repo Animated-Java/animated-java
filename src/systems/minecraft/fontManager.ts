@@ -193,8 +193,8 @@ class BitmapFontProvider extends FontProvider {
 		// Update canvas
 		this.canvas.width = texture.image.width
 		this.canvas.height = texture.image.height
-		const ctx = this.canvas.getContext('2d')!
-		ctx.drawImage(this.atlas.image as HTMLImageElement, 0, 0)
+		const ctx = this.canvas.getContext('2d', { willReadFrequently: true })!
+		ctx.drawImage(this.atlas.image, 0, 0)
 		this.loaded = true
 		return this
 	}

@@ -178,37 +178,13 @@ const yamlPlugin: (opts: {
 	},
 })
 
-const devWorkerConfig: esbuild.BuildOptions = {
-	bundle: true,
-	minify: false,
-	platform: 'node',
-	sourcemap: 'inline',
-	sourceRoot: 'http://animated-java/',
-	loader: { '.svg': 'dataurl', '.ttf': 'binary', '.mcb': 'text' },
-	plugins: [
-		// inlineImage({
-		// 	limit: -1,
-		// }),
-		// @ts-ignore
-		// ImportGlobPlugin.default(),
-		// INFO_PLUGIN,
-		// yamlPlugin({}),
-		// sveltePlugin(svelteConfig),
-		// packagerPlugin(),
-	],
-	// format: 'iife',
-	// define: DEFINES,
-}
-const devConfig: esbuild.BuildOptions = {
+const COMMON_CONFIG: esbuild.BuildOptions = {
 	banner: createBanner(),
 	entryPoints: ['./src/index.ts'],
-	outfile: `./dist/${PACKAGE.name as string}.js`,
+	outfile: `./dist/${PACKAGE.name}.js`,
 	bundle: true,
-	minify: false,
 	platform: 'node',
-	sourcemap: 'inline',
-	sourceRoot: 'http://animated-java/',
-	loader: { '.svg': 'dataurl', '.ttf': 'binary', '.mcb': 'text' },
+	loader: { '.svg': 'dataurl', '.ttf': 'binary', '.css': 'text' },
 	plugins: [
 		importFolderPlugin,
 		// @ts-ignore
@@ -231,36 +207,17 @@ const devConfig: esbuild.BuildOptions = {
 	treeShaking: true,
 }
 
+const devConfig: esbuild.BuildOptions = {
+	...COMMON_CONFIG,
+	minify: false,
+	sourcemap: 'inline',
+	sourceRoot: 'http://animated-java/',
+}
+
 const prodConfig: esbuild.BuildOptions = {
-	entryPoints: ['./src/index.ts'],
-	outfile: `./dist/${PACKAGE.name as string}.js`,
-	bundle: true,
 	minify: true,
-	platform: 'node',
-	loader: { '.svg': 'dataurl', '.ttf': 'binary', '.mcb': 'text' },
-	plugins: [
-		importFolderPlugin,
-		// @ts-ignore
-		ImportGlobPlugin.default(),
-		bufferPatchPlugin(),
-		inlineImage({
-			limit: -1,
-		}),
-		INFO_PLUGIN,
-		yamlPlugin({}),
-		sveltePlugin(svelteConfig),
-		packagerPlugin(),
-		assetOverridePlugin(),
-		mcbCompressionPlugin(),
-		DEPENDENCY_QUARKS,
-	],
-	alias: { svelte: 'svelte' },
 	keepNames: true,
-	banner: createBanner(),
 	drop: ['debugger'],
-	format: 'iife',
-	define: DEFINES,
-	treeShaking: true,
 	metafile: true,
 }
 

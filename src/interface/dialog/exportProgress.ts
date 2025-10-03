@@ -28,11 +28,13 @@ export function openExportProgressDialog(debug?: boolean) {
 		id: `${PACKAGE.name}:exportProgressDialog`,
 		title: translate('dialog.export_progress.title'),
 		width: 512,
-		component: ExportProgressDialogSvelteComponent,
-		props: {
-			progress: PROGRESS,
-			maxProgress: MAX_PROGRESS,
-			progressDescription: PROGRESS_DESCRIPTION,
+		content: {
+			component: ExportProgressDialogSvelteComponent,
+			props: {
+				progress: PROGRESS,
+				maxProgress: MAX_PROGRESS,
+				progressDescription: PROGRESS_DESCRIPTION,
+			},
 		},
 		preventKeybinds: true,
 		buttons: [],

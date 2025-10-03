@@ -18,15 +18,17 @@ export function openVariantConfigDialog(variant: Variant) {
 		id: `${PACKAGE.name}:variantConfig`,
 		title: translate('dialog.variant_config.title'),
 		width: 700,
-		component: VariantConfigDialogSvelteComponent,
-		props: {
-			variant,
-			displayName,
-			name,
-			uuid,
-			textureMap,
-			generateNameFromDisplayName,
-			excludedNodes,
+		content: {
+			component: VariantConfigDialogSvelteComponent,
+			props: {
+				variant,
+				displayName,
+				name,
+				uuid,
+				textureMap,
+				generateNameFromDisplayName,
+				excludedNodes,
+			},
 		},
 		preventKeybinds: true,
 		onConfirm() {

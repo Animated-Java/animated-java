@@ -1,5 +1,5 @@
 import type { SvelteComponentDev } from 'svelte/internal'
-import { isCurrentFormat } from '../../blueprintFormat'
+import { activeProjectIsBlueprintFormat } from '../../blueprintFormat'
 import CustomKeyframePanelSvelteComponent from '../../components/customKeyframePanel.svelte'
 import { CUSTOM_CHANNELS } from '../../mods/customKeyframesMod'
 import EVENTS from '../../util/events'
@@ -10,7 +10,7 @@ let currentPanel: SvelteComponentDev | undefined = undefined
 
 export function injectCustomKeyframePanel(selectedKeyframe: _Keyframe) {
 	if (
-		!isCurrentFormat() ||
+		!activeProjectIsBlueprintFormat() ||
 		!selectedKeyframe ||
 		!CUSTOM_CHANNELS.includes(selectedKeyframe.channel)
 	)

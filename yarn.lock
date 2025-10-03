@@ -3400,10 +3400,10 @@ matcher@^3.0.0:
   dependencies:
     escape-string-regexp "^4.0.0"
 
-mc-build@^3.5.1:
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/mc-build/-/mc-build-3.5.1.tgz#684bf069701d62b85c8d698be6679bb92f5d4044"
-  integrity sha512-bySCg9VA+V0++SqfJrBcPxU9t8UrifcecGpXAR/21kqV4uWItoo12MqBSN3bI6f51j3vbVIrdOAH+PiWBp5S7w==
+mc-build@^3.6.7:
+  version "3.6.7"
+  resolved "https://registry.yarnpkg.com/mc-build/-/mc-build-3.6.7.tgz#f22bd9e7eaf0e565ad5bb04f5b5eb631b3c6ecb4"
+  integrity sha512-Cd0g/20e3h5/atUzj80689TjOkE7nZuMZg4YPwPzQ8oHRrKnlxnxDwumUfzEwFW6xw8Z52rfC06N8In7Xg3ang==
 
 md5@^2.3.0:
   version "2.3.0"

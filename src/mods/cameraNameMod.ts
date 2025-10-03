@@ -1,5 +1,5 @@
 import { registerPluginMod } from 'src/util/moddingTools'
-import { isCurrentFormat } from '../blueprintFormat'
+import { activeProjectIsBlueprintFormat } from '../blueprintFormat'
 import { sanitizeOutlinerElementName } from '../outliner/util'
 
 registerPluginMod({
@@ -16,14 +16,14 @@ registerPluginMod({
 				this: OutlinerElement,
 				save?: boolean
 			) {
-				if (isCurrentFormat()) {
+				if (activeProjectIsBlueprintFormat()) {
 					this.name = sanitizeOutlinerElementName(this.name, this.uuid)
 				}
 				return originalRename.call(this, save)
 			}
 
 			OutlinerElement.types.camera.prototype.sanitizeName = function (this: OutlinerElement) {
-				if (isCurrentFormat()) {
+				if (activeProjectIsBlueprintFormat()) {
 					this.name = sanitizeOutlinerElementName(this.name, this.uuid)
 				}
 				return originalSanitize.call(this)

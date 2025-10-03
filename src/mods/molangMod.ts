@@ -1,4 +1,4 @@
-import { BLUEPRINT_FORMAT } from 'src/blueprintFormat'
+import { BLUEPRINT_FORMAT_ID } from 'src/blueprintFormat'
 import { registerProjectMod } from 'src/util/moddingTools'
 import MolangFunctionFile from './functions.molang'
 
@@ -384,7 +384,7 @@ function filterAndSortList(
 registerProjectMod({
 	id: `animated-java:molang-mod`,
 
-	condition: project => project.format === BLUEPRINT_FORMAT,
+	condition: project => project.format.id === BLUEPRINT_FORMAT_ID,
 
 	apply: () => {
 		Object.assign(GLOBAL_VARIABLES, CUSTOM_FUNCTIONS)

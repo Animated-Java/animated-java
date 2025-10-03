@@ -1,5 +1,5 @@
+import { BLUEPRINT_FORMAT_ID } from 'src/blueprintFormat'
 import { registerProjectMod } from 'src/util/moddingTools'
-import { BLUEPRINT_FORMAT } from '../blueprintFormat'
 import { translate } from '../util/translation'
 
 export class LocatorAnimator extends BoneAnimator {
@@ -99,7 +99,7 @@ LocatorAnimator.prototype.channels = {
 registerProjectMod({
 	id: 'animated-java:locator-animator',
 
-	condition: project => project.format === BLUEPRINT_FORMAT,
+	condition: project => project.format.id === BLUEPRINT_FORMAT_ID,
 
 	apply: () => {
 		Locator.animator = LocatorAnimator as any

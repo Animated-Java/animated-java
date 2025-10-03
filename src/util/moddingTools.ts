@@ -75,6 +75,7 @@ interface ModOptions<ID extends string, RevertContext extends any | void> {
 	id: ResourceLocation.Validate<ID>
 	/** A list of mod IDs that this mod depends on */
 	dependencies?: string[]
+	/** The priority of the mod. Higher priority mods will be installed first. */
 	priority?: number
 	/** A function that applies the mod. This function should return a context object that will be passed to the revert function. */
 	apply: () => Promise<RevertContext> | RevertContext
@@ -192,6 +193,7 @@ export function registerProjectMod<ID extends string, RevertContext extends any 
 		apply: () => {
 			return [
 				EVENTS.PRE_SELECT_PROJECT.subscribe(project => {
+					console.log('Checking project mod condition for', options.id, project)
 					if (!options.condition(project)) return
 					console.log(`Applying project mod '${options.id}'`)
 					revertContext = options.apply()
@@ -236,7 +238,7 @@ export function registerPluginMod<ID extends string, RevertContext extends any |
 		apply: () => {
 			return [
 				EVENTS.EXTERNAL_PLUGIN_LOAD.subscribe(plugin => {
-					if (!options.condition(plugin)) return
+					if (!Condition(options.condition, plugin)) return
 					console.log(`Applying plugin mod '${options.id}'`)
 					revertContext = options.apply()
 				}),
@@ -260,16 +262,17 @@ export function registerPluginMod<ID extends string, RevertContext extends any |
 
 interface DeletableEventHandler<T> {
 	/** The current instance of this deletable */
-	get(): T | undefined
+	get(): T | null
 	onCreated: Subscribable<T>['subscribe']
 	onDeleted: Subscribable<T>['subscribe']
 }
 
-type CreateActionOptions = ActionOptions & {
-	/**
-	 * @param path Path pointing to the location. Use the ID of each level of the menu, or index or group within a level, separated by a period. For example; `file.export.0` places the action at the top position of the Export submenu in the File menu.
-	 */
-	menu_path?: string
+interface RegisterDeletableOptions<ID extends string> {
+	id: ResourceLocation.Validate<ID>
+	/** A list of mod IDs that this mod depends on */
+	dependencies?: string[]
+	/** The priority of the mod. Higher priority mods will be installed first. */
+	priority?: number
 }
 
 /**
@@ -279,8 +282,11 @@ function registerDeletableFactory<T extends Deletable, A extends any[]>(
 	createInstance: (id: string, ...args: A) => T,
 	deleteInstance: (instance: T) => void
 ) {
-	return function handler<ID extends string>(id: ResourceLocation.Validate<ID>, ...args: A) {
-		let activeInstance: T | undefined
+	return function handler<ID extends string>(
+		{ id, priority, dependencies }: RegisterDeletableOptions<ID>,
+		...args: A
+	) {
+		let activeInstance: T | null
 		const created = subscribable<T>()
 		const deleted = subscribable<T>()
 
@@ -292,6 +298,8 @@ function registerDeletableFactory<T extends Deletable, A extends any[]>(
 
 		registerMod({
 			id,
+			priority,
+			dependencies,
 			apply: () => {
 				activeInstance = createInstance(id, ...args)
 				created.publish(activeInstance)
@@ -299,7 +307,7 @@ function registerDeletableFactory<T extends Deletable, A extends any[]>(
 			},
 			revert: lastInstance => {
 				deleteInstance(lastInstance)
-				activeInstance = undefined
+				activeInstance = null
 				deleted.publish(lastInstance)
 			},
 		})
@@ -314,7 +322,7 @@ function registerDeletableFactory<T extends Deletable, A extends any[]>(
  * See https://www.blockbench.net/wiki/api/action for more information on the Blockbench.Action class.
  */
 export const registerAction = registerDeletableFactory(
-	(id, options: CreateActionOptions) => new Action(id, options),
+	(id, options: ActionOptions) => new Action(id, options),
 	action => action.delete()
 )
 
@@ -359,7 +367,13 @@ export const registerModelLoader = registerDeletableFactory(
 export const registerMenu = registerDeletableFactory(
 	(id, template: MenuItem[] | ((context?: any) => MenuItem[]), options: MenuOptions) =>
 		new Menu(id, template, options),
-	menu => menu.delete()
+	menu => {
+		// Swap over to this when Blockbench updates to 5.0
+		// menu.delete()
+		// Temporary implementation of `menu.delete()` from Blockbench 5.0
+		// @ts-expect-error
+		menu.node.remove()
+	}
 )
 
 interface Storage<Value = any> {

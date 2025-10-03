@@ -6,8 +6,7 @@ import { openUnexpectedErrorDialog } from '../interface/dialog/unexpectedError'
 import { BoneConfig } from '../nodeConfigs'
 import { MinecraftVersion } from './global'
 
-export function process(model: any): any {
-	console.log('Running MDFU...', JSON.parse(JSON.stringify(model)))
+export function process(model: any): IBlueprintFormatJSON {
 	if (model?.meta?.model_format === 'animatedJava/ajmodel') {
 		model.meta.model_format = 'animated_java/ajmodel'
 		model.meta.format_version = '0.0'
@@ -18,25 +17,49 @@ export function process(model: any): any {
 		needsUpgrade = needsUpgrade || compareVersions(PACKAGE.version, model.meta.format_version)
 		if (!needsUpgrade) return model
 
-		console.log(
-			'Upgrading model from version',
+		console.groupCollapsed(
+			'Upgrading project from',
 			model.meta.format_version,
 			'to',
 			PACKAGE.version
 		)
+		console.log('Original model:', JSON.parse(JSON.stringify(model)))
 
-		console.group('Upgrade process')
 		if (model.meta.format_version.length === 3) {
-			console.log('Processing old model format', JSON.parse(JSON.stringify(model)))
-			if (compareVersions('1.0', model.meta.format_version)) updateModelToOld1_0(model)
-			if (compareVersions('1.1', model.meta.format_version)) updateModelToOld1_1(model)
-			if (compareVersions('1.2', model.meta.format_version)) updateModelToOld1_2(model)
-			if (compareVersions('1.3', model.meta.format_version)) updateModelToOld1_3(model)
-			if (compareVersions('1.4', model.meta.format_version)) updateModelToOld1_4(model)
-			model.meta.format_version = '0.3.9'
+			console.groupCollapsed(
+				'Discovered outdated ajmodel format! Upgrading to blueprint format...'
+			)
+			try {
+				if (compareVersions('1.0', model.meta.format_version))
+					model = updateModelToOld1_0(model)
+
+				if (compareVersions('1.1', model.meta.format_version))
+					model = updateModelToOld1_1(model)
+
+				if (compareVersions('1.2', model.meta.format_version))
+					model = updateModelToOld1_2(model)
+
+				if (compareVersions('1.3', model.meta.format_version))
+					model = updateModelToOld1_3(model)
+
+				if (compareVersions('1.4', model.meta.format_version))
+					model = updateModelToOld1_4(model)
+
+				model.meta.format_version = '0.3.9'
+
+				console.log(
+					'Upgrade to blueprint format complete',
+					JSON.parse(JSON.stringify(model))
+				)
+			} catch (e) {
+				console.error('Failed to upgrade from ajmodel format to blueprint format', e)
+				throw e
+			} finally {
+				console.groupEnd()
+			}
 		}
 		// Versions below this are post 0.3.10. I changed the versioning system to use the AJ version instead of a unique format version.
-		if (compareVersions('0.3.10', model.meta.format_version)) updateModelTo0_3_10(model)
+		if (compareVersions('0.3.10', model.meta.format_version)) model = updateModelTo0_3_10(model)
 		// v1.0.0-pre1
 		if (compareVersions('0.5.0', model.meta.format_version)) model = updateModelTo1_0pre1(model)
 		// v1.0.0-pre6
@@ -48,23 +71,29 @@ export function process(model: any): any {
 		// v1.4.0
 		if (compareVersions('1.4.0', model.meta.format_version)) model = updateModelTo1_4_0(model)
 		// v1.6.3
-		if (compareVersions('1.6.3', model.meta.format_version))
-			model = updateModelTo1_6_3(model as IBlueprintFormatJSON)
+		if (compareVersions('1.6.3', model.meta.format_version)) model = updateModelTo1_6_3(model)
 		// v1.6.5
-		if (compareVersions('1.6.5', model.meta.format_version))
-			model = updateModelTo1_6_5(model as IBlueprintFormatJSON)
+		if (compareVersions('1.6.5', model.meta.format_version)) model = updateModelTo1_6_5(model)
 		// v1.8.0
-		if (compareVersions('1.8.0', model.meta.format_version))
-			model = updateModelTo1_8_0(model as IBlueprintFormatJSON)
+		if (compareVersions('1.8.0', model.meta.format_version)) model = updateModelTo1_8_0(model)
 
-		console.groupEnd()
+		// Remove unknown blueprint settings
+		const defaultSettings = getDefaultProjectSettings()
+		for (const key in model.blueprint_settings) {
+			if (key in defaultSettings) continue
+			console.warn('Removing unknown blueprint setting', key, model.blueprint_settings[key])
+			delete model.blueprint_settings[key]
+		}
 
 		model.meta.format_version = PACKAGE.version
 		console.log('Upgrade complete', JSON.parse(JSON.stringify(model)))
+
 		return model
 	} catch (e: any) {
 		openUnexpectedErrorDialog(e as Error)
 		throw e
+	} finally {
+		console.groupEnd()
 	}
 }
 
@@ -204,6 +233,9 @@ function updateModelToOld1_4(model: any) {
 // eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-unused-vars
 function updateModelTo0_3_10(model: any) {
 	console.log('Processing model for AJ 0.3.10', JSON.parse(JSON.stringify(model)))
+	model.meta ??= {}
+	model.meta.model_format = 'animated_java/blueprint'
+	return model
 }
 
 // region v1.0.0-pre1
@@ -216,9 +248,7 @@ function updateModelTo1_0pre1(model: any) {
 		model.animated_java.exporter_settings['animated_java:datapack_exporter']
 
 	const defaultVariant = model.animated_java.variants.find((v: any) => !!v.default)
-	const variants = model.animated_java.variants.filter((v: any) => !v.default)
-
-	const blueprint: IBlueprintFormatJSON = {
+	const blueprint: Record<string, any> = {
 		meta: {
 			format: 'animated_java_blueprint',
 			format_version: '0.5.0',
@@ -227,9 +257,9 @@ function updateModelTo1_0pre1(model: any) {
 		},
 		project_settings: {
 			// Blueprint Settings
-			show_bounding_box: defaultSettings.show_bounding_box,
-			auto_bounding_box: defaultSettings.auto_bounding_box,
-			bounding_box: defaultSettings.bounding_box,
+			show_bounding_box: defaultSettings.show_render_box,
+			auto_bounding_box: defaultSettings.auto_render_box,
+			bounding_box: defaultSettings.render_box,
 			// Export settings
 			export_namespace: model.animated_java.settings.project_namespace,
 			enable_plugin_mode: defaultSettings.enable_plugin_mode,
@@ -251,7 +281,7 @@ function updateModelTo1_0pre1(model: any) {
 			data_pack: datapackExporterSettings?.datapack_mcmeta
 				? datapackExporterSettings.datapack_mcmeta.replace(/pack\.mcmeta$/, '')
 				: '',
-			summon_commands: defaultSettings.summon_commands,
+			summon_commands: defaultSettings.on_summon_function,
 			interpolation_duration: defaultSettings.interpolation_duration,
 			teleportation_duration: defaultSettings.teleportation_duration,
 			use_storage_for_animation: defaultSettings.use_storage_for_animation,
@@ -265,7 +295,6 @@ function updateModelTo1_0pre1(model: any) {
 				display_name: defaultVariant.name || 'Default',
 				uuid: defaultVariant.uuid || guid(),
 				texture_map: defaultVariant.textureMap || {},
-				// @ts-ignore
 				excluded_bones: [],
 			},
 			list: [],
@@ -301,7 +330,7 @@ function updateModelTo1_0pre1(model: any) {
 	model.outliner.forEach(recurseOutliner)
 	blueprint.outliner = model.outliner
 
-	for (const element of blueprint.elements) {
+	for (const element of blueprint.elements ?? []) {
 		if (element.type === 'locator') {
 			element.config = {
 				use_entity: true,
@@ -366,6 +395,7 @@ function updateModelTo1_0pre1(model: any) {
 		}
 	}
 
+	const variants = model.animated_java?.variants?.filter((v: any) => !v.default) ?? []
 	for (const variant of variants) {
 		const includedBones = variant.affectedBones.map((v: any) => v.value as string)
 		let excludedBones: string[]
@@ -399,7 +429,6 @@ function updateModelTo1_0pre1(model: any) {
 		nbt.delete('Tags')
 		if ([...nbt.keys()].length !== 0) commands.push('data merge entity @s ' + nbt.toString())
 		if (tags) commands.push(...tags.map(t => `tag @s add ${t}`))
-		// @ts-expect-error
 		blueprint.project_settings!.summon_commands = commands.join('\n')
 	}
 
@@ -408,7 +437,7 @@ function updateModelTo1_0pre1(model: any) {
 
 // region v1.0.0-pre6
 // eslint-disable-next-line @typescript-eslint/naming-convention
-function updateModelTo1_0pre6(model: any): IBlueprintFormatJSON {
+function updateModelTo1_0pre6(model: any) {
 	console.log('Processing model format 1.0.0-pre6', JSON.parse(JSON.stringify(model)))
 
 	const defaultVariant = model.variants.default
@@ -431,12 +460,12 @@ function updateModelTo1_0pre6(model: any): IBlueprintFormatJSON {
 		}
 	}
 
-	return model as IBlueprintFormatJSON
+	return model
 }
 
 // region v1.0.0-pre7
 // eslint-disable-next-line @typescript-eslint/naming-convention
-function updateModelTo1_0pre7(model: any): IBlueprintFormatJSON {
+function updateModelTo1_0pre7(model: any) {
 	console.log('Processing model format 1.0.0-pre7', JSON.parse(JSON.stringify(model)))
 
 	if (model.project_settings.enable_resource_pack !== undefined) {
@@ -454,12 +483,12 @@ function updateModelTo1_0pre7(model: any): IBlueprintFormatJSON {
 		delete model.project_settings.enable_data_pack
 	}
 
-	return model as IBlueprintFormatJSON
+	return model
 }
 
 // region v1.0.0-pre8
 // eslint-disable-next-line @typescript-eslint/naming-convention
-function updateModelTo1_0pre8(model: any): IBlueprintFormatJSON {
+function updateModelTo1_0pre8(model: any) {
 	console.log('Processing model format 1.0.0-pre8', JSON.parse(JSON.stringify(model)))
 
 	if (model.project_settings) {
@@ -467,12 +496,12 @@ function updateModelTo1_0pre8(model: any): IBlueprintFormatJSON {
 		delete model.project_settings
 	}
 
-	return model as IBlueprintFormatJSON
+	return model
 }
 
 // region v1.4.0
 // eslint-disable-next-line @typescript-eslint/naming-convention
-function updateModelTo1_4_0(model: any): IBlueprintFormatJSON {
+function updateModelTo1_4_0(model: any) {
 	console.log('Processing model format 1.4.0', JSON.parse(JSON.stringify(model)))
 
 	// Separated advanced folders from advanced settings
@@ -488,12 +517,12 @@ function updateModelTo1_4_0(model: any): IBlueprintFormatJSON {
 		model.blueprint_settings.enable_advanced_resource_pack_settings = true
 	}
 
-	return model as IBlueprintFormatJSON
+	return model
 }
 
 // region v1.6.3
 // eslint-disable-next-line @typescript-eslint/naming-convention
-function updateModelTo1_6_3(model: IBlueprintFormatJSON): IBlueprintFormatJSON {
+function updateModelTo1_6_3(model: any) {
 	console.log('Processing model format 1.6.3', JSON.parse(JSON.stringify(model)))
 
 	// Automatically add a transparent texture to the model if it uses the old transparent texture in any of it's variants.
@@ -513,12 +542,11 @@ function updateModelTo1_6_3(model: IBlueprintFormatJSON): IBlueprintFormatJSON {
 }
 
 // region v1.6.5
-function updateModelTo1_6_5(model: IBlueprintFormatJSON): IBlueprintFormatJSON {
+function updateModelTo1_6_5(model: any) {
 	console.log('Processing model format 1.6.5', JSON.parse(JSON.stringify(model)))
 
 	// Update target_minecraft_version to an array if it's a string
 	if (typeof model.blueprint_settings?.target_minecraft_version === 'string') {
-		// @ts-expect-error
 		model.blueprint_settings.target_minecraft_version = [
 			model.blueprint_settings.target_minecraft_version,
 		]
@@ -528,16 +556,62 @@ function updateModelTo1_6_5(model: IBlueprintFormatJSON): IBlueprintFormatJSON {
 }
 
 // region v1.8.0
-function updateModelTo1_8_0(model: any): IBlueprintFormatJSON {
+function updateModelTo1_8_0(model: any) {
 	console.log('Processing model format 1.8.0', JSON.parse(JSON.stringify(model)))
+	const fixed: IBlueprintFormatJSON = JSON.parse(JSON.stringify(model))
 
-	// Update target_minecraft_version to an array if it's a string
-	if (Array.isArray(model.blueprint_settings?.target_minecraft_versions)) {
-		model.blueprint_settings.target_minecraft_version =
-			(model.blueprint_settings.target_minecraft_versions.at(0) as MinecraftVersion) ??
-			'1.21.5'
-		delete model.blueprint_settings.target_minecraft_versions
+	fixed.blueprint_settings ??= {}
+
+	// Update export mode settings
+	if (model.blueprint_settings?.resource_pack_export_mode === 'raw') {
+		fixed.blueprint_settings.resource_pack_export_mode = 'folder'
+	}
+	if (model.blueprint_settings?.data_pack_export_mode === 'raw') {
+		fixed.blueprint_settings.data_pack_export_mode = 'folder'
 	}
 
-	return model
+	// Update bounding box settings
+	if (model.blueprint_settings?.show_bounding_box != undefined) {
+		fixed.blueprint_settings.show_render_box = model.blueprint_settings.show_bounding_box
+		// @ts-expect-error
+		delete fixed.blueprint_settings.show_bounding_box
+	}
+	if (model.blueprint_settings?.auto_bounding_box != undefined) {
+		fixed.blueprint_settings.auto_render_box = model.blueprint_settings.auto_bounding_box
+		// @ts-expect-error
+		delete fixed.blueprint_settings.auto_bounding_box
+	}
+	if (model.blueprint_settings?.bounding_box != undefined) {
+		fixed.blueprint_settings.render_box = model.blueprint_settings.bounding_box
+		// @ts-expect-error
+		delete fixed.blueprint_settings.bounding_box
+	}
+
+	// Update command settings
+	if (model.blueprint_settings?.summon_commands != undefined) {
+		fixed.blueprint_settings.on_summon_function = model.blueprint_settings.summon_commands
+		// @ts-expect-error
+		delete fixed.blueprint_settings.summon_commands
+	}
+	if (model.blueprint_settings?.remove_commands != undefined) {
+		fixed.blueprint_settings.on_remove_function = model.blueprint_settings.remove_commands
+		// @ts-expect-error
+		delete fixed.blueprint_settings.remove_commands
+	}
+	if (model.blueprint_settings?.ticking_commands != undefined) {
+		fixed.blueprint_settings.on_post_tick_function = model.blueprint_settings.ticking_commands
+		// @ts-expect-error
+		delete fixed.blueprint_settings.ticking_commands
+	}
+
+	// Update target version settings
+	if (Array.isArray(model.blueprint_settings?.target_minecraft_versions)) {
+		fixed.blueprint_settings.target_minecraft_version =
+			(model.blueprint_settings.target_minecraft_versions.at(0) as MinecraftVersion) ??
+			'1.21.5'
+		// @ts-expect-error
+		delete fixed.blueprint_settings.target_minecraft_versions
+	}
+
+	return fixed
 }

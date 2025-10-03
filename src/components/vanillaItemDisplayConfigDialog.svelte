@@ -65,7 +65,7 @@
 		} catch (e: any) {
 			return {
 				type: 'error',
-				message: translate('dialog.bone_config.custom_name.invalid_json.error', e.message),
+				message: e.message,
 			}
 		}
 
@@ -73,22 +73,112 @@
 	}
 </script>
 
-<div>
-	{#if pluginModeEnabled}
-		<Select
-			label={translate('dialog.bone_config.billboard.title')}
-			tooltip={translate('dialog.bone_config.billboard.description')}
-			options={billboardOptions}
-			defaultOption={BoneConfig.prototype.billboard}
-			bind:value={billboard}
-		/>
+{#if pluginModeEnabled}
+	<Select
+		label={translate('dialog.bone_config.billboard.title')}
+		tooltip={translate('dialog.bone_config.billboard.description')}
+		options={billboardOptions}
+		defaultOption={BoneConfig.prototype.billboard}
+		bind:value={billboard}
+	/>
 
+	<CodeInput
+		label={translate('dialog.bone_config.custom_name.title')}
+		tooltip={translate('dialog.bone_config.custom_name.description')}
+		bind:value={customName}
+		defaultValue={BoneConfig.prototype.customName}
+		valueChecker={customNameChecker}
+		syntax="snbtTextComponent"
+	/>
+
+	<Checkbox
+		label={translate('dialog.bone_config.custom_name_visible.title')}
+		tooltip={translate('dialog.bone_config.custom_name_visible.description')}
+		bind:checked={customNameVisible}
+		defaultValue={BoneConfig.prototype.customNameVisible}
+	/>
+
+	<Checkbox
+		label={translate('dialog.bone_config.glowing.title')}
+		tooltip={translate('dialog.bone_config.glowing.description')}
+		bind:checked={glowing}
+		defaultValue={BoneConfig.prototype.glowing}
+	/>
+
+	<ColorPicker
+		label={translate('dialog.bone_config.glow_color.title')}
+		tooltip={translate('dialog.bone_config.glow_color.description')}
+		bind:value={glowColor}
+	/>
+
+	<NumberSlider
+		label={translate('dialog.bone_config.shadow_radius.title')}
+		tooltip={translate('dialog.bone_config.shadow_radius.description')}
+		bind:value={shadowRadius}
+		defaultValue={BoneConfig.prototype.shadowRadius}
+		min={0}
+		max={64}
+	/>
+
+	<NumberSlider
+		label={translate('dialog.bone_config.shadow_strength.title')}
+		tooltip={translate('dialog.bone_config.shadow_strength.description')}
+		bind:value={shadowStrength}
+		defaultValue={BoneConfig.prototype.shadowStrength}
+		min={0}
+	/>
+
+	<Checkbox
+		label={translate('dialog.bone_config.use_custom_brightness.title')}
+		tooltip={translate('dialog.bone_config.use_custom_brightness.description')}
+		bind:checked={overrideBrightness}
+		defaultValue={BoneConfig.prototype.overrideBrightness}
+	/>
+
+	<NumberSlider
+		label={translate('dialog.bone_config.custom_brightness.title')}
+		tooltip={translate('dialog.bone_config.custom_brightness.description')}
+		bind:value={brightnessOverride}
+		defaultValue={BoneConfig.prototype.brightnessOverride}
+		min={0}
+		max={15}
+		valueStep={1}
+	/>
+
+	<Checkbox
+		label={translate('dialog.bone_config.invisible.title')}
+		tooltip={translate('dialog.bone_config.invisible.description')}
+		bind:checked={invisible}
+		defaultValue={BoneConfig.prototype.invisible}
+	/>
+{:else}
+	<Checkbox
+		label={translate('dialog.bone_config.use_nbt.title')}
+		tooltip={translate('dialog.bone_config.use_nbt.description')}
+		bind:checked={useNBT}
+		defaultValue={BoneConfig.prototype.useNBT}
+	/>
+
+	{#if $useNBT}
+		<p class="use_nbt_warning">
+			{translate('dialog.bone_config.use_nbt.use_nbt_warning')}
+		</p>
+		<CodeInput
+			label={translate('dialog.bone_config.nbt.title')}
+			tooltip={translate('dialog.bone_config.nbt.description')}
+			bind:value={nbt}
+			defaultValue={BoneConfig.prototype.nbt}
+			valueChecker={nbtChecker}
+			syntax="snbtTextComponent"
+		/>
+	{:else}
 		<CodeInput
 			label={translate('dialog.bone_config.custom_name.title')}
 			tooltip={translate('dialog.bone_config.custom_name.description')}
 			bind:value={customName}
 			defaultValue={BoneConfig.prototype.customName}
 			valueChecker={customNameChecker}
+			syntax="snbtTextComponent"
 		/>
 
 		<Checkbox
@@ -98,6 +188,14 @@
 			defaultValue={BoneConfig.prototype.customNameVisible}
 		/>
 
+		<Select
+			label={translate('dialog.bone_config.billboard.title')}
+			tooltip={translate('dialog.bone_config.billboard.description')}
+			options={billboardOptions}
+			defaultOption={BoneConfig.prototype.billboard}
+			bind:value={billboard}
+		/>
+
 		<Checkbox
 			label={translate('dialog.bone_config.glowing.title')}
 			tooltip={translate('dialog.bone_config.glowing.description')}
@@ -105,11 +203,20 @@
 			defaultValue={BoneConfig.prototype.glowing}
 		/>
 
-		<ColorPicker
-			label={translate('dialog.bone_config.glow_color.title')}
-			tooltip={translate('dialog.bone_config.glow_color.description')}
-			bind:value={glowColor}
+		<Checkbox
+			label={translate('dialog.bone_config.override_glow_color.title')}
+			tooltip={translate('dialog.bone_config.override_glow_color.description')}
+			bind:checked={overrideGlowColor}
+			defaultValue={BoneConfig.prototype.overrideGlowColor}
 		/>
+
+		{#if $overrideGlowColor}
+			<ColorPicker
+				label={translate('dialog.bone_config.glow_color.title')}
+				tooltip={translate('dialog.bone_config.glow_color.description')}
+				bind:value={glowColor}
+			/>
+		{/if}
 
 		<NumberSlider
 			label={translate('dialog.bone_config.shadow_radius.title')}
@@ -117,7 +224,7 @@
 			bind:value={shadowRadius}
 			defaultValue={BoneConfig.prototype.shadowRadius}
 			min={0}
-			max={64}
+			max={15}
 		/>
 
 		<NumberSlider
@@ -126,144 +233,40 @@
 			bind:value={shadowStrength}
 			defaultValue={BoneConfig.prototype.shadowStrength}
 			min={0}
-		/>
-
-		<Checkbox
-			label={translate('dialog.bone_config.use_custom_brightness.title')}
-			tooltip={translate('dialog.bone_config.use_custom_brightness.description')}
-			bind:checked={overrideBrightness}
-			defaultValue={BoneConfig.prototype.overrideBrightness}
-		/>
-
-		<NumberSlider
-			label={translate('dialog.bone_config.custom_brightness.title')}
-			tooltip={translate('dialog.bone_config.custom_brightness.description')}
-			bind:value={brightnessOverride}
-			defaultValue={BoneConfig.prototype.brightnessOverride}
-			min={0}
 			max={15}
 		/>
 
 		<Checkbox
-			label={translate('dialog.bone_config.invisible.title')}
-			tooltip={translate('dialog.bone_config.invisible.description')}
-			bind:checked={invisible}
-			defaultValue={BoneConfig.prototype.invisible}
-		/>
-	{:else}
-		<Checkbox
-			label={translate('dialog.bone_config.use_nbt.title')}
-			tooltip={translate('dialog.bone_config.use_nbt.description')}
-			bind:checked={useNBT}
-			defaultValue={BoneConfig.prototype.useNBT}
+			label={translate('dialog.bone_config.override_brightness.title')}
+			tooltip={translate('dialog.bone_config.override_brightness.description')}
+			bind:checked={overrideBrightness}
+			defaultValue={BoneConfig.prototype.overrideBrightness}
 		/>
 
-		{#if $useNBT}
-			<p class="use_nbt_warning">
-				{translate('dialog.bone_config.use_nbt.use_nbt_warning')}
-			</p>
-			<CodeInput
-				label={translate('dialog.bone_config.nbt.title')}
-				tooltip={translate('dialog.bone_config.nbt.description')}
-				bind:value={nbt}
-				defaultValue={BoneConfig.prototype.nbt}
-				valueChecker={nbtChecker}
-			/>
-		{:else}
-			<CodeInput
-				label={translate('dialog.bone_config.custom_name.title')}
-				tooltip={translate('dialog.bone_config.custom_name.description')}
-				bind:value={customName}
-				defaultValue={BoneConfig.prototype.customName}
-				valueChecker={customNameChecker}
-			/>
-
-			<Checkbox
-				label={translate('dialog.bone_config.custom_name_visible.title')}
-				tooltip={translate('dialog.bone_config.custom_name_visible.description')}
-				bind:checked={customNameVisible}
-				defaultValue={BoneConfig.prototype.customNameVisible}
-			/>
-
-			<Select
-				label={translate('dialog.bone_config.billboard.title')}
-				tooltip={translate('dialog.bone_config.billboard.description')}
-				options={billboardOptions}
-				defaultOption={BoneConfig.prototype.billboard}
-				bind:value={billboard}
-			/>
-
-			<Checkbox
-				label={translate('dialog.bone_config.glowing.title')}
-				tooltip={translate('dialog.bone_config.glowing.description')}
-				bind:checked={glowing}
-				defaultValue={BoneConfig.prototype.glowing}
-			/>
-
-			<Checkbox
-				label={translate('dialog.bone_config.override_glow_color.title')}
-				tooltip={translate('dialog.bone_config.override_glow_color.description')}
-				bind:checked={overrideGlowColor}
-				defaultValue={BoneConfig.prototype.overrideGlowColor}
-			/>
-
-			{#if $overrideGlowColor}
-				<ColorPicker
-					label={translate('dialog.bone_config.glow_color.title')}
-					tooltip={translate('dialog.bone_config.glow_color.description')}
-					bind:value={glowColor}
-				/>
-			{/if}
-
+		{#if $overrideBrightness}
 			<NumberSlider
-				label={translate('dialog.bone_config.shadow_radius.title')}
-				tooltip={translate('dialog.bone_config.shadow_radius.description')}
-				bind:value={shadowRadius}
-				defaultValue={BoneConfig.prototype.shadowRadius}
+				label={translate('dialog.bone_config.brightness_override.title')}
+				tooltip={translate('dialog.bone_config.brightness_override.description')}
+				bind:value={brightnessOverride}
+				defaultValue={BoneConfig.prototype.brightnessOverride}
 				min={0}
 				max={15}
+				valueStep={1}
 			/>
+		{/if}
 
-			<NumberSlider
-				label={translate('dialog.bone_config.shadow_strength.title')}
-				tooltip={translate('dialog.bone_config.shadow_strength.description')}
-				bind:value={shadowStrength}
-				defaultValue={BoneConfig.prototype.shadowStrength}
-				min={0}
-				max={15}
-			/>
-
-			<Checkbox
-				label={translate('dialog.bone_config.override_brightness.title')}
-				tooltip={translate('dialog.bone_config.override_brightness.description')}
-				bind:checked={overrideBrightness}
-				defaultValue={BoneConfig.prototype.overrideBrightness}
-			/>
-
-			{#if $overrideBrightness}
-				<NumberSlider
-					label={translate('dialog.bone_config.brightness_override.title')}
-					tooltip={translate('dialog.bone_config.brightness_override.description')}
-					bind:value={brightnessOverride}
-					defaultValue={BoneConfig.prototype.brightnessOverride}
-					min={0}
-					max={15}
-				/>
-			{/if}
-
-			<!-- <Checkbox
+		<!-- <Checkbox
 				label={translate('dialog.bone_config.invisible.title')}
 				tooltip={translate('dialog.bone_config.invisible.description')}
 				bind:checked={invisible}
 			/> -->
-		{/if}
 	{/if}
-</div>
+{/if}
 
 <style>
-	div {
-		overflow-y: auto;
-		max-height: 75vh;
-		padding-right: 8px;
+	.use_nbt_warning {
+		color: var(--color-warning);
+		margin: 0px 18px 16px;
+		font-size: small;
 	}
 </style>

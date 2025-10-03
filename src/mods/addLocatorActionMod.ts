@@ -1,5 +1,5 @@
 import { registerMod } from 'src/util/moddingTools'
-import { isCurrentFormat } from '../blueprintFormat'
+import { activeProjectIsBlueprintFormat } from '../blueprintFormat'
 
 registerMod({
 	id: `animated-java:add-locator-action`,
@@ -8,7 +8,7 @@ registerMod({
 		const action = BarItems.add_locator as Action
 		const originalCondition = (BarItems.add_locator as Action).condition
 		action.condition = () => {
-			if (isCurrentFormat()) return true
+			if (activeProjectIsBlueprintFormat()) return true
 			return Condition(originalCondition)
 		}
 

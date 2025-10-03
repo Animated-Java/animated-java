@@ -1,7 +1,6 @@
 import { registerAction } from 'src/util/moddingTools'
-import { type IBlueprintBoneConfigJSON, isCurrentFormat } from '../blueprintFormat'
+import { type IBlueprintBoneConfigJSON, activeProjectIsBlueprintFormat } from '../blueprintFormat'
 import { PACKAGE } from '../constants'
-import { VANILLA_ITEM_DISPLAY_CONFIG_ACTION } from '../interface/dialog/vanillaItemDisplayConfig'
 import { BoneConfig } from '../nodeConfigs'
 import { getItemModel } from '../systems/minecraft/itemModelManager'
 import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
@@ -49,13 +48,6 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 
 	public error = new Valuable('')
 
-	public menu = new Menu([
-		...Outliner.control_menu_group,
-		VANILLA_ITEM_DISPLAY_CONFIG_ACTION,
-		'_',
-		'rename',
-		'delete',
-	])
 	public buttons = [Outliner.buttons.export, Outliner.buttons.locked, Outliner.buttons.visibility]
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	public preview_controller = PREVIEW_CONTROLLER
@@ -247,7 +239,7 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, 
 		ResizableOutlinerElement.prototype.preview_controller.updateTransform(el)
 	},
 	updateHighlight(el: VanillaItemDisplay, force?: boolean | VanillaItemDisplay) {
-		if (!isCurrentFormat() || !el?.mesh) return
+		if (!activeProjectIsBlueprintFormat() || !el?.mesh) return
 		const highlighted = Modes.edit && (force === true || force === el || el.selected) ? 1 : 0
 
 		const itemModel = el.mesh.children.at(0) as THREE.Mesh
@@ -385,37 +377,40 @@ class VanillaItemDisplayAnimator extends BoneAnimator {
 VanillaItemDisplayAnimator.prototype.type = VanillaItemDisplay.type
 VanillaItemDisplay.animator = VanillaItemDisplayAnimator as any
 
-export const CREATE_ACTION = registerAction(`animated-java:action/create-vanilla-item-display`, {
-	name: translate('action.create_vanilla_item_display.title'),
-	icon: 'icecream',
-	category: 'animated_java',
-	condition() {
-		return isCurrentFormat() && Mode.selected.id === Modes.options.edit.id
-	},
-	click() {
-		Undo.initEdit({ outliner: true, elements: [], selection: true })
+export const CREATE_ACTION = registerAction(
+	{ id: `animated-java:action/create-vanilla-item-display` },
+	{
+		name: translate('action.create_vanilla_item_display.title'),
+		icon: 'icecream',
+		category: 'animated_java',
+		condition() {
+			return activeProjectIsBlueprintFormat() && Mode.selected.id === Modes.options.edit.id
+		},
+		click() {
+			Undo.initEdit({ outliner: true, elements: [], selection: true })
 
-		const vanillaItemDisplay = new VanillaItemDisplay({}).init()
-		const group = getCurrentGroup()
+			const vanillaItemDisplay = new VanillaItemDisplay({}).init()
+			const group = getCurrentGroup()
 
-		if (group instanceof Group) {
-			vanillaItemDisplay.addTo(group)
-			vanillaItemDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
-		}
+			if (group instanceof Group) {
+				vanillaItemDisplay.addTo(group)
+				vanillaItemDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
+			}
 
-		selected.forEachReverse(el => el.unselect())
-		Group.first_selected && Group.first_selected.unselect()
-		vanillaItemDisplay.select()
+			selected.forEachReverse(el => el.unselect())
+			Group.first_selected && Group.first_selected.unselect()
+			vanillaItemDisplay.select()
 
-		Undo.finishEdit('Create Vanilla Item Display', {
-			outliner: true,
-			elements: selected,
-			selection: true,
-		})
+			Undo.finishEdit('Create Vanilla Item Display', {
+				outliner: true,
+				elements: selected,
+				selection: true,
+			})
 
-		return vanillaItemDisplay
-	},
-})
+			return vanillaItemDisplay
+		},
+	}
+)
 
 const unsubscribers: Array<() => void> = []
 

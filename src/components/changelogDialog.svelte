@@ -1,19 +1,21 @@
-<script lang="ts">
-	import changelog from '../pluginPackage/changelog.json'
+<script lang="ts" context="module">
 	import AnimatedJavaIcon from '../assets/animated_java_icon.svg'
+	import changelog from '../pluginPackage/changelog.json'
 
-	function formatDateFull(date: string) {
+	const ISSUES_URL = 'https://api.github.com/repos/animated-java/animated-java/issues/'
+
+	const FORMATTED_CHANGELOG_CACHE = new Map<string, string>()
+
+	const formatDateFull = (date: string) => {
 		// @ts-expect-error
 		return getDateDisplay(date).full
 	}
-	function formatDateShort(date: string) {
+	const formatDateShort = (date: string) => {
 		// @ts-expect-error
 		return getDateDisplay(date).short
 	}
 
-	const ISSUES_URL = 'https://api.github.com/repos/animated-java/animated-java/issues/'
-
-	async function formatMarkdown(text: string) {
+	const formatMarkdown = async (text: string) => {
 		const issues: Record<number, { title: string; url: string }> = {}
 		text = text.replace('[BREAKING]', '<span class="breaking">BREAKING</span>')
 		text = text.replace(/\[([^\]]+?)\]\(([^)]+?)\)/gm, (match, title, url) => {
@@ -25,19 +27,27 @@
 			}
 			return `<a href="${url}" target="_blank">${title}</a>`
 		})
-		for (const [issueNumber, { title, url }] of Object.entries(issues)) {
-			await fetch(`${ISSUES_URL}${issueNumber}`)
+		for (const [issueNumber, { url }] of Object.entries(issues)) {
+			const data = await fetch(ISSUES_URL + issueNumber)
 				.then(response => response.json())
-				.then(data => {
-					text = text.replace(
-						`$$$ISSUE${issueNumber}$$$`,
-						`<a href="${url}" target="_blank">#${issueNumber} - ${data.title}</a>`,
-					)
-				})
+				.catch(() => undefined)
+			text = text.replace(
+				`$$$ISSUE${issueNumber}$$$`,
+				`<a href="${url}" target="_blank">#${issueNumber}${data ? ' - ' + data.title : ''}</a>`
+			)
 		}
 		// inline code blocks
 		text = text.replace(/`([^`]+?)`/g, '<code>$1</code>')
 		return text
+	}
+
+	const getChangelog = async (item: string) => {
+		if (FORMATTED_CHANGELOG_CACHE.has(item)) {
+			return FORMATTED_CHANGELOG_CACHE.get(item)
+		}
+		const formatted = await formatMarkdown(item)
+		FORMATTED_CHANGELOG_CACHE.set(item, formatted)
+		return formatted
 	}
 </script>
 
@@ -46,7 +56,7 @@
 		<div class="title-container">
 			<img src={AnimatedJavaIcon} alt="" />
 			<h3>
-				{versions.title}
+				{'Animated Java ' + versions.title}
 			</h3>
 		</div>
 		<!-- svelte-ignore a11y-label-has-associated-control -->
@@ -64,7 +74,7 @@
 					<ul class="plugin_changelog_features">
 						{#each category.list as item}
 							<li>
-								{#await formatMarkdown(item) then data}
+								{#await getChangelog(item) then data}
 									{@html data}
 								{/await}
 							</li>
@@ -93,8 +103,9 @@
 		color: var(--color-back);
 		padding: 0 0.3em;
 		border-radius: 3px;
-		font-size: 0.8em;
-		font-weight: 700;
+		font-size: 0.9em;
+		font-weight: bold;
+		margin-right: 0.25rem;
 	}
 	img {
 		border-radius: 4px;
@@ -113,5 +124,8 @@
 		justify-content: flex-start;
 		align-items: center;
 		margin-top: 8px;
+	}
+	hr {
+		margin: 2rem 0;
 	}
 </style>

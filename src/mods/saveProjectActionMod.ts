@@ -1,4 +1,4 @@
-import { BLUEPRINT_FORMAT, saveBlueprint } from '../blueprintFormat'
+import { activeProjectIsBlueprintFormat, saveBlueprint } from '../blueprintFormat'
 import { registerMod } from '../util/moddingTools'
 
 registerMod({
@@ -10,7 +10,7 @@ registerMod({
 		const originalClick = action.click
 		action.click = (event: Event) => {
 			if (!Project || !Format) return
-			if (Format === BLUEPRINT_FORMAT) {
+			if (activeProjectIsBlueprintFormat()) {
 				saveBlueprint()
 			} else {
 				originalClick.call(action, event)

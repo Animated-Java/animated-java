@@ -1,3 +1,4 @@
+import { BLUEPRINT_FORMAT_ID } from 'src/blueprintFormat'
 import { registerMod } from 'src/util/moddingTools'
 import Icon from '../components/icon.svelte'
 import { injectSvelteComponent } from '../util/injectSvelteComponent'
@@ -7,13 +8,13 @@ registerMod({
 
 	apply: () => {
 		void injectSvelteComponent({
-			elementSelector: () => document.querySelector('[format=animated_java_blueprint]'),
+			elementSelector: () => document.querySelector(`li[format="${BLUEPRINT_FORMAT_ID}"]`),
 			component: Icon,
 			props: {},
 			prepend: true,
 			postMount: () => {
 				document
-					.querySelector('[format=animated_java_blueprint] span i')
+					.querySelector(`li[format="${BLUEPRINT_FORMAT_ID}"] span i`)
 					?.parentElement?.remove()
 				const duplicates = [...document.querySelectorAll('#animated_java\\:icon')]
 				if (duplicates.length > 1) {

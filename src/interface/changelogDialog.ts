@@ -9,9 +9,10 @@ export function openChangelogDialog() {
 	new SvelteDialog({
 		id: DIALOG_ID,
 		title: translate('dialog.changelog_dialog.title'),
-		width: 600,
-		component: ChangelogDialog,
-		props: {},
+		width: 800,
+		content: {
+			component: ChangelogDialog,
+		},
 		buttons: ['OK!'],
 		preventKeybinds: true,
 	}).show()

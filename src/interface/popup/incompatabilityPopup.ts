@@ -5,15 +5,17 @@ import { translate } from '../../util/translation'
 
 const INCOMPATABLE_PLUGINS = ['animation_utils']
 
-let currentInstance: SvelteDialog<IncompatabilityPopup, any> | null = null
+let currentInstance: SvelteDialog<IncompatabilityPopup> | null = null
 
 export function openIncompatabilityPopup(plugins: BBPlugin[]) {
 	currentInstance = new SvelteDialog({
 		id: `${PACKAGE.name}:incompatabilityPopup`,
 		title: translate('popup.incompatability_popup.title'),
 		width: 700,
-		component: IncompatabilityPopup,
-		props: { plugins },
+		content: {
+			component: IncompatabilityPopup,
+			props: { plugins },
+		},
 		preventKeybinds: true,
 		buttons: [],
 	}).show()

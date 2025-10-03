@@ -413,7 +413,6 @@ async function generateRootEntityPassengers(
 			dataEntity.set('id', new NbtString('minecraft:item_display'))
 	}
 
-	// const nodeStorage = createNodeStorage(rig)
 	passengers.add(
 		dataEntity
 			.set(
@@ -426,7 +425,12 @@ async function generateRootEntityPassengers(
 					new NbtString(TAGS.PROJECT_DATA(aj.export_namespace)),
 				])
 			)
-			.set('data', new NbtCompound().set('rig_hash', new NbtString(rigHash)))
+			.set(
+				'data',
+				new NbtCompound()
+					.set('rig_hash', new NbtString(rigHash))
+					.set('export_namespace', new NbtString(aj.export_namespace))
+			)
 	)
 
 	for (const [uuid, node] of Object.entries(rig.nodes)) {
@@ -439,8 +443,8 @@ async function generateRootEntityPassengers(
 
 		if (BONE_TYPES.includes(node.type)) {
 			passenger
-				.set('height', new NbtFloat(aj.bounding_box[1]))
-				.set('width', new NbtFloat(aj.bounding_box[0]))
+				.set('height', new NbtFloat(aj.render_box[1]))
+				.set('width', new NbtFloat(aj.render_box[0]))
 				.set('teleport_duration', new NbtInt(0))
 				.set('interpolation_duration', new NbtInt(aj.interpolation_duration))
 				.set(
@@ -754,6 +758,7 @@ interface DataPackCompilerOptions {
 	animations: IRenderedAnimation[]
 	rigHash: string
 	animationHash: string
+	debugMode: boolean
 }
 
 export type DataPackCompiler = (options: DataPackCompilerOptions) => Promise<void>
@@ -764,6 +769,7 @@ interface CompileDataPackOptions {
 	dataPackFolder: string
 	rigHash: string
 	animationHash: string
+	debugMode: boolean
 }
 
 export default async function compileDataPack(
@@ -781,7 +787,7 @@ export default async function compileDataPack(
 		options.dataPackFolder
 	)
 
-	if (aj.data_pack_export_mode === 'raw') {
+	if (aj.data_pack_export_mode === 'folder') {
 		ajmeta.read()
 	}
 
@@ -864,7 +870,7 @@ export default async function compileDataPack(
 		includeInAJMeta: false,
 	})
 
-	if (aj.data_pack_export_mode === 'raw') {
+	if (aj.data_pack_export_mode === 'folder') {
 		await removeFiles(ajmeta, options.dataPackFolder)
 
 		// Write new files
@@ -888,7 +894,7 @@ export default async function compileDataPack(
 async function removeFiles(ajmeta: AJMeta, dataPackFolder: string) {
 	console.time('Removing Files took')
 	const aj = Project!.animated_java
-	if (aj.data_pack_export_mode === 'raw') {
+	if (aj.data_pack_export_mode === 'folder') {
 		PROGRESS_DESCRIPTION.set('Removing Old Data Pack Files...')
 		PROGRESS.set(0)
 		MAX_PROGRESS.set(ajmeta.previousVersionedFiles.size)
@@ -961,6 +967,7 @@ const dataPackCompiler: DataPackCompiler = async ({
 	animations,
 	rigHash,
 	animationHash,
+	debugMode,
 }) => {
 	JsonText.defaultTargetVersion = version
 
@@ -978,8 +985,10 @@ const dataPackCompiler: DataPackCompiler = async ({
 		TAGS,
 		OBJECTIVES,
 		TELLRAW,
-		custom_summon_commands: aj.summon_commands,
-		custom_remove_commands: aj.remove_commands,
+		on_summon_function: aj.on_summon_function,
+		on_remove_function: aj.on_remove_function,
+		on_pre_tick_function: aj.on_pre_tick_function,
+		on_post_tick_function: aj.on_post_tick_function,
 		matrixToNbtFloatArray,
 		transformationToNbt,
 		use_storage_for_animation: aj.use_storage_for_animation,
@@ -988,14 +997,11 @@ const dataPackCompiler: DataPackCompiler = async ({
 			: null,
 		rig_hash: rigHash,
 		animation_hash: animationHash,
-		boundingBox: aj.bounding_box,
+		boundingBox: aj.render_box,
 		BoneConfig,
 		roundTo,
 		nodeSorter,
 		getRotationFromQuaternion: eulerFromQuaternion,
-		root_ticking_commands: aj.ticking_commands,
-		show_function_errors: aj.show_function_errors,
-		show_outdated_warning: aj.show_outdated_warning,
 		has_locators: Object.values(rig.nodes).filter(n => n.type === 'locator').length > 0,
 		has_entity_locators:
 			Object.values(rig.nodes).filter(n => n.type === 'locator' && n.config?.use_entity)
@@ -1005,24 +1011,24 @@ const dataPackCompiler: DataPackCompiler = async ({
 		getNodeTags,
 		BONE_TYPES,
 		project_storage: `animated_java:${aj.export_namespace}`,
+		temp_storage: `animated_java:temp`,
+		gu_storage: `animated_java:gu`,
+		auto_update_rig_orientation: aj.auto_update_rig_orientation,
+		debug_mode: debugMode,
 	}
 
 	compile({
-		path: 'src/animated_java.mcb',
-		mcbFile: is_static ? mcbFiles[version].static : mcbFiles[version].animation,
+		sourceFiles: {
+			'src/global.mcbt': mcbFiles[version].coreTemplates,
+			'src/animated_java.mcb': mcbFiles[version].core,
+			[`src/animated_java/${aj.export_namespace}.mcb`]: is_static
+				? mcbFiles[version].static
+				: mcbFiles[version].animation,
+		},
 		destPath: '.',
 		variables,
 		version,
 		exportedFiles: versionedFiles,
-	})
-
-	compile({
-		path: 'src/animated_java.mcb',
-		mcbFile: mcbFiles[version].core,
-		destPath: '.',
-		variables,
-		version,
-		exportedFiles: coreFiles,
 	})
 }
 

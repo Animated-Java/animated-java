@@ -1,4 +1,4 @@
-import { BLUEPRINT_FORMAT } from '../blueprintFormat'
+import { activeProjectIsBlueprintFormat } from '../blueprintFormat'
 import { registerMod } from '../util/moddingTools'
 
 registerMod({
@@ -9,7 +9,7 @@ registerMod({
 
 		const originalFilesFunction = panel.inside_vue.$options.computed!.files as () => any
 		panel.inside_vue.$options.computed!.files = function (this) {
-			if (Format.id === BLUEPRINT_FORMAT.id) {
+			if (activeProjectIsBlueprintFormat()) {
 				return {
 					'': {
 						animations: [

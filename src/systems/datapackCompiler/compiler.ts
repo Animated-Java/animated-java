@@ -1,12 +1,13 @@
 import { Parser, SyncIo, Tokenizer } from 'mc-build'
+import { AstNode } from 'mc-build/dist/mcl/AstNode'
 import { Compiler, VariableMap } from 'mc-build/dist/mcl/Compiler'
+import { Token } from 'mc-build/dist/mcl/Tokenizer'
 import { getDataPackFormat } from '../../util/minecraftUtil'
 import type { MinecraftVersion } from '../global'
 import type { ExportedFile } from '../util'
 
 interface CompilerOptions {
-	path: string
-	mcbFile: string
+	sourceFiles: Record<string, string>
 	destPath: string
 	variables: Record<string, any>
 	version: MinecraftVersion
@@ -14,14 +15,13 @@ interface CompilerOptions {
 }
 
 export function compile({
-	path,
-	mcbFile,
+	sourceFiles,
 	destPath,
 	variables,
 	version,
 	exportedFiles,
 }: CompilerOptions) {
-	console.group('Compiling', path)
+	console.group('Compiling', sourceFiles)
 	console.log('Variables:', variables)
 
 	const compiler = new Compiler('src/', {
@@ -53,8 +53,46 @@ export function compile({
 	compiler.io = createSyncIO()
 
 	console.time('MC-Build compiled in')
-	const tokens = Tokenizer.tokenize(mcbFile, path)
-	compiler.addFile(path, Parser.parseMcbFile(tokens))
+
+	const mcbTemplateFiles = Object.entries(sourceFiles).filter(([path]) => path.endsWith('.mcbt'))
+	const mcbFiles = Object.entries(sourceFiles).filter(([path]) => path.endsWith('.mcb'))
+
+	for (const [path, mcbFile] of mcbTemplateFiles) {
+		let tokens: Token[] = []
+		try {
+			tokens = Tokenizer.tokenize(mcbFile, path)
+		} catch (e) {
+			if (e instanceof Error) e.message = `Error tokenizing "${path}":\n\t${e.message}`
+			throw e
+		}
+		let ast: AstNode[] = []
+		try {
+			ast = Parser.parseMcbtFile(tokens)
+		} catch (e) {
+			if (e instanceof Error) e.message = `Error tokenizing "${path}":\n\t${e.message}`
+			throw e
+		}
+		compiler.addFile(path, ast)
+	}
+
+	for (const [path, mcbFile] of mcbFiles) {
+		let tokens: Token[] = []
+		try {
+			tokens = Tokenizer.tokenize(mcbFile, path)
+		} catch (e) {
+			if (e instanceof Error) e.message = `Error tokenizing "${path}":\n\t${e.message}`
+			throw e
+		}
+		let ast: AstNode[] = []
+		try {
+			ast = Parser.parseMcbFile(tokens)
+		} catch (e) {
+			if (e instanceof Error) e.message = `Error tokenizing "${path}":\n\t${e.message}`
+			throw e
+		}
+		compiler.addFile(path, ast)
+	}
+
 	compiler.compile(VariableMap.fromObject(variables))
 	console.timeEnd('MC-Build compiled in')
 	console.log('Exported files:', exportedFiles.keys())

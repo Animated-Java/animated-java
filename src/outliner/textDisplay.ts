@@ -1,13 +1,11 @@
 import {
-	BLUEPRINT_FORMAT,
 	type IBlueprintTextDisplayConfigJSON,
-	isCurrentFormat,
+	activeProjectIsBlueprintFormat,
 } from '../blueprintFormat'
 import { PACKAGE } from '../constants'
 import { registerAction } from '../util/moddingTools'
 // import * as MinecraftFull from '../assets/MinecraftFull.json'
 import { JsonParserError } from 'src/systems/jsonText/parser'
-import { TEXT_DISPLAY_CONFIG_ACTION } from '../interface/dialog/textDisplayConfig'
 import { TextDisplayConfig } from '../nodeConfigs'
 import { JsonText } from '../systems/jsonText'
 import { getVanillaFont } from '../systems/minecraft/fontManager'
@@ -43,13 +41,6 @@ export class TextDisplay extends ResizableOutlinerElement {
 	// Properties
 	public config: IBlueprintTextDisplayConfigJSON
 
-	public menu = new Menu([
-		...Outliner.control_menu_group,
-		TEXT_DISPLAY_CONFIG_ACTION,
-		'_',
-		'rename',
-		'delete',
-	])
 	public buttons = [Outliner.buttons.export, Outliner.buttons.locked, Outliner.buttons.visibility]
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	public preview_controller = PREVIEW_CONTROLLER
@@ -474,37 +465,40 @@ class TextDisplayAnimator extends BoneAnimator {
 TextDisplayAnimator.prototype.type = TextDisplay.type
 TextDisplay.animator = TextDisplayAnimator as any
 
-export const CREATE_ACTION = registerAction(`animated-java:create-text-display`, {
-	name: translate('action.create_text_display.title'),
-	icon: 'text_fields',
-	category: 'animated_java',
-	condition() {
-		return isCurrentFormat() && Mode.selected.id === Modes.options.edit.id
-	},
-	click() {
-		Undo.initEdit({ outliner: true, elements: [], selection: true })
+export const CREATE_ACTION = registerAction(
+	{ id: `animated-java:create-text-display` },
+	{
+		name: translate('action.create_text_display.title'),
+		icon: 'text_fields',
+		category: 'animated_java',
+		condition() {
+			return activeProjectIsBlueprintFormat() && Mode.selected.id === Modes.options.edit.id
+		},
+		click() {
+			Undo.initEdit({ outliner: true, elements: [], selection: true })
 
-		const textDisplay = new TextDisplay({}).init()
-		const group = getCurrentGroup()
+			const textDisplay = new TextDisplay({}).init()
+			const group = getCurrentGroup()
 
-		if (group instanceof Group) {
-			textDisplay.addTo(group)
-			textDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
-		}
+			if (group instanceof Group) {
+				textDisplay.addTo(group)
+				textDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
+			}
 
-		selected.forEachReverse(el => el.unselect())
-		Group.first_selected && Group.first_selected.unselect()
-		textDisplay.select()
+			selected.forEachReverse(el => el.unselect())
+			Group.first_selected && Group.first_selected.unselect()
+			textDisplay.select()
 
-		Undo.finishEdit('Create Text Display', {
-			outliner: true,
-			elements: selected,
-			selection: true,
-		})
+			Undo.finishEdit('Create Text Display', {
+				outliner: true,
+				elements: selected,
+				selection: true,
+			})
 
-		return textDisplay
-	},
-})
+			return textDisplay
+		},
+	}
+)
 
 const unsubscribers: Array<() => void> = []
 
@@ -515,14 +509,14 @@ CREATE_ACTION.onCreated(action => {
 
 	unsubscribers.push(
 		EVENTS.SELECT_PROJECT.subscribe(project => {
-			if (project.format.id !== BLUEPRINT_FORMAT.id) return
+			if (!activeProjectIsBlueprintFormat()) return
 			project.textDisplays ??= []
 			TextDisplay.all.empty()
 			TextDisplay.all.push(...project.textDisplays)
 		}),
 
 		EVENTS.UNSELECT_PROJECT.subscribe(project => {
-			if (project.format.id !== BLUEPRINT_FORMAT.id) return
+			if (!activeProjectIsBlueprintFormat()) return
 			project.textDisplays = [...TextDisplay.all]
 			TextDisplay.all.empty()
 		})

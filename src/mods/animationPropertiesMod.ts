@@ -1,5 +1,5 @@
 import { registerMod } from 'src/util/moddingTools'
-import { isCurrentFormat } from '../blueprintFormat'
+import { activeProjectIsBlueprintFormat } from '../blueprintFormat'
 import { roundToNth } from '../util/misc'
 import { translate } from '../util/translation'
 
@@ -16,7 +16,7 @@ registerMod({
 			data: AnimationOptions
 		) {
 			originalExtend.call(this, data)
-			if (isCurrentFormat()) {
+			if (activeProjectIsBlueprintFormat()) {
 				this.snapping = DEFAULT_SNAPPING_VALUE
 				this.length = Math.max(this.length, MINIMUM_ANIMATION_LENGTH)
 				for (const animator of Object.values(this.animators)) {
@@ -36,7 +36,7 @@ registerMod({
 
 		const originalSetLength = Blockbench.Animation.prototype.setLength
 		Blockbench.Animation.prototype.setLength = function (this: _Animation, length?: number) {
-			if (isCurrentFormat()) {
+			if (activeProjectIsBlueprintFormat()) {
 				length = Math.max(length || this.length, MINIMUM_ANIMATION_LENGTH)
 			}
 			return originalSetLength.call(this, length)
@@ -47,7 +47,7 @@ registerMod({
 			'array',
 			'excluded_nodes',
 			{
-				condition: () => isCurrentFormat(),
+				condition: () => activeProjectIsBlueprintFormat(),
 				label: translate('animation.excluded_nodes'),
 				default: [],
 			}

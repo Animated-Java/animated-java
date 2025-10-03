@@ -1,5 +1,5 @@
 import { Valuable } from 'src/util/stores'
-import { isCurrentFormat } from '../blueprintFormat'
+import { activeProjectIsBlueprintFormat } from '../blueprintFormat'
 import { roundToNth } from '../util/misc'
 import { registerMod } from '../util/moddingTools'
 
@@ -18,7 +18,7 @@ registerMod({
 		) {
 			if (
 				!BONE_INTERPOLATION_ENABLED.get() ||
-				!isCurrentFormat() ||
+				!activeProjectIsBlueprintFormat() ||
 				allowExpression === false
 			) {
 				return original.call(this, channel, allowExpression, axis)

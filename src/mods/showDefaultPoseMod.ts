@@ -1,4 +1,4 @@
-import { isCurrentFormat } from '../blueprintFormat'
+import { activeProjectIsBlueprintFormat } from '../blueprintFormat'
 import { registerMod } from '../util/moddingTools'
 
 registerMod({
@@ -8,7 +8,7 @@ registerMod({
 		const original = Animator.showDefaultPose
 
 		Animator.showDefaultPose = function (noMatrixUpdate?: boolean) {
-			if (!isCurrentFormat()) return original(noMatrixUpdate)
+			if (!activeProjectIsBlueprintFormat()) return original(noMatrixUpdate)
 
 			const nodes = [...Group.all, ...Outliner.elements]
 			for (const node of nodes) {

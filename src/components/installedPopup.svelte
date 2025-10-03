@@ -8,10 +8,7 @@
 		<img src={AnimatedJavaIcon} />
 		<div>
 			<h1>Welcome to Animated Java!</h1>
-			<h3>
-				A Blockbench plugin that makes complex animation a breeze in Minecraft: Java
-				Edition.
-			</h3>
+			<h3>Effortlessly craft complex animations for Minecraft: Java Edition</h3>
 		</div>
 	</div>
 	<div class="another-container">
@@ -25,10 +22,10 @@
 		<p>
 			You can open our docs at any time via the Animated Java menu at the top of the screen.
 		</p>
-		<h2>Need more help?</h2>
+		<h2>Need Help?</h2>
 		<p>
-			Feel free to join our <a href="https://animated-java.dev/discord">Discord server</a> to ask
-			questions via our support channel.
+			Join our <a href="https://animated-java.dev/discord">Discord server</a> to ask questions
+			via our support channel.
 		</p>
 	</div>
 </div>

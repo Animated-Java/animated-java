@@ -99,6 +99,7 @@
 		"eslint": "^8.35.0",
 		"firebase": "^9.19.0",
 		"js-yaml": "^4.1.0",
+		"mc-build": "^3.6.7",
 		"octokit": "^5.0.3",
 		"prettier": "^2.5.1",
 		"svelte": "^3.55.1",
@@ -116,7 +117,6 @@
 		"generic-stream": "^1.2.6",
 		"marked": "^4.3.0",
 		"marked-gfm-heading-id": "^3.0.0",
-		"mc-build": "^3.5.1",
 		"request-progress": "^3.0.0",
 		"svelte-ace": "^1.0.21",
 		"svelte-dnd-action": "^0.9.38"

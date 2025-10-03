@@ -1,4 +1,4 @@
-import { BLUEPRINT_FORMAT } from '../blueprintFormat'
+import { activeProjectIsBlueprintFormat } from '../blueprintFormat'
 import { registerMod } from '../util/moddingTools'
 
 registerMod({
@@ -9,7 +9,7 @@ registerMod({
 
 		const originalCondition = action.condition
 		action.condition = function (this: Action) {
-			if (Format.id === BLUEPRINT_FORMAT.id) {
+			if (activeProjectIsBlueprintFormat()) {
 				return false
 			}
 			return Condition(originalCondition)

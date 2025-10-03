@@ -1,4 +1,4 @@
-import { BLUEPRINT_FORMAT } from '../blueprintFormat'
+import { activeProjectIsBlueprintFormat } from '../blueprintFormat'
 import { openBlueprintSettingsDialog } from '../interface/dialog/blueprintSettings'
 import { registerMod } from '../util/moddingTools'
 
@@ -10,7 +10,7 @@ registerMod({
 
 		const oldClick = action.click
 		action.click = function (this, event: Event) {
-			if (Format.id === BLUEPRINT_FORMAT.id) {
+			if (activeProjectIsBlueprintFormat()) {
 				openBlueprintSettingsDialog()
 			} else {
 				oldClick.call(this, event)

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte'
-	import { roundTo } from '../../util/misc'
+	import { roundToNth } from '../../util/misc'
 	import { Valuable } from '../../util/stores'
 	import BaseDialogItem from './baseDialogItem.svelte'
 
@@ -19,7 +19,7 @@
 	let slider: HTMLElement
 
 	const clampValue = (v: number) => {
-		return Math.clamp(roundTo(v, 1 / (valueStep ?? 1)), min, max) || 0
+		return Math.clamp(roundToNth(v, 1 / (valueStep ?? 1)), min, max) || 0
 	}
 
 	const onStartDrag = (moveEvent: MouseEvent | TouchEvent) => {

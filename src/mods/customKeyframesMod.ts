@@ -1,5 +1,5 @@
 import { registerProjectMod } from 'src/util/moddingTools'
-import { BLUEPRINT_FORMAT, isCurrentFormat } from '../blueprintFormat'
+import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from '../blueprintFormat'
 import { translate } from '../util/translation'
 import { Variant } from '../variants'
 
@@ -34,7 +34,7 @@ export const getKeyframeRepeatFrequency = keyframeValueGetterFactory<number>('re
 registerProjectMod({
 	id: 'animated-java:custom-keyframes',
 
-	condition: project => project.format === BLUEPRINT_FORMAT,
+	condition: project => project.format.id === BLUEPRINT_FORMAT_ID,
 
 	apply: () => {
 		const defaultChannels = { ...EffectAnimator.prototype.channels }
@@ -142,7 +142,7 @@ registerProjectMod({
 				})
 			}
 
-			if (!(Project && isCurrentFormat())) return
+			if (!(Project && activeProjectIsBlueprintFormat())) return
 			if (!this.muted.variant) {
 				let after, before, result: _Keyframe | undefined
 

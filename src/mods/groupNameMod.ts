@@ -1,5 +1,5 @@
 import { registerMod } from 'src/util/moddingTools'
-import { isCurrentFormat } from '../blueprintFormat'
+import { activeProjectIsBlueprintFormat } from '../blueprintFormat'
 import { sanitizeOutlinerElementName } from '../outliner/util'
 
 registerMod({
@@ -8,7 +8,7 @@ registerMod({
 	apply: () => {
 		const originalRename = Group.prototype.saveName
 		Group.prototype.saveName = function (this: Group, save?: boolean) {
-			if (isCurrentFormat()) {
+			if (activeProjectIsBlueprintFormat()) {
 				this.name = sanitizeOutlinerElementName(this.name, this.uuid)
 			}
 			return originalRename.call(this, save)
@@ -16,7 +16,7 @@ registerMod({
 
 		const originalSanitize = Group.prototype.sanitizeName
 		Group.prototype.sanitizeName = function (this: Group) {
-			if (isCurrentFormat()) {
+			if (activeProjectIsBlueprintFormat()) {
 				this.name = sanitizeOutlinerElementName(this.name, this.uuid)
 			}
 			return originalSanitize.call(this)

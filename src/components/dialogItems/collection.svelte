@@ -1,10 +1,10 @@
 <script lang="ts" context="module">
-	import { Valuable } from '../../util/stores'
 	import { dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action'
-	import BaseDialogItem from './baseDialogItem.svelte'
 	import { flip } from 'svelte/animate'
-	import { fade } from 'svelte/transition'
 	import { cubicIn } from 'svelte/easing'
+	import { fade } from 'svelte/transition'
+	import { Valuable } from '../../util/stores'
+	import BaseDialogItem from './baseDialogItem.svelte'
 </script>
 
 <script lang="ts">
@@ -41,7 +41,7 @@
 
 	function finalizeSort() {
 		includedItems.update(items =>
-			includedItemsList.map(i => availableItems.find(a => a.name === i.title)!),
+			includedItemsList.map(i => availableItems.find(a => a.name === i.title)!)
 		)
 	}
 
@@ -148,7 +148,7 @@
 		border: 1px solid var(--color-border);
 		margin: 8px;
 		margin-top: 0px;
-		padding: 4px 8px 30px;
+		padding: 6px 8px 30px;
 		max-height: 16rem;
 		overflow-y: auto;
 	}

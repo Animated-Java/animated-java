@@ -14,10 +14,10 @@
 		align-items: center;
 	}
 	h4 {
-		padding: 4px 8px;
-		flex-grow: 1;
-		font-size: 1.12em;
-		border-bottom: 2px solid var(--color-back);
+		padding: 6px 24px;
+		font-size: 24px;
+		border-bottom: 5px solid var(--color-back);
 		background-color: var(--color-button);
+		font-family: 'MinecraftFull';
 	}
 </style>

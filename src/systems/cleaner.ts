@@ -14,7 +14,7 @@ export async function cleanupExportedFiles() {
 		// displayItemPath,
 	} = getExportPaths()
 
-	if (aj.resource_pack_export_mode === 'raw') {
+	if (aj.resource_pack_export_mode === 'folder') {
 		const assetsMetaPath = PathModule.join(resourcePackFolder, 'assets.ajmeta')
 		const assetsMeta = new AJMeta(
 			assetsMetaPath,
@@ -66,7 +66,7 @@ export async function cleanupExportedFiles() {
 		assetsMeta.write()
 	}
 
-	if (aj.data_pack_export_mode === 'raw') {
+	if (aj.data_pack_export_mode === 'folder') {
 		const dataMetaPath = PathModule.join(dataPackFolder, 'data.ajmeta')
 		const dataMeta = new AJMeta(
 			dataMetaPath,

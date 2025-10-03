@@ -1,5 +1,5 @@
 import { registerAction } from 'src/util/moddingTools'
-import { BLUEPRINT_FORMAT } from '../../blueprintFormat'
+import { activeProjectIsBlueprintFormat } from '../../blueprintFormat'
 import BoneConfigDialogSvelteComponent from '../../components/boneConfigDialog.svelte'
 import { PACKAGE } from '../../constants'
 import { BoneConfig } from '../../nodeConfigs'
@@ -85,24 +85,26 @@ export function openBoneConfigDialog(bone: Group) {
 		id: `${PACKAGE.name}:boneConfig`,
 		title: translate('dialog.bone_config.title'),
 		width: 600,
-		component: BoneConfigDialogSvelteComponent,
-		props: {
-			variant: Variant.selected!,
-			customName,
-			customNameVisible,
-			billboard,
-			overrideBrightness,
-			brightnessOverride,
-			enchanted,
-			glowing,
-			overrideGlowColor,
-			glowColor,
-			inheritSettings,
-			invisible,
-			nbt,
-			shadowRadius,
-			shadowStrength,
-			useNBT,
+		content: {
+			component: BoneConfigDialogSvelteComponent,
+			props: {
+				variant: Variant.selected!,
+				customName,
+				customNameVisible,
+				billboard,
+				overrideBrightness,
+				brightnessOverride,
+				enchanted,
+				glowing,
+				overrideGlowColor,
+				glowColor,
+				inheritSettings,
+				invisible,
+				nbt,
+				shadowRadius,
+				shadowStrength,
+				useNBT,
+			},
 		},
 		preventKeybinds: true,
 		onConfirm() {
@@ -171,12 +173,19 @@ export function openBoneConfigDialog(bone: Group) {
 	}).show()
 }
 
-export const BONE_CONFIG_ACTION = registerAction(`animated-java:bone-config`, {
-	icon: 'settings',
-	name: translate('action.open_bone_config.name'),
-	condition: () => Format === BLUEPRINT_FORMAT,
-	click: () => {
-		if (!Group.first_selected) return
-		openBoneConfigDialog(Group.first_selected)
-	},
+export const BONE_CONFIG_ACTION = registerAction(
+	{ id: `animated-java:bone-config` },
+	{
+		icon: 'settings',
+		name: translate('action.open_bone_config.name'),
+		condition: activeProjectIsBlueprintFormat,
+		click: () => {
+			if (!Group.first_selected) return
+			openBoneConfigDialog(Group.first_selected)
+		},
+	}
+)
+
+BONE_CONFIG_ACTION.onCreated(action => {
+	Group.prototype.menu!.addAction(action, 6)
 })

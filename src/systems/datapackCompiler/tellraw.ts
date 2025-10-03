@@ -56,7 +56,7 @@ namespace TELLRAW {
 	export const RIG_OUTDATED = () =>
 		TELLRAW_ERROR('Outdated Rig Instance', [
 			'The instance of ',
-			{ text: Project!.animated_java.export_namespace, color: 'yellow' },
+			{ text: '$(export_namespace)', color: 'yellow' },
 			' at ',
 			{ text: '$(x), $(y), $(z)', color: 'yellow' },
 			' was summoned using an older export of its Blueprint.',
@@ -87,9 +87,7 @@ namespace TELLRAW {
 						text: toSmallCaps('Remove Instance'),
 						click_event: {
 							action: 'suggest_command',
-							command: `/execute as $(uuid) run function animated_java:${
-								Project!.animated_java.export_namespace
-							}/remove/this`,
+							command: `/execute as $(uuid) run function animated_java:$(export_namespace)/remove/this`,
 						},
 						color: 'aqua',
 						underlined: true,
@@ -98,9 +96,7 @@ namespace TELLRAW {
 						text: toSmallCaps('Remove Instance'),
 						clickEvent: {
 							action: 'suggest_command',
-							value: `/execute as $(uuid) run function animated_java:${
-								Project!.animated_java.export_namespace
-							}/remove/this`,
+							value: `/execute as $(uuid) run function animated_java:$(export_namespace)/remove/this`,
 						},
 						color: 'aqua',
 						underlined: true,

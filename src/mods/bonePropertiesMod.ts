@@ -1,5 +1,5 @@
 import { registerMod } from 'src/util/moddingTools'
-import { isCurrentFormat as condition } from '../blueprintFormat'
+import { activeProjectIsBlueprintFormat as condition } from '../blueprintFormat'
 
 class DeepClonedObjectProperty extends Property<'object'> {
 	constructor(targetClass: any, name: string, options?: PropertyOptions) {

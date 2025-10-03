@@ -1,4 +1,4 @@
-import { checkTargetVersionMeetsRequirement, saveBlueprint } from '../blueprintFormat'
+import { projectTargetVersionIsAtLeast, saveBlueprint } from '../blueprintFormat'
 import { blueprintSettingErrors } from '../blueprintSettings'
 import { openBlueprintSettingsDialog } from '../interface/dialog/blueprintSettings'
 import { PROGRESS_DESCRIPTION, openExportProgressDialog } from '../interface/dialog/exportProgress'
@@ -44,7 +44,15 @@ export function getExportPaths() {
 	}
 }
 
-async function actuallyExportProject(forceSave = true) {
+interface ExportProjectOptions {
+	forceSave?: boolean
+	debugMode?: boolean
+}
+
+async function actuallyExportProject({
+	forceSave = true,
+	debugMode = false,
+}: ExportProjectOptions = {}) {
 	const aj = Project!.animated_java
 	const dialog = openExportProgressDialog()
 	// Wait for the dialog to open
@@ -110,24 +118,17 @@ async function actuallyExportProject(forceSave = true) {
 		const rigHash = hashRig(rig)
 		const animationHash = hashAnimations(animations)
 
-		// Always run the resource pack compiler because it calculates the custom model data.
+		// TODO - Plugin mode should run without the resource pack compiler
+		// Always run the resource pack compiler because it calculates custom model data.
 		await resourcepackCompiler([aj.target_minecraft_version], {
 			rig,
 			displayItemPath,
 			resourcePackFolder,
 			textureExportFolder,
 			modelExportFolder,
+			debugMode,
 		})
 
-		// if (aj.enable_plugin_mode) {
-		// 	exportJSON({
-		// 		rig,
-		// 		animations,
-		// 		displayItemPath,
-		// 		textureExportFolder,
-		// 		modelExportFolder,
-		// 	})
-		// } else {
 		if (aj.data_pack_export_mode !== 'none') {
 			await compileDataPack([aj.target_minecraft_version], {
 				rig,
@@ -135,6 +136,7 @@ async function actuallyExportProject(forceSave = true) {
 				dataPackFolder,
 				rigHash,
 				animationHash,
+				debugMode,
 			})
 		}
 
@@ -162,14 +164,14 @@ async function actuallyExportProject(forceSave = true) {
 	}
 }
 
-export async function exportProject(forceSave = true) {
+export async function exportProject(options?: ExportProjectOptions) {
 	if (!Project) return // TODO: Handle this error better
 
 	if (Cube.all.some(cube => isCubeValid(cube) === 'invalid')) {
 		Blockbench.showMessageBox({
 			title: translate('misc.failed_to_export.title'),
 			message: translate(
-				checkTargetVersionMeetsRequirement('1.21.4')
+				projectTargetVersionIsAtLeast('1.21.4')
 					? 'misc.failed_to_export.invalid_rotation.message_post_1_21_4'
 					: 'misc.failed_to_export.invalid_rotation.message'
 			),
@@ -204,5 +206,5 @@ export async function exportProject(forceSave = true) {
 
 	settingsDialog.close(0)
 
-	await actuallyExportProject(forceSave)
+	await actuallyExportProject(options)
 }

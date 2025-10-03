@@ -7,7 +7,7 @@ import {
 	type AsyncZippable,
 	type Unzipped,
 } from 'fflate/browser'
-import { checkTargetVersionMeetsRequirement } from 'src/blueprintFormat'
+import { projectTargetVersionIsAtLeast } from 'src/blueprintFormat'
 import { roundTo } from '../util/misc'
 import type { INodeTransform } from './animationRenderer'
 
@@ -102,7 +102,7 @@ export function isCubeValid(cube: Cube): '1.21.4+' | 'valid' | 'invalid' {
 		totalRotation === cube.rotation[1] ||
 		totalRotation === cube.rotation[2]
 
-	if (isSingleAxisRotation && checkTargetVersionMeetsRequirement('1.21.4')) return '1.21.4+'
+	if (isSingleAxisRotation && projectTargetVersionIsAtLeast('1.21.4')) return '1.21.4+'
 
 	const isRotationInAllowedSteps =
 		totalRotation === -45 ||

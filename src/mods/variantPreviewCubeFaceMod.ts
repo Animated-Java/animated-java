@@ -1,4 +1,4 @@
-import { isCurrentFormat } from '../blueprintFormat'
+import { activeProjectIsBlueprintFormat } from '../blueprintFormat'
 import { registerMod } from '../util/moddingTools'
 import { Variant } from '../variants'
 
@@ -9,7 +9,7 @@ registerMod({
 		const original = CubeFace.prototype.getTexture
 
 		CubeFace.prototype.getTexture = function (this: CubeFace): Texture | undefined {
-			if (isCurrentFormat() && this.texture) {
+			if (activeProjectIsBlueprintFormat() && this.texture) {
 				const variant = Variant.selected
 				if (
 					variant &&

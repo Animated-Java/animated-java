@@ -16,12 +16,14 @@ export function openAnimationPropertiesDialog(animation: _Animation) {
 		id: DIALOG_ID,
 		title: translate('dialog.animation_properties.title', animation.name),
 		width: 600,
-		component: AniamtionPropertiesSvelteComponent,
-		props: {
-			animationName,
-			loopMode,
-			loopDelay,
-			excludedNodes,
+		content: {
+			component: AniamtionPropertiesSvelteComponent,
+			props: {
+				animationName,
+				loopMode,
+				loopDelay,
+				excludedNodes,
+			},
 		},
 		preventKeybinds: true,
 		onConfirm() {

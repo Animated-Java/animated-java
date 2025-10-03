@@ -1,4 +1,4 @@
-import { isCurrentFormat } from '../../blueprintFormat'
+import { activeProjectIsBlueprintFormat } from '../../blueprintFormat'
 import VanillaItemDisplayElementPanel from '../../components/vanillaItemDisplayElementPanel.svelte'
 import { PACKAGE } from '../../constants'
 import { type ItemDisplayMode, VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
@@ -20,7 +20,7 @@ export const ITEM_DISPLAY_ITEM_DISPLAY_SELECT = new BarSelect(
 		name: translate('tool.item_display.item_display.title'),
 		icon: 'format_align_left',
 		description: translate('tool.item_display.item_display.description'),
-		condition: () => isCurrentFormat() && !!VanillaItemDisplay.selected.length,
+		condition: () => activeProjectIsBlueprintFormat() && !!VanillaItemDisplay.selected.length,
 		options: {
 			none: translate('tool.item_display.item_display.options.none'),
 			thirdperson_lefthand: translate(

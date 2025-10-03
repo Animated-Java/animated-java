@@ -26,6 +26,7 @@ interface ResourcePackCompilerOptions {
 	displayItemPath: string
 	textureExportFolder: string
 	modelExportFolder: string
+	debugMode: boolean
 }
 
 export type ResourcePackCompiler = (options: ResourcePackCompilerOptions) => Promise<void>
@@ -36,6 +37,7 @@ export interface CompileResourcePackOptions {
 	resourcePackFolder: string
 	textureExportFolder: string
 	modelExportFolder: string
+	debugMode: boolean
 }
 
 export default async function compileResourcePack(
@@ -51,7 +53,7 @@ export default async function compileResourcePack(
 		options.resourcePackFolder
 	)
 
-	if (aj.resource_pack_export_mode === 'raw') {
+	if (aj.resource_pack_export_mode === 'folder') {
 		ajmeta.read()
 	}
 
@@ -137,7 +139,7 @@ export default async function compileResourcePack(
 	if (aj.enable_plugin_mode) {
 		// Do nothing
 		console.log('Plugin mode enabled. Skipping resource pack export.')
-	} else if (aj.resource_pack_export_mode === 'raw') {
+	} else if (aj.resource_pack_export_mode === 'folder') {
 		// Clean up old files
 		PROGRESS_DESCRIPTION.set('Removing Old Resource Pack Files...')
 		PROGRESS.set(0)

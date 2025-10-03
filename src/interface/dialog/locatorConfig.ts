@@ -1,5 +1,5 @@
 import { registerAction } from 'src/util/moddingTools'
-import { BLUEPRINT_FORMAT } from '../../blueprintFormat'
+import { activeProjectIsBlueprintFormat } from '../../blueprintFormat'
 import LocatorConfigDialog from '../../components/locatorConfigDialog.svelte'
 import { PACKAGE } from '../../constants'
 import { LocatorConfig } from '../../nodeConfigs'
@@ -14,41 +14,50 @@ export function openLocatorConfigDialog(locator: Locator) {
 	const useEntity = new Valuable(locatorConfig.useEntity)
 	const entityType = new Valuable(locatorConfig.entityType)
 	const syncPassengerRotation = new Valuable(locatorConfig.syncPassengerRotation)
-	const summonCommands = new Valuable(locatorConfig.summonCommands)
-	const tickingCommands = new Valuable(locatorConfig.tickingCommands)
+	const onSummonFunction = new Valuable(locatorConfig.onSummonFunction)
+	const onTickFunction = new Valuable(locatorConfig.onTickFunction)
 
 	new SvelteDialog({
 		id: `${PACKAGE.name}:locatorConfig`,
 		title: translate('dialog.locator_config.title'),
 		width: 600,
-		component: LocatorConfigDialog,
-		props: {
-			useEntity,
-			entityType,
-			syncPassengerRotation,
-			summonCommands,
-			tickingCommands,
+		content: {
+			component: LocatorConfigDialog,
+			props: {
+				useEntity,
+				entityType,
+				syncPassengerRotation,
+				onSummonFunction,
+				onTickFunction,
+			},
 		},
 		preventKeybinds: true,
 		onConfirm() {
 			locatorConfig.useEntity = useEntity.get()
 			locatorConfig.entityType = entityType.get()
 			locatorConfig.syncPassengerRotation = syncPassengerRotation.get()
-			locatorConfig.summonCommands = summonCommands.get()
-			locatorConfig.tickingCommands = tickingCommands.get()
+			locatorConfig.onSummonFunction = onSummonFunction.get()
+			locatorConfig.onTickFunction = onTickFunction.get()
 
 			locator.config = locatorConfig.toJSON()
 		},
 	}).show()
 }
 
-export const LOCATOR_CONFIG_ACTION = registerAction(`animated-java:locator-config`, {
-	icon: 'settings',
-	name: translate('action.open_locator_config.name'),
-	condition: () => Format === BLUEPRINT_FORMAT,
-	click: () => {
-		const locator = Locator.selected.at(0)
-		if (!locator) return
-		openLocatorConfigDialog(locator)
-	},
+const LOCATOR_CONFIG_ACTION = registerAction(
+	{ id: `animated-java:locator-config` },
+	{
+		icon: 'settings',
+		name: translate('action.open_locator_config.name'),
+		condition: activeProjectIsBlueprintFormat,
+		click: () => {
+			const locator = Locator.selected.at(0)
+			if (!locator) return
+			openLocatorConfigDialog(locator)
+		},
+	}
+)
+
+LOCATOR_CONFIG_ACTION.onCreated(action => {
+	Locator.prototype.menu!.addAction(action, '6')
 })

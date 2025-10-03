@@ -1,5 +1,5 @@
 import { registerAction } from 'src/util/moddingTools'
-import { isCurrentFormat } from '../../blueprintFormat'
+import { activeProjectIsBlueprintFormat } from '../../blueprintFormat'
 import VanillaBlockDisplayConfigDialog from '../../components/vanillaBlockDisplayConfigDialog.svelte'
 import { PACKAGE } from '../../constants'
 import { BoneConfig } from '../../nodeConfigs'
@@ -7,7 +7,6 @@ import { VanillaBlockDisplay } from '../../outliner/vanillaBlockDisplay'
 import { Valuable } from '../../util/stores'
 import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
-import { Variant } from '../../variants'
 
 export function openVanillaBlockDisplayConfigDialog(display: VanillaBlockDisplay) {
 	// Blockbench's JSON stringifier doesn't handle custom toJSON functions, so I'm storing the config JSON in the bone instead of the actual BoneConfig object
@@ -31,22 +30,23 @@ export function openVanillaBlockDisplayConfigDialog(display: VanillaBlockDisplay
 		id: `${PACKAGE.name}:vanillaItemDisplayConfigDialog`,
 		title: translate('dialog.vanilla_block_display_config.title'),
 		width: 600,
-		component: VanillaBlockDisplayConfigDialog,
-		props: {
-			variant: Variant.selected,
-			customName,
-			customNameVisible,
-			billboard,
-			overrideBrightness,
-			brightnessOverride,
-			glowing,
-			overrideGlowColor,
-			glowColor,
-			invisible,
-			nbt,
-			shadowRadius,
-			shadowStrength,
-			useNBT,
+		content: {
+			component: VanillaBlockDisplayConfigDialog,
+			props: {
+				customName,
+				customNameVisible,
+				billboard,
+				overrideBrightness,
+				brightnessOverride,
+				glowing,
+				overrideGlowColor,
+				glowColor,
+				invisible,
+				nbt,
+				shadowRadius,
+				shadowStrength,
+				useNBT,
+			},
 		},
 		preventKeybinds: true,
 		onConfirm() {
@@ -96,14 +96,24 @@ export function openVanillaBlockDisplayConfigDialog(display: VanillaBlockDisplay
 }
 
 export const VANILLA_BLOCK_DISPLAY_CONFIG_ACTION = registerAction(
-	`animated-java:open-vanilla-block-display-config`,
+	{ id: `animated-java:open-vanilla-block-display-config` },
 	{
 		icon: 'settings',
 		name: translate('action.open_vanilla_block_display_config.name'),
-		condition: () => isCurrentFormat(),
+		condition: () => activeProjectIsBlueprintFormat(),
 		click: () => {
 			if (VanillaBlockDisplay.selected.length === 0) return
 			openVanillaBlockDisplayConfigDialog(VanillaBlockDisplay.selected[0])
 		},
 	}
 )
+
+VANILLA_BLOCK_DISPLAY_CONFIG_ACTION.onCreated(action => {
+	VanillaBlockDisplay.prototype.menu = new Menu([
+		...Outliner.control_menu_group,
+		action,
+		'_',
+		'rename',
+		'delete',
+	])
+})

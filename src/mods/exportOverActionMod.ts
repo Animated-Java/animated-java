@@ -1,4 +1,4 @@
-import { BLUEPRINT_CODEC, BLUEPRINT_FORMAT } from '../blueprintFormat'
+import { BLUEPRINT_CODEC, activeProjectIsBlueprintFormat } from '../blueprintFormat'
 import { registerMod } from '../util/moddingTools'
 
 registerMod({
@@ -10,20 +10,22 @@ registerMod({
 		const originalClick = (BarItems.export_over as Action).click
 		action.click = (event: Event) => {
 			if (!Project || !Format) return
-			if (Format.id === BLUEPRINT_FORMAT.id) {
+			if (activeProjectIsBlueprintFormat()) {
+				const codec = BLUEPRINT_CODEC.get()!
+
 				const path = Project.save_path || Project.export_path
 				if (path) {
 					if (fs.existsSync(PathModule.dirname(path))) {
 						Project.save_path = path
-						BLUEPRINT_CODEC.write(BLUEPRINT_CODEC.compile(), path)
+						codec.write(codec.compile(), path)
 					} else {
 						console.error(
 							`Failed to export Animated Java Blueprint, file location '${path}' does not exist!`
 						)
-						BLUEPRINT_CODEC.export()
+						codec.export()
 					}
 				} else {
-					BLUEPRINT_CODEC.export()
+					codec.export()
 				}
 			} else {
 				originalClick.call(action, event)

@@ -11,8 +11,8 @@
 	export let useEntity: Valuable<boolean>
 	export let entityType: Valuable<string>
 	export let syncPassengerRotation: Valuable<boolean>
-	export let summonCommands: Valuable<string>
-	export let tickingCommands: Valuable<string>
+	export let onSummonFunction: Valuable<string>
+	export let onTickFunction: Valuable<string>
 
 	const entityTypeValidator: DialogItemValueChecker<string> = (value: string) => {
 		if (value.length === 0) {
@@ -65,17 +65,23 @@
 			/>
 
 			<CodeInput
-				label={translate('dialog.locator_config.summon_commands.title')}
-				tooltip={translate('dialog.locator_config.summon_commands.description')}
-				bind:value={summonCommands}
+				label={translate('dialog.locator_config.on_summon_function.title')}
+				tooltip={$useEntity
+					? translate(
+							'dialog.locator_config.on_summon_function.description_with_use_entity'
+						)
+					: translate('dialog.locator_config.on_summon_function.description')}
+				bind:value={onSummonFunction}
 				defaultValue=""
 			/>
 		{/if}
 
 		<CodeInput
-			label={translate('dialog.locator_config.ticking_commands.title')}
-			tooltip={translate('dialog.locator_config.ticking_commands.description')}
-			bind:value={tickingCommands}
+			label={translate('dialog.locator_config.on_tick_function.title')}
+			tooltip={$useEntity
+				? translate('dialog.locator_config.on_tick_function.description_with_use_entity')
+				: translate('dialog.locator_config.on_tick_function.description')}
+			bind:value={onTickFunction}
 			defaultValue=""
 		/>
 	{/if}
