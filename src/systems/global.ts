@@ -1,6 +1,5 @@
 import { normalizePath } from '../util/fileUtil'
-import { getDataPackFormat } from '../util/minecraftUtil'
-import { IntentionalExportError } from './exporter'
+import { IntentionalExportError, IntentionalExportErrorFromInvalidFile } from './exporter'
 import { sortObjectKeys } from './util'
 
 export type MinecraftVersion = '1.20.4' | '1.20.5' | '1.21.0' | '1.21.2' | '1.21.4' | '1.21.5'
@@ -107,65 +106,70 @@ export type PackMetaFormats = number | number[] | { min_inclusive: number; max_i
 
 interface OverlayEntry {
 	directory?: string
+	/** Since 1.21.9 */
+	min_format?: number
+	/** Since 1.21.9 */
+	max_format?: number
+	/** Minecraft enforces this field does not to exist if the pack doesn't support versions older than 1.21.9 */
 	formats?: PackMetaFormats
 }
 export interface SerializedPackMeta {
 	pack?: {
 		pack_format?: number
+		/** Since 1.21.9 */
+		min_format?: number
+		/** Since 1.21.9 */
+		max_format?: number
+		/** Minecraft enforces this field does not to exist if the pack doesn't support versions older than 1.21.9 */
 		supported_formats?: PackMetaFormats[]
 		description?: string
+	}
+	features?: {
+		enabled?: string[]
+	}
+	filter?: {
+		block?: Array<{
+			namespace: string
+			path: string
+		}>
 	}
 	overlays?: {
 		entries?: Array<OverlayEntry>
 	}
+	language?: {
+		name?: string
+		region?: string
+		bidirectional?: boolean
+	}
 }
 
+/**
+ * A class that reads and writes pack.mcmeta files.
+ *
+ * Designed to only modify parts of the file we care about, and leave the rest as-is.
+ */
 export class PackMeta {
-	constructor(
-		public path: string,
-		public pack_format = getDataPackFormat('1.20.4'),
-		public supportedFormats: PackMetaFormats[] = [],
-		public description = 'Animated Java Resource Pack',
-		public overlayEntries = new Set<OverlayEntry>()
-	) {}
+	content: SerializedPackMeta = {}
 
-	read() {
-		if (!fs.existsSync(this.path)) return
+	static fromFile(path: string) {
+		const meta = new PackMeta()
 
-		const raw = fs.readFileSync(this.path, 'utf-8')
-		try {
-			const content = JSON.parse(raw)
-			if (content.pack) {
-				this.pack_format = content.pack.pack_format ?? this.pack_format
-				this.description = content.pack.description ?? this.description
-				this.supportedFormats = content.pack.supported_formats ?? this.supportedFormats
-			}
-			if (content.overlays) {
-				for (const entry of content.overlays.entries ?? []) {
-					this.overlayEntries.add(entry)
-				}
-			}
-		} catch (e) {
-			throw new IntentionalExportError(
-				`Failed to read existing pack.mcmeta file at ${this.path}: ${e}\n\nFile content:\n${raw}`
-			)
+		if (!fs.existsSync(path)) {
+			console.warn(`Pack meta file does not exist at ${path}`)
+			return meta
 		}
+
+		const raw = fs.readFileSync(path, 'utf-8')
+		try {
+			meta.content = JSON.parse(raw)
+		} catch (e: any) {
+			throw new IntentionalExportErrorFromInvalidFile(path, e)
+		}
+
+		return meta
 	}
 
 	toJSON(): SerializedPackMeta {
-		const json: SerializedPackMeta = {
-			pack: {
-				pack_format: this.pack_format,
-				supported_formats:
-					this.supportedFormats.length > 0 ? this.supportedFormats : undefined,
-				description: this.description,
-			},
-		}
-		if (this.overlayEntries.size > 0) {
-			json.overlays = {
-				entries: Array.from(this.overlayEntries),
-			}
-		}
-		return json
+		return structuredClone(this.content)
 	}
 }

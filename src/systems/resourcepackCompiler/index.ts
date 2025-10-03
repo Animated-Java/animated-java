@@ -103,26 +103,27 @@ export default async function compileResourcePack(
 
 	// pack.mcmeta
 	const packMetaPath = PathModule.join(options.resourcePackFolder, 'pack.mcmeta')
-	const packMeta = new PackMeta(
-		packMetaPath,
-		0,
-		[],
-		`Animated Java Resource Pack for ${targetVersions.join(', ')}`
-	)
-	packMeta.read()
-	packMeta.pack_format = getResourcePackFormat(targetVersions[0])
-	packMeta.supportedFormats = []
+	const packMeta = PackMeta.fromFile(packMetaPath)
+	packMeta.content.pack ??= {}
+	packMeta.content.pack.pack_format = getResourcePackFormat(targetVersions[0])
+	packMeta.content.pack.description ??= `Animated Java Resource Pack for ${targetVersions.join(
+		', '
+	)}`
 
 	if (targetVersions.length > 1) {
+		packMeta.content.pack.supported_formats ??= []
+		packMeta.content.overlays ??= {}
+		packMeta.content.overlays.entries ??= []
+
 		for (const version of targetVersions) {
 			let format: PackMetaFormats = getResourcePackFormat(version)
-			packMeta.supportedFormats.push(format)
+			packMeta.content.pack.supported_formats.push(format)
 
-			const existingOverlay = [...packMeta.overlayEntries].find(
+			const existingOverlay = packMeta.content.overlays.entries.find(
 				e => e.directory === `animated_java_${version.replaceAll('.', '_')}`
 			)
 			if (!existingOverlay) {
-				packMeta.overlayEntries.add({
+				packMeta.content.overlays.entries.push({
 					directory: `animated_java_${version.replaceAll('.', '_')}`,
 					formats: format,
 				})

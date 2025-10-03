@@ -27,7 +27,7 @@ import {
 	replacePathPart,
 	transformationToNbt,
 } from '../util'
-import { compile } from './compiler'
+import { compileMcbProject } from './mcbCompiler'
 import { TAGS } from './tags'
 import TELLRAW from './tellraw'
 
@@ -837,26 +837,25 @@ export default async function compileDataPack(
 	console.log('Exported Files:', globalCoreFiles.size + globalVersionSpecificFiles.size)
 
 	const packMetaPath = PathModule.join(options.dataPackFolder, 'pack.mcmeta')
-	let packMeta = new PackMeta(
-		packMetaPath,
-		0,
-		[],
-		`Animated Java Data Pack for ${targetVersions.join(', ')}`
-	)
-	packMeta.read()
-	packMeta.pack_format = getDataPackFormat(targetVersions[0])
-	packMeta.supportedFormats = []
+	let packMeta = PackMeta.fromFile(packMetaPath)
+	packMeta.content.pack ??= {}
+	packMeta.content.pack.pack_format = getDataPackFormat(targetVersions[0])
+	packMeta.content.pack.description ??= `Animated Java Data Pack for ${targetVersions.join(', ')}`
 
 	if (targetVersions.length > 1) {
+		packMeta.content.pack.supported_formats = []
+		packMeta.content.overlays ??= {}
+		packMeta.content.overlays.entries ??= []
+
 		for (const version of targetVersions) {
 			let format: PackMetaFormats = getDataPackFormat(version)
-			packMeta.supportedFormats.push(format)
+			packMeta.content.pack.supported_formats.push(format)
 
-			const existingOverlay = [...packMeta.overlayEntries].find(
+			const existingOverlay = packMeta.content.overlays.entries.find(
 				e => e.directory === `animated_java_${version.replaceAll('.', '_')}`
 			)
 			if (!existingOverlay) {
-				packMeta.overlayEntries.add({
+				packMeta.content.overlays.entries.push({
 					directory: `animated_java_${version.replaceAll('.', '_')}`,
 					formats: format,
 				})
@@ -1018,7 +1017,7 @@ const dataPackCompiler: DataPackCompiler = async ({
 		debug_mode: debugMode,
 	}
 
-	compile({
+	compileMcbProject({
 		sourceFiles: {
 			'src/global.mcbt': mcbFiles[version].coreTemplates,
 			'src/animated_java.mcb': mcbFiles[version].core,

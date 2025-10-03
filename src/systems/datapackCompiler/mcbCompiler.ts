@@ -12,7 +12,7 @@ interface CompilerOptions {
 	exportedFiles: Map<string, ExportedFile>
 }
 
-export function compile({
+export function compileMcbProject({
 	sourceFiles,
 	destPath,
 	variables,
