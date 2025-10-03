@@ -1,5 +1,8 @@
-import type { IBlueprintBoneConfigJSON, IBlueprintLocatorConfigJSON } from './blueprintFormat'
 import { BlueprintSettings } from './blueprintSettings'
+import type {
+	IBlueprintBoneConfigJSON,
+	IBlueprintLocatorConfigJSON,
+} from './formats/blueprint/format'
 import { TextDisplay } from './outliner/textDisplay'
 import { VanillaBlockDisplay } from './outliner/vanillaBlockDisplay'
 import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'

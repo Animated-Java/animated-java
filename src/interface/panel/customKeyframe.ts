@@ -1,6 +1,6 @@
 import type { SvelteComponentDev } from 'svelte/internal'
-import { activeProjectIsBlueprintFormat } from '../../blueprintFormat'
 import CustomKeyframePanelSvelteComponent from '../../components/customKeyframePanel.svelte'
+import { activeProjectIsBlueprintFormat } from '../../formats/blueprint/format'
 import { CUSTOM_CHANNELS } from '../../mods/customKeyframesMod'
 import EVENTS from '../../util/events'
 import { injectSvelteComponent } from '../../util/injectSvelteComponent'

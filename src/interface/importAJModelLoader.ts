@@ -1,7 +1,7 @@
 import { registerModelLoader } from 'src/util/moddingTools'
 import { SvelteComponentDev } from 'svelte/internal'
-import { BLUEPRINT_CODEC } from '../blueprintFormat'
 import ImportAjModelLoaderDialog from '../components/importAJModelLoaderDialog.svelte'
+import { BLUEPRINT_CODEC } from '../formats/blueprint/codec'
 import * as ModelDatFixerUpper from '../systems/modelDataFixerUpper'
 import { injectSvelteComponent } from '../util/injectSvelteComponent'
 import { sanitizeStorageKey } from '../util/minecraftUtil'

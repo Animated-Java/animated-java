@@ -1,7 +1,7 @@
 import { registerAction } from 'src/util/moddingTools'
-import { activeProjectIsBlueprintFormat } from '../../blueprintFormat'
 import TextDisplayConfigDialog from '../../components/textDisplayConfigDialog.svelte'
 import { PACKAGE } from '../../constants'
+import { activeProjectIsBlueprintFormat } from '../../formats/blueprint/format'
 import { TextDisplayConfig } from '../../nodeConfigs'
 import { TextDisplay } from '../../outliner/textDisplay'
 import { Valuable } from '../../util/stores'

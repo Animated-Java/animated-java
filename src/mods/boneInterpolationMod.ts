@@ -1,5 +1,5 @@
 import { Valuable } from 'src/util/stores'
-import { activeProjectIsBlueprintFormat } from '../blueprintFormat'
+import { activeProjectIsBlueprintFormat } from '../formats/blueprint/format'
 import { roundToNth } from '../util/misc'
 import { registerMod } from '../util/moddingTools'
 

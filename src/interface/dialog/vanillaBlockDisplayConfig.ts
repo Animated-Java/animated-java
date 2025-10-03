@@ -1,7 +1,7 @@
 import { registerAction } from 'src/util/moddingTools'
-import { activeProjectIsBlueprintFormat } from '../../blueprintFormat'
 import VanillaBlockDisplayConfigDialog from '../../components/vanillaBlockDisplayConfigDialog.svelte'
 import { PACKAGE } from '../../constants'
+import { activeProjectIsBlueprintFormat } from '../../formats/blueprint/format'
 import { BoneConfig } from '../../nodeConfigs'
 import { VanillaBlockDisplay } from '../../outliner/vanillaBlockDisplay'
 import { Valuable } from '../../util/stores'

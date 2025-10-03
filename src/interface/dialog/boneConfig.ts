@@ -1,7 +1,7 @@
 import { registerAction } from 'src/util/moddingTools'
-import { activeProjectIsBlueprintFormat } from '../../blueprintFormat'
 import BoneConfigDialogSvelteComponent from '../../components/boneConfigDialog.svelte'
 import { PACKAGE } from '../../constants'
+import { activeProjectIsBlueprintFormat } from '../../formats/blueprint/format'
 import { BoneConfig } from '../../nodeConfigs'
 import { Valuable } from '../../util/stores'
 import { SvelteDialog } from '../../util/svelteDialog'

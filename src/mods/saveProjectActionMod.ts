@@ -1,4 +1,4 @@
-import { activeProjectIsBlueprintFormat, saveBlueprint } from '../blueprintFormat'
+import { activeProjectIsBlueprintFormat, saveBlueprint } from '../formats/blueprint/format'
 import { registerMod } from '../util/moddingTools'
 
 registerMod({

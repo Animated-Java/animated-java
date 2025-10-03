@@ -1,5 +1,5 @@
 import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/lib/nbt'
-import { projectTargetVersionIsAtLeast } from 'src/blueprintFormat'
+import { projectTargetVersionIsAtLeast } from 'src/formats/blueprint/format'
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
 import { BoneConfig, TextDisplayConfig } from '../../nodeConfigs'
 import { isFunctionTagPath } from '../../util/fileUtil'

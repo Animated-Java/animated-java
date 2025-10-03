@@ -1,6 +1,6 @@
-import { activeProjectIsBlueprintFormat } from '../../blueprintFormat'
 import VanillaItemDisplayElementPanel from '../../components/vanillaItemDisplayElementPanel.svelte'
 import { PACKAGE } from '../../constants'
+import { activeProjectIsBlueprintFormat } from '../../formats/blueprint/format'
 import { type ItemDisplayMode, VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
 import EVENTS from '../../util/events'
 import { injectSvelteComponentMod } from '../../util/injectSvelteComponent'

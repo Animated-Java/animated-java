@@ -1,5 +1,5 @@
 import { registerMod } from 'src/util/moddingTools'
-import { activeProjectIsBlueprintFormat } from '../blueprintFormat'
+import { activeProjectIsBlueprintFormat } from '../formats/blueprint/format'
 
 import {
 	EASING_DEFAULT,

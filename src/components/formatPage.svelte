@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createNewBlueprintProject } from '../blueprintFormat'
+	import { createNewBlueprintProject } from '../formats/blueprint/format'
 </script>
 
 <p class="format_description">Create advanced animated models for Vanilla Java Edition</p>

@@ -1,4 +1,4 @@
-import { activeProjectIsBlueprintFormat } from '../blueprintFormat'
+import { activeProjectIsBlueprintFormat } from '../formats/blueprint/format'
 import EVENTS from '../util/events'
 import { registerMod } from '../util/moddingTools'
 

@@ -2,7 +2,7 @@ import { PACKAGE } from './constants'
 import EVENTS from './util/events'
 import './util/translation'
 // Blueprint Format
-import './blueprintFormat'
+import './formats/blueprint/format'
 // Interface
 import './interface'
 // Blockbench Mods
@@ -20,8 +20,9 @@ import './systems/minecraft/fontManager'
 import './systems/minecraft/registryManager'
 import './systems/minecraft/versionManager'
 // Misc imports
-import { BLUEPRINT_CODEC, BLUEPRINT_FORMAT } from './blueprintFormat'
 import { blueprintSettingErrors } from './blueprintSettings'
+import { BLUEPRINT_CODEC } from './formats/blueprint/codec'
+import { BLUEPRINT_FORMAT } from './formats/blueprint/format'
 import { openChangelogDialog } from './interface/changelogDialog'
 import { openExportProgressDialog } from './interface/dialog/exportProgress'
 import { openUnexpectedErrorDialog } from './interface/dialog/unexpectedError'

@@ -1,6 +1,9 @@
 import { registerAction } from 'src/util/moddingTools'
-import { type IBlueprintBoneConfigJSON, activeProjectIsBlueprintFormat } from '../blueprintFormat'
 import { PACKAGE } from '../constants'
+import {
+	type IBlueprintBoneConfigJSON,
+	activeProjectIsBlueprintFormat,
+} from '../formats/blueprint/format'
 import { BoneConfig } from '../nodeConfigs'
 import { getBlockModel } from '../systems/minecraft/blockModelManager'
 import { type BlockStateValue, getBlockState } from '../systems/minecraft/blockstateManager'

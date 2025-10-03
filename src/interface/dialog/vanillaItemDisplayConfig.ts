@@ -1,7 +1,7 @@
 import { registerAction } from 'src/util/moddingTools'
-import { activeProjectIsBlueprintFormat } from '../../blueprintFormat'
 import VanillaItemDisplayConfigDialog from '../../components/vanillaItemDisplayConfigDialog.svelte'
 import { PACKAGE } from '../../constants'
+import { activeProjectIsBlueprintFormat } from '../../formats/blueprint/format'
 import { BoneConfig } from '../../nodeConfigs'
 import { VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
 import { Valuable } from '../../util/stores'

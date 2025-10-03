@@ -1,6 +1,9 @@
 import { registerAction } from 'src/util/moddingTools'
-import { type IBlueprintBoneConfigJSON, activeProjectIsBlueprintFormat } from '../blueprintFormat'
 import { PACKAGE } from '../constants'
+import {
+	type IBlueprintBoneConfigJSON,
+	activeProjectIsBlueprintFormat,
+} from '../formats/blueprint/format'
 import { BoneConfig } from '../nodeConfigs'
 import { getItemModel } from '../systems/minecraft/itemModelManager'
 import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'

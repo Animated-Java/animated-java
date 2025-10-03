@@ -1,8 +1,8 @@
+import { PACKAGE } from '../constants'
 import {
 	type IBlueprintTextDisplayConfigJSON,
 	activeProjectIsBlueprintFormat,
-} from '../blueprintFormat'
-import { PACKAGE } from '../constants'
+} from '../formats/blueprint/format'
 import { registerAction } from '../util/moddingTools'
 // import * as MinecraftFull from '../assets/MinecraftFull.json'
 import { JsonParserError } from 'src/systems/jsonText/parser'

@@ -1,4 +1,4 @@
-import { BLUEPRINT_FORMAT_ID } from 'src/blueprintFormat'
+import { BLUEPRINT_FORMAT_ID } from 'src/formats/blueprint/format'
 import { registerProjectMod } from 'src/util/moddingTools'
 import MolangFunctionFile from './functions.molang'
 

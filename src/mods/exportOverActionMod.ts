@@ -1,4 +1,5 @@
-import { BLUEPRINT_CODEC, activeProjectIsBlueprintFormat } from '../blueprintFormat'
+import { BLUEPRINT_CODEC } from 'src/formats/blueprint/codec'
+import { activeProjectIsBlueprintFormat } from '../formats/blueprint/format'
 import { registerMod } from '../util/moddingTools'
 
 registerMod({

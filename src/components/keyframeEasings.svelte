@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
 	// @ts-expect-error
 	import { default as ICON_IMPORTS, filenames } from '../assets/easingIcons/*.svg'
-	import { activeProjectIsBlueprintFormat } from '../blueprintFormat'
+	import { activeProjectIsBlueprintFormat } from '../formats/blueprint/format'
 	import { getEasingArgDefault, hasArgs } from '../util/easing'
 	import EVENTS from '../util/events'
 	import { Valuable } from '../util/stores'

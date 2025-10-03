@@ -1,4 +1,4 @@
-import { activeProjectIsBlueprintFormat } from '../blueprintFormat'
+import { activeProjectIsBlueprintFormat } from '../formats/blueprint/format'
 import { openBlueprintSettingsDialog } from '../interface/dialog/blueprintSettings'
 import { registerMod } from '../util/moddingTools'
 

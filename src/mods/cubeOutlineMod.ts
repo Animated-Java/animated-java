@@ -1,5 +1,8 @@
 import { translate } from 'src/util/translation'
-import { activeProjectIsBlueprintFormat, projectTargetVersionIsAtLeast } from '../blueprintFormat'
+import {
+	activeProjectIsBlueprintFormat,
+	projectTargetVersionIsAtLeast,
+} from '../formats/blueprint/format'
 import { isCubeValid } from '../systems/util'
 import { createPropertySubscribable, registerMod } from '../util/moddingTools'
 

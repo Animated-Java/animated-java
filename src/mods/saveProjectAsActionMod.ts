@@ -1,5 +1,6 @@
+import { BLUEPRINT_CODEC } from 'src/formats/blueprint/codec'
 import { registerMod } from 'src/util/moddingTools'
-import { BLUEPRINT_CODEC, activeProjectIsBlueprintFormat } from '../blueprintFormat'
+import { activeProjectIsBlueprintFormat } from '../formats/blueprint/format'
 
 registerMod({
 	id: `animated-java:save-project-as`,
