@@ -1,5 +1,14 @@
-import { activeProjectIsBlueprintFormat as condition } from '../formats/blueprint/format'
+import {
+	activeProjectIsBlueprintFormat as condition,
+	type IBlueprintLocatorConfigJSON,
+} from '../formats/blueprint/format'
 import { registerMod } from '../util/moddingTools'
+
+declare global {
+	interface Locator {
+		config: IBlueprintLocatorConfigJSON
+	}
+}
 
 registerMod({
 	id: `animated-java:locator-properties`,

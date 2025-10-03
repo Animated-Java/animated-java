@@ -1,5 +1,21 @@
 import { registerMod } from 'src/util/moddingTools'
-import { activeProjectIsBlueprintFormat as condition } from '../formats/blueprint/format'
+import {
+	activeProjectIsBlueprintFormat as condition,
+	type IBlueprintBoneConfigJSON,
+} from '../formats/blueprint/format'
+
+declare global {
+	interface Group {
+		configs: {
+			default: IBlueprintBoneConfigJSON
+			/**
+			 * @key Variant UUID
+			 * @value Variant Bone Config
+			 */
+			variants: Record<string, IBlueprintBoneConfigJSON>
+		}
+	}
+}
 
 class DeepClonedObjectProperty extends Property<'object'> {
 	constructor(targetClass: any, name: string, options?: PropertyOptions) {

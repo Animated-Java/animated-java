@@ -1,4 +1,5 @@
 /// <reference path="D:/github-repos/snavesutit/blockbench-types/types/index.d.ts"/>
+/// <reference path="./blockbenchTypeMods.d.ts"/>
 
 declare module '*.png' {
 	const value: string

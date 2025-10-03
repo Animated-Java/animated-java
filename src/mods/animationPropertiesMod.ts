@@ -3,6 +3,21 @@ import { activeProjectIsBlueprintFormat } from '../formats/blueprint/format'
 import { roundToNth } from '../util/misc'
 import { translate } from '../util/translation'
 
+declare global {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface _Animation {
+		excluded_nodes: CollectionItem[]
+	}
+
+	interface AnimationUndoCopy {
+		excluded_nodes: string[]
+	}
+
+	interface AnimationOptions {
+		excluded_nodes: string[]
+	}
+}
+
 export const DEFAULT_SNAPPING_VALUE = 20
 export const MINIMUM_ANIMATION_LENGTH = 0.05
 

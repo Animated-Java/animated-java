@@ -6,6 +6,12 @@ import {
 import { isCubeValid } from '../systems/util'
 import { createPropertySubscribable, registerMod } from '../util/moddingTools'
 
+declare global {
+	interface Cube {
+		isRotationValid: boolean
+	}
+}
+
 const ERROR_OUTLINE_MATERIAL = Canvas.outlineMaterial.clone()
 ERROR_OUTLINE_MATERIAL.color.set('#ff0000')
 

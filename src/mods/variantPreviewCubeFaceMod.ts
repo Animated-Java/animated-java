@@ -2,6 +2,12 @@ import { activeProjectIsBlueprintFormat } from '../formats/blueprint/format'
 import { registerMod } from '../util/moddingTools'
 import { Variant } from '../variants'
 
+declare global {
+	interface CubeFace {
+		lastVariant: Variant | undefined
+	}
+}
+
 registerMod({
 	id: `animated-java:variant-preview-cube-face`,
 

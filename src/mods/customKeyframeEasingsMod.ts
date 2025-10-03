@@ -1,6 +1,5 @@
 import { registerMod } from 'src/util/moddingTools'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint/format'
-
 import {
 	EASING_DEFAULT,
 	type EasingKey,
@@ -8,6 +7,14 @@ import {
 	getEasingArgDefault,
 	hasArgs,
 } from '../util/easing'
+
+declare global {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface _Keyframe {
+		easing?: EasingKey
+		easingArgs?: number[]
+	}
+}
 
 interface IEasingProperties {
 	easing?: EasingKey

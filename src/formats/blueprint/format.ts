@@ -1,3 +1,6 @@
+import { type TextDisplay } from 'src/outliner/textDisplay'
+import { type VanillaBlockDisplay } from 'src/outliner/vanillaBlockDisplay'
+import { type VanillaItemDisplay } from 'src/outliner/vanillaItemDisplay'
 import FormatPageSvelte from '../../components/formatPage.svelte'
 import ProjectTitleSvelte from '../../components/projectTitle.svelte'
 import { type BillboardMode, BoneConfig, LocatorConfig } from '../../nodeConfigs'
@@ -11,6 +14,23 @@ import { Variant } from '../../variants'
 import { BLUEPRINT_CODEC } from './codec'
 import type { BlueprintSettings } from './settings'
 import * as blueprintSettings from './settings'
+
+declare global {
+	interface ModelProject {
+		animated_java: BlueprintSettings
+		last_used_export_namespace: string
+		visualBoundingBox?: THREE.LineSegments
+		pluginMode: Valuable<boolean>
+		transparentTexture: Texture
+
+		variants: Variant[]
+		textDisplays: TextDisplay[]
+		vanillaItemDisplays: VanillaItemDisplay[]
+		vanillaBlockDisplays: VanillaBlockDisplay[]
+
+		loadingPromises?: Array<Promise<unknown>>
+	}
+}
 
 let boundingBoxUpdateIntervalId: ReturnType<typeof setInterval> | undefined
 
