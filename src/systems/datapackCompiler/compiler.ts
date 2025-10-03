@@ -1,7 +1,5 @@
-import { Parser, SyncIo, Tokenizer } from 'mc-build'
-import { AstNode } from 'mc-build/dist/mcl/AstNode'
-import { Compiler, VariableMap } from 'mc-build/dist/mcl/Compiler'
-import { Token } from 'mc-build/dist/mcl/Tokenizer'
+import { Compiler, Parser, SyncIo, Tokenizer } from 'mc-build'
+import { VariableMap } from 'mc-build/dist/mcl/Compiler'
 import { getDataPackFormat } from '../../util/minecraftUtil'
 import type { MinecraftVersion } from '../global'
 import type { ExportedFile } from '../util'
@@ -24,7 +22,7 @@ export function compile({
 	console.group('Compiling', sourceFiles)
 	console.log('Variables:', variables)
 
-	const compiler = new Compiler('src/', {
+	const compiler = new Compiler('src', {
 		libDir: null,
 		generatedDirName: 'zzz',
 		internalScoreboardName: 'aj.i',
@@ -37,7 +35,6 @@ export function compile({
 		formatVersion: getDataPackFormat(version),
 	})
 	compiler.disableRequire = true
-	compiler.templateParsingEnabled = false
 
 	function createSyncIO() {
 		const io = new SyncIo()
@@ -58,39 +55,21 @@ export function compile({
 	const mcbFiles = Object.entries(sourceFiles).filter(([path]) => path.endsWith('.mcb'))
 
 	for (const [path, mcbFile] of mcbTemplateFiles) {
-		let tokens: Token[] = []
 		try {
-			tokens = Tokenizer.tokenize(mcbFile, path)
+			compiler.addFile(path, Parser.parseMcbtFile(Tokenizer.tokenize(mcbFile, path)))
 		} catch (e) {
-			if (e instanceof Error) e.message = `Error tokenizing "${path}":\n\t${e.message}`
+			if (e instanceof Error) e.message = `Failed to compile "${path}":\n\t${e.message}`
 			throw e
 		}
-		let ast: AstNode[] = []
-		try {
-			ast = Parser.parseMcbtFile(tokens)
-		} catch (e) {
-			if (e instanceof Error) e.message = `Error tokenizing "${path}":\n\t${e.message}`
-			throw e
-		}
-		compiler.addFile(path, ast)
 	}
 
 	for (const [path, mcbFile] of mcbFiles) {
-		let tokens: Token[] = []
 		try {
-			tokens = Tokenizer.tokenize(mcbFile, path)
+			compiler.addFile(path, Parser.parseMcbFile(Tokenizer.tokenize(mcbFile, path)))
 		} catch (e) {
-			if (e instanceof Error) e.message = `Error tokenizing "${path}":\n\t${e.message}`
+			if (e instanceof Error) e.message = `Failed to compile "${path}":\n\t${e.message}`
 			throw e
 		}
-		let ast: AstNode[] = []
-		try {
-			ast = Parser.parseMcbFile(tokens)
-		} catch (e) {
-			if (e instanceof Error) e.message = `Error tokenizing "${path}":\n\t${e.message}`
-			throw e
-		}
-		compiler.addFile(path, ast)
 	}
 
 	compiler.compile(VariableMap.fromObject(variables))
