@@ -161,28 +161,72 @@ export function parseDataPackPath(path: string): IMinecraftResourceLocation | un
 	}
 }
 
-export interface IFunctionTag {
+export interface FunctionTagJSON {
 	replace?: boolean
 	values: Array<string | { id: string; required?: boolean }>
 }
 
-export function mergeTag(oldTag: IFunctionTag, newTag: IFunctionTag): IFunctionTag {
-	oldTag.values.forEach(value => {
-		if (typeof value === 'string') {
-			if (!newTag.values.some(v => (typeof v === 'object' ? v.id === value : v === value))) {
-				newTag.values.push(value)
-			}
-		} else {
-			if (
-				!newTag.values.some(v =>
-					typeof v === 'object' ? v.id === value.id : v === value.id
-				)
-			) {
-				newTag.values.push(value)
-			}
+type TagEntry = string | { id: string; required?: boolean }
+
+export class DataPackTag {
+	replace = false
+	values: Array<string | { id: string; required?: boolean }> = []
+
+	has(entry: TagEntry) {
+		const id = DataPackTag.getEntryId(entry)
+		return this.values.some(v => DataPackTag.getEntryId(v) === id)
+	}
+
+	add(value: TagEntry) {
+		const existingEntry = this.get(value)
+		if (existingEntry) return
+		this.values.push(value)
+	}
+
+	get(value: TagEntry) {
+		const id = DataPackTag.getEntryId(value)
+		return this.values.find(v => DataPackTag.getEntryId(v) === id)
+	}
+
+	filter(predicate: (value: TagEntry, index: number, array: TagEntry[]) => boolean) {
+		this.values = this.values.filter(predicate)
+		return this
+	}
+
+	merge(other: DataPackTag) {
+		this.replace = other.replace
+
+		for (const value of other.values) {
+			this.add(value)
 		}
-	})
-	return newTag
+
+		return this
+	}
+
+	sort() {
+		this.values.sort((a, b) => {
+			const idA = DataPackTag.getEntryId(a)
+			const idB = DataPackTag.getEntryId(b)
+			return idA.localeCompare(idB, 'en')
+		})
+
+		return this
+	}
+
+	static getEntryId(entry: TagEntry) {
+		return typeof entry === 'string' ? entry : entry.id
+	}
+
+	static fromJSON(json: FunctionTagJSON) {
+		const tag = new DataPackTag()
+		if (typeof json.replace === 'boolean') tag.replace = json.replace
+		if (Array.isArray(json.values)) tag.values = structuredClone(json.values)
+		return tag
+	}
+
+	toJSON(): FunctionTagJSON {
+		return { replace: this.replace, values: structuredClone(this.values) }
+	}
 }
 
 export function resolveBlockstateValueType(

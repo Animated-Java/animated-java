@@ -1,11 +1,12 @@
 import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/lib/nbt'
+import { projectTargetVersionIsAtLeast } from 'src/blueprintFormat'
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
 import { BoneConfig, TextDisplayConfig } from '../../nodeConfigs'
 import { isFunctionTagPath } from '../../util/fileUtil'
 import {
+	DataPackTag,
+	type FunctionTagJSON,
 	getDataPackFormat,
-	type IFunctionTag,
-	mergeTag,
 	parseBlock,
 	parseDataPackPath,
 	parseResourceLocation,
@@ -919,7 +920,7 @@ async function removeFiles(ajmeta: AJMeta, dataPackFolder: string) {
 					}
 				}
 				// Remove mentions of the export namespace from the file
-				let content: IFunctionTag
+				let content: FunctionTagJSON
 				// Remove mentions of the export namespace from the file
 				try {
 					content = JSON.parse((await fs.promises.readFile(file)).toString())
@@ -1037,6 +1038,7 @@ async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFold
 	PROGRESS.set(0)
 	MAX_PROGRESS.set(exportedFiles.size)
 	const aj = Project!.animated_java
+	const lastNamespace = Project!.last_used_export_namespace
 	const createdFolderCache = new Set<string>()
 
 	const functionTagQueue = new Map<string, ExportedFile>()
@@ -1080,76 +1082,55 @@ async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFold
 	}
 	await Promise.all(writeQueue.values())
 
+	PROGRESS_DESCRIPTION.set('Merging Function Tags...')
+	MAX_PROGRESS.set(functionTagQueue.size)
+	PROGRESS.set(0)
 	for (const [path, file] of functionTagQueue.entries()) {
-		const oldFile: IFunctionTag = JSON.parse(fs.readFileSync(path, 'utf-8'))
-		const newFile: IFunctionTag = JSON.parse(file.content.toString())
-		const merged = mergeTag(oldFile, newFile)
-		if (aj.export_namespace !== Project!.last_used_export_namespace) {
-			merged.values = merged.values.filter(v => {
-				const value = typeof v === 'string' ? v : v.id
-				return (
-					!value.startsWith(`#animated_java:${Project!.last_used_export_namespace}/`) ||
-					value.startsWith(`animated_java:${Project!.last_used_export_namespace}/`)
+		const oldTag = DataPackTag.fromJSON(JSON.parse(fs.readFileSync(path, 'utf-8')))
+		const merged = oldTag.merge(DataPackTag.fromJSON(JSON.parse(file.content.toString())))
+
+		merged.filter(entry => {
+			const id = DataPackTag.getEntryId(entry)
+			const isTag = id.startsWith('#')
+			const location = parseResourceLocation(isTag ? id.substring(1) : id)
+			// Ignore entries unrelated to Animated Java
+			if (location.namespace !== 'animated_java') return true
+
+			// Remove last namespace entries if the namespace has changed
+			if (aj.export_namespace !== lastNamespace && location.namespace === lastNamespace)
+				return false
+
+			// Search for the entry in all data folders
+			const functionFolderName = projectTargetVersionIsAtLeast('1.21')
+				? 'function'
+				: 'functions'
+			const subPath = (isTag ? 'tags/' : '') + functionFolderName
+			const extension = isTag ? '.json' : '.mcfunction'
+
+			for (const folder of fs.readdirSync(dataPackFolder)) {
+				const fullPath = PathModule.join(
+					dataPackFolder,
+					folder,
+					location.namespace,
+					subPath,
+					location.path + extension
 				)
-			})
-		}
-		merged.values = merged.values
-			.filter(v => {
-				const value = typeof v === 'string' ? v : v.id
-				const isTag = value.startsWith('#')
-				const location = parseResourceLocation(isTag ? value.substring(1) : value)
 
-				console.log('Checking:', value, location)
+				if (fs.existsSync(fullPath)) return true
+			}
 
-				let exists = false
-				for (const folder of fs.readdirSync(dataPackFolder)) {
-					const overrideFolder = PathModule.join(dataPackFolder, folder)
-					if (!fs.statSync(overrideFolder).isDirectory()) continue
-					const dataFolder =
-						folder === 'data' ? overrideFolder : PathModule.join(overrideFolder, 'data')
+			console.warn(
+				`Removed reference to ${
+					isTag ? 'tag' : 'function'
+				} '${id}' in '${path}' because it does not exist!`
+			)
+			// Remove the entry if it wasn't found
+			return false
+		})
 
-					const path = isTag
-						? PathModule.join(
-								dataFolder,
-								location.namespace,
-								'tags/functions',
-								location.path + '.json'
-						  )
-						: PathModule.join(
-								dataFolder,
-								location.namespace,
-								'functions',
-								location.path + '.mcfunction'
-						  )
-					console.log('Checking path:', path)
-					if (
-						!(
-							fs.existsSync(path) ||
-							fs.existsSync(
-								path.replace(
-									`${PathModule.sep}functions${PathModule.sep}`,
-									`${PathModule.sep}function${PathModule.sep}`
-								)
-							)
-						)
-					)
-						continue
-					exists = true
-					break
-				}
+		merged.sort()
 
-				if (!exists) {
-					const parentLocation = parseDataPackPath(path)
-					console.warn(
-						`The referenced ${isTag ? 'tag' : 'function'} '${value}' in '${
-							parentLocation?.resourceLocation || path
-						}' does not exist! Removing reference...`
-					)
-				}
-				return exists
-			})
-			.sort()
-
-		await fs.promises.writeFile(path, autoStringify(merged))
+		await fs.promises.writeFile(path, autoStringify(merged.toJSON()))
+		PROGRESS.set(PROGRESS.get() + 1)
 	}
 }
