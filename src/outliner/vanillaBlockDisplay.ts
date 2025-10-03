@@ -27,11 +27,12 @@ interface VanillaBlockDisplayOptions {
 
 export class VanillaBlockDisplay extends ResizableOutlinerElement {
 	static type = `${PACKAGE.name}:vanilla_block_display`
+	static icon = 'deployed_code'
 	static selected: VanillaBlockDisplay[] = []
 	static all: VanillaBlockDisplay[] = []
 
 	public type = VanillaBlockDisplay.type
-	public icon = 'deployed_code'
+	public icon = VanillaBlockDisplay.icon
 	public needsUniqueName = true
 
 	// Properties
@@ -171,6 +172,7 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 		this.preview_controller.updateHighlight(this)
 	}
 }
+VanillaBlockDisplay.prototype.icon = VanillaBlockDisplay.icon
 new Property(VanillaBlockDisplay, 'string', 'block', { default: 'minecraft:stone' })
 new Property(VanillaBlockDisplay, 'object', 'config', {
 	get default() {

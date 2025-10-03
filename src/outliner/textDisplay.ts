@@ -31,11 +31,12 @@ export type Alignment = 'left' | 'center' | 'right'
 
 export class TextDisplay extends ResizableOutlinerElement {
 	static type = `${PACKAGE.name}:text_display`
+	static icon = 'text_fields'
 	static selected: TextDisplay[] = []
 	static all: TextDisplay[] = []
 
 	public type = TextDisplay.type
-	public icon = 'text_fields'
+	public icon = TextDisplay.icon
 	public needsUniqueName = true
 
 	// Properties
@@ -301,6 +302,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 		return newMesh
 	}
 }
+TextDisplay.prototype.icon = TextDisplay.icon
 new Property(TextDisplay, 'string', 'text', { default: '"Hello World!"' })
 new Property(TextDisplay, 'number', 'lineWidth', { default: 200 })
 new Property(TextDisplay, 'string', 'backgroundColor', { default: '#000000' })

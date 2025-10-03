@@ -34,11 +34,12 @@ interface VanillaItemDisplayOptions {
 
 export class VanillaItemDisplay extends ResizableOutlinerElement {
 	static type = `${PACKAGE.name}:vanilla_item_display`
+	static icon = 'icecream'
 	static selected: VanillaItemDisplay[] = []
 	static all: VanillaItemDisplay[] = []
 
 	public type = VanillaItemDisplay.type
-	public icon = 'icecream'
+	public icon = VanillaItemDisplay.icon
 	public needsUniqueName = true
 
 	// Properties
@@ -190,6 +191,7 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 		this.preview_controller.updateHighlight(this)
 	}
 }
+VanillaItemDisplay.prototype.icon = VanillaItemDisplay.icon
 new Property(VanillaItemDisplay, 'string', 'item', { default: 'minecraft:diamond' })
 new Property(VanillaItemDisplay, 'string', 'itemDisplay', { default: 'none' })
 new Property(VanillaItemDisplay, 'object', 'config', {
