@@ -1,23 +1,24 @@
-import { registerMod } from 'src/util/moddingTools'
+import { registerPropertyOverrideMod } from 'src/util/moddingTools'
 import {
 	closeBlueprintLoadingDialog,
 	openBlueprintLoadingDialog,
 	PROGRESS,
 } from '../interface/popup/blueprintLoading'
 
-registerMod({
-	id: `animated-java:blockbench-read-mod`,
+registerPropertyOverrideMod({
+	id: `animated-java:function-override/blockbench/read-async`,
+	object: Blockbench,
+	key: 'read',
 
-	apply: () => {
-		const original = Blockbench.read
-		async function asyncRead(
+	override: original => {
+		return async function (
 			files: Parameters<typeof Blockbench.read>['0'],
 			options: Parameters<typeof Blockbench.read>['1'],
 			cb: Parameters<typeof Blockbench.read>['2']
 		) {
 			for (const file of files) {
 				original([file], options, cb)
-				await new Promise<void>(r => {
+				await new Promise<void>(resolve => {
 					if (Project?.loadingPromises) {
 						openBlueprintLoadingDialog()
 						const promises: Array<Promise<unknown>> = []
@@ -41,22 +42,13 @@ registerMod({
 							.finally(() => {
 								closeBlueprintLoadingDialog()
 								delete Project.loadingPromises
-								r()
+								resolve()
 							})
 						return
 					}
-					r()
+					resolve()
 				})
 			}
 		}
-
-		Blockbench.read = function (files, options, cb) {
-			void asyncRead(files, options, cb).catch(console.error)
-		}
-		return { original }
-	},
-
-	revert: ({ original }) => {
-		Blockbench.read = original
 	},
 })

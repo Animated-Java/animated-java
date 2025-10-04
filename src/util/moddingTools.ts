@@ -71,12 +71,16 @@ EVENTS.PLUGIN_UNLOAD.subscribe(async () => {
 	EVENTS.PLUGIN_FINISHED_UNLOADING.publish()
 })
 
-interface ModOptions<ID extends string, RevertContext extends any | void> {
+interface BaseModOptions<ID extends string> {
 	id: ResourceLocation.Validate<ID>
 	/** A list of mod IDs that this mod depends on */
 	dependencies?: string[]
 	/** The priority of the mod. Higher priority mods will be installed first. */
 	priority?: number
+}
+
+interface ModOptions<ID extends string, RevertContext extends any | void>
+	extends BaseModOptions<ID> {
 	/** A function that applies the mod. This function should return a context object that will be passed to the revert function. */
 	apply: () => Promise<RevertContext> | RevertContext
 	/**
@@ -267,13 +271,7 @@ interface DeletableEventHandler<T> {
 	onDeleted: Subscribable<T>['subscribe']
 }
 
-interface RegisterDeletableOptions<ID extends string> {
-	id: ResourceLocation.Validate<ID>
-	/** A list of mod IDs that this mod depends on */
-	dependencies?: string[]
-	/** The priority of the mod. Higher priority mods will be installed first. */
-	priority?: number
-}
+interface RegisterDeletableOptions<ID extends string> extends BaseModOptions<ID> {}
 
 /**
  * Defines a new deletable register function, that handles the creation and deletion of deletables on the appropriate Blockbench events.
@@ -375,6 +373,128 @@ export const registerMenu = registerDeletableFactory(
 		menu.node.remove()
 	}
 )
+
+interface PropertyOverrideModOptions<
+	ID extends string,
+	T extends Object,
+	K extends keyof T,
+	O extends T[K]
+> extends BaseModOptions<ID> {
+	object: T
+	key: K
+	override: (this: T, original: T[K]) => O
+}
+
+export function registerPropertyOverrideMod<
+	ID extends string,
+	T extends Object,
+	K extends keyof T,
+	O extends T[K]
+>(options: PropertyOverrideModOptions<ID, T, K, O>) {
+	let originalValue = options.object[options.key]
+
+	const originalDescriptor = Object.getOwnPropertyDescriptor(options.object, options.key) ?? {
+		value: originalValue,
+		writable: true,
+		configurable: true,
+	}
+
+	if (originalDescriptor.configurable === false) {
+		throw new Error(
+			`Cannot override property '${String(
+				options.key
+			)}' on object because it is not configurable.`
+		)
+	}
+
+	registerMod({
+		...options,
+
+		apply: () => {
+			Object.defineProperty(options.object, options.key, {
+				configurable: true,
+				get() {
+					return options.override.call(this, originalValue)
+				},
+				set(value) {
+					originalValue = value
+				},
+			})
+		},
+
+		revert: () => {
+			Object.defineProperty(options.object, options.key, originalDescriptor)
+		},
+	})
+}
+
+interface ConditionalPropertyOverrideModOptions<
+	ID extends string,
+	T extends Object,
+	K extends keyof T,
+	O extends T[K]
+> extends BaseModOptions<ID> {
+	object: T
+	key: K
+	get?: {
+		condition: ConditionResolvable<T>
+		override: (this: T, original: T[K]) => O
+	}
+	set?: {
+		condition: ConditionResolvable<T>
+		override: (this: T, value: T[K]) => O
+	}
+}
+
+export function registerConditionalPropertyOverrideMod<
+	ID extends string,
+	T extends Object,
+	K extends keyof T,
+	O extends T[K]
+>(options: ConditionalPropertyOverrideModOptions<ID, T, K, O>) {
+	let originalValue = options.object[options.key]
+
+	const originalDescriptor = Object.getOwnPropertyDescriptor(options.object, options.key) ?? {
+		value: originalValue,
+		writable: true,
+		configurable: true,
+	}
+
+	if (originalDescriptor.configurable === false) {
+		throw new Error(
+			`Cannot override property '${String(
+				options.key
+			)}' on object because it is not configurable.`
+		)
+	}
+
+	registerMod({
+		...options,
+
+		apply: () => {
+			Object.defineProperty(options.object, options.key, {
+				configurable: true,
+				get: options.get
+					? function (this: T) {
+							if (Condition(options.get!.condition, this)) {
+								return options.get!.override.call(this, originalValue)
+							}
+							return originalValue
+					  }
+					: () => originalValue,
+				set: options.set
+					? function (this: T, value) {
+							originalValue = value
+					  }
+					: value => (originalValue = value),
+			})
+		},
+
+		revert: () => {
+			Object.defineProperty(options.object, options.key, originalDescriptor)
+		},
+	})
+}
 
 interface Storage<Value = any> {
 	value: Value

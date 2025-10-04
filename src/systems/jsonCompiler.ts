@@ -10,7 +10,7 @@ import {
 	getKeyframeRepeat,
 	getKeyframeRepeatFrequency,
 	getKeyframeVariant,
-} from '../mods/customKeyframesMod'
+} from '../mods/customKeyframes'
 import type { EasingKey } from '../util/easing'
 import { resolvePath } from '../util/fileUtil'
 import { detectCircularReferences, mapObjEntries, scrubUndefined } from '../util/misc'

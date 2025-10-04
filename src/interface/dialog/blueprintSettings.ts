@@ -1,5 +1,5 @@
 import KofiPopup from 'src/components/kofiPopup.svelte'
-import { updateAllCubeOutlines } from 'src/mods/cubeOutlineMod'
+import { updateAllCubeOutlines } from 'src/mods/cube'
 import type { MinecraftVersion } from 'src/systems/global'
 import BlueprintSettingsDialogSvelteComponent from '../../components/blueprintSettingsDialog.svelte'
 import { PACKAGE } from '../../constants'

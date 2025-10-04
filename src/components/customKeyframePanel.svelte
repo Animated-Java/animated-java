@@ -2,7 +2,7 @@
 	import {
 		getKeyframeExecuteCondition,
 		setKeyframeExecuteCondition,
-	} from '../mods/customKeyframesMod'
+	} from '../mods/customKeyframes'
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
 	import CommandsKeyframePanel from './keyframePanels/commandsKeyframePanel.svelte'
@@ -13,7 +13,7 @@
 	export let selectedKeyframe: _Keyframe
 
 	const executeCondition = new Valuable<string>(
-		getKeyframeExecuteCondition(selectedKeyframe) || '',
+		getKeyframeExecuteCondition(selectedKeyframe) || ''
 	)
 
 	executeCondition.subscribe(value => {

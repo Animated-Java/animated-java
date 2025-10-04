@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getKeyframeVariant, setKeyframeVariant } from '../../mods/customKeyframesMod'
+	import { getKeyframeVariant, setKeyframeVariant } from '../../mods/customKeyframes'
 	import { Valuable } from '../../util/stores'
 	import { translate } from '../../util/translation'
 	import { Variant } from '../../variants'

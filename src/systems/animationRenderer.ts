@@ -1,5 +1,5 @@
 import * as crypto from 'crypto'
-import { BONE_INTERPOLATION_ENABLED } from 'src/mods/boneInterpolationMod'
+import { BONE_INTERPOLATION_ENABLED } from 'src/mods/boneAnimatorMod'
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../interface/dialog/exportProgress'
 import {
 	getKeyframeCommands,
@@ -7,7 +7,7 @@ import {
 	getKeyframeRepeat,
 	getKeyframeRepeatFrequency,
 	getKeyframeVariant,
-} from '../mods/customKeyframesMod'
+} from '../mods/customKeyframes'
 import { TextDisplay } from '../outliner/textDisplay'
 import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
 import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'

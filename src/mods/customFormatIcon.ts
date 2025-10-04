@@ -4,7 +4,7 @@ import Icon from '../components/icon.svelte'
 import { injectSvelteComponent } from '../util/injectSvelteComponent'
 
 registerMod({
-	id: `aniamted-java:format-icon-mod`,
+	id: `aniamted-java:format-icon`,
 
 	apply: () => {
 		void injectSvelteComponent({

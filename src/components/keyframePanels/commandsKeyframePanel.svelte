@@ -1,5 +1,4 @@
 <script lang="ts" context="module">
-	import { Valuable } from '../../util/stores'
 	import {
 		getKeyframeCommands,
 		getKeyframeRepeat,
@@ -7,7 +6,8 @@
 		setKeyframeCommands,
 		setKeyframeRepeat,
 		setKeyframeRepeatFrequency,
-	} from '../../mods/customKeyframesMod'
+	} from '../../mods/customKeyframes'
+	import { Valuable } from '../../util/stores'
 	import { translate } from '../../util/translation'
 </script>
 

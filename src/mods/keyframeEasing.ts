@@ -1,4 +1,4 @@
-import { registerMod } from 'src/util/moddingTools'
+import { registerConditionalPropertyOverrideMod, registerMod } from 'src/util/moddingTools'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint/format'
 import {
 	EASING_DEFAULT,
@@ -26,7 +26,7 @@ function lerp(start: number, stop: number, amt: number): number {
 }
 
 registerMod({
-	id: `animated-java:keyframe-easing-mod`,
+	id: `animated-java:keyframe-easing`,
 
 	apply: () => {
 		const properties = [
@@ -92,65 +92,63 @@ export function reverseEasing(easing?: EasingKey): EasingKey | undefined {
 	return easing
 }
 
-registerMod({
-	id: `animated-java:reverse-keyframes-mod`,
-	apply: () => {
-		const action = BarItems.reverse_keyframes as Action
+registerConditionalPropertyOverrideMod({
+	id: `animated-java:action-click-override/reverse-keyframes`,
+	object: BarItems.reverse_keyframes as Action,
+	key: 'click',
 
-		const originalClick = action.click
-		action.click = function (event?: Event) {
-			originalClick.call(this, event)
-			// There's not really an easy way to merge our undo operation with the original one so we'll make a new one instead
-			Undo.initEdit({ keyframes: Timeline.selected || undefined })
+	get: {
+		condition: () => activeProjectIsBlueprintFormat(),
 
-			const kfByAnimator: Record<string, _Keyframe[]> = {}
-			for (const kf of Timeline.selected || []) {
-				kfByAnimator[kf.animator.uuid] ??= []
-				kfByAnimator[kf.animator.uuid].push(kf)
-			}
+		override: original => {
+			return (event?: Event) => {
+				original(event)
+				// There's not really an easy way to merge our undo operation with the original one so we'll make a new one instead
+				Undo.initEdit({ keyframes: Timeline.selected || undefined })
 
-			const kfByAnimatorAndChannel: Record<string, Record<string, _Keyframe[]>> = {}
-			for (const [animatorUuid, keyframes] of Object.entries(kfByAnimator)) {
-				const channel: Record<string, _Keyframe[]> = {}
-				kfByAnimatorAndChannel[animatorUuid] = channel
-				for (const kf of keyframes) {
-					channel[kf.channel] ??= []
-					channel[kf.channel].push(kf)
+				const kfByAnimator: Record<string, _Keyframe[]> = {}
+				for (const kf of Timeline.selected || []) {
+					kfByAnimator[kf.animator.uuid] ??= []
+					kfByAnimator[kf.animator.uuid].push(kf)
 				}
-			}
 
-			for (const channelGroups of Object.values(kfByAnimatorAndChannel)) {
-				for (const keyframes of Object.values(channelGroups)) {
-					// Ensure keyframes are in temporal order. Not sure if this is already the case, but it couldn't hurt
-					keyframes.sort((a, b) => a.time - b.time)
-					// Reverse easing direction
-					const easingData: IEasingProperties[] = keyframes.map((kf: _Keyframe) => ({
-						easing: reverseEasing(kf.easing),
-						easingArgs: kf.easingArgs,
-					}))
-					// Shift easing data to the right by one keyframe
-					keyframes.forEach((kf: _Keyframe, i: number) => {
-						if (i == 0) {
-							kf.easing = undefined
-							kf.easingArgs = undefined
-							return
-						}
-						const newEasingData = easingData[i - 1]
-						kf.easing = newEasingData.easing
-						kf.easingArgs = newEasingData.easingArgs
-					})
+				const kfByAnimatorAndChannel: Record<string, Record<string, _Keyframe[]>> = {}
+				for (const [animatorUuid, keyframes] of Object.entries(kfByAnimator)) {
+					const channel: Record<string, _Keyframe[]> = {}
+					kfByAnimatorAndChannel[animatorUuid] = channel
+					for (const kf of keyframes) {
+						channel[kf.channel] ??= []
+						channel[kf.channel].push(kf)
+					}
 				}
+
+				for (const channelGroups of Object.values(kfByAnimatorAndChannel)) {
+					for (const keyframes of Object.values(channelGroups)) {
+						// Ensure keyframes are in temporal order. Not sure if this is already the case, but it couldn't hurt
+						keyframes.sort((a, b) => a.time - b.time)
+						// Reverse easing direction
+						const easingData: IEasingProperties[] = keyframes.map((kf: _Keyframe) => ({
+							easing: reverseEasing(kf.easing),
+							easingArgs: kf.easingArgs,
+						}))
+						// Shift easing data to the right by one keyframe
+						keyframes.forEach((kf: _Keyframe, i: number) => {
+							if (i == 0) {
+								kf.easing = undefined
+								kf.easingArgs = undefined
+								return
+							}
+							const newEasingData = easingData[i - 1]
+							kf.easing = newEasingData.easing
+							kf.easingArgs = newEasingData.easingArgs
+						})
+					}
+				}
+
+				Undo.finishEdit('Reverse keyframe easing')
+				updateKeyframeSelection()
+				Animator.preview()
 			}
-
-			Undo.finishEdit('Reverse keyframe easing')
-			updateKeyframeSelection()
-			Animator.preview()
-		}
-
-		return { action, originalClick }
-	},
-
-	revert: ({ action, originalClick }) => {
-		action.click = originalClick
+		},
 	},
 })

@@ -1,5 +1,5 @@
 import type { IBlueprintVariantJSON } from './formats/blueprint/format'
-import { getKeyframeVariant, setKeyframeVariant } from './mods/customKeyframesMod'
+import { getKeyframeVariant, setKeyframeVariant } from './mods/customKeyframes'
 import EVENTS from './util/events'
 import { sanitizeStorageKey } from './util/minecraftUtil'
 
