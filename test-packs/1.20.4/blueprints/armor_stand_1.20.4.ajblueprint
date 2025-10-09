@@ -857,24 +857,26 @@
 			"type": "locator"
 		},
 		{
+			"uuid": "c2e217f1-b50a-5c9a-b342-71a35e984046",
+			"type": "animated_java:text_display",
 			"name": "text_display",
 			"position": [0, 38, 0],
 			"rotation": [22.5, 0, 0],
 			"scale": [1, 1, 1],
 			"visibility": true,
+			"locked": false,
+			"export": true,
 			"block": "minecraft:stone",
 			"config": {},
 			"item": "minecraft:diamond",
 			"itemDisplay": "none",
-			"text": "[\n\t{ text: \"someone's string\\n\" },\n\t{ \"text\": \"\\u2603\" },\n\t{text: 'test', hoverEvent: {\n\t\taction:show_item,\n\t\tcontents: {id:'minecraft:stone'}\n\t}},\n\t'awd\"',\n\t\"awd'\", \n\t\"awd\\\"\",\n\t'awd\\'',\n\t'awd\\'\"',\n\t'\\n\\u2604\\n',\n\tno_quotes_on_me,\n\t'\\n',\n\t{\n\t\ttext: orange,\n\t\tcolor: '#ffaa00',\n\t\titalic: true,\n\t\tunderlined: \"true\",\n\t\tstrikethrough: TRUE\n\t}\n]",
+			"text": "[\n\t{0x00aced}yeah', 'I' '[{love light_purple}' 'text]{' displays''#FF5555'}\n\t'\\n'[{#55_FF_55}definitly' 'quite' 'cursed]\n\t'\\n'{what red}{amI #6395EE}{evenlookingat #c02c38}\n]",
 			"lineWidth": 400,
 			"backgroundColor": "#000000",
 			"backgroundAlpha": 0.12941,
 			"align": "center",
 			"shadow": true,
-			"seeThrough": true,
-			"uuid": "c2e217f1-b50a-5c9a-b342-71a35e984046",
-			"type": "animated_java:text_display"
+			"seeThrough": true
 		},
 		{
 			"name": "camera",
@@ -889,11 +891,15 @@
 			"uuid": "3ffeee76-901e-f8a2-c29a-82f90e16fd1e"
 		},
 		{
+			"uuid": "bc141119-7f51-9690-7e21-e119b34fb3a2",
+			"type": "animated_java:vanilla_item_display",
 			"name": "item_display",
 			"position": [6, 12, -4],
 			"rotation": [-90, 0, 0],
 			"scale": [0.5, 0.5, 0.5],
 			"visibility": true,
+			"locked": false,
+			"export": true,
 			"block": "minecraft:stone",
 			"config": {},
 			"item": "minecraft:diamond",
@@ -904,9 +910,7 @@
 			"backgroundAlpha": 0.25,
 			"align": "center",
 			"shadow": false,
-			"seeThrough": false,
-			"uuid": "bc141119-7f51-9690-7e21-e119b34fb3a2",
-			"type": "animated_java:vanilla_item_display"
+			"seeThrough": false
 		}
 	],
 	"outliner": [
@@ -1587,7 +1591,7 @@
 			"length": 1,
 			"snapping": 20,
 			"selected": false,
-			"saved": false,
+			"saved": true,
 			"path": "",
 			"anim_time_update": "",
 			"blend_weight": "",
@@ -1850,7 +1854,7 @@
 			"length": 2,
 			"snapping": 20,
 			"selected": false,
-			"saved": false,
+			"saved": true,
 			"path": "",
 			"anim_time_update": "",
 			"blend_weight": "",
@@ -1912,7 +1916,7 @@
 			"length": 1,
 			"snapping": 20,
 			"selected": false,
-			"saved": false,
+			"saved": true,
 			"path": "",
 			"anim_time_update": "",
 			"blend_weight": "",
