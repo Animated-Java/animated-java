@@ -391,39 +391,50 @@ export function registerPropertyOverrideMod<
 	K extends keyof T,
 	O extends T[K]
 >(options: PropertyOverrideModOptions<ID, T, K, O>) {
-	let originalValue = options.object[options.key]
-
-	const originalDescriptor = Object.getOwnPropertyDescriptor(options.object, options.key) ?? {
-		value: originalValue,
-		writable: true,
-		configurable: true,
-	}
-
-	if (originalDescriptor.configurable === false) {
-		throw new Error(
-			`Cannot override property '${String(
-				options.key
-			)}' on object because it is not configurable.`
-		)
-	}
-
 	registerMod({
 		...options,
 
 		apply: () => {
+			if (options.object == undefined) {
+				throw new Error(`Cannot override property on undefined object.`)
+			}
+
+			const original = {
+				value: undefined as O,
+				descriptor: undefined as unknown as PropertyDescriptor,
+			}
+
+			original.value = options.object[options.key] as O
+
+			original.descriptor = Object.getOwnPropertyDescriptor(options.object, options.key) ?? {
+				value: original.value,
+				writable: true,
+				configurable: true,
+			}
+
+			if (original.descriptor.configurable === false) {
+				throw new Error(
+					`Cannot override property '${String(
+						options.key
+					)}' on object because it is not configurable.`
+				)
+			}
+
 			Object.defineProperty(options.object, options.key, {
 				configurable: true,
 				get() {
-					return options.override.call(this, originalValue)
+					return options.override.call(this, original.value)
 				},
 				set(value) {
-					originalValue = value
+					original.value = value
 				},
 			})
+
+			return { original }
 		},
 
-		revert: () => {
-			Object.defineProperty(options.object, options.key, originalDescriptor)
+		revert: ({ original }) => {
+			Object.defineProperty(options.object, options.key, original.descriptor)
 		},
 	})
 }
@@ -452,46 +463,57 @@ export function registerConditionalPropertyOverrideMod<
 	K extends keyof T,
 	O extends T[K]
 >(options: ConditionalPropertyOverrideModOptions<ID, T, K, O>) {
-	let originalValue = options.object[options.key]
-
-	const originalDescriptor = Object.getOwnPropertyDescriptor(options.object, options.key) ?? {
-		value: originalValue,
-		writable: true,
-		configurable: true,
-	}
-
-	if (originalDescriptor.configurable === false) {
-		throw new Error(
-			`Cannot override property '${String(
-				options.key
-			)}' on object because it is not configurable.`
-		)
-	}
-
 	registerMod({
 		...options,
 
 		apply: () => {
+			if (options.object == undefined) {
+				throw new Error(`Cannot override property on undefined object.`)
+			}
+
+			const original = {
+				value: undefined as O,
+				descriptor: undefined as unknown as PropertyDescriptor,
+			}
+
+			original.value = options.object[options.key] as O
+
+			original.descriptor = Object.getOwnPropertyDescriptor(options.object, options.key) ?? {
+				value: original.value,
+				writable: true,
+				configurable: true,
+			}
+
+			if (original.descriptor.configurable === false) {
+				throw new Error(
+					`Cannot override property '${String(
+						options.key
+					)}' on object because it is not configurable.`
+				)
+			}
+
 			Object.defineProperty(options.object, options.key, {
 				configurable: true,
 				get: options.get
 					? function (this: T) {
 							if (Condition(options.get!.condition, this)) {
-								return options.get!.override.call(this, originalValue)
+								return options.get!.override.call(this, original.value)
 							}
-							return originalValue
+							return original.value
 					  }
-					: () => originalValue,
+					: () => original.value,
 				set: options.set
 					? function (this: T, value) {
-							originalValue = value
+							original.value = value
 					  }
-					: value => (originalValue = value),
+					: value => (original.value = value),
 			})
+
+			return { original }
 		},
 
-		revert: () => {
-			Object.defineProperty(options.object, options.key, originalDescriptor)
+		revert: ({ original }) => {
+			Object.defineProperty(options.object, options.key, original.descriptor)
 		},
 	})
 }
