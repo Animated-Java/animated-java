@@ -23,7 +23,6 @@ import {
 	updatePreview,
 } from './animationRenderer'
 import { IntentionalExportError } from './exporter'
-import { JsonText } from './jsonText'
 
 export interface IRenderedFace {
 	uv: number[]
@@ -121,7 +120,7 @@ export interface IRenderedNodes {
 	}
 	TextDisplay: IRenderedNode & {
 		type: 'text_display'
-		text?: JsonText
+		text: string
 		line_width: number
 		background_color: string
 		background_alpha: number
@@ -522,7 +521,7 @@ function renderTextDisplay(display: TextDisplay, rig: IRenderedRig): INodeStruct
 		storage_name: sanitizeStorageKey(display.name),
 		uuid: display.uuid,
 		parent: parentId,
-		text: JsonText.fromString(display.text, Project!.animated_java.target_minecraft_version),
+		text: display.text,
 		line_width: display.lineWidth,
 		background_color: display.backgroundColor,
 		background_alpha: display.backgroundAlpha,
@@ -680,9 +679,7 @@ export function hashRig(rig: IRenderedRig) {
 			case 'camera':
 				break
 			case 'text_display': {
-				hash.update(
-					`;${node.text?.toString(Project!.animated_java.target_minecraft_version)}`
-				)
+				hash.update(`;${node.text}`)
 				if (node.config) {
 					hash.update(';' + JSON.stringify(node.config))
 				}

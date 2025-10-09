@@ -557,7 +557,7 @@ async function generateRootEntityPassengers(
 							'text',
 							// String JSON text format
 							new NbtString(
-								node.text?.toString(version) ??
+								new JsonText(node.text).toString(true, version) ??
 									`{ "text": "Invalid Text Component", "color": "red" }`
 							)
 						)
@@ -657,7 +657,7 @@ async function generateRootEntityPassengers(
 	for (const display of Object.values(rig.nodes).filter(n => n.type === 'text_display')) {
 		result = result.replace(
 			'"$$$' + display.type + '_' + display.storage_name + '_text_placeholder$$$"',
-			display.text?.toString(version) ??
+			new JsonText(display.text).toString(true, version) ??
 				`{ "text": "Invalid Text Component", "color": "red" }`
 		)
 	}
@@ -817,18 +817,18 @@ export default async function compileDataPack(
 			versionedFiles,
 		})
 
-		for (let [path, file] of coreFiles) {
-			path = PathModule.join(coreDataPackFolder, path)
-			globalCoreFiles.set(path, file)
+		for (const [path, file] of coreFiles) {
+			const relative = PathModule.join(coreDataPackFolder, path)
+			globalCoreFiles.set(relative, file)
 			if (file.includeInAJMeta === false) continue
-			ajmeta.coreFiles.add(path)
+			ajmeta.coreFiles.add(relative)
 		}
 
-		for (let [path, file] of versionedFiles) {
-			path = PathModule.join(versionedDataPackFolder, path)
-			globalVersionSpecificFiles.set(path, file)
+		for (const [path, file] of versionedFiles) {
+			const relative = PathModule.join(versionedDataPackFolder, path)
+			globalVersionSpecificFiles.set(relative, file)
 			if (file.includeInAJMeta === false) continue
-			ajmeta.versionedFiles.add(path)
+			ajmeta.versionedFiles.add(relative)
 		}
 
 		console.groupEnd()
@@ -837,7 +837,7 @@ export default async function compileDataPack(
 	console.log('Exported Files:', globalCoreFiles.size + globalVersionSpecificFiles.size)
 
 	const packMetaPath = PathModule.join(options.dataPackFolder, 'pack.mcmeta')
-	let packMeta = PackMeta.fromFile(packMetaPath)
+	const packMeta = PackMeta.fromFile(packMetaPath)
 	packMeta.content.pack ??= {}
 	packMeta.content.pack.pack_format = getDataPackFormat(targetVersions[0])
 	packMeta.content.pack.description ??= `Animated Java Data Pack for ${targetVersions.join(', ')}`
@@ -848,7 +848,7 @@ export default async function compileDataPack(
 		packMeta.content.overlays.entries ??= []
 
 		for (const version of targetVersions) {
-			let format: PackMetaFormats = getDataPackFormat(version)
+			const format: PackMetaFormats = getDataPackFormat(version)
 			packMeta.content.pack.supported_formats.push(format)
 
 			const existingOverlay = packMeta.content.overlays.entries.find(
@@ -871,7 +871,7 @@ export default async function compileDataPack(
 	})
 
 	if (aj.data_pack_export_mode === 'folder') {
-		await removeFiles(ajmeta, options.dataPackFolder)
+		await removeFiles(ajmeta)
 
 		// Write new files
 		ajmeta.coreFiles = new Set(globalCoreFiles.keys())
@@ -891,7 +891,7 @@ export default async function compileDataPack(
 	console.timeEnd('Data Pack Compilation took')
 }
 
-async function removeFiles(ajmeta: AJMeta, dataPackFolder: string) {
+async function removeFiles(ajmeta: AJMeta) {
 	console.time('Removing Files took')
 	const aj = Project!.animated_java
 	if (aj.data_pack_export_mode === 'folder') {
@@ -969,7 +969,7 @@ const dataPackCompiler: DataPackCompiler = async ({
 	animationHash,
 	debugMode,
 }) => {
-	JsonText.defaultTargetVersion = version
+	JsonText.defaultMinecraftVersion = version
 
 	const aj = Project!.animated_java
 	const isStatic = animations.length === 0
@@ -1019,9 +1019,9 @@ const dataPackCompiler: DataPackCompiler = async ({
 
 	compileMcbProject({
 		sourceFiles: {
-			'src/global.mcbt': mcbFiles[version].coreTemplates,
-			'src/animated_java.mcb': mcbFiles[version].core,
-			[`src/animated_java/${aj.export_namespace}.mcb`]: is_static
+			'src/global.mcbt': mcbFiles[version].globalTemplates,
+			'src/animated_java.mcb': mcbFiles[version].global,
+			[`src/animated_java/${aj.export_namespace}.mcb`]: isStatic
 				? mcbFiles[version].static
 				: mcbFiles[version].animation,
 		},
