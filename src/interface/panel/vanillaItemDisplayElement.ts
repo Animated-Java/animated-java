@@ -79,7 +79,6 @@ ITEM_DISPLAY_ITEM_DISPLAY_SELECT.set = function (
 	return this
 }
 function updateItemDisplaySelect() {
-	console.log('updateItemDisplaySelect')
 	let value = VanillaItemDisplay.selected.at(0)?.itemDisplay
 	value ??= 'none'
 	ITEM_DISPLAY_ITEM_DISPLAY_SELECT.set(value)

@@ -26,7 +26,6 @@ registerMod({
 		Plugins.dialog.component.methods.selectPlugin = function (this, plugin: BBPlugin) {
 			const result = original.call(this, plugin)
 			SELECTED_PLUGIN.set(plugin)
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 			return result
 		}
 

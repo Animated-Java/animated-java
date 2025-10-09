@@ -25,7 +25,7 @@ export type SliceString<
 		: After
 	: String
 
-export type JoinStrings<Strings extends string[], Joiner extends string = ''> = Strings extends []
+export type JoinStrings<Strings extends string[]> = Strings extends []
 	? ''
 	: Strings extends [infer Only extends string]
 	? Only
@@ -45,17 +45,3 @@ export type RestrictString<String extends string, ValidChars extends string> = [
 ] extends [ValidChars]
 	? String
 	: never
-
-// export type RestrictString<
-// 	String extends string,
-// 	ValidChars extends string,
-// 	AllowEmpty extends boolean = false,
-// > = String extends ''
-// 	? AllowEmpty extends true
-// 		? ''
-// 		: `String must not be empty`
-// 	: String extends `${infer This}${infer Rest}`
-// 		? This extends ValidChars
-// 			? `${This}${RestrictString<Rest, ValidChars, true>}`
-// 			: `${This} <- invalid character '${This}'`
-// 		: 'String must not be empty'

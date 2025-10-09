@@ -51,7 +51,7 @@ registerConditionalPropertyOverrideMod({
 	get: {
 		condition: () => activeProjectIsBlueprintFormat(),
 		override: () => {
-			return (event: Event) => {
+			return () => {
 				if (!Project || !Format) return
 
 				const codec = BLUEPRINT_CODEC.get()!

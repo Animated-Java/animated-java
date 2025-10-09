@@ -47,7 +47,7 @@ export async function getLatestVersionClientDownloadUrl() {
 		} catch (error) {
 			console.error('Failed to fetch latest Minecraft version API:', error)
 		}
-		if (response && response.ok) {
+		if (response?.ok) {
 			const result = await response.json()
 			if (!result?.downloads?.client) {
 				throw new Error(`Failed to find client download for ${version.id}`)

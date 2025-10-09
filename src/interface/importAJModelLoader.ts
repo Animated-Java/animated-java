@@ -2,7 +2,7 @@ import { registerModelLoader } from 'src/util/moddingTools'
 import { SvelteComponentDev } from 'svelte/internal'
 import ImportAjModelLoaderDialog from '../components/importAJModelLoaderDialog.svelte'
 import { BLUEPRINT_CODEC } from '../formats/blueprint/codec'
-import * as ModelDatFixerUpper from '../formats/blueprint/dfu'
+import * as modelDatFixerUpper from '../formats/blueprint/dfu'
 import { injectSvelteComponent } from '../util/injectSvelteComponent'
 import { sanitizeStorageKey } from '../util/minecraftUtil'
 import { translate } from '../util/translation'
@@ -44,8 +44,8 @@ registerModelLoader(
 
 export function convertAJModelToBlueprint(path: string) {
 	try {
-		console.log(`Convert .ajmodel: ${path}`)
-		const blueprint = ModelDatFixerUpper.process(JSON.parse(fs.readFileSync(path, 'utf8')))
+		console.log(`Converting .ajmodel: ${path}`)
+		const blueprint = modelDatFixerUpper.process(JSON.parse(fs.readFileSync(path, 'utf8')))
 
 		const codec = BLUEPRINT_CODEC.get()
 		if (!codec) throw new Error('Animated Java Blueprint codec is not registered!')

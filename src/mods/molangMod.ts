@@ -336,7 +336,7 @@ const CUSTOM_FUNCTIONS: Record<string, (...args: number[]) => number> = {}
 const CUSTOM_FUNCTION_LABELS: Record<string, string> = {}
 
 for (const [call, body] of Object.entries(MolangFunctionFile)) {
-	const match = call.match(/^(.+?)\((.*?)\)$/)
+	const match = /^(.+?)\((.*?)\)$/.exec(call)
 	if (!match) continue
 	const name = match[1]
 	const argList = match[2].split(',').map(v => v.trim())
@@ -377,7 +377,7 @@ function filterAndSortList(
 	})
 	if (blacklist) blacklist.forEach(black => result.remove(black))
 	return result.map(text => {
-		return { text, label: labels && labels[text], overlap: match.length }
+		return { text, label: labels?.[text], overlap: match.length }
 	})
 }
 
@@ -431,7 +431,7 @@ registerProjectMod({
 					return filterAndSortList(options, dir)
 				}
 			} else {
-				const root_tokens = ROOT_TOKENS.slice()
+				const rootTokens = ROOT_TOKENS.slice()
 				let labels = {}
 				if (type === 'placeholders') {
 					labels = {
@@ -439,10 +439,10 @@ registerProjectMod({
 						'slider()': 'slider( name, step?, min?, max? )',
 						'impulse()': 'impulse( name, duration )',
 					}
-					root_tokens.push(...Object.keys(labels))
+					rootTokens.push(...Object.keys(labels))
 				}
 				return filterAndSortList(
-					[...root_tokens, ...Object.keys(CUSTOM_FUNCTION_LABELS)],
+					[...rootTokens, ...Object.keys(CUSTOM_FUNCTION_LABELS)],
 					beginning,
 					undefined,
 					{ ...labels, ...CUSTOM_FUNCTION_LABELS }

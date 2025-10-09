@@ -15,14 +15,12 @@
 	)
 
 	const EASING_MODE_ICONS: Record<string, string> = {
-		in: ICONS['expo'],
-		out: ICONS['out'],
-		inout: ICONS['inout'],
+		in: ICONS.expo,
+		out: ICONS.out,
+		inout: ICONS.inout,
 	}
-</script>
 
-<script lang="ts">
-	const easingTypes = [
+	const EASING_TYPES = [
 		'linear',
 		'sine',
 		'quad',
@@ -35,15 +33,18 @@
 		'back',
 		'bounce',
 	]
-	const easingModes = ['in', 'out', 'inout']
 
-	let easingType: string = 'linear'
+	const EASING_MODES = ['in', 'out', 'inout']
+</script>
+
+<script lang="ts">
+	let easingType = 'linear'
 	let easingMode: string | undefined
 	let easingArg: Valuable<number> | undefined
 
 	function getSelectedEasing() {
 		if (!selectedKeyframe?.easing) return
-		const match = selectedKeyframe.easing.match(/ease(InOut|Out|In)(.+)/)
+		const match = /ease(InOut|Out|In)(.+)/.exec(selectedKeyframe.easing)
 		if (!match) {
 			return {
 				type: selectedKeyframe.easing,
@@ -58,7 +59,7 @@
 		}
 	}
 
-	function setSelectedEasing(type: string, mode: string = 'inout') {
+	function setSelectedEasing(type: string, mode = 'inout') {
 		if (!selectedKeyframe) return
 		if (type === 'linear') {
 			selectedKeyframe.easing = 'linear'
@@ -77,10 +78,10 @@
 	let unsub: (() => void) | undefined
 	function getEasingArgs() {
 		if (!selectedKeyframe) return
-		unsub && unsub()
+		unsub?.()
 		if (hasArgs(selectedKeyframe.easing)) {
 			easingArg = new Valuable(
-				selectedKeyframe.easingArgs?.[0] || getEasingArgDefault(selectedKeyframe) || 0
+				selectedKeyframe.easingArgs?.[0] ?? getEasingArgDefault(selectedKeyframe) ?? 0
 			)
 			unsub = easingArg?.subscribe(value => setEasingArgs(value))
 		} else {
@@ -108,7 +109,6 @@
 	}
 
 	EVENTS.SELECT_KEYFRAME.subscribe((keyframe?: _Keyframe) => {
-		console.log('selected keyframe', keyframe)
 		if (
 			activeProjectIsBlueprintFormat() &&
 			keyframe &&
@@ -150,7 +150,7 @@
 			</label>
 			{#key easingType}
 				<div id="easing_type_input" class="easing-container">
-					{#each easingTypes as ease}
+					{#each EASING_TYPES as ease}
 						<button
 							class="easing-type"
 							title={translate(`panel.keyframe.easing_type.options.${ease}`)}
@@ -178,7 +178,7 @@
 				</label>
 				{#key easingMode}
 					<div id="easing_mode_input" class="easing-container">
-						{#each easingModes as mode}
+						{#each EASING_MODES as mode}
 							<button
 								class="easing-type"
 								title={translate(`panel.keyframe.easing_mode.options.${mode}`)}

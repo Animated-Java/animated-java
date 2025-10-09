@@ -5,7 +5,7 @@
 	import BaseDialogItem from './baseDialogItem.svelte'
 
 	export let label: string
-	export let tooltip: string = ''
+	export let tooltip = ''
 	export let value: Valuable<string>
 	export let defaultValue: string
 	export let valueChecker: DialogItemValueChecker<string> = undefined
@@ -15,8 +15,8 @@
 
 	let codeJarElement: HTMLPreElement | undefined
 
-	let warning_text = ''
-	let error_text = ''
+	let warningText = ''
+	let errorText = ''
 
 	function highlight(code: string, syntax?: string) {
 		if (!syntax) return code
@@ -32,8 +32,8 @@
 	function onValueChange() {
 		if (valueChecker) {
 			const result = valueChecker($value)
-			result.type === 'error' ? (error_text = result.message) : (error_text = '')
-			result.type === 'warning' ? (warning_text = result.message) : (warning_text = '')
+			result.type === 'error' ? (errorText = result.message) : (errorText = '')
+			result.type === 'warning' ? (warningText = result.message) : (warningText = '')
 		}
 
 		forceNoWrap()
@@ -96,14 +96,16 @@
 					white-space: pre;
 					margin: 8px;
 					margin-bottom: 0px;
-					{error_text
+					{errorText
 					? 'border: 1px solid var(--color-error); border-bottom: none; border-radius: 0.3em 0.3em 0 0;'
 					: 'border: 1px solid var(--color-border);'}
 					text-shadow: 0px 1px rgba(0, 0, 0, 0.3);
 				"
 			/>
-			{#if error_text}
-				<textarea readonly rows={error_text.split('\n').length + 1}>{error_text}</textarea>
+			{#if errorText || warningText}
+				<textarea readonly rows={errorText.split('\n').length + 1}
+					>{errorText ?? warningText}</textarea
+				>
 			{/if}
 		</div>
 	</div>

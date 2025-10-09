@@ -74,7 +74,6 @@ interface IComponentLine {
  */
 export function getComponentWords(input: TextElement) {
 	const flattenedComponents = new JsonText(input).flatten(true)
-	console.log('Flattened components:', JSON.stringify(flattenedComponents, null, 2))
 	if (!flattenedComponents.length) return []
 	const words: IComponentWord[] = []
 

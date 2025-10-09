@@ -24,7 +24,7 @@ export function sanitizeOutlinerElementName(name: string, elementUUID: string): 
 	}
 
 	let i = 1
-	const match = name.match(/\d+$/)
+	const match = /\d+$/.exec(name)
 	if (match) {
 		i = parseInt(match[0])
 		name = name.slice(0, -match[0].length)

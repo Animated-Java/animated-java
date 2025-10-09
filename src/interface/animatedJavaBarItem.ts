@@ -10,20 +10,20 @@ import { openAboutDialog } from './dialog/about'
 import { openBlueprintSettingsDialog } from './dialog/blueprintSettings'
 
 function createIconImg() {
-	const IMG = document.createElement('img')
-	Object.assign(IMG, {
+	const img = document.createElement('img')
+	Object.assign(img, {
 		src: AnimatedJavaIcon,
 		width: 16,
 		height: 16,
 	})
-	Object.assign(IMG.style, {
+	Object.assign(img.style, {
 		position: 'relative',
 		top: '2px',
 		borderRadius: '2px',
 		marginRight: '6px',
 		boxShadow: '1px 1px 1px #000000aa',
 	})
-	return IMG
+	return img
 }
 
 const SEPARATOR = new MenuSeparator('animated-java:menu-separator/menubar-separator')

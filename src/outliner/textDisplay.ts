@@ -35,19 +35,19 @@ export class TextDisplay extends ResizableOutlinerElement {
 	static selected: TextDisplay[] = []
 	static all: TextDisplay[] = []
 
-	public type = TextDisplay.type
-	public icon = TextDisplay.icon
-	public needsUniqueName = true
+	type = TextDisplay.type
+	icon = TextDisplay.icon
+	needsUniqueName = true
 
 	// Properties
-	public config: IBlueprintTextDisplayConfigJSON
+	config: IBlueprintTextDisplayConfigJSON
 
-	public buttons = [Outliner.buttons.export, Outliner.buttons.locked, Outliner.buttons.visibility]
+	buttons = [Outliner.buttons.export, Outliner.buttons.locked, Outliner.buttons.visibility]
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	public preview_controller = PREVIEW_CONTROLLER
+	preview_controller = PREVIEW_CONTROLLER
 
-	public ready = false
-	public textError = new Valuable('')
+	ready = false
+	textError = new Valuable('')
 
 	private __isUpdating = false
 	private __text = new Valuable('Hello World!')
@@ -56,7 +56,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 	private __backgroundAlpha = new Valuable(0.25)
 	private __shadow = new Valuable(false)
 	private __align = new Valuable<Alignment>('center')
-	public seeThrough = false
+	seeThrough = false
 
 	constructor(data: TextDisplayOptions, uuid = guid()) {
 		super(data, uuid)
@@ -87,7 +87,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 		this.__align.subscribe(() => this.updateText())
 	}
 
-	public sanitizeName(): string {
+	sanitizeName(): string {
 		this.name = sanitizeOutlinerElementName(this.name, this.uuid)
 		return this.name
 	}
@@ -347,8 +347,8 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 })
 
 class TextDisplayAnimator extends BoneAnimator {
-	public uuid: string
-	public element: TextDisplay | undefined
+	uuid: string
+	element: TextDisplay | undefined
 
 	constructor(uuid: string, animation: _Animation, name: string) {
 		super(uuid, animation, name)

@@ -12,11 +12,11 @@
 <script lang="ts">
 	export let selectedKeyframe: _Keyframe
 
-	const executeCondition = new Valuable<string>(
-		getKeyframeExecuteCondition(selectedKeyframe) || ''
+	const EXECUTE_CONDITION = new Valuable<string>(
+		getKeyframeExecuteCondition(selectedKeyframe) ?? ''
 	)
 
-	executeCondition.subscribe(value => {
+	EXECUTE_CONDITION.subscribe(value => {
 		setKeyframeExecuteCondition(selectedKeyframe, value)
 	})
 </script>
@@ -42,7 +42,7 @@
 			id="execute_condition"
 			type="text"
 			class="dark_bordered code keyframe_input tab_target"
-			bind:value={$executeCondition}
+			bind:value={$EXECUTE_CONDITION}
 		/>
 	</div>
 </div>

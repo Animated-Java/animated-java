@@ -13,13 +13,17 @@
 	import EVENTS from '../util/events'
 	import { translate } from '../util/translation'
 	import { Variant } from '../variants'
-	type LocalVariant = { id: number; value: Variant }
 
-	const flipDurationMs = 100
+	interface LocalVariant {
+		id: number
+		value: Variant
+	}
+
+	const FLIP_DURATION = 100
 </script>
 
 <script lang="ts">
-	let localVariants: (LocalVariant & { [SHADOW_ITEM_MARKER_PROPERTY_NAME]?: boolean })[] = []
+	let localVariants: Array<LocalVariant & { [SHADOW_ITEM_MARKER_PROPERTY_NAME]?: boolean }> = []
 
 	function updateLocalVariants() {
 		localVariants = Variant.all.map((v, i) => ({ id: i, value: v }))
@@ -108,7 +112,7 @@
 	</div>
 	<ul
 		class="variants_list"
-		use:dndzone={{ items: localVariants, flipDurationMs, dropTargetStyle: {} }}
+		use:dndzone={{ items: localVariants, flipDurationMs: FLIP_DURATION, dropTargetStyle: {} }}
 		on:consider={handleSort}
 		on:finalize={finalizeSort}
 	>
@@ -118,7 +122,7 @@
 				class={item.value === Variant.selected
 					? 'variant_item selected_variant_item'
 					: 'variant_item'}
-				animate:flip={{ duration: flipDurationMs }}
+				animate:flip={{ duration: FLIP_DURATION }}
 				on:click={() => selectVariant(item.value)}
 				on:contextmenu|stopPropagation={e => {
 					item.value.select()

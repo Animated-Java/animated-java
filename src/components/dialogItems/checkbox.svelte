@@ -3,7 +3,7 @@
 	import BaseDialogItem from './baseDialogItem.svelte'
 
 	export let label: string
-	export let tooltip: string = ''
+	export let tooltip = ''
 	export let checked: Valuable<boolean>
 	export let defaultValue: boolean
 

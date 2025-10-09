@@ -1,5 +1,5 @@
 import { type ComponentConstructorOptions, SvelteComponent } from 'svelte'
-import * as PACKAGE from '../../package.json'
+import { PACKAGE } from '../constants'
 import { pollUntilResult } from '../util/promises'
 import { type SvelteComponentConstructor } from './misc'
 

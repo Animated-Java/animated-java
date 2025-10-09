@@ -3,7 +3,7 @@ import { registerProjectMod } from 'src/util/moddingTools'
 import { translate } from '../util/translation'
 
 export class LocatorAnimator extends BoneAnimator {
-	private _name: string
+	private __name: string
 
 	public uuid: string
 	public element: Locator | undefined
@@ -11,7 +11,7 @@ export class LocatorAnimator extends BoneAnimator {
 	constructor(uuid: string, animation: _Animation, name: string) {
 		super(uuid, animation, name)
 		this.uuid = uuid
-		this._name = name
+		this.__name = name
 	}
 
 	getElement() {
@@ -51,7 +51,7 @@ export class LocatorAnimator extends BoneAnimator {
 			}
 		}
 
-		if (this.element && this.element.parent && this.element.parent !== 'root') {
+		if (this.element?.parent && this.element.parent !== 'root') {
 			this.element.parent.openUp()
 		}
 
@@ -60,7 +60,7 @@ export class LocatorAnimator extends BoneAnimator {
 
 	doRender() {
 		this.getElement()
-		return !!(this.element && this.element.mesh)
+		return !!this.element?.mesh
 	}
 
 	displayPosition(arr?: ArrayVector3, multiplier = 1) {

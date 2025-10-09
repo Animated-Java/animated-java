@@ -4,7 +4,7 @@ import './util/translation'
 // Blueprint Format
 import './formats/blueprint/format'
 // Interface
-import './interface'
+import './interface/**'
 // Blockbench Mods
 import './mods/**'
 // Outliner
@@ -58,8 +58,10 @@ declare global {
 	interface Window {
 		AnimatedJava: typeof AnimatedJavaApi
 	}
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	const AnimatedJava: typeof AnimatedJavaApi
 }
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const AnimatedJavaApi = {
 	API: {
 		parseResourcePackPath,

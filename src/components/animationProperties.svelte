@@ -16,7 +16,7 @@
 	export let loopDelay: Valuable<number>
 	export let excludedNodes: Valuable<Array<{ name: string; value: string }>>
 
-	const availableBones = getAvailableNodes(excludedNodes.get())
+	const AVAILABLE_BONES = getAvailableNodes(excludedNodes.get())
 
 	function animationNameValueChecker(value: string): { type: string; message: string } {
 		if (value.trim().length === 0) {
@@ -24,7 +24,7 @@
 				type: 'error',
 				message: translate('dialog.animation_properties.animation_name.error.empty'),
 			}
-		} else if (value.match(/[^a-zA-Z0-9_\.]/)) {
+		} else if (/[^a-zA-Z0-9_\.]/.exec(value)) {
 			return {
 				type: 'error',
 				message: translate(
@@ -80,7 +80,7 @@
 		swapColumnsButtonTooltip={translate(
 			'dialog.animation_properties.swap_columns_button.tooltip'
 		)}
-		availableItems={availableBones}
+		availableItems={AVAILABLE_BONES}
 		bind:includedItems={excludedNodes}
 	/>
 </div>

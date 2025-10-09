@@ -62,7 +62,7 @@ registerConditionalPropertyOverrideMod({
 
 		override: original => {
 			return function (this: _Animation, length?: number) {
-				length = Math.max(length || this.length, MINIMUM_ANIMATION_LENGTH)
+				length = Math.max(length ?? this.length, MINIMUM_ANIMATION_LENGTH)
 				return original.call(this, length)
 			}
 		},

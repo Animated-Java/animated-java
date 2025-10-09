@@ -1,9 +1,11 @@
-<script lang="ts">
+<script lang="ts" context="module">
 	import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
 	import EVENTS from '../util/events'
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
+</script>
 
+<script lang="ts">
 	let selectedDisplay = VanillaBlockDisplay.selected.at(0)
 	let lastSelected = selectedDisplay
 

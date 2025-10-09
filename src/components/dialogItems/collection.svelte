@@ -17,10 +17,10 @@
 	export let includedItemsColumnTooltip: string
 	export let swapColumnsButtonTooltip: string
 	export let availableItems: CollectionItem[]
-	export let includedItems: Valuable<Array<CollectionItem>>
+	export let includedItems: Valuable<CollectionItem[]>
 
-	let includedItemsList: { id: number; title: string; [key: string]: any }[] = []
-	let availableItemsList: { id: number; title: string; [key: string]: any }[] = []
+	let includedItemsList: Array<{ id: number; title: string; [key: string]: any }> = []
+	let availableItemsList: Array<{ id: number; title: string; [key: string]: any }> = []
 
 	for (let i = 0; i < availableItems.length; i++) {
 		const item = availableItems[i]
@@ -40,7 +40,7 @@
 	}
 
 	function finalizeSort() {
-		includedItems.update(items =>
+		includedItems.update(() =>
 			includedItemsList.map(i => availableItems.find(a => a.name === i.title)!)
 		)
 	}
@@ -57,7 +57,7 @@
 	}
 </script>
 
-<BaseDialogItem {label} {tooltip} {onReset} let:id>
+<BaseDialogItem {label} {tooltip} {onReset}>
 	<div class="main-column-container">
 		<div class="column" title={availableItemsColumnTooltip}>
 			<h3>{availableItemsColumnLable}</h3>
@@ -84,7 +84,7 @@
 						{/if}
 						<i
 							class="material-icons notranslate icon"
-							style="color: rgb(162, 235, 255);">{item.icon || 'folder'}</i
+							style="color: rgb(162, 235, 255);">{item.icon ?? 'folder'}</i
 						>
 						<span>{item.title}</span>
 					</div>
@@ -123,7 +123,7 @@
 						{/if}
 						<i
 							class="material-icons notranslate icon"
-							style="color: rgb(162, 235, 255);">{item.icon || 'folder'}</i
+							style="color: rgb(162, 235, 255);">{item.icon ?? 'folder'}</i
 						>
 						<span>{item.title}</span>
 					</div>

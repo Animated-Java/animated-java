@@ -4,55 +4,55 @@ import { JsonText, TextElement } from '../jsonText'
 import { type IRenderedVariant } from '../rigRenderer'
 import { TAGS } from './tags'
 
-namespace TELLRAW {
-	const TELLRAW_PREFIX = () =>
-		new JsonText([
-			{ text: '\n ', color: 'gray' },
-			{ text: 'ᴀɴɪᴍᴀᴛᴇᴅ ᴊᴀᴠᴀ', color: '#00aced' },
-			{
-				text: `\n (animated_java:${Project!.animated_java.export_namespace})`,
-				color: 'dark_gray',
-				italic: true,
-			},
-			'\n → ',
-		]).flatten()
+const TELLRAW_PREFIX = () =>
+	new JsonText([
+		{ text: '\n ', color: 'gray' },
+		{ text: 'ᴀɴɪᴍᴀᴛᴇᴅ ᴊᴀᴠᴀ', color: '#00aced' },
+		{
+			text: `\n (animated_java:${Project!.animated_java.export_namespace})`,
+			color: 'dark_gray',
+			italic: true,
+		},
+		'\n → ',
+	]).flatten()
 
-	const TELLRAW_SUFFIX = () => '\n'
+const TELLRAW_SUFFIX = () => '\n'
 
-	const TELLRAW_ERROR = (errorName: string, details: TextElement) =>
-		new JsonText({
-			text: '',
-			color: 'red',
-			extra: [
-				TELLRAW_PREFIX(),
-				'ᴇʀʀᴏʀ: ',
-				{ text: errorName, underlined: true },
-				'\n\n ',
-				...(Array.isArray(details) ? details : [details]),
-				TELLRAW_SUFFIX(),
-			],
-		})
-
-	const CREATE_TELLRAW_HELP_LINK = (url: string) =>
-		new JsonText([
+const TELLRAW_ERROR = (errorName: string, details: TextElement) =>
+	new JsonText({
+		text: '',
+		color: 'red',
+		extra: [
+			TELLRAW_PREFIX(),
+			'ᴇʀʀᴏʀ: ',
+			{ text: errorName, underlined: true },
 			'\n\n ',
-			!compareVersions('1.21.5', Project!.animated_java.target_minecraft_version)
-				? {
-						text: '▶ Learn More ◀',
-						color: 'blue',
-						underlined: true,
-						italic: true,
-						click_event: { action: 'open_url', url },
-				  }
-				: {
-						text: '▶ Learn More ◀',
-						color: 'blue',
-						underlined: true,
-						italic: true,
-						clickEvent: { action: 'open_url', value: url },
-				  },
-		]).flatten()
+			...(Array.isArray(details) ? details : [details]),
+			TELLRAW_SUFFIX(),
+		],
+	})
 
+const CREATE_TELLRAW_HELP_LINK = (url: string) =>
+	new JsonText([
+		'\n\n ',
+		!compareVersions('1.21.5', Project!.animated_java.target_minecraft_version)
+			? {
+					text: '▶ Learn More ◀',
+					color: 'blue',
+					underlined: true,
+					italic: true,
+					click_event: { action: 'open_url', url },
+			  }
+			: {
+					text: '▶ Learn More ◀',
+					color: 'blue',
+					underlined: true,
+					italic: true,
+					clickEvent: { action: 'open_url', value: url },
+			  },
+	]).flatten()
+
+namespace TELLRAW {
 	export const RIG_OUTDATED = () =>
 		TELLRAW_ERROR('Outdated Rig Instance', [
 			'The instance of ',

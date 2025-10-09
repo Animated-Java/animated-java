@@ -1,10 +1,12 @@
-<script lang="ts">
+<script lang="ts" context="module">
 	import { ITEM_DISPLAY_ITEM_DISPLAY_SELECT } from '../interface/panel/vanillaItemDisplayElement'
 	import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
 	import EVENTS from '../util/events'
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
+</script>
 
+<script lang="ts">
 	let selectedDisplay = VanillaItemDisplay.selected.at(0)
 	let lastSelected = selectedDisplay
 

@@ -1,5 +1,11 @@
 {
-	"include": ["src/**/*", "tools/**/*"],
+	"include": [
+		"src/**/*",
+		"tools/**/*",
+		"./eslint.config.ts",
+		"./vitest.config.ts",
+		"./svelte.config.ts"
+	],
 	"exclude": ["**/node_modules/**"],
 	"compilerOptions": {
 		"outDir": "./dist/",

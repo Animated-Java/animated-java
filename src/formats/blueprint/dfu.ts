@@ -137,8 +137,7 @@ function updateModelToOld1_0(model: any) {
 	}
 
 	if (
-		model.animations &&
-		model.animations.find((a: any) =>
+		model.animations?.find((a: any) =>
 			Object.keys(a.animators as Record<string, any>).find(name => name === 'effects')
 		)
 	) {
@@ -229,7 +228,7 @@ function updateModelToOld1_4(model: any) {
 }
 
 // region v0.3.10
-// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelTo0_3_10(model: any) {
 	console.log('Processing model for AJ 0.3.10', JSON.parse(JSON.stringify(model)))
 	model.meta ??= {}
@@ -251,7 +250,7 @@ function updateModelTo1_0pre1(model: any) {
 		meta: {
 			format: 'animated_java_blueprint',
 			format_version: '0.5.0',
-			uuid: model.meta.uuid || guid(),
+			uuid: model.meta.uuid ?? guid(),
 			last_used_export_namespace: model.animated_java.settings.project_namespace,
 		},
 		project_settings: {
@@ -291,9 +290,9 @@ function updateModelTo1_0pre1(model: any) {
 		variants: {
 			default: {
 				name: 'default',
-				display_name: defaultVariant.name || 'Default',
-				uuid: defaultVariant.uuid || guid(),
-				texture_map: defaultVariant.textureMap || {},
+				display_name: defaultVariant.name ?? 'Default',
+				uuid: defaultVariant.uuid ?? guid(),
+				texture_map: defaultVariant.textureMap ?? {},
 				excluded_bones: [],
 			},
 			list: [],
@@ -336,13 +335,13 @@ function updateModelTo1_0pre1(model: any) {
 			}
 			if (element.entity_type) element.config.entity_type = element.entity_type
 			if (element.nbt) {
-				const summon_commands: string[] = []
+				const summonCommands: string[] = []
 				const nbt = NbtTag.fromString(element.nbt as string) as NbtCompound
 				nbt.delete('Passengers')
 				const tags = (nbt.get('Tags') as NbtList<NbtString>)?.map(t => t.getAsString())
 				nbt.delete('Tags')
-				summon_commands.push('data merge entity @s ' + nbt.toString())
-				if (tags) summon_commands.push(...tags.map(t => `tag @s add ${t}`))
+				summonCommands.push('data merge entity @s ' + nbt.toString())
+				if (tags) summonCommands.push(...tags.map(t => `tag @s add ${t}`))
 
 				const recursePassengers = (stringNbt: string): string[] => {
 					const nbt = NbtTag.fromString(stringNbt) as NbtCompound
@@ -380,16 +379,16 @@ function updateModelTo1_0pre1(model: any) {
 				}
 
 				try {
-					summon_commands.push(...recursePassengers(element.nbt as string))
+					summonCommands.push(...recursePassengers(element.nbt as string))
 				} catch (e) {
 					console.error('Failed to parse NBT', element.nbt)
 					console.error(e)
 				}
-				if (summon_commands.length === 0) {
-					summon_commands.push(`data merge entity @s ${element.nbt as string}`)
+				if (summonCommands.length === 0) {
+					summonCommands.push(`data merge entity @s ${element.nbt as string}`)
 				}
 
-				element.config.summon_commands = summon_commands.join('\n')
+				element.config.summon_commands = summonCommands.join('\n')
 			}
 		}
 	}
@@ -445,14 +444,14 @@ function updateModelTo1_0pre6(model: any) {
 		delete defaultVariant.excluded_bones
 	}
 
-	for (const variant of model?.variants?.list || []) {
+	for (const variant of model?.variants?.list ?? []) {
 		if (variant?.excluded_bones) {
 			variant.excluded_nodes = variant.excluded_bones
 			delete variant.excluded_bones
 		}
 	}
 
-	for (const animation of model?.animations || []) {
+	for (const animation of model?.animations ?? []) {
 		if (animation?.excluded_bones) {
 			animation.excluded_nodes = animation.excluded_bones
 			delete animation.excluded_bones
@@ -531,7 +530,6 @@ function updateModelTo1_6_3(model: any) {
 				{ name: 'transparent' },
 				'797174ae-5c58-4a83-a630-eefd51007c80'
 			).fromDataURL(TransparentTexture)
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 			model.textures.push(texture.getSaveCopy())
 			break
 		}
@@ -541,6 +539,7 @@ function updateModelTo1_6_3(model: any) {
 }
 
 // region v1.6.5
+// eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelTo1_6_5(model: any) {
 	console.log('Processing model format 1.6.5', JSON.parse(JSON.stringify(model)))
 
@@ -555,6 +554,7 @@ function updateModelTo1_6_5(model: any) {
 }
 
 // region v1.8.0
+// eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelTo1_8_0(model: any) {
 	console.log('Processing model format 1.8.0', JSON.parse(JSON.stringify(model)))
 	const fixed: IBlueprintFormatJSON = JSON.parse(JSON.stringify(model))

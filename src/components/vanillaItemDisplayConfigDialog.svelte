@@ -63,16 +63,16 @@
 	export let customName: Valuable<string>
 	export let customNameVisible: Valuable<boolean>
 	export let billboard: Valuable<string>
-	export let overrideBrightness: Valuable<NonNullable<BoneConfig['_overrideBrightness']>>
-	export let brightnessOverride: Valuable<NonNullable<BoneConfig['_brightnessOverride']>>
-	export let glowing: Valuable<NonNullable<BoneConfig['_glowing']>>
-	export let overrideGlowColor: Valuable<NonNullable<BoneConfig['_overrideGlowColor']>>
-	export let glowColor: Valuable<NonNullable<BoneConfig['_glowColor']>>
-	export let invisible: Valuable<NonNullable<BoneConfig['_invisible']>>
-	export let nbt: Valuable<NonNullable<BoneConfig['_nbt']>>
-	export let shadowRadius: Valuable<NonNullable<BoneConfig['_shadowRadius']>>
-	export let shadowStrength: Valuable<NonNullable<BoneConfig['_shadowStrength']>>
-	export let useNBT: Valuable<NonNullable<BoneConfig['_useNBT']>>
+	export let overrideBrightness: Valuable<NonNullable<BoneConfig['__overrideBrightness']>>
+	export let brightnessOverride: Valuable<NonNullable<BoneConfig['__brightnessOverride']>>
+	export let glowing: Valuable<NonNullable<BoneConfig['__glowing']>>
+	export let overrideGlowColor: Valuable<NonNullable<BoneConfig['__overrideGlowColor']>>
+	export let glowColor: Valuable<NonNullable<BoneConfig['__glowColor']>>
+	export let invisible: Valuable<NonNullable<BoneConfig['__invisible']>>
+	export let nbt: Valuable<NonNullable<BoneConfig['__nbt']>>
+	export let shadowRadius: Valuable<NonNullable<BoneConfig['__shadowRadius']>>
+	export let shadowStrength: Valuable<NonNullable<BoneConfig['__shadowStrength']>>
+	export let useNBT: Valuable<NonNullable<BoneConfig['__useNBT']>>
 </script>
 
 {#if PLUGIN_MODE}

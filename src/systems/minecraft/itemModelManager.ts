@@ -5,7 +5,7 @@ import { parseBlockModel } from './blockModelManager'
 import type { IItemModel } from './model'
 import { TEXTURE_FRAG_SHADER, TEXTURE_VERT_SHADER } from './textureShaders'
 
-type ItemModelMesh = {
+interface ItemModelMesh {
 	mesh: THREE.Mesh
 	outline: THREE.LineSegments
 	boundingBox: THREE.BufferGeometry
@@ -81,8 +81,6 @@ async function parseItemModel(location: string, childModel?: IItemModel): Promis
 		// The block model parser handles custom item models made from elements just fine, so we can use it here
 		return await parseBlockModel({ model: location, isItemModel: true }, model)
 	}
-
-	throw new Error(`Unsupported item model '${location}'`)
 }
 
 async function generateItemMesh(location: string, model: IItemModel): Promise<ItemModelMesh> {
@@ -136,7 +134,7 @@ async function generateItemMesh(location: string, model: IItemModel): Promise<It
 			normals.push(x, y, z, x, y, z, x, y, z, x, y, z)
 		}
 
-		if (texture && texture.image.width) {
+		if (texture?.image.width) {
 			const canvas = document.createElement('canvas')
 			const ctx = canvas.getContext('2d')!
 			canvas.width = texture.image.width
@@ -148,8 +146,8 @@ async function generateItemMesh(location: string, model: IItemModel): Promise<It
 				const y = dir === 1 ? -1 : 0
 				// prettier-ignore
 				positionArray.push(
-					-x, y, z,
-					-x, y, z + 1,
+					-x,     y, z,
+					-x,     y, z + 1,
 					-x - w, y, z + h,
 					-x - w, y, z + h - 1
 				)
@@ -184,11 +182,11 @@ async function generateItemMesh(location: string, model: IItemModel): Promise<It
 				const s = positionArray.length / 3
 				// prettier-ignore
 				positionArray.push(
-						-startX, 0, startY,
-						-startX, -1, startY,
-						-endX, -1, endY,
-						-endX, 0, endY
-					)
+					-startX,  0, startY,
+					-startX, -1, startY,
+					-endX  , -1, endY,
+					-endX  ,  0, endY
+				)
 
 				if (dir === 1) {
 					indices.push(s + 0, s + 1, s + 2, s + 0, s + 2, s + 3)
@@ -210,15 +208,12 @@ async function generateItemMesh(location: string, model: IItemModel): Promise<It
 					endX -= 0.1
 					addNormal(0, 0, -dir)
 				}
+				// prettier-ignore
 				uvs.push(
-					endX / canvas.width,
-					1 - startY / canvas.height,
-					endX / canvas.width,
-					1 - endY / canvas.height,
-					startX / canvas.width,
-					1 - endY / canvas.height,
-					startX / canvas.width,
-					1 - startY / canvas.height
+					endX   / canvas.width, 1 - startY   / canvas.height,
+					endX   / canvas.width, 1 - endY     / canvas.height,
+					startX / canvas.width, 1 - endY     / canvas.height,
+					startX / canvas.width, 1 - startY   / canvas.height
 				)
 				colors.push(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
 			}
@@ -303,7 +298,7 @@ async function generateItemMesh(location: string, model: IItemModel): Promise<It
 	const outlineGeo = mergeGeometries(outlineGeos)
 	const boundingBox = mergeGeometries(boundingBoxes)!
 	const outline = new THREE.LineSegments(
-		new THREE.EdgesGeometry(outlineGeo as THREE.BufferGeometry),
+		new THREE.EdgesGeometry(outlineGeo!),
 		Canvas.outlineMaterial
 	)
 

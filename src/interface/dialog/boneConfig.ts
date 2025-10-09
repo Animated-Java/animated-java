@@ -31,7 +31,7 @@ function propagateInheritanceDown(group: Group, config: BoneConfig, variant?: st
 	for (const child of group.children) {
 		if (!(child instanceof Group)) continue
 		const childConfig = variant ? child.configs.variants[variant] : child.configs.default
-		if (childConfig && childConfig.inherit_settings) {
+		if (childConfig?.inherit_settings) {
 			const childBoneConfig = BoneConfig.fromJSON(childConfig)
 			childBoneConfig.inheritFrom(config)
 			if (variant) child.configs.variants[variant] = childBoneConfig.toJSON()

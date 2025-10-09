@@ -10,6 +10,7 @@ export type CommonKeys<T extends object> = Extract<AllKeys<T>, keyof T>
 /** Gets keys that aren't common between all members of a object union */
 export type UncommonKeys<T extends object> = Exclude<AllKeys<T>, CommonKeys<T>>
 /** Gets the type of a key in an object, or undefined if the key doesn't exist in the object */
+// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
 export type PickType<T, K extends AllKeys<T>> = T extends { [k in K]?: any } ? T[K] : undefined
 /** Gets the type of a key in an object union, or never if the key doesn't exist in any member of the union */
 export type PickTypeOf<T, K extends string | number | symbol> = K extends AllKeys<T>

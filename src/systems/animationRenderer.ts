@@ -45,10 +45,10 @@ function getNodeMatrix(node: OutlinerElement, scale: number) {
 
 function getDecomposedTransformation(matrix: THREE.Matrix4) {
 	const translation = new THREE.Vector3()
-	const left_rotation = new THREE.Quaternion()
+	const leftRotation = new THREE.Quaternion()
 	const scale = new THREE.Vector3()
-	matrix.decompose(translation, left_rotation, scale)
-	return { translation, left_rotation, scale }
+	matrix.decompose(translation, leftRotation, scale)
+	return { translation, left_rotation: leftRotation, scale }
 }
 
 function threeAxisRotationToTwoAxisRotation(rot: THREE.Quaternion): ArrayVector2 {
@@ -229,7 +229,7 @@ export function getFrame(
 			case 'struct': {
 				matrix = getNodeMatrix(outlinerNode, 1)
 				// Only add the frame if the matrix has changed, or this is the first frame
-				if (lastFrame && lastFrame.matrix.equals(matrix)) continue
+				if (lastFrame?.matrix.equals(matrix)) continue
 				lastFrameCache.set(uuid, { matrix, keyframe })
 				break
 			}
@@ -327,7 +327,7 @@ export function updatePreview(animation: _Animation, time: number) {
 	// Blockbench.dispatchEvent('display_animation_frame')
 }
 
-async function renderAnimation(animation: _Animation, rig: IRenderedRig) {
+function renderAnimation(animation: _Animation, rig: IRenderedRig) {
 	const rendered = {
 		name: animation.name,
 		storage_name: sanitizeStorageKey(animation.name),
@@ -427,7 +427,7 @@ export async function renderProjectAnimations(project: ModelProject, rig: IRende
 	correctSceneAngle()
 	const animations: IRenderedAnimation[] = []
 	for (const animation of project.animations) {
-		animations.push(await renderAnimation(animation, rig))
+		animations.push(renderAnimation(animation, rig))
 		PROGRESS.set(PROGRESS.get() + 1)
 		await sleepForAnimationFrame()
 	}

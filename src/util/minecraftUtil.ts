@@ -63,7 +63,7 @@ export function getPathFromResourceLocation(resourceLocation: string, type: stri
 
 export function isResourcePackPath(path: string) {
 	const parsed = parseResourcePackPath(path)
-	return !!(parsed && parsed.namespace && parsed.resourcePath)
+	return !!(parsed?.namespace && parsed.resourcePath)
 }
 
 export function parseResourcePackPath(path: string): IMinecraftResourceLocation | undefined {
@@ -119,7 +119,7 @@ export function parseResourceLocation(resourceLocation: string) {
 
 export function isDataPackPath(path: string) {
 	const parsed = parseDataPackPath(path)
-	return !!(parsed && parsed.namespace && parsed.resourcePath)
+	return !!(parsed?.namespace && parsed.resourcePath)
 }
 
 export function parseDataPackPath(path: string): IMinecraftResourceLocation | undefined {
@@ -262,7 +262,7 @@ export interface IParsedBlock {
 export async function parseBlock(block: string): Promise<IParsedBlock | undefined> {
 	const states: Record<string, ReturnType<typeof resolveBlockstateValueType>> = {}
 	if (block.includes('[')) {
-		const match = block.match(/(.+?)\[((?:[^,=[\]]+=[^,=[\]]+,?)+)?]/)
+		const match = /(.+?)\[((?:[^,=[\]]+=[^,=[\]]+,?)+)?]/.exec(block)
 		if (!match) return
 		if (match[2] !== undefined) {
 			const args = match[2].split(',')

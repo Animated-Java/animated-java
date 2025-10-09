@@ -80,8 +80,8 @@ function createMissingCharacter(): CachedBitmapChar {
 }
 
 abstract class FontProvider {
-	public type: 'bitmap' | 'reference' | 'space'
-	public loaded = false
+	type: 'bitmap' | 'reference' | 'space'
+	loaded = false
 
 	constructor(providerJSON: MinecraftJson.FontProvider) {
 		this.type = providerJSON.type
@@ -110,7 +110,7 @@ abstract class FontProvider {
 }
 
 class ReferenceFontProvider extends FontProvider {
-	public reference: MinecraftFont
+	reference: MinecraftFont
 
 	constructor(providerJSON: MinecraftJson.FontProviderReference) {
 		super(providerJSON)
@@ -135,7 +135,7 @@ class ReferenceFontProvider extends FontProvider {
 }
 
 class SpaceFontProvider extends FontProvider {
-	public advances: Record<string, number>
+	advances: Record<string, number>
 
 	constructor(providerJSON: MinecraftJson.FontProviderSpace) {
 		super(providerJSON)
@@ -159,14 +159,14 @@ class SpaceFontProvider extends FontProvider {
 }
 
 class BitmapFontProvider extends FontProvider {
-	public bitmapPath: string
-	public charHeight: number
-	public charWidth: number
-	public ascent: number
-	public chars: UnicodeString[] = []
+	bitmapPath: string
+	charHeight: number
+	charWidth: number
+	ascent: number
+	chars: UnicodeString[] = []
 
-	public atlas: THREE.Texture = THREE.Texture.DEFAULT_IMAGE
-	public canvas: HTMLCanvasElement = document.createElement('canvas')
+	atlas: THREE.Texture = THREE.Texture.DEFAULT_IMAGE
+	canvas: HTMLCanvasElement = document.createElement('canvas')
 
 	private charCache = new Map<string, CachedChar>()
 
@@ -257,9 +257,9 @@ class BitmapFontProvider extends FontProvider {
 export class MinecraftFont {
 	static all: MinecraftFont[] = []
 
-	public id: string
-	public providers: FontProvider[] = []
-	public fallback: MinecraftFont | undefined
+	id: string
+	providers: FontProvider[] = []
+	fallback: MinecraftFont | undefined
 
 	private loaded = false
 	private charCache = new Map<string, CachedChar>()
@@ -371,7 +371,6 @@ export class MinecraftFont {
 		let material = this.materialCache.get(colorString)
 		if (!material) {
 			const alpha = color.getAlpha()
-			console.log(colorString, alpha, color)
 			if (alpha < 1) {
 				material = new THREE.MeshBasicMaterial({
 					color: color.toHexString(),
@@ -406,48 +405,9 @@ export class MinecraftFont {
 		const mesh = new THREE.Mesh()
 
 		const words = getComponentWords(jsonText.toJSON())
-		console.log('Component words:', words)
 		const { lines, backgroundWidth } = await computeTextWrapping(words, maxLineWidth)
-		console.log('Computed lines:', lines)
 		const width = backgroundWidth + 1
 		const height = (lines.length || 1) * 10 + 1
-		console.log('Text dimensions:', width, height)
-
-		// // Debug output
-		// const wordWidths = words.map(word => this.getWordWidth(word))
-		// for (const word of words) {
-		// 	console.log(
-		// 		`${words.indexOf(word)} '${word.text.toString()}' width: ${
-		// 			wordWidths[words.indexOf(word)]
-		// 		}`
-		// 	)
-		// 	for (const span of word.styles) {
-		// 		console.log(
-		// 			`'${word.text.slice(span.start, span.end).toString()}' ${span.start}-${
-		// 				span.end
-		// 			} = `,
-		// 			span.style
-		// 		)
-		// 	}
-		// }
-		// console.log('Lines:', lines, 'CanvasWidth:', maxLineWidth)
-		// for (const line of lines) {
-		// 	console.log('Line', lines.indexOf(line), line.width)
-		// 	for (const word of line.words) {
-		// 		console.log(
-		// 			'Word',
-		// 			line.words.indexOf(word),
-		// 			`'${word.text.toString()}'`,
-		// 			word.styles.map(span => span.style),
-		// 			word.styles.map(
-		// 				span =>
-		// 					`${span.start}-${span.end} '${word.text
-		// 						.slice(span.start, span.end)
-		// 						.toString()}'`
-		// 			)
-		// 		)
-		// 	}
-		// }
 
 		const backgroundGeo = new THREE.PlaneBufferGeometry(width, height)
 		const backgroundMesh = new THREE.Mesh(
@@ -544,7 +504,6 @@ export class MinecraftFont {
 		if (spanGeos.length > 0) {
 			const charGeo = mergeGeometries(spanGeos, true)!
 			const charMesh = new THREE.Mesh(charGeo, spanMaterials)
-			console.log(charGeo, spanMaterials, charMesh)
 			mesh.add(charMesh)
 		}
 
@@ -760,40 +719,3 @@ export async function getVanillaFont() {
 EVENTS.MINECRAFT_ASSETS_LOADED.subscribe(() => {
 	loadMinecraftFonts()
 })
-
-// events.SELECT_PROJECT.subscribe(() => {
-// 	void getVanillaFont().then(async font => {
-// 		await font.generateTextMesh({
-// 			jsonText: new JsonText([
-// 				'',
-// 				{
-// 					text: 'Sometimes ',
-// 					italic: true,
-// 				},
-// 				'you ',
-// 				{
-// 					text: 'have',
-// 					bold: true,
-// 				},
-// 				' to wear ',
-// 				{
-// 					text: 'stretchy',
-// 					color: 'yellow',
-// 				},
-// 				' pants.\n',
-// 				{
-// 					text: "(It's for ",
-// 				},
-// 				{
-// 					text: 'fun!',
-// 					underlined: true,
-// 					color: 'blue',
-// 				},
-// 				')',
-// 			]),
-// 			maxLineWidth: 100,
-// 			backgroundColor: '#000000',
-// 			backgroundAlpha: 0.25,
-// 		})
-// 	})
-// })

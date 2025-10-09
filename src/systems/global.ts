@@ -12,28 +12,30 @@ export enum SUPPORTED_MINECRAFT_VERSIONS {
 	'1.20.4' = '1.20.4',
 }
 
-interface OldSerializedAJMeta {
-	[key: string]: {
+type OldSerializedAJMeta = Record<
+	string,
+	{
 		files?: string[]
 	}
-}
+>
 
 interface SerializedAJMeta {
 	formatVersion?: string
-	rigs?: {
-		[key: string]: {
+	rigs?: Record<
+		string,
+		{
 			coreFiles?: string[]
 			versionedFiles?: string[]
 		}
-	}
+	>
 }
 
 export class AJMeta {
-	public coreFiles = new Set<string>()
-	public previousCoreFiles = new Set<string>()
+	coreFiles = new Set<string>()
+	previousCoreFiles = new Set<string>()
 
-	public versionedFiles = new Set<string>()
-	public previousVersionedFiles = new Set<string>()
+	versionedFiles = new Set<string>()
+	previousVersionedFiles = new Set<string>()
 
 	private previousAJMeta: SerializedAJMeta = {}
 
@@ -142,7 +144,7 @@ export interface SerializedPackMeta {
 		}>
 	}
 	overlays?: {
-		entries?: Array<OverlayEntry>
+		entries?: OverlayEntry[]
 	}
 	language?: {
 		name?: string

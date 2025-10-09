@@ -1,18 +1,10 @@
-<script lang="ts">
-	const pluginModeEnabled = !!Project?.animated_java?.enable_plugin_mode
-
+<script lang="ts" context="module">
 	import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
 	import CheckBox from './dialogItems/checkbox.svelte'
 	import CodeInput from './dialogItems/codeInput.svelte'
 	import LineInput from './dialogItems/lineInput.svelte'
-
-	export let useEntity: Valuable<boolean>
-	export let entityType: Valuable<string>
-	export let syncPassengerRotation: Valuable<boolean>
-	export let onSummonFunction: Valuable<string>
-	export let onTickFunction: Valuable<string>
 
 	const entityTypeValidator: DialogItemValueChecker<string> = (value: string) => {
 		if (value.length === 0) {
@@ -35,8 +27,18 @@
 	}
 </script>
 
+<script lang="ts">
+	const PLUGIN_MODE = !!Project?.animated_java?.enable_plugin_mode
+
+	export let useEntity: Valuable<boolean>
+	export let entityType: Valuable<string>
+	export let syncPassengerRotation: Valuable<boolean>
+	export let onSummonFunction: Valuable<string>
+	export let onTickFunction: Valuable<string>
+</script>
+
 <div>
-	{#if pluginModeEnabled}
+	{#if PLUGIN_MODE}
 		{#each translate('dialog.locator_config.plugin_mode_warning').split('\n') as line}
 			<p>{line}</p>
 		{/each}

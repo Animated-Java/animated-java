@@ -5,7 +5,7 @@
 	import BaseDialogItem from './baseDialogItem.svelte'
 
 	export let label: string
-	export let tooltip: string = ''
+	export let tooltip = ''
 	export let value: Valuable<number>
 	export let defaultValue: number
 	export let min = -Infinity

@@ -17,13 +17,13 @@
 	export let uuid: Valuable<string>
 	export let textureMap: TextureMap
 	export let generateNameFromDisplayName: Valuable<boolean>
-	export let excludedNodes: Valuable<Array<CollectionItem>>
+	export let excludedNodes: Valuable<CollectionItem[]>
 
-	const availableTextures = [...Texture.all]
-	const primaryTextures = [...Texture.all]
-	const secondaryTextures = availableTextures
+	const AVAILABLE_TEXTURES = [...Texture.all]
+	const PRIMARY_TEXTURES = [...Texture.all]
+	const SECONDARY_TEXTURES = AVAILABLE_TEXTURES
 
-	const availableBones = getAvailableNodes(excludedNodes.get(), {
+	const AVAILABLE_BONES = getAvailableNodes(excludedNodes.get(), {
 		groupsOnly: true,
 		excludeEmptyGroups: true,
 	})
@@ -54,7 +54,7 @@
 	}
 
 	function getTextureSrc(uuid: string) {
-		const texture = availableTextures.find(t => t.uuid === uuid)
+		const texture = AVAILABLE_TEXTURES.find(t => t.uuid === uuid)
 		if (!texture) return MissingTexture
 		return texture.img.src
 	}
@@ -62,7 +62,7 @@
 	function selectNewPrimaryTexture(e: Event, oldPrimaryUUID: string) {
 		const select = e.target as HTMLSelectElement
 		const textureName = select.value.trim()
-		const newPrimaryUUID = primaryTextures.find(t => t.name === textureName)?.uuid
+		const newPrimaryUUID = PRIMARY_TEXTURES.find(t => t.name === textureName)?.uuid
 		if (!newPrimaryUUID) {
 			console.error(`Failed to find new primary texture with the name: ${textureName}`)
 			return
@@ -80,7 +80,7 @@
 	function selectNewSecondaryTexture(e: Event, primaryUUID: string) {
 		const select = e.target as HTMLSelectElement
 		const textureName = select.value.trim()
-		const newSecondaryUUID = secondaryTextures.find(t => t.name === textureName)?.uuid
+		const newSecondaryUUID = SECONDARY_TEXTURES.find(t => t.name === textureName)?.uuid
 		if (!newSecondaryUUID) {
 			console.error(`Failed to find new secondary texture with the name: ${textureName}`)
 			return
@@ -91,7 +91,7 @@
 
 	function getUnusedPrimaryTextures() {
 		const usedTextures = [...textureMap.map.keys()]
-		return primaryTextures.filter(t => !usedTextures.includes(t.uuid))
+		return PRIMARY_TEXTURES.filter(t => !usedTextures.includes(t.uuid))
 	}
 </script>
 
@@ -139,9 +139,9 @@
 			<div
 				class="tool"
 				title={translate('dialog.variant_config.texture_map.create_new_mapping')}
-				on:click={() => {}}
+				on:click={() => createTextureMapping()}
 			>
-				<i class="material-icons icon" on:click={() => createTextureMapping()}>add</i>
+				<i class="material-icons icon">add</i>
 			</div>
 		</div>
 		{#key textureMapUpdated}
@@ -149,7 +149,7 @@
 				class="texture-map-container"
 				style={[...textureMap.map.entries()].length === 0 ? 'min-height: 2rem;' : ''}
 			>
-				{#each [...textureMap.map.entries()] as entry, index}
+				{#each [...textureMap.map.entries()] as entry}
 					<div class="texture-mapping-item"></div>
 					<li class="texture-mapping-item">
 						<div class="texture-mapping-item-dropdown-container">
@@ -160,8 +160,7 @@
 								class="texture-mapping-item-dropdown"
 								on:change={e => selectNewPrimaryTexture(e, entry[0])}
 							>
-								<!-- svelte-ignore missing-declaration -->
-								{#each primaryTextures as texture}
+								{#each PRIMARY_TEXTURES as texture}
 									<option selected={texture.uuid === entry[0]}>
 										{texture.name}
 									</option>
@@ -179,8 +178,7 @@
 								class="texture-mapping-item-dropdown"
 								on:change={e => selectNewSecondaryTexture(e, entry[0])}
 							>
-								<!-- svelte-ignore missing-declaration -->
-								{#each secondaryTextures as texture}
+								{#each SECONDARY_TEXTURES as texture}
 									<option selected={texture.uuid === entry[1]}>
 										{texture.name}
 									</option>
@@ -219,7 +217,7 @@
 			swapColumnsButtonTooltip={translate(
 				'dialog.variant_config.swap_columns_button.tooltip'
 			)}
-			availableItems={availableBones}
+			availableItems={AVAILABLE_BONES}
 			bind:includedItems={excludedNodes}
 		/>
 	{/if}

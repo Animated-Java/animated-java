@@ -3,7 +3,7 @@ import type { SvelteComponentConstructor } from './misc'
 import { registerMod } from './moddingTools'
 import { pollUntilResult } from './promises'
 
-type InjectSvelteComponentOptions<T, U extends ComponentConstructorOptions> = {
+interface InjectSvelteComponentOptions<T, U extends ComponentConstructorOptions> {
 	/**
 	 * The svelte component constructor.
 	 */

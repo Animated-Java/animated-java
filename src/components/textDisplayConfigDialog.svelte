@@ -9,24 +9,8 @@
 	import { TextDisplayConfig } from '../nodeConfigs'
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
-</script>
 
-<script lang="ts">
-	const pluginModeEnabled = !!Project?.animated_java?.enable_plugin_mode
-
-	export let billboard: Valuable<string>
-	export let overrideBrightness: Valuable<NonNullable<TextDisplayConfig['_overrideBrightness']>>
-	export let brightnessOverride: Valuable<NonNullable<TextDisplayConfig['_brightnessOverride']>>
-	export let glowing: Valuable<NonNullable<TextDisplayConfig['_glowing']>>
-	export let overrideGlowColor: Valuable<NonNullable<TextDisplayConfig['_overrideGlowColor']>>
-	export let glowColor: Valuable<NonNullable<TextDisplayConfig['_glowColor']>>
-	export let invisible: Valuable<NonNullable<TextDisplayConfig['_invisible']>>
-	export let nbt: Valuable<NonNullable<TextDisplayConfig['_nbt']>>
-	export let shadowRadius: Valuable<NonNullable<TextDisplayConfig['_shadowRadius']>>
-	export let shadowStrength: Valuable<NonNullable<TextDisplayConfig['_shadowStrength']>>
-	export let useNBT: Valuable<NonNullable<TextDisplayConfig['_useNBT']>>
-
-	const billboardOptions: Record<TextDisplayConfig['billboard'], string> = {
+	const BILLBOARD_OPTIONS: Record<TextDisplayConfig['billboard'], string> = {
 		fixed: translate('dialog.bone_config.billboard.options.fixed'),
 		vertical: translate('dialog.bone_config.billboard.options.vertical'),
 		horizontal: translate('dialog.bone_config.billboard.options.horizontal'),
@@ -54,11 +38,27 @@
 	}
 </script>
 
-{#if pluginModeEnabled}
+<script lang="ts">
+	const PLUGIN_MODE = !!Project?.animated_java?.enable_plugin_mode
+
+	export let billboard: Valuable<string>
+	export let overrideBrightness: Valuable<NonNullable<TextDisplayConfig['__overrideBrightness']>>
+	export let brightnessOverride: Valuable<NonNullable<TextDisplayConfig['__brightnessOverride']>>
+	export let glowing: Valuable<NonNullable<TextDisplayConfig['__glowing']>>
+	export let overrideGlowColor: Valuable<NonNullable<TextDisplayConfig['__overrideGlowColor']>>
+	export let glowColor: Valuable<NonNullable<TextDisplayConfig['__glowColor']>>
+	export let invisible: Valuable<NonNullable<TextDisplayConfig['__invisible']>>
+	export let nbt: Valuable<NonNullable<TextDisplayConfig['__nbt']>>
+	export let shadowRadius: Valuable<NonNullable<TextDisplayConfig['__shadowRadius']>>
+	export let shadowStrength: Valuable<NonNullable<TextDisplayConfig['__shadowStrength']>>
+	export let useNBT: Valuable<NonNullable<TextDisplayConfig['__useNBT']>>
+</script>
+
+{#if PLUGIN_MODE}
 	<Select
 		label={translate('dialog.text_display_config.billboard.title')}
 		tooltip={translate('dialog.text_display_config.billboard.description')}
-		options={billboardOptions}
+		options={BILLBOARD_OPTIONS}
 		defaultOption={TextDisplayConfig.prototype.billboard}
 		bind:value={billboard}
 	/>
@@ -140,7 +140,7 @@
 		<Select
 			label={translate('dialog.bone_config.billboard.title')}
 			tooltip={translate('dialog.bone_config.billboard.description')}
-			options={billboardOptions}
+			options={BILLBOARD_OPTIONS}
 			defaultOption={TextDisplayConfig.prototype.billboard}
 			bind:value={billboard}
 		/>

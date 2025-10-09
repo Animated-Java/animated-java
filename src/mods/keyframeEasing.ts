@@ -48,7 +48,7 @@ registerMod({
 			amount,
 			allowExpression
 		): number {
-			const easing = other.easing || 'linear'
+			const easing = other.easing ?? 'linear'
 
 			if (!activeProjectIsBlueprintFormat() || easing === 'linear')
 				return originalGetLerp.call(this, other, axis, amount, allowExpression)
@@ -60,7 +60,7 @@ registerMod({
 						? other.easingArgs[0]
 						: getEasingArgDefault(other)
 
-				easingFunc = easingFunc.bind(null, arg1 || 0)
+				easingFunc = easingFunc.bind(null, arg1 ?? 0)
 			}
 			const easedAmount = easingFunc(amount)
 			const start = this.calc(axis)

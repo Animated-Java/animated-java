@@ -58,7 +58,7 @@ const CUSTOM_RULES: ConfigWithExtends['rules'] = {
 	'@typescript-eslint/no-unsafe-call': 'off',
 	'@typescript-eslint/unbound-method': 'off',
 	'@typescript-eslint/no-non-null-assertion': 'off',
-	'@typescript-eslint/triple-slash-reference': 'off',
+	'@typescript-eslint/explicit-member-accessibility': ['error', { accessibility: 'no-public' }],
 	// Naming conventions
 	'@typescript-eslint/naming-convention': [
 		'warn',
@@ -74,6 +74,12 @@ const CUSTOM_RULES: ConfigWithExtends['rules'] = {
 				match: true,
 				regex: 'v\\d+_\\d+_\\d+$',
 			},
+			format: null,
+		},
+		{
+			// Version Enums
+			selector: ['enumMember'],
+			filter: { regex: '^([\\d\\.]+)$', match: true },
 			format: null,
 		},
 		{

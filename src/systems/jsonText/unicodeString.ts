@@ -14,13 +14,13 @@ const ESCAPE_SEQUENCES = {
 	r: '\r',
 }
 
-const unicodeCharMap = new Map<string, string>()
+const UNICODE_CHAR_MAP = new Map<string, string>()
 
 async function loadUnicodeCharMappings() {
 	const response = await fetch('https://unicode.org/Public/UNIDATA/UnicodeData.txt')
 	const text = await response.text()
 
-	unicodeCharMap.clear()
+	UNICODE_CHAR_MAP.clear()
 	const lines = text.split('\n')
 	for (const line of lines) {
 		const parts = line.split(';')
@@ -28,10 +28,10 @@ async function loadUnicodeCharMappings() {
 		const name = parts[1]
 		const codePoint = parseInt(codePointHex, 16)
 		if (isNaN(codePoint) || name === '<control>' || name === '') continue
-		unicodeCharMap.set(name, String.fromCodePoint(codePoint))
+		UNICODE_CHAR_MAP.set(name, String.fromCodePoint(codePoint))
 	}
 
-	console.log(`Loaded ${unicodeCharMap.size} Unicode character mappings`, unicodeCharMap)
+	console.log(`Loaded ${UNICODE_CHAR_MAP.size} Unicode character mappings`, UNICODE_CHAR_MAP)
 
 	for (const textDisplay of TextDisplay.all) {
 		void textDisplay.updateText()
@@ -77,14 +77,14 @@ function resolveNamedUnicodeEscapeSequence(s: StringStream): string {
 		return '\\N{}'
 	}
 
-	if ((s.item as string) !== '}') {
+	if (s.item !== '}') {
 		console.warn(`Expected '}' to end named unicode escape sequence`)
 		return `\\N{${name}`
 	}
 	s.consume() // }
 
-	if (unicodeCharMap.has(name)) {
-		return unicodeCharMap.get(name)!
+	if (UNICODE_CHAR_MAP.has(name)) {
+		return UNICODE_CHAR_MAP.get(name)!
 	}
 
 	return `\\N{${name}}`
@@ -106,8 +106,6 @@ function resolveUnicodeEscapeSequence(s: StringStream): string {
 		return `\\${char}${hex}`
 	}
 	return String.fromCodePoint(codePoint)
-
-	return `\\${char}${hex}`
 }
 
 function resolveEscapeSequences(str: string): string {
@@ -156,9 +154,9 @@ function resolveEscapeSequences(str: string): string {
 export class UnicodeString {
 	static regex = /[^]/gmu
 
-	public str: string
-
 	private chars: string[] = []
+
+	str: string
 
 	constructor(str: string) {
 		this.str = str

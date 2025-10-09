@@ -20,9 +20,7 @@ registerMod({
 				if (mesh.fix_scale) mesh.scale.copy(mesh.fix_scale)
 				else if (
 					// @ts-expect-error
-					node.constructor.animator.prototype.channels &&
-					// @ts-expect-error
-					node.constructor.animator.prototype.channels.scale
+					node.constructor.animator.prototype.channels?.scale
 				) {
 					mesh.scale.x = mesh.scale.y = mesh.scale.z = 1
 				}

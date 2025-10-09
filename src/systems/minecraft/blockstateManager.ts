@@ -11,8 +11,8 @@ const REGISTRIES_URL = 'https://raw.githubusercontent.com/misode/mcmeta/summary/
 export type BlockStateValue = string | number | boolean | Array<string | number | boolean>
 
 export class BlockStateRegistryEntry {
-	public defaultStates: Record<string, BlockStateValue> = {}
-	public stateValues: Record<string, BlockStateValue[]> = {}
+	defaultStates: Record<string, BlockStateValue> = {}
+	stateValues: Record<string, BlockStateValue[]> = {}
 
 	constructor(blockstate: BlockStateRegistryData) {
 		for (const [k, v] of Object.entries(blockstate[1])) {
@@ -49,7 +49,7 @@ async function updateLocalRegistry() {
 		} catch (error) {
 			console.error('Failed to fetch latest BlockState registry:', error)
 		}
-		if (response && response.ok) {
+		if (response?.ok) {
 			const newRegistry = (await response.json()) as BlockStateRegistryJSON
 			localStorage.setItem('animated_java:blockStateRegistry', JSON.stringify(newRegistry))
 			const latestVersion = await getLatestVersion()

@@ -7,9 +7,8 @@ registerPropertyOverrideMod({
 	key: 'unload',
 
 	override: original => {
-		return async function (this: BBPlugin) {
+		return function (this: BBPlugin) {
 			const result = original.call(this)
-			console.log(`Detected external plugin unload: ${this.id}`)
 			EVENTS.EXTERNAL_PLUGIN_UNLOAD.publish(this)
 			return result
 		}

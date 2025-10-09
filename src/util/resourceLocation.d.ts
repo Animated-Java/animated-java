@@ -37,7 +37,3 @@ export namespace ResourceLocation {
 			: ValidateNamespace<N>
 		: 'No namespace separator (:) found'
 }
-
-type test = ResourceLocation.Validate<'animated-java:blueprint/settings-dialog'>
-type testInvalid = ResourceLocation.Validate<'Animated-Java:blueprint/settings-dialog'>
-type testInvalidPath = ResourceLocation.Validate<'animated-java:blueprint/Settings-Dialog'>

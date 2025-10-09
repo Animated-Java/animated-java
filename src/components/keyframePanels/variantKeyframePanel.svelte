@@ -4,41 +4,40 @@
 	import { translate } from '../../util/translation'
 	import { Variant } from '../../variants'
 	export let selectedKeyframe: _Keyframe
-	const keyframeValue = new Valuable<string>(getKeyframeVariant(selectedKeyframe) as string)
+	const KEYFRAME_VALUE = new Valuable<string>(getKeyframeVariant(selectedKeyframe) ?? '')
 	let selectContainer: HTMLDivElement
 
-	if (!Variant.all.find(v => v.uuid === keyframeValue.get())) {
+	if (!Variant.all.find(v => v.uuid === KEYFRAME_VALUE.get())) {
 		console.warn('Keyframe variant not found. Resetting to default.')
 		const uuid = Variant.getDefault().uuid
 		setKeyframeVariant(selectedKeyframe, uuid)
-		keyframeValue.set(uuid)
+		KEYFRAME_VALUE.set(uuid)
 	}
 
-	keyframeValue.subscribe(value => {
+	KEYFRAME_VALUE.subscribe(value => {
 		setKeyframeVariant(selectedKeyframe, value)
 	})
 
-	const options = Object.fromEntries(
+	const OPTIONS = Object.fromEntries(
 		Variant.all.map(variant => [variant.uuid, variant.displayName])
 	)
 
-	// @ts-ignore
-	const selectInput = new Interface.CustomElements.SelectInput('keyframe-variant-selector', {
-		options,
-		value: keyframeValue.get(),
+	const SELECT_ELEMENT = new Interface.CustomElements.SelectInput('keyframe-variant-selector', {
+		options: OPTIONS,
+		value: KEYFRAME_VALUE.get(),
 		onChange() {
-			const value = selectInput.node.getAttribute('value')
+			const value = SELECT_ELEMENT.node.getAttribute('value')
 			if (value == undefined) {
 				console.warn('Variant value is undefined')
 				return
 			}
-			keyframeValue.set(value)
+			KEYFRAME_VALUE.set(value)
 			Animator.preview()
 		},
 	})
 
 	requestAnimationFrame(() => {
-		selectContainer.appendChild(selectInput.node)
+		selectContainer.appendChild(SELECT_ELEMENT.node)
 	})
 </script>
 

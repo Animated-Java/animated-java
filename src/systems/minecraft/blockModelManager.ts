@@ -17,7 +17,7 @@ import type {
 } from './model'
 import { TEXTURE_FRAG_SHADER, TEXTURE_VERT_SHADER } from './textureShaders'
 
-type BlockModelMesh = {
+interface BlockModelMesh {
 	mesh: THREE.Mesh
 	outline: THREE.LineSegments
 	boundingBox: THREE.BufferGeometry
@@ -91,7 +91,7 @@ export async function parseBlockModel(
 		// Interesting that elements aren't merged in vanilla...
 		if (childModel.elements !== undefined) model.elements = childModel.elements
 		if (childModel.display !== undefined)
-			model.display = Object.assign(model.display || {}, childModel.display)
+			model.display = Object.assign(model.display ?? {}, childModel.display)
 		if (childModel.ambientocclusion !== undefined)
 			model.ambientocclusion = childModel.ambientocclusion
 	}
@@ -379,8 +379,6 @@ async function loadTexture(textures: IBlockModel['textures'], key: string): Prom
 	}
 	let texture: THREE.Texture
 	if (hasAsset(texturePath + '.mcmeta')) {
-		console.log(`Found mcmeta for texture '${texturePath}'`)
-
 		const img = new Image()
 		img.src = getPngAssetAsDataUrl(texturePath)
 		const canvas = document.createElement('canvas')

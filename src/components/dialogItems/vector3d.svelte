@@ -3,7 +3,7 @@
 	import BaseDialogItem from './baseDialogItem.svelte'
 
 	export let label: string
-	export let tooltip: string = ''
+	export let tooltip = ''
 
 	export let step: number | undefined = undefined
 
@@ -24,20 +24,20 @@
 
 	export let valueChecker: DialogItemValueChecker<{ x: number; y: number; z: number }> = undefined
 
-	let warning_text = ''
-	let error_text = ''
+	let warningText = ''
+	let errorText = ''
 
 	function checkValue() {
 		if (!valueChecker) return
 		const result = valueChecker({ x: valueX.get(), y: valueY.get(), z: valueZ.get() })
-		result.type === 'error' ? (error_text = result.message) : (error_text = '')
-		result.type === 'warning' ? (warning_text = result.message) : (warning_text = '')
+		result.type === 'error' ? (errorText = result.message) : (errorText = '')
+		result.type === 'warning' ? (warningText = result.message) : (warningText = '')
 	}
 	valueX.subscribe(() => checkValue())
 	valueY.subscribe(() => checkValue())
 	valueZ.subscribe(() => checkValue())
 
-	const molangParser = new Molang()
+	const MOLANG_PARSER = new Molang()
 
 	let inputX: HTMLInputElement
 	let sliderX: HTMLElement
@@ -56,22 +56,22 @@
 	) {
 		addEventListeners(target, 'mousedown touchstart', (e1: any) => {
 			convertTouchEvent(e1)
-			let last_difference = 0
+			let lastDifference = 0
 			function move(e2: any) {
 				convertTouchEvent(e2)
-				let difference = Math.trunc((e2.clientX - e1.clientX) / 10) * (step || 1)
-				if (difference != last_difference) {
+				let difference = Math.trunc((e2.clientX - e1.clientX) / 10) * (step ?? 1)
+				if (difference != lastDifference) {
 					value.set(
 						Math.clamp(
-							value.get() + (difference - last_difference),
-							min !== undefined ? min : -Infinity,
-							max !== undefined ? max : Infinity
+							value.get() + (difference - lastDifference),
+							min ?? -Infinity,
+							max ?? Infinity
 						)
 					)
-					last_difference = difference
+					lastDifference = difference
 				}
 			}
-			function stop(e2: any) {
+			function stop() {
 				removeEventListeners(document, 'mousemove touchmove', move)
 				removeEventListeners(document, 'mouseup touchend', stop)
 			}
@@ -81,11 +81,7 @@
 
 		addEventListeners(inputX, 'focusout dblclick', () => {
 			value.set(
-				Math.clamp(
-					molangParser.parse(value.get()),
-					min !== undefined ? min : -Infinity,
-					max !== undefined ? max : Infinity
-				)
+				Math.clamp(MOLANG_PARSER.parse(value.get()), min ?? -Infinity, max ?? Infinity)
 			)
 		})
 	}
@@ -103,7 +99,7 @@
 	})
 </script>
 
-<BaseDialogItem {label} {tooltip} {onReset} bind:warning_text bind:error_text let:id>
+<BaseDialogItem {label} {tooltip} {onReset} bind:warningText bind:errorText let:id>
 	<div class="dialog_bar form_bar">
 		<label class="name_space_left" for={id}>{label}</label>
 		<div class="dialog_vector_group half">

@@ -16,12 +16,13 @@ interface IPredicateItemModel {
 }
 
 class PredicateItemModel {
-	public lastOverrideId = 1
 	private overrides = new Map<number, string>()
 	private externalOverrides = new Map<number, string>()
-	public rigs: Record<string, number[]> = {}
-	public parent? = 'item/generated'
-	public textures: IPredicateItemModel['textures'] = {}
+
+	lastOverrideId = 1
+	rigs: Record<string, number[]> = {}
+	parent? = 'item/generated'
+	textures: IPredicateItemModel['textures'] = {}
 
 	setOverride(id: number, model: string) {
 		this.overrides.set(id, model)

@@ -41,22 +41,22 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 	static selected: VanillaItemDisplay[] = []
 	static all: VanillaItemDisplay[] = []
 
-	public type = VanillaItemDisplay.type
-	public icon = VanillaItemDisplay.icon
-	public needsUniqueName = true
+	type = VanillaItemDisplay.type
+	icon = VanillaItemDisplay.icon
+	needsUniqueName = true
 
 	// Properties
-	public _item = new Valuable('minecraft:diamond')
-	public _itemDisplay = new Valuable<ItemDisplayMode>('none')
-	public config: IBlueprintBoneConfigJSON
+	private __item = new Valuable('minecraft:diamond')
+	private __itemDisplay = new Valuable<ItemDisplayMode>('none')
+	config: IBlueprintBoneConfigJSON
 
-	public error = new Valuable('')
+	error = new Valuable('')
 
-	public buttons = [Outliner.buttons.export, Outliner.buttons.locked, Outliner.buttons.visibility]
+	buttons = [Outliner.buttons.export, Outliner.buttons.locked, Outliner.buttons.visibility]
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	public preview_controller = PREVIEW_CONTROLLER
+	preview_controller = PREVIEW_CONTROLLER
 
-	public ready = false
+	ready = false
 
 	constructor(data: VanillaItemDisplayOptions, uuid = guid()) {
 		super(data, uuid)
@@ -100,27 +100,27 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 			}
 		}
 
-		this._item.subscribe(value => {
+		this.__item.subscribe(value => {
 			updateItem(value)
 		})
 	}
 
 	get item() {
-		if (this._item === undefined) return 'minecraft:diamond'
-		return this._item.get()
+		if (this.__item === undefined) return 'minecraft:diamond'
+		return this.__item.get()
 	}
 	set item(value: string) {
-		if (this._item === undefined) return
-		this._item.set(value)
+		if (this.__item === undefined) return
+		this.__item.set(value)
 	}
 
 	get itemDisplay() {
-		if (this._itemDisplay === undefined) return 'none'
-		return this._itemDisplay.get()
+		if (this.__itemDisplay === undefined) return 'none'
+		return this.__itemDisplay.get()
 	}
 	set itemDisplay(value: ItemDisplayMode) {
-		if (this._itemDisplay === undefined) return
-		this._itemDisplay.set(value)
+		if (this.__itemDisplay === undefined) return
+		this.__itemDisplay.set(value)
 	}
 
 	async waitForReady() {
@@ -129,7 +129,7 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 		}
 	}
 
-	public sanitizeName(): string {
+	sanitizeName(): string {
 		this.name = sanitizeOutlinerElementName(this.name, this.uuid)
 		return this.name
 	}
@@ -260,15 +260,12 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, 
 })
 
 class VanillaItemDisplayAnimator extends BoneAnimator {
-	private _name: string
-
-	public uuid: string
-	public element: VanillaItemDisplay | undefined
+	uuid: string
+	element: VanillaItemDisplay | undefined
 
 	constructor(uuid: string, animation: _Animation, name: string) {
 		super(uuid, animation, name)
 		this.uuid = uuid
-		this._name = name
 	}
 
 	getElement() {
@@ -308,7 +305,7 @@ class VanillaItemDisplayAnimator extends BoneAnimator {
 			}
 		}
 
-		if (this.element && this.element.parent && this.element.parent !== 'root') {
+		if (this.element?.parent && this.element.parent !== 'root') {
 			this.element.parent.openUp()
 		}
 
@@ -317,7 +314,7 @@ class VanillaItemDisplayAnimator extends BoneAnimator {
 
 	doRender() {
 		this.getElement()
-		return !!(this.element && this.element.mesh)
+		return !!this.element?.mesh
 	}
 
 	displayRotation(arr: ArrayVector3 | ArrayVector4, multiplier = 1) {
@@ -329,13 +326,13 @@ class VanillaItemDisplayAnimator extends BoneAnimator {
 
 		if (arr) {
 			if (arr.length === 4) {
-				const added_rotation = new THREE.Euler().setFromQuaternion(
+				const addedRotation = new THREE.Euler().setFromQuaternion(
 					new THREE.Quaternion().fromArray(arr),
 					'ZYX'
 				)
-				bone.rotation.x -= added_rotation.x * multiplier
-				bone.rotation.y -= added_rotation.y * multiplier
-				bone.rotation.z += added_rotation.z * multiplier
+				bone.rotation.x -= addedRotation.x * multiplier
+				bone.rotation.y -= addedRotation.y * multiplier
+				bone.rotation.z += addedRotation.z * multiplier
 			} else {
 				bone.rotation.x += Math.degToRad(-arr[0]) * multiplier
 				bone.rotation.y += Math.degToRad(-arr[1]) * multiplier
@@ -400,7 +397,7 @@ export const CREATE_ACTION = registerAction(
 			}
 
 			selected.forEachReverse(el => el.unselect())
-			Group.first_selected && Group.first_selected.unselect()
+			Group.first_selected?.unselect()
 			vanillaItemDisplay.select()
 
 			Undo.finishEdit('Create Vanilla Item Display', {
@@ -414,14 +411,14 @@ export const CREATE_ACTION = registerAction(
 	}
 )
 
-const unsubscribers: Array<() => void> = []
+const CLEANUP_CALLBACKS: Array<() => void> = []
 
 CREATE_ACTION.onCreated(action => {
 	Interface.Panels.outliner.menu.addAction(action, 3)
 	Toolbars.outliner.add(action, 0)
 	MenuBar.menus.edit.addAction(action, 8)
 
-	unsubscribers.push(
+	CLEANUP_CALLBACKS.push(
 		EVENTS.SELECT_PROJECT.subscribe(project => {
 			project.vanillaItemDisplays ??= []
 			VanillaItemDisplay.all.empty()
@@ -440,6 +437,6 @@ CREATE_ACTION.onDeleted(action => {
 	Toolbars.outliner.remove(action)
 	MenuBar.menus.edit.removeAction(action)
 
-	unsubscribers.forEach(unsub => unsub())
-	unsubscribers.empty()
+	CLEANUP_CALLBACKS.forEach(unsub => unsub())
+	CLEANUP_CALLBACKS.empty()
 })

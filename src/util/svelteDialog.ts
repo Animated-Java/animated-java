@@ -1,6 +1,6 @@
 import type { ComponentProps, ComponentType, SvelteComponent } from 'svelte'
 
-const DIALOG_STACK: Array<SvelteDialog> = []
+const DIALOG_STACK: SvelteDialog[] = []
 
 type CssStyleObject = {
 	[K in keyof CSSStyleDeclaration as K extends string

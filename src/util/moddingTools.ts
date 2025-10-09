@@ -203,7 +203,7 @@ export function registerProjectMod<ID extends string, RevertContext extends any 
 					revertContext = options.apply()
 				}),
 
-				EVENTS.UNSELECT_PROJECT.subscribe(project => {
+				EVENTS.UNSELECT_PROJECT.subscribe(() => {
 					// Effectively using revertContext as a boolean to check if the mod is applied
 					if (revertContext !== undefined) {
 						console.log(`Reverting project mod '${options.id}'`)
@@ -247,7 +247,7 @@ export function registerPluginMod<ID extends string, RevertContext extends any |
 					revertContext = options.apply()
 				}),
 
-				EVENTS.EXTERNAL_PLUGIN_UNLOAD.subscribe(plugin => {
+				EVENTS.EXTERNAL_PLUGIN_UNLOAD.subscribe(() => {
 					// Effectively using revertContext as a boolean to check if the mod is applied
 					if (revertContext !== undefined) {
 						console.log(`Reverting plugin mod '${options.id}'`)

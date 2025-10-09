@@ -1,21 +1,21 @@
 import { makeNotZero } from '../util/misc'
 
 export class ResizableOutlinerElement extends OutlinerElement {
-	public type: string = 'resizable'
+	type = 'resizable'
 	// Properties
-	public name: string
-	public position: ArrayVector3
-	public rotation: ArrayVector3
-	public scale: ArrayVector3
-	public visibility: boolean
+	name: string
+	position: ArrayVector3
+	rotation: ArrayVector3
+	scale: ArrayVector3
+	visibility: boolean
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	public preview_controller = PREVIEW_CONTROLLER
+	preview_controller = PREVIEW_CONTROLLER
 
 	// Transform flags
-	public movable = true
-	public rotatable = true
-	public scalable = true
-	public resizable = true
+	movable = true
+	rotatable = true
+	scalable = true
+	resizable = true
 
 	// Resizable Workaround properties
 	get from() {
@@ -57,7 +57,7 @@ export class ResizableOutlinerElement extends OutlinerElement {
 		return THREE.fastWorldPosition(this.mesh, Reusable.vec2).add(Reusable.vec3) as THREE.Vector3
 	}
 
-	public extend(data: any) {
+	extend(data: any) {
 		for (const key in ResizableOutlinerElement.properties) {
 			ResizableOutlinerElement.properties[key].merge(this, data)
 		}
@@ -92,7 +92,7 @@ export class ResizableOutlinerElement extends OutlinerElement {
 		// allowNegative: boolean,
 		// bidirectional: boolean
 	) {
-		let before = this.oldScale !== undefined ? this.oldScale : this.size(axis)
+		let before = this.oldScale ?? this.size(axis)
 		if (before instanceof Array) before = before[axis]
 		// For some unknown reason scale is not inverted on the y axis
 		const sign = before < 0 && axis !== 1 ? -1 : 1

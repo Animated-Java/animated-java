@@ -3,15 +3,15 @@
 	import { translate } from '../../util/translation'
 
 	export let label: string
-	export let tooltip: string = ''
-	export let warning_text: string = ''
-	export let error_text: string = ''
+	export let tooltip = ''
+	export let warningText = ''
+	export let errorText = ''
 	export let onReset: () => void
 
 	let id = guid()
 
-	$: if (error_text) {
-		blueprintSettingErrors.get()[label] = error_text
+	$: if (errorText) {
+		blueprintSettingErrors.get()[label] = errorText
 	}
 </script>
 
@@ -21,19 +21,19 @@
 			<slot {id} />
 
 			<div class="description">
-				{#if error_text}
+				{#if errorText}
 					<div class="error_text">
 						<i class="fa fa-exclamation-circle dialog_form_error text_icon" />
 						<div class="error_lines">
 							<!-- svelte-ignore missing-declaration -->
-							{@html pureMarked(error_text)}
+							{@html pureMarked(errorText)}
 						</div>
 					</div>
-				{:else if warning_text}
+				{:else if warningText}
 					<div class="warning_text">
 						<i class="fa fa-exclamation-triangle dialog_form_warning text_icon" />
 						<!-- svelte-ignore missing-declaration -->
-						{@html pureMarked(warning_text)}
+						{@html pureMarked(warningText)}
 					</div>
 				{/if}
 				{#if tooltip}

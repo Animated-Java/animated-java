@@ -25,51 +25,6 @@
 			document.fonts.add(font)
 		})
 	}
-</script>
-
-<script lang="ts">
-	export let blueprintName: Valuable<string>
-	export let textureSizeX: Valuable<number>
-	export let textureSizeY: Valuable<number>
-	// Export Settings
-	export let exportNamespace: Valuable<string>
-	export let enablePluginMode: Valuable<boolean>
-	// FIXME - Force-disable plugin mode for now
-	$enablePluginMode = false
-	export let resourcePackExportMode: Valuable<string>
-	export let dataPackExportMode: Valuable<string>
-	export let targetMinecraftVersion: Valuable<string>
-	// Bounding Box
-	export let showRenderBox: Valuable<boolean>
-	export let autoRenderBox: Valuable<boolean>
-	export let renderBoxX: Valuable<number>
-	export let renderBoxY: Valuable<number>
-	// Resource Pack Settings
-	export let displayItem: Valuable<string>
-	export let customModelDataOffset: Valuable<number>
-	export let enableAdvancedResourcePackSettings: Valuable<boolean>
-	export let resourcePack: Valuable<string>
-	// Data Pack Settings
-	// export let enableAdvancedDataPackSettings: Valuable<boolean>
-	export let dataPack: Valuable<string>
-
-	export let onSummonFunction: Valuable<string>
-	export let onRemoveFunction: Valuable<string>
-	export let onPreTickFunction: Valuable<string>
-	export let onPostTickFunction: Valuable<string>
-
-	export let interpolationDuration: Valuable<number>
-	export let teleportationDuration: Valuable<number>
-	export let useStorageForAnimation: Valuable<boolean>
-	export let autoUpdateRigOrientation: Valuable<boolean>
-	// Plugin Export Settings
-	export let bakedAnimations: Valuable<boolean>
-	export let jsonFile: Valuable<string>
-
-	const requiresDisplayItem = new Valuable(false)
-	$: {
-		$requiresDisplayItem = compareVersions('1.21.2', $targetMinecraftVersion)
-	}
 
 	const TARGETABLE_VERSIONS = Object.fromEntries(
 		Object.entries(mcbFiles).map(([key]) => [key, key])
@@ -81,7 +36,7 @@
 				type: 'error',
 				message: translate('dialog.blueprint_settings.export_namespace.error.empty'),
 			}
-		} else if (value.trim().match('[^a-zA-Z0-9_]')) {
+		} else if (/[^a-zA-Z0-9_]/.exec(value.trim())) {
 			return {
 				type: 'error',
 				message: translate(
@@ -168,10 +123,10 @@
 	} {
 		const x = Number(value.x)
 		const y = Number(value.y)
-		const largestHeight: number = Number(
+		const largestHeight = Number(
 			Texture.all.map(t => t.height).reduce((max, cur) => Math.max(max, cur), 0)
 		)
-		const largestWidth: number = Number(
+		const largestWidth = Number(
 			Texture.all.map(t => t.width).reduce((max, cur) => Math.max(max, cur), 0)
 		)
 
@@ -308,47 +263,6 @@
 		}
 	}
 
-	function advancedResourcePackFileChecker(value: string): { type: string; message: string } {
-		let path: string
-		try {
-			path = resolvePath(value)
-		} catch (e) {
-			console.error(e)
-			return {
-				type: 'error',
-				message: translate(
-					'dialog.blueprint_settings.advanced_resource_pack_file.error.file_does_not_exist'
-				),
-			}
-		}
-		console.log(path)
-		switch (true) {
-			case value === '':
-				return {
-					type: 'error',
-					message: translate(
-						'dialog.blueprint_settings.advanced_resource_pack_file.error.no_file_selected'
-					),
-				}
-			case !fs.existsSync(path):
-				return {
-					type: 'error',
-					message: translate(
-						'dialog.blueprint_settings.advanced_resource_pack_file.error.file_does_not_exist'
-					),
-				}
-			case !fs.statSync(path).isFile():
-				return {
-					type: 'error',
-					message: translate(
-						'dialog.blueprint_settings.advanced_resource_pack_file.error.not_a_file'
-					),
-				}
-			default:
-				return { type: 'success', message: '' }
-		}
-	}
-
 	function jsonFileChecker(value: string): { type: string; message: string } {
 		let path: string
 		try {
@@ -360,7 +274,6 @@
 				message: translate('dialog.blueprint_settings.json_file.error.file_does_not_exist'),
 			}
 		}
-		console.log(path)
 		switch (true) {
 			case value === '':
 				return {
@@ -373,47 +286,6 @@
 				return {
 					type: 'error',
 					message: translate('dialog.blueprint_settings.json_file.error.not_a_file'),
-				}
-			default:
-				return { type: 'success', message: '' }
-		}
-	}
-
-	function advancedResourcePackFolderChecker(value: string): { type: string; message: string } {
-		let path: string
-		try {
-			path = resolvePath(value)
-		} catch (e) {
-			console.error(e)
-			return {
-				type: 'error',
-				message: translate(
-					'dialog.blueprint_settings.advanced_resource_pack_folder.error.folder_does_not_exist'
-				),
-			}
-		}
-		console.log(path)
-		switch (true) {
-			case value === '':
-				return {
-					type: 'error',
-					message: translate(
-						'dialog.blueprint_settings.advanced_resource_pack_folder.error.no_folder_selected'
-					),
-				}
-			case !fs.existsSync(path):
-				return {
-					type: 'error',
-					message: translate(
-						'dialog.blueprint_settings.advanced_resource_pack_folder.error.folder_does_not_exist'
-					),
-				}
-			case !fs.statSync(path).isDirectory():
-				return {
-					type: 'error',
-					message: translate(
-						'dialog.blueprint_settings.advanced_resource_pack_folder.error.not_a_folder'
-					),
 				}
 			default:
 				return { type: 'success', message: '' }
@@ -433,7 +305,6 @@
 				),
 			}
 		}
-		console.log(path)
 		switch (true) {
 			case value === '':
 				return {
@@ -452,6 +323,51 @@
 			default:
 				return { type: 'success', message: '' }
 		}
+	}
+</script>
+
+<script lang="ts">
+	export let blueprintName: Valuable<string>
+	export let textureSizeX: Valuable<number>
+	export let textureSizeY: Valuable<number>
+	// Export Settings
+	export let exportNamespace: Valuable<string>
+	export let enablePluginMode: Valuable<boolean>
+	// FIXME - Force-disable plugin mode for now
+	$enablePluginMode = false
+	export let resourcePackExportMode: Valuable<string>
+	export let dataPackExportMode: Valuable<string>
+	export let targetMinecraftVersion: Valuable<string>
+	// Bounding Box
+	export let showRenderBox: Valuable<boolean>
+	export let autoRenderBox: Valuable<boolean>
+	export let renderBoxX: Valuable<number>
+	export let renderBoxY: Valuable<number>
+	// Resource Pack Settings
+	export let displayItem: Valuable<string>
+	export let customModelDataOffset: Valuable<number>
+	export let enableAdvancedResourcePackSettings: Valuable<boolean>
+	export let resourcePack: Valuable<string>
+	// Data Pack Settings
+	// export let enableAdvancedDataPackSettings: Valuable<boolean>
+	export let dataPack: Valuable<string>
+
+	export let onSummonFunction: Valuable<string>
+	export let onRemoveFunction: Valuable<string>
+	export let onPreTickFunction: Valuable<string>
+	export let onPostTickFunction: Valuable<string>
+
+	export let interpolationDuration: Valuable<number>
+	export let teleportationDuration: Valuable<number>
+	export let useStorageForAnimation: Valuable<boolean>
+	export let autoUpdateRigOrientation: Valuable<boolean>
+	// Plugin Export Settings
+	export let bakedAnimations: Valuable<boolean>
+	export let jsonFile: Valuable<string>
+
+	const DISPLAY_ITEM_REQUIRED = new Valuable(false)
+	$: {
+		$DISPLAY_ITEM_REQUIRED = compareVersions('1.21.2', $targetMinecraftVersion)
 	}
 </script>
 
@@ -569,7 +485,7 @@
 	/>
 
 	{#if $resourcePackExportMode !== 'none'}
-		{#if $requiresDisplayItem}
+		{#if $DISPLAY_ITEM_REQUIRED}
 			<LineInput
 				label={translate('dialog.blueprint_settings.display_item.title')}
 				tooltip={translate('dialog.blueprint_settings.display_item.description')}

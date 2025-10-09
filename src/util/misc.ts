@@ -47,7 +47,7 @@ export function scrubUndefined<T extends Record<string, any>>(obj: T) {
 }
 
 // Developed by FetchBot 💖
-type LLNode = {
+interface LLNode {
 	parent?: LLNode
 	name: string
 }

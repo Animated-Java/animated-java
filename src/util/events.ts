@@ -60,6 +60,5 @@ Blockbench.on<EventName>('redo', (entry: UndoEntry) => EVENTS.REDO.publish(entry
 // `loaded_plugin` is not in BB's EventName.
 Blockbench.on('loaded_plugin', ({ plugin }: { plugin: BBPlugin }) => {
 	if (plugin.id === PACKAGE.name) return
-	console.log(`Detected external plugin load: ${plugin.id}`)
 	EVENTS.EXTERNAL_PLUGIN_LOAD.publish(plugin)
 })

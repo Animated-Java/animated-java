@@ -3,7 +3,7 @@ import { registerCodec } from 'src/util/moddingTools'
 import { translate } from 'src/util/translation'
 import { Variant } from 'src/variants'
 import { PACKAGE } from '../../constants'
-import * as ModelDatFixerUpper from './dfu'
+import * as modelDatFixerUpper from './dfu'
 import {
 	BLUEPRINT_FORMAT,
 	BLUEPRINT_FORMAT_ID,
@@ -26,10 +26,10 @@ export const BLUEPRINT_CODEC = registerCodec(
 		},
 
 		// region > load
-		load(model, file, add) {
+		load(model, file) {
 			console.log(`Loading Animated Java Blueprint from '${file.name}'...`)
 
-			model = ModelDatFixerUpper.process(model)
+			model = modelDatFixerUpper.process(model)
 
 			const format = BLUEPRINT_FORMAT.get()
 			if (format == undefined) {
@@ -119,7 +119,7 @@ export const BLUEPRINT_CODEC = registerCodec(
 					}
 					if (texture.path && fs.existsSync(texture.path) && !model.meta?.backup) {
 						newTexture.fromPath(texture.path)
-					} else if (texture.source && texture.source.startsWith('data:')) {
+					} else if (texture.source?.startsWith('data:')) {
 						newTexture.fromDataURL(texture.source)
 					}
 				}
@@ -185,7 +185,7 @@ export const BLUEPRINT_CODEC = registerCodec(
 			if (model.animations) {
 				for (const animation of model.animations) {
 					const newAnimation = new Blockbench.Animation()
-					newAnimation.uuid = animation.uuid || guid()
+					newAnimation.uuid = animation.uuid ?? guid()
 					newAnimation.extend(animation).add()
 				}
 			}
@@ -193,7 +193,7 @@ export const BLUEPRINT_CODEC = registerCodec(
 			if (model.animation_controllers) {
 				for (const controller of model.animation_controllers) {
 					const newController = new Blockbench.AnimationController()
-					newController.uuid = controller.uuid || guid()
+					newController.uuid = controller.uuid ?? guid()
 					newController.extend(controller).add()
 				}
 			}
@@ -288,7 +288,7 @@ export const BLUEPRINT_CODEC = registerCodec(
 
 			model.elements = []
 			for (const element of elements) {
-				model.elements.push(element.getSaveCopy && element.getSaveCopy(!!model.meta))
+				model.elements.push(element.getSaveCopy?.(!!model.meta))
 			}
 
 			model.outliner = compileGroups(true)

@@ -5,21 +5,21 @@ import { type IRenderedRig } from '../rigRenderer'
 import type { ExportedFile } from '../util'
 
 import { AJMeta, PackMeta, SUPPORTED_MINECRAFT_VERSIONS, type PackMetaFormats } from '../global'
-import _1_20_4 from './1.20.4'
-import _1_21_2 from './1.21.2'
-import _1_21_4 from './1.21.4'
+import EXPORT_1_20_4 from './1.20.4'
+import EXPORT_1_21_2 from './1.21.2'
+import EXPORT_1_21_4 from './1.21.4'
 
 const VERSIONED_RESOURCE_PACK_COMPILERS: Record<
 	SUPPORTED_MINECRAFT_VERSIONS,
 	ResourcePackCompiler
 > = {
-	'1.21.9': _1_21_4,
-	'1.21.5': _1_21_4,
-	'1.21.4': _1_21_4,
-	'1.21.2': _1_21_2,
-	'1.21.0': _1_20_4,
-	'1.20.5': _1_20_4,
-	'1.20.4': _1_20_4,
+	'1.21.9': EXPORT_1_21_4,
+	'1.21.5': EXPORT_1_21_4,
+	'1.21.4': EXPORT_1_21_4,
+	'1.21.2': EXPORT_1_21_2,
+	'1.21.0': EXPORT_1_20_4,
+	'1.20.5': EXPORT_1_20_4,
+	'1.20.4': EXPORT_1_20_4,
 }
 
 interface ResourcePackCompilerOptions {
@@ -86,18 +86,18 @@ export default async function compileResourcePack(
 			versionedFiles,
 		})
 
-		for (let [path, file] of coreFiles) {
-			path = PathModule.join(coreResourcePackFolder, path)
-			globalCoreFiles.set(path, file)
+		for (const [path, file] of coreFiles) {
+			const relative = PathModule.join(coreResourcePackFolder, path)
+			globalCoreFiles.set(relative, file)
 			if (file.includeInAJMeta === false) continue
-			ajmeta.coreFiles.add(path)
+			ajmeta.coreFiles.add(relative)
 		}
 
-		for (let [path, file] of versionedFiles) {
-			path = PathModule.join(versionedResourcePackFolder, path)
-			globalVersionSpecificFiles.set(path, file)
+		for (const [path, file] of versionedFiles) {
+			const relative = PathModule.join(versionedResourcePackFolder, path)
+			globalVersionSpecificFiles.set(relative, file)
 			if (file.includeInAJMeta === false) continue
-			ajmeta.versionedFiles.add(path)
+			ajmeta.versionedFiles.add(relative)
 		}
 
 		console.groupEnd()
@@ -120,7 +120,7 @@ export default async function compileResourcePack(
 		packMeta.content.overlays.entries ??= []
 
 		for (const version of targetVersions) {
-			let format: PackMetaFormats = getResourcePackFormat(version)
+			const format: PackMetaFormats = getResourcePackFormat(version)
 			packMeta.content.pack.supported_formats.push(format)
 
 			const existingOverlay = packMeta.content.overlays.entries.find(

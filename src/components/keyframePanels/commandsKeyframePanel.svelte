@@ -14,19 +14,19 @@
 <script lang="ts">
 	export let selectedKeyframe: _Keyframe
 
-	const commands = new Valuable<string>(getKeyframeCommands(selectedKeyframe) || '')
-	const repeat = new Valuable<boolean>(getKeyframeRepeat(selectedKeyframe) || false)
-	const repeatFrequency = new Valuable<number>(getKeyframeRepeatFrequency(selectedKeyframe) || 1)
+	const COMMANDS = new Valuable<string>(getKeyframeCommands(selectedKeyframe) ?? '')
+	const REPEAT = new Valuable<boolean>(getKeyframeRepeat(selectedKeyframe) ?? false)
+	const REPEAT_FREQUENCY = new Valuable<number>(getKeyframeRepeatFrequency(selectedKeyframe) ?? 1)
 
-	commands.subscribe(value => {
+	COMMANDS.subscribe(value => {
 		setKeyframeCommands(selectedKeyframe, value)
 	})
-	repeat.subscribe(value => {
+	REPEAT.subscribe(value => {
 		setKeyframeRepeat(selectedKeyframe, value)
 	})
-	repeatFrequency.subscribe(value => {
+	REPEAT_FREQUENCY.subscribe(value => {
 		if (value < 1) value = 1
-		repeatFrequency.set(value)
+		REPEAT_FREQUENCY.set(value)
 		setKeyframeRepeatFrequency(selectedKeyframe, value)
 	})
 </script>
@@ -43,7 +43,7 @@
 	<textarea
 		id="commands_input"
 		class="dark_bordered code keyframe_input tab_target"
-		bind:value={$commands}
+		bind:value={$COMMANDS}
 	/>
 </div>
 
@@ -60,7 +60,7 @@
 		id="repeat_input"
 		class="dark_bordered tab_target"
 		type="checkbox"
-		bind:checked={$repeat}
+		bind:checked={$REPEAT}
 	/>
 </div>
 
@@ -77,7 +77,7 @@
 		id="repeat_frequency_input"
 		class="dark_bordered tab_target"
 		type="number"
-		bind:value={$repeatFrequency}
+		bind:value={$REPEAT_FREQUENCY}
 	/>
 </div>
 
