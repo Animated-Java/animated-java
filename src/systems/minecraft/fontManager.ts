@@ -4,7 +4,7 @@ import { type Alignment } from '../../outliner/textDisplay'
 import { mergeGeometries } from '../../util/bufferGeometryUtils'
 import EVENTS from '../../util/events'
 import { getPathFromResourceLocation } from '../../util/minecraftUtil'
-import { COLOR_MAP, ComponentStyle, JsonText } from '../jsonText'
+import { COLOR_VALUES, ComponentStyle, JsonText } from '../jsonText'
 import { UnicodeString } from '../jsonText/unicodeString'
 import * as assets from './assetManager'
 import {

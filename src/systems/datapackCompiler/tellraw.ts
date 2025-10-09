@@ -1,6 +1,6 @@
 import { toSmallCaps } from 'src/util/minecraftUtil'
 import { type IRenderedAnimation } from '../animationRenderer'
-import { Component, JsonText } from '../jsonText'
+import { JsonText, TextElement } from '../jsonText'
 import { type IRenderedVariant } from '../rigRenderer'
 import { TAGS } from './tags'
 
@@ -19,7 +19,7 @@ namespace TELLRAW {
 
 	const TELLRAW_SUFFIX = () => '\n'
 
-	const TELLRAW_ERROR = (errorName: string, details: Component) =>
+	const TELLRAW_ERROR = (errorName: string, details: TextElement) =>
 		new JsonText({
 			text: '',
 			color: 'red',

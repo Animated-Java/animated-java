@@ -1,32 +1,30 @@
 import {
-	type ClickEvent,
-	type ClickEvent_1_21_5,
-	type Component,
-	type CompositeComponent,
-	type HoverEvent,
-	type HoverEvent_1_21_5,
-	type ScoreComponent,
+	type LegacyClickEvent,
+	type LegacyHoverEvent,
+	type ModernClickEvent,
+	type ModernHoverEvent,
+	type TextElement,
+	type TextObject,
 } from '.'
-import { type MinecraftVersion } from '../global'
+
+enum FEATURES {
+	REQUIRE_DOUBLE_QUOTES = 1 << 0,
+	RESOLVE_SPACE_ESCAPE_SEQUENCES = 1 << 1,
+}
 
 export class JsonTextStringifier {
-	private enforceDoubleQuotes = false
-	private useModernClickEventFormat = false
-	private useModernHoverEventFormat = false
-	/** Transform '\s' to spaces in strings */
-	private resolveSpaceEscapeSequences = false
+	enabledFeatures = FEATURES.REQUIRE_DOUBLE_QUOTES
 
-	constructor(private element: Component, private targetMinecraftVersion: MinecraftVersion) {
-		if (compareVersions('1.21.5', this.targetMinecraftVersion)) {
-			this.enforceDoubleQuotes = true
-			this.useModernClickEventFormat = false
-			this.useModernHoverEventFormat = false
-			this.resolveSpaceEscapeSequences = true
+	constructor(private element: TextElement, private minecraftVersion: string) {
+		// targetMinecraftVersion >= 1.21.5
+		if (!compareVersions('1.21.5', this.minecraftVersion)) {
+			this.enabledFeatures &= ~FEATURES.REQUIRE_DOUBLE_QUOTES
+			this.enabledFeatures |= FEATURES.RESOLVE_SPACE_ESCAPE_SEQUENCES
 		}
 	}
 
 	stringify(): string {
-		return this.stringifyComponent(this.element)
+		return this.stringifyTextElement(this.element)
 	}
 
 	/**
@@ -38,7 +36,7 @@ export class JsonTextStringifier {
 	 */
 	private stringifyString(str: string): string {
 		str = str.replaceAll('\n', '\\n')
-		if (this.resolveSpaceEscapeSequences) {
+		if (this.enabledFeatures & FEATURES.RESOLVE_SPACE_ESCAPE_SEQUENCES) {
 			str = str.replaceAll('\\s', ' ')
 		}
 
@@ -47,7 +45,7 @@ export class JsonTextStringifier {
 		const hasSingle = unescaped.includes("'")
 		const hasDouble = unescaped.includes('"')
 
-		if (this.enforceDoubleQuotes) {
+		if (this.enabledFeatures & FEATURES.REQUIRE_DOUBLE_QUOTES) {
 			return `"${unescaped.replace(/"/g, '\\"')}"`
 		} else if (hasSingle && hasDouble) {
 			// Both quotes present, fallback to single quotes and escape single quotes
@@ -61,12 +59,12 @@ export class JsonTextStringifier {
 		}
 	}
 
-	private stringifyComponentArray(arr: Component[]): string {
-		return `[${arr.map(e => this.stringifyComponent(e)).join(',')}]`
+	private stringifyTextElementArray(arr: TextElement[]): string {
+		return `[${arr.map(e => this.stringifyTextElement(e)).join(',')}]`
 	}
 
-	private stringifyScoreObject(score: ScoreComponent['score']): string {
-		if (this.enforceDoubleQuotes) {
+	private stringifyScoreObject(score: NonNullable<TextObject['score']>): string {
+		if (this.enabledFeatures & FEATURES.REQUIRE_DOUBLE_QUOTES) {
 			return (
 				`{"name":${this.stringifyString(score.name)}` +
 				`,"objective":${this.stringifyString(score.objective)}}`
@@ -78,30 +76,65 @@ export class JsonTextStringifier {
 		)
 	}
 
-	private stringifyHoverEvent(event: HoverEvent): string {
-		if (this.useModernHoverEventFormat) {
-			throw new Error(
-				`Minecraft ${this.targetMinecraftVersion} does not support hoverEvents. Use hover_event instead.`
-			)
+	private stringifyPlayerObject(player: NonNullable<TextObject['player']>): string {
+		const q = this.enabledFeatures & FEATURES.REQUIRE_DOUBLE_QUOTES ? '"' : ''
+		const result: string[] = []
+		if (player.name !== undefined) {
+			result.push(`${q}name${q}:${this.stringifyString(player.name)}`)
 		}
+		if (player.id !== undefined) {
+			result.push(`${q}id${q}:${JSON.stringify(player.id)}`)
+		}
+		if (player.texture !== undefined) {
+			result.push(`${q}texture${q}:${player.texture}`)
+		}
+		if (player.cape !== undefined) {
+			result.push(`${q}cape${q}:${player.cape}`)
+		}
+		if (player.model !== undefined) {
+			result.push(`${q}model${q}:${this.stringifyString(player.model)}`)
+		}
+		if (player.hat !== undefined) {
+			result.push(`${q}hat${q}:${player.hat}`)
+		}
+		if (player.properties !== undefined) {
+			for (const prop of player.properties) {
+				result.push(
+					`{name:${this.stringifyString(prop.name)}` +
+						`,value:${this.stringifyString(prop.value)}` +
+						(prop.signature === undefined
+							? ''
+							: `,signature:${this.stringifyString(prop.signature)}`) +
+						'}'
+				)
+			}
+		}
+		return '{' + result.join(',') + '}'
+	}
 
+	private stringifyLegacyHoverEvent(event: LegacyHoverEvent): string {
 		switch (event.action) {
 			case 'show_text': {
-				return `{"action":"show_text","contents":${this.stringifyComponent(
+				return `{"action":"show_text","contents":${this.stringifyTextElement(
 					event.contents
 				)}}`
 			}
 
 			case 'show_item': {
-				let result = `{"action":"show_item","contents":{"id":${this.stringifyString(
-					event.contents.id
-				)}`
+				let result = `{"action":"show_item","contents":`
 
-				if (event.contents.count !== undefined) {
-					result += `,"count":${event.contents.count}`
-				}
-				if (event.contents.tag !== undefined) {
-					result += `,"tag":${this.stringifyComponent(event.contents.tag)}`
+				if (typeof event.contents === 'string') {
+					result += this.stringifyString(event.contents)
+				} else {
+					result += '{"id":' + this.stringifyString(event.contents.id)
+
+					if (event.contents.count !== undefined) {
+						result += `,"count":${event.contents.count}`
+					}
+
+					if (event.contents.tag !== undefined) {
+						result += `,"tag":${this.stringifyTextElement(event.contents.tag)}`
+					}
 				}
 
 				return result + `}}`
@@ -110,10 +143,16 @@ export class JsonTextStringifier {
 			case 'show_entity': {
 				let result = `{"action":"show_entity","contents":{"type":${this.stringifyString(
 					event.contents.type
-				)},"id":${this.stringifyString(event.contents.id)}`
+				)}`
+
+				if (Array.isArray(event.contents.id)) {
+					result += `,"id":[${event.contents.id.join(',')}]`
+				} else if (typeof event.contents.id === 'string') {
+					result += `,"id":${this.stringifyString(event.contents.id)}`
+				}
 
 				if (event.contents.name !== undefined) {
-					result += `,"name":${this.stringifyComponent(event.contents.name)}`
+					result += `,"name":${this.stringifyTextElement(event.contents.name)}`
 				}
 
 				return result + `}}`
@@ -121,17 +160,12 @@ export class JsonTextStringifier {
 		}
 	}
 
-	private stringify1_21_5HoverEvent(event: HoverEvent_1_21_5): string {
-		if (!this.useModernHoverEventFormat) {
-			throw new Error(
-				`Minecraft ${this.targetMinecraftVersion} does not support hover_events. Use hoverEvent instead.`
-			)
-		}
-
+	private stringifyModernHoverEvent(event: ModernHoverEvent): string {
 		switch (event.action) {
 			case 'show_text': {
-				return `{action:show_text,value:${this.stringifyComponent(event.action)}}`
+				return `{action:show_text,value:${this.stringifyTextElement(event.value)}}`
 			}
+
 			case 'show_item': {
 				let result = `{action:show_item,id:${this.stringifyString(event.id)}`
 
@@ -139,17 +173,16 @@ export class JsonTextStringifier {
 					result += `,count:${event.count}`
 				}
 
-				if (event.components !== undefined) {
-					result += `,components:${this.stringifyString(event.components)}`
-				}
+				// `components` is not supported by the parser
 
 				return result + `}`
 			}
+
 			case 'show_entity': {
 				let result = `{action:show_entity,id:${this.stringifyString(event.id)}`
 
 				if (event.name !== undefined) {
-					result += `,name:${this.stringifyComponent(event.name)}`
+					result += `,name:${this.stringifyTextElement(event.name)}`
 				}
 
 				if (Array.isArray(event.uuid)) {
@@ -163,22 +196,11 @@ export class JsonTextStringifier {
 		}
 	}
 
-	private stringifyClickEvent(event: ClickEvent): string {
-		if (this.useModernClickEventFormat) {
-			throw new Error(
-				`Minecraft ${this.targetMinecraftVersion} does not support clickEvents. Use click_event instead.`
-			)
-		}
+	private stringifyLegacyClickEvent(event: LegacyClickEvent): string {
 		return `{"action":"${event.action}","value":${this.stringifyString(event.value)}}`
 	}
 
-	private stringify1_21_5ClickEvent(event: ClickEvent_1_21_5): string {
-		if (this.useModernClickEventFormat) {
-			throw new Error(
-				`Minecraft ${this.targetMinecraftVersion} does not support click_events. Use clickEvent instead.`
-			)
-		}
-
+	private stringifyModernClickEvent(event: ModernClickEvent): string {
 		switch (event.action) {
 			case 'open_url':
 				return `{action:open_url,url:${this.stringifyString(event.url)}}`
@@ -205,83 +227,111 @@ export class JsonTextStringifier {
 				let result = `{action:custom,id:${this.stringifyString(event.id)}`
 
 				if (event.payload !== undefined) {
-					result += `,payload:${this.stringifyComponent(event.payload)}`
+					result += `,payload:${this.stringifyTextElement(event.payload)}`
 				}
 
 				return result + `}`
 		}
 	}
 
-	private stringifyCompositeComponent(obj: CompositeComponent): string {
+	private stringifyTextObject(obj: TextObject): string {
 		const entries: string[] = []
 
-		for (let [key, value] of Object.entries(obj) as [
-			keyof CompositeComponent,
-			CompositeComponent[keyof CompositeComponent]
-		][]) {
-			// Quote character to use for keys
-			const q = this.enforceDoubleQuotes ? '"' : ''
+		for (const key of Object.keys(obj) as Array<keyof TextObject>) {
+			if (obj[key] === undefined) continue
 
-			if (Array.isArray(value)) {
-				if (typeof value[0] === 'number') {
-					entries.push(`${q + key + q}:${JSON.stringify(value)}`)
-				} else {
-					// @ts-expect-error - Cannot remove [number, number, number, number] type
-					entries.push(`${q + key + q}:${this.stringifyComponent(value)}`)
-				}
-			} else if (typeof value === 'object') {
-				switch (key) {
-					case 'hoverEvent': {
-						entries.push(`${q + key + q}:${this.stringifyHoverEvent(value as any)}`)
+			// Quote character to use for keys
+			const q = this.enabledFeatures & FEATURES.REQUIRE_DOUBLE_QUOTES ? '"' : ''
+			const quotedKey = q + key + q
+
+			switch (key) {
+				case 'type':
+				case 'text':
+				case 'translate':
+				case 'fallback':
+				case 'keybind':
+				case 'nbt':
+				case 'source':
+				case 'block':
+				case 'entity':
+				case 'storage':
+				case 'selector':
+				case 'font':
+				case 'insertion':
+				case 'object':
+				case 'sprite':
+				case 'atlas':
+				case 'color':
+					// Value is a string
+					entries.push(`${quotedKey}:${this.stringifyString(obj[key])}`)
+					break
+
+				case 'shadow_color':
+					if (Array.isArray(obj[key])) {
+						entries.push(`${quotedKey}:${JSON.stringify(obj[key])}`)
 						break
 					}
-					case 'hover_event': {
-						entries.push(
-							`${q + key + q}:${this.stringify1_21_5HoverEvent(value as any)}`
-						)
-						break
-					}
-					case 'clickEvent': {
-						entries.push(`${q + key + q}:${this.stringifyClickEvent(value as any)}`)
-						break
-					}
-					case 'click_event': {
-						entries.push(
-							`${q + key + q}:${this.stringify1_21_5ClickEvent(value as any)}`
-						)
-						break
-					}
-					case 'score': {
-						entries.push(`${q + key + q}:${this.stringifyScoreObject(value as any)}`)
-						break
-					}
-					default: {
-						entries.push(`${q + key + q}:${this.stringifyComponent(value as any)}`)
-						break
-					}
-				}
-			} else if (typeof value === 'string') {
-				entries.push(`${q + key + q}:${this.stringifyString(value)}`)
-			} else if (value != undefined) {
-				entries.push(`${q + key + q}:${value}`)
-			} else {
-				console.warn('Undefined value in JsonTextStringifier:', key, value)
+				// color and shadow_color fall through to number | bool case
+				case 'bold':
+				case 'italic':
+				case 'obfuscated':
+				case 'strikethrough':
+				case 'underlined':
+				case 'interpret':
+					// Value is a number or boolean
+					entries.push(`${quotedKey}:${obj[key]}`)
+					break
+
+				case 'with':
+				case 'extra':
+				case 'separator':
+					// Value is an array of components
+					entries.push(`${quotedKey}:${this.stringifyTextElement(obj[key]!)}`)
+					break
+
+				case 'score':
+					entries.push(`${quotedKey}:${this.stringifyScoreObject(obj[key])}`)
+					break
+
+				case 'player':
+					entries.push(`${quotedKey}:${this.stringifyPlayerObject(obj[key])}`)
+					break
+
+				case 'clickEvent':
+					entries.push(`${quotedKey}:${this.stringifyLegacyClickEvent(obj[key])}`)
+					break
+
+				case 'click_event':
+					entries.push(`${quotedKey}:${this.stringifyModernClickEvent(obj[key])}`)
+					break
+
+				case 'hoverEvent':
+					entries.push(`${quotedKey}:${this.stringifyLegacyHoverEvent(obj[key])}`)
+					break
+
+				case 'hover_event':
+					entries.push(`${quotedKey}:${this.stringifyModernHoverEvent(obj[key])}`)
+					break
+
+				default:
+					console.warn(`Unknown key in TextObject: '${key}'`)
+					break
 			}
 		}
 
 		return `{${entries.join(',')}}`
 	}
 
-	private stringifyComponent(element: Component): string {
+	private stringifyTextElement(element: TextElement): string {
 		if (typeof element === 'string') {
 			return this.stringifyString(element)
 		} else if (Array.isArray(element)) {
-			return this.stringifyComponentArray(element)
+			return this.stringifyTextElementArray(element)
 		} else if (typeof element === 'object' && element !== null) {
-			return this.stringifyCompositeComponent(element)
+			return this.stringifyTextObject(element)
 		} else {
 			console.error(element)
-			throw new Error('Invalid JsonTextElement')
+			throw new Error('Invalid TextElement')
 		}
 	}
 }

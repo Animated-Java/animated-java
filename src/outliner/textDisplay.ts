@@ -5,7 +5,7 @@ import {
 } from '../formats/blueprint/format'
 import { registerAction } from '../util/moddingTools'
 // import * as MinecraftFull from '../assets/MinecraftFull.json'
-import { JsonParserError } from 'src/systems/jsonText/parser'
+import { JsonTextSyntaxError } from 'src/systems/jsonText/parser'
 import { TextDisplayConfig } from '../nodeConfigs'
 import { JsonText } from '../systems/jsonText'
 import { getVanillaFont } from '../systems/minecraft/fontManager'
@@ -241,7 +241,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 				console.log('Text updated:', text)
 			} catch (e: any) {
 				console.error(e)
-				if (e instanceof JsonParserError) {
+				if (e instanceof JsonTextSyntaxError) {
 					this.textError.set(e.getOriginErrorMessage())
 				} else {
 					this.textError.set(e.message as string)
