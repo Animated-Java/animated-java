@@ -73,7 +73,7 @@ function addPrismSyntaxForSnbtTextComponents() {
 		boolean: {
 			pattern: /\b(?:true|false|0b|1b)\b/i,
 		},
-		number: /[-]?(?:\b\d+(?:\.\d*)?|\B\.\d+)(?:[eE][+-]?\d+\b)?/,
+		number: /(?:(?:#|0x)[\dA-Fa-f_]{1,8}\b|[-]?(?:\b\d[\d_]*(?:\.[\d_]*)?|\B\.[\d_]+)(?:[eE][+-]?[\d_]+\b)?)/,
 	})
 }
 
