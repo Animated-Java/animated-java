@@ -46,7 +46,7 @@ registerConditionalPropertyOverrideMod({
 
 registerConditionalPropertyOverrideMod({
 	id: `animated-java:action-click-override/export-project`,
-	object: BarItems.export_project as Action,
+	object: BarItems.export_over as Action,
 	key: 'click',
 	get: {
 		condition: () => activeProjectIsBlueprintFormat(),
