@@ -372,7 +372,7 @@ export class MinecraftFont {
 		return Math.max(width, 0)
 	}
 
-	async generateTextMesh({
+	async generateTextDisplayMesh({
 		jsonText,
 		maxLineWidth,
 		backgroundColor,
