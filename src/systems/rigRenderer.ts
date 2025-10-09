@@ -417,7 +417,7 @@ function renderGroup(
 	}
 
 	// Export a struct instead of a bone if no elements are present
-	if (!groupModel.model || !groupModel.model.elements || groupModel.model.elements.length === 0) {
+	if (!groupModel.model?.elements || groupModel.model.elements.length === 0) {
 		delete defaultVariant.models[group.uuid]
 		const struct: IRenderedNodes['Struct'] = {
 			type: 'struct',

@@ -197,31 +197,5 @@ export default async function compileResourcePack(
 		}
 	} else if (aj.resource_pack_export_mode === 'zip') {
 		throw new IntentionalExportError('ZIP export is not yet implemented.')
-		// exportedFiles.set(
-		// 	PathModule.join(options.resourcePackFolder, 'pack.mcmeta'),
-		// 	autoStringify({
-		// 		pack: {
-		// 			// FIXME - This should be a setting
-		// 			pack_format: 32,
-		// 			description: `${Project!.name}. Generated with Animated Java`,
-		// 		},
-		// 	})
-		// )
-
-		// PROGRESS_DESCRIPTION.set('Writing Resource Pack Zip...')
-		// const data: Record<string, Uint8Array> = {}
-		// for (const [path, file] of exportedFiles) {
-		// 	const relativePath = PathModule.relative(options.resourcePackFolder, path)
-		// 	if (typeof file === 'string') {
-		// 		data[relativePath] = Buffer.from(file)
-		// 	} else {
-		// 		data[relativePath] = file
-		// 	}
-		// }
-		// const zipped = await zip(data, {})
-		// await fs.promises.writeFile(
-		// 	options.resourcePackFolder + (options.resourcePackFolder.endsWith('.zip') ? '' : '.zip'),
-		// 	zipped
-		// )
 	}
 }

@@ -9,28 +9,8 @@
 	import { JsonText } from '../systems/jsonText'
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
-</script>
 
-<script lang="ts">
-	import CodeInput from './dialogItems/codeInput.svelte'
-
-	const pluginModeEnabled = !!Project?.animated_java?.enable_plugin_mode
-
-	export let customName: Valuable<string>
-	export let customNameVisible: Valuable<boolean>
-	export let billboard: Valuable<string>
-	export let overrideBrightness: Valuable<NonNullable<BoneConfig['_overrideBrightness']>>
-	export let brightnessOverride: Valuable<NonNullable<BoneConfig['_brightnessOverride']>>
-	export let glowing: Valuable<NonNullable<BoneConfig['_glowing']>>
-	export let overrideGlowColor: Valuable<NonNullable<BoneConfig['_overrideGlowColor']>>
-	export let glowColor: Valuable<NonNullable<BoneConfig['_glowColor']>>
-	export let invisible: Valuable<NonNullable<BoneConfig['_invisible']>>
-	export let nbt: Valuable<NonNullable<BoneConfig['_nbt']>>
-	export let shadowRadius: Valuable<NonNullable<BoneConfig['_shadowRadius']>>
-	export let shadowStrength: Valuable<NonNullable<BoneConfig['_shadowStrength']>>
-	export let useNBT: Valuable<NonNullable<BoneConfig['_useNBT']>>
-
-	const billboardOptions: Record<BoneConfig['billboard'], string> = {
+	const BILLBOARD_OPTIONS: Record<BoneConfig['billboard'], string> = {
 		fixed: translate('dialog.bone_config.billboard.options.fixed'),
 		vertical: translate('dialog.bone_config.billboard.options.vertical'),
 		horizontal: translate('dialog.bone_config.billboard.options.horizontal'),
@@ -61,7 +41,9 @@
 		if (value === '') return { type: 'success', message: '' }
 
 		try {
-			JsonText.fromString(value, Project!.animated_java.target_minecraft_version)
+			JsonText.fromString(value, {
+				minecraftVersion: Project!.animated_java.target_minecraft_version,
+			})
 		} catch (e: any) {
 			return {
 				type: 'error',
@@ -73,11 +55,31 @@
 	}
 </script>
 
-{#if pluginModeEnabled}
+<script lang="ts">
+	import CodeInput from './dialogItems/codeInput.svelte'
+
+	const PLUGIN_MODE = !!Project?.animated_java?.enable_plugin_mode
+
+	export let customName: Valuable<string>
+	export let customNameVisible: Valuable<boolean>
+	export let billboard: Valuable<string>
+	export let overrideBrightness: Valuable<NonNullable<BoneConfig['_overrideBrightness']>>
+	export let brightnessOverride: Valuable<NonNullable<BoneConfig['_brightnessOverride']>>
+	export let glowing: Valuable<NonNullable<BoneConfig['_glowing']>>
+	export let overrideGlowColor: Valuable<NonNullable<BoneConfig['_overrideGlowColor']>>
+	export let glowColor: Valuable<NonNullable<BoneConfig['_glowColor']>>
+	export let invisible: Valuable<NonNullable<BoneConfig['_invisible']>>
+	export let nbt: Valuable<NonNullable<BoneConfig['_nbt']>>
+	export let shadowRadius: Valuable<NonNullable<BoneConfig['_shadowRadius']>>
+	export let shadowStrength: Valuable<NonNullable<BoneConfig['_shadowStrength']>>
+	export let useNBT: Valuable<NonNullable<BoneConfig['_useNBT']>>
+</script>
+
+{#if PLUGIN_MODE}
 	<Select
 		label={translate('dialog.bone_config.billboard.title')}
 		tooltip={translate('dialog.bone_config.billboard.description')}
-		options={billboardOptions}
+		options={BILLBOARD_OPTIONS}
 		defaultOption={BoneConfig.prototype.billboard}
 		bind:value={billboard}
 	/>
@@ -191,7 +193,7 @@
 		<Select
 			label={translate('dialog.bone_config.billboard.title')}
 			tooltip={translate('dialog.bone_config.billboard.description')}
-			options={billboardOptions}
+			options={BILLBOARD_OPTIONS}
 			defaultOption={BoneConfig.prototype.billboard}
 			bind:value={billboard}
 		/>

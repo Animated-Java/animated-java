@@ -959,9 +959,9 @@ async function removeFiles(ajmeta: AJMeta, dataPackFolder: string) {
 }
 
 const dataPackCompiler: DataPackCompiler = async ({
-	ajmeta,
+	// ajmeta,
 	version,
-	coreFiles,
+	// coreFiles,
 	versionedFiles,
 	rig,
 	animations,
@@ -972,7 +972,7 @@ const dataPackCompiler: DataPackCompiler = async ({
 	JsonText.defaultTargetVersion = version
 
 	const aj = Project!.animated_java
-	const is_static = animations.length === 0
+	const isStatic = animations.length === 0
 	const variables = {
 		export_namespace: aj.export_namespace,
 		interpolation_duration: aj.interpolation_duration,
@@ -1007,7 +1007,7 @@ const dataPackCompiler: DataPackCompiler = async ({
 			Object.values(rig.nodes).filter(n => n.type === 'locator' && n.config?.use_entity)
 				.length > 0,
 		has_cameras: Object.values(rig.nodes).filter(n => n.type === 'camera').length > 0,
-		is_static,
+		is_static: isStatic,
 		getNodeTags,
 		BONE_TYPES,
 		project_storage: `animated_java:${aj.export_namespace}`,
@@ -1076,7 +1076,7 @@ async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFold
 			})
 		)
 		if (writeQueue.size >= maxWriteThreads) {
-			await Promise.any(writeQueue)
+			await Promise.any(writeQueue.values())
 		}
 	}
 	await Promise.all(writeQueue.values())

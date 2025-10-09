@@ -23,11 +23,9 @@
 	let lastSelected: TextDisplay | undefined
 	let selected = TextDisplay.selected.at(0)
 
-	// @ts-expect-error
-	let text = selected?._text ?? new Valuable('')
+	let text = selected?.getTextValuable() ?? new Valuable('')
 	let lastText: string | undefined = selected?.text
-	// @ts-expect-error
-	let error = selected?._textError ?? new Valuable('')
+	let error = selected?.textError ?? new Valuable('')
 
 	let codeJarElement: HTMLPreElement | undefined
 
@@ -45,9 +43,7 @@
 		lastSelected = selected
 		selected = TextDisplay.selected.at(0)
 		if (!selected || Group.first_selected) return
-		// This might be a bit hacky, but svelte seems to handle it fine.
-		// @ts-ignore
-		text = selected._text
+		text = selected.getTextValuable()
 		lastText = selected.text
 		error = selected.textError
 

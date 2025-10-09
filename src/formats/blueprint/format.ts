@@ -273,7 +273,6 @@ export const BLUEPRINT_FORMAT = registerModelFormat(
 			},
 		},
 
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		onSetup(project, newModel) {
 			if (!Project) return
 			console.log('Animated Java Blueprint format setup')
