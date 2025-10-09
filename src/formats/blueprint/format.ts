@@ -407,9 +407,9 @@ export function shouldEnableRotationLock(): boolean {
 
 	return !(
 		!!Group.first_selected ||
-		!!AnimatedJava.API.TextDisplay.selected.length ||
-		!!AnimatedJava.API.VanillaItemDisplay.selected.length ||
-		!!AnimatedJava.API.VanillaBlockDisplay.selected.length ||
+		!!AnimatedJava.TextDisplay.selected.length ||
+		!!AnimatedJava.VanillaItemDisplay.selected.length ||
+		!!AnimatedJava.VanillaBlockDisplay.selected.length ||
 		!!(
 			Array.isArray(OutlinerElement.types.locator?.selected) &&
 			OutlinerElement.types.locator.selected.length

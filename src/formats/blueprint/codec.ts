@@ -149,11 +149,9 @@ export const BLUEPRINT_CODEC = registerCodec(
 							}
 							break
 						}
-						case newElement instanceof AnimatedJava.API.TextDisplay:
-						case newElement instanceof AnimatedJava.API.VanillaItemDisplay:
-						case newElement instanceof AnimatedJava.API.VanillaBlockDisplay: {
-							// ES-Lint doesn't like the types here for some reason, so I'm casing them to please it.
-							Project.loadingPromises.push(newElement.waitForReady() as Promise<void>)
+						case newElement instanceof AnimatedJava.VanillaItemDisplay:
+						case newElement instanceof AnimatedJava.VanillaBlockDisplay: {
+							Project.loadingPromises.push(newElement.waitForReady())
 							break
 						}
 					}

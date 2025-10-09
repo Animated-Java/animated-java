@@ -63,58 +63,54 @@ declare global {
 }
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const AnimatedJavaApi = {
-	API: {
-		parseResourcePackPath,
-		datapackCompiler,
-		resourcepackCompiler,
-		Variant,
-		MINECRAFT_REGISTRY,
-		openExportProgressDialog,
-		isResourcePackPath,
-		isDataPackPath,
-		blueprintSettingErrors,
-		openUnexpectedErrorDialog,
-		BLUEPRINT_FORMAT,
-		BLUEPRINT_CODEC,
-		TextDisplay,
-		getLatestVersionClientDownloadUrl,
-		getVanillaFont,
-		assetManager,
-		itemModelManager,
-		blockModelManager,
-		VanillaItemDisplay,
-		VanillaBlockDisplay,
-		debugBlocks,
-		debugBlockState,
-		BLOCKSTATE_REGISTRY,
-		exportProject,
-		openBlueprintLoadingDialog,
-		openInstallPopup,
-		removeCubesAssociatedWithTexture(texture: Texture) {
-			const cubes = Cube.all.filter(cube =>
-				Object.values(cube.faces).some(face => face.texture === texture.uuid)
-			)
-			Undo.initEdit({ elements: cubes, outliner: true, textures: [texture] })
-			cubes.forEach(cube => cube.remove())
-			texture.remove()
-			Undo.finishEdit('Remove Cubes Associated With Texture')
-		},
-		cleanupExportedFiles,
-		mcbFiles,
-		openChangelogDialog,
-		checkForIncompatabilities,
-		toSmallCharacters: toSmallCaps,
-		printMinecraftFontSheet: () => {
-			const fontJson = AnimatedJava.API.assetManager.getJSONAsset(
-				'assets/minecraft/font/include/default.json'
-			)
-			return fontJson.providers[0].chars.map(
-				(characters: string, i: number) => `${i}: ` + characters.split('').join(' ')
-			)
-		},
-		TELLRAW,
-		JsonText,
+	parseResourcePackPath,
+	datapackCompiler,
+	resourcepackCompiler,
+	Variant,
+	MINECRAFT_REGISTRY,
+	openExportProgressDialog,
+	isResourcePackPath,
+	isDataPackPath,
+	blueprintSettingErrors,
+	openUnexpectedErrorDialog,
+	BLUEPRINT_FORMAT,
+	BLUEPRINT_CODEC,
+	TextDisplay,
+	getLatestVersionClientDownloadUrl,
+	getVanillaFont,
+	assetManager,
+	itemModelManager,
+	blockModelManager,
+	VanillaItemDisplay,
+	VanillaBlockDisplay,
+	debugBlocks,
+	debugBlockState,
+	BLOCKSTATE_REGISTRY,
+	exportProject,
+	openBlueprintLoadingDialog,
+	openInstallPopup,
+	removeCubesAssociatedWithTexture(texture: Texture) {
+		const cubes = Cube.all.filter(cube =>
+			Object.values(cube.faces).some(face => face.texture === texture.uuid)
+		)
+		Undo.initEdit({ elements: cubes, outliner: true, textures: [texture] })
+		cubes.forEach(cube => cube.remove())
+		texture.remove()
+		Undo.finishEdit('Remove Cubes Associated With Texture')
 	},
+	cleanupExportedFiles,
+	mcbFiles,
+	openChangelogDialog,
+	checkForIncompatabilities,
+	toSmallCharacters: toSmallCaps,
+	printMinecraftFontSheet: () => {
+		const fontJson = assetManager.getJSONAsset('assets/minecraft/font/include/default.json')
+		return fontJson.providers[0].chars.map(
+			(characters: string, i: number) => `${i}: ` + characters.split('').join(' ')
+		)
+	},
+	TELLRAW,
+	JsonText,
 }
 window.AnimatedJava = AnimatedJavaApi
 
@@ -130,8 +126,8 @@ requestAnimationFrame(() => {
 
 // Uninstall events
 EVENTS.EXTRACT_MODS.subscribe(() => {
-	// @ts-ignore
-	globalThis.AnimatedJava = undefined
+	// @ts-expect-error Cannot delete type that isn't optional
+	delete window.AnimatedJava
 })
 
 BBPlugin.register(PACKAGE.name, {
