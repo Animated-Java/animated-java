@@ -4,18 +4,22 @@ import { IntentionalExportError } from '../exporter'
 import { type IRenderedRig } from '../rigRenderer'
 import type { ExportedFile } from '../util'
 
-import { AJMeta, type MinecraftVersion, PackMeta, type PackMetaFormats } from '../global'
+import { AJMeta, PackMeta, SUPPORTED_MINECRAFT_VERSIONS, type PackMetaFormats } from '../global'
 import _1_20_4 from './1.20.4'
 import _1_21_2 from './1.21.2'
 import _1_21_4 from './1.21.4'
 
-const VERSIONS = {
-	'1.20.4': _1_20_4,
-	'1.20.5': _1_20_4,
-	'1.21.0': _1_20_4,
-	'1.21.2': _1_21_2,
-	'1.21.4': _1_21_4,
+const VERSIONED_RESOURCE_PACK_COMPILERS: Record<
+	SUPPORTED_MINECRAFT_VERSIONS,
+	ResourcePackCompiler
+> = {
+	'1.21.9': _1_21_4,
 	'1.21.5': _1_21_4,
+	'1.21.4': _1_21_4,
+	'1.21.2': _1_21_2,
+	'1.21.0': _1_20_4,
+	'1.20.5': _1_20_4,
+	'1.20.4': _1_20_4,
 }
 
 interface ResourcePackCompilerOptions {
@@ -41,7 +45,7 @@ export interface CompileResourcePackOptions {
 }
 
 export default async function compileResourcePack(
-	targetVersions: MinecraftVersion[],
+	targetVersions: SUPPORTED_MINECRAFT_VERSIONS[],
 	options: CompileResourcePackOptions
 ) {
 	const aj = Project!.animated_java
@@ -75,7 +79,7 @@ export default async function compileResourcePack(
 				: options.resourcePackFolder
 
 		// Move paths into versioned overlay folders.
-		await VERSIONS[version]({
+		await VERSIONED_RESOURCE_PACK_COMPILERS[version]({
 			...options,
 			ajmeta,
 			coreFiles,

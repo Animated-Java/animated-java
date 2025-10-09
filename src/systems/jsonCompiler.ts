@@ -16,6 +16,7 @@ import { resolvePath } from '../util/fileUtil'
 import { detectCircularReferences, mapObjEntries, scrubUndefined } from '../util/misc'
 import { Variant } from '../variants'
 import type { INodeTransform, IRenderedAnimation, IRenderedFrame } from './animationRenderer'
+import { JsonText } from './jsonText'
 import type {
 	AnyRenderedNode,
 	IRenderedModel,
@@ -64,7 +65,7 @@ type ExportedBakedAnimation = Omit<
 	frames: ExportedAnimationFrame[]
 	modified_nodes: string[]
 }
-type ExportedKeyframe = {
+interface ExportedKeyframe {
 	time: number
 	channel: string
 	value?: [string, string, string]
@@ -96,7 +97,7 @@ type ExportedKeyframe = {
 	repeat_frequency?: number
 }
 type ExportedAnimator = ExportedKeyframe[]
-type ExportedDynamicAnimation = {
+interface ExportedDynamicAnimation {
 	name: string
 	loop_mode: 'once' | 'hold' | 'loop'
 	duration: number
@@ -347,7 +348,7 @@ function serailizeRenderedNode(node: AnyRenderedNode): ExportedRenderedNode {
 			break
 		}
 		case 'text_display': {
-			json.text = node.text?.toJSON()
+			json.text = new JsonText(node.text).toJSON()
 			break
 		}
 	}

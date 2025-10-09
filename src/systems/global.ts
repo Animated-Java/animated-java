@@ -2,7 +2,15 @@ import { normalizePath } from '../util/fileUtil'
 import { IntentionalExportError, IntentionalExportErrorFromInvalidFile } from './exporter'
 import { sortObjectKeys } from './util'
 
-export type MinecraftVersion = '1.20.4' | '1.20.5' | '1.21.0' | '1.21.2' | '1.21.4' | '1.21.5'
+export enum SUPPORTED_MINECRAFT_VERSIONS {
+	'1.21.9' = '1.21.9',
+	'1.21.5' = '1.21.5',
+	'1.21.4' = '1.21.4',
+	'1.21.2' = '1.21.2',
+	'1.21.0' = '1.21.0',
+	'1.20.5' = '1.20.5',
+	'1.20.4' = '1.20.4',
+}
 
 interface OldSerializedAJMeta {
 	[key: string]: {

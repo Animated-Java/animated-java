@@ -1,4 +1,4 @@
-import type { MinecraftVersion } from '../../systems/global'
+import { SUPPORTED_MINECRAFT_VERSIONS } from '../../systems/global'
 import { Valuable } from '../../util/stores'
 
 export type ExportMode = 'folder' | 'zip' | 'none'
@@ -13,7 +13,7 @@ export interface BlueprintSettings {
 	enable_plugin_mode: boolean
 	resource_pack_export_mode: ExportMode
 	data_pack_export_mode: ExportMode
-	target_minecraft_version: MinecraftVersion
+	target_minecraft_version: SUPPORTED_MINECRAFT_VERSIONS
 	// Resource Pack Settings
 	display_item: string
 	custom_model_data_offset: number
@@ -46,7 +46,7 @@ export const defaultValues: BlueprintSettings = {
 	enable_plugin_mode: false,
 	resource_pack_export_mode: 'folder' as ExportMode,
 	data_pack_export_mode: 'folder' as ExportMode,
-	target_minecraft_version: '1.21.5' as MinecraftVersion,
+	target_minecraft_version: SUPPORTED_MINECRAFT_VERSIONS['1.21.9'],
 
 	// Resource Pack Settings
 	display_item: 'minecraft:white_dye',

@@ -1,14 +1,14 @@
 import { Compiler, Parser, SyncIo, Tokenizer } from 'mc-build'
 import { VariableMap } from 'mc-build/dist/mcl/Compiler'
 import { getDataPackFormat } from '../../util/minecraftUtil'
-import type { MinecraftVersion } from '../global'
+import { SUPPORTED_MINECRAFT_VERSIONS } from '../global'
 import type { ExportedFile } from '../util'
 
 interface CompilerOptions {
 	sourceFiles: Record<string, string>
 	destPath: string
 	variables: Record<string, any>
-	version: MinecraftVersion
+	version: SUPPORTED_MINECRAFT_VERSIONS
 	exportedFiles: Map<string, ExportedFile>
 }
 

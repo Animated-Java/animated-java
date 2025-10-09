@@ -1,7 +1,7 @@
-import { type MinecraftVersion } from '../global'
+import { SUPPORTED_MINECRAFT_VERSIONS } from '../global'
 import animation_1_20_4 from './1.20.4/animation.mcb'
-import core_1_20_4 from './1.20.4/global.mcb'
-import coreTemplates_1_20_4 from './1.20.4/global.mcbt'
+import global_1_20_4 from './1.20.4/global.mcb'
+import globalTemplates_1_20_4 from './1.20.4/global.mcbt'
 import static_1_20_4 from './1.20.4/static.mcb'
 
 import animation_1_20_5 from './1.20.5/animation.mcb'
@@ -22,46 +22,52 @@ import static_1_21_5 from './1.21.5/static.mcb'
 interface MCBFiles {
 	animation: string
 	static: string
-	core: string
-	coreTemplates: string
+	global: string
+	globalTemplates: string
 }
 
-const MCB_FILES: Record<MinecraftVersion, MCBFiles> = {
+const MCB_FILES: Record<SUPPORTED_MINECRAFT_VERSIONS, MCBFiles> = {
+	'1.21.9': {
+		animation: animation_1_21_5,
+		static: static_1_21_5,
+		global: global_1_20_4,
+		globalTemplates: globalTemplates_1_20_4,
+	},
 	'1.21.5': {
 		animation: animation_1_21_5,
 		static: static_1_21_5,
-		core: core_1_20_4,
-		coreTemplates: coreTemplates_1_20_4,
+		global: global_1_20_4,
+		globalTemplates: globalTemplates_1_20_4,
 	},
 	'1.21.4': {
 		animation: animation_1_21_4,
 		static: static_1_21_4,
-		core: core_1_20_4,
-		coreTemplates: coreTemplates_1_20_4,
+		global: global_1_20_4,
+		globalTemplates: globalTemplates_1_20_4,
 	},
 	'1.21.2': {
 		animation: animation_1_21_2,
 		static: static_1_21_2,
-		core: core_1_20_4,
-		coreTemplates: coreTemplates_1_20_4,
+		global: global_1_20_4,
+		globalTemplates: globalTemplates_1_20_4,
 	},
 	'1.21.0': {
 		animation: animation_1_20_5,
 		static: static_1_20_5,
-		core: core_1_20_4,
-		coreTemplates: coreTemplates_1_20_4,
+		global: global_1_20_4,
+		globalTemplates: globalTemplates_1_20_4,
 	},
 	'1.20.5': {
 		animation: animation_1_20_5,
 		static: static_1_20_5,
-		core: core_1_20_4,
-		coreTemplates: coreTemplates_1_20_4,
+		global: global_1_20_4,
+		globalTemplates: globalTemplates_1_20_4,
 	},
 	'1.20.4': {
 		animation: animation_1_20_4,
 		static: static_1_20_4,
-		core: core_1_20_4,
-		coreTemplates: coreTemplates_1_20_4,
+		global: global_1_20_4,
+		globalTemplates: globalTemplates_1_20_4,
 	},
 }
 

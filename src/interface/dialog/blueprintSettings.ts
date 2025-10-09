@@ -1,6 +1,6 @@
 import KofiPopup from 'src/components/kofiPopup.svelte'
 import { updateAllCubeOutlines } from 'src/mods/cube'
-import type { MinecraftVersion } from 'src/systems/global'
+import { SUPPORTED_MINECRAFT_VERSIONS } from 'src/systems/global'
 import BlueprintSettingsDialogSvelteComponent from '../../components/blueprintSettingsDialog.svelte'
 import { PACKAGE } from '../../constants'
 import { updateRenderBoxPreview, updateRotationLock } from '../../formats/blueprint/format'
@@ -88,7 +88,7 @@ function setSettings(settings: ReturnType<typeof getSettings>) {
 		settings.resourcePackExportMode.get() as ExportMode
 	Project.animated_java.data_pack_export_mode = settings.dataPackExportMode.get() as ExportMode
 	Project.animated_java.target_minecraft_version =
-		settings.targetMinecraftVersion.get() as MinecraftVersion
+		settings.targetMinecraftVersion.get() as SUPPORTED_MINECRAFT_VERSIONS
 	// Resource Pack Settings
 	Project.animated_java.display_item = settings.displayItem.get()
 	Project.animated_java.custom_model_data_offset = settings.customModelDataOffset.get()

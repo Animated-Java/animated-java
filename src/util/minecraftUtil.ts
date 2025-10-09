@@ -1,5 +1,5 @@
 import * as pathjs from 'path'
-import type { MinecraftVersion } from '../systems/global'
+import { SUPPORTED_MINECRAFT_VERSIONS } from '../systems/global'
 import {
 	BlockStateRegistryEntry,
 	type BlockStateValue,
@@ -283,46 +283,54 @@ export async function parseBlock(block: string): Promise<IParsedBlock | undefine
 	}
 }
 
-export function sortMCVersions(versions: MinecraftVersion[]): MinecraftVersion[] {
+export function sortMCVersions(
+	versions: SUPPORTED_MINECRAFT_VERSIONS[]
+): SUPPORTED_MINECRAFT_VERSIONS[] {
 	return versions.sort((a, b) => {
 		return compareVersions(a, b) ? -1 : 1
 	})
 }
 
-export function getDataPackFormat(version: MinecraftVersion): number {
+export function getDataPackFormat(version: SUPPORTED_MINECRAFT_VERSIONS): number {
 	switch (version) {
-		case '1.20.4':
+		case SUPPORTED_MINECRAFT_VERSIONS['1.20.4']:
 			return 26
-		case '1.20.5':
+		case SUPPORTED_MINECRAFT_VERSIONS['1.20.5']:
 			return 41
-		case '1.21.0':
+		case SUPPORTED_MINECRAFT_VERSIONS['1.21.0']:
 			return 48
-		case '1.21.2':
+		case SUPPORTED_MINECRAFT_VERSIONS['1.21.2']:
 			return 57
-		case '1.21.4':
+		case SUPPORTED_MINECRAFT_VERSIONS['1.21.4']:
 			return 61
-		case '1.21.5':
+		case SUPPORTED_MINECRAFT_VERSIONS['1.21.5']:
 			return 71
+		case SUPPORTED_MINECRAFT_VERSIONS['1.21.9']:
+			return 88.0
 		default:
+			console.warn(`Unknown Minecraft version: ${version}`)
 			return Infinity
 	}
 }
 
-export function getResourcePackFormat(version: MinecraftVersion): number {
+export function getResourcePackFormat(version: SUPPORTED_MINECRAFT_VERSIONS): number {
 	switch (version) {
-		case '1.20.4':
+		case SUPPORTED_MINECRAFT_VERSIONS['1.20.4']:
 			return 22
-		case '1.20.5':
+		case SUPPORTED_MINECRAFT_VERSIONS['1.20.5']:
 			return 32
-		case '1.21.0':
+		case SUPPORTED_MINECRAFT_VERSIONS['1.21.0']:
 			return 34
-		case '1.21.2':
+		case SUPPORTED_MINECRAFT_VERSIONS['1.21.2']:
 			return 42
-		case '1.21.4':
+		case SUPPORTED_MINECRAFT_VERSIONS['1.21.4']:
 			return 46
-		case '1.21.5':
+		case SUPPORTED_MINECRAFT_VERSIONS['1.21.5']:
 			return 55
+		case SUPPORTED_MINECRAFT_VERSIONS['1.21.9']:
+			return 69.0
 		default:
+			console.warn(`Unknown Minecraft version: ${version}`)
 			return Infinity
 	}
 }

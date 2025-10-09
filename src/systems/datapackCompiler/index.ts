@@ -17,7 +17,7 @@ import { Variant } from '../../variants'
 import type { IRenderedAnimation } from '../animationRenderer'
 import mcbFiles from '../datapackCompiler/mcbFiles'
 import { IntentionalExportError } from '../exporter'
-import { AJMeta, type MinecraftVersion, PackMeta, type PackMetaFormats } from '../global'
+import { AJMeta, PackMeta, type PackMetaFormats, SUPPORTED_MINECRAFT_VERSIONS } from '../global'
 import { JsonText } from '../jsonText'
 import type { AnyRenderedNode, IRenderedRig } from '../rigRenderer'
 import {
@@ -393,7 +393,7 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 }
 
 async function generateRootEntityPassengers(
-	version: MinecraftVersion,
+	version: SUPPORTED_MINECRAFT_VERSIONS,
 	rig: IRenderedRig,
 	rigHash: string
 ) {
@@ -752,7 +752,7 @@ function nodeSorter(a: AnyRenderedNode, b: AnyRenderedNode): number {
 
 interface DataPackCompilerOptions {
 	ajmeta: AJMeta
-	version: MinecraftVersion
+	version: SUPPORTED_MINECRAFT_VERSIONS
 	coreFiles: Map<string, ExportedFile>
 	versionedFiles: Map<string, ExportedFile>
 	rig: IRenderedRig
@@ -774,7 +774,7 @@ interface CompileDataPackOptions {
 }
 
 export default async function compileDataPack(
-	targetVersions: MinecraftVersion[],
+	targetVersions: SUPPORTED_MINECRAFT_VERSIONS[],
 	options: CompileDataPackOptions
 ) {
 	console.time('Data Pack Compilation took')

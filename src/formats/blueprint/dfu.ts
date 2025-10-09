@@ -3,7 +3,6 @@ import TransparentTexture from '../../assets/transparent.png'
 import { PACKAGE } from '../../constants'
 import { openUnexpectedErrorDialog } from '../../interface/dialog/unexpectedError'
 import { BoneConfig } from '../../nodeConfigs'
-import { MinecraftVersion } from '../../systems/global'
 import { type IBlueprintFormatJSON, getDefaultProjectSettings } from './format'
 
 export function process(model: any): IBlueprintFormatJSON {
@@ -607,8 +606,8 @@ function updateModelTo1_8_0(model: any) {
 	// Update target version settings
 	if (Array.isArray(model.blueprint_settings?.target_minecraft_versions)) {
 		fixed.blueprint_settings.target_minecraft_version =
-			(model.blueprint_settings.target_minecraft_versions.at(0) as MinecraftVersion) ??
-			'1.21.5'
+			model.blueprint_settings.target_minecraft_versions.at(0) ??
+			getDefaultProjectSettings().target_minecraft_version
 		// @ts-expect-error
 		delete fixed.blueprint_settings.target_minecraft_versions
 	}
