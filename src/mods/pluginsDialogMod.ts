@@ -19,10 +19,10 @@ registerMod({
 	id: `animated-java:plugins-dialog-mod`,
 
 	apply: () => {
-		// @ts-expect-error
+		// @ts-expect-error Missing types
 		const original = Plugins.dialog.component.methods.selectPlugin
 
-		// @ts-expect-error
+		// @ts-expect-error Missing types
 		Plugins.dialog.component.methods.selectPlugin = function (this, plugin: BBPlugin) {
 			const result = original.call(this, plugin)
 			SELECTED_PLUGIN.set(plugin)
@@ -33,7 +33,7 @@ registerMod({
 	},
 
 	revert: ({ original }) => {
-		// @ts-expect-error
+		// @ts-expect-error Missing types
 		Plugins.dialog.component.methods.selectPlugin = original
 	},
 })

@@ -67,7 +67,7 @@ export class SvelteDialog<
 		const mount = document.createComment(`svelte-dialog-` + guid())
 
 		const dialogOptions = { ...options }
-		// @ts-expect-error
+		// @ts-expect-error Not in DialogOptions
 		delete dialogOptions.component
 
 		super(options.id, {

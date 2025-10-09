@@ -1,4 +1,5 @@
 import { NbtCompound, NbtList, NbtString, NbtTag } from 'deepslate/lib/nbt'
+import { TextDisplay } from 'src/outliner/textDisplay'
 import TransparentTexture from '../../assets/transparent.png'
 import { PACKAGE } from '../../constants'
 import { openUnexpectedErrorDialog } from '../../interface/dialog/unexpectedError'
@@ -572,34 +573,34 @@ function updateModelTo1_8_0(model: any) {
 	// Update bounding box settings
 	if (model.blueprint_settings?.show_bounding_box != undefined) {
 		fixed.blueprint_settings.show_render_box = model.blueprint_settings.show_bounding_box
-		// @ts-expect-error
+		// @ts-expect-error Does not exist on type
 		delete fixed.blueprint_settings.show_bounding_box
 	}
 	if (model.blueprint_settings?.auto_bounding_box != undefined) {
 		fixed.blueprint_settings.auto_render_box = model.blueprint_settings.auto_bounding_box
-		// @ts-expect-error
+		// @ts-expect-error Does not exist on type
 		delete fixed.blueprint_settings.auto_bounding_box
 	}
 	if (model.blueprint_settings?.bounding_box != undefined) {
 		fixed.blueprint_settings.render_box = model.blueprint_settings.bounding_box
-		// @ts-expect-error
+		// @ts-expect-error Does not exist on type
 		delete fixed.blueprint_settings.bounding_box
 	}
 
 	// Update command settings
 	if (model.blueprint_settings?.summon_commands != undefined) {
 		fixed.blueprint_settings.on_summon_function = model.blueprint_settings.summon_commands
-		// @ts-expect-error
+		// @ts-expect-error Does not exist on type
 		delete fixed.blueprint_settings.summon_commands
 	}
 	if (model.blueprint_settings?.remove_commands != undefined) {
 		fixed.blueprint_settings.on_remove_function = model.blueprint_settings.remove_commands
-		// @ts-expect-error
+		// @ts-expect-error Does not exist on type
 		delete fixed.blueprint_settings.remove_commands
 	}
 	if (model.blueprint_settings?.ticking_commands != undefined) {
 		fixed.blueprint_settings.on_post_tick_function = model.blueprint_settings.ticking_commands
-		// @ts-expect-error
+		// @ts-expect-error Does not exist on type
 		delete fixed.blueprint_settings.ticking_commands
 	}
 
@@ -608,7 +609,7 @@ function updateModelTo1_8_0(model: any) {
 		fixed.blueprint_settings.target_minecraft_version =
 			model.blueprint_settings.target_minecraft_versions.at(0) ??
 			getDefaultProjectSettings().target_minecraft_version
-		// @ts-expect-error
+		// @ts-expect-error Does not exist on type
 		delete fixed.blueprint_settings.target_minecraft_versions
 	}
 

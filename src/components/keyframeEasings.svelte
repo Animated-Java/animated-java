@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-	// @ts-expect-error
+	// @ts-expect-error No types for glob imports
 	import { default as ICON_IMPORTS, filenames } from '../assets/easingIcons/*.svg'
 	import { activeProjectIsBlueprintFormat } from '../formats/blueprint/format'
 	import { getEasingArgDefault, hasArgs } from '../util/easing'

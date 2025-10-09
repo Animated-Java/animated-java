@@ -93,17 +93,17 @@ const REGISTRIES_URL =
 	'https://raw.githubusercontent.com/misode/mcmeta/summary/registries/data.json'
 
 class MinecraftRegistryEntry {
-	public items: string[] = []
+	items: string[] = []
 
 	constructor(entries: string[]) {
 		this.items = entries
 	}
 
-	public has(item: string): boolean {
+	has(item: string): boolean {
 		return this.items.includes(item)
 	}
 
-	public find(searchFunction: (item: string) => boolean): string | undefined {
+	find(searchFunction: (item: string) => boolean): string | undefined {
 		return this.items.find(searchFunction)
 	}
 }
@@ -136,7 +136,7 @@ async function updateLocalRegistry() {
 		} catch (error) {
 			console.error('Failed to fetch latest Minecraft registry:', error)
 		}
-		if (response && response.ok) {
+		if (response?.ok) {
 			const newRegistry = (await response.json()) as IRegistryJSON
 			localStorage.setItem('animated_java:minecraftRegistry', JSON.stringify(newRegistry))
 			const latestVersion = await getLatestVersion()

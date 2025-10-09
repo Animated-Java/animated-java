@@ -97,20 +97,20 @@ async function generateItemMesh(location: string, model: IItemModel): Promise<It
 
 		const mat = new THREE.ShaderMaterial({
 			uniforms: {
-				// @ts-ignore
+				// @ts-expect-error Uniforms types are wrong
 				map: { type: 't', value: texture },
-				// @ts-ignore
+				// @ts-expect-error Uniforms types are wrong
 				SHADE: { type: 'bool', value: settings.shading.value },
 				LIGHTCOLOR: {
-					// @ts-ignore
+					// @ts-expect-error Uniforms types are wrong
 					type: 'vec3',
 					value: new THREE.Color()
 						.copy(Canvas.global_light_color)
 						.multiplyScalar(settings.brightness.value / 50),
 				},
-				// @ts-ignore
+				// @ts-expect-error Uniforms types are wrong
 				LIGHTSIDE: { type: 'int', value: Canvas.global_light_side },
-				// @ts-ignore
+				// @ts-expect-error Uniforms types are wrong
 				EMISSIVE: { type: 'bool', value: false },
 			},
 			vertexShader: TEXTURE_VERT_SHADER,
@@ -119,7 +119,7 @@ async function generateItemMesh(location: string, model: IItemModel): Promise<It
 			side: Canvas.getRenderSide(),
 			transparent: true,
 		})
-		// @ts-ignore
+		// @ts-expect-error Uniforms types are wrong
 		mat.map = texture
 		mat.name = location
 

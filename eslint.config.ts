@@ -53,7 +53,16 @@ const CUSTOM_RULES: ConfigWithExtends['rules'] = {
 	'@typescript-eslint/restrict-template-expressions': 'off',
 	'@typescript-eslint/no-unsafe-member-access': 'off',
 	'@typescript-eslint/no-unsafe-assignment': 'off',
-	'@typescript-eslint/ban-ts-comment': 'off',
+	'@typescript-eslint/ban-ts-comment': [
+		'warn',
+		{
+			minimumDescriptionLength: 3,
+			'ts-check': false,
+			'ts-expect-error': 'allow-with-description',
+			'ts-ignore': true,
+			'ts-nocheck': true,
+		},
+	],
 	'@typescript-eslint/require-await': 'warn',
 	'@typescript-eslint/no-unsafe-call': 'off',
 	'@typescript-eslint/unbound-method': 'off',

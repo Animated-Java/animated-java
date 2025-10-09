@@ -53,7 +53,7 @@ export class ResizableOutlinerElement extends OutlinerElement {
 
 	getWorldCenter(): THREE.Vector3 {
 		Reusable.vec3.set(0, 0, 0)
-		// @ts-ignore
+		// @ts-expect-error fastWorldPosition types are wrong
 		return THREE.fastWorldPosition(this.mesh, Reusable.vec2).add(Reusable.vec3) as THREE.Vector3
 	}
 
@@ -133,9 +133,9 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(ResizableOutlinerEle
 		Project!.nodes_3d[el.uuid] = mesh
 
 		el.preview_controller.updateGeometry?.(el)
-		// el.preview_controller.updateTransform(el)
 		el.preview_controller.dispatchEvent('setup', { element: el })
 	},
+
 	updateTransform(el: ResizableOutlinerElement) {
 		NodePreviewController.prototype.updateTransform.call(el.preview_controller, el)
 		if (el.mesh.fix_position) {
@@ -153,7 +153,6 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(ResizableOutlinerEle
 			el.mesh.fix_scale.set(...el.scale)
 			makeNotZero(el.mesh.fix_scale)
 		}
-		// @ts-ignore
 		el.preview_controller.dispatchEvent('update_transform', { element: el })
 	},
 })

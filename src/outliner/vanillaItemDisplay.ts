@@ -251,7 +251,6 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, 
 			const highlight = child.geometry.attributes.highlight
 
 			if (highlight.array[0] != highlighted) {
-				// @ts-ignore
 				highlight.array.set(Array(highlight.count).fill(highlighted))
 				highlight.needsUpdate = true
 			}

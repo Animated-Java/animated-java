@@ -329,7 +329,7 @@ function mergeAttributes(attributes: any) {
 			for (let j = 0, l = attribute.count; j < l; j++) {
 				for (let c = 0; c < itemSize; c++) {
 					const value = attribute.getComponent(j, c)
-					// @ts-ignore
+					// @ts-expect-error No types
 					result.setComponent(j + tupleOffset, c, value)
 				}
 			}
@@ -341,7 +341,7 @@ function mergeAttributes(attributes: any) {
 	}
 
 	if (gpuType !== undefined) {
-		// @ts-ignore
+		// @ts-expect-error No types
 		result.gpuType = gpuType
 	}
 
@@ -358,10 +358,10 @@ export function deepCloneAttribute(attribute: any) {
 	}
 
 	if (attribute.isInstancedBufferAttribute) {
-		// @ts-ignore
+		// @ts-expect-error No types
 		return new InstancedBufferAttribute().copy(attribute)
 	}
-	// @ts-ignore
+	// @ts-expect-error No types
 	return new BufferAttribute().copy(attribute)
 }
 
@@ -415,7 +415,7 @@ function interleaveAttributes(attributes: any) {
 		// at the appropriate offset
 		for (let c = 0; c < count; c++) {
 			for (let k = 0; k < itemSize; k++) {
-				// @ts-ignore
+				// @ts-expect-error No types
 				iba[setters[k]](c, attribute[getters[k]](c))
 			}
 		}

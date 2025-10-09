@@ -224,18 +224,16 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 			axis,
 			origin: cube.origin,
 		}
-	}
-
-	if (cube.rescale) {
-		// @ts-ignore
-		if (element.rotation) element.rotation.rescale = true
-		else
-			element.rotation = {
-				angle: 0,
-				axis: cube.rotation_axis || 'y',
-				origin: cube.origin,
-				rescale: true,
-			}
+		if (cube.rescale) {
+			element.rotation.rescale = true
+		}
+	} else if (cube.rescale) {
+		element.rotation = {
+			angle: 0,
+			axis: cube.rotation_axis || 'y',
+			origin: cube.origin,
+			rescale: true,
+		}
 	}
 
 	if (cube.parent instanceof Group) {
@@ -515,6 +513,7 @@ function renderTextDisplay(display: TextDisplay, rig: IRenderedRig): INodeStruct
 		throw new Error(`Invalid bone path: ${display.name} -> ${path}`)
 	}
 
+	const backgroundColor = tinycolor(display.backgroundColor)
 	const renderedBone: IRenderedNodes['TextDisplay'] = {
 		type: 'text_display',
 		name: display.name,
@@ -523,8 +522,8 @@ function renderTextDisplay(display: TextDisplay, rig: IRenderedRig): INodeStruct
 		parent: parentId,
 		text: display.text,
 		line_width: display.lineWidth,
-		background_color: display.backgroundColor,
-		background_alpha: display.backgroundAlpha,
+		background_color: backgroundColor.toHexString(),
+		background_alpha: backgroundColor.getAlpha(),
 		align: display.align,
 		shadow: display.shadow,
 		see_through: display.seeThrough,

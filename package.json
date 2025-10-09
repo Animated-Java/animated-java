@@ -79,7 +79,9 @@
 		"prod": "node ./tools/cleanupDist.cjs && yarn build:scripts && node ./dist/build.cjs",
 		"format": "prettier --write .",
 		"test": "yarn build:scripts && vitest run",
-		"coverage": "yarn build:scripts && vitest run --coverage"
+		"coverage": "yarn build:scripts && vitest run --coverage",
+		"check-formatting": "prettier . --check",
+		"lint": "eslint . --max-warnings=0 --no-warn-ignored"
 	},
 	"devDependencies": {
 		"@novacbn/svelte-codejar": "^0.1.2",
@@ -102,6 +104,7 @@
 		"jiti": "^2.6.1",
 		"js-yaml": "^4.1.0",
 		"mc-build": "^3.6.7",
+		"node-modules-vscode-problems-patch": "^1.0.9",
 		"octokit": "^5.0.3",
 		"prettier": "^2.5.1",
 		"svelte": "^3.55.1",

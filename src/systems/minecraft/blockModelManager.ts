@@ -224,18 +224,18 @@ async function generateModelMesh(
 			const material = new THREE.ShaderMaterial({
 				uniforms: {
 					map: new THREE.Uniform(texture),
-					// @ts-expect-error
+					// @ts-expect-error Uniforms types are wrong
 					SHADE: { type: 'bool', value: settings.shading.value },
 					LIGHTCOLOR: {
-						// @ts-expect-error
+						// @ts-expect-error Uniforms types are wrong
 						type: 'vec3',
 						value: new THREE.Color()
 							.copy(Canvas.global_light_color)
 							.multiplyScalar(settings.brightness.value / 50),
 					},
-					// @ts-expect-error
+					// @ts-expect-error Uniforms types are wrong
 					LIGHTSIDE: { type: 'int', value: Canvas.global_light_side },
-					// @ts-expect-error
+					// @ts-expect-error Uniforms types are wrong
 					EMISSIVE: { type: 'bool', value: false },
 				},
 				vertexShader: TEXTURE_VERT_SHADER,
@@ -244,7 +244,7 @@ async function generateModelMesh(
 				side: Canvas.getRenderSide(),
 				transparent: true,
 			})
-			// @ts-expect-error
+			// @ts-expect-error Uniforms types are wrong
 			material.map = texture
 			material.name = variant.model
 			materials.push(material)

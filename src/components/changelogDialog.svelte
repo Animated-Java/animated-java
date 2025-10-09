@@ -7,11 +7,11 @@
 	const FORMATTED_CHANGELOG_CACHE = new Map<string, string>()
 
 	const formatDateFull = (date: string) => {
-		// @ts-expect-error
+		// @ts-expect-error No types for getDateDisplay
 		return getDateDisplay(date).full
 	}
 	const formatDateShort = (date: string) => {
-		// @ts-expect-error
+		// @ts-expect-error No types for getDateDisplay
 		return getDateDisplay(date).short
 	}
 

@@ -54,7 +54,7 @@ export default getZipFile('${localPath}')
 				}
 			})
 
-			build.onLoad({ filter: /.*/, namespace: 'mcbZipData' }, async ({ path }) => {
+			build.onLoad({ filter: /.*/, namespace: 'mcbZipData' }, async () => {
 				const zipped = await zip(Object.fromEntries(mcbFiles.entries()))
 				const data = Buffer.from(zipped).toString('base64')
 				return {

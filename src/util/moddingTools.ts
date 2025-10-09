@@ -350,7 +350,7 @@ export const registerBarMenu = registerDeletableFactory(
 		// Swap over to this when Blockbench updates to 5.0
 		// menubar.delete()
 		// Temporary implementation of `menubar.delete()` from Blockbench 5.0
-		// @ts-expect-error
+		// @ts-expect-error No types
 		menubar.node.remove()
 		menubar.label.remove()
 		delete MenuBar.menus[menubar.id]
@@ -369,7 +369,7 @@ export const registerMenu = registerDeletableFactory(
 		// Swap over to this when Blockbench updates to 5.0
 		// menu.delete()
 		// Temporary implementation of `menu.delete()` from Blockbench 5.0
-		// @ts-expect-error
+		// @ts-expect-error No types
 		menu.node.remove()
 	}
 )

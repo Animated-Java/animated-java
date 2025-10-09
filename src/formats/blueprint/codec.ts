@@ -277,7 +277,7 @@ export const BLUEPRINT_CODEC = registerCodec(
 				const value = Project.animated_java[key]
 				if (value == undefined || value === defaultSettings[key]) continue
 				model.blueprint_settings ??= {}
-				// @ts-expect-error
+				// @ts-expect-error - Cannot index blueprint_settings with key
 				model.blueprint_settings[key] = value
 			}
 
@@ -402,7 +402,7 @@ export const BLUEPRINT_CODEC = registerCodec(
 			})
 		},
 
-		// ANCHOR - Codec:fileName
+		// region > fileName
 		fileName() {
 			if (!Project?.name) return 'unnamed_project.ajblueprint'
 			return `${Project.name}.ajblueprint`

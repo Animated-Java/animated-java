@@ -3,12 +3,12 @@ import * as fs from 'fs'
 import { readFileSync, writeFileSync } from 'fs'
 import { Octokit } from 'octokit'
 import * as pathjs from 'path'
-// @ts-expect-error
+// @ts-expect-error No types
 import * as prettier from 'prettier'
 import * as c from 'svelte/compiler'
 import * as svelteInternal from 'svelte/internal'
 
-const octokit = new Octokit({})
+const OCTO_KIT = new Octokit({})
 
 const PACKAGE = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
 const PLUGIN_PACKAGE_PATH = './src/pluginPackage/'
@@ -53,7 +53,7 @@ function plugin(): Plugin {
 				)
 				const svelteResult = c.compile(readFileSync(SVELTE_FILE, 'utf-8'), {
 					generate: 'ssr',
-					cssHash({ name, filename, hash, css }) {
+					cssHash({ hash, css }) {
 						return `animated-java-plugin-page-${hash(css)}`
 					},
 				})
@@ -89,7 +89,7 @@ function plugin(): Plugin {
 							}
 							const latestRelease = getVersionNumbers(
 								(
-									await octokit.request('GET /repos/{owner}/{repo}/releases', {
+									await OCTO_KIT.request('GET /repos/{owner}/{repo}/releases', {
 										owner: 'animated-java',
 										repo: 'animated-java',
 										per_page: 1,

@@ -5,8 +5,8 @@ import { translate } from '../util/translation'
 export class LocatorAnimator extends BoneAnimator {
 	private __name: string
 
-	public uuid: string
-	public element: Locator | undefined
+	uuid: string
+	element: Locator | undefined
 
 	constructor(uuid: string, animation: _Animation, name: string) {
 		super(uuid, animation, name)
@@ -117,7 +117,6 @@ registerProjectMod({
 				Mode.selected.id === Modes.options.animate.id &&
 				Outliner.selected[0] instanceof Locator
 			) {
-				// @ts-ignore
 				Canvas.gizmos[0].visible = false
 				Transformer.visible = false
 			}
@@ -130,7 +129,6 @@ registerProjectMod({
 				Mode.selected.id === Modes.options.animate.id &&
 				Outliner.selected[0] instanceof Locator
 			) {
-				// @ts-ignore
 				Canvas.gizmos[0].visible = false
 				Transformer.visible = false
 			}

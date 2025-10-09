@@ -10,7 +10,6 @@
 
 	let colorPicker = new ColorPicker(`${PACKAGE.name}:${label}-color_picker`, {
 		onChange() {
-			// @ts-ignore
 			const color = colorPicker.get() as tinycolor.Instance
 			value.set(color.toHexString())
 		},

@@ -8,15 +8,12 @@ export default function plugin(): Plugin {
 				return { path: args.path, namespace: 'buffer-namespace' }
 			})
 
-			build.onLoad(
-				{ filter: /^buffer$/, namespace: 'buffer-namespace' },
-				async ({ path }) => {
-					return {
-						contents: `export const Buffer = globalThis.Buffer;`,
-						loader: 'js',
-					}
+			build.onLoad({ filter: /^buffer$/, namespace: 'buffer-namespace' }, () => {
+				return {
+					contents: `export const Buffer = globalThis.Buffer;`,
+					loader: 'js',
 				}
-			)
+			})
 		},
 	}
 }

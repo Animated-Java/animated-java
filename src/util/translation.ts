@@ -1,4 +1,4 @@
-// @ts-expect-error
+// @ts-expect-error No types
 import { default as LANGUAGES, filenames as filepaths } from '../lang/*.yml'
 
 const FILE_NAMES = filepaths.map((path: string) => PathModule.basename(path, '.yml'))
