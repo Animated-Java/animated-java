@@ -1,11 +1,11 @@
-import { Component, ComponentStyle, CompositeComponent, JsonText } from '../jsonText'
+import { JsonText, type ComponentStyle, type TextElement, type TextObject } from '../jsonText'
 import { UnicodeString } from '../jsonText/unicodeString'
 import { getVanillaFont } from './fontManager'
 
 // Jumpstarted by @IanSSenne (FetchBot) and refactored by @SnaveSutit to do line wrapping on JSON Text Components.
 // THANK U IAN <3 - SnaveSutit
 
-function getText(component: string | CompositeComponent): UnicodeString {
+function getText(component: string | TextObject): UnicodeString {
 	if (typeof component === 'string') {
 		return new UnicodeString(component)
 	}
@@ -67,14 +67,14 @@ interface IComponentLine {
 	width: number
 }
 
-const defaultStyle: ComponentStyle = { color: 'white' }
 /**
  * Gets the words from a JSON Text Component, while keeping track of the styles applied to each word.
  *
  * WARNING: Word width is not calculated by this function.
  */
-export function getComponentWords(input: Component) {
-	const flattenedComponents = new JsonText(input).flatten()
+export function getComponentWords(input: TextElement) {
+	const flattenedComponents = new JsonText(input).flatten(true)
+	console.log('Flattened components:', JSON.stringify(flattenedComponents, null, 2))
 	if (!flattenedComponents.length) return []
 	const words: IComponentWord[] = []
 
@@ -84,7 +84,7 @@ export function getComponentWords(input: Component) {
 
 	let componentText = getText(component)
 	let span: IStyleSpan = {
-		style: JsonText.getComponentStyle(component, defaultStyle),
+		style: JsonText.getComponentStyle(component),
 		start: 0,
 		end: 0,
 	}
@@ -108,7 +108,9 @@ export function getComponentWords(input: Component) {
 			} else if (char === '\n') {
 				if (word) {
 					if (Object.keys(span.style).length) {
-						word.styles.push({ ...span })
+						if (span.start < span.end) {
+							word.styles.push({ ...span })
+						}
 						span.start = 0
 						span.end = 0
 					}
@@ -133,9 +135,7 @@ export function getComponentWords(input: Component) {
 				word = undefined
 			}
 
-			if (!word) {
-				word = { styles: [], text: new UnicodeString(''), width: 0 }
-			}
+			word ??= { styles: [], text: new UnicodeString(''), width: 0 }
 			word.text.append(char)
 			span.end++
 		}
@@ -147,13 +147,13 @@ export function getComponentWords(input: Component) {
 			if (word) {
 				word.styles.push(span)
 				span = {
-					style: JsonText.getComponentStyle(component, defaultStyle),
+					style: JsonText.getComponentStyle(component),
 					start: span.end,
 					end: span.end,
 				}
 			} else {
 				span = {
-					style: JsonText.getComponentStyle(component, defaultStyle),
+					style: JsonText.getComponentStyle(component),
 					start: 0,
 					end: 0,
 				}

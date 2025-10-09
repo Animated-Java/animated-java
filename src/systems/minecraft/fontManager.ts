@@ -63,7 +63,7 @@ interface CachedSpaceChar {
 
 type CachedChar = CachedBitmapChar | CachedSpaceChar
 
-type CachedCharMesh = {
+interface CachedCharGeo {
 	geo?: THREE.BufferGeometry
 	width: number
 }
@@ -261,9 +261,10 @@ export class MinecraftFont {
 	public providers: FontProvider[] = []
 	public fallback: MinecraftFont | undefined
 
-	private charCache = new Map<string, CachedChar>()
 	private loaded = false
-	private characterMeshCache = new Map<string, CachedCharMesh>()
+	private charCache = new Map<string, CachedChar>()
+	private geoCache = new Map<string, CachedCharGeo>()
+	private materialCache = new Map<string, THREE.Material>()
 
 	constructor(id: string, assetPath: string, fallback?: MinecraftFont) {
 		this.id = id
@@ -304,12 +305,7 @@ export class MinecraftFont {
 
 	async load() {
 		if (this.loaded) return this
-		await Promise.all(this.providers.map(provider => provider.load())).then(() => {
-			// // Cache commonly used characters
-			// for (const char of 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}\\|;:\'",.<>/?`~ ') {
-			// 	this.getChar(char)
-			// }
-		})
+		await Promise.all(this.providers.map(provider => provider.load()))
 		this.loaded = true
 		return this
 	}
@@ -332,7 +328,6 @@ export class MinecraftFont {
 	getTextWidth(text: UnicodeString, span?: IStyleSpan) {
 		let width = 0
 		const boldExtra = span?.style.bold ? 1 : 0
-		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		let font: MinecraftFont = this
 
 		if (span?.style.font && span.style.font !== this.id) {
@@ -356,7 +351,6 @@ export class MinecraftFont {
 
 	getWordWidth(word: IComponentWord) {
 		let width = 0
-		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		let font: MinecraftFont = this
 
 		for (const span of word.styles) {
@@ -372,6 +366,26 @@ export class MinecraftFont {
 		return Math.max(width, 0)
 	}
 
+	getColorMaterial(color: tinycolor.Instance): THREE.Material {
+		const colorString = color.toHex8String()
+		let material = this.materialCache.get(colorString)
+		if (!material) {
+			const alpha = color.getAlpha()
+			console.log(colorString, alpha, color)
+			if (alpha < 1) {
+				material = new THREE.MeshBasicMaterial({
+					color: color.toHexString(),
+					transparent: true,
+					opacity: alpha,
+				})
+			} else {
+				material = new THREE.MeshBasicMaterial({ color: color.toHexString() })
+			}
+			this.materialCache.set(colorString, material)
+		}
+		return material
+	}
+
 	async generateTextDisplayMesh({
 		jsonText,
 		maxLineWidth,
@@ -384,6 +398,7 @@ export class MinecraftFont {
 		maxLineWidth: number
 		backgroundColor: string
 		backgroundAlpha: number
+		/** Whether or not to render any text shadow */
 		shadow?: boolean
 		alignment?: Alignment
 	}): Promise<{ mesh: THREE.Mesh; outline: THREE.LineSegments }> {
@@ -391,9 +406,12 @@ export class MinecraftFont {
 		const mesh = new THREE.Mesh()
 
 		const words = getComponentWords(jsonText.toJSON())
+		console.log('Component words:', words)
 		const { lines, backgroundWidth } = await computeTextWrapping(words, maxLineWidth)
+		console.log('Computed lines:', lines)
 		const width = backgroundWidth + 1
-		const height = lines.length * 10 + 1
+		const height = (lines.length || 1) * 10 + 1
+		console.log('Text dimensions:', width, height)
 
 		// // Debug output
 		// const wordWidths = words.map(word => this.getWordWidth(word))
@@ -444,7 +462,8 @@ export class MinecraftFont {
 			.translateZ(-0.05)
 		mesh.add(backgroundMesh)
 
-		const geos: THREE.BufferGeometry[] = []
+		const spanGeos: THREE.BufferGeometry[] = []
+		const spanMaterials: THREE.Material[] = []
 		const cursor = { x: 0, y: height - 9 }
 		for (const line of lines) {
 			switch (alignment) {
@@ -460,22 +479,61 @@ export class MinecraftFont {
 
 			for (const word of line.words) {
 				for (const span of word.styles) {
+					const charGeos: THREE.BufferGeometry[] = []
+					const shadowGeos: THREE.BufferGeometry[] = []
+
 					const text = word.text.slice(span.start, span.end)
 					for (const char of text) {
-						const charMesh = this.getCharMesh(char, span.style, shadow)
+						const charGeo = this.getCharGeo(char, span.style)
 
-						if (!charMesh) {
-							console.error('Failed to get character mesh while drawing text:', char)
+						if (!charGeo) {
+							console.error('Failed to get character geometry:', char)
 							continue
 						}
 
-						if (charMesh.geo) {
-							const clone = charMesh.geo.clone()
+						if (charGeo.geo) {
+							const clone = charGeo.geo.clone()
 							clone.translate(cursor.x, cursor.y, 0)
-							geos.push(clone)
+							charGeos.push(clone)
+							if (shadow) {
+								const shadowGeo = charGeo.geo.clone()
+								shadowGeo.translate(cursor.x + 1, cursor.y - 1, -0.01)
+								shadowGeos.push(shadowGeo)
+							}
 						}
 
-						cursor.x += charMesh.width
+						cursor.x += charGeo.width
+					}
+
+					if (charGeos.length > 0) {
+						spanGeos.push(mergeGeometries(charGeos)!)
+
+						const color = JsonText.getColor(span.style.color ?? COLOR_VALUES.white)
+						spanMaterials.push(this.getColorMaterial(color))
+
+						if (shadow && shadowGeos.length > 0) {
+							spanGeos.push(mergeGeometries(shadowGeos)!)
+
+							if (span.style.shadow_color) {
+								spanMaterials.push(
+									this.getColorMaterial(
+										JsonText.getColor(span.style.shadow_color)
+									)
+								)
+							} else {
+								// Default shadow color is 25% the brightness of the main color
+								spanMaterials.push(
+									this.getColorMaterial(
+										// This version of tinycolor doesn't have a multiply method...
+										tinycolor(
+											new THREE.Color(color.toHexString())
+												.multiplyScalar(0.25)
+												.getHexString()
+										)
+									)
+								)
+							}
+						}
 					}
 				}
 			}
@@ -483,13 +541,10 @@ export class MinecraftFont {
 			cursor.y -= 10
 		}
 
-		let charGeo: THREE.BufferGeometry | undefined
-		if (geos.length > 0) {
-			charGeo = mergeGeometries(geos)!
-			const charMesh = new THREE.Mesh(
-				charGeo,
-				new THREE.MeshBasicMaterial({ vertexColors: true })
-			)
+		if (spanGeos.length > 0) {
+			const charGeo = mergeGeometries(spanGeos, true)!
+			const charMesh = new THREE.Mesh(charGeo, spanMaterials)
+			console.log(charGeo, spanMaterials, charMesh)
 			mesh.add(charMesh)
 		}
 
@@ -516,47 +571,29 @@ export class MinecraftFont {
 		return { mesh, outline }
 	}
 
-	getCharMesh(char: string, style: ComponentStyle, shadow?: boolean): CachedCharMesh {
-		// eslint-disable-next-line @typescript-eslint/no-this-alias
+	getCharGeo(char: string, style: ComponentStyle): CachedCharGeo {
 		let font: MinecraftFont = this
 		if (style.font) {
 			const newFont = MinecraftFont.getById(style.font)
 			if (newFont) font = newFont
 		}
-		let charData = font.getChar(char)
-
-		let color = new THREE.Color('#ffffff')
-		if (typeof style.color === 'string') {
-			color =
-				style.color.startsWith('#') && style.color.length === 7
-					? new THREE.Color(style.color)
-					: new THREE.Color(COLOR_MAP[style.color]) || color
-		}
-
-		let shadowColor: THREE.Color
-		if (Array.isArray(style.shadow_color)) {
-			shadowColor = new THREE.Color().fromArray(style.shadow_color)
-		} else {
-			shadowColor = color.clone().multiplyScalar(0.25)
-		}
-
-		const boldExtra = style.bold ? 1 : 0
 
 		const hash = createHash('sha256')
 		hash.update(char)
-		hash.update(';' + color.getHexString())
-		if (shadow) hash.update('shadow')
+		hash.update(';' + font.id)
 		if (style.bold) hash.update('bold')
 		if (style.italic) hash.update('italic')
 		if (style.underlined) hash.update('underlined')
 		if (style.strikethrough) hash.update('strikethrough')
-		if (style.shadow_color) hash.update(';' + shadowColor.getHexString())
 		if (style.font) hash.update(';' + font.id)
 		const digest = hash.digest('hex')
 
-		let charMesh = this.characterMeshCache.get(digest)
+		const charData = font.getChar(char)
+		const boldExtra = style.bold ? 1 : 0
 
-		if (charMesh === undefined) {
+		let charGeo = this.geoCache.get(digest)
+
+		if (charGeo === undefined) {
 			const canvas = document.createElement('canvas')
 			if (charData.type === 'space') {
 				canvas.width = charData.width
@@ -587,20 +624,22 @@ export class MinecraftFont {
 			const data = ctx.getImageData(0, 0, canvas.width, canvas.height)
 
 			const geo = new THREE.BufferGeometry()
-			let colors: number[] = []
-			let vertices: number[] = []
-			let indices: number[] = []
+
+			const mainGeoData = {
+				vertices: [] as number[],
+				indices: [] as number[],
+			}
 
 			const createQuad = (x: number, y: number, w: number, h: number) => {
-				const vertIndex = vertices.length / 3
+				const vertIndex = mainGeoData.vertices.length / 3
 				// prettier-ignore
-				vertices.push(
+				mainGeoData.vertices.push(
 					x,     y,     0,
 					x + w, y,     0,
 					x + w, y + h, 0,
 					x,     y + h, 0
 				)
-				indices.push(
+				mainGeoData.indices.push(
 					vertIndex,
 					vertIndex + 1,
 					vertIndex + 2,
@@ -608,41 +647,6 @@ export class MinecraftFont {
 					vertIndex + 2,
 					vertIndex + 3
 				)
-				// prettier-ignore
-				colors.push(
-					color.r, color.g, color.b,
-					color.r, color.g, color.b,
-					color.r, color.g, color.b,
-					color.r, color.g, color.b
-				)
-				if (shadow) {
-					const shadowVertIndex = vertices.length / 3
-					x += 1
-					y -= 1
-					const z = -0.01
-					// prettier-ignore
-					vertices.push(
-						x,     y,     z,
-						x + w, y,     z,
-						x + w, y + h, z,
-						x,     y + h, z
-					)
-					indices.push(
-						shadowVertIndex,
-						shadowVertIndex + 1,
-						shadowVertIndex + 2,
-						shadowVertIndex,
-						shadowVertIndex + 2,
-						shadowVertIndex + 3
-					)
-					// prettier-ignore
-					colors.push(
-						shadowColor.r, shadowColor.g, shadowColor.b,
-						shadowColor.r, shadowColor.g, shadowColor.b,
-						shadowColor.r, shadowColor.g, shadowColor.b,
-						shadowColor.r, shadowColor.g, shadowColor.b
-					)
-				}
 			}
 
 			if (charData.type !== 'space') {
@@ -670,18 +674,18 @@ export class MinecraftFont {
 				}
 			}
 
-			geo.setIndex(indices)
-			geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), 3))
-			geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(colors), 3))
-
+			geo.setIndex(mainGeoData.indices)
+			geo.setAttribute(
+				'position',
+				new THREE.BufferAttribute(new Float32Array(mainGeoData.vertices), 3)
+			)
 			if (style.italic) {
 				geo.applyMatrix4(new THREE.Matrix4().makeShear(0, 0, 0.2, 0, 0, 0))
 				geo.translate(-1, 0, 0)
 			}
 
-			vertices = Array.from(geo.getAttribute('position').array)
-			colors = Array.from(geo.getAttribute('color').array)
-			indices = Array.from(geo.getIndex()!.array)
+			mainGeoData.vertices = Array.from(geo.getAttribute('position').array)
+			mainGeoData.indices = Array.from(geo.getIndex()!.array)
 
 			if (style.underlined) {
 				createQuad(-1, -1, canvas.width + 2, 1)
@@ -699,20 +703,21 @@ export class MinecraftFont {
 				}
 			}
 
-			geo.setIndex(indices)
-			geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), 3))
-			geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(colors), 3))
+			geo.setIndex(mainGeoData.indices)
+			geo.setAttribute(
+				'position',
+				new THREE.BufferAttribute(new Float32Array(mainGeoData.vertices), 3)
+			)
 
 			geo.attributes.position.needsUpdate = true
-			geo.attributes.color.needsUpdate = true
-			charMesh = {
+			charGeo = {
 				geo,
 				width: charData.width + boldExtra,
 			}
 
-			this.characterMeshCache.set(digest, charMesh)
+			this.geoCache.set(digest, charGeo)
 		}
-		return charMesh
+		return charGeo
 	}
 }
 
