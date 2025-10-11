@@ -20,8 +20,8 @@ import './systems/minecraft/fontManager'
 import './systems/minecraft/registryManager'
 import './systems/minecraft/versionManager'
 // Misc imports
+import { BLUEPRINT_FORMAT } from './formats/blueprint'
 import { BLUEPRINT_CODEC } from './formats/blueprint/codec'
-import { BLUEPRINT_FORMAT } from './formats/blueprint/format'
 import { blueprintSettingErrors } from './formats/blueprint/settings'
 import { openChangelogDialog } from './interface/changelogDialog'
 import { openExportProgressDialog } from './interface/dialog/exportProgress'
@@ -112,16 +112,6 @@ const AnimatedJavaApi = {
 }
 window.AnimatedJava = AnimatedJavaApi
 
-requestAnimationFrame(() => {
-	if (checkForIncompatabilities()) return
-
-	const lastVersion = localStorage.getItem('animated-java-last-version')
-	if (lastVersion !== PACKAGE.version) {
-		localStorage.setItem('animated-java-last-version', PACKAGE.version)
-		openChangelogDialog()
-	}
-})
-
 // Uninstall events
 EVENTS.EXTRACT_MODS.subscribe(() => {
 	// @ts-expect-error Cannot delete type that isn't optional
@@ -159,4 +149,14 @@ BBPlugin.register(PACKAGE.name, {
 			buttons: ['OK'],
 		})
 	},
+})
+
+EVENTS.PLUGIN_FINISHED_LOADING.subscribe(() => {
+	if (checkForIncompatabilities()) return
+
+	const lastVersion = localStorage.getItem('animated-java-last-version')
+	if (lastVersion !== PACKAGE.version) {
+		localStorage.setItem('animated-java-last-version', PACKAGE.version)
+		openChangelogDialog()
+	}
 })
