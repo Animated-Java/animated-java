@@ -12,6 +12,12 @@ animated_java.action.open_locator_config.name: Locator Config
 animated_java.action.open_text_display_config.name: Text Display Config
 animated_java.action.export.name: Export
 animated_java.action.export_debug.name: Export (Debug)
+animated_java.action.export_all.name: Export All
+animated_java.action.export_all.description: |-
+  Export all open Blueprint projects.
+animated_java.action.export_all_debug.name: Export All (Debug)
+animated_java.action.export_all_debug.description: |-
+  Export all open Blueprint projects in debug mode.
 animated_java.action.extract.name: Extract
 animated_java.action.extract.confirm: Confirm Extraction
 animated_java.action.create_text_display.title: Add Text Display
@@ -30,12 +36,17 @@ animated_java.popup.loading.offline: |-
 animated_java.popup.installed_popup.title: Thank you for installing!
 animated_java.popup.installed_popup.close_button: Let's Get Animating!
 
-animated_java.popup.incompatability_popup.title: Incompatible Plugin Detected!
+animated_java.popup.incompatability_popup.title: Animated Java Incompatibility Detected
 animated_java.popup.incompatability_popup.description: |-
-  Animated Java has detected incompatible plugin(s)!
-  Please disable / uninstall the following plugin(s) and restart Blockbench to use Animated Java:
+  You have plugins installed that are known to cause issues with Animated Java.
+  Please disable or uninstall the following plugin(s) and restart Blockbench to use Animated Java:
 animated_java.popup.incompatability_popup.disable_button: Disable Plugin
-animated_java.dialog.incompatability_notice: This plugin is not compatible with Animated Java!
+animated_java.popup.incompatability_popup.button.disable_all: Disable All Incompatible Plugins
+animated_java.popup.incompatability_popup.button.ignore: Ignore and Continue (Not Recommended)
+animated_java.plugin_dialog.incompatability_notice: |-
+  This plugin is known to cause issues with Animated Java.
+
+  You will be unable to install this plugin while Animated Java is installed.
 
 ### Dialogs
 animated_java.dialog.reset: Reset to Default
@@ -361,7 +372,7 @@ animated_java.dialog.locator_config.entity_type.warning.invalid: The selected en
 animated_java.dialog.locator_config.sync_passenger_rotation.title: Sync Passenger Rotation
 animated_java.dialog.locator_config.sync_passenger_rotation.description: Automatically sync the rotation of the Locator's passenger entities.
 
-animated_java.dialog.locator_config.on_summon_function.title: On-Summon Commands
+animated_java.dialog.locator_config.on_summon_function.title: On-Summon Function
 animated_java.dialog.locator_config.on_summon_function.description: |-
   Commands to run `as` the root entity and `at` the Locator's position when the rig is summoned.
 
@@ -371,7 +382,7 @@ animated_java.dialog.locator_config.on_summon_function.description_with_use_enti
 
   Supports [MC-Build](https://mcbuild.dev) syntax.
 
-animated_java.dialog.locator_config.on_tick_function.title: On-Tick Commands
+animated_java.dialog.locator_config.on_tick_function.title: On-Tick Function
 animated_java.dialog.locator_config.on_tick_function.description: |-
   Commands to run `at` the Locator's position every tick.
 
@@ -554,11 +565,11 @@ animated_java.animation.invert_excluded_nodes: Invert Excluded Nodes
 
 ## Timeline
 animated_java.effect_animator.timeline.variant: Variant
-animated_java.effect_animator.timeline.commands: Commands
+animated_java.effect_animator.timeline.function: Function
 
 ## Keyframes
 animated_java.effect_animator.keyframe_data_point.variant: Variant
-animated_java.effect_animator.keyframe_data_point.commands: Commands
+animated_java.effect_animator.keyframe_data_point.function: Function
 animated_java.effect_animator.keyframe_data_point.execute_condition: Execute Condition
 animated_java.effect_animator.keyframe_data_point.repeat: Repeat
 animated_java.effect_animator.keyframe_data_point.repeat_frequency: Repeat Frequency
@@ -569,8 +580,8 @@ animated_java.panel.keyframe.keyframe_title: Keyframe ({0})
 animated_java.panel.keyframe.variant.title: Variant
 animated_java.panel.keyframe.variant.description: The Variant to apply to the keyframe.
 
-animated_java.panel.keyframe.commands.title: Commands
-animated_java.panel.keyframe.commands.description: |-
+animated_java.panel.keyframe.function.title: Function
+animated_java.panel.keyframe.function.description: |-
   Commands to run when the keyframe is reached.
 
   Treat this text input as if it were a `.mcfunction` file.
@@ -584,10 +595,10 @@ animated_java.panel.keyframe.execute_condition.description: |-
 
   E.g. `if score @s myScore matches 1..`
 
-animated_java.panel.keyframe.repeat.title: Repeat?
+animated_java.panel.keyframe.repeat.title: Repeat
 animated_java.panel.keyframe.repeat.description: |-
-  When enabled, the commands in this keyframe will repeat at the interval specified by Repeat Frequency.
-animated_java.panel.keyframe.repeat_frequency.title: Repeat Frequency
+  When enabled, the commands in this keyframe will repeat at the interval specified by Frequency.
+animated_java.panel.keyframe.repeat_frequency.title: Frequency
 animated_java.panel.keyframe.repeat_frequency.description: |-
   Number of ticks between command repeats.
 
@@ -646,6 +657,10 @@ animated_java.tool.text_display.text_alignment.options.right: Right
 
 animated_java.tool.text_display.see_through.title: See Through
 animated_java.tool.text_display.see_through.description: Whether or not the text display should be visible through blocks.
+
+animated_java.tool.text_display.copy_text.title: Copy exported text component
+animated_java.tool.text_display.copy_text.description: Copy the exported text component to your clipboard.
+animated_java.tool.text_display.copy_text.copied: Text copied to clipboard!
 
 # Item Display Panel
 animated_java.panel.vanilla_item_display.title: Displayed Item
