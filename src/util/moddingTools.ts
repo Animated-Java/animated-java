@@ -74,7 +74,7 @@ EVENTS.PLUGIN_UNLOAD.subscribe(async () => {
 	EVENTS.PLUGIN_FINISHED_UNLOADING.publish()
 })
 
-interface BaseModOptions<ID extends string> {
+export interface BaseModOptions<ID extends string> {
 	id: ResourceLocation.Validate<ID>
 	/** A list of mod IDs that this mod depends on */
 	dependencies?: string[]
@@ -385,7 +385,8 @@ interface PropertyOverrideModOptions<
 > extends BaseModOptions<ID> {
 	object: T
 	key: K
-	override: (this: T, original: T[K]) => O
+	get: (this: T, original: T[K]) => O
+	set?: (this: T, value: O) => void
 }
 
 export function registerPropertyOverrideMod<
@@ -426,7 +427,7 @@ export function registerPropertyOverrideMod<
 			Object.defineProperty(options.object, options.key, {
 				configurable: true,
 				get() {
-					return options.override.call(this, original.value)
+					return options.get.call(this, original.value)
 				},
 				set(value) {
 					original.value = value
@@ -450,14 +451,9 @@ interface ConditionalPropertyOverrideModOptions<
 > extends BaseModOptions<ID> {
 	object: T
 	key: K
-	get?: {
-		condition: ConditionResolvable<T>
-		override: (this: T, original: T[K]) => O
-	}
-	set?: {
-		condition: ConditionResolvable<T>
-		override: (this: T, value: T[K]) => O
-	}
+	condition: ConditionResolvable<T>
+	get: (this: T, original: T[K]) => O
+	set?: (this: T, value: O) => void
 }
 
 export function registerConditionalPropertyOverrideMod<
@@ -497,19 +493,24 @@ export function registerConditionalPropertyOverrideMod<
 
 			Object.defineProperty(options.object, options.key, {
 				configurable: true,
-				get: options.get
-					? function (this: T) {
-							if (Condition(options.get!.condition, this)) {
-								return options.get!.override.call(this, original.value)
-							}
-							return original.value
-					  }
-					: () => original.value,
+				enumerable: original.descriptor.enumerable,
+				get: function (this: T) {
+					if (Condition(options.condition, this)) {
+						return options.get.call(this, original.value)
+					}
+					return original.value
+				},
 				set: options.set
 					? function (this: T, value) {
-							original.value = value
+							if (Condition(options.condition, this)) {
+								options.set!.call(this, value)
+							} else {
+								original.value = value
+							}
 					  }
-					: value => (original.value = value),
+					: value => {
+							original.value = value
+					  },
 			})
 
 			return { original }
