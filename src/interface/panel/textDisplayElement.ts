@@ -1,17 +1,14 @@
+import { JsonTextParser } from 'src/systems/jsonText/parser'
+import { registerMountSvelteComponentMod } from 'src/util/mountSvelteComponent'
 import TextDisplayElementPanel from '../../components/textDisplayElementPanel.svelte'
-import { PACKAGE } from '../../constants'
 import { activeProjectIsBlueprintFormat } from '../../formats/blueprint'
 import { type Alignment, TextDisplay } from '../../outliner/textDisplay'
-import { injectSvelteComponentMod } from '../../util/injectSvelteComponent'
-import { floatToHex } from '../../util/misc'
 import { translate } from '../../util/translation'
 
-injectSvelteComponentMod({
+registerMountSvelteComponentMod({
+	id: 'animated-java:panel/text-display',
 	component: TextDisplayElementPanel,
-	props: {},
-	elementSelector() {
-		return document.querySelector('#panel_element')
-	},
+	target: '#panel_element',
 })
 
 type Grammar = ReturnType<typeof Prism.languages.extend>
@@ -79,8 +76,11 @@ function addPrismSyntaxForSnbtTextComponents() {
 
 addPrismSyntaxForSnbtTextComponents()
 
+const TEXT_DISPLAY_CONDITION = () =>
+	activeProjectIsBlueprintFormat() && !!TextDisplay.selected.length
+
 export const TEXT_DISPLAY_WIDTH_SLIDER = new NumSlider(
-	`${PACKAGE.name}:textDisplayLineWidthSlider`,
+	`animated-java:text-display-line-width-slider`,
 	{
 		name: translate('tool.text_display.line_width.title'),
 		icon: 'format_size',
@@ -90,15 +90,15 @@ export const TEXT_DISPLAY_WIDTH_SLIDER = new NumSlider(
 			max: 10000,
 			interval: 1,
 		},
-		condition: () => activeProjectIsBlueprintFormat() && !!TextDisplay.selected.length,
+		condition: TEXT_DISPLAY_CONDITION,
 		get() {
-			const selected = TextDisplay.selected[0]
-			if (!selected) return 0
+			const selected = TextDisplay.selected.at(0)
+			if (!selected) return TextDisplay.properties.lineWidth.default as number
 			return selected.lineWidth
 		},
 		change(value) {
 			if (!Project) return
-			const selected = TextDisplay.selected[0]
+			const selected = TextDisplay.selected.at(0)
 			if (!selected) return
 			const newLineWidth = Math.clamp(value(selected.lineWidth), 1, 10000)
 			if (selected.lineWidth === newLineWidth) return
@@ -109,30 +109,33 @@ export const TEXT_DISPLAY_WIDTH_SLIDER = new NumSlider(
 )
 
 export const TEXT_DISPLAY_BACKGROUND_COLOR_PICKER = new ColorPicker(
-	`${PACKAGE.name}:textDisplayBackgroundColorPicker`,
+	`animated-java:text-display-background-color-picker`,
 	{
 		name: translate('tool.text_display.background_color.title'),
 		icon: 'format_color_fill',
 		description: translate('tool.text_display.background_color.description'),
-		condition: () => activeProjectIsBlueprintFormat() && !!TextDisplay.selected.length,
+		condition: TEXT_DISPLAY_CONDITION,
 	}
 )
-// @ts-expect-error
-TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.jq.spectrum('option', 'defaultColor', '#0000003f')
+// @ts-expect-error Missing types
+TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.jq.spectrum(
+	'option',
+	'defaultColor',
+	TextDisplay.properties.backgroundColor.default
+)
 TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.get = function () {
-	const selected = TextDisplay.selected[0]
-	if (!selected) return new tinycolor('#0000003f')
-	return new tinycolor(selected.backgroundColor + floatToHex(selected.backgroundAlpha))
+	const selected = TextDisplay.selected.at(0)
+	if (!selected) return tinycolor(TextDisplay.properties.backgroundColor.default)
+	return tinycolor(selected.backgroundColor)
 }
-TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.set = function (this: ColorPicker, color: string) {
-	this.value = new tinycolor(color)
-	// @ts-expect-error
-	this.jq.spectrum('set', this.value.toHex8String())
+TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.set = function (this: ColorPicker, color: tinycolor.Instance) {
+	this.value = color
+	// @ts-expect-error Missing types
+	this.jq.spectrum('set', color.toHex8String())
 
-	const selected = TextDisplay.selected[0]
+	const selected = TextDisplay.selected.at(0)
 	if (!selected) return this
-	selected.backgroundColor = this.value.toHexString()
-	selected.backgroundAlpha = this.value.getAlpha()
+	selected.backgroundColor = color.toHex8String()
 	return this
 }
 TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.change = function (
@@ -140,28 +143,26 @@ TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.change = function (
 	color: InstanceType<typeof tinycolor>
 ) {
 	if (!Project) return this
-	const selected = TextDisplay.selected[0]
+	const selected = TextDisplay.selected.at(0)
 	if (!selected) return this
-	const newBackground = color.toHexString()
-	const newAlpha = color.getAlpha()
-	if (selected.backgroundColor === newBackground && selected.backgroundAlpha === newAlpha)
-		return this
+	const newBackground = color.toHex8String()
+	if (selected.backgroundColor === newBackground) return this
 	selected.backgroundColor = newBackground
-	selected.backgroundAlpha = newAlpha
 	Project!.saved = false
 	return this
 }
 
-export const TEXT_DISPLAY_SHADOW_TOGGLE = new Toggle(`${PACKAGE.name}:textDisplayShadowToggle`, {
+export const TEXT_DISPLAY_SHADOW_TOGGLE = new Toggle(`animated-java:text-display-shadow-toggle`, {
 	name: translate('tool.text_display.text_shadow.title'),
 	icon: 'check_box_outline_blank',
 	description: translate('tool.text_display.text_shadow.description'),
-	condition: () => activeProjectIsBlueprintFormat() && !!TextDisplay.selected.length,
+	condition: TEXT_DISPLAY_CONDITION,
+	default: TextDisplay.properties.shadow.default as boolean,
 	onChange() {
 		if (!Project) return
 		const scope = TEXT_DISPLAY_SHADOW_TOGGLE
 		scope.setIcon(scope.value ? 'check_box' : 'check_box_outline_blank')
-		const selected = TextDisplay.selected[0]
+		const selected = TextDisplay.selected.at(0)
 		if (!selected) return
 		if (selected.shadow === TEXT_DISPLAY_SHADOW_TOGGLE.value) return
 		selected.shadow = TEXT_DISPLAY_SHADOW_TOGGLE.value
@@ -175,12 +176,12 @@ TEXT_DISPLAY_SHADOW_TOGGLE.set = function (value) {
 }
 
 export const TEXT_DISPLAY_ALIGNMENT_SELECT = new BarSelect(
-	`${PACKAGE.name}:textDisplayAlignmentSelect`,
+	`animated-java:text-display-alignment-select`,
 	{
 		name: translate('tool.text_display.text_alignment.title'),
 		icon: 'format_align_left',
 		description: translate('tool.text_display.text_alignment.description'),
-		condition: () => activeProjectIsBlueprintFormat() && !!TextDisplay.selected.length,
+		condition: TEXT_DISPLAY_CONDITION,
 		options: {
 			left: translate('tool.text_display.text_alignment.options.left'),
 			center: translate('tool.text_display.text_alignment.options.center'),
@@ -189,12 +190,12 @@ export const TEXT_DISPLAY_ALIGNMENT_SELECT = new BarSelect(
 	}
 )
 TEXT_DISPLAY_ALIGNMENT_SELECT.get = function () {
-	const selected = TextDisplay.selected[0]
-	if (!selected) return 'left'
+	const selected = TextDisplay.selected.at(0)
+	if (!selected) return TextDisplay.properties.align.default as Alignment
 	return selected.align
 }
 TEXT_DISPLAY_ALIGNMENT_SELECT.set = function (this: BarSelect<Alignment>, value: Alignment) {
-	const selected = TextDisplay.selected[0]
+	const selected = TextDisplay.selected.at(0)
 	if (!selected) return this
 	this.value = value
 	const name = this.getNameFor(value)
@@ -209,17 +210,17 @@ TEXT_DISPLAY_ALIGNMENT_SELECT.set = function (this: BarSelect<Alignment>, value:
 }
 
 export const TEXT_DISPLAY_SEE_THROUGH_TOGGLE = new Toggle(
-	`${PACKAGE.name}:textDisplaySeeThroughToggle`,
+	`animated-java:text-display-see-through-toggle`,
 	{
 		name: translate('tool.text_display.see_through.title'),
 		icon: 'check_box_outline_blank',
 		description: translate('tool.text_display.see_through.description'),
-		condition: () => activeProjectIsBlueprintFormat() && !!TextDisplay.selected.length,
+		condition: TEXT_DISPLAY_CONDITION,
 		onChange() {
 			if (!Project) return
 			const scope = TEXT_DISPLAY_SEE_THROUGH_TOGGLE
 			scope.setIcon(scope.value ? 'check_box' : 'check_box_outline_blank')
-			const selected = TextDisplay.selected[0]
+			const selected = TextDisplay.selected.at(0)
 			if (!selected) return
 			if (selected.seeThrough === TEXT_DISPLAY_SEE_THROUGH_TOGGLE.value) return
 			selected.seeThrough = TEXT_DISPLAY_SEE_THROUGH_TOGGLE.value
@@ -232,3 +233,31 @@ TEXT_DISPLAY_SEE_THROUGH_TOGGLE.set = function (value) {
 	this.click()
 	return this
 }
+
+export const TEXT_DISPLAY_COPY_TEXT_ACTION = new Action(
+	`animated-java:text-display-copy-text-action`,
+	{
+		name: translate('tool.text_display.copy_text.title'),
+		icon: 'content_copy',
+		description: translate('tool.text_display.copy_text.description'),
+		condition: TEXT_DISPLAY_CONDITION,
+		click: () => {
+			if (!Project) return
+			const selected = TextDisplay.selected.at(0)
+			if (!selected) return
+
+			try {
+				const text = new JsonTextParser({
+					minecraftVersion: Project.animated_java.target_minecraft_version,
+				})
+					.parse(selected.text)
+					.toString(true, Project.animated_java.target_minecraft_version)
+				clipboard.writeText(text)
+				Blockbench.showQuickMessage(translate('tool.text_display.copy_text.copied'), 2000)
+			} catch (e) {
+				console.error(e)
+				Blockbench.showQuickMessage('Failed to copy text to clipboard', 2000)
+			}
+		},
+	}
+)

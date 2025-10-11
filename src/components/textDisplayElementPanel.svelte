@@ -1,30 +1,43 @@
-<script lang="ts">
+<script lang="ts" context="module">
 	import { CodeJar } from '@novacbn/svelte-codejar'
+	import { Stopwatch } from 'src/util/stopwatch'
 	import { onDestroy } from 'svelte'
-	import { type Unsubscriber } from 'svelte/store'
 	import {
 		TEXT_DISPLAY_ALIGNMENT_SELECT,
 		TEXT_DISPLAY_BACKGROUND_COLOR_PICKER,
+		TEXT_DISPLAY_COPY_TEXT_ACTION,
 		TEXT_DISPLAY_SEE_THROUGH_TOGGLE,
 		TEXT_DISPLAY_SHADOW_TOGGLE,
 		TEXT_DISPLAY_WIDTH_SLIDER,
 	} from '../interface/panel/textDisplayElement'
 	import { TextDisplay } from '../outliner/textDisplay'
 	import EVENTS from '../util/events'
-	import { floatToHex } from '../util/misc'
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
 
+	const HIGHLIGHT_CACHE = new Map<string, string>()
+
 	function highlight(code: string, syntax?: string) {
 		if (!syntax) return code
-		return Prism.highlight(code, Prism.languages[syntax], syntax)
+		const cached = HIGHLIGHT_CACHE.get(code)
+		if (cached) return cached
+		if (code.length > 10000) {
+			console.warn('Skipping syntax highlighting due to large text size')
+			return code
+		}
+		const stopwatch = new Stopwatch('Highlighting').start()
+		const result = Prism.highlight(code, Prism.languages[syntax], syntax)
+		stopwatch.debug(result)
+		HIGHLIGHT_CACHE.set(code, result)
+		return result
 	}
+</script>
 
-	let lastSelected: TextDisplay | undefined
+<script lang="ts">
 	let selected = TextDisplay.selected.at(0)
 
-	let text = selected?.getTextValuable() ?? new Valuable('')
-	let lastText: string | undefined = selected?.text
+	let text = new Valuable(selected?.text ?? '')
+
 	let error = selected?.textError ?? new Valuable('')
 
 	let codeJarElement: HTMLPreElement | undefined
@@ -34,36 +47,35 @@
 	let shadowSlot: HTMLDivElement
 	let alignmentSlot: HTMLDivElement
 	let seeThroughSlot: HTMLDivElement
+	let copyTextSlot: HTMLDivElement
 
-	let unsubFromText: Unsubscriber | undefined
+	let unsubFromText: (() => void) | undefined
 
 	const unsubFromEvent = EVENTS.UPDATE_SELECTION.subscribe(() => {
 		unsubFromText?.()
 
-		lastSelected = selected
 		selected = TextDisplay.selected.at(0)
-		if (!selected || Group.first_selected) return
-		text = selected.getTextValuable()
-		lastText = selected.text
+		if (!selected || Group.first_selected) {
+			$text = ''
+			error = new Valuable('')
+			return
+		}
+
+		$text = selected.text
 		error = selected.textError
 
 		// Force the inputs to update
 		TEXT_DISPLAY_WIDTH_SLIDER.setValue(selected.lineWidth)
-		const color = selected.backgroundColor + floatToHex(selected.backgroundAlpha)
+		const color = tinycolor(selected.backgroundColor)
 		TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.set(color)
 		TEXT_DISPLAY_SHADOW_TOGGLE.set(selected.shadow)
 		TEXT_DISPLAY_ALIGNMENT_SELECT.set(selected.align)
 		TEXT_DISPLAY_SEE_THROUGH_TOGGLE.set(selected.seeThrough)
 
-		unsubFromText = text.subscribe(value => {
-			if (!Project) return
-			if (lastSelected !== selected || lastSelected === undefined) {
-				lastSelected = selected
-				return
-			}
-			if (lastText === value) return
-			lastText = value
-			Project.saved = false
+		text.subscribe(v => {
+			console.log('Text changed:', v)
+			if (!selected) return
+			selected.text = v
 		})
 	})
 
@@ -73,6 +85,7 @@
 		shadowSlot.appendChild(TEXT_DISPLAY_SHADOW_TOGGLE.node)
 		alignmentSlot.appendChild(TEXT_DISPLAY_ALIGNMENT_SELECT.node)
 		seeThroughSlot.appendChild(TEXT_DISPLAY_SEE_THROUGH_TOGGLE.node)
+		copyTextSlot.appendChild(TEXT_DISPLAY_COPY_TEXT_ACTION.node)
 		forceNoWrap()
 	})
 
@@ -89,7 +102,7 @@
 		} else if (e.code === 'KeyZ' && e.ctrlKey) {
 			// CodeJar doesn't capture undo correctly. So we have to fudge it a little.
 			requestAnimationFrame(() => {
-				if (codeJarElement?.textContent != undefined) {
+				if (selected && codeJarElement?.textContent != undefined) {
 					$text = codeJarElement.textContent
 				}
 			})
@@ -98,7 +111,6 @@
 
 	onDestroy(() => {
 		unsubFromEvent()
-		unsubFromText?.()
 	})
 </script>
 
@@ -110,11 +122,12 @@
 	class="toolbar text-display-toolbar"
 	style={!!selected ? '' : 'visibility:hidden; height: 0px;'}
 >
-	<div class="content" bind:this={lineWidthSlot}></div>
-	<div class="content" bind:this={backgroundColorSlot}></div>
-	<div class="content" bind:this={shadowSlot}></div>
-	<div class="content" bind:this={alignmentSlot}></div>
-	<div class="content" bind:this={seeThroughSlot}></div>
+	<div class="content" bind:this={lineWidthSlot} />
+	<div class="content" bind:this={backgroundColorSlot} />
+	<div class="content" bind:this={shadowSlot} />
+	<div class="content" bind:this={alignmentSlot} />
+	<div class="content" bind:this={seeThroughSlot} />
+	<div class="content" bind:this={copyTextSlot} />
 </div>
 
 <div
@@ -163,7 +176,6 @@
 	}
 	.text-display-text-toolbar {
 		display: flex;
-		flex-direction: column;
 	}
 	textarea {
 		color: var(--color-error);
