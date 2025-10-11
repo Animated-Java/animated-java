@@ -4,13 +4,6 @@
 
 import type { IBlueprintBoneConfigJSON } from '../formats/blueprint'
 import { type defaultValues } from '../formats/blueprint/settings'
-import {
-	getKeyframeCommands,
-	getKeyframeExecuteCondition,
-	getKeyframeRepeat,
-	getKeyframeRepeatFrequency,
-	getKeyframeVariant,
-} from '../mods/customKeyframes'
 import type { EasingKey } from '../util/easing'
 import { resolvePath } from '../util/fileUtil'
 import { detectCircularReferences, mapObjEntries, scrubUndefined } from '../util/misc'
@@ -149,15 +142,15 @@ function transferKey(obj: any, oldKey: string, newKey: string) {
 }
 
 function serailizeKeyframe(kf: _Keyframe): ExportedKeyframe {
-	const json = {
+	const json: ExportedKeyframe = scrubUndefined({
 		time: kf.time,
 		channel: kf.channel,
-		commands: getKeyframeCommands(kf),
-		variant: getKeyframeVariant(kf),
-		execute_condition: getKeyframeExecuteCondition(kf),
-		repeat: getKeyframeRepeat(kf),
-		repeat_frequency: getKeyframeRepeatFrequency(kf),
-	} as ExportedKeyframe
+		commands: kf.function,
+		variant: kf.variant?.uuid,
+		execute_condition: kf.execute_condition,
+		repeat: kf.repeat,
+		repeat_frequency: kf.repeat_frequency,
+	})
 
 	switch (json.channel) {
 		case 'variant':
@@ -314,8 +307,8 @@ function serailizeNodeTransform(node: INodeTransform): ExportedNodetransform {
 		head_rot: node.head_rot,
 		scale: node.scale,
 		interpolation: node.interpolation,
-		commands: node.commands,
-		commands_execute_condition: node.commands_execute_condition,
+		function: node.function,
+		function_execute_condition: node.function_execute_condition,
 	}
 	return json
 }
