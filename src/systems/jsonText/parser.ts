@@ -1,4 +1,5 @@
 import { StringStream } from 'generic-stream'
+import { Stopwatch } from 'src/util/stopwatch'
 import {
 	COLOR_VALUES,
 	CONTENT_KEYS,
@@ -361,6 +362,7 @@ export class JsonTextParser {
 	}
 
 	parse(text: string): JsonText {
+		const stopwatch = new Stopwatch('Parse JSON Text').start()
 		this.s = new StringStream(text)
 		this.reset()
 
@@ -371,6 +373,7 @@ export class JsonTextParser {
 			if (this.s.item) {
 				this.throwSyntax(`Unexpected trailing '${this.s.item}' after JsonTextElement`)
 			}
+			stopwatch.debug(result)
 			return new JsonText(result)
 		} catch (e: any) {
 			if (e instanceof JsonTextParserError) {
