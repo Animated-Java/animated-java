@@ -1,17 +1,15 @@
+import { registerMountSvelteComponentMod } from 'src/util/mountSvelteComponent'
 import VanillaItemDisplayElementPanel from '../../components/vanillaItemDisplayElementPanel.svelte'
 import { PACKAGE } from '../../constants'
 import { activeProjectIsBlueprintFormat } from '../../formats/blueprint'
 import { type ItemDisplayMode, VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
 import EVENTS from '../../util/events'
-import { injectSvelteComponentMod } from '../../util/injectSvelteComponent'
 import { translate } from '../../util/translation'
 
-injectSvelteComponentMod({
+registerMountSvelteComponentMod({
+	id: 'animated-java:append-element-panel/vanilla-item-display',
 	component: VanillaItemDisplayElementPanel,
-	props: {},
-	elementSelector() {
-		return document.querySelector('#panel_element')
-	},
+	target: '#panel_element',
 })
 
 export const ITEM_DISPLAY_ITEM_DISPLAY_SELECT = new BarSelect(
