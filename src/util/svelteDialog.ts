@@ -1,27 +1,15 @@
-import type { ComponentProps, ComponentType, SvelteComponent } from 'svelte'
+import type { SvelteComponent } from 'svelte'
+import type { SvelteComponentOptions } from './svelteUtil'
 
 const DIALOG_STACK: SvelteDialog[] = []
 
-type CssStyleObject = {
+export type CssStyleObject = {
 	[K in keyof CSSStyleDeclaration as K extends string
 		? CSSStyleDeclaration[K] extends string
 			? K
 			: never
 		: never]?: CSSStyleDeclaration[K]
 }
-
-type SvelteComponentOptions<T extends SvelteComponent> = ComponentProps<T> extends Record<
-	string,
-	never
->
-	? {
-			component: ComponentType<T>
-			props?: ComponentProps<T>
-	  }
-	: {
-			component: ComponentType<T>
-			props: ComponentProps<T>
-	  }
 
 type SvelteDialogOptions<
 	DialogContent extends SvelteComponent,
