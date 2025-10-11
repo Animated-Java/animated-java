@@ -1,32 +1,13 @@
 import { BLUEPRINT_FORMAT_ID } from 'src/formats/blueprint'
 import { registerMod } from 'src/util/moddingTools'
 import Icon from '../components/icon.svelte'
-import { injectSvelteComponent } from '../util/injectSvelteComponent'
+import { registerMountSvelteComponentMod } from '../util/mountSvelteComponent'
 
-registerMod({
-	id: `aniamted-java:format-icon`,
-
-	apply: () => {
-		void injectSvelteComponent({
-			elementSelector: () => document.querySelector(`li[format="${BLUEPRINT_FORMAT_ID}"]`),
-			component: Icon,
-			props: {},
-			prepend: true,
-			postMount: () => {
-				document
-					.querySelector(`li[format="${BLUEPRINT_FORMAT_ID}"] span i`)
-					?.parentElement?.remove()
-				const duplicates = [...document.querySelectorAll('#animated_java\\:icon')]
-				if (duplicates.length > 1) {
-					duplicates.slice(1).forEach(d => d.remove())
-				}
-			},
-		})
-	},
-
-	revert: () => {
-		document.querySelector('#animated_java\\:icon')?.remove()
-	},
+registerMountSvelteComponentMod({
+	id: 'animated-java:injected-svelte/format-icon',
+	component: Icon,
+	target: `li[format="${BLUEPRINT_FORMAT_ID}"] span`,
+	replaceChildren: true,
 })
 
 registerMod({
