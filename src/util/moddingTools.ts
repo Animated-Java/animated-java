@@ -1,3 +1,4 @@
+import { PACKAGE } from 'src/constants'
 import EVENTS from './events'
 import type { ResourceLocation } from './resourceLocation'
 import { subscribable, type Subscribable } from './subscribable'
@@ -42,6 +43,7 @@ EVENTS.PLUGIN_LOAD.subscribe(async () => {
 
 	// Emit fake plugin load events for all already loaded plugins, so mods can hook into them
 	for (const plugin of Object.values(Plugins.registered)) {
+		if (plugin.id === PACKAGE.name) continue
 		EVENTS.EXTERNAL_PLUGIN_LOAD.publish(plugin)
 	}
 
@@ -64,6 +66,7 @@ EVENTS.PLUGIN_UNLOAD.subscribe(async () => {
 	}
 
 	for (const plugin of Object.values(Plugins.registered)) {
+		if (plugin.id === PACKAGE.name) continue
 		EVENTS.EXTERNAL_PLUGIN_UNLOAD.publish(plugin)
 	}
 
