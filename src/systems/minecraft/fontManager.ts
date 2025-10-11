@@ -1,18 +1,14 @@
 import { createHash } from 'crypto'
+import { Stopwatch } from 'src/util/stopwatch'
 import MissingCharacter from '../../assets/missing_character.png'
-import { type Alignment } from '../../outliner/textDisplay'
+import { TextDisplay, type Alignment } from '../../outliner/textDisplay'
 import { mergeGeometries } from '../../util/bufferGeometryUtils'
 import EVENTS from '../../util/events'
 import { getPathFromResourceLocation } from '../../util/minecraftUtil'
 import { COLOR_VALUES, ComponentStyle, JsonText } from '../jsonText'
 import { UnicodeString } from '../jsonText/unicodeString'
+import { wrapJsonText, type StyleSpan, type Word } from '../jsonText/wrapping'
 import * as assets from './assetManager'
-import {
-	computeTextWrapping,
-	getComponentWords,
-	type IComponentWord,
-	type IStyleSpan,
-} from './textWrapping'
 
 namespace MinecraftJson {
 	export interface FontProviderBitmap {
@@ -325,7 +321,7 @@ export class MinecraftFont {
 		return createMissingCharacter()
 	}
 
-	getTextWidth(text: UnicodeString, span?: IStyleSpan) {
+	getTextWidth(text: UnicodeString, span?: StyleSpan) {
 		let width = 0
 		const boldExtra = span?.style.bold ? 1 : 0
 		let font: MinecraftFont = this
@@ -349,7 +345,7 @@ export class MinecraftFont {
 		return Math.max(width, 0)
 	}
 
-	getWordWidth(word: IComponentWord) {
+	getWordWidth(word: Word) {
 		let width = 0
 		let font: MinecraftFont = this
 
@@ -387,40 +383,23 @@ export class MinecraftFont {
 
 	async generateTextDisplayMesh({
 		jsonText,
-		maxLineWidth,
-		backgroundColor,
-		backgroundAlpha,
-		shadow,
-		alignment,
+		maxLineWidth = TextDisplay.properties.maxLineWidth.default,
+		backgroundColor = tinycolor(TextDisplay.properties.backgroundColor.default),
+		shadow = TextDisplay.properties.shadow.default,
+		alignment = TextDisplay.properties.align.default,
 	}: {
 		jsonText: JsonText
-		maxLineWidth: number
-		backgroundColor: string
-		backgroundAlpha: number
+		maxLineWidth?: number
+		backgroundColor?: tinycolor.Instance
 		/** Whether or not to render any text shadow */
 		shadow?: boolean
 		alignment?: Alignment
-	}): Promise<{ mesh: THREE.Mesh; outline: THREE.LineSegments }> {
-		console.time('drawTextToMesh')
-		const mesh = new THREE.Mesh()
+	}) {
+		const stopwatch = new Stopwatch('Generate Text Display Mesh').start()
 
-		const words = getComponentWords(jsonText.toJSON())
-		const { lines, backgroundWidth } = await computeTextWrapping(words, maxLineWidth)
+		const { lines, backgroundWidth } = await wrapJsonText(jsonText, maxLineWidth)
 		const width = backgroundWidth + 1
 		const height = (lines.length || 1) * 10 + 1
-
-		const backgroundGeo = new THREE.PlaneBufferGeometry(width, height)
-		const backgroundMesh = new THREE.Mesh(
-			backgroundGeo,
-			new THREE.MeshBasicMaterial({
-				color: backgroundColor,
-				transparent: true,
-				opacity: backgroundAlpha,
-			})
-		)
-			.translateY(height / 2)
-			.translateZ(-0.05)
-		mesh.add(backgroundMesh)
 
 		const spanGeos: THREE.BufferGeometry[] = []
 		const spanMaterials: THREE.Material[] = []
@@ -501,33 +480,49 @@ export class MinecraftFont {
 			cursor.y -= 10
 		}
 
+		const mesh = new THREE.Mesh()
+
+		// Transforms a geometry to emulate how Minecraft renders text in the world
+		const transform = (geo: THREE.BufferGeometry) => {
+			geo.scale(0.4, 0.4, 0.4)
+			geo.rotateY(Math.PI)
+			geo.translate(1 / 5, 0, 0)
+			return geo
+		}
+
 		if (spanGeos.length > 0) {
-			const charGeo = mergeGeometries(spanGeos, true)!
-			const charMesh = new THREE.Mesh(charGeo, spanMaterials)
-			mesh.add(charMesh)
+			const charGeo = transform(mergeGeometries(spanGeos, true)!)
+			const textMesh = new THREE.Mesh(charGeo, spanMaterials)
+			textMesh.name = 'text'
+			mesh.add(textMesh)
 		}
 
-		mesh.scale.set(0.4, 0.4, 0.4)
-		mesh.rotateY(Math.PI)
-		mesh.translateX(1 / 5)
+		const backgroundGeo = transform(
+			// Align bottom-middle of the background with origin, and move it slightly backwards to avoid z-fighting with text.
+			// Minecraft applies the same backwards offset to prevent z-fighting.
+			new THREE.PlaneBufferGeometry(width, height).translate(0, height / 2, -0.05)
+		)
+		const backgroundMesh = new THREE.Mesh(
+			backgroundGeo,
+			new THREE.MeshBasicMaterial({
+				color: backgroundColor.toHexString(),
+				opacity: backgroundColor.getAlpha(),
+				transparent: true,
+			})
+		)
+		backgroundMesh.name = 'background'
+		mesh.add(backgroundMesh)
 
-		const outlineGeo = new THREE.EdgesGeometry(backgroundGeo.clone().scale(0.4, 0.4, 0.4))
-		const outline = new THREE.LineSegments(outlineGeo, Canvas.outlineMaterial)
-		const positions = Array.from(outlineGeo.getAttribute('position').array)
-		for (let i = 0; i < positions.length; i += 3) {
-			positions[i] -= 1 / 5
-			positions[i + 1] += (height / 2) * 0.4
-		}
-		outlineGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
-
+		const outline = new THREE.LineSegments(
+			new THREE.EdgesGeometry(backgroundGeo),
+			Canvas.outlineMaterial
+		)
 		outline.no_export = true
 		outline.renderOrder = 2
 		outline.frustumCulled = false
 
-		mesh.isTextDisplayText = true
-
-		console.timeEnd('drawTextToMesh')
-		return { mesh, outline }
+		stopwatch.debug({ mesh, hitbox: backgroundGeo, outline })
+		return { mesh, hitbox: backgroundGeo, outline }
 	}
 
 	getCharGeo(char: string, style: ComponentStyle): CachedCharGeo {
@@ -584,21 +579,22 @@ export class MinecraftFont {
 
 			const geo = new THREE.BufferGeometry()
 
-			const mainGeoData = {
+			const geoData = {
 				vertices: [] as number[],
 				indices: [] as number[],
+				uvs: [] as number[],
 			}
 
 			const createQuad = (x: number, y: number, w: number, h: number) => {
-				const vertIndex = mainGeoData.vertices.length / 3
+				const vertIndex = geoData.vertices.length / 3
 				// prettier-ignore
-				mainGeoData.vertices.push(
+				geoData.vertices.push(
 					x,     y,     0,
 					x + w, y,     0,
 					x + w, y + h, 0,
 					x,     y + h, 0
 				)
-				mainGeoData.indices.push(
+				geoData.indices.push(
 					vertIndex,
 					vertIndex + 1,
 					vertIndex + 2,
@@ -633,18 +629,18 @@ export class MinecraftFont {
 				}
 			}
 
-			geo.setIndex(mainGeoData.indices)
+			geo.setIndex(geoData.indices)
 			geo.setAttribute(
 				'position',
-				new THREE.BufferAttribute(new Float32Array(mainGeoData.vertices), 3)
+				new THREE.BufferAttribute(new Float32Array(geoData.vertices), 3)
 			)
 			if (style.italic) {
 				geo.applyMatrix4(new THREE.Matrix4().makeShear(0, 0, 0.2, 0, 0, 0))
 				geo.translate(-1, 0, 0)
 			}
 
-			mainGeoData.vertices = Array.from(geo.getAttribute('position').array)
-			mainGeoData.indices = Array.from(geo.getIndex()!.array)
+			geoData.vertices = Array.from(geo.getAttribute('position').array)
+			geoData.indices = Array.from(geo.getIndex()!.array)
 
 			if (style.underlined) {
 				createQuad(-1, -1, canvas.width + 2, 1)
@@ -662,10 +658,10 @@ export class MinecraftFont {
 				}
 			}
 
-			geo.setIndex(mainGeoData.indices)
+			geo.setIndex(geoData.indices)
 			geo.setAttribute(
 				'position',
-				new THREE.BufferAttribute(new Float32Array(mainGeoData.vertices), 3)
+				new THREE.BufferAttribute(new Float32Array(geoData.vertices), 3)
 			)
 
 			geo.attributes.position.needsUpdate = true
