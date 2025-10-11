@@ -1,4 +1,3 @@
-import { PACKAGE } from 'src/constants'
 import { Variant } from '../variants'
 import { subscribable } from './subscribable'
 
@@ -29,6 +28,7 @@ const EVENTS = {
 	PRE_SELECT_PROJECT: subscribable<ModelProject>(),
 	SELECT_PROJECT: subscribable<ModelProject>(),
 	UNSELECT_PROJECT: subscribable<ModelProject>(),
+	CLOSE_PROJECT: subscribable<ModelProject>(),
 
 	SELECT_AJ_PROJECT: subscribable<ModelProject>(),
 	UNSELECT_AJ_PROJECT: subscribable<ModelProject>(),
@@ -38,8 +38,7 @@ const EVENTS = {
 	DELETE_VARIANT: subscribable<Variant>(),
 	SELECT_VARIANT: subscribable<Variant>(),
 
-	SELECT_KEYFRAME: subscribable<_Keyframe>(),
-	UNSELECT_KEYFRAME: subscribable<void>(),
+	UPDATE_KEYFRAME_SELECTION: subscribable<void>(),
 
 	UPDATE_SELECTION: subscribable<void>(),
 
@@ -54,11 +53,12 @@ Blockbench.on<EventName>('select_project', ({ project }: { project: ModelProject
 Blockbench.on<EventName>('unselect_project', ({ project }: { project: ModelProject }) => {
 	EVENTS.UNSELECT_PROJECT.publish(project)
 })
-Blockbench.on<EventName>('update_selection', () => EVENTS.UPDATE_SELECTION.publish())
-Blockbench.on<EventName>('undo', (entry: UndoEntry) => EVENTS.UNDO.publish(entry))
-Blockbench.on<EventName>('redo', (entry: UndoEntry) => EVENTS.REDO.publish(entry))
-// `loaded_plugin` is not in BB's EventName.
-Blockbench.on('loaded_plugin', ({ plugin }: { plugin: BBPlugin }) => {
-	if (plugin.id === PACKAGE.name) return
-	EVENTS.EXTERNAL_PLUGIN_LOAD.publish(plugin)
-})
+// Blockbench.on('loaded_plugin', ({ plugin }: { plugin: BBPlugin }) => {
+// 	if (plugin.id === PACKAGE.name) return
+// 	EVENTS.EXTERNAL_PLUGIN_LOAD.publish(plugin)
+// })
+Blockbench.on<EventName>('close_project', () => EVENTS.CLOSE_PROJECT.publish(Project!))
+Blockbench.on<EventName>('update_keyframe_selection', EVENTS.UPDATE_KEYFRAME_SELECTION.publish)
+Blockbench.on<EventName>('update_selection', EVENTS.UPDATE_SELECTION.publish)
+Blockbench.on<EventName>('undo', EVENTS.UNDO.publish)
+Blockbench.on<EventName>('redo', EVENTS.REDO.publish)
