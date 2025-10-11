@@ -1,59 +1,67 @@
-import { JsonText, type ComponentStyle, type TextElement, type TextObject } from '../jsonText'
-import { UnicodeString } from '../jsonText/unicodeString'
-import { getVanillaFont } from './fontManager'
+import { Stopwatch } from 'src/util/stopwatch'
+import { JsonText, type ComponentStyle, type TextElement, type TextObject } from '.'
+import { getVanillaFont } from '../minecraft/fontManager'
+import { UnicodeString } from './unicodeString'
 
 // Jumpstarted by @IanSSenne (FetchBot) and refactored by @SnaveSutit to do line wrapping on JSON Text Components.
 // THANK U IAN <3 - SnaveSutit
 
-function getText(component: string | TextObject): UnicodeString {
-	if (typeof component === 'string') {
-		return new UnicodeString(component)
+function getRawText(element: string | TextObject): UnicodeString {
+	if (typeof element === 'string') {
+		return new UnicodeString(element)
 	}
 
 	switch (true) {
-		case component.text !== undefined:
-			return new UnicodeString(component.text)
+		case element.text !== undefined:
+			return new UnicodeString(element.text)
 
-		case component.translate !== undefined:
-			return new UnicodeString(`{${component.translate}}`)
+		case element.translate !== undefined:
+			return new UnicodeString(`{${element.translate}}`)
 
-		case component.selector !== undefined:
-			return new UnicodeString(`{${component.selector}}`)
+		case element.selector !== undefined:
+			return new UnicodeString(`{${element.selector}}`)
 
-		case component.score !== undefined:
-			return new UnicodeString(`{${component.score.name}:${component.score.objective}}`)
+		case element.score !== undefined:
+			return new UnicodeString(`{${element.score.name}:${element.score.objective}}`)
 
-		case component.keybind !== undefined:
-			return new UnicodeString(`{${component.keybind}}`)
+		case element.keybind !== undefined:
+			return new UnicodeString(`{${element.keybind}}`)
 
-		case component.nbt !== undefined:
+		case element.nbt !== undefined:
 			switch (true) {
-				case component.block !== undefined:
-					return new UnicodeString(`{${component.block}:${component.nbt}}`)
+				case element.block !== undefined:
+					return new UnicodeString(`{${element.block}:${element.nbt}}`)
 
-				case component.entity !== undefined:
-					return new UnicodeString(`{${component.entity}:${component.nbt}}`)
+				case element.entity !== undefined:
+					return new UnicodeString(`{${element.entity}:${element.nbt}}`)
 
-				case component.storage !== undefined:
-					return new UnicodeString(`{${component.storage}:${component.nbt}}`)
+				case element.storage !== undefined:
+					return new UnicodeString(`{${element.storage}:${element.nbt}}`)
 
 				default:
-					return new UnicodeString(`{${component.nbt}}`)
+					return new UnicodeString(`{${element.nbt}}`)
 			}
 
+		case element.sprite !== undefined:
+			return new UnicodeString(`{sprite:${element.sprite}}`)
+
+		case element.player !== undefined:
+			return new UnicodeString(`{player:${element.player}}`)
+
 		default:
-			return new UnicodeString('')
+			console.warn('Unknown JSON Text element:', element)
+			return new UnicodeString('{Unknown Element}')
 	}
 }
 
-export interface IStyleSpan {
+export interface StyleSpan {
 	style: ComponentStyle
 	start: number
 	end: number
 }
 
-export interface IComponentWord {
-	styles: IStyleSpan[]
+export interface Word {
+	styles: StyleSpan[]
 	text: UnicodeString
 	/**
 	 * The width of the word in pixels.
@@ -62,35 +70,34 @@ export interface IComponentWord {
 	forceWrap?: boolean
 }
 
-interface IComponentLine {
-	words: IComponentWord[]
+interface Line {
+	words: Word[]
 	width: number
 }
 
 /**
- * Gets the words from a JSON Text Component, while keeping track of the styles applied to each word.
+ * Gets the words from a JSON Text Element, keeping track of the styles applied to each word.
  *
- * WARNING: Word width is not calculated by this function.
+ * WARNING: Word width is ***not calculated*** by this function.
  */
-export function getComponentWords(input: TextElement) {
-	const flattenedComponents = new JsonText(input).flatten(true)
-	if (!flattenedComponents.length) return []
-	const words: IComponentWord[] = []
+export function parseWords(inputElement: TextElement) {
+	const stopwatch = new Stopwatch('Parse Words').start()
+	const flattened = new JsonText(inputElement).flatten(true)
+	if (!flattened.length) return []
+	const words: Word[] = []
 
-	let word: IComponentWord | undefined
-	let component = flattenedComponents.shift()
-	if (component === undefined) return words
+	let word: Word | undefined
+	let element = flattened.shift()
+	if (element === undefined) return words
 
-	let componentText = getText(component)
-	let span: IStyleSpan = {
-		style: JsonText.getComponentStyle(component),
+	let componentText = getRawText(element)
+	let span: StyleSpan = {
+		style: JsonText.getComponentStyle(element),
 		start: 0,
 		end: 0,
 	}
 
-	console.time('getComponentWords')
-
-	while (component !== undefined) {
+	while (element !== undefined) {
 		for (const char of componentText) {
 			if (char === ' ') {
 				// A group of multiple spaces is treated as a word.
@@ -139,20 +146,20 @@ export function getComponentWords(input: TextElement) {
 			span.end++
 		}
 
-		component = flattenedComponents.shift()
+		element = flattened.shift()
 
-		if (component !== undefined) {
-			componentText = getText(component)
+		if (element !== undefined) {
+			componentText = getRawText(element)
 			if (word) {
 				word.styles.push(span)
 				span = {
-					style: JsonText.getComponentStyle(component),
+					style: JsonText.getComponentStyle(element),
 					start: span.end,
 					end: span.end,
 				}
 			} else {
 				span = {
-					style: JsonText.getComponentStyle(component),
+					style: JsonText.getComponentStyle(element),
 					start: 0,
 					end: 0,
 				}
@@ -167,17 +174,20 @@ export function getComponentWords(input: TextElement) {
 		words.push(word)
 	}
 
-	console.timeEnd('getComponentWords')
+	stopwatch.debug()
 	return words
 }
 
-export async function computeTextWrapping(words: IComponentWord[], maxLineWidth = 200) {
-	console.time('computeTextWrapping')
-	const lines: IComponentLine[] = []
+export async function wrapJsonText(jsonText: JsonText, maxLineWidth = 200) {
+	const stopwatch = new Stopwatch('Wrap Json Text').start()
+
+	const words = parseWords(jsonText.toJSON())
+	const lines: Line[] = []
+	// FIXME - This will not work for custom fonts
 	const font = await getVanillaFont()
 
 	let backgroundWidth = 0
-	let currentLine: IComponentLine = { words: [], width: 0 }
+	let currentLine: Line = { words: [], width: 0 }
 	for (const word of words) {
 		const wordWidth = font.getWordWidth(word)
 		const wordStyles = [...word.styles]
@@ -192,7 +202,7 @@ export async function computeTextWrapping(words: IComponentWord[], maxLineWidth 
 			let part = new UnicodeString('')
 			let partWidth = 0
 			let partStartIndex = 0
-			let style: IStyleSpan | undefined = wordStyles.shift()
+			let style: StyleSpan | undefined = wordStyles.shift()
 			if (!style) throw new Error(`No active style found for word '${word.text.toString()}'`)
 
 			for (let i = 0; i < word.text.length; i++) {
@@ -276,6 +286,6 @@ export async function computeTextWrapping(words: IComponentWord[], maxLineWidth 
 		backgroundWidth = Math.max(backgroundWidth, currentLine.width)
 	}
 
-	console.timeEnd('computeTextWrapping')
+	stopwatch.debug()
 	return { lines, backgroundWidth }
 }
