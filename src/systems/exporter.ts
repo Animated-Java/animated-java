@@ -1,4 +1,5 @@
-import { projectTargetVersionIsAtLeast, saveBlueprint } from '../formats/blueprint/format'
+import { Stopwatch } from 'src/util/stopwatch'
+import { projectTargetVersionIsAtLeast, saveBlueprint } from '../formats/blueprint'
 import { blueprintSettingErrors } from '../formats/blueprint/settings'
 import { openBlueprintSettingsDialog } from '../interface/dialog/blueprintSettings'
 import { PROGRESS_DESCRIPTION, openExportProgressDialog } from '../interface/dialog/exportProgress'
@@ -87,16 +88,15 @@ interface ExportProjectOptions {
 async function actuallyExportProject({
 	forceSave = true,
 	debugMode = false,
-}: ExportProjectOptions = {}) {
+}: ExportProjectOptions = {}): Promise<boolean> {
 	const aj = Project!.animated_java
 	const dialog = openExportProgressDialog()
 	// Wait for the dialog to open
 	await new Promise(resolve => requestAnimationFrame(resolve))
 	const selectedVariant = Variant.selected
 	Variant.getDefault().select()
+	const stopwatch = new Stopwatch('Project Export').start()
 	try {
-		console.time('Exporting project took')
-
 		// Verify that all variant texture maps are valid
 		for (const variant of Variant.all) {
 			variant.verifyTextureMap()
@@ -144,7 +144,7 @@ async function actuallyExportProject({
 				buttons: [translate('misc.failed_to_export.button')],
 			})
 			dialog.close(0)
-			return
+			return false
 		}
 
 		const animations = await renderProjectAnimations(Project!, rig)
@@ -176,12 +176,11 @@ async function actuallyExportProject({
 		}
 
 		Project!.last_used_export_namespace = aj.export_namespace
-		console.timeEnd('Exporting project took')
 
 		if (forceSave) saveBlueprint()
 		Blockbench.showQuickMessage('Project exported successfully!', 2000)
 
-		return
+		return true
 	} catch (e: any) {
 		console.error(e)
 		if (e instanceof IntentionalExportError) {
@@ -194,17 +193,19 @@ async function actuallyExportProject({
 				},
 				e.messageBoxCallback
 			)
-			return
+			return false
 		}
 		openUnexpectedErrorDialog(e as Error)
 	} finally {
 		selectedVariant?.select()
 		dialog.close(0)
+		stopwatch.debug()
 	}
+	return false
 }
 
-export async function exportProject(options?: ExportProjectOptions) {
-	if (!Project) return // TODO: Handle this error better
+export async function exportProject(options?: ExportProjectOptions): Promise<boolean> {
+	if (!Project) return false // TODO: Handle this error better
 
 	if (Cube.all.some(cube => isCubeValid(cube) === 'invalid')) {
 		Blockbench.showMessageBox({
@@ -216,7 +217,7 @@ export async function exportProject(options?: ExportProjectOptions) {
 			),
 			buttons: [translate('misc.failed_to_export.button')],
 		})
-		return
+		return false
 	}
 
 	blueprintSettingErrors.set({})
@@ -240,10 +241,10 @@ export async function exportProject(options?: ExportProjectOptions) {
 					.join('\n\n'),
 			buttons: [translate('misc.failed_to_export.button')],
 		})
-		return
+		return false
 	}
 
 	settingsDialog.close(0)
 
-	await actuallyExportProject(options)
+	return await actuallyExportProject(options)
 }
