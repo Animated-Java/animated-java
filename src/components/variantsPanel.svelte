@@ -23,6 +23,7 @@
 </script>
 
 <script lang="ts">
+	let selectedProject = Project
 	let localVariants: Array<LocalVariant & { [SHADOW_ITEM_MARKER_PROPERTY_NAME]?: boolean }> = []
 
 	function updateLocalVariants() {
@@ -41,9 +42,14 @@
 		updateLocalVariants()
 	})
 
-	EVENTS.SELECT_PROJECT.subscribe(() => {
+	EVENTS.SELECT_AJ_PROJECT.subscribe(project => {
+		selectedProject = project
 		Variant.selectDefault()
 		updateLocalVariants()
+	})
+
+	EVENTS.UNSELECT_PROJECT.subscribe(project => {
+		selectedProject = project
 	})
 
 	EVENTS.SELECT_VARIANT.subscribe(() => {
@@ -79,115 +85,124 @@
 	updateLocalVariants()
 </script>
 
-<div class="panel_container">
-	<div class="toolbar">
-		<!-- svelte-ignore a11y-click-events-have-key-events -->
-		<div
-			class="tool"
-			title={translate('panel.variants.tool.create_new_variant')}
-			on:click={e => createVariant(e)}
-		>
-			<i class="material-icons icon">texture_add</i>
-		</div>
-		<!-- svelte-ignore a11y-click-events-have-key-events -->
-		<div
-			class="tool"
-			title={translate('panel.variants.tool.duplicate_selected_variant')}
-			on:click={e => duplicateVariant(e)}
-		>
-			<i class="material-icons icon">content_copy</i>
-		</div>
-		<!-- svelte-ignore a11y-click-events-have-key-events -->
-		<div
-			class="tool"
-			title={translate('panel.variants.tool.delete_selected_variant')}
-			on:click={e => deleteVariant(e)}
-		>
-			<i
-				class={'material-icons icon' +
-					(Variant.selected?.isDefault ? ' in_list_button_disabled' : '')}
-				>delete
-			</i>
-		</div>
-	</div>
-	<ul
-		class="variants_list"
-		use:dndzone={{ items: localVariants, flipDurationMs: FLIP_DURATION, dropTargetStyle: {} }}
-		on:consider={handleSort}
-		on:finalize={finalizeSort}
-	>
-		{#each localVariants as item (item.id)}
+{#key selectedProject}
+	<div class="panel_container">
+		<div class="toolbar">
 			<!-- svelte-ignore a11y-click-events-have-key-events -->
-			<li
-				class={item.value === Variant.selected
-					? 'variant_item selected_variant_item'
-					: 'variant_item'}
-				animate:flip={{ duration: FLIP_DURATION }}
-				on:click={() => selectVariant(item.value)}
-				on:contextmenu|stopPropagation={e => {
-					item.value.select()
-					VARIANT_PANEL_CONTEXT_MENU.get()?.open(e)
-				}}
+			<div
+				class="tool"
+				title={translate('panel.variants.tool.create_new_variant')}
+				on:click={e => createVariant(e)}
 			>
-				{#if item[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
-					<div
-						style="visibility: visible !important; position: relative; top: 0; left: 0; border-bottom: 2px solid var(--color-accent); width: 100%; height: 15px;"
-						in:fade={{ duration: 150, easing: cubicIn }}
-					></div>
-				{:else}
-					<i class="material-icons icon in_list_button">texture</i>
-					<div class="variant_item_name">
-						{item.value.displayName}
-					</div>
-					<div class="spacer" />
-					{#if item.value.isDefault}
-						<i
-							class="material-icons icon in_list_button in_list_button_disabled"
-							title={translate('panel.variants.tool.cannot_edit_default_variant')}
-							>edit</i
-						>
+				<i class="material-icons icon">texture_add</i>
+			</div>
+			<!-- svelte-ignore a11y-click-events-have-key-events -->
+			<div
+				class="tool"
+				title={translate('panel.variants.tool.duplicate_selected_variant')}
+				on:click={e => duplicateVariant(e)}
+			>
+				<i class="material-icons icon">content_copy</i>
+			</div>
+			<!-- svelte-ignore a11y-click-events-have-key-events -->
+			<div
+				class="tool"
+				title={translate('panel.variants.tool.delete_selected_variant')}
+				on:click={e => deleteVariant(e)}
+			>
+				<i
+					class={'material-icons icon' +
+						(Variant.selected?.isDefault ? ' in_list_button_disabled' : '')}
+					>delete
+				</i>
+			</div>
+		</div>
+		<ul
+			class="variants_list"
+			use:dndzone={{
+				items: localVariants,
+				flipDurationMs: FLIP_DURATION,
+				dropTargetStyle: {},
+			}}
+			on:consider={handleSort}
+			on:finalize={finalizeSort}
+		>
+			{#each localVariants as item (item.id)}
+				<!-- svelte-ignore a11y-click-events-have-key-events -->
+				<li
+					class={item.value === Variant.selected
+						? 'variant_item selected_variant_item'
+						: 'variant_item'}
+					animate:flip={{ duration: FLIP_DURATION }}
+					on:click={() => selectVariant(item.value)}
+					on:contextmenu|stopPropagation={e => {
+						item.value.select()
+						VARIANT_PANEL_CONTEXT_MENU.get()?.open(e)
+					}}
+				>
+					{#if item[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
+						<div
+							style="visibility: visible !important; position: relative; top: 0; left: 0; border-bottom: 2px solid var(--color-accent); width: 100%; height: 15px;"
+							in:fade={{ duration: 150, easing: cubicIn }}
+						></div>
 					{:else}
-						<i
-							class="material-icons icon in_list_button"
-							title={translate('panel.variants.tool.edit_variant')}
-							on:click={() => openVariantConfigDialog(item.value)}>edit</i
-						>
-					{/if}
-					{#if Variant.selected === item.value}
-						<i
-							class="material-icons icon in_list_button"
-							title={translate('panel.variants.tool.variant_visible')}>visibility</i
-						>
-					{:else}
-						<i
-							class="material-icons icon in_list_button in_list_button_disabled"
-							title={translate('panel.variants.tool.variant_not_visible')}
-						>
-							visibility_off
-						</i>
-					{/if}
+						<i class="material-icons icon in_list_button">texture</i>
+						<div class="variant_item_name">
+							{item.value.displayName}
+						</div>
+						<div class="spacer" />
+						{#if item.value.isDefault}
+							<i
+								class="material-icons icon in_list_button in_list_button_disabled"
+								title={translate('panel.variants.tool.cannot_edit_default_variant')}
+								>edit</i
+							>
+						{:else}
+							<i
+								class="material-icons icon in_list_button"
+								title={translate('panel.variants.tool.edit_variant')}
+								on:click={() => openVariantConfigDialog(item.value)}>edit</i
+							>
+						{/if}
+						{#if Variant.selected === item.value}
+							<i
+								class="material-icons icon in_list_button"
+								title={translate('panel.variants.tool.variant_visible')}
+								>visibility</i
+							>
+						{:else}
+							<i
+								class="material-icons icon in_list_button in_list_button_disabled"
+								title={translate('panel.variants.tool.variant_not_visible')}
+							>
+								visibility_off
+							</i>
+						{/if}
 
-					{#if !item.value.isDefault}
-						<!-- svelte-ignore a11y-click-events-have-key-events -->
-						<i
-							class="material-icons icon in_list_button"
-							on:click={e => deleteVariant(e)}
-						>
-							delete
-						</i>
-					{:else}
-						<i
-							class="material-icons icon in_list_button_disabled"
-							title={translate('panel.variants.tool.cannot_delete_default_variant')}
-						>
-							delete
-						</i>
+						{#if !item.value.isDefault}
+							<!-- svelte-ignore a11y-click-events-have-key-events -->
+							<i
+								class="material-icons icon in_list_button"
+								on:click={e => deleteVariant(e)}
+							>
+								delete
+							</i>
+						{:else}
+							<i
+								class="material-icons icon in_list_button_disabled"
+								title={translate(
+									'panel.variants.tool.cannot_delete_default_variant'
+								)}
+							>
+								delete
+							</i>
+						{/if}
 					{/if}
-				{/if}
-			</li>
-		{/each}
-	</ul>
-</div>
+				</li>
+			{/each}
+		</ul>
+	</div>
+{/key}
 
 <style>
 	.panel_container {
