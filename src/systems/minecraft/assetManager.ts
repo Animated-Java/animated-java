@@ -162,27 +162,27 @@ export function getJSONAsset(path: string) {
 }
 
 EVENTS.PLUGIN_LOAD.subscribe(() => {
-	void showLoadingPopup().then(async () => {
-		if (!window.navigator.onLine) {
-			showOfflineError()
-		}
-		EVENTS.NETWORK_CONNECTED.publish()
+	if (!window.navigator.onLine) {
+		showOfflineError()
+	}
+	EVENTS.NETWORK_CONNECTED.publish()
 
-		await Promise.all([
-			new Promise<void>(resolve => EVENTS.MINECRAFT_ASSETS_LOADED.subscribe(resolve)),
-			new Promise<void>(resolve => EVENTS.MINECRAFT_REGISTRY_LOADED.subscribe(resolve)),
-			new Promise<void>(resolve => EVENTS.MINECRAFT_FONTS_LOADED.subscribe(resolve)),
-			new Promise<void>(resolve => EVENTS.BLOCKSTATE_REGISTRY_LOADED.subscribe(resolve)),
-		])
-			.then(() => {
-				hideLoadingPopup()
+	showLoadingPopup()
+
+	void Promise.all([
+		new Promise<void>(resolve => EVENTS.MINECRAFT_ASSETS_LOADED.subscribe(resolve)),
+		new Promise<void>(resolve => EVENTS.MINECRAFT_REGISTRY_LOADED.subscribe(resolve)),
+		new Promise<void>(resolve => EVENTS.MINECRAFT_FONTS_LOADED.subscribe(resolve)),
+		new Promise<void>(resolve => EVENTS.BLOCKSTATE_REGISTRY_LOADED.subscribe(resolve)),
+	])
+		.then(() => {
+			hideLoadingPopup()
+		})
+		.catch(error => {
+			console.error(error)
+			Blockbench.showToastNotification({
+				text: 'Animated Java failed to load! Please restart Blockbench',
+				color: 'var(--color-error)',
 			})
-			.catch(error => {
-				console.error(error)
-				Blockbench.showToastNotification({
-					text: 'Animated Java failed to load! Please restart Blockbench',
-					color: 'var(--color-error)',
-				})
-			})
-	})
+		})
 })

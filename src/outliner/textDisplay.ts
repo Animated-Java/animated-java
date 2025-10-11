@@ -7,8 +7,8 @@ import { registerAction } from '../util/moddingTools'
 // import * as MinecraftFull from '../assets/MinecraftFull.json'
 import { JsonTextSyntaxError } from 'src/systems/jsonText/parser'
 import { TextDisplayConfig } from '../nodeConfigs'
-import { JsonText } from '../systems/jsonText'
-import { getVanillaFont } from '../systems/minecraft/fontManager'
+import { JsonText, TextElement } from '../systems/jsonText'
+import { getVanillaFont, MinecraftFont } from '../systems/minecraft/fontManager'
 import EVENTS from '../util/events'
 import { Valuable } from '../util/stores'
 import { translate } from '../util/translation'
@@ -34,6 +34,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 	static icon = 'text_fields'
 	static selected: TextDisplay[] = []
 	static all: TextDisplay[] = []
+	static invalidJsonText: TextElement = { text: 'Invalid JSON Text!', color: 'red' }
 
 	type = TextDisplay.type
 	icon = TextDisplay.icon
@@ -46,17 +47,15 @@ export class TextDisplay extends ResizableOutlinerElement {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	preview_controller = PREVIEW_CONTROLLER
 
-	ready = false
 	textError = new Valuable('')
 
-	private __isUpdating = false
+	private __pendingMeshUpdate?: ReturnType<MinecraftFont['generateTextDisplayMesh']>
 	private __text = new Valuable('Hello World!')
-	private __lineWidth = new Valuable(200)
-	private __backgroundColor = new Valuable('#000000')
-	private __backgroundAlpha = new Valuable(0.25)
-	private __shadow = new Valuable(false)
-	private __align = new Valuable<Alignment>('center')
-	seeThrough = false
+	private __lineWidth = TextDisplay.properties.lineWidth.default as number
+	private __backgroundColor = TextDisplay.properties.backgroundColor.default as string
+	private __shadow = TextDisplay.properties.shadow.default as boolean
+	private __align: Alignment = TextDisplay.properties.align.default as Alignment
+	seeThrough = TextDisplay.properties.seeThrough.default as boolean
 
 	constructor(data: TextDisplayOptions, uuid = guid()) {
 		super(data, uuid)
@@ -78,13 +77,6 @@ export class TextDisplay extends ResizableOutlinerElement {
 		this.config ??= {}
 
 		this.sanitizeName()
-
-		this.__text.subscribe(() => this.updateText())
-		this.__lineWidth.subscribe(() => this.updateText())
-		this.__backgroundColor.subscribe(() => this.updateText())
-		this.__backgroundAlpha.subscribe(() => this.updateText())
-		this.__shadow.subscribe(() => this.updateText())
-		this.__align.subscribe(() => this.updateText())
 	}
 
 	sanitizeName(): string {
@@ -101,59 +93,57 @@ export class TextDisplay extends ResizableOutlinerElement {
 		if (this.__text === undefined) return
 		if (value === this.text) return
 		this.__text.set(value)
+		void this.updateTextMesh()
 	}
 
 	get lineWidth() {
 		if (this.__lineWidth === undefined)
 			return TextDisplay.properties.lineWidth.default as number
-		return this.__lineWidth.get()
+		return this.__lineWidth
 	}
 
 	set lineWidth(value) {
 		if (this.__lineWidth === undefined) return
-		this.__lineWidth.set(value)
+		if (value === this.lineWidth) return
+		this.__lineWidth = value
+		void this.updateTextMesh()
 	}
 
 	get backgroundColor() {
 		if (this.__backgroundColor === undefined)
 			return TextDisplay.properties.backgroundColor.default as string
-		return this.__backgroundColor.get()
+		return this.__backgroundColor
 	}
 
 	set backgroundColor(value) {
 		if (this.__backgroundColor === undefined) return
-		this.__backgroundColor.set(value)
-	}
-
-	get backgroundAlpha() {
-		if (this.__backgroundAlpha === undefined)
-			return TextDisplay.properties.backgroundAlpha.default as number
-		return this.__backgroundAlpha.get()
-	}
-
-	set backgroundAlpha(value) {
-		if (this.__backgroundAlpha === undefined) return
-		this.__backgroundAlpha.set(value)
+		if (value === this.backgroundColor) return
+		this.__backgroundColor = value
+		void this.updateTextMesh()
 	}
 
 	get shadow() {
 		if (this.__shadow === undefined) return TextDisplay.properties.shadow.default as boolean
-		return this.__shadow.get()
+		return this.__shadow
 	}
 
 	set shadow(value) {
 		if (this.__shadow === undefined) return
-		this.__shadow.set(value)
+		if (value === this.shadow) return
+		this.__shadow = value
+		void this.updateTextMesh()
 	}
 
 	get align() {
 		if (this.__align === undefined) return TextDisplay.properties.align.default as Alignment
-		return this.__align.get()
+		return this.__align
 	}
 
 	set align(value) {
 		if (this.__align === undefined) return
-		this.__align.set(value)
+		if (value === this.align) return
+		this.__align = value
+		void this.updateTextMesh()
 	}
 
 	getTextValuable() {
@@ -221,94 +211,79 @@ export class TextDisplay extends ResizableOutlinerElement {
 		TickUpdates.selection = true
 	}
 
-	async updateText() {
-		if (this.__isUpdating) return
-		this.__isUpdating = true
-
-		if (Project?.loadingPromises) {
-			// Wait to render text until after the project is done loading
-			await Promise.all(Project?.loadingPromises)
-		}
-
-		let latestMesh: THREE.Mesh | undefined
-		while (this.__isUpdating) {
-			let text: JsonText | undefined
+	updateTextMesh() {
+		let result: JsonText | undefined
+		try {
+			result = JsonText.fromString(this.text, {
+				minecraftVersion: Project!.animated_java.target_minecraft_version,
+			})
 			this.textError.set('')
-			try {
-				text = JsonText.fromString(this.text, {
-					minecraftVersion: Project!.animated_java.target_minecraft_version,
-				})
-				console.log('Text updated:', text)
-			} catch (e: any) {
-				console.error(e)
-				if (e instanceof JsonTextSyntaxError) {
-					this.textError.set(e.getOriginErrorMessage())
-				} else {
-					this.textError.set(e.message as string)
-				}
+		} catch (e: any) {
+			console.error(e)
+			if (e instanceof JsonTextSyntaxError) {
+				this.textError.set(e.getOriginErrorMessage())
+			} else {
+				this.textError.set(e.message as string)
 			}
-			this.__isUpdating = false
-			if (text === undefined) {
-				console.warn('Text is undefined, using fallback text')
-				text = new JsonText({ text: 'Invalid JSON Text!', color: 'red' })
-			}
-			latestMesh = await this.setText(text)
 		}
-		return latestMesh
-	}
-
-	async waitForReady() {
-		while (!this.ready) {
-			await new Promise(resolve => requestAnimationFrame(resolve))
-		}
-	}
-
-	private async setText(jsonText: JsonText) {
-		await this.waitForReady()
-		const font = await getVanillaFont()
-		// Hide the geo while rendering
-
-		const { mesh: newMesh, outline } = await font.generateTextDisplayMesh({
-			jsonText,
-			maxLineWidth: this.lineWidth,
-			backgroundColor: this.backgroundColor,
-			backgroundAlpha: this.backgroundAlpha,
-			shadow: this.shadow,
-			alignment: this.align,
+		result ??= new JsonText({ text: 'Invalid JSON Text!', color: 'red' })
+		void this.renderTextMesh(result).then(({ mesh, hitbox, outline }) => {
+			this.applyTextMesh(mesh, hitbox, outline)
 		})
-		newMesh.name = this.uuid + '_text'
-		const previousMesh = this.mesh.children.find(v => v.name === newMesh.name)
-		if (previousMesh) this.mesh.remove(previousMesh)
+	}
+
+	private async renderTextMesh(jsonText: JsonText) {
+		const promise = getVanillaFont()
+			.then(font =>
+				font.generateTextDisplayMesh({
+					jsonText,
+					maxLineWidth: this.lineWidth,
+					backgroundColor: tinycolor(this.backgroundColor),
+					shadow: this.shadow,
+					alignment: this.align,
+				})
+			)
+			.then(result => {
+				if (this.__pendingMeshUpdate === promise) {
+					this.__pendingMeshUpdate = undefined
+					return result
+				}
+				return this.__pendingMeshUpdate
+			}) as ReturnType<MinecraftFont['generateTextDisplayMesh']>
+
+		this.__pendingMeshUpdate = promise
+		return promise
+	}
+
+	private applyTextMesh(
+		text: THREE.Mesh,
+		hitbox: THREE.BufferGeometry,
+		outline: THREE.LineSegments
+	) {
+		text.name = this.uuid + '_text'
+		text.isTextDisplayText = true
 
 		const mesh = this.mesh as THREE.Mesh
+		mesh.clear()
+		delete mesh.sprite
 		mesh.name = this.uuid
-		mesh.geometry = (newMesh.children[0] as THREE.Mesh).geometry.clone()
-		mesh.geometry.translate(
-			newMesh.children[0].position.x,
-			newMesh.children[0].position.y,
-			newMesh.children[0].position.z
-		)
-		mesh.geometry.rotateY(Math.PI)
-		mesh.geometry.scale(newMesh.scale.x, newMesh.scale.y, newMesh.scale.z)
 		mesh.material = Canvas.transparentMaterial
-
-		mesh.add(newMesh)
+		mesh.geometry = hitbox
+		mesh.add(text)
 
 		outline.name = this.uuid + '_outline'
 		outline.visible = this.selected
 		mesh.outline = outline
-		const previousOutline = mesh.children.find(v => v.name === outline.name)
-		if (previousOutline) mesh.remove(previousOutline)
 		mesh.add(outline)
 		mesh.visible = this.visibility
-		return newMesh
+
+		return text
 	}
 }
 TextDisplay.prototype.icon = TextDisplay.icon
 new Property(TextDisplay, 'string', 'text', { default: '"Hello World!"' })
 new Property(TextDisplay, 'number', 'lineWidth', { default: 200 })
-new Property(TextDisplay, 'string', 'backgroundColor', { default: '#000000' })
-new Property(TextDisplay, 'number', 'backgroundAlpha', { default: 0.25 })
+new Property(TextDisplay, 'string', 'backgroundColor', { default: '#00000040' })
 new Property(TextDisplay, 'string', 'align', { default: 'center' })
 new Property(TextDisplay, 'boolean', 'shadow', { default: false })
 new Property(TextDisplay, 'boolean', 'seeThrough', { default: false })
@@ -320,27 +295,39 @@ new Property(TextDisplay, 'object', 'config', {
 
 OutlinerElement.registerType(TextDisplay, TextDisplay.type)
 
+const TEMP_MESH_MAP = new THREE.TextureLoader().load(
+	'data:image/svg+xml,' +
+		encodeURIComponent(
+			`<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M280-160v-520H80v-120h520v120H400v520H280Zm360 0v-320H520v-120h360v120H760v320H640Z"/></svg>`
+		)
+)
+TEMP_MESH_MAP.minFilter = THREE.NearestFilter
+TEMP_MESH_MAP.magFilter = THREE.NearestFilter
+
 export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 	setup(el: TextDisplay) {
 		ResizableOutlinerElement.prototype.preview_controller.setup(el)
-		// Minecraft's transparency is funky 😭
-		Project!.nodes_3d[el.uuid].renderOrder = -1
-
-		void getVanillaFont()
-			.then(() => {
-				el.preview_controller.updateTransform(el)
-				el.preview_controller.updateGeometry(el)
-				el.preview_controller.dispatchEvent('setup', { element: el })
-			})
-			.finally(() => {
-				el.ready = true
-			})
-	},
-	updateGeometry(el: TextDisplay) {
-		void el.updateText().then(() => {
-			el.preview_controller.updateTransform(el)
+		// Setup temp sprite mesh
+		const material = new THREE.SpriteMaterial({
+			map: TEMP_MESH_MAP,
+			alphaTest: 0.1,
+			sizeAttenuation: false,
 		})
+		const sprite = new THREE.Sprite(material)
+		sprite.scale.setScalar(1 / 32)
+		const mesh = el.mesh as THREE.Mesh
+		mesh.add(sprite)
+		mesh.sprite = sprite
+
+		// Minecraft's transparency is funky 😭
+		mesh.renderOrder = -1
+		el.preview_controller.dispatchEvent('setup', { element: el })
 	},
+
+	updateGeometry(el: TextDisplay) {
+		el.updateTextMesh()
+	},
+
 	updateTransform(el: TextDisplay) {
 		ResizableOutlinerElement.prototype.preview_controller.updateTransform(el)
 	},

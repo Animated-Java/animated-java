@@ -26,7 +26,6 @@ import { blueprintSettingErrors } from './formats/blueprint/settings'
 import { openChangelogDialog } from './interface/changelogDialog'
 import { openExportProgressDialog } from './interface/dialog/exportProgress'
 import { openUnexpectedErrorDialog } from './interface/dialog/unexpectedError'
-import { openBlueprintLoadingDialog } from './interface/popup/blueprintLoading'
 import { checkForIncompatabilities } from './interface/popup/incompatabilityPopup'
 import { openInstallPopup } from './interface/popup/installed'
 import { TextDisplay } from './outliner/textDisplay'
@@ -87,7 +86,6 @@ const AnimatedJavaApi = {
 	debugBlockState,
 	BLOCKSTATE_REGISTRY,
 	exportProject,
-	openBlueprintLoadingDialog,
 	openInstallPopup,
 	removeCubesAssociatedWithTexture(texture: Texture) {
 		const cubes = Cube.all.filter(cube =>

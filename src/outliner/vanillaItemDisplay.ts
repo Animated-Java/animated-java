@@ -1,8 +1,8 @@
+import { getItemModel } from 'src/systems/minecraft/itemModelManager'
 import { registerAction } from 'src/util/moddingTools'
 import { PACKAGE } from '../constants'
 import { type IBlueprintBoneConfigJSON, activeProjectIsBlueprintFormat } from '../formats/blueprint'
 import { BoneConfig } from '../nodeConfigs'
-import { getItemModel } from '../systems/minecraft/itemModelManager'
 import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
 import { getCurrentVersion } from '../systems/minecraft/versionManager'
 import EVENTS from '../util/events'
@@ -52,8 +52,6 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 	buttons = [Outliner.buttons.export, Outliner.buttons.locked, Outliner.buttons.visibility]
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	preview_controller = PREVIEW_CONTROLLER
-
-	ready = false
 
 	constructor(data: VanillaItemDisplayOptions, uuid = guid()) {
 		super(data, uuid)
@@ -118,12 +116,6 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 	set itemDisplay(value: ItemDisplayMode) {
 		if (this.__itemDisplay === undefined) return
 		this.__itemDisplay.set(value)
-	}
-
-	async waitForReady() {
-		while (!this.ready) {
-			await new Promise(resolve => requestAnimationFrame(resolve))
-		}
 	}
 
 	sanitizeName(): string {
@@ -201,9 +193,29 @@ new Property(VanillaItemDisplay, 'object', 'config', {
 })
 OutlinerElement.registerType(VanillaItemDisplay, VanillaItemDisplay.type)
 
+const TEMP_MESH_MAP = new THREE.TextureLoader().load(
+	'data:image/svg+xml,' +
+		encodeURIComponent(
+			`<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M482-40 294-400q-71 3-122.5-41T120-560q0-51 29.5-92t74.5-58q18-91 89.5-150.5T480-920q95 0 166.5 59.5T736-710q45 17 74.5 58t29.5 92q0 75-53 119t-119 41L482-40ZM280-480q15 0 29.5-5t26.5-17l22-22 26 16q21 14 45.5 21t50.5 7q26 0 50.5-7t45.5-21l26-16 22 22q12 12 26.5 17t29.5 5q33 0 56.5-23.5T760-560q0-30-19-52.5T692-640l-30-4-2-32q-5-69-57-116.5T480-840q-71 0-123 47.5T300-676l-2 32-30 6q-30 6-49 27t-19 51q0 33 23.5 56.5T280-480Zm202 266 108-210q-24 12-52 18t-58 6q-27 0-54.5-6T372-424l110 210Zm-2-446Z"/></svg>`
+		)
+)
+TEMP_MESH_MAP.minFilter = THREE.NearestFilter
+TEMP_MESH_MAP.magFilter = THREE.NearestFilter
+
 export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, {
 	setup(el: VanillaItemDisplay) {
 		ResizableOutlinerElement.prototype.preview_controller.setup(el)
+		// Setup temp sprite mesh
+		const material = new THREE.SpriteMaterial({
+			map: TEMP_MESH_MAP,
+			alphaTest: 0.1,
+			sizeAttenuation: false,
+		})
+		const sprite = new THREE.Sprite(material)
+		sprite.scale.setScalar(1 / 20)
+		const mesh = el.mesh as THREE.Mesh
+		mesh.add(sprite)
+		mesh.sprite = sprite
 	},
 	updateGeometry(el: VanillaItemDisplay) {
 		if (!el.mesh) return
@@ -229,9 +241,6 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, 
 				if (typeof err.message === 'string') {
 					el.error.set(err.message as string)
 				}
-			})
-			.finally(() => {
-				el.ready = true
 			})
 	},
 	updateTransform(el: VanillaItemDisplay) {

@@ -17,7 +17,7 @@ import type {
 } from './model'
 import { TEXTURE_FRAG_SHADER, TEXTURE_VERT_SHADER } from './textureShaders'
 
-interface BlockModelMesh {
+export interface BlockModelMesh {
 	mesh: THREE.Mesh
 	outline: THREE.LineSegments
 	boundingBox: THREE.BufferGeometry

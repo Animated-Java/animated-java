@@ -34,7 +34,7 @@ async function loadUnicodeCharMappings() {
 	console.log(`Loaded ${UNICODE_CHAR_MAP.size} Unicode character mappings`, UNICODE_CHAR_MAP)
 
 	for (const textDisplay of TextDisplay.all) {
-		void textDisplay.updateText()
+		void textDisplay.updateTextMesh()
 	}
 }
 

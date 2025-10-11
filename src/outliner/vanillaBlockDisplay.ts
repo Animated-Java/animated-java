@@ -2,7 +2,7 @@ import { registerAction } from 'src/util/moddingTools'
 import { PACKAGE } from '../constants'
 import { type IBlueprintBoneConfigJSON, activeProjectIsBlueprintFormat } from '../formats/blueprint'
 import { BoneConfig } from '../nodeConfigs'
-import { getBlockModel } from '../systems/minecraft/blockModelManager'
+import { BlockModelMesh, getBlockModel } from '../systems/minecraft/blockModelManager'
 import { type BlockStateValue, getBlockState } from '../systems/minecraft/blockstateManager'
 import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
 import { getCurrentVersion } from '../systems/minecraft/versionManager'
@@ -44,8 +44,6 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 	buttons = [Outliner.buttons.export, Outliner.buttons.locked, Outliner.buttons.visibility]
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	preview_controller = PREVIEW_CONTROLLER
-
-	ready = false
 
 	constructor(data: VanillaBlockDisplayOptions, uuid = guid()) {
 		super(data, uuid)
@@ -99,12 +97,6 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 		if (this.__block === undefined) return
 		if (this.block === value) return
 		this.__block.set(value)
-	}
-
-	async waitForReady() {
-		while (!this.ready) {
-			await new Promise(resolve => requestAnimationFrame(resolve))
-		}
 	}
 
 	sanitizeName(): string {
@@ -171,6 +163,25 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 		TickUpdates.selection = true
 		this.preview_controller.updateHighlight(this)
 	}
+
+	applyBlockModel(blockModel: BlockModelMesh) {
+		const mesh = this.mesh as THREE.Mesh
+		mesh.name = this.uuid
+		mesh.geometry = blockModel.boundingBox
+		mesh.material = Canvas.transparentMaterial
+
+		mesh.clear()
+		blockModel.outline.name = this.uuid + '_outline'
+		blockModel.outline.visible = this.selected
+		mesh.outline = blockModel.outline
+		mesh.add(blockModel.mesh)
+		mesh.add(blockModel.outline)
+
+		this.preview_controller.updateHighlight(this)
+		this.preview_controller.updateTransform(this)
+		mesh.visible = this.visibility
+		TickUpdates.selection = true
+	}
 }
 VanillaBlockDisplay.prototype.icon = VanillaBlockDisplay.icon
 new Property(VanillaBlockDisplay, 'string', 'block', { default: 'minecraft:stone' })
@@ -181,9 +192,29 @@ new Property(VanillaBlockDisplay, 'object', 'config', {
 })
 OutlinerElement.registerType(VanillaBlockDisplay, VanillaBlockDisplay.type)
 
+const TEMP_MESH_MAP = new THREE.TextureLoader().load(
+	'data:image/svg+xml,' +
+		encodeURIComponent(
+			`<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M440-183v-274L200-596v274l240 139Zm80 0 240-139v-274L520-457v274Zm-40-343 237-137-237-137-237 137 237 137ZM160-252q-19-11-29.5-29T120-321v-318q0-22 10.5-40t29.5-29l280-161q19-11 40-11t40 11l280 161q19 11 29.5 29t10.5 40v318q0 22-10.5 40T800-252L520-91q-19 11-40 11t-40-11L160-252Zm320-228Z"/></svg>`
+		)
+)
+TEMP_MESH_MAP.minFilter = THREE.NearestFilter
+TEMP_MESH_MAP.magFilter = THREE.NearestFilter
+
 export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay, {
 	setup(el: VanillaBlockDisplay) {
 		ResizableOutlinerElement.prototype.preview_controller.setup(el)
+		// Setup temp sprite mesh
+		const material = new THREE.SpriteMaterial({
+			map: TEMP_MESH_MAP,
+			alphaTest: 0.1,
+			sizeAttenuation: false,
+		})
+		const sprite = new THREE.Sprite(material)
+		sprite.scale.setScalar(1 / 32)
+		const mesh = el.mesh as THREE.Mesh
+		mesh.add(sprite)
+		mesh.sprite = sprite
 	},
 	updateGeometry(el: VanillaBlockDisplay) {
 		if (!el.mesh) return
@@ -191,22 +222,7 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay,
 		void getBlockModel(el.block)
 			.then(result => {
 				if (!result?.mesh) return
-
-				const mesh = el.mesh as THREE.Mesh
-				mesh.name = el.uuid
-				mesh.geometry = result.boundingBox
-				mesh.material = Canvas.transparentMaterial
-
-				mesh.clear()
-				result.outline.name = el.uuid + '_outline'
-				result.outline.visible = el.selected
-				mesh.outline = result.outline
-				mesh.add(result.mesh)
-				mesh.add(result.outline)
-
-				el.preview_controller.updateHighlight(el)
-				el.preview_controller.updateTransform(el)
-				mesh.visible = el.visibility
+				el.applyBlockModel(result)
 				TickUpdates.selection = true
 			})
 			.catch(err => {
@@ -220,7 +236,6 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay,
 					if (el.error.get()) el.mesh.outline.material = ERROR_OUTLINE_MATERIAL
 					else el.mesh.outline.material = Canvas.outlineMaterial
 				}
-				el.ready = true
 			})
 	},
 	updateTransform(el: VanillaBlockDisplay) {
