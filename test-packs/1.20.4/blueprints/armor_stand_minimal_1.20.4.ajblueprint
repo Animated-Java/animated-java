@@ -2,7 +2,7 @@
 	"meta": {
 		"format": "animated-java:format/blueprint",
 		"format_version": "1.8.0",
-		"uuid": "167b27cd-b559-3f13-a97c-0841fe21f1d1",
+		"uuid": "173aa82f-fb4f-c354-ad34-a34d7fbce647",
 		"save_location": "D:\\github-repos\\animated-java\\old-animated-java\\test-packs\\1.20.4\\blueprints\\armor_stand_minimal_1.20.4.ajblueprint",
 		"last_used_export_namespace": "armor_stand_minimal"
 	},
@@ -1017,7 +1017,7 @@
 			"length": 1,
 			"snapping": 20,
 			"selected": true,
-			"saved": false,
+			"saved": true,
 			"path": "",
 			"anim_time_update": "",
 			"blend_weight": "",
