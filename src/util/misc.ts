@@ -18,12 +18,6 @@ export function roundToNth(n: number, x: number) {
 	return Math.round(n * x) / x
 }
 
-export function floatToHex(n: number) {
-	return Number((255 * n).toFixed(0))
-		.toString(16)
-		.padStart(2, '0')
-}
-
 export function tinycolorToDecimal(color: InstanceType<typeof tinycolor>) {
 	const rgba = color.toRgb()
 	return ((rgba.a * 255) << 24) | (rgba.r << 16) | (rgba.g << 8) | rgba.b
