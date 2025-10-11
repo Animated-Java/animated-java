@@ -1,17 +1,17 @@
 import { registerMod } from 'src/util/moddingTools'
+import { registerMountSvelteComponentMod } from 'src/util/mountSvelteComponent'
 import IncompatiblePluginNotice from '../components/incompatiblePluginNotice.svelte'
-import { injectSvelteComponentMod } from '../util/injectSvelteComponent'
 import { Valuable } from '../util/stores'
 
 const SELECTED_PLUGIN = new Valuable<BBPlugin | null>(null)
 
-injectSvelteComponentMod({
+registerMountSvelteComponentMod({
+	id: 'animated-java:dialog/incompatible-plugin-notice',
 	component: IncompatiblePluginNotice,
+	target: '.plugin_browser_page_header',
+	prepend: true,
 	props: {
 		selectedPlugin: SELECTED_PLUGIN,
-	},
-	elementSelector() {
-		return document.querySelector('.plugin_browser_page_header')
 	},
 })
 

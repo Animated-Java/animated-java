@@ -77,8 +77,8 @@
 
 	let unsub: (() => void) | undefined
 	function getEasingArgs() {
-		if (!selectedKeyframe) return
 		unsub?.()
+		if (!selectedKeyframe) return
 		if (hasArgs(selectedKeyframe.easing)) {
 			easingArg = new Valuable(
 				selectedKeyframe.easingArgs?.[0] ?? getEasingArgDefault(selectedKeyframe) ?? 0
@@ -108,27 +108,24 @@
 		)
 	}
 
-	EVENTS.SELECT_KEYFRAME.subscribe((keyframe?: _Keyframe) => {
+	EVENTS.UPDATE_KEYFRAME_SELECTION.subscribe(() => {
+		const selected = Timeline.selected.at(0)
 		if (
 			activeProjectIsBlueprintFormat() &&
-			keyframe &&
-			['position', 'rotation', 'scale'].includes(keyframe.channel) &&
-			!isFirstKeyframe(keyframe)
+			selected &&
+			['position', 'rotation', 'scale'].includes(selected.channel) &&
+			!isFirstKeyframe(selected)
 		) {
-			selectedKeyframe = keyframe
+			selectedKeyframe = selected
 			const easing = getSelectedEasing()
 			if (easing) {
 				easingType = easing.type
 				easingMode = easing.mode
 			}
 		} else {
+			setEasingArgs($easingArg)
 			selectedKeyframe = undefined
 		}
-	})
-
-	EVENTS.UNSELECT_KEYFRAME.subscribe(() => {
-		setEasingArgs($easingArg)
-		selectedKeyframe = undefined
 	})
 
 	EVENTS.UNSELECT_AJ_PROJECT.subscribe(() => {
