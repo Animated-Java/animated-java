@@ -56,14 +56,14 @@ registerConditionalPropertyOverrideMod({
 	id: `animated-java:override-function/group/save-name`,
 	object: Group.prototype,
 	key: 'saveName',
-	get: {
-		condition: () => activeProjectIsBlueprintFormat(),
-		override: original => {
-			return function (this: Group, save?: boolean) {
-				this.name = sanitizeOutlinerElementName(this.name, this.uuid)
-				return original.call(this, save)
-			}
-		},
+
+	condition: () => activeProjectIsBlueprintFormat(),
+
+	get: original => {
+		return function (this: Group, save?: boolean) {
+			this.name = sanitizeOutlinerElementName(this.name, this.uuid)
+			return original.call(this, save)
+		}
 	},
 })
 
@@ -72,13 +72,13 @@ registerConditionalPropertyOverrideMod({
 	id: `animated-java:override-function/group/sanitize-name`,
 	object: Group.prototype,
 	key: 'sanitizeName',
-	get: {
-		condition: () => activeProjectIsBlueprintFormat(),
-		override: original => {
-			return function (this: Group) {
-				this.name = sanitizeOutlinerElementName(this.name, this.uuid)
-				return original.call(this)
-			}
-		},
+
+	condition: () => activeProjectIsBlueprintFormat(),
+
+	get: original => {
+		return function (this: Group) {
+			this.name = sanitizeOutlinerElementName(this.name, this.uuid)
+			return original.call(this)
+		}
 	},
 })

@@ -5,9 +5,8 @@ registerConditionalPropertyOverrideMod({
 	id: `animated-java:animation-controller-force-saved`,
 	object: AnimationController.prototype,
 	key: 'saved',
-	get: {
-		condition: () => activeProjectIsBlueprintFormat(),
 
-		override: () => true,
-	},
+	condition: () => activeProjectIsBlueprintFormat(),
+
+	get: () => true,
 })

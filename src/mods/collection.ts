@@ -5,9 +5,8 @@ registerConditionalPropertyOverrideMod({
 	id: 'animated-java:property-condition-override/collection/export-path',
 	object: Collection.properties.export_path,
 	key: 'condition',
-	get: {
-		condition: () => activeProjectIsBlueprintFormat(),
 
-		override: () => false,
-	},
+	condition: () => activeProjectIsBlueprintFormat(),
+
+	get: () => false,
 })

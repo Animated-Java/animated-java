@@ -27,28 +27,27 @@ registerConditionalPropertyOverrideMod({
 	id: `animated-java:function-override/animation/extend`,
 	object: Blockbench.Animation.prototype,
 	key: 'extend',
-	get: {
-		condition: () => activeProjectIsBlueprintFormat(),
 
-		override: original => {
-			return function (this: _Animation, data?: AnimationOptions) {
-				original.call(this, data)
-				this.snapping = DEFAULT_SNAPPING_VALUE
-				this.length = Math.max(this.length, MINIMUM_ANIMATION_LENGTH)
-				for (const animator of Object.values(this.animators)) {
-					if (!animator) continue
-					let lastTime = -Infinity
-					for (const kf of animator.keyframes) {
-						let rounded = roundToNth(kf.time, DEFAULT_SNAPPING_VALUE)
-						if (rounded === kf.time) continue
-						if (rounded === lastTime) rounded += 0.05
-						kf.time = rounded
-						lastTime = rounded
-					}
+	condition: () => activeProjectIsBlueprintFormat(),
+
+	get: original => {
+		return function (this: _Animation, data?: AnimationOptions) {
+			original.call(this, data)
+			this.snapping = DEFAULT_SNAPPING_VALUE
+			this.length = Math.max(this.length, MINIMUM_ANIMATION_LENGTH)
+			for (const animator of Object.values(this.animators)) {
+				if (!animator) continue
+				let lastTime = -Infinity
+				for (const kf of animator.keyframes) {
+					let rounded = roundToNth(kf.time, DEFAULT_SNAPPING_VALUE)
+					if (rounded === kf.time) continue
+					if (rounded === lastTime) rounded += 0.05
+					kf.time = rounded
+					lastTime = rounded
 				}
-				return this
 			}
-		},
+			return this
+		}
 	},
 })
 
@@ -57,15 +56,14 @@ registerConditionalPropertyOverrideMod({
 	id: `animated-java:function-override/animation/set-length`,
 	object: Blockbench.Animation.prototype,
 	key: 'setLength',
-	get: {
-		condition: () => activeProjectIsBlueprintFormat(),
 
-		override: original => {
-			return function (this: _Animation, length?: number) {
-				length = Math.max(length ?? this.length, MINIMUM_ANIMATION_LENGTH)
-				return original.call(this, length)
-			}
-		},
+	condition: () => activeProjectIsBlueprintFormat(),
+
+	get: original => {
+		return function (this: _Animation, length?: number) {
+			length = Math.max(length ?? this.length, MINIMUM_ANIMATION_LENGTH)
+			return original.call(this, length)
+		}
 	},
 })
 
@@ -74,18 +72,17 @@ registerConditionalPropertyOverrideMod({
 	id: `animated-java:function-override/animation/properties-dialog`,
 	object: Blockbench.Animation.prototype,
 	key: 'propertiesDialog',
-	get: {
-		condition: () => activeProjectIsBlueprintFormat(),
 
-		override: () => {
-			return function (this: _Animation) {
-				if (!Blockbench.Animation.selected) {
-					Blockbench.showQuickMessage('No animation selected')
-					return
-				}
-				openAnimationPropertiesDialog(Blockbench.Animation.selected)
+	condition: () => activeProjectIsBlueprintFormat(),
+
+	get: () => {
+		return function (this: _Animation) {
+			if (!Blockbench.Animation.selected) {
+				Blockbench.showQuickMessage('No animation selected')
+				return
 			}
-		},
+			openAnimationPropertiesDialog(Blockbench.Animation.selected)
+		}
 	},
 })
 
@@ -118,11 +115,10 @@ registerConditionalPropertyOverrideMod({
 	id: `animated-java:animation-force-saved`,
 	object: Blockbench.Animation.prototype,
 	key: 'saved',
-	get: {
-		condition: () => activeProjectIsBlueprintFormat(),
 
-		override: () => true,
-	},
+	condition: () => activeProjectIsBlueprintFormat(),
+
+	get: () => true,
 })
 
 //region Save All Action
@@ -130,9 +126,8 @@ registerConditionalPropertyOverrideMod({
 	id: `animated-java:action-condition-override/save-all-animations`,
 	object: BarItems.save_all_animations as Action,
 	key: 'condition',
-	get: {
-		condition: () => activeProjectIsBlueprintFormat(),
 
-		override: () => false,
-	},
+	condition: () => activeProjectIsBlueprintFormat(),
+
+	get: () => false,
 })
