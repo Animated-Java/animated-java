@@ -1,11 +1,11 @@
 import { type TextDisplay } from 'src/outliner/textDisplay'
 import { type VanillaBlockDisplay } from 'src/outliner/vanillaBlockDisplay'
 import { type VanillaItemDisplay } from 'src/outliner/vanillaItemDisplay'
+import { mountSvelteComponent } from 'src/util/mountSvelteComponent'
 import FormatPageSvelte from '../../components/formatPage.svelte'
 import ProjectTitleSvelte from '../../components/projectTitle.svelte'
 import { type BillboardMode, BoneConfig, LocatorConfig } from '../../nodeConfigs'
 import EVENTS from '../../util/events'
-import { injectSvelteComponent } from '../../util/injectSvelteComponent'
 import { sanitizeStorageKey } from '../../util/minecraftUtil'
 import { registerModelFormat } from '../../util/moddingTools'
 import { Valuable } from '../../util/stores'
@@ -27,8 +27,6 @@ declare global {
 		textDisplays: TextDisplay[]
 		vanillaItemDisplays: VanillaItemDisplay[]
 		vanillaBlockDisplays: VanillaBlockDisplay[]
-
-		loadingPromises?: Array<Promise<unknown>>
 	}
 }
 
@@ -258,73 +256,58 @@ export const BLUEPRINT_FORMAT = registerModelFormat(
 		show_on_start_screen: true,
 		format_page: {
 			component: {
-				methods: {},
-				created() {
-					void injectSvelteComponent({
-						elementSelector: () =>
-							$(`div[id="${BLUEPRINT_FORMAT_ID}/format_page_mount"]`)[0],
+				template: `<div id="${BLUEPRINT_FORMAT_ID}/format_page_mount" style="display: flex; flex-direction: column; flex-grow: 1;"></div>`,
+				mounted() {
+					// Don't need to worry about unmounting since the whole panel gets replaced when switching formats
+					mountSvelteComponent({
 						component: FormatPageSvelte,
-						props: {},
-					}).then(instance => {
-						EVENTS.PLUGIN_UNLOAD.subscribe(() => instance.$destroy(), true)
+						target: `div[id="${BLUEPRINT_FORMAT_ID}/format_page_mount"]`,
 					})
 				},
-				template: `<div id="${BLUEPRINT_FORMAT_ID}/format_page_mount" style="display: flex; flex-direction: column; flex-grow: 1;"></div>`,
 			},
 		},
 
 		onSetup(project, newModel) {
-			if (!Project) return
 			console.log('Animated Java Blueprint format setup')
 
 			const defaults = getDefaultProjectSettings()
 			if (newModel) {
-				Project.animated_java = defaults
-				Project.last_used_export_namespace = ''
+				project.animated_java = defaults
+				project.last_used_export_namespace = ''
 			} else {
-				Project.animated_java = { ...defaults, ...Project!.animated_java }
+				project.animated_java = { ...defaults, ...project!.animated_java }
 			}
 
-			const thisProject = Project
-			Project.variants ??= []
+			project.pluginMode = new Valuable(project.animated_java.enable_plugin_mode)
+
+			// project.variants ??= []
+			// if (Variant.all.length === 0) {
+			// 	console.warn('No variants found, creating default variant')
+			// 	new Variant('Default', true)
+			// }
+			// Variant.selectDefault()
 
 			initializeRenderBoxPreview()
 
-			Project.loadingPromises ??= []
-			Project.loadingPromises.push(
-				new Promise<void>(resolve => {
-					requestAnimationFrame(() => {
-						thisProject.pluginMode = new Valuable(
-							thisProject.animated_java.enable_plugin_mode
-						)
-						// Remove the default title
-						const element = document.querySelector(
-							'#tab_bar_list .icon-armor_stand.icon'
-						)
-						element?.remove()
-						// Custom title
-						void injectSvelteComponent({
-							elementSelector: () => {
-								const titles = [
-									...document.querySelectorAll(
-										`.project_tab[title="${project.name}"]`
-									),
-								]
-								if (titles.length) {
-									return titles[0]
-								}
-							},
-							prepend: true,
-							component: ProjectTitleSvelte,
-							props: { pluginMode: thisProject.pluginMode },
-						})
+			requestAnimationFrame(() => {
+				const projectIndex = ModelProject.all.indexOf(project)
+				const projectTab = document.querySelectorAll('#tab_bar_list .project_tab')[
+					projectIndex
+				]
 
-						if (Variant.all.length === 0) new Variant('Default', true)
-						Variant.selectDefault()
-					})
-					resolve()
+				if (!projectTab) {
+					console.error('Could not find project tab for Animated Java Blueprint project!')
+					return
+				}
+				projectTab.querySelector('i')?.remove()
+
+				mountSvelteComponent({
+					target: projectTab,
+					prepend: true,
+					component: ProjectTitleSvelte,
+					props: { pluginMode: project.pluginMode },
 				})
-			)
+			})
 		},
 
 		animated_textures: true,
@@ -361,6 +344,7 @@ export const BLUEPRINT_FORMAT = registerModelFormat(
 		cullfaces: true,
 	}
 )
+Language.data['format_category.animated_java'] = translate('format_category.animated_java')
 
 BLUEPRINT_FORMAT.onCreated(format => {
 	const codec = BLUEPRINT_CODEC.get()
