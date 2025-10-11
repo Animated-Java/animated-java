@@ -1,7 +1,7 @@
 import { registerAction, registerBarMenu } from 'src/util/moddingTools'
 import { pollUntilResult } from 'src/util/promises'
 import AnimatedJavaIcon from '../assets/animated_java_icon.svg'
-import { activeProjectIsBlueprintFormat } from '../formats/blueprint/format'
+import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from '../formats/blueprint'
 import { cleanupExportedFiles } from '../systems/cleaner'
 import { exportProject } from '../systems/exporter'
 import { translate } from '../util/translation'

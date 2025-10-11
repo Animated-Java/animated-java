@@ -1,6 +1,6 @@
 import { registerAction, registerMenu } from 'src/util/moddingTools'
 import VariantsPanel from '../../components/variantsPanel.svelte'
-import { BLUEPRINT_FORMAT_ID } from '../../formats/blueprint/format'
+import { BLUEPRINT_FORMAT_ID } from '../../formats/blueprint'
 import { SveltePanel } from '../../util/sveltePanel'
 import { translate } from '../../util/translation'
 import { Variant } from '../../variants'

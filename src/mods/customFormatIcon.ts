@@ -1,4 +1,4 @@
-import { BLUEPRINT_FORMAT_ID } from 'src/formats/blueprint/format'
+import { BLUEPRINT_FORMAT_ID } from 'src/formats/blueprint'
 import { registerMod } from 'src/util/moddingTools'
 import Icon from '../components/icon.svelte'
 import { injectSvelteComponent } from '../util/injectSvelteComponent'

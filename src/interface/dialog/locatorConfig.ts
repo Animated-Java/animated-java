@@ -1,7 +1,7 @@
 import { registerAction } from 'src/util/moddingTools'
 import LocatorConfigDialog from '../../components/locatorConfigDialog.svelte'
 import { PACKAGE } from '../../constants'
-import { activeProjectIsBlueprintFormat } from '../../formats/blueprint/format'
+import { activeProjectIsBlueprintFormat } from '../../formats/blueprint'
 import { LocatorConfig } from '../../nodeConfigs'
 import { Valuable } from '../../util/stores'
 import { SvelteDialog } from '../../util/svelteDialog'

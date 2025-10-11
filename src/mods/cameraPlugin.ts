@@ -1,5 +1,5 @@
 import { registerPluginMod } from 'src/util/moddingTools'
-import { activeProjectIsBlueprintFormat } from '../formats/blueprint/format'
+import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 import { sanitizeOutlinerElementName } from '../outliner/util'
 
 registerPluginMod({

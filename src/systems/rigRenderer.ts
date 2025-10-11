@@ -4,7 +4,7 @@ import type {
 	IBlueprintLocatorConfigJSON,
 	IBlueprintTextDisplayConfigJSON,
 	IBlueprintVariantJSON,
-} from '../formats/blueprint/format'
+} from '../formats/blueprint'
 import { BoneConfig } from '../nodeConfigs'
 import { type Alignment, TextDisplay } from '../outliner/textDisplay'
 import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'

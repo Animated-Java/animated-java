@@ -1,5 +1,5 @@
 import { Valuable } from 'src/util/stores'
-import { activeProjectIsBlueprintFormat } from '../formats/blueprint/format'
+import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 import { roundToNth } from '../util/misc'
 import { registerConditionalPropertyOverrideMod } from '../util/moddingTools'
 

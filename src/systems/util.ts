@@ -7,7 +7,7 @@ import {
 	type AsyncZippable,
 	type Unzipped,
 } from 'fflate/browser'
-import { projectTargetVersionIsAtLeast } from 'src/formats/blueprint/format'
+import { projectTargetVersionIsAtLeast } from 'src/formats/blueprint'
 import { roundTo } from '../util/misc'
 import type { INodeTransform } from './animationRenderer'
 

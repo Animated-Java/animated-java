@@ -1,5 +1,5 @@
-import { BLUEPRINT_FORMAT_ID } from 'src/formats/blueprint/format'
 import { registerProjectMod } from 'src/util/moddingTools'
+import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from 'src/formats/blueprint'
 import { translate } from '../util/translation'
 
 export class LocatorAnimator extends BoneAnimator {

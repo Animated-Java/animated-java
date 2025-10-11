@@ -1,5 +1,5 @@
 import { registerConditionalPropertyOverrideMod } from 'src/util/moddingTools'
-import { activeProjectIsBlueprintFormat } from '../formats/blueprint/format'
+import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 
 registerConditionalPropertyOverrideMod({
 	id: `animated-java:animation-controller-force-saved`,

@@ -1,7 +1,7 @@
 import {
 	activeProjectIsBlueprintFormat as condition,
 	type IBlueprintLocatorConfigJSON,
-} from '../formats/blueprint/format'
+} from '../formats/blueprint'
 import { registerMod } from '../util/moddingTools'
 
 declare global {

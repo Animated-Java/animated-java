@@ -1,4 +1,4 @@
-import { activeProjectIsBlueprintFormat } from 'src/formats/blueprint/format'
+import { activeProjectIsBlueprintFormat } from 'src/formats/blueprint'
 import { registerConditionalPropertyOverrideMod } from 'src/util/moddingTools'
 
 registerConditionalPropertyOverrideMod({

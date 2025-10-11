@@ -2,7 +2,7 @@ import { PACKAGE } from '../constants'
 import {
 	type IBlueprintTextDisplayConfigJSON,
 	activeProjectIsBlueprintFormat,
-} from '../formats/blueprint/format'
+} from '../formats/blueprint'
 import { registerAction } from '../util/moddingTools'
 // import * as MinecraftFull from '../assets/MinecraftFull.json'
 import { JsonTextSyntaxError } from 'src/systems/jsonText/parser'

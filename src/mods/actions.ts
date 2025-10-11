@@ -1,6 +1,6 @@
 import { BLUEPRINT_CODEC } from 'src/formats/blueprint/codec'
 import { openBlueprintSettingsDialog } from 'src/interface/dialog/blueprintSettings'
-import { activeProjectIsBlueprintFormat, saveBlueprint } from '../formats/blueprint/format'
+import { activeProjectIsBlueprintFormat, saveBlueprint } from '../formats/blueprint'
 import { registerConditionalPropertyOverrideMod } from '../util/moddingTools'
 
 registerConditionalPropertyOverrideMod({

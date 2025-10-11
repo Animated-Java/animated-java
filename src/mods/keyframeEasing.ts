@@ -1,5 +1,5 @@
 import { registerConditionalPropertyOverrideMod, registerMod } from 'src/util/moddingTools'
-import { activeProjectIsBlueprintFormat } from '../formats/blueprint/format'
+import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 import {
 	EASING_DEFAULT,
 	type EasingKey,

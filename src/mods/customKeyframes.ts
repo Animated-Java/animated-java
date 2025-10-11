@@ -1,5 +1,5 @@
 import { registerProjectMod } from 'src/util/moddingTools'
-import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from '../formats/blueprint/format'
+import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from '../formats/blueprint'
 import { translate } from '../util/translation'
 import { Variant } from '../variants'
 

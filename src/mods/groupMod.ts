@@ -1,9 +1,6 @@
 import { sanitizeOutlinerElementName } from 'src/outliner/util'
 import { registerConditionalPropertyOverrideMod, registerMod } from 'src/util/moddingTools'
-import {
-	activeProjectIsBlueprintFormat,
-	type IBlueprintBoneConfigJSON,
-} from '../formats/blueprint/format'
+import { activeProjectIsBlueprintFormat, type IBlueprintBoneConfigJSON } from '../formats/blueprint'
 
 declare global {
 	interface Group {

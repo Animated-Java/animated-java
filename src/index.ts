@@ -2,7 +2,7 @@ import { PACKAGE } from './constants'
 import EVENTS from './util/events'
 import './util/translation'
 // Blueprint Format
-import './formats/blueprint/format'
+import './formats/**'
 // Interface
 import './interface/**'
 // Blockbench Mods

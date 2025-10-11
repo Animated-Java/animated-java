@@ -1,6 +1,6 @@
 import TextDisplayElementPanel from '../../components/textDisplayElementPanel.svelte'
 import { PACKAGE } from '../../constants'
-import { activeProjectIsBlueprintFormat } from '../../formats/blueprint/format'
+import { activeProjectIsBlueprintFormat } from '../../formats/blueprint'
 import { type Alignment, TextDisplay } from '../../outliner/textDisplay'
 import { injectSvelteComponentMod } from '../../util/injectSvelteComponent'
 import { floatToHex } from '../../util/misc'

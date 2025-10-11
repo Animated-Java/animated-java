@@ -1,6 +1,6 @@
 import { openAnimationPropertiesDialog } from 'src/interface/dialog/animationProperties'
 import { registerConditionalPropertyOverrideMod, registerMod } from 'src/util/moddingTools'
-import { activeProjectIsBlueprintFormat } from '../formats/blueprint/format'
+import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 import { roundToNth } from '../util/misc'
 import { translate } from '../util/translation'
 

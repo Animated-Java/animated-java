@@ -1,4 +1,4 @@
-import { BLUEPRINT_FORMAT_ID, convertToBlueprint } from '../formats/blueprint/format'
+import { BLUEPRINT_FORMAT_ID, convertToBlueprint } from '../formats/blueprint'
 import { registerMod } from '../util/moddingTools'
 
 registerMod({

@@ -2,7 +2,7 @@
 /// <reference path="D:/github-repos/snavesutit/blockbench-types/types/index.d.ts"/>
 /// <reference path="../global.d.ts"/>
 
-import type { IBlueprintBoneConfigJSON } from '../formats/blueprint/format'
+import type { IBlueprintBoneConfigJSON } from '../formats/blueprint'
 import { type defaultValues } from '../formats/blueprint/settings'
 import {
 	getKeyframeCommands,

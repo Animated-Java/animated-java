@@ -3,7 +3,7 @@ import type {
 	IBlueprintBoneConfigJSON,
 	IBlueprintLocatorConfigJSON,
 	IBlueprintTextDisplayConfigJSON,
-} from './formats/blueprint/format'
+} from './formats/blueprint'
 import { scrubUndefined } from './util/misc'
 
 export type BillboardMode = 'fixed' | 'vertical' | 'horizontal' | 'center'
