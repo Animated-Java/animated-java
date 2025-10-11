@@ -11,7 +11,7 @@ import {
 	parseDataPackPath,
 	parseResourceLocation,
 } from '../../util/minecraftUtil'
-import { eulerFromQuaternion, floatToHex, roundTo, tinycolorToDecimal } from '../../util/misc'
+import { eulerFromQuaternion, roundTo, tinycolorToDecimal } from '../../util/misc'
 import { MSLimiter } from '../../util/msLimiter'
 import { Variant } from '../../variants'
 import type { IRenderedAnimation } from '../animationRenderer'
@@ -535,9 +535,7 @@ async function generateRootEntityPassengers(
 				break
 			}
 			case 'text_display': {
-				const color = new tinycolor(
-					node.background_color + floatToHex(node.background_alpha)
-				)
+				const color = new tinycolor(node.background_color)
 
 				passenger
 					.set('id', new NbtString('minecraft:text_display'))
