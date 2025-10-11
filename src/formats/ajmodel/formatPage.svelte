@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
-	import { convertAJModelToBlueprint } from '../interface/importAJModelLoader'
-	import { translate } from '../util/translation'
+	import { convertAJModelToBlueprint } from '.'
+	import { translate } from '../../util/translation'
 </script>
 
 <script lang="ts">

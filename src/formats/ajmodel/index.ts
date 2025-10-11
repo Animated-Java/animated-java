@@ -1,14 +1,11 @@
 import { registerModelLoader } from 'src/util/moddingTools'
-import { SvelteComponentDev } from 'svelte/internal'
-import ImportAjModelLoaderDialog from '../components/importAJModelLoaderDialog.svelte'
-import { BLUEPRINT_CODEC } from '../formats/blueprint/codec'
-import * as modelDatFixerUpper from '../formats/blueprint/dfu'
-import { injectSvelteComponent } from '../util/injectSvelteComponent'
-import { sanitizeStorageKey } from '../util/minecraftUtil'
-import { translate } from '../util/translation'
-import { openUnexpectedErrorDialog } from './dialog/unexpectedError'
-
-let activeComponent: SvelteComponentDev | null = null
+import { mountSvelteComponent } from 'src/util/mountSvelteComponent'
+import { openUnexpectedErrorDialog } from '../../interface/dialog/unexpectedError'
+import { sanitizeStorageKey } from '../../util/minecraftUtil'
+import { translate } from '../../util/translation'
+import { BLUEPRINT_CODEC } from '../blueprint/codec'
+import * as modelDatFixerUpper from '../blueprint/dfu'
+import FormatPage from './formatPage.svelte'
 
 registerModelLoader(
 	{ id: `animated-java:upgrade-aj-model-loader` },
@@ -20,24 +17,15 @@ registerModelLoader(
 		format_page: {
 			component: {
 				template: `<div id="animated-java:upgrade-aj-model-loader-target" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;"></div>`,
+				mounted() {
+					// Don't need to worry about unmounting since the whole panel gets replaced when switching formats
+					mountSvelteComponent({
+						component: FormatPage,
+						target: `#animated-java\\:upgrade-aj-model-loader-target`,
+						injectIndex: 2,
+					})
+				},
 			},
-		},
-		onFormatPage() {
-			if (activeComponent) {
-				activeComponent.$destroy()
-			}
-
-			void injectSvelteComponent({
-				component: ImportAjModelLoaderDialog,
-				props: {},
-				elementSelector() {
-					return document.querySelector(`#animated-java\\:upgrade-aj-model-loader-target`)
-				},
-				postMount(el) {
-					activeComponent = el
-				},
-				injectIndex: 2,
-			})
 		},
 	}
 )

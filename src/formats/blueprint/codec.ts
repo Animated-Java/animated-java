@@ -27,18 +27,15 @@ export const BLUEPRINT_CODEC = registerCodec(
 
 		// region > load
 		load(model, file) {
+			const format = BLUEPRINT_FORMAT.get()
+			if (!format) throw new Error('Animated Java Blueprint format is not registered!')
+
 			console.log(`Loading Animated Java Blueprint from '${file.name}'...`)
 
 			model = modelDatFixerUpper.process(model)
 
-			const format = BLUEPRINT_FORMAT.get()
-			if (format == undefined) {
-				throw new Error('Animated Java Blueprint format is not registered!')
-			}
 			setupProject(format, model.meta?.uuid)
-			if (!Project) {
-				throw new Error('Failed to load Animated Java Blueprint')
-			}
+			if (!Project) throw new Error('Failed to load Animated Java Blueprint')
 
 			this.parse!(model, file.path)
 
@@ -70,8 +67,6 @@ export const BLUEPRINT_CODEC = registerCodec(
 		parse(model: IBlueprintFormatJSON, path) {
 			console.log(`Parsing Animated Java Blueprint from '${path}'...`)
 			if (!Project) throw new Error('No project to parse into')
-
-			Project.loadingPromises = []
 
 			Project.save_path = path
 
@@ -147,11 +142,6 @@ export const BLUEPRINT_CODEC = registerCodec(
 									newElement.faces[face].texture = defaultTexture.uuid
 								}
 							}
-							break
-						}
-						case newElement instanceof AnimatedJava.VanillaItemDisplay:
-						case newElement instanceof AnimatedJava.VanillaBlockDisplay: {
-							Project.loadingPromises.push(newElement.waitForReady())
 							break
 						}
 					}

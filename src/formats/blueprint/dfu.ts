@@ -613,5 +613,19 @@ function updateModelTo1_8_0(model: any) {
 		delete fixed.blueprint_settings.target_minecraft_versions
 	}
 
+	// Update text display backgrounds to use 8 digit hex colors instead of separate alpha
+	if (Array.isArray(fixed.elements)) {
+		const textDisplays = fixed.elements.filter(e => e.type === TextDisplay.type)
+		for (const display of textDisplays) {
+			if (display.backgroundAlpha !== undefined) {
+				display.backgroundColor ??= TextDisplay.properties.backgroundColor.default as string
+				display.backgroundColor = tinycolor(display.backgroundColor)
+					.setAlpha(display.backgroundAlpha)
+					.toHex8String()
+				delete display.backgroundAlpha
+			}
+		}
+	}
+
 	return fixed
 }
