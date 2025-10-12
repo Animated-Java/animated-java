@@ -131,6 +131,7 @@ const compileResourcePack: ResourcePackCompiler = async ({
 	coreFiles,
 	versionedFiles,
 	rig,
+	resourcePackPath,
 	displayItemPath,
 	textureExportFolder,
 	modelExportFolder,
@@ -150,9 +151,10 @@ const compileResourcePack: ResourcePackCompiler = async ({
 
 	// Display Item
 	const displayItemModel = new PredicateItemModel()
-	if (fs.existsSync(displayItemPath)) {
+	const absoluteDisplayItemPath = PathModule.join(resourcePackPath, displayItemPath)
+	if (fs.existsSync(absoluteDisplayItemPath)) {
 		console.warn('Display item already exists! Attempting to merge...')
-		displayItemModel.readExisting(displayItemPath)
+		displayItemModel.readExisting(absoluteDisplayItemPath)
 	}
 
 	displayItemModel.lastOverrideId = Math.max(

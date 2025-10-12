@@ -27,6 +27,7 @@ interface ResourcePackCompilerOptions {
 	coreFiles: Map<string, ExportedFile>
 	versionedFiles: Map<string, ExportedFile>
 	rig: IRenderedRig
+	resourcePackPath: string
 	displayItemPath: string
 	textureExportFolder: string
 	modelExportFolder: string
@@ -81,6 +82,7 @@ export default async function compileResourcePack(
 		// Move paths into versioned overlay folders.
 		await VERSIONED_RESOURCE_PACK_COMPILERS[version]({
 			...options,
+			resourcePackPath: versionedResourcePackFolder,
 			ajmeta,
 			coreFiles,
 			versionedFiles,
