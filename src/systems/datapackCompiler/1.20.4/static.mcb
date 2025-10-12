@@ -12,7 +12,7 @@ dir root {
 	function on_tick {
 		execute unless entity @s[tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return 0
 
-		# Custom pre-tick commands
+		# Custom pre-tick function
 		IF (on_pre_tick_function) {
 			<%%
 				emit.mcb(on_pre_tick_function)
@@ -29,7 +29,7 @@ dir root {
 			execute on passengers run tp @s ~ ~ ~ ~ ~
 		}
 
-		# Custom post-tick commands
+		# Custom post-tick function
 		IF (on_post_tick_function) {
 			<%%
 				emit.mcb(on_post_tick_function)
@@ -54,19 +54,19 @@ dir root {
 									execute on passengers run tp @s ~ ~ ~ ~ ~
 								}
 
-								IF (locator.config?.ticking_commands) {
+								IF (locator.config?.on_tick_function) {
 									<%%
-										emit.mcb(locator.config.ticking_commands)
+										emit.mcb(locator.config.on_tick_function)
 									%%>
 								}
 							}
-						} ELSE IF (locator.config?.ticking_commands) {
+						} ELSE IF (locator.config?.on_tick_function) {
 							$execute \
 								positioned ^$(px) ^$(py) ^$(pz) \
 								rotated ~$(ry) ~$(rx) \
 							run block at_locator_<%locator.storage_name%> {
 								<%%
-									emit.mcb(locator.config.ticking_commands)
+									emit.mcb(locator.config.on_tick_function)
 								%%>
 							}
 						}
@@ -213,7 +213,7 @@ function summon {
 				execute if data storage <%temp_storage%> {args:{variant:''}} run return run block if_empty {
 					# Tell the user that the variant cannot be empty.
 					tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('variant')%>
-					function *<%export_namespace%>/remove/this/without_on_remove_commands
+					function *<%export_namespace%>/remove/this/without_on_remove_function
 				}
 				# Attempt to apply the requested variant.
 				# We get the success of the `try_apply` function in just in case the user's arguments are *very* wrong.
@@ -226,14 +226,14 @@ function summon {
 				execute unless score #success <%OBJECTIVES.I()%> matches 1 run return run block invalid_variant {
 					# Tell the user that the provided variant doesn't exist, remove the rig, and list all available variants for this rig.
 					tellraw @a <%TELLRAW.INVALID_VARIANT(rig.variants)%>
-					function *<%export_namespace%>/remove/this/without_on_remove_commands
+					function *<%export_namespace%>/remove/this/without_on_remove_function
 				}
 				scoreboard players set #success <%OBJECTIVES.I()%> 1
 			}
 		} ELSE {
 			execute if data storage <%temp_storage%> args.variant run block zzz/variant_arg/no_variants_warning {
 				tellraw @a <%TELLRAW.NO_VARIANTS()%>
-				function *<%export_namespace%>/remove/this/without_on_remove_commands
+				function *<%export_namespace%>/remove/this/without_on_remove_function
 				scoreboard players set #success <%OBJECTIVES.I()%> 0
 			}
 		}
@@ -474,11 +474,40 @@ dir remove {
 			if (on_remove_function) emit.mcb(on_remove_function)
 		%%>
 
-		function ./this/without_on_remove_commands
+		IF (has_entity_locators) {
+			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block as_data {
+				REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator')) as locator {
+					IF (locator.config?.on_remove_function) {
+						IF (locator.config.use_entity) {
+							block as_locator_<%locator.storage_name%> { with entity @s data.locators.<%locator.storage_name%>
+								$execute as $(uuid) at @s run block locator_<%locator.storage_name%>_on_remove {
+									<%%
+										emit.mcb(locator.config.on_remove_function)
+									%%>
+								}
+							}
+						} ELSE {
+							block at_locator_<%locator.storage_name%> { with entity @s data.locators.<%locator.storage_name%>
+								$execute \
+									positioned ^$(px) ^$(py) ^$(pz) \
+									rotated ~$(ry) ~$(rx) \
+								run block locator_<%locator.storage_name%>_on_remove {
+									<%%
+										emit.mcb(locator.config.on_remove_function)
+									%%>
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		function ./this/without_on_remove_function
 	}
 
 	dir this {
-		function without_on_remove_commands {
+		function without_on_remove_function {
 			debug assert executed_as_root_entity
 
 			IF (has_entity_locators || has_cameras) {
