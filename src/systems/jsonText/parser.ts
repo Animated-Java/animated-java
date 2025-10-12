@@ -162,6 +162,9 @@ enum FEATURES {
 	 * 	- `{ text: '', '#00aced' }` -> `{ text: '', color: '#00aced' }`
 	 */
 	TEXT_OBJECT_INFERRED_KEYS = 1 << 15,
+
+	ALLOW_CLICK_EVENTS = 1 << 16,
+	ALLOW_HOVER_EVENTS = 1 << 17,
 }
 
 export function compareVersions(a: string, b: string): number {
@@ -288,6 +291,9 @@ export class JsonTextParser {
 	static maxNestingDepth = 512
 	static maxArrayLength = 2 ** 31 - 9
 
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	static FEATURES = FEATURES
+
 	static defaultFeatures =
 		// Minecraft syntax sugar
 		FEATURES.LITERAL_KEYS |
@@ -298,7 +304,10 @@ export class JsonTextParser {
 		FEATURES.OPTIONAL_COMMAS |
 		FEATURES.SHADOW_COLOR_ACCEPTS_STRING |
 		FEATURES.TEXT_OBJECT_INFERRED_KEYS |
-		FEATURES.IMPLICIT_TEXT_KEY
+		FEATURES.IMPLICIT_TEXT_KEY |
+		// Mouse events
+		FEATURES.ALLOW_CLICK_EVENTS |
+		FEATURES.ALLOW_HOVER_EVENTS
 
 	private s!: StringStream
 	private currentNestingDepth = 0
@@ -835,6 +844,9 @@ export class JsonTextParser {
 						break
 
 					case 'clickEvent': {
+						if (!(this.enabledFeatures & FEATURES.ALLOW_CLICK_EVENTS)) {
+							this.throwSyntax(`'clickEvent' field is not allowed`)
+						}
 						const event = this.parseLegacyClickEventObject()
 						if (this.enabledFeatures & FEATURES.MODERN_EVENT_FORMAT) {
 							if (obj.click_event !== undefined) {
@@ -851,6 +863,9 @@ export class JsonTextParser {
 					}
 
 					case 'click_event': {
+						if (!(this.enabledFeatures & FEATURES.ALLOW_CLICK_EVENTS)) {
+							this.throwSyntax(`'click_event' field is not allowed`)
+						}
 						const event = this.parseModernClickEventObject()
 						if (!(this.enabledFeatures & FEATURES.MODERN_EVENT_FORMAT)) {
 							if (obj.clickEvent !== undefined) {
@@ -867,6 +882,9 @@ export class JsonTextParser {
 					}
 
 					case 'hoverEvent': {
+						if (!(this.enabledFeatures & FEATURES.ALLOW_HOVER_EVENTS)) {
+							this.throwSyntax(`'hoverEvent' field is not allowed`)
+						}
 						const event = this.parseLegacyHoverEventObject()
 						if (this.enabledFeatures & FEATURES.MODERN_EVENT_FORMAT) {
 							if (obj.hover_event !== undefined) {
@@ -883,6 +901,9 @@ export class JsonTextParser {
 					}
 
 					case 'hover_event':
+						if (!(this.enabledFeatures & FEATURES.ALLOW_HOVER_EVENTS)) {
+							this.throwSyntax(`'hover_event' field is not allowed`)
+						}
 						const event = this.parseModernHoverEventObject()
 						if (!(this.enabledFeatures & FEATURES.MODERN_EVENT_FORMAT)) {
 							if (obj.hoverEvent !== undefined) {

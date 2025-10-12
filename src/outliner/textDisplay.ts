@@ -5,7 +5,7 @@ import {
 } from '../formats/blueprint'
 import { registerAction } from '../util/moddingTools'
 // import * as MinecraftFull from '../assets/MinecraftFull.json'
-import { JsonTextSyntaxError } from 'src/systems/jsonText/parser'
+import { JsonTextParser, JsonTextSyntaxError } from 'src/systems/jsonText/parser'
 import { TextDisplayConfig } from '../nodeConfigs'
 import { JsonText, TextElement } from '../systems/jsonText'
 import { getVanillaFont, MinecraftFont } from '../systems/minecraft/fontManager'
@@ -214,9 +214,14 @@ export class TextDisplay extends ResizableOutlinerElement {
 	updateTextMesh() {
 		let result: JsonText | undefined
 		try {
-			result = JsonText.fromString(this.text, {
+			const parser = new JsonTextParser({
 				minecraftVersion: Project!.animated_java.target_minecraft_version,
 			})
+			parser.enabledFeatures &= ~(
+				JsonTextParser.FEATURES.ALLOW_CLICK_EVENTS |
+				JsonTextParser.FEATURES.ALLOW_HOVER_EVENTS
+			)
+			result = parser.parse(this.text)
 			this.textError.set('')
 		} catch (e: any) {
 			console.error(e)
