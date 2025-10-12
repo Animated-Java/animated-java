@@ -560,7 +560,7 @@ async function generateRootEntityPassengers(
 					.set('item', item)
 					.set('item_display', new NbtString(node.item_display))
 
-				if (compareVersions(version, '1.20.4') /* <= 1.20.4 */) {
+				if (!compareVersions(version, '1.20.4') /* <= 1.20.4 */) {
 					// `Count` does not default to 1 in 1.20.4.
 					item.set('Count', new NbtInt(1))
 					break
