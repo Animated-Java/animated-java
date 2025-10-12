@@ -211,8 +211,8 @@ export async function exportProject(options?: ExportProjectOptions): Promise<boo
 		Blockbench.showMessageBox({
 			title: translate('misc.failed_to_export.title'),
 			message: translate(
-				projectTargetVersionIsAtLeast('1.21.4')
-					? 'misc.failed_to_export.invalid_rotation.message_post_1_21_4'
+				projectTargetVersionIsAtLeast('1.21.6')
+					? 'misc.failed_to_export.invalid_rotation.message_post_1_21_6'
 					: 'misc.failed_to_export.invalid_rotation.message'
 			),
 			buttons: [translate('misc.failed_to_export.button')],

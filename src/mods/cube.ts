@@ -30,8 +30,8 @@ function showToastNotification() {
 	if (!toastNotification) {
 		toastNotification = Blockbench.showToastNotification({
 			text: translate(
-				projectTargetVersionIsAtLeast('1.21.4')
-					? 'toast.invalid_rotations_post_1_21_4'
+				projectTargetVersionIsAtLeast('1.21.6')
+					? 'toast.invalid_rotations_post_1_21_6'
 					: 'toast.invalid_rotations'
 			),
 			color: 'var(--color-error)',
@@ -65,12 +65,12 @@ registerMod({
 						updateCubeValidity(cube, true)
 						break
 					}
-					case '1.21.4+': {
-						if (projectTargetVersionIsAtLeast('1.21.4')) {
+					case '1.21.6+': {
+						if (projectTargetVersionIsAtLeast('1.21.6')) {
 							updateCubeValidity(cube, true)
 							break
 						}
-						// Fallthrough to invalid if the target version is below 1.21.4
+						// Fallthrough to invalid if the target version is below 1.21.6
 					}
 					case 'invalid': {
 						updateCubeValidity(cube, false)

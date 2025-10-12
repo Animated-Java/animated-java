@@ -92,7 +92,7 @@ export const unzip = (data: Uint8Array, options: AsyncUnzipOptions) => {
 	})
 }
 
-export function isCubeValid(cube: Cube): '1.21.4+' | 'valid' | 'invalid' {
+export function isCubeValid(cube: Cube): '1.21.6+' | 'valid' | 'invalid' {
 	const totalRotation = cube.rotation[0] + cube.rotation[1] + cube.rotation[2]
 
 	if (totalRotation === 0) return 'valid'
@@ -102,7 +102,7 @@ export function isCubeValid(cube: Cube): '1.21.4+' | 'valid' | 'invalid' {
 		totalRotation === cube.rotation[1] ||
 		totalRotation === cube.rotation[2]
 
-	if (isSingleAxisRotation && projectTargetVersionIsAtLeast('1.21.4')) return '1.21.4+'
+	if (isSingleAxisRotation && projectTargetVersionIsAtLeast('1.21.4')) return '1.21.6+'
 
 	const isRotationInAllowedSteps =
 		totalRotation === -45 ||

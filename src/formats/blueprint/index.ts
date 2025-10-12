@@ -386,7 +386,7 @@ export function projectTargetVersionIsAtLeast(version: string): boolean {
 export function shouldEnableRotationLock(): boolean {
 	if (!activeProjectIsBlueprintFormat()) return false
 
-	if (projectTargetVersionIsAtLeast('1.21.4')) {
+	if (projectTargetVersionIsAtLeast('1.21.6')) {
 		return false
 	}
 

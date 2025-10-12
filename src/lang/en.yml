@@ -708,15 +708,15 @@ animated_java.misc.failed_to_export.button: Ok
 animated_java.misc.failed_to_export.invalid_rotation.message: |-
   Some cubes in your model have an invalid rotations!
 
-  Cubes must have a rotation of -45, -22.5, 0, 22.5, or 45 degrees, and can only be rotated on a single axis at a time.
+  Cubes must have a rotation of -45, -22.5, 0, 22.5, or 45 degrees, and can only be rotated on a single axis at a time when targeting Minecraft versions before 1.21.6.
 
   If you want to rotate a cube more precisely, or on multiple axes, put it in a bone and rotate the bone instead.
 
   All of the invalid cubes are outlined in red in the editor. Please fix them before exporting.
-animated_java.misc.failed_to_export.invalid_rotation.message_post_1_21_4: |-
+animated_java.misc.failed_to_export.invalid_rotation.message_post_1_21_6: |-
   Some cubes in your model have an invalid rotations!
 
-  Cubes can only be rotated on a single axis at a time.
+  Cubes can only be rotated on a single axis at a time when targeting Minecraft 1.21.6 or later.
 
   If you want to rotate a cube on multiple axes, put it in a bone and rotate the bone instead.
 
@@ -735,10 +735,10 @@ animated_java.toast.invalid_rotations: |-
 
   All cubes with invalid rotations are outlined in red.
 
-animated_java.toast.invalid_rotations_post_1_21_4: |-
+animated_java.toast.invalid_rotations_post_1_21_6: |-
   Invalid Cube Rotations!
 
-  Cubes can only be rotated on a single axis at a time.
+  Cubes can only be rotated on a single axis at a time when targeting Minecraft 1.21.6 or later.
 
   All cubes with invalid rotations are outlined in red.
 
