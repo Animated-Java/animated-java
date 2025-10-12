@@ -132,7 +132,7 @@ animated_java.dialog.blueprint_settings.target_minecraft_version.description: |-
 
   If the version you are using is not available, select the closest version below it.
 
-  E.g If you are using `1.21.9`, select `1.21.5`.
+  E.g If you are using `1.21.8`, select `1.21.5`.
 
   Some features may be altered, or unavailable depending on the selected version.
 
