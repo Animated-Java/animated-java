@@ -23,6 +23,7 @@ import {
 	updatePreview,
 } from './animationRenderer'
 import { IntentionalExportError } from './exporter'
+import { JsonText } from './jsonText'
 
 export interface IRenderedFace {
 	uv: number[]
@@ -522,7 +523,7 @@ function renderTextDisplay(display: TextDisplay, rig: IRenderedRig): INodeStruct
 		parent: parentId,
 		text: display.text,
 		line_width: display.lineWidth,
-		background_color: backgroundColor.toHexString(),
+		background_color: JsonText.moveHex8AlphaToStart(backgroundColor.toHex8String()),
 		background_alpha: backgroundColor.getAlpha(),
 		align: display.align,
 		shadow: display.shadow,

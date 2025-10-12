@@ -380,6 +380,11 @@ export class JsonText {
 		return JsonText.intToRgba(JsonText.hexToInt(hex))
 	}
 
+	static moveHex8AlphaToStart(hex: string): string {
+		const alpha = hex.slice(-2)
+		return '#' + alpha + hex.slice(1, -2)
+	}
+
 	static hexToInt(hex: string): number {
 		if (!hex.startsWith('#') || (hex.length !== 7 && hex.length !== 9)) {
 			throw new Error('Invalid hex color format. Expected #RRGGBB or #AARRGGBB.')
@@ -387,7 +392,8 @@ export class JsonText {
 		if (hex.length === 7) {
 			hex = '#ff' + hex.slice(1) // Add alpha
 		}
-		return parseInt(hex.slice(1), 16)
+		const unsigned = parseInt(hex.slice(1), 16)
+		return unsigned > 0x7fffffff ? unsigned - 0x100000000 : unsigned
 	}
 
 	static getColor(color: TextObjectColor | TextObjectShadowColor): tinycolor.Instance {
