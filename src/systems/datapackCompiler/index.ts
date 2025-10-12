@@ -11,7 +11,7 @@ import {
 	parseDataPackPath,
 	parseResourceLocation,
 } from '../../util/minecraftUtil'
-import { eulerFromQuaternion, roundTo, tinycolorToDecimal } from '../../util/misc'
+import { eulerFromQuaternion, roundTo } from '../../util/misc'
 import { MSLimiter } from '../../util/msLimiter'
 import { Variant } from '../../variants'
 import type { IRenderedAnimation } from '../animationRenderer'
@@ -19,6 +19,7 @@ import mcbFiles from '../datapackCompiler/mcbFiles'
 import { IntentionalExportError } from '../exporter'
 import { AJMeta, PackMeta, type PackMetaFormats, SUPPORTED_MINECRAFT_VERSIONS } from '../global'
 import { JsonText } from '../jsonText'
+import { JsonTextParser } from '../jsonText/parser'
 import type { AnyRenderedNode, IRenderedRig } from '../rigRenderer'
 import {
 	arrayToNbtFloatArray,
@@ -535,46 +536,35 @@ async function generateRootEntityPassengers(
 				break
 			}
 			case 'text_display': {
-				const color = new tinycolor(node.background_color)
-
 				passenger
 					.set('id', new NbtString('minecraft:text_display'))
-					.set('background', new NbtInt(tinycolorToDecimal(color)))
+					.set('background', new NbtInt(JsonText.hexToInt(node.background_color)))
 					.set('line_width', new NbtInt(node.line_width))
 					.set('shadow', new NbtByte(node.shadow ? 1 : 0))
 					.set('see_through', new NbtByte(node.see_through ? 1 : 0))
 					.set('alignment', new NbtString(node.align))
 
-				switch (version) {
-					case '1.20.4':
-					case '1.20.5':
-					case '1.21.0':
-					case '1.21.2':
-					case '1.21.4':
-						passenger.set(
-							'text',
-							// String JSON text format
-							new NbtString(
-								new JsonText(node.text).toString(true, version) ??
-									`{ "text": "Invalid Text Component", "color": "red" }`
-							)
+				if (!compareVersions('1.21.5', version) /* >= 1.21.5 */) {
+					passenger.set(
+						'text',
+						// SNBT JSON text format
+						// Hacky workaround for deepslate not supporting MC's new escape sequences.
+						new NbtString(
+							'$$$' + node.type + '_' + node.storage_name + '_text_placeholder$$$'
 						)
-						break
-					case '1.21.5':
-						passenger.set(
-							'text',
-							// SNBT JSON text format
-							// Hacky workaround for deepslate not supporting MC's new escape sequences.
-							new NbtString(
-								'$$$' + node.type + '_' + node.storage_name + '_text_placeholder$$$'
-							)
+					)
+				} else if (!compareVersions('1.20.4', version) /* >= 1.20.4 */) {
+					passenger.set(
+						'text',
+						// String JSON text format
+						new NbtString(
+							new JsonTextParser({ minecraftVersion: version })
+								.parse(node.text)
+								.toString(true, version)
 						)
-						break
-					default: {
-						throw new Error(
-							`Unsupported Minecraft version '${version}' for text display!`
-						)
-					}
+					)
+				} else {
+					throw new Error(`Unsupported Minecraft version '${version}' for text display!`)
 				}
 
 				if (node.config) {
@@ -652,12 +642,15 @@ async function generateRootEntityPassengers(
 
 	let result = passengers.toString()
 
-	for (const display of Object.values(rig.nodes).filter(n => n.type === 'text_display')) {
-		result = result.replace(
-			'"$$$' + display.type + '_' + display.storage_name + '_text_placeholder$$$"',
-			new JsonText(display.text).toString(true, version) ??
-				`{ "text": "Invalid Text Component", "color": "red" }`
-		)
+	if (!compareVersions('1.21.5', version) /* >= 1.21.5 */) {
+		for (const display of Object.values(rig.nodes).filter(n => n.type === 'text_display')) {
+			result = result.replace(
+				'"$$$' + display.type + '_' + display.storage_name + '_text_placeholder$$$"',
+				new JsonTextParser({ minecraftVersion: version })
+					.parse(display.text)
+					.toString(true, version)
+			)
+		}
 	}
 
 	return result

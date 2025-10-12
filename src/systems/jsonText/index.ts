@@ -246,7 +246,7 @@ export class JsonText {
 
 	toString(minify = true, minecraftVersion = JsonText.defaultMinecraftVersion) {
 		const content = minify ? this.flatten() : this.content
-		return new JsonTextStringifier(content, minecraftVersion).stringify()
+		return new JsonTextStringifier(minecraftVersion).stringify(content)
 	}
 
 	toJSON(): TextElement {

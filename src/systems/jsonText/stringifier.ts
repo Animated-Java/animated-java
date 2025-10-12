@@ -6,6 +6,7 @@ import {
 	type TextElement,
 	type TextObject,
 } from '.'
+import { compareVersions } from './parser'
 
 enum FEATURES {
 	REQUIRE_DOUBLE_QUOTES = 1 << 0,
@@ -13,18 +14,17 @@ enum FEATURES {
 }
 
 export class JsonTextStringifier {
-	enabledFeatures = FEATURES.REQUIRE_DOUBLE_QUOTES
+	enabledFeatures = FEATURES.REQUIRE_DOUBLE_QUOTES | FEATURES.RESOLVE_SPACE_ESCAPE_SEQUENCES
 
-	constructor(private element: TextElement, private minecraftVersion: string) {
-		// targetMinecraftVersion >= 1.21.5
-		if (!compareVersions('1.21.5', this.minecraftVersion)) {
+	constructor(private minecraftVersion: string) {
+		if (compareVersions(this.minecraftVersion, '1.21.5') >= 0) {
 			this.enabledFeatures &= ~FEATURES.REQUIRE_DOUBLE_QUOTES
-			this.enabledFeatures |= FEATURES.RESOLVE_SPACE_ESCAPE_SEQUENCES
+			this.enabledFeatures &= ~FEATURES.RESOLVE_SPACE_ESCAPE_SEQUENCES
 		}
 	}
 
-	stringify(): string {
-		return this.stringifyTextElement(this.element)
+	stringify(element: TextElement): string {
+		return this.stringifyTextElement(element)
 	}
 
 	/**
