@@ -34,6 +34,12 @@ const MCB_FILES: Record<SUPPORTED_MINECRAFT_VERSIONS, MCBFiles> = {
 		global: GLOBAL_1_21_5,
 		globalTemplates: GLOBAL_TEMPLATES_1_20_4,
 	},
+	'1.21.6': {
+		animation: ANIMATION_1_21_4,
+		static: STATIC_1_21_4,
+		global: GLOBAL_1_21_5,
+		globalTemplates: GLOBAL_TEMPLATES_1_20_4,
+	},
 	'1.21.5': {
 		animation: ANIMATION_1_21_4,
 		static: STATIC_1_21_4,

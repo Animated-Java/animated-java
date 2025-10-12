@@ -193,6 +193,9 @@
 		white-space: pre;
 		tab-size: 4;
 	}
+	.codejar-container {
+		width: 100%;
+	}
 	.codejar-container :global(.language-snbtTextComponent) {
 		& .brackets {
 			color: #5ba8c5;

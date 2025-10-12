@@ -14,6 +14,7 @@ const VERSIONED_RESOURCE_PACK_COMPILERS: Record<
 	ResourcePackCompiler
 > = {
 	'1.21.9': EXPORT_1_21_4,
+	'1.21.6': EXPORT_1_21_4,
 	'1.21.5': EXPORT_1_21_4,
 	'1.21.4': EXPORT_1_21_4,
 	'1.21.2': EXPORT_1_21_2,
