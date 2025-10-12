@@ -36,6 +36,9 @@ type TintSource =
 
 type ItemModel =
 	| {
+			type: 'minecraft:empty'
+	  }
+	| {
 			type: 'minecraft:model'
 			model: string
 			tints?: TintSource[]
@@ -49,7 +52,6 @@ type ItemModel =
 // 'minecraft:select': SelectModel
 // 'minecraft:range_dispatch': {}
 // 'minecraft:bundle/selected_item': {}
-// 'minecraft:empty': {}
 // 'minecraft:special': {}
 
 type ConditionModel = {

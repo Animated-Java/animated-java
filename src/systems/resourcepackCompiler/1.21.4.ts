@@ -22,7 +22,6 @@ const compileResourcePack: ResourcePackCompiler = async ({
 		modelExportFolder,
 	})
 
-	const globalModelsFolder = PathModule.join('assets/animated_java/models/')
 	const itemModelDefinitionsFolder = PathModule.join(
 		'assets/animated_java/items/blueprint/',
 		aj.export_namespace
@@ -57,17 +56,6 @@ const compileResourcePack: ResourcePackCompiler = async ({
 	}
 	coreFiles.set(blockAtlasPath, {
 		content: autoStringify(blockAtlas),
-	})
-
-	// Empty
-	versionedFiles.set(PathModule.join(globalModelsFolder, 'empty.json'), { content: '{}' })
-	versionedFiles.set(PathModule.join('assets/animated_java/items', 'empty.json'), {
-		content: autoStringify({
-			model: {
-				type: 'minecraft:model',
-				model: 'animated_java:empty',
-			},
-		}),
 	})
 
 	// Textures
@@ -171,10 +159,7 @@ function createMultiVariantItemDefinition(
 			cases: [
 				{
 					when: 'AJ_INTERNAL_EMPTY',
-					model: {
-						type: 'minecraft:model',
-						model: 'animated_java:empty',
-					},
+					model: { type: 'minecraft:empty' },
 				},
 			],
 			fallback: {
