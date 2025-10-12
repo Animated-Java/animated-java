@@ -15,8 +15,7 @@ import STATIC_1_21_2 from './1.21.2/static.mcb'
 import ANIMATION_1_21_4 from './1.21.4/animation.mcb'
 import STATIC_1_21_4 from './1.21.4/static.mcb'
 
-import ANIMATION_1_21_5 from './1.21.5/animation.mcb'
-import STATIC_1_21_5 from './1.21.5/static.mcb'
+import GLOBAL_1_21_5 from './1.21.5/global.mcb'
 
 // The core is content that always goes in the `data` folder directly,
 // while other files are in the `animated_java/data` folder to be overlayed when the correct version is loaded.
@@ -30,15 +29,15 @@ interface MCBFiles {
 
 const MCB_FILES: Record<SUPPORTED_MINECRAFT_VERSIONS, MCBFiles> = {
 	'1.21.9': {
-		animation: ANIMATION_1_21_5,
-		static: STATIC_1_21_5,
-		global: GLOBAL_1_21_2,
+		animation: ANIMATION_1_21_4,
+		static: STATIC_1_21_4,
+		global: GLOBAL_1_21_5,
 		globalTemplates: GLOBAL_TEMPLATES_1_20_4,
 	},
 	'1.21.5': {
-		animation: ANIMATION_1_21_5,
-		static: STATIC_1_21_5,
-		global: GLOBAL_1_21_2,
+		animation: ANIMATION_1_21_4,
+		static: STATIC_1_21_4,
+		global: GLOBAL_1_21_5,
 		globalTemplates: GLOBAL_TEMPLATES_1_20_4,
 	},
 	'1.21.4': {
