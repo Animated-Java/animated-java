@@ -181,6 +181,7 @@ function plugin(): Plugin {
 						manifest.animated_java.description = PACKAGE.description
 						manifest.animated_java.version = PACKAGE.version
 						manifest.animated_java.min_version = PACKAGE.min_blockbench_version
+						manifest.animated_java.max_version = PACKAGE.max_blockbench_version
 						manifest.animated_java.variant = PACKAGE.variant
 						manifest.animated_java.tags = PACKAGE.tags
 						manifest.animated_java.has_changelog = true
