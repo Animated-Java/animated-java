@@ -335,6 +335,15 @@ export function getResourcePackFormat(version: SUPPORTED_MINECRAFT_VERSIONS): nu
 	}
 }
 
+export function getNextSupportedVersion(
+	version: SUPPORTED_MINECRAFT_VERSIONS
+): SUPPORTED_MINECRAFT_VERSIONS | undefined {
+	const versions = Object.values(SUPPORTED_MINECRAFT_VERSIONS)
+	const index = versions.indexOf(version)
+	if (index === -1 || index === versions.length - 1) return undefined
+	return versions[index + 1]
+}
+
 export function functionReferenceExists(dataPackRoot: string, resourceLocation: string): boolean {
 	const parsed = parseResourceLocation(resourceLocation)
 	if (!parsed) return false

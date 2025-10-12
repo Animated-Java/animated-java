@@ -3,13 +3,13 @@ import { IntentionalExportError, IntentionalExportErrorFromInvalidFile } from '.
 import { sortObjectKeys } from './util'
 
 export enum SUPPORTED_MINECRAFT_VERSIONS {
-	'1.21.9' = '1.21.9',
-	'1.21.6' = '1.21.6',
-	'1.21.5' = '1.21.5',
-	'1.21.4' = '1.21.4',
-	'1.21.2' = '1.21.2',
-	'1.20.5' = '1.20.5',
 	'1.20.4' = '1.20.4',
+	'1.20.5' = '1.20.5',
+	'1.21.2' = '1.21.2',
+	'1.21.4' = '1.21.4',
+	'1.21.5' = '1.21.5',
+	'1.21.6' = '1.21.6',
+	'1.21.9' = '1.21.9',
 }
 
 type OldSerializedAJMeta = Record<
@@ -126,7 +126,7 @@ export interface SerializedPackMeta {
 	pack?: {
 		pack_format?: number
 		/** Minecraft enforces this field does not to exist if the pack doesn't support versions older than 1.21.9 */
-		supported_formats?: PackMetaFormats[]
+		supported_formats?: PackMetaFormats
 		description?: string
 		// Below since 1.21.9
 		min_format?: number

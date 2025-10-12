@@ -381,6 +381,7 @@ export class MinecraftFont {
 		return material
 	}
 
+	// TODO - Add support for rendering object text components
 	async generateTextDisplayMesh({
 		jsonText,
 		maxLineWidth = TextDisplay.properties.maxLineWidth.default,

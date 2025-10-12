@@ -1,5 +1,5 @@
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
-import { getResourcePackFormat } from '../../util/minecraftUtil'
+import { getNextSupportedVersion, getResourcePackFormat } from '../../util/minecraftUtil'
 import { IntentionalExportError } from '../exporter'
 import { type IRenderedRig } from '../rigRenderer'
 import type { ExportedFile } from '../util'
@@ -109,7 +109,21 @@ export default async function compileResourcePack(
 	const packMetaPath = PathModule.join(options.resourcePackFolder, 'pack.mcmeta')
 	const packMeta = PackMeta.fromFile(packMetaPath)
 	packMeta.content.pack ??= {}
-	packMeta.content.pack.pack_format = getResourcePackFormat(targetVersions[0])
+
+	const nextVersion = getNextSupportedVersion(targetVersions[0])
+	const format = getResourcePackFormat(targetVersions[0])
+	const nextFormat = nextVersion ? getResourcePackFormat(nextVersion) : 10000000
+	if (!compareVersions('1.21.9', targetVersions[0]) /* >= 1.21.9 */) {
+		packMeta.content.pack.min_format = format
+		packMeta.content.pack.max_format = nextFormat - 1
+	} else {
+		packMeta.content.pack.pack_format = format
+		packMeta.content.pack.supported_formats = {
+			min_inclusive: format,
+			max_inclusive: nextFormat - 1,
+		}
+	}
+
 	packMeta.content.pack.description ??= `Animated Java Resource Pack for ${targetVersions.join(
 		', '
 	)}`

@@ -7,6 +7,7 @@ import {
 	DataPackTag,
 	type FunctionTagJSON,
 	getDataPackFormat,
+	getNextSupportedVersion,
 	parseBlock,
 	parseDataPackPath,
 	parseResourceLocation,
@@ -402,16 +403,13 @@ async function generateRootEntityPassengers(
 	const passengers: NbtList = new NbtList()
 
 	const dataEntity = new NbtCompound()
-	switch (version) {
-		case '1.20.4':
-		case '1.20.5':
-		case '1.21.2':
-		case '1.21.4':
-			dataEntity.set('id', new NbtString('minecraft:marker'))
-			break
-		case '1.21.5':
-		default:
-			dataEntity.set('id', new NbtString('minecraft:item_display'))
+
+	if (!compareVersions('1.21.5', version) /* >= 1.21.5 */) {
+		dataEntity.set('id', new NbtString('minecraft:item_display'))
+	} else if (!compareVersions('1.20.4', version) /* >= 1.20.4 */) {
+		dataEntity.set('id', new NbtString('minecraft:marker'))
+	} else {
+		throw new Error(`Minecraft version is below minimum supported version 1.20.4!`)
 	}
 
 	passengers.add(
@@ -471,61 +469,46 @@ async function generateRootEntityPassengers(
 					throw new Error(`Model for bone '${node.storage_name}' not found!`)
 				}
 
-				switch (version) {
-					case '1.20.4': {
-						item.set(
-							'tag',
-							new NbtCompound().set(
-								'CustomModelData',
-								new NbtInt(variantModel.custom_model_data)
-							)
-						)
-						// `Count` does not default to 1.
-						// However, `count` does default to 1 in later versions, so we only need this for 1.20.4.
-						item.set('Count', new NbtInt(1))
-						break
-					}
-					case '1.20.5': {
-						item.set(
-							'components',
-							new NbtCompound().set(
+				if (!compareVersions('1.21.4', version) /* >= 1.21.4 */) {
+					item.set(
+						'components',
+						new NbtCompound()
+							.set('minecraft:item_model', new NbtString(variantModel.item_model))
+							.set(
 								'minecraft:custom_model_data',
-								new NbtInt(variantModel.custom_model_data)
-							)
-						)
-						break
-					}
-					case '1.21.2': {
-						item.set(
-							'components',
-							new NbtCompound().set(
-								'minecraft:item_model',
-								new NbtString(variantModel.item_model)
-							)
-						)
-						break
-					}
-					case '1.21.4':
-					case '1.21.5': {
-						item.set(
-							'components',
-							new NbtCompound()
-								.set('minecraft:item_model', new NbtString(variantModel.item_model))
-								.set(
-									'minecraft:custom_model_data',
-									new NbtCompound().set(
-										'strings',
-										new NbtList([new NbtString('default')])
-									)
+								new NbtCompound().set(
+									'strings',
+									new NbtList([new NbtString('default')])
 								)
+							)
+					)
+				} else if (!compareVersions('1.21.2', version) /* >= 1.21.2 */) {
+					item.set(
+						'components',
+						new NbtCompound().set(
+							'minecraft:item_model',
+							new NbtString(variantModel.item_model)
 						)
-						break
-					}
-					default: {
-						throw new Error(
-							`Unsupported Minecraft version '${version}' for item display!`
+					)
+				} else if (!compareVersions('1.20.5', version) /* >= 1.20.5 */) {
+					item.set(
+						'components',
+						new NbtCompound().set(
+							'minecraft:custom_model_data',
+							new NbtInt(variantModel.custom_model_data)
 						)
-					}
+					)
+				} else if (!compareVersions('1.20.4', version) /* >= 1.20.4 */) {
+					item.set(
+						'tag',
+						new NbtCompound().set(
+							'CustomModelData',
+							new NbtInt(variantModel.custom_model_data)
+						)
+					)
+					// `Count` does not default to 1.
+					// However, `count` does default to 1 in later versions, so we only need this for 1.20.4.
+					item.set('Count', new NbtInt(1))
 				}
 
 				if (node.configs?.default) {
@@ -577,24 +560,10 @@ async function generateRootEntityPassengers(
 					.set('item', item)
 					.set('item_display', new NbtString(node.item_display))
 
-				switch (version) {
-					case '1.20.4': {
-						// `Count` does not default to 1.
-						item.set('Count', new NbtInt(1))
-						break
-					}
-					case '1.20.5':
-					case '1.21.2':
-					case '1.21.4':
-					case '1.21.5': {
-						// `count` defaults to 1, so we can omit it.
-						break
-					}
-					default: {
-						throw new Error(
-							`Unsupported Minecraft version '${version}' for item display!`
-						)
-					}
+				if (compareVersions(version, '1.20.4') /* <= 1.20.4 */) {
+					// `Count` does not default to 1 in 1.20.4.
+					item.set('Count', new NbtInt(1))
+					break
 				}
 
 				if (node.config) {
@@ -827,7 +796,21 @@ export default async function compileDataPack(
 	const packMetaPath = PathModule.join(options.dataPackFolder, 'pack.mcmeta')
 	const packMeta = PackMeta.fromFile(packMetaPath)
 	packMeta.content.pack ??= {}
-	packMeta.content.pack.pack_format = getDataPackFormat(targetVersions[0])
+
+	const nextVersion = getNextSupportedVersion(targetVersions[0])
+	const format = getDataPackFormat(targetVersions[0])
+	const nextFormat = nextVersion ? getDataPackFormat(nextVersion) : 10000000
+	if (!compareVersions('1.21.9', targetVersions[0]) /* >= 1.21.9 */) {
+		packMeta.content.pack.min_format = format
+		packMeta.content.pack.max_format = nextFormat - 1
+	} else {
+		packMeta.content.pack.pack_format = format
+		packMeta.content.pack.supported_formats = {
+			min_inclusive: format,
+			max_inclusive: nextFormat - 1,
+		}
+	}
+
 	packMeta.content.pack.description ??= `Animated Java Data Pack for ${targetVersions.join(', ')}`
 
 	// if (targetVersions.length > 1) {
