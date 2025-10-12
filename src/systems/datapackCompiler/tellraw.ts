@@ -19,18 +19,15 @@ const TELLRAW_PREFIX = () =>
 const TELLRAW_SUFFIX = () => '\n'
 
 const TELLRAW_ERROR = (errorName: string, details: TextElement) =>
-	new JsonText({
-		text: '',
-		color: 'red',
-		extra: [
-			TELLRAW_PREFIX(),
-			'ᴇʀʀᴏʀ: ',
-			{ text: errorName, underlined: true },
-			'\n\n ',
-			...(Array.isArray(details) ? details : [details]),
-			TELLRAW_SUFFIX(),
-		],
-	})
+	new JsonText([
+		{ text: '', color: 'red' },
+		TELLRAW_PREFIX(),
+		'ᴇʀʀᴏʀ: ',
+		{ text: errorName, underlined: true },
+		'\n\n ',
+		...(Array.isArray(details) ? details : [details]),
+		TELLRAW_SUFFIX(),
+	])
 
 const CREATE_TELLRAW_HELP_LINK = (url: string) =>
 	new JsonText([
@@ -280,6 +277,20 @@ namespace TELLRAW {
 			{ nbt: 'args.name', storage: 'aj:temp', color: 'aqua' },
 			'.',
 			'\n Please ensure the command is valid.',
+		])
+
+	export const AUTO_UPDATE_RIG_ORIENTATION_MOVE_WARNING = () =>
+		TELLRAW_ERROR('Called Move Function while Auto Update Rig Orientation is Enabled', [
+			'The ',
+			{ text: 'move', color: 'yellow' },
+			' function cannot be called while ',
+			{ text: 'Auto Update Rig Orientation', color: 'yellow' },
+			' is enabled.',
+			'\n Please either disable ',
+			{ text: 'Auto Update Rig Orientation', color: 'yellow' },
+			' or avoid calling the ',
+			{ text: 'move', color: 'yellow' },
+			' function.',
 		])
 }
 

@@ -147,6 +147,10 @@ IF (!auto_update_rig_orientation) {
 
 		execute at @s on passengers run tp @s ~ ~ ~ ~ ~
 	}
+} ELSE {
+	function move {
+		tellraw @a <%TELLRAW.AUTO_UPDATE_RIG_ORIENTATION_MOVE_WARNING()%>
+	}
 }
 
 dir animations {
