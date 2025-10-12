@@ -613,8 +613,8 @@ function updateModelTo1_8_0(model: any) {
 		delete fixed.blueprint_settings.target_minecraft_versions
 	}
 
-	// Update text display backgrounds to use 8 digit hex colors instead of separate alpha
 	if (Array.isArray(fixed.elements)) {
+		// Update text display backgrounds to use 8 digit hex colors instead of separate alpha
 		const textDisplays = fixed.elements.filter(e => e.type === TextDisplay.type)
 		for (const display of textDisplays) {
 			if (display.backgroundAlpha !== undefined) {
@@ -623,6 +623,18 @@ function updateModelTo1_8_0(model: any) {
 					.setAlpha(display.backgroundAlpha)
 					.toHex8String()
 				delete display.backgroundAlpha
+			}
+		}
+		// Update locators to use new event function names
+		const locators = fixed.elements.filter(e => e.type === Locator.prototype.type)
+		for (const locator of locators) {
+			if (locator.config?.summon_commands) {
+				locator.config.on_summon_function = locator.config.summon_commands
+				delete locator.config.summon_commands
+			}
+			if (locator.config?.ticking_commands) {
+				locator.config.on_tick_function = locator.config.ticking_commands
+				delete locator.config.ticking_commands
 			}
 		}
 	}
