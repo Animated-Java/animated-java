@@ -7,28 +7,20 @@ import { BLUEPRINT_CODEC } from '../blueprint/codec'
 import * as modelDatFixerUpper from '../blueprint/dfu'
 import FormatPage from './formatPage.svelte'
 
-registerModelLoader(
-	{ id: `animated-java:upgrade-aj-model-loader` },
-	{
-		icon: 'upload_file',
-		category: 'animated_java',
-		name: translate('action.upgrade_old_aj_model_loader.name'),
-		condition: true,
-		format_page: {
-			component: {
-				template: `<div id="animated-java:upgrade-aj-model-loader-target" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;"></div>`,
-				mounted() {
-					// Don't need to worry about unmounting since the whole panel gets replaced when switching formats
-					mountSvelteComponent({
-						component: FormatPage,
-						target: `#animated-java\\:upgrade-aj-model-loader-target`,
-						injectIndex: 2,
-					})
-				},
-			},
-		},
-	}
-)
+// Blockbench has a bug where it calls the onStart function multiple times when double-clicking it.
+let waitingForAJModel = false
+export async function openAJModel() {
+	if (waitingForAJModel) return
+	waitingForAJModel = true
+	const result = await electron.dialog.showOpenDialog({
+		properties: ['openFile'],
+		filters: [{ name: '.ajmodel', extensions: ['ajmodel'] }],
+		message: translate('action.upgrade_old_aj_model_loader.select_file'),
+	})
+	waitingForAJModel = false
+	if (result.canceled) return
+	convertAJModelToBlueprint(result.filePaths[0])
+}
 
 export function convertAJModelToBlueprint(path: string) {
 	try {
@@ -54,3 +46,27 @@ export function convertAJModelToBlueprint(path: string) {
 		openUnexpectedErrorDialog(e as Error)
 	}
 }
+
+registerModelLoader(
+	{ id: `animated-java:upgrade-aj-model-loader` },
+	{
+		icon: 'upload_file',
+		category: 'animated_java',
+		name: translate('action.upgrade_old_aj_model_loader.name'),
+		condition: true,
+		format_page: {
+			component: {
+				template: `<div id="animated-java:upgrade-aj-model-loader-target" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;"></div>`,
+				mounted() {
+					// Don't need to worry about unmounting since the whole panel gets replaced when switching formats
+					mountSvelteComponent({
+						component: FormatPage,
+						target: `#animated-java\\:upgrade-aj-model-loader-target`,
+						injectIndex: 2,
+					})
+				},
+			},
+		},
+		onStart: openAJModel,
+	}
+)
