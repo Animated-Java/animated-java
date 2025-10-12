@@ -130,11 +130,7 @@ dir root {
 
 IF (!auto_update_rig_orientation) {
 	function move {
-		IF (debug_mode) {
-			# Assert that the function is being run as the root entity.
-			execute unless entity @s[tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run \
-				return run tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
-		}
+		debug assert executed_as_root_entity
 
 		tp @s ~ ~ ~ ~ ~
 
