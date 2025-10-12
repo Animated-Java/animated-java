@@ -156,9 +156,10 @@ IF (!auto_update_rig_orientation) {
 dir animations {
 	REPEAT (animations) as animation {
 		dir <%animation.storage_name%> {
-			# TODO: Maybe add an exclusive argument to the play function that will pause all other animations before playing this one.
 			function play {
 				debug assert executed_as_root_entity
+
+				function *<%export_namespace%>/animations/pause_all
 
 				tag @s add <%TAGS.ANIMATION_PLAYING(export_namespace, animation.storage_name)%>
 				scoreboard players set @s <%OBJECTIVES.FRAME(animation.storage_name)%> 0
@@ -170,7 +171,8 @@ dir animations {
 			function stop {
 				debug assert executed_as_root_entity
 
-				tag @s remove <%TAGS.ANIMATION_PLAYING(export_namespace, animation.storage_name)%>
+				function *<%export_namespace%>/animations/pause_all
+
 				scoreboard players set @s <%OBJECTIVES.FRAME(animation.storage_name)%> 0
 				tag @s add <%TAGS.TRANSFORMS_ONLY()%>
 				execute at @s run function ./zzz/set_frame {frame: 0}
