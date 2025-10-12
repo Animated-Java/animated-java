@@ -303,6 +303,8 @@ export function getDataPackFormat(version: SUPPORTED_MINECRAFT_VERSIONS): number
 			return 61
 		case SUPPORTED_MINECRAFT_VERSIONS['1.21.5']:
 			return 71
+		case SUPPORTED_MINECRAFT_VERSIONS['1.21.6']:
+			return 80
 		case SUPPORTED_MINECRAFT_VERSIONS['1.21.9']:
 			return 88.0
 		default:
@@ -323,6 +325,8 @@ export function getResourcePackFormat(version: SUPPORTED_MINECRAFT_VERSIONS): nu
 			return 46
 		case SUPPORTED_MINECRAFT_VERSIONS['1.21.5']:
 			return 55
+		case SUPPORTED_MINECRAFT_VERSIONS['1.21.6']:
+			return 63
 		case SUPPORTED_MINECRAFT_VERSIONS['1.21.9']:
 			return 69.0
 		default:
