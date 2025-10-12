@@ -405,7 +405,6 @@ async function generateRootEntityPassengers(
 	switch (version) {
 		case '1.20.4':
 		case '1.20.5':
-		case '1.21.0':
 		case '1.21.2':
 		case '1.21.4':
 			dataEntity.set('id', new NbtString('minecraft:marker'))
@@ -486,8 +485,7 @@ async function generateRootEntityPassengers(
 						item.set('Count', new NbtInt(1))
 						break
 					}
-					case '1.20.5':
-					case '1.21.0': {
+					case '1.20.5': {
 						item.set(
 							'components',
 							new NbtCompound().set(
@@ -586,7 +584,6 @@ async function generateRootEntityPassengers(
 						break
 					}
 					case '1.20.5':
-					case '1.21.0':
 					case '1.21.2':
 					case '1.21.4':
 					case '1.21.5': {
