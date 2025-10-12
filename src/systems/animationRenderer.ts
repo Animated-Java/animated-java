@@ -75,9 +75,9 @@ export interface IRenderedFrame {
 	/** The condition to check before applying variants */
 	variants_execute_condition?: string
 	/** A mcfunction to run as the root on this frame. (Supports MCB syntax) */
-	commands?: string
-	/** The condition to check before running commands */
-	commands_execute_condition?: string
+	function?: string
+	/** The condition to check before running the function */
+	function_execute_condition?: string
 }
 
 export interface IRenderedAnimation {
@@ -119,7 +119,7 @@ export function getFrame(
 		time,
 		node_transforms: {},
 		...getVariantKeyframe(animation, time),
-		...getCommandsKeyframe(animation, time),
+		...getFunctionKeyframe(animation, time),
 	}
 
 	if (lastAnimation !== animation) {
@@ -264,17 +264,17 @@ function getVariantKeyframe(
 	return {}
 }
 
-function getCommandsKeyframe(
+function getFunctionKeyframe(
 	animation: _Animation,
 	time: number
-): Pick<IRenderedFrame, 'commands' | 'commands_execute_condition'> {
-	const commandsKeyframes = animation.animators.effects?.commands as _Keyframe[]
-	if (commandsKeyframes) {
-		const kf = commandsKeyframes.find(kf => kf.time === time)
+): Pick<IRenderedFrame, 'function' | 'function_execute_condition'> {
+	const functionKeyframes = animation.animators.effects?.function as _Keyframe[]
+	if (functionKeyframes) {
+		const kf = functionKeyframes.find(kf => kf.time === time)
 		if (kf) {
 			return scrubUndefined({
-				commands: kf.function?.trim(),
-				commands_execute_condition: kf.execute_condition?.trim(),
+				function: kf.function?.trim(),
+				function_execute_condition: kf.execute_condition?.trim(),
 			})
 		}
 	}
@@ -360,9 +360,9 @@ export function hashAnimations(animations: IRenderedAnimation[]) {
 				if (frame.variants_execute_condition)
 					hash.update(';' + frame.variants_execute_condition)
 			}
-			if (frame.commands) hash.update(';' + frame.commands)
-			if (frame.commands_execute_condition)
-				hash.update(';' + frame.commands_execute_condition)
+			if (frame.function) hash.update(';' + frame.function)
+			if (frame.function_execute_condition)
+				hash.update(';' + frame.function_execute_condition)
 		}
 	}
 	return hash.digest('hex')

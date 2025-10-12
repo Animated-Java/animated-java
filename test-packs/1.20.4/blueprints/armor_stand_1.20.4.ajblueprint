@@ -18,8 +18,6 @@
 		"data_pack": "../datapacks/animated_java",
 		"on_summon_function": "say On-Summon!",
 		"on_remove_function": "say On-Remove!",
-		"on_pre_tick_function": "say Pre-Tick!",
-		"on_post_tick_function": "say Post-Tick!",
 		"baked_animations": false,
 		"json_file": "../testPluginExport.json"
 	},

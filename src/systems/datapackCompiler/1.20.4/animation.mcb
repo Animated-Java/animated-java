@@ -34,7 +34,7 @@ dir root {
 	function on_tick {
 		execute unless entity @s[tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return 0
 
-		# Custom pre-tick commands
+		# Custom pre-tick function
 		IF (on_pre_tick_function) {
 			<%%
 				emit.mcb(on_pre_tick_function)
@@ -70,7 +70,7 @@ dir root {
 			execute on passengers run tp @s ~ ~ ~ ~ ~
 		}
 
-		# Custom post-tick commands
+		# Custom post-tick function
 		IF (on_post_tick_function) {
 			<%%
 				emit.mcb(on_post_tick_function)
@@ -95,19 +95,19 @@ dir root {
 									execute on passengers run tp @s ~ ~ ~ ~ ~
 								}
 
-								IF (locator.config?.ticking_commands) {
+								IF (locator.config?.on_tick_function) {
 									<%%
-										emit.mcb(locator.config.ticking_commands)
+										emit.mcb(locator.config.on_tick_function)
 									%%>
 								}
 							}
-						} ELSE IF (locator.config?.ticking_commands) {
+						} ELSE IF (locator.config?.on_tick_function) {
 							$execute \
 								positioned ^$(px) ^$(py) ^$(pz) \
 								rotated ~$(ry) ~$(rx) \
 							run block at_locator_<%locator.storage_name%> {
 								<%%
-									emit.mcb(locator.config.ticking_commands)
+									emit.mcb(locator.config.on_tick_function)
 								%%>
 							}
 						}
@@ -242,9 +242,9 @@ dir animations {
 						data modify entity @s interpolation_duration set value <%interpolation_duration%>
 					# Animation logic
 					IF (animation.loop_mode === 'loop' && animation.loop_delay === 0) {
-						# Makes sure commands keyframes in the last frame of the animation are activated.
+						# Makes sure function keyframes in the last frame of the animation are activated.
 						execute if score @s <%OBJECTIVES.FRAME(animation.storage_name)%> matches -1 run \
-							block commands_keyframe_loop_patch {
+							block function_keyframe_loop_patch {
 								function ./apply_frame {frame: <%animation.duration-1%>}
 								scoreboard players add @s <%OBJECTIVES.FRAME(animation.storage_name)%> 1
 							}
@@ -311,13 +311,6 @@ dir animations {
 							}
 						}
 
-						# IF (!auto_update_rig_orientation && (has_locators || has_cameras)) {
-						# 	execute \
-						# 		on passengers \
-						# 		if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] \
-						# 	run function ./on_tick/transform_floating_entities
-						# }
-
 						return 1
 					}
 				} ELSE {
@@ -330,13 +323,6 @@ dir animations {
 						execute on passengers if entity @s[tag=!<%TAGS.GLOBAL_DATA()%>] run \
 							data modify entity @s start_interpolation set value -1
 
-						# IF (!auto_update_rig_orientation && (has_locators || has_cameras)) {
-						# 	execute \
-						# 		on passengers \
-						# 		if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] \
-						# 	run function ./on_tick/transform_floating_entities
-						# }
-
 						return 1
 					}
 
@@ -344,13 +330,6 @@ dir animations {
 						#ARGS: {frame: int}
 						$execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run \
 							function ./frames/$(frame) with entity @s data.uuids_by_name
-
-						# IF (!auto_update_rig_orientation && (has_locators || has_cameras)) {
-						# 	execute \
-						# 		on passengers \
-						# 		if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] \
-						# 	run function ./on_tick/transform_floating_entities
-						# }
 
 						return 1
 					}
@@ -361,7 +340,7 @@ dir animations {
 							// A record of node uuid to INodeTransform.
 							// Keeps track of the last time a bone was updated.
 							// Only used for step keyframe interpolation.
-							let hasCommands = false
+							let hasFunction = false
 							const lastActiveFrame = {}
 							const modifiedNodes = Object.values(animation.modified_nodes).filter(n => n.type !== 'struct').sort(nodeSorter);
 							for (const [frameIndex, frame] of animation.frames.entries()) {
@@ -395,7 +374,7 @@ dir animations {
 														+ `interpolation_duration: ${interpolation_duration}`
 													+ `}`
 											}
-											;hasCommands = true
+											;hasFunction = true
 											break
 										}
 										case 'locator': {
@@ -411,25 +390,25 @@ dir animations {
 												};
 											}
 
-											if (transform.commands) {
+											if (transform.function) {
 												if (node.config?.use_entity) {
 													frameFunc +=
 														`\n$execute on vehicle unless entity @s[tag=${TAGS.TRANSFORMS_ONLY()}] as $(${node.type + '_' + node.storage_name}) `
 														+ `positioned ^${roundTo(transform.pos[0], 10)} ^${roundTo(transform.pos[1], 10)} ^${roundTo(transform.pos[2], 10)} `
 														+ `rotated ~${roundTo(transform.head_rot[1], 10)} ~${roundTo(transform.head_rot[0], 10)} `
-														+ `${transform.commands_execute_condition ? transform.commands_execute_condition + ' ' : ''}run `
-														+ `block ${frameIndex}_locator_commands%NEWLINE_PATCH%{\n`
+														+ `${transform.function_execute_condition ? transform.function_execute_condition + ' ' : ''}run `
+														+ `block ${frameIndex}_locator_${node.storage_name}%NEWLINE_PATCH%{\n`
 															+ `tp @s ~ ~ ~ ~ ~\n`
-															+ `${transform.commands}`
+															+ `${transform.function}`
 														+ `\n}`
 												} else {
 													frameFunc +=
 														`\nexecute on vehicle unless entity @s[tag=${TAGS.TRANSFORMS_ONLY()}] `
 														+ `positioned ^${roundTo(transform.pos[0], 10)} ^${roundTo(transform.pos[1], 10)} ^${roundTo(transform.pos[2], 10)} `
 														+ `rotated ~${roundTo(transform.head_rot[1], 10)} ~${roundTo(transform.head_rot[0], 10)} `
-														+ `${transform.commands_execute_condition ? transform.commands_execute_condition + ' ' : ''}run `
-														+ `block ${frameIndex}_locator_commands%NEWLINE_PATCH%{\n`
-															+ `${transform.commands}`
+														+ `${transform.function_execute_condition ? transform.function_execute_condition + ' ' : ''}run `
+														+ `block ${frameIndex}_locator_${node.storage_name}%NEWLINE_PATCH%{\n`
+															+ `${transform.function}`
 														+ `\n}`
 												}
 											}
@@ -457,7 +436,7 @@ dir animations {
 									if (!auto_update_rig_orientation) {
 										frameFunc += `\nfunction ./on_tick/transform_floating_entities`
 									}
-									hasCommands = true
+									hasFunction = true
 								}
 
 								if (frame.variants?.length) {
@@ -467,14 +446,14 @@ dir animations {
 									}
 									const execute_condition = frame.variants_execute_condition ? frame.variants_execute_condition + ' ' : ''
 									frameFunc += `\nexecute on vehicle unless entity @s[tag=${TAGS.TRANSFORMS_ONLY()}] ${execute_condition}run function *${export_namespace}/variants/${variant.name}/apply`
-									;hasCommands = true
+									;hasFunction = true
 								}
 
-								// Root commands keyframes.
-								if (frame.commands) {
-									const execute_condition = frame.commands_execute_condition ? frame.commands_execute_condition + ' ' : ''
-									frameFunc += `\nexecute on vehicle unless entity @s[tag=${TAGS.TRANSFORMS_ONLY()}] at @s ${execute_condition}run block ${frameIndex}_root_commands%NEWLINE_PATCH%{\n${frame.commands}\n}`
-									;hasCommands = true
+								// Root function keyframes.
+								if (frame.function) {
+									const execute_condition = frame.function_execute_condition ? frame.function_execute_condition + ' ' : ''
+									frameFunc += `\nexecute on vehicle unless entity @s[tag=${TAGS.TRANSFORMS_ONLY()}] at @s ${execute_condition}run block ${frameIndex}_root_function%NEWLINE_PATCH%{\n${frame.function}\n}`
+									;hasFunction = true
 								}
 								;if (frameFunc.length > 0) {
 									frameFunc = `function ${frameIndex}%NEWLINE_PATCH%{${frameFunc}\n}`
@@ -602,7 +581,7 @@ function summon {
 				execute if data storage <%temp_storage%> {args:{variant:''}} run return run block if_empty {
 					# Tell the user that the variant cannot be empty.
 					tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('variant')%>
-					function *<%export_namespace%>/remove/this/without_on_remove_commands
+					function *<%export_namespace%>/remove/this/without_on_remove_function
 				}
 				# Attempt to apply the requested variant.
 				# We get the success of the `try_apply` function in just in case the user's arguments are *very* wrong.
@@ -615,14 +594,14 @@ function summon {
 				execute unless score #success <%OBJECTIVES.I()%> matches 1 run return run block invalid_variant {
 					# Tell the user that the provided variant doesn't exist, remove the rig, and list all available variants for this rig.
 					tellraw @a <%TELLRAW.INVALID_VARIANT(rig.variants)%>
-					function *<%export_namespace%>/remove/this/without_on_remove_commands
+					function *<%export_namespace%>/remove/this/without_on_remove_function
 				}
 				scoreboard players set #success <%OBJECTIVES.I()%> 1
 			}
 		} ELSE {
 			execute if data storage <%temp_storage%> args.variant run block zzz/variant_arg/no_variants_warning {
 				tellraw @a <%TELLRAW.NO_VARIANTS()%>
-				function *<%export_namespace%>/remove/this/without_on_remove_commands
+				function *<%export_namespace%>/remove/this/without_on_remove_function
 				scoreboard players set #success <%OBJECTIVES.I()%> 0
 			}
 		}
@@ -637,7 +616,7 @@ function summon {
 			# If the animation argument is *explicitly* set to an empty string, return an error.
 			execute if data storage <%temp_storage%> {args:{animation:''}} run return run block if_empty {
 				tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('animation')%>
-				function *<%export_namespace%>/remove/this/without_on_remove_commands
+				function *<%export_namespace%>/remove/this/without_on_remove_function
 			}
 			# Automatically set the frame argument to 0 if the frame argument is not provided.
 			# Takes advantage of `store result score` setting the score to 0 if the command fails.
@@ -650,7 +629,7 @@ function summon {
 			execute if score #frame <%OBJECTIVES.I()%> matches ..-1 run return run block no_negative {
 				# Tell the user that the frame argument cannot be negative.
 				tellraw @a <%TELLRAW.FRAME_CANNOT_BE_NEGATIVE()%>
-				function *<%export_namespace%>/remove/this/without_on_remove_commands
+				function *<%export_namespace%>/remove/this/without_on_remove_function
 			}
 			# Attempt to apply the animation frame.
 			execute store success score #success <%OBJECTIVES.I()%> run block try_set_frame { with storage <%temp_storage%> args
@@ -666,7 +645,7 @@ function summon {
 			execute unless score #success <%OBJECTIVES.I()%> matches 1 run return run block invalid_animation {
 				# Tell the user that the provided animation doesn't exist, remove the rig, and list all available animations for this rig.
 				tellraw @a <%TELLRAW.INVALID_ANIMATION(animations)%>
-				function *<%export_namespace%>/remove/this/without_on_remove_commands
+				function *<%export_namespace%>/remove/this/without_on_remove_function
 			}
 
 			# If the animation is successfully applied, and the start_animation argument is set to true, start the animation.
@@ -911,11 +890,11 @@ dir remove {
 			if (on_remove_function) emit.mcb(on_remove_function)
 		%%>
 
-		function ./this/without_on_remove_commands
+		function ./this/without_on_remove_function
 	}
 
 	dir this {
-		function without_on_remove_commands {
+		function without_on_remove_function {
 			debug assert executed_as_root_entity
 
 			IF (has_entity_locators || has_cameras) {
