@@ -1,19 +1,9 @@
 import { registerMod } from 'src/util/moddingTools'
-import { registerMountSvelteComponentMod } from 'src/util/mountSvelteComponent'
+import { mountSvelteComponent } from 'src/util/mountSvelteComponent'
 import IncompatiblePluginNotice from '../components/incompatiblePluginNotice.svelte'
 import { Valuable } from '../util/stores'
 
 const SELECTED_PLUGIN = new Valuable<BBPlugin | null>(null)
-
-registerMountSvelteComponentMod({
-	id: 'animated-java:dialog/incompatible-plugin-notice',
-	component: IncompatiblePluginNotice,
-	target: '.plugin_browser_page_header',
-	prepend: true,
-	props: {
-		selectedPlugin: SELECTED_PLUGIN,
-	},
-})
 
 registerMod({
 	id: `animated-java:plugins-dialog-mod`,
@@ -36,4 +26,26 @@ registerMod({
 		// @ts-expect-error Missing types
 		Plugins.dialog.component.methods.selectPlugin = original
 	},
+})
+
+let mounted: IncompatiblePluginNotice | null = null
+
+SELECTED_PLUGIN.subscribe(plugin => {
+	if (mounted) {
+		mounted.$destroy()
+		mounted = null
+	}
+	if (!plugin) return
+
+	requestAnimationFrame(() => {
+		mounted = mountSvelteComponent({
+			component: IncompatiblePluginNotice,
+			props: { selectedPlugin: plugin },
+			target: '.plugin_browser_page_header',
+			prepend: true,
+			onDestroy: () => {
+				mounted = null
+			},
+		})
+	})
 })

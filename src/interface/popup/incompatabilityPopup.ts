@@ -6,6 +6,7 @@ import { translate } from '../../util/translation'
 
 enum INCOMPATABLE_PLUGINS {
 	GECKOLIB_ANIMATION_UTILS = 'animation_utils',
+	GECKOLIB = 'geckolib',
 }
 
 let currentInstance: SvelteDialog<IncompatabilityPopup> | null = null

@@ -2,7 +2,6 @@
 	import EVENTS from 'src/util/events'
 	import { onDestroy } from 'svelte'
 	import { isIncompatiblePlugin } from '../interface/popup/incompatabilityPopup'
-	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
 
 	const getButton = (innerText: string) => {
@@ -13,14 +12,9 @@
 </script>
 
 <script lang="ts">
-	export let selectedPlugin: Valuable<BBPlugin | null>
+	export let selectedPlugin: BBPlugin | null
 
-	let isIncompatible: boolean
-
-	$: {
-		isIncompatible = !!$selectedPlugin && isIncompatiblePlugin($selectedPlugin)
-		updateButtons()
-	}
+	let isIncompatible = !!selectedPlugin && isIncompatiblePlugin(selectedPlugin)
 
 	const updateButtons = () => {
 		requestAnimationFrame(() => {
@@ -43,6 +37,8 @@
 			if (disableButton) disableButton.disabled = false
 		})
 	}
+
+	updateButtons()
 
 	const UNSUBS = [
 		EVENTS.EXTERNAL_PLUGIN_LOAD.subscribe(updateButtons),

@@ -127,17 +127,20 @@ export function registerMountSvelteComponentMod<ID extends string, T extends Sve
 				// Prioritize cancelling if the mod is uninstalled while waiting.
 				() => !modHandle.isInstalled() || !!options.cancelCondition?.()
 			)
+				.catch(e => {
+					if (e instanceof PollingCancelledError) {
+						console.error('Mounting Svelte component cancelled for mod', options.id)
+						return undefined
+					} else {
+						console.error('Error mounting Svelte component for mod', options.id, e)
+					}
+				})
 				.then(target => {
+					if (!target) return
 					mounted = mountSvelteComponent({
 						...(options as typeof options & { props: ComponentProps<T> }),
 						target,
 					})
-				})
-				.catch(e => {
-					if (e instanceof PollingCancelledError) {
-						console.warn('Mounting Svelte component cancelled for mod', options.id)
-						return
-					} else throw e
 				})
 		},
 
