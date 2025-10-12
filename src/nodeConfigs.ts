@@ -350,6 +350,7 @@ export class LocatorConfig {
 	private __entityType?: string
 	private __syncPassengerRotation?: boolean
 	private __onSummonFunction?: string
+	private __onRemoveFunction?: string
 	private __onTickFunction?: string
 
 	getDefault(): LocatorConfig {
@@ -358,6 +359,7 @@ export class LocatorConfig {
 			entity_type: 'minecraft:pig',
 			sync_passenger_rotation: false,
 			on_summon_function: '',
+			on_remove_function: '',
 			on_tick_function: '',
 		})
 	}
@@ -398,6 +400,15 @@ export class LocatorConfig {
 		this.__onSummonFunction = value
 	}
 
+	get onRemoveFunction(): NonNullable<LocatorConfig['__onRemoveFunction']> {
+		if (this.__onRemoveFunction !== undefined) return this.__onRemoveFunction
+		const defaultConfig = this.getDefault()
+		return defaultConfig.onRemoveFunction
+	}
+	set onRemoveFunction(value: NonNullable<LocatorConfig['__onRemoveFunction']>) {
+		this.__onRemoveFunction = value
+	}
+
 	get onTickFunction(): NonNullable<LocatorConfig['__onTickFunction']> {
 		if (this.__onTickFunction !== undefined) return this.__onTickFunction
 		const defaultConfig = this.getDefault()
@@ -413,6 +424,7 @@ export class LocatorConfig {
 			entity_type: this.__entityType,
 			sync_passenger_rotation: this.__syncPassengerRotation,
 			on_summon_function: this.__onSummonFunction,
+			on_remove_function: this.__onRemoveFunction,
 			on_tick_function: this.__onTickFunction,
 		})
 	}
@@ -425,6 +437,8 @@ export class LocatorConfig {
 			config.__syncPassengerRotation = json.sync_passenger_rotation
 		if (json.on_summon_function !== undefined)
 			config.__onSummonFunction = json.on_summon_function
+		if (json.on_remove_function !== undefined)
+			config.__onRemoveFunction = json.on_remove_function
 		if (json.on_tick_function !== undefined) config.__onTickFunction = json.on_tick_function
 		return config
 	}
@@ -439,6 +453,7 @@ export class LocatorConfig {
 			this.entityType === other.entityType &&
 			this.syncPassengerRotation === other.syncPassengerRotation &&
 			this.onSummonFunction === other.onSummonFunction &&
+			this.onRemoveFunction === other.onRemoveFunction &&
 			this.onTickFunction === other.onTickFunction
 		)
 	}

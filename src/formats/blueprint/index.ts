@@ -66,6 +66,7 @@ export interface IBlueprintLocatorConfigJSON {
 	entity_type?: LocatorConfig['entityType']
 	sync_passenger_rotation?: LocatorConfig['syncPassengerRotation']
 	on_summon_function?: LocatorConfig['__onSummonFunction']
+	on_remove_function?: LocatorConfig['__onRemoveFunction']
 	on_tick_function?: LocatorConfig['__onTickFunction']
 }
 

@@ -890,6 +890,35 @@ dir remove {
 			if (on_remove_function) emit.mcb(on_remove_function)
 		%%>
 
+		IF (has_entity_locators) {
+			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block as_data {
+				REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator')) as locator {
+					IF (locator.config?.on_remove_function) {
+						IF (locator.config.use_entity) {
+							block as_locator_<%locator.storage_name%> { with entity @s data.locators.<%locator.storage_name%>
+								$execute as $(uuid) at @s run block locator_<%locator.storage_name%>_on_remove {
+									<%%
+										emit.mcb(locator.config.on_remove_function)
+									%%>
+								}
+							}
+						} ELSE {
+							block at_locator_<%locator.storage_name%> { with entity @s data.locators.<%locator.storage_name%>
+								$execute \
+									positioned ^$(px) ^$(py) ^$(pz) \
+									rotated ~$(ry) ~$(rx) \
+								run block locator_<%locator.storage_name%>_on_remove {
+									<%%
+										emit.mcb(locator.config.on_remove_function)
+									%%>
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
 		function ./this/without_on_remove_function
 	}
 

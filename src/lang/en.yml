@@ -382,6 +382,16 @@ animated_java.dialog.locator_config.on_summon_function.description_with_use_enti
 
   Supports [MC-Build](https://mcbuild.dev) syntax.
 
+animated_java.dialog.locator_config.on_remove_function.title: On-Remove Function
+animated_java.dialog.locator_config.on_remove_function.description: |-
+  Commands to run `as` the root entity and `at` the Locator's position when the rig is removed.
+
+  Supports [MC-Build](https://mcbuild.dev) syntax.
+animated_java.dialog.locator_config.on_remove_function.description_with_use_entity: |-
+  Commands to run `as` and `at` the Locator's entity when removed.
+
+  Supports [MC-Build](https://mcbuild.dev) syntax.
+
 animated_java.dialog.locator_config.on_tick_function.title: On-Tick Function
 animated_java.dialog.locator_config.on_tick_function.description: |-
   Commands to run `at` the Locator's position every tick.

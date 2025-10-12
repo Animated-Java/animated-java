@@ -34,6 +34,7 @@
 	export let entityType: Valuable<string>
 	export let syncPassengerRotation: Valuable<boolean>
 	export let onSummonFunction: Valuable<string>
+	export let onRemoveFunction: Valuable<string>
 	export let onTickFunction: Valuable<string>
 </script>
 
@@ -74,6 +75,17 @@
 						)
 					: translate('dialog.locator_config.on_summon_function.description')}
 				bind:value={onSummonFunction}
+				defaultValue=""
+			/>
+
+			<CodeInput
+				label={translate('dialog.locator_config.on_remove_function.title')}
+				tooltip={$useEntity
+					? translate(
+							'dialog.locator_config.on_remove_function.description_with_use_entity'
+						)
+					: translate('dialog.locator_config.on_remove_function.description')}
+				bind:value={onRemoveFunction}
 				defaultValue=""
 			/>
 		{/if}

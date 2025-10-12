@@ -15,6 +15,7 @@ export function openLocatorConfigDialog(locator: Locator) {
 	const entityType = new Valuable(locatorConfig.entityType)
 	const syncPassengerRotation = new Valuable(locatorConfig.syncPassengerRotation)
 	const onSummonFunction = new Valuable(locatorConfig.onSummonFunction)
+	const onRemoveFunction = new Valuable(locatorConfig.onRemoveFunction)
 	const onTickFunction = new Valuable(locatorConfig.onTickFunction)
 
 	new SvelteDialog({
@@ -28,6 +29,7 @@ export function openLocatorConfigDialog(locator: Locator) {
 				entityType,
 				syncPassengerRotation,
 				onSummonFunction,
+				onRemoveFunction,
 				onTickFunction,
 			},
 		},
@@ -37,6 +39,7 @@ export function openLocatorConfigDialog(locator: Locator) {
 			locatorConfig.entityType = entityType.get()
 			locatorConfig.syncPassengerRotation = syncPassengerRotation.get()
 			locatorConfig.onSummonFunction = onSummonFunction.get()
+			locatorConfig.onRemoveFunction = onRemoveFunction.get()
 			locatorConfig.onTickFunction = onTickFunction.get()
 
 			locator.config = locatorConfig.toJSON()
