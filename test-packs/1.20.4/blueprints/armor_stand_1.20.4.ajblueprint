@@ -831,8 +831,9 @@
 				"use_entity": true,
 				"entity_type": "minecraft:item_display",
 				"sync_passenger_rotation": true,
-				"summon_commands": "say Left Hand!",
-				"ticking_commands": "particle minecraft:bubble ^ ^ ^1\ntp @e[tag=test3,limit=1] ~ ~ ~ ~ ~"
+				"on_summon_function": "say Summon Left Hand!",
+				"on_remove_function": "say Remove Left Hand!",
+				"on_tick_function": "particle minecraft:bubble ^ ^ ^1\ntp @e[tag=test3,limit=1] ~ ~ ~ ~ ~"
 			},
 			"uuid": "7de415a2-9fdd-e4b2-3455-c3bed72eb896",
 			"type": "locator"
@@ -848,8 +849,9 @@
 				"use_entity": true,
 				"entity_type": "minecraft:item_display",
 				"sync_passenger_rotation": false,
-				"summon_commands": "say Right Hand!",
-				"ticking_commands": "particle minecraft:bubble ^ ^ ^1\ntp @e[tag=test2,limit=1] ~ ~ ~ ~ ~"
+				"on_summon_function": "say Summon Right Hand!",
+				"on_remove_function": "say Remove Right Hand!",
+				"on_tick_function": "particle minecraft:bubble ^ ^ ^1\ntp @e[tag=test2,limit=1] ~ ~ ~ ~ ~"
 			},
 			"uuid": "7747736f-85e2-338f-207e-53f8d3d2fa39",
 			"type": "locator"
@@ -859,7 +861,7 @@
 			"type": "animated_java:text_display",
 			"name": "text_display",
 			"position": [0, 38, 0],
-			"rotation": [22.5, 0, 0],
+			"rotation": [0, 0, 0],
 			"scale": [1, 1, 1],
 			"visibility": true,
 			"locked": false,
@@ -1849,7 +1851,7 @@
 			"override": false,
 			"length": 2,
 			"snapping": 20,
-			"selected": false,
+			"selected": true,
 			"saved": true,
 			"path": "",
 			"anim_time_update": "",
@@ -1901,6 +1903,120 @@
 							"easingArgs": []
 						}
 					]
+				},
+				"7de415a2-9fdd-e4b2-3455-c3bed72eb896": {
+					"name": "left_hand",
+					"type": "locator",
+					"keyframes": [
+						{
+							"channel": "function",
+							"data_points": [
+								{
+									"x": "0",
+									"y": "0",
+									"z": "0",
+									"function": "particle minecraft:flame ^ ^ ^",
+									"execute_condition": "",
+									"repeat": true,
+									"repeat_frequency": 5
+								}
+							],
+							"uuid": "923a41b4-3218-552c-06cb-582ead7ce8e8",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						}
+					]
+				},
+				"7747736f-85e2-338f-207e-53f8d3d2fa39": {
+					"name": "right_hand",
+					"type": "locator",
+					"keyframes": [
+						{
+							"channel": "function",
+							"data_points": [
+								{
+									"x": "0",
+									"y": "0",
+									"z": "0",
+									"function": "particle minecraft:flame ^ ^ ^",
+									"execute_condition": "",
+									"repeat": true,
+									"repeat_frequency": 1
+								}
+							],
+							"uuid": "fe357d53-5802-876b-c5d0-9eb8a19f573b",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						}
+					]
+				},
+				"3b35d1a9-befe-066e-60df-e1f3a5ec5a78": {
+					"name": "pig",
+					"type": "bone",
+					"keyframes": [
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "16 - math.cos(q.life_time * 180) * 16",
+									"y": "16 + math.sin(q.life_time * 360) * 8",
+									"z": "-32"
+								}
+							],
+							"uuid": "08083fab-35c8-d8f0-44b0-000f720cf533",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						}
+					]
+				},
+				"effects": {
+					"name": "Effects",
+					"type": "effect",
+					"keyframes": [
+						{
+							"channel": "function",
+							"data_points": [
+								{
+									"function": "say hi",
+									"execute_condition": "",
+									"repeat": false,
+									"repeat_frequency": 1
+								}
+							],
+							"uuid": "e8054bec-122c-6f34-6781-a4a58d46a5a6",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						},
+						{
+							"channel": "function",
+							"data_points": [
+								{
+									"function": "say bye",
+									"execute_condition": "",
+									"repeat": false,
+									"repeat_frequency": 1
+								}
+							],
+							"uuid": "523673ac-dff1-1729-8064-4d0258e2de2a",
+							"time": 2,
+							"color": -1,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						}
+					]
 				}
 			}
 		},
@@ -1911,7 +2027,7 @@
 			"override": false,
 			"length": 1,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"saved": true,
 			"path": "",
 			"anim_time_update": "",

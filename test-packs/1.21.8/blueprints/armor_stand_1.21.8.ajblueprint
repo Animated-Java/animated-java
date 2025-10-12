@@ -1,46 +1,25 @@
 {
 	"meta": {
-		"format": "animated_java_blueprint",
+		"format": "animated-java:format/blueprint",
 		"format_version": "1.8.0",
 		"uuid": "167b27cd-b559-3f13-a97c-0841fe21f1d1",
-		"save_location": "D:\\github-repos\\animated-java\\old-animated-java\\test-packs\\1.21.8\\blueprints\\armor_stand.ajblueprint",
+		"save_location": "D:\\github-repos\\animated-java\\old-animated-java\\test-packs\\1.20.4\\blueprints\\armor_stand_1.20.4.ajblueprint",
 		"last_used_export_namespace": "armor_stand"
-	},
-	"blueprint_settings": {
-		"export_namespace": "armor_stand",
-		"show_bounding_box": false,
-		"auto_bounding_box": true,
-		"bounding_box": [95, 32],
-		"enable_plugin_mode": false,
-		"resource_pack_export_mode": "raw",
-		"data_pack_export_mode": "raw",
-		"target_minecraft_version": "1.21.5",
-		"display_item": "minecraft:white_dye",
-		"custom_model_data_offset": 0,
-		"enable_advanced_resource_pack_settings": false,
-		"resource_pack": "../resources",
-		"enable_advanced_data_pack_settings": false,
-		"data_pack": "../datapacks/animated_java",
-		"summon_commands": "say On-Summon!",
-		"remove_commands": "say On-Remove!",
-		"ticking_commands": "",
-		"interpolation_duration": 1,
-		"teleportation_duration": 1,
-		"use_storage_for_animation": false,
-		"show_function_errors": true,
-		"show_outdated_warning": true,
-		"baked_animations": false,
-		"json_file": "../testPluginExport.json",
-		"enable_advanced_resource_pack_folders": false,
-		"display_item_path": "",
-		"model_folder": "",
-		"texture_folder": "",
-		"customModelDataOffset": 0,
-		"custom_summon_commands": ""
 	},
 	"resolution": {
 		"width": 64,
 		"height": 64
+	},
+	"blueprint_settings": {
+		"export_namespace": "armor_stand",
+		"render_box": [95, 32],
+		"target_minecraft_version": "1.21.5",
+		"resource_pack": "../resources",
+		"data_pack": "../datapacks/animated_java",
+		"on_summon_function": "say On-Summon!",
+		"on_remove_function": "say On-Remove!",
+		"baked_animations": false,
+		"json_file": "../testPluginExport.json"
 	},
 	"elements": [
 		{
@@ -852,8 +831,9 @@
 				"use_entity": true,
 				"entity_type": "minecraft:item_display",
 				"sync_passenger_rotation": true,
-				"summon_commands": "say Left Hand!",
-				"ticking_commands": "particle minecraft:bubble ^ ^ ^1\ntp @e[tag=test3,limit=1] ~ ~ ~ ~ ~"
+				"on_summon_function": "say Summon Left Hand!",
+				"on_remove_function": "say Remove Left Hand!",
+				"on_tick_function": "particle minecraft:bubble ^ ^ ^1\ntp @e[tag=test3,limit=1] ~ ~ ~ ~ ~"
 			},
 			"uuid": "7de415a2-9fdd-e4b2-3455-c3bed72eb896",
 			"type": "locator"
@@ -869,31 +849,33 @@
 				"use_entity": true,
 				"entity_type": "minecraft:item_display",
 				"sync_passenger_rotation": false,
-				"summon_commands": "say Right Hand!",
-				"ticking_commands": "particle minecraft:bubble ^ ^ ^1\ntp @e[tag=test2,limit=1] ~ ~ ~ ~ ~"
+				"on_summon_function": "say Summon Right Hand!",
+				"on_remove_function": "say Remove Right Hand!",
+				"on_tick_function": "particle minecraft:bubble ^ ^ ^1\ntp @e[tag=test2,limit=1] ~ ~ ~ ~ ~"
 			},
 			"uuid": "7747736f-85e2-338f-207e-53f8d3d2fa39",
 			"type": "locator"
 		},
 		{
+			"uuid": "c2e217f1-b50a-5c9a-b342-71a35e984046",
+			"type": "animated_java:text_display",
 			"name": "text_display",
 			"position": [0, 38, 0],
-			"rotation": [45, 0, 0],
+			"rotation": [0, 0, 0],
 			"scale": [1, 1, 1],
 			"visibility": true,
+			"locked": false,
+			"export": true,
 			"block": "minecraft:stone",
 			"config": {},
 			"item": "minecraft:diamond",
 			"itemDisplay": "none",
-			"text": "[\n\t{ text: \"someone's string\\N{HORIZONTAL ELLIPSIS}\\n\" },\n\t{ \"text\": \"\\x40 \\u0042 \\U00000061 \\N{Snowman}\" },\n\t{text: 'test', hover_event: {\n\t\taction:show_item,\n\t\tid:'minecraft:stone'\n\t}},\n\t'awd\"',\n\t\"awd'\", \n\t\"awd\\\"\",\n\t'awd\\'',\n\t'awd\\'\"',\n\t'\\n\\N{Comet}\\n',\n\tno_quotes_on_me,\n\t'\\n',\n\t{\n\t\ttext: orange,\n\t\tcolor: '#ffaa00',\n\t\titalic: true,\n\t\tunderlined: \"true\",\n\t\tstrikethrough: TRUE\n\t}\n]",
+			"text": "[\n\t{0x00aced}yeah', 'I' '[{love light_purple}' 'text]{' displays''#FF5555'}\n\t'\\n'[{#55_FF_55}definitly' 'quite' 'cursed]\n\t'\\n'{what red}{amI #6395EE}{evenlookingat #c02c38}\n]",
 			"lineWidth": 400,
-			"backgroundColor": "#000000",
-			"backgroundAlpha": 0.12941,
+			"backgroundColor": "#00000040",
 			"align": "center",
 			"shadow": true,
-			"seeThrough": true,
-			"uuid": "c2e217f1-b50a-5c9a-b342-71a35e984046",
-			"type": "animated_java:text_display"
+			"seeThrough": true
 		},
 		{
 			"name": "camera",
@@ -908,11 +890,15 @@
 			"uuid": "3ffeee76-901e-f8a2-c29a-82f90e16fd1e"
 		},
 		{
+			"uuid": "bc141119-7f51-9690-7e21-e119b34fb3a2",
+			"type": "animated_java:vanilla_item_display",
 			"name": "item_display",
 			"position": [6, 12, -4],
 			"rotation": [-90, 0, 0],
 			"scale": [0.5, 0.5, 0.5],
 			"visibility": true,
+			"locked": false,
+			"export": true,
 			"block": "minecraft:stone",
 			"config": {},
 			"item": "minecraft:diamond",
@@ -920,12 +906,9 @@
 			"text": "\"Hello World!\"",
 			"lineWidth": 200,
 			"backgroundColor": "#000000",
-			"backgroundAlpha": 0.25,
 			"align": "center",
 			"shadow": false,
-			"seeThrough": false,
-			"uuid": "bc141119-7f51-9690-7e21-e119b34fb3a2",
-			"type": "animated_java:vanilla_item_display"
+			"seeThrough": false
 		}
 	],
 	"outliner": [
@@ -1606,7 +1589,7 @@
 			"length": 1,
 			"snapping": 20,
 			"selected": false,
-			"saved": false,
+			"saved": true,
 			"path": "",
 			"anim_time_update": "",
 			"blend_weight": "",
@@ -1858,29 +1841,6 @@
 							"easingArgs": []
 						}
 					]
-				},
-				"effects": {
-					"name": "Effects",
-					"type": "effect",
-					"keyframes": [
-						{
-							"channel": "variant",
-							"data_points": [
-								{
-									"variant": "5417306e-2c69-3f36-1e3c-edd904034a36",
-									"execute_condition": "",
-									"repeat": false,
-									"repeat_frequency": 1
-								}
-							],
-							"uuid": "1baa095b-e941-62df-a215-698b50c93524",
-							"time": 0,
-							"color": -1,
-							"interpolation": "linear",
-							"easing": "linear",
-							"easingArgs": []
-						}
-					]
 				}
 			}
 		},
@@ -1892,7 +1852,7 @@
 			"length": 2,
 			"snapping": 20,
 			"selected": true,
-			"saved": false,
+			"saved": true,
 			"path": "",
 			"anim_time_update": "",
 			"blend_weight": "",
@@ -1949,13 +1909,13 @@
 					"type": "locator",
 					"keyframes": [
 						{
-							"channel": "commands",
+							"channel": "function",
 							"data_points": [
 								{
 									"x": "0",
 									"y": "0",
 									"z": "0",
-									"commands": "particle minecraft:flame ^ ^ ^",
+									"function": "particle minecraft:flame ^ ^ ^",
 									"execute_condition": "",
 									"repeat": true,
 									"repeat_frequency": 5
@@ -1975,13 +1935,13 @@
 					"type": "locator",
 					"keyframes": [
 						{
-							"channel": "commands",
+							"channel": "function",
 							"data_points": [
 								{
 									"x": "0",
 									"y": "0",
 									"z": "0",
-									"commands": "particle minecraft:flame ^ ^ ^",
+									"function": "particle minecraft:flame ^ ^ ^",
 									"execute_condition": "",
 									"repeat": true,
 									"repeat_frequency": 1
@@ -2023,10 +1983,10 @@
 					"type": "effect",
 					"keyframes": [
 						{
-							"channel": "commands",
+							"channel": "function",
 							"data_points": [
 								{
-									"commands": "say hi",
+									"function": "say hi",
 									"execute_condition": "",
 									"repeat": false,
 									"repeat_frequency": 1
@@ -2040,10 +2000,10 @@
 							"easingArgs": []
 						},
 						{
-							"channel": "commands",
+							"channel": "function",
 							"data_points": [
 								{
-									"commands": "say bye",
+									"function": "say bye",
 									"execute_condition": "",
 									"repeat": false,
 									"repeat_frequency": 1
@@ -2059,8 +2019,224 @@
 					]
 				}
 			}
+		},
+		{
+			"uuid": "791551a5-7e73-8e04-068e-fc13614050d9",
+			"name": "test",
+			"loop": "loop",
+			"override": false,
+			"length": 1,
+			"snapping": 20,
+			"selected": false,
+			"saved": true,
+			"path": "",
+			"anim_time_update": "",
+			"blend_weight": "",
+			"start_delay": "",
+			"loop_delay": "0",
+			"excluded_nodes": [],
+			"animators": {
+				"bc141119-7f51-9690-7e21-e119b34fb3a2": {
+					"name": "item_display",
+					"type": "animated_java:vanilla_item_display",
+					"keyframes": [
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "math.sin(q.life_time * 360 * 8) * 32",
+									"y": "0",
+									"z": "math.cos(q.life_time * 360 * 8) * 32"
+								}
+							],
+							"uuid": "a69ba6a4-665c-ec76-2a8c-8b8e131069ce",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						}
+					]
+				},
+				"c2e217f1-b50a-5c9a-b342-71a35e984046": {
+					"name": "text_display",
+					"type": "animated_java:text_display",
+					"keyframes": [
+						{
+							"channel": "rotation",
+							"data_points": [
+								{
+									"x": "math.sin(q.life_time * 360) * 2",
+									"y": "math.cos(q.life_time * 360) * 2",
+									"z": "0"
+								}
+							],
+							"uuid": "c1567f01-545a-acab-0f30-60be7926f8ad",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						},
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "0",
+									"y": "-math.cos(q.life_time * 360) * 1",
+									"z": "0"
+								}
+							],
+							"uuid": "0ef7b645-7023-abf3-6de5-1273f9531880",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						},
+						{
+							"channel": "scale",
+							"data_points": [
+								{
+									"x": "1 + math.cos(q.life_time * 360) * 0.05",
+									"y": "1 + math.sin(q.life_time * 360) * 0.05",
+									"z": "1"
+								}
+							],
+							"uuid": "cc319bc4-2caf-bd79-01a4-fbfa78d8b859",
+							"time": 0,
+							"color": -1,
+							"uniform": false,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						}
+					]
+				},
+				"808e3c26-7285-af3f-a079-d8b899176dd3": {
+					"name": "head",
+					"type": "bone",
+					"keyframes": [
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "0",
+									"y": "0",
+									"z": "0"
+								}
+							],
+							"uuid": "57100f98-a3c8-2bdb-1124-f26f002a4680",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						},
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "0",
+									"y": "10",
+									"z": "0"
+								}
+							],
+							"uuid": "8a4dbb22-bc64-41ed-2ee5-ad035414a7bf",
+							"time": 0.5,
+							"color": -1,
+							"interpolation": "linear",
+							"easing": "easeOutCubic",
+							"easingArgs": []
+						},
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "0",
+									"y": "0",
+									"z": "0"
+								}
+							],
+							"uuid": "ce5edc5a-11dd-2b47-36e5-16200667dd1f",
+							"time": 1,
+							"color": -1,
+							"interpolation": "linear",
+							"easing": "easeInQuad",
+							"easingArgs": []
+						},
+						{
+							"channel": "scale",
+							"data_points": [
+								{
+									"x": "1",
+									"y": "1",
+									"z": "1"
+								}
+							],
+							"uuid": "dda5a134-8352-b67e-5c03-c7655842ffa5",
+							"time": 0,
+							"color": -1,
+							"uniform": true,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						},
+						{
+							"channel": "scale",
+							"data_points": [
+								{
+									"x": "1",
+									"y": "1",
+									"z": "1"
+								}
+							],
+							"uuid": "465d64a5-61bf-db04-f1f5-bfdc24a3a925",
+							"time": 0.5,
+							"color": -1,
+							"uniform": true,
+							"interpolation": "linear",
+							"easing": "easeOutBack",
+							"easingArgs": [2]
+						},
+						{
+							"channel": "scale",
+							"data_points": [
+								{
+									"x": "1",
+									"y": "1",
+									"z": "1"
+								}
+							],
+							"uuid": "4a7d7cfb-5436-9bff-eaa7-a0834787100d",
+							"time": 1,
+							"color": -1,
+							"uniform": true,
+							"interpolation": "linear",
+							"easing": "linear",
+							"easingArgs": []
+						},
+						{
+							"channel": "scale",
+							"data_points": [
+								{
+									"x": "0.9",
+									"y": "1.1",
+									"z": "0.9\n"
+								}
+							],
+							"uuid": "5b63d06f-8aa2-33dc-e3ab-6da22b3c61c3",
+							"time": 0.15,
+							"color": -1,
+							"uniform": false,
+							"interpolation": "linear",
+							"easing": "easeOutCubic",
+							"easingArgs": [1]
+						}
+					]
+				}
+			}
 		}
 	],
-	"animation_controllers": [],
 	"animation_variable_placeholders": "v.walk_speed = 360 * 1;\nv.run_speed = 360 * 1.5;\nv.stickbug_speed = 360 * 1.25;\n"
 }
