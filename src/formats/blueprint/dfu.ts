@@ -639,5 +639,27 @@ function updateModelTo1_8_0(model: any) {
 		}
 	}
 
+	// Update commands keyframes to use new keyframe channel name
+	if (Array.isArray(fixed.animations)) {
+		debugger
+		for (const animation of fixed.animations) {
+			for (const animator of Object.values<any>(animation.animators ?? {})) {
+				if (!Array.isArray(animator.keyframes)) continue
+				for (const keyframe of animator.keyframes) {
+					if (keyframe.channel !== 'commands') continue
+					keyframe.channel = 'function'
+					if (Array.isArray(keyframe.data_points)) {
+						for (const dataPoint of keyframe.data_points) {
+							if (dataPoint.commands) {
+								dataPoint.function = dataPoint.commands
+								delete dataPoint.commands
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 	return fixed
 }
