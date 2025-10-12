@@ -116,23 +116,21 @@ export type PackMetaFormats = number | number[] | { min_inclusive: number; max_i
 
 interface OverlayEntry {
 	directory?: string
-	/** Since 1.21.9 */
-	min_format?: number
-	/** Since 1.21.9 */
-	max_format?: number
 	/** Minecraft enforces this field does not to exist if the pack doesn't support versions older than 1.21.9 */
 	formats?: PackMetaFormats
+	// Below since 1.21.9
+	min_format?: number
+	max_format?: number
 }
 export interface SerializedPackMeta {
 	pack?: {
 		pack_format?: number
-		/** Since 1.21.9 */
-		min_format?: number
-		/** Since 1.21.9 */
-		max_format?: number
 		/** Minecraft enforces this field does not to exist if the pack doesn't support versions older than 1.21.9 */
 		supported_formats?: PackMetaFormats[]
 		description?: string
+		// Below since 1.21.9
+		min_format?: number
+		max_format?: number
 	}
 	features?: {
 		enabled?: string[]

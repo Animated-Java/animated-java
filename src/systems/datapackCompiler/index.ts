@@ -17,7 +17,7 @@ import { Variant } from '../../variants'
 import type { IRenderedAnimation } from '../animationRenderer'
 import mcbFiles from '../datapackCompiler/mcbFiles'
 import { IntentionalExportError } from '../exporter'
-import { AJMeta, PackMeta, type PackMetaFormats, SUPPORTED_MINECRAFT_VERSIONS } from '../global'
+import { AJMeta, PackMeta, SUPPORTED_MINECRAFT_VERSIONS } from '../global'
 import { JsonText } from '../jsonText'
 import { JsonTextParser } from '../jsonText/parser'
 import type { AnyRenderedNode, IRenderedRig } from '../rigRenderer'
@@ -830,28 +830,28 @@ export default async function compileDataPack(
 	packMeta.content.pack.pack_format = getDataPackFormat(targetVersions[0])
 	packMeta.content.pack.description ??= `Animated Java Data Pack for ${targetVersions.join(', ')}`
 
-	if (targetVersions.length > 1) {
-		packMeta.content.pack.supported_formats = []
-		packMeta.content.overlays ??= {}
-		packMeta.content.overlays.entries ??= []
+	// if (targetVersions.length > 1) {
+	// 	packMeta.content.pack.supported_formats = []
+	// 	packMeta.content.overlays ??= {}
+	// 	packMeta.content.overlays.entries ??= []
 
-		for (const version of targetVersions) {
-			const format: PackMetaFormats = getDataPackFormat(version)
-			packMeta.content.pack.supported_formats.push(format)
+	// 	for (const version of targetVersions) {
+	// 		const format: PackMetaFormats = getDataPackFormat(version)
+	// 		packMeta.content.pack.supported_formats.push(format)
 
-			const existingOverlay = packMeta.content.overlays.entries.find(
-				e => e.directory === `animated_java_${version.replaceAll('.', '_')}`
-			)
-			if (!existingOverlay) {
-				packMeta.content.overlays.entries.push({
-					directory: `animated_java_${version.replaceAll('.', '_')}`,
-					formats: format,
-				})
-			} else {
-				existingOverlay.formats = format
-			}
-		}
-	}
+	// 		const existingOverlay = packMeta.content.overlays.entries.find(
+	// 			e => e.directory === `animated_java_${version.replaceAll('.', '_')}`
+	// 		)
+	// 		if (!existingOverlay) {
+	// 			packMeta.content.overlays.entries.push({
+	// 				directory: `animated_java_${version.replaceAll('.', '_')}`,
+	// 				formats: format,
+	// 			})
+	// 		} else {
+	// 			existingOverlay.formats = format
+	// 		}
+	// 	}
+	// }
 
 	globalCoreFiles.set(PathModule.join(options.dataPackFolder, 'pack.mcmeta'), {
 		content: autoStringify(packMeta.toJSON()),

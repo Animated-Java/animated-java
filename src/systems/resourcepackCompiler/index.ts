@@ -4,7 +4,7 @@ import { IntentionalExportError } from '../exporter'
 import { type IRenderedRig } from '../rigRenderer'
 import type { ExportedFile } from '../util'
 
-import { AJMeta, PackMeta, SUPPORTED_MINECRAFT_VERSIONS, type PackMetaFormats } from '../global'
+import { AJMeta, PackMeta, SUPPORTED_MINECRAFT_VERSIONS } from '../global'
 import EXPORT_1_20_4 from './1.20.4'
 import EXPORT_1_21_2 from './1.21.2'
 import EXPORT_1_21_4 from './1.21.4'
@@ -114,28 +114,28 @@ export default async function compileResourcePack(
 		', '
 	)}`
 
-	if (targetVersions.length > 1) {
-		packMeta.content.pack.supported_formats ??= []
-		packMeta.content.overlays ??= {}
-		packMeta.content.overlays.entries ??= []
+	// if (targetVersions.length > 1) {
+	// 	packMeta.content.pack.supported_formats ??= []
+	// 	packMeta.content.overlays ??= {}
+	// 	packMeta.content.overlays.entries ??= []
 
-		for (const version of targetVersions) {
-			const format: PackMetaFormats = getResourcePackFormat(version)
-			packMeta.content.pack.supported_formats.push(format)
+	// 	for (const version of targetVersions) {
+	// 		const format: PackMetaFormats = getResourcePackFormat(version)
+	// 		packMeta.content.pack.supported_formats.push(format)
 
-			const existingOverlay = packMeta.content.overlays.entries.find(
-				e => e.directory === `animated_java_${version.replaceAll('.', '_')}`
-			)
-			if (!existingOverlay) {
-				packMeta.content.overlays.entries.push({
-					directory: `animated_java_${version.replaceAll('.', '_')}`,
-					formats: format,
-				})
-			} else {
-				existingOverlay.formats = format
-			}
-		}
-	}
+	// 		const existingOverlay = packMeta.content.overlays.entries.find(
+	// 			e => e.directory === `animated_java_${version.replaceAll('.', '_')}`
+	// 		)
+	// 		if (!existingOverlay) {
+	// 			packMeta.content.overlays.entries.push({
+	// 				directory: `animated_java_${version.replaceAll('.', '_')}`,
+	// 				formats: format,
+	// 			})
+	// 		} else {
+	// 			existingOverlay.formats = format
+	// 		}
+	// 	}
+	// }
 
 	globalCoreFiles.set(PathModule.join(options.resourcePackFolder, 'pack.mcmeta'), {
 		content: autoStringify(packMeta.toJSON()),
