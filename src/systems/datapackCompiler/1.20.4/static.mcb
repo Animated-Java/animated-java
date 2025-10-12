@@ -27,6 +27,11 @@ dir root {
 				run function ./on_tick/transform_floating_entities
 			}
 			execute on passengers run tp @s ~ ~ ~ ~ ~
+		} ELSE IF (has_ticking_locators) {
+			execute \
+				on passengers \
+				if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] \
+			run function ./on_tick/transform_locators
 		}
 
 		# Custom post-tick function
@@ -39,7 +44,7 @@ dir root {
 
 	IF (has_locators || has_cameras) {
 		dir on_tick {
-			function transform_floating_entities {
+			function transform_locators {
 				REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator')) as locator {
 					block select_locator_<%locator.storage_name%> { with entity @s data.locators.<%locator.storage_name%>
 						IF (locator.config?.use_entity) {
@@ -72,6 +77,10 @@ dir root {
 						}
 					}
 				}
+			}
+
+			function transform_floating_entities {
+				function ./transform_locators
 
 				REPEAT (Object.values(rig.nodes).filter(node => node.type === 'camera')) as camera {
 					block select_camera_<%camera.storage_name%> { with entity @s data.cameras.<%camera.storage_name%>

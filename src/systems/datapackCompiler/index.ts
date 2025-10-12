@@ -997,6 +997,9 @@ const dataPackCompiler: DataPackCompiler = async ({
 		has_entity_locators:
 			Object.values(rig.nodes).filter(n => n.type === 'locator' && n.config?.use_entity)
 				.length > 0,
+		has_ticking_locators:
+			Object.values(rig.nodes).filter(n => n.type === 'locator' && n.config?.on_tick_function)
+				.length > 0,
 		has_cameras: Object.values(rig.nodes).filter(n => n.type === 'camera').length > 0,
 		is_static: isStatic,
 		getNodeTags,

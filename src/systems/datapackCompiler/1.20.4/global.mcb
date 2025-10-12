@@ -21,9 +21,9 @@ dir global {
 
 	IF (debug_mode) {
 		function on_tick minecraft:tick {
-				execute as @e[type=item_display,tag=<%TAGS.GLOBAL_ROOT()%>] at @s run function *global/root/on_tick
+			execute as @e[type=item_display,tag=<%TAGS.GLOBAL_ROOT()%>] at @s run function *global/root/on_tick
 		}
-	} ELSE IF (!is_static) {
+	} ELSE {
 		function on_tick minecraft:tick {
 			execute as @e[type=item_display,tag=<%TAGS.GLOBAL_ROOT()%>] at @s run function #*global/root/on_tick
 		}
