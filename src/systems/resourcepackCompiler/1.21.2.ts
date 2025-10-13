@@ -1,9 +1,9 @@
 import type { ResourcePackCompiler } from '.'
 import { PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
 import { safeReadSync } from '../../util/fileUtil'
-import { isResourcePackPath, sanitizePathName } from '../../util/minecraftUtil'
+import { isResourcePackPath, sanitizeStorageKey } from '../../util/minecraftUtil'
 import { type ITextureAtlas } from '../minecraft/textureAtlas'
-import { IRenderedNodes } from '../rigRenderer'
+import type { IRenderedNodes } from '../rigRenderer'
 
 const compileResourcePack: ResourcePackCompiler = async ({
 	coreFiles,
@@ -84,13 +84,16 @@ const compileResourcePack: ResourcePackCompiler = async ({
 			throw new Error(`Texture ${texture.name} is missing it's image data.`)
 		}
 
-		let textureName = sanitizePathName(texture.name)
-		if (!texture.name.endsWith('.png')) textureName += '.png'
+		let textureName = texture.name.replace(/\.png$/, '')
+		textureName = sanitizeStorageKey(textureName) + '.png'
+
 		versionedFiles.set(PathModule.join(textureExportFolder, textureName), { content: image })
+
 		if (mcmeta !== undefined)
 			versionedFiles.set(PathModule.join(textureExportFolder, textureName + '.mcmeta'), {
 				content: mcmeta,
 			})
+
 		if (optifineEmissive !== undefined)
 			versionedFiles.set(PathModule.join(textureExportFolder, textureName + '_e.png'), {
 				content: optifineEmissive,

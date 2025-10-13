@@ -1,16 +1,21 @@
-import { isCurrentFormat } from '../blueprintFormat'
-import { PACKAGE } from '../constants'
-import { createBlockbenchMod } from '../util/moddingTools'
+import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
+import { registerMod } from '../util/moddingTools'
 import { Variant } from '../variants'
 
-createBlockbenchMod(
-	`${PACKAGE.name}:variantPreviewCubeFace`,
-	{
-		originalGetTexture: CubeFace.prototype.getTexture,
-	},
-	context => {
+declare global {
+	interface CubeFace {
+		lastVariant: Variant | undefined
+	}
+}
+
+registerMod({
+	id: `animated-java:variant-preview-cube-face`,
+
+	apply: () => {
+		const original = CubeFace.prototype.getTexture
+
 		CubeFace.prototype.getTexture = function (this: CubeFace): Texture | undefined {
-			if (isCurrentFormat() && this.texture) {
+			if (activeProjectIsBlueprintFormat() && this.texture) {
 				const variant = Variant.selected
 				if (
 					variant &&
@@ -31,11 +36,13 @@ createBlockbenchMod(
 				}
 			}
 			this.lastVariant = undefined
-			return context.originalGetTexture.call(this)
+			return original.call(this)
 		}
-		return context
+
+		return { original }
 	},
-	context => {
-		CubeFace.prototype.getTexture = context.originalGetTexture
-	}
-)
+
+	revert: ({ original }) => {
+		CubeFace.prototype.getTexture = original
+	},
+})

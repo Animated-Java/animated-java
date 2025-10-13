@@ -3,7 +3,7 @@
 	import BaseDialogItem from './baseDialogItem.svelte'
 
 	export let label: string
-	export let tooltip: string = ''
+	export let tooltip = ''
 	export let options: Record<string, string>
 	export let defaultOption: string
 	export let value: Valuable<string>
@@ -12,12 +12,11 @@
 
 	if (!(value.get() || options[value.get()])) value.set(defaultOption)
 
-	// @ts-ignore
-	const selectInput = new Interface.CustomElements.SelectInput('dialog-select', {
+	const SELECT_ELEMENT = new Interface.CustomElements.SelectInput('dialog-select', {
 		options,
 		value: value.get(),
 		onChange() {
-			const v = selectInput.node.getAttribute('value')
+			const v = SELECT_ELEMENT.node.getAttribute('value')
 			if (v == undefined) {
 				console.warn('Select value is undefined')
 				return
@@ -28,13 +27,13 @@
 
 	function onReset() {
 		value.set(defaultOption)
-		if (selectInput.node) {
-			selectInput.set(defaultOption)
+		if (SELECT_ELEMENT.node) {
+			SELECT_ELEMENT.set(defaultOption)
 		}
 	}
 
 	requestAnimationFrame(() => {
-		container.appendChild(selectInput.node)
+		container.appendChild(SELECT_ELEMENT.node)
 	})
 </script>
 

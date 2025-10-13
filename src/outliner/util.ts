@@ -1,10 +1,10 @@
-import { sanitizePathName } from '../util/minecraftUtil'
+import { sanitizeStorageKey } from '../util/minecraftUtil'
 import { TextDisplay } from './textDisplay'
 import { VanillaBlockDisplay } from './vanillaBlockDisplay'
 import { VanillaItemDisplay } from './vanillaItemDisplay'
 
 export function sanitizeOutlinerElementName(name: string, elementUUID: string): string {
-	name = sanitizePathName(name)
+	name = sanitizeStorageKey(name)
 	let otherNodes: OutlinerElement[] = [
 		...VanillaBlockDisplay.all,
 		...Group.all,
@@ -24,7 +24,7 @@ export function sanitizeOutlinerElementName(name: string, elementUUID: string): 
 	}
 
 	let i = 1
-	const match = name.match(/\d+$/)
+	const match = /\d+$/.exec(name)
 	if (match) {
 		i = parseInt(match[0])
 		name = name.slice(0, -match[0].length)

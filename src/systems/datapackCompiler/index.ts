@@ -1,41 +1,37 @@
-import {
-	NbtByte,
-	NbtCompound,
-	NbtFloat,
-	NbtInt,
-	NbtList,
-	NbtString,
-	NbtTag,
-} from 'deepslate/lib/nbt'
+import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/lib/nbt'
+import { projectTargetVersionIsAtLeast } from 'src/formats/blueprint'
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
 import { BoneConfig, TextDisplayConfig } from '../../nodeConfigs'
 import { isFunctionTagPath } from '../../util/fileUtil'
 import {
+	DataPackTag,
+	type FunctionTagJSON,
 	getDataPackFormat,
-	IFunctionTag,
-	mergeTag,
+	getNextSupportedVersion,
 	parseBlock,
 	parseDataPackPath,
 	parseResourceLocation,
 } from '../../util/minecraftUtil'
-import { eulerFromQuaternion, floatToHex, roundTo, tinycolorToDecimal } from '../../util/misc'
+import { eulerFromQuaternion, roundTo } from '../../util/misc'
 import { MSLimiter } from '../../util/msLimiter'
 import { Variant } from '../../variants'
-import { IRenderedAnimation } from '../animationRenderer'
+import type { IRenderedAnimation } from '../animationRenderer'
 import mcbFiles from '../datapackCompiler/mcbFiles'
 import { IntentionalExportError } from '../exporter'
-import { AJMeta, MinecraftVersion, PackMeta, PackMetaFormats } from '../global'
-import { JsonText } from '../minecraft/jsonText'
-import { AnyRenderedNode, IRenderedRig, IRenderedVariant } from '../rigRenderer'
+import { AJMeta, PackMeta, SUPPORTED_MINECRAFT_VERSIONS } from '../global'
+import { JsonText } from '../jsonText'
+import { JsonTextParser } from '../jsonText/parser'
+import type { AnyRenderedNode, IRenderedRig } from '../rigRenderer'
 import {
 	arrayToNbtFloatArray,
-	ExportedFile,
+	type ExportedFile,
 	matrixToNbtFloatArray,
 	replacePathPart,
 	transformationToNbt,
 } from '../util'
-import { compile } from './compiler'
+import { compileMcbProject } from './mcbCompiler'
 import { TAGS } from './tags'
+import TELLRAW from './tellraw'
 
 const BONE_TYPES = ['bone', 'text_display', 'item_display', 'block_display']
 
@@ -47,14 +43,6 @@ namespace OBJECTIVES {
 	export const TWEEN_DURATION = () => 'aj.tween_duration'
 }
 
-// 🗡 🏹 🔱 🧪 ⚗ 🎣 🛡 🪓 ⛏ ☠ ☮ ☯ ♠ Ω ♤ ♣ ♧ ❤ ♥ ♡
-// ♦ ♢ ★ ☆ ☄ ☽ ☀ ☁ ☂ ☃ ◎ ☺ ☻ ☹ ☜ ☞ ♪ ♩ ♫ ♬ ✂ ✉ ∞ ♂ ♀ ❤ ™ ®
-// © ✘ ■ □ ▲ △ ▼ ▽ ◆ ◇ ○ ◎ ● Δ ʊ ღ ₪ ½ ⅓ ⅔ ¼ ¾ ⅛ ⅜ ⅝ ⅞ ∧ ∨ ∩
-// ⊂ ⊃  ⊥ ∀ Ξ Γ ɐ ə ɘ ε β ɟ ɥ ɯ ɔ и  ɹ ʁ я ʌ ʍ λ ч ∞ Σ Π Ⓐ Ⓑ Ⓒ
-// Ⓓ Ⓔ Ⓕ Ⓖ Ⓗ Ⓘ Ⓙ Ⓚ Ⓛ Ⓜ Ⓝ Ⓞ Ⓟ Ⓠ Ⓡ Ⓢ Ⓣ Ⓤ Ⓥ Ⓦ Ⓧ Ⓨ Ⓩ ⓐ ⓑ ⓒ ⓓ ⓔ ⓕ ⓖ ⓗ ⓘ ⓙ ⓚ ⓛ ⓜ ⓝ ⓞ ⓟ ⓠ ⓡ ⓢ ⓣ ⓤ ⓥ ⓦ ⓧ ⓨ ⓩ
-// ▓ □〓≡ ╝╚╔╗╬ ╓ ╩┌ ┐└ ┘ ↑ ↓ → ← ↔ ▀▐ ░ ▒▬ ♦ ◘
-// → ✎ ❣ ✚ ✔ ✖ ▁ ▂ ▃ ▄ ▅ ▆ ▇ █ ⊻ ⊼ ⊽ ⋃ ⌀ ⌂
-
 function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 	const tags: string[] = []
 
@@ -65,7 +53,7 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 			// Root is ignored
 		} else if (n.parent) {
 			parentNames.push({
-				name: rig.nodes[n.parent].path_name,
+				name: rig.nodes[n.parent].storage_name,
 				type: rig.nodes[n.parent].type,
 			})
 			recurseParents(rig.nodes[n.parent])
@@ -80,11 +68,11 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 		TAGS.NEW(),
 		TAGS.GLOBAL_ENTITY(),
 		TAGS.GLOBAL_NODE(),
-		TAGS.GLOBAL_NODE_NAMED(node.path_name),
+		TAGS.GLOBAL_NODE_NAMED(node.storage_name),
 		// Project
 		TAGS.PROJECT_ENTITY(Project!.animated_java.export_namespace),
 		TAGS.PROJECT_NODE(Project!.animated_java.export_namespace),
-		TAGS.PROJECT_NODE_NAMED(Project!.animated_java.export_namespace, node.path_name)
+		TAGS.PROJECT_NODE_NAMED(Project!.animated_java.export_namespace, node.storage_name)
 	)
 
 	if (!hasParent) {
@@ -94,19 +82,22 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 		case 'bone': {
 			tags.push(
 				// Global
-				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.path_name),
+				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.storage_name),
 				TAGS.GLOBAL_BONE(),
-				TAGS.GLOBAL_BONE_TREE(node.path_name), // Tree includes self
-				TAGS.GLOBAL_BONE_TREE_BONE(node.path_name), // Tree includes self
+				TAGS.GLOBAL_BONE_TREE(node.storage_name), // Tree includes self
+				TAGS.GLOBAL_BONE_TREE_BONE(node.storage_name), // Tree includes self
 				// Project
 				TAGS.PROJECT_DISPLAY_NODE_NAMED(
 					Project!.animated_java.export_namespace,
-					node.path_name
+					node.storage_name
 				),
 				TAGS.PROJECT_BONE(Project!.animated_java.export_namespace),
-				TAGS.PROJECT_BONE_NAMED(Project!.animated_java.export_namespace, node.path_name),
-				TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_namespace, node.path_name), // Tree includes self
-				TAGS.PROJECT_BONE_TREE_BONE(Project!.animated_java.export_namespace, node.path_name) // Tree includes self
+				TAGS.PROJECT_BONE_NAMED(Project!.animated_java.export_namespace, node.storage_name),
+				TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_namespace, node.storage_name), // Tree includes self
+				TAGS.PROJECT_BONE_TREE_BONE(
+					Project!.animated_java.export_namespace,
+					node.storage_name
+				) // Tree includes self
 			)
 			if (!hasParent) {
 				// Nodes without parents are assumed to be root nodes
@@ -146,17 +137,17 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 		case 'item_display': {
 			tags.push(
 				// Global
-				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.path_name),
+				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.storage_name),
 				TAGS.GLOBAL_ITEM_DISPLAY(),
 				// Project
 				TAGS.PROJECT_DISPLAY_NODE_NAMED(
 					Project!.animated_java.export_namespace,
-					node.path_name
+					node.storage_name
 				),
 				TAGS.PROJECT_ITEM_DISPLAY(Project!.animated_java.export_namespace),
 				TAGS.PROJECT_ITEM_DISPLAY_NAMED(
 					Project!.animated_java.export_namespace,
-					node.path_name
+					node.storage_name
 				)
 			)
 			if (!hasParent) {
@@ -198,17 +189,17 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 		case 'block_display': {
 			tags.push(
 				// Global
-				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.path_name),
+				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.storage_name),
 				TAGS.GLOBAL_BLOCK_DISPLAY(),
 				// Project
 				TAGS.PROJECT_DISPLAY_NODE_NAMED(
 					Project!.animated_java.export_namespace,
-					node.path_name
+					node.storage_name
 				),
 				TAGS.PROJECT_BLOCK_DISPLAY(Project!.animated_java.export_namespace),
 				TAGS.PROJECT_BLOCK_DISPLAY_NAMED(
 					Project!.animated_java.export_namespace,
-					node.path_name
+					node.storage_name
 				)
 			)
 			if (!hasParent) {
@@ -250,17 +241,17 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 		case 'text_display': {
 			tags.push(
 				// Global
-				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.path_name),
+				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.storage_name),
 				TAGS.GLOBAL_TEXT_DISPLAY(),
 				// Project
 				TAGS.PROJECT_DISPLAY_NODE_NAMED(
 					Project!.animated_java.export_namespace,
-					node.path_name
+					node.storage_name
 				),
 				TAGS.PROJECT_TEXT_DISPLAY(Project!.animated_java.export_namespace),
 				TAGS.PROJECT_TEXT_DISPLAY_NAMED(
 					Project!.animated_java.export_namespace,
-					node.path_name
+					node.storage_name
 				)
 			)
 			if (!hasParent) {
@@ -305,7 +296,10 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 				TAGS.GLOBAL_LOCATOR(),
 				// Project
 				TAGS.PROJECT_LOCATOR(Project!.animated_java.export_namespace),
-				TAGS.PROJECT_LOCATOR_NAMED(Project!.animated_java.export_namespace, node.path_name)
+				TAGS.PROJECT_LOCATOR_NAMED(
+					Project!.animated_java.export_namespace,
+					node.storage_name
+				)
 			)
 			if (!hasParent) {
 				// Nodes without parents are assumed to be root nodes
@@ -349,7 +343,10 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 				TAGS.GLOBAL_CAMERA(),
 				// Project
 				TAGS.PROJECT_CAMERA(Project!.animated_java.export_namespace),
-				TAGS.PROJECT_CAMERA_NAMED(Project!.animated_java.export_namespace, node.path_name)
+				TAGS.PROJECT_CAMERA_NAMED(
+					Project!.animated_java.export_namespace,
+					node.storage_name
+				)
 			)
 			if (!hasParent) {
 				// Nodes without parents are assumed to be root nodes
@@ -397,281 +394,24 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 	return new NbtList(tags.sort().map(v => new NbtString(v)))
 }
 
-const TELLRAW_PREFIX = () =>
-	new JsonText([
-		{ text: '\n[', color: 'gray' },
-		{ text: 'AJ', color: 'aqua' },
-		'] ',
-		[
-			{ text: '(from ', color: 'gray', italic: true },
-			Project!.animated_java.export_namespace,
-			')',
-		],
-		' -> ',
-	])
-
-const TELLRAW_ERROR_PREFIX = () =>
-	new JsonText([TELLRAW_PREFIX(), { text: 'ERROR: ', color: 'red' }, '\n '])
-
-const TELLRAW_SUFFIX = () => new JsonText(['\n'])
-
-const TELLRAW_LEARN_MORE_LINK = (url: string) =>
-	new JsonText([
-		'\n ',
-		{
-			text: 'Click here to learn more',
-			color: 'blue',
-			underlined: true,
-			italic: true,
-			clickEvent: { action: 'open_url', value: url },
-		},
-	])
-
-namespace TELLRAW {
-	export const RIG_OUTDATED = () =>
-		new JsonText([
-			'',
-			TELLRAW_ERROR_PREFIX(),
-			{ text: 'The ', color: 'red' },
-			{ text: Project!.animated_java.export_namespace, color: 'yellow' },
-			{ text: ' rig instance at', color: 'red' },
-			[
-				{ text: ' [', color: 'yellow' },
-				{ score: { name: '#this.x', objective: OBJECTIVES.I() } },
-				', ',
-				{ score: { name: '#this.y', objective: OBJECTIVES.I() } },
-				', ',
-				{ score: { name: '#this.z', objective: OBJECTIVES.I() } },
-				']',
-			],
-			{
-				text: ' is outdated! It will not function correctly and should be removed or re-summoned.',
-				color: 'red',
-			},
-			'\n ',
-			{
-				text: '[Click Here to Teleport to the Rig Instance]',
-				clickEvent: {
-					action: 'suggest_command',
-					value: '/tp @s $(x) $(y) $(z)',
-				},
-				color: 'aqua',
-				underlined: true,
-			},
-			TELLRAW_SUFFIX(),
-		])
-	export const RIG_OUTDATED_TEXT_DISPLAY = () =>
-		new JsonText([
-			'',
-			{
-				text: 'This rig instance is outdated!\\nIt will not function correctly and should be removed or re-summoned.',
-				color: 'red',
-			},
-		])
-	export const FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR = (functionName: string) =>
-		new JsonText([
-			'',
-			TELLRAW_ERROR_PREFIX(),
-			{
-				text: 'This function',
-				color: 'blue',
-				underlined: true,
-				hoverEvent: {
-					action: 'show_text',
-					contents: [{ text: functionName, color: 'yellow' }],
-				},
-			},
-			{ text: " must be executed as the rig's root entity.", color: 'red' },
-			'\n',
-			TELLRAW_LEARN_MORE_LINK(
-				'https://animated-java.dev/docs/rigs/controlling-a-rig-instance'
-			),
-			TELLRAW_SUFFIX(),
-		])
-	// Summon Function
-	export const VARIANT_CANNOT_BE_EMPTY = () =>
-		new JsonText([
-			'',
-			TELLRAW_ERROR_PREFIX(),
-			{ text: 'variant', color: 'yellow' },
-			{ text: ' cannot be an empty string.', color: 'red' },
-			TELLRAW_SUFFIX(),
-		])
-	export const INVALID_VARIANT = (
-		variantName: string,
-		variants: Record<string, IRenderedVariant>
-	) =>
-		new JsonText([
-			'',
-			TELLRAW_ERROR_PREFIX(),
-			{ text: 'The variant ', color: 'red' },
-			{ text: variantName, color: 'yellow' },
-			{ text: ' does not exist.', color: 'red' },
-			'\n ',
-			{ text: ' ≡ ', color: 'white' },
-			{ text: 'Available Variants:', color: 'green' },
-			...Object.values(variants).map(
-				variant =>
-					new JsonText([
-						'\n ',
-						' ',
-						' ',
-						{ text: ' ● ', color: 'gray' },
-						{ text: variant.name, color: 'yellow' },
-					])
-			),
-			TELLRAW_SUFFIX(),
-		])
-	export const ANIMATION_CANNOT_BE_EMPTY = () =>
-		new JsonText([
-			'',
-			TELLRAW_ERROR_PREFIX(),
-			{ text: 'animation', color: 'yellow' },
-			{ text: ' cannot be an empty string.', color: 'red' },
-			TELLRAW_SUFFIX(),
-		])
-	export const FRAME_CANNOT_BE_NEGATIVE = () =>
-		new JsonText([
-			'',
-			TELLRAW_ERROR_PREFIX(),
-			{ text: 'frame', color: 'yellow' },
-			{ text: ' must be a non-negative integer.', color: 'red' },
-			TELLRAW_SUFFIX(),
-		])
-	export const INVALID_ANIMATION = (animationName: string, animations: IRenderedAnimation[]) =>
-		new JsonText([
-			'',
-			TELLRAW_ERROR_PREFIX(),
-			{ text: 'The animation ', color: 'red' },
-			{ text: animationName, color: 'yellow' },
-			{ text: ' does not exist.', color: 'red' },
-			'\n ',
-			{ text: ' ≡ ', color: 'white' },
-			{ text: 'Available Animations:', color: 'green' },
-			...animations.map(
-				anim =>
-					new JsonText([
-						'\n ',
-						' ',
-						' ',
-						{ text: ' ● ', color: 'gray' },
-						{ text: anim.path_name, color: 'yellow' },
-					])
-			),
-			TELLRAW_SUFFIX(),
-		])
-	export const NO_VARIANTS = () =>
-		new JsonText([
-			'',
-			TELLRAW_ERROR_PREFIX(),
-			{ text: 'No variants are available.', color: 'red' },
-			TELLRAW_SUFFIX(),
-		])
-	export const INVALID_VERSION = () =>
-		new JsonText([
-			TELLRAW_ERROR_PREFIX(),
-			[
-				{
-					text: 'Attempting to load an Animated Java Data Pack that was exported for ',
-					color: 'red',
-				},
-				{
-					text: `Minecraft ${Project!.animated_java.target_minecraft_versions}`,
-					color: 'aqua',
-				},
-				{ text: ' in the wrong version!', color: 'red' },
-				{
-					text: '\n Please ensure that the data pack is loaded in the correct version, or that your blueprint settings are configured to target the correct version(s) of Minecraft.',
-					color: 'yellow',
-				},
-			],
-			TELLRAW_SUFFIX(),
-		])
-	export const UNINSTALL = () =>
-		new JsonText([
-			TELLRAW_PREFIX(),
-			{ text: 'Successfully removed known animation scoreboard objectives.', color: 'red' },
-			{
-				text: "\nIf you have exported multiple times you may have to manually remove some objectives from previous exports manually, as Animated Java can only remove the latest export's objectives.",
-				color: 'gray',
-				italic: true,
-			},
-			TELLRAW_SUFFIX(),
-		])
-	export const LOCATOR_NOT_FOUND = () =>
-		new JsonText([
-			TELLRAW_PREFIX(),
-			{ text: 'Locator ', color: 'red' },
-			{ nbt: 'args.name', storage: 'aj:temp', color: 'aqua' },
-			{ text: ' not found!', color: 'red' },
-			{
-				text: "\nPlease ensure that it's name is spelled correctly.",
-				color: 'gray',
-				italic: true,
-			},
-			TELLRAW_SUFFIX(),
-		])
-	export const LOCATOR_NOT_FOUND_ENTITY = () =>
-		new JsonText([
-			TELLRAW_PREFIX(),
-			{ text: 'Locator ', color: 'red' },
-			{ nbt: 'args.name', storage: 'aj:temp', color: 'aqua' },
-			{ text: ' not found!', color: 'red' },
-			{
-				text: '\nPlease ensure that the locator has ',
-				color: 'gray',
-				italic: true,
-			},
-			{
-				text: 'Use Entity',
-				color: 'yellow',
-				italic: true,
-			},
-			{
-				text: " enabled in it's config, and it's name is spelled correctly.",
-				color: 'gray',
-				italic: true,
-			},
-			TELLRAW_SUFFIX(),
-		])
-	export const CAMERA_NOT_FOUND_ENTITY = () =>
-		new JsonText([
-			TELLRAW_PREFIX(),
-			{ text: 'Camera ', color: 'red' },
-			{ nbt: 'args.name', storage: 'aj:temp', color: 'aqua' },
-			{ text: ' not found!', color: 'red' },
-			{
-				text: "\nPlease ensure that it's name is spelled correctly.",
-				color: 'gray',
-				italic: true,
-			},
-			TELLRAW_SUFFIX(),
-		])
-}
-
 async function generateRootEntityPassengers(
-	version: MinecraftVersion,
+	version: SUPPORTED_MINECRAFT_VERSIONS,
 	rig: IRenderedRig,
 	rigHash: string
 ) {
 	const aj = Project!.animated_java
 	const passengers: NbtList = new NbtList()
 
-	const { locators, cameras, uuids } = createPassengerStorage(rig)
-
 	const dataEntity = new NbtCompound()
 
-	switch (version) {
-		case '1.20.4':
-		case '1.20.5':
-		case '1.21.0':
-		case '1.21.2':
-		case '1.21.4':
-			dataEntity.set('id', new NbtString('minecraft:marker'))
-			break
-		case '1.21.5':
-			dataEntity.set('id', new NbtString('minecraft:item_display'))
+	if (!compareVersions('1.21.5', version) /* >= 1.21.5 */) {
+		dataEntity.set('id', new NbtString('minecraft:item_display'))
+	} else if (!compareVersions('1.20.4', version) /* >= 1.20.4 */) {
+		dataEntity.set('id', new NbtString('minecraft:marker'))
+	} else {
+		throw new Error(`Minecraft version is below minimum supported version 1.20.4!`)
 	}
+
 	passengers.add(
 		dataEntity
 			.set(
@@ -687,10 +427,8 @@ async function generateRootEntityPassengers(
 			.set(
 				'data',
 				new NbtCompound()
-					.set('rigHash', new NbtString(rigHash))
-					.set('locators', locators)
-					.set('cameras', cameras)
-					.set('uuids', uuids)
+					.set('rig_hash', new NbtString(rigHash))
+					.set('export_namespace', new NbtString(aj.export_namespace))
 			)
 	)
 
@@ -702,10 +440,13 @@ async function generateRootEntityPassengers(
 		const tags = getNodeTags(node, rig)
 		passenger.set('Tags', tags)
 
-		switch (node.type) {
-			case 'bone': {
-				passenger.set('id', new NbtString('minecraft:item_display'))
-				passenger.set(
+		if (BONE_TYPES.includes(node.type)) {
+			passenger
+				.set('height', new NbtFloat(aj.render_box[1]))
+				.set('width', new NbtFloat(aj.render_box[0]))
+				.set('teleport_duration', new NbtInt(0))
+				.set('interpolation_duration', new NbtInt(aj.interpolation_duration))
+				.set(
 					'transformation',
 					new NbtCompound()
 						.set('translation', arrayToNbtFloatArray([0, 0, 0]))
@@ -713,134 +454,99 @@ async function generateRootEntityPassengers(
 						.set('right_rotation', arrayToNbtFloatArray([0, 0, 0, 1]))
 						.set('scale', arrayToNbtFloatArray([0, 0, 0]))
 				)
-				passenger.set('interpolation_duration', new NbtInt(aj.interpolation_duration))
-				passenger.set('teleport_duration', new NbtInt(0))
-				passenger.set('item_display', new NbtString('head'))
-				const item = new NbtCompound()
+		}
+
+		switch (node.type) {
+			case 'bone': {
+				const item = new NbtCompound().set('id', new NbtString(aj.display_item))
+				passenger
+					.set('id', new NbtString('minecraft:item_display'))
+					.set('item', item)
+					.set('item_display', new NbtString('head'))
+
 				const variantModel = rig.variants[Variant.getDefault().uuid].models[uuid]
 				if (!variantModel) {
-					throw new Error(`Model for bone '${node.path_name}' not found!`)
+					throw new Error(`Model for bone '${node.storage_name}' not found!`)
 				}
-				passenger.set('item', item.set('id', new NbtString(aj.display_item)))
-				switch (version) {
-					case '1.20.4': {
-						item.set(
-							'tag',
-							new NbtCompound().set(
-								'CustomModelData',
-								new NbtInt(variantModel.custom_model_data)
-							)
-						)
-						// Count defaults to 1, but only in versions above 1.20.4
-						item.set('Count', new NbtInt(1))
-						break
-					}
-					case '1.20.5':
-					case '1.21.0': {
-						item.set(
-							'components',
-							new NbtCompound().set(
+
+				if (!compareVersions('1.21.4', version) /* >= 1.21.4 */) {
+					item.set(
+						'components',
+						new NbtCompound()
+							.set('minecraft:item_model', new NbtString(variantModel.item_model))
+							.set(
 								'minecraft:custom_model_data',
-								new NbtInt(variantModel.custom_model_data)
-							)
-						)
-						break
-					}
-					case '1.21.2': {
-						item.set(
-							'components',
-							new NbtCompound().set(
-								'minecraft:item_model',
-								new NbtString(variantModel.item_model)
-							)
-						)
-						break
-					}
-					case '1.21.4':
-					case '1.21.5': {
-						item.set(
-							'components',
-							new NbtCompound()
-								.set('minecraft:item_model', new NbtString(variantModel.item_model))
-								.set(
-									'minecraft:custom_model_data',
-									new NbtCompound().set(
-										'strings',
-										new NbtList([new NbtString('default')])
-									)
+								new NbtCompound().set(
+									'strings',
+									new NbtList([new NbtString('default')])
 								)
+							)
+					)
+				} else if (!compareVersions('1.21.2', version) /* >= 1.21.2 */) {
+					item.set(
+						'components',
+						new NbtCompound().set(
+							'minecraft:item_model',
+							new NbtString(variantModel.item_model)
 						)
-						break
-					}
-					default: {
-						throw new Error(
-							`Unsupported Minecraft version '${version}' for item display!`
+					)
+				} else if (!compareVersions('1.20.5', version) /* >= 1.20.5 */) {
+					item.set(
+						'components',
+						new NbtCompound().set(
+							'minecraft:custom_model_data',
+							new NbtInt(variantModel.custom_model_data)
 						)
-					}
+					)
+				} else if (!compareVersions('1.20.4', version) /* >= 1.20.4 */) {
+					item.set(
+						'tag',
+						new NbtCompound().set(
+							'CustomModelData',
+							new NbtInt(variantModel.custom_model_data)
+						)
+					)
+					// `Count` does not default to 1.
+					// However, `count` does default to 1 in later versions, so we only need this for 1.20.4.
+					item.set('Count', new NbtInt(1))
 				}
 
 				if (node.configs?.default) {
 					BoneConfig.fromJSON(node.configs.default).toNBT(passenger)
 				}
-
-				passenger.set('height', new NbtFloat(aj.bounding_box[1]))
-				passenger.set('width', new NbtFloat(aj.bounding_box[0]))
 				break
 			}
 			case 'text_display': {
-				passenger.set('id', new NbtString('minecraft:text_display'))
-				passenger.set(
-					'transformation',
-					new NbtCompound()
-						.set('translation', arrayToNbtFloatArray([0, 0, 0]))
-						.set('left_rotation', arrayToNbtFloatArray([0, 0, 0, 1]))
-						.set('right_rotation', arrayToNbtFloatArray([0, 0, 0, 1]))
-						.set('scale', arrayToNbtFloatArray([0, 0, 0]))
-				)
-				passenger.set('interpolation_duration', new NbtInt(aj.interpolation_duration))
-				passenger.set('teleport_duration', new NbtInt(0))
+				passenger
+					.set('id', new NbtString('minecraft:text_display'))
+					.set('background', new NbtInt(JsonText.hexToInt(node.background_color)))
+					.set('line_width', new NbtInt(node.line_width))
+					.set('shadow', new NbtByte(node.shadow ? 1 : 0))
+					.set('see_through', new NbtByte(node.see_through ? 1 : 0))
+					.set('alignment', new NbtString(node.align))
 
-				passenger.set('height', new NbtFloat(aj.bounding_box[1]))
-				passenger.set('width', new NbtFloat(aj.bounding_box[0]))
-
-				switch (version) {
-					case '1.20.4':
-					case '1.20.5':
-					case '1.21.0':
-					case '1.21.2':
-					case '1.21.4':
-						passenger.set(
-							'text_display',
-							new NbtString(
-								node.text?.toString() ?? `{ "text": "Invalid Text Component" }`
-							)
+				if (!compareVersions('1.21.5', version) /* >= 1.21.5 */) {
+					passenger.set(
+						'text',
+						// SNBT JSON text format
+						// Hacky workaround for deepslate not supporting MC's new escape sequences.
+						new NbtString(
+							'$$$' + node.type + '_' + node.storage_name + '_text_placeholder$$$'
 						)
-						break
-					case '1.21.5':
-						passenger.set(
-							'text',
-							NbtTag.fromString(
-								node.text
-									? node.text.toString()
-									: "{ text: 'Invalid Text Component' }"
-							)
+					)
+				} else if (!compareVersions('1.20.4', version) /* >= 1.20.4 */) {
+					passenger.set(
+						'text',
+						// String JSON text format
+						new NbtString(
+							new JsonTextParser({ minecraftVersion: version })
+								.parse(node.text)
+								.toString(true, version)
 						)
-						break
-					default: {
-						throw new Error(
-							`Unsupported Minecraft version '${version}' for text display!`
-						)
-					}
+					)
+				} else {
+					throw new Error(`Unsupported Minecraft version '${version}' for text display!`)
 				}
-
-				const color = new tinycolor(
-					node.background_color + floatToHex(node.background_alpha)
-				)
-				passenger.set('background', new NbtInt(tinycolorToDecimal(color)))
-				passenger.set('line_width', new NbtInt(node.line_width))
-				passenger.set('shadow', new NbtByte(node.shadow ? 1 : 0))
-				passenger.set('see_through', new NbtByte(node.see_through ? 1 : 0))
-				passenger.set('alignment', new NbtString(node.align))
 
 				if (node.config) {
 					TextDisplayConfig.fromJSON(node.config).toNBT(passenger)
@@ -848,13 +554,17 @@ async function generateRootEntityPassengers(
 				break
 			}
 			case 'item_display': {
-				passenger.set('id', new NbtString('minecraft:item_display'))
-				passenger.set(
-					'item',
-					new NbtCompound()
-						.set('id', new NbtString(node.item))
-						.set('count', new NbtInt(1))
-				)
+				const item = new NbtCompound().set('id', new NbtString(node.item))
+				passenger
+					.set('id', new NbtString('minecraft:item_display'))
+					.set('item', item)
+					.set('item_display', new NbtString(node.item_display))
+
+				if (!compareVersions(version, '1.20.4') /* <= 1.20.4 */) {
+					// `Count` does not default to 1 in 1.20.4.
+					item.set('Count', new NbtInt(1))
+					break
+				}
 
 				if (node.config) {
 					BoneConfig.fromJSON(node.config).toNBT(passenger)
@@ -862,26 +572,25 @@ async function generateRootEntityPassengers(
 				break
 			}
 			case 'block_display': {
-				passenger.set('id', new NbtString('minecraft:block_display'))
-
+				const states = new NbtCompound()
 				const parsed = await parseBlock(node.block)
 				if (!parsed) {
 					throw new Error(
-						`Invalid Blockstate '${node.block}' in node '${node.path_name}'!`
+						`Invalid Blockstate '${node.block}' in node '${node.storage_name}'!`
 					)
 				}
-
-				const states = new NbtCompound()
 				for (const [k, v] of Object.entries(parsed.states)) {
 					states.set(k, new NbtString(v.toString()))
 				}
 
-				passenger.set(
-					'block_state',
-					new NbtCompound()
-						.set('Name', new NbtString(parsed.resource.name))
-						.set('Properties', states)
-				)
+				passenger
+					.set('id', new NbtString('minecraft:block_display'))
+					.set(
+						'block_state',
+						new NbtCompound()
+							.set('Name', new NbtString(parsed.resource.name))
+							.set('Properties', states)
+					)
 
 				if (node.config) {
 					BoneConfig.fromJSON(node.config).toNBT(passenger)
@@ -897,7 +606,20 @@ async function generateRootEntityPassengers(
 		passengers.add(passenger)
 	}
 
-	return passengers.toString()
+	let result = passengers.toString()
+
+	if (!compareVersions('1.21.5', version) /* >= 1.21.5 */) {
+		for (const display of Object.values(rig.nodes).filter(n => n.type === 'text_display')) {
+			result = result.replace(
+				'"$$$' + display.type + '_' + display.storage_name + '_text_placeholder$$$"',
+				new JsonTextParser({ minecraftVersion: version })
+					.parse(display.text)
+					.toString(true, version)
+			)
+		}
+	}
+
+	return result
 }
 
 async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAnimation[]) {
@@ -913,9 +635,9 @@ async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAn
 		PROGRESS_DESCRIPTION.set(`Creating Animation Storage for '${animation.storage_name}'`)
 		let frames = new NbtCompound()
 		const addFrameDataCommand = () => {
-			const str = `data modify storage aj.${
+			const str = `data modify storage animated_java:${
 				Project!.animated_java.export_namespace
-			}:animations ${animation.storage_name} merge value ${frames.toString()}`
+			}/animations ${animation.storage_name} merge value ${frames.toString()}`
 			dataCommands.push(str)
 			frames = new NbtCompound()
 		}
@@ -941,11 +663,11 @@ async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAn
 					thisFrame.set(
 						node.type.charAt(0) + '_' + node.storage_name,
 						new NbtCompound()
-							.set('posx', new NbtFloat(roundTo(transform.pos[0], 4)))
-							.set('posy', new NbtFloat(roundTo(transform.pos[1], 4)))
-							.set('posz', new NbtFloat(roundTo(transform.pos[2], 4)))
-							.set('rotx', new NbtFloat(roundTo(transform.rot[0], 4)))
-							.set('roty', new NbtFloat(roundTo(transform.rot[1], 4)))
+							.set('px', new NbtFloat(roundTo(transform.pos[0], 4)))
+							.set('py', new NbtFloat(roundTo(transform.pos[1], 4)))
+							.set('pz', new NbtFloat(roundTo(transform.pos[2], 4)))
+							.set('rx', new NbtFloat(roundTo(transform.rot[0], 4)))
+							.set('ry', new NbtFloat(roundTo(transform.rot[1], 4)))
 					)
 				}
 			}
@@ -979,44 +701,6 @@ async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAn
 	return dataCommands
 }
 
-function createPassengerStorage(rig: IRenderedRig) {
-	const uuids = new NbtCompound()
-	const locators = new NbtCompound()
-	const cameras = new NbtCompound()
-	// Data entity
-	uuids.set('data_data', new NbtString(''))
-	for (const node of Object.values(rig.nodes)) {
-		switch (node.type) {
-			case 'locator':
-			case 'camera': {
-				const data = new NbtCompound()
-					.set('posx', new NbtFloat(node.default_transform.pos[0]))
-					.set('posy', new NbtFloat(node.default_transform.pos[1]))
-					.set('posz', new NbtFloat(node.default_transform.pos[2]))
-					.set('rotx', new NbtFloat(Math.radToDeg(node.default_transform.rot[0])))
-					.set('roty', new NbtFloat(Math.radToDeg(node.default_transform.rot[1])))
-				if (node.type === 'locator' && node.config?.use_entity)
-					data.set('uuid', new NbtString(''))
-				if (node.type === 'camera') {
-					cameras.set(node.storage_name, data)
-				} else {
-					locators.set(node.storage_name, data)
-				}
-				uuids.set(node.type + '_' + node.storage_name, new NbtString(''))
-				break
-			}
-			case 'bone':
-			case 'text_display':
-			case 'item_display':
-			case 'block_display': {
-				uuids.set(node.type + '_' + node.storage_name, new NbtString(''))
-				break
-			}
-		}
-	}
-	return { locators, cameras, uuids }
-}
-
 function nodeSorter(a: AnyRenderedNode, b: AnyRenderedNode): number {
 	if (a.type === 'locator' && b.type !== 'locator') return 1
 	if (a.type !== 'locator' && b.type === 'locator') return -1
@@ -1025,13 +709,14 @@ function nodeSorter(a: AnyRenderedNode, b: AnyRenderedNode): number {
 
 interface DataPackCompilerOptions {
 	ajmeta: AJMeta
-	version: MinecraftVersion
+	version: SUPPORTED_MINECRAFT_VERSIONS
 	coreFiles: Map<string, ExportedFile>
 	versionedFiles: Map<string, ExportedFile>
 	rig: IRenderedRig
 	animations: IRenderedAnimation[]
 	rigHash: string
 	animationHash: string
+	debugMode: boolean
 }
 
 export type DataPackCompiler = (options: DataPackCompilerOptions) => Promise<void>
@@ -1042,10 +727,11 @@ interface CompileDataPackOptions {
 	dataPackFolder: string
 	rigHash: string
 	animationHash: string
+	debugMode: boolean
 }
 
 export default async function compileDataPack(
-	targetVersions: MinecraftVersion[],
+	targetVersions: SUPPORTED_MINECRAFT_VERSIONS[],
 	options: CompileDataPackOptions
 ) {
 	console.time('Data Pack Compilation took')
@@ -1059,7 +745,7 @@ export default async function compileDataPack(
 		options.dataPackFolder
 	)
 
-	if (aj.data_pack_export_mode === 'raw') {
+	if (aj.data_pack_export_mode === 'folder') {
 		ajmeta.read()
 	}
 
@@ -1088,18 +774,18 @@ export default async function compileDataPack(
 			versionedFiles,
 		})
 
-		for (let [path, file] of coreFiles) {
-			path = PathModule.join(coreDataPackFolder, path)
-			globalCoreFiles.set(path, file)
+		for (const [path, file] of coreFiles) {
+			const relative = PathModule.join(coreDataPackFolder, path)
+			globalCoreFiles.set(relative, file)
 			if (file.includeInAJMeta === false) continue
-			ajmeta.coreFiles.add(path)
+			ajmeta.coreFiles.add(relative)
 		}
 
-		for (let [path, file] of versionedFiles) {
-			path = PathModule.join(versionedDataPackFolder, path)
-			globalVersionSpecificFiles.set(path, file)
+		for (const [path, file] of versionedFiles) {
+			const relative = PathModule.join(versionedDataPackFolder, path)
+			globalVersionSpecificFiles.set(relative, file)
 			if (file.includeInAJMeta === false) continue
-			ajmeta.versionedFiles.add(path)
+			ajmeta.versionedFiles.add(relative)
 		}
 
 		console.groupEnd()
@@ -1108,42 +794,55 @@ export default async function compileDataPack(
 	console.log('Exported Files:', globalCoreFiles.size + globalVersionSpecificFiles.size)
 
 	const packMetaPath = PathModule.join(options.dataPackFolder, 'pack.mcmeta')
-	let packMeta = new PackMeta(
-		packMetaPath,
-		0,
-		[],
-		`Animated Java Data Pack for ${targetVersions.join(', ')}`
-	)
-	packMeta.read()
-	packMeta.pack_format = getDataPackFormat(targetVersions[0])
-	packMeta.supportedFormats = []
+	const packMeta = PackMeta.fromFile(packMetaPath)
+	packMeta.content.pack ??= {}
 
-	if (targetVersions.length > 1) {
-		for (const version of targetVersions) {
-			let format: PackMetaFormats = getDataPackFormat(version)
-			packMeta.supportedFormats.push(format)
-
-			const existingOverlay = [...packMeta.overlayEntries].find(
-				e => e.directory === `animated_java_${version.replaceAll('.', '_')}`
-			)
-			if (!existingOverlay) {
-				packMeta.overlayEntries.add({
-					directory: `animated_java_${version.replaceAll('.', '_')}`,
-					formats: format,
-				})
-			} else {
-				existingOverlay.formats = format
-			}
+	const nextVersion = getNextSupportedVersion(targetVersions[0])
+	const format = getDataPackFormat(targetVersions[0])
+	const nextFormat = nextVersion ? getDataPackFormat(nextVersion) : 10000000
+	if (!compareVersions('1.21.9', targetVersions[0]) /* >= 1.21.9 */) {
+		packMeta.content.pack.min_format = format
+		packMeta.content.pack.max_format = nextFormat - 1
+	} else {
+		packMeta.content.pack.pack_format = format
+		packMeta.content.pack.supported_formats = {
+			min_inclusive: format,
+			max_inclusive: nextFormat - 1,
 		}
 	}
+
+	packMeta.content.pack.description ??= `Animated Java Data Pack for ${targetVersions.join(', ')}`
+
+	// if (targetVersions.length > 1) {
+	// 	packMeta.content.pack.supported_formats = []
+	// 	packMeta.content.overlays ??= {}
+	// 	packMeta.content.overlays.entries ??= []
+
+	// 	for (const version of targetVersions) {
+	// 		const format: PackMetaFormats = getDataPackFormat(version)
+	// 		packMeta.content.pack.supported_formats.push(format)
+
+	// 		const existingOverlay = packMeta.content.overlays.entries.find(
+	// 			e => e.directory === `animated_java_${version.replaceAll('.', '_')}`
+	// 		)
+	// 		if (!existingOverlay) {
+	// 			packMeta.content.overlays.entries.push({
+	// 				directory: `animated_java_${version.replaceAll('.', '_')}`,
+	// 				formats: format,
+	// 			})
+	// 		} else {
+	// 			existingOverlay.formats = format
+	// 		}
+	// 	}
+	// }
 
 	globalCoreFiles.set(PathModule.join(options.dataPackFolder, 'pack.mcmeta'), {
 		content: autoStringify(packMeta.toJSON()),
 		includeInAJMeta: false,
 	})
 
-	if (aj.data_pack_export_mode === 'raw') {
-		await removeFiles(ajmeta, options.dataPackFolder)
+	if (aj.data_pack_export_mode === 'folder') {
+		await removeFiles(ajmeta)
 
 		// Write new files
 		ajmeta.coreFiles = new Set(globalCoreFiles.keys())
@@ -1163,10 +862,10 @@ export default async function compileDataPack(
 	console.timeEnd('Data Pack Compilation took')
 }
 
-async function removeFiles(ajmeta: AJMeta, dataPackFolder: string) {
+async function removeFiles(ajmeta: AJMeta) {
 	console.time('Removing Files took')
 	const aj = Project!.animated_java
-	if (aj.data_pack_export_mode === 'raw') {
+	if (aj.data_pack_export_mode === 'folder') {
 		PROGRESS_DESCRIPTION.set('Removing Old Data Pack Files...')
 		PROGRESS.set(0)
 		MAX_PROGRESS.set(ajmeta.previousVersionedFiles.size)
@@ -1191,7 +890,7 @@ async function removeFiles(ajmeta: AJMeta, dataPackFolder: string) {
 					}
 				}
 				// Remove mentions of the export namespace from the file
-				let content: IFunctionTag
+				let content: FunctionTagJSON
 				// Remove mentions of the export namespace from the file
 				try {
 					content = JSON.parse((await fs.promises.readFile(file)).toString())
@@ -1231,17 +930,20 @@ async function removeFiles(ajmeta: AJMeta, dataPackFolder: string) {
 }
 
 const dataPackCompiler: DataPackCompiler = async ({
-	ajmeta,
+	// ajmeta,
 	version,
-	coreFiles,
+	// coreFiles,
 	versionedFiles,
 	rig,
 	animations,
 	rigHash,
 	animationHash,
+	debugMode,
 }) => {
+	JsonText.defaultMinecraftVersion = version
+
 	const aj = Project!.animated_java
-	const is_static = animations.length === 0
+	const isStatic = animations.length === 0
 	const variables = {
 		export_namespace: aj.export_namespace,
 		interpolation_duration: aj.interpolation_duration,
@@ -1254,49 +956,53 @@ const dataPackCompiler: DataPackCompiler = async ({
 		TAGS,
 		OBJECTIVES,
 		TELLRAW,
-		custom_summon_commands: aj.summon_commands,
-		custom_remove_commands: aj.remove_commands,
+		on_summon_function: aj.on_summon_function,
+		on_remove_function: aj.on_remove_function,
+		on_pre_tick_function: aj.on_pre_tick_function,
+		on_post_tick_function: aj.on_post_tick_function,
 		matrixToNbtFloatArray,
 		transformationToNbt,
 		use_storage_for_animation: aj.use_storage_for_animation,
 		animationStorage: aj.use_storage_for_animation
 			? await createAnimationStorage(rig, animations)
 			: null,
-		rigHash,
-		animationHash,
-		boundingBox: aj.bounding_box,
+		rig_hash: rigHash,
+		animation_hash: animationHash,
+		boundingBox: aj.render_box,
 		BoneConfig,
 		roundTo,
 		nodeSorter,
 		getRotationFromQuaternion: eulerFromQuaternion,
-		root_ticking_commands: aj.ticking_commands,
-		show_function_errors: aj.show_function_errors,
-		show_outdated_warning: aj.show_outdated_warning,
 		has_locators: Object.values(rig.nodes).filter(n => n.type === 'locator').length > 0,
 		has_entity_locators:
 			Object.values(rig.nodes).filter(n => n.type === 'locator' && n.config?.use_entity)
 				.length > 0,
+		has_ticking_locators:
+			Object.values(rig.nodes).filter(n => n.type === 'locator' && n.config?.on_tick_function)
+				.length > 0,
 		has_cameras: Object.values(rig.nodes).filter(n => n.type === 'camera').length > 0,
-		is_static,
+		is_static: isStatic,
 		getNodeTags,
+		BONE_TYPES,
+		project_storage: `animated_java:${aj.export_namespace}`,
+		temp_storage: `animated_java:temp`,
+		gu_storage: `animated_java:gu`,
+		auto_update_rig_orientation: aj.auto_update_rig_orientation,
+		debug_mode: debugMode,
 	}
 
-	compile({
-		path: 'src/animated_java.mcb',
-		mcbFile: is_static ? mcbFiles[version].static : mcbFiles[version].animation,
+	compileMcbProject({
+		sourceFiles: {
+			'src/global.mcbt': mcbFiles[version].globalTemplates,
+			'src/animated_java.mcb': mcbFiles[version].global,
+			[`src/animated_java/${aj.export_namespace}.mcb`]: isStatic
+				? mcbFiles[version].static
+				: mcbFiles[version].animation,
+		},
 		destPath: '.',
 		variables,
 		version,
 		exportedFiles: versionedFiles,
-	})
-
-	compile({
-		path: 'src/animated_java.mcb',
-		mcbFile: mcbFiles[version].core,
-		destPath: '.',
-		variables,
-		version,
-		exportedFiles: coreFiles,
 	})
 }
 
@@ -1305,6 +1011,7 @@ async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFold
 	PROGRESS.set(0)
 	MAX_PROGRESS.set(exportedFiles.size)
 	const aj = Project!.animated_java
+	const lastNamespace = Project!.last_used_export_namespace
 	const createdFolderCache = new Set<string>()
 
 	const functionTagQueue = new Map<string, ExportedFile>()
@@ -1323,7 +1030,12 @@ async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFold
 		if (file.writeHandler) {
 			await file.writeHandler(path, file.content)
 		} else {
-			await fs.promises.writeFile(path, file.content)
+			await fs.promises.writeFile(
+				path,
+				new Uint8Array(
+					Buffer.isBuffer(file.content) ? file.content : Buffer.from(file.content)
+				)
+			)
 		}
 		PROGRESS.set(PROGRESS.get() + 1)
 	}
@@ -1338,81 +1050,60 @@ async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFold
 			})
 		)
 		if (writeQueue.size >= maxWriteThreads) {
-			await Promise.any(writeQueue)
+			await Promise.any(writeQueue.values())
 		}
 	}
 	await Promise.all(writeQueue.values())
 
+	PROGRESS_DESCRIPTION.set('Merging Function Tags...')
+	MAX_PROGRESS.set(functionTagQueue.size)
+	PROGRESS.set(0)
 	for (const [path, file] of functionTagQueue.entries()) {
-		const oldFile: IFunctionTag = JSON.parse(fs.readFileSync(path, 'utf-8'))
-		const newFile: IFunctionTag = JSON.parse(file.content.toString())
-		const merged = mergeTag(oldFile, newFile)
-		if (aj.export_namespace !== Project!.last_used_export_namespace) {
-			merged.values = merged.values.filter(v => {
-				const value = typeof v === 'string' ? v : v.id
-				return (
-					!value.startsWith(`#animated_java:${Project!.last_used_export_namespace}/`) ||
-					value.startsWith(`animated_java:${Project!.last_used_export_namespace}/`)
+		const oldTag = DataPackTag.fromJSON(JSON.parse(fs.readFileSync(path, 'utf-8')))
+		const merged = oldTag.merge(DataPackTag.fromJSON(JSON.parse(file.content.toString())))
+
+		merged.filter(entry => {
+			const id = DataPackTag.getEntryId(entry)
+			const isTag = id.startsWith('#')
+			const location = parseResourceLocation(isTag ? id.substring(1) : id)
+			// Ignore entries unrelated to Animated Java
+			if (location.namespace !== 'animated_java') return true
+
+			// Remove last namespace entries if the namespace has changed
+			if (aj.export_namespace !== lastNamespace && location.namespace === lastNamespace)
+				return false
+
+			// Search for the entry in all data folders
+			const functionFolderName = projectTargetVersionIsAtLeast('1.21')
+				? 'function'
+				: 'functions'
+			const subPath = (isTag ? 'tags/' : '') + functionFolderName
+			const extension = isTag ? '.json' : '.mcfunction'
+
+			for (const folder of fs.readdirSync(dataPackFolder)) {
+				const fullPath = PathModule.join(
+					dataPackFolder,
+					folder,
+					location.namespace,
+					subPath,
+					location.path + extension
 				)
-			})
-		}
-		merged.values = merged.values
-			.filter(v => {
-				const value = typeof v === 'string' ? v : v.id
-				const isTag = value.startsWith('#')
-				const location = parseResourceLocation(isTag ? value.substring(1) : value)
 
-				console.log('Checking:', value, location)
+				if (fs.existsSync(fullPath)) return true
+			}
 
-				let exists = false
-				for (const folder of fs.readdirSync(dataPackFolder)) {
-					const overrideFolder = PathModule.join(dataPackFolder, folder)
-					if (!fs.statSync(overrideFolder).isDirectory()) continue
-					const dataFolder =
-						folder === 'data' ? overrideFolder : PathModule.join(overrideFolder, 'data')
+			console.warn(
+				`Removed reference to ${
+					isTag ? 'tag' : 'function'
+				} '${id}' in '${path}' because it does not exist!`
+			)
+			// Remove the entry if it wasn't found
+			return false
+		})
 
-					const path = isTag
-						? PathModule.join(
-								dataFolder,
-								location.namespace,
-								'tags/functions',
-								location.path + '.json'
-						  )
-						: PathModule.join(
-								dataFolder,
-								location.namespace,
-								'functions',
-								location.path + '.mcfunction'
-						  )
-					console.log('Checking path:', path)
-					if (
-						!(
-							fs.existsSync(path) ||
-							fs.existsSync(
-								path.replace(
-									`${PathModule.sep}functions${PathModule.sep}`,
-									`${PathModule.sep}function${PathModule.sep}`
-								)
-							)
-						)
-					)
-						continue
-					exists = true
-					break
-				}
+		merged.sort()
 
-				if (!exists) {
-					const parentLocation = parseDataPackPath(path)
-					console.warn(
-						`The referenced ${isTag ? 'tag' : 'function'} '${value}' in '${
-							parentLocation?.resourceLocation || path
-						}' does not exist! Removing reference...`
-					)
-				}
-				return exists
-			})
-			.sort()
-
-		await fs.promises.writeFile(path, autoStringify(merged))
+		await fs.promises.writeFile(path, autoStringify(merged.toJSON()))
+		PROGRESS.set(PROGRESS.get() + 1)
 	}
 }

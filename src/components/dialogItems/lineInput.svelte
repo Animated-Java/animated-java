@@ -3,22 +3,22 @@
 	import BaseDialogItem from './baseDialogItem.svelte'
 
 	export let label: string
-	export let tooltip: string = ''
+	export let tooltip = ''
 	export let value: Valuable<string>
 	export let defaultValue: string
-	export let disabled: boolean = false
+	export let disabled = false
 	export let valueChecker: DialogItemValueChecker<string> = undefined
 
 	let _value: string = value.get()
 
-	let warning_text = ''
-	let error_text = ''
+	let warningText = ''
+	let errorText = ''
 
 	function onValueChange() {
 		if (valueChecker) {
 			const result = valueChecker(_value)
-			result.type === 'error' ? (error_text = result.message) : (error_text = '')
-			result.type === 'warning' ? (warning_text = result.message) : (warning_text = '')
+			result.type === 'error' ? (errorText = result.message) : (errorText = '')
+			result.type === 'warning' ? (warningText = result.message) : (warningText = '')
 		}
 
 		value.set(_value)
@@ -33,7 +33,7 @@
 	onValueChange()
 </script>
 
-<BaseDialogItem {label} {tooltip} {warning_text} {error_text} {onReset} let:id>
+<BaseDialogItem {label} {tooltip} {warningText} {errorText} {onReset} let:id>
 	<div class="dialog_bar form_bar">
 		<label class="name_space_left" for={id}>{label}</label>
 		<input

@@ -1,0 +1,17 @@
+dialog.dialog p code {
+	padding: 2px 6px;
+	border: none;
+	font-size: smaller;
+}
+
+dialog.dialog pre:has(code) {
+	background-color: var(--color-back);
+	padding: 4px 7px;
+	font-size: smaller;
+	user-select: text;
+	white-space: pre-wrap;
+}
+
+#collection_properties_vue > ul > li {
+	max-width: unset !important;
+}

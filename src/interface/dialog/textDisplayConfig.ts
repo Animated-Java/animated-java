@@ -1,13 +1,12 @@
-import { isCurrentFormat } from '../../blueprintFormat'
-import { TextDisplayConfig } from '../../nodeConfigs'
+import { registerAction } from 'src/util/moddingTools'
+import TextDisplayConfigDialog from '../../components/textDisplayConfigDialog.svelte'
 import { PACKAGE } from '../../constants'
-import { createAction } from '../../util/moddingTools'
+import { activeProjectIsBlueprintFormat } from '../../formats/blueprint'
+import { TextDisplayConfig } from '../../nodeConfigs'
+import { TextDisplay } from '../../outliner/textDisplay'
 import { Valuable } from '../../util/stores'
 import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
-import { Variant } from '../../variants'
-import TextDisplayConfigDialog from '../../components/textDisplayConfigDialog.svelte'
-import { TextDisplay } from '../../outliner/textDisplay'
 
 export function openBoneConfigDialog(bone: TextDisplay) {
 	// Blockbench's JSON stringifier doesn't handle custom toJSON functions, so I'm storing the config JSON in the bone instead of the actual BoneConfig object
@@ -28,21 +27,22 @@ export function openBoneConfigDialog(bone: TextDisplay) {
 	new SvelteDialog({
 		id: `${PACKAGE.name}:textDisplayConfigDialog`,
 		title: translate('dialog.text_display_config.title'),
-		width: 400,
-		component: TextDisplayConfigDialog,
-		props: {
-			variant: Variant.selected,
-			billboard,
-			overrideBrightness,
-			brightnessOverride,
-			glowing,
-			overrideGlowColor,
-			glowColor,
-			invisible,
-			nbt,
-			shadowRadius,
-			shadowStrength,
-			useNBT,
+		width: 600,
+		content: {
+			component: TextDisplayConfigDialog,
+			props: {
+				billboard,
+				overrideBrightness,
+				brightnessOverride,
+				glowing,
+				overrideGlowColor,
+				glowColor,
+				invisible,
+				nbt,
+				shadowRadius,
+				shadowStrength,
+				useNBT,
+			},
 		},
 		preventKeybinds: true,
 		onConfirm() {
@@ -80,16 +80,31 @@ export function openBoneConfigDialog(bone: TextDisplay) {
 			newConfig.useNBT === defaultConfig.useNBT && (newConfig.useNBT = undefined)
 
 			bone.config = newConfig.toJSON()
+
+			Project!.saved = false
 		},
 	}).show()
 }
 
-export const TEXT_DISPLAY_CONFIG_ACTION = createAction(`${PACKAGE.name}:text_display_config`, {
-	icon: 'settings',
-	name: translate('action.open_text_display_config.name'),
-	condition: () => isCurrentFormat(),
-	click: () => {
-		if (TextDisplay.selected.length === 0) return
-		openBoneConfigDialog(TextDisplay.selected[0])
-	},
+export const TEXT_DISPLAY_CONFIG_ACTION = registerAction(
+	{ id: `animated-java:text-display-config` },
+	{
+		icon: 'settings',
+		name: translate('action.open_text_display_config.name'),
+		condition: () => activeProjectIsBlueprintFormat(),
+		click: () => {
+			if (TextDisplay.selected.length === 0) return
+			openBoneConfigDialog(TextDisplay.selected[0])
+		},
+	}
+)
+
+TEXT_DISPLAY_CONFIG_ACTION.onCreated(action => {
+	TextDisplay.prototype.menu = new Menu([
+		...Outliner.control_menu_group,
+		action,
+		'_',
+		'rename',
+		'delete',
+	])
 })

@@ -1,10 +1,10 @@
 <script lang="ts" context="module">
-	import { Valuable } from '../../util/stores'
 	import { dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action'
-	import BaseDialogItem from './baseDialogItem.svelte'
 	import { flip } from 'svelte/animate'
-	import { fade } from 'svelte/transition'
 	import { cubicIn } from 'svelte/easing'
+	import { fade } from 'svelte/transition'
+	import { Valuable } from '../../util/stores'
+	import BaseDialogItem from './baseDialogItem.svelte'
 </script>
 
 <script lang="ts">
@@ -17,10 +17,10 @@
 	export let includedItemsColumnTooltip: string
 	export let swapColumnsButtonTooltip: string
 	export let availableItems: CollectionItem[]
-	export let includedItems: Valuable<Array<CollectionItem>>
+	export let includedItems: Valuable<CollectionItem[]>
 
-	let includedItemsList: { id: number; title: string; [key: string]: any }[] = []
-	let availableItemsList: { id: number; title: string; [key: string]: any }[] = []
+	let includedItemsList: Array<{ id: number; title: string; [key: string]: any }> = []
+	let availableItemsList: Array<{ id: number; title: string; [key: string]: any }> = []
 
 	for (let i = 0; i < availableItems.length; i++) {
 		const item = availableItems[i]
@@ -40,8 +40,8 @@
 	}
 
 	function finalizeSort() {
-		includedItems.update(items =>
-			includedItemsList.map(i => availableItems.find(a => a.name === i.title)!),
+		includedItems.update(() =>
+			includedItemsList.map(i => availableItems.find(a => a.name === i.title)!)
 		)
 	}
 
@@ -57,7 +57,7 @@
 	}
 </script>
 
-<BaseDialogItem {label} {tooltip} {onReset} let:id>
+<BaseDialogItem {label} {tooltip} {onReset}>
 	<div class="main-column-container">
 		<div class="column" title={availableItemsColumnTooltip}>
 			<h3>{availableItemsColumnLable}</h3>
@@ -84,7 +84,7 @@
 						{/if}
 						<i
 							class="material-icons notranslate icon"
-							style="color: rgb(162, 235, 255);">{item.icon || 'folder'}</i
+							style="color: rgb(162, 235, 255);">{item.icon ?? 'folder'}</i
 						>
 						<span>{item.title}</span>
 					</div>
@@ -123,7 +123,7 @@
 						{/if}
 						<i
 							class="material-icons notranslate icon"
-							style="color: rgb(162, 235, 255);">{item.icon || 'folder'}</i
+							style="color: rgb(162, 235, 255);">{item.icon ?? 'folder'}</i
 						>
 						<span>{item.title}</span>
 					</div>
@@ -148,7 +148,7 @@
 		border: 1px solid var(--color-border);
 		margin: 8px;
 		margin-top: 0px;
-		padding: 4px 8px 30px;
+		padding: 6px 8px 30px;
 		max-height: 16rem;
 		overflow-y: auto;
 	}

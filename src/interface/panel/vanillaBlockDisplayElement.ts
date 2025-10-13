@@ -1,10 +1,8 @@
+import { registerMountSvelteComponentMod } from 'src/util/mountSvelteComponent'
 import VanillaBlockDisplayElementPanel from '../../components/vanillaBlockDisplayElementPanel.svelte'
-import { injectSvelteCompomponentMod } from '../../util/injectSvelteComponent'
 
-injectSvelteCompomponentMod({
+registerMountSvelteComponentMod({
+	id: 'animated-java:append-element-panel/vanilla-block-display',
 	component: VanillaBlockDisplayElementPanel,
-	props: {},
-	elementSelector() {
-		return document.querySelector('#panel_element')
-	},
+	target: '#panel_element',
 })

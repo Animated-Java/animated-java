@@ -37,7 +37,7 @@ export async function getLatestVersion() {
 			`Failed to fetch latest Minecraft version manifest: ${error.message as string}`
 		)
 	}
-	if (response && response.ok) {
+	if (response?.ok) {
 		const result: IMinecraftVersionManifest = await response.json()
 		const version = result.versions.find(
 			(v: IMinecraftVersion) => v.id === result.latest.snapshot

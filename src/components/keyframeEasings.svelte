@@ -1,29 +1,26 @@
 <script lang="ts" context="module">
-	// @ts-expect-error
+	import { activeProjectIsBlueprintFormat } from 'src/formats/blueprint'
+	// @ts-expect-error No types for glob imports
 	import { default as ICON_IMPORTS, filenames } from '../assets/easingIcons/*.svg'
-	import { translate } from '../util/translation'
-	import { events } from '../util/events'
 	import { getEasingArgDefault, hasArgs } from '../util/easing'
+	import EVENTS from '../util/events'
 	import { Valuable } from '../util/stores'
-	import { isCurrentFormat } from '../blueprintFormat'
-	import { createPropertySubscribable } from '../util/moddingTools'
-	import { Subscribable } from '../util/subscribable'
+	import { translate } from '../util/translation'
 
 	const ICONS = Object.fromEntries(
-		(ICON_IMPORTS as unknown as any[]).map((icon, i) => [
+		(ICON_IMPORTS as unknown as Array<{ default: string }>).map((icon, i) => [
 			PathModule.basename(filenames[i]).replace('.svg', '').toLowerCase(),
 			icon.default,
-		]) as [string, string][],
+		])
 	)
-	const EASING_MODE_ICONS: Record<string, string> = {
-		in: ICONS['expo'],
-		out: ICONS['out'],
-		inout: ICONS['inout'],
-	}
-</script>
 
-<script lang="ts">
-	const easingTypes = [
+	const EASING_MODE_ICONS: Record<string, string> = {
+		in: ICONS.expo,
+		out: ICONS.out,
+		inout: ICONS.inout,
+	}
+
+	const EASING_TYPES = [
 		'linear',
 		'sine',
 		'quad',
@@ -36,15 +33,18 @@
 		'back',
 		'bounce',
 	]
-	const easingModes = ['in', 'out', 'inout']
 
-	let easingType: string = 'linear'
+	const EASING_MODES = ['in', 'out', 'inout']
+</script>
+
+<script lang="ts">
+	let easingType = 'linear'
 	let easingMode: string | undefined
 	let easingArg: Valuable<number> | undefined
 
 	function getSelectedEasing() {
 		if (!selectedKeyframe?.easing) return
-		const match = selectedKeyframe.easing.match(/ease(InOut|Out|In)(.+)/)
+		const match = /ease(InOut|Out|In)(.+)/.exec(selectedKeyframe.easing)
 		if (!match) {
 			return {
 				type: selectedKeyframe.easing,
@@ -59,7 +59,7 @@
 		}
 	}
 
-	function setSelectedEasing(type: string, mode: string = 'inout') {
+	function setSelectedEasing(type: string, mode = 'inout') {
 		if (!selectedKeyframe) return
 		if (type === 'linear') {
 			selectedKeyframe.easing = 'linear'
@@ -77,11 +77,11 @@
 
 	let unsub: (() => void) | undefined
 	function getEasingArgs() {
+		unsub?.()
 		if (!selectedKeyframe) return
-		unsub && unsub()
 		if (hasArgs(selectedKeyframe.easing)) {
 			easingArg = new Valuable(
-				selectedKeyframe.easingArgs?.[0] || getEasingArgDefault(selectedKeyframe) || 0,
+				selectedKeyframe.easingArgs?.[0] ?? getEasingArgDefault(selectedKeyframe) ?? 0
 			)
 			unsub = easingArg?.subscribe(value => setEasingArgs(value))
 		} else {
@@ -92,7 +92,7 @@
 	function setEasingArgs(arg: number | undefined) {
 		if (!selectedKeyframe) return
 		if (!arg) {
-			selectedKeyframe.easingArgs = undefined
+			delete selectedKeyframe.easingArgs
 			return
 		}
 		selectedKeyframe.easingArgs = [arg]
@@ -108,31 +108,27 @@
 		)
 	}
 
-	events.SELECT_KEYFRAME.subscribe((keyframe?: _Keyframe) => {
-		console.log('selected keyframe', keyframe)
+	EVENTS.UPDATE_KEYFRAME_SELECTION.subscribe(() => {
+		const selected = Timeline.selected.at(0)
 		if (
-			isCurrentFormat() &&
-			keyframe &&
-			['position', 'rotation', 'scale'].includes(keyframe.channel) &&
-			!isFirstKeyframe(keyframe)
+			activeProjectIsBlueprintFormat() &&
+			selected &&
+			['position', 'rotation', 'scale'].includes(selected.channel) &&
+			!isFirstKeyframe(selected)
 		) {
-			selectedKeyframe = keyframe
+			selectedKeyframe = selected
 			const easing = getSelectedEasing()
 			if (easing) {
 				easingType = easing.type
 				easingMode = easing.mode
 			}
 		} else {
+			setEasingArgs($easingArg)
 			selectedKeyframe = undefined
 		}
 	})
 
-	events.UNSELECT_KEYFRAME.subscribe(() => {
-		setEasingArgs($easingArg)
-		selectedKeyframe = undefined
-	})
-
-	events.UNSELECT_AJ_PROJECT.subscribe(() => {
+	EVENTS.UNSELECT_AJ_PROJECT.subscribe(() => {
 		setEasingArgs($easingArg)
 		selectedKeyframe = undefined
 	})
@@ -151,7 +147,7 @@
 			</label>
 			{#key easingType}
 				<div id="easing_type_input" class="easing-container">
-					{#each easingTypes as ease}
+					{#each EASING_TYPES as ease}
 						<button
 							class="easing-type"
 							title={translate(`panel.keyframe.easing_type.options.${ease}`)}
@@ -179,7 +175,7 @@
 				</label>
 				{#key easingMode}
 					<div id="easing_mode_input" class="easing-container">
-						{#each easingModes as mode}
+						{#each EASING_MODES as mode}
 							<button
 								class="easing-type"
 								title={translate(`panel.keyframe.easing_mode.options.${mode}`)}
@@ -203,7 +199,7 @@
 					class="undefined"
 					style="font-weight: unset; width: 100px; text-align: left;"
 					title={translate(
-						`panel.keyframe.easing_args.easing_arg.${easingType}.description`,
+						`panel.keyframe.easing_args.easing_arg.${easingType}.description`
 					)}
 				>
 					{translate(`panel.keyframe.easing_args.easing_arg.${easingType}.title`)}

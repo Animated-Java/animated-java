@@ -1,12 +1,11 @@
-import { IBlueprintBoneConfigJSON, isCurrentFormat } from '../blueprintFormat'
+import { getItemModel } from 'src/systems/minecraft/itemModelManager'
+import { registerAction } from 'src/util/moddingTools'
 import { PACKAGE } from '../constants'
-import { VANILLA_ITEM_DISPLAY_CONFIG_ACTION } from '../interface/dialog/vanillaItemDisplayConfig'
+import { type IBlueprintBoneConfigJSON, activeProjectIsBlueprintFormat } from '../formats/blueprint'
 import { BoneConfig } from '../nodeConfigs'
-import { getItemModel } from '../systems/minecraft/itemModelManager'
 import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
 import { getCurrentVersion } from '../systems/minecraft/versionManager'
-import { events } from '../util/events'
-import { createAction, createBlockbenchMod } from '../util/moddingTools'
+import EVENTS from '../util/events'
 import { Valuable } from '../util/stores'
 import { translate } from '../util/translation'
 import { ResizableOutlinerElement } from './resizableOutlinerElement'
@@ -35,32 +34,24 @@ interface VanillaItemDisplayOptions {
 
 export class VanillaItemDisplay extends ResizableOutlinerElement {
 	static type = `${PACKAGE.name}:vanilla_item_display`
+	static icon = 'icecream'
 	static selected: VanillaItemDisplay[] = []
 	static all: VanillaItemDisplay[] = []
 
-	public type = VanillaItemDisplay.type
-	public icon = 'icecream'
-	public needsUniqueName = true
+	type = VanillaItemDisplay.type
+	icon = VanillaItemDisplay.icon
+	needsUniqueName = true
 
 	// Properties
-	public _item = new Valuable('minecraft:diamond')
-	public _itemDisplay = new Valuable<ItemDisplayMode>('none')
-	public config: IBlueprintBoneConfigJSON
+	private __item = new Valuable('minecraft:diamond')
+	private __itemDisplay = new Valuable<ItemDisplayMode>('none')
+	config: IBlueprintBoneConfigJSON
 
-	public error = new Valuable('')
+	error = new Valuable('')
 
-	public menu = new Menu([
-		...Outliner.control_menu_group,
-		VANILLA_ITEM_DISPLAY_CONFIG_ACTION,
-		'_',
-		'rename',
-		'delete',
-	])
-	public buttons = [Outliner.buttons.export, Outliner.buttons.locked, Outliner.buttons.visibility]
+	buttons = [Outliner.buttons.export, Outliner.buttons.locked, Outliner.buttons.visibility]
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	public preview_controller = PREVIEW_CONTROLLER
-
-	public ready = false
+	preview_controller = PREVIEW_CONTROLLER
 
 	constructor(data: VanillaItemDisplayOptions, uuid = guid()) {
 		super(data, uuid)
@@ -104,36 +95,30 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 			}
 		}
 
-		this._item.subscribe(value => {
+		this.__item.subscribe(value => {
 			updateItem(value)
 		})
 	}
 
 	get item() {
-		if (this._item === undefined) return 'minecraft:diamond'
-		return this._item.get()
+		if (this.__item === undefined) return 'minecraft:diamond'
+		return this.__item.get()
 	}
 	set item(value: string) {
-		if (this._item === undefined) return
-		this._item.set(value)
+		if (this.__item === undefined) return
+		this.__item.set(value)
 	}
 
 	get itemDisplay() {
-		if (this._itemDisplay === undefined) return 'none'
-		return this._itemDisplay.get()
+		if (this.__itemDisplay === undefined) return 'none'
+		return this.__itemDisplay.get()
 	}
 	set itemDisplay(value: ItemDisplayMode) {
-		if (this._itemDisplay === undefined) return
-		this._itemDisplay.set(value)
+		if (this.__itemDisplay === undefined) return
+		this.__itemDisplay.set(value)
 	}
 
-	async waitForReady() {
-		while (!this.ready) {
-			await new Promise(resolve => requestAnimationFrame(resolve))
-		}
-	}
-
-	public sanitizeName(): string {
+	sanitizeName(): string {
 		this.name = sanitizeOutlinerElementName(this.name, this.uuid)
 		return this.name
 	}
@@ -151,14 +136,11 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 	}
 
 	getSaveCopy() {
-		const el: any = {}
+		const save = super.getSaveCopy?.() ?? {}
 		for (const key in VanillaItemDisplay.properties) {
-			VanillaItemDisplay.properties[key].copy(this, el)
+			VanillaItemDisplay.properties[key].copy(this, save)
 		}
-		el.uuid = this.uuid
-		el.type = this.type
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-		return el
+		return save
 	}
 
 	select() {
@@ -201,6 +183,7 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 		this.preview_controller.updateHighlight(this)
 	}
 }
+VanillaItemDisplay.prototype.icon = VanillaItemDisplay.icon
 new Property(VanillaItemDisplay, 'string', 'item', { default: 'minecraft:diamond' })
 new Property(VanillaItemDisplay, 'string', 'itemDisplay', { default: 'none' })
 new Property(VanillaItemDisplay, 'object', 'config', {
@@ -210,9 +193,29 @@ new Property(VanillaItemDisplay, 'object', 'config', {
 })
 OutlinerElement.registerType(VanillaItemDisplay, VanillaItemDisplay.type)
 
+const TEMP_MESH_MAP = new THREE.TextureLoader().load(
+	'data:image/svg+xml,' +
+		encodeURIComponent(
+			`<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M482-40 294-400q-71 3-122.5-41T120-560q0-51 29.5-92t74.5-58q18-91 89.5-150.5T480-920q95 0 166.5 59.5T736-710q45 17 74.5 58t29.5 92q0 75-53 119t-119 41L482-40ZM280-480q15 0 29.5-5t26.5-17l22-22 26 16q21 14 45.5 21t50.5 7q26 0 50.5-7t45.5-21l26-16 22 22q12 12 26.5 17t29.5 5q33 0 56.5-23.5T760-560q0-30-19-52.5T692-640l-30-4-2-32q-5-69-57-116.5T480-840q-71 0-123 47.5T300-676l-2 32-30 6q-30 6-49 27t-19 51q0 33 23.5 56.5T280-480Zm202 266 108-210q-24 12-52 18t-58 6q-27 0-54.5-6T372-424l110 210Zm-2-446Z"/></svg>`
+		)
+)
+TEMP_MESH_MAP.minFilter = THREE.NearestFilter
+TEMP_MESH_MAP.magFilter = THREE.NearestFilter
+
 export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, {
 	setup(el: VanillaItemDisplay) {
 		ResizableOutlinerElement.prototype.preview_controller.setup(el)
+		// Setup temp sprite mesh
+		const material = new THREE.SpriteMaterial({
+			map: TEMP_MESH_MAP,
+			alphaTest: 0.1,
+			sizeAttenuation: false,
+		})
+		const sprite = new THREE.Sprite(material)
+		sprite.scale.setScalar(1 / 20)
+		const mesh = el.mesh as THREE.Mesh
+		mesh.add(sprite)
+		mesh.sprite = sprite
 	},
 	updateGeometry(el: VanillaItemDisplay) {
 		if (!el.mesh) return
@@ -239,15 +242,12 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, 
 					el.error.set(err.message as string)
 				}
 			})
-			.finally(() => {
-				el.ready = true
-			})
 	},
 	updateTransform(el: VanillaItemDisplay) {
 		ResizableOutlinerElement.prototype.preview_controller.updateTransform(el)
 	},
 	updateHighlight(el: VanillaItemDisplay, force?: boolean | VanillaItemDisplay) {
-		if (!isCurrentFormat() || !el?.mesh) return
+		if (!activeProjectIsBlueprintFormat() || !el?.mesh) return
 		const highlighted = Modes.edit && (force === true || force === el || el.selected) ? 1 : 0
 
 		const itemModel = el.mesh.children.at(0) as THREE.Mesh
@@ -257,7 +257,6 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, 
 			const highlight = child.geometry.attributes.highlight
 
 			if (highlight.array[0] != highlighted) {
-				// @ts-ignore
 				highlight.array.set(Array(highlight.count).fill(highlighted))
 				highlight.needsUpdate = true
 			}
@@ -266,15 +265,12 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, 
 })
 
 class VanillaItemDisplayAnimator extends BoneAnimator {
-	private _name: string
-
-	public uuid: string
-	public element: VanillaItemDisplay | undefined
+	uuid: string
+	element: VanillaItemDisplay | undefined
 
 	constructor(uuid: string, animation: _Animation, name: string) {
 		super(uuid, animation, name)
 		this.uuid = uuid
-		this._name = name
 	}
 
 	getElement() {
@@ -314,7 +310,7 @@ class VanillaItemDisplayAnimator extends BoneAnimator {
 			}
 		}
 
-		if (this.element && this.element.parent && this.element.parent !== 'root') {
+		if (this.element?.parent && this.element.parent !== 'root') {
 			this.element.parent.openUp()
 		}
 
@@ -323,7 +319,7 @@ class VanillaItemDisplayAnimator extends BoneAnimator {
 
 	doRender() {
 		this.getElement()
-		return !!(this.element && this.element.mesh)
+		return !!this.element?.mesh
 	}
 
 	displayRotation(arr: ArrayVector3 | ArrayVector4, multiplier = 1) {
@@ -335,13 +331,13 @@ class VanillaItemDisplayAnimator extends BoneAnimator {
 
 		if (arr) {
 			if (arr.length === 4) {
-				const added_rotation = new THREE.Euler().setFromQuaternion(
+				const addedRotation = new THREE.Euler().setFromQuaternion(
 					new THREE.Quaternion().fromArray(arr),
 					'ZYX'
 				)
-				bone.rotation.x -= added_rotation.x * multiplier
-				bone.rotation.y -= added_rotation.y * multiplier
-				bone.rotation.z += added_rotation.z * multiplier
+				bone.rotation.x -= addedRotation.x * multiplier
+				bone.rotation.y -= addedRotation.y * multiplier
+				bone.rotation.z += addedRotation.z * multiplier
 			} else {
 				bone.rotation.x += Math.degToRad(-arr[0]) * multiplier
 				bone.rotation.y += Math.degToRad(-arr[1]) * multiplier
@@ -385,66 +381,67 @@ class VanillaItemDisplayAnimator extends BoneAnimator {
 VanillaItemDisplayAnimator.prototype.type = VanillaItemDisplay.type
 VanillaItemDisplay.animator = VanillaItemDisplayAnimator as any
 
-createBlockbenchMod(
-	`${PACKAGE.name}:vanillaItemDisplay`,
+export const CREATE_ACTION = registerAction(
+	{ id: `animated-java:action/create-vanilla-item-display` },
 	{
-		subscriptions: [] as Array<() => void>,
-	},
-	context => {
-		Interface.Panels.outliner.menu.addAction(CREATE_ACTION, 3)
-		Toolbars.outliner.add(CREATE_ACTION, 0)
-		MenuBar.menus.edit.addAction(CREATE_ACTION, 8)
+		name: translate('action.create_vanilla_item_display.title'),
+		icon: 'icecream',
+		category: 'animated_java',
+		condition() {
+			return activeProjectIsBlueprintFormat() && Mode.selected.id === Modes.options.edit.id
+		},
+		click() {
+			Undo.initEdit({ outliner: true, elements: [], selection: true })
 
-		context.subscriptions.push(
-			events.SELECT_PROJECT.subscribe(project => {
-				project.vanillaItemDisplays ??= []
-				VanillaItemDisplay.all.empty()
-				VanillaItemDisplay.all.push(...project.vanillaItemDisplays)
-			}),
-			events.UNSELECT_PROJECT.subscribe(project => {
-				project.vanillaItemDisplays = [...VanillaItemDisplay.all]
-				VanillaItemDisplay.all.empty()
+			const vanillaItemDisplay = new VanillaItemDisplay({}).init()
+			const group = getCurrentGroup()
+
+			if (group instanceof Group) {
+				vanillaItemDisplay.addTo(group)
+				vanillaItemDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
+			}
+
+			selected.forEachReverse(el => el.unselect())
+			Group.first_selected?.unselect()
+			vanillaItemDisplay.select()
+
+			Undo.finishEdit('Create Vanilla Item Display', {
+				outliner: true,
+				elements: selected,
+				selection: true,
 			})
-		)
-		return context
-	},
-	context => {
-		Interface.Panels.outliner.menu.removeAction(CREATE_ACTION.id)
-		Toolbars.outliner.remove(CREATE_ACTION)
-		MenuBar.menus.edit.removeAction(CREATE_ACTION.id)
 
-		context.subscriptions.forEach(unsub => unsub())
+			return vanillaItemDisplay
+		},
 	}
 )
 
-export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_vanilla_item_display`, {
-	name: translate('action.create_vanilla_item_display.title'),
-	icon: 'icecream',
-	category: 'animated_java',
-	condition() {
-		return isCurrentFormat() && Mode.selected.id === Modes.options.edit.id
-	},
-	click() {
-		Undo.initEdit({ outliner: true, elements: [], selection: true })
+const CLEANUP_CALLBACKS: Array<() => void> = []
 
-		const vanillaItemDisplay = new VanillaItemDisplay({}).init()
-		const group = getCurrentGroup()
+CREATE_ACTION.onCreated(action => {
+	Interface.Panels.outliner.menu.addAction(action, 3)
+	Toolbars.outliner.add(action, 0)
+	MenuBar.menus.edit.addAction(action, 8)
 
-		if (group instanceof Group) {
-			vanillaItemDisplay.addTo(group)
-			vanillaItemDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
-		}
+	CLEANUP_CALLBACKS.push(
+		EVENTS.SELECT_PROJECT.subscribe(project => {
+			project.vanillaItemDisplays ??= []
+			VanillaItemDisplay.all.empty()
+			VanillaItemDisplay.all.push(...project.vanillaItemDisplays)
+		}),
 
-		selected.forEachReverse(el => el.unselect())
-		Group.first_selected && Group.first_selected.unselect()
-		vanillaItemDisplay.select()
-
-		Undo.finishEdit('Create Vanilla Item Display', {
-			outliner: true,
-			elements: selected,
-			selection: true,
+		EVENTS.UNSELECT_PROJECT.subscribe(project => {
+			project.vanillaItemDisplays = [...VanillaItemDisplay.all]
+			VanillaItemDisplay.all.empty()
 		})
+	)
+})
 
-		return vanillaItemDisplay
-	},
+CREATE_ACTION.onDeleted(action => {
+	Interface.Panels.outliner.menu.removeAction(action)
+	Toolbars.outliner.remove(action)
+	MenuBar.menus.edit.removeAction(action)
+
+	CLEANUP_CALLBACKS.forEach(unsub => unsub())
+	CLEANUP_CALLBACKS.empty()
 })

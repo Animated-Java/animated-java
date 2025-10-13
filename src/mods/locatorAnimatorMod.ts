@@ -1,22 +1,15 @@
-import { BLUEPRINT_FORMAT } from '../blueprintFormat'
-import { events } from '../util/events'
+import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from 'src/formats/blueprint'
+import EVENTS from 'src/util/events'
+import { registerConditionalPropertyOverrideMod, registerProjectMod } from 'src/util/moddingTools'
 import { translate } from '../util/translation'
 
-const DEFAULT_SHOW_MOTION_TRAIL = Animator.showMotionTrail
-const DEFAULT_PREVIEW = Animator.preview
-const DEFAULT_UPDATE_SELECTION = globalThis.updateSelection
-const DEFAULT_SELECT = Locator.prototype.select
-
 export class LocatorAnimator extends BoneAnimator {
-	private _name: string
-
-	public uuid: string
-	public element: Locator | undefined
+	uuid: string
+	element: Locator | undefined
 
 	constructor(uuid: string, animation: _Animation, name: string) {
 		super(uuid, animation, name)
 		this.uuid = uuid
-		this._name = name
 	}
 
 	getElement() {
@@ -56,7 +49,7 @@ export class LocatorAnimator extends BoneAnimator {
 			}
 		}
 
-		if (this.element && this.element.parent && this.element.parent !== 'root') {
+		if (this.element?.parent && this.element.parent !== 'root') {
 			this.element.parent.openUp()
 		}
 
@@ -65,7 +58,7 @@ export class LocatorAnimator extends BoneAnimator {
 
 	doRender() {
 		this.getElement()
-		return !!(this.element && this.element.mesh)
+		return !!this.element?.mesh
 	}
 
 	displayPosition(arr?: ArrayVector3, multiplier = 1) {
@@ -93,74 +86,98 @@ export class LocatorAnimator extends BoneAnimator {
 }
 LocatorAnimator.prototype.type = 'locator'
 LocatorAnimator.prototype.channels = {
-	commands: {
-		name: translate('effect_animator.timeline.commands'),
+	function: {
+		name: translate('effect_animator.timeline.function'),
 		mutable: true,
 		transform: true,
 		max_data_points: 1,
 	},
 }
 
-let installed = false
+registerConditionalPropertyOverrideMod({
+	id: 'animated-java:property-override/locator/animator',
+	object: Locator,
+	key: 'animator',
 
-function inject() {
-	if (installed) return
+	condition: () => activeProjectIsBlueprintFormat(),
 
-	Locator.animator = LocatorAnimator as any
+	get: () => {
+		return LocatorAnimator as unknown as BoneAnimator
+	},
+})
 
-	Animator.showMotionTrail = function (target?: Group) {
-		if (!target || target instanceof Locator) return
-		DEFAULT_SHOW_MOTION_TRAIL(target)
-	}
-	Animator.preview = function (inLoop?: boolean) {
-		DEFAULT_PREVIEW(inLoop)
-		if (
-			Mode.selected.id === Modes.options.animate.id &&
-			Outliner.selected[0] instanceof Locator
-		) {
-			// @ts-ignore
-			Canvas.gizmos[0].visible = false
-			Transformer.visible = false
+registerConditionalPropertyOverrideMod({
+	id: 'animated-java:function-override/locator/select',
+	object: Locator.prototype,
+	key: 'select',
+
+	condition: () => activeProjectIsBlueprintFormat(),
+
+	get: original => {
+		return function (this: Locator, event?: any, isOutlinerClick?: boolean) {
+			const result = original.call(this, event, isOutlinerClick)
+			if (Animator.open && Blockbench.Animation.selected) {
+				Blockbench.Animation.selected.getBoneAnimator().select()
+			}
+			return result
 		}
-	}
-	globalThis.updateSelection = function () {
-		DEFAULT_UPDATE_SELECTION()
-		if (
-			Mode.selected.id === Modes.options.animate.id &&
-			Outliner.selected[0] instanceof Locator
-		) {
-			// @ts-ignore
-			Canvas.gizmos[0].visible = false
-			Transformer.visible = false
+	},
+})
+
+registerConditionalPropertyOverrideMod({
+	id: 'animated-java:function-override/animator/show-motion-trail',
+	object: Animator,
+	key: 'showMotionTrail',
+
+	condition: () => activeProjectIsBlueprintFormat(),
+
+	get: original => {
+		return function (target?: Group) {
+			if (!target || target instanceof Locator) return
+			return original(target)
 		}
-	}
-	Locator.prototype.select = function (this: Locator, event?: any, isOutlinerClick?: boolean) {
-		const result = DEFAULT_SELECT.call(this, event, isOutlinerClick)
-		if (Animator.open && Blockbench.Animation.selected) {
-			Blockbench.Animation.selected.getBoneAnimator().select()
+	},
+})
+
+registerConditionalPropertyOverrideMod({
+	id: 'animated-java:function-override/animator/preview',
+	object: Animator,
+	key: 'preview',
+
+	condition: () => activeProjectIsBlueprintFormat(),
+
+	get: original => {
+		return function (inLoop?: boolean) {
+			const result = original(inLoop)
+			if (
+				Mode.selected.id === Modes.options.animate.id &&
+				Outliner.selected[0] instanceof Locator
+			) {
+				Canvas.gizmos[0].visible = false
+				Transformer.visible = false
+			}
+			return result
 		}
-		return result
-	}
+	},
+})
 
-	installed = true
-}
+registerProjectMod({
+	id: 'animated-java:project-mod/locator-animator/hide-gizmos',
 
-function extract() {
-	if (!installed) return
-	Locator.animator = undefined
+	condition: project => project.format.id === BLUEPRINT_FORMAT_ID,
 
-	Animator.showMotionTrail = DEFAULT_SHOW_MOTION_TRAIL
-	Animator.preview = DEFAULT_PREVIEW
-	globalThis.updateSelection = DEFAULT_UPDATE_SELECTION
-	Locator.prototype.select = DEFAULT_SELECT
+	apply: () => {
+		const unsub = EVENTS.UPDATE_SELECTION.subscribe(() => {
+			if (Mode.selected.id !== Modes.options.animate.id) return
+			if (selected.at(0) instanceof Locator) {
+				Canvas.gizmos[0].visible = false
+				Transformer.visible = false
+			}
+		})
+		return { unsub }
+	},
 
-	installed = false
-}
-
-events.PRE_SELECT_PROJECT.subscribe(project => {
-	if (project.format.id === BLUEPRINT_FORMAT.id) {
-		inject()
-	} else {
-		extract()
-	}
+	revert: ({ unsub }) => {
+		unsub()
+	},
 })

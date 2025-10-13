@@ -1,30 +1,30 @@
 import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtString, NbtTag } from 'deepslate/lib/nbt'
-import {
+import type {
 	IBlueprintBoneConfigJSON,
-	IBlueprintCameraConfigJSON,
 	IBlueprintLocatorConfigJSON,
 	IBlueprintTextDisplayConfigJSON,
-} from './blueprintFormat'
+} from './formats/blueprint'
+import { scrubUndefined } from './util/misc'
 
 export type BillboardMode = 'fixed' | 'vertical' | 'horizontal' | 'center'
 
 // TODO: Refactor these configs to inherit from a base class
 export class BoneConfig {
-	private _customName?: string
-	private _customNameVisible?: boolean
-	private _billboard?: BillboardMode
-	private _overrideBrightness?: boolean
-	private _brightnessOverride?: number
-	private _enchanted?: boolean
-	private _glowing?: boolean
-	private _overrideGlowColor?: boolean
-	private _glowColor?: string
-	private _inheritSettings?: boolean
-	private _invisible?: boolean
-	private _nbt?: string
-	private _shadowRadius?: number
-	private _shadowStrength?: number
-	private _useNBT?: boolean
+	private __customName?: string
+	private __customNameVisible?: boolean
+	private __billboard?: BillboardMode
+	private __overrideBrightness?: boolean
+	private __brightnessOverride?: number
+	private __enchanted?: boolean
+	private __glowing?: boolean
+	private __overrideGlowColor?: boolean
+	private __glowColor?: string
+	private __inheritSettings?: boolean
+	private __invisible?: boolean
+	private __nbt?: string
+	private __shadowRadius?: number
+	private __shadowStrength?: number
+	private __useNBT?: boolean
 
 	static getDefault(): BoneConfig {
 		return BoneConfig.fromJSON({
@@ -46,230 +46,232 @@ export class BoneConfig {
 		})
 	}
 
-	get customName(): NonNullable<BoneConfig['_customName']> {
-		if (this._customName !== undefined) return this._customName
+	get customName(): NonNullable<BoneConfig['__customName']> {
+		if (this.__customName !== undefined) return this.__customName
 		const defaultConfig = BoneConfig.getDefault()
 		return defaultConfig.customName
 	}
-	set customName(value: BoneConfig['_customName']) {
-		this._customName = value
+	set customName(value: BoneConfig['__customName']) {
+		this.__customName = value
 	}
 
-	get customNameVisible(): NonNullable<BoneConfig['_customNameVisible']> {
-		if (this._customNameVisible !== undefined) return this._customNameVisible
+	get customNameVisible(): NonNullable<BoneConfig['__customNameVisible']> {
+		if (this.__customNameVisible !== undefined) return this.__customNameVisible
 		const defaultConfig = BoneConfig.getDefault()
 		return defaultConfig.customNameVisible
 	}
-	set customNameVisible(value: BoneConfig['_customNameVisible']) {
-		this._customNameVisible = value
+	set customNameVisible(value: BoneConfig['__customNameVisible']) {
+		this.__customNameVisible = value
 	}
 
-	get billboard(): NonNullable<BoneConfig['_billboard']> {
-		if (this._billboard !== undefined) return this._billboard
+	get billboard(): NonNullable<BoneConfig['__billboard']> {
+		if (this.__billboard !== undefined) return this.__billboard
 		const defaultConfig = BoneConfig.getDefault()
 		return defaultConfig.billboard
 	}
-	set billboard(value: BoneConfig['_billboard']) {
-		this._billboard = value
+	set billboard(value: BoneConfig['__billboard']) {
+		this.__billboard = value
 	}
 
-	get overrideBrightness(): NonNullable<BoneConfig['_overrideBrightness']> {
-		if (this._overrideBrightness !== undefined) return this._overrideBrightness
+	get overrideBrightness(): NonNullable<BoneConfig['__overrideBrightness']> {
+		if (this.__overrideBrightness !== undefined) return this.__overrideBrightness
 		const defaultConfig = BoneConfig.getDefault()
 		return defaultConfig.overrideBrightness
 	}
-	set overrideBrightness(value: BoneConfig['_overrideBrightness']) {
-		this._overrideBrightness = value
+	set overrideBrightness(value: BoneConfig['__overrideBrightness']) {
+		this.__overrideBrightness = value
 	}
 
-	get brightnessOverride(): NonNullable<BoneConfig['_brightnessOverride']> {
-		if (this._brightnessOverride !== undefined) return this._brightnessOverride
+	get brightnessOverride(): NonNullable<BoneConfig['__brightnessOverride']> {
+		if (this.__brightnessOverride !== undefined) return this.__brightnessOverride
 		const defaultConfig = BoneConfig.getDefault()
 		return defaultConfig.brightnessOverride
 	}
-	set brightnessOverride(value: BoneConfig['_brightnessOverride']) {
-		this._brightnessOverride = value
+	set brightnessOverride(value: BoneConfig['__brightnessOverride']) {
+		this.__brightnessOverride = value
 	}
 
-	get enchanted(): NonNullable<BoneConfig['_enchanted']> {
-		if (this._enchanted !== undefined) return this._enchanted
+	get enchanted(): NonNullable<BoneConfig['__enchanted']> {
+		if (this.__enchanted !== undefined) return this.__enchanted
 		const defaultConfig = BoneConfig.getDefault()
 		return defaultConfig.enchanted
 	}
-	set enchanted(value: BoneConfig['_enchanted']) {
-		this._enchanted = value
+	set enchanted(value: BoneConfig['__enchanted']) {
+		this.__enchanted = value
 	}
 
-	get glowing(): NonNullable<BoneConfig['_glowing']> {
-		if (this._glowing !== undefined) return this._glowing
+	get glowing(): NonNullable<BoneConfig['__glowing']> {
+		if (this.__glowing !== undefined) return this.__glowing
 		const defaultConfig = BoneConfig.getDefault()
 		return defaultConfig.glowing
 	}
-	set glowing(value: BoneConfig['_glowing']) {
-		this._glowing = value
+	set glowing(value: BoneConfig['__glowing']) {
+		this.__glowing = value
 	}
 
-	get overrideGlowColor(): NonNullable<BoneConfig['_overrideGlowColor']> {
-		if (this._overrideGlowColor !== undefined) return this._overrideGlowColor
+	get overrideGlowColor(): NonNullable<BoneConfig['__overrideGlowColor']> {
+		if (this.__overrideGlowColor !== undefined) return this.__overrideGlowColor
 		const defaultConfig = BoneConfig.getDefault()
 		return defaultConfig.overrideGlowColor
 	}
-	set overrideGlowColor(value: BoneConfig['_overrideGlowColor']) {
-		this._overrideGlowColor = value
+	set overrideGlowColor(value: BoneConfig['__overrideGlowColor']) {
+		this.__overrideGlowColor = value
 	}
 
-	get glowColor(): NonNullable<BoneConfig['_glowColor']> {
-		if (this._glowColor !== undefined) return this._glowColor
+	get glowColor(): NonNullable<BoneConfig['__glowColor']> {
+		if (this.__glowColor !== undefined) return this.__glowColor
 		const defaultConfig = BoneConfig.getDefault()
 		return defaultConfig.glowColor
 	}
-	set glowColor(value: BoneConfig['_glowColor']) {
-		this._glowColor = value
+	set glowColor(value: BoneConfig['__glowColor']) {
+		this.__glowColor = value
 	}
 
-	get inheritSettings(): NonNullable<BoneConfig['_inheritSettings']> {
-		if (this._inheritSettings !== undefined) return this._inheritSettings
+	get inheritSettings(): NonNullable<BoneConfig['__inheritSettings']> {
+		if (this.__inheritSettings !== undefined) return this.__inheritSettings
 		const defaultConfig = BoneConfig.getDefault()
 		return defaultConfig.inheritSettings
 	}
-	set inheritSettings(value: BoneConfig['_inheritSettings']) {
-		this._inheritSettings = value
+	set inheritSettings(value: BoneConfig['__inheritSettings']) {
+		this.__inheritSettings = value
 	}
 
-	get invisible(): NonNullable<BoneConfig['_invisible']> {
-		if (this._invisible !== undefined) return this._invisible
+	get invisible(): NonNullable<BoneConfig['__invisible']> {
+		if (this.__invisible !== undefined) return this.__invisible
 		const defaultConfig = BoneConfig.getDefault()
 		return defaultConfig.invisible
 	}
-	set invisible(value: BoneConfig['_invisible']) {
-		this._invisible = value
+	set invisible(value: BoneConfig['__invisible']) {
+		this.__invisible = value
 	}
 
-	get nbt(): NonNullable<BoneConfig['_nbt']> {
-		if (this._nbt !== undefined) return this._nbt
+	get nbt(): NonNullable<BoneConfig['__nbt']> {
+		if (this.__nbt !== undefined) return this.__nbt
 		const defaultConfig = BoneConfig.getDefault()
 		return defaultConfig.nbt
 	}
-	set nbt(value: BoneConfig['_nbt']) {
-		this._nbt = value
+	set nbt(value: BoneConfig['__nbt']) {
+		this.__nbt = value
 	}
 
-	get shadowRadius(): NonNullable<BoneConfig['_shadowRadius']> {
-		if (this._shadowRadius !== undefined) return this._shadowRadius
+	get shadowRadius(): NonNullable<BoneConfig['__shadowRadius']> {
+		if (this.__shadowRadius !== undefined) return this.__shadowRadius
 		const defaultConfig = BoneConfig.getDefault()
 		return defaultConfig.shadowRadius
 	}
-	set shadowRadius(value: BoneConfig['_shadowRadius']) {
-		this._shadowRadius = value
+	set shadowRadius(value: BoneConfig['__shadowRadius']) {
+		this.__shadowRadius = value
 	}
 
-	get shadowStrength(): NonNullable<BoneConfig['_shadowStrength']> {
-		if (this._shadowStrength !== undefined) return this._shadowStrength
+	get shadowStrength(): NonNullable<BoneConfig['__shadowStrength']> {
+		if (this.__shadowStrength !== undefined) return this.__shadowStrength
 		const defaultConfig = BoneConfig.getDefault()
 		return defaultConfig.shadowStrength
 	}
-	set shadowStrength(value: BoneConfig['_shadowStrength']) {
-		this._shadowStrength = value
+	set shadowStrength(value: BoneConfig['__shadowStrength']) {
+		this.__shadowStrength = value
 	}
 
-	get useNBT(): NonNullable<BoneConfig['_useNBT']> {
-		if (this._useNBT !== undefined) return this._useNBT
+	get useNBT(): NonNullable<BoneConfig['__useNBT']> {
+		if (this.__useNBT !== undefined) return this.__useNBT
 		const defaultConfig = BoneConfig.getDefault()
 		return defaultConfig.useNBT
 	}
-	set useNBT(value: BoneConfig['_useNBT']) {
-		this._useNBT = value
+	set useNBT(value: BoneConfig['__useNBT']) {
+		this.__useNBT = value
 	}
 
-	public checkIfEqual(other: BoneConfig) {
+	checkIfEqual(other: BoneConfig) {
 		return (
-			this._customName === other._customName &&
-			this._customNameVisible === other._customNameVisible &&
-			this._billboard === other._billboard &&
-			this._overrideBrightness === other._overrideBrightness &&
-			this._brightnessOverride === other._brightnessOverride &&
-			this._enchanted === other._enchanted &&
-			this._glowing === other._glowing &&
-			this._overrideGlowColor === other._overrideGlowColor &&
-			this._glowColor === other._glowColor &&
-			this._inheritSettings === other._inheritSettings &&
-			this._invisible === other._invisible &&
-			this._nbt === other._nbt &&
-			this._shadowRadius === other._shadowRadius &&
-			this._shadowStrength === other._shadowStrength &&
-			this._useNBT === other._useNBT
+			this.__customName === other.__customName &&
+			this.__customNameVisible === other.__customNameVisible &&
+			this.__billboard === other.__billboard &&
+			this.__overrideBrightness === other.__overrideBrightness &&
+			this.__brightnessOverride === other.__brightnessOverride &&
+			this.__enchanted === other.__enchanted &&
+			this.__glowing === other.__glowing &&
+			this.__overrideGlowColor === other.__overrideGlowColor &&
+			this.__glowColor === other.__glowColor &&
+			this.__inheritSettings === other.__inheritSettings &&
+			this.__invisible === other.__invisible &&
+			this.__nbt === other.__nbt &&
+			this.__shadowRadius === other.__shadowRadius &&
+			this.__shadowStrength === other.__shadowStrength &&
+			this.__useNBT === other.__useNBT
 		)
 	}
 
-	public isDefault(): boolean {
+	isDefault(): boolean {
 		return this.checkIfEqual(BoneConfig.getDefault())
 	}
 
-	public toJSON(): IBlueprintBoneConfigJSON {
-		return {
-			custom_name: this._customName,
-			custom_name_visible: this._customNameVisible,
-			billboard: this._billboard,
-			override_brightness: this._overrideBrightness,
-			brightness_override: this._brightnessOverride,
-			enchanted: this._enchanted,
-			glowing: this._glowing,
-			override_glow_color: this._overrideGlowColor,
-			glow_color: this._glowColor,
-			inherit_settings: this._inheritSettings,
-			invisible: this._invisible,
-			nbt: this._nbt,
-			shadow_radius: this._shadowRadius,
-			shadow_strength: this._shadowStrength,
-			use_nbt: this._useNBT,
-		}
+	toJSON(): IBlueprintBoneConfigJSON {
+		return scrubUndefined({
+			custom_name: this.__customName,
+			custom_name_visible: this.__customNameVisible,
+			billboard: this.__billboard,
+			override_brightness: this.__overrideBrightness,
+			brightness_override: this.__brightnessOverride,
+			enchanted: this.__enchanted,
+			glowing: this.__glowing,
+			override_glow_color: this.__overrideGlowColor,
+			glow_color: this.__glowColor,
+			inherit_settings: this.__inheritSettings,
+			invisible: this.__invisible,
+			nbt: this.__nbt,
+			shadow_radius: this.__shadowRadius,
+			shadow_strength: this.__shadowStrength,
+			use_nbt: this.__useNBT,
+		})
 	}
 
 	inheritFrom(other: BoneConfig) {
-		if (other._customName !== undefined) this.customName = other.customName
-		if (other._customNameVisible !== undefined) this.customNameVisible = other.customNameVisible
-		if (other._billboard !== undefined) this.billboard = other.billboard
-		if (other._overrideBrightness !== undefined)
+		if (other.__customName !== undefined) this.customName = other.customName
+		if (other.__customNameVisible !== undefined)
+			this.customNameVisible = other.customNameVisible
+		if (other.__billboard !== undefined) this.billboard = other.billboard
+		if (other.__overrideBrightness !== undefined)
 			this.overrideBrightness = other.overrideBrightness
-		if (other._brightnessOverride !== undefined)
+		if (other.__brightnessOverride !== undefined)
 			this.brightnessOverride = other.brightnessOverride
-		if (other._enchanted !== undefined) this.enchanted = other.enchanted
-		if (other._glowing !== undefined) this.glowing = other.glowing
-		if (other._overrideGlowColor !== undefined) this.overrideGlowColor = other.overrideGlowColor
-		if (other._glowColor !== undefined) this.glowColor = other.glowColor
-		if (other._inheritSettings !== undefined) this.inheritSettings = other.inheritSettings
-		if (other._invisible !== undefined) this.invisible = other.invisible
-		if (other._nbt !== undefined) this.nbt = other.nbt
-		if (other._shadowRadius !== undefined) this.shadowRadius = other.shadowRadius
-		if (other._shadowStrength !== undefined) this.shadowStrength = other.shadowStrength
-		if (other._useNBT !== undefined) this.useNBT = other.useNBT
+		if (other.__enchanted !== undefined) this.enchanted = other.enchanted
+		if (other.__glowing !== undefined) this.glowing = other.glowing
+		if (other.__overrideGlowColor !== undefined)
+			this.overrideGlowColor = other.overrideGlowColor
+		if (other.__glowColor !== undefined) this.glowColor = other.glowColor
+		if (other.__inheritSettings !== undefined) this.inheritSettings = other.inheritSettings
+		if (other.__invisible !== undefined) this.invisible = other.invisible
+		if (other.__nbt !== undefined) this.nbt = other.nbt
+		if (other.__shadowRadius !== undefined) this.shadowRadius = other.shadowRadius
+		if (other.__shadowStrength !== undefined) this.shadowStrength = other.shadowStrength
+		if (other.__useNBT !== undefined) this.useNBT = other.useNBT
 	}
 
-	public static fromJSON(json: IBlueprintBoneConfigJSON): BoneConfig {
+	static fromJSON(json: IBlueprintBoneConfigJSON): BoneConfig {
 		const config = new BoneConfig()
-		if (json.custom_name !== undefined) config._customName = json.custom_name
+		if (json.custom_name !== undefined) config.__customName = json.custom_name
 		if (json.custom_name_visible !== undefined)
-			config._customNameVisible = json.custom_name_visible
-		if (json.billboard !== undefined) config._billboard = json.billboard
+			config.__customNameVisible = json.custom_name_visible
+		if (json.billboard !== undefined) config.__billboard = json.billboard
 		if (json.override_brightness !== undefined)
-			config._overrideBrightness = json.override_brightness
+			config.__overrideBrightness = json.override_brightness
 		if (json.brightness_override !== undefined)
-			config._brightnessOverride = json.brightness_override
-		if (json.enchanted !== undefined) config._enchanted = json.enchanted
-		if (json.glowing !== undefined) config._glowing = json.glowing
+			config.__brightnessOverride = json.brightness_override
+		if (json.enchanted !== undefined) config.__enchanted = json.enchanted
+		if (json.glowing !== undefined) config.__glowing = json.glowing
 		if (json.override_glow_color !== undefined)
-			config._overrideGlowColor = json.override_glow_color
-		if (json.glow_color !== undefined) config._glowColor = json.glow_color
-		if (json.inherit_settings !== undefined) config._inheritSettings = json.inherit_settings
-		if (json.invisible !== undefined) config._invisible = json.invisible
-		if (json.nbt !== undefined) config._nbt = json.nbt
-		if (json.shadow_radius !== undefined) config._shadowRadius = json.shadow_radius
-		if (json.shadow_strength !== undefined) config._shadowStrength = json.shadow_strength
-		if (json.use_nbt !== undefined) config._useNBT = json.use_nbt
+			config.__overrideGlowColor = json.override_glow_color
+		if (json.glow_color !== undefined) config.__glowColor = json.glow_color
+		if (json.inherit_settings !== undefined) config.__inheritSettings = json.inherit_settings
+		if (json.invisible !== undefined) config.__invisible = json.invisible
+		if (json.nbt !== undefined) config.__nbt = json.nbt
+		if (json.shadow_radius !== undefined) config.__shadowRadius = json.shadow_radius
+		if (json.shadow_strength !== undefined) config.__shadowStrength = json.shadow_strength
+		if (json.use_nbt !== undefined) config.__useNBT = json.use_nbt
 		return config
 	}
 
-	public toNBT(compound: NbtCompound = new NbtCompound()): NbtCompound {
+	toNBT(compound: NbtCompound = new NbtCompound()): NbtCompound {
 		if (this.useNBT) {
 			const newData = NbtTag.fromString(this.nbt) as NbtCompound
 			for (const key of newData.keys()) {
@@ -278,15 +280,15 @@ export class BoneConfig {
 			return compound
 		}
 
-		if (this._customName) {
+		if (this.__customName) {
 			compound.set('CustomName', new NbtString(this.customName))
 		}
 
-		if (this._customNameVisible) {
+		if (this.__customNameVisible) {
 			compound.set('CustomNameVisible', new NbtByte(Number(this.customNameVisible)))
 		}
 
-		if (this._billboard) {
+		if (this.__billboard) {
 			compound.set('billboard', new NbtString(this.billboard))
 		}
 
@@ -331,11 +333,11 @@ export class BoneConfig {
 		// 	compound.set('invisible', new NbtByte(1))
 		// }
 
-		if (this._shadowRadius) {
+		if (this.__shadowRadius) {
 			compound.set('shadow_radius', new NbtFloat(this.shadowRadius))
 		}
 
-		if (this._shadowStrength) {
+		if (this.__shadowStrength) {
 			compound.set('shadow_strength', new NbtFloat(this.shadowStrength))
 		}
 
@@ -344,184 +346,131 @@ export class BoneConfig {
 }
 
 export class LocatorConfig {
-	private _useEntity?: boolean
-	private _entityType?: string
-	private _syncPassengerRotation?: boolean
-	private _summonCommands?: string
-	private _tickingCommands?: string
+	private __useEntity?: boolean
+	private __entityType?: string
+	private __syncPassengerRotation?: boolean
+	private __onSummonFunction?: string
+	private __onRemoveFunction?: string
+	private __onTickFunction?: string
 
 	getDefault(): LocatorConfig {
 		return LocatorConfig.fromJSON({
 			use_entity: false,
 			entity_type: 'minecraft:pig',
 			sync_passenger_rotation: false,
-			summon_commands: '',
-			ticking_commands: '',
+			on_summon_function: '',
+			on_remove_function: '',
+			on_tick_function: '',
 		})
 	}
 
-	get useEntity(): NonNullable<LocatorConfig['_useEntity']> {
-		if (this._useEntity !== undefined) return this._useEntity
+	get useEntity(): NonNullable<LocatorConfig['__useEntity']> {
+		if (this.__useEntity !== undefined) return this.__useEntity
 		const defaultConfig = this.getDefault()
 		return defaultConfig.useEntity
 	}
-	set useEntity(value: NonNullable<LocatorConfig['_useEntity']>) {
-		this._useEntity = value
+	set useEntity(value: NonNullable<LocatorConfig['__useEntity']>) {
+		this.__useEntity = value
 	}
 
-	get entityType(): NonNullable<LocatorConfig['_entityType']> {
-		if (this._entityType !== undefined) return this._entityType
+	get entityType(): NonNullable<LocatorConfig['__entityType']> {
+		if (this.__entityType !== undefined) return this.__entityType
 		const defaultConfig = this.getDefault()
 		return defaultConfig.entityType
 	}
-	set entityType(value: NonNullable<LocatorConfig['_entityType']>) {
-		this._entityType = value
+	set entityType(value: NonNullable<LocatorConfig['__entityType']>) {
+		this.__entityType = value
 	}
 
-	get syncPassengerRotation(): NonNullable<LocatorConfig['_syncPassengerRotation']> {
-		if (this._syncPassengerRotation !== undefined) return this._syncPassengerRotation
+	get syncPassengerRotation(): NonNullable<LocatorConfig['__syncPassengerRotation']> {
+		if (this.__syncPassengerRotation !== undefined) return this.__syncPassengerRotation
 		const defaultConfig = this.getDefault()
 		return defaultConfig.syncPassengerRotation
 	}
-	set syncPassengerRotation(value: NonNullable<LocatorConfig['_syncPassengerRotation']>) {
-		this._syncPassengerRotation = value
+	set syncPassengerRotation(value: NonNullable<LocatorConfig['__syncPassengerRotation']>) {
+		this.__syncPassengerRotation = value
 	}
 
-	get summonCommands(): NonNullable<LocatorConfig['_summonCommands']> {
-		if (this._summonCommands !== undefined) return this._summonCommands
+	get onSummonFunction(): NonNullable<LocatorConfig['__onSummonFunction']> {
+		if (this.__onSummonFunction !== undefined) return this.__onSummonFunction
 		const defaultConfig = this.getDefault()
-		return defaultConfig.summonCommands
+		return defaultConfig.onSummonFunction
 	}
-	set summonCommands(value: NonNullable<LocatorConfig['_summonCommands']>) {
-		this._summonCommands = value
+	set onSummonFunction(value: NonNullable<LocatorConfig['__onSummonFunction']>) {
+		this.__onSummonFunction = value
 	}
 
-	get tickingCommands(): NonNullable<LocatorConfig['_tickingCommands']> {
-		if (this._tickingCommands !== undefined) return this._tickingCommands
+	get onRemoveFunction(): NonNullable<LocatorConfig['__onRemoveFunction']> {
+		if (this.__onRemoveFunction !== undefined) return this.__onRemoveFunction
 		const defaultConfig = this.getDefault()
-		return defaultConfig.tickingCommands
+		return defaultConfig.onRemoveFunction
 	}
-	set tickingCommands(value: NonNullable<LocatorConfig['_tickingCommands']>) {
-		this._tickingCommands = value
-	}
-
-	public toJSON(): IBlueprintLocatorConfigJSON {
-		return {
-			use_entity: this._useEntity,
-			entity_type: this._entityType,
-			sync_passenger_rotation: this._syncPassengerRotation,
-			summon_commands: this._summonCommands,
-			ticking_commands: this._tickingCommands,
-		}
+	set onRemoveFunction(value: NonNullable<LocatorConfig['__onRemoveFunction']>) {
+		this.__onRemoveFunction = value
 	}
 
-	public static fromJSON(json: IBlueprintLocatorConfigJSON): LocatorConfig {
+	get onTickFunction(): NonNullable<LocatorConfig['__onTickFunction']> {
+		if (this.__onTickFunction !== undefined) return this.__onTickFunction
+		const defaultConfig = this.getDefault()
+		return defaultConfig.onTickFunction
+	}
+	set onTickFunction(value: NonNullable<LocatorConfig['__onTickFunction']>) {
+		this.__onTickFunction = value
+	}
+
+	toJSON(): IBlueprintLocatorConfigJSON {
+		return scrubUndefined({
+			use_entity: this.__useEntity,
+			entity_type: this.__entityType,
+			sync_passenger_rotation: this.__syncPassengerRotation,
+			on_summon_function: this.__onSummonFunction,
+			on_remove_function: this.__onRemoveFunction,
+			on_tick_function: this.__onTickFunction,
+		})
+	}
+
+	static fromJSON(json: IBlueprintLocatorConfigJSON): LocatorConfig {
 		const config = new LocatorConfig()
-		if (json.use_entity !== undefined) config._useEntity = json.use_entity
-		if (json.entity_type !== undefined) config._entityType = json.entity_type
+		if (json.use_entity !== undefined) config.__useEntity = json.use_entity
+		if (json.entity_type !== undefined) config.__entityType = json.entity_type
 		if (json.sync_passenger_rotation !== undefined)
-			config._syncPassengerRotation = json.sync_passenger_rotation
-		if (json.summon_commands !== undefined) config._summonCommands = json.summon_commands
-		if (json.ticking_commands !== undefined) config._tickingCommands = json.ticking_commands
+			config.__syncPassengerRotation = json.sync_passenger_rotation
+		if (json.on_summon_function !== undefined)
+			config.__onSummonFunction = json.on_summon_function
+		if (json.on_remove_function !== undefined)
+			config.__onRemoveFunction = json.on_remove_function
+		if (json.on_tick_function !== undefined) config.__onTickFunction = json.on_tick_function
 		return config
 	}
 
-	public isDefault(): boolean {
+	isDefault(): boolean {
 		return this.checkIfEqual(new LocatorConfig())
 	}
 
-	public checkIfEqual(other: LocatorConfig) {
+	checkIfEqual(other: LocatorConfig) {
 		return (
 			this.useEntity === other.useEntity &&
 			this.entityType === other.entityType &&
 			this.syncPassengerRotation === other.syncPassengerRotation &&
-			this.summonCommands === other.summonCommands &&
-			this.tickingCommands === other.tickingCommands
-		)
-	}
-}
-
-export class CameraConfig {
-	private _entityType?: string
-	private _nbt?: string
-	private _tickingCommands?: string
-
-	getDefault(): CameraConfig {
-		return CameraConfig.fromJSON({
-			entity_type: 'minecraft:item_display',
-			nbt: '{}',
-			ticking_commands: '',
-		})
-	}
-
-	get entityType(): NonNullable<CameraConfig['_entityType']> {
-		if (this._entityType !== undefined) return this._entityType
-		const defaultConfig = this.getDefault()
-		return defaultConfig.entityType
-	}
-	set entityType(value: NonNullable<CameraConfig['_entityType']>) {
-		this._entityType = value
-	}
-
-	get nbt(): NonNullable<CameraConfig['_nbt']> {
-		if (this._nbt !== undefined) return this._nbt
-		const defaultConfig = this.getDefault()
-		return defaultConfig.nbt
-	}
-	set nbt(value: NonNullable<CameraConfig['_nbt']>) {
-		this._nbt = value
-	}
-
-	get tickingCommands(): NonNullable<CameraConfig['_tickingCommands']> {
-		if (this._tickingCommands !== undefined) return this._tickingCommands
-		const defaultConfig = this.getDefault()
-		return defaultConfig.tickingCommands
-	}
-	set tickingCommands(value: NonNullable<CameraConfig['_tickingCommands']>) {
-		this._tickingCommands = value
-	}
-
-	public toJSON(): IBlueprintCameraConfigJSON {
-		return {
-			entity_type: this.entityType,
-			nbt: this.nbt,
-			ticking_commands: this.tickingCommands,
-		}
-	}
-
-	public static fromJSON(json: IBlueprintCameraConfigJSON): CameraConfig {
-		const config = new CameraConfig()
-		if (json.entity_type != undefined) config.entityType = json.entity_type
-		if (json.nbt != undefined) config.nbt = json.nbt
-		if (json.ticking_commands != undefined) config.tickingCommands = json.ticking_commands
-		return config
-	}
-
-	public isDefault(): boolean {
-		return this.checkIfEqual(new CameraConfig())
-	}
-
-	public checkIfEqual(other: CameraConfig) {
-		return (
-			this.entityType === other.entityType &&
-			this.nbt === other.nbt &&
-			this.tickingCommands === other.tickingCommands
+			this.onSummonFunction === other.onSummonFunction &&
+			this.onRemoveFunction === other.onRemoveFunction &&
+			this.onTickFunction === other.onTickFunction
 		)
 	}
 }
 
 export class TextDisplayConfig {
-	private _billboard?: BillboardMode
-	private _overrideBrightness?: boolean
-	private _brightnessOverride?: number
-	private _glowing?: boolean
-	private _overrideGlowColor?: boolean
-	private _glowColor?: string
-	private _invisible?: boolean
-	private _shadowRadius?: number
-	private _shadowStrength?: number
-	private _useNBT?: boolean
-	private _nbt?: string
+	private __billboard?: BillboardMode
+	private __overrideBrightness?: boolean
+	private __brightnessOverride?: number
+	private __glowing?: boolean
+	private __overrideGlowColor?: boolean
+	private __glowColor?: string
+	private __invisible?: boolean
+	private __shadowRadius?: number
+	private __shadowStrength?: number
+	private __useNBT?: boolean
+	private __nbt?: string
 
 	static getDefault(): TextDisplayConfig {
 		return TextDisplayConfig.fromJSON({
@@ -539,103 +488,103 @@ export class TextDisplayConfig {
 		})
 	}
 
-	get billboard(): NonNullable<BoneConfig['_billboard']> {
-		if (this._billboard !== undefined) return this._billboard
-		const defaultConfig = BoneConfig.getDefault()
+	get billboard(): NonNullable<TextDisplayConfig['__billboard']> {
+		if (this.__billboard !== undefined) return this.__billboard
+		const defaultConfig = TextDisplayConfig.getDefault()
 		return defaultConfig.billboard
 	}
-	set billboard(value: BoneConfig['_billboard']) {
-		this._billboard = value
+	set billboard(value: TextDisplayConfig['__billboard']) {
+		this.__billboard = value
 	}
 
-	get overrideBrightness(): NonNullable<BoneConfig['_overrideBrightness']> {
-		if (this._overrideBrightness !== undefined) return this._overrideBrightness
-		const defaultConfig = BoneConfig.getDefault()
+	get overrideBrightness(): NonNullable<TextDisplayConfig['__overrideBrightness']> {
+		if (this.__overrideBrightness !== undefined) return this.__overrideBrightness
+		const defaultConfig = TextDisplayConfig.getDefault()
 		return defaultConfig.overrideBrightness
 	}
-	set overrideBrightness(value: BoneConfig['_overrideBrightness']) {
-		this._overrideBrightness = value
+	set overrideBrightness(value: TextDisplayConfig['__overrideBrightness']) {
+		this.__overrideBrightness = value
 	}
 
-	get brightnessOverride(): NonNullable<BoneConfig['_brightnessOverride']> {
-		if (this._brightnessOverride !== undefined) return this._brightnessOverride
-		const defaultConfig = BoneConfig.getDefault()
+	get brightnessOverride(): NonNullable<TextDisplayConfig['__brightnessOverride']> {
+		if (this.__brightnessOverride !== undefined) return this.__brightnessOverride
+		const defaultConfig = TextDisplayConfig.getDefault()
 		return defaultConfig.brightnessOverride
 	}
-	set brightnessOverride(value: BoneConfig['_brightnessOverride']) {
-		this._brightnessOverride = value
+	set brightnessOverride(value: TextDisplayConfig['__brightnessOverride']) {
+		this.__brightnessOverride = value
 	}
 
-	get glowing(): NonNullable<BoneConfig['_glowing']> {
-		if (this._glowing !== undefined) return this._glowing
-		const defaultConfig = BoneConfig.getDefault()
+	get glowing(): NonNullable<TextDisplayConfig['__glowing']> {
+		if (this.__glowing !== undefined) return this.__glowing
+		const defaultConfig = TextDisplayConfig.getDefault()
 		return defaultConfig.glowing
 	}
-	set glowing(value: BoneConfig['_glowing']) {
-		this._glowing = value
+	set glowing(value: TextDisplayConfig['__glowing']) {
+		this.__glowing = value
 	}
 
-	get overrideGlowColor(): NonNullable<BoneConfig['_overrideGlowColor']> {
-		if (this._overrideGlowColor !== undefined) return this._overrideGlowColor
-		const defaultConfig = BoneConfig.getDefault()
+	get overrideGlowColor(): NonNullable<TextDisplayConfig['__overrideGlowColor']> {
+		if (this.__overrideGlowColor !== undefined) return this.__overrideGlowColor
+		const defaultConfig = TextDisplayConfig.getDefault()
 		return defaultConfig.overrideGlowColor
 	}
-	set overrideGlowColor(value: BoneConfig['_overrideGlowColor']) {
-		this._overrideGlowColor = value
+	set overrideGlowColor(value: TextDisplayConfig['__overrideGlowColor']) {
+		this.__overrideGlowColor = value
 	}
 
-	get glowColor(): NonNullable<BoneConfig['_glowColor']> {
-		if (this._glowColor !== undefined) return this._glowColor
-		const defaultConfig = BoneConfig.getDefault()
+	get glowColor(): NonNullable<TextDisplayConfig['__glowColor']> {
+		if (this.__glowColor !== undefined) return this.__glowColor
+		const defaultConfig = TextDisplayConfig.getDefault()
 		return defaultConfig.glowColor
 	}
-	set glowColor(value: BoneConfig['_glowColor']) {
-		this._glowColor = value
+	set glowColor(value: TextDisplayConfig['__glowColor']) {
+		this.__glowColor = value
 	}
 
-	get invisible(): NonNullable<BoneConfig['_invisible']> {
-		if (this._invisible !== undefined) return this._invisible
-		const defaultConfig = BoneConfig.getDefault()
+	get invisible(): NonNullable<TextDisplayConfig['__invisible']> {
+		if (this.__invisible !== undefined) return this.__invisible
+		const defaultConfig = TextDisplayConfig.getDefault()
 		return defaultConfig.invisible
 	}
-	set invisible(value: BoneConfig['_invisible']) {
-		this._invisible = value
+	set invisible(value: TextDisplayConfig['__invisible']) {
+		this.__invisible = value
 	}
 
-	get nbt(): NonNullable<BoneConfig['_nbt']> {
-		if (this._nbt !== undefined) return this._nbt
-		const defaultConfig = BoneConfig.getDefault()
+	get nbt(): NonNullable<TextDisplayConfig['__nbt']> {
+		if (this.__nbt !== undefined) return this.__nbt
+		const defaultConfig = TextDisplayConfig.getDefault()
 		return defaultConfig.nbt
 	}
-	set nbt(value: BoneConfig['_nbt']) {
-		this._nbt = value
+	set nbt(value: TextDisplayConfig['__nbt']) {
+		this.__nbt = value
 	}
 
-	get shadowRadius(): NonNullable<BoneConfig['_shadowRadius']> {
-		if (this._shadowRadius !== undefined) return this._shadowRadius
-		const defaultConfig = BoneConfig.getDefault()
+	get shadowRadius(): NonNullable<TextDisplayConfig['__shadowRadius']> {
+		if (this.__shadowRadius !== undefined) return this.__shadowRadius
+		const defaultConfig = TextDisplayConfig.getDefault()
 		return defaultConfig.shadowRadius
 	}
-	set shadowRadius(value: BoneConfig['_shadowRadius']) {
-		this._shadowRadius = value
+	set shadowRadius(value: TextDisplayConfig['__shadowRadius']) {
+		this.__shadowRadius = value
 	}
 
-	get shadowStrength(): NonNullable<BoneConfig['_shadowStrength']> {
-		if (this._shadowStrength !== undefined) return this._shadowStrength
-		const defaultConfig = BoneConfig.getDefault()
+	get shadowStrength(): NonNullable<TextDisplayConfig['__shadowStrength']> {
+		if (this.__shadowStrength !== undefined) return this.__shadowStrength
+		const defaultConfig = TextDisplayConfig.getDefault()
 		return defaultConfig.shadowStrength
 	}
-	set shadowStrength(value: BoneConfig['_shadowStrength']) {
-		this._shadowStrength = value
+	set shadowStrength(value: TextDisplayConfig['__shadowStrength']) {
+		this.__shadowStrength = value
 	}
 
-	get useNBT(): NonNullable<BoneConfig['_useNBT']> {
-		if (this._useNBT !== undefined) return this._useNBT
-		const defaultConfig = BoneConfig.getDefault()
+	get useNBT(): NonNullable<TextDisplayConfig['__useNBT']> {
+		if (this.__useNBT !== undefined) return this.__useNBT
+		const defaultConfig = TextDisplayConfig.getDefault()
 		return defaultConfig.useNBT
 	}
-	set useNBT(value: BoneConfig['_useNBT']) {
-		this._useNBT = value
+	set useNBT(value: TextDisplayConfig['__useNBT']) {
+		this.__useNBT = value
 	}
 
 	getDefault(): TextDisplayConfig {
@@ -644,52 +593,52 @@ export class TextDisplayConfig {
 		})
 	}
 
-	get tickingCommands(): NonNullable<TextDisplayConfig['_billboard']> {
-		if (this._billboard !== undefined) return this._billboard
+	get tickingCommands(): NonNullable<TextDisplayConfig['__billboard']> {
+		if (this.__billboard !== undefined) return this.__billboard
 		const defaultConfig = this.getDefault()
 		return defaultConfig.tickingCommands
 	}
-	set tickingCommands(value: NonNullable<TextDisplayConfig['_billboard']>) {
-		this._billboard = value
+	set tickingCommands(value: NonNullable<TextDisplayConfig['__billboard']>) {
+		this.__billboard = value
 	}
 
-	public toJSON(): IBlueprintTextDisplayConfigJSON {
-		return {
-			billboard: this._billboard,
-			override_brightness: this._overrideBrightness,
-			brightness_override: this._brightnessOverride,
-			glowing: this._glowing,
-			override_glow_color: this._overrideGlowColor,
-			glow_color: this._glowColor,
-			invisible: this._invisible,
-			nbt: this._nbt,
-			shadow_radius: this._shadowRadius,
-			shadow_strength: this._shadowStrength,
-			use_nbt: this._useNBT,
-		}
+	toJSON(): IBlueprintTextDisplayConfigJSON {
+		return scrubUndefined({
+			billboard: this.__billboard,
+			override_brightness: this.__overrideBrightness,
+			brightness_override: this.__brightnessOverride,
+			glowing: this.__glowing,
+			override_glow_color: this.__overrideGlowColor,
+			glow_color: this.__glowColor,
+			invisible: this.__invisible,
+			nbt: this.__nbt,
+			shadow_radius: this.__shadowRadius,
+			shadow_strength: this.__shadowStrength,
+			use_nbt: this.__useNBT,
+		})
 	}
 
-	public static fromJSON(json: IBlueprintTextDisplayConfigJSON): TextDisplayConfig {
+	static fromJSON(json: IBlueprintTextDisplayConfigJSON): TextDisplayConfig {
 		const config = new TextDisplayConfig()
-		if (json.billboard !== undefined) config._billboard = json.billboard
+		if (json.billboard !== undefined) config.__billboard = json.billboard
 		if (json.override_brightness !== undefined)
-			config._overrideBrightness = json.override_brightness
+			config.__overrideBrightness = json.override_brightness
 		if (json.brightness_override !== undefined)
-			config._brightnessOverride = json.brightness_override
-		if (json.glowing !== undefined) config._glowing = json.glowing
+			config.__brightnessOverride = json.brightness_override
+		if (json.glowing !== undefined) config.__glowing = json.glowing
 		if (json.override_glow_color !== undefined)
-			config._overrideGlowColor = json.override_glow_color
-		if (json.glow_color !== undefined) config._glowColor = json.glow_color
-		if (json.invisible !== undefined) config._invisible = json.invisible
-		if (json.nbt !== undefined) config._nbt = json.nbt
-		if (json.shadow_radius !== undefined) config._shadowRadius = json.shadow_radius
-		if (json.shadow_strength !== undefined) config._shadowStrength = json.shadow_strength
-		if (json.use_nbt !== undefined) config._useNBT = json.use_nbt
+			config.__overrideGlowColor = json.override_glow_color
+		if (json.glow_color !== undefined) config.__glowColor = json.glow_color
+		if (json.invisible !== undefined) config.__invisible = json.invisible
+		if (json.nbt !== undefined) config.__nbt = json.nbt
+		if (json.shadow_radius !== undefined) config.__shadowRadius = json.shadow_radius
+		if (json.shadow_strength !== undefined) config.__shadowStrength = json.shadow_strength
+		if (json.use_nbt !== undefined) config.__useNBT = json.use_nbt
 
 		return config
 	}
 
-	public toNBT(compound = new NbtCompound()) {
+	toNBT(compound = new NbtCompound()) {
 		if (this.useNBT) {
 			const newData = NbtTag.fromString(this.nbt) as NbtCompound
 			for (const key of newData.keys()) {
@@ -698,7 +647,7 @@ export class TextDisplayConfig {
 			return compound
 		}
 
-		if (this._billboard) {
+		if (this.__billboard) {
 			compound.set('billboard', new NbtString(this.billboard))
 		}
 
@@ -726,34 +675,34 @@ export class TextDisplayConfig {
 		// 	compound.set('invisible', new NbtByte(1))
 		// }
 
-		if (this._shadowRadius) {
+		if (this.__shadowRadius) {
 			compound.set('shadow_radius', new NbtFloat(this.shadowRadius))
 		}
 
-		if (this._shadowStrength) {
+		if (this.__shadowStrength) {
 			compound.set('shadow_strength', new NbtFloat(this.shadowStrength))
 		}
 
 		return compound
 	}
 
-	public isDefault(): boolean {
+	isDefault(): boolean {
 		return this.checkIfEqual(new TextDisplayConfig())
 	}
 
-	public checkIfEqual(other: TextDisplayConfig) {
+	checkIfEqual(other: TextDisplayConfig) {
 		return (
-			this._billboard === other._billboard &&
-			this._overrideBrightness === other._overrideBrightness &&
-			this._brightnessOverride === other._brightnessOverride &&
-			this._glowing === other._glowing &&
-			this._overrideGlowColor === other._overrideGlowColor &&
-			this._glowColor === other._glowColor &&
-			this._invisible === other._invisible &&
-			this._nbt === other._nbt &&
-			this._shadowRadius === other._shadowRadius &&
-			this._shadowStrength === other._shadowStrength &&
-			this._useNBT === other._useNBT
+			this.__billboard === other.__billboard &&
+			this.__overrideBrightness === other.__overrideBrightness &&
+			this.__brightnessOverride === other.__brightnessOverride &&
+			this.__glowing === other.__glowing &&
+			this.__overrideGlowColor === other.__overrideGlowColor &&
+			this.__glowColor === other.__glowColor &&
+			this.__invisible === other.__invisible &&
+			this.__nbt === other.__nbt &&
+			this.__shadowRadius === other.__shadowRadius &&
+			this.__shadowStrength === other.__shadowStrength &&
+			this.__useNBT === other.__useNBT
 		)
 	}
 }

@@ -6,10 +6,10 @@
 
 'use strict'
 Object.defineProperty(exports, '__esModule', { value: true })
+import type { Plugin } from 'esbuild'
 import { readFile } from 'fs/promises'
-import { preprocess, compile } from 'svelte/compiler'
 import { relative } from 'path'
-import { Plugin } from 'esbuild'
+import { compile, preprocess } from 'svelte/compiler'
 /**
  * Convert a warning or error emitted from the svelte compiler for esbuild.
  */
@@ -49,15 +49,18 @@ function esbuildPluginSvelte(
 			build.onLoad({ filter: /\.svelte$/ }, async ({ path }) => {
 				let source = await readFile(path, 'utf-8')
 				const filename = relative(process.cwd(), path)
+				let sourcemap: any
 				if (opts.preprocess) {
 					const processed = await preprocess(source, opts.preprocess, {
 						filename,
 					})
 					source = processed.code
+					sourcemap = processed.map
 				}
 				const compilerOptions = {
 					css: false,
 					...opts.compilerOptions,
+					sourcemap,
 				}
 				let res
 				try {

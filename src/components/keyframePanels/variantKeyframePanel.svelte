@@ -1,37 +1,41 @@
-<script lang="ts">
-	import { getKeyframeVariant, setKeyframeVariant } from '../../mods/customKeyframesMod'
-	import { Valuable } from '../../util/stores'
+<script lang="ts" context="module">
 	import { translate } from '../../util/translation'
 	import { Variant } from '../../variants'
-	export let selectedKeyframe: _Keyframe
-	const keyframeValue = new Valuable<string>(getKeyframeVariant(selectedKeyframe) as string)
-	let selectContainer: HTMLDivElement
+	import CustomCodeJar from '../customCodeJar.svelte'
+</script>
 
-	keyframeValue.subscribe(value => {
-		setKeyframeVariant(selectedKeyframe, value)
-	})
+<script lang="ts">
+	export let keyframe: _Keyframe
 
-	const options = Object.fromEntries(
+	let variantUuid = keyframe?.variant?.uuid ?? Variant.getDefault().uuid
+	let executeCondition = keyframe?.execute_condition ?? ''
+
+	$: {
+		keyframe.variant = Variant.all.find(v => v.uuid === variantUuid) ?? Variant.getDefault()
+		keyframe.execute_condition = executeCondition
+		Animator.preview()
+	}
+
+	const OPTIONS = Object.fromEntries(
 		Variant.all.map(variant => [variant.uuid, variant.displayName])
 	)
 
-	// @ts-ignore
-	const selectInput = new Interface.CustomElements.SelectInput('keyframe-variant-selector', {
-		options,
-		value: keyframeValue.get(),
+	const SELECT_ELEMENT = new Interface.CustomElements.SelectInput('keyframe-variant-selector', {
+		options: OPTIONS,
+		value: variantUuid,
 		onChange() {
-			const value = selectInput.node.getAttribute('value')
+			const value = SELECT_ELEMENT.node.getAttribute('value')
 			if (value == undefined) {
 				console.warn('Variant value is undefined')
 				return
 			}
-			keyframeValue.set(value)
-			Animator.preview()
+			variantUuid = value
 		},
 	})
 
+	let selectContainer: HTMLDivElement
 	requestAnimationFrame(() => {
-		selectContainer.appendChild(selectInput.node)
+		selectContainer.appendChild(SELECT_ELEMENT.node)
 	})
 </script>
 
@@ -47,7 +51,22 @@
 	<div class="select-container" bind:this={selectContainer} />
 </div>
 
+<div class="bar flex custom-bar">
+	<label
+		for="execute_condition"
+		class="undefined"
+		style="font-weight: unset;"
+		title={translate('panel.keyframe.execute_condition.description')}
+	>
+		{translate('panel.keyframe.execute_condition.title')}
+	</label>
+	<CustomCodeJar bind:value={executeCondition} placeholder={'if score @s matches 1..'} />
+</div>
+
 <style>
+	.custom-bar {
+		flex-direction: column;
+	}
 	.select-container {
 		flex-grow: 1;
 		height: 30px;

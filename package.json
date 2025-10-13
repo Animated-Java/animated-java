@@ -3,9 +3,10 @@
 	"name": "animated_java",
 	"title": "Animated Java",
 	"icon": "icon.svg",
-	"description": "A Blockbench plugin that makes complex animation a breeze in Minecraft: Java Edition.",
-	"version": "1.7.2",
+	"description": "Effortlessly craft complex animations for Minecraft: Java Edition",
+	"version": "1.8.0-beta.1",
 	"min_blockbench_version": "4.12.0",
+	"max_blockbench_version": "4.12.6",
 	"variant": "desktop",
 	"tags": [
 		"Minecraft: Java Edition",
@@ -79,7 +80,9 @@
 		"prod": "node ./tools/cleanupDist.cjs && yarn build:scripts && node ./dist/build.cjs",
 		"format": "prettier --write .",
 		"test": "yarn build:scripts && vitest run",
-		"coverage": "yarn build:scripts && vitest run --coverage"
+		"coverage": "yarn build:scripts && vitest run --coverage",
+		"check-formatting": "prettier . --check",
+		"lint": "eslint . --max-warnings=0 --no-warn-ignored"
 	},
 	"devDependencies": {
 		"@novacbn/svelte-codejar": "^0.1.2",
@@ -96,17 +99,24 @@
 		"esbuild-plugin-inline-image": "^0.0.9",
 		"esbuild-plugin-inline-worker": "^0.1.1",
 		"esbuild-plugin-svelte": "^0.1.1",
-		"eslint": "^8.35.0",
+		"eslint": "^9.37.0",
+		"eslint-plugin-svelte": "^3.12.4",
 		"firebase": "^9.19.0",
+		"jiti": "^2.6.1",
 		"js-yaml": "^4.1.0",
+		"mc-build": "^3.6.7",
+		"node-modules-vscode-problems-patch": "^1.0.9",
+		"octokit": "^5.0.3",
 		"prettier": "^2.5.1",
 		"svelte": "^3.55.1",
 		"svelte-awesome-color-picker": "^3.0.0-beta.7",
+		"svelte-eslint-parser": "^1.3.3",
 		"svelte-multiselect": "^11.0.0-rc.1",
 		"svelte-preprocess": "^5.0.1",
 		"svelte-preprocess-esbuild": "^3.0.1",
 		"typescript": "^4.5.5",
-		"vitest": "^2.1.8"
+		"typescript-eslint": "^8.45.0",
+		"vitest": "^3.2.4"
 	},
 	"dependencies": {
 		"deepslate": "^0.19.2",
@@ -115,7 +125,6 @@
 		"generic-stream": "^1.2.6",
 		"marked": "^4.3.0",
 		"marked-gfm-heading-id": "^3.0.0",
-		"mc-build": "^3.5.1",
 		"request-progress": "^3.0.0",
 		"svelte-ace": "^1.0.21",
 		"svelte-dnd-action": "^0.9.38"

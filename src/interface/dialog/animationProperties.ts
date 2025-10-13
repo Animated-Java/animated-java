@@ -16,12 +16,14 @@ export function openAnimationPropertiesDialog(animation: _Animation) {
 		id: DIALOG_ID,
 		title: translate('dialog.animation_properties.title', animation.name),
 		width: 600,
-		component: AniamtionPropertiesSvelteComponent,
-		props: {
-			animationName,
-			loopMode,
-			loopDelay,
-			excludedNodes,
+		content: {
+			component: AniamtionPropertiesSvelteComponent,
+			props: {
+				animationName,
+				loopMode,
+				loopDelay,
+				excludedNodes,
+			},
 		},
 		preventKeybinds: true,
 		onConfirm() {
@@ -30,6 +32,8 @@ export function openAnimationPropertiesDialog(animation: _Animation) {
 			animation.loop = loopMode.get() as any
 			animation.loop_delay = loopDelay.get().toString()
 			animation.excluded_nodes = excludedNodes.get()
+
+			Project!.saved = false
 		},
 	}).show()
 }

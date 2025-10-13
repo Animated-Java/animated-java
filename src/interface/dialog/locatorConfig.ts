@@ -1,8 +1,8 @@
-import { BLUEPRINT_FORMAT } from '../../blueprintFormat'
+import { registerAction } from 'src/util/moddingTools'
 import LocatorConfigDialog from '../../components/locatorConfigDialog.svelte'
 import { PACKAGE } from '../../constants'
+import { activeProjectIsBlueprintFormat } from '../../formats/blueprint'
 import { LocatorConfig } from '../../nodeConfigs'
-import { createAction } from '../../util/moddingTools'
 import { Valuable } from '../../util/stores'
 import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
@@ -14,41 +14,53 @@ export function openLocatorConfigDialog(locator: Locator) {
 	const useEntity = new Valuable(locatorConfig.useEntity)
 	const entityType = new Valuable(locatorConfig.entityType)
 	const syncPassengerRotation = new Valuable(locatorConfig.syncPassengerRotation)
-	const summonCommands = new Valuable(locatorConfig.summonCommands)
-	const tickingCommands = new Valuable(locatorConfig.tickingCommands)
+	const onSummonFunction = new Valuable(locatorConfig.onSummonFunction)
+	const onRemoveFunction = new Valuable(locatorConfig.onRemoveFunction)
+	const onTickFunction = new Valuable(locatorConfig.onTickFunction)
 
 	new SvelteDialog({
 		id: `${PACKAGE.name}:locatorConfig`,
 		title: translate('dialog.locator_config.title'),
 		width: 600,
-		component: LocatorConfigDialog,
-		props: {
-			useEntity,
-			entityType,
-			syncPassengerRotation,
-			summonCommands,
-			tickingCommands,
+		content: {
+			component: LocatorConfigDialog,
+			props: {
+				useEntity,
+				entityType,
+				syncPassengerRotation,
+				onSummonFunction,
+				onRemoveFunction,
+				onTickFunction,
+			},
 		},
 		preventKeybinds: true,
 		onConfirm() {
 			locatorConfig.useEntity = useEntity.get()
 			locatorConfig.entityType = entityType.get()
 			locatorConfig.syncPassengerRotation = syncPassengerRotation.get()
-			locatorConfig.summonCommands = summonCommands.get()
-			locatorConfig.tickingCommands = tickingCommands.get()
+			locatorConfig.onSummonFunction = onSummonFunction.get()
+			locatorConfig.onRemoveFunction = onRemoveFunction.get()
+			locatorConfig.onTickFunction = onTickFunction.get()
 
 			locator.config = locatorConfig.toJSON()
 		},
 	}).show()
 }
 
-export const LOCATOR_CONFIG_ACTION = createAction(`${PACKAGE.name}:locator_config`, {
-	icon: 'settings',
-	name: translate('action.open_locator_config.name'),
-	condition: () => Format === BLUEPRINT_FORMAT,
-	click: () => {
-		const locator = Locator.selected.at(0)
-		if (!locator) return
-		openLocatorConfigDialog(locator)
-	},
+const LOCATOR_CONFIG_ACTION = registerAction(
+	{ id: `animated-java:locator-config` },
+	{
+		icon: 'settings',
+		name: translate('action.open_locator_config.name'),
+		condition: activeProjectIsBlueprintFormat,
+		click: () => {
+			const locator = Locator.selected.at(0)
+			if (!locator) return
+			openLocatorConfigDialog(locator)
+		},
+	}
+)
+
+LOCATOR_CONFIG_ACTION.onCreated(action => {
+	Locator.prototype.menu!.addAction(action, '6')
 })

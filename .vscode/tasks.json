@@ -1,0 +1,50 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"command": "yarn check-formatting",
+			"label": "Check formatting",
+			"detail": "Reports any formatting issues via the problems view",
+			"group": "test",
+			"isBackground": true,
+			"icon": {
+				"id": "code",
+				"color": "terminal.ansiMagenta"
+			},
+			"problemMatcher": "$prettier",
+			"runOptions": {
+				"instanceLimit": 1,
+				"reevaluateOnRerun": true
+			},
+			"presentation": {
+				"reveal": "never",
+				"showReuseMessage": true,
+				"clear": false,
+				"revealProblems": "onProblem"
+			}
+		},
+		{
+			"type": "eslint",
+			"problemMatcher": ["$eslint-stylish"],
+			"label": "ESLint: Lint the whole project",
+			"detail": "Reports any linting issues via the problems view",
+			"group": "test",
+			"icon": {
+				"id": "code",
+				"color": "terminal.ansiYellow"
+			},
+			"presentation": {
+				"reveal": "never",
+				"showReuseMessage": true,
+				"clear": false,
+				"revealProblems": "onProblem"
+			},
+			"runOptions": {
+				"instanceLimit": 1,
+				"instancePolicy": "terminateOldest",
+				"reevaluateOnRerun": true
+			}
+		}
+	]
+}

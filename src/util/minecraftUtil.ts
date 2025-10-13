@@ -1,8 +1,8 @@
 import * as pathjs from 'path'
-import { MinecraftVersion } from '../systems/global'
+import { SUPPORTED_MINECRAFT_VERSIONS } from '../systems/global'
 import {
 	BlockStateRegistryEntry,
-	BlockStateValue,
+	type BlockStateValue,
 	getBlockState,
 } from '../systems/minecraft/blockstateManager'
 
@@ -17,14 +17,20 @@ export interface IMinecraftResourceLocation {
 	type: string
 }
 
-/**
- * Return a sanitized version of {@param str} that is safe to use as a path name in a data pack or resource pack.
- *
- * Function names can only contain lowercase letters, numbers, underscores, and periods.
- * All other characters are replaced with underscores.
- */
-export function sanitizePathName(str: string): string {
-	return str.toLowerCase().replace(/[^a-z0-9_.]+/g, '_')
+const CHARACTERS = 'abcdefghijklmnopqrstuvwxyz0123456789'
+const SMALL_CAPS_CHARACTERS = 'ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘꞯʀꜱᴛᴜᴠᴡxʏᴢ⁰¹²³⁴⁵⁶⁷⁸⁹'
+
+export function toSmallCaps(str: string): string {
+	let result = ''
+	for (const char of str) {
+		const index = CHARACTERS.indexOf(char.toLowerCase())
+		if (index !== -1) {
+			result += SMALL_CAPS_CHARACTERS[index]
+		} else {
+			result += char
+		}
+	}
+	return result
 }
 
 /**
@@ -57,7 +63,7 @@ export function getPathFromResourceLocation(resourceLocation: string, type: stri
 
 export function isResourcePackPath(path: string) {
 	const parsed = parseResourcePackPath(path)
-	return !!(parsed && parsed.namespace && parsed.resourcePath)
+	return !!(parsed?.namespace && parsed.resourcePath)
 }
 
 export function parseResourcePackPath(path: string): IMinecraftResourceLocation | undefined {
@@ -113,7 +119,7 @@ export function parseResourceLocation(resourceLocation: string) {
 
 export function isDataPackPath(path: string) {
 	const parsed = parseDataPackPath(path)
-	return !!(parsed && parsed.namespace && parsed.resourcePath)
+	return !!(parsed?.namespace && parsed.resourcePath)
 }
 
 export function parseDataPackPath(path: string): IMinecraftResourceLocation | undefined {
@@ -155,28 +161,72 @@ export function parseDataPackPath(path: string): IMinecraftResourceLocation | un
 	}
 }
 
-export interface IFunctionTag {
+export interface FunctionTagJSON {
 	replace?: boolean
 	values: Array<string | { id: string; required?: boolean }>
 }
 
-export function mergeTag(oldTag: IFunctionTag, newTag: IFunctionTag): IFunctionTag {
-	oldTag.values.forEach(value => {
-		if (typeof value === 'string') {
-			if (!newTag.values.some(v => (typeof v === 'object' ? v.id === value : v === value))) {
-				newTag.values.push(value)
-			}
-		} else {
-			if (
-				!newTag.values.some(v =>
-					typeof v === 'object' ? v.id === value.id : v === value.id
-				)
-			) {
-				newTag.values.push(value)
-			}
+type TagEntry = string | { id: string; required?: boolean }
+
+export class DataPackTag {
+	replace = false
+	values: Array<string | { id: string; required?: boolean }> = []
+
+	has(entry: TagEntry) {
+		const id = DataPackTag.getEntryId(entry)
+		return this.values.some(v => DataPackTag.getEntryId(v) === id)
+	}
+
+	add(value: TagEntry) {
+		const existingEntry = this.get(value)
+		if (existingEntry) return
+		this.values.push(value)
+	}
+
+	get(value: TagEntry) {
+		const id = DataPackTag.getEntryId(value)
+		return this.values.find(v => DataPackTag.getEntryId(v) === id)
+	}
+
+	filter(predicate: (value: TagEntry, index: number, array: TagEntry[]) => boolean) {
+		this.values = this.values.filter(predicate)
+		return this
+	}
+
+	merge(other: DataPackTag) {
+		this.replace = other.replace
+
+		for (const value of other.values) {
+			this.add(value)
 		}
-	})
-	return newTag
+
+		return this
+	}
+
+	sort() {
+		this.values.sort((a, b) => {
+			const idA = DataPackTag.getEntryId(a)
+			const idB = DataPackTag.getEntryId(b)
+			return idA.localeCompare(idB, 'en')
+		})
+
+		return this
+	}
+
+	static getEntryId(entry: TagEntry) {
+		return typeof entry === 'string' ? entry : entry.id
+	}
+
+	static fromJSON(json: FunctionTagJSON) {
+		const tag = new DataPackTag()
+		if (typeof json.replace === 'boolean') tag.replace = json.replace
+		if (Array.isArray(json.values)) tag.values = structuredClone(json.values)
+		return tag
+	}
+
+	toJSON(): FunctionTagJSON {
+		return { replace: this.replace, values: structuredClone(this.values) }
+	}
 }
 
 export function resolveBlockstateValueType(
@@ -212,7 +262,7 @@ export interface IParsedBlock {
 export async function parseBlock(block: string): Promise<IParsedBlock | undefined> {
 	const states: Record<string, ReturnType<typeof resolveBlockstateValueType>> = {}
 	if (block.includes('[')) {
-		const match = block.match(/(.+?)\[((?:[^,=[\]]+=[^,=[\]]+,?)+)?]/)
+		const match = /(.+?)\[((?:[^,=[\]]+=[^,=[\]]+,?)+)?]/.exec(block)
 		if (!match) return
 		if (match[2] !== undefined) {
 			const args = match[2].split(',')
@@ -233,48 +283,65 @@ export async function parseBlock(block: string): Promise<IParsedBlock | undefine
 	}
 }
 
-export function sortMCVersions(versions: MinecraftVersion[]): MinecraftVersion[] {
+export function sortMCVersions(
+	versions: SUPPORTED_MINECRAFT_VERSIONS[]
+): SUPPORTED_MINECRAFT_VERSIONS[] {
 	return versions.sort((a, b) => {
 		return compareVersions(a, b) ? -1 : 1
 	})
 }
 
-export function getDataPackFormat(version: MinecraftVersion): number {
+export function getDataPackFormat(version: SUPPORTED_MINECRAFT_VERSIONS): number {
 	switch (version) {
-		case '1.20.4':
+		case SUPPORTED_MINECRAFT_VERSIONS['1.20.4']:
 			return 26
-		case '1.20.5':
+		case SUPPORTED_MINECRAFT_VERSIONS['1.20.5']:
 			return 41
-		case '1.21.0':
-			return 48
-		case '1.21.2':
+		case SUPPORTED_MINECRAFT_VERSIONS['1.21.2']:
 			return 57
-		case '1.21.4':
+		case SUPPORTED_MINECRAFT_VERSIONS['1.21.4']:
 			return 61
-		case '1.21.5':
+		case SUPPORTED_MINECRAFT_VERSIONS['1.21.5']:
 			return 71
+		case SUPPORTED_MINECRAFT_VERSIONS['1.21.6']:
+			return 80
+		case SUPPORTED_MINECRAFT_VERSIONS['1.21.9']:
+			return 88.0
 		default:
+			console.warn(`Unknown Minecraft version: ${version}`)
 			return Infinity
 	}
 }
 
-export function getResourcePackFormat(version: MinecraftVersion): number {
+export function getResourcePackFormat(version: SUPPORTED_MINECRAFT_VERSIONS): number {
 	switch (version) {
-		case '1.20.4':
+		case SUPPORTED_MINECRAFT_VERSIONS['1.20.4']:
 			return 22
-		case '1.20.5':
+		case SUPPORTED_MINECRAFT_VERSIONS['1.20.5']:
 			return 32
-		case '1.21.0':
-			return 34
-		case '1.21.2':
+		case SUPPORTED_MINECRAFT_VERSIONS['1.21.2']:
 			return 42
-		case '1.21.4':
+		case SUPPORTED_MINECRAFT_VERSIONS['1.21.4']:
 			return 46
-		case '1.21.5':
+		case SUPPORTED_MINECRAFT_VERSIONS['1.21.5']:
 			return 55
+		case SUPPORTED_MINECRAFT_VERSIONS['1.21.6']:
+			return 63
+		case SUPPORTED_MINECRAFT_VERSIONS['1.21.9']:
+			return 69.0
 		default:
+			console.warn(`Unknown Minecraft version: ${version}`)
 			return Infinity
 	}
+}
+
+export function getNextSupportedVersion(
+	version: SUPPORTED_MINECRAFT_VERSIONS
+): SUPPORTED_MINECRAFT_VERSIONS | undefined {
+	const versions = Object.values(SUPPORTED_MINECRAFT_VERSIONS)
+	const index = versions.indexOf(version)
+	if (index === -1 || index === versions.length - 1) return undefined
+	return versions[index + 1]
 }
 
 export function functionReferenceExists(dataPackRoot: string, resourceLocation: string): boolean {

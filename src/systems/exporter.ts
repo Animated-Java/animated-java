@@ -1,10 +1,11 @@
-import { saveBlueprint } from '../blueprintFormat'
-import { blueprintSettingErrors } from '../blueprintSettings'
+import { Stopwatch } from 'src/util/stopwatch'
+import { projectTargetVersionIsAtLeast, saveBlueprint } from '../formats/blueprint'
+import { blueprintSettingErrors } from '../formats/blueprint/settings'
 import { openBlueprintSettingsDialog } from '../interface/dialog/blueprintSettings'
 import { PROGRESS_DESCRIPTION, openExportProgressDialog } from '../interface/dialog/exportProgress'
 import { openUnexpectedErrorDialog } from '../interface/dialog/unexpectedError'
 import { resolvePath } from '../util/fileUtil'
-import { isResourcePackPath, sortMCVersions } from '../util/minecraftUtil'
+import { isResourcePackPath } from '../util/minecraftUtil'
 import { translate } from '../util/translation'
 import { Variant } from '../variants'
 import { hashAnimations, renderProjectAnimations } from './animationRenderer'
@@ -13,7 +14,42 @@ import resourcepackCompiler from './resourcepackCompiler'
 import { hashRig, renderRig } from './rigRenderer'
 import { isCubeValid } from './util'
 
-export class IntentionalExportError extends Error {}
+export class IntentionalExportError extends Error {
+	constructor(
+		message: string,
+		public messageBoxOptions?: MessageBoxOptions,
+		public messageBoxCallback?: Parameters<typeof Blockbench.showMessageBox>[1]
+	) {
+		super(message)
+		this.name = 'IntentionalExportError'
+	}
+}
+
+export class IntentionalExportErrorFromInvalidFile extends IntentionalExportError {
+	constructor(filePath: string, public originalError: Error) {
+		const parsed = PathModule.parse(filePath)
+		super(
+			`Failed to read file <code title="${filePath}">${parsed.base}</code>:\n\n` +
+				'```\n' +
+				originalError +
+				'\n```',
+			{
+				commands: {
+					open_file: {
+						text: 'Open File Location',
+						icon: 'folder_open',
+					},
+				},
+			},
+			button => {
+				if (button === 'open_file') {
+					shell.showItemInFolder(filePath)
+				}
+			}
+		)
+		this.name = 'IntentionalExportErrorFromInvalidFile'
+	}
+}
 
 export function getExportPaths() {
 	const aj = Project!.animated_java
@@ -44,16 +80,23 @@ export function getExportPaths() {
 	}
 }
 
-async function actuallyExportProject(forceSave = true) {
+interface ExportProjectOptions {
+	forceSave?: boolean
+	debugMode?: boolean
+}
+
+async function actuallyExportProject({
+	forceSave = true,
+	debugMode = false,
+}: ExportProjectOptions = {}): Promise<boolean> {
 	const aj = Project!.animated_java
 	const dialog = openExportProgressDialog()
 	// Wait for the dialog to open
 	await new Promise(resolve => requestAnimationFrame(resolve))
 	const selectedVariant = Variant.selected
 	Variant.getDefault().select()
+	const stopwatch = new Stopwatch('Project Export').start()
 	try {
-		console.time('Exporting project took')
-
 		// Verify that all variant texture maps are valid
 		for (const variant of Variant.all) {
 			variant.verifyTextureMap()
@@ -69,11 +112,6 @@ async function actuallyExportProject(forceSave = true) {
 				)
 			}
 		}
-
-		// Sort target versions
-		console.log('Target Minecraft Versions', aj.target_minecraft_versions)
-		aj.target_minecraft_versions = sortMCVersions(aj.target_minecraft_versions)
-		console.log('Sorted Target Minecraft Versions', aj.target_minecraft_versions)
 
 		const {
 			resourcePackFolder,
@@ -106,7 +144,7 @@ async function actuallyExportProject(forceSave = true) {
 				buttons: [translate('misc.failed_to_export.button')],
 			})
 			dialog.close(0)
-			return
+			return false
 		}
 
 		const animations = await renderProjectAnimations(Project!, rig)
@@ -115,72 +153,71 @@ async function actuallyExportProject(forceSave = true) {
 		const rigHash = hashRig(rig)
 		const animationHash = hashAnimations(animations)
 
-		// Always run the resource pack compiler because it calculates the custom model data.
-		await resourcepackCompiler(aj.target_minecraft_versions, {
+		// TODO - Plugin mode should run without the resource pack compiler
+		// Always run the resource pack compiler because it calculates custom model data.
+		await resourcepackCompiler([aj.target_minecraft_version], {
 			rig,
 			displayItemPath,
 			resourcePackFolder,
 			textureExportFolder,
 			modelExportFolder,
+			debugMode,
 		})
 
-		// if (aj.enable_plugin_mode) {
-		// 	exportJSON({
-		// 		rig,
-		// 		animations,
-		// 		displayItemPath,
-		// 		textureExportFolder,
-		// 		modelExportFolder,
-		// 	})
-		// } else {
 		if (aj.data_pack_export_mode !== 'none') {
-			await compileDataPack(aj.target_minecraft_versions, {
+			await compileDataPack([aj.target_minecraft_version], {
 				rig,
 				animations,
 				dataPackFolder,
 				rigHash,
 				animationHash,
+				debugMode,
 			})
 		}
 
 		Project!.last_used_export_namespace = aj.export_namespace
-		console.timeEnd('Exporting project took')
 
 		if (forceSave) saveBlueprint()
 		Blockbench.showQuickMessage('Project exported successfully!', 2000)
 
-		return
+		return true
 	} catch (e: any) {
 		console.error(e)
 		if (e instanceof IntentionalExportError) {
-			Blockbench.showMessageBox({
-				title: translate('misc.failed_to_export.title'),
-				message: e.message,
-				buttons: [translate('misc.failed_to_export.button')],
-			})
-			return
+			Blockbench.showMessageBox(
+				{
+					title: translate('misc.failed_to_export.title'),
+					message: e.message,
+					buttons: [translate('misc.failed_to_export.button')],
+					...e.messageBoxOptions,
+				},
+				e.messageBoxCallback
+			)
+			return false
 		}
 		openUnexpectedErrorDialog(e as Error)
 	} finally {
 		selectedVariant?.select()
 		dialog.close(0)
+		stopwatch.debug()
 	}
+	return false
 }
 
-export async function exportProject(forceSave = true) {
-	if (!Project) return // TODO: Handle this error better
+export async function exportProject(options?: ExportProjectOptions): Promise<boolean> {
+	if (!Project) return false // TODO: Handle this error better
 
-	if (
-		// Check if 1.21.3 is newer than the target version
-		// compareVersions('1.21.3', Project.animated_java.target_minecraft_versions) &&
-		!Cube.all.allAre(c => isCubeValid(c))
-	) {
+	if (Cube.all.some(cube => isCubeValid(cube) === 'invalid')) {
 		Blockbench.showMessageBox({
 			title: translate('misc.failed_to_export.title'),
-			message: translate('misc.failed_to_export.invalid_rotation.message'),
+			message: translate(
+				projectTargetVersionIsAtLeast('1.21.6')
+					? 'misc.failed_to_export.invalid_rotation.message_post_1_21_6'
+					: 'misc.failed_to_export.invalid_rotation.message'
+			),
 			buttons: [translate('misc.failed_to_export.button')],
 		})
-		return
+		return false
 	}
 
 	blueprintSettingErrors.set({})
@@ -204,10 +241,10 @@ export async function exportProject(forceSave = true) {
 					.join('\n\n'),
 			buttons: [translate('misc.failed_to_export.button')],
 		})
-		return
+		return false
 	}
 
 	settingsDialog.close(0)
 
-	await actuallyExportProject(forceSave)
+	return await actuallyExportProject(options)
 }

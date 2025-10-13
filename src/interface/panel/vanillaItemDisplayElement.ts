@@ -1,17 +1,15 @@
-import { isCurrentFormat } from '../../blueprintFormat'
+import { registerMountSvelteComponentMod } from 'src/util/mountSvelteComponent'
 import VanillaItemDisplayElementPanel from '../../components/vanillaItemDisplayElementPanel.svelte'
 import { PACKAGE } from '../../constants'
-import { ItemDisplayMode, VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
-import { events } from '../../util/events'
-import { injectSvelteCompomponentMod } from '../../util/injectSvelteComponent'
+import { activeProjectIsBlueprintFormat } from '../../formats/blueprint'
+import { type ItemDisplayMode, VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
+import EVENTS from '../../util/events'
 import { translate } from '../../util/translation'
 
-injectSvelteCompomponentMod({
+registerMountSvelteComponentMod({
+	id: 'animated-java:append-element-panel/vanilla-item-display',
 	component: VanillaItemDisplayElementPanel,
-	props: {},
-	elementSelector() {
-		return document.querySelector('#panel_element')
-	},
+	target: '#panel_element',
 })
 
 export const ITEM_DISPLAY_ITEM_DISPLAY_SELECT = new BarSelect(
@@ -20,7 +18,7 @@ export const ITEM_DISPLAY_ITEM_DISPLAY_SELECT = new BarSelect(
 		name: translate('tool.item_display.item_display.title'),
 		icon: 'format_align_left',
 		description: translate('tool.item_display.item_display.description'),
-		condition: () => isCurrentFormat() && !!VanillaItemDisplay.selected.length,
+		condition: () => activeProjectIsBlueprintFormat() && !!VanillaItemDisplay.selected.length,
 		options: {
 			none: translate('tool.item_display.item_display.options.none'),
 			thirdperson_lefthand: translate(
@@ -79,14 +77,13 @@ ITEM_DISPLAY_ITEM_DISPLAY_SELECT.set = function (
 	return this
 }
 function updateItemDisplaySelect() {
-	console.log('updateItemDisplaySelect')
 	let value = VanillaItemDisplay.selected.at(0)?.itemDisplay
 	value ??= 'none'
 	ITEM_DISPLAY_ITEM_DISPLAY_SELECT.set(value)
 }
-events.UNDO.subscribe(() => {
+EVENTS.UNDO.subscribe(() => {
 	updateItemDisplaySelect()
 })
-events.REDO.subscribe(() => {
+EVENTS.REDO.subscribe(() => {
 	updateItemDisplaySelect()
 })

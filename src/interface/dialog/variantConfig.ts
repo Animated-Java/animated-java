@@ -1,6 +1,6 @@
 import VariantConfigDialogSvelteComponent from '../../components/variantConfigDialog.svelte'
 import { PACKAGE } from '../../constants'
-import { events } from '../../util/events'
+import EVENTS from '../../util/events'
 import { Valuable } from '../../util/stores'
 import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
@@ -17,16 +17,18 @@ export function openVariantConfigDialog(variant: Variant) {
 	new SvelteDialog({
 		id: `${PACKAGE.name}:variantConfig`,
 		title: translate('dialog.variant_config.title'),
-		width: 512,
-		component: VariantConfigDialogSvelteComponent,
-		props: {
-			variant,
-			displayName,
-			name,
-			uuid,
-			textureMap,
-			generateNameFromDisplayName,
-			excludedNodes,
+		width: 700,
+		content: {
+			component: VariantConfigDialogSvelteComponent,
+			props: {
+				variant,
+				displayName,
+				name,
+				uuid,
+				textureMap,
+				generateNameFromDisplayName,
+				excludedNodes,
+			},
 		},
 		preventKeybinds: true,
 		onConfirm() {
@@ -36,8 +38,10 @@ export function openVariantConfigDialog(variant: Variant) {
 			variant.textureMap = textureMap
 			variant.generateNameFromDisplayName = generateNameFromDisplayName.get()
 			variant.excludedNodes = excludedNodes.get()
-			events.UPDATE_VARIANT.dispatch(variant)
+			EVENTS.UPDATE_VARIANT.publish(variant)
 			variant.select()
+
+			Project!.saved = false
 		},
 	}).show()
 }

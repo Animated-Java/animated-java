@@ -1,4 +1,5 @@
-/// <reference path="blockbenchTypeMods.d.ts" />
+/// <reference path="D:/github-repos/snavesutit/blockbench-types/types/index.d.ts"/>
+/// <reference path="./blockbenchTypeMods.d.ts"/>
 
 declare module '*.png' {
 	const value: string
@@ -30,6 +31,11 @@ declare module '*.mcb' {
 	export = value
 }
 
+declare module '*.mcbt' {
+	const value: string
+	export = value
+}
+
 declare module '*.txt' {
 	const value: string
 	export = value
@@ -46,4 +52,9 @@ declare module '*.molang' {
 
 declare module 'fflate/browser' {
 	export * from 'fflate'
+}
+
+declare module '*.css' {
+	const value: string
+	export = value
 }

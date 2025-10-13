@@ -1,76 +1,64 @@
-import * as PACKAGE from '../../package.json'
 import { Variant } from '../variants'
-import { Subscribable } from './subscribable'
-
-export class PluginEvent<EventData = void> extends Subscribable<EventData> {
-	protected static events: Record<string, PluginEvent<any>> = {}
-	constructor(public name: string) {
-		super()
-		PluginEvent.events[name] = this
-	}
-}
+import { subscribable } from './subscribable'
 
 // Plugin Events
-export const events = {
-	LOAD: new PluginEvent('load'),
-	UNLOAD: new PluginEvent('unload'),
-	INSTALL: new PluginEvent('install'),
-	UNINSTALL: new PluginEvent('uninstall'),
+const EVENTS = {
+	PLUGIN_LOAD: subscribable<void>(),
+	PLUGIN_FINISHED_LOADING: subscribable<void>(),
 
-	INJECT_MODS: new PluginEvent('injectMods'),
-	EXTRACT_MODS: new PluginEvent('extractMods'),
+	PLUGIN_UNLOAD: subscribable<void>(),
+	PLUGIN_FINISHED_UNLOADING: subscribable<void>(),
 
-	NETWORK_CONNECTED: new PluginEvent('networkConnected'),
+	PLUGIN_INSTALL: subscribable<void>(),
+	PLUGIN_UNINSTALL: subscribable<void>(),
 
-	MINECRAFT_ASSETS_LOADED: new PluginEvent('minecraftAssetsLoaded'),
-	MINECRAFT_REGISTRY_LOADED: new PluginEvent('minecraftRegistriesLoaded'),
-	MINECRAFT_FONTS_LOADED: new PluginEvent('minecraftFontsLoaded'),
-	BLOCKSTATE_REGISTRY_LOADED: new PluginEvent('blockstateRegistryLoaded'),
+	EXTERNAL_PLUGIN_LOAD: subscribable<BBPlugin>(),
+	EXTERNAL_PLUGIN_UNLOAD: subscribable<BBPlugin>(),
 
-	PRE_SELECT_PROJECT: new PluginEvent<ModelProject>('preSelectProject'),
-	SELECT_PROJECT: new PluginEvent<ModelProject>('selectProject'),
-	UNSELECT_PROJECT: new PluginEvent<ModelProject>('deselectProject'),
+	INJECT_MODS: subscribable<void>(),
+	EXTRACT_MODS: subscribable<void>(),
 
-	SELECT_AJ_PROJECT: new PluginEvent<ModelProject>('selectAJProject'),
-	UNSELECT_AJ_PROJECT: new PluginEvent<ModelProject>('unselectAJProject'),
+	NETWORK_CONNECTED: subscribable<void>(),
 
-	CREATE_VARIANT: new PluginEvent<Variant>('createVariant'),
-	UPDATE_VARIANT: new PluginEvent<Variant>('updateVariant'),
-	DELETE_VARIANT: new PluginEvent<Variant>('deleteVariant'),
-	SELECT_VARIANT: new PluginEvent<Variant>('selectVariant'),
+	MINECRAFT_ASSETS_LOADED: subscribable<void>(),
+	MINECRAFT_REGISTRY_LOADED: subscribable<void>(),
+	MINECRAFT_FONTS_LOADED: subscribable<void>(),
+	BLOCKSTATE_REGISTRY_LOADED: subscribable<void>(),
 
-	SELECT_KEYFRAME: new PluginEvent<_Keyframe>('selectKeyframe'),
-	UNSELECT_KEYFRAME: new PluginEvent('unselectKeyframe'),
+	PRE_SELECT_PROJECT: subscribable<ModelProject>(),
+	SELECT_PROJECT: subscribable<ModelProject>(),
+	UNSELECT_PROJECT: subscribable<ModelProject>(),
+	CLOSE_PROJECT: subscribable<ModelProject>(),
 
-	UPDATE_SELECTION: new PluginEvent('updateSelection'),
+	SELECT_AJ_PROJECT: subscribable<ModelProject>(),
+	UNSELECT_AJ_PROJECT: subscribable<ModelProject>(),
 
-	UNDO: new PluginEvent<UndoEntry>('undo'),
-	REDO: new PluginEvent<UndoEntry>('redo'),
+	CREATE_VARIANT: subscribable<Variant>(),
+	UPDATE_VARIANT: subscribable<Variant>(),
+	DELETE_VARIANT: subscribable<Variant>(),
+	SELECT_VARIANT: subscribable<Variant>(),
+
+	UPDATE_KEYFRAME_SELECTION: subscribable<void>(),
+
+	UPDATE_SELECTION: subscribable<void>(),
+
+	UNDO: subscribable<UndoEntry>(),
+	REDO: subscribable<UndoEntry>(),
 }
-
-function injectionHandler() {
-	console.groupCollapsed(`Injecting BlockbenchMods added by '${PACKAGE.name}'`)
-	events.INJECT_MODS.dispatch()
-	console.groupEnd()
-}
-
-function extractionHandler() {
-	console.groupCollapsed(`Extracting BlockbenchMods added by '${PACKAGE.name}'`)
-	events.EXTRACT_MODS.dispatch()
-	console.groupEnd()
-}
-
-events.LOAD.subscribe(injectionHandler)
-events.UNLOAD.subscribe(extractionHandler)
-events.INSTALL.subscribe(injectionHandler)
-events.UNINSTALL.subscribe(extractionHandler)
+export default EVENTS
 
 Blockbench.on<EventName>('select_project', ({ project }: { project: ModelProject }) => {
-	events.SELECT_PROJECT.dispatch(project)
+	EVENTS.SELECT_PROJECT.publish(project)
 })
 Blockbench.on<EventName>('unselect_project', ({ project }: { project: ModelProject }) => {
-	events.UNSELECT_PROJECT.dispatch(project)
+	EVENTS.UNSELECT_PROJECT.publish(project)
 })
-Blockbench.on<EventName>('update_selection', () => events.UPDATE_SELECTION.dispatch())
-Blockbench.on<EventName>('undo', (entry: UndoEntry) => events.UNDO.dispatch(entry))
-Blockbench.on<EventName>('redo', (entry: UndoEntry) => events.REDO.dispatch(entry))
+// Blockbench.on('loaded_plugin', ({ plugin }: { plugin: BBPlugin }) => {
+// 	if (plugin.id === PACKAGE.name) return
+// 	EVENTS.EXTERNAL_PLUGIN_LOAD.publish(plugin)
+// })
+Blockbench.on<EventName>('close_project', () => EVENTS.CLOSE_PROJECT.publish(Project!))
+Blockbench.on<EventName>('update_keyframe_selection', EVENTS.UPDATE_KEYFRAME_SELECTION.publish)
+Blockbench.on<EventName>('update_selection', EVENTS.UPDATE_SELECTION.publish)
+Blockbench.on<EventName>('undo', EVENTS.UNDO.publish)
+Blockbench.on<EventName>('redo', EVENTS.REDO.publish)

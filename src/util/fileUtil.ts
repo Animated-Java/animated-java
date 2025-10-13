@@ -26,7 +26,12 @@ export function resolveEnvVariables(path: string) {
 }
 
 export function isRelativePath(path: string) {
-	return path.startsWith('./') || path.startsWith('../')
+	return (
+		path.startsWith('./') ||
+		path.startsWith('../') ||
+		path.startsWith('.\\') ||
+		path.startsWith('..\\')
+	)
 }
 
 export function resolveRelativePath(path: string) {
@@ -60,7 +65,7 @@ export function swapPathRoot(path: string, oldRoot: string, newRoot: string) {
 export function safeReadSync(path: string): Buffer | undefined {
 	try {
 		return fs.readFileSync(path)
-	} catch (e) {
+	} catch {
 		return undefined
 	}
 }

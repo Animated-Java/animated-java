@@ -1,28 +1,46 @@
 <script lang="ts">
-	import { blueprintSettingErrors } from '../../blueprintSettings'
+	import { blueprintSettingErrors } from '../../formats/blueprint/settings'
 	import { translate } from '../../util/translation'
 
 	export let label: string
-	export let tooltip: string = ''
-	export let warning_text: string = ''
-	export let error_text: string = ''
+	export let tooltip = ''
+	export let warningText = ''
+	export let errorText = ''
 	export let onReset: () => void
 
 	let id = guid()
 
-	$: if (error_text) {
-		blueprintSettingErrors.get()[label] = error_text
-	}
-
-	function onQuestionMarkClick() {
-		Blockbench.showQuickMessage(tooltip, 50 * tooltip.length)
+	$: if (errorText) {
+		blueprintSettingErrors.get()[label] = errorText
 	}
 </script>
 
-<div>
+<div class="dialog_item_container">
 	<div class="base_dialog_item">
 		<div class="slot_container">
 			<slot {id} />
+
+			<div class="description">
+				{#if errorText}
+					<div class="error_text">
+						<i class="fa fa-exclamation-circle dialog_form_error text_icon" />
+						<div class="error_lines">
+							<!-- svelte-ignore missing-declaration -->
+							{@html pureMarked(errorText)}
+						</div>
+					</div>
+				{:else if warningText}
+					<div class="warning_text">
+						<i class="fa fa-exclamation-triangle dialog_form_warning text_icon" />
+						<!-- svelte-ignore missing-declaration -->
+						{@html pureMarked(warningText)}
+					</div>
+				{/if}
+				{#if tooltip}
+					<!-- svelte-ignore missing-declaration -->
+					{@html pureMarked(tooltip)}
+				{/if}
+			</div>
 		</div>
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<i
@@ -31,68 +49,57 @@
 			title={translate('dialog.reset')}
 		/>
 	</div>
-	<div class="base_dialog_item">
-		{#if error_text}
-			<div class="error_text">
-				<i class="fa fa-exclamation-circle dialog_form_error text_icon" />
-				<div class="error_lines">
-					{#each error_text.split('\n') as text}
-						<div>{text}</div>
-					{/each}
-				</div>
-			</div>
-		{:else if warning_text}
-			<div class="warning_text">
-				<i class="fa fa-exclamation-triangle dialog_form_warning text_icon" />
-				<div class="warning_lines">
-					{#each warning_text.split('\n') as text}
-						<div>{text}</div>
-					{/each}
-				</div>
-			</div>
-		{/if}
-	</div>
-	{#if tooltip}
-		<div class="description">
-			{tooltip}
-		</div>
-	{/if}
 </div>
 
 <style>
+	.dialog_item_container {
+		margin: 0px 16px 8px;
+	}
 	.base_dialog_item {
 		display: flex;
 		flex-direction: row;
-		/* align-items: center; */
-		justify-content: space-between;
+	}
+	.base_dialog_item :global(label) {
+		--max_label_width: 200px !important;
 	}
 	.slot_container {
 		flex-grow: 1;
 		margin-right: 4px;
+		max-width: 96%;
+	}
+	.warning_text i {
+		font-size: 1.2em;
 	}
 	.warning_text {
 		display: flex;
 		align-items: center;
 		color: var(--color-warning);
 		font-family: var(--font-code);
-		font-size: 0.8em;
-	}
-	.warning_lines {
-		display: flex;
-		flex-direction: column;
+		margin: 0.75rem;
+		margin-top: 0;
 	}
 	.description {
-		font-size: 0.9em;
+		font-size: 0.9rem;
 		color: var(--color-subtle_text);
-		margin-top: 4px;
-		margin-bottom: 16px;
+		margin: 0 0.75rem;
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+	.description :global(li) {
+		list-style: circle;
+		margin-left: 1.5rem;
+	}
+	.error_text i {
+		font-size: 1.2em;
 	}
 	.error_text {
 		display: flex;
 		align-items: center;
 		color: var(--color-error);
 		font-family: var(--font-code);
-		font-size: 0.8em;
+		margin: 0.75rem;
+		margin-top: 0;
 	}
 	.error_lines {
 		display: flex;

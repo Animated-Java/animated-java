@@ -1,5 +1,0 @@
-template throw {
-	with missing_root_context:literal {
-		$tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(arguments[1].functions.at(-1))%>
-	}
-}

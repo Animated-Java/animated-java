@@ -2,20 +2,14 @@
 /// <reference path="D:/github-repos/snavesutit/blockbench-types/types/index.d.ts"/>
 /// <reference path="../global.d.ts"/>
 
-import type { IBlueprintBoneConfigJSON } from '../blueprintFormat'
-import { type defaultValues } from '../blueprintSettings'
-import {
-	getKeyframeCommands,
-	getKeyframeExecuteCondition,
-	getKeyframeRepeat,
-	getKeyframeRepeatFrequency,
-	getKeyframeVariant,
-} from '../mods/customKeyframesMod'
-import { EasingKey } from '../util/easing'
+import type { IBlueprintBoneConfigJSON } from '../formats/blueprint'
+import { type defaultValues } from '../formats/blueprint/settings'
+import type { EasingKey } from '../util/easing'
 import { resolvePath } from '../util/fileUtil'
 import { detectCircularReferences, mapObjEntries, scrubUndefined } from '../util/misc'
 import { Variant } from '../variants'
 import type { INodeTransform, IRenderedAnimation, IRenderedFrame } from './animationRenderer'
+import { JsonText } from './jsonText'
 import type {
 	AnyRenderedNode,
 	IRenderedModel,
@@ -64,7 +58,7 @@ type ExportedBakedAnimation = Omit<
 	frames: ExportedAnimationFrame[]
 	modified_nodes: string[]
 }
-type ExportedKeyframe = {
+interface ExportedKeyframe {
 	time: number
 	channel: string
 	value?: [string, string, string]
@@ -96,7 +90,7 @@ type ExportedKeyframe = {
 	repeat_frequency?: number
 }
 type ExportedAnimator = ExportedKeyframe[]
-type ExportedDynamicAnimation = {
+interface ExportedDynamicAnimation {
 	name: string
 	loop_mode: 'once' | 'hold' | 'loop'
 	duration: number
@@ -127,7 +121,7 @@ export interface IExportedJSON {
 	 */
 	settings: {
 		export_namespace: (typeof defaultValues)['export_namespace']
-		bounding_box: (typeof defaultValues)['bounding_box']
+		bounding_box: (typeof defaultValues)['render_box']
 		// Resource Pack Settings
 		custom_model_data_offset: (typeof defaultValues)['custom_model_data_offset']
 		// Plugin Settings
@@ -148,15 +142,15 @@ function transferKey(obj: any, oldKey: string, newKey: string) {
 }
 
 function serailizeKeyframe(kf: _Keyframe): ExportedKeyframe {
-	const json = {
+	const json: ExportedKeyframe = scrubUndefined({
 		time: kf.time,
 		channel: kf.channel,
-		commands: getKeyframeCommands(kf),
-		variant: getKeyframeVariant(kf),
-		execute_condition: getKeyframeExecuteCondition(kf),
-		repeat: getKeyframeRepeat(kf),
-		repeat_frequency: getKeyframeRepeatFrequency(kf),
-	} as ExportedKeyframe
+		commands: kf.function,
+		variant: kf.variant?.uuid,
+		execute_condition: kf.execute_condition,
+		repeat: kf.repeat,
+		repeat_frequency: kf.repeat_frequency,
+	})
 
 	switch (json.channel) {
 		case 'variant':
@@ -244,7 +238,7 @@ export function exportJSON(options: {
 	const json: IExportedJSON = {
 		settings: {
 			export_namespace: aj.export_namespace,
-			bounding_box: aj.bounding_box,
+			bounding_box: aj.render_box,
 			custom_model_data_offset: aj.custom_model_data_offset,
 			baked_animations: aj.baked_animations,
 		},
@@ -313,8 +307,8 @@ function serailizeNodeTransform(node: INodeTransform): ExportedNodetransform {
 		head_rot: node.head_rot,
 		scale: node.scale,
 		interpolation: node.interpolation,
-		commands: node.commands,
-		commands_execute_condition: node.commands_execute_condition,
+		function: node.function,
+		function_execute_condition: node.function_execute_condition,
 	}
 	return json
 }
@@ -347,7 +341,7 @@ function serailizeRenderedNode(node: AnyRenderedNode): ExportedRenderedNode {
 			break
 		}
 		case 'text_display': {
-			json.text = node.text?.toJSON()
+			json.text = new JsonText(node.text).toJSON()
 			break
 		}
 	}

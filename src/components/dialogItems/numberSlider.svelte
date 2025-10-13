@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte'
-	import { roundTo } from '../../util/misc'
+	import { roundToNth } from '../../util/misc'
 	import { Valuable } from '../../util/stores'
 	import BaseDialogItem from './baseDialogItem.svelte'
 
 	export let label: string
-	export let tooltip: string = ''
+	export let tooltip = ''
 	export let value: Valuable<number>
 	export let defaultValue: number
 	export let min = -Infinity
@@ -19,7 +19,7 @@
 	let slider: HTMLElement
 
 	const clampValue = (v: number) => {
-		return Math.clamp(roundTo(v, 1 / (valueStep ?? 1)), min, max) || 0
+		return Math.clamp(roundToNth(v, 1 / (valueStep ?? 1)), min, max) || 0
 	}
 
 	const onStartDrag = (moveEvent: MouseEvent | TouchEvent) => {
@@ -77,9 +77,18 @@
 				bind:value={$value}
 				inputmode="decimal"
 			/>
-			<div bind:this={slider} class="tool numaric_input_slider">
+			<div bind:this={slider} class="tool numaric_input_slider slider-fix">
 				<i class="material-icons icon">code</i>
 			</div>
 		</div>
 	</div>
 </BaseDialogItem>
+
+<style>
+	input {
+		padding: 0 8px !important;
+	}
+	.slider-fix {
+		right: 8px !important;
+	}
+</style>

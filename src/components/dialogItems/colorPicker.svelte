@@ -5,12 +5,11 @@
 	import BaseDialogItem from './baseDialogItem.svelte'
 
 	export let label: string
-	export let tooltip: string = ''
+	export let tooltip = ''
 	export let value: Valuable<string>
 
 	let colorPicker = new ColorPicker(`${PACKAGE.name}:${label}-color_picker`, {
 		onChange() {
-			// @ts-ignore
 			const color = colorPicker.get() as tinycolor.Instance
 			value.set(color.toHexString())
 		},

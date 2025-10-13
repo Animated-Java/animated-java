@@ -1,7 +1,8 @@
-import { Plugin } from 'esbuild'
+import type { Plugin } from 'esbuild'
+import * as fflate from 'fflate'
+import { existsSync } from 'fs'
 import * as fs from 'fs/promises'
 import * as pathjs from 'path'
-import * as fflate from 'fflate'
 
 function zip(data: fflate.AsyncZippable): Promise<Uint8Array> {
 	return new Promise((resolve, reject) => {
@@ -18,10 +19,24 @@ export default function plugin(): Plugin {
 		setup(build) {
 			const mcbFiles = new Map<string, fflate.AsyncZippableFile>()
 
-			build.onLoad({ filter: /\.mcb$/ }, async ({ path }) => {
+			build.onResolve({ filter: /\.mcbt?$/ }, args => {
+				const path = pathjs.join(args.resolveDir, args.path)
+
+				if (!existsSync(path)) {
+					return { errors: [{ text: `MCB file not found: ${path}` }] }
+				}
+
+				return {
+					path,
+					namespace: 'mcb',
+					watchFiles: [path],
+				}
+			})
+
+			build.onLoad({ filter: /\.mcbt?$/, namespace: 'mcb' }, async ({ path }) => {
 				const localPath = pathjs.relative(process.cwd(), path).replace(/\\/g, '/')
 				const data = await fs.readFile(path)
-				mcbFiles.set(localPath, data)
+				mcbFiles.set(localPath, new Uint8Array(data))
 
 				return {
 					contents: `
@@ -39,7 +54,7 @@ export default getZipFile('${localPath}')
 				}
 			})
 
-			build.onLoad({ filter: /.*/, namespace: 'mcbZipData' }, async ({ path }) => {
+			build.onLoad({ filter: /.*/, namespace: 'mcbZipData' }, async () => {
 				const zipped = await zip(Object.fromEntries(mcbFiles.entries()))
 				const data = Buffer.from(zipped).toString('base64')
 				return {

@@ -1,10 +1,10 @@
 import type { ResourcePackCompiler } from '.'
 import { PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
-import { isResourcePackPath, sanitizePathName } from '../../util/minecraftUtil'
+import { isResourcePackPath, sanitizeStorageKey } from '../../util/minecraftUtil'
 import { Variant } from '../../variants'
-import { IItemDefinition } from '../minecraft/itemDefinitions'
+import type { IItemDefinition } from '../minecraft/itemDefinitions'
 import { type ITextureAtlas } from '../minecraft/textureAtlas'
-import { IRenderedNodes, IRenderedRig, IRenderedVariantModel } from '../rigRenderer'
+import type { IRenderedNodes, IRenderedRig, IRenderedVariantModel } from '../rigRenderer'
 
 const compileResourcePack: ResourcePackCompiler = async ({
 	coreFiles,
@@ -22,7 +22,6 @@ const compileResourcePack: ResourcePackCompiler = async ({
 		modelExportFolder,
 	})
 
-	const globalModelsFolder = PathModule.join('assets/animated_java/models/')
 	const itemModelDefinitionsFolder = PathModule.join(
 		'assets/animated_java/items/blueprint/',
 		aj.export_namespace
@@ -59,17 +58,6 @@ const compileResourcePack: ResourcePackCompiler = async ({
 		content: autoStringify(blockAtlas),
 	})
 
-	// Empty
-	versionedFiles.set(PathModule.join(globalModelsFolder, 'empty.json'), { content: '{}' })
-	versionedFiles.set(PathModule.join('assets/animated_java/items', 'empty.json'), {
-		content: autoStringify({
-			model: {
-				type: 'minecraft:model',
-				model: 'animated_java:empty',
-			},
-		}),
-	})
-
 	// Textures
 	for (const texture of Object.values(rig.textures)) {
 		let image: Buffer | undefined
@@ -94,13 +82,16 @@ const compileResourcePack: ResourcePackCompiler = async ({
 			throw new Error(`Texture ${texture.name} is missing it's image data.`)
 		}
 
-		let textureName = sanitizePathName(texture.name)
-		if (!texture.name.endsWith('.png')) textureName += '.png'
+		let textureName = texture.name.replace(/\.png$/, '')
+		textureName = sanitizeStorageKey(textureName) + '.png'
+
 		versionedFiles.set(PathModule.join(textureExportFolder, textureName), { content: image })
+
 		if (mcmeta !== undefined)
 			versionedFiles.set(PathModule.join(textureExportFolder, textureName + '.mcmeta'), {
 				content: mcmeta,
 			})
+
 		if (optifineEmissive !== undefined)
 			versionedFiles.set(PathModule.join(textureExportFolder, textureName + '_e.png'), {
 				content: optifineEmissive,
@@ -168,10 +159,7 @@ function createMultiVariantItemDefinition(
 			cases: [
 				{
 					when: 'AJ_INTERNAL_EMPTY',
-					model: {
-						type: 'minecraft:model',
-						model: 'animated_java:empty',
-					},
+					model: { type: 'minecraft:empty' },
 				},
 			],
 			fallback: {

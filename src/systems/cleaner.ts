@@ -1,5 +1,5 @@
 import { isFunctionTagPath } from '../util/fileUtil'
-import { IFunctionTag, parseDataPackPath } from '../util/minecraftUtil'
+import { type FunctionTagJSON, parseDataPackPath } from '../util/minecraftUtil'
 import { getExportPaths } from './exporter'
 import { AJMeta } from './global'
 import { replacePathPart } from './util'
@@ -14,7 +14,7 @@ export async function cleanupExportedFiles() {
 		// displayItemPath,
 	} = getExportPaths()
 
-	if (aj.resource_pack_export_mode === 'raw') {
+	if (aj.resource_pack_export_mode === 'folder') {
 		const assetsMetaPath = PathModule.join(resourcePackFolder, 'assets.ajmeta')
 		const assetsMeta = new AJMeta(
 			assetsMetaPath,
@@ -66,7 +66,7 @@ export async function cleanupExportedFiles() {
 		assetsMeta.write()
 	}
 
-	if (aj.data_pack_export_mode === 'raw') {
+	if (aj.data_pack_export_mode === 'folder') {
 		const dataMetaPath = PathModule.join(dataPackFolder, 'data.ajmeta')
 		const dataMeta = new AJMeta(
 			dataMetaPath,
@@ -100,7 +100,7 @@ export async function cleanupExportedFiles() {
 					}
 				}
 				// Remove mentions of the export namespace from the file
-				const content: IFunctionTag = JSON.parse(
+				const content: FunctionTagJSON = JSON.parse(
 					(await fs.promises.readFile(file)).toString()
 				)
 				content.values = content.values.filter(

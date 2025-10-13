@@ -4,24 +4,24 @@
 	import BaseDialogItem from './baseDialogItem.svelte'
 
 	export let label: string
-	export let tooltip: string = ''
+	export let tooltip = ''
 	export let value: Valuable<string>
 	export let defaultValue: string
 	export let filters: FileFilter[] = []
-	export let fileSelectMessage: string = 'Select File'
+	export let fileSelectMessage = 'Select File'
 
 	let _value: string = value.get()
 
 	export let valueChecker: DialogItemValueChecker<string> = undefined
 
-	let warning_text = ''
-	let error_text = ''
+	let warningText = ''
+	let errorText = ''
 
 	function checkValue() {
 		if (!valueChecker) return
 		const result = valueChecker(value.get())
-		result.type === 'error' ? (error_text = result.message) : (error_text = '')
-		result.type === 'warning' ? (warning_text = result.message) : (warning_text = '')
+		result.type === 'error' ? (errorText = result.message) : (errorText = '')
+		result.type === 'warning' ? (warningText = result.message) : (warningText = '')
 	}
 	value.subscribe(() => checkValue())
 
@@ -31,8 +31,7 @@
 	}
 
 	function selectFile() {
-		Promise.any([
-			// @ts-ignore
+		void Promise.any([
 			electron.dialog.showOpenDialog({
 				properties: ['openFile', 'promptToCreate'],
 				filters,
@@ -54,7 +53,7 @@
 	onValueChange()
 </script>
 
-<BaseDialogItem {label} {tooltip} {onReset} bind:warning_text bind:error_text let:id>
+<BaseDialogItem {label} {tooltip} {onReset} bind:warningText bind:errorText let:id>
 	<div class="dialog_bar form_bar">
 		<label class="name_space_left" for={id}>{label}</label>
 		<input

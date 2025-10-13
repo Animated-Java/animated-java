@@ -1,8 +1,8 @@
 import type { ResourcePackCompiler } from '.'
 import { PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
-import { isResourcePackPath, sanitizePathName } from '../../util/minecraftUtil'
-import { ITextureAtlas } from '../minecraft/textureAtlas'
-import { IRenderedNodes } from '../rigRenderer'
+import { isResourcePackPath, sanitizeStorageKey } from '../../util/minecraftUtil'
+import type { ITextureAtlas } from '../minecraft/textureAtlas'
+import type { IRenderedNodes } from '../rigRenderer'
 import { sortObjectKeys } from '../util'
 
 interface IPredicateItemModel {
@@ -16,12 +16,13 @@ interface IPredicateItemModel {
 }
 
 class PredicateItemModel {
-	public lastOverrideId = 1
 	private overrides = new Map<number, string>()
 	private externalOverrides = new Map<number, string>()
-	public rigs: Record<string, number[]> = {}
-	public parent? = 'item/generated'
-	public textures: IPredicateItemModel['textures'] = {}
+
+	lastOverrideId = 1
+	rigs: Record<string, number[]> = {}
+	parent? = 'item/generated'
+	textures: IPredicateItemModel['textures'] = {}
 
 	setOverride(id: number, model: string) {
 		this.overrides.set(id, model)
@@ -130,6 +131,7 @@ const compileResourcePack: ResourcePackCompiler = async ({
 	coreFiles,
 	versionedFiles,
 	rig,
+	resourcePackPath,
 	displayItemPath,
 	textureExportFolder,
 	modelExportFolder,
@@ -149,9 +151,10 @@ const compileResourcePack: ResourcePackCompiler = async ({
 
 	// Display Item
 	const displayItemModel = new PredicateItemModel()
-	if (fs.existsSync(displayItemPath)) {
+	const absoluteDisplayItemPath = PathModule.join(resourcePackPath, displayItemPath)
+	if (fs.existsSync(absoluteDisplayItemPath)) {
 		console.warn('Display item already exists! Attempting to merge...')
-		displayItemModel.readExisting(displayItemPath)
+		displayItemModel.readExisting(absoluteDisplayItemPath)
 	}
 
 	displayItemModel.lastOverrideId = Math.max(
@@ -186,13 +189,16 @@ const compileResourcePack: ResourcePackCompiler = async ({
 			throw new Error(`Texture ${texture.name} is missing it's image data.`)
 		}
 
-		let textureName = sanitizePathName(texture.name)
-		if (!texture.name.endsWith('.png')) textureName += '.png'
+		let textureName = texture.name.replace(/\.png$/, '')
+		textureName = sanitizeStorageKey(textureName) + '.png'
+
 		versionedFiles.set(PathModule.join(textureExportFolder, textureName), { content: image })
+
 		if (mcmeta !== undefined)
 			versionedFiles.set(PathModule.join(textureExportFolder, textureName + '.mcmeta'), {
 				content: mcmeta,
 			})
+
 		if (optifineEmissive !== undefined)
 			versionedFiles.set(PathModule.join(textureExportFolder, textureName + '_e.png'), {
 				content: optifineEmissive,

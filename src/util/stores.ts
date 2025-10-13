@@ -8,7 +8,7 @@ export class Valuable<T> implements Writable<T> {
 
 	constructor(value: T, valueValidator?: Valuable<T>['valueValidator']) {
 		this.store = writable(value)
-		this.valueValidator = valueValidator || ((value: T) => value)
+		this.valueValidator = valueValidator ?? ((value: T) => value)
 		Valuable.all.push(this)
 	}
 

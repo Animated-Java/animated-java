@@ -1,15 +1,15 @@
 <script lang="ts" context="module">
+	import MissingTexture from '../assets/missing_texture.png'
 	import { type Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
 	import { TextureMap, Variant } from '../variants'
 	import Checkbox from './dialogItems/checkbox.svelte'
 	import LineInput from './dialogItems/lineInput.svelte'
-	import MissingTexture from '../assets/missing_texture.png'
 </script>
 
 <script lang="ts">
-	import Collection from './dialogItems/collection.svelte'
 	import { getAvailableNodes } from '../util/excludedNodes'
+	import Collection from './dialogItems/collection.svelte'
 
 	export let variant: Variant
 	export let displayName: Valuable<string>
@@ -17,13 +17,13 @@
 	export let uuid: Valuable<string>
 	export let textureMap: TextureMap
 	export let generateNameFromDisplayName: Valuable<boolean>
-	export let excludedNodes: Valuable<Array<CollectionItem>>
+	export let excludedNodes: Valuable<CollectionItem[]>
 
-	const availableTextures = [...Texture.all]
-	const primaryTextures = [...Texture.all]
-	const secondaryTextures = availableTextures
+	const AVAILABLE_TEXTURES = [...Texture.all]
+	const PRIMARY_TEXTURES = [...Texture.all]
+	const SECONDARY_TEXTURES = AVAILABLE_TEXTURES
 
-	const availableBones = getAvailableNodes(excludedNodes.get(), {
+	const AVAILABLE_BONES = getAvailableNodes(excludedNodes.get(), {
 		groupsOnly: true,
 		excludeEmptyGroups: true,
 	})
@@ -54,7 +54,7 @@
 	}
 
 	function getTextureSrc(uuid: string) {
-		const texture = availableTextures.find(t => t.uuid === uuid)
+		const texture = AVAILABLE_TEXTURES.find(t => t.uuid === uuid)
 		if (!texture) return MissingTexture
 		return texture.img.src
 	}
@@ -62,7 +62,7 @@
 	function selectNewPrimaryTexture(e: Event, oldPrimaryUUID: string) {
 		const select = e.target as HTMLSelectElement
 		const textureName = select.value.trim()
-		const newPrimaryUUID = primaryTextures.find(t => t.name === textureName)?.uuid
+		const newPrimaryUUID = PRIMARY_TEXTURES.find(t => t.name === textureName)?.uuid
 		if (!newPrimaryUUID) {
 			console.error(`Failed to find new primary texture with the name: ${textureName}`)
 			return
@@ -80,7 +80,7 @@
 	function selectNewSecondaryTexture(e: Event, primaryUUID: string) {
 		const select = e.target as HTMLSelectElement
 		const textureName = select.value.trim()
-		const newSecondaryUUID = secondaryTextures.find(t => t.name === textureName)?.uuid
+		const newSecondaryUUID = SECONDARY_TEXTURES.find(t => t.name === textureName)?.uuid
 		if (!newSecondaryUUID) {
 			console.error(`Failed to find new secondary texture with the name: ${textureName}`)
 			return
@@ -91,7 +91,7 @@
 
 	function getUnusedPrimaryTextures() {
 		const usedTextures = [...textureMap.map.keys()]
-		return primaryTextures.filter(t => !usedTextures.includes(t.uuid))
+		return PRIMARY_TEXTURES.filter(t => !usedTextures.includes(t.uuid))
 	}
 </script>
 
@@ -129,10 +129,6 @@
 		defaultValue={true}
 	/>
 
-	<div class="uuid">
-		{$uuid}
-	</div>
-
 	{#if !variant.isDefault}
 		<div class="toolbar" style="margin: 8px 0;">
 			<div>
@@ -143,24 +139,17 @@
 			<div
 				class="tool"
 				title={translate('dialog.variant_config.texture_map.create_new_mapping')}
-				on:click={() => {}}
+				on:click={() => createTextureMapping()}
 			>
-				<i class="material-icons icon" on:click={() => createTextureMapping()}>add</i>
+				<i class="material-icons icon">add</i>
 			</div>
-			<!-- svelte-ignore a11y-click-events-have-key-events -->
-			<!-- svelte-ignore missing-declaration -->
-			<i
-				class="fa fa-question dialog_form_description"
-				title={translate('dialog.variant_config.texture_map.description')}
-				on:click={() => {
-					const tooltip = translate('dialog.variant_config.texture_map.description')
-					Blockbench.showQuickMessage(tooltip, 50 * tooltip.length)
-				}}
-			/>
 		</div>
-		<lu class="texture-map-container">
-			{#key textureMapUpdated}
-				{#each [...textureMap.map.entries()] as entry, index}
+		{#key textureMapUpdated}
+			<ul
+				class="texture-map-container"
+				style={[...textureMap.map.entries()].length === 0 ? 'min-height: 2rem;' : ''}
+			>
+				{#each [...textureMap.map.entries()] as entry}
 					<div class="texture-mapping-item"></div>
 					<li class="texture-mapping-item">
 						<div class="texture-mapping-item-dropdown-container">
@@ -171,8 +160,7 @@
 								class="texture-mapping-item-dropdown"
 								on:change={e => selectNewPrimaryTexture(e, entry[0])}
 							>
-								<!-- svelte-ignore missing-declaration -->
-								{#each primaryTextures as texture}
+								{#each PRIMARY_TEXTURES as texture}
 									<option selected={texture.uuid === entry[0]}>
 										{texture.name}
 									</option>
@@ -190,8 +178,7 @@
 								class="texture-mapping-item-dropdown"
 								on:change={e => selectNewSecondaryTexture(e, entry[0])}
 							>
-								<!-- svelte-ignore missing-declaration -->
-								{#each secondaryTextures as texture}
+								{#each SECONDARY_TEXTURES as texture}
 									<option selected={texture.uuid === entry[1]}>
 										{texture.name}
 									</option>
@@ -207,35 +194,45 @@
 					</li>
 				{:else}
 					<div class="no-mappings">
-						{translate('dialog.variant_config.texture_map.no-mappings')}
+						{translate('dialog.variant_config.texture_map.no_mappings')}
 					</div>
 				{/each}
-			{/key}
-		</lu>
+			</ul>
+		{/key}
+		<div class="texture-map-description">
+			{@html translate('dialog.variant_config.texture_map.description')}
+		</div>
+
 		<Collection
 			label={translate('dialog.variant_config.excluded_nodes.title')}
 			tooltip={translate('dialog.variant_config.bone_lists.description')}
 			availableItemsColumnLable={translate('dialog.variant_config.included_nodes.title')}
 			availableItemsColumnTooltip={translate(
-				'dialog.variant_config.included_nodes.description',
+				'dialog.variant_config.included_nodes.description'
 			)}
 			includedItemsColumnLable={translate('dialog.variant_config.excluded_nodes.title')}
 			includedItemsColumnTooltip={translate(
-				'dialog.variant_config.excluded_nodes.description',
+				'dialog.variant_config.excluded_nodes.description'
 			)}
 			swapColumnsButtonTooltip={translate(
-				'dialog.variant_config.swap_columns_button.tooltip',
+				'dialog.variant_config.swap_columns_button.tooltip'
 			)}
-			availableItems={availableBones}
+			availableItems={AVAILABLE_BONES}
 			bind:includedItems={excludedNodes}
 		/>
 	{/if}
+
+	<div class="uuid">
+		{$uuid}
+	</div>
 </div>
 
 <style>
 	.dialog-container {
 		display: flex;
 		flex-direction: column;
+		overflow-y: auto;
+		max-height: 75vh;
 	}
 	.uuid {
 		color: var(--color-subtle_text);
@@ -292,6 +289,7 @@
 		max-height: 600px;
 		overflow-y: auto;
 		max-height: 16rem;
+		min-height: 12rem;
 	}
 	.spacer {
 		flex-grow: 1;
@@ -300,5 +298,12 @@
 		display: flex;
 		flex-direction: row;
 		align-items: center;
+	}
+	.texture-map-description {
+		font-size: 0.9em;
+		color: var(--color-subtle_text);
+		margin-top: 4px;
+		margin-bottom: 16px;
+		max-width: 80%;
 	}
 </style>

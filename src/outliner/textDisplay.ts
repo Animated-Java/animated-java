@@ -1,16 +1,15 @@
-import {
-	BLUEPRINT_FORMAT,
-	IBlueprintTextDisplayConfigJSON,
-	isCurrentFormat,
-} from '../blueprintFormat'
 import { PACKAGE } from '../constants'
-import { createAction, createBlockbenchMod } from '../util/moddingTools'
+import {
+	type IBlueprintTextDisplayConfigJSON,
+	activeProjectIsBlueprintFormat,
+} from '../formats/blueprint'
+import { registerAction } from '../util/moddingTools'
 // import * as MinecraftFull from '../assets/MinecraftFull.json'
-import { TEXT_DISPLAY_CONFIG_ACTION } from '../interface/dialog/textDisplayConfig'
+import { JsonTextParser, JsonTextSyntaxError } from 'src/systems/jsonText/parser'
 import { TextDisplayConfig } from '../nodeConfigs'
-import { getVanillaFont } from '../systems/minecraft/fontManager'
-import { JsonText } from '../systems/minecraft/jsonText'
-import { events } from '../util/events'
+import { JsonText, TextElement } from '../systems/jsonText'
+import { getVanillaFont, MinecraftFont } from '../systems/minecraft/fontManager'
+import EVENTS from '../util/events'
 import { Valuable } from '../util/stores'
 import { translate } from '../util/translation'
 import { ResizableOutlinerElement } from './resizableOutlinerElement'
@@ -32,44 +31,31 @@ export type Alignment = 'left' | 'center' | 'right'
 
 export class TextDisplay extends ResizableOutlinerElement {
 	static type = `${PACKAGE.name}:text_display`
+	static icon = 'text_fields'
 	static selected: TextDisplay[] = []
 	static all: TextDisplay[] = []
+	static invalidJsonText: TextElement = { text: 'Invalid JSON Text!', color: 'red' }
 
-	public type = TextDisplay.type
-	public icon = 'text_fields'
-	public needsUniqueName = true
+	type = TextDisplay.type
+	icon = TextDisplay.icon
+	needsUniqueName = true
 
 	// Properties
-	public config: IBlueprintTextDisplayConfigJSON
+	config: IBlueprintTextDisplayConfigJSON
 
-	public menu = new Menu([
-		...Outliner.control_menu_group,
-		TEXT_DISPLAY_CONFIG_ACTION,
-		'_',
-		'rename',
-		'delete',
-	])
-	public buttons = [Outliner.buttons.export, Outliner.buttons.locked, Outliner.buttons.visibility]
+	buttons = [Outliner.buttons.export, Outliner.buttons.locked, Outliner.buttons.visibility]
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	public preview_controller = PREVIEW_CONTROLLER
+	preview_controller = PREVIEW_CONTROLLER
 
-	public ready = false
-	public textError = new Valuable('')
+	textError = new Valuable('')
 
-	private _updating = false
-	private _text = new Valuable('Hello World!')
-	private _newText: string | undefined
-	private _lineWidth = new Valuable(200)
-	private _newLineWidth: number | undefined
-	private _backgroundColor = new Valuable('#000000')
-	private _newBackgroundColor: string | undefined
-	private _backgroundAlpha = new Valuable(0.25)
-	private _newBackgroundAlpha: number | undefined
-	private _shadow = new Valuable(false)
-	private _newShadow: boolean | undefined
-	private _align = new Valuable<Alignment>('center')
-	private _newAlign: Alignment | undefined
-	public seeThrough = false
+	private __pendingMeshUpdate?: ReturnType<MinecraftFont['generateTextDisplayMesh']>
+	private __text = new Valuable('Hello World!')
+	private __lineWidth = TextDisplay.properties.lineWidth.default as number
+	private __backgroundColor = TextDisplay.properties.backgroundColor.default as string
+	private __shadow = TextDisplay.properties.shadow.default as boolean
+	private __align: Alignment = TextDisplay.properties.align.default as Alignment
+	seeThrough = TextDisplay.properties.seeThrough.default as boolean
 
 	constructor(data: TextDisplayOptions, uuid = guid()) {
 		super(data, uuid)
@@ -91,100 +77,77 @@ export class TextDisplay extends ResizableOutlinerElement {
 		this.config ??= {}
 
 		this.sanitizeName()
-
-		this._text.subscribe(v => {
-			this._newText = v
-			void this.updateText()
-		})
-		this._lineWidth.subscribe(v => {
-			this._newLineWidth = v
-			void this.updateText()
-		})
-		this._backgroundColor.subscribe(v => {
-			this._newBackgroundColor = v
-			void this.updateText()
-		})
-		this._backgroundAlpha.subscribe(v => {
-			this._newBackgroundAlpha = v
-			void this.updateText()
-		})
-		this._shadow.subscribe(v => {
-			this._newShadow = v
-			void this.updateText()
-		})
-		this._align.subscribe(v => {
-			this._newAlign = v
-			void this.updateText()
-		})
 	}
 
-	public sanitizeName(): string {
+	sanitizeName(): string {
 		this.name = sanitizeOutlinerElementName(this.name, this.uuid)
 		return this.name
 	}
 
 	get text() {
-		if (this._text === undefined) return TextDisplay.properties['text'].default as string
-		return this._text.get()
+		if (this.__text === undefined) return TextDisplay.properties.text.default as string
+		return this.__text.get()
 	}
 
 	set text(value) {
-		if (this._text === undefined) return
+		if (this.__text === undefined) return
 		if (value === this.text) return
-		this._text.set(value)
+		this.__text.set(value)
+		void this.updateTextMesh()
 	}
 
 	get lineWidth() {
-		if (this._lineWidth === undefined)
-			return TextDisplay.properties['lineWidth'].default as number
-		return this._lineWidth.get()
+		if (this.__lineWidth === undefined)
+			return TextDisplay.properties.lineWidth.default as number
+		return this.__lineWidth
 	}
 
 	set lineWidth(value) {
-		if (this._lineWidth === undefined) return
-		this._lineWidth.set(value)
+		if (this.__lineWidth === undefined) return
+		if (value === this.lineWidth) return
+		this.__lineWidth = value
+		void this.updateTextMesh()
 	}
 
 	get backgroundColor() {
-		if (this._backgroundColor === undefined)
-			return TextDisplay.properties['backgroundColor'].default as string
-		return this._backgroundColor.get()
+		if (this.__backgroundColor === undefined)
+			return TextDisplay.properties.backgroundColor.default as string
+		return this.__backgroundColor
 	}
 
 	set backgroundColor(value) {
-		if (this._backgroundColor === undefined) return
-		this._backgroundColor.set(value)
-	}
-
-	get backgroundAlpha() {
-		if (this._backgroundAlpha === undefined)
-			return TextDisplay.properties['backgroundAlpha'].default as number
-		return this._backgroundAlpha.get()
-	}
-
-	set backgroundAlpha(value) {
-		if (this._backgroundAlpha === undefined) return
-		this._backgroundAlpha.set(value)
+		if (this.__backgroundColor === undefined) return
+		if (value === this.backgroundColor) return
+		this.__backgroundColor = value
+		void this.updateTextMesh()
 	}
 
 	get shadow() {
-		if (this._shadow === undefined) return TextDisplay.properties['shadow'].default as boolean
-		return this._shadow.get()
+		if (this.__shadow === undefined) return TextDisplay.properties.shadow.default as boolean
+		return this.__shadow
 	}
 
 	set shadow(value) {
-		if (this._shadow === undefined) return
-		this._shadow.set(value)
+		if (this.__shadow === undefined) return
+		if (value === this.shadow) return
+		this.__shadow = value
+		void this.updateTextMesh()
 	}
 
 	get align() {
-		if (this._align === undefined) return TextDisplay.properties['align'].default as Alignment
-		return this._align.get()
+		if (this.__align === undefined) return TextDisplay.properties.align.default as Alignment
+		return this.__align
 	}
 
 	set align(value) {
-		if (this._align === undefined) return
-		this._align.set(value)
+		if (this.__align === undefined) return
+		if (value === this.align) return
+		this.__align = value
+		void this.updateTextMesh()
+	}
+
+	getTextValuable() {
+		return this.__text
 	}
 
 	getUndoCopy() {
@@ -201,14 +164,11 @@ export class TextDisplay extends ResizableOutlinerElement {
 	}
 
 	getSaveCopy() {
-		const el: any = {}
+		const save = super.getSaveCopy?.() ?? {}
 		for (const key in TextDisplay.properties) {
-			TextDisplay.properties[key].copy(this, el)
+			TextDisplay.properties[key].copy(this, save)
 		}
-		el.uuid = this.uuid
-		el.type = this.type
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-		return el
+		return save
 	}
 
 	select() {
@@ -251,93 +211,84 @@ export class TextDisplay extends ResizableOutlinerElement {
 		TickUpdates.selection = true
 	}
 
-	async updateText() {
-		if (this._updating) return
-		this._updating = true
-		let latestMesh: THREE.Mesh | undefined
-		while (
-			this._newText !== undefined ||
-			this._newLineWidth !== undefined ||
-			this._newBackgroundColor !== undefined ||
-			this._newBackgroundAlpha !== undefined ||
-			this._newShadow !== undefined ||
-			this._newAlign !== undefined
-		) {
-			let text: JsonText | undefined
+	updateTextMesh() {
+		let result: JsonText | undefined
+		try {
+			const parser = new JsonTextParser({
+				minecraftVersion: Project!.animated_java.target_minecraft_version,
+			})
+			parser.enabledFeatures &= ~(
+				JsonTextParser.FEATURES.ALLOW_CLICK_EVENTS |
+				JsonTextParser.FEATURES.ALLOW_HOVER_EVENTS
+			)
+			result = parser.parse(this.text)
 			this.textError.set('')
-			try {
-				text = JsonText.fromString(this.text)
-				console.log(text)
-			} catch (e: any) {
-				console.error(e)
+		} catch (e: any) {
+			console.error(e)
+			if (e instanceof JsonTextSyntaxError) {
+				this.textError.set(e.getOriginErrorMessage())
+			} else {
 				this.textError.set(e.message as string)
-				this._updating = false
-				text = new JsonText({ text: 'Invalid JSON Text!', color: 'red' })
 			}
-			this._newText = undefined
-			this._newLineWidth = undefined
-			this._newBackgroundColor = undefined
-			this._newBackgroundAlpha = undefined
-			this._newShadow = undefined
-			this._newAlign = undefined
-			if (text === undefined) continue
-			latestMesh = await this.setText(text)
 		}
-		this._updating = false
-		return latestMesh
-	}
-
-	async waitForReady() {
-		while (!this.ready) {
-			await new Promise(resolve => requestAnimationFrame(resolve))
-		}
-	}
-
-	private async setText(jsonText: JsonText) {
-		await this.waitForReady()
-		const font = await getVanillaFont()
-		// Hide the geo while rendering
-
-		const { mesh: newMesh, outline } = await font.generateTextMesh({
-			jsonText,
-			maxLineWidth: this.lineWidth,
-			backgroundColor: this.backgroundColor,
-			backgroundAlpha: this.backgroundAlpha,
-			shadow: this.shadow,
-			alignment: this.align,
+		result ??= new JsonText({ text: 'Invalid JSON Text!', color: 'red' })
+		void this.renderTextMesh(result).then(({ mesh, hitbox, outline }) => {
+			this.applyTextMesh(mesh, hitbox, outline)
 		})
-		newMesh.name = this.uuid + '_text'
-		const previousMesh = this.mesh.children.find(v => v.name === newMesh.name)
-		if (previousMesh) this.mesh.remove(previousMesh)
+	}
+
+	private async renderTextMesh(jsonText: JsonText) {
+		const promise = getVanillaFont()
+			.then(font =>
+				font.generateTextDisplayMesh({
+					jsonText,
+					maxLineWidth: this.lineWidth,
+					backgroundColor: tinycolor(this.backgroundColor),
+					shadow: this.shadow,
+					alignment: this.align,
+				})
+			)
+			.then(result => {
+				if (this.__pendingMeshUpdate === promise) {
+					this.__pendingMeshUpdate = undefined
+					return result
+				}
+				return this.__pendingMeshUpdate
+			}) as ReturnType<MinecraftFont['generateTextDisplayMesh']>
+
+		this.__pendingMeshUpdate = promise
+		return promise
+	}
+
+	private applyTextMesh(
+		text: THREE.Mesh,
+		hitbox: THREE.BufferGeometry,
+		outline: THREE.LineSegments
+	) {
+		text.name = this.uuid + '_text'
+		text.isTextDisplayText = true
 
 		const mesh = this.mesh as THREE.Mesh
+		mesh.clear()
+		delete mesh.sprite
 		mesh.name = this.uuid
-		mesh.geometry = (newMesh.children[0] as THREE.Mesh).geometry.clone()
-		mesh.geometry.translate(
-			newMesh.children[0].position.x,
-			newMesh.children[0].position.y,
-			newMesh.children[0].position.z
-		)
-		mesh.geometry.rotateY(Math.PI)
-		mesh.geometry.scale(newMesh.scale.x, newMesh.scale.y, newMesh.scale.z)
 		mesh.material = Canvas.transparentMaterial
-
-		mesh.add(newMesh)
+		mesh.geometry = hitbox
+		mesh.add(text)
 
 		outline.name = this.uuid + '_outline'
 		outline.visible = this.selected
 		mesh.outline = outline
-		const previousOutline = mesh.children.find(v => v.name === outline.name)
-		if (previousOutline) mesh.remove(previousOutline)
 		mesh.add(outline)
 		mesh.visible = this.visibility
-		return newMesh
+
+		return text
 	}
 }
+TextDisplay.prototype.icon = TextDisplay.icon
 new Property(TextDisplay, 'string', 'text', { default: '"Hello World!"' })
 new Property(TextDisplay, 'number', 'lineWidth', { default: 200 })
-new Property(TextDisplay, 'string', 'backgroundColor', { default: '#000000' })
-new Property(TextDisplay, 'number', 'backgroundAlpha', { default: 0.25 })
+new Property(TextDisplay, 'string', 'backgroundColor', { default: '#00000040' })
 new Property(TextDisplay, 'string', 'align', { default: 'center' })
 new Property(TextDisplay, 'boolean', 'shadow', { default: false })
 new Property(TextDisplay, 'boolean', 'seeThrough', { default: false })
@@ -349,42 +300,51 @@ new Property(TextDisplay, 'object', 'config', {
 
 OutlinerElement.registerType(TextDisplay, TextDisplay.type)
 
+const TEMP_MESH_MAP = new THREE.TextureLoader().load(
+	'data:image/svg+xml,' +
+		encodeURIComponent(
+			`<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M280-160v-520H80v-120h520v120H400v520H280Zm360 0v-320H520v-120h360v120H760v320H640Z"/></svg>`
+		)
+)
+TEMP_MESH_MAP.minFilter = THREE.NearestFilter
+TEMP_MESH_MAP.magFilter = THREE.NearestFilter
+
 export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 	setup(el: TextDisplay) {
 		ResizableOutlinerElement.prototype.preview_controller.setup(el)
-		// Minecraft's transparency is funky 😭
-		Project!.nodes_3d[el.uuid].renderOrder = -1
-
-		void getVanillaFont()
-			.then(() => {
-				el.preview_controller.updateTransform(el)
-				el.preview_controller.updateGeometry(el)
-				el.preview_controller.dispatchEvent('setup', { element: el })
-			})
-			.finally(() => {
-				el.ready = true
-			})
-	},
-	updateGeometry(el: TextDisplay) {
-		void el.updateText().then(() => {
-			el.preview_controller.updateTransform(el)
+		// Setup temp sprite mesh
+		const material = new THREE.SpriteMaterial({
+			map: TEMP_MESH_MAP,
+			alphaTest: 0.1,
+			sizeAttenuation: false,
 		})
+		const sprite = new THREE.Sprite(material)
+		sprite.scale.setScalar(1 / 32)
+		const mesh = el.mesh as THREE.Mesh
+		mesh.add(sprite)
+		mesh.sprite = sprite
+
+		// Minecraft's transparency is funky 😭
+		mesh.renderOrder = -1
+		el.preview_controller.dispatchEvent('setup', { element: el })
 	},
+
+	updateGeometry(el: TextDisplay) {
+		el.updateTextMesh()
+	},
+
 	updateTransform(el: TextDisplay) {
 		ResizableOutlinerElement.prototype.preview_controller.updateTransform(el)
 	},
 })
 
 class TextDisplayAnimator extends BoneAnimator {
-	private _name: string
-
-	public uuid: string
-	public element: TextDisplay | undefined
+	uuid: string
+	element: TextDisplay | undefined
 
 	constructor(uuid: string, animation: _Animation, name: string) {
 		super(uuid, animation, name)
 		this.uuid = uuid
-		this._name = name
 	}
 
 	getElement() {
@@ -424,7 +384,7 @@ class TextDisplayAnimator extends BoneAnimator {
 			}
 		}
 
-		if (this.element && this.element.parent && this.element.parent !== 'root') {
+		if (this.element.parent && this.element.parent !== 'root') {
 			this.element.parent.openUp()
 		}
 
@@ -433,7 +393,7 @@ class TextDisplayAnimator extends BoneAnimator {
 
 	doRender() {
 		this.getElement()
-		return !!(this.element && this.element.mesh)
+		return !!this.element?.mesh
 	}
 
 	displayRotation(arr: ArrayVector3 | ArrayVector4, multiplier = 1) {
@@ -445,13 +405,13 @@ class TextDisplayAnimator extends BoneAnimator {
 
 		if (arr) {
 			if (arr.length === 4) {
-				const added_rotation = new THREE.Euler().setFromQuaternion(
+				const addedRotation = new THREE.Euler().setFromQuaternion(
 					new THREE.Quaternion().fromArray(arr),
 					'ZYX'
 				)
-				bone.rotation.x -= added_rotation.x * multiplier
-				bone.rotation.y -= added_rotation.y * multiplier
-				bone.rotation.z += added_rotation.z * multiplier
+				bone.rotation.x -= addedRotation.x * multiplier
+				bone.rotation.y -= addedRotation.y * multiplier
+				bone.rotation.z += addedRotation.z * multiplier
 			} else {
 				bone.rotation.x -= Math.degToRad(arr[0]) * multiplier
 				bone.rotation.y -= Math.degToRad(arr[1]) * multiplier
@@ -495,68 +455,68 @@ class TextDisplayAnimator extends BoneAnimator {
 TextDisplayAnimator.prototype.type = TextDisplay.type
 TextDisplay.animator = TextDisplayAnimator as any
 
-createBlockbenchMod(
-	`${PACKAGE.name}:textDisplay`,
+export const CREATE_ACTION = registerAction(
+	{ id: `animated-java:create-text-display` },
 	{
-		subscriptions: [] as Array<() => void>,
-	},
-	context => {
-		Interface.Panels.outliner.menu.addAction(CREATE_ACTION, 3)
-		Toolbars.outliner.add(CREATE_ACTION, 0)
-		MenuBar.menus.edit.addAction(CREATE_ACTION, 8)
+		name: translate('action.create_text_display.title'),
+		icon: 'text_fields',
+		category: 'animated_java',
+		condition() {
+			return activeProjectIsBlueprintFormat() && Mode.selected.id === Modes.options.edit.id
+		},
+		click() {
+			Undo.initEdit({ outliner: true, elements: [], selection: true })
 
-		context.subscriptions.push(
-			events.SELECT_PROJECT.subscribe(project => {
-				if (project.format.id !== BLUEPRINT_FORMAT.id) return
-				project.textDisplays ??= []
-				TextDisplay.all.empty()
-				TextDisplay.all.push(...project.textDisplays)
-			}),
-			events.UNSELECT_PROJECT.subscribe(project => {
-				if (project.format.id !== BLUEPRINT_FORMAT.id) return
-				project.textDisplays = [...TextDisplay.all]
-				TextDisplay.all.empty()
+			const textDisplay = new TextDisplay({}).init()
+			const group = getCurrentGroup()
+
+			if (group instanceof Group) {
+				textDisplay.addTo(group)
+				textDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
+			}
+
+			selected.forEachReverse(el => el.unselect())
+			Group.first_selected?.unselect()
+			textDisplay.select()
+
+			Undo.finishEdit('Create Text Display', {
+				outliner: true,
+				elements: selected,
+				selection: true,
 			})
-		)
-		return context
-	},
-	context => {
-		Interface.Panels.outliner.menu.removeAction(CREATE_ACTION.id)
-		Toolbars.outliner.remove(CREATE_ACTION)
-		MenuBar.menus.edit.removeAction(CREATE_ACTION.id)
 
-		context.subscriptions.forEach(unsub => unsub())
+			return textDisplay
+		},
 	}
 )
 
-export const CREATE_ACTION = createAction(`${PACKAGE.name}:create_text_display`, {
-	name: translate('action.create_text_display.title'),
-	icon: 'text_fields',
-	category: 'animated_java',
-	condition() {
-		return isCurrentFormat() && Mode.selected.id === Modes.options.edit.id
-	},
-	click() {
-		Undo.initEdit({ outliner: true, elements: [], selection: true })
+const CLEANUP_CALLBACKS: Array<() => void> = []
 
-		const textDisplay = new TextDisplay({}).init()
-		const group = getCurrentGroup()
+CREATE_ACTION.onCreated(action => {
+	Interface.Panels.outliner.menu.addAction(action, 3)
+	Toolbars.outliner.add(action, 0)
+	MenuBar.menus.edit.addAction(action, 8)
 
-		if (group instanceof Group) {
-			textDisplay.addTo(group)
-			textDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
-		}
+	CLEANUP_CALLBACKS.push(
+		EVENTS.SELECT_PROJECT.subscribe(project => {
+			if (!activeProjectIsBlueprintFormat()) return
+			project.textDisplays ??= []
+			TextDisplay.all.empty()
+			TextDisplay.all.push(...project.textDisplays)
+		}),
 
-		selected.forEachReverse(el => el.unselect())
-		Group.first_selected && Group.first_selected.unselect()
-		textDisplay.select()
-
-		Undo.finishEdit('Create Text Display', {
-			outliner: true,
-			elements: selected,
-			selection: true,
+		EVENTS.UNSELECT_PROJECT.subscribe(project => {
+			if (!activeProjectIsBlueprintFormat()) return
+			project.textDisplays = [...TextDisplay.all]
+			TextDisplay.all.empty()
 		})
+	)
+})
 
-		return textDisplay
-	},
+CREATE_ACTION.onDeleted(action => {
+	Interface.Panels.outliner.menu.removeAction(action)
+	Toolbars.outliner.remove(action)
+	MenuBar.menus.edit.removeAction(action)
+
+	CLEANUP_CALLBACKS.forEach(unsub => unsub())
 })

@@ -1,8 +1,8 @@
-import { BLUEPRINT_FORMAT } from '../../blueprintFormat'
-import { BoneConfig } from '../../nodeConfigs'
+import { registerAction } from 'src/util/moddingTools'
 import BoneConfigDialogSvelteComponent from '../../components/boneConfigDialog.svelte'
 import { PACKAGE } from '../../constants'
-import { createAction } from '../../util/moddingTools'
+import { activeProjectIsBlueprintFormat } from '../../formats/blueprint'
+import { BoneConfig } from '../../nodeConfigs'
 import { Valuable } from '../../util/stores'
 import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
@@ -31,7 +31,7 @@ function propagateInheritanceDown(group: Group, config: BoneConfig, variant?: st
 	for (const child of group.children) {
 		if (!(child instanceof Group)) continue
 		const childConfig = variant ? child.configs.variants[variant] : child.configs.default
-		if (childConfig && childConfig.inherit_settings) {
+		if (childConfig?.inherit_settings) {
 			const childBoneConfig = BoneConfig.fromJSON(childConfig)
 			childBoneConfig.inheritFrom(config)
 			if (variant) child.configs.variants[variant] = childBoneConfig.toJSON()
@@ -84,25 +84,27 @@ export function openBoneConfigDialog(bone: Group) {
 	new SvelteDialog({
 		id: `${PACKAGE.name}:boneConfig`,
 		title: translate('dialog.bone_config.title'),
-		width: 400,
-		component: BoneConfigDialogSvelteComponent,
-		props: {
-			variant: Variant.selected!,
-			customName,
-			customNameVisible,
-			billboard,
-			overrideBrightness,
-			brightnessOverride,
-			enchanted,
-			glowing,
-			overrideGlowColor,
-			glowColor,
-			inheritSettings,
-			invisible,
-			nbt,
-			shadowRadius,
-			shadowStrength,
-			useNBT,
+		width: 600,
+		content: {
+			component: BoneConfigDialogSvelteComponent,
+			props: {
+				variant: Variant.selected!,
+				customName,
+				customNameVisible,
+				billboard,
+				overrideBrightness,
+				brightnessOverride,
+				enchanted,
+				glowing,
+				overrideGlowColor,
+				glowColor,
+				inheritSettings,
+				invisible,
+				nbt,
+				shadowRadius,
+				shadowStrength,
+				useNBT,
+			},
 		},
 		preventKeybinds: true,
 		onConfirm() {
@@ -165,16 +167,25 @@ export function openBoneConfigDialog(bone: Group) {
 				bone.configs.default = newConfig.toJSON()
 				propagateInheritanceDown(bone, newConfig)
 			}
+
+			Project!.saved = false
 		},
 	}).show()
 }
 
-export const BONE_CONFIG_ACTION = createAction(`${PACKAGE.name}:bone_config`, {
-	icon: 'settings',
-	name: translate('action.open_bone_config.name'),
-	condition: () => Format === BLUEPRINT_FORMAT,
-	click: () => {
-		if (!Group.first_selected) return
-		openBoneConfigDialog(Group.first_selected)
-	},
+export const BONE_CONFIG_ACTION = registerAction(
+	{ id: `animated-java:bone-config` },
+	{
+		icon: 'settings',
+		name: translate('action.open_bone_config.name'),
+		condition: activeProjectIsBlueprintFormat,
+		click: () => {
+			if (!Group.first_selected) return
+			openBoneConfigDialog(Group.first_selected)
+		},
+	}
+)
+
+BONE_CONFIG_ACTION.onCreated(action => {
+	Group.prototype.menu!.addAction(action, 6)
 })

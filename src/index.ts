@@ -1,110 +1,121 @@
 import { PACKAGE } from './constants'
-import { events } from './util/events'
+import EVENTS from './util/events'
 import './util/translation'
 // Blueprint Format
-import './blueprintFormat'
+import './formats/**'
 // Interface
-import './interface'
+import './interface/**'
 // Blockbench Mods
-import './mods'
+import './mods/**'
 // Outliner
 import './outliner/textDisplay'
-import './outliner/vanillaItemDisplay'
 import './outliner/vanillaBlockDisplay'
+import './outliner/vanillaItemDisplay'
 // Compilers
 import datapackCompiler from './systems/datapackCompiler'
 // Minecraft Systems
-import './systems/minecraft/versionManager'
-import './systems/minecraft/registryManager'
-import './systems/minecraft/blockstateManager'
 import './systems/minecraft/assetManager'
+import './systems/minecraft/blockstateManager'
 import './systems/minecraft/fontManager'
+import './systems/minecraft/registryManager'
+import './systems/minecraft/versionManager'
 // Misc imports
-import { Variant } from './variants'
+import { BLUEPRINT_FORMAT } from './formats/blueprint'
+import { BLUEPRINT_CODEC } from './formats/blueprint/codec'
+import { blueprintSettingErrors } from './formats/blueprint/settings'
+import { openChangelogDialog } from './interface/changelogDialog'
+import { openExportProgressDialog } from './interface/dialog/exportProgress'
+import { openUnexpectedErrorDialog } from './interface/dialog/unexpectedError'
+import { checkForIncompatabilities } from './interface/popup/incompatabilityPopup'
+import { openInstallPopup } from './interface/popup/installed'
+import { TextDisplay } from './outliner/textDisplay'
+import { VanillaBlockDisplay, debugBlockState, debugBlocks } from './outliner/vanillaBlockDisplay'
+import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
+import { cleanupExportedFiles } from './systems/cleaner'
+import mcbFiles from './systems/datapackCompiler/mcbFiles'
+import TELLRAW from './systems/datapackCompiler/tellraw'
+import { exportProject } from './systems/exporter'
+import { JsonText } from './systems/jsonText'
+import * as assetManager from './systems/minecraft/assetManager'
+import { getLatestVersionClientDownloadUrl } from './systems/minecraft/assetManager'
+import * as blockModelManager from './systems/minecraft/blockModelManager'
+import { BLOCKSTATE_REGISTRY } from './systems/minecraft/blockstateManager'
+import { getVanillaFont } from './systems/minecraft/fontManager'
+import * as itemModelManager from './systems/minecraft/itemModelManager'
 import './systems/minecraft/registryManager'
 import { MINECRAFT_REGISTRY } from './systems/minecraft/registryManager'
 import resourcepackCompiler from './systems/resourcepackCompiler'
-import { openExportProgressDialog } from './interface/dialog/exportProgress'
-import { isDataPackPath, isResourcePackPath, parseResourcePackPath } from './util/minecraftUtil'
-import { blueprintSettingErrors } from './blueprintSettings'
-import { openUnexpectedErrorDialog } from './interface/dialog/unexpectedError'
-import { BLUEPRINT_CODEC, BLUEPRINT_FORMAT } from './blueprintFormat'
-import { TextDisplay } from './outliner/textDisplay'
-import { getLatestVersionClientDownloadUrl } from './systems/minecraft/assetManager'
-import { getVanillaFont } from './systems/minecraft/fontManager'
-import * as assetManager from './systems/minecraft/assetManager'
-import * as itemModelManager from './systems/minecraft/itemModelManager'
-import * as blockModelManager from './systems/minecraft/blockModelManager'
-import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
-import { VanillaBlockDisplay, debugBlockState, debugBlocks } from './outliner/vanillaBlockDisplay'
-import { BLOCKSTATE_REGISTRY } from './systems/minecraft/blockstateManager'
-import { exportProject } from './systems/exporter'
-import { openBlueprintLoadingDialog } from './interface/popup/blueprintLoading'
-import { openInstallPopup } from './interface/popup/installed'
-import { cleanupExportedFiles } from './systems/cleaner'
-import mcbFiles from './systems/datapackCompiler/mcbFiles'
-import { openChangelogDialog } from './interface/changelogDialog'
-import { checkForIncompatabilities } from './interface/popup/incompatabilityPopup'
+import {
+	isDataPackPath,
+	isResourcePackPath,
+	parseResourcePackPath,
+	toSmallCaps,
+} from './util/minecraftUtil'
+import { Variant } from './variants'
 
-// @ts-ignore
-globalThis.AnimatedJava = {
-	API: {
-		parseResourcePackPath,
-		datapackCompiler,
-		resourcepackCompiler,
-		Variant,
-		MINECRAFT_REGISTRY,
-		openExportProgressDialog,
-		isResourcePackPath,
-		isDataPackPath,
-		blueprintSettingErrors,
-		openUnexpectedErrorDialog,
-		BLUEPRINT_FORMAT,
-		BLUEPRINT_CODEC,
-		TextDisplay,
-		getLatestVersionClientDownloadUrl,
-		getVanillaFont,
-		assetManager,
-		itemModelManager,
-		blockModelManager,
-		VanillaItemDisplay,
-		VanillaBlockDisplay,
-		debugBlocks,
-		debugBlockState,
-		BLOCKSTATE_REGISTRY,
-		exportProject,
-		openBlueprintLoadingDialog,
-		openInstallPopup,
-		removeCubesAssociatedWithTexture(texture: Texture) {
-			const cubes = Cube.all.filter(cube =>
-				Object.values(cube.faces).some(face => face.texture === texture.uuid)
-			)
-			Undo.initEdit({ elements: cubes, outliner: true, textures: [texture] })
-			cubes.forEach(cube => cube.remove())
-			texture.remove()
-			Undo.finishEdit('Remove Cubes Associated With Texture')
-		},
-		cleanupExportedFiles,
-		mcbFiles,
-		openChangelogDialog,
-		checkForIncompatabilities,
-	},
-}
-
-requestAnimationFrame(() => {
-	if (checkForIncompatabilities()) return
-
-	const lastVersion = localStorage.getItem('animated-java-last-version')
-	if (lastVersion !== PACKAGE.version) {
-		localStorage.setItem('animated-java-last-version', PACKAGE.version)
-		openChangelogDialog()
+declare global {
+	interface Window {
+		AnimatedJava: typeof AnimatedJavaApi
 	}
-})
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	const AnimatedJava: typeof AnimatedJavaApi
+}
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const AnimatedJavaApi = {
+	parseResourcePackPath,
+	datapackCompiler,
+	resourcepackCompiler,
+	Variant,
+	MINECRAFT_REGISTRY,
+	openExportProgressDialog,
+	isResourcePackPath,
+	isDataPackPath,
+	blueprintSettingErrors,
+	openUnexpectedErrorDialog,
+	BLUEPRINT_FORMAT,
+	BLUEPRINT_CODEC,
+	TextDisplay,
+	getLatestVersionClientDownloadUrl,
+	getVanillaFont,
+	assetManager,
+	itemModelManager,
+	blockModelManager,
+	VanillaItemDisplay,
+	VanillaBlockDisplay,
+	debugBlocks,
+	debugBlockState,
+	BLOCKSTATE_REGISTRY,
+	exportProject,
+	openInstallPopup,
+	removeCubesAssociatedWithTexture(texture: Texture) {
+		const cubes = Cube.all.filter(cube =>
+			Object.values(cube.faces).some(face => face.texture === texture.uuid)
+		)
+		Undo.initEdit({ elements: cubes, outliner: true, textures: [texture] })
+		cubes.forEach(cube => cube.remove())
+		texture.remove()
+		Undo.finishEdit('Remove Cubes Associated With Texture')
+	},
+	cleanupExportedFiles,
+	mcbFiles,
+	openChangelogDialog,
+	checkForIncompatabilities,
+	toSmallCharacters: toSmallCaps,
+	printMinecraftFontSheet: () => {
+		const fontJson = assetManager.getJSONAsset('assets/minecraft/font/include/default.json')
+		return fontJson.providers[0].chars.map(
+			(characters: string, i: number) => `${i}: ` + characters.split('').join(' ')
+		)
+	},
+	TELLRAW,
+	JsonText,
+}
+window.AnimatedJava = AnimatedJavaApi
 
 // Uninstall events
-events.EXTRACT_MODS.subscribe(() => {
-	// @ts-ignore
-	globalThis.AnimatedJava = undefined
+EVENTS.EXTRACT_MODS.subscribe(() => {
+	// @ts-expect-error Cannot delete type that isn't optional
+	delete window.AnimatedJava
 })
 
 BBPlugin.register(PACKAGE.name, {
@@ -118,21 +129,34 @@ BBPlugin.register(PACKAGE.name, {
 	tags: ['Minecraft: Java Edition', 'Animation', 'Display Entities'],
 	await_loading: true,
 	onload() {
-		events.LOAD.dispatch()
+		// Wait for plugin system to finish loading plugins.
+		requestAnimationFrame(() => {
+			EVENTS.PLUGIN_LOAD.publish()
+		})
 	},
 	onunload() {
-		events.UNLOAD.dispatch()
+		EVENTS.PLUGIN_UNLOAD.publish()
 	},
 	oninstall() {
-		events.INSTALL.dispatch()
+		EVENTS.PLUGIN_INSTALL.publish()
 		openInstallPopup()
 	},
 	onuninstall() {
-		events.UNINSTALL.dispatch()
+		EVENTS.PLUGIN_UNINSTALL.publish()
 		Blockbench.showMessageBox({
 			title: 'Animated Java has Been Uninstalled!',
 			message: 'In order to fully uninstall Animated Java, please restart Blockbench.',
 			buttons: ['OK'],
 		})
 	},
+})
+
+EVENTS.PLUGIN_FINISHED_LOADING.subscribe(() => {
+	if (checkForIncompatabilities()) return
+
+	const lastVersion = localStorage.getItem('animated-java-last-version')
+	if (lastVersion !== PACKAGE.version) {
+		localStorage.setItem('animated-java-last-version', PACKAGE.version)
+		openChangelogDialog()
+	}
 })

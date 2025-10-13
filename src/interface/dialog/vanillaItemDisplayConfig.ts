@@ -1,13 +1,12 @@
-import { isCurrentFormat } from '../../blueprintFormat'
-import { BoneConfig } from '../../nodeConfigs'
+import { registerAction } from 'src/util/moddingTools'
+import VanillaItemDisplayConfigDialog from '../../components/vanillaItemDisplayConfigDialog.svelte'
 import { PACKAGE } from '../../constants'
-import { createAction } from '../../util/moddingTools'
+import { activeProjectIsBlueprintFormat } from '../../formats/blueprint'
+import { BoneConfig } from '../../nodeConfigs'
+import { VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
 import { Valuable } from '../../util/stores'
 import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
-import { Variant } from '../../variants'
-import { VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
-import VanillaItemDisplayConfigDialog from '../../components/vanillaItemDisplayConfigDialog.svelte'
 
 export function openVanillaItemDisplayConfigDialog(display: VanillaItemDisplay) {
 	// Blockbench's JSON stringifier doesn't handle custom toJSON functions, so I'm storing the config JSON in the bone instead of the actual BoneConfig object
@@ -30,23 +29,24 @@ export function openVanillaItemDisplayConfigDialog(display: VanillaItemDisplay) 
 	new SvelteDialog({
 		id: `${PACKAGE.name}:vanillaItemDisplayConfigDialog`,
 		title: translate('dialog.vanilla_item_display_config.title'),
-		width: 400,
-		component: VanillaItemDisplayConfigDialog,
-		props: {
-			variant: Variant.selected,
-			customName,
-			customNameVisible,
-			billboard,
-			overrideBrightness,
-			brightnessOverride,
-			glowing,
-			overrideGlowColor,
-			glowColor,
-			invisible,
-			nbt,
-			shadowRadius,
-			shadowStrength,
-			useNBT,
+		width: 600,
+		content: {
+			component: VanillaItemDisplayConfigDialog,
+			props: {
+				customName,
+				customNameVisible,
+				billboard,
+				overrideBrightness,
+				brightnessOverride,
+				glowing,
+				overrideGlowColor,
+				glowColor,
+				invisible,
+				nbt,
+				shadowRadius,
+				shadowStrength,
+				useNBT,
+			},
 		},
 		preventKeybinds: true,
 		onConfirm() {
@@ -89,19 +89,31 @@ export function openVanillaItemDisplayConfigDialog(display: VanillaItemDisplay) 
 			newConfig.useNBT === defaultConfig.useNBT && (newConfig.useNBT = undefined)
 
 			display.config = newConfig.toJSON()
+
+			Project!.saved = false
 		},
 	}).show()
 }
 
-export const VANILLA_ITEM_DISPLAY_CONFIG_ACTION = createAction(
-	`${PACKAGE.name}:open_vanilla_item_display_config`,
+export const VANILLA_ITEM_DISPLAY_CONFIG_ACTION = registerAction(
+	{ id: `animated-java:open-vanilla-item-display-config` },
 	{
 		icon: 'settings',
 		name: translate('action.open_vanilla_item_display_config.name'),
-		condition: () => isCurrentFormat(),
+		condition: () => activeProjectIsBlueprintFormat(),
 		click: () => {
 			if (VanillaItemDisplay.selected.length === 0) return
 			openVanillaItemDisplayConfigDialog(VanillaItemDisplay.selected[0])
 		},
 	}
 )
+
+VANILLA_ITEM_DISPLAY_CONFIG_ACTION.onCreated(action => {
+	VanillaItemDisplay.prototype.menu = new Menu([
+		...Outliner.control_menu_group,
+		action,
+		'_',
+		'rename',
+		'delete',
+	])
+})
