@@ -269,6 +269,10 @@ export class TextDisplay extends ResizableOutlinerElement {
 		text.isTextDisplayText = true
 
 		const mesh = this.mesh as THREE.Mesh
+		if (!mesh) {
+			console.warn('TextDisplay mesh not found')
+			return
+		}
 		mesh.clear()
 		delete mesh.sprite
 		mesh.name = this.uuid
@@ -281,8 +285,6 @@ export class TextDisplay extends ResizableOutlinerElement {
 		mesh.outline = outline
 		mesh.add(outline)
 		mesh.visible = this.visibility
-
-		return text
 	}
 }
 TextDisplay.prototype.icon = TextDisplay.icon
