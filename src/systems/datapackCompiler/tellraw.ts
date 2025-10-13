@@ -7,7 +7,7 @@ import { TAGS } from './tags'
 const TELLRAW_PREFIX = () =>
 	new JsonText([
 		{ text: '\n ', color: 'gray' },
-		{ text: 'ᴀɴɪᴍᴀᴛᴇᴅ ᴊᴀᴠᴀ', color: '#00aced' },
+		{ text: toSmallCaps('Animated Java'), color: '#00aced' },
 		{
 			text: `\n (animated_java:${Project!.animated_java.export_namespace})`,
 			color: 'dark_gray',
@@ -22,8 +22,19 @@ const TELLRAW_ERROR = (errorName: string, details: TextElement) =>
 	new JsonText([
 		{ text: '', color: 'red' },
 		TELLRAW_PREFIX(),
-		'ᴇʀʀᴏʀ: ',
+		toSmallCaps('error') + ': ',
 		{ text: errorName, underlined: true },
+		'\n\n ',
+		...(Array.isArray(details) ? details : [details]),
+		TELLRAW_SUFFIX(),
+	])
+
+const TELLRAW_WARNING = (warningName: string, details: TextElement) =>
+	new JsonText([
+		{ text: '', color: 'yellow' },
+		TELLRAW_PREFIX(),
+		toSmallCaps('warning') + ': ',
+		{ text: warningName, underlined: true },
 		'\n\n ',
 		...(Array.isArray(details) ? details : [details]),
 		TELLRAW_SUFFIX(),
@@ -157,7 +168,7 @@ namespace TELLRAW {
 	export const INVALID_VARIANT = (variants: Record<string, IRenderedVariant>) =>
 		TELLRAW_ERROR('Invalid Variant', [
 			'The variant ',
-			{ nbt: 'args.variant', storage: 'aj:temp', color: 'yellow' },
+			{ nbt: 'args.variant', storage: 'animated_java:temp', color: 'yellow' },
 			' does not exist.',
 			'\n ',
 			{ text: ' ≡ ', color: 'white' },
@@ -181,7 +192,7 @@ namespace TELLRAW {
 	export const INVALID_ANIMATION = (animations: IRenderedAnimation[]) =>
 		TELLRAW_ERROR('Invalid Animation', [
 			'The animation ',
-			{ nbt: 'args.animation', storage: 'aj:temp', color: 'yellow' },
+			{ nbt: 'args.animation', storage: 'animated_java:temp', color: 'yellow' },
 			' does not exist.',
 			'\n ',
 			{ text: ' ≡ ', color: 'white' },
@@ -236,7 +247,7 @@ namespace TELLRAW {
 	export const LOCATOR_NOT_FOUND = () =>
 		TELLRAW_ERROR('Locator Not Found', [
 			'Locator ',
-			{ nbt: 'args.name', storage: 'aj:temp', color: 'aqua' },
+			{ nbt: 'args.name', storage: 'animated_java:temp', color: 'aqua' },
 			' not found!',
 			'\n Please ensure that the name is spelled correctly.',
 		])
@@ -244,7 +255,7 @@ namespace TELLRAW {
 	export const LOCATOR_ENTITY_NOT_FOUND = () =>
 		TELLRAW_ERROR('Locator Not Found', [
 			'Locator ',
-			{ nbt: 'args.name', storage: 'aj:temp', color: 'aqua' },
+			{ nbt: 'args.name', storage: 'animated_java:temp', color: 'aqua' },
 			' does not exist!',
 			{ text: '\n Please ensure that the name is spelled correctly, and ' },
 			{ text: '"Use Entity"', color: 'yellow' },
@@ -254,9 +265,9 @@ namespace TELLRAW {
 	export const LOCATOR_COMMAND_FAILED_TO_EXECUTE = () =>
 		TELLRAW_ERROR('Failed to Execute Command as Locator', [
 			'Failed to execute command ',
-			{ nbt: 'args.command', storage: 'aj:temp', color: 'yellow' },
+			{ nbt: 'args.command', storage: 'animated_java:temp', color: 'yellow' },
 			' as Locator ',
-			{ nbt: 'args.name', storage: 'aj:temp', color: 'aqua' },
+			{ nbt: 'args.name', storage: 'animated_java:temp', color: 'aqua' },
 			'.',
 			'\n Please ensure the command is valid.',
 		])
@@ -264,7 +275,7 @@ namespace TELLRAW {
 	export const CAMERA_ENTITY_NOT_FOUND = () =>
 		TELLRAW_ERROR('Camera Not Found', [
 			'Camera ',
-			{ nbt: 'args.name', storage: 'aj:temp', color: 'aqua' },
+			{ nbt: 'args.name', storage: 'animated_java:temp', color: 'aqua' },
 			' does not exist!',
 			'\n Please ensure that its name is spelled correctly.',
 		])
@@ -272,9 +283,9 @@ namespace TELLRAW {
 	export const CAMERA_COMMAND_FAILED_TO_EXECUTE = () =>
 		TELLRAW_ERROR('Failed to Execute Command as Camera', [
 			'Failed to execute command ',
-			{ nbt: 'args.command', storage: 'aj:temp', color: 'yellow' },
+			{ nbt: 'args.command', storage: 'animated_java:temp', color: 'yellow' },
 			' as Camera ',
-			{ nbt: 'args.name', storage: 'aj:temp', color: 'aqua' },
+			{ nbt: 'args.name', storage: 'animated_java:temp', color: 'aqua' },
 			'.',
 			'\n Please ensure the command is valid.',
 		])
@@ -291,6 +302,15 @@ namespace TELLRAW {
 			' or avoid calling the ',
 			{ text: 'move', color: 'yellow' },
 			' function.',
+		])
+
+	export const DEPRECATED_FUNCTION_WARNING = (functionName: string, alternative: string) =>
+		TELLRAW_WARNING('Deprecated Function', [
+			'The function ',
+			{ text: functionName, color: 'aqua' },
+			' is deprecated.\nPlease use ',
+			{ text: alternative, color: 'aqua' },
+			' instead.',
 		])
 }
 
