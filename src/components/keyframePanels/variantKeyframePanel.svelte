@@ -11,7 +11,7 @@
 	let executeCondition = keyframe?.execute_condition ?? ''
 
 	$: {
-		keyframe.variant = Variant.all.find(v => v.uuid === variantUuid) ?? Variant.getDefault()
+		keyframe.variant = Variant.getByUUID(variantUuid) ?? Variant.getDefault()
 		keyframe.execute_condition = executeCondition
 		Animator.preview()
 	}

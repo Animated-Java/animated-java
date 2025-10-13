@@ -281,13 +281,6 @@ export const BLUEPRINT_FORMAT = registerModelFormat(
 
 			project.pluginMode = new Valuable(project.animated_java.enable_plugin_mode)
 
-			// project.variants ??= []
-			// if (Variant.all.length === 0) {
-			// 	console.warn('No variants found, creating default variant')
-			// 	new Variant('Default', true)
-			// }
-			// Variant.selectDefault()
-
 			initializeRenderBoxPreview()
 
 			requestAnimationFrame(() => {

@@ -309,8 +309,8 @@ export const BLUEPRINT_CODEC = registerCodec(
 			}
 
 			model.variants = {
-				default: Variant.all.find(v => v.isDefault)!.toJSON(),
-				list: Variant.all.filter(v => !v.isDefault).map(v => v.toJSON()),
+				default: Variant.getDefault().toJSON(),
+				list: Variant.allExcludingDefault().map(v => v.toJSON()),
 			}
 
 			const animationOptions = { bone_names: true, absolute_paths: options.absolute_paths }
