@@ -217,6 +217,7 @@ const DEV_CONFIG: esbuild.BuildOptions = {
 }
 
 const PROD_CONFIG: esbuild.BuildOptions = {
+	...COMMON_CONFIG,
 	minify: true,
 	keepNames: true,
 	drop: ['debugger'],

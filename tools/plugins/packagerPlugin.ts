@@ -126,35 +126,19 @@ function plugin(): Plugin {
 								)
 							}
 
-							const changeList = versionChangelog.categories.find(
-								(c: any) => c.title === 'Changes'
-							)
-							let changes = ''
-							if (changeList) {
-								changes =
-									'### Changes\n\n' +
-									changeList.list
-										.map((v: any) => '- ' + v)
+							let categories = ''
+							for (const category of versionChangelog.categories) {
+								categories +=
+									`\n\n### ${category.title}\n\n` +
+									category.list
+										.map((v: string) => '- ' + v)
 										.join('\n')
-										.replace('[BREAKING]', '⚠️ **BREAKING CHANGE** — ')
-							}
-							const fixList = versionChangelog.categories.find(
-								(c: any) => c.title === 'Fixes'
-							)
-							let fixes = ''
-							if (fixList) {
-								fixes =
-									'### Fixes\n\n' +
-									fixList.list
-										.map((v: any) => '- ' + v)
-										.join('\n')
-										.replace('[BREAKING]', '⚠️ **BREAKING CHANGE** — ')
+										.replaceAll('[BREAKING]', '⚠️ **BREAKING** —')
 							}
 
 							content = replaceTemplateVars(content, {
 								version: PACKAGE.version,
-								changes,
-								fixes,
+								categories: categories.trim(),
 								pings: pings.trim(),
 							})
 
