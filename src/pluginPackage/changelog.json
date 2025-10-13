@@ -201,7 +201,149 @@
 				"title": "Fixes",
 				"list": [
 					"Fixed adding cameras to a rig causing the data entity to dismount root.",
-					"Make variant keyframes reset to default if their variant doesn't exist anymore"
+					"Make variant keyframes reset to default if their variant doesn't exist anymore."
+				]
+			}
+		]
+	},
+	"1.8.0-beta.1": {
+		"title": "v1.8.0-beta.1",
+		"author": "Titus Evans (SnaveSutit)",
+		"date": "2025-10-13",
+		"categories": [
+			{
+				"title": "Changes",
+				"list": [
+					"[BREAKING] `play` and `stop` functions now pause all animations when called.",
+					"[BREAKING] Removed support for Multiple target Minecraft versions. Blueprints can now only be exported to a single target version at a time.",
+					"[BREAKING] *Temporarily* disabled plugin mode entirely to avoid confusion while it's being reworked.",
+					"Added `Export All` and `Export All (Debug)` action to export all open Blueprints at once.",
+					"Added `Export (Debug)` action to export a Blueprint with debug features enabled. (Replaces `show_function_errors` and `show_outdated_warning` settings)",
+					"Added support for Minecraft 1.21.6 and 1.21.9",
+					"Added support for 1.21.6 element rotations. (No more 22.5 degree limitation!)",
+					"Added full support for SNBT JSON Text components. You can now use the modern SNBT format in any version, and Animated Java will automatically convert it to the correct format for your target version on export.",
+					"Added full support for 1.21.5 unicode escape sequences in SNBT JSON Text components. As long as the version of Minecraft you're exporting to supports Unicode characters, you can use them in your JSON Text components.",
+					"Added a button to copy the exported JSON Text component of a Text Display to your clipboard.",
+					"Updated keyframe UI, making it much more responsive, and easier to use.",
+					"Added support for `light_emission` on cubes.",
+					"The Blueprint format now has basic support for Blockbench collections. More features will be added in future updates.",
+					"Improved Text Display JSON text input syntax highlighting.",
+					"Improved Text Display JSON text input appearance.",
+					"Improved JSON Text component parsing and error reporting.",
+					"Improved all function errors and tellraws in exported Data Packs.",
+					"Improved outdated warning formatting and functionality.",
+					"Improved text display rendering performance, and update reactivity.",
+					"Display item is no longer configurable in versions that use `item_model` (1.20.5+).",
+					"The `summon` function now provides better feedback when using invalid arguments.",
+					"Removed loading popup when opening a model. Display entities are now loaded asynchronously, and will display a temporary placeholder model until they are ready.",
+					"Replaced `animated_java:empty` with vanilla empty model in MC 1.21.4+.",
+					"Increased width of all node configs from 400px to 600px.",
+					"Entities riding the root after running the on-summon function will now be removed automatically when the rig is removed.",
+					"Removed `show_function_errors` and `show_outdated_warning` and replaced them with a new `Export (Debug)` action.",
+					"Renamed all 'Commands' settings to 'Function'.",
+					"Renamed 'On-Tick Function' to 'Post-Tick Function'.",
+					"Added 'Pre-Tick Function' Blueprint setting.",
+					"Renamed `raw` export mode to `folder`.",
+					"Added new Blueprint setting: 'Auto Update Rig Orientation'.",
+					"Added `animated_java:<export_namespace>/move` function to move the rig when 'Auto Update Rig Orientation' is enabled.",
+					"Reduced number of teleport commands run every tick when idle and animating if 'Auto Update Rig Orientation' is disabled.",
+					"Reduced the number of times the orientation of locators and cameras is updated while animating.",
+					"Improved performance of `fontManager` char mesh rendering.",
+					"Updated plugin description to 'Effortlessly craft complex animations for Minecraft: Java Edition'.",
+					"Replaced all `textarea`s in Blueprint settings, Variant config, and Node configs with a custom CodeJar that provides a better editing experience.",
+					"Improved plugin incompatibility warnings."
+				]
+			},
+			{
+				"title": "Fixes",
+				"list": [
+					"Fixed a few minor Text Display text wrapping issues.",
+					"Fixed display entities causing collections to break.",
+					"Fixed [#440](https://github.com/Animated-Java/animated-java/issues/440)",
+					"Fixed [#442](https://github.com/Animated-Java/animated-java/issues/442)",
+					"Fixed [#453](https://github.com/Animated-Java/animated-java/issues/453)",
+					"Fixed [#213](https://github.com/Animated-Java/animated-java/issues/213)",
+					"Fixed [#284](https://github.com/Animated-Java/animated-java/issues/284)",
+					"Fixed GU failing on first load due to missing scoreboard dependency.",
+					"Fixed [#435](https://github.com/Animated-Java/animated-java/issues/435)",
+					"Fixed [#439](https://github.com/Animated-Java/animated-java/issues/439)",
+					"Fixed Text Display JSON text input not catching tab key presses.",
+					"Fixed outdated rig warning not working in some cases.",
+					"Fixed outdated rig warning entities missing important tags.",
+					"Fixed missing translations for install popup.",
+					"Fixed function tag merging not working correctly.",
+					"Fixed missing `item_display` NBT tag on exported Item Displays.",
+					"Fixed missing `Count` tag on Item Displays in Data Packs exported for 1.20.4.",
+					"Fixed project save status not updating when modifying node configs.",
+					"Fixed [#441](https://github.com/Animated-Java/animated-java/issues/441)",
+					"Fixed [#421](https://github.com/Animated-Java/animated-java/issues/421)",
+					"Fixed [#429](https://github.com/Animated-Java/animated-java/issues/429)",
+					"Fixed Text Display, Item Display, Block Display, and Variant config menus overflowing off the screen.",
+					"Fixed [#422](https://github.com/Animated-Java/animated-java/issues/422)",
+					"Fixed invalid cube warning not updating when editing cubes.",
+					"Fixed relative paths not being recognized on windows.",
+					"Fixed `set_frame` failing due to incorrect tag in entity selector.",
+					"Fixed animation preview not using in-game display entity interpolation simulation. Interpolations of fast-moving and rotating objects in the preview should now be much more accurate to how they appear in-game.",
+					"Fixed `NumberSlider` dialog item failing to correctly clamp values when `valueStep` is defined.",
+					"Fixed animation config dialog not marking project as unsaved after making changes.",
+					"Fixed variants panel animating when switching between projects.",
+					"Fixed `ajmodel` upgrader not opening when double clicked"
+				]
+			},
+			{
+				"title": "Camera Fixes",
+				"list": [
+					"Fixed [#441](https://github.com/Animated-Java/animated-java/issues/441)",
+					"Fixed [#435](https://github.com/Animated-Java/animated-java/issues/435)",
+					"Fixed [#434](https://github.com/Animated-Java/animated-java/issues/434)",
+					"Fixed [#427](https://github.com/Animated-Java/animated-java/issues/427)",
+					"Fixed [#421](https://github.com/Animated-Java/animated-java/issues/421)",
+					"Fixed [#441](https://github.com/Animated-Java/animated-java/issues/441)"
+				]
+			},
+			{
+				"title": "Internal Data Pack Changes and Fixes",
+				"list": [
+					"Updated to the latest version of MC-Build.",
+					"Added support for `.mcbt` files to the Data Pack compiler.",
+					"Reduced entity data size by reducing the length of locator and camera transform keys.",
+					"Removed `global/internal` folder.",
+					"Expanded all `aj` namespaces to `animated_java` except tags.",
+					"Renamed `convert_uuid_array_to_string` -> `get_entity_uuid_string`.",
+					"Removed most transformation of rig entities from `summon`. We now primarily use `set_default_pose` to apply the rig's default pose to reduce code duplication and improve consistency.",
+					"Fixed global tag in `set_frame` and `apply_frame` functions not using dynamic tag getter.",
+					"`.mcb` files now use more descriptive variable names.",
+					"Removed `path_name` in favor of `storage_name` for all rendered rig nodes, and animations.",
+					"Reduced overhead when generating variant functions.",
+					"Switched over to using variables for storage names.",
+					"Renamed `on_summon_commands` -> `on_summon_function`.",
+					"Renamed `on_remove_commands` -> `on_remove_function`.",
+					"Renamed `ticking_commands` -> `on_post_tick_function`.",
+					"Moved some ticking and loading functionality out of individual namespaces and into global.",
+					"Added `debug` macro to reduce code duplication.",
+					"Removed an entire indentation level by including the export namespace in the source path instead of as a dir in the .mcb file.",
+					"Replaced all `arguments[1]` references with new `context` variable."
+				]
+			},
+			{
+				"title": "Other Changes and Fixes",
+				"list": [
+					"Most enum-like values are now using TS enums.",
+					"Removed config functionality from cameras entirely.",
+					"Renamed `isCurrentFormat` -> `activeProjectIsBlueprintFormat`.",
+					"Updated to new modern modding tools. Animated Java is now capable of being disabled, enabled, and uninstalled safely without restarting Blockbench.",
+					"`AnimatedJava.API` global has been renamed to `AnimatedJava`.",
+					"Improve handling of Text and Block Display entity NBT when generating root entity passengers.",
+					"Removed most transformation of rig entities from `summon`. We now primarily use `set_default_pose` to apply the rig's default pose to reduce code duplication and improve consistency.",
+					"Fixed global tag in `set_frame` and `apply_frame` functions not using dynamic tag getter.",
+					"`.mcb` files now use more descriptive variable names.",
+					"`assetManager.getRawAsset` now returns a Buffer.",
+					"Fixed broken Animated Java bar item condition.",
+					"Removed `path_name` in favor of `storage_name` for all rendered rig nodes, and animations.",
+					"Removed `addProjectToRecentProjects` function into custom `load` logic, and let the default `Codec` functionality handle adding the project in `afterSave`.",
+					"Improve `ModelDataFixerUpper` types, logic flow, and error handling.",
+					"Add `ModelDataFixerUpper` upgrade function for v1.8.0.",
+					"Made `TELLRAW.RIG_OUTDATED` runtime-generic."
 				]
 			}
 		]
