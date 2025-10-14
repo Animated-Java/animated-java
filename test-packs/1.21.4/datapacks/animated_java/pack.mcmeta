@@ -1,6 +1,10 @@
 {
 	"pack": {
 		"pack_format": 61,
-		"description": "AJ Testing DP"
+		"description": "AJ Testing DP",
+		"supported_formats": {
+			"min_inclusive": 61,
+			"max_inclusive": 70
+		}
 	}
 }
