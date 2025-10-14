@@ -695,6 +695,16 @@ function summon {
 			}
 		}
 
+		REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type) && node.on_summon_function?.trim())) as node {
+			execute \
+				on passengers if entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(export_namespace, node.storage_name)%>] \
+			run block node_on_summon_<%node.storage_name%> {
+				<%%
+					emit.mcb(node.on_summon_function.trim())
+				%%>
+			}
+		}
+
 		IF (on_summon_function) {
 			execute at @s run block rig_on_summon {
 				<%%
@@ -989,6 +999,7 @@ IF (Object.keys(rig.variants).length > 1) {
 						execute \
 							on passengers \
 							if entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(export_namespace, node.storage_name)%>] \
+							at @s \
 						run \
 							block zzz/apply_to_node_<%node.storage_name%> {
 								IF (node.type === 'bone' && variant.models[node.uuid] !== undefined) {
@@ -1005,6 +1016,11 @@ IF (Object.keys(rig.variants).length > 1) {
 									%%>
 									IF (!global.config.isDefault()) {
 										data merge entity @s <%global.config.toNBT(undefined, variant.is_default)%>
+									}
+									IF (global.config.onApplyFunction) {
+										<%%
+											emit.mcb(global.config.onApplyFunction)
+										%%>
 									}
 								}
 						}

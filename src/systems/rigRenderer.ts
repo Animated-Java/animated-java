@@ -85,6 +85,7 @@ export interface IRenderedDisplayEntityNode extends IRenderedNode {
 	 */
 	base_scale: number
 	bounding_box: THREE.Box3
+	on_summon_function?: string
 	configs?: IDisplayEntityConfigs
 }
 
@@ -354,7 +355,8 @@ function renderGroup(
 		parent: parentId,
 		bounding_box: getNodeBoundingBox(group),
 		base_scale: 1,
-		configs: group.configs,
+		configs: structuredClone(group.configs),
+		on_summon_function: group.onSummonFunction?.trim(),
 		// This is a placeholder value that will be updated later once the animation renderer is run.
 		default_transform: {} as INodeTransform,
 	}
@@ -464,7 +466,8 @@ function renderItemDisplay(display: VanillaItemDisplay, rig: IRenderedRig) {
 		item: display.item,
 		item_display: display.itemDisplay,
 		base_scale: 1,
-		configs: display.configs,
+		configs: structuredClone(display.configs),
+		on_summon_function: display.onSummonFunction?.trim(),
 		bounding_box: getNodeBoundingBox(display),
 		default_transform: {} as INodeTransform,
 	}
@@ -492,7 +495,8 @@ function renderBlockDisplay(display: VanillaBlockDisplay, rig: IRenderedRig) {
 		block: display.block,
 		parent: parentId,
 		base_scale: 1,
-		configs: display.configs,
+		configs: structuredClone(display.configs),
+		on_summon_function: display.onSummonFunction?.trim(),
 		bounding_box: getNodeBoundingBox(display),
 		default_transform: {} as INodeTransform,
 	}
@@ -527,7 +531,8 @@ function renderTextDisplay(display: TextDisplay, rig: IRenderedRig): INodeStruct
 		shadow: display.shadow,
 		see_through: display.seeThrough,
 		base_scale: 1,
-		configs: display.configs,
+		configs: structuredClone(display.configs),
+		on_summon_function: display.onSummonFunction?.trim(),
 		bounding_box: getNodeBoundingBox(display),
 		default_transform: {} as INodeTransform,
 	}
@@ -549,7 +554,7 @@ function renderLocator(locator: Locator, rig: IRenderedRig) {
 		storage_name: sanitizeStorageKey(locator.name),
 		uuid: locator.uuid,
 		parent: parentId,
-		config: locator.config,
+		config: structuredClone(locator.config),
 		max_distance: 0,
 		default_transform: {} as INodeTransform,
 	}
