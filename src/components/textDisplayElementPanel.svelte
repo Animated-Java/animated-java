@@ -42,13 +42,6 @@
 
 	let codeJarElement: HTMLPreElement | undefined
 
-	let lineWidthSlot: HTMLDivElement
-	let backgroundColorSlot: HTMLDivElement
-	let shadowSlot: HTMLDivElement
-	let alignmentSlot: HTMLDivElement
-	let seeThroughSlot: HTMLDivElement
-	let copyTextSlot: HTMLDivElement
-
 	let unsubFromText: (() => void) | undefined
 
 	const unsubFromEvent = EVENTS.UPDATE_SELECTION.subscribe(() => {
@@ -79,13 +72,26 @@
 		})
 	})
 
+	const mountLineWidth = (node: HTMLDivElement) => {
+		node.appendChild(TEXT_DISPLAY_WIDTH_SLIDER.node)
+	}
+	const mountShadow = (node: HTMLDivElement) => {
+		node.appendChild(TEXT_DISPLAY_SHADOW_TOGGLE.node)
+	}
+	const mountAlignment = (node: HTMLDivElement) => {
+		node.appendChild(TEXT_DISPLAY_ALIGNMENT_SELECT.node)
+	}
+	const mountSeeThrough = (node: HTMLDivElement) => {
+		node.appendChild(TEXT_DISPLAY_SEE_THROUGH_TOGGLE.node)
+	}
+	const mountBackgroundColor = (node: HTMLDivElement) => {
+		node.appendChild(TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.node)
+	}
+	const mountCopyText = (node: HTMLDivElement) => {
+		node.appendChild(TEXT_DISPLAY_COPY_TEXT_ACTION.node)
+	}
+
 	requestAnimationFrame(() => {
-		lineWidthSlot.appendChild(TEXT_DISPLAY_WIDTH_SLIDER.node)
-		backgroundColorSlot.appendChild(TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.node)
-		shadowSlot.appendChild(TEXT_DISPLAY_SHADOW_TOGGLE.node)
-		alignmentSlot.appendChild(TEXT_DISPLAY_ALIGNMENT_SELECT.node)
-		seeThroughSlot.appendChild(TEXT_DISPLAY_SEE_THROUGH_TOGGLE.node)
-		copyTextSlot.appendChild(TEXT_DISPLAY_COPY_TEXT_ACTION.node)
 		forceNoWrap()
 	})
 
@@ -122,12 +128,12 @@
 	class="toolbar text-display-toolbar"
 	style={!!selected ? '' : 'visibility:hidden; height: 0px;'}
 >
-	<div class="content" bind:this={lineWidthSlot} />
-	<div class="content" bind:this={backgroundColorSlot} />
-	<div class="content" bind:this={shadowSlot} />
-	<div class="content" bind:this={alignmentSlot} />
-	<div class="content" bind:this={seeThroughSlot} />
-	<div class="content" bind:this={copyTextSlot} />
+	<div class="content" use:mountLineWidth />
+	<div class="content" use:mountShadow />
+	<div class="content" use:mountAlignment />
+	<div class="content" use:mountSeeThrough />
+	<div class="content" use:mountBackgroundColor />
+	<div class="content" use:mountCopyText />
 </div>
 
 <div
