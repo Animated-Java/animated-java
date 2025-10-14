@@ -4,7 +4,7 @@ import { type IBlueprintFormatJSON, getDefaultProjectSettings } from '.'
 import TransparentTexture from '../../assets/transparent.png'
 import { PACKAGE } from '../../constants'
 import { openUnexpectedErrorDialog } from '../../interface/dialog/unexpectedError'
-import { BoneConfig } from '../../nodeConfigs'
+import { DisplayEntityConfig } from '../../nodeConfigs'
 
 export function process(model: any): IBlueprintFormatJSON {
 	if (model?.meta?.model_format === 'animatedJava/ajmodel') {
@@ -85,7 +85,7 @@ export function process(model: any): IBlueprintFormatJSON {
 			delete model.blueprint_settings[key]
 		}
 
-		model.meta.format_version = PACKAGE.version
+		model.meta.format_version = '1.8.0'
 		console.log('Upgrade complete', JSON.parse(JSON.stringify(model)))
 
 		return model
@@ -312,7 +312,7 @@ function updateModelTo1_0pre1(model: any) {
 		if (typeof node === 'string') return
 		bones.push(node.uuid as string)
 		node.configs = {
-			default: new BoneConfig().toJSON(),
+			default: new DisplayEntityConfig().toJSON(),
 			variants: {},
 		}
 		node.children.forEach((child: any) => {
@@ -625,6 +625,33 @@ function updateModelTo1_8_0(model: any) {
 				delete display.backgroundAlpha
 			}
 		}
+		// Update old config structure for display entities
+		const displayEntities = fixed.elements.filter(
+			e =>
+				e.type === AnimatedJava.TextDisplay.type ||
+				e.type === AnimatedJava.VanillaItemDisplay.type ||
+				e.type === AnimatedJava.VanillaBlockDisplay.type
+		)
+		for (const displayEntity of displayEntities) {
+			if (displayEntity.config) {
+				if (displayEntity.config.custom_name !== undefined) {
+					displayEntity.config.on_apply_function ??= ''
+					displayEntity.config.on_apply_function += `\n# Auto-upgraded custom name setting (May need fixing):\ndata modify entity @s CustomName set value '${displayEntity.config.custom_name}'\n`
+					delete displayEntity.config.custom_name
+				}
+				if (displayEntity.config.custom_name_visible) {
+					displayEntity.config.on_apply_function ??= ''
+					displayEntity.config.on_apply_function += `\n# Auto-upgraded custom name visibility setting:\ndata modify entity @s CustomNameVisible set value ${displayEntity.config.custom_name_visible}\n`
+					delete displayEntity.config.custom_name_visible
+				}
+
+				displayEntity.configs = {
+					default: displayEntity.config,
+					variants: {},
+				}
+				delete displayEntity.config
+			}
+		}
 		// Update locators to use new event function names
 		const locators = fixed.elements.filter(e => e.type === Locator.prototype.type)
 		for (const locator of locators) {
@@ -641,7 +668,6 @@ function updateModelTo1_8_0(model: any) {
 
 	// Update commands keyframes to use new keyframe channel name
 	if (Array.isArray(fixed.animations)) {
-		debugger
 		for (const animation of fixed.animations) {
 			for (const animator of Object.values<any>(animation.animators ?? {})) {
 				if (!Array.isArray(animator.keyframes)) continue
