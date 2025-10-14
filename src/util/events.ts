@@ -42,6 +42,8 @@ const EVENTS = {
 
 	UPDATE_SELECTION: subscribable<void>(),
 
+	UPDATE_VIEW: subscribable<void>(),
+
 	UNDO: subscribable<UndoEntry>(),
 	REDO: subscribable<UndoEntry>(),
 }
@@ -53,12 +55,9 @@ Blockbench.on<EventName>('select_project', ({ project }: { project: ModelProject
 Blockbench.on<EventName>('unselect_project', ({ project }: { project: ModelProject }) => {
 	EVENTS.UNSELECT_PROJECT.publish(project)
 })
-// Blockbench.on('loaded_plugin', ({ plugin }: { plugin: BBPlugin }) => {
-// 	if (plugin.id === PACKAGE.name) return
-// 	EVENTS.EXTERNAL_PLUGIN_LOAD.publish(plugin)
-// })
 Blockbench.on<EventName>('close_project', () => EVENTS.CLOSE_PROJECT.publish(Project!))
 Blockbench.on<EventName>('update_keyframe_selection', EVENTS.UPDATE_KEYFRAME_SELECTION.publish)
 Blockbench.on<EventName>('update_selection', EVENTS.UPDATE_SELECTION.publish)
+Blockbench.on<EventName>('update_view', EVENTS.UPDATE_VIEW.publish)
 Blockbench.on<EventName>('undo', EVENTS.UNDO.publish)
 Blockbench.on<EventName>('redo', EVENTS.REDO.publish)

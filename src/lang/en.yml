@@ -7,9 +7,8 @@ animated_java.action.open_blueprint_settings.name: Blueprint Settings
 animated_java.action.open_documentation.name: Documentation
 animated_java.action.open_changelog.name: Changelog
 animated_java.action.open_about.name: About
-animated_java.action.open_bone_config.name: Bone Config
+animated_java.action.open_display_entity_config.name: Display Entity Config
 animated_java.action.open_locator_config.name: Locator Config
-animated_java.action.open_text_display_config.name: Text Display Config
 animated_java.action.export.name: Export
 animated_java.action.export_debug.name: Export (Debug)
 animated_java.action.export_all.name: Export All
@@ -23,8 +22,10 @@ animated_java.action.extract.confirm: Confirm Extraction
 animated_java.action.create_text_display.title: Add Text Display
 animated_java.action.create_vanilla_item_display.title: Add Item Display
 animated_java.action.create_vanilla_block_display.title: Add Block Display
-animated_java.action.open_vanilla_item_display_config.name: Item Display Config
-animated_java.action.open_vanilla_block_display_config.name: Block Display Config
+animated_java.action.copy_display_entity_config.name: Copy Display Entity Config
+animated_java.action.copy_display_entity_config.message: Copied Display Entity Config from "{0}"
+animated_java.action.paste_display_entity_config.name: Paste Display Entity Config
+animated_java.action.paste_display_entity_config.message: Pasted Display Entity Config from "{0}"
 
 ### Popups
 animated_java.popup.loading.loading: Loading Animated Java...
@@ -278,79 +279,80 @@ animated_java.dialog.blueprint_settings.json_file.error.no_file_selected: No fil
 animated_java.dialog.blueprint_settings.json_file.error.not_a_file: The selected path is not a file!
 
 ## Bone Config Dialog
-animated_java.dialog.bone_config.title: Bone Config
+animated_java.dialog.display_entity.title: Display Entity Config for "{0}"
 
-animated_java.dialog.bone_config.selected_variant: 'Selected Variant: {0}'
-animated_java.dialog.bone_config.default_variant_subtitle: The settings below will be applied to this bone by default.
-animated_java.dialog.bone_config.selected_variant_subtitle: The settings below will be applied to this bone only when this variant is applied.
+animated_java.dialog.display_entity.node_options.title: Node
+animated_java.dialog.display_entity.per_variant_options.title: Per-Variant
 
-animated_java.dialog.bone_config.use_nbt.title: Use NBT
-animated_java.dialog.bone_config.use_nbt.description: Whether or not to use NBT to configure the bone instead of settings.
-animated_java.dialog.bone_config.use_nbt.use_nbt_warning: Using NBT will override all other settings, and any changes you make will not be visible in the editor. Only use this if you know what you're doing!
+animated_java.dialog.display_entity.on_summon_function.title: On-Summon Function
+animated_java.dialog.display_entity.on_summon_function.description: |-
+  Commands to run `as` the display entity when summoned.
 
-animated_java.dialog.bone_config.inherit_settings.title: Inherit Settings
-animated_java.dialog.bone_config.inherit_settings.description: Whether or not to inherit the settings from the parent bone.
+  Treat this input as if it were a `.mcfunction` file.
 
-animated_java.dialog.bone_config.custom_name.title: Custom Name
-animated_java.dialog.bone_config.custom_name.description: The custom name of the bone.
-animated_java.dialog.bone_config.custom_name.invalid_json.error: |-
+  Supports [MC-Build](https://mcbuild.dev) syntax.
+
+animated_java.dialog.display_entity.on_apply_function.title: On-Apply Function
+animated_java.dialog.display_entity.on_apply_function.description: |-
+  Commands to run `as` the display entity when the variant is applied.
+
+  Treat this input as if it were a `.mcfunction` file.
+
+  Supports [MC-Build](https://mcbuild.dev) syntax.
+
+animated_java.dialog.display_entity.custom_name.title: Custom Name
+animated_java.dialog.display_entity.custom_name.description: The custom name of the node.
+animated_java.dialog.display_entity.custom_name.invalid_json.error: |-
   Invalid JSON Text!
   {0}
 
-animated_java.dialog.bone_config.custom_name_visible.title: Custom Name Visible
-animated_java.dialog.bone_config.custom_name_visible.description: Whether or not the custom name should always be visible.
+animated_java.dialog.display_entity.custom_name_visible.title: Custom Name Visible
+animated_java.dialog.display_entity.custom_name_visible.description: Whether or not the custom name should always be visible.
 
-animated_java.dialog.bone_config.glowing.title: Glowing
-animated_java.dialog.bone_config.glowing.description: Whether or not the bone should glow in-game.
+animated_java.dialog.display_entity.glowing.title: Glowing
+animated_java.dialog.display_entity.glowing.description: Whether or not the node should glow in-game.
 
-animated_java.dialog.bone_config.override_glow_color.title: Override Glow Color
-animated_java.dialog.bone_config.override_glow_color.description: Whether or not to override the default glow color.
+animated_java.dialog.display_entity.override_glow_color.title: Override Glow Color
+animated_java.dialog.display_entity.override_glow_color.description: Whether or not to override the default glow color.
 
-animated_java.dialog.bone_config.glow_color.title: Glow Color
-animated_java.dialog.bone_config.glow_color.description: The color of the glow.
+animated_java.dialog.display_entity.glow_color.title: Glow Color
+animated_java.dialog.display_entity.glow_color.description: The color of the glow.
 
-animated_java.dialog.bone_config.shadow_radius.title: Shadow Radius
-animated_java.dialog.bone_config.shadow_radius.description: The radius of the shadow.
+animated_java.dialog.display_entity.shadow_radius.title: Shadow Radius
+animated_java.dialog.display_entity.shadow_radius.description: The radius of the shadow.
 
-animated_java.dialog.bone_config.shadow_strength.title: Shadow Strength
-animated_java.dialog.bone_config.shadow_strength.description: The strength of the shadow.
+animated_java.dialog.display_entity.shadow_strength.title: Shadow Strength
+animated_java.dialog.display_entity.shadow_strength.description: The strength of the shadow.
 
-animated_java.dialog.bone_config.override_brightness.title: Override Brightness
-animated_java.dialog.bone_config.override_brightness.description: Whether or not to override the default brightness.
+animated_java.dialog.display_entity.override_brightness.title: Override Brightness
+animated_java.dialog.display_entity.override_brightness.description: Whether or not to override the default brightness.
 
-animated_java.dialog.bone_config.brightness_override.title: Brightness
-animated_java.dialog.bone_config.brightness_override.description: The brightness of the bone. This should be a value between 0 and 15.
+animated_java.dialog.display_entity.brightness_override.title: Brightness
+animated_java.dialog.display_entity.brightness_override.description: The brightness of the node. This should be a value between 0 and 15.
 
-animated_java.dialog.bone_config.use_custom_brightness.title: Use Custom Brightness
-animated_java.dialog.bone_config.use_custom_brightness.description: Whether or not to enable the custom brightness override for the bone.
+animated_java.dialog.display_entity.use_custom_brightness.title: Use Custom Brightness
+animated_java.dialog.display_entity.use_custom_brightness.description: Whether or not to enable the custom brightness override for the node.
 
-animated_java.dialog.bone_config.custom_brightness.title: Custom Brightness
-animated_java.dialog.bone_config.custom_brightness.description: The custom brightness of the bone. This should be a value between 0 and 15.
+animated_java.dialog.display_entity.custom_brightness.title: Custom Brightness
+animated_java.dialog.display_entity.custom_brightness.description: The custom brightness of the node. This should be a value between 0 and 15.
 
-animated_java.dialog.bone_config.enchanted.title: Enchanted
-animated_java.dialog.bone_config.enchanted.description: Whether or not the bone should be enchanted.
+animated_java.dialog.display_entity.enchanted.title: Enchanted
+animated_java.dialog.display_entity.enchanted.description: Whether or not the node should be enchanted.
 
-animated_java.dialog.bone_config.invisible.title: Invisible
-animated_java.dialog.bone_config.invisible.description: Whether or not the bone should be invisible.
+animated_java.dialog.display_entity.invisible.title: Invisible
+animated_java.dialog.display_entity.invisible.description: Whether or not the node should be invisible.
 
-animated_java.dialog.bone_config.nbt.title: NBT
-animated_java.dialog.bone_config.nbt.description: The NBT to apply to the bone.
-animated_java.dialog.bone_config.nbt.invalid_nbt.not_compound: The NBT must be a compound tag! Eg. {CustomName:'"my name"'}
-animated_java.dialog.bone_config.nbt.invalid_nbt.error: |-
-  Invalid NBT!
-  {0}
-
-animated_java.dialog.bone_config.billboard.title: Billboard
-animated_java.dialog.bone_config.billboard.description: |-
-  Controls if this entity's model should pivot to face player when rendered.
+animated_java.dialog.display_entity.billboard.title: Billboard
+animated_java.dialog.display_entity.billboard.description: |-
+  Controls if this nodes model should pivot to face player when rendered.
   - **Fixed**: Both vertical and horizontal angles are fixed.
   - **Vertical**: Pivots around vertical axis.
   - **Horizontal**: Pivots around horizontal axis.
   - **Center**: Pivots around center point.
-animated_java.dialog.bone_config.billboard.options.fixed: Fixed
-animated_java.dialog.bone_config.billboard.options.vertical: Vertical
-animated_java.dialog.bone_config.billboard.options.horizontal: Horizontal
-animated_java.dialog.bone_config.billboard.options.center: Center
+animated_java.dialog.display_entity.billboard.options.fixed: Fixed
+animated_java.dialog.display_entity.billboard.options.vertical: Vertical
+animated_java.dialog.display_entity.billboard.options.horizontal: Horizontal
+animated_java.dialog.display_entity.billboard.options.center: Center
 
 ## Locator Config Dialog
 animated_java.dialog.locator_config.title: Locator Config

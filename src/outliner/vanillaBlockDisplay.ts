@@ -1,7 +1,8 @@
+import { IDisplayEntityConfigs } from 'src/systems/rigRenderer'
 import { registerAction } from 'src/util/moddingTools'
+import { DeepClonedObjectProperty, fixClassPropertyInheritance } from 'src/util/property'
 import { PACKAGE } from '../constants'
-import { type IBlueprintBoneConfigJSON, activeProjectIsBlueprintFormat } from '../formats/blueprint'
-import { BoneConfig } from '../nodeConfigs'
+import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 import { BlockModelMesh, getBlockModel } from '../systems/minecraft/blockModelManager'
 import { type BlockStateValue, getBlockState } from '../systems/minecraft/blockstateManager'
 import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
@@ -24,6 +25,7 @@ interface VanillaBlockDisplayOptions {
 	visibility?: boolean
 }
 
+@fixClassPropertyInheritance
 export class VanillaBlockDisplay extends ResizableOutlinerElement {
 	static type = `${PACKAGE.name}:vanilla_block_display`
 	static icon = 'deployed_code'
@@ -36,7 +38,8 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 
 	// Properties
 	private __block = new Valuable('minecraft:stone')
-	config: IBlueprintBoneConfigJSON
+	onSummonFunction = VanillaBlockDisplay.properties.onSummonFunction.default as string
+	configs!: IDisplayEntityConfigs
 
 	error = new Valuable('')
 
@@ -54,9 +57,6 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 
 		this.name = 'block_display'
 		this.extend(data)
-
-		this.block ??= 'minecraft:stone'
-		this.config ??= {}
 
 		this.sanitizeName()
 
@@ -177,10 +177,9 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 }
 VanillaBlockDisplay.prototype.icon = VanillaBlockDisplay.icon
 new Property(VanillaBlockDisplay, 'string', 'block', { default: 'minecraft:stone' })
-new Property(VanillaBlockDisplay, 'object', 'config', {
-	get default() {
-		return new BoneConfig().toJSON()
-	},
+new Property(VanillaBlockDisplay, 'string', 'onSummonFunction', { default: '' })
+new DeepClonedObjectProperty(VanillaBlockDisplay, 'configs', {
+	default: () => ({ default: {}, variants: {} }),
 })
 OutlinerElement.registerType(VanillaBlockDisplay, VanillaBlockDisplay.type)
 
