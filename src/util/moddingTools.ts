@@ -200,7 +200,6 @@ export function registerProjectMod<ID extends string, RevertContext extends any 
 		apply: () => {
 			return [
 				EVENTS.PRE_SELECT_PROJECT.subscribe(project => {
-					console.log('Checking project mod condition for', options.id, project)
 					if (!options.condition(project)) return
 					console.log(`Applying project mod '${options.id}'`)
 					revertContext = options.apply()
@@ -619,9 +618,4 @@ export class ObjectProperty extends Property<'object'> {
 			instance[this.name] = JSON.parse(JSON.stringify(data[this.name]))
 		}
 	}
-}
-
-export const fixClassPropertyInheritance: ClassDecorator = target => {
-	target.properties = { ...target.properties }
-	return target
 }
