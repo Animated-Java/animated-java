@@ -928,7 +928,7 @@
 			"export": true,
 			"item": "minecraft:diamond",
 			"itemDisplay": "none",
-			"onSummonFunction": "",
+			"onSummonFunction": "say I'm a Diamond!",
 			"configs": {
 				"default": {
 					"on_apply_function": "",
@@ -945,7 +945,7 @@
 				},
 				"variants": {
 					"49521f4b-b970-e4bd-b594-2e05d2d46027": {
-						"on_apply_function": "",
+						"on_apply_function": "say I'm now a very colorful diamond!",
 						"billboard": "fixed",
 						"override_brightness": false,
 						"brightness_override": 0,
