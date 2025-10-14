@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onDestroy } from 'svelte'
 	import { Valuable } from '../../util/stores'
 	import BaseDialogItem from './baseDialogItem.svelte'
 
@@ -7,8 +8,6 @@
 	export let options: Record<string, string>
 	export let defaultOption: string
 	export let value: Valuable<string>
-
-	let container: HTMLDivElement
 
 	if (!(value.get() || options[value.get()])) value.set(defaultOption)
 
@@ -32,13 +31,22 @@
 		}
 	}
 
-	requestAnimationFrame(() => {
-		container.appendChild(SELECT_ELEMENT.node)
+	const unsub = value.subscribe(v => {
+		SELECT_ELEMENT.set(v)
 	})
+
+	onDestroy(() => {
+		unsub()
+		SELECT_ELEMENT.node.remove()
+	})
+
+	const mountSelect = (node: HTMLDivElement) => {
+		node.appendChild(SELECT_ELEMENT.node)
+	}
 </script>
 
 <BaseDialogItem {label} {tooltip} {onReset} let:id>
-	<div bind:this={container} class="dialog_bar form_bar">
+	<div class="dialog_bar form_bar" use:mountSelect>
 		<label class="name_space_left" for={id}>{label}</label>
 	</div>
 </BaseDialogItem>

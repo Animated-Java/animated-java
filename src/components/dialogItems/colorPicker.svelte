@@ -6,26 +6,31 @@
 
 	export let label: string
 	export let tooltip = ''
+	export let defaultValue = '#ffffff'
 	export let value: Valuable<string>
 
 	let colorPicker = new ColorPicker(`${PACKAGE.name}:${label}-color_picker`, {
 		onChange() {
 			const color = colorPicker.get() as tinycolor.Instance
-			value.set(color.toHexString())
+			$value = color.toHexString()
 		},
 	})
-	let colorPickerMount: HTMLDivElement
 
-	function onLoad(el: HTMLDivElement) {
+	function mountColorPicker(el: HTMLDivElement) {
 		colorPicker.toElement(el)
-		colorPicker.set(value.get())
+		colorPicker.set($value)
 	}
 
 	function onReset() {
-		value.set('#ffffff')
+		$value = defaultValue
 	}
 
+	const unsub = value.subscribe(v => {
+		colorPicker.set(v)
+	})
+
 	onDestroy(() => {
+		unsub()
 		colorPicker.delete()
 	})
 </script>
@@ -33,6 +38,6 @@
 <BaseDialogItem {label} {tooltip} {onReset} let:id>
 	<div class="dialog_bar form_bar">
 		<label class="name_space_left" for={id}>{label}</label>
-		<div bind:this={colorPickerMount} use:onLoad />
+		<div use:mountColorPicker />
 	</div>
 </BaseDialogItem>

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { CodeJar } from '@novacbn/svelte-codejar'
 	import { onDestroy } from 'svelte'
 	import { Valuable } from '../../util/stores'
+	import CustomCodeJar from '../customCodeJar.svelte'
 	import BaseDialogItem from './baseDialogItem.svelte'
 
 	export let label: string
@@ -18,25 +18,12 @@
 	let warningText = ''
 	let errorText = ''
 
-	function highlight(code: string, syntax?: string) {
-		if (!syntax) return code
-		return Prism.highlight(code, Prism.languages[syntax], syntax)
-	}
-
-	function forceNoWrap() {
-		if (!codeJarElement) return
-		codeJarElement.style.overflowWrap = 'unset'
-		codeJarElement.style.whiteSpace = 'pre'
-	}
-
 	function onValueChange() {
 		if (valueChecker) {
 			const result = valueChecker($value)
 			result.type === 'error' ? (errorText = result.message) : (errorText = '')
 			result.type === 'warning' ? (warningText = result.message) : (warningText = '')
 		}
-
-		forceNoWrap()
 	}
 
 	const unsub = value.subscribe(() => {
@@ -73,34 +60,12 @@
 		<label class="name_space_left" for={id}>{label}</label>
 
 		<div class="content codejar-container" on:keydown={onKeydown}>
-			<CodeJar
-				bind:element={codeJarElement}
+			<CustomCodeJar
 				{syntax}
-				{highlight}
 				bind:value={$value}
-				on:change={() => forceNoWrap()}
-				preserveIdent
-				history
-				class={'language-' + (syntax ?? 'plaintext')}
-				style="
-					font-family: var(--font-code);
-					font-size: 14px;
-					padding: 3px 6px;
-					max-height: 20em;
-					height: fit-content;
-					padding-bottom: 1rem;
-					width: 100%;
-					outline: none;
-					overflow-wrap: unset;
-					overflow-y: scroll;
-					white-space: pre;
-					margin: 8px;
-					margin-bottom: 0px;
-					{errorText
+				style={errorText
 					? 'border: 1px solid var(--color-error); border-bottom: none; border-radius: 0.3em 0.3em 0 0;'
 					: 'border: 1px solid var(--color-border);'}
-					text-shadow: 0px 1px rgba(0, 0, 0, 0.3);
-				"
 			/>
 			{#if errorText || warningText}
 				<textarea readonly rows={errorText.split('\n').length + 1}
