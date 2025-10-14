@@ -1,14 +1,45 @@
 import { JsonTextParser } from 'src/systems/jsonText/parser'
-import { registerMountSvelteComponentMod } from 'src/util/mountSvelteComponent'
+import EVENTS from 'src/util/events'
+import { registerProjectMod } from 'src/util/moddingTools'
+import { mountSvelteComponent } from 'src/util/mountSvelteComponent'
 import TextDisplayElementPanel from '../../components/textDisplayElementPanel.svelte'
-import { activeProjectIsBlueprintFormat } from '../../formats/blueprint'
+import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from '../../formats/blueprint'
 import { type Alignment, TextDisplay } from '../../outliner/textDisplay'
 import { translate } from '../../util/translation'
 
-registerMountSvelteComponentMod({
-	id: 'animated-java:panel/text-display',
-	component: TextDisplayElementPanel,
-	target: '#panel_element',
+let mounted: TextDisplayElementPanel | null = null
+
+const destroyMounted = () => {
+	mounted?.$destroy()
+	mounted = null
+}
+
+const updatePanel = () => {
+	destroyMounted()
+	const textDisplay = TextDisplay.selected.at(0)
+	if (textDisplay) {
+		mounted = mountSvelteComponent({
+			component: TextDisplayElementPanel,
+			props: { selected: textDisplay },
+			target: '#panel_element',
+		})
+	}
+}
+
+registerProjectMod({
+	id: 'animated-java:append-element-panel/text-display',
+
+	condition: project => project.format.id === BLUEPRINT_FORMAT_ID,
+
+	apply: () => {
+		const unsubscribers = [EVENTS.UPDATE_SELECTION.subscribe(updatePanel)]
+		return { unsubscribers }
+	},
+
+	revert: ({ unsubscribers }) => {
+		unsubscribers.forEach(u => u())
+		destroyMounted()
+	},
 })
 
 type Grammar = ReturnType<typeof Prism.languages.extend>
@@ -103,6 +134,7 @@ export const TEXT_DISPLAY_WIDTH_SLIDER = new NumSlider(
 			const newLineWidth = Math.clamp(value(selected.lineWidth), 1, 10000)
 			if (selected.lineWidth === newLineWidth) return
 			selected.lineWidth = newLineWidth
+			selected.updateTextMesh()
 			Project.saved = false
 		},
 	}
@@ -135,7 +167,13 @@ TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.set = function (this: ColorPicker, color: t
 
 	const selected = TextDisplay.selected.at(0)
 	if (!selected) return this
+
+	const value = color.toHex8String()
+	if (selected.backgroundColor === value) return this
+
 	selected.backgroundColor = color.toHex8String()
+	selected.updateTextMesh()
+	Project!.saved = false
 	return this
 }
 TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.change = function (
@@ -145,9 +183,13 @@ TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.change = function (
 	if (!Project) return this
 	const selected = TextDisplay.selected.at(0)
 	if (!selected) return this
+
 	const newBackground = color.toHex8String()
+
 	if (selected.backgroundColor === newBackground) return this
+
 	selected.backgroundColor = newBackground
+	selected.updateTextMesh()
 	Project!.saved = false
 	return this
 }
@@ -166,6 +208,7 @@ export const TEXT_DISPLAY_SHADOW_TOGGLE = new Toggle(`animated-java:text-display
 		if (!selected) return
 		if (selected.shadow === TEXT_DISPLAY_SHADOW_TOGGLE.value) return
 		selected.shadow = TEXT_DISPLAY_SHADOW_TOGGLE.value
+		selected.updateTextMesh()
 		Project!.saved = false
 	},
 })
@@ -205,7 +248,12 @@ TEXT_DISPLAY_ALIGNMENT_SELECT.set = function (this: BarSelect<Alignment>, value:
 	if (!this.nodes.includes(this.node)) {
 		$(this.node).find('bb-select').text(name)
 	}
+
+	if (selected.align === value) return this
+
 	selected.align = value
+	selected.updateTextMesh()
+	Project!.saved = false
 	return this
 }
 
@@ -224,6 +272,7 @@ export const TEXT_DISPLAY_SEE_THROUGH_TOGGLE = new Toggle(
 			if (!selected) return
 			if (selected.seeThrough === TEXT_DISPLAY_SEE_THROUGH_TOGGLE.value) return
 			selected.seeThrough = TEXT_DISPLAY_SEE_THROUGH_TOGGLE.value
+			selected.updateTextMesh()
 			Project!.saved = false
 		},
 	}
