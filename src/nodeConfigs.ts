@@ -223,7 +223,26 @@ export class DisplayEntityConfig {
 
 		if (this.enchanted) {
 			const item = (compound.get('item') as NbtCompound) ?? new NbtCompound()
-			if (!compareVersions(Project!.animated_java.target_minecraft_version, '1.20.4')) {
+			if (!compareVersions('1.21.5', Project!.animated_java.target_minecraft_version)) {
+				// >= 1.21.5
+				const components = (item.get('components') as NbtCompound) ?? new NbtCompound()
+				item.set('components', components)
+				const enchantments =
+					(components.get('minecraft:enchantments') as NbtCompound) ?? new NbtCompound()
+				components.set('minecraft:enchantments', enchantments)
+				enchantments.set('minecraft:infinity', new NbtInt(1))
+			} else if (compareVersions(Project!.animated_java.target_minecraft_version, '1.20.4')) {
+				// 1.20.5 - 1.21.4
+				const components = (item.get('components') as NbtCompound) ?? new NbtCompound()
+				item.set('components', components)
+				const enchantments =
+					(components.get('minecraft:enchantments') as NbtCompound) ?? new NbtCompound()
+				components.set('minecraft:enchantments', enchantments)
+				enchantments.set(
+					'levels',
+					new NbtCompound().set('minecraft:infinity', new NbtInt(1))
+				)
+			} else {
 				// <= 1.20.4
 				const tag = (item.get('tag') as NbtCompound) ?? new NbtCompound()
 				item.set('tag', tag)
@@ -233,16 +252,6 @@ export class DisplayEntityConfig {
 					new NbtCompound()
 						.set('id', new NbtString('minecraft:infinity'))
 						.set('lvl', new NbtInt(1))
-				)
-			} else {
-				const components = (item.get('components') as NbtCompound) ?? new NbtCompound()
-				item.set('components', components)
-				const enchantments =
-					(components.get('minecraft:enchantments') as NbtCompound) ?? new NbtCompound()
-				components.set('minecraft:enchantments', enchantments)
-				enchantments.set(
-					'levels',
-					new NbtCompound().set('minecraft:infinity', new NbtInt(1))
 				)
 			}
 			compound.set('item', item)
