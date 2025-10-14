@@ -1,6 +1,10 @@
 {
 	"pack": {
 		"pack_format": 32,
-		"description": "AJ Testing RP"
+		"description": "AJ Testing RP",
+		"supported_formats": {
+			"min_inclusive": 32,
+			"max_inclusive": 41
+		}
 	}
 }
