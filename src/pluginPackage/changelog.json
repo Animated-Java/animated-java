@@ -379,5 +379,16 @@
 				]
 			}
 		]
+	},
+	"1.8.0-beta.3": {
+		"title": "v1.8.0-beta.3",
+		"author": "Titus Evans (SnaveSutit)",
+		"date": "2025-10-15",
+		"categories": [
+			{
+				"title": "Fixes",
+				"list": ["Fixed On-Summon Functions and On-Apply Functions not functioning."]
+			}
+		]
 	}
 }
