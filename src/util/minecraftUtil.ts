@@ -263,6 +263,23 @@ export interface IParsedBlock {
 	blockStateRegistryEntry: BlockStateRegistryEntry | undefined
 }
 
+export async function validateItem(item: string) {
+	if (!MINECRAFT_REGISTRY.item) {
+		await assetsLoaded()
+		return
+	}
+	let [namespace, id] = item.split(':')
+	if (!id) {
+		id = namespace
+		namespace = 'minecraft'
+	}
+	if ((namespace === 'minecraft' || namespace === '') && MINECRAFT_REGISTRY.item.has(id)) {
+		return ''
+	} else {
+		return `This item does not exist in Minecraft ${getCurrentVersion()!.id}.`
+	}
+}
+
 export async function validateBlock(block: string) {
 	if (!MINECRAFT_REGISTRY.block) await assetsLoaded()
 	const parsed = await parseBlock(block)

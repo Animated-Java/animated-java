@@ -1,10 +1,9 @@
 import { getItemModel } from 'src/systems/minecraft/itemModelManager'
+import { validateItem } from 'src/util/minecraftUtil'
 import { registerAction } from 'src/util/moddingTools'
 import { PACKAGE } from '../constants'
 import { type IBlueprintBoneConfigJSON, activeProjectIsBlueprintFormat } from '../formats/blueprint'
 import { BoneConfig } from '../nodeConfigs'
-import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
-import { getCurrentVersion } from '../systems/minecraft/versionManager'
 import EVENTS from '../util/events'
 import { Valuable } from '../util/stores'
 import { translate } from '../util/translation'
@@ -74,29 +73,8 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 
 		this.sanitizeName()
 
-		const updateItem = (newItem: string) => {
-			if (!MINECRAFT_REGISTRY.item) {
-				requestAnimationFrame(() => updateItem(newItem))
-				return
-			}
-			let [namespace, id] = newItem.split(':')
-			if (!id) {
-				id = namespace
-				namespace = 'minecraft'
-			}
-			if (
-				(namespace === 'minecraft' || namespace === '') &&
-				MINECRAFT_REGISTRY.item.has(id)
-			) {
-				this.error.set('')
-				this.preview_controller.updateGeometry(this)
-			} else {
-				this.error.set(`This item does not exist in Minecraft ${getCurrentVersion()!.id}.`)
-			}
-		}
-
-		this.__item.subscribe(value => {
-			updateItem(value)
+		this.__item.subscribe(() => {
+			void this.updateItem()
 		})
 	}
 
@@ -181,6 +159,16 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 		this.selected = false
 		TickUpdates.selection = true
 		this.preview_controller.updateHighlight(this)
+	}
+
+	async updateItem() {
+		const error = await validateItem(this.item)
+		if (error) {
+			this.error.set(error)
+			return
+		}
+		this.error.set('')
+		this.preview_controller.updateGeometry(this)
 	}
 }
 VanillaItemDisplay.prototype.icon = VanillaItemDisplay.icon
