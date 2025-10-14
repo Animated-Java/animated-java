@@ -1,5 +1,7 @@
+import { fixClassPropertyInheritance } from 'src/util/property'
 import { makeNotZero } from '../util/misc'
 
+@fixClassPropertyInheritance
 export class ResizableOutlinerElement extends OutlinerElement {
 	type = 'resizable'
 	// Properties
@@ -58,13 +60,10 @@ export class ResizableOutlinerElement extends OutlinerElement {
 	}
 
 	extend(data: any) {
-		for (const key in ResizableOutlinerElement.properties) {
-			ResizableOutlinerElement.properties[key].merge(this, data)
+		const properties = this.constructor.properties
+		for (const key in properties) {
+			properties[key]!.merge(this, data)
 		}
-		if (data.visibility !== undefined) {
-			this.visibility = data.visibility
-		}
-
 		return this
 	}
 

@@ -12,11 +12,11 @@ dir global {
 
 		# Purposefully load gu first, as other functions depend on it.
 		function *global/gu/on_load
+		function #*global/on_load
 		IF (debug_mode) {
 			scoreboard players reset * <%OBJECTIVES.IS_RIG_LOADED()%>
 			execute as @e[type=item_display,tag=<%TAGS.GLOBAL_ROOT()%>] at @s run function *global/root/on_load
 		}
-		function #*global/on_load
 	}
 
 	IF (debug_mode) {

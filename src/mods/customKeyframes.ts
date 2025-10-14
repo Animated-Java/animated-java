@@ -44,7 +44,7 @@ registerConditionalPropertyOverrideMod({
 		const uuid = this.data_points.at(0)?.[EFFECT_ANIMATOR_CHANNELS.VARIANT] as
 			| string
 			| undefined
-		if (uuid) return Variant.all.find(v => v.uuid === uuid)
+		if (uuid) return Variant.getByUUID(uuid)
 		console.error('Keyframe variant', uuid, 'not found!')
 	},
 

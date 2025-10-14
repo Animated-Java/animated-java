@@ -156,18 +156,22 @@ export const BLUEPRINT_CODEC = registerCodec(
 				}
 			}
 
-			if (model.variants?.default) {
-				Variant.fromJSON(model.variants?.default, true)
-			} else {
-				console.warn('No default Variant found, creating one named "Default"')
-				new Variant('Default', true)
-			}
+			if (model.variants) {
+				Variant.all = []
 
-			if (model.variants?.list) {
-				for (const variantJSON of model.variants.list) {
-					Variant.fromJSON(variantJSON)
+				if (model.variants.default) {
+					Variant.fromJSON(model.variants?.default, true)
+				} else {
+					console.warn('No default Variant found, creating one named "Default"')
+					new Variant('Default', true)
 				}
-				Project.variants = Variant.all
+
+				if (Array.isArray(model.variants.list)) {
+					for (const variantJSON of model.variants.list) {
+						Variant.fromJSON(variantJSON)
+					}
+					Project.variants = Variant.all
+				}
 			}
 
 			if (model.animations) {
@@ -309,8 +313,8 @@ export const BLUEPRINT_CODEC = registerCodec(
 			}
 
 			model.variants = {
-				default: Variant.all.find(v => v.isDefault)!.toJSON(),
-				list: Variant.all.filter(v => !v.isDefault).map(v => v.toJSON()),
+				default: Variant.getDefault().toJSON(),
+				list: Variant.allExcludingDefault().map(v => v.toJSON()),
 			}
 
 			const animationOptions = { bone_names: true, absolute_paths: options.absolute_paths }

@@ -1,11 +1,9 @@
 import * as crypto from 'crypto'
 import type {
-	IBlueprintBoneConfigJSON,
+	IBlueprintDisplayEntityConfigJSON,
 	IBlueprintLocatorConfigJSON,
-	IBlueprintTextDisplayConfigJSON,
 	IBlueprintVariantJSON,
 } from '../formats/blueprint'
-import { BoneConfig } from '../nodeConfigs'
 import { type Alignment, TextDisplay } from '../outliner/textDisplay'
 import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
 import { type ItemDisplayMode, VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
@@ -81,6 +79,15 @@ export interface IRenderedNode {
 	default_transform: INodeTransform
 }
 
+export interface IRenderedDisplayEntityNode extends IRenderedNode {
+	/**
+	 * The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit.
+	 */
+	base_scale: number
+	bounding_box: THREE.Box3
+	configs?: IDisplayEntityConfigs
+}
+
 export interface ICamera extends OutlinerElement {
 	name: string
 	path: string
@@ -92,18 +99,33 @@ export interface ICamera extends OutlinerElement {
 	preview_controller: NodePreviewController
 }
 
+export interface IDisplayEntityConfigs {
+	default: IBlueprintDisplayEntityConfigJSON
+	variants: Record<string, IBlueprintDisplayEntityConfigJSON>
+}
+
 export interface IRenderedNodes {
-	Bone: IRenderedNode & {
+	Bone: IRenderedDisplayEntityNode & {
 		type: 'bone'
-		bounding_box: THREE.Box3
-		/**
-		 * The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit.
-		 */
-		base_scale: number
-		configs?: {
-			default?: IBlueprintBoneConfigJSON
-			variants: Record<string, IBlueprintBoneConfigJSON>
-		}
+	}
+	TextDisplay: IRenderedDisplayEntityNode & {
+		type: 'text_display'
+		text: string
+		line_width: number
+		background_color: string
+		background_alpha: number
+		align: Alignment
+		shadow: boolean
+		see_through: boolean
+	}
+	ItemDisplay: IRenderedDisplayEntityNode & {
+		type: 'item_display'
+		item: string
+		item_display: ItemDisplayMode
+	}
+	BlockDisplay: IRenderedDisplayEntityNode & {
+		type: 'block_display'
+		block: string
 	}
 	Struct: IRenderedNode & {
 		type: 'struct'
@@ -118,40 +140,6 @@ export interface IRenderedNodes {
 		/** The maximum distance this node travels away from the root entity while animating. */
 		max_distance: number
 		config?: IBlueprintLocatorConfigJSON
-	}
-	TextDisplay: IRenderedNode & {
-		type: 'text_display'
-		text: string
-		line_width: number
-		background_color: string
-		background_alpha: number
-		align: Alignment
-		shadow: boolean
-		see_through: boolean
-		/**
-		 * The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit.
-		 */
-		base_scale: number
-		config?: IBlueprintTextDisplayConfigJSON
-	}
-	ItemDisplay: IRenderedNode & {
-		type: 'item_display'
-		item: string
-		item_display: ItemDisplayMode
-		/**
-		 * The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit.
-		 */
-		base_scale: number
-		config?: IBlueprintBoneConfigJSON
-	}
-	BlockDisplay: IRenderedNode & {
-		type: 'block_display'
-		block: string
-		/**
-		 * The base scale of the bone, used to offset any rescaling done to the bone's model due to exceeding the 3x3x3 model size limit.
-		 */
-		base_scale: number
-		config?: IBlueprintBoneConfigJSON
 	}
 }
 
@@ -311,26 +299,34 @@ export function getTextureResourceLocation(texture: Texture, rig: IRenderedRig) 
 	throw new Error(`Invalid texture path: ${path}`)
 }
 
-function getBoneBoundingBox(group: Group) {
-	const children = group.children.filter(e => e instanceof Cube) as Cube[]
+function getNodeBoundingBox(node: Group | TextDisplay | VanillaItemDisplay | VanillaBlockDisplay) {
 	const box = new THREE.Box3()
-	box.expandByPoint(new THREE.Vector3(group.origin[0], group.origin[1], group.origin[2]))
-	for (const child of children) {
-		box.expandByPoint(
-			new THREE.Vector3(
-				child.from[0] - child.inflate,
-				child.from[1] - child.inflate,
-				child.from[2] - child.inflate
+	if (node instanceof Group) {
+		const children = node.children.filter(e => e instanceof Cube) as Cube[]
+		for (const child of children) {
+			box.expandByPoint(
+				new THREE.Vector3(
+					child.from[0] - child.inflate,
+					child.from[1] - child.inflate,
+					child.from[2] - child.inflate
+				)
 			)
-		)
-		box.expandByPoint(
-			new THREE.Vector3(
-				child.to[0] + child.inflate,
-				child.to[1] + child.inflate,
-				child.to[2] + child.inflate
+			box.expandByPoint(
+				new THREE.Vector3(
+					child.to[0] + child.inflate,
+					child.to[1] + child.inflate,
+					child.to[2] + child.inflate
+				)
 			)
-		)
+		}
+	} else if (
+		node instanceof TextDisplay ||
+		node instanceof VanillaItemDisplay ||
+		node instanceof VanillaBlockDisplay
+	) {
+		box.setFromObject(node.mesh)
 	}
+	box.expandByPoint(new THREE.Vector3(node.origin[0], node.origin[1], node.origin[2]))
 	return box
 }
 
@@ -356,7 +352,7 @@ function renderGroup(
 		storage_name: sanitizeStorageKey(group.name),
 		uuid: group.uuid,
 		parent: parentId,
-		bounding_box: getBoneBoundingBox(group),
+		bounding_box: getNodeBoundingBox(group),
 		base_scale: 1,
 		configs: group.configs,
 		// This is a placeholder value that will be updated later once the animation renderer is run.
@@ -468,7 +464,8 @@ function renderItemDisplay(display: VanillaItemDisplay, rig: IRenderedRig) {
 		item: display.item,
 		item_display: display.itemDisplay,
 		base_scale: 1,
-		config: display.config,
+		configs: display.configs,
+		bounding_box: getNodeBoundingBox(display),
 		default_transform: {} as INodeTransform,
 	}
 
@@ -495,7 +492,8 @@ function renderBlockDisplay(display: VanillaBlockDisplay, rig: IRenderedRig) {
 		block: display.block,
 		parent: parentId,
 		base_scale: 1,
-		config: display.config,
+		configs: display.configs,
+		bounding_box: getNodeBoundingBox(display),
 		default_transform: {} as INodeTransform,
 	}
 
@@ -529,7 +527,8 @@ function renderTextDisplay(display: TextDisplay, rig: IRenderedRig): INodeStruct
 		shadow: display.shadow,
 		see_through: display.seeThrough,
 		base_scale: 1,
-		config: display.config,
+		configs: display.configs,
+		bounding_box: getNodeBoundingBox(display),
 		default_transform: {} as INodeTransform,
 	}
 
@@ -650,36 +649,28 @@ export function hashRig(rig: IRenderedRig) {
 		hash.update(node.default_transform.matrix.elements.toString())
 		switch (node.type) {
 			case 'bone': {
-				const model = rig.variants[Variant.getDefault().uuid].models[nodeUuid]
-				hash.update(';' + JSON.stringify(model) || '')
-				if (!node.configs) break // Skip if there are no configs
-				if (node.configs.default) {
-					const defaultConfig = BoneConfig.fromJSON(node.configs.default)
-					if (!defaultConfig.isDefault()) {
-						hash.update('defaultconfig;')
-						hash.update(defaultConfig.toNBT().toString())
-					}
-				}
-				for (const [variantName, config] of Object.entries(node.configs.variants)) {
-					const variantConfig = BoneConfig.fromJSON(config)
-					if (!variantConfig.isDefault()) {
-						hash.update('variantconfig;')
-						hash.update(variantName)
-						hash.update(variantConfig.toNBT().toString())
-					}
-				}
+				hash.update(
+					';' + JSON.stringify(rig.variants[Variant.getDefault().uuid].models[nodeUuid])
+				)
+				if (node.configs) hash.update(';' + JSON.stringify(node.configs))
 				break
 			}
-			case 'locator': {
-				if (node.config) {
-					hash.update(';' + JSON.stringify(node.config))
-				}
+			case 'block_display':
+				hash.update(`;${node.block}`)
+				if (node.configs) hash.update(';' + JSON.stringify(node.configs))
 				break
-			}
-			case 'camera':
+
+			case 'item_display':
+				hash.update(`;${node.item};${node.item_display}`)
+				if (node.configs) hash.update(';' + JSON.stringify(node.configs))
 				break
-			case 'text_display': {
+
+			case 'text_display':
 				hash.update(`;${node.text}`)
+				if (node.configs) hash.update(';' + JSON.stringify(node.configs))
+				break
+
+			case 'locator': {
 				if (node.config) {
 					hash.update(';' + JSON.stringify(node.config))
 				}

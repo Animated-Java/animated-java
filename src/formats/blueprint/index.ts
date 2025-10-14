@@ -4,7 +4,7 @@ import { type VanillaItemDisplay } from 'src/outliner/vanillaItemDisplay'
 import { mountSvelteComponent } from 'src/util/mountSvelteComponent'
 import FormatPageSvelte from '../../components/formatPage.svelte'
 import ProjectTitleSvelte from '../../components/projectTitle.svelte'
-import { type BillboardMode, BoneConfig, LocatorConfig } from '../../nodeConfigs'
+import { DisplayEntityConfig, LocatorConfig } from '../../nodeConfigs'
 import EVENTS from '../../util/events'
 import { sanitizeStorageKey } from '../../util/minecraftUtil'
 import { registerModelFormat } from '../../util/moddingTools'
@@ -30,32 +30,23 @@ declare global {
 	}
 }
 
-let boundingBoxUpdateIntervalId: ReturnType<typeof setInterval> | undefined
-
 export const BLUEPRINT_FORMAT_ID = 'animated-java:format/blueprint'
 
 /**
  * The serialized Variant Bone Config
  */
-export interface IBlueprintBoneConfigJSON {
-	custom_name?: BoneConfig['customName']
-	custom_name_visible?: BoneConfig['customNameVisible']
-	billboard?: BoneConfig['billboard']
-	override_brightness?: BoneConfig['overrideBrightness']
-	brightness_override?: BoneConfig['brightnessOverride']
-	enchanted?: BoneConfig['enchanted']
-	glowing?: BoneConfig['glowing']
-	override_glow_color?: BoneConfig['overrideGlowColor']
-	glow_color?: BoneConfig['glowColor']
-	inherit_settings?: BoneConfig['inheritSettings']
-	invisible?: BoneConfig['invisible']
-	/**
-	 * Custom NBT for the bone that will be merged when this Variant is applied
-	 */
-	nbt?: BoneConfig['nbt']
-	shadow_radius?: BoneConfig['shadowRadius']
-	shadow_strength?: BoneConfig['shadowStrength']
-	use_nbt?: BoneConfig['useNBT']
+export interface IBlueprintDisplayEntityConfigJSON {
+	on_apply_function?: DisplayEntityConfig['__onApplyFunction']
+	billboard?: DisplayEntityConfig['billboard']
+	override_brightness?: DisplayEntityConfig['overrideBrightness']
+	brightness_override?: DisplayEntityConfig['brightnessOverride']
+	enchanted?: DisplayEntityConfig['enchanted']
+	glowing?: DisplayEntityConfig['glowing']
+	override_glow_color?: DisplayEntityConfig['overrideGlowColor']
+	glow_color?: DisplayEntityConfig['glowColor']
+	invisible?: DisplayEntityConfig['invisible']
+	shadow_radius?: DisplayEntityConfig['shadowRadius']
+	shadow_strength?: DisplayEntityConfig['shadowStrength']
 }
 
 /**
@@ -68,26 +59,6 @@ export interface IBlueprintLocatorConfigJSON {
 	on_summon_function?: LocatorConfig['__onSummonFunction']
 	on_remove_function?: LocatorConfig['__onRemoveFunction']
 	on_tick_function?: LocatorConfig['__onTickFunction']
-}
-
-/**
- * The serialized Variant Text Display Config
- */
-export interface IBlueprintTextDisplayConfigJSON {
-	billboard?: BillboardMode
-	override_brightness?: BoneConfig['overrideBrightness']
-	brightness_override?: BoneConfig['brightnessOverride']
-	glowing?: BoneConfig['glowing']
-	override_glow_color?: BoneConfig['overrideGlowColor']
-	glow_color?: BoneConfig['glowColor']
-	invisible?: BoneConfig['invisible']
-	shadow_radius?: BoneConfig['shadowRadius']
-	shadow_strength?: BoneConfig['shadowStrength']
-	use_nbt?: BoneConfig['useNBT']
-	/**
-	 * Custom NBT for the bone that will be merged when this Variant is applied
-	 */
-	nbt?: BoneConfig['nbt']
 }
 
 /**
@@ -198,20 +169,11 @@ export function getDefaultProjectSettings() {
 	return { ...blueprintSettings.defaultValues }
 }
 
-function initializeRenderBoxPreview() {
-	if (boundingBoxUpdateIntervalId == undefined) {
-		boundingBoxUpdateIntervalId = setInterval(() => {
-			updateRenderBoxPreview()
-		}, 500)
-		EVENTS.PLUGIN_UNLOAD.subscribe(() => clearInterval(boundingBoxUpdateIntervalId), true)
-		EVENTS.PLUGIN_UNINSTALL.subscribe(() => clearInterval(boundingBoxUpdateIntervalId), true)
-	}
-}
-
-export function updateRenderBoxPreview() {
+EVENTS.UPDATE_VIEW.subscribe(() => {
+	// Update the render box preview
 	if (!Project || !activeProjectIsBlueprintFormat()) return
-	if (Project.visualBoundingBox) scene.remove(Project.visualBoundingBox)
 
+	if (Project.visualBoundingBox) scene.remove(Project.visualBoundingBox)
 	if (!Project.animated_java.show_render_box) return
 
 	let width = 0
@@ -227,6 +189,23 @@ export function updateRenderBoxPreview() {
 			)
 			height = Math.max(height, cube.to[1], cube.from[1])
 		}
+
+		for (const display of [
+			...AnimatedJava.TextDisplay.all,
+			...AnimatedJava.VanillaItemDisplay.all,
+			...AnimatedJava.VanillaBlockDisplay.all,
+		]) {
+			const box = new THREE.Box3().setFromObject(display.mesh)
+			width = Math.max(
+				width,
+				Math.abs(box.min.x),
+				Math.abs(box.min.z),
+				Math.abs(box.max.x),
+				Math.abs(box.max.z)
+			)
+			height = Math.max(height, box.max.y)
+		}
+
 		const boundingBoxOverflow = 8
 		width += boundingBoxOverflow
 		height += boundingBoxOverflow
@@ -242,7 +221,7 @@ export function updateRenderBoxPreview() {
 	)
 	Project.visualBoundingBox.position.set(0, height / 2, 0)
 	scene.add(Project.visualBoundingBox)
-}
+})
 
 // region Format
 export const BLUEPRINT_FORMAT = registerModelFormat(
@@ -280,15 +259,6 @@ export const BLUEPRINT_FORMAT = registerModelFormat(
 			}
 
 			project.pluginMode = new Valuable(project.animated_java.enable_plugin_mode)
-
-			// project.variants ??= []
-			// if (Variant.all.length === 0) {
-			// 	console.warn('No variants found, creating default variant')
-			// 	new Variant('Default', true)
-			// }
-			// Variant.selectDefault()
-
-			initializeRenderBoxPreview()
 
 			requestAnimationFrame(() => {
 				const projectIndex = ModelProject.all.indexOf(project)
@@ -435,7 +405,6 @@ EVENTS.UNSELECT_PROJECT.subscribe(project => {
 EVENTS.UPDATE_SELECTION.subscribe(updateRotationLock)
 EVENTS.SELECT_AJ_PROJECT.subscribe(() => {
 	requestAnimationFrame(() => {
-		updateRenderBoxPreview()
 		updateRotationLock()
 	})
 })

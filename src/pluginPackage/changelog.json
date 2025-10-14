@@ -347,5 +347,37 @@
 				]
 			}
 		]
+	},
+	"1.8.0-beta.2": {
+		"title": "v1.8.0-beta.2",
+		"author": "Titus Evans (SnaveSutit)",
+		"date": "2025-10-15",
+		"categories": [
+			{
+				"title": "Changes",
+				"list": [
+					"[BREAKING] Removed `custom_name`, `custom_name_visible`, `useNbt`, and `nbt` from Display Entity Configs. Use the new 'On Summon Function' and 'On Apply Function' settings to configure entity NBT instead.",
+					"[BREAKING] Removed `inherit_settings` from Display Entity Configs. It didn't work properly and was causing more issues than it solved. Use the new copy / paste config actions instead.",
+					"Replaced unique node configs with universal DisplayEntityConfig.",
+					"Added 'Copy Display Entity Config' and 'Paste Display Entity Config' actions to context menus for Groups, Text Displays, Item Displays, and Block Displays.",
+					"Added 'On Summon Function' to Display Entity Configs.",
+					"Added 'On Apply Function' to Per-variant Display Entity Configs.",
+					"Improved undo / redo history and behavior for TextDisplays, ItemDisplays, and BlockDisplays.",
+					"Improved the Render Box preview's reactivity."
+				]
+			},
+			{
+				"title": "Fixes",
+				"list": [
+					"Fixed rotation validation not checking the correct version, and marking any rotation as invalid.",
+					"Fixed Blueprints becoming unsavable after opening.",
+					"Fixed Blueprints becoming unsavable after converting from another format.",
+					"Fixed annoying element panel UI flicker when selecting or transforming TextDisplays, ItemDisplays, or BlockDisplays.",
+					"Fixed uncaught error when deleting a text display.",
+					"Fixed outdated warning not appearing until the second reload after rig_hash was modified.",
+					"Fixed custom outliner elements inheriting the same properties list, and therefor causing every node which inherits it to include every other node's properties in it's saved data."
+				]
+			}
+		]
 	}
 }

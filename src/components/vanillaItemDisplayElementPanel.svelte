@@ -1,101 +1,63 @@
 <script lang="ts" context="module">
+	import { validateItem } from 'src/util/minecraftUtil'
 	import { ITEM_DISPLAY_ITEM_DISPLAY_SELECT } from '../interface/panel/vanillaItemDisplayElement'
 	import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
-	import EVENTS from '../util/events'
-	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
 </script>
 
 <script lang="ts">
-	let selectedDisplay = VanillaItemDisplay.selected.at(0)
-	let lastSelected = selectedDisplay
+	export let selected: VanillaItemDisplay
 
-	let item = new Valuable<string>('')
-	let error = new Valuable<string>('')
-	let itemDisplaySlot: HTMLDivElement
-	let visible = false
+	let item = selected.item
+	let error = selected.error
 
-	let unsub: (() => void) | undefined
+	$: {
+		$error = ''
+		if (selected.item !== item) {
+			void validateItem(item)
+				.then(err => {
+					if (err) {
+						$error = err
+						console.log('Item validation error:', err)
+						return
+					}
+					console.log('Changing item to', item)
+					Undo.initEdit({ elements: [selected] })
 
-	EVENTS.UPDATE_SELECTION.subscribe(() => {
-		selectedDisplay = VanillaItemDisplay.selected.at(0)
-		if (!selectedDisplay || selected.length > 1) {
-			item = new Valuable('')
-			error = new Valuable('')
-			visible = false
-			return
+					selected.item = item
+					Project!.saved = false
+
+					Undo.finishEdit(`Change Item Display Item to "${item}"`, {
+						elements: [selected],
+					})
+				})
+				.catch(err => {
+					$error = err.message
+				})
 		}
-		$item = selectedDisplay.item
-		error = selectedDisplay.error
-		visible = true
-	})
+	}
 
-	EVENTS.UPDATE_SELECTION.subscribe(() => {
-		unsub?.()
-
-		lastSelected = selectedDisplay
-		selectedDisplay = VanillaItemDisplay.selected.at(0)
-
-		if (!selectedDisplay) {
-			visible = false
-			return
-		}
-
-		$item = selectedDisplay.item
-		error = selectedDisplay.error
-		ITEM_DISPLAY_ITEM_DISPLAY_SELECT.set(selectedDisplay.itemDisplay)
-		visible = true
-
-		unsub = item.subscribe(value => {
-			if (selectedDisplay == undefined || selectedDisplay !== lastSelected) {
-				lastSelected = selectedDisplay
-				return
-			}
-			if (value === selectedDisplay.item) return
-
-			Undo.initEdit({ elements: VanillaItemDisplay.selected })
-
-			if (VanillaItemDisplay.selected.length > 1) {
-				for (const display of VanillaItemDisplay.selected) {
-					display.item = value
-				}
-			} else {
-				selectedDisplay.item = value
-			}
-			Project!.saved = false
-
-			Undo.finishEdit(`Change Item Display's Item to "${$item}"`, {
-				elements: VanillaItemDisplay.selected,
-			})
-		})
-	})
-
-	requestAnimationFrame(() => {
-		itemDisplaySlot.appendChild(ITEM_DISPLAY_ITEM_DISPLAY_SELECT.node)
-	})
+	const mountItemDisplaySelect = (node: HTMLDivElement) => {
+		node.appendChild(ITEM_DISPLAY_ITEM_DISPLAY_SELECT.node)
+	}
 </script>
 
-<p class="panel_toolbar_label label" style={!!visible ? '' : 'visibility:hidden; height: 0px;'}>
+<p class="panel_toolbar_label label">
 	{translate('panel.vanilla_item_display.title')}
 </p>
 
-<div
-	class="toolbar custom-toolbar"
-	style={!!visible ? '' : 'visibility:hidden; height: 0px;'}
-	title={translate('panel.vanilla_item_display.description')}
->
+<div class="toolbar custom-toolbar" title={translate('panel.vanilla_item_display.description')}>
 	<div class="content" style="width: 95%;">
-		<input type="text" bind:value={$item} />
+		<input type="text" bind:value={item} />
 	</div>
-	<div class="content" bind:this={itemDisplaySlot}></div>
+	<div class="content" use:mountItemDisplaySelect></div>
 </div>
 
-<div
-	class="error"
-	style={!!$error ? '' : 'visibility:hidden; height: 0px; color: var(--color-error);'}
->
-	{$error}
-</div>
+{#if $error}
+	<div class="error">
+		{$error}
+	</div>
+{/if}
 
 <style>
 	input {

@@ -1,13 +1,13 @@
+import { IDisplayEntityConfigs } from 'src/systems/rigRenderer'
 import { registerAction } from 'src/util/moddingTools'
+import { DeepClonedObjectProperty, fixClassPropertyInheritance } from 'src/util/property'
 import { PACKAGE } from '../constants'
-import { type IBlueprintBoneConfigJSON, activeProjectIsBlueprintFormat } from '../formats/blueprint'
-import { BoneConfig } from '../nodeConfigs'
+import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 import { BlockModelMesh, getBlockModel } from '../systems/minecraft/blockModelManager'
 import { type BlockStateValue, getBlockState } from '../systems/minecraft/blockstateManager'
 import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
-import { getCurrentVersion } from '../systems/minecraft/versionManager'
 import EVENTS from '../util/events'
-import { parseBlock } from '../util/minecraftUtil'
+import { validateBlock } from '../util/minecraftUtil'
 import { Valuable } from '../util/stores'
 import { translate } from '../util/translation'
 import { ResizableOutlinerElement } from './resizableOutlinerElement'
@@ -25,6 +25,7 @@ interface VanillaBlockDisplayOptions {
 	visibility?: boolean
 }
 
+@fixClassPropertyInheritance
 export class VanillaBlockDisplay extends ResizableOutlinerElement {
 	static type = `${PACKAGE.name}:vanilla_block_display`
 	static icon = 'deployed_code'
@@ -37,7 +38,8 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 
 	// Properties
 	private __block = new Valuable('minecraft:stone')
-	config: IBlueprintBoneConfigJSON
+	onSummonFunction = VanillaBlockDisplay.properties.onSummonFunction.default as string
+	configs!: IDisplayEntityConfigs
 
 	error = new Valuable('')
 
@@ -56,36 +58,10 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 		this.name = 'block_display'
 		this.extend(data)
 
-		this.block ??= 'minecraft:stone'
-		this.config ??= {}
-
 		this.sanitizeName()
 
-		const updateBlock = async (newBlock: string) => {
-			if (!MINECRAFT_REGISTRY.block) {
-				requestAnimationFrame(() => void updateBlock(newBlock))
-				return
-			}
-			const parsed = await parseBlock(newBlock)
-			if (!parsed) {
-				this.error.set('Invalid block ID.')
-			} else if (
-				(parsed.resource.namespace === 'minecraft' || parsed.resource.namespace === '') &&
-				MINECRAFT_REGISTRY.block.has(parsed.resource.name)
-			) {
-				this.error.set('')
-				this.preview_controller.updateGeometry(this)
-			} else {
-				this.error.set(`This block does not exist in Minecraft ${getCurrentVersion()!.id}.`)
-			}
-			if (this.mesh?.outline instanceof THREE.LineSegments) {
-				if (this.error.get()) this.mesh.outline.material = ERROR_OUTLINE_MATERIAL
-				else this.mesh.outline.material = Canvas.outlineMaterial
-			}
-		}
-
-		this.__block.subscribe(value => {
-			void updateBlock(value)
+		this.__block.subscribe(() => {
+			void this.updateBlock()
 		})
 	}
 
@@ -97,6 +73,10 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 		if (this.__block === undefined) return
 		if (this.block === value) return
 		this.__block.set(value)
+	}
+
+	getBlockValuable() {
+		return this.__block
 	}
 
 	sanitizeName(): string {
@@ -164,6 +144,19 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 		this.preview_controller.updateHighlight(this)
 	}
 
+	async updateBlock() {
+		const error = await validateBlock(this.block)
+		if (error) {
+			this.error.set(error)
+			if (this.mesh?.outline instanceof THREE.LineSegments) {
+				if (this.error.get()) this.mesh.outline.material = ERROR_OUTLINE_MATERIAL
+				else this.mesh.outline.material = Canvas.outlineMaterial
+			}
+			return
+		}
+		this.preview_controller.updateGeometry(this)
+	}
+
 	applyBlockModel(blockModel: BlockModelMesh) {
 		const mesh = this.mesh as THREE.Mesh
 		mesh.name = this.uuid
@@ -180,15 +173,13 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 		this.preview_controller.updateHighlight(this)
 		this.preview_controller.updateTransform(this)
 		mesh.visible = this.visibility
-		TickUpdates.selection = true
 	}
 }
 VanillaBlockDisplay.prototype.icon = VanillaBlockDisplay.icon
 new Property(VanillaBlockDisplay, 'string', 'block', { default: 'minecraft:stone' })
-new Property(VanillaBlockDisplay, 'object', 'config', {
-	get default() {
-		return new BoneConfig().toJSON()
-	},
+new Property(VanillaBlockDisplay, 'string', 'onSummonFunction', { default: '' })
+new DeepClonedObjectProperty(VanillaBlockDisplay, 'configs', {
+	default: () => ({ default: {}, variants: {} }),
 })
 OutlinerElement.registerType(VanillaBlockDisplay, VanillaBlockDisplay.type)
 
@@ -223,10 +214,9 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay,
 			.then(result => {
 				if (!result?.mesh) return
 				el.applyBlockModel(result)
-				TickUpdates.selection = true
 			})
 			.catch(err => {
-				console.error(err)
+				console.error('Failed to get block model:', err)
 				if (typeof err.message === 'string') {
 					el.error.set(err.message as string)
 				}

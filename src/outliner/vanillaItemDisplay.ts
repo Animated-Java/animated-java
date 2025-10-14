@@ -1,10 +1,10 @@
 import { getItemModel } from 'src/systems/minecraft/itemModelManager'
+import { IDisplayEntityConfigs } from 'src/systems/rigRenderer'
+import { validateItem } from 'src/util/minecraftUtil'
 import { registerAction } from 'src/util/moddingTools'
+import { DeepClonedObjectProperty, fixClassPropertyInheritance } from 'src/util/property'
 import { PACKAGE } from '../constants'
-import { type IBlueprintBoneConfigJSON, activeProjectIsBlueprintFormat } from '../formats/blueprint'
-import { BoneConfig } from '../nodeConfigs'
-import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
-import { getCurrentVersion } from '../systems/minecraft/versionManager'
+import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 import EVENTS from '../util/events'
 import { Valuable } from '../util/stores'
 import { translate } from '../util/translation'
@@ -32,6 +32,7 @@ interface VanillaItemDisplayOptions {
 	visibility?: boolean
 }
 
+@fixClassPropertyInheritance
 export class VanillaItemDisplay extends ResizableOutlinerElement {
 	static type = `${PACKAGE.name}:vanilla_item_display`
 	static icon = 'icecream'
@@ -45,7 +46,8 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 	// Properties
 	private __item = new Valuable('minecraft:diamond')
 	private __itemDisplay = new Valuable<ItemDisplayMode>('none')
-	config: IBlueprintBoneConfigJSON
+	onSummonFunction = VanillaItemDisplay.properties.onSummonFunction.default as string
+	configs!: IDisplayEntityConfigs
 
 	error = new Valuable('')
 
@@ -64,39 +66,10 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 		this.name = 'item_display'
 		this.extend(data)
 
-		this.item ??= 'minecraft:diamond'
-		this.itemDisplay ??= 'none'
-		this.position ??= [0, 0, 0]
-		this.rotation ??= [0, 0, 0]
-		this.scale ??= [1, 1, 1]
-		this.visibility ??= true
-		this.config ??= {}
-
 		this.sanitizeName()
 
-		const updateItem = (newItem: string) => {
-			if (!MINECRAFT_REGISTRY.item) {
-				requestAnimationFrame(() => updateItem(newItem))
-				return
-			}
-			let [namespace, id] = newItem.split(':')
-			if (!id) {
-				id = namespace
-				namespace = 'minecraft'
-			}
-			if (
-				(namespace === 'minecraft' || namespace === '') &&
-				MINECRAFT_REGISTRY.item.has(id)
-			) {
-				this.error.set('')
-				this.preview_controller.updateGeometry(this)
-			} else {
-				this.error.set(`This item does not exist in Minecraft ${getCurrentVersion()!.id}.`)
-			}
-		}
-
-		this.__item.subscribe(value => {
-			updateItem(value)
+		this.__item.subscribe(() => {
+			void this.updateItem()
 		})
 	}
 
@@ -182,14 +155,23 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 		TickUpdates.selection = true
 		this.preview_controller.updateHighlight(this)
 	}
+
+	async updateItem() {
+		const error = await validateItem(this.item)
+		if (error) {
+			this.error.set(error)
+			return
+		}
+		this.error.set('')
+		this.preview_controller.updateGeometry(this)
+	}
 }
 VanillaItemDisplay.prototype.icon = VanillaItemDisplay.icon
 new Property(VanillaItemDisplay, 'string', 'item', { default: 'minecraft:diamond' })
 new Property(VanillaItemDisplay, 'string', 'itemDisplay', { default: 'none' })
-new Property(VanillaItemDisplay, 'object', 'config', {
-	get default() {
-		return new BoneConfig().toJSON()
-	},
+new Property(VanillaItemDisplay, 'string', 'onSummonFunction', { default: '' })
+new DeepClonedObjectProperty(VanillaItemDisplay, 'configs', {
+	default: () => ({ default: {}, variants: {} }),
 })
 OutlinerElement.registerType(VanillaItemDisplay, VanillaItemDisplay.type)
 

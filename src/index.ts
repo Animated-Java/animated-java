@@ -39,7 +39,7 @@ import { JsonText } from './systems/jsonText'
 import * as assetManager from './systems/minecraft/assetManager'
 import { getLatestVersionClientDownloadUrl } from './systems/minecraft/assetManager'
 import * as blockModelManager from './systems/minecraft/blockModelManager'
-import { BLOCKSTATE_REGISTRY } from './systems/minecraft/blockstateManager'
+import { BLOCKSTATE_REGISTRY, getBlockState } from './systems/minecraft/blockstateManager'
 import { getVanillaFont } from './systems/minecraft/fontManager'
 import * as itemModelManager from './systems/minecraft/itemModelManager'
 import './systems/minecraft/registryManager'
@@ -109,6 +109,7 @@ const AnimatedJavaApi = {
 	},
 	TELLRAW,
 	JsonText,
+	getBlockState,
 }
 window.AnimatedJava = AnimatedJavaApi
 

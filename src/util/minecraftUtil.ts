@@ -1,4 +1,8 @@
 import * as pathjs from 'path'
+import { assetsLoaded } from 'src/systems/minecraft/assetManager'
+import { validateBlockState } from 'src/systems/minecraft/blockModelManager'
+import { MINECRAFT_REGISTRY } from 'src/systems/minecraft/registryManager'
+import { getCurrentVersion } from 'src/systems/minecraft/versionManager'
 import { SUPPORTED_MINECRAFT_VERSIONS } from '../systems/global'
 import {
 	BlockStateRegistryEntry,
@@ -257,6 +261,38 @@ export interface IParsedBlock {
 	resourceLocation: string
 	states: Record<string, BlockStateValue>
 	blockStateRegistryEntry: BlockStateRegistryEntry | undefined
+}
+
+export async function validateItem(item: string) {
+	if (!MINECRAFT_REGISTRY.item) {
+		await assetsLoaded()
+		return
+	}
+	let [namespace, id] = item.split(':')
+	if (!id) {
+		id = namespace
+		namespace = 'minecraft'
+	}
+	if ((namespace === 'minecraft' || namespace === '') && MINECRAFT_REGISTRY.item.has(id)) {
+		return ''
+	} else {
+		return `This item does not exist in Minecraft ${getCurrentVersion()!.id}.`
+	}
+}
+
+export async function validateBlock(block: string) {
+	if (!MINECRAFT_REGISTRY.block) await assetsLoaded()
+	const parsed = await parseBlock(block)
+	if (!parsed) {
+		return 'Invalid block ID.'
+	} else if (
+		(parsed.resource.namespace === 'minecraft' || parsed.resource.namespace === '') &&
+		MINECRAFT_REGISTRY.block.has(parsed.resource.name)
+	) {
+		return validateBlockState(parsed)
+	} else {
+		return `This block does not exist in Minecraft ${getCurrentVersion()!.id}.`
+	}
 }
 
 export async function parseBlock(block: string): Promise<IParsedBlock | undefined> {

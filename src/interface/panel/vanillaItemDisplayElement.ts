@@ -1,15 +1,49 @@
-import { registerMountSvelteComponentMod } from 'src/util/mountSvelteComponent'
+import { registerProjectMod } from 'src/util/moddingTools'
+import { mountSvelteComponent } from 'src/util/mountSvelteComponent'
 import VanillaItemDisplayElementPanel from '../../components/vanillaItemDisplayElementPanel.svelte'
 import { PACKAGE } from '../../constants'
-import { activeProjectIsBlueprintFormat } from '../../formats/blueprint'
+import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from '../../formats/blueprint'
 import { type ItemDisplayMode, VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
 import EVENTS from '../../util/events'
 import { translate } from '../../util/translation'
 
-registerMountSvelteComponentMod({
+let mounted: VanillaItemDisplayElementPanel | null = null
+
+const destroyMounted = () => {
+	mounted?.$destroy()
+	mounted = null
+}
+
+const updatePanel = () => {
+	destroyMounted()
+	const itemDisplay = VanillaItemDisplay.selected.at(0)
+	if (itemDisplay) {
+		mounted = mountSvelteComponent({
+			component: VanillaItemDisplayElementPanel,
+			props: { selected: itemDisplay },
+			target: '#panel_element',
+		})
+	}
+}
+
+registerProjectMod({
 	id: 'animated-java:append-element-panel/vanilla-item-display',
-	component: VanillaItemDisplayElementPanel,
-	target: '#panel_element',
+
+	condition: project => project.format.id === BLUEPRINT_FORMAT_ID,
+
+	apply: () => {
+		const unsubscribers = [
+			EVENTS.UNDO.subscribe(updatePanel),
+			EVENTS.REDO.subscribe(updatePanel),
+			EVENTS.UPDATE_SELECTION.subscribe(updatePanel),
+		]
+		return { unsubscribers }
+	},
+
+	revert: ({ unsubscribers }) => {
+		unsubscribers.forEach(u => u())
+		destroyMounted()
+	},
 })
 
 export const ITEM_DISPLAY_ITEM_DISPLAY_SELECT = new BarSelect(

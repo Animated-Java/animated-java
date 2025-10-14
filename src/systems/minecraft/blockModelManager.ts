@@ -51,7 +51,6 @@ export async function getBlockModel(block: string): Promise<BlockModelMesh | und
 	await assetsLoaded()
 	let result = BLOCK_MODEL_CACHE.get(block)
 	if (!result) {
-		// console.warn(`Found no cached item model mesh for '${block}'`)
 		const parsed = await parseBlock(block)
 		if (!parsed) return undefined
 		if (BLACKLISTED_BLOCKS.has(block)) {
@@ -402,6 +401,31 @@ async function loadTexture(textures: IBlockModel['textures'], key: string): Prom
 	TEXTURE_CACHE.set(texturePath, texture)
 
 	return texture
+}
+
+export function validateBlockState(block: IParsedBlock) {
+	if (!block.blockStateRegistryEntry) {
+		if (Object.keys(block.states).length > 0) {
+			return `${block.resource.name} has no block states`
+		}
+	} else {
+		for (const [k, v] of Object.entries(block.states)) {
+			if (!block.blockStateRegistryEntry.stateValues[k]) {
+				return (
+					`Invalid block state '${k}' for '${block.resource.name}'` +
+					` Expected one of: ${Object.keys(
+						block.blockStateRegistryEntry.stateValues
+					).join(', ')}`
+				)
+			} else if (!block.blockStateRegistryEntry.stateValues[k].includes(v)) {
+				return (
+					`Invalid block state value '${v.toString()}' for '${k}'.` +
+					` Expected one of: ${block.blockStateRegistryEntry.stateValues[k].join(', ')}`
+				)
+			}
+		}
+	}
+	return ''
 }
 
 export async function parseBlockState(block: IParsedBlock): Promise<BlockModelMesh> {

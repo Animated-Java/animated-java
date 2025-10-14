@@ -2,7 +2,7 @@
 /// <reference path="D:/github-repos/snavesutit/blockbench-types/types/index.d.ts"/>
 /// <reference path="../global.d.ts"/>
 
-import type { IBlueprintBoneConfigJSON } from '../formats/blueprint'
+import type { IBlueprintDisplayEntityConfigJSON } from '../formats/blueprint'
 import { type defaultValues } from '../formats/blueprint/settings'
 import type { EasingKey } from '../util/easing'
 import { resolvePath } from '../util/fileUtil'
@@ -46,7 +46,7 @@ type ExportedRenderedNode = Omit<
 > & {
 	default_transform: ExportedNodetransform
 	bounding_box?: { min: ArrayVector3; max: ArrayVector3 }
-	configs?: Record<string, IBlueprintBoneConfigJSON>
+	configs?: Record<string, IBlueprintDisplayEntityConfigJSON>
 }
 type ExportedAnimationFrame = Omit<IRenderedFrame, 'nodes' | 'node_transforms'> & {
 	node_transforms: Record<string, ExportedNodetransform>

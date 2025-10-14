@@ -102,7 +102,7 @@ export function isCubeValid(cube: Cube): '1.21.6+' | 'valid' | 'invalid' {
 		totalRotation === cube.rotation[1] ||
 		totalRotation === cube.rotation[2]
 
-	if (isSingleAxisRotation && projectTargetVersionIsAtLeast('1.21.4')) return '1.21.6+'
+	if (isSingleAxisRotation && projectTargetVersionIsAtLeast('1.21.6')) return '1.21.6+'
 
 	const isRotationInAllowedSteps =
 		totalRotation === -45 ||
@@ -114,11 +114,6 @@ export function isCubeValid(cube: Cube): '1.21.6+' | 'valid' | 'invalid' {
 	if (isSingleAxisRotation && isRotationInAllowedSteps) return 'valid'
 
 	return 'invalid'
-}
-
-export function getFunctionNamespace(version: string): 'function' | 'functions' {
-	// If the target version is 1.21.0 or higher, use the 'function' namespace instead of 'functions'
-	return compareVersions(version, '1.20.10000') ? 'function' : 'functions'
 }
 
 export async function sleepForAnimationFrame() {

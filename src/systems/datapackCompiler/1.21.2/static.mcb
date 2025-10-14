@@ -108,7 +108,6 @@ IF (!auto_update_rig_orientation) {
 				if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] \
 			run function ./on_tick/transform_floating_entities
 		}
-
 		execute at @s on passengers run rotate @s ~ ~
 	}
 } ELSE {
@@ -550,33 +549,40 @@ IF (Object.keys(rig.variants).length > 1) {
 					debug assert executed_as_root_entity
 
 					<%%
-						global.filteredBones = Object.values(rig.nodes).filter(
-							node => node.type === 'bone' &&
-							!variant.excluded_nodes.includes(node.uuid) &&
-							(	// Variant has a model override or a config override for this bone.
-								variant.models[node.uuid] !== undefined ||
+						global.filteredNodes = Object.values(rig.nodes).filter(
+							node => (
+								node.type === 'bone' &&
+								!variant.excluded_nodes.includes(node.uuid) &&
+								(	// Variant has a model override or a config override for this bone.
+									variant.models[node.uuid] !== undefined ||
+									node.configs.variants[variant.uuid] !== undefined
+								)
+							) || (
+								BONE_TYPES.includes(node.type) &&
+								!variant.excluded_nodes.includes(node.uuid) &&
+								// Variant has a config override for this node.
 								node.configs.variants[variant.uuid] !== undefined
 							)
 						)
 					%%>
 
-					REPEAT (global.filteredBones) as bone {
+					REPEAT (global.filteredNodes) as node {
 						execute \
 							on passengers \
-							if entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(export_namespace, bone.storage_name)%>] \
+							if entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(export_namespace, node.storage_name)%>] \
 						run \
-							block zzz/apply_to_bone_<%bone.storage_name%> {
-								IF (variant.models[bone.uuid] !== undefined) {
+							block zzz/apply_to_node_<%node.storage_name%> {
+								IF (node.type === 'bone' && variant.models[node.uuid] !== undefined) {
 									# Special case for `animated_java:empty` model.
-									IF (variant.models[bone.uuid].model === null) {
+									IF (variant.models[node.uuid].model === null) {
 										data modify entity @s item.components."minecraft:item_model" set value "animated_java:empty"
 									} ELSE {
-										data modify entity @s item.components."minecraft:item_model" set value "<%variant.models[bone.uuid].item_model%>"
+										data modify entity @s item.components."minecraft:item_model" set value "<%variant.models[node.uuid].item_model%>"
 									}
 								}
-								IF (bone.configs.variants[variant.uuid]) {
+								IF (node.configs.variants[variant.uuid]) {
 									<%%
-										global.config = BoneConfig.fromJSON(bone.configs.variants[variant.uuid])
+										global.config = DisplayEntityConfig.fromJSON(node.configs.variants[variant.uuid])
 									%%>
 									IF (!global.config.isDefault()) {
 										data merge entity @s <%global.config.toNBT(undefined, variant.is_default)%>

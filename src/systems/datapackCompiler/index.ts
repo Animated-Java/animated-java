@@ -1,7 +1,7 @@
 import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/lib/nbt'
 import { projectTargetVersionIsAtLeast } from 'src/formats/blueprint'
 import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
-import { BoneConfig, TextDisplayConfig } from '../../nodeConfigs'
+import { DisplayEntityConfig } from '../../nodeConfigs'
 import { isFunctionTagPath } from '../../util/fileUtil'
 import {
 	DataPackTag,
@@ -512,7 +512,7 @@ async function generateRootEntityPassengers(
 				}
 
 				if (node.configs?.default) {
-					BoneConfig.fromJSON(node.configs.default).toNBT(passenger)
+					DisplayEntityConfig.fromJSON(node.configs.default).toNBT(passenger)
 				}
 				break
 			}
@@ -548,8 +548,8 @@ async function generateRootEntityPassengers(
 					throw new Error(`Unsupported Minecraft version '${version}' for text display!`)
 				}
 
-				if (node.config) {
-					TextDisplayConfig.fromJSON(node.config).toNBT(passenger)
+				if (node.configs?.default) {
+					DisplayEntityConfig.fromJSON(node.configs.default).toNBT(passenger)
 				}
 				break
 			}
@@ -566,8 +566,8 @@ async function generateRootEntityPassengers(
 					break
 				}
 
-				if (node.config) {
-					BoneConfig.fromJSON(node.config).toNBT(passenger)
+				if (node.configs?.default) {
+					DisplayEntityConfig.fromJSON(node.configs.default).toNBT(passenger)
 				}
 				break
 			}
@@ -592,8 +592,8 @@ async function generateRootEntityPassengers(
 							.set('Properties', states)
 					)
 
-				if (node.config) {
-					BoneConfig.fromJSON(node.config).toNBT(passenger)
+				if (node.configs?.default) {
+					DisplayEntityConfig.fromJSON(node.configs.default).toNBT(passenger)
 				}
 				break
 			}
@@ -969,7 +969,7 @@ const dataPackCompiler: DataPackCompiler = async ({
 		rig_hash: rigHash,
 		animation_hash: animationHash,
 		boundingBox: aj.render_box,
-		BoneConfig,
+		DisplayEntityConfig,
 		roundTo,
 		nodeSorter,
 		getRotationFromQuaternion: eulerFromQuaternion,

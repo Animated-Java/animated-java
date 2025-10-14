@@ -1,12 +1,9 @@
-import { PACKAGE } from '../constants'
-import {
-	type IBlueprintTextDisplayConfigJSON,
-	activeProjectIsBlueprintFormat,
-} from '../formats/blueprint'
-import { registerAction } from '../util/moddingTools'
-// import * as MinecraftFull from '../assets/MinecraftFull.json'
 import { JsonTextParser, JsonTextSyntaxError } from 'src/systems/jsonText/parser'
-import { TextDisplayConfig } from '../nodeConfigs'
+import { IDisplayEntityConfigs } from 'src/systems/rigRenderer'
+import { registerAction } from 'src/util/moddingTools'
+import { DeepClonedObjectProperty, fixClassPropertyInheritance } from 'src/util/property'
+import { PACKAGE } from '../constants'
+import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 import { JsonText, TextElement } from '../systems/jsonText'
 import { getVanillaFont, MinecraftFont } from '../systems/minecraft/fontManager'
 import EVENTS from '../util/events'
@@ -29,6 +26,7 @@ interface TextDisplayOptions {
 }
 export type Alignment = 'left' | 'center' | 'right'
 
+@fixClassPropertyInheritance
 export class TextDisplay extends ResizableOutlinerElement {
 	static type = `${PACKAGE.name}:text_display`
 	static icon = 'text_fields'
@@ -41,13 +39,15 @@ export class TextDisplay extends ResizableOutlinerElement {
 	needsUniqueName = true
 
 	// Properties
-	config: IBlueprintTextDisplayConfigJSON
+	configs!: IDisplayEntityConfigs
 
 	buttons = [Outliner.buttons.export, Outliner.buttons.locked, Outliner.buttons.visibility]
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	preview_controller = PREVIEW_CONTROLLER
 
 	textError = new Valuable('')
+
+	needsMeshUpdate = false
 
 	private __pendingMeshUpdate?: ReturnType<MinecraftFont['generateTextDisplayMesh']>
 	private __text = new Valuable('Hello World!')
@@ -56,6 +56,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 	private __shadow = TextDisplay.properties.shadow.default as boolean
 	private __align: Alignment = TextDisplay.properties.align.default as Alignment
 	seeThrough = TextDisplay.properties.seeThrough.default as boolean
+	onSummonFunction = TextDisplay.properties.onSummonFunction.default as string
 
 	constructor(data: TextDisplayOptions, uuid = guid()) {
 		super(data, uuid)
@@ -67,14 +68,6 @@ export class TextDisplay extends ResizableOutlinerElement {
 
 		this.name = 'text_display'
 		this.extend(data)
-
-		this.name ??= 'text_display'
-		this.position ??= [0, 0, 0]
-		this.rotation ??= [0, 0, 0]
-		this.scale ??= [1, 1, 1]
-		this.align ??= 'center'
-		this.visibility ??= true
-		this.config ??= {}
 
 		this.sanitizeName()
 	}
@@ -91,9 +84,9 @@ export class TextDisplay extends ResizableOutlinerElement {
 
 	set text(value) {
 		if (this.__text === undefined) return
-		if (value === this.text) return
+		if (value === this.__text.get()) return
 		this.__text.set(value)
-		void this.updateTextMesh()
+		this.needsMeshUpdate = true
 	}
 
 	get lineWidth() {
@@ -104,9 +97,9 @@ export class TextDisplay extends ResizableOutlinerElement {
 
 	set lineWidth(value) {
 		if (this.__lineWidth === undefined) return
-		if (value === this.lineWidth) return
+		if (value === this.__lineWidth) return
 		this.__lineWidth = value
-		void this.updateTextMesh()
+		this.needsMeshUpdate = true
 	}
 
 	get backgroundColor() {
@@ -117,9 +110,9 @@ export class TextDisplay extends ResizableOutlinerElement {
 
 	set backgroundColor(value) {
 		if (this.__backgroundColor === undefined) return
-		if (value === this.backgroundColor) return
+		if (value === this.__backgroundColor) return
 		this.__backgroundColor = value
-		void this.updateTextMesh()
+		this.needsMeshUpdate = true
 	}
 
 	get shadow() {
@@ -129,9 +122,9 @@ export class TextDisplay extends ResizableOutlinerElement {
 
 	set shadow(value) {
 		if (this.__shadow === undefined) return
-		if (value === this.shadow) return
+		if (value === this.__shadow) return
 		this.__shadow = value
-		void this.updateTextMesh()
+		this.needsMeshUpdate = true
 	}
 
 	get align() {
@@ -141,9 +134,9 @@ export class TextDisplay extends ResizableOutlinerElement {
 
 	set align(value) {
 		if (this.__align === undefined) return
-		if (value === this.align) return
+		if (value === this.__align) return
 		this.__align = value
-		void this.updateTextMesh()
+		this.needsMeshUpdate = true
 	}
 
 	getTextValuable() {
@@ -237,17 +230,17 @@ export class TextDisplay extends ResizableOutlinerElement {
 		})
 	}
 
-	private async renderTextMesh(jsonText: JsonText) {
+	private renderTextMesh(jsonText: JsonText) {
 		const promise = getVanillaFont()
-			.then(font =>
-				font.generateTextDisplayMesh({
+			.then(font => {
+				return font.generateTextDisplayMesh({
 					jsonText,
 					maxLineWidth: this.lineWidth,
 					backgroundColor: tinycolor(this.backgroundColor),
 					shadow: this.shadow,
 					alignment: this.align,
 				})
-			)
+			})
 			.then(result => {
 				if (this.__pendingMeshUpdate === promise) {
 					this.__pendingMeshUpdate = undefined
@@ -269,6 +262,10 @@ export class TextDisplay extends ResizableOutlinerElement {
 		text.isTextDisplayText = true
 
 		const mesh = this.mesh as THREE.Mesh
+		if (!mesh) {
+			console.warn('TextDisplay mesh not found')
+			return
+		}
 		mesh.clear()
 		delete mesh.sprite
 		mesh.name = this.uuid
@@ -282,7 +279,8 @@ export class TextDisplay extends ResizableOutlinerElement {
 		mesh.add(outline)
 		mesh.visible = this.visibility
 
-		return text
+		// Dispatch view update without actually doing anything
+		Canvas.updateView({ elements: [], element_aspects: {} })
 	}
 }
 TextDisplay.prototype.icon = TextDisplay.icon
@@ -292,10 +290,9 @@ new Property(TextDisplay, 'string', 'backgroundColor', { default: '#00000040' })
 new Property(TextDisplay, 'string', 'align', { default: 'center' })
 new Property(TextDisplay, 'boolean', 'shadow', { default: false })
 new Property(TextDisplay, 'boolean', 'seeThrough', { default: false })
-new Property(TextDisplay, 'object', 'config', {
-	get default() {
-		return new TextDisplayConfig().toJSON()
-	},
+new Property(TextDisplay, 'string', 'onSummonFunction', { default: '' })
+new DeepClonedObjectProperty(TextDisplay, 'configs', {
+	default: () => ({ default: {}, variants: {} }),
 })
 
 OutlinerElement.registerType(TextDisplay, TextDisplay.type)
@@ -330,7 +327,10 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 	},
 
 	updateGeometry(el: TextDisplay) {
-		el.updateTextMesh()
+		if (el.needsMeshUpdate) {
+			el.updateTextMesh()
+			el.needsMeshUpdate = false
+		}
 	},
 
 	updateTransform(el: TextDisplay) {

@@ -1,7 +1,7 @@
 {
 	"meta": {
 		"format": "animated-java:format/blueprint",
-		"format_version": "1.8.0",
+		"format_version": "1.8.0-beta.2",
 		"uuid": "167b27cd-b559-3f13-a97c-0841fe21f1d1",
 		"save_location": "D:\\github-repos\\animated-java\\old-animated-java\\test-packs\\1.21.4\\blueprints\\armor_stand_1.21.4.ajblueprint",
 		"last_used_export_namespace": "armor_stand"
@@ -866,16 +866,43 @@
 			"visibility": true,
 			"locked": false,
 			"export": true,
-			"block": "minecraft:stone",
-			"config": {},
-			"item": "minecraft:diamond",
-			"itemDisplay": "none",
 			"text": "[\n\t{0x00aced}yeah', 'I' '[{love light_purple}' 'text]{' displays''#FF5555'}\n\t'\\n'[{#55_FF_55}definitly' 'quite' 'cursed]\n\t'\\n'{what red}{amI #6395EE}{evenlookingat #c02c38}\n]",
 			"lineWidth": 400,
 			"backgroundColor": "#00000040",
 			"align": "center",
 			"shadow": true,
-			"seeThrough": true
+			"seeThrough": true,
+			"onSummonFunction": "",
+			"configs": {
+				"default": {
+					"on_apply_function": "",
+					"billboard": "fixed",
+					"override_brightness": false,
+					"brightness_override": 0,
+					"enchanted": false,
+					"glowing": false,
+					"override_glow_color": false,
+					"glow_color": "#6f114b",
+					"invisible": false,
+					"shadow_radius": 0,
+					"shadow_strength": 1
+				},
+				"variants": {
+					"49521f4b-b970-e4bd-b594-2e05d2d46027": {
+						"on_apply_function": "",
+						"billboard": "vertical",
+						"override_brightness": false,
+						"brightness_override": 0,
+						"enchanted": false,
+						"glowing": true,
+						"override_glow_color": true,
+						"glow_color": "#6f114b",
+						"invisible": false,
+						"shadow_radius": 0,
+						"shadow_strength": 1
+					}
+				}
+			}
 		},
 		{
 			"name": "camera",
@@ -899,16 +926,39 @@
 			"visibility": true,
 			"locked": false,
 			"export": true,
-			"block": "minecraft:stone",
-			"config": {},
 			"item": "minecraft:diamond",
 			"itemDisplay": "none",
-			"text": "\"Hello World!\"",
-			"lineWidth": 200,
-			"backgroundColor": "#000000",
-			"align": "center",
-			"shadow": false,
-			"seeThrough": false
+			"onSummonFunction": "",
+			"configs": {
+				"default": {
+					"on_apply_function": "",
+					"billboard": "fixed",
+					"override_brightness": false,
+					"brightness_override": 0,
+					"enchanted": false,
+					"glowing": false,
+					"override_glow_color": false,
+					"glow_color": "#ffffff",
+					"invisible": false,
+					"shadow_radius": 0,
+					"shadow_strength": 1
+				},
+				"variants": {
+					"49521f4b-b970-e4bd-b594-2e05d2d46027": {
+						"on_apply_function": "",
+						"billboard": "fixed",
+						"override_brightness": false,
+						"brightness_override": 0,
+						"enchanted": true,
+						"glowing": true,
+						"override_glow_color": true,
+						"glow_color": "#99ff00",
+						"invisible": false,
+						"shadow_radius": 0,
+						"shadow_strength": 1
+					}
+				}
+			}
 		}
 	],
 	"outliner": [
@@ -916,6 +966,7 @@
 			"name": "root",
 			"origin": [0, 0, 0],
 			"color": 0,
+			"onSummonFunction": "",
 			"configs": {
 				"default": {
 					"billboard": "fixed",
@@ -945,6 +996,7 @@
 					"name": "baseplate_root",
 					"origin": [0, 0, 0],
 					"color": 0,
+					"onSummonFunction": "",
 					"configs": {
 						"default": {
 							"billboard": "fixed",
@@ -974,6 +1026,7 @@
 							"name": "baseplate_pivot_a",
 							"origin": [0, 1, 6],
 							"color": 0,
+							"onSummonFunction": "",
 							"configs": {
 								"default": {
 									"billboard": "fixed",
@@ -1006,6 +1059,7 @@
 					"name": "armor_stand_root",
 					"origin": [0, 1, 0],
 					"color": 0,
+					"onSummonFunction": "",
 					"configs": {
 						"default": {
 							"billboard": "fixed",
@@ -1036,6 +1090,7 @@
 							"name": "waist_pivot",
 							"origin": [0, 12, 0],
 							"color": 0,
+							"onSummonFunction": "",
 							"configs": {
 								"default": {
 									"billboard": "fixed",
@@ -1068,6 +1123,7 @@
 									"name": "body_waist_pivot",
 									"origin": [0, 12, 0],
 									"color": 0,
+									"onSummonFunction": "",
 									"configs": {
 										"default": {
 											"billboard": "fixed",
@@ -1100,6 +1156,7 @@
 											"name": "body",
 											"origin": [0, 24, 0],
 											"color": 0,
+											"onSummonFunction": "",
 											"configs": {
 												"default": {
 													"billboard": "fixed",
@@ -1167,6 +1224,7 @@
 													"name": "head",
 													"origin": [0, 23, 0],
 													"color": 0,
+													"onSummonFunction": "",
 													"configs": {
 														"default": {
 															"billboard": "fixed",
@@ -1215,6 +1273,7 @@
 													"name": "left_arm",
 													"origin": [-6, 23, 0],
 													"color": 0,
+													"onSummonFunction": "",
 													"configs": {
 														"default": {
 															"billboard": "fixed",
@@ -1263,6 +1322,7 @@
 													"name": "right_arm",
 													"origin": [6, 23, 0],
 													"color": 0,
+													"onSummonFunction": "",
 													"configs": {
 														"default": {
 															"billboard": "fixed",
@@ -1320,6 +1380,7 @@
 									"name": "left_leg",
 									"origin": [2, 12, 0],
 									"color": 0,
+									"onSummonFunction": "",
 									"configs": {
 										"default": {
 											"billboard": "fixed",
@@ -1366,6 +1427,7 @@
 									"name": "right_leg",
 									"origin": [-2, 12, 0],
 									"color": 0,
+									"onSummonFunction": "",
 									"configs": {
 										"default": {
 											"billboard": "fixed",

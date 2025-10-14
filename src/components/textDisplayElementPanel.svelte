@@ -1,7 +1,6 @@
 <script lang="ts" context="module">
 	import { CodeJar } from '@novacbn/svelte-codejar'
 	import { Stopwatch } from 'src/util/stopwatch'
-	import { onDestroy } from 'svelte'
 	import {
 		TEXT_DISPLAY_ALIGNMENT_SELECT,
 		TEXT_DISPLAY_BACKGROUND_COLOR_PICKER,
@@ -11,8 +10,6 @@
 		TEXT_DISPLAY_WIDTH_SLIDER,
 	} from '../interface/panel/textDisplayElement'
 	import { TextDisplay } from '../outliner/textDisplay'
-	import EVENTS from '../util/events'
-	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
 
 	const HIGHLIGHT_CACHE = new Map<string, string>()
@@ -27,65 +24,57 @@
 		}
 		const stopwatch = new Stopwatch('Highlighting').start()
 		const result = Prism.highlight(code, Prism.languages[syntax], syntax)
-		stopwatch.debug(result)
+		stopwatch.debug({ code, result })
 		HIGHLIGHT_CACHE.set(code, result)
 		return result
 	}
 </script>
 
 <script lang="ts">
-	let selected = TextDisplay.selected.at(0)
+	export let selected: TextDisplay
 
-	let text = new Valuable(selected?.text ?? '')
-
-	let error = selected?.textError ?? new Valuable('')
+	let text = selected.text
+	let error = selected.textError
 
 	let codeJarElement: HTMLPreElement | undefined
 
-	let lineWidthSlot: HTMLDivElement
-	let backgroundColorSlot: HTMLDivElement
-	let shadowSlot: HTMLDivElement
-	let alignmentSlot: HTMLDivElement
-	let seeThroughSlot: HTMLDivElement
-	let copyTextSlot: HTMLDivElement
+	// Force the inputs to update
+	TEXT_DISPLAY_WIDTH_SLIDER.setValue(selected.lineWidth)
+	TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.set(tinycolor(selected.backgroundColor))
+	TEXT_DISPLAY_SHADOW_TOGGLE.set(selected.shadow)
+	TEXT_DISPLAY_ALIGNMENT_SELECT.set(selected.align)
+	TEXT_DISPLAY_SEE_THROUGH_TOGGLE.set(selected.seeThrough)
 
-	let unsubFromText: (() => void) | undefined
-
-	const unsubFromEvent = EVENTS.UPDATE_SELECTION.subscribe(() => {
-		unsubFromText?.()
-
-		selected = TextDisplay.selected.at(0)
-		if (!selected || Group.first_selected) {
-			$text = ''
-			error = new Valuable('')
-			return
+	$: {
+		if (selected.text !== text) {
+			Undo.initEdit({ elements: [selected] })
+			selected.text = text
+			selected.updateTextMesh()
+			Project!.saved = false
+			Undo.finishEdit(`Change Text Display Text`, { elements: [selected] })
 		}
+	}
 
-		$text = selected.text
-		error = selected.textError
-
-		// Force the inputs to update
-		TEXT_DISPLAY_WIDTH_SLIDER.setValue(selected.lineWidth)
-		const color = tinycolor(selected.backgroundColor)
-		TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.set(color)
-		TEXT_DISPLAY_SHADOW_TOGGLE.set(selected.shadow)
-		TEXT_DISPLAY_ALIGNMENT_SELECT.set(selected.align)
-		TEXT_DISPLAY_SEE_THROUGH_TOGGLE.set(selected.seeThrough)
-
-		text.subscribe(v => {
-			console.log('Text changed:', v)
-			if (!selected) return
-			selected.text = v
-		})
-	})
+	const mountLineWidth = (node: HTMLDivElement) => {
+		node.appendChild(TEXT_DISPLAY_WIDTH_SLIDER.node)
+	}
+	const mountShadow = (node: HTMLDivElement) => {
+		node.appendChild(TEXT_DISPLAY_SHADOW_TOGGLE.node)
+	}
+	const mountAlignment = (node: HTMLDivElement) => {
+		node.appendChild(TEXT_DISPLAY_ALIGNMENT_SELECT.node)
+	}
+	const mountSeeThrough = (node: HTMLDivElement) => {
+		node.appendChild(TEXT_DISPLAY_SEE_THROUGH_TOGGLE.node)
+	}
+	const mountBackgroundColor = (node: HTMLDivElement) => {
+		node.appendChild(TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.node)
+	}
+	const mountCopyText = (node: HTMLDivElement) => {
+		node.appendChild(TEXT_DISPLAY_COPY_TEXT_ACTION.node)
+	}
 
 	requestAnimationFrame(() => {
-		lineWidthSlot.appendChild(TEXT_DISPLAY_WIDTH_SLIDER.node)
-		backgroundColorSlot.appendChild(TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.node)
-		shadowSlot.appendChild(TEXT_DISPLAY_SHADOW_TOGGLE.node)
-		alignmentSlot.appendChild(TEXT_DISPLAY_ALIGNMENT_SELECT.node)
-		seeThroughSlot.appendChild(TEXT_DISPLAY_SEE_THROUGH_TOGGLE.node)
-		copyTextSlot.appendChild(TEXT_DISPLAY_COPY_TEXT_ACTION.node)
 		forceNoWrap()
 	})
 
@@ -103,31 +92,24 @@
 			// CodeJar doesn't capture undo correctly. So we have to fudge it a little.
 			requestAnimationFrame(() => {
 				if (selected && codeJarElement?.textContent != undefined) {
-					$text = codeJarElement.textContent
+					text = codeJarElement.textContent
 				}
 			})
 		}
 	}
-
-	onDestroy(() => {
-		unsubFromEvent()
-	})
 </script>
 
-<p class="panel_toolbar_label label" style={!!selected ? '' : 'visibility:hidden; height: 0px;'}>
+<p class="panel_toolbar_label label">
 	{translate('panel.text_display.title')}
 </p>
 
-<div
-	class="toolbar text-display-toolbar"
-	style={!!selected ? '' : 'visibility:hidden; height: 0px;'}
->
-	<div class="content" bind:this={lineWidthSlot} />
-	<div class="content" bind:this={backgroundColorSlot} />
-	<div class="content" bind:this={shadowSlot} />
-	<div class="content" bind:this={alignmentSlot} />
-	<div class="content" bind:this={seeThroughSlot} />
-	<div class="content" bind:this={copyTextSlot} />
+<div class="toolbar text-display-toolbar">
+	<div class="content" use:mountLineWidth />
+	<div class="content" use:mountShadow />
+	<div class="content" use:mountAlignment />
+	<div class="content" use:mountSeeThrough />
+	<div class="content" use:mountBackgroundColor />
+	<div class="content" use:mountCopyText />
 </div>
 
 <div
@@ -139,7 +121,7 @@
 			bind:element={codeJarElement}
 			syntax="snbtTextComponent"
 			{highlight}
-			bind:value={$text}
+			bind:value={text}
 			on:change={() => forceNoWrap()}
 			preserveIdent
 			history

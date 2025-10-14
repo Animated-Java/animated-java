@@ -3,6 +3,7 @@
 
 	export let value: string
 	export let placeholder: string | undefined = undefined
+	export let style: string | undefined = undefined
 	export let syntax: string | undefined = undefined
 
 	let codeJarElement: HTMLPreElement | undefined
@@ -26,12 +27,13 @@
 		}
 	}
 
-	const forceNoWrap = () => {
+	const forceNoWrap = (_?: HTMLElement) => {
 		if (!codeJarElement) return
 		codeJarElement.style.overflowWrap = 'unset'
 		codeJarElement.style.whiteSpace = 'pre'
 	}
 
+	$: codeJarElement && forceNoWrap()
 	$: value !== undefined && forceNoWrap()
 </script>
 
@@ -45,7 +47,7 @@
 		preserveIdent
 		history
 		class={'language-' + (syntax ?? 'plaintext')}
-		style="
+		style={`
 			font-family: var(--font-code);
 			font-size: 14px;
 			padding: 3px 6px;
@@ -61,8 +63,9 @@
 			border: 1px solid var(--color-border);
 			border-radius: 0;
 			text-shadow: 0px 1px rgba(0, 0, 0, 0.3);
-		"
+		` + style}
 	/>
+	<div use:forceNoWrap />
 	{#if placeholder && (!value || value.length === 0)}
 		<div class="placeholder">{placeholder}</div>
 	{/if}

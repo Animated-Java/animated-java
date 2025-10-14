@@ -93,11 +93,13 @@ export class Variant {
 		this.textureMap = new TextureMap()
 		this.id = Variant.all.length
 		if (this.isDefault) {
+			if (Variant.hasDefault()) {
+				throw new Error('There can only be one default variant!')
+			}
 			this.displayName = 'Default'
 			this.name = 'default'
 		}
 		Variant.all.push(this)
-		// this.select()
 		EVENTS.CREATE_VARIANT.publish(this)
 	}
 
@@ -225,12 +227,23 @@ export class Variant {
 	}
 
 	static selectDefault() {
-		const variant = Variant.all.find(v => v.isDefault)
-		if (variant) variant.select()
+		Variant.getDefault().select()
+	}
+
+	static getByUUID(uuid: string): Variant | undefined {
+		return Variant.all.find(v => v.uuid === uuid)
+	}
+
+	static allExcludingDefault(): Variant[] {
+		return Variant.all.filter(v => !v.isDefault)
+	}
+
+	static hasDefault(): boolean {
+		return Variant.all.some(v => v.isDefault)
 	}
 
 	static getDefault(): Variant {
-		return Variant.all.find(v => v.isDefault) ?? Variant.all[0]
+		return Variant.all.find(v => v.isDefault) ?? new Variant('Default', true)
 	}
 }
 
