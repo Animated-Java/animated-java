@@ -1,80 +1,57 @@
 <script lang="ts" context="module">
+	import { validateBlock } from 'src/util/minecraftUtil'
 	import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
-	import EVENTS from '../util/events'
-	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
 </script>
 
 <script lang="ts">
-	let selectedDisplay = VanillaBlockDisplay.selected.at(0)
-	let lastSelected = selectedDisplay
+	export let selected: VanillaBlockDisplay
 
-	let block = new Valuable<string>('')
-	let error = new Valuable<string>('')
-	let visible = false
+	let block = selected.block
+	let error = selected.error
 
-	let unsub: (() => void) | undefined
+	$: {
+		$error = ''
+		if (selected.block !== block) {
+			void validateBlock(block)
+				.then(err => {
+					if (err) {
+						$error = err
+						console.log('Block validation error:', err)
+						return
+					}
+					console.log('Changing block to', block)
+					Undo.initEdit({ elements: [selected] })
 
-	EVENTS.UPDATE_SELECTION.subscribe(() => {
-		unsub?.()
+					selected.block = block
+					Project!.saved = false
 
-		lastSelected = selectedDisplay
-		selectedDisplay = VanillaBlockDisplay.selected.at(0)
-
-		if (!selectedDisplay) {
-			visible = false
-			return
+					Undo.finishEdit(`Change Block Display Block to "${block}"`, {
+						elements: [selected],
+					})
+				})
+				.catch(err => {
+					$error = err.message
+				})
 		}
-
-		$block = selectedDisplay.block
-		error = selectedDisplay.error
-		visible = true
-
-		unsub = block.subscribe(value => {
-			if (selectedDisplay == undefined || selectedDisplay !== lastSelected) {
-				lastSelected = selectedDisplay
-				return
-			}
-			if (value === selectedDisplay.block) return
-
-			Undo.initEdit({ elements: VanillaBlockDisplay.selected })
-
-			if (VanillaBlockDisplay.selected.length > 1) {
-				for (const display of VanillaBlockDisplay.selected) {
-					display.block = value
-				}
-			} else {
-				selectedDisplay.block = value
-			}
-			Project!.saved = false
-
-			Undo.finishEdit(`Change Block Display Block to "${$block}"`, {
-				elements: VanillaBlockDisplay.selected,
-			})
-		})
-	})
+	}
 </script>
 
-<p class="panel_toolbar_label label" style={!!visible ? '' : 'visibility:hidden; height: 0px;'}>
+<p class="panel_toolbar_label label">
 	{translate('panel.vanilla_block_display.title')}
 </p>
 
-<div
-	class="toolbar custom-toolbar"
-	style={!!visible ? '' : 'visibility:hidden; height: 0px;'}
-	title={translate('panel.vanilla_block_display.description')}
->
+<div class="toolbar custom-toolbar" title={translate('panel.vanilla_block_display.description')}>
 	<div class="content" style="width: 95%;">
-		<input type="text" bind:value={$block} />
+		<input type="text" bind:value={block} />
 	</div>
 </div>
 
-<div
-	class="error"
-	style={!!$error ? '' : 'visibility:hidden; height: 0px; color: var(--color-error);'}
->
-	{$error}
-</div>
+{#if $error}
+	<div class="error">
+		{$error}
+	</div>
+{/if}
 
 <style>
 	input {

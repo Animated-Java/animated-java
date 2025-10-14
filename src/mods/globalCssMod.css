@@ -15,3 +15,14 @@ dialog.dialog pre:has(code) {
 #collection_properties_vue > ul > li {
 	max-width: unset !important;
 }
+
+#edit_history_list ul li {
+	height: unset !important;
+}
+
+#edit_history_list > ul > li label {
+	margin-right: auto !important;
+	overflow-x: auto !important;
+	white-space: nowrap !important;
+	max-width: 75% !important;
+}
