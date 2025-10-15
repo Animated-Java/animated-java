@@ -58,24 +58,28 @@ export function process(model: any): IBlueprintFormatJSON {
 				console.groupEnd()
 			}
 		}
+
 		// Versions below this are post 0.3.10. I changed the versioning system to use the AJ version instead of a unique format version.
-		if (compareVersions('0.3.10', model.meta.format_version)) model = updateModelTo0_3_10(model)
-		// v1.0.0-pre1
-		if (compareVersions('0.5.0', model.meta.format_version)) model = updateModelTo1_0pre1(model)
-		// v1.0.0-pre6
-		if (compareVersions('0.5.5', model.meta.format_version)) model = updateModelTo1_0pre6(model)
-		// v1.0.0-pre7
-		if (compareVersions('0.5.6', model.meta.format_version)) model = updateModelTo1_0pre7(model)
-		// v1.0.0-pre8
-		if (compareVersions('0.5.7', model.meta.format_version)) model = updateModelTo1_0pre8(model)
-		// v1.4.0
-		if (compareVersions('1.4.0', model.meta.format_version)) model = updateModelTo1_4_0(model)
-		// v1.6.3
-		if (compareVersions('1.6.3', model.meta.format_version)) model = updateModelTo1_6_3(model)
-		// v1.6.5
-		if (compareVersions('1.6.5', model.meta.format_version)) model = updateModelTo1_6_5(model)
-		// v1.8.0
-		if (compareVersions('1.8.0', model.meta.format_version)) model = updateModelTo1_8_0(model)
+		switch (true) {
+			case compareVersions('0.3.10', model.meta.format_version):
+				model = updateModelTo0_3_10(model)
+			case compareVersions('0.5.0', model.meta.format_version):
+				model = updateModelTo1_0pre1(model)
+			case compareVersions('0.5.5', model.meta.format_version):
+				model = updateModelTo1_0pre6(model)
+			case compareVersions('0.5.6', model.meta.format_version):
+				model = updateModelTo1_0pre7(model)
+			case compareVersions('0.5.7', model.meta.format_version):
+				model = updateModelTo1_0pre8(model)
+			case compareVersions('1.4.0', model.meta.format_version):
+				model = updateModelTo1_4_0(model)
+			case compareVersions('1.6.3', model.meta.format_version):
+				model = updateModelTo1_6_3(model)
+			case compareVersions('1.6.5', model.meta.format_version):
+				model = updateModelTo1_6_5(model)
+			case compareVersions('1.8.0', model.meta.format_version):
+				model = updateModelTo1_8_0(model)
+		}
 
 		// Remove unknown blueprint settings
 		const defaultSettings = getDefaultProjectSettings()
@@ -100,29 +104,31 @@ export function process(model: any): IBlueprintFormatJSON {
 // region F1.0
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelToOld1_0(model: any) {
-	console.log('Processing model format 1.0', JSON.parse(JSON.stringify(model)))
-	if (model.meta.settings) {
+	console.log('Processing model format 1.0', model)
+	const fixed = JSON.parse(JSON.stringify(model))
+
+	if (fixed.meta.settings) {
 		console.log('Upgrading settings...')
 		const animatedJava: any = {
 			settings: {
-				project_name: model.meta.settings.animatedJava.projectName,
-				verbose: model.meta.settings.animatedJava.verbose,
-				rig_item: model.meta.settings.animatedJava.rigItem,
-				rig_item_model: model.meta.settings.animatedJava.predicateFilePath,
-				rig_export_folder: model.meta.settings.animatedJava.rigModelsExportFolder,
+				project_name: fixed.meta.settings.animatedJava.projectName,
+				verbose: fixed.meta.settings.animatedJava.verbose,
+				rig_item: fixed.meta.settings.animatedJava.rigItem,
+				rig_item_model: fixed.meta.settings.animatedJava.predicateFilePath,
+				rig_export_folder: fixed.meta.settings.animatedJava.rigModelsExportFolder,
 			},
 			exporter_settings: {},
 			variants: [],
 		}
 
-		model.animated_java = animatedJava
+		fixed.animated_java = animatedJava
 	}
 
-	if (model.meta.variants) {
+	if (fixed.meta.variants) {
 		console.log('Upgrading variants...')
 		const variants: any[] = []
 
-		for (const [name, variant] of Object.entries(model.meta.variants as Record<string, any>)) {
+		for (const [name, variant] of Object.entries(fixed.meta.variants as Record<string, any>)) {
 			variants.push({
 				name,
 				uuid: guid(),
@@ -134,17 +140,17 @@ function updateModelToOld1_0(model: any) {
 			})
 		}
 
-		model.animated_java.variants = variants
+		fixed.animated_java.variants = variants
 	}
 
 	if (
-		model.animations?.find((a: any) =>
+		fixed.animations?.find((a: any) =>
 			Object.keys(a.animators as Record<string, any>).find(name => name === 'effects')
 		)
 	) {
 		console.log('Upgrading effects...')
 
-		for (const animation of model.animations) {
+		for (const animation of fixed.animations) {
 			const effects = animation.animators.effects
 			if (!effects) continue
 			for (const keyframe of effects.keyframes) {
@@ -159,35 +165,44 @@ function updateModelToOld1_0(model: any) {
 			}
 		}
 
-		console.log('Upgrading effects complete', model.animations)
+		console.log('Upgrading effects complete', fixed.animations)
 	}
 
-	model.meta.format_version = PACKAGE.version
+	fixed.meta.format_version = PACKAGE.version
 
-	delete model.meta.variants
-	delete model.meta.settings
-	delete model.meta.uuid
+	delete fixed.meta.variants
+	delete fixed.meta.settings
+	delete fixed.meta.uuid
+
+	return fixed
 }
 
 // region F1.1
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelToOld1_1(model: any) {
-	console.log('Processing model format 1.1', JSON.parse(JSON.stringify(model)))
-	model.animated_java.settings.resource_pack_mcmeta =
-		model.animated_java.settings.resource_pack_folder
-	delete model.animated_java.settings.resource_pack_folder
+	console.log('Processing model format 1.1', model)
+	const fixed = JSON.parse(JSON.stringify(model))
+
+	fixed.animated_java.settings.resource_pack_mcmeta =
+		fixed.animated_java.settings.resource_pack_folder
+	delete fixed.animated_java.settings.resource_pack_folder
+
 	const animationExporterSettings =
-		model.animated_java.exporter_settings['animated_java:animation_exporter']
-	if (!animationExporterSettings) return
-	animationExporterSettings.datapack_mcmeta = animationExporterSettings.datapack_folder
-	delete animationExporterSettings.datapack_folder
+		fixed.animated_java.exporter_settings['animated_java:animation_exporter']
+	if (animationExporterSettings) {
+		animationExporterSettings.datapack_mcmeta = animationExporterSettings.datapack_folder
+		delete animationExporterSettings.datapack_folder
+	}
+
+	return fixed
 }
 
 // region F1.2
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelToOld1_2(model: any) {
-	console.log('Processing model format 1.2', JSON.parse(JSON.stringify(model)))
-	for (const variant of model.animated_java.variants) {
+	console.log('Processing model format 1.2', model)
+	const fixed = JSON.parse(JSON.stringify(model))
+	for (const variant of fixed.animated_java.variants) {
 		for (const [from, to] of Object.entries(variant.textureMap as Record<string, string>)) {
 			const fromUUID = from.split('::')[0]
 			const toUUID = to.split('::')[0]
@@ -195,52 +210,60 @@ function updateModelToOld1_2(model: any) {
 			delete variant.textureMap[from]
 		}
 	}
+	return fixed
 }
 
 // region F1.3
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelToOld1_3(model: any) {
-	console.log('Processing model format 1.3', JSON.parse(JSON.stringify(model)))
-	if (model.animated_java.settings.exporter === 'animated_java:animation_exporter') {
-		model.animated_java.settings.exporter = 'animated_java:datapack_exporter'
+	console.log('Processing model format 1.3', model)
+	const fixed = JSON.parse(JSON.stringify(model))
+	if (fixed.animated_java.settings.exporter === 'animated_java:animation_exporter') {
+		fixed.animated_java.settings.exporter = 'animated_java:datapack_exporter'
 	}
-	if (model.animated_java.exporter_settings['animated_java:animation_exporter']) {
-		model.animated_java.exporter_settings['animated_java:datapack_exporter'] =
-			model.animated_java.exporter_settings['animated_java:animation_exporter']
-		delete model.animated_java.exporter_settings['animated_java:animation_exporter']
+	if (fixed.animated_java.exporter_settings['animated_java:animation_exporter']) {
+		fixed.animated_java.exporter_settings['animated_java:datapack_exporter'] =
+			fixed.animated_java.exporter_settings['animated_java:animation_exporter']
+		delete fixed.animated_java.exporter_settings['animated_java:animation_exporter']
 	}
+	return fixed
 }
 
 // region F1.4
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelToOld1_4(model: any) {
-	console.log('Processing model format 1.4', JSON.parse(JSON.stringify(model)))
-	const exporter = model.animated_java.exporter_settings['animated_java:datapack_exporter']
+	console.log('Processing model format 1.4', model)
+	const fixed = JSON.parse(JSON.stringify(model))
+	const exporter = fixed.animated_java.exporter_settings['animated_java:datapack_exporter']
 	if (exporter && exporter.outdated_rig_warning !== undefined) {
-		model.animated_java.exporter_settings[
+		fixed.animated_java.exporter_settings[
 			'animated_java:datapack_exporter'
 		].enable_outdated_rig_warning =
-			model.animated_java.exporter_settings[
+			fixed.animated_java.exporter_settings[
 				'animated_java:datapack_exporter'
 			].outdated_rig_warning
-		delete model.animated_java.exporter_settings['animated_java:datapack_exporter']
+		delete fixed.animated_java.exporter_settings['animated_java:datapack_exporter']
 			.outdated_rig_warning
 	}
+	return fixed
 }
 
 // region v0.3.10
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelTo0_3_10(model: any) {
-	console.log('Processing model for AJ 0.3.10', JSON.parse(JSON.stringify(model)))
-	model.meta ??= {}
-	model.meta.model_format = 'animated_java/blueprint'
-	return model
+	console.log('Processing model for AJ 0.3.10', model)
+	const fixed = JSON.parse(JSON.stringify(model))
+
+	fixed.meta ??= {}
+	fixed.meta.model_format = 'animated_java/blueprint'
+
+	return fixed
 }
 
 // region v1.0.0-pre1
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelTo1_0pre1(model: any) {
-	console.log('Processing model format 1.0.0-pre1', JSON.parse(JSON.stringify(model)))
+	console.log('Processing model format 1.0.0-pre1', model)
 
 	const defaultSettings = getDefaultProjectSettings()
 	const datapackExporterSettings =
@@ -437,121 +460,128 @@ function updateModelTo1_0pre1(model: any) {
 // region v1.0.0-pre6
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelTo1_0pre6(model: any) {
-	console.log('Processing model format 1.0.0-pre6', JSON.parse(JSON.stringify(model)))
+	console.log('Processing model format 1.0.0-pre6', model)
+	const fixed = JSON.parse(JSON.stringify(model))
 
-	const defaultVariant = model.variants.default
+	const defaultVariant = fixed.variants.default
 	if (defaultVariant?.excluded_bones) {
 		defaultVariant.excluded_nodes = defaultVariant.excluded_bones
 		delete defaultVariant.excluded_bones
 	}
 
-	for (const variant of model?.variants?.list ?? []) {
+	for (const variant of fixed.variants?.list ?? []) {
 		if (variant?.excluded_bones) {
 			variant.excluded_nodes = variant.excluded_bones
 			delete variant.excluded_bones
 		}
 	}
 
-	for (const animation of model?.animations ?? []) {
+	for (const animation of fixed.animations ?? []) {
 		if (animation?.excluded_bones) {
 			animation.excluded_nodes = animation.excluded_bones
 			delete animation.excluded_bones
 		}
 	}
 
-	return model
+	return fixed
 }
 
 // region v1.0.0-pre7
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelTo1_0pre7(model: any) {
-	console.log('Processing model format 1.0.0-pre7', JSON.parse(JSON.stringify(model)))
+	console.log('Processing model format 1.0.0-pre7', model)
+	const fixed = JSON.parse(JSON.stringify(model))
 
-	if (model.project_settings.enable_resource_pack !== undefined) {
-		model.project_settings.resource_pack_export_mode = model.project_settings
+	if (fixed.project_settings.enable_resource_pack !== undefined) {
+		fixed.project_settings.resource_pack_export_mode = fixed.project_settings
 			.enable_resource_pack
 			? 'raw'
 			: 'none'
-		delete model.project_settings.enable_resource_pack
+		delete fixed.project_settings.enable_resource_pack
 	}
 
-	if (model.project_settings.enable_data_pack !== undefined) {
-		model.project_settings.data_pack_export_mode = model.project_settings.enable_data_pack
+	if (fixed.project_settings.enable_data_pack !== undefined) {
+		fixed.project_settings.data_pack_export_mode = fixed.project_settings.enable_data_pack
 			? 'raw'
 			: 'none'
-		delete model.project_settings.enable_data_pack
+		delete fixed.project_settings.enable_data_pack
 	}
 
-	return model
+	return fixed
 }
 
 // region v1.0.0-pre8
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelTo1_0pre8(model: any) {
-	console.log('Processing model format 1.0.0-pre8', JSON.parse(JSON.stringify(model)))
+	console.log('Processing model format 1.0.0-pre8', model)
+	const fixed = JSON.parse(JSON.stringify(model))
 
-	if (model.project_settings) {
-		model.blueprint_settings = model.project_settings
-		delete model.project_settings
+	if (fixed.project_settings) {
+		fixed.blueprint_settings = fixed.project_settings
+		delete fixed.project_settings
 	}
 
-	return model
+	return fixed
 }
 
 // region v1.4.0
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelTo1_4_0(model: any) {
-	console.log('Processing model format 1.4.0', JSON.parse(JSON.stringify(model)))
+	console.log('Processing model format 1.4.0', model)
+	const fixed = JSON.parse(JSON.stringify(model))
 
 	// Separated advanced folders from advanced settings
-	if (model.blueprint_settings.enable_advanced_resource_pack_settings) {
-		model.blueprint_settings.enable_advanced_resource_pack_folders = true
+	if (fixed.blueprint_settings.enable_advanced_resource_pack_settings) {
+		fixed.blueprint_settings.enable_advanced_resource_pack_folders = true
 	}
 
 	// Custom model data is now hidden behind advanced settings
 	if (
-		model.blueprint_settings.custom_model_data_offset !== undefined &&
-		model.blueprint_settings.custom_model_data_offset !== 0
+		fixed.blueprint_settings.custom_model_data_offset !== undefined &&
+		fixed.blueprint_settings.custom_model_data_offset !== 0
 	) {
-		model.blueprint_settings.enable_advanced_resource_pack_settings = true
+		fixed.blueprint_settings.enable_advanced_resource_pack_settings = true
 	}
 
-	return model
+	return fixed
 }
 
 // region v1.6.3
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelTo1_6_3(model: any) {
-	console.log('Processing model format 1.6.3', JSON.parse(JSON.stringify(model)))
+	console.log('Processing model format 1.6.3', model)
+	const fixed = JSON.parse(JSON.stringify(model))
 
 	// Automatically add a transparent texture to the model if it uses the old transparent texture in any of it's variants.
-	for (const variant of model.variants.list) {
+	for (const variant of fixed.variants.list) {
 		if (Object.values(variant.texture_map).includes('797174ae-5c58-4a83-a630-eefd51007c80')) {
 			const texture = new Texture(
 				{ name: 'transparent' },
 				'797174ae-5c58-4a83-a630-eefd51007c80'
 			).fromDataURL(TransparentTexture)
-			model.textures.push(texture.getSaveCopy())
+			fixed.textures.push(texture.getSaveCopy())
 			break
 		}
 	}
 
-	return model
+	return fixed
 }
 
 // region v1.6.5
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function updateModelTo1_6_5(model: any) {
-	console.log('Processing model format 1.6.5', JSON.parse(JSON.stringify(model)))
+	console.log('Processing model format 1.6.5', model)
+	const fixed = JSON.parse(JSON.stringify(model))
 
 	// Update target_minecraft_version to an array if it's a string
-	if (typeof model.blueprint_settings?.target_minecraft_version === 'string') {
-		model.blueprint_settings.target_minecraft_version = [
-			model.blueprint_settings.target_minecraft_version,
+	if (typeof fixed.blueprint_settings?.target_minecraft_version === 'string') {
+		fixed.blueprint_settings.target_minecraft_versions = [
+			fixed.blueprint_settings.target_minecraft_version,
 		]
+		delete fixed.blueprint_settings.target_minecraft_version
 	}
 
-	return model
+	return fixed
 }
 
 // region v1.8.0
