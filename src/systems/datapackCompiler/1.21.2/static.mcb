@@ -98,7 +98,7 @@ dir root {
 
 IF (!auto_update_rig_orientation) {
 	function move {
-		debug assert executed_as_root_entity
+		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(export_namespace)%>
 
 		tp @s ~ ~ ~ ~ ~
 
@@ -303,7 +303,7 @@ function summon {
 IF (has_entity_locators) {
 	function as_locator {
 		#ARGS: {name: string, command: string}
-		debug assert executed_as_root_entity
+		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(export_namespace)%>
 
 		data remove storage <%temp_storage%> args
 		$data modify storage <%temp_storage%> args merge value {name:'$(name)', command:'$(command)', uuid:'+MISSING_UUID+'}
@@ -340,7 +340,7 @@ IF (has_entity_locators) {
 
 	function as_all_locators {
 		#ARGS: {command: string}
-		debug assert executed_as_root_entity
+		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(export_namespace)%>
 
 		data remove storage <%temp_storage%> args
 		$data modify storage <%temp_storage%> args merge value {command:'$(command)'}
@@ -363,7 +363,7 @@ IF (has_entity_locators) {
 IF (has_locators) {
 	function at_locator {
 		#ARGS: {name: string, command: string}
-		debug assert executed_as_root_entity
+		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(export_namespace)%>
 
 		data remove storage <%temp_storage%> args
 		$data modify storage <%temp_storage%> args merge value {name:'$(name)', command:'$(command)'}
@@ -405,7 +405,7 @@ IF (has_locators) {
 
 	function at_all_locators {
 		#ARGS: {command: string}
-		debug assert executed_as_root_entity
+		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(export_namespace)%>
 
 		data remove storage <%temp_storage%> args
 		$data modify storage <%temp_storage%> args merge value {command:'$(command)'}
@@ -431,7 +431,7 @@ IF (has_locators) {
 IF (has_cameras) {
 	function as_camera {
 		#ARGS: {name: string, command: string}
-		debug assert executed_as_root_entity
+		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(export_namespace)%>
 
 		data remove storage <%temp_storage%> args
 		$data modify storage <%temp_storage%> args merge value {name:'$(name)', command:'$(command)', uuid:'+MISSING_UUID+'}
@@ -485,7 +485,7 @@ dir remove {
 
 	function this {
 		# Removes the rig this function is executed as.
-		debug assert executed_as_root_entity
+		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(export_namespace)%>
 
 		<%%
 			if (on_remove_function) emit.mcb(on_remove_function)
@@ -525,7 +525,7 @@ dir remove {
 
 	dir this {
 		function without_on_remove_function {
-			debug assert executed_as_root_entity
+			debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(export_namespace)%>
 
 			IF (has_entity_locators || has_cameras) {
 				execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block as_data {
@@ -556,7 +556,7 @@ IF (Object.keys(rig.variants).length > 1) {
 		REPEAT (Object.values(rig.variants)) as variant {
 			dir <%variant.name%> {
 				function apply {
-					debug assert executed_as_root_entity
+					debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(export_namespace)%>
 
 					<%%
 						global.filteredNodes = Object.values(rig.nodes).filter(
@@ -674,7 +674,7 @@ IF (has_locators || has_cameras) {
 
 function set_default_pose {
 	# Changes the pose of the rig to the the default pose without interpolation
-	debug assert executed_as_root_entity
+	debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(export_namespace)%>
 
 	IF (has_locators || has_cameras) {
 		function ./zzz/reset_floating_entities
