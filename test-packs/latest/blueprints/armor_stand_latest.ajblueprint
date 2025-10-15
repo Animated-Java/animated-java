@@ -1,9 +1,9 @@
 {
 	"meta": {
 		"format": "animated-java:format/blueprint",
-		"format_version": "1.8.0-beta.2",
+		"format_version": "1.8.0-beta.3",
 		"uuid": "167b27cd-b559-3f13-a97c-0841fe21f1d1",
-		"save_location": "D:\\github-repos\\animated-java\\old-animated-java\\test-packs\\1.20.4\\blueprints\\armor_stand_1.20.4.ajblueprint",
+		"save_location": "D:\\github-repos\\animated-java\\old-animated-java\\test-packs\\latest\\blueprints\\armor_stand_latest.ajblueprint",
 		"last_used_export_namespace": "armor_stand"
 	},
 	"resolution": {
@@ -13,11 +13,11 @@
 	"blueprint_settings": {
 		"export_namespace": "armor_stand",
 		"render_box": [95, 32],
-		"target_minecraft_version": "1.20.4",
 		"resource_pack": "../resources",
 		"data_pack": "../datapacks/animated_java",
 		"on_summon_function": "say On-Summon!",
 		"on_remove_function": "say On-Remove!",
+		"auto_update_rig_orientation": false,
 		"baked_animations": false,
 		"json_file": "../testPluginExport.json"
 	},
@@ -830,10 +830,10 @@
 			"config": {
 				"use_entity": true,
 				"entity_type": "minecraft:item_display",
-				"sync_passenger_rotation": true,
+				"sync_passenger_rotation": false,
 				"on_summon_function": "say Summon Left Hand!",
 				"on_remove_function": "say Remove Left Hand!",
-				"on_tick_function": "particle minecraft:bubble ^ ^ ^1\ntp @e[tag=test3,limit=1] ~ ~ ~ ~ ~"
+				"on_tick_function": ""
 			},
 			"uuid": "7de415a2-9fdd-e4b2-3455-c3bed72eb896",
 			"type": "locator"
@@ -851,7 +851,7 @@
 				"sync_passenger_rotation": false,
 				"on_summon_function": "say Summon Right Hand!",
 				"on_remove_function": "say Remove Right Hand!",
-				"on_tick_function": "particle minecraft:bubble ^ ^ ^1\ntp @e[tag=test2,limit=1] ~ ~ ~ ~ ~"
+				"on_tick_function": ""
 			},
 			"uuid": "7747736f-85e2-338f-207e-53f8d3d2fa39",
 			"type": "locator"

@@ -1,7 +1,7 @@
 template debug {
-	with assert:literal executed_as_root_entity:literal {
+	with assert:literal executed_as_root_entity:literal root_tag:literal {
 		IF (debug_mode) {
-			execute unless entity @s[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run return run \
+			execute unless entity @s[type=minecraft:item_display,tag=<%root_tag%>] run return run \
 				tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(context.functions.at(-1))%>
 		}
 	}

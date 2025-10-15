@@ -118,7 +118,7 @@ dir global {
 		# Removes locators and cameras owned by the rig, even if they're not included in the currently loaded export.
 		function outdated_rig {
 			# Assert that the function is being executed as a root entity.
-			debug assert executed_as_root_entity
+			debug assert executed_as_root_entity <%TAGS.GLOBAL_ROOT()%>
 
 			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block as_data {
 				data remove storage <%temp_storage%> args
