@@ -1,5 +1,5 @@
 {
-	"$schema": "./plugin-rig.schema.json",
+	"$schema": "./plugin-blueprint.schema.json",
 	"format_version": 1,
 	"settings": {
 		"id": "animated_java:blueprint"
