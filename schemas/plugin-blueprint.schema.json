@@ -1,0 +1,862 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"title": "Animated Java Plugin Blueprint",
+	"description": "A schema of the JSON file a Blueprint Project creates when exported for a Plugin environment.",
+	"type": "object",
+	"required": ["format_version", "settings"],
+	"properties": {
+		"format_version": {
+			"type": "number"
+		},
+		"settings": {
+			"type": "object",
+			"required": ["id"],
+			"properties": {
+				"id": {
+					"$ref": "#/definitions/resource_location",
+					"description": "The unique id for this blueprint."
+				}
+			}
+		},
+		"textures": {
+			"type": "object",
+			"default": {},
+			"patternProperties": {
+				"^[a-z0-9_]+$": {
+					"$ref": "#/definitions/texture"
+				}
+			}
+		},
+		"texture_palettes": {
+			"type": "object",
+			"default": {},
+			"patternProperties": {
+				"^[a-z0-9_]+$": {
+					"$ref": "#/definitions/texture_palette"
+				}
+			}
+		},
+		"nodes": {
+			"type": "object",
+			"default": {},
+			"patternProperties": {
+				"^[a-z0-9_]+$": {
+					"$ref": "#/definitions/node"
+				}
+			}
+		},
+		"animations": {
+			"type": "object",
+			"default": {},
+			"patternProperties": {
+				"^[a-z0-9_]+$": {
+					"$ref": "#/definitions/dynamic_animation"
+				}
+			}
+		}
+	},
+	"definitions": {
+		"texture": {
+			"type": "object",
+			"oneOf": [
+				{
+					"required": ["type", "base64_string"],
+					"properties": {
+						"type": {
+							"const": "custom"
+						},
+						"base64_string": {
+							"type": "string",
+							"description": "The base64-encoded string representing the image data."
+						},
+						"mime_type": {
+							"type": "string",
+							"description": "The MIME type of the image (e.g., 'image/png', 'image/jpeg'). This field might not be strictly necessary, as Minecraft currently only supports PNG images. However, it could be useful to include if future updates add support for other image types.",
+							"default": "image/png"
+						},
+						"animation": {
+							"type": "object",
+							"default": {},
+							"properties": {
+								"interpolate": {
+									"type": "boolean",
+									"default": false
+								},
+								"width": {
+									"type": "number"
+								},
+								"height": {
+									"type": "number"
+								},
+								"frametime": {
+									"type": "number",
+									"default": 1
+								},
+								"frames": {
+									"type": "array",
+									"items": {
+										"oneOf": [
+											{
+												"type": "number"
+											},
+											{
+												"type": "object",
+												"required": ["index", "time"],
+												"properties": {
+													"index": { "type": "number" },
+													"time": { "type": "number" }
+												}
+											}
+										]
+									}
+								}
+							}
+						}
+					}
+				},
+				{
+					"required": ["type", "resource_location"],
+					"properties": {
+						"type": {
+							"const": "reference"
+						},
+						"resource_location": {
+							"$ref": "#/definitions/resource_location",
+							"description": "The resource location of the internal Minecraft texture."
+						}
+					}
+				}
+			]
+		},
+		"texture_palette": {
+			"type": "object",
+			"required": ["active_state", "states"],
+			"properties": {
+				"active_state": {
+					"type": "string",
+					"description": "The name of the currently active state. This value must match one of the keys defined in the 'states' map.",
+					"pattern": "^[a-z0-9_]+$"
+				},
+				"states": {
+					"type": "object",
+					"description": "A map that links state names to objects representing individual states.",
+					"minProperties": 1,
+					"patternProperties": {
+						"^[a-z0-9_]+$": {
+							"type": "object",
+							"required": ["texture"],
+							"properties": {
+								"texture": {
+									"type": "string",
+									"description": "The key of the texture used for this state, referencing an entry from the 'textures' section.",
+									"pattern": "^[a-z0-9_]+$"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"node": {
+			"type": "object",
+			"required": ["type"],
+			"properties": {
+				"type": {
+					"type": "string"
+				},
+				"default_transformation": {
+					"$ref": "#/definitions/node_transformation"
+				}
+			},
+			"allOf": [
+				{
+					"if": {
+						"properties": {
+							"type": { "const": "bone" }
+						}
+					},
+					"then": {
+						"type": "object",
+						"required": ["elements"],
+						"properties": {
+							"display_properties": {
+								"$ref": "#/definitions/bone_display_properties"
+							},
+							"elements": {
+								"type": "array",
+								"items": {
+									"$ref": "#/definitions/bone_element"
+								}
+							}
+						}
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": { "const": "item_display" }
+						}
+					},
+					"then": {
+						"type": "object",
+						"properties": {
+							"display_properties": {
+								"$ref": "#/definitions/item_display_properties"
+							}
+						}
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": { "const": "block_display" }
+						}
+					},
+					"then": {
+						"type": "object",
+						"properties": {
+							"display_properties": {
+								"$ref": "#/definitions/block_display_properties"
+							}
+						}
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": { "const": "text_display" }
+						}
+					},
+					"then": {
+						"type": "object",
+						"properties": {
+							"display_properties": {
+								"$ref": "#/definitions/text_display_properties"
+							}
+						}
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": { "const": "structure" }
+						}
+					},
+					"then": {}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": { "const": "camera" }
+						}
+					},
+					"then": {}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": { "const": "locator" }
+						}
+					},
+					"then": {}
+				}
+			]
+		},
+		"node_transformation": {
+			"type": "object",
+			"default": {},
+			"properties": {
+				"matrix": {
+					"$ref": "#/definitions/matrix",
+					"default": [
+						1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
+						1.0
+					]
+				},
+				"decomposed": {
+					"type": "object",
+					"properties": {
+						"translation": {
+							"$ref": "#/definitions/vector3",
+							"default": [0.0, 0.0, 0.0]
+						},
+						"left_rotation": {
+							"$ref": "#/definitions/vector4",
+							"default": [0.0, 0.0, 0.0, 1.0]
+						},
+						"scale": {
+							"$ref": "#/definitions/vector3",
+							"default": [1.0, 1.0, 1.0]
+						}
+					}
+				},
+				"position": {
+					"$ref": "#/definitions/vector3",
+					"default": [0.0, 0.0, 0.0]
+				},
+				"rotation": {
+					"$ref": "#/definitions/vector3",
+					"default": [0.0, 180.0, 0.0]
+				},
+				"head_rotation": {
+					"$ref": "#/definitions/vector2",
+					"default": [0.0, 180.0]
+				},
+				"scale": {
+					"$ref": "#/definitions/vector3",
+					"default": [1.0, 1.0, 1.0]
+				}
+			}
+		},
+		"bone_element": {
+			"type": "object",
+			"required": ["from", "to", "rotation", "faces"],
+			"properties": {
+				"from": {
+					"$ref": "#/definitions/vector3"
+				},
+				"to": {
+					"$ref": "#/definitions/vector3"
+				},
+				"rotation": {
+					"type": "object",
+					"required": ["angle", "axis", "origin"],
+					"properties": {
+						"angle": {
+							"type": "number"
+						},
+						"axis": {
+							"type": "string",
+							"enum": ["x", "y", "z"]
+						},
+						"origin": {
+							"$ref": "#/definitions/vector3"
+						}
+					}
+				},
+				"shade": {
+					"type": "boolean",
+					"default": true
+				},
+				"light_emission": {
+					"type": "number",
+					"default": 0
+				},
+				"faces": {
+					"type": "object",
+					"minProperties": 1,
+					"additionalProperties": false,
+					"properties": {
+						"north": { "$ref": "#/definitions/bone_element_face" },
+						"east": { "$ref": "#/definitions/bone_element_face" },
+						"south": { "$ref": "#/definitions/bone_element_face" },
+						"west": { "$ref": "#/definitions/bone_element_face" },
+						"up": { "$ref": "#/definitions/bone_element_face" },
+						"down": { "$ref": "#/definitions/bone_element_face" }
+					}
+				},
+				"display_rotation": {
+					"$ref": "#/definitions/vector3",
+					"default": [0.0, 180.0, 0.0]
+				}
+			}
+		},
+		"bone_element_face": {
+			"type": "object",
+			"required": ["uv", "texture_provider"],
+			"additionalProperties": false,
+			"properties": {
+				"uv": {
+					"$ref": "#/definitions/vector4"
+				},
+				"tintindex": {
+					"type": "number",
+					"description": "Determines whether to tint the texture using a hardcoded tint index. The default value, -1, indicates not to use the tint. Any other number is provided to BlockColors to get the tint value corresponding to that index. However, most blocks do not have a tint value defined (in which case white is used). Furthermore, no vanilla block currently uses multiple tint values, and thus the tint index value is ignored (as long as it is set to something other than -1); it could be used for modded blocks that need multiple distinct tint values in the same block though.",
+					"default": -1
+				},
+				"texture_provider": {
+					"type": "object",
+					"oneOf": [
+						{
+							"required": ["type", "texture"],
+							"properties": {
+								"type": {
+									"const": "texture"
+								},
+								"texture": {
+									"type": "string",
+									"description": "A valid key from the 'textures' section."
+								}
+							}
+						},
+						{
+							"required": ["type", "texture_palette"],
+							"properties": {
+								"type": {
+									"const": "texture_palette"
+								},
+								"texture_palette": {
+									"type": "string",
+									"description": "A valid key from the 'texture_palettes' section."
+								}
+							}
+						}
+					]
+				},
+				"rotation": {
+					"type": "number",
+					"description": "Rotates the texture clockwise by the specified number of degrees. Can be 0, 90, 180, or 270. Defaults to 0. \n\nRotation does not affect which part of the texture is used. Instead, it amounts to permutation of the selected texture vertexes (selected implicitly, or explicitly though `uv`)",
+					"markdownDescription": "Rotates the texture clockwise by the specified number of degrees. Can be 0, 90, 180, or 270. Defaults to 0. \n\nRotation does not affect which part of the texture is used. Instead, it amounts to permutation of the selected texture vertexes (selected implicitly, or explicitly though `uv`)",
+					"default": 0
+				}
+			}
+		},
+		"common_display_properties": {
+			"type": "object",
+			"default": {},
+			"properties": {
+				"billboard": {
+					"type": "string",
+					"enum": ["fixed", "vertical", "horizontal", "center"],
+					"default": "fixed"
+				},
+				"custom_brightness": {
+					"type": "number",
+					"default": 0
+				},
+				"custom_name": {
+					"$ref": "#/definitions/optional_adventure_component",
+					"default": null
+				},
+				"glow_color_override": {
+					"type": "number",
+					"default": 16777215
+				},
+				"is_custom_name_visible": {
+					"type": "boolean",
+					"default": false
+				},
+				"is_glowing": {
+					"type": "boolean",
+					"default": false
+				},
+				"shadow_radius": {
+					"type": "number",
+					"default": 0.0
+				},
+				"shadow_strength": {
+					"type": "number",
+					"default": 1.0
+				}
+			}
+		},
+		"item_display_properties": {
+			"default": {},
+			"allOf": [
+				{
+					"$ref": "#/definitions/common_display_properties"
+				},
+				{
+					"type": "object",
+					"properties": {
+						"item": {
+							"type": "string",
+							"default": "minecraft:air",
+							"description": "A string representing a detailed Minecraft item stack (e.g., 'minecraft:wooden_sword[damage=3]')."
+						},
+						"item_display": {
+							"type": "string",
+							"enum": [
+								"none",
+								"thirdperson_lefthand",
+								"thirdperson_righthand",
+								"firstperson_lefthand",
+								"firstperson_righthand",
+								"head",
+								"gui",
+								"ground",
+								"fixed"
+							],
+							"default": "none"
+						}
+					}
+				}
+			]
+		},
+		"block_display_properties": {
+			"default": {},
+			"allOf": [
+				{
+					"$ref": "#/definitions/common_display_properties"
+				},
+				{
+					"type": "object",
+					"properties": {
+						"block_state": {
+							"type": "string",
+							"default": "minecraft:air",
+							"description": "A string representing Minecraft block data (e.g., 'minecraft:cake[bites=3]')."
+						}
+					}
+				}
+			]
+		},
+		"text_display_properties": {
+			"default": {},
+			"allOf": [
+				{
+					"$ref": "#/definitions/common_display_properties"
+				},
+				{
+					"type": "object",
+					"properties": {
+						"alignment": {
+							"type": "string",
+							"enum": ["center", "left", "right"],
+							"default": "center"
+						},
+						"background_color": {
+							"type": "number",
+							"default": 1073741824
+						},
+						"is_default_background": {
+							"type": "boolean",
+							"default": false
+						},
+						"is_see_through": {
+							"type": "boolean",
+							"default": false
+						},
+						"is_shadowed": {
+							"type": "boolean",
+							"default": false
+						},
+						"line_width": {
+							"type": "number",
+							"default": 200
+						},
+						"text": {
+							"$ref": "#/definitions/optional_adventure_component",
+							"default": null
+						},
+						"text_opacity": {
+							"type": "number",
+							"default": -1
+						}
+					}
+				}
+			]
+		},
+		"bone_display_properties": {
+			"default": {},
+			"allOf": [
+				{
+					"$ref": "#/definitions/common_display_properties"
+				},
+				{
+					"type": "object",
+					"properties": {
+						"is_enchanted": {
+							"type": "boolean",
+							"default": false
+						}
+					}
+				}
+			]
+		},
+		"dynamic_animation": {
+			"type": "object",
+			"required": ["loop_mode", "length"],
+			"properties": {
+				"loop_mode": {
+					"oneOf": [
+						{
+							"required": ["type"],
+							"properties": {
+								"type": { "const": "once" }
+							}
+						},
+						{
+							"required": ["type"],
+							"properties": {
+								"type": { "const": "hold" }
+							}
+						},
+						{
+							"required": ["type"],
+							"properties": {
+								"type": { "const": "loop" },
+								"loop_delay": {
+									"$ref": "#/definitions/molang_expression",
+									"default": "0"
+								}
+							}
+						}
+					]
+				},
+				"blend_weight": {
+					"$ref": "#/definitions/molang_expression",
+					"default": "1"
+				},
+				"start_delay": {
+					"$ref": "#/definitions/molang_expression",
+					"default": "0"
+				},
+				"length": {
+					"type": "number"
+				},
+				"global_keyframes": {
+					"type": "object",
+					"default": {},
+					"properties": {
+						"texture": {
+							"type": "object",
+							"default": {},
+							"description": "A collection of texture keyframes, identified by a floating-point timestamp.",
+							"patternProperties": {
+								"^\\d+\\.\\d+$": {
+									"$ref": "#/definitions/texture_keyframe"
+								}
+							}
+						},
+						"event": {
+							"type": "object",
+							"default": {},
+							"description": "A collection of event keyframes, identified by a floating-point timestamp.",
+							"patternProperties": {
+								"^\\d+\\.\\d+$": {
+									"$ref": "#/definitions/event_keyframe"
+								}
+							}
+						}
+					}
+				},
+				"node_keyframes": {
+					"type": "object",
+					"default": {},
+					"patternProperties": {
+						"^[a-z0-9_]+$": {
+							"type": "object",
+							"default": {},
+							"properties": {
+								"position": {
+									"type": "object",
+									"default": {},
+									"description": "A collection of position keyframes, identified by a floating-point timestamp.",
+									"patternProperties": {
+										"^\\d+\\.\\d+$": {
+											"$ref": "#/definitions/transformation_keyframe"
+										}
+									}
+								},
+								"rotation": {
+									"type": "object",
+									"default": {},
+									"description": "A collection of rotation keyframes, identified by a floating-point timestamp.",
+									"patternProperties": {
+										"^\\d+\\.\\d+$": {
+											"$ref": "#/definitions/transformation_keyframe"
+										}
+									}
+								},
+								"scale": {
+									"type": "object",
+									"default": {},
+									"description": "A collection of scale keyframes, identified by a floating-point timestamp.",
+									"patternProperties": {
+										"^\\d+\\.\\d+$": {
+											"$ref": "#/definitions/transformation_keyframe"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"molang_expression": {
+			"type": "string",
+			"description": "A string representing a Molang expression."
+		},
+		"molang_vector3": {
+			"type": "array",
+			"items": { "$ref": "#/definitions/molang_expression" },
+			"minItems": 3,
+			"maxItems": 3
+		},
+		"texture_keyframe": {
+			"type": "object",
+			"default": {},
+			"description": "Maps texture palettes to active states. Each key corresponds to a valid texture palette key from the 'texture_palette' section, and the value defines its active state.",
+			"patternProperties": {
+				"^[a-z0-9_]+$": {
+					"type": "string",
+					"pattern": "^[a-z0-9_]+$"
+				}
+			}
+		},
+		"event_keyframe": {
+			"type": "object",
+			"required": ["events"],
+			"properties": {
+				"events": {
+					"type": "array",
+					"description": "A list of event names that can be used to trigger actions in the API.",
+					"items": {
+						"type": "string",
+						"pattern": "^[a-z0-9_]+$"
+					}
+				}
+			}
+		},
+		"transformation_keyframe": {
+			"type": "object",
+			"required": ["value", "interpolation"],
+			"properties": {
+				"value": {
+					"$ref": "#/definitions/molang_vector3"
+				},
+				"post": {
+					"$ref": "#/definitions/molang_vector3"
+				},
+				"interpolation": {
+					"type": "object",
+					"oneOf": [
+						{
+							"type": "object",
+							"required": ["type", "easing"],
+							"properties": {
+								"type": {
+									"const": "linear"
+								},
+								"easing": {
+									"type": "string",
+									"enum": [
+										"linear",
+										"step",
+										"ease_in_quad",
+										"ease_out_quad",
+										"ease_in_out_quad",
+										"ease_in_cubic",
+										"ease_out_cubic",
+										"ease_in_out_cubic",
+										"ease_in_quart",
+										"ease_out_quart",
+										"ease_in_out_quart",
+										"ease_in_quint",
+										"ease_out_quint",
+										"ease_in_out_quint",
+										"ease_in_sine",
+										"ease_out_sine",
+										"ease_in_out_sine",
+										"ease_in_expo",
+										"ease_out_expo",
+										"ease_in_out_expo",
+										"ease_in_circ",
+										"ease_out_circ",
+										"ease_in_out_circ",
+										"ease_in_back",
+										"ease_out_back",
+										"ease_in_out_back",
+										"ease_in_elastic",
+										"ease_out_elastic",
+										"ease_in_out_elastic",
+										"ease_in_bounce",
+										"ease_out_bounce",
+										"ease_in_out_bounce"
+									]
+								},
+								"easing_arguments": {
+									"type": "array",
+									"items": {
+										"type": "number"
+									},
+									"default": []
+								}
+							}
+						},
+						{
+							"type": "object",
+							"required": [
+								"type",
+								"left_handle_time",
+								"left_handle_value",
+								"right_handle_time",
+								"right_handle_value"
+							],
+							"properties": {
+								"type": {
+									"const": "bezier"
+								},
+								"left_handle_time": {
+									"$ref": "#/definitions/vector3"
+								},
+								"left_handle_value": {
+									"$ref": "#/definitions/vector3"
+								},
+								"right_handle_time": {
+									"$ref": "#/definitions/vector3"
+								},
+								"right_handle_value": {
+									"$ref": "#/definitions/vector3"
+								}
+							}
+						},
+						{
+							"type": "object",
+							"required": ["type"],
+							"properties": {
+								"type": {
+									"const": "catmullrom"
+								}
+							}
+						},
+						{
+							"type": "object",
+							"required": ["type"],
+							"properties": {
+								"type": {
+									"const": "step"
+								}
+							}
+						}
+					]
+				}
+			}
+		},
+		"resource_location": {
+			"type": "string",
+			"pattern": "^[a-z0-9_\\-]+:[a-z0-9_\\-./]+$",
+			"description": "A string representing a Minecraft resource location."
+		},
+		"optional_adventure_component": {
+			"type": ["string", "null"],
+			"description": "A string representing a serialized Adventure text component. This can be plain text (e.g., 'hello' or '\"hello world\"'), JSON-formatted text (e.g., '{\"text\":\"hello\",\"bold\":true}'), or an array of components (e.g., '[\"hello\",\"world\"]')."
+		},
+		"matrix": {
+			"type": "array",
+			"items": { "type": "number" },
+			"minItems": 16,
+			"maxItems": 16
+		},
+		"vector2": {
+			"type": "array",
+			"items": { "type": "number" },
+			"minItems": 2,
+			"maxItems": 2
+		},
+		"vector3": {
+			"type": "array",
+			"items": { "type": "number" },
+			"minItems": 3,
+			"maxItems": 3
+		},
+		"vector4": {
+			"type": "array",
+			"items": { "type": "number" },
+			"minItems": 4,
+			"maxItems": 4
+		}
+	}
+}
