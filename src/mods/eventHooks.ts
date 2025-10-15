@@ -46,3 +46,16 @@ registerPropertyOverrideMod({
 		}
 	},
 })
+
+registerPropertyOverrideMod({
+	id: `animated-java:event-hook/pre-select-project-event`,
+	object: ModelProject.prototype,
+	key: 'select',
+
+	get: original => {
+		return function (this: ModelProject) {
+			EVENTS.PRE_SELECT_PROJECT.publish(this)
+			return original.call(this)
+		}
+	},
+})

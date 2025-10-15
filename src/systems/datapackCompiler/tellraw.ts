@@ -2,7 +2,6 @@ import { toSmallCaps } from 'src/util/minecraftUtil'
 import { type IRenderedAnimation } from '../animationRenderer'
 import { JsonText, TextElement } from '../jsonText'
 import { type IRenderedVariant } from '../rigRenderer'
-import { TAGS } from './tags'
 
 const TELLRAW_PREFIX = () =>
 	new JsonText([
@@ -120,12 +119,10 @@ namespace TELLRAW {
 			.toString()
 			.replaceAll('\\n', '\\\\n')
 
-	export const FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR = (functionPath: string) => {
+	export const FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR = (functionPath: string, tag: string) => {
 		const hoverText = new JsonText([{ text: functionPath, color: 'yellow' }, '']).flatten()
 
-		const exampleCommand = `/execute as @e[tag=${TAGS.PROJECT_ROOT(
-			Project!.animated_java.export_namespace
-		)}] run function ${functionPath}`
+		const exampleCommand = `/execute as @e[tag=${tag}] run function ${functionPath}`
 
 		return TELLRAW_ERROR('Function Not Executed as Root Entity', [
 			!compareVersions('1.21.5', Project!.animated_java.target_minecraft_version)
