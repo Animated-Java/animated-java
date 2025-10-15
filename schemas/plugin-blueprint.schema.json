@@ -1,7 +1,7 @@
 {
 	"$schema": "http://json-schema.org/draft-07/schema#",
 	"title": "Animated Java Plugin Blueprint",
-	"description": "A schema of the JSON file an Blueprint Project creates when exported for a Plugin environment.",
+	"description": "A schema of the JSON file a Blueprint Project creates when exported for a Plugin environment.",
 	"type": "object",
 	"required": ["format_version", "settings"],
 	"properties": {
@@ -13,7 +13,7 @@
 			"required": ["id"],
 			"properties": {
 				"id": {
-					"$ref": "#/$defs/resource_location",
+					"$ref": "#/definitions/resource_location",
 					"description": "The unique id for this blueprint."
 				}
 			}
@@ -23,7 +23,7 @@
 			"default": {},
 			"patternProperties": {
 				"^[a-z0-9_]+$": {
-					"$ref": "#/$defs/texture"
+					"$ref": "#/definitions/texture"
 				}
 			}
 		},
@@ -32,7 +32,7 @@
 			"default": {},
 			"patternProperties": {
 				"^[a-z0-9_]+$": {
-					"$ref": "#/$defs/texture_palette"
+					"$ref": "#/definitions/texture_palette"
 				}
 			}
 		},
@@ -41,7 +41,7 @@
 			"default": {},
 			"patternProperties": {
 				"^[a-z0-9_]+$": {
-					"$ref": "#/$defs/node"
+					"$ref": "#/definitions/node"
 				}
 			}
 		},
@@ -50,12 +50,12 @@
 			"default": {},
 			"patternProperties": {
 				"^[a-z0-9_]+$": {
-					"$ref": "#/$defs/dynamic_animation"
+					"$ref": "#/definitions/dynamic_animation"
 				}
 			}
 		}
 	},
-	"$defs": {
+	"definitions": {
 		"texture": {
 			"type": "object",
 			"oneOf": [
@@ -121,7 +121,7 @@
 							"const": "reference"
 						},
 						"resource_location": {
-							"$ref": "#/$defs/resource_location",
+							"$ref": "#/definitions/resource_location",
 							"description": "The resource location of the internal Minecraft texture."
 						}
 					}
@@ -165,7 +165,7 @@
 					"type": "string"
 				},
 				"default_transformation": {
-					"$ref": "#/$defs/node_transformation"
+					"$ref": "#/definitions/node_transformation"
 				}
 			},
 			"allOf": [
@@ -180,12 +180,12 @@
 						"required": ["elements"],
 						"properties": {
 							"display_properties": {
-								"$ref": "#/$defs/bone_display_properties"
+								"$ref": "#/definitions/bone_display_properties"
 							},
 							"elements": {
 								"type": "array",
 								"items": {
-									"$ref": "#/$defs/bone_element"
+									"$ref": "#/definitions/bone_element"
 								}
 							}
 						}
@@ -201,7 +201,7 @@
 						"type": "object",
 						"properties": {
 							"display_properties": {
-								"$ref": "#/$defs/item_display_properties"
+								"$ref": "#/definitions/item_display_properties"
 							}
 						}
 					}
@@ -216,7 +216,7 @@
 						"type": "object",
 						"properties": {
 							"display_properties": {
-								"$ref": "#/$defs/block_display_properties"
+								"$ref": "#/definitions/block_display_properties"
 							}
 						}
 					}
@@ -231,7 +231,7 @@
 						"type": "object",
 						"properties": {
 							"display_properties": {
-								"$ref": "#/$defs/text_display_properties"
+								"$ref": "#/definitions/text_display_properties"
 							}
 						}
 					}
@@ -267,7 +267,7 @@
 			"default": {},
 			"properties": {
 				"matrix": {
-					"$ref": "#/$defs/matrix",
+					"$ref": "#/definitions/matrix",
 					"default": [
 						1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
 						1.0
@@ -277,33 +277,33 @@
 					"type": "object",
 					"properties": {
 						"translation": {
-							"$ref": "#/$defs/vector3",
+							"$ref": "#/definitions/vector3",
 							"default": [0.0, 0.0, 0.0]
 						},
 						"left_rotation": {
-							"$ref": "#/$defs/vector4",
+							"$ref": "#/definitions/vector4",
 							"default": [0.0, 0.0, 0.0, 1.0]
 						},
 						"scale": {
-							"$ref": "#/$defs/vector3",
+							"$ref": "#/definitions/vector3",
 							"default": [1.0, 1.0, 1.0]
 						}
 					}
 				},
 				"position": {
-					"$ref": "#/$defs/vector3",
+					"$ref": "#/definitions/vector3",
 					"default": [0.0, 0.0, 0.0]
 				},
 				"rotation": {
-					"$ref": "#/$defs/vector3",
+					"$ref": "#/definitions/vector3",
 					"default": [0.0, 180.0, 0.0]
 				},
 				"head_rotation": {
-					"$ref": "#/$defs/vector2",
+					"$ref": "#/definitions/vector2",
 					"default": [0.0, 180.0]
 				},
 				"scale": {
-					"$ref": "#/$defs/vector3",
+					"$ref": "#/definitions/vector3",
 					"default": [1.0, 1.0, 1.0]
 				}
 			}
@@ -313,10 +313,10 @@
 			"required": ["from", "to", "rotation", "faces"],
 			"properties": {
 				"from": {
-					"$ref": "#/$defs/vector3"
+					"$ref": "#/definitions/vector3"
 				},
 				"to": {
-					"$ref": "#/$defs/vector3"
+					"$ref": "#/definitions/vector3"
 				},
 				"rotation": {
 					"type": "object",
@@ -330,7 +330,7 @@
 							"enum": ["x", "y", "z"]
 						},
 						"origin": {
-							"$ref": "#/$defs/vector3"
+							"$ref": "#/definitions/vector3"
 						}
 					}
 				},
@@ -347,16 +347,16 @@
 					"minProperties": 1,
 					"additionalProperties": false,
 					"properties": {
-						"north": { "$ref": "#/$defs/bone_element_face" },
-						"east": { "$ref": "#/$defs/bone_element_face" },
-						"south": { "$ref": "#/$defs/bone_element_face" },
-						"west": { "$ref": "#/$defs/bone_element_face" },
-						"up": { "$ref": "#/$defs/bone_element_face" },
-						"down": { "$ref": "#/$defs/bone_element_face" }
+						"north": { "$ref": "#/definitions/bone_element_face" },
+						"east": { "$ref": "#/definitions/bone_element_face" },
+						"south": { "$ref": "#/definitions/bone_element_face" },
+						"west": { "$ref": "#/definitions/bone_element_face" },
+						"up": { "$ref": "#/definitions/bone_element_face" },
+						"down": { "$ref": "#/definitions/bone_element_face" }
 					}
 				},
 				"display_rotation": {
-					"$ref": "#/$defs/vector3",
+					"$ref": "#/definitions/vector3",
 					"default": [0.0, 180.0, 0.0]
 				}
 			}
@@ -367,7 +367,7 @@
 			"additionalProperties": false,
 			"properties": {
 				"uv": {
-					"$ref": "#/$defs/vector4"
+					"$ref": "#/definitions/vector4"
 				},
 				"tintindex": {
 					"type": "number",
@@ -425,7 +425,7 @@
 					"default": 0
 				},
 				"custom_name": {
-					"$ref": "#/$defs/optional_adventure_component",
+					"$ref": "#/definitions/optional_adventure_component",
 					"default": null
 				},
 				"glow_color_override": {
@@ -454,7 +454,7 @@
 			"default": {},
 			"allOf": [
 				{
-					"$ref": "#/$defs/common_display_properties"
+					"$ref": "#/definitions/common_display_properties"
 				},
 				{
 					"type": "object",
@@ -487,7 +487,7 @@
 			"default": {},
 			"allOf": [
 				{
-					"$ref": "#/$defs/common_display_properties"
+					"$ref": "#/definitions/common_display_properties"
 				},
 				{
 					"type": "object",
@@ -505,7 +505,7 @@
 			"default": {},
 			"allOf": [
 				{
-					"$ref": "#/$defs/common_display_properties"
+					"$ref": "#/definitions/common_display_properties"
 				},
 				{
 					"type": "object",
@@ -536,7 +536,7 @@
 							"default": 200
 						},
 						"text": {
-							"$ref": "#/$defs/optional_adventure_component",
+							"$ref": "#/definitions/optional_adventure_component",
 							"default": null
 						},
 						"text_opacity": {
@@ -551,7 +551,7 @@
 			"default": {},
 			"allOf": [
 				{
-					"$ref": "#/$defs/common_display_properties"
+					"$ref": "#/definitions/common_display_properties"
 				},
 				{
 					"type": "object",
@@ -587,7 +587,7 @@
 							"properties": {
 								"type": { "const": "loop" },
 								"loop_delay": {
-									"$ref": "#/$defs/molang_expression",
+									"$ref": "#/definitions/molang_expression",
 									"default": "0"
 								}
 							}
@@ -595,11 +595,11 @@
 					]
 				},
 				"blend_weight": {
-					"$ref": "#/$defs/molang_expression",
+					"$ref": "#/definitions/molang_expression",
 					"default": "1"
 				},
 				"start_delay": {
-					"$ref": "#/$defs/molang_expression",
+					"$ref": "#/definitions/molang_expression",
 					"default": "0"
 				},
 				"length": {
@@ -615,7 +615,7 @@
 							"description": "A collection of texture keyframes, identified by a floating-point timestamp.",
 							"patternProperties": {
 								"^\\d+\\.\\d+$": {
-									"$ref": "#/$defs/texture_keyframe"
+									"$ref": "#/definitions/texture_keyframe"
 								}
 							}
 						},
@@ -625,7 +625,7 @@
 							"description": "A collection of event keyframes, identified by a floating-point timestamp.",
 							"patternProperties": {
 								"^\\d+\\.\\d+$": {
-									"$ref": "#/$defs/event_keyframe"
+									"$ref": "#/definitions/event_keyframe"
 								}
 							}
 						}
@@ -645,7 +645,7 @@
 									"description": "A collection of position keyframes, identified by a floating-point timestamp.",
 									"patternProperties": {
 										"^\\d+\\.\\d+$": {
-											"$ref": "#/$defs/transformation_keyframe"
+											"$ref": "#/definitions/transformation_keyframe"
 										}
 									}
 								},
@@ -655,7 +655,7 @@
 									"description": "A collection of rotation keyframes, identified by a floating-point timestamp.",
 									"patternProperties": {
 										"^\\d+\\.\\d+$": {
-											"$ref": "#/$defs/transformation_keyframe"
+											"$ref": "#/definitions/transformation_keyframe"
 										}
 									}
 								},
@@ -665,7 +665,7 @@
 									"description": "A collection of scale keyframes, identified by a floating-point timestamp.",
 									"patternProperties": {
 										"^\\d+\\.\\d+$": {
-											"$ref": "#/$defs/transformation_keyframe"
+											"$ref": "#/definitions/transformation_keyframe"
 										}
 									}
 								}
@@ -681,7 +681,7 @@
 		},
 		"molang_vector3": {
 			"type": "array",
-			"items": { "$ref": "#/$defs/molang_expression" },
+			"items": { "$ref": "#/definitions/molang_expression" },
 			"minItems": 3,
 			"maxItems": 3
 		},
@@ -715,10 +715,10 @@
 			"required": ["value", "interpolation"],
 			"properties": {
 				"value": {
-					"$ref": "#/$defs/molang_vector3"
+					"$ref": "#/definitions/molang_vector3"
 				},
 				"post": {
-					"$ref": "#/$defs/molang_vector3"
+					"$ref": "#/definitions/molang_vector3"
 				},
 				"interpolation": {
 					"type": "object",
@@ -790,16 +790,16 @@
 									"const": "bezier"
 								},
 								"left_handle_time": {
-									"$ref": "#/$defs/vector3"
+									"$ref": "#/definitions/vector3"
 								},
 								"left_handle_value": {
-									"$ref": "#/$defs/vector3"
+									"$ref": "#/definitions/vector3"
 								},
 								"right_handle_time": {
-									"$ref": "#/$defs/vector3"
+									"$ref": "#/definitions/vector3"
 								},
 								"right_handle_value": {
-									"$ref": "#/$defs/vector3"
+									"$ref": "#/definitions/vector3"
 								}
 							}
 						},
