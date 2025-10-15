@@ -390,5 +390,19 @@
 				"list": ["Fixed On-Summon Functions and On-Apply Functions not functioning."]
 			}
 		]
+	},
+	"1.8.0-beta.4": {
+		"title": "v1.8.0-beta.4",
+		"author": "Titus Evans (SnaveSutit)",
+		"date": "2025-10-16",
+		"categories": [
+			{
+				"title": "Fixes",
+				"list": [
+					"Fixed Blueprint format data fixer uppper failing to upgrade Blueprints past format version 1.6.5.",
+					"Fixed outdated rig function failing due to incorrect root tag."
+				]
+			}
+		]
 	}
 }
