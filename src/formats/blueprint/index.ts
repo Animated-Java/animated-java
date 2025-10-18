@@ -149,10 +149,7 @@ export interface IBlueprintFormatJSON {
 export function fixCubeRotation(cube: Cube) {
 	const maxRotation = Math.max(...cube.rotation)
 	const minRotation = Math.min(...cube.rotation)
-	if (maxRotation <= 45 && minRotation >= -45) {
-		console.log('Cube rotation is fine, no need to fix', cube.rotation)
-		return
-	}
+	if (maxRotation <= 45 && minRotation >= -45) return
 	// Use the rotation with the largest absolute value
 	const rotation = Math.abs(maxRotation) >= Math.abs(minRotation) ? maxRotation : minRotation
 	const axis = cube.rotation.indexOf(rotation)
@@ -173,13 +170,19 @@ export function convertToBlueprint() {
 		group.createUniqueName(Group.all.filter(g => g !== group))
 		group.sanitizeName()
 	}
+
 	for (const animation of Blockbench.Animation.all) {
 		animation.createUniqueName(Blockbench.Animation.all.filter(a => a !== animation))
 		animation.name = sanitizeStorageKey(animation.name)
 	}
+
 	for (const cube of Cube.all) {
 		cube.setUVMode(false)
+
+		fixCubeRotation(cube)
 	}
+
+	Canvas.updateAll()
 }
 
 export function getDefaultProjectSettings() {
