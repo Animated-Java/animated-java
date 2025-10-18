@@ -146,6 +146,23 @@ export interface IBlueprintFormatJSON {
 	collections?: ICollectionJSON[]
 }
 
+export function fixCubeRotation(cube: Cube) {
+	const maxRotation = Math.max(...cube.rotation)
+	const minRotation = Math.min(...cube.rotation)
+	if (maxRotation <= 45 && minRotation >= -45) {
+		console.log('Cube rotation is fine, no need to fix', cube.rotation)
+		return
+	}
+	// Use the rotation with the largest absolute value
+	const rotation = Math.abs(maxRotation) >= Math.abs(minRotation) ? maxRotation : minRotation
+	const axis = cube.rotation.indexOf(rotation)
+
+	const previousSelected = Project!.selected_elements
+	Project!.selected_elements = [cube]
+	rotateOnAxis(() => rotation, axis, true)
+	Project!.selected_elements = previousSelected
+}
+
 //region > Convert
 export function convertToBlueprint() {
 	// Convert the current project to a Blueprint
@@ -278,6 +295,13 @@ export const BLUEPRINT_FORMAT = registerModelFormat(
 					component: ProjectTitleSvelte,
 					props: { pluginMode: project.pluginMode },
 				})
+
+				for (const cube of Cube.all) {
+					cube.setUVMode(false)
+					fixCubeRotation(cube)
+				}
+
+				Canvas.updateAll()
 			})
 		},
 

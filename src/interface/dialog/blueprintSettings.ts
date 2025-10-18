@@ -3,7 +3,7 @@ import { updateAllCubeOutlines } from 'src/mods/cube'
 import { SUPPORTED_MINECRAFT_VERSIONS } from 'src/systems/global'
 import BlueprintSettingsDialogSvelteComponent from '../../components/blueprintSettingsDialog.svelte'
 import { PACKAGE } from '../../constants'
-import { updateRotationLock } from '../../formats/blueprint'
+import { updateRotationConstraints } from '../../formats/blueprint'
 import { defaultValues, type ExportMode } from '../../formats/blueprint/settings'
 import { sanitizeStorageKey } from '../../util/minecraftUtil'
 import { Valuable } from '../../util/stores'
@@ -134,7 +134,7 @@ export function openBlueprintSettingsDialog() {
 		preventKeybinds: true,
 		onConfirm() {
 			setSettings(settings)
-			updateRotationLock()
+			updateRotationConstraints()
 			updateAllCubeOutlines()
 			Canvas.updateAll()
 		},
