@@ -26,6 +26,7 @@ const EVENTS = {
 	BLOCKSTATE_REGISTRY_LOADED: subscribable<void>(),
 
 	PRE_SELECT_PROJECT: subscribable<ModelProject>(),
+	POST_SELECT_PROJECT: subscribable<ModelProject>(),
 	SELECT_PROJECT: subscribable<ModelProject>(),
 	UNSELECT_PROJECT: subscribable<ModelProject>(),
 	CLOSE_PROJECT: subscribable<ModelProject>(),

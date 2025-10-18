@@ -192,7 +192,7 @@ interface RegisterProjectModOptions<ID extends string, RevertContext extends any
 export function registerProjectMod<ID extends string, RevertContext extends any | void>(
 	options: RegisterProjectModOptions<ID, RevertContext>
 ) {
-	let revertContext: RevertContext | undefined
+	let revertContext: RevertContext | null = null
 
 	return registerMod({
 		...options,
@@ -200,6 +200,8 @@ export function registerProjectMod<ID extends string, RevertContext extends any 
 		apply: () => {
 			return [
 				EVENTS.PRE_SELECT_PROJECT.subscribe(project => {
+					// Effectively using revertContext as a boolean to check if the mod is applied
+					if (revertContext !== null) return
 					if (!options.condition(project)) return
 					console.log(`Applying project mod '${options.id}'`)
 					revertContext = options.apply()
@@ -207,11 +209,10 @@ export function registerProjectMod<ID extends string, RevertContext extends any 
 
 				EVENTS.UNSELECT_PROJECT.subscribe(() => {
 					// Effectively using revertContext as a boolean to check if the mod is applied
-					if (revertContext !== undefined) {
-						console.log(`Reverting project mod '${options.id}'`)
-						options.revert(revertContext)
-						revertContext = undefined
-					}
+					if (revertContext === null) return
+					console.log(`Reverting project mod '${options.id}'`)
+					options.revert(revertContext)
+					revertContext = null
 				}),
 			]
 		},
