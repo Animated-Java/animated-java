@@ -404,5 +404,21 @@
 				]
 			}
 		]
+	},
+	"1.8.0-beta.5": {
+		"title": "v1.8.0-beta.5",
+		"author": "Titus Evans (SnaveSutit)",
+		"date": "2025-10-19",
+		"categories": [
+			{
+				"title": "Fixes",
+				"list": [
+					"Fixed cube rotations in 1.21.6+ allowing rotation values outside the -45..45 degree range",
+					"Fixed rotation limits not being enforced when converting to a Blueprint.",
+					"Fixed rotation limit not being enforced when rotating cubes.",
+					"Fixed export crash due to invalid tag reference."
+				]
+			}
+		]
 	}
 }

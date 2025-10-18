@@ -1,7 +1,7 @@
 {
 	"meta": {
 		"format": "animated-java:format/blueprint",
-		"format_version": "1.8.0-beta.3",
+		"format_version": "1.8.0-beta.4",
 		"uuid": "167b27cd-b559-3f13-a97c-0841fe21f1d1",
 		"save_location": "D:\\github-repos\\animated-java\\old-animated-java\\test-packs\\latest\\blueprints\\armor_stand_latest.ajblueprint",
 		"last_used_export_namespace": "armor_stand"

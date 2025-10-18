@@ -102,7 +102,11 @@ export function isCubeValid(cube: Cube): '1.21.6+' | 'valid' | 'invalid' {
 		totalRotation === cube.rotation[1] ||
 		totalRotation === cube.rotation[2]
 
-	if (isSingleAxisRotation && projectTargetVersionIsAtLeast('1.21.6')) return '1.21.6+'
+	if (isSingleAxisRotation && projectTargetVersionIsAtLeast('1.21.6')) {
+		// Rotation values still need to be within -45 and 45 degrees
+		if (totalRotation <= 45 && totalRotation >= -45) return '1.21.6+'
+		else return 'invalid'
+	}
 
 	const isRotationInAllowedSteps =
 		totalRotation === -45 ||

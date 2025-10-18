@@ -1,8 +1,8 @@
 template debug {
-	with assert:literal executed_as_root_entity:literal root_tag:literal {
+	with assert:literal executed_as_root_entity:literal root_tag:js {
 		IF (debug_mode) {
 			execute unless entity @s[type=minecraft:item_display,tag=<%root_tag%>] run return run \
-				tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(context.functions.at(-1))%>
+				tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(context.functions.at(-1), root_tag)%>
 		}
 	}
 }

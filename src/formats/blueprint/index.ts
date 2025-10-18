@@ -146,6 +146,20 @@ export interface IBlueprintFormatJSON {
 	collections?: ICollectionJSON[]
 }
 
+export function fixCubeRotation(cube: Cube) {
+	const maxRotation = Math.max(...cube.rotation)
+	const minRotation = Math.min(...cube.rotation)
+	if (maxRotation <= 45 && minRotation >= -45) return
+	// Use the rotation with the largest absolute value
+	const rotation = Math.abs(maxRotation) >= Math.abs(minRotation) ? maxRotation : minRotation
+	const axis = cube.rotation.indexOf(rotation)
+
+	const previousSelected = Project!.selected_elements
+	Project!.selected_elements = [cube]
+	rotateOnAxis(() => rotation, axis, true)
+	Project!.selected_elements = previousSelected
+}
+
 //region > Convert
 export function convertToBlueprint() {
 	// Convert the current project to a Blueprint
@@ -156,13 +170,19 @@ export function convertToBlueprint() {
 		group.createUniqueName(Group.all.filter(g => g !== group))
 		group.sanitizeName()
 	}
+
 	for (const animation of Blockbench.Animation.all) {
 		animation.createUniqueName(Blockbench.Animation.all.filter(a => a !== animation))
 		animation.name = sanitizeStorageKey(animation.name)
 	}
+
 	for (const cube of Cube.all) {
 		cube.setUVMode(false)
+
+		fixCubeRotation(cube)
 	}
+
+	Canvas.updateAll()
 }
 
 export function getDefaultProjectSettings() {
@@ -278,6 +298,13 @@ export const BLUEPRINT_FORMAT = registerModelFormat(
 					component: ProjectTitleSvelte,
 					props: { pluginMode: project.pluginMode },
 				})
+
+				for (const cube of Cube.all) {
+					cube.setUVMode(false)
+					fixCubeRotation(cube)
+				}
+
+				Canvas.updateAll()
 			})
 		},
 
@@ -353,14 +380,8 @@ export function projectTargetVersionIsAtLeast(version: string): boolean {
 	return !compareVersions(version, Project!.animated_java.target_minecraft_version)
 }
 
-export function shouldEnableRotationLock(): boolean {
-	if (!activeProjectIsBlueprintFormat()) return false
-
-	if (projectTargetVersionIsAtLeast('1.21.6')) {
-		return false
-	}
-
-	return !(
+export function hasNonElementSelection(): boolean {
+	return (
 		!!Group.first_selected ||
 		!!AnimatedJava.TextDisplay.selected.length ||
 		!!AnimatedJava.VanillaItemDisplay.selected.length ||
@@ -376,20 +397,20 @@ export function shouldEnableRotationLock(): boolean {
 	)
 }
 
-export function updateRotationLock() {
+export function updateRotationConstraints() {
 	if (!activeProjectIsBlueprintFormat()) return
 	const format = BLUEPRINT_FORMAT.get()!
-	// If any of these node types are selected, we disable rotation lock.
-	format.rotation_limit = shouldEnableRotationLock()
-	format.rotation_snap = format.rotation_limit
-}
+	if (!format) {
+		console.error('Animated Java Blueprint format is not registered!')
+		return
+	}
 
-export function disableRotationLock() {
-	if (!activeProjectIsBlueprintFormat()) return
-	const format = BLUEPRINT_FORMAT.get()!
-
-	format.rotation_limit = false
-	format.rotation_snap = false
+	// Rotation is always limited when selecting an element
+	format.rotation_limit = !hasNonElementSelection()
+	if (!projectTargetVersionIsAtLeast('1.21.6') /* < 1.21.6 */) {
+		// But only snaps to 22.5 degree increments on versions before 1.21.6
+		format.rotation_snap = format.rotation_limit
+	}
 }
 
 EVENTS.SELECT_PROJECT.subscribe(project => {
@@ -402,13 +423,12 @@ EVENTS.UNSELECT_PROJECT.subscribe(project => {
 		EVENTS.UNSELECT_AJ_PROJECT.publish(project)
 	}
 })
-EVENTS.UPDATE_SELECTION.subscribe(updateRotationLock)
+EVENTS.UPDATE_SELECTION.subscribe(updateRotationConstraints)
 EVENTS.SELECT_AJ_PROJECT.subscribe(() => {
 	requestAnimationFrame(() => {
-		updateRotationLock()
+		updateRotationConstraints()
 	})
 })
 EVENTS.UNSELECT_AJ_PROJECT.subscribe(project => {
 	if (project.visualBoundingBox) scene.remove(project.visualBoundingBox)
-	disableRotationLock()
 })
