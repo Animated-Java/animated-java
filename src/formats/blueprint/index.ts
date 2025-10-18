@@ -377,14 +377,8 @@ export function projectTargetVersionIsAtLeast(version: string): boolean {
 	return !compareVersions(version, Project!.animated_java.target_minecraft_version)
 }
 
-export function shouldEnableRotationLock(): boolean {
-	if (!activeProjectIsBlueprintFormat()) return false
-
-	if (projectTargetVersionIsAtLeast('1.21.6')) {
-		return false
-	}
-
-	return !(
+export function hasNonElementSelection(): boolean {
+	return (
 		!!Group.first_selected ||
 		!!AnimatedJava.TextDisplay.selected.length ||
 		!!AnimatedJava.VanillaItemDisplay.selected.length ||
@@ -400,20 +394,20 @@ export function shouldEnableRotationLock(): boolean {
 	)
 }
 
-export function updateRotationLock() {
+export function updateRotationConstraints() {
 	if (!activeProjectIsBlueprintFormat()) return
 	const format = BLUEPRINT_FORMAT.get()!
-	// If any of these node types are selected, we disable rotation lock.
-	format.rotation_limit = shouldEnableRotationLock()
-	format.rotation_snap = format.rotation_limit
-}
+	if (!format) {
+		console.error('Animated Java Blueprint format is not registered!')
+		return
+	}
 
-export function disableRotationLock() {
-	if (!activeProjectIsBlueprintFormat()) return
-	const format = BLUEPRINT_FORMAT.get()!
-
-	format.rotation_limit = false
-	format.rotation_snap = false
+	// Rotation is always limited when selecting an element
+	format.rotation_limit = !hasNonElementSelection()
+	if (!projectTargetVersionIsAtLeast('1.21.6') /* < 1.21.6 */) {
+		// But only snaps to 22.5 degree increments on versions before 1.21.6
+		format.rotation_snap = format.rotation_limit
+	}
 }
 
 EVENTS.SELECT_PROJECT.subscribe(project => {
@@ -426,13 +420,12 @@ EVENTS.UNSELECT_PROJECT.subscribe(project => {
 		EVENTS.UNSELECT_AJ_PROJECT.publish(project)
 	}
 })
-EVENTS.UPDATE_SELECTION.subscribe(updateRotationLock)
+EVENTS.UPDATE_SELECTION.subscribe(updateRotationConstraints)
 EVENTS.SELECT_AJ_PROJECT.subscribe(() => {
 	requestAnimationFrame(() => {
-		updateRotationLock()
+		updateRotationConstraints()
 	})
 })
 EVENTS.UNSELECT_AJ_PROJECT.subscribe(project => {
 	if (project.visualBoundingBox) scene.remove(project.visualBoundingBox)
-	disableRotationLock()
 })
