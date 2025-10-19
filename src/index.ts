@@ -119,6 +119,15 @@ EVENTS.EXTRACT_MODS.subscribe(() => {
 	delete window.AnimatedJava
 })
 
+if (!compareVersions('5.0.0', Blockbench.version) /* >= 5.0.0 */) {
+	Blockbench.showMessageBox({
+		title: 'Animated Java - Incompatible Blockbench Version',
+		message: `Animated Java is incompatible with Blockbench versions above 5.0.0. Please downgrade to Blockbench 4.21.6 to continue using this plugin.`,
+		buttons: ['OK'],
+	})
+	throw new Error('Incompatible Blockbench Version')
+}
+
 BBPlugin.register(PACKAGE.name, {
 	title: PACKAGE.title,
 	author: PACKAGE.author.name,
