@@ -213,6 +213,7 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, 
 				mesh.add(result.mesh)
 				mesh.add(result.outline)
 				mesh.outline = result.outline
+				mesh.outline.visible = el.selected
 
 				el.preview_controller.updateHighlight(el)
 				el.preview_controller.updateTransform(el)
