@@ -30,15 +30,11 @@
 			"locked": false,
 			"export": true,
 			"block": "minecraft:lever[facing=north]",
-			"config": {},
-			"item": "minecraft:diamond",
-			"itemDisplay": "none",
-			"text": "\"Hello World!\"",
-			"lineWidth": 200,
-			"backgroundColor": "#000000",
-			"align": "center",
-			"shadow": false,
-			"seeThrough": false
+			"onSummonFunction": "",
+			"configs": {
+				"default": {},
+				"variants": {}
+			}
 		},
 		{
 			"uuid": "22ad5245-d92c-7f66-6578-bc4f2ca565ec",
@@ -51,15 +47,11 @@
 			"locked": false,
 			"export": true,
 			"block": "minecraft:lever[facing=south]",
-			"config": {},
-			"item": "minecraft:diamond",
-			"itemDisplay": "none",
-			"text": "\"Hello World!\"",
-			"lineWidth": 200,
-			"backgroundColor": "#000000",
-			"align": "center",
-			"shadow": false,
-			"seeThrough": false
+			"onSummonFunction": "",
+			"configs": {
+				"default": {},
+				"variants": {}
+			}
 		},
 		{
 			"uuid": "2ecf5cb0-eae7-5434-d5c2-85f686edcaf0",
@@ -72,15 +64,11 @@
 			"locked": false,
 			"export": true,
 			"block": "minecraft:lever[facing=east]",
-			"config": {},
-			"item": "minecraft:diamond",
-			"itemDisplay": "none",
-			"text": "\"Hello World!\"",
-			"lineWidth": 200,
-			"backgroundColor": "#000000",
-			"align": "center",
-			"shadow": false,
-			"seeThrough": false
+			"onSummonFunction": "",
+			"configs": {
+				"default": {},
+				"variants": {}
+			}
 		},
 		{
 			"uuid": "d509630d-9540-1113-a879-03ce6793117d",
@@ -93,15 +81,11 @@
 			"locked": false,
 			"export": true,
 			"block": "minecraft:lever[facing=west]",
-			"config": {},
-			"item": "minecraft:diamond",
-			"itemDisplay": "none",
-			"text": "\"Hello World!\"",
-			"lineWidth": 200,
-			"backgroundColor": "#000000",
-			"align": "center",
-			"shadow": false,
-			"seeThrough": false
+			"onSummonFunction": "",
+			"configs": {
+				"default": {},
+				"variants": {}
+			}
 		},
 		{
 			"uuid": "f7e90b05-553d-be8a-0a74-a10f3c40f905",
@@ -114,15 +98,11 @@
 			"locked": false,
 			"export": true,
 			"block": "minecraft:stone_button[facing=north]",
-			"config": {},
-			"item": "minecraft:diamond",
-			"itemDisplay": "none",
-			"text": "\"Hello World!\"",
-			"lineWidth": 200,
-			"backgroundColor": "#000000",
-			"align": "center",
-			"shadow": false,
-			"seeThrough": false
+			"onSummonFunction": "",
+			"configs": {
+				"default": {},
+				"variants": {}
+			}
 		},
 		{
 			"uuid": "db073962-3077-37c3-a53d-5acc41e31500",
@@ -135,15 +115,11 @@
 			"locked": false,
 			"export": true,
 			"block": "minecraft:stone_button[facing=south]",
-			"config": {},
-			"item": "minecraft:diamond",
-			"itemDisplay": "none",
-			"text": "\"Hello World!\"",
-			"lineWidth": 200,
-			"backgroundColor": "#000000",
-			"align": "center",
-			"shadow": false,
-			"seeThrough": false
+			"onSummonFunction": "",
+			"configs": {
+				"default": {},
+				"variants": {}
+			}
 		},
 		{
 			"uuid": "ae5551bd-088a-8861-524d-9914984bae41",
@@ -156,15 +132,11 @@
 			"locked": false,
 			"export": true,
 			"block": "minecraft:stone_button[facing=east]",
-			"config": {},
-			"item": "minecraft:diamond",
-			"itemDisplay": "none",
-			"text": "\"Hello World!\"",
-			"lineWidth": 200,
-			"backgroundColor": "#000000",
-			"align": "center",
-			"shadow": false,
-			"seeThrough": false
+			"onSummonFunction": "",
+			"configs": {
+				"default": {},
+				"variants": {}
+			}
 		},
 		{
 			"uuid": "19d912ba-80b5-1c18-41d0-857ee8b4d590",
@@ -177,15 +149,11 @@
 			"locked": false,
 			"export": true,
 			"block": "minecraft:stone_button[facing=west]",
-			"config": {},
-			"item": "minecraft:diamond",
-			"itemDisplay": "none",
-			"text": "\"Hello World!\"",
-			"lineWidth": 200,
-			"backgroundColor": "#000000",
-			"align": "center",
-			"shadow": false,
-			"seeThrough": false
+			"onSummonFunction": "",
+			"configs": {
+				"default": {},
+				"variants": {}
+			}
 		},
 		{
 			"uuid": "260e05ee-918f-b242-1570-7cc241284acb",
@@ -198,15 +166,11 @@
 			"locked": false,
 			"export": true,
 			"block": "minecraft:wall_torch[facing=north]",
-			"config": {},
-			"item": "minecraft:diamond",
-			"itemDisplay": "none",
-			"text": "\"Hello World!\"",
-			"lineWidth": 200,
-			"backgroundColor": "#000000",
-			"align": "center",
-			"shadow": false,
-			"seeThrough": false
+			"onSummonFunction": "",
+			"configs": {
+				"default": {},
+				"variants": {}
+			}
 		},
 		{
 			"uuid": "5290f4fe-83b8-0c33-81b4-f0407db57738",
@@ -219,15 +183,11 @@
 			"locked": false,
 			"export": true,
 			"block": "minecraft:wall_torch[facing=south]",
-			"config": {},
-			"item": "minecraft:diamond",
-			"itemDisplay": "none",
-			"text": "\"Hello World!\"",
-			"lineWidth": 200,
-			"backgroundColor": "#000000",
-			"align": "center",
-			"shadow": false,
-			"seeThrough": false
+			"onSummonFunction": "",
+			"configs": {
+				"default": {},
+				"variants": {}
+			}
 		},
 		{
 			"uuid": "b8918e92-660b-9728-6415-6de83f8b14f1",
@@ -240,15 +200,11 @@
 			"locked": false,
 			"export": true,
 			"block": "minecraft:wall_torch[facing=east]",
-			"config": {},
-			"item": "minecraft:diamond",
-			"itemDisplay": "none",
-			"text": "\"Hello World!\"",
-			"lineWidth": 200,
-			"backgroundColor": "#000000",
-			"align": "center",
-			"shadow": false,
-			"seeThrough": false
+			"onSummonFunction": "",
+			"configs": {
+				"default": {},
+				"variants": {}
+			}
 		},
 		{
 			"uuid": "fd962fbf-1279-4871-adee-50664bb02c85",
@@ -261,15 +217,11 @@
 			"locked": false,
 			"export": true,
 			"block": "minecraft:wall_torch[facing=west]",
-			"config": {},
-			"item": "minecraft:diamond",
-			"itemDisplay": "none",
-			"text": "\"Hello World!\"",
-			"lineWidth": 200,
-			"backgroundColor": "#000000",
-			"align": "center",
-			"shadow": false,
-			"seeThrough": false
+			"onSummonFunction": "",
+			"configs": {
+				"default": {},
+				"variants": {}
+			}
 		},
 		{
 			"uuid": "27a5728f-1868-35b0-ddf2-94f58e7305bd",
@@ -282,15 +234,11 @@
 			"locked": false,
 			"export": true,
 			"block": "minecraft:cobblestone_stairs[facing=north]",
-			"config": {},
-			"item": "minecraft:diamond",
-			"itemDisplay": "none",
-			"text": "\"Hello World!\"",
-			"lineWidth": 200,
-			"backgroundColor": "#000000",
-			"align": "center",
-			"shadow": false,
-			"seeThrough": false
+			"onSummonFunction": "",
+			"configs": {
+				"default": {},
+				"variants": {}
+			}
 		},
 		{
 			"uuid": "9e758d97-f302-a2f5-1147-ef03c323ba27",
@@ -303,15 +251,11 @@
 			"locked": false,
 			"export": true,
 			"block": "minecraft:cobblestone_stairs[facing=south]",
-			"config": {},
-			"item": "minecraft:diamond",
-			"itemDisplay": "none",
-			"text": "\"Hello World!\"",
-			"lineWidth": 200,
-			"backgroundColor": "#000000",
-			"align": "center",
-			"shadow": false,
-			"seeThrough": false
+			"onSummonFunction": "",
+			"configs": {
+				"default": {},
+				"variants": {}
+			}
 		},
 		{
 			"uuid": "39d33f52-142e-60c8-5912-38b3466c4a3f",
@@ -324,15 +268,11 @@
 			"locked": false,
 			"export": true,
 			"block": "minecraft:cobblestone_stairs[facing=east]",
-			"config": {},
-			"item": "minecraft:diamond",
-			"itemDisplay": "none",
-			"text": "\"Hello World!\"",
-			"lineWidth": 200,
-			"backgroundColor": "#000000",
-			"align": "center",
-			"shadow": false,
-			"seeThrough": false
+			"onSummonFunction": "",
+			"configs": {
+				"default": {},
+				"variants": {}
+			}
 		},
 		{
 			"uuid": "487e7ddd-0d55-a188-cc02-15e5025ac19f",
@@ -345,15 +285,11 @@
 			"locked": false,
 			"export": true,
 			"block": "minecraft:cobblestone_stairs[facing=west]",
-			"config": {},
-			"item": "minecraft:diamond",
-			"itemDisplay": "none",
-			"text": "\"Hello World!\"",
-			"lineWidth": 200,
-			"backgroundColor": "#000000",
-			"align": "center",
-			"shadow": false,
-			"seeThrough": false
+			"onSummonFunction": "",
+			"configs": {
+				"default": {},
+				"variants": {}
+			}
 		},
 		{
 			"uuid": "e42645c7-89b3-198d-dce6-8cd5e2dbccb6",
@@ -366,15 +302,11 @@
 			"locked": false,
 			"export": true,
 			"block": "minecraft:cobblestone_stairs[facing=north,shape=inner_left]",
-			"config": {},
-			"item": "minecraft:diamond",
-			"itemDisplay": "none",
-			"text": "\"Hello World!\"",
-			"lineWidth": 200,
-			"backgroundColor": "#000000",
-			"align": "center",
-			"shadow": false,
-			"seeThrough": false
+			"onSummonFunction": "",
+			"configs": {
+				"default": {},
+				"variants": {}
+			}
 		},
 		{
 			"uuid": "1dc76a78-955a-f71b-ae83-b332d3aa3196",
@@ -387,15 +319,11 @@
 			"locked": false,
 			"export": true,
 			"block": "minecraft:cobblestone_stairs[facing=west,shape=inner_left]",
-			"config": {},
-			"item": "minecraft:diamond",
-			"itemDisplay": "none",
-			"text": "\"Hello World!\"",
-			"lineWidth": 200,
-			"backgroundColor": "#000000",
-			"align": "center",
-			"shadow": false,
-			"seeThrough": false
+			"onSummonFunction": "",
+			"configs": {
+				"default": {},
+				"variants": {}
+			}
 		},
 		{
 			"uuid": "47608e95-885c-7f7c-5331-49d9fb70c979",
@@ -408,15 +336,11 @@
 			"locked": false,
 			"export": true,
 			"block": "minecraft:cobblestone_stairs[facing=south,shape=inner_left]",
-			"config": {},
-			"item": "minecraft:diamond",
-			"itemDisplay": "none",
-			"text": "\"Hello World!\"",
-			"lineWidth": 200,
-			"backgroundColor": "#000000",
-			"align": "center",
-			"shadow": false,
-			"seeThrough": false
+			"onSummonFunction": "",
+			"configs": {
+				"default": {},
+				"variants": {}
+			}
 		},
 		{
 			"uuid": "2e72601c-6d12-cd2f-e14d-35ac2e7da732",
@@ -429,15 +353,11 @@
 			"locked": false,
 			"export": true,
 			"block": "minecraft:cobblestone_stairs[facing=east,shape=inner_left]",
-			"config": {},
-			"item": "minecraft:diamond",
-			"itemDisplay": "none",
-			"text": "\"Hello World!\"",
-			"lineWidth": 200,
-			"backgroundColor": "#000000",
-			"align": "center",
-			"shadow": false,
-			"seeThrough": false
+			"onSummonFunction": "",
+			"configs": {
+				"default": {},
+				"variants": {}
+			}
 		}
 	],
 	"outliner": [
