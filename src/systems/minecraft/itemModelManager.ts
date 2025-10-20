@@ -50,7 +50,13 @@ function getItemResourceLocation(item: string) {
 
 async function parseItemModel(location: string, childModel?: IItemModel): Promise<ItemModelMesh> {
 	const modelPath = getPathFromResourceLocation(location, 'models')
-	const model = getJSONAsset(modelPath + '.json') as IItemModel
+	let model: IItemModel
+	try {
+		model = getJSONAsset(modelPath + '.json')
+	} catch {
+		// Fallback to block model if item model doesn't exist
+		model = getJSONAsset(modelPath.replace('item/', 'block/') + '.json')
+	}
 
 	if (childModel) {
 		// if (childModel.ambientocclusion !== undefined)
@@ -69,6 +75,7 @@ async function parseItemModel(location: string, childModel?: IItemModel): Promis
 
 	if (model.parent) {
 		const resource = parseResourceLocation(model.parent)
+		console.log('Parsed resource:', resource)
 		if (resource.type === 'block') {
 			return await parseBlockModel({ model: model.parent, isItemModel: true }, model)
 		}
