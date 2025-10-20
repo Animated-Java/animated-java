@@ -218,7 +218,6 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, 
 				el.preview_controller.updateHighlight(el)
 				el.preview_controller.updateTransform(el)
 				mesh.visible = el.visibility
-				TickUpdates.selection = true
 			})
 			.catch(err => {
 				if (typeof err.message === 'string') {
