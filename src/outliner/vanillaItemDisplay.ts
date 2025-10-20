@@ -202,7 +202,7 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, 
 	updateGeometry(el: VanillaItemDisplay) {
 		if (!el.mesh) return
 
-		void getItemModel(el.item)
+		void getItemModel(el.item, el.itemDisplay)
 			.then(result => {
 				if (!result) return
 				const mesh = el.mesh as THREE.Mesh

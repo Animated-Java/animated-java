@@ -11,6 +11,8 @@
 	let item = selected.item
 	let error = selected.error
 
+	ITEM_DISPLAY_ITEM_DISPLAY_SELECT.set(selected.itemDisplay)
+
 	$: {
 		$error = ''
 		if (selected.item !== item) {
