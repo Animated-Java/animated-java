@@ -189,9 +189,7 @@ async function generateModelMesh(
 		if (variant.x) geometry.rotateX(Math.degToRad(variant.x))
 		if (variant.y) geometry.rotateY(-Math.degToRad(variant.y))
 		geometry.rotateY(Math.degToRad(-180)) // Rotate back after mirroring
-		if (variant.isItemModel) {
-			geometry.translate(0, 8, 0)
-		} else {
+		if (!variant.isItemModel) {
 			geometry.translate(8, 8, 8)
 		}
 
