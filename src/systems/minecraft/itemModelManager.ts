@@ -75,29 +75,35 @@ export function applyModelDisplayTransform(
 	model: IItemModel,
 	itemDisplay: ItemDisplayMode
 ) {
-	if (itemDisplay === 'none') return
+	if (itemDisplay === 'none' || !model.display) return
 
 	// default to right hand if left hand display is not defined
-	if (itemDisplay === 'thirdperson_lefthand' && !model.display?.thirdperson_lefthand) {
-		itemDisplay = 'thirdperson_righthand'
+	if (!model.display.thirdperson_lefthand && model.display.thirdperson_righthand) {
+		model.display.thirdperson_lefthand = structuredClone(model.display.thirdperson_righthand)
 	}
-	if (itemDisplay === 'firstperson_lefthand' && !model.display?.firstperson_lefthand) {
-		itemDisplay = 'firstperson_righthand'
+	if (!model.display.firstperson_lefthand && model.display.firstperson_righthand) {
+		model.display.firstperson_lefthand = structuredClone(model.display.thirdperson_righthand)
 	}
 
-	const display = model.display?.[itemDisplay]
+	const display = model.display[itemDisplay]
 	if (!display) return
 
 	const matrix = new THREE.Matrix4()
 	if (display.rotation) {
 		const rot = display.rotation.map((n: number) => (n * Math.PI) / 180)
-		matrix.makeRotationFromEuler(new THREE.Euler(rot[0], rot[1], rot[2]))
+		matrix.makeRotationFromEuler(Reusable.euler1.set(-rot[0], -rot[1], rot[2]))
 	}
 	if (display.translation) {
-		matrix.setPosition(new THREE.Vector3(...display.translation))
+		matrix.setPosition(
+			Reusable.vec1.set(
+				display.translation[0],
+				display.translation[1],
+				display.translation[2]
+			)
+		)
 	}
 	if (display.scale) {
-		matrix.scale(new THREE.Vector3(...display.scale))
+		matrix.scale(Reusable.vec2.set(...display.scale))
 	}
 
 	itemModel.boundingBox.applyMatrix4(matrix)
