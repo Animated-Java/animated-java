@@ -134,7 +134,34 @@ function createBanner() {
 		return '│ ' + ' '.repeat(l) + v + ' '.repeat(r) + ' │'
 	})
 
-	const banner = '\n' + [header, ...lines, footer].map(v => `//?? ${v}`).join('\n') + '\n'
+	const message = `
+# Animated Java does not work in Blockbench 5
+
+You will need to install and use Blockbench v4.12.6 to use Animated Java until it is updated to support 5.
+
+## How to install Blockbench v4.12.6
+
+1. Download the portable version of Blockbench 4.12.6 [here](https://github.com/JannisX11/blockbench/releases/download/v4.12.6/Blockbench_4.12.6_portable.exe).
+2. Once it's finished downloading, double click the .exe file to run it.
+
+If you're familiar with command line interfaces, you can use [Envbench](https://www.npmjs.com/package/envbench) to install and manage multiple Blockbench versions side by side.
+`
+
+	const startupCode = `(() => {
+	if (!compareVersions('5.0.0', Blockbench.version)) {
+		const message = \`${message}\`;
+		Blockbench.showMessageBox({title: 'Animated Java - Incompatible Blockbench Version',message,width:600});
+		requestAnimationFrame(() => Plugins.registered['animated_java'].uninstall());
+		throw new Error(message);
+	}
+})()`.trim()
+
+	const banner =
+		'\n' +
+		[header, ...lines, footer].map(v => `//?? ${v}`).join('\n') +
+		'\n\n' +
+		startupCode +
+		'\n'
 
 	return {
 		js: banner,
