@@ -1,5 +1,5 @@
 <div align=center>
-		<img src="src/assets/animated_java_fancy_icon_centered.svg" alt="Animated Java Icon" width="180px">
+		<img src="src/assets/icons/animated_java_fancy_icon_centered.svg" alt="Animated Java Icon" width="180px">
 	<br/>
 	<br/>
 	<picture>
