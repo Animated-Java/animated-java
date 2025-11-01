@@ -579,5 +579,29 @@
 				]
 			}
 		]
+	},
+	"1.8.1": {
+		"title": "v1.8.1",
+		"author": "Titus Evans (SnaveSutit)",
+		"date": "2025-11-2",
+		"categories": [
+			{
+				"title": "Changes",
+				"list": [
+					"💬 Added Russian localization - Thanks Koishem!",
+					"Added previewing for Item Display's `item_display` transforms."
+				]
+			},
+			{
+				"title": "Fixes",
+				"list": [
+					"Fixed [#465](https://github.com/Animated-Java/animated-java/issues/465)",
+					"Fixed `global/on_tick` function being placed at start of `minecraft:tick` function tag.",
+					"Fixed backwards / missing chest model.",
+					"Fixed block models on Item Displays using the wrong pivot point.",
+					"Fixed item display panel losing focus when a valid item is entered."
+				]
+			}
+		]
 	}
 }
