@@ -283,8 +283,12 @@ dir animations {
 						execute \
 							if score @s <%OBJECTIVES.FRAME(animation.storage_name)%> \
 							matches <%animation.duration-1%> \
-						run return run \
-							function ../stop
+						run return run block loop_mode_stop {
+							scoreboard players set @s <%OBJECTIVES.FRAME(animation.storage_name)%> 0
+							tag @s add <%TAGS.TRANSFORMS_ONLY()%>
+							execute at @s run function ./zzz/set_frame {frame: 0}
+							tag @s remove <%TAGS.TRANSFORMS_ONLY()%>
+						}
 					}
 					scoreboard players add @s <%OBJECTIVES.FRAME(animation.storage_name)%> 1
 				}
