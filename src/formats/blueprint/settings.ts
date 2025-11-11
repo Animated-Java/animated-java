@@ -46,7 +46,7 @@ export const defaultValues: BlueprintSettings = {
 	enable_plugin_mode: false,
 	resource_pack_export_mode: 'folder' as ExportMode,
 	data_pack_export_mode: 'folder' as ExportMode,
-	target_minecraft_version: SUPPORTED_MINECRAFT_VERSIONS['1.21.9'],
+	target_minecraft_version: SUPPORTED_MINECRAFT_VERSIONS['1.21.11'],
 
 	// Resource Pack Settings
 	display_item: 'minecraft:white_dye',

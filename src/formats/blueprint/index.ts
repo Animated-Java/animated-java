@@ -405,10 +405,11 @@ export function updateRotationConstraints() {
 		return
 	}
 
-	// Rotation is always limited when selecting an element
-	format.rotation_limit = !hasNonElementSelection()
-	if (!projectTargetVersionIsAtLeast('1.21.6') /* < 1.21.6 */) {
-		// But only snaps to 22.5 degree increments on versions before 1.21.6
+	if (!projectTargetVersionIsAtLeast('1.21.11')) {
+		// Rotation is limited to one axis, and between -45 and 45 degrees on versions before 1.21.11
+		format.rotation_limit = !hasNonElementSelection()
+	} else if (!projectTargetVersionIsAtLeast('1.21.6') /* < 1.21.6 */) {
+		// Rotation is snapped to 22.5 degree increments on versions before 1.21.6
 		format.rotation_snap = format.rotation_limit
 	}
 }

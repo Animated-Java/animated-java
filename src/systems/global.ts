@@ -10,6 +10,7 @@ export enum SUPPORTED_MINECRAFT_VERSIONS {
 	'1.21.5' = '1.21.5',
 	'1.21.6' = '1.21.6',
 	'1.21.9' = '1.21.9',
+	'1.21.11' = '1.21.11',
 }
 
 type OldSerializedAJMeta = Record<

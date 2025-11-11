@@ -345,6 +345,8 @@ export function getDataPackFormat(version: SUPPORTED_MINECRAFT_VERSIONS): number
 			return 80
 		case SUPPORTED_MINECRAFT_VERSIONS['1.21.9']:
 			return 88.0
+		case SUPPORTED_MINECRAFT_VERSIONS['1.21.11']:
+			return 93.1
 		default:
 			console.warn(`Unknown Minecraft version: ${version}`)
 			return Infinity
@@ -367,6 +369,8 @@ export function getResourcePackFormat(version: SUPPORTED_MINECRAFT_VERSIONS): nu
 			return 63
 		case SUPPORTED_MINECRAFT_VERSIONS['1.21.9']:
 			return 69.0
+		case SUPPORTED_MINECRAFT_VERSIONS['1.21.11']:
+			return 74.0
 		default:
 			console.warn(`Unknown Minecraft version: ${version}`)
 			return Infinity

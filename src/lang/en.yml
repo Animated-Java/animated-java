@@ -718,7 +718,7 @@ animated_java.misc.failed_to_export.invalid_rotation.message: |-
 animated_java.misc.failed_to_export.invalid_rotation.message_post_1_21_6: |-
   Some cubes in your model have an invalid rotations!
 
-  Cubes can only be rotated on a single axis at a time when targeting Minecraft 1.21.6 or later.
+  Cubes can only be rotated on a single axis at a time when targeting Minecraft 1.21.6 through 1.21.10.
 
   If you want to rotate a cube on multiple axes, put it in a bone and rotate the bone instead.
 
