@@ -1,3 +1,4 @@
+import { ItemDisplayMode } from 'src/outliner/vanillaItemDisplay'
 import { mergeGeometries } from '../../util/bufferGeometryUtils'
 import {
 	type IParsedBlock,
@@ -8,6 +9,7 @@ import {
 import { translate } from '../../util/translation'
 import { assetsLoaded, getJSONAsset, getPngAssetAsDataUrl, hasAsset } from './assetManager'
 import type { BlockStateValue } from './blockstateManager'
+import { applyModelDisplayTransform } from './itemModelManager'
 import type {
 	IBlockModel,
 	IBlockState,
@@ -77,7 +79,8 @@ export async function getBlockModel(block: string): Promise<BlockModelMesh | und
 
 export async function parseBlockModel(
 	variant: IBlockStateVariant,
-	childModel?: IBlockModel
+	childModel?: IBlockModel,
+	itemDisplay: ItemDisplayMode = 'none'
 ): Promise<BlockModelMesh> {
 	const modelPath = getPathFromResourceLocation(variant.model, 'models')
 	const model = getJSONAsset(modelPath + '.json') as IBlockModel
@@ -97,10 +100,12 @@ export async function parseBlockModel(
 
 	if (model.parent) {
 		const parentVariant = { ...variant, model: model.parent }
-		return await parseBlockModel(parentVariant, model)
+		return await parseBlockModel(parentVariant, model, itemDisplay)
 	}
 
-	return await generateModelMesh(variant, model)
+	const mesh = await generateModelMesh(variant, model)
+	applyModelDisplayTransform(mesh, model, itemDisplay)
+	return mesh
 }
 
 async function generateModelMesh(
@@ -189,9 +194,7 @@ async function generateModelMesh(
 		if (variant.x) geometry.rotateX(Math.degToRad(variant.x))
 		if (variant.y) geometry.rotateY(-Math.degToRad(variant.y))
 		geometry.rotateY(Math.degToRad(-180)) // Rotate back after mirroring
-		if (variant.isItemModel) {
-			geometry.translate(0, 8, 0)
-		} else {
+		if (!variant.isItemModel) {
 			geometry.translate(8, 8, 8)
 		}
 

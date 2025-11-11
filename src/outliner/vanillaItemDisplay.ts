@@ -202,7 +202,7 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, 
 	updateGeometry(el: VanillaItemDisplay) {
 		if (!el.mesh) return
 
-		void getItemModel(el.item)
+		void getItemModel(el.item, el.itemDisplay)
 			.then(result => {
 				if (!result) return
 				const mesh = el.mesh as THREE.Mesh
@@ -213,11 +213,11 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, 
 				mesh.add(result.mesh)
 				mesh.add(result.outline)
 				mesh.outline = result.outline
+				mesh.outline.visible = el.selected
 
 				el.preview_controller.updateHighlight(el)
 				el.preview_controller.updateTransform(el)
 				mesh.visible = el.visibility
-				TickUpdates.selection = true
 			})
 			.catch(err => {
 				if (typeof err.message === 'string') {

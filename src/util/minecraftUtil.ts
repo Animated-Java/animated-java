@@ -211,6 +211,8 @@ export class DataPackTag {
 		this.values.sort((a, b) => {
 			const idA = DataPackTag.getEntryId(a)
 			const idB = DataPackTag.getEntryId(b)
+			if (idA === 'animated_java:global/on_tick') return 1
+			if (idB === 'animated_java:global/on_tick') return -1
 			return idA.localeCompare(idB, 'en')
 		})
 

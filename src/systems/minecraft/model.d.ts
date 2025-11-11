@@ -41,10 +41,10 @@ export interface IItemModelElementFace {
 }
 
 export interface IModelELement {
-	from: [number, number, number]
-	to: [number, number, number]
+	from: ArrayVector3
+	to: ArrayVector3
 	rotation?: {
-		origin: [number, number, number]
+		origin: ArrayVector3
 		axis: 'x' | 'y' | 'z'
 		angle: number
 		rescale: boolean
@@ -56,13 +56,15 @@ export interface IModelELement {
 export interface IItemModel {
 	parent?: string
 	textures: Record<string, string> & Record<`layer${number}`, string> & { particle?: string }
-	display?: Record<
-		ModelDisplaySlot,
-		{
-			rotation: [number, number, number]
-			translation: [number, number, number]
-			scale: [number, number, number]
-		}
+	display?: Partial<
+		Record<
+			ModelDisplaySlot,
+			{
+				rotation?: ArrayVector3
+				translation?: ArrayVector3
+				scale?: ArrayVector3
+			}
+		>
 	>
 	gui_light?: 'front' | 'side'
 	elements?: IModelELement[]
@@ -75,13 +77,15 @@ export interface IItemModel {
 export interface IBlockModel {
 	parent?: string
 	textures: Record<string, string> & Record<`layer${number}`, string> & { particle?: string }
-	display?: Record<
-		ModelDisplaySlot,
-		{
-			rotation: [number, number, number]
-			translation: [number, number, number]
-			scale: [number, number, number]
-		}
+	display?: Partial<
+		Record<
+			ModelDisplaySlot,
+			{
+				rotation?: ArrayVector3
+				translation?: ArrayVector3
+				scale?: ArrayVector3
+			}
+		>
 	>
 	ambientocclusion?: boolean
 	elements?: IModelELement[]

@@ -100,9 +100,11 @@ ITEM_DISPLAY_ITEM_DISPLAY_SELECT.set = function (
 	if (VanillaItemDisplay.selected.length > 1) {
 		for (const display of VanillaItemDisplay.selected) {
 			display.itemDisplay = value
+			void display.updateItem()
 		}
 	} else {
 		selected.itemDisplay = value
+		void selected.updateItem()
 	}
 	Project!.saved = false
 	Undo.finishEdit(`Change Item Display Node's Item Display Mode to ${value}`, {
