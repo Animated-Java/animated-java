@@ -17,6 +17,19 @@ export function translate(key: string, ...args: string[]) {
 	if (translation) {
 		return translation.replace(/\{(\d+)\}/g, (str, index) => args[index] || '')
 	} else {
+		const enIndex = FILE_NAMES.indexOf('en')
+		if (languageIndex !== enIndex) {
+			const langEn = LANGUAGES[enIndex] as Record<string, string>
+			const translationEn = langEn[key]
+			if (translationEn) {
+				console.warn(
+					`Missing translation for '${key}' in '${
+						settings.language.value as string
+					}', falling back to English`
+				)
+				return langEn[key].replace(/\{(\d+)\}/g, (str, index) => args[index] || '')
+			}
+		}
 		console.warn(`Could not find translation for '${key}'`)
 		return key
 	}
