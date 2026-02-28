@@ -1,13 +1,15 @@
 import Test from '@components/test.svelte'
+import EVENTS from '@events'
 import { mount, unmount } from 'svelte'
 import { openBlueprintSettings } from './dialogs/blueprint-settings'
 import { BlueprintSettings } from './formats/ajblueprint/settings'
 import { SvelteDialog } from './svelte/dialog'
 import { JsonConfig } from './util/jsonConfig'
-import { createBlockbenchMod } from './util/moddingTools'
+import { createGenericPatch } from './util/moddingTools'
 
 const PLUGIN_API = {
 	API: {
+		EVENTS,
 		svelte: {
 			mount,
 			unmount,
@@ -40,7 +42,7 @@ declare global {
 
 window.AnimatedJava = PLUGIN_API
 
-createBlockbenchMod({
+createGenericPatch({
 	id: `animated-java:global-api`,
 	apply: () => {
 		globalThis.AnimatedJava = PLUGIN_API

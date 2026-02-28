@@ -5,7 +5,7 @@
 	"icon": "icon.svg",
 	"description": "Effortlessly craft complex animations in Minecraft: Java Edition",
 	"version": "2.0.0",
-	"min_blockbench_version": "5.0.0",
+	"min_blockbench_version": "4.12.0",
 	"variant": "desktop",
 	"tags": [
 		"Minecraft: Java Edition",
@@ -42,7 +42,7 @@
 		"@types/websocket": "^1.0.10",
 		"@typescript-eslint/eslint-plugin": "^8.40.0",
 		"@typescript-eslint/parser": "^8.40.0",
-		"blockbench-types": "^4.12.2",
+		"blockbench-types": "file:../../../../snavesutit/blockbench/types",
 		"deepslate": "^0.24.0",
 		"envbench": "^3.0.2",
 		"esbuild": "^0.25.9",

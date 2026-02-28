@@ -53,6 +53,7 @@ export class JsonConfig<
 	/** The actual instance of {@link Config} (No proxies) */
 	private __origin__: JsonConfig<Config>
 	private __parent__?: Config
+
 	constructor() {
 		// @ts-expect-error
 		this.__origin__ = this
@@ -86,6 +87,7 @@ export class JsonConfig<
 			},
 		})
 	}
+
 	private __postInitialize() {
 		for (const key of Object.getOwnPropertyNames(this) as Array<string & keyof AsObject>) {
 			if (key.startsWith('_')) continue
@@ -95,6 +97,7 @@ export class JsonConfig<
 			this[key] = undefined
 		}
 	}
+
 	/**
 	 * Serialize the config to a JSON object.
 	 * @param metaData If true, include metadata such as inherited keys.
@@ -117,6 +120,7 @@ export class JsonConfig<
 		}
 		return JSON.parse(JSON.stringify(result))
 	}
+
 	/**
 	 * Initialize the config from a JSON object.
 	 * @param json The JSON object to initialize the config from.
@@ -142,24 +146,10 @@ export class JsonConfig<
 		}
 		return this
 	}
-	// toSyncable<Return = { [key in keyof AsObject]: Syncable<AsObject[key]> }>(): Return {
-	// 	const obj = {} as Return
-	// 	for (const [key, value] of this.entries() as Array<
-	// 		[string, AsObject[string & keyof AsObject]]
-	// 	>) {
-	// 		obj[key as keyof Return] = syncable(value) as Return[keyof Return]
-	// 	}
-	// 	return obj
-	// }
-	// fromSyncable(syncable: { [key in keyof AsObject]: Syncable<AsObject[key]> }): this {
-	// 	for (const [key, value] of Object.entries(syncable) as Array<
-	// 		[string & keyof AsObject, Syncable<AsObject[string & keyof AsObject]>]
-	// 	>) {
-	// 		// @ts-expect-error
-	// 		this[key] = value.get()
-	// 	}
-	// 	return this
-	// }
+
+	/**
+	 * Checks whether all properties are unset (undefined).
+	 */
 	isDefault(): boolean {
 		return Object.getOwnPropertyNames(this).every(key => {
 			if (key.startsWith('_')) return true
@@ -167,15 +157,41 @@ export class JsonConfig<
 			return this[key] == undefined
 		})
 	}
+
 	/**
 	 * Explicitly set the value of {@link key} to its default.
 	 *
 	 * Note that this is different from setting it to `undefined`.
 	 */
-	makeDefault(key: string & keyof AsObject): void {
+	applyDefaultValue(key: string & keyof AsObject): void {
 		// @ts-expect-error
 		this[key] = this.__defaultValues__[key]
 	}
+
+	/**
+	 * Clear the value of {@link key} if it is identical to its default value by locally setting it to undefined.
+	 * This is useful for cleaning up configs before serialization.
+	 *
+	 * @returns Whether or not the value was changed to undefined.
+	 */
+	resolveDefaultValue(key: string & keyof AsObject) {
+		// @ts-expect-error
+		if (this[key] === this.__defaultValues__[key]) {
+			// @ts-expect-error
+			this[key] = undefined
+			return true
+		}
+	}
+
+	/**
+	 * Clear all values that are identical to their default values by locally setting them to undefined.
+	 */
+	resolveDefaultValues() {
+		for (const key of Object.getOwnPropertyNames(this) as Array<string & keyof AsObject>) {
+			this.resolveDefaultValue(key)
+		}
+	}
+
 	/**
 	 * Checks whether two configs are equal.
 	 */
@@ -187,6 +203,7 @@ export class JsonConfig<
 		}
 		return true
 	}
+
 	/**
 	 * Set the value of {@link key} to be (or not to be) inherited from the parent if it's not set locally.
 	 * @param key The key to set the inheritance of.
@@ -200,6 +217,7 @@ export class JsonConfig<
 		}
 		return this
 	}
+
 	/**
 	 * Get the inheritance status of {@link key}.
 	 * @returns Whether or not the key is inherited from the parent.
@@ -207,6 +225,7 @@ export class JsonConfig<
 	getKeyInheritance(key: string & keyof AsObject): boolean {
 		return this.__inheritedKeys__.has(key)
 	}
+
 	/**
 	 * Gets the value of {@link key} based on {@link getMode}
 	 * @returns If {@link getMode} is `local`, returns the explicitly set value of property {@link key} on this instance. If {@link getMode} is `local-inherited`
@@ -239,6 +258,7 @@ export class JsonConfig<
 			}
 		}
 	}
+
 	/**
 	 * Set the value of {@link key} to {@link value}.
 	 *
@@ -249,6 +269,7 @@ export class JsonConfig<
 		this[key] = value
 		return this
 	}
+
 	/**
 	 * Set the parent of this config.
 	 *
@@ -258,6 +279,7 @@ export class JsonConfig<
 		this.__parent__ = parent
 		return this
 	}
+
 	/**
 	 * @param sort If true, sort the keys alphabetically. If a function, sort the keys using the function. The sort function
 	 * uses the same implementation as {@link Array.prototype.sort}.
@@ -278,6 +300,10 @@ export class JsonConfig<
 		}
 		return keys
 	}
+
+	/**
+	 * Get all values in the config.
+	 */
 	values(): Array<AsObject[string & keyof AsObject]> {
 		const values: Array<AsObject[string & keyof AsObject]> = []
 		for (const key of Object.getOwnPropertyNames(this)) {
@@ -287,6 +313,7 @@ export class JsonConfig<
 		}
 		return values
 	}
+
 	/**
 	 * Get the linked status of a key.
 	 *
@@ -296,6 +323,7 @@ export class JsonConfig<
 	getLinkedState(key: string & keyof AsObject): boolean {
 		return this.get(key, 'local') == undefined
 	}
+
 	/**
 	 * Get the linked status of all keys.
 	 *
@@ -309,6 +337,7 @@ export class JsonConfig<
 		}
 		return map
 	}
+
 	/**
 	 * @param sort If true, sort the entries alphabetically. If a function, sort the entries using the function. The function
 	 * uses the same implementation as {@link Array.prototype.sort}.
@@ -334,6 +363,7 @@ export class JsonConfig<
 		}
 		return entries
 	}
+
 	/**
 	 * Decorator to make a class a serializable config.
 	 */

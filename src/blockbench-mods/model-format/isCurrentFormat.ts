@@ -1,4 +1,4 @@
-import { createBlockbenchMod } from '@aj/util/moddingTools'
+import { createGenericPatch } from '@aj/util/moddingTools'
 
 declare global {
 	interface ModelFormat {
@@ -6,7 +6,7 @@ declare global {
 	}
 }
 
-createBlockbenchMod({
+createGenericPatch({
 	id: 'animated-java:model-format/is-current-format',
 	apply: () => {
 		ModelFormat.prototype.isCurrentFormat = function (this) {

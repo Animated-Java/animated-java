@@ -29,16 +29,16 @@ describe('SerializableConfig', () => {
 	it('does not include default values when serialized unless explicitly set', () => {
 		const config = new TestConfig()
 		expect(config.toJSON()).toEqual({})
-		config.makeDefault('foo')
-		config.makeDefault('bar')
-		config.makeDefault('baz')
+		config.applyDefaultValue('foo')
+		config.applyDefaultValue('bar')
+		config.applyDefaultValue('baz')
 		expect(config.toJSON()).toEqual({ foo: 'string', bar: 42, baz: false })
 	})
 
 	it('includes explicitly set values when serialized', () => {
 		const config = new TestConfig()
 		config.foo = 'baz'
-		config.makeDefault('bar')
+		config.applyDefaultValue('bar')
 		expect(config.toJSON()).toEqual({ foo: 'baz', bar: 42 })
 	})
 

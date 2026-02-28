@@ -1,10 +1,11 @@
+import { localize } from '@aj/util/lang'
 import { AJBLUEPRINT_CODEC } from './codec'
 
 import './settings'
 
 export const AJBLUEPRINT_FORMAT = new Blockbench.ModelFormat({
 	id: 'animated-java:ajblueprint',
-	name: 'Animated Java Blueprint',
+	name: localize('format.blueprint.name'),
 	icon: 'icon-armor_stand',
 	category: 'animated_java',
 	target: 'Minecraft: Java Edition',

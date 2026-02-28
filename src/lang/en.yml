@@ -1,11 +1,20 @@
+format_category:
+  animated_java: Animated Java
+
+format:
+  blueprint:
+    name: Blueprint
+
 dialog:
   blueprint_settings:
     title: Blueprint Settings
     pages:
       general:
         label: General
+
       data_pack:
         label: Data Pack
+
       resource_pack:
         label: Resource Pack
 

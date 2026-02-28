@@ -1,17 +1,8 @@
-import type { ValidateResourceLocation } from '@aj/util/namespacedId'
-import { mount, unmount, type Component, type MountOptions } from 'svelte'
-import type { ComponentPropsPatch, GenericComponent } from './helperTypes'
+import type { ValidateResourceLocation } from '@aj/util/resourceLocation'
+import { mount, unmount, type Component } from 'svelte'
+import type { ComponentMountOptions, GenericComponent } from './helperTypes'
 
 const DIALOG_STACK = new Map<string, SvelteDialog<string>>()
-
-interface ComponentMountOptions<C extends GenericComponent> {
-	component: C
-	props?: ComponentPropsPatch<C>
-	intro?: boolean
-	outro?: boolean
-	/** Can be accessed via getContext() at the component level */
-	context?: MountOptions['context']
-}
 
 interface SidebarPage<C extends GenericComponent> extends ComponentMountOptions<C> {
 	label: string

@@ -1,6 +1,6 @@
 import type { Plugin } from 'esbuild'
-import * as fs from 'fs'
-import * as pathjs from 'path'
+import { existsSync, readdirSync, statSync, type ObjectEncodingOptions } from 'fs'
+import { dirname, extname, join, posix, relative, resolve, sep } from 'path'
 
 interface IRecursiveDirEntry {
 	// The file's name with extension
@@ -16,7 +16,7 @@ interface IRecursiveDirEntry {
 }
 
 interface IRecursiveReadDirSyncOptions {
-	encoding?: fs.ObjectEncodingOptions['encoding']
+	encoding?: ObjectEncodingOptions['encoding']
 	maxDepth?: number
 	filter?: (file: IRecursiveDirEntry) => boolean
 }
@@ -36,30 +36,30 @@ function recursiveReadDirSync(
 
 	function recurse(localDir: string, depth = 0) {
 		// If a local index is found, it is imported and the rest of the directory is ignored.
-		const indexPath = pathjs.join(localDir, 'index.ts')
-		if (fs.existsSync(indexPath)) {
-			const absolutePath = pathjs.resolve(localDir, 'index.ts')
+		const indexPath = join(localDir, 'index.ts')
+		if (existsSync(indexPath)) {
+			const absolutePath = resolve(localDir, 'index.ts')
 			files.push({
 				name: 'index',
 				ext: '.ts',
 				path: absolutePath,
 				parentPath: localDir,
-				localPath: pathjs.relative(dir, absolutePath),
+				localPath: relative(dir, absolutePath),
 			})
 			return
 		}
 
-		fs.readdirSync(localDir, { encoding, withFileTypes: true }).forEach(dirEntry => {
-			const absolutePath = pathjs.join(localDir, dirEntry.name)
+		readdirSync(localDir, { encoding, withFileTypes: true }).forEach(dirEntry => {
+			const absolutePath = join(localDir, dirEntry.name)
 			if (dirEntry.isDirectory() && depth <= maxDepth) {
 				recurse(absolutePath, depth + 1)
 			} else {
 				const fileEntry: IRecursiveDirEntry = {
 					name: dirEntry.name,
-					ext: pathjs.extname(dirEntry.name),
+					ext: extname(dirEntry.name),
 					path: absolutePath,
-					parentPath: pathjs.dirname(absolutePath),
-					localPath: pathjs.relative(dir, absolutePath),
+					parentPath: dirname(absolutePath),
+					localPath: relative(dir, absolutePath),
 				}
 				if (!!filter && !filter(fileEntry)) return
 				files.push(fileEntry)
@@ -72,27 +72,33 @@ function recursiveReadDirSync(
 }
 
 function normalizePathToPosix(path: string) {
-	return path.replaceAll(pathjs.sep, pathjs.posix.sep)
+	return path.replaceAll(sep, posix.sep)
 }
 
 /**
  * A plugin for importing all files in a folder without manually updating an index file.
- * To recurse into subdirectories, use the `//` suffix.
+ *
+ * Use the `/*` suffix to import a folder.
+ *
+ * Use the `/**` suffix to recurse into subdirectories.
  *
  * NOTE - If you're using a glob plugin, this plugin should be executed first.
  */
 const plugin: Plugin = {
 	name: 'import-folder',
 	setup: build => {
-		build.onResolve({ filter: /.+\/\/?$/, namespace: 'file' }, args => {
-			const fullPath = normalizePathToPosix(pathjs.join(args.resolveDir, args.path))
+		build.onResolve({ filter: /.+\/\*\*?$/, namespace: 'file' }, args => {
+			const fullPath = normalizePathToPosix(join(args.resolveDir, args.path)).replace(
+				/\/\*\*?$/,
+				''
+			)
 
-			const stat = fs.statSync(fullPath)
+			const stat = statSync(fullPath)
 			if (!stat.isDirectory()) {
 				return {
 					errors: [
 						{
-							text: `"${fullPath}" is not a directory, but is being imported with a "/" suffix.`,
+							text: `"${fullPath}" is not a directory, but is being imported as a folder.`,
 							location: { file: args.importer },
 						},
 					],
@@ -102,11 +108,11 @@ const plugin: Plugin = {
 			return {
 				namespace: 'import-folder',
 				path: fullPath,
-				pluginData: { recursive: args.path.endsWith('//'), importer: args.importer },
+				pluginData: { recursive: args.path.endsWith('/**'), importer: args.importer },
 			}
 		})
 
-		build.onLoad({ filter: /.+\/\/?$/, namespace: 'import-folder' }, args => {
+		build.onLoad({ filter: /.+/, namespace: 'import-folder' }, args => {
 			let files: IRecursiveDirEntry[]
 
 			const filter: IRecursiveReadDirSyncOptions['filter'] = file => {
@@ -125,16 +131,16 @@ const plugin: Plugin = {
 
 			console.log(
 				`📃 ${normalizePathToPosix(
-					pathjs.relative(process.cwd(), args.pluginData.importer)
-				)} imports folder ${normalizePathToPosix(
-					pathjs.relative(process.cwd(), args.path)
-				)}${args.pluginData.recursive ? ' recursively' : ''}.`
+					relative(process.cwd(), args.pluginData.importer)
+				)} imports folder ${normalizePathToPosix(relative(process.cwd(), args.path))}${
+					args.pluginData.recursive ? ' recursively' : ''
+				}.`
 			)
 
 			return {
 				loader: 'js',
 				contents,
-				watchFiles: files.map(file => pathjs.join(file.parentPath, file.name)),
+				watchFiles: files.map(file => join(file.parentPath, file.name)),
 				resolveDir: args.path,
 			}
 		})

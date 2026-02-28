@@ -1,4 +1,3 @@
-import { name as pluginID } from '../../package.json'
 import { subscribable } from './subscribable'
 
 // Plugin Events
@@ -8,8 +7,8 @@ const EVENTS = {
 	INSTALL: subscribable<void>(),
 	UNINSTALL: subscribable<void>(),
 
-	INSTALL_MODS: subscribable<void>(),
-	UNINSTALL_MODS: subscribable<void>(),
+	INSTALL_PATCHES: subscribable<void>(),
+	UNINSTALL_PATCHES: subscribable<void>(),
 
 	NETWORK_CONNECTED: subscribable<void>(),
 
@@ -41,22 +40,13 @@ const EVENTS = {
 
 export default EVENTS
 
-function installHandler() {
-	console.groupCollapsed(`Installing BlockbenchMods added by '${pluginID}'`)
-	EVENTS.INSTALL_MODS.publish()
-	console.groupEnd()
-}
+EVENTS.LOAD.subscribe(() => {
+	EVENTS.INSTALL_PATCHES.publish()
+})
 
-function uninstallHandler() {
-	console.groupCollapsed(`Uninstalling BlockbenchMods added by '${pluginID}'`)
-	EVENTS.UNINSTALL_MODS.publish()
-	console.groupEnd()
-}
-
-EVENTS.LOAD.subscribe(installHandler)
-EVENTS.UNLOAD.subscribe(uninstallHandler)
-EVENTS.INSTALL.subscribe(installHandler)
-EVENTS.UNINSTALL.subscribe(uninstallHandler)
+EVENTS.UNLOAD.subscribe(() => {
+	EVENTS.UNINSTALL_PATCHES.publish()
+})
 
 // Blockbench.on<EventName>('select_project', ({ project }: { project: ModelProject }) => {
 // 	EVENTS.SELECT_PROJECT.dispatch(project)

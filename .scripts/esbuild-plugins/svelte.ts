@@ -7,7 +7,7 @@
 Object.defineProperty(exports, '__esModule', { value: true })
 import type { Plugin, TransformOptions } from 'esbuild'
 import { readFile } from 'fs/promises'
-import { relative } from 'path'
+import { parse } from 'path'
 import type { PreprocessorGroup } from 'svelte-preprocess/dist/types'
 import type { CompileResult, ModuleCompileOptions } from 'svelte/compiler'
 import { type CompileOptions, compile, preprocess } from 'svelte/compiler'
@@ -86,7 +86,7 @@ function esbuildPluginSvelte(opts: ISvelteESBuildPluginOptions): Plugin {
 			build.onLoad({ filter: /\.svelte$/ }, async ({ path }) => {
 				let source = await readFile(path, 'utf-8')
 				let sourcemap: any
-				const filename = relative(process.cwd(), path)
+				const filename = parse(path).base
 				if (opts.preprocess) {
 					const processed = await preprocess(source, opts.preprocess, { filename })
 					source = processed.code

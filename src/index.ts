@@ -1,11 +1,11 @@
-// Initialize API
+// API
 import './api'
 
-// Initialize Plugin
-import './plugin'
+// Blockbench Mods
+import './blockbench-mods/**'
 
 // Formats
-import './formats//'
+import './formats/**'
 
-// Blockbench Mods
-import './blockbench-mods//'
+// Plugin
+import './plugin'

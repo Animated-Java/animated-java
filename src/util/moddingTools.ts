@@ -2,16 +2,13 @@ import EVENTS from '@events'
 import type { ValidateResourceLocation } from './resourceLocation'
 import { subscribable, type Subscribable } from './subscribable'
 
-// Useful for describing context variables that will become BlochBench class properties in the inject function.
-export type ContextProperty<Type extends keyof IPropertyType> = Property<Type> | undefined
-
-class BlockbenchModInstallError extends Error {
+class PatchInstallError extends Error {
 	constructor(id: string, err: Error) {
 		super(`Mod '${id}' failed to install: ${err.message}` + (err.stack ? '\n' + err.stack : ''))
 	}
 }
 
-class BlockbenchModUninstallError extends Error {
+class PatchUninstallError extends Error {
 	constructor(id: string, err: Error) {
 		super(
 			`Mod '${id}' failed to uninstall: ${err.message}` + (err.stack ? '\n' + err.stack : '')
@@ -19,17 +16,52 @@ class BlockbenchModUninstallError extends Error {
 	}
 }
 
-interface BlockbenchMod {
-	applied: boolean
+interface PatchHandle {
+	id: string
+	priority: number
+	isApplied(): boolean
 	install: () => void
 	uninstall: () => void
 }
 
+declare global {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	var MONKEY_PATCHES: PatchHandle[]
+}
+window.MONKEY_PATCHES ??= []
+
+EVENTS.INSTALL_PATCHES.subscribe(() => {
+	console.groupCollapsed(`Installing Patches`)
+	for (const patch of MONKEY_PATCHES) {
+		if (patch.isApplied()) {
+			console.warn(`Patch '${patch.id}' is already installed, skipping install.`)
+			continue
+		}
+		patch.install()
+	}
+	console.groupEnd()
+})
+
+EVENTS.UNINSTALL_PATCHES.subscribe(() => {
+	console.groupCollapsed(`Uninstalling Patches`)
+	for (const patch of MONKEY_PATCHES) {
+		if (!patch.isApplied()) {
+			console.warn(`Patch '${patch.id}' is not installed, skipping uninstall.`)
+			continue
+		}
+		patch.uninstall()
+	}
+	console.groupEnd()
+})
+
 /**
- * A framework for creating Blockbench mods that automatically handles installation and uninstallation on the appropriate Blockbench EVENTS.
+ * A generic framework for creating Blockbench patches.
+ *
+ * If possible, you should use more specific functions like {@link createAction} or {@link createFunctionPatch} instead of this function whenever possible.
+ *
  * @example
  * ```ts
- * createBlockbenchMod({
+ * createPatch({
  * 	id: 'my-plugin-id:my-mod',
  * 	collectContext: () => ({
  * 		original: Blockbench.Animation.prototype.select
@@ -51,7 +83,7 @@ interface BlockbenchMod {
  * }
  * ```
  */
-export function createBlockbenchMod<
+export function createGenericPatch<
 	ID extends string,
 	ApplyContext extends any,
 	RevertContext extends ApplyContext | void,
@@ -60,43 +92,49 @@ export function createBlockbenchMod<
 	collectContext,
 	apply,
 	revert,
-	autoInstall = true,
+	priority = 0,
 }: {
 	id: ValidateResourceLocation<ID>
 	collectContext?: () => ApplyContext
 	apply: (ctx: ApplyContext) => RevertContext
 	revert: (ctx: RevertContext) => void
+	priority?: number
 	autoInstall?: boolean
 }) {
-	let applyContext: RevertContext
+	let revertContext: RevertContext
+	let applied = false
 
-	const handle: BlockbenchMod = {
-		applied: false,
+	const handle: PatchHandle = {
+		id,
+		priority,
+		isApplied() {
+			return applied
+		},
 		install() {
+			console.log(`Installing Patch '${id}'`)
 			try {
-				if (this.applied) throw new Error('Mod is already installed!')
+				if (applied) throw new Error('Mod is already installed!')
 				const context = collectContext?.()!
-				applyContext = apply(context)
-				this.applied = true
+				revertContext = apply(context)
+				applied = true
 			} catch (err) {
-				throw new BlockbenchModInstallError(id, err as Error)
+				throw new PatchInstallError(id, err as Error)
 			}
 		},
 		uninstall() {
+			console.log(`Uninstalling Patch '${id}'`)
 			try {
-				if (!this.applied) throw new Error('Mod is not installed!')
-				revert(applyContext)
-				this.applied = false
+				if (!applied) throw new Error('Mod is not installed!')
+				revert(revertContext)
+				applied = false
 			} catch (err) {
-				throw new BlockbenchModUninstallError(id, err as Error)
+				throw new PatchUninstallError(id, err as Error)
 			}
 		},
 	}
 
-	if (autoInstall) {
-		EVENTS.INSTALL_MODS.subscribe(handle.install.bind(handle))
-	}
-	EVENTS.UNINSTALL_MODS.subscribe(handle.uninstall.bind(handle))
+	MONKEY_PATCHES.push(handle)
+	MONKEY_PATCHES.sort((a, b) => a.priority - b.priority)
 
 	return handle
 }
@@ -107,7 +145,7 @@ type CreateActionOptions = ActionOptions & {
 	 */
 	menu_path?: string
 }
-/** Creates a new Blockbench.Action and automatically handles it's deletion on the plugin unload and uninstall EVENTS.
+/** Creates a new Blockbench.Action and automatically handles it's deletion on the plugin unload and uninstall events.
  * See https://www.blockbench.net/wiki/api/action for more information on the Blockbench.Action class.
  * @param id A namespaced ID ('my-plugin-id:my-action')
  * @param options The options for the action.
@@ -122,7 +160,7 @@ export function createAction<ID extends string>(
 		MenuBar.addAction(action, options.menu_path)
 	}
 
-	EVENTS.UNINSTALL_MODS.subscribe(() => {
+	EVENTS.UNINSTALL_PATCHES.subscribe(() => {
 		if (options.menu_path !== undefined) {
 			MenuBar.removeAction(options.menu_path)
 		}
@@ -132,24 +170,24 @@ export function createAction<ID extends string>(
 	return action
 }
 
+// /**
+//  * Creates a new Blockbench.ModelLoader and automatically handles it's deletion on the plugin unload and uninstall events.
+//  * @param id A namespaced ID ('my-plugin-id:my-model-loader')
+//  * @param options The options for the model loader.
+//  * @returns The created model loader.
+//  */
+// export function createModelLoader(id: string, options: ModelLoaderOptions): ModelLoader {
+// 	const modelLoader = new ModelLoader(id, options)
+
+// 	EVENTS.UNINSTALL_PATCHES.subscribe(() => {
+// 		modelLoader.delete()
+// 	}, true)
+
+// 	return modelLoader
+// }
+
 /**
- * Creates a new Blockbench.ModelLoader and automatically handles it's deletion on the plugin unload and uninstall EVENTS.
- * @param id A namespaced ID ('my-plugin-id:my-model-loader')
- * @param options The options for the model loader.
- * @returns The created model loader.
- */
-export function createModelLoader(id: string, options: ModelLoaderOptions): ModelLoader {
-	const modelLoader = new ModelLoader(id, options)
-
-	EVENTS.UNINSTALL_MODS.subscribe(() => {
-		modelLoader.delete()
-	}, true)
-
-	return modelLoader
-}
-
-/**
- * Creates a new Blockbench.Menu and automatically handles it's deletion on the plugin unload and uninstall EVENTS.
+ * Creates a new Blockbench.Menu and automatically handles it's deletion on the plugin unload and uninstall events.
  * See https://www.blockbench.net/wiki/api/menu for more information on the Blockbench.Menu class.
  * @param template The menu template.
  * @param options The options for the menu.
@@ -166,7 +204,7 @@ export function createMenu(template: MenuItem[], options?: MenuOptions) {
 }
 
 /**
- * Creates a new Blockbench.BarMenu and automatically handles it's deletion on the plugin unload and uninstall EVENTS.
+ * Creates a new Blockbench.BarMenu and automatically handles it's deletion on the plugin unload and uninstall events.
  * @param id A namespaced ID ('my-plugin-id:my-menu')
  * @param structure The menu structure.
  * @param condition The condition for the menu to be visible.
@@ -247,7 +285,7 @@ export function createPropertySubscribable<Value = any>(object: any, key: string
 			configurable: true,
 		})
 
-		EVENTS.UNINSTALL_MODS.subscribe(() => {
+		EVENTS.UNINSTALL_PATCHES.subscribe(() => {
 			const value = object[key]
 			delete object[key]
 			Object.defineProperty(object, key, {
@@ -260,53 +298,207 @@ export function createPropertySubscribable<Value = any>(object: any, key: string
 	return subscribables
 }
 
-// export function overwriteFunction<Target extends Record<string, any>, Key extends string>(
-// 	/**
-// 	 * The object or class to overwrite the function on.
-// 	 */
-// 	target: Target,
-// 	/**
-// 	 * The key of the function to overwrite.
-// 	 */
-// 	key: string,
-// 	/**
-// 	 * The function to overwrite the original function with.
-// 	 */
-// 	callback: (target: Target, originalFunction: Target[Key]) => void,
-// 	/**
-// 	 * The priority of the overwrite. Higher priority overwrites are called first.
-// 	 */
-// 	priority?: number
-// ) {
-// 	//
-// }
+type PatchableObject = Record<string, any>
+
+type PatchableFunction<P extends any[], R extends any> = (...args: P) => R
+
+type ExtractPatchableFunctionKeys<T> = keyof {
+	[Key in keyof T]: T[Key] extends PatchableFunction<infer P, infer R>
+		? PatchableFunction<P, R>
+		: never
+}
 
 /**
- * A wrapper for the Blockbench.Property class that deep-clones the property value when copying or merging.
+ * Points at which a function can be injected.
+ *
+ * 'HEAD' - At the start of the function.
+ *
+ * 'RETURN' - After the function has returned, but before the return value is passed to the caller.
  */
-export class ObjectProperty extends Property<'object'> {
-	constructor(target: any, name: string, options: PropertyOptions) {
-		super(target, 'object', name, options)
-	}
+type InjectionPoint = 'HEAD' | 'RETURN'
 
-	copy(instance: any, target: any) {
-		if (instance[this.name] == undefined) {
-			target[this.name] = instance[this.name]
-		} else {
-			target[this.name] = JSON.parse(JSON.stringify(instance[this.name]))
+type FunctionPatchContext<
+	FunctionOwner extends PatchableObject,
+	Key extends ExtractPatchableFunctionKeys<FunctionOwner>,
+	At extends InjectionPoint,
+	TargetFunction extends FunctionOwner[Key] = FunctionOwner[Key],
+> = {
+	target: FunctionOwner
+	sourceFunction: TargetFunction
+	args: Parameters<TargetFunction>
+	/** Set the function's return value */
+	setReturnValue: (value: ReturnType<TargetFunction>) => void
+	/** Get the function's return value, if it has been set */
+	getReturnValue: () => ReturnType<TargetFunction> | undefined
+} & (At extends 'HEAD'
+	? {
+			/** Cancel the function's execution and return void */
+			cancel: () => void
 		}
-	}
+	: {})
 
-	merge(instance: any, data: any) {
-		if (data[this.name] == undefined) {
-			instance[this.name] = this.default
-		} else {
-			instance[this.name] = JSON.parse(JSON.stringify(data[this.name]))
-		}
-	}
+interface FunctionPatchOptions<
+	ID extends string,
+	FunctionOwner extends PatchableObject,
+	Key extends ExtractPatchableFunctionKeys<FunctionOwner>,
+	At extends InjectionPoint,
+	TargetFunction extends FunctionOwner[Key] = FunctionOwner[Key],
+> {
+	/** The ID of the the patch. */
+	id: ValidateResourceLocation<ID>
+	/** The object or class to overwrite the function on. */
+	target: FunctionOwner
+	/** The key of the function to overwrite. */
+	key: Key
+	/** Where to inject the function. */
+	at: At
+	/** The priority of the patch. Higher priority patches will wrap lower ones. */
+	priority?: number
+	/** The function to overwrite the original function with. */
+	callback: (
+		this: FunctionOwner,
+		ctx: FunctionPatchContext<FunctionOwner, Key, At, TargetFunction>
+	) => void
 }
 
-export const fixClassPropertyInheritance: ClassDecorator = target => {
-	target.properties = { ...target.properties }
-	return target
+/**
+ * Creates a patch that injects code into an existing function on a class or object by overwriting the function directly at runtime.
+ *
+ * This is a very powerful tool, but should be used sparingly, as it creates a hard dependency on the internal implementation of Blockbench,
+ * and is prone to causing conflicts with other plugins that patch the same function.
+ *
+ * Commonly known as "monkey patching" 🙈
+ */
+export function createFunctionPatch<
+	ID extends string,
+	FunctionOwner extends PatchableObject,
+	Key extends ExtractPatchableFunctionKeys<FunctionOwner>,
+	At extends InjectionPoint,
+	TargetFunction extends FunctionOwner[Key],
+>({
+	id,
+	target,
+	key,
+	at,
+	priority,
+	callback,
+}: FunctionPatchOptions<ID, FunctionOwner, Key, At, TargetFunction>): void {
+	createGenericPatch({
+		id,
+		priority,
+		collectContext: () => ({ sourceFunction: target[key] }),
+		apply: ({ sourceFunction }) => {
+			if (typeof sourceFunction !== 'function') {
+				throw new Error(`Cannot patch non-function property '${key as string}'`)
+			}
+
+			let overrideFunction: TargetFunction
+
+			switch (at) {
+				case 'HEAD': {
+					overrideFunction = function (
+						this: FunctionOwner,
+						...args: Parameters<TargetFunction>
+					) {
+						let returnValue: ReturnType<TargetFunction> | undefined
+						let returnValueChanged = false
+						let cancelled = false
+						const ctx: FunctionPatchContext<
+							FunctionOwner,
+							Key,
+							'HEAD',
+							TargetFunction
+						> = {
+							target,
+							sourceFunction,
+							args,
+							setReturnValue(value) {
+								returnValue = value
+								returnValueChanged = true
+							},
+							getReturnValue() {
+								return returnValue
+							},
+							cancel() {
+								cancelled = true
+							},
+						}
+						callback.call(this, ctx)
+						if (cancelled) return
+						if (returnValueChanged) return returnValue
+						return sourceFunction.apply(this, args)
+					} as TargetFunction
+					break
+				}
+
+				case 'RETURN': {
+					overrideFunction = function (
+						this: FunctionOwner,
+						...args: Parameters<TargetFunction>
+					) {
+						let returnValue: ReturnType<TargetFunction> = sourceFunction.apply(
+							this,
+							args
+						)
+						const ctx: FunctionPatchContext<
+							FunctionOwner,
+							Key,
+							'RETURN',
+							TargetFunction
+						> = {
+							target,
+							sourceFunction,
+							args,
+							setReturnValue(value) {
+								returnValue = value
+							},
+							getReturnValue() {
+								return returnValue
+							},
+						}
+						// @ts-expect-error
+						callback.call(this, ctx)
+						return returnValue
+					} as TargetFunction
+					break
+				}
+			}
+
+			target[key] = overrideFunction
+			return { sourceFunction }
+		},
+		revert: ({ sourceFunction }) => {
+			target[key] = sourceFunction
+		},
+	})
 }
+
+// /**
+//  * A wrapper for the Blockbench.Property class that deep-clones the property value when copying or merging.
+//  */
+// export class ObjectProperty extends Property<'object'> {
+// 	constructor(target: any, name: string, options: PropertyOptions) {
+// 		super(target, 'object', name, options)
+// 	}
+
+// 	copy(instance: any, target: any) {
+// 		if (instance[this.name] == undefined) {
+// 			target[this.name] = instance[this.name]
+// 		} else {
+// 			target[this.name] = JSON.parse(JSON.stringify(instance[this.name]))
+// 		}
+// 	}
+
+// 	merge(instance: any, data: any) {
+// 		if (data[this.name] == undefined) {
+// 			instance[this.name] = this.default
+// 		} else {
+// 			instance[this.name] = JSON.parse(JSON.stringify(data[this.name]))
+// 		}
+// 	}
+// }
+
+// export const fixClassPropertyInheritance: ClassDecorator = target => {
+// 	target.properties = { ...target.properties }
+// 	return target
+// }

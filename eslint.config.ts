@@ -76,6 +76,7 @@ const CUSTOM_RULES: ConfigWithExtends['rules'] = {
 	'@typescript-eslint/unbound-method': 'off',
 	'@typescript-eslint/no-non-null-assertion': 'off',
 	'@typescript-eslint/triple-slash-reference': 'off',
+	'@typescript-eslint/explicit-member-accessibility': ['error', { accessibility: 'no-public' }],
 	// Naming conventions
 	'@typescript-eslint/naming-convention': [
 		'warn',

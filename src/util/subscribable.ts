@@ -18,7 +18,7 @@ export function subscribable<T>(): Subscribable<T> {
 		 * @param oneShot If true, the callback will be removed after it is called once.
 		 * @returns A function that can be called to unsubscribe the callback.
 		 */
-		subscribe(callback: (value: T) => void, oneShot = false) {
+		subscribe: (callback: (value: T) => void, oneShot = false) => {
 			if (oneShot) {
 				const wrappedCallback = (value: T) => {
 					callback(value)
@@ -32,7 +32,7 @@ export function subscribable<T>(): Subscribable<T> {
 		 * Publish a value to all subscribers.
 		 * @param value The value to be passed to the subscribers.
 		 */
-		publish(value: T) {
+		publish: (value: T) => {
 			if (publishing) return
 			publishing = true
 			subscribers.forEach(callback => callback(value))
