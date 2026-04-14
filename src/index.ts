@@ -2,11 +2,14 @@ import { PACKAGE } from './constants'
 import EVENTS from './util/events'
 import './util/translation'
 // Blueprint Format
-import './formats/**'
+import 'import_folder_recursive:./formats'
 // Interface
-import './interface/**'
+import 'import_folder_recursive:./dialogs'
+import 'import_folder_recursive:./interface'
+import 'import_folder_recursive:./panels'
+import 'import_folder_recursive:./popups'
 // Blockbench Mods
-import './mods/**'
+import 'import_folder_recursive:./mods'
 // Outliner
 import './outliner/textDisplay'
 import './outliner/vanillaBlockDisplay'

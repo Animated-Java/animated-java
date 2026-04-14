@@ -7,6 +7,7 @@ if (process.argv.includes('--mode=dev')) {
 process.env.FLAVOR ??= `local`
 
 import * as esbuild from 'esbuild'
+import importFolderPlugin from 'esbuild-plugin-import-folder'
 import ImportGlobPlugin from 'esbuild-plugin-import-glob'
 import inlineImage from 'esbuild-plugin-inline-image'
 import * as fs from 'fs'
@@ -21,7 +22,6 @@ import {
 import { TextDecoder } from 'util'
 import assetOverridePlugin from './plugins/assetOverridePlugin'
 import bufferPatchPlugin from './plugins/bufferPatchFunction.js'
-import importFolderPlugin from './plugins/importFolder'
 import mcbCompressionPlugin from './plugins/mcbCompressionPlugin'
 import packagerPlugin from './plugins/packagerPlugin'
 const PACKAGE = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
@@ -195,7 +195,8 @@ const COMMON_CONFIG: esbuild.BuildOptions = {
 	plugins: [
 		// @ts-expect-error broken default import
 		vscodeProblemsPatch.default(),
-		importFolderPlugin,
+		// @ts-expect-error broken default import
+		importFolderPlugin.default(),
 		// @ts-expect-error broken default import
 		ImportGlobPlugin.default(),
 		bufferPatchPlugin(),
