@@ -1,4 +1,4 @@
-<script lang="ts" , context="module">
+<script lang="ts" module>
 	import LineInput from './dialogItems/lineInput.svelte'
 	import NumberSlider from './dialogItems/numberSlider.svelte'
 

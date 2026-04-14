@@ -48,7 +48,7 @@
 	>
 		{translate('panel.keyframe.variant.title')}
 	</label>
-	<div class="select-container" bind:this={selectContainer} />
+	<div class="select-container" bind:this={selectContainer}></div>
 </div>
 
 <div class="bar flex custom-bar">

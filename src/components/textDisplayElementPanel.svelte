@@ -1,6 +1,5 @@
 <script lang="ts" context="module">
 	import { CodeJar } from '@novacbn/svelte-codejar'
-	import { Stopwatch } from 'src/util/stopwatch'
 	import {
 		TEXT_DISPLAY_ALIGNMENT_SELECT,
 		TEXT_DISPLAY_BACKGROUND_COLOR_PICKER,
@@ -10,6 +9,7 @@
 		TEXT_DISPLAY_WIDTH_SLIDER,
 	} from '../interface/panel/textDisplayElement'
 	import { TextDisplay } from '../outliner/textDisplay'
+	import { Stopwatch } from '../util/stopwatch'
 	import { translate } from '../util/translation'
 
 	const HIGHLIGHT_CACHE = new Map<string, string>()
@@ -104,12 +104,12 @@
 </p>
 
 <div class="toolbar text-display-toolbar">
-	<div class="content" use:mountLineWidth />
-	<div class="content" use:mountShadow />
-	<div class="content" use:mountAlignment />
-	<div class="content" use:mountSeeThrough />
-	<div class="content" use:mountBackgroundColor />
-	<div class="content" use:mountCopyText />
+	<div class="content" use:mountLineWidth></div>
+	<div class="content" use:mountShadow></div>
+	<div class="content" use:mountAlignment></div>
+	<div class="content" use:mountSeeThrough></div>
+	<div class="content" use:mountBackgroundColor></div>
+	<div class="content" use:mountCopyText></div>
 </div>
 
 <div

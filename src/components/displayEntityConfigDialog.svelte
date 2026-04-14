@@ -1,9 +1,9 @@
-<script lang="ts" , context="module">
-	import { type DisplayEntity } from 'src/interface/dialog/displayEntityConfig'
-	import { TextDisplay } from 'src/outliner/textDisplay'
-	import { type IDisplayEntityConfigs } from 'src/systems/rigRenderer'
+<script lang="ts" module>
 	import { onDestroy } from 'svelte'
+	import { type DisplayEntity } from '../interface/dialog/displayEntityConfig'
 	import { type BillboardMode, DisplayEntityConfig } from '../nodeConfigs'
+	import { TextDisplay } from '../outliner/textDisplay'
+	import { type IDisplayEntityConfigs } from '../systems/rigRenderer'
 	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
 	import { Variant } from '../variants'
@@ -141,7 +141,7 @@
 
 <SectionHeader label={translate('dialog.display_entity.per_variant_options.title')} />
 
-<div class="variant-select" use:mountVariantSelect />
+<div class="variant-select" use:mountVariantSelect></div>
 
 <hr />
 

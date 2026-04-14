@@ -14,14 +14,16 @@ import { load } from 'js-yaml'
 import vscodeProblemsPatch from 'node-modules-vscode-problems-patch'
 import * as path from 'path'
 import { isAbsolute, join } from 'path'
+import {
+	createBlockbenchSvelteConfig,
+	esbuildPluginSvelte,
+} from 'svelte-patching-tools/esbuildPlugin'
 import { TextDecoder } from 'util'
-import svelteConfig from '../svelte.config.js'
 import assetOverridePlugin from './plugins/assetOverridePlugin'
 import bufferPatchPlugin from './plugins/bufferPatchFunction.js'
 import importFolderPlugin from './plugins/importFolder'
 import mcbCompressionPlugin from './plugins/mcbCompressionPlugin'
 import packagerPlugin from './plugins/packagerPlugin'
-import sveltePlugin from './plugins/sveltePlugin'
 const PACKAGE = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
 
 const INFO_PLUGIN: esbuild.Plugin = {
@@ -134,34 +136,7 @@ function createBanner() {
 		return '│ ' + ' '.repeat(l) + v + ' '.repeat(r) + ' │'
 	})
 
-	const message = `
-# Animated Java does not work in Blockbench 5
-
-You will need to install and use Blockbench v4.12.6 to use Animated Java until it is updated to support 5.
-
-## How to install Blockbench v4.12.6
-
-1. Download the portable version of Blockbench 4.12.6 [here](https://github.com/JannisX11/blockbench/releases/download/v4.12.6/Blockbench_4.12.6_portable.exe).
-2. Once it's finished downloading, double click the .exe file to run it.
-
-If you're familiar with command line interfaces, you can use [Envbench](https://www.npmjs.com/package/envbench) to install and manage multiple Blockbench versions side by side.
-`
-
-	const startupCode = `(() => {
-	if (!compareVersions('5.0.0', Blockbench.version)) {
-		const message = \`${message}\`;
-		Blockbench.showMessageBox({title: 'Animated Java - Incompatible Blockbench Version',message,width:600});
-		requestAnimationFrame(() => Plugins.registered['animated_java'].uninstall());
-		throw new Error(message);
-	}
-})()`.trim()
-
-	const banner =
-		'\n' +
-		[header, ...lines, footer].map(v => `//?? ${v}`).join('\n') +
-		'\n\n' +
-		startupCode +
-		'\n'
+	const banner = '\n' + [header, ...lines, footer].map(v => `//?? ${v}`).join('\n')
 
 	return {
 		js: banner,
@@ -205,6 +180,11 @@ const yamlPlugin: (opts: {
 	},
 })
 
+import VSCODE_SETTINGS from '../.vscode/settings.json'
+const IGNORED_SVELTE_WARNINGS = Object.keys(
+	VSCODE_SETTINGS['svelte.plugin.svelte.compilerWarnings']
+)
+
 const COMMON_CONFIG: esbuild.BuildOptions = {
 	banner: createBanner(),
 	entryPoints: ['./src/index.ts'],
@@ -224,7 +204,15 @@ const COMMON_CONFIG: esbuild.BuildOptions = {
 		}),
 		INFO_PLUGIN,
 		yamlPlugin({}),
-		sveltePlugin(svelteConfig),
+		esbuildPluginSvelte(
+			createBlockbenchSvelteConfig(PACKAGE.name, {
+				compilerOptions: {
+					warningFilter(warning: any) {
+						return !IGNORED_SVELTE_WARNINGS.includes(warning.code)
+					},
+				},
+			})
+		),
 		packagerPlugin(),
 		assetOverridePlugin(),
 		mcbCompressionPlugin(),

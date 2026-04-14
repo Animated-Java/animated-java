@@ -23,7 +23,7 @@
 			<div class="description">
 				{#if errorText}
 					<div class="error_text">
-						<i class="fa fa-exclamation-circle dialog_form_error text_icon" />
+						<i class="fa fa-exclamation-circle dialog_form_error text_icon"></i>
 						<div class="error_lines">
 							<!-- svelte-ignore missing-declaration -->
 							{@html pureMarked(errorText)}
@@ -31,7 +31,7 @@
 					</div>
 				{:else if warningText}
 					<div class="warning_text">
-						<i class="fa fa-exclamation-triangle dialog_form_warning text_icon" />
+						<i class="fa fa-exclamation-triangle dialog_form_warning text_icon"></i>
 						<!-- svelte-ignore missing-declaration -->
 						{@html pureMarked(warningText)}
 					</div>
@@ -47,7 +47,7 @@
 			on:click={onReset}
 			class="fa fa-rotate-left dialog_form_description dialog-form-description reset-button"
 			title={translate('dialog.reset')}
-		/>
+		></i>
 	</div>
 </div>
 

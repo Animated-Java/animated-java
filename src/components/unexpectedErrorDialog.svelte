@@ -60,9 +60,9 @@
 
 <div class="container">
 	<div class="quote">
-		<i class="fas fa-quote-left dialog_form_warning text_icon" />
+		<i class="fas fa-quote-left dialog_form_warning text_icon"></i>
 		<h2 style="font-size: 24px; text-align: center;">{@html pickRandomFlavorQuote()}</h2>
-		<i class="fas fa-quote-right dialog_form_warning text_icon" />
+		<i class="fas fa-quote-right dialog_form_warning text_icon"></i>
 	</div>
 	<p>
 		{@html translate(
@@ -72,13 +72,13 @@
 		)}
 	</p>
 	<div class="codebox dark_bordered">
-		<textarea bind:value readonly />
+		<textarea bind:value readonly></textarea>
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<i
 			class="fas fa-copy dialog_form_warning text_icon"
 			title={translate('dialog.unexpected_error.copy_error_message_button.description')}
 			on:click={copyError}
-		/>
+		></i>
 	</div>
 </div>
 

@@ -134,7 +134,7 @@
 			<div>
 				{translate('dialog.variant_config.texture_map.title')}
 			</div>
-			<div class="spacer" />
+			<div class="spacer"></div>
 			<!-- svelte-ignore a11y-click-events-have-key-events -->
 			<div
 				class="tool"

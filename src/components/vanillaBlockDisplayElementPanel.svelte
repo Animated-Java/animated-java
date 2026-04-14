@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
-	import { validateBlock } from 'src/util/minecraftUtil'
 	import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
+	import { validateBlock } from '../util/minecraftUtil'
 	import { translate } from '../util/translation'
 </script>
 

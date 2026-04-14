@@ -128,7 +128,7 @@
 			on:finalize={finalizeSort}
 		>
 			{#each localVariants as item (item.id)}
-				<!-- svelte-ignore a11y-click-events-have-key-events -->
+				<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 				<li
 					class={item.value === Variant.selected
 						? 'variant_item selected_variant_item'
@@ -150,7 +150,7 @@
 						<div class="variant_item_name">
 							{item.value.displayName}
 						</div>
-						<div class="spacer" />
+						<div class="spacer"></div>
 						{#if item.value.isDefault}
 							<i
 								class="material-icons icon in_list_button in_list_button_disabled"

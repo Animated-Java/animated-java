@@ -16,7 +16,7 @@
 	<div class="dialog_bar form_bar checkbox_bar">
 		<label class="name_space_left" for={id}>{label}</label>
 		<div class="checkbox-line">
-			<div class="spacer" />
+			<div class="spacer"></div>
 			<input type="checkbox" class="focusable_input" {id} bind:checked={$checked} />
 		</div>
 	</div>

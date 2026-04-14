@@ -10,9 +10,9 @@
 	"compilerOptions": {
 		"outDir": "./dist/",
 		"noImplicitAny": true,
-		"module": "ES2022",
+		"module": "preserve",
 		"target": "ES2022",
-		"moduleResolution": "node",
+		"moduleResolution": "bundler",
 		"strict": true,
 		"types": ["node"],
 		"resolveJsonModule": true,
@@ -23,6 +23,6 @@
 		"noEmit": true,
 		"isolatedModules": true,
 		"alwaysStrict": true,
-		"baseUrl": "."
+		"verbatimModuleSyntax": true
 	}
 }

@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
-	import EVENTS from 'src/util/events'
 	import { onDestroy } from 'svelte'
 	import { isIncompatiblePlugin } from '../interface/popup/incompatabilityPopup'
+	import EVENTS from '../util/events'
 	import { translate } from '../util/translation'
 
 	const getButton = (innerText: string) => {

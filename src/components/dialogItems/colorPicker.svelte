@@ -38,6 +38,6 @@
 <BaseDialogItem {label} {tooltip} {onReset} let:id>
 	<div class="dialog_bar form_bar">
 		<label class="name_space_left" for={id}>{label}</label>
-		<div use:mountColorPicker />
+		<div use:mountColorPicker></div>
 	</div>
 </BaseDialogItem>

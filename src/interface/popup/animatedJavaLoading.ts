@@ -1,6 +1,7 @@
-import { mountSvelteComponent } from 'src/util/mountSvelteComponent'
-import { SvelteComponentDev } from 'svelte/internal'
+// TODO - Add a full-screen loading animation while AJ is initializing.
+// TODO - Add an animation of an armor_stand using a hammer on an anvil to the loading screen.
 import AnimatedJavaLoadingPopup from '../../components/animatedJavaLoadingPopup.svelte'
+import { mountSvelteComponent } from '../../util/mountSvelteComponent'
 import { Valuable } from '../../util/stores'
 
 const LOADED = new Valuable(false)
@@ -8,7 +9,7 @@ const OFFLINE = new Valuable(false)
 const PROGRESS = new Valuable(0)
 const PROGRESS_LABEL = new Valuable('')
 
-let mountedPopup: SvelteComponentDev | undefined
+let mountedPopup: any | undefined
 
 export function showLoadingPopup() {
 	if (mountedPopup) return

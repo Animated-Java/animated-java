@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
-	import { Valuable } from '../util/stores'
 	import ArmorStandRunningGif from '../assets/armor_stand_running.webp'
+	import { Valuable } from '../util/stores'
 </script>
 
 <script lang="ts">
@@ -16,7 +16,7 @@
 		<img src={ArmorStandRunningGif} width="64px" />
 	</div>
 	{#if $progress !== 0}
-		<progress value={$progress / $maxProgress || 0} max="1" />
+		<progress value={$progress / $maxProgress || 0} max="1"></progress>
 	{/if}
 </div>
 

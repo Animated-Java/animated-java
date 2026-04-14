@@ -97,7 +97,7 @@
 			style="min-width: 30px;"
 			title={swapColumnsButtonTooltip}
 			on:click={swapColumns}
-		/>
+		></i>
 		<div class="column selected-column" title={includedItemsColumnTooltip}>
 			<h3>{includedItemsColumnLable}</h3>
 			<section
