@@ -1,12 +1,21 @@
 <script lang="ts">
 	import { CodeJar } from '@novacbn/svelte-codejar'
 
-	export let value: string
-	export let placeholder: string | undefined = undefined
-	export let style: string | undefined = undefined
-	export let syntax: string | undefined = undefined
+	interface Props {
+		value: string
+		placeholder?: string | undefined
+		style?: string | undefined
+		syntax?: string | undefined
+	}
 
-	let codeJarElement: HTMLPreElement | undefined
+	let {
+		value = $bindable(),
+		placeholder = undefined,
+		style = undefined,
+		syntax = undefined,
+	}: Props = $props()
+
+	let codeJarElement: HTMLPreElement | undefined = $state()
 
 	function highlight(code: string, syntax?: string) {
 		if (!syntax) {
@@ -37,11 +46,15 @@
 		codeJarElement.style.whiteSpace = 'pre'
 	}
 
-	$: codeJarElement && forceNoWrap()
-	$: value !== undefined && forceNoWrap()
+	$effect.pre(() => {
+		codeJarElement && forceNoWrap()
+	})
+	$effect.pre(() => {
+		value !== undefined && forceNoWrap()
+	})
 </script>
 
-<div class="content codejar-container" on:keydown={onKeydown}>
+<div class="content codejar-container" onkeydown={onKeydown}>
 	<CodeJar
 		bind:element={codeJarElement}
 		{syntax}
@@ -68,7 +81,7 @@
 			text-shadow: 0px 1px rgba(0, 0, 0, 0.3);
 		` + style}
 	/>
-	<div use:forceNoWrap />
+	<div use:forceNoWrap></div>
 	{#if placeholder && (!value || value.length === 0)}
 		<div class="placeholder">{placeholder}</div>
 	{/if}
@@ -92,7 +105,7 @@
 		width: 100%;
 		font-style: italic;
 	}
-	.codejar-container :global(.language-snbtTextComponent) {
+	:global(.language-snbtTextComponent) {
 		& .brackets {
 			color: #5ba8c5;
 		}

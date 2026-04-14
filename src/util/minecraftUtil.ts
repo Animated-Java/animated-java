@@ -1,4 +1,4 @@
-import * as pathjs from 'path'
+import * as pathjs from 'node:path'
 import { SUPPORTED_MINECRAFT_VERSIONS } from '../systems/global'
 import { assetsLoaded } from '../systems/minecraft/assetManager'
 import { validateBlockState } from '../systems/minecraft/blockModelManager'

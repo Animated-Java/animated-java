@@ -178,7 +178,7 @@
 	.codejar-container {
 		width: 100%;
 	}
-	.codejar-container :global(.language-snbtTextComponent) {
+	:global(.language-snbtTextComponent) {
 		& .brackets {
 			color: #5ba8c5;
 		}

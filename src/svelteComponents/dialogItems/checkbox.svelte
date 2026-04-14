@@ -2,24 +2,30 @@
 	import { Valuable } from '../../util/stores'
 	import BaseDialogItem from './baseDialogItem.svelte'
 
-	export let label: string
-	export let tooltip = ''
-	export let checked: Valuable<boolean>
-	export let defaultValue: boolean
+	interface Props {
+		label: string
+		tooltip?: string
+		checked: Valuable<boolean>
+		defaultValue: boolean
+	}
+
+	let { label, tooltip = '', checked, defaultValue }: Props = $props()
 
 	function onReset() {
 		checked.set(defaultValue)
 	}
 </script>
 
-<BaseDialogItem {label} {tooltip} {onReset} let:id>
-	<div class="dialog_bar form_bar checkbox_bar">
-		<label class="name_space_left" for={id}>{label}</label>
-		<div class="checkbox-line">
-			<div class="spacer"></div>
-			<input type="checkbox" class="focusable_input" {id} bind:checked={$checked} />
+<BaseDialogItem {label} {tooltip} {onReset}>
+	{#snippet children({ id })}
+		<div class="dialog_bar form_bar checkbox_bar">
+			<label class="name_space_left" for={id}>{label}</label>
+			<div class="checkbox-line">
+				<div class="spacer"></div>
+				<input type="checkbox" class="focusable_input" {id} bind:checked={$checked} />
+			</div>
 		</div>
-	</div>
+	{/snippet}
 </BaseDialogItem>
 
 <style>

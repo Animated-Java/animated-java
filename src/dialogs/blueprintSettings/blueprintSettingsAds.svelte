@@ -1,7 +1,7 @@
 <script lang="ts" module>
-	import BisectHostingBanner from '../assets/banners/bisect-hosting-promo-banner.png'
-	import HeartIcon from '../assets/heart.png'
-	import KoFiImage from '../assets/kofi_tag_white.webp'
+	import BisectHostingBanner from '../../assets/banners/bisect-hosting-promo-banner.png'
+	import HeartIcon from '../../assets/heart.png'
+	import KoFiImage from '../../assets/kofi_tag_white.webp'
 
 	localStorage.setItem('animated_java_settings_support_me_popup', 'true')
 </script>

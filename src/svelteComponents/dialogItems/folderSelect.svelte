@@ -3,19 +3,28 @@
 	import { Valuable } from '../../util/stores'
 	import BaseDialogItem from './baseDialogItem.svelte'
 
-	export let label: string
-	export let tooltip = ''
-	export let value: Valuable<string>
-	export let defaultValue: string
-	export let filters: FileFilter[] = []
-	export let fileSelectMessage = 'Select Folder'
+	interface Props {
+		label: string
+		tooltip?: string
+		value: Valuable<string>
+		defaultValue: string
+		filters?: FileFilter[]
+		fileSelectMessage?: string
+		valueChecker?: DialogItemValueChecker<string>
+	}
 
-	let _value: string = value.get()
+	let {
+		label,
+		tooltip = '',
+		value,
+		defaultValue,
+		filters = [],
+		fileSelectMessage = 'Select File',
+		valueChecker = undefined,
+	}: Props = $props()
 
-	export let valueChecker: DialogItemValueChecker<string> = undefined
-
-	let warningText = ''
-	let errorText = ''
+	let warningText = $state('')
+	let errorText = $state('')
 
 	function checkValue() {
 		if (!valueChecker) return
@@ -23,12 +32,14 @@
 		result.type === 'error' ? (errorText = result.message) : (errorText = '')
 		result.type === 'warning' ? (warningText = result.message) : (warningText = '')
 	}
-	value.subscribe(() => checkValue())
 
-	function onValueChange() {
-		value.set(_value)
-		_value = value.get()
+	const onValueChange = () => {
+		checkValue()
 	}
+
+	$effect.pre(() => {
+		value.subscribe(onValueChange)
+	})
 
 	function selectFile() {
 		void Promise.any([
@@ -39,36 +50,34 @@
 			}),
 		]).then(result => {
 			if (!result.canceled) {
-				_value = result.filePaths[0]
-				onValueChange()
+				$value = result.filePaths[0]
 			}
 		})
 	}
 
 	function onReset() {
-		_value = defaultValue
-		onValueChange()
+		$value = defaultValue
 	}
-
-	onValueChange()
 </script>
 
-<BaseDialogItem {label} {tooltip} {onReset} bind:warningText bind:errorText let:id>
-	<div class="dialog_bar form_bar">
-		<label class="name_space_left" for={id}>{label}</label>
-		<input
-			type="text"
-			class="dark_bordered half focusable_input"
-			{id}
-			bind:value={_value}
-			oninput={onValueChange}
-			onchange={onValueChange}
-		/>
-		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<div class="tool animated-java-file-select-icon" onclick={() => selectFile()}>
-			<i class="material-icons icon">insert_drive_file</i>
+<BaseDialogItem {label} {tooltip} {onReset} bind:warningText bind:errorText>
+	{#snippet children({ id })}
+		<div class="dialog_bar form_bar">
+			<label class="name_space_left" for={id}>{label}</label>
+			<input
+				type="text"
+				class="dark_bordered half focusable_input"
+				{id}
+				bind:value={$value}
+				oninput={onValueChange}
+				onchange={onValueChange}
+			/>
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<div class="tool animated-java-file-select-icon" onclick={() => selectFile()}>
+				<i class="material-icons icon">insert_drive_file</i>
+			</div>
 		</div>
-	</div>
+	{/snippet}
 </BaseDialogItem>
 
 <style>

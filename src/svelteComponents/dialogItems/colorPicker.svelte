@@ -1,19 +1,35 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte'
 	import { PACKAGE } from '../../constants'
 	import { Valuable } from '../../util/stores'
 	import BaseDialogItem from './baseDialogItem.svelte'
 
-	export let label: string
-	export let tooltip = ''
-	export let defaultValue = '#ffffff'
-	export let value: Valuable<string>
+	interface Props {
+		label: string
+		tooltip?: string
+		defaultValue?: string
+		value: Valuable<string>
+	}
 
-	let colorPicker = new ColorPicker(`${PACKAGE.name}:${label}-color_picker`, {
-		onChange() {
-			const color = colorPicker.get() as tinycolor.Instance
-			$value = color.toHexString()
-		},
+	let { label, tooltip = '', defaultValue = '#ffffff', value }: Props = $props()
+
+	let colorPicker: ColorPicker
+
+	$effect.pre(() => {
+		colorPicker = new ColorPicker(`${PACKAGE.name}:${label}-color_picker`, {
+			onChange() {
+				const color = colorPicker.get() as tinycolor.Instance
+				$value = color.toHexString()
+			},
+		})
+
+		const unsub = value.subscribe(v => {
+			colorPicker.set(v)
+		})
+
+		return () => {
+			unsub()
+			colorPicker.delete()
+		}
 	})
 
 	function mountColorPicker(el: HTMLDivElement) {
@@ -24,20 +40,13 @@
 	function onReset() {
 		$value = defaultValue
 	}
-
-	const unsub = value.subscribe(v => {
-		colorPicker.set(v)
-	})
-
-	onDestroy(() => {
-		unsub()
-		colorPicker.delete()
-	})
 </script>
 
-<BaseDialogItem {label} {tooltip} {onReset} let:id>
-	<div class="dialog_bar form_bar">
-		<label class="name_space_left" for={id}>{label}</label>
-		<div use:mountColorPicker></div>
-	</div>
+<BaseDialogItem {label} {tooltip} {onReset}>
+	{#snippet children({ id })}
+		<div class="dialog_bar form_bar">
+			<label class="name_space_left" for={id}>{label}</label>
+			<div use:mountColorPicker></div>
+		</div>
+	{/snippet}
 </BaseDialogItem>

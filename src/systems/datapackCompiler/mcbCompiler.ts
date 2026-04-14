@@ -1,5 +1,7 @@
-import { Compiler, Parser, SyncIo, Tokenizer } from 'mc-build'
-import { VariableMap } from 'mc-build/dist/mcl/Compiler'
+import { type IoLike } from 'mc-build'
+import { Compiler, VariableMap } from 'mc-build/mcl/Compiler'
+import { Parser } from 'mc-build/mcl/Parser'
+import { Tokenizer } from 'mc-build/mcl/TokenizerImpl'
 import { getDataPackFormat } from '../../util/minecraftUtil'
 import { SUPPORTED_MINECRAFT_VERSIONS } from '../global'
 import type { ExportedFile } from '../util'
@@ -36,18 +38,26 @@ export function compileMcbProject({
 	})
 	compiler.disableRequire = true
 
-	function createSyncIO() {
-		const io = new SyncIo()
-		io.write = (localPath, content) => {
-			const writePath = PathModule.join(destPath, localPath)
-			exportedFiles.set(writePath, {
-				content,
-				includeInAJMeta: true,
-			})
+	function createIo() {
+		const io: IoLike = {
+			cleanup: () => {
+				console.log('io.cleanup')
+			},
+			finished: () => {
+				console.log('io.finished')
+				return true
+			},
+			write: (localPath, content) => {
+				const writePath = PathModule.join(destPath, localPath)
+				exportedFiles.set(writePath, {
+					content,
+					includeInAJMeta: true,
+				})
+			},
 		}
 		return io
 	}
-	compiler.io = createSyncIO()
+	compiler.io = createIo()
 
 	console.time('MC-Build compiled in')
 

@@ -38,9 +38,9 @@
 </script>
 
 <script lang="ts">
-	let easingType = 'linear'
-	let easingMode: string | undefined
-	let easingArg: Valuable<number> | undefined
+	let easingType = $state('linear')
+	let easingMode: string | undefined = $state()
+	let easingArg: Valuable<number> | undefined = $state()
 
 	function getSelectedEasing() {
 		if (!selectedKeyframe?.easing) return
@@ -98,7 +98,7 @@
 		selectedKeyframe.easingArgs = [arg]
 	}
 
-	let selectedKeyframe: _Keyframe | undefined
+	let selectedKeyframe: _Keyframe | undefined = $state()
 
 	function isFirstKeyframe(kf: _Keyframe) {
 		return (

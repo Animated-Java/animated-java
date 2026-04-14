@@ -1,16 +1,16 @@
-import { PACKAGE } from '../../constants'
+import { fs, PACKAGE } from '../../constants'
 import EVENTS from '../../util/events'
 import { getCurrentVersion, getLatestVersion } from './versionManager'
 
-import download from 'download'
-import type { Unzipped } from 'fflate'
+// import download from 'download'
+import type { Unzipped } from 'fflate/browser'
 import index from '../../assets/vanillaAssetOverrides/index.json'
 
 import {
 	hideLoadingPopup,
 	showLoadingPopup,
 	showOfflineError,
-	updateLoadingProgress,
+	// updateLoadingProgress,
 	updateLoadingProgressLabel,
 } from '../../popups/animatedJavaLoading/animatedJavaLoading'
 import { unzip } from '../util'
@@ -19,13 +19,15 @@ const ASSET_OVERRIDES = index as unknown as Record<string, string>
 async function downloadJar(url: string, savePath: string) {
 	updateLoadingProgressLabel('Downloading Minecraft Assets...')
 
-	const data = await download(url, { retry: { retries: 3 } })
-		.on('downloadProgress', progress => {
-			updateLoadingProgress(progress.percent * 100)
-		})
-		.catch((error: any) => {
-			console.error('Failed to download Minecraft client:', error)
-		})
+	// const data = await download(url, { retry: { retries: 3 } })
+	// 	.on('downloadProgress', progress => {
+	// 		updateLoadingProgress(progress.percent * 100)
+	// 	})
+	// 	.catch((error: any) => {
+	// 		console.error('Failed to download Minecraft client:', error)
+	// 	})
+
+	const data = false
 
 	if (!data) {
 		showOfflineError()
@@ -59,7 +61,7 @@ export async function getLatestVersionClientDownloadUrl() {
 }
 
 function getCachedJarFilePath() {
-	const userDataPath = electron.app.getPath('userData')
+	const userDataPath = SystemInfo.user_data_directory
 	return PathModule.join(userDataPath, `${PACKAGE.name}/latest.jar`)
 }
 

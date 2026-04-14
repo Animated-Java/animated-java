@@ -12,9 +12,13 @@
 </script>
 
 <script lang="ts">
-	export let selectedPlugin: BBPlugin | null
+	interface Props {
+		selectedPlugin: BBPlugin | null
+	}
 
-	let isIncompatible = !!selectedPlugin && isIncompatiblePlugin(selectedPlugin)
+	let { selectedPlugin }: Props = $props()
+
+	let isIncompatible = $derived(!!selectedPlugin && isIncompatiblePlugin(selectedPlugin))
 
 	const updateButtons = () => {
 		requestAnimationFrame(() => {

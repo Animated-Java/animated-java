@@ -8,28 +8,44 @@
 </script>
 
 <script lang="ts">
-	// An editable list of unique items, with a button to add new items from a list of options.
-	export let label: string
-	export let tooltip: string
-	export let availableItemsColumnLable: string
-	export let availableItemsColumnTooltip: string
-	export let includedItemsColumnLable: string
-	export let includedItemsColumnTooltip: string
-	export let swapColumnsButtonTooltip: string
-	export let availableItems: CollectionItem[]
-	export let includedItems: Valuable<CollectionItem[]>
-
-	let includedItemsList: Array<{ id: number; title: string; [key: string]: any }> = []
-	let availableItemsList: Array<{ id: number; title: string; [key: string]: any }> = []
-
-	for (let i = 0; i < availableItems.length; i++) {
-		const item = availableItems[i]
-		if (includedItems.get().find(i => i.value === item.value)) {
-			includedItemsList.push({ id: i, title: item.name, icon: item.icon })
-		} else {
-			availableItemsList.push({ id: i, title: item.name, icon: item.icon })
-		}
+	interface Props {
+		// An editable list of unique items, with a button to add new items from a list of options.
+		label: string
+		tooltip: string
+		availableItemsColumnLable: string
+		availableItemsColumnTooltip: string
+		includedItemsColumnLable: string
+		includedItemsColumnTooltip: string
+		swapColumnsButtonTooltip: string
+		availableItems: CollectionItem[]
+		includedItems: Valuable<CollectionItem[]>
 	}
+
+	let {
+		label,
+		tooltip,
+		availableItemsColumnLable,
+		availableItemsColumnTooltip,
+		includedItemsColumnLable,
+		includedItemsColumnTooltip,
+		swapColumnsButtonTooltip,
+		availableItems,
+		includedItems,
+	}: Props = $props()
+
+	let includedItemsList: Array<{ id: number; title: string; [key: string]: any }> = $state([])
+	let availableItemsList: Array<{ id: number; title: string; [key: string]: any }> = $state([])
+
+	$effect.pre(() => {
+		for (let i = 0; i < availableItems.length; i++) {
+			const item = availableItems[i]
+			if (includedItems.get().find(i => i.value === item.value)) {
+				includedItemsList.push({ id: i, title: item.name, icon: item.icon })
+			} else {
+				availableItemsList.push({ id: i, title: item.name, icon: item.icon })
+			}
+		}
+	})
 
 	function handleSortAvailableItems(e: any) {
 		availableItemsList = e.detail.items
@@ -107,8 +123,8 @@
 					flipDurationMs: 150,
 					centreDraggedOnCursor: true,
 				}}
-				on:consider={handleSortIncludedItems}
-				on:finalize={e => {
+				onconsider={handleSortIncludedItems}
+				onfinalize={e => {
 					handleSortIncludedItems(e)
 					finalizeSort()
 				}}

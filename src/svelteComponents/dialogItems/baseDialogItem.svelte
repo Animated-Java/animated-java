@@ -2,23 +2,37 @@
 	import { blueprintSettingErrors } from '../../formats/blueprint/settings'
 	import { translate } from '../../util/translation'
 
-	export let label: string
-	export let tooltip = ''
-	export let warningText = ''
-	export let errorText = ''
-	export let onReset: () => void
+	interface Props {
+		label: string
+		tooltip?: string
+		warningText?: string
+		errorText?: string
+		onReset: () => void
+		children?: import('svelte').Snippet<[any]>
+	}
+
+	let {
+		label,
+		tooltip = '',
+		warningText = $bindable(''),
+		errorText = $bindable(''),
+		onReset,
+		children,
+	}: Props = $props()
 
 	let id = guid()
 
-	$: if (errorText) {
-		blueprintSettingErrors.get()[label] = errorText
-	}
+	$effect.pre(() => {
+		if (errorText) {
+			blueprintSettingErrors.get()[label] = errorText
+		}
+	})
 </script>
 
 <div class="dialog_item_container">
 	<div class="base_dialog_item">
 		<div class="slot_container">
-			<slot {id} />
+			{@render children?.({ id })}
 
 			<div class="description">
 				{#if errorText}

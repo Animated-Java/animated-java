@@ -5,7 +5,11 @@
 </script>
 
 <script lang="ts">
-	export let pluginMode: Valuable<boolean>
+	interface Props {
+		pluginMode: Valuable<boolean>
+	}
+
+	let { pluginMode }: Props = $props()
 </script>
 
 {#if $pluginMode}

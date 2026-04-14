@@ -2,50 +2,59 @@
 	import { Valuable } from '../../util/stores'
 	import BaseDialogItem from './baseDialogItem.svelte'
 
-	export let label: string
-	export let tooltip = ''
-	export let value: Valuable<string>
-	export let defaultValue: string
-	export let disabled = false
-	export let valueChecker: DialogItemValueChecker<string> = undefined
+	interface Props {
+		label: string
+		tooltip?: string
+		value: Valuable<string>
+		defaultValue: string
+		disabled?: boolean
+		valueChecker?: DialogItemValueChecker<string>
+	}
 
-	let _value: string = value.get()
+	let {
+		label,
+		tooltip = '',
+		value,
+		defaultValue,
+		disabled = false,
+		valueChecker = undefined,
+	}: Props = $props()
 
-	let warningText = ''
-	let errorText = ''
+	let warningText = $state('')
+	let errorText = $state('')
 
-	function onValueChange() {
+	const onValueChange = () => {
 		if (valueChecker) {
-			const result = valueChecker(_value)
+			const result = valueChecker($value)
 			result.type === 'error' ? (errorText = result.message) : (errorText = '')
 			result.type === 'warning' ? (warningText = result.message) : (warningText = '')
 		}
-
-		value.set(_value)
-		_value = value.get()
 	}
+
+	$effect.pre(() => {
+		value.subscribe(onValueChange)
+	})
 
 	function onReset() {
-		_value = defaultValue
-		onValueChange()
+		$value = defaultValue
 	}
-
-	onValueChange()
 </script>
 
-<BaseDialogItem {label} {tooltip} {warningText} {errorText} {onReset} let:id>
-	<div class="dialog_bar form_bar">
-		<label class="name_space_left" for={id}>{label}</label>
-		<input
-			type="text"
-			class="dark_bordered half focusable_input"
-			{id}
-			bind:value={_value}
-			on:change={onValueChange}
-			{disabled}
-			style={disabled ? 'color: var(--color-subtle_text);' : ''}
-		/>
-	</div>
+<BaseDialogItem {label} {tooltip} {warningText} {errorText} {onReset}>
+	{#snippet children({ id })}
+		<div class="dialog_bar form_bar">
+			<label class="name_space_left" for={id}>{label}</label>
+			<input
+				type="text"
+				class="dark_bordered half focusable_input"
+				{id}
+				bind:value={$value}
+				onchange={onValueChange}
+				{disabled}
+				style={disabled ? 'color: var(--color-subtle_text);' : ''}
+			/>
+		</div>
+	{/snippet}
 </BaseDialogItem>
 
 <style>

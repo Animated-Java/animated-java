@@ -1,10 +1,10 @@
 <script lang="ts" module>
+	import MissingTexture from '../../assets/missing_texture.png'
 	import Checkbox from '../../svelteComponents/dialogItems/checkbox.svelte'
 	import LineInput from '../../svelteComponents/dialogItems/lineInput.svelte'
 	import { type Valuable } from '../../util/stores'
 	import { translate } from '../../util/translation'
 	import { TextureMap, Variant } from '../../variants'
-	import MissingTexture from '../assets/missing_texture.png'
 </script>
 
 <script lang="ts">

@@ -1,20 +1,40 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte'
+	import CustomCodeJar from '../../svelteComponents/customCodeJar.svelte'
 	import { Valuable } from '../../util/stores'
-	import CustomCodeJar from '../customCodeJar.svelte'
 	import BaseDialogItem from './baseDialogItem.svelte'
 
-	export let label: string
-	export let tooltip = ''
-	export let value: Valuable<string>
-	export let defaultValue: string
-	export let valueChecker: DialogItemValueChecker<string> = undefined
-	export let syntax: string | undefined = undefined
+	interface Props {
+		label: string
+		tooltip?: string
+		value: Valuable<string>
+		defaultValue: string
+		valueChecker?: DialogItemValueChecker<string>
+		syntax?: string | undefined
+	}
 
-	value.get()
+	let {
+		label,
+		tooltip = '',
+		value,
+		defaultValue,
+		valueChecker = undefined,
+		syntax = undefined,
+	}: Props = $props()
 
-	let warningText = ''
-	let errorText = ''
+	$effect.pre(() => {
+		value.get()
+
+		const unsub = value.subscribe(() => {
+			onValueChange()
+		})
+
+		return () => {
+			unsub()
+		}
+	})
+
+	let warningText = $state('')
+	let errorText = $state('')
 
 	function onValueChange() {
 		if (valueChecker) {
@@ -24,13 +44,6 @@
 		}
 	}
 
-	const unsub = value.subscribe(() => {
-		onValueChange()
-	})
-	onDestroy(() => {
-		unsub()
-	})
-
 	function onReset() {
 		$value = defaultValue
 		onValueChange()
@@ -39,25 +52,27 @@
 	onValueChange()
 </script>
 
-<BaseDialogItem {label} {tooltip} {onReset} let:id>
-	<div class="dialog_bar form_bar custom">
-		<label class="name_space_left" for={id}>{label}</label>
+<BaseDialogItem {label} {tooltip} {onReset}>
+	{#snippet children({ id })}
+		<div class="dialog_bar form_bar custom">
+			<label class="name_space_left" for={id}>{label}</label>
 
-		<div class="content codejar-container">
-			<CustomCodeJar
-				{syntax}
-				bind:value={$value}
-				style={errorText
-					? 'border: 1px solid var(--color-error); border-bottom: none; border-radius: 0.3em 0.3em 0 0;'
-					: 'border: 1px solid var(--color-border);'}
-			/>
-			{#if errorText || warningText}
-				<textarea readonly rows={errorText.split('\n').length + 1}
-					>{errorText ?? warningText}</textarea
-				>
-			{/if}
+			<div class="content codejar-container">
+				<CustomCodeJar
+					{syntax}
+					bind:value={$value}
+					style={errorText
+						? 'border: 1px solid var(--color-error); border-bottom: none; border-radius: 0.3em 0.3em 0 0;'
+						: 'border: 1px solid var(--color-border);'}
+				/>
+				{#if errorText || warningText}
+					<textarea readonly rows={errorText.split('\n').length + 1}
+						>{errorText ?? warningText}</textarea
+					>
+				{/if}
+			</div>
 		</div>
-	</div>
+	{/snippet}
 </BaseDialogItem>
 
 <style>
@@ -82,7 +97,7 @@
 		white-space: pre;
 		tab-size: 4;
 	}
-	.codejar-container :global(.language-snbtTextComponent) {
+	:global(.language-snbtTextComponent) {
 		& .brackets {
 			color: #5ba8c5;
 		}
