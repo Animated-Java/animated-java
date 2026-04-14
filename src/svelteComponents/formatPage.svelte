@@ -20,7 +20,7 @@
 </p>
 
 <div class="button_bar">
-	<button on:click={() => createNewBlueprintProject()}>
+	<button onclick={() => createNewBlueprintProject()}>
 		<i class="material-icons">arrow_forward</i>
 		Create new AJ Blueprint
 	</button>

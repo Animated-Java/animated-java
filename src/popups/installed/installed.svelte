@@ -1,10 +1,10 @@
-<script lang="ts" context="module">
-	import AnimatedJavaIcon from '../assets/animated_java_icon.svg'
+<script lang="ts" module>
+	import AnimatedJavaIcon from '../../assets/animated_java_icon.svg'
 </script>
 
 <div class="content-container">
 	<div class="header-container">
-		<!-- svelte-ignore a11y-missing-attribute -->
+		<!-- svelte-ignore a11y_missing_attribute -->
 		<img src={AnimatedJavaIcon} />
 		<div>
 			<h1>Welcome to Animated Java!</h1>

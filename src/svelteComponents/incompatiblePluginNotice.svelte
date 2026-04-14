@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import { onDestroy } from 'svelte'
 	import { isIncompatiblePlugin } from '../popups/incompatability/incompatability'
 	import EVENTS from '../util/events'
@@ -53,7 +53,7 @@
 {#if isIncompatible}
 	<div class="incompatible_plugin_notice">
 		<i class="material-icons icon">warning</i>
-		<!-- svelte-ignore missing-declaration -->
+
 		<div class="description">
 			{@html pureMarked(translate('plugin_dialog.incompatability_notice'))}
 		</div>

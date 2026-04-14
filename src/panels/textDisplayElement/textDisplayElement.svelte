@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import { CodeJar } from '@novacbn/svelte-codejar'
 	import { TextDisplay } from '../../outliner/textDisplay'
 	import { Stopwatch } from '../../util/stopwatch'

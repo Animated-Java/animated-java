@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import BisectHostingBanner from '../assets/banners/bisect-hosting-promo-banner.png'
 	import HeartIcon from '../assets/heart.png'
 	import KoFiImage from '../assets/kofi_tag_white.webp'
@@ -32,12 +32,12 @@
 			<div class="title">
 				<img class="heart" src={HeartIcon} alt="❤️" />
 				<span>Animated Java?</span>
-				<!-- svelte-ignore a11y-click-events-have-key-events -->
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<i
 					class="material-icons icon"
-					on:click={clickSupportMeXButton}
-					on:mouseenter={hoverCloseButton}
-					on:mouseleave={leaveCloseButton}
+					onclick={clickSupportMeXButton}
+					onmouseenter={hoverCloseButton}
+					onmouseleave={leaveCloseButton}
 				>
 					close
 				</i>

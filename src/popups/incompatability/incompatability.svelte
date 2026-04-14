@@ -25,9 +25,9 @@
 					<img src={plugin.getIcon()} alt="" />
 				{/if}
 				{plugin.title}
-				<button on:click={() => disablePlugin(plugin)}>
+				<button onclick={() => disablePlugin(plugin)}>
 					<i class="material-icons icon">bedtime</i>
-					<!-- svelte-ignore missing-declaration -->
+
 					{tl('dialog.plugins.disable')}
 				</button>
 			</li>

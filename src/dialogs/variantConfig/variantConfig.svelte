@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import Checkbox from '../../svelteComponents/dialogItems/checkbox.svelte'
 	import LineInput from '../../svelteComponents/dialogItems/lineInput.svelte'
 	import { type Valuable } from '../../util/stores'
@@ -135,11 +135,11 @@
 				{translate('dialog.variant_config.texture_map.title')}
 			</div>
 			<div class="spacer"></div>
-			<!-- svelte-ignore a11y-click-events-have-key-events -->
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<div
 				class="tool"
 				title={translate('dialog.variant_config.texture_map.create_new_mapping')}
-				on:click={() => createTextureMapping()}
+				onclick={() => createTextureMapping()}
 			>
 				<i class="material-icons icon">add</i>
 			</div>
@@ -158,7 +158,7 @@
 							</div>
 							<select
 								class="texture-mapping-item-dropdown"
-								on:change={e => selectNewPrimaryTexture(e, entry[0])}
+								onchange={e => selectNewPrimaryTexture(e, entry[0])}
 							>
 								{#each PRIMARY_TEXTURES as texture}
 									<option selected={texture.uuid === entry[0]}>
@@ -176,7 +176,7 @@
 							</div>
 							<select
 								class="texture-mapping-item-dropdown"
-								on:change={e => selectNewSecondaryTexture(e, entry[0])}
+								onchange={e => selectNewSecondaryTexture(e, entry[0])}
 							>
 								{#each SECONDARY_TEXTURES as texture}
 									<option selected={texture.uuid === entry[1]}>
@@ -186,10 +186,10 @@
 							</select>
 						</div>
 
-						<!-- svelte-ignore a11y-click-events-have-key-events -->
+						<!-- svelte-ignore a11y_click_events_have_key_events -->
 						<i
 							class="material-icons icon tool"
-							on:click={() => deleteTextureMapping(entry[0])}>delete</i
+							onclick={() => deleteTextureMapping(entry[0])}>delete</i
 						>
 					</li>
 				{:else}

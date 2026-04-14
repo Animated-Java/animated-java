@@ -61,11 +61,11 @@
 			class="dark_bordered half focusable_input"
 			{id}
 			bind:value={_value}
-			on:input={onValueChange}
-			on:change={onValueChange}
+			oninput={onValueChange}
+			onchange={onValueChange}
 		/>
-		<!-- svelte-ignore a11y-click-events-have-key-events -->
-		<div class="tool animated-java-file-select-icon" on:click={() => selectFile()}>
+		<!-- svelte-ignore a11y_click_events_have_key_events -->
+		<div class="tool animated-java-file-select-icon" onclick={() => selectFile()}>
 			<i class="material-icons icon">insert_drive_file</i>
 		</div>
 	</div>

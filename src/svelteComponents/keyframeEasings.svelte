@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 	// @ts-expect-error No types for glob imports
 	import { default as ICON_IMPORTS, filenames } from '../assets/easingIcons/*.svg'
@@ -151,7 +151,7 @@
 						<button
 							class="easing-type"
 							title={translate(`panel.keyframe.easing_type.options.${ease}`)}
-							on:click={() => setSelectedEasing(ease, easingMode)}
+							onclick={() => setSelectedEasing(ease, easingMode)}
 						>
 							<img
 								class={easingType === ease ? 'selected-keyframe-icon' : ''}
@@ -179,7 +179,7 @@
 							<button
 								class="easing-type"
 								title={translate(`panel.keyframe.easing_mode.options.${mode}`)}
-								on:click={() => setSelectedEasing(easingType, mode)}
+								onclick={() => setSelectedEasing(easingType, mode)}
 							>
 								<img
 									class={easingMode === mode ? 'selected-keyframe-icon' : ''}

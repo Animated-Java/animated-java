@@ -1,12 +1,12 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
+	import AnimatedJavaIcon from '../../assets/animated_java_icon.svg'
+	import AnimatedJavaIconNoBackground from '../../assets/animated_java_icon_no_background.svg'
 	import { PACKAGE } from '../../constants'
-	import AnimatedJavaIcon from '../assets/animated_java_icon.svg'
-	import AnimatedJavaIconNoBackground from '../assets/animated_java_icon_no_background.svg'
 </script>
 
 <div class="content">
 	<div class="header-container">
-		<!-- svelte-ignore a11y-missing-attribute -->
+		<!-- svelte-ignore a11y_missing_attribute -->
 		<img src={AnimatedJavaIcon} />
 		<div>
 			<h1>Animated Java</h1>
@@ -16,24 +16,24 @@
 
 	<div class="socials">
 		<a href="https://animated-java.dev" class="open-in-browser">
-			<!-- svelte-ignore a11y-missing-attribute -->
+			<!-- svelte-ignore a11y_missing_attribute -->
 			<img src={AnimatedJavaIconNoBackground} />
-			<!-- svelte-ignore a11y-label-has-associated-control -->
+			<!-- svelte-ignore a11y_label_has_associated_control -->
 			<label>Website</label>
 		</a>
 		<a href="https://discord.com/invite/jFgY4PXZfp" class="open-in-browser"
 			><i class="icon fab fa-discord" style="color: rgb(114, 127, 255);"></i>
-			<!-- svelte-ignore a11y-label-has-associated-control -->
+			<!-- svelte-ignore a11y_label_has_associated_control -->
 			<label>Discord</label>
 		</a>
 		<a href="https://github.com/Animated-Java/animated-java" class="open-in-browser"
 			><i class="icon fab fa-github" style="color: rgb(221, 221, 221);"></i>
-			<!-- svelte-ignore a11y-label-has-associated-control -->
+			<!-- svelte-ignore a11y_label_has_associated_control -->
 			<label>GitHub</label>
 		</a>
 		<a href="https://animated-java.dev/docs" class="open-in-browser"
 			><i class="icon fas fa-book"></i>
-			<!-- svelte-ignore a11y-label-has-associated-control -->
+			<!-- svelte-ignore a11y_label_has_associated_control -->
 			<label>Wiki</label>
 		</a>
 	</div>

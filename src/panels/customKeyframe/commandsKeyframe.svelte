@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import CustomCodeJar from '../../svelteComponents/customCodeJar.svelte'
 	import { translate } from '../../util/translation'
 </script>

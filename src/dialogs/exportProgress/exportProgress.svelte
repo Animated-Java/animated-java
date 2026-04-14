@@ -1,6 +1,6 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
+	import ArmorStandRunningGif from '../../assets/armor_stand_running.webp'
 	import { Valuable } from '../../util/stores'
-	import ArmorStandRunningGif from '../assets/armor_stand_running.webp'
 </script>
 
 <script lang="ts">
@@ -12,7 +12,7 @@
 <div class="dialog-container">
 	<div class="progress-container">
 		<p>{$progressDescription}</p>
-		<!-- svelte-ignore a11y-missing-attribute -->
+		<!-- svelte-ignore a11y_missing_attribute -->
 		<img src={ArmorStandRunningGif} width="64px" />
 	</div>
 	{#if $progress !== 0}

@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import { SHADOW_ITEM_MARKER_PROPERTY_NAME, dndzone } from 'svelte-dnd-action'
 	import { flip } from 'svelte/animate'
 	import { cubicIn } from 'svelte/easing'
@@ -88,27 +88,27 @@
 {#key selectedProject}
 	<div class="panel_container">
 		<div class="toolbar">
-			<!-- svelte-ignore a11y-click-events-have-key-events -->
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<div
 				class="tool"
 				title={translate('panel.variants.tool.create_new_variant')}
-				on:click={e => createVariant(e)}
+				onclick={e => createVariant(e)}
 			>
 				<i class="material-icons icon">texture_add</i>
 			</div>
-			<!-- svelte-ignore a11y-click-events-have-key-events -->
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<div
 				class="tool"
 				title={translate('panel.variants.tool.duplicate_selected_variant')}
-				on:click={e => duplicateVariant(e)}
+				onclick={e => duplicateVariant(e)}
 			>
 				<i class="material-icons icon">content_copy</i>
 			</div>
-			<!-- svelte-ignore a11y-click-events-have-key-events -->
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<div
 				class="tool"
 				title={translate('panel.variants.tool.delete_selected_variant')}
-				on:click={e => deleteVariant(e)}
+				onclick={e => deleteVariant(e)}
 			>
 				<i
 					class={'material-icons icon' +
@@ -124,8 +124,8 @@
 				flipDurationMs: FLIP_DURATION,
 				dropTargetStyle: {},
 			}}
-			on:consider={handleSort}
-			on:finalize={finalizeSort}
+			onconsider={handleSort}
+			onfinalize={finalizeSort}
 		>
 			{#each localVariants as item (item.id)}
 				<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
@@ -134,8 +134,9 @@
 						? 'variant_item selected_variant_item'
 						: 'variant_item'}
 					animate:flip={{ duration: FLIP_DURATION }}
-					on:click={() => selectVariant(item.value)}
-					on:contextmenu|stopPropagation={e => {
+					onclick={() => selectVariant(item.value)}
+					oncontextmenu={e => {
+						e.stopPropagation()
 						item.value.select()
 						VARIANT_PANEL_CONTEXT_MENU.get()?.open(e)
 					}}
@@ -161,7 +162,7 @@
 							<i
 								class="material-icons icon in_list_button"
 								title={translate('panel.variants.tool.edit_variant')}
-								on:click={() => openVariantConfigDialog(item.value)}>edit</i
+								onclick={() => openVariantConfigDialog(item.value)}>edit</i
 							>
 						{/if}
 						{#if Variant.selected === item.value}
@@ -180,10 +181,10 @@
 						{/if}
 
 						{#if !item.value.isDefault}
-							<!-- svelte-ignore a11y-click-events-have-key-events -->
+							<!-- svelte-ignore a11y_click_events_have_key_events -->
 							<i
 								class="material-icons icon in_list_button"
-								on:click={e => deleteVariant(e)}
+								onclick={e => deleteVariant(e)}
 							>
 								delete
 							</i>

@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import { defaultValues } from '../../formats/blueprint/settings'
 	import mcbFiles from '../../systems/datapackCompiler/mcbFiles'
 	import { MINECRAFT_REGISTRY } from '../../systems/minecraft/registryManager'

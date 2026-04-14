@@ -1,4 +1,4 @@
-import { NbtCompound, NbtList, NbtString, NbtTag } from 'deepslate/nbt'
+import { NbtCompound, NbtList, NbtString, NbtTag } from 'deepslate/lib/nbt'
 import { type IBlueprintFormatJSON, getDefaultProjectSettings } from '.'
 import TransparentTexture from '../../assets/transparent.png'
 import { PACKAGE } from '../../constants'

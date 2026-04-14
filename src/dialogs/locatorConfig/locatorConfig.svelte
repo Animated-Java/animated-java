@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import CheckBox from '../../svelteComponents/dialogItems/checkbox.svelte'
 	import CodeInput from '../../svelteComponents/dialogItems/codeInput.svelte'
 	import LineInput from '../../svelteComponents/dialogItems/lineInput.svelte'

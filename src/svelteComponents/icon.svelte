@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import AnimatedJavaIcon from '../assets/animated_java_icon.svg'
 </script>
 

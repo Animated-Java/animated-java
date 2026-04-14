@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import { dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action'
 	import { flip } from 'svelte/animate'
 	import { cubicIn } from 'svelte/easing'
@@ -68,8 +68,8 @@
 					flipDurationMs: 150,
 					centreDraggedOnCursor: true,
 				}}
-				on:consider={handleSortAvailableItems}
-				on:finalize={e => {
+				onconsider={handleSortAvailableItems}
+				onfinalize={e => {
 					handleSortAvailableItems(e)
 					finalizeSort()
 				}}
@@ -91,12 +91,12 @@
 				{/each}
 			</section>
 		</div>
-		<!-- svelte-ignore a11y-click-events-have-key-events -->
+		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		<i
 			class="fa-icon fas fa-arrow-right-arrow-left icon in_list_button"
 			style="min-width: 30px;"
 			title={swapColumnsButtonTooltip}
-			on:click={swapColumns}
+			onclick={swapColumns}
 		></i>
 		<div class="column selected-column" title={includedItemsColumnTooltip}>
 			<h3>{includedItemsColumnLable}</h3>

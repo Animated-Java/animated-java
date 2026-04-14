@@ -1,6 +1,6 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
+	import AnimatedJavaIcon from '../../assets/animated_java_icon.svg'
 	import changelog from '../../pluginPackage/changelog.json'
-	import AnimatedJavaIcon from '../assets/animated_java_icon.svg'
 
 	const ISSUES_URL = 'https://api.github.com/repos/animated-java/animated-java/issues/'
 
@@ -50,12 +50,11 @@
 				{'Animated Java ' + versions.title}
 			</h3>
 		</div>
-		<!-- svelte-ignore a11y-label-has-associated-control -->
+		<!-- svelte-ignore a11y_label_has_associated_control -->
 		<label class="plugin_changelog_author">{versions.author}</label>
-		<!-- svelte-ignore a11y-label-has-associated-control -->
+		<!-- svelte-ignore a11y_label_has_associated_control -->
 		<label class="plugin_changelog_date" title={formatDateFull(versions.date)}>
 			<i class="material-icons icon">calendar_today</i>
-			<!-- svelte-ignore missing-declaration -->
 			{formatDateShort(versions.date)}
 		</label>
 		<ul>
@@ -74,7 +73,6 @@
 											<i class="material-icons icon spinner"
 												>progress_activity</i
 											>
-											<!-- svelte-ignore missing-declaration -->
 											{@html pureMarked(item)}
 										</p>
 									</li>
@@ -87,7 +85,6 @@
 													{'#' + issue.number}
 												</a>
 												{' - '}
-												<!-- svelte-ignore missing-declaration -->
 												{@html pureMarked(issue.title)}
 											{:else}
 												<a
@@ -101,7 +98,6 @@
 									</li>
 								{:catch}
 									<li>
-										<!-- svelte-ignore missing-declaration -->
 										{@html pureMarked(item)}
 									</li>
 								{/await}
@@ -109,13 +105,11 @@
 								<li>
 									<p>
 										<span class="breaking">BREAKING</span>
-										<!-- svelte-ignore missing-declaration -->
 										{@html pureMarked(item.replace('[BREAKING]', '').trim())}
 									</p>
 								</li>
 							{:else}
 								<li>
-									<!-- svelte-ignore missing-declaration -->
 									{@html pureMarked(item)}
 								</li>
 							{/if}

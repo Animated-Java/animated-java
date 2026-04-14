@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import { translate } from '../../util/translation'
 
 	const FLAVOR_QUOTES = [
@@ -73,11 +73,11 @@
 	</p>
 	<div class="codebox dark_bordered">
 		<textarea bind:value readonly></textarea>
-		<!-- svelte-ignore a11y-click-events-have-key-events -->
+		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		<i
 			class="fas fa-copy dialog_form_warning text_icon"
 			title={translate('dialog.unexpected_error.copy_error_message_button.description')}
-			on:click={copyError}
+			onclick={copyError}
 		></i>
 	</div>
 </div>
