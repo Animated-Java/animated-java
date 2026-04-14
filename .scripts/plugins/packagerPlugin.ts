@@ -1,8 +1,8 @@
 import type { Plugin } from 'esbuild'
 import * as fs from 'fs'
 import { readFileSync, writeFileSync } from 'fs'
+import { basename, join } from 'node:path'
 import { Octokit } from 'octokit'
-import { basename, join } from 'path'
 import * as prettier from 'prettier'
 import { sveltePreprocess } from 'svelte-preprocess'
 // @ts-expect-error - Types are broken in nodenext for this package, but it works fine.
@@ -24,7 +24,7 @@ const DIST_PACKAGE_PATH = './dist/pluginPackage/'
 const PLUGIN_REPO_PATH = 'D:/github-repos/snavesutit/blockbench-plugins/plugins/animated_java'
 const PLUGIN_MANIFEST_PATH = 'D:/github-repos/snavesutit/blockbench-plugins/plugins.json'
 const CHANGELOG_PATH = './src/pluginPackage/changelog.json'
-const RELEASE_NOTES_TEMPLATES = './tools/plugins/releaseNoteTemplates/'
+const RELEASE_NOTES_TEMPLATES = './.scripts/plugins/releaseNoteTemplates/'
 const URL_REGEX =
 	/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{1,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gm
 
@@ -130,10 +130,17 @@ function plugin(): Plugin {
 				console.log('📦 Packaging...')
 				fs.rmSync(DIST_PACKAGE_PATH, { recursive: true, force: true })
 				fs.cpSync(PLUGIN_PACKAGE_PATH, DIST_PACKAGE_PATH, { recursive: true })
-				fs.copyFileSync(
-					`./dist/${PACKAGE.name}.js`,
-					join(DIST_PACKAGE_PATH, PACKAGE.name + '.js')
-				)
+				try {
+					fs.copyFileSync(
+						`./dist/${PACKAGE.name}.js`,
+						join(DIST_PACKAGE_PATH, PACKAGE.name + '.js')
+					)
+					// eslint-disable-next-line @typescript-eslint/no-unused-vars
+				} catch (e) {
+					console.log('⚠️  Packaging failed, main plugin file not found in dist!')
+					return
+				}
+
 				const svelteResult = await renderSvelteFileToStaticHTML(SVELTE_FILE)
 
 				if (

@@ -1,6 +1,6 @@
 import type { Plugin } from 'esbuild'
 import * as fs from 'fs/promises'
-import * as pathjs from 'path'
+import * as pathjs from 'node:path'
 
 const ASSET_OVERRIDES_PATH = 'src/assets/vanillaAssetOverrides/'
 

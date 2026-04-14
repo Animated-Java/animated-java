@@ -13,8 +13,8 @@ import inlineImage from 'esbuild-plugin-inline-image'
 import * as fs from 'fs'
 import { load } from 'js-yaml'
 import vscodeProblemsPatch from 'node-modules-vscode-problems-patch'
-import * as path from 'path'
-import { isAbsolute, join } from 'path'
+import * as path from 'node:path'
+import { isAbsolute, join } from 'node:path'
 import {
 	createBlockbenchSvelteConfig,
 	esbuildPluginSvelte,
@@ -190,7 +190,8 @@ const COMMON_CONFIG: esbuild.BuildOptions = {
 	entryPoints: ['./src/index.ts'],
 	outfile: `./dist/${PACKAGE.name}.js`,
 	bundle: true,
-	platform: 'node',
+	platform: 'browser',
+	external: ['node:*'],
 	loader: { '.svg': 'dataurl', '.ttf': 'binary', '.css': 'text' },
 	plugins: [
 		// @ts-expect-error broken default import
@@ -211,6 +212,10 @@ const COMMON_CONFIG: esbuild.BuildOptions = {
 					warningFilter(warning: any) {
 						return !IGNORED_SVELTE_WARNINGS.includes(warning.code)
 					},
+					compatibility: {
+						componentApi: 4,
+					},
+					generate: 'client',
 				},
 			})
 		),
@@ -219,9 +224,17 @@ const COMMON_CONFIG: esbuild.BuildOptions = {
 		mcbCompressionPlugin(),
 		DEPENDENCY_QUARKS,
 	],
-	alias: { svelte: 'svelte' },
+	alias: {
+		svelte: 'svelte',
+		module: './.scripts/fakeModule.js',
+		'node:module': './.scripts/fakeModule.js',
+	},
 	format: 'iife',
 	define: DEFINES,
+	inject: [
+		// Blockbench does not provide access to the global process, but some of our dependencies expect it to exist.
+		`./.scripts/fakeProcess.js`,
+	],
 	treeShaking: true,
 }
 

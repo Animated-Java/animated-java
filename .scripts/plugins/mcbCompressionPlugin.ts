@@ -1,8 +1,8 @@
 import type { Plugin } from 'esbuild'
-import * as fflate from 'fflate'
+import * as fflate from 'fflate/browser'
 import { existsSync } from 'fs'
 import * as fs from 'fs/promises'
-import * as pathjs from 'path'
+import * as pathjs from 'node:path'
 
 function zip(data: fflate.AsyncZippable): Promise<Uint8Array> {
 	return new Promise((resolve, reject) => {
@@ -59,7 +59,7 @@ export default getZipFile('${localPath}')
 				const data = Buffer.from(zipped).toString('base64')
 				return {
 					contents: `
-import * as fflate from 'fflate'
+import * as fflate from 'fflate/browser'
 const unzipped = fflate.unzipSync(Uint8Array.from(atob('${data}'), c => c.charCodeAt(0)))
 export default function getFile(path) {
 	return Buffer.from(unzipped[path]).toString('utf-8')
