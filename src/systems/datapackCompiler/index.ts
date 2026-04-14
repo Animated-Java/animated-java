@@ -1,4 +1,4 @@
-import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/nbt'
+import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/lib/nbt'
 import {
 	MAX_PROGRESS,
 	PROGRESS,

@@ -59,6 +59,10 @@ declare module '*.css' {
 	export = value
 }
 
+declare module 'deepslate/lib/nbt' {
+	export * from 'deepslate/nbt'
+}
+
 /**
  * Import this folder's contents recursively.
  * If a local index is found in a folder, it is imported and the rest of that folder is ignored.

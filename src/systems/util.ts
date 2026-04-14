@@ -1,4 +1,4 @@
-import { NbtCompound, NbtFloat, NbtList } from 'deepslate/nbt'
+import { NbtCompound, NbtFloat, NbtList } from 'deepslate/lib/nbt'
 import {
 	unzip as cbUnzip,
 	zip as cbZip,
