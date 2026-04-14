@@ -1,15 +1,15 @@
-import { sanitizeStorageKey } from 'src/util/minecraftUtil'
-import { registerCodec } from 'src/util/moddingTools'
-import { translate } from 'src/util/translation'
-import { Variant } from 'src/variants'
 import {
 	BLUEPRINT_FORMAT,
 	BLUEPRINT_FORMAT_ID,
 	getDefaultProjectSettings,
-	IBlueprintFormatJSON,
-	ICollectionJSON,
+	type IBlueprintFormatJSON,
+	type ICollectionJSON,
 } from '.'
 import { PACKAGE } from '../../constants'
+import { sanitizeStorageKey } from '../../util/minecraftUtil'
+import { registerCodec } from '../../util/moddingTools'
+import { translate } from '../../util/translation'
+import { Variant } from '../../variants'
 import * as modelDatFixerUpper from './dfu'
 import * as blueprintSettings from './settings'
 
@@ -131,8 +131,7 @@ export const BLUEPRINT_CODEC = registerCodec(
 									}
 								} else if (
 									defaultTexture &&
-									newElement.faces &&
-									newElement.faces[face].texture !== undefined
+									newElement.faces?.[face].texture !== undefined
 								) {
 									newElement.faces[face].texture = defaultTexture.uuid
 								}

@@ -1,7 +1,7 @@
-import { ComponentProps, SvelteComponent } from 'svelte'
-import { BaseModOptions, registerMod } from './moddingTools'
+import { type ComponentProps, SvelteComponent } from 'svelte'
+import { type BaseModOptions, registerMod } from './moddingTools'
 import { PollingCancelledError, pollUntilResult } from './promises'
-import { SvelteComponentOptions } from './svelteUtil'
+import { type SvelteComponentOptions } from './svelteUtil'
 
 type ElementSelector = string | (() => Element | undefined | null)
 
@@ -92,7 +92,7 @@ export function mountSvelteComponent<T extends SvelteComponent>(
 
 type MountSvelteComponentModOptions<
 	ID extends string,
-	T extends SvelteComponent
+	T extends SvelteComponent,
 > = BaseModOptions<ID> &
 	Omit<MountSvelteComponentOptions<T>, 'target'> & {
 		target: ElementSelector

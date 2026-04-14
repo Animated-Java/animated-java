@@ -1,10 +1,10 @@
-import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/lib/nbt'
-import { projectTargetVersionIsAtLeast } from 'src/formats/blueprint'
+import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/nbt'
 import {
 	MAX_PROGRESS,
 	PROGRESS,
 	PROGRESS_DESCRIPTION,
 } from '../../dialogs/exportProgress/exportProgress'
+import { projectTargetVersionIsAtLeast } from '../../formats/blueprint'
 import { DisplayEntityConfig } from '../../nodeConfigs'
 import { isFunctionTagPath } from '../../util/fileUtil'
 import {

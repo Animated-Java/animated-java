@@ -1,5 +1,5 @@
-import { fixClassPropertyInheritance } from 'src/util/property'
 import { makeNotZero } from '../util/misc'
+import { fixClassPropertyInheritance } from '../util/property'
 
 @fixClassPropertyInheritance
 export class ResizableOutlinerElement extends OutlinerElement {

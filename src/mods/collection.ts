@@ -1,5 +1,5 @@
-import { activeProjectIsBlueprintFormat } from 'src/formats/blueprint'
-import { registerConditionalPropertyOverrideMod } from 'src/util/moddingTools'
+import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
+import { registerConditionalPropertyOverrideMod } from '../util/moddingTools'
 
 registerConditionalPropertyOverrideMod({
 	id: 'animated-java:property-condition-override/collection/export-path',

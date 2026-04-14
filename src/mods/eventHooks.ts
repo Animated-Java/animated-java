@@ -1,5 +1,5 @@
-import EVENTS from 'src/util/events'
-import { registerPropertyOverrideMod } from 'src/util/moddingTools'
+import EVENTS from '../util/events'
+import { registerPropertyOverrideMod } from '../util/moddingTools'
 
 registerPropertyOverrideMod({
 	id: `animated-java:event-hook/external-plugin-load/load`,

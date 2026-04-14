@@ -1,6 +1,6 @@
-import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from 'src/formats/blueprint'
-import EVENTS from 'src/util/events'
-import { registerConditionalPropertyOverrideMod, registerProjectMod } from 'src/util/moddingTools'
+import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from '../formats/blueprint'
+import EVENTS from '../util/events'
+import { registerConditionalPropertyOverrideMod, registerProjectMod } from '../util/moddingTools'
 import { translate } from '../util/translation'
 
 export class LocatorAnimator extends BoneAnimator {

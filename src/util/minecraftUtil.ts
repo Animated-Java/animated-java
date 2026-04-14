@@ -1,14 +1,14 @@
 import * as pathjs from 'path'
-import { assetsLoaded } from 'src/systems/minecraft/assetManager'
-import { validateBlockState } from 'src/systems/minecraft/blockModelManager'
-import { MINECRAFT_REGISTRY } from 'src/systems/minecraft/registryManager'
-import { getCurrentVersion } from 'src/systems/minecraft/versionManager'
 import { SUPPORTED_MINECRAFT_VERSIONS } from '../systems/global'
+import { assetsLoaded } from '../systems/minecraft/assetManager'
+import { validateBlockState } from '../systems/minecraft/blockModelManager'
 import {
 	BlockStateRegistryEntry,
 	type BlockStateValue,
 	getBlockState,
 } from '../systems/minecraft/blockstateManager'
+import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
+import { getCurrentVersion } from '../systems/minecraft/versionManager'
 
 export interface IMinecraftResourceLocation {
 	packRoot: string

@@ -1,11 +1,11 @@
-import { DisplayEntityConfig } from 'src/nodeConfigs'
-import { sanitizeOutlinerElementName } from 'src/outliner/util'
-import { registerConditionalPropertyOverrideMod, registerMod } from 'src/util/moddingTools'
-import { DeepClonedObjectProperty } from 'src/util/property'
 import {
 	activeProjectIsBlueprintFormat,
 	type IBlueprintDisplayEntityConfigJSON,
 } from '../formats/blueprint'
+import { DisplayEntityConfig } from '../nodeConfigs'
+import { sanitizeOutlinerElementName } from '../outliner/util'
+import { registerConditionalPropertyOverrideMod, registerMod } from '../util/moddingTools'
+import { DeepClonedObjectProperty } from '../util/property'
 
 declare global {
 	interface Group {

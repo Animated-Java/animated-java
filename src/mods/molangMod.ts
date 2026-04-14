@@ -1,5 +1,5 @@
-import { BLUEPRINT_FORMAT_ID } from 'src/formats/blueprint'
-import { registerProjectMod } from 'src/util/moddingTools'
+import { BLUEPRINT_FORMAT_ID } from '../formats/blueprint'
+import { registerProjectMod } from '../util/moddingTools'
 import MolangFunctionFile from './functions.molang'
 
 const GLOBAL_VARIABLES = Animator.MolangParser.global_variables

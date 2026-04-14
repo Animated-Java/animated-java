@@ -1,10 +1,10 @@
-import { NbtCompound, NbtList, NbtString, NbtTag } from 'deepslate/lib/nbt'
-import { TextDisplay } from 'src/outliner/textDisplay'
+import { NbtCompound, NbtList, NbtString, NbtTag } from 'deepslate/nbt'
 import { type IBlueprintFormatJSON, getDefaultProjectSettings } from '.'
 import TransparentTexture from '../../assets/transparent.png'
 import { PACKAGE } from '../../constants'
 import { openUnexpectedErrorDialog } from '../../dialogs/unexpectedError/unexpectedError'
 import { DisplayEntityConfig } from '../../nodeConfigs'
+import { TextDisplay } from '../../outliner/textDisplay'
 
 export function process(model: any): IBlueprintFormatJSON {
 	if (model?.meta?.model_format === 'animatedJava/ajmodel') {

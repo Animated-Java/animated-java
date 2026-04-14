@@ -1,7 +1,7 @@
-import { Valuable } from 'src/util/stores'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 import { roundToNth } from '../util/misc'
 import { registerConditionalPropertyOverrideMod } from '../util/moddingTools'
+import { Valuable } from '../util/stores'
 
 export const BONE_INTERPOLATION_ENABLED = new Valuable(true)
 

@@ -1,4 +1,4 @@
-import { PACKAGE } from 'src/constants'
+import { PACKAGE } from '../constants'
 import EVENTS from './events'
 import type { ResourceLocation } from './resourceLocation'
 import { subscribable, type Subscribable } from './subscribable'
@@ -82,8 +82,10 @@ export interface BaseModOptions<ID extends string> {
 	priority?: number
 }
 
-interface ModOptions<ID extends string, RevertContext extends any | void>
-	extends BaseModOptions<ID> {
+interface ModOptions<
+	ID extends string,
+	RevertContext extends any | void,
+> extends BaseModOptions<ID> {
 	/** A function that applies the mod. This function should return a context object that will be passed to the revert function. */
 	apply: () => Promise<RevertContext> | RevertContext
 	/**
@@ -178,8 +180,10 @@ export function registerMod<ID extends string, RevertContext extends any | void>
 	return handle
 }
 
-interface RegisterProjectModOptions<ID extends string, RevertContext extends any | void>
-	extends ModOptions<ID, RevertContext> {
+interface RegisterProjectModOptions<
+	ID extends string,
+	RevertContext extends any | void,
+> extends ModOptions<ID, RevertContext> {
 	apply: () => RevertContext
 	revert: (ctx: RevertContext) => void
 	/** A function that checks if the mod should be applied when switching projects */
@@ -223,8 +227,10 @@ export function registerProjectMod<ID extends string, RevertContext extends any 
 	})
 }
 
-interface RegisterPluginModOptions<ID extends string, RevertContext extends any | void>
-	extends ModOptions<ID, RevertContext> {
+interface RegisterPluginModOptions<
+	ID extends string,
+	RevertContext extends any | void,
+> extends ModOptions<ID, RevertContext> {
 	apply: () => RevertContext
 	revert: (ctx: RevertContext) => void
 	/** A function that checks if the mod should be applied when the plugin is loaded */
@@ -381,7 +387,7 @@ interface PropertyOverrideModOptions<
 	ID extends string,
 	T extends Object,
 	K extends keyof T,
-	O extends T[K]
+	O extends T[K],
 > extends BaseModOptions<ID> {
 	object: T
 	key: K
@@ -393,7 +399,7 @@ export function registerPropertyOverrideMod<
 	ID extends string,
 	T extends Object,
 	K extends keyof T,
-	O extends T[K]
+	O extends T[K],
 >(options: PropertyOverrideModOptions<ID, T, K, O>) {
 	registerMod({
 		...options,
@@ -447,7 +453,7 @@ interface ConditionalPropertyOverrideModOptions<
 	ID extends string,
 	T extends Object,
 	K extends keyof T,
-	O extends T[K]
+	O extends T[K],
 > extends BaseModOptions<ID> {
 	object: T
 	key: K
@@ -460,7 +466,7 @@ export function registerConditionalPropertyOverrideMod<
 	ID extends string,
 	T extends Object,
 	K extends keyof T,
-	O extends T[K]
+	O extends T[K],
 >(options: ConditionalPropertyOverrideModOptions<ID, T, K, O>) {
 	registerMod({
 		...options,
@@ -507,10 +513,10 @@ export function registerConditionalPropertyOverrideMod<
 							} else {
 								original.value = value
 							}
-					  }
+						}
 					: value => {
 							original.value = value
-					  },
+						},
 			})
 
 			return { original }
@@ -529,7 +535,7 @@ const SUBSCRIBABLES = new Map<
 	any,
 	[
 		Subscribable<{ storage: Storage<any>; value: any }>,
-		Subscribable<{ storage: Storage<any>; newValue: any }>
+		Subscribable<{ storage: Storage<any>; newValue: any }>,
 	]
 >()
 

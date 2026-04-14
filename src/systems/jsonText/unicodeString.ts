@@ -1,6 +1,6 @@
 import { StringStream } from 'generic-stream'
-import { TextDisplay } from 'src/outliner/textDisplay'
-import EVENTS from 'src/util/events'
+import { TextDisplay } from '../../outliner/textDisplay'
+import EVENTS from '../../util/events'
 
 const ESCAPE_SEQUENCES = {
 	'\\': '\\',

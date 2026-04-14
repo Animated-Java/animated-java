@@ -1,4 +1,4 @@
-import { ItemDisplayMode } from 'src/outliner/vanillaItemDisplay'
+import { type ItemDisplayMode } from '../../outliner/vanillaItemDisplay'
 import { mergeGeometries } from '../../util/bufferGeometryUtils'
 import {
 	type IParsedBlock,

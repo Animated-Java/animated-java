@@ -1,5 +1,5 @@
-import { Stopwatch } from 'src/util/stopwatch'
 import { JsonText, type ComponentStyle, type TextElement, type TextObject } from '.'
+import { Stopwatch } from '../../util/stopwatch'
 import { getVanillaFont } from '../minecraft/fontManager'
 import { UnicodeString } from './unicodeString'
 

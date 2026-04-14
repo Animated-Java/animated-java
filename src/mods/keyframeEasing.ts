@@ -1,4 +1,3 @@
-import { registerConditionalPropertyOverrideMod, registerMod } from 'src/util/moddingTools'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 import {
 	EASING_DEFAULT,
@@ -7,6 +6,7 @@ import {
 	getEasingArgDefault,
 	hasArgs,
 } from '../util/easing'
+import { registerConditionalPropertyOverrideMod, registerMod } from '../util/moddingTools'
 
 declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

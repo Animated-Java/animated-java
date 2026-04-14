@@ -1,4 +1,4 @@
-import { NbtCompound, NbtFloat, NbtList } from 'deepslate/lib/nbt'
+import { NbtCompound, NbtFloat, NbtList } from 'deepslate/nbt'
 import {
 	unzip as cbUnzip,
 	zip as cbZip,
@@ -7,7 +7,7 @@ import {
 	type AsyncZippable,
 	type Unzipped,
 } from 'fflate/browser'
-import { projectTargetVersionIsAtLeast } from 'src/formats/blueprint'
+import { projectTargetVersionIsAtLeast } from '../formats/blueprint'
 import { roundTo } from '../util/misc'
 import type { INodeTransform } from './animationRenderer'
 

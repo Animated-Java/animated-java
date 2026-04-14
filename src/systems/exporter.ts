@@ -1,4 +1,3 @@
-import { Stopwatch } from 'src/util/stopwatch'
 import { openBlueprintSettingsDialog } from '../dialogs/blueprintSettings/blueprintSettings'
 import {
 	PROGRESS_DESCRIPTION,
@@ -9,6 +8,7 @@ import { projectTargetVersionIsAtLeast, saveBlueprint } from '../formats/bluepri
 import { blueprintSettingErrors } from '../formats/blueprint/settings'
 import { resolvePath } from '../util/fileUtil'
 import { isResourcePackPath } from '../util/minecraftUtil'
+import { Stopwatch } from '../util/stopwatch'
 import { translate } from '../util/translation'
 import { Variant } from '../variants'
 import { hashAnimations, renderProjectAnimations } from './animationRenderer'

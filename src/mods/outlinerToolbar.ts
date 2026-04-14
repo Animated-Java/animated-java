@@ -1,4 +1,4 @@
-import { registerMod } from 'src/util/moddingTools'
+import { registerMod } from '../util/moddingTools'
 
 //region Add Locator
 registerMod({

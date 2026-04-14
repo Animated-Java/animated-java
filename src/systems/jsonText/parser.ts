@@ -1,12 +1,10 @@
 import { StringStream } from 'generic-stream'
-import { Stopwatch } from 'src/util/stopwatch'
 import {
 	COLOR_VALUES,
 	CONTENT_KEYS,
 	CONTENT_TYPES,
 	JsonText,
 	MODERN_CLICK_EVENT_SUBKEYS,
-	TextObjectShadowColor,
 	type LegacyClickEvent,
 	type LegacyHoverEvent,
 	type ModernClickEvent,
@@ -14,7 +12,9 @@ import {
 	type TextElement,
 	type TextObject,
 	type TextObjectColor,
+	type TextObjectShadowColor,
 } from '.'
+import { Stopwatch } from '../../util/stopwatch'
 import type { MergeUnion } from '../../util/utilityTypes'
 
 enum NUMBER_TYPES {

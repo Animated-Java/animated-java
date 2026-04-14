@@ -1,6 +1,6 @@
-import { registerPluginMod } from 'src/util/moddingTools'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 import { sanitizeOutlinerElementName } from '../outliner/util'
+import { registerPluginMod } from '../util/moddingTools'
 
 registerPluginMod({
 	id: `animated-java:camera-plugin/camera-name-sanitization`,

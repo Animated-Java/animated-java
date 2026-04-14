@@ -1,6 +1,6 @@
-import { toSmallCaps } from 'src/util/minecraftUtil'
+import { toSmallCaps } from '../../util/minecraftUtil'
 import { type IRenderedAnimation } from '../animationRenderer'
-import { JsonText, TextElement } from '../jsonText'
+import { JsonText, type TextElement } from '../jsonText'
 import { type IRenderedVariant } from '../rigRenderer'
 
 const TELLRAW_PREFIX = () =>
@@ -49,14 +49,14 @@ const CREATE_TELLRAW_HELP_LINK = (url: string) =>
 					underlined: true,
 					italic: true,
 					click_event: { action: 'open_url', url },
-			  }
+				}
 			: {
 					text: '▶ Learn More ◀',
 					color: 'blue',
 					underlined: true,
 					italic: true,
 					clickEvent: { action: 'open_url', value: url },
-			  },
+				},
 	]).flatten()
 
 namespace TELLRAW {
@@ -78,7 +78,7 @@ namespace TELLRAW {
 						},
 						color: 'aqua',
 						underlined: true,
-				  }
+					}
 				: {
 						text: toSmallCaps('Teleport to Instance'),
 						clickEvent: {
@@ -87,7 +87,7 @@ namespace TELLRAW {
 						},
 						color: 'aqua',
 						underlined: true,
-				  },
+					},
 			{ text: '\n ≡ ', color: 'white' },
 			!compareVersions('1.21.5', Project!.animated_java.target_minecraft_version)
 				? {
@@ -98,7 +98,7 @@ namespace TELLRAW {
 						},
 						color: 'aqua',
 						underlined: true,
-				  }
+					}
 				: {
 						text: toSmallCaps('Remove Instance'),
 						clickEvent: {
@@ -107,7 +107,7 @@ namespace TELLRAW {
 						},
 						color: 'aqua',
 						underlined: true,
-				  },
+					},
 		])
 
 	export const RIG_OUTDATED_TEXT_DISPLAY = () =>
@@ -130,12 +130,12 @@ namespace TELLRAW {
 						text: '[This Function]',
 						color: 'yellow',
 						hover_event: { action: 'show_text', value: hoverText },
-				  }
+					}
 				: {
 						text: '[This Function]',
 						color: 'yellow',
 						hoverEvent: { action: 'show_text', contents: hoverText },
-				  },
+					},
 			" must be executed as the rig's root entity.",
 			{
 				text: '\n\n ≡ ',
@@ -147,13 +147,13 @@ namespace TELLRAW {
 								color: 'aqua',
 								underlined: true,
 								click_event: { action: 'suggest_command', command: exampleCommand },
-						  }
+							}
 						: {
 								text: toSmallCaps('Show Example Command'),
 								color: 'aqua',
 								underlined: true,
 								clickEvent: { action: 'suggest_command', value: exampleCommand },
-						  },
+							},
 				],
 			},
 			CREATE_TELLRAW_HELP_LINK(
@@ -171,12 +171,12 @@ namespace TELLRAW {
 						text: '[This Function]',
 						color: 'yellow',
 						hover_event: { action: 'show_text', value: hoverText },
-				  }
+					}
 				: {
 						text: '[This Function]',
 						color: 'yellow',
 						hoverEvent: { action: 'show_text', contents: hoverText },
-				  },
+					},
 			' must be executed as an entity with the NBT ',
 			{ text: 'data.root_uuid', color: 'yellow' },
 		])
