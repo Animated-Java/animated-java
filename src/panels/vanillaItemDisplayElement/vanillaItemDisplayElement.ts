@@ -1,11 +1,11 @@
-import { registerProjectMod } from 'src/util/moddingTools'
-import { mountSvelteComponent } from 'src/util/mountSvelteComponent'
-import VanillaItemDisplayElementPanel from '../../components/vanillaItemDisplayElementPanel.svelte'
 import { PACKAGE } from '../../constants'
 import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from '../../formats/blueprint'
 import { type ItemDisplayMode, VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
 import EVENTS from '../../util/events'
+import { registerProjectMod } from '../../util/moddingTools'
+import { mountSvelteComponent } from '../../util/mountSvelteComponent'
 import { translate } from '../../util/translation'
+import VanillaItemDisplayElementPanel from './vanillaItemDisplayElement.svelte'
 
 let mounted: VanillaItemDisplayElementPanel | null = null
 

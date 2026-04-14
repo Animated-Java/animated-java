@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
+	import CustomCodeJar from '../../components/customCodeJar.svelte'
 	import { translate } from '../../util/translation'
-	import CustomCodeJar from '../customCodeJar.svelte'
 </script>
 
 <script lang="ts">

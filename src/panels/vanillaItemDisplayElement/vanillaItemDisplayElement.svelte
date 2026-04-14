@@ -1,8 +1,8 @@
 <script lang="ts" module>
-	import { ITEM_DISPLAY_ITEM_DISPLAY_SELECT } from '../interface/panel/vanillaItemDisplayElement'
-	import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
-	import { validateItem } from '../util/minecraftUtil'
-	import { translate } from '../util/translation'
+	import { VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
+	import { validateItem } from '../../util/minecraftUtil'
+	import { translate } from '../../util/translation'
+	import { ITEM_DISPLAY_ITEM_DISPLAY_SELECT } from './vanillaItemDisplayElement'
 </script>
 
 <script lang="ts">

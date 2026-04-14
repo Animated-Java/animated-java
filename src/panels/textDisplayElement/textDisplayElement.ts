@@ -1,11 +1,11 @@
-import { JsonTextParser } from 'src/systems/jsonText/parser'
-import EVENTS from 'src/util/events'
-import { registerProjectMod } from 'src/util/moddingTools'
-import { mountSvelteComponent } from 'src/util/mountSvelteComponent'
-import TextDisplayElementPanel from '../../components/textDisplayElementPanel.svelte'
 import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from '../../formats/blueprint'
 import { type Alignment, TextDisplay } from '../../outliner/textDisplay'
+import { JsonTextParser } from '../../systems/jsonText/parser'
+import EVENTS from '../../util/events'
+import { registerProjectMod } from '../../util/moddingTools'
+import { mountSvelteComponent } from '../../util/mountSvelteComponent'
 import { translate } from '../../util/translation'
+import TextDisplayElementPanel from './textDisplayElement.svelte'
 
 let mounted: TextDisplayElementPanel | null = null
 
@@ -149,7 +149,6 @@ export const TEXT_DISPLAY_BACKGROUND_COLOR_PICKER = new ColorPicker(
 		condition: TEXT_DISPLAY_CONDITION,
 	}
 )
-// @ts-expect-error Missing types
 TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.jq.spectrum(
 	'option',
 	'defaultColor',
@@ -162,7 +161,6 @@ TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.get = function () {
 }
 TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.set = function (this: ColorPicker, color: tinycolor.Instance) {
 	this.value = color
-	// @ts-expect-error Missing types
 	this.jq.spectrum('set', color.toHex8String())
 
 	const selected = TextDisplay.selected.at(0)

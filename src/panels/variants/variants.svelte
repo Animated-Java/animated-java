@@ -3,16 +3,16 @@
 	import { flip } from 'svelte/animate'
 	import { cubicIn } from 'svelte/easing'
 	import { fade } from 'svelte/transition'
-	import { openVariantConfigDialog } from '../dialogs/variantConfig/variantConfig'
+	import { openVariantConfigDialog } from '../../dialogs/variantConfig/variantConfig'
+	import EVENTS from '../../util/events'
+	import { translate } from '../../util/translation'
+	import { Variant } from '../../variants'
 	import {
 		CREATE_VARIANT_ACTION,
 		DELETE_VARIANT_ACTION,
 		DUPLICATE_VARIANT_ACTION,
 		VARIANT_PANEL_CONTEXT_MENU,
-	} from '../interface/panel/variants'
-	import EVENTS from '../util/events'
-	import { translate } from '../util/translation'
-	import { Variant } from '../variants'
+	} from './variants'
 
 	interface LocalVariant {
 		id: number

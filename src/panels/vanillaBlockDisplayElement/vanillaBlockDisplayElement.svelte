@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
-	import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
-	import { validateBlock } from '../util/minecraftUtil'
-	import { translate } from '../util/translation'
+	import { VanillaBlockDisplay } from '../../outliner/vanillaBlockDisplay'
+	import { validateBlock } from '../../util/minecraftUtil'
+	import { translate } from '../../util/translation'
 </script>
 
 <script lang="ts">

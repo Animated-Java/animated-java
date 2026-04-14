@@ -1,9 +1,9 @@
-import { BLUEPRINT_FORMAT_ID } from 'src/formats/blueprint'
-import { VanillaBlockDisplay } from 'src/outliner/vanillaBlockDisplay'
-import EVENTS from 'src/util/events'
-import { registerProjectMod } from 'src/util/moddingTools'
-import { mountSvelteComponent } from 'src/util/mountSvelteComponent'
-import VanillaBlockDisplayElementPanel from '../../components/vanillaBlockDisplayElementPanel.svelte'
+import { BLUEPRINT_FORMAT_ID } from '../../formats/blueprint'
+import { VanillaBlockDisplay } from '../../outliner/vanillaBlockDisplay'
+import EVENTS from '../../util/events'
+import { registerProjectMod } from '../../util/moddingTools'
+import { mountSvelteComponent } from '../../util/mountSvelteComponent'
+import VanillaBlockDisplayElementPanel from './vanillaBlockDisplayElement.svelte'
 
 let mounted: VanillaBlockDisplayElementPanel | null = null
 

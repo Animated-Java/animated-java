@@ -1,5 +1,8 @@
 <script lang="ts" context="module">
 	import { CodeJar } from '@novacbn/svelte-codejar'
+	import { TextDisplay } from '../../outliner/textDisplay'
+	import { Stopwatch } from '../../util/stopwatch'
+	import { translate } from '../../util/translation'
 	import {
 		TEXT_DISPLAY_ALIGNMENT_SELECT,
 		TEXT_DISPLAY_BACKGROUND_COLOR_PICKER,
@@ -7,10 +10,7 @@
 		TEXT_DISPLAY_SEE_THROUGH_TOGGLE,
 		TEXT_DISPLAY_SHADOW_TOGGLE,
 		TEXT_DISPLAY_WIDTH_SLIDER,
-	} from '../interface/panel/textDisplayElement'
-	import { TextDisplay } from '../outliner/textDisplay'
-	import { Stopwatch } from '../util/stopwatch'
-	import { translate } from '../util/translation'
+	} from './textDisplayElement'
 
 	const HIGHLIGHT_CACHE = new Map<string, string>()
 

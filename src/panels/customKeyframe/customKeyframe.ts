@@ -1,10 +1,10 @@
-import CommandsKeyframePanel from 'src/components/keyframePanels/commandsKeyframePanel.svelte'
-import VariantKeyframePanel from 'src/components/keyframePanels/variantKeyframePanel.svelte'
-import { EFFECT_ANIMATOR_CHANNELS, isCustomKeyframeChannel } from 'src/mods/customKeyframes'
-import EVENTS from 'src/util/events'
-import { registerMod } from 'src/util/moddingTools'
-import { translate } from 'src/util/translation'
+import { EFFECT_ANIMATOR_CHANNELS, isCustomKeyframeChannel } from '../../mods/customKeyframes'
+import EVENTS from '../../util/events'
+import { registerMod } from '../../util/moddingTools'
 import { mountSvelteComponent } from '../../util/mountSvelteComponent'
+import { translate } from '../../util/translation'
+import CommandsKeyframePanel from './commandsKeyframe.svelte'
+import VariantKeyframePanel from './variantKeyframe.svelte'
 
 registerMod({
 	id: 'animated-java:panel/custom-keyframe-data-points',
