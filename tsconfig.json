@@ -1,7 +1,7 @@
 {
 	"include": [
 		"src/**/*",
-		"tools/**/*",
+		".scripts/**/**/*",
 		"./eslint.config.ts",
 		"./vitest.config.ts",
 		"./svelte.config.ts"
