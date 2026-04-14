@@ -24,8 +24,8 @@
 		</p>
 		<h2>Need Help?</h2>
 		<p>
-			Join our <a href="https://animated-java.dev/discord">Discord server</a> to ask questions
-			via our support channel.
+			Join our <a href="https://animated-java.dev/discord">Discord server</a> to ask questions via
+			our support channel.
 		</p>
 	</div>
 </div>

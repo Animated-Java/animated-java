@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
 	import { onDestroy } from 'svelte'
-	import { isIncompatiblePlugin } from '../interface/popup/incompatabilityPopup'
+	import { isIncompatiblePlugin } from '../popups/incompatability/incompatability'
 	import EVENTS from '../util/events'
 	import { translate } from '../util/translation'
 

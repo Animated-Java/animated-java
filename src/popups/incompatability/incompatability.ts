@@ -1,8 +1,8 @@
 import { PACKAGE } from '../../constants'
-import IncompatabilityPopup from '../../svelteComponents/incompatabilityPopup.svelte'
 import EVENTS from '../../util/events'
 import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
+import IncompatabilityPopup from './incompatability.svelte'
 
 enum INCOMPATABLE_PLUGINS {
 	GECKOLIB_ANIMATION_UTILS = 'animation_utils',

@@ -12,7 +12,7 @@ import {
 	showOfflineError,
 	updateLoadingProgress,
 	updateLoadingProgressLabel,
-} from '../../interface/popup/animatedJavaLoading'
+} from '../../popups/animatedJavaLoading/animatedJavaLoading'
 import { unzip } from '../util'
 const ASSET_OVERRIDES = index as unknown as Record<string, string>
 

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { closeIncompatabilityPopup } from '../interface/popup/incompatabilityPopup'
-	import { translate } from '../util/translation'
+	import { translate } from '../../util/translation'
+	import { closeIncompatabilityPopup } from './incompatability'
 
 	export let plugins: BBPlugin[]
 

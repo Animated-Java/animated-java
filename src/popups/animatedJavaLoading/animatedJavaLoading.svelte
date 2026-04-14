@@ -1,10 +1,10 @@
 <script lang="ts" context="module">
+	import { type Valuable } from '../../util/stores'
 	import RunningArmorStand from '../assets/armor_stand_running.webp'
-	import { type Valuable } from '../util/stores'
 </script>
 
 <script lang="ts">
-	import { translate } from '../util/translation'
+	import { translate } from '../../util/translation'
 
 	export let loaded: Valuable<boolean>
 	export let offline: Valuable<boolean>
