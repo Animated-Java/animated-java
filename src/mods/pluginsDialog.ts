@@ -1,6 +1,6 @@
-import { registerMod } from 'src/util/moddingTools'
-import { mountSvelteComponent } from 'src/util/mountSvelteComponent'
-import IncompatiblePluginNotice from '../components/incompatiblePluginNotice.svelte'
+import IncompatiblePluginNotice from '../svelteComponents/incompatiblePluginNotice.svelte'
+import { registerMod } from '../util/moddingTools'
+import { mountSvelteComponent } from '../util/mountSvelteComponent'
 import { Valuable } from '../util/stores'
 
 const SELECTED_PLUGIN = new Valuable<BBPlugin | null>(null)
@@ -9,10 +9,8 @@ registerMod({
 	id: `animated-java:plugins-dialog-mod`,
 
 	apply: () => {
-		// @ts-expect-error Missing types
 		const original = Plugins.dialog.component.methods.selectPlugin
 
-		// @ts-expect-error Missing types
 		Plugins.dialog.component.methods.selectPlugin = function (this, plugin: BBPlugin) {
 			const result = original.call(this, plugin)
 			SELECTED_PLUGIN.set(plugin)
@@ -23,7 +21,6 @@ registerMod({
 	},
 
 	revert: ({ original }) => {
-		// @ts-expect-error Missing types
 		Plugins.dialog.component.methods.selectPlugin = original
 	},
 })

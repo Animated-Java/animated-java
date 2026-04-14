@@ -1,6 +1,6 @@
 // TODO - Add a full-screen loading animation while AJ is initializing.
 // TODO - Add an animation of an armor_stand using a hammer on an anvil to the loading screen.
-import AnimatedJavaLoadingPopup from '../../components/animatedJavaLoadingPopup.svelte'
+import AnimatedJavaLoadingPopup from '../../svelteComponents/animatedJavaLoadingPopup.svelte'
 import { mountSvelteComponent } from '../../util/mountSvelteComponent'
 import { Valuable } from '../../util/stores'
 

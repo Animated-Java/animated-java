@@ -1,14 +1,14 @@
 <script lang="ts" module>
-	import LineInput from '../../components/dialogItems/lineInput.svelte'
-	import NumberSlider from '../../components/dialogItems/numberSlider.svelte'
+	import LineInput from '../../svelteComponents/dialogItems/lineInput.svelte'
+	import NumberSlider from '../../svelteComponents/dialogItems/numberSlider.svelte'
 
 	import { Valuable } from '../../util/stores'
 	import { translate } from '../../util/translation'
 </script>
 
 <script lang="ts">
-	import Collection from '../../components/dialogItems/collection.svelte'
-	import Select from '../../components/dialogItems/select.svelte'
+	import Collection from '../../svelteComponents/dialogItems/collection.svelte'
+	import Select from '../../svelteComponents/dialogItems/select.svelte'
 	import { getAvailableNodes } from '../../util/excludedNodes'
 
 	export let animationName: Valuable<string>

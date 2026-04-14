@@ -1,5 +1,5 @@
-import InstalledPopup from '../../components/installedPopup.svelte'
 import { PACKAGE } from '../../constants'
+import InstalledPopup from '../../svelteComponents/installedPopup.svelte'
 import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
 

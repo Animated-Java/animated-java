@@ -1,6 +1,6 @@
-import { BLUEPRINT_FORMAT_ID } from 'src/formats/blueprint'
-import { registerMod } from 'src/util/moddingTools'
-import Icon from '../components/icon.svelte'
+import { BLUEPRINT_FORMAT_ID } from '../formats/blueprint'
+import Icon from '../svelteComponents/icon.svelte'
+import { registerMod } from '../util/moddingTools'
 import { registerMountSvelteComponentMod } from '../util/mountSvelteComponent'
 
 registerMountSvelteComponentMod({

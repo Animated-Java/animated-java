@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
-	import CheckBox from '../../components/dialogItems/checkbox.svelte'
-	import CodeInput from '../../components/dialogItems/codeInput.svelte'
-	import LineInput from '../../components/dialogItems/lineInput.svelte'
+	import CheckBox from '../../svelteComponents/dialogItems/checkbox.svelte'
+	import CodeInput from '../../svelteComponents/dialogItems/codeInput.svelte'
+	import LineInput from '../../svelteComponents/dialogItems/lineInput.svelte'
 	import { MINECRAFT_REGISTRY } from '../../systems/minecraft/registryManager'
 	import { Valuable } from '../../util/stores'
 	import { translate } from '../../util/translation'

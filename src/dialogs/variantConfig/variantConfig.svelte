@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
-	import Checkbox from '../../components/dialogItems/checkbox.svelte'
-	import LineInput from '../../components/dialogItems/lineInput.svelte'
+	import Checkbox from '../../svelteComponents/dialogItems/checkbox.svelte'
+	import LineInput from '../../svelteComponents/dialogItems/lineInput.svelte'
 	import { type Valuable } from '../../util/stores'
 	import { translate } from '../../util/translation'
 	import { TextureMap, Variant } from '../../variants'
@@ -8,7 +8,7 @@
 </script>
 
 <script lang="ts">
-	import Collection from '../../components/dialogItems/collection.svelte'
+	import Collection from '../../svelteComponents/dialogItems/collection.svelte'
 	import { getAvailableNodes } from '../../util/excludedNodes'
 
 	export let variant: Variant

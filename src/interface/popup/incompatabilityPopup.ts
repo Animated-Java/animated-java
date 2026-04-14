@@ -1,6 +1,6 @@
-import EVENTS from 'src/util/events'
-import IncompatabilityPopup from '../../components/incompatabilityPopup.svelte'
 import { PACKAGE } from '../../constants'
+import IncompatabilityPopup from '../../svelteComponents/incompatabilityPopup.svelte'
+import EVENTS from '../../util/events'
 import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
 
