@@ -1,6 +1,10 @@
 import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/lib/nbt'
 import { projectTargetVersionIsAtLeast } from 'src/formats/blueprint'
-import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
+import {
+	MAX_PROGRESS,
+	PROGRESS,
+	PROGRESS_DESCRIPTION,
+} from '../../dialogs/exportProgress/exportProgress'
 import { DisplayEntityConfig } from '../../nodeConfigs'
 import { isFunctionTagPath } from '../../util/fileUtil'
 import {
@@ -763,7 +767,7 @@ export default async function compileDataPack(
 				? PathModule.join(
 						options.dataPackFolder,
 						`animated_java_${version.replaceAll('.', '_')}`
-				  )
+					)
 				: coreDataPackFolder
 
 		await dataPackCompiler({

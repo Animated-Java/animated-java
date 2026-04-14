@@ -1,4 +1,4 @@
-import AboutSvelte from '../../components/about.svelte'
+import AboutSvelte from './about.svelte'
 import { PACKAGE } from '../../constants'
 import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'

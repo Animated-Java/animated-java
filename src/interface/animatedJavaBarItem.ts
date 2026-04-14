@@ -1,13 +1,13 @@
-import { registerAction, registerBarMenu } from 'src/util/moddingTools'
-import { pollUntilResult } from 'src/util/promises'
 import AnimatedJavaIcon from '../assets/animated_java_icon.svg'
+import { openAboutDialog } from '../dialogs/about/about'
+import { openBlueprintSettingsDialog } from '../dialogs/blueprintSettings/blueprintSettings'
 import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from '../formats/blueprint'
 import { cleanupExportedFiles } from '../systems/cleaner'
 import { exportProject } from '../systems/exporter'
+import { registerAction, registerBarMenu } from '../util/moddingTools'
+import { pollUntilResult } from '../util/promises'
 import { translate } from '../util/translation'
 import { openChangelogDialog } from './changelogDialog'
-import { openAboutDialog } from './dialog/about'
-import { openBlueprintSettingsDialog } from './dialog/blueprintSettings'
 
 function createIconImg() {
 	const img = document.createElement('img')

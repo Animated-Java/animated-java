@@ -1,9 +1,9 @@
 <script lang="ts" context="module">
-	import { defaultValues } from '../formats/blueprint/settings'
-	import mcbFiles from '../systems/datapackCompiler/mcbFiles'
-	import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
-	import { Valuable } from '../util/stores'
-	import { translate } from '../util/translation'
+	import { defaultValues } from '../../formats/blueprint/settings'
+	import mcbFiles from '../../systems/datapackCompiler/mcbFiles'
+	import { MINECRAFT_REGISTRY } from '../../systems/minecraft/registryManager'
+	import { Valuable } from '../../util/stores'
+	import { translate } from '../../util/translation'
 
 	import Checkbox from './dialogItems/checkbox.svelte'
 	import CodeInput from './dialogItems/codeInput.svelte'
@@ -15,10 +15,10 @@
 	import Select from './dialogItems/select.svelte'
 	import Vector2D from './dialogItems/vector2d.svelte'
 
-	import fontUrl from '../assets/MinecraftFull.ttf'
-	import { getJSONAsset } from '../systems/minecraft/assetManager'
-	import type { IItemModel } from '../systems/minecraft/model'
-	import { resolvePath } from '../util/fileUtil'
+	import fontUrl from '../../assets/MinecraftFull.ttf'
+	import { getJSONAsset } from '../../systems/minecraft/assetManager'
+	import type { IItemModel } from '../../systems/minecraft/model'
+	import { resolvePath } from '../../util/fileUtil'
 
 	if (![...document.fonts.keys()].some(v => v.family === 'MinecraftFull')) {
 		void new FontFace('MinecraftFull', fontUrl, {}).load().then(font => {

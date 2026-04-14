@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
+	import { PACKAGE } from '../../constants'
 	import AnimatedJavaIcon from '../assets/animated_java_icon.svg'
 	import AnimatedJavaIconNoBackground from '../assets/animated_java_icon_no_background.svg'
-	import { PACKAGE } from '../constants'
 </script>
 
 <div class="content">

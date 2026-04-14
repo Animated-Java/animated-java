@@ -3,7 +3,7 @@ import { TextDisplay } from 'src/outliner/textDisplay'
 import { type IBlueprintFormatJSON, getDefaultProjectSettings } from '.'
 import TransparentTexture from '../../assets/transparent.png'
 import { PACKAGE } from '../../constants'
-import { openUnexpectedErrorDialog } from '../../interface/dialog/unexpectedError'
+import { openUnexpectedErrorDialog } from '../../dialogs/unexpectedError/unexpectedError'
 import { DisplayEntityConfig } from '../../nodeConfigs'
 
 export function process(model: any): IBlueprintFormatJSON {

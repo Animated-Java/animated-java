@@ -1,15 +1,15 @@
 <script lang="ts" context="module">
+	import Checkbox from '../../components/dialogItems/checkbox.svelte'
+	import LineInput from '../../components/dialogItems/lineInput.svelte'
+	import { type Valuable } from '../../util/stores'
+	import { translate } from '../../util/translation'
+	import { TextureMap, Variant } from '../../variants'
 	import MissingTexture from '../assets/missing_texture.png'
-	import { type Valuable } from '../util/stores'
-	import { translate } from '../util/translation'
-	import { TextureMap, Variant } from '../variants'
-	import Checkbox from './dialogItems/checkbox.svelte'
-	import LineInput from './dialogItems/lineInput.svelte'
 </script>
 
 <script lang="ts">
-	import { getAvailableNodes } from '../util/excludedNodes'
-	import Collection from './dialogItems/collection.svelte'
+	import Collection from '../../components/dialogItems/collection.svelte'
+	import { getAvailableNodes } from '../../util/excludedNodes'
 
 	export let variant: Variant
 	export let displayName: Valuable<string>

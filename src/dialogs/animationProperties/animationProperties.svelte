@@ -1,15 +1,15 @@
 <script lang="ts" module>
-	import LineInput from './dialogItems/lineInput.svelte'
-	import NumberSlider from './dialogItems/numberSlider.svelte'
+	import LineInput from '../../components/dialogItems/lineInput.svelte'
+	import NumberSlider from '../../components/dialogItems/numberSlider.svelte'
 
-	import { Valuable } from '../util/stores'
-	import { translate } from '../util/translation'
+	import { Valuable } from '../../util/stores'
+	import { translate } from '../../util/translation'
 </script>
 
 <script lang="ts">
-	import { getAvailableNodes } from '../util/excludedNodes'
-	import Collection from './dialogItems/collection.svelte'
-	import Select from './dialogItems/select.svelte'
+	import Collection from '../../components/dialogItems/collection.svelte'
+	import Select from '../../components/dialogItems/select.svelte'
+	import { getAvailableNodes } from '../../util/excludedNodes'
 
 	export let animationName: Valuable<string>
 	export let loopMode: Valuable<string>

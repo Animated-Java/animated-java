@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
+	import changelog from '../../pluginPackage/changelog.json'
 	import AnimatedJavaIcon from '../assets/animated_java_icon.svg'
-	import changelog from '../pluginPackage/changelog.json'
 
 	const ISSUES_URL = 'https://api.github.com/repos/animated-java/animated-java/issues/'
 

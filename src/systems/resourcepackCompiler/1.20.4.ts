@@ -1,5 +1,5 @@
 import type { ResourcePackCompiler } from '.'
-import { PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
+import { PROGRESS_DESCRIPTION } from '../../dialogs/exportProgress/exportProgress'
 import { isResourcePackPath, sanitizeStorageKey } from '../../util/minecraftUtil'
 import type { ITextureAtlas } from '../minecraft/textureAtlas'
 import type { IRenderedNodes } from '../rigRenderer'
@@ -112,7 +112,7 @@ class PredicateItemModel {
 					? this.textures
 					: {
 							layer0: `${displayItemNamespace}:item/${displayItemName}`,
-					  },
+						},
 			overrides: [...this.externalOverrides.entries(), ...this.overrides.entries()]
 				.sort((a, b) => a[0] - b[0])
 				.map(([id, model]) => ({

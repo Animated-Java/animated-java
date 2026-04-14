@@ -1,13 +1,13 @@
-import { TextDisplay } from 'src/outliner/textDisplay'
-import { VanillaBlockDisplay } from 'src/outliner/vanillaBlockDisplay'
-import { VanillaItemDisplay } from 'src/outliner/vanillaItemDisplay'
-import { IDisplayEntityConfigs } from 'src/systems/rigRenderer'
-import { registerAction } from 'src/util/moddingTools'
-import { Valuable } from 'src/util/stores'
-import DisplayEntityConfigDialog from '../../components/displayEntityConfigDialog.svelte'
 import { activeProjectIsBlueprintFormat } from '../../formats/blueprint'
+import { TextDisplay } from '../../outliner/textDisplay'
+import { VanillaBlockDisplay } from '../../outliner/vanillaBlockDisplay'
+import { VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
+import { type IDisplayEntityConfigs } from '../../systems/rigRenderer'
+import { registerAction } from '../../util/moddingTools'
+import { Valuable } from '../../util/stores'
 import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
+import DisplayEntityConfigDialog from './displayEntityConfig.svelte'
 
 export type DisplayEntity = Group | TextDisplay | VanillaItemDisplay | VanillaBlockDisplay
 

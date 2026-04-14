@@ -1,5 +1,5 @@
 import type { ResourcePackCompiler } from '.'
-import { PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
+import { PROGRESS_DESCRIPTION } from '../../dialogs/exportProgress/exportProgress'
 import { safeReadSync } from '../../util/fileUtil'
 import { isResourcePackPath, sanitizeStorageKey } from '../../util/minecraftUtil'
 import { type ITextureAtlas } from '../minecraft/textureAtlas'

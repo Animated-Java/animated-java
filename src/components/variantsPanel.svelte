@@ -3,7 +3,7 @@
 	import { flip } from 'svelte/animate'
 	import { cubicIn } from 'svelte/easing'
 	import { fade } from 'svelte/transition'
-	import { openVariantConfigDialog } from '../interface/dialog/variantConfig'
+	import { openVariantConfigDialog } from '../dialogs/variantConfig/variantConfig'
 	import {
 		CREATE_VARIANT_ACTION,
 		DELETE_VARIANT_ACTION,

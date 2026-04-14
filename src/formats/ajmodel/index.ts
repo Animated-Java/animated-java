@@ -1,6 +1,6 @@
 import { registerModelLoader } from 'src/util/moddingTools'
 import { mountSvelteComponent } from 'src/util/mountSvelteComponent'
-import { openUnexpectedErrorDialog } from '../../interface/dialog/unexpectedError'
+import { openUnexpectedErrorDialog } from '../../dialogs/unexpectedError/unexpectedError'
 import { sanitizeStorageKey } from '../../util/minecraftUtil'
 import { translate } from '../../util/translation'
 import { BLUEPRINT_CODEC } from '../blueprint/codec'

@@ -1,5 +1,5 @@
 import type { ResourcePackCompiler } from '.'
-import { PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
+import { PROGRESS_DESCRIPTION } from '../../dialogs/exportProgress/exportProgress'
 import { isResourcePackPath, sanitizeStorageKey } from '../../util/minecraftUtil'
 import { Variant } from '../../variants'
 import type { IItemDefinition } from '../minecraft/itemDefinitions'

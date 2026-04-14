@@ -1,5 +1,5 @@
-import ChangelogDialog from '../components/changelogDialog.svelte'
 import { PACKAGE } from '../constants'
+import ChangelogDialog from '../dialogs/changelog/changelog.svelte'
 import { SvelteDialog } from '../util/svelteDialog'
 import { translate } from '../util/translation'
 

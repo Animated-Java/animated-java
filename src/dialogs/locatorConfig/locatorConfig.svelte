@@ -1,10 +1,10 @@
 <script lang="ts" context="module">
-	import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
-	import { Valuable } from '../util/stores'
-	import { translate } from '../util/translation'
-	import CheckBox from './dialogItems/checkbox.svelte'
-	import CodeInput from './dialogItems/codeInput.svelte'
-	import LineInput from './dialogItems/lineInput.svelte'
+	import CheckBox from '../../components/dialogItems/checkbox.svelte'
+	import CodeInput from '../../components/dialogItems/codeInput.svelte'
+	import LineInput from '../../components/dialogItems/lineInput.svelte'
+	import { MINECRAFT_REGISTRY } from '../../systems/minecraft/registryManager'
+	import { Valuable } from '../../util/stores'
+	import { translate } from '../../util/translation'
 
 	const entityTypeValidator: DialogItemValueChecker<string> = (value: string) => {
 		if (value.length === 0) {

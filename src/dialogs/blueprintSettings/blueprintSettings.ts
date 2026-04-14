@@ -1,14 +1,14 @@
-import BlueprintSettingsAds from 'src/components/blueprintSettingsAds.svelte'
-import { updateAllCubeOutlines } from 'src/mods/cube'
-import { SUPPORTED_MINECRAFT_VERSIONS } from 'src/systems/global'
-import BlueprintSettingsDialogSvelteComponent from '../../components/blueprintSettingsDialog.svelte'
 import { PACKAGE } from '../../constants'
 import { updateRotationConstraints } from '../../formats/blueprint'
 import { defaultValues, type ExportMode } from '../../formats/blueprint/settings'
+import { updateAllCubeOutlines } from '../../mods/cube'
+import { SUPPORTED_MINECRAFT_VERSIONS } from '../../systems/global'
 import { sanitizeStorageKey } from '../../util/minecraftUtil'
 import { Valuable } from '../../util/stores'
 import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
+import BlueprintSettings from './blueprintSettings.svelte'
+import BlueprintSettingsAds from './blueprintSettingsAds.svelte'
 
 function getSettings() {
 	return {
@@ -122,7 +122,7 @@ export function openBlueprintSettingsDialog() {
 		title: translate('dialog.blueprint_settings.title'),
 		width: 800,
 		content: {
-			component: BlueprintSettingsDialogSvelteComponent,
+			component: BlueprintSettings,
 			props: settings,
 		},
 		extra: {

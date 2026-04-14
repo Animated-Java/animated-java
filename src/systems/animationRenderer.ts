@@ -1,6 +1,10 @@
 import * as crypto from 'crypto'
 import { BONE_INTERPOLATION_ENABLED } from 'src/mods/boneAnimatorMod'
-import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../interface/dialog/exportProgress'
+import {
+	MAX_PROGRESS,
+	PROGRESS,
+	PROGRESS_DESCRIPTION,
+} from '../dialogs/exportProgress/exportProgress'
 import { TextDisplay } from '../outliner/textDisplay'
 import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
 import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'

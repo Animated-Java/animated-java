@@ -1,4 +1,8 @@
-import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
+import {
+	MAX_PROGRESS,
+	PROGRESS,
+	PROGRESS_DESCRIPTION,
+} from '../../dialogs/exportProgress/exportProgress'
 import { getNextSupportedVersion, getResourcePackFormat } from '../../util/minecraftUtil'
 import { IntentionalExportError } from '../errors'
 import { type IRenderedRig } from '../rigRenderer'
@@ -78,7 +82,7 @@ export default async function compileResourcePack(
 				? PathModule.join(
 						options.resourcePackFolder,
 						`animated_java_${version.replaceAll('.', '_')}`
-				  )
+					)
 				: options.resourcePackFolder
 
 		// Move paths into versioned overlay folders.

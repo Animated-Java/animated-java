@@ -1,10 +1,10 @@
-import { registerAction, registerMenu } from 'src/util/moddingTools'
 import VariantsPanel from '../../components/variantsPanel.svelte'
+import { openVariantConfigDialog } from '../../dialogs/variantConfig/variantConfig'
 import { BLUEPRINT_FORMAT_ID } from '../../formats/blueprint'
+import { registerAction, registerMenu } from '../../util/moddingTools'
 import { SveltePanel } from '../../util/sveltePanel'
 import { translate } from '../../util/translation'
 import { Variant } from '../../variants'
-import { openVariantConfigDialog } from '../dialog/variantConfig'
 
 export const CREATE_VARIANT_ACTION = registerAction(
 	{ id: `animated-java:create-variant` },
