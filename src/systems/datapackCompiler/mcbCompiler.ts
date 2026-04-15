@@ -1,6 +1,6 @@
-import { type IoLike } from 'mc-build'
 import { Compiler, VariableMap } from 'mc-build/mcl/Compiler'
 import { Parser } from 'mc-build/mcl/Parser'
+import { TemplateRegisterer } from 'mc-build/mcl/TemplateRegisterer'
 import { Tokenizer } from 'mc-build/mcl/TokenizerImpl'
 import { getDataPackFormat } from '../../util/minecraftUtil'
 import { SUPPORTED_MINECRAFT_VERSIONS } from '../global'
@@ -24,6 +24,8 @@ export function compileMcbProject({
 	console.group('Compiling', sourceFiles)
 	console.log('Variables:', variables)
 
+	TemplateRegisterer.register()
+
 	const compiler = new Compiler('src', {
 		libDir: null,
 		generatedDirName: 'zzz',
@@ -38,26 +40,17 @@ export function compileMcbProject({
 	})
 	compiler.disableRequire = true
 
-	function createIo() {
-		const io: IoLike = {
-			cleanup: () => {
-				console.log('io.cleanup')
-			},
-			finished: () => {
-				console.log('io.finished')
-				return true
-			},
-			write: (localPath, content) => {
-				const writePath = PathModule.join(destPath, localPath)
-				exportedFiles.set(writePath, {
-					content,
-					includeInAJMeta: true,
-				})
-			},
-		}
-		return io
+	compiler.io = {
+		cleanup: () => undefined,
+		finished: () => true,
+		write: (localPath, content) => {
+			const writePath = PathModule.join(destPath, localPath)
+			exportedFiles.set(writePath, {
+				content,
+				includeInAJMeta: true,
+			})
+		},
 	}
-	compiler.io = createIo()
 
 	console.time('MC-Build compiled in')
 
