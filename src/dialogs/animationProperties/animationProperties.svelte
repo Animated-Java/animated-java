@@ -11,10 +11,19 @@
 	import Select from '../../svelteComponents/dialogItems/select.svelte'
 	import { getAvailableNodes } from '../../util/excludedNodes'
 
-	export let animationName: Observable<string>
-	export let loopMode: Observable<string>
-	export let loopDelay: Observable<number>
-	export let excludedNodes: Observable<Array<{ name: string; value: string }>>
+	interface Props {
+		animationName: Observable<string>
+		loopMode: Observable<string>
+		loopDelay: Observable<number>
+		excludedNodes: Observable<Array<{ name: string; value: string }>>
+	}
+
+	let {
+		animationName = $bindable(),
+		loopMode = $bindable(),
+		loopDelay = $bindable(),
+		excludedNodes = $bindable(),
+	}: Props = $props()
 
 	const AVAILABLE_BONES = getAvailableNodes(excludedNodes.get())
 

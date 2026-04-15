@@ -33,18 +33,20 @@
 		includedItems = $bindable(),
 	}: Props = $props()
 
-	let includedItemsList: Array<{ id: number; title: string; [key: string]: any }> = $state([])
-	let availableItemsList: Array<{ id: number; title: string; [key: string]: any }> = $state([])
-
-	$effect.pre(() => {
-		for (let i = 0; i < availableItems.length; i++) {
-			const item = availableItems[i]
-			if (includedItems.get().find(i => i.value === item.value)) {
-				includedItemsList.push({ id: i, title: item.name, icon: item.icon })
-			} else {
-				availableItemsList.push({ id: i, title: item.name, icon: item.icon })
-			}
+	let availableItemsList = $derived.by(() => {
+		let result: Array<{ id: number; title: string; [key: string]: any }> = []
+		for (const item of availableItems) {
+			if ($includedItems.find(i => i.value === item.value)) continue
+			result.push({ id: result.length, title: item.name, icon: item.icon })
 		}
+		return result
+	})
+	let includedItemsList = $derived.by(() => {
+		let result: Array<{ id: number; title: string; [key: string]: any }> = []
+		for (const item of $includedItems) {
+			result.push({ id: result.length, title: item.name, icon: item.icon })
+		}
+		return result
 	})
 
 	function handleSortAvailableItems(e: any) {
