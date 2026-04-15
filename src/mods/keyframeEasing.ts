@@ -101,7 +101,7 @@ registerPropertyOverridePatch({
 
 	get: original => {
 		return (event?: Event) => {
-			original(event)
+			original?.(event)
 			// There's not really an easy way to merge our undo operation with the original one so we'll make a new one instead
 			Undo.initEdit({ keyframes: Timeline.selected || undefined })
 

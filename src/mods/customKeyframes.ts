@@ -248,10 +248,13 @@ registerProjectPatch({
 			this.last_displayed_time = this.animation.time
 		}
 
+		console.log('Applied custom keyframe channels patch')
+
 		return { defaultChannels, defaultEffectDisplayFrame, properties }
 	},
 
 	revert: ({ defaultChannels, defaultEffectDisplayFrame, properties }) => {
+		console.log('Reverting custom keyframe channels patch')
 		for (const channel of Object.keys(defaultChannels)) {
 			if (channel === 'sound') continue // AJ doesn't modify the sound channel
 			EffectAnimator.prototype.channels[channel] = defaultChannels[channel]
