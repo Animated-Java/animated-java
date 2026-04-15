@@ -1,9 +1,9 @@
 <script lang="ts" module>
 	import { dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action'
+	import { type Observable } from 'svelte-observable-store'
 	import { flip } from 'svelte/animate'
 	import { cubicIn } from 'svelte/easing'
 	import { fade } from 'svelte/transition'
-	import { Valuable } from '../../util/stores'
 	import BaseDialogItem from './baseDialogItem.svelte'
 </script>
 
@@ -18,7 +18,7 @@
 		includedItemsColumnTooltip: string
 		swapColumnsButtonTooltip: string
 		availableItems: CollectionItem[]
-		includedItems: Valuable<CollectionItem[]>
+		includedItems: Observable<CollectionItem[]>
 	}
 
 	let {
@@ -30,7 +30,7 @@
 		includedItemsColumnTooltip,
 		swapColumnsButtonTooltip,
 		availableItems,
-		includedItems,
+		includedItems = $bindable(),
 	}: Props = $props()
 
 	let includedItemsList: Array<{ id: number; title: string; [key: string]: any }> = $state([])

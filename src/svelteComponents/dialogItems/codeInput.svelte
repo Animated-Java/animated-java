@@ -1,12 +1,12 @@
 <script lang="ts">
+	import { type Observable } from 'svelte-observable-store'
 	import CustomCodeJar from '../../svelteComponents/customCodeJar.svelte'
-	import { Valuable } from '../../util/stores'
 	import BaseDialogItem from './baseDialogItem.svelte'
 
 	interface Props {
 		label: string
 		tooltip?: string
-		value: Valuable<string>
+		value: Observable<string>
 		defaultValue: string
 		valueChecker?: DialogItemValueChecker<string>
 		syntax?: string | undefined
@@ -15,7 +15,7 @@
 	let {
 		label,
 		tooltip = '',
-		value,
+		value = $bindable(),
 		defaultValue,
 		valueChecker = undefined,
 		syntax = undefined,
@@ -81,6 +81,7 @@
 	}
 	.custom {
 		flex-direction: column;
+		align-items: flex-start;
 	}
 	textarea {
 		color: var(--color-error);
@@ -96,6 +97,9 @@
 		border: 1px solid var(--color-error);
 		white-space: pre;
 		tab-size: 4;
+	}
+	.codejar-container {
+		width: 100%;
 	}
 	:global(.language-snbtTextComponent) {
 		& .brackets {

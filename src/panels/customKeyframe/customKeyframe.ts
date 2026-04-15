@@ -1,24 +1,24 @@
+import { registerPatch } from 'blockbench-patch-manager'
+import { injectComponent } from 'svelte-patching-tools'
 import { EFFECT_ANIMATOR_CHANNELS, isCustomKeyframeChannel } from '../../mods/customKeyframes'
 import EVENTS from '../../util/events'
-import { registerMod } from '../../util/moddingTools'
-import { mountSvelteComponent } from '../../util/mountSvelteComponent'
 import { translate } from '../../util/translation'
 import CommandsKeyframePanel from './commandsKeyframe.svelte'
 import VariantKeyframePanel from './variantKeyframe.svelte'
 
-registerMod({
-	id: 'animated-java:panel/custom-keyframe-data-points',
+let unmountCallback: (() => Promise<void>) | null = null
+
+registerPatch({
+	id: 'animated_java:panel/custom-keyframe-data-points',
 
 	apply: () => {
 		Language.data['timeline.variant'] = translate('effect_animator.timeline.variant')
 		Language.data['timeline.function'] = translate('effect_animator.timeline.function')
 
-		let mounted: VariantKeyframePanel | CommandsKeyframePanel | undefined
-
 		const unsubs = [
-			EVENTS.UPDATE_KEYFRAME_SELECTION.subscribe(() => {
-				mounted?.$destroy()
-				mounted = undefined
+			EVENTS.UPDATE_KEYFRAME_SELECTION.subscribe(async () => {
+				await unmountCallback?.()
+				unmountCallback = null
 
 				const keyframe = Timeline.selected.at(0)
 				const isCustomKeyframe = isCustomKeyframeChannel(keyframe?.channel ?? '')
@@ -39,29 +39,33 @@ registerMod({
 							return
 					}
 
-					mounted = mountSvelteComponent({
+					unmountCallback = injectComponent({
 						component,
 						props: { keyframe },
-						target: '#panel_keyframe .panel_vue_wrapper .keyframe_data_point',
-						hideTargetChildren: true,
+						elementSelector(): HTMLElement | null {
+							return document.querySelector(
+								'#panel_keyframe .panel_vue_wrapper .keyframe_data_point'
+							)
+						},
+						// hideTargetChildren: true,
 					})
 				}
 			}),
 
-			EVENTS.UNSELECT_AJ_PROJECT.subscribe(() => {
-				mounted?.$destroy()
-				mounted = undefined
+			EVENTS.UNSELECT_AJ_PROJECT.subscribe(async () => {
+				await unmountCallback?.()
+				unmountCallback = null
 			}),
 		]
 
-		return { mounted, unsubs }
+		return { unsubs }
 	},
 
-	revert: ({ mounted, unsubs }) => {
+	revert: async ({ unsubs }) => {
 		delete Language.data['timeline.variant']
 		delete Language.data['timeline.function']
 
 		unsubs.forEach(unsub => unsub())
-		mounted?.$destroy()
+		await unmountCallback?.()
 	},
 })

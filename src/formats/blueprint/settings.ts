@@ -1,5 +1,5 @@
+import { observable } from 'svelte-observable-store'
 import { SUPPORTED_MINECRAFT_VERSIONS } from '../../systems/global'
-import { Valuable } from '../../util/stores'
 
 export type ExportMode = 'folder' | 'zip' | 'none'
 
@@ -74,4 +74,4 @@ export const defaultValues: BlueprintSettings = {
 	json_file: '',
 }
 
-export const blueprintSettingErrors = new Valuable<Record<string, string>>({})
+export const blueprintSettingErrors = observable<Record<string, string>>({})

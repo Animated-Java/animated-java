@@ -1,15 +1,15 @@
 <script lang="ts" module>
+	import { type Observable } from 'svelte-observable-store'
 	import RunningArmorStand from '../../assets/armor_stand_running.webp'
-	import { type Valuable } from '../../util/stores'
 </script>
 
 <script lang="ts">
 	import { translate } from '../../util/translation'
 
-	export let loaded: Valuable<boolean>
-	export let offline: Valuable<boolean>
-	export let progress: Valuable<number>
-	export let progressLabel: Valuable<string>
+	export let loaded: Observable<boolean>
+	export let offline: Observable<boolean>
+	export let progress: Observable<number>
+	export let progressLabel: Observable<string>
 </script>
 
 <div class={`floating ${$offline ? 'red-border' : 'blue-border'}`}>

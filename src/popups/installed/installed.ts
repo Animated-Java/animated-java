@@ -1,5 +1,5 @@
+import { SvelteDialog } from 'svelte-patching-tools/blockbench'
 import { PACKAGE } from '../../constants'
-import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
 import InstalledPopup from './installed.svelte'
 
@@ -8,10 +8,8 @@ export function openInstallPopup() {
 		id: `${PACKAGE.name}:installedPopup`,
 		title: translate('popup.installed_popup.title'),
 		width: 700,
-		content: {
-			component: InstalledPopup,
-		},
-		preventKeybinds: true,
+		component: InstalledPopup,
+		disableKeybinds: true,
 		buttons: [translate('popup.installed_popup.close_button')],
 	}).show()
 }

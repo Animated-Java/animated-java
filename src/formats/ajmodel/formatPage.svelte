@@ -3,11 +3,17 @@
 	import { translate } from '../../util/translation'
 </script>
 
+<h2>
+	{translate('dialog.upgrade_old_aj_model_loader.title')}
+</h2>
+
 <p>{translate('action.upgrade_old_aj_model_loader.body')}</p>
 
-<button onclick={openAJModel}>
-	{translate('action.upgrade_old_aj_model_loader.button')}
-</button>
+<div class="button_bar">
+	<button onclick={openAJModel}>
+		{translate('action.upgrade_old_aj_model_loader.button')}
+	</button>
+</div>
 
 <style>
 	button {

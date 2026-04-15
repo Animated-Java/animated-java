@@ -1,12 +1,12 @@
+import { observable } from 'svelte-observable-store'
+import { SvelteDialog } from 'svelte-patching-tools/blockbench'
 import { PACKAGE } from '../../constants'
-import { Valuable } from '../../util/stores'
-import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
 import ExportProgressDialogSvelteComponent from './exportProgress.svelte'
 
-export const PROGRESS = new Valuable(0)
-export const MAX_PROGRESS = new Valuable(1)
-export const PROGRESS_DESCRIPTION = new Valuable('')
+export const PROGRESS = observable(0)
+export const MAX_PROGRESS = observable(1)
+export const PROGRESS_DESCRIPTION = observable('')
 
 export function openExportProgressDialog(debug?: boolean) {
 	PROGRESS.set(0)
@@ -28,15 +28,13 @@ export function openExportProgressDialog(debug?: boolean) {
 		id: `${PACKAGE.name}:exportProgressDialog`,
 		title: translate('dialog.export_progress.title'),
 		width: 512,
-		content: {
-			component: ExportProgressDialogSvelteComponent,
-			props: {
-				progress: PROGRESS,
-				maxProgress: MAX_PROGRESS,
-				progressDescription: PROGRESS_DESCRIPTION,
-			},
+		component: ExportProgressDialogSvelteComponent,
+		props: {
+			progress: PROGRESS,
+			maxProgress: MAX_PROGRESS,
+			progressDescription: PROGRESS_DESCRIPTION,
 		},
-		preventKeybinds: true,
+		disableKeybinds: true,
 		buttons: [],
 	}).show()
 	return dialog

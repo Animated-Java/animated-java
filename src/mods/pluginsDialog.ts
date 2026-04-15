@@ -1,12 +1,12 @@
+import { registerPatch } from 'blockbench-patch-manager'
+import { observable } from 'svelte-observable-store'
+import { injectComponent } from 'svelte-patching-tools'
 import IncompatiblePluginNotice from '../svelteComponents/incompatiblePluginNotice.svelte'
-import { registerMod } from '../util/moddingTools'
-import { mountSvelteComponent } from '../util/mountSvelteComponent'
-import { Valuable } from '../util/stores'
 
-const SELECTED_PLUGIN = new Valuable<BBPlugin | null>(null)
+const SELECTED_PLUGIN = observable<BBPlugin | null>(null)
 
-registerMod({
-	id: `animated-java:plugins-dialog-mod`,
+registerPatch({
+	id: `animated_java:plugins-dialog-mod`,
 
 	apply: () => {
 		const original = Plugins.dialog.component.methods.selectPlugin
@@ -25,24 +25,21 @@ registerMod({
 	},
 })
 
-let mounted: IncompatiblePluginNotice | null = null
+let unmountCallback: (() => Promise<void>) | null
 
-SELECTED_PLUGIN.subscribe(plugin => {
-	if (mounted) {
-		mounted.$destroy()
-		mounted = null
-	}
+SELECTED_PLUGIN.subscribe(async plugin => {
+	await unmountCallback?.()
+	unmountCallback = null
 	if (!plugin) return
 
 	requestAnimationFrame(() => {
-		mounted = mountSvelteComponent({
+		unmountCallback = injectComponent({
 			component: IncompatiblePluginNotice,
 			props: { selectedPlugin: plugin },
-			target: '.plugin_browser_page_header',
-			prepend: true,
-			onDestroy: () => {
-				mounted = null
+			elementSelector: (): HTMLElement | null => {
+				return document.querySelector('.plugin_browser_page_header')
 			},
+			prepend: true,
 		})
 	})
 })

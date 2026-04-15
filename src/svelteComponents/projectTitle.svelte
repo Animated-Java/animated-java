@@ -1,12 +1,12 @@
 <script lang="ts" module>
+	import { type Observable } from 'svelte-observable-store'
 	import AnimatedJavaIcon from '../assets/animated_java_icon.svg'
 	import AnimatedPaperIcon from '../assets/animated_paper_icon.svg'
-	import { Valuable } from '../util/stores'
 </script>
 
 <script lang="ts">
 	interface Props {
-		pluginMode: Valuable<boolean>
+		pluginMode: Observable<boolean>
 	}
 
 	let { pluginMode }: Props = $props()

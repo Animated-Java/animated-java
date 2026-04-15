@@ -1,7 +1,7 @@
+import { registerDeletableHandlerPatch } from 'blockbench-patch-manager'
+import { mount, unmount } from 'svelte'
 import { openUnexpectedErrorDialog } from '../../dialogs/unexpectedError/unexpectedError'
 import { sanitizeStorageKey } from '../../util/minecraftUtil'
-import { registerModelLoader } from '../../util/moddingTools'
-import { mountSvelteComponent } from '../../util/mountSvelteComponent'
 import { translate } from '../../util/translation'
 import { BLUEPRINT_CODEC } from '../blueprint/codec'
 import * as modelDatFixerUpper from '../blueprint/dfu'
@@ -47,26 +47,37 @@ export function convertAJModelToBlueprint(path: string) {
 	}
 }
 
-registerModelLoader(
-	{ id: `animated-java:upgrade-aj-model-loader` },
-	{
-		icon: 'upload_file',
-		category: 'animated_java',
-		name: translate('action.upgrade_old_aj_model_loader.name'),
-		condition: true,
-		format_page: {
-			component: {
-				template: `<div id="animated-java:upgrade-aj-model-loader-target" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;"></div>`,
-				mounted() {
-					// Don't need to worry about unmounting since the whole panel gets replaced when switching formats
-					mountSvelteComponent({
-						component: FormatPage,
-						target: `#animated-java\\:upgrade-aj-model-loader-target`,
-						injectIndex: 2,
-					})
+let mountedComponent: ReturnType<typeof mount> | null = null
+let titleElement: HTMLElement | null = null
+
+registerDeletableHandlerPatch({
+	id: `animated_java:model-loader/ajmodel`,
+	create() {
+		return new ModelLoader(`animated_java:model-loader/ajmodel`, {
+			icon: 'upload_file',
+			category: 'animated_java',
+			name: translate('action.upgrade_old_aj_model_loader.name'),
+			condition: true,
+			format_page: {
+				component: {
+					template: '<div></div>',
+					mounted(this: Vue) {
+						const target = this.$el.parentElement!
+						titleElement = target.querySelector('h2')
+						if (titleElement) titleElement.hidden = true
+
+						mountedComponent = mount(FormatPage, { target })
+					},
+					destroyed(this: Vue) {
+						if (titleElement) titleElement.hidden = false
+						if (mountedComponent) {
+							void unmount(mountedComponent!)
+							mountedComponent = null
+						}
+					},
 				},
 			},
-		},
-		onStart: openAJModel,
-	}
-)
+			onStart: openAJModel,
+		})
+	},
+})

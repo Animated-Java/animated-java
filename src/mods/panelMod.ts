@@ -1,8 +1,8 @@
+import { registerPatch } from 'blockbench-patch-manager'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
-import { registerMod } from '../util/moddingTools'
 
-registerMod({
-	id: `animated-java:panel-mod`,
+registerPatch({
+	id: `animated_java:panel-mod`,
 
 	apply: () => {
 		const panel = Interface.Panels.animations

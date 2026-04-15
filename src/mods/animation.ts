@@ -1,7 +1,7 @@
+import { registerPatch, registerPropertyOverridePatch } from 'blockbench-patch-manager'
 import { openAnimationPropertiesDialog } from '../dialogs/animationProperties/animationProperties'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 import { roundToNth } from '../util/misc'
-import { registerConditionalPropertyOverrideMod, registerMod } from '../util/moddingTools'
 import { translate } from '../util/translation'
 
 declare global {
@@ -23,12 +23,12 @@ export const DEFAULT_SNAPPING_VALUE = 20
 export const MINIMUM_ANIMATION_LENGTH = 0.05
 
 //region Extend
-registerConditionalPropertyOverrideMod({
-	id: `animated-java:function-override/animation/extend`,
-	object: Blockbench.Animation.prototype,
+registerPropertyOverridePatch({
+	id: `animated_java:function-override/animation/extend`,
+	target: Blockbench.Animation.prototype,
 	key: 'extend',
 
-	condition: () => activeProjectIsBlueprintFormat(),
+	getCondition: () => activeProjectIsBlueprintFormat(),
 
 	get: original => {
 		return function (this: _Animation, data?: AnimationOptions) {
@@ -52,12 +52,12 @@ registerConditionalPropertyOverrideMod({
 })
 
 //region Set Length
-registerConditionalPropertyOverrideMod({
-	id: `animated-java:function-override/animation/set-length`,
-	object: Blockbench.Animation.prototype,
+registerPropertyOverridePatch({
+	id: `animated_java:function-override/animation/set-length`,
+	target: Blockbench.Animation.prototype,
 	key: 'setLength',
 
-	condition: () => activeProjectIsBlueprintFormat(),
+	getCondition: () => activeProjectIsBlueprintFormat(),
 
 	get: original => {
 		return function (this: _Animation, length?: number) {
@@ -68,12 +68,12 @@ registerConditionalPropertyOverrideMod({
 })
 
 //region Properties Dialog
-registerConditionalPropertyOverrideMod({
-	id: `animated-java:function-override/animation/properties-dialog`,
-	object: Blockbench.Animation.prototype,
+registerPropertyOverridePatch({
+	id: `animated_java:function-override/animation/properties-dialog`,
+	target: Blockbench.Animation.prototype,
 	key: 'propertiesDialog',
 
-	condition: () => activeProjectIsBlueprintFormat(),
+	getCondition: () => activeProjectIsBlueprintFormat(),
 
 	get: () => {
 		return function (this: _Animation) {
@@ -87,8 +87,8 @@ registerConditionalPropertyOverrideMod({
 })
 
 //region Properties
-registerMod({
-	id: `animated-java:property-definitions/animation`,
+registerPatch({
+	id: `animated_java:property-definitions/animation`,
 
 	apply: () => {
 		const excludedNodesProperty = new Property(
@@ -111,23 +111,23 @@ registerMod({
 })
 
 //region Force Saved
-registerConditionalPropertyOverrideMod({
-	id: `animated-java:animation-force-saved`,
-	object: Blockbench.Animation.prototype,
+registerPropertyOverridePatch({
+	id: `animated_java:animation-force-saved`,
+	target: Blockbench.Animation.prototype,
 	key: 'saved',
 
-	condition: () => activeProjectIsBlueprintFormat(),
+	getCondition: () => activeProjectIsBlueprintFormat(),
 
 	get: () => true,
 })
 
 //region Save All Action
-registerConditionalPropertyOverrideMod({
-	id: `animated-java:action-condition-override/save-all-animations`,
-	object: BarItems.save_all_animations as Action,
+registerPropertyOverridePatch({
+	id: `animated_java:action-condition-override/save-all-animations`,
+	target: BarItems.save_all_animations as Action,
 	key: 'condition',
 
-	condition: () => activeProjectIsBlueprintFormat(),
+	getCondition: () => activeProjectIsBlueprintFormat(),
 
 	get: () => false,
 })

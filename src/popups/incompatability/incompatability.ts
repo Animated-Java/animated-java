@@ -1,6 +1,6 @@
+import { SvelteDialog } from 'svelte-patching-tools/blockbench'
 import { PACKAGE } from '../../constants'
 import EVENTS from '../../util/events'
-import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
 import IncompatabilityPopup from './incompatability.svelte'
 
@@ -9,7 +9,7 @@ enum INCOMPATABLE_PLUGINS {
 	GECKOLIB = 'geckolib',
 }
 
-let currentInstance: SvelteDialog<IncompatabilityPopup> | null = null
+let currentInstance: SvelteDialog<typeof IncompatabilityPopup> | null = null
 
 export function openIncompatabilityPopup(plugins: BBPlugin[]) {
 	if (currentInstance) return
@@ -17,12 +17,10 @@ export function openIncompatabilityPopup(plugins: BBPlugin[]) {
 		id: `${PACKAGE.name}:incompatabilityPopup`,
 		title: translate('popup.incompatability_popup.title'),
 		width: 700,
-		content: {
-			component: IncompatabilityPopup,
-			props: { plugins },
-		},
-		preventKeybinds: true,
-		preventKeybindCancel: true,
+		component: IncompatabilityPopup,
+		props: { plugins },
+		disableKeybinds: true,
+		disableCancelKeybind: true,
 		buttons: [
 			translate('popup.incompatability_popup.button.disable_all'),
 			translate('popup.incompatability_popup.button.ignore'),

@@ -1,35 +1,33 @@
+import { registerProjectPatch } from 'blockbench-patch-manager'
+import { injectComponent } from 'svelte-patching-tools'
 import { PACKAGE } from '../../constants'
 import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from '../../formats/blueprint'
 import { type ItemDisplayMode, VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
 import EVENTS from '../../util/events'
-import { registerProjectMod } from '../../util/moddingTools'
-import { mountSvelteComponent } from '../../util/mountSvelteComponent'
 import { translate } from '../../util/translation'
 import VanillaItemDisplayElementPanel from './vanillaItemDisplayElement.svelte'
 
-let mounted: VanillaItemDisplayElementPanel | null = null
+let unmountCallback: (() => Promise<void>) | null = null
 
-const destroyMounted = () => {
-	mounted?.$destroy()
-	mounted = null
-}
-
-const updatePanel = () => {
-	destroyMounted()
+const updatePanel = async () => {
+	await unmountCallback?.()
+	unmountCallback = null
 	const itemDisplay = VanillaItemDisplay.selected.at(0)
 	if (itemDisplay) {
-		mounted = mountSvelteComponent({
+		unmountCallback = injectComponent({
 			component: VanillaItemDisplayElementPanel,
 			props: { selected: itemDisplay },
-			target: '#panel_element',
+			elementSelector(): HTMLElement | null {
+				return document.querySelector('#panel_element')
+			},
 		})
 	}
 }
 
-registerProjectMod({
-	id: 'animated-java:append-element-panel/vanilla-item-display',
+registerProjectPatch({
+	id: 'animated_java:append-element-panel/vanilla-item-display',
 
-	condition: project => project.format.id === BLUEPRINT_FORMAT_ID,
+	condition: ({ project }) => project.format.id === BLUEPRINT_FORMAT_ID,
 
 	apply: () => {
 		const unsubscribers = [
@@ -40,9 +38,10 @@ registerProjectMod({
 		return { unsubscribers }
 	},
 
-	revert: ({ unsubscribers }) => {
+	revert: async ({ unsubscribers }) => {
 		unsubscribers.forEach(u => u())
-		destroyMounted()
+		await unmountCallback?.()
+		unmountCallback = null
 	},
 })
 

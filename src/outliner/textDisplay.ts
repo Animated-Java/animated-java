@@ -1,3 +1,5 @@
+import { registerDeletableHandlerPatch } from 'blockbench-patch-manager'
+import { observable } from 'svelte-observable-store'
 import { PACKAGE } from '../constants'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 import { JsonText, type TextElement } from '../systems/jsonText'
@@ -5,9 +7,7 @@ import { JsonTextParser, JsonTextSyntaxError } from '../systems/jsonText/parser'
 import { getVanillaFont, MinecraftFont } from '../systems/minecraft/fontManager'
 import { type IDisplayEntityConfigs } from '../systems/rigRenderer'
 import EVENTS from '../util/events'
-import { registerAction } from '../util/moddingTools'
 import { DeepClonedObjectProperty, fixClassPropertyInheritance } from '../util/property'
-import { Valuable } from '../util/stores'
 import { translate } from '../util/translation'
 import { ResizableOutlinerElement } from './resizableOutlinerElement'
 import { sanitizeOutlinerElementName } from './util'
@@ -45,12 +45,12 @@ export class TextDisplay extends ResizableOutlinerElement {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	preview_controller = PREVIEW_CONTROLLER
 
-	textError = new Valuable('')
+	textError = observable('')
 
 	needsMeshUpdate = false
 
 	private __pendingMeshUpdate?: ReturnType<MinecraftFont['generateTextDisplayMesh']>
-	private __text = new Valuable('Hello World!')
+	private __text = observable('Hello World!')
 	private __lineWidth = TextDisplay.properties.lineWidth.default as number
 	private __backgroundColor = TextDisplay.properties.backgroundColor.default as string
 	private __shadow = TextDisplay.properties.shadow.default as boolean
@@ -455,40 +455,44 @@ class TextDisplayAnimator extends BoneAnimator {
 TextDisplayAnimator.prototype.type = TextDisplay.type
 TextDisplay.animator = TextDisplayAnimator as any
 
-export const CREATE_ACTION = registerAction(
-	{ id: `animated-java:create-text-display` },
-	{
-		name: translate('action.create_text_display.title'),
-		icon: 'text_fields',
-		category: 'animated_java',
-		condition() {
-			return activeProjectIsBlueprintFormat() && Mode.selected.id === Modes.options.edit.id
-		},
-		click() {
-			Undo.initEdit({ outliner: true, elements: [], selection: true })
+export const CREATE_ACTION = registerDeletableHandlerPatch({
+	id: `animated_java:action/create-text-display`,
+	create() {
+		return new Blockbench.Action(`animated_java:action/create-text-display`, {
+			name: translate('action.create_text_display.title'),
+			icon: 'text_fields',
+			category: 'animated_java',
+			condition() {
+				return (
+					activeProjectIsBlueprintFormat() && Mode.selected.id === Modes.options.edit.id
+				)
+			},
+			click() {
+				Undo.initEdit({ outliner: true, elements: [], selection: true })
 
-			const textDisplay = new TextDisplay({}).init()
-			const group = getCurrentGroup()
+				const textDisplay = new TextDisplay({}).init()
+				const group = getCurrentGroup()
 
-			if (group instanceof Group) {
-				textDisplay.addTo(group)
-				textDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
-			}
+				if (group instanceof Group) {
+					textDisplay.addTo(group)
+					textDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
+				}
 
-			selected.forEachReverse(el => el.unselect())
-			Group.first_selected?.unselect()
-			textDisplay.select()
+				selected.forEachReverse(el => el.unselect())
+				Group.first_selected?.unselect()
+				textDisplay.select()
 
-			Undo.finishEdit('Create Text Display', {
-				outliner: true,
-				elements: selected,
-				selection: true,
-			})
+				Undo.finishEdit('Create Text Display', {
+					outliner: true,
+					elements: selected,
+					selection: true,
+				})
 
-			return textDisplay
-		},
-	}
-)
+				return textDisplay
+			},
+		})
+	},
+})
 
 const CLEANUP_CALLBACKS: Array<() => void> = []
 

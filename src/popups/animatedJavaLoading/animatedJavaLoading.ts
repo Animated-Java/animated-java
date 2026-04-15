@@ -1,19 +1,19 @@
 // TODO - Add a full-screen loading animation while AJ is initializing.
 // TODO - Add an animation of an armor_stand using a hammer on an anvil to the loading screen.
-import { mountSvelteComponent } from '../../util/mountSvelteComponent'
-import { Valuable } from '../../util/stores'
+import { observable } from 'svelte-observable-store'
+import { injectComponent } from 'svelte-patching-tools'
 import AnimatedJavaLoadingPopup from './animatedJavaLoading.svelte'
 
-const LOADED = new Valuable(false)
-const OFFLINE = new Valuable(false)
-const PROGRESS = new Valuable(0)
-const PROGRESS_LABEL = new Valuable('')
+const LOADED = observable(false)
+const OFFLINE = observable(false)
+const PROGRESS = observable(0)
+const PROGRESS_LABEL = observable('')
 
-let mountedPopup: any | undefined
+let unmountCallback: (() => Promise<void>) | null
 
 export function showLoadingPopup() {
-	if (mountedPopup) return
-	mountedPopup = mountSvelteComponent({
+	if (unmountCallback) return
+	unmountCallback = injectComponent({
 		component: AnimatedJavaLoadingPopup,
 		props: {
 			loaded: LOADED,
@@ -21,28 +21,30 @@ export function showLoadingPopup() {
 			progress: PROGRESS,
 			progressLabel: PROGRESS_LABEL,
 		},
-		target: document.body,
+		elementSelector() {
+			return document.body
+		},
 	})
 }
 
 export function hideLoadingPopup() {
-	if (!mountedPopup) return
+	if (!unmountCallback) return
 	LOADED.set(true)
-	setTimeout(() => {
-		if (!mountedPopup) return
-		mountedPopup.$destroy()
-		mountedPopup = undefined
+	setTimeout(async () => {
+		if (!unmountCallback) return
+		await unmountCallback()
+		unmountCallback = null
 	}, 2000)
 }
 
 export function showOfflineError() {
-	if (!mountedPopup) return
+	if (!unmountCallback) return
 	OFFLINE.set(true)
 	// FIXME - Change this into a X button instead of a timeout.
-	setTimeout(() => {
-		if (!mountedPopup) return
-		mountedPopup.$destroy()
-		mountedPopup = undefined
+	setTimeout(async () => {
+		if (!unmountCallback) return
+		await unmountCallback()
+		unmountCallback = null
 	}, 10000)
 }
 

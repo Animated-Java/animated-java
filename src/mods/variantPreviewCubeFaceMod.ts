@@ -1,5 +1,5 @@
+import { registerPatch } from 'blockbench-patch-manager'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
-import { registerMod } from '../util/moddingTools'
 import { Variant } from '../variants'
 
 declare global {
@@ -8,8 +8,8 @@ declare global {
 	}
 }
 
-registerMod({
-	id: `animated-java:variant-preview-cube-face`,
+registerPatch({
+	id: `animated_java:variant-preview-cube-face`,
 
 	apply: () => {
 		const original = CubeFace.prototype.getTexture

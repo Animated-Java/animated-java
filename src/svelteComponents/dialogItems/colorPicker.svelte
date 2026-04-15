@@ -1,16 +1,16 @@
 <script lang="ts">
+	import { type Observable } from 'svelte-observable-store'
 	import { PACKAGE } from '../../constants'
-	import { Valuable } from '../../util/stores'
 	import BaseDialogItem from './baseDialogItem.svelte'
 
 	interface Props {
 		label: string
 		tooltip?: string
 		defaultValue?: string
-		value: Valuable<string>
+		value: Observable<string>
 	}
 
-	let { label, tooltip = '', defaultValue = '#ffffff', value }: Props = $props()
+	let { label, tooltip = '', defaultValue = '#ffffff', value = $bindable() }: Props = $props()
 
 	let colorPicker: ColorPicker
 

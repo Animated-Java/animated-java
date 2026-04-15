@@ -1,26 +1,39 @@
 <script lang="ts">
-	import { Valuable } from '../../util/stores'
+	import { type Observable } from 'svelte-observable-store'
 	import BaseDialogItem from './baseDialogItem.svelte'
 
-	export let label: string
-	export let tooltip = ''
+	interface Props {
+		label: string
+		tooltip?: string
+		step?: number | undefined
+		valueX: Observable<number>
+		defaultValueX: number
+		minX?: number | undefined
+		maxX?: number | undefined
+		valueY: Observable<number>
+		defaultValueY: number
+		minY?: number | undefined
+		maxY?: number | undefined
+		valueChecker?: DialogItemValueChecker<{ x: number; y: number }>
+	}
 
-	export let step: number | undefined = undefined
+	let {
+		label,
+		tooltip = '',
+		step = undefined,
+		valueX = $bindable(),
+		defaultValueX,
+		minX = undefined,
+		maxX = undefined,
+		valueY = $bindable(),
+		defaultValueY,
+		minY = undefined,
+		maxY = undefined,
+		valueChecker = undefined,
+	}: Props = $props()
 
-	export let valueX: Valuable<number>
-	export let defaultValueX: number
-	export let minX: number | undefined = undefined
-	export let maxX: number | undefined = undefined
-
-	export let valueY: Valuable<number>
-	export let defaultValueY: number
-	export let minY: number | undefined = undefined
-	export let maxY: number | undefined = undefined
-
-	export let valueChecker: DialogItemValueChecker<{ x: number; y: number }> = undefined
-
-	let warningText = ''
-	let errorText = ''
+	let warningText = $state('')
+	let errorText = $state('')
 
 	function checkValue() {
 		if (!valueChecker) return
@@ -28,20 +41,21 @@
 		result.type === 'error' ? (errorText = result.message) : (errorText = '')
 		result.type === 'warning' ? (warningText = result.message) : (warningText = '')
 	}
-	valueX.subscribe(() => checkValue())
-	valueY.subscribe(() => checkValue())
 
-	const MOLANG_PARSER = new Molang()
+	$effect.pre(() => {
+		valueX.subscribe(() => checkValue())
+		valueY.subscribe(() => checkValue())
+	})
 
-	let inputX: HTMLInputElement
-	let sliderX: HTMLElement
+	let inputX: HTMLInputElement | undefined = $state()
+	let sliderX: HTMLElement | undefined = $state()
 
-	let inputY: HTMLInputElement
-	let sliderY: HTMLElement
+	let inputY: HTMLInputElement | undefined = $state()
+	let sliderY: HTMLElement | undefined = $state()
 
 	function eventListenerFactory(
 		target: HTMLElement,
-		value: Valuable<number>,
+		value: Observable<number>,
 		min?: number,
 		max?: number
 	) {
@@ -70,9 +84,13 @@
 			addEventListeners(document as unknown as any, 'mouseup touchend', stop)
 		})
 
-		addEventListeners(inputX, 'focusout dblclick', () => {
+		addEventListeners(inputX!, 'focusout dblclick', () => {
 			value.set(
-				Math.clamp(MOLANG_PARSER.parse(value.get()), min ?? -Infinity, max ?? Infinity)
+				Math.clamp(
+					Animator.MolangParser.parse(value.get()),
+					min ?? -Infinity,
+					max ?? Infinity
+				)
 			)
 		})
 	}
@@ -83,39 +101,41 @@
 	}
 
 	requestAnimationFrame(() => {
-		eventListenerFactory(sliderX, valueX, minX, maxX)
-		eventListenerFactory(sliderY, valueY, minY, maxY)
+		eventListenerFactory(sliderX!, valueX, minX, maxX)
+		eventListenerFactory(sliderY!, valueY, minY, maxY)
 	})
 </script>
 
-<BaseDialogItem {label} {tooltip} {onReset} bind:warningText bind:errorText let:id>
-	<div class="dialog_bar form_bar">
-		<label class="name_space_left" for={id}>{label}</label>
-		<div class="dialog_vector_group half" style="max-width: 256px;">
-			<div class="numeric_input">
-				<input
-					bind:this={inputX}
-					{id}
-					class="dark_bordered focusable_input"
-					bind:value={$valueX}
-					inputmode="decimal"
-				/>
-				<div bind:this={sliderX} class="tool numaric_input_slider">
-					<i class="material-icons icon">code</i>
+<BaseDialogItem {label} {tooltip} {onReset} bind:warningText bind:errorText>
+	{#snippet children({ id })}
+		<div class="dialog_bar form_bar">
+			<label class="name_space_left" for={id}>{label}</label>
+			<div class="dialog_vector_group half" style="max-width: 256px;">
+				<div class="numeric_input">
+					<input
+						bind:this={inputX}
+						{id}
+						class="dark_bordered focusable_input"
+						bind:value={$valueX}
+						inputmode="decimal"
+					/>
+					<div bind:this={sliderX} class="tool numaric_input_slider">
+						<i class="material-icons icon">code</i>
+					</div>
 				</div>
-			</div>
-			<div class="numeric_input">
-				<input
-					bind:this={inputY}
-					{id}
-					class="dark_bordered focusable_input"
-					bind:value={$valueY}
-					inputmode="decimal"
-				/>
-				<div bind:this={sliderY} class="tool numaric_input_slider">
-					<i class="material-icons icon">code</i>
+				<div class="numeric_input">
+					<input
+						bind:this={inputY}
+						{id}
+						class="dark_bordered focusable_input"
+						bind:value={$valueY}
+						inputmode="decimal"
+					/>
+					<div bind:this={sliderY} class="tool numaric_input_slider">
+						<i class="material-icons icon">code</i>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
+	{/snippet}
 </BaseDialogItem>

@@ -14,7 +14,7 @@
 		"target": "ES2022",
 		"moduleResolution": "bundler",
 		"strict": true,
-		"types": ["node"],
+		"types": ["node", "/mnt/ssd2/repos/snavesutit/blockbench/types/index.d.ts"],
 		"resolveJsonModule": true,
 		"allowSyntheticDefaultImports": true,
 		"allowUmdGlobalAccess": true,
@@ -23,6 +23,9 @@
 		"noEmit": true,
 		"isolatedModules": true,
 		"alwaysStrict": true,
-		"verbatimModuleSyntax": true
+		"verbatimModuleSyntax": true,
+		"paths": {
+			"@blockbench-types/*": ["/var/mnt/ssd2/repos/snavesutit/blockbench/types/*"]
+		}
 	}
 }

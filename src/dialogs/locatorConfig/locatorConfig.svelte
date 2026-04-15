@@ -1,9 +1,9 @@
 <script lang="ts" module>
+	import { type Observable } from 'svelte-observable-store'
 	import CheckBox from '../../svelteComponents/dialogItems/checkbox.svelte'
 	import CodeInput from '../../svelteComponents/dialogItems/codeInput.svelte'
 	import LineInput from '../../svelteComponents/dialogItems/lineInput.svelte'
 	import { MINECRAFT_REGISTRY } from '../../systems/minecraft/registryManager'
-	import { Valuable } from '../../util/stores'
 	import { translate } from '../../util/translation'
 
 	const entityTypeValidator: DialogItemValueChecker<string> = (value: string) => {
@@ -30,12 +30,12 @@
 <script lang="ts">
 	const PLUGIN_MODE = !!Project?.animated_java?.enable_plugin_mode
 
-	export let useEntity: Valuable<boolean>
-	export let entityType: Valuable<string>
-	export let syncPassengerRotation: Valuable<boolean>
-	export let onSummonFunction: Valuable<string>
-	export let onRemoveFunction: Valuable<string>
-	export let onTickFunction: Valuable<string>
+	export let useEntity: Observable<boolean>
+	export let entityType: Observable<string>
+	export let syncPassengerRotation: Observable<boolean>
+	export let onSummonFunction: Observable<string>
+	export let onRemoveFunction: Observable<string>
+	export let onTickFunction: Observable<string>
 </script>
 
 <div>

@@ -2,12 +2,22 @@
 
 import type { IBlueprintDisplayEntityConfigJSON } from '../formats/blueprint'
 import { resolvePath } from '../util/fileUtil'
-import { isResourcePackPath, parseResourcePackPath, sanitizeStorageKey } from '../util/minecraftUtil'
+import {
+	isResourcePackPath,
+	parseResourcePackPath,
+	sanitizeStorageKey,
+} from '../util/minecraftUtil'
 import { detectCircularReferences, scrubUndefined } from '../util/misc'
 import { Variant } from '../variants'
 import type { INodeTransform, IRenderedAnimation } from './animationRenderer'
 import { IntentionalExportError } from './errors'
-import type { AnyRenderedNode, IRenderedElement, IRenderedFace, IRenderedModel, IRenderedRig } from './rigRenderer'
+import type {
+	AnyRenderedNode,
+	IRenderedElement,
+	IRenderedFace,
+	IRenderedModel,
+	IRenderedRig,
+} from './rigRenderer'
 
 type TextureAnimationFrame =
 	| number
@@ -86,7 +96,14 @@ interface NodeTransformation {
 	scale?: ArrayVector3
 }
 
-type NodeType = 'bone' | 'item_display' | 'block_display' | 'text_display' | 'structure' | 'camera' | 'locator'
+type NodeType =
+	| 'bone'
+	| 'item_display'
+	| 'block_display'
+	| 'text_display'
+	| 'structure'
+	| 'camera'
+	| 'locator'
 
 type PluginNode =
 	| {
@@ -265,7 +282,8 @@ function serializeTextureProvider(options: {
 	textureKeyToPaletteId: Map<string, string>
 }): TextureProvider {
 	const textureKey = options.textureIdToKey.get(options.textureId)
-	if (!textureKey) throw new Error(`Missing texture mapping for texture id '${options.textureId}'`)
+	if (!textureKey)
+		throw new Error(`Missing texture mapping for texture id '${options.textureId}'`)
 
 	const paletteId = options.textureKeyToPaletteId.get(textureKey)
 	if (paletteId) return { type: 'texture_palette', texture_palette: paletteId }
@@ -273,10 +291,13 @@ function serializeTextureProvider(options: {
 	return { type: 'texture', texture: textureKey }
 }
 
-function serializeFace(face: IRenderedFace, options: {
-	textureIdToKey: Map<string, string>
-	textureKeyToPaletteId: Map<string, string>
-}): BoneElementFace | undefined {
+function serializeFace(
+	face: IRenderedFace,
+	options: {
+		textureIdToKey: Map<string, string>
+		textureKeyToPaletteId: Map<string, string>
+	}
+): BoneElementFace | undefined {
 	if (!face.uv) return undefined
 	const textureId = face.texture?.startsWith('#') ? face.texture.slice(1) : face.texture
 	if (!textureId) return undefined
@@ -293,10 +314,13 @@ function serializeFace(face: IRenderedFace, options: {
 	} satisfies BoneElementFace)
 }
 
-function serializeBoneElements(model: IRenderedModel, options: {
-	textureIdToKey: Map<string, string>
-	textureKeyToPaletteId: Map<string, string>
-}): BoneElement[] {
+function serializeBoneElements(
+	model: IRenderedModel,
+	options: {
+		textureIdToKey: Map<string, string>
+		textureKeyToPaletteId: Map<string, string>
+	}
+): BoneElement[] {
 	const elements = model.elements ?? []
 	return elements.map((el: IRenderedElement) => {
 		const faces: BoneElementFaces = {}
@@ -313,7 +337,7 @@ function serializeBoneElements(model: IRenderedModel, options: {
 						axis: el.rotation.axis as BoneElementRotation['axis'],
 						origin: el.rotation.origin as ArrayVector3,
 						rescale: (el.rotation as any).rescale,
-				  }
+					}
 				: { angle: 0, axis: 'y', origin: [0, 0, 0] }
 
 		return scrubUndefined({
@@ -434,7 +458,7 @@ function buildPalettes(options: {
 		let hasAnyAlternative = false
 		for (const variant of variants) {
 			const mapped = variant.textureMap.getMappedTexture(texture.uuid)
-			let mappedKey = textureKey
+			let mappedKey: string = textureKey
 			if (mapped) {
 				const key = options.textureIdToKey.get(mapped.id)
 				if (key) mappedKey = key

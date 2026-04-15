@@ -1,22 +1,35 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte'
+	import { type Observable } from 'svelte-observable-store'
 	import { roundToNth } from '../../util/misc'
-	import { Valuable } from '../../util/stores'
 	import BaseDialogItem from './baseDialogItem.svelte'
 
-	export let label: string
-	export let tooltip = ''
-	export let value: Valuable<number>
-	export let defaultValue: number
-	export let min = -Infinity
-	export let max = Infinity
-	/** Minimum difference between two unique values */
-	export let valueStep = 0.1
-	/** How much to change when dragging */
-	export let dragStep: number | undefined = valueStep
+	interface Props {
+		label: string
+		tooltip?: string
+		value: Observable<number>
+		defaultValue: number
+		min?: any
+		max?: any
+		/** Minimum difference between two unique values */
+		valueStep?: number
+		/** How much to change when dragging */
+		dragStep?: number | undefined
+	}
 
-	let input: HTMLInputElement
-	let slider: HTMLElement
+	let {
+		label,
+		tooltip = '',
+		value = $bindable(),
+		defaultValue,
+		min = -Infinity,
+		max = Infinity,
+		valueStep = 0.1,
+		dragStep = valueStep,
+	}: Props = $props()
+
+	let input: HTMLInputElement | undefined = $state()
+	let slider: HTMLElement | undefined = $state()
 
 	const clampValue = (v: number) => {
 		return Math.clamp(roundToNth(v, 1 / (valueStep ?? 1)), min, max) || 0
@@ -45,20 +58,19 @@
 		)
 	}
 
-	const MOLANG_PARSER = new Molang()
 	const onInput = () => {
-		value.set(clampValue(MOLANG_PARSER.parse(value.get())))
+		value.set(clampValue(Animator.MolangParser.parse(value.get())))
 	}
 
 	// onMount
 	requestAnimationFrame(() => {
-		addEventListeners(slider, 'mousedown touchstart', onStartDrag)
-		addEventListeners(input, 'focusout dblclick', onInput)
+		addEventListeners(slider!, 'mousedown touchstart', onStartDrag)
+		addEventListeners(input!, 'focusout dblclick', onInput)
 	})
 
 	onDestroy(() => {
-		removeEventListeners(input, 'focusout dblclick', onInput)
-		removeEventListeners(slider, 'mousedown touchstart', onStartDrag)
+		removeEventListeners(input!, 'focusout dblclick', onInput)
+		removeEventListeners(slider!, 'mousedown touchstart', onStartDrag)
 	})
 
 	function onReset() {
@@ -66,22 +78,24 @@
 	}
 </script>
 
-<BaseDialogItem {label} {tooltip} {onReset} let:id>
-	<div class="dialog_bar form_bar">
-		<label class="name_space_left" for={id}>{label}</label>
-		<div class="numeric_input">
-			<input
-				bind:this={input}
-				{id}
-				class="dark_bordered focusable_input"
-				bind:value={$value}
-				inputmode="decimal"
-			/>
-			<div bind:this={slider} class="tool numaric_input_slider slider-fix">
-				<i class="material-icons icon">code</i>
+<BaseDialogItem {label} {tooltip} {onReset}>
+	{#snippet children({ id })}
+		<div class="dialog_bar form_bar">
+			<label class="name_space_left" for={id}>{label}</label>
+			<div class="numeric_input">
+				<input
+					bind:this={input}
+					{id}
+					class="dark_bordered focusable_input"
+					bind:value={$value}
+					inputmode="decimal"
+				/>
+				<div bind:this={slider} class="tool numaric_input_slider slider-fix">
+					<i class="material-icons icon">code</i>
+				</div>
 			</div>
 		</div>
-	</div>
+	{/snippet}
 </BaseDialogItem>
 
 <style>

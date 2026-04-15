@@ -1,3 +1,4 @@
+import { registerPatch, registerPropertyOverridePatch } from 'blockbench-patch-manager'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 import {
 	EASING_DEFAULT,
@@ -6,7 +7,6 @@ import {
 	getEasingArgDefault,
 	hasArgs,
 } from '../util/easing'
-import { registerConditionalPropertyOverrideMod, registerMod } from '../util/moddingTools'
 
 declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -25,8 +25,8 @@ function lerp(start: number, stop: number, amt: number): number {
 	return amt * (stop - start) + start
 }
 
-registerMod({
-	id: `animated-java:keyframe-easing`,
+registerPatch({
+	id: `animated_java:keyframe-easing`,
 
 	apply: () => {
 		const properties = [
@@ -92,9 +92,9 @@ export function reverseEasing(easing?: EasingKey): EasingKey | undefined {
 	return easing
 }
 
-registerConditionalPropertyOverrideMod({
-	id: `animated-java:action-click-override/reverse-keyframes`,
-	object: BarItems.reverse_keyframes as Action,
+registerPropertyOverridePatch({
+	id: `animated_java:action-click-override/reverse-keyframes`,
+	target: BarItems.reverse_keyframes as Action,
 	key: 'click',
 
 	condition: () => activeProjectIsBlueprintFormat(),

@@ -2,7 +2,7 @@
 	import LineInput from '../../svelteComponents/dialogItems/lineInput.svelte'
 	import NumberSlider from '../../svelteComponents/dialogItems/numberSlider.svelte'
 
-	import { Valuable } from '../../util/stores'
+	import { type Observable } from 'svelte-observable-store'
 	import { translate } from '../../util/translation'
 </script>
 
@@ -11,10 +11,10 @@
 	import Select from '../../svelteComponents/dialogItems/select.svelte'
 	import { getAvailableNodes } from '../../util/excludedNodes'
 
-	export let animationName: Valuable<string>
-	export let loopMode: Valuable<string>
-	export let loopDelay: Valuable<number>
-	export let excludedNodes: Valuable<Array<{ name: string; value: string }>>
+	export let animationName: Observable<string>
+	export let loopMode: Observable<string>
+	export let loopDelay: Observable<number>
+	export let excludedNodes: Observable<Array<{ name: string; value: string }>>
 
 	const AVAILABLE_BONES = getAvailableNodes(excludedNodes.get())
 

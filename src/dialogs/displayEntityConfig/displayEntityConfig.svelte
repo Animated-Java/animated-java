@@ -1,5 +1,6 @@
 <script lang="ts" module>
 	import { onDestroy } from 'svelte'
+	import { observable, type Observable } from 'svelte-observable-store'
 	import { type BillboardMode, DisplayEntityConfig } from '../../nodeConfigs'
 	import { TextDisplay } from '../../outliner/textDisplay'
 	import Checkbox from '../../svelteComponents/dialogItems/checkbox.svelte'
@@ -9,7 +10,6 @@
 	import SectionHeader from '../../svelteComponents/dialogItems/sectionHeader.svelte'
 	import Select from '../../svelteComponents/dialogItems/select.svelte'
 	import { type IDisplayEntityConfigs } from '../../systems/rigRenderer'
-	import { Valuable } from '../../util/stores'
 	import { translate } from '../../util/translation'
 	import { Variant } from '../../variants'
 	import { type DisplayEntity } from './displayEntityConfig'
@@ -26,21 +26,21 @@
 
 <script lang="ts">
 	export let displayEntity: DisplayEntity
-	export let onSummonFunction: Valuable<string>
+	export let onSummonFunction: Observable<string>
 	export let configs: IDisplayEntityConfigs
 
-	let onApplyFunction = new Valuable<string>(DEFAULT_CONFIG.onApplyFunction)
+	let onApplyFunction = observable<string>(DEFAULT_CONFIG.onApplyFunction)
 
-	let billboard = new Valuable<string>(DEFAULT_CONFIG.billboard)
-	let overrideBrightness = new Valuable<boolean>(DEFAULT_CONFIG.overrideBrightness)
-	let brightnessOverride = new Valuable<number>(DEFAULT_CONFIG.brightnessOverride)
-	let enchanted = new Valuable<boolean>(DEFAULT_CONFIG.enchanted)
-	let glowing = new Valuable<boolean>(DEFAULT_CONFIG.glowing)
-	let overrideGlowColor = new Valuable<boolean>(DEFAULT_CONFIG.overrideGlowColor)
-	let glowColor = new Valuable<string>(DEFAULT_CONFIG.glowColor)
-	let invisible = new Valuable<boolean>(DEFAULT_CONFIG.invisible)
-	let shadowRadius = new Valuable<number>(DEFAULT_CONFIG.shadowRadius)
-	let shadowStrength = new Valuable<number>(DEFAULT_CONFIG.shadowStrength)
+	let billboard = observable<string>(DEFAULT_CONFIG.billboard)
+	let overrideBrightness = observable<boolean>(DEFAULT_CONFIG.overrideBrightness)
+	let brightnessOverride = observable<number>(DEFAULT_CONFIG.brightnessOverride)
+	let enchanted = observable<boolean>(DEFAULT_CONFIG.enchanted)
+	let glowing = observable<boolean>(DEFAULT_CONFIG.glowing)
+	let overrideGlowColor = observable<boolean>(DEFAULT_CONFIG.overrideGlowColor)
+	let glowColor = observable<string>(DEFAULT_CONFIG.glowColor)
+	let invisible = observable<boolean>(DEFAULT_CONFIG.invisible)
+	let shadowRadius = observable<number>(DEFAULT_CONFIG.shadowRadius)
+	let shadowStrength = observable<number>(DEFAULT_CONFIG.shadowStrength)
 
 	let config: DisplayEntityConfig
 
@@ -85,7 +85,7 @@
 		Variant.all.map(variant => [variant.uuid, variant.displayName])
 	)
 
-	let variant = new Valuable(Variant.getDefault().uuid)
+	let variant = observable<string>(Variant.getDefault().uuid)
 
 	$: {
 		loadConfig($variant)
@@ -107,7 +107,7 @@
 	}
 
 	const SELECT_ELEMENT = new Interface.CustomElements.SelectInput(
-		'animated-java:display-entity-variant-select',
+		'animated_java:display-entity-variant-select',
 		{
 			options: OPTIONS,
 			value: $variant,

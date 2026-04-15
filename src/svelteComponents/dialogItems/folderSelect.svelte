@@ -1,12 +1,12 @@
 <script lang="ts">
 	import type { FileFilter } from 'electron'
-	import { Valuable } from '../../util/stores'
+	import { type Observable } from 'svelte-observable-store'
 	import BaseDialogItem from './baseDialogItem.svelte'
 
 	interface Props {
 		label: string
 		tooltip?: string
-		value: Valuable<string>
+		value: Observable<string>
 		defaultValue: string
 		filters?: FileFilter[]
 		fileSelectMessage?: string
@@ -16,7 +16,7 @@
 	let {
 		label,
 		tooltip = '',
-		value,
+		value = $bindable(),
 		defaultValue,
 		filters = [],
 		fileSelectMessage = 'Select File',

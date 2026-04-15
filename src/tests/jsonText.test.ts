@@ -1,5 +1,5 @@
-import { COLOR_VALUES, JsonText, type TextElement } from 'src/systems/jsonText'
 import { describe, expect, test } from 'vitest'
+import { COLOR_VALUES, JsonText, type TextElement } from '../systems/jsonText'
 import { JsonTextParser, JsonTextSyntaxError } from '../systems/jsonText/parser'
 
 type ErrorPattern = string | RegExp | (new (...args: any[]) => Error)

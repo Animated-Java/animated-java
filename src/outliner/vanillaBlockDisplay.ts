@@ -1,3 +1,5 @@
+import { registerDeletableHandlerPatch } from 'blockbench-patch-manager'
+import { observable } from 'svelte-observable-store'
 import { PACKAGE } from '../constants'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 import { type BlockModelMesh, getBlockModel } from '../systems/minecraft/blockModelManager'
@@ -6,9 +8,7 @@ import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
 import { type IDisplayEntityConfigs } from '../systems/rigRenderer'
 import EVENTS from '../util/events'
 import { validateBlock } from '../util/minecraftUtil'
-import { registerAction } from '../util/moddingTools'
 import { DeepClonedObjectProperty, fixClassPropertyInheritance } from '../util/property'
-import { Valuable } from '../util/stores'
 import { translate } from '../util/translation'
 import { ResizableOutlinerElement } from './resizableOutlinerElement'
 import { sanitizeOutlinerElementName } from './util'
@@ -37,11 +37,11 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 	needsUniqueName = true
 
 	// Properties
-	private __block = new Valuable('minecraft:stone')
+	private __block = observable('minecraft:stone')
 	onSummonFunction = VanillaBlockDisplay.properties.onSummonFunction.default as string
 	configs!: IDisplayEntityConfigs
 
-	error = new Valuable('')
+	error = observable('')
 
 	buttons = [Outliner.buttons.export, Outliner.buttons.locked, Outliner.buttons.visibility]
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -367,40 +367,44 @@ class VanillaBlockDisplayAnimator extends BoneAnimator {
 VanillaBlockDisplayAnimator.prototype.type = VanillaBlockDisplay.type
 VanillaBlockDisplay.animator = VanillaBlockDisplayAnimator as any
 
-export const CREATE_ACTION = registerAction(
-	{ id: `animated-java:create-vanilla-block-display` },
-	{
-		name: translate('action.create_vanilla_block_display.title'),
-		icon: 'deployed_code',
-		category: 'animated_java',
-		condition() {
-			return activeProjectIsBlueprintFormat() && Mode.selected.id === Modes.options.edit.id
-		},
-		click() {
-			Undo.initEdit({ outliner: true, elements: [], selection: true })
+export const CREATE_ACTION = registerDeletableHandlerPatch({
+	id: `animated_java:action/create-block-display`,
+	create() {
+		return new Blockbench.Action(`animated_java:action/create-block-display`, {
+			name: translate('action.create_block_display.title'),
+			icon: 'deployed_code',
+			category: 'animated_java',
+			condition() {
+				return (
+					activeProjectIsBlueprintFormat() && Mode.selected.id === Modes.options.edit.id
+				)
+			},
+			click() {
+				Undo.initEdit({ outliner: true, elements: [], selection: true })
 
-			const vanillaBlockDisplay = new VanillaBlockDisplay({}).init()
-			const group = getCurrentGroup()
+				const vanillaBlockDisplay = new VanillaBlockDisplay({}).init()
+				const group = getCurrentGroup()
 
-			if (group instanceof Group) {
-				vanillaBlockDisplay.addTo(group)
-				vanillaBlockDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
-			}
+				if (group instanceof Group) {
+					vanillaBlockDisplay.addTo(group)
+					vanillaBlockDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
+				}
 
-			selected.forEachReverse(el => el.unselect())
-			Group.first_selected?.unselect()
-			vanillaBlockDisplay.select()
+				selected.forEachReverse(el => el.unselect())
+				Group.first_selected?.unselect()
+				vanillaBlockDisplay.select()
 
-			Undo.finishEdit('Create Vanilla Block Display', {
-				outliner: true,
-				elements: selected,
-				selection: true,
-			})
+				Undo.finishEdit('Create Vanilla Block Display', {
+					outliner: true,
+					elements: selected,
+					selection: true,
+				})
 
-			return vanillaBlockDisplay
-		},
-	}
-)
+				return vanillaBlockDisplay
+			},
+		})
+	},
+})
 
 const CLEANUP_CALLBACKS: Array<() => void> = []
 

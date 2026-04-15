@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { Valuable } from '../../util/stores'
+	import { type Observable } from 'svelte-observable-store'
 	import BaseDialogItem from './baseDialogItem.svelte'
 
 	interface Props {
 		label: string
 		tooltip?: string
-		checked: Valuable<boolean>
+		checked: Observable<boolean>
 		defaultValue: boolean
 	}
 
-	let { label, tooltip = '', checked, defaultValue }: Props = $props()
+	let { label, tooltip = '', checked = $bindable(), defaultValue }: Props = $props()
 
 	function onReset() {
 		checked.set(defaultValue)

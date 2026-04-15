@@ -10,7 +10,7 @@ export namespace ResourceLocation {
 		: `Invalid characters in path: ${Exclude<P, PathChars>}`
 
 	export type ValidateNamespace<N extends string> = [N] extends [
-		RestrictString<N, NamespaceChars>
+		RestrictString<N, NamespaceChars>,
 	]
 		? N
 		: `Invalid characters in namespace: ${Exclude<N, NamespaceChars>}`
@@ -23,7 +23,7 @@ export namespace ResourceLocation {
 	 *
 	 * ```
 	 * // Valid
-	 * 'namespace:path', 'name-space:foo/bar.json', 'snavesutit.animated-java:blueprint-settings-dialog'
+	 * 'namespace:path', 'name-space:foo/bar.json', 'snavesutit.animated_java:blueprint-settings-dialog'
 	 *
 	 * // Invalid
 	 * 'Namespace:Path', 'namespace:path:extra', 'namespacepath'

@@ -1,6 +1,6 @@
+import { registerProjectPatch, registerPropertyOverridePatch } from 'blockbench-patch-manager'
 import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from '../formats/blueprint'
 import EVENTS from '../util/events'
-import { registerConditionalPropertyOverrideMod, registerProjectMod } from '../util/moddingTools'
 import { translate } from '../util/translation'
 
 export class LocatorAnimator extends BoneAnimator {
@@ -94,9 +94,9 @@ LocatorAnimator.prototype.channels = {
 	},
 }
 
-registerConditionalPropertyOverrideMod({
-	id: 'animated-java:property-override/locator/animator',
-	object: Locator,
+registerPropertyOverridePatch({
+	id: 'animated_java:property-override/locator/animator',
+	target: Locator,
 	key: 'animator',
 
 	condition: () => activeProjectIsBlueprintFormat(),
@@ -106,9 +106,9 @@ registerConditionalPropertyOverrideMod({
 	},
 })
 
-registerConditionalPropertyOverrideMod({
-	id: 'animated-java:function-override/locator/select',
-	object: Locator.prototype,
+registerPropertyOverridePatch({
+	id: 'animated_java:function-override/locator/select',
+	target: Locator.prototype,
 	key: 'select',
 
 	condition: () => activeProjectIsBlueprintFormat(),
@@ -117,16 +117,16 @@ registerConditionalPropertyOverrideMod({
 		return function (this: Locator, event?: any, isOutlinerClick?: boolean) {
 			const result = original.call(this, event, isOutlinerClick)
 			if (Animator.open && Blockbench.Animation.selected) {
-				Blockbench.Animation.selected.getBoneAnimator().select()
+				Blockbench.Animation.selected.getBoneAnimator()?.select()
 			}
 			return result
 		}
 	},
 })
 
-registerConditionalPropertyOverrideMod({
-	id: 'animated-java:function-override/animator/show-motion-trail',
-	object: Animator,
+registerPropertyOverridePatch({
+	id: 'animated_java:function-override/animator/show-motion-trail',
+	target: Animator,
 	key: 'showMotionTrail',
 
 	condition: () => activeProjectIsBlueprintFormat(),
@@ -139,9 +139,9 @@ registerConditionalPropertyOverrideMod({
 	},
 })
 
-registerConditionalPropertyOverrideMod({
-	id: 'animated-java:function-override/animator/preview',
-	object: Animator,
+registerPropertyOverridePatch({
+	id: 'animated_java:function-override/animator/preview',
+	target: Animator,
 	key: 'preview',
 
 	condition: () => activeProjectIsBlueprintFormat(),
@@ -161,10 +161,10 @@ registerConditionalPropertyOverrideMod({
 	},
 })
 
-registerProjectMod({
-	id: 'animated-java:project-mod/locator-animator/hide-gizmos',
+registerProjectPatch({
+	id: 'animated_java:project-mod/locator-animator/hide-gizmos',
 
-	condition: project => project.format.id === BLUEPRINT_FORMAT_ID,
+	condition: ({ project }) => project.format.id === BLUEPRINT_FORMAT_ID,
 
 	apply: () => {
 		const unsub = EVENTS.UPDATE_SELECTION.subscribe(() => {

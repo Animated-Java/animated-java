@@ -1,6 +1,6 @@
 <script lang="ts">
 	import MultiSelect, { type ObjectOption } from 'svelte-multiselect'
-	import { Valuable } from '../../util/stores'
+	import { type Observable } from 'svelte-observable-store'
 	import BaseDialogItem from './baseDialogItem.svelte'
 
 	type StringOption = ObjectOption & { value: string }
@@ -9,7 +9,7 @@
 	export let tooltip = ''
 	export let options: StringOption[]
 	export let defaultValue: StringOption[]
-	export let value: Valuable<string[]>
+	export let value: Observable<string[]>
 
 	let selected: StringOption[] = $value
 		.filter(v => options.find(o => o.value == v))

@@ -1,8 +1,8 @@
 <script lang="ts" module>
+	import { observable, type Observable } from 'svelte-observable-store'
 	import { defaultValues } from '../../formats/blueprint/settings'
 	import mcbFiles from '../../systems/datapackCompiler/mcbFiles'
 	import { MINECRAFT_REGISTRY } from '../../systems/minecraft/registryManager'
-	import { Valuable } from '../../util/stores'
 	import { translate } from '../../util/translation'
 
 	import Checkbox from '../../svelteComponents/dialogItems/checkbox.svelte'
@@ -327,43 +327,43 @@
 </script>
 
 <script lang="ts">
-	export let blueprintName: Valuable<string>
-	export let textureSizeX: Valuable<number>
-	export let textureSizeY: Valuable<number>
+	export let blueprintName: Observable<string>
+	export let textureSizeX: Observable<number>
+	export let textureSizeY: Observable<number>
 	// Export Settings
-	export let exportNamespace: Valuable<string>
-	export let enablePluginMode: Valuable<boolean>
-	export let resourcePackExportMode: Valuable<string>
-	export let dataPackExportMode: Valuable<string>
-	export let targetMinecraftVersion: Valuable<string>
+	export let exportNamespace: Observable<string>
+	export let enablePluginMode: Observable<boolean>
+	export let resourcePackExportMode: Observable<string>
+	export let dataPackExportMode: Observable<string>
+	export let targetMinecraftVersion: Observable<string>
 	// Bounding Box
-	export let showRenderBox: Valuable<boolean>
-	export let autoRenderBox: Valuable<boolean>
-	export let renderBoxX: Valuable<number>
-	export let renderBoxY: Valuable<number>
+	export let showRenderBox: Observable<boolean>
+	export let autoRenderBox: Observable<boolean>
+	export let renderBoxX: Observable<number>
+	export let renderBoxY: Observable<number>
 	// Resource Pack Settings
-	export let displayItem: Valuable<string>
-	export let customModelDataOffset: Valuable<number>
-	export let enableAdvancedResourcePackSettings: Valuable<boolean>
-	export let resourcePack: Valuable<string>
+	export let displayItem: Observable<string>
+	export let customModelDataOffset: Observable<number>
+	export let enableAdvancedResourcePackSettings: Observable<boolean>
+	export let resourcePack: Observable<string>
 	// Data Pack Settings
-	// export let enableAdvancedDataPackSettings: Valuable<boolean>
-	export let dataPack: Valuable<string>
+	// export let enableAdvancedDataPackSettings: Observable<boolean>
+	export let dataPack: Observable<string>
 
-	export let onSummonFunction: Valuable<string>
-	export let onRemoveFunction: Valuable<string>
-	export let onPreTickFunction: Valuable<string>
-	export let onPostTickFunction: Valuable<string>
+	export let onSummonFunction: Observable<string>
+	export let onRemoveFunction: Observable<string>
+	export let onPreTickFunction: Observable<string>
+	export let onPostTickFunction: Observable<string>
 
-	export let interpolationDuration: Valuable<number>
-	export let teleportationDuration: Valuable<number>
-	export let useStorageForAnimation: Valuable<boolean>
-	export let autoUpdateRigOrientation: Valuable<boolean>
+	export let interpolationDuration: Observable<number>
+	export let teleportationDuration: Observable<number>
+	export let useStorageForAnimation: Observable<boolean>
+	export let autoUpdateRigOrientation: Observable<boolean>
 	// Plugin Export Settings
-	export let bakedAnimations: Valuable<boolean>
-	export let jsonFile: Valuable<string>
+	export let bakedAnimations: Observable<boolean>
+	export let jsonFile: Observable<string>
 
-	const DISPLAY_ITEM_REQUIRED = new Valuable(false)
+	const DISPLAY_ITEM_REQUIRED = observable(false)
 	$: {
 		$DISPLAY_ITEM_REQUIRED = compareVersions('1.21.2', $targetMinecraftVersion)
 	}
@@ -646,6 +646,7 @@
 <style>
 	.container {
 		max-height: 75vh;
+		overflow: auto;
 	}
 	.warning {
 		color: var(--color-warning);

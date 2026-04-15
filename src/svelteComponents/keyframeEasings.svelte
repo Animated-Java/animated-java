@@ -1,10 +1,10 @@
 <script lang="ts" module>
+	import { observable, type Observable } from 'svelte-observable-store'
 	import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 	// @ts-expect-error No types for glob imports
 	import { default as ICON_IMPORTS, filenames } from '../assets/easingIcons/*.svg'
 	import { getEasingArgDefault, hasArgs } from '../util/easing'
 	import EVENTS from '../util/events'
-	import { Valuable } from '../util/stores'
 	import { translate } from '../util/translation'
 
 	const ICONS = Object.fromEntries(
@@ -40,7 +40,7 @@
 <script lang="ts">
 	let easingType = $state('linear')
 	let easingMode: string | undefined = $state()
-	let easingArg: Valuable<number> | undefined = $state()
+	let easingArg: Observable<number> | undefined = $state()
 
 	function getSelectedEasing() {
 		if (!selectedKeyframe?.easing) return
@@ -80,7 +80,7 @@
 		unsub?.()
 		if (!selectedKeyframe) return
 		if (hasArgs(selectedKeyframe.easing)) {
-			easingArg = new Valuable(
+			easingArg = observable(
 				selectedKeyframe.easingArgs?.[0] ?? getEasingArgDefault(selectedKeyframe) ?? 0
 			)
 			unsub = easingArg?.subscribe(value => setEasingArgs(value))

@@ -1,8 +1,8 @@
-import { registerMod } from '../util/moddingTools'
+import { registerPatch } from 'blockbench-patch-manager'
 
 //region Add Locator
-registerMod({
-	id: `animated-java:append-toolbar/outliner/add-locator-action`,
+registerPatch({
+	id: `animated_java:append-toolbar/outliner/add-locator-action`,
 
 	apply: () => {
 		const action = BarItems.add_locator as Action

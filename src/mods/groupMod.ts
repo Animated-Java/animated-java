@@ -1,10 +1,10 @@
+import { registerPatch, registerPropertyOverridePatch } from 'blockbench-patch-manager'
 import {
 	activeProjectIsBlueprintFormat,
 	type IBlueprintDisplayEntityConfigJSON,
 } from '../formats/blueprint'
 import { DisplayEntityConfig } from '../nodeConfigs'
 import { sanitizeOutlinerElementName } from '../outliner/util'
-import { registerConditionalPropertyOverrideMod, registerMod } from '../util/moddingTools'
 import { DeepClonedObjectProperty } from '../util/property'
 
 declare global {
@@ -22,8 +22,8 @@ declare global {
 }
 
 // region Properties
-registerMod({
-	id: `animated-java:bone-properties`,
+registerPatch({
+	id: `animated_java:bone-properties`,
 
 	apply: () => {
 		const properties = [
@@ -48,9 +48,9 @@ registerMod({
 })
 
 //region Save Name
-registerConditionalPropertyOverrideMod({
-	id: `animated-java:override-function/group/save-name`,
-	object: Group.prototype,
+registerPropertyOverridePatch({
+	id: `animated_java:override-function/group/save-name`,
+	target: Group.prototype,
 	key: 'saveName',
 
 	condition: () => activeProjectIsBlueprintFormat(),
@@ -64,9 +64,9 @@ registerConditionalPropertyOverrideMod({
 })
 
 //region Sanitize Name
-registerConditionalPropertyOverrideMod({
-	id: `animated-java:override-function/group/sanitize-name`,
-	object: Group.prototype,
+registerPropertyOverridePatch({
+	id: `animated_java:override-function/group/sanitize-name`,
+	target: Group.prototype,
 	key: 'sanitizeName',
 
 	condition: () => activeProjectIsBlueprintFormat(),

@@ -1,36 +1,34 @@
+import { observable } from 'svelte-observable-store'
+import { SvelteDialog } from 'svelte-patching-tools/blockbench'
 import { PACKAGE } from '../../constants'
 import EVENTS from '../../util/events'
-import { Valuable } from '../../util/stores'
-import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
 import { Variant } from '../../variants'
 import VariantConfigDialogSvelteComponent from './variantConfig.svelte'
 
 export function openVariantConfigDialog(variant: Variant) {
-	const displayName = new Valuable(variant.displayName)
-	const name = new Valuable(variant.name)
-	const uuid = new Valuable(variant.uuid)
+	const displayName = observable(variant.displayName)
+	const name = observable(variant.name)
+	const uuid = observable(variant.uuid)
 	const textureMap = variant.textureMap.copy()
-	const generateNameFromDisplayName = new Valuable(variant.generateNameFromDisplayName)
-	const excludedNodes = new Valuable(variant.excludedNodes)
+	const generateNameFromDisplayName = observable(variant.generateNameFromDisplayName)
+	const excludedNodes = observable(variant.excludedNodes)
 
 	new SvelteDialog({
 		id: `${PACKAGE.name}:variantConfig`,
 		title: translate('dialog.variant_config.title'),
 		width: 700,
-		content: {
-			component: VariantConfigDialogSvelteComponent,
-			props: {
-				variant,
-				displayName,
-				name,
-				uuid,
-				textureMap,
-				generateNameFromDisplayName,
-				excludedNodes,
-			},
+		component: VariantConfigDialogSvelteComponent,
+		props: {
+			variant,
+			displayName,
+			name,
+			uuid,
+			textureMap,
+			generateNameFromDisplayName,
+			excludedNodes,
 		},
-		preventKeybinds: true,
+		disableKeybinds: true,
 		onConfirm() {
 			variant.displayName = displayName.get()
 			variant.name = name.get()

@@ -1,6 +1,13 @@
 <script lang="ts">
-	import { createNewBlueprintProject } from '../formats/blueprint'
+	import { createNewBlueprintProject } from '.'
+	import AnimatedJavaIcon from '../../assets/animated_java_icon.svg'
+	import { translate } from '../../util/translation'
 </script>
+
+<h2>
+	<img src={AnimatedJavaIcon} alt="" />
+	{translate('menubar.label') + ' ' + translate('format.blueprint.name')}
+</h2>
 
 <p class="format_description">Create advanced animated models for Vanilla Java Edition</p>
 
@@ -27,8 +34,23 @@
 </div>
 
 <style>
+	h2 {
+		font-weight: 400;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: flex-start;
+		margin-bottom: 16px;
+	}
 	button {
 		width: 100%;
 		height: 40px;
+	}
+	img {
+		border-radius: 8px;
+		height: 48px;
+		box-shadow: 1px 1px 1px #000000aa;
+		vertical-align: bottom;
+		margin-right: 16px;
 	}
 </style>

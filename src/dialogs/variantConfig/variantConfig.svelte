@@ -1,8 +1,8 @@
 <script lang="ts" module>
+	import { type Observable } from 'svelte-observable-store'
 	import MissingTexture from '../../assets/missing_texture.png'
 	import Checkbox from '../../svelteComponents/dialogItems/checkbox.svelte'
 	import LineInput from '../../svelteComponents/dialogItems/lineInput.svelte'
-	import { type Valuable } from '../../util/stores'
 	import { translate } from '../../util/translation'
 	import { TextureMap, Variant } from '../../variants'
 </script>
@@ -12,12 +12,12 @@
 	import { getAvailableNodes } from '../../util/excludedNodes'
 
 	export let variant: Variant
-	export let displayName: Valuable<string>
-	export let name: Valuable<string>
-	export let uuid: Valuable<string>
+	export let displayName: Observable<string>
+	export let name: Observable<string>
+	export let uuid: Observable<string>
 	export let textureMap: TextureMap
-	export let generateNameFromDisplayName: Valuable<boolean>
-	export let excludedNodes: Valuable<CollectionItem[]>
+	export let generateNameFromDisplayName: Observable<boolean>
+	export let excludedNodes: Observable<CollectionItem[]>
 
 	const AVAILABLE_TEXTURES = [...Texture.all]
 	const PRIMARY_TEXTURES = [...Texture.all]

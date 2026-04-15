@@ -61,6 +61,8 @@ export async function getLatestVersionClientDownloadUrl() {
 }
 
 function getCachedJarFilePath() {
+	// TODO - Create types for SystemInfo in Blockbench.
+	// @ts-expect-error No types for SystemInfo in Blockbench
 	const userDataPath = SystemInfo.user_data_directory
 	return PathModule.join(userDataPath, `${PACKAGE.name}/latest.jar`)
 }

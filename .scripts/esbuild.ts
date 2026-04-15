@@ -215,6 +215,7 @@ const COMMON_CONFIG: esbuild.BuildOptions = {
 					compatibility: {
 						componentApi: 4,
 					},
+					// @ts-expect-error - not typed correctly
 					generate: 'client',
 				},
 			})

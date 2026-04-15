@@ -1,12 +1,12 @@
+import { registerDeletableHandlerPatch } from 'blockbench-patch-manager'
+import { observable } from 'svelte-observable-store'
 import { PACKAGE } from '../constants'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint/index'
 import { getItemModel } from '../systems/minecraft/itemModelManager'
 import { type IDisplayEntityConfigs } from '../systems/rigRenderer'
 import EVENTS from '../util/events'
 import { validateItem } from '../util/minecraftUtil'
-import { registerAction } from '../util/moddingTools'
 import { DeepClonedObjectProperty, fixClassPropertyInheritance } from '../util/property'
-import { Valuable } from '../util/stores'
 import { translate } from '../util/translation'
 import { ResizableOutlinerElement } from './resizableOutlinerElement'
 import { sanitizeOutlinerElementName } from './util'
@@ -44,12 +44,12 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 	needsUniqueName = true
 
 	// Properties
-	private __item = new Valuable('minecraft:diamond')
-	private __itemDisplay = new Valuable<ItemDisplayMode>('none')
+	private __item = observable('minecraft:diamond')
+	private __itemDisplay = observable<ItemDisplayMode>('none')
 	onSummonFunction = VanillaItemDisplay.properties.onSummonFunction.default as string
 	configs!: IDisplayEntityConfigs
 
-	error = new Valuable('')
+	error = observable('')
 
 	buttons = [Outliner.buttons.export, Outliner.buttons.locked, Outliner.buttons.visibility]
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -363,40 +363,44 @@ class VanillaItemDisplayAnimator extends BoneAnimator {
 VanillaItemDisplayAnimator.prototype.type = VanillaItemDisplay.type
 VanillaItemDisplay.animator = VanillaItemDisplayAnimator as any
 
-export const CREATE_ACTION = registerAction(
-	{ id: `animated-java:action/create-vanilla-item-display` },
-	{
-		name: translate('action.create_vanilla_item_display.title'),
-		icon: 'icecream',
-		category: 'animated_java',
-		condition() {
-			return activeProjectIsBlueprintFormat() && Mode.selected.id === Modes.options.edit.id
-		},
-		click() {
-			Undo.initEdit({ outliner: true, elements: [], selection: true })
+export const CREATE_ACTION = registerDeletableHandlerPatch({
+	id: `animated_java:action/create-vanilla-item-display`,
+	create() {
+		return new Blockbench.Action(`animated_java:action/create-item-display`, {
+			name: translate('action.create_vanilla_item_display.title'),
+			icon: 'icecream',
+			category: 'animated_java',
+			condition() {
+				return (
+					activeProjectIsBlueprintFormat() && Mode.selected.id === Modes.options.edit.id
+				)
+			},
+			click() {
+				Undo.initEdit({ outliner: true, elements: [], selection: true })
 
-			const vanillaItemDisplay = new VanillaItemDisplay({}).init()
-			const group = getCurrentGroup()
+				const vanillaItemDisplay = new VanillaItemDisplay({}).init()
+				const group = getCurrentGroup()
 
-			if (group instanceof Group) {
-				vanillaItemDisplay.addTo(group)
-				vanillaItemDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
-			}
+				if (group instanceof Group) {
+					vanillaItemDisplay.addTo(group)
+					vanillaItemDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
+				}
 
-			selected.forEachReverse(el => el.unselect())
-			Group.first_selected?.unselect()
-			vanillaItemDisplay.select()
+				selected.forEachReverse(el => el.unselect())
+				Group.first_selected?.unselect()
+				vanillaItemDisplay.select()
 
-			Undo.finishEdit('Create Vanilla Item Display', {
-				outliner: true,
-				elements: selected,
-				selection: true,
-			})
+				Undo.finishEdit('Create Vanilla Item Display', {
+					outliner: true,
+					elements: selected,
+					selection: true,
+				})
 
-			return vanillaItemDisplay
-		},
-	}
-)
+				return vanillaItemDisplay
+			},
+		})
+	},
+})
 
 const CLEANUP_CALLBACKS: Array<() => void> = []
 

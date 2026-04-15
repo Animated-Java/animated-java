@@ -1,72 +1,57 @@
+import { mount } from 'svelte'
+import { observable } from 'svelte-observable-store'
+import { SvelteDialog } from 'svelte-patching-tools/blockbench'
 import { PACKAGE } from '../../constants'
 import { updateRotationConstraints } from '../../formats/blueprint'
-import { defaultValues, type ExportMode } from '../../formats/blueprint/settings'
+import { type ExportMode } from '../../formats/blueprint/settings'
 import { updateAllCubeOutlines } from '../../mods/cube'
 import { SUPPORTED_MINECRAFT_VERSIONS } from '../../systems/global'
-import { sanitizeStorageKey } from '../../util/minecraftUtil'
-import { Valuable } from '../../util/stores'
-import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
 import BlueprintSettings from './blueprintSettings.svelte'
 import BlueprintSettingsAds from './blueprintSettingsAds.svelte'
 
 function getSettings() {
 	return {
-		blueprintName: new Valuable(Project!.name, value => {
-			if (!value) {
-				return 'My Blueprint'
-			}
-			return value
-		}),
-		textureSizeX: new Valuable(Project!.texture_width),
-		textureSizeY: new Valuable(Project!.texture_height),
-		showRenderBox: new Valuable(Project!.animated_java.show_render_box),
-		autoRenderBox: new Valuable(Project!.animated_java.auto_render_box),
-		renderBoxX: new Valuable(Project!.animated_java.render_box[0]),
-		renderBoxY: new Valuable(Project!.animated_java.render_box[1]),
+		blueprintName: observable(Project!.name),
+		textureSizeX: observable(Project!.texture_width),
+		textureSizeY: observable(Project!.texture_height),
+		showRenderBox: observable(Project!.animated_java.show_render_box),
+		autoRenderBox: observable(Project!.animated_java.auto_render_box),
+		renderBoxX: observable(Project!.animated_java.render_box[0]),
+		renderBoxY: observable(Project!.animated_java.render_box[1]),
 		// Export Settings
-		enablePluginMode: new Valuable(Project!.animated_java.enable_plugin_mode),
-		exportNamespace: new Valuable(Project!.animated_java.export_namespace, value => {
-			if (!value) {
-				return defaultValues.export_namespace
-			}
-			return sanitizeStorageKey(value)
-		}),
-		resourcePackExportMode: new Valuable(
+		enablePluginMode: observable(Project!.animated_java.enable_plugin_mode),
+		exportNamespace: observable(Project!.animated_java.export_namespace),
+		resourcePackExportMode: observable(
 			Project!.animated_java.resource_pack_export_mode as string
 		),
-		dataPackExportMode: new Valuable(Project!.animated_java.data_pack_export_mode as string),
-		targetMinecraftVersion: new Valuable(
+		dataPackExportMode: observable(Project!.animated_java.data_pack_export_mode as string),
+		targetMinecraftVersion: observable(
 			Project!.animated_java.target_minecraft_version as string
 		),
 		// Resource Pack Settings
-		displayItem: new Valuable(Project!.animated_java.display_item, value => {
-			if (!value) {
-				return defaultValues.display_item
-			}
-			return value
-		}),
-		customModelDataOffset: new Valuable(Project!.animated_java.custom_model_data_offset),
-		enableAdvancedResourcePackSettings: new Valuable(
+		displayItem: observable(Project!.animated_java.display_item),
+		customModelDataOffset: observable(Project!.animated_java.custom_model_data_offset),
+		enableAdvancedResourcePackSettings: observable(
 			Project!.animated_java.enable_advanced_resource_pack_settings
 		),
-		resourcePack: new Valuable(Project!.animated_java.resource_pack),
+		resourcePack: observable(Project!.animated_java.resource_pack),
 		// Data Pack Settings
-		enableAdvancedDataPackSettings: new Valuable(
+		enableAdvancedDataPackSettings: observable(
 			Project!.animated_java.enable_advanced_data_pack_settings
 		),
-		dataPack: new Valuable(Project!.animated_java.data_pack),
-		onSummonFunction: new Valuable(Project!.animated_java.on_summon_function),
-		onRemoveFunction: new Valuable(Project!.animated_java.on_remove_function),
-		onPreTickFunction: new Valuable(Project!.animated_java.on_pre_tick_function),
-		onPostTickFunction: new Valuable(Project!.animated_java.on_post_tick_function),
-		interpolationDuration: new Valuable(Project!.animated_java.interpolation_duration),
-		teleportationDuration: new Valuable(Project!.animated_java.teleportation_duration),
-		autoUpdateRigOrientation: new Valuable(Project!.animated_java.auto_update_rig_orientation),
-		useStorageForAnimation: new Valuable(Project!.animated_java.use_storage_for_animation),
+		dataPack: observable(Project!.animated_java.data_pack),
+		onSummonFunction: observable(Project!.animated_java.on_summon_function),
+		onRemoveFunction: observable(Project!.animated_java.on_remove_function),
+		onPreTickFunction: observable(Project!.animated_java.on_pre_tick_function),
+		onPostTickFunction: observable(Project!.animated_java.on_post_tick_function),
+		interpolationDuration: observable(Project!.animated_java.interpolation_duration),
+		teleportationDuration: observable(Project!.animated_java.teleportation_duration),
+		autoUpdateRigOrientation: observable(Project!.animated_java.auto_update_rig_orientation),
+		useStorageForAnimation: observable(Project!.animated_java.use_storage_for_animation),
 		// Plugin Settings
-		bakedAnimations: new Valuable(Project!.animated_java.baked_animations),
-		jsonFile: new Valuable(Project!.animated_java.json_file),
+		bakedAnimations: observable(Project!.animated_java.baked_animations),
+		jsonFile: observable(Project!.animated_java.json_file),
 	}
 }
 
@@ -117,26 +102,22 @@ export function openBlueprintSettingsDialog() {
 	if (!Project) return
 
 	const settings = getSettings()
-	return new SvelteDialog({
+	const dialog = new SvelteDialog({
 		id: `${PACKAGE.name}:blueprintSettingsDialog`,
 		title: translate('dialog.blueprint_settings.title'),
 		width: 800,
-		content: {
-			component: BlueprintSettings,
-			props: settings,
+		component: BlueprintSettings,
+		props: settings,
+		onOpen() {
+			mount(BlueprintSettingsAds, { target: dialog.object! })
 		},
-		extra: {
-			component: BlueprintSettingsAds,
-		},
-		contentStyle: {
-			marginTop: '10px',
-		},
-		preventKeybinds: true,
+		disableKeybinds: true,
 		onConfirm() {
 			setSettings(settings)
 			updateRotationConstraints()
 			updateAllCubeOutlines()
 			Canvas.updateAll()
 		},
-	}).show()
+	})
+	return dialog.show()
 }

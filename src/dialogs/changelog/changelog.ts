@@ -1,5 +1,5 @@
+import { SvelteDialog } from 'svelte-patching-tools/blockbench'
 import { PACKAGE } from '../../constants'
-import { SvelteDialog } from '../../util/svelteDialog'
 import { translate } from '../../util/translation'
 import ChangelogDialog from './changelog.svelte'
 
@@ -10,8 +10,8 @@ export function openChangelogDialog() {
 		id: DIALOG_ID,
 		title: translate('dialog.changelog_dialog.title'),
 		width: 800,
-		content: { component: ChangelogDialog },
+		component: ChangelogDialog,
 		buttons: ['OK!'],
-		preventKeybinds: true,
+		disableKeybinds: true,
 	}).show()
 }

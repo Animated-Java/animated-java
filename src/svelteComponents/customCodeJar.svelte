@@ -105,6 +105,9 @@
 		width: 100%;
 		font-style: italic;
 	}
+	.codejar-container {
+		width: 100%;
+	}
 	:global(.language-snbtTextComponent) {
 		& .brackets {
 			color: #5ba8c5;

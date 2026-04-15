@@ -1,44 +1,44 @@
+import { registerProjectPatch } from 'blockbench-patch-manager'
+import { injectComponent } from 'svelte-patching-tools'
 import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from '../../formats/blueprint'
 import { type Alignment, TextDisplay } from '../../outliner/textDisplay'
 import { JsonTextParser } from '../../systems/jsonText/parser'
 import EVENTS from '../../util/events'
-import { registerProjectMod } from '../../util/moddingTools'
-import { mountSvelteComponent } from '../../util/mountSvelteComponent'
 import { translate } from '../../util/translation'
 import TextDisplayElementPanel from './textDisplayElement.svelte'
 
-let mounted: TextDisplayElementPanel | null = null
+let unmountCallback: (() => Promise<void>) | null = null
 
-const destroyMounted = () => {
-	mounted?.$destroy()
-	mounted = null
-}
+const updatePanel = async () => {
+	await unmountCallback?.()
+	unmountCallback = null
 
-const updatePanel = () => {
-	destroyMounted()
 	const textDisplay = TextDisplay.selected.at(0)
 	if (textDisplay) {
-		mounted = mountSvelteComponent({
+		unmountCallback = injectComponent({
 			component: TextDisplayElementPanel,
 			props: { selected: textDisplay },
-			target: '#panel_element',
+			elementSelector(): HTMLElement | null {
+				return document.querySelector('#panel_element')
+			},
 		})
 	}
 }
 
-registerProjectMod({
-	id: 'animated-java:append-element-panel/text-display',
+registerProjectPatch({
+	id: 'animated_java:append-element-panel/text-display',
 
-	condition: project => project.format.id === BLUEPRINT_FORMAT_ID,
+	condition: ({ project }) => project.format.id === BLUEPRINT_FORMAT_ID,
 
 	apply: () => {
 		const unsubscribers = [EVENTS.UPDATE_SELECTION.subscribe(updatePanel)]
 		return { unsubscribers }
 	},
 
-	revert: ({ unsubscribers }) => {
+	revert: async ({ unsubscribers }) => {
 		unsubscribers.forEach(u => u())
-		destroyMounted()
+		await unmountCallback?.()
+		unmountCallback = null
 	},
 })
 
@@ -111,7 +111,7 @@ const TEXT_DISPLAY_CONDITION = () =>
 	activeProjectIsBlueprintFormat() && !!TextDisplay.selected.length
 
 export const TEXT_DISPLAY_WIDTH_SLIDER = new NumSlider(
-	`animated-java:text-display-line-width-slider`,
+	`animated_java:text-display-line-width-slider`,
 	{
 		name: translate('tool.text_display.line_width.title'),
 		icon: 'format_size',
@@ -141,7 +141,7 @@ export const TEXT_DISPLAY_WIDTH_SLIDER = new NumSlider(
 )
 
 export const TEXT_DISPLAY_BACKGROUND_COLOR_PICKER = new ColorPicker(
-	`animated-java:text-display-background-color-picker`,
+	`animated_java:text-display-background-color-picker`,
 	{
 		name: translate('tool.text_display.background_color.title'),
 		icon: 'format_color_fill',
@@ -192,7 +192,7 @@ TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.change = function (
 	return this
 }
 
-export const TEXT_DISPLAY_SHADOW_TOGGLE = new Toggle(`animated-java:text-display-shadow-toggle`, {
+export const TEXT_DISPLAY_SHADOW_TOGGLE = new Toggle(`animated_java:text-display-shadow-toggle`, {
 	name: translate('tool.text_display.text_shadow.title'),
 	icon: 'check_box_outline_blank',
 	description: translate('tool.text_display.text_shadow.description'),
@@ -217,7 +217,7 @@ TEXT_DISPLAY_SHADOW_TOGGLE.set = function (value) {
 }
 
 export const TEXT_DISPLAY_ALIGNMENT_SELECT = new BarSelect(
-	`animated-java:text-display-alignment-select`,
+	`animated_java:text-display-alignment-select`,
 	{
 		name: translate('tool.text_display.text_alignment.title'),
 		icon: 'format_align_left',
@@ -256,7 +256,7 @@ TEXT_DISPLAY_ALIGNMENT_SELECT.set = function (this: BarSelect<Alignment>, value:
 }
 
 export const TEXT_DISPLAY_SEE_THROUGH_TOGGLE = new Toggle(
-	`animated-java:text-display-see-through-toggle`,
+	`animated_java:text-display-see-through-toggle`,
 	{
 		name: translate('tool.text_display.see_through.title'),
 		icon: 'check_box_outline_blank',
@@ -282,7 +282,7 @@ TEXT_DISPLAY_SEE_THROUGH_TOGGLE.set = function (value) {
 }
 
 export const TEXT_DISPLAY_COPY_TEXT_ACTION = new Action(
-	`animated-java:text-display-copy-text-action`,
+	`animated_java:text-display-copy-text-action`,
 	{
 		name: translate('tool.text_display.copy_text.title'),
 		icon: 'content_copy',

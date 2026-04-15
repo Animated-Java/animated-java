@@ -1,12 +1,12 @@
 <script lang="ts" module>
+	import { type Observable } from 'svelte-observable-store'
 	import ArmorStandRunningGif from '../../assets/armor_stand_running.webp'
-	import { Valuable } from '../../util/stores'
 </script>
 
 <script lang="ts">
-	export let progress: Valuable<number>
-	export let maxProgress: Valuable<number>
-	export let progressDescription: Valuable<string>
+	export let progress: Observable<number>
+	export let maxProgress: Observable<number>
+	export let progressDescription: Observable<string>
 </script>
 
 <div class="dialog-container">

@@ -1,9 +1,9 @@
+import { registerPluginPatch } from 'blockbench-patch-manager'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 import { sanitizeOutlinerElementName } from '../outliner/util'
-import { registerPluginMod } from '../util/moddingTools'
 
-registerPluginMod({
-	id: `animated-java:camera-plugin/camera-name-sanitization`,
+registerPluginPatch({
+	id: `animated_java:camera-plugin/camera-name-sanitization`,
 
 	condition: plugin => plugin.id === 'cameras',
 
