@@ -18,7 +18,6 @@
 		tooltip = '',
 		value = $bindable(),
 		defaultValue,
-		filters = [],
 		fileSelectMessage = 'Select File',
 		valueChecker = undefined,
 	}: Props = $props()
@@ -42,17 +41,11 @@
 	})
 
 	function selectFile() {
-		void Promise.any([
-			electron.dialog.showOpenDialog({
-				properties: ['openDirectory'],
-				filters,
-				message: fileSelectMessage,
-			}),
-		]).then(result => {
-			if (!result.canceled) {
-				$value = result.filePaths[0]
-			}
+		const result = Filesystem.pickDirectory({
+			title: fileSelectMessage,
+			startpath: value.get() || undefined,
 		})
+		$value = result ?? ''
 	}
 
 	function onReset() {

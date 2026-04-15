@@ -1,5 +1,4 @@
 <script lang="ts">
-	import type { FileFilter } from 'electron'
 	import { type Observable } from 'svelte-observable-store'
 	import BaseDialogItem from './baseDialogItem.svelte'
 
@@ -8,7 +7,10 @@
 		tooltip?: string
 		value: Observable<string>
 		defaultValue: string
-		filters?: FileFilter[]
+		fileType?: Parameters<typeof Filesystem.importFile>[0]['type']
+		extensions?: string[]
+		multiple?: boolean
+		readtype?: Parameters<typeof Filesystem.importFile>[0]['readtype']
 		fileSelectMessage?: string
 		valueChecker?: DialogItemValueChecker<string>
 	}
@@ -18,7 +20,10 @@
 		tooltip = '',
 		value = $bindable(),
 		defaultValue,
-		filters = [],
+		fileType = 'all',
+		extensions = [],
+		multiple = false,
+		readtype,
 		fileSelectMessage = 'Select File',
 		valueChecker = undefined,
 	}: Props = $props()
@@ -42,16 +47,13 @@
 	})
 
 	function selectFile() {
-		void Promise.any([
-			electron.dialog.showOpenDialog({
-				properties: ['openFile', 'promptToCreate'],
-				filters,
-				message: fileSelectMessage,
-			}),
-		]).then(result => {
-			if (!result.canceled) {
-				$value = result.filePaths[0]
-			}
+		Filesystem.importFile({
+			title: fileSelectMessage,
+			startpath: value.get() ?? undefined,
+			type: fileType,
+			extensions,
+			multiple,
+			readtype,
 		})
 	}
 
