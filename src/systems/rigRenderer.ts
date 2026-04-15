@@ -37,6 +37,13 @@ export interface IRenderedElement {
 	shade?: boolean
 	rotation?:
 		| {
+				x: number
+				y: number
+				z: number
+				origin: number[]
+				rescale?: boolean
+		  }
+		| {
 				angle: number
 				axis: string
 				origin: number[]
@@ -190,6 +197,10 @@ export interface IRenderedRig {
 	 * Whether or not this rig includes Cubes
 	 */
 	includes_custom_models: boolean
+	/**
+	 * The target Minecraft version for this rig, which may affect how the rig is rendered.
+	 */
+	target_minecraft_version: string
 }
 
 function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
@@ -207,12 +218,23 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 
 	if (cube.shade === false) element.shade = false
 
-	if (!(cube.rotation.allEqual(0) && cube.origin.allEqual(0))) {
+	// If target version is 1.21.9 or higher, we can use free rotation
+	if (!compareVersions('1.21.9', rig.target_minecraft_version)) {
+		element.rotation = {
+			x: cube.rotation[0],
+			y: cube.rotation[1],
+			z: cube.rotation[2],
+			origin: cube.origin.slice(),
+		}
+		if (cube.rescale) {
+			element.rotation.rescale = true
+		}
+	} else if (!(cube.rotation.allEqual(0) && cube.origin.allEqual(0))) {
 		const axis = cube.rotationAxis() || 'y'
 		element.rotation = {
 			angle: cube.rotation[getAxisNumber(axis)],
 			axis,
-			origin: cube.origin,
+			origin: cube.origin.slice(),
 		}
 		if (cube.rescale) {
 			element.rotation.rescale = true
@@ -221,7 +243,7 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 		element.rotation = {
 			angle: 0,
 			axis: cube.rotation_axis || 'y',
-			origin: cube.origin,
+			origin: cube.origin.slice(),
 			rescale: true,
 		}
 	}
@@ -715,6 +737,7 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 		model_export_folder: modelExportFolder,
 		texture_export_folder: textureExportFolder,
 		includes_custom_models: false,
+		target_minecraft_version: Project!.animated_java.target_minecraft_version,
 	}
 
 	const defaultVariant = Variant.getDefault()
