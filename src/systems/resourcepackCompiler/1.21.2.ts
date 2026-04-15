@@ -1,4 +1,5 @@
 import type { ResourcePackCompiler } from '.'
+import { fs } from '../../constants'
 import { PROGRESS_DESCRIPTION } from '../../dialogs/exportProgress/exportProgress'
 import { safeReadSync } from '../../util/fileUtil'
 import { isResourcePackPath, sanitizeStorageKey } from '../../util/minecraftUtil'

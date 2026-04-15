@@ -302,10 +302,10 @@ export function updatePreview(animation: _Animation, time: number) {
 	for (const node of nodes) {
 		if (!(node.constructor as any).animator) continue
 		Animator.resetLastValues()
-		animation.getBoneAnimator(node).displayFrame()
+		animation.getBoneAnimator(node)!.displayFrame()
 	}
 	Animator.resetLastValues()
-	scene.updateMatrixWorld()
+	Canvas.scene.updateMatrixWorld()
 	if (animation.effects) animation.effects.displayFrame()
 	// Blockbench.dispatchEvent('display_animation_frame')
 }

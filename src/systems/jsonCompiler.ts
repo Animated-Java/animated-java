@@ -2,7 +2,7 @@
 /// <reference path="/var/mnt/ssd2/repos/snavesutit/blockbench-types/types/index.d.ts"/>
 /// <reference path="../global.d.ts"/>
 
-import { PACKAGE } from '../constants'
+import { fs, PACKAGE } from '../constants'
 import type { IBlueprintDisplayEntityConfigJSON } from '../formats/blueprint'
 import { type defaultValues } from '../formats/blueprint/settings'
 import type { EasingKey } from '../util/easing'
@@ -30,10 +30,7 @@ type ExportedNodetransform = Omit<INodeTransform, 'matrix' | 'decomposed'> & {
 }
 type ExportedRenderedNode = Omit<
 	AnyRenderedNode,
-	'default_transform' 
-	| 'bounding_box' 
-	| 'configs' 
-	| 'storage_name'
+	'default_transform' | 'bounding_box' | 'configs' | 'storage_name'
 > & {
 	default_transform: ExportedNodetransform
 	bounding_box?: { min: ArrayVector3; max: ArrayVector3 }
@@ -44,10 +41,7 @@ type ExportedAnimationFrame = Omit<IRenderedFrame, 'node_transforms'> & {
 }
 type ExportedBakedAnimation = Omit<
 	IRenderedAnimation,
-	'uuid' 
-	| 'frames' 
-	| 'modified_nodes' 
-	| 'storage_name'
+	'uuid' | 'frames' | 'modified_nodes' | 'storage_name'
 > & {
 	frames: ExportedAnimationFrame[]
 	modified_nodes: string[]
@@ -98,9 +92,7 @@ interface ExportedTexture {
 }
 type ExportedVariantModel = Pick<
 	IRenderedVariantModel,
-	'custom_model_data' 
-	| 'resource_location' 
-	| 'item_model'
+	'custom_model_data' | 'resource_location' | 'item_model'
 > & { model: IRenderedModel | null }
 type ExportedVariant = Omit<IRenderedVariant, 'models'> & {
 	/**

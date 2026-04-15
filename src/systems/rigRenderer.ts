@@ -1,4 +1,5 @@
 import * as crypto from 'node:crypto'
+import type { fs } from '../constants'
 import type {
 	IBlueprintDisplayEntityConfigJSON,
 	IBlueprintLocatorConfigJSON,
@@ -568,7 +569,7 @@ function renderTextDisplay(display: TextDisplay, rig: IRenderedRig): INodeStruct
 
 function renderLocator(locator: Locator, rig: IRenderedRig) {
 	if (!locator.export) return
-	const parentId = (locator.parent instanceof Group ? locator.parent.uuid : locator.parent)!
+	const parentId = typeof locator.parent === 'string' ? locator.parent : locator.parent.uuid
 
 	const renderedLocator: IRenderedNodes['Locator'] = {
 		type: 'locator',
@@ -586,7 +587,7 @@ function renderLocator(locator: Locator, rig: IRenderedRig) {
 
 function renderCamera(camera: ICamera, rig: IRenderedRig) {
 	if (!camera.export) return
-	const parentId = (camera.parent instanceof Group ? camera.parent.uuid : camera.parent)!
+	const parentId = typeof camera.parent === 'string' ? camera.parent : camera.parent.uuid
 
 	const renderedCamera: IRenderedNodes['Camera'] = {
 		type: 'camera',

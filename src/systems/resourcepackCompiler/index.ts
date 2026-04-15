@@ -1,3 +1,4 @@
+import { fs } from '../../constants'
 import {
 	MAX_PROGRESS,
 	PROGRESS,

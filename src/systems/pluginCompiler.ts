@@ -1,5 +1,6 @@
 /// <reference path="../global.d.ts"/>
 
+import { fs } from '../constants'
 import type { IBlueprintDisplayEntityConfigJSON } from '../formats/blueprint'
 import { resolvePath } from '../util/fileUtil'
 import {
