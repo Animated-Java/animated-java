@@ -59,7 +59,7 @@ function setSettings(settings: ReturnType<typeof getSettings>) {
 	if (!Project) return
 	Project.name = settings.blueprintName.get()
 
-	setProjectResolution(settings.textureSizeX.get(), settings.textureSizeY.get(), true)
+	Blockbench.setProjectResolution(settings.textureSizeX.get(), settings.textureSizeY.get(), true)
 
 	Project.animated_java.show_render_box = settings.showRenderBox.get()
 	Project.animated_java.auto_render_box = settings.autoRenderBox.get()
@@ -110,6 +110,7 @@ export function openBlueprintSettingsDialog() {
 		props: settings,
 		onOpen() {
 			mount(BlueprintSettingsAds, { target: dialog.object! })
+			dialog.object!.style.top = ''
 		},
 		disableKeybinds: true,
 		onConfirm() {

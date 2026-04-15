@@ -6,7 +6,7 @@ import {
 	type IBlueprintFormatJSON,
 	type ICollectionJSON,
 } from '.'
-import { PACKAGE } from '../../constants'
+import { PACKAGE, fs } from '../../constants'
 import { sanitizeStorageKey } from '../../util/minecraftUtil'
 import { translate } from '../../util/translation'
 import { Variant } from '../../variants'
@@ -143,8 +143,15 @@ export const BLUEPRINT_CODEC = registerDeletableHandlerPatch({
 					}
 				}
 
+				if (model.groups) {
+					for (const template of model.groups) {
+						// @ts-expect-error - missing UUID arg
+						new Group(template, template.uuid).init()
+					}
+				}
+
 				if (model.outliner) {
-					parseGroups(model.outliner)
+					Outliner.loadJSON(model.outliner)
 
 					for (const group of Group.all) {
 						group.name = sanitizeStorageKey(group.name)
@@ -278,11 +285,18 @@ export const BLUEPRINT_CODEC = registerDeletableHandlerPatch({
 					model.elements.push(element.getSaveCopy?.(!!model.meta))
 				}
 
-				model.outliner = compileGroups(true)
+				model.groups = []
+				for (const group of Group.all) {
+					// @ts-expect-error - missing arg
+					model.groups.push(group.getSaveCopy(false))
+				}
+
+				model.outliner = Outliner.toJSON()
 
 				model.textures = []
 				for (const texture of Texture.all) {
 					const save = texture.getSaveCopy() as Texture
+					// @ts-expect-error - Deleting a property that isn't optional
 					delete save.selected
 					if (
 						isApp &&

@@ -140,6 +140,7 @@ export interface IBlueprintFormatJSON {
 	}
 
 	elements?: any[]
+	groups?: any[]
 	outliner?: any[]
 	textures?: Texture[]
 	animations?: AnimationOptions[]
@@ -309,7 +310,9 @@ export const BLUEPRINT_FORMAT = registerDeletableHandlerPatch({
 						)
 						return
 					}
-					projectTab.querySelector('i')?.remove()
+
+					const icon = projectTab.querySelector('img') ?? projectTab.querySelector('i')
+					icon?.remove()
 
 					injectComponent({
 						elementSelector() {
