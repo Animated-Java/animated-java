@@ -46,18 +46,3 @@ registerPropertyOverridePatch({
 		}
 	},
 })
-
-registerPropertyOverridePatch({
-	id: `animated_java:event-hook/pre-post-select-project-event`,
-	target: ModelProject.prototype,
-	key: 'loadEditorState',
-
-	get: original => {
-		return function (this: ModelProject) {
-			EVENTS.PRE_SELECT_PROJECT.publish(this)
-			const result = original.call(this)
-			EVENTS.POST_SELECT_PROJECT.publish(this)
-			return result
-		}
-	},
-})

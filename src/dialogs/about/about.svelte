@@ -92,6 +92,9 @@
 </div>
 
 <style>
+	h1 {
+		font-weight: 500;
+	}
 	.content {
 		display: flex;
 		flex-direction: column;

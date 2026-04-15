@@ -1,8 +1,9 @@
 import PACKAGEJSON from '../package.json'
+import { translate } from './util/translation'
 export const PACKAGE: typeof PACKAGEJSON = PACKAGEJSON
 
 const FS_MODULE = requireNativeModule('fs', {
-	message: 'Save and load Minecraft client data',
+	message: translate('require.fs'),
 	optional: false,
 })!
 

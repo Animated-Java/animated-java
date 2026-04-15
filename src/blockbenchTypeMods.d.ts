@@ -1,7 +1,3 @@
-declare global {
-	const fs: typeof import('fs')
-}
-
 declare module 'three' {
 	interface Object3D {
 		isVanillaItemModel?: boolean

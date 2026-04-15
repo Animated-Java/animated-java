@@ -119,6 +119,8 @@ registerPropertyOverridePatch({
 	getCondition: () => activeProjectIsBlueprintFormat(),
 
 	get: () => true,
+
+	set: () => true,
 })
 
 //region Save All Action
