@@ -1,4 +1,3 @@
-import '@blockbench-types/custom/util/version_util'
 import { type IBlueprintFormatJSON, getDefaultProjectSettings } from '..'
 import { TextDisplay } from '../../../outliner/textDisplay'
 

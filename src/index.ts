@@ -42,7 +42,7 @@ import { JsonText } from './systems/jsonText'
 import * as assetManager from './systems/minecraft/assetManager'
 import * as blockModelManager from './systems/minecraft/blockModelManager'
 import { BLOCKSTATE_REGISTRY, getBlockState } from './systems/minecraft/blockstateManager'
-import { getVanillaFont } from './systems/minecraft/fontManager'
+import { MinecraftFont } from './systems/minecraft/fontManager'
 import * as itemModelManager from './systems/minecraft/itemModelManager'
 import './systems/minecraft/registryManager'
 import resourcepackCompiler from './systems/resourcepackCompiler'
@@ -75,7 +75,7 @@ const AnimatedJavaApi = {
 	BLUEPRINT_FORMAT,
 	BLUEPRINT_CODEC,
 	TextDisplay,
-	getVanillaFont,
+	MinecraftFont,
 	assetManager,
 	itemModelManager,
 	blockModelManager,

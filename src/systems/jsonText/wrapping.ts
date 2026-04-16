@@ -1,6 +1,6 @@
 import { JsonText, type ComponentStyle, type TextElement, type TextObject } from '.'
 import { Stopwatch } from '../../util/stopwatch'
-import { getVanillaFont } from '../minecraft/fontManager'
+import { MinecraftFont } from '../minecraft/fontManager'
 import { UnicodeString } from './unicodeString'
 
 // Jumpstarted by @IanSSenne (FetchBot) and refactored by @SnaveSutit to do line wrapping on JSON Text Components.
@@ -184,12 +184,12 @@ export async function wrapJsonText(jsonText: JsonText, maxLineWidth = 200) {
 	const words = parseWords(jsonText.toJSON())
 	const lines: Line[] = []
 	// FIXME - This will not work for custom fonts
-	const font = await getVanillaFont()
+	const font = await MinecraftFont.getById('minecraft:default')
 
 	let backgroundWidth = 0
 	let currentLine: Line = { words: [], width: 0 }
 	for (const word of words) {
-		const wordWidth = font.getWordWidth(word)
+		const wordWidth = await font.getWordWidth(word)
 		const wordStyles = [...word.styles]
 		// If the word is longer than than the max line width, split it into multiple lines
 		if (wordWidth - 1 > maxLineWidth) {
@@ -211,7 +211,7 @@ export async function wrapJsonText(jsonText: JsonText, maxLineWidth = 200) {
 					style = wordStyles.shift()!
 				}
 
-				const charWidth = font.getTextWidth(new UnicodeString(char), style)
+				const charWidth = await font.getTextWidth(new UnicodeString(char), style)
 				if (part.length > 0 && partWidth + (charWidth - 1) > maxLineWidth) {
 					// Find all styles that apply to this part
 					// FIXME: Attempt to avoid filtering and maping the styles for each character

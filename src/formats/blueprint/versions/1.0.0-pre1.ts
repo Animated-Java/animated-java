@@ -1,4 +1,3 @@
-import '@blockbench-types/custom/util/version_util'
 import { NbtCompound, NbtList, NbtString, NbtTag } from 'deepslate/lib/nbt'
 import { getDefaultProjectSettings } from '..'
 import { DisplayEntityConfig } from '../../../nodeConfigs'

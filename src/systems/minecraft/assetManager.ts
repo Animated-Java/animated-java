@@ -8,6 +8,7 @@ import { getVersionById, getVersionDownloadUrl } from './versionManager'
 const CLIENT_JAR_FOLDER = join(SystemInfo.user_data_directory, `animated_java/client_jars`)
 
 const ASSETS_CACHE = new Map<string, Unzipped>()
+const FOLDER_CACHE = new Map<string, Record<string, Buffer>>()
 const ACTIVE_DOWNLOAD_PROMISES = new Map<string, Promise<void>>()
 
 async function downloadFile(url: string, savePath: string) {
@@ -98,4 +99,27 @@ export async function getJSONAsset(versionId: string, assetPath: string) {
 		throw new Error(`Asset '${assetPath}' not found in Minecraft ${versionId} client jar!`)
 	}
 	return JSON.parse(asset.toString('utf-8'))
+}
+
+export async function getFolder(versionId: string, folderPath: string) {
+	const cacheKey = `${versionId}:${folderPath}`
+	if (FOLDER_CACHE.has(cacheKey)) {
+		return FOLDER_CACHE.get(cacheKey)!
+	}
+
+	const assets = await getAssets(versionId)
+	const folderAssets: Record<string, Buffer> = {}
+	for (const assetPath in assets) {
+		if (assetPath.startsWith(folderPath)) {
+			folderAssets[assetPath] = Buffer.from(assets[assetPath])
+		}
+	}
+
+	FOLDER_CACHE.set(cacheKey, folderAssets)
+	return folderAssets
+}
+
+export async function filterAssets(versionId: string, predicate: (assetPath: string) => boolean) {
+	const assets = await getAssets(versionId)
+	return Object.keys(assets).filter(predicate)
 }

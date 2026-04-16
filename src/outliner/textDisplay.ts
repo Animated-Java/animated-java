@@ -4,7 +4,7 @@ import { PACKAGE } from '../constants'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 import { JsonText, type TextElement } from '../systems/jsonText'
 import { JsonTextParser, JsonTextSyntaxError } from '../systems/jsonText/parser'
-import { getVanillaFont, MinecraftFont } from '../systems/minecraft/fontManager'
+import { MinecraftFont } from '../systems/minecraft/fontManager'
 import { type IDisplayEntityConfigs } from '../systems/rigRenderer'
 import EVENTS from '../util/events'
 import { DeepClonedObjectProperty, fixClassPropertyInheritance } from '../util/property'
@@ -231,7 +231,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 	}
 
 	private renderTextMesh(jsonText: JsonText) {
-		const promise = getVanillaFont()
+		const promise = MinecraftFont.getById('minecraft:default')
 			.then(font => {
 				return font.generateTextDisplayMesh({
 					jsonText,

@@ -10,7 +10,7 @@ import { PACKAGE, fs } from '../../constants'
 import { sanitizeStorageKey } from '../../util/minecraftUtil'
 import { translate } from '../../util/translation'
 import { Variant } from '../../variants'
-import * as modelDatFixerUpper from './dfu'
+import { upgradeAnimatedJavaBlueprint } from './dfu'
 import * as blueprintSettings from './settings'
 
 // region Codec
@@ -33,7 +33,7 @@ export const BLUEPRINT_CODEC = registerDeletableHandlerPatch({
 
 				console.log(`Loading Animated Java Blueprint from '${file.name}'...`)
 
-				model = modelDatFixerUpper.process(model)
+				model = upgradeAnimatedJavaBlueprint(model)
 
 				setupProject(format, model.meta?.uuid)
 				if (!Project) throw new Error('Failed to load Animated Java Blueprint')

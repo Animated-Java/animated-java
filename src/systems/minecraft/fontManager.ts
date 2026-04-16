@@ -2,13 +2,12 @@ import { createHash } from 'node:crypto'
 import MissingCharacter from '../../assets/missing_character.png'
 import { TextDisplay, type Alignment } from '../../outliner/textDisplay'
 import { mergeGeometries } from '../../util/bufferGeometryUtils'
-import EVENTS from '../../util/events'
 import { getPathFromResourceLocation } from '../../util/minecraftUtil'
 import { Stopwatch } from '../../util/stopwatch'
 import { COLOR_VALUES, JsonText, type ComponentStyle } from '../jsonText'
 import { UnicodeString } from '../jsonText/unicodeString'
 import { wrapJsonText, type StyleSpan, type Word } from '../jsonText/wrapping'
-import { getJSONAsset, getPngAsset } from './assetManager'
+import { getJSONAsset, getPngAsset, hasAsset } from './assetManager'
 
 namespace MinecraftJson {
 	export interface FontProviderBitmap {
@@ -264,30 +263,51 @@ export class MinecraftFont {
 	fallback: MinecraftFont | undefined
 
 	private loaded = false
+	private assetPath: string
 	private charCache = new Map<string, CachedChar>()
 	private geoCache = new Map<string, CachedCharGeo>()
 	private materialCache = new Map<string, THREE.Material>()
 
 	constructor(id: string, assetPath: string, fallback?: MinecraftFont) {
 		this.id = id
+		this.assetPath = assetPath
 		this.fallback = fallback
-
-		void this.init(assetPath)
 
 		MinecraftFont.all.push(this)
 	}
 
-	private async init(assetPath: string) {
+	static async getById(id: string) {
+		let font = MinecraftFont.all.find(font => font.id === id)
+
+		if (!font) {
+			const path = getPathFromResourceLocation(id, 'font') + '.json'
+			font = new MinecraftFont(id, path)
+		}
+
+		await font.load()
+
+		return font
+	}
+
+	async load() {
+		if (this.loaded) return this
+
+		if (!(await hasAsset(Project.animated_java.target_minecraft_version, this.assetPath))) {
+			throw new Error(`Font ${this.id} does not exist at ${this.assetPath}`)
+		}
+
 		let fontJSON: MinecraftJson.Font
 		try {
 			fontJSON = (await getJSONAsset(
 				Project.animated_java.target_minecraft_version,
-				assetPath
+				this.assetPath
 			)) as MinecraftJson.Font
 		} catch (error) {
-			console.error(`Failed to load font JSON from ${assetPath}:`, error)
+			console.error(`Failed to load font JSON from ${this.assetPath}:`, error)
 			throw error
 		}
+
+		console.log(this.assetPath, fontJSON)
 
 		for (const providerJSON of fontJSON.providers) {
 			switch (providerJSON.type) {
@@ -306,15 +326,9 @@ export class MinecraftFont {
 					)
 			}
 		}
-	}
 
-	static getById(id: string) {
-		return MinecraftFont.all.find(font => font.id === id)
-	}
-
-	async load() {
-		if (this.loaded) return this
 		await Promise.all(this.providers.map(provider => provider.load()))
+
 		this.loaded = true
 		return this
 	}
@@ -334,13 +348,13 @@ export class MinecraftFont {
 		return createMissingCharacter()
 	}
 
-	getTextWidth(text: UnicodeString, span?: StyleSpan) {
+	async getTextWidth(text: UnicodeString, span?: StyleSpan) {
 		let width = 0
 		const boldExtra = span?.style.bold ? 1 : 0
 		let font: MinecraftFont = this
 
 		if (span?.style.font && span.style.font !== this.id) {
-			const newFont = MinecraftFont.getById(span.style.font)
+			const newFont = await MinecraftFont.getById(span.style.font)
 			if (newFont) font = newFont
 		}
 
@@ -358,17 +372,17 @@ export class MinecraftFont {
 		return Math.max(width, 0)
 	}
 
-	getWordWidth(word: Word) {
+	async getWordWidth(word: Word) {
 		let width = 0
 		let font: MinecraftFont = this
 
 		for (const span of word.styles) {
 			if (span.style.font && span.style.font !== this.id) {
-				const newFont = MinecraftFont.getById(span.style.font)
+				const newFont = await MinecraftFont.getById(span.style.font)
 				if (newFont) font = newFont
 			}
 			const text = word.text.slice(span.start, span.end)
-			const textWidth = font.getTextWidth(text, span)
+			const textWidth = await font.getTextWidth(text, span)
 			width += textWidth
 		}
 
@@ -437,7 +451,7 @@ export class MinecraftFont {
 
 					const text = word.text.slice(span.start, span.end)
 					for (const char of text) {
-						const charGeo = this.getCharGeo(char, span.style)
+						const charGeo = await this.getCharGeo(char, span.style)
 
 						if (!charGeo) {
 							console.error('Failed to get character geometry:', char)
@@ -539,10 +553,10 @@ export class MinecraftFont {
 		return { mesh, hitbox: backgroundGeo, outline }
 	}
 
-	getCharGeo(char: string, style: ComponentStyle): CachedCharGeo {
+	async getCharGeo(char: string, style: ComponentStyle): Promise<CachedCharGeo> {
 		let font: MinecraftFont = this
 		if (style.font) {
-			const newFont = MinecraftFont.getById(style.font)
+			const newFont = await MinecraftFont.getById(style.font)
 			if (newFont) font = newFont
 		}
 
@@ -690,42 +704,36 @@ export class MinecraftFont {
 	}
 }
 
-let vanillaFont: MinecraftFont
-let illagerFont: MinecraftFont
-let standardGalacticAlphabetFont: MinecraftFont
-function loadMinecraftFonts() {
-	console.log('Loading Minecraft fonts...')
-	vanillaFont = new MinecraftFont('minecraft:default', 'assets/minecraft/font/default.json')
-	illagerFont = new MinecraftFont(
-		'minecraft:illageralt',
-		'assets/minecraft/font/illageralt.json',
-		vanillaFont
-	)
-	standardGalacticAlphabetFont = new MinecraftFont(
-		'minecraft:alt',
-		'assets/minecraft/font/alt.json',
-		vanillaFont
-	)
+// let vanillaFont: MinecraftFont
+// let illagerFont: MinecraftFont
+// let standardGalacticAlphabetFont: MinecraftFont
+// async function loadMinecraftFonts() {
+// 	console.log('Loading Minecraft fonts...')
 
-	void Promise.all([
-		vanillaFont.load(),
-		illagerFont.load(),
-		standardGalacticAlphabetFont.load(),
-	]).then(() => {
-		console.log('Minecraft fonts loaded!')
-		requestAnimationFrame(() => EVENTS.MINECRAFT_FONTS_LOADED.publish())
-	})
-}
+// 	vanillaFont = new MinecraftFont('minecraft:default', 'assets/minecraft/font/default.json')
+// 	illagerFont = new MinecraftFont(
+// 		'minecraft:illageralt',
+// 		'assets/minecraft/font/illageralt.json',
+// 		vanillaFont
+// 	)
+// 	standardGalacticAlphabetFont = new MinecraftFont(
+// 		'minecraft:alt',
+// 		'assets/minecraft/font/alt.json',
+// 		vanillaFont
+// 	)
 
-export async function getVanillaFont() {
-	if (!vanillaFont) {
-		await new Promise<void>(resolve => {
-			EVENTS.MINECRAFT_FONTS_LOADED.subscribe(() => resolve())
-		})
-	}
-	return vanillaFont.load()
-}
+// 	await Promise.all([
+// 		vanillaFont.load(),
+// 		illagerFont.load(),
+// 		standardGalacticAlphabetFont.load(),
+// 	]).then(() => {
+// 		console.log('Minecraft fonts loaded!')
+// 	})
+// }
 
-EVENTS.MINECRAFT_ASSETS_LOADED.subscribe(() => {
-	loadMinecraftFonts()
-})
+// export async function getVanillaFont() {
+// 	if (!vanillaFont) {
+// 		await loadMinecraftFonts()
+// 	}
+// 	return vanillaFont.load()
+// }

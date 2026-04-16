@@ -1,4 +1,4 @@
-import TransparentTexture from '../../assets/transparent.png'
+import TransparentTexture from '../../../assets/transparent.png'
 
 export default function upgrade(model: any) {
 	console.log('Processing model format 1.6.3', model)
