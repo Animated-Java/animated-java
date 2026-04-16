@@ -1,5 +1,7 @@
 type DialogItemValueChecker<Value> =
-	| ((value: Value) => { type: string; message: string })
+	| ((
+			value: Value
+	  ) => { type: string; message: string } | Promise<{ type: string; message: string }>)
 	| undefined
 
 interface CollectionItem {

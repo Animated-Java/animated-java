@@ -3,20 +3,21 @@
 	import CheckBox from '../../svelteComponents/dialogItems/checkbox.svelte'
 	import CodeInput from '../../svelteComponents/dialogItems/codeInput.svelte'
 	import LineInput from '../../svelteComponents/dialogItems/lineInput.svelte'
-	import { MINECRAFT_REGISTRY } from '../../systems/minecraft/registryManager'
+	import { getRegistryEntry } from '../../systems/minecraft/registryManager'
 	import { translate } from '../../util/translation'
 
-	const entityTypeValidator: DialogItemValueChecker<string> = (value: string) => {
+	const entityTypeValidator: DialogItemValueChecker<string> = async (value: string) => {
+		const itemRegistry = await getRegistryEntry(
+			Project.animated_java.target_minecraft_version,
+			'entity_type'
+		)
 		if (value.length === 0) {
 			return {
 				type: 'error',
 				message: translate('dialog.locator_config.entity_type.error.empty'),
 			}
 		} else if (
-			!(
-				MINECRAFT_REGISTRY.entity_type?.has(value) ||
-				MINECRAFT_REGISTRY.entity_type?.has(value.replace(/^minecraft\:/, ''))
-			)
+			!(itemRegistry?.has(value) || itemRegistry?.has(value.replace(/^minecraft\:/, '')))
 		) {
 			return {
 				type: 'warning',

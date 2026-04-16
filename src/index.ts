@@ -30,7 +30,7 @@ import { BLUEPRINT_FORMAT } from './formats/blueprint'
 import { BLUEPRINT_CODEC } from './formats/blueprint/codec'
 import { blueprintSettingErrors } from './formats/blueprint/settings'
 import { TextDisplay } from './outliner/textDisplay'
-import { VanillaBlockDisplay, debugBlockState, debugBlocks } from './outliner/vanillaBlockDisplay'
+import { VanillaBlockDisplay, debugBlockState } from './outliner/vanillaBlockDisplay'
 import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
 import { checkForIncompatabilities } from './popups/incompatability/incompatability'
 import { openInstallPopup } from './popups/installed/installed'
@@ -40,13 +40,11 @@ import TELLRAW from './systems/datapackCompiler/tellraw'
 import { exportProject } from './systems/exporter'
 import { JsonText } from './systems/jsonText'
 import * as assetManager from './systems/minecraft/assetManager'
-import { getLatestVersionClientDownloadUrl } from './systems/minecraft/assetManager'
 import * as blockModelManager from './systems/minecraft/blockModelManager'
 import { BLOCKSTATE_REGISTRY, getBlockState } from './systems/minecraft/blockstateManager'
 import { getVanillaFont } from './systems/minecraft/fontManager'
 import * as itemModelManager from './systems/minecraft/itemModelManager'
 import './systems/minecraft/registryManager'
-import { MINECRAFT_REGISTRY } from './systems/minecraft/registryManager'
 import resourcepackCompiler from './systems/resourcepackCompiler'
 import {
 	isDataPackPath,
@@ -69,7 +67,6 @@ const AnimatedJavaApi = {
 	datapackCompiler,
 	resourcepackCompiler,
 	Variant,
-	MINECRAFT_REGISTRY,
 	openExportProgressDialog,
 	isResourcePackPath,
 	isDataPackPath,
@@ -78,14 +75,12 @@ const AnimatedJavaApi = {
 	BLUEPRINT_FORMAT,
 	BLUEPRINT_CODEC,
 	TextDisplay,
-	getLatestVersionClientDownloadUrl,
 	getVanillaFont,
 	assetManager,
 	itemModelManager,
 	blockModelManager,
 	VanillaItemDisplay,
 	VanillaBlockDisplay,
-	debugBlocks,
 	debugBlockState,
 	BLOCKSTATE_REGISTRY,
 	exportProject,
@@ -104,8 +99,14 @@ const AnimatedJavaApi = {
 	openChangelogDialog,
 	checkForIncompatabilities,
 	toSmallCharacters: toSmallCaps,
-	printMinecraftFontSheet: () => {
-		const fontJson = assetManager.getJSONAsset('assets/minecraft/font/include/default.json')
+	printMinecraftFontSheet: async () => {
+		if (!Project?.animated_java?.target_minecraft_version) {
+			throw new Error('No target Minecraft version set for project!')
+		}
+		const fontJson = await assetManager.getJSONAsset(
+			Project.animated_java.target_minecraft_version,
+			'assets/minecraft/font/include/default.json'
+		)
 		return fontJson.providers[0].chars.map(
 			(characters: string, i: number) => `${i}: ` + characters.split('').join(' ')
 		)
@@ -122,39 +123,6 @@ EVENTS.EXTRACT_MODS.subscribe(() => {
 	delete window.AnimatedJava
 })
 
-BBPlugin.register(PACKAGE.name, {
-	title: PACKAGE.title,
-	author: PACKAGE.author.name,
-	description: PACKAGE.description,
-	icon: 'icon.svg',
-	variant: 'desktop',
-	version: PACKAGE.version,
-	min_version: PACKAGE.min_blockbench_version,
-	tags: ['Minecraft: Java Edition', 'Animation', 'Display Entities'],
-	await_loading: true,
-	onload() {
-		// Wait for plugin system to finish loading plugins.
-		requestAnimationFrame(() => {
-			EVENTS.PLUGIN_LOAD.publish()
-		})
-	},
-	onunload() {
-		EVENTS.PLUGIN_UNLOAD.publish()
-	},
-	oninstall() {
-		EVENTS.PLUGIN_INSTALL.publish()
-		openInstallPopup()
-	},
-	onuninstall() {
-		EVENTS.PLUGIN_UNINSTALL.publish()
-		Blockbench.showMessageBox({
-			title: 'Animated Java has Been Uninstalled!',
-			message: 'In order to fully uninstall Animated Java, please restart Blockbench.',
-			buttons: ['OK'],
-		})
-	},
-})
-
 EVENTS.PLUGIN_FINISHED_LOADING.subscribe(() => {
 	if (checkForIncompatabilities()) return
 
@@ -164,3 +132,5 @@ EVENTS.PLUGIN_FINISHED_LOADING.subscribe(() => {
 		openChangelogDialog()
 	}
 })
+
+import './plugin'

@@ -1,7 +1,7 @@
 import { type ItemDisplayMode } from '../../outliner/vanillaItemDisplay'
 import { mergeGeometries } from '../../util/bufferGeometryUtils'
 import { getPathFromResourceLocation, parseResourceLocation } from '../../util/minecraftUtil'
-import { assetsLoaded, getJSONAsset, getPngAssetAsDataUrl } from './assetManager'
+import { getJSONAsset, getPngAsset } from './assetManager'
 import { parseBlockModel } from './blockModelManager'
 import type { IItemModel } from './model'
 import { TEXTURE_FRAG_SHADER, TEXTURE_VERT_SHADER } from './textureShaders'
@@ -20,7 +20,6 @@ export async function getItemModel(
 	item: string,
 	itemDisplay: ItemDisplayMode
 ): Promise<ItemMesh | undefined> {
-	await assetsLoaded()
 	const cacheKey = item + '|' + itemDisplay
 	let result = ITEM_MODEL_CACHE.get(cacheKey)
 	if (!result) {
@@ -119,10 +118,16 @@ async function parseItemModel(
 	const modelPath = getPathFromResourceLocation(location, 'models')
 	let model: IItemModel
 	try {
-		model = getJSONAsset(modelPath + '.json')
+		model = await getJSONAsset(
+			Project.animated_java.target_minecraft_version,
+			modelPath + '.json'
+		)
 	} catch {
 		// Fallback to block model if item model doesn't exist
-		model = getJSONAsset(modelPath.replace('item/', 'block/') + '.json')
+		model = await getJSONAsset(
+			Project.animated_java.target_minecraft_version,
+			modelPath.replace('item/', 'block/') + '.json'
+		)
 	}
 
 	if (childModel) {
@@ -169,7 +174,10 @@ async function generateItemMesh(location: string, model: IItemModel): Promise<It
 
 	for (const textureResourceLoc of Object.values(model.textures)) {
 		const texturePath = getPathFromResourceLocation(textureResourceLoc, 'textures') + '.png'
-		const textureUrl = getPngAssetAsDataUrl(texturePath)
+		const textureUrl = await getPngAsset(
+			Project.animated_java.target_minecraft_version,
+			texturePath
+		)
 		const texture = await LOADER.loadAsync(textureUrl)
 		texture.magFilter = THREE.NearestFilter
 		texture.minFilter = THREE.NearestFilter

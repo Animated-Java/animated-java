@@ -676,6 +676,9 @@ animated_java.tool.text_display.see_through.description: Whether or not the text
 animated_java.tool.text_display.copy_text.title: Copy exported text component
 animated_java.tool.text_display.copy_text.description: Copy the exported text component to your clipboard.
 animated_java.tool.text_display.copy_text.copied: Text copied to clipboard!
+animated_java.tool.text_display.copy_text.clipboard_module_access_request: Animated Java requires access to the Clipboard API to copy the exported text component to your clipboard.
+animated_java.tool.text_display.copy_text.clipboard_module_access_denied: Access to the Clipboard API was denied. Please grant access and try again.
+animated_java.tool.text_display.copy_text.failed: Failed to copy text to clipboard.
 
 # Item Display Panel
 animated_java.panel.vanilla_item_display.title: Displayed Item

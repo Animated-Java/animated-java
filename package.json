@@ -126,6 +126,7 @@
 		"deepslate": "^0.19.2",
 		"fflate": "^0.8.2",
 		"generic-stream": "^1.2.6",
+		"ky": "^2.0.1",
 		"marked": "^4.3.0",
 		"marked-gfm-heading-id": "^3.0.0",
 		"request-progress": "^3.0.0",

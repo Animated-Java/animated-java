@@ -23,9 +23,9 @@
 	let warningText = $state('')
 	let errorText = $state('')
 
-	const onValueChange = () => {
+	const onValueChange = async () => {
 		if (valueChecker) {
-			const result = valueChecker($value)
+			const result = await valueChecker($value)
 			result.type === 'error' ? (errorText = result.message) : (errorText = '')
 			result.type === 'warning' ? (warningText = result.message) : (warningText = '')
 		}

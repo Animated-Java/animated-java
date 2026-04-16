@@ -7,7 +7,7 @@ import {
 	resolveBlockstateValueType,
 } from '../../util/minecraftUtil'
 import { translate } from '../../util/translation'
-import { assetsLoaded, getJSONAsset, getPngAssetAsDataUrl, hasAsset } from './assetManager'
+import { getJSONAsset, getPngAsset, hasAsset } from './assetManager'
 import type { BlockStateValue } from './blockstateManager'
 import { applyModelDisplayTransform } from './itemModelManager'
 import type {
@@ -50,7 +50,6 @@ const BLACKLISTED_BLOCKS = new Map([
 ])
 
 export async function getBlockModel(block: string): Promise<BlockModelMesh | undefined> {
-	await assetsLoaded()
 	let result = BLOCK_MODEL_CACHE.get(block)
 	if (!result) {
 		const parsed = await parseBlock(block)
@@ -83,7 +82,10 @@ export async function parseBlockModel(
 	itemDisplay: ItemDisplayMode = 'none'
 ): Promise<BlockModelMesh> {
 	const modelPath = getPathFromResourceLocation(variant.model, 'models')
-	const model = getJSONAsset(modelPath + '.json') as IBlockModel
+	const model = (await getJSONAsset(
+		Project.animated_java.target_minecraft_version,
+		modelPath + '.json'
+	)) as IBlockModel
 
 	if (childModel) {
 		if (childModel.textures !== undefined) {
@@ -380,9 +382,9 @@ async function loadTexture(textures: IBlockModel['textures'], key: string): Prom
 		return TEXTURE_CACHE.get(texturePath)!
 	}
 	let texture: THREE.Texture
-	if (hasAsset(texturePath + '.mcmeta')) {
+	if (await hasAsset(Project.animated_java.target_minecraft_version, texturePath + '.mcmeta')) {
 		const img = new Image()
-		img.src = getPngAssetAsDataUrl(texturePath)
+		img.src = await getPngAsset(Project.animated_java.target_minecraft_version, texturePath)
 		const canvas = document.createElement('canvas')
 		const ctx = canvas.getContext('2d')!
 		await new Promise<void>(resolve => {
@@ -395,7 +397,9 @@ async function loadTexture(textures: IBlockModel['textures'], key: string): Prom
 		})
 		texture = new THREE.CanvasTexture(canvas)
 	} else {
-		texture = await LOADER.loadAsync(getPngAssetAsDataUrl(texturePath))
+		texture = await LOADER.loadAsync(
+			await getPngAsset(Project.animated_java.target_minecraft_version, texturePath)
+		)
 	}
 
 	texture.magFilter = THREE.NearestFilter
@@ -433,7 +437,10 @@ export function validateBlockState(block: IParsedBlock) {
 
 export async function parseBlockState(block: IParsedBlock): Promise<BlockModelMesh> {
 	const path = getPathFromResourceLocation(block.resourceLocation, 'blockstates')
-	const blockstate = (await getJSONAsset(path + '.json')) as IBlockState
+	const blockstate = (await getJSONAsset(
+		Project.animated_java.target_minecraft_version,
+		path + '.json'
+	)) as IBlockState
 	if (!block.blockStateRegistryEntry) {
 		throw new Error(`Block state registry entry not found for '${block.resource.name}'`)
 	}

@@ -57,11 +57,11 @@
 	})
 
 	function createVariant(e: Event) {
-		CREATE_VARIANT_ACTION.get()?.click(e)
+		CREATE_VARIANT_ACTION.get()?.click?.(e)
 	}
 
 	function duplicateVariant(e: Event) {
-		DUPLICATE_VARIANT_ACTION.get()?.click(e)
+		DUPLICATE_VARIANT_ACTION.get()?.click?.(e)
 	}
 
 	function selectVariant(variant: Variant) {
@@ -70,7 +70,7 @@
 	}
 
 	function deleteVariant(e: Event) {
-		DELETE_VARIANT_ACTION.get()?.click(e)
+		DELETE_VARIANT_ACTION.get()?.click?.(e)
 	}
 
 	function handleSort(e: any) {

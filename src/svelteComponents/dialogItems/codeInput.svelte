@@ -25,7 +25,7 @@
 		value.get()
 
 		const unsub = value.subscribe(() => {
-			onValueChange()
+			void onValueChange()
 		})
 
 		return () => {
@@ -36,9 +36,9 @@
 	let warningText = $state('')
 	let errorText = $state('')
 
-	function onValueChange() {
+	async function onValueChange() {
 		if (valueChecker) {
-			const result = valueChecker($value)
+			const result = await valueChecker($value)
 			result.type === 'error' ? (errorText = result.message) : (errorText = '')
 			result.type === 'warning' ? (warningText = result.message) : (warningText = '')
 		}
@@ -46,10 +46,10 @@
 
 	function onReset() {
 		$value = defaultValue
-		onValueChange()
+		void onValueChange()
 	}
 
-	onValueChange()
+	void onValueChange()
 </script>
 
 <BaseDialogItem {label} {tooltip} {onReset}>

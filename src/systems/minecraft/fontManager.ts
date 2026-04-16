@@ -8,7 +8,7 @@ import { Stopwatch } from '../../util/stopwatch'
 import { COLOR_VALUES, JsonText, type ComponentStyle } from '../jsonText'
 import { UnicodeString } from '../jsonText/unicodeString'
 import { wrapJsonText, type StyleSpan, type Word } from '../jsonText/wrapping'
-import * as assets from './assetManager'
+import { getJSONAsset, getPngAsset } from './assetManager'
 
 namespace MinecraftJson {
 	export interface FontProviderBitmap {
@@ -87,9 +87,12 @@ abstract class FontProvider {
 
 	abstract getChar(char: string): CachedChar | undefined
 
-	static fromAssetPath(assetPath: string) {
+	static async fromAssetPath(assetPath: string) {
 		if (!assetPath.endsWith('.json')) assetPath += '.json'
-		const providerJSON = assets.getJSONAsset(assetPath) as MinecraftJson.FontProvider
+		const providerJSON = (await getJSONAsset(
+			Project.animated_java.target_minecraft_version,
+			assetPath
+		)) as MinecraftJson.FontProvider
 		switch (providerJSON.type) {
 			case 'bitmap':
 				return new BitmapFontProvider(providerJSON)
@@ -180,7 +183,10 @@ class BitmapFontProvider extends FontProvider {
 
 	async load() {
 		if (this.loaded) return this
-		const dataUrl = assets.getPngAssetAsDataUrl(this.bitmapPath)
+		const dataUrl = await getPngAsset(
+			Project.animated_java.target_minecraft_version,
+			this.bitmapPath
+		)
 		const texture = await new THREE.TextureLoader().loadAsync(dataUrl)
 
 		this.atlas = texture
@@ -266,9 +272,18 @@ export class MinecraftFont {
 		this.id = id
 		this.fallback = fallback
 
+		void this.init(assetPath)
+
+		MinecraftFont.all.push(this)
+	}
+
+	private async init(assetPath: string) {
 		let fontJSON: MinecraftJson.Font
 		try {
-			fontJSON = assets.getJSONAsset(assetPath) as MinecraftJson.Font
+			fontJSON = (await getJSONAsset(
+				Project.animated_java.target_minecraft_version,
+				assetPath
+			)) as MinecraftJson.Font
 		} catch (error) {
 			console.error(`Failed to load font JSON from ${assetPath}:`, error)
 			throw error
@@ -291,8 +306,6 @@ export class MinecraftFont {
 					)
 			}
 		}
-
-		MinecraftFont.all.push(this)
 	}
 
 	static getById(id: string) {

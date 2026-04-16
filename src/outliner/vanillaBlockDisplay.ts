@@ -4,7 +4,6 @@ import { PACKAGE } from '../constants'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 import { type BlockModelMesh, getBlockModel } from '../systems/minecraft/blockModelManager'
 import { type BlockStateValue, getBlockState } from '../systems/minecraft/blockstateManager'
-import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
 import { type IDisplayEntityConfigs } from '../systems/rigRenderer'
 import EVENTS from '../util/events'
 import { validateBlock } from '../util/minecraftUtil'
@@ -435,15 +434,15 @@ CREATE_ACTION.onDeleted(action => {
 	CLEANUP_CALLBACKS.forEach(unsub => unsub())
 })
 
-export function debugBlocks() {
-	const maxX = Math.floor(Math.sqrt(MINECRAFT_REGISTRY.block.items.length))
-	for (let i = 0; i < MINECRAFT_REGISTRY.block.items.length; i++) {
-		const block = MINECRAFT_REGISTRY.block.items[i]
-		const x = (i % maxX) * 32
-		const y = Math.floor(i / maxX) * 32
-		new VanillaBlockDisplay({ name: block, block, position: [x, 8, y] }).init()
-	}
-}
+// export function debugBlocks() {
+// 	const maxX = Math.floor(Math.sqrt(MINECRAFT_REGISTRY.block.items.length))
+// 	for (let i = 0; i < MINECRAFT_REGISTRY.block.items.length; i++) {
+// 		const block = MINECRAFT_REGISTRY.block.items[i]
+// 		const x = (i % maxX) * 32
+// 		const y = Math.floor(i / maxX) * 32
+// 		new VanillaBlockDisplay({ name: block, block, position: [x, 8, y] }).init()
+// 	}
+// }
 
 export async function debugBlockState(block: string) {
 	const blockState = await getBlockState(block)

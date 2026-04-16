@@ -5,12 +5,16 @@
 </script>
 
 <script lang="ts">
-	export let selected: VanillaBlockDisplay
+	interface Props {
+		selected: VanillaBlockDisplay
+	}
 
-	let block = selected.block
-	let error = selected.error
+	let { selected }: Props = $props()
 
-	$: {
+	let block = $derived(selected.block)
+	let error = $derived(selected.error)
+
+	$effect(() => {
 		$error = ''
 		if (selected.block !== block) {
 			void validateBlock(block)
@@ -34,7 +38,7 @@
 					$error = err.message
 				})
 		}
-	}
+	})
 </script>
 
 <p class="panel_toolbar_label label">

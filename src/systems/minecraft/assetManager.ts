@@ -1,190 +1,101 @@
-import { fs, PACKAGE } from '../../constants'
-import EVENTS from '../../util/events'
-import { getCurrentVersion, getLatestVersion } from './versionManager'
-
-// import download from 'download'
-import type { Unzipped } from 'fflate/browser'
-import index from '../../assets/vanillaAssetOverrides/index.json'
-
-import {
-	hideLoadingPopup,
-	showLoadingPopup,
-	showOfflineError,
-	// updateLoadingProgress,
-	updateLoadingProgressLabel,
-} from '../../popups/animatedJavaLoading/animatedJavaLoading'
+import type { Unzipped } from 'fflate'
+import ky from 'ky'
+import { dirname, join } from 'node:path'
+import { fs } from '../../constants'
 import { unzip } from '../util'
-const ASSET_OVERRIDES = index as unknown as Record<string, string>
+import { getVersionById, getVersionDownloadUrl } from './versionManager'
 
-async function downloadJar(url: string, savePath: string) {
-	updateLoadingProgressLabel('Downloading Minecraft Assets...')
+const CLIENT_JAR_FOLDER = join(SystemInfo.user_data_directory, `animated_java/client_jars`)
 
-	// const data = await download(url, { retry: { retries: 3 } })
-	// 	.on('downloadProgress', progress => {
-	// 		updateLoadingProgress(progress.percent * 100)
-	// 	})
-	// 	.catch((error: any) => {
-	// 		console.error('Failed to download Minecraft client:', error)
-	// 	})
+const ASSETS_CACHE = new Map<string, Unzipped>()
+const ACTIVE_DOWNLOAD_PROMISES = new Map<string, Promise<void>>()
 
-	const data = false
+async function downloadFile(url: string, savePath: string) {
+	const response = await ky(url, {
+		method: 'GET',
+		onDownloadProgress(progress) {
+			Blockbench.setStatusBarText('Downloading Minecraft Assets...')
+			Blockbench.setProgress(progress.percent)
+		},
+	})
 
-	if (!data) {
-		showOfflineError()
-		throw new Error('Failed to download Minecraft client after 3 retries.')
+	setTimeout(() => {
+		Blockbench.setStatusBarText()
+		Blockbench.setProgress(0, 0)
+	}, 5000)
+
+	if (!response.ok) {
+		throw new Error(`Failed to download file from ${url}: ${response.statusText}`)
 	}
 
-	await fs.promises.writeFile(savePath, new Uint8Array(data))
+	const data = new Uint8Array(await response.arrayBuffer())
+
+	await fs.promises.mkdir(dirname(savePath), { recursive: true })
+	await fs.promises.writeFile(savePath, data)
 }
 
-export async function getLatestVersionClientDownloadUrl() {
-	let retries = 3
-	const version = await getLatestVersion()
+export async function getAssets(versionId: string) {
+	if (ASSETS_CACHE.has(versionId)) {
+		return ASSETS_CACHE.get(versionId)!
+	}
 
-	retries = 3
-	while (retries-- >= 0) {
-		let response: Response | undefined
+	const manifest = await getVersionById(versionId)
+
+	const jarPath = join(CLIENT_JAR_FOLDER, `${manifest.id}.jar`)
+
+	const clientDownloadUrl = await getVersionDownloadUrl(manifest.id)
+
+	if (ACTIVE_DOWNLOAD_PROMISES.has(manifest.id)) {
+		await ACTIVE_DOWNLOAD_PROMISES.get(manifest.id)!
+	} else if (!fs.existsSync(jarPath)) {
+		const downloadPromise = downloadFile(clientDownloadUrl, jarPath)
+		ACTIVE_DOWNLOAD_PROMISES.set(manifest.id, downloadPromise)
 		try {
-			response = await fetch(version.url)
-		} catch (error) {
-			console.error('Failed to fetch latest Minecraft version API:', error)
-		}
-		if (response?.ok) {
-			const result = await response.json()
-			if (!result?.downloads?.client) {
-				throw new Error(`Failed to find client download for ${version.id}`)
-			}
-			return result.downloads.client.url as string
-		}
-	}
-	throw new Error('Failed to fetch latest Minecraft version API after 3 retries.')
-}
-
-function getCachedJarFilePath() {
-	const userDataPath = SystemInfo.user_data_directory
-	return PathModule.join(userDataPath, `${PACKAGE.name}/latest.jar`)
-}
-
-export async function updateAssets() {
-	localStorage.setItem('assetsLoaded', 'false')
-
-	const downloadUrl = await getLatestVersionClientDownloadUrl()
-	console.log('Downloading latest Minecraft client:', downloadUrl)
-
-	const cachedJarFilePath = getCachedJarFilePath()
-	await fs.promises.mkdir(PathModule.dirname(cachedJarFilePath), { recursive: true })
-	await downloadJar(downloadUrl, cachedJarFilePath)
-	console.log('Downloaded latest Minecraft client:', cachedJarFilePath)
-}
-
-export async function checkForAssetsUpdate() {
-	console.log('Checking for Minecraft assets update...')
-
-	const currentVersion = getCurrentVersion()
-	if (!currentVersion) {
-		console.log('No current Minecraft version found, updating assets...')
-		await updateAssets()
-	} else {
-		const latestVersion = await getLatestVersion()
-		if (currentVersion.id !== latestVersion.id) {
-			console.log('Minecraft assets are outdated, updating...')
-			await updateAssets()
+			await downloadPromise
+		} finally {
+			ACTIVE_DOWNLOAD_PROMISES.delete(manifest.id)
 		}
 	}
 
-	const cachedJarFilePath = getCachedJarFilePath()
-	if (!fs.existsSync(cachedJarFilePath) || !(localStorage.getItem('assetsLoaded') === 'true')) {
-		console.log('No cached Minecraft client found, updating assets...')
-		await updateAssets()
-	}
+	const buffer = await fs.promises.readFile(jarPath)
 
-	console.log('Does file exist?', fs.existsSync(cachedJarFilePath))
-	console.log('Are assets loaded?', localStorage.getItem('assetsLoaded') === 'true')
-
-	await extractAssets()
-	console.log('Minecraft assets are up to date!')
-	localStorage.setItem('assetsLoaded', 'true')
-	requestAnimationFrame(() => EVENTS.MINECRAFT_ASSETS_LOADED.publish())
-}
-
-let loadedAssets: Unzipped | undefined
-export async function extractAssets() {
-	const cachedJarFilePath = getCachedJarFilePath()
-
-	const data = await fs.promises.readFile(cachedJarFilePath)
-
-	loadedAssets = await unzip(new Uint8Array(data), {
+	const loadedAssets = await unzip(new Uint8Array(buffer), {
 		filter: v => v.name.startsWith('assets/'),
 	})
+
+	ASSETS_CACHE.set(versionId, loadedAssets)
+	return loadedAssets
 }
 
-export async function assetsLoaded() {
-	return new Promise<void>(resolve => {
-		if (loadedAssets !== undefined) {
-			resolve()
-		} else {
-			EVENTS.MINECRAFT_ASSETS_LOADED.subscribe(() => resolve(), true)
-		}
-	})
+export async function hasAsset(versionId: string, assetPath: string) {
+	const assets = await getAssets(versionId)
+	return assetPath in assets
 }
 
-export function hasAsset(path: string) {
-	if (!loadedAssets) throw new Error('Assets not loaded')
-	return !!loadedAssets[path]
-}
-
-export function getRawAsset(path: string): Buffer {
-	if (!loadedAssets) throw new Error('Assets not loaded')
-
-	if (ASSET_OVERRIDES[path]) {
-		return Buffer.from(ASSET_OVERRIDES[path])
+export async function getRawAsset(versionId: string, assetPath: string) {
+	const assets = await getAssets(versionId)
+	const asset = assets[assetPath]
+	if (!asset) {
+		throw new Error(`Asset '${assetPath}' not found in Minecraft ${versionId} client jar!`)
 	}
-
-	const asset = loadedAssets[path]
-	if (!asset) throw new Error(`Asset not found: ${path}`)
 	return Buffer.from(asset)
 }
 
-export function getPngAssetAsDataUrl(path: string) {
-	const asset = getRawAsset(path)
-	if (!asset) throw new Error(`Asset not found: ${path}`)
+/**
+ * Gets a PNG asset as a data URL for a specific Minecraft version.
+ */
+export async function getPngAsset(versionId: string, assetPath: string) {
+	const asset = await getRawAsset(versionId, assetPath)
+	if (!asset) {
+		throw new Error(`Asset '${assetPath}' not found in Minecraft ${versionId} client jar!`)
+	}
 	return `data:image/png;base64,${asset.toString('base64')}`
 }
 
-export function getJSONAsset(path: string) {
-	const asset = getRawAsset(path)
-	if (!asset) throw new Error(`Asset not found: ${path}`)
-	const assetString = asset.toString('utf-8')
-	try {
-		return JSON.parse(assetString)
-	} catch (error) {
-		console.error(`Failed to parse JSON asset from ${path}:`, assetString, error)
-		throw error
+export async function getJSONAsset(versionId: string, assetPath: string) {
+	const asset = await getRawAsset(versionId, assetPath)
+	if (!asset) {
+		throw new Error(`Asset '${assetPath}' not found in Minecraft ${versionId} client jar!`)
 	}
+	return JSON.parse(asset.toString('utf-8'))
 }
-
-EVENTS.PLUGIN_LOAD.subscribe(() => {
-	if (!window.navigator.onLine) {
-		showOfflineError()
-	}
-	EVENTS.NETWORK_CONNECTED.publish()
-
-	showLoadingPopup()
-
-	void Promise.all([
-		new Promise<void>(resolve => EVENTS.MINECRAFT_ASSETS_LOADED.subscribe(resolve)),
-		new Promise<void>(resolve => EVENTS.MINECRAFT_REGISTRY_LOADED.subscribe(resolve)),
-		new Promise<void>(resolve => EVENTS.MINECRAFT_FONTS_LOADED.subscribe(resolve)),
-		new Promise<void>(resolve => EVENTS.BLOCKSTATE_REGISTRY_LOADED.subscribe(resolve)),
-	])
-		.then(() => {
-			hideLoadingPopup()
-		})
-		.catch(error => {
-			console.error(error)
-			Blockbench.showToastNotification({
-				text: 'Animated Java failed to load! Please restart Blockbench',
-				color: 'var(--color-error)',
-			})
-		})
-})

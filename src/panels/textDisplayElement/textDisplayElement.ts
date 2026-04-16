@@ -8,21 +8,37 @@ import { translate } from '../../util/translation'
 import TextDisplayElementPanel from './textDisplayElement.svelte'
 
 let unmountCallback: (() => Promise<void>) | null = null
+let currentUpdatePromise: Promise<void> | null = null
 
-const updatePanel = async () => {
-	await unmountCallback?.()
-	unmountCallback = null
-
-	const textDisplay = TextDisplay.selected.at(0)
-	if (textDisplay) {
-		unmountCallback = injectComponent({
-			component: TextDisplayElementPanel,
-			props: { selected: textDisplay },
-			elementSelector(): HTMLElement | null {
-				return document.querySelector('#panel_element')
-			},
+const updatePanel = () => {
+	if (currentUpdatePromise) {
+		return currentUpdatePromise.then(() => {
+			void updatePanel()
 		})
 	}
+
+	currentUpdatePromise = new Promise(async resolve => {
+		await unmountCallback?.()
+
+		const textDisplay = TextDisplay.selected.at(0)
+		if (textDisplay) {
+			unmountCallback = injectComponent({
+				component: TextDisplayElementPanel,
+				props: { selected: textDisplay },
+				elementSelector(): HTMLElement | null {
+					return document.querySelector('#panel_element')
+				},
+
+				postMount() {
+					currentUpdatePromise = null
+					resolve()
+				},
+			})
+		} else {
+			currentUpdatePromise = null
+			resolve()
+		}
+	})
 }
 
 registerProjectPatch({
@@ -212,7 +228,7 @@ export const TEXT_DISPLAY_SHADOW_TOGGLE = new Toggle(`animated_java:text-display
 })
 TEXT_DISPLAY_SHADOW_TOGGLE.set = function (value) {
 	if (this.value === value) return this
-	this.click()
+	this.click?.()
 	return this
 }
 
@@ -277,7 +293,7 @@ export const TEXT_DISPLAY_SEE_THROUGH_TOGGLE = new Toggle(
 )
 TEXT_DISPLAY_SEE_THROUGH_TOGGLE.set = function (value) {
 	if (this.value === value) return this
-	this.click()
+	this.click?.()
 	return this
 }
 
@@ -293,6 +309,18 @@ export const TEXT_DISPLAY_COPY_TEXT_ACTION = new Action(
 			const selected = TextDisplay.selected.at(0)
 			if (!selected) return
 
+			const clipboard = requireNativeModule('clipboard', {
+				message: translate('tool.text_display.copy_text.clipboard_module_access_request'),
+			})
+
+			if (!clipboard) {
+				Blockbench.showQuickMessage(
+					translate('tool.text_display.copy_text.clipboard_module_access_denied'),
+					2000
+				)
+				return
+			}
+
 			try {
 				const text = new JsonTextParser({
 					minecraftVersion: Project.animated_java.target_minecraft_version,
@@ -303,7 +331,7 @@ export const TEXT_DISPLAY_COPY_TEXT_ACTION = new Action(
 				Blockbench.showQuickMessage(translate('tool.text_display.copy_text.copied'), 2000)
 			} catch (e) {
 				console.error(e)
-				Blockbench.showQuickMessage('Failed to copy text to clipboard', 2000)
+				Blockbench.showQuickMessage(translate('tool.text_display.copy_text.failed'), 2000)
 			}
 		},
 	}

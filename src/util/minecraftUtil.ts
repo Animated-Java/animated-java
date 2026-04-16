@@ -1,14 +1,13 @@
 import * as pathjs from 'node:path'
+import { fs } from '../constants'
 import { SUPPORTED_MINECRAFT_VERSIONS } from '../systems/global'
-import { assetsLoaded } from '../systems/minecraft/assetManager'
 import { validateBlockState } from '../systems/minecraft/blockModelManager'
 import {
 	BlockStateRegistryEntry,
 	type BlockStateValue,
 	getBlockState,
 } from '../systems/minecraft/blockstateManager'
-import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
-import { getCurrentVersion } from '../systems/minecraft/versionManager'
+import { getRegistryEntry } from '../systems/minecraft/registryManager'
 
 export interface IMinecraftResourceLocation {
 	packRoot: string
@@ -266,34 +265,38 @@ export interface IParsedBlock {
 }
 
 export async function validateItem(item: string) {
-	if (!MINECRAFT_REGISTRY.item) {
-		await assetsLoaded()
-		return
-	}
+	const itemRegistry = await getRegistryEntry(
+		Project.animated_java.target_minecraft_version,
+		'item'
+	)
+
 	let [namespace, id] = item.split(':')
 	if (!id) {
 		id = namespace
 		namespace = 'minecraft'
 	}
-	if ((namespace === 'minecraft' || namespace === '') && MINECRAFT_REGISTRY.item.has(id)) {
+	if ((namespace === 'minecraft' || namespace === '') && itemRegistry.has(id)) {
 		return ''
 	} else {
-		return `This item does not exist in Minecraft ${getCurrentVersion()!.id}.`
+		return `This item does not exist in Minecraft ${Project.animated_java.target_minecraft_version}.`
 	}
 }
 
 export async function validateBlock(block: string) {
-	if (!MINECRAFT_REGISTRY.block) await assetsLoaded()
+	const blockRegistry = await getRegistryEntry(
+		Project.animated_java.target_minecraft_version,
+		'block'
+	)
 	const parsed = await parseBlock(block)
 	if (!parsed) {
 		return 'Invalid block ID.'
 	} else if (
 		(parsed.resource.namespace === 'minecraft' || parsed.resource.namespace === '') &&
-		MINECRAFT_REGISTRY.block.has(parsed.resource.name)
+		blockRegistry.has(parsed.resource.name)
 	) {
 		return validateBlockState(parsed)
 	} else {
-		return `This block does not exist in Minecraft ${getCurrentVersion()!.id}.`
+		return `This block does not exist in Minecraft ${Project.animated_java.target_minecraft_version}.`
 	}
 }
 

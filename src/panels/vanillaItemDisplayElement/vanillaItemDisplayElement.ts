@@ -8,20 +8,36 @@ import { translate } from '../../util/translation'
 import VanillaItemDisplayElementPanel from './vanillaItemDisplayElement.svelte'
 
 let unmountCallback: (() => Promise<void>) | null = null
+let currentUpdatePromise: Promise<void> | null = null
 
-const updatePanel = async () => {
-	await unmountCallback?.()
-	unmountCallback = null
-	const itemDisplay = VanillaItemDisplay.selected.at(0)
-	if (itemDisplay) {
-		unmountCallback = injectComponent({
-			component: VanillaItemDisplayElementPanel,
-			props: { selected: itemDisplay },
-			elementSelector(): HTMLElement | null {
-				return document.querySelector('#panel_element')
-			},
+const updatePanel = () => {
+	if (currentUpdatePromise) {
+		return currentUpdatePromise.then(() => {
+			void updatePanel()
 		})
 	}
+
+	currentUpdatePromise = new Promise(async resolve => {
+		await unmountCallback?.()
+
+		const itemDisplay = VanillaItemDisplay.selected.at(0)
+		if (itemDisplay) {
+			unmountCallback = injectComponent({
+				component: VanillaItemDisplayElementPanel,
+				props: { selected: itemDisplay },
+				elementSelector(): HTMLElement | null {
+					return document.querySelector('#panel_element')
+				},
+				postMount() {
+					currentUpdatePromise = null
+					resolve()
+				},
+			})
+		} else {
+			currentUpdatePromise = null
+			resolve()
+		}
+	})
 }
 
 registerProjectPatch({
@@ -78,10 +94,7 @@ ITEM_DISPLAY_ITEM_DISPLAY_SELECT.get = function () {
 	if (!selected) return 'left'
 	return selected.itemDisplay
 }
-ITEM_DISPLAY_ITEM_DISPLAY_SELECT.set = function (
-	this: BarSelect<ItemDisplayMode>,
-	value: ItemDisplayMode
-) {
+ITEM_DISPLAY_ITEM_DISPLAY_SELECT.set = function (this: BarSelect, value: ItemDisplayMode) {
 	const selected = VanillaItemDisplay.selected.at(0)
 	if (!selected) return this
 	this.value = value

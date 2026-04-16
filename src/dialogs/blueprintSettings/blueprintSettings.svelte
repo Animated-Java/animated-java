@@ -3,7 +3,6 @@
 	import { fs } from '../../constants'
 	import { defaultValues } from '../../formats/blueprint/settings'
 	import mcbFiles from '../../systems/datapackCompiler/mcbFiles'
-	import { MINECRAFT_REGISTRY } from '../../systems/minecraft/registryManager'
 	import { translate } from '../../util/translation'
 
 	import Checkbox from '../../svelteComponents/dialogItems/checkbox.svelte'
@@ -19,6 +18,7 @@
 	import fontUrl from '../../assets/MinecraftFull.ttf'
 	import { getJSONAsset } from '../../systems/minecraft/assetManager'
 	import type { IItemModel } from '../../systems/minecraft/model'
+	import { getRegistryEntry } from '../../systems/minecraft/registryManager'
 	import { resolvePath } from '../../util/fileUtil'
 
 	if (![...document.fonts.keys()].some(v => v.family === 'MinecraftFull')) {
@@ -57,7 +57,11 @@
 		}
 	}
 
-	function displayItemChecker(value: string): { type: string; message: string } {
+	async function displayItemChecker(value: string): Promise<{ type: string; message: string }> {
+		const itemRegistry = await getRegistryEntry(
+			Project.animated_java.target_minecraft_version,
+			'item'
+		)
 		if (value === '') {
 			return {
 				type: 'error',
@@ -77,10 +81,7 @@
 					'dialog.blueprint_settings.display_item.error.invalid_item_id.whitespace'
 				),
 			}
-		} else if (
-			MINECRAFT_REGISTRY.item &&
-			!MINECRAFT_REGISTRY.item.has(value.replace('minecraft:', ''))
-		) {
+		} else if (itemRegistry.has(value.replace('minecraft:', ''))) {
 			return {
 				type: 'warning',
 				message: translate(
@@ -90,7 +91,8 @@
 		} else {
 			let asset: IItemModel
 			try {
-				asset = getJSONAsset(
+				asset = await getJSONAsset(
+					Project.animated_java.target_minecraft_version,
 					'assets/minecraft/models/item/' + value.replace('minecraft:', '') + '.json'
 				)
 			} catch (e) {
