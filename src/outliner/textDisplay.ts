@@ -306,7 +306,7 @@ const TEMP_MESH_MAP = new THREE.TextureLoader().load(
 TEMP_MESH_MAP.minFilter = THREE.NearestFilter
 TEMP_MESH_MAP.magFilter = THREE.NearestFilter
 
-export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
+export const PREVIEW_CONTROLLER: NodePreviewController = new NodePreviewController(TextDisplay, {
 	setup(el: TextDisplay) {
 		ResizableOutlinerElement.prototype.preview_controller.setup(el)
 		// Setup temp sprite mesh

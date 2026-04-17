@@ -184,67 +184,71 @@ const TEMP_MESH_MAP = new THREE.TextureLoader().load(
 TEMP_MESH_MAP.minFilter = THREE.NearestFilter
 TEMP_MESH_MAP.magFilter = THREE.NearestFilter
 
-export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, {
-	setup(el: VanillaItemDisplay) {
-		ResizableOutlinerElement.prototype.preview_controller.setup(el)
-		// Setup temp sprite mesh
-		const material = new THREE.SpriteMaterial({
-			map: TEMP_MESH_MAP,
-			alphaTest: 0.1,
-			sizeAttenuation: false,
-		})
-		const sprite = new THREE.Sprite(material)
-		sprite.scale.setScalar(1 / 20)
-		const mesh = el.mesh as THREE.Mesh
-		mesh.add(sprite)
-		mesh.sprite = sprite
-	},
-	updateGeometry(el: VanillaItemDisplay) {
-		if (!el.mesh) return
-
-		void getItemModel(el.item, el.itemDisplay)
-			.then(result => {
-				if (!result) return
-				const mesh = el.mesh as THREE.Mesh
-				mesh.name = el.uuid
-				mesh.geometry = result.boundingBox
-				mesh.material = Canvas.transparentMaterial
-				mesh.clear()
-				mesh.add(result.mesh)
-				mesh.add(result.outline)
-				mesh.outline = result.outline
-				mesh.outline.visible = el.selected
-
-				el.preview_controller.updateHighlight(el)
-				el.preview_controller.updateTransform(el)
-				mesh.visible = el.visibility
+export const PREVIEW_CONTROLLER: NodePreviewController = new NodePreviewController(
+	VanillaItemDisplay,
+	{
+		setup(el: VanillaItemDisplay) {
+			ResizableOutlinerElement.prototype.preview_controller.setup(el)
+			// Setup temp sprite mesh
+			const material = new THREE.SpriteMaterial({
+				map: TEMP_MESH_MAP,
+				alphaTest: 0.1,
+				sizeAttenuation: false,
 			})
-			.catch(err => {
-				if (typeof err.message === 'string') {
-					el.error.set(err.message as string)
+			const sprite = new THREE.Sprite(material)
+			sprite.scale.setScalar(1 / 20)
+			const mesh = el.mesh as THREE.Mesh
+			mesh.add(sprite)
+			mesh.sprite = sprite
+		},
+		updateGeometry(el: VanillaItemDisplay) {
+			if (!el.mesh) return
+
+			void getItemModel(el.item, el.itemDisplay)
+				.then(result => {
+					if (!result) return
+					const mesh = el.mesh as THREE.Mesh
+					mesh.name = el.uuid
+					mesh.geometry = result.boundingBox
+					mesh.material = Canvas.transparentMaterial
+					mesh.clear()
+					mesh.add(result.mesh)
+					mesh.add(result.outline)
+					mesh.outline = result.outline
+					mesh.outline.visible = el.selected
+
+					el.preview_controller.updateHighlight(el)
+					el.preview_controller.updateTransform(el)
+					mesh.visible = el.visibility
+				})
+				.catch(err => {
+					if (typeof err.message === 'string') {
+						el.error.set(err.message as string)
+					}
+				})
+		},
+		updateTransform(el: VanillaItemDisplay) {
+			ResizableOutlinerElement.prototype.preview_controller.updateTransform(el)
+		},
+		updateHighlight(el: VanillaItemDisplay, force?: boolean | VanillaItemDisplay) {
+			if (!activeProjectIsBlueprintFormat() || !el?.mesh) return
+			const highlighted =
+				Modes.edit && (force === true || force === el || el.selected) ? 1 : 0
+
+			const itemModel = el.mesh.children.at(0) as THREE.Mesh
+			if (!itemModel) return
+			for (const child of itemModel.children) {
+				if (!(child instanceof THREE.Mesh)) continue
+				const highlight = child.geometry.attributes.highlight
+
+				if (highlight.array[0] != highlighted) {
+					highlight.array.set(Array(highlight.count).fill(highlighted))
+					highlight.needsUpdate = true
 				}
-			})
-	},
-	updateTransform(el: VanillaItemDisplay) {
-		ResizableOutlinerElement.prototype.preview_controller.updateTransform(el)
-	},
-	updateHighlight(el: VanillaItemDisplay, force?: boolean | VanillaItemDisplay) {
-		if (!activeProjectIsBlueprintFormat() || !el?.mesh) return
-		const highlighted = Modes.edit && (force === true || force === el || el.selected) ? 1 : 0
-
-		const itemModel = el.mesh.children.at(0) as THREE.Mesh
-		if (!itemModel) return
-		for (const child of itemModel.children) {
-			if (!(child instanceof THREE.Mesh)) continue
-			const highlight = child.geometry.attributes.highlight
-
-			if (highlight.array[0] != highlighted) {
-				highlight.array.set(Array(highlight.count).fill(highlighted))
-				highlight.needsUpdate = true
 			}
-		}
-	},
-})
+		},
+	}
+)
 
 class VanillaItemDisplayAnimator extends BoneAnimator {
 	uuid: string

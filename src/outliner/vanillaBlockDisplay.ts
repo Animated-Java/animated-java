@@ -191,62 +191,66 @@ const TEMP_MESH_MAP = new THREE.TextureLoader().load(
 TEMP_MESH_MAP.minFilter = THREE.NearestFilter
 TEMP_MESH_MAP.magFilter = THREE.NearestFilter
 
-export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay, {
-	setup(el: VanillaBlockDisplay) {
-		ResizableOutlinerElement.prototype.preview_controller.setup(el)
-		// Setup temp sprite mesh
-		const material = new THREE.SpriteMaterial({
-			map: TEMP_MESH_MAP,
-			alphaTest: 0.1,
-			sizeAttenuation: false,
-		})
-		const sprite = new THREE.Sprite(material)
-		sprite.scale.setScalar(1 / 32)
-		const mesh = el.mesh as THREE.Mesh
-		mesh.add(sprite)
-		mesh.sprite = sprite
-	},
-	updateGeometry(el: VanillaBlockDisplay) {
-		if (!el.mesh) return
-
-		void getBlockModel(el.block)
-			.then(result => {
-				if (!result?.mesh) return
-				el.applyBlockModel(result)
+export const PREVIEW_CONTROLLER: NodePreviewController = new NodePreviewController(
+	VanillaBlockDisplay,
+	{
+		setup(el: VanillaBlockDisplay) {
+			ResizableOutlinerElement.prototype.preview_controller.setup(el)
+			// Setup temp sprite mesh
+			const material = new THREE.SpriteMaterial({
+				map: TEMP_MESH_MAP,
+				alphaTest: 0.1,
+				sizeAttenuation: false,
 			})
-			.catch(err => {
-				console.error('Failed to get block model:', err)
-				if (typeof err.message === 'string') {
-					el.error.set(err.message as string)
+			const sprite = new THREE.Sprite(material)
+			sprite.scale.setScalar(1 / 32)
+			const mesh = el.mesh as THREE.Mesh
+			mesh.add(sprite)
+			mesh.sprite = sprite
+		},
+		updateGeometry(el: VanillaBlockDisplay) {
+			if (!el.mesh) return
+
+			void getBlockModel(el.block)
+				.then(result => {
+					if (!result?.mesh) return
+					el.applyBlockModel(result)
+				})
+				.catch(err => {
+					console.error('Failed to get block model:', err)
+					if (typeof err.message === 'string') {
+						el.error.set(err.message as string)
+					}
+				})
+				.finally(() => {
+					if (el.mesh?.outline instanceof THREE.LineSegments) {
+						if (el.error.get()) el.mesh.outline.material = ERROR_OUTLINE_MATERIAL
+						else el.mesh.outline.material = Canvas.outlineMaterial
+					}
+				})
+		},
+		updateTransform(el: VanillaBlockDisplay) {
+			ResizableOutlinerElement.prototype.preview_controller.updateTransform(el)
+		},
+		updateHighlight(el: VanillaBlockDisplay, force?: boolean | VanillaBlockDisplay) {
+			if (!activeProjectIsBlueprintFormat() || !el?.mesh) return
+			const highlighted =
+				Modes.edit && (force === true || force === el || el.selected) ? 1 : 0
+
+			const blockModel = el.mesh.children.at(0) as THREE.Mesh
+			if (!blockModel) return
+			for (const child of blockModel.children) {
+				if (!(child instanceof THREE.Mesh)) continue
+				const highlight = child.geometry.attributes.highlight
+
+				if (highlight.array[0] != highlighted) {
+					highlight.array.set(Array(highlight.count).fill(highlighted))
+					highlight.needsUpdate = true
 				}
-			})
-			.finally(() => {
-				if (el.mesh?.outline instanceof THREE.LineSegments) {
-					if (el.error.get()) el.mesh.outline.material = ERROR_OUTLINE_MATERIAL
-					else el.mesh.outline.material = Canvas.outlineMaterial
-				}
-			})
-	},
-	updateTransform(el: VanillaBlockDisplay) {
-		ResizableOutlinerElement.prototype.preview_controller.updateTransform(el)
-	},
-	updateHighlight(el: VanillaBlockDisplay, force?: boolean | VanillaBlockDisplay) {
-		if (!activeProjectIsBlueprintFormat() || !el?.mesh) return
-		const highlighted = Modes.edit && (force === true || force === el || el.selected) ? 1 : 0
-
-		const blockModel = el.mesh.children.at(0) as THREE.Mesh
-		if (!blockModel) return
-		for (const child of blockModel.children) {
-			if (!(child instanceof THREE.Mesh)) continue
-			const highlight = child.geometry.attributes.highlight
-
-			if (highlight.array[0] != highlighted) {
-				highlight.array.set(Array(highlight.count).fill(highlighted))
-				highlight.needsUpdate = true
 			}
-		}
-	},
-})
+		},
+	}
+)
 
 class VanillaBlockDisplayAnimator extends BoneAnimator {
 	uuid: string

@@ -23,8 +23,8 @@ const updatePanel = () => {
 			unmountCallback = injectComponent({
 				component: VanillaBlockDisplayElementPanel,
 				props: { selected: blockDisplay },
-				elementSelector(): HTMLElement | null {
-					return document.querySelector('#panel_element')
+				elementSelector() {
+					return Panels.element.node
 				},
 				postMount() {
 					currentUpdatePromise = null

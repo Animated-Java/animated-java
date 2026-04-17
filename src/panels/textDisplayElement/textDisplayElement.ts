@@ -25,10 +25,9 @@ const updatePanel = () => {
 			unmountCallback = injectComponent({
 				component: TextDisplayElementPanel,
 				props: { selected: textDisplay },
-				elementSelector(): HTMLElement | null {
-					return document.querySelector('#panel_element')
+				elementSelector() {
+					return Panels.element.node
 				},
-
 				postMount() {
 					currentUpdatePromise = null
 					resolve()
