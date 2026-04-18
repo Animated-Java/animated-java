@@ -1,9 +1,8 @@
 import { registerDeletableHandlerPatch } from 'blockbench-patch-manager'
+import { TextComponent, TextComponentParser, type TextElement } from 'book-and-quill'
 import { observable } from 'svelte-observable-store'
 import { PACKAGE } from '../constants'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
-import { JsonText, type TextElement } from '../systems/jsonText'
-import { JsonTextParser, JsonTextSyntaxError } from '../systems/jsonText/parser'
 import { MinecraftFont } from '../systems/minecraft/fontManager'
 import { type IDisplayEntityConfigs } from '../systems/rigRenderer'
 import EVENTS from '../util/events'
@@ -205,32 +204,32 @@ export class TextDisplay extends ResizableOutlinerElement {
 	}
 
 	updateTextMesh() {
-		let result: JsonText | undefined
+		let result: TextComponent | undefined
 		try {
-			const parser = new JsonTextParser({
+			const parser = new TextComponentParser({
 				minecraftVersion: Project!.animated_java.target_minecraft_version,
 			})
 			parser.enabledFeatures &= ~(
-				JsonTextParser.FEATURES.ALLOW_CLICK_EVENTS |
-				JsonTextParser.FEATURES.ALLOW_HOVER_EVENTS
+				TextComponentParser.FEATURES.CLICK_EVENTS |
+				TextComponentParser.FEATURES.HOVER_EVENTS
 			)
-			result = parser.parse(this.text)
+			result = new TextComponent(parser.parse(this.text))
 			this.textError.set('')
 		} catch (e: any) {
 			console.error(e)
-			if (e instanceof JsonTextSyntaxError) {
+			if (e.name === 'SyntaxPointerError') {
 				this.textError.set(e.getOriginErrorMessage())
 			} else {
 				this.textError.set(e.message as string)
 			}
 		}
-		result ??= new JsonText({ text: 'Invalid JSON Text!', color: 'red' })
+		result ??= new TextComponent({ text: 'Invalid JSON Text!', color: 'red' })
 		void this.renderTextMesh(result).then(({ mesh, hitbox, outline }) => {
 			this.applyTextMesh(mesh, hitbox, outline)
 		})
 	}
 
-	private renderTextMesh(jsonText: JsonText) {
+	private renderTextMesh(jsonText: TextComponent) {
 		const promise = MinecraftFont.getById('minecraft:default')
 			.then(font => {
 				return font.generateTextDisplayMesh({

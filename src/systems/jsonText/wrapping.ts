@@ -1,7 +1,12 @@
-import { JsonText, type ComponentStyle, type TextElement, type TextObject } from '.'
+import {
+	TextComponent,
+	UnicodeString,
+	type TextComponentStyle,
+	type TextElement,
+	type TextObject,
+} from 'book-and-quill'
 import { Stopwatch } from '../../util/stopwatch'
 import { MinecraftFont } from '../minecraft/fontManager'
-import { UnicodeString } from './unicodeString'
 
 // Jumpstarted by @IanSSenne (FetchBot) and refactored by @SnaveSutit to do line wrapping on JSON Text Components.
 // THANK U IAN <3 - SnaveSutit
@@ -55,7 +60,7 @@ function getRawText(element: string | TextObject): UnicodeString {
 }
 
 export interface StyleSpan {
-	style: ComponentStyle
+	style: TextComponentStyle
 	start: number
 	end: number
 }
@@ -82,17 +87,20 @@ interface Line {
  */
 export function parseWords(inputElement: TextElement) {
 	const stopwatch = new Stopwatch('Parse Words').start()
-	const flattened = new JsonText(inputElement).flatten(true)
-	if (!flattened.length) return []
+	const optimized = new TextComponent(inputElement).optimized(true)
+	if (!optimized.length) return []
 	const words: Word[] = []
 
 	let word: Word | undefined
-	let element = flattened.shift()
+	let element = optimized.shift()
+	if (Array.isArray(element)) {
+		throw new Error('Unexpected array element in optimized JSON Text')
+	}
 	if (element === undefined) return words
 
 	let componentText = getRawText(element)
 	let span: StyleSpan = {
-		style: JsonText.getComponentStyle(element),
+		style: TextComponent.getComponentStyle(element),
 		start: 0,
 		end: 0,
 	}
@@ -146,20 +154,23 @@ export function parseWords(inputElement: TextElement) {
 			span.end++
 		}
 
-		element = flattened.shift()
+		element = optimized.shift()
+		if (Array.isArray(element)) {
+			throw new Error('Unexpected array element in optimized JSON Text')
+		}
 
 		if (element !== undefined) {
 			componentText = getRawText(element)
 			if (word) {
 				word.styles.push(span)
 				span = {
-					style: JsonText.getComponentStyle(element),
+					style: TextComponent.getComponentStyle(element),
 					start: span.end,
 					end: span.end,
 				}
 			} else {
 				span = {
-					style: JsonText.getComponentStyle(element),
+					style: TextComponent.getComponentStyle(element),
 					start: 0,
 					end: 0,
 				}
@@ -178,7 +189,7 @@ export function parseWords(inputElement: TextElement) {
 	return words
 }
 
-export async function wrapJsonText(jsonText: JsonText, maxLineWidth = 200) {
+export async function wrapJsonText(jsonText: TextComponent, maxLineWidth = 200) {
 	const stopwatch = new Stopwatch('Wrap Json Text').start()
 
 	const words = parseWords(jsonText.toJSON())

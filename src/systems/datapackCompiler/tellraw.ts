@@ -1,11 +1,11 @@
+import { TextComponent, type TextElement } from 'book-and-quill'
 import { toSmallCaps } from '../../util/minecraftUtil'
 import { type IRenderedAnimation } from '../animationRenderer'
-import { JsonText, type TextElement } from '../jsonText'
 import { type IRenderedVariant } from '../rigRenderer'
 import OBJECTIVES from './objectives'
 
 const TELLRAW_PREFIX = () =>
-	new JsonText([
+	new TextComponent([
 		{ text: '\n ', color: 'gray' },
 		{ text: toSmallCaps('Animated Java'), color: '#00aced' },
 		{
@@ -14,12 +14,12 @@ const TELLRAW_PREFIX = () =>
 			italic: true,
 		},
 		'\n → ',
-	]).flatten()
+	]).optimized()
 
 const TELLRAW_SUFFIX = () => '\n'
 
 const TELLRAW_ERROR = (errorName: string, details: TextElement) =>
-	new JsonText([
+	new TextComponent([
 		{ text: '', color: 'red' },
 		TELLRAW_PREFIX(),
 		toSmallCaps('error') + ': ',
@@ -30,7 +30,7 @@ const TELLRAW_ERROR = (errorName: string, details: TextElement) =>
 	])
 
 const TELLRAW_WARNING = (warningName: string, details: TextElement) =>
-	new JsonText([
+	new TextComponent([
 		{ text: '', color: 'yellow' },
 		TELLRAW_PREFIX(),
 		toSmallCaps('warning') + ': ',
@@ -41,7 +41,7 @@ const TELLRAW_WARNING = (warningName: string, details: TextElement) =>
 	])
 
 const CREATE_TELLRAW_HELP_LINK = (url: string) =>
-	new JsonText([
+	new TextComponent([
 		'\n\n ',
 		!compareVersions('1.21.5', Project!.animated_java.target_minecraft_version)
 			? {
@@ -58,7 +58,7 @@ const CREATE_TELLRAW_HELP_LINK = (url: string) =>
 					italic: true,
 					clickEvent: { action: 'open_url', value: url },
 				},
-	]).flatten()
+	]).optimized()
 
 namespace TELLRAW {
 	export const RIG_OUTDATED = () =>
@@ -112,7 +112,7 @@ namespace TELLRAW {
 		])
 
 	export const RIG_OUTDATED_TEXT_DISPLAY = () =>
-		new JsonText([
+		new TextComponent([
 			{ text: '⚠ This rig instance is outdated! ⚠', color: 'red' },
 			'\n It should be removed and re-summoned to ensure it functions correctly.',
 		])
@@ -121,7 +121,10 @@ namespace TELLRAW {
 			.replaceAll('\\n', '\\\\n')
 
 	export const FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR = (functionPath: string, tag: string) => {
-		const hoverText = new JsonText([{ text: functionPath, color: 'yellow' }, '']).flatten()
+		const hoverText = new TextComponent([
+			{ text: functionPath, color: 'yellow' },
+			'',
+		]).optimized()
 
 		const exampleCommand = `/execute as @e[tag=${tag}] run function ${functionPath}`
 
@@ -164,7 +167,10 @@ namespace TELLRAW {
 	}
 
 	export const FUNCTION_NOT_EXECUTED_AS_ENTITY_WITH_ID_SCORE = (functionPath: string) => {
-		const hoverText = new JsonText([{ text: functionPath, color: 'yellow' }, '']).flatten()
+		const hoverText = new TextComponent([
+			{ text: functionPath, color: 'yellow' },
+			'',
+		]).optimized()
 
 		return TELLRAW_ERROR('Function Not Executed as Entity with ID Score', [
 			!compareVersions('1.21.5', Project!.animated_java.target_minecraft_version)
@@ -201,12 +207,12 @@ namespace TELLRAW {
 			{ text: ' ≡ ', color: 'white' },
 			{ text: 'Available Variants:', color: 'green' },
 			...Object.values(variants).map(variant =>
-				new JsonText([
+				new TextComponent([
 					{ text: '\n ', color: 'gray' },
 					'\\s\\s\\s',
 					' ● ',
 					{ text: variant.name, color: 'yellow' },
-				]).flatten()
+				]).optimized()
 			),
 		])
 
@@ -225,12 +231,12 @@ namespace TELLRAW {
 			{ text: ' ≡ ', color: 'white' },
 			{ text: 'Available Animations:', color: 'green' },
 			...animations.map(anim =>
-				new JsonText([
+				new TextComponent([
 					{ text: '\n ', color: 'gray' },
 					'\\s\\s\\s',
 					' ● ',
 					{ text: anim.storage_name, color: 'yellow' },
-				]).flatten()
+				]).optimized()
 			),
 		])
 
@@ -249,7 +255,7 @@ namespace TELLRAW {
 		])
 
 	export const UNINSTALL = () =>
-		new JsonText([
+		new TextComponent([
 			TELLRAW_PREFIX(),
 			[
 				{ text: 'Successfully uninstalled ', color: 'green' },

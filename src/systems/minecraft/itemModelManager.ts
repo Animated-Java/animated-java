@@ -193,7 +193,7 @@ async function generateItemMesh(location: string, model: IItemModel): Promise<It
 					type: 'vec3',
 					value: new THREE.Color()
 						.copy(Canvas.global_light_color)
-						.multiplyScalar(settings.brightness.value / 50),
+						.multiplyScalar((settings.brightness.value as number) / 50),
 				},
 				// @ts-expect-error Uniforms types are wrong
 				LIGHTSIDE: { type: 'int', value: Canvas.global_light_side },

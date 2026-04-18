@@ -1,3 +1,4 @@
+import { TextComponent } from 'book-and-quill'
 import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/lib/nbt'
 import { fs } from '../../constants'
 import {
@@ -24,8 +25,6 @@ import type { IRenderedAnimation } from '../animationRenderer'
 import mcbFiles from '../datapackCompiler/mcbFiles'
 import { IntentionalExportError } from '../errors'
 import { AJMeta, PackMeta, SUPPORTED_MINECRAFT_VERSIONS } from '../global'
-import { JsonText } from '../jsonText'
-import { JsonTextParser } from '../jsonText/parser'
 import type { AnyRenderedNode, IRenderedRig } from '../rigRenderer'
 import {
 	arrayToNbtFloatArray,
@@ -400,27 +399,6 @@ async function generateRootEntityPassengers(
 	const aj = Project!.animated_java
 	const passengers: NbtList = new NbtList()
 
-	// passengers.add(
-	// 	new NbtCompound()
-	// 		.set('id', new NbtString('minecraft:marker'))
-	// 		.set(
-	// 			'Tags',
-	// 			new NbtList([
-	// 				new NbtString(TAGS.NEW()),
-	// 				new NbtString(TAGS.GLOBAL_ENTITY()),
-	// 				new NbtString(TAGS.GLOBAL_DATA()),
-	// 				new NbtString(TAGS.PROJECT_ENTITY(aj.export_namespace)),
-	// 				new NbtString(TAGS.PROJECT_DATA(aj.export_namespace)),
-	// 			])
-	// 		)
-	// 		.set(
-	// 			'data',
-	// 			new NbtCompound()
-	// 				.set('rig_hash', new NbtString(rigHash))
-	// 				.set('export_namespace', new NbtString(aj.export_namespace))
-	// 		)
-	// )
-
 	for (const [uuid, node] of Object.entries(rig.nodes)) {
 		if (node.type === 'struct') continue
 
@@ -508,7 +486,7 @@ async function generateRootEntityPassengers(
 			case 'text_display': {
 				passenger
 					.set('id', new NbtString('minecraft:text_display'))
-					.set('background', new NbtInt(JsonText.hexToInt(node.background_color)))
+					.set('background', new NbtInt(TextComponent.hexToInt(node.background_color)))
 					.set('line_width', new NbtInt(node.line_width))
 					.set('shadow', new NbtByte(node.shadow ? 1 : 0))
 					.set('see_through', new NbtByte(node.see_through ? 1 : 0))
@@ -528,9 +506,9 @@ async function generateRootEntityPassengers(
 						'text',
 						// String JSON text format
 						new NbtString(
-							new JsonTextParser({ minecraftVersion: version })
-								.parse(node.text)
-								.toString(true, version)
+							TextComponent.fromString(node.text, {
+								minecraftVersion: version,
+							}).toString(true, version)
 						)
 					)
 				} else {
@@ -601,9 +579,10 @@ async function generateRootEntityPassengers(
 		for (const display of Object.values(rig.nodes).filter(n => n.type === 'text_display')) {
 			result = result.replace(
 				'"$$$' + display.type + '_' + display.storage_name + '_text_placeholder$$$"',
-				new JsonTextParser({ minecraftVersion: version })
-					.parse(display.text)
-					.toString(true, version)
+				TextComponent.fromString(display.text, { minecraftVersion: version }).toString(
+					true,
+					version
+				)
 			)
 		}
 	}
@@ -929,7 +908,7 @@ const dataPackCompiler: DataPackCompiler = async ({
 	animationHash,
 	debugMode,
 }) => {
-	JsonText.defaultMinecraftVersion = version
+	TextComponent.defaultMinecraftVersion = version
 
 	const aj = Project!.animated_java
 	const isStatic = animations.length === 0

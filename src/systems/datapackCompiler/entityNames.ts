@@ -1,8 +1,8 @@
-import { JsonText } from '../jsonText'
+import { TextComponent } from 'book-and-quill'
 
 namespace ENTITY_NAMES {
 	export const ROOT = (exportNamespace: string) =>
-		new JsonText([
+		new TextComponent([
 			'',
 			{ text: 'aj', color: '#00aced' },
 			'.',
@@ -12,7 +12,7 @@ namespace ENTITY_NAMES {
 		]).toString(true)
 
 	export const NODE = (exportNamespace: string, type: string, name: string) =>
-		new JsonText([
+		new TextComponent([
 			'',
 			{ text: 'aj', color: '#00aced' },
 			'.',

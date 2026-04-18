@@ -2,6 +2,7 @@
 /// <reference path="/var/mnt/ssd2/repos/snavesutit/blockbench-types/types/index.d.ts"/>
 /// <reference path="../global.d.ts"/>
 
+import { TextComponent } from 'book-and-quill'
 import { fs, PACKAGE } from '../constants'
 import type { IBlueprintDisplayEntityConfigJSON } from '../formats/blueprint'
 import { type defaultValues } from '../formats/blueprint/settings'
@@ -11,7 +12,6 @@ import { detectCircularReferences, mapObjEntries, scrubUndefined } from '../util
 import { Variant } from '../variants'
 import type { INodeTransform, IRenderedAnimation, IRenderedFrame } from './animationRenderer'
 import { IntentionalExportError } from './errors'
-import { JsonText } from './jsonText'
 import type {
 	AnyRenderedNode,
 	IRenderedModel,
@@ -365,7 +365,7 @@ function serailizeRenderedNode(node: AnyRenderedNode): ExportedRenderedNode {
 			break
 		}
 		case 'text_display': {
-			json.text = new JsonText(node.text).toJSON()
+			json.text = new TextComponent(node.text).toJSON()
 			break
 		}
 	}

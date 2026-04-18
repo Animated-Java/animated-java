@@ -1,5 +1,6 @@
+import { TextComponent } from 'book-and-quill'
 import * as crypto from 'node:crypto'
-import type { fs } from '../constants'
+import { fs } from '../constants'
 import type {
 	IBlueprintDisplayEntityConfigJSON,
 	IBlueprintLocatorConfigJSON,
@@ -22,7 +23,6 @@ import {
 	updatePreview,
 } from './animationRenderer'
 import { IntentionalExportError } from './errors'
-import { JsonText } from './jsonText'
 
 export interface IRenderedFace {
 	uv: number[]
@@ -548,7 +548,7 @@ function renderTextDisplay(display: TextDisplay, rig: IRenderedRig): INodeStruct
 		parent: parentId,
 		text: display.text,
 		line_width: display.lineWidth,
-		background_color: JsonText.moveHex8AlphaToStart(backgroundColor.toHex8String()),
+		background_color: TextComponent.moveHex8AlphaToStart(backgroundColor.toHex8String()),
 		background_alpha: backgroundColor.getAlpha(),
 		align: display.align,
 		shadow: display.shadow,

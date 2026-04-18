@@ -38,7 +38,6 @@ import { cleanupExportedFiles } from './systems/cleaner'
 import mcbFiles from './systems/datapackCompiler/mcbFiles'
 import TELLRAW from './systems/datapackCompiler/tellraw'
 import { exportProject } from './systems/exporter'
-import { JsonText } from './systems/jsonText'
 import * as assetManager from './systems/minecraft/assetManager'
 import * as blockModelManager from './systems/minecraft/blockModelManager'
 import { BLOCKSTATE_REGISTRY, getBlockState } from './systems/minecraft/blockstateManager'
@@ -112,7 +111,6 @@ const AnimatedJavaApi = {
 		)
 	},
 	TELLRAW,
-	JsonText,
 	getBlockState,
 }
 window.AnimatedJava = AnimatedJavaApi

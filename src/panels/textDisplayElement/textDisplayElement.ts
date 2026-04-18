@@ -1,8 +1,8 @@
 import { registerProjectPatch } from 'blockbench-patch-manager'
+import { TextComponent } from 'book-and-quill'
 import { injectComponent } from 'svelte-patching-tools'
 import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from '../../formats/blueprint'
 import { type Alignment, TextDisplay } from '../../outliner/textDisplay'
-import { JsonTextParser } from '../../systems/jsonText/parser'
 import EVENTS from '../../util/events'
 import { translate } from '../../util/translation'
 import TextDisplayElementPanel from './textDisplayElement.svelte'
@@ -321,11 +321,9 @@ export const TEXT_DISPLAY_COPY_TEXT_ACTION = new Action(
 			}
 
 			try {
-				const text = new JsonTextParser({
+				const text = TextComponent.fromString(selected.text, {
 					minecraftVersion: Project.animated_java.target_minecraft_version,
-				})
-					.parse(selected.text)
-					.toString(true, Project.animated_java.target_minecraft_version)
+				}).toString(true, Project.animated_java.target_minecraft_version)
 				clipboard.writeText(text)
 				Blockbench.showQuickMessage(translate('tool.text_display.copy_text.copied'), 2000)
 			} catch (e) {

@@ -1,11 +1,10 @@
+import { COLORS, TextComponent, UnicodeString, type TextComponentStyle } from 'book-and-quill'
 import { createHash } from 'node:crypto'
 import MissingCharacter from '../../assets/missing_character.png'
 import { TextDisplay, type Alignment } from '../../outliner/textDisplay'
 import { mergeGeometries } from '../../util/bufferGeometryUtils'
 import { getPathFromResourceLocation } from '../../util/minecraftUtil'
 import { Stopwatch } from '../../util/stopwatch'
-import { COLOR_VALUES, JsonText, type ComponentStyle } from '../jsonText'
-import { UnicodeString } from '../jsonText/unicodeString'
 import { wrapJsonText, type StyleSpan, type Word } from '../jsonText/wrapping'
 import { getJSONAsset, getPngAsset, hasAsset } from './assetManager'
 
@@ -166,17 +165,22 @@ class BitmapFontProvider extends FontProvider {
 	atlas: THREE.Texture = THREE.Texture.DEFAULT_IMAGE
 	canvas: HTMLCanvasElement = document.createElement('canvas')
 
+	providerJSON: MinecraftJson.FontProviderBitmap
+
 	private charCache = new Map<string, CachedChar>()
 
 	constructor(providerJSON: MinecraftJson.FontProviderBitmap) {
 		super(providerJSON)
+		this.providerJSON = providerJSON
 		this.type = providerJSON.type
 		this.bitmapPath = getPathFromResourceLocation(providerJSON.file, 'textures')
 		this.charHeight = providerJSON.height ?? 8
 		this.charWidth = 8
 		this.ascent = providerJSON.ascent
 		for (const row of providerJSON.chars) {
-			this.chars.push(new UnicodeString(row))
+			const str = new UnicodeString(row)
+			console.log({ row, str })
+			this.chars.push(str)
 		}
 	}
 
@@ -191,6 +195,20 @@ class BitmapFontProvider extends FontProvider {
 		this.atlas = texture
 		this.charHeight = texture.image.height / this.chars.length
 		this.charWidth = texture.image.width / this.chars[0].length
+		if (!Number.isFinite(this.charWidth)) {
+			console.log({
+				providerJSON: this.providerJSON,
+				bitmapPath: this.bitmapPath,
+				imageWidth: texture.image.width,
+				charsPerRow: this.chars[0].length,
+				calculatedCharWidth: this.charWidth,
+				chars: this.chars,
+				texture,
+			})
+			throw new Error(
+				`Invalid character width calculated from bitmap font atlas: ${this.charWidth}`
+			)
+		}
 		// Update canvas
 		this.canvas.width = texture.image.width
 		this.canvas.height = texture.image.height
@@ -416,7 +434,7 @@ export class MinecraftFont {
 		shadow = TextDisplay.properties.shadow.default,
 		alignment = TextDisplay.properties.align.default,
 	}: {
-		jsonText: JsonText
+		jsonText: TextComponent
 		maxLineWidth?: number
 		backgroundColor?: tinycolor.Instance
 		/** Whether or not to render any text shadow */
@@ -475,7 +493,7 @@ export class MinecraftFont {
 					if (charGeos.length > 0) {
 						spanGeos.push(mergeGeometries(charGeos)!)
 
-						const color = JsonText.getColor(span.style.color ?? COLOR_VALUES.white)
+						const color = TextComponent.getColor(span.style.color ?? COLORS.white)
 						spanMaterials.push(this.getColorMaterial(color))
 
 						if (shadow && shadowGeos.length > 0) {
@@ -484,7 +502,7 @@ export class MinecraftFont {
 							if (span.style.shadow_color) {
 								spanMaterials.push(
 									this.getColorMaterial(
-										JsonText.getColor(span.style.shadow_color)
+										TextComponent.getColor(span.style.shadow_color)
 									)
 								)
 							} else {
@@ -553,7 +571,7 @@ export class MinecraftFont {
 		return { mesh, hitbox: backgroundGeo, outline }
 	}
 
-	async getCharGeo(char: string, style: ComponentStyle): Promise<CachedCharGeo> {
+	async getCharGeo(char: string, style: TextComponentStyle): Promise<CachedCharGeo> {
 		let font: MinecraftFont = this
 		if (style.font) {
 			const newFont = await MinecraftFont.getById(style.font)
