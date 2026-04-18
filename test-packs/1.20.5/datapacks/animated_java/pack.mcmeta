@@ -4,7 +4,7 @@
 		"description": "AJ Testing DP",
 		"supported_formats": {
 			"min_inclusive": 41,
-			"max_inclusive": 56
+			"max_inclusive": 47
 		}
 	}
 }

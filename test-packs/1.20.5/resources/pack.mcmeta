@@ -4,7 +4,7 @@
 		"description": "AJ Testing RP",
 		"supported_formats": {
 			"min_inclusive": 32,
-			"max_inclusive": 41
+			"max_inclusive": 33
 		}
 	}
 }

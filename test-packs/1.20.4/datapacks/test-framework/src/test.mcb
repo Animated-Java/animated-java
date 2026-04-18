@@ -9,38 +9,71 @@ function on_load minecraft:load {
 
 dir armor_stand {
 	function test {
+		scoreboard players set #failed_tests aj.i 0
 		execute as @e[tag=aj.armor_stand.root] run {
 			scoreboard players set #test aj.i 0
 			function animated_java:armor_stand/as_locator {name:'left_hand',command:'scoreboard players set #test aj.i 1'}
-			execute if score #test aj.i matches 0 run tellraw @a {"text":"as_locator test failed!","color":"red"}
+			execute if score #test aj.i matches 0 run {
+				tellraw @a {"text":"as_locator test failed!","color":"red"}
+				scoreboard players add #failed_tests aj.i 1
+			}
 
 			scoreboard players set #test aj.i 0
 			function animated_java:armor_stand/at_locator {name:'left_hand',command:'scoreboard players set #test aj.i 1'}
-			execute if score #test aj.i matches 0 run tellraw @a {"text":"at_locator test failed!","color":"red"}
+			execute if score #test aj.i matches 0 run {
+				tellraw @a {"text":"at_locator test failed!","color":"red"}
+				scoreboard players add #failed_tests aj.i 1
+			}
 
 			scoreboard players set #test aj.i 0
 			function animated_java:armor_stand/as_at_locator {name:'left_hand',command:'scoreboard players set #test aj.i 1'}
-			execute if score #test aj.i matches 0 run tellraw @a {"text":"as_at_locator test failed!","color":"red"}
+			execute if score #test aj.i matches 0 run {
+				tellraw @a {"text":"as_at_locator test failed!","color":"red"}
+				scoreboard players add #failed_tests aj.i 1
+			}
 
 			scoreboard players set #test aj.i 0
 			function animated_java:armor_stand/as_all_locators {command:'scoreboard players add #test aj.i 1'}
-			execute unless score #test aj.i matches 2 run tellraw @a {"text":"as_all_locators test failed!","color":"red"}
+			execute unless score #test aj.i matches 2 run {
+				tellraw @a {"text":"as_all_locators test failed!","color":"red"}
+				scoreboard players add #failed_tests aj.i 1
+			}
 
 			scoreboard players set #test aj.i 0
 			function animated_java:armor_stand/at_all_locators {command:'scoreboard players add #test aj.i 1'}
-			execute unless score #test aj.i matches 2 run tellraw @a {"text":"at_all_locators test failed!","color":"red"}
+			execute unless score #test aj.i matches 2 run {
+				tellraw @a {"text":"at_all_locators test failed!","color":"red"}
+				scoreboard players add #failed_tests aj.i 1
+			}
 
 			scoreboard players set #test aj.i 0
 			function animated_java:armor_stand/as_at_all_locators {command:'scoreboard players add #test aj.i 1'}
-			execute unless score #test aj.i matches 2 run tellraw @a {"text":"as_at_all_locators test failed!","color":"red"}
+			execute unless score #test aj.i matches 2 run {
+				tellraw @a {"text":"as_at_all_locators test failed!","color":"red"}
+				scoreboard players add #failed_tests aj.i 1
+			}
 
 			scoreboard players set #test aj.i 0
 			function animated_java:armor_stand/as_camera {name:'camera',command:'scoreboard players set #test aj.i 1'}
-			execute if score #test aj.i matches 0 run tellraw @a {"text":"as_camera test failed!","color":"red"}
+			execute if score #test aj.i matches 0 run {
+				tellraw @a {"text":"as_camera test failed!","color":"red"}
+				scoreboard players add #failed_tests aj.i 1
+			}
 
 			scoreboard players set #test aj.i 0
 			function animated_java:armor_stand/as_node {name:'head',command:'scoreboard players set #test aj.i 1'}
-			execute if score #test aj.i matches 0 run tellraw @a {"text":"as_node test failed!","color":"red"}
+			execute if score #test aj.i matches 0 run {
+				tellraw @a {"text":"as_node test failed!","color":"red"}
+				scoreboard players add #failed_tests aj.i 1
+			}
+		}
+
+		execute if score #failed_tests aj.i matches 0 run {
+			tellraw @a {"text":"All tests passed!","color":"green"}
+		}
+
+		execute if score #failed_tests aj.i matches 1.. run {
+			tellraw @a [{"score":{"name":"#failed_tests","objective":"aj.i"}}, {"text":" tests failed!","color":"red"}]
 		}
 	}
 

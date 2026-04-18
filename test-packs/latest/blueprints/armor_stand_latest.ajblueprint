@@ -17,7 +17,6 @@
 		"data_pack": "../datapacks/animated_java",
 		"on_summon_function": "say On-Summon!",
 		"on_remove_function": "say On-Remove!",
-		"auto_update_rig_orientation": false,
 		"baked_animations": false,
 		"json_file": "../testPluginExport.json"
 	},
@@ -891,7 +890,7 @@
 				"sync_passenger_rotation": true,
 				"on_summon_function": "say Summon Left Hand!",
 				"on_remove_function": "say Remove Left Hand!",
-				"on_tick_function": ""
+				"on_tick_function": "particle minecraft:bubble ^ ^ ^1\ntp @e[tag=test3,limit=1] ~ ~ ~ ~ ~"
 			},
 			"uuid": "7de415a2-9fdd-e4b2-3455-c3bed72eb896",
 			"type": "locator"
@@ -910,7 +909,7 @@
 				"sync_passenger_rotation": false,
 				"on_summon_function": "say Summon Right Hand!",
 				"on_remove_function": "say Remove Right Hand!",
-				"on_tick_function": ""
+				"on_tick_function": "particle minecraft:bubble ^ ^ ^1\ntp @e[tag=test2,limit=1] ~ ~ ~ ~ ~"
 			},
 			"uuid": "7747736f-85e2-338f-207e-53f8d3d2fa39",
 			"type": "locator"
@@ -967,47 +966,17 @@
 		},
 		{
 			"name": "camera",
-			"box_uv": false,
-			"render_order": "default",
-			"rescale": false,
-			"locked": false,
-			"shade": true,
-			"light_emission": 0,
+			"position": [0, 27, 0],
+			"rotation": [0, 0, 0],
+			"fov": 70,
+			"aspect_ratio": [16, 9],
+			"linked_preview": "",
+			"camera_linked": false,
+			"visibility": true,
 			"export": true,
+			"locked": false,
 			"scope": 0,
-			"allow_mirror_modeling": true,
-			"from": [0, 0, 0],
-			"to": [1, 1, 1],
-			"autouv": 0,
-			"color": 3,
-			"origin": [0, 0, 0],
-			"faces": {
-				"north": {
-					"uv": [0, 0, 1, 1],
-					"texture": "eb6c49b8-8e8e-a039-9a6f-ef6a06bc7924"
-				},
-				"east": {
-					"uv": [0, 0, 1, 1],
-					"texture": "eb6c49b8-8e8e-a039-9a6f-ef6a06bc7924"
-				},
-				"south": {
-					"uv": [0, 0, 1, 1],
-					"texture": "eb6c49b8-8e8e-a039-9a6f-ef6a06bc7924"
-				},
-				"west": {
-					"uv": [0, 0, 1, 1],
-					"texture": "eb6c49b8-8e8e-a039-9a6f-ef6a06bc7924"
-				},
-				"up": {
-					"uv": [0, 0, 1, 1],
-					"texture": "eb6c49b8-8e8e-a039-9a6f-ef6a06bc7924"
-				},
-				"down": {
-					"uv": [0, 0, 1, 1],
-					"texture": "eb6c49b8-8e8e-a039-9a6f-ef6a06bc7924"
-				}
-			},
-			"type": "cube",
+			"type": "camera",
 			"uuid": "3ffeee76-901e-f8a2-c29a-82f90e16fd1e"
 		},
 		{
@@ -1021,7 +990,7 @@
 			"export": true,
 			"item": "minecraft:diamond",
 			"itemDisplay": "none",
-			"onSummonFunction": "say I'm a Diamond!",
+			"onSummonFunction": "",
 			"configs": {
 				"default": {
 					"on_apply_function": "",
@@ -1038,7 +1007,7 @@
 				},
 				"variants": {
 					"49521f4b-b970-e4bd-b594-2e05d2d46027": {
-						"on_apply_function": "say I'm now a very colorful diamond!",
+						"on_apply_function": "",
 						"billboard": "fixed",
 						"override_brightness": false,
 						"brightness_override": 0,
@@ -1155,17 +1124,17 @@
 			"onSummonFunction": "",
 			"configs": {
 				"default": {
-					"on_apply_function": "",
 					"billboard": "fixed",
-					"override_brightness": false,
 					"brightness_override": 0,
 					"enchanted": false,
-					"glowing": false,
-					"override_glow_color": false,
 					"glow_color": "#ffffff",
+					"glowing": false,
+					"inherit_settings": true,
 					"invisible": false,
+					"nbt": "{}",
 					"shadow_radius": 0,
-					"shadow_strength": 1
+					"shadow_strength": 1,
+					"use_nbt": false
 				},
 				"variants": {}
 			},
@@ -2245,6 +2214,12 @@
 					"rotation_global": false,
 					"quaternion_interpolation": false
 				},
+				"3ffeee76-901e-f8a2-c29a-82f90e16fd1e": {
+					"name": "camera",
+					"type": "camera",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
 				"bc141119-7f51-9690-7e21-e119b34fb3a2": {
 					"name": "item_display",
 					"type": "animated_java:vanilla_item_display",
@@ -2504,6 +2479,12 @@
 					"rotation_global": false,
 					"quaternion_interpolation": false
 				},
+				"3ffeee76-901e-f8a2-c29a-82f90e16fd1e": {
+					"name": "camera",
+					"type": "camera",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
 				"bc141119-7f51-9690-7e21-e119b34fb3a2": {
 					"name": "item_display",
 					"type": "animated_java:vanilla_item_display",
@@ -2519,7 +2500,7 @@
 			"override": false,
 			"length": 1,
 			"snapping": 20,
-			"selected": false,
+			"selected": true,
 			"saved": true,
 			"path": "",
 			"scope": 0,
@@ -2811,119 +2792,10 @@
 					"type": "locator",
 					"rotation_global": false,
 					"quaternion_interpolation": false
-				}
-			}
-		},
-		{
-			"uuid": "8b5ebbc6-1189-bb9a-00f6-6ef68e212fc1",
-			"name": "camera_test",
-			"loop": "loop",
-			"override": false,
-			"length": 90,
-			"snapping": 20,
-			"selected": true,
-			"saved": true,
-			"path": "",
-			"scope": 0,
-			"anim_time_update": "",
-			"blend_weight": "",
-			"start_delay": "",
-			"loop_delay": "0",
-			"excluded_nodes": [],
-			"animators": {
-				"98795982-9c43-6e3e-eed9-2c776a957938": {
-					"name": "root",
-					"type": "bone",
-					"rotation_global": false,
-					"quaternion_interpolation": false
 				},
-				"102db36a-eeda-0e6f-d5cc-c186ecda8165": {
-					"name": "baseplate_root",
-					"type": "bone",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
-				"4f000ffc-11d6-3a4b-7c8d-6b5ba483228c": {
-					"name": "baseplate_pivot_a",
-					"type": "bone",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
-				"5e08acae-d6ca-0dfd-9360-8cdb13c7a824": {
-					"name": "armor_stand_root",
-					"type": "bone",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
-				"98a28100-07e8-849a-38b7-f56abc2c2e56": {
-					"name": "waist_pivot",
-					"type": "bone",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
-				"49e67c2a-3d1d-792d-9c75-72ecbc0f92e0": {
-					"name": "body_waist_pivot",
-					"type": "bone",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
-				"6c53311f-ffc8-e567-ff1b-65840698e9ba": {
-					"name": "body",
-					"type": "bone",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
-				"808e3c26-7285-af3f-a079-d8b899176dd3": {
-					"name": "head",
-					"type": "bone",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
-				"b5b52d2c-097c-08df-6457-372fbae12445": {
-					"name": "left_arm",
-					"type": "bone",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
-				"215d1b02-0e64-a794-1b88-a9c5a6d7541c": {
-					"name": "right_arm",
-					"type": "bone",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
-				"55b812fe-7e4c-b2a5-da5b-3a8c82f9fc69": {
-					"name": "left_leg",
-					"type": "bone",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
-				"60d50d30-a018-429d-ba78-c5fb5804dd8a": {
-					"name": "right_leg",
-					"type": "bone",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
-				"7de415a2-9fdd-e4b2-3455-c3bed72eb896": {
-					"name": "left_hand",
-					"type": "locator",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
-				"7747736f-85e2-338f-207e-53f8d3d2fa39": {
-					"name": "right_hand",
-					"type": "locator",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
-				"c2e217f1-b50a-5c9a-b342-71a35e984046": {
-					"name": "text_display",
-					"type": "animated_java:text_display",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
-				"bc141119-7f51-9690-7e21-e119b34fb3a2": {
-					"name": "item_display",
-					"type": "animated_java:vanilla_item_display",
+				"3ffeee76-901e-f8a2-c29a-82f90e16fd1e": {
+					"name": "camera",
+					"type": "camera",
 					"rotation_global": false,
 					"quaternion_interpolation": false
 				}

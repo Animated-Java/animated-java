@@ -230,7 +230,7 @@ function summon {
 				on passengers \
 				if entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(export_namespace, node.storage_name)%>] \
 			run block as_node/<%node.storage_name%> {
-				data modify entity @s CustomName set value '<%ENTITY_NAMES.NODE(export_namespace, node.type, node.storage_name)%>'
+				data modify entity @s CustomName set value <%ENTITY_NAMES.NODE(export_namespace, node.type, node.storage_name)%>
 				function *global/gu/get_entity_uuid_string
 				scoreboard players operation @s <%OBJECTIVES.ID()%> = aj.last_id <%OBJECTIVES.ID()%>
 			}

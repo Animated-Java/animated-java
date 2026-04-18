@@ -33,18 +33,21 @@ interface MCBFiles {
 }
 
 const MCB_FILES: Record<SUPPORTED_MINECRAFT_VERSIONS, MCBFiles> = {
+	// Completely unrestricted element rotation
 	'1.21.11': {
 		animation: ANIMATION_1_21_5,
 		static: STATIC_1_21_5,
 		global: GLOBAL_1_21_5,
 		globalTemplates: GLOBAL_TEMPLATES_1_20_4,
 	},
+	// Single axis element rotation removed
 	'1.21.9': {
 		animation: ANIMATION_1_21_5,
 		static: STATIC_1_21_5,
 		global: GLOBAL_1_21_5,
 		globalTemplates: GLOBAL_TEMPLATES_1_20_4,
 	},
+	// 22.5 degree element rotation limit removed
 	'1.21.6': {
 		animation: ANIMATION_1_21_5,
 		static: STATIC_1_21_5,
