@@ -34,19 +34,13 @@ import {
 	replacePathPart,
 	transformationToNbt,
 } from '../util'
+import ENTITY_NAMES from './entityNames'
 import { compileMcbProject } from './mcbCompiler'
-import { TAGS } from './tags'
+import OBJECTIVES from './objectives'
+import TAGS from './tags'
 import TELLRAW from './tellraw'
 
 const BONE_TYPES = ['bone', 'text_display', 'item_display', 'block_display']
-
-namespace OBJECTIVES {
-	export const I = () => 'aj.i'
-	export const ID = () => 'aj.id'
-	export const FRAME = (animationName: string) => `aj.${animationName}.frame`
-	export const IS_RIG_LOADED = () => 'aj.is_rig_loaded'
-	export const TWEEN_DURATION = () => 'aj.tween_duration'
-}
 
 function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 	const tags: string[] = []
@@ -401,41 +395,31 @@ function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 
 async function generateRootEntityPassengers(
 	version: SUPPORTED_MINECRAFT_VERSIONS,
-	rig: IRenderedRig,
-	rigHash: string
+	rig: IRenderedRig
 ) {
 	const aj = Project!.animated_java
 	const passengers: NbtList = new NbtList()
 
-	const dataEntity = new NbtCompound()
-
-	if (!compareVersions('1.21.5', version) /* >= 1.21.5 */) {
-		dataEntity.set('id', new NbtString('minecraft:item_display'))
-	} else if (!compareVersions('1.20.4', version) /* >= 1.20.4 */) {
-		dataEntity.set('id', new NbtString('minecraft:marker'))
-	} else {
-		throw new Error(`Minecraft version is below minimum supported version 1.20.4!`)
-	}
-
-	passengers.add(
-		dataEntity
-			.set(
-				'Tags',
-				new NbtList([
-					new NbtString(TAGS.NEW()),
-					new NbtString(TAGS.GLOBAL_ENTITY()),
-					new NbtString(TAGS.GLOBAL_DATA()),
-					new NbtString(TAGS.PROJECT_ENTITY(aj.export_namespace)),
-					new NbtString(TAGS.PROJECT_DATA(aj.export_namespace)),
-				])
-			)
-			.set(
-				'data',
-				new NbtCompound()
-					.set('rig_hash', new NbtString(rigHash))
-					.set('export_namespace', new NbtString(aj.export_namespace))
-			)
-	)
+	// passengers.add(
+	// 	new NbtCompound()
+	// 		.set('id', new NbtString('minecraft:marker'))
+	// 		.set(
+	// 			'Tags',
+	// 			new NbtList([
+	// 				new NbtString(TAGS.NEW()),
+	// 				new NbtString(TAGS.GLOBAL_ENTITY()),
+	// 				new NbtString(TAGS.GLOBAL_DATA()),
+	// 				new NbtString(TAGS.PROJECT_ENTITY(aj.export_namespace)),
+	// 				new NbtString(TAGS.PROJECT_DATA(aj.export_namespace)),
+	// 			])
+	// 		)
+	// 		.set(
+	// 			'data',
+	// 			new NbtCompound()
+	// 				.set('rig_hash', new NbtString(rigHash))
+	// 				.set('export_namespace', new NbtString(aj.export_namespace))
+	// 		)
+	// )
 
 	for (const [uuid, node] of Object.entries(rig.nodes)) {
 		if (node.type === 'struct') continue
@@ -957,10 +941,11 @@ const dataPackCompiler: DataPackCompiler = async ({
 		rig,
 		animations,
 		export_version: Math.random().toString().substring(2, 10),
-		root_entity_passengers: await generateRootEntityPassengers(version, rig, rigHash),
+		root_entity_passengers: await generateRootEntityPassengers(version, rig),
 		TAGS,
 		OBJECTIVES,
 		TELLRAW,
+		ENTITY_NAMES,
 		on_summon_function: aj.on_summon_function,
 		on_remove_function: aj.on_remove_function,
 		on_pre_tick_function: aj.on_pre_tick_function,
@@ -992,6 +977,7 @@ const dataPackCompiler: DataPackCompiler = async ({
 		project_storage: `animated_java:${aj.export_namespace}`,
 		temp_storage: `animated_java:temp`,
 		gu_storage: `animated_java:gu`,
+		data_storage: `animated_java:data`,
 		auto_update_rig_orientation: aj.auto_update_rig_orientation,
 		debug_mode: debugMode,
 	}

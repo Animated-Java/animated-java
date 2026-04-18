@@ -2,6 +2,7 @@ import { toSmallCaps } from '../../util/minecraftUtil'
 import { type IRenderedAnimation } from '../animationRenderer'
 import { JsonText, type TextElement } from '../jsonText'
 import { type IRenderedVariant } from '../rigRenderer'
+import OBJECTIVES from './objectives'
 
 const TELLRAW_PREFIX = () =>
 	new JsonText([
@@ -162,10 +163,10 @@ namespace TELLRAW {
 		])
 	}
 
-	export const FUNCTION_NOT_EXECUTED_AS_ENTITY_WITH_ROOT_UUID_ERROR = (functionPath: string) => {
+	export const FUNCTION_NOT_EXECUTED_AS_ENTITY_WITH_ID_SCORE = (functionPath: string) => {
 		const hoverText = new JsonText([{ text: functionPath, color: 'yellow' }, '']).flatten()
 
-		return TELLRAW_ERROR('Function Not Executed as Entity with Root UUID Data', [
+		return TELLRAW_ERROR('Function Not Executed as Entity with ID Score', [
 			!compareVersions('1.21.5', Project!.animated_java.target_minecraft_version)
 				? {
 						text: '[This Function]',
@@ -177,8 +178,9 @@ namespace TELLRAW {
 						color: 'yellow',
 						hoverEvent: { action: 'show_text', contents: hoverText },
 					},
-			' must be executed as an entity with the NBT ',
-			{ text: 'data.root_uuid', color: 'yellow' },
+			' must be executed as an entity with a ',
+			{ text: `${OBJECTIVES.ID()}`, color: 'yellow' },
+			' score.',
 		])
 	}
 

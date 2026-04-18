@@ -1,4 +1,4 @@
-export namespace TAGS {
+namespace TAGS {
 	// --------------------------------
 	// region Global Tags
 	// --------------------------------
@@ -13,7 +13,6 @@ export namespace TAGS {
 	export const GLOBAL_ROOT_CHILD_TEXT_DISPLAY = () => 'aj.global.root.child.text_display'
 	export const GLOBAL_ROOT_CHILD_LOCATOR = () => 'aj.global.root.child.locator'
 	export const GLOBAL_ROOT_CHILD_CAMERA = () => 'aj.global.root.child.camera'
-	export const GLOBAL_ROOT_CHILD_DATA = () => 'aj.global.root.child.data'
 
 	export const GLOBAL_NODE = () => 'aj.global.node'
 	export const GLOBAL_DISPLAY_NODE = () => 'aj.global.display_node'
@@ -24,7 +23,6 @@ export namespace TAGS {
 	export const GLOBAL_TEXT_DISPLAY = () => 'aj.global.text_display'
 	export const GLOBAL_CAMERA = () => 'aj.global.camera'
 	export const GLOBAL_LOCATOR = () => 'aj.global.locator'
-	export const GLOBAL_DATA = () => 'aj.global.data'
 
 	export const GLOBAL_NODE_NAMED = (nodeName: string) => `aj.global.node.${nodeName}`
 	export const GLOBAL_DISPLAY_NODE_NAMED = (nodeName: string) =>
@@ -82,8 +80,6 @@ export namespace TAGS {
 		`aj.${exportNamespace}.root.child.locator`
 	export const PROJECT_ROOT_CHILD_CAMERA = (exportNamespace: string) =>
 		`aj.${exportNamespace}.root.child.camera`
-	export const PROJECT_ROOT_CHILD_DATA = (exportNamespace: string) =>
-		`aj.${exportNamespace}.root.child.data`
 
 	export const PROJECT_NODE = (exportNamespace: string) => `aj.${exportNamespace}.node`
 	export const PROJECT_DISPLAY_NODE = (exportNamespace: string) =>
@@ -99,7 +95,6 @@ export namespace TAGS {
 		`aj.${exportNamespace}.text_display`
 	export const PROJECT_CAMERA = (exportNamespace: string) => `aj.${exportNamespace}.camera`
 	export const PROJECT_LOCATOR = (exportNamespace: string) => `aj.${exportNamespace}.locator`
-	export const PROJECT_DATA = (exportNamespace: string) => `aj.${exportNamespace}.data`
 
 	export const PROJECT_NODE_NAMED = (exportNamespace: string, nodeName: string) =>
 		`aj.${exportNamespace}.node.${nodeName}`
@@ -170,5 +165,8 @@ export namespace TAGS {
 		`aj.${exportNamespace}.variant.${variantName}.applied`
 	// Used to tell the set and apply frame functions to only apply the bone transforms, and ignore command/variant keyframes
 	export const TRANSFORMS_ONLY = () => 'aj.transforms_only'
+	export const EFFECTS_ONLY = () => 'aj.effects_only'
 	export const OUTDATED_RIG_TEXT_DISPLAY = () => 'aj.outdated_rig_text_display'
 }
+
+export default TAGS

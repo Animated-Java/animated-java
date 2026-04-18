@@ -9,10 +9,10 @@ import ANIMATION_1_20_5 from './1.20.5/animation.mcb'
 import STATIC_1_20_5 from './1.20.5/static.mcb'
 
 import ANIMATION_1_21_0 from './1.21.0/animation.mcb'
+import GLOBAL_1_21_0 from './1.21.0/global.mcb'
 import STATIC_1_21_0 from './1.21.0/static.mcb'
 
 import ANIMATION_1_21_2 from './1.21.2/animation.mcb'
-import GLOBAL_1_21_2 from './1.21.2/global.mcb'
 import STATIC_1_21_2 from './1.21.2/static.mcb'
 
 import ANIMATION_1_21_4 from './1.21.4/animation.mcb'
@@ -58,19 +58,19 @@ const MCB_FILES: Record<SUPPORTED_MINECRAFT_VERSIONS, MCBFiles> = {
 	'1.21.4': {
 		animation: ANIMATION_1_21_4,
 		static: STATIC_1_21_4,
-		global: GLOBAL_1_21_2,
+		global: GLOBAL_1_21_0,
 		globalTemplates: GLOBAL_TEMPLATES_1_20_4,
 	},
 	'1.21.2': {
 		animation: ANIMATION_1_21_2,
 		static: STATIC_1_21_2,
-		global: GLOBAL_1_21_2,
+		global: GLOBAL_1_21_0,
 		globalTemplates: GLOBAL_TEMPLATES_1_20_4,
 	},
 	'1.21.0': {
 		animation: ANIMATION_1_21_0,
 		static: STATIC_1_21_0,
-		global: GLOBAL_1_20_4,
+		global: GLOBAL_1_21_0,
 		globalTemplates: GLOBAL_TEMPLATES_1_20_4,
 	},
 	'1.20.5': {

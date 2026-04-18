@@ -1,8 +1,9 @@
 # TODO - Move all internal functions into an internal namespace, and only have user-facing functions in the main `animated_java:<%export_namespace%>` namespace.
 
-# DIFFERENCES FROM 1.20.5:
-# - @n entity selector
-# - minecraft:item_model item component: item.components."minecraft:custom_model_data" -> item.components."minecraft:item_model"
+# DIFFERENCES FROM 1.21.2:
+# - node entities are no longer passengers of the root entity for smooth rotation fix.
+# - minecraft:custom_model_data is now more powerful than minecraft:item_model: item.components."minecraft:item_model" -> item.components."minecraft:custom_model_data".strings[0]
+# - JSON text components are now stored as NBT in entities.
 
 import ../global.mcbt
 
@@ -70,7 +71,7 @@ dir root {
 			IF (has_locators || has_cameras) {
 				function ./on_tick/transform_floating_entities
 			}
-			execute on passengers run tp @s ~ ~ ~ ~ ~
+			execute on passengers run rotate @s ~ ~
 		} ELSE IF (has_ticking_locators) {
 			function ./on_tick/transform_locators
 		}
@@ -97,7 +98,7 @@ dir root {
 								tp @s ~ ~ ~ ~ ~
 
 								IF (locator.config?.sync_passenger_rotation) {
-									execute on passengers run tp @s ~ ~ ~ ~ ~
+									execute on passengers run rotate @s ~ ~
 								}
 
 								IF (locator.config?.on_tick_function) {
@@ -105,6 +106,16 @@ dir root {
 										emit.mcb(locator.config.on_tick_function)
 									%%>
 								}
+							}
+
+							IF (locator.config?.sync_passenger_rotation) {
+								# Precise Rotation Workaround. Fixes MC-272913.
+								# Thanks @Triton365! (https://discord.com/channels/154777837382008833/157097006500806656/1402253905408163842)
+								$execute \
+									as $(uuid) \
+									store success entity @s OnGround byte 1 \
+									store success score @s <%OBJECTIVES.I()%> \
+									unless score @s <%OBJECTIVES.I()%> matches 1
 							}
 						} ELSE IF (locator.config?.on_tick_function) {
 							$execute \
@@ -130,6 +141,13 @@ dir root {
 							positioned ^$(px) ^$(py) ^$(pz) \
 							rotated ~$(ry) ~$(rx) \
 						run tp @s ~ ~ ~ ~ ~
+						# Precise Rotation Workaround. Fixes MC-272913.
+						# Thanks @Triton365! (https://discord.com/channels/154777837382008833/157097006500806656/1402253905408163842)
+						$execute \
+							as $(uuid) \
+							store success entity @s OnGround byte 1 \
+							store success score @s <%OBJECTIVES.I()%> \
+							unless score @s <%OBJECTIVES.I()%> matches 1
 					}
 				}
 			}
@@ -143,11 +161,23 @@ IF (!auto_update_rig_orientation) {
 
 		tp @s ~ ~ ~ ~ ~
 
+		data_manager prep read
 		IF (has_locators || has_cameras) {
-			data_manager prep read
 			function ./on_tick/transform_floating_entities
 		}
-		execute at @s on passengers run tp @s ~ ~ ~ ~ ~
+
+		block { with storage <%temp_storage%> entry.data.uuids_by_name
+			REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
+				$tp $(<%node.storage_name%>) ~ ~ ~ ~ ~
+				# Precise Rotation Workaround. Fixes MC-272913.
+				# Thanks @Triton365! (https://discord.com/channels/154777837382008833/157097006500806656/1402253905408163842)
+				$execute \
+					as $(<%node.storage_name%>) \
+					store success entity @s OnGround byte 1 \
+					store success score @s <%OBJECTIVES.I()%> \
+					unless score @s <%OBJECTIVES.I()%> matches 1
+			}
+		}
 	}
 } ELSE {
 	function move {
@@ -242,7 +272,16 @@ dir animations {
 				execute at @s run function ./zzz/apply_frame {frame: 0}
 				$execute at @s run function ./zzz/apply_frame {frame: $(to_frame)}
 				tag @s remove <%TAGS.TRANSFORMS_ONLY()%>
-				execute on passengers store result entity @s interpolation_duration int 1 run scoreboard players get #this <%OBJECTIVES.I()%>
+
+				data_manager prep read
+				block { with <%temp_storage%> entry.data.uuids_by_name
+					REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
+						$execute \
+							as $(<%node.storage_name%>) \
+							store result entity @s interpolation_duration int 1 \
+							run scoreboard players get #this <%OBJECTIVES.I()%>
+					}
+				}
 			}
 
 			dir zzz {
@@ -250,8 +289,13 @@ dir animations {
 					# Tweening logic
 					scoreboard players remove @s <%OBJECTIVES.TWEEN_DURATION()%> 1
 					execute if score @s <%OBJECTIVES.TWEEN_DURATION()%> matches 1.. run return 1
-					execute if score @s <%OBJECTIVES.TWEEN_DURATION()%> matches 0 on passengers run \
-						data modify entity @s interpolation_duration set value <%interpolation_duration%>
+					execute if score @s <%OBJECTIVES.TWEEN_DURATION()%> matches 0 run \
+						block { with storage <%temp_storage%> entry.data.uuids_by_name
+							REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
+								$data modify entity $(<%node.storage_name%>) interpolation_duration set value <%interpolation_duration%>
+							}
+						}
+
 					# Animation logic
 					IF (animation.loop_mode === 'loop' && animation.loop_delay === 0) {
 						# Makes sure function keyframes in the last frame of the animation are activated.
@@ -300,20 +344,26 @@ dir animations {
 					function set_frame {
 						#ARGS: {frame: int}
 						$function ./apply_frame {frame: $(frame)}
-						execute on passengers run data modify entity @s start_interpolation set value -1
+						block { with storage <%temp_storage%> entry.data.uuids_by_name
+							REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
+								$data modify entity $(<%node.storage_name%>) start_interpolation set value -1
+							}
+						}
 						return 1
 					}
 
 					function apply_frame {
 						#ARGS: {frame: int}
-						REPEAT (Object.values(animation.modified_nodes).sort(nodeSorter)) as node {
-							IF (BONE_TYPES.includes(node.type)) {
-								$execute on passengers if entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(export_namespace, node.storage_name)%>] run \
-									data modify entity @s {} merge from \
+
+						block { with storage <%temp_storage%> entry.data.uuids_by_name
+							REPEAT (Object.values(animation.modified_nodes).sort(nodeSorter)) as node {
+								IF (BONE_TYPES.includes(node.type)) {
+									$data modify entity $(<%node.storage_name%>) {} merge from \
 										storage <%project_storage%>/animations <%animation.storage_name%>.$(frame).<%node.storage_name%>
-							} ELSE IF (node.type === 'locator' || node.type === 'camera') {
-								$data modify storage <%temp_storage%> entry.data.uuids_by_name.<%node.storage_name%> merge from \
+								} ELSE IF (node.type === 'locator' || node.type === 'camera') {
+									$data modify storage <%temp_storage%> entry.data.uuids_by_name.<%node.storage_name%> merge from \
 										storage <%project_storage%>/animations <%animation.storage_name%>.$(frame).<%node.storage_name%>
+								}
 							}
 						}
 
@@ -336,8 +386,11 @@ dir animations {
 
 						$function ./frames/$(frame) with storage <%temp_storage%> entry.data.uuids_by_name
 
-						execute on passengers run \
-							data modify entity @s start_interpolation set value -1
+						block { with storage <%temp_storage%> entry.data.uuids_by_name
+							REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
+								$data modify entity $(<%node.storage_name%>) start_interpolation set value -1
+							}
+						}
 
 						return 1
 					}
@@ -565,7 +618,7 @@ function summon {
 		teleport_duration: 0, \
 		interpolation_duration: <%interpolation_duration%>, \
 		Passengers:<%root_entity_passengers%>, \
-		CustomName: '<%ENTITY_NAMES.ROOT(export_namespace)%>', \
+		CustomName: <%ENTITY_NAMES.ROOT(export_namespace)%>, \
 	}
 	execute as @n[ \
 		type=minecraft:item_display, \
@@ -603,7 +656,7 @@ function summon {
 			run block as_locator/<%locator.storage_name%> {
 			# run block ../as_locator/<%locator.storage_name%> {
 				tag @s remove <%TAGS.NEW()%>
-				data modify entity @s CustomName set value '<%ENTITY_NAMES.NODE(export_namespace, locator.type, locator.storage_name)%>'
+				data modify entity @s CustomName set value <%ENTITY_NAMES.NODE(export_namespace, locator.type, locator.storage_name)%>
 				function *global/gu/get_entity_uuid_string
 				scoreboard players operation @s <%OBJECTIVES.ID()%> = aj.last_id <%OBJECTIVES.ID()%>
 			}
@@ -628,7 +681,7 @@ function summon {
 			run block as_camera/<%camera.storage_name%> {
 			# run block ../as_camera/<%camera.storage_name%> {
 				tag @s remove <%TAGS.NEW()%>
-				data modify entity @s CustomName set value '<%ENTITY_NAMES.NODE(export_namespace, camera.type, camera.storage_name)%>'
+				data modify entity @s CustomName set value <%ENTITY_NAMES.NODE(export_namespace, camera.type, camera.storage_name)%>
 				function *global/gu/get_entity_uuid_string
 				scoreboard players operation @s <%OBJECTIVES.ID()%> = aj.last_id <%OBJECTIVES.ID()%>
 			}
@@ -642,7 +695,7 @@ function summon {
 				on passengers \
 				if entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(export_namespace, node.storage_name)%>] \
 			run block as_node/<%node.storage_name%> {
-				data modify entity @s CustomName set value '<%ENTITY_NAMES.NODE(export_namespace, node.type, node.storage_name)%>'
+				data modify entity @s CustomName set value <%ENTITY_NAMES.NODE(export_namespace, node.type, node.storage_name)%>
 				function *global/gu/get_entity_uuid_string
 				scoreboard players operation @s <%OBJECTIVES.ID()%> = aj.last_id <%OBJECTIVES.ID()%>
 			}
@@ -737,7 +790,7 @@ function summon {
 		IF (has_locators || has_cameras) {
 			function ./on_tick/transform_floating_entities
 		}
-		execute on passengers run tp @s ~ ~ ~ ~ ~
+		execute on passengers run rotate @s ~ ~
 
 		# Apply teleport duration
 		data modify entity @s teleport_duration set value <%teleportation_duration%>
@@ -780,6 +833,8 @@ function summon {
 		# Remove the NEW tag from the root entity, and it's passengers.
 		tag @s remove <%TAGS.NEW()%>
 		execute on passengers run tag @s remove <%TAGS.NEW()%>
+		# Dismount bone entities from the root entity.
+		execute on passengers run ride @s dismount
 	}
 }
 
@@ -1171,8 +1226,9 @@ dir remove {
 		function without_on_remove_function {
 			debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(export_namespace)%>
 
+			data_manager prep read
+
 			IF (has_entity_locators || has_cameras) {
-				data_manager prep read
 				REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator' && node.config?.use_entity)) as locator {
 					function animated_java:global/remove/entity_stack_by_uuid with entity @s data.locators.<%locator.storage_name%>
 				}
@@ -1185,6 +1241,12 @@ dir remove {
 			execute \
 				unless data storage <%temp_storage%> {entry:{data:{rig_hash: '<%rig_hash%>'}}} \
 			run function animated_java:global/remove/outdated_rig
+
+			block { with storage <%temp_storage%> entry.data.uuids_by_name
+				REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
+					$kill $(<%node.storage_name%>)
+				}
+			}
 
 			function animated_java:global/remove/entity_stack
 		}
@@ -1216,19 +1278,16 @@ IF (Object.keys(rig.variants).length > 1) {
 						)
 					%%>
 
-					REPEAT (global.filteredNodes) as node {
-						execute \
-							on passengers \
-							if entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(export_namespace, node.storage_name)%>] \
-							at @s \
-						run \
-							block zzz/apply_to_node_<%node.storage_name%> {
+					data_manager prep read
+					block { with storage <%temp_storage%> entry.data.uuids_by_name
+						REPEAT (global.filteredNodes) as node {
+							$execute as $(<%node.storage_name%>) run block zzz/apply_to_node_<%node.storage_name%> {
 								IF (node.type === 'bone' && variant.models[node.uuid] !== undefined) {
 									# Special case for `animated_java:empty` model.
 									IF (variant.models[node.uuid].model === null) {
-										data modify entity @s item.components."minecraft:item_model" set value "animated_java:empty"
+										data modify entity @s item.components."minecraft:custom_model_data".strings[0] set value "AJ_INTERNAL_EMPTY"
 									} ELSE {
-										data modify entity @s item.components."minecraft:item_model" set value "<%variant.models[node.uuid].item_model%>"
+										data modify entity @s item.components."minecraft:custom_model_data".strings[0] set value "<%variant.name%>"
 									}
 								}
 								IF (node.configs.variants[variant.uuid]) {
@@ -1244,8 +1303,10 @@ IF (Object.keys(rig.variants).length > 1) {
 										%%>
 									}
 								}
+							}
 						}
 					}
+
 					# Return success to allow this function to be used in function conditions.
 					return 1
 				}
@@ -1259,7 +1320,7 @@ IF (has_locators || has_cameras) {
 		function reset_floating_entities {
 			IF (has_locators) {
 				REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator')) as locator {
-					execute at @s run block zzz/set_default_pose/as_locator_<%locator.storage_name%> { with storage <%temp_storage%> entry.data.locators.<%locator.storage_name%>
+					block zzz/set_default_pose/as_locator_<%locator.storage_name%> { with storage <%temp_storage%> entry.data.locators.<%locator.storage_name%>
 						IF (locator.config?.use_entity) {
 							$tp $(uuid) \
 								^<%roundTo(locator.default_transform.pos[0], 10)%> \
@@ -1282,7 +1343,7 @@ IF (has_locators || has_cameras) {
 
 			IF (has_cameras) {
 				REPEAT (Object.values(rig.nodes).filter(node => node.type === 'camera')) as camera {
-					execute at @s run block zzz/set_default_pose/as_camera_<%camera.storage_name%> { with storage <%temp_storage%> entry.data.cameras.<%camera.storage_name%>
+					block zzz/set_default_pose/as_camera_<%camera.storage_name%> { with storage <%temp_storage%> entry.data.cameras.<%camera.storage_name%>
 						$tp $(uuid) \
 							^<%roundTo(camera.default_transform.pos[0], 10)%> \
 							^<%roundTo(camera.default_transform.pos[1], 10)%> \
@@ -1310,15 +1371,13 @@ dir zzz {
 			function ./zzz/reset_floating_entities
 		}
 
-		REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
-			execute \
-				on passengers \
-				if entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(export_namespace, node.storage_name)%>] \
-			run \
-				data merge entity @s { \
+		block { with storage <%temp_storage%> entry.data.uuids_by_name
+			REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
+				$data merge entity $(<%node.storage_name%>) { \
 					transformation: <%matrixToNbtFloatArray(node.default_transform.matrix).toString()%>, \
 					start_interpolation: 0 \
 				}
+			}
 		}
 	}
 
@@ -1327,19 +1386,16 @@ dir zzz {
 			function ./zzz/reset_floating_entities
 		}
 
-		REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
-			execute \
-				on passengers \
-				if entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(export_namespace, node.storage_name)%>] \
-			run \
-				data merge entity @s { \
+		block { with storage <%temp_storage%> entry.data.uuids_by_name
+			REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
+				$data merge entity $(<%node.storage_name%>) { \
 					transformation: <%matrixToNbtFloatArray(node.default_transform.matrix).toString()%>, \
 					start_interpolation: -1 \
 				}
+			}
 		}
 	}
 }
-
 function apply_default_pose {
 	# Changes the pose of the rig to the the default pose with interpolation
 	debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(export_namespace)%>

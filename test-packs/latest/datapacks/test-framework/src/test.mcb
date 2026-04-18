@@ -35,7 +35,7 @@ dir armor_stand {
 		function animated_java:global/remove/everything
 		data remove storage test:temp args
 		$data modify storage test:temp args set value {args:$(args)}
-		REPEAT (0, 999) as i {
+		REPEAT (0, 49) as i {
 			schedule 1t {
 				execute positioned <%i % 16%> 1 <%Math.floor(i / 16)%> rotated 0 0 run function animated_java:armor_stand_minimal/summon with storage test:temp args
 			}
