@@ -68,11 +68,11 @@ dir root {
 
 		IF (auto_update_rig_orientation) {
 			IF (has_locators || has_cameras) {
-				function ./on_tick/transform_floating_entities
+				function *<%export_namespace%>/root/on_tick/transform_floating_entities
 			}
 			execute on passengers run rotate @s ~ ~
 		} ELSE IF (has_ticking_locators) {
-			function ./on_tick/transform_locators
+			function *<%export_namespace%>/root/on_tick/transform_locators
 		}
 
 		# Custom post-tick function
@@ -162,7 +162,7 @@ IF (!auto_update_rig_orientation) {
 
 		data_manager prep read
 		IF (has_locators || has_cameras) {
-			function ./on_tick/transform_floating_entities
+			function *<%export_namespace%>/root/on_tick/transform_floating_entities
 		}
 
 		block { with storage <%temp_storage%> entry.data.uuids_by_name
@@ -273,7 +273,7 @@ dir animations {
 				tag @s remove <%TAGS.TRANSFORMS_ONLY()%>
 
 				data_manager prep read
-				block { with <%temp_storage%> entry.data.uuids_by_name
+				block { with storage <%temp_storage%> entry.data.uuids_by_name
 					REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
 						$execute \
 							as $(<%node.storage_name%>) \
@@ -430,7 +430,7 @@ dir animations {
 											<%global.transform.function_execute_condition ? global.transform.function_execute_condition + ' ' : ''%>run \
 												function ./<%animation.duration%>_locator_<%node.storage_name%>
 									} ELSE {
-										$execute \
+										execute \
 											positioned \
 												^<%roundTo(global.transform.pos[0], 10)%> \
 												^<%roundTo(global.transform.pos[1], 10)%> \
@@ -525,7 +525,7 @@ dir animations {
 														+ `\n}`
 												} else {
 													frameFunc +=
-														`\n$execute unless entity @s[tag=${TAGS.TRANSFORMS_ONLY()}] `
+														`\nexecute unless entity @s[tag=${TAGS.TRANSFORMS_ONLY()}] `
 														+ `positioned ^${roundTo(transform.pos[0], 10)} ^${roundTo(transform.pos[1], 10)} ^${roundTo(transform.pos[2], 10)} `
 														+ `rotated ~${roundTo(transform.head_rot[1], 10)} ~${roundTo(transform.head_rot[0], 10)} `
 														+ `${transform.function_execute_condition ? transform.function_execute_condition + ' ' : ''}run `
@@ -557,7 +557,7 @@ dir animations {
 									frameFunc += `\ndata modify storage <%temp_storage%> entry.data merge value ${JSON.stringify(to_merge)}`
 									frameFunc += `\ndata_manager write`
 									if (!auto_update_rig_orientation) {
-										frameFunc += `\nfunction ./on_tick/transform_floating_entities`
+										frameFunc += `\nfunction *${export_namespace}/root/on_tick/transform_floating_entities`
 									}
 									hasFunction = true
 								}
@@ -703,6 +703,20 @@ function summon {
 			data modify storage <%temp_storage%> entry.data.uuids_by_name.<%node.storage_name%> set from storage <%gu_storage%> out
 		}
 
+		IF (has_entity_locators) {
+			REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator' && node.config?.use_entity)) as locator {
+				block { with storage <%temp_storage%> entry.data.locators.<%locator.storage_name%>
+					# Track any custom entities on the locator.
+					$execute at @s as $(uuid) at @s run function *global/util/get_entity_stack_uuids
+				}
+				data modify storage <%temp_storage%> entry.data.uuids append from storage <%temp_storage%> uuids
+			}
+		}
+
+		function *<%export_namespace%>/zzz/set_default_pose
+
+		data_manager write
+
 		# Variant Arguement
 		IF (Object.keys(rig.variants).length > 1) {
 			execute if data storage <%temp_storage%> args.variant run block variant_arg/process { with storage <%temp_storage%> args
@@ -736,8 +750,6 @@ function summon {
 			}
 		}
 		execute if score #success <%OBJECTIVES.I()%> matches 0 run return fail
-
-		function *<%export_namespace%>/zzz/set_default_pose
 
 		# Animation Argument
 		# If the animation argument is provided, attempt to apply the animation.
@@ -787,7 +799,7 @@ function summon {
 		execute if score #success <%OBJECTIVES.I()%> matches 0 run return fail
 
 		IF (has_locators || has_cameras) {
-			function ./on_tick/transform_floating_entities
+			function *<%export_namespace%>/root/on_tick/transform_floating_entities
 		}
 		execute on passengers run rotate @s ~ ~
 
@@ -798,15 +810,12 @@ function summon {
 		IF (has_entity_locators) {
 			REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator' && node.config?.use_entity && node.config.on_summon_function)) as locator {
 				block { with storage <%temp_storage%> entry.data.locators.<%locator.storage_name%>
-					$execute at @s as $(uuid) at @s run block on_summon/<%locator.type + '_' + locator.storage_name%> {
+					$execute at @s as $(uuid) at @s run block on_summon/custom_<%locator.type + '_' + locator.storage_name%> {
 						<%%
 							emit.mcb(locator.config.on_summon_function)
 						%%>
-						# Track any custom entities on the locator.
-						function *global/util/get_entity_stack_uuids
 					}
 				}
-				data modify storage <%temp_storage%> entry.data.uuids append from storage <%temp_storage%> uuids
 			}
 		}
 
@@ -828,7 +837,6 @@ function summon {
 			}
 		}
 
-		data_manager write
 		# Remove the NEW tag from the root entity, and it's passengers.
 		tag @s remove <%TAGS.NEW()%>
 		execute on passengers run tag @s remove <%TAGS.NEW()%>
@@ -1039,7 +1047,7 @@ IF (has_locators) {
 			$data modify storage <%temp_storage%> args merge from storage <%temp_storage%> entry.data.locators.$(name)
 
 			IF (debug_mode) {
-				execute unless data storage <%temp_storage%> args.uuid run return run tellraw @a <%TELLRAW.LOCATOR_NOT_FOUND()%>
+				execute unless data storage <%temp_storage%> args.px run return run tellraw @a <%TELLRAW.LOCATOR_NOT_FOUND()%>
 				scoreboard players set #aj.check <%OBJECTIVES.I()%> 0
 			}
 
@@ -1319,16 +1327,24 @@ IF (has_locators || has_cameras) {
 		function reset_floating_entities {
 			IF (has_locators) {
 				REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator')) as locator {
-					execute at @s run block zzz/set_default_pose/as_locator_<%locator.storage_name%> { with storage <%temp_storage%> entry.data.locators.<%locator.storage_name%>
-						IF (locator.config?.use_entity) {
+					IF (locator.config?.use_entity) {
+						execute at @s run block set_default_pose/as_locator_<%locator.storage_name%> { with storage <%temp_storage%> entry.data.locators.<%locator.storage_name%>
 							$tp $(uuid) \
 								^<%roundTo(locator.default_transform.pos[0], 10)%> \
 								^<%roundTo(locator.default_transform.pos[1], 10)%> \
 								^<%roundTo(locator.default_transform.pos[2], 10)%> \
 								~<%roundTo(locator.default_transform.head_rot[1], 10)%> \
 								~<%roundTo(locator.default_transform.head_rot[0], 10)%>
-						}
 
+							data modify storage <%temp_storage%> entry.data.locators.<%locator.storage_name%> merge value { \
+								px: <%roundTo(locator.default_transform.pos[0], 10)%>, \
+								py: <%roundTo(locator.default_transform.pos[1], 10)%>, \
+								pz: <%roundTo(locator.default_transform.pos[2], 10)%>, \
+								ry: <%roundTo(locator.default_transform.head_rot[1], 10)%>, \
+								rx: <%roundTo(locator.default_transform.head_rot[0], 10)%> \
+							}
+						}
+					} ELSE {
 						data modify storage <%temp_storage%> entry.data.locators.<%locator.storage_name%> merge value { \
 							px: <%roundTo(locator.default_transform.pos[0], 10)%>, \
 							py: <%roundTo(locator.default_transform.pos[1], 10)%>, \
@@ -1342,7 +1358,7 @@ IF (has_locators || has_cameras) {
 
 			IF (has_cameras) {
 				REPEAT (Object.values(rig.nodes).filter(node => node.type === 'camera')) as camera {
-					execute at @s run block zzz/set_default_pose/as_camera_<%camera.storage_name%> { with storage <%temp_storage%> entry.data.cameras.<%camera.storage_name%>
+					execute at @s run block set_default_pose/as_camera_<%camera.storage_name%> { with storage <%temp_storage%> entry.data.cameras.<%camera.storage_name%>
 						$tp $(uuid) \
 							^<%roundTo(camera.default_transform.pos[0], 10)%> \
 							^<%roundTo(camera.default_transform.pos[1], 10)%> \
@@ -1367,7 +1383,7 @@ IF (has_locators || has_cameras) {
 dir zzz {
 	function apply_default_pose {
 		IF (has_locators || has_cameras) {
-			function ./zzz/reset_floating_entities
+			function ../zzz/reset_floating_entities
 		}
 
 		block { with storage <%temp_storage%> entry.data.uuids_by_name
@@ -1382,7 +1398,7 @@ dir zzz {
 
 	function set_default_pose {
 		IF (has_locators || has_cameras) {
-			function ./zzz/reset_floating_entities
+			function ../zzz/reset_floating_entities
 		}
 
 		block { with storage <%temp_storage%> entry.data.uuids_by_name
