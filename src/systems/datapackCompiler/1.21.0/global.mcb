@@ -230,9 +230,9 @@ dir global {
 			execute store result storage <%temp_storage%> args.id int 1 run scoreboard players get #aj.data_manager.index <%OBJECTIVES.I()%>
 			block { with storage <%temp_storage%> args
 				$data modify storage <%temp_storage%> args.uuid set from storage <%data_storage%> "$(id)".uuid
+				scoreboard players set #success <%OBJECTIVES.I()%> 0
 				block { with storage <%temp_storage%> args
-					scoreboard players set #success <%OBJECTIVES.I()%> 0
-					$execute store result score #success <%OBJECTIVES.I()%> if entity $(uuid)
+					$execute store success score #success <%OBJECTIVES.I()%> if score $(uuid) matches 1..
 					$execute if score #success <%OBJECTIVES.I()%> matches 0 run data remove storage <%data_storage%> "$(id)"
 				}
 			}
