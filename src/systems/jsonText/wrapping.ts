@@ -11,7 +11,61 @@ import { MinecraftFont } from '../minecraft/fontManager'
 // Jumpstarted by @IanSSenne (FetchBot) and refactored by @SnaveSutit to do line wrapping on JSON Text Components.
 // THANK U IAN <3 - SnaveSutit
 
-function getRawText(element: string | TextObject): UnicodeString {
+const KEYBIND_KEY_MAP: Record<string, string> = {
+	'key.advancements': 'L',
+	'key.attack': 'key.mouse.left',
+	'key.back': 'S',
+	'key.chat': 'T',
+	'key.command': '/',
+	'key.drop': 'Q',
+	'key.forward': 'W',
+	'key.fullscreen': 'F11',
+	'key.hotbar.1': '1',
+	'key.hotbar.2': '2',
+	'key.hotbar.3': '3',
+	'key.hotbar.4': '4',
+	'key.hotbar.5': '5',
+	'key.hotbar.6': '6',
+	'key.hotbar.7': '7',
+	'key.hotbar.8': '8',
+	'key.hotbar.9': '9',
+	'key.inventory': 'E',
+	'key.jump': 'Space',
+	'key.left': 'A',
+	'key.loadToolbarActivator': 'X',
+	'key.pickItem': 'key.mouse.middle',
+	'key.playerlist': 'Tab',
+	'key.quickActions': 'Quick Actions',
+	'key.right': 'D',
+	'key.saveToolbarActivator': 'G',
+	'key.screenshot': 'F2',
+	'key.smoothCamera': 'Toggle Cinematic Camera',
+	'key.sneak': 'Left Shift',
+	'key.socialInteractions': 'P',
+	'key.spectatorHotbar': 'key.keyboard.unknown',
+	'key.spectatorOutlines': 'key.keyboard.unknown',
+	'key.sprint': 'Left Control',
+	'key.swapOffhand': 'F',
+	'key.toggleGui': 'F1',
+	'key.togglePerspective': 'F5',
+	'key.toggleSpectatorShaderEffects': 'F4',
+	'key.use': 'key.mouse.right',
+}
+
+async function getLangTranslation(key: string): Promise<string> {
+	const lang = await AnimatedJava.assetManager.getJSONAsset(
+		Project.animated_java.target_minecraft_version,
+		'assets/minecraft/lang/en_us.json'
+	)
+	return lang[key] ?? key
+}
+
+async function getKeybindTranslation(keybind: string): Promise<string> {
+	const mappedKeybind = KEYBIND_KEY_MAP[keybind] ?? keybind
+	return getLangTranslation(mappedKeybind)
+}
+
+async function getRawText(element: string | TextObject): Promise<UnicodeString> {
 	if (typeof element === 'string') {
 		return new UnicodeString(element)
 	}
@@ -21,7 +75,10 @@ function getRawText(element: string | TextObject): UnicodeString {
 			return new UnicodeString(element.text)
 
 		case element.translate !== undefined:
-			return new UnicodeString(`{${element.translate}}`)
+			const translation = await getLangTranslation(element.translate)
+			return new UnicodeString(
+				translation === element.translate ? `{${element.translate}}` : translation
+			)
 
 		case element.selector !== undefined:
 			return new UnicodeString(`{${element.selector}}`)
@@ -30,7 +87,10 @@ function getRawText(element: string | TextObject): UnicodeString {
 			return new UnicodeString(`{${element.score.name}:${element.score.objective}}`)
 
 		case element.keybind !== undefined:
-			return new UnicodeString(`{${element.keybind}}`)
+			const keybindTranslation = await getKeybindTranslation(element.keybind)
+			return new UnicodeString(
+				element.keybind === keybindTranslation ? `{${element.keybind}}` : keybindTranslation
+			)
 
 		case element.nbt !== undefined:
 			switch (true) {
@@ -85,7 +145,7 @@ interface Line {
  *
  * WARNING: Word width is ***not calculated*** by this function.
  */
-export function parseWords(inputElement: TextElement) {
+export async function parseWords(inputElement: TextElement) {
 	const stopwatch = new Stopwatch('Parse Words').start()
 	const optimized = new TextComponent(inputElement).optimized(true)
 	if (!optimized.length) return []
@@ -98,7 +158,7 @@ export function parseWords(inputElement: TextElement) {
 	}
 	if (element === undefined) return words
 
-	let componentText = getRawText(element)
+	let componentText = await getRawText(element)
 	let span: StyleSpan = {
 		style: TextComponent.getComponentStyle(element),
 		start: 0,
@@ -160,7 +220,7 @@ export function parseWords(inputElement: TextElement) {
 		}
 
 		if (element !== undefined) {
-			componentText = getRawText(element)
+			componentText = await getRawText(element)
 			if (word) {
 				word.styles.push(span)
 				span = {
@@ -192,7 +252,7 @@ export function parseWords(inputElement: TextElement) {
 export async function wrapJsonText(jsonText: TextComponent, maxLineWidth = 200) {
 	const stopwatch = new Stopwatch('Wrap Json Text').start()
 
-	const words = parseWords(jsonText.toJSON())
+	const words = await parseWords(jsonText.toJSON())
 	const lines: Line[] = []
 	// FIXME - This will not work for custom fonts
 	const font = await MinecraftFont.getById('minecraft:default')
