@@ -4,7 +4,7 @@ import { PACKAGE } from '../../constants'
 import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from '../../formats/blueprint'
 import { type ItemDisplayMode, VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
 import EVENTS from '../../util/events'
-import { translate } from '../../util/translation'
+import { localize as translate } from '../../util/lang'
 import VanillaItemDisplayElementPanel from './vanillaItemDisplayElement.svelte'
 
 let unmountCallback: (() => Promise<void>) | null = null

@@ -1,6 +1,6 @@
 import { SvelteDialog } from 'svelte-patching-tools/blockbench'
 import { PACKAGE } from '../../constants'
-import { translate } from '../../util/translation'
+import { localize as translate } from '../../util/lang'
 import ChangelogDialog from './changelog.svelte'
 
 export const DIALOG_ID = `${PACKAGE.name}:changelogDialog`

@@ -1,12 +1,12 @@
 import { type ItemDisplayMode } from '../../outliner/vanillaItemDisplay'
 import { mergeGeometries } from '../../util/bufferGeometryUtils'
+import { localize as translate } from '../../util/lang'
 import {
 	type IParsedBlock,
 	getPathFromResourceLocation,
 	parseBlock,
 	resolveBlockstateValueType,
 } from '../../util/minecraftUtil'
-import { translate } from '../../util/translation'
 import { getJSONAsset, getPngAsset, hasAsset } from './assetManager'
 import type { BlockStateValue } from './blockstateManager'
 import { applyModelDisplayTransform } from './itemModelManager'

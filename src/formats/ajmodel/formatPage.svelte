@@ -1,6 +1,6 @@
 <script lang="ts" module>
 	import { openAJModel } from '.'
-	import { translate } from '../../util/translation'
+	import { localize as translate } from '../../util/lang'
 </script>
 
 <h2>

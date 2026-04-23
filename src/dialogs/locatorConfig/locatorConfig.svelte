@@ -4,7 +4,7 @@
 	import CodeInput from '../../svelteComponents/dialogItems/codeInput.svelte'
 	import LineInput from '../../svelteComponents/dialogItems/lineInput.svelte'
 	import { getRegistryEntry } from '../../systems/minecraft/registryManager'
-	import { translate } from '../../util/translation'
+	import { localize as translate } from '../../util/lang'
 
 	const entityTypeValidator: DialogItemValueChecker<string> = async (value: string) => {
 		const itemRegistry = await getRegistryEntry(

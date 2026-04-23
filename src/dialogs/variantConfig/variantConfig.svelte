@@ -3,7 +3,7 @@
 	import MissingTexture from '../../assets/missing_texture.png'
 	import Checkbox from '../../svelteComponents/dialogItems/checkbox.svelte'
 	import LineInput from '../../svelteComponents/dialogItems/lineInput.svelte'
-	import { translate } from '../../util/translation'
+	import { localize as translate } from '../../util/lang'
 	import { TextureMap, Variant } from '../../variants'
 </script>
 

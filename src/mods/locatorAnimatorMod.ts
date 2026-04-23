@@ -1,7 +1,7 @@
 import { registerProjectPatch, registerPropertyOverridePatch } from 'blockbench-patch-manager'
 import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from '../formats/blueprint'
 import EVENTS from '../util/events'
-import { translate } from '../util/translation'
+import { localize as translate } from '../util/lang'
 
 export class LocatorAnimator extends BoneAnimator {
 	uuid: string

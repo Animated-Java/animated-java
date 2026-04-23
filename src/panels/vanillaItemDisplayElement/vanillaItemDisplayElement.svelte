@@ -1,7 +1,7 @@
 <script lang="ts" module>
 	import { VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
+	import { localize as translate } from '../../util/lang'
 	import { validateItem } from '../../util/minecraftUtil'
-	import { translate } from '../../util/translation'
 	import { ITEM_DISPLAY_ITEM_DISPLAY_SELECT } from './vanillaItemDisplayElement'
 </script>
 

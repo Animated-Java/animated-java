@@ -743,10 +743,10 @@ dir remove {
 
 			IF (has_entity_locators || has_cameras) {
 				REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator' && node.config?.use_entity)) as locator {
-					function animated_java:global/remove/entity_stack_by_uuid with entity @s data.locators.<%locator.storage_name%>
+					function animated_java:global/remove/entity_stack_by_uuid with storage <%temp_storage%> entry.data.locators.<%locator.storage_name%>
 				}
 				REPEAT (Object.values(rig.nodes).filter(node => node.type === 'camera')) as camera {
-					function animated_java:global/remove/entity_stack_by_uuid with entity @s data.cameras.<%camera.storage_name%>
+					function animated_java:global/remove/entity_stack_by_uuid with storage <%temp_storage%> entry.data.cameras.<%camera.storage_name%>
 				}
 			}
 

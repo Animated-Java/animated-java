@@ -222,6 +222,7 @@ dir global {
 		}
 	}
 
+	# Storage-based per-entity NBT storage. Thanks Xanbelor for the concept!
 	dir data_manager {
 		function on_load {
 			scoreboard players add #aj.data_manager.index <%OBJECTIVES.I()%> 0

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createNewBlueprintProject } from '.'
 	import AnimatedJavaIcon from '../../assets/animated_java_icon.svg'
-	import { translate } from '../../util/translation'
+	import { localize as translate } from '../../util/lang'
 </script>
 
 <h2>

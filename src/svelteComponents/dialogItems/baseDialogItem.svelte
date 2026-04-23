@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { blueprintSettingErrors } from '../../formats/blueprint/settings'
-	import { translate } from '../../util/translation'
+	import { localize as translate } from '../../util/lang'
 
 	interface Props {
 		label: string

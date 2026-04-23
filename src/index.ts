@@ -1,6 +1,6 @@
 import { PACKAGE } from './constants'
 import EVENTS from './util/events'
-import './util/translation'
+import './util/lang'
 // Blueprint Format
 import 'import_folder_recursive:./formats'
 // Interface
@@ -34,6 +34,7 @@ import { VanillaBlockDisplay, debugBlockState } from './outliner/vanillaBlockDis
 import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
 import { checkForIncompatabilities } from './popups/incompatability/incompatability'
 import { openInstallPopup } from './popups/installed/installed'
+import './prism/mcfunctionPrism'
 import { cleanupExportedFiles } from './systems/cleaner'
 import mcbFiles from './systems/datapackCompiler/mcbFiles'
 import TELLRAW from './systems/datapackCompiler/tellraw'

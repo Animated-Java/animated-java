@@ -22,6 +22,7 @@ import {
 import { TextDecoder } from 'util'
 import assetOverridePlugin from './plugins/assetOverridePlugin'
 import bufferPatchPlugin from './plugins/bufferPatchFunction.js'
+import langPlugin from './plugins/lang'
 import mcbCompressionPlugin from './plugins/mcbCompressionPlugin'
 import packagerPlugin from './plugins/packagerPlugin'
 const PACKAGE = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
@@ -194,6 +195,9 @@ const COMMON_CONFIG: esbuild.BuildOptions = {
 	external: ['node:*'],
 	loader: { '.svg': 'dataurl', '.ttf': 'binary', '.css': 'text' },
 	plugins: [
+		langPlugin({
+			languageFolder: 'src/lang',
+		}),
 		// @ts-expect-error broken default import
 		vscodeProblemsPatch.default(),
 		// @ts-expect-error broken default import

@@ -2,7 +2,7 @@
 	import { onDestroy } from 'svelte'
 	import { isIncompatiblePlugin } from '../popups/incompatability/incompatability'
 	import EVENTS from '../util/events'
-	import { translate } from '../util/translation'
+	import { localize as translate } from '../util/lang'
 
 	const getButton = (innerText: string) => {
 		return jQuery(

@@ -3,7 +3,7 @@
 	import { fs } from '../../constants'
 	import { defaultValues } from '../../formats/blueprint/settings'
 	import mcbFiles from '../../systems/datapackCompiler/mcbFiles'
-	import { translate } from '../../util/translation'
+	import { localize as translate } from '../../util/lang'
 
 	import Checkbox from '../../svelteComponents/dialogItems/checkbox.svelte'
 	import CodeInput from '../../svelteComponents/dialogItems/codeInput.svelte'

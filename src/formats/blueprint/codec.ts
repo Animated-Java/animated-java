@@ -7,8 +7,8 @@ import {
 	type ICollectionJSON,
 } from '.'
 import { PACKAGE, fs } from '../../constants'
+import { localize as translate } from '../../util/lang'
 import { sanitizeStorageKey } from '../../util/minecraftUtil'
-import { translate } from '../../util/translation'
 import { Variant } from '../../variants'
 import { upgradeAnimatedJavaBlueprint } from './dfu'
 import * as blueprintSettings from './settings'

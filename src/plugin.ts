@@ -13,6 +13,11 @@ BBPlugin.register(PACKAGE.name, {
 	tags: ['Minecraft: Java Edition', 'Animation', 'Display Entities'],
 	await_loading: true,
 	onload() {
+		console.log(
+			`%cAnimated Java v${PACKAGE.version}`,
+			'border: 2px solid #00aced; padding: 4px 8px; font-size: 1.2em;'
+		)
+		console.log('%cby ' + PACKAGE.author.name, 'font-size: 1.1em;')
 		// Wait for plugin system to finish loading plugins.
 		requestAnimationFrame(() => {
 			EVENTS.PLUGIN_LOAD.publish()

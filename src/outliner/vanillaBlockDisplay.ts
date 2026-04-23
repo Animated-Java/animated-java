@@ -6,9 +6,9 @@ import { type BlockModelMesh, getBlockModel } from '../systems/minecraft/blockMo
 import { type BlockStateValue, getBlockState } from '../systems/minecraft/blockstateManager'
 import { type IDisplayEntityConfigs } from '../systems/rigRenderer'
 import EVENTS from '../util/events'
+import { localize as translate } from '../util/lang'
 import { validateBlock } from '../util/minecraftUtil'
 import { DeepClonedObjectProperty, fixClassPropertyInheritance } from '../util/property'
-import { translate } from '../util/translation'
 import { ResizableOutlinerElement } from './resizableOutlinerElement'
 import { sanitizeOutlinerElementName } from './util'
 

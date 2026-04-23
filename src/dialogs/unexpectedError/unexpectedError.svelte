@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import { translate } from '../../util/translation'
+	import { localize as translate } from '../../util/lang'
 
 	const FLAVOR_QUOTES = [
 		`Uh oh!`,

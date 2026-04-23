@@ -2,7 +2,7 @@ import { registerPatch } from 'blockbench-patch-manager'
 import { injectComponent } from 'svelte-patching-tools'
 import { EFFECT_ANIMATOR_CHANNELS, isCustomKeyframeChannel } from '../../mods/customKeyframes'
 import EVENTS from '../../util/events'
-import { translate } from '../../util/translation'
+import { localize as translate } from '../../util/lang'
 import CommandsKeyframePanel from './commandsKeyframe.svelte'
 import VariantKeyframePanel from './variantKeyframe.svelte'
 

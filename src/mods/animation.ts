@@ -1,8 +1,8 @@
 import { registerPatch, registerPropertyOverridePatch } from 'blockbench-patch-manager'
 import { openAnimationPropertiesDialog } from '../dialogs/animationProperties/animationProperties'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
+import { localize as translate } from '../util/lang'
 import { roundToNth } from '../util/misc'
-import { translate } from '../util/translation'
 
 declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

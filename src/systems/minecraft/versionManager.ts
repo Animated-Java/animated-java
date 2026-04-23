@@ -68,7 +68,7 @@ export async function getVersionById(versionId: string) {
 		const result: IMinecraftVersionManifest = await response.json()
 		const version = result.versions.find((v: IMinecraftVersion) => v.id === versionId)
 		if (!version) {
-			throw new Error(`Failed to find version data for '${versionId}'`)
+			throw new Error(`Unknown Minecraft version '${versionId}'`)
 		}
 		return version
 	}

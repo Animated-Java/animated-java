@@ -1,7 +1,7 @@
 import { overrideAccessors, registerPatch } from 'blockbench-patch-manager'
 import { activeProjectIsBlueprintFormat, projectTargetVersionIsAtLeast } from '../formats/blueprint'
 import { isCubeValid } from '../systems/util'
-import { translate } from '../util/translation'
+import { localize as translate } from '../util/lang'
 
 declare global {
 	interface Cube {

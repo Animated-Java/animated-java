@@ -4,7 +4,7 @@ import { injectComponent } from 'svelte-patching-tools'
 import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from '../../formats/blueprint'
 import { type Alignment, TextDisplay } from '../../outliner/textDisplay'
 import EVENTS from '../../util/events'
-import { translate } from '../../util/translation'
+import { localize as translate } from '../../util/lang'
 import TextDisplayElementPanel from './textDisplayElement.svelte'
 
 let unmountCallback: (() => Promise<void>) | null = null

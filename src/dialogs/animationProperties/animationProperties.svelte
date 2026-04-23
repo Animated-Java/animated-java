@@ -3,7 +3,7 @@
 	import NumberSlider from '../../svelteComponents/dialogItems/numberSlider.svelte'
 
 	import { type Observable } from 'svelte-observable-store'
-	import { translate } from '../../util/translation'
+	import { localize as translate } from '../../util/lang'
 </script>
 
 <script lang="ts">

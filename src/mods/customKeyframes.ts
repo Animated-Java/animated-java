@@ -1,6 +1,6 @@
 import { registerProjectPatch, registerPropertyOverridePatch } from 'blockbench-patch-manager'
 import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from '../formats/blueprint'
-import { translate } from '../util/translation'
+import { localize as translate } from '../util/lang'
 import { Variant } from '../variants'
 
 declare global {

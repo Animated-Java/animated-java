@@ -80,11 +80,11 @@
 				removeEventListeners(document, 'mousemove touchmove', move)
 				removeEventListeners(document, 'mouseup touchend', stop)
 			}
-			addEventListeners(document as unknown as any, 'mousemove touchmove', move)
-			addEventListeners(document as unknown as any, 'mouseup touchend', stop)
+			addEventListeners(document, 'mousemove touchmove', move)
+			addEventListeners(document, 'mouseup touchend', stop)
 		})
 
-		addEventListeners(inputX!, 'focusout dblclick', () => {
+		addEventListeners(target, 'focusout dblclick', () => {
 			value.set(
 				Math.clamp(
 					Animator.MolangParser.parse(value.get()),

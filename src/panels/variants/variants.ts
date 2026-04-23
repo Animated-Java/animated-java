@@ -2,7 +2,7 @@ import { registerDeletableHandlerPatch } from 'blockbench-patch-manager'
 import { SveltePanel } from 'svelte-patching-tools/blockbench'
 import { openVariantConfigDialog } from '../../dialogs/variantConfig/variantConfig'
 import { BLUEPRINT_FORMAT_ID } from '../../formats/blueprint'
-import { translate } from '../../util/translation'
+import { localize as translate } from '../../util/lang'
 import { Variant } from '../../variants'
 import VariantsPanel from './variants.svelte'
 

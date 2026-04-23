@@ -3,7 +3,7 @@
 	// @ts-expect-error No types for glob imports
 	import { default as ICON_IMPORTS, filenames } from '../assets/easingIcons/*.svg'
 	import { getEasingArgDefault, hasArgs } from '../util/easing'
-	import { translate } from '../util/translation'
+	import { localize as translate } from '../util/lang'
 
 	const ICONS = Object.fromEntries(
 		(ICON_IMPORTS as unknown as Array<{ default: string }>).map((icon, i) => [

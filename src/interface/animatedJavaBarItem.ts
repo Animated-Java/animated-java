@@ -6,7 +6,7 @@ import { openChangelogDialog } from '../dialogs/changelog/changelog'
 import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from '../formats/blueprint'
 import { cleanupExportedFiles } from '../systems/cleaner'
 import { exportProject } from '../systems/exporter'
-import { translate } from '../util/translation'
+import { localize as translate } from '../util/lang'
 
 function createIconImg() {
 	const img = document.createElement('img')
@@ -28,7 +28,7 @@ function createIconImg() {
 const SEPARATOR_A = new MenuSeparator('animated_java:menu-separator/menubar-separator-a')
 const SEPARATOR_B = new MenuSeparator('animated_java:menu-separator/menubar-separator-b')
 
-const OPEN_ABOUT = registerDeletableHandlerPatch({
+export const OPEN_ABOUT = registerDeletableHandlerPatch({
 	id: 'animated_java:action/about',
 	create() {
 		return new Blockbench.Action(`animated_java:action/about`, {
@@ -42,7 +42,7 @@ const OPEN_ABOUT = registerDeletableHandlerPatch({
 	},
 })
 
-const OPEN_DOCUMENTATION = registerDeletableHandlerPatch({
+export const OPEN_DOCUMENTATION = registerDeletableHandlerPatch({
 	id: 'animated_java:action/documentation',
 	create() {
 		return new Blockbench.Action(`animated_java:action/documentation`, {
@@ -152,7 +152,7 @@ const EXTRACT = registerDeletableHandlerPatch({
 	},
 })
 
-const EXPORT_DEBUG = registerDeletableHandlerPatch({
+export const EXPORT_DEBUG = registerDeletableHandlerPatch({
 	id: 'animated_java:action/export-debug',
 	create() {
 		return new Blockbench.Action(`animated_java:action/export-debug`, {
@@ -168,7 +168,7 @@ const EXPORT_DEBUG = registerDeletableHandlerPatch({
 	},
 })
 
-const EXPORT = registerDeletableHandlerPatch({
+export const EXPORT = registerDeletableHandlerPatch({
 	id: 'animated_java:action/export',
 	create() {
 		return new Blockbench.Action(`animated_java:action/export`, {
@@ -223,8 +223,11 @@ registerDeletableHandlerPatch({
 			{}
 		)
 
+		// @ts-expect-error
 		menubar.label.style.display = 'inline-block'
+		// @ts-expect-error
 		menubar.label.innerHTML = translate('menubar.label')
+		// @ts-expect-error
 		menubar.label.prepend(createIconImg())
 
 		MenuBar.update()

@@ -6,7 +6,7 @@ import { TextDisplay } from '../../outliner/textDisplay'
 import { VanillaBlockDisplay } from '../../outliner/vanillaBlockDisplay'
 import { VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
 import { type IDisplayEntityConfigs } from '../../systems/rigRenderer'
-import { translate } from '../../util/translation'
+import { localize as translate } from '../../util/lang'
 import DisplayEntityConfigDialog from './displayEntityConfig.svelte'
 
 export type DisplayEntity = Group | TextDisplay | VanillaItemDisplay | VanillaBlockDisplay

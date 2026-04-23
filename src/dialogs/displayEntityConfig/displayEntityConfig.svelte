@@ -10,7 +10,7 @@
 	import SectionHeader from '../../svelteComponents/dialogItems/sectionHeader.svelte'
 	import Select from '../../svelteComponents/dialogItems/select.svelte'
 	import { type IDisplayEntityConfigs } from '../../systems/rigRenderer'
-	import { translate } from '../../util/translation'
+	import { localize as translate } from '../../util/lang'
 	import { Variant } from '../../variants'
 	import { type DisplayEntity } from './displayEntityConfig'
 

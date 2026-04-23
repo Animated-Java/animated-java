@@ -1,5 +1,5 @@
 import PACKAGEJSON from '../package.json'
-import { translate } from './util/translation'
+import { localize as translate } from './util/lang'
 export const PACKAGE: typeof PACKAGEJSON = PACKAGEJSON
 
 const FS_MODULE = requireNativeModule('fs', {

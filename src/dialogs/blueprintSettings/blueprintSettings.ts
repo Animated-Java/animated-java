@@ -6,7 +6,8 @@ import { updateRotationConstraints } from '../../formats/blueprint'
 import { type ExportMode } from '../../formats/blueprint/settings'
 import { updateAllCubeOutlines } from '../../mods/cube'
 import { SUPPORTED_MINECRAFT_VERSIONS } from '../../systems/global'
-import { translate } from '../../util/translation'
+import { localize as translate } from '../../util/lang'
+import { openBlueprintSettingsv2 } from '../blueprintSettingsv2/blueprintSettings'
 import BlueprintSettings from './blueprintSettings.svelte'
 import BlueprintSettingsAds from './blueprintSettingsAds.svelte'
 
@@ -59,7 +60,7 @@ function setSettings(settings: ReturnType<typeof getSettings>) {
 	if (!Project) return
 	Project.name = settings.blueprintName.get()
 
-	Blockbench.setProjectResolution(settings.textureSizeX.get(), settings.textureSizeY.get(), true)
+	Project.setResolution(settings.textureSizeX.get(), settings.textureSizeY.get(), true)
 
 	Project.animated_java.show_render_box = settings.showRenderBox.get()
 	Project.animated_java.auto_render_box = settings.autoRenderBox.get()
@@ -100,6 +101,8 @@ function setSettings(settings: ReturnType<typeof getSettings>) {
 
 export function openBlueprintSettingsDialog() {
 	if (!Project) return
+
+	return openBlueprintSettingsv2()
 
 	const settings = getSettings()
 	const dialog = new SvelteDialog({

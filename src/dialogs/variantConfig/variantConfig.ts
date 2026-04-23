@@ -2,7 +2,7 @@ import { observable } from 'svelte-observable-store'
 import { SvelteDialog } from 'svelte-patching-tools/blockbench'
 import { PACKAGE } from '../../constants'
 import EVENTS from '../../util/events'
-import { translate } from '../../util/translation'
+import { localize as translate } from '../../util/lang'
 import { Variant } from '../../variants'
 import VariantConfigDialogSvelteComponent from './variantConfig.svelte'
 

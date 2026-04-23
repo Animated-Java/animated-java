@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { translate } from '../../util/translation'
+	import { localize as translate } from '../../util/lang'
 	import { closeIncompatabilityPopup } from './incompatability'
 
 	export let plugins: BBPlugin[]

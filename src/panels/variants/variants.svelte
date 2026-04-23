@@ -5,7 +5,7 @@
 	import { fade } from 'svelte/transition'
 	import { openVariantConfigDialog } from '../../dialogs/variantConfig/variantConfig'
 	import EVENTS from '../../util/events'
-	import { translate } from '../../util/translation'
+	import { localize as translate } from '../../util/lang'
 	import { Variant } from '../../variants'
 	import {
 		CREATE_VARIANT_ACTION,

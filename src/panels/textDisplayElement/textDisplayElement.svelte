@@ -1,8 +1,8 @@
 <script lang="ts" module>
 	import { CodeJar } from '@novacbn/svelte-codejar'
 	import { TextDisplay } from '../../outliner/textDisplay'
+	import { localize as translate } from '../../util/lang'
 	import { Stopwatch } from '../../util/stopwatch'
-	import { translate } from '../../util/translation'
 	import {
 		TEXT_DISPLAY_ALIGNMENT_SELECT,
 		TEXT_DISPLAY_BACKGROUND_COLOR_PICKER,

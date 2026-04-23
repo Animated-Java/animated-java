@@ -4,8 +4,10 @@ import { SvelteDialog } from 'svelte-patching-tools/blockbench'
 import { PACKAGE } from '../../constants'
 import { activeProjectIsBlueprintFormat } from '../../formats/blueprint'
 import { LocatorConfig } from '../../nodeConfigs'
-import { translate } from '../../util/translation'
+import { localize as translate } from '../../util/lang'
 import LocatorConfigDialog from './locatorConfig.svelte'
+
+// TODO - Make on-tick function work without requiring use-entity.
 
 export function openLocatorConfigDialog(locator: Locator) {
 	// Blockbench's JSON stringifier doesn't handle custom toJSON functions, so I'm storing the config JSON in the locator instead of the actual LocatorConfig object
