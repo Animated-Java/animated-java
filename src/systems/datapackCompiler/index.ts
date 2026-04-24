@@ -1,5 +1,6 @@
 import { TextComponent } from 'book-and-quill'
 import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/lib/nbt'
+import type { AsyncZippable } from 'fflate/browser'
 import { fs } from '../../constants'
 import {
 	MAX_PROGRESS,
@@ -31,6 +32,7 @@ import {
 	matrixToNbtFloatArray,
 	replacePathPart,
 	transformationToNbt,
+	zip,
 } from '../util'
 import ENTITY_NAMES from './entityNames'
 import { compileMcbProject } from './mcbCompiler'
@@ -434,6 +436,30 @@ export default async function compileDataPack(version: string, options: CompileD
 		console.time('Writing DataPack Files took')
 		await writeFiles(exportedFiles, options.dataPackFolder)
 		console.timeEnd('Writing DataPack Files took')
+	} else if (aj.data_pack_export_mode === 'zip') {
+		const data: AsyncZippable = {}
+
+		for (const [path, file] of coreFiles.entries()) {
+			const content = Uint8Array.from(
+				typeof file.content === 'string' ? Buffer.from(file.content) : file.content
+			)
+			data[path] = content
+		}
+
+		for (const [path, file] of versionedFiles.entries()) {
+			const content = Uint8Array.from(
+				typeof file.content === 'string' ? Buffer.from(file.content) : file.content
+			)
+			data[path] = content
+		}
+
+		data['pack.mcmeta'] = Uint8Array.from(
+			Buffer.from(autoStringify(packMeta.toJSON()), 'utf-8')
+		)
+
+		await fs.promises.rm(options.dataPackFolder, { recursive: true, force: true })
+		const zipped = await zip(data, {})
+		await fs.promises.writeFile(options.dataPackFolder, zipped)
 	}
 
 	console.timeEnd('Data Pack Compilation took')

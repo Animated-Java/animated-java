@@ -1,3 +1,4 @@
+import type { AsyncZippable } from 'fflate/browser'
 import { fs } from '../../constants'
 import {
 	MAX_PROGRESS,
@@ -5,11 +6,11 @@ import {
 	PROGRESS_DESCRIPTION,
 } from '../../dialogs/exportProgress/exportProgress'
 import { IntentionalExportError } from '../errors'
-import { type IRenderedRig } from '../rigRenderer'
-import type { ExportedFile } from '../util'
-
 import { AJMeta, PackMeta } from '../global'
 import { getMisodeVersion } from '../minecraft/versionManager'
+import { type IRenderedRig } from '../rigRenderer'
+import { zip, type ExportedFile } from '../util'
+
 import EXPORT_1_20_4 from './1.20.4'
 import EXPORT_1_21_2 from './1.21.2'
 import EXPORT_1_21_4 from './1.21.4'
@@ -189,7 +190,29 @@ export default async function compileResourcePack(
 			}
 			PROGRESS.set(PROGRESS.get() + 1)
 		}
-	} else if (aj.resource_pack_export_mode === 'zip') {
-		throw new IntentionalExportError('ZIP export is not yet implemented.')
+	} else if (aj.data_pack_export_mode === 'zip') {
+		const data: AsyncZippable = {}
+
+		for (const [path, file] of coreFiles.entries()) {
+			const content = Uint8Array.from(
+				typeof file.content === 'string' ? Buffer.from(file.content) : file.content
+			)
+			data[path] = content
+		}
+
+		for (const [path, file] of versionedFiles.entries()) {
+			const content = Uint8Array.from(
+				typeof file.content === 'string' ? Buffer.from(file.content) : file.content
+			)
+			data[path] = content
+		}
+
+		data['pack.mcmeta'] = Uint8Array.from(
+			Buffer.from(autoStringify(packMeta.toJSON()), 'utf-8')
+		)
+
+		await fs.promises.rm(options.resourcePackFolder, { recursive: true, force: true })
+		const zipped = await zip(data, {})
+		await fs.promises.writeFile(options.resourcePackFolder, zipped)
 	}
 }

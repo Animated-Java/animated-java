@@ -13,8 +13,10 @@
 	"blueprint_settings": {
 		"blueprint_id": "aj_booth:rigs/armor_stand",
 		"render_box": [95, 32],
-		"resource_pack": "../resources",
-		"data_pack": "../datapacks/animated_java",
+		"resource_pack_export_mode": "zip",
+		"data_pack_export_mode": "zip",
+		"resource_pack": "/home/snavesutit/Prism Launcher Instances/AJ Testing 1.21.11/minecraft/resourcepacks/resources.zip",
+		"data_pack": "../datapacks/animated_java.zip",
 		"on_summon_function": "say On-Summon!",
 		"on_remove_function": "say On-Remove!",
 		"baked_animations": false,
