@@ -319,20 +319,49 @@
 					"$ref": "#/definitions/vector3"
 				},
 				"rotation": {
-					"type": "object",
-					"required": ["angle", "axis", "origin"],
-					"properties": {
-						"angle": {
-							"type": "number"
+					"oneOf": [
+						{
+							"type": "object",
+							"required": ["angle", "axis", "origin"],
+							"properties": {
+								"angle": {
+									"type": "number"
+								},
+								"axis": {
+									"type": "string",
+									"enum": ["x", "y", "z"]
+								},
+								"origin": {
+									"$ref": "#/definitions/vector3"
+								}
+							}
 						},
-						"axis": {
-							"type": "string",
-							"enum": ["x", "y", "z"]
+						{
+							"type": "object",
+							"required": ["x", "y", "z", "origin"],
+							"properties": {
+								"x": {
+									"type": "number"
+								},
+								"y": {
+									"type": "number"
+								},
+								"z": {
+									"type": "number"
+								},
+								"origin": {
+									"$ref": "#/definitions/vector3"
+								},
+								"rescale": {
+									"type": "boolean",
+									"default": false
+								}
+							}
 						},
-						"origin": {
+						{
 							"$ref": "#/definitions/vector3"
 						}
-					}
+					]
 				},
 				"shade": {
 					"type": "boolean",

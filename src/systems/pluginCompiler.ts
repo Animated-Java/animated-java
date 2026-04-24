@@ -67,12 +67,21 @@ type BoneElementFaces = Partial<
 	Record<'north' | 'east' | 'south' | 'west' | 'up' | 'down', BoneElementFace>
 >
 
-interface BoneElementRotation {
-	angle: number
-	axis: 'x' | 'y' | 'z'
-	origin: ArrayVector3
-	rescale?: boolean
-}
+type BoneElementRotation =
+	| {
+			x: number
+			y: number
+			z: number
+			origin: ArrayVector3
+			rescale?: boolean
+	  }
+	| {
+			angle: number
+			axis: 'y' | 'x' | 'z'
+			origin: ArrayVector3
+			rescale?: boolean
+	  }
+	| ArrayVector3
 
 interface BoneElement {
 	from: ArrayVector3
@@ -331,15 +340,7 @@ function serializeBoneElements(
 			;(faces as any)[dir] = serializedFace
 		}
 
-		const rotation: BoneElementRotation =
-			el.rotation && !Array.isArray(el.rotation)
-				? {
-						angle: el.rotation.angle,
-						axis: el.rotation.axis as BoneElementRotation['axis'],
-						origin: el.rotation.origin as ArrayVector3,
-						rescale: (el.rotation as any).rescale,
-					}
-				: { angle: 0, axis: 'y', origin: [0, 0, 0] }
+		const rotation = el.rotation ?? { angle: 0, axis: 'y', origin: [0, 0, 0] }
 
 		return scrubUndefined({
 			from: el.from as ArrayVector3,
@@ -509,6 +510,7 @@ function serializeAnimation(options: {
 }): PluginAnimation {
 	const { animation, nodeUuidToId } = options
 
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	const loop_mode: LoopMode =
 		animation.loop_mode === 'loop'
 			? { type: 'loop', loop_delay: String(animation.loop_delay ?? 0) }
@@ -518,6 +520,7 @@ function serializeAnimation(options: {
 
 	const maxTime = animation.frames.at(-1)?.time ?? 0
 
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	const node_keyframes: NonNullable<PluginAnimation['node_keyframes']> = {}
 
 	for (const frame of animation.frames) {
@@ -563,6 +566,7 @@ function serializeAnimation(options: {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	let global_keyframes: NonNullable<PluginAnimation['global_keyframes']> | undefined
 
 	// map the baked variant for each frame into the texture keyframes
