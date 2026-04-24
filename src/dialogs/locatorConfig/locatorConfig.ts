@@ -23,7 +23,7 @@ export function openLocatorConfigDialog(locator: Locator) {
 	new SvelteDialog({
 		id: `${PACKAGE.name}:locatorConfig`,
 		title: translate('dialog.locator_config.title'),
-		width: 600,
+		width: 800,
 		component: LocatorConfigDialog,
 		props: {
 			useEntity,

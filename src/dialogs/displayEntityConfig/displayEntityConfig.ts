@@ -27,7 +27,7 @@ export function openDisplayEntityConfigDialog(displayEntity: DisplayEntity) {
 	new SvelteDialog({
 		id: `animated_java:displayEntityConfig`,
 		title: translate('dialog.display_entity.title', displayEntity.name),
-		width: 600,
+		width: 800,
 		component: DisplayEntityConfigDialog,
 		props: {
 			displayEntity,

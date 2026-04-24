@@ -44,7 +44,7 @@
 						<div class="box-select-label">{option.label}</div>
 					{:else if option.type === 'text'}
 						<div class="box-select-label">{option.label}</div>
-						<div class="box-select-description">{option.description}</div>
+						<div class="box-select-description">{@html option.description}</div>
 					{/if}
 				</div>
 			{/each}

@@ -57,6 +57,7 @@ registerProjectPatch({
 	},
 })
 
+// @ts-expect-error - Broken BB types
 type Grammar = ReturnType<typeof Prism.languages.extend>
 type GrammarValue = NonNullable<Grammar['property']>
 
@@ -66,6 +67,7 @@ function addPrismSyntaxForSnbtTextComponents() {
 		alias: 'quotation',
 	}
 
+	// @ts-expect-error - Broken BB types
 	Prism.languages.snbtTextComponent = Prism.languages.extend('json', {
 		punctuation: /[,:]/,
 		brackets: {
@@ -164,6 +166,7 @@ export const TEXT_DISPLAY_BACKGROUND_COLOR_PICKER = new ColorPicker(
 		condition: TEXT_DISPLAY_CONDITION,
 	}
 )
+// @ts-expect-error - Broken BB types
 TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.jq.spectrum(
 	'option',
 	'defaultColor',
@@ -176,6 +179,7 @@ TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.get = function () {
 }
 TEXT_DISPLAY_BACKGROUND_COLOR_PICKER.set = function (this: ColorPicker, color: tinycolor.Instance) {
 	this.value = color
+	// @ts-expect-error - Broken BB types
 	this.jq.spectrum('set', color.toHex8String())
 
 	const selected = TextDisplay.selected.at(0)
@@ -250,7 +254,7 @@ TEXT_DISPLAY_ALIGNMENT_SELECT.get = function () {
 	if (!selected) return TextDisplay.properties.align.default as Alignment
 	return selected.align
 }
-TEXT_DISPLAY_ALIGNMENT_SELECT.set = function (this: BarSelect<Alignment>, value: Alignment) {
+TEXT_DISPLAY_ALIGNMENT_SELECT.set = function (this: BarSelect, value: Alignment) {
 	const selected = TextDisplay.selected.at(0)
 	if (!selected) return this
 	this.value = value

@@ -41,24 +41,24 @@
 					{/if}
 				</label>
 			{/if}
-			{#if description}
-				<p class="description">{description}</p>
-			{/if}
 		</div>
 		<div class="inline-slot-container">
 			{@render inlineChildren?.(ID)}
 		</div>
 	</div>
+	{#if description}
+		<p class="description">{@html description}</p>
+	{/if}
 	<div class="slot-container">
 		{@render children?.(ID)}
 	</div>
 	{#if error}
 		<div class="popup error" transition:slide={{ duration: 100 }}>
-			<i class="fa fa-circle-exclamation text_icon"></i>{error}
+			<i class="fa fa-circle-exclamation text_icon"></i>{@html error}
 		</div>
 	{:else if warning}
 		<div class="popup warning" transition:slide={{ duration: 100 }}>
-			<i class="fa fa-triangle-exclamation text_icon"></i>{warning}
+			<i class="fa fa-triangle-exclamation text_icon"></i>{@html warning}
 		</div>
 	{/if}
 </div>
@@ -88,7 +88,6 @@
 
 	.label {
 		font-size: 1.2em;
-		margin-bottom: 8px;
 	}
 
 	.required-asterisk {
@@ -97,7 +96,8 @@
 
 	.description {
 		color: var(--color-subtle_text);
-		font-size: medium;
+		font-size: 0.95em;
+		margin-bottom: 8px;
 	}
 
 	.popup {
@@ -108,7 +108,7 @@
 		gap: 8px;
 		flex-direction: row;
 		align-items: center;
-		font-size: medium;
+		font-size: 1em;
 		padding: 8px 10px;
 		border-radius: 0px 0px 8px 8px;
 	}

@@ -39,7 +39,7 @@
 	export let onTickFunction: Observable<string>
 </script>
 
-<div>
+<div class="locator-config">
 	{#if PLUGIN_MODE}
 		{#each translate('dialog.locator_config.plugin_mode_warning').split('\n') as line}
 			<p>{line}</p>
@@ -77,6 +77,7 @@
 					: translate('dialog.locator_config.on_summon_function.description')}
 				bind:value={onSummonFunction}
 				defaultValue=""
+				syntax="mcfunction"
 			/>
 
 			<CodeInput
@@ -88,6 +89,7 @@
 					: translate('dialog.locator_config.on_remove_function.description')}
 				bind:value={onRemoveFunction}
 				defaultValue=""
+				syntax="mcfunction"
 			/>
 		{/if}
 
@@ -98,9 +100,14 @@
 				: translate('dialog.locator_config.on_tick_function.description')}
 			bind:value={onTickFunction}
 			defaultValue=""
+			syntax="mcfunction"
 		/>
 	{/if}
 </div>
 
 <style>
+	.locator-config {
+		max-height: 75vh;
+		overflow-y: auto;
+	}
 </style>

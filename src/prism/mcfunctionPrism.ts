@@ -1,3 +1,4 @@
+// @ts-expect-error - Broken BB types
 Prism.languages.mcfunction = {
 	// Multi-line documentation style comment blocks beginning with #>, #!, or ##.
 	'comment-block': {
@@ -127,4 +128,5 @@ Prism.languages.mcfunction = {
 	},
 }
 
+// @ts-expect-error - Broken BB types
 Prism.languages.bolt = Prism.languages.mcfunction

@@ -23,6 +23,7 @@
 			element.textContent = code
 			return element.innerHTML
 		}
+		// @ts-expect-error - Broken BB types
 		return Prism.highlight(code, Prism.languages[syntax], syntax)
 	}
 

@@ -130,105 +130,113 @@
 	})
 </script>
 
-<SectionHeader label={translate('dialog.display_entity.node_options.title')} />
+<div class="display-entity-config">
+	<SectionHeader label={translate('dialog.display_entity.node_options.title')} />
 
-<CodeInput
-	label={translate('dialog.display_entity.on_summon_function.title')}
-	tooltip={translate('dialog.display_entity.on_summon_function.description')}
-	bind:value={onSummonFunction}
-	defaultValue=""
-/>
-
-<SectionHeader label={translate('dialog.display_entity.per_variant_options.title')} />
-
-<div class="variant-select" use:mountVariantSelect></div>
-
-<hr />
-
-<CodeInput
-	label={translate('dialog.display_entity.on_apply_function.title')}
-	tooltip={translate('dialog.display_entity.on_apply_function.description')}
-	bind:value={onApplyFunction}
-	defaultValue=""
-/>
-
-<Select
-	label={translate('dialog.display_entity.billboard.title')}
-	tooltip={translate('dialog.display_entity.billboard.description')}
-	options={BILLBOARD_OPTIONS}
-	defaultOption={DisplayEntityConfig.prototype.billboard}
-	bind:value={billboard}
-/>
-
-<Checkbox
-	label={translate('dialog.display_entity.override_brightness.title')}
-	tooltip={translate('dialog.display_entity.override_brightness.description')}
-	bind:checked={overrideBrightness}
-	defaultValue={DisplayEntityConfig.prototype.overrideBrightness}
-/>
-
-{#if $overrideBrightness}
-	<NumberSlider
-		label={translate('dialog.display_entity.brightness_override.title')}
-		tooltip={translate('dialog.display_entity.brightness_override.description')}
-		bind:value={brightnessOverride}
-		defaultValue={DisplayEntityConfig.prototype.brightnessOverride}
-		min={0}
-		max={15}
-		valueStep={1}
+	<CodeInput
+		label={translate('dialog.display_entity.on_summon_function.title')}
+		tooltip={translate('dialog.display_entity.on_summon_function.description')}
+		bind:value={onSummonFunction}
+		defaultValue=""
+		syntax="mcfunction"
 	/>
-{/if}
 
-{#if !(displayEntity instanceof TextDisplay)}
-	<Checkbox
-		label={translate('dialog.display_entity.enchanted.title')}
-		tooltip={translate('dialog.display_entity.enchanted.description')}
-		bind:checked={enchanted}
-		defaultValue={DisplayEntityConfig.prototype.enchanted}
+	<SectionHeader label={translate('dialog.display_entity.per_variant_options.title')} />
+
+	<div class="variant-select" use:mountVariantSelect></div>
+
+	<hr />
+
+	<CodeInput
+		label={translate('dialog.display_entity.on_apply_function.title')}
+		tooltip={translate('dialog.display_entity.on_apply_function.description')}
+		bind:value={onApplyFunction}
+		defaultValue=""
+		syntax="mcfunction"
+	/>
+
+	<Select
+		label={translate('dialog.display_entity.billboard.title')}
+		tooltip={translate('dialog.display_entity.billboard.description')}
+		options={BILLBOARD_OPTIONS}
+		defaultOption={DisplayEntityConfig.prototype.billboard}
+		bind:value={billboard}
 	/>
 
 	<Checkbox
-		label={translate('dialog.display_entity.glowing.title')}
-		tooltip={translate('dialog.display_entity.glowing.description')}
-		bind:checked={glowing}
-		defaultValue={DisplayEntityConfig.prototype.glowing}
+		label={translate('dialog.display_entity.override_brightness.title')}
+		tooltip={translate('dialog.display_entity.override_brightness.description')}
+		bind:checked={overrideBrightness}
+		defaultValue={DisplayEntityConfig.prototype.overrideBrightness}
 	/>
 
-	<Checkbox
-		label={translate('dialog.display_entity.override_glow_color.title')}
-		tooltip={translate('dialog.display_entity.override_glow_color.description')}
-		bind:checked={overrideGlowColor}
-		defaultValue={DisplayEntityConfig.prototype.overrideGlowColor}
-	/>
-
-	{#if $overrideGlowColor}
-		<ColorPicker
-			label={translate('dialog.display_entity.glow_color.title')}
-			tooltip={translate('dialog.display_entity.glow_color.description')}
-			bind:value={glowColor}
+	{#if $overrideBrightness}
+		<NumberSlider
+			label={translate('dialog.display_entity.brightness_override.title')}
+			tooltip={translate('dialog.display_entity.brightness_override.description')}
+			bind:value={brightnessOverride}
+			defaultValue={DisplayEntityConfig.prototype.brightnessOverride}
+			min={0}
+			max={15}
+			valueStep={1}
 		/>
 	{/if}
-{/if}
 
-<NumberSlider
-	label={translate('dialog.display_entity.shadow_radius.title')}
-	tooltip={translate('dialog.display_entity.shadow_radius.description')}
-	bind:value={shadowRadius}
-	defaultValue={DisplayEntityConfig.prototype.shadowRadius}
-	min={0}
-	max={15}
-/>
+	{#if !(displayEntity instanceof TextDisplay)}
+		<Checkbox
+			label={translate('dialog.display_entity.enchanted.title')}
+			tooltip={translate('dialog.display_entity.enchanted.description')}
+			bind:checked={enchanted}
+			defaultValue={DisplayEntityConfig.prototype.enchanted}
+		/>
 
-<NumberSlider
-	label={translate('dialog.display_entity.shadow_strength.title')}
-	tooltip={translate('dialog.display_entity.shadow_strength.description')}
-	bind:value={shadowStrength}
-	defaultValue={DisplayEntityConfig.prototype.shadowStrength}
-	min={0}
-	max={15}
-/>
+		<Checkbox
+			label={translate('dialog.display_entity.glowing.title')}
+			tooltip={translate('dialog.display_entity.glowing.description')}
+			bind:checked={glowing}
+			defaultValue={DisplayEntityConfig.prototype.glowing}
+		/>
+
+		<Checkbox
+			label={translate('dialog.display_entity.override_glow_color.title')}
+			tooltip={translate('dialog.display_entity.override_glow_color.description')}
+			bind:checked={overrideGlowColor}
+			defaultValue={DisplayEntityConfig.prototype.overrideGlowColor}
+		/>
+
+		{#if $overrideGlowColor}
+			<ColorPicker
+				label={translate('dialog.display_entity.glow_color.title')}
+				tooltip={translate('dialog.display_entity.glow_color.description')}
+				bind:value={glowColor}
+			/>
+		{/if}
+	{/if}
+
+	<NumberSlider
+		label={translate('dialog.display_entity.shadow_radius.title')}
+		tooltip={translate('dialog.display_entity.shadow_radius.description')}
+		bind:value={shadowRadius}
+		defaultValue={DisplayEntityConfig.prototype.shadowRadius}
+		min={0}
+		max={15}
+	/>
+
+	<NumberSlider
+		label={translate('dialog.display_entity.shadow_strength.title')}
+		tooltip={translate('dialog.display_entity.shadow_strength.description')}
+		bind:value={shadowStrength}
+		defaultValue={DisplayEntityConfig.prototype.shadowStrength}
+		min={0}
+		max={15}
+	/>
+</div>
 
 <style>
+	.display-entity-config {
+		overflow-y: auto;
+		max-height: 75vh;
+	}
 	.variant-select {
 		margin: 0px 32px 8px 24px;
 	}

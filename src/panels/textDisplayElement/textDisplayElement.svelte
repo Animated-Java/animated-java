@@ -23,6 +23,7 @@
 			return code
 		}
 		const stopwatch = new Stopwatch('Highlighting').start()
+		// @ts-expect-error - Broken BB types
 		const result = Prism.highlight(code, Prism.languages[syntax], syntax)
 		stopwatch.debug({ code, result })
 		HIGHLIGHT_CACHE.set(code, result)

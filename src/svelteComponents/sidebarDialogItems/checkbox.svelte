@@ -14,13 +14,15 @@
 
 <BaseSidebarDialogItem {label} {description}>
 	{#snippet inlineChildren(id)}
-		<hr />
+		<div class="fake-hr"></div>
 		<input type="checkbox" {id} class="checkbox_input" bind:checked={value} />
 	{/snippet}
 </BaseSidebarDialogItem>
 
 <style>
-	hr {
+	.fake-hr {
+		margin: 0px 8px;
+		height: 0px;
 		align-self: center;
 		flex-grow: 1;
 		border-top: 2px dashed var(--color-elevated);

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { blueprintSettingErrors } from '../../formats/blueprint/settings'
 	import { localize as translate } from '../../util/lang'
 
 	interface Props {
@@ -21,12 +20,6 @@
 	}: Props = $props()
 
 	let id = guid()
-
-	$effect.pre(() => {
-		if (errorText) {
-			blueprintSettingErrors.get()[label] = errorText
-		}
-	})
 </script>
 
 <div class="dialog_item_container">

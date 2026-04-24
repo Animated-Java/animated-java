@@ -28,7 +28,6 @@
 
 <style>
 	.codejar-container {
-		width: 752px;
 		border-radius: 0;
 		transition: outline 0.1s cubic-bezier(0.25, 0.68, 0.53, 1.3);
 	}
