@@ -1,7 +1,7 @@
 import { registerDeletableHandlerPatch } from 'blockbench-patch-manager'
 import AnimatedJavaIcon from '../assets/animated_java_icon.svg'
 import { openAboutDialog } from '../dialogs/about/about'
-import { openBlueprintSettingsDialog } from '../dialogs/blueprintSettings/blueprintSettings'
+import { openBlueprintSettings } from '../dialogs/blueprintSettings/blueprintSettings'
 import { openChangelogDialog } from '../dialogs/changelog/changelog'
 import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from '../formats/blueprint'
 import { cleanupExportedFiles } from '../systems/cleaner'
@@ -131,7 +131,7 @@ const OPEN_BLUEPRINT_SETTINGS = registerDeletableHandlerPatch({
 			name: translate('action.open_blueprint_settings.name'),
 			condition: activeProjectIsBlueprintFormat,
 			click() {
-				openBlueprintSettingsDialog()
+				openBlueprintSettings()
 			},
 		})
 	},

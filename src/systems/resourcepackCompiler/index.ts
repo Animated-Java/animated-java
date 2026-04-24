@@ -4,29 +4,31 @@ import {
 	PROGRESS,
 	PROGRESS_DESCRIPTION,
 } from '../../dialogs/exportProgress/exportProgress'
-import { getNextSupportedVersion, getResourcePackFormat } from '../../util/minecraftUtil'
 import { IntentionalExportError } from '../errors'
 import { type IRenderedRig } from '../rigRenderer'
 import type { ExportedFile } from '../util'
 
-import { AJMeta, PackMeta, SUPPORTED_MINECRAFT_VERSIONS } from '../global'
+import { AJMeta, PackMeta } from '../global'
+import { getMisodeVersion } from '../minecraft/versionManager'
 import EXPORT_1_20_4 from './1.20.4'
 import EXPORT_1_21_2 from './1.21.2'
 import EXPORT_1_21_4 from './1.21.4'
 
-const VERSIONED_RESOURCE_PACK_COMPILERS: Record<
-	SUPPORTED_MINECRAFT_VERSIONS,
-	ResourcePackCompiler
-> = {
-	'1.21.11': EXPORT_1_21_4,
-	'1.21.9': EXPORT_1_21_4,
-	'1.21.6': EXPORT_1_21_4,
-	'1.21.5': EXPORT_1_21_4,
-	'1.21.4': EXPORT_1_21_4,
-	'1.21.2': EXPORT_1_21_2,
-	'1.21.0': EXPORT_1_21_2,
-	'1.20.5': EXPORT_1_20_4,
-	'1.20.4': EXPORT_1_20_4,
+function getResourcePackCompilerForVersion(version: string): ResourcePackCompiler {
+	switch (true) {
+		case VersionUtil.compare(version, '>=', '1.21.4'):
+			return EXPORT_1_21_4
+		case VersionUtil.compare(version, '>=', '1.21.2'):
+			return EXPORT_1_21_2
+		case VersionUtil.compare(version, '>=', '1.21.0'):
+			return EXPORT_1_21_2
+		case VersionUtil.compare(version, '>=', '1.20.5'):
+			return EXPORT_1_20_4
+		case VersionUtil.compare(version, '>=', '1.20.4'):
+			return EXPORT_1_20_4
+		default:
+			throw new IntentionalExportError(`Unsupported Minecraft version: ${version}`)
+	}
 }
 
 interface ResourcePackCompilerOptions {
@@ -53,15 +55,15 @@ export interface CompileResourcePackOptions {
 }
 
 export default async function compileResourcePack(
-	targetVersions: SUPPORTED_MINECRAFT_VERSIONS[],
+	version: string,
 	options: CompileResourcePackOptions
 ) {
 	const aj = Project!.animated_java
 
 	const ajmeta = new AJMeta(
 		PathModule.join(options.resourcePackFolder, 'assets.ajmeta'),
-		aj.export_namespace,
-		Project!.last_used_export_namespace,
+		aj.blueprint_id,
+		Project!.last_used_blueprint_id,
 		options.resourcePackFolder
 	)
 
@@ -73,44 +75,34 @@ export default async function compileResourcePack(
 	const globalVersionSpecificFiles = new Map<string, ExportedFile>()
 	const coreResourcePackFolder = options.resourcePackFolder
 
-	for (const version of targetVersions) {
-		console.groupCollapsed(`Compiling resource pack for Minecraft ${version}`)
-		const coreFiles = new Map<string, ExportedFile>()
-		const versionedFiles = new Map<string, ExportedFile>()
+	console.groupCollapsed(`Compiling resource pack for Minecraft ${version}`)
+	const coreFiles = new Map<string, ExportedFile>()
+	const versionedFiles = new Map<string, ExportedFile>()
 
-		const versionedResourcePackFolder =
-			targetVersions.length > 1
-				? PathModule.join(
-						options.resourcePackFolder,
-						`animated_java_${version.replaceAll('.', '_')}`
-					)
-				: options.resourcePackFolder
+	const resourcePackCompiler = getResourcePackCompilerForVersion(version)
+	await resourcePackCompiler({
+		...options,
+		resourcePackPath: options.resourcePackFolder,
+		ajmeta,
+		coreFiles,
+		versionedFiles,
+	})
 
-		// Move paths into versioned overlay folders.
-		await VERSIONED_RESOURCE_PACK_COMPILERS[version]({
-			...options,
-			resourcePackPath: versionedResourcePackFolder,
-			ajmeta,
-			coreFiles,
-			versionedFiles,
-		})
-
-		for (const [path, file] of coreFiles) {
-			const relative = PathModule.join(coreResourcePackFolder, path)
-			globalCoreFiles.set(relative, file)
-			if (file.includeInAJMeta === false) continue
-			ajmeta.coreFiles.add(relative)
-		}
-
-		for (const [path, file] of versionedFiles) {
-			const relative = PathModule.join(versionedResourcePackFolder, path)
-			globalVersionSpecificFiles.set(relative, file)
-			if (file.includeInAJMeta === false) continue
-			ajmeta.versionedFiles.add(relative)
-		}
-
-		console.groupEnd()
+	for (const [path, file] of coreFiles) {
+		const relative = PathModule.join(coreResourcePackFolder, path)
+		globalCoreFiles.set(relative, file)
+		if (file.includeInAJMeta === false) continue
+		ajmeta.coreFiles.add(relative)
 	}
+
+	for (const [path, file] of versionedFiles) {
+		const relative = PathModule.join(options.resourcePackFolder, path)
+		globalVersionSpecificFiles.set(relative, file)
+		if (file.includeInAJMeta === false) continue
+		ajmeta.versionedFiles.add(relative)
+	}
+
+	console.groupEnd()
 
 	console.log('Exported files:', globalCoreFiles.size + globalVersionSpecificFiles.size)
 
@@ -119,46 +111,21 @@ export default async function compileResourcePack(
 	const packMeta = PackMeta.fromFile(packMetaPath)
 	packMeta.content.pack ??= {}
 
-	const nextVersion = getNextSupportedVersion(targetVersions[0])
-	const format = getResourcePackFormat(targetVersions[0])
-	const nextFormat = nextVersion ? getResourcePackFormat(nextVersion) : 10000000
-	if (!compareVersions('1.21.9', targetVersions[0]) /* >= 1.21.9 */) {
+	const misodeVersionData = await getMisodeVersion(version)
+
+	const format = misodeVersionData.data_pack_version
+	if (VersionUtil.compare(version, '>=', '1.21.9')) {
 		packMeta.content.pack.min_format = format
-		packMeta.content.pack.max_format = nextFormat - 1
+		packMeta.content.pack.max_format = format
 	} else {
 		packMeta.content.pack.pack_format = format
 		packMeta.content.pack.supported_formats = {
 			min_inclusive: format,
-			max_inclusive: nextFormat - 1,
+			max_inclusive: format,
 		}
 	}
 
-	packMeta.content.pack.description ??= `Animated Java Resource Pack for ${targetVersions.join(
-		', '
-	)}`
-
-	// if (targetVersions.length > 1) {
-	// 	packMeta.content.pack.supported_formats ??= []
-	// 	packMeta.content.overlays ??= {}
-	// 	packMeta.content.overlays.entries ??= []
-
-	// 	for (const version of targetVersions) {
-	// 		const format: PackMetaFormats = getResourcePackFormat(version)
-	// 		packMeta.content.pack.supported_formats.push(format)
-
-	// 		const existingOverlay = packMeta.content.overlays.entries.find(
-	// 			e => e.directory === `animated_java_${version.replaceAll('.', '_')}`
-	// 		)
-	// 		if (!existingOverlay) {
-	// 			packMeta.content.overlays.entries.push({
-	// 				directory: `animated_java_${version.replaceAll('.', '_')}`,
-	// 				formats: format,
-	// 			})
-	// 		} else {
-	// 			existingOverlay.formats = format
-	// 		}
-	// 	}
-	// }
+	packMeta.content.pack.description ??= `Animated Java Resource Pack for ${version}`
 
 	globalCoreFiles.set(PathModule.join(options.resourcePackFolder, 'pack.mcmeta'), {
 		content: autoStringify(packMeta.toJSON()),

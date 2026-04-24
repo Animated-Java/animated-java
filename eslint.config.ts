@@ -67,12 +67,12 @@ const CUSTOM_RULES: ConfigWithExtends['rules'] = {
 			selector: ['import'],
 			modifiers: ['default'],
 			filter: {
-				regex: '(old_)?v[\\d_]+(_pre\\d+)?$',
+				regex: '(old_)?v[\\d_]+(_pre\\d+|_beta_\\d+)?$',
 				match: true,
 			},
 			custom: {
 				match: true,
-				regex: '(old_)?v[\\d_]+(_pre\\d+)?$',
+				regex: '(old_)?v[\\d_]+(_pre\\d+|_beta_\\d+)?$',
 			},
 			format: null,
 		},

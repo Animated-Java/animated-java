@@ -2,19 +2,18 @@ import { Compiler, VariableMap } from 'mc-build/mcl/Compiler'
 import { Parser } from 'mc-build/mcl/Parser'
 import { TemplateRegisterer } from 'mc-build/mcl/TemplateRegisterer'
 import { Tokenizer } from 'mc-build/mcl/TokenizerImpl'
-import { getDataPackFormat } from '../../util/minecraftUtil'
-import { SUPPORTED_MINECRAFT_VERSIONS } from '../global'
+import { getMisodeVersion } from '../minecraft/versionManager'
 import type { ExportedFile } from '../util'
 
 interface CompilerOptions {
 	sourceFiles: Record<string, string>
 	destPath: string
 	variables: Record<string, any>
-	version: SUPPORTED_MINECRAFT_VERSIONS
+	version: string
 	exportedFiles: Map<string, ExportedFile>
 }
 
-export function compileMcbProject({
+export async function compileMcbProject({
 	sourceFiles,
 	destPath,
 	variables,
@@ -26,6 +25,8 @@ export function compileMcbProject({
 
 	TemplateRegisterer.register()
 
+	const misodeVersionData = await getMisodeVersion(version)
+
 	const compiler = new Compiler('src', {
 		libDir: null,
 		generatedDirName: 'zzz',
@@ -36,7 +37,7 @@ export function compileMcbProject({
 		ioThreadCount: null,
 		dontEmitComments: true,
 		setup: null,
-		formatVersion: getDataPackFormat(version),
+		formatVersion: misodeVersionData.data_pack_version,
 	})
 	compiler.disableRequire = true
 

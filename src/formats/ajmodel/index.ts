@@ -5,7 +5,7 @@ import { openUnexpectedErrorDialog } from '../../dialogs/unexpectedError/unexpec
 import { localize as translate } from '../../util/lang'
 import { sanitizeStorageKey } from '../../util/minecraftUtil'
 import { BLUEPRINT_CODEC } from '../blueprint/codec'
-import * as modelDatFixerUpper from '../blueprint/dfu'
+import { upgradeAnimatedJavaBlueprint } from '../blueprint/dfu'
 import FormatPage from './formatPage.svelte'
 
 // Blockbench has a bug where it calls the onStart function multiple times when double-clicking it.
@@ -26,7 +26,7 @@ export async function openAJModel() {
 export function convertAJModelToBlueprint(path: string) {
 	try {
 		console.log(`Converting .ajmodel: ${path}`)
-		const blueprint = modelDatFixerUpper.process(JSON.parse(fs.readFileSync(path, 'utf8')))
+		const blueprint = upgradeAnimatedJavaBlueprint(JSON.parse(fs.readFileSync(path, 'utf8')))
 
 		const codec = BLUEPRINT_CODEC.get()
 		if (!codec) throw new Error('Animated Java Blueprint codec is not registered!')
@@ -35,7 +35,8 @@ export function convertAJModelToBlueprint(path: string) {
 			name: 'Upgrade .ajmodel to Blueprint',
 			path,
 		})
-		blueprint.blueprint_settings!.export_namespace ??= sanitizeStorageKey(Project!.name)
+		blueprint.blueprint_settings!.blueprint_id ??=
+			'animated_java:' + sanitizeStorageKey(Project!.name)
 
 		requestAnimationFrame(() => {
 			Project!.save_path = ''

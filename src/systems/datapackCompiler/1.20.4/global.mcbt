@@ -27,9 +27,6 @@ template data_manager {
 					case 'prep':
 						result.push(`
 							<%'# Data Manager: Prepare for Read / Write'%>
-							IF (debug_mode) {\n
-								scoreboard players add #aj.data_manager.preps_this_tick <%OBJECTIVES.I()%> 1
-							}
 							execute store result storage <%temp_storage%> args.id int 1 run scoreboard players get @s <%OBJECTIVES.ID()%>
 						`)
 						break
@@ -37,25 +34,14 @@ template data_manager {
 					case 'read':
 						result.push(`
 							<%'# Data Manager: Read'%>
-							IF (debug_mode) {\n
-								scoreboard players add #aj.data_manager.reads_this_tick <%OBJECTIVES.I()%> 1
-							}
 							function animated_java:global/data_manager/read with storage <%temp_storage%> args
-							# tellraw @a ["read", {"nbt":"entry","storage":"<%temp_storage%>"}]
 						`)
 						break
 
 					case 'write':
 						result.push(`
 							<%'# Data Manager: Write'%>
-							IF (debug_mode) {\n
-								scoreboard players add #aj.data_manager.writes_this_tick <%OBJECTIVES.I()%> 1
-								# tellraw @a ["write in: ", {"nbt":"entry","storage":"<%temp_storage%>"}]
-							}
 							function animated_java:global/data_manager/write with storage <%temp_storage%> args
-							block { with storage <%temp_storage%> args\n
-								# $tellraw @a ["write out: ", {"nbt":"$(id)","storage":"<%data_storage%>"}]
-							}
 						`)
 						break
 

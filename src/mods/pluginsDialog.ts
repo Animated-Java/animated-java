@@ -9,9 +9,9 @@ registerPatch({
 	id: `animated_java:plugins-dialog-mod`,
 
 	apply: () => {
-		const original = Plugins.dialog.component.methods.selectPlugin
+		const original = Plugins.dialog!.component.methods.selectPlugin
 
-		Plugins.dialog.component.methods.selectPlugin = function (this, plugin: BBPlugin) {
+		Plugins.dialog!.component.methods.selectPlugin = function (this, plugin: BBPlugin) {
 			const result = original.call(this, plugin)
 			SELECTED_PLUGIN.set(plugin)
 			return result
@@ -21,7 +21,7 @@ registerPatch({
 	},
 
 	revert: ({ original }) => {
-		Plugins.dialog.component.methods.selectPlugin = original
+		Plugins.dialog!.component.methods.selectPlugin = original
 	},
 })
 

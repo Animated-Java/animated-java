@@ -1,7 +1,11 @@
 import type { ResourcePackCompiler } from '.'
 import { fs } from '../../constants'
 import { PROGRESS_DESCRIPTION } from '../../dialogs/exportProgress/exportProgress'
-import { isResourcePackPath, sanitizeStorageKey } from '../../util/minecraftUtil'
+import {
+	isResourcePackPath,
+	parseResourceLocation,
+	sanitizeStorageKey,
+} from '../../util/minecraftUtil'
 import { Variant } from '../../variants'
 import type { IItemDefinition } from '../minecraft/itemDefinitions'
 import { type ITextureAtlas } from '../minecraft/textureAtlas'
@@ -23,9 +27,13 @@ const compileResourcePack: ResourcePackCompiler = async ({
 		modelExportFolder,
 	})
 
+	const parsed = parseResourceLocation(aj.blueprint_id)
 	const itemModelDefinitionsFolder = PathModule.join(
-		'assets/animated_java/items/blueprint/',
-		aj.export_namespace
+		'assets',
+		parsed.namespace,
+		'items',
+		'blueprint',
+		parsed.path
 	)
 
 	// Texture atlas

@@ -12,7 +12,9 @@ registerPatch({
 	id: 'animated_java:panel/custom-keyframe-data-points',
 
 	apply: () => {
+		// @ts-expect-error - Broken BB types
 		Language.data['timeline.variant'] = translate('effect_animator.timeline.variant')
+		// @ts-expect-error - Broken BB types
 		Language.data['timeline.function'] = translate('effect_animator.timeline.function')
 
 		const unsubs = [
@@ -62,7 +64,9 @@ registerPatch({
 	},
 
 	revert: async ({ unsubs }) => {
+		// @ts-expect-error - Broken BB types
 		delete Language.data['timeline.variant']
+		// @ts-expect-error - Broken BB types
 		delete Language.data['timeline.function']
 
 		unsubs.forEach(unsub => unsub())

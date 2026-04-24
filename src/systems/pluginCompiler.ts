@@ -651,7 +651,7 @@ export function exportPluginBlueprint(options: {
 	const blueprint: PluginBlueprintJson = scrubUndefined({
 		format_version: 1,
 		settings: {
-			id: `animated_java:${aj.export_namespace}`,
+			id: `animated_java:${aj.blueprint_id}`,
 		},
 		textures,
 		texture_palettes: palettes,

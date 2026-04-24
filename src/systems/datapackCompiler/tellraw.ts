@@ -9,7 +9,7 @@ const TELLRAW_PREFIX = () =>
 		{ text: '\n ', color: 'gray' },
 		{ text: toSmallCaps('Animated Java'), color: '#00aced' },
 		{
-			text: `\n (animated_java:${Project!.animated_java.export_namespace})`,
+			text: `\n (animated_java:${Project!.animated_java.blueprint_id})`,
 			color: 'dark_gray',
 			italic: true,
 		},
@@ -259,7 +259,7 @@ namespace TELLRAW {
 			TELLRAW_PREFIX(),
 			[
 				{ text: 'Successfully uninstalled ', color: 'green' },
-				{ text: Project!.animated_java.export_namespace, color: 'yellow' },
+				{ text: Project!.animated_java.blueprint_id, color: 'yellow' },
 				{ text: '!' },
 				{
 					text: '\n If you have exported multiple times, you may have to remove objectives from previous exports manually, as Animated Java only knows about the objectives from the most recent export.',

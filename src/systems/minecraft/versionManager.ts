@@ -3,6 +3,9 @@ import ky from 'ky'
 export const VERSION_MANIFEST_URL =
 	'https://launchermeta.mojang.com/mc/game/version_manifest_v2.json'
 
+const MISODE_VERSION_URL =
+	'https://raw.githubusercontent.com/misode/mcmeta/refs/tags/$$VERSION$$-summary/version.json'
+
 interface IMinecraftVersion {
 	id: string
 	type: 'snapshot' | 'release'
@@ -11,6 +14,23 @@ interface IMinecraftVersion {
 	releaseTime: string
 	sha1: string
 	complianceLevel: number
+}
+
+interface MisodeVersion {
+	id: string
+	name: string
+	release_target: unknown
+	type: 'release' | 'snapshot'
+	stable: boolean
+	data_version: number
+	protocol_version: number
+	data_pack_version: number
+	data_pack_version_minor: number
+	resource_pack_version: number
+	resource_pack_version_minor: number
+	build_time: string
+	release_time: string
+	sha1: string
 }
 
 export interface IMinecraftVersionManifest {
@@ -23,6 +43,18 @@ export interface IMinecraftVersionManifest {
 
 const VERSION_CACHE = new Map<string, IMinecraftVersion>()
 const CLIENT_JAR_DOWNLOAD_URL_CACHE = new Map<string, string>()
+const MISODE_VERSION_CACHE = new Map<string, MisodeVersion>()
+
+export async function getMisodeVersion(versionId: string) {
+	if (MISODE_VERSION_CACHE.has(versionId)) {
+		return MISODE_VERSION_CACHE.get(versionId)!
+	}
+	const response = await ky<MisodeVersion>(
+		MISODE_VERSION_URL.replace('$$VERSION$$', versionId)
+	).json()
+	MISODE_VERSION_CACHE.set(versionId, response)
+	return response
+}
 
 export async function getLatestVersion() {
 	if (!window.navigator.onLine) {

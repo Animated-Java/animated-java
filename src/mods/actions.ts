@@ -1,6 +1,6 @@
 import { registerPropertyOverridePatch } from 'blockbench-patch-manager'
 import { fs } from '../constants'
-import { openBlueprintSettingsDialog } from '../dialogs/blueprintSettings/blueprintSettings'
+import { openBlueprintSettings } from '../dialogs/blueprintSettings/blueprintSettings'
 import { activeProjectIsBlueprintFormat, saveBlueprint } from '../formats/blueprint'
 import { BLUEPRINT_CODEC } from '../formats/blueprint/codec'
 
@@ -38,7 +38,7 @@ registerPropertyOverridePatch({
 	getCondition: () => activeProjectIsBlueprintFormat(),
 
 	get: () => {
-		return openBlueprintSettingsDialog
+		return openBlueprintSettings
 	},
 })
 

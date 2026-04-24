@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { ModelProject } from '@blockbench-types/generated/io/project'
 import { registerDeletableHandlerPatch } from 'blockbench-patch-manager'
 import { mount, unmount } from 'svelte'
@@ -21,7 +22,7 @@ import * as blueprintSettings from './settings'
 declare module '@blockbench-types/generated/io/project' {
 	export interface ModelProject {
 		animated_java: BlueprintSettings
-		last_used_export_namespace: string
+		last_used_blueprint_id: string
 		visualBoundingBox?: THREE.LineSegments
 		pluginMode: Observable<boolean>
 		transparentTexture: Texture
@@ -111,7 +112,7 @@ export interface IBlueprintFormatJSON {
 		format?: string
 		format_version?: string
 		uuid?: string
-		last_used_export_namespace?: string
+		last_used_blueprint_id?: string
 		box_uv?: boolean
 		backup?: boolean
 		save_location?: string
@@ -168,7 +169,7 @@ export function fixCubeRotation(cube: Cube) {
 export function convertToBlueprint() {
 	// Convert the current project to a Blueprint
 	Project!.save_path = ''
-	Project!.last_used_export_namespace = ''
+	Project!.last_used_blueprint_id = ''
 
 	for (const group of Group.all) {
 		group.createUniqueName(Group.all.filter(g => g !== group))
@@ -176,6 +177,7 @@ export function convertToBlueprint() {
 	}
 
 	for (const animation of Blockbench.Animation.all) {
+		// @ts-expect-error - Broken BB types
 		animation.createUniqueName(Blockbench.Animation.all.filter(a => a !== animation))
 		animation.name = sanitizeStorageKey(animation.name)
 	}
@@ -291,7 +293,7 @@ export const BLUEPRINT_FORMAT = registerDeletableHandlerPatch({
 				const defaults = getDefaultProjectSettings()
 				if (newModel) {
 					project.animated_java = defaults
-					project.last_used_export_namespace = ''
+					project.last_used_blueprint_id = ''
 				} else {
 					project.animated_java = { ...defaults, ...project!.animated_java }
 				}
@@ -374,6 +376,7 @@ export const BLUEPRINT_FORMAT = registerDeletableHandlerPatch({
 		return format
 	},
 })
+// @ts-expect-error - Broken BB types
 Language.data['format_category.animated_java'] = translate('format_category.animated_java')
 
 export function activeProjectIsBlueprintFormat() {

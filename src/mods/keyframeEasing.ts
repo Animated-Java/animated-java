@@ -9,6 +9,7 @@ import {
 } from '../util/easing'
 
 declare global {
+	// @ts-expect-error - Broken BB types
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface _Keyframe {
 		easing?: EasingKey
@@ -58,7 +59,7 @@ registerPatch({
 				const arg1 =
 					Array.isArray(other.easingArgs) && other.easingArgs.length > 0
 						? other.easingArgs[0]
-						: getEasingArgDefault(other)
+						: getEasingArgDefault(easing)
 
 				easingFunc = easingFunc.bind(null, arg1 ?? 0)
 			}

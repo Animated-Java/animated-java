@@ -19,8 +19,8 @@ export async function cleanupExportedFiles() {
 		const assetsMetaPath = PathModule.join(resourcePackFolder, 'assets.ajmeta')
 		const assetsMeta = new AJMeta(
 			assetsMetaPath,
-			aj.export_namespace,
-			Project!.last_used_export_namespace,
+			aj.blueprint_id,
+			Project!.last_used_blueprint_id,
 			resourcePackFolder
 		)
 		assetsMeta.read()
@@ -32,18 +32,18 @@ export async function cleanupExportedFiles() {
 		for (const file of assetsMeta.previousVersionedFiles) {
 			if (!isFunctionTagPath(file)) {
 				if (fs.existsSync(file)) await fs.promises.unlink(file)
-			} else if (aj.export_namespace !== Project!.last_used_export_namespace) {
+			} else if (aj.blueprint_id !== Project!.last_used_blueprint_id) {
 				const resourceLocation = parseDataPackPath(file)!.resourceLocation
 				if (
 					resourceLocation.startsWith(
-						`animated_java:${Project!.last_used_export_namespace}/`
+						`animated_java:${Project!.last_used_blueprint_id}/`
 					) &&
 					fs.existsSync(file)
 				) {
 					const newPath = replacePathPart(
 						file,
-						Project!.last_used_export_namespace,
-						aj.export_namespace
+						Project!.last_used_blueprint_id,
+						aj.blueprint_id
 					)
 					await fs.promises.mkdir(PathModule.dirname(newPath), { recursive: true })
 					await fs.promises.copyFile(file, newPath)
@@ -71,8 +71,8 @@ export async function cleanupExportedFiles() {
 		const dataMetaPath = PathModule.join(dataPackFolder, 'data.ajmeta')
 		const dataMeta = new AJMeta(
 			dataMetaPath,
-			aj.export_namespace,
-			Project!.last_used_export_namespace,
+			aj.blueprint_id,
+			Project!.last_used_blueprint_id,
 			dataPackFolder
 		)
 		dataMeta.read()
@@ -83,17 +83,17 @@ export async function cleanupExportedFiles() {
 		const removedFolders = new Set<string>()
 		for (const file of [...dataMeta.previousCoreFiles, ...dataMeta.previousVersionedFiles]) {
 			if (isFunctionTagPath(file) && fs.existsSync(file)) {
-				if (aj.export_namespace !== Project!.last_used_export_namespace) {
+				if (aj.blueprint_id !== Project!.last_used_blueprint_id) {
 					const resourceLocation = parseDataPackPath(file)!.resourceLocation
 					if (
 						resourceLocation.startsWith(
-							`animated_java:${Project!.last_used_export_namespace}/`
+							`animated_java:${Project!.last_used_blueprint_id}/`
 						)
 					) {
 						const newPath = replacePathPart(
 							file,
-							Project!.last_used_export_namespace,
-							aj.export_namespace
+							Project!.last_used_blueprint_id,
+							aj.blueprint_id
 						)
 						await fs.promises.mkdir(PathModule.dirname(newPath), { recursive: true })
 						await fs.promises.copyFile(file, newPath)
@@ -107,8 +107,8 @@ export async function cleanupExportedFiles() {
 				content.values = content.values.filter(
 					v =>
 						typeof v === 'string' &&
-						(!v.startsWith(`animated_java:${aj.export_namespace}/`) ||
-							!v.startsWith(`animated_java:${Project!.last_used_export_namespace}/`))
+						(!v.startsWith(`animated_java:${aj.blueprint_id}/`) ||
+							!v.startsWith(`animated_java:${Project!.last_used_blueprint_id}/`))
 				)
 				await fs.promises.writeFile(file, autoStringify(content))
 			} else {

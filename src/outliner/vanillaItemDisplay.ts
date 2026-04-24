@@ -139,8 +139,8 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 		return this
 	}
 
-	unselect() {
-		if (!this.selected) return
+	unselect(unselectParent?: boolean) {
+		if (!this.selected) return this
 		if (
 			Animator.open &&
 			Timeline.selected_animator &&
@@ -154,6 +154,7 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 		this.selected = false
 		TickUpdates.selection = true
 		this.preview_controller.updateHighlight(this)
+		return this
 	}
 
 	async updateItem() {
@@ -199,6 +200,7 @@ export const PREVIEW_CONTROLLER: NodePreviewController = new NodePreviewControll
 			sprite.scale.setScalar(1 / 20)
 			const mesh = el.mesh as THREE.Mesh
 			mesh.add(sprite)
+			// @ts-expect-error - Broken BB types
 			mesh.sprite = sprite
 		},
 		updateGeometry(el: VanillaItemDisplay) {
@@ -281,11 +283,13 @@ class VanillaItemDisplayAnimator extends BoneAnimator {
 		GeneralAnimator.prototype.select.call(this)
 
 		if (
+			// @ts-expect-error - Broken BB types
 			this[Toolbox.selected.animation_channel] &&
 			((Timeline.selected && Timeline.selected.length === 0) ||
 				(Timeline.selected && (Timeline.selected[0].animator as any)) !== this)
 		) {
 			let nearest: _Keyframe | undefined
+			// @ts-expect-error - Broken BB types
 			this[Toolbox.selected.animation_channel].forEach((kf: _Keyframe) => {
 				if (Math.abs(kf.time - Timeline.time) < 0.002) {
 					nearest = kf

@@ -78,11 +78,11 @@ class PredicateItemModel {
 			}
 		}
 
-		file.animated_java[aj.export_namespace] ??= []
+		file.animated_java[aj.blueprint_id] ??= []
 
 		for (const [name, ownedIds] of Object.entries(file.animated_java)) {
-			const namespace = aj.export_namespace
-			const lastNamespace = Project!.last_used_export_namespace
+			const namespace = aj.blueprint_id
+			const lastNamespace = Project!.last_used_blueprint_id
 			if (name === namespace || name === lastNamespace) {
 				file.overrides = file.overrides.filter(
 					override => !ownedIds.includes(override.predicate.custom_model_data)
@@ -104,7 +104,7 @@ class PredicateItemModel {
 	toJSON(): IPredicateItemModel {
 		const [displayItemNamespace, displayItemName] =
 			Project!.animated_java.display_item.split(':')
-		const exportNamespace = Project!.animated_java.export_namespace
+		const exportNamespace = Project!.animated_java.blueprint_id
 
 		return {
 			parent: this.parent,

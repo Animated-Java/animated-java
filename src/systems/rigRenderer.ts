@@ -41,16 +41,16 @@ export interface IRenderedElement {
 				x: number
 				y: number
 				z: number
-				origin: number[]
+				origin: ArrayVector3
 				rescale?: boolean
 		  }
 		| {
 				angle: number
-				axis: string
-				origin: number[]
+				axis: 'y' | 'x' | 'z'
+				origin: ArrayVector3
 				rescale?: boolean
 		  }
-		| number[]
+		| ArrayVector3
 	faces?: Record<string, IRenderedFace>
 	light_emission?: number
 }
@@ -225,17 +225,17 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 			x: cube.rotation[0],
 			y: cube.rotation[1],
 			z: cube.rotation[2],
-			origin: cube.origin.slice(),
+			origin: cube.origin.slice() as ArrayVector3,
 		}
 		if (cube.rescale) {
 			element.rotation.rescale = true
 		}
 	} else if (!(cube.rotation.allEqual(0) && cube.origin.allEqual(0))) {
-		const axis = cube.rotationAxis() || 'y'
+		const axis = (cube.rotationAxis() || 'y') as 'y' | 'x' | 'z'
 		element.rotation = {
 			angle: cube.rotation[getAxisNumber(axis)],
 			axis,
-			origin: cube.origin.slice(),
+			origin: cube.origin.slice() as ArrayVector3,
 		}
 		if (cube.rescale) {
 			element.rotation.rescale = true
@@ -243,8 +243,8 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 	} else if (cube.rescale) {
 		element.rotation = {
 			angle: 0,
-			axis: cube.rotation_axis || 'y',
-			origin: cube.origin.slice(),
+			axis: (cube.rotation_axis || 'y') as 'y' | 'x' | 'z',
+			origin: cube.origin.slice() as ArrayVector3,
 			rescale: true,
 		}
 	}
@@ -254,7 +254,9 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 		element.from = element.from.map((v, i) => v - parent.origin[i])
 		element.to = element.to.map((v, i) => v - parent.origin[i])
 		if (element.rotation && !Array.isArray(element.rotation)) {
-			element.rotation.origin = element.rotation.origin.map((v, i) => v - parent.origin[i])
+			element.rotation.origin = element.rotation.origin.map(
+				(v, i) => v - parent.origin[i]
+			) as ArrayVector3
 		}
 	}
 
@@ -283,7 +285,9 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 
 	if (Object.keys(element.faces).length === 0) return
 
+	// @ts-expect-error - Broken BB types
 	if (cube.light_emission) {
+		// @ts-expect-error - Broken BB types
 		element.light_emission = cube.light_emission
 	}
 
@@ -460,7 +464,9 @@ function renderGroup(
 		element.from = element.from.map(v => v * scale + 8)
 		element.to = element.to.map(v => v * scale + 8)
 		if (element.rotation && !Array.isArray(element.rotation)) {
-			element.rotation.origin = element.rotation.origin.map(v => v * scale + 8)
+			element.rotation.origin = element.rotation.origin.map(
+				v => v * scale + 8
+			) as ArrayVector3
 		}
 	}
 

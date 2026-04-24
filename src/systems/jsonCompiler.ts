@@ -111,7 +111,7 @@ export interface IExportedJSON {
 	 * The Blueprint's Settings
 	 */
 	settings: {
-		export_namespace: (typeof defaultValues)['export_namespace']
+		export_namespace: (typeof defaultValues)['blueprint_id']
 		target_minecraft_version: (typeof defaultValues)['target_minecraft_version']
 		display_item: (typeof defaultValues)['display_item']
 		bounding_box: (typeof defaultValues)['render_box']
@@ -245,7 +245,7 @@ export function exportJSON(options: {
 			version: PACKAGE.version,
 		},
 		settings: {
-			export_namespace: aj.export_namespace,
+			export_namespace: aj.blueprint_id,
 			target_minecraft_version: aj.target_minecraft_version,
 			display_item: aj.display_item,
 			bounding_box: aj.render_box,
@@ -273,12 +273,15 @@ export function exportJSON(options: {
 				name: animation.name,
 				loop_mode: animation.loop,
 				duration: animation.length,
+				// @ts-expect-error - Broken BB types
 				excluded_nodes: animation.excluded_nodes.map(node => node.value),
 				animators: {},
 			}
 			for (const [uuid, animator] of Object.entries(animation.animators)) {
 				// Only include animators with keyframes
+				// @ts-expect-error - Broken BB types
 				if (animator.keyframes.length === 0) continue
+				// @ts-expect-error - Broken BB types
 				animJSON.animators[uuid] = animator.keyframes.map(serailizeKeyframe)
 			}
 			json.animations[animation.uuid] = animJSON

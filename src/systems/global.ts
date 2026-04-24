@@ -3,18 +3,6 @@ import { normalizePath } from '../util/fileUtil'
 import { IntentionalExportError, IntentionalExportErrorFromInvalidFile } from './errors'
 import { sortObjectKeys } from './util'
 
-export enum SUPPORTED_MINECRAFT_VERSIONS {
-	'1.20.4' = '1.20.4',
-	'1.20.5' = '1.20.5',
-	'1.21.0' = '1.21.0',
-	'1.21.2' = '1.21.2',
-	'1.21.4' = '1.21.4',
-	'1.21.5' = '1.21.5',
-	'1.21.6' = '1.21.6',
-	'1.21.9' = '1.21.9',
-	'1.21.11' = '1.21.11',
-}
-
 type OldSerializedAJMeta = Record<
 	string,
 	{
@@ -44,8 +32,8 @@ export class AJMeta {
 
 	constructor(
 		public path: string,
-		public exportNamespace: string,
-		public lastUsedExportNamespace: string,
+		public blueprintId: string,
+		public lastUsedBlueprintId: string,
 		public rootFolder: string
 	) {}
 
@@ -75,23 +63,23 @@ export class AJMeta {
 
 		this.previousAJMeta.rigs ??= {}
 
-		const lastNamespaceData = this.previousAJMeta.rigs[this.lastUsedExportNamespace]
+		const lastNamespaceData = this.previousAJMeta.rigs[this.lastUsedBlueprintId]
 		if (lastNamespaceData) {
 			if (!Array.isArray(lastNamespaceData.versionedFiles))
 				lastNamespaceData.versionedFiles = []
 			for (const file of lastNamespaceData.versionedFiles) {
 				this.previousVersionedFiles.add(PathModule.join(this.rootFolder, file))
 			}
-			delete this.previousAJMeta.rigs[this.lastUsedExportNamespace]
+			delete this.previousAJMeta.rigs[this.lastUsedBlueprintId]
 		}
 
-		const namespaceData = this.previousAJMeta.rigs[this.exportNamespace]
+		const namespaceData = this.previousAJMeta.rigs[this.blueprintId]
 		if (namespaceData) {
 			if (!Array.isArray(namespaceData.versionedFiles)) namespaceData.versionedFiles = []
 			for (const file of namespaceData.versionedFiles) {
 				this.previousVersionedFiles.add(PathModule.join(this.rootFolder, file))
 			}
-			delete this.previousAJMeta.rigs[this.exportNamespace]
+			delete this.previousAJMeta.rigs[this.blueprintId]
 		}
 	}
 
@@ -101,7 +89,7 @@ export class AJMeta {
 			formatVersion: '1.0.0',
 			rigs: sortObjectKeys({
 				...this.previousAJMeta.rigs,
-				[this.exportNamespace]: {
+				[this.blueprintId]: {
 					coreFiles: Array.from(this.coreFiles)
 						.map(v => normalizePath(PathModule.relative(resourcePackFolder, v)))
 						.sort(),

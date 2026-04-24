@@ -8,6 +8,7 @@ import { sanitizeOutlinerElementName } from '../outliner/util'
 import { DeepClonedObjectProperty } from '../util/property'
 
 declare global {
+	// @ts-expect-error - Broken BB types
 	interface Group {
 		onSummonFunction: string
 		configs: {

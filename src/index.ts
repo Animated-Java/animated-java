@@ -28,7 +28,6 @@ import { openExportProgressDialog } from './dialogs/exportProgress/exportProgres
 import { openUnexpectedErrorDialog } from './dialogs/unexpectedError/unexpectedError'
 import { BLUEPRINT_FORMAT } from './formats/blueprint'
 import { BLUEPRINT_CODEC } from './formats/blueprint/codec'
-import { blueprintSettingErrors } from './formats/blueprint/settings'
 import { TextDisplay } from './outliner/textDisplay'
 import { VanillaBlockDisplay, debugBlockState } from './outliner/vanillaBlockDisplay'
 import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
@@ -36,7 +35,6 @@ import { checkForIncompatabilities } from './popups/incompatability/incompatabil
 import { openInstallPopup } from './popups/installed/installed'
 import './prism/mcfunctionPrism'
 import { cleanupExportedFiles } from './systems/cleaner'
-import mcbFiles from './systems/datapackCompiler/mcbFiles'
 import TELLRAW from './systems/datapackCompiler/tellraw'
 import { exportProject } from './systems/exporter'
 import * as assetManager from './systems/minecraft/assetManager'
@@ -70,7 +68,6 @@ const AnimatedJavaApi = {
 	openExportProgressDialog,
 	isResourcePackPath,
 	isDataPackPath,
-	blueprintSettingErrors,
 	openUnexpectedErrorDialog,
 	BLUEPRINT_FORMAT,
 	BLUEPRINT_CODEC,
@@ -95,7 +92,6 @@ const AnimatedJavaApi = {
 		Undo.finishEdit('Remove Cubes Associated With Texture')
 	},
 	cleanupExportedFiles,
-	mcbFiles,
 	openChangelogDialog,
 	checkForIncompatabilities,
 	toSmallCharacters: toSmallCaps,

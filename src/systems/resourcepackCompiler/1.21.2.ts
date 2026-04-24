@@ -112,14 +112,11 @@ const compileResourcePack: ResourcePackCompiler = async ({
 			// Hacky workaround for this version enforcing the `item` namespace.
 			if (variantModel.model?.parent) {
 				variantModel.model.parent = variantModel.model.parent.replace(
-					'animated_java:blueprint/',
-					'animated_java:item/'
+					':blueprint/',
+					':item/'
 				)
 			}
-			variantModel.item_model = variantModel.item_model.replace(
-				'animated_java:blueprint/',
-				'animated_java:'
-			)
+			variantModel.item_model = variantModel.item_model.replace(':blueprint/', ':')
 			console.log('Exporting model', variantModel.model, 'to', exportPath)
 			versionedFiles.set(PathModule.join(exportPath), {
 				content: autoStringify(variantModel.model),

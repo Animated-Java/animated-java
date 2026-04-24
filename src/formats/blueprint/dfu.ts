@@ -14,7 +14,8 @@ import v1_0_0_pre1 from './versions/1.0.0-pre1'
 import v1_0_0_pre6 from './versions/1.0.0-pre6'
 import v1_0_0_pre7 from './versions/1.0.0-pre7'
 import v1_0_0_pre8 from './versions/1.0.0-pre8'
-import v1_10_0 from './versions/1.10.0'
+import v1_10_0_beta_1 from './versions/1.10.0-beta.1'
+import v1_10_0_beta_4 from './versions/1.10.0-beta.4'
 import v1_4_0 from './versions/1.4.0'
 import v1_6_3 from './versions/1.6.3'
 import v1_6_5 from './versions/1.6.5'
@@ -76,26 +77,28 @@ export function upgradeAnimatedJavaBlueprint(model: any): IBlueprintFormatJSON {
 
 		// Versions below this are post 0.3.10. I changed the versioning system to use the AJ version instead of a unique format version.
 		switch (true) {
-			case VersionUtil.compare('0.3.10', '>', model.meta.format_version):
+			case VersionUtil.compare(model.meta.format_version, '<', '0.3.10'):
 				model = v0_3_10(model)
-			case VersionUtil.compare('0.5.0', '>', model.meta.format_version):
+			case VersionUtil.compare(model.meta.format_version, '<', '0.5.0'):
 				model = v1_0_0_pre1(model)
-			case VersionUtil.compare('0.5.5', '>', model.meta.format_version):
+			case VersionUtil.compare(model.meta.format_version, '<', '0.5.5'):
 				model = v1_0_0_pre6(model)
-			case VersionUtil.compare('0.5.6', '>', model.meta.format_version):
+			case VersionUtil.compare(model.meta.format_version, '<', '0.5.6'):
 				model = v1_0_0_pre7(model)
-			case VersionUtil.compare('0.5.7', '>', model.meta.format_version):
+			case VersionUtil.compare(model.meta.format_version, '<', '0.5.7'):
 				model = v1_0_0_pre8(model)
-			case VersionUtil.compare('1.4.0', '>', model.meta.format_version):
+			case VersionUtil.compare(model.meta.format_version, '<', '1.4.0'):
 				model = v1_4_0(model)
-			case VersionUtil.compare('1.6.3', '>', model.meta.format_version):
+			case VersionUtil.compare(model.meta.format_version, '<', '1.6.3'):
 				model = v1_6_3(model)
-			case VersionUtil.compare('1.6.5', '>', model.meta.format_version):
+			case VersionUtil.compare(model.meta.format_version, '<', '1.6.5'):
 				model = v1_6_5(model)
-			case VersionUtil.compare('1.8.0', '>', model.meta.format_version):
+			case VersionUtil.compare(model.meta.format_version, '<', '1.8.0'):
 				model = v1_8_0(model)
-			case VersionUtil.compare('1.10.0', '>', model.meta.format_version):
-				model = v1_10_0(model)
+			case VersionUtil.compare(model.meta.format_version, '<', '1.10.0-beta.1'):
+				model = v1_10_0_beta_1(model)
+			case VersionUtil.compare(model.meta.format_version, '<', '1.10.0-beta.4'):
+				model = v1_10_0_beta_4(model)
 		}
 
 		// Remove unknown blueprint settings

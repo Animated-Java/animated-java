@@ -24,7 +24,8 @@ export function getAvailableNodes(
 			...TextDisplay.all,
 			...VanillaItemDisplay.all,
 			...VanillaBlockDisplay.all,
-			...(OutlinerElement.types.camera?.all || [])
+			// @ts-expect-error - Broken BB types
+			...(OutlinerElement.types.camera?.all ?? [])
 		)
 	}
 	const availableNodes = allNodes.map(node => {

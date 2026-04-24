@@ -3,6 +3,7 @@ import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 import { Variant } from '../variants'
 
 declare global {
+	// @ts-expect-error - Broken BB types
 	interface CubeFace {
 		lastVariant: Variant | undefined
 	}
@@ -14,7 +15,7 @@ registerPatch({
 	apply: () => {
 		const original = CubeFace.prototype.getTexture
 
-		CubeFace.prototype.getTexture = function (this: CubeFace): Texture | undefined {
+		CubeFace.prototype.getTexture = function (this: CubeFace) {
 			if (activeProjectIsBlueprintFormat() && this.texture) {
 				const variant = Variant.selected
 				if (

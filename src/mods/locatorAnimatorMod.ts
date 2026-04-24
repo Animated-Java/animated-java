@@ -34,11 +34,13 @@ export class LocatorAnimator extends BoneAnimator {
 		GeneralAnimator.prototype.select.call(this)
 
 		if (
+			// @ts-expect-error - Broken BB types
 			this[Toolbox.selected.animation_channel] &&
 			((Timeline.selected && Timeline.selected.length === 0) ||
 				(Timeline.selected && (Timeline.selected[0].animator as any)) !== this)
 		) {
 			let nearest: _Keyframe | undefined
+			// @ts-expect-error - Broken BB types
 			this[Toolbox.selected.animation_channel].forEach((kf: _Keyframe) => {
 				if (Math.abs(kf.time - Timeline.time) < 0.002) {
 					nearest = kf

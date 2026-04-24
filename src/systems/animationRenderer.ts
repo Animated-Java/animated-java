@@ -297,6 +297,7 @@ export function updatePreview(animation: _Animation, time: number) {
 		...VanillaItemDisplay.all,
 	]
 	if (OutlinerElement.types.camera) {
+		// @ts-expect-error - Broken BB types
 		nodes.push(...OutlinerElement.types.camera.all)
 	}
 	for (const node of nodes) {
@@ -379,6 +380,7 @@ export function getAnimatableNodes(): OutlinerElement[] {
 		...TextDisplay.all,
 		...VanillaBlockDisplay.all,
 		...VanillaItemDisplay.all,
+		// @ts-expect-error - Broken BB types
 		...(OutlinerElement.types.camera ? OutlinerElement.types.camera.all : []),
 	]
 }

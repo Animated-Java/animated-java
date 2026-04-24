@@ -4,6 +4,7 @@ import { localize as translate } from '../util/lang'
 import { Variant } from '../variants'
 
 declare global {
+	// @ts-expect-error - Broken BB types
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface _Keyframe {
 		variant?: Variant

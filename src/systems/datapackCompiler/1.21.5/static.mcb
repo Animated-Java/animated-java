@@ -1,5 +1,4 @@
 # TODO - Move all internal functions into an internal namespace, and only have user-facing functions in the main `animated_java:<%export_namespace%>` namespace.
-import ../global.mcbt
 
 function on_load {
 	data modify storage <%project_storage%> rig_hash set value <%"'" + rig_hash + "'"%>

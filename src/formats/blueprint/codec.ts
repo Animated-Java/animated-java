@@ -92,8 +92,8 @@ export const BLUEPRINT_CODEC = registerDeletableHandlerPatch({
 					}
 				}
 
-				Project.last_used_export_namespace =
-					model.meta?.last_used_export_namespace ?? Project.animated_java.export_namespace
+				Project.last_used_blueprint_id =
+					model.meta?.last_used_blueprint_id ?? Project.animated_java.blueprint_id
 
 				if (model.textures) {
 					for (const texture of model.textures) {
@@ -255,7 +255,7 @@ export const BLUEPRINT_CODEC = registerDeletableHandlerPatch({
 						uuid: Project.uuid,
 
 						save_location: Project.save_path,
-						last_used_export_namespace: Project.last_used_export_namespace,
+						last_used_blueprint_id: Project.last_used_blueprint_id,
 					},
 					resolution: {
 						width: Project.texture_width ?? 16,
@@ -393,7 +393,7 @@ export const BLUEPRINT_CODEC = registerDeletableHandlerPatch({
 					extensions: [this.extension!],
 					content: this.compile!(),
 					// eslint-disable-next-line @typescript-eslint/naming-convention
-					custom_writer: (content, path) => {
+					custom_writer: (content: string, path: string) => {
 						if (fs.existsSync(PathModule.dirname(path))) {
 							Project!.save_path = path
 							this.write!(content, path)

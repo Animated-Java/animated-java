@@ -1,6 +1,5 @@
 import * as pathjs from 'node:path'
 import { fs } from '../constants'
-import { SUPPORTED_MINECRAFT_VERSIONS } from '../systems/global'
 import { validateBlockState } from '../systems/minecraft/blockModelManager'
 import {
 	BlockStateRegistryEntry,
@@ -324,67 +323,10 @@ export async function parseBlock(block: string): Promise<IParsedBlock | undefine
 	}
 }
 
-export function sortMCVersions(
-	versions: SUPPORTED_MINECRAFT_VERSIONS[]
-): SUPPORTED_MINECRAFT_VERSIONS[] {
+export function sortMCVersions(versions: string[]): string[] {
 	return versions.sort((a, b) => {
 		return compareVersions(a, b) ? -1 : 1
 	})
-}
-
-export function getDataPackFormat(version: SUPPORTED_MINECRAFT_VERSIONS): number {
-	switch (version) {
-		case SUPPORTED_MINECRAFT_VERSIONS['1.20.4']:
-			return 26
-		case SUPPORTED_MINECRAFT_VERSIONS['1.20.5']:
-			return 41
-		case SUPPORTED_MINECRAFT_VERSIONS['1.21.0']:
-			return 48
-		case SUPPORTED_MINECRAFT_VERSIONS['1.21.2']:
-			return 57
-		case SUPPORTED_MINECRAFT_VERSIONS['1.21.4']:
-			return 61
-		case SUPPORTED_MINECRAFT_VERSIONS['1.21.5']:
-			return 71
-		case SUPPORTED_MINECRAFT_VERSIONS['1.21.6']:
-			return 80
-		case SUPPORTED_MINECRAFT_VERSIONS['1.21.9']:
-			return 88.0
-		case SUPPORTED_MINECRAFT_VERSIONS['1.21.11']:
-			return 93.1
-	}
-}
-
-export function getResourcePackFormat(version: SUPPORTED_MINECRAFT_VERSIONS): number {
-	switch (version) {
-		case SUPPORTED_MINECRAFT_VERSIONS['1.20.4']:
-			return 22
-		case SUPPORTED_MINECRAFT_VERSIONS['1.20.5']:
-			return 32
-		case SUPPORTED_MINECRAFT_VERSIONS['1.21.0']:
-			return 34
-		case SUPPORTED_MINECRAFT_VERSIONS['1.21.2']:
-			return 42
-		case SUPPORTED_MINECRAFT_VERSIONS['1.21.4']:
-			return 46
-		case SUPPORTED_MINECRAFT_VERSIONS['1.21.5']:
-			return 55
-		case SUPPORTED_MINECRAFT_VERSIONS['1.21.6']:
-			return 63
-		case SUPPORTED_MINECRAFT_VERSIONS['1.21.9']:
-			return 69.0
-		case SUPPORTED_MINECRAFT_VERSIONS['1.21.11']:
-			return 74.0
-	}
-}
-
-export function getNextSupportedVersion(
-	version: SUPPORTED_MINECRAFT_VERSIONS
-): SUPPORTED_MINECRAFT_VERSIONS | undefined {
-	const versions = Object.values(SUPPORTED_MINECRAFT_VERSIONS)
-	const index = versions.indexOf(version)
-	if (index === -1 || index === versions.length - 1) return undefined
-	return versions[index + 1]
 }
 
 export function functionReferenceExists(dataPackRoot: string, resourceLocation: string): boolean {

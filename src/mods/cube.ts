@@ -4,6 +4,7 @@ import { isCubeValid } from '../systems/util'
 import { localize as translate } from '../util/lang'
 
 declare global {
+	// @ts-expect-error - Broken BB types
 	interface Cube {
 		isRotationValid: boolean
 	}

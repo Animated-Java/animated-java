@@ -1,7 +1,7 @@
 import type { IBlueprintFormatJSON } from '..'
 
 export default function upgrade(model: any): IBlueprintFormatJSON {
-	console.log('Processing model format 1.10.0', JSON.parse(JSON.stringify(model)))
+	console.log('Processing model format 1.10.0-beta.1', JSON.parse(JSON.stringify(model)))
 	const fixed: IBlueprintFormatJSON = JSON.parse(JSON.stringify(model))
 
 	// Invert rotation xy and position x for Blockbench 5.0
