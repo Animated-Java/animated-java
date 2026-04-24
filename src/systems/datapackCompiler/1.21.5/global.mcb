@@ -1,5 +1,4 @@
-# DIFFERENCES FROM 1.20.4:
-# - @n entity selector
+# DIFFERENCES FROM 1.21.0:
 # - JSON text components are now stored as NBT in entities.
 
 import ./global.mcbt

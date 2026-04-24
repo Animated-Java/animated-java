@@ -1,10 +1,8 @@
-# TODO - Move all internal functions into an internal namespace, and only have user-facing functions in the main `animated_java:<%export_namespace%>` namespace.
+# TODO - Move all internal functions into an internal namespace, and only have user-facing functions in the main `<%blueprint_id%>` namespace.
 
 # DIFFERENCES FROM 1.21.2:
 # - node entities are no longer passengers of the root entity for smooth rotation fix.
 # - minecraft:custom_model_data is now more powerful than minecraft:item_model: item.components."minecraft:item_model" -> item.components."minecraft:custom_model_data".strings[0]
-
-import ../global.mcbt
 
 function on_load {
 	data modify storage <%project_storage%> rig_hash set value <%"'" + rig_hash + "'"%>
@@ -25,7 +23,7 @@ dir root {
 
 		IF (auto_update_rig_orientation) {
 			IF (has_locators || has_cameras) {
-				function *<%export_namespace%>/root/on_tick/transform_floating_entities
+				function <%blueprint_id%>/root/on_tick/transform_floating_entities
 			}
 
 			block { with storage <%temp_storage%> entry.data.uuids_by_name
@@ -41,7 +39,7 @@ dir root {
 				}
 			}
 		} ELSE IF (has_ticking_locators) {
-			function *<%export_namespace%>/root/on_tick/transform_locators
+			function <%blueprint_id%>/root/on_tick/transform_locators
 		}
 
 		# Custom post-tick function
@@ -125,13 +123,13 @@ dir root {
 
 IF (!auto_update_rig_orientation) {
 	function move {
-		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(export_namespace)%>
+		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
 
 		tp @s ~ ~ ~ ~ ~
 
 		data_manager prep read
 		IF (has_locators || has_cameras) {
-			function *<%export_namespace%>/root/on_tick/transform_floating_entities
+			function <%blueprint_id%>/root/on_tick/transform_floating_entities
 		}
 
 		block { with storage <%temp_storage%> entry.data.uuids_by_name
@@ -164,17 +162,17 @@ function summon {
 			'<%TAGS.NEW()%>', \
 			'<%TAGS.GLOBAL_ENTITY()%>', \
 			'<%TAGS.GLOBAL_ROOT()%>', \
-			'<%TAGS.PROJECT_ENTITY(export_namespace)%>', \
-			'<%TAGS.PROJECT_ROOT(export_namespace)%>' \
+			'<%TAGS.PROJECT_ENTITY(blueprint_id)%>', \
+			'<%TAGS.PROJECT_ROOT(blueprint_id)%>' \
 		], \
 		teleport_duration: 0, \
 		interpolation_duration: <%interpolation_duration%>, \
 		Passengers:<%root_entity_passengers%>, \
-		CustomName: '<%ENTITY_NAMES.ROOT(export_namespace)%>', \
+		CustomName: '<%ENTITY_NAMES.ROOT(blueprint_id)%>', \
 	}
 	execute as @n[ \
 		type=minecraft:item_display, \
-		tag=<%TAGS.PROJECT_ROOT(export_namespace)%>, \
+		tag=<%TAGS.PROJECT_ROOT(blueprint_id)%>, \
 		tag=<%TAGS.NEW()%>, \
 		distance=..0.01 \
 	] run block zzz/summon/as_root_entity {
@@ -182,11 +180,11 @@ function summon {
 
 		data_manager init prep read
 		# Data manager init runs gu:get_entity_uuid_string. So we don't need to call it again here.
-		# function *global/gu/get_entity_uuid_string
+		# function animated_java:global/gu/get_entity_uuid_string
 		data modify storage <%temp_storage%> entry.data.uuids append from storage <%gu_storage%> out
 		data modify storage <%temp_storage%> entry.data.root_uuid set from storage <%gu_storage%> out
 
-		data modify storage <%temp_storage%> entry.data.export_namespace set value "<%export_namespace%>"
+		data modify storage <%temp_storage%> entry.data.blueprint_id set value "<%blueprint_id%>"
 		data modify storage <%temp_storage%> entry.data.rig_hash set value "<%rig_hash%>"
 
 		# Align the position and rotation of the root with the command context.
@@ -201,15 +199,15 @@ function summon {
 			execute \
 				as @n[ \
 					type=<%locator.config.entity_type%>, \
-					tag=<%TAGS.PROJECT_LOCATOR_NAMED(export_namespace, locator.storage_name)%>, \
+					tag=<%TAGS.PROJECT_LOCATOR_NAMED(blueprint_id, locator.storage_name)%>, \
 					tag=<%TAGS.NEW()%>, \
 					distance=..<%Math.ceil(locator.max_distance)%> \
 				] \
 			run block as_locator/<%locator.storage_name%> {
 			# run block ../as_locator/<%locator.storage_name%> {
 				tag @s remove <%TAGS.NEW()%>
-				data modify entity @s CustomName set value '<%ENTITY_NAMES.NODE(export_namespace, locator.type, locator.storage_name)%>'
-				function *global/gu/get_entity_uuid_string
+				data modify entity @s CustomName set value '<%ENTITY_NAMES.NODE(blueprint_id, locator.type, locator.storage_name)%>'
+				function animated_java:global/gu/get_entity_uuid_string
 				scoreboard players operation @s <%OBJECTIVES.ID()%> = aj.last_id <%OBJECTIVES.ID()%>
 			}
 			data modify storage <%temp_storage%> entry.data.uuids append from storage <%gu_storage%> out
@@ -226,15 +224,15 @@ function summon {
 			execute \
 				as @n[ \
 					type=minecraft:item_display, \
-					tag=<%TAGS.PROJECT_CAMERA_NAMED(export_namespace, camera.storage_name)%>, \
+					tag=<%TAGS.PROJECT_CAMERA_NAMED(blueprint_id, camera.storage_name)%>, \
 					tag=<%TAGS.NEW()%>, \
 					distance=..<%Math.ceil(camera.max_distance)%> \
 				] \
 			run block as_camera/<%camera.storage_name%> {
 			# run block ../as_camera/<%camera.storage_name%> {
 				tag @s remove <%TAGS.NEW()%>
-				data modify entity @s CustomName set value '<%ENTITY_NAMES.NODE(export_namespace, camera.type, camera.storage_name)%>'
-				function *global/gu/get_entity_uuid_string
+				data modify entity @s CustomName set value '<%ENTITY_NAMES.NODE(blueprint_id, camera.type, camera.storage_name)%>'
+				function animated_java:global/gu/get_entity_uuid_string
 				scoreboard players operation @s <%OBJECTIVES.ID()%> = aj.last_id <%OBJECTIVES.ID()%>
 			}
 			data modify storage <%temp_storage%> entry.data.uuids append from storage <%gu_storage%> out
@@ -245,10 +243,10 @@ function summon {
 		REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
 			execute \
 				on passengers \
-				if entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(export_namespace, node.storage_name)%>] \
+				if entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(blueprint_id, node.storage_name)%>] \
 			run block as_node/<%node.storage_name%> {
-				data modify entity @s CustomName set value '<%ENTITY_NAMES.NODE(export_namespace, node.type, node.storage_name)%>'
-				function *global/gu/get_entity_uuid_string
+				data modify entity @s CustomName set value '<%ENTITY_NAMES.NODE(blueprint_id, node.type, node.storage_name)%>'
+				function animated_java:global/gu/get_entity_uuid_string
 				scoreboard players operation @s <%OBJECTIVES.ID()%> = aj.last_id <%OBJECTIVES.ID()%>
 			}
 
@@ -260,13 +258,13 @@ function summon {
 			REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator' && node.config?.use_entity)) as locator {
 				block { with storage <%temp_storage%> entry.data.locators.<%locator.storage_name%>
 					# Track any custom entities on the locator.
-					$execute at @s as $(uuid) at @s run function *global/util/get_entity_stack_uuids
+					$execute at @s as $(uuid) at @s run function animated_java:global/util/get_entity_stack_uuids
 				}
 				data modify storage <%temp_storage%> entry.data.uuids append from storage <%temp_storage%> uuids
 			}
 		}
 
-		function *<%export_namespace%>/zzz/set_default_pose
+		function <%blueprint_id%>/zzz/set_default_pose
 
 		data_manager write
 
@@ -278,12 +276,12 @@ function summon {
 				execute if data storage <%temp_storage%> {args:{variant:''}} run return run block if_empty {
 					# Tell the user that the variant cannot be empty.
 					tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('variant')%>
-					function *<%export_namespace%>/remove/this/without_on_remove_function
+					function <%blueprint_id%>/remove/this/without_on_remove_function
 				}
 				# Attempt to apply the requested variant.
 				# We get the success of the `try_apply` function in just in case the user's arguments are *very* wrong.
 				execute store success score #success <%OBJECTIVES.I()%> run block try_apply { with storage <%temp_storage%> args
-					$execute if function animated_java:<%export_namespace%>/variants/$(variant)/apply run return 1
+					$execute if function <%blueprint_id%>/variants/$(variant)/apply run return 1
 					# If the apply function fails, the variant doesn't exist, so we return an error.
 					return fail
 				}
@@ -291,21 +289,21 @@ function summon {
 				execute unless score #success <%OBJECTIVES.I()%> matches 1 run return run block invalid_variant {
 					# Tell the user that the provided variant doesn't exist, remove the rig, and list all available variants for this rig.
 					tellraw @a <%TELLRAW.INVALID_VARIANT(rig.variants)%>
-					function *<%export_namespace%>/remove/this/without_on_remove_function
+					function <%blueprint_id%>/remove/this/without_on_remove_function
 				}
 				scoreboard players set #success <%OBJECTIVES.I()%> 1
 			}
 		} ELSE {
 			execute if data storage <%temp_storage%> args.variant run block zzz/variant_arg/no_variants_warning {
 				tellraw @a <%TELLRAW.NO_VARIANTS()%>
-				function *<%export_namespace%>/remove/this/without_on_remove_function
+				function <%blueprint_id%>/remove/this/without_on_remove_function
 				scoreboard players set #success <%OBJECTIVES.I()%> 0
 			}
 		}
 		execute if score #success <%OBJECTIVES.I()%> matches 0 run return fail
 
 		IF (has_locators || has_cameras) {
-			function *<%export_namespace%>/root/on_tick/transform_floating_entities
+			function <%blueprint_id%>/root/on_tick/transform_floating_entities
 		}
 		execute on passengers run rotate @s ~ ~
 
@@ -327,7 +325,7 @@ function summon {
 
 		REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type) && node.on_summon_function?.trim())) as node {
 			execute \
-				on passengers if entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(export_namespace, node.storage_name)%>] \
+				on passengers if entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(blueprint_id, node.storage_name)%>] \
 			run block on_summon/<%node.type + '_' + node.storage_name%> {
 				<%%
 					emit.mcb(node.on_summon_function.trim())
@@ -353,7 +351,7 @@ function summon {
 
 function as_node {
 	#ARGS: {name: string, command: string}
-	debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(export_namespace)%>
+	debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
 	data remove storage <%temp_storage%> args
 	$data modify storage <%temp_storage%> args merge value {name:'$(name)', command:'$(command)', uuid:'+MISSING_UUID+'}
 
@@ -389,7 +387,7 @@ function as_node {
 IF (has_entity_locators) {
 	function as_locator {
 		#ARGS: {name: string, command: string}
-		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(export_namespace)%>
+		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
 
 		data remove storage <%temp_storage%> args
 		$data modify storage <%temp_storage%> args merge value {name:'$(name)', command:'$(command)', uuid:'+MISSING_UUID+'}
@@ -425,7 +423,7 @@ IF (has_entity_locators) {
 
 	function as_at_locator {
 		#ARGS: {name: string, command: string}
-		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(export_namespace)%>
+		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
 
 		data remove storage <%temp_storage%> args
 		$data modify storage <%temp_storage%> args merge value {name:'$(name)', command:'$(command)', uuid:'+MISSING_UUID+'}
@@ -461,7 +459,7 @@ IF (has_entity_locators) {
 
 	function as_all_locators {
 		#ARGS: {command: string}
-		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(export_namespace)%>
+		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
 
 		data remove storage <%temp_storage%> args
 		$data modify storage <%temp_storage%> args merge value {command:'$(command)'}
@@ -498,7 +496,7 @@ IF (has_entity_locators) {
 
 	function as_at_all_locators {
 		#ARGS: {command: string}
-		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(export_namespace)%>
+		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
 
 		data remove storage <%temp_storage%> args
 		$data modify storage <%temp_storage%> args merge value {command:'$(command)'}
@@ -537,7 +535,7 @@ IF (has_entity_locators) {
 IF (has_locators) {
 	function at_locator {
 		#ARGS: {name: string, command: string}
-		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(export_namespace)%>
+		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
 
 		data remove storage <%temp_storage%> args
 		$data modify storage <%temp_storage%> args merge value {name:'$(name)', command:'$(command)'}
@@ -577,7 +575,7 @@ IF (has_locators) {
 
 	function at_all_locators {
 		#ARGS: {command: string}
-		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(export_namespace)%>
+		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
 
 		data remove storage <%temp_storage%> args
 		$data modify storage <%temp_storage%> args merge value {command:'$(command)'}
@@ -619,7 +617,7 @@ IF (has_locators) {
 IF (has_cameras) {
 	function as_camera {
 		#ARGS: {name: string, command: string}
-		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(export_namespace)%>
+		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
 
 		data remove storage <%temp_storage%> args
 		$data modify storage <%temp_storage%> args merge value {name:'$(name)', command:'$(command)', uuid:'+MISSING_UUID+'}
@@ -688,17 +686,17 @@ function as_root {
 dir remove {
 	function all {
 		# Removes all instances of this rig from the world.
-		execute as @e[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(export_namespace)%>] run function *<%export_namespace%>/remove/this
+		execute as @e[type=minecraft:item_display,tag=<%TAGS.PROJECT_ROOT(blueprint_id)%>] run function <%blueprint_id%>/remove/this
 	}
 
 	function entities {
 		# Removes all entities related to this rig from the world.
-		kill @e[tag=<%TAGS.PROJECT_ENTITY(export_namespace)%>]
+		kill @e[tag=<%TAGS.PROJECT_ENTITY(blueprint_id)%>]
 	}
 
 	function this {
 		# Removes the rig this function is executed as.
-		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(export_namespace)%>
+		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
 
 		<%%
 			if (on_remove_function) emit.mcb(on_remove_function)
@@ -737,7 +735,7 @@ dir remove {
 
 	dir this {
 		function without_on_remove_function {
-			debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(export_namespace)%>
+			debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
 
 			data_manager prep read
 
@@ -771,7 +769,7 @@ IF (Object.keys(rig.variants).length > 1) {
 		REPEAT (Object.values(rig.variants)) as variant {
 			dir <%variant.name%> {
 				function apply {
-					debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(export_namespace)%>
+					debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
 
 					<%%
 						global.filteredNodes = Object.values(rig.nodes).filter(
@@ -892,7 +890,7 @@ dir zzz {
 			function ../zzz/reset_floating_entities
 		}
 
-		block { with storage <%temp_storage%> entry.data.uuids_by_name
+		block set_default_pose_to_nodes { with storage <%temp_storage%> entry.data.uuids_by_name
 			REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
 				$data merge entity $(<%node.storage_name%>) { \
 					transformation: <%matrixToNbtFloatArray(node.default_transform.matrix).toString()%>, \
@@ -905,7 +903,7 @@ dir zzz {
 
 function set_default_pose {
 	# Changes the pose of the rig to the the default pose without interpolation
-	debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(export_namespace)%>
+	debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
 
 	IF (has_locators || has_cameras) {
 		data_manager prep read

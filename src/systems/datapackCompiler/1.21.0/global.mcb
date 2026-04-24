@@ -1,6 +1,7 @@
-import ./global.mcbt
 # DIFFERENCES FROM 1.20.4:
 # - @n entity selector
+
+import ./global.mcbt
 
 dir global {
 	function on_load minecraft:load {
@@ -28,7 +29,7 @@ dir global {
 	}
 
 	tag functions on_load {
-		*<%export_namespace%>/on_load
+		<%blueprint_id%>/on_load
 	}
 
 	dir root {
@@ -41,7 +42,7 @@ dir global {
 		}
 
 		function run_project_tick {
-			$function animated_java:$(export_namespace)/root/on_tick
+			$function $(blueprint_id)/root/on_tick
 		}
 
 		IF (debug_mode) {
@@ -60,7 +61,7 @@ dir global {
 					# data_manager prep read
 
 					# Get export namespace
-					data modify storage <%temp_storage%> args.export_namespace set from storage <%temp_storage%> entry.data.export_namespace
+					data modify storage <%temp_storage%> args.blueprint_id set from storage <%temp_storage%> entry.data.blueprint_id
 					# Overwrite the rig hash so the warning doesn't show again.
 					data modify storage <%temp_storage%> entry.data.rig_hash set value '<%rig_hash%>'
 					data_manager write
@@ -158,8 +159,8 @@ dir global {
 			block { with storage <%temp_storage%> entry.data
 				# REVIEW - The replace here is a bit hacky.
 				# Because this is a core function, I need to create a generic version of
-				# project_storage that uses a macro to get the export namespace instead of hardcoding it.
-				$execute if data storage <%project_storage.replace(export_namespace, '$(export_namespace)')%> {rig_hash:'$(rig_hash)'} run return 0
+				# project_storage that uses a macro to get the blueprint ID instead of hardcoding it.
+				$execute if data storage <%project_storage.replace(blueprint_id, '$(blueprint_id)')%> {rig_hash:'$(rig_hash)'} run return 0
 				return 1
 			}
 		}
@@ -221,6 +222,7 @@ dir global {
 		}
 	}
 
+	# Storage-based per-entity NBT storage. Thanks Xanbelor for the concept!
 	dir data_manager {
 		function on_load {
 			scoreboard players add #aj.data_manager.index <%OBJECTIVES.I()%> 0
@@ -254,15 +256,5 @@ dir global {
 		function write {
 			$data modify storage <%data_storage%> "$(id)" set from storage <%temp_storage%> entry
 		}
-	}
-}
-
-dir <%export_namespace%> {
-	function on_load {
-		function *<%export_namespace%>/invalid_version_warning
-	}
-
-	function invalid_version_warning {
-		tellraw @a <%TELLRAW.INVALID_VERSION()%>
 	}
 }
