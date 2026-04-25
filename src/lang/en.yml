@@ -39,9 +39,9 @@ animated_java:
       confirm: Confirm Extraction
     create_text_display:
       title: Add Text Display
-    create_vanilla_item_display:
+    create_item_display:
       title: Add Item Display
-    create_vanilla_block_display:
+    create_block_display:
       title: Add Block Display
     copy_display_entity_config:
       name: Copy Display Entity Config

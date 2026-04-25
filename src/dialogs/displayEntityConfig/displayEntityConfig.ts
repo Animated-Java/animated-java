@@ -124,7 +124,7 @@ export const DISPLAY_ENTITY_CONFIG_ACTION = registerDeletableHandlerPatch({
 		'animated_java:action/paste-display-entity-config',
 	],
 	create() {
-		return new Blockbench.Action(`animated_java:action/open-display-entity-config`, {
+		const action = new Blockbench.Action(`animated_java:action/open-display-entity-config`, {
 			icon: 'settings',
 			name: translate('action.open_display_entity_config.name'),
 			condition: activeProjectIsBlueprintFormat,
@@ -139,38 +139,38 @@ export const DISPLAY_ENTITY_CONFIG_ACTION = registerDeletableHandlerPatch({
 				}
 			},
 		})
+
+		const copyAction = COPY_DISPLAY_ENTITY_CONFIG_ACTION.get()
+		if (!copyAction) {
+			console.error('Copy display entity config action not registered')
+			return
+		}
+		const pasteAction = PASTE_DISPLAY_ENTITY_CONFIG_ACTION.get()
+		if (!pasteAction) {
+			console.error('Paste display entity config action not registered')
+			return
+		}
+
+		Group.prototype.menu!.structure.splice(6, 0, '_')
+		Group.prototype.menu!.addAction(action, 7)
+		Group.prototype.menu!.addAction(copyAction, 8)
+		Group.prototype.menu!.addAction(pasteAction, 9)
+
+		const displayEntityMenu = new Menu([
+			...Outliner.control_menu_group,
+			'_',
+			action,
+			copyAction,
+			pasteAction,
+			'_',
+			'rename',
+			'delete',
+		])
+
+		TextDisplay.prototype.menu = displayEntityMenu
+		VanillaItemDisplay.prototype.menu = displayEntityMenu
+		VanillaBlockDisplay.prototype.menu = displayEntityMenu
+
+		return action
 	},
-})
-
-DISPLAY_ENTITY_CONFIG_ACTION.onCreated(action => {
-	const copyAction = COPY_DISPLAY_ENTITY_CONFIG_ACTION.get()
-	if (!copyAction) {
-		console.error('Copy display entity config action not registered')
-		return
-	}
-	const pasteAction = PASTE_DISPLAY_ENTITY_CONFIG_ACTION.get()
-	if (!pasteAction) {
-		console.error('Paste display entity config action not registered')
-		return
-	}
-
-	Group.prototype.menu!.structure.splice(6, 0, '_')
-	Group.prototype.menu!.addAction(action, 7)
-	Group.prototype.menu!.addAction(copyAction, 8)
-	Group.prototype.menu!.addAction(pasteAction, 9)
-
-	const displayEntityMenu = new Menu([
-		...Outliner.control_menu_group,
-		'_',
-		action,
-		copyAction,
-		pasteAction,
-		'_',
-		'rename',
-		'delete',
-	])
-
-	TextDisplay.prototype.menu = displayEntityMenu
-	VanillaItemDisplay.prototype.menu = displayEntityMenu
-	VanillaBlockDisplay.prototype.menu = displayEntityMenu
 })

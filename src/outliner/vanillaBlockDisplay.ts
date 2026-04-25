@@ -1,4 +1,4 @@
-import { registerDeletableHandlerPatch } from 'blockbench-patch-manager'
+import { registerDeletableHandlerPatch, registerPatch } from 'blockbench-patch-manager'
 import { observable } from 'svelte-observable-store'
 import { PACKAGE } from '../constants'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
@@ -377,7 +377,7 @@ VanillaBlockDisplay.animator = VanillaBlockDisplayAnimator as any
 export const CREATE_ACTION = registerDeletableHandlerPatch({
 	id: `animated_java:action/create-block-display`,
 	create() {
-		return new Blockbench.Action(`animated_java:action/create-block-display`, {
+		const action = new Blockbench.Action(`animated_java:action/create-block-display`, {
 			name: translate('action.create_block_display.title'),
 			icon: 'deployed_code',
 			category: 'animated_java',
@@ -401,7 +401,7 @@ export const CREATE_ACTION = registerDeletableHandlerPatch({
 				Group.first_selected?.unselect()
 				vanillaBlockDisplay.select()
 
-				Undo.finishEdit('Create Vanilla Block Display', {
+				Undo.finishEdit('Create Block Display', {
 					outliner: true,
 					elements: selected,
 					selection: true,
@@ -410,36 +410,41 @@ export const CREATE_ACTION = registerDeletableHandlerPatch({
 				return vanillaBlockDisplay
 			},
 		})
+
+		// @ts-expect-error - Broken BB types
+		BarItems.add_element.side_menu.addAction(action, 3)
+
+		return action
 	},
 })
 
-const CLEANUP_CALLBACKS: Array<() => void> = []
+registerPatch({
+	id: `animated_java:block-display-project-sync`,
 
-CREATE_ACTION.onCreated(action => {
-	Interface.Panels.outliner.menu.addAction(action, 3)
-	Toolbars.outliner.add(action, 0)
-	MenuBar.menus.edit.addAction(action, 8)
+	apply: () => {
+		const callbacks: Array<() => void> = []
 
-	CLEANUP_CALLBACKS.push(
-		EVENTS.SELECT_PROJECT.subscribe(project => {
-			project.vanillaBlockDisplays ??= []
-			VanillaBlockDisplay.all.empty()
-			VanillaBlockDisplay.all.push(...project.vanillaBlockDisplays)
-		}),
+		callbacks.push(
+			EVENTS.SELECT_PROJECT.subscribe(project => {
+				project.vanillaBlockDisplays ??= []
+				VanillaBlockDisplay.all.empty()
+				VanillaBlockDisplay.all.push(...project.vanillaBlockDisplays)
+			}),
 
-		EVENTS.UNSELECT_PROJECT.subscribe(project => {
-			project.vanillaBlockDisplays = [...VanillaBlockDisplay.all]
-			VanillaBlockDisplay.all.empty()
-		})
-	)
-})
+			EVENTS.UNSELECT_PROJECT.subscribe(project => {
+				project.vanillaBlockDisplays = [...VanillaBlockDisplay.all]
+				VanillaBlockDisplay.all.empty()
+			})
+		)
+		return { callbacks }
+	},
 
-CREATE_ACTION.onDeleted(action => {
-	Interface.Panels.outliner.menu.removeAction(action)
-	Toolbars.outliner.remove(action)
-	MenuBar.menus.edit.removeAction(action)
+	revert: ({ callbacks }) => {
+		// @ts-expect-error - Broken BB types
+		BarItems.add_element.side_menu.removeAction(`animated_java:action/create-block-display`)
 
-	CLEANUP_CALLBACKS.forEach(unsub => unsub())
+		callbacks.forEach(unsub => unsub())
+	},
 })
 
 // export function debugBlocks() {

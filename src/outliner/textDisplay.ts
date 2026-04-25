@@ -1,4 +1,4 @@
-import { registerDeletableHandlerPatch } from 'blockbench-patch-manager'
+import { registerDeletableHandlerPatch, registerPatch } from 'blockbench-patch-manager'
 import { TextComponent, TextComponentParser, type TextElement } from 'book-and-quill'
 import { observable } from 'svelte-observable-store'
 import { PACKAGE } from '../constants'
@@ -463,7 +463,7 @@ TextDisplay.animator = TextDisplayAnimator as any
 export const CREATE_ACTION = registerDeletableHandlerPatch({
 	id: `animated_java:action/create-text-display`,
 	create() {
-		return new Blockbench.Action(`animated_java:action/create-text-display`, {
+		const action = new Blockbench.Action(`animated_java:action/create-text-display`, {
 			name: translate('action.create_text_display.title'),
 			icon: 'text_fields',
 			category: 'animated_java',
@@ -496,36 +496,39 @@ export const CREATE_ACTION = registerDeletableHandlerPatch({
 				return textDisplay
 			},
 		})
+
+		// @ts-expect-error - Broken BB types
+		BarItems.add_element.side_menu.addAction(action, 3)
+
+		return action
 	},
 })
 
-const CLEANUP_CALLBACKS: Array<() => void> = []
+registerPatch({
+	id: `animated_java:text-display-project-sync`,
 
-CREATE_ACTION.onCreated(action => {
-	Interface.Panels.outliner.menu.addAction(action, 3)
-	Toolbars.outliner.add(action, 0)
-	MenuBar.menus.edit.addAction(action, 8)
+	apply: () => {
+		const callbacks: Array<() => void> = []
 
-	CLEANUP_CALLBACKS.push(
-		EVENTS.SELECT_PROJECT.subscribe(project => {
-			if (!activeProjectIsBlueprintFormat()) return
-			project.textDisplays ??= []
-			TextDisplay.all.empty()
-			TextDisplay.all.push(...project.textDisplays)
-		}),
+		callbacks.push(
+			EVENTS.SELECT_PROJECT.subscribe(project => {
+				if (!activeProjectIsBlueprintFormat()) return
+				project.textDisplays ??= []
+				TextDisplay.all.empty()
+				TextDisplay.all.push(...project.textDisplays)
+			}),
 
-		EVENTS.UNSELECT_PROJECT.subscribe(project => {
-			if (!activeProjectIsBlueprintFormat()) return
-			project.textDisplays = [...TextDisplay.all]
-			TextDisplay.all.empty()
-		})
-	)
-})
-
-CREATE_ACTION.onDeleted(action => {
-	Interface.Panels.outliner.menu.removeAction(action)
-	Toolbars.outliner.remove(action)
-	MenuBar.menus.edit.removeAction(action)
-
-	CLEANUP_CALLBACKS.forEach(unsub => unsub())
+			EVENTS.UNSELECT_PROJECT.subscribe(project => {
+				if (!activeProjectIsBlueprintFormat()) return
+				project.textDisplays = [...TextDisplay.all]
+				TextDisplay.all.empty()
+			})
+		)
+		return { callbacks }
+	},
+	revert: ({ callbacks }) => {
+		// @ts-expect-error - Broken BB types
+		BarItems.add_element.side_menu.removeAction(CREATE_ACTION)
+		callbacks.forEach(unsub => unsub())
+	},
 })

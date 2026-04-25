@@ -1,4 +1,4 @@
-import { registerDeletableHandlerPatch } from 'blockbench-patch-manager'
+import { registerDeletableHandlerPatch, registerPatch } from 'blockbench-patch-manager'
 import { observable } from 'svelte-observable-store'
 import { PACKAGE } from '../constants'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint/index'
@@ -372,10 +372,10 @@ VanillaItemDisplayAnimator.prototype.type = VanillaItemDisplay.type
 VanillaItemDisplay.animator = VanillaItemDisplayAnimator as any
 
 export const CREATE_ACTION = registerDeletableHandlerPatch({
-	id: `animated_java:action/create-vanilla-item-display`,
+	id: `animated_java:action/create-item-display`,
 	create() {
-		return new Blockbench.Action(`animated_java:action/create-item-display`, {
-			name: translate('action.create_vanilla_item_display.title'),
+		const action = new Blockbench.Action(`animated_java:action/create-item-display`, {
+			name: translate('action.create_item_display.title'),
 			icon: 'icecream',
 			category: 'animated_java',
 			condition() {
@@ -398,7 +398,7 @@ export const CREATE_ACTION = registerDeletableHandlerPatch({
 				Group.first_selected?.unselect()
 				vanillaItemDisplay.select()
 
-				Undo.finishEdit('Create Vanilla Item Display', {
+				Undo.finishEdit('Create Item Display', {
 					outliner: true,
 					elements: selected,
 					selection: true,
@@ -407,35 +407,39 @@ export const CREATE_ACTION = registerDeletableHandlerPatch({
 				return vanillaItemDisplay
 			},
 		})
+
+		// @ts-expect-error - Broken BB types
+		BarItems.add_element.side_menu.addAction(action, 3)
+
+		return action
 	},
 })
 
-const CLEANUP_CALLBACKS: Array<() => void> = []
+registerPatch({
+	id: `animated_java:item-display-project-sync`,
 
-CREATE_ACTION.onCreated(action => {
-	Interface.Panels.outliner.menu.addAction(action, 3)
-	Toolbars.outliner.add(action, 0)
-	MenuBar.menus.edit.addAction(action, 8)
+	apply: () => {
+		const callbacks: Array<() => void> = []
 
-	CLEANUP_CALLBACKS.push(
-		EVENTS.SELECT_PROJECT.subscribe(project => {
-			project.vanillaItemDisplays ??= []
-			VanillaItemDisplay.all.empty()
-			VanillaItemDisplay.all.push(...project.vanillaItemDisplays)
-		}),
+		callbacks.push(
+			EVENTS.SELECT_PROJECT.subscribe(project => {
+				project.vanillaItemDisplays ??= []
+				VanillaItemDisplay.all.empty()
+				VanillaItemDisplay.all.push(...project.vanillaItemDisplays)
+			}),
 
-		EVENTS.UNSELECT_PROJECT.subscribe(project => {
-			project.vanillaItemDisplays = [...VanillaItemDisplay.all]
-			VanillaItemDisplay.all.empty()
-		})
-	)
-})
+			EVENTS.UNSELECT_PROJECT.subscribe(project => {
+				project.vanillaItemDisplays = [...VanillaItemDisplay.all]
+				VanillaItemDisplay.all.empty()
+			})
+		)
+		return { callbacks }
+	},
 
-CREATE_ACTION.onDeleted(action => {
-	Interface.Panels.outliner.menu.removeAction(action)
-	Toolbars.outliner.remove(action)
-	MenuBar.menus.edit.removeAction(action)
+	revert: ({ callbacks }) => {
+		// @ts-expect-error - Broken BB types
+		BarItems.add_element.side_menu.removeAction(`animated_java:action/create-item-display`)
 
-	CLEANUP_CALLBACKS.forEach(unsub => unsub())
-	CLEANUP_CALLBACKS.empty()
+		callbacks.forEach(unsub => unsub())
+	},
 })
