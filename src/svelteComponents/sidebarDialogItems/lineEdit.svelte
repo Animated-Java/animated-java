@@ -8,11 +8,19 @@
 		label: string
 		description?: string
 		value: string
+		defaultValue?: string
 		required?: boolean
 		checkValue?: (value: string) => Promise<ValueCheckResult> | ValueCheckResult
 	}
 
-	let { label, description, value = $bindable(), required, checkValue }: Props = $props()
+	let {
+		label,
+		description,
+		value = $bindable(),
+		defaultValue,
+		required,
+		checkValue,
+	}: Props = $props()
 
 	let error = $state<string | undefined>()
 	let warning = $state<string | undefined>()
@@ -49,6 +57,10 @@
 			warning = result.message
 		}
 	})
+
+	function resetValue() {
+		value = defaultValue ?? ''
+	}
 </script>
 
 <BaseSidebarDialogItem {label} {description} {required} {error} {warning}>
@@ -59,6 +71,9 @@
 			class="{error ? 'error' : ''} {warning ? 'warning' : ''}"
 			bind:value
 		/>
+		{#if defaultValue !== undefined}
+			<i class="fa fa-arrow-rotate-left" onclick={resetValue}></i>
+		{/if}
 	{/snippet}
 </BaseSidebarDialogItem>
 
@@ -68,9 +83,21 @@
 		background-color: var(--color-back);
 		outline: 1px solid var(--color-border);
 		padding-left: 4px;
+		padding-right: 24px;
 
 		border-radius: 0;
 		transition: outline 0.1s cubic-bezier(0.25, 0.68, 0.53, 1.3);
+	}
+
+	i {
+		position: absolute;
+		right: 4px;
+		top: 4px;
+		cursor: pointer;
+	}
+
+	i:hover {
+		color: var(--color-light);
 	}
 
 	.error {

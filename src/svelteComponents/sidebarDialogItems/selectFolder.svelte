@@ -80,6 +80,7 @@
 		background-color: var(--color-back);
 		outline: 1px solid var(--color-border);
 		padding-left: 4px;
+		padding-right: 24px;
 
 		border-radius: 0;
 		transition: outline 0.1s cubic-bezier(0.25, 0.68, 0.53, 1.3);
