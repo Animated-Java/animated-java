@@ -8,12 +8,13 @@ import {
 } from '../../interface/animatedJavaBarItem'
 import { updateAllCubeOutlines } from '../../mods/cube'
 import { createScopedTranslator } from '../../util/lang'
-import Footer from './footer.svelte'
-import Datapack from './pages/datapack.svelte'
-import EventFunctions from './pages/eventFunctions.svelte'
-import General from './pages/general.svelte'
-import Misc from './pages/misc.svelte'
-import Resourcepack from './pages/resourcepack.svelte'
+import FooterComponent from './footer.svelte'
+import DatapackComponent from './pages/datapack.svelte'
+import EventFunctionsComponent from './pages/eventFunctions.svelte'
+import GeneralComponent from './pages/general.svelte'
+import MiscComponent from './pages/misc.svelte'
+import PluginComponent from './pages/plugin.svelte'
+import ResourcepackComponent from './pages/resourcepack.svelte'
 
 const localize = createScopedTranslator('dialog.blueprint_settings')
 
@@ -23,36 +24,42 @@ export function openBlueprintSettings() {
 		title: 'Blueprint Settings',
 		pages: {
 			general: {
-				component: General,
+				component: GeneralComponent,
 				label: localize('pages.general.title'),
 				icon: 'settings',
 			},
 			datapack: {
-				component: Datapack,
+				component: DatapackComponent,
 				condition: () => Project.pluginMode.get() === false,
 				label: localize('pages.datapack.title'),
 				icon: 'database',
 			},
 			resourcepack: {
-				component: Resourcepack,
+				component: ResourcepackComponent,
 				condition: () => Project.pluginMode.get() === false,
 				label: localize('pages.resource_pack.title'),
 				icon: 'image',
 			},
 			eventFunctions: {
-				component: EventFunctions,
+				component: EventFunctionsComponent,
 				condition: () => Project.pluginMode.get() === false,
 				label: localize('pages.event_functions.title'),
 				icon: 'functions',
 			},
+			plugin: {
+				component: PluginComponent,
+				condition: () => Project.pluginMode.get() === true,
+				label: localize('pages.plugin.title'),
+				icon: 'fa-paper-plane',
+			},
 			misc: {
-				component: Misc,
+				component: MiscComponent,
 				label: localize('pages.misc.title'),
 				icon: 'tune',
 			},
 		},
 		footer: {
-			component: Footer,
+			component: FooterComponent,
 		},
 		pageSwitchActions: [
 			OPEN_DOCUMENTATION.get()!,

@@ -43,7 +43,7 @@ export interface BlueprintSettings {
 }
 
 export const defaultValues: BlueprintSettings = {
-	blueprint_id: 'blueprint',
+	blueprint_id: 'aj:my_blueprint',
 
 	show_render_box: false,
 	auto_render_box: true,

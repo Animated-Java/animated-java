@@ -113,6 +113,7 @@ animated_java:
         resource_pack.title: Resource Pack
         datapack.title: Data Pack
         event_functions.title: Event Functions
+        plugin.title: Plugin
         misc.title: Misc
 
       project_settings:

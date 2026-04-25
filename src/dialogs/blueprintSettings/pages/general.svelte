@@ -1,7 +1,9 @@
 <script lang="ts">
+	import type {} from '@blockbench-types/generated/uv/uv_size'
 	import { onDestroy } from 'svelte'
 	import DataPackIcon from '../../../assets/icons/impulse_command_block.png'
 	import PluginIcon from '../../../assets/icons/papermc.svg'
+	import { getDefaultProjectSettings } from '../../../formats/blueprint'
 	import {
 		validateBlueprintId,
 		validateTargetMinecraftVersion,
@@ -10,6 +12,8 @@
 	import BoxSelect from '../../../svelteComponents/sidebarDialogItems/boxSelect.svelte'
 	import LineEdit from '../../../svelteComponents/sidebarDialogItems/lineEdit.svelte'
 	import Vector2 from '../../../svelteComponents/sidebarDialogItems/vector2.svelte'
+
+	const DEFAULT_SETTINGS = getDefaultProjectSettings()
 
 	let targetEnvironment = $state(Project.animated_java.enable_plugin_mode ? 'plugin' : 'datapack')
 	let blueprintName = $state(Project.name)
@@ -23,7 +27,7 @@
 	})
 
 	onDestroy(() => {
-		Project.setResolution(textureSizeX, textureSizeY)
+		UVSizeUtil.adjustProjectResolution(textureSizeX, textureSizeY)
 		Project.name = blueprintName
 		Project.animated_java.blueprint_id = blueprintId
 		Project.animated_java.target_minecraft_version = targetMinecraftVersion
@@ -54,12 +58,14 @@
 		label="Blueprint Name"
 		description="The name of your Blueprint. Used for the exported file name and in-game display name."
 		bind:value={blueprintName}
+		defaultValue={'My Blueprint'}
 	></LineEdit>
 
 	<LineEdit
 		label="Blueprint ID"
 		description="The unique identifier for your Blueprint."
 		bind:value={blueprintId}
+		defaultValue={DEFAULT_SETTINGS.blueprint_id}
 		checkValue={validateBlueprintId}
 		required
 	></LineEdit>
@@ -68,6 +74,7 @@
 		label="Target Minecraft Version"
 		description="The Minecraft version you're targeting. Affects which features you can use and how the export is structured."
 		bind:value={targetMinecraftVersion}
+		defaultValue={DEFAULT_SETTINGS.target_minecraft_version}
 		checkValue={validateTargetMinecraftVersion}
 		required
 	></LineEdit>
