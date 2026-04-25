@@ -9,6 +9,10 @@ animated_java:
   require:
     fs: Animated Java requires the fs module to export Data Packs & Resource Packs when exporting, to save and load Blueprints, to validate Blueprint settings, and to cache Minecraft assets.
 
+  outliner:
+    structure_group:
+      title: Structure Group (Will not create an entity)
+
   action:
     open_blueprint_settings:
       name: Blueprint Settings

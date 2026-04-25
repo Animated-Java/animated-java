@@ -1,26 +1,50 @@
 import { registerPatch, registerPropertyOverridePatch } from 'blockbench-patch-manager'
-import {
-	activeProjectIsBlueprintFormat,
-	type IBlueprintDisplayEntityConfigJSON,
-} from '../formats/blueprint'
+import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 import { DisplayEntityConfig } from '../nodeConfigs'
 import { sanitizeOutlinerElementName } from '../outliner/util'
+import type { IDisplayEntityConfigs } from '../systems/rigRenderer'
+import { localize } from '../util/lang'
 import { DeepClonedObjectProperty } from '../util/property'
 
 declare global {
 	// @ts-expect-error - Broken BB types
 	interface Group {
 		onSummonFunction: string
-		configs: {
-			default: IBlueprintDisplayEntityConfigJSON
-			/**
-			 * @key Variant UUID
-			 * @value Variant Bone Config
-			 */
-			variants: Record<string, IBlueprintDisplayEntityConfigJSON>
-		}
+		configs: IDisplayEntityConfigs
 	}
 }
+
+registerPropertyOverridePatch({
+	id: `animated_java:structure-group-icon`,
+	target: Group.prototype,
+	key: 'icon',
+
+	get: function (this, original) {
+		if (activeProjectIsBlueprintFormat()) {
+			if (this.children.some(child => child instanceof Cube)) {
+				return original
+			}
+			return 'account_tree'
+		}
+		return original
+	},
+})
+
+registerPropertyOverridePatch({
+	id: `animated_java:structure-group-title`,
+	target: Group.prototype,
+	key: 'title',
+
+	get: function (this, original) {
+		if (activeProjectIsBlueprintFormat()) {
+			if (this.children.some(child => child instanceof Cube)) {
+				return original
+			}
+			return localize('outliner.structure_group.title')
+		}
+		return original
+	},
+})
 
 // region Properties
 registerPatch({
