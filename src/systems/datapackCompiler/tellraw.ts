@@ -9,7 +9,7 @@ const TELLRAW_PREFIX = () =>
 		{ text: '\n ', color: 'gray' },
 		{ text: toSmallCaps('Animated Java'), color: '#00aced' },
 		{
-			text: `\n (animated_java:${Project!.animated_java.blueprint_id})`,
+			text: `\n (${Project!.animated_java.blueprint_id})`,
 			color: 'dark_gray',
 			italic: true,
 		},

@@ -114,7 +114,7 @@ export default async function compileResourcePack(
 
 	const misodeVersionData = await getMisodeVersion(version)
 
-	const format = misodeVersionData.data_pack_version
+	const format = misodeVersionData.resource_pack_version
 	if (VersionUtil.compare(version, '>=', '1.21.9')) {
 		packMeta.content.pack.min_format = format
 		packMeta.content.pack.max_format = format

@@ -655,7 +655,7 @@ function summon {
 					type=<%locator.config.entity_type%>, \
 					tag=<%TAGS.PROJECT_LOCATOR_NAMED(blueprint_id, locator.storage_name)%>, \
 					tag=<%TAGS.NEW()%>, \
-					distance=..<%Math.ceil(locator.max_distance)%> \
+					distance=..<%Math.ceil(locator.max_distance + 0.5)%> \
 				] \
 			run block as_locator/<%locator.storage_name%> {
 			# run block ../as_locator/<%locator.storage_name%> {
@@ -680,7 +680,7 @@ function summon {
 					type=minecraft:item_display, \
 					tag=<%TAGS.PROJECT_CAMERA_NAMED(blueprint_id, camera.storage_name)%>, \
 					tag=<%TAGS.NEW()%>, \
-					distance=..<%Math.ceil(camera.max_distance)%> \
+					distance=..<%Math.ceil(camera.max_distance + 0.5)%> \
 				] \
 			run block as_camera/<%camera.storage_name%> {
 			# run block ../as_camera/<%camera.storage_name%> {
