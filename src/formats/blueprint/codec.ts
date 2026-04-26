@@ -6,7 +6,7 @@ import {
 	type IBlueprintFormatJSON,
 	type ICollectionJSON,
 } from '.'
-import { PACKAGE, fs } from '../../constants'
+import { PACKAGE, getFsModule } from '../../constants'
 import { localize as translate } from '../../util/lang'
 import { sanitizeStorageKey } from '../../util/minecraftUtil'
 import { Variant } from '../../variants'
@@ -98,17 +98,18 @@ export const BLUEPRINT_CODEC = registerDeletableHandlerPatch({
 				if (model.textures) {
 					for (const texture of model.textures) {
 						const newTexture = new Texture(texture, texture.uuid).add(false)
+						const { existsSync } = getFsModule()
 						if (texture.relative_path && Project.save_path) {
 							const resolvedPath = PathModule.resolve(
 								Project.save_path,
 								texture.relative_path
 							)
-							if (fs.existsSync(resolvedPath)) {
+							if (existsSync(resolvedPath)) {
 								newTexture.fromPath(resolvedPath)
 								continue
 							}
 						}
-						if (texture.path && fs.existsSync(texture.path) && !model.meta?.backup) {
+						if (texture.path && existsSync(texture.path) && !model.meta?.backup) {
 							newTexture.fromPath(texture.path)
 						} else if (texture.source?.startsWith('data:')) {
 							newTexture.fromDataURL(texture.source)

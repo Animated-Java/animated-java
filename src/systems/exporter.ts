@@ -1,4 +1,4 @@
-import { fs } from '../constants'
+import { getFsModule } from '../constants'
 import {
 	PROGRESS_DESCRIPTION,
 	openExportProgressDialog,
@@ -80,8 +80,9 @@ async function actuallyExportProject({
 		}
 
 		// Verify that all non-external textures have unique names
+		const { existsSync } = getFsModule()
 		for (const texture of Texture.all) {
-			if (texture.path && isResourcePackPath(texture.path) && fs.existsSync(texture.path))
+			if (texture.path && isResourcePackPath(texture.path) && existsSync(texture.path))
 				continue
 			if (Texture.all.some(t => t !== texture && t.name === texture.name)) {
 				throw new IntentionalExportError(

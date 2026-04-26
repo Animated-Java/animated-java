@@ -1,4 +1,4 @@
-import { fs } from '../constants'
+import { getFsModule } from '../constants'
 import { isFunctionTagPath } from '../util/fileUtil'
 import { type FunctionTagJSON, parseDataPackPath } from '../util/minecraftUtil'
 import { getExportPaths } from './exporter'
@@ -14,6 +14,8 @@ export async function cleanupExportedFiles() {
 		// modelExportFolder,
 		// displayItemPath,
 	} = getExportPaths()
+	const { existsSync, promises } = getFsModule()
+	const { unlink, mkdir, copyFile, readFile, writeFile, readdir, rm } = promises
 
 	if (aj.resource_pack_export_mode === 'folder') {
 		const assetsMetaPath = PathModule.join(resourcePackFolder, 'assets.ajmeta')
@@ -31,32 +33,32 @@ export async function cleanupExportedFiles() {
 		const removedFolders = new Set<string>()
 		for (const file of assetsMeta.previousVersionedFiles) {
 			if (!isFunctionTagPath(file)) {
-				if (fs.existsSync(file)) await fs.promises.unlink(file)
+				if (existsSync(file)) await unlink(file)
 			} else if (aj.blueprint_id !== Project!.last_used_blueprint_id) {
 				const resourceLocation = parseDataPackPath(file)!.resourceLocation
 				if (
 					resourceLocation.startsWith(
 						`animated_java:${Project!.last_used_blueprint_id}/`
 					) &&
-					fs.existsSync(file)
+					existsSync(file)
 				) {
 					const newPath = replacePathPart(
 						file,
 						Project!.last_used_blueprint_id,
 						aj.blueprint_id
 					)
-					await fs.promises.mkdir(PathModule.dirname(newPath), { recursive: true })
-					await fs.promises.copyFile(file, newPath)
-					await fs.promises.unlink(file)
+					await mkdir(PathModule.dirname(newPath), { recursive: true })
+					await copyFile(file, newPath)
+					await unlink(file)
 				}
 			}
 			let folder = PathModule.dirname(file)
 			while (
 				!removedFolders.has(folder) &&
-				fs.existsSync(folder) &&
-				(await fs.promises.readdir(folder)).length === 0
+				existsSync(folder) &&
+				(await readdir(folder)).length === 0
 			) {
-				await fs.promises.rm(folder, { recursive: true })
+				await rm(folder, { recursive: true })
 				removedFolders.add(folder)
 				folder = PathModule.dirname(folder)
 				if (PathModule.basename(folder) === 'assets') break
@@ -82,7 +84,7 @@ export async function cleanupExportedFiles() {
 		// MAX_PROGRESS.set(dataMeta.oldFiles.size)
 		const removedFolders = new Set<string>()
 		for (const file of [...dataMeta.previousCoreFiles, ...dataMeta.previousVersionedFiles]) {
-			if (isFunctionTagPath(file) && fs.existsSync(file)) {
+			if (isFunctionTagPath(file) && existsSync(file)) {
 				if (aj.blueprint_id !== Project!.last_used_blueprint_id) {
 					const resourceLocation = parseDataPackPath(file)!.resourceLocation
 					if (
@@ -95,33 +97,31 @@ export async function cleanupExportedFiles() {
 							Project!.last_used_blueprint_id,
 							aj.blueprint_id
 						)
-						await fs.promises.mkdir(PathModule.dirname(newPath), { recursive: true })
-						await fs.promises.copyFile(file, newPath)
-						await fs.promises.unlink(file)
+						await mkdir(PathModule.dirname(newPath), { recursive: true })
+						await copyFile(file, newPath)
+						await unlink(file)
 					}
 				}
 				// Remove mentions of the export namespace from the file
-				const content: FunctionTagJSON = JSON.parse(
-					(await fs.promises.readFile(file)).toString()
-				)
+				const content: FunctionTagJSON = JSON.parse((await readFile(file)).toString())
 				content.values = content.values.filter(
 					v =>
 						typeof v === 'string' &&
 						(!v.startsWith(`animated_java:${aj.blueprint_id}/`) ||
 							!v.startsWith(`animated_java:${Project!.last_used_blueprint_id}/`))
 				)
-				await fs.promises.writeFile(file, autoStringify(content))
+				await writeFile(file, autoStringify(content))
 			} else {
 				// Delete the file
-				if (fs.existsSync(file)) await fs.promises.unlink(file)
+				if (existsSync(file)) await unlink(file)
 			}
 			let folder = PathModule.dirname(file)
 			while (
 				!removedFolders.has(folder) &&
-				fs.existsSync(folder) &&
-				(await fs.promises.readdir(folder)).length === 0
+				existsSync(folder) &&
+				(await readdir(folder)).length === 0
 			) {
-				await fs.promises.rm(folder, { recursive: true })
+				await rm(folder, { recursive: true })
 				removedFolders.add(folder)
 				folder = PathModule.dirname(folder)
 				if (PathModule.basename(folder) === 'data') break

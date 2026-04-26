@@ -1,7 +1,6 @@
 import type { ResourcePackCompiler } from '.'
-import { fs } from '../../constants'
+import { getFsModule } from '../../constants'
 import { PROGRESS_DESCRIPTION } from '../../dialogs/exportProgress/exportProgress'
-import { safeReadSync } from '../../util/fileUtil'
 import { isResourcePackPath, sanitizeStorageKey } from '../../util/minecraftUtil'
 import { type ITextureAtlas } from '../minecraft/textureAtlas'
 import type { IRenderedNodes } from '../rigRenderer'
@@ -25,10 +24,12 @@ const compileResourcePack: ResourcePackCompiler = async ({
 		modelExportFolder,
 	})
 
+	const { existsSync, promises } = getFsModule()
+	const { readFile } = promises
+
 	// Texture atlas
 	const blockAtlasPath = PathModule.join('assets/minecraft/atlases/blocks.json')
-	const blockAtlas: ITextureAtlas = await fs.promises
-		.readFile(blockAtlasPath, 'utf-8')
+	const blockAtlas: ITextureAtlas = await readFile(blockAtlasPath, 'utf-8')
 		.catch(() => {
 			console.log('Creating new block atlas...')
 			return JSON.stringify({ sources: [] })
@@ -67,14 +68,16 @@ const compileResourcePack: ResourcePackCompiler = async ({
 		let optifineEmissive: Buffer | undefined
 		if (texture.source?.startsWith('data:')) {
 			image = Buffer.from(texture.source.split(',')[1], 'base64')
-		} else if (texture.path && fs.existsSync(texture.path)) {
+		} else if (texture.path && existsSync(texture.path)) {
 			if (!isResourcePackPath(texture.path)) {
-				image = safeReadSync(texture.path)
+				image = await readFile(texture.path).catch(() => undefined)
 				if (image == undefined) {
 					throw new Error(`Failed to read texture "${texture.name}" at ${texture.path}`)
 				}
-				mcmeta = safeReadSync(texture.path + '.mcmeta')
-				optifineEmissive = safeReadSync(texture.path.replace('.png', '_e.png'))
+				mcmeta = await readFile(texture.path + '.mcmeta').catch(() => undefined)
+				optifineEmissive = await readFile(texture.path.replace('.png', '_e.png')).catch(
+					() => undefined
+				)
 			} else {
 				// Don't copy the texture if it's already in a valid resource pack location.
 				continue

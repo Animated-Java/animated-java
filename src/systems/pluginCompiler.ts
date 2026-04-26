@@ -1,6 +1,6 @@
 /// <reference path="../global.d.ts"/>
 
-import { fs } from '../constants'
+import { getFsModule } from '../constants'
 import type { IBlueprintDisplayEntityConfigJSON } from '../formats/blueprint'
 import { resolvePath } from '../util/fileUtil'
 import {
@@ -214,9 +214,12 @@ function parseDataUrl(dataUrl: string): { mimeType: string; base64: string } {
 function readTextureAnimation(texture: Texture): TextureAnimation | undefined {
 	if (!texture.path) return undefined
 	const mcmetaPath = texture.path + '.mcmeta'
-	if (!fs.existsSync(mcmetaPath)) return undefined
+
+	const { existsSync, readFileSync } = getFsModule()
+
+	if (!existsSync(mcmetaPath)) return undefined
 	try {
-		const parsed = JSON.parse(fs.readFileSync(mcmetaPath, 'utf-8')) as {
+		const parsed = JSON.parse(readFileSync(mcmetaPath, 'utf-8')) as {
 			animation?: Record<string, unknown>
 		}
 		const anim = parsed.animation as any
@@ -672,12 +675,14 @@ export function exportPluginBlueprint(options: {
 		)
 	}
 
+	const { existsSync, mkdirSync, writeFileSync } = getFsModule()
+
 	try {
 		const dir = PathModule.dirname(exportPath)
-		if (dir && dir !== '.' && !fs.existsSync(dir)) {
-			fs.mkdirSync(dir, { recursive: true })
+		if (dir && dir !== '.' && !existsSync(dir)) {
+			mkdirSync(dir, { recursive: true })
 		}
-		fs.writeFileSync(exportPath, compileJSON(blueprint).toString())
+		writeFileSync(exportPath, compileJSON(blueprint).toString())
 	} catch (e: any) {
 		throw new IntentionalExportError(
 			`Failed to write JSON file <code>${exportPath}</code>: ${String(e)}`

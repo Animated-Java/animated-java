@@ -1,5 +1,5 @@
 import type { AsyncZippable } from 'fflate/browser'
-import { fs } from '../../constants'
+import { getFsModule } from '../../constants'
 import {
 	MAX_PROGRESS,
 	PROGRESS,
@@ -132,6 +132,9 @@ export default async function compileResourcePack(
 		content: autoStringify(packMeta.toJSON()),
 	})
 
+	const { existsSync, promises } = getFsModule()
+	const { writeFile, mkdir, rm, readdir, unlink } = promises
+
 	if (aj.enable_plugin_mode) {
 		// Do nothing
 		console.log('Plugin mode enabled. Skipping resource pack export.')
@@ -143,14 +146,14 @@ export default async function compileResourcePack(
 
 		const removedFolders = new Set<string>()
 		for (const file of ajmeta.previousVersionedFiles) {
-			if (fs.existsSync(file)) await fs.promises.unlink(file)
+			if (existsSync(file)) await unlink(file)
 			let folder = PathModule.dirname(file)
 			while (
 				!removedFolders.has(folder) &&
-				fs.existsSync(folder) &&
-				(await fs.promises.readdir(folder)).length === 0
+				existsSync(folder) &&
+				(await readdir(folder)).length === 0
 			) {
-				await fs.promises.rm(folder, { recursive: true })
+				await rm(folder, { recursive: true })
 				removedFolders.add(folder)
 				folder = PathModule.dirname(folder)
 			}
@@ -175,13 +178,13 @@ export default async function compileResourcePack(
 		for (const [path, file] of exportedFiles) {
 			const folder = PathModule.dirname(path)
 			if (!createdFolderCache.has(folder)) {
-				await fs.promises.mkdir(folder, { recursive: true })
+				await mkdir(folder, { recursive: true })
 				createdFolderCache.add(folder)
 			}
 			if (file.writeHandler) {
 				await file.writeHandler(path, file.content)
 			} else {
-				await fs.promises.writeFile(
+				await writeFile(
 					path,
 					new Uint8Array(
 						Buffer.isBuffer(file.content) ? file.content : Buffer.from(file.content)
@@ -211,8 +214,8 @@ export default async function compileResourcePack(
 			Buffer.from(autoStringify(packMeta.toJSON()), 'utf-8')
 		)
 
-		await fs.promises.rm(options.resourcePackFolder, { recursive: true, force: true })
+		await rm(options.resourcePackFolder, { recursive: true, force: true })
 		const zipped = await zip(data, {})
-		await fs.promises.writeFile(options.resourcePackFolder, zipped)
+		await writeFile(options.resourcePackFolder, zipped)
 	}
 }

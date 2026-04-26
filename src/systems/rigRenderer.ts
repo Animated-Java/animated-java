@@ -1,6 +1,6 @@
 import { TextComponent } from 'book-and-quill'
 import * as crypto from 'node:crypto'
-import { fs } from '../constants'
+import { getFsModule } from '../constants'
 import type {
 	IBlueprintDisplayEntityConfigJSON,
 	IBlueprintLocatorConfigJSON,
@@ -297,6 +297,8 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 
 const TEXTURE_RESOURCE_LOCATION_CACHE = new Map<string, IMinecraftResourceLocation>()
 export function getTextureResourceLocation(texture: Texture, rig: IRenderedRig) {
+	const { existsSync, statSync } = getFsModule()
+
 	if (TEXTURE_RESOURCE_LOCATION_CACHE.has(texture.uuid)) {
 		return TEXTURE_RESOURCE_LOCATION_CACHE.get(texture.uuid)!
 	}
@@ -304,7 +306,7 @@ export function getTextureResourceLocation(texture: Texture, rig: IRenderedRig) 
 	let textureName = texture.name.replace(/\.png$/, '')
 	textureName = sanitizeStorageKey(textureName) + '.png'
 
-	if (texture.path && fs.existsSync(texture.path) && fs.statSync(texture.path).isFile()) {
+	if (texture.path && existsSync(texture.path) && statSync(texture.path).isFile()) {
 		const parsed = parseResourcePackPath(texture.path)
 		if (parsed) {
 			TEXTURE_RESOURCE_LOCATION_CACHE.set(texture.uuid, parsed)

@@ -1,4 +1,4 @@
-import { fs } from '../constants'
+import { getFsModule } from '../constants'
 import { normalizePath } from '../util/fileUtil'
 import { IntentionalExportError, IntentionalExportErrorFromInvalidFile } from './errors'
 import { sortObjectKeys } from './util'
@@ -38,10 +38,12 @@ export class AJMeta {
 	) {}
 
 	read() {
-		if (!fs.existsSync(this.path)) return
+		const { existsSync, readFileSync } = getFsModule()
+
+		if (!existsSync(this.path)) return
 
 		try {
-			this.previousAJMeta = JSON.parse(fs.readFileSync(this.path, 'utf-8'))
+			this.previousAJMeta = JSON.parse(readFileSync(this.path, 'utf-8'))
 		} catch (e) {
 			throw new IntentionalExportError(`Failed to read existing AJMeta file: ${e}`)
 		}
@@ -99,7 +101,8 @@ export class AJMeta {
 				},
 			}),
 		}
-		fs.writeFileSync(this.path, autoStringify(content))
+		const { writeFileSync } = getFsModule()
+		writeFileSync(this.path, autoStringify(content))
 	}
 }
 
@@ -152,13 +155,14 @@ export class PackMeta {
 
 	static fromFile(path: string) {
 		const meta = new PackMeta()
+		const { existsSync, readFileSync } = getFsModule()
 
-		if (!fs.existsSync(path)) {
+		if (!existsSync(path)) {
 			console.warn(`Pack meta file does not exist at ${path}`)
 			return meta
 		}
 
-		const raw = fs.readFileSync(path, 'utf-8')
+		const raw = readFileSync(path, 'utf-8')
 		try {
 			meta.content = JSON.parse(raw)
 		} catch (e: any) {

@@ -1,7 +1,7 @@
 import { TextComponent } from 'book-and-quill'
 import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/lib/nbt'
 import type { AsyncZippable } from 'fflate/browser'
-import { fs } from '../../constants'
+import { getFsModule } from '../../constants'
 import {
 	MAX_PROGRESS,
 	PROGRESS,
@@ -457,9 +457,11 @@ export default async function compileDataPack(version: string, options: CompileD
 			Buffer.from(autoStringify(packMeta.toJSON()), 'utf-8')
 		)
 
-		await fs.promises.rm(options.dataPackFolder, { recursive: true, force: true })
+		const { rm, writeFile } = getFsModule().promises
+
+		await rm(options.dataPackFolder, { recursive: true, force: true })
 		const zipped = await zip(data, {})
-		await fs.promises.writeFile(options.dataPackFolder, zipped)
+		await writeFile(options.dataPackFolder, zipped)
 	}
 
 	console.timeEnd('Data Pack Compilation took')
@@ -468,13 +470,16 @@ export default async function compileDataPack(version: string, options: CompileD
 async function removeFiles(ajmeta: AJMeta) {
 	console.time('Removing Files took')
 	const aj = Project!.animated_java
+	const { existsSync, promises } = getFsModule()
+	const { rm, writeFile, mkdir, copyFile, unlink, readFile } = promises
+
 	if (aj.data_pack_export_mode === 'folder') {
 		PROGRESS_DESCRIPTION.set('Removing Old Data Pack Files...')
 		PROGRESS.set(0)
 		MAX_PROGRESS.set(ajmeta.previousVersionedFiles.size)
 		const removedFolders = new Set<string>()
 		for (const file of ajmeta.previousVersionedFiles) {
-			if (isFunctionTagPath(file) && fs.existsSync(file)) {
+			if (isFunctionTagPath(file) && existsSync(file)) {
 				if (aj.blueprint_id !== Project!.last_used_blueprint_id) {
 					const resourceLocation = parseDataPackPath(file)!.resourceLocation
 					if (resourceLocation.startsWith(`${Project!.last_used_blueprint_id}/`)) {
@@ -483,16 +488,16 @@ async function removeFiles(ajmeta: AJMeta) {
 							Project!.last_used_blueprint_id,
 							aj.blueprint_id
 						)
-						await fs.promises.mkdir(PathModule.dirname(newPath), { recursive: true })
-						await fs.promises.copyFile(file, newPath)
-						await fs.promises.unlink(file)
+						await mkdir(PathModule.dirname(newPath), { recursive: true })
+						await copyFile(file, newPath)
+						await unlink(file)
 					}
 				}
 				// Remove mentions of the export namespace from the file
 				let content: FunctionTagJSON
 				// Remove mentions of the export namespace from the file
 				try {
-					content = JSON.parse((await fs.promises.readFile(file)).toString())
+					content = JSON.parse((await readFile(file)).toString())
 				} catch (e) {
 					if (e instanceof SyntaxError) {
 						throw new IntentionalExportError(
@@ -507,18 +512,18 @@ async function removeFiles(ajmeta: AJMeta) {
 						(!v.startsWith(`${aj.blueprint_id}/`) ||
 							!v.startsWith(`${Project!.last_used_blueprint_id}/`))
 				)
-				await fs.promises.writeFile(file, autoStringify(content))
+				await writeFile(file, autoStringify(content))
 			} else {
 				// Delete the file
-				if (fs.existsSync(file)) await fs.promises.unlink(file)
+				if (existsSync(file)) await unlink(file)
 			}
 			let folder = PathModule.dirname(file)
 			while (
 				!removedFolders.has(folder) &&
-				fs.existsSync(folder) &&
-				(await fs.promises.readdir(folder)).length === 0
+				existsSync(folder) &&
+				(await promises.readdir(folder)).length === 0
 			) {
-				await fs.promises.rm(folder, { recursive: true })
+				await rm(folder, { recursive: true })
 				removedFolders.add(folder)
 				folder = PathModule.dirname(folder)
 			}
@@ -627,21 +632,24 @@ async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFold
 
 	const functionTagQueue = new Map<string, ExportedFile>()
 
-	async function writeFile(path: string, file: ExportedFile) {
-		if (isFunctionTagPath(path) && fs.existsSync(path)) {
+	const { existsSync, readdirSync, promises } = getFsModule()
+	const { mkdir, readFile, writeFile } = promises
+
+	async function customWriteFile(path: string, file: ExportedFile) {
+		if (isFunctionTagPath(path) && existsSync(path)) {
 			functionTagQueue.set(path, file)
 			return
 		}
 
 		const folder = PathModule.dirname(path)
 		if (!createdFolderCache.has(folder)) {
-			await fs.promises.mkdir(folder, { recursive: true })
+			await mkdir(folder, { recursive: true })
 			createdFolderCache.add(folder)
 		}
 		if (file.writeHandler) {
 			await file.writeHandler(path, file.content)
 		} else {
-			await fs.promises.writeFile(
+			await writeFile(
 				path,
 				new Uint8Array(
 					Buffer.isBuffer(file.content) ? file.content : Buffer.from(file.content)
@@ -656,7 +664,7 @@ async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFold
 	for (const [path, data] of exportedFiles) {
 		writeQueue.set(
 			path,
-			writeFile(path, data).finally(() => {
+			customWriteFile(path, data).finally(() => {
 				writeQueue.delete(path)
 			})
 		)
@@ -670,7 +678,7 @@ async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFold
 	MAX_PROGRESS.set(functionTagQueue.size)
 	PROGRESS.set(0)
 	for (const [path, file] of functionTagQueue.entries()) {
-		const oldTag = DataPackTag.fromJSON(JSON.parse(fs.readFileSync(path, 'utf-8')))
+		const oldTag = DataPackTag.fromJSON(JSON.parse((await readFile(path)).toString()))
 		const merged = oldTag.merge(DataPackTag.fromJSON(JSON.parse(file.content.toString())))
 
 		merged.filter(entry => {
@@ -689,7 +697,7 @@ async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFold
 			const subPath = (isTag ? 'tags/' : '') + functionFolderName
 			const extension = isTag ? '.json' : '.mcfunction'
 
-			for (const folder of fs.readdirSync(dataPackFolder)) {
+			for (const folder of readdirSync(dataPackFolder)) {
 				const fullPath = PathModule.join(
 					dataPackFolder,
 					folder,
@@ -698,7 +706,7 @@ async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFold
 					location.path + extension
 				)
 
-				if (fs.existsSync(fullPath)) return true
+				if (existsSync(fullPath)) return true
 			}
 
 			console.warn(
@@ -712,7 +720,7 @@ async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFold
 
 		merged.sort()
 
-		await fs.promises.writeFile(path, autoStringify(merged.toJSON()))
+		await writeFile(path, autoStringify(merged.toJSON()))
 		PROGRESS.set(PROGRESS.get() + 1)
 	}
 }

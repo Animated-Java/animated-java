@@ -1,4 +1,4 @@
-import { fs } from '../constants'
+import { getFsModule } from '../constants'
 
 export function normalizePath(path: string): string {
 	return path.replace(/\\/g, '/')
@@ -65,13 +65,15 @@ export function swapPathRoot(path: string, oldRoot: string, newRoot: string) {
 }
 
 export function safeReadSync(path: string): Buffer | undefined {
+	const { readFileSync } = getFsModule()
 	try {
-		return fs.readFileSync(path)
+		return readFileSync(path)
 	} catch {
 		return undefined
 	}
 }
 
 export async function safeRead(path: string) {
-	return fs.promises.readFile(path).catch(() => undefined)
+	const { readFile } = getFsModule().promises
+	return readFile(path).catch(() => undefined)
 }

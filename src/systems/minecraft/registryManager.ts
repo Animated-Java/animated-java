@@ -1,6 +1,6 @@
 import ky from 'ky'
 import { join } from 'node:path'
-import { fs } from '../../constants'
+import { getFsModule } from '../../constants'
 
 interface IRegistryJSON {
 	activity: string[]
@@ -128,19 +128,15 @@ async function fetchRegistry(versionId: string) {
 	if (!response) {
 		throw new Error('Failed to fetch Minecraft registry data!')
 	}
-	await fs.promises.mkdir(REGISTRY_CACHE_FOLDER, { recursive: true })
-	await fs.promises.writeFile(
-		join(REGISTRY_CACHE_FOLDER, `${versionId}.json`),
-		JSON.stringify(response)
-	)
+	const { mkdir, writeFile } = getFsModule().promises
+	await mkdir(REGISTRY_CACHE_FOLDER, { recursive: true })
+	await writeFile(join(REGISTRY_CACHE_FOLDER, `${versionId}.json`), JSON.stringify(response))
 	return MinecraftRegistryEntry.createRegistry(response)
 }
 
 async function loadRegistryFromCache(versionId: string) {
-	const registryData = await fs.promises.readFile(
-		join(REGISTRY_CACHE_FOLDER, `${versionId}.json`),
-		'utf-8'
-	)
+	const { readFile } = getFsModule().promises
+	const registryData = await readFile(join(REGISTRY_CACHE_FOLDER, `${versionId}.json`), 'utf-8')
 	const registry = JSON.parse(registryData) as IRegistryJSON
 	const typedRegistry: MinecraftRegistry = MinecraftRegistryEntry.createRegistry(registry)
 	REGISTRY_CACHE.set(versionId, typedRegistry)
@@ -152,7 +148,9 @@ export async function getRegistry(versionId: string) {
 		return REGISTRY_CACHE.get(versionId)!
 	}
 
-	if (fs.existsSync(join(REGISTRY_CACHE_FOLDER, `${versionId}.json`))) {
+	const { existsSync } = getFsModule()
+
+	if (existsSync(join(REGISTRY_CACHE_FOLDER, `${versionId}.json`))) {
 		return await loadRegistryFromCache(versionId)
 	}
 
@@ -162,7 +160,7 @@ export async function getRegistry(versionId: string) {
 		return registry
 	} catch (error) {
 		console.error('Failed to fetch Minecraft registry from network:', error)
-		if (fs.existsSync(join(REGISTRY_CACHE_FOLDER, `${versionId}.json`))) {
+		if (existsSync(join(REGISTRY_CACHE_FOLDER, `${versionId}.json`))) {
 			console.log('Loading Minecraft registry from cache...')
 			return await loadRegistryFromCache(versionId)
 		}

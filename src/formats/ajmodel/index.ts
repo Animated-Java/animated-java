@@ -1,6 +1,6 @@
 import { registerDeletableHandlerPatch } from 'blockbench-patch-manager'
 import { mount, unmount } from 'svelte'
-import { fs } from '../../constants'
+import { getFsModule } from '../../constants'
 import { openUnexpectedErrorDialog } from '../../dialogs/unexpectedError/unexpectedError'
 import { localize as translate } from '../../util/lang'
 import { sanitizeStorageKey } from '../../util/minecraftUtil'
@@ -24,9 +24,11 @@ export async function openAJModel() {
 }
 
 export function convertAJModelToBlueprint(path: string) {
+	const { readFileSync } = getFsModule()
+
 	try {
 		console.log(`Converting .ajmodel: ${path}`)
-		const blueprint = upgradeAnimatedJavaBlueprint(JSON.parse(fs.readFileSync(path, 'utf8')))
+		const blueprint = upgradeAnimatedJavaBlueprint(JSON.parse(readFileSync(path, 'utf8')))
 
 		const codec = BLUEPRINT_CODEC.get()
 		if (!codec) throw new Error('Animated Java Blueprint codec is not registered!')

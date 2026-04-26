@@ -1,5 +1,5 @@
 import { registerPropertyOverridePatch } from 'blockbench-patch-manager'
-import { fs } from '../constants'
+import { getFsModule } from '../constants'
 import { openBlueprintSettings } from '../dialogs/blueprintSettings/blueprintSettings'
 import { activeProjectIsBlueprintFormat, saveBlueprint } from '../formats/blueprint'
 import { BLUEPRINT_CODEC } from '../formats/blueprint/codec'
@@ -58,7 +58,8 @@ registerPropertyOverridePatch({
 
 			const path = Project.save_path || Project.export_path
 			if (path) {
-				if (fs.existsSync(PathModule.dirname(path))) {
+				const { existsSync } = getFsModule()
+				if (existsSync(PathModule.dirname(path))) {
 					Project.save_path = path
 					codec.write(codec.compile(), path)
 				} else {

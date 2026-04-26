@@ -1,5 +1,5 @@
 import type { ResourcePackCompiler } from '.'
-import { fs } from '../../constants'
+import { getFsModule } from '../../constants'
 import { PROGRESS_DESCRIPTION } from '../../dialogs/exportProgress/exportProgress'
 import { isResourcePackPath, sanitizeStorageKey } from '../../util/minecraftUtil'
 import type { ITextureAtlas } from '../minecraft/textureAtlas'
@@ -43,9 +43,11 @@ class PredicateItemModel {
 
 	readExisting(path: string) {
 		const aj = Project!.animated_java
+		const { readFileSync } = getFsModule()
+
 		let file: IPredicateItemModel
 		try {
-			file = JSON.parse(fs.readFileSync(path, 'utf-8'))
+			file = JSON.parse(readFileSync(path, 'utf-8'))
 		} catch (e) {
 			console.error('Failed to read existing display item model:', e)
 			return
@@ -138,6 +140,8 @@ const compileResourcePack: ResourcePackCompiler = async ({
 	modelExportFolder,
 }) => {
 	const aj = Project!.animated_java
+	const { existsSync, promises } = getFsModule()
+	const { readFile } = promises
 
 	PROGRESS_DESCRIPTION.set('Compiling Resource Pack...')
 	console.log('Compiling resource pack...', {
@@ -153,7 +157,7 @@ const compileResourcePack: ResourcePackCompiler = async ({
 	// Display Item
 	const displayItemModel = new PredicateItemModel()
 	const absoluteDisplayItemPath = PathModule.join(resourcePackPath, displayItemPath)
-	if (fs.existsSync(absoluteDisplayItemPath)) {
+	if (existsSync(absoluteDisplayItemPath)) {
 		console.warn('Display item already exists! Attempting to merge...')
 		displayItemModel.readExisting(absoluteDisplayItemPath)
 	}
@@ -173,13 +177,15 @@ const compileResourcePack: ResourcePackCompiler = async ({
 		let optifineEmissive: Buffer | undefined
 		if (texture.source?.startsWith('data:')) {
 			image = Buffer.from(texture.source.split(',')[1], 'base64')
-		} else if (texture.path && fs.existsSync(texture.path)) {
+		} else if (texture.path && existsSync(texture.path)) {
 			if (!isResourcePackPath(texture.path)) {
-				image = fs.readFileSync(texture.path)
+				image = await readFile(texture.path).catch(() => undefined)
 				const mcmetaPath = texture.path + '.mcmeta'
 				const emissivePath = texture.path.replace('.png', '_e.png')
-				if (fs.existsSync(mcmetaPath)) mcmeta = fs.readFileSync(mcmetaPath)
-				if (fs.existsSync(emissivePath)) optifineEmissive = fs.readFileSync(emissivePath)
+				if (existsSync(mcmetaPath))
+					mcmeta = await readFile(mcmetaPath).catch(() => undefined)
+				if (existsSync(emissivePath))
+					optifineEmissive = await readFile(emissivePath).catch(() => undefined)
 			} else {
 				// Don't copy the texture if it's already in a valid resource pack location.
 				continue
@@ -208,8 +214,7 @@ const compileResourcePack: ResourcePackCompiler = async ({
 
 	// Texture atlas
 	const blockAtlasPath = PathModule.join('assets/minecraft/atlases/blocks.json')
-	const blockAtlas: ITextureAtlas = await fs.promises
-		.readFile(blockAtlasPath, 'utf-8')
+	const blockAtlas: ITextureAtlas = await readFile(blockAtlasPath, 'utf-8')
 		.catch(() => {
 			console.log('Creating new block atlas...')
 			return '{ "sources": [] }'

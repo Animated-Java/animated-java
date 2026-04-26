@@ -1,7 +1,7 @@
 import type { Unzipped } from 'fflate'
 import ky from 'ky'
 import { dirname, join } from 'node:path'
-import { fs } from '../../constants'
+import { getFsModule } from '../../constants'
 import { unzip } from '../util'
 import { getVersionById, getVersionDownloadUrl } from './versionManager'
 
@@ -31,8 +31,10 @@ async function downloadFile(url: string, savePath: string) {
 
 	const data = new Uint8Array(await response.arrayBuffer())
 
-	await fs.promises.mkdir(dirname(savePath), { recursive: true })
-	await fs.promises.writeFile(savePath, data)
+	const { mkdir, writeFile } = getFsModule().promises
+
+	await mkdir(dirname(savePath), { recursive: true })
+	await writeFile(savePath, data)
 }
 
 export async function getAssets(versionId: string) {
@@ -46,9 +48,12 @@ export async function getAssets(versionId: string) {
 
 	const clientDownloadUrl = await getVersionDownloadUrl(manifest.id)
 
+	const { existsSync, promises } = getFsModule()
+	const { readFile } = promises
+
 	if (ACTIVE_DOWNLOAD_PROMISES.has(manifest.id)) {
 		await ACTIVE_DOWNLOAD_PROMISES.get(manifest.id)!
-	} else if (!fs.existsSync(jarPath)) {
+	} else if (!existsSync(jarPath)) {
 		const downloadPromise = downloadFile(clientDownloadUrl, jarPath)
 		ACTIVE_DOWNLOAD_PROMISES.set(manifest.id, downloadPromise)
 		try {
@@ -58,7 +63,7 @@ export async function getAssets(versionId: string) {
 		}
 	}
 
-	const buffer = await fs.promises.readFile(jarPath)
+	const buffer = await readFile(jarPath)
 
 	const loadedAssets = await unzip(new Uint8Array(buffer), {
 		filter: v => v.name.startsWith('assets/'),

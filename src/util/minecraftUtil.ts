@@ -1,5 +1,5 @@
 import * as pathjs from 'node:path'
-import { fs } from '../constants'
+import { getFsModule } from '../constants'
 import { validateBlockState } from '../systems/minecraft/blockModelManager'
 import {
 	BlockStateRegistryEntry,
@@ -335,12 +335,14 @@ export function functionReferenceExists(dataPackRoot: string, resourceLocation: 
 	if (parsed.type !== 'tags' && parsed.type !== 'function' && parsed.type !== 'functions')
 		return false
 
-	for (const folder of fs.readdirSync(dataPackRoot)) {
+	const { readdirSync, statSync, existsSync } = getFsModule()
+
+	for (const folder of readdirSync(dataPackRoot)) {
 		const dataFolder = PathModule.join(dataPackRoot, folder)
-		if (!fs.statSync(dataFolder).isDirectory()) continue
+		if (!statSync(dataFolder).isDirectory()) continue
 
 		const path = PathModule.join(dataFolder, parsed.fullPath)
-		if (!fs.existsSync(path)) continue
+		if (!existsSync(path)) continue
 		return true
 	}
 

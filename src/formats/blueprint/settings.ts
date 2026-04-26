@@ -1,5 +1,5 @@
 import { join } from 'node:path'
-import { fs } from '../../constants'
+import { getFsModule } from '../../constants'
 import type { ValueCheckResult } from '../../svelteComponents/sidebarDialogItems/sidebarDialogTypes'
 import { getVersionById } from '../../systems/minecraft/versionManager'
 import { resolvePath } from '../../util/fileUtil'
@@ -203,28 +203,30 @@ export function validateResourcePackFolder(value: string): ValueCheckResult {
 		}
 	}
 
-	if (!fs.existsSync(path)) {
+	const { existsSync, statSync } = getFsModule()
+
+	if (!existsSync(path)) {
 		return {
 			type: 'error',
 			message: localize('resource_pack.folder.error.does_not_exist'),
 		}
 	}
 
-	if (!fs.statSync(path).isDirectory()) {
+	if (!statSync(path).isDirectory()) {
 		return {
 			type: 'error',
 			message: localize('resource_pack.folder.error.not_a_dir'),
 		}
 	}
 
-	if (!fs.existsSync(join(path, 'pack.mcmeta'))) {
+	if (!existsSync(join(path, 'pack.mcmeta'))) {
 		return {
 			type: 'error',
 			message: localize('resource_pack.folder.error.no_pack_mcmeta'),
 		}
 	}
 
-	if (!fs.existsSync(join(path, 'assets'))) {
+	if (!existsSync(join(path, 'assets'))) {
 		return {
 			type: 'warning',
 			message: localize('resource_pack.folder.warning.no_assets'),
@@ -251,28 +253,30 @@ export function validateDataPackFolder(value: string): ValueCheckResult {
 		}
 	}
 
-	if (!fs.existsSync(path)) {
+	const { existsSync, statSync } = getFsModule()
+
+	if (!existsSync(path)) {
 		return {
 			type: 'error',
 			message: localize('data_pack.folder.error.does_not_exist'),
 		}
 	}
 
-	if (!fs.statSync(path).isDirectory()) {
+	if (!statSync(path).isDirectory()) {
 		return {
 			type: 'error',
 			message: localize('data_pack.folder.error.not_a_dir'),
 		}
 	}
 
-	if (!fs.existsSync(join(path, 'pack.mcmeta'))) {
+	if (!existsSync(join(path, 'pack.mcmeta'))) {
 		return {
 			type: 'error',
 			message: localize('data_pack.folder.error.no_pack_mcmeta'),
 		}
 	}
 
-	if (!fs.existsSync(join(path, 'data'))) {
+	if (!existsSync(join(path, 'data'))) {
 		return {
 			type: 'warning',
 			message: localize('data_pack.folder.warning.no_data'),

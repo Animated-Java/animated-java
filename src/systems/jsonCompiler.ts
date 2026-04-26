@@ -3,7 +3,7 @@
 /// <reference path="../global.d.ts"/>
 
 import { TextComponent } from 'book-and-quill'
-import { fs, PACKAGE } from '../constants'
+import { getFsModule, PACKAGE } from '../constants'
 import type { IBlueprintDisplayEntityConfigJSON } from '../formats/blueprint'
 import { type defaultValues } from '../formats/blueprint/settings'
 import type { EasingKey } from '../util/easing'
@@ -303,12 +303,14 @@ export function exportJSON(options: {
 		)
 	}
 
+	const { existsSync, mkdirSync, writeFileSync } = getFsModule()
+
 	try {
 		const dir = PathModule.dirname(exportPath)
-		if (dir && dir !== '.' && !fs.existsSync(dir)) {
-			fs.mkdirSync(dir, { recursive: true })
+		if (dir && dir !== '.' && !existsSync(dir)) {
+			mkdirSync(dir, { recursive: true })
 		}
-		fs.writeFileSync(exportPath, compileJSON(json).toString())
+		writeFileSync(exportPath, compileJSON(json).toString())
 	} catch (e: any) {
 		throw new IntentionalExportError(
 			`Failed to write JSON file <code>${exportPath}</code>: ${String(e)}`
