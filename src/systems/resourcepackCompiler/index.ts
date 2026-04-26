@@ -22,7 +22,7 @@ function getResourcePackCompilerForVersion(version: string): ResourcePackCompile
 		case VersionUtil.compare(version, '>=', '1.21.2'):
 			return EXPORT_1_21_2
 		case VersionUtil.compare(version, '>=', '1.21.0'):
-			return EXPORT_1_21_2
+			return EXPORT_1_20_4
 		case VersionUtil.compare(version, '>=', '1.20.5'):
 			return EXPORT_1_20_4
 		case VersionUtil.compare(version, '>=', '1.20.4'):
