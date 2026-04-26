@@ -74,7 +74,7 @@ function areMultipleBlueprintsOpen() {
 	return Blockbench.ModelProject.all.filter(p => p.format.id === BLUEPRINT_FORMAT_ID).length > 1
 }
 
-async function exportAll(debugMode: boolean) {
+export async function exportAll(debugMode: boolean) {
 	const selectedProject = Project
 	const blueprints = Blockbench.ModelProject.all.filter(p => p.format.id === BLUEPRINT_FORMAT_ID)
 	let success = true
