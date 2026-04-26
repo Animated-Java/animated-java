@@ -445,11 +445,11 @@ dir animations {
 											lastActiveFrame[node.uuid] = transform
 											;if (!lastFrame || matrixToNbtFloatArray(transform.matrix).toString() !== matrixToNbtFloatArray(lastFrame.matrix).toString()) {
 												to_merge.locators[node.storage_name] = {
-													px: transform.pos[0],
-													py: transform.pos[1],
-													pz: transform.pos[2],
-													ry: transform.head_rot[1],
-													rx: transform.head_rot[0]
+													px: roundTo(transform.pos[0], 10),
+													py: roundTo(transform.pos[1], 10),
+													pz: roundTo(transform.pos[2], 10),
+													ry: roundTo(transform.head_rot[1], 10),
+													rx: roundTo(transform.head_rot[0], 10)
 												};
 											}
 
