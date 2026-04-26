@@ -663,10 +663,38 @@
 					"Re-enabled Plugin mode - WARNING: This is experimental, and is using a new plugin JSON schema that will likely change in the future. - Thanks Meekiavelique!",
 					"Added Bisect hosting partnership banner."
 				]
+			}
+		]
+	},
+	"1.10.0-beta.5": {
+		"title": "v1.10.0-beta.5",
+		"author": "Titus Evans (SnaveSutit)",
+		"date": "2026-04-26",
+		"categories": [
+			{
+				"title": "Changes",
+				"list": [
+					"[BREAKING] Removed `data` entity in favor of much faster score-indexed storage. Thanks @Xanbelor!",
+					"[BREAKING] Added support for custom namespaces. The `Export Namespace` setting has been renamed to `Blueprint ID` and now supports namespaces. E.g. `my_cool_pack:rigs/my_awesome_blueprint`. Tags will also use the `Blueprint ID` as their prefix: `aj.my_rig.root` -> `my_cool_pack.rigs.my_awesome_blueprint`. The default namespace is now `aj:` to keep tags prefixes consistent with previous versions.",
+					"Overhauled Blueprint Settings UI to be more user friendly and easier to navigate.",
+					"Added `.zip` export format for Data Pack and Resource Pack.",
+					"Added visualization for Structure Groups.",
+					"Added syntax highlighting for settings.",
+					"Updated Plugin exporter to support modern Minecraft's free element rotations.",
+					"Added translation string and keybind resolution for JSON text components. Translation strings from vanilla will automatically be resolved to the correct text for your target version when previewing Text Displays.",
+					"Added display names to all entities in the rig to make debugging easier.",
+					"Switched to using `blockbench-patch-manager` for safer handling of Blockbench monkey-patches.",
+					"Moved JSON text component system into its own library called `book-and-quill`.",
+					"Improved MC font loading handling and caching.",
+					"Improved internal MC asset handling and caching.",
+					"Updated to Blockbench 5.1.4.",
+					"Updated to Svelte 5.",
+					"Updated to MCB 4.0.5."
+				]
 			},
 			{
 				"title": "Fixes",
-				"list": []
+				"list": ["Fixed \"infinite loading popup\" issue."]
 			}
 		]
 	}
