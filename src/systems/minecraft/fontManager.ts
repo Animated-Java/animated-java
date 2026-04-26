@@ -1,14 +1,12 @@
-import { createHash } from 'crypto'
-import { Stopwatch } from 'src/util/stopwatch'
+import { COLORS, TextComponent, UnicodeString, type TextComponentStyle } from 'book-and-quill'
+import { createHash } from 'node:crypto'
 import MissingCharacter from '../../assets/missing_character.png'
 import { TextDisplay, type Alignment } from '../../outliner/textDisplay'
 import { mergeGeometries } from '../../util/bufferGeometryUtils'
-import EVENTS from '../../util/events'
 import { getPathFromResourceLocation } from '../../util/minecraftUtil'
-import { COLOR_VALUES, ComponentStyle, JsonText } from '../jsonText'
-import { UnicodeString } from '../jsonText/unicodeString'
+import { Stopwatch } from '../../util/stopwatch'
 import { wrapJsonText, type StyleSpan, type Word } from '../jsonText/wrapping'
-import * as assets from './assetManager'
+import { getJSONAsset, getPngAsset, hasAsset } from './assetManager'
 
 namespace MinecraftJson {
 	export interface FontProviderBitmap {
@@ -87,9 +85,12 @@ abstract class FontProvider {
 
 	abstract getChar(char: string): CachedChar | undefined
 
-	static fromAssetPath(assetPath: string) {
+	static async fromAssetPath(assetPath: string) {
 		if (!assetPath.endsWith('.json')) assetPath += '.json'
-		const providerJSON = assets.getJSONAsset(assetPath) as MinecraftJson.FontProvider
+		const providerJSON = (await getJSONAsset(
+			Project.animated_java.target_minecraft_version,
+			assetPath
+		)) as MinecraftJson.FontProvider
 		switch (providerJSON.type) {
 			case 'bitmap':
 				return new BitmapFontProvider(providerJSON)
@@ -164,28 +165,50 @@ class BitmapFontProvider extends FontProvider {
 	atlas: THREE.Texture = THREE.Texture.DEFAULT_IMAGE
 	canvas: HTMLCanvasElement = document.createElement('canvas')
 
+	providerJSON: MinecraftJson.FontProviderBitmap
+
 	private charCache = new Map<string, CachedChar>()
 
 	constructor(providerJSON: MinecraftJson.FontProviderBitmap) {
 		super(providerJSON)
+		this.providerJSON = providerJSON
 		this.type = providerJSON.type
 		this.bitmapPath = getPathFromResourceLocation(providerJSON.file, 'textures')
 		this.charHeight = providerJSON.height ?? 8
 		this.charWidth = 8
 		this.ascent = providerJSON.ascent
 		for (const row of providerJSON.chars) {
-			this.chars.push(new UnicodeString(row))
+			const str = new UnicodeString(row)
+			console.log({ row, str })
+			this.chars.push(str)
 		}
 	}
 
 	async load() {
 		if (this.loaded) return this
-		const dataUrl = assets.getPngAssetAsDataUrl(this.bitmapPath)
+		const dataUrl = await getPngAsset(
+			Project.animated_java.target_minecraft_version,
+			this.bitmapPath
+		)
 		const texture = await new THREE.TextureLoader().loadAsync(dataUrl)
 
 		this.atlas = texture
 		this.charHeight = texture.image.height / this.chars.length
 		this.charWidth = texture.image.width / this.chars[0].length
+		if (!Number.isFinite(this.charWidth)) {
+			console.log({
+				providerJSON: this.providerJSON,
+				bitmapPath: this.bitmapPath,
+				imageWidth: texture.image.width,
+				charsPerRow: this.chars[0].length,
+				calculatedCharWidth: this.charWidth,
+				chars: this.chars,
+				texture,
+			})
+			throw new Error(
+				`Invalid character width calculated from bitmap font atlas: ${this.charWidth}`
+			)
+		}
 		// Update canvas
 		this.canvas.width = texture.image.width
 		this.canvas.height = texture.image.height
@@ -258,21 +281,51 @@ export class MinecraftFont {
 	fallback: MinecraftFont | undefined
 
 	private loaded = false
+	private assetPath: string
 	private charCache = new Map<string, CachedChar>()
 	private geoCache = new Map<string, CachedCharGeo>()
 	private materialCache = new Map<string, THREE.Material>()
 
 	constructor(id: string, assetPath: string, fallback?: MinecraftFont) {
 		this.id = id
+		this.assetPath = assetPath
 		this.fallback = fallback
+
+		MinecraftFont.all.push(this)
+	}
+
+	static async getById(id: string) {
+		let font = MinecraftFont.all.find(font => font.id === id)
+
+		if (!font) {
+			const path = getPathFromResourceLocation(id, 'font') + '.json'
+			font = new MinecraftFont(id, path)
+		}
+
+		await font.load()
+
+		return font
+	}
+
+	async load() {
+		if (this.loaded) return this
+
+		if (!(await hasAsset(Project.animated_java.target_minecraft_version, this.assetPath))) {
+			throw new Error(`Font ${this.id} does not exist at ${this.assetPath}`)
+		}
 
 		let fontJSON: MinecraftJson.Font
 		try {
-			fontJSON = assets.getJSONAsset(assetPath) as MinecraftJson.Font
+			fontJSON = (await getJSONAsset(
+				Project.animated_java.target_minecraft_version,
+				this.assetPath
+			)) as MinecraftJson.Font
 		} catch (error) {
-			console.error(`Failed to load font JSON from ${assetPath}:`, error)
+			console.error(`Failed to load font JSON from ${this.assetPath}:`, error)
 			throw error
 		}
+
+		console.log(this.assetPath, fontJSON)
 
 		for (const providerJSON of fontJSON.providers) {
 			switch (providerJSON.type) {
@@ -292,16 +345,8 @@ export class MinecraftFont {
 			}
 		}
 
-		MinecraftFont.all.push(this)
-	}
-
-	static getById(id: string) {
-		return MinecraftFont.all.find(font => font.id === id)
-	}
-
-	async load() {
-		if (this.loaded) return this
 		await Promise.all(this.providers.map(provider => provider.load()))
+
 		this.loaded = true
 		return this
 	}
@@ -321,13 +366,13 @@ export class MinecraftFont {
 		return createMissingCharacter()
 	}
 
-	getTextWidth(text: UnicodeString, span?: StyleSpan) {
+	async getTextWidth(text: UnicodeString, span?: StyleSpan) {
 		let width = 0
 		const boldExtra = span?.style.bold ? 1 : 0
 		let font: MinecraftFont = this
 
 		if (span?.style.font && span.style.font !== this.id) {
-			const newFont = MinecraftFont.getById(span.style.font)
+			const newFont = await MinecraftFont.getById(span.style.font)
 			if (newFont) font = newFont
 		}
 
@@ -345,17 +390,17 @@ export class MinecraftFont {
 		return Math.max(width, 0)
 	}
 
-	getWordWidth(word: Word) {
+	async getWordWidth(word: Word) {
 		let width = 0
 		let font: MinecraftFont = this
 
 		for (const span of word.styles) {
 			if (span.style.font && span.style.font !== this.id) {
-				const newFont = MinecraftFont.getById(span.style.font)
+				const newFont = await MinecraftFont.getById(span.style.font)
 				if (newFont) font = newFont
 			}
 			const text = word.text.slice(span.start, span.end)
-			const textWidth = font.getTextWidth(text, span)
+			const textWidth = await font.getTextWidth(text, span)
 			width += textWidth
 		}
 
@@ -389,7 +434,7 @@ export class MinecraftFont {
 		shadow = TextDisplay.properties.shadow.default,
 		alignment = TextDisplay.properties.align.default,
 	}: {
-		jsonText: JsonText
+		jsonText: TextComponent
 		maxLineWidth?: number
 		backgroundColor?: tinycolor.Instance
 		/** Whether or not to render any text shadow */
@@ -424,7 +469,7 @@ export class MinecraftFont {
 
 					const text = word.text.slice(span.start, span.end)
 					for (const char of text) {
-						const charGeo = this.getCharGeo(char, span.style)
+						const charGeo = await this.getCharGeo(char, span.style)
 
 						if (!charGeo) {
 							console.error('Failed to get character geometry:', char)
@@ -448,7 +493,7 @@ export class MinecraftFont {
 					if (charGeos.length > 0) {
 						spanGeos.push(mergeGeometries(charGeos)!)
 
-						const color = JsonText.getColor(span.style.color ?? COLOR_VALUES.white)
+						const color = TextComponent.getColor(span.style.color ?? COLORS.white)
 						spanMaterials.push(this.getColorMaterial(color))
 
 						if (shadow && shadowGeos.length > 0) {
@@ -457,7 +502,7 @@ export class MinecraftFont {
 							if (span.style.shadow_color) {
 								spanMaterials.push(
 									this.getColorMaterial(
-										JsonText.getColor(span.style.shadow_color)
+										TextComponent.getColor(span.style.shadow_color)
 									)
 								)
 							} else {
@@ -526,10 +571,10 @@ export class MinecraftFont {
 		return { mesh, hitbox: backgroundGeo, outline }
 	}
 
-	getCharGeo(char: string, style: ComponentStyle): CachedCharGeo {
+	async getCharGeo(char: string, style: TextComponentStyle): Promise<CachedCharGeo> {
 		let font: MinecraftFont = this
 		if (style.font) {
-			const newFont = MinecraftFont.getById(style.font)
+			const newFont = await MinecraftFont.getById(style.font)
 			if (newFont) font = newFont
 		}
 
@@ -677,42 +722,36 @@ export class MinecraftFont {
 	}
 }
 
-let vanillaFont: MinecraftFont
-let illagerFont: MinecraftFont
-let standardGalacticAlphabetFont: MinecraftFont
-function loadMinecraftFonts() {
-	console.log('Loading Minecraft fonts...')
-	vanillaFont = new MinecraftFont('minecraft:default', 'assets/minecraft/font/default.json')
-	illagerFont = new MinecraftFont(
-		'minecraft:illageralt',
-		'assets/minecraft/font/illageralt.json',
-		vanillaFont
-	)
-	standardGalacticAlphabetFont = new MinecraftFont(
-		'minecraft:alt',
-		'assets/minecraft/font/alt.json',
-		vanillaFont
-	)
+// let vanillaFont: MinecraftFont
+// let illagerFont: MinecraftFont
+// let standardGalacticAlphabetFont: MinecraftFont
+// async function loadMinecraftFonts() {
+// 	console.log('Loading Minecraft fonts...')
 
-	void Promise.all([
-		vanillaFont.load(),
-		illagerFont.load(),
-		standardGalacticAlphabetFont.load(),
-	]).then(() => {
-		console.log('Minecraft fonts loaded!')
-		requestAnimationFrame(() => EVENTS.MINECRAFT_FONTS_LOADED.publish())
-	})
-}
+// 	vanillaFont = new MinecraftFont('minecraft:default', 'assets/minecraft/font/default.json')
+// 	illagerFont = new MinecraftFont(
+// 		'minecraft:illageralt',
+// 		'assets/minecraft/font/illageralt.json',
+// 		vanillaFont
+// 	)
+// 	standardGalacticAlphabetFont = new MinecraftFont(
+// 		'minecraft:alt',
+// 		'assets/minecraft/font/alt.json',
+// 		vanillaFont
+// 	)
 
-export async function getVanillaFont() {
-	if (!vanillaFont) {
-		await new Promise<void>(resolve => {
-			EVENTS.MINECRAFT_FONTS_LOADED.subscribe(() => resolve())
-		})
-	}
-	return vanillaFont.load()
-}
+// 	await Promise.all([
+// 		vanillaFont.load(),
+// 		illagerFont.load(),
+// 		standardGalacticAlphabetFont.load(),
+// 	]).then(() => {
+// 		console.log('Minecraft fonts loaded!')
+// 	})
+// }
 
-EVENTS.MINECRAFT_ASSETS_LOADED.subscribe(() => {
-	loadMinecraftFonts()
-})
+// export async function getVanillaFont() {
+// 	if (!vanillaFont) {
+// 		await loadMinecraftFonts()
+// 	}
+// 	return vanillaFont.load()
+// }

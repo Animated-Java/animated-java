@@ -1,8 +1,8 @@
-import { registerMod } from 'src/util/moddingTools'
+import { registerPatch } from 'blockbench-patch-manager'
 import CSS from './globalCssMod.css'
 
-registerMod({
-	id: 'animated-java:global-css',
+registerPatch({
+	id: 'animated_java:global-css',
 
 	apply: () => {
 		return Blockbench.addCSS(CSS)

@@ -1,27 +1,35 @@
-import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
-import { getNextSupportedVersion, getResourcePackFormat } from '../../util/minecraftUtil'
+import type { AsyncZippable } from 'fflate/browser'
+import { getFsModule } from '../../constants'
+import {
+	MAX_PROGRESS,
+	PROGRESS,
+	PROGRESS_DESCRIPTION,
+} from '../../dialogs/exportProgress/exportProgress'
 import { IntentionalExportError } from '../errors'
+import { AJMeta, PackMeta } from '../global'
+import { getMisodeVersion } from '../minecraft/versionManager'
 import { type IRenderedRig } from '../rigRenderer'
-import type { ExportedFile } from '../util'
+import { zip, type ExportedFile } from '../util'
 
-import { AJMeta, PackMeta, SUPPORTED_MINECRAFT_VERSIONS } from '../global'
 import EXPORT_1_20_4 from './1.20.4'
 import EXPORT_1_21_2 from './1.21.2'
 import EXPORT_1_21_4 from './1.21.4'
 
-const VERSIONED_RESOURCE_PACK_COMPILERS: Record<
-	SUPPORTED_MINECRAFT_VERSIONS,
-	ResourcePackCompiler
-> = {
-	'1.21.11': EXPORT_1_21_4,
-	'1.21.9': EXPORT_1_21_4,
-	'1.21.6': EXPORT_1_21_4,
-	'1.21.5': EXPORT_1_21_4,
-	'1.21.4': EXPORT_1_21_4,
-	'1.21.2': EXPORT_1_21_2,
-	'1.21.0': EXPORT_1_21_2,
-	'1.20.5': EXPORT_1_20_4,
-	'1.20.4': EXPORT_1_20_4,
+function getResourcePackCompilerForVersion(version: string): ResourcePackCompiler {
+	switch (true) {
+		case VersionUtil.compare(version, '>=', '1.21.4'):
+			return EXPORT_1_21_4
+		case VersionUtil.compare(version, '>=', '1.21.2'):
+			return EXPORT_1_21_2
+		case VersionUtil.compare(version, '>=', '1.21.0'):
+			return EXPORT_1_21_2
+		case VersionUtil.compare(version, '>=', '1.20.5'):
+			return EXPORT_1_20_4
+		case VersionUtil.compare(version, '>=', '1.20.4'):
+			return EXPORT_1_20_4
+		default:
+			throw new IntentionalExportError(`Unsupported Minecraft version: ${version}`)
+	}
 }
 
 interface ResourcePackCompilerOptions {
@@ -48,15 +56,15 @@ export interface CompileResourcePackOptions {
 }
 
 export default async function compileResourcePack(
-	targetVersions: SUPPORTED_MINECRAFT_VERSIONS[],
+	version: string,
 	options: CompileResourcePackOptions
 ) {
 	const aj = Project!.animated_java
 
 	const ajmeta = new AJMeta(
 		PathModule.join(options.resourcePackFolder, 'assets.ajmeta'),
-		aj.export_namespace,
-		Project!.last_used_export_namespace,
+		aj.blueprint_id,
+		Project!.last_used_blueprint_id,
 		options.resourcePackFolder
 	)
 
@@ -68,44 +76,34 @@ export default async function compileResourcePack(
 	const globalVersionSpecificFiles = new Map<string, ExportedFile>()
 	const coreResourcePackFolder = options.resourcePackFolder
 
-	for (const version of targetVersions) {
-		console.groupCollapsed(`Compiling resource pack for Minecraft ${version}`)
-		const coreFiles = new Map<string, ExportedFile>()
-		const versionedFiles = new Map<string, ExportedFile>()
+	console.groupCollapsed(`Compiling resource pack for Minecraft ${version}`)
+	const coreFiles = new Map<string, ExportedFile>()
+	const versionedFiles = new Map<string, ExportedFile>()
 
-		const versionedResourcePackFolder =
-			targetVersions.length > 1
-				? PathModule.join(
-						options.resourcePackFolder,
-						`animated_java_${version.replaceAll('.', '_')}`
-				  )
-				: options.resourcePackFolder
+	const resourcePackCompiler = getResourcePackCompilerForVersion(version)
+	await resourcePackCompiler({
+		...options,
+		resourcePackPath: options.resourcePackFolder,
+		ajmeta,
+		coreFiles,
+		versionedFiles,
+	})
 
-		// Move paths into versioned overlay folders.
-		await VERSIONED_RESOURCE_PACK_COMPILERS[version]({
-			...options,
-			resourcePackPath: versionedResourcePackFolder,
-			ajmeta,
-			coreFiles,
-			versionedFiles,
-		})
-
-		for (const [path, file] of coreFiles) {
-			const relative = PathModule.join(coreResourcePackFolder, path)
-			globalCoreFiles.set(relative, file)
-			if (file.includeInAJMeta === false) continue
-			ajmeta.coreFiles.add(relative)
-		}
-
-		for (const [path, file] of versionedFiles) {
-			const relative = PathModule.join(versionedResourcePackFolder, path)
-			globalVersionSpecificFiles.set(relative, file)
-			if (file.includeInAJMeta === false) continue
-			ajmeta.versionedFiles.add(relative)
-		}
-
-		console.groupEnd()
+	for (const [path, file] of coreFiles) {
+		const relative = PathModule.join(coreResourcePackFolder, path)
+		globalCoreFiles.set(relative, file)
+		if (file.includeInAJMeta === false) continue
+		ajmeta.coreFiles.add(relative)
 	}
+
+	for (const [path, file] of versionedFiles) {
+		const relative = PathModule.join(options.resourcePackFolder, path)
+		globalVersionSpecificFiles.set(relative, file)
+		if (file.includeInAJMeta === false) continue
+		ajmeta.versionedFiles.add(relative)
+	}
+
+	console.groupEnd()
 
 	console.log('Exported files:', globalCoreFiles.size + globalVersionSpecificFiles.size)
 
@@ -114,50 +112,28 @@ export default async function compileResourcePack(
 	const packMeta = PackMeta.fromFile(packMetaPath)
 	packMeta.content.pack ??= {}
 
-	const nextVersion = getNextSupportedVersion(targetVersions[0])
-	const format = getResourcePackFormat(targetVersions[0])
-	const nextFormat = nextVersion ? getResourcePackFormat(nextVersion) : 10000000
-	if (!compareVersions('1.21.9', targetVersions[0]) /* >= 1.21.9 */) {
+	const misodeVersionData = await getMisodeVersion(version)
+
+	const format = misodeVersionData.resource_pack_version
+	if (VersionUtil.compare(version, '>=', '1.21.9')) {
 		packMeta.content.pack.min_format = format
-		packMeta.content.pack.max_format = nextFormat - 1
+		packMeta.content.pack.max_format = format
 	} else {
 		packMeta.content.pack.pack_format = format
 		packMeta.content.pack.supported_formats = {
 			min_inclusive: format,
-			max_inclusive: nextFormat - 1,
+			max_inclusive: format,
 		}
 	}
 
-	packMeta.content.pack.description ??= `Animated Java Resource Pack for ${targetVersions.join(
-		', '
-	)}`
-
-	// if (targetVersions.length > 1) {
-	// 	packMeta.content.pack.supported_formats ??= []
-	// 	packMeta.content.overlays ??= {}
-	// 	packMeta.content.overlays.entries ??= []
-
-	// 	for (const version of targetVersions) {
-	// 		const format: PackMetaFormats = getResourcePackFormat(version)
-	// 		packMeta.content.pack.supported_formats.push(format)
-
-	// 		const existingOverlay = packMeta.content.overlays.entries.find(
-	// 			e => e.directory === `animated_java_${version.replaceAll('.', '_')}`
-	// 		)
-	// 		if (!existingOverlay) {
-	// 			packMeta.content.overlays.entries.push({
-	// 				directory: `animated_java_${version.replaceAll('.', '_')}`,
-	// 				formats: format,
-	// 			})
-	// 		} else {
-	// 			existingOverlay.formats = format
-	// 		}
-	// 	}
-	// }
+	packMeta.content.pack.description ??= `Animated Java Resource Pack for ${version}`
 
 	globalCoreFiles.set(PathModule.join(options.resourcePackFolder, 'pack.mcmeta'), {
 		content: autoStringify(packMeta.toJSON()),
 	})
+
+	const { existsSync, promises } = getFsModule()
+	const { writeFile, mkdir, rm, readdir, unlink } = promises
 
 	if (aj.enable_plugin_mode) {
 		// Do nothing
@@ -170,14 +146,14 @@ export default async function compileResourcePack(
 
 		const removedFolders = new Set<string>()
 		for (const file of ajmeta.previousVersionedFiles) {
-			if (fs.existsSync(file)) await fs.promises.unlink(file)
+			if (existsSync(file)) await unlink(file)
 			let folder = PathModule.dirname(file)
 			while (
 				!removedFolders.has(folder) &&
-				fs.existsSync(folder) &&
-				(await fs.promises.readdir(folder)).length === 0
+				existsSync(folder) &&
+				(await readdir(folder)).length === 0
 			) {
-				await fs.promises.rm(folder, { recursive: true })
+				await rm(folder, { recursive: true })
 				removedFolders.add(folder)
 				folder = PathModule.dirname(folder)
 			}
@@ -202,13 +178,13 @@ export default async function compileResourcePack(
 		for (const [path, file] of exportedFiles) {
 			const folder = PathModule.dirname(path)
 			if (!createdFolderCache.has(folder)) {
-				await fs.promises.mkdir(folder, { recursive: true })
+				await mkdir(folder, { recursive: true })
 				createdFolderCache.add(folder)
 			}
 			if (file.writeHandler) {
 				await file.writeHandler(path, file.content)
 			} else {
-				await fs.promises.writeFile(
+				await writeFile(
 					path,
 					new Uint8Array(
 						Buffer.isBuffer(file.content) ? file.content : Buffer.from(file.content)
@@ -217,7 +193,29 @@ export default async function compileResourcePack(
 			}
 			PROGRESS.set(PROGRESS.get() + 1)
 		}
-	} else if (aj.resource_pack_export_mode === 'zip') {
-		throw new IntentionalExportError('ZIP export is not yet implemented.')
+	} else if (aj.data_pack_export_mode === 'zip') {
+		const data: AsyncZippable = {}
+
+		for (const [path, file] of coreFiles.entries()) {
+			const content = Uint8Array.from(
+				typeof file.content === 'string' ? Buffer.from(file.content) : file.content
+			)
+			data[path] = content
+		}
+
+		for (const [path, file] of versionedFiles.entries()) {
+			const content = Uint8Array.from(
+				typeof file.content === 'string' ? Buffer.from(file.content) : file.content
+			)
+			data[path] = content
+		}
+
+		data['pack.mcmeta'] = Uint8Array.from(
+			Buffer.from(autoStringify(packMeta.toJSON()), 'utf-8')
+		)
+
+		await rm(options.resourcePackFolder, { recursive: true, force: true })
+		const zipped = await zip(data, {})
+		await writeFile(options.resourcePackFolder, zipped)
 	}
 }

@@ -1,14 +1,12 @@
-import * as pathjs from 'path'
-import { assetsLoaded } from 'src/systems/minecraft/assetManager'
-import { validateBlockState } from 'src/systems/minecraft/blockModelManager'
-import { MINECRAFT_REGISTRY } from 'src/systems/minecraft/registryManager'
-import { getCurrentVersion } from 'src/systems/minecraft/versionManager'
-import { SUPPORTED_MINECRAFT_VERSIONS } from '../systems/global'
+import * as pathjs from 'node:path'
+import { getFsModule } from '../constants'
+import { validateBlockState } from '../systems/minecraft/blockModelManager'
 import {
 	BlockStateRegistryEntry,
 	type BlockStateValue,
 	getBlockState,
 } from '../systems/minecraft/blockstateManager'
+import { getRegistryEntry } from '../systems/minecraft/registryManager'
 
 export interface IMinecraftResourceLocation {
 	packRoot: string
@@ -266,34 +264,38 @@ export interface IParsedBlock {
 }
 
 export async function validateItem(item: string) {
-	if (!MINECRAFT_REGISTRY.item) {
-		await assetsLoaded()
-		return
-	}
+	const itemRegistry = await getRegistryEntry(
+		Project.animated_java.target_minecraft_version,
+		'item'
+	)
+
 	let [namespace, id] = item.split(':')
 	if (!id) {
 		id = namespace
 		namespace = 'minecraft'
 	}
-	if ((namespace === 'minecraft' || namespace === '') && MINECRAFT_REGISTRY.item.has(id)) {
+	if ((namespace === 'minecraft' || namespace === '') && itemRegistry.has(id)) {
 		return ''
 	} else {
-		return `This item does not exist in Minecraft ${getCurrentVersion()!.id}.`
+		return `This item does not exist in Minecraft ${Project.animated_java.target_minecraft_version}.`
 	}
 }
 
 export async function validateBlock(block: string) {
-	if (!MINECRAFT_REGISTRY.block) await assetsLoaded()
+	const blockRegistry = await getRegistryEntry(
+		Project.animated_java.target_minecraft_version,
+		'block'
+	)
 	const parsed = await parseBlock(block)
 	if (!parsed) {
 		return 'Invalid block ID.'
 	} else if (
 		(parsed.resource.namespace === 'minecraft' || parsed.resource.namespace === '') &&
-		MINECRAFT_REGISTRY.block.has(parsed.resource.name)
+		blockRegistry.has(parsed.resource.name)
 	) {
 		return validateBlockState(parsed)
 	} else {
-		return `This block does not exist in Minecraft ${getCurrentVersion()!.id}.`
+		return `This block does not exist in Minecraft ${Project.animated_java.target_minecraft_version}.`
 	}
 }
 
@@ -321,67 +323,10 @@ export async function parseBlock(block: string): Promise<IParsedBlock | undefine
 	}
 }
 
-export function sortMCVersions(
-	versions: SUPPORTED_MINECRAFT_VERSIONS[]
-): SUPPORTED_MINECRAFT_VERSIONS[] {
+export function sortMCVersions(versions: string[]): string[] {
 	return versions.sort((a, b) => {
 		return compareVersions(a, b) ? -1 : 1
 	})
-}
-
-export function getDataPackFormat(version: SUPPORTED_MINECRAFT_VERSIONS): number {
-	switch (version) {
-		case SUPPORTED_MINECRAFT_VERSIONS['1.20.4']:
-			return 26
-		case SUPPORTED_MINECRAFT_VERSIONS['1.20.5']:
-			return 41
-		case SUPPORTED_MINECRAFT_VERSIONS['1.21.0']:
-			return 48
-		case SUPPORTED_MINECRAFT_VERSIONS['1.21.2']:
-			return 57
-		case SUPPORTED_MINECRAFT_VERSIONS['1.21.4']:
-			return 61
-		case SUPPORTED_MINECRAFT_VERSIONS['1.21.5']:
-			return 71
-		case SUPPORTED_MINECRAFT_VERSIONS['1.21.6']:
-			return 80
-		case SUPPORTED_MINECRAFT_VERSIONS['1.21.9']:
-			return 88.0
-		case SUPPORTED_MINECRAFT_VERSIONS['1.21.11']:
-			return 93.1
-	}
-}
-
-export function getResourcePackFormat(version: SUPPORTED_MINECRAFT_VERSIONS): number {
-	switch (version) {
-		case SUPPORTED_MINECRAFT_VERSIONS['1.20.4']:
-			return 22
-		case SUPPORTED_MINECRAFT_VERSIONS['1.20.5']:
-			return 32
-		case SUPPORTED_MINECRAFT_VERSIONS['1.21.0']:
-			return 34
-		case SUPPORTED_MINECRAFT_VERSIONS['1.21.2']:
-			return 42
-		case SUPPORTED_MINECRAFT_VERSIONS['1.21.4']:
-			return 46
-		case SUPPORTED_MINECRAFT_VERSIONS['1.21.5']:
-			return 55
-		case SUPPORTED_MINECRAFT_VERSIONS['1.21.6']:
-			return 63
-		case SUPPORTED_MINECRAFT_VERSIONS['1.21.9']:
-			return 69.0
-		case SUPPORTED_MINECRAFT_VERSIONS['1.21.11']:
-			return 74.0
-	}
-}
-
-export function getNextSupportedVersion(
-	version: SUPPORTED_MINECRAFT_VERSIONS
-): SUPPORTED_MINECRAFT_VERSIONS | undefined {
-	const versions = Object.values(SUPPORTED_MINECRAFT_VERSIONS)
-	const index = versions.indexOf(version)
-	if (index === -1 || index === versions.length - 1) return undefined
-	return versions[index + 1]
 }
 
 export function functionReferenceExists(dataPackRoot: string, resourceLocation: string): boolean {
@@ -390,12 +335,14 @@ export function functionReferenceExists(dataPackRoot: string, resourceLocation: 
 	if (parsed.type !== 'tags' && parsed.type !== 'function' && parsed.type !== 'functions')
 		return false
 
-	for (const folder of fs.readdirSync(dataPackRoot)) {
+	const { readdirSync, statSync, existsSync } = getFsModule()
+
+	for (const folder of readdirSync(dataPackRoot)) {
 		const dataFolder = PathModule.join(dataPackRoot, folder)
-		if (!fs.statSync(dataFolder).isDirectory()) continue
+		if (!statSync(dataFolder).isDirectory()) continue
 
 		const path = PathModule.join(dataFolder, parsed.fullPath)
-		if (!fs.existsSync(path)) continue
+		if (!existsSync(path)) continue
 		return true
 	}
 

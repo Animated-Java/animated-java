@@ -1,5 +1,5 @@
+import { subscribable } from 'simple-subpub'
 import { Variant } from '../variants'
-import { subscribable } from './subscribable'
 
 // Plugin Events
 const EVENTS = {
@@ -25,8 +25,6 @@ const EVENTS = {
 	MINECRAFT_FONTS_LOADED: subscribable<void>(),
 	BLOCKSTATE_REGISTRY_LOADED: subscribable<void>(),
 
-	PRE_SELECT_PROJECT: subscribable<ModelProject>(),
-	POST_SELECT_PROJECT: subscribable<ModelProject>(),
 	SELECT_PROJECT: subscribable<ModelProject>(),
 	UNSELECT_PROJECT: subscribable<ModelProject>(),
 	CLOSE_PROJECT: subscribable<ModelProject>(),
@@ -43,22 +41,22 @@ const EVENTS = {
 
 	UPDATE_SELECTION: subscribable<void>(),
 
-	UPDATE_VIEW: subscribable<void>(),
+	UPDATE_VIEW: subscribable<UpdateViewOptions>(),
 
-	UNDO: subscribable<UndoEntry>(),
-	REDO: subscribable<UndoEntry>(),
+	UNDO: subscribable<{ entry: UndoEntry }>(),
+	REDO: subscribable<{ entry: UndoEntry }>(),
 }
 export default EVENTS
 
-Blockbench.on<EventName>('select_project', ({ project }: { project: ModelProject }) => {
+Blockbench.on('select_project', ({ project }: { project: ModelProject }) => {
 	EVENTS.SELECT_PROJECT.publish(project)
 })
-Blockbench.on<EventName>('unselect_project', ({ project }: { project: ModelProject }) => {
+Blockbench.on('unselect_project', ({ project }: { project: ModelProject }) => {
 	EVENTS.UNSELECT_PROJECT.publish(project)
 })
-Blockbench.on<EventName>('close_project', () => EVENTS.CLOSE_PROJECT.publish(Project!))
-Blockbench.on<EventName>('update_keyframe_selection', EVENTS.UPDATE_KEYFRAME_SELECTION.publish)
-Blockbench.on<EventName>('update_selection', EVENTS.UPDATE_SELECTION.publish)
-Blockbench.on<EventName>('update_view', EVENTS.UPDATE_VIEW.publish)
-Blockbench.on<EventName>('undo', EVENTS.UNDO.publish)
-Blockbench.on<EventName>('redo', EVENTS.REDO.publish)
+Blockbench.on('close_project', () => EVENTS.CLOSE_PROJECT.publish(Project!))
+Blockbench.on('update_keyframe_selection', EVENTS.UPDATE_KEYFRAME_SELECTION.publish)
+Blockbench.on('update_selection', EVENTS.UPDATE_SELECTION.publish)
+Blockbench.on('update_view', EVENTS.UPDATE_VIEW.publish)
+Blockbench.on('undo', EVENTS.UNDO.publish)
+Blockbench.on('redo', EVENTS.REDO.publish)

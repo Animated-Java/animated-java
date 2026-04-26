@@ -5,10 +5,63 @@ template debug {
 				tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR(context.functions.at(-1), root_tag)%>
 		}
 	}
-	with assert:literal executed_as_entity_with_root_uuid_data:literal {
-		IF (debug_mode) {
-			execute unless data entity @s data.root_uuid run return run \
-				tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ENTITY_WITH_ROOT_UUID_ERROR(context.functions.at(-1))%>
-		}
+}
+
+template data_manager {
+	with rest:raw {
+		<%%
+			const commands = rest.split(' ')
+			const result = []
+			for (const command of commands) {
+				switch (command) {
+					case 'init':
+						result.push(`
+							<%'# Data Manager: Initalize per-entity storage'%>
+							function animated_java:global/gu/get_entity_uuid_string
+							data modify storage <%temp_storage%> args.uuid set from storage <%gu_storage%> out
+							execute store result storage <%temp_storage%> args.id int 1 run scoreboard players get @s <%OBJECTIVES.ID()%>
+							function animated_java:global/data_manager/create_entry with storage <%temp_storage%> args
+						`)
+						break
+
+					case 'prep':
+						result.push(`
+							<%'# Data Manager: Prepare for Read / Write'%>
+							execute store result storage <%temp_storage%> args.id int 1 run scoreboard players get @s <%OBJECTIVES.ID()%>
+						`)
+						break
+
+					case 'read':
+						result.push(`
+							<%'# Data Manager: Read'%>
+							function animated_java:global/data_manager/read with storage <%temp_storage%> args
+						`)
+						break
+
+					case 'write':
+						result.push(`
+							<%'# Data Manager: Write'%>
+							function animated_java:global/data_manager/write with storage <%temp_storage%> args
+						`)
+						break
+
+					default:
+						throw new Error(`Unknown data_manager command: ${command}`)
+				}
+			}
+			emit.mcb(result.join('\n'))
+		%%>
 	}
+
+	# with rw:literal block:block {
+	# 	template data_manager read
+
+	# 	<%%
+	# 		console.log(arguments)
+	# 		console.log(context)
+	# 		console.log(block)
+	# 	%%>
+
+	# 	template data_manager write
+	# }
 }

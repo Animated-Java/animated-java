@@ -1,17 +1,21 @@
-import { Stopwatch } from 'src/util/stopwatch'
+import { getFsModule } from '../constants'
+import {
+	PROGRESS_DESCRIPTION,
+	openExportProgressDialog,
+} from '../dialogs/exportProgress/exportProgress'
+import { openUnexpectedErrorDialog } from '../dialogs/unexpectedError/unexpectedError'
 import { projectTargetVersionIsAtLeast, saveBlueprint } from '../formats/blueprint'
-import { blueprintSettingErrors } from '../formats/blueprint/settings'
-import { openBlueprintSettingsDialog } from '../interface/dialog/blueprintSettings'
-import { PROGRESS_DESCRIPTION, openExportProgressDialog } from '../interface/dialog/exportProgress'
-import { openUnexpectedErrorDialog } from '../interface/dialog/unexpectedError'
+import { validateThisProjectsBlueprintSettings } from '../formats/blueprint/settings'
 import { resolvePath } from '../util/fileUtil'
-import { isResourcePackPath } from '../util/minecraftUtil'
-import { translate } from '../util/translation'
+import { localize as translate } from '../util/lang'
+import { isResourcePackPath, parseResourceLocation } from '../util/minecraftUtil'
+import { scrubUndefined } from '../util/misc'
+import { Stopwatch } from '../util/stopwatch'
 import { Variant } from '../variants'
 import { hashAnimations, renderProjectAnimations } from './animationRenderer'
-import { exportPluginBlueprint } from './pluginCompiler'
 import compileDataPack from './datapackCompiler'
 import { IntentionalExportError } from './errors'
+import { exportPluginBlueprint } from './pluginCompiler'
 import resourcepackCompiler from './resourcepackCompiler'
 import { hashRig, renderRig } from './rigRenderer'
 import { isCubeValid } from './util'
@@ -22,14 +26,22 @@ export function getExportPaths() {
 	const resourcePackFolder = resolvePath(aj.resource_pack)
 	const dataPackFolder = resolvePath(aj.data_pack)
 
+	const parsed = parseResourceLocation(aj.blueprint_id)
+
 	// These paths are all relative to the resource pack folder
 	const modelExportFolder = PathModule.join(
-		'assets/animated_java/models/blueprint/',
-		aj.export_namespace
+		'assets',
+		parsed.namespace,
+		'models',
+		'blueprint',
+		parsed.path
 	)
 	const textureExportFolder = PathModule.join(
-		'assets/animated_java/textures/blueprint/',
-		aj.export_namespace
+		'assets',
+		parsed.namespace,
+		'textures',
+		'blueprint',
+		parsed.path
 	)
 	const displayItemPath = PathModule.join(
 		'assets/minecraft/models/item/',
@@ -68,8 +80,9 @@ async function actuallyExportProject({
 		}
 
 		// Verify that all non-external textures have unique names
+		const { existsSync } = getFsModule()
 		for (const texture of Texture.all) {
-			if (texture.path && isResourcePackPath(texture.path) && fs.existsSync(texture.path))
+			if (texture.path && isResourcePackPath(texture.path) && existsSync(texture.path))
 				continue
 			if (Texture.all.some(t => t !== texture && t.name === texture.name)) {
 				throw new IntentionalExportError(
@@ -120,7 +133,7 @@ async function actuallyExportProject({
 
 		// TODO - Plugin mode should run without the resource pack compiler
 		// Always run the resource pack compiler because it calculates custom model data.
-		await resourcepackCompiler([aj.target_minecraft_version], {
+		await resourcepackCompiler(aj.target_minecraft_version, {
 			rig,
 			displayItemPath,
 			resourcePackFolder,
@@ -130,7 +143,7 @@ async function actuallyExportProject({
 		})
 
 		if (!aj.enable_plugin_mode && aj.data_pack_export_mode !== 'none') {
-			await compileDataPack([aj.target_minecraft_version], {
+			await compileDataPack(aj.target_minecraft_version, {
 				rig,
 				animations,
 				dataPackFolder,
@@ -145,7 +158,7 @@ async function actuallyExportProject({
 			exportPluginBlueprint({ rig, animations })
 		}
 
-		Project!.last_used_export_namespace = aj.export_namespace
+		Project!.last_used_blueprint_id = aj.blueprint_id
 
 		if (forceSave) saveBlueprint()
 		Blockbench.showQuickMessage('Project exported successfully!', 2000)
@@ -190,31 +203,29 @@ export async function exportProject(options?: ExportProjectOptions): Promise<boo
 		return false
 	}
 
-	blueprintSettingErrors.set({})
-	const settingsDialog = openBlueprintSettingsDialog()!
-	// Wait for the dialog to open
-	await new Promise(resolve => requestAnimationFrame(resolve))
-	console.log('Blueprint Setting Errors', blueprintSettingErrors.get())
-	if (Object.keys(blueprintSettingErrors.get()).length > 0) {
+	let blueprintSettingErrors = scrubUndefined(await validateThisProjectsBlueprintSettings())
+	blueprintSettingErrors = Object.fromEntries(
+		Object.entries(blueprintSettingErrors).filter(([, error]) => error.type === 'error')
+	)
+
+	if (Object.keys(blueprintSettingErrors).length > 0) {
 		Blockbench.showMessageBox({
 			title: translate('misc.failed_to_export.title'),
 			message:
 				translate('misc.failed_to_export.blueprint_settings.message') +
 				'\n\n' +
-				Object.entries(blueprintSettingErrors.get())
+				Object.entries(blueprintSettingErrors)
 					.map(
 						v =>
 							translate('misc.failed_to_export.blueprint_settings.error_item', v[0]) +
 							'\n - ' +
-							v[1]
+							v[1].message
 					)
 					.join('\n\n'),
 			buttons: [translate('misc.failed_to_export.button')],
 		})
 		return false
 	}
-
-	settingsDialog.close(0)
 
 	return await actuallyExportProject(options)
 }

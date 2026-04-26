@@ -1,7 +1,8 @@
 {
+	"files": ["src/index.ts"],
 	"include": [
 		"src/**/*",
-		"tools/**/*",
+		".scripts/**/**/*",
 		"./eslint.config.ts",
 		"./vitest.config.ts",
 		"./svelte.config.ts"
@@ -10,11 +11,11 @@
 	"compilerOptions": {
 		"outDir": "./dist/",
 		"noImplicitAny": true,
-		"module": "ES2022",
+		"module": "preserve",
 		"target": "ES2022",
-		"moduleResolution": "node",
+		"moduleResolution": "bundler",
 		"strict": true,
-		"types": ["node"],
+		"types": ["node", "/mnt/ssd2/repos/snavesutit/blockbench/types/index.d.ts"],
 		"resolveJsonModule": true,
 		"allowSyntheticDefaultImports": true,
 		"allowUmdGlobalAccess": true,
@@ -23,6 +24,9 @@
 		"noEmit": true,
 		"isolatedModules": true,
 		"alwaysStrict": true,
-		"baseUrl": "."
+		"verbatimModuleSyntax": true,
+		"paths": {
+			"@blockbench-types/*": ["/mnt/ssd2/repos/snavesutit/blockbench/types/*"]
+		}
 	}
 }

@@ -1,12 +1,12 @@
-import { activeProjectIsBlueprintFormat } from 'src/formats/blueprint'
-import { registerConditionalPropertyOverrideMod } from 'src/util/moddingTools'
+import { registerPropertyOverridePatch } from 'blockbench-patch-manager'
+import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 
-registerConditionalPropertyOverrideMod({
-	id: 'animated-java:property-condition-override/collection/export-path',
-	object: Collection.properties.export_path,
+registerPropertyOverridePatch({
+	id: 'animated_java:property-condition-override/collection/export-path',
+	target: Collection.properties.export_path,
 	key: 'condition',
 
-	condition: () => activeProjectIsBlueprintFormat(),
+	getCondition: () => activeProjectIsBlueprintFormat(),
 
 	get: () => false,
 })

@@ -1,12 +1,12 @@
-import { registerConditionalPropertyOverrideMod } from 'src/util/moddingTools'
+import { registerPropertyOverridePatch } from 'blockbench-patch-manager'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 
-registerConditionalPropertyOverrideMod({
-	id: `animated-java:animation-controller-force-saved`,
-	object: AnimationController.prototype,
+registerPropertyOverridePatch({
+	id: `animated_java:animation-controller-force-saved`,
+	target: AnimationController.prototype,
 	key: 'saved',
 
-	condition: () => activeProjectIsBlueprintFormat(),
+	getCondition: () => activeProjectIsBlueprintFormat(),
 
 	get: () => true,
 })

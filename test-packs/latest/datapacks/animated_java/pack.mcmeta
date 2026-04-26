@@ -1,7 +1,7 @@
 {
 	"pack": {
 		"description": "AJ Testing DP",
-		"min_format": 93.1,
-		"max_format": 9999999
+		"min_format": 101,
+		"max_format": 101
 	}
 }

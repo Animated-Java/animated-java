@@ -1,7 +1,7 @@
-import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from 'src/formats/blueprint'
-import EVENTS from 'src/util/events'
-import { registerConditionalPropertyOverrideMod, registerProjectMod } from 'src/util/moddingTools'
-import { translate } from '../util/translation'
+import { registerProjectPatch, registerPropertyOverridePatch } from 'blockbench-patch-manager'
+import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from '../formats/blueprint'
+import EVENTS from '../util/events'
+import { localize as translate } from '../util/lang'
 
 export class LocatorAnimator extends BoneAnimator {
 	uuid: string
@@ -34,11 +34,13 @@ export class LocatorAnimator extends BoneAnimator {
 		GeneralAnimator.prototype.select.call(this)
 
 		if (
+			// @ts-expect-error - Broken BB types
 			this[Toolbox.selected.animation_channel] &&
 			((Timeline.selected && Timeline.selected.length === 0) ||
 				(Timeline.selected && (Timeline.selected[0].animator as any)) !== this)
 		) {
 			let nearest: _Keyframe | undefined
+			// @ts-expect-error - Broken BB types
 			this[Toolbox.selected.animation_channel].forEach((kf: _Keyframe) => {
 				if (Math.abs(kf.time - Timeline.time) < 0.002) {
 					nearest = kf
@@ -94,9 +96,9 @@ LocatorAnimator.prototype.channels = {
 	},
 }
 
-registerConditionalPropertyOverrideMod({
-	id: 'animated-java:property-override/locator/animator',
-	object: Locator,
+registerPropertyOverridePatch({
+	id: 'animated_java:property-override/locator/animator',
+	target: Locator,
 	key: 'animator',
 
 	condition: () => activeProjectIsBlueprintFormat(),
@@ -106,9 +108,9 @@ registerConditionalPropertyOverrideMod({
 	},
 })
 
-registerConditionalPropertyOverrideMod({
-	id: 'animated-java:function-override/locator/select',
-	object: Locator.prototype,
+registerPropertyOverridePatch({
+	id: 'animated_java:function-override/locator/select',
+	target: Locator.prototype,
 	key: 'select',
 
 	condition: () => activeProjectIsBlueprintFormat(),
@@ -117,16 +119,16 @@ registerConditionalPropertyOverrideMod({
 		return function (this: Locator, event?: any, isOutlinerClick?: boolean) {
 			const result = original.call(this, event, isOutlinerClick)
 			if (Animator.open && Blockbench.Animation.selected) {
-				Blockbench.Animation.selected.getBoneAnimator().select()
+				Blockbench.Animation.selected.getBoneAnimator()?.select()
 			}
 			return result
 		}
 	},
 })
 
-registerConditionalPropertyOverrideMod({
-	id: 'animated-java:function-override/animator/show-motion-trail',
-	object: Animator,
+registerPropertyOverridePatch({
+	id: 'animated_java:function-override/animator/show-motion-trail',
+	target: Animator,
 	key: 'showMotionTrail',
 
 	condition: () => activeProjectIsBlueprintFormat(),
@@ -139,9 +141,9 @@ registerConditionalPropertyOverrideMod({
 	},
 })
 
-registerConditionalPropertyOverrideMod({
-	id: 'animated-java:function-override/animator/preview',
-	object: Animator,
+registerPropertyOverridePatch({
+	id: 'animated_java:function-override/animator/preview',
+	target: Animator,
 	key: 'preview',
 
 	condition: () => activeProjectIsBlueprintFormat(),
@@ -161,10 +163,10 @@ registerConditionalPropertyOverrideMod({
 	},
 })
 
-registerProjectMod({
-	id: 'animated-java:project-mod/locator-animator/hide-gizmos',
+registerProjectPatch({
+	id: 'animated_java:project-mod/locator-animator/hide-gizmos',
 
-	condition: project => project.format.id === BLUEPRINT_FORMAT_ID,
+	condition: ({ project }) => project.format.id === BLUEPRINT_FORMAT_ID,
 
 	apply: () => {
 		const unsub = EVENTS.UPDATE_SELECTION.subscribe(() => {

@@ -1,17 +1,17 @@
-import { Valuable } from 'src/util/stores'
+import { registerPropertyOverridePatch } from 'blockbench-patch-manager'
+import { observable } from 'svelte-observable-store'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 import { roundToNth } from '../util/misc'
-import { registerConditionalPropertyOverrideMod } from '../util/moddingTools'
 
-export const BONE_INTERPOLATION_ENABLED = new Valuable(true)
+export const BONE_INTERPOLATION_ENABLED = observable(true)
 
 //region Interpolate
-registerConditionalPropertyOverrideMod({
-	id: `animated-java:override-function/bone-animator/interpolate`,
-	object: BoneAnimator.prototype,
+registerPropertyOverridePatch({
+	id: `animated_java:override-function/bone-animator/interpolate`,
+	target: BoneAnimator.prototype,
 	key: 'interpolate',
 
-	condition: () => BONE_INTERPOLATION_ENABLED.get() && activeProjectIsBlueprintFormat(),
+	getCondition: () => BONE_INTERPOLATION_ENABLED.get() && activeProjectIsBlueprintFormat(),
 
 	get: original => {
 		return function (this: BoneAnimator, channel, allowExpression, axis) {

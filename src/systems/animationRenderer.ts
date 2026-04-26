@@ -1,6 +1,10 @@
-import * as crypto from 'crypto'
-import { BONE_INTERPOLATION_ENABLED } from 'src/mods/boneAnimatorMod'
-import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../interface/dialog/exportProgress'
+import * as crypto from 'node:crypto'
+import {
+	MAX_PROGRESS,
+	PROGRESS,
+	PROGRESS_DESCRIPTION,
+} from '../dialogs/exportProgress/exportProgress'
+import { BONE_INTERPOLATION_ENABLED } from '../mods/boneAnimatorMod'
 import { TextDisplay } from '../outliner/textDisplay'
 import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
 import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
@@ -293,15 +297,16 @@ export function updatePreview(animation: _Animation, time: number) {
 		...VanillaItemDisplay.all,
 	]
 	if (OutlinerElement.types.camera) {
+		// @ts-expect-error - Broken BB types
 		nodes.push(...OutlinerElement.types.camera.all)
 	}
 	for (const node of nodes) {
 		if (!(node.constructor as any).animator) continue
 		Animator.resetLastValues()
-		animation.getBoneAnimator(node).displayFrame()
+		animation.getBoneAnimator(node)!.displayFrame()
 	}
 	Animator.resetLastValues()
-	scene.updateMatrixWorld()
+	Canvas.scene.updateMatrixWorld()
 	if (animation.effects) animation.effects.displayFrame()
 	// Blockbench.dispatchEvent('display_animation_frame')
 }
@@ -375,6 +380,7 @@ export function getAnimatableNodes(): OutlinerElement[] {
 		...TextDisplay.all,
 		...VanillaBlockDisplay.all,
 		...VanillaItemDisplay.all,
+		// @ts-expect-error - Broken BB types
 		...(OutlinerElement.types.camera ? OutlinerElement.types.camera.all : []),
 	]
 }

@@ -1,26 +1,30 @@
-import { type TextDisplay } from 'src/outliner/textDisplay'
-import { type VanillaBlockDisplay } from 'src/outliner/vanillaBlockDisplay'
-import { type VanillaItemDisplay } from 'src/outliner/vanillaItemDisplay'
-import { mountSvelteComponent } from 'src/util/mountSvelteComponent'
-import FormatPageSvelte from '../../components/formatPage.svelte'
-import ProjectTitleSvelte from '../../components/projectTitle.svelte'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { ModelProject } from '@blockbench-types/generated/io/project'
+import { registerDeletableHandlerPatch } from 'blockbench-patch-manager'
+import { mount, unmount } from 'svelte'
+import { observable, type Observable } from 'svelte-observable-store'
+import { injectComponent } from 'svelte-patching-tools'
+import AnimatedJavaIcon from '../../assets/icons/animated_java_fancy_icon_centered.svg'
 import { DisplayEntityConfig, LocatorConfig } from '../../nodeConfigs'
+import { type TextDisplay } from '../../outliner/textDisplay'
+import { type VanillaBlockDisplay } from '../../outliner/vanillaBlockDisplay'
+import { type VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
+import ProjectTitleSvelte from '../../svelteComponents/projectTitle.svelte'
 import EVENTS from '../../util/events'
+import { localize as translate } from '../../util/lang'
 import { sanitizeStorageKey } from '../../util/minecraftUtil'
-import { registerModelFormat } from '../../util/moddingTools'
-import { Valuable } from '../../util/stores'
-import { translate } from '../../util/translation'
 import { Variant } from '../../variants'
 import { BLUEPRINT_CODEC } from './codec'
+import FormatPageSvelte from './formatPage.svelte'
 import type { BlueprintSettings } from './settings'
 import * as blueprintSettings from './settings'
 
-declare global {
-	interface ModelProject {
+declare module '@blockbench-types/generated/io/project' {
+	export interface ModelProject {
 		animated_java: BlueprintSettings
-		last_used_export_namespace: string
+		last_used_blueprint_id: string
 		visualBoundingBox?: THREE.LineSegments
-		pluginMode: Valuable<boolean>
+		pluginMode: Observable<boolean>
 		transparentTexture: Texture
 
 		variants: Variant[]
@@ -108,7 +112,7 @@ export interface IBlueprintFormatJSON {
 		format?: string
 		format_version?: string
 		uuid?: string
-		last_used_export_namespace?: string
+		last_used_blueprint_id?: string
 		box_uv?: boolean
 		backup?: boolean
 		save_location?: string
@@ -137,6 +141,7 @@ export interface IBlueprintFormatJSON {
 	}
 
 	elements?: any[]
+	groups?: any[]
 	outliner?: any[]
 	textures?: Texture[]
 	animations?: AnimationOptions[]
@@ -164,7 +169,7 @@ export function fixCubeRotation(cube: Cube) {
 export function convertToBlueprint() {
 	// Convert the current project to a Blueprint
 	Project!.save_path = ''
-	Project!.last_used_export_namespace = ''
+	Project!.last_used_blueprint_id = ''
 
 	for (const group of Group.all) {
 		group.createUniqueName(Group.all.filter(g => g !== group))
@@ -172,6 +177,7 @@ export function convertToBlueprint() {
 	}
 
 	for (const animation of Blockbench.Animation.all) {
+		// @ts-expect-error - Broken BB types
 		animation.createUniqueName(Blockbench.Animation.all.filter(a => a !== animation))
 		animation.name = sanitizeStorageKey(animation.name)
 	}
@@ -192,6 +198,7 @@ export function getDefaultProjectSettings() {
 EVENTS.UPDATE_VIEW.subscribe(() => {
 	// Update the render box preview
 	if (!Project || !activeProjectIsBlueprintFormat()) return
+	if (!Project?.animated_java) return false
 
 	if (Project.visualBoundingBox) scene.remove(Project.visualBoundingBox)
 	if (!Project.animated_java.show_render_box) return
@@ -244,116 +251,136 @@ EVENTS.UPDATE_VIEW.subscribe(() => {
 })
 
 // region Format
-export const BLUEPRINT_FORMAT = registerModelFormat(
-	{ id: BLUEPRINT_FORMAT_ID, dependencies: ['animated-java:codec/blueprint'] },
-	{
-		name: translate('format.blueprint.name'),
-		icon: 'icon-armor_stand',
-		category: 'animated_java',
-		target: 'Minecraft: Java Edition',
-		confidential: false,
-		condition: () => true,
-		show_on_start_screen: true,
-		format_page: {
-			component: {
-				template: `<div id="${BLUEPRINT_FORMAT_ID}/format_page_mount" style="display: flex; flex-direction: column; flex-grow: 1;"></div>`,
-				mounted() {
-					// Don't need to worry about unmounting since the whole panel gets replaced when switching formats
-					mountSvelteComponent({
-						component: FormatPageSvelte,
-						target: `div[id="${BLUEPRINT_FORMAT_ID}/format_page_mount"]`,
-					})
+export const BLUEPRINT_FORMAT = registerDeletableHandlerPatch({
+	id: `animated_java:format/blueprint`,
+	dependencies: ['animated_java:codec/blueprint'],
+	create() {
+		let mountedComponent: ReturnType<typeof mount> | null = null
+		let titleElement: HTMLElement | null = null
+
+		const format = new Blockbench.ModelFormat(BLUEPRINT_FORMAT_ID, {
+			id: BLUEPRINT_FORMAT_ID,
+			name: translate('format.blueprint.name'),
+			icon: AnimatedJavaIcon,
+			category: 'animated_java',
+			target: 'Minecraft: Java Edition',
+			confidential: false,
+			condition: () => true,
+			show_on_start_screen: true,
+			format_page: {
+				component: {
+					template: '<div></div>',
+					mounted(this: Vue) {
+						const target = this.$el.parentElement!
+						titleElement = target.querySelector('h2')
+						if (titleElement) titleElement.hidden = true
+
+						mountedComponent = mount(FormatPageSvelte, { target })
+					},
+					beforeDestroy(this: Vue) {
+						if (titleElement) titleElement.hidden = false
+						if (mountedComponent) {
+							void unmount(mountedComponent!)
+							mountedComponent = null
+						}
+					},
 				},
 			},
-		},
 
-		onSetup(project, newModel) {
-			console.log('Animated Java Blueprint format setup')
+			onSetup(project, newModel) {
+				console.log('Animated Java Blueprint format setup')
 
-			const defaults = getDefaultProjectSettings()
-			if (newModel) {
-				project.animated_java = defaults
-				project.last_used_export_namespace = ''
-			} else {
-				project.animated_java = { ...defaults, ...project!.animated_java }
-			}
-
-			project.pluginMode = new Valuable(project.animated_java.enable_plugin_mode)
-
-			requestAnimationFrame(() => {
-				const projectIndex = ModelProject.all.indexOf(project)
-				const projectTab = document.querySelectorAll('#tab_bar_list .project_tab')[
-					projectIndex
-				]
-
-				if (!projectTab) {
-					console.error('Could not find project tab for Animated Java Blueprint project!')
-					return
+				const defaults = getDefaultProjectSettings()
+				if (newModel) {
+					project.animated_java = defaults
+					project.last_used_blueprint_id = ''
+				} else {
+					project.animated_java = { ...defaults, ...project!.animated_java }
 				}
-				projectTab.querySelector('i')?.remove()
 
-				mountSvelteComponent({
-					target: projectTab,
-					prepend: true,
-					component: ProjectTitleSvelte,
-					props: { pluginMode: project.pluginMode },
+				project.pluginMode = observable(project.animated_java.enable_plugin_mode)
+
+				requestAnimationFrame(() => {
+					const projectIndex = Blockbench.ModelProject.all.indexOf(project)
+					const projectTab = document.querySelectorAll('#tab_bar_list .project_tab')[
+						projectIndex
+					]
+
+					if (!projectTab) {
+						console.error(
+							'Could not find project tab for Animated Java Blueprint project!'
+						)
+						return
+					}
+
+					const icon = projectTab.querySelector('img') ?? projectTab.querySelector('i')
+					icon?.remove()
+
+					injectComponent({
+						elementSelector() {
+							return projectTab as HTMLElement
+						},
+						prepend: true,
+						component: ProjectTitleSvelte,
+						props: { pluginMode: project.pluginMode },
+					})
+
+					for (const cube of Cube.all) {
+						cube.setUVMode(false)
+						fixCubeRotation(cube)
+					}
+
+					Canvas.updateAll()
 				})
+			},
 
-				for (const cube of Cube.all) {
-					cube.setUVMode(false)
-					fixCubeRotation(cube)
-				}
+			animated_textures: true,
+			animation_controllers: true,
+			animation_files: true,
+			texture_mcmeta: true,
+			animation_mode: true,
+			bone_binding_expression: true,
+			bone_rig: true,
+			box_uv: false,
+			centered_grid: true,
+			display_mode: false,
+			edit_mode: true,
+			integer_size: false,
+			java_face_properties: true,
+			locators: true,
+			meshes: false,
+			model_identifier: false,
+			optional_box_uv: true,
+			paint_mode: true,
+			parent_model_id: false,
+			pose_mode: false,
+			render_sides: 'front',
+			rotate_cubes: true,
+			rotation_limit: false,
+			select_texture_for_particles: false,
+			single_texture: false,
+			texture_folder: false,
+			texture_meshes: false,
+			uv_rotation: true,
+			vertex_color_ambient_occlusion: true,
+			java_cube_shading_properties: true,
+			box_uv_float_size: false,
+			cullfaces: true,
+		})
 
-				Canvas.updateAll()
-			})
-		},
+		const codec = BLUEPRINT_CODEC.get()!
 
-		animated_textures: true,
-		animation_controllers: true,
-		animation_files: true,
-		texture_mcmeta: true,
-		animation_mode: true,
-		bone_binding_expression: true,
-		bone_rig: true,
-		box_uv: false,
-		centered_grid: true,
-		display_mode: false,
-		edit_mode: true,
-		integer_size: false,
-		java_face_properties: true,
-		locators: true,
-		meshes: false,
-		model_identifier: false,
-		optional_box_uv: true,
-		paint_mode: true,
-		parent_model_id: false,
-		pose_mode: false,
-		render_sides: 'front',
-		rotate_cubes: true,
-		rotation_limit: false,
-		select_texture_for_particles: false,
-		single_texture: false,
-		texture_folder: false,
-		texture_meshes: false,
-		uv_rotation: true,
-		vertex_color_ambient_occlusion: true,
-		java_cube_shading_properties: true,
-		box_uv_float_size: false,
-		cullfaces: true,
-	}
-)
+		codec.format = format
+		format.codec = codec
+
+		return format
+	},
+})
+// @ts-expect-error - Broken BB types
 Language.data['format_category.animated_java'] = translate('format_category.animated_java')
 
-BLUEPRINT_FORMAT.onCreated(format => {
-	const codec = BLUEPRINT_CODEC.get()
-	if (!codec) throw new Error('Animated Java Blueprint codec is not registered!')
-
-	codec.format = format
-	format.codec = codec
-})
-
 export function activeProjectIsBlueprintFormat() {
-	return Format instanceof ModelFormat && Format.id === BLUEPRINT_FORMAT_ID
+	return Project instanceof Blockbench.ModelProject && Project.format.id === BLUEPRINT_FORMAT_ID
 }
 
 export function createNewBlueprintProject() {
@@ -377,7 +404,8 @@ export function saveBlueprint() {
 }
 
 export function projectTargetVersionIsAtLeast(version: string): boolean {
-	return !compareVersions(version, Project!.animated_java.target_minecraft_version)
+	if (!Project?.animated_java) return false
+	return !compareVersions(version, Project.animated_java.target_minecraft_version)
 }
 
 export function hasNonElementSelection(): boolean {
@@ -399,6 +427,8 @@ export function hasNonElementSelection(): boolean {
 
 export function updateRotationConstraints() {
 	if (!activeProjectIsBlueprintFormat()) return
+	if (!Project?.animated_java) return false
+
 	const format = BLUEPRINT_FORMAT.get()!
 	if (!format) {
 		console.error('Animated Java Blueprint format is not registered!')

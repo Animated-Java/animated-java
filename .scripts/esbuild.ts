@@ -1,0 +1,286 @@
+if (process.argv.includes('--mode=dev')) {
+	process.env.NODE_ENV = 'development'
+} else {
+	process.env.NODE_ENV = 'production'
+}
+
+process.env.FLAVOR ??= `local`
+
+import * as esbuild from 'esbuild'
+import importFolderPlugin from 'esbuild-plugin-import-folder'
+import ImportGlobPlugin from 'esbuild-plugin-import-glob'
+import inlineImage from 'esbuild-plugin-inline-image'
+import * as fs from 'fs'
+import { load } from 'js-yaml'
+import vscodeProblemsPatch from 'node-modules-vscode-problems-patch'
+import * as path from 'node:path'
+import { isAbsolute, join } from 'node:path'
+import {
+	createBlockbenchSvelteConfig,
+	esbuildPluginSvelte,
+} from 'svelte-patching-tools/esbuildPlugin'
+import { TextDecoder } from 'util'
+import assetOverridePlugin from './plugins/assetOverridePlugin'
+import bufferPatchPlugin from './plugins/bufferPatchFunction.js'
+import langPlugin from './plugins/lang'
+import mcbCompressionPlugin from './plugins/mcbCompressionPlugin'
+import packagerPlugin from './plugins/packagerPlugin'
+const PACKAGE = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
+
+const INFO_PLUGIN: esbuild.Plugin = {
+	name: 'infoPlugin',
+	setup(build) {
+		let start = Date.now()
+		build.onStart(() => {
+			console.log('\u{1F528} Building...')
+			start = Date.now()
+		})
+
+		build.onEnd(result => {
+			const end = Date.now()
+			const diff = end - start
+			console.log(
+				`\u{2705} Build completed in ${diff}ms with ${result.warnings.length} warning${
+					result.warnings.length == 1 ? '' : 's'
+				} and ${result.errors.length} error${result.errors.length == 1 ? '' : 's'}.`
+			)
+		})
+	},
+}
+const DEPENDENCY_QUARKS: esbuild.Plugin = {
+	name: 'dependency-quarks',
+	setup(build) {
+		build.onResolve({ filter: /^three/ }, args => {
+			if (args.path === 'three') {
+				return { path: 'three', external: true }
+			} else {
+				return {
+					path: require.resolve(args.path),
+				}
+			}
+		})
+		build.onResolve({ filter: /^deepslate\// }, args => {
+			return {
+				// esbuild respects the package.json "exports" field
+				// but the version of typescript we're using doesn't
+				// so we need to resolve the path manually
+				path: path.resolve(
+					process.cwd(),
+					path.dirname(require.resolve('deepslate')),
+					'..',
+					args.path.split('/').slice(1).join('/'),
+					'index.js'
+				),
+			}
+		})
+	},
+}
+function createBanner() {
+	function wrap(s: string, width: number) {
+		return s.replace(new RegExp(`(?![^\\n]{1,${width}}$)([^\\n]{1,${width}})\\s`, 'g'), '$1\n')
+	}
+
+	const license = fs.readFileSync('./LICENSE').toString()
+	const fetchbot = PACKAGE.contributors[0]
+	const dominexis = PACKAGE.contributors[1]
+	let lines: string[] = [
+		String.raw`____ _  _ _ _  _ ____ ___ ____ ___      _ ____ _  _ ____`,
+		String.raw`|__| |\ | | |\/| |__|  |  |___ |  \     | |__| |  | |__|`,
+		String.raw`|  | | \| | |  | |  |  |  |___ |__/    _| |  |  \/  |  |`,
+		``,
+		`v${PACKAGE.version as string}`,
+		``,
+		PACKAGE.description,
+		``,
+		`Created by ${PACKAGE.author.name as string}`,
+		`(${PACKAGE.author.email as string}) [${PACKAGE.author.url as string}]`,
+		``,
+		`With AMAZING help from`,
+		``,
+		`${fetchbot.name as string}`,
+		`(${fetchbot.email as string}) [${fetchbot.url as string}]`,
+		``,
+		`and ${dominexis.name as string}`,
+		`(${dominexis.email as string}) [${dominexis.url as string}]`,
+		``,
+		`[ SPECIAL THANKS ]`,
+		``,
+		`$INSERT_SPECIAL_THANKS_HERE`,
+		``,
+		`[ SOURCE ]`,
+		`${PACKAGE.repository.url as string}`,
+		``,
+		`[ LICENSE ]`,
+		...license.split('\n').map(v => v.trim()),
+	]
+
+	const maxLength = Math.max(...lines.map(line => line.length))
+
+	lines.splice(
+		lines.indexOf('$INSERT_SPECIAL_THANKS_HERE'),
+		1,
+		...wrap(PACKAGE.special_thanks.join(', ') as string, Math.floor(maxLength / 1.5)).split(
+			'\n'
+		)
+	)
+
+	const leftBuffer = Math.floor(maxLength / 2)
+	const rightBuffer = Math.ceil(maxLength / 2)
+
+	const header = '╭' + `─`.repeat(maxLength + 2) + '╮'
+	const footer = '╰' + `─`.repeat(maxLength + 2) + '╯'
+
+	lines = lines.map(v => {
+		const div = v.length / 2
+		const l = Math.ceil(leftBuffer - div)
+		const r = Math.floor(rightBuffer - div)
+		return '│ ' + ' '.repeat(l) + v + ' '.repeat(r) + ' │'
+	})
+
+	const banner = '\n' + [header, ...lines, footer].map(v => `//?? ${v}`).join('\n')
+
+	return {
+		js: banner,
+	}
+}
+
+const DEFINES: Record<string, string> = {}
+
+Object.entries(process.env).forEach(([key, value]) => {
+	if (/[^A-Za-z0-9_]/i.exec(key)) return
+	DEFINES[`process.env.${key}`] = JSON.stringify(value)
+})
+
+const yamlPlugin: (opts: {
+	loadOptions?: jsyaml.LoadOptions
+	transform?: any
+}) => esbuild.Plugin = options => ({
+	name: 'yaml',
+	setup(build) {
+		build.onResolve({ filter: /\.(yml|yaml|molang)$/ }, args => {
+			if (args.resolveDir === '') return
+			return {
+				path: isAbsolute(args.path) ? args.path : join(args.resolveDir, args.path),
+				namespace: 'yaml',
+			}
+		})
+		build.onLoad({ filter: /.*/, namespace: 'yaml' }, async args => {
+			const yamlContent = await fs.promises.readFile(args.path)
+			let parsed = load(
+				new TextDecoder().decode(new Uint8Array(yamlContent)),
+				options?.loadOptions
+			)
+			if (options?.transform && options.transform(parsed, args.path) !== void 0)
+				parsed = options.transform(parsed, args.path)
+			return {
+				contents: JSON.stringify(parsed),
+				loader: 'json',
+				watchFiles: [args.path],
+			}
+		})
+	},
+})
+
+import VSCODE_SETTINGS from '../.vscode/settings.json'
+const IGNORED_SVELTE_WARNINGS = Object.keys(
+	VSCODE_SETTINGS['svelte.plugin.svelte.compilerWarnings']
+)
+
+const COMMON_CONFIG: esbuild.BuildOptions = {
+	banner: createBanner(),
+	entryPoints: ['./src/index.ts'],
+	outfile: `./dist/${PACKAGE.name}.js`,
+	bundle: true,
+	platform: 'browser',
+	external: ['node:*'],
+	loader: { '.svg': 'dataurl', '.ttf': 'binary', '.css': 'text' },
+	plugins: [
+		langPlugin({
+			languageFolder: 'src/lang',
+		}),
+		// @ts-expect-error broken default import
+		vscodeProblemsPatch.default(),
+		// @ts-expect-error broken default import
+		importFolderPlugin.default(),
+		// @ts-expect-error broken default import
+		ImportGlobPlugin.default(),
+		bufferPatchPlugin(),
+		inlineImage({
+			limit: -1,
+		}),
+		INFO_PLUGIN,
+		yamlPlugin({}),
+		esbuildPluginSvelte(
+			createBlockbenchSvelteConfig(PACKAGE.name, {
+				compilerOptions: {
+					warningFilter(warning: any) {
+						return !IGNORED_SVELTE_WARNINGS.includes(warning.code)
+					},
+					compatibility: {
+						componentApi: 4,
+					},
+					// @ts-expect-error - not typed correctly
+					generate: 'client',
+				},
+			})
+		),
+		packagerPlugin(),
+		assetOverridePlugin(),
+		mcbCompressionPlugin(),
+		DEPENDENCY_QUARKS,
+	],
+	alias: {
+		svelte: 'svelte',
+		module: './.scripts/fakeModule.js',
+		'node:module': './.scripts/fakeModule.js',
+	},
+	format: 'iife',
+	define: DEFINES,
+	inject: [
+		// Blockbench does not provide access to the global process, but some of our dependencies expect it to exist.
+		`./.scripts/fakeProcess.js`,
+	],
+	treeShaking: true,
+}
+
+const DEV_CONFIG: esbuild.BuildOptions = {
+	...COMMON_CONFIG,
+	minify: false,
+	sourcemap: 'inline',
+	sourceRoot: 'http://animated-java/',
+}
+
+const PROD_CONFIG: esbuild.BuildOptions = {
+	...COMMON_CONFIG,
+	minify: true,
+	keepNames: true,
+	drop: ['debugger'],
+	metafile: true,
+}
+
+async function buildDev() {
+	const ctx = await esbuild.context(DEV_CONFIG)
+	await ctx.watch()
+}
+
+async function buildProd() {
+	const result = await esbuild.build(PROD_CONFIG).catch(() => process.exit(1))
+	if (result.errors.length > 0) {
+		console.error(result.errors)
+		process.exit(1)
+	}
+	if (result.warnings.length > 0) {
+		console.warn(result.warnings)
+	}
+	fs.writeFileSync('./dist/meta.json', JSON.stringify(result.metafile, null, '\t'))
+}
+
+async function main() {
+	if (process.env.NODE_ENV === 'development') {
+		await buildDev()
+		return
+	}
+	await buildProd()
+}
+
+void main()

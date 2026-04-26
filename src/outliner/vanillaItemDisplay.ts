@@ -1,13 +1,13 @@
-import { getItemModel } from 'src/systems/minecraft/itemModelManager'
-import { IDisplayEntityConfigs } from 'src/systems/rigRenderer'
-import { validateItem } from 'src/util/minecraftUtil'
-import { registerAction } from 'src/util/moddingTools'
-import { DeepClonedObjectProperty, fixClassPropertyInheritance } from 'src/util/property'
+import { registerDeletableHandlerPatch, registerPatch } from 'blockbench-patch-manager'
+import { observable } from 'svelte-observable-store'
 import { PACKAGE } from '../constants'
-import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
+import { activeProjectIsBlueprintFormat } from '../formats/blueprint/index'
+import { getItemModel } from '../systems/minecraft/itemModelManager'
+import { type IDisplayEntityConfigs } from '../systems/rigRenderer'
 import EVENTS from '../util/events'
-import { Valuable } from '../util/stores'
-import { translate } from '../util/translation'
+import { localize as translate } from '../util/lang'
+import { validateItem } from '../util/minecraftUtil'
+import { DeepClonedObjectProperty, fixClassPropertyInheritance } from '../util/property'
 import { ResizableOutlinerElement } from './resizableOutlinerElement'
 import { sanitizeOutlinerElementName } from './util'
 
@@ -44,12 +44,12 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 	needsUniqueName = true
 
 	// Properties
-	private __item = new Valuable('minecraft:diamond')
-	private __itemDisplay = new Valuable<ItemDisplayMode>('none')
+	private __item = observable('minecraft:diamond')
+	private __itemDisplay = observable<ItemDisplayMode>('none')
 	onSummonFunction = VanillaItemDisplay.properties.onSummonFunction.default as string
 	configs!: IDisplayEntityConfigs
 
-	error = new Valuable('')
+	error = observable('')
 
 	buttons = [Outliner.buttons.export, Outliner.buttons.locked, Outliner.buttons.visibility]
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -139,8 +139,8 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 		return this
 	}
 
-	unselect() {
-		if (!this.selected) return
+	unselect(unselectParent?: boolean) {
+		if (!this.selected) return this
 		if (
 			Animator.open &&
 			Timeline.selected_animator &&
@@ -154,6 +154,7 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 		this.selected = false
 		TickUpdates.selection = true
 		this.preview_controller.updateHighlight(this)
+		return this
 	}
 
 	async updateItem() {
@@ -184,67 +185,72 @@ const TEMP_MESH_MAP = new THREE.TextureLoader().load(
 TEMP_MESH_MAP.minFilter = THREE.NearestFilter
 TEMP_MESH_MAP.magFilter = THREE.NearestFilter
 
-export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaItemDisplay, {
-	setup(el: VanillaItemDisplay) {
-		ResizableOutlinerElement.prototype.preview_controller.setup(el)
-		// Setup temp sprite mesh
-		const material = new THREE.SpriteMaterial({
-			map: TEMP_MESH_MAP,
-			alphaTest: 0.1,
-			sizeAttenuation: false,
-		})
-		const sprite = new THREE.Sprite(material)
-		sprite.scale.setScalar(1 / 20)
-		const mesh = el.mesh as THREE.Mesh
-		mesh.add(sprite)
-		mesh.sprite = sprite
-	},
-	updateGeometry(el: VanillaItemDisplay) {
-		if (!el.mesh) return
-
-		void getItemModel(el.item, el.itemDisplay)
-			.then(result => {
-				if (!result) return
-				const mesh = el.mesh as THREE.Mesh
-				mesh.name = el.uuid
-				mesh.geometry = result.boundingBox
-				mesh.material = Canvas.transparentMaterial
-				mesh.clear()
-				mesh.add(result.mesh)
-				mesh.add(result.outline)
-				mesh.outline = result.outline
-				mesh.outline.visible = el.selected
-
-				el.preview_controller.updateHighlight(el)
-				el.preview_controller.updateTransform(el)
-				mesh.visible = el.visibility
+export const PREVIEW_CONTROLLER: NodePreviewController = new NodePreviewController(
+	VanillaItemDisplay,
+	{
+		setup(el: VanillaItemDisplay) {
+			ResizableOutlinerElement.prototype.preview_controller.setup(el)
+			// Setup temp sprite mesh
+			const material = new THREE.SpriteMaterial({
+				map: TEMP_MESH_MAP,
+				alphaTest: 0.1,
+				sizeAttenuation: false,
 			})
-			.catch(err => {
-				if (typeof err.message === 'string') {
-					el.error.set(err.message as string)
+			const sprite = new THREE.Sprite(material)
+			sprite.scale.setScalar(1 / 20)
+			const mesh = el.mesh as THREE.Mesh
+			mesh.add(sprite)
+			// @ts-expect-error - Broken BB types
+			mesh.sprite = sprite
+		},
+		updateGeometry(el: VanillaItemDisplay) {
+			if (!el.mesh) return
+
+			void getItemModel(el.item, el.itemDisplay)
+				.then(result => {
+					if (!result) return
+					const mesh = el.mesh as THREE.Mesh
+					mesh.name = el.uuid
+					mesh.geometry = result.boundingBox
+					mesh.material = Canvas.transparentMaterial
+					mesh.clear()
+					mesh.add(result.mesh)
+					mesh.add(result.outline)
+					mesh.outline = result.outline
+					mesh.outline.visible = el.selected
+
+					el.preview_controller.updateHighlight(el)
+					el.preview_controller.updateTransform(el)
+					mesh.visible = el.visibility
+				})
+				.catch(err => {
+					if (typeof err.message === 'string') {
+						el.error.set(err.message as string)
+					}
+				})
+		},
+		updateTransform(el: VanillaItemDisplay) {
+			ResizableOutlinerElement.prototype.preview_controller.updateTransform(el)
+		},
+		updateHighlight(el: VanillaItemDisplay, force?: boolean | VanillaItemDisplay) {
+			if (!activeProjectIsBlueprintFormat() || !el?.mesh) return
+			const highlighted =
+				Modes.edit && (force === true || force === el || el.selected) ? 1 : 0
+
+			const itemModel = el.mesh.children.at(0) as THREE.Mesh
+			if (!itemModel) return
+			for (const child of itemModel.children) {
+				if (!(child instanceof THREE.Mesh)) continue
+				const highlight = child.geometry.attributes.highlight
+
+				if (highlight.array[0] != highlighted) {
+					highlight.array.set(Array(highlight.count).fill(highlighted))
+					highlight.needsUpdate = true
 				}
-			})
-	},
-	updateTransform(el: VanillaItemDisplay) {
-		ResizableOutlinerElement.prototype.preview_controller.updateTransform(el)
-	},
-	updateHighlight(el: VanillaItemDisplay, force?: boolean | VanillaItemDisplay) {
-		if (!activeProjectIsBlueprintFormat() || !el?.mesh) return
-		const highlighted = Modes.edit && (force === true || force === el || el.selected) ? 1 : 0
-
-		const itemModel = el.mesh.children.at(0) as THREE.Mesh
-		if (!itemModel) return
-		for (const child of itemModel.children) {
-			if (!(child instanceof THREE.Mesh)) continue
-			const highlight = child.geometry.attributes.highlight
-
-			if (highlight.array[0] != highlighted) {
-				highlight.array.set(Array(highlight.count).fill(highlighted))
-				highlight.needsUpdate = true
 			}
-		}
-	},
-})
+		},
+	}
+)
 
 class VanillaItemDisplayAnimator extends BoneAnimator {
 	uuid: string
@@ -277,11 +283,13 @@ class VanillaItemDisplayAnimator extends BoneAnimator {
 		GeneralAnimator.prototype.select.call(this)
 
 		if (
+			// @ts-expect-error - Broken BB types
 			this[Toolbox.selected.animation_channel] &&
 			((Timeline.selected && Timeline.selected.length === 0) ||
 				(Timeline.selected && (Timeline.selected[0].animator as any)) !== this)
 		) {
 			let nearest: _Keyframe | undefined
+			// @ts-expect-error - Broken BB types
 			this[Toolbox.selected.animation_channel].forEach((kf: _Keyframe) => {
 				if (Math.abs(kf.time - Timeline.time) < 0.002) {
 					nearest = kf
@@ -363,67 +371,75 @@ class VanillaItemDisplayAnimator extends BoneAnimator {
 VanillaItemDisplayAnimator.prototype.type = VanillaItemDisplay.type
 VanillaItemDisplay.animator = VanillaItemDisplayAnimator as any
 
-export const CREATE_ACTION = registerAction(
-	{ id: `animated-java:action/create-vanilla-item-display` },
-	{
-		name: translate('action.create_vanilla_item_display.title'),
-		icon: 'icecream',
-		category: 'animated_java',
-		condition() {
-			return activeProjectIsBlueprintFormat() && Mode.selected.id === Modes.options.edit.id
-		},
-		click() {
-			Undo.initEdit({ outliner: true, elements: [], selection: true })
+export const CREATE_ACTION = registerDeletableHandlerPatch({
+	id: `animated_java:action/create-item-display`,
+	create() {
+		const action = new Blockbench.Action(`animated_java:action/create-item-display`, {
+			name: translate('action.create_item_display.title'),
+			icon: 'icecream',
+			category: 'animated_java',
+			condition() {
+				return (
+					activeProjectIsBlueprintFormat() && Mode.selected.id === Modes.options.edit.id
+				)
+			},
+			click() {
+				Undo.initEdit({ outliner: true, elements: [], selection: true })
 
-			const vanillaItemDisplay = new VanillaItemDisplay({}).init()
-			const group = getCurrentGroup()
+				const vanillaItemDisplay = new VanillaItemDisplay({}).init()
+				const group = getCurrentGroup()
 
-			if (group instanceof Group) {
-				vanillaItemDisplay.addTo(group)
-				vanillaItemDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
-			}
+				if (group instanceof Group) {
+					vanillaItemDisplay.addTo(group)
+					vanillaItemDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
+				}
 
-			selected.forEachReverse(el => el.unselect())
-			Group.first_selected?.unselect()
-			vanillaItemDisplay.select()
+				selected.forEachReverse(el => el.unselect())
+				Group.first_selected?.unselect()
+				vanillaItemDisplay.select()
 
-			Undo.finishEdit('Create Vanilla Item Display', {
-				outliner: true,
-				elements: selected,
-				selection: true,
-			})
+				Undo.finishEdit('Create Item Display', {
+					outliner: true,
+					elements: selected,
+					selection: true,
+				})
 
-			return vanillaItemDisplay
-		},
-	}
-)
-
-const CLEANUP_CALLBACKS: Array<() => void> = []
-
-CREATE_ACTION.onCreated(action => {
-	Interface.Panels.outliner.menu.addAction(action, 3)
-	Toolbars.outliner.add(action, 0)
-	MenuBar.menus.edit.addAction(action, 8)
-
-	CLEANUP_CALLBACKS.push(
-		EVENTS.SELECT_PROJECT.subscribe(project => {
-			project.vanillaItemDisplays ??= []
-			VanillaItemDisplay.all.empty()
-			VanillaItemDisplay.all.push(...project.vanillaItemDisplays)
-		}),
-
-		EVENTS.UNSELECT_PROJECT.subscribe(project => {
-			project.vanillaItemDisplays = [...VanillaItemDisplay.all]
-			VanillaItemDisplay.all.empty()
+				return vanillaItemDisplay
+			},
 		})
-	)
+
+		// @ts-expect-error - Broken BB types
+		BarItems.add_element.side_menu.addAction(action, 3)
+
+		return action
+	},
 })
 
-CREATE_ACTION.onDeleted(action => {
-	Interface.Panels.outliner.menu.removeAction(action)
-	Toolbars.outliner.remove(action)
-	MenuBar.menus.edit.removeAction(action)
+registerPatch({
+	id: `animated_java:item-display-project-sync`,
 
-	CLEANUP_CALLBACKS.forEach(unsub => unsub())
-	CLEANUP_CALLBACKS.empty()
+	apply: () => {
+		const callbacks: Array<() => void> = []
+
+		callbacks.push(
+			EVENTS.SELECT_PROJECT.subscribe(project => {
+				project.vanillaItemDisplays ??= []
+				VanillaItemDisplay.all.empty()
+				VanillaItemDisplay.all.push(...project.vanillaItemDisplays)
+			}),
+
+			EVENTS.UNSELECT_PROJECT.subscribe(project => {
+				project.vanillaItemDisplays = [...VanillaItemDisplay.all]
+				VanillaItemDisplay.all.empty()
+			})
+		)
+		return { callbacks }
+	},
+
+	revert: ({ callbacks }) => {
+		// @ts-expect-error - Broken BB types
+		BarItems.add_element.side_menu.removeAction(`animated_java:action/create-item-display`)
+
+		callbacks.forEach(unsub => unsub())
+	},
 })

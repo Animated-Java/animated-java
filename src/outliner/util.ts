@@ -5,7 +5,7 @@ import { VanillaItemDisplay } from './vanillaItemDisplay'
 
 export function sanitizeOutlinerElementName(name: string, elementUUID: string): string {
 	name = sanitizeStorageKey(name)
-	let otherNodes: OutlinerElement[] = [
+	let otherNodes: OutlinerNode[] = [
 		...VanillaBlockDisplay.all,
 		...Group.all,
 		...TextDisplay.all,
@@ -13,6 +13,7 @@ export function sanitizeOutlinerElementName(name: string, elementUUID: string): 
 		...Locator.all,
 	]
 	if (OutlinerElement.types.camera) {
+		// @ts-expect-error - Broken BB types
 		otherNodes.push(...OutlinerElement.types.camera.all)
 	}
 	otherNodes = otherNodes.filter(v => v.uuid !== elementUUID)

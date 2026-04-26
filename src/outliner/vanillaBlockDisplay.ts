@@ -1,15 +1,14 @@
-import { IDisplayEntityConfigs } from 'src/systems/rigRenderer'
-import { registerAction } from 'src/util/moddingTools'
-import { DeepClonedObjectProperty, fixClassPropertyInheritance } from 'src/util/property'
+import { registerDeletableHandlerPatch, registerPatch } from 'blockbench-patch-manager'
+import { observable } from 'svelte-observable-store'
 import { PACKAGE } from '../constants'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
-import { BlockModelMesh, getBlockModel } from '../systems/minecraft/blockModelManager'
+import { type BlockModelMesh, getBlockModel } from '../systems/minecraft/blockModelManager'
 import { type BlockStateValue, getBlockState } from '../systems/minecraft/blockstateManager'
-import { MINECRAFT_REGISTRY } from '../systems/minecraft/registryManager'
+import { type IDisplayEntityConfigs } from '../systems/rigRenderer'
 import EVENTS from '../util/events'
+import { localize as translate } from '../util/lang'
 import { validateBlock } from '../util/minecraftUtil'
-import { Valuable } from '../util/stores'
-import { translate } from '../util/translation'
+import { DeepClonedObjectProperty, fixClassPropertyInheritance } from '../util/property'
 import { ResizableOutlinerElement } from './resizableOutlinerElement'
 import { sanitizeOutlinerElementName } from './util'
 
@@ -37,11 +36,11 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 	needsUniqueName = true
 
 	// Properties
-	private __block = new Valuable('minecraft:stone')
+	private __block = observable('minecraft:stone')
 	onSummonFunction = VanillaBlockDisplay.properties.onSummonFunction.default as string
 	configs!: IDisplayEntityConfigs
 
-	error = new Valuable('')
+	error = observable('')
 
 	buttons = [Outliner.buttons.export, Outliner.buttons.locked, Outliner.buttons.visibility]
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -127,8 +126,8 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 		return this
 	}
 
-	unselect() {
-		if (!this.selected) return
+	unselect(unselectParent?: boolean) {
+		if (!this.selected) return this
 		if (
 			Animator.open &&
 			Timeline.selected_animator &&
@@ -142,6 +141,7 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 		this.selected = false
 		TickUpdates.selection = true
 		this.preview_controller.updateHighlight(this)
+		return this
 	}
 
 	async updateBlock() {
@@ -192,62 +192,67 @@ const TEMP_MESH_MAP = new THREE.TextureLoader().load(
 TEMP_MESH_MAP.minFilter = THREE.NearestFilter
 TEMP_MESH_MAP.magFilter = THREE.NearestFilter
 
-export const PREVIEW_CONTROLLER = new NodePreviewController(VanillaBlockDisplay, {
-	setup(el: VanillaBlockDisplay) {
-		ResizableOutlinerElement.prototype.preview_controller.setup(el)
-		// Setup temp sprite mesh
-		const material = new THREE.SpriteMaterial({
-			map: TEMP_MESH_MAP,
-			alphaTest: 0.1,
-			sizeAttenuation: false,
-		})
-		const sprite = new THREE.Sprite(material)
-		sprite.scale.setScalar(1 / 32)
-		const mesh = el.mesh as THREE.Mesh
-		mesh.add(sprite)
-		mesh.sprite = sprite
-	},
-	updateGeometry(el: VanillaBlockDisplay) {
-		if (!el.mesh) return
-
-		void getBlockModel(el.block)
-			.then(result => {
-				if (!result?.mesh) return
-				el.applyBlockModel(result)
+export const PREVIEW_CONTROLLER: NodePreviewController = new NodePreviewController(
+	VanillaBlockDisplay,
+	{
+		setup(el: VanillaBlockDisplay) {
+			ResizableOutlinerElement.prototype.preview_controller.setup(el)
+			// Setup temp sprite mesh
+			const material = new THREE.SpriteMaterial({
+				map: TEMP_MESH_MAP,
+				alphaTest: 0.1,
+				sizeAttenuation: false,
 			})
-			.catch(err => {
-				console.error('Failed to get block model:', err)
-				if (typeof err.message === 'string') {
-					el.error.set(err.message as string)
+			const sprite = new THREE.Sprite(material)
+			sprite.scale.setScalar(1 / 32)
+			const mesh = el.mesh as THREE.Mesh
+			mesh.add(sprite)
+			// @ts-expect-error - Broken BB types
+			mesh.sprite = sprite
+		},
+		updateGeometry(el: VanillaBlockDisplay) {
+			if (!el.mesh) return
+
+			void getBlockModel(el.block)
+				.then(result => {
+					if (!result?.mesh) return
+					el.applyBlockModel(result)
+				})
+				.catch(err => {
+					console.error('Failed to get block model:', err)
+					if (typeof err.message === 'string') {
+						el.error.set(err.message as string)
+					}
+				})
+				.finally(() => {
+					if (el.mesh?.outline instanceof THREE.LineSegments) {
+						if (el.error.get()) el.mesh.outline.material = ERROR_OUTLINE_MATERIAL
+						else el.mesh.outline.material = Canvas.outlineMaterial
+					}
+				})
+		},
+		updateTransform(el: VanillaBlockDisplay) {
+			ResizableOutlinerElement.prototype.preview_controller.updateTransform(el)
+		},
+		updateHighlight(el: VanillaBlockDisplay, force?: boolean | VanillaBlockDisplay) {
+			if (!activeProjectIsBlueprintFormat() || !el?.mesh) return
+			const highlighted =
+				Modes.edit && (force === true || force === el || el.selected) ? 1 : 0
+
+			const blockModel = el.mesh.children.at(0) as THREE.Mesh
+			if (!blockModel) return
+			for (const child of blockModel.children) {
+				if (!(child instanceof THREE.Mesh)) continue
+				const highlight = child.geometry.attributes.highlight
+
+				if (highlight.array[0] != highlighted) {
+					highlight.array.set(Array(highlight.count).fill(highlighted))
+					highlight.needsUpdate = true
 				}
-			})
-			.finally(() => {
-				if (el.mesh?.outline instanceof THREE.LineSegments) {
-					if (el.error.get()) el.mesh.outline.material = ERROR_OUTLINE_MATERIAL
-					else el.mesh.outline.material = Canvas.outlineMaterial
-				}
-			})
-	},
-	updateTransform(el: VanillaBlockDisplay) {
-		ResizableOutlinerElement.prototype.preview_controller.updateTransform(el)
-	},
-	updateHighlight(el: VanillaBlockDisplay, force?: boolean | VanillaBlockDisplay) {
-		if (!activeProjectIsBlueprintFormat() || !el?.mesh) return
-		const highlighted = Modes.edit && (force === true || force === el || el.selected) ? 1 : 0
-
-		const blockModel = el.mesh.children.at(0) as THREE.Mesh
-		if (!blockModel) return
-		for (const child of blockModel.children) {
-			if (!(child instanceof THREE.Mesh)) continue
-			const highlight = child.geometry.attributes.highlight
-
-			if (highlight.array[0] != highlighted) {
-				highlight.array.set(Array(highlight.count).fill(highlighted))
-				highlight.needsUpdate = true
 			}
-		}
-	},
-})
+		},
+	}
+)
 
 class VanillaBlockDisplayAnimator extends BoneAnimator {
 	uuid: string
@@ -280,11 +285,13 @@ class VanillaBlockDisplayAnimator extends BoneAnimator {
 		GeneralAnimator.prototype.select.call(this)
 
 		if (
+			// @ts-expect-error - Broken BB types
 			this[Toolbox.selected.animation_channel] &&
 			((Timeline.selected && Timeline.selected.length === 0) ||
 				(Timeline.selected && (Timeline.selected[0].animator as any)) !== this)
 		) {
 			let nearest: _Keyframe | undefined
+			// @ts-expect-error - Broken BB types
 			this[Toolbox.selected.animation_channel].forEach((kf: _Keyframe) => {
 				if (Math.abs(kf.time - Timeline.time) < 0.002) {
 					nearest = kf
@@ -367,79 +374,88 @@ class VanillaBlockDisplayAnimator extends BoneAnimator {
 VanillaBlockDisplayAnimator.prototype.type = VanillaBlockDisplay.type
 VanillaBlockDisplay.animator = VanillaBlockDisplayAnimator as any
 
-export const CREATE_ACTION = registerAction(
-	{ id: `animated-java:create-vanilla-block-display` },
-	{
-		name: translate('action.create_vanilla_block_display.title'),
-		icon: 'deployed_code',
-		category: 'animated_java',
-		condition() {
-			return activeProjectIsBlueprintFormat() && Mode.selected.id === Modes.options.edit.id
-		},
-		click() {
-			Undo.initEdit({ outliner: true, elements: [], selection: true })
+export const CREATE_ACTION = registerDeletableHandlerPatch({
+	id: `animated_java:action/create-block-display`,
+	create() {
+		const action = new Blockbench.Action(`animated_java:action/create-block-display`, {
+			name: translate('action.create_block_display.title'),
+			icon: 'deployed_code',
+			category: 'animated_java',
+			condition() {
+				return (
+					activeProjectIsBlueprintFormat() && Mode.selected.id === Modes.options.edit.id
+				)
+			},
+			click() {
+				Undo.initEdit({ outliner: true, elements: [], selection: true })
 
-			const vanillaBlockDisplay = new VanillaBlockDisplay({}).init()
-			const group = getCurrentGroup()
+				const vanillaBlockDisplay = new VanillaBlockDisplay({}).init()
+				const group = getCurrentGroup()
 
-			if (group instanceof Group) {
-				vanillaBlockDisplay.addTo(group)
-				vanillaBlockDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
-			}
+				if (group instanceof Group) {
+					vanillaBlockDisplay.addTo(group)
+					vanillaBlockDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
+				}
 
-			selected.forEachReverse(el => el.unselect())
-			Group.first_selected?.unselect()
-			vanillaBlockDisplay.select()
+				selected.forEachReverse(el => el.unselect())
+				Group.first_selected?.unselect()
+				vanillaBlockDisplay.select()
 
-			Undo.finishEdit('Create Vanilla Block Display', {
-				outliner: true,
-				elements: selected,
-				selection: true,
-			})
+				Undo.finishEdit('Create Block Display', {
+					outliner: true,
+					elements: selected,
+					selection: true,
+				})
 
-			return vanillaBlockDisplay
-		},
-	}
-)
-
-const CLEANUP_CALLBACKS: Array<() => void> = []
-
-CREATE_ACTION.onCreated(action => {
-	Interface.Panels.outliner.menu.addAction(action, 3)
-	Toolbars.outliner.add(action, 0)
-	MenuBar.menus.edit.addAction(action, 8)
-
-	CLEANUP_CALLBACKS.push(
-		EVENTS.SELECT_PROJECT.subscribe(project => {
-			project.vanillaBlockDisplays ??= []
-			VanillaBlockDisplay.all.empty()
-			VanillaBlockDisplay.all.push(...project.vanillaBlockDisplays)
-		}),
-
-		EVENTS.UNSELECT_PROJECT.subscribe(project => {
-			project.vanillaBlockDisplays = [...VanillaBlockDisplay.all]
-			VanillaBlockDisplay.all.empty()
+				return vanillaBlockDisplay
+			},
 		})
-	)
+
+		// @ts-expect-error - Broken BB types
+		BarItems.add_element.side_menu.addAction(action, 3)
+
+		return action
+	},
 })
 
-CREATE_ACTION.onDeleted(action => {
-	Interface.Panels.outliner.menu.removeAction(action)
-	Toolbars.outliner.remove(action)
-	MenuBar.menus.edit.removeAction(action)
+registerPatch({
+	id: `animated_java:block-display-project-sync`,
 
-	CLEANUP_CALLBACKS.forEach(unsub => unsub())
+	apply: () => {
+		const callbacks: Array<() => void> = []
+
+		callbacks.push(
+			EVENTS.SELECT_PROJECT.subscribe(project => {
+				project.vanillaBlockDisplays ??= []
+				VanillaBlockDisplay.all.empty()
+				VanillaBlockDisplay.all.push(...project.vanillaBlockDisplays)
+			}),
+
+			EVENTS.UNSELECT_PROJECT.subscribe(project => {
+				project.vanillaBlockDisplays = [...VanillaBlockDisplay.all]
+				VanillaBlockDisplay.all.empty()
+			})
+		)
+		return { callbacks }
+	},
+
+	revert: ({ callbacks }) => {
+		// @ts-expect-error - Broken BB types
+		BarItems.add_element.side_menu.removeAction(`animated_java:action/create-block-display`)
+
+		callbacks.forEach(unsub => unsub())
+	},
 })
 
-export function debugBlocks() {
-	const maxX = Math.floor(Math.sqrt(MINECRAFT_REGISTRY.block.items.length))
-	for (let i = 0; i < MINECRAFT_REGISTRY.block.items.length; i++) {
-		const block = MINECRAFT_REGISTRY.block.items[i]
-		const x = (i % maxX) * 32
-		const y = Math.floor(i / maxX) * 32
-		new VanillaBlockDisplay({ name: block, block, position: [x, 8, y] }).init()
-	}
-}
+// export function debugBlocks() {
+// 	const maxX = Math.floor(Math.sqrt(MINECRAFT_REGISTRY.block.items.length))
+// 	for (let i = 0; i < MINECRAFT_REGISTRY.block.items.length; i++) {
+// 		const block = MINECRAFT_REGISTRY.block.items[i]
+// 		const x = (i % maxX) * 32
+// 		const y = Math.floor(i / maxX) * 32
+// 		new VanillaBlockDisplay({ name: block, block, position: [x, 8, y] }).init()
+// 	}
+// }
 
 export async function debugBlockState(block: string) {
 	const blockState = await getBlockState(block)

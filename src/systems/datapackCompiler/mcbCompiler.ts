@@ -1,18 +1,19 @@
-import { Compiler, Parser, SyncIo, Tokenizer } from 'mc-build'
-import { VariableMap } from 'mc-build/dist/mcl/Compiler'
-import { getDataPackFormat } from '../../util/minecraftUtil'
-import { SUPPORTED_MINECRAFT_VERSIONS } from '../global'
+import { Compiler, VariableMap } from 'mc-build/mcl/Compiler'
+import { Parser } from 'mc-build/mcl/Parser'
+import { TemplateRegisterer } from 'mc-build/mcl/TemplateRegisterer'
+import { Tokenizer } from 'mc-build/mcl/TokenizerImpl'
+import { getMisodeVersion } from '../minecraft/versionManager'
 import type { ExportedFile } from '../util'
 
 interface CompilerOptions {
 	sourceFiles: Record<string, string>
 	destPath: string
 	variables: Record<string, any>
-	version: SUPPORTED_MINECRAFT_VERSIONS
+	version: string
 	exportedFiles: Map<string, ExportedFile>
 }
 
-export function compileMcbProject({
+export async function compileMcbProject({
 	sourceFiles,
 	destPath,
 	variables,
@@ -21,6 +22,10 @@ export function compileMcbProject({
 }: CompilerOptions) {
 	console.group('Compiling', sourceFiles)
 	console.log('Variables:', variables)
+
+	TemplateRegisterer.register()
+
+	const misodeVersionData = await getMisodeVersion(version)
 
 	const compiler = new Compiler('src', {
 		libDir: null,
@@ -32,22 +37,21 @@ export function compileMcbProject({
 		ioThreadCount: null,
 		dontEmitComments: true,
 		setup: null,
-		formatVersion: getDataPackFormat(version),
+		formatVersion: misodeVersionData.data_pack_version,
 	})
 	compiler.disableRequire = true
 
-	function createSyncIO() {
-		const io = new SyncIo()
-		io.write = (localPath, content) => {
+	compiler.io = {
+		cleanup: () => undefined,
+		finished: () => true,
+		write: (localPath, content) => {
 			const writePath = PathModule.join(destPath, localPath)
 			exportedFiles.set(writePath, {
 				content,
 				includeInAJMeta: true,
 			})
-		}
-		return io
+		},
 	}
-	compiler.io = createSyncIO()
 
 	console.time('MC-Build compiled in')
 

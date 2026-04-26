@@ -1,6 +1,6 @@
-import EVENTS from '../../util/events'
-import { checkForAssetsUpdate } from './assetManager'
-import { getLatestVersion } from './versionManager'
+import ky from 'ky'
+import { join } from 'node:path'
+import { getFsModule } from '../../constants'
 
 interface IRegistryJSON {
 	activity: string[]
@@ -89,9 +89,6 @@ interface IRegistryJSON {
 	'worldgen/trunk_placer_type': string[]
 }
 
-const REGISTRIES_URL =
-	'https://raw.githubusercontent.com/misode/mcmeta/summary/registries/data.json'
-
 class MinecraftRegistryEntry {
 	items: string[] = []
 
@@ -106,80 +103,78 @@ class MinecraftRegistryEntry {
 	find(searchFunction: (item: string) => boolean): string | undefined {
 		return this.items.find(searchFunction)
 	}
+
+	static createRegistry(registry: IRegistryJSON): MinecraftRegistry {
+		const result = {} as MinecraftRegistry
+		for (const key in registry) {
+			result[key as keyof IRegistryJSON] = new MinecraftRegistryEntry(
+				registry[key as keyof IRegistryJSON]
+			)
+		}
+		return result
+	}
 }
 
 type MinecraftRegistry = Record<keyof IRegistryJSON, MinecraftRegistryEntry>
 
-export const MINECRAFT_REGISTRY = {} as MinecraftRegistry
+const REGISTRIES_URL =
+	'https://raw.githubusercontent.com/misode/mcmeta/summary/registries/data.json'
+const REGISTRY_CACHE_FOLDER = join(SystemInfo.user_data_directory, 'animated_java/registries')
 
-function updateMemoryRegistry() {
-	const registryString = localStorage.getItem('animated_java:minecraftRegistry')
-	if (!registryString) {
-		console.error('Minecraft Registry not found in local storage')
-		return
+const REGISTRY_CACHE = new Map<string, MinecraftRegistry>()
+
+async function fetchRegistry(versionId: string) {
+	const response = await ky<IRegistryJSON>(REGISTRIES_URL).json()
+	if (!response) {
+		throw new Error('Failed to fetch Minecraft registry data!')
 	}
-	const registry = JSON.parse(registryString) as IRegistryJSON
-	for (const key in registry) {
-		MINECRAFT_REGISTRY[key as keyof IRegistryJSON] = new MinecraftRegistryEntry(
-			registry[key as keyof IRegistryJSON]
-		)
-	}
+	const { mkdir, writeFile } = getFsModule().promises
+	await mkdir(REGISTRY_CACHE_FOLDER, { recursive: true })
+	await writeFile(join(REGISTRY_CACHE_FOLDER, `${versionId}.json`), JSON.stringify(response))
+	return MinecraftRegistryEntry.createRegistry(response)
 }
 
-async function updateLocalRegistry() {
-	console.log('Updating Minecraft Registry...')
-	let retries = 3
-	while (retries-- >= 0) {
-		let response
-		try {
-			response = await fetch(REGISTRIES_URL)
-		} catch (error) {
-			console.error('Failed to fetch latest Minecraft registry:', error)
+async function loadRegistryFromCache(versionId: string) {
+	const { readFile } = getFsModule().promises
+	const registryData = await readFile(join(REGISTRY_CACHE_FOLDER, `${versionId}.json`), 'utf-8')
+	const registry = JSON.parse(registryData) as IRegistryJSON
+	const typedRegistry: MinecraftRegistry = MinecraftRegistryEntry.createRegistry(registry)
+	REGISTRY_CACHE.set(versionId, typedRegistry)
+	return typedRegistry
+}
+
+export async function getRegistry(versionId: string) {
+	if (REGISTRY_CACHE.has(versionId)) {
+		return REGISTRY_CACHE.get(versionId)!
+	}
+
+	const { existsSync } = getFsModule()
+
+	if (existsSync(join(REGISTRY_CACHE_FOLDER, `${versionId}.json`))) {
+		return await loadRegistryFromCache(versionId)
+	}
+
+	try {
+		const registry = await fetchRegistry(versionId)
+		REGISTRY_CACHE.set(versionId, registry)
+		return registry
+	} catch (error) {
+		console.error('Failed to fetch Minecraft registry from network:', error)
+		if (existsSync(join(REGISTRY_CACHE_FOLDER, `${versionId}.json`))) {
+			console.log('Loading Minecraft registry from cache...')
+			return await loadRegistryFromCache(versionId)
 		}
-		if (response?.ok) {
-			const newRegistry = (await response.json()) as IRegistryJSON
-			localStorage.setItem('animated_java:minecraftRegistry', JSON.stringify(newRegistry))
-			const latestVersion = await getLatestVersion()
-			localStorage.setItem(
-				'animated_java:minecraftRegistryVersion',
-				JSON.stringify(latestVersion)
-			)
-			console.log('Minecraft Registry updated!')
-			return
-		}
+		throw new Error('Failed to load Minecraft registry from both network and cache!')
 	}
-	throw new Error('Failed to fetch latest Minecraft registry after 3 retries.')
 }
 
-export async function checkForRegistryUpdate() {
-	console.log('Checking if Minecraft Registry update...')
-	const currentValueString = localStorage.getItem('animated_java:minecraftRegistry')
-	if (!currentValueString) {
-		console.log('No Minecraft Registry found. Updating...')
-		await updateLocalRegistry()
-		return
+export async function getRegistryEntry<K extends keyof IRegistryJSON>(
+	versionId: string,
+	registryName: K
+) {
+	const registry = await getRegistry(versionId)
+	if (!registry[registryName]) {
+		throw new Error(`Minecraft registry '${registryName}' not found in memory!`)
 	}
-	const currentVersionString = localStorage.getItem('animated_java:minecraftRegistryVersion')
-	if (!currentVersionString) {
-		console.log('No Minecraft Registry version found. Updating...')
-		await updateLocalRegistry()
-		return
-	}
-	const currentVersion = JSON.parse(currentVersionString)
-	const latestVersion = await getLatestVersion()
-	if (currentVersion.id !== latestVersion.id) {
-		console.log('Minecraft Registry is outdated. Updating...')
-		await updateLocalRegistry()
-		return
-	}
-
-	console.log('Minecraft Registry is up to date!')
-	updateMemoryRegistry()
-	requestAnimationFrame(() => EVENTS.MINECRAFT_REGISTRY_LOADED.publish())
+	return registry[registryName]
 }
-
-EVENTS.NETWORK_CONNECTED.subscribe(() => {
-	void checkForRegistryUpdate().then(async () => {
-		await checkForAssetsUpdate()
-	})
-})

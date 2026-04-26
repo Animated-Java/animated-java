@@ -1,13 +1,18 @@
+import { TextComponent } from 'book-and-quill'
 import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/lib/nbt'
-import { projectTargetVersionIsAtLeast } from 'src/formats/blueprint'
-import { MAX_PROGRESS, PROGRESS, PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
+import type { AsyncZippable } from 'fflate/browser'
+import { getFsModule } from '../../constants'
+import {
+	MAX_PROGRESS,
+	PROGRESS,
+	PROGRESS_DESCRIPTION,
+} from '../../dialogs/exportProgress/exportProgress'
+import { projectTargetVersionIsAtLeast } from '../../formats/blueprint'
 import { DisplayEntityConfig } from '../../nodeConfigs'
 import { isFunctionTagPath } from '../../util/fileUtil'
 import {
 	DataPackTag,
 	type FunctionTagJSON,
-	getDataPackFormat,
-	getNextSupportedVersion,
 	parseBlock,
 	parseDataPackPath,
 	parseResourceLocation,
@@ -16,11 +21,10 @@ import { eulerFromQuaternion, roundTo } from '../../util/misc'
 import { MSLimiter } from '../../util/msLimiter'
 import { Variant } from '../../variants'
 import type { IRenderedAnimation } from '../animationRenderer'
-import mcbFiles from '../datapackCompiler/mcbFiles'
+import { getMCBFilesByVersion } from '../datapackCompiler/mcbFiles'
 import { IntentionalExportError } from '../errors'
-import { AJMeta, PackMeta, SUPPORTED_MINECRAFT_VERSIONS } from '../global'
-import { JsonText } from '../jsonText'
-import { JsonTextParser } from '../jsonText/parser'
+import { AJMeta, PackMeta } from '../global'
+import { getMisodeVersion } from '../minecraft/versionManager'
 import type { AnyRenderedNode, IRenderedRig } from '../rigRenderer'
 import {
 	arrayToNbtFloatArray,
@@ -28,409 +32,19 @@ import {
 	matrixToNbtFloatArray,
 	replacePathPart,
 	transformationToNbt,
+	zip,
 } from '../util'
+import ENTITY_NAMES from './entityNames'
 import { compileMcbProject } from './mcbCompiler'
-import { TAGS } from './tags'
+import OBJECTIVES from './objectives'
+import TAGS, { getNodeTags } from './tags'
 import TELLRAW from './tellraw'
 
 const BONE_TYPES = ['bone', 'text_display', 'item_display', 'block_display']
 
-namespace OBJECTIVES {
-	export const I = () => 'aj.i'
-	export const ID = () => 'aj.id'
-	export const FRAME = (animationName: string) => `aj.${animationName}.frame`
-	export const IS_RIG_LOADED = () => 'aj.is_rig_loaded'
-	export const TWEEN_DURATION = () => 'aj.tween_duration'
-}
-
-function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
-	const tags: string[] = []
-
-	const parentNames: Array<{ name: string; type: string }> = []
-
-	function recurseParents(n: AnyRenderedNode) {
-		if (n.parent === 'root') {
-			// Root is ignored
-		} else if (n.parent) {
-			parentNames.push({
-				name: rig.nodes[n.parent].storage_name,
-				type: rig.nodes[n.parent].type,
-			})
-			recurseParents(rig.nodes[n.parent])
-		}
-	}
-	recurseParents(node)
-
-	const hasParent = node.parent && node.parent !== 'root'
-
-	tags.push(
-		// Global
-		TAGS.NEW(),
-		TAGS.GLOBAL_ENTITY(),
-		TAGS.GLOBAL_NODE(),
-		TAGS.GLOBAL_NODE_NAMED(node.storage_name),
-		// Project
-		TAGS.PROJECT_ENTITY(Project!.animated_java.export_namespace),
-		TAGS.PROJECT_NODE(Project!.animated_java.export_namespace),
-		TAGS.PROJECT_NODE_NAMED(Project!.animated_java.export_namespace, node.storage_name)
-	)
-
-	if (!hasParent) {
-		tags.push(TAGS.GLOBAL_ROOT_CHILD())
-	}
-	switch (node.type) {
-		case 'bone': {
-			tags.push(
-				// Global
-				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.storage_name),
-				TAGS.GLOBAL_BONE(),
-				TAGS.GLOBAL_BONE_TREE(node.storage_name), // Tree includes self
-				TAGS.GLOBAL_BONE_TREE_BONE(node.storage_name), // Tree includes self
-				// Project
-				TAGS.PROJECT_DISPLAY_NODE_NAMED(
-					Project!.animated_java.export_namespace,
-					node.storage_name
-				),
-				TAGS.PROJECT_BONE(Project!.animated_java.export_namespace),
-				TAGS.PROJECT_BONE_NAMED(Project!.animated_java.export_namespace, node.storage_name),
-				TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_namespace, node.storage_name), // Tree includes self
-				TAGS.PROJECT_BONE_TREE_BONE(
-					Project!.animated_java.export_namespace,
-					node.storage_name
-				) // Tree includes self
-			)
-			if (!hasParent) {
-				// Nodes without parents are assumed to be root nodes
-				tags.push(TAGS.GLOBAL_ROOT_CHILD_BONE())
-			} else {
-				tags.push(
-					// Global
-					TAGS.GLOBAL_BONE_CHILD(parentNames[0].name),
-					TAGS.GLOBAL_BONE_CHILD_BONE(parentNames[0].name),
-					// Project
-					TAGS.PROJECT_BONE_CHILD(
-						Project!.animated_java.export_namespace,
-						parentNames[0].name
-					),
-					TAGS.PROJECT_BONE_CHILD_BONE(
-						Project!.animated_java.export_namespace,
-						parentNames[0].name
-					)
-				)
-			}
-			for (const { name } of parentNames) {
-				tags.push(
-					// Global
-					TAGS.GLOBAL_BONE_DECENDANT(name),
-					TAGS.GLOBAL_BONE_DECENDANT_BONE(name),
-					TAGS.GLOBAL_BONE_TREE(name),
-					TAGS.GLOBAL_BONE_TREE_BONE(name),
-					// Project
-					TAGS.PROJECT_BONE_DECENDANT(Project!.animated_java.export_namespace, name),
-					TAGS.PROJECT_BONE_DECENDANT_BONE(Project!.animated_java.export_namespace, name),
-					TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_namespace, name),
-					TAGS.PROJECT_BONE_TREE_BONE(Project!.animated_java.export_namespace, name)
-				)
-			}
-			break
-		}
-		case 'item_display': {
-			tags.push(
-				// Global
-				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.storage_name),
-				TAGS.GLOBAL_ITEM_DISPLAY(),
-				// Project
-				TAGS.PROJECT_DISPLAY_NODE_NAMED(
-					Project!.animated_java.export_namespace,
-					node.storage_name
-				),
-				TAGS.PROJECT_ITEM_DISPLAY(Project!.animated_java.export_namespace),
-				TAGS.PROJECT_ITEM_DISPLAY_NAMED(
-					Project!.animated_java.export_namespace,
-					node.storage_name
-				)
-			)
-			if (!hasParent) {
-				// Nodes without parents are assumed to be root nodes
-				tags.push(TAGS.GLOBAL_ROOT_CHILD_ITEM_DISPLAY())
-			} else {
-				tags.push(
-					// Global
-					TAGS.GLOBAL_BONE_CHILD(parentNames[0].name),
-					TAGS.GLOBAL_BONE_CHILD_ITEM_DISPLAY(parentNames[0].name),
-					// Project
-					TAGS.PROJECT_BONE_CHILD(
-						Project!.animated_java.export_namespace,
-						parentNames[0].name
-					),
-					TAGS.PROJECT_BONE_CHILD_ITEM_DISPLAY(
-						Project!.animated_java.export_namespace,
-						parentNames[0].name
-					)
-				)
-			}
-			for (const { name } of parentNames) {
-				tags.push(
-					// Global
-					TAGS.GLOBAL_BONE_DECENDANT(name),
-					TAGS.GLOBAL_BONE_DECENDANT_ITEM_DISPLAY(name),
-					TAGS.GLOBAL_BONE_TREE(name),
-					// Project
-					TAGS.PROJECT_BONE_DECENDANT(Project!.animated_java.export_namespace, name),
-					TAGS.PROJECT_BONE_DECENDANT_ITEM_DISPLAY(
-						Project!.animated_java.export_namespace,
-						name
-					),
-					TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_namespace, name)
-				)
-			}
-			break
-		}
-		case 'block_display': {
-			tags.push(
-				// Global
-				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.storage_name),
-				TAGS.GLOBAL_BLOCK_DISPLAY(),
-				// Project
-				TAGS.PROJECT_DISPLAY_NODE_NAMED(
-					Project!.animated_java.export_namespace,
-					node.storage_name
-				),
-				TAGS.PROJECT_BLOCK_DISPLAY(Project!.animated_java.export_namespace),
-				TAGS.PROJECT_BLOCK_DISPLAY_NAMED(
-					Project!.animated_java.export_namespace,
-					node.storage_name
-				)
-			)
-			if (!hasParent) {
-				// Nodes without parents are assumed to be root nodes
-				tags.push(TAGS.GLOBAL_ROOT_CHILD_BLOCK_DISPLAY())
-			} else {
-				tags.push(
-					// Global
-					TAGS.GLOBAL_BONE_CHILD(parentNames[0].name),
-					TAGS.GLOBAL_BONE_CHILD_BLOCK_DISPLAY(parentNames[0].name),
-					// Project
-					TAGS.PROJECT_BONE_CHILD(
-						Project!.animated_java.export_namespace,
-						parentNames[0].name
-					),
-					TAGS.PROJECT_BONE_CHILD_BLOCK_DISPLAY(
-						Project!.animated_java.export_namespace,
-						parentNames[0].name
-					)
-				)
-			}
-			for (const { name } of parentNames) {
-				tags.push(
-					// Global
-					TAGS.GLOBAL_BONE_DECENDANT(name),
-					TAGS.GLOBAL_BONE_DECENDANT_BLOCK_DISPLAY(name),
-					TAGS.GLOBAL_BONE_TREE(name),
-					// Project
-					TAGS.PROJECT_BONE_DECENDANT(Project!.animated_java.export_namespace, name),
-					TAGS.PROJECT_BONE_DECENDANT_BLOCK_DISPLAY(
-						Project!.animated_java.export_namespace,
-						name
-					),
-					TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_namespace, name)
-				)
-			}
-			break
-		}
-		case 'text_display': {
-			tags.push(
-				// Global
-				TAGS.GLOBAL_DISPLAY_NODE_NAMED(node.storage_name),
-				TAGS.GLOBAL_TEXT_DISPLAY(),
-				// Project
-				TAGS.PROJECT_DISPLAY_NODE_NAMED(
-					Project!.animated_java.export_namespace,
-					node.storage_name
-				),
-				TAGS.PROJECT_TEXT_DISPLAY(Project!.animated_java.export_namespace),
-				TAGS.PROJECT_TEXT_DISPLAY_NAMED(
-					Project!.animated_java.export_namespace,
-					node.storage_name
-				)
-			)
-			if (!hasParent) {
-				// Nodes without parents are assumed to be root nodes
-				tags.push(TAGS.GLOBAL_ROOT_CHILD_TEXT_DISPLAY())
-			} else {
-				tags.push(
-					// Global
-					TAGS.GLOBAL_BONE_CHILD(parentNames[0].name),
-					TAGS.GLOBAL_BONE_CHILD_TEXT_DISPLAY(parentNames[0].name),
-					// Project
-					TAGS.PROJECT_BONE_CHILD(
-						Project!.animated_java.export_namespace,
-						parentNames[0].name
-					),
-					TAGS.PROJECT_BONE_CHILD_TEXT_DISPLAY(
-						Project!.animated_java.export_namespace,
-						parentNames[0].name
-					)
-				)
-			}
-			for (const { name } of parentNames) {
-				tags.push(
-					// Global
-					TAGS.GLOBAL_BONE_DECENDANT(name),
-					TAGS.GLOBAL_BONE_DECENDANT_TEXT_DISPLAY(name),
-					TAGS.GLOBAL_BONE_TREE(name),
-					// Project
-					TAGS.PROJECT_BONE_DECENDANT(Project!.animated_java.export_namespace, name),
-					TAGS.PROJECT_BONE_DECENDANT_TEXT_DISPLAY(
-						Project!.animated_java.export_namespace,
-						name
-					),
-					TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_namespace, name)
-				)
-			}
-			break
-		}
-		case 'locator': {
-			tags.push(
-				// Global
-				TAGS.GLOBAL_LOCATOR(),
-				// Project
-				TAGS.PROJECT_LOCATOR(Project!.animated_java.export_namespace),
-				TAGS.PROJECT_LOCATOR_NAMED(
-					Project!.animated_java.export_namespace,
-					node.storage_name
-				)
-			)
-			if (!hasParent) {
-				// Nodes without parents are assumed to be root nodes
-				tags.push(TAGS.GLOBAL_ROOT_CHILD_LOCATOR())
-			} else {
-				tags.push(
-					// Global
-					TAGS.GLOBAL_BONE_CHILD(parentNames[0].name),
-					TAGS.GLOBAL_BONE_CHILD_LOCATOR(parentNames[0].name),
-					// Project
-					TAGS.PROJECT_BONE_CHILD(
-						Project!.animated_java.export_namespace,
-						parentNames[0].name
-					),
-					TAGS.PROJECT_BONE_CHILD_LOCATOR(
-						Project!.animated_java.export_namespace,
-						parentNames[0].name
-					)
-				)
-			}
-			for (const { name } of parentNames) {
-				tags.push(
-					// Global
-					TAGS.GLOBAL_BONE_DECENDANT(name),
-					TAGS.GLOBAL_BONE_DECENDANT_LOCATOR(name),
-					TAGS.GLOBAL_BONE_TREE(name),
-					// Project
-					TAGS.PROJECT_BONE_DECENDANT(Project!.animated_java.export_namespace, name),
-					TAGS.PROJECT_BONE_DECENDANT_LOCATOR(
-						Project!.animated_java.export_namespace,
-						name
-					),
-					TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_namespace, name)
-				)
-			}
-			break
-		}
-		case 'camera': {
-			tags.push(
-				// Global
-				TAGS.GLOBAL_CAMERA(),
-				// Project
-				TAGS.PROJECT_CAMERA(Project!.animated_java.export_namespace),
-				TAGS.PROJECT_CAMERA_NAMED(
-					Project!.animated_java.export_namespace,
-					node.storage_name
-				)
-			)
-			if (!hasParent) {
-				// Nodes without parents are assumed to be root nodes
-				tags.push(TAGS.GLOBAL_ROOT_CHILD_CAMERA())
-			} else {
-				tags.push(
-					// Global
-					TAGS.GLOBAL_BONE_CHILD(parentNames[0].name),
-					TAGS.GLOBAL_BONE_CHILD_CAMERA(parentNames[0].name),
-					// Project
-					TAGS.PROJECT_BONE_CHILD(
-						Project!.animated_java.export_namespace,
-						parentNames[0].name
-					),
-					TAGS.PROJECT_BONE_CHILD_CAMERA(
-						Project!.animated_java.export_namespace,
-						parentNames[0].name
-					)
-				)
-			}
-			for (const { name } of parentNames) {
-				tags.push(
-					// Global
-					TAGS.GLOBAL_BONE_DECENDANT(name),
-					TAGS.GLOBAL_BONE_DECENDANT_CAMERA(name),
-					TAGS.GLOBAL_BONE_TREE(name),
-					// Project
-					TAGS.PROJECT_BONE_DECENDANT(Project!.animated_java.export_namespace, name),
-					TAGS.PROJECT_BONE_DECENDANT_CAMERA(
-						Project!.animated_java.export_namespace,
-						name
-					),
-					TAGS.PROJECT_BONE_TREE(Project!.animated_java.export_namespace, name)
-				)
-			}
-			break
-		}
-		default: {
-			throw new IntentionalExportError(
-				`Attempted to get tags for an unknown node type: '${node.type}'!`
-			)
-		}
-	}
-
-	return new NbtList(tags.sort().map(v => new NbtString(v)))
-}
-
-async function generateRootEntityPassengers(
-	version: SUPPORTED_MINECRAFT_VERSIONS,
-	rig: IRenderedRig,
-	rigHash: string
-) {
+async function generateRootEntityPassengers(version: string, rig: IRenderedRig) {
 	const aj = Project!.animated_java
 	const passengers: NbtList = new NbtList()
-
-	const dataEntity = new NbtCompound()
-
-	if (!compareVersions('1.21.5', version) /* >= 1.21.5 */) {
-		dataEntity.set('id', new NbtString('minecraft:item_display'))
-	} else if (!compareVersions('1.20.4', version) /* >= 1.20.4 */) {
-		dataEntity.set('id', new NbtString('minecraft:marker'))
-	} else {
-		throw new Error(`Minecraft version is below minimum supported version 1.20.4!`)
-	}
-
-	passengers.add(
-		dataEntity
-			.set(
-				'Tags',
-				new NbtList([
-					new NbtString(TAGS.NEW()),
-					new NbtString(TAGS.GLOBAL_ENTITY()),
-					new NbtString(TAGS.GLOBAL_DATA()),
-					new NbtString(TAGS.PROJECT_ENTITY(aj.export_namespace)),
-					new NbtString(TAGS.PROJECT_DATA(aj.export_namespace)),
-				])
-			)
-			.set(
-				'data',
-				new NbtCompound()
-					.set('rig_hash', new NbtString(rigHash))
-					.set('export_namespace', new NbtString(aj.export_namespace))
-			)
-	)
 
 	for (const [uuid, node] of Object.entries(rig.nodes)) {
 		if (node.type === 'struct') continue
@@ -519,7 +133,7 @@ async function generateRootEntityPassengers(
 			case 'text_display': {
 				passenger
 					.set('id', new NbtString('minecraft:text_display'))
-					.set('background', new NbtInt(JsonText.hexToInt(node.background_color)))
+					.set('background', new NbtInt(TextComponent.hexToInt(node.background_color)))
 					.set('line_width', new NbtInt(node.line_width))
 					.set('shadow', new NbtByte(node.shadow ? 1 : 0))
 					.set('see_through', new NbtByte(node.see_through ? 1 : 0))
@@ -539,9 +153,9 @@ async function generateRootEntityPassengers(
 						'text',
 						// String JSON text format
 						new NbtString(
-							new JsonTextParser({ minecraftVersion: version })
-								.parse(node.text)
-								.toString(true, version)
+							TextComponent.fromString(node.text, {
+								minecraftVersion: version,
+							}).toString(true, version)
 						)
 					)
 				} else {
@@ -612,9 +226,10 @@ async function generateRootEntityPassengers(
 		for (const display of Object.values(rig.nodes).filter(n => n.type === 'text_display')) {
 			result = result.replace(
 				'"$$$' + display.type + '_' + display.storage_name + '_text_placeholder$$$"',
-				new JsonTextParser({ minecraftVersion: version })
-					.parse(display.text)
-					.toString(true, version)
+				TextComponent.fromString(display.text, { minecraftVersion: version }).toString(
+					true,
+					version
+				)
 			)
 		}
 	}
@@ -636,7 +251,7 @@ async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAn
 		let frames = new NbtCompound()
 		const addFrameDataCommand = () => {
 			const str = `data modify storage animated_java:${
-				Project!.animated_java.export_namespace
+				Project!.animated_java.blueprint_id
 			}/animations ${animation.storage_name} merge value ${frames.toString()}`
 			dataCommands.push(str)
 			frames = new NbtCompound()
@@ -709,7 +324,7 @@ function nodeSorter(a: AnyRenderedNode, b: AnyRenderedNode): number {
 
 interface DataPackCompilerOptions {
 	ajmeta: AJMeta
-	version: SUPPORTED_MINECRAFT_VERSIONS
+	version: string
 	coreFiles: Map<string, ExportedFile>
 	versionedFiles: Map<string, ExportedFile>
 	rig: IRenderedRig
@@ -730,18 +345,15 @@ interface CompileDataPackOptions {
 	debugMode: boolean
 }
 
-export default async function compileDataPack(
-	targetVersions: SUPPORTED_MINECRAFT_VERSIONS[],
-	options: CompileDataPackOptions
-) {
+export default async function compileDataPack(version: string, options: CompileDataPackOptions) {
 	console.time('Data Pack Compilation took')
 
 	const aj = Project!.animated_java
 
 	const ajmeta = new AJMeta(
 		PathModule.join(options.dataPackFolder, 'data.ajmeta'),
-		aj.export_namespace,
-		Project!.last_used_export_namespace,
+		aj.blueprint_id,
+		Project!.last_used_blueprint_id,
 		options.dataPackFolder
 	)
 
@@ -753,43 +365,33 @@ export default async function compileDataPack(
 	const globalVersionSpecificFiles = new Map<string, ExportedFile>()
 	const coreDataPackFolder = options.dataPackFolder
 
-	for (const version of targetVersions) {
-		console.groupCollapsed(`Compiling data pack for Minecraft ${version}`)
-		const coreFiles = new Map<string, ExportedFile>()
-		const versionedFiles = new Map<string, ExportedFile>()
+	console.groupCollapsed(`Compiling data pack for Minecraft ${version}`)
+	const coreFiles = new Map<string, ExportedFile>()
+	const versionedFiles = new Map<string, ExportedFile>()
 
-		const versionedDataPackFolder =
-			targetVersions.length > 1
-				? PathModule.join(
-						options.dataPackFolder,
-						`animated_java_${version.replaceAll('.', '_')}`
-				  )
-				: coreDataPackFolder
+	await dataPackCompiler({
+		...options,
+		ajmeta,
+		version,
+		coreFiles,
+		versionedFiles,
+	})
 
-		await dataPackCompiler({
-			...options,
-			ajmeta,
-			version,
-			coreFiles,
-			versionedFiles,
-		})
-
-		for (const [path, file] of coreFiles) {
-			const relative = PathModule.join(coreDataPackFolder, path)
-			globalCoreFiles.set(relative, file)
-			if (file.includeInAJMeta === false) continue
-			ajmeta.coreFiles.add(relative)
-		}
-
-		for (const [path, file] of versionedFiles) {
-			const relative = PathModule.join(versionedDataPackFolder, path)
-			globalVersionSpecificFiles.set(relative, file)
-			if (file.includeInAJMeta === false) continue
-			ajmeta.versionedFiles.add(relative)
-		}
-
-		console.groupEnd()
+	for (const [path, file] of coreFiles) {
+		const relative = PathModule.join(coreDataPackFolder, path)
+		globalCoreFiles.set(relative, file)
+		if (file.includeInAJMeta === false) continue
+		ajmeta.coreFiles.add(relative)
 	}
+
+	for (const [path, file] of versionedFiles) {
+		const relative = PathModule.join(coreDataPackFolder, path)
+		globalVersionSpecificFiles.set(relative, file)
+		if (file.includeInAJMeta === false) continue
+		ajmeta.versionedFiles.add(relative)
+	}
+
+	console.groupEnd()
 
 	console.log('Exported Files:', globalCoreFiles.size + globalVersionSpecificFiles.size)
 
@@ -797,44 +399,21 @@ export default async function compileDataPack(
 	const packMeta = PackMeta.fromFile(packMetaPath)
 	packMeta.content.pack ??= {}
 
-	const nextVersion = getNextSupportedVersion(targetVersions[0])
-	const format = getDataPackFormat(targetVersions[0])
-	const nextFormat = nextVersion ? getDataPackFormat(nextVersion) : 10000000
-	if (!compareVersions('1.21.9', targetVersions[0]) /* >= 1.21.9 */) {
+	const misodeVersionData = await getMisodeVersion(version)
+	const format = misodeVersionData.data_pack_version
+
+	if (VersionUtil.compare(version, '>=', '1.21.9')) {
 		packMeta.content.pack.min_format = format
-		packMeta.content.pack.max_format = nextFormat - 1
+		packMeta.content.pack.max_format = format
 	} else {
 		packMeta.content.pack.pack_format = format
 		packMeta.content.pack.supported_formats = {
 			min_inclusive: format,
-			max_inclusive: nextFormat - 1,
+			max_inclusive: format,
 		}
 	}
 
-	packMeta.content.pack.description ??= `Animated Java Data Pack for ${targetVersions.join(', ')}`
-
-	// if (targetVersions.length > 1) {
-	// 	packMeta.content.pack.supported_formats = []
-	// 	packMeta.content.overlays ??= {}
-	// 	packMeta.content.overlays.entries ??= []
-
-	// 	for (const version of targetVersions) {
-	// 		const format: PackMetaFormats = getDataPackFormat(version)
-	// 		packMeta.content.pack.supported_formats.push(format)
-
-	// 		const existingOverlay = packMeta.content.overlays.entries.find(
-	// 			e => e.directory === `animated_java_${version.replaceAll('.', '_')}`
-	// 		)
-	// 		if (!existingOverlay) {
-	// 			packMeta.content.overlays.entries.push({
-	// 				directory: `animated_java_${version.replaceAll('.', '_')}`,
-	// 				formats: format,
-	// 			})
-	// 		} else {
-	// 			existingOverlay.formats = format
-	// 		}
-	// 	}
-	// }
+	packMeta.content.pack.description ??= `Animated Java Data Pack for ${version}`
 
 	globalCoreFiles.set(PathModule.join(options.dataPackFolder, 'pack.mcmeta'), {
 		content: autoStringify(packMeta.toJSON()),
@@ -857,6 +436,32 @@ export default async function compileDataPack(
 		console.time('Writing DataPack Files took')
 		await writeFiles(exportedFiles, options.dataPackFolder)
 		console.timeEnd('Writing DataPack Files took')
+	} else if (aj.data_pack_export_mode === 'zip') {
+		const data: AsyncZippable = {}
+
+		for (const [path, file] of coreFiles.entries()) {
+			const content = Uint8Array.from(
+				typeof file.content === 'string' ? Buffer.from(file.content) : file.content
+			)
+			data[path] = content
+		}
+
+		for (const [path, file] of versionedFiles.entries()) {
+			const content = Uint8Array.from(
+				typeof file.content === 'string' ? Buffer.from(file.content) : file.content
+			)
+			data[path] = content
+		}
+
+		data['pack.mcmeta'] = Uint8Array.from(
+			Buffer.from(autoStringify(packMeta.toJSON()), 'utf-8')
+		)
+
+		const { rm, writeFile } = getFsModule().promises
+
+		await rm(options.dataPackFolder, { recursive: true, force: true })
+		const zipped = await zip(data, {})
+		await writeFile(options.dataPackFolder, zipped)
 	}
 
 	console.timeEnd('Data Pack Compilation took')
@@ -865,35 +470,34 @@ export default async function compileDataPack(
 async function removeFiles(ajmeta: AJMeta) {
 	console.time('Removing Files took')
 	const aj = Project!.animated_java
+	const { existsSync, promises } = getFsModule()
+	const { rm, writeFile, mkdir, copyFile, unlink, readFile } = promises
+
 	if (aj.data_pack_export_mode === 'folder') {
 		PROGRESS_DESCRIPTION.set('Removing Old Data Pack Files...')
 		PROGRESS.set(0)
 		MAX_PROGRESS.set(ajmeta.previousVersionedFiles.size)
 		const removedFolders = new Set<string>()
 		for (const file of ajmeta.previousVersionedFiles) {
-			if (isFunctionTagPath(file) && fs.existsSync(file)) {
-				if (aj.export_namespace !== Project!.last_used_export_namespace) {
+			if (isFunctionTagPath(file) && existsSync(file)) {
+				if (aj.blueprint_id !== Project!.last_used_blueprint_id) {
 					const resourceLocation = parseDataPackPath(file)!.resourceLocation
-					if (
-						resourceLocation.startsWith(
-							`animated_java:${Project!.last_used_export_namespace}/`
-						)
-					) {
+					if (resourceLocation.startsWith(`${Project!.last_used_blueprint_id}/`)) {
 						const newPath = replacePathPart(
 							file,
-							Project!.last_used_export_namespace,
-							aj.export_namespace
+							Project!.last_used_blueprint_id,
+							aj.blueprint_id
 						)
-						await fs.promises.mkdir(PathModule.dirname(newPath), { recursive: true })
-						await fs.promises.copyFile(file, newPath)
-						await fs.promises.unlink(file)
+						await mkdir(PathModule.dirname(newPath), { recursive: true })
+						await copyFile(file, newPath)
+						await unlink(file)
 					}
 				}
 				// Remove mentions of the export namespace from the file
 				let content: FunctionTagJSON
 				// Remove mentions of the export namespace from the file
 				try {
-					content = JSON.parse((await fs.promises.readFile(file)).toString())
+					content = JSON.parse((await readFile(file)).toString())
 				} catch (e) {
 					if (e instanceof SyntaxError) {
 						throw new IntentionalExportError(
@@ -905,21 +509,21 @@ async function removeFiles(ajmeta: AJMeta) {
 				content.values = content.values.filter(
 					v =>
 						typeof v === 'string' &&
-						(!v.startsWith(`animated_java:${aj.export_namespace}/`) ||
-							!v.startsWith(`animated_java:${Project!.last_used_export_namespace}/`))
+						(!v.startsWith(`${aj.blueprint_id}/`) ||
+							!v.startsWith(`${Project!.last_used_blueprint_id}/`))
 				)
-				await fs.promises.writeFile(file, autoStringify(content))
+				await writeFile(file, autoStringify(content))
 			} else {
 				// Delete the file
-				if (fs.existsSync(file)) await fs.promises.unlink(file)
+				if (existsSync(file)) await unlink(file)
 			}
 			let folder = PathModule.dirname(file)
 			while (
 				!removedFolders.has(folder) &&
-				fs.existsSync(folder) &&
-				(await fs.promises.readdir(folder)).length === 0
+				existsSync(folder) &&
+				(await promises.readdir(folder)).length === 0
 			) {
-				await fs.promises.rm(folder, { recursive: true })
+				await rm(folder, { recursive: true })
 				removedFolders.add(folder)
 				folder = PathModule.dirname(folder)
 			}
@@ -940,22 +544,31 @@ const dataPackCompiler: DataPackCompiler = async ({
 	animationHash,
 	debugMode,
 }) => {
-	JsonText.defaultMinecraftVersion = version
+	TextComponent.defaultMinecraftVersion = version
 
 	const aj = Project!.animated_java
 	const isStatic = animations.length === 0
+
+	const parsed = parseResourceLocation(aj.blueprint_id)
+	const relativePathToSrc = parsed.path
+		.split('/')
+		.map(() => '..')
+		.join('/')
+
 	const variables = {
-		export_namespace: aj.export_namespace,
+		relativePathToSrc,
+		blueprint_id: aj.blueprint_id,
 		interpolation_duration: aj.interpolation_duration,
 		teleportation_duration: aj.teleportation_duration,
 		display_item: aj.display_item,
 		rig,
 		animations,
 		export_version: Math.random().toString().substring(2, 10),
-		root_entity_passengers: await generateRootEntityPassengers(version, rig, rigHash),
+		root_entity_passengers: await generateRootEntityPassengers(version, rig),
 		TAGS,
 		OBJECTIVES,
 		TELLRAW,
+		ENTITY_NAMES,
 		on_summon_function: aj.on_summon_function,
 		on_remove_function: aj.on_remove_function,
 		on_pre_tick_function: aj.on_pre_tick_function,
@@ -984,20 +597,23 @@ const dataPackCompiler: DataPackCompiler = async ({
 		is_static: isStatic,
 		getNodeTags,
 		BONE_TYPES,
-		project_storage: `animated_java:${aj.export_namespace}`,
+		project_storage: `${aj.blueprint_id}`,
 		temp_storage: `animated_java:temp`,
 		gu_storage: `animated_java:gu`,
+		data_storage: `animated_java:data`,
 		auto_update_rig_orientation: aj.auto_update_rig_orientation,
 		debug_mode: debugMode,
 	}
 
-	compileMcbProject({
+	const mcbFiles = getMCBFilesByVersion(version)
+
+	await compileMcbProject({
 		sourceFiles: {
-			'src/global.mcbt': mcbFiles[version].globalTemplates,
-			'src/animated_java.mcb': mcbFiles[version].global,
-			[`src/animated_java/${aj.export_namespace}.mcb`]: isStatic
-				? mcbFiles[version].static
-				: mcbFiles[version].animation,
+			'src/global.mcbt': mcbFiles.globalTemplates,
+			'src/animated_java.mcb': mcbFiles.global,
+			[`src/${parsed.fullPath}.mcb`]:
+				`import ${relativePathToSrc}/global.mcbt\n` +
+				(isStatic ? mcbFiles.static : mcbFiles.animation),
 		},
 		destPath: '.',
 		variables,
@@ -1011,26 +627,29 @@ async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFold
 	PROGRESS.set(0)
 	MAX_PROGRESS.set(exportedFiles.size)
 	const aj = Project!.animated_java
-	const lastNamespace = Project!.last_used_export_namespace
+	const lastNamespace = Project!.last_used_blueprint_id
 	const createdFolderCache = new Set<string>()
 
 	const functionTagQueue = new Map<string, ExportedFile>()
 
-	async function writeFile(path: string, file: ExportedFile) {
-		if (isFunctionTagPath(path) && fs.existsSync(path)) {
+	const { existsSync, readdirSync, promises } = getFsModule()
+	const { mkdir, readFile, writeFile } = promises
+
+	async function customWriteFile(path: string, file: ExportedFile) {
+		if (isFunctionTagPath(path) && existsSync(path)) {
 			functionTagQueue.set(path, file)
 			return
 		}
 
 		const folder = PathModule.dirname(path)
 		if (!createdFolderCache.has(folder)) {
-			await fs.promises.mkdir(folder, { recursive: true })
+			await mkdir(folder, { recursive: true })
 			createdFolderCache.add(folder)
 		}
 		if (file.writeHandler) {
 			await file.writeHandler(path, file.content)
 		} else {
-			await fs.promises.writeFile(
+			await writeFile(
 				path,
 				new Uint8Array(
 					Buffer.isBuffer(file.content) ? file.content : Buffer.from(file.content)
@@ -1045,7 +664,7 @@ async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFold
 	for (const [path, data] of exportedFiles) {
 		writeQueue.set(
 			path,
-			writeFile(path, data).finally(() => {
+			customWriteFile(path, data).finally(() => {
 				writeQueue.delete(path)
 			})
 		)
@@ -1059,18 +678,16 @@ async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFold
 	MAX_PROGRESS.set(functionTagQueue.size)
 	PROGRESS.set(0)
 	for (const [path, file] of functionTagQueue.entries()) {
-		const oldTag = DataPackTag.fromJSON(JSON.parse(fs.readFileSync(path, 'utf-8')))
+		const oldTag = DataPackTag.fromJSON(JSON.parse((await readFile(path)).toString()))
 		const merged = oldTag.merge(DataPackTag.fromJSON(JSON.parse(file.content.toString())))
 
 		merged.filter(entry => {
 			const id = DataPackTag.getEntryId(entry)
 			const isTag = id.startsWith('#')
 			const location = parseResourceLocation(isTag ? id.substring(1) : id)
-			// Ignore entries unrelated to Animated Java
-			if (location.namespace !== 'animated_java') return true
 
 			// Remove last namespace entries if the namespace has changed
-			if (aj.export_namespace !== lastNamespace && location.namespace === lastNamespace)
+			if (aj.blueprint_id !== lastNamespace && location.namespace === lastNamespace)
 				return false
 
 			// Search for the entry in all data folders
@@ -1080,7 +697,7 @@ async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFold
 			const subPath = (isTag ? 'tags/' : '') + functionFolderName
 			const extension = isTag ? '.json' : '.mcfunction'
 
-			for (const folder of fs.readdirSync(dataPackFolder)) {
+			for (const folder of readdirSync(dataPackFolder)) {
 				const fullPath = PathModule.join(
 					dataPackFolder,
 					folder,
@@ -1089,7 +706,7 @@ async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFold
 					location.path + extension
 				)
 
-				if (fs.existsSync(fullPath)) return true
+				if (existsSync(fullPath)) return true
 			}
 
 			console.warn(
@@ -1103,7 +720,7 @@ async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFold
 
 		merged.sort()
 
-		await fs.promises.writeFile(path, autoStringify(merged.toJSON()))
+		await writeFile(path, autoStringify(merged.toJSON()))
 		PROGRESS.set(PROGRESS.get() + 1)
 	}
 }

@@ -1,0 +1,84 @@
+<script lang="ts" module>
+	import { VanillaBlockDisplay } from '../../outliner/vanillaBlockDisplay'
+	import { localize as translate } from '../../util/lang'
+	import { validateBlock } from '../../util/minecraftUtil'
+</script>
+
+<script lang="ts">
+	interface Props {
+		selected: VanillaBlockDisplay
+	}
+
+	let { selected }: Props = $props()
+
+	let block = $derived(selected.block)
+	let error = $derived(selected.error)
+
+	$effect(() => {
+		$error = ''
+		if (selected.block !== block) {
+			void validateBlock(block)
+				.then(err => {
+					if (err) {
+						$error = err
+						console.log('Block validation error:', err)
+						return
+					}
+					console.log('Changing block to', block)
+					Undo.initEdit({ elements: [selected] })
+
+					selected.block = block
+					Project!.saved = false
+
+					Undo.finishEdit(`Change Block Display Block to "${block}"`, {
+						elements: [selected],
+					})
+				})
+				.catch(err => {
+					$error = err.message
+				})
+		}
+	})
+</script>
+
+<p class="panel_toolbar_label label">
+	{translate('panel.vanilla_block_display.title')}
+</p>
+
+<div class="toolbar custom-toolbar" title={translate('panel.vanilla_block_display.description')}>
+	<div class="content" style="width: 95%;">
+		<input type="text" bind:value={block} />
+	</div>
+</div>
+
+{#if $error}
+	<div class="error">
+		{$error}
+	</div>
+{/if}
+
+<style>
+	input {
+		background-color: var(--color-button);
+		padding: 2px 8px;
+		width: 100%;
+	}
+	.label {
+		margin-bottom: -3px !important;
+	}
+	.custom-toolbar {
+		display: flex;
+		flex-direction: row;
+		margin-bottom: 1px;
+	}
+	.custom-toolbar :global(.sp-replacer) {
+		padding: 4px 18px !important;
+		height: 28px !important;
+		margin: 1px 0px !important;
+	}
+	.error {
+		margin: 2px 8px;
+		font-size: 14px;
+		color: var(--color-error);
+	}
+</style>

@@ -96,6 +96,96 @@
 						}
 					},
 					"display_rotation": [90.0, 20.0, 0.0]
+				},
+				{
+					"from": [0.0, 0.0, 0.0],
+					"to": [1.0, 1.0, 1.0],
+					"rotation": {
+						"x": 0,
+						"y": 0,
+						"z": 0,
+						"origin": [0, 0, 0],
+						"rescale": false
+					},
+					"faces": {
+						"north": {
+							"uv": [0, 0, 16, 16],
+							"texture_provider": { "type": "texture", "texture": "custom_texture" }
+						},
+						"east": {
+							"uv": [0, 0, 16, 16],
+							"texture_provider": {
+								"type": "texture",
+								"texture": "reference_texture"
+							}
+						},
+						"south": {
+							"uv": [0, 0, 16, 16],
+							"texture_provider": { "type": "texture", "texture": "custom_texture" },
+							"rotation": 90
+						},
+						"west": {
+							"uv": [0, 0, 16, 16],
+							"texture_provider": {
+								"type": "texture",
+								"texture": "reference_texture"
+							}
+						},
+						"up": {
+							"uv": [0, 0, 16, 16],
+							"texture_provider": { "type": "texture", "texture": "custom_texture" }
+						},
+						"down": {
+							"uv": [0, 0, 16, 16],
+							"texture_provider": {
+								"type": "texture_palette",
+								"texture_palette": "default_palette"
+							}
+						}
+					},
+					"display_rotation": [90.0, 20.0, 0.0]
+				},
+				{
+					"from": [0.0, 0.0, 0.0],
+					"to": [1.0, 1.0, 1.0],
+					"rotation": [0, 0, 0],
+					"faces": {
+						"north": {
+							"uv": [0, 0, 16, 16],
+							"texture_provider": { "type": "texture", "texture": "custom_texture" }
+						},
+						"east": {
+							"uv": [0, 0, 16, 16],
+							"texture_provider": {
+								"type": "texture",
+								"texture": "reference_texture"
+							}
+						},
+						"south": {
+							"uv": [0, 0, 16, 16],
+							"texture_provider": { "type": "texture", "texture": "custom_texture" },
+							"rotation": 90
+						},
+						"west": {
+							"uv": [0, 0, 16, 16],
+							"texture_provider": {
+								"type": "texture",
+								"texture": "reference_texture"
+							}
+						},
+						"up": {
+							"uv": [0, 0, 16, 16],
+							"texture_provider": { "type": "texture", "texture": "custom_texture" }
+						},
+						"down": {
+							"uv": [0, 0, 16, 16],
+							"texture_provider": {
+								"type": "texture_palette",
+								"texture_palette": "default_palette"
+							}
+						}
+					},
+					"display_rotation": [90.0, 20.0, 0.0]
 				}
 			]
 		},

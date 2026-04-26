@@ -1,20 +1,21 @@
+import { registerPatch } from 'blockbench-patch-manager'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
-import { registerMod } from '../util/moddingTools'
 import { Variant } from '../variants'
 
 declare global {
+	// @ts-expect-error - Broken BB types
 	interface CubeFace {
 		lastVariant: Variant | undefined
 	}
 }
 
-registerMod({
-	id: `animated-java:variant-preview-cube-face`,
+registerPatch({
+	id: `animated_java:variant-preview-cube-face`,
 
 	apply: () => {
 		const original = CubeFace.prototype.getTexture
 
-		CubeFace.prototype.getTexture = function (this: CubeFace): Texture | undefined {
+		CubeFace.prototype.getTexture = function (this: CubeFace) {
 			if (activeProjectIsBlueprintFormat() && this.texture) {
 				const variant = Variant.selected
 				if (

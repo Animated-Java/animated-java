@@ -1,14 +1,13 @@
-import { JsonTextParser, JsonTextSyntaxError } from 'src/systems/jsonText/parser'
-import { IDisplayEntityConfigs } from 'src/systems/rigRenderer'
-import { registerAction } from 'src/util/moddingTools'
-import { DeepClonedObjectProperty, fixClassPropertyInheritance } from 'src/util/property'
+import { registerDeletableHandlerPatch, registerPatch } from 'blockbench-patch-manager'
+import { TextComponent, TextComponentParser, type TextElement } from 'book-and-quill'
+import { observable } from 'svelte-observable-store'
 import { PACKAGE } from '../constants'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
-import { JsonText, TextElement } from '../systems/jsonText'
-import { getVanillaFont, MinecraftFont } from '../systems/minecraft/fontManager'
+import { MinecraftFont } from '../systems/minecraft/fontManager'
+import { type IDisplayEntityConfigs } from '../systems/rigRenderer'
 import EVENTS from '../util/events'
-import { Valuable } from '../util/stores'
-import { translate } from '../util/translation'
+import { localize as translate } from '../util/lang'
+import { DeepClonedObjectProperty, fixClassPropertyInheritance } from '../util/property'
 import { ResizableOutlinerElement } from './resizableOutlinerElement'
 import { sanitizeOutlinerElementName } from './util'
 
@@ -45,12 +44,12 @@ export class TextDisplay extends ResizableOutlinerElement {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	preview_controller = PREVIEW_CONTROLLER
 
-	textError = new Valuable('')
+	textError = observable('')
 
 	needsMeshUpdate = false
 
 	private __pendingMeshUpdate?: ReturnType<MinecraftFont['generateTextDisplayMesh']>
-	private __text = new Valuable('Hello World!')
+	private __text = observable('Hello World!')
 	private __lineWidth = TextDisplay.properties.lineWidth.default as number
 	private __backgroundColor = TextDisplay.properties.backgroundColor.default as string
 	private __shadow = TextDisplay.properties.shadow.default as boolean
@@ -152,6 +151,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 
 		copy.uuid = this.uuid
 		copy.type = this.type
+		// @ts-expect-error - Broken BB types
 		delete copy.parent
 		return copy
 	}
@@ -188,8 +188,8 @@ export class TextDisplay extends ResizableOutlinerElement {
 		return this
 	}
 
-	unselect() {
-		if (!this.selected) return
+	unselect(unselectParent?: boolean) {
+		if (!this.selected) return this
 		if (
 			Animator.open &&
 			Timeline.selected_animator &&
@@ -202,36 +202,37 @@ export class TextDisplay extends ResizableOutlinerElement {
 		TextDisplay.selected.remove(this)
 		this.selected = false
 		TickUpdates.selection = true
+		return this
 	}
 
 	updateTextMesh() {
-		let result: JsonText | undefined
+		let result: TextComponent | undefined
 		try {
-			const parser = new JsonTextParser({
+			const parser = new TextComponentParser({
 				minecraftVersion: Project!.animated_java.target_minecraft_version,
 			})
 			parser.enabledFeatures &= ~(
-				JsonTextParser.FEATURES.ALLOW_CLICK_EVENTS |
-				JsonTextParser.FEATURES.ALLOW_HOVER_EVENTS
+				TextComponentParser.FEATURES.CLICK_EVENTS |
+				TextComponentParser.FEATURES.HOVER_EVENTS
 			)
-			result = parser.parse(this.text)
+			result = new TextComponent(parser.parse(this.text))
 			this.textError.set('')
 		} catch (e: any) {
 			console.error(e)
-			if (e instanceof JsonTextSyntaxError) {
+			if (e.name === 'SyntaxPointerError') {
 				this.textError.set(e.getOriginErrorMessage())
 			} else {
 				this.textError.set(e.message as string)
 			}
 		}
-		result ??= new JsonText({ text: 'Invalid JSON Text!', color: 'red' })
+		result ??= new TextComponent({ text: 'Invalid JSON Text!', color: 'red' })
 		void this.renderTextMesh(result).then(({ mesh, hitbox, outline }) => {
 			this.applyTextMesh(mesh, hitbox, outline)
 		})
 	}
 
-	private renderTextMesh(jsonText: JsonText) {
-		const promise = getVanillaFont()
+	private renderTextMesh(jsonText: TextComponent) {
+		const promise = MinecraftFont.getById('minecraft:default')
 			.then(font => {
 				return font.generateTextDisplayMesh({
 					jsonText,
@@ -267,6 +268,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 			return
 		}
 		mesh.clear()
+		// @ts-expect-error - Broken BB types
 		delete mesh.sprite
 		mesh.name = this.uuid
 		mesh.material = Canvas.transparentMaterial
@@ -306,7 +308,7 @@ const TEMP_MESH_MAP = new THREE.TextureLoader().load(
 TEMP_MESH_MAP.minFilter = THREE.NearestFilter
 TEMP_MESH_MAP.magFilter = THREE.NearestFilter
 
-export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
+export const PREVIEW_CONTROLLER: NodePreviewController = new NodePreviewController(TextDisplay, {
 	setup(el: TextDisplay) {
 		ResizableOutlinerElement.prototype.preview_controller.setup(el)
 		// Setup temp sprite mesh
@@ -319,6 +321,7 @@ export const PREVIEW_CONTROLLER = new NodePreviewController(TextDisplay, {
 		sprite.scale.setScalar(1 / 32)
 		const mesh = el.mesh as THREE.Mesh
 		mesh.add(sprite)
+		// @ts-expect-error - Broken BB types
 		mesh.sprite = sprite
 
 		// Minecraft's transparency is funky 😭
@@ -369,11 +372,13 @@ class TextDisplayAnimator extends BoneAnimator {
 		GeneralAnimator.prototype.select.call(this)
 
 		if (
+			// @ts-expect-error - Broken BB types
 			this[Toolbox.selected.animation_channel] &&
 			((Timeline.selected && Timeline.selected.length === 0) ||
 				(Timeline.selected && (Timeline.selected[0].animator as any)) !== this)
 		) {
 			let nearest: _Keyframe | undefined
+			// @ts-expect-error - Broken BB types
 			this[Toolbox.selected.animation_channel].forEach((kf: _Keyframe) => {
 				if (Math.abs(kf.time - Timeline.time) < 0.002) {
 					nearest = kf
@@ -455,68 +460,75 @@ class TextDisplayAnimator extends BoneAnimator {
 TextDisplayAnimator.prototype.type = TextDisplay.type
 TextDisplay.animator = TextDisplayAnimator as any
 
-export const CREATE_ACTION = registerAction(
-	{ id: `animated-java:create-text-display` },
-	{
-		name: translate('action.create_text_display.title'),
-		icon: 'text_fields',
-		category: 'animated_java',
-		condition() {
-			return activeProjectIsBlueprintFormat() && Mode.selected.id === Modes.options.edit.id
-		},
-		click() {
-			Undo.initEdit({ outliner: true, elements: [], selection: true })
+export const CREATE_ACTION = registerDeletableHandlerPatch({
+	id: `animated_java:action/create-text-display`,
+	create() {
+		const action = new Blockbench.Action(`animated_java:action/create-text-display`, {
+			name: translate('action.create_text_display.title'),
+			icon: 'text_fields',
+			category: 'animated_java',
+			condition() {
+				return (
+					activeProjectIsBlueprintFormat() && Mode.selected.id === Modes.options.edit.id
+				)
+			},
+			click() {
+				Undo.initEdit({ outliner: true, elements: [], selection: true })
 
-			const textDisplay = new TextDisplay({}).init()
-			const group = getCurrentGroup()
+				const textDisplay = new TextDisplay({}).init()
+				const group = getCurrentGroup()
 
-			if (group instanceof Group) {
-				textDisplay.addTo(group)
-				textDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
-			}
+				if (group instanceof Group) {
+					textDisplay.addTo(group)
+					textDisplay.extend({ position: group.origin.slice() as ArrayVector3 })
+				}
 
-			selected.forEachReverse(el => el.unselect())
-			Group.first_selected?.unselect()
-			textDisplay.select()
+				selected.forEachReverse(el => el.unselect())
+				Group.first_selected?.unselect()
+				textDisplay.select()
 
-			Undo.finishEdit('Create Text Display', {
-				outliner: true,
-				elements: selected,
-				selection: true,
-			})
+				Undo.finishEdit('Create Text Display', {
+					outliner: true,
+					elements: selected,
+					selection: true,
+				})
 
-			return textDisplay
-		},
-	}
-)
-
-const CLEANUP_CALLBACKS: Array<() => void> = []
-
-CREATE_ACTION.onCreated(action => {
-	Interface.Panels.outliner.menu.addAction(action, 3)
-	Toolbars.outliner.add(action, 0)
-	MenuBar.menus.edit.addAction(action, 8)
-
-	CLEANUP_CALLBACKS.push(
-		EVENTS.SELECT_PROJECT.subscribe(project => {
-			if (!activeProjectIsBlueprintFormat()) return
-			project.textDisplays ??= []
-			TextDisplay.all.empty()
-			TextDisplay.all.push(...project.textDisplays)
-		}),
-
-		EVENTS.UNSELECT_PROJECT.subscribe(project => {
-			if (!activeProjectIsBlueprintFormat()) return
-			project.textDisplays = [...TextDisplay.all]
-			TextDisplay.all.empty()
+				return textDisplay
+			},
 		})
-	)
+
+		// @ts-expect-error - Broken BB types
+		BarItems.add_element.side_menu.addAction(action, 3)
+
+		return action
+	},
 })
 
-CREATE_ACTION.onDeleted(action => {
-	Interface.Panels.outliner.menu.removeAction(action)
-	Toolbars.outliner.remove(action)
-	MenuBar.menus.edit.removeAction(action)
+registerPatch({
+	id: `animated_java:text-display-project-sync`,
 
-	CLEANUP_CALLBACKS.forEach(unsub => unsub())
+	apply: () => {
+		const callbacks: Array<() => void> = []
+
+		callbacks.push(
+			EVENTS.SELECT_PROJECT.subscribe(project => {
+				if (!activeProjectIsBlueprintFormat()) return
+				project.textDisplays ??= []
+				TextDisplay.all.empty()
+				TextDisplay.all.push(...project.textDisplays)
+			}),
+
+			EVENTS.UNSELECT_PROJECT.subscribe(project => {
+				if (!activeProjectIsBlueprintFormat()) return
+				project.textDisplays = [...TextDisplay.all]
+				TextDisplay.all.empty()
+			})
+		)
+		return { callbacks }
+	},
+	revert: ({ callbacks }) => {
+		// @ts-expect-error - Broken BB types
+		BarItems.add_element.side_menu.removeAction(CREATE_ACTION)
+		callbacks.forEach(unsub => unsub())
+	},
 })

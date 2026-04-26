@@ -286,8 +286,8 @@ export const EASING_OPTIONS = Object.fromEntries(
 Object.freeze(EASING_OPTIONS)
 export const EASING_DEFAULT = 'linear'
 
-export const getEasingArgDefault = (kf: _Keyframe) => {
-	switch (kf.easing) {
+export const getEasingArgDefault = (easing: EasingKey) => {
+	switch (easing) {
 		case EASING_OPTIONS.easeInBack:
 		case EASING_OPTIONS.easeOutBack:
 		case EASING_OPTIONS.easeInOutBack:
@@ -302,12 +302,12 @@ export const getEasingArgDefault = (kf: _Keyframe) => {
 		case EASING_OPTIONS.step:
 			return 5
 		default:
-			return null
+			return undefined
 	}
 }
 
-export const parseEasingArg = (kf: _Keyframe, value: string) => {
-	switch (kf.easing) {
+export const parseEasingArg = (easing: EasingKey, value: string) => {
+	switch (easing) {
 		case EASING_OPTIONS.easeInBack:
 		case EASING_OPTIONS.easeOutBack:
 		case EASING_OPTIONS.easeInOutBack:

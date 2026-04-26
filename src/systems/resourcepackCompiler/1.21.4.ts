@@ -1,6 +1,11 @@
 import type { ResourcePackCompiler } from '.'
-import { PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
-import { isResourcePackPath, sanitizeStorageKey } from '../../util/minecraftUtil'
+import { getFsModule } from '../../constants'
+import { PROGRESS_DESCRIPTION } from '../../dialogs/exportProgress/exportProgress'
+import {
+	isResourcePackPath,
+	parseResourceLocation,
+	sanitizeStorageKey,
+} from '../../util/minecraftUtil'
 import { Variant } from '../../variants'
 import type { IItemDefinition } from '../minecraft/itemDefinitions'
 import { type ITextureAtlas } from '../minecraft/textureAtlas'
@@ -22,15 +27,21 @@ const compileResourcePack: ResourcePackCompiler = async ({
 		modelExportFolder,
 	})
 
+	const parsed = parseResourceLocation(aj.blueprint_id)
 	const itemModelDefinitionsFolder = PathModule.join(
-		'assets/animated_java/items/blueprint/',
-		aj.export_namespace
+		'assets',
+		parsed.namespace,
+		'items',
+		'blueprint',
+		parsed.path
 	)
+
+	const { existsSync, promises } = getFsModule()
+	const { readFile } = promises
 
 	// Texture atlas
 	const blockAtlasPath = PathModule.join('assets/minecraft/atlases/blocks.json')
-	const blockAtlas: ITextureAtlas = await fs.promises
-		.readFile(blockAtlasPath, 'utf-8')
+	const blockAtlas: ITextureAtlas = await readFile(blockAtlasPath, 'utf-8')
 		.catch(() => {
 			console.log('Creating new block atlas...')
 			return '{ "sources": [] }'
@@ -65,13 +76,13 @@ const compileResourcePack: ResourcePackCompiler = async ({
 		let optifineEmissive: Buffer | undefined
 		if (texture.source?.startsWith('data:')) {
 			image = Buffer.from(texture.source.split(',')[1], 'base64')
-		} else if (texture.path && fs.existsSync(texture.path)) {
+		} else if (texture.path && existsSync(texture.path)) {
 			if (!isResourcePackPath(texture.path)) {
-				image = fs.readFileSync(texture.path)
+				image = await readFile(texture.path)
 				const mcmetaPath = texture.path + '.mcmeta'
 				const emissivePath = texture.path.replace('.png', '_e.png')
-				if (fs.existsSync(mcmetaPath)) mcmeta = fs.readFileSync(mcmetaPath)
-				if (fs.existsSync(emissivePath)) optifineEmissive = fs.readFileSync(emissivePath)
+				if (existsSync(mcmetaPath)) mcmeta = await readFile(mcmetaPath)
+				if (existsSync(emissivePath)) optifineEmissive = await readFile(emissivePath)
 			} else {
 				// Don't copy the texture if it's already in a valid resource pack location.
 				continue

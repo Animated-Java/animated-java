@@ -1,8 +1,8 @@
+import { registerPatch } from 'blockbench-patch-manager'
 import {
 	activeProjectIsBlueprintFormat as condition,
 	type IBlueprintLocatorConfigJSON,
 } from '../formats/blueprint'
-import { registerMod } from '../util/moddingTools'
 
 declare global {
 	interface Locator {
@@ -10,8 +10,8 @@ declare global {
 	}
 }
 
-registerMod({
-	id: `animated-java:locator-properties`,
+registerPatch({
+	id: `animated_java:locator-properties`,
 
 	apply: () => {
 		const config = new Property(Locator, 'instance', 'config', {

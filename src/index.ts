@@ -1,12 +1,15 @@
 import { PACKAGE } from './constants'
 import EVENTS from './util/events'
-import './util/translation'
+import './util/lang'
 // Blueprint Format
-import './formats/**'
+import 'import_folder_recursive:./formats'
 // Interface
-import './interface/**'
+import 'import_folder_recursive:./dialogs'
+import 'import_folder_recursive:./interface'
+import 'import_folder_recursive:./panels'
+import 'import_folder_recursive:./popups'
 // Blockbench Mods
-import './mods/**'
+import 'import_folder_recursive:./mods'
 // Outliner
 import './outliner/textDisplay'
 import './outliner/vanillaBlockDisplay'
@@ -20,30 +23,26 @@ import './systems/minecraft/fontManager'
 import './systems/minecraft/registryManager'
 import './systems/minecraft/versionManager'
 // Misc imports
+import { openChangelogDialog } from './dialogs/changelog/changelog'
+import { openExportProgressDialog } from './dialogs/exportProgress/exportProgress'
+import { openUnexpectedErrorDialog } from './dialogs/unexpectedError/unexpectedError'
 import { BLUEPRINT_FORMAT } from './formats/blueprint'
 import { BLUEPRINT_CODEC } from './formats/blueprint/codec'
-import { blueprintSettingErrors } from './formats/blueprint/settings'
-import { openChangelogDialog } from './interface/changelogDialog'
-import { openExportProgressDialog } from './interface/dialog/exportProgress'
-import { openUnexpectedErrorDialog } from './interface/dialog/unexpectedError'
-import { checkForIncompatabilities } from './interface/popup/incompatabilityPopup'
-import { openInstallPopup } from './interface/popup/installed'
 import { TextDisplay } from './outliner/textDisplay'
-import { VanillaBlockDisplay, debugBlockState, debugBlocks } from './outliner/vanillaBlockDisplay'
+import { VanillaBlockDisplay, debugBlockState } from './outliner/vanillaBlockDisplay'
 import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
+import { checkForIncompatabilities } from './popups/incompatability/incompatability'
+import { openInstallPopup } from './popups/installed/installed'
+import './prism/mcfunctionPrism'
 import { cleanupExportedFiles } from './systems/cleaner'
-import mcbFiles from './systems/datapackCompiler/mcbFiles'
 import TELLRAW from './systems/datapackCompiler/tellraw'
 import { exportProject } from './systems/exporter'
-import { JsonText } from './systems/jsonText'
 import * as assetManager from './systems/minecraft/assetManager'
-import { getLatestVersionClientDownloadUrl } from './systems/minecraft/assetManager'
 import * as blockModelManager from './systems/minecraft/blockModelManager'
 import { BLOCKSTATE_REGISTRY, getBlockState } from './systems/minecraft/blockstateManager'
-import { getVanillaFont } from './systems/minecraft/fontManager'
+import { MinecraftFont } from './systems/minecraft/fontManager'
 import * as itemModelManager from './systems/minecraft/itemModelManager'
 import './systems/minecraft/registryManager'
-import { MINECRAFT_REGISTRY } from './systems/minecraft/registryManager'
 import resourcepackCompiler from './systems/resourcepackCompiler'
 import {
 	isDataPackPath,
@@ -66,23 +65,19 @@ const AnimatedJavaApi = {
 	datapackCompiler,
 	resourcepackCompiler,
 	Variant,
-	MINECRAFT_REGISTRY,
 	openExportProgressDialog,
 	isResourcePackPath,
 	isDataPackPath,
-	blueprintSettingErrors,
 	openUnexpectedErrorDialog,
 	BLUEPRINT_FORMAT,
 	BLUEPRINT_CODEC,
 	TextDisplay,
-	getLatestVersionClientDownloadUrl,
-	getVanillaFont,
+	MinecraftFont,
 	assetManager,
 	itemModelManager,
 	blockModelManager,
 	VanillaItemDisplay,
 	VanillaBlockDisplay,
-	debugBlocks,
 	debugBlockState,
 	BLOCKSTATE_REGISTRY,
 	exportProject,
@@ -97,18 +92,22 @@ const AnimatedJavaApi = {
 		Undo.finishEdit('Remove Cubes Associated With Texture')
 	},
 	cleanupExportedFiles,
-	mcbFiles,
 	openChangelogDialog,
 	checkForIncompatabilities,
 	toSmallCharacters: toSmallCaps,
-	printMinecraftFontSheet: () => {
-		const fontJson = assetManager.getJSONAsset('assets/minecraft/font/include/default.json')
+	printMinecraftFontSheet: async () => {
+		if (!Project?.animated_java?.target_minecraft_version) {
+			throw new Error('No target Minecraft version set for project!')
+		}
+		const fontJson = await assetManager.getJSONAsset(
+			Project.animated_java.target_minecraft_version,
+			'assets/minecraft/font/include/default.json'
+		)
 		return fontJson.providers[0].chars.map(
 			(characters: string, i: number) => `${i}: ` + characters.split('').join(' ')
 		)
 	},
 	TELLRAW,
-	JsonText,
 	getBlockState,
 }
 window.AnimatedJava = AnimatedJavaApi
@@ -117,39 +116,6 @@ window.AnimatedJava = AnimatedJavaApi
 EVENTS.EXTRACT_MODS.subscribe(() => {
 	// @ts-expect-error Cannot delete type that isn't optional
 	delete window.AnimatedJava
-})
-
-BBPlugin.register(PACKAGE.name, {
-	title: PACKAGE.title,
-	author: PACKAGE.author.name,
-	description: PACKAGE.description,
-	icon: 'icon.svg',
-	variant: 'desktop',
-	version: PACKAGE.version,
-	min_version: PACKAGE.min_blockbench_version,
-	tags: ['Minecraft: Java Edition', 'Animation', 'Display Entities'],
-	await_loading: true,
-	onload() {
-		// Wait for plugin system to finish loading plugins.
-		requestAnimationFrame(() => {
-			EVENTS.PLUGIN_LOAD.publish()
-		})
-	},
-	onunload() {
-		EVENTS.PLUGIN_UNLOAD.publish()
-	},
-	oninstall() {
-		EVENTS.PLUGIN_INSTALL.publish()
-		openInstallPopup()
-	},
-	onuninstall() {
-		EVENTS.PLUGIN_UNINSTALL.publish()
-		Blockbench.showMessageBox({
-			title: 'Animated Java has Been Uninstalled!',
-			message: 'In order to fully uninstall Animated Java, please restart Blockbench.',
-			buttons: ['OK'],
-		})
-	},
 })
 
 EVENTS.PLUGIN_FINISHED_LOADING.subscribe(() => {
@@ -161,3 +127,5 @@ EVENTS.PLUGIN_FINISHED_LOADING.subscribe(() => {
 		openChangelogDialog()
 	}
 })
+
+import './plugin'

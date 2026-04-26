@@ -1,6 +1,6 @@
 import type { ResourcePackCompiler } from '.'
-import { PROGRESS_DESCRIPTION } from '../../interface/dialog/exportProgress'
-import { safeReadSync } from '../../util/fileUtil'
+import { getFsModule } from '../../constants'
+import { PROGRESS_DESCRIPTION } from '../../dialogs/exportProgress/exportProgress'
 import { isResourcePackPath, sanitizeStorageKey } from '../../util/minecraftUtil'
 import { type ITextureAtlas } from '../minecraft/textureAtlas'
 import type { IRenderedNodes } from '../rigRenderer'
@@ -24,10 +24,12 @@ const compileResourcePack: ResourcePackCompiler = async ({
 		modelExportFolder,
 	})
 
+	const { existsSync, promises } = getFsModule()
+	const { readFile } = promises
+
 	// Texture atlas
 	const blockAtlasPath = PathModule.join('assets/minecraft/atlases/blocks.json')
-	const blockAtlas: ITextureAtlas = await fs.promises
-		.readFile(blockAtlasPath, 'utf-8')
+	const blockAtlas: ITextureAtlas = await readFile(blockAtlasPath, 'utf-8')
 		.catch(() => {
 			console.log('Creating new block atlas...')
 			return JSON.stringify({ sources: [] })
@@ -66,14 +68,16 @@ const compileResourcePack: ResourcePackCompiler = async ({
 		let optifineEmissive: Buffer | undefined
 		if (texture.source?.startsWith('data:')) {
 			image = Buffer.from(texture.source.split(',')[1], 'base64')
-		} else if (texture.path && fs.existsSync(texture.path)) {
+		} else if (texture.path && existsSync(texture.path)) {
 			if (!isResourcePackPath(texture.path)) {
-				image = safeReadSync(texture.path)
+				image = await readFile(texture.path).catch(() => undefined)
 				if (image == undefined) {
 					throw new Error(`Failed to read texture "${texture.name}" at ${texture.path}`)
 				}
-				mcmeta = safeReadSync(texture.path + '.mcmeta')
-				optifineEmissive = safeReadSync(texture.path.replace('.png', '_e.png'))
+				mcmeta = await readFile(texture.path + '.mcmeta').catch(() => undefined)
+				optifineEmissive = await readFile(texture.path.replace('.png', '_e.png')).catch(
+					() => undefined
+				)
 			} else {
 				// Don't copy the texture if it's already in a valid resource pack location.
 				continue
@@ -111,14 +115,11 @@ const compileResourcePack: ResourcePackCompiler = async ({
 			// Hacky workaround for this version enforcing the `item` namespace.
 			if (variantModel.model?.parent) {
 				variantModel.model.parent = variantModel.model.parent.replace(
-					'animated_java:blueprint/',
-					'animated_java:item/'
+					':blueprint/',
+					':item/'
 				)
 			}
-			variantModel.item_model = variantModel.item_model.replace(
-				'animated_java:blueprint/',
-				'animated_java:'
-			)
+			variantModel.item_model = variantModel.item_model.replace(':blueprint/', ':')
 			console.log('Exporting model', variantModel.model, 'to', exportPath)
 			versionedFiles.set(PathModule.join(exportPath), {
 				content: autoStringify(variantModel.model),

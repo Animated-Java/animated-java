@@ -1,19 +1,17 @@
-import { registerMod } from 'src/util/moddingTools'
-import { mountSvelteComponent } from 'src/util/mountSvelteComponent'
-import IncompatiblePluginNotice from '../components/incompatiblePluginNotice.svelte'
-import { Valuable } from '../util/stores'
+import { registerPatch } from 'blockbench-patch-manager'
+import { observable } from 'svelte-observable-store'
+import { injectComponent } from 'svelte-patching-tools'
+import IncompatiblePluginNotice from '../svelteComponents/incompatiblePluginNotice.svelte'
 
-const SELECTED_PLUGIN = new Valuable<BBPlugin | null>(null)
+const SELECTED_PLUGIN = observable<BBPlugin | null>(null)
 
-registerMod({
-	id: `animated-java:plugins-dialog-mod`,
+registerPatch({
+	id: `animated_java:plugins-dialog-mod`,
 
 	apply: () => {
-		// @ts-expect-error Missing types
-		const original = Plugins.dialog.component.methods.selectPlugin
+		const original = Plugins.dialog!.component.methods.selectPlugin
 
-		// @ts-expect-error Missing types
-		Plugins.dialog.component.methods.selectPlugin = function (this, plugin: BBPlugin) {
+		Plugins.dialog!.component.methods.selectPlugin = function (this, plugin: BBPlugin) {
 			const result = original.call(this, plugin)
 			SELECTED_PLUGIN.set(plugin)
 			return result
@@ -23,29 +21,25 @@ registerMod({
 	},
 
 	revert: ({ original }) => {
-		// @ts-expect-error Missing types
-		Plugins.dialog.component.methods.selectPlugin = original
+		Plugins.dialog!.component.methods.selectPlugin = original
 	},
 })
 
-let mounted: IncompatiblePluginNotice | null = null
+let unmountCallback: (() => Promise<void>) | null
 
-SELECTED_PLUGIN.subscribe(plugin => {
-	if (mounted) {
-		mounted.$destroy()
-		mounted = null
-	}
+SELECTED_PLUGIN.subscribe(async plugin => {
+	await unmountCallback?.()
+	unmountCallback = null
 	if (!plugin) return
 
 	requestAnimationFrame(() => {
-		mounted = mountSvelteComponent({
+		unmountCallback = injectComponent({
 			component: IncompatiblePluginNotice,
 			props: { selectedPlugin: plugin },
-			target: '.plugin_browser_page_header',
-			prepend: true,
-			onDestroy: () => {
-				mounted = null
+			elementSelector: (): HTMLElement | null => {
+				return document.querySelector('.plugin_browser_page_header')
 			},
+			prepend: true,
 		})
 	})
 })

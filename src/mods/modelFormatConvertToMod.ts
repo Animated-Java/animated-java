@@ -1,8 +1,8 @@
+import { registerPatch } from 'blockbench-patch-manager'
 import { BLUEPRINT_FORMAT_ID, convertToBlueprint } from '../formats/blueprint'
-import { registerMod } from '../util/moddingTools'
 
-registerMod({
-	id: `animated-java:model-format-convert-to-mod`,
+registerPatch({
+	id: `animated_java:model-format-convert-to-mod`,
 
 	apply: () => {
 		const original = ModelFormat.prototype.convertTo

@@ -1,4 +1,4 @@
-import { registerConditionalPropertyOverrideMod, registerMod } from 'src/util/moddingTools'
+import { registerPatch, registerPropertyOverridePatch } from 'blockbench-patch-manager'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 import {
 	EASING_DEFAULT,
@@ -9,6 +9,7 @@ import {
 } from '../util/easing'
 
 declare global {
+	// @ts-expect-error - Broken BB types
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface _Keyframe {
 		easing?: EasingKey
@@ -25,8 +26,8 @@ function lerp(start: number, stop: number, amt: number): number {
 	return amt * (stop - start) + start
 }
 
-registerMod({
-	id: `animated-java:keyframe-easing`,
+registerPatch({
+	id: `animated_java:keyframe-easing`,
 
 	apply: () => {
 		const properties = [
@@ -58,7 +59,7 @@ registerMod({
 				const arg1 =
 					Array.isArray(other.easingArgs) && other.easingArgs.length > 0
 						? other.easingArgs[0]
-						: getEasingArgDefault(other)
+						: getEasingArgDefault(easing)
 
 				easingFunc = easingFunc.bind(null, arg1 ?? 0)
 			}
@@ -92,16 +93,16 @@ export function reverseEasing(easing?: EasingKey): EasingKey | undefined {
 	return easing
 }
 
-registerConditionalPropertyOverrideMod({
-	id: `animated-java:action-click-override/reverse-keyframes`,
-	object: BarItems.reverse_keyframes as Action,
+registerPropertyOverridePatch({
+	id: `animated_java:action-click-override/reverse-keyframes`,
+	target: BarItems.reverse_keyframes as Action,
 	key: 'click',
 
 	condition: () => activeProjectIsBlueprintFormat(),
 
 	get: original => {
 		return (event?: Event) => {
-			original(event)
+			original?.(event)
 			// There's not really an easy way to merge our undo operation with the original one so we'll make a new one instead
 			Undo.initEdit({ keyframes: Timeline.selected || undefined })
 

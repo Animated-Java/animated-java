@@ -1,9 +1,10 @@
-import { registerConditionalPropertyOverrideMod, registerProjectMod } from 'src/util/moddingTools'
+import { registerProjectPatch, registerPropertyOverridePatch } from 'blockbench-patch-manager'
 import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from '../formats/blueprint'
-import { translate } from '../util/translation'
+import { localize as translate } from '../util/lang'
 import { Variant } from '../variants'
 
 declare global {
+	// @ts-expect-error - Broken BB types
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface _Keyframe {
 		variant?: Variant
@@ -33,9 +34,9 @@ export function isCustomKeyframeChannel(channel: string) {
 	return Object.values(EFFECT_ANIMATOR_CHANNELS).includes(channel as any)
 }
 
-registerConditionalPropertyOverrideMod({
-	id: `animated-java:keyframe/data-point/variant`,
-	object: Blockbench.Keyframe.prototype,
+registerPropertyOverridePatch({
+	id: `animated_java:keyframe/data-point/variant`,
+	target: Blockbench.Keyframe.prototype,
 	key: EFFECT_ANIMATOR_CHANNELS.VARIANT,
 
 	condition: () => activeProjectIsBlueprintFormat(),
@@ -50,13 +51,17 @@ registerConditionalPropertyOverrideMod({
 
 	set(this: _Keyframe, value: Variant | undefined) {
 		const dataPoint = this.data_points.at(0)
-		if (dataPoint) dataPoint[EFFECT_ANIMATOR_CHANNELS.VARIANT] = value?.uuid
+		if (dataPoint) {
+			dataPoint[EFFECT_ANIMATOR_CHANNELS.VARIANT] = value?.uuid
+			return value
+		}
+		return undefined
 	},
 })
 
-registerConditionalPropertyOverrideMod({
-	id: `animated-java:keyframe/data-point/function`,
-	object: Blockbench.Keyframe.prototype,
+registerPropertyOverridePatch({
+	id: `animated_java:keyframe/data-point/function`,
+	target: Blockbench.Keyframe.prototype,
 	key: EFFECT_ANIMATOR_CHANNELS.FUNCTION,
 
 	condition: () => activeProjectIsBlueprintFormat(),
@@ -67,13 +72,17 @@ registerConditionalPropertyOverrideMod({
 
 	set(this: _Keyframe, value: string) {
 		const dataPoint = this.data_points.at(0)
-		if (dataPoint) dataPoint[EFFECT_ANIMATOR_CHANNELS.FUNCTION] = value
+		if (dataPoint) {
+			dataPoint[EFFECT_ANIMATOR_CHANNELS.FUNCTION] = value
+			return value
+		}
+		return undefined!
 	},
 })
 
-registerConditionalPropertyOverrideMod({
-	id: `animated-java:keyframe/data-point/execute-condition`,
-	object: Blockbench.Keyframe.prototype,
+registerPropertyOverridePatch({
+	id: `animated_java:keyframe/data-point/execute-condition`,
+	target: Blockbench.Keyframe.prototype,
 	key: KEYFRAME_DATA_POINTS.EXECUTE_CONDITION,
 
 	condition: () => activeProjectIsBlueprintFormat(),
@@ -84,13 +93,17 @@ registerConditionalPropertyOverrideMod({
 
 	set(this: _Keyframe, value: string) {
 		const dataPoint = this.data_points.at(0)
-		if (dataPoint) dataPoint[KEYFRAME_DATA_POINTS.EXECUTE_CONDITION] = value
+		if (dataPoint) {
+			dataPoint[KEYFRAME_DATA_POINTS.EXECUTE_CONDITION] = value
+			return value
+		}
+		return undefined!
 	},
 })
 
-registerConditionalPropertyOverrideMod({
-	id: `animated-java:keyframe/data-point/repeat`,
-	object: Blockbench.Keyframe.prototype,
+registerPropertyOverridePatch({
+	id: `animated_java:keyframe/data-point/repeat`,
+	target: Blockbench.Keyframe.prototype,
 	key: KEYFRAME_DATA_POINTS.REPEAT,
 
 	condition: () => activeProjectIsBlueprintFormat(),
@@ -101,13 +114,17 @@ registerConditionalPropertyOverrideMod({
 
 	set(this: _Keyframe, value: boolean) {
 		const dataPoint = this.data_points.at(0)
-		if (dataPoint) dataPoint[KEYFRAME_DATA_POINTS.REPEAT] = value
+		if (dataPoint) {
+			dataPoint[KEYFRAME_DATA_POINTS.REPEAT] = value
+			return value
+		}
+		return undefined!
 	},
 })
 
-registerConditionalPropertyOverrideMod({
-	id: `animated-java:keyframe/data-point/repeat-frequency`,
-	object: Blockbench.Keyframe.prototype,
+registerPropertyOverridePatch({
+	id: `animated_java:keyframe/data-point/repeat-frequency`,
+	target: Blockbench.Keyframe.prototype,
 	key: KEYFRAME_DATA_POINTS.REPEAT_FREQUENCY,
 
 	condition: () => activeProjectIsBlueprintFormat(),
@@ -118,14 +135,18 @@ registerConditionalPropertyOverrideMod({
 
 	set(this: _Keyframe, value: number) {
 		const dataPoint = this.data_points.at(0)
-		if (dataPoint) dataPoint[KEYFRAME_DATA_POINTS.REPEAT_FREQUENCY] = value
+		if (dataPoint) {
+			dataPoint[KEYFRAME_DATA_POINTS.REPEAT_FREQUENCY] = value
+			return value
+		}
+		return undefined!
 	},
 })
 
-registerProjectMod({
-	id: 'animated-java:custom-keyframes',
+registerProjectPatch({
+	id: 'animated_java:custom-keyframes',
 
-	condition: project => project.format.id === BLUEPRINT_FORMAT_ID,
+	condition: ({ project }) => project.format.id === BLUEPRINT_FORMAT_ID,
 
 	apply: () => {
 		const defaultChannels = { ...EffectAnimator.prototype.channels }

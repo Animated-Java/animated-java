@@ -1,3 +1,6 @@
+# DIFFERENCES FROM 1.21.0:
+# - JSON text components are now stored as NBT in entities.
+
 import ./global.mcbt
 
 dir global {
@@ -10,40 +13,39 @@ dir global {
 
 		scoreboard players add aj.last_id <%OBJECTIVES.ID()%> 0
 
-		# Purposefully load gu first, as other functions depend on it.
+		# Enforce loading order.
 		function *global/gu/on_load
+		function *global/data_manager/on_load
 		function #*global/on_load
+
 		IF (debug_mode) {
 			scoreboard players reset * <%OBJECTIVES.IS_RIG_LOADED()%>
 			execute as @e[type=item_display,tag=<%TAGS.GLOBAL_ROOT()%>] at @s run function *global/root/on_load
 		}
 	}
 
-	IF (debug_mode) {
-		function on_tick minecraft:tick {
-			execute as @e[type=item_display,tag=<%TAGS.GLOBAL_ROOT()%>] at @s run function *global/root/on_tick
-		}
-	} ELSE {
-		function on_tick minecraft:tick {
-			execute as @e[type=item_display,tag=<%TAGS.GLOBAL_ROOT()%>] at @s run function #*global/root/on_tick
-		}
+	function on_tick minecraft:tick {
+		execute as @e[type=item_display,tag=<%TAGS.GLOBAL_ROOT()%>] at @s run function *global/root/on_tick
 	}
 
 	tag functions on_load {
-		*<%export_namespace%>/on_load
+		<%blueprint_id%>/on_load
 	}
 
 	dir root {
-		tag functions on_tick {
-			*<%export_namespace%>/root/on_tick
+		function on_tick {
+			IF (debug_mode) {
+				execute unless score @s <%OBJECTIVES.IS_RIG_LOADED()%> matches 1 run function *global/root/on_load
+			}
+			data_manager prep read
+			function *global/root/run_project_tick with storage <%temp_storage%> entry.data
+		}
+
+		function run_project_tick {
+			$function $(blueprint_id)/root/on_tick
 		}
 
 		IF (debug_mode) {
-			function on_tick {
-				execute unless score @s <%OBJECTIVES.IS_RIG_LOADED()%> matches 1 run function *global/root/on_load
-				function #*global/root/on_tick
-			}
-
 			function on_load {
 				# Check if the rig is outdated by comparing the function's rig_hash of the rig to the rig_hash stored in the entity data.
 				execute if function animated_java:global/util/is_rig_outdated run block outdated_warning/modify_rig {
@@ -54,12 +56,16 @@ dir global {
 					execute store result storage <%temp_storage%> args.x double 1 run data get entity @s Pos[0] 1
 					execute store result storage <%temp_storage%> args.y double 1 run data get entity @s Pos[1] 1
 					execute store result storage <%temp_storage%> args.z double 1 run data get entity @s Pos[2] 1
-					execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run {
-						# Get export namespace
-						data modify storage <%temp_storage%> args.export_namespace set from entity @s data.export_namespace
-						# Overwrite the rig hash so the warning doesn't show again.
-						data modify entity @s data.rig_hash set value '<%rig_hash%>'
-					}
+
+					# No need to read here, since is_rig_outdated already reads the data.
+					# data_manager prep read
+
+					# Get export namespace
+					data modify storage <%temp_storage%> args.blueprint_id set from storage <%temp_storage%> entry.data.blueprint_id
+					# Overwrite the rig hash so the warning doesn't show again.
+					data modify storage <%temp_storage%> entry.data.rig_hash set value '<%rig_hash%>'
+					data_manager write
+
 					block print { with storage <%temp_storage%> args
 						$tellraw @a <%TELLRAW.RIG_OUTDATED()%>
 					}
@@ -117,20 +123,20 @@ dir global {
 
 		# Removes locators and cameras owned by the rig, even if they're not included in the currently loaded export.
 		function outdated_rig {
-			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run block as_data {
-				data remove storage <%temp_storage%> args
-				data remove storage <%temp_storage%> uuids
-				data modify storage <%temp_storage%> uuids set from entity @s data.uuids
-				execute store result score #aj.length <%OBJECTIVES.I()%> run data get storage <%temp_storage%> uuids
+			data_manager prep read
 
-				execute if score #aj.length <%OBJECTIVES.I()%> matches 1.. run block loop_over_uuids {
-					data modify storage <%temp_storage%> args.current_uuid set from storage <%temp_storage%> uuids[-1].uuid
-					data remove storage <%temp_storage%> uuids[-1]
-					function ./entity_stack_by_uuid with storage <%temp_storage%> args
+			data remove storage <%temp_storage%> args
+			data remove storage <%temp_storage%> uuids
+			data modify storage <%temp_storage%> uuids set from entity @s data.uuids
+			execute store result score #aj.length <%OBJECTIVES.I()%> run data get storage <%temp_storage%> uuids
 
-					scoreboard players remove #aj.length <%OBJECTIVES.I()%> 1
-					execute if score #aj.length <%OBJECTIVES.I()%> matches 1.. run function ^0
-				}
+			execute if score #aj.length <%OBJECTIVES.I()%> matches 1.. run block loop_over_uuids {
+				data modify storage <%temp_storage%> args.current_uuid set from storage <%temp_storage%> uuids[-1].uuid
+				data remove storage <%temp_storage%> uuids[-1]
+				function ./entity_stack_by_uuid with storage <%temp_storage%> args
+
+				scoreboard players remove #aj.length <%OBJECTIVES.I()%> 1
+				execute if score #aj.length <%OBJECTIVES.I()%> matches 1.. run function ^0
 			}
 
 			function ./entity_stack
@@ -149,11 +155,12 @@ dir global {
 		}
 		# Returns 1 if the rig is outdated, else returns 0.
 		function is_rig_outdated {
-			execute on passengers if entity @s[tag=<%TAGS.GLOBAL_DATA()%>] run return run { with entity @s data
+			data_manager prep read
+			block { with storage <%temp_storage%> entry.data
 				# REVIEW - The replace here is a bit hacky.
 				# Because this is a core function, I need to create a generic version of
-				# project_storage that uses a macro to get the export namespace instead of hardcoding it.
-				$execute if data storage <%project_storage.replace(export_namespace, '$(export_namespace)')%> {rig_hash:'$(rig_hash)'} run return 0
+				# project_storage that uses a macro to get the blueprint ID instead of hardcoding it.
+				$execute if data storage <%project_storage.replace(blueprint_id, '$(blueprint_id)')%> {rig_hash:'$(rig_hash)'} run return 0
 				return 1
 			}
 		}
@@ -214,14 +221,40 @@ dir global {
 			}
 		}
 	}
-}
 
-dir <%export_namespace%> {
-	function on_load {
-		function *<%export_namespace%>/invalid_version_warning
-	}
+	# Storage-based per-entity NBT storage. Thanks Xanbelor for the concept!
+	dir data_manager {
+		function on_load {
+			scoreboard players add #aj.data_manager.index <%OBJECTIVES.I()%> 0
+		}
 
-	function invalid_version_warning {
-		tellraw @a <%TELLRAW.INVALID_VERSION()%>
+		function on_tick minecraft:tick {
+			execute store result storage <%temp_storage%> args.id int 1 run scoreboard players get #aj.data_manager.index <%OBJECTIVES.I()%>
+			block { with storage <%temp_storage%> args
+				$data modify storage <%temp_storage%> args.uuid set from storage <%data_storage%> "$(id)".uuid
+				scoreboard players set #success <%OBJECTIVES.I()%> 0
+				block { with storage <%temp_storage%> args
+					$execute store success score #success <%OBJECTIVES.I()%> if score $(uuid) matches 1..
+					$execute if score #success <%OBJECTIVES.I()%> matches 0 run data remove storage <%data_storage%> "$(id)"
+				}
+			}
+			scoreboard players add #aj.data_manager.index <%OBJECTIVES.I()%> 1
+			execute \
+				if score #aj.data_manager.index <%OBJECTIVES.I()%> > aj.last_id <%OBJECTIVES.ID()%> \
+			run scoreboard players set #aj.data_manager.index <%OBJECTIVES.I()%> 0
+		}
+
+		function create_entry {
+			$data modify storage <%data_storage%> "$(id)" set value {uuid: "$(uuid)", data: {}}
+		}
+
+		function read {
+			data remove storage <%temp_storage%> entry
+			$data modify storage <%temp_storage%> entry set from storage <%data_storage%> "$(id)"
+		}
+
+		function write {
+			$data modify storage <%data_storage%> "$(id)" set from storage <%temp_storage%> entry
+		}
 	}
 }

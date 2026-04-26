@@ -1,8 +1,8 @@
+import { registerPatch } from 'blockbench-patch-manager'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
-import { registerMod } from '../util/moddingTools'
 
-registerMod({
-	id: `animated-java:show-default-pose`,
+registerPatch({
+	id: `animated_java:show-default-pose`,
 
 	apply: () => {
 		const original = Animator.showDefaultPose

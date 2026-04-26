@@ -1,24 +1,25 @@
-import { BLUEPRINT_CODEC } from 'src/formats/blueprint/codec'
-import { openBlueprintSettingsDialog } from 'src/interface/dialog/blueprintSettings'
+import { registerPropertyOverridePatch } from 'blockbench-patch-manager'
+import { getFsModule } from '../constants'
+import { openBlueprintSettings } from '../dialogs/blueprintSettings/blueprintSettings'
 import { activeProjectIsBlueprintFormat, saveBlueprint } from '../formats/blueprint'
-import { registerConditionalPropertyOverrideMod } from '../util/moddingTools'
+import { BLUEPRINT_CODEC } from '../formats/blueprint/codec'
 
-registerConditionalPropertyOverrideMod({
-	id: `animated-java:action-click-override/save-project`,
-	object: BarItems.save_project as Action,
+registerPropertyOverridePatch({
+	id: `animated_java:action-click-override/save-project`,
+	target: BarItems.save_project as Action,
 	key: 'click',
 
-	condition: () => activeProjectIsBlueprintFormat(),
+	getCondition: () => activeProjectIsBlueprintFormat(),
 
 	get: () => saveBlueprint,
 })
 
-registerConditionalPropertyOverrideMod({
-	id: `animated-java:action-click-override/save-project-as`,
-	object: BarItems.save_project_as as Action,
+registerPropertyOverridePatch({
+	id: `animated_java:action-click-override/save-project-as`,
+	target: BarItems.save_project_as as Action,
 	key: 'click',
 
-	condition: () => activeProjectIsBlueprintFormat(),
+	getCondition: () => activeProjectIsBlueprintFormat(),
 
 	get: () => {
 		return () => {
@@ -29,24 +30,24 @@ registerConditionalPropertyOverrideMod({
 	},
 })
 
-registerConditionalPropertyOverrideMod({
-	id: `animated-java:action-click-override/project-window`,
-	object: BarItems.project_window as Action,
+registerPropertyOverridePatch({
+	id: `animated_java:action-click-override/project-window`,
+	target: BarItems.project_window as Action,
 	key: 'click',
 
-	condition: () => activeProjectIsBlueprintFormat(),
+	getCondition: () => activeProjectIsBlueprintFormat(),
 
 	get: () => {
-		return openBlueprintSettingsDialog
+		return openBlueprintSettings
 	},
 })
 
-registerConditionalPropertyOverrideMod({
-	id: `animated-java:action-click-override/export-project`,
-	object: BarItems.export_over as Action,
+registerPropertyOverridePatch({
+	id: `animated_java:action-click-override/export-project`,
+	target: BarItems.export_over as Action,
 	key: 'click',
 
-	condition: () => activeProjectIsBlueprintFormat(),
+	getCondition: () => activeProjectIsBlueprintFormat(),
 
 	get: () => {
 		return () => {
@@ -57,7 +58,8 @@ registerConditionalPropertyOverrideMod({
 
 			const path = Project.save_path || Project.export_path
 			if (path) {
-				if (fs.existsSync(PathModule.dirname(path))) {
+				const { existsSync } = getFsModule()
+				if (existsSync(PathModule.dirname(path))) {
 					Project.save_path = path
 					codec.write(codec.compile(), path)
 				} else {

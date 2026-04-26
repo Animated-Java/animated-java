@@ -1,9 +1,10 @@
-import { translate } from 'src/util/translation'
+import { overrideAccessors, registerPatch } from 'blockbench-patch-manager'
 import { activeProjectIsBlueprintFormat, projectTargetVersionIsAtLeast } from '../formats/blueprint'
 import { isCubeValid } from '../systems/util'
-import { createPropertySubscribable, registerMod } from '../util/moddingTools'
+import { localize as translate } from '../util/lang'
 
 declare global {
+	// @ts-expect-error - Broken BB types
 	interface Cube {
 		isRotationValid: boolean
 	}
@@ -51,8 +52,8 @@ function showToastNotification() {
 	}
 }
 
-registerMod({
-	id: `animated-java:cube-outline-mod`,
+registerPatch({
+	id: `animated_java:cube-outline-mod`,
 
 	apply: () => {
 		const originalUpdateTransform = Cube.preview_controller.updateTransform
@@ -88,10 +89,13 @@ registerMod({
 
 			cube.isRotationValid = true
 
-			const [, setVisible] = createPropertySubscribable(cube.mesh.outline, 'visible')
-			setVisible.subscribe(({ storage }) => {
-				if (!activeProjectIsBlueprintFormat()) return
-				storage.value = !cube.isRotationValid || storage.value
+			overrideAccessors({
+				target: cube.mesh.outline,
+				key: 'visible',
+				set: value => {
+					if (!activeProjectIsBlueprintFormat()) return value
+					return !cube.isRotationValid || value
+				},
 			})
 
 			return cube

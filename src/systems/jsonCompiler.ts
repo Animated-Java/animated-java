@@ -2,7 +2,8 @@
 /// <reference path="/var/mnt/ssd2/repos/snavesutit/blockbench-types/types/index.d.ts"/>
 /// <reference path="../global.d.ts"/>
 
-import { PACKAGE } from '../constants'
+import { TextComponent } from 'book-and-quill'
+import { getFsModule, PACKAGE } from '../constants'
 import type { IBlueprintDisplayEntityConfigJSON } from '../formats/blueprint'
 import { type defaultValues } from '../formats/blueprint/settings'
 import type { EasingKey } from '../util/easing'
@@ -11,7 +12,6 @@ import { detectCircularReferences, mapObjEntries, scrubUndefined } from '../util
 import { Variant } from '../variants'
 import type { INodeTransform, IRenderedAnimation, IRenderedFrame } from './animationRenderer'
 import { IntentionalExportError } from './errors'
-import { JsonText } from './jsonText'
 import type {
 	AnyRenderedNode,
 	IRenderedModel,
@@ -30,10 +30,7 @@ type ExportedNodetransform = Omit<INodeTransform, 'matrix' | 'decomposed'> & {
 }
 type ExportedRenderedNode = Omit<
 	AnyRenderedNode,
-	'default_transform' 
-	| 'bounding_box' 
-	| 'configs' 
-	| 'storage_name'
+	'default_transform' | 'bounding_box' | 'configs' | 'storage_name'
 > & {
 	default_transform: ExportedNodetransform
 	bounding_box?: { min: ArrayVector3; max: ArrayVector3 }
@@ -44,10 +41,7 @@ type ExportedAnimationFrame = Omit<IRenderedFrame, 'node_transforms'> & {
 }
 type ExportedBakedAnimation = Omit<
 	IRenderedAnimation,
-	'uuid' 
-	| 'frames' 
-	| 'modified_nodes' 
-	| 'storage_name'
+	'uuid' | 'frames' | 'modified_nodes' | 'storage_name'
 > & {
 	frames: ExportedAnimationFrame[]
 	modified_nodes: string[]
@@ -98,9 +92,7 @@ interface ExportedTexture {
 }
 type ExportedVariantModel = Pick<
 	IRenderedVariantModel,
-	'custom_model_data' 
-	| 'resource_location' 
-	| 'item_model'
+	'custom_model_data' | 'resource_location' | 'item_model'
 > & { model: IRenderedModel | null }
 type ExportedVariant = Omit<IRenderedVariant, 'models'> & {
 	/**
@@ -119,7 +111,7 @@ export interface IExportedJSON {
 	 * The Blueprint's Settings
 	 */
 	settings: {
-		export_namespace: (typeof defaultValues)['export_namespace']
+		export_namespace: (typeof defaultValues)['blueprint_id']
 		target_minecraft_version: (typeof defaultValues)['target_minecraft_version']
 		display_item: (typeof defaultValues)['display_item']
 		bounding_box: (typeof defaultValues)['render_box']
@@ -253,7 +245,7 @@ export function exportJSON(options: {
 			version: PACKAGE.version,
 		},
 		settings: {
-			export_namespace: aj.export_namespace,
+			export_namespace: aj.blueprint_id,
 			target_minecraft_version: aj.target_minecraft_version,
 			display_item: aj.display_item,
 			bounding_box: aj.render_box,
@@ -281,12 +273,15 @@ export function exportJSON(options: {
 				name: animation.name,
 				loop_mode: animation.loop,
 				duration: animation.length,
+				// @ts-expect-error - Broken BB types
 				excluded_nodes: animation.excluded_nodes.map(node => node.value),
 				animators: {},
 			}
 			for (const [uuid, animator] of Object.entries(animation.animators)) {
 				// Only include animators with keyframes
+				// @ts-expect-error - Broken BB types
 				if (animator.keyframes.length === 0) continue
+				// @ts-expect-error - Broken BB types
 				animJSON.animators[uuid] = animator.keyframes.map(serailizeKeyframe)
 			}
 			json.animations[animation.uuid] = animJSON
@@ -308,12 +303,14 @@ export function exportJSON(options: {
 		)
 	}
 
+	const { existsSync, mkdirSync, writeFileSync } = getFsModule()
+
 	try {
 		const dir = PathModule.dirname(exportPath)
-		if (dir && dir !== '.' && !fs.existsSync(dir)) {
-			fs.mkdirSync(dir, { recursive: true })
+		if (dir && dir !== '.' && !existsSync(dir)) {
+			mkdirSync(dir, { recursive: true })
 		}
-		fs.writeFileSync(exportPath, compileJSON(json).toString())
+		writeFileSync(exportPath, compileJSON(json).toString())
 	} catch (e: any) {
 		throw new IntentionalExportError(
 			`Failed to write JSON file <code>${exportPath}</code>: ${String(e)}`
@@ -373,7 +370,7 @@ function serailizeRenderedNode(node: AnyRenderedNode): ExportedRenderedNode {
 			break
 		}
 		case 'text_display': {
-			json.text = new JsonText(node.text).toJSON()
+			json.text = new TextComponent(node.text).toJSON()
 			break
 		}
 	}

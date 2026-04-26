@@ -1,13 +1,24 @@
 /// <reference path="../global.d.ts"/>
 
+import { getFsModule } from '../constants'
 import type { IBlueprintDisplayEntityConfigJSON } from '../formats/blueprint'
 import { resolvePath } from '../util/fileUtil'
-import { isResourcePackPath, parseResourcePackPath, sanitizeStorageKey } from '../util/minecraftUtil'
+import {
+	isResourcePackPath,
+	parseResourcePackPath,
+	sanitizeStorageKey,
+} from '../util/minecraftUtil'
 import { detectCircularReferences, scrubUndefined } from '../util/misc'
 import { Variant } from '../variants'
 import type { INodeTransform, IRenderedAnimation } from './animationRenderer'
 import { IntentionalExportError } from './errors'
-import type { AnyRenderedNode, IRenderedElement, IRenderedFace, IRenderedModel, IRenderedRig } from './rigRenderer'
+import type {
+	AnyRenderedNode,
+	IRenderedElement,
+	IRenderedFace,
+	IRenderedModel,
+	IRenderedRig,
+} from './rigRenderer'
 
 type TextureAnimationFrame =
 	| number
@@ -56,12 +67,21 @@ type BoneElementFaces = Partial<
 	Record<'north' | 'east' | 'south' | 'west' | 'up' | 'down', BoneElementFace>
 >
 
-interface BoneElementRotation {
-	angle: number
-	axis: 'x' | 'y' | 'z'
-	origin: ArrayVector3
-	rescale?: boolean
-}
+type BoneElementRotation =
+	| {
+			x: number
+			y: number
+			z: number
+			origin: ArrayVector3
+			rescale?: boolean
+	  }
+	| {
+			angle: number
+			axis: 'y' | 'x' | 'z'
+			origin: ArrayVector3
+			rescale?: boolean
+	  }
+	| ArrayVector3
 
 interface BoneElement {
 	from: ArrayVector3
@@ -86,7 +106,14 @@ interface NodeTransformation {
 	scale?: ArrayVector3
 }
 
-type NodeType = 'bone' | 'item_display' | 'block_display' | 'text_display' | 'structure' | 'camera' | 'locator'
+type NodeType =
+	| 'bone'
+	| 'item_display'
+	| 'block_display'
+	| 'text_display'
+	| 'structure'
+	| 'camera'
+	| 'locator'
 
 type PluginNode =
 	| {
@@ -187,9 +214,12 @@ function parseDataUrl(dataUrl: string): { mimeType: string; base64: string } {
 function readTextureAnimation(texture: Texture): TextureAnimation | undefined {
 	if (!texture.path) return undefined
 	const mcmetaPath = texture.path + '.mcmeta'
-	if (!fs.existsSync(mcmetaPath)) return undefined
+
+	const { existsSync, readFileSync } = getFsModule()
+
+	if (!existsSync(mcmetaPath)) return undefined
 	try {
-		const parsed = JSON.parse(fs.readFileSync(mcmetaPath, 'utf-8')) as {
+		const parsed = JSON.parse(readFileSync(mcmetaPath, 'utf-8')) as {
 			animation?: Record<string, unknown>
 		}
 		const anim = parsed.animation as any
@@ -265,7 +295,8 @@ function serializeTextureProvider(options: {
 	textureKeyToPaletteId: Map<string, string>
 }): TextureProvider {
 	const textureKey = options.textureIdToKey.get(options.textureId)
-	if (!textureKey) throw new Error(`Missing texture mapping for texture id '${options.textureId}'`)
+	if (!textureKey)
+		throw new Error(`Missing texture mapping for texture id '${options.textureId}'`)
 
 	const paletteId = options.textureKeyToPaletteId.get(textureKey)
 	if (paletteId) return { type: 'texture_palette', texture_palette: paletteId }
@@ -273,10 +304,13 @@ function serializeTextureProvider(options: {
 	return { type: 'texture', texture: textureKey }
 }
 
-function serializeFace(face: IRenderedFace, options: {
-	textureIdToKey: Map<string, string>
-	textureKeyToPaletteId: Map<string, string>
-}): BoneElementFace | undefined {
+function serializeFace(
+	face: IRenderedFace,
+	options: {
+		textureIdToKey: Map<string, string>
+		textureKeyToPaletteId: Map<string, string>
+	}
+): BoneElementFace | undefined {
 	if (!face.uv) return undefined
 	const textureId = face.texture?.startsWith('#') ? face.texture.slice(1) : face.texture
 	if (!textureId) return undefined
@@ -293,10 +327,13 @@ function serializeFace(face: IRenderedFace, options: {
 	} satisfies BoneElementFace)
 }
 
-function serializeBoneElements(model: IRenderedModel, options: {
-	textureIdToKey: Map<string, string>
-	textureKeyToPaletteId: Map<string, string>
-}): BoneElement[] {
+function serializeBoneElements(
+	model: IRenderedModel,
+	options: {
+		textureIdToKey: Map<string, string>
+		textureKeyToPaletteId: Map<string, string>
+	}
+): BoneElement[] {
 	const elements = model.elements ?? []
 	return elements.map((el: IRenderedElement) => {
 		const faces: BoneElementFaces = {}
@@ -306,15 +343,7 @@ function serializeBoneElements(model: IRenderedModel, options: {
 			;(faces as any)[dir] = serializedFace
 		}
 
-		const rotation: BoneElementRotation =
-			el.rotation && !Array.isArray(el.rotation)
-				? {
-						angle: el.rotation.angle,
-						axis: el.rotation.axis as BoneElementRotation['axis'],
-						origin: el.rotation.origin as ArrayVector3,
-						rescale: (el.rotation as any).rescale,
-				  }
-				: { angle: 0, axis: 'y', origin: [0, 0, 0] }
+		const rotation = el.rotation ?? { angle: 0, axis: 'y', origin: [0, 0, 0] }
 
 		return scrubUndefined({
 			from: el.from as ArrayVector3,
@@ -434,7 +463,7 @@ function buildPalettes(options: {
 		let hasAnyAlternative = false
 		for (const variant of variants) {
 			const mapped = variant.textureMap.getMappedTexture(texture.uuid)
-			let mappedKey = textureKey
+			let mappedKey: string = textureKey
 			if (mapped) {
 				const key = options.textureIdToKey.get(mapped.id)
 				if (key) mappedKey = key
@@ -484,6 +513,7 @@ function serializeAnimation(options: {
 }): PluginAnimation {
 	const { animation, nodeUuidToId } = options
 
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	const loop_mode: LoopMode =
 		animation.loop_mode === 'loop'
 			? { type: 'loop', loop_delay: String(animation.loop_delay ?? 0) }
@@ -493,6 +523,7 @@ function serializeAnimation(options: {
 
 	const maxTime = animation.frames.at(-1)?.time ?? 0
 
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	const node_keyframes: NonNullable<PluginAnimation['node_keyframes']> = {}
 
 	for (const frame of animation.frames) {
@@ -538,6 +569,7 @@ function serializeAnimation(options: {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	let global_keyframes: NonNullable<PluginAnimation['global_keyframes']> | undefined
 
 	// map the baked variant for each frame into the texture keyframes
@@ -622,7 +654,7 @@ export function exportPluginBlueprint(options: {
 	const blueprint: PluginBlueprintJson = scrubUndefined({
 		format_version: 1,
 		settings: {
-			id: `animated_java:${aj.export_namespace}`,
+			id: `animated_java:${aj.blueprint_id}`,
 		},
 		textures,
 		texture_palettes: palettes,
@@ -643,12 +675,14 @@ export function exportPluginBlueprint(options: {
 		)
 	}
 
+	const { existsSync, mkdirSync, writeFileSync } = getFsModule()
+
 	try {
 		const dir = PathModule.dirname(exportPath)
-		if (dir && dir !== '.' && !fs.existsSync(dir)) {
-			fs.mkdirSync(dir, { recursive: true })
+		if (dir && dir !== '.' && !existsSync(dir)) {
+			mkdirSync(dir, { recursive: true })
 		}
-		fs.writeFileSync(exportPath, compileJSON(blueprint).toString())
+		writeFileSync(exportPath, compileJSON(blueprint).toString())
 	} catch (e: any) {
 		throw new IntentionalExportError(
 			`Failed to write JSON file <code>${exportPath}</code>: ${String(e)}`

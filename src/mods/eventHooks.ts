@@ -1,9 +1,9 @@
-import EVENTS from 'src/util/events'
-import { registerPropertyOverrideMod } from 'src/util/moddingTools'
+import { registerPropertyOverridePatch } from 'blockbench-patch-manager'
+import EVENTS from '../util/events'
 
-registerPropertyOverrideMod({
-	id: `animated-java:event-hook/external-plugin-load/load`,
-	object: BBPlugin.prototype,
+registerPropertyOverridePatch({
+	id: `animated_java:event-hook/external-plugin-load/load`,
+	target: BBPlugin.prototype,
 	key: 'load',
 
 	get: original => {
@@ -16,9 +16,9 @@ registerPropertyOverrideMod({
 	},
 })
 
-registerPropertyOverrideMod({
-	id: `animated-java:event-hook/external-plugin-load/toggle-disabled`,
-	object: BBPlugin.prototype,
+registerPropertyOverridePatch({
+	id: `animated_java:event-hook/external-plugin-load/toggle-disabled`,
+	target: BBPlugin.prototype,
 	key: 'toggleDisabled',
 
 	get: original => {
@@ -32,9 +32,9 @@ registerPropertyOverrideMod({
 	},
 })
 
-registerPropertyOverrideMod({
-	id: `animated-java:event-hook/external-plugin-unload/unload`,
-	object: BBPlugin.prototype,
+registerPropertyOverridePatch({
+	id: `animated_java:event-hook/external-plugin-unload/unload`,
+	target: BBPlugin.prototype,
 	key: 'unload',
 
 	get: original => {
@@ -42,21 +42,6 @@ registerPropertyOverrideMod({
 			const result = original.call(this)
 			console.log('Unloaded plugin:', this.id)
 			EVENTS.EXTERNAL_PLUGIN_UNLOAD.publish(this)
-			return result
-		}
-	},
-})
-
-registerPropertyOverrideMod({
-	id: `animated-java:event-hook/pre-post-select-project-event`,
-	object: ModelProject.prototype,
-	key: 'loadEditorState',
-
-	get: original => {
-		return function (this: ModelProject) {
-			EVENTS.PRE_SELECT_PROJECT.publish(this)
-			const result = original.call(this)
-			EVENTS.POST_SELECT_PROJECT.publish(this)
 			return result
 		}
 	},
