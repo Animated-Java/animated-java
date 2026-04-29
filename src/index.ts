@@ -129,3 +129,5 @@ EVENTS.PLUGIN_FINISHED_LOADING.subscribe(() => {
 		openChangelogDialog()
 	}
 })
+
+import './plugin'
