@@ -26,6 +26,8 @@ animated_java:
       name: Display Entity Config
     open_locator_config:
       name: Locator Config
+    open_interaction_config:
+      name: Interaction Config
     export:
       name: Export
     export_debug:
@@ -506,7 +508,61 @@ animated_java:
           [Markdown]
           Commands to run `as` and `at` the Locator's entity every tick.
 
+    interaction_config:
+      title: Interaction Config
+      plugin_mode_warning: |-
+        Plugin Mode is enabled! Interaction have no configuration in Plugin Mode.
+        Instead, use the Plugin API to add custom functionality to your Interaction.
+        For more information, see the Official Plugin API documentation for more information.
+
+      response:
+        title: Response
+        description: Whether interacting with this Interaction should trigger a response (hand animation / attack sound).
+
+      on_summon_function:
+        title: On-Summon Function
+        description: |-
+          [Markdown]
+          Commands to run `as` and `at` this Interaction when summoned.
+
           Supports [MC-Build](https://mcbuild.dev) syntax.
+
+      on_interaction_function:
+        title: On-Interaction Function
+        description: |-
+          [Markdown]
+          Commands to run `as` and `at` this Interaction when a player interacts with it.
+
+          You can use `execute on target` to select the player who initiated the interaction.
+
+          Supports [MC-Build](https://mcbuild.dev) syntax.
+
+      on_attack_function:
+        title: On-Attack Function
+        description: |-
+          [Markdown]
+          Commands to run `as` and `at` this Interaction when a player attacks it.
+
+          You can use `execute on attacker` to select the player who initiated the attack.
+
+          Supports [MC-Build](https://mcbuild.dev) syntax.
+
+      on_remove_function:
+        title: On-Remove Function
+        description: |-
+          [Markdown]
+          Commands to run `as` and `at` this Interaction when removed.
+
+          Supports [MC-Build](https://mcbuild.dev) syntax.
+
+      on_tick_function:
+        title: On-Tick Function
+        description: |-
+          [Markdown]
+          Commands to run `as` and `at` this Interaction every tick.
+
+          Supports [MC-Build](https://mcbuild.dev) syntax.
+
     text_display_config:
       title: Text Display Config
       use_nbt:

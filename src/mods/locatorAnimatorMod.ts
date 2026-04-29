@@ -171,7 +171,7 @@ registerProjectPatch({
 	apply: () => {
 		const unsub = EVENTS.UPDATE_SELECTION.subscribe(() => {
 			if (Mode.selected.id !== Modes.options.animate.id) return
-			if (selected.at(0) instanceof Locator) {
+			if (Outliner.selected.at(0) instanceof Locator) {
 				Canvas.gizmos[0].visible = false
 				Transformer.visible = false
 			}

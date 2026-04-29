@@ -5,7 +5,7 @@ import { mount, unmount } from 'svelte'
 import { observable, type Observable } from 'svelte-observable-store'
 import { injectComponent } from 'svelte-patching-tools'
 import AnimatedJavaIcon from '../../assets/icons/animated_java_fancy_icon_centered.svg'
-import { DisplayEntityConfig, LocatorConfig } from '../../nodeConfigs'
+import { DisplayEntityConfig, InteractionConfig, LocatorConfig } from '../../nodeConfigs'
 import { type TextDisplay } from '../../outliner/textDisplay'
 import { type VanillaBlockDisplay } from '../../outliner/vanillaBlockDisplay'
 import { type VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
@@ -63,6 +63,18 @@ export interface IBlueprintLocatorConfigJSON {
 	on_summon_function?: LocatorConfig['__onSummonFunction']
 	on_remove_function?: LocatorConfig['__onRemoveFunction']
 	on_tick_function?: LocatorConfig['__onTickFunction']
+}
+
+/**
+ * The serialized Variant Interaction Config
+ */
+export interface IBlueprintInteractionConfigJSON {
+	response?: InteractionConfig['__response']
+	on_summon_function?: InteractionConfig['__onSummonFunction']
+	on_interaction_function?: InteractionConfig['__onInteractionFunction']
+	on_attack_function?: InteractionConfig['__onAttackFunction']
+	on_remove_function?: InteractionConfig['__onRemoveFunction']
+	on_tick_function?: InteractionConfig['__onTickFunction']
 }
 
 /**
@@ -361,6 +373,7 @@ export const BLUEPRINT_FORMAT = registerDeletableHandlerPatch({
 			single_texture: false,
 			texture_folder: false,
 			texture_meshes: false,
+			bounding_boxes: true,
 			uv_rotation: true,
 			vertex_color_ambient_occlusion: true,
 			java_cube_shading_properties: true,

@@ -1,6 +1,7 @@
 import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/lib/nbt'
 import type {
 	IBlueprintDisplayEntityConfigJSON,
+	IBlueprintInteractionConfigJSON,
 	IBlueprintLocatorConfigJSON,
 } from './formats/blueprint'
 import { scrubUndefined } from './util/misc'
@@ -391,6 +392,121 @@ export class LocatorConfig {
 			this.useEntity === other.useEntity &&
 			this.entityType === other.entityType &&
 			this.syncPassengerRotation === other.syncPassengerRotation &&
+			this.onSummonFunction === other.onSummonFunction &&
+			this.onRemoveFunction === other.onRemoveFunction &&
+			this.onTickFunction === other.onTickFunction
+		)
+	}
+}
+
+export class InteractionConfig {
+	private __response?: boolean
+	private __onInteractionFunction?: string
+	private __onAttackFunction?: string
+	private __onSummonFunction?: string
+	private __onRemoveFunction?: string
+	private __onTickFunction?: string
+
+	getDefault(): InteractionConfig {
+		return InteractionConfig.fromJSON({
+			response: false,
+			on_interaction_function: '',
+			on_attack_function: '',
+			on_summon_function: '',
+			on_remove_function: '',
+			on_tick_function: '',
+		})
+	}
+
+	get response(): NonNullable<InteractionConfig['__response']> {
+		if (this.__response !== undefined) return this.__response
+		const defaultConfig = this.getDefault()
+		return defaultConfig.response
+	}
+	set response(value: NonNullable<InteractionConfig['__response']>) {
+		this.__response = value
+	}
+
+	get onInteractionFunction(): NonNullable<InteractionConfig['__onInteractionFunction']> {
+		if (this.__onInteractionFunction !== undefined) return this.__onInteractionFunction
+		const defaultConfig = this.getDefault()
+		return defaultConfig.onInteractionFunction
+	}
+	set onInteractionFunction(value: NonNullable<InteractionConfig['__onInteractionFunction']>) {
+		this.__onInteractionFunction = value
+	}
+
+	get onAttackFunction(): NonNullable<InteractionConfig['__onAttackFunction']> {
+		if (this.__onAttackFunction !== undefined) return this.__onAttackFunction
+		const defaultConfig = this.getDefault()
+		return defaultConfig.onAttackFunction
+	}
+	set onAttackFunction(value: NonNullable<InteractionConfig['__onAttackFunction']>) {
+		this.__onAttackFunction = value
+	}
+
+	get onSummonFunction(): NonNullable<InteractionConfig['__onSummonFunction']> {
+		if (this.__onSummonFunction !== undefined) return this.__onSummonFunction
+		const defaultConfig = this.getDefault()
+		return defaultConfig.onSummonFunction
+	}
+	set onSummonFunction(value: NonNullable<InteractionConfig['__onSummonFunction']>) {
+		this.__onSummonFunction = value
+	}
+
+	get onRemoveFunction(): NonNullable<InteractionConfig['__onRemoveFunction']> {
+		if (this.__onRemoveFunction !== undefined) return this.__onRemoveFunction
+		const defaultConfig = this.getDefault()
+		return defaultConfig.onRemoveFunction
+	}
+	set onRemoveFunction(value: NonNullable<InteractionConfig['__onRemoveFunction']>) {
+		this.__onRemoveFunction = value
+	}
+
+	get onTickFunction(): NonNullable<InteractionConfig['__onTickFunction']> {
+		if (this.__onTickFunction !== undefined) return this.__onTickFunction
+		const defaultConfig = this.getDefault()
+		return defaultConfig.onTickFunction
+	}
+	set onTickFunction(value: NonNullable<InteractionConfig['__onTickFunction']>) {
+		this.__onTickFunction = value
+	}
+
+	toJSON(): IBlueprintInteractionConfigJSON {
+		return scrubUndefined({
+			response: this.__response,
+			on_interaction_function: this.__onInteractionFunction,
+			on_attack_function: this.__onAttackFunction,
+			on_summon_function: this.__onSummonFunction,
+			on_remove_function: this.__onRemoveFunction,
+			on_tick_function: this.__onTickFunction,
+		})
+	}
+
+	static fromJSON(json: IBlueprintInteractionConfigJSON): InteractionConfig {
+		const config = new InteractionConfig()
+		if (json.response !== undefined) config.__response = json.response
+		if (json.on_interaction_function !== undefined)
+			config.__onInteractionFunction = json.on_interaction_function
+		if (json.on_attack_function !== undefined)
+			config.__onAttackFunction = json.on_attack_function
+		if (json.on_summon_function !== undefined)
+			config.__onSummonFunction = json.on_summon_function
+		if (json.on_remove_function !== undefined)
+			config.__onRemoveFunction = json.on_remove_function
+		if (json.on_tick_function !== undefined) config.__onTickFunction = json.on_tick_function
+		return config
+	}
+
+	isDefault(): boolean {
+		return this.checkIfEqual(new InteractionConfig())
+	}
+
+	checkIfEqual(other: InteractionConfig) {
+		return (
+			this.response === other.response &&
+			this.onInteractionFunction === other.onInteractionFunction &&
+			this.onAttackFunction === other.onAttackFunction &&
 			this.onSummonFunction === other.onSummonFunction &&
 			this.onRemoveFunction === other.onRemoveFunction &&
 			this.onTickFunction === other.onTickFunction

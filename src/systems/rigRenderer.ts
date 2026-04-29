@@ -3,6 +3,7 @@ import * as crypto from 'node:crypto'
 import { getFsModule } from '../constants'
 import type {
 	IBlueprintDisplayEntityConfigJSON,
+	IBlueprintInteractionConfigJSON,
 	IBlueprintLocatorConfigJSON,
 	IBlueprintVariantJSON,
 } from '../formats/blueprint'
@@ -149,6 +150,14 @@ export interface IRenderedNodes {
 		/** The maximum distance this node travels away from the root entity while animating. */
 		max_distance: number
 		config?: IBlueprintLocatorConfigJSON
+	}
+	Interaction: IRenderedNode & {
+		type: 'interaction'
+		width: number
+		height: number
+		/** The maximum distance this node travels away from the root entity while animating. */
+		max_distance: number
+		config: IBlueprintInteractionConfigJSON
 	}
 }
 
@@ -593,6 +602,27 @@ function renderLocator(locator: Locator, rig: IRenderedRig) {
 	rig.nodes[locator.uuid] = renderedLocator
 }
 
+function renderInteraction(box: BoundingBox, rig: IRenderedRig) {
+	if (!box.export) return
+	const parentId = box.parent instanceof Group ? box.parent.uuid : undefined
+
+	const renderedInteraction: IRenderedNodes['Interaction'] = {
+		type: 'interaction',
+		name: box.name,
+		storage_name: sanitizeStorageKey(box.name),
+		uuid: box.uuid,
+		parent: parentId,
+		// @ts-expect-error - Broken BB types
+		config: structuredClone(box.config),
+		max_distance: 0,
+		default_transform: {} as INodeTransform,
+		width: box.to[0] - box.from[0],
+		height: box.to[1] - box.from[1],
+	}
+
+	rig.nodes[box.uuid] = renderedInteraction
+}
+
 function renderCamera(camera: ICamera, rig: IRenderedRig) {
 	if (!camera.export) return
 	const parentId = typeof camera.parent === 'string' ? camera.parent : camera.parent.uuid
@@ -712,6 +742,14 @@ export function hashRig(rig: IRenderedRig) {
 				}
 				break
 			}
+
+			case 'interaction': {
+				hash.update(`;${node.width};${node.height}`)
+				if (node.config) {
+					hash.update(';' + JSON.stringify(node.config))
+				}
+				break
+			}
 		}
 	}
 	return hash.digest('hex')
@@ -725,6 +763,7 @@ function renderVariant(variant: Variant, rig: IRenderedRig): IRenderedVariant {
 }
 
 function getDefaultTransforms(rig: IRenderedRig) {
+	// @ts-expect-error - Broken BB types
 	const anim = new Blockbench.Animation()
 	correctSceneAngle()
 	updatePreview(anim, 0)
@@ -779,6 +818,10 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 			}
 			case node instanceof VanillaBlockDisplay: {
 				renderBlockDisplay(node, rig)
+				break
+			}
+			case node instanceof BoundingBox: {
+				renderInteraction(node, rig)
 				break
 			}
 			case node instanceof Cube: {

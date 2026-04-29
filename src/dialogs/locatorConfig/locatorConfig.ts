@@ -50,6 +50,7 @@ export function openLocatorConfigDialog(locator: Locator) {
 registerDeletableHandlerPatch({
 	id: `animated_java:action/locator-config`,
 	create() {
+		// @ts-expect-error - Broken BB types
 		const action = new Blockbench.Action(`animated_java:action/locator-config`, {
 			icon: 'settings',
 			name: translate('action.open_locator_config.name'),
