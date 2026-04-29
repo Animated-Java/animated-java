@@ -395,7 +395,8 @@ export const BLUEPRINT_CODEC = registerDeletableHandlerPatch({
 					content: this.compile!(),
 					// eslint-disable-next-line @typescript-eslint/naming-convention
 					custom_writer: (content: string, path: string) => {
-						if (fs.existsSync(PathModule.dirname(path))) {
+						const { existsSync } = getFsModule()
+						if (existsSync(PathModule.dirname(path))) {
 							Project!.save_path = path
 							this.write!(content, path)
 						} else {
