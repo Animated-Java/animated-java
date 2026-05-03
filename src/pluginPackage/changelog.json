@@ -716,7 +716,9 @@
 				"list": [
 					"Fixed Blueprints failing to save due to missing `fs` global.",
 					"Fixed Animated Java failing to reload correctly when plugins are reloaded.",
-					"Fixed JSON Text Components failing to add quotes around strings that start with numeric characters."
+					"Fixed JSON Text Components failing to add quotes around strings that start with numeric characters.",
+					"Fixed [#491](https://github.com/Animated-Java/animated-java/issues/491)",
+					"Fixed [#490](https://github.com/Animated-Java/animated-java/issues/490)"
 				]
 			}
 		]
