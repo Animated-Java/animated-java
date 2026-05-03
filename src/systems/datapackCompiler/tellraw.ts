@@ -240,6 +240,18 @@ namespace TELLRAW {
 			),
 		])
 
+	export const FRAME_ARG_NO_RIG_FRAMES = () =>
+		TELLRAW_ERROR('Frame Argument Invalid - No Rig Animations', [
+			'This Blueprint has no animations to play, and therefore no frames to switch between.',
+			'\n Please ensure that the rig has animations, or avoid using the frame argument in your summon function.',
+		])
+
+	export const ANIMATION_ARG_NO_RIG_ANIMATIONS = () =>
+		TELLRAW_ERROR('Animation Argument Invalid - No Rig Animations', [
+			'This Blueprint has no animations to play.',
+			'\n Please ensure that the rig has animations, or avoid using the animation argument in your summon function.',
+		])
+
 	export const NO_VARIANTS = () =>
 		TELLRAW_ERROR('No Variants', ['This Blueprint has no variants to switch between.'])
 

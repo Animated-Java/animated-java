@@ -594,7 +594,7 @@ const dataPackCompiler: DataPackCompiler = async ({
 			Object.values(rig.nodes).filter(n => n.type === 'locator' && n.config?.on_tick_function)
 				.length > 0,
 		has_cameras: Object.values(rig.nodes).filter(n => n.type === 'camera').length > 0,
-		is_static: isStatic,
+		has_animations: animations.length > 0,
 		getNodeTags,
 		BONE_TYPES,
 		project_storage: `${aj.blueprint_id}`,
@@ -612,8 +612,7 @@ const dataPackCompiler: DataPackCompiler = async ({
 			'src/global.mcbt': mcbFiles.globalTemplates,
 			'src/animated_java.mcb': mcbFiles.global,
 			[`src/${parsed.fullPath}.mcb`]:
-				`import ${relativePathToSrc}/global.mcbt\n` +
-				(isStatic ? mcbFiles.static : mcbFiles.animation),
+				`import ${relativePathToSrc}/global.mcbt\n` + mcbFiles.main,
 		},
 		destPath: '.',
 		variables,
