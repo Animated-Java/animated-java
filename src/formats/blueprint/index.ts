@@ -373,7 +373,7 @@ export const BLUEPRINT_FORMAT = registerDeletableHandlerPatch({
 			single_texture: false,
 			texture_folder: false,
 			texture_meshes: false,
-			bounding_boxes: true,
+			// bounding_boxes: true,
 			uv_rotation: true,
 			vertex_color_ambient_occlusion: true,
 			java_cube_shading_properties: true,
