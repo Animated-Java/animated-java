@@ -562,13 +562,7 @@ function summon {
 	}
 
 	summon minecraft:item_display ~ ~ ~ { \
-		Tags:[ \
-			'<%TAGS.NEW()%>', \
-			'<%TAGS.GLOBAL_ENTITY()%>', \
-			'<%TAGS.GLOBAL_ROOT()%>', \
-			'<%TAGS.PROJECT_ENTITY(blueprint_id)%>', \
-			'<%TAGS.PROJECT_ROOT(blueprint_id)%>' \
-		], \
+		Tags:<%root_entity_tags%>, \
 		teleport_duration: 0, \
 		interpolation_duration: <%interpolation_duration%>, \
 		Passengers:<%root_entity_passengers%>, \

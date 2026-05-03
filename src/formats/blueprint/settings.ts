@@ -35,6 +35,7 @@ export interface BlueprintSettings {
 	on_post_tick_function: string
 	interpolation_duration: number
 	teleportation_duration: number
+	custom_rig_entity_tags: string
 	auto_update_rig_orientation: boolean
 	use_storage_for_animation: boolean
 	use_entity_stacking: boolean
@@ -74,6 +75,7 @@ export const defaultValues: BlueprintSettings = {
 	interpolation_duration: 1,
 	teleportation_duration: 1,
 
+	custom_rig_entity_tags: '',
 	auto_update_rig_orientation: true,
 	use_storage_for_animation: false,
 	use_entity_stacking: false,

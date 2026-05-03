@@ -173,9 +173,24 @@ namespace TAGS {
 
 export default TAGS
 
+export function getRootEntityTags(): NbtList {
+	const tags: string[] = [
+		...Project!.animated_java.custom_rig_entity_tags.split(',').map(t => t.trim()),
+		TAGS.NEW(),
+		TAGS.GLOBAL_ENTITY(),
+		TAGS.GLOBAL_ROOT(),
+		TAGS.PROJECT_ENTITY(Project!.animated_java.blueprint_id),
+		TAGS.PROJECT_ROOT(Project!.animated_java.blueprint_id),
+	]
+
+	return new NbtList(tags.sort().map(v => new NbtString(v)))
+}
+
 // region getNodeTags
 export function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
-	const tags: string[] = []
+	const tags: string[] = [
+		...Project!.animated_java.custom_rig_entity_tags.split(',').map(t => t.trim()),
+	]
 
 	const parentNames: Array<{ name: string; type: string }> = []
 

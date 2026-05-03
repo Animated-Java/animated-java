@@ -37,7 +37,7 @@ import {
 import ENTITY_NAMES from './entityNames'
 import { compileMcbProject } from './mcbCompiler'
 import OBJECTIVES from './objectives'
-import TAGS, { getNodeTags } from './tags'
+import TAGS, { getNodeTags, getRootEntityTags } from './tags'
 import TELLRAW from './tellraw'
 
 const BONE_TYPES = ['bone', 'text_display', 'item_display', 'block_display']
@@ -603,6 +603,7 @@ const dataPackCompiler: DataPackCompiler = async ({
 		auto_update_rig_orientation: aj.auto_update_rig_orientation,
 		debug_mode: debugMode,
 		use_entity_stacking: aj.use_entity_stacking,
+		root_entity_tags: getRootEntityTags().toString(),
 	}
 
 	const mcbFiles = getMCBFilesByVersion(version)

@@ -312,7 +312,14 @@ animated_java:
 
           Treat this input as if it were a `.mcfunction` file.
 
-          Supports [MC-Build](https://mcbuild.dev) syntax.
+      custom_rig_entity_tags:
+        title: Custom Rig Entity Tags
+        description: |-
+          [Markdown]
+          A list of tags (separated by commas) to add to ***every entity*** in the rig when summoned.
+
+          E.g. `tag1, tag2, tag3`
+
       interpolation_duration:
         title: Interpolation Duration
         description: |-
