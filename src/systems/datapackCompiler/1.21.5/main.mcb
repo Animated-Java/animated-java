@@ -69,17 +69,20 @@ dir root {
 			IF (has_locators || has_cameras) {
 				function <%blueprint_id%>/root/on_tick/transform_floating_entities
 			}
-
-			block { with storage <%temp_storage%> entry.data.uuids_by_name
-				REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
-					$tp $(<%node.storage_name%>) ~ ~ ~ ~ ~
-					# Precise Rotation Workaround. Fixes MC-272913.
-					# Thanks @Triton365! (https://discord.com/channels/154777837382008833/157097006500806656/1402253905408163842)
-					$execute \
-						as $(<%node.storage_name%>) \
-						store success entity @s OnGround byte 1 \
-						store success score @s <%OBJECTIVES.I()%> \
-						unless score @s <%OBJECTIVES.I()%> matches 1
+			IF (use_entity_stacking) {
+				execute on passengers run rotate @s ~ ~
+			} ELSE {
+				block { with storage <%temp_storage%> entry.data.uuids_by_name
+					REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
+						$tp $(<%node.storage_name%>) ~ ~ ~ ~ ~
+						# Precise Rotation Workaround. Fixes MC-272913.
+						# Thanks @Triton365! (https://discord.com/channels/154777837382008833/157097006500806656/1402253905408163842)
+						$execute \
+							as $(<%node.storage_name%>) \
+							store success entity @s OnGround byte 1 \
+							store success score @s <%OBJECTIVES.I()%> \
+							unless score @s <%OBJECTIVES.I()%> matches 1
+					}
 				}
 			}
 		} ELSE IF (has_ticking_locators) {
@@ -175,17 +178,20 @@ IF (!auto_update_rig_orientation) {
 		IF (has_locators || has_cameras) {
 			function <%blueprint_id%>/root/on_tick/transform_floating_entities
 		}
-
-		block { with storage <%temp_storage%> entry.data.uuids_by_name
-			REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
-				$tp $(<%node.storage_name%>) ~ ~ ~ ~ ~
-				# Precise Rotation Workaround. Fixes MC-272913.
-				# Thanks @Triton365! (https://discord.com/channels/154777837382008833/157097006500806656/1402253905408163842)
-				$execute \
-					as $(<%node.storage_name%>) \
-					store success entity @s OnGround byte 1 \
-					store success score @s <%OBJECTIVES.I()%> \
-					unless score @s <%OBJECTIVES.I()%> matches 1
+		IF (use_entity_stacking) {
+			execute at @s on passengers run rotate @s ~ ~
+		} ELSE {
+			block { with storage <%temp_storage%> entry.data.uuids_by_name
+				REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
+					$tp $(<%node.storage_name%>) ~ ~ ~ ~ ~
+					# Precise Rotation Workaround. Fixes MC-272913.
+					# Thanks @Triton365! (https://discord.com/channels/154777837382008833/157097006500806656/1402253905408163842)
+					$execute \
+						as $(<%node.storage_name%>) \
+						store success entity @s OnGround byte 1 \
+						store success score @s <%OBJECTIVES.I()%> \
+						unless score @s <%OBJECTIVES.I()%> matches 1
+				}
 			}
 		}
 	}
@@ -284,13 +290,17 @@ IF (has_animations) {
 					$execute at @s run function ./zzz/apply_frame {frame: $(to_frame)}
 					tag @s remove <%TAGS.TRANSFORMS_ONLY()%>
 
-					data_manager prep read
-					block { with storage <%temp_storage%> entry.data.uuids_by_name
-						REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
-							$execute \
-								as $(<%node.storage_name%>) \
-								store result entity @s interpolation_duration int 1 \
-								run scoreboard players get #this <%OBJECTIVES.I()%>
+					IF (use_entity_stacking) {
+						execute on passengers store result entity @s interpolation_duration int 1 run scoreboard players get #this <%OBJECTIVES.I()%>
+					} ELSE {
+						data_manager prep read
+						block { with storage <%temp_storage%> entry.data.uuids_by_name
+							REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
+								$execute \
+									as $(<%node.storage_name%>) \
+									store result entity @s interpolation_duration int 1 \
+									run scoreboard players get #this <%OBJECTIVES.I()%>
+							}
 						}
 					}
 				}
@@ -300,12 +310,17 @@ IF (has_animations) {
 						# Tweening logic
 						scoreboard players remove @s <%OBJECTIVES.TWEEN_DURATION()%> 1
 						execute if score @s <%OBJECTIVES.TWEEN_DURATION()%> matches 1.. run return 1
-						execute if score @s <%OBJECTIVES.TWEEN_DURATION()%> matches 0 run \
-							block { with storage <%temp_storage%> entry.data.uuids_by_name
-								REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
-									$data modify entity $(<%node.storage_name%>) interpolation_duration set value <%interpolation_duration%>
+						IF (use_entity_stacking) {
+							execute if score @s <%OBJECTIVES.TWEEN_DURATION()%> matches 0 on passengers run \
+								data modify entity @s interpolation_duration set value <%interpolation_duration%>
+						} ELSE {
+							execute if score @s <%OBJECTIVES.TWEEN_DURATION()%> matches 0 run \
+								block { with storage <%temp_storage%> entry.data.uuids_by_name
+									REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
+										$data modify entity $(<%node.storage_name%>) interpolation_duration set value <%interpolation_duration%>
+									}
 								}
-							}
+						}
 
 						# Animation logic
 						IF (animation.loop_mode === 'loop' && animation.loop_delay === 0) {
@@ -355,9 +370,13 @@ IF (has_animations) {
 						function set_frame {
 							#ARGS: {frame: int}
 							$function ./apply_frame {frame: $(frame)}
-							block { with storage <%temp_storage%> entry.data.uuids_by_name
-								REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
-									$data modify entity $(<%node.storage_name%>) start_interpolation set value -1
+							IF (use_entity_stacking) {
+								execute on passengers run data modify entity @s start_interpolation set value -1
+							} ELSE {
+								block { with storage <%temp_storage%> entry.data.uuids_by_name
+									REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
+										$data modify entity $(<%node.storage_name%>) start_interpolation set value -1
+									}
 								}
 							}
 							return 1
@@ -397,9 +416,14 @@ IF (has_animations) {
 
 							$function ./frames/$(frame) with storage <%temp_storage%> entry.data.uuids_by_name
 
-							block { with storage <%temp_storage%> entry.data.uuids_by_name
-								REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
-									$data modify entity $(<%node.storage_name%>) start_interpolation set value -1
+							IF (use_entity_stacking) {
+								execute on passengers run \
+									data modify entity @s start_interpolation set value -1
+							} ELSE {
+								block { with storage <%temp_storage%> entry.data.uuids_by_name
+									REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
+										$data modify entity $(<%node.storage_name%>) start_interpolation set value -1
+									}
 								}
 							}
 

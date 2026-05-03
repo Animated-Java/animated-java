@@ -37,6 +37,7 @@ export interface BlueprintSettings {
 	teleportation_duration: number
 	auto_update_rig_orientation: boolean
 	use_storage_for_animation: boolean
+	use_entity_stacking: boolean
 	// Plugin Settings
 	baked_animations: boolean
 	json_file: string
@@ -75,7 +76,7 @@ export const defaultValues: BlueprintSettings = {
 
 	auto_update_rig_orientation: true,
 	use_storage_for_animation: false,
-
+	use_entity_stacking: false,
 	// Plugin Settings
 	baked_animations: true,
 	json_file: '',

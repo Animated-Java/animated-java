@@ -547,7 +547,6 @@ const dataPackCompiler: DataPackCompiler = async ({
 	TextComponent.defaultMinecraftVersion = version
 
 	const aj = Project!.animated_java
-	const isStatic = animations.length === 0
 
 	const parsed = parseResourceLocation(aj.blueprint_id)
 	const relativePathToSrc = parsed.path
@@ -603,6 +602,7 @@ const dataPackCompiler: DataPackCompiler = async ({
 		data_storage: `animated_java:data`,
 		auto_update_rig_orientation: aj.auto_update_rig_orientation,
 		debug_mode: debugMode,
+		use_entity_stacking: aj.use_entity_stacking,
 	}
 
 	const mcbFiles = getMCBFilesByVersion(version)
