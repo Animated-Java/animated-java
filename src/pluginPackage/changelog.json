@@ -697,5 +697,28 @@
 				"list": ["Fixed \"infinite loading popup\" issue."]
 			}
 		]
+	},
+	"1.10.0-beta.6": {
+		"title": "v1.10.0-beta.6",
+		"author": "Titus Evans (SnaveSutit)",
+		"date": "2026-05-04",
+		"categories": [
+			{
+				"title": "Changes",
+				"list": [
+					"Added `Rig` page to Blueprint settings.",
+					"Added `Custom Rig Entity Tags` option to Blueprint settings.",
+					"Added `Use Entity Stacking` option to Blueprint settings."
+				]
+			},
+			{
+				"title": "Fixes",
+				"list": [
+					"Fixed Blueprints failing to save due to missing `fs` global.",
+					"Fixed Animated Java failing to reload correctly when plugins are reloaded.",
+					"Fixed JSON Text Components failing to add quotes around strings that start with numeric characters."
+				]
+			}
+		]
 	}
 }
