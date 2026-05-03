@@ -15,6 +15,7 @@ import GeneralComponent from './pages/general.svelte'
 import MiscComponent from './pages/misc.svelte'
 import PluginComponent from './pages/plugin.svelte'
 import ResourcepackComponent from './pages/resourcepack.svelte'
+import RigComponent from './pages/rig.svelte'
 
 const localize = createScopedTranslator('dialog.blueprint_settings')
 
@@ -28,17 +29,25 @@ export function openBlueprintSettings() {
 				label: localize('pages.general.title'),
 				icon: 'settings',
 			},
+			resourcepack: {
+				component: ResourcepackComponent,
+				condition: () => Project.pluginMode.get() === false,
+				label: localize('pages.resource_pack.title'),
+				icon: 'image',
+			},
 			datapack: {
 				component: DatapackComponent,
 				condition: () => Project.pluginMode.get() === false,
 				label: localize('pages.datapack.title'),
 				icon: 'database',
 			},
-			resourcepack: {
-				component: ResourcepackComponent,
-				condition: () => Project.pluginMode.get() === false,
-				label: localize('pages.resource_pack.title'),
-				icon: 'image',
+			rig: {
+				component: RigComponent,
+				label: localize('pages.rig.title'),
+				icon: 'fa-person',
+				condition: () =>
+					Project.pluginMode.get() === false &&
+					Project.animated_java.data_pack_export_mode !== 'none',
 			},
 			eventFunctions: {
 				component: EventFunctionsComponent,

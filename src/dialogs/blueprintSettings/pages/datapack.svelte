@@ -3,7 +3,6 @@
 	import { validateDataPackFolder, validateZipPath } from '../../../formats/blueprint/settings'
 	import BoxSelect from '../../../svelteComponents/sidebarDialogItems/boxSelect.svelte'
 	import Checkbox from '../../../svelteComponents/sidebarDialogItems/checkbox.svelte'
-	import NumberSlider from '../../../svelteComponents/sidebarDialogItems/numberSlider.svelte'
 	import SelectFile from '../../../svelteComponents/sidebarDialogItems/selectFile.svelte'
 	import SelectFolder from '../../../svelteComponents/sidebarDialogItems/selectFolder.svelte'
 	import { createScopedTranslator } from '../../../util/lang'
@@ -15,16 +14,12 @@
 	let animationSystem = $state(
 		Project.animated_java.use_storage_for_animation ? 'storage' : 'functions'
 	)
-	let interpolationDuration = $state(Project.animated_java.interpolation_duration)
-	let teleportationDuration = $state(Project.animated_java.teleportation_duration)
 	let autoUpdateRigOrientation = $state(Project.animated_java.auto_update_rig_orientation)
 
 	onDestroy(() => {
 		Project.animated_java.data_pack_export_mode = dataPackExportFormat
 		Project.animated_java.data_pack = dataPackLocation
 		Project.animated_java.use_storage_for_animation = animationSystem === 'storage'
-		Project.animated_java.interpolation_duration = interpolationDuration
-		Project.animated_java.teleportation_duration = teleportationDuration
 		Project.animated_java.auto_update_rig_orientation = autoUpdateRigOrientation
 	})
 </script>
@@ -71,24 +66,6 @@
 	{/if}
 
 	{#if dataPackExportFormat !== 'none'}
-		<NumberSlider
-			label={translate('interpolation_duration.title')}
-			description={translate('interpolation_duration.description')}
-			bind:value={interpolationDuration}
-			step={1}
-			min={0}
-			max={2147483647}
-		/>
-
-		<NumberSlider
-			label={translate('teleportation_duration.title')}
-			description={translate('teleportation_duration.description')}
-			bind:value={teleportationDuration}
-			step={1}
-			min={0}
-			max={2147483647}
-		/>
-
 		<Checkbox
 			label={translate('auto_update_rig_orientation.title')}
 			description={translate('auto_update_rig_orientation.description')}

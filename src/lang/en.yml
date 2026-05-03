@@ -114,6 +114,7 @@ animated_java:
         general.title: General
         resource_pack.title: Resource Pack
         datapack.title: Data Pack
+        rig.title: Rig
         event_functions.title: Event Functions
         plugin.title: Plugin
         misc.title: Misc
@@ -325,7 +326,22 @@ animated_java:
           [Markdown]
           The default [teleport duration](https://minecraft.wiki/w/Display#Entity_data) of the rig.
 
-          Higher values make large movements smoother but less responsive.
+      use_entity_stacking:
+        title: Use Entity Stacking
+        description: |-
+          [Markdown]
+          Whether or not to use entity stacking for the rig's bone entities.
+
+          When **enabled**:
+          - All bone entities will be mounted on the root entity.
+          - Bone rotations will be less precise. (limited to integer degrees)
+          - Bone entities can be selected via `on passengers` when executing `as` the root entity.
+
+          When **disabled**:
+          - Bone entities will not be mounted on the root entity.
+          - Bone rotations will be *much* more precise, enabling much smoother movement when teleporting the rig around.
+          - Bone entities cannot be selected via `on passengers`, but can still be accessed via `as_node`.
+
       auto_update_rig_orientation:
         title: Auto Update Rig Orientation
         description: |-
