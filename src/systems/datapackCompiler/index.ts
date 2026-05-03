@@ -37,7 +37,7 @@ import {
 import ENTITY_NAMES from './entityNames'
 import { compileMcbProject } from './mcbCompiler'
 import OBJECTIVES from './objectives'
-import TAGS, { getNodeTags } from './tags'
+import TAGS, { getNodeTags, getRootEntityTags } from './tags'
 import TELLRAW from './tellraw'
 
 const BONE_TYPES = ['bone', 'text_display', 'item_display', 'block_display']
@@ -547,7 +547,6 @@ const dataPackCompiler: DataPackCompiler = async ({
 	TextComponent.defaultMinecraftVersion = version
 
 	const aj = Project!.animated_java
-	const isStatic = animations.length === 0
 
 	const parsed = parseResourceLocation(aj.blueprint_id)
 	const relativePathToSrc = parsed.path
@@ -594,7 +593,7 @@ const dataPackCompiler: DataPackCompiler = async ({
 			Object.values(rig.nodes).filter(n => n.type === 'locator' && n.config?.on_tick_function)
 				.length > 0,
 		has_cameras: Object.values(rig.nodes).filter(n => n.type === 'camera').length > 0,
-		is_static: isStatic,
+		has_animations: animations.length > 0,
 		getNodeTags,
 		BONE_TYPES,
 		project_storage: `${aj.blueprint_id}`,
@@ -603,6 +602,8 @@ const dataPackCompiler: DataPackCompiler = async ({
 		data_storage: `animated_java:data`,
 		auto_update_rig_orientation: aj.auto_update_rig_orientation,
 		debug_mode: debugMode,
+		use_entity_stacking: aj.use_entity_stacking,
+		root_entity_tags: getRootEntityTags().toString(),
 	}
 
 	const mcbFiles = getMCBFilesByVersion(version)
@@ -612,8 +613,7 @@ const dataPackCompiler: DataPackCompiler = async ({
 			'src/global.mcbt': mcbFiles.globalTemplates,
 			'src/animated_java.mcb': mcbFiles.global,
 			[`src/${parsed.fullPath}.mcb`]:
-				`import ${relativePathToSrc}/global.mcbt\n` +
-				(isStatic ? mcbFiles.static : mcbFiles.animation),
+				`import ${relativePathToSrc}/global.mcbt\n` + mcbFiles.main,
 		},
 		destPath: '.',
 		variables,

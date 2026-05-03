@@ -26,3 +26,13 @@ dialog.dialog pre:has(code) {
 	white-space: nowrap !important;
 	max-width: 75% !important;
 }
+
+div.base-sidebar-dialog-item p.description ul {
+	padding-left: 2em;
+}
+div.base-sidebar-dialog-item p.description li {
+	list-style: disc;
+}
+div.base-sidebar-dialog-item p.description code {
+	background: var(--color-back);
+}

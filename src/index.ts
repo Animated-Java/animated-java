@@ -28,6 +28,7 @@ import { openExportProgressDialog } from './dialogs/exportProgress/exportProgres
 import { openUnexpectedErrorDialog } from './dialogs/unexpectedError/unexpectedError'
 import { BLUEPRINT_FORMAT } from './formats/blueprint'
 import { BLUEPRINT_CODEC } from './formats/blueprint/codec'
+import { exportAll } from './interface/animatedJavaBarItem'
 import { TextDisplay } from './outliner/textDisplay'
 import { VanillaBlockDisplay, debugBlockState } from './outliner/vanillaBlockDisplay'
 import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
@@ -82,6 +83,7 @@ const AnimatedJavaApi = {
 	BLOCKSTATE_REGISTRY,
 	exportProject,
 	openInstallPopup,
+	exportAll,
 	removeCubesAssociatedWithTexture(texture: Texture) {
 		const cubes = Cube.all.filter(cube =>
 			Object.values(cube.faces).some(face => face.texture === texture.uuid)

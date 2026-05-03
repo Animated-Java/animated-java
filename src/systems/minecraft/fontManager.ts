@@ -179,7 +179,7 @@ class BitmapFontProvider extends FontProvider {
 		this.ascent = providerJSON.ascent
 		for (const row of providerJSON.chars) {
 			const str = new UnicodeString(row)
-			console.log({ row, str })
+			// console.log({ row, str })
 			this.chars.push(str)
 		}
 	}
@@ -196,15 +196,15 @@ class BitmapFontProvider extends FontProvider {
 		this.charHeight = texture.image.height / this.chars.length
 		this.charWidth = texture.image.width / this.chars[0].length
 		if (!Number.isFinite(this.charWidth)) {
-			console.log({
-				providerJSON: this.providerJSON,
-				bitmapPath: this.bitmapPath,
-				imageWidth: texture.image.width,
-				charsPerRow: this.chars[0].length,
-				calculatedCharWidth: this.charWidth,
-				chars: this.chars,
-				texture,
-			})
+			// console.log({
+			// 	providerJSON: this.providerJSON,
+			// 	bitmapPath: this.bitmapPath,
+			// 	imageWidth: texture.image.width,
+			// 	charsPerRow: this.chars[0].length,
+			// 	calculatedCharWidth: this.charWidth,
+			// 	chars: this.chars,
+			// 	texture,
+			// })
 			throw new Error(
 				`Invalid character width calculated from bitmap font atlas: ${this.charWidth}`
 			)
@@ -325,7 +325,7 @@ export class MinecraftFont {
 			throw error
 		}
 
-		console.log(this.assetPath, fontJSON)
+		// console.log(this.assetPath, fontJSON)
 
 		for (const providerJSON of fontJSON.providers) {
 			switch (providerJSON.type) {

@@ -216,6 +216,7 @@ export function getFrame(
 				// lastFrameCache.set(uuid, { matrix, keyframe })
 				break
 			}
+			case 'interaction':
 			case 'camera':
 			case 'struct': {
 				transform.matrix = getNodeMatrix(outlinerNode, 1)
@@ -232,7 +233,7 @@ export function getFrame(
 		transform.matrix.decompose(pos, rot, scale)
 		transform.decomposed = getDecomposedTransformation(transform.matrix)
 
-		if (node.type === 'locator' || node.type === 'camera') {
+		if (node.type === 'locator' || node.type === 'camera' || node.type === 'interaction') {
 			node.max_distance = Math.max(node.max_distance, pos.length())
 		}
 
@@ -288,18 +289,7 @@ function getFunctionKeyframe(
 export function updatePreview(animation: _Animation, time: number) {
 	Timeline.time = time
 	Animator.showDefaultPose(true)
-	const nodes: OutlinerNode[] = [
-		...Group.all,
-		...NullObject.all,
-		...Locator.all,
-		...TextDisplay.all,
-		...VanillaBlockDisplay.all,
-		...VanillaItemDisplay.all,
-	]
-	if (OutlinerElement.types.camera) {
-		// @ts-expect-error - Broken BB types
-		nodes.push(...OutlinerElement.types.camera.all)
-	}
+	const nodes: OutlinerNode[] = getAnimatableNodes()
 	for (const node of nodes) {
 		if (!(node.constructor as any).animator) continue
 		Animator.resetLastValues()
@@ -377,6 +367,7 @@ export function getAnimatableNodes(): OutlinerElement[] {
 	return [
 		...Group.all,
 		...Locator.all,
+		...BoundingBox.all,
 		...TextDisplay.all,
 		...VanillaBlockDisplay.all,
 		...VanillaItemDisplay.all,

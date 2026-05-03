@@ -2,8 +2,6 @@ import type { Plugin } from 'esbuild'
 import * as fs from 'fs'
 import { readFileSync, writeFileSync } from 'fs'
 import { basename, join } from 'node:path'
-import { Octokit } from 'octokit'
-import * as prettier from 'prettier'
 import { sveltePreprocess } from 'svelte-preprocess'
 // @ts-expect-error - Types are broken in nodenext for this package, but it works fine.
 import { typescript } from 'svelte-preprocess-esbuild'
@@ -13,16 +11,12 @@ import { render } from 'svelte/server'
 // @ts-expect-error - Svelte's internal server-side rendering API is not typed, but we need it to render the about.svelte file at build time.
 import * as svelteInternalServer from 'svelte/internal/server'
 
-const OCTO_KIT = new Octokit({})
-
 const PACKAGE = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
 const PLUGIN_PACKAGE_PATH = './src/pluginPackage/'
 const SVELTE_FILE = './src/pluginPackage/about.svelte'
 const README_DIST_PATH = './dist/pluginPackage/about.md'
 const DIST_PATH = './dist/'
 const DIST_PACKAGE_PATH = './dist/pluginPackage/'
-const PLUGIN_REPO_PATH = 'D:/github-repos/snavesutit/blockbench-plugins/plugins/animated_java'
-const PLUGIN_MANIFEST_PATH = 'D:/github-repos/snavesutit/blockbench-plugins/plugins.json'
 const CHANGELOG_PATH = './src/pluginPackage/changelog.json'
 const RELEASE_NOTES_TEMPLATES = './.scripts/plugins/releaseNoteTemplates/'
 const URL_REGEX =
@@ -30,18 +24,6 @@ const URL_REGEX =
 
 function replaceTemplateVars(str: string, items: Record<string, string>) {
 	return str.replace(/\{(.+?)\}/g, str => items[str.replace(/[\{\}]/g, '')] ?? str)
-}
-
-const VERSION_REGEX = /(\d+)\.(\d+)\.(\d+)(?:-([a-zA-Z0-9]+))?/
-
-function getVersionNumbers(version: string) {
-	const match = VERSION_REGEX.exec(version)
-	if (!match) return null
-	const major = parseInt(match[1])
-	const minor = parseInt(match[2])
-	const patch = parseInt(match[3])
-	const preRelease = match[4] ?? null
-	return { major, minor, patch, preRelease }
 }
 
 /**
@@ -160,114 +142,68 @@ function plugin(): Plugin {
 					fs.unlinkSync(join(DIST_PACKAGE_PATH, 'about.svelte'))
 
 				if (process.env.NODE_ENV === 'production') {
-					try {
-						console.log('📝 Creating changelogs...')
-						const rawChangelog = fs.readFileSync(CHANGELOG_PATH, 'utf-8')
-						const changelog = JSON.parse(rawChangelog)
-						for (const file of fs.readdirSync(RELEASE_NOTES_TEMPLATES)) {
-							let content = fs.readFileSync(
-								join(RELEASE_NOTES_TEMPLATES, file),
-								'utf-8'
+					console.log('📝 Creating changelogs...')
+					const rawChangelog = fs.readFileSync(CHANGELOG_PATH, 'utf-8')
+					const changelog = JSON.parse(rawChangelog)
+					for (const file of fs.readdirSync(RELEASE_NOTES_TEMPLATES)) {
+						let content = fs.readFileSync(join(RELEASE_NOTES_TEMPLATES, file), 'utf-8')
+
+						const versionChangelog = changelog[PACKAGE.version]
+						if (!versionChangelog) {
+							console.warn(
+								`⚠️  No changelog found for version ${PACKAGE.version} in ${CHANGELOG_PATH}`
 							)
-							let pings = ''
-							const version = getVersionNumbers(PACKAGE.version)
-							if (!version) {
-								throw new Error(
-									`Version ${PACKAGE.version} in package.json is not valid semver!`
-								)
-							}
-							const latestRelease = getVersionNumbers(
-								(
-									await OCTO_KIT.request('GET /repos/{owner}/{repo}/releases', {
-										owner: 'animated-java',
-										repo: 'animated-java',
-										per_page: 1,
-										headers: {
-											accept: 'application/vnd.github+json',
-											'X-GitHub-Api-Version': '2022-11-28',
-										},
-									})
-								).data[0].tag_name
-							)
-							if (!latestRelease) {
-								throw new Error('No latest release found on github!')
-							}
-							if (version.major > latestRelease.major) {
-								pings += `@Major Release Ping`
-							}
-							if (version.minor > latestRelease.minor) {
-								pings += ` @Minor Release Ping`
-							}
-							if (version.patch > latestRelease.patch) {
-								pings += ` @Patch Release Ping`
-							}
-							if (latestRelease.preRelease) {
-								pings += ` @Pre-Release Ping`
-							}
-							if (rawChangelog.includes('[BREAKING]')) {
-								pings += ` @Breaking Changes Ping`
-							}
-
-							const versionChangelog = changelog[PACKAGE.version]
-							if (!versionChangelog) {
-								throw new Error(
-									`No changelog found for version ${PACKAGE.version} in ${CHANGELOG_PATH}`
-								)
-							}
-
-							let categories = ''
-							for (const category of versionChangelog.categories) {
-								categories +=
-									`\n\n### ${category.title}\n\n` +
-									category.list
-										.map((v: string) => '- ' + v)
-										.join('\n')
-										.replaceAll('[BREAKING]', '⚠️ **BREAKING** —')
-							}
-
-							content = replaceTemplateVars(content, {
-								version: PACKAGE.version,
-								categories: categories.trim(),
-								pings: pings.trim(),
-							})
-
-							if (content.includes('[[ESCAPE_URLS]]')) {
-								content = content
-									.replace('[[ESCAPE_URLS]]', '')
-									.replaceAll(URL_REGEX, (match: string) => '<' + match + '>')
-							}
-
-							fs.writeFileSync(join(DIST_PATH, file), content)
+							return
 						}
-					} catch (e) {
-						console.error('Error creating changelogs:', e)
-						throw e
+
+						let categories = ''
+						for (const category of versionChangelog.categories) {
+							categories +=
+								`\n\n### ${category.title}\n\n` +
+								category.list
+									.map((v: string) => '- ' + v)
+									.join('\n')
+									.replaceAll('[BREAKING]', '⚠️ **BREAKING** —')
+						}
+
+						content = replaceTemplateVars(content, {
+							version: PACKAGE.version,
+							categories: categories.trim(),
+						})
+
+						if (content.includes('[[ESCAPE_URLS]]')) {
+							content = content
+								.replace('[[ESCAPE_URLS]]', '')
+								.replaceAll(URL_REGEX, (match: string) => '<' + match + '>')
+						}
+
+						fs.writeFileSync(join(DIST_PATH, file), content)
 					}
 
-					if (fs.existsSync(PLUGIN_REPO_PATH)) {
-						fs.rmSync(PLUGIN_REPO_PATH, { recursive: true, force: true })
-						fs.cpSync(DIST_PACKAGE_PATH, PLUGIN_REPO_PATH, { recursive: true })
-						const manifest = JSON.parse(fs.readFileSync(PLUGIN_MANIFEST_PATH, 'utf-8'))
-						manifest.animated_java.title = PACKAGE.title
-						manifest.animated_java.author = PACKAGE.author.name
-						manifest.animated_java.icon = PACKAGE.icon
-						manifest.animated_java.description = PACKAGE.description
-						manifest.animated_java.version = PACKAGE.version
-						manifest.animated_java.min_version = PACKAGE.min_blockbench_version
-						manifest.animated_java.max_version = PACKAGE.max_blockbench_version
-						manifest.animated_java.variant = PACKAGE.variant
-						manifest.animated_java.tags = PACKAGE.tags
-						manifest.animated_java.has_changelog = true
+					// if (fs.existsSync(PLUGIN_REPO_PATH)) {
+					// 	fs.rmSync(PLUGIN_REPO_PATH, { recursive: true, force: true })
+					// 	fs.cpSync(DIST_PACKAGE_PATH, PLUGIN_REPO_PATH, { recursive: true })
+					// 	const manifest = JSON.parse(fs.readFileSync(PLUGIN_MANIFEST_PATH, 'utf-8'))
+					// 	manifest.animated_java.title = PACKAGE.title
+					// 	manifest.animated_java.author = PACKAGE.author.name
+					// 	manifest.animated_java.icon = PACKAGE.icon
+					// 	manifest.animated_java.description = PACKAGE.description
+					// 	manifest.animated_java.version = PACKAGE.version
+					// 	manifest.animated_java.min_version = PACKAGE.min_blockbench_version
+					// 	manifest.animated_java.max_version = PACKAGE.max_blockbench_version
+					// 	manifest.animated_java.variant = PACKAGE.variant
+					// 	manifest.animated_java.tags = PACKAGE.tags
+					// 	manifest.animated_java.has_changelog = true
 
-						fs.writeFileSync(
-							PLUGIN_MANIFEST_PATH,
-							await prettier.format(JSON.stringify(manifest, null, '\t'), {
-								useTabs: true,
-								parser: 'json',
-							})
-						)
-						console.log('📋 Copied to Plugin Repo!')
-					}
+					// 	fs.writeFileSync(
+					// 		PLUGIN_MANIFEST_PATH,
+					// 		await prettier.format(JSON.stringify(manifest, null, '\t'), {
+					// 			useTabs: true,
+					// 			parser: 'json',
+					// 		})
+					// 	)
+					// 	console.log('📋 Copied to Plugin Repo!')
+					// }
 				}
 			})
 		},

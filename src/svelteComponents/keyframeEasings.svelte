@@ -58,6 +58,7 @@
 		} else {
 			kf.easing = getEasingFunctionName(type, mode)
 		}
+		Project.saved = false
 	}
 
 	function setKeyframeEasingArg(kf: _Keyframe, arg: number | undefined) {
@@ -66,6 +67,7 @@
 		} else {
 			kf.easingArgs = [arg]
 		}
+		Project.saved = false
 	}
 
 	function getEasingFunctionName(type: string, mode = 'inout') {
