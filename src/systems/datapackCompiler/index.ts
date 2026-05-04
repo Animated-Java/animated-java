@@ -250,7 +250,7 @@ async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAn
 		PROGRESS_DESCRIPTION.set(`Creating Animation Storage for '${animation.storage_name}'`)
 		let frames = new NbtCompound()
 		const addFrameDataCommand = () => {
-			const str = `data modify storage animated_java:${
+			const str = `data modify storage ${
 				Project!.animated_java.blueprint_id
 			}/animations ${animation.storage_name} merge value ${frames.toString()}`
 			dataCommands.push(str)
