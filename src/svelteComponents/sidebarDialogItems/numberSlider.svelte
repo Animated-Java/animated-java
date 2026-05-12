@@ -50,6 +50,19 @@
 
 	let input = $state<HTMLInputElement>()
 
+	function setValue(newValue: number) {
+		const divisor = 1 / (step ?? 1)
+		return (
+			Math.round(
+				Math.clamp(
+					Animator.MolangParser.parse(newValue),
+					min ?? -Infinity,
+					max ?? Infinity
+				) * divisor
+			) / divisor
+		)
+	}
+
 	function onMousedown(input: HTMLInputElement, event: any) {
 		event.preventDefault()
 		convertTouchEvent(event)
@@ -59,11 +72,8 @@
 			convertTouchEvent(e2)
 			let difference = Math.trunc((e2.clientX - event.clientX) / 10) * (step ?? 1)
 			if (difference != lastDifference) {
-				input.value = Math.clamp(
-					parseFloat(input.value) + (difference - lastDifference),
-					min ?? -Infinity,
-					max ?? Infinity
-				).toString()
+				value = setValue(parseFloat(input.value) + (difference - lastDifference))
+				input.value = value.toString()
 				lastDifference = difference
 			}
 		}
@@ -75,12 +85,9 @@
 		addEventListeners(document, 'mouseup touchend', stop)
 	}
 
-	function onFocusOut(input: HTMLInputElement, min?: number, max?: number) {
-		input.value = Math.clamp(
-			Animator.MolangParser.parse(input.value),
-			min ?? -Infinity,
-			max ?? Infinity
-		).toString()
+	function onFocusOut(input: HTMLInputElement) {
+		value = setValue(Animator.MolangParser.parse(input.value))
+		input.value = value.toString()
 	}
 </script>
 
@@ -98,7 +105,7 @@
 					bind:this={input}
 					class="dark_bordered focusable_input"
 					bind:value
-					onfocusout={() => onFocusOut(input!, min, max)}
+					onfocusout={() => onFocusOut(input!)}
 				/>
 				<div
 					class="tool numaric_input_slider slider-fix"
