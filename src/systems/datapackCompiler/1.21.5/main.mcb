@@ -208,6 +208,7 @@ IF (has_animations) {
 				function play {
 					debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
 
+					data_manager prep read
 					function <%blueprint_id%>/animations/pause_all
 
 					tag @s add <%TAGS.ANIMATION_PLAYING(blueprint_id, animation.storage_name)%>
@@ -220,6 +221,7 @@ IF (has_animations) {
 				function stop {
 					debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
 
+					data_manager prep read
 					function <%blueprint_id%>/animations/pause_all
 
 					scoreboard players set @s <%OBJECTIVES.FRAME(animation.storage_name)%> 0
@@ -243,6 +245,7 @@ IF (has_animations) {
 				function next_frame {
 					debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
 
+					data_manager prep read
 					execute if score @s <%OBJECTIVES.FRAME(animation.storage_name)%> matches <%animation.duration%>.. run scoreboard players set @s <%OBJECTIVES.FRAME(animation.storage_name)%> 1
 					data remove storage <%temp_storage%> args
 					execute store result storage <%temp_storage%> args.frame int 1 run scoreboard players get @s <%OBJECTIVES.FRAME(animation.storage_name)%>
@@ -256,7 +259,6 @@ IF (has_animations) {
 					debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
 
 					data_manager prep read
-
 					data remove storage <%temp_storage%> args
 					$execute store result storage <%temp_storage%> args.frame int 1 run scoreboard players set @s <%OBJECTIVES.FRAME(animation.storage_name)%> $(frame)
 					execute at @s run function ./zzz/set_frame with storage <%temp_storage%> args
@@ -278,6 +280,7 @@ IF (has_animations) {
 					#ARGS: {duration: int, to_frame: int}
 					debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
 
+					data_manager prep read
 					function <%blueprint_id%>/animations/pause_all
 
 					tag @s add <%TAGS.ANIMATION_PLAYING(blueprint_id, animation.storage_name)%>
@@ -293,7 +296,6 @@ IF (has_animations) {
 					IF (use_entity_stacking) {
 						execute on passengers store result entity @s interpolation_duration int 1 run scoreboard players get #this <%OBJECTIVES.I()%>
 					} ELSE {
-						data_manager prep read
 						block { with storage <%temp_storage%> entry.data.uuids_by_name
 							REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
 								$execute \
