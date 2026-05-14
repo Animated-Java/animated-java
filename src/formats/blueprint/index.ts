@@ -163,18 +163,59 @@ export interface IBlueprintFormatJSON {
 	collections?: ICollectionJSON[]
 }
 
-export function fixCubeRotation(cube: Cube) {
-	const maxRotation = Math.max(...cube.rotation)
-	const minRotation = Math.min(...cube.rotation)
-	if (maxRotation <= 45 && minRotation >= -45) return
-	// Use the rotation with the largest absolute value
-	const rotation = Math.abs(maxRotation) >= Math.abs(minRotation) ? maxRotation : minRotation
-	const axis = cube.rotation.indexOf(rotation)
+function splitRotationChunks(value: number, limit = 45): number[] {
+	if (Math.abs(value) <= limit) return [value]
+	const sign = value > 0 ? 1 : -1
+	const absVal = Math.abs(value)
+	const full = Math.floor(absVal / limit)
+	const remainder = absVal - full * limit
+	const chunks: number[] = Array(full).fill(sign * limit)
+	if (remainder > 0) chunks.push(sign * remainder)
+	return chunks
+}
 
-	const previousSelected = Project!.selected_elements
-	Project!.selected_elements = [cube]
-	rotateOnAxis(() => rotation, axis, true)
-	Project!.selected_elements = previousSelected
+export function fixCubeRotation(cube: Cube) {
+	const rot = cube.rotation as ArrayVector3
+	const nonZero = rot.filter(v => v !== 0).length
+	const overLimit = rot.some(v => Math.abs(v) > 45)
+	if (nonZero <= 1 && !overLimit) return
+
+	const chain: Array<{ axis: 0 | 1 | 2; value: number }> = []
+	for (const axis of [0, 1, 2] as const) {
+		const v = rot[axis]
+		if (v === 0) continue
+		for (const chunk of splitRotationChunks(v, 45)) chain.push({ axis, value: chunk })
+	}
+	if (chain.length === 0) return
+
+	const origin = (cube.origin as ArrayVector3).slice() as ArrayVector3
+	const originalParent = cube.parent
+	const cubeIndex = cube.getParentArray().indexOf(cube)
+
+	const innermost = chain[0]
+	const cubeRot: ArrayVector3 = [0, 0, 0]
+	cubeRot[innermost.axis] = innermost.value
+	cube.rotation = cubeRot
+
+	let inner: OutlinerNode = cube
+	for (let i = 1; i < chain.length; i++) {
+		const { axis, value } = chain[i]
+		const groupRot: ArrayVector3 = [0, 0, 0]
+		groupRot[axis] = value
+		const wrap = new Group(
+			{
+				name: `cube_rot_${'xyz'[axis]}`,
+				origin: origin.slice(),
+				rotation: groupRot,
+			},
+			// @ts-expect-error - missing UUID arg in custom types
+			guid()
+		).init()
+		wrap.createUniqueName()
+		inner.addTo(wrap)
+		inner = wrap
+	}
+	inner.addTo(originalParent, cubeIndex)
 }
 
 //region > Convert
