@@ -1,0 +1,956 @@
+animated_java:
+  menubar:
+    label: Animated Java
+
+  format:
+    blueprint:
+      name: 블루프린트
+
+  require:
+    fs: Animated Java는 리소스 팩 및 데이터 팩 내보내기, 블루프린트 저장 및 불러오기, 블루프린트 설정 검증, Minecraft 에셋 캐싱을 위해 fs 모듈이 필요합니다.
+
+  outliner:
+    structure_group:
+      title: 구조 그룹 (엔티티를 생성하지 않음)
+
+  action:
+    open_blueprint_settings:
+      name: 블루프린트 설정
+    open_documentation:
+      name: 문서
+    open_changelog:
+      name: 변경 사항
+    open_about:
+      name: 정보
+    open_display_entity_config:
+      name: 디스플레이 엔티티 설정
+    open_locator_config:
+      name: 로케이터 설정
+    open_interaction_config:
+      name: 인터랙션 설정
+    export:
+      name: 내보내기
+    export_debug:
+      name: 내보내기 (디버그)
+    export_all:
+      name: 모두 내보내기
+      description: |-
+        열려 있는 모든 블루프린트 프로젝트를 내보냅니다.
+    export_all_debug:
+      name: 모두 내보내기 (디버그)
+      description: |-
+        열려 있는 모든 블루프린트 프로젝트를 디버그 모드로 내보냅니다.
+    extract:
+      name: 추출
+      confirm: 추출 확인
+    create_text_display:
+      title: 텍스트 디스플레이 추가
+    create_item_display:
+      title: 아이템 디스플레이 추가
+    create_block_display:
+      title: 블록 디스플레이 추가
+    copy_display_entity_config:
+      name: 디스플레이 엔티티 설정 복사
+      message: '"%s"의 디스플레이 엔티티 설정을 복사했습니다'
+    paste_display_entity_config:
+      name: 디스플레이 엔티티 설정 붙여넣기
+      message: '"%s"의 디스플레이 엔티티 설정을 붙여넣었습니다'
+    variants:
+      create: 배리언트 생성
+      duplicate: 배리언트 복제
+      open_config: 배리언트 설정 열기
+      delete: 배리언트 삭제
+    upgrade_old_aj_model_loader:
+      name: .ajmodel 업데이트
+      select_file: .ajmodel 파일 선택
+      body: 오래된 .ajmodel 파일을 새로운 .ajblueprint 형식으로 업그레이드합니다.
+      button: 업그레이드할 .ajmodel 파일 선택
+
+  popup:
+    loading:
+      loading: Animated Java 불러오는 중...
+      success: Animated Java를 성공적으로 불러왔습니다!
+      offline: |-
+        Animated Java 연결에 실패했습니다!
+        일부 기능을 사용할 수 없을 수 있습니다.
+    installed_popup:
+      title: 설치해 주셔서 감사합니다!
+      close_button: 애니메이션을 시작해 봅시다!
+    incompatability_popup:
+      title: Animated Java 호환성 문제 감지됨
+      description: |-
+        Animated Java와 충돌하는 것으로 알려진 플러그인이 설치되어 있습니다.
+        Animated Java를 사용하려면 다음 플러그인을 비활성화하거나 삭제한 뒤 Blockbench를 재시작해 주세요:
+      disable_button: 플러그인 비활성화
+      button:
+        disable_all: 호환되지 않는 플러그인 모두 비활성화
+        ignore: 무시하고 계속 진행 (권장하지 않음)
+
+  plugin_dialog:
+    incompatability_notice: |-
+      이 플러그인은 Animated Java와 충돌하는 것으로 알려져 있습니다.
+
+      Animated Java가 설치되어 있는 동안에는 이 플러그인을 설치할 수 없습니다.
+
+  dialog:
+    reset: 기본값으로 재설정
+    about:
+      title: Animated Java 정보
+      close_button: 닫기
+    changelog_dialog:
+      title: Animated Java 변경 사항
+    unexpected_error:
+      title: 예기치 않은 오류가 발생했습니다!
+      close_button: 닫기
+      copy_error_message_button:
+        message: 오류 메시지를 클립보드에 복사했습니다!
+        description: 클릭하여 오류 메시지를 클립보드에 복사합니다.
+      paragraph: '이 오류를 보고하려면 저희 %s에 참여하여 #animated-java-support 채널에 스레드를 만들어 주시거나, {1}에 이슈를 등록해 주세요. 감사합니다!'
+
+    blueprint_settings:
+      title: 블루프린트 설정
+
+      pages:
+        general.title: 일반
+        resource_pack.title: 리소스 팩
+        datapack.title: 데이터 팩
+        rig.title: 리그
+        event_functions.title: 이벤트 함수
+        plugin.title: 플러그인
+        misc.title: 기타
+
+      project_settings:
+        title: 프로젝트
+      advanced_settings_warning: 고급 설정은 반드시 필요한 경우에만 사용해야 합니다!
+      project_name:
+        title: 이름
+        description: |-
+          블루프린트의 파일 이름입니다.
+
+          블루프린트를 다른 이름으로 저장하면 이 값이 덮어써집니다.
+      texture_size:
+        title: 텍스처 크기
+        description: |-
+          UV 에디터의 해상도입니다.
+
+          블루프린트 내에서 가장 큰 텍스처의 크기와 일치해야 합니다.
+        warning:
+          does_not_match_largest_width: 텍스처 너비가 가장 큰 텍스처의 너비(%s)와 일치하지 않습니다. 렌더링 문제가 발생할 수 있습니다.
+          does_not_match_largest_height: 텍스처 높이가 가장 큰 텍스처의 높이(%s)와 일치하지 않습니다. 렌더링 문제가 발생할 수 있습니다.
+          not_square: 텍스처의 너비와 높이가 같지 않습니다. 렌더링 문제가 발생할 수 있습니다.
+          not_a_power_of_2: 텍스처 크기가 2의 거듭제곱이 아닙니다. 렌더링 문제가 발생할 수 있습니다.
+      export_settings:
+        title: 내보내기
+      blueprint_id:
+        title: 블루프린트 ID
+        description: |-
+          리소스 팩과 데이터 팩을 생성할 때 사용할 ID입니다.
+
+          다른 리소스 팩 및 데이터 팩과의 충돌을 피하려면 고유한 ID를 사용하는 것이 좋습니다.
+        error:
+          empty_path: 블루프린트 ID 경로는 비어 있을 수 없습니다.
+          minecraft_namespace: |-
+            [Markdown]
+            `minecraft` 네임스페이스는 예약되어 있어 사용할 수 없습니다.
+          animated_java_global_id: |-
+            [Markdown]
+            `animated_java:global`은 예약된 ID이므로 사용할 수 없습니다.
+          invalid_characters: 블루프린트 ID는 영어 소문자, 숫자, 밑줄(_)만 포함할 수 있습니다.
+      show_render_box:
+        title: 렌더 박스 표시
+        description: 활성화하면 에디터에서 렌더 박스가 표시됩니다.
+      auto_render_box:
+        title: 렌더 박스 자동 크기 조절
+        description: |-
+          활성화하면 모델의 지오메트리를 기반으로 렌더 박스가 자동으로 계산됩니다.
+      render_box:
+        title: 렌더 박스 크기
+        description: |-
+          [Markdown]
+          리그 디스플레이 엔티티의 [너비와 높이](https://minecraft.wiki/w/Display#Entity_data)입니다.
+      view_range:
+        title: 시야 범위
+        description: |-
+          [Markdown]
+          리그의 기본 [시야 범위(view range)](https://minecraft.wiki/w/Display#Entity_data)입니다.
+      enable_plugin_mode:
+        title: 플러그인 모드
+        description: |-
+          활성화하면 프로젝트가 플러그인에서 사용할 수 있도록 설계된 JSON 파일로 내보내집니다.
+      resource_pack_export_mode:
+        title: 리소스 팩 내보내기 모드
+        options:
+          folder: 폴더
+          zip: Zip
+          none: 없음
+      data_pack_export_mode:
+        title: 데이터 팩 내보내기 형식
+        options:
+          folder:
+            title: 폴더
+            description: |-
+              데이터 팩을 폴더로 내보내고 기존 파일과 자동으로 병합합니다.
+          zip:
+            title: Zip
+            description: |-
+              데이터 팩을 .zip 파일로 내보냅니다.
+          none:
+            title: 없음
+            description: |-
+              데이터 팩을 내보내지 않습니다.
+
+      target_minecraft_version:
+        title: 대상 Minecraft 버전
+        description: |-
+          [Markdown]
+          타겟으로 하는 Minecraft 버전입니다. 예: `26.1.1` 또는 `1.20.4`
+
+          사용할 수 있는 기능과 내보내기 구조에 영향을 줍니다.
+        error:
+          invalid_version_format: |-
+            [Markdown]
+            제공된 Minecraft 버전이 올바르지 않습니다! Minecraft 버전은 `major.minor.patch` 형식이어야 합니다. 예: `1.20.4` 또는 `26.1.1`.
+          early_versions_not_supported: 1.20.4 미만 버전은 지원되지 않습니다.
+      resource_pack_settings:
+        title: 리소스 팩
+      enable_advanced_resource_pack_settings:
+        title: 고급 설정
+      enable_advanced_resource_pack_folders:
+        title: 고급 폴더
+      display_item:
+        title: 디스플레이 아이템
+        description: |-
+          리그의 모델에 사용할 아이템입니다.
+
+          같은 프로젝트의 여러 블루프린트가 동일한 아이템을 사용할 수 있으며, 내보낼 때 자동으로 병합됩니다.
+        error:
+          no_item_selected: 선택된 아이템이 없습니다!
+          invalid_item_id:
+            no_namespace: 입력한 아이템 ID가 올바르지 않습니다! 아이템 ID는 `namespace:item_id` 형식이어야 합니다.
+            whitespace: 입력한 아이템 ID가 올바르지 않습니다! 아이템 ID에는 공백이 포함될 수 없습니다.
+          item_model_not_found: |-
+            선택한 아이템의 모델 파일이 바닐라 리소스 팩에 존재하지 않습니다!
+
+            오류로 보인다면 Blockbench를 재시작하고, 블루프린트를 열기 전에 AJ 로딩 팝업이 사라질 때까지 기다려 보세요.
+        warning:
+          item_does_not_exist: 선택한 아이템이 바닐라에 존재하지 않습니다!
+          item_model_not_generated: 선택한 아이템이 `minecraft:item/generated`를 부모 모델로 사용하지 않습니다. 게임 내에서 모델 문제가 발생할 수 있습니다.
+      custom_model_data_offset:
+        title: CMD 오프셋
+        description: |-
+          디스플레이 아이템의 프레디케이트에 사용되는 커스텀 모델 데이터(CMD) 값을 지정한 만큼 오프셋합니다.
+      resource_pack:
+        title: 리소스 팩
+        description: |-
+          [Markdown]
+          프로젝트를 내보낼 리소스 팩의 루트 폴더입니다.
+
+          대상 리소스 팩에는 `pack.mcmeta` 파일이 포함되어 있어야 합니다.
+        warning:
+          no_assets: 선택한 폴더에 assets 폴더가 없습니다.
+        error:
+          empty: 리소스 팩 폴더는 필수입니다.
+          invalid_path: '경로 확인에 실패했습니다: %s'
+          does_not_exist: 선택한 경로가 존재하지 않습니다.
+          not_a_dir: 선택한 경로는 폴더가 아닙니다.
+          no_pack_mcmeta: 선택한 폴더에 pack.mcmeta 파일이 없습니다.
+      data_pack_settings:
+        title: 데이터 팩
+      data_pack:
+        folder:
+          title: 데이터 팩
+          description: |-
+            데이터 팩을 내보낼 폴더입니다.
+          warning:
+            no_data: 선택한 폴더에 data 폴더가 없습니다.
+          error:
+            empty: 데이터 팩 폴더는 필수입니다.
+            invalid_path: '경로 확인에 실패했습니다: %s'
+            does_not_exist: 선택한 경로가 존재하지 않습니다.
+            not_a_dir: 선택한 경로는 폴더가 아닙니다.
+            no_pack_mcmeta: 선택한 폴더에 pack.mcmeta 파일이 없습니다.
+        zip:
+          title: 데이터 팩
+          description: |-
+            데이터 팩 zip 파일을 내보낼 위치입니다.
+          error:
+            empty: 값은 비어 있을 수 없습니다!
+            invalid_path: '경로 확인에 실패했습니다: %s'
+            require_zip_extension: 선택한 파일은 .zip 확장자로 끝나야 합니다.
+      on_summon_function:
+        title: 소환 시 함수
+        description: |-
+          [Markdown]
+          소환되었을 때 루트 엔티티를 기준으로 `as`, `at`로 실행할 명령어입니다.
+
+          이 입력은 `.mcfunction` 파일처럼 취급됩니다.
+
+          [MC-Build](https://mcbuild.dev) 문법을 지원합니다.
+      on_remove_function:
+        title: 제거 시 함수
+        description: |-
+          [Markdown]
+          제거되었을 때 루트 엔티티를 기준으로 `as`, `at`로 실행할 명령어입니다.
+
+          이 입력은 `.mcfunction` 파일처럼 취급됩니다.
+
+          [MC-Build](https://mcbuild.dev) 문법을 지원합니다.
+      on_pre_tick_function:
+        title: Pre-Tick 함수
+        description: |-
+          [Markdown]
+          매 틱마다 Animated Java의 자체 틱 로직 *이전에* 루트 엔티티를 기준으로 `as`, `at`로 실행할 명령어입니다.
+
+          이 입력은 `.mcfunction` 파일처럼 취급됩니다.
+
+          [MC-Build](https://mcbuild.dev) 문법을 지원합니다.
+      on_post_tick_function:
+        title: Post-Tick 함수
+        description: |-
+          [Markdown]
+          매 틱마다 Animated Java의 자체 틱 로직 *이후에* 루트 엔티티를 기준으로 `as`, `at`로 실행할 명령어입니다.
+
+          이 입력은 `.mcfunction` 파일처럼 취급됩니다.
+
+      custom_rig_entity_tags:
+        title: 사용자 지정 리그 엔티티 태그
+        description: |-
+          [Markdown]
+          소환 시 리그의 ***모든 엔티티***에 추가할 태그 목록입니다(쉼표로 구분).
+
+          예: `tag1, tag2, tag3`
+
+      interpolation_duration:
+        title: 보간 시간
+        description: |-
+          [Markdown]
+          리그의 기본 [보간 시간(interpolation duration)](https://minecraft.wiki/w/Display#Entity_data)입니다.
+
+          값이 클수록 애니메이션이 부드러워지지만 반응성은 떨어집니다.
+      teleportation_duration:
+        title: 텔레포트 시간
+        description: |-
+          [Markdown]
+          리그의 기본 [텔레포트 시간(teleport duration)](https://minecraft.wiki/w/Display#Entity_data)입니다.
+
+      use_entity_stacking:
+        title: 엔티티 스태킹 사용
+        description: |-
+          [Markdown]
+          리그의 본 엔티티에 엔티티 스태킹을 사용할지 여부입니다.
+
+          **활성화** 시:
+          - 모든 본 엔티티가 루트 엔티티에 탑승됩니다.
+          - 본 회전 정밀도가 떨어집니다. (정수 각도로 제한됨)
+          - 루트 엔티티를 기준으로 `as`로 실행할 때 `on passengers`로 본 엔티티를 선택할 수 있습니다.
+
+          **비활성화** 시:
+          - 본 엔티티가 루트 엔티티에 탑승되지 않습니다.
+          - 본 회전이 *훨씬* 더 정밀해져, 리그를 텔레포트할 때의 움직임이 훨씬 부드러워집니다.
+          - 본 엔티티를 `on passengers`로 선택할 수 없지만, `as_node`로는 여전히 접근할 수 있습니다.
+
+      auto_update_rig_orientation:
+        title: 리그 방향 자동 업데이트
+        description: |-
+          [Markdown]
+          노드의 위치와 회전을 동기화하는 작업은 비용이 ***매우*** 큽니다.
+          이 옵션은 리그의 위치와 회전을 매 틱마다 루트 엔티티에 자동으로 동기화할지 여부를 선택합니다.
+
+          **활성화**되면 리그가 자동으로 루트 엔티티의 위치 및 회전과 동기화됩니다.
+
+          **비활성화**되면 리그를 텔레포트하기 위해 move 함수를 직접 사용해야 합니다:
+
+          ```
+          execute as @e[tag=aj.<export_namespace>_root] \
+              positioned <x> <y> <z> rotated <yaw> <pitch> run \
+              function animated_java:<export_namespace>/move
+          ```
+
+          매 틱 이동할 필요가 없는 리그에서는 이 옵션을 **비활성화**하는 것이 좋습니다.
+      animation_system:
+        title: 애니메이션 시스템
+        description: |-
+          애니메이션 데이터를 어떻게 저장할지 결정합니다.
+        options:
+          functions:
+            label: 함수
+            description: |-
+              애니메이션 데이터를 함수 파일에 저장합니다. 성능이 가장 좋지만 파일이 많이 생성됩니다.
+          storage:
+            label: 스토리지
+            description: |-
+              애니메이션 데이터를 커맨드 스토리지에 저장합니다. 더 느리지만 파일이 적게 생성됩니다.
+      baked_animations:
+        title: 베이크된 애니메이션
+        description: |-
+          [Markdown]
+          내보낼 애니메이션을 베이크할지 여부입니다.
+          베이크된 애니메이션은 프레임이 미리 계산되어 내보낸 JSON 파일에 저장되므로, 게임 내에서 모델을 렌더링할 때의 복잡도가 줄어듭니다.
+          일부 플러그인은 정상 동작을 위해 이 옵션이 활성화되어 있어야 합니다.
+      json_file:
+        title: JSON 파일
+        description: 프로젝트를 내보낼 JSON 파일의 경로입니다.
+        error:
+          invalid_path: 잘못된 파일 경로입니다!
+          no_file_selected: 선택된 파일이 없습니다!
+          not_a_file: 선택한 경로가 파일이 아닙니다!
+
+    display_entity:
+      title: '"%s"의 디스플레이 엔티티 설정'
+      node_options:
+        title: 노드
+      per_variant_options:
+        title: 배리언트별 설정
+      on_summon_function:
+        title: 소환 시 함수
+        description: |-
+          [Markdown]
+          소환되었을 때 디스플레이 엔티티를 기준으로 `as`로 실행할 명령어입니다.
+
+          이 입력은 `.mcfunction` 파일처럼 취급됩니다.
+
+          [MC-Build](https://mcbuild.dev) 문법을 지원합니다.
+      on_apply_function:
+        title: 적용 시 함수
+        description: |-
+          [Markdown]
+          배리언트가 적용될 때 디스플레이 엔티티를 기준으로 `as`로 실행할 명령어입니다.
+
+          이 입력은 `.mcfunction` 파일처럼 취급됩니다.
+
+          [MC-Build](https://mcbuild.dev) 문법을 지원합니다.
+      custom_name:
+        title: 커스텀 이름
+        description: 노드의 커스텀 이름입니다.
+        invalid_json:
+          error: |-
+            잘못된 JSON 텍스트입니다!
+            %s
+      custom_name_visible:
+        title: 커스텀 이름 항상 표시
+        description: 커스텀 이름을 항상 표시할지 여부입니다.
+      glowing:
+        title: 발광
+        description: 노드를 게임 내에서 발광시킬지 여부입니다.
+      override_glow_color:
+        title: 발광 색상 재정의
+        description: 기본 발광 색상을 재정의할지 여부입니다.
+      glow_color:
+        title: 발광 색상
+        description: 발광의 색상입니다.
+      shadow_radius:
+        title: 그림자 반경
+        description: 그림자의 반경입니다.
+      shadow_strength:
+        title: 그림자 강도
+        description: 그림자의 강도입니다.
+      override_brightness:
+        title: 밝기 재정의
+        description: 기본 밝기를 재정의할지 여부입니다.
+      brightness_override:
+        title: 밝기
+        description: 노드의 밝기입니다. 0~15 사이의 값이어야 합니다.
+      use_custom_brightness:
+        title: 커스텀 밝기 사용
+        description: 노드의 커스텀 밝기 재정의를 사용할지 여부입니다.
+      custom_brightness:
+        title: 커스텀 밝기
+        description: 노드의 커스텀 밝기입니다. 0~15 사이의 값이어야 합니다.
+      enchanted:
+        title: 인챈트 효과
+        description: 노드에 인챈트 효과를 적용할지 여부입니다.
+      invisible:
+        title: 보이지 않음
+        description: 노드를 보이지 않게 할지 여부입니다.
+      billboard:
+        title: 빌보드
+        description: |-
+          [Markdown]
+          이 노드의 모델이 렌더링될 때 플레이어를 향해 회전할지 여부를 제어합니다.
+          - **Fixed**: 수직 및 수평 각도 모두 고정됩니다.
+          - **Vertical**: 수직 축을 기준으로 회전합니다.
+          - **Horizontal**: 수평 축을 기준으로 회전합니다.
+          - **Center**: 중심점을 기준으로 회전합니다.
+        options:
+          fixed: Fixed
+          vertical: Vertical
+          horizontal: Horizontal
+          center: Center
+    locator_config:
+      title: 로케이터 설정
+      plugin_mode_warning: |-
+        플러그인 모드가 활성화되어 있습니다! 플러그인 모드에서는 로케이터에 설정 항목이 없습니다.
+        대신 플러그인 API를 사용해 로케이터에 사용자 지정 기능을 추가하세요.
+        자세한 내용은 공식 플러그인 API 문서를 참고해 주세요.
+      use_entity:
+        title: 엔티티 사용
+        description: |-
+          활성화하면 로케이터가 게임 내에서 자신을 나타내는 엔티티를 소환하여 사용합니다.
+      entity_type:
+        title: 엔티티 유형
+        description: 로케이터에 연결할 엔티티의 유형입니다.
+        error:
+          empty: 엔티티 유형은 비어 있을 수 없습니다!
+        warning:
+          invalid: 선택한 엔티티 유형이 Minecraft %s에 존재하지 않습니다
+      sync_passenger_rotation:
+        title: 탑승자 회전 동기화
+        description: 로케이터에 탑승한 엔티티의 회전을 자동으로 동기화합니다.
+      on_summon_function:
+        title: 소환 시 함수
+        description: |-
+          [Markdown]
+          리그가 소환될 때 루트 엔티티를 기준으로 `as`, 로케이터의 위치를 기준으로 `at`으로 실행할 명령어입니다.
+
+          [MC-Build](https://mcbuild.dev) 문법을 지원합니다.
+        description_with_use_entity: |-
+          [Markdown]
+          소환되었을 때 로케이터의 엔티티를 기준으로 `as`, `at`으로 실행할 명령어입니다.
+
+          [MC-Build](https://mcbuild.dev) 문법을 지원합니다.
+      on_remove_function:
+        title: 제거 시 함수
+        description: |-
+          [Markdown]
+          리그가 제거될 때 루트 엔티티를 기준으로 `as`, 로케이터의 위치를 기준으로 `at`으로 실행할 명령어입니다.
+
+          [MC-Build](https://mcbuild.dev) 문법을 지원합니다.
+        description_with_use_entity: |-
+          [Markdown]
+          제거되었을 때 로케이터의 엔티티를 기준으로 `as`, `at`으로 실행할 명령어입니다.
+
+          [MC-Build](https://mcbuild.dev) 문법을 지원합니다.
+      on_tick_function:
+        title: 틱 함수
+        description: |-
+          [Markdown]
+          매 틱마다 로케이터의 위치를 기준으로 `at`으로 실행할 명령어입니다.
+
+          [MC-Build](https://mcbuild.dev) 문법을 지원합니다.
+        description_with_use_entity: |-
+          [Markdown]
+          매 틱마다 로케이터의 엔티티를 기준으로 `as`, `at`으로 실행할 명령어입니다.
+
+    interaction_config:
+      title: 인터랙션 설정
+      plugin_mode_warning: |-
+        플러그인 모드가 활성화되어 있습니다! 플러그인 모드에서는 인터랙션에 설정 항목이 없습니다.
+        대신 플러그인 API를 사용해 인터랙션에 사용자 지정 기능을 추가하세요.
+        자세한 내용은 공식 플러그인 API 문서를 참고해 주세요.
+
+      response:
+        title: 반응
+        description: 이 인터랙션과 상호작용할 때 반응(손 동작 / 공격 사운드)을 트리거할지 여부입니다.
+
+      on_summon_function:
+        title: 소환 시 함수
+        description: |-
+          [Markdown]
+          소환되었을 때 이 인터랙션을 기준으로 `as`, `at`으로 실행할 명령어입니다.
+
+          [MC-Build](https://mcbuild.dev) 문법을 지원합니다.
+
+      on_interaction_function:
+        title: 상호작용 시 함수
+        description: |-
+          [Markdown]
+          플레이어가 이 인터랙션과 상호작용할 때 해당 인터랙션을 기준으로 `as`, `at`으로 실행할 명령어입니다.
+
+          상호작용을 시작한 플레이어를 선택하려면 `execute on target`을 사용할 수 있습니다.
+
+          [MC-Build](https://mcbuild.dev) 문법을 지원합니다.
+
+      on_attack_function:
+        title: 공격 시 함수
+        description: |-
+          [Markdown]
+          플레이어가 이 인터랙션을 공격할 때 해당 인터랙션을 기준으로 `as`, `at`으로 실행할 명령어입니다.
+
+          공격을 시작한 플레이어를 선택하려면 `execute on attacker`를 사용할 수 있습니다.
+
+          [MC-Build](https://mcbuild.dev) 문법을 지원합니다.
+
+      on_remove_function:
+        title: 제거 시 함수
+        description: |-
+          [Markdown]
+          제거되었을 때 이 인터랙션을 기준으로 `as`, `at`으로 실행할 명령어입니다.
+
+          [MC-Build](https://mcbuild.dev) 문법을 지원합니다.
+
+      on_tick_function:
+        title: 틱 함수
+        description: |-
+          [Markdown]
+          매 틱마다 이 인터랙션을 기준으로 `as`, `at`으로 실행할 명령어입니다.
+
+          [MC-Build](https://mcbuild.dev) 문법을 지원합니다.
+
+    text_display_config:
+      title: 텍스트 디스플레이 설정
+      use_nbt:
+        title: NBT 사용
+        description: 설정 대신 NBT를 사용해 텍스트 디스플레이를 구성할지 여부입니다.
+        use_nbt_warning: NBT를 사용하면 다른 모든 설정이 덮어써지며, 변경 사항이 에디터에 표시되지 않습니다. 사용 방법을 잘 알고 있을 때만 사용하세요!
+      inherit_settings:
+        title: 설정 상속
+        description: 부모 텍스트 디스플레이의 설정을 상속할지 여부입니다.
+      glowing:
+        title: 발광
+        description: 텍스트 디스플레이를 게임 내에서 발광시킬지 여부입니다.
+      override_glow_color:
+        title: 발광 색상 재정의
+        description: 기본 발광 색상을 재정의할지 여부입니다.
+      glow_color:
+        title: 발광 색상
+        description: 발광의 색상입니다.
+      shadow_radius:
+        title: 그림자 반경
+        description: 그림자의 반경입니다.
+      shadow_strength:
+        title: 그림자 강도
+        description: 그림자의 강도입니다.
+      override_brightness:
+        title: 밝기 재정의
+        description: 기본 밝기를 재정의할지 여부입니다.
+      brightness_override:
+        title: 밝기
+        description: 텍스트 디스플레이의 밝기입니다. 0~15 사이의 값이어야 합니다.
+      use_custom_brightness:
+        title: 커스텀 밝기 사용
+        description: 본에 대해 커스텀 밝기 재정의를 사용할지 여부입니다.
+      custom_brightness:
+        title: 커스텀 밝기
+        description: 본의 커스텀 밝기입니다. 0~15 사이의 값이어야 합니다.
+      invisible:
+        title: 보이지 않음
+        description: 텍스트 디스플레이를 보이지 않게 할지 여부입니다.
+      nbt:
+        title: NBT
+        description: 텍스트 디스플레이에 적용할 NBT입니다.
+    bone_config:
+      vanilla_item_model:
+        title: 바닐라 아이템 모델
+        description: |-
+          설정하면 본이 바닐라 아이템 모델로 렌더링됩니다.
+          이 경우 본의 기존 큐브가 덮어써집니다.
+    vanilla_block_display_config:
+      title: 블록 디스플레이 설정
+    vanilla_block_display:
+      custom_name:
+        title: 커스텀 이름
+        description: 블록 디스플레이의 커스텀 이름입니다.
+        invalid_json:
+          error: |-
+            잘못된 JSON 텍스트입니다!
+            %s
+      custom_name_visible:
+        title: 커스텀 이름 항상 표시
+        description: 커스텀 이름을 항상 표시할지 여부입니다.
+    vanilla_item_display_config:
+      title: 아이템 디스플레이 설정
+    vanilla_item_display:
+      custom_name:
+        title: 커스텀 이름
+        description: 아이템 디스플레이의 커스텀 이름입니다.
+        invalid_json:
+          error: |-
+            잘못된 JSON 텍스트입니다!
+            %s
+      custom_name_visible:
+        title: 커스텀 이름 항상 표시
+        description: 커스텀 이름을 항상 표시할지 여부입니다.
+    variant_config:
+      title: 배리언트 설정
+      variant_display_name: 라벨
+      variant_display_name.description: 에디터와 오류 메시지에서 배리언트를 식별하는 데 사용됩니다.
+      generate_name_from_display_name: 라벨에서 이름 생성
+      generate_name_from_display_name.description: 라벨에서 이름을 자동 생성할지 여부입니다.
+      variant_name: 이름
+      variant_name.description: 내보낸 리소스 팩과 데이터 팩에서 배리언트를 식별하는 데 사용됩니다.
+      texture_map:
+        title: 텍스처 맵
+        description: 이 배리언트를 적용할 때 교체할 텍스처들의 맵입니다.
+        create_new_mapping: 새 매핑 생성
+        no_mappings: 배리언트에 매핑된 텍스처가 없습니다.
+      bone_lists:
+        description: |-
+          배리언트가 영향을 줄 노드를 지정합니다.
+
+          포함 목록의 노드는 배리언트를 적용할 때 변경됩니다.
+
+          제외 목록의 노드는 변경되지 않고 그대로 유지됩니다.
+      excluded_nodes:
+        title: 제외할 노드
+        description: 배리언트에서 제외할 노드 목록입니다. 배리언트를 적용할 때 이 노드들은 변경되지 않습니다.
+      included_nodes:
+        title: 포함할 노드
+        description: 배리언트에 포함할 노드 목록입니다. 배리언트를 적용하면 이 노드들만 변경됩니다.
+      swap_columns_button:
+        tooltip: 목록 바꾸기
+    upgrade_old_aj_model_loader:
+      title: .ajmodel 업데이트
+    animation_properties:
+      title: 애니메이션 속성 (%s)
+      animation_name:
+        title: 애니메이션 이름
+        description: 애니메이션의 이름입니다.
+        error:
+          empty: 애니메이션 이름은 비어 있을 수 없습니다!
+          invalid_characters: 애니메이션 이름에 잘못된 문자가 포함되어 있습니다! 애니메이션 이름은 영문자, 숫자, 밑줄(_), 마침표(.)만 포함할 수 있습니다.
+      loop_mode:
+        title: 반복 모드
+        description: |-
+          [Markdown]
+          - Once: 애니메이션이 한 번 재생된 뒤 첫 프레임으로 돌아갑니다.
+          - Hold: 애니메이션이 한 번 재생된 뒤 마지막 프레임을 유지합니다.
+          - Loop: 애니메이션이 무한히 반복됩니다.
+        options:
+          once: Once
+          hold: Hold
+          loop: Loop
+      loop_delay:
+        title: 반복 대기 시간
+        description: |-
+          Loop 모드에서 애니메이션을 다시 시작하기 전까지 대기할 틱 수입니다.
+
+          예: 값이 20이면 1초 대기 후 다시 시작됩니다.
+      bone_lists:
+        description: |-
+          애니메이션이 영향을 줄 노드를 지정합니다.
+
+          포함 목록의 노드는 애니메이션에 의해 변경됩니다.
+
+          제외 목록의 노드는 변경되지 않고 그대로 유지됩니다.
+      excluded_nodes:
+        title: 제외할 노드
+        description: 애니메이션에서 제외할 노드 목록입니다. 애니메이션을 적용할 때 이 노드들은 변경되지 않습니다.
+      included_nodes:
+        title: 포함할 노드
+        description: 애니메이션에 포함할 노드 목록입니다. 애니메이션을 적용하면 이 노드들만 변경됩니다.
+      swap_columns_button:
+        tooltip: 목록 바꾸기
+    export_progress:
+      title: 내보내는 중...
+    blueprint_loading:
+      title: 블루프린트 불러오는 중...
+
+  panel:
+    variants:
+      title: 배리언트
+      tool:
+        create_new_variant: 새 배리언트 생성
+        edit_variant: 배리언트 편집
+        duplicate_selected_variant: 선택한 배리언트 복제
+        delete_selected_variant: 선택한 배리언트 삭제
+        variant_visible: 배리언트 선택됨
+        variant_not_visible: 배리언트 선택되지 않음
+        cannot_delete_default_variant: 기본 배리언트는 삭제할 수 없습니다!
+        cannot_edit_default_variant: 기본 배리언트는 편집할 수 없습니다!
+    keyframe:
+      keyframe_title: 키프레임 (%s)
+      variant:
+        title: 배리언트
+        description: 키프레임에 적용할 배리언트입니다.
+      function:
+        title: 함수
+        description: |-
+          [Markdown]
+          키프레임에 도달했을 때 실행할 명령어입니다.
+
+          이 텍스트 입력은 `.mcfunction` 파일처럼 취급됩니다.
+
+          [MC-Build](https://mcbuild.dev) 문법을 지원합니다.
+      execute_condition:
+        title: 실행 조건
+        description: |-
+          [Markdown]
+          키프레임이 실행되려면 충족해야 하는 조건입니다.
+
+          이 텍스트 입력은 `execute if` 명령어의 조건처럼 취급됩니다.
+
+          예: `if score @s myScore matches 1..`
+      repeat:
+        title: 반복
+        description: |-
+          활성화하면 이 키프레임의 명령어가 지정된 빈도로 반복됩니다.
+      repeat_frequency:
+        title: 빈도
+        description: |-
+          명령어 반복 사이의 틱 수입니다.
+
+          1로 설정하면 애니메이션의 매 틱마다 실행됩니다.
+      easing_type:
+        title: 이징 종류
+        description: 키프레임에 적용할 이징의 종류입니다.
+        options:
+          linear: Linear
+          sine: Sine
+          quad: Quad
+          cubic: Cubic
+          quart: Quart
+          quint: Quint
+          expo: Expo
+          circ: Circ
+          elastic: Elastic
+          back: Back
+          bounce: Bounce
+      easing_mode:
+        title: 이징 모드
+        description: 키프레임에 적용할 이징 모드입니다.
+        options:
+          in: In
+          out: Out
+          inout: In-Out
+      easing_args:
+        title: 이징 인자
+        description: 이징 함수에 적용할 인자입니다.
+        easing_arg:
+          elastic:
+            title: 탄성도
+            description: 이징 함수의 탄성도입니다.
+          back:
+            title: 오버슛
+            description: 이징 함수에 적용할 오버슛 정도입니다.
+          bounce:
+            title: 바운스 정도
+            description: 이징 함수의 바운스 정도입니다.
+      nonlinear_interpolation: |-
+        [Markdown]
+        고급 이징 옵션이 비활성화되어 있습니다.
+        활성화하려면 키프레임의 보간 모드를 `linear`로 변경하세요.
+    text_display:
+      title: 텍스트 디스플레이
+    vanilla_item_display:
+      title: 표시할 아이템
+      description: 표시할 아이템입니다.
+    vanilla_block_display:
+      title: 표시할 블록
+      description: 표시할 블록입니다. 블록 상태(blockstate)도 지원합니다!
+
+  animation:
+    excluded_nodes: 제외할 노드
+    invert_excluded_nodes: 제외할 노드 반전
+
+  effect_animator:
+    timeline:
+      variant: 배리언트
+      function: 함수
+    keyframe_data_point:
+      variant: 배리언트
+      function: 함수
+      execute_condition: 실행 조건
+      repeat: 반복
+      repeat_frequency: 반복 빈도
+
+  tool:
+    text_display:
+      line_width:
+        title: 줄 너비
+        description: 텍스트 디스플레이의 너비(픽셀 단위)입니다.
+      background_color:
+        title: 배경 색상
+        description: 텍스트 디스플레이 배경의 색상입니다.
+      text_shadow:
+        title: 텍스트 그림자
+        description: 텍스트 뒤에 그림자를 표시할지 여부입니다.
+      text_alignment:
+        title: 텍스트 정렬
+        description: 텍스트의 정렬 방식입니다.
+        options:
+          left: 왼쪽
+          center: 가운데
+          right: 오른쪽
+      see_through:
+        title: 블록 통과해서 보이기
+        description: 텍스트 디스플레이가 블록을 통과해 보일지 여부입니다.
+      copy_text:
+        title: 내보낸 텍스트 컴포넌트 복사
+        description: 내보낸 텍스트 컴포넌트를 클립보드로 복사합니다.
+        copied: 텍스트를 클립보드에 복사했습니다!
+        clipboard_module_access_request: 내보낸 텍스트 컴포넌트를 클립보드에 복사하려면 Animated Java가 클립보드 API에 접근해야 합니다.
+        clipboard_module_access_denied: 클립보드 API 접근이 거부되었습니다. 권한을 허용한 뒤 다시 시도해 주세요.
+        failed: 텍스트를 클립보드에 복사하지 못했습니다.
+    item_display:
+      item_display:
+        title: 아이템 모델 표시 모드
+        description: 아이템에 적용할 아이템 모델 변환입니다(모델 JSON의 display 필드에서 정의됨).
+        options:
+          none: 없음
+          thirdperson_lefthand: 3인칭 왼손
+          thirdperson_righthand: 3인칭 오른손
+          firstperson_lefthand: 1인칭 왼손
+          firstperson_righthand: 1인칭 오른손
+          head: 머리
+          gui: GUI
+          ground: 바닥
+          fixed: 고정
+
+  vanilla_item_display:
+    title: 아이템 디스플레이
+
+  misc:
+    failed_to_export:
+      title: 내보내기 실패
+      custom_models:
+        message: 리소스 팩 내보내기를 비활성화했지만 프로젝트에 커스텀 모델이 있습니다! 내보내기 전에 리소스 팩 내보내기를 활성화하거나 커스텀 모델을 제거해 주세요.
+      blueprint_settings:
+        message: 블루프린트 설정에 오류가 있습니다! 내보내기 전에 수정해 주세요.
+        error_item: '%s에서 문제가 발견되었습니다:'
+      button: 확인
+      invalid_rotation:
+        message: |-
+          모델의 일부 큐브에 잘못된 회전 값이 있습니다!
+
+          1.21.6 이전 Minecraft 버전을 타겟으로 할 때, 큐브는 -45, -22.5, 0, 22.5, 45도 중 하나의 회전 값을 가져야 하며, 한 번에 하나의 축에서만 회전할 수 있습니다.
+
+          큐브를 더 정밀하게 회전시키거나 여러 축으로 회전시키려면, 본에 넣고 본을 회전시키세요.
+
+          잘못된 큐브들은 모두 에디터에서 빨간색으로 표시됩니다. 내보내기 전에 수정해 주세요.
+        message_post_1_21_6: |-
+          모델의 일부 큐브에 잘못된 회전 값이 있습니다!
+
+          Minecraft 1.21.6 ~ 1.21.10을 타겟으로 할 때, 큐브는 한 번에 하나의 축에서만 회전할 수 있습니다.
+
+          큐브를 여러 축으로 회전시키려면, 본에 넣고 본을 회전시키세요.
+
+          잘못된 큐브들은 모두 에디터에서 빨간색으로 표시됩니다. 내보내기 전에 수정해 주세요.
+      rig_has_textures_but_no_custom_models:
+        message: |-
+          모델에 텍스처가 적용되어 있지만, 이를 사용할 커스텀 모델(큐브)이 없습니다!
+          이 텍스처들을 사용할 큐브를 만들거나, 내보내기 전에 텍스처를 제거해 주세요.
+      rig_has_custom_models_but_no_textures:
+        message: |-
+          모델에 커스텀 모델(큐브)이 있지만, 적용된 텍스처가 없습니다!
+          큐브에 텍스처를 적용하거나, 내보내기 전에 큐브를 제거해 주세요.
+
+  toast:
+    invalid_rotations: |-
+      잘못된 큐브 회전 값입니다!
+
+      큐브의 회전 값은 45, 22.5, 0, -22.5, -45 중 하나여야 하며, 한 번에 하나의 축에서만 회전할 수 있습니다.
+
+      잘못된 회전 값을 가진 큐브들은 모두 빨간색으로 표시됩니다.
+    invalid_rotations_post_1_21_6: |-
+      잘못된 큐브 회전 값입니다!
+
+      Minecraft 1.21.6 이상을 타겟으로 할 때, 큐브는 한 번에 하나의 축에서만 회전할 수 있습니다.
+
+      잘못된 회전 값을 가진 큐브들은 모두 빨간색으로 표시됩니다.
+
+  format_category:
+    animated_java: Animated Java
+
+  block_model_manager:
+    fluid_warning: 액체는 블록 디스플레이에서 렌더링되지 않습니다.
+    mob_head_warning: 몹 머리는 블록 디스플레이에서 렌더링되지 않습니다. 대신 아이템 디스플레이를 사용하세요.
+    facing_warning: '"facing" 블록 상태 키는 블록 디스플레이에서 지원되지 않습니다.'
+
+  error:
+    blueprint_export_path_doesnt_exist:
+      title: 블루프린트 내보내기 경로가 존재하지 않습니다
+      description: |-
+        [Markdown]
+        내보내기 경로 '%s'가 존재하지 않습니다!
+
+        저장하려는 폴더가 존재하는지 확인한 뒤 다시 시도해 주세요.
