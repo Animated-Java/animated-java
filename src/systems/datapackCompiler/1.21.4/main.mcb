@@ -882,8 +882,10 @@ function summon {
 		# Remove the NEW tag from the root entity, and it's passengers.
 		tag @s remove <%TAGS.NEW()%>
 		execute on passengers run tag @s remove <%TAGS.NEW()%>
-		# Dismount bone entities from the root entity.
-		execute on passengers run ride @s dismount
+		IF (!use_entity_stacking) {
+			# Dismount bone entities from the root entity.
+			execute on passengers run ride @s dismount
+		}
 	}
 }
 
