@@ -113,21 +113,12 @@ body:
 
         Provide details about your system and setup to help diagnose the issue.
 
-  - type: dropdown
+  - type: input
     id: mc-version
     attributes:
       label: 🟩 Minecraft Version
-      description: >-
-        The version of Minecraft you're using. (Only versions supported by the
-        latest version of Animated Java are listed).
-      options:
-        - 1.20.4
-        - 1.20.5
-        - 1.20.6
-        - 1.21.1
-        - 1.21.2
-        - 1.21.3
-        - 1.21.4
+      description: The version of Minecraft you're using.
+      placeholder: E.g. 1.20.4, 26.1.1
     validations:
       required: true
 
