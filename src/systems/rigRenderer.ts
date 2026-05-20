@@ -228,8 +228,8 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 
 	if (cube.shade === false) element.shade = false
 
-	// If target version is 1.21.9 or higher, we can use free rotation
-	if (!compareVersions('1.21.9', rig.target_minecraft_version)) {
+	// If target version is 1.21.11 or higher, we can use free rotation
+	if (!compareVersions('1.21.11', rig.target_minecraft_version)) {
 		element.rotation = {
 			x: cube.rotation[0],
 			y: cube.rotation[1],
