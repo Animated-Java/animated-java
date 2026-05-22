@@ -155,9 +155,12 @@ function createSingleVariantItemDefinition(
 	model: IRenderedVariantModel,
 	itemModelProperties?: { tints: TintSource[] }
 ): IItemDefinition {
-	const tints = itemModelProperties?.tints ?? [
-		new oneLiner({ type: 'minecraft:dye', default: [1, 1, 1] }),
-	]
+	let tints: TintSource[]
+	if (itemModelProperties?.tints.length) {
+		tints = itemModelProperties.tints
+	} else {
+		tints = [new oneLiner({ type: 'minecraft:dye', default: [1, 1, 1] })]
+	}
 
 	return {
 		model: {
@@ -174,6 +177,13 @@ function createMultiVariantItemDefinition(
 	rig: IRenderedRig,
 	itemModelProperties?: { tints: TintSource[] }
 ): IItemDefinition {
+	let tints: TintSource[]
+	if (itemModelProperties?.tints.length) {
+		tints = itemModelProperties.tints
+	} else {
+		tints = [new oneLiner({ type: 'minecraft:dye', default: [1, 1, 1] })]
+	}
+
 	const itemDefinition: IItemDefinition & {
 		model: { type: 'minecraft:select'; property: 'minecraft:custom_model_data' }
 	} = {
@@ -189,7 +199,7 @@ function createMultiVariantItemDefinition(
 			fallback: {
 				type: 'minecraft:model',
 				model: model.resource_location,
-				tints: [new oneLiner({ type: 'minecraft:dye', default: [1, 1, 1] })],
+				tints,
 			},
 		},
 	}
@@ -202,9 +212,7 @@ function createMultiVariantItemDefinition(
 			model: {
 				type: 'minecraft:model',
 				model: variantModel.resource_location,
-				tints: itemModelProperties?.tints ?? [
-					new oneLiner({ type: 'minecraft:dye', default: [1, 1, 1] }),
-				],
+				tints,
 			},
 		} as (typeof itemDefinition.model.cases)[0])
 	}
