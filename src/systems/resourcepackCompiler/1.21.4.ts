@@ -7,7 +7,7 @@ import {
 	sanitizeStorageKey,
 } from '../../util/minecraftUtil'
 import { Variant } from '../../variants'
-import type { IItemDefinition } from '../minecraft/itemDefinitions'
+import type { IItemDefinition, TintSource } from '../minecraft/itemDefinitions'
 import { type ITextureAtlas } from '../minecraft/textureAtlas'
 import type { IRenderedNodes, IRenderedRig, IRenderedVariantModel } from '../rigRenderer'
 
@@ -119,9 +119,14 @@ const compileResourcePack: ResourcePackCompiler = async ({
 		let itemDefinition: IItemDefinition
 
 		if (Object.values(rig.variants).length === 1) {
-			itemDefinition = createSingleVariantItemDefinition(model)
+			itemDefinition = createSingleVariantItemDefinition(model, bone.itemModelProperties)
 		} else {
-			itemDefinition = createMultiVariantItemDefinition(boneUuid, model, rig)
+			itemDefinition = createMultiVariantItemDefinition(
+				boneUuid,
+				model,
+				rig,
+				bone.itemModelProperties
+			)
 		}
 
 		versionedFiles.set(exportPath, { content: autoStringify(itemDefinition) })
@@ -146,12 +151,19 @@ const compileResourcePack: ResourcePackCompiler = async ({
 
 export default compileResourcePack
 
-function createSingleVariantItemDefinition(model: IRenderedVariantModel): IItemDefinition {
+function createSingleVariantItemDefinition(
+	model: IRenderedVariantModel,
+	itemModelProperties?: { tints: TintSource[] }
+): IItemDefinition {
+	const tints = itemModelProperties?.tints ?? [
+		new oneLiner({ type: 'minecraft:dye', default: [1, 1, 1] }),
+	]
+
 	return {
 		model: {
 			type: 'minecraft:model',
 			model: model.resource_location,
-			tints: [new oneLiner({ type: 'minecraft:dye', default: [1, 1, 1] })],
+			tints,
 		},
 	}
 }
@@ -159,7 +171,8 @@ function createSingleVariantItemDefinition(model: IRenderedVariantModel): IItemD
 function createMultiVariantItemDefinition(
 	boneUUID: string,
 	model: IRenderedVariantModel,
-	rig: IRenderedRig
+	rig: IRenderedRig,
+	itemModelProperties?: { tints: TintSource[] }
 ): IItemDefinition {
 	const itemDefinition: IItemDefinition & {
 		model: { type: 'minecraft:select'; property: 'minecraft:custom_model_data' }
@@ -189,13 +202,15 @@ function createMultiVariantItemDefinition(
 			model: {
 				type: 'minecraft:model',
 				model: variantModel.resource_location,
-				tints: [new oneLiner({ type: 'minecraft:dye', default: [1, 1, 1] })],
+				tints: itemModelProperties?.tints ?? [
+					new oneLiner({ type: 'minecraft:dye', default: [1, 1, 1] }),
+				],
 			},
 		} as (typeof itemDefinition.model.cases)[0])
 	}
 
 	if (itemDefinition.model.cases.length === 0) {
-		return createSingleVariantItemDefinition(model)
+		return createSingleVariantItemDefinition(model, itemModelProperties)
 	}
 
 	return itemDefinition

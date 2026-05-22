@@ -12,7 +12,7 @@ type DisplayContext =
 type TintSource =
 	| {
 			type: 'minecraft:constant'
-			value: [number, number, number]
+			value: number | [number, number, number]
 	  }
 	| {
 			type:

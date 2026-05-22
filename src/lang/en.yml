@@ -28,6 +28,8 @@ animated_java:
       name: Locator Config
     open_interaction_config:
       name: Interaction Config
+    open_item_model_properties:
+      name: Item Model Properties
     export:
       name: Export
     export_debug:
@@ -99,6 +101,16 @@ animated_java:
       close_button: Close
     changelog_dialog:
       title: Animated Java Changelog
+    item_properties:
+      title: Item Model Properties
+      tint_constants: Tint Constants
+      description: |-
+        [Markdown]
+        Constant tints apply fixed color values to an item's tint layers, so the model always uses the same tint colors in-game.
+      add_tint: Add Tint
+      empty_state: No tint constants configured. Add a tint to start.
+      tint_label: Tint Index %s
+      remove_tint: Remove
     unexpected_error:
       title: An Unexpected Error Occurred!
       close_button: Close

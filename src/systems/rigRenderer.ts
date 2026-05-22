@@ -24,6 +24,7 @@ import {
 	updatePreview,
 } from './animationRenderer'
 import { IntentionalExportError } from './errors'
+import type { TintSource } from './minecraft/itemDefinitions'
 
 export interface IRenderedFace {
 	uv: number[]
@@ -117,6 +118,9 @@ export interface IDisplayEntityConfigs {
 export interface IRenderedNodes {
 	Bone: IRenderedDisplayEntityNode & {
 		type: 'bone'
+		itemModelProperties?: {
+			tints: TintSource[]
+		}
 	}
 	TextDisplay: IRenderedDisplayEntityNode & {
 		type: 'text_display'
@@ -395,6 +399,9 @@ function renderGroup(
 		base_scale: 1,
 		configs: structuredClone(group.configs),
 		on_summon_function: group.onSummonFunction?.trim(),
+		itemModelProperties: group.itemModelProperties
+			? structuredClone(group.itemModelProperties)
+			: undefined,
 		// This is a placeholder value that will be updated later once the animation renderer is run.
 		default_transform: {} as INodeTransform,
 	}
