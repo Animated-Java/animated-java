@@ -78,7 +78,7 @@ export const defaultValues: BlueprintSettings = {
 	custom_rig_entity_tags: '',
 	auto_update_rig_orientation: true,
 	use_storage_for_animation: false,
-	use_entity_stacking: false,
+	use_entity_stacking: true,
 	// Plugin Settings
 	baked_animations: true,
 	json_file: '',
