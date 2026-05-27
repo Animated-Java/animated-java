@@ -163,6 +163,26 @@ export const DISPLAY_ENTITY_CONFIG_ACTION = registerDeletableHandlerPatch({
 			copyAction,
 			pasteAction,
 			'_',
+			{
+				name: 'menu.cube.color',
+				icon: 'color_lens',
+				children() {
+					return markerColors.map((color, i) => {
+						return {
+							icon: 'bubble_chart',
+							color: color.standard,
+							// @ts-expect-error - Broken BB types
+							name: color.name ?? 'cube.color.' + color.id,
+							click(element: any) {
+								// @ts-expect-error - any
+								element.forSelected(obj => obj.setColor(i), 'Change color')
+							},
+						}
+					})
+				},
+			},
+			'randomize_marker_colors',
+			'_',
 			'rename',
 			'delete',
 		])
