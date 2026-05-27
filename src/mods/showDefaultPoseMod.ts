@@ -1,15 +1,15 @@
-import { registerPatch } from 'blockbench-patch-manager'
+import { registerPropertyOverridePatch } from 'blockbench-patch-manager'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 
-registerPatch({
-	id: `animated_java:show-default-pose`,
+registerPropertyOverridePatch({
+	id: `animated_java:animator/show-default-pose`,
+	target: Animator,
+	key: 'showDefaultPose',
 
-	apply: () => {
-		const original = Animator.showDefaultPose
+	condition: () => activeProjectIsBlueprintFormat(),
 
-		Animator.showDefaultPose = function (noMatrixUpdate?: boolean) {
-			if (!activeProjectIsBlueprintFormat()) return original(noMatrixUpdate)
-
+	get: () => {
+		return function (noMatrixUpdate?: boolean) {
 			const nodes = [...Group.all, ...Outliner.elements]
 			for (const node of nodes) {
 				// @ts-expect-error Constructor type is Function
@@ -25,13 +25,7 @@ registerPatch({
 					mesh.scale.x = mesh.scale.y = mesh.scale.z = 1
 				}
 			}
-			if (!noMatrixUpdate) scene.updateMatrixWorld()
+			if (!noMatrixUpdate) Canvas.scene.updateMatrixWorld()
 		}
-
-		return { original }
-	},
-
-	revert: ({ original }) => {
-		Animator.showDefaultPose = original
 	},
 })

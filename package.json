@@ -105,7 +105,7 @@
 		"firebase": "^9.19.0",
 		"jiti": "^2.6.1",
 		"js-yaml": "^4.1.0",
-		"mc-build": "^4.0.4",
+		"mc-build": "^4.1.2",
 		"node-modules-vscode-problems-patch": "^1.0.9",
 		"octokit": "^5.0.3",
 		"prettier": "^3.8.2",

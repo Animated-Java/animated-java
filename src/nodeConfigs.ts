@@ -401,7 +401,7 @@ export class LocatorConfig {
 
 export class InteractionConfig {
 	private __response?: boolean
-	private __onInteractionFunction?: string
+	private __onInteractFunction?: string
 	private __onAttackFunction?: string
 	private __onSummonFunction?: string
 	private __onRemoveFunction?: string
@@ -410,7 +410,7 @@ export class InteractionConfig {
 	getDefault(): InteractionConfig {
 		return InteractionConfig.fromJSON({
 			response: false,
-			on_interaction_function: '',
+			on_interact_function: '',
 			on_attack_function: '',
 			on_summon_function: '',
 			on_remove_function: '',
@@ -427,13 +427,13 @@ export class InteractionConfig {
 		this.__response = value
 	}
 
-	get onInteractionFunction(): NonNullable<InteractionConfig['__onInteractionFunction']> {
-		if (this.__onInteractionFunction !== undefined) return this.__onInteractionFunction
+	get onInteractFunction(): NonNullable<InteractionConfig['__onInteractFunction']> {
+		if (this.__onInteractFunction !== undefined) return this.__onInteractFunction
 		const defaultConfig = this.getDefault()
-		return defaultConfig.onInteractionFunction
+		return defaultConfig.onInteractFunction
 	}
-	set onInteractionFunction(value: NonNullable<InteractionConfig['__onInteractionFunction']>) {
-		this.__onInteractionFunction = value
+	set onInteractFunction(value: NonNullable<InteractionConfig['__onInteractFunction']>) {
+		this.__onInteractFunction = value
 	}
 
 	get onAttackFunction(): NonNullable<InteractionConfig['__onAttackFunction']> {
@@ -475,7 +475,7 @@ export class InteractionConfig {
 	toJSON(): IBlueprintInteractionConfigJSON {
 		return scrubUndefined({
 			response: this.__response,
-			on_interaction_function: this.__onInteractionFunction,
+			on_interact_function: this.__onInteractFunction,
 			on_attack_function: this.__onAttackFunction,
 			on_summon_function: this.__onSummonFunction,
 			on_remove_function: this.__onRemoveFunction,
@@ -486,8 +486,8 @@ export class InteractionConfig {
 	static fromJSON(json: IBlueprintInteractionConfigJSON): InteractionConfig {
 		const config = new InteractionConfig()
 		if (json.response !== undefined) config.__response = json.response
-		if (json.on_interaction_function !== undefined)
-			config.__onInteractionFunction = json.on_interaction_function
+		if (json.on_interact_function !== undefined)
+			config.__onInteractFunction = json.on_interact_function
 		if (json.on_attack_function !== undefined)
 			config.__onAttackFunction = json.on_attack_function
 		if (json.on_summon_function !== undefined)
@@ -505,7 +505,7 @@ export class InteractionConfig {
 	checkIfEqual(other: InteractionConfig) {
 		return (
 			this.response === other.response &&
-			this.onInteractionFunction === other.onInteractionFunction &&
+			this.onInteractFunction === other.onInteractFunction &&
 			this.onAttackFunction === other.onAttackFunction &&
 			this.onSummonFunction === other.onSummonFunction &&
 			this.onRemoveFunction === other.onRemoveFunction &&

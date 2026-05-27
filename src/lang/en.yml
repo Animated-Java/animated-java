@@ -12,6 +12,8 @@ animated_java:
   outliner:
     structure_group:
       title: Structure Group (Will not create an entity)
+    interaction:
+      title: Interaction
 
   action:
     open_blueprint_settings:
@@ -51,6 +53,8 @@ animated_java:
       title: Add Item Display
     create_block_display:
       title: Add Block Display
+    create_interaction:
+      title: Add Interaction
     copy_display_entity_config:
       name: Copy Display Entity Config
       message: Copied Display Entity Config from "%s"
@@ -562,8 +566,8 @@ animated_java:
 
           Supports [MC-Build](https://mcbuild.dev) syntax.
 
-      on_interaction_function:
-        title: On-Interaction Function
+      on_interact_function:
+        title: On-Interact Function
         description: |-
           [Markdown]
           Commands to run `as` and `at` this Interaction when a player interacts with it.

@@ -234,7 +234,7 @@ dir global {
 				$data modify storage <%temp_storage%> args.uuid set from storage <%data_storage%> "$(id)".uuid
 				scoreboard players set #success <%OBJECTIVES.I()%> 0
 				block { with storage <%temp_storage%> args
-					$execute store success score #success <%OBJECTIVES.I()%> if score $(uuid) matches 1..
+					$execute store success score #success <%OBJECTIVES.I()%> if score $(uuid) <%OBJECTIVES.ID()%> matches 1..
 					$execute if score #success <%OBJECTIVES.I()%> matches 0 run data remove storage <%data_storage%> "$(id)"
 				}
 			}
@@ -255,6 +255,80 @@ dir global {
 
 		function write {
 			$data modify storage <%data_storage%> "$(id)" set from storage <%temp_storage%> entry
+		}
+	}
+
+	dir interactions {
+		REPEAT (['interaction', 'attack']) as direction {
+			dir <%direction%> {
+				advancement trigger {
+					"criteria": {
+						"player_<%direction%>_clicked_interaction_entity": {
+							"trigger": "<%direction === 'interaction' ? 'minecraft:player_interacted_with_entity' : 'minecraft:player_hurt_entity'%>",
+							"conditions": {
+								"entity": {
+									"type": "minecraft:interaction"
+								}
+							}
+						}
+					},
+					"rewards": {
+						"function": "<%context.namespace + ':' + context.path.join('/')%>/on"
+					}
+				}
+
+				function on {
+					advancement revoke @s only <%context.namespace + ':' + context.path.join('/')%>/trigger
+					tag @s add <%TAGS.INTERACTING_PLAYER()%>
+					execute \
+						as @e[type=interaction, tag=<%TAGS.GLOBAL_INTERACTION()%>, distance=..8] \
+						if data entity @s <%direction%> \
+						run function ./check
+					tag @s remove <%TAGS.INTERACTING_PLAYER()%>
+				}
+
+				function check {
+					execute store result score #gametime <%OBJECTIVES.I()%> run time query gametime
+					execute \
+						store result score #timestamp <%OBJECTIVES.I()%> \
+						run data get entity @s <%direction%>.timestamp
+
+					# Check that the interaction has a command to run, and
+					# if this interaction is from the player being processed.
+					scoreboard players set #check <%OBJECTIVES.I()%> 0
+					execute \
+						if score #timestamp <%OBJECTIVES.I()%> = #gametime <%OBJECTIVES.I()%> \
+						if data entity @s data.animated_java.on_<%direction === 'interaction' ? 'interact' : 'attack'%>_function \
+						store success score #check <%OBJECTIVES.I()%> \
+						on <%direction === 'interaction' ? 'target' : 'attacker'%> \
+						if entity @s[tag=<%TAGS.INTERACTING_PLAYER()%>]
+
+					execute \
+						if score #check <%OBJECTIVES.I()%> matches 1 \
+						run function ./do
+				}
+
+				function do {
+					scoreboard players set #check <%OBJECTIVES.I()%> 0
+					block execute { with entity @s data.animated_java
+						$$(on_<%direction === 'interaction' ? 'interact' : 'attack'%>_function)
+						scoreboard players set #check <%OBJECTIVES.I()%> 1
+					}
+					execute if score #check <%OBJECTIVES.I()%> matches 0 run tellraw @a [ \
+						{text: '', color: red}, \
+						{text:'ɪɴᴛᴇʀᴀᴄᴛɪᴏɴꜱ', color:'light_purple'}, \
+						{text:'\n(<%global.root%>.mcb)', color:'dark_gray'}, \
+						'\n→ ᴇʀʀᴏʀ:\n\sFailed to handle <%direction === 'interaction' ? 'right' : 'left'%> click interaction from ', \
+						{selector: '@p[tag=<%TAGS.INTERACTING_PLAYER()%>]', color: gold}, \
+						':\n\s\sInvalid command: ', \
+						{nbt: 'data.animated_java.on_<%direction === 'interaction' ? 'interact' : 'attack'%>_function', entity: '@s', color: aqua}, \
+						'\n\s\sfrom ', \
+						{text: 'data.animated_java.on_<%direction === 'interaction' ? 'interact' : 'attack'%>_function ', color: yellow}, \
+					]
+					# Only remove the interaction if it's consumed.
+					data remove entity @s <%direction%>
+				}
+			}
 		}
 	}
 }

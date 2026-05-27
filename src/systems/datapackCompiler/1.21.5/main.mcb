@@ -1,5 +1,5 @@
 # TODO - Move all internal functions into an internal namespace, and only have user-facing functions in the main `<%blueprint_id%>` namespace.
-
+# FetchBot was here - May 5 2026
 # DIFFERENCES FROM 1.21.4:
 # - JSON text components are now stored as NBT in entities.
 
@@ -87,6 +87,19 @@ dir root {
 			}
 		} ELSE IF (has_ticking_locators) {
 			function <%blueprint_id%>/root/on_tick/transform_locators
+		}
+
+		REPEAT (Object.values(rig.nodes).filter(node => node.type === 'interaction' && node.config?.on_tick_function)) as interaction {
+			block tick_interactions { with storage <%temp_storage%> entry.data.uuids_by_name
+				$execute \
+					as $(<%interaction.storage_name%>) \
+					at @s \
+				run block <%interaction.storage_name%> {
+					<%%
+						emit.mcb(interaction.config.on_tick_function)
+					%%>
+				}
+			}
 		}
 
 		# Custom post-tick function
@@ -209,7 +222,7 @@ IF (has_animations) {
 					debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
 
 					data_manager prep read
-					function <%blueprint_id%>/animations/pause_all
+					# function <%blueprint_id%>/animations/pause_all
 
 					tag @s add <%TAGS.ANIMATION_PLAYING(blueprint_id, animation.storage_name)%>
 					scoreboard players set @s <%OBJECTIVES.FRAME(animation.storage_name)%> 0
@@ -447,7 +460,6 @@ IF (has_animations) {
 								global.modified_effect_nodes = Object.values(animation.modified_nodes).filter(
 									node => node.type === 'locator' && global.frame.node_transforms[node.uuid]
 								)
-								console.log(global.modified_effect_nodes)
 							%%>
 							IF(Object.keys(global.modified_effect_nodes).length > 0) {
 								function last_frame_effects {
@@ -592,8 +604,8 @@ IF (has_animations) {
 									}
 
 									if (Object.keys(to_merge.locators).length > 0 || Object.keys(to_merge.cameras).length > 0) {
-										frameFunc += `\ndata modify storage <%temp_storage%> entry.data merge value ${JSON.stringify(to_merge)}`
-										frameFunc += `\ndata_manager write`
+										frameFunc += `\ndata modify storage ${temp_storage} entry.data merge value ${JSON.stringify(to_merge)}`
+										frameFunc += `\ndata_manager prep write`
 										if (!auto_update_rig_orientation) {
 											frameFunc += `\nfunction ${blueprint_id}/root/on_tick/transform_floating_entities`
 										}
@@ -677,6 +689,42 @@ function summon {
 
 		# Align the position and rotation of the root with the command context.
 		tp @s ~ ~ ~ ~ ~
+
+		REPEAT (Object.values(rig.nodes).filter(node => node.type === 'interaction')) as interaction {
+			summon minecraft:interaction \
+				^<%roundTo(interaction.default_transform.pos[0], 10)%> \
+				^<%roundTo(interaction.default_transform.pos[1], 10)%> \
+				^<%roundTo(interaction.default_transform.pos[2], 10)%> \
+				{ \
+					Tags:<%getNodeTags(interaction, rig)%>, \
+					response: <%interaction.config.response ?? false%>, \
+					width: <%interaction.width%>f, \
+					height: <%interaction.height%>f, \
+				}
+			execute \
+				as @n[ \
+					type=minecraft:interaction, \
+					tag=<%TAGS.PROJECT_INTERACTION_NAMED(blueprint_id, interaction.storage_name)%>, \
+					tag=<%TAGS.NEW()%>, \
+					distance=..<%Math.ceil(interaction.max_distance + 0.5)%> \
+				] \
+			run block as_interaction/<%interaction.storage_name%> {
+			# run block ../as_interaction/<%interaction.storage_name%> {
+				tag @s remove <%TAGS.NEW()%>
+				data modify entity @s CustomName set value <%ENTITY_NAMES.NODE(blueprint_id, interaction.type, interaction.storage_name)%>
+				function animated_java:global/gu/get_entity_uuid_string
+				scoreboard players operation @s <%OBJECTIVES.ID()%> = aj.last_id <%OBJECTIVES.ID()%>
+				IF (interaction.config?.on_interact_function) {
+					data modify entity @s data.animated_java.on_interact_function set value 'function <%blueprint_id%>/interactions/<%interaction.storage_name%>_on_interact'
+				}
+				IF (interaction.config?.on_attack_function) {
+					data modify entity @s data.animated_java.on_attack_function set value 'function <%blueprint_id%>/interactions/<%interaction.storage_name%>_on_attack'
+				}
+			}
+			data modify storage <%temp_storage%> entry.data.uuids append from storage <%gu_storage%> out
+			data modify storage <%temp_storage%> entry.data.uuids_by_name.<%interaction.storage_name%> set from storage <%gu_storage%> out
+			data modify storage <%temp_storage%> entry.data.interactions.<%interaction.storage_name%>.uuid set from storage <%gu_storage%> out
+		}
 
 		REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator' && node.config?.use_entity)) as locator {
 			summon <%locator.config.entity_type%> \
@@ -860,6 +908,16 @@ function summon {
 			}
 		}
 
+		REPEAT (Object.values(rig.nodes).filter(node => node.type === 'interaction' && node.config.on_summon_function)) as interaction {
+			block { with storage <%temp_storage%> entry.data.interactions.<%interaction.storage_name%>
+				$execute at @s as $(uuid) at @s run block on_summon/custom_<%interaction.type + '_' + interaction.storage_name%> {
+					<%%
+						emit.mcb(interaction.config.on_summon_function)
+					%%>
+				}
+			}
+		}
+
 		REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type) && node.on_summon_function?.trim())) as node {
 			execute \
 				on passengers if entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(blueprint_id, node.storage_name)%>] \
@@ -884,6 +942,25 @@ function summon {
 		IF (!use_entity_stacking) {
 			# Dismount bone entities from the root entity.
 			execute on passengers run ride @s dismount
+		}
+	}
+}
+
+dir interactions {
+	REPEAT (Object.values(rig.nodes).filter(node => node.type === 'interaction')) as interaction {
+		IF (interaction.config.on_interact_function) {
+			function <%interaction.storage_name%>_on_interact {
+				<%%
+					emit.mcb(interaction.config.on_interact_function)
+				%%>
+			}
+		}
+		IF (interaction.config.on_attack_function) {
+			function <%interaction.storage_name%>_on_attack {
+				<%%
+					emit.mcb(interaction.config.on_attack_function)
+				%%>
+			}
 		}
 	}
 }
@@ -1241,8 +1318,9 @@ dir remove {
 			if (on_remove_function) emit.mcb(on_remove_function)
 		%%>
 
+		data_manager prep read
+
 		IF (has_entity_locators) {
-			data_manager prep read
 			REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator')) as locator {
 				IF (locator.config?.on_remove_function) {
 					IF (locator.config.use_entity) {
@@ -1269,6 +1347,18 @@ dir remove {
 			}
 		}
 
+		REPEAT (Object.values(rig.nodes).filter(node => node.type === 'interaction')) as interaction {
+			IF (interaction.config?.on_remove_function) {
+				block as_interaction_<%interaction.storage_name%> { with storage <%temp_storage%> entry.data.uuids_by_name
+					$execute as $(<%interaction.storage_name%>) at @s run block interaction_<%interaction.storage_name%>_on_remove {
+						<%%
+							emit.mcb(interaction.config.on_remove_function)
+						%%>
+					}
+				}
+			}
+		}
+
 		function ./this/without_on_remove_function
 	}
 
@@ -1285,6 +1375,11 @@ dir remove {
 				REPEAT (Object.values(rig.nodes).filter(node => node.type === 'camera')) as camera {
 					function animated_java:global/remove/entity_stack_by_uuid with storage <%temp_storage%> entry.data.cameras.<%camera.storage_name%>
 				}
+			}
+
+			REPEAT (Object.values(rig.nodes).filter(node => node.type === 'interaction')) as interaction {
+				data modify storage <%temp_storage%> args.uuid set from storage <%temp_storage%> entry.data.uuids_by_name.<%interaction.storage_name%>
+				function animated_java:global/remove/entity_stack_by_uuid with storage <%temp_storage%> args
 			}
 
 			# Remove the rig using the more expensive & thorough method if the rig_hash doesn't match.

@@ -10,6 +10,7 @@ export class ResizableOutlinerElement extends OutlinerElement {
 	rotation: ArrayVector3
 	scale: ArrayVector3
 	visibility: boolean
+	color!: number
 	// @ts-expect-error - Is defined externally
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	preview_controller = PREVIEW_CONTROLLER
@@ -65,14 +66,21 @@ export class ResizableOutlinerElement extends OutlinerElement {
 		return this
 	}
 
-	getSize() {
-		return this.size()
+	setColor(color: number) {
+		this.color = color
+		this.preview_controller.updateGeometry?.(this)
+		this.preview_controller.updateHighlight?.(this)
+		return this
 	}
 
-	size(axis?: number, floored?: boolean) {
+	getSize(axis?: number) {
+		return this.size(axis)
+	}
+
+	size(axis?: number, floored?: boolean): number | ArrayVector3 {
 		if (axis === undefined) {
-			if (floored) return this.scale.map(n => Math.floor(n))
-			return this.scale.slice()
+			if (floored) return this.scale.map(n => Math.floor(n)) as ArrayVector3
+			return this.scale.slice() as ArrayVector3
 		}
 		if (floored) return Math.floor(this.scale[axis])
 		return this.scale[axis]
@@ -80,15 +88,16 @@ export class ResizableOutlinerElement extends OutlinerElement {
 
 	resize(
 		val: number | ((n: number) => number),
-		axis: number
-		// negative: boolean,
-		// allowNegative: boolean,
-		// bidirectional: boolean
+		axis: number,
+		negative: boolean,
+		_allowNegative: boolean,
+		_bidirectional: boolean
 	) {
 		let before = this.temp_data.old_size ?? this.size(axis)
 		if (before instanceof Array) before = before[axis]
 		// For some unknown reason scale is not inverted on the y axis
-		const sign = before < 0 && axis !== 1 ? -1 : 1
+		let sign = before < 0 && axis !== 1 ? -1 : 1
+		if (negative) sign *= -1
 
 		const modify = typeof val === 'function' ? val : (n: number) => n + (val * sign) / 16
 
@@ -112,6 +121,9 @@ new Property(ResizableOutlinerElement, 'vector', 'position', { default: [0, 0, 0
 new Property(ResizableOutlinerElement, 'vector', 'rotation', { default: [0, 0, 0] })
 new Property(ResizableOutlinerElement, 'vector', 'pivotOffset', { default: [0, 0, 0] })
 new Property(ResizableOutlinerElement, 'vector', 'scale', { default: [1, 1, 1] })
+new Property(ResizableOutlinerElement, 'number', 'color', {
+	default: () => Math.floor(Math.random() * markerColors.length),
+})
 new Property(ResizableOutlinerElement, 'boolean', 'visibility', { default: true })
 new Property(ResizableOutlinerElement, 'boolean', 'locked', { default: false })
 new Property(ResizableOutlinerElement, 'boolean', 'export', { default: true })
@@ -148,6 +160,7 @@ export const PREVIEW_CONTROLLER: NodePreviewController = new NodePreviewControll
 				el.mesh.fix_rotation.copy(el.mesh.rotation)
 			}
 			el.mesh.scale.set(...el.scale)
+			makeNotZero(el.mesh.scale)
 			if (el.mesh.fix_scale) {
 				el.mesh.fix_scale.set(...el.scale)
 				makeNotZero(el.mesh.fix_scale)

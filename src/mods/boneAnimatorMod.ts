@@ -15,6 +15,7 @@ registerPropertyOverridePatch({
 
 	get: original => {
 		return function (this: BoneAnimator, channel, allowExpression, axis) {
+			if (this.channels?.[channel] == undefined) return false
 			if (
 				!BONE_INTERPOLATION_ENABLED.get() ||
 				!activeProjectIsBlueprintFormat() ||

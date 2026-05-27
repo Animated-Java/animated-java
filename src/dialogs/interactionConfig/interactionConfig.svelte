@@ -10,7 +10,7 @@
 
 	export let response: Observable<boolean>
 	export let onSummonFunction: Observable<string>
-	export let onInteractionFunction: Observable<string>
+	export let onInteractFunction: Observable<string>
 	export let onAttackFunction: Observable<string>
 	export let onRemoveFunction: Observable<string>
 	export let onTickFunction: Observable<string>
@@ -38,9 +38,9 @@
 		/>
 
 		<CodeInput
-			label={localize('dialog.interaction_config.on_interaction_function.title')}
-			tooltip={localize('dialog.interaction_config.on_interaction_function.description')}
-			bind:value={onInteractionFunction}
+			label={localize('dialog.interaction_config.on_interact_function.title')}
+			tooltip={localize('dialog.interaction_config.on_interact_function.description')}
+			bind:value={onInteractFunction}
 			defaultValue=""
 			syntax="mcfunction"
 		/>
