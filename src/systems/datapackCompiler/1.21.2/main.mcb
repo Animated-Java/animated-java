@@ -66,12 +66,25 @@ dir root {
 		}
 
 		IF (auto_update_rig_orientation) {
-			IF (has_locators || has_cameras) {
+			IF (has_locators || has_cameras || has_interactions) {
 				function <%blueprint_id%>/root/on_tick/transform_floating_entities
 			}
 			execute on passengers run rotate @s ~ ~
 		} ELSE IF (has_ticking_locators) {
 			function <%blueprint_id%>/root/on_tick/transform_locators
+		}
+
+		REPEAT (Object.values(rig.nodes).filter(node => node.type === 'interaction' && node.config?.on_tick_function)) as interaction {
+			block tick_interactions { with storage <%temp_storage%> entry.data.uuids_by_name
+				$execute \
+					as $(<%interaction.storage_name%>) \
+					at @s \
+				run block <%interaction.storage_name%> {
+					<%%
+						emit.mcb(interaction.config.on_tick_function)
+					%%>
+				}
+			}
 		}
 
 		# Custom post-tick function
@@ -82,7 +95,7 @@ dir root {
 		}
 	}
 
-	IF (has_locators || has_cameras) {
+	IF (has_locators || has_cameras || has_interactions) {
 		dir on_tick {
 			function transform_locators {
 				REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator')) as locator {
@@ -117,6 +130,24 @@ dir root {
 						}
 					}
 				}
+
+				REPEAT (Object.values(rig.nodes).filter(node => node.type === 'interaction')) as interaction {
+					block select_interaction_<%interaction.storage_name%> { with storage <%temp_storage%> entry.data.interactions.<%interaction.storage_name%>
+						$execute \
+							as $(uuid) \
+							positioned ^$(px) ^$(py) ^$(pz) \
+							rotated ~$(ry) ~$(rx) \
+						run block as_interaction_<%interaction.storage_name%> {
+							tp @s ~ ~ ~ ~ ~
+
+							IF (interaction.config?.on_tick_function) {
+								<%%
+									emit.mcb(interaction.config.on_tick_function)
+								%%>
+							}
+						}
+					}
+				}
 			}
 
 			function transform_floating_entities {
@@ -142,8 +173,8 @@ IF (!auto_update_rig_orientation) {
 
 		tp @s ~ ~ ~ ~ ~
 
+		data_manager prep read
 		IF (has_locators || has_cameras) {
-			data_manager prep read
 			function <%blueprint_id%>/root/on_tick/transform_floating_entities
 		}
 		execute at @s on passengers run rotate @s ~ ~
@@ -162,7 +193,7 @@ IF (has_animations) {
 					debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
 
 					data_manager prep read
-					function <%blueprint_id%>/animations/pause_all
+					# function <%blueprint_id%>/animations/pause_all
 
 					tag @s add <%TAGS.ANIMATION_PLAYING(blueprint_id, animation.storage_name)%>
 					scoreboard players set @s <%OBJECTIVES.FRAME(animation.storage_name)%> 0
@@ -360,7 +391,6 @@ IF (has_animations) {
 								global.modified_effect_nodes = Object.values(animation.modified_nodes).filter(
 									node => node.type === 'locator' && global.frame.node_transforms[node.uuid]
 								)
-								console.log(global.modified_effect_nodes)
 							%%>
 							IF(Object.keys(global.modified_effect_nodes).length > 0) {
 								function last_frame_effects {
@@ -416,7 +446,7 @@ IF (has_animations) {
 								const lastActiveFrame = {}
 								const modifiedNodes = Object.values(animation.modified_nodes).filter(n => n.type !== 'struct').sort(nodeSorter);
 								for (const [frameIndex, frame] of animation.frames.entries()) {
-									const to_merge = {cameras: {}, locators: {}}
+									const to_merge = {cameras: {}, locators: {}, interactions: {}}
 									let frameFunc = ``;
 									for (const node of modifiedNodes) {
 										const transform = frame.node_transforms[node.uuid]
@@ -487,6 +517,32 @@ IF (has_animations) {
 												}
 												break
 											}
+											case 'interaction': {
+												const lastFrame = lastActiveFrame[node.uuid]
+												lastActiveFrame[node.uuid] = transform
+												;if (!lastFrame || matrixToNbtFloatArray(transform.matrix).toString() !== matrixToNbtFloatArray(lastFrame.matrix).toString()) {
+													to_merge.interactions[node.storage_name] = {
+														px: roundTo(transform.pos[0], 10),
+														py: roundTo(transform.pos[1], 10),
+														pz: roundTo(transform.pos[2], 10),
+														ry: roundTo(transform.head_rot[1], 10),
+														rx: roundTo(transform.head_rot[0], 10)
+													};
+												}
+
+												if (transform.function) {
+													frameFunc +=
+														`\n$execute unless entity @s[tag=${TAGS.TRANSFORMS_ONLY()}] as $(${node.storage_name}) `
+														+ `positioned ^${roundTo(transform.pos[0], 10)} ^${roundTo(transform.pos[1], 10)} ^${roundTo(transform.pos[2], 10)} `
+														+ `rotated ~${roundTo(transform.head_rot[1], 10)} ~${roundTo(transform.head_rot[0], 10)} `
+														+ `${transform.function_execute_condition ? transform.function_execute_condition + ' ' : ''}run `
+														+ `block ${frameIndex}_interaction_${node.storage_name}%NEWLINE_PATCH%{\n`
+															+ `tp @s ~ ~ ~ ~ ~\n`
+															+ `${transform.function}`
+														+ `\n}`
+												}
+												break
+											}
 											case 'camera': {
 												const lastFrame = lastActiveFrame[node.uuid]
 												lastActiveFrame[node.uuid] = transform
@@ -504,9 +560,17 @@ IF (has_animations) {
 										}
 									}
 
-									if (Object.keys(to_merge.locators).length > 0 || Object.keys(to_merge.cameras).length > 0) {
-										frameFunc += `\ndata modify storage <%temp_storage%> entry.data merge value ${JSON.stringify(to_merge)}`
-										frameFunc += `\ndata_manager write`
+									const updatedLocators = Object.keys(to_merge.locators).length > 0;
+									const updatedCameras = Object.keys(to_merge.cameras).length > 0;
+									const updatedInteractions = Object.keys(to_merge.interactions).length > 0;
+
+									if (!updatedCameras) delete to_merge.cameras;
+									if (!updatedLocators) delete to_merge.locators;
+									if (!updatedInteractions) delete to_merge.interactions;
+
+									if (updatedLocators || updatedCameras || updatedInteractions) {
+										frameFunc += `\ndata modify storage ${temp_storage} entry.data merge value ${JSON.stringify(to_merge)}`
+										frameFunc += `\ndata_manager prep write`
 										if (!auto_update_rig_orientation) {
 											frameFunc += `\nfunction ${blueprint_id}/root/on_tick/transform_floating_entities`
 										}
@@ -590,6 +654,42 @@ function summon {
 
 		# Align the position and rotation of the root with the command context.
 		tp @s ~ ~ ~ ~ ~
+
+		REPEAT (Object.values(rig.nodes).filter(node => node.type === 'interaction')) as interaction {
+			summon minecraft:interaction \
+				^<%roundTo(interaction.default_transform.pos[0], 10)%> \
+				^<%roundTo(interaction.default_transform.pos[1], 10)%> \
+				^<%roundTo(interaction.default_transform.pos[2], 10)%> \
+				{ \
+					Tags:<%getNodeTags(interaction, rig)%>, \
+					response: <%interaction.config.response ?? false%>, \
+					width: <%interaction.width%>f, \
+					height: <%interaction.height%>f, \
+				}
+			execute \
+				as @n[ \
+					type=minecraft:interaction, \
+					tag=<%TAGS.PROJECT_INTERACTION_NAMED(blueprint_id, interaction.storage_name)%>, \
+					tag=<%TAGS.NEW()%>, \
+					distance=..<%Math.ceil(interaction.max_distance + 0.5)%> \
+				] \
+			run block as_interaction/<%interaction.storage_name%> {
+			# run block ../as_interaction/<%interaction.storage_name%> {
+				tag @s remove <%TAGS.NEW()%>
+				data modify entity @s CustomName set value '<%ENTITY_NAMES.NODE(blueprint_id, interaction.type, interaction.storage_name)%>'
+				function animated_java:global/gu/get_entity_uuid_string
+				scoreboard players operation @s <%OBJECTIVES.ID()%> = aj.last_id <%OBJECTIVES.ID()%>
+				IF (interaction.config?.on_interact_function) {
+					data modify entity @s data.animated_java.on_interact_function set value "function <%blueprint_id%>/interactions/<%interaction.storage_name%>_on_interact"
+				}
+				IF (interaction.config?.on_attack_function) {
+					data modify entity @s data.animated_java.on_attack_function set value "function <%blueprint_id%>/interactions/<%interaction.storage_name%>_on_attack"
+				}
+			}
+			data modify storage <%temp_storage%> entry.data.uuids append from storage <%gu_storage%> out
+			data modify storage <%temp_storage%> entry.data.uuids_by_name.<%interaction.storage_name%> set from storage <%gu_storage%> out
+			data modify storage <%temp_storage%> entry.data.interactions.<%interaction.storage_name%>.uuid set from storage <%gu_storage%> out
+		}
 
 		REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator' && node.config?.use_entity)) as locator {
 			summon <%locator.config.entity_type%> \
@@ -773,6 +873,16 @@ function summon {
 			}
 		}
 
+		REPEAT (Object.values(rig.nodes).filter(node => node.type === 'interaction' && node.config.on_summon_function)) as interaction {
+			block { with storage <%temp_storage%> entry.data.interactions.<%interaction.storage_name%>
+				$execute at @s as $(uuid) at @s run block on_summon/custom_<%interaction.type + '_' + interaction.storage_name%> {
+					<%%
+						emit.mcb(interaction.config.on_summon_function)
+					%%>
+				}
+			}
+		}
+
 		REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type) && node.on_summon_function?.trim())) as node {
 			execute \
 				on passengers if entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(blueprint_id, node.storage_name)%>] \
@@ -794,6 +904,25 @@ function summon {
 		# Remove the NEW tag from the root entity, and it's passengers.
 		tag @s remove <%TAGS.NEW()%>
 		execute on passengers run tag @s remove <%TAGS.NEW()%>
+	}
+}
+
+dir interactions {
+	REPEAT (Object.values(rig.nodes).filter(node => node.type === 'interaction')) as interaction {
+		IF (interaction.config.on_interact_function) {
+			function <%interaction.storage_name%>_on_interact {
+				<%%
+					emit.mcb(interaction.config.on_interact_function)
+				%%>
+			}
+		}
+		IF (interaction.config.on_attack_function) {
+			function <%interaction.storage_name%>_on_attack {
+				<%%
+					emit.mcb(interaction.config.on_attack_function)
+				%%>
+			}
+		}
 	}
 }
 
@@ -828,6 +957,234 @@ function as_node {
 		}
 		IF (debug_mode) {
 			execute if score #aj.check <%OBJECTIVES.I()%> matches 0 run tellraw @a <%TELLRAW.NODE_COMMAND_FAILED_TO_EXECUTE()%>
+		}
+	}
+}
+
+IF (has_interactions) {
+	function as_interaction {
+		#ARGS: {name: string, command: string}
+		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
+
+		data remove storage <%temp_storage%> args
+		$data modify storage <%temp_storage%> args merge value {name:'$(name)', command:'$(command)', uuid:'+MISSING_UUID+'}
+
+		IF (debug_mode) {
+			execute if data storage <%temp_storage%> {args:{name:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('name')%>
+			execute if data storage <%temp_storage%> {args:{command:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('command')%>
+		}
+
+		data_manager prep read
+
+		block zzz/as_interaction/as_data { with storage <%temp_storage%> args
+			$data modify storage <%temp_storage%> args.uuid set from storage <%temp_storage%> entry.data.interactions.$(name).uuid
+			IF (debug_mode) {
+				scoreboard players set #aj.check <%OBJECTIVES.I()%> 0
+			}
+			block execute_as_uuid { with storage <%temp_storage%> args
+				IF (debug_mode) {
+					# If the function successfully instantiated, the provided command is valid.
+					scoreboard players set #aj.check <%OBJECTIVES.I()%> 1
+				}
+				$execute as $(uuid) run return run $(command)
+				IF (debug_mode) {
+					# If the entity with the provided UUID doesn't exist, the interaction wasn't found.
+					tellraw @a <%TELLRAW.INTERACTION_ENTITY_NOT_FOUND()%>
+				}
+			}
+			IF (debug_mode) {
+				execute if score #aj.check <%OBJECTIVES.I()%> matches 0 run tellraw @a <%TELLRAW.INTERACTION_COMMAND_FAILED_TO_EXECUTE()%>
+			}
+		}
+	}
+
+	function as_at_interaction {
+		#ARGS: {name: string, command: string}
+		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
+
+		data remove storage <%temp_storage%> args
+		$data modify storage <%temp_storage%> args merge value {name:'$(name)', command:'$(command)', uuid:'+MISSING_UUID+'}
+
+		IF (debug_mode) {
+			execute if data storage <%temp_storage%> {args:{name:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('name')%>
+			execute if data storage <%temp_storage%> {args:{command:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('command')%>
+		}
+
+		data_manager prep read
+
+		block zzz/as_interaction/as_data { with storage <%temp_storage%> args
+			$data modify storage <%temp_storage%> args.uuid set from storage <%temp_storage%> entry.data.interactions.$(name).uuid
+			IF (debug_mode) {
+				scoreboard players set #aj.check <%OBJECTIVES.I()%> 0
+			}
+			block execute_as_uuid { with storage <%temp_storage%> args
+				IF (debug_mode) {
+					# If the function successfully instantiated, the provided command is valid.
+					scoreboard players set #aj.check <%OBJECTIVES.I()%> 1
+				}
+				$execute as $(uuid) at @s run return run $(command)
+				IF (debug_mode) {
+					# If the entity with the provided UUID doesn't exist, the interaction wasn't found.
+					tellraw @a <%TELLRAW.INTERACTION_ENTITY_NOT_FOUND()%>
+				}
+			}
+			IF (debug_mode) {
+				execute if score #aj.check <%OBJECTIVES.I()%> matches 0 run tellraw @a <%TELLRAW.INTERACTION_COMMAND_FAILED_TO_EXECUTE()%>
+			}
+		}
+	}
+
+	function as_all_interactions {
+		#ARGS: {command: string}
+		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
+
+		data remove storage <%temp_storage%> args
+		$data modify storage <%temp_storage%> args merge value {command:'$(command)'}
+
+		IF (debug_mode) {
+			execute if data storage <%temp_storage%> {args:{command:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('command')%>
+		}
+
+		data_manager prep read
+
+		block zzz/as_all_interactions/as_data {
+			REPEAT (Object.values(rig.nodes).filter(node => node.type === 'interaction')) as interaction {
+				data modify storage <%temp_storage%> args.uuid set from storage <%temp_storage%> entry.data.interactions.<%interaction.storage_name%>.uuid
+
+				IF (debug_mode) {
+					scoreboard players set #aj.check <%OBJECTIVES.I()%> 0
+				}
+
+				block execute_as_uuid { with storage <%temp_storage%> args
+					IF (debug_mode) {
+						# If the function successfully instantiated, the provided command is valid.
+						scoreboard players set #aj.check <%OBJECTIVES.I()%> 1
+					}
+
+					$execute as $(uuid) run return run $(command)
+				}
+
+				IF (debug_mode) {
+					execute if score #aj.check <%OBJECTIVES.I()%> matches 0 run tellraw @a <%TELLRAW.INTERACTION_COMMAND_FAILED_TO_EXECUTE({text: interaction.storage_name, color: 'aqua'})%>
+				}
+			}
+		}
+	}
+
+	function as_at_all_interactions {
+		#ARGS: {command: string}
+		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
+
+		data remove storage <%temp_storage%> args
+		$data modify storage <%temp_storage%> args merge value {command:'$(command)'}
+
+		IF (debug_mode) {
+			execute if data storage <%temp_storage%> {args:{command:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('command')%>
+		}
+
+		data_manager prep read
+
+		block zzz/as_all_interactions/as_data {
+			REPEAT (Object.values(rig.nodes).filter(node => node.type === 'interaction')) as interaction {
+				data modify storage <%temp_storage%> args.uuid set from storage <%temp_storage%> entry.data.interactions.<%interaction.storage_name%>.uuid
+
+				IF (debug_mode) {
+					scoreboard players set #aj.check <%OBJECTIVES.I()%> 0
+				}
+
+				block execute_as_uuid { with storage <%temp_storage%> args
+					IF (debug_mode) {
+						# If the function successfully instantiated, the provided command is valid.
+						scoreboard players set #aj.check <%OBJECTIVES.I()%> 1
+					}
+
+					$execute as $(uuid) at @s run return run $(command)
+				}
+
+				IF (debug_mode) {
+					execute if score #aj.check <%OBJECTIVES.I()%> matches 0 run tellraw @a <%TELLRAW.INTERACTION_COMMAND_FAILED_TO_EXECUTE({text: interaction.storage_name, color: 'aqua'})%>
+				}
+			}
+		}
+	}
+
+	function at_interaction {
+		#ARGS: {name: string, command: string}
+		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
+
+		data remove storage <%temp_storage%> args
+		$data modify storage <%temp_storage%> args merge value {name:'$(name)', command:'$(command)'}
+
+		IF (debug_mode) {
+			execute if data storage <%temp_storage%> {args:{name:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('name')%>
+			execute if data storage <%temp_storage%> {args:{command:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('command')%>
+		}
+
+		data_manager prep read
+
+		execute at @s run block zzz/at_interaction/as_data { with storage <%temp_storage%> args
+			$data modify storage <%temp_storage%> args merge from storage <%temp_storage%> entry.data.interactions.$(name)
+
+			IF (debug_mode) {
+				execute unless data storage <%temp_storage%> args.px run return run tellraw @a <%TELLRAW.INTERACTION_NOT_FOUND()%>
+				scoreboard players set #aj.check <%OBJECTIVES.I()%> 0
+			}
+
+			block execute_at_transform { with storage <%temp_storage%> args
+				IF (debug_mode) {
+					# If the function successfully instantiated, the provided command is valid.
+					scoreboard players set #aj.check <%OBJECTIVES.I()%> 1
+				}
+
+				$execute \
+					positioned ^$(px) ^$(py) ^$(pz) \
+					rotated ~$(ry) ~$(rx) \
+				run $(command)
+			}
+
+			IF (debug_mode) {
+				execute if score #aj.check <%OBJECTIVES.I()%> matches 0 run tellraw @a <%TELLRAW.INTERACTION_COMMAND_FAILED_TO_EXECUTE()%>
+			}
+		}
+	}
+
+	function at_all_interactions {
+		#ARGS: {command: string}
+		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
+
+		data remove storage <%temp_storage%> args
+		$data modify storage <%temp_storage%> args merge value {command:'$(command)'}
+
+		IF (debug_mode) {
+			execute if data storage <%temp_storage%> {args:{command:''}} run return run tellraw @a <%TELLRAW.ARGUMENT_CANNOT_BE_EMPTY('command')%>
+		}
+
+		data_manager prep read
+
+		block zzz/at_all_interactions/as_data {
+			REPEAT (Object.values(rig.nodes).filter(node => node.type === 'interaction')) as interaction {
+				data modify storage <%temp_storage%> args merge from storage <%temp_storage%> entry.data.interactions.<%interaction.storage_name%>
+
+				IF (debug_mode) {
+					scoreboard players set #aj.check <%OBJECTIVES.I()%> 0
+				}
+
+				block execute_at_transform { with storage <%temp_storage%> args
+					IF (debug_mode) {
+						# If the function successfully instantiated, the provided command is valid.
+						scoreboard players set #aj.check <%OBJECTIVES.I()%> 1
+					}
+
+					$execute \
+						positioned ^$(px) ^$(py) ^$(pz) \
+						rotated ~$(ry) ~$(rx) \
+					run $(command)
+				}
+
+				IF (debug_mode) {
+					execute if score #aj.check <%OBJECTIVES.I()%> matches 0 run tellraw @a <%TELLRAW.INTERACTION_COMMAND_FAILED_TO_EXECUTE({text: interaction.storage_name, color: 'aqua'})%>
+				}
+			}
 		}
 	}
 }
@@ -1150,8 +1507,9 @@ dir remove {
 			if (on_remove_function) emit.mcb(on_remove_function)
 		%%>
 
+		data_manager prep read
+
 		IF (has_entity_locators) {
-			data_manager prep read
 			REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator')) as locator {
 				IF (locator.config?.on_remove_function) {
 					IF (locator.config.use_entity) {
@@ -1178,6 +1536,18 @@ dir remove {
 			}
 		}
 
+		REPEAT (Object.values(rig.nodes).filter(node => node.type === 'interaction')) as interaction {
+			IF (interaction.config?.on_remove_function) {
+				block as_interaction_<%interaction.storage_name%> { with storage <%temp_storage%> entry.data.uuids_by_name
+					$execute as $(<%interaction.storage_name%>) at @s run block interaction_<%interaction.storage_name%>_on_remove {
+						<%%
+							emit.mcb(interaction.config.on_remove_function)
+						%%>
+					}
+				}
+			}
+		}
+
 		function ./this/without_on_remove_function
 	}
 
@@ -1194,6 +1564,11 @@ dir remove {
 				REPEAT (Object.values(rig.nodes).filter(node => node.type === 'camera')) as camera {
 					function animated_java:global/remove/entity_stack_by_uuid with storage <%temp_storage%> entry.data.cameras.<%camera.storage_name%>
 				}
+			}
+
+			REPEAT (Object.values(rig.nodes).filter(node => node.type === 'interaction')) as interaction {
+				data modify storage <%temp_storage%> args.uuid set from storage <%temp_storage%> entry.data.uuids_by_name.<%interaction.storage_name%>
+				function animated_java:global/remove/entity_stack_by_uuid with storage <%temp_storage%> args
 			}
 
 			# Remove the rig using the more expensive & thorough method if the rig_hash doesn't match.
