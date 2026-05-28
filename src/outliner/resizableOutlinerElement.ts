@@ -104,7 +104,21 @@ export class ResizableOutlinerElement extends OutlinerElement {
 		this.scale[axis] = modify(before)
 
 		this.preview_controller.updateGeometry?.(this)
-		this.preview_controller.updateTransform(this)
+		this.preview_controller.updateTransform?.(this)
+
+		return this
+	}
+
+	flip(axis: number, center: number) {
+		console.log('Flipping', this.name, 'on axis', axis, 'with center', center)
+		this.rotation[(axis + 1) % 3] *= -1
+		this.rotation[(axis + 2) % 3] *= -1
+		this.origin[axis] = center * 2 - this.origin[axis]
+		// @ts-expect-error - Incorrectly required arguments
+		flipNameOnAxis(this, axis)
+
+		this.preview_controller.updateTransform?.(this)
+		this.preview_controller.updateGeometry?.(this)
 
 		return this
 	}
