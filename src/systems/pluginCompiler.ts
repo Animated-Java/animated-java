@@ -506,96 +506,161 @@ function serializeTexture(texture: Texture): PluginTexture {
 	} satisfies PluginTexture)
 }
 
-function serializeAnimation(options: {
+function buildLoopMode(animation: IRenderedAnimation): LoopMode {
+	switch (animation.loop_mode) {
+		case 'loop':
+			return { type: 'loop', loop_delay: String(animation.loop_delay ?? 0) }
+		case 'hold':
+			return { type: 'hold' }
+		default:
+			return { type: 'once' }
+	}
+}
+
+function pad3<T>(arr: ArrayLike<T>, fill: T): [T, T, T] {
+	return [arr[0] ?? fill, arr[1] ?? fill, arr[2] ?? fill]
+}
+
+function keyframeInterpolation(kf: _Keyframe): TransformationKeyframeInterpolation {
+	switch (kf.interpolation) {
+		case 'bezier':
+			return {
+				type: 'bezier',
+				left_handle_time: pad3(kf.bezier_left_time, 0),
+				left_handle_value: pad3(kf.bezier_left_value, 0),
+				right_handle_time: pad3(kf.bezier_right_time, 0),
+				right_handle_value: pad3(kf.bezier_right_value, 0),
+			}
+		case 'catmullrom':
+			return { type: 'catmullrom' }
+		case 'step':
+			return { type: 'step' }
+		default: {
+			const out: TransformationKeyframeInterpolation = {
+				type: 'linear',
+				easing: kf.easing ?? 'linear',
+			}
+			if (kf.easingArgs?.length) out.easing_arguments = kf.easingArgs.slice()
+			return out
+		}
+	}
+}
+
+function keyframeDataPoint(kf: _Keyframe, index: number): [string, string, string] {
+	return [
+		String(kf.get('x', index)),
+		String(kf.get('y', index)),
+		String(kf.get('z', index)),
+	]
+}
+
+function serializeRawAnimation(options: {
 	animation: IRenderedAnimation
 	nodeUuidToId: Map<string, string>
 	paletteIds: string[]
 }): PluginAnimation {
-	const { animation, nodeUuidToId } = options
-
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	const loop_mode: LoopMode =
-		animation.loop_mode === 'loop'
-			? { type: 'loop', loop_delay: String(animation.loop_delay ?? 0) }
-			: animation.loop_mode === 'hold'
-				? { type: 'hold' }
-				: { type: 'once' }
-
-	const maxTime = animation.frames.at(-1)?.time ?? 0
-
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	const node_keyframes: NonNullable<PluginAnimation['node_keyframes']> = {}
-
-	for (const frame of animation.frames) {
-		const timeKey = formatTimestamp(frame.time)
-		for (const [uuid, transform] of Object.entries(frame.node_transforms)) {
-			const nodeId = nodeUuidToId.get(uuid)
-			if (!nodeId) continue
-			node_keyframes[nodeId] ??= {}
-
-			const createInterpolation = (): TransformationKeyframeInterpolation =>
-				transform.interpolation === 'step' || transform.interpolation === 'pre-post'
-					? { type: 'step' }
-					: { type: 'linear', easing: 'linear' }
-
-			node_keyframes[nodeId].position ??= {}
-			node_keyframes[nodeId].rotation ??= {}
-			node_keyframes[nodeId].scale ??= {}
-
-			node_keyframes[nodeId].position![timeKey] = {
-				value: [
-					toMolangNumber(transform.pos[0]),
-					toMolangNumber(transform.pos[1]),
-					toMolangNumber(transform.pos[2]),
-				],
-				interpolation: createInterpolation(),
-			}
-			node_keyframes[nodeId].rotation![timeKey] = {
-				value: [
-					toMolangNumber(transform.rot[0]),
-					toMolangNumber(transform.rot[1]),
-					toMolangNumber(transform.rot[2]),
-				],
-				interpolation: createInterpolation(),
-			}
-			node_keyframes[nodeId].scale![timeKey] = {
-				value: [
-					toMolangNumber(transform.scale[0]),
-					toMolangNumber(transform.scale[1]),
-					toMolangNumber(transform.scale[2]),
-				],
-				interpolation: createInterpolation(),
-			}
-		}
+	const { animation, nodeUuidToId, paletteIds } = options
+	const bbAnimation = Blockbench.Animation.all.find(a => a.uuid === animation.uuid)
+	if (!bbAnimation) {
+		throw new IntentionalExportError(
+			`Could not locate source animation for <code>${animation.name}</code>.`
+		)
 	}
 
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	let global_keyframes: NonNullable<PluginAnimation['global_keyframes']> | undefined
+	const node_keyframes: NonNullable<PluginAnimation['node_keyframes']> = {}
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	let global_keyframes: PluginAnimation['global_keyframes']
 
-	// map the baked variant for each frame into the texture keyframes
-	if (options.paletteIds.length) {
-		const textureKeyframes: Record<string, Record<string, string>> = {}
-		for (const frame of animation.frames) {
-			if (!frame.variants?.length) continue
-			const variant = Variant.getByUUID(frame.variants[0])
-			if (!variant) continue
-			const timeKey = formatTimestamp(frame.time)
-			textureKeyframes[timeKey] ??= {}
-			for (const paletteId of options.paletteIds) {
-				textureKeyframes[timeKey][paletteId] = variant.name
+	for (const [animatorUuid, animator] of Object.entries(bbAnimation.animators)) {
+		// @ts-expect-error - broken bb types
+		const keyframes: _Keyframe[] | undefined = animator?.keyframes
+		if (!keyframes?.length) continue
+
+		const nodeId = nodeUuidToId.get(animatorUuid)
+
+		for (const kf of keyframes) {
+			const timeKey = formatTimestamp(kf.time)
+
+			if (kf.channel === 'position' || kf.channel === 'rotation' || kf.channel === 'scale') {
+				if (!nodeId) continue
+				const channels = (node_keyframes[nodeId] ??= {})
+				const bucket = (channels[kf.channel] ??= {})
+				const entry: TransformationKeyframe = {
+					value: keyframeDataPoint(kf, 0),
+					interpolation: keyframeInterpolation(kf),
+				}
+				if (kf.data_points.length === 2) entry.post = keyframeDataPoint(kf, 1)
+				bucket[timeKey] = entry
+			} else if (kf.channel === 'variant' && paletteIds.length && kf.variant) {
+				global_keyframes ??= {}
+				const texture = (global_keyframes.texture ??= {})
+				const slot = (texture[timeKey] ??= {})
+				for (const paletteId of paletteIds) slot[paletteId] = kf.variant.name
 			}
-		}
-		if (Object.keys(textureKeyframes).length) {
-			global_keyframes ??= {}
-			global_keyframes.texture = textureKeyframes
 		}
 	}
 
 	return scrubUndefined({
-		loop_mode,
+		loop_mode: buildLoopMode(animation),
 		blend_weight: '1',
 		start_delay: '0',
-		length: maxTime,
+		length: bbAnimation.length,
+		global_keyframes,
+		node_keyframes,
+	} satisfies PluginAnimation)
+}
+
+function serializeBakedAnimation(options: {
+	animation: IRenderedAnimation
+	nodeUuidToId: Map<string, string>
+	paletteIds: string[]
+}): PluginAnimation {
+	const { animation, nodeUuidToId, paletteIds } = options
+
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	const node_keyframes: NonNullable<PluginAnimation['node_keyframes']> = {}
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	let global_keyframes: PluginAnimation['global_keyframes']
+
+	for (const frame of animation.frames) {
+		const timeKey = formatTimestamp(frame.time)
+
+		for (const [uuid, transform] of Object.entries(frame.node_transforms)) {
+			const nodeId = nodeUuidToId.get(uuid)
+			if (!nodeId) continue
+
+			const interpolation: TransformationKeyframeInterpolation =
+				transform.interpolation === 'step' || transform.interpolation === 'pre-post'
+					? { type: 'step' }
+					: { type: 'linear', easing: 'linear' }
+
+			const channels = (node_keyframes[nodeId] ??= {})
+			const position = (channels.position ??= {})
+			const rotation = (channels.rotation ??= {})
+			const scale = (channels.scale ??= {})
+
+			position[timeKey] = { value: transform.pos.map(toMolangNumber) as [string, string, string], interpolation }
+			rotation[timeKey] = { value: transform.rot.map(toMolangNumber) as [string, string, string], interpolation }
+			scale[timeKey] = { value: transform.scale.map(toMolangNumber) as [string, string, string], interpolation }
+		}
+
+		if (paletteIds.length && frame.variants?.length) {
+			const variant = Variant.getByUUID(frame.variants[0])
+			if (variant) {
+				global_keyframes ??= {}
+				const texture = (global_keyframes.texture ??= {})
+				const slot = (texture[timeKey] ??= {})
+				for (const paletteId of paletteIds) slot[paletteId] = variant.name
+			}
+		}
+	}
+
+	return scrubUndefined({
+		loop_mode: buildLoopMode(animation),
+		blend_weight: '1',
+		start_delay: '0',
+		length: animation.frames.at(-1)?.time ?? 0,
 		global_keyframes,
 		node_keyframes,
 	} satisfies PluginAnimation)
@@ -642,13 +707,11 @@ export function exportPluginBlueprint(options: {
 	}
 
 	const animations: Record<string, PluginAnimation> = {}
+	const usedAnimationKeys = new Set<string>()
+	const serialize = aj.baked_animations ? serializeBakedAnimation : serializeRawAnimation
 	for (const animation of options.animations) {
-		const key = ensureUniqueKey(animation.storage_name, new Set(Object.keys(animations)))
-		animations[key] = serializeAnimation({
-			animation,
-			nodeUuidToId,
-			paletteIds,
-		})
+		const key = ensureUniqueKey(animation.storage_name, usedAnimationKeys)
+		animations[key] = serialize({ animation, nodeUuidToId, paletteIds })
 	}
 
 	const blueprint: PluginBlueprintJson = scrubUndefined({
