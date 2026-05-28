@@ -84,17 +84,14 @@
 			<h3>{availableItemsColumnLable}</h3>
 			<section class="column sub-column-container">
 				{#each availableItemsList as item (item.id)}
-					<div class="list-item">
+					<div class="list-item" onclick={() => includeItem(item.value)}>
 						<!-- svelte-ignore a11y_click_events_have_key_events -->
 						<i
 							class="fas fa-angle-right icon swap-item-button"
 							title="Move to {includedItemsColumnLable}"
-							onclick={() => includeItem(item.value)}
 						></i>
-						<i
-							class="material-icons notranslate icon"
-							style="color: rgb(162, 235, 255);">{item.icon ?? 'folder'}</i
-						>
+						{@html Blockbench.getIconNode(item.icon ?? 'folder', 'rgb(162, 235, 255)')
+							.outerHTML}
 						<span>{item.title}</span>
 					</div>
 				{/each}
@@ -111,17 +108,14 @@
 			<h3>{includedItemsColumnLable}</h3>
 			<section class="column sub-column-container">
 				{#each includedItemsList as item (item.id)}
-					<div class="list-item">
+					<div class="list-item" onclick={() => excludeItem(item.value)}>
 						<!-- svelte-ignore a11y_click_events_have_key_events -->
 						<i
 							class="fas fa-angle-left icon swap-item-button"
 							title="Move to {availableItemsColumnLable}"
-							onclick={() => excludeItem(item.value)}
 						></i>
-						<i
-							class="material-icons notranslate icon"
-							style="color: rgb(162, 235, 255);">{item.icon ?? 'folder'}</i
-						>
+						{@html Blockbench.getIconNode(item.icon ?? 'folder', 'rgb(162, 235, 255)')
+							.outerHTML}
 						<span>{item.title}</span>
 					</div>
 				{/each}
@@ -164,8 +158,8 @@
 		display: flex;
 		align-items: center;
 		gap: 8px;
-		cursor: default !important;
 		width: 100%;
+		cursor: pointer;
 	}
 	span {
 		flex: 1;
@@ -178,7 +172,6 @@
 		line-height: 1;
 		padding: 2px;
 		color: var(--color-text);
-		cursor: pointer;
 	}
 	.swap-item-button:hover {
 		color: var(--color-light);
