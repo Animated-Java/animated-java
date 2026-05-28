@@ -241,7 +241,6 @@ export const PREVIEW_CONTROLLER: NodePreviewController = new NodePreviewControll
 	updateTransform(el: Interaction) {
 		ResizableOutlinerElement.prototype.preview_controller.updateTransform(el)
 		if (el.mesh.parent) {
-			console.log('Updating interaction transform with parent')
 			Reusable.euler1.setFromQuaternion(
 				el.mesh.parent.getWorldQuaternion(Reusable.quat1),
 				'ZYX'

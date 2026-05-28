@@ -20,6 +20,8 @@ import type {
 	IRenderedRig,
 } from './rigRenderer'
 
+type StringVector3 = [string, string, string]
+
 type TextureAnimationFrame =
 	| number
 	| {
@@ -143,8 +145,8 @@ type TransformationKeyframeInterpolation =
 	| { type: 'step' }
 
 interface TransformationKeyframe {
-	value: [string, string, string]
-	post?: [string, string, string]
+	value: StringVector3
+	post?: StringVector3
 	interpolation: TransformationKeyframeInterpolation
 }
 
@@ -262,7 +264,10 @@ function serializeDisplayProperties(
 	const overrideBrightness = config?.override_brightness ?? false
 	if (overrideBrightness) {
 		props.is_custom_brightness_enabled = true
-		props.custom_brightness = config?.brightness_override ?? 0
+		props.custom_brightness = {
+			sky: config?.sky_brightness ?? 0,
+			block: config?.block_brightness ?? 0,
+		}
 	}
 
 	if (config?.glowing !== undefined) props.is_glowing = config.glowing
@@ -546,12 +551,8 @@ function keyframeInterpolation(kf: _Keyframe): TransformationKeyframeInterpolati
 	}
 }
 
-function keyframeDataPoint(kf: _Keyframe, index: number): [string, string, string] {
-	return [
-		String(kf.get('x', index)),
-		String(kf.get('y', index)),
-		String(kf.get('z', index)),
-	]
+function keyframeDataPoint(kf: _Keyframe, index: number): StringVector3 {
+	return [String(kf.get('x', index)), String(kf.get('y', index)), String(kf.get('z', index))]
 }
 
 function serializeRawAnimation(options: {
@@ -640,9 +641,18 @@ function serializeBakedAnimation(options: {
 			const rotation = (channels.rotation ??= {})
 			const scale = (channels.scale ??= {})
 
-			position[timeKey] = { value: transform.pos.map(toMolangNumber) as [string, string, string], interpolation }
-			rotation[timeKey] = { value: transform.rot.map(toMolangNumber) as [string, string, string], interpolation }
-			scale[timeKey] = { value: transform.scale.map(toMolangNumber) as [string, string, string], interpolation }
+			position[timeKey] = {
+				value: transform.pos.map(toMolangNumber) as StringVector3,
+				interpolation,
+			}
+			rotation[timeKey] = {
+				value: transform.rot.map(toMolangNumber) as StringVector3,
+				interpolation,
+			}
+			scale[timeKey] = {
+				value: transform.scale.map(toMolangNumber) as StringVector3,
+				interpolation,
+			}
 		}
 
 		if (paletteIds.length && frame.variants?.length) {

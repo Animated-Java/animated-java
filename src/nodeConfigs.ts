@@ -13,7 +13,8 @@ export class DisplayEntityConfig {
 	private __onApplyFunction?: string
 	private __billboard?: BillboardMode
 	private __overrideBrightness?: boolean
-	private __brightnessOverride?: number
+	private __skyBrightness?: number
+	private __blockBrightness?: number
 	private __enchanted?: boolean
 	private __glowing?: boolean
 	private __overrideGlowColor?: boolean
@@ -27,7 +28,8 @@ export class DisplayEntityConfig {
 			on_apply_function: '',
 			billboard: 'fixed',
 			override_brightness: false,
-			brightness_override: 0,
+			sky_brightness: 0,
+			block_brightness: 0,
 			enchanted: false,
 			glowing: false,
 			override_glow_color: false,
@@ -64,13 +66,22 @@ export class DisplayEntityConfig {
 		this.__overrideBrightness = value
 	}
 
-	get brightnessOverride(): NonNullable<DisplayEntityConfig['__brightnessOverride']> {
-		if (this.__brightnessOverride !== undefined) return this.__brightnessOverride
+	get skyBrightness(): NonNullable<DisplayEntityConfig['__skyBrightness']> {
+		if (this.__skyBrightness !== undefined) return this.__skyBrightness
 		const defaultConfig = DisplayEntityConfig.getDefault()
-		return defaultConfig.brightnessOverride
+		return defaultConfig.skyBrightness
 	}
-	set brightnessOverride(value: DisplayEntityConfig['__brightnessOverride']) {
-		this.__brightnessOverride = value
+	set skyBrightness(value: DisplayEntityConfig['__skyBrightness']) {
+		this.__skyBrightness = value
+	}
+
+	get blockBrightness(): NonNullable<DisplayEntityConfig['__blockBrightness']> {
+		if (this.__blockBrightness !== undefined) return this.__blockBrightness
+		const defaultConfig = DisplayEntityConfig.getDefault()
+		return defaultConfig.blockBrightness
+	}
+	set blockBrightness(value: DisplayEntityConfig['__blockBrightness']) {
+		this.__blockBrightness = value
 	}
 
 	get enchanted(): NonNullable<DisplayEntityConfig['__enchanted']> {
@@ -141,7 +152,8 @@ export class DisplayEntityConfig {
 			this.__onApplyFunction === other.__onApplyFunction &&
 			this.__billboard === other.__billboard &&
 			this.__overrideBrightness === other.__overrideBrightness &&
-			this.__brightnessOverride === other.__brightnessOverride &&
+			this.__skyBrightness === other.__skyBrightness &&
+			this.__blockBrightness === other.__blockBrightness &&
 			this.__enchanted === other.__enchanted &&
 			this.__glowing === other.__glowing &&
 			this.__overrideGlowColor === other.__overrideGlowColor &&
@@ -161,7 +173,8 @@ export class DisplayEntityConfig {
 			on_apply_function: this.__onApplyFunction,
 			billboard: this.__billboard,
 			override_brightness: this.__overrideBrightness,
-			brightness_override: this.__brightnessOverride,
+			sky_brightness: this.__skyBrightness,
+			block_brightness: this.__blockBrightness,
 			enchanted: this.__enchanted,
 			glowing: this.__glowing,
 			override_glow_color: this.__overrideGlowColor,
@@ -177,8 +190,8 @@ export class DisplayEntityConfig {
 		if (other.__billboard !== undefined) this.billboard = other.billboard
 		if (other.__overrideBrightness !== undefined)
 			this.overrideBrightness = other.overrideBrightness
-		if (other.__brightnessOverride !== undefined)
-			this.brightnessOverride = other.brightnessOverride
+		if (other.__skyBrightness !== undefined) this.skyBrightness = other.skyBrightness
+		if (other.__blockBrightness !== undefined) this.blockBrightness = other.blockBrightness
 		if (other.__enchanted !== undefined) this.enchanted = other.enchanted
 		if (other.__glowing !== undefined) this.glowing = other.glowing
 		if (other.__overrideGlowColor !== undefined)
@@ -195,8 +208,12 @@ export class DisplayEntityConfig {
 		if (json.billboard !== undefined) config.__billboard = json.billboard
 		if (json.override_brightness !== undefined)
 			config.__overrideBrightness = json.override_brightness
-		if (json.brightness_override !== undefined)
-			config.__brightnessOverride = json.brightness_override
+		if (json.sky_brightness !== undefined) config.__skyBrightness = json.sky_brightness
+		if (json.block_brightness !== undefined) config.__blockBrightness = json.block_brightness
+		if (json.brightness_override !== undefined) {
+			config.__skyBrightness ??= json.brightness_override
+			config.__blockBrightness ??= json.brightness_override
+		}
 		if (json.enchanted !== undefined) config.__enchanted = json.enchanted
 		if (json.glowing !== undefined) config.__glowing = json.glowing
 		if (json.override_glow_color !== undefined)
@@ -217,8 +234,8 @@ export class DisplayEntityConfig {
 			compound.set(
 				'brightness',
 				new NbtCompound()
-					.set('block', new NbtFloat(this.brightnessOverride))
-					.set('sky', new NbtFloat(this.brightnessOverride))
+					.set('block', new NbtInt(this.blockBrightness))
+					.set('sky', new NbtInt(this.skyBrightness))
 			)
 		}
 

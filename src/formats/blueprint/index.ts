@@ -45,7 +45,9 @@ export interface IBlueprintDisplayEntityConfigJSON {
 	on_apply_function?: DisplayEntityConfig['__onApplyFunction']
 	billboard?: DisplayEntityConfig['billboard']
 	override_brightness?: DisplayEntityConfig['overrideBrightness']
-	brightness_override?: DisplayEntityConfig['brightnessOverride']
+	sky_brightness?: DisplayEntityConfig['skyBrightness']
+	block_brightness?: DisplayEntityConfig['blockBrightness']
+	brightness_override?: number
 	enchanted?: DisplayEntityConfig['enchanted']
 	glowing?: DisplayEntityConfig['glowing']
 	override_glow_color?: DisplayEntityConfig['overrideGlowColor']

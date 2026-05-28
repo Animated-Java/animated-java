@@ -466,6 +466,12 @@ animated_java:
       brightness_override:
         title: Brightness
         description: The brightness of the node. This should be a value between 0 and 15.
+      sky_brightness:
+        title: Sky Brightness
+        description: The sky light brightness of the node. This should be a value between 0 and 15.
+      block_brightness:
+        title: Block Brightness
+        description: The block light brightness of the node. This should be a value between 0 and 15.
       use_custom_brightness:
         title: Use Custom Brightness
         description: Whether or not to enable the custom brightness override for the node.
@@ -632,6 +638,12 @@ animated_java:
       brightness_override:
         title: Brightness
         description: The brightness of the text display. This should be a value between 0 and 15.
+      sky_brightness:
+        title: Sky Brightness
+        description: The sky light brightness of the text display. This should be a value between 0 and 15.
+      block_brightness:
+        title: Block Brightness
+        description: The block light brightness of the text display. This should be a value between 0 and 15.
       use_custom_brightness:
         title: Use Custom Brightness
         description: Whether or not to enable the custom brightness override for the bone.

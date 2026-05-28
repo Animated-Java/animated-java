@@ -517,7 +517,8 @@
 				"glow_color",
 				"shadow_radius",
 				"shadow_strength",
-				"brightness_override",
+				"sky_brightness",
+				"block_brightness",
 				"enchanted",
 				"invisible",
 				"nbt"
@@ -551,6 +552,18 @@
 					"default": 0
 				},
 				"brightness_override": {
+					"type": "number",
+					"minimum": 0,
+					"maximum": 15,
+					"default": 0
+				},
+				"sky_brightness": {
+					"type": "number",
+					"minimum": 0,
+					"maximum": 15,
+					"default": 0
+				},
+				"block_brightness": {
 					"type": "number",
 					"minimum": 0,
 					"maximum": 15,
