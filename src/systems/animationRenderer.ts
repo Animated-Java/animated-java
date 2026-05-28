@@ -198,6 +198,7 @@ export function getFrame(
 				lastFrameCache.set(uuid, { matrix: transform.matrix, keyframe })
 				break
 			}
+			case 'interaction':
 			case 'locator': {
 				transform.matrix = getNodeMatrix(outlinerNode, 1)
 				// // Only add the frame if the matrix has changed, or this is the first frame
@@ -217,7 +218,6 @@ export function getFrame(
 				// lastFrameCache.set(uuid, { matrix, keyframe })
 				break
 			}
-			case 'interaction':
 			case 'camera':
 			case 'struct': {
 				transform.matrix = getNodeMatrix(outlinerNode, 1)

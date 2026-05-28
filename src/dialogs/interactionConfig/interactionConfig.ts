@@ -47,6 +47,8 @@ export function openInteractionConfigDialog(interaction: Interaction) {
 			interactionConfig.onTickFunction = onTickFunction.get()
 
 			interaction.config = interactionConfig.toJSON()
+
+			Project!.saved = false
 		},
 	}).show()
 }

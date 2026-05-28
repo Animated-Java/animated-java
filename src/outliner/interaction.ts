@@ -149,7 +149,7 @@ export class Interaction extends ResizableOutlinerElement {
 		return this
 	}
 
-	unselect(unselectParent?: boolean) {
+	unselect(_unselectParent?: boolean) {
 		if (!this.selected) return this
 		if (
 			Animator.open &&
@@ -240,6 +240,17 @@ export const PREVIEW_CONTROLLER: NodePreviewController = new NodePreviewControll
 	},
 	updateTransform(el: Interaction) {
 		ResizableOutlinerElement.prototype.preview_controller.updateTransform(el)
+		if (el.mesh.parent) {
+			console.log('Updating interaction transform with parent')
+			Reusable.euler1.setFromQuaternion(
+				el.mesh.parent.getWorldQuaternion(Reusable.quat1),
+				'ZYX'
+			)
+			el.mesh.rotation.x = -Reusable.euler1.x
+			el.mesh.rotation.y = -Reusable.euler1.y
+			el.mesh.rotation.z = -Reusable.euler1.z
+			el.mesh.fix_rotation!.copy(el.mesh.rotation)
+		}
 	},
 	updateHighlight(el: Interaction, force?: boolean | Interaction) {
 		if (!activeProjectIsBlueprintFormat() || !el?.mesh) return
@@ -357,6 +368,7 @@ class InteractionAnimator extends BoneAnimator {
 			// prevent parent scale from affecting the size of the element
 			Reusable.vec3.copy(el.mesh.parent.scale)
 			el.mesh.scale.set(...el.scale).divide(Reusable.vec3)
+			el.mesh.fix_scale!.copy(el.mesh.scale)
 			return this
 		}
 
@@ -369,6 +381,12 @@ InteractionAnimator.prototype.type = Interaction.type
 Interaction.animator = InteractionAnimator as any
 InteractionAnimator.prototype.channels = {
 	position: InteractionAnimator.prototype.channels.position,
+	function: {
+		name: translate('effect_animator.timeline.function'),
+		mutable: true,
+		transform: true,
+		max_data_points: 1,
+	},
 }
 
 export const CREATE_ACTION = registerDeletableHandlerPatch({

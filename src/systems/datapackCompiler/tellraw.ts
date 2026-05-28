@@ -289,6 +289,34 @@ namespace TELLRAW {
 			{ text: ' cannot be an empty string.' },
 		])
 
+	export const INTERACTION_NOT_FOUND = () =>
+		TELLRAW_ERROR('Interaction Not Found', [
+			'Interaction ',
+			{ nbt: 'args.name', storage: 'animated_java:temp', color: 'aqua' },
+			' not found!',
+			'\n Please ensure that the name is spelled correctly.',
+		])
+
+	export const INTERACTION_ENTITY_NOT_FOUND = () =>
+		TELLRAW_ERROR('Interaction Not Found', [
+			'Interaction ',
+			{ nbt: 'args.name', storage: 'animated_java:temp', color: 'aqua' },
+			' does not exist!',
+			{ text: '\n Please ensure that the name is spelled correctly, and ' },
+			{ text: '"Use Entity"', color: 'yellow' },
+			" is enabled in the interaction's config.",
+		])
+
+	export const INTERACTION_COMMAND_FAILED_TO_EXECUTE = (name?: TextElement) =>
+		TELLRAW_ERROR('Failed to Execute Command as Interaction', [
+			'Failed to execute command ',
+			{ nbt: 'args.command', storage: 'animated_java:temp', color: 'yellow' },
+			' as Interaction ',
+			name ?? { nbt: 'args.name', storage: 'animated_java:temp', color: 'aqua' },
+			'.',
+			'\n Please ensure the command is valid.',
+		])
+
 	export const LOCATOR_NOT_FOUND = () =>
 		TELLRAW_ERROR('Locator Not Found', [
 			'Locator ',

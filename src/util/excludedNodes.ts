@@ -1,3 +1,4 @@
+import { Interaction } from '../outliner/interaction'
 import { TextDisplay } from '../outliner/textDisplay'
 import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
 import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
@@ -22,6 +23,7 @@ export function getAvailableNodes(
 		allNodes.push(
 			...Locator.all,
 			...TextDisplay.all,
+			...Interaction.all,
 			...VanillaItemDisplay.all,
 			...VanillaBlockDisplay.all,
 			// @ts-expect-error - Broken BB types
@@ -34,28 +36,8 @@ export function getAvailableNodes(
 			entry.name = node.name
 		}
 
-		let icon: string
-		switch (true) {
-			case node instanceof Group:
-				icon = 'folder'
-				break
-			case node instanceof Locator:
-				icon = 'anchor'
-				break
-			case node instanceof TextDisplay:
-			case node instanceof VanillaItemDisplay:
-			case node instanceof VanillaBlockDisplay:
-				icon = node.icon
-				break
-			case node instanceof OutlinerElement.types.camera:
-				icon = 'videocam'
-				break
-			default:
-				icon = 'close'
-				break
-		}
-
-		return { icon, name: node.name, value: node.uuid }
+		// @ts-expect-error - Broken BB types
+		return { icon: node.icon, name: node.name, value: node.uuid }
 	})
 
 	return availableNodes

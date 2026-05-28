@@ -448,6 +448,10 @@ function renderGroup(
 				renderBlockDisplay(node, rig)
 				break
 			}
+			case node instanceof Interaction: {
+				renderInteraction(node, rig)
+				break
+			}
 			case node instanceof Cube: {
 				renderCube(node, rig, groupModel.model!)
 				rig.includes_custom_models = true

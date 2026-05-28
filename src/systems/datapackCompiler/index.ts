@@ -586,6 +586,7 @@ const dataPackCompiler: DataPackCompiler = async ({
 		nodeSorter,
 		getRotationFromQuaternion: eulerFromQuaternion,
 		has_locators: Object.values(rig.nodes).filter(n => n.type === 'locator').length > 0,
+		has_interactions: Object.values(rig.nodes).filter(n => n.type === 'interaction').length > 0,
 		has_entity_locators:
 			Object.values(rig.nodes).filter(n => n.type === 'locator' && n.config?.use_entity)
 				.length > 0,
