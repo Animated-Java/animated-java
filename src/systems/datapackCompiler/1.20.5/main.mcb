@@ -193,7 +193,19 @@ IF (has_animations) {
 					debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
 
 					data_manager prep read
-					# function <%blueprint_id%>/animations/pause_all
+
+					tag @s add <%TAGS.ANIMATION_PLAYING(blueprint_id, animation.storage_name)%>
+					scoreboard players set @s <%OBJECTIVES.FRAME(animation.storage_name)%> 0
+					tag @s add <%TAGS.TRANSFORMS_ONLY()%>
+					execute at @s run function ./zzz/set_frame {frame: 0}
+					tag @s remove <%TAGS.TRANSFORMS_ONLY()%>
+				}
+
+				function play_exclusive {
+					debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
+
+					data_manager prep read
+					function <%blueprint_id%>/animations/pause_all
 
 					tag @s add <%TAGS.ANIMATION_PLAYING(blueprint_id, animation.storage_name)%>
 					scoreboard players set @s <%OBJECTIVES.FRAME(animation.storage_name)%> 0
