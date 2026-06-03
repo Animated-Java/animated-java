@@ -722,5 +722,37 @@
 				]
 			}
 		]
+	},
+	"1.10.0-beta.7": {
+		"title": "v1.10.0-beta.7",
+		"author": "Titus Evans (SnaveSutit)",
+		"date": "2026-06-04",
+		"categories": [
+			{
+				"title": "Changes",
+				"list": [
+					"[BREAKING] The play function no longer automatically pauses all other animations. Use the new `play_exclusive` function to pause all other animations and play the desired animation.",
+					"Added Interaction element",
+					"Added functions for interacting with Interactions, similar to the locator functions, such as `as_interaction` and `as_all_interactions`.",
+					"Split Display Entity config option `brightnessOverride` into two separate properties: `blockBrightness` and `skyBrightness`.",
+					"Added marker color support to Display entity elements.",
+					"Made `Use Entity Stacking` default to true.",
+					"Added `Item Model Config` to Groups with cube children.",
+					"Added support for adding custom constant tints to item models."
+				]
+			},
+			{
+				"title": "Fixes",
+				"list": [
+					"Fixed Item Display, Block Display, and Text Display elements ignoring flip actions.",
+					"Fixed custom element size not being rendered in element panel.",
+					"Fixed [#509](https://github.com/Animated-Java/animated-java/issues/509)",
+					"Fixed [#507](https://github.com/Animated-Java/animated-java/issues/507)",
+					"Fixed [#510](https://github.com/Animated-Java/animated-java/issues/510)",
+					"Fixed [#505](https://github.com/Animated-Java/animated-java/issues/505)",
+					"Fixed [#495](https://github.com/Animated-Java/animated-java/issues/495)"
+				]
+			}
+		]
 	}
 }
