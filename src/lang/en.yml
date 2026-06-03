@@ -12,6 +12,8 @@ animated_java:
   outliner:
     structure_group:
       title: Structure Group (Will not create an entity)
+    interaction:
+      title: Interaction
 
   action:
     open_blueprint_settings:
@@ -28,6 +30,8 @@ animated_java:
       name: Locator Config
     open_interaction_config:
       name: Interaction Config
+    open_item_model_properties:
+      name: Item Model Properties
     export:
       name: Export
     export_debug:
@@ -49,6 +53,8 @@ animated_java:
       title: Add Item Display
     create_block_display:
       title: Add Block Display
+    create_interaction:
+      title: Add Interaction
     copy_display_entity_config:
       name: Copy Display Entity Config
       message: Copied Display Entity Config from "%s"
@@ -99,6 +105,16 @@ animated_java:
       close_button: Close
     changelog_dialog:
       title: Animated Java Changelog
+    item_properties:
+      title: Item Model Properties
+      tint_constants: Tint Constants
+      description: |-
+        [Markdown]
+        Constant tints apply fixed color values to an item's tint layers, so the model always uses the same tint colors in-game.
+      add_tint: Add Tint
+      empty_state: No tint constants configured. Add a tint to start.
+      tint_label: Tint Index %s
+      remove_tint: Remove
     unexpected_error:
       title: An Unexpected Error Occurred!
       close_button: Close
@@ -450,6 +466,12 @@ animated_java:
       brightness_override:
         title: Brightness
         description: The brightness of the node. This should be a value between 0 and 15.
+      sky_brightness:
+        title: Sky Brightness
+        description: The sky light brightness of the node. This should be a value between 0 and 15.
+      block_brightness:
+        title: Block Brightness
+        description: The block light brightness of the node. This should be a value between 0 and 15.
       use_custom_brightness:
         title: Use Custom Brightness
         description: Whether or not to enable the custom brightness override for the node.
@@ -550,8 +572,8 @@ animated_java:
 
           Supports [MC-Build](https://mcbuild.dev) syntax.
 
-      on_interaction_function:
-        title: On-Interaction Function
+      on_interact_function:
+        title: On-Interact Function
         description: |-
           [Markdown]
           Commands to run `as` and `at` this Interaction when a player interacts with it.
@@ -616,6 +638,12 @@ animated_java:
       brightness_override:
         title: Brightness
         description: The brightness of the text display. This should be a value between 0 and 15.
+      sky_brightness:
+        title: Sky Brightness
+        description: The sky light brightness of the text display. This should be a value between 0 and 15.
+      block_brightness:
+        title: Block Brightness
+        description: The block light brightness of the text display. This should be a value between 0 and 15.
       use_custom_brightness:
         title: Use Custom Brightness
         description: Whether or not to enable the custom brightness override for the bone.

@@ -7,6 +7,7 @@ import type {
 	IBlueprintLocatorConfigJSON,
 	IBlueprintVariantJSON,
 } from '../formats/blueprint'
+import { Interaction } from '../outliner/interaction'
 import { type Alignment, TextDisplay } from '../outliner/textDisplay'
 import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
 import { type ItemDisplayMode, VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
@@ -24,6 +25,7 @@ import {
 	updatePreview,
 } from './animationRenderer'
 import { IntentionalExportError } from './errors'
+import type { TintSource } from './minecraft/itemDefinitions'
 
 export interface IRenderedFace {
 	uv: number[]
@@ -117,6 +119,9 @@ export interface IDisplayEntityConfigs {
 export interface IRenderedNodes {
 	Bone: IRenderedDisplayEntityNode & {
 		type: 'bone'
+		itemModelProperties?: {
+			tints: TintSource[]
+		}
 	}
 	TextDisplay: IRenderedDisplayEntityNode & {
 		type: 'text_display'
@@ -228,8 +233,8 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 
 	if (cube.shade === false) element.shade = false
 
-	// If target version is 1.21.9 or higher, we can use free rotation
-	if (!compareVersions('1.21.9', rig.target_minecraft_version)) {
+	// If target version is 1.21.11 or higher, we can use free rotation
+	if (!compareVersions('1.21.11', rig.target_minecraft_version)) {
 		element.rotation = {
 			x: cube.rotation[0],
 			y: cube.rotation[1],
@@ -395,6 +400,9 @@ function renderGroup(
 		base_scale: 1,
 		configs: structuredClone(group.configs),
 		on_summon_function: group.onSummonFunction?.trim(),
+		itemModelProperties: group.itemModelProperties
+			? structuredClone(group.itemModelProperties)
+			: undefined,
 		// This is a placeholder value that will be updated later once the animation renderer is run.
 		default_transform: {} as INodeTransform,
 	}
@@ -438,6 +446,10 @@ function renderGroup(
 			}
 			case node instanceof VanillaBlockDisplay: {
 				renderBlockDisplay(node, rig)
+				break
+			}
+			case node instanceof Interaction: {
+				renderInteraction(node, rig)
 				break
 			}
 			case node instanceof Cube: {
@@ -602,7 +614,7 @@ function renderLocator(locator: Locator, rig: IRenderedRig) {
 	rig.nodes[locator.uuid] = renderedLocator
 }
 
-function renderInteraction(box: BoundingBox, rig: IRenderedRig) {
+function renderInteraction(box: Interaction, rig: IRenderedRig) {
 	if (!box.export) return
 	const parentId = box.parent instanceof Group ? box.parent.uuid : undefined
 
@@ -612,12 +624,11 @@ function renderInteraction(box: BoundingBox, rig: IRenderedRig) {
 		storage_name: sanitizeStorageKey(box.name),
 		uuid: box.uuid,
 		parent: parentId,
-		// @ts-expect-error - Broken BB types
 		config: structuredClone(box.config),
 		max_distance: 0,
 		default_transform: {} as INodeTransform,
-		width: box.to[0] - box.from[0],
-		height: box.to[1] - box.from[1],
+		width: box.scale[0] / 16,
+		height: box.scale[1] / 16,
 	}
 
 	rig.nodes[box.uuid] = renderedInteraction
@@ -820,7 +831,7 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 				renderBlockDisplay(node, rig)
 				break
 			}
-			case node instanceof BoundingBox: {
+			case node instanceof Interaction: {
 				renderInteraction(node, rig)
 				break
 			}

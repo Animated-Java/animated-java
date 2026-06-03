@@ -33,7 +33,8 @@
 
 	let billboard = observable<string>(DEFAULT_CONFIG.billboard)
 	let overrideBrightness = observable<boolean>(DEFAULT_CONFIG.overrideBrightness)
-	let brightnessOverride = observable<number>(DEFAULT_CONFIG.brightnessOverride)
+	let skyBrightness = observable<number>(DEFAULT_CONFIG.skyBrightness)
+	let blockBrightness = observable<number>(DEFAULT_CONFIG.blockBrightness)
 	let enchanted = observable<boolean>(DEFAULT_CONFIG.enchanted)
 	let glowing = observable<boolean>(DEFAULT_CONFIG.glowing)
 	let overrideGlowColor = observable<boolean>(DEFAULT_CONFIG.overrideGlowColor)
@@ -58,7 +59,8 @@
 		$onApplyFunction = config.onApplyFunction
 		$billboard = config.billboard
 		$overrideBrightness = config.overrideBrightness
-		$brightnessOverride = config.brightnessOverride
+		$skyBrightness = config.skyBrightness
+		$blockBrightness = config.blockBrightness
 		$enchanted = config.enchanted
 		$glowing = config.glowing
 		$overrideGlowColor = config.overrideGlowColor
@@ -95,7 +97,8 @@
 		config.onApplyFunction = $onApplyFunction
 		config.billboard = $billboard as BillboardMode
 		config.overrideBrightness = $overrideBrightness
-		config.brightnessOverride = $brightnessOverride
+		config.skyBrightness = $skyBrightness
+		config.blockBrightness = $blockBrightness
 		config.enchanted = $enchanted
 		config.glowing = $glowing
 		config.overrideGlowColor = $overrideGlowColor
@@ -172,10 +175,20 @@
 
 	{#if $overrideBrightness}
 		<NumberSlider
-			label={translate('dialog.display_entity.brightness_override.title')}
-			tooltip={translate('dialog.display_entity.brightness_override.description')}
-			bind:value={brightnessOverride}
-			defaultValue={DisplayEntityConfig.prototype.brightnessOverride}
+			label={translate('dialog.display_entity.sky_brightness.title')}
+			tooltip={translate('dialog.display_entity.sky_brightness.description')}
+			bind:value={skyBrightness}
+			defaultValue={DisplayEntityConfig.prototype.skyBrightness}
+			min={0}
+			max={15}
+			valueStep={1}
+		/>
+
+		<NumberSlider
+			label={translate('dialog.display_entity.block_brightness.title')}
+			tooltip={translate('dialog.display_entity.block_brightness.description')}
+			bind:value={blockBrightness}
+			defaultValue={DisplayEntityConfig.prototype.blockBrightness}
 			min={0}
 			max={15}
 			valueStep={1}

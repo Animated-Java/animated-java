@@ -450,8 +450,20 @@
 					"default": "fixed"
 				},
 				"custom_brightness": {
-					"type": "number",
-					"default": 0
+					"type": "object",
+					"required": ["sky", "block"],
+					"properties": {
+						"sky": {
+							"type": "number",
+							"minimum": 0,
+							"maximum": 15
+						},
+						"block": {
+							"type": "number",
+							"minimum": 0,
+							"maximum": 15
+						}
+					}
 				},
 				"custom_name": {
 					"$ref": "#/definitions/optional_adventure_component",

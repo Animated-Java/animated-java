@@ -6,6 +6,7 @@ import { observable, type Observable } from 'svelte-observable-store'
 import { injectComponent } from 'svelte-patching-tools'
 import AnimatedJavaIcon from '../../assets/icons/animated_java_fancy_icon_centered.svg'
 import { DisplayEntityConfig, InteractionConfig, LocatorConfig } from '../../nodeConfigs'
+import type { Interaction } from '../../outliner/interaction'
 import { type TextDisplay } from '../../outliner/textDisplay'
 import { type VanillaBlockDisplay } from '../../outliner/vanillaBlockDisplay'
 import { type VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
@@ -31,6 +32,7 @@ declare module '@blockbench-types/generated/io/project' {
 		textDisplays: TextDisplay[]
 		vanillaItemDisplays: VanillaItemDisplay[]
 		vanillaBlockDisplays: VanillaBlockDisplay[]
+		interactions: Interaction[]
 	}
 }
 
@@ -43,7 +45,9 @@ export interface IBlueprintDisplayEntityConfigJSON {
 	on_apply_function?: DisplayEntityConfig['__onApplyFunction']
 	billboard?: DisplayEntityConfig['billboard']
 	override_brightness?: DisplayEntityConfig['overrideBrightness']
-	brightness_override?: DisplayEntityConfig['brightnessOverride']
+	sky_brightness?: DisplayEntityConfig['skyBrightness']
+	block_brightness?: DisplayEntityConfig['blockBrightness']
+	brightness_override?: number
 	enchanted?: DisplayEntityConfig['enchanted']
 	glowing?: DisplayEntityConfig['glowing']
 	override_glow_color?: DisplayEntityConfig['overrideGlowColor']
@@ -71,7 +75,7 @@ export interface IBlueprintLocatorConfigJSON {
 export interface IBlueprintInteractionConfigJSON {
 	response?: InteractionConfig['__response']
 	on_summon_function?: InteractionConfig['__onSummonFunction']
-	on_interaction_function?: InteractionConfig['__onInteractionFunction']
+	on_interact_function?: InteractionConfig['__onInteractFunction']
 	on_attack_function?: InteractionConfig['__onAttackFunction']
 	on_remove_function?: InteractionConfig['__onRemoveFunction']
 	on_tick_function?: InteractionConfig['__onTickFunction']
@@ -373,7 +377,7 @@ export const BLUEPRINT_FORMAT = registerDeletableHandlerPatch({
 			single_texture: false,
 			texture_folder: false,
 			texture_meshes: false,
-			// bounding_boxes: true,
+			bounding_boxes: false,
 			uv_rotation: true,
 			vertex_color_ambient_occlusion: true,
 			java_cube_shading_properties: true,

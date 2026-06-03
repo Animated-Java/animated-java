@@ -2,6 +2,7 @@ import { registerPatch, registerPropertyOverridePatch } from 'blockbench-patch-m
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
 import { DisplayEntityConfig } from '../nodeConfigs'
 import { sanitizeOutlinerElementName } from '../outliner/util'
+import type { TintSource } from '../systems/minecraft/itemDefinitions'
 import type { IDisplayEntityConfigs } from '../systems/rigRenderer'
 import { localize } from '../util/lang'
 import { DeepClonedObjectProperty } from '../util/property'
@@ -11,6 +12,9 @@ declare global {
 	interface Group {
 		onSummonFunction: string
 		configs: IDisplayEntityConfigs
+		itemModelProperties?: {
+			tints: TintSource[]
+		}
 	}
 }
 
@@ -60,6 +64,12 @@ registerPatch({
 				condition: activeProjectIsBlueprintFormat,
 				default: () => {
 					return { default: new DisplayEntityConfig().toJSON(), variants: {} }
+				},
+			}),
+			new DeepClonedObjectProperty(Group, 'itemModelProperties', {
+				condition: activeProjectIsBlueprintFormat,
+				default: () => {
+					return { tints: [] }
 				},
 			}),
 		]

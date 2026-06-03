@@ -59,6 +59,19 @@
 	let inputX = $state<HTMLInputElement>()
 	let inputY = $state<HTMLInputElement>()
 
+	function setValue(newValue: number, min?: number, max?: number) {
+		const divisor = 1 / (step ?? 1)
+		return (
+			Math.round(
+				Math.clamp(
+					Animator.MolangParser.parse(newValue),
+					min ?? -Infinity,
+					max ?? Infinity
+				) * divisor
+			) / divisor
+		)
+	}
+
 	function onMousedown(input: HTMLInputElement, event: any) {
 		event.preventDefault()
 		convertTouchEvent(event)
@@ -68,11 +81,21 @@
 			convertTouchEvent(e2)
 			let difference = Math.trunc((e2.clientX - event.clientX) / 10) * (step ?? 1)
 			if (difference != lastDifference) {
-				input.value = Math.clamp(
-					parseFloat(input.value) + (difference - lastDifference),
-					input === inputX ? (minX ?? -Infinity) : (minY ?? -Infinity),
-					input === inputX ? (maxX ?? Infinity) : (maxY ?? Infinity)
-				).toString()
+				if (input === inputX) {
+					valueX = setValue(
+						parseFloat(input.value) + (difference - lastDifference),
+						minX,
+						maxX
+					)
+					input.value = valueX.toString()
+				} else {
+					valueY = setValue(
+						parseFloat(input.value) + (difference - lastDifference),
+						minY,
+						maxY
+					)
+					input.value = valueY.toString()
+				}
 				lastDifference = difference
 			}
 		}
@@ -84,12 +107,14 @@
 		addEventListeners(document, 'mouseup touchend', stop)
 	}
 
-	function onFocusOut(input: HTMLInputElement, min?: number, max?: number) {
-		input.value = Math.clamp(
-			Animator.MolangParser.parse(input.value),
-			min ?? -Infinity,
-			max ?? Infinity
-		).toString()
+	function onFocusOut(input: HTMLInputElement) {
+		if (input === inputX) {
+			valueX = setValue(Animator.MolangParser.parse(input.value), minX, maxX)
+			input.value = valueX.toString()
+		} else {
+			valueY = setValue(Animator.MolangParser.parse(input.value), minY, maxY)
+			input.value = valueY.toString()
+		}
 	}
 </script>
 
@@ -107,7 +132,7 @@
 					bind:this={inputX}
 					class="dark_bordered focusable_input"
 					bind:value={valueX}
-					onfocusout={() => onFocusOut(inputX!, minX, maxX)}
+					onfocusout={() => onFocusOut(inputX!)}
 				/>
 				<div
 					class="tool numaric_input_slider slider-fix"
@@ -129,7 +154,7 @@
 					bind:this={inputY}
 					class="dark_bordered focusable_input"
 					bind:value={valueY}
-					onfocusout={() => onFocusOut(inputY!, minY, maxY)}
+					onfocusout={() => onFocusOut(inputY!)}
 				/>
 				<div
 					class="tool numaric_input_slider slider-fix"

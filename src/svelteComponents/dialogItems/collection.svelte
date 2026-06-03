@@ -1,9 +1,5 @@
 <script lang="ts" module>
-	import { dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action'
 	import { type Observable } from 'svelte-observable-store'
-	import { flip } from 'svelte/animate'
-	import { cubicIn } from 'svelte/easing'
-	import { fade } from 'svelte/transition'
 	import BaseDialogItem from './baseDialogItem.svelte'
 </script>
 
@@ -33,41 +29,48 @@
 		includedItems = $bindable(),
 	}: Props = $props()
 
+	function sortByName<T extends { name: string }>(items: T[]): T[] {
+		return [...items].sort((a, b) =>
+			a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
+		)
+	}
+
 	let availableItemsList = $derived.by(() => {
-		let result: Array<{ id: number; title: string; [key: string]: any }> = []
-		for (const item of availableItems) {
+		let result: Array<{ id: string; title: string; value: string; icon?: string }> = []
+		for (const item of sortByName(availableItems)) {
 			if ($includedItems.find(i => i.value === item.value)) continue
-			result.push({ id: result.length, title: item.name, icon: item.icon })
+			result.push({ id: item.value, title: item.name, value: item.value, icon: item.icon })
 		}
 		return result
 	})
 	let includedItemsList = $derived.by(() => {
-		let result: Array<{ id: number; title: string; [key: string]: any }> = []
-		for (const item of $includedItems) {
-			result.push({ id: result.length, title: item.name, icon: item.icon })
+		let result: Array<{ id: string; title: string; value: string; icon?: string }> = []
+		for (const item of sortByName($includedItems)) {
+			result.push({ id: item.value, title: item.name, value: item.value, icon: item.icon })
 		}
 		return result
 	})
 
-	function handleSortAvailableItems(e: any) {
-		availableItemsList = e.detail.items
+	function includeItem(value: string) {
+		const itemToInclude = availableItems.find(item => item.value === value)
+		if (!itemToInclude) return
+
+		includedItems.update(items => {
+			if (items.find(item => item.value === value)) return items
+			return sortByName([...items, itemToInclude])
+		})
 	}
 
-	function handleSortIncludedItems(e: any) {
-		includedItemsList = e.detail.items
-	}
-
-	function finalizeSort() {
-		includedItems.update(() =>
-			includedItemsList.map(i => availableItems.find(a => a.name === i.title)!)
-		)
+	function excludeItem(value: string) {
+		includedItems.update(items => items.filter(item => item.value !== value))
 	}
 
 	function swapColumns() {
-		const temp = availableItemsList
-		availableItemsList = includedItemsList
-		includedItemsList = temp
-		finalizeSort()
+		includedItems.set(
+			sortByName(
+				availableItems.filter(item => !$includedItems.some(i => i.value === item.value))
+			)
+		)
 	}
 
 	function onReset() {
@@ -79,31 +82,16 @@
 	<div class="main-column-container">
 		<div class="column" title={availableItemsColumnTooltip}>
 			<h3>{availableItemsColumnLable}</h3>
-			<section
-				class="column sub-column-container"
-				use:dndzone={{
-					items: availableItemsList,
-					flipDurationMs: 150,
-					centreDraggedOnCursor: true,
-				}}
-				onconsider={handleSortAvailableItems}
-				onfinalize={e => {
-					handleSortAvailableItems(e)
-					finalizeSort()
-				}}
-			>
+			<section class="column sub-column-container">
 				{#each availableItemsList as item (item.id)}
-					<div class="list-item" animate:flip={{ duration: 150 }}>
-						{#if item[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
-							<div
-								style="visibility: visible !important; border-bottom: 2px solid var(--color-accent); width: 100%; height: 50%;"
-								in:fade={{ duration: 150, easing: cubicIn }}
-							></div>
-						{/if}
+					<div class="list-item" onclick={() => includeItem(item.value)}>
+						<!-- svelte-ignore a11y_click_events_have_key_events -->
 						<i
-							class="material-icons notranslate icon"
-							style="color: rgb(162, 235, 255);">{item.icon ?? 'folder'}</i
-						>
+							class="fas fa-angle-right icon swap-item-button"
+							title="Move to {includedItemsColumnLable}"
+						></i>
+						{@html Blockbench.getIconNode(item.icon ?? 'folder', 'rgb(162, 235, 255)')
+							.outerHTML}
 						<span>{item.title}</span>
 					</div>
 				{/each}
@@ -111,38 +99,23 @@
 		</div>
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		<i
-			class="fa-icon fas fa-arrow-right-arrow-left icon in_list_button"
+			class="swap-icon fas fa-arrow-right-arrow-left icon in_list_button"
 			style="min-width: 30px;"
 			title={swapColumnsButtonTooltip}
 			onclick={swapColumns}
 		></i>
 		<div class="column selected-column" title={includedItemsColumnTooltip}>
 			<h3>{includedItemsColumnLable}</h3>
-			<section
-				class="column sub-column-container"
-				use:dndzone={{
-					items: includedItemsList,
-					flipDurationMs: 150,
-					centreDraggedOnCursor: true,
-				}}
-				onconsider={handleSortIncludedItems}
-				onfinalize={e => {
-					handleSortIncludedItems(e)
-					finalizeSort()
-				}}
-			>
+			<section class="column sub-column-container">
 				{#each includedItemsList as item (item.id)}
-					<div class="list-item" animate:flip={{ duration: 150 }}>
-						{#if item[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
-							<div
-								style="visibility: visible !important; border-bottom: 2px solid var(--color-accent); width: 100%; height: 50%;"
-								in:fade={{ duration: 150, easing: cubicIn }}
-							></div>
-						{/if}
+					<div class="list-item" onclick={() => excludeItem(item.value)}>
+						<!-- svelte-ignore a11y_click_events_have_key_events -->
 						<i
-							class="material-icons notranslate icon"
-							style="color: rgb(162, 235, 255);">{item.icon ?? 'folder'}</i
-						>
+							class="fas fa-angle-left icon swap-item-button"
+							title="Move to {availableItemsColumnLable}"
+						></i>
+						{@html Blockbench.getIconNode(item.icon ?? 'folder', 'rgb(162, 235, 255)')
+							.outerHTML}
 						<span>{item.title}</span>
 					</div>
 				{/each}
@@ -183,19 +156,27 @@
 	}
 	.list-item {
 		display: flex;
-		cursor: default !important;
+		align-items: center;
+		gap: 8px;
 		width: 100%;
+		cursor: pointer;
 	}
 	span {
-		/* background-color: var(--color-button); */
-		/* border-bottom: 2px solid var(--color-dark); */
-		/* margin: 0 8px 6px 8px; */
-		padding: 0 8px;
+		flex: 1;
 	}
 	span:hover {
 		color: var(--color-light);
 	}
-	.fa-icon {
+	.swap-item-button {
+		font-size: 16px;
+		line-height: 1;
+		padding: 2px;
+		color: var(--color-text);
+	}
+	.swap-item-button:hover {
+		color: var(--color-light);
+	}
+	.swap-icon {
 		display: flex;
 		align-items: center;
 		justify-content: center;

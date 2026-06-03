@@ -11,6 +11,7 @@ import 'import_folder_recursive:./popups'
 // Blockbench Mods
 import 'import_folder_recursive:./mods'
 // Outliner
+import './outliner/interaction'
 import './outliner/textDisplay'
 import './outliner/vanillaBlockDisplay'
 import './outliner/vanillaItemDisplay'

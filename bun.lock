@@ -25,7 +25,7 @@
         "@typescript-eslint/eslint-plugin": "^5.54.0",
         "@typescript-eslint/parser": "^5.54.0",
         "blockbench-patch-manager": "^1.1.0",
-        "book-and-quill": "^1.0.9",
+        "book-and-quill": "^1.0.10",
         "esbuild": "^0.17.10",
         "esbuild-plugin-import-folder": "^1.0.1",
         "esbuild-plugin-import-glob": "^0.1.1",
@@ -37,7 +37,7 @@
         "firebase": "^9.19.0",
         "jiti": "^2.6.1",
         "js-yaml": "^4.1.0",
-        "mc-build": "^4.0.4",
+        "mc-build": "^4.1.2",
         "node-modules-vscode-problems-patch": "^1.0.9",
         "octokit": "^5.0.3",
         "prettier": "^3.8.2",
@@ -503,7 +503,7 @@
 
     "blockbench-types": ["blockbench-types@5.1.0", "", { "dependencies": { "@babel/types": "^7.20.7", "@types/dompurify": "^3.0.5", "@types/jquery": "^3.5.32", "@types/prismjs": "^1.26.0", "@types/three": "^0.129.2", "@types/tinycolor2": "^1.4.6", "dompurify": "^3.0.1", "electron": "^40.8.0", "prismjs": "^1.29.0", "tinycolor2": "^1.6.0", "typescript": "^5.8.3", "vue": "2.7.14", "wintersky": "^1.3.0" } }, "sha512-JLMHJZ+2J7aFQwSacfW4N/rvd56JRqvaBsHNH2R6sjyxkwKPuNPKYIeav/WtRXnq3dmlsEoH3rtg09s7yhe3sg=="],
 
-    "book-and-quill": ["book-and-quill@1.0.9", "", { "dependencies": { "@types/node": "^25.3.3", "tinycolor2": "^1.6.0" }, "peerDependencies": { "typescript": "^5" } }, "sha512-5jpj2ziHTMzeS7YTPqV8IcvaRkRn71A+kcvhSsxruK6JBM14jnqIjgdiKlDfuA/YzV5P6APwH9lNcC5yWOBn5A=="],
+    "book-and-quill": ["book-and-quill@1.0.10", "", { "dependencies": { "@types/node": "^25.3.3", "tinycolor2": "^1.6.0" }, "peerDependencies": { "typescript": "^5" } }, "sha512-9NaTEOmnJM8GPJVsdvl8Th9peju97KgvAtWPhya3v+IGI4hAafpdpuVoIlCK7TjHkHjIqKJ2HLYmcJX2qd4kEQ=="],
 
     "boolean": ["boolean@3.2.0", "", {}, "sha512-d0II/GO9uf9lfUHH2BQsjxzRJZBdsjgsBiW4BvhWk/3qoKwQFjIDVN19PfX8F2D/r9PCMTtLWjYVCFrpeYUzsw=="],
 
@@ -829,7 +829,7 @@
 
     "matcher": ["matcher@3.0.0", "", { "dependencies": { "escape-string-regexp": "^4.0.0" } }, "sha512-OkeDaAZ/bQCxeFAozM55PKcKU0yJMPGifLwV4Qgjitu+5MoAfSQN4lsLJeXZ1b8w0x+/Emda6MZgXS1jvsapng=="],
 
-    "mc-build": ["mc-build@4.0.4", "", { "bin": { "mcb3": "dist/mcb.js", "mc-build": "dist/mcb.js", "mcb": "dist/mcb.js" } }, "sha512-3f+tAQLann/dYBBlHD6itL7A3OZrPOAqayMtqOvVTikBnzKtemdhTY2w4Nkv1CDrVqLwHZ8GVnbVawYV6ATIWQ=="],
+    "mc-build": ["mc-build@4.1.2", "", { "bin": { "mcb3": "dist/mcb.js", "mc-build": "dist/mcb.js", "mcb": "dist/mcb.js" } }, "sha512-C/Su40vSUn2IPtbtLPzkQXUUiv2ATCOwvkE4dE4JhORIWM6qTWHwCZlABeqpegcjRvR6PuqWQeyqd2cVeCW8BQ=="],
 
     "md5": ["md5@2.3.0", "", { "dependencies": { "charenc": "0.0.2", "crypt": "0.0.2", "is-buffer": "~1.1.6" } }, "sha512-T1GITYmFaKuO91vxyoQMFETst+O71VUPEU3ze5GNzDm0OWdP8v1ziTaAEPUr/3kLsY3Sftgz242A1SetQiDL7g=="],
 

@@ -52,16 +52,4 @@ template data_manager {
 			emit.mcb(result.join('\n'))
 		%%>
 	}
-
-	# with rw:literal block:block {
-	# 	template data_manager read
-
-	# 	<%%
-	# 		console.log(arguments)
-	# 		console.log(context)
-	# 		console.log(block)
-	# 	%%>
-
-	# 	template data_manager write
-	# }
 }

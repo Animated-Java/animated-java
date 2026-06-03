@@ -5,6 +5,7 @@ import {
 	PROGRESS_DESCRIPTION,
 } from '../dialogs/exportProgress/exportProgress'
 import { BONE_INTERPOLATION_ENABLED } from '../mods/boneAnimatorMod'
+import { Interaction } from '../outliner/interaction'
 import { TextDisplay } from '../outliner/textDisplay'
 import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
 import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
@@ -197,6 +198,7 @@ export function getFrame(
 				lastFrameCache.set(uuid, { matrix: transform.matrix, keyframe })
 				break
 			}
+			case 'interaction':
 			case 'locator': {
 				transform.matrix = getNodeMatrix(outlinerNode, 1)
 				// // Only add the frame if the matrix has changed, or this is the first frame
@@ -216,7 +218,6 @@ export function getFrame(
 				// lastFrameCache.set(uuid, { matrix, keyframe })
 				break
 			}
-			case 'interaction':
 			case 'camera':
 			case 'struct': {
 				transform.matrix = getNodeMatrix(outlinerNode, 1)
@@ -296,7 +297,7 @@ export function updatePreview(animation: _Animation, time: number) {
 		animation.getBoneAnimator(node)!.displayFrame()
 	}
 	Animator.resetLastValues()
-	Canvas.scene.updateMatrixWorld()
+	Canvas.scene.updateMatrixWorld(true)
 	if (animation.effects) animation.effects.displayFrame()
 	// Blockbench.dispatchEvent('display_animation_frame')
 }
@@ -367,7 +368,7 @@ export function getAnimatableNodes(): OutlinerElement[] {
 	return [
 		...Group.all,
 		...Locator.all,
-		...BoundingBox.all,
+		...Interaction.all,
 		...TextDisplay.all,
 		...VanillaBlockDisplay.all,
 		...VanillaItemDisplay.all,
