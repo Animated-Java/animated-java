@@ -6,14 +6,14 @@ export default function upgrade(model: any): IBlueprintFormatJSON {
 
 	// Split brightness override into separate sky and block brightness values.
 	for (const group of fixed.groups ?? []) {
-		if (group.configs?.default) upgradeConfig(group.configs.default)
-		for (const config of Object.values(group.configs.variants ?? {}) as any) {
+		if (group.configs?.default) upgradeConfig(group.configs?.default)
+		for (const config of Object.values(group.configs?.variants ?? {}) as any) {
 			upgradeConfig(config)
 		}
 	}
 	for (const element of fixed.elements ?? []) {
-		if (element.configs?.default) upgradeConfig(element.configs.default)
-		for (const config of Object.values(element.configs.variants ?? {}) as any) {
+		if (element.configs?.default) upgradeConfig(element.configs?.default)
+		for (const config of Object.values(element.configs?.variants ?? {}) as any) {
 			upgradeConfig(config)
 		}
 	}
