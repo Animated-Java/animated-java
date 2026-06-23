@@ -47,7 +47,7 @@ async function generateRootEntityPassengers(version: string, rig: IRenderedRig) 
 	const passengers: NbtList = new NbtList()
 
 	for (const [uuid, node] of Object.entries(rig.nodes)) {
-		if (node.type === 'struct') continue
+		if (node.type === 'struct' || node.type === 'null_object') continue
 
 		const passenger = new NbtCompound()
 
