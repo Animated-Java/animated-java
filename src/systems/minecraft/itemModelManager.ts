@@ -26,7 +26,10 @@ export async function getItemModel(
 		result = await parseItemModel(getItemResourceLocation(item), itemDisplay)
 		ITEM_MODEL_CACHE.set(cacheKey, result)
 	}
-	if (!result) return undefined
+	if (!result) {
+		console.warn(`Failed to load item model for ${item} with display mode ${itemDisplay}`)
+		return undefined
+	}
 	result = {
 		mesh: result.mesh.clone(true),
 		outline: result.outline.clone(true),

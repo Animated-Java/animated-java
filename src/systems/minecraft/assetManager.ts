@@ -1,6 +1,7 @@
 import type { Unzipped } from 'fflate'
 import ky from 'ky'
 import { dirname, join } from 'node:path'
+import index from '../../assets/vanillaAssetOverrides/index.json'
 import { getFsModule } from '../../constants'
 import { unzip } from '../util'
 import { getVersionById, getVersionDownloadUrl } from './versionManager'
@@ -10,6 +11,8 @@ const CLIENT_JAR_FOLDER = join(SystemInfo.user_data_directory, `animated_java/cl
 const ASSETS_CACHE = new Map<string, Unzipped>()
 const FOLDER_CACHE = new Map<string, Record<string, Buffer>>()
 const ACTIVE_DOWNLOAD_PROMISES = new Map<string, Promise<void>>()
+
+const ASSET_OVERRIDES = index as unknown as Record<string, string>
 
 async function downloadFile(url: string, savePath: string) {
 	const response = await ky(url, {
@@ -80,7 +83,13 @@ export async function hasAsset(versionId: string, assetPath: string) {
 
 export async function getRawAsset(versionId: string, assetPath: string) {
 	const assets = await getAssets(versionId)
+
+	if (ASSET_OVERRIDES[assetPath]) {
+		return Buffer.from(ASSET_OVERRIDES[assetPath])
+	}
+
 	const asset = assets[assetPath]
+
 	if (!asset) {
 		throw new Error(`Asset '${assetPath}' not found in Minecraft ${versionId} client jar!`)
 	}
@@ -116,7 +125,11 @@ export async function getFolder(versionId: string, folderPath: string) {
 	const folderAssets: Record<string, Buffer> = {}
 	for (const assetPath in assets) {
 		if (assetPath.startsWith(folderPath)) {
-			folderAssets[assetPath] = Buffer.from(assets[assetPath])
+			if (ASSET_OVERRIDES[assetPath]) {
+				folderAssets[assetPath] = Buffer.from(ASSET_OVERRIDES[assetPath])
+			} else {
+				folderAssets[assetPath] = Buffer.from(assets[assetPath])
+			}
 		}
 	}
 
