@@ -145,6 +145,9 @@ export interface IRenderedNodes {
 	Struct: IRenderedNode & {
 		type: 'struct'
 	}
+	NullObject: IRenderedNode & {
+		type: 'null_object'
+	}
 	Camera: IRenderedNode & {
 		type: 'camera'
 		/** The maximum distance this node travels away from the root entity while animating. */
@@ -374,6 +377,19 @@ function getNodeBoundingBox(node: Group | TextDisplay | VanillaItemDisplay | Van
 	return box
 }
 
+function renderNullObject(nullObject: NullObject, rig: IRenderedRig) {
+	const parent = nullObject.parent instanceof Group ? nullObject.parent.uuid : undefined
+	const renderedNullObject: IRenderedNodes['NullObject'] = {
+		type: 'null_object',
+		name: nullObject.name,
+		uuid: nullObject.uuid,
+		parent,
+		default_transform: {} as INodeTransform,
+		storage_name: sanitizeStorageKey(nullObject.name),
+	}
+	rig.nodes[nullObject.uuid] = renderedNullObject
+}
+
 function renderGroup(
 	group: Group,
 	rig: IRenderedRig,
@@ -455,6 +471,10 @@ function renderGroup(
 			case node instanceof Cube: {
 				renderCube(node, rig, groupModel.model!)
 				rig.includes_custom_models = true
+				break
+			}
+			case node instanceof NullObject: {
+				renderNullObject(node, rig)
 				break
 			}
 			default:
@@ -614,24 +634,31 @@ function renderLocator(locator: Locator, rig: IRenderedRig) {
 	rig.nodes[locator.uuid] = renderedLocator
 }
 
-function renderInteraction(box: Interaction, rig: IRenderedRig) {
-	if (!box.export) return
-	const parentId = box.parent instanceof Group ? box.parent.uuid : undefined
+function renderInteraction(interaction: Interaction, rig: IRenderedRig) {
+	if (!interaction.export) return
+
+	if (VersionUtil.compare(Project.animated_java.target_minecraft_version, '<', '1.21.5')) {
+		throw new IntentionalExportError(
+			"Interactions are only supported when targeting Minecraft 1.21.5 and above. Please update your project's target Minecraft version to 1.21.5 or higher to use interactions."
+		)
+	}
+
+	const parentId = interaction.parent instanceof Group ? interaction.parent.uuid : undefined
 
 	const renderedInteraction: IRenderedNodes['Interaction'] = {
 		type: 'interaction',
-		name: box.name,
-		storage_name: sanitizeStorageKey(box.name),
-		uuid: box.uuid,
+		name: interaction.name,
+		storage_name: sanitizeStorageKey(interaction.name),
+		uuid: interaction.uuid,
 		parent: parentId,
-		config: structuredClone(box.config),
+		config: structuredClone(interaction.config),
 		max_distance: 0,
 		default_transform: {} as INodeTransform,
-		width: box.scale[0] / 16,
-		height: box.scale[1] / 16,
+		width: interaction.scale[0] / 16,
+		height: interaction.scale[1] / 16,
 	}
 
-	rig.nodes[box.uuid] = renderedInteraction
+	rig.nodes[interaction.uuid] = renderedInteraction
 }
 
 function renderCamera(camera: ICamera, rig: IRenderedRig) {
@@ -778,7 +805,8 @@ function getDefaultTransforms(rig: IRenderedRig) {
 	const anim = new Blockbench.Animation()
 	correctSceneAngle()
 	updatePreview(anim, 0)
-	const transforms = getFrame(anim, rig.nodes).node_transforms
+	updatePreview(anim, 0) // IK doesn't work unless I call this twice for some reason...
+	const transforms = getFrame(anim, rig.nodes, 0).node_transforms
 	restoreSceneAngle()
 	return transforms
 }
@@ -833,6 +861,10 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 			}
 			case node instanceof Interaction: {
 				renderInteraction(node, rig)
+				break
+			}
+			case node instanceof NullObject: {
+				renderNullObject(node, rig)
 				break
 			}
 			case node instanceof Cube: {

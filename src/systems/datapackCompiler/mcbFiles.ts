@@ -15,6 +15,8 @@ import MAIN_1_21_4 from './1.21.4/main.mcb'
 import GLOBAL_1_21_5 from './1.21.5/global.mcb'
 import MAIN_1_21_5 from './1.21.5/main.mcb'
 
+import GLOBAL_26_2 from './26.2/global.mcb'
+
 // The core is content that always goes in the `data` folder directly,
 // while other files are in the `animated_java/data` folder to be overlayed when the correct version is loaded.
 
@@ -26,6 +28,14 @@ interface MCBFiles {
 
 export function getMCBFilesByVersion(version: string): MCBFiles {
 	switch (true) {
+		case VersionUtil.compare(version, '>=', '26.2'): {
+			return {
+				main: MAIN_1_21_5,
+				global: GLOBAL_26_2,
+				globalTemplates: GLOBAL_TEMPLATES_1_20_4,
+			}
+		}
+
 		case VersionUtil.compare(version, '>=', '1.21.11'): {
 			return {
 				main: MAIN_1_21_5,

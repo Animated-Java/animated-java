@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [64, 64],
 	"textures": {
-		"0": "entity/banner_base",
-		"tint": "entity/banner_base"
+		"0": "entity/banner/base",
+		"tint": "entity/banner/base"
 	},
 	"elements": [
 		{

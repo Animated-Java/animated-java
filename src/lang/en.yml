@@ -123,8 +123,26 @@ animated_java:
         description: Click to copy the error message to the clipboard.
       paragraph: 'Please report this error by joining our %s and creating a thread in the #animated-java-support channel, or by creating an issue on our {1}. Thank you!'
 
+    entity_count_dialog:
+      title: Entity Count
+      description: |-
+        [Markdown]
+        This dialog shows what nodes in your Blueprint will create entities in-game, and how many entities will be created in total.
+
+        Large numbers of entities will cause performance issues in-game. It's recommended to keep the total number of entities as low as possible.
+
+        For more information on Rig Entities, see [Animated Java Docs / Core Concepts / Rigs](https://animated-java.dev/docs/core-concepts/rigs)
+      root_entities: Root Entity
+      group_entities: Group Entities
+      display_entities: Display Entities
+      locator_entities: Locator Entities
+      camera_entities: Camera Entities
+      interaction_entities: Interaction Entities
+      total_entities: Total Entities
+
     blueprint_settings:
       title: Blueprint Settings
+      required_footer: Required
 
       pages:
         general.title: General
@@ -808,8 +826,11 @@ animated_java:
           Number of ticks between command repeats.
 
           Set to 1 to run every tick of the animation.
+
+    easings:
+      title: Keyframe Easing
       easing_type:
-        title: Easing Type
+        title: Curve
         description: The type of easing to apply to the keyframe.
         options:
           linear: Linear
@@ -824,14 +845,13 @@ animated_java:
           back: Back
           bounce: Bounce
       easing_mode:
-        title: Easing Mode
+        title: Mode
         description: The easing mode to apply to the keyframe.
         options:
           in: In
           out: Out
           inout: In-Out
       easing_args:
-        title: Easing Args
         description: The arguments to apply to the easing function.
         easing_arg:
           elastic:
@@ -845,8 +865,16 @@ animated_java:
             description: The bounciness of the easing function.
       nonlinear_interpolation: |-
         [Markdown]
-        Advanced easing options are disabled.
-        Change the keyframe's interpolation mode to `linear` to enable them.
+        Only keyframes with `linear` interpolation can use advanced easing options.
+      no_keyframe_selected: |-
+        [Markdown]
+        No keyframe selected.
+
+        Please select a keyframe to edit its easing options.
+      first_keyframe_easing: |-
+        [Markdown]
+        The first keyframe in an animation cannot change its easing options, as it has no previous keyframe to interpolate from.
+
     text_display:
       title: Text Display
     vanilla_item_display:

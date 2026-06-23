@@ -174,7 +174,7 @@ IF (!auto_update_rig_orientation) {
 		tp @s ~ ~ ~ ~ ~
 
 		data_manager prep read
-		IF (has_locators || has_cameras) {
+		IF (has_locators || has_cameras || has_interactions) {
 			function <%blueprint_id%>/root/on_tick/transform_floating_entities
 		}
 		execute at @s on passengers run rotate @s ~ ~
@@ -458,8 +458,9 @@ IF (has_animations) {
 								const lastActiveFrame = {}
 								const modifiedNodes = Object.values(animation.modified_nodes).filter(n => n.type !== 'struct').sort(nodeSorter);
 								for (const [frameIndex, frame] of animation.frames.entries()) {
-									const to_merge = {cameras: {}, locators: {}, interactions: {}}
+									const toMerge = {cameras: {}, locators: {}, interactions: {}}
 									let frameFunc = ``;
+									let frameFuncEnd = ``;
 									for (const node of modifiedNodes) {
 										const transform = frame.node_transforms[node.uuid]
 										// Skip if the node doesn't have a transform for this frame.
@@ -496,7 +497,7 @@ IF (has_animations) {
 												const lastFrame = lastActiveFrame[node.uuid]
 												lastActiveFrame[node.uuid] = transform
 												;if (!lastFrame || matrixToNbtFloatArray(transform.matrix).toString() !== matrixToNbtFloatArray(lastFrame.matrix).toString()) {
-													to_merge.locators[node.storage_name] = {
+													toMerge.locators[node.storage_name] = {
 														px: roundTo(transform.pos[0], 10),
 														py: roundTo(transform.pos[1], 10),
 														pz: roundTo(transform.pos[2], 10),
@@ -507,7 +508,7 @@ IF (has_animations) {
 
 												if (transform.function) {
 													if (node.config?.use_entity) {
-														frameFunc +=
+														frameFuncEnd +=
 															`\n$execute unless entity @s[tag=${TAGS.TRANSFORMS_ONLY()}] as $(${node.storage_name}) `
 															+ `positioned ^${roundTo(transform.pos[0], 10)} ^${roundTo(transform.pos[1], 10)} ^${roundTo(transform.pos[2], 10)} `
 															+ `rotated ~${roundTo(transform.head_rot[1], 10)} ~${roundTo(transform.head_rot[0], 10)} `
@@ -517,7 +518,7 @@ IF (has_animations) {
 																+ `${transform.function}`
 															+ `\n}`
 													} else {
-														frameFunc +=
+														frameFuncEnd +=
 															`\nexecute unless entity @s[tag=${TAGS.TRANSFORMS_ONLY()}] `
 															+ `positioned ^${roundTo(transform.pos[0], 10)} ^${roundTo(transform.pos[1], 10)} ^${roundTo(transform.pos[2], 10)} `
 															+ `rotated ~${roundTo(transform.head_rot[1], 10)} ~${roundTo(transform.head_rot[0], 10)} `
@@ -533,7 +534,7 @@ IF (has_animations) {
 												const lastFrame = lastActiveFrame[node.uuid]
 												lastActiveFrame[node.uuid] = transform
 												;if (!lastFrame || matrixToNbtFloatArray(transform.matrix).toString() !== matrixToNbtFloatArray(lastFrame.matrix).toString()) {
-													to_merge.interactions[node.storage_name] = {
+													toMerge.interactions[node.storage_name] = {
 														px: roundTo(transform.pos[0], 10),
 														py: roundTo(transform.pos[1], 10),
 														pz: roundTo(transform.pos[2], 10),
@@ -543,7 +544,7 @@ IF (has_animations) {
 												}
 
 												if (transform.function) {
-													frameFunc +=
+													frameFuncEnd +=
 														`\n$execute unless entity @s[tag=${TAGS.TRANSFORMS_ONLY()}] as $(${node.storage_name}) `
 														+ `positioned ^${roundTo(transform.pos[0], 10)} ^${roundTo(transform.pos[1], 10)} ^${roundTo(transform.pos[2], 10)} `
 														+ `rotated ~${roundTo(transform.head_rot[1], 10)} ~${roundTo(transform.head_rot[0], 10)} `
@@ -559,7 +560,7 @@ IF (has_animations) {
 												const lastFrame = lastActiveFrame[node.uuid]
 												lastActiveFrame[node.uuid] = transform
 												;if (!lastFrame || matrixToNbtFloatArray(transform.matrix).toString() !== matrixToNbtFloatArray(lastFrame.matrix).toString()) {
-													to_merge.cameras[node.storage_name] = {
+													toMerge.cameras[node.storage_name] = {
 														px: transform.pos[0],
 														py: transform.pos[1],
 														pz: transform.pos[2],
@@ -572,16 +573,16 @@ IF (has_animations) {
 										}
 									}
 
-									const updatedLocators = Object.keys(to_merge.locators).length > 0;
-									const updatedCameras = Object.keys(to_merge.cameras).length > 0;
-									const updatedInteractions = Object.keys(to_merge.interactions).length > 0;
+									const updatedLocators = Object.keys(toMerge.locators).length > 0;
+									const updatedCameras = Object.keys(toMerge.cameras).length > 0;
+									const updatedInteractions = Object.keys(toMerge.interactions).length > 0;
 
-									if (!updatedCameras) delete to_merge.cameras;
-									if (!updatedLocators) delete to_merge.locators;
-									if (!updatedInteractions) delete to_merge.interactions;
+									if (!updatedCameras) delete toMerge.cameras;
+									if (!updatedLocators) delete toMerge.locators;
+									if (!updatedInteractions) delete toMerge.interactions;
 
 									if (updatedLocators || updatedCameras || updatedInteractions) {
-										frameFunc += `\ndata modify storage ${temp_storage} entry.data merge value ${JSON.stringify(to_merge)}`
+										frameFunc += `\ndata modify storage ${temp_storage} entry.data merge value ${JSON.stringify(toMerge)}`
 										frameFunc += `\ndata_manager prep write`
 										if (!auto_update_rig_orientation) {
 											frameFunc += `\nfunction ${blueprint_id}/root/on_tick/transform_floating_entities`
@@ -595,17 +596,18 @@ IF (has_animations) {
 											throw new Error(`Could not find Variant with uuid "${frame.variants[0]}" while generating frame "${frameIndex}" of animation "${animation.name}".`)
 										}
 										const execute_condition = frame.variants_execute_condition ? frame.variants_execute_condition + ' ' : ''
-										frameFunc += `\nexecute unless entity @s[tag=${TAGS.TRANSFORMS_ONLY()}] ${execute_condition}run function ${blueprint_id}/variants/${variant.name}/apply`
+										frameFuncEnd += `\nexecute unless entity @s[tag=${TAGS.TRANSFORMS_ONLY()}] ${execute_condition}run function ${blueprint_id}/variants/${variant.name}/apply`
 										;hasFunction = true
 									}
 
 									// Root function keyframes.
 									if (frame.function) {
 										const execute_condition = frame.function_execute_condition ? frame.function_execute_condition + ' ' : ''
-										frameFunc += `\nexecute unless entity @s[tag=${TAGS.TRANSFORMS_ONLY()}] at @s ${execute_condition}run block ${frameIndex}_root_function%NEWLINE_PATCH%{\n${frame.function}\n}`
+										frameFuncEnd += `\nexecute unless entity @s[tag=${TAGS.TRANSFORMS_ONLY()}] at @s ${execute_condition}run block ${frameIndex}_root_function%NEWLINE_PATCH%{\n${frame.function}\n}`
 										;hasFunction = true
 									}
-									;if (frameFunc.length > 0) {
+									frameFunc += frameFuncEnd;
+									if (frameFunc.length > 0) {
 										frameFunc = `function ${frameIndex}%NEWLINE_PATCH%{${frameFunc}\n}`
 										emit.mcb(frameFunc.replaceAll(/%NEWLINE_PATCH%\n?/g, ' '))
 									}
@@ -1639,12 +1641,12 @@ IF (Object.keys(rig.variants).length > 1) {
 										data modify entity @s item.components."minecraft:item_model" set value "<%variant.models[node.uuid].item_model%>"
 									}
 								}
-								IF (node.configs.variants[variant.uuid]) {
+							IF (node.configs.variants[variant.uuid] || variant.is_default && node.configs.default) {
 									<%%
-										global.config = DisplayEntityConfig.fromJSON(node.configs.variants[variant.uuid])
+										global.config = DisplayEntityConfig.fromJSON(node.configs.variants[variant.uuid] ?? node.configs.default)
 									%%>
 									IF (!global.config.isDefault()) {
-										data merge entity @s <%global.config.toNBT(undefined, variant.is_default)%>
+										data merge entity @s <%global.config.toNBT(undefined)%>
 									}
 									IF (global.config.onApplyFunction) {
 										<%%
@@ -1665,26 +1667,16 @@ IF (Object.keys(rig.variants).length > 1) {
 IF (has_locators || has_cameras) {
 	dir zzz {
 		function reset_floating_entities {
-			IF (has_locators) {
-				REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator')) as locator {
-					IF (locator.config?.use_entity) {
-						execute at @s run block set_default_pose/as_locator_<%locator.storage_name%> { with storage <%temp_storage%> entry.data.locators.<%locator.storage_name%>
-							$tp $(uuid) \
-								^<%roundTo(locator.default_transform.pos[0], 10)%> \
-								^<%roundTo(locator.default_transform.pos[1], 10)%> \
-								^<%roundTo(locator.default_transform.pos[2], 10)%> \
-								~<%roundTo(locator.default_transform.head_rot[1], 10)%> \
-								~<%roundTo(locator.default_transform.head_rot[0], 10)%>
+			REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator')) as locator {
+				IF (locator.config?.use_entity) {
+					execute at @s run block set_default_pose/as_locator_<%locator.storage_name%> { with storage <%temp_storage%> entry.data.locators.<%locator.storage_name%>
+						$tp $(uuid) \
+							^<%roundTo(locator.default_transform.pos[0], 10)%> \
+							^<%roundTo(locator.default_transform.pos[1], 10)%> \
+							^<%roundTo(locator.default_transform.pos[2], 10)%> \
+							~<%roundTo(locator.default_transform.head_rot[1], 10)%> \
+							~<%roundTo(locator.default_transform.head_rot[0], 10)%>
 
-							data modify storage <%temp_storage%> entry.data.locators.<%locator.storage_name%> merge value { \
-								px: <%roundTo(locator.default_transform.pos[0], 10)%>, \
-								py: <%roundTo(locator.default_transform.pos[1], 10)%>, \
-								pz: <%roundTo(locator.default_transform.pos[2], 10)%>, \
-								ry: <%roundTo(locator.default_transform.head_rot[1], 10)%>, \
-								rx: <%roundTo(locator.default_transform.head_rot[0], 10)%> \
-							}
-						}
-					} ELSE {
 						data modify storage <%temp_storage%> entry.data.locators.<%locator.storage_name%> merge value { \
 							px: <%roundTo(locator.default_transform.pos[0], 10)%>, \
 							py: <%roundTo(locator.default_transform.pos[1], 10)%>, \
@@ -1693,26 +1685,50 @@ IF (has_locators || has_cameras) {
 							rx: <%roundTo(locator.default_transform.head_rot[0], 10)%> \
 						}
 					}
+				} ELSE {
+					data modify storage <%temp_storage%> entry.data.locators.<%locator.storage_name%> merge value { \
+						px: <%roundTo(locator.default_transform.pos[0], 10)%>, \
+						py: <%roundTo(locator.default_transform.pos[1], 10)%>, \
+						pz: <%roundTo(locator.default_transform.pos[2], 10)%>, \
+						ry: <%roundTo(locator.default_transform.head_rot[1], 10)%>, \
+						rx: <%roundTo(locator.default_transform.head_rot[0], 10)%> \
+					}
 				}
 			}
 
-			IF (has_cameras) {
-				REPEAT (Object.values(rig.nodes).filter(node => node.type === 'camera')) as camera {
-					execute at @s run block set_default_pose/as_camera_<%camera.storage_name%> { with storage <%temp_storage%> entry.data.cameras.<%camera.storage_name%>
-						$tp $(uuid) \
-							^<%roundTo(camera.default_transform.pos[0], 10)%> \
-							^<%roundTo(camera.default_transform.pos[1], 10)%> \
-							^<%roundTo(camera.default_transform.pos[2], 10)%> \
-							~<%roundTo(camera.default_transform.head_rot[1], 10)%> \
-							~<%roundTo(camera.default_transform.head_rot[0], 10)%>
+			REPEAT(Object.values(rig.nodes).filter(node => node.type === 'interaction')) as interaction {
+				execute at @s run block set_default_pose/as_interaction_<%interaction.storage_name%> { with storage <%temp_storage%> entry.data.interactions.<%interaction.storage_name%>
+					$tp $(uuid) \
+						^<%roundTo(interaction.default_transform.pos[0], 10)%> \
+						^<%roundTo(interaction.default_transform.pos[1], 10)%> \
+						^<%roundTo(interaction.default_transform.pos[2], 10)%> \
+						~<%roundTo(interaction.default_transform.head_rot[1], 10)%> \
+						~<%roundTo(interaction.default_transform.head_rot[0], 10)%>
+					data modify storage <%temp_storage%> entry.data.interactions.<%interaction.storage_name%> merge value { \
+						px: <%roundTo(interaction.default_transform.pos[0], 10)%>, \
+						py: <%roundTo(interaction.default_transform.pos[1], 10)%>, \
+						pz: <%roundTo(interaction.default_transform.pos[2], 10)%>, \
+						ry: <%roundTo(interaction.default_transform.head_rot[1], 10)%>, \
+						rx: <%roundTo(interaction.default_transform.head_rot[0], 10)%> \
+					}
+				}
+			}
 
-						data modify storage <%temp_storage%> entry.data.cameras.<%camera.storage_name%> merge value { \
-							px: <%roundTo(camera.default_transform.pos[0], 10)%>, \
-							py: <%roundTo(camera.default_transform.pos[1], 10)%>, \
-							pz: <%roundTo(camera.default_transform.pos[2], 10)%>, \
-							ry: <%roundTo(camera.default_transform.head_rot[1], 10)%>, \
-							rx: <%roundTo(camera.default_transform.head_rot[0], 10)%> \
-						}
+			REPEAT (Object.values(rig.nodes).filter(node => node.type === 'camera')) as camera {
+				execute at @s run block set_default_pose/as_camera_<%camera.storage_name%> { with storage <%temp_storage%> entry.data.cameras.<%camera.storage_name%>
+					$tp $(uuid) \
+						^<%roundTo(camera.default_transform.pos[0], 10)%> \
+						^<%roundTo(camera.default_transform.pos[1], 10)%> \
+						^<%roundTo(camera.default_transform.pos[2], 10)%> \
+						~<%roundTo(camera.default_transform.head_rot[1], 10)%> \
+						~<%roundTo(camera.default_transform.head_rot[0], 10)%>
+
+					data modify storage <%temp_storage%> entry.data.cameras.<%camera.storage_name%> merge value { \
+						px: <%roundTo(camera.default_transform.pos[0], 10)%>, \
+						py: <%roundTo(camera.default_transform.pos[1], 10)%>, \
+						pz: <%roundTo(camera.default_transform.pos[2], 10)%>, \
+						ry: <%roundTo(camera.default_transform.head_rot[1], 10)%>, \
+						rx: <%roundTo(camera.default_transform.head_rot[0], 10)%> \
 					}
 				}
 			}
@@ -1723,7 +1739,7 @@ IF (has_locators || has_cameras) {
 dir zzz {
 	IF (has_animations) {
 		function apply_default_pose {
-			IF (has_locators || has_cameras) {
+			IF (has_locators || has_cameras || has_interactions) {
 				function ../zzz/reset_floating_entities
 			}
 
@@ -1741,7 +1757,7 @@ dir zzz {
 	}
 
 	function set_default_pose {
-		IF (has_locators || has_cameras) {
+		IF (has_locators || has_cameras || has_interactions) {
 			function ../zzz/reset_floating_entities
 		}
 
@@ -1763,7 +1779,7 @@ IF (has_animations) {
 		# Changes the pose of the rig to the the default pose with interpolation
 		debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
 
-		IF (has_locators || has_cameras) {
+		IF (has_locators || has_cameras || has_interactions) {
 			data_manager prep read
 		}
 		function ./zzz/apply_default_pose
@@ -1774,7 +1790,7 @@ function set_default_pose {
 	# Changes the pose of the rig to the the default pose without interpolation
 	debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
 
-	IF (has_locators || has_cameras) {
+	IF (has_locators || has_cameras || has_interactions) {
 		data_manager prep read
 	}
 	function ./zzz/set_default_pose
