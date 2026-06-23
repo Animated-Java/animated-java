@@ -754,5 +754,103 @@
 				]
 			}
 		]
+	},
+	"1.10.0": {
+		"title": "v1.10.0",
+		"author": "Titus Evans (SnaveSutit)",
+		"date": "2026-06-24",
+		"categories": [
+			{
+				"title": "Changes",
+				"list": [
+					"[BREAKING] Removed `data` entity in favor of much faster score-indexed storage. Thanks @Xanbelor!",
+					"[BREAKING] Added support for custom namespaces. The `Export Namespace` setting has been renamed to `Blueprint ID` and now supports namespaces. E.g. `my_cool_pack:rigs/my_awesome_blueprint`. Tags will also use the `Blueprint ID` as their prefix: `aj.my_rig.root` -> `my_cool_pack.rigs.my_awesome_blueprint`. The default namespace is now `aj:` to keep tags prefixes consistent with previous versions.",
+					"[BREAKING] `as_locator` & `as_all_locators` no longer execute `at` the targeted locators.",
+
+					"Added Interaction element",
+					"Added functions for interacting with Interactions, similar to the locator functions, such as `as_interaction` and `as_all_interactions`.",
+					"Split Display Entity config option `brightnessOverride` into two separate properties: `blockBrightness` and `skyBrightness`.",
+					"Added marker color support to Display entity elements.",
+					"Made `Use Entity Stacking` default to true.",
+					"Added `Item Model Config` to Groups with cube children.",
+					"Added support for adding custom constant tints to item models.",
+
+					"Added support for Minecraft 26.2 predicate changes.",
+					"Added syntax highlighting to function keyframes, and keyframe execute conditions.",
+					"Added Entity Counter dialog and toolbar element.",
+					"Added `zh_cn` localization - Thanks jiuwu02!",
+					"Disabled camera roll in Blockbench preview to better match in-game behavior.",
+					"Moved keyframe easings into their own panel, and improved reactivity.",
+
+					"Added `Rig` page to Blueprint settings.",
+					"Added `Custom Rig Entity Tags` option to Blueprint settings.",
+					"Added `Use Entity Stacking` option to Blueprint settings.",
+
+					"Overhauled Blueprint Settings UI to be more user friendly and easier to navigate.",
+					"Added `.zip` export format for Data Pack and Resource Pack.",
+					"Added visualization for Structure Groups.",
+					"Added syntax highlighting for settings.",
+					"Updated Plugin exporter to support modern Minecraft's free element rotations.",
+					"Added translation string and keybind resolution for JSON text components. Translation strings from vanilla will automatically be resolved to the correct text for your target version when previewing Text Displays.",
+					"Added display names to all entities in the rig to make debugging easier.",
+					"Switched to using `blockbench-patch-manager` for safer handling of Blockbench monkey-patches.",
+					"Moved JSON text component system into its own library called `book-and-quill`.",
+					"Improved MC font loading handling and caching.",
+					"Improved internal MC asset handling and caching.",
+					"Updated to Blockbench 5.1.4.",
+					"Updated to Svelte 5.",
+					"Updated to MCB 4.0.5.",
+
+					"Updated Russian translations to improve consistency and punctuation. - Thanks Koishem!",
+					"Re-enabled Plugin mode - WARNING: This is experimental, and is using a new plugin JSON schema that will likely change in the future. - Thanks Meekiavelique!",
+					"Added Bisect hosting partnership banner.",
+
+					"Improved error messages for `as_all_locators` and similar functions.",
+
+					"Added `as_at_locator` & `as_at_all_locators` functions to replace previous `as_locator` and `as_all_locators` positional functionality.",
+					"Made camera and rig rotation much more precise for 1.21.4 and above.",
+					"Added support for the removal of item model rotation restrictions in 1.21.11.",
+					"Added `as_node` function."
+				]
+			},
+			{
+				"title": "Fixes",
+				"list": [
+					"Fixed interactions being left behind when moving a Rig.",
+					"Fixed [#515](https://github.com/Animated-Java/animated-java/issues/515)",
+					"Fixed [#505](https://github.com/Animated-Java/animated-java/issues/505)",
+					"Fixed [#506](https://github.com/Animated-Java/animated-java/issues/506)",
+					"Fixed [#516](https://github.com/Animated-Java/animated-java/issues/516)",
+					"Fixed [#512](https://github.com/Animated-Java/animated-java/issues/512)",
+					"Fixed [#514](https://github.com/Animated-Java/animated-java/issues/514)",
+
+					"Fixed Item Display, Block Display, and Text Display elements ignoring flip actions.",
+					"Fixed custom element size not being rendered in element panel.",
+					"Fixed [#509](https://github.com/Animated-Java/animated-java/issues/509)",
+					"Fixed [#507](https://github.com/Animated-Java/animated-java/issues/507)",
+					"Fixed [#510](https://github.com/Animated-Java/animated-java/issues/510)",
+					"Fixed [#505](https://github.com/Animated-Java/animated-java/issues/505)",
+					"Fixed [#495](https://github.com/Animated-Java/animated-java/issues/495)",
+
+					"Fixed Blueprints failing to save due to missing `fs` global.",
+					"Fixed Animated Java failing to reload correctly when plugins are reloaded.",
+					"Fixed JSON Text Components failing to add quotes around strings that start with numeric characters.",
+					"Fixed [#491](https://github.com/Animated-Java/animated-java/issues/491)",
+					"Fixed [#490](https://github.com/Animated-Java/animated-java/issues/490)",
+
+					"Fixed \"infinite loading popup\" issue.",
+
+					"Fixed locators failing to tick, and display entities being left behind when moving the root (either by `tp` or `move` function).",
+
+					"Fixed [#475](https://github.com/Animated-Java/animated-java/issues/475)",
+					"Fixed [#474](https://github.com/Animated-Java/animated-java/issues/474)",
+					"Fixed [#472](https://github.com/Animated-Java/animated-java/issues/472)",
+					"Fixed [#471](https://github.com/Animated-Java/animated-java/issues/471)",
+					"Fixed [#469](https://github.com/Animated-Java/animated-java/issues/469)",
+					"Fixed [#468](https://github.com/Animated-Java/animated-java/issues/468)",
+					"Fixed `move` function not transforming floating entities."
+				]
+			}
+		]
 	}
 }
