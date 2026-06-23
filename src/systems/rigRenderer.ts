@@ -614,24 +614,31 @@ function renderLocator(locator: Locator, rig: IRenderedRig) {
 	rig.nodes[locator.uuid] = renderedLocator
 }
 
-function renderInteraction(box: Interaction, rig: IRenderedRig) {
-	if (!box.export) return
-	const parentId = box.parent instanceof Group ? box.parent.uuid : undefined
+function renderInteraction(interaction: Interaction, rig: IRenderedRig) {
+	if (!interaction.export) return
+
+	if (VersionUtil.compare(Project.animated_java.target_minecraft_version, '<', '1.21.5')) {
+		throw new IntentionalExportError(
+			"Interactions are only supported when targeting Minecraft 1.21.5 and above. Please update your project's target Minecraft version to 1.21.5 or higher to use interactions."
+		)
+	}
+
+	const parentId = interaction.parent instanceof Group ? interaction.parent.uuid : undefined
 
 	const renderedInteraction: IRenderedNodes['Interaction'] = {
 		type: 'interaction',
-		name: box.name,
-		storage_name: sanitizeStorageKey(box.name),
-		uuid: box.uuid,
+		name: interaction.name,
+		storage_name: sanitizeStorageKey(interaction.name),
+		uuid: interaction.uuid,
 		parent: parentId,
-		config: structuredClone(box.config),
+		config: structuredClone(interaction.config),
 		max_distance: 0,
 		default_transform: {} as INodeTransform,
-		width: box.scale[0] / 16,
-		height: box.scale[1] / 16,
+		width: interaction.scale[0] / 16,
+		height: interaction.scale[1] / 16,
 	}
 
-	rig.nodes[box.uuid] = renderedInteraction
+	rig.nodes[interaction.uuid] = renderedInteraction
 }
 
 function renderCamera(camera: ICamera, rig: IRenderedRig) {
