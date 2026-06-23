@@ -429,7 +429,7 @@ IF (has_animations) {
 
 						function apply_frame {
 							#ARGS: {frame: int}
-
+							$data modify storage <%temp_storage%> entry.data.uuids_by_name.frame set value $(frame)
 							block { with storage <%temp_storage%> entry.data.uuids_by_name
 								REPEAT (Object.values(animation.modified_nodes).sort(nodeSorter)) as node {
 									IF (BONE_TYPES.includes(node.type)) {
