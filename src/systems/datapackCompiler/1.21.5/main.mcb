@@ -1729,12 +1729,12 @@ IF (Object.keys(rig.variants).length > 1) {
 										data modify entity @s item.components."minecraft:custom_model_data".strings[0] set value "<%variant.name%>"
 									}
 								}
-								IF (node.configs.variants[variant.uuid]) {
+							IF (node.configs.variants[variant.uuid] || variant.is_default && node.configs.default) {
 									<%%
-										global.config = DisplayEntityConfig.fromJSON(node.configs.variants[variant.uuid])
+										global.config = DisplayEntityConfig.fromJSON(node.configs.variants[variant.uuid] ?? node.configs.default)
 									%%>
 									IF (!global.config.isDefault()) {
-										data merge entity @s <%global.config.toNBT(undefined, variant.is_default)%>
+										data merge entity @s <%global.config.toNBT(undefined)%>
 									}
 									IF (global.config.onApplyFunction) {
 										<%%

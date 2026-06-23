@@ -147,7 +147,51 @@ export class DisplayEntityConfig {
 		this.__shadowStrength = value
 	}
 
-	checkIfEqual(other: DisplayEntityConfig) {
+	checkIfEqual(other: DisplayEntityConfig, ignoreUndefined = false): boolean {
+		if (ignoreUndefined) {
+			if (
+				this.__onApplyFunction !== undefined &&
+				this.__onApplyFunction !== other.__onApplyFunction
+			)
+				return false
+			if (this.__billboard !== undefined && this.__billboard !== other.__billboard)
+				return false
+			if (
+				this.__overrideBrightness !== undefined &&
+				this.__overrideBrightness !== other.__overrideBrightness
+			)
+				return false
+			if (
+				this.__skyBrightness !== undefined &&
+				this.__skyBrightness !== other.__skyBrightness
+			)
+				return false
+			if (
+				this.__blockBrightness !== undefined &&
+				this.__blockBrightness !== other.__blockBrightness
+			)
+				return false
+			if (this.__enchanted !== undefined && this.__enchanted !== other.__enchanted)
+				return false
+			if (this.__glowing !== undefined && this.__glowing !== other.__glowing) return false
+			if (
+				this.__overrideGlowColor !== undefined &&
+				this.__overrideGlowColor !== other.__overrideGlowColor
+			)
+				return false
+			if (this.__glowColor !== undefined && this.__glowColor !== other.__glowColor)
+				return false
+			if (this.__invisible !== undefined && this.__invisible !== other.__invisible)
+				return false
+			if (this.__shadowRadius !== undefined && this.__shadowRadius !== other.__shadowRadius)
+				return false
+			if (
+				this.__shadowStrength !== undefined &&
+				this.__shadowStrength !== other.__shadowStrength
+			)
+				return false
+			return true
+		}
 		return (
 			this.__onApplyFunction === other.__onApplyFunction &&
 			this.__billboard === other.__billboard &&
@@ -165,7 +209,7 @@ export class DisplayEntityConfig {
 	}
 
 	isDefault(): boolean {
-		return this.checkIfEqual(DisplayEntityConfig.getDefault())
+		return this.checkIfEqual(DisplayEntityConfig.getDefault(), true)
 	}
 
 	toJSON(): IBlueprintDisplayEntityConfigJSON {
