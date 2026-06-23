@@ -125,6 +125,7 @@ animated_java:
 
     blueprint_settings:
       title: Blueprint Settings
+      required_footer: Required
 
       pages:
         general.title: General

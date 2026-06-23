@@ -1,4 +1,8 @@
-<div><span>*</span> = Required</div>
+<script lang="ts">
+	import { localize } from '../../util/lang'
+</script>
+
+<div><span>*</span> = {localize('dialog.blueprint_settings.required_footer')}</div>
 
 <style>
 	div {

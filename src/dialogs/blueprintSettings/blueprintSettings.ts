@@ -22,7 +22,7 @@ const localize = createScopedTranslator('dialog.blueprint_settings')
 export function openBlueprintSettings() {
 	const dialog = new SvelteDialogSidebar({
 		id: `animated_java_blueprint_settings`,
-		title: 'Blueprint Settings',
+		title: localize('title'),
 		pages: {
 			general: {
 				component: GeneralComponent,
@@ -79,7 +79,7 @@ export function openBlueprintSettings() {
 		width: 1024,
 		defaultPage: 'general',
 		disableKeybinds: true,
-		buttons: ['Close'],
+		buttons: [tl('dialog.close')],
 		onClose: () => {
 			updateRotationConstraints()
 			updateAllCubeOutlines()
