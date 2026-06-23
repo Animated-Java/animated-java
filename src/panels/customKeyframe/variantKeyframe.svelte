@@ -60,7 +60,11 @@
 	>
 		{translate('panel.keyframe.execute_condition.title')}
 	</label>
-	<CustomCodeJar bind:value={executeCondition} placeholder={'if score @s matches 1..'} />
+	<CustomCodeJar
+		bind:value={executeCondition}
+		placeholder={'if score @s matches 1..'}
+		syntax="mcfunction"
+	/>
 </div>
 
 <style>

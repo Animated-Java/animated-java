@@ -1,4 +1,3 @@
-// @ts-expect-error - Broken BB types
 Prism.languages.mcfunction = {
 	// Multi-line documentation style comment blocks beginning with #>, #!, or ##.
 	'comment-block': {
@@ -17,9 +16,9 @@ Prism.languages.mcfunction = {
 		},
 	},
 
-	// Regular comments (line start and inline).
+	// Regular comments (line start only).
 	comment: {
-		pattern: /#.*/,
+		pattern: /^\s*#(?![>!#]).*/m,
 		greedy: true,
 	},
 
@@ -79,7 +78,11 @@ Prism.languages.mcfunction = {
 
 	number: [/[+-]?\d*\.?\d+(?:[eE][+-]?\d+)?[df]?\b/, /[+-]?\d+(?:[bBlLsS])?\b/],
 
-	range: /\.\./,
+	// Int Range: ..0, 0.., or 0..1
+	range: {
+		pattern: /\b\d*\.\.\d*\b/,
+		alias: 'number',
+	},
 
 	// Command words at line start and after run.
 	keyword: [
@@ -128,5 +131,4 @@ Prism.languages.mcfunction = {
 	},
 }
 
-// @ts-expect-error - Broken BB types
 Prism.languages.bolt = Prism.languages.mcfunction

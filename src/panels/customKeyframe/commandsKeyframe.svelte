@@ -28,7 +28,7 @@
 	>
 		{translate('panel.keyframe.function.title')}
 	</label>
-	<CustomCodeJar bind:value={func} placeholder={'say Hello, World!'} />
+	<CustomCodeJar bind:value={func} placeholder={'say Hello, World!'} syntax="mcfunction" />
 </div>
 
 <div class="bar flex custom-bar">
@@ -40,7 +40,11 @@
 	>
 		{translate('panel.keyframe.execute_condition.title')}
 	</label>
-	<CustomCodeJar bind:value={executeCondition} placeholder={'if score @s matches 1..'} />
+	<CustomCodeJar
+		bind:value={executeCondition}
+		placeholder={'if score @s matches 1..'}
+		syntax="mcfunction"
+	/>
 </div>
 
 <div class="bar flex">
