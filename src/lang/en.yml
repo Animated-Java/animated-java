@@ -282,12 +282,13 @@ animated_java:
           The targeted Resource Pack must contain a `pack.mcmeta` file.
         warning:
           no_assets: Selected folder does not contain an assets folder.
-        error:
-          empty: Resource Pack folder is required.
-          invalid_path: 'Failed to resolve path: %s'
-          does_not_exist: Selected path does not exist.
-          not_a_dir: Selected path is not a directory.
-          no_pack_mcmeta: Selected folder does not contain a pack.mcmeta file.
+        folder:
+          error:
+            empty: Resource Pack folder is required.
+            invalid_path: 'Failed to resolve path: %s'
+            does_not_exist: Selected path does not exist.
+            not_a_dir: Selected path is not a directory.
+            no_pack_mcmeta: Selected folder does not contain a pack.mcmeta file.
       data_pack_settings:
         title: Data Pack
       data_pack:

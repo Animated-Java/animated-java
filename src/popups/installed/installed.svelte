@@ -15,7 +15,7 @@
 		<h2>Not Sure Where to Start?</h2>
 		<p>
 			Check out our <a
-				href="https://animated-java.dev/docs/getting-started/creating-a-blueprint"
+				href="https://animated-java.dev/docs/getting-started/your-first-blueprint"
 				>getting started</a
 			> page to learn how to use Animated Java!
 		</p>
