@@ -2,6 +2,7 @@
 	import { onDestroy } from 'svelte'
 	import { DisplayEntityConfig } from '../../../nodeConfigs'
 	import { TextDisplay } from '../../../outliner/textDisplay'
+	import { VanillaBlockDisplay } from '../../../outliner/vanillaBlockDisplay'
 	import BoxSelect from '../../../svelteComponents/sidebarDialogItems/boxSelect.svelte'
 	import Checkbox from '../../../svelteComponents/sidebarDialogItems/checkbox.svelte'
 	import CodeEdit from '../../../svelteComponents/sidebarDialogItems/codeEdit.svelte'
@@ -80,6 +81,7 @@
 
 	onDestroy(() => {
 		saveConfig()
+		Canvas.updateAll()
 	})
 </script>
 
@@ -160,11 +162,13 @@
 	{/if}
 
 	{#if !(displayEntity instanceof TextDisplay)}
-		<Checkbox
-			label={localize('dialog.display_entity.enchanted.title')}
-			description={localize('dialog.display_entity.enchanted.description')}
-			bind:value={enchanted}
-		/>
+		{#if !(displayEntity instanceof VanillaBlockDisplay)}
+			<Checkbox
+				label={localize('dialog.display_entity.enchanted.title')}
+				description={localize('dialog.display_entity.enchanted.description')}
+				bind:value={enchanted}
+			/>
+		{/if}
 
 		<Checkbox
 			label={localize('dialog.display_entity.glowing.title')}

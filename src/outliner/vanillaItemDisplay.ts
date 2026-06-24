@@ -2,12 +2,14 @@ import { registerDeletableHandlerPatch, registerPatch } from 'blockbench-patch-m
 import { observable } from 'svelte-observable-store'
 import { PACKAGE } from '../constants'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint/index'
+import { applyEnchantmentGlintToMesh } from '../shaders/enchantmentGlint'
 import { getItemModel } from '../systems/minecraft/itemModelManager'
 import { type IDisplayEntityConfigs } from '../systems/rigRenderer'
 import EVENTS from '../util/events'
 import { localize as translate } from '../util/lang'
 import { validateItem } from '../util/minecraftUtil'
 import { DeepClonedObjectProperty, fixClassPropertyInheritance } from '../util/property'
+import { Variant } from '../variants'
 import { ResizableOutlinerElement } from './resizableOutlinerElement'
 import { sanitizeOutlinerElementName } from './util'
 
@@ -211,13 +213,23 @@ export const PREVIEW_CONTROLLER: NodePreviewController = new NodePreviewControll
 					if (!result) return
 					const mesh = el.mesh as THREE.Mesh
 					mesh.name = el.uuid
+					mesh.clear()
 					mesh.geometry = result.boundingBox
 					mesh.material = Canvas.transparentMaterial
-					mesh.clear()
 					mesh.add(result.mesh)
 					mesh.add(result.outline)
 					mesh.outline = result.outline
 					mesh.outline.visible = el.selected
+
+					if (Variant.selected) {
+						const config = Variant.selected.getDisplayEntityConfig(el)
+						if (config.enchanted) {
+							for (const child of result.mesh.children) {
+								if (!(child instanceof THREE.Mesh)) continue
+								applyEnchantmentGlintToMesh(child, 1 / 16)
+							}
+						}
+					}
 
 					el.preview_controller.updateHighlight(el)
 					el.preview_controller.updateTransform(el)
@@ -240,7 +252,7 @@ export const PREVIEW_CONTROLLER: NodePreviewController = new NodePreviewControll
 			const itemModel = el.mesh.children.at(0) as THREE.Mesh
 			if (!itemModel) return
 			for (const child of itemModel.children) {
-				if (!(child instanceof THREE.Mesh)) continue
+				if (!(child instanceof THREE.Mesh && child.isVanillaItemModel)) continue
 				const highlight = child.geometry.attributes.highlight
 
 				if (highlight.array[0] != highlighted) {

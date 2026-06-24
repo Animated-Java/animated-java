@@ -1,4 +1,5 @@
-import type { IBlueprintVariantJSON } from './formats/blueprint'
+import type { IBlueprintDisplayEntityConfigJSON, IBlueprintVariantJSON } from './formats/blueprint'
+import type { IDisplayEntityConfigs } from './systems/rigRenderer'
 import EVENTS from './util/events'
 import { sanitizeStorageKey } from './util/minecraftUtil'
 
@@ -106,8 +107,18 @@ export class Variant {
 	select() {
 		if (Variant.selected) Variant.selected.unselect()
 		Variant.selected = this
-		Canvas.updateAllFaces()
+		Canvas.updateAll()
 		EVENTS.SELECT_VARIANT.publish(this)
+	}
+
+	getDisplayEntityConfig(
+		element: OutlinerElement & { configs: IDisplayEntityConfigs }
+	): IBlueprintDisplayEntityConfigJSON {
+		if (this.isDefault) {
+			return element.configs.default
+		} else {
+			return element.configs.variants[this.uuid] ?? element.configs.default
+		}
 	}
 
 	unselect() {

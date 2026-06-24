@@ -1,7 +1,20 @@
-import { overrideAccessors, registerPatch } from 'blockbench-patch-manager'
-import { activeProjectIsBlueprintFormat, projectTargetVersionIsAtLeast } from '../formats/blueprint'
+import {
+	overrideAccessors,
+	registerPatch,
+	registerPropertyOverridePatch,
+} from 'blockbench-patch-manager'
+import {
+	activeProjectIsBlueprintFormat,
+	projectTargetVersionIsAtLeast,
+	type IBlueprintDisplayEntityConfigJSON,
+} from '../formats/blueprint'
+import {
+	applyEnchantmentGlintToMesh,
+	removeEnchantmentGlintFromMesh,
+} from '../shaders/enchantmentGlint'
 import { isCubeValid } from '../systems/util'
 import { localize as translate } from '../util/lang'
+import { Variant } from '../variants'
 
 declare global {
 	// @ts-expect-error - Broken BB types
@@ -107,5 +120,37 @@ registerPatch({
 	revert: ({ originalUpdateTransform, originalInit }) => {
 		Cube.preview_controller.updateTransform = originalUpdateTransform
 		Cube.prototype.init = originalInit
+	},
+})
+
+registerPropertyOverridePatch({
+	id: `animated_java:override-function/cube/preview_controller/updateGeometry`,
+	target: Cube.preview_controller,
+	key: 'updateGeometry',
+
+	condition: () => activeProjectIsBlueprintFormat(),
+
+	get: original => {
+		return function (this: NodePreviewController, instance: Cube) {
+			original.apply(this, [instance])
+
+			if (activeProjectIsBlueprintFormat()) {
+				const parent = instance.parent
+				let config: IBlueprintDisplayEntityConfigJSON
+				if (parent instanceof Group) {
+					if (!Variant.selected || Variant.selected.isDefault) {
+						config = parent.configs.default
+					} else {
+						config = parent.configs.variants[Variant.selected.uuid]
+					}
+
+					removeEnchantmentGlintFromMesh(instance.mesh)
+
+					if (config?.enchanted) {
+						applyEnchantmentGlintToMesh(instance.mesh)
+					}
+				}
+			}
+		}
 	},
 })
