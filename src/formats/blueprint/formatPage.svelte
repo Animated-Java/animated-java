@@ -21,9 +21,8 @@
 </h3>
 
 <p>
-	<a href="https://animated-java.dev/docs/getting-started/creating-a-blueprint"
-		>Check out the Docs</a
-	> to learn how to use Animated Java.
+	<a href="https://animated-java.dev/docs/getting-started/installing">Check out the Docs</a> to learn
+	how to use Animated Java.
 </p>
 
 <div class="button_bar">
