@@ -1,13 +1,13 @@
 import { registerDeletableHandlerPatch } from 'blockbench-patch-manager'
-import { observable } from 'svelte-observable-store'
-import { SvelteDialog } from 'svelte-patching-tools/blockbench'
+import { SvelteDialogSidebar } from 'svelte-patching-tools/blockbench'
 import { activeProjectIsBlueprintFormat } from '../../formats/blueprint'
 import { TextDisplay } from '../../outliner/textDisplay'
 import { VanillaBlockDisplay } from '../../outliner/vanillaBlockDisplay'
 import { VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
 import { type IDisplayEntityConfigs } from '../../systems/rigRenderer'
-import { localize as translate } from '../../util/lang'
-import DisplayEntityConfigDialog from './displayEntityConfig.svelte'
+import { localize } from '../../util/lang'
+import GeneralPage from './pages/general.svelte'
+import PerVariantPage from './pages/perVariant.svelte'
 
 export type DisplayEntity = Group | TextDisplay | VanillaItemDisplay | VanillaBlockDisplay
 
@@ -21,28 +21,26 @@ function isDisplayEntity(object: any): object is DisplayEntity {
 }
 
 export function openDisplayEntityConfigDialog(displayEntity: DisplayEntity) {
-	const onSummonFunction = observable<string>(displayEntity.onSummonFunction ?? '')
-	const configs = structuredClone(displayEntity.configs)
-
-	new SvelteDialog({
+	new SvelteDialogSidebar({
 		id: `animated_java:displayEntityConfig`,
-		title: translate('dialog.display_entity.title', displayEntity.name),
-		width: 800,
-		component: DisplayEntityConfigDialog,
-		props: {
-			displayEntity,
-			onSummonFunction,
-			configs,
+		title: localize('dialog.display_entity.title', displayEntity.name),
+		width: 1024,
+		pages: {
+			general: {
+				label: localize('dialog.display_entity.pages.general.title'),
+				icon: 'settings',
+				component: GeneralPage,
+				props: { displayEntity },
+			},
+			per_variant: {
+				label: localize('dialog.display_entity.pages.per_variant.title'),
+				icon: 'view_list',
+				component: PerVariantPage,
+				props: { displayEntity },
+			},
 		},
+		buttons: [tl('dialog.close')],
 		disableKeybinds: true,
-		onConfirm() {
-			console.log('Saving display entity config for', displayEntity.name, configs)
-
-			displayEntity.onSummonFunction = onSummonFunction.get().trim()
-			displayEntity.configs = configs
-
-			Project!.saved = false
-		},
 	}).show()
 }
 
@@ -57,7 +55,7 @@ const COPY_DISPLAY_ENTITY_CONFIG_ACTION = registerDeletableHandlerPatch({
 	create() {
 		return new Blockbench.Action(`animated_java:action/copy-display-entity-config`, {
 			icon: 'content_copy',
-			name: translate('action.copy_display_entity_config.name'),
+			name: localize('action.copy_display_entity_config.name'),
 			condition: () =>
 				activeProjectIsBlueprintFormat() &&
 				isDisplayEntity(Group.first_selected ?? Outliner.selected.at(0)),
@@ -70,7 +68,7 @@ const COPY_DISPLAY_ENTITY_CONFIG_ACTION = registerDeletableHandlerPatch({
 						configs: structuredClone(displayEntity.configs),
 					}
 					Blockbench.showQuickMessage(
-						translate('action.copy_display_entity_config.message', clipboard.sourceName)
+						localize('action.copy_display_entity_config.message', clipboard.sourceName)
 					)
 				} else {
 					console.error(
@@ -87,7 +85,7 @@ const PASTE_DISPLAY_ENTITY_CONFIG_ACTION = registerDeletableHandlerPatch({
 	create() {
 		return new Blockbench.Action(`animated_java:action/paste-display-entity-config`, {
 			icon: 'content_paste',
-			name: translate('action.paste_display_entity_config.name'),
+			name: localize('action.paste_display_entity_config.name'),
 			condition: () =>
 				!!clipboard &&
 				activeProjectIsBlueprintFormat() &&
@@ -103,7 +101,7 @@ const PASTE_DISPLAY_ENTITY_CONFIG_ACTION = registerDeletableHandlerPatch({
 					}
 					displayEntity.onSummonFunction = clipboard.onSummonFunction
 					displayEntity.configs = structuredClone(clipboard.configs)
-					const message = translate(
+					const message = localize(
 						'action.paste_display_entity_config.message',
 						clipboard.sourceName
 					)
@@ -132,7 +130,7 @@ export const DISPLAY_ENTITY_CONFIG_ACTION = registerDeletableHandlerPatch({
 	create() {
 		const action = new Blockbench.Action(`animated_java:action/open-display-entity-config`, {
 			icon: 'settings',
-			name: translate('action.open_display_entity_config.name'),
+			name: localize('action.open_display_entity_config.name'),
 			condition: () =>
 				activeProjectIsBlueprintFormat() &&
 				isDisplayEntity(Group.first_selected ?? Outliner.selected.at(0)),

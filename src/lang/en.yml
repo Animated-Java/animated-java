@@ -432,10 +432,17 @@ animated_java:
 
     display_entity:
       title: Display Entity Config for "%s"
-      node_options:
-        title: Node
-      per_variant_options:
-        title: Per-Variant
+      pages:
+        general.title: General
+        per_variant.title: Per-Variant
+
+      variant:
+        title: Target Variant
+        description: |-
+          [Markdown]
+          The variant to configure the display entity for.
+
+          This allows you to have different display entity settings for each variant.
       on_summon_function:
         title: On-Summon Function
         description: |-
@@ -508,15 +515,19 @@ animated_java:
         description: |-
           [Markdown]
           Controls if this nodes model should pivot to face player when rendered.
-          - **Fixed**: Both vertical and horizontal angles are fixed.
-          - **Vertical**: Pivots around vertical axis.
-          - **Horizontal**: Pivots around horizontal axis.
-          - **Center**: Pivots around center point.
         options:
-          fixed: Fixed
-          vertical: Vertical
-          horizontal: Horizontal
-          center: Center
+          fixed:
+            label: Fixed
+            description: Do not pivot to face the player.
+          vertical:
+            label: Vertical
+            description: Pivot around the vertical axis to face the player.
+          horizontal:
+            label: Horizontal
+            description: Pivot around the horizontal axis to face the player.
+          center:
+            label: Center
+            description: Pivot around both the vertical and horizontal axes to face the player.
     locator_config:
       title: Locator Config
       plugin_mode_warning: |-
