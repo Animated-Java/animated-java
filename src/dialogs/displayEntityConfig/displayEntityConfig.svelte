@@ -134,8 +134,6 @@
 </script>
 
 <div class="display-entity-config">
-	<SectionHeader label={translate('dialog.display_entity.node_options.title')} />
-
 	<CodeInput
 		label={translate('dialog.display_entity.on_summon_function.title')}
 		tooltip={translate('dialog.display_entity.on_summon_function.description')}
