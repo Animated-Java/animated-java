@@ -852,5 +852,22 @@
 				]
 			}
 		]
+	},
+	"1.10.1": {
+		"title": "v1.10.1",
+		"author": "Titus Evans (SnaveSutit)",
+		"date": "2026-06-24",
+		"categories": [
+			{
+				"title": "Fixes",
+				"list": [
+					"Fixed broken website links.",
+					"Fixed plugin data desyncs.",
+					"Fixed missing translations for resource pack folder path.",
+					"Fixed missing message for file access request.",
+					"Fixed dependencies requiring node:fs early in the plugin load process."
+				]
+			}
+		]
 	}
 }
