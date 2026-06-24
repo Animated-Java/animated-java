@@ -37,7 +37,7 @@
         "firebase": "^9.19.0",
         "jiti": "^2.6.1",
         "js-yaml": "^4.1.0",
-        "mc-build": "^4.1.2",
+        "mc-build": "^4.1.3",
         "node-modules-vscode-problems-patch": "^1.0.9",
         "octokit": "^5.0.3",
         "prettier": "^3.8.2",
@@ -829,7 +829,7 @@
 
     "matcher": ["matcher@3.0.0", "", { "dependencies": { "escape-string-regexp": "^4.0.0" } }, "sha512-OkeDaAZ/bQCxeFAozM55PKcKU0yJMPGifLwV4Qgjitu+5MoAfSQN4lsLJeXZ1b8w0x+/Emda6MZgXS1jvsapng=="],
 
-    "mc-build": ["mc-build@4.1.2", "", { "bin": { "mcb3": "dist/mcb.js", "mc-build": "dist/mcb.js", "mcb": "dist/mcb.js" } }, "sha512-C/Su40vSUn2IPtbtLPzkQXUUiv2ATCOwvkE4dE4JhORIWM6qTWHwCZlABeqpegcjRvR6PuqWQeyqd2cVeCW8BQ=="],
+    "mc-build": ["mc-build@4.1.3", "", { "bin": { "mcb3": "dist/mcb.js", "mc-build": "dist/mcb.js", "mcb": "dist/mcb.js" } }, "sha512-toWLAGIkd69Dc5V+RnTtuZQJkyFYR9H7rLWHMN3+e/0lIWp/srJZalE2qTVS1+HHdbMaq1iKtBADW0rW9JbAnQ=="],
 
     "md5": ["md5@2.3.0", "", { "dependencies": { "charenc": "0.0.2", "crypt": "0.0.2", "is-buffer": "~1.1.6" } }, "sha512-T1GITYmFaKuO91vxyoQMFETst+O71VUPEU3ze5GNzDm0OWdP8v1ziTaAEPUr/3kLsY3Sftgz242A1SetQiDL7g=="],
 
