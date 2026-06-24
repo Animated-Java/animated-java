@@ -13,7 +13,7 @@ export type DisplayEntity = Group | TextDisplay | VanillaItemDisplay | VanillaBl
 
 function isDisplayEntity(object: any): object is DisplayEntity {
 	return (
-		object instanceof Group ||
+		(object instanceof Group && object.children.some(child => child instanceof Cube)) ||
 		object instanceof TextDisplay ||
 		object instanceof VanillaItemDisplay ||
 		object instanceof VanillaBlockDisplay
@@ -58,8 +58,11 @@ const COPY_DISPLAY_ENTITY_CONFIG_ACTION = registerDeletableHandlerPatch({
 		return new Blockbench.Action(`animated_java:action/copy-display-entity-config`, {
 			icon: 'content_copy',
 			name: translate('action.copy_display_entity_config.name'),
+			condition: () =>
+				activeProjectIsBlueprintFormat() &&
+				isDisplayEntity(Group.first_selected ?? Outliner.selected.at(0)),
 			click: () => {
-				const displayEntity = Group.first_selected ?? selected.at(0)
+				const displayEntity = Group.first_selected ?? Outliner.selected.at(0)
 				if (isDisplayEntity(displayEntity)) {
 					clipboard = {
 						sourceName: displayEntity.name,
@@ -85,7 +88,10 @@ const PASTE_DISPLAY_ENTITY_CONFIG_ACTION = registerDeletableHandlerPatch({
 		return new Blockbench.Action(`animated_java:action/paste-display-entity-config`, {
 			icon: 'content_paste',
 			name: translate('action.paste_display_entity_config.name'),
-			condition: () => !!clipboard && activeProjectIsBlueprintFormat(),
+			condition: () =>
+				!!clipboard &&
+				activeProjectIsBlueprintFormat() &&
+				isDisplayEntity(Group.first_selected ?? Outliner.selected.at(0)),
 			click: () => {
 				if (!clipboard) return
 				const displayEntity = Group.first_selected ?? selected.at(0)
@@ -127,7 +133,9 @@ export const DISPLAY_ENTITY_CONFIG_ACTION = registerDeletableHandlerPatch({
 		const action = new Blockbench.Action(`animated_java:action/open-display-entity-config`, {
 			icon: 'settings',
 			name: translate('action.open_display_entity_config.name'),
-			condition: activeProjectIsBlueprintFormat,
+			condition: () =>
+				activeProjectIsBlueprintFormat() &&
+				isDisplayEntity(Group.first_selected ?? Outliner.selected.at(0)),
 			click: () => {
 				const displayEntity = Group.first_selected ?? selected.at(0)
 				if (isDisplayEntity(displayEntity)) {
