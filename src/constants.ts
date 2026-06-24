@@ -4,7 +4,6 @@ export const PACKAGE: typeof PACKAGEJSON = PACKAGEJSON
 
 let cachedFsModule: ScopedFS | null = null
 export function getFsModule() {
-	debugger
 	cachedFsModule ??= requireNativeModule('fs', {
 		message: localize('require.fs'),
 		optional: false,
