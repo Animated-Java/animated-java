@@ -29,6 +29,12 @@ IF (has_animations) {
 	}
 }
 
+dir zzz {
+	function outdated_rig_warning {
+		$tellraw @a <%TELLRAW.RIG_OUTDATED()%>
+	}
+}
+
 dir root {
 	function on_tick {
 		# Custom pre-tick function
