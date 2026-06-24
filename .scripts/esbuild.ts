@@ -233,6 +233,7 @@ const COMMON_CONFIG: esbuild.BuildOptions = {
 		svelte: 'svelte',
 		module: './.scripts/fakeModule.js',
 		'node:module': './.scripts/fakeModule.js',
+		'node:fs': './src/constants.ts',
 	},
 	format: 'iife',
 	define: DEFINES,
