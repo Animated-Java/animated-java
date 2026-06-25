@@ -203,18 +203,27 @@ export const PREVIEW_CONTROLLER: NodePreviewController = new NodePreviewControll
 	{
 		setup(el: VanillaBlockDisplay) {
 			ResizableOutlinerElement.prototype.preview_controller.setup(el)
+
+			// Placeholder wireframe mesh
+			const geometry = new THREE.BoxGeometry(16, 16, 16)
+			const cubeMesh = new THREE.Mesh(geometry, Canvas.wireframeMaterial)
+			cubeMesh.name = el.uuid
+			cubeMesh.visible = el.visibility
+			cubeMesh.position.set(8, 8, 8)
+			el.mesh.add(cubeMesh)
+
 			// Setup temp sprite mesh
-			const material = new THREE.SpriteMaterial({
+			const spriteMaterial = new THREE.SpriteMaterial({
 				map: TEMP_MESH_MAP,
 				alphaTest: 0.1,
 				sizeAttenuation: false,
 			})
-			const sprite = new THREE.Sprite(material)
-			sprite.scale.setScalar(1 / 32)
-			const mesh = el.mesh as THREE.Mesh
-			mesh.add(sprite)
+			const sprite = new THREE.Sprite(spriteMaterial)
+			sprite.scale.setScalar(1 / 16)
+			sprite.position.set(8, 8, 8)
+			el.mesh.add(sprite)
 			// @ts-expect-error - Broken BB types
-			mesh.sprite = sprite
+			el.mesh.sprite = sprite
 		},
 		updateGeometry(el: VanillaBlockDisplay) {
 			if (!el.mesh) return
