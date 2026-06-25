@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type {} from '@blockbench-types/generated/uv/uv_size'
 	import { onDestroy } from 'svelte'
-	import DataPackIcon from '../../../assets/icons/impulse_command_block.png'
+	import DataPackIcon from '../../../assets/icons/command_block.webp'
 	import PluginIcon from '../../../assets/icons/papermc.svg'
 	import { getDefaultProjectSettings } from '../../../formats/blueprint'
 	import {

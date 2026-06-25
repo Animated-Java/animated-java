@@ -95,5 +95,6 @@
 		user-select: none;
 		transform: translate(0px, 0px) rotate(345deg);
 		transition: transform 0.1s cubic-bezier(0.25, 0.68, 0.53, 1.3);
+		image-rendering: auto;
 	}
 </style>
