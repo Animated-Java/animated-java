@@ -1,34 +1,17 @@
 <script lang="ts">
-	import { Interaction } from '../../outliner/interaction'
-	import { TextDisplay } from '../../outliner/textDisplay'
-	import { VanillaBlockDisplay } from '../../outliner/vanillaBlockDisplay'
-	import { VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
+	import { getEntityCounts } from '../../mods/entityCounter'
 	import { createScopedTranslator } from '../../util/lang'
 
 	const localize = createScopedTranslator('dialog.entity_count_dialog')
 
-	let groupEntities = $state(0)
-	let displayEntities = $state(0)
-	let locatorEntities = $state(0)
-	let cameraEntities = $state(0)
-	let interactionEntities = $state(0)
-	let totalEntities = $derived(
-		1 + groupEntities + displayEntities + locatorEntities + cameraEntities + interactionEntities
-	)
-
-	for (const group of Group.all) {
-		groupEntities += Number(group.children.some(child => child instanceof Cube))
-	}
-
-	displayEntities =
-		TextDisplay.all.length + VanillaBlockDisplay.all.length + VanillaItemDisplay.all.length
-
-	interactionEntities = Interaction.all.length
-
-	if (OutlinerElement.types.camera) {
-		// @ts-expect-error - Camera class isn't typed as a class.
-		cameraEntities = OutlinerElement.types.camera.all.length
-	}
+	const {
+		groupEntities,
+		displayEntities,
+		locatorEntities,
+		cameraEntities,
+		interactionEntities,
+		totalEntities,
+	} = getEntityCounts()
 </script>
 
 <div class="entity-count-dialog">
