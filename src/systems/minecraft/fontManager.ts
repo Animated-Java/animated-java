@@ -407,9 +407,12 @@ export class MinecraftFont {
 		return Math.max(width, 0)
 	}
 
-	getColorMaterial(color: tinycolor.Instance): THREE.Material {
-		const colorString = color.toHex8String()
-		let material = this.materialCache.get(colorString)
+	getColorMaterial(
+		color: tinycolor.Instance,
+		minecraftVersion = Project.animated_java.target_minecraft_version
+	): THREE.Material {
+		const cacheKey = color.toHex8String() + ';' + minecraftVersion
+		let material = this.materialCache.get(cacheKey)
 		if (!material) {
 			const alpha = color.getAlpha()
 			if (alpha < 1) {
@@ -421,7 +424,7 @@ export class MinecraftFont {
 			} else {
 				material = new THREE.MeshBasicMaterial({ color: color.toHexString() })
 			}
-			this.materialCache.set(colorString, material)
+			this.materialCache.set(cacheKey, material)
 		}
 		return material
 	}
@@ -571,7 +574,11 @@ export class MinecraftFont {
 		return { mesh, hitbox: backgroundGeo, outline }
 	}
 
-	async getCharGeo(char: string, style: TextComponentStyle): Promise<CachedCharGeo> {
+	async getCharGeo(
+		char: string,
+		style: TextComponentStyle,
+		minecraftVersion = Project.animated_java.target_minecraft_version
+	): Promise<CachedCharGeo> {
 		let font: MinecraftFont = this
 		if (style.font) {
 			const newFont = await MinecraftFont.getById(style.font)
@@ -580,12 +587,12 @@ export class MinecraftFont {
 
 		const hash = createHash('sha256')
 		hash.update(char)
+		hash.update(';' + minecraftVersion)
 		hash.update(';' + font.id)
-		if (style.bold) hash.update('bold')
-		if (style.italic) hash.update('italic')
-		if (style.underlined) hash.update('underlined')
-		if (style.strikethrough) hash.update('strikethrough')
-		if (style.font) hash.update(';' + font.id)
+		if (style.bold) hash.update(';bold')
+		if (style.italic) hash.update(';italic')
+		if (style.underlined) hash.update(';underlined')
+		if (style.strikethrough) hash.update(';strikethrough')
 		const digest = hash.digest('hex')
 
 		const charData = font.getChar(char)

@@ -18,9 +18,10 @@ const ITEM_MODEL_CACHE = new Map<string, ItemMesh>()
 
 export async function getItemModel(
 	item: string,
-	itemDisplay: ItemDisplayMode
+	itemDisplay: ItemDisplayMode,
+	minecraftVersion = Project.animated_java.target_minecraft_version
 ): Promise<ItemMesh | undefined> {
-	const cacheKey = item + '|' + itemDisplay
+	const cacheKey = minecraftVersion + '|' + item + '|' + itemDisplay
 	let result = ITEM_MODEL_CACHE.get(cacheKey)
 	if (!result) {
 		result = await parseItemModel(getItemResourceLocation(item), itemDisplay)

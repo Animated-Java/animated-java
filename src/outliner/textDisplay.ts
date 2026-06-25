@@ -71,6 +71,12 @@ export class TextDisplay extends ResizableOutlinerElement {
 		this.sanitizeName()
 	}
 
+	static forceUpdateAll() {
+		for (const textDisplay of TextDisplay.all) {
+			textDisplay.preview_controller.updateAll(textDisplay)
+		}
+	}
+
 	sanitizeName(): string {
 		this.name = sanitizeOutlinerElementName(this.name, this.uuid)
 		return this.name

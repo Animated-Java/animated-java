@@ -49,8 +49,12 @@ const BLACKLISTED_BLOCKS = new Map([
 	['piglin_wall_head', translate('block_model_manager.mob_head_warning')],
 ])
 
-export async function getBlockModel(block: string): Promise<BlockModelMesh | undefined> {
-	let result = BLOCK_MODEL_CACHE.get(block)
+export async function getBlockModel(
+	block: string,
+	minecraftVersion = Project.animated_java.target_minecraft_version
+): Promise<BlockModelMesh | undefined> {
+	const key = minecraftVersion + '|' + block
+	let result = BLOCK_MODEL_CACHE.get(key)
 	if (!result) {
 		const parsed = await parseBlock(block)
 		if (!parsed) return undefined
@@ -58,7 +62,7 @@ export async function getBlockModel(block: string): Promise<BlockModelMesh | und
 			throw new Error(BLACKLISTED_BLOCKS.get(block))
 		}
 		result = await parseBlockState(parsed)
-		BLOCK_MODEL_CACHE.set(block, result)
+		BLOCK_MODEL_CACHE.set(key, result)
 	}
 	if (!result) return undefined
 	result = {

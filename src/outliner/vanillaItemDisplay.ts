@@ -75,6 +75,12 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 		})
 	}
 
+	static forceUpdateAll() {
+		for (const itemDisplay of VanillaItemDisplay.all) {
+			itemDisplay.preview_controller.updateAll(itemDisplay)
+		}
+	}
+
 	get item() {
 		if (this.__item === undefined) return 'minecraft:diamond'
 		return this.__item.get()

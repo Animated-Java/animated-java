@@ -64,6 +64,12 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 		})
 	}
 
+	static forceUpdateAll() {
+		for (const blockDisplay of VanillaBlockDisplay.all) {
+			blockDisplay.preview_controller.updateAll(blockDisplay)
+		}
+	}
+
 	get block() {
 		if (this.__block === undefined) return 'minecraft:stone'
 		return this.__block.get()
