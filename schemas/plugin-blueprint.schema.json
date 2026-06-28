@@ -680,6 +680,26 @@
 							"type": "object",
 							"default": {},
 							"properties": {
+								"matrix": {
+									"type": "object",
+									"default": {},
+									"description": "A collection of baked transformation matrix keyframes, identified by a floating-point timestamp.",
+									"patternProperties": {
+										"^\\d+\\.\\d+$": {
+											"$ref": "#/definitions/matrix_keyframe"
+										}
+									}
+								},
+								"decomposed": {
+									"type": "object",
+									"default": {},
+									"description": "A collection of baked decomposed transformation keyframes, identified by a floating-point timestamp.",
+									"patternProperties": {
+										"^\\d+\\.\\d+$": {
+											"$ref": "#/definitions/decomposed_keyframe"
+										}
+									}
+								},
 								"position": {
 									"type": "object",
 									"default": {},
@@ -762,109 +782,152 @@
 					"$ref": "#/definitions/molang_vector3"
 				},
 				"interpolation": {
-					"type": "object",
-					"oneOf": [
-						{
-							"type": "object",
-							"required": ["type", "easing"],
-							"properties": {
-								"type": {
-									"const": "linear"
-								},
-								"easing": {
-									"type": "string",
-									"enum": [
-										"linear",
-										"step",
-										"ease_in_quad",
-										"ease_out_quad",
-										"ease_in_out_quad",
-										"ease_in_cubic",
-										"ease_out_cubic",
-										"ease_in_out_cubic",
-										"ease_in_quart",
-										"ease_out_quart",
-										"ease_in_out_quart",
-										"ease_in_quint",
-										"ease_out_quint",
-										"ease_in_out_quint",
-										"ease_in_sine",
-										"ease_out_sine",
-										"ease_in_out_sine",
-										"ease_in_expo",
-										"ease_out_expo",
-										"ease_in_out_expo",
-										"ease_in_circ",
-										"ease_out_circ",
-										"ease_in_out_circ",
-										"ease_in_back",
-										"ease_out_back",
-										"ease_in_out_back",
-										"ease_in_elastic",
-										"ease_out_elastic",
-										"ease_in_out_elastic",
-										"ease_in_bounce",
-										"ease_out_bounce",
-										"ease_in_out_bounce"
-									]
-								},
-								"easing_arguments": {
-									"type": "array",
-									"items": {
-										"type": "number"
-									},
-									"default": []
-								}
-							}
-						},
-						{
-							"type": "object",
-							"required": [
-								"type",
-								"left_handle_time",
-								"left_handle_value",
-								"right_handle_time",
-								"right_handle_value"
-							],
-							"properties": {
-								"type": {
-									"const": "bezier"
-								},
-								"left_handle_time": {
-									"$ref": "#/definitions/vector3"
-								},
-								"left_handle_value": {
-									"$ref": "#/definitions/vector3"
-								},
-								"right_handle_time": {
-									"$ref": "#/definitions/vector3"
-								},
-								"right_handle_value": {
-									"$ref": "#/definitions/vector3"
-								}
-							}
-						},
-						{
-							"type": "object",
-							"required": ["type"],
-							"properties": {
-								"type": {
-									"const": "catmullrom"
-								}
-							}
-						},
-						{
-							"type": "object",
-							"required": ["type"],
-							"properties": {
-								"type": {
-									"const": "step"
-								}
-							}
-						}
-					]
+					"$ref": "#/definitions/keyframe_interpolation"
 				}
 			}
+		},
+		"matrix_keyframe": {
+			"type": "object",
+			"required": ["value", "interpolation"],
+			"description": "A baked transformation matrix keyframe, identified by a floating-point timestamp.",
+			"properties": {
+				"value": {
+					"$ref": "#/definitions/matrix"
+				},
+				"interpolation": {
+					"$ref": "#/definitions/keyframe_interpolation"
+				}
+			}
+		},
+		"decomposed_keyframe": {
+			"type": "object",
+			"required": ["value", "interpolation"],
+			"description": "A baked decomposed transformation keyframe, identified by a floating-point timestamp.",
+			"properties": {
+				"value": {
+					"type": "object",
+					"properties": {
+						"translation": {
+							"$ref": "#/definitions/vector3",
+							"default": [0.0, 0.0, 0.0]
+						},
+						"left_rotation": {
+							"$ref": "#/definitions/vector4",
+							"default": [0.0, 0.0, 0.0, 1.0]
+						},
+						"scale": {
+							"$ref": "#/definitions/vector3",
+							"default": [1.0, 1.0, 1.0]
+						}
+					}
+				},
+				"interpolation": {
+					"$ref": "#/definitions/keyframe_interpolation"
+				}
+			}
+		},
+		"keyframe_interpolation": {
+			"type": "object",
+			"oneOf": [
+				{
+					"type": "object",
+					"required": ["type", "easing"],
+					"properties": {
+						"type": {
+							"const": "linear"
+						},
+						"easing": {
+							"type": "string",
+							"enum": [
+								"linear",
+								"step",
+								"ease_in_quad",
+								"ease_out_quad",
+								"ease_in_out_quad",
+								"ease_in_cubic",
+								"ease_out_cubic",
+								"ease_in_out_cubic",
+								"ease_in_quart",
+								"ease_out_quart",
+								"ease_in_out_quart",
+								"ease_in_quint",
+								"ease_out_quint",
+								"ease_in_out_quint",
+								"ease_in_sine",
+								"ease_out_sine",
+								"ease_in_out_sine",
+								"ease_in_expo",
+								"ease_out_expo",
+								"ease_in_out_expo",
+								"ease_in_circ",
+								"ease_out_circ",
+								"ease_in_out_circ",
+								"ease_in_back",
+								"ease_out_back",
+								"ease_in_out_back",
+								"ease_in_elastic",
+								"ease_out_elastic",
+								"ease_in_out_elastic",
+								"ease_in_bounce",
+								"ease_out_bounce",
+								"ease_in_out_bounce"
+							]
+						},
+						"easing_arguments": {
+							"type": "array",
+							"items": {
+								"type": "number"
+							},
+							"default": []
+						}
+					}
+				},
+				{
+					"type": "object",
+					"required": [
+						"type",
+						"left_handle_time",
+						"left_handle_value",
+						"right_handle_time",
+						"right_handle_value"
+					],
+					"properties": {
+						"type": {
+							"const": "bezier"
+						},
+						"left_handle_time": {
+							"$ref": "#/definitions/vector3"
+						},
+						"left_handle_value": {
+							"$ref": "#/definitions/vector3"
+						},
+						"right_handle_time": {
+							"$ref": "#/definitions/vector3"
+						},
+						"right_handle_value": {
+							"$ref": "#/definitions/vector3"
+						}
+					}
+				},
+				{
+					"type": "object",
+					"required": ["type"],
+					"properties": {
+						"type": {
+							"const": "catmullrom"
+						}
+					}
+				},
+				{
+					"type": "object",
+					"required": ["type"],
+					"properties": {
+						"type": {
+							"const": "step"
+						}
+					}
+				}
+			]
 		},
 		"resource_location": {
 			"type": "string",
