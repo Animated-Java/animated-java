@@ -5,6 +5,7 @@
 - [ ] Add Variants to the UndoSystem (Blocked by vanilla Blockbench not supporting custom undo actions).
 - [ ] Add an option to generate a `damage_flash` variant for mob-type entities.
 - [ ] Add a fix for 360 rotation snap by using `set_frame` instead of `apply_frame` for the first frame of the animation.
+- [ ] Add a toggle for node custom names.
 
 # Data Pack Compiler
 

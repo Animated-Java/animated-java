@@ -84,6 +84,7 @@ export class Variant {
 	textureMap: TextureMap
 	isDefault = false
 	generateNameFromDisplayName = true
+	onApplyFunction?: string
 	excludedNodes: CollectionItem[] = []
 
 	constructor(displayName: string, isDefault = false) {
@@ -149,6 +150,7 @@ export class Variant {
 			uuid: this.uuid,
 			texture_map: Object.fromEntries(this.textureMap.map),
 			excluded_nodes: this.excludedNodes.map(item => item.value),
+			on_apply_function: this.onApplyFunction,
 		}
 		if (this.isDefault) {
 			json.is_default = true
@@ -185,6 +187,7 @@ export class Variant {
 				return group ? { name: group.name, value: uuid } : undefined
 			})
 			.filter(Boolean) as CollectionItem[]
+		variant.onApplyFunction = json.on_apply_function
 		return variant
 	}
 

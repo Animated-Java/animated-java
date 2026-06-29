@@ -746,8 +746,19 @@ animated_java:
         description: A list of nodes to include in the Variant. Only these nodes will be changed when applying the Variant.
       swap_columns_button:
         tooltip: Swap Lists
+      on_apply_function:
+        title: On-Apply Function
+        description: |-
+          [Markdown]
+          Commands to run `as` and `at` the root entity when the Variant is applied.
+
+          Treat this text input as if it were a `.mcfunction` file.
+
+          Supports [MC-Build](https://mcbuild.dev) syntax.
+
     upgrade_old_aj_model_loader:
       title: Update .ajmodel
+
     animation_properties:
       title: Animation Properties (%s)
       animation_name:
