@@ -777,7 +777,6 @@ function summon {
 		}
 
 		data_manager write
-
 		function <%blueprint_id%>/zzz/set_default_pose
 
 		# Variant Arguement
@@ -875,7 +874,7 @@ function summon {
 			block { with storage <%temp_storage%> entry.data.locators
 				REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator' && node.config?.use_entity && node.config.on_summon_function)) as locator {
 					$block { $(<%locator.storage_name%>)
-						$execute at @s as $(uuid) at @s run block on_summon/custom_<%locator.type + '_' + locator.storage_name%> {
+						$execute as $(uuid) at @s run block on_summon/custom_<%locator.type + '_' + locator.storage_name%> {
 							<%%
 								emit.mcb(locator.config.on_summon_function)
 							%%>
@@ -888,7 +887,7 @@ function summon {
 			REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator' && node.config?.use_entity)) as locator {
 				block { with storage <%temp_storage%> entry.data.locators.<%locator.storage_name%>
 					# Track any custom entities on the locator.
-					$execute at @s as $(uuid) at @s run function animated_java:global/util/get_entity_stack_uuids
+					$execute as $(uuid) at @s run function animated_java:global/util/get_entity_stack_uuids
 				}
 				data modify storage <%temp_storage%> entry.data.uuids append from storage <%temp_storage%> uuids
 			}
@@ -899,7 +898,7 @@ function summon {
 			block { with storage <%temp_storage%> entry.data.interactions
 				REPEAT (Object.values(rig.nodes).filter(node => node.type === 'interaction' && node.config.on_summon_function)) as interaction {
 					$block { $(<%interaction.storage_name%>)
-						$execute at @s as $(uuid) at @s run block on_summon/custom_<%interaction.type + '_' + interaction.storage_name%> {
+						$execute as $(uuid) at @s run block on_summon/custom_<%interaction.type + '_' + interaction.storage_name%> {
 							<%%
 								emit.mcb(interaction.config.on_summon_function)
 							%%>
