@@ -2,6 +2,13 @@
 	import BisectHostingBanner from '../../assets/banners/bisect-hosting-promo-banner.png'
 	import HeartIcon from '../../assets/heart.png'
 	import KoFiImage from '../../assets/kofi_tag_white.webp'
+	import MinecraftFont from '../../assets/MinecraftFull.ttf'
+
+	if (![...document.fonts.keys()].some(v => v.family === 'MinecraftFull')) {
+		void new FontFace('MinecraftFull', MinecraftFont, {}).load().then(font => {
+			document.fonts.add(font)
+		})
+	}
 
 	localStorage.setItem('animated_java_settings_support_me_popup', 'true')
 </script>
