@@ -1,4 +1,6 @@
 import type { IBlueprintDisplayEntityConfigJSON, IBlueprintVariantJSON } from './formats/blueprint'
+import { VanillaBlockDisplay } from './outliner/vanillaBlockDisplay'
+import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
 import type { IDisplayEntityConfigs } from './systems/rigRenderer'
 import EVENTS from './util/events'
 import { sanitizeStorageKey } from './util/minecraftUtil'
@@ -108,7 +110,9 @@ export class Variant {
 	select() {
 		if (Variant.selected) Variant.selected.unselect()
 		Variant.selected = this
-		Canvas.updateAll()
+		Canvas.updateAllFaces()
+		VanillaBlockDisplay.forceUpdateAll()
+		VanillaItemDisplay.forceUpdateAll()
 		EVENTS.SELECT_VARIANT.publish(this)
 	}
 
