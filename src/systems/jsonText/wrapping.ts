@@ -254,14 +254,15 @@ export async function wrapJsonText(jsonText: TextComponent, maxLineWidth = 200) 
 
 	const words = await parseWords(jsonText.toJSON())
 	const lines: Line[] = []
-	// FIXME - This will not work for custom fonts
-	const font = await MinecraftFont.getById('minecraft:default')
+	// The `getWordWidth` function handles getting the width of words with different / custom fonts
+	const font = (await MinecraftFont.getById('minecraft:default'))!
 
 	let backgroundWidth = 0
 	let currentLine: Line = { words: [], width: 0 }
 	for (const word of words) {
 		const wordWidth = await font.getWordWidth(word)
 		const wordStyles = [...word.styles]
+
 		// If the word is longer than than the max line width, split it into multiple lines
 		if (wordWidth - 1 > maxLineWidth) {
 			if (currentLine.words.length) {
@@ -343,6 +344,15 @@ export async function wrapJsonText(jsonText: TextComponent, maxLineWidth = 200) 
 			if (lastWord?.text.at(-1) === ' ') {
 				currentLine.words.pop()
 				currentLine.width -= lastWord.width
+			}
+			if (word.text.at(0) === ' ') {
+				// If the word starts with a space, remove it.
+				word.text = word.text.slice(1)
+				word.styles.forEach(span => {
+					span.start = Math.max(0, span.start - 1)
+					span.end = Math.max(0, span.end - 1)
+				})
+				// word.width = await font.getWordWidth(word)
 			}
 			lines.push(currentLine)
 			backgroundWidth = Math.max(backgroundWidth, currentLine.width)

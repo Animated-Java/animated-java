@@ -274,7 +274,7 @@ class BitmapFontProvider extends FontProvider {
 }
 
 export class MinecraftFont {
-	static all: MinecraftFont[] = []
+	static all = new Map<string, MinecraftFont>()
 
 	id: string
 	providers: FontProvider[] = []
@@ -291,18 +291,23 @@ export class MinecraftFont {
 		this.assetPath = assetPath
 		this.fallback = fallback
 
-		MinecraftFont.all.push(this)
+		MinecraftFont.all.set(this.id, this)
 	}
 
 	static async getById(id: string) {
-		let font = MinecraftFont.all.find(font => font.id === id)
+		let font = MinecraftFont.all.get(id)
 
 		if (!font) {
 			const path = getPathFromResourceLocation(id, 'font') + '.json'
 			font = new MinecraftFont(id, path)
 		}
 
-		await font.load()
+		try {
+			await font.load()
+		} catch (error) {
+			console.error(`Failed to load font ${font.id} from ${font.assetPath}:`, error)
+			return undefined
+		}
 
 		return font
 	}
