@@ -274,7 +274,7 @@ class BitmapFontProvider extends FontProvider {
 }
 
 export class MinecraftFont {
-	static all: MinecraftFont[] = []
+	static all = new Map<string, MinecraftFont>()
 
 	id: string
 	providers: FontProvider[] = []
@@ -291,18 +291,23 @@ export class MinecraftFont {
 		this.assetPath = assetPath
 		this.fallback = fallback
 
-		MinecraftFont.all.push(this)
+		MinecraftFont.all.set(this.id, this)
 	}
 
 	static async getById(id: string) {
-		let font = MinecraftFont.all.find(font => font.id === id)
+		let font = MinecraftFont.all.get(id)
 
 		if (!font) {
 			const path = getPathFromResourceLocation(id, 'font') + '.json'
 			font = new MinecraftFont(id, path)
 		}
 
-		await font.load()
+		try {
+			await font.load()
+		} catch (error) {
+			console.error(`Failed to load font ${font.id} from ${font.assetPath}:`, error)
+			return undefined
+		}
 
 		return font
 	}
@@ -407,9 +412,12 @@ export class MinecraftFont {
 		return Math.max(width, 0)
 	}
 
-	getColorMaterial(color: tinycolor.Instance): THREE.Material {
-		const colorString = color.toHex8String()
-		let material = this.materialCache.get(colorString)
+	getColorMaterial(
+		color: tinycolor.Instance,
+		minecraftVersion = Project.animated_java.target_minecraft_version
+	): THREE.Material {
+		const cacheKey = color.toHex8String() + ';' + minecraftVersion
+		let material = this.materialCache.get(cacheKey)
 		if (!material) {
 			const alpha = color.getAlpha()
 			if (alpha < 1) {
@@ -421,7 +429,7 @@ export class MinecraftFont {
 			} else {
 				material = new THREE.MeshBasicMaterial({ color: color.toHexString() })
 			}
-			this.materialCache.set(colorString, material)
+			this.materialCache.set(cacheKey, material)
 		}
 		return material
 	}
@@ -571,7 +579,11 @@ export class MinecraftFont {
 		return { mesh, hitbox: backgroundGeo, outline }
 	}
 
-	async getCharGeo(char: string, style: TextComponentStyle): Promise<CachedCharGeo> {
+	async getCharGeo(
+		char: string,
+		style: TextComponentStyle,
+		minecraftVersion = Project.animated_java.target_minecraft_version
+	): Promise<CachedCharGeo> {
 		let font: MinecraftFont = this
 		if (style.font) {
 			const newFont = await MinecraftFont.getById(style.font)
@@ -580,12 +592,12 @@ export class MinecraftFont {
 
 		const hash = createHash('sha256')
 		hash.update(char)
+		hash.update(';' + minecraftVersion)
 		hash.update(';' + font.id)
-		if (style.bold) hash.update('bold')
-		if (style.italic) hash.update('italic')
-		if (style.underlined) hash.update('underlined')
-		if (style.strikethrough) hash.update('strikethrough')
-		if (style.font) hash.update(';' + font.id)
+		if (style.bold) hash.update(';bold')
+		if (style.italic) hash.update(';italic')
+		if (style.underlined) hash.update(';underlined')
+		if (style.strikethrough) hash.update(';strikethrough')
 		const digest = hash.digest('hex')
 
 		const charData = font.getChar(char)

@@ -23,6 +23,8 @@ import './systems/minecraft/blockstateManager'
 import './systems/minecraft/fontManager'
 import './systems/minecraft/registryManager'
 import './systems/minecraft/versionManager'
+// Shaders
+import 'import_folder_recursive:./shaders'
 // Misc imports
 import { openChangelogDialog } from './dialogs/changelog/changelog'
 import { openExportProgressDialog } from './dialogs/exportProgress/exportProgress'
@@ -31,11 +33,15 @@ import { BLUEPRINT_FORMAT } from './formats/blueprint'
 import { BLUEPRINT_CODEC } from './formats/blueprint/codec'
 import { exportAll } from './interface/animatedJavaBarItem'
 import { TextDisplay } from './outliner/textDisplay'
-import { VanillaBlockDisplay, debugBlockState } from './outliner/vanillaBlockDisplay'
+import { debugBlockState, VanillaBlockDisplay } from './outliner/vanillaBlockDisplay'
 import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
 import { checkForIncompatabilities } from './popups/incompatability/incompatability'
 import { openInstallPopup } from './popups/installed/installed'
 import './prism/mcfunctionPrism'
+import {
+	applyEnchantmentGlintToMesh,
+	removeEnchantmentGlintFromMesh,
+} from './shaders/enchantmentGlint'
 import { cleanupExportedFiles } from './systems/cleaner'
 import TELLRAW from './systems/datapackCompiler/tellraw'
 import { exportProject } from './systems/exporter'
@@ -112,6 +118,8 @@ const AnimatedJavaApi = {
 	},
 	TELLRAW,
 	getBlockState,
+	applyEnchantmentGlintToMesh,
+	removeEnchantmentGlintFromMesh,
 }
 window.AnimatedJava = AnimatedJavaApi
 

@@ -1,4 +1,7 @@
-import type { IBlueprintVariantJSON } from './formats/blueprint'
+import type { IBlueprintDisplayEntityConfigJSON, IBlueprintVariantJSON } from './formats/blueprint'
+import { VanillaBlockDisplay } from './outliner/vanillaBlockDisplay'
+import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
+import type { IDisplayEntityConfigs } from './systems/rigRenderer'
 import EVENTS from './util/events'
 import { sanitizeStorageKey } from './util/minecraftUtil'
 
@@ -83,6 +86,7 @@ export class Variant {
 	textureMap: TextureMap
 	isDefault = false
 	generateNameFromDisplayName = true
+	onApplyFunction?: string
 	excludedNodes: CollectionItem[] = []
 
 	constructor(displayName: string, isDefault = false) {
@@ -107,7 +111,19 @@ export class Variant {
 		if (Variant.selected) Variant.selected.unselect()
 		Variant.selected = this
 		Canvas.updateAllFaces()
+		VanillaBlockDisplay.forceUpdateAll()
+		VanillaItemDisplay.forceUpdateAll()
 		EVENTS.SELECT_VARIANT.publish(this)
+	}
+
+	getDisplayEntityConfig(
+		element: OutlinerElement & { configs: IDisplayEntityConfigs }
+	): IBlueprintDisplayEntityConfigJSON {
+		if (this.isDefault) {
+			return element.configs.default
+		} else {
+			return element.configs.variants[this.uuid] ?? element.configs.default
+		}
 	}
 
 	unselect() {
@@ -138,6 +154,7 @@ export class Variant {
 			uuid: this.uuid,
 			texture_map: Object.fromEntries(this.textureMap.map),
 			excluded_nodes: this.excludedNodes.map(item => item.value),
+			on_apply_function: this.onApplyFunction,
 		}
 		if (this.isDefault) {
 			json.is_default = true
@@ -174,6 +191,7 @@ export class Variant {
 				return group ? { name: group.name, value: uuid } : undefined
 			})
 			.filter(Boolean) as CollectionItem[]
+		variant.onApplyFunction = json.on_apply_function
 		return variant
 	}
 

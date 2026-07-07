@@ -1,64 +1,88 @@
 <script lang="ts" module>
+	import { onDestroy } from 'svelte'
 	import { VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
+	import EVENTS from '../../util/events'
 	import { localize as translate } from '../../util/lang'
-	import { validateItem } from '../../util/minecraftUtil'
-	import { ITEM_DISPLAY_ITEM_DISPLAY_SELECT } from './vanillaItemDisplayElement'
+	import {
+		ITEM_DISPLAY_ITEM_DISPLAY_SELECT,
+		updateItemDisplaySelect,
+	} from './vanillaItemDisplayElement'
 </script>
 
 <script lang="ts">
-	export let selected: VanillaItemDisplay
+	import { validateItem } from '../../util/minecraftUtil'
 
-	let item = selected.item
-	let error = selected.error
+	let selected = $state(VanillaItemDisplay.selected.at(0))
+	let item = $derived(selected?.item)
+	let error = $derived(selected?.error)
 
-	ITEM_DISPLAY_ITEM_DISPLAY_SELECT.set(selected.itemDisplay)
+	const onSelectionChanged = () => {
+		selected = VanillaItemDisplay.selected.at(0)
+		item = selected?.item
+		error = selected?.error
+		updateItemDisplaySelect()
+	}
 
-	$: {
-		$error = ''
-		if (selected.item !== item) {
-			void validateItem(item)
+	const unsubs = [
+		EVENTS.UNDO.subscribe(onSelectionChanged),
+		EVENTS.REDO.subscribe(onSelectionChanged),
+		EVENTS.UPDATE_SELECTION.subscribe(onSelectionChanged),
+	]
+
+	$effect(() => {
+		const thisSelected = selected
+		const thisItem = item
+		error?.set('')
+		if (thisSelected && thisItem && thisSelected.item !== thisItem) {
+			void validateItem(thisItem)
 				.then(err => {
 					if (err) {
-						$error = err
+						error?.set(err)
 						console.log('Item validation error:', err)
 						return
 					}
-					console.log('Changing item to', item)
-					Undo.initEdit({ elements: [selected] })
+					console.log('Changing item to', thisItem)
+					Undo.initEdit({ elements: [thisSelected] })
 
-					selected.item = item
+					thisSelected.item = thisItem
 					Project!.saved = false
 
-					Undo.finishEdit(`Change Item Display Item to "${item}"`, {
-						elements: [selected],
+					Undo.finishEdit(`Change Item Display Item to "${thisItem}"`, {
+						elements: [thisSelected],
 					})
 				})
 				.catch(err => {
-					$error = err.message
+					error?.set(err.message)
 				})
 		}
-	}
+	})
 
 	const mountItemDisplaySelect = (node: HTMLDivElement) => {
 		node.appendChild(ITEM_DISPLAY_ITEM_DISPLAY_SELECT.node)
 	}
+
+	onDestroy(() => {
+		unsubs.forEach(u => u())
+	})
 </script>
 
-<p class="panel_toolbar_label label">
-	{translate('panel.vanilla_item_display.title')}
-</p>
+{#if selected}
+	<p class="panel_toolbar_label label">
+		{translate('panel.vanilla_item_display.title')}
+	</p>
 
-<div class="toolbar custom-toolbar" title={translate('panel.vanilla_item_display.description')}>
-	<div class="content" style="width: 95%;">
-		<input type="text" bind:value={item} />
+	<div class="toolbar custom-toolbar" title={translate('panel.vanilla_item_display.description')}>
+		<div class="content" style="width: 95%;">
+			<input type="text" bind:value={item} />
+		</div>
+		<div class="content" use:mountItemDisplaySelect></div>
 	</div>
-	<div class="content" use:mountItemDisplaySelect></div>
-</div>
 
-{#if $error}
-	<div class="error">
-		{$error}
-	</div>
+	{#if $error}
+		<div class="error">
+			{$error}
+		</div>
+	{/if}
 {/if}
 
 <style>

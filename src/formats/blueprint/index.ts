@@ -109,6 +109,10 @@ export interface IBlueprintVariantJSON {
 	 * Whether or not this is the default Variant
 	 */
 	is_default?: true
+	/**
+	 * A list of commands to run when applying the Variant
+	 */
+	on_apply_function?: string
 }
 
 export interface ICollectionJSON {
@@ -346,7 +350,10 @@ export const BLUEPRINT_FORMAT = registerDeletableHandlerPatch({
 						fixCubeRotation(cube)
 					}
 
-					Canvas.updateAll()
+					requestAnimationFrame(() => {
+						Variant.selectDefault()
+						Canvas.updateAll()
+					})
 				})
 			},
 

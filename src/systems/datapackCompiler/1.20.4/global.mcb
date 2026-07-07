@@ -31,10 +31,10 @@ dir global {
 
 	dir root {
 		function on_tick {
+			data_manager prep read
 			IF (debug_mode) {
 				execute unless score @s <%OBJECTIVES.IS_RIG_LOADED()%> matches 1 run function *global/root/on_load
 			}
-			data_manager prep read
 			function *global/root/run_project_tick with storage <%temp_storage%> entry.data
 		}
 
@@ -62,11 +62,23 @@ dir global {
 					# Overwrite the rig hash so the warning doesn't show again.
 					data modify storage <%temp_storage%> entry.data.rig_hash set value '<%rig_hash%>'
 					data_manager write
-
-					block print { with storage <%temp_storage%> args
-						$tellraw @a <%TELLRAW.RIG_OUTDATED()%>
+					block run_print { with storage <%temp_storage%> entry.data
+						$function $(blueprint_id)/zzz/outdated_rig_warning with storage <%temp_storage%> args
 					}
-					execute on passengers run data merge entity @s {Glowing: 1b, glow_color_override: <%0xff0000%>}
+
+					# Loop over rig entities and glow them red.
+					data modify storage <%temp_storage%> list set from storage <%temp_storage%> entry.data.uuids
+					block loop {
+						data modify storage <%temp_storage%> args.uuid set from storage <%temp_storage%> list[-1]
+						data remove storage <%temp_storage%> list[-1]
+						block as_uuid { with storage <%temp_storage%> args
+							$data merge entity $(uuid) {Glowing: 1b, glow_color_override: <%0xff0000%>}
+						}
+
+						execute store result score #length <%OBJECTIVES.I()%> run data get storage <%temp_storage%> list
+						execute if score #length <%OBJECTIVES.I()%> matches 1.. run function ^0
+					}
+
 					summon minecraft:text_display ~ ~ ~ { \
 						Tags:[ \
 							'<%TAGS.GLOBAL_ENTITY()%>', \
@@ -153,7 +165,7 @@ dir global {
 		# Returns 1 if the rig is outdated, else returns 0.
 		function is_rig_outdated {
 			data_manager prep read
-			block { with storage <%temp_storage%> entry.data
+			return run block { with storage <%temp_storage%> entry.data
 				# REVIEW - The replace here is a bit hacky.
 				# Because this is a core function, I need to create a generic version of
 				# project_storage that uses a macro to get the blueprint ID instead of hardcoding it.

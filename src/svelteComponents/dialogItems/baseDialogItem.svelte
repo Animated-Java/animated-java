@@ -2,16 +2,14 @@
 	import { localize as translate } from '../../util/lang'
 
 	interface Props {
-		label: string
 		tooltip?: string
 		warningText?: string
 		errorText?: string
-		onReset: () => void
+		onReset?: () => void
 		children?: import('svelte').Snippet<[any]>
 	}
 
 	let {
-		label,
 		tooltip = '',
 		warningText = $bindable(''),
 		errorText = $bindable(''),
@@ -48,11 +46,13 @@
 			</div>
 		</div>
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<i
-			onclick={onReset}
-			class="fa fa-rotate-left dialog_form_description dialog-form-description reset-button"
-			title={translate('dialog.reset')}
-		></i>
+		{#if onReset}
+			<i
+				onclick={onReset}
+				class="fa fa-rotate-left dialog_form_description dialog-form-description reset-button"
+				title={translate('dialog.reset')}
+			></i>
+		{/if}
 	</div>
 </div>
 

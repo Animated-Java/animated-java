@@ -869,5 +869,36 @@
 				]
 			}
 		]
+	},
+	"1.10.2": {
+		"title": "v1.10.2",
+		"author": "Titus Evans (SnaveSutit)",
+		"date": "2026-07-08",
+		"categories": [
+			{
+				"title": "Changes",
+				"list": [
+					"Reworked the Display Entity Config dialog with separate General and Per-Variant pages, including a dropdown to select which Variant you're configuring.",
+					"Added an `Enchanted` option to Display Entity Configs that previews the enchantment glint effect on Cubes and Item Displays directly in Blockbench.",
+					"Added a root On-Apply Function to Variants, which runs `as` and `at` the root entity whenever the Variant is applied.",
+					"Disabled Display Entity Config on Structure Groups, since it never applied to them.",
+					"Vanilla Block Display and Item Display models are now automatically refreshed after changing a Blueprint's target Minecraft version.",
+					"Updated the Data Pack icon in Blueprint Settings to use an animated icon."
+				]
+			},
+			{
+				"title": "Fixes",
+				"list": [
+					"Fixed selecting a Variant crashing Blockbench.",
+					"Fixed custom fonts breaking Text Display word wrapping.",
+					"Fixed Item Display translation being applied on the wrong axis, and in the wrong order relative to scale.",
+					"Fixed the `summon` function failing if a locator summoned another rig from its own On-Summon Function.",
+					"Improved the reliability of the Block Display and Item Display panels.",
+					"Fixed the Entity Counter dialog reporting inaccurate entity counts.",
+					"Fixed the Paint Tool breaking when used on Interactions.",
+					"Fixed the outdated rig warning not glowing all rig entities red, and improved its performance."
+				]
+			}
+		]
 	}
 }

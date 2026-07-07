@@ -8,6 +8,7 @@
 </script>
 
 <script lang="ts">
+	import CodeInput from '../../svelteComponents/dialogItems/codeInput.svelte'
 	import Collection from '../../svelteComponents/dialogItems/collection.svelte'
 	import { getAvailableNodes } from '../../util/excludedNodes'
 
@@ -18,6 +19,7 @@
 	export let textureMap: TextureMap
 	export let generateNameFromDisplayName: Observable<boolean>
 	export let excludedNodes: Observable<CollectionItem[]>
+	export let onApplyFunction: Observable<string>
 
 	const AVAILABLE_TEXTURES = [...Texture.all]
 	const PRIMARY_TEXTURES = [...Texture.all]
@@ -221,6 +223,14 @@
 			bind:includedItems={excludedNodes}
 		/>
 	{/if}
+
+	<CodeInput
+		label={translate('dialog.variant_config.on_apply_function.title')}
+		bind:value={onApplyFunction}
+		tooltip={translate('dialog.variant_config.on_apply_function.description')}
+		syntax="mcfunction"
+		defaultValue={''}
+	></CodeInput>
 
 	<div class="uuid">
 		{$uuid}

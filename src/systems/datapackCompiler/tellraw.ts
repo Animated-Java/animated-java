@@ -1,4 +1,5 @@
 import { TextComponent, type TextElement } from 'book-and-quill'
+import { projectTargetVersionIsAtLeast } from '../../formats/blueprint'
 import { toSmallCaps } from '../../util/minecraftUtil'
 import { type IRenderedAnimation } from '../animationRenderer'
 import { type IRenderedVariant } from '../rigRenderer'
@@ -111,14 +112,17 @@ namespace TELLRAW {
 					},
 		])
 
-	export const RIG_OUTDATED_TEXT_DISPLAY = () =>
-		new TextComponent([
+	export const RIG_OUTDATED_TEXT_DISPLAY = () => {
+		let text = new TextComponent([
 			{ text: '⚠ This rig instance is outdated! ⚠', color: 'red' },
 			'\n It should be removed and re-summoned to ensure it functions correctly.',
-		])
-			// Because this is used as NBT in a summon command, we need to double-escape the newlines.
-			.toString()
-			.replaceAll('\\n', '\\\\n')
+		]).toString()
+		if (!projectTargetVersionIsAtLeast('1.21.5')) {
+			// Because this is used as an NBT string in 1.21.4 and below, we need to double-escape the newlines.
+			text = text.replaceAll('\\n', '\\\\n')
+		}
+		return text
+	}
 
 	export const FUNCTION_NOT_EXECUTED_AS_ROOT_ERROR = (functionPath: string, tag: string) => {
 		const hoverText = new TextComponent([
