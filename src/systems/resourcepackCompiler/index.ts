@@ -135,10 +135,7 @@ export default async function compileResourcePack(
 	const { existsSync, promises } = getFsModule()
 	const { writeFile, mkdir, rm, readdir, unlink } = promises
 
-	if (aj.enable_plugin_mode) {
-		// Do nothing
-		console.log('Plugin mode enabled. Skipping resource pack export.')
-	} else if (aj.resource_pack_export_mode === 'folder') {
+	if (aj.resource_pack_export_mode === 'folder') {
 		// Clean up old files
 		PROGRESS_DESCRIPTION.set('Removing Old Resource Pack Files...')
 		PROGRESS.set(0)
