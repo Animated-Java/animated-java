@@ -221,32 +221,6 @@ function parseDataUrl(dataUrl: string): { mimeType: string; base64: string } {
 	return { mimeType, base64 }
 }
 
-function readTextureAnimation(texture: Texture): TextureAnimation | undefined {
-	if (!texture.path) return undefined
-	const mcmetaPath = texture.path + '.mcmeta'
-
-	const { existsSync, readFileSync } = getFsModule()
-
-	if (!existsSync(mcmetaPath)) return undefined
-	try {
-		const parsed = JSON.parse(readFileSync(mcmetaPath, 'utf-8')) as {
-			animation?: Record<string, unknown>
-		}
-		const anim = parsed.animation as any
-		if (!anim) return undefined
-		return scrubUndefined({
-			interpolate: anim.interpolate,
-			width: anim.width,
-			height: anim.height,
-			frametime: anim.frametime,
-			frames: anim.frames,
-		} satisfies TextureAnimation)
-	} catch (e) {
-		console.warn(`Failed to parse texture animation mcmeta for ${texture.name}:`, e)
-		return undefined
-	}
-}
-
 function serializeNodeTransformation(transform: INodeTransform): NodeTransformation {
 	return scrubUndefined({
 		matrix: transform.matrix.elements.slice(),
@@ -515,7 +489,7 @@ function serializeTexture(texture: Texture): PluginTexture {
 		type: 'custom',
 		base64_string: base64,
 		mime_type: mimeType,
-		animation: readTextureAnimation(texture),
+		animation: texture.getMCMetaContent()?.animation,
 	} satisfies PluginTexture)
 }
 
