@@ -131,16 +131,16 @@ async function actuallyExportProject({
 		const rigHash = hashRig(rig)
 		const animationHash = hashAnimations(animations)
 
-		// TODO - Plugin mode should run without the resource pack compiler
-		// Always run the resource pack compiler because it calculates custom model data.
-		await resourcepackCompiler(aj.target_minecraft_version, {
-			rig,
-			displayItemPath,
-			resourcePackFolder,
-			textureExportFolder,
-			modelExportFolder,
-			debugMode,
-		})
+		if (!aj.enable_plugin_mode) {
+			await resourcepackCompiler(aj.target_minecraft_version, {
+				rig,
+				displayItemPath,
+				resourcePackFolder,
+				textureExportFolder,
+				modelExportFolder,
+				debugMode,
+			})
+		}
 
 		if (!aj.enable_plugin_mode && aj.data_pack_export_mode !== 'none') {
 			await compileDataPack(aj.target_minecraft_version, {
