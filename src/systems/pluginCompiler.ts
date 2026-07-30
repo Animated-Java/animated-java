@@ -709,7 +709,7 @@ export function exportPluginBlueprint(options: {
 	const blueprint: PluginBlueprintJson = scrubUndefined({
 		format_version: PLUGIN_JSON_FORMAT_VERSION,
 		settings: {
-			id: `animated_java:${aj.blueprint_id}`,
+			id: aj.blueprint_id,
 		},
 		textures,
 		texture_palettes: palettes,
