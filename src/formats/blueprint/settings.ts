@@ -327,15 +327,18 @@ export async function validateThisProjectsBlueprintSettings(): Promise<
 			Project.animated_java.render_box[1]
 		),
 		resource_pack_folder:
-			Project.animated_java.resource_pack_export_mode === 'folder'
+			Project.animated_java.resource_pack_export_mode === 'folder' &&
+			!Project.animated_java.enable_plugin_mode
 				? validateResourcePackFolder(Project.animated_java.resource_pack)
 				: undefined,
 		data_pack_folder:
-			Project.animated_java.data_pack_export_mode === 'folder'
+			Project.animated_java.data_pack_export_mode === 'folder' &&
+			!Project.animated_java.enable_plugin_mode
 				? validateDataPackFolder(Project.animated_java.data_pack)
 				: undefined,
 		data_pack_zip:
-			Project.animated_java.data_pack_export_mode === 'zip'
+			Project.animated_java.data_pack_export_mode === 'zip' &&
+			!Project.animated_java.enable_plugin_mode
 				? validateZipPath(Project.animated_java.data_pack)
 				: undefined,
 	}
