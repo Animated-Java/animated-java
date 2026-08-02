@@ -120,12 +120,14 @@ type NodeType =
 type PluginNode =
 	| {
 			type: 'bone'
+			parent?: string
 			default_transformation?: NodeTransformation
 			display_properties?: Record<string, unknown>
 			elements: BoneElement[]
 	  }
 	| {
 			type: Exclude<NodeType, 'bone'>
+			parent?: string
 			default_transformation?: NodeTransformation
 			display_properties?: Record<string, unknown>
 	  }
@@ -339,12 +341,14 @@ function serializeBoneElements(
 function serializeNode(
 	node: AnyRenderedNode,
 	options: {
+		parent?: string
 		defaultVariantModels: Record<string, { model: IRenderedModel | null }>
 		textureIdToKey: Map<string, string>
 		textureKeyToPaletteId: Map<string, string>
 	}
 ): PluginNode {
 	const base = {
+		parent: options.parent,
 		default_transformation: serializeNodeTransformation(node.default_transform),
 	} as const
 
@@ -684,6 +688,7 @@ export function exportPluginBlueprint(options: {
 		const nodeId = nodeUuidToId.get(uuid)
 		if (!nodeId) continue
 		nodes[nodeId] = serializeNode(node, {
+			parent: node.parent ? nodeUuidToId.get(node.parent) : undefined,
 			defaultVariantModels,
 			textureIdToKey,
 			textureKeyToPaletteId,
