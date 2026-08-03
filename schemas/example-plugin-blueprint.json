@@ -1,6 +1,6 @@
 {
 	"$schema": "./plugin-blueprint.schema.json",
-	"format_version": 1,
+	"format_version": 2,
 	"settings": {
 		"id": "animated_java:blueprint"
 	},
@@ -39,7 +39,7 @@
 				"rotation": [5, 180, 0],
 				"head_rotation": [5, 180]
 			},
-			"display_properties": {
+			"entity_properties": {
 				"billboard": "vertical",
 				"custom_brightness": 10,
 				"custom_name": "'Bone Node'",
@@ -198,7 +198,7 @@
 				},
 				"position": [0, 1.625, 0]
 			},
-			"display_properties": {
+			"entity_properties": {
 				"billboard": "vertical",
 				"is_glowing": true,
 				"shadow_radius": 3.0,
@@ -224,7 +224,7 @@
 				"head_rotation": [4.61854, 202.57734],
 				"scale": [1.0625, 1.125, 1]
 			},
-			"display_properties": {
+			"entity_properties": {
 				"billboard": "horizontal",
 				"custom_brightness": 15,
 				"custom_name": "'Block Display Node'",
@@ -235,7 +235,7 @@
 		},
 		"text_display_node": {
 			"type": "text_display",
-			"display_properties": {
+			"entity_properties": {
 				"custom_brightness": 5,
 				"is_custom_brightness_enabled": true,
 				"is_glowing": true,

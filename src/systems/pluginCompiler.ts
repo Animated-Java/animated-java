@@ -113,6 +113,7 @@ type NodeType =
 	| 'item_display'
 	| 'block_display'
 	| 'text_display'
+	| 'interaction'
 	| 'structure'
 	| 'camera'
 	| 'locator'
@@ -122,14 +123,14 @@ type PluginNode =
 			type: 'bone'
 			parent?: string
 			default_transformation?: NodeTransformation
-			display_properties?: Record<string, unknown>
+			entity_properties?: Record<string, unknown>
 			elements: BoneElement[]
 	  }
 	| {
 			type: Exclude<NodeType, 'bone'>
 			parent?: string
 			default_transformation?: NodeTransformation
-			display_properties?: Record<string, unknown>
+			entity_properties?: Record<string, unknown>
 	  }
 
 type LoopMode = { type: 'once' } | { type: 'hold' } | { type: 'loop'; loop_delay?: string }
@@ -176,8 +177,11 @@ interface PluginAnimation {
  * changelog) whenever the shape of {@link PluginBlueprintJson} changes in a
  * release, so consumers can branch on it. It is independent of the Animated
  * Java plugin version and only moves when this file format does.
+ *
+ * 2: `display_properties` renamed to `entity_properties`, added node `parent`,
+ *    `settings.id` is now the raw blueprint id (no `animated_java:` prefix).
  */
-export const PLUGIN_JSON_FORMAT_VERSION = 1
+export const PLUGIN_JSON_FORMAT_VERSION = 2
 
 export interface PluginBlueprintJson {
 	$schema?: string
@@ -372,7 +376,7 @@ function serializeNode(
 			return scrubUndefined({
 				type: 'bone',
 				...base,
-				display_properties: displayProps,
+				entity_properties: displayProps,
 				elements: serializeBoneElements(model, {
 					textureIdToKey: options.textureIdToKey,
 					textureKeyToPaletteId: options.textureKeyToPaletteId,
@@ -383,7 +387,7 @@ function serializeNode(
 			return scrubUndefined({
 				type: 'item_display',
 				...base,
-				display_properties: scrubUndefined({
+				entity_properties: scrubUndefined({
 					...displayProps,
 					item: (node as any).item,
 					item_display: (node as any).item_display,
@@ -394,7 +398,7 @@ function serializeNode(
 			return scrubUndefined({
 				type: 'block_display',
 				...base,
-				display_properties: scrubUndefined({
+				entity_properties: scrubUndefined({
 					...displayProps,
 					block_state: (node as any).block,
 				}),
@@ -405,7 +409,7 @@ function serializeNode(
 			return scrubUndefined({
 				type: 'text_display',
 				...base,
-				display_properties: scrubUndefined({
+				entity_properties: scrubUndefined({
 					...displayProps,
 					alignment: (node as any).align,
 					background_color: argb,
@@ -417,6 +421,15 @@ function serializeNode(
 				}),
 			} satisfies PluginNode)
 		}
+		case 'interaction':
+			return scrubUndefined({
+				type: 'interaction',
+				...base,
+				entity_properties: {
+					width: node.width,
+					height: node.height,
+				},
+			})
 		case 'struct':
 			return { type: 'structure', ...base }
 		case 'camera':
