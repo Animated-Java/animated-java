@@ -183,7 +183,7 @@
 						"type": "object",
 						"required": ["elements"],
 						"properties": {
-							"display_properties": {
+							"entity_properties": {
 								"$ref": "#/definitions/bone_display_properties"
 							},
 							"elements": {
@@ -204,7 +204,7 @@
 					"then": {
 						"type": "object",
 						"properties": {
-							"display_properties": {
+							"entity_properties": {
 								"$ref": "#/definitions/item_display_properties"
 							}
 						}
@@ -219,7 +219,7 @@
 					"then": {
 						"type": "object",
 						"properties": {
-							"display_properties": {
+							"entity_properties": {
 								"$ref": "#/definitions/block_display_properties"
 							}
 						}
@@ -234,8 +234,23 @@
 					"then": {
 						"type": "object",
 						"properties": {
-							"display_properties": {
+							"entity_properties": {
 								"$ref": "#/definitions/text_display_properties"
+							}
+						}
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": { "const": "interaction" }
+						}
+					},
+					"then": {
+						"type": "object",
+						"properties": {
+							"entity_properties": {
+								"$ref": "#/definitions/interaction_entity_properties"
 							}
 						}
 					}
@@ -608,6 +623,20 @@
 					}
 				}
 			]
+		},
+		"interaction_entity_properties": {
+			"type": "object",
+			"default": {},
+			"properties": {
+				"width": {
+					"type": "number",
+					"default": 1
+				},
+				"height": {
+					"type": "number",
+					"default": 1
+				}
+			}
 		},
 		"dynamic_animation": {
 			"type": "object",
