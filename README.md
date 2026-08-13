@@ -99,10 +99,10 @@ Contributions are always welcome! Check out [CONTRIBUTING.md](CONTRIBUTING.md) f
 
 # ⭐ Star History
 
-<a href="https://star-history.com/#animated-java/animated-java&Date" alt="test">
+<a href="https://star-history.dera.page/#animated-java/animated-java&Date" alt="test">
 	<picture>
-		<source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=animated-java/animated-java&type=Date&theme=dark" />
-		<source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=animated-java/animated-java&type=Date" />
-		<img alt="Star History Chart" src="https://api.star-history.com/svg?repos=animated-java/animated-java&type=Date" />
+		<source media="(prefers-color-scheme: dark)" srcset="https://star-history.dera.page/svg?repos=animated-java/animated-java&type=Date&theme=dark" />
+		<source media="(prefers-color-scheme: light)" srcset="https://star-history.dera.page/svg?repos=animated-java/animated-java&type=Date" />
+		<img alt="Star History Chart" src="https://star-history.dera.page/svg?repos=animated-java/animated-java&type=Date" />
 	</picture>
 </a>
