@@ -509,8 +509,8 @@ async function removeFiles(ajmeta: AJMeta) {
 				content.values = content.values.filter(
 					v =>
 						typeof v === 'string' &&
-						(!v.startsWith(`${aj.blueprint_id}/`) ||
-							!v.startsWith(`${Project!.last_used_blueprint_id}/`))
+						!v.startsWith(`${aj.blueprint_id}/`) &&
+						!v.startsWith(`${Project!.last_used_blueprint_id}/`)
 				)
 				await writeFile(file, autoStringify(content))
 			} else {

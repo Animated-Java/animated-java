@@ -1,14 +1,15 @@
 <script lang="ts" module>
 	import AnimatedJavaIcon from '../../assets/animated_java_icon.svg'
+	import { PACKAGE } from '../../constants'
 </script>
 
 <div class="content-container">
 	<div class="header-container">
 		<!-- svelte-ignore a11y_missing_attribute -->
-		<img src={AnimatedJavaIcon} />
+		<img src={AnimatedJavaIcon} width="256px" />
 		<div>
 			<h1>Welcome to Animated Java!</h1>
-			<h3>Effortlessly craft complex animations for Minecraft: Java Edition</h3>
+			<h3>{PACKAGE.description}</h3>
 		</div>
 	</div>
 	<div class="another-container">
@@ -62,6 +63,9 @@
 		align-items: center;
 		margin-top: 1rem;
 		justify-content: center;
+		display: flex;
+		align-items: center;
+		gap: 16px;
 	}
 	.header-container div {
 		display: flex;
@@ -70,7 +74,6 @@
 		margin-left: 2rem;
 	}
 	.header-container img {
-		width: 128px;
 		border-radius: 16px;
 		box-shadow: 4px 4px 8px -4px black;
 	}

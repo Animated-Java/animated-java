@@ -193,7 +193,7 @@ export default async function compileResourcePack(
 			}
 			PROGRESS.set(PROGRESS.get() + 1)
 		}
-	} else if (aj.data_pack_export_mode === 'zip') {
+	} else if (aj.resource_pack_export_mode === 'zip') {
 		const data: AsyncZippable = {}
 
 		for (const [path, file] of coreFiles.entries()) {
