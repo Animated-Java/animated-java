@@ -70,12 +70,14 @@ export async function checkForRegistryUpdate() {
 	if (!currentValueString) {
 		console.log('No BlockState Registry found. Updating...')
 		await updateLocalRegistry()
+		updateMemoryRegistry()
 		return
 	}
 	const currentVersionString = localStorage.getItem('animated_java:blockStateRegistryVersion')
 	if (!currentVersionString) {
 		console.log('No BlockState Registry version found. Updating...')
 		await updateLocalRegistry()
+		updateMemoryRegistry()
 		return
 	}
 	const currentVersion = JSON.parse(currentVersionString)
@@ -83,6 +85,7 @@ export async function checkForRegistryUpdate() {
 	if (currentVersion.id !== latestVersion.id) {
 		console.log('BlockState Registry is outdated. Updating...')
 		await updateLocalRegistry()
+		updateMemoryRegistry()
 		return
 	}
 
