@@ -1,5 +1,5 @@
-# DIFFERENCES FROM 1.21.0:
-# - JSON text components are now stored as NBT in entities.
+# DIFFERENCES FROM 1.20.4:
+# - @n entity selector
 
 import ./global.mcbt
 
@@ -88,7 +88,7 @@ dir global {
 							'<%TAGS.OUTDATED_RIG_TEXT_DISPLAY()%>', \
 							'<%TAGS.NEW()%>' \
 						], \
-						text:<%TELLRAW.RIG_OUTDATED_TEXT_DISPLAY()%>, \
+						text:'<%TELLRAW.RIG_OUTDATED_TEXT_DISPLAY()%>', \
 						alignment: 'center', \
 						billboard: 'vertical', \
 						shadow: true, \
@@ -178,7 +178,7 @@ dir global {
 		}
 	}
 
-	# Thanks Gibbsly for this code! https://github.com/gibbsly/gu
+	# Thanks Gibbsly for the original code! https://github.com/gibbsly/gu
 	dir gu {
 		function on_load {
 			scoreboard players set 256 <%OBJECTIVES.I()%> 256
