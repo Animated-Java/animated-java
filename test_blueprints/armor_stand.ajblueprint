@@ -1,17 +1,17 @@
 {
 	"meta": {
 		"format": "animated-java:format/blueprint",
-		"format_version": "1.9.0-beta.3",
+		"format_version": "1.10.0-beta.6",
 		"uuid": "167b27cd-b559-3f13-a97c-0841fe21f1d1",
 		"save_location": "/var/mnt/ssd2/repos/animated-java/animated-java/test_blueprints/armor_stand.ajblueprint",
-		"last_used_export_namespace": "armor_stand"
+		"last_used_blueprint_id": "aj:undefined"
 	},
 	"resolution": {
 		"width": 64,
 		"height": 64
 	},
 	"blueprint_settings": {
-		"export_namespace": "armor_stand",
+		"blueprint_id": "aj:armor_stand",
 		"render_box": [95, 32],
 		"target_minecraft_version": "1.21.5",
 		"resource_pack": "C:\\Users\\SnaveSutit\\AppData\\Roaming\\ModrinthApp\\profiles\\Animated Java Dev\\resourcepacks\\resourcepack",
@@ -1012,13 +1012,16 @@
 				},
 				"variants": {}
 			},
+			"itemModelProperties": {
+				"tints": []
+			},
 			"children": [],
 			"reset": false,
 			"shade": true,
 			"mirror_uv": false,
 			"visibility": true,
 			"autouv": 0,
-			"isOpen": true,
+			"isOpen": false,
 			"primary_selected": false
 		},
 		{
@@ -1051,6 +1054,9 @@
 					"use_nbt": false
 				},
 				"variants": {}
+			},
+			"itemModelProperties": {
+				"tints": []
 			},
 			"children": [],
 			"reset": false,
@@ -1092,6 +1098,9 @@
 				},
 				"variants": {}
 			},
+			"itemModelProperties": {
+				"tints": []
+			},
 			"children": [],
 			"reset": false,
 			"shade": true,
@@ -1132,6 +1141,9 @@
 					"use_nbt": false
 				},
 				"variants": {}
+			},
+			"itemModelProperties": {
+				"tints": []
 			},
 			"children": [],
 			"reset": false,
@@ -1176,6 +1188,9 @@
 					"5417306e-2c69-3f36-1e3c-edd904034a36": {}
 				}
 			},
+			"itemModelProperties": {
+				"tints": []
+			},
 			"children": [],
 			"reset": false,
 			"shade": true,
@@ -1218,6 +1233,9 @@
 				"variants": {
 					"5417306e-2c69-3f36-1e3c-edd904034a36": {}
 				}
+			},
+			"itemModelProperties": {
+				"tints": []
 			},
 			"children": [],
 			"reset": false,
@@ -1291,6 +1309,9 @@
 					}
 				}
 			},
+			"itemModelProperties": {
+				"tints": []
+			},
 			"children": [],
 			"reset": false,
 			"shade": true,
@@ -1348,6 +1369,9 @@
 						"use_nbt": false
 					}
 				}
+			},
+			"itemModelProperties": {
+				"tints": []
 			},
 			"children": [],
 			"reset": false,
@@ -1407,6 +1431,9 @@
 					}
 				}
 			},
+			"itemModelProperties": {
+				"tints": []
+			},
 			"children": [],
 			"reset": false,
 			"shade": true,
@@ -1465,6 +1492,9 @@
 					}
 				}
 			},
+			"itemModelProperties": {
+				"tints": []
+			},
 			"children": [],
 			"reset": false,
 			"shade": true,
@@ -1520,6 +1550,9 @@
 						"use_nbt": false
 					}
 				}
+			},
+			"itemModelProperties": {
+				"tints": []
 			},
 			"children": [],
 			"reset": false,
@@ -1577,6 +1610,9 @@
 					}
 				}
 			},
+			"itemModelProperties": {
+				"tints": []
+			},
 			"children": [],
 			"reset": false,
 			"shade": true,
@@ -1604,6 +1640,9 @@
 			"configs": {
 				"variants": {}
 			},
+			"itemModelProperties": {
+				"tints": []
+			},
 			"children": [],
 			"reset": false,
 			"shade": true,
@@ -1617,7 +1656,7 @@
 	"outliner": [
 		{
 			"uuid": "98795982-9c43-6e3e-eed9-2c776a957938",
-			"isOpen": true,
+			"isOpen": false,
 			"children": [
 				{
 					"uuid": "102db36a-eeda-0e6f-d5cc-c186ecda8165",
@@ -1883,7 +1922,7 @@
 			"override": false,
 			"length": 2,
 			"snapping": 20,
-			"selected": true,
+			"selected": false,
 			"saved": true,
 			"path": "",
 			"scope": 0,
@@ -1903,8 +1942,8 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "90\n- math.sin(q.life_time * 360) * 30",
-									"y": "22.5\n- math.cos(q.life_time * 360) * 30",
+									"x": "-90\n+ math.sin(q.life_time * 360) * 30",
+									"y": "-22.5\n+ math.cos(q.life_time * 360) * 30",
 									"z": "0"
 								}
 							],
@@ -1927,8 +1966,8 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "90\n- math.sin(q.life_time * 360) * 30",
-									"y": "-22.5\n+ math.cos(q.life_time * 360) * 30",
+									"x": "-90\n+ math.sin(q.life_time * 360) * 30",
+									"y": "22.5\n- math.cos(q.life_time * 360) * 30",
 									"z": "0"
 								}
 							],
@@ -2007,7 +2046,7 @@
 							"channel": "position",
 							"data_points": [
 								{
-									"x": "-16 + math.cos(q.life_time * 180) * 16",
+									"x": "16 - math.cos(q.life_time * 180) * 16",
 									"y": "16 + math.sin(q.life_time * 360) * 8",
 									"z": "-32"
 								}
@@ -2156,7 +2195,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "-90",
+									"x": "90",
 									"y": "0",
 									"z": "0"
 								}
@@ -2196,7 +2235,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "-math.cos(q.life_time * 360) * 22.5",
+									"x": "math.cos(q.life_time * 360) * 22.5",
 									"y": "0",
 									"z": "0"
 								}
@@ -2236,7 +2275,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "6\n- math.sin(q.life_time * 360) * 22.5",
+									"x": "-6\n+ math.sin(q.life_time * 360) * 22.5",
 									"y": "0",
 									"z": "0"
 								}
@@ -2260,7 +2299,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "math.cos(q.life_time * 360) * 22.5",
+									"x": "-math.cos(q.life_time * 360) * 22.5",
 									"y": "0",
 									"z": "0"
 								}
@@ -2284,7 +2323,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "math.cos(q.life_time * 360) * 12.25",
+									"x": "-math.cos(q.life_time * 360) * 12.25",
 									"y": "0",
 									"z": "0"
 								}
@@ -2308,7 +2347,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "math.cos(q.life_time * 360) * 12.25",
+									"x": "-math.cos(q.life_time * 360) * 12.25",
 									"y": "0",
 									"z": "0"
 								}
@@ -2332,7 +2371,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "math.sin(q.life_time * 360) * 22.5",
+									"x": "-math.sin(q.life_time * 360) * 22.5",
 									"y": "0",
 									"z": "0"
 								}
@@ -2356,7 +2395,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "math.sin(q.life_time * 360) * 22.5",
+									"x": "-math.sin(q.life_time * 360) * 22.5",
 									"y": "0",
 									"z": "0"
 								}
@@ -2429,7 +2468,7 @@
 							"data_points": [
 								{
 									"x": "0",
-									"y": "-1 + math.sin(q.life_time * v.walk_speed + 90) * 12.25\n",
+									"y": "1 - math.sin(q.life_time * v.walk_speed + 90) * 12.25\n",
 									"z": "0"
 								}
 							],
@@ -2469,7 +2508,7 @@
 							"data_points": [
 								{
 									"x": "0",
-									"y": "-1 - math.sin(q.life_time * v.walk_speed + 90) * 12.25",
+									"y": "1 + math.sin(q.life_time * v.walk_speed + 90) * 12.25",
 									"z": "0"
 								}
 							],
@@ -2492,7 +2531,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "-math.sin(q.life_time * v.walk_speed) * 8",
+									"x": "math.sin(q.life_time * v.walk_speed) * 8",
 									"y": "0",
 									"z": "22.5"
 								}
@@ -2508,7 +2547,7 @@
 							"channel": "position",
 							"data_points": [
 								{
-									"x": "-2",
+									"x": "2",
 									"y": "0",
 									"z": "-math.sin(q.life_time * v.walk_speed) * 2"
 								}
@@ -2532,8 +2571,8 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "-math.sin(q.life_time * v.walk_speed) * 22.5",
-									"y": "-math.sin(q.life_time * v.walk_speed) * 12.25",
+									"x": "math.sin(q.life_time * v.walk_speed) * 22.5",
+									"y": "math.sin(q.life_time * v.walk_speed) * 12.25",
 									"z": "math.cos(q.life_time * v.walk_speed * 2) * 6 + 6"
 								}
 							],
@@ -2556,7 +2595,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "math.sin(q.life_time * v.walk_speed) * 22.5",
+									"x": "-math.sin(q.life_time * v.walk_speed) * 22.5",
 									"y": "0",
 									"z": "0"
 								}
@@ -2596,7 +2635,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "-math.sin(q.life_time * v.walk_speed) * 22.5",
+									"x": "math.sin(q.life_time * v.walk_speed) * 22.5",
 									"y": "0",
 									"z": "0"
 								}
@@ -2724,8 +2763,8 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "-lopsided_wave(q.life_time * v.run_speed, 10) * 45 - 22.5",
-									"y": "-3",
+									"x": "lopsided_wave(q.life_time * v.run_speed, 10) * 45 + 22.5",
+									"y": "3",
 									"z": "0"
 								}
 							],
@@ -2764,8 +2803,8 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "-12.25",
-									"y": "-math.sin(q.life_time * v.run_speed) * 12.25",
+									"x": "12.25",
+									"y": "math.sin(q.life_time * v.run_speed) * 12.25",
 									"z": "-math.sin(q.life_time * v.run_speed) * 2"
 								}
 							],
@@ -2804,8 +2843,8 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "6",
-									"y": "math.sin(q.life_time * v.run_speed) * 12.25",
+									"x": "-6",
+									"y": "-math.sin(q.life_time * v.run_speed) * 12.25",
 									"z": "math.sin(q.life_time * v.run_speed) * 2"
 								}
 							],
@@ -2828,8 +2867,8 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "-lopsided_wave(q.life_time * v.run_speed + 180, 20) * 45 + 12.25",
-									"y": "-6",
+									"x": "lopsided_wave(q.life_time * v.run_speed + 180, 20) * 45 - 12.25",
+									"y": "6",
 									"z": "-12.25"
 								}
 							],
@@ -2852,8 +2891,8 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "-lopsided_wave(q.life_time * v.run_speed, 20) * 45 + 12.25",
-									"y": "6",
+									"x": "lopsided_wave(q.life_time * v.run_speed, 20) * 45 - 12.25",
+									"y": "-6",
 									"z": "12.25"
 								}
 							],
@@ -2876,8 +2915,8 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "-lopsided_wave(q.life_time * v.run_speed + 180, 10) * 45 - 22.5",
-									"y": "-3",
+									"x": "lopsided_wave(q.life_time * v.run_speed + 180, 10) * 45 + 22.5",
+									"y": "3",
 									"z": "0"
 								}
 							],
@@ -2959,7 +2998,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "-math.clamp(-math.cos(q.life_time * 360 * 2 - 45) * 1, -2, 0) * -2",
+									"x": "math.clamp(-math.cos(q.life_time * 360 * 2 - 45) * 1, -2, 0) * -2",
 									"y": "0",
 									"z": "0"
 								}
@@ -2999,7 +3038,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "-math.clamp(-math.cos(q.life_time * 360 * 2 - 90) * 1, -2, 0) * -5",
+									"x": "math.clamp(-math.cos(q.life_time * 360 * 2 - 90) * 1, -2, 0) * -5",
 									"y": "0",
 									"z": "0"
 								}
@@ -3072,7 +3111,7 @@
 							"data_points": [
 								{
 									"x": "0",
-									"y": "v.progress = math.cos(q.life_time * 360 - 22.5) * 0.5 + 0.5;\nv.ease = v.progress < 0.5\n      ? 4 * v.progress * v.progress * v.progress\n      : 1 - math.pow(-2 * v.progress + 2, 3) / 2;\n\nreturn -math.lerp(10, 22.5, v.ease)",
+									"y": "v.progress = math.cos(q.life_time * 360 - 22.5) * 0.5 + 0.5;\nv.ease = v.progress < 0.5\n      ? 4 * v.progress * v.progress * v.progress\n      : 1 - math.pow(-2 * v.progress + 2, 3) / 2;\n\nreturn math.lerp(10, 22.5, v.ease)",
 									"z": "v.progress = math.cos(q.life_time * 360 - 22.5) * 0.5 + 0.5;\nv.ease = v.progress < 0.5\n      ? 4 * v.progress * v.progress * v.progress\n      : 1 - math.pow(-2 * v.progress + 2, 3) / 2;\n\nreturn math.lerp(0, 12.25, v.ease)"
 								}
 							],
@@ -3087,7 +3126,7 @@
 							"channel": "position",
 							"data_points": [
 								{
-									"x": "v.progress = math.cos(q.life_time * 360 - 22.5) * 0.5 + 0.5;\nv.ease = v.progress < 0.5\n      ? 4 * v.progress * v.progress * v.progress\n      : 1 - math.pow(-2 * v.progress + 2, 3) / 2;\n\nreturn -math.lerp(0, -0.5, v.ease)",
+									"x": "v.progress = math.cos(q.life_time * 360 - 22.5) * 0.5 + 0.5;\nv.ease = v.progress < 0.5\n      ? 4 * v.progress * v.progress * v.progress\n      : 1 - math.pow(-2 * v.progress + 2, 3) / 2;\n\nreturn math.lerp(0, -0.5, v.ease)",
 									"y": "0",
 									"z": "0"
 								}
@@ -3127,7 +3166,7 @@
 							"channel": "position",
 							"data_points": [
 								{
-									"x": "v.progress = math.cos(q.life_time * 360 - 22.5) * 0.5 + 0.5;\nv.ease = v.progress < 0.5\n      ? 4 * v.progress * v.progress * v.progress\n      : 1 - math.pow(-2 * v.progress + 2, 3) / 2;\n\nreturn -math.lerp(0, 0.5, v.ease)",
+									"x": "v.progress = math.cos(q.life_time * 360 - 22.5) * 0.5 + 0.5;\nv.ease = v.progress < 0.5\n      ? 4 * v.progress * v.progress * v.progress\n      : 1 - math.pow(-2 * v.progress + 2, 3) / 2;\n\nreturn math.lerp(0, 0.5, v.ease)",
 									"y": "0",
 									"z": "0"
 								}
@@ -3170,7 +3209,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "10",
+									"x": "-10",
 									"y": "0",
 									"z": "0"
 								}
@@ -3210,7 +3249,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "-22.5",
+									"x": "22.5",
 									"y": "0",
 									"z": "0"
 								}
@@ -3250,7 +3289,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "5",
+									"x": "-5",
 									"y": "0",
 									"z": "0"
 								}
@@ -3274,8 +3313,8 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "-v.value = q.life_time * 360;\nv.lopside_mag = +30;\n\n14.6772\n- (math.sin(v.value + math.cos(v.value) * v.lopside_mag)) * 6;",
-									"y": "-24.92619",
+									"x": "v.value = q.life_time * 360;\nv.lopside_mag = -30;\n\n14.6772\n+ (math.sin(v.value + math.cos(v.value) * v.lopside_mag)) * 6;",
+									"y": "24.92619",
 									"z": "166.58275"
 								}
 							],
@@ -3314,8 +3353,8 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "\n-v.value = q.life_time * 90;\nv.lopside_mag = +30;\n\n+67.1224\n- (math.sin(v.value + math.cos(v.value) * v.lopside_mag)) * 2;\n",
-									"y": "66.97934",
+									"x": "\nv.value = q.life_time * 90;\nv.lopside_mag = -30;\n\n-67.1224\n+ (math.sin(v.value + math.cos(v.value) * v.lopside_mag)) * 2;\n",
+									"y": "-66.97934",
 									"z": "-11.88242"
 								}
 							],
@@ -3330,7 +3369,7 @@
 							"channel": "position",
 							"data_points": [
 								{
-									"x": "1",
+									"x": "-1",
 									"y": "-1",
 									"z": "-1"
 								}
@@ -3354,7 +3393,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "-90",
+									"x": "90",
 									"y": "0",
 									"z": "0"
 								}
@@ -3509,8 +3548,8 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "22.01816",
-									"y": "-4.75113",
+									"x": "-22.01816",
+									"y": "4.75113",
 									"z": "11.57518"
 								}
 							],
@@ -3533,8 +3572,8 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "22.01816",
-									"y": "4.75113",
+									"x": "-22.01816",
+									"y": "-4.75113",
 									"z": "-11.57518"
 								}
 							],
@@ -3557,8 +3596,8 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "90",
-									"y": "-22.5",
+									"x": "-90",
+									"y": "22.5",
 									"z": "0"
 								}
 							],
@@ -3581,8 +3620,8 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "90",
-									"y": "22.5",
+									"x": "-90",
+									"y": "-22.5",
 									"z": "0"
 								}
 							],
@@ -3624,7 +3663,7 @@
 							"channel": "position",
 							"data_points": [
 								{
-									"x": "-math.sin(q.life_time * v.stickbug_speed) * 3",
+									"x": "math.sin(q.life_time * v.stickbug_speed) * 3",
 									"y": "math.cos(q.life_time * v.stickbug_speed * 2)",
 									"z": "0"
 								}
@@ -3648,7 +3687,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "-90",
+									"x": "90",
 									"y": "0",
 									"z": "0"
 								}
@@ -3689,7 +3728,7 @@
 							"data_points": [
 								{
 									"x": "0",
-									"y": "math.sin(q.life_time * v.stickbug_speed) * 12.25",
+									"y": "-math.sin(q.life_time * v.stickbug_speed) * 12.25",
 									"z": "0"
 								}
 							],
@@ -3712,7 +3751,7 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "67.5",
+									"x": "-67.5",
 									"y": "0",
 									"z": "0"
 								}
@@ -3736,8 +3775,8 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "112.5\n",
-									"y": "12.25\n- math.sin(q.life_time * v.stickbug_speed) * 33\n",
+									"x": "-112.5\n",
+									"y": "-12.25\n+ math.sin(q.life_time * v.stickbug_speed) * 33\n",
 									"z": "0"
 								}
 							],
@@ -3752,7 +3791,7 @@
 							"channel": "position",
 							"data_points": [
 								{
-									"x": "-1 - math.sin(q.life_time * v.stickbug_speed) * 1",
+									"x": "1 + math.sin(q.life_time * v.stickbug_speed) * 1",
 									"y": "0",
 									"z": "-math.sin(q.life_time * v.stickbug_speed) * 1\n- math.cos(q.life_time * v.stickbug_speed * 2) * 1"
 								}
@@ -3776,8 +3815,8 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "112.5\n",
-									"y": "-12.25\n- math.sin(q.life_time * v.stickbug_speed) * 33\n",
+									"x": "-112.5\n",
+									"y": "12.25\n+ math.sin(q.life_time * v.stickbug_speed) * 33\n",
 									"z": "0"
 								}
 							],
@@ -3792,7 +3831,7 @@
 							"channel": "position",
 							"data_points": [
 								{
-									"x": "1 - math.sin(q.life_time * v.stickbug_speed) * 1",
+									"x": "-1 + math.sin(q.life_time * v.stickbug_speed) * 1",
 									"y": "0",
 									"z": "math.sin(q.life_time * v.stickbug_speed) * 1\n- math.cos(q.life_time * v.stickbug_speed * 2) * 1"
 								}
@@ -3816,8 +3855,8 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "72\n",
-									"y": "-12.25\n- math.sin(q.life_time * v.stickbug_speed) * 22.5\n",
+									"x": "-72\n",
+									"y": "12.25\n+ math.sin(q.life_time * v.stickbug_speed) * 22.5\n",
 									"z": "0"
 								}
 							],
@@ -3832,7 +3871,7 @@
 							"channel": "position",
 							"data_points": [
 								{
-									"x": "1 - math.sin(q.life_time * v.stickbug_speed) * 0.25",
+									"x": "-1 + math.sin(q.life_time * v.stickbug_speed) * 0.25",
 									"y": "0",
 									"z": "-math.sin(q.life_time * v.stickbug_speed) * 0.5\n- math.cos(q.life_time * v.stickbug_speed * 2) * 0.75"
 								}
@@ -3856,8 +3895,8 @@
 							"channel": "rotation",
 							"data_points": [
 								{
-									"x": "72\n",
-									"y": "12.25\n- math.sin(q.life_time * v.stickbug_speed) * 22.5\n",
+									"x": "-72\n",
+									"y": "-12.25\n+ math.sin(q.life_time * v.stickbug_speed) * 22.5\n",
 									"z": "0"
 								}
 							],
@@ -3872,7 +3911,7 @@
 							"channel": "position",
 							"data_points": [
 								{
-									"x": "-1 - math.sin(q.life_time * v.stickbug_speed) * 0.25",
+									"x": "1 + math.sin(q.life_time * v.stickbug_speed) * 0.25",
 									"y": "0",
 									"z": "math.sin(q.life_time * v.stickbug_speed) * 0.5\n- math.cos(q.life_time * v.stickbug_speed * 2) * 0.75"
 								}
@@ -3888,7 +3927,7 @@
 							"channel": "position",
 							"data_points": [
 								{
-									"x": "-easeinoutquart(\n  linear_wave(q.life_time * v.stickbug_speed + 90 + 45)\n)",
+									"x": "easeinoutquart(\n  linear_wave(q.life_time * v.stickbug_speed + 90 + 45)\n)",
 									"y": "0",
 									"z": "0"
 								}
@@ -3904,7 +3943,7 @@
 							"channel": "position",
 							"data_points": [
 								{
-									"x": "1 - easeinoutquart(\n  linear_wave(q.life_time * v.stickbug_speed + 90 + 45)\n)",
+									"x": "-1 + easeinoutquart(\n  linear_wave(q.life_time * v.stickbug_speed + 90 + 45)\n)",
 									"y": "0",
 									"z": "0"
 								}
