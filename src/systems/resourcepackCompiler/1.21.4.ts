@@ -15,6 +15,7 @@ const compileResourcePack: ResourcePackCompiler = async ({
 	coreFiles,
 	versionedFiles,
 	rig,
+	resourcePackPath,
 	textureExportFolder,
 	modelExportFolder,
 }) => {
@@ -40,7 +41,7 @@ const compileResourcePack: ResourcePackCompiler = async ({
 	const { readFile } = promises
 
 	// Texture atlas
-	const blockAtlasPath = PathModule.join('assets/minecraft/atlases/blocks.json')
+	const blockAtlasPath = PathModule.join(resourcePackPath, 'assets/minecraft/atlases/blocks.json')
 	const blockAtlas: ITextureAtlas = await readFile(blockAtlasPath, 'utf-8')
 		.catch(() => {
 			console.log('Creating new block atlas...')
