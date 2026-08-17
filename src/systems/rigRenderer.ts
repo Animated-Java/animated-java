@@ -390,131 +390,132 @@ function renderNullObject(nullObject: NullObject, rig: IRenderedRig) {
 	rig.nodes[nullObject.uuid] = renderedNullObject
 }
 
-function renderGroup(
-	group: Group,
-	rig: IRenderedRig,
-	defaultVariant: IRenderedVariant
-): INodeStructure | undefined {
-	if (!group.export) return
-	const parentId = group.parent instanceof Group ? group.parent.uuid : undefined
+function renderGroup(rootGroup: Group, rig: IRenderedRig, defaultVariant: IRenderedVariant): void {
+	const stack: Group[] = [rootGroup]
 
-	const path = PathModule.join(rig.model_export_folder, group.name + `.json`)
-	const parsed = parseResourcePackPath(path)
+	while (stack.length > 0) {
+		const group = stack.pop()!
+		if (!group.export) continue
+		const parentId = group.parent instanceof Group ? group.parent.uuid : undefined
 
-	if (!parsed) {
-		console.error(group)
-		throw new Error(`Invalid bone path: ${group.name} -> ${path}`)
-	}
+		const path = PathModule.join(rig.model_export_folder, group.name + `.json`)
+		const parsed = parseResourcePackPath(path)
 
-	const renderedBone: IRenderedNodes['Bone'] = {
-		type: 'bone',
-		name: group.name,
-		storage_name: sanitizeStorageKey(group.name),
-		uuid: group.uuid,
-		parent: parentId,
-		bounding_box: getNodeBoundingBox(group),
-		base_scale: 1,
-		configs: structuredClone(group.configs),
-		on_summon_function: group.onSummonFunction?.trim(),
-		itemModelProperties: group.itemModelProperties
-			? structuredClone(group.itemModelProperties)
-			: undefined,
-		// This is a placeholder value that will be updated later once the animation renderer is run.
-		default_transform: {} as INodeTransform,
-	}
-	let groupModel = defaultVariant.models[group.uuid]
-	if (!groupModel) {
-		groupModel = defaultVariant.models[group.uuid] = {
-			model: {
-				textures: {
-					particle: 'minecraft:item/pufferfish',
-				},
-				display: { head: { rotation: [0, 180, 0] } },
-			},
-			custom_model_data: -1, // This is calculated when constructing the resource pack.
-			resource_location: parsed.resourceLocation,
-			item_model: parsed.resourceLocation,
+		if (!parsed) {
+			console.error(group)
+			throw new Error(`Invalid bone path: ${group.name} -> ${path}`)
 		}
-	}
 
-	for (const node of group.children) {
-		if (!node.export) continue
-		switch (true) {
-			case node instanceof Group: {
-				renderGroup(node, rig, defaultVariant)
-				break
-			}
-			case node instanceof Locator: {
-				renderLocator(node, rig)
-				break
-			}
-			case node instanceof TextDisplay: {
-				renderTextDisplay(node, rig)
-				break
-			}
-			case OutlinerElement.types.camera && node instanceof OutlinerElement.types.camera: {
-				renderCamera(node as ICamera, rig)
-				break
-			}
-			case node instanceof VanillaItemDisplay: {
-				renderItemDisplay(node, rig)
-				break
-			}
-			case node instanceof VanillaBlockDisplay: {
-				renderBlockDisplay(node, rig)
-				break
-			}
-			case node instanceof Interaction: {
-				renderInteraction(node, rig)
-				break
-			}
-			case node instanceof Cube: {
-				renderCube(node, rig, groupModel.model!)
-				rig.includes_custom_models = true
-				break
-			}
-			case node instanceof NullObject: {
-				renderNullObject(node, rig)
-				break
-			}
-			default:
-				console.warn(`Encountered unknown node type:`, node)
-		}
-	}
-
-	// Export a struct instead of a bone if no elements are present
-	if (!groupModel.model?.elements || groupModel.model.elements.length === 0) {
-		delete defaultVariant.models[group.uuid]
-		const struct: IRenderedNodes['Struct'] = {
-			type: 'struct',
+		const renderedBone: IRenderedNodes['Bone'] = {
+			type: 'bone',
 			name: group.name,
 			storage_name: sanitizeStorageKey(group.name),
 			uuid: group.uuid,
 			parent: parentId,
+			bounding_box: getNodeBoundingBox(group),
+			base_scale: 1,
+			configs: structuredClone(group.configs),
+			on_summon_function: group.onSummonFunction?.trim(),
+			itemModelProperties: group.itemModelProperties
+				? structuredClone(group.itemModelProperties)
+				: undefined,
 			default_transform: {} as INodeTransform,
 		}
-		rig.nodes[group.uuid] = struct
-		return
-	}
-
-	const diff = new THREE.Vector3().subVectors(
-		renderedBone.bounding_box.max,
-		renderedBone.bounding_box.min
-	)
-	const max = Math.max(diff.x, diff.y, diff.z)
-	const scale = Math.min(1, 24 / max)
-	for (const element of groupModel.model.elements) {
-		element.from = element.from.map(v => v * scale + 8)
-		element.to = element.to.map(v => v * scale + 8)
-		if (element.rotation && !Array.isArray(element.rotation)) {
-			element.rotation.origin = element.rotation.origin.map(
-				v => v * scale + 8
-			) as ArrayVector3
+		let groupModel = defaultVariant.models[group.uuid]
+		if (!groupModel) {
+			groupModel = defaultVariant.models[group.uuid] = {
+				model: {
+					textures: {
+						particle: 'minecraft:item/pufferfish',
+					},
+					display: { head: { rotation: [0, 180, 0] } },
+				},
+				custom_model_data: -1,
+				resource_location: parsed.resourceLocation,
+				item_model: parsed.resourceLocation,
+			}
 		}
-	}
 
-	renderedBone.base_scale = 1 / scale
-	rig.nodes[group.uuid] = renderedBone
+		const childGroups: Group[] = []
+		for (const node of group.children) {
+			if (!node.export) continue
+			switch (true) {
+				case node instanceof Group: {
+					childGroups.push(node)
+					break
+				}
+				case node instanceof Locator: {
+					renderLocator(node, rig)
+					break
+				}
+				case node instanceof TextDisplay: {
+					renderTextDisplay(node, rig)
+					break
+				}
+				case OutlinerElement.types.camera && node instanceof OutlinerElement.types.camera: {
+					renderCamera(node as ICamera, rig)
+					break
+				}
+				case node instanceof VanillaItemDisplay: {
+					renderItemDisplay(node, rig)
+					break
+				}
+				case node instanceof VanillaBlockDisplay: {
+					renderBlockDisplay(node, rig)
+					break
+				}
+				case node instanceof Interaction: {
+					renderInteraction(node, rig)
+					break
+				}
+				case node instanceof Cube: {
+					renderCube(node, rig, groupModel.model!)
+					rig.includes_custom_models = true
+					break
+				}
+				case node instanceof NullObject: {
+					renderNullObject(node, rig)
+					break
+				}
+				default:
+					console.warn(`Encountered unknown node type:`, node)
+			}
+		}
+		for (let i = childGroups.length - 1; i >= 0; i--) stack.push(childGroups[i])
+
+		if (!groupModel.model?.elements || groupModel.model.elements.length === 0) {
+			delete defaultVariant.models[group.uuid]
+			const struct: IRenderedNodes['Struct'] = {
+				type: 'struct',
+				name: group.name,
+				storage_name: sanitizeStorageKey(group.name),
+				uuid: group.uuid,
+				parent: parentId,
+				default_transform: {} as INodeTransform,
+			}
+			rig.nodes[group.uuid] = struct
+			continue
+		}
+
+		const diff = new THREE.Vector3().subVectors(
+			renderedBone.bounding_box.max,
+			renderedBone.bounding_box.min
+		)
+		const max = Math.max(diff.x, diff.y, diff.z)
+		const scale = Math.min(1, 24 / max)
+		for (const element of groupModel.model.elements) {
+			element.from = element.from.map(v => v * scale + 8)
+			element.to = element.to.map(v => v * scale + 8)
+			if (element.rotation && !Array.isArray(element.rotation)) {
+				element.rotation.origin = element.rotation.origin.map(
+					v => v * scale + 8
+				) as ArrayVector3
+			}
+		}
+
+		renderedBone.base_scale = 1 / scale
+		rig.nodes[group.uuid] = renderedBone
+	}
 }
 
 function renderItemDisplay(display: VanillaItemDisplay, rig: IRenderedRig) {
@@ -681,16 +682,12 @@ function renderCamera(camera: ICamera, rig: IRenderedRig) {
 function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 	const models: Record<string, IRenderedVariantModel> = {}
 
-	const defaultVariant = Variant.getDefault()
-	const defaultModels = rig.variants[defaultVariant.uuid].models
-
 	for (const [uuid, bone] of Object.entries(rig.nodes)) {
 		if (bone.type !== 'bone') continue
 		if (variant.excludedNodes.find(v => v.value === uuid)) continue
 		const textures: IRenderedModel['textures'] = {}
 
-		let isOnlyTransparent = true
-		const unreplacedTextures = new Set<string>(Object.keys(defaultModels[uuid].model!.textures))
+		let hasTextureChanges = false
 
 		for (const [fromUUID, toUUID] of variant.textureMap.map.entries()) {
 			const fromTexture = Texture.all.find(t => t.uuid === fromUUID)
@@ -699,22 +696,27 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 			if (!toTexture) throw new Error(`To texture not found: ${toUUID}`)
 			textures[fromTexture.id] = getTextureResourceLocation(toTexture, rig).resourceLocation
 			rig.textures[toTexture.id] = toTexture
-			isOnlyTransparent = false
+			hasTextureChanges = true
+		}
+
+		// Use the default model if the variant doesn't have any texture changes for this bone
+		if (!hasTextureChanges) {
+			const path = PathModule.join(rig.model_export_folder, bone.storage_name + '.json')
+			const parsed = parseResourcePackPath(path)
+			if (!parsed) {
+				throw new Error(`Invalid Bone Name: '${bone.storage_name}' -> '${path}'`)
+			}
+			models[uuid] = {
+				model: null,
+				custom_model_data: 1,
+				resource_location: parsed.resourceLocation,
+				item_model: parsed.resourceLocation,
+			}
+			continue
 		}
 
 		// Don't export models without any texture changes
 		if (Object.keys(textures).length === 0) continue
-
-		// Use empty model if all textures are transparent
-		if (isOnlyTransparent && unreplacedTextures.size === 0) {
-			models[uuid] = {
-				model: null,
-				custom_model_data: 1,
-				resource_location: 'animated_java:empty',
-				item_model: 'animated_java:empty',
-			}
-			continue
-		}
 
 		const modelParent = PathModule.join(rig.model_export_folder, bone.storage_name + '.json')
 		const parsed = parseResourcePackPath(modelParent)
