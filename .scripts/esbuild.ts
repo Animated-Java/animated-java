@@ -194,6 +194,7 @@ const COMMON_CONFIG: esbuild.BuildOptions = {
 	platform: 'browser',
 	external: ['node:*'],
 	loader: { '.svg': 'dataurl', '.ttf': 'binary', '.css': 'text' },
+	target: 'es2020',
 	plugins: [
 		langPlugin({
 			languageFolder: 'src/lang',
