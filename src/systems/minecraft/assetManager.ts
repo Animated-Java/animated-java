@@ -1,7 +1,6 @@
 import type { Unzipped } from 'fflate'
 import ky from 'ky'
 import { dirname, join } from 'node:path'
-import index from '../../assets/vanillaAssetOverrides/index.json'
 import { getFsModule } from '../../constants'
 import { unzip } from '../util'
 import { getVersionById, getVersionDownloadUrl } from './versionManager'
@@ -11,8 +10,6 @@ const CLIENT_JAR_FOLDER = join(SystemInfo.user_data_directory, `animated_java/cl
 const ASSETS_CACHE = new Map<string, Unzipped>()
 const FOLDER_CACHE = new Map<string, Record<string, Buffer>>()
 const ACTIVE_DOWNLOAD_PROMISES = new Map<string, Promise<void>>()
-
-const ASSET_OVERRIDES = index as unknown as Record<string, string>
 
 async function downloadFile(url: string, savePath: string) {
 	const response = await ky(url, {
@@ -76,6 +73,29 @@ export async function getAssets(versionId: string) {
 	return loadedAssets
 }
 
+/** A `block-model-renderer` virtual asset handler over a version's client jar. */
+export const getAssetHandler = async (versionId: string) => {
+	const assets = await getAssets(versionId)
+	const paths = Object.keys(assets)
+	return {
+		read(filePath: string): Uint8Array | null {
+			return assets[filePath] ?? null
+		},
+		list(dir: string): string[] {
+			const prefix = dir.endsWith('/') ? dir : dir + '/'
+			const children = new Set<string>()
+			for (const path of paths) {
+				if (!path.startsWith(prefix)) continue
+				const rest = path.slice(prefix.length)
+				const slash = rest.indexOf('/')
+				children.add(slash === -1 ? rest : rest.slice(0, slash))
+			}
+			return [...children]
+		},
+		filter: [] as unknown[],
+	}
+}
+
 export async function hasAsset(versionId: string, assetPath: string) {
 	const assets = await getAssets(versionId)
 	return assetPath in assets
@@ -83,10 +103,6 @@ export async function hasAsset(versionId: string, assetPath: string) {
 
 export async function getRawAsset(versionId: string, assetPath: string) {
 	const assets = await getAssets(versionId)
-
-	if (ASSET_OVERRIDES[assetPath]) {
-		return Buffer.from(ASSET_OVERRIDES[assetPath])
-	}
 
 	const asset = assets[assetPath]
 
@@ -125,11 +141,7 @@ export async function getFolder(versionId: string, folderPath: string) {
 	const folderAssets: Record<string, Buffer> = {}
 	for (const assetPath in assets) {
 		if (assetPath.startsWith(folderPath)) {
-			if (ASSET_OVERRIDES[assetPath]) {
-				folderAssets[assetPath] = Buffer.from(ASSET_OVERRIDES[assetPath])
-			} else {
-				folderAssets[assetPath] = Buffer.from(assets[assetPath])
-			}
+			folderAssets[assetPath] = Buffer.from(assets[assetPath])
 		}
 	}
 

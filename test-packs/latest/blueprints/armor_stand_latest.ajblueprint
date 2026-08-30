@@ -1163,7 +1163,7 @@
 			"visibility": true,
 			"locked": false,
 			"export": true,
-			"block": "minecraft:stone",
+			"block": "minecraft:oak_stairs[facing=north,shape=inner_right]",
 			"onSummonFunction": "",
 			"configs": {
 				"default": {
@@ -1196,7 +1196,7 @@
 			"visibility": true,
 			"locked": false,
 			"export": true,
-			"block": "minecraft:grass_block",
+			"block": "minecraft:command_block",
 			"onSummonFunction": "",
 			"configs": {
 				"default": {
@@ -1229,7 +1229,7 @@
 			"visibility": true,
 			"locked": false,
 			"export": true,
-			"block": "minecraft:oak_log",
+			"block": "minecraft:enchanting_table",
 			"onSummonFunction": "",
 			"configs": {
 				"default": {
@@ -1272,7 +1272,7 @@
 					"override_brightness": false,
 					"sky_brightness": 0,
 					"block_brightness": 0,
-					"enchanted": false,
+					"enchanted": true,
 					"glowing": false,
 					"override_glow_color": false,
 					"glow_color": "#ffffff",
@@ -1296,7 +1296,7 @@
 			"visibility": true,
 			"locked": false,
 			"export": true,
-			"item": "minecraft:orange_dye",
+			"item": "minecraft:gold_ingot",
 			"itemDisplay": "ground",
 			"onSummonFunction": "",
 			"configs": {
@@ -1330,7 +1330,7 @@
 			"visibility": true,
 			"locked": false,
 			"export": true,
-			"item": "minecraft:orange_dye",
+			"item": "minecraft:stone_sword",
 			"itemDisplay": "ground",
 			"onSummonFunction": "",
 			"configs": {
@@ -1353,6 +1353,159 @@
 			"scope": 0,
 			"uuid": "01475b0a-1cfb-55fc-f1f5-70dda0fc8d71",
 			"type": "animated_java:vanilla_item_display"
+		},
+		{
+			"name": "block_display6",
+			"position": [56, 0, -8],
+			"rotation": [0, 0, 0],
+			"pivotOffset": [0, 0, 0],
+			"scale": [1, 1.0625, 1],
+			"color": 9,
+			"visibility": true,
+			"locked": false,
+			"export": true,
+			"block": "minecraft:chest[facing=south]",
+			"onSummonFunction": "",
+			"configs": {
+				"default": {
+					"on_apply_function": "",
+					"billboard": "fixed",
+					"override_brightness": false,
+					"sky_brightness": 0,
+					"block_brightness": 0,
+					"enchanted": true,
+					"glowing": false,
+					"override_glow_color": false,
+					"glow_color": "#ffffff",
+					"invisible": false,
+					"shadow_radius": 0,
+					"shadow_strength": 1
+				},
+				"variants": {}
+			},
+			"scope": 0,
+			"uuid": "de661450-24fc-70c7-7927-1f0e5524f216",
+			"type": "animated_java:vanilla_block_display"
+		},
+		{
+			"name": "block_display8",
+			"position": [72, 0, -8],
+			"rotation": [0, 0, 0],
+			"pivotOffset": [0, 0, 0],
+			"scale": [1, 1.0625, 1],
+			"color": 9,
+			"visibility": true,
+			"locked": false,
+			"export": true,
+			"block": "minecraft:oak_slab[waterlogged=true]",
+			"onSummonFunction": "",
+			"configs": {
+				"default": {
+					"on_apply_function": "",
+					"billboard": "fixed",
+					"override_brightness": false,
+					"sky_brightness": 0,
+					"block_brightness": 0,
+					"enchanted": true,
+					"glowing": false,
+					"override_glow_color": false,
+					"glow_color": "#ffffff",
+					"invisible": false,
+					"shadow_radius": 0,
+					"shadow_strength": 1
+				},
+				"variants": {}
+			},
+			"scope": 0,
+			"uuid": "c6ac5d8b-0da4-b065-c8ca-1ab06a21aaee",
+			"type": "animated_java:vanilla_block_display"
+		},
+		{
+			"name": "item_display2",
+			"position": [32, 25, 0],
+			"rotation": [0, 0, 0],
+			"pivotOffset": [0, 0, 0],
+			"scale": [1, 1, 1],
+			"color": 6,
+			"visibility": true,
+			"locked": false,
+			"export": true,
+			"item": "minecraft:player_head",
+			"itemDisplay": "none",
+			"onSummonFunction": "",
+			"configs": {
+				"default": {},
+				"variants": {}
+			},
+			"scope": 0,
+			"uuid": "98c410fa-8f40-26b4-28f6-e6972180d138",
+			"type": "animated_java:vanilla_item_display"
+		},
+		{
+			"name": "block_display10",
+			"position": [88, 0, -8],
+			"rotation": [0, 0, 0],
+			"pivotOffset": [0, 0, 0],
+			"scale": [1, 1.0625, 1],
+			"color": 9,
+			"visibility": true,
+			"locked": false,
+			"export": true,
+			"block": "minecraft:water",
+			"onSummonFunction": "",
+			"configs": {
+				"default": {
+					"on_apply_function": "",
+					"billboard": "fixed",
+					"override_brightness": false,
+					"sky_brightness": 0,
+					"block_brightness": 0,
+					"enchanted": true,
+					"glowing": false,
+					"override_glow_color": false,
+					"glow_color": "#ffffff",
+					"invisible": false,
+					"shadow_radius": 0,
+					"shadow_strength": 1
+				},
+				"variants": {}
+			},
+			"scope": 0,
+			"uuid": "07e1c24e-d4e4-9284-6c7e-6628ac996110",
+			"type": "animated_java:vanilla_block_display"
+		},
+		{
+			"name": "block_display12",
+			"position": [104, 0, -8],
+			"rotation": [0, 0, 0],
+			"pivotOffset": [0, 0, 0],
+			"scale": [1, 1.0625, 1],
+			"color": 9,
+			"visibility": true,
+			"locked": false,
+			"export": true,
+			"block": "minecraft:lava",
+			"onSummonFunction": "",
+			"configs": {
+				"default": {
+					"on_apply_function": "",
+					"billboard": "fixed",
+					"override_brightness": false,
+					"sky_brightness": 0,
+					"block_brightness": 0,
+					"enchanted": true,
+					"glowing": false,
+					"override_glow_color": false,
+					"glow_color": "#ffffff",
+					"invisible": false,
+					"shadow_radius": 0,
+					"shadow_strength": 1
+				},
+				"variants": {}
+			},
+			"scope": 0,
+			"uuid": "f3872b69-65b3-2812-3827-518ece3e20e8",
+			"type": "animated_java:vanilla_block_display"
 		}
 	],
 	"groups": [
@@ -1739,7 +1892,7 @@
 					"override_brightness": false,
 					"sky_brightness": 0,
 					"block_brightness": 0,
-					"enchanted": false,
+					"enchanted": true,
 					"glowing": false,
 					"override_glow_color": true,
 					"glow_color": "#ffffff",
@@ -2098,9 +2251,14 @@
 		"857172ba-7e40-f659-9b57-c9e9030d5ebd",
 		"10960a14-0305-4213-fc7b-d9cb56e30a49",
 		"e1de5b7c-4e08-e515-6697-f24326e769c1",
+		"de661450-24fc-70c7-7927-1f0e5524f216",
+		"c6ac5d8b-0da4-b065-c8ca-1ab06a21aaee",
+		"07e1c24e-d4e4-9284-6c7e-6628ac996110",
+		"f3872b69-65b3-2812-3827-518ece3e20e8",
 		"446c95f8-f3ba-c843-c9b9-7c06fbd62da7",
 		"0a0e0205-c124-0e26-3a2f-1d35f08b8790",
-		"01475b0a-1cfb-55fc-f1f5-70dda0fc8d71"
+		"01475b0a-1cfb-55fc-f1f5-70dda0fc8d71",
+		"98c410fa-8f40-26b4-28f6-e6972180d138"
 	],
 	"textures": [
 		{

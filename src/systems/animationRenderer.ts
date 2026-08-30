@@ -60,7 +60,7 @@ function threeAxisRotationToTwoAxisRotation(rot: THREE.Quaternion): ArrayVector2
 
 export interface INodeTransform {
 	matrix: THREE.Matrix4
-	decomposed: {
+	decomposed?: {
 		translation: THREE.Vector3
 		left_rotation: THREE.Quaternion
 		scale: THREE.Vector3
@@ -238,7 +238,9 @@ export function getFrame(
 		const rot = new THREE.Quaternion()
 		const scale = new THREE.Vector3()
 		transform.matrix.decompose(pos, rot, scale)
-		transform.decomposed = getDecomposedTransformation(transform.matrix)
+		if (Project.animated_java.enable_plugin_mode) {
+			transform.decomposed = getDecomposedTransformation(transform.matrix)
+		}
 
 		if (node.type === 'locator' || node.type === 'camera' || node.type === 'interaction') {
 			node.max_distance = Math.max(node.max_distance, pos.length())

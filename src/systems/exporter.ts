@@ -4,7 +4,7 @@ import {
 	openExportProgressDialog,
 } from '../dialogs/exportProgress/exportProgress'
 import { openUnexpectedErrorDialog } from '../dialogs/unexpectedError/unexpectedError'
-import { projectTargetVersionIsAtLeast, saveBlueprint } from '../formats/blueprint'
+import { projectTargetVersionIsAtLeast } from '../formats/blueprint'
 import { validateThisProjectsBlueprintSettings } from '../formats/blueprint/settings'
 import { resolvePath } from '../util/fileUtil'
 import { localize as translate } from '../util/lang'
@@ -58,12 +58,10 @@ export function getExportPaths() {
 }
 
 interface ExportProjectOptions {
-	forceSave?: boolean
 	debugMode?: boolean
 }
 
 async function actuallyExportProject({
-	forceSave = true,
 	debugMode = false,
 }: ExportProjectOptions = {}): Promise<boolean> {
 	const aj = Project!.animated_java
@@ -160,7 +158,6 @@ async function actuallyExportProject({
 
 		Project!.last_used_blueprint_id = aj.blueprint_id
 
-		if (forceSave) saveBlueprint()
 		Blockbench.showQuickMessage('Project exported successfully!', 2000)
 
 		return true

@@ -1,397 +1,76 @@
 import { type ItemDisplayMode } from '../../outliner/vanillaItemDisplay'
-import { mergeGeometries } from '../../util/bufferGeometryUtils'
-import { getPathFromResourceLocation, parseResourceLocation } from '../../util/minecraftUtil'
-import { getJSONAsset, getPngAsset } from './assetManager'
-import { parseBlockModel } from './blockModelManager'
-import type { IItemModel } from './model'
-import { TEXTURE_FRAG_SHADER, TEXTURE_VERT_SHADER } from './textureShaders'
+import {
+	bmr,
+	cloneRenderedModel,
+	convertBmrGroup,
+	ensureConfigured,
+	getPreparedAssets,
+	type RenderedModelMesh,
+} from './bmrModelRenderer'
 
-interface ItemMesh {
-	mesh: THREE.Mesh
-	outline: THREE.LineSegments
-	boundingBox: THREE.BufferGeometry
-	isBlock?: boolean
-}
-
-const LOADER = new THREE.TextureLoader()
-const ITEM_MODEL_CACHE = new Map<string, ItemMesh>()
+const ITEM_MODEL_CACHE = new Map<string, RenderedModelMesh>()
+const ITEM_MODEL_PENDING = new Map<string, Promise<RenderedModelMesh>>()
 
 export async function getItemModel(
 	item: string,
 	itemDisplay: ItemDisplayMode,
 	minecraftVersion = Project.animated_java.target_minecraft_version
-): Promise<ItemMesh | undefined> {
-	const cacheKey = minecraftVersion + '|' + item + '|' + itemDisplay
-	let result = ITEM_MODEL_CACHE.get(cacheKey)
-	if (!result) {
-		result = await parseItemModel(getItemResourceLocation(item), itemDisplay)
-		ITEM_MODEL_CACHE.set(cacheKey, result)
-	}
-	if (!result) {
-		console.warn(`Failed to load item model for ${item} with display mode ${itemDisplay}`)
-		return undefined
-	}
-	result = {
-		mesh: result.mesh.clone(true),
-		outline: result.outline.clone(true),
-		boundingBox: result.boundingBox.clone(),
-		isBlock: result.isBlock,
+): Promise<RenderedModelMesh | undefined> {
+	const cacheKey = `${minecraftVersion}|${item}|${itemDisplay}`
+
+	let template = ITEM_MODEL_CACHE.get(cacheKey)
+	if (!template) {
+		let pending = ITEM_MODEL_PENDING.get(cacheKey)
+		if (!pending) {
+			pending = buildItemModel(item, itemDisplay, minecraftVersion)
+			ITEM_MODEL_PENDING.set(cacheKey, pending)
+			void pending.catch(() => undefined).finally(() => ITEM_MODEL_PENDING.delete(cacheKey))
+		}
+		template = await pending
+		ITEM_MODEL_CACHE.set(cacheKey, template)
 	}
 
-	result.mesh.geometry = result.mesh.geometry.clone()
-	result.outline.geometry = result.outline.geometry.clone()
-	result.mesh.name = item
-	if (result.isBlock) {
-		result.mesh.isVanillaBlockModel = true
-	} else {
-		result.mesh.isVanillaItemModel = true
-	}
-
-	return result
+	return cloneRenderedModel(template, item)
 }
 
-function getItemResourceLocation(item: string) {
-	const resource = parseResourceLocation(item)
-	return resource.namespace + ':' + 'item/' + resource.path
-}
-
-const GENERATED_ITEM_DISPLAY_SETTINGS: NonNullable<IItemModel['display']> = {
-	thirdperson_righthand: { translation: [0, 3, 1], scale: [0.55, 0.55, 0.55] },
-	thirdperson_lefthand: { translation: [0, 3, 1], scale: [0.55, 0.55, 0.55] },
-	firstperson_righthand: {
-		rotation: [0, -90, 25],
-		translation: [1.13, 3.2, 1.13],
-		scale: [0.68, 0.68, 0.68],
-	},
-	firstperson_lefthand: {
-		rotation: [0, -90, 25],
-		translation: [1.13, 3.2, 1.13],
-		scale: [0.68, 0.68, 0.68],
-	},
-	ground: { translation: [0, 2, 0], scale: [0.5, 0.5, 0.5] },
-	head: { rotation: [0, -180, 0], translation: [0, 13, 7] },
-	fixed: { rotation: [0, -180, 0] },
-}
-
-export function applyModelDisplayTransform(
-	itemModel: ItemMesh,
-	model: IItemModel,
-	itemDisplay: ItemDisplayMode
-) {
-	if (itemDisplay === 'none' || !model.display) return
-
-	// default to right hand if left hand display is not defined
-	if (!model.display.thirdperson_lefthand && model.display.thirdperson_righthand) {
-		model.display.thirdperson_lefthand = structuredClone(model.display.thirdperson_righthand)
-	}
-	if (!model.display.firstperson_lefthand && model.display.firstperson_righthand) {
-		model.display.firstperson_lefthand = structuredClone(model.display.thirdperson_righthand)
-	}
-
-	const display = model.display[itemDisplay]
-	if (!display) return
-
-	const matrix = new THREE.Matrix4()
-	if (display.rotation) {
-		const rot = display.rotation.map((n: number) => (n * Math.PI) / 180)
-		matrix.makeRotationFromEuler(Reusable.euler1.set(-rot[0], -rot[1], rot[2]))
-	}
-	if (display.scale) {
-		matrix.scale(Reusable.vec2.set(...display.scale))
-	}
-	if (display.translation) {
-		matrix.setPosition(
-			Reusable.vec1.set(
-				display.translation[0],
-				display.translation[1],
-				-display.translation[2]
-			)
-		)
-	}
-
-	itemModel.boundingBox.applyMatrix4(matrix)
-	itemModel.outline.geometry.applyMatrix4(matrix)
-	itemModel.mesh.applyMatrix4(matrix)
-}
-
-async function parseItemModel(
-	location: string,
+async function buildItemModel(
+	item: string,
 	itemDisplay: ItemDisplayMode,
-	childModel?: IItemModel
-): Promise<ItemMesh> {
-	const modelPath = getPathFromResourceLocation(location, 'models')
-	let model: IItemModel
-	try {
-		model = await getJSONAsset(
-			Project.animated_java.target_minecraft_version,
-			modelPath + '.json'
-		)
-	} catch {
-		// Fallback to block model if item model doesn't exist
-		model = await getJSONAsset(
-			Project.animated_java.target_minecraft_version,
-			modelPath.replace('item/', 'block/') + '.json'
-		)
+	minecraftVersion: string
+): Promise<RenderedModelMesh> {
+	ensureConfigured()
+	const assets = await getPreparedAssets(minecraftVersion)
+
+	const displayContext = itemDisplay === 'none' ? undefined : itemDisplay
+	const models = await bmr.parseItemDefinition(assets, item, {
+		version: minecraftVersion,
+		display: displayContext,
+	})
+	if (!models.length) {
+		throw new Error(`No model found for item '${item}'.`)
 	}
 
-	if (childModel) {
-		// if (childModel.ambientocclusion !== undefined)
-		// 	model.ambientocclusion = childModel.ambientocclusion
-		if (childModel.textures !== undefined) {
-			model.textures ??= {}
-			Object.assign(model.textures, childModel.textures)
-		}
-		// Interesting that elements aren't merged in vanilla...
-		if (childModel.elements !== undefined) model.elements = childModel.elements
-		if (childModel.display !== undefined)
-			Object.assign(model.display as any, childModel.display)
-		if (childModel.gui_light !== undefined) model.gui_light = childModel.gui_light
-		if (childModel.overrides !== undefined) model.overrides = childModel.overrides
-	}
+	// 'none' = no transform; any other mode uses the model's transform for that context.
+	const display =
+		itemDisplay === 'none'
+			? { rotation: [0, 0, 0] as [number, number, number] }
+			: { type: 'fallback' as const, display: itemDisplay }
 
-	if (model.parent) {
-		const resource = parseResourceLocation(model.parent)
-		if (resource.type === 'block') {
-			return await parseBlockModel(
-				{ model: model.parent, isItemModel: true },
-				model,
-				itemDisplay
-			)
-		} else if (resource.path === 'item/generated') {
-			const itemMesh = await generateItemMesh(location, model)
-			model.display ??= GENERATED_ITEM_DISPLAY_SETTINGS
-			applyModelDisplayTransform(itemMesh, model, itemDisplay)
-			return itemMesh
-		} else {
-			return await parseItemModel(model.parent, itemDisplay, model)
-		}
-	} else {
-		// The block model parser handles custom item models made from elements just fine, so we can use it here
-		return await parseBlockModel({ model: location, isItemModel: true }, model, itemDisplay)
-	}
-}
-
-async function generateItemMesh(location: string, model: IItemModel): Promise<ItemMesh> {
-	const masterMesh = new THREE.Mesh()
-	const boundingBoxes: THREE.BufferGeometry[] = []
-	const outlineGeos: THREE.BufferGeometry[] = []
-
-	for (const textureResourceLoc of Object.values(model.textures)) {
-		const texturePath = getPathFromResourceLocation(textureResourceLoc, 'textures') + '.png'
-		const textureUrl = await getPngAsset(
-			Project.animated_java.target_minecraft_version,
-			texturePath
-		)
-		const texture = await LOADER.loadAsync(textureUrl)
-		texture.magFilter = THREE.NearestFilter
-		texture.minFilter = THREE.NearestFilter
-
-		const mat = new THREE.ShaderMaterial({
-			uniforms: {
-				// @ts-expect-error Uniforms types are wrong
-				map: { type: 't', value: texture },
-				// @ts-expect-error Uniforms types are wrong
-				SHADE: { type: 'bool', value: settings.shading.value },
-				LIGHTCOLOR: {
-					// @ts-expect-error Uniforms types are wrong
-					type: 'vec3',
-					value: new THREE.Color()
-						.copy(Canvas.global_light_color)
-						.multiplyScalar((settings.brightness.value as number) / 50),
-				},
-				// @ts-expect-error Uniforms types are wrong
-				LIGHTSIDE: { type: 'int', value: Canvas.global_light_side },
-				// @ts-expect-error Uniforms types are wrong
-				EMISSIVE: { type: 'bool', value: false },
-			},
-			vertexShader: TEXTURE_VERT_SHADER,
-			fragmentShader: TEXTURE_FRAG_SHADER,
-			blending: THREE.NormalBlending,
-			side: Canvas.getRenderSide(),
-			transparent: true,
+	let isBlock = false
+	const root = new THREE.Group()
+	for (const model of models) {
+		const resolved = await bmr.resolveModelData(assets, model)
+		const modelIsBlock = resolved.type === 'block'
+		isBlock ||= modelIsBlock
+		const group = await bmr.loadModel(null, assets, resolved, {
+			display,
+			lighting: modelIsBlock ? 'world' : 'item',
+			version: minecraftVersion,
+			animate: false, // the auto-animator can't survive the per-element clone
 		})
-		// @ts-expect-error Uniforms types are wrong
-		mat.map = texture
-		mat.name = location
-
-		const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), mat)
-
-		const positionArray: number[] = []
-		const indices: number[] = []
-		const uvs: number[] = []
-		const normals: number[] = []
-		const colors: number[] = []
-		const addNormal = (x: number, y: number, z: number) => {
-			normals.push(x, y, z, x, y, z, x, y, z, x, y, z)
-		}
-
-		if (texture?.image.width) {
-			const canvas = document.createElement('canvas')
-			const ctx = canvas.getContext('2d')!
-			canvas.width = texture.image.width
-			canvas.height = texture.image.height
-			ctx.drawImage(texture.image as HTMLImageElement, 0, 0)
-
-			const addFace = (x: number, z: number, w: number, h: number, dir: number) => {
-				const s = positionArray.length / 3
-				const y = dir === 1 ? -1 : 0
-				// prettier-ignore
-				positionArray.push(
-					-x,     y, z,
-					-x,     y, z + 1,
-					-x - w, y, z + h,
-					-x - w, y, z + h - 1
-				)
-
-				if (dir === 1) {
-					indices.push(s + 0, s + 1, s + 2, s + 0, s + 2, s + 3)
-				} else if (dir === -1) {
-					indices.push(s + 0, s + 2, s + 1, s + 0, s + 3, s + 2)
-				}
-
-				addNormal(dir, 0, 0)
-				uvs.push(
-					(x + w) / canvas.width,
-					1 - z / canvas.height,
-					(x + w) / canvas.width,
-					1 - (z + h) / canvas.height,
-					x / canvas.width,
-					1 - (z + h) / canvas.height,
-					x / canvas.width,
-					1 - z / canvas.height
-				)
-				colors.push(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-			}
-
-			const addEdge = (
-				startX: number,
-				startY: number,
-				endX: number,
-				endY: number,
-				dir: number
-			) => {
-				const s = positionArray.length / 3
-				// prettier-ignore
-				positionArray.push(
-					-startX,  0, startY,
-					-startX, -1, startY,
-					-endX  , -1, endY,
-					-endX  ,  0, endY
-				)
-
-				if (dir === 1) {
-					indices.push(s + 0, s + 1, s + 2, s + 0, s + 2, s + 3)
-				} else if (dir === -1) {
-					indices.push(s + 0, s + 2, s + 1, s + 0, s + 3, s + 2)
-				}
-
-				if (startX == endX) {
-					startX += 0.1 * -dir
-					endX += 0.4 * -dir
-					startY += 0.1
-					endY -= 0.1
-					addNormal(-dir, 0, 0)
-				}
-				if (startY == endY) {
-					startY += 0.1 * dir
-					endY += 0.4 * dir
-					startX += 0.1
-					endX -= 0.1
-					addNormal(0, 0, -dir)
-				}
-				// prettier-ignore
-				uvs.push(
-					endX   / canvas.width, 1 - startY   / canvas.height,
-					endX   / canvas.width, 1 - endY     / canvas.height,
-					startX / canvas.width, 1 - endY     / canvas.height,
-					startX / canvas.width, 1 - startY   / canvas.height
-				)
-				colors.push(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-			}
-
-			const result = ctx.getImageData(0, 0, canvas.width, canvas.height)
-
-			const matrix1 = []
-			for (let i = 0; i < result.data.length; i += 4) {
-				matrix1.push(result.data[i + 3] > 140 ? 1 : 0)
-			}
-			const matrix2 = matrix1.slice()
-
-			let pixel = 0
-			for (let y = 0; y < canvas.height; y++) {
-				for (let x = 0; x < canvas.width; x++) {
-					pixel = matrix1[y * canvas.width + x]
-					if (pixel) {
-						addFace(x, y, 1, 1, 1)
-						addFace(x, y, 1, 1, -1)
-					}
-				}
-			}
-
-			for (let y = 0; y < canvas.height; y++) {
-				for (let x = 0; x <= canvas.width; x++) {
-					const px0 = x == 0 ? 0 : matrix1[y * canvas.width + x - 1]
-					const px1 = x == canvas.width ? 0 : matrix1[y * canvas.width + x]
-					if (!px0 !== !px1) {
-						addEdge(x, y, x, y + 1, px0 ? 1 : -1)
-					}
-				}
-			}
-
-			for (let x = 0; x < canvas.width; x++) {
-				for (let y = 0; y <= canvas.height; y++) {
-					const px0 = y == 0 ? 0 : matrix2[(y - 1) * canvas.width + x]
-					const px1 = y == canvas.height ? 0 : matrix2[y * canvas.width + x]
-					if (!px0 !== !px1) {
-						addEdge(x, y, x + 1, y, px0 ? -1 : 1)
-					}
-				}
-			}
-		}
-
-		positionArray.forEach((n, i) => {
-			positionArray[i] = n + [8, 0.5, -8][i % 3]
-		})
-
-		mesh.geometry.setAttribute(
-			'position',
-			new THREE.BufferAttribute(new Float32Array(positionArray), 3)
-		)
-		mesh.geometry.setAttribute(
-			'highlight',
-			new THREE.BufferAttribute(new Uint8Array(mesh.geometry.attributes.position.count), 1)
-		)
-		mesh.geometry.setIndex(indices)
-		mesh.geometry.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(uvs), 2))
-		mesh.geometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(colors), 3))
-		mesh.geometry.setAttribute(
-			'normal',
-			new THREE.BufferAttribute(new Float32Array(normals), 3)
-		)
-		mesh.geometry.attributes.color.needsUpdate = true
-		mesh.geometry.attributes.normal.needsUpdate = true
-
-		mesh.geometry.rotateX(Math.PI / 2)
-
-		const outlineGeo = mesh.geometry.clone()
-		// Remove the front and back face planes
-		const outlineVerts = Array.from(outlineGeo.attributes.position.array)
-		outlineVerts.splice(0, 24)
-		outlineGeo.setAttribute(
-			'position',
-			new THREE.BufferAttribute(new Float32Array(outlineVerts), 3)
-		)
-		outlineGeos.push(outlineGeo)
-		boundingBoxes.push(mesh.geometry.clone())
-		masterMesh.add(mesh)
+		root.add(group)
 	}
 
-	const outlineGeo = mergeGeometries(outlineGeos)
-	const boundingBox = mergeGeometries(boundingBoxes)!
-	const outline = new THREE.LineSegments(
-		new THREE.EdgesGeometry(outlineGeo!),
-		Canvas.outlineMaterial
-	)
-
-	return { mesh: masterMesh, outline, boundingBox }
+	// Item displays always pivot at the model's center, even for block items.
+	return convertBmrGroup(root, { pivot: 'center', isBlock })
 }

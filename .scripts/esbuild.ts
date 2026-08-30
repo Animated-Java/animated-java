@@ -20,7 +20,6 @@ import {
 	esbuildPluginSvelte,
 } from 'svelte-patching-tools/esbuildPlugin'
 import { TextDecoder } from 'util'
-import assetOverridePlugin from './plugins/assetOverridePlugin'
 import bufferPatchPlugin from './plugins/bufferPatchFunction.js'
 import langPlugin from './plugins/lang'
 import mcbCompressionPlugin from './plugins/mcbCompressionPlugin'
@@ -193,7 +192,7 @@ const COMMON_CONFIG: esbuild.BuildOptions = {
 	bundle: true,
 	platform: 'browser',
 	external: ['node:*'],
-	loader: { '.svg': 'dataurl', '.ttf': 'binary', '.css': 'text' },
+	loader: { '.svg': 'dataurl', '.ttf': 'binary', '.css': 'text', '.zip': 'dataurl' },
 	target: 'es2020',
 	plugins: [
 		langPlugin({
@@ -226,7 +225,6 @@ const COMMON_CONFIG: esbuild.BuildOptions = {
 			})
 		),
 		packagerPlugin(),
-		assetOverridePlugin(),
 		mcbCompressionPlugin(),
 		DEPENDENCY_QUARKS,
 	],
@@ -235,6 +233,10 @@ const COMMON_CONFIG: esbuild.BuildOptions = {
 		module: './.scripts/fakeModule.js',
 		'node:module': './.scripts/fakeModule.js',
 		'node:fs': './src/constants.ts',
+		// block-model-renderer's assets.zip isn't in its package exports; inlined it as a data URL instead.
+		'block-model-renderer/assets.zip': path.resolve(
+			'node_modules/block-model-renderer/assets.zip'
+		),
 	},
 	format: 'iife',
 	define: DEFINES,
