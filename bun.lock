@@ -5,7 +5,7 @@
     "": {
       "name": "animated_java",
       "dependencies": {
-        "block-model-renderer": "^2.1.0",
+        "block-model-renderer": "^2.15.2",
         "deepslate": "^0.19.2",
         "fflate": "^0.8.2",
         "generic-stream": "^3.0.1",
@@ -572,7 +572,7 @@
 
     "bl": ["bl@4.1.0", "", { "dependencies": { "buffer": "^5.5.0", "inherits": "^2.0.4", "readable-stream": "^3.4.0" } }, "sha512-1W07cM9gS6DcLperZfFSj+bWLtaPGSOHWhPiGzXmvVJbRLdG82sH/Kn8EtW1VqWVA54AKf2h5k5BbnIbwF3h6w=="],
 
-    "block-model-renderer": ["block-model-renderer@2.1.0", "", { "dependencies": { "gl": "^8.1.6", "headless-three": "^1.8.0", "sharp": "^0.34.5", "skia-canvas": "^3.0.8" }, "peerDependencies": { "three": ">=0.152.0" }, "optionalPeers": ["three"] }, "sha512-XCE6vj9e3VG3k7r6i+38sJhkzFP8bD4aleKsXV65bhUu/w7c5P1GCQPCn9N4lQGO597om9raBF4DTJ45u1C8jg=="],
+    "block-model-renderer": ["block-model-renderer@2.15.2", "", { "dependencies": { "gl": "^8.1.6", "headless-three": "^1.8.1", "sharp": "^0.34.5", "skia-canvas": "^3.0.8" }, "peerDependencies": { "three": ">=0.152.0" }, "optionalPeers": ["three"] }, "sha512-xE2LcLsKh9GX9injZ4dButM/l0zE8ds3IBOcW4QYm/JXz8g/tt1UZMtcvuRDIoxK35/w5ys1R01LVUfndtO2bg=="],
 
     "blockbench-patch-manager": ["blockbench-patch-manager@1.1.0", "", { "dependencies": { "blockbench-types": "^5.1.0-beta.1", "simple-subpub": "^1.2.0", "svelte": "^5.46.3", "svelte-observable-store": "^1.0.1", "svelte-preprocess": "^6.0.3", "svelte-preprocess-esbuild": "^3.0.1" }, "peerDependencies": { "typescript": "^5" } }, "sha512-68FXezYJ3HdkVcam90r/MY8W2gS8jZeitfUz3XXnC/XyDkHJZlLr8dpFJmJrrUqUSBVRG7wweOhbs/tn+znotQ=="],
 
@@ -854,7 +854,7 @@
 
     "hasown": ["hasown@2.0.2", "", { "dependencies": { "function-bind": "^1.1.2" } }, "sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ=="],
 
-    "headless-three": ["headless-three@1.8.0", "", { "dependencies": { "gl": "^8.1.6", "sharp": "^0.34.5", "three": "0.162.0" } }, "sha512-xI9UOW4F0HVRIeWxVmqTdNMUyxjsotrlJjCdHNisX1E/OTAPZCCYfvDsXqfKPcaBzbWmIEXrzaeifCRVHR/EWQ=="],
+    "headless-three": ["headless-three@1.9.0", "", { "dependencies": { "gl": "^8.1.6", "sharp": "^0.34.5", "three": "0.162.0" } }, "sha512-4QuRO2VPE2Dlt7dhwkUU29oETHLjKNbZmd7vOks/GfDZnQG3WogF37QlUtrUr/uS7IHuzHodVr0uAg2uYszguA=="],
 
     "http-cache-semantics": ["http-cache-semantics@4.1.1", "", {}, "sha512-er295DKPVsV82j5kw1Gjt+ADA/XYHsajl82cGNQG2eyoPkvgUhX+nDIyelzhIWbbsXP39EHcI6l5tYs2FYqYXQ=="],
 
