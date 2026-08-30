@@ -213,8 +213,11 @@ const compileResourcePack: ResourcePackCompiler = async ({
 	}
 
 	// Texture atlas
-	const blockAtlasPath = PathModule.join(resourcePackPath, 'assets/minecraft/atlases/blocks.json')
-	const blockAtlas: ITextureAtlas = await readFile(blockAtlasPath, 'utf-8')
+	const blockAtlasPath = 'assets/minecraft/atlases/blocks.json'
+	const blockAtlas: ITextureAtlas = await readFile(
+		PathModule.join(resourcePackPath, blockAtlasPath),
+		'utf-8'
+	)
 		.catch(() => {
 			console.log('Creating new block atlas...')
 			return '{ "sources": [] }'
