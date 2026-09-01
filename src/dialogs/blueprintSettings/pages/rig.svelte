@@ -7,15 +7,18 @@
 
 	const localize = createScopedTranslator('dialog.blueprint_settings')
 
+	let dataPackExportFormat = $state(Project.animated_java.data_pack_export_mode)
 	let customRigEntityTags = $state(Project.animated_java.custom_rig_entity_tags)
 	let interpolationDuration = $state(Project.animated_java.interpolation_duration)
 	let teleportationDuration = $state(Project.animated_java.teleportation_duration)
+	let autoUpdateRigOrientation = $state(Project.animated_java.auto_update_rig_orientation)
 	let useEntityStacking = $state(Project.animated_java.use_entity_stacking)
 
 	onDestroy(() => {
 		Project.animated_java.custom_rig_entity_tags = customRigEntityTags
 		Project.animated_java.interpolation_duration = interpolationDuration
 		Project.animated_java.teleportation_duration = teleportationDuration
+		Project.animated_java.auto_update_rig_orientation = autoUpdateRigOrientation
 		Project.animated_java.use_entity_stacking = useEntityStacking
 	})
 </script>
@@ -43,6 +46,14 @@
 	min={0}
 	max={2147483647}
 />
+
+{#if dataPackExportFormat !== 'none'}
+	<Checkbox
+		label={localize('auto_update_rig_orientation.title')}
+		description={localize('auto_update_rig_orientation.description')}
+		bind:value={autoUpdateRigOrientation}
+	></Checkbox>
+{/if}
 
 <Checkbox
 	label={localize('use_entity_stacking.title')}
