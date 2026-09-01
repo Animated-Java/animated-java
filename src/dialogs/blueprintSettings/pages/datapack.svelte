@@ -2,7 +2,6 @@
 	import { onDestroy } from 'svelte'
 	import { validateDataPackFolder, validateZipPath } from '../../../formats/blueprint/settings'
 	import BoxSelect from '../../../svelteComponents/sidebarDialogItems/boxSelect.svelte'
-	import Checkbox from '../../../svelteComponents/sidebarDialogItems/checkbox.svelte'
 	import SelectFile from '../../../svelteComponents/sidebarDialogItems/selectFile.svelte'
 	import SelectFolder from '../../../svelteComponents/sidebarDialogItems/selectFolder.svelte'
 	import { createScopedTranslator } from '../../../util/lang'
@@ -14,13 +13,11 @@
 	let animationSystem = $state(
 		Project.animated_java.use_storage_for_animation ? 'storage' : 'functions'
 	)
-	let autoUpdateRigOrientation = $state(Project.animated_java.auto_update_rig_orientation)
 
 	onDestroy(() => {
 		Project.animated_java.data_pack_export_mode = dataPackExportFormat
 		Project.animated_java.data_pack = dataPackLocation
 		Project.animated_java.use_storage_for_animation = animationSystem === 'storage'
-		Project.animated_java.auto_update_rig_orientation = autoUpdateRigOrientation
 	})
 </script>
 
@@ -66,12 +63,6 @@
 	{/if}
 
 	{#if dataPackExportFormat !== 'none'}
-		<Checkbox
-			label={translate('auto_update_rig_orientation.title')}
-			description={translate('auto_update_rig_orientation.description')}
-			bind:value={autoUpdateRigOrientation}
-		></Checkbox>
-
 		<BoxSelect
 			label={translate('animation_system.title')}
 			description={translate('animation_system.description')}
