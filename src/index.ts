@@ -22,6 +22,7 @@ import './systems/minecraft/assetManager'
 import './systems/minecraft/blockstateManager'
 import './systems/minecraft/fontManager'
 import './systems/minecraft/fontRenderer'
+import './systems/minecraft/previewResourcePack'
 import './systems/minecraft/registryManager'
 import './systems/minecraft/versionManager'
 // Shaders

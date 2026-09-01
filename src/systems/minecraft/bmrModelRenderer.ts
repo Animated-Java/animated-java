@@ -1,7 +1,7 @@
 import * as bmr from 'block-model-renderer'
 import ASSETS_ZIP_URL from 'block-model-renderer/assets.zip'
 import { mergeGeometries } from '../../util/bufferGeometryUtils'
-import { getAssetHandler } from './assetManager'
+import { getAssetHandler, getPreviewResourcePackKey } from './assetManager'
 
 /** The editor-preview mesh for a vanilla item or block model. */
 export interface RenderedModelMesh {
@@ -23,18 +23,29 @@ type PreparedAssets = Awaited<ReturnType<typeof bmr.prepareAssets>>
 
 const PREPARED_ASSETS_CACHE = new Map<string, Promise<PreparedAssets>>()
 
-/** A cached bmr asset bundle over the client jar for the given version. */
+/** A cached bmr asset bundle over the client jar (plus preview pack) for the given version. */
 export async function getPreparedAssets(versionId: string): Promise<PreparedAssets> {
-	let prepared = PREPARED_ASSETS_CACHE.get(versionId)
+	// The preview resource pack overlays the client jar, so its token is part of
+	// our cache key or a swapped pack keeps serving the old bundle.
+	const previewKey = getPreviewResourcePackKey()
+	const cacheKey = previewKey ? `${versionId}::${previewKey}` : versionId
+	let prepared = PREPARED_ASSETS_CACHE.get(cacheKey)
 	if (!prepared) {
 		prepared = (async () => {
 			const handler = await getAssetHandler(versionId)
-			// `version` must be pinned here: the { cache: true } cache isn't version-aware.
-			return bmr.prepareAssets([handler], { cache: true, version: versionId })
+			// bmr's { cache: true } store isn't version-aware, so `version` must be
+			// pinned to `versionId` (renders pass that same value). It also can't tell
+			// preview-pack overlays apart, so bypass it entirely while one is active.
+			return bmr.prepareAssets([handler], { cache: !previewKey, version: versionId })
 		})()
-		PREPARED_ASSETS_CACHE.set(versionId, prepared)
+		PREPARED_ASSETS_CACHE.set(cacheKey, prepared)
 	}
 	return prepared
+}
+
+/** Drops every cached bmr asset bundle. Call when the preview resource pack changes. */
+export function clearPreparedAssetsCache() {
+	PREPARED_ASSETS_CACHE.clear()
 }
 
 function toPositionOnlyWorldGeometry(

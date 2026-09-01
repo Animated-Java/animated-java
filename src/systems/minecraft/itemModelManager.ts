@@ -33,6 +33,12 @@ export async function getItemModel(
 	return cloneRenderedModel(template, item)
 }
 
+/** Drops every cached item model. Call when the preview resource pack changes. */
+export function clearItemModelCache() {
+	ITEM_MODEL_CACHE.clear()
+	ITEM_MODEL_PENDING.clear()
+}
+
 async function buildItemModel(
 	item: string,
 	itemDisplay: ItemDisplayMode,

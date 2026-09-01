@@ -151,6 +151,7 @@ animated_java:
         rig.title: Rig
         event_functions.title: Event Functions
         plugin.title: Plugin
+        preview.title: Preview
         misc.title: Misc
 
       project_settings:
@@ -289,6 +290,31 @@ animated_java:
             does_not_exist: Selected path does not exist.
             not_a_dir: Selected path is not a directory.
             no_pack_mcmeta: Selected folder does not contain a pack.mcmeta file.
+      preview:
+        list:
+          title: Preview Resource Packs
+          hint: |-
+            [Markdown]
+            Load custom Resource Packs to preview custom fonts, models, and textures directly in the editor.
+
+            This only affects the editor preview - it is never exported, and does not replace your Blueprint's own Resource Pack.
+
+            Each entry is a Resource Pack folder (containing a `pack.mcmeta` file) or a `.zip` archive. Packs higher in the list override packs below them.
+          add: Add Pack
+          empty: No preview Resource Packs.
+          placeholder: Path to a Resource Pack folder or .zip
+          browse_folder: Select a folder
+          browse_zip: Select a .zip file
+          move_up: Move up
+          move_down: Move down
+          remove: Remove
+          error:
+            entry: 'Pack %s: %s'
+          warning:
+            entry: 'Pack %s: %s'
+        error:
+          zip_is_a_dir: Path ends with `.zip` but is a folder.
+        reload: Reload Preview
       data_pack_settings:
         title: Data Pack
       data_pack:
