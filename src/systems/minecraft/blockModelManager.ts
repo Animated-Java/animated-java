@@ -82,6 +82,12 @@ async function buildBlockModel(
 	return { ...converted, isBlock: true }
 }
 
+/** Drops every cached block model. Call when the preview resource pack changes. */
+export function clearBlockModelCache() {
+	BLOCK_MODEL_CACHE.clear()
+	BLOCK_MODEL_PENDING.clear()
+}
+
 export function validateBlockState(block: IParsedBlock) {
 	if (!block.blockStateRegistryEntry) {
 		if (Object.keys(block.states).length > 0) {

@@ -18,6 +18,7 @@ import EventFunctionsComponent from './pages/eventFunctions.svelte'
 import GeneralComponent from './pages/general.svelte'
 import MiscComponent from './pages/misc.svelte'
 import PluginComponent from './pages/plugin.svelte'
+import PreviewComponent from './pages/preview.svelte'
 import ResourcepackComponent from './pages/resourcepack.svelte'
 import RigComponent from './pages/rig.svelte'
 
@@ -64,6 +65,11 @@ export function openBlueprintSettings() {
 				condition: () => Project.pluginMode.get() === true,
 				label: localize('pages.plugin.title'),
 				icon: 'fa-paper-plane',
+			},
+			preview: {
+				component: PreviewComponent,
+				label: localize('pages.preview.title'),
+				icon: 'visibility',
 			},
 			misc: {
 				component: MiscComponent,
