@@ -69,7 +69,10 @@ export function convertBmrGroup(
 	options: { pivot: 'center' | 'corner'; isBlock?: boolean }
 ): RenderedModelMesh {
 	const wrapper = new THREE.Group()
-	wrapper.rotation.y = Math.PI
+	if (!options.isBlock) {
+		// Only rotate non-block models around the Y axis.
+		wrapper.rotation.y = Math.PI
+	}
 	if (options.pivot === 'corner') wrapper.position.set(8, 8, 8)
 	wrapper.add(root)
 	wrapper.updateMatrixWorld(true)
