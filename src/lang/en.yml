@@ -950,6 +950,14 @@ animated_java:
       title: Displayed Block
       description: The block to display. Supports block states!
 
+    textures:
+      linked_icon: |-
+        Linked texture
+        Loaded from a resource pack and referenced by its resource location. Not exported with the Blueprint.
+      internal_icon: |-
+        Internal texture
+        Stored in the Blueprint file and written to the Blueprint's texture folder on export.
+
   animation:
     excluded_nodes: Excluded Nodes
     invert_excluded_nodes: Invert Excluded Nodes
