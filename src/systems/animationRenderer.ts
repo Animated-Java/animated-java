@@ -170,16 +170,23 @@ export function getFrame(
 			case 'block_display':
 			case 'bone': {
 				transform.matrix = getNodeMatrix(outlinerNode, node.base_scale)
-				// Inherit instant interpolation from parent
-				if (node.parent && node.parent !== 'root') {
-					const parentKeyframes = keyframeCache.get(node.parent)
-					const parentKeyframe = parentKeyframes?.get(time)
-					const prevParentKeyframe = parentKeyframes?.get(time - 0.05)
-					if (parentKeyframe?.interpolation === 'step') {
+				// Inherit instant interpolation from the nearest keyframed ancestor.
+				let ancestorUuid = node.parent
+				while (ancestorUuid && ancestorUuid !== 'root') {
+					const ancestorKeyframes = keyframeCache.get(ancestorUuid)
+					const ancestorKeyframe = ancestorKeyframes?.get(time)
+					const prevAncestorKeyframe = ancestorKeyframes?.get(time - 0.05)
+					if (ancestorKeyframe?.interpolation === 'step') {
 						transform.interpolation = 'step'
-					} else if (prevParentKeyframe?.data_points.length === 2) {
+						break
+					} else if (prevAncestorKeyframe?.data_points.length === 2) {
 						transform.interpolation = 'pre-post'
+						break
+					} else if (ancestorKeyframe) {
+						// This ancestor moved with normal interpolation; nothing to inherit.
+						break
 					}
+					ancestorUuid = nodeMap[ancestorUuid]?.parent
 				}
 				// Only add the frame if the matrix has changed, this is the first frame, or there is an interpolation change.
 				if (
