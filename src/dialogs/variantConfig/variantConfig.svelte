@@ -10,6 +10,7 @@
 <script lang="ts">
 	import CodeInput from '../../svelteComponents/dialogItems/codeInput.svelte'
 	import Collection from '../../svelteComponents/dialogItems/collection.svelte'
+	import TextureSelect from '../../svelteComponents/textureSelect.svelte'
 	import { getAvailableNodes } from '../../util/excludedNodes'
 
 	export let variant: Variant
@@ -55,38 +56,16 @@
 		textureMapUpdated++
 	}
 
-	function getTextureSrc(uuid: string) {
-		const texture = AVAILABLE_TEXTURES.find(t => t.uuid === uuid)
-		if (!texture) return MissingTexture
-		return texture.img.src
-	}
-
-	function selectNewPrimaryTexture(e: Event, oldPrimaryUUID: string) {
-		const select = e.target as HTMLSelectElement
-		const textureName = select.value.trim()
-		const newPrimaryUUID = PRIMARY_TEXTURES.find(t => t.name === textureName)?.uuid
-		if (!newPrimaryUUID) {
-			console.error(`Failed to find new primary texture with the name: ${textureName}`)
-			return
-		}
+	function setPrimaryTexture(oldPrimaryUUID: string, newPrimaryUUID: string) {
+		if (newPrimaryUUID === oldPrimaryUUID) return
 		const secondaryUuid = textureMap.get(oldPrimaryUUID)
-		if (!secondaryUuid) {
-			console.error(`Failed to find secondary texture with the uuid: ${oldPrimaryUUID}`)
-			return
-		}
+		if (!secondaryUuid) return
 		textureMap.delete(oldPrimaryUUID)
 		textureMap.add(newPrimaryUUID, secondaryUuid)
 		textureMapUpdated++
 	}
 
-	function selectNewSecondaryTexture(e: Event, primaryUUID: string) {
-		const select = e.target as HTMLSelectElement
-		const textureName = select.value.trim()
-		const newSecondaryUUID = SECONDARY_TEXTURES.find(t => t.name === textureName)?.uuid
-		if (!newSecondaryUUID) {
-			console.error(`Failed to find new secondary texture with the name: ${textureName}`)
-			return
-		}
+	function setSecondaryTexture(primaryUUID: string, newSecondaryUUID: string) {
 		textureMap.add(primaryUUID, newSecondaryUUID)
 		textureMapUpdated++
 	}
@@ -152,45 +131,26 @@
 				style={[...textureMap.map.entries()].length === 0 ? 'min-height: 2rem;' : ''}
 			>
 				{#each [...textureMap.map.entries()] as entry}
-					<div class="texture-mapping-item"></div>
 					<li class="texture-mapping-item">
-						<div class="texture-mapping-item-dropdown-container">
-							<div class="img-container">
-								<img src={getTextureSrc(entry[0])} alt="" />
-							</div>
-							<select
-								class="texture-mapping-item-dropdown"
-								onchange={e => selectNewPrimaryTexture(e, entry[0])}
-							>
-								{#each PRIMARY_TEXTURES as texture}
-									<option selected={texture.uuid === entry[0]}>
-										{texture.name}
-									</option>
-								{/each}
-							</select>
-						</div>
+						<TextureSelect
+							textures={PRIMARY_TEXTURES}
+							value={entry[0]}
+							missingSrc={MissingTexture}
+							onchange={uuid => setPrimaryTexture(entry[0], uuid)}
+						/>
 
 						<i class="material-icons icon">east</i>
 
-						<div class="texture-mapping-item-dropdown-container">
-							<div class="img-container">
-								<img src={getTextureSrc(entry[1])} alt="" />
-							</div>
-							<select
-								class="texture-mapping-item-dropdown"
-								onchange={e => selectNewSecondaryTexture(e, entry[0])}
-							>
-								{#each SECONDARY_TEXTURES as texture}
-									<option selected={texture.uuid === entry[1]}>
-										{texture.name}
-									</option>
-								{/each}
-							</select>
-						</div>
+						<TextureSelect
+							textures={SECONDARY_TEXTURES}
+							value={entry[1]}
+							missingSrc={MissingTexture}
+							onchange={uuid => setSecondaryTexture(entry[0], uuid)}
+						/>
 
 						<!-- svelte-ignore a11y_click_events_have_key_events -->
 						<i
-							class="material-icons icon tool"
+							class="material-icons icon tool trash"
 							onclick={() => deleteTextureMapping(entry[0])}>delete</i
 						>
 					</li>
@@ -256,50 +216,24 @@
 		font-style: italic;
 		text-align: center;
 	}
-	.img-container {
-		display: flex;
-		align-items: flex-start;
-		width: 128px;
-		height: 128px;
-		pointer-events: none;
-		background: repeating-conic-gradient(var(--color-dark) 0% 25%, transparent 0% 50%) 50% /
-			16px 16px;
-	}
-	img {
-		width: 128px;
-		pointer-events: none;
-	}
 	.texture-mapping-item {
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
-	}
-	.texture-mapping-item-dropdown-container {
-		position: relative;
-		flex-grow: 1;
-		height: 164px;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-	}
-	.texture-mapping-item-dropdown {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		max-width: 128px;
+		gap: 16px;
+		background-color: var(--color-back);
+		padding: 8px;
 	}
 	.texture-map-container {
 		display: flex;
 		flex-direction: column;
-		border: 1px solid var(--color-border);
-		background-color: var(--color-back);
+		align-items: stretch;
+		justify-content: flex-start;
 		padding: 4px;
+		gap: 4px;
 		overflow-y: auto;
 		max-height: 600px;
-		overflow-y: auto;
-		max-height: 16rem;
-		min-height: 12rem;
+		min-height: fit-content;
+		width: 100%;
 	}
 	.spacer {
 		flex-grow: 1;
@@ -315,5 +249,8 @@
 		margin-top: 4px;
 		margin-bottom: 16px;
 		max-width: 80%;
+	}
+	.trash {
+		height: unset;
 	}
 </style>
