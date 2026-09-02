@@ -2,7 +2,6 @@
 
 # DIFFERENCES FROM 1.20.5:
 # - @n entity selector
-# - minecraft:item_model item component: item.components."minecraft:custom_model_data" -> item.components."minecraft:item_model"
 
 function on_load {
 	data modify storage <%project_storage%> rig_hash set value <%"'" + rig_hash + "'"%>
@@ -1645,11 +1644,12 @@ IF (Object.keys(rig.variants).length > 1) {
 						run \
 							block zzz/apply_to_node_<%node.storage_name%> {
 								IF (node.type === 'bone' && variant.models[node.uuid] !== undefined) {
+									# minecraft:item_model does not exist until 1.21.2.
 									# Special case for `animated_java:empty` model.
 									IF (variant.models[node.uuid].model === null) {
-										data modify entity @s item.components."minecraft:item_model" set value "animated_java:empty"
+										data modify entity @s item.components."minecraft:custom_model_data" set value 1
 									} ELSE {
-										data modify entity @s item.components."minecraft:item_model" set value "<%variant.models[node.uuid].item_model%>"
+										data modify entity @s item.components."minecraft:custom_model_data" set value <%variant.models[node.uuid].custom_model_data%>
 									}
 								}
 							IF (node.configs.variants[variant.uuid] || variant.is_default && node.configs.default) {
