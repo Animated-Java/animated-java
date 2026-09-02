@@ -55,7 +55,7 @@ interface GlyphGeo {
 	width: number
 }
 
-// version -> fontId -> char -> [styleFlags 0..15]
+// (version + previewPackKey) -> fontId -> char -> [styleFlags 0..15]
 const GLYPH_GEO_CACHE = new Map<string, Map<string, Map<string, Array<GlyphGeo | undefined>>>>()
 // raw colour value -> resolved THREE colour + alpha, kept across renders
 const COLOR_CACHE = new Map<string, ColorInfo>()
@@ -169,9 +169,9 @@ function buildGlyphGeo(font: MinecraftFont, char: string, flags: number): GlyphG
 	return geo
 }
 
-function getGlyphGeo(version: string, font: MinecraftFont, char: string, flags: number): GlyphGeo {
-	let byFont = GLYPH_GEO_CACHE.get(version)
-	if (!byFont) GLYPH_GEO_CACHE.set(version, (byFont = new Map()))
+function getGlyphGeo(scope: string, font: MinecraftFont, char: string, flags: number): GlyphGeo {
+	let byFont = GLYPH_GEO_CACHE.get(scope)
+	if (!byFont) GLYPH_GEO_CACHE.set(scope, (byFont = new Map()))
 	let byChar = byFont.get(font.id)
 	if (!byChar) byFont.set(font.id, (byChar = new Map()))
 	let byFlags = byChar.get(char)
@@ -180,7 +180,7 @@ function getGlyphGeo(version: string, font: MinecraftFont, char: string, flags: 
 }
 
 // ---------------------------------------------------------------------------
-// Layout (wrap + place), cached per (version, text, maxLineWidth)
+// Layout (wrap + place), cached per (version + previewPackKey, text, maxLineWidth)
 // ---------------------------------------------------------------------------
 
 interface GlyphPlacement {
@@ -210,7 +210,7 @@ interface TextLayout {
 }
 
 function buildLayout(
-	version: string,
+	scope: string,
 	baseFont: MinecraftFont,
 	segments: ReturnType<typeof resolveComponent>,
 	maxLineWidth: number
@@ -234,7 +234,7 @@ function buildLayout(
 			const mainColor = style.color ?? (COLORS.white as Color)
 			const shadowColor = style.shadow_color
 			for (const char of segment.text) {
-				const geo = getGlyphGeo(version, styledFont, char, flags)
+				const geo = getGlyphGeo(scope, styledFont, char, flags)
 				if (geo.tris || geo.decoTris.length > 0) {
 					glyphs.push({ geo, relX, mainColor, shadowColor })
 				}
@@ -355,18 +355,23 @@ export async function generateTextDisplayMesh({
 	const stopwatch = new Stopwatch('Generate Text Display Mesh').start()
 
 	const version = Project.animated_java.target_minecraft_version
+	// Scope every glyph/layout cache entry to the active preview resource pack so a
+	// text-mesh build that started before an overlay swap (e.g. project-load renders
+	// racing the SELECT_AJ_PROJECT overlay apply) writes into its own now-orphaned
+	// bucket instead of poisoning the caches the post-swap rebuild reads.
+	const cacheScope = version + '\0' + getPreviewResourcePackKey()
 	const font = await MinecraftFont.getById('minecraft:default')
 	if (!font) throw new Error('Could not load the default Minecraft font')
 
 	// --- Wrap + place (cached per component) ------------------------------
 	const layoutKey =
-		cacheKey === undefined ? undefined : version + '\0' + maxLineWidth + '\0' + cacheKey
+		cacheKey === undefined ? undefined : cacheScope + '\0' + maxLineWidth + '\0' + cacheKey
 	let layout = layoutKey === undefined ? undefined : LAYOUT_CACHE.get(layoutKey)
 	if (!layout) {
 		const lang = await getLangMap(version)
 		const segments = resolveComponent(jsonText, { translate: key => lang[key] })
 		await preloadReferencedFonts(segments)
-		layout = buildLayout(version, font, segments, maxLineWidth)
+		layout = buildLayout(cacheScope, font, segments, maxLineWidth)
 		if (layoutKey !== undefined) {
 			if (LAYOUT_CACHE.size >= LAYOUT_CACHE_LIMIT) LAYOUT_CACHE.clear()
 			LAYOUT_CACHE.set(layoutKey, layout)
