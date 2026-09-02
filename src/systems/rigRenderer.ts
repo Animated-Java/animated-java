@@ -18,8 +18,9 @@ import {
 } from '../util/minecraftUtil'
 import { Variant } from '../variants'
 import {
+	AnimationSampler,
 	correctSceneAngle,
-	getFrame,
+	getAnimatableNodes,
 	type INodeTransform,
 	restoreSceneAngle,
 	updatePreview,
@@ -350,20 +351,22 @@ export function getTextureResourceLocation(texture: Texture, rig: IRenderedRig) 
 	throw new Error(`Invalid texture path: ${path}`)
 }
 
+const BOUNDING_BOX_POINT_SCRATCH = new THREE.Vector3()
 function getNodeBoundingBox(node: Group | TextDisplay | VanillaItemDisplay | VanillaBlockDisplay) {
 	const box = new THREE.Box3()
+	const point = BOUNDING_BOX_POINT_SCRATCH
 	if (node instanceof Group) {
-		const children = node.children.filter(e => e instanceof Cube) as Cube[]
-		for (const child of children) {
+		for (const child of node.children) {
+			if (!(child instanceof Cube)) continue
 			box.expandByPoint(
-				new THREE.Vector3(
+				point.set(
 					child.from[0] - child.inflate,
 					child.from[1] - child.inflate,
 					child.from[2] - child.inflate
 				)
 			)
 			box.expandByPoint(
-				new THREE.Vector3(
+				point.set(
 					child.to[0] + child.inflate,
 					child.to[1] + child.inflate,
 					child.to[2] + child.inflate
@@ -377,7 +380,7 @@ function getNodeBoundingBox(node: Group | TextDisplay | VanillaItemDisplay | Van
 	) {
 		box.setFromObject(node.mesh)
 	}
-	box.expandByPoint(new THREE.Vector3(node.origin[0], node.origin[1], node.origin[2]))
+	box.expandByPoint(point.set(node.origin[0], node.origin[1], node.origin[2]))
 	return box
 }
 
@@ -686,18 +689,20 @@ function renderCamera(camera: ICamera, rig: IRenderedRig) {
 
 function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 	const models: Record<string, IRenderedVariantModel> = {}
+	const texturesByUuid = new Map(Texture.all.map(t => [t.uuid, t]))
+	const excludedNodes = new Set(variant.excludedNodes.map(v => v.value))
 
 	for (const [uuid, bone] of Object.entries(rig.nodes)) {
 		if (bone.type !== 'bone') continue
-		if (variant.excludedNodes.find(v => v.value === uuid)) continue
+		if (excludedNodes.has(uuid)) continue
 		const textures: IRenderedModel['textures'] = {}
 
 		let hasTextureChanges = false
 
 		for (const [fromUUID, toUUID] of variant.textureMap.map.entries()) {
-			const fromTexture = Texture.all.find(t => t.uuid === fromUUID)
+			const fromTexture = texturesByUuid.get(fromUUID)
 			if (!fromTexture) throw new Error(`From texture not found: ${fromUUID}`)
-			const toTexture = Texture.all.find(t => t.uuid === toUUID)
+			const toTexture = texturesByUuid.get(toUUID)
 			if (!toTexture) throw new Error(`To texture not found: ${toUUID}`)
 			textures[fromTexture.id] = getTextureResourceLocation(toTexture, rig).resourceLocation
 			rig.textures[toTexture.id] = toTexture
@@ -758,7 +763,7 @@ export function hashRig(rig: IRenderedRig) {
 		hash.update('node;')
 		hash.update(nodeUuid)
 		hash.update(node.name)
-		hash.update(node.default_transform.matrix.elements.toString())
+		hash.update(Array.from(node.default_transform.matrix ?? []).toString())
 		switch (node.type) {
 			case 'bone': {
 				hash.update(
@@ -817,10 +822,12 @@ function renderVariant(variant: Variant, rig: IRenderedRig): IRenderedVariant {
 function getDefaultTransforms(rig: IRenderedRig) {
 	// @ts-expect-error - Broken BB types
 	const anim = new Blockbench.Animation()
+	const animatableNodes = getAnimatableNodes()
 	correctSceneAngle()
-	updatePreview(anim, 0)
-	updatePreview(anim, 0) // IK doesn't work unless I call this twice for some reason...
-	const transforms = getFrame(anim, rig.nodes, 0).node_transforms
+	updatePreview(anim, 0, animatableNodes)
+	updatePreview(anim, 0, animatableNodes) // IK doesn't work unless I call this twice for some reason...
+	const sampler = new AnimationSampler(anim, rig.nodes, animatableNodes)
+	const transforms = sampler.sample(0).node_transforms
 	restoreSceneAngle()
 	return transforms
 }

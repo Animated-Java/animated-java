@@ -320,12 +320,18 @@ export function exportJSON(options: {
 
 function serailizeNodeTransform(node: INodeTransform): ExportedNodetransform {
 	const json: ExportedNodetransform = {
-		matrix: node.matrix.elements,
-		decomposed: {
-			translation: node.decomposed.translation.toArray(),
-			left_rotation: node.decomposed.left_rotation.toArray() as ArrayVector4,
-			scale: node.decomposed.scale.toArray(),
-		},
+		matrix: node.matrix ? Array.from(node.matrix) : [],
+		decomposed: node.decomposed
+			? {
+					translation: node.decomposed.translation,
+					left_rotation: node.decomposed.left_rotation,
+					scale: node.decomposed.scale,
+			  }
+			: {
+					translation: [0, 0, 0] as ArrayVector3,
+					left_rotation: [0, 0, 0, 1] as ArrayVector4,
+					scale: [1, 1, 1] as ArrayVector3,
+			  },
 		pos: node.pos,
 		rot: node.rot,
 		head_rot: node.head_rot,
