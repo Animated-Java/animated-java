@@ -1,0 +1,6 @@
+{
+	"pack": {
+		"pack_format": 22,
+		"description": "Fixture for the texture-name-sanitizer test: a resource pack containing a real linked texture."
+	}
+}
