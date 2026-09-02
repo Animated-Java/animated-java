@@ -14,7 +14,7 @@
         "marked-gfm-heading-id": "^3.0.0",
         "request-progress": "^3.0.0",
         "svelte-ace": "^1.0.21",
-        "svelte-dnd-action": "^0.9.38",
+        "svelte-dnd-action": "^0.9.79",
       },
       "devDependencies": {
         "@jest/globals": "^30.5.1",
@@ -1656,7 +1656,7 @@
 
     "svelte-awesome-slider": ["svelte-awesome-slider@1.1.0", "", {}, "sha512-MgY6ZdBON42HVZqNWNjq2HOgyDlC35q0TNbV/YO1l1/bcb5yhM8EE97h1AJ/7F6t6sLzXhQ3qPf5nGyCdDSnCg=="],
 
-    "svelte-dnd-action": ["svelte-dnd-action@0.9.47", "", {}, "sha512-Z343HCJfrGHgK98LCrp0ziGUwwWOd8UrpXk7b7A61OQErrB8nUS2tLVRZlaGzhMfE1UCivuqTGFLqxJ14KehfQ=="],
+    "svelte-dnd-action": ["svelte-dnd-action@0.9.79", "", { "peerDependencies": { "svelte": ">=3.23.0 || ^5.0.0-next.0" } }, "sha512-zCKaG1Q9hVgfJFyZXhY+uIpo9+cjsG03CqwNz8yBlWCRBphC8U2zli9FzIcrL4rhXEs8yV+asS4rV0RHDuQqQQ=="],
 
     "svelte-eslint-parser": ["svelte-eslint-parser@1.3.3", "", { "dependencies": { "eslint-scope": "^8.2.0", "eslint-visitor-keys": "^4.0.0", "espree": "^10.0.0", "postcss": "^8.4.49", "postcss-scss": "^4.0.9", "postcss-selector-parser": "^7.0.0" } }, "sha512-oTrDR8Z7Wnguut7QH3YKh7JR19xv1seB/bz4dxU5J/86eJtZOU4eh0/jZq4dy6tAlz/KROxnkRQspv5ZEt7t+Q=="],
 
