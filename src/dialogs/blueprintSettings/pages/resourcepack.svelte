@@ -25,23 +25,22 @@
 
 <div class="dialog-page-container">
 	<BoxSelect
-		label="Resource Pack Export Format"
+		label={translate('resource_pack_export_mode.title')}
 		options={{
 			folder: {
 				type: 'text',
-				label: 'Folder',
-				description:
-					'Export the Resource Pack as a folder and automatically merge with existing files.',
+				label: translate('resource_pack_export_mode.options.folder.title'),
+				description: translate('resource_pack_export_mode.options.folder.description'),
 			},
 			zip: {
 				type: 'text',
-				label: 'Zip',
-				description: 'Export the Resource Pack as a `.zip` file.',
+				label: translate('resource_pack_export_mode.options.zip.title'),
+				description: translate('resource_pack_export_mode.options.zip.description'),
 			},
 			none: {
 				type: 'text',
-				label: 'None',
-				description: "Don't export a Resource Pack.",
+				label: translate('resource_pack_export_mode.options.none.title'),
+				description: translate('resource_pack_export_mode.options.none.description'),
 			},
 		}}
 		bind:selected={resourcePackExportFormat}
@@ -49,16 +48,16 @@
 
 	{#if resourcePackExportFormat === 'folder'}
 		<SelectFolder
-			label="Resource Pack Folder"
-			description="The folder to export the Resource Pack to."
+			label={translate('resource_pack.folder.title')}
+			description={translate('resource_pack.folder.description')}
 			bind:value={resourcePackLocation}
 			checkValue={validateResourcePackFolder}
 			required
 		></SelectFolder>
 	{:else if resourcePackExportFormat === 'zip'}
 		<SelectFile
-			label="Resource Pack Zip"
-			description="The location to export the Resource Pack zip file to."
+			label={translate('resource_pack.zip.title')}
+			description={translate('resource_pack.zip.description')}
 			bind:value={resourcePackLocation}
 			checkValue={validateZipPath}
 			required
