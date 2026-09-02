@@ -162,6 +162,7 @@ export interface IBlueprintFormatJSON {
 
 	elements?: any[]
 	groups?: any[]
+	texture_groups?: any[]
 	outliner?: any[]
 	textures?: Texture[]
 	animations?: AnimationOptions[]
