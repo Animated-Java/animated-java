@@ -16,6 +16,10 @@ const IGNORE_PATTERNS = [
 	// Blockbench Plugin Template
 	'dist/**/*',
 
+	// Test-runner config (plain ESM, not part of the TS project)
+	'jest.config.mjs',
+	'blockbench.config.mjs',
+
 	// Ignore files for PNPM, NPM and YARN
 	'pnpm-lock.yaml',
 	'package-lock.json',
