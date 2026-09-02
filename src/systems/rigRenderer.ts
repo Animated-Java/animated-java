@@ -1,6 +1,6 @@
 import { TextComponent } from 'book-and-quill'
 import * as crypto from 'node:crypto'
-import { getFsModule } from '../constants'
+import { getFsModule, PACKAGE } from '../constants'
 import type {
 	IBlueprintDisplayEntityConfigJSON,
 	IBlueprintInteractionConfigJSON,
@@ -58,10 +58,14 @@ export interface IRenderedElement {
 	light_emission?: number
 }
 
+/** Written verbatim into the `credit` field of every generated model file. */
+export const MODEL_CREDIT = `Made with Animated Java (${PACKAGE.repository.url}) via Blockbench`
+
 /**
  * An actual Minecraft model
  */
 export interface IRenderedModel {
+	credit?: string
 	parent?: string
 	textures: Record<string, string>
 	elements?: IRenderedElement[]
@@ -425,6 +429,7 @@ function renderGroup(rootGroup: Group, rig: IRenderedRig, defaultVariant: IRende
 		if (!groupModel) {
 			groupModel = defaultVariant.models[group.uuid] = {
 				model: {
+					credit: MODEL_CREDIT,
 					textures: {
 						particle: 'minecraft:item/pufferfish',
 					},
@@ -734,6 +739,7 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 
 		models[uuid] = {
 			model: {
+				credit: MODEL_CREDIT,
 				parent: parsed.resourceLocation,
 				textures,
 			},
@@ -756,7 +762,13 @@ export function hashRig(rig: IRenderedRig) {
 		switch (node.type) {
 			case 'bone': {
 				hash.update(
-					';' + JSON.stringify(rig.variants[Variant.getDefault().uuid].models[nodeUuid])
+					';' +
+						// `credit` is a constant string, not rig data - keep it out of
+						// the hash so it doesn't invalidate every existing rig.
+						JSON.stringify(
+							rig.variants[Variant.getDefault().uuid].models[nodeUuid],
+							(key, value) => (key === 'credit' ? undefined : value)
+						)
 				)
 				if (node.configs) hash.update(';' + JSON.stringify(node.configs))
 				break
