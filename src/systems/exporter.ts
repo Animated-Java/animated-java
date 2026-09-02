@@ -1,7 +1,8 @@
 import { getFsModule } from '../constants'
 import {
-	PROGRESS_DESCRIPTION,
+	closeExportProgressDialog,
 	openExportProgressDialog,
+	setExportProgressPhase,
 } from '../dialogs/exportProgress/exportProgress'
 import { openUnexpectedErrorDialog } from '../dialogs/unexpectedError/unexpectedError'
 import { projectTargetVersionIsAtLeast } from '../formats/blueprint'
@@ -65,7 +66,7 @@ async function actuallyExportProject({
 	debugMode = false,
 }: ExportProjectOptions = {}): Promise<boolean> {
 	const aj = Project!.animated_java
-	const dialog = openExportProgressDialog()
+	openExportProgressDialog()
 	// Wait for the dialog to open
 	await new Promise(resolve => requestAnimationFrame(resolve))
 	const selectedVariant = Variant.selected
@@ -97,7 +98,7 @@ async function actuallyExportProject({
 			displayItemPath,
 		} = getExportPaths()
 
-		PROGRESS_DESCRIPTION.set('Rendering Rig...')
+		setExportProgressPhase('Rendering Rig...')
 		const rig = renderRig(modelExportFolder, textureExportFolder)
 
 		if (!rig.includes_custom_models && Texture.all.length !== 0) {
@@ -114,18 +115,18 @@ async function actuallyExportProject({
 			Project!.animated_java.resource_pack_export_mode === 'none' &&
 			rig.includes_custom_models
 		) {
+			closeExportProgressDialog()
 			Blockbench.showMessageBox({
 				title: translate('misc.failed_to_export.title'),
 				message: translate('misc.failed_to_export.custom_models.message'),
 				buttons: [translate('misc.failed_to_export.button')],
 			})
-			dialog.close(0)
 			return false
 		}
 
 		const animations = await renderProjectAnimations(Project!, rig)
 
-		PROGRESS_DESCRIPTION.set('Hashing Rendered Objects...')
+		setExportProgressPhase('Hashing Rendered Objects...')
 		const rigHash = hashRig(rig)
 		const animationHash = hashAnimations(animations)
 
@@ -152,7 +153,7 @@ async function actuallyExportProject({
 		}
 
 		if (aj.enable_plugin_mode) {
-			PROGRESS_DESCRIPTION.set('Exporting Plugin JSON...')
+			setExportProgressPhase('Exporting Plugin JSON...')
 			exportPluginBlueprint({ rig, animations })
 		}
 
@@ -163,6 +164,7 @@ async function actuallyExportProject({
 		return true
 	} catch (e: any) {
 		console.error(e)
+		closeExportProgressDialog()
 		if (e instanceof IntentionalExportError) {
 			Blockbench.showMessageBox(
 				{
@@ -178,7 +180,7 @@ async function actuallyExportProject({
 		openUnexpectedErrorDialog(e as Error)
 	} finally {
 		selectedVariant?.select()
-		dialog.close(0)
+		closeExportProgressDialog()
 		stopwatch.debug()
 	}
 	return false

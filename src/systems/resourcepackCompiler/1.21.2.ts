@@ -1,6 +1,6 @@
 import type { ResourcePackCompiler } from '.'
 import { getFsModule } from '../../constants'
-import { PROGRESS_DESCRIPTION } from '../../dialogs/exportProgress/exportProgress'
+import { setExportProgressPhase } from '../../dialogs/exportProgress/exportProgress'
 import { isResourcePackPath, sanitizeStorageKey } from '../../util/minecraftUtil'
 import { type ITextureAtlas } from '../minecraft/textureAtlas'
 import type { IRenderedNodes } from '../rigRenderer'
@@ -18,7 +18,7 @@ const compileResourcePack: ResourcePackCompiler = async ({
 		'$1item$2'
 	)
 
-	PROGRESS_DESCRIPTION.set('Compiling Resource Pack...')
+	setExportProgressPhase('Compiling Resource Pack...')
 	console.log('Compiling resource pack...', {
 		rig,
 		textureExportFolder,

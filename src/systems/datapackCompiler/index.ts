@@ -3,9 +3,11 @@ import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deep
 import type { AsyncZippable } from 'fflate/browser'
 import { getFsModule } from '../../constants'
 import {
-	MAX_PROGRESS,
 	PROGRESS,
-	PROGRESS_DESCRIPTION,
+	PROGRESS_DETAIL,
+	setExportProgressPhase,
+	setExportProgressSubTask,
+	SUB_PROGRESS,
 } from '../../dialogs/exportProgress/exportProgress'
 import { projectTargetVersionIsAtLeast } from '../../formats/blueprint'
 import { DisplayEntityConfig } from '../../nodeConfigs'
@@ -238,16 +240,12 @@ async function generateRootEntityPassengers(version: string, rig: IRenderedRig) 
 }
 
 async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAnimation[]) {
-	PROGRESS_DESCRIPTION.set('Creating Animation Storage...')
-	PROGRESS.set(0)
-	MAX_PROGRESS.set(
-		animations.length + animations.reduce((acc, anim) => acc + anim.frames.length, 0)
-	)
+	setExportProgressPhase('Creating Animation Storage...', animations.length)
 	const dataCommands: string[] = []
 	const limiter = new MSLimiter(16)
 
 	for (const animation of animations) {
-		PROGRESS_DESCRIPTION.set(`Creating Animation Storage for '${animation.storage_name}'`)
+		setExportProgressSubTask(animation.name, animation.frames.length)
 		let frames = new NbtCompound()
 		const addFrameDataCommand = () => {
 			const str = `data modify storage ${
@@ -305,7 +303,7 @@ async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAn
 			if (frames.toString().length > 1000000) {
 				addFrameDataCommand()
 			}
-			PROGRESS.set(PROGRESS.get() + 1)
+			SUB_PROGRESS.set(i + 1)
 			await limiter.sync()
 		}
 		addFrameDataCommand()
@@ -474,11 +472,10 @@ async function removeFiles(ajmeta: AJMeta) {
 	const { rm, writeFile, mkdir, copyFile, unlink, readFile } = promises
 
 	if (aj.data_pack_export_mode === 'folder') {
-		PROGRESS_DESCRIPTION.set('Removing Old Data Pack Files...')
-		PROGRESS.set(0)
-		MAX_PROGRESS.set(ajmeta.previousVersionedFiles.size)
+		setExportProgressPhase('Removing Old Data Pack Files...', ajmeta.previousVersionedFiles.size)
 		const removedFolders = new Set<string>()
 		for (const file of ajmeta.previousVersionedFiles) {
+			PROGRESS_DETAIL.set(PathModule.basename(file))
 			if (isFunctionTagPath(file) && existsSync(file)) {
 				if (aj.blueprint_id !== Project!.last_used_blueprint_id) {
 					const resourceLocation = parseDataPackPath(file)!.resourceLocation
@@ -626,9 +623,7 @@ const dataPackCompiler: DataPackCompiler = async ({
 }
 
 async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFolder: string) {
-	PROGRESS_DESCRIPTION.set('Writing Data Pack...')
-	PROGRESS.set(0)
-	MAX_PROGRESS.set(exportedFiles.size)
+	setExportProgressPhase('Writing Data Pack...', exportedFiles.size)
 	const aj = Project!.animated_java
 	const lastNamespace = Project!.last_used_blueprint_id
 	const createdFolderCache = new Set<string>()
@@ -659,6 +654,7 @@ async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFold
 				)
 			)
 		}
+		PROGRESS_DETAIL.set(PathModule.basename(path))
 		PROGRESS.set(PROGRESS.get() + 1)
 	}
 
@@ -677,10 +673,9 @@ async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFold
 	}
 	await Promise.all(writeQueue.values())
 
-	PROGRESS_DESCRIPTION.set('Merging Function Tags...')
-	MAX_PROGRESS.set(functionTagQueue.size)
-	PROGRESS.set(0)
+	setExportProgressPhase('Merging Function Tags...', functionTagQueue.size)
 	for (const [path, file] of functionTagQueue.entries()) {
+		PROGRESS_DETAIL.set(PathModule.basename(path))
 		const oldTag = DataPackTag.fromJSON(JSON.parse((await readFile(path)).toString()))
 		const merged = oldTag.merge(DataPackTag.fromJSON(JSON.parse(file.content.toString())))
 
