@@ -147,7 +147,7 @@
 							in:fade={{ duration: 150, easing: cubicIn }}
 						></div>
 					{:else}
-						<i class="material-icons icon in_list_button">texture</i>
+						<!-- <i class="material-icons icon in_list_button">texture</i> -->
 						<div class="variant_item_name">
 							{item.value.displayName}
 						</div>
