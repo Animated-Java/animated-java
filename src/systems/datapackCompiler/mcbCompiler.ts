@@ -2,6 +2,7 @@ import { Compiler, VariableMap } from 'mc-build/mcl/Compiler'
 import { Parser } from 'mc-build/mcl/Parser'
 import { TemplateRegisterer } from 'mc-build/mcl/TemplateRegisterer'
 import { Tokenizer } from 'mc-build/mcl/TokenizerImpl'
+import { IntentionalExportError } from '../errors'
 import { getMisodeVersion } from '../minecraft/versionManager'
 import type { ExportedFile } from '../util'
 
@@ -76,7 +77,21 @@ export async function compileMcbProject({
 		}
 	}
 
-	compiler.compile(VariableMap.fromObject(variables))
+	try {
+		compiler.compile(VariableMap.fromObject(variables))
+	} catch (e) {
+		// User commands are emitted into the templates and only parsed here, so
+		// their syntax errors otherwise surface as a raw crash.
+		const original = e instanceof Error ? e.message : String(e)
+		throw new IntentionalExportError(
+			'Failed to compile the Data Pack.\n\n' +
+				'This is usually caused by an invalid command in a command keyframe, or in an ' +
+				'On-Summon / On-Tick / On-Remove / variant apply function.\n\n' +
+				'```\n' +
+				original +
+				'\n```'
+		)
+	}
 	console.timeEnd('MC-Build compiled in')
 	console.log('Exported files:', exportedFiles.keys())
 	console.groupEnd()
