@@ -22,26 +22,31 @@ registerProjectPatch({
 	},
 
 	apply() {
-		requestAnimationFrame(() => {
-			for (const texture of Texture.all) {
-				console.log('texture', texture)
-				updateTextureIcon(texture)
-			}
-		})
+		const refreshAll = () => {
+			for (const texture of Texture.all) updateTextureIcon(texture)
+		}
+		requestAnimationFrame(refreshAll)
 
 		const onTextureChange = ({ texture }: BlockbenchEventMap['change_texture_path']) =>
 			updateTextureIcon(texture)
+		// `change_texture_path` only fires on "Reopen"; catch every other path
+		// change (relink, properties dialog, undo/redo) via the edit it commits.
+		const onFinishedEdit = (data: BlockbenchEventMap['finished_edit']) => {
+			if ('remote' in data || data.aspects.textures) requestAnimationFrame(refreshAll)
+		}
 
 		Blockbench.on('change_texture_path', onTextureChange)
 		Blockbench.on('add_texture', onTextureChange)
 		Blockbench.on('select_texture', onTextureChange)
+		Blockbench.on('finished_edit', onFinishedEdit)
 
-		return { onTextureChange }
+		return { onTextureChange, onFinishedEdit }
 	},
 
-	revert({ onTextureChange }) {
+	revert({ onTextureChange, onFinishedEdit }) {
 		Blockbench.removeListener('change_texture_path', onTextureChange)
 		Blockbench.removeListener('add_texture', onTextureChange)
 		Blockbench.removeListener('select_texture', onTextureChange)
+		Blockbench.removeListener('finished_edit', onFinishedEdit)
 	},
 })
