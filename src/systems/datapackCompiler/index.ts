@@ -559,6 +559,8 @@ const dataPackCompiler: DataPackCompiler = async ({
 		blueprint_id: aj.blueprint_id,
 		interpolation_duration: aj.interpolation_duration,
 		teleportation_duration: aj.teleportation_duration,
+		shadow_radius: aj.shadow_radius,
+		shadow_strength: aj.shadow_strength,
 		display_item: aj.display_item,
 		rig,
 		animations,

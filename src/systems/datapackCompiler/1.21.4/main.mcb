@@ -740,6 +740,8 @@ function summon {
 		Tags:<%root_entity_tags%>, \
 		teleport_duration: 0, \
 		interpolation_duration: <%interpolation_duration%>, \
+		shadow_radius: <%roundTo(shadow_radius, 4)%>f, \
+		shadow_strength: <%roundTo(shadow_strength, 4)%>f, \
 		Passengers:<%root_entity_passengers%>, \
 		CustomName: '<%ENTITY_NAMES.ROOT(blueprint_id)%>', \
 	}

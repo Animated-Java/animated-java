@@ -411,6 +411,21 @@ animated_java:
           [Markdown]
           The default [teleport duration](https://minecraft.wiki/w/Display#Entity_data) of the rig.
 
+      shadow_radius:
+        title: Shadow Radius
+        description: |-
+          [Markdown]
+          The [shadow radius](https://minecraft.wiki/w/Display#Entity_data) of the rig's root entity, in blocks.
+
+          `0` disables the shadow.
+      shadow_strength:
+        title: Shadow Strength
+        description: |-
+          [Markdown]
+          The [shadow strength](https://minecraft.wiki/w/Display#Entity_data) of the rig's root entity.
+
+          Only has an effect when Shadow Radius is greater than `0`.
+
       use_entity_stacking:
         title: Use Entity Stacking
         description: |-
