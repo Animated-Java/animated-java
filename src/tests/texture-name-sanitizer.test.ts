@@ -4,10 +4,12 @@ import * as path from 'node:path'
 
 const BLUEPRINT_FORMAT_ID = 'animated-java:format/blueprint'
 
-// A real texture inside a valid resource pack layout (assets/<ns>/textures/...).
+// A committed fixture texture inside a valid resource pack layout
+// (assets/<ns>/textures/...). Must exist on disk - the sanitizer only treats a
+// texture as "linked" when its path resolves to a real file.
 const LINKED_TEXTURE = path.resolve(
 	process.cwd(),
-	'test-packs/1.20.5/resources/assets/animated_java/textures/blueprint/armor_stand/wood.png'
+	'test-packs/linked-texture-pack/assets/animated_java/textures/blueprint/armor_stand/wood.png'
 )
 
 /**
