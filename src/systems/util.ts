@@ -21,20 +21,23 @@ export function arrayToNbtFloatArray(array: number[]) {
 	return new NbtList(array.map(v => new NbtFloat(v)))
 }
 
-export function matrixToNbtFloatArray(matrix: THREE.Matrix4) {
+export function matrixToNbtFloatArray(matrix: number[] | THREE.Matrix4) {
+	const elements = matrix instanceof THREE.Matrix4 ? matrix.elements : matrix
 	const matrixArray = new THREE.Matrix4()
-		.copy(matrix)
+		.fromArray(elements)
 		.transpose()
 		.toArray()
 		.map(v => roundTo(v, 4))
 	return arrayToNbtFloatArray(matrixArray)
 }
 
-export function transformationToNbt(transformation: INodeTransform['decomposed']): NbtCompound {
+export function transformationToNbt(
+	transformation: NonNullable<INodeTransform['decomposed']>
+): NbtCompound {
 	const compound = new NbtCompound()
-	compound.set('translation', arrayToNbtFloatArray(transformation.translation.toArray()))
-	compound.set('left_rotation', arrayToNbtFloatArray(transformation.left_rotation.toArray()))
-	compound.set('scale', arrayToNbtFloatArray(transformation.scale.toArray()))
+	compound.set('translation', arrayToNbtFloatArray(transformation.translation))
+	compound.set('left_rotation', arrayToNbtFloatArray(transformation.left_rotation))
+	compound.set('scale', arrayToNbtFloatArray(transformation.scale))
 	return compound
 }
 

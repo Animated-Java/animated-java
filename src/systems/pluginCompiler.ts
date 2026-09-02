@@ -229,12 +229,14 @@ function parseDataUrl(dataUrl: string): { mimeType: string; base64: string } {
 
 function serializeNodeTransformation(transform: INodeTransform): NodeTransformation {
 	return scrubUndefined({
-		matrix: transform.matrix.elements.slice(),
-		decomposed: {
-			translation: transform.decomposed.translation.toArray() as ArrayVector3,
-			left_rotation: transform.decomposed.left_rotation.toArray() as ArrayVector4,
-			scale: transform.decomposed.scale.toArray() as ArrayVector3,
-		},
+		matrix: transform.matrix ? Array.from(transform.matrix) : undefined,
+		decomposed: transform.decomposed
+			? {
+					translation: transform.decomposed.translation,
+					left_rotation: transform.decomposed.left_rotation,
+					scale: transform.decomposed.scale,
+			  }
+			: undefined,
 		position: transform.pos,
 		rotation: transform.rot,
 		head_rotation: transform.head_rot,

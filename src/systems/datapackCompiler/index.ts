@@ -269,7 +269,7 @@ async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAn
 					thisFrame.set(
 						node.storage_name,
 						new NbtCompound()
-							.set('transformation', matrixToNbtFloatArray(transform.matrix))
+							.set('transformation', matrixToNbtFloatArray(transform.matrix!))
 							.set('start_interpolation', new NbtInt(0))
 					)
 				} else {
