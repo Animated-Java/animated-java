@@ -115,7 +115,7 @@
 		align-items: center;
 		gap: 8px;
 		width: 100%;
-		padding: 4px 6px;
+		padding: 6px;
 		border: none;
 		cursor: pointer;
 		text-align: left;
@@ -131,6 +131,10 @@
 		color: var(--color-bright_ui_text);
 		border-radius: 0;
 	}
+	/* pad between touching buttons */
+	.menu :global(button + button) {
+		margin-top: 4px;
+	}
 	.trigger:hover,
 	.menu button:hover {
 		background-color: var(--color-accent);
@@ -144,9 +148,9 @@
 		width: 64px;
 		height: 64px;
 		image-rendering: pixelated;
-		background-color: var(--color-back);
 		background-image:
-			var(--tex, none), repeating-conic-gradient(var(--color-dark) 0% 25%, transparent 0% 50%);
+			var(--tex, none),
+			repeating-conic-gradient(var(--color-checkerboard) 0% 25%, var(--color-ui) 0% 50%);
 		background-size:
 			contain,
 			12px 12px;
@@ -154,6 +158,7 @@
 			center,
 			top left;
 		background-repeat: no-repeat, repeat;
+		border: 1px solid var(--color-border);
 	}
 	.name {
 		flex-grow: 1;
@@ -168,11 +173,12 @@
 		position: fixed;
 		z-index: 10000;
 		margin: 0;
-		max-height: 240px;
+		max-height: 25vh;
 		max-width: 90vw;
 		overflow-y: auto;
 		list-style: none;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+		background: var(--color-bright_ui);
 	}
 	.menu li {
 		list-style: none;

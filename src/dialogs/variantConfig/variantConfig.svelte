@@ -111,7 +111,7 @@
 	/>
 
 	{#if !variant.isDefault}
-		<div class="toolbar" style="margin: 8px 0;">
+		<div class="toolbar" style="margin: 8px 16px 8px; width: -webkit-fill-available;">
 			<div>
 				{translate('dialog.variant_config.texture_map.title')}
 			</div>
@@ -125,11 +125,12 @@
 				<i class="material-icons icon">add</i>
 			</div>
 		</div>
+		<div class="texture-map-description">
+			{@html translate('dialog.variant_config.texture_map.description')}
+		</div>
+
 		{#key textureMapUpdated}
-			<ul
-				class="texture-map-container"
-				style={[...textureMap.map.entries()].length === 0 ? 'min-height: 2rem;' : ''}
-			>
+			<ul class="texture-map-container">
 				{#each [...textureMap.map.entries()] as entry}
 					<li class="texture-mapping-item">
 						<TextureSelect
@@ -161,9 +162,6 @@
 				{/each}
 			</ul>
 		{/key}
-		<div class="texture-map-description">
-			{@html translate('dialog.variant_config.texture_map.description')}
-		</div>
 
 		<Collection
 			label={translate('dialog.variant_config.excluded_nodes.title')}
@@ -217,23 +215,27 @@
 		text-align: center;
 	}
 	.texture-mapping-item {
-		display: flex;
+		display: grid;
+		grid-template-columns: 1fr auto 1fr auto;
 		align-items: center;
 		gap: 16px;
-		background-color: var(--color-back);
-		padding: 8px;
+		padding-right: 16px;
 	}
 	.texture-map-container {
 		display: flex;
 		flex-direction: column;
 		align-items: stretch;
 		justify-content: flex-start;
-		padding: 4px;
-		gap: 4px;
+		margin: 8px 16px 8px;
+		margin-top: -4px;
+		padding: 8px;
+		gap: 8px;
 		overflow-y: auto;
 		max-height: 600px;
 		min-height: fit-content;
-		width: 100%;
+		width: auto;
+		background: var(--color-back);
+		border-radius: 6px;
 	}
 	.spacer {
 		flex-grow: 1;
@@ -246,9 +248,10 @@
 	.texture-map-description {
 		font-size: 0.9em;
 		color: var(--color-subtle_text);
-		margin-top: 4px;
+		margin-top: -6px;
 		margin-bottom: 16px;
 		max-width: 80%;
+		margin-left: calc(16px + 0.75rem);
 	}
 	.trash {
 		height: unset;
