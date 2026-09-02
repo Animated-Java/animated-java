@@ -2,6 +2,9 @@
 	import { onDestroy } from 'svelte'
 	import Checkbox from '../../../svelteComponents/sidebarDialogItems/checkbox.svelte'
 	import Vector2 from '../../../svelteComponents/sidebarDialogItems/vector2.svelte'
+	import { createScopedTranslator } from '../../../util/lang'
+
+	const translate = createScopedTranslator('dialog.blueprint_settings')
 
 	let showRenderBox = $state(Project.animated_java.show_render_box)
 	let autoRenderBox = $state(Project.animated_java.auto_render_box)
@@ -17,21 +20,21 @@
 
 <div class="dialog-page-container">
 	<Checkbox
-		label="Preview Render Box"
-		description="Show a box in the preview that represents the rig's render box."
+		label={translate('show_render_box.title')}
+		description={translate('show_render_box.description')}
 		bind:value={showRenderBox}
 	></Checkbox>
 
 	<Checkbox
-		label="Auto Render Box"
-		description="Automatically adjust the rig's render box to fit the model."
+		label={translate('auto_render_box.title')}
+		description={translate('auto_render_box.description')}
 		bind:value={autoRenderBox}
 	></Checkbox>
 
 	{#if !autoRenderBox}
 		<Vector2
-			label="Render Box Size"
-			description="The size of the rig's render box. This is ignored if Auto Render Box is enabled."
+			label={translate('render_box.title')}
+			description={translate('render_box.description')}
 			step={1}
 			bind:valueX={renderBoxSizeX}
 			minX={1}

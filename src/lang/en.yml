@@ -192,17 +192,14 @@ animated_java:
             `animated_java:global` is a reserved ID and cannot be used.
           invalid_characters: Blueprint ID can only contain lowercase letters, numbers, and underscores.
       show_render_box:
-        title: Show Render Box
-        description: When enabled, the render box will be visible in the editor.
+        title: Preview Render Box
+        description: Show a box in the preview that represents the rig's render box.
       auto_render_box:
-        title: Auto-Size Render Box
-        description: |-
-          When enabled, the render box will be automatically calculated based on the model's geometry.
+        title: Auto Render Box
+        description: Automatically adjust the rig's render box to fit the model.
       render_box:
         title: Render Box Size
-        description: |-
-          [Markdown]
-          The [width and height](https://minecraft.wiki/w/Display#Entity_data) of the rig's display entities.
+        description: The size of the rig's render box. This is ignored if Auto Render Box is enabled.
       view_range:
         title: View Range
         description: |-
@@ -212,12 +209,27 @@ animated_java:
         title: Plugin Mode
         description: |-
           When enabled, the project will be exported as a JSON file designed for use with plugins.
-      resource_pack_export_mode:
-        title: Resource Pack Export Mode
+      target_environment:
+        title: Target Environment
+        description: What system you'll be using to animate your Blueprint in-game.
         options:
-          folder: Folder
-          zip: Zip
-          none: None
+          datapack: Datapack
+          plugin: Plugin
+      blueprint_name:
+        title: Blueprint Name
+        description: The name of your Blueprint. Used for the exported file name and in-game display name.
+      resource_pack_export_mode:
+        title: Resource Pack Export Format
+        options:
+          folder:
+            title: Folder
+            description: Export the Resource Pack as a folder and automatically merge with existing files.
+          zip:
+            title: Zip
+            description: Export the Resource Pack as a `.zip` file.
+          none:
+            title: None
+            description: Don't export a Resource Pack.
       data_pack_export_mode:
         title: Data Pack Export Format
         options:
@@ -284,12 +296,17 @@ animated_java:
         warning:
           no_assets: Selected folder does not contain an assets folder.
         folder:
+          title: Resource Pack Folder
+          description: The folder to export the Resource Pack to.
           error:
             empty: Resource Pack folder is required.
             invalid_path: 'Failed to resolve path: %s'
             does_not_exist: Selected path does not exist.
             not_a_dir: Selected path is not a directory.
             no_pack_mcmeta: Selected folder does not contain a pack.mcmeta file.
+        zip:
+          title: Resource Pack Zip
+          description: The location to export the Resource Pack zip file to.
       preview:
         list:
           title: Preview Resource Packs
