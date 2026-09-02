@@ -95,6 +95,13 @@ export const BLUEPRINT_CODEC = registerDeletableHandlerPatch({
 				Project.last_used_blueprint_id =
 					model.meta?.last_used_blueprint_id ?? Project.animated_java.blueprint_id
 
+				if (model.texture_groups) {
+					for (const textureGroup of model.texture_groups) {
+						// @ts-expect-error - add() type omits the undo arg
+						new TextureGroup(textureGroup, textureGroup.uuid).add(false)
+					}
+				}
+
 				if (model.textures) {
 					for (const texture of model.textures) {
 						const newTexture = new Texture(texture, texture.uuid).add(false)
@@ -293,6 +300,11 @@ export const BLUEPRINT_CODEC = registerDeletableHandlerPatch({
 				}
 
 				model.outliner = Outliner.toJSON()
+
+				model.texture_groups = []
+				for (const textureGroup of TextureGroup.all) {
+					model.texture_groups.push(textureGroup.getSaveCopy())
+				}
 
 				model.textures = []
 				for (const texture of Texture.all) {
