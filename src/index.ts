@@ -28,7 +28,10 @@ import './systems/minecraft/versionManager'
 import 'import_folder_recursive:./shaders'
 // Misc imports
 import { openChangelogDialog } from './dialogs/changelog/changelog'
-import { openExportProgressDialog } from './dialogs/exportProgress/exportProgress'
+import {
+	debugExportProgressDialog,
+	openExportProgressDialog,
+} from './dialogs/exportProgress/exportProgress'
 import { openUnexpectedErrorDialog } from './dialogs/unexpectedError/unexpectedError'
 import { BLUEPRINT_FORMAT } from './formats/blueprint'
 import { BLUEPRINT_CODEC } from './formats/blueprint/codec'
@@ -76,6 +79,7 @@ const AnimatedJavaApi = {
 	resourcepackCompiler,
 	Variant,
 	openExportProgressDialog,
+	debugExportProgressDialog,
 	isResourcePackPath,
 	isDataPackPath,
 	openUnexpectedErrorDialog,
