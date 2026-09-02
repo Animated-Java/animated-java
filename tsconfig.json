@@ -1,12 +1,6 @@
 {
 	"files": ["src/index.ts"],
-	"include": [
-		"src/**/*",
-		".scripts/**/**/*",
-		"./eslint.config.ts",
-		"./vitest.config.ts",
-		"./svelte.config.ts"
-	],
+	"include": ["src/**/*", ".scripts/**/**/*", "./eslint.config.ts", "./svelte.config.ts"],
 	"exclude": ["**/node_modules/**"],
 	"compilerOptions": {
 		"outDir": "./dist/",
