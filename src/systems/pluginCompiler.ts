@@ -169,6 +169,14 @@ interface PluginAnimation {
 	>
 }
 
+/**
+ * Schema version of the Plugin JSON. Bump this (and note the change in the
+ * changelog) whenever the shape of {@link PluginBlueprintJson} changes in a
+ * release, so consumers can branch on it. It is independent of the Animated
+ * Java plugin version and only moves when this file format does.
+ */
+export const PLUGIN_JSON_FORMAT_VERSION = 1
+
 export interface PluginBlueprintJson {
 	$schema?: string
 	format_version: number
@@ -725,7 +733,7 @@ export function exportPluginBlueprint(options: {
 	}
 
 	const blueprint: PluginBlueprintJson = scrubUndefined({
-		format_version: 1,
+		format_version: PLUGIN_JSON_FORMAT_VERSION,
 		settings: {
 			id: `animated_java:${aj.blueprint_id}`,
 		},
