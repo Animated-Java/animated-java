@@ -1,0 +1,6 @@
+{
+	"pack": {
+		"pack_format": 42,
+		"description": "Jestbench fixture: overrides the width of 'A' in minecraft:default so text-display font overlays are measurable."
+	}
+}

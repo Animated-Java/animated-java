@@ -22,7 +22,6 @@ import './systems/minecraft/assetManager'
 import './systems/minecraft/blockstateManager'
 import './systems/minecraft/fontManager'
 import './systems/minecraft/fontRenderer'
-import './systems/minecraft/previewResourcePack'
 import './systems/minecraft/registryManager'
 import './systems/minecraft/versionManager'
 // Shaders
@@ -52,6 +51,7 @@ import * as blockModelManager from './systems/minecraft/blockModelManager'
 import { BLOCKSTATE_REGISTRY, getBlockState } from './systems/minecraft/blockstateManager'
 import { MinecraftFont } from './systems/minecraft/fontManager'
 import * as itemModelManager from './systems/minecraft/itemModelManager'
+import * as previewResourcePack from './systems/minecraft/previewResourcePack'
 import './systems/minecraft/registryManager'
 import resourcepackCompiler from './systems/resourcepackCompiler'
 import {
@@ -86,6 +86,7 @@ const AnimatedJavaApi = {
 	assetManager,
 	itemModelManager,
 	blockModelManager,
+	previewResourcePack,
 	VanillaItemDisplay,
 	VanillaBlockDisplay,
 	debugBlockState,
