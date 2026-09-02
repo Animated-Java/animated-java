@@ -9,6 +9,9 @@ export default {
 	...preset,
 	rootDir: '.',
 	testMatch: ['<rootDir>/src/tests/**/*.test.ts'],
+	// The fast pure-logic lane runs under `jest.unit.config.mjs` (plain Node, no
+	// Blockbench). Keep it out of the jestbench run.
+	testPathIgnorePatterns: ['<rootDir>/src/tests/unit/'],
 	// Tests open blueprints, which fetch the target Minecraft version's assets
 	// (downloaded and cached on first run).
 	testTimeout: 120_000,
