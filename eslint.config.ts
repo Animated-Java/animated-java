@@ -12,13 +12,20 @@ const IGNORE_PATTERNS = [
 	'.github',
 	'.vscode',
 	'**/node_modules/**',
+	'test-packs/**',
+	'test_blueprints/**',
+	'test_ajmodels/**',
 
 	// Blockbench Plugin Template
 	'dist/**/*',
 
 	// Test-runner config (plain ESM, not part of the TS project)
 	'jest.config.mjs',
+	'jest.unit.config.mjs',
 	'blockbench.config.mjs',
+
+	// Plain-CJS stub modules for the unit lane (not part of the TS project)
+	'src/tests/unit/__stubs__/**',
 
 	// Ignore files for PNPM, NPM and YARN
 	'pnpm-lock.yaml',

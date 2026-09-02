@@ -36,6 +36,7 @@ import { openUnexpectedErrorDialog } from './dialogs/unexpectedError/unexpectedE
 import { BLUEPRINT_FORMAT } from './formats/blueprint'
 import { BLUEPRINT_CODEC } from './formats/blueprint/codec'
 import { exportAll } from './interface/animatedJavaBarItem'
+import { Interaction } from './outliner/interaction'
 import { TextDisplay } from './outliner/textDisplay'
 import { debugBlockState, VanillaBlockDisplay } from './outliner/vanillaBlockDisplay'
 import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
@@ -46,6 +47,7 @@ import {
 	applyEnchantmentGlintToMesh,
 	removeEnchantmentGlintFromMesh,
 } from './shaders/enchantmentGlint'
+import { hashAnimations, renderProjectAnimations } from './systems/animationRenderer'
 import { cleanupExportedFiles } from './systems/cleaner'
 import TELLRAW from './systems/datapackCompiler/tellraw'
 import { exportProject } from './systems/exporter'
@@ -57,6 +59,7 @@ import * as itemModelManager from './systems/minecraft/itemModelManager'
 import * as previewResourcePack from './systems/minecraft/previewResourcePack'
 import './systems/minecraft/registryManager'
 import resourcepackCompiler from './systems/resourcepackCompiler'
+import { hashRig, renderRig } from './systems/rigRenderer'
 import {
 	isDataPackPath,
 	isResourcePackPath,
@@ -93,9 +96,15 @@ const AnimatedJavaApi = {
 	previewResourcePack,
 	VanillaItemDisplay,
 	VanillaBlockDisplay,
+	Interaction,
 	debugBlockState,
 	BLOCKSTATE_REGISTRY,
 	exportProject,
+	// Export-pipeline stages, exposed for the test suite.
+	renderRig,
+	hashRig,
+	renderProjectAnimations,
+	hashAnimations,
 	openInstallPopup,
 	exportAll,
 	removeCubesAssociatedWithTexture(texture: Texture) {

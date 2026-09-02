@@ -78,7 +78,8 @@
 		"dev": "yarn build:scripts && node ./dist/build.cjs --mode=dev",
 		"prod": "node ./.scripts/cleanupDist.cjs && yarn build:scripts && node ./dist/build.cjs",
 		"format": "prettier --write .",
-		"test": "yarn prod && jest",
+		"test": "yarn test:unit && yarn prod && jest",
+		"test:unit": "jest --config jest.unit.config.mjs",
 		"test:only": "jest",
 		"check-formatting": "prettier . --check",
 		"lint": "eslint . --max-warnings=0 --no-warn-ignored"
