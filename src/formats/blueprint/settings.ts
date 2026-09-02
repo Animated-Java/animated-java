@@ -392,15 +392,20 @@ export async function validateThisProjectsBlueprintSettings(): Promise<
 			Project.animated_java.render_box[0],
 			Project.animated_java.render_box[1]
 		),
+		// Plugin mode exports a JSON file, not a resource/data pack, so the pack
+		// folders are irrelevant and must not block the export.
 		resource_pack_folder:
+			!Project.animated_java.enable_plugin_mode &&
 			Project.animated_java.resource_pack_export_mode === 'folder'
 				? validateResourcePackFolder(Project.animated_java.resource_pack)
 				: undefined,
 		data_pack_folder:
+			!Project.animated_java.enable_plugin_mode &&
 			Project.animated_java.data_pack_export_mode === 'folder'
 				? validateDataPackFolder(Project.animated_java.data_pack)
 				: undefined,
 		data_pack_zip:
+			!Project.animated_java.enable_plugin_mode &&
 			Project.animated_java.data_pack_export_mode === 'zip'
 				? validateZipPath(Project.animated_java.data_pack)
 				: undefined,
