@@ -48,10 +48,11 @@ describe('Export pipeline', () => {
 		}
 	}, 120_000)
 
-	// One version per `getMCBFilesByVersion` branch: the 1.20.4 core templates,
-	// the 1.21.5 set, and the 26.2 global. First run downloads each version's
+	// One version per distinct `getMCBFilesByVersion` layering result: 1.20.4
+	// (base), 1.21.2 (its own global, older main), 1.21.5 (full set), and 26.2
+	// (26.2 global over the 1.21.5 main). First run downloads each version's
 	// assets into `~/.envbench`.
-	it.each(['1.20.4', '1.21.5', '26.2'])(
+	it.each(['1.20.4', '1.21.2', '1.21.5', '26.2'])(
 		'compiles a working data pack for target %s',
 		async version => {
 			const run = await runFixtureExport({ fixture: FIXTURE, targetVersion: version })

@@ -41,6 +41,21 @@ declare module '*.txt' {
 	export = value
 }
 
+/**
+ * Auto-discovered MC-Build datapack sources, one entry per version directory
+ * under the resolved path. Provided by `.scripts/plugins/mcbCompressionPlugin.ts`.
+ * Each field is present only if that version directory contains the file.
+ */
+declare module 'mcb-sources:*' {
+	interface MCBVersionSources {
+		main?: string
+		global?: string
+		globalTemplates?: string
+	}
+	const sources: Record<string, MCBVersionSources>
+	export default sources
+}
+
 declare module '*.worker.ts' {
 	export = Worker
 }
