@@ -12,7 +12,7 @@ export function openVariantConfigDialog(variant: Variant) {
 	const uuid = observable(variant.uuid)
 	const textureMap = variant.textureMap.copy()
 	const generateNameFromDisplayName = observable(variant.generateNameFromDisplayName)
-	const excludedNodes = observable(variant.excludedNodes)
+	const excludedNodes = observable([...variant.excludedNodes.keys()])
 	const onApplyFunction = observable(variant.onApplyFunction ?? '')
 
 	new SvelteDialog({
@@ -37,7 +37,7 @@ export function openVariantConfigDialog(variant: Variant) {
 			variant.uuid = uuid.get()
 			variant.textureMap = textureMap
 			variant.generateNameFromDisplayName = generateNameFromDisplayName.get()
-			variant.excludedNodes = excludedNodes.get()
+			variant.excludedNodes = new Set(excludedNodes.get())
 			variant.onApplyFunction = onApplyFunction.get().trim()
 			EVENTS.UPDATE_VARIANT.publish(variant)
 			variant.select()

@@ -8,10 +8,15 @@
 </script>
 
 <script lang="ts">
+	import { observable } from 'svelte-observable-store'
 	import CodeInput from '../../svelteComponents/dialogItems/codeInput.svelte'
 	import Collection from '../../svelteComponents/dialogItems/collection.svelte'
 	import TextureSelect from '../../svelteComponents/textureSelect.svelte'
-	import { getAvailableNodes } from '../../util/excludedNodes'
+	import {
+		fromCollectionItems,
+		getAvailableNodes,
+		toCollectionItems,
+	} from '../../util/excludedNodes'
 
 	export let variant: Variant
 	export let displayName: Observable<string>
@@ -19,14 +24,20 @@
 	export let uuid: Observable<string>
 	export let textureMap: TextureMap
 	export let generateNameFromDisplayName: Observable<boolean>
-	export let excludedNodes: Observable<CollectionItem[]>
+	export let excludedNodes: Observable<string[]>
 	export let onApplyFunction: Observable<string>
 
 	const AVAILABLE_TEXTURES = [...Texture.all]
 	const PRIMARY_TEXTURES = [...Texture.all]
 	const SECONDARY_TEXTURES = AVAILABLE_TEXTURES
 
-	const AVAILABLE_BONES = getAvailableNodes(excludedNodes.get(), {
+	// `variant.excludedNodes` is stored as a Set of node UUIDs, but the Collection
+	// component works in `CollectionItem`s. Bridge the two with a local store that
+	// writes the UUIDs back into the dialog's observable on every change.
+	let excludedNodeItems = observable(toCollectionItems(excludedNodes.get()))
+	excludedNodeItems.subscribe(items => excludedNodes.set(fromCollectionItems(items)))
+
+	const AVAILABLE_BONES = getAvailableNodes(excludedNodeItems.get(), {
 		groupsOnly: true,
 		excludeEmptyGroups: true,
 	})
@@ -71,7 +82,7 @@
 	}
 
 	function getUnusedPrimaryTextures() {
-		const usedTextures = [...textureMap.map.keys()]
+		const usedTextures = [...textureMap.keys()]
 		return PRIMARY_TEXTURES.filter(t => !usedTextures.includes(t.uuid))
 	}
 </script>
@@ -131,7 +142,7 @@
 
 		{#key textureMapUpdated}
 			<ul class="texture-map-container">
-				{#each [...textureMap.map.entries()] as entry}
+				{#each [...textureMap.entries()] as entry}
 					<li class="texture-mapping-item">
 						<TextureSelect
 							textures={PRIMARY_TEXTURES}
@@ -178,7 +189,7 @@
 				'dialog.variant_config.swap_columns_button.tooltip'
 			)}
 			availableItems={AVAILABLE_BONES}
-			bind:includedItems={excludedNodes}
+			bind:includedItems={excludedNodeItems}
 		/>
 	{/if}
 
