@@ -1,7 +1,9 @@
-# TODO - Move all internal functions into an internal namespace, and only have user-facing functions in the main `<%blueprint_id%>` namespace.
-# FetchBot was here - May 5 2026
-# DIFFERENCES FROM 1.21.4:
-# - JSON text components are now stored as NBT in entities.
+# main.mcb — Minecraft 1.21.5. Per-version rig functions (summon / remove / animate / user API).
+# Newest main.mcb: also used for every target >= 1.21.5 (there is no 26.2/main.mcb).
+#
+# Changes from 1.21.4/main.mcb:
+# - Entity text (CustomName, text-display text) is stored as an NBT text component,
+#   not a quoted JSON string.
 
 function on_load {
 	data modify storage <%project_storage%> rig_hash set value <%"'" + rig_hash + "'"%>
@@ -1741,7 +1743,7 @@ IF (Object.keys(rig.variants).length > 1) {
 										data modify entity @s item.components."minecraft:custom_model_data".strings[0] set value "<%variant.name%>"
 									}
 								}
-							IF (node.configs.variants[variant.uuid] || variant.is_default && node.configs.default) {
+								IF (node.configs.variants[variant.uuid] || variant.is_default && node.configs.default) {
 									<%%
 										global.config = DisplayEntityConfig.fromJSON(node.configs.variants[variant.uuid] ?? node.configs.default)
 									%%>

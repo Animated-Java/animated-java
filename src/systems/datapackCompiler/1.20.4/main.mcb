@@ -1,4 +1,6 @@
-# TODO - Move all internal functions into an internal namespace, and only have user-facing functions in the main `animated_java:<%export_namespace%>` namespace.
+# main.mcb — Minecraft 1.20.4. Per-version rig functions (summon / remove / animate / user API).
+#
+# 1.20.4 is the baseline; every later <version>/main.mcb is a diff on top of this file.
 
 function on_load {
 	data modify storage <%project_storage%> rig_hash set value <%"'" + rig_hash + "'"%>
@@ -1651,7 +1653,7 @@ IF (Object.keys(rig.variants).length > 1) {
 										data modify entity @s item.tag.CustomModelData set value <%variant.models[node.uuid].custom_model_data%>
 									}
 								}
-							IF (node.configs.variants[variant.uuid] || variant.is_default && node.configs.default) {
+								IF (node.configs.variants[variant.uuid] || variant.is_default && node.configs.default) {
 									<%%
 										global.config = DisplayEntityConfig.fromJSON(node.configs.variants[variant.uuid] ?? node.configs.default)
 									%%>
@@ -1748,6 +1750,7 @@ IF (has_locators || has_cameras) {
 					}
 				}
 			}
+			data_manager write
 		}
 	}
 }

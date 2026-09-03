@@ -21,7 +21,7 @@ export async function compileMcbProject({
 	version,
 	exportedFiles,
 }: CompilerOptions) {
-	console.group('Compiling', sourceFiles)
+	console.group('Compiling', Object.keys(sourceFiles))
 	console.log('Variables:', variables)
 
 	TemplateRegisterer.register()

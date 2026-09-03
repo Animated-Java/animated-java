@@ -185,22 +185,29 @@ namespace TAGS {
 	// --------------------------------
 	export const ANIMATION_PLAYING = (blueprintId: string, animationName: string) =>
 		`${makeTagSafe(blueprintId)}.animation.${animationName}.playing`
-	export const TWEENING = (blueprintId: string, animationName: string) =>
-		`${makeTagSafe(blueprintId)}.animation.${animationName}.tween_playing`
-	export const VARIANT_APPLIED = (blueprintId: string, variantName: string) =>
-		`${makeTagSafe(blueprintId)}.variant.${variantName}.applied`
 	// Used to tell the set and apply frame functions to only apply the bone transforms, and ignore command/variant keyframes
 	export const TRANSFORMS_ONLY = () => 'aj.transforms_only'
-	export const EFFECTS_ONLY = () => 'aj.effects_only'
 	export const OUTDATED_RIG_TEXT_DISPLAY = () => 'aj.outdated_rig_text_display'
 	export const INTERACTING_PLAYER = () => 'aj.interacting_player'
 }
 
 export default TAGS
 
+/**
+ * The user's `custom_rig_entity_tags` setting, split into individual tags.
+ * Empty entries are dropped so a blank/trailing-comma setting doesn't add an
+ * empty-string tag to every summoned entity.
+ */
+function parseCustomRigEntityTags(): string[] {
+	return Project!.animated_java.custom_rig_entity_tags
+		.split(',')
+		.map(t => t.trim())
+		.filter(Boolean)
+}
+
 export function getRootEntityTags(): NbtList {
 	const tags: string[] = [
-		...Project!.animated_java.custom_rig_entity_tags.split(',').map(t => t.trim()),
+		...parseCustomRigEntityTags(),
 		TAGS.NEW(),
 		TAGS.GLOBAL_ENTITY(),
 		TAGS.GLOBAL_ROOT(),
@@ -213,9 +220,7 @@ export function getRootEntityTags(): NbtList {
 
 // region getNodeTags
 export function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
-	const tags: string[] = [
-		...Project!.animated_java.custom_rig_entity_tags.split(',').map(t => t.trim()),
-	]
+	const tags: string[] = [...parseCustomRigEntityTags()]
 
 	const parentNames: Array<{ name: string; type: string }> = []
 
