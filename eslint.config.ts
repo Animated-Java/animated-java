@@ -24,6 +24,10 @@ const IGNORE_PATTERNS = [
 	'jest.unit.config.mjs',
 	'blockbench.config.mjs',
 
+	// Plain JS/CJS build shims and helpers (not part of the TS project)
+	'.scripts/*.js',
+	'.scripts/*.cjs',
+
 	// Plain-CJS stub modules for the unit lane (not part of the TS project)
 	'src/tests/unit/__stubs__/**',
 

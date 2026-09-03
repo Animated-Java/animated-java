@@ -132,7 +132,7 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 		return this
 	}
 
-	unselect(unselectParent?: boolean) {
+	unselect(_unselectParent?: boolean) {
 		if (!this.selected) return this
 		if (
 			Animator.open &&
