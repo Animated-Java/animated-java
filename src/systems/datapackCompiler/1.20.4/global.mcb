@@ -1,3 +1,9 @@
+# global.mcb — Minecraft 1.20.4. Shared `animated_java:global/*` functions: load/tick
+# dispatch, the entity-UUID helper (gu), the storage-backed per-entity data manager,
+# and the interaction/attack advancement plumbing.
+#
+# 1.20.4 is the baseline; every later <version>/global.mcb is a diff on top of this file.
+
 import ./global.mcbt
 
 dir global {

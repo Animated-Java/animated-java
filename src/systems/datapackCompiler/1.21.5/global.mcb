@@ -1,5 +1,10 @@
-# DIFFERENCES FROM 1.21.0:
-# - JSON text components are now stored as NBT in entities.
+# global.mcb — Minecraft 1.21.5. Shared `animated_java:global/*` functions: load/tick
+# dispatch, the entity-UUID helper (gu), the storage-backed per-entity data manager,
+# and the interaction/attack advancement plumbing.
+#
+# Changes from 1.21.2/global.mcb:
+# - The outdated-rig text display's `text` is written as an NBT text component
+#   instead of a quoted JSON string.
 
 import ./global.mcbt
 

@@ -1,5 +1,10 @@
-# DIFFERENCES FROM 1.20.4:
-# - @n entity selector
+# global.mcb — Minecraft 1.21.0. Shared `animated_java:global/*` functions: load/tick
+# dispatch, the entity-UUID helper (gu), the storage-backed per-entity data manager,
+# and the interaction/attack advancement plumbing.
+#
+# Changes from 1.20.4/global.mcb:
+# - Mount the outdated-rig text display with the @n (nearest) selector instead of
+#   @e[...,limit=1].
 
 import ./global.mcbt
 

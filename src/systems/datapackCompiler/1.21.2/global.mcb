@@ -1,5 +1,11 @@
-# DIFFERENCES FROM 1.20.4:
-# - @n entity selector
+# global.mcb — Minecraft 1.21.2. Shared `animated_java:global/*` functions: load/tick
+# dispatch, the entity-UUID helper (gu), the storage-backed per-entity data manager,
+# and the interaction/attack advancement plumbing.
+#
+# Changes from 1.21.0/global.mcb:
+# - gu/get_entity_uuid_string: fast path for non-player entities that reads a
+#   summoned item_display's item_name (via the `entity_uuid` item modifier) instead
+#   of the scoreboard bit-twiddle.
 
 import ./global.mcbt
 
@@ -259,7 +265,7 @@ dir global {
 			block { with storage <%temp_storage%> args
 				$data modify storage <%temp_storage%> args.uuid set from storage <%data_storage%> "$(id)".uuid
 				scoreboard players set #success <%OBJECTIVES.I()%> 0
-				block { with storage <%temp_storage%> args
+				execute if data storage <%temp_storage%> args.uuid run { with storage <%temp_storage%> args
 					$execute store success score #success <%OBJECTIVES.I()%> if score $(uuid) <%OBJECTIVES.ID()%> matches 1..
 					$execute if score #success <%OBJECTIVES.I()%> matches 0 run data remove storage <%data_storage%> "$(id)"
 				}

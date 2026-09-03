@@ -1,5 +1,9 @@
-# DIFFERENCES FROM 1.21.5:
-# - Predicates use `entity_type` instead of `type`.
+# global.mcb — Minecraft 26.2. Shared `animated_java:global/*` functions: load/tick
+# dispatch, the entity-UUID helper (gu), the storage-backed per-entity data manager,
+# and the interaction/attack advancement plumbing.
+#
+# Changes from 1.21.5/global.mcb:
+# - Advancement entity conditions use `entity_type` instead of `type`.
 
 import ./global.mcbt
 

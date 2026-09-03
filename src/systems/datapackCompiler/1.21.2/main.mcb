@@ -1,7 +1,9 @@
-# TODO - Move all internal functions into an internal namespace, and only have user-facing functions in the main `animated_java:<%export_namespace%>` namespace.
-
-# DIFFERENCES FROM 1.21.0:
-# - /rotate command
+# main.mcb — Minecraft 1.21.2. Per-version rig functions (summon / remove / animate / user API).
+#
+# Changes from 1.21.0/main.mcb:
+# - Rotate passengers with `rotate @s ~ ~` instead of `tp @s ~ ~ ~ ~ ~` (new /rotate command).
+# - Variant model swaps write item.components."minecraft:item_model"
+#   (empty model -> "animated_java:empty").
 
 function on_load {
 	data modify storage <%project_storage%> rig_hash set value <%"'" + rig_hash + "'"%>
@@ -1653,7 +1655,7 @@ IF (Object.keys(rig.variants).length > 1) {
 										data modify entity @s item.components."minecraft:item_model" set value "<%variant.models[node.uuid].item_model%>"
 									}
 								}
-							IF (node.configs.variants[variant.uuid] || variant.is_default && node.configs.default) {
+								IF (node.configs.variants[variant.uuid] || variant.is_default && node.configs.default) {
 									<%%
 										global.config = DisplayEntityConfig.fromJSON(node.configs.variants[variant.uuid] ?? node.configs.default)
 									%%>
@@ -1750,6 +1752,7 @@ IF (has_locators || has_cameras) {
 					}
 				}
 			}
+			data_manager write
 		}
 	}
 }
