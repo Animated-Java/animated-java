@@ -1,15 +1,26 @@
 <script lang="ts" module>
 	import { onDestroy } from 'svelte'
 	import { VanillaBlockDisplay } from '../../outliner/vanillaBlockDisplay'
+	import { type BlockStateValue } from '../../systems/minecraft/blockstateManager'
 	import EVENTS from '../../util/events'
 	import { localize as translate } from '../../util/lang'
-	import { validateBlock } from '../../util/minecraftUtil'
+	import { parseBlock, stringifyBlock, validateBlock } from '../../util/minecraftUtil'
+
+	interface BlockStateControl {
+		key: string
+		options: Record<string, string>
+		value: string
+	}
 </script>
 
 <script lang="ts">
 	let selected = $state(VanillaBlockDisplay.selected.at(0))
 	let block = $derived(selected?.block)
 	let error = $derived(selected?.error)
+
+	let blockId = $state('')
+	let blockDefaults = $state<Record<string, BlockStateValue>>({})
+	let stateControls = $state<BlockStateControl[]>([])
 
 	const onSelectionChanged = () => {
 		selected = VanillaBlockDisplay.selected.at(0)
@@ -51,6 +62,57 @@
 		}
 	})
 
+	// Keep the blockstate dropdowns in sync with the block string.
+	$effect(() => {
+		void rebuildStateControls(block)
+	})
+
+	async function rebuildStateControls(blockString: string | undefined) {
+		const parsed = blockString ? await parseBlock(blockString) : undefined
+		const registryEntry = parsed?.blockStateRegistryEntry
+		if (!parsed || !registryEntry) {
+			blockId = ''
+			blockDefaults = {}
+			stateControls = []
+			return
+		}
+		blockId = parsed.resourceLocation
+		blockDefaults = registryEntry.defaultStates
+		stateControls = Object.entries(registryEntry.stateValues).map(([key, values]) => ({
+			key,
+			options: Object.fromEntries(values.map(v => [String(v), String(v)])),
+			value: String(parsed.states[key] ?? registryEntry.defaultStates[key]),
+		}))
+	}
+
+	function onStateChange(key: string, value: string) {
+		const states: Record<string, BlockStateValue> = {}
+		for (const control of stateControls) {
+			states[control.key] = control.key === key ? value : control.value
+		}
+		const next = stringifyBlock(blockId, states, blockDefaults)
+		if (next !== block) block = next
+	}
+
+	const mountStateSelect = (node: HTMLDivElement, control: BlockStateControl) => {
+		const select = new Interface.CustomElements.SelectInput(
+			`animated_java:block_display_state/${control.key}`,
+			{
+				options: control.options,
+				value: control.value,
+				onChange(value) {
+					onStateChange(control.key, String(value))
+				},
+			}
+		)
+		node.appendChild(select.node)
+		return {
+			destroy() {
+				select.node.remove()
+			},
+		}
+	}
+
 	onDestroy(() => {
 		unsubs.forEach(u => u())
 	})
@@ -69,6 +131,20 @@
 			<input type="text" bind:value={block} />
 		</div>
 	</div>
+
+	{#if stateControls.length > 0}
+		<p class="panel_toolbar_label label">
+			{translate('panel.vanilla_block_display.blockstates')}
+		</p>
+		<div class="blockstate-list">
+			{#each stateControls as control (blockId + '/' + control.key + '=' + control.value)}
+				<div class="blockstate-row">
+					<span class="blockstate-key" title={control.key}>{capitalizeFirstLetter(control.key)}</span>
+					<div class="blockstate-select" use:mountStateSelect={control}></div>
+				</div>
+			{/each}
+		</div>
+	{/if}
 
 	{#if $error}
 		<div class="error">
@@ -95,6 +171,35 @@
 		padding: 4px 18px !important;
 		height: 28px !important;
 		margin: 1px 0px !important;
+	}
+	.blockstate-list {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		margin: 4px 0px;
+		width: 95%;
+		background: var(--color-back);
+		padding: 4px;
+		border-radius: 6px;
+	}
+	.blockstate-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 8px;margin-left: 8px;
+	}
+	.blockstate-key {
+		font-size: 14px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.blockstate-select {
+		flex: 0 0 55%;
+		display: flex;
+	}
+	.blockstate-select :global(.bb-select) {
+		width: 100%;
 	}
 	.error {
 		margin: 2px 8px;

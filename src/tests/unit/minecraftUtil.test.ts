@@ -8,6 +8,7 @@ import {
 	parseResourcePackPath,
 	resolveBlockstateValueType,
 	sanitizeStorageKey,
+	stringifyBlock,
 	toSmallCaps,
 } from '../../util/minecraftUtil'
 
@@ -149,5 +150,39 @@ describe('resolveBlockstateValueType', () => {
 	it('splits pipe lists only when arrays are allowed', () => {
 		expect(resolveBlockstateValueType('1|2|foo', true)).toEqual([1, 2, 'foo'])
 		expect(resolveBlockstateValueType('a|b', false)).toBe('a|b')
+	})
+})
+
+describe('stringifyBlock', () => {
+	it('returns the bare location when no states differ from the defaults', () => {
+		expect(
+			stringifyBlock(
+				'minecraft:oak_stairs',
+				{ facing: 'north', half: 'bottom' },
+				{ facing: 'north', half: 'bottom' }
+			)
+		).toBe('minecraft:oak_stairs')
+	})
+
+	it('emits only the states that differ from the defaults', () => {
+		expect(
+			stringifyBlock(
+				'minecraft:oak_stairs',
+				{ facing: 'north', half: 'top', waterlogged: false },
+				{ facing: 'north', half: 'bottom', waterlogged: false }
+			)
+		).toBe('minecraft:oak_stairs[half=top]')
+	})
+
+	it('emits every state when no defaults are provided', () => {
+		expect(stringifyBlock('minecraft:lever', { face: 'wall', powered: true })).toBe(
+			'minecraft:lever[face=wall,powered=true]'
+		)
+	})
+
+	it('stringifies boolean and number values', () => {
+		expect(
+			stringifyBlock('minecraft:note_block', { note: 5, powered: true }, { note: 0, powered: false })
+		).toBe('minecraft:note_block[note=5,powered=true]')
 	})
 })

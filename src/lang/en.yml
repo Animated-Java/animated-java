@@ -962,8 +962,9 @@ animated_java:
       title: Displayed Item
       description: The item to display.
     vanilla_block_display:
-      title: Displayed Block
+      title: Block
       description: The block to display. Supports block states!
+      blockstates: Blockstates
 
     textures:
       linked_icon: |-
