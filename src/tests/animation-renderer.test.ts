@@ -99,4 +99,84 @@ describe('animationRenderer.renderProjectAnimations', () => {
 		}, BLUEPRINT_FORMAT_ID)
 		expect(count).toBe(0)
 	})
+
+	// The renderer only re-poses (and resets) the nodes an animation keyframes.
+	// A sibling bone that the animation never touches must stay at its exact
+	// rest transform in every frame - and be deduped down to its first frame.
+	it('leaves bones the animation does not keyframe untouched', async () => {
+		const result = await blockbench.evaluate(async (formatId: string) => {
+			const aj = (window as any).AnimatedJava
+			const g = globalThis as any
+			g.newProject(g.Formats[formatId])
+
+			const texture = new Texture({ name: 't.png' }, undefined).add(false)
+			const moved = new Group({ name: 'moved', origin: [4, 0, 0] }).init()
+			const still = new Group({ name: 'still', origin: [-4, 0, 0] }).init()
+			for (const bone of [moved, still]) {
+				const cube = new Cube({
+					name: bone.name + '_c',
+					from: [0, 0, 0],
+					to: [1, 1, 1],
+				}).init()
+				cube.addTo(bone)
+				for (const face of Object.keys(cube.faces)) cube.faces[face].texture = texture.uuid
+			}
+
+			const animation = new Blockbench.Animation({ name: 'wiggle' })
+			animation.add()
+			animation.loop = 'loop'
+			animation.length = 1
+			const animator = animation.getBoneAnimator(moved)
+			animator.addKeyframe({
+				channel: 'rotation',
+				time: 0,
+				data_points: [{ x: 0, y: 0, z: 0 }],
+			})
+			animator.addKeyframe({
+				channel: 'rotation',
+				time: 0.5,
+				data_points: [{ x: 0, y: 45, z: 0 }],
+			})
+			animator.addKeyframe({
+				channel: 'rotation',
+				time: 1,
+				data_points: [{ x: 0, y: 0, z: 0 }],
+			})
+
+			const rig = aj.renderRig(
+				'assets/aj/models/blueprint/x',
+				'assets/aj/textures/blueprint/x'
+			)
+			const anim = (await aj.renderProjectAnimations(Project, rig))[0]
+
+			const idOf = (name: string) =>
+				Object.keys(rig.nodes).find(uuid => (rig.nodes[uuid] as any).name === name)!
+			const movedId = idOf('moved')
+			const stillId = idOf('still')
+
+			const movedFrames = anim.frames.filter((f: any) => f.node_transforms[movedId])
+			const stillFrames = anim.frames.filter((f: any) => f.node_transforms[stillId])
+
+			// The keyframed bone actually animates across the run.
+			const movedRotates =
+				JSON.stringify(movedFrames[0].node_transforms[movedId].rot) !==
+				JSON.stringify(
+					movedFrames[(movedFrames.length / 2) | 0].node_transforms[movedId].rot
+				)
+
+			return {
+				frameCount: anim.frames.length,
+				movedFrameCount: movedFrames.length,
+				movedRotates,
+				stillEmitCount: stillFrames.length,
+				stillMatrix: stillFrames[0]?.node_transforms[stillId]?.matrix,
+			}
+		}, BLUEPRINT_FORMAT_ID)
+
+		expect(result.frameCount).toBe(21)
+		expect(result.movedRotates).toBe(true)
+		// The bone with no keyframes is emitted once and deduped thereafter.
+		expect(result.stillEmitCount).toBe(1)
+		expect(Array.isArray(result.stillMatrix)).toBe(true)
+	})
 })
