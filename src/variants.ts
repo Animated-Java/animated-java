@@ -5,43 +5,35 @@ import type { IDisplayEntityConfigs } from './systems/rigRenderer'
 import EVENTS from './util/events'
 import { sanitizeStorageKey } from './util/minecraftUtil'
 
-export class TextureMap {
-	map: Map<string, string>
+const TEXTURE_BY_UUID_CACHE = new Map<string, Texture>()
 
-	constructor() {
-		this.map = new Map()
-	}
-
+export class TextureMap extends Map<string, string> {
 	add(key: string, value: string) {
-		this.map.set(key, value)
-	}
-
-	get(key: string) {
-		return this.map.get(key)
-	}
-
-	has(key: string) {
-		return this.map.has(key)
-	}
-
-	delete(key: string) {
-		this.map.delete(key)
+		this.set(key, value)
 	}
 
 	/**
 	 * Given a texture or texture uuid, return the mapped texture
 	 */
 	getMappedTexture(texture: Texture | string): Texture | undefined {
-		const uuid = this.map.get(texture instanceof Texture ? texture.uuid : texture)
-		return Texture.all.find(t => t.uuid === uuid)
+		const uuid = this.get(texture instanceof Texture ? texture.uuid : texture)
+		if (!uuid) return undefined
+
+		let cached = TEXTURE_BY_UUID_CACHE.get(uuid)
+		if (!cached) {
+			cached = Texture.all.find(t => t.uuid === uuid)
+			if (cached) TEXTURE_BY_UUID_CACHE.set(uuid, cached)
+		}
+
+		return cached
 	}
 
 	setMappedTexture(texture: Texture, mappedTexture: Texture) {
-		this.map.set(texture.uuid, mappedTexture.uuid)
+		this.set(texture.uuid, mappedTexture.uuid)
 	}
 
 	toJSON() {
-		return Object.fromEntries(this.map)
+		return Object.fromEntries(this)
 	}
 
 	static fromJSON(json: Record<string, string>): TextureMap {
@@ -53,15 +45,13 @@ export class TextureMap {
 	}
 
 	copy() {
-		const textureMap = new TextureMap()
-		textureMap.map = new Map(this.map)
-		return textureMap
+		return new TextureMap(this)
 	}
 
 	verifyTextures() {
-		for (const [key, value] of this.map) {
+		for (const [key, value] of this) {
 			if (!Texture.all.some(t => t.uuid === value)) {
-				this.map.delete(key)
+				this.delete(key)
 			}
 		}
 	}
@@ -87,7 +77,7 @@ export class Variant {
 	isDefault = false
 	generateNameFromDisplayName = true
 	onApplyFunction?: string
-	excludedNodes: CollectionItem[] = []
+	excludedNodes = new Set<string>()
 
 	constructor(displayName: string, isDefault = false) {
 		this.displayName = Variant.makeDisplayNameUnique(this, displayName)
@@ -152,8 +142,8 @@ export class Variant {
 			name: this.name,
 			display_name: this.displayName,
 			uuid: this.uuid,
-			texture_map: Object.fromEntries(this.textureMap.map),
-			excluded_nodes: this.excludedNodes.map(item => item.value),
+			texture_map: Object.fromEntries(this.textureMap),
+			excluded_nodes: [...this.excludedNodes.keys()],
 			on_apply_function: this.onApplyFunction,
 		}
 		if (this.isDefault) {
@@ -168,7 +158,7 @@ export class Variant {
 		variant.isDefault = false
 		variant.generateNameFromDisplayName = this.generateNameFromDisplayName
 		variant.textureMap = this.textureMap.copy()
-		variant.excludedNodes = this.excludedNodes.map(item => ({ ...item }))
+		variant.excludedNodes = new Set(this.excludedNodes)
 		variant.select()
 	}
 
@@ -185,12 +175,14 @@ export class Variant {
 		for (const [key, value] of Object.entries(json.texture_map)) {
 			variant.textureMap.add(key, value)
 		}
-		variant.excludedNodes = json.excluded_nodes
-			.map(uuid => {
-				const group = Group.all.find(group => group.uuid === uuid)
-				return group ? { name: group.name, value: uuid } : undefined
-			})
-			.filter(Boolean) as CollectionItem[]
+		variant.excludedNodes = new Set(
+			json.excluded_nodes
+				.map(uuid => {
+					const group = Group.all.find(group => group.uuid === uuid)
+					return group ? uuid : undefined
+				})
+				.filter(v => v != undefined)
+		)
 		variant.onApplyFunction = json.on_apply_function
 		return variant
 	}

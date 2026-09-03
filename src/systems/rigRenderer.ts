@@ -690,11 +690,10 @@ function renderCamera(camera: ICamera, rig: IRenderedRig) {
 function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 	const models: Record<string, IRenderedVariantModel> = {}
 	const texturesByUuid = new Map(Texture.all.map(t => [t.uuid, t]))
-	const excludedNodes = new Set(variant.excludedNodes.map(v => v.value))
 
 	for (const [uuid, bone] of Object.entries(rig.nodes)) {
 		if (bone.type !== 'bone') continue
-		if (excludedNodes.has(uuid)) continue
+		if (variant.excludedNodes.has(uuid)) continue
 		const textures: IRenderedModel['textures'] = {}
 
 		let hasTextureChanges = false

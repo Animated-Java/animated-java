@@ -68,7 +68,7 @@ describe('Variants', () => {
 			const variant = new aj.Variant('Red')
 			variant.textureMap.add(texA.uuid, texB.uuid)
 			variant.onApplyFunction = 'test:on_apply'
-			variant.excludedNodes = [{ name: bone.name, value: bone.uuid }]
+			variant.excludedNodes = new Set([bone.uuid])
 
 			const json = variant.toJSON()
 			// Remove the original so `fromJSON` doesn't uniquify the restored name.
@@ -80,7 +80,7 @@ describe('Variants', () => {
 				restoredDisplayName: restored.displayName,
 				restoredMapped: restored.textureMap.get(texA.uuid),
 				restoredOnApply: restored.onApplyFunction,
-				restoredExcluded: restored.excludedNodes.map((n: any) => n.value),
+				restoredExcluded: [...restored.excludedNodes],
 				boneUuid: bone.uuid,
 			}
 		}, BLUEPRINT_FORMAT_ID)
@@ -110,7 +110,7 @@ describe('Variants', () => {
 
 			const blue = new aj.Variant('Blue')
 			blue.onApplyFunction = 'test:blue'
-			blue.excludedNodes = [{ name: bone.name, value: bone.uuid }]
+			blue.excludedNodes = new Set([bone.uuid])
 
 			const compiled = codec.compile({ raw: true, bitmaps: false })
 			g.newProject(g.Formats[formatId])
@@ -123,7 +123,7 @@ describe('Variants', () => {
 				defaultCount: all.filter(v => v.isDefault).length,
 				redHasMapping: byName('Red')?.textureMap.map.size > 0,
 				blueOnApply: byName('Blue')?.onApplyFunction,
-				blueExcludes: byName('Blue')?.excludedNodes.length,
+				blueExcludes: byName('Blue')?.excludedNodes.size,
 			}
 		}, BLUEPRINT_FORMAT_ID)
 

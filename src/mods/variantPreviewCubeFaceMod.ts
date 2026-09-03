@@ -18,22 +18,21 @@ registerPatch({
 		CubeFace.prototype.getTexture = function (this: CubeFace) {
 			if (activeProjectIsBlueprintFormat() && this.texture) {
 				const variant = Variant.selected
-				if (
-					variant &&
-					this.cube.parent instanceof Group &&
-					!variant.excludedNodes.find(
-						v => v.value === (this.cube.parent as Group).uuid
-					) &&
-					variant.textureMap.has(this.texture)
-				) {
-					this.lastVariant = variant
-					return variant.textureMap.getMappedTexture(this.texture)
-				} else if (
-					Mode.selected.id === Modes.options.animate.id &&
-					this.lastVariant &&
-					!variant?.isDefault
-				) {
-					return this.lastVariant.textureMap.getMappedTexture(this.texture)
+				if (variant) {
+					if (
+						this.cube.parent instanceof Group &&
+						variant.textureMap.has(this.texture) &&
+						!variant.excludedNodes.has(this.cube.parent.uuid)
+					) {
+						this.lastVariant = variant
+						return variant.textureMap.getMappedTexture(this.texture)
+					} else if (
+						Mode.selected.id === Modes.options.animate.id &&
+						this.lastVariant &&
+						variant.isDefault
+					) {
+						return this.lastVariant.textureMap.getMappedTexture(this.texture)
+					}
 				}
 			}
 			this.lastVariant = undefined

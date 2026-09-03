@@ -2,6 +2,20 @@ import { Interaction } from '../outliner/interaction'
 import { TextDisplay } from '../outliner/textDisplay'
 import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
 import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
+import { getAnimatableNodes } from '../systems/animationRenderer'
+
+export function toCollectionItems(nodes: string[]): CollectionItem[] {
+	return (
+		getAnimatableNodes()
+			.filter(node => nodes.includes(node.uuid))
+			// @ts-expect-error - node.icon missing type
+			.map(node => ({ name: node.name, icon: node.icon, value: node.uuid }))
+	)
+}
+
+export function fromCollectionItems(items: CollectionItem[]): string[] {
+	return items.map(item => item.value)
+}
 
 export function getAvailableNodes(
 	excludedNodes: CollectionItem[],
