@@ -182,7 +182,7 @@ dir global {
 		}
 	}
 
-	# Thanks Gibbsly for this code! https://github.com/gibbsly/gu
+	# Thanks Gibbsly for the original code! https://github.com/gibbsly/gu
 	dir gu {
 		function on_load {
 			scoreboard players set 256 <%OBJECTIVES.I()%> 256
@@ -190,7 +190,21 @@ dir global {
 				<%JSON.stringify([...Array(0x100).keys()].map(v => {const x = v.toString(16); return x.length > 1 ? x : '0' + x}))%>
 		}
 
+		item_modifier entity_uuid {
+			"function": "minecraft:set_name",
+			"entity": "this",
+			"target": "item_name",
+			"name": {"selector": "@s"}
+		}
+
 		function get_entity_uuid_string {
+			execute if entity @s[type=!minecraft:player] run return run {
+				summon minecraft:item_display ~ ~ ~ {UUID:uuid('21e0f4fa-2970-4cba-be91-6a50cd9dd0eb'),item:{id:'minecraft:pufferfish'}}
+				item modify entity 21e0f4fa-2970-4cba-be91-6a50cd9dd0eb container.0 animated_java:global/gu/entity_uuid
+				data modify storage <%gu_storage%> out set from entity 21e0f4fa-2970-4cba-be91-6a50cd9dd0eb item.components.minecraft:item_name.insertion
+				kill 21e0f4fa-2970-4cba-be91-6a50cd9dd0eb
+			}
+
 			data modify storage <%gu_storage%> temp set value {0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,a:0,b:0,c:0,d:0,e:0,f:0}
 			data modify storage <%gu_storage%> in set from entity @s UUID
 

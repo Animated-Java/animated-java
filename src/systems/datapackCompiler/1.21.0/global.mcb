@@ -183,7 +183,7 @@ dir global {
 		}
 	}
 
-	# Thanks Gibbsly for this code! https://github.com/gibbsly/gu
+	# Thanks Gibbsly for the original code! https://github.com/gibbsly/gu
 	dir gu {
 		function on_load {
 			scoreboard players set 256 <%OBJECTIVES.I()%> 256
@@ -250,7 +250,7 @@ dir global {
 			block { with storage <%temp_storage%> args
 				$data modify storage <%temp_storage%> args.uuid set from storage <%data_storage%> "$(id)".uuid
 				scoreboard players set #success <%OBJECTIVES.I()%> 0
-				block { with storage <%temp_storage%> args
+				execute if data storage <%temp_storage%> args.uuid run { with storage <%temp_storage%> args
 					$execute store success score #success <%OBJECTIVES.I()%> if score $(uuid) <%OBJECTIVES.ID()%> matches 1..
 					$execute if score #success <%OBJECTIVES.I()%> matches 0 run data remove storage <%data_storage%> "$(id)"
 				}
