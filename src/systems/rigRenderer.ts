@@ -696,7 +696,7 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 
 		let hasTextureChanges = false
 
-		for (const [fromUUID, toUUID] of variant.textureMap.map.entries()) {
+		for (const [fromUUID, toUUID] of variant.textureMap.entries()) {
 			const fromTexture = texturesByUuid.get(fromUUID)
 			if (!fromTexture) throw new Error(`From texture not found: ${fromUUID}`)
 			const toTexture = texturesByUuid.get(toUUID)
