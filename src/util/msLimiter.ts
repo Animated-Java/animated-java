@@ -7,14 +7,15 @@ export class MSLimiter {
 		this.lastTime = performance.now()
 	}
 
+	/** True when {@link sync} would actually yield - lets a hot loop skip `await` entirely. */
+	needsSync() {
+		return performance.now() - this.lastTime >= this.limit
+	}
+
 	async sync() {
-		const now = performance.now()
-		const diff = now - this.lastTime
-		if (diff >= this.limit) {
-			await new Promise(r => requestAnimationFrame(r))
-			this.lastTime = performance.now()
-			return true
-		}
-		return false
+		if (!this.needsSync()) return false
+		await new Promise(r => requestAnimationFrame(r))
+		this.lastTime = performance.now()
+		return true
 	}
 }

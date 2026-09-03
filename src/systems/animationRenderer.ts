@@ -25,6 +25,20 @@ const TEXT_DISPLAY_ROTATION_MATRIX = new THREE.Matrix4().makeRotationFromEuler(
 )
 const MATRIX_POSITION_SCRATCH = new THREE.Vector3()
 const MATRIX_SCALE_SCRATCH = new THREE.Vector3()
+/**
+ * Node types that skip re-emitting a frame when their matrix is unchanged, so a
+ * subtree of them with no keyframed ancestor only needs sampling on tick 0.
+ * (`locator` / `interaction` are excluded - they emit a transform every tick.)
+ */
+const SKIPPABLE_NODE_TYPES = new Set([
+	'bone',
+	'text_display',
+	'item_display',
+	'block_display',
+	'null_object',
+	'camera',
+	'struct',
+])
 
 function getMainPreview() {
 	return Preview.all.find(p => p.id === 'main')
@@ -40,8 +54,8 @@ export function restoreSceneAngle() {
 	Canvas.scene.setRotationFromAxisAngle(new THREE.Vector3(0, 1, 0), 0)
 }
 
-function getNodeMatrix(node: OutlinerElement, scale: number) {
-	const matrixWorld = node.mesh.matrixWorld.clone()
+function getNodeMatrix(node: OutlinerElement, scale: number, out?: THREE.Matrix4) {
+	const matrixWorld = out ? out.copy(node.mesh.matrixWorld) : node.mesh.matrixWorld.clone()
 	MATRIX_POSITION_SCRATCH.setFromMatrixPosition(matrixWorld).multiplyScalar(1 / 16)
 	matrixWorld.setPosition(MATRIX_POSITION_SCRATCH)
 	matrixWorld.scale(MATRIX_SCALE_SCRATCH.setScalar(scale))
@@ -134,7 +148,6 @@ interface LastFrameCacheItem {
 export class AnimationSampler {
 	private readonly animation: _Animation
 	private readonly nodeEntries: Array<[string, AnyRenderedNode]>
-	private readonly animatableNodes: OutlinerElement[]
 	private readonly enablePluginMode: boolean
 
 	private readonly outlinerNodes = new Map<string, OutlinerElement>()
@@ -147,10 +160,38 @@ export class AnimationSampler {
 	private readonly functionKeyframesByTick = new Map<number, _Keyframe>()
 	private readonly lastFrameCache = new Map<string, LastFrameCacheItem>()
 
+	/**
+	 * Entries whose transform can never change after the first frame - no
+	 * keyframed ancestor or self - so they only need sampling on tick 0. Only
+	 * covers node types that already skip unchanged frames (bone / display /
+	 * null_object / camera / struct); locators and interactions always emit.
+	 */
+	private readonly dynamicEntries: Array<[string, AnyRenderedNode]>
+	/** Nodes this animation keyframes + their animators, ancestors-first. */
+	readonly poseTargets: Array<{ node: OutlinerElement; animator: BoneAnimator }>
+	/**
+	 * Flat, ancestors-first list of rig-node meshes under an animated root - the
+	 * ones whose `matrixWorld` a moving parent invalidates each tick. Built once;
+	 * see the constructor.
+	 */
+	readonly worldRefreshMeshes: THREE.Object3D[]
+	/**
+	 * Tick -> the bone/display nodes whose previous-tick keyframe carries two
+	 * data points, i.e. need re-sampling a hair later for the pre-post
+	 * discontinuity. Lets {@link sample} do one shared preview excursion per
+	 * tick instead of two per affected node.
+	 */
+	private readonly prePostByTick = new Map<
+		number,
+		Array<{ uuid: string; scale: number; node: OutlinerElement }>
+	>()
+	private readonly prePostMatrices = new Map<string, THREE.Matrix4>()
+
 	private readonly posScratch = new THREE.Vector3()
 	private readonly quatScratch = new THREE.Quaternion()
 	private readonly scaleScratch = new THREE.Vector3()
 	private readonly eulerScratch = new THREE.Euler()
+	private readonly matrixScratch = new THREE.Matrix4()
 
 	constructor(
 		animation: _Animation,
@@ -159,7 +200,6 @@ export class AnimationSampler {
 	) {
 		this.animation = animation
 		this.nodeEntries = Object.entries(nodeMap)
-		this.animatableNodes = animatableNodes
 		this.enablePluginMode = !!Project?.animated_java.enable_plugin_mode
 
 		for (const node of animatableNodes) {
@@ -195,6 +235,85 @@ export class AnimationSampler {
 		}
 		for (const kf of (effects?.function as _Keyframe[] | undefined) ?? []) {
 			this.functionKeyframesByTick.set(Math.round(kf.time * TICK_RATE), kf)
+		}
+
+		this.dynamicEntries = this.nodeEntries.filter(([uuid, node]) =>
+			this.isDynamicEntry(uuid, node)
+		)
+		this.buildPrePostIndex()
+
+		// The nodes this animation actually keyframes, paired with their resolved
+		// animator and ordered ancestors-first. Posing only these is equivalent
+		// to posing the whole rig: a node with no keyframes contributes nothing
+		// in `displayFrame`, and parent-driven motion still flows through the
+		// world-matrix sweep below. (The warm-up pass in `renderAnimation` has
+		// already resolved every animator, so `getBoneAnimator` is a cache hit.)
+		this.poseTargets = animatableNodes
+			.filter(node => (this.keyframesByNode.get(node.uuid)?.size ?? 0) > 0)
+			.sort(
+				(a, b) =>
+					(this.parentChains.get(a.uuid)?.length ?? 0) -
+					(this.parentChains.get(b.uuid)?.length ?? 0)
+			)
+			.map(node => ({ node, animator: animation.getBoneAnimator(node)! }))
+			.filter(t => !!t.animator)
+
+		// Flat, ancestors-first list of the rig-node meshes sitting under an
+		// animated root - exactly the ones whose `matrixWorld` a moving parent
+		// invalidates each tick. Cube and helper leaves are excluded: nothing
+		// samples them and they have no sampled descendants. Each mesh's parent
+		// is either `model_3d`, an earlier entry, or a never-moving static
+		// ancestor, so a single parent-first `multiplyMatrices` sweep is exact.
+		this.worldRefreshMeshes = this.nodeEntries
+			.filter(([uuid]) => this.hasKeyframedSelfOrAncestor(uuid))
+			.sort(
+				(a, b) =>
+					(this.parentChains.get(a[0])?.length ?? 0) -
+					(this.parentChains.get(b[0])?.length ?? 0)
+			)
+			.map(([uuid]) => this.outlinerNodes.get(uuid)?.mesh)
+			.filter((mesh): mesh is THREE.Object3D => !!mesh)
+	}
+
+	/** True if this node or any ancestor is keyframed by this animation. */
+	private hasKeyframedSelfOrAncestor(uuid: string): boolean {
+		if ((this.keyframesByNode.get(uuid)?.size ?? 0) > 0) return true
+		for (const ancestorUuid of this.parentChains.get(uuid) ?? []) {
+			if ((this.keyframesByNode.get(ancestorUuid)?.size ?? 0) > 0) return true
+		}
+		return false
+	}
+
+	private isDynamicEntry(uuid: string, node: AnyRenderedNode): boolean {
+		if (!SKIPPABLE_NODE_TYPES.has(node.type)) return true
+		return this.hasKeyframedSelfOrAncestor(uuid)
+	}
+
+	/**
+	 * Index, per tick, the bone/display nodes whose previous-tick keyframe has
+	 * two data points. {@link sample} resamples all of them in one preview
+	 * excursion rather than nudging the timeline twice per node.
+	 */
+	private buildPrePostIndex() {
+		const prePostTypes = new Set(['bone', 'text_display', 'item_display', 'block_display'])
+		for (const [uuid, node] of this.nodeEntries) {
+			if (!prePostTypes.has(node.type)) continue
+			const outlinerNode = this.outlinerNodes.get(uuid)
+			if (!outlinerNode) continue
+			if (this.excludedNodes.has(uuid)) continue
+			const keyframes = this.keyframesByNode.get(uuid)
+			if (!keyframes) continue
+			for (const [kfTick, kf] of keyframes) {
+				if (kf.data_points.length !== 2) continue
+				const tick = kfTick + 1
+				let list = this.prePostByTick.get(tick)
+				if (!list) this.prePostByTick.set(tick, (list = []))
+				list.push({
+					uuid,
+					scale: (node as { base_scale: number }).base_scale,
+					node: outlinerNode,
+				})
+			}
 		}
 	}
 
@@ -236,6 +355,20 @@ export class AnimationSampler {
 		return undefined
 	}
 
+	/** Record the last emitted matrix for a node, reusing the cached buffer. */
+	private storeLastFrame(uuid: string, elements: ArrayLike<number>, keyframe?: _Keyframe) {
+		const existing = this.lastFrameCache.get(uuid)
+		if (existing) {
+			for (let i = 0; i < 16; i++) existing.matrix[i] = elements[i]
+			existing.keyframe = keyframe
+		} else {
+			this.lastFrameCache.set(uuid, {
+				matrix: Array.prototype.slice.call(elements),
+				keyframe,
+			})
+		}
+	}
+
 	sample(tick: number): IRenderedFrame {
 		const { animation } = this
 		const time = tick / TICK_RATE
@@ -247,7 +380,21 @@ export class AnimationSampler {
 			...this.getFunctionFrame(tick),
 		}
 
-		for (const [uuid, node] of this.nodeEntries) {
+		// One shared preview excursion for every pre-post node at this tick,
+		// instead of nudging the timeline back and forth per node.
+		const prePostNodes = this.prePostByTick.get(tick)
+		this.prePostMatrices.clear()
+		if (prePostNodes) {
+			updatePreviewFast(animation, time + 0.001, this.poseTargets, this.worldRefreshMeshes)
+			for (const { uuid, scale, node } of prePostNodes) {
+				this.prePostMatrices.set(uuid, getNodeMatrix(node, scale))
+			}
+			updatePreviewFast(animation, time, this.poseTargets, this.worldRefreshMeshes)
+		}
+
+		// Static subtrees (no keyframed ancestor) can't move after frame 0.
+		const entries = tick === 0 ? this.nodeEntries : this.dynamicEntries
+		for (const [uuid, node] of entries) {
 			const outlinerNode = this.outlinerNodes.get(uuid)
 			if (!outlinerNode) continue
 			if (this.excludedNodes.has(uuid)) continue
@@ -267,7 +414,7 @@ export class AnimationSampler {
 				case 'item_display':
 				case 'block_display':
 				case 'bone': {
-					matrix = getNodeMatrix(outlinerNode, node.base_scale)
+					matrix = getNodeMatrix(outlinerNode, node.base_scale, this.matrixScratch)
 					interpolation = this.inheritedInterpolation(uuid, tick)
 					// Only emit the frame if the matrix changed, this is the first
 					// frame, or the interpolation changed.
@@ -281,26 +428,18 @@ export class AnimationSampler {
 						interpolation = 'step'
 					} else if (prevKeyframe?.data_points.length === 2) {
 						interpolation = 'pre-post'
-						updatePreview(animation, time + 0.001, this.animatableNodes)
-						matrix = getNodeMatrix(outlinerNode, node.base_scale)
-						updatePreview(animation, time, this.animatableNodes)
+						matrix = this.prePostMatrices.get(uuid) ?? matrix
 					}
-					this.lastFrameCache.set(uuid, {
-						matrix: matrix.elements.slice(),
-						keyframe,
-					})
+					this.storeLastFrame(uuid, matrix.elements, keyframe)
 					break
 				}
 				case 'interaction':
 				case 'locator': {
-					matrix = getNodeMatrix(outlinerNode, 1)
+					matrix = getNodeMatrix(outlinerNode, 1, this.matrixScratch)
 					if (keyframe) {
 						fn = keyframe.function
 						fnCondition = keyframe.execute_condition
-						this.lastFrameCache.set(uuid, {
-							matrix: matrix.elements.slice(),
-							keyframe,
-						})
+						this.storeLastFrame(uuid, matrix.elements, keyframe)
 					} else if (lastFrame?.keyframe) {
 						const repeat = lastFrame.keyframe.repeat
 						const frequency = lastFrame.keyframe.repeat_frequency
@@ -314,14 +453,11 @@ export class AnimationSampler {
 				case 'null_object':
 				case 'camera':
 				case 'struct': {
-					matrix = getNodeMatrix(outlinerNode, 1)
+					matrix = getNodeMatrix(outlinerNode, 1, this.matrixScratch)
 					// Only emit the frame if the matrix changed, or this is the first frame.
 					if (lastFrame && matrixElementsEqual(lastFrame.matrix, matrix.elements))
 						continue
-					this.lastFrameCache.set(uuid, {
-						matrix: matrix.elements.slice(),
-						keyframe,
-					})
+					this.storeLastFrame(uuid, matrix.elements, keyframe)
 					break
 				}
 				default:
@@ -398,6 +534,56 @@ export function updatePreview(
 	if (animation.effects) animation.effects.displayFrame()
 }
 
+/** Reset one node's mesh to its rest pose - mirrors the AJ `showDefaultPose` patch. */
+function resetNodePose(node: OutlinerNode) {
+	const mesh = node.mesh as THREE.Object3D & {
+		fix_rotation?: THREE.Euler
+		fix_position?: THREE.Vector3
+		fix_scale?: THREE.Vector3
+	}
+	if (mesh.fix_rotation) mesh.rotation.copy(mesh.fix_rotation)
+	if (mesh.fix_position) mesh.position.copy(mesh.fix_position)
+	if (mesh.fix_scale) mesh.scale.copy(mesh.fix_scale)
+	else if ((node.constructor as any).animator?.prototype?.channels?.scale) {
+		mesh.scale.x = mesh.scale.y = mesh.scale.z = 1
+	}
+}
+
+/**
+ * Like {@link updatePreview}, but only touches the nodes this animation
+ * actually keyframes. Valid for every tick after a full-scene
+ * {@link updatePreview} has run for the animation (see `renderAnimation`'s
+ * warm-up): nothing else in the rig moves, so resetting and re-posing only
+ * these nodes, then sweeping `matrixWorld` for just the animated subtree, is
+ * equivalent to the full pass but proportional to the animated subtree instead
+ * of the whole model.
+ *
+ * `poseTargets` and `worldRefreshMeshes` must both be ordered ancestors-first.
+ */
+export function updatePreviewFast(
+	animation: _Animation,
+	time: number,
+	poseTargets: AnimationSampler['poseTargets'],
+	worldRefreshMeshes: THREE.Object3D[]
+) {
+	Timeline.time = time
+	for (const { node } of poseTargets) resetNodePose(node)
+	for (const { animator } of poseTargets) {
+		Animator.resetLastValues()
+		animator.displayFrame()
+	}
+	Animator.resetLastValues()
+	// Only the posed nodes' local matrices actually changed. Refresh those, then
+	// sweep world matrices down the animated subtree in parent-first order -
+	// far cheaper than THREE re-composing every static descendant.
+	Project!.model_3d.updateWorldMatrix(true, false)
+	for (const { node } of poseTargets) node.mesh.updateMatrix()
+	for (const mesh of worldRefreshMeshes) {
+		mesh.matrixWorld.multiplyMatrices(mesh.parent!.matrixWorld, mesh.matrix)
+	}
+	if (animation.effects) animation.effects.displayFrame()
+}
+
 async function renderAnimation(
 	animation: _Animation,
 	rig: IRenderedRig,
@@ -415,6 +601,12 @@ async function renderAnimation(
 	} as IRenderedAnimation
 	animation.select()
 
+	// Full-scene pass at t=0: establishes the rest of the rig for every later
+	// (animated-subtree-only) tick, and resolves legacy name-keyed animators
+	// onto their node UUIDs so the sampler's `animation.animators` view is
+	// already migrated.
+	updatePreview(animation, 0, animatableNodes)
+
 	const sampler = new AnimationSampler(animation, rig.nodes, animatableNodes)
 	const includedNodes = new Set<string>()
 
@@ -426,14 +618,18 @@ async function renderAnimation(
 	const limiter = new MSLimiter(100)
 	for (let tick = 0; tick / TICK_RATE <= animation.length + 1e-9; tick++) {
 		const time = tick / TICK_RATE
-		updatePreview(animation, time, animatableNodes)
+		// Tick 0's scene is already posed by the warm-up above; later ticks only
+		// need the animated subtree re-posed.
+		if (tick > 0)
+			updatePreviewFast(animation, time, sampler.poseTargets, sampler.worldRefreshMeshes)
 		const frame = sampler.sample(tick)
 		for (const uuid in frame.node_transforms) includedNodes.add(uuid)
 		rendered.frames.push(frame)
 		SUB_PROGRESS.set(tick + 1)
 		// Let the dialog repaint on slow rigs. Safe here because nothing between
-		// samples depends on the scene staying untouched across the yield.
-		await limiter.sync()
+		// samples depends on the scene staying untouched across the yield. The
+		// sync `needsSync` check keeps the common path off the microtask queue.
+		if (limiter.needsSync()) await limiter.sync()
 	}
 
 	rendered.duration = rendered.frames.length
@@ -448,31 +644,40 @@ async function renderAnimation(
 
 export function hashAnimations(animations: IRenderedAnimation[]) {
 	const hash = crypto.createHash('sha256')
+	// One `hash.update` per frame rather than ~7 per node: the byte stream fed to
+	// sha256 is byte-for-byte the same as concatenating the old pieces in order,
+	// so the digest is unchanged.
 	for (const animation of animations) {
-		hash.update('anim;' + animation.name)
-		hash.update(';' + animation.duration.toString())
-		hash.update(';' + animation.loop_mode)
-		hash.update(';' + Object.keys(animation.modified_nodes).join(';'))
+		hash.update(
+			'anim;' +
+				animation.name +
+				';' +
+				animation.duration.toString() +
+				';' +
+				animation.loop_mode +
+				';' +
+				Object.keys(animation.modified_nodes).join(';')
+		)
 		for (const frame of animation.frames) {
-			hash.update(';' + frame.time.toString())
-			for (const [uuid, node] of Object.entries(frame.node_transforms)) {
-				hash.update(';' + uuid)
-				hash.update(';' + node.pos.join(';'))
-				hash.update(';' + node.rot.join(';'))
-				hash.update(';' + node.scale.join(';'))
-				node.interpolation && hash.update(';' + node.interpolation)
-				if (node.function) hash.update(';' + node.function)
-				if (node.function_execute_condition)
-					hash.update(';' + node.function_execute_condition)
+			let s = ';' + frame.time.toString()
+			const transforms = frame.node_transforms
+			for (const uuid in transforms) {
+				const node = transforms[uuid]
+				s += ';' + uuid
+				s += ';' + node.pos.join(';')
+				s += ';' + node.rot.join(';')
+				s += ';' + node.scale.join(';')
+				if (node.interpolation) s += ';' + node.interpolation
+				if (node.function) s += ';' + node.function
+				if (node.function_execute_condition) s += ';' + node.function_execute_condition
 			}
 			if (frame.variants) {
-				hash.update(';' + frame.variants)
-				if (frame.variants_execute_condition)
-					hash.update(';' + frame.variants_execute_condition)
+				s += ';' + frame.variants
+				if (frame.variants_execute_condition) s += ';' + frame.variants_execute_condition
 			}
-			if (frame.function) hash.update(';' + frame.function)
-			if (frame.function_execute_condition)
-				hash.update(';' + frame.function_execute_condition)
+			if (frame.function) s += ';' + frame.function
+			if (frame.function_execute_condition) s += ';' + frame.function_execute_condition
+			hash.update(s)
 		}
 	}
 	return hash.digest('hex')
@@ -530,6 +735,5 @@ export async function renderProjectAnimations(project: ModelProject, rig: IRende
 	}
 
 	console.timeEnd('Rendering animations took')
-	console.log('Animations:', animations)
 	return animations
 }
