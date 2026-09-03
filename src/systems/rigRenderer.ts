@@ -307,9 +307,7 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 
 	if (Object.keys(element.faces).length === 0) return
 
-	// @ts-expect-error - Broken BB types
 	if (cube.light_emission) {
-		// @ts-expect-error - Broken BB types
 		element.light_emission = cube.light_emission
 	}
 
