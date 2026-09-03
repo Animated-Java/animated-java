@@ -329,7 +329,7 @@ class InteractionAnimator extends BoneAnimator {
 		return !!this.element?.mesh
 	}
 
-	displayRotation(arr: ArrayVector3 | ArrayVector4, multiplier = 1) {
+	displayRotation(_arr: ArrayVector3 | ArrayVector4, _multiplier = 1) {
 		const bone = this.getElement().mesh
 
 		if (bone.parent) {
