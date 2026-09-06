@@ -9,39 +9,36 @@ body:
   - type: markdown
     attributes:
       value: >-
-        # 👋 Thank You for Creating a Bug Report!
+        # 👋 Thanks for Reporting a Bug!
 
-        Every issue that gets reported and fixed is an improvement for everyone
-        using Animated Java!
-
-        Please fill out the following information to the best of your ability.
-        Providing clear, and concise information will greatly improve the
-        chances of your issue getting resolved!
+        Every bug report that gets fixed makes Animated Java better for
+        everyone. Fill out what you can below — the more detail you give us,
+        the faster we can track down the problem.
 
   - type: checkboxes
     id: confirmations
     attributes:
-      label: 🛑 Before you Start
+      label: 🛑 Quick Checklist
       description: >-
-        Please confirm you have taken the following steps *before* creating a
-        new issue!
+        A few quick checks before you post — these help us avoid duplicate
+        reports and wasted back-and-forth.
       options:
         - label: >-
-            I have searched [existing
-            bug reports](https://github.com/Animated-Java/animated-java/labels/%F0%9F%90%9B%20Bug) for
-            my problem.
+            I searched [existing bug
+            reports](https://github.com/Animated-Java/animated-java/labels/%F0%9F%90%9B%20Bug)
+            and didn't find mine.
           required: true
         - label: >-
-            I have read the
-            [F-A-Q](https://animated-java.dev/docs/resources/faq).
+            I checked the [F-A-Q](https://animated-java.dev/docs/resources/faq)
+            and my issue isn't answered there.
           required: true
         - label: >-
-            I am using the [latest
-            version](https://builds.animated-java.dev/latest) of Animated Java
+            I'm using the [latest
+            version](https://builds.animated-java.dev/latest) of Animated Java.
           required: true
         - label: >-
-            I will only report a single bug in this report. If I have found multiple
-            bugs, I will create a separate report for each one.
+            This report is about a single bug. (If I found more than one,
+            I'll file a separate report for each.)
           required: true
 
   - type: markdown
@@ -51,31 +48,22 @@ body:
   - type: textarea
     id: description
     attributes:
-      label: 🗣️ Describe the bug
+      label: 🗣️ What happened?
       description: >-
-        A clear and concise description of the bug. You may include screenshots,
-        videos, and other media as needed.
+        Describe the bug in your own words. Screenshots, videos, and
+        `.ajblueprint` files are all welcome, and often help us understand
+        the problem a lot faster.
       placeholder: My lawnmower is producing large clumps of grass.
     validations:
       required: true
 
   - type: textarea
-    id: error
-    attributes:
-      label: ⚠️ Error Message
-      description: The error message provided by Animated Java (If applicable)
-      render: javascript
-      placeholder: >-
-        If you received an error message, please paste it here. If not, you can
-        leave this field blank.
-
-  - type: textarea
     id: repro
     attributes:
-      label: 🔄️ How to Reproduce
+      label: 🔄️ Steps to reproduce
       description: >-
-        A short explanation of how to reproduce the issue. Please include and
-        `.ajblueprint` files that produce the issue if applicable.
+        Walk us through exactly what you did, step by step, right before the
+        bug showed up.
       placeholder: |-
         1. Go to '...'
         2. Click on '....'
@@ -87,8 +75,7 @@ body:
   - type: textarea
     id: expected
     attributes:
-      label: ✅ Expected Behavior
-      description: What you expected to happen when performing the above steps.
+      label: ✅ What did you expect to happen instead?
       placeholder: >-
         My lawnmower should produce small grass clippings that easily filter
         into the lawn.
@@ -96,29 +83,42 @@ body:
       required: true
 
   - type: textarea
+    id: error
+    attributes:
+      label: ⚠️ Error message
+      description: >-
+        If Animated Java or Blockbench showed you an error message, paste it
+        here. If not, leave this blank.
+      render: javascript
+
+  - type: textarea
     id: solutions
     attributes:
-      label: 💡 Solutions & Alternatives
+      label: 💡 Found a workaround?
       description: >-
-        Any alternative solutions, or workarounds you've considered, and why
-        they're not ideal.
+        If you've found a way around the problem — even a clunky one — let us
+        know. It helps other users in the meantime, and sometimes points us
+        straight at the fix.
       placeholder: >-
-        - I could use a lawnmower bag, but I would need to purchase a bag, and
-        empty it periodically while mowing.
+        I could use a lawnmower bag, but I'd need to buy one, and empty it
+        periodically while mowing.
 
   - type: markdown
     attributes:
       value: |-
-        # ⛰️ Environment
+        # ⛰️ Your Setup
 
-        Provide details about your system and setup to help diagnose the issue.
+        This helps us tell whether the bug is specific to a certain version,
+        platform, or mod/plugin combo. If you're not sure about something,
+        your best guess is fine.
 
   - type: input
     id: mc-version
     attributes:
       label: 🟩 Minecraft Version
-      description: The version of Minecraft you're using.
-      placeholder: E.g. 1.20.4, 26.1.1
+      description: >-
+        Shown in the bottom-right corner of the Minecraft title screen.
+      placeholder: E.g. 1.20.4, 26.2
     validations:
       required: true
 
@@ -126,7 +126,7 @@ body:
     id: bb-version
     attributes:
       label: 🟦 Blockbench Version
-      description: The version of Blockbench you're using.
+      description: Found under Blockbench's Help menu → About Blockbench.
       placeholder: E.g. 4.12.2
     validations:
       required: true
@@ -146,8 +146,10 @@ body:
   - type: textarea
     id: installed-bb-plugins
     attributes:
-      label: 📃 Installed Blockbench Plugins
-      description: Any Blockbench Plugins you have installed other than Animated Java.
+      label: 📃 Other Blockbench Plugins
+      description: >-
+        Any other Blockbench plugins you have installed besides Animated
+        Java. If it's just Animated Java, leave this blank.
       placeholder: |-
         - Geckolib Animation Utils
         - Cameras
@@ -157,10 +159,11 @@ body:
   - type: textarea
     id: environment
     attributes:
-      label: ⛰️ Minecraft Environment
+      label: 🎮 Modded Client or Server?
       description: >-
-        A description of the Minecraft environment you're using, if it's not
-        strictly a vanilla single-player world or server.
+        If you're just playing vanilla Minecraft (singleplayer or a plain
+        server), you can leave this blank. If you're using mods, a modpack,
+        or server plugins, tell us about them here.
       placeholder: |
         ## Server environment
 
