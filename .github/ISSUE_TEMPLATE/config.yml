@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Questions & Help
+    url: https://animated-java.dev/discord
+    about: Not sure if it's a bug, or just need a hand? Ask on Discord first!
+  - name: 📚 Documentation
+    url: https://animated-java.dev/docs
+    about: Guides and answers to common questions about using Animated Java.
