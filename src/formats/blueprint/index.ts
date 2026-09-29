@@ -351,10 +351,8 @@ export const BLUEPRINT_FORMAT = registerDeletableHandlerPatch({
 						fixCubeRotation(cube)
 					}
 
-					requestAnimationFrame(() => {
-						Variant.selectDefault()
-						Canvas.updateAll()
-					})
+					Variant.selectDefault()
+					Canvas.updateAll()
 				})
 			},
 

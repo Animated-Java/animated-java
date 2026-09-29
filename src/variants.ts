@@ -263,4 +263,5 @@ EVENTS.SELECT_PROJECT.subscribe(project => {
 })
 EVENTS.UNSELECT_PROJECT.subscribe(() => {
 	Variant.all = []
+	Variant.selected = undefined
 })
