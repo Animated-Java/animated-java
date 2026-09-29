@@ -60,6 +60,45 @@ function toPositionOnlyWorldGeometry(
 }
 
 /**
+ * Removes the full front/back quads of a flat 2D item icon, so its outline follows the icon
+ * instead of drawing a rectangle around it. Expects non-indexed, position-only geometry.
+ */
+function stripFlatBackgroundFaces(geometry: THREE.BufferGeometry): THREE.BufferGeometry {
+	const position = geometry.getAttribute('position') as THREE.BufferAttribute
+	const triangleCount = position.count / 3
+	const size = new THREE.Box3().setFromBufferAttribute(position).getSize(new THREE.Vector3())
+	const fullExtentArea = size.x * size.y * 0.49
+
+	const a = new THREE.Vector3()
+	const b = new THREE.Vector3()
+	const c = new THREE.Vector3()
+	const kept: number[] = []
+	let strippedAny = false
+
+	for (let i = 0; i < triangleCount; i++) {
+		a.fromBufferAttribute(position, i * 3)
+		b.fromBufferAttribute(position, i * 3 + 1)
+		c.fromBufferAttribute(position, i * 3 + 2)
+
+		const cross = b.clone().sub(a).cross(c.clone().sub(a))
+		const doubleArea = cross.length()
+		const isFlatBackgroundFace =
+			doubleArea >= fullExtentArea * 2 && Math.abs(cross.z) >= doubleArea * 0.999
+
+		if (isFlatBackgroundFace) {
+			strippedAny = true
+			continue
+		}
+		kept.push(i * 3, i * 3 + 1, i * 3 + 2)
+	}
+
+	if (!strippedAny) return geometry
+	const stripped = geometry.clone()
+	stripped.setIndex(kept)
+	return stripped
+}
+
+/**
  * Converts a bmr model group into the outliner's expected structure. bmr builds
  * in Minecraft space (origin-centered, 16u/block); Blockbench's is that rotated
  * 180° around Y. `pivot` picks the block (corner) or item (center) origin.
@@ -94,7 +133,10 @@ export function convertBmrGroup(
 
 		const worldGeometry = toPositionOnlyWorldGeometry(mesh.geometry, mesh.matrixWorld)
 		boxGeometries.push(worldGeometry)
-		edgeGeometries.push(new THREE.EdgesGeometry(worldGeometry))
+		const edgeSourceGeometry = options.isBlock
+			? worldGeometry
+			: stripFlatBackgroundFaces(worldGeometry)
+		edgeGeometries.push(new THREE.EdgesGeometry(edgeSourceGeometry))
 	})
 
 	const boundingBox = boxGeometries.length
