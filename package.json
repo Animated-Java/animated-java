@@ -4,7 +4,7 @@
 	"title": "Animated Java",
 	"icon": "icon.svg",
 	"description": "Effortlessly craft complex animations for Minecraft: Java Edition",
-	"version": "1.10.2",
+	"version": "1.11.0",
 	"min_blockbench_version": "5.1.4",
 	"variant": "desktop",
 	"tags": [
@@ -30,10 +30,8 @@
 		}
 	],
 	"subscription_supporters": [
-		"123yeah_boi321",
+		"CodeNeon",
 		"alumina6767",
-		"LadyCailin",
-		"VonLeipenstein",
 		"Zoe"
 	],
 	"special_thanks": [
