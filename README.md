@@ -68,8 +68,8 @@ Animated Java is a cutting-edge Blockbench plugin designed for Minecraft: Java E
 
 # 📦 Installation
 
--   ❔ [Getting Started](https://animated-java.dev/docs/getting-started/using-animated-java)
--   📚 [Documentation](https://animated-java.dev/docs)
+-   ❔ [Getting Started](https://animated-java.dev/docs/getting-started/installing)
+-   📚 [Documentation](https://animated-java.dev/docs/welcome)
 -   🌐 [Website](https://animated-java.dev)
 -   🗣️ [Discord](https://animated-java.dev/discord)
 
