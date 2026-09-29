@@ -96,7 +96,7 @@
 
 	.description {
 		color: var(--color-subtle_text);
-		font-size: 0.95em;
+		font-size: 0.9rem;
 		margin-bottom: 8px;
 	}
 
