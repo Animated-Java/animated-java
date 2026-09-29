@@ -25,6 +25,7 @@ const TEXT_DISPLAY_ROTATION_MATRIX = new THREE.Matrix4().makeRotationFromEuler(
 )
 const MATRIX_POSITION_SCRATCH = new THREE.Vector3()
 const MATRIX_SCALE_SCRATCH = new THREE.Vector3()
+const PIVOT_OFFSET_MATRIX_SCRATCH = new THREE.Matrix4()
 /**
  * Node types that skip re-emitting a frame when their matrix is unchanged, so a
  * subtree of them with no keyframed ancestor only needs sampling on tick 0.
@@ -56,6 +57,21 @@ export function restoreSceneAngle() {
 
 function getNodeMatrix(node: OutlinerElement, scale: number, out?: THREE.Matrix4) {
 	const matrixWorld = out ? out.copy(node.mesh.matrixWorld) : node.mesh.matrixWorld.clone()
+
+	// The preview offsets a child of `node.mesh` by the pivot, so apply the same offset here
+	if (
+		(node instanceof VanillaItemDisplay || node instanceof VanillaBlockDisplay) &&
+		!node.pivotOffset.allEqual(0)
+	) {
+		matrixWorld.multiply(
+			PIVOT_OFFSET_MATRIX_SCRATCH.makeTranslation(
+				node.pivotOffset[0],
+				node.pivotOffset[1],
+				node.pivotOffset[2]
+			)
+		)
+	}
+
 	MATRIX_POSITION_SCRATCH.setFromMatrixPosition(matrixWorld).multiplyScalar(1 / 16)
 	matrixWorld.setPosition(MATRIX_POSITION_SCRATCH)
 	matrixWorld.scale(MATRIX_SCALE_SCRATCH.setScalar(scale))

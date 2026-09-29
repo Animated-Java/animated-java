@@ -9,7 +9,12 @@ import EVENTS from '../util/events'
 import { localize as translate } from '../util/lang'
 import { validateBlock } from '../util/minecraftUtil'
 import { DeepClonedObjectProperty, fixClassPropertyInheritance } from '../util/property'
-import { ResizableOutlinerElement } from './resizableOutlinerElement'
+import {
+	applyPivotOffset,
+	getPivotedGeometryWorldCenter,
+	ResizableOutlinerElement,
+	resetPivotOffsetTracking,
+} from './resizableOutlinerElement'
 import { sanitizeOutlinerElementName } from './util'
 
 const ERROR_OUTLINE_MATERIAL = Canvas.outlineMaterial.clone()
@@ -20,6 +25,7 @@ interface VanillaBlockDisplayOptions {
 	block?: string
 	position?: ArrayVector3
 	rotation?: ArrayVector3
+	pivotOffset?: ArrayVector3
 	scale?: ArrayVector3
 	visibility?: boolean
 }
@@ -30,6 +36,11 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 	static icon = 'deployed_code'
 	static selected: VanillaBlockDisplay[] = []
 	static all: VanillaBlockDisplay[] = []
+
+	static behavior = {
+		...ResizableOutlinerElement.behavior,
+		has_pivot: true,
+	}
 
 	type = VanillaBlockDisplay.type
 	icon = VanillaBlockDisplay.icon
@@ -87,6 +98,10 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 	sanitizeName(): string {
 		this.name = sanitizeOutlinerElementName(this.name, this.uuid)
 		return this.name
+	}
+
+	getWorldCenter(): THREE.Vector3 {
+		return getPivotedGeometryWorldCenter(this)
 	}
 
 	getUndoCopy() {
@@ -175,6 +190,7 @@ export class VanillaBlockDisplay extends ResizableOutlinerElement {
 		mesh.outline = blockModel.outline
 		mesh.add(blockModel.mesh)
 		mesh.add(blockModel.outline)
+		resetPivotOffsetTracking(mesh.geometry, blockModel.mesh, blockModel.outline)
 
 		this.preview_controller.updateHighlight(this)
 		this.preview_controller.updateTransform(this)
@@ -248,6 +264,9 @@ export const PREVIEW_CONTROLLER: NodePreviewController = new NodePreviewControll
 		},
 		updateTransform(el: VanillaBlockDisplay) {
 			ResizableOutlinerElement.prototype.preview_controller.updateTransform(el)
+			if (el.mesh.outline) {
+				applyPivotOffset(el, el.mesh.geometry, el.mesh.children[0], el.mesh.outline)
+			}
 		},
 		updateHighlight(el: VanillaBlockDisplay, force?: boolean | VanillaBlockDisplay) {
 			if (!activeProjectIsBlueprintFormat() || !el?.mesh) return
@@ -342,12 +361,12 @@ class VanillaBlockDisplayAnimator extends BoneAnimator {
 					new THREE.Quaternion().fromArray(arr),
 					'ZYX'
 				)
-				bone.rotation.x -= addedRotation.x * multiplier
-				bone.rotation.y -= addedRotation.y * multiplier
+				bone.rotation.x += addedRotation.x * multiplier
+				bone.rotation.y += addedRotation.y * multiplier
 				bone.rotation.z += addedRotation.z * multiplier
 			} else {
-				bone.rotation.x -= Math.degToRad(arr[0]) * multiplier
-				bone.rotation.y -= Math.degToRad(arr[1]) * multiplier
+				bone.rotation.x += Math.degToRad(arr[0]) * multiplier
+				bone.rotation.y += Math.degToRad(arr[1]) * multiplier
 				bone.rotation.z += Math.degToRad(arr[2]) * multiplier
 			}
 		}
@@ -366,7 +385,7 @@ class VanillaBlockDisplayAnimator extends BoneAnimator {
 			bone.position.copy(bone.fix_position as THREE.Vector3)
 		}
 		if (arr) {
-			bone.position.x -= arr[0] * multiplier
+			bone.position.x += arr[0] * multiplier
 			bone.position.y += arr[1] * multiplier
 			bone.position.z += arr[2] * multiplier
 		}

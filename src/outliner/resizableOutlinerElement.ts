@@ -8,6 +8,8 @@ export class ResizableOutlinerElement extends OutlinerElement {
 	name: string
 	position: ArrayVector3
 	rotation: ArrayVector3
+	/** Local offset of the rendered geometry from {@link position}, used as the pivot point. */
+	pivotOffset: ArrayVector3
 	scale: ArrayVector3
 	visibility: boolean
 	color!: number
@@ -41,6 +43,7 @@ export class ResizableOutlinerElement extends OutlinerElement {
 		this.name ??= 'resizable_outliner_element'
 		this.position ??= [0, 0, 0]
 		this.rotation ??= [0, 0, 0]
+		this.pivotOffset ??= [0, 0, 0]
 		this.scale ??= [1, 1, 1]
 		this.visibility ??= true
 	}
@@ -128,6 +131,86 @@ export class ResizableOutlinerElement extends OutlinerElement {
 		save.uuid = this.uuid
 		save.type = this.type
 		return save
+	}
+
+	/**
+	 * Moves the pivot to `origin` without moving the rendered geometry.
+	 * Divides by `scale` because `pivotOffset` lives inside the scaled mesh.
+	 */
+	transferOrigin(origin: ArrayVector3) {
+		if (!this.mesh) return this
+		const q = Reusable.quat1.copy(this.mesh.quaternion).invert()
+		const shift = Reusable.vec1
+			.set(
+				this.position[0] - origin[0],
+				this.position[1] - origin[1],
+				this.position[2] - origin[2]
+			)
+			.applyQuaternion(q)
+			.divide(Reusable.vec2.fromArray(this.scale))
+
+		this.pivotOffset[0] += shift.x
+		this.pivotOffset[1] += shift.y
+		this.pivotOffset[2] += shift.z
+		this.position.V3_set(origin)
+
+		this.preview_controller.updateTransform(this)
+		this.preview_controller.updateGeometry?.(this)
+		return this
+	}
+}
+
+/**
+ * World-space center of an element's rendered geometry, rather than its pivot,
+ * so "Center Pivot" works.
+ */
+export function getPivotedGeometryWorldCenter(el: ResizableOutlinerElement): THREE.Vector3 {
+	return new THREE.Box3().setFromObject(el.mesh).getCenter(new THREE.Vector3())
+}
+
+/**
+ * Records a freshly loaded model's un-offset position for {@link applyPivotOffset}.
+ * Call right after adding the model to `el.mesh`.
+ */
+export function resetPivotOffsetTracking(
+	hitboxGeometry: THREE.BufferGeometry,
+	modelMesh: THREE.Object3D,
+	outline: THREE.Object3D
+) {
+	modelMesh.userData.pivotBaseline = modelMesh.position.toArray()
+	outline.userData.pivotBaseline = outline.position.toArray()
+	hitboxGeometry.userData.pivotOffsetApplied = [0, 0, 0]
+}
+
+/**
+ * Applies `el.pivotOffset` to a loaded model's mesh, outline and hitbox.
+ * Idempotent, so it's safe to call every frame.
+ * Does nothing until {@link resetPivotOffsetTracking} has run.
+ */
+export function applyPivotOffset(
+	el: ResizableOutlinerElement,
+	hitboxGeometry: THREE.BufferGeometry,
+	modelMesh: THREE.Object3D,
+	outline: THREE.Object3D
+) {
+	const applied = hitboxGeometry.userData.pivotOffsetApplied as ArrayVector3 | undefined
+	const modelBaseline = modelMesh.userData.pivotBaseline as ArrayVector3 | undefined
+	const outlineBaseline = outline.userData.pivotBaseline as ArrayVector3 | undefined
+	if (!applied || !modelBaseline || !outlineBaseline) return
+
+	const [x, y, z] = el.pivotOffset
+	modelMesh.position.set(modelBaseline[0] + x, modelBaseline[1] + y, modelBaseline[2] + z)
+	outline.position.set(outlineBaseline[0] + x, outlineBaseline[1] + y, outlineBaseline[2] + z)
+
+	const dx = x - applied[0]
+	const dy = y - applied[1]
+	const dz = z - applied[2]
+	if (dx || dy || dz) {
+		hitboxGeometry.translate(dx, dy, dz)
+		hitboxGeometry.userData.pivotOffsetApplied = [x, y, z]
+		// `translate` doesn't clear cached bounds
+		hitboxGeometry.boundingBox = null
+		hitboxGeometry.boundingSphere = null
 	}
 }
 new Property(ResizableOutlinerElement, 'string', 'name', { default: 'resizable_outliner_element' })

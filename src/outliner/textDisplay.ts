@@ -8,7 +8,12 @@ import { type IDisplayEntityConfigs } from '../systems/rigRenderer'
 import EVENTS from '../util/events'
 import { localize as translate } from '../util/lang'
 import { DeepClonedObjectProperty, fixClassPropertyInheritance } from '../util/property'
-import { ResizableOutlinerElement } from './resizableOutlinerElement'
+import {
+	applyPivotOffset,
+	getPivotedGeometryWorldCenter,
+	ResizableOutlinerElement,
+	resetPivotOffsetTracking,
+} from './resizableOutlinerElement'
 import { sanitizeOutlinerElementName } from './util'
 
 interface TextDisplayOptions {
@@ -16,6 +21,7 @@ interface TextDisplayOptions {
 	text?: string
 	position?: ArrayVector3
 	rotation?: ArrayVector3
+	pivotOffset?: ArrayVector3
 	scale?: ArrayVector3
 	lineLength?: number
 	backgroundColor?: string
@@ -32,6 +38,11 @@ export class TextDisplay extends ResizableOutlinerElement {
 	static selected: TextDisplay[] = []
 	static all: TextDisplay[] = []
 	static invalidJsonText: TextElement = { text: 'Invalid JSON Text!', color: 'red' }
+
+	static behavior = {
+		...ResizableOutlinerElement.behavior,
+		has_pivot: true,
+	}
 
 	type = TextDisplay.type
 	icon = TextDisplay.icon
@@ -85,6 +96,10 @@ export class TextDisplay extends ResizableOutlinerElement {
 	sanitizeName(): string {
 		this.name = sanitizeOutlinerElementName(this.name, this.uuid)
 		return this.name
+	}
+
+	getWorldCenter(): THREE.Vector3 {
+		return getPivotedGeometryWorldCenter(this)
 	}
 
 	get text() {
@@ -286,7 +301,8 @@ export class TextDisplay extends ResizableOutlinerElement {
 		delete mesh.sprite
 		mesh.name = this.uuid
 		mesh.material = Canvas.transparentMaterial
-		mesh.geometry = hitbox
+		// The background mesh shares `hitbox`, and pivot offsets translate it in place
+		mesh.geometry = hitbox.clone()
 		mesh.add(text)
 
 		outline.name = this.uuid + '_outline'
@@ -294,6 +310,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 		mesh.outline = outline
 		mesh.add(outline)
 		mesh.visible = this.visibility
+		resetPivotOffsetTracking(mesh.geometry, text, outline)
 
 		// Dispatch view update without actually doing anything
 		Canvas.updateView({ elements: [], element_aspects: {} })
@@ -352,6 +369,9 @@ export const PREVIEW_CONTROLLER: NodePreviewController = new NodePreviewControll
 
 	updateTransform(el: TextDisplay) {
 		ResizableOutlinerElement.prototype.preview_controller.updateTransform(el)
+		if (el.mesh.outline) {
+			applyPivotOffset(el, el.mesh.geometry, el.mesh.children[0], el.mesh.outline)
+		}
 	},
 })
 
@@ -428,12 +448,12 @@ class TextDisplayAnimator extends BoneAnimator {
 					new THREE.Quaternion().fromArray(arr),
 					'ZYX'
 				)
-				bone.rotation.x -= addedRotation.x * multiplier
-				bone.rotation.y -= addedRotation.y * multiplier
+				bone.rotation.x += addedRotation.x * multiplier
+				bone.rotation.y += addedRotation.y * multiplier
 				bone.rotation.z += addedRotation.z * multiplier
 			} else {
-				bone.rotation.x -= Math.degToRad(arr[0]) * multiplier
-				bone.rotation.y -= Math.degToRad(arr[1]) * multiplier
+				bone.rotation.x += Math.degToRad(arr[0]) * multiplier
+				bone.rotation.y += Math.degToRad(arr[1]) * multiplier
 				bone.rotation.z += Math.degToRad(arr[2]) * multiplier
 			}
 		}
@@ -452,7 +472,7 @@ class TextDisplayAnimator extends BoneAnimator {
 			bone.position.copy(bone.fix_position as THREE.Vector3)
 		}
 		if (arr) {
-			bone.position.x -= arr[0] * multiplier
+			bone.position.x += arr[0] * multiplier
 			bone.position.y += arr[1] * multiplier
 			bone.position.z += arr[2] * multiplier
 		}

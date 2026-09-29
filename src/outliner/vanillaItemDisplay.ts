@@ -10,7 +10,12 @@ import { localize as translate } from '../util/lang'
 import { validateItem } from '../util/minecraftUtil'
 import { DeepClonedObjectProperty, fixClassPropertyInheritance } from '../util/property'
 import { Variant } from '../variants'
-import { ResizableOutlinerElement } from './resizableOutlinerElement'
+import {
+	applyPivotOffset,
+	getPivotedGeometryWorldCenter,
+	ResizableOutlinerElement,
+	resetPivotOffsetTracking,
+} from './resizableOutlinerElement'
 import { sanitizeOutlinerElementName } from './util'
 
 export type ItemDisplayMode =
@@ -30,6 +35,7 @@ interface VanillaItemDisplayOptions {
 	itemDisplay?: ItemDisplayMode
 	position?: ArrayVector3
 	rotation?: ArrayVector3
+	pivotOffset?: ArrayVector3
 	scale?: ArrayVector3
 	visibility?: boolean
 }
@@ -40,6 +46,11 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 	static icon = 'icecream'
 	static selected: VanillaItemDisplay[] = []
 	static all: VanillaItemDisplay[] = []
+
+	static behavior = {
+		...ResizableOutlinerElement.behavior,
+		has_pivot: true,
+	}
 
 	type = VanillaItemDisplay.type
 	icon = VanillaItemDisplay.icon
@@ -102,6 +113,10 @@ export class VanillaItemDisplay extends ResizableOutlinerElement {
 	sanitizeName(): string {
 		this.name = sanitizeOutlinerElementName(this.name, this.uuid)
 		return this.name
+	}
+
+	getWorldCenter(): THREE.Vector3 {
+		return getPivotedGeometryWorldCenter(this)
 	}
 
 	getUndoCopy() {
@@ -226,6 +241,7 @@ export const PREVIEW_CONTROLLER: NodePreviewController = new NodePreviewControll
 					mesh.add(result.outline)
 					mesh.outline = result.outline
 					mesh.outline.visible = el.selected
+					resetPivotOffsetTracking(mesh.geometry, result.mesh, result.outline)
 
 					if (Variant.selected) {
 						const config = Variant.selected.getDisplayEntityConfig(el)
@@ -249,6 +265,9 @@ export const PREVIEW_CONTROLLER: NodePreviewController = new NodePreviewControll
 		},
 		updateTransform(el: VanillaItemDisplay) {
 			ResizableOutlinerElement.prototype.preview_controller.updateTransform(el)
+			if (el.mesh.outline) {
+				applyPivotOffset(el, el.mesh.geometry, el.mesh.children[0], el.mesh.outline)
+			}
 		},
 		updateHighlight(el: VanillaItemDisplay, force?: boolean | VanillaItemDisplay) {
 			if (!activeProjectIsBlueprintFormat() || !el?.mesh) return
@@ -343,12 +362,12 @@ class VanillaItemDisplayAnimator extends BoneAnimator {
 					new THREE.Quaternion().fromArray(arr),
 					'ZYX'
 				)
-				bone.rotation.x -= addedRotation.x * multiplier
-				bone.rotation.y -= addedRotation.y * multiplier
+				bone.rotation.x += addedRotation.x * multiplier
+				bone.rotation.y += addedRotation.y * multiplier
 				bone.rotation.z += addedRotation.z * multiplier
 			} else {
-				bone.rotation.x += Math.degToRad(-arr[0]) * multiplier
-				bone.rotation.y += Math.degToRad(-arr[1]) * multiplier
+				bone.rotation.x += Math.degToRad(arr[0]) * multiplier
+				bone.rotation.y += Math.degToRad(arr[1]) * multiplier
 				bone.rotation.z += Math.degToRad(arr[2]) * multiplier
 			}
 		}
@@ -367,7 +386,7 @@ class VanillaItemDisplayAnimator extends BoneAnimator {
 			bone.position.copy(bone.fix_position as THREE.Vector3)
 		}
 		if (arr) {
-			bone.position.x -= arr[0] * multiplier
+			bone.position.x += arr[0] * multiplier
 			bone.position.y += arr[1] * multiplier
 			bone.position.z += arr[2] * multiplier
 		}
