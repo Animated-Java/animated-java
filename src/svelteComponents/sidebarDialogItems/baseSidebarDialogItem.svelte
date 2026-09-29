@@ -54,7 +54,7 @@
 	</div>
 	{#if error}
 		<div class="popup error" transition:slide={{ duration: 100 }}>
-			<i class="fa fa-circle-exclamation text_icon"></i>{@html error}
+			<i class="fa fa-circle-xmark text_icon"></i>{@html error}
 		</div>
 	{:else if warning}
 		<div class="popup warning" transition:slide={{ duration: 100 }}>
