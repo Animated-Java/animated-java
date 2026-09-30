@@ -2,9 +2,13 @@
 # dispatch, the entity-UUID helper (gu), the storage-backed per-entity data manager,
 # and the interaction/attack advancement plumbing.
 #
-# Changes from 1.21.2/global.mcb:
+# Changes from 1.21.0/global.mcb:
 # - The outdated-rig text display's `text` is written as an NBT text component
 #   instead of a quoted JSON string.
+# - gu/get_entity_uuid_string: fast path for non-player entities that reads a
+#   summoned item_display's item_name (via the `entity_uuid` item modifier) instead
+#   of the scoreboard bit-twiddle. Needs the SNBT `uuid()` function and NBT text
+#   components, both new in 1.21.5.
 
 import ./global.mcbt
 
