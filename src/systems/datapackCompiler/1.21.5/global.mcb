@@ -345,17 +345,7 @@ dir global {
 						$$(on_<%direction === 'interaction' ? 'interact' : 'attack'%>_function)
 						scoreboard players set #check <%OBJECTIVES.I()%> 1
 					}
-					execute if score #check <%OBJECTIVES.I()%> matches 0 run tellraw @a [ \
-						{text: '', color: red}, \
-						{text:'ɪɴᴛᴇʀᴀᴄᴛɪᴏɴꜱ', color:'light_purple'}, \
-						{text:'\n(<%global.root%>.mcb)', color:'dark_gray'}, \
-						'\n→ ᴇʀʀᴏʀ:\n\sFailed to handle <%direction === 'interaction' ? 'right' : 'left'%> click interaction from ', \
-						{selector: '@p[tag=<%TAGS.INTERACTING_PLAYER()%>]', color: gold}, \
-						':\n\s\sInvalid command: ', \
-						{nbt: 'data.animated_java.on_<%direction === 'interaction' ? 'interact' : 'attack'%>_function', entity: '@s', color: aqua}, \
-						'\n\s\sfrom ', \
-						{text: 'data.animated_java.on_<%direction === 'interaction' ? 'interact' : 'attack'%>_function ', color: yellow}, \
-					]
+					execute if score #check <%OBJECTIVES.I()%> matches 0 run tellraw @a <%TELLRAW.INTERACTION_FUNCTION_FAILED(direction)%>
 					# Only remove the interaction if it's consumed.
 					data remove entity @s <%direction%>
 				}
