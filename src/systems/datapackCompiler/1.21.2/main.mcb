@@ -1648,12 +1648,8 @@ IF (Object.keys(rig.variants).length > 1) {
 						run \
 							block zzz/apply_to_node_<%node.storage_name%> {
 								IF (node.type === 'bone' && variant.models[node.uuid] !== undefined) {
-									# Special case for `animated_java:empty` model.
-									IF (variant.models[node.uuid].model === null) {
-										data modify entity @s item.components."minecraft:item_model" set value "animated_java:empty"
-									} ELSE {
-										data modify entity @s item.components."minecraft:item_model" set value "<%variant.models[node.uuid].item_model%>"
-									}
+									# For bones this variant doesn't change, `item_model` is their default model.
+									data modify entity @s item.components."minecraft:item_model" set value "<%variant.models[node.uuid].item_model%>"
 								}
 								IF (node.configs.variants[variant.uuid] || variant.is_default && node.configs.default) {
 									<%%

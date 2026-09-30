@@ -55,8 +55,9 @@ describe('.ajmeta incremental export', () => {
 			const modelsAfterSecond = relFiles(run.resourcePackFolder).filter(
 				f => f.startsWith(modelPrefix) && f.endsWith('.json')
 			)
+			// A bone's models are `<bone>.json`, plus `<bone>/...` for Texture Slot faces.
 			const ownsBone = (files: string[], bone: string) =>
-				files.some(f => f.endsWith(`/${bone}.json`))
+				files.some(f => f.endsWith(`/${bone}.json`) || f.includes(`/${bone}/`))
 
 			// The first export owned the bone; the second no longer does.
 			expect(ownsBone(modelsAfterFirst, removed!)).toBe(true)
@@ -65,7 +66,12 @@ describe('.ajmeta incremental export', () => {
 			expect(modelsAfterSecond.length).toBeLessThan(modelsAfterFirst.length)
 			expect(modelsAfterSecond.length).toBeGreaterThan(0)
 			const survivor = modelsAfterFirst
-				.map(f => f.slice(f.lastIndexOf('/') + 1, -'.json'.length))
+				.map(f =>
+					f
+						.slice(modelPrefix.length)
+						.split('/')[0]
+						.replace(/\.json$/, '')
+				)
 				.find(name => name !== removed)!
 			expect(ownsBone(modelsAfterSecond, survivor)).toBe(true)
 

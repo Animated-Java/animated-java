@@ -3,8 +3,8 @@
 # Changes from 1.21.2/main.mcb:
 # - Bone/display nodes can be optionally summoned as free-floating entities transformed each
 #   tick, not passengers of the root, to fix jittery rotation (MC-272913 workaround).
-# - Variant model swaps write item.components."minecraft:custom_model_data".strings[0]
-#   (custom_model_data string list replaces minecraft:item_model).
+# - Texture Slots swap independently: each slot's texture name lives in the bone item's
+#   custom_model_data strings[slot.index], set by texture_slots/<slot>/<texture> and by Variants.
 
 function on_load {
 	data modify storage <%project_storage%> rig_hash set value <%"'" + rig_hash + "'"%>
@@ -1707,6 +1707,30 @@ dir remove {
 	}
 }
 
+IF (Object.keys(rig.texture_slots).length > 0) {
+	dir texture_slots {
+		REPEAT (Object.values(rig.texture_slots)) as slot {
+			dir <%slot.name%> {
+				REPEAT (slot.textures) as texture {
+					function <%texture.name%> {
+						debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
+
+						data_manager prep read
+						block { with storage <%temp_storage%> entry.data.uuids_by_name
+							REPEAT (slot.bones.map(uuid => rig.nodes[uuid])) as node {
+								$data modify entity $(<%node.storage_name%>) item.components."minecraft:custom_model_data".strings[<%slot.index%>] set value "<%texture.name%>"
+							}
+						}
+
+						# Return success to allow this function to be used in function conditions.
+						return 1
+					}
+				}
+			}
+		}
+	}
+}
+
 IF (Object.keys(rig.variants).length > 1) {
 	dir variants {
 		REPEAT (Object.values(rig.variants)) as variant {
@@ -1716,19 +1740,14 @@ IF (Object.keys(rig.variants).length > 1) {
 
 					<%%
 						global.filteredNodes = Object.values(rig.nodes).filter(
-							node => (
-								node.type === 'bone' &&
-								!variant.excluded_nodes.includes(node.uuid) &&
-								(	// Variant has a model override or a config override for this bone.
-									variant.models[node.uuid] !== undefined ||
-									node.configs.variants[variant.uuid] !== undefined
-								)
-							) || (
+							node =>
 								BONE_TYPES.includes(node.type) &&
 								!variant.excluded_nodes.includes(node.uuid) &&
-								// Variant has a config override for this node.
-								node.configs.variants[variant.uuid] !== undefined
-							)
+								(
+									node.configs.variants[variant.uuid] !== undefined ||
+									(node.type === 'bone' &&
+										(variant.is_default || getVariantSlotTextures(variant, node.uuid).length > 0))
+								)
 						)
 					%%>
 
@@ -1736,12 +1755,9 @@ IF (Object.keys(rig.variants).length > 1) {
 					block { with storage <%temp_storage%> entry.data.uuids_by_name
 						REPEAT (global.filteredNodes) as node {
 							$execute as $(<%node.storage_name%>) run block zzz/apply_to_node_<%node.storage_name%> {
-								IF (node.type === 'bone' && variant.models[node.uuid] !== undefined) {
-									# Special case for `animated_java:empty` model.
-									IF (variant.models[node.uuid].model === null) {
-										data modify entity @s item.components."minecraft:custom_model_data".strings[0] set value "AJ_INTERNAL_EMPTY"
-									} ELSE {
-										data modify entity @s item.components."minecraft:custom_model_data".strings[0] set value "<%variant.name%>"
+								IF (node.type === 'bone') {
+									REPEAT (getVariantSlotTextures(variant, node.uuid)) as slotTexture {
+										data modify entity @s item.components."minecraft:custom_model_data".strings[<%slotTexture.index%>] set value "<%slotTexture.texture%>"
 									}
 								}
 								IF (node.configs.variants[variant.uuid] || variant.is_default && node.configs.default) {

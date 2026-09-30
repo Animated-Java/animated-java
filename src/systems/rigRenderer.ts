@@ -12,6 +12,13 @@ import { type Alignment, TextDisplay } from '../outliner/textDisplay'
 import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
 import { type ItemDisplayMode, VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
 import {
+	getSlotDefaultTexture,
+	getSlotTextures,
+	getTextureSlot,
+	TEXTURE_SLOT_COMMANDS_MIN_VERSION,
+} from '../textureSlots'
+import { makeUniqueName } from '../util/uniqueName'
+import {
 	type IMinecraftResourceLocation,
 	parseResourcePackPath,
 	sanitizeStorageKey,
@@ -195,11 +202,28 @@ export type IRenderedVariant = Omit<IBlueprintVariantJSON, 'uuid'> & {
 	models: Record<string, IRenderedVariantModel>
 }
 
+export interface IRenderedTextureSlot {
+	name: string
+	/** Where this slot's texture name sits in each bone item's `custom_model_data` strings. */
+	index: number
+	/**
+	 * The first one is the default. `id` is a key of {@link IRenderedRig.textures}, and `name`
+	 * is unique within the slot.
+	 */
+	textures: Array<{ id: string; name: string }>
+	/** UUIDs of the bones with faces in this slot. */
+	bones: string[]
+}
+
 export interface IRenderedRig {
 	/**
 	 * A map of outliner node UUIDs to rendered bones
 	 */
 	nodes: Record<string, AnyRenderedNode>
+	/**
+	 * A map of Texture Slot UUID -> slot, for slots used by an exported face
+	 */
+	texture_slots: Record<string, IRenderedTextureSlot>
 	/**
 	 * A map of Variant UUID -> IRenderedVariant
 	 */
@@ -292,7 +316,21 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 				.map((v, i) => (v * 16) / UVEditor.getResolution(i % 2))
 		}
 		if (data.rotation) renderedFace.rotation = data.rotation
-		if (data.texture) {
+		const slot = typeof data.texture === 'string' ? getTextureSlot(data.texture) : undefined
+		if (slot) {
+			const slotDefault = getSlotDefaultTexture(slot)
+			if (!slotDefault) {
+				throw new IntentionalExportError(
+					`Texture Slot '${slot.name}' is used by '${cube.name}' but has no textures.`
+				)
+			}
+			const renderedSlot = renderTextureSlot(slot, rig)
+			const key = getSlotTextureKey(renderedSlot.name)
+			renderedFace.texture = '#' + key
+			model.textures[key] = getTextureResourceLocation(slotDefault, rig).resourceLocation
+			const bone = (cube.parent as Group).uuid
+			if (!renderedSlot.bones.includes(bone)) renderedSlot.bones.push(bone)
+		} else if (data.texture) {
 			const texture = data.getTexture()
 			if (!texture) throw new Error('Texture not found')
 			renderedFace.texture = '#' + texture.id
@@ -313,6 +351,38 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 
 	model.elements ??= []
 	model.elements.push(element)
+}
+
+/**
+ * The model texture variable a Texture Slot's faces use.
+ */
+export function getSlotTextureKey(slotName: string) {
+	return 'slot_' + slotName
+}
+
+function renderTextureSlot(slot: Texture, rig: IRenderedRig): IRenderedTextureSlot {
+	const existing = rig.texture_slots[slot.uuid]
+	if (existing) return existing
+
+	const textures: IRenderedTextureSlot['textures'] = []
+	for (const texture of getSlotTextures(slot)) {
+		rig.textures[texture.id] = texture
+		const name = makeUniqueName(sanitizeStorageKey(texture.name.replace(/\.png$/i, '')), n =>
+			textures.some(t => t.name === n)
+		)
+		textures.push({ id: texture.id, name })
+	}
+
+	const rendered: IRenderedTextureSlot = {
+		name: makeUniqueName(sanitizeStorageKey(slot.name.replace(/\.png$/i, '')), n =>
+			Object.values(rig.texture_slots).some(s => s.name === n)
+		),
+		index: Object.keys(rig.texture_slots).length,
+		textures,
+		bones: [],
+	}
+	rig.texture_slots[slot.uuid] = rendered
+	return rendered
 }
 
 const TEXTURE_RESOURCE_LOCATION_CACHE = new Map<string, IMinecraftResourceLocation>()
@@ -688,26 +758,25 @@ function renderCamera(camera: ICamera, rig: IRenderedRig) {
 function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 	const models: Record<string, IRenderedVariantModel> = {}
 	const texturesByUuid = new Map(Texture.all.map(t => [t.uuid, t]))
+	const defaultModels = rig.variants[Variant.getDefault().uuid].models
 
 	for (const [uuid, bone] of Object.entries(rig.nodes)) {
 		if (bone.type !== 'bone') continue
 		if (variant.excludedNodes.has(uuid)) continue
+		const boneTextures = defaultModels[uuid]?.model?.textures ?? {}
 		const textures: IRenderedModel['textures'] = {}
 
-		let hasTextureChanges = false
-
-		for (const [fromUUID, toUUID] of variant.textureMap.entries()) {
-			const fromTexture = texturesByUuid.get(fromUUID)
-			if (!fromTexture) throw new Error(`From texture not found: ${fromUUID}`)
-			const toTexture = texturesByUuid.get(toUUID)
-			if (!toTexture) throw new Error(`To texture not found: ${toUUID}`)
-			textures[fromTexture.id] = getTextureResourceLocation(toTexture, rig).resourceLocation
-			rig.textures[toTexture.id] = toTexture
-			hasTextureChanges = true
+		for (const [slotUuid, textureUuid] of variant.slotTextures) {
+			const slot = rig.texture_slots[slotUuid]
+			const texture = texturesByUuid.get(textureUuid)
+			if (!slot || !texture) continue
+			const key = getSlotTextureKey(slot.name)
+			if (!boneTextures[key]) continue
+			textures[key] = getTextureResourceLocation(texture, rig).resourceLocation
 		}
 
-		// Use the default model if the variant doesn't have any texture changes for this bone
-		if (!hasTextureChanges) {
+		// Use the default model if the variant doesn't change any of this bone's slots
+		if (Object.keys(textures).length === 0) {
 			const path = PathModule.join(rig.model_export_folder, bone.storage_name + '.json')
 			const parsed = parseResourcePackPath(path)
 			if (!parsed) {
@@ -721,9 +790,6 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 			}
 			continue
 		}
-
-		// Don't export models without any texture changes
-		if (Object.keys(textures).length === 0) continue
 
 		const modelParent = PathModule.join(rig.model_export_folder, bone.storage_name + '.json')
 		const parsed = parseResourcePackPath(modelParent)
@@ -812,7 +878,10 @@ export function hashRig(rig: IRenderedRig) {
 function renderVariant(variant: Variant, rig: IRenderedRig): IRenderedVariant {
 	return {
 		...variant.toJSON(),
-		models: renderVariantModels(variant, rig),
+		// 1.21.4+ Variants switch Texture Slots instead of whole models
+		models: compareVersions(TEXTURE_SLOT_COMMANDS_MIN_VERSION, rig.target_minecraft_version)
+			? renderVariantModels(variant, rig)
+			: {},
 	}
 }
 
@@ -837,6 +906,7 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 
 	const rig: IRenderedRig = {
 		nodes: {},
+		texture_slots: {},
 		variants: {},
 		textures: {},
 		model_export_folder: modelExportFolder,

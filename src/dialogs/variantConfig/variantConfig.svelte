@@ -3,8 +3,14 @@
 	import MissingTexture from '../../assets/missing_texture.png'
 	import Checkbox from '../../svelteComponents/dialogItems/checkbox.svelte'
 	import LineInput from '../../svelteComponents/dialogItems/lineInput.svelte'
+	import {
+		getSlotDefaultTexture,
+		getSlotTextures,
+		getTextureSlot,
+		getTextureSlots,
+	} from '../../textureSlots'
 	import { localize as translate } from '../../util/lang'
-	import { TextureMap, Variant } from '../../variants'
+	import { Variant } from '../../variants'
 </script>
 
 <script lang="ts">
@@ -22,14 +28,10 @@
 	export let displayName: Observable<string>
 	export let name: Observable<string>
 	export let uuid: Observable<string>
-	export let textureMap: TextureMap
+	export let slotTextures: Map<string, string>
 	export let generateNameFromDisplayName: Observable<boolean>
 	export let excludedNodes: Observable<string[]>
 	export let onApplyFunction: Observable<string>
-
-	const AVAILABLE_TEXTURES = [...Texture.all]
-	const PRIMARY_TEXTURES = [...Texture.all]
-	const SECONDARY_TEXTURES = AVAILABLE_TEXTURES
 
 	// `variant.excludedNodes` is stored as a Set of node UUIDs, but the Collection
 	// component works in `CollectionItem`s. Bridge the two with a local store that
@@ -42,7 +44,7 @@
 		excludeEmptyGroups: true,
 	})
 
-	let textureMapUpdated = 0
+	let slotTexturesUpdated = 0
 
 	displayName.subscribe(value => {
 		if ($generateNameFromDisplayName) {
@@ -55,35 +57,36 @@
 		name.set(Variant.makeNameUnique(variant, $displayName))
 	})
 
-	function createTextureMapping() {
-		const texture = getUnusedPrimaryTextures()[0]
-		if (!texture) return
-		textureMap.add(texture.uuid, texture.uuid)
-		textureMapUpdated++
+	function openAddSlotMenu(e: MouseEvent) {
+		const available = getTextureSlots().filter(
+			slot => !slotTextures.has(slot.uuid) && getSlotDefaultTexture(slot)
+		)
+		if (!available.length) {
+			Blockbench.showQuickMessage(
+				translate('dialog.variant_config.slot_textures.all_slots_added')
+			)
+			return
+		}
+		new Menu(
+			available.map(slot => ({
+				name: slot.name,
+				icon: 'style',
+				click: () => {
+					slotTextures.set(slot.uuid, getSlotDefaultTexture(slot)!.uuid)
+					slotTexturesUpdated++
+				},
+			}))
+		).open(e)
 	}
 
-	function deleteTextureMapping(uuid: string) {
-		textureMap.delete(uuid)
-		textureMapUpdated++
+	function setSlotTexture(slotUuid: string, textureUuid: string) {
+		slotTextures.set(slotUuid, textureUuid)
+		slotTexturesUpdated++
 	}
 
-	function setPrimaryTexture(oldPrimaryUUID: string, newPrimaryUUID: string) {
-		if (newPrimaryUUID === oldPrimaryUUID) return
-		const secondaryUuid = textureMap.get(oldPrimaryUUID)
-		if (!secondaryUuid) return
-		textureMap.delete(oldPrimaryUUID)
-		textureMap.add(newPrimaryUUID, secondaryUuid)
-		textureMapUpdated++
-	}
-
-	function setSecondaryTexture(primaryUUID: string, newSecondaryUUID: string) {
-		textureMap.add(primaryUUID, newSecondaryUUID)
-		textureMapUpdated++
-	}
-
-	function getUnusedPrimaryTextures() {
-		const usedTextures = [...textureMap.keys()]
-		return PRIMARY_TEXTURES.filter(t => !usedTextures.includes(t.uuid))
+	function removeSlot(slotUuid: string) {
+		slotTextures.delete(slotUuid)
+		slotTexturesUpdated++
 	}
 </script>
 
@@ -124,51 +127,49 @@
 	{#if !variant.isDefault}
 		<div class="toolbar" style="margin: 8px 16px 8px; width: -webkit-fill-available;">
 			<div>
-				{translate('dialog.variant_config.texture_map.title')}
+				{translate('dialog.variant_config.slot_textures.title')}
 			</div>
 			<div class="spacer"></div>
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<div
 				class="tool"
-				title={translate('dialog.variant_config.texture_map.create_new_mapping')}
-				onclick={() => createTextureMapping()}
+				title={translate('dialog.variant_config.slot_textures.add_slot')}
+				onclick={e => openAddSlotMenu(e)}
 			>
 				<i class="material-icons icon">add</i>
 			</div>
 		</div>
 		<div class="texture-map-description">
-			{@html translate('dialog.variant_config.texture_map.description')}
+			{@html translate('dialog.variant_config.slot_textures.description')}
 		</div>
 
-		{#key textureMapUpdated}
+		{#key slotTexturesUpdated}
 			<ul class="texture-map-container">
-				{#each [...textureMap.entries()] as entry}
-					<li class="texture-mapping-item">
-						<TextureSelect
-							textures={PRIMARY_TEXTURES}
-							value={entry[0]}
-							missingSrc={MissingTexture}
-							onchange={uuid => setPrimaryTexture(entry[0], uuid)}
-						/>
+				{#each [...slotTextures.entries()] as [slotUuid, textureUuid] (slotUuid)}
+					{@const slot = getTextureSlot(slotUuid)}
+					{#if slot}
+						<li class="texture-mapping-item">
+							<div class="slot-name">{slot.name}</div>
 
-						<i class="material-icons icon">east</i>
+							<i class="material-icons icon">east</i>
 
-						<TextureSelect
-							textures={SECONDARY_TEXTURES}
-							value={entry[1]}
-							missingSrc={MissingTexture}
-							onchange={uuid => setSecondaryTexture(entry[0], uuid)}
-						/>
+							<TextureSelect
+								textures={getSlotTextures(slot)}
+								value={textureUuid}
+								missingSrc={MissingTexture}
+								onchange={uuid => setSlotTexture(slotUuid, uuid)}
+							/>
 
-						<!-- svelte-ignore a11y_click_events_have_key_events -->
-						<i
-							class="material-icons icon tool trash"
-							onclick={() => deleteTextureMapping(entry[0])}>delete</i
-						>
-					</li>
+							<!-- svelte-ignore a11y_click_events_have_key_events -->
+							<i
+								class="material-icons icon tool trash"
+								onclick={() => removeSlot(slotUuid)}>delete</i
+							>
+						</li>
+					{/if}
 				{:else}
 					<div class="no-mappings">
-						{translate('dialog.variant_config.texture_map.no_mappings')}
+						{translate('dialog.variant_config.slot_textures.no_slots')}
 					</div>
 				{/each}
 			</ul>
@@ -231,6 +232,11 @@
 		align-items: center;
 		gap: 16px;
 		padding-right: 16px;
+	}
+	.slot-name {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 	.texture-map-container {
 		display: flex;

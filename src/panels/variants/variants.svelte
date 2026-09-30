@@ -152,19 +152,11 @@
 							{item.value.displayName}
 						</div>
 						<div class="spacer"></div>
-						{#if item.value.isDefault}
-							<i
-								class="material-icons icon in_list_button in_list_button_disabled"
-								title={translate('panel.variants.tool.cannot_edit_default_variant')}
-								>edit</i
-							>
-						{:else}
-							<i
-								class="material-icons icon in_list_button"
-								title={translate('panel.variants.tool.edit_variant')}
-								onclick={() => openVariantConfigDialog(item.value)}>edit</i
-							>
-						{/if}
+						<i
+							class="material-icons icon in_list_button"
+							title={translate('panel.variants.tool.edit_variant')}
+							onclick={() => openVariantConfigDialog(item.value)}>edit</i
+						>
 						{#if Variant.selected === item.value}
 							<i
 								class="material-icons icon in_list_button"

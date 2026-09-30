@@ -98,9 +98,9 @@ export interface IBlueprintVariantJSON {
 	 */
 	uuid: string
 	/**
-	 * The texture map for the Variant
+	 * Slot UUID -> texture UUID. Slots left out are unchanged when the Variant is applied.
 	 */
-	texture_map: Record<string, string>
+	slot_textures: Record<string, string>
 	/**
 	 * The list of bones that should be ignored when applying the Variant
 	 */

@@ -1,6 +1,6 @@
 {
 	"$schema": "./plugin-blueprint.schema.json",
-	"format_version": 2,
+	"format_version": 3,
 	"settings": {
 		"id": "animated_java:blueprint"
 	},
@@ -19,13 +19,10 @@
 			"resource_location": "minecraft:block/stone"
 		}
 	},
-	"texture_palettes": {
-		"default_palette": {
-			"active_state": "default",
-			"states": {
-				"default": { "texture": "custom_texture" },
-				"alternative": { "texture": "reference_texture" }
-			}
+	"texture_slots": {
+		"body": {
+			"default_texture": "custom_texture",
+			"textures": ["custom_texture", "reference_texture"]
 		}
 	},
 	"nodes": {
@@ -90,8 +87,8 @@
 						"down": {
 							"uv": [0, 0, 16, 16],
 							"texture_provider": {
-								"type": "texture_palette",
-								"texture_palette": "default_palette"
+								"type": "texture_slot",
+								"texture_slot": "body"
 							}
 						}
 					},
@@ -138,8 +135,8 @@
 						"down": {
 							"uv": [0, 0, 16, 16],
 							"texture_provider": {
-								"type": "texture_palette",
-								"texture_palette": "default_palette"
+								"type": "texture_slot",
+								"texture_slot": "body"
 							}
 						}
 					},
@@ -180,8 +177,8 @@
 						"down": {
 							"uv": [0, 0, 16, 16],
 							"texture_provider": {
-								"type": "texture_palette",
-								"texture_palette": "default_palette"
+								"type": "texture_slot",
+								"texture_slot": "body"
 							}
 						}
 					},
@@ -260,9 +257,9 @@
 			"start_delay": "0.0",
 			"length": 3.0,
 			"global_keyframes": {
-				"texture": {
-					"0.0": { "default_palette": "default" },
-					"1.5": { "default_palette": "alternative" }
+				"texture_slot": {
+					"0.0": { "body": "custom_texture" },
+					"1.5": { "body": "reference_texture" }
 				},
 				"event": {
 					"1.5": { "events": ["event_1", "event_2"] },

@@ -66,6 +66,8 @@ animated_java:
       duplicate: Duplicate Variant
       open_config: Open Variant Config
       delete: Delete Variant
+    texture_slots:
+      create: Create Texture Slot
     upgrade_old_aj_model_loader:
       name: Update .ajmodel
       select_file: Select .ajmodel File
@@ -776,6 +778,21 @@ animated_java:
       custom_name_visible:
         title: Custom Name Visible
         description: Whether or not the custom name should always be visible.
+    texture_slot:
+      title: Texture Slot
+      name: Name
+      name.description: Used to name the slot's functions and models in the exported Resource Pack and Data Pack.
+      textures: Textures
+      faces: '%s faces'
+      hint: Drag to reorder. The first texture is the default.
+      add_texture: Add Texture
+      all_textures_added: Every texture is already in this slot.
+      no_textures: No textures yet. Add one to use this slot.
+      default: Default
+      preview: Show in the editor
+      remove: Remove from slot
+      missing: Missing texture
+      old_version_notice: On this Minecraft version, Texture Slots only change when a Variant is applied. Switching a single slot with a command needs Minecraft %s or newer.
     variant_config:
       title: Variant Config
       variant_display_name: Display Name
@@ -784,11 +801,12 @@ animated_java:
       generate_name_from_display_name.description: Whether or not to generate the Name automatically from the Display Name.
       variant_name: Name
       variant_name.description: Used to identify the Variant in the exported Resource Pack and Data Pack.
-      texture_map:
-        title: Texture Map
-        description: A map of which textures to swap out when applying this Variant.
-        create_new_mapping: Create New Mapping
-        no_mappings: Variant has no mapped textures.
+      slot_textures:
+        title: Texture Slots
+        description: The texture each Texture Slot switches to when this Variant is applied. Slots not listed here are left unchanged.
+        add_slot: Add Texture Slot
+        no_slots: This Variant doesn't change any Texture Slots.
+        all_slots_added: Every Texture Slot is already listed.
       bone_lists:
         description: |-
           Specify which nodes the Variant should affect.
@@ -873,7 +891,6 @@ animated_java:
         variant_visible: Variant Selected
         variant_not_visible: Variant Not Selected
         cannot_delete_default_variant: Cannot delete the default variant!
-        cannot_edit_default_variant: Cannot edit the default variant!
     keyframe:
       keyframe_title: Keyframe (%s)
       variant:
@@ -973,6 +990,10 @@ animated_java:
       internal_icon: |-
         Internal texture
         Stored in the Blueprint file and written to the Blueprint's texture folder on export.
+      slot_icon: |-
+        Texture Slot
+        Faces using it can switch between its textures. Double-click to edit.
+      slot_description: Texture Slot · %s textures
 
   animation:
     excluded_nodes: Excluded Nodes
@@ -1070,7 +1091,13 @@ animated_java:
           You have custom models (Cubes) in your model, but have no textures applied to them!
           Please apply textures to your Cubes, or remove the Cubes before exporting.
 
+  menu:
+    texture_slot:
+      preview: Preview
+      properties: Texture Slot Properties
+
   toast:
+    texture_slots_old_version: On Minecraft %s, Texture Slots only change when a Variant is applied. Swapping a single slot with the texture_slots functions needs Minecraft %s or newer.
     invalid_rotations: |-
       Invalid Cube Rotations!
 

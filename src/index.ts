@@ -66,6 +66,7 @@ import {
 	parseResourcePackPath,
 	toSmallCaps,
 } from './util/minecraftUtil'
+import * as textureSlots from './textureSlots'
 import { Variant } from './variants'
 
 declare global {
@@ -81,6 +82,7 @@ const AnimatedJavaApi = {
 	datapackCompiler,
 	resourcepackCompiler,
 	Variant,
+	textureSlots,
 	openExportProgressDialog,
 	debugExportProgressDialog,
 	isResourcePackPath,

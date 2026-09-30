@@ -1,6 +1,7 @@
 import { registerProjectPatch, registerPropertyOverridePatch } from 'blockbench-patch-manager'
 import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from '../formats/blueprint'
 import { localize } from '../util/lang'
+import { isTextureSlot } from '../textureSlots'
 import { isResourcePackPath } from '../util/minecraftUtil'
 
 /** A texture that Animated Java does not write to a file of its own on export. */
@@ -14,7 +15,20 @@ export function updateTextureIcon(texture: Texture) {
 	)
 	if (!saveIcon) return
 
-	if (texture.path && isResourcePackPath(texture.path)) {
+	if (isTextureSlot(texture)) {
+		saveIcon.textContent = 'style'
+		saveIcon.setAttribute('title', localize('panel.textures.slot_icon'))
+		saveIcon.classList.remove('clickable')
+		const description = saveIcon
+			.closest('li.texture')
+			?.querySelector<HTMLElement>('.texture_res')
+		if (description) {
+			description.textContent = localize(
+				'panel.textures.slot_description',
+				String(texture.slot_textures.length)
+			)
+		}
+	} else if (texture.path && isResourcePackPath(texture.path)) {
 		// Referenced from a resource pack by resource location.
 		saveIcon.textContent = 'link'
 		saveIcon.setAttribute('title', localize('panel.textures.linked_icon'))

@@ -1647,9 +1647,9 @@ IF (Object.keys(rig.variants).length > 1) {
 						run \
 							block zzz/apply_to_node_<%node.storage_name%> {
 								IF (node.type === 'bone' && variant.models[node.uuid] !== undefined) {
-									# Special case for `animated_java:empty` model.
+									# Bones this variant doesn't change go back to their default model.
 									IF (variant.models[node.uuid].model === null) {
-										data modify entity @s item.components."minecraft:custom_model_data" set value 1
+										data modify entity @s item.components."minecraft:custom_model_data" set value <%Object.values(rig.variants).find(v => v.is_default).models[node.uuid].custom_model_data%>
 									} ELSE {
 										data modify entity @s item.components."minecraft:custom_model_data" set value <%variant.models[node.uuid].custom_model_data%>
 									}

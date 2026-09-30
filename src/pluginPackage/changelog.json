@@ -900,5 +900,23 @@
 				]
 			}
 		]
+	},
+
+	"1.11.0": {
+		"title": "v1.11.0",
+		"author": "Titus Evans (SnaveSutit)",
+		"date": "2026-09-29",
+		"categories": [
+			{
+				"title": "Changes",
+				"list": [
+					"Added Texture Slots. Assign faces to a slot, then switch every face in it to any of the slot's textures. On Minecraft 1.21.4 and newer, each slot can be switched on its own with `function <blueprint_id>/texture_slots/<slot>/<texture>`.",
+					"Variants now pick a texture for each Texture Slot instead of mapping textures, and leave slots they don't set unchanged. Existing Blueprints are migrated automatically.",
+					"The default Variant can now be renamed.",
+					"[BREAKING] On Minecraft 1.21.4 and newer, bone items' `custom_model_data` strings now hold each Texture Slot's current texture instead of the applied Variant's name.",
+					"[BREAKING] Plugin JSON format version 3: `texture_palettes` is replaced by `texture_slots`, and texture keys no longer end in `_png`."
+				]
+			}
+		]
 	}
 }

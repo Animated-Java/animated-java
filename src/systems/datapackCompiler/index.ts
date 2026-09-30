@@ -27,7 +27,7 @@ import { getMCBFilesByVersion } from '../datapackCompiler/mcbFiles'
 import { IntentionalExportError } from '../errors'
 import { AJMeta, PackMeta } from '../global'
 import { getMisodeVersion } from '../minecraft/versionManager'
-import type { AnyRenderedNode, IRenderedRig } from '../rigRenderer'
+import type { AnyRenderedNode, IRenderedRig, IRenderedVariant } from '../rigRenderer'
 import {
 	arrayToNbtFloatArray,
 	type ExportedFile,
@@ -86,18 +86,17 @@ async function generateRootEntityPassengers(version: string, rig: IRenderedRig) 
 				}
 
 				if (!compareVersions('1.21.4', version) /* >= 1.21.4 */) {
-					item.set(
-						'components',
-						new NbtCompound()
-							.set('minecraft:item_model', new NbtString(variantModel.item_model))
-							.set(
-								'minecraft:custom_model_data',
-								new NbtCompound().set(
-									'strings',
-									new NbtList([new NbtString('default')])
-								)
-							)
+					const components = new NbtCompound().set(
+						'minecraft:item_model',
+						new NbtString(variantModel.item_model)
 					)
+					if (Object.values(rig.texture_slots).some(slot => slot.bones.includes(uuid))) {
+						components.set(
+							'minecraft:custom_model_data',
+							new NbtCompound().set('strings', getDefaultSlotStrings(rig))
+						)
+					}
+					item.set('components', components)
 				} else if (!compareVersions('1.21.2', version) /* >= 1.21.2 */) {
 					item.set(
 						'components',
@@ -236,6 +235,35 @@ async function generateRootEntityPassengers(version: string, rig: IRenderedRig) 
 		}
 	}
 
+	return result
+}
+
+/**
+ * Every Texture Slot's default texture name, in slot index order.
+ */
+function getDefaultSlotStrings(rig: IRenderedRig) {
+	const strings = new NbtList<NbtString>()
+	for (const slot of Object.values(rig.texture_slots).sort((a, b) => a.index - b.index)) {
+		strings.add(new NbtString(slot.textures[0].name))
+	}
+	return strings
+}
+
+/**
+ * The slot textures `variant` sets on a bone, as indexes into its `custom_model_data` strings.
+ * The default Variant resets every slot.
+ */
+function getVariantSlotTextures(rig: IRenderedRig, variant: IRenderedVariant, boneUuid: string) {
+	const result: Array<{ index: number; texture: string }> = []
+	for (const [slotUuid, slot] of Object.entries(rig.texture_slots)) {
+		if (!slot.bones.includes(boneUuid)) continue
+		const textureUuid = variant.is_default ? undefined : variant.slot_textures[slotUuid]
+		if (!variant.is_default && !textureUuid) continue
+		const texture = textureUuid
+			? slot.textures.find(t => rig.textures[t.id]?.uuid === textureUuid)
+			: slot.textures[0]
+		if (texture) result.push({ index: slot.index, texture: texture.name })
+	}
 	return result
 }
 
@@ -472,7 +500,10 @@ async function removeFiles(ajmeta: AJMeta) {
 	const { rm, writeFile, mkdir, copyFile, unlink, readFile } = promises
 
 	if (aj.data_pack_export_mode === 'folder') {
-		setExportProgressPhase('Removing Old Data Pack Files...', ajmeta.previousVersionedFiles.size)
+		setExportProgressPhase(
+			'Removing Old Data Pack Files...',
+			ajmeta.previousVersionedFiles.size
+		)
 		const removedFolders = new Set<string>()
 		for (const file of ajmeta.previousVersionedFiles) {
 			PROGRESS_DETAIL.set(PathModule.basename(file))
@@ -595,6 +626,8 @@ const dataPackCompiler: DataPackCompiler = async ({
 		has_cameras: Object.values(rig.nodes).filter(n => n.type === 'camera').length > 0,
 		has_animations: animations.length > 0,
 		getNodeTags,
+		getVariantSlotTextures: (variant: IRenderedVariant, boneUuid: string) =>
+			getVariantSlotTextures(rig, variant, boneUuid),
 		BONE_TYPES,
 		project_storage: `${aj.blueprint_id}`,
 		temp_storage: `animated_java:temp`,

@@ -76,8 +76,9 @@ describe('Export contents (player fixture)', () => {
 			f => f.startsWith('assets/aj/models/blueprint/player/') && f.endsWith('.json')
 		)
 		expect(models.length).toBeGreaterThan(0)
-		const model = JSON.parse(readRp(models[0]))
-		expect(Array.isArray(model.elements)).toBe(true)
+		// Texture Slot child models only override textures, so look for one with geometry.
+		const model = models.map(f => JSON.parse(readRp(f))).find(m => m.elements)
+		expect(model).toBeDefined()
 		expect(model.elements.length).toBeGreaterThan(0)
 		expect(typeof model.textures).toBe('object')
 	})

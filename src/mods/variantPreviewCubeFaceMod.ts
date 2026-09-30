@@ -1,13 +1,12 @@
 import { registerPatch } from 'blockbench-patch-manager'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
+import {
+	getSlotDefaultTexture,
+	getSlotPreviewTexture,
+	getTextureSlot,
+	shouldResolveSlots,
+} from '../textureSlots'
 import { Variant } from '../variants'
-
-declare global {
-	// @ts-expect-error - Broken BB types
-	interface CubeFace {
-		lastVariant: Variant | undefined
-	}
-}
 
 registerPatch({
 	id: `animated_java:variant-preview-cube-face`,
@@ -15,27 +14,26 @@ registerPatch({
 	apply: () => {
 		const original = CubeFace.prototype.getTexture
 
+		// A face using a Texture Slot shows (and paints) the texture the slot currently shows.
 		CubeFace.prototype.getTexture = function (this: CubeFace) {
-			if (activeProjectIsBlueprintFormat() && this.texture) {
-				const variant = Variant.selected
-				if (variant) {
-					if (
+			if (
+				activeProjectIsBlueprintFormat() &&
+				typeof this.texture === 'string' &&
+				shouldResolveSlots()
+			) {
+				const slot = getTextureSlot(this.texture)
+				if (slot) {
+					const variant = Variant.selected
+					const excluded =
 						this.cube.parent instanceof Group &&
-						variant.textureMap.has(this.texture) &&
-						!variant.excludedNodes.has(this.cube.parent.uuid)
-					) {
-						this.lastVariant = variant
-						return variant.textureMap.getMappedTexture(this.texture)
-					} else if (
-						Mode.selected.id === Modes.options.animate.id &&
-						this.lastVariant &&
-						variant.isDefault
-					) {
-						return this.lastVariant.textureMap.getMappedTexture(this.texture)
-					}
+						variant?.excludedNodes.has(this.cube.parent.uuid) &&
+						variant.slotTextures.has(slot.uuid)
+					const texture = excluded
+						? getSlotDefaultTexture(slot)
+						: getSlotPreviewTexture(slot)
+					if (texture) return texture
 				}
 			}
-			this.lastVariant = undefined
 			return original.call(this)
 		}
 

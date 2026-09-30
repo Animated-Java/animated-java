@@ -61,4 +61,75 @@ describe('Plugin-mode export', () => {
 			fs.rmSync(workDir, { recursive: true, force: true })
 		}
 	}, 120_000)
+
+	it('exports Texture Slots, slot faces and Variant keyframes', async () => {
+		const workDir = fs.mkdtempSync(path.join(os.tmpdir(), 'aj-plugin-'))
+		const jsonFile = path.join(workDir, 'blueprint.json')
+
+		try {
+			const ok = await blockbench.evaluate(
+				(args: { formatId: string; jsonFile: string }) => {
+					const aj = (window as any).AnimatedJava
+					const g = globalThis as any
+					g.newProject(g.Formats[args.formatId])
+
+					// `.png` is stripped from texture keys
+					const red = new Texture({ name: 'red.png' }, undefined).add(false)
+					const blue = new Texture({ name: 'blue.png' }, undefined).add(false)
+					const bone = new Group({ name: 'bone' }).init()
+					const cube = new Cube({ from: [0, 0, 0], to: [4, 4, 4] }).addTo(bone).init()
+					for (const face of Object.values(cube.faces) as any[]) face.texture = red.uuid
+
+					const slot = aj.textureSlots.createTextureSlot([red, blue])
+					slot.name = 'shirt'
+					cube.faces.north.texture = slot.uuid
+					const variant = new aj.Variant('Blue')
+					variant.slotTextures.set(slot.uuid, blue.uuid)
+
+					const anim = new Blockbench.Animation({ name: 'swap' })
+					anim.add()
+					anim.length = 1
+					anim.animators.effects ??= new (g.EffectAnimator as any)(anim)
+					const toBlue = anim.animators.effects.addKeyframe({
+						channel: 'variant',
+						time: 0.5,
+						data_points: [{}],
+					})
+					toBlue.variant = variant
+					const toDefault = anim.animators.effects.addKeyframe({
+						channel: 'variant',
+						time: 1,
+						data_points: [{}],
+					})
+					toDefault.variant = aj.Variant.getDefault()
+
+					const settings = Project.animated_java
+					settings.blueprint_id = 'test:slots'
+					settings.enable_plugin_mode = true
+					settings.json_file = args.jsonFile
+					return aj.exportProject()
+				},
+				{ formatId: BLUEPRINT_FORMAT_ID, jsonFile }
+			)
+
+			expect(ok).toBe(true)
+			const json = JSON.parse(fs.readFileSync(jsonFile, 'utf-8'))
+			expect(json.format_version).toBe(3)
+			expect(json.texture_slots).toEqual({
+				shirt: { default_texture: 'red', textures: ['red', 'blue'] },
+			})
+			const faces = json.nodes.bone.elements[0].faces
+			expect(faces.north.texture_provider).toEqual({
+				type: 'texture_slot',
+				texture_slot: 'shirt',
+			})
+			expect(faces.south.texture_provider).toEqual({ type: 'texture', texture: 'red' })
+			expect(json.animations.swap.global_keyframes.texture_slot).toEqual({
+				'0.5': { shirt: 'blue' },
+				'1.0': { shirt: 'red' },
+			})
+		} finally {
+			fs.rmSync(workDir, { recursive: true, force: true })
+		}
+	}, 120_000)
 })

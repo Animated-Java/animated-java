@@ -9,6 +9,12 @@ import {
 import { PACKAGE, getFsModule } from '../../constants'
 import { localize as translate } from '../../util/lang'
 import { sanitizeStorageKey } from '../../util/minecraftUtil'
+import {
+	isTextureSlot,
+	savePreviews,
+	setSlotResolution,
+	updateAllSlotImages,
+} from '../../textureSlots'
 import { Variant } from '../../variants'
 import { upgradeAnimatedJavaBlueprint } from './dfu'
 import * as blueprintSettings from './settings'
@@ -241,6 +247,7 @@ export const BLUEPRINT_CODEC = registerDeletableHandlerPatch({
 					}
 				}
 
+				updateAllSlotImages()
 				Canvas.updateAll()
 				Validator.validate()
 
@@ -254,6 +261,7 @@ export const BLUEPRINT_CODEC = registerDeletableHandlerPatch({
 
 				// Disable variants while compiling
 				const previouslySelectedVariant = Variant.selected
+				const restoreSlotPreviews = savePreviews()
 				Variant.selectDefault()
 
 				const model: IBlueprintFormatJSON = {
@@ -289,8 +297,14 @@ export const BLUEPRINT_CODEC = registerDeletableHandlerPatch({
 				}
 
 				model.elements = []
-				for (const element of elements) {
-					model.elements.push(element.getSaveCopy?.(!!model.meta))
+				// Faces save the Texture Slot they use, not the texture it shows
+				setSlotResolution(false)
+				try {
+					for (const element of elements) {
+						model.elements.push(element.getSaveCopy?.(!!model.meta))
+					}
+				} finally {
+					setSlotResolution(true)
 				}
 
 				model.groups = []
@@ -333,6 +347,13 @@ export const BLUEPRINT_CODEC = registerDeletableHandlerPatch({
 						save.internal = true
 					}
 					if (options.absolute_paths == false) delete save.path
+					if (isTextureSlot(texture)) {
+						// A slot's image only mirrors one of its textures
+						const slotSave: Partial<Texture> = save
+						delete slotSave.source
+						delete slotSave.path
+						delete slotSave.relative_path
+					}
 					model.textures.push(save)
 				}
 
@@ -388,6 +409,7 @@ export const BLUEPRINT_CODEC = registerDeletableHandlerPatch({
 				}
 
 				previouslySelectedVariant?.select()
+				restoreSlotPreviews()
 
 				console.log('Successfully compiled Animated Java Blueprint', model)
 				return options.raw ? model : compileJSON(model)

@@ -11,6 +11,12 @@ import { resolvePath } from '../util/fileUtil'
 import { localize as translate } from '../util/lang'
 import { isResourcePackPath, parseResourceLocation } from '../util/minecraftUtil'
 import { scrubUndefined } from '../util/misc'
+import {
+	getTextureSlots,
+	savePreviews,
+	TEXTURE_SLOT_COMMANDS_MIN_VERSION,
+	verifySlotTextures,
+} from '../textureSlots'
 import { Stopwatch } from '../util/stopwatch'
 import { Variant } from '../variants'
 import { hashAnimations, renderProjectAnimations } from './animationRenderer'
@@ -58,6 +64,25 @@ export function getExportPaths() {
 	}
 }
 
+const PROJECTS_SHOWN_SLOT_NOTICE = new WeakSet<ModelProject>()
+
+/**
+ * Explains, once per project per session, that Texture Slots only swap through Variants on this version.
+ */
+function showOldVersionTextureSlotsNotice() {
+	if (!Project || PROJECTS_SHOWN_SLOT_NOTICE.has(Project)) return
+	PROJECTS_SHOWN_SLOT_NOTICE.add(Project)
+	Blockbench.showToastNotification({
+		text: translate(
+			'toast.texture_slots_old_version',
+			Project.animated_java.target_minecraft_version,
+			TEXTURE_SLOT_COMMANDS_MIN_VERSION
+		),
+		icon: 'info',
+		expire: 15000,
+	})
+}
+
 interface ExportProjectOptions {
 	debugMode?: boolean
 }
@@ -70,12 +95,15 @@ async function actuallyExportProject({
 	// Wait for the dialog to open
 	await new Promise(resolve => requestAnimationFrame(resolve))
 	const selectedVariant = Variant.selected
+	const restoreSlotPreviews = savePreviews()
 	Variant.getDefault().select()
 	const stopwatch = new Stopwatch('Project Export').start()
 	try {
-		// Verify that all variant texture maps are valid
+		for (const slot of getTextureSlots()) {
+			verifySlotTextures(slot)
+		}
 		for (const variant of Variant.all) {
-			variant.verifyTextureMap()
+			variant.verifySlotTextures()
 		}
 
 		// Verify that all non-external textures have unique names
@@ -161,6 +189,14 @@ async function actuallyExportProject({
 
 		Blockbench.showQuickMessage('Project exported successfully!', 2000)
 
+		if (
+			!aj.enable_plugin_mode &&
+			Object.keys(rig.texture_slots).length &&
+			!projectTargetVersionIsAtLeast(TEXTURE_SLOT_COMMANDS_MIN_VERSION)
+		) {
+			showOldVersionTextureSlotsNotice()
+		}
+
 		return true
 	} catch (e: any) {
 		console.error(e)
@@ -180,6 +216,7 @@ async function actuallyExportProject({
 		openUnexpectedErrorDialog(e as Error)
 	} finally {
 		selectedVariant?.select()
+		restoreSlotPreviews()
 		closeExportProgressDialog()
 		stopwatch.debug()
 	}

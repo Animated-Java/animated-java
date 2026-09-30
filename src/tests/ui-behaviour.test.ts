@@ -115,12 +115,15 @@ describe('UI behaviour', () => {
 			expect(await blockbench.dialog().isOpen()).toBe(false)
 		})
 
-		it('the variant config action opens for a non-default variant only', async () => {
+		it('the variant config action opens for any variant, including the default', async () => {
 			await blockbench.newProject(BLUEPRINT_FORMAT_ID)
 			const openConfig = blockbench.action('animated_java:action/open-variant-config')
 
-			// Default selected -> disabled.
-			expect(await openConfig.isEnabled()).toBe(false)
+			// The default variant can be renamed, so its config opens too.
+			expect(await openConfig.isEnabled()).toBe(true)
+			await openConfig.trigger()
+			expect(await blockbench.dialog().id()).toBe('animated_java:variantConfig')
+			await blockbench.dialog().cancel()
 
 			await blockbench.evaluate(() =>
 				new (window as any).AnimatedJava.Variant('Cfg').select()

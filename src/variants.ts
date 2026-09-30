@@ -1,61 +1,11 @@
 import type { IBlueprintDisplayEntityConfigJSON, IBlueprintVariantJSON } from './formats/blueprint'
 import { VanillaBlockDisplay } from './outliner/vanillaBlockDisplay'
 import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
+import { getTextureSlot, previewSlots } from './textureSlots'
 import type { IDisplayEntityConfigs } from './systems/rigRenderer'
 import EVENTS from './util/events'
 import { sanitizeStorageKey } from './util/minecraftUtil'
-
-const TEXTURE_BY_UUID_CACHE = new Map<string, Texture>()
-
-export class TextureMap extends Map<string, string> {
-	add(key: string, value: string) {
-		this.set(key, value)
-	}
-
-	/**
-	 * Given a texture or texture uuid, return the mapped texture
-	 */
-	getMappedTexture(texture: Texture | string): Texture | undefined {
-		const uuid = this.get(texture instanceof Texture ? texture.uuid : texture)
-		if (!uuid) return undefined
-
-		let cached = TEXTURE_BY_UUID_CACHE.get(uuid)
-		if (!cached) {
-			cached = Texture.all.find(t => t.uuid === uuid)
-			if (cached) TEXTURE_BY_UUID_CACHE.set(uuid, cached)
-		}
-
-		return cached
-	}
-
-	setMappedTexture(texture: Texture, mappedTexture: Texture) {
-		this.set(texture.uuid, mappedTexture.uuid)
-	}
-
-	toJSON() {
-		return Object.fromEntries(this)
-	}
-
-	static fromJSON(json: Record<string, string>): TextureMap {
-		const textureMap = new TextureMap()
-		for (const [key, value] of Object.entries(json)) {
-			textureMap.add(key, value)
-		}
-		return textureMap
-	}
-
-	copy() {
-		return new TextureMap(this)
-	}
-
-	verifyTextures() {
-		for (const [key, value] of this) {
-			if (!Texture.all.some(t => t.uuid === value)) {
-				this.delete(key)
-			}
-		}
-	}
-}
+import { makeUniqueName } from './util/uniqueName'
 
 export class VariantBoneConfig {
 	bone: string
@@ -73,26 +23,22 @@ export class Variant {
 	displayName: string
 	name: string
 	uuid: string
-	textureMap: TextureMap
+	/** Slot UUID -> texture UUID. Slots left out are unchanged when the variant is applied. */
+	slotTextures = new Map<string, string>()
 	isDefault = false
 	generateNameFromDisplayName = true
 	onApplyFunction?: string
 	excludedNodes = new Set<string>()
 
 	constructor(displayName: string, isDefault = false) {
+		if (isDefault && Variant.hasDefault()) {
+			throw new Error('There can only be one default variant!')
+		}
 		this.displayName = Variant.makeDisplayNameUnique(this, displayName)
 		this.name = Variant.makeNameUnique(this, this.displayName)
 		this.isDefault = isDefault
 		this.uuid = guid()
-		this.textureMap = new TextureMap()
 		this.id = Variant.all.length
-		if (this.isDefault) {
-			if (Variant.hasDefault()) {
-				throw new Error('There can only be one default variant!')
-			}
-			this.displayName = 'Default'
-			this.name = 'default'
-		}
 		Variant.all.push(this)
 		EVENTS.CREATE_VARIANT.publish(this)
 	}
@@ -100,6 +46,7 @@ export class Variant {
 	select() {
 		if (Variant.selected) Variant.selected.unselect()
 		Variant.selected = this
+		this.previewSlotTextures()
 		Canvas.updateAllFaces()
 		VanillaBlockDisplay.forceUpdateAll()
 		VanillaItemDisplay.forceUpdateAll()
@@ -114,6 +61,13 @@ export class Variant {
 		} else {
 			return element.configs.variants[this.uuid] ?? element.configs.default
 		}
+	}
+
+	/**
+	 * Resets every slot's editor preview to its default, then shows this variant's textures.
+	 */
+	previewSlotTextures() {
+		previewSlots(slot => this.slotTextures.get(slot.uuid))
 	}
 
 	unselect() {
@@ -142,7 +96,7 @@ export class Variant {
 			name: this.name,
 			display_name: this.displayName,
 			uuid: this.uuid,
-			texture_map: Object.fromEntries(this.textureMap),
+			slot_textures: Object.fromEntries(this.slotTextures),
 			excluded_nodes: [...this.excludedNodes.keys()],
 			on_apply_function: this.onApplyFunction,
 		}
@@ -157,23 +111,34 @@ export class Variant {
 		variant.uuid = guid()
 		variant.isDefault = false
 		variant.generateNameFromDisplayName = this.generateNameFromDisplayName
-		variant.textureMap = this.textureMap.copy()
+		variant.slotTextures = new Map(this.slotTextures)
 		variant.excludedNodes = new Set(this.excludedNodes)
 		variant.select()
 	}
 
-	verifyTextureMap() {
-		this.textureMap.verifyTextures()
+	/**
+	 * Drops choices whose slot is gone or no longer holds the chosen texture.
+	 */
+	verifySlotTextures() {
+		for (const [slotUuid, textureUuid] of this.slotTextures) {
+			if (!getTextureSlot(slotUuid)?.slot_textures.includes(textureUuid)) {
+				this.slotTextures.delete(slotUuid)
+			}
+		}
 	}
 
 	static fromJSON(json: IBlueprintVariantJSON, isDefault = false): Variant {
 		const variant = new Variant(json.display_name, isDefault)
 		variant.uuid = json.uuid
+		if (json.name) variant.name = Variant.makeNameUnique(variant, json.name)
+		variant.generateNameFromDisplayName =
+			variant.name === Variant.makeNameUnique(variant, variant.displayName)
+		variant.onApplyFunction = json.on_apply_function
 		if (json.is_default) {
 			return variant
 		}
-		for (const [key, value] of Object.entries(json.texture_map)) {
-			variant.textureMap.add(key, value)
+		for (const [slotUuid, textureUuid] of Object.entries(json.slot_textures ?? {})) {
+			variant.slotTextures.set(slotUuid, textureUuid)
 		}
 		variant.excludedNodes = new Set(
 			json.excluded_nodes
@@ -183,57 +148,19 @@ export class Variant {
 				})
 				.filter(v => v != undefined)
 		)
-		variant.onApplyFunction = json.on_apply_function
 		return variant
 	}
 
 	static makeDisplayNameUnique(variant: Variant, displayName: string): string {
-		if (!Variant.all.some(v => v !== variant && v.displayName === displayName)) {
-			return displayName
-		}
-
-		let i = 1
-		const match = /\d+$/.exec(displayName)
-		if (match) {
-			i = parseInt(match[0])
-			displayName = displayName.slice(0, -match[0].length)
-		}
-
-		let maxTries = 1000
-		while (maxTries-- > 0) {
-			const newName = `${displayName}${i}`
-			if (!Variant.all.some(v => v !== variant && v.displayName === newName)) {
-				return newName
-			}
-			i++
-		}
-
-		throw new Error('Could not make Variant display name unique!')
+		return makeUniqueName(displayName, name =>
+			Variant.all.some(v => v !== variant && v.displayName === name)
+		)
 	}
 
 	static makeNameUnique(variant: Variant, name: string): string {
-		name = sanitizeStorageKey(name)
-		if (!Variant.all.some(v => v !== variant && v.name === name)) {
-			return name
-		}
-
-		let i = 1
-		const match = /\d+$/.exec(name)
-		if (match) {
-			i = parseInt(match[0])
-			name = name.slice(0, -match[0].length)
-		}
-
-		let maxTries = 1000
-		while (maxTries-- > 0) {
-			const newName = `${name}${i}`
-			if (!Variant.all.some(v => v !== variant && v.name === newName)) {
-				return newName
-			}
-			i++
-		}
-
-		throw new Error('Could not make Variant name unique!')
+		return makeUniqueName(sanitizeStorageKey(name), name =>
+			Variant.all.some(v => v !== variant && v.name === name)
+		)
 	}
 
 	static selectDefault() {
