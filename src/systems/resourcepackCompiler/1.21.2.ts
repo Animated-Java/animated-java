@@ -112,18 +112,19 @@ const compileResourcePack: ResourcePackCompiler = async ({
 	for (const variant of Object.values(rig.variants)) {
 		for (const [boneUuid, variantModel] of Object.entries(variant.models)) {
 			const bone = rig.nodes[boneUuid] as IRenderedNodes['Bone']
+			// Hacky workaround for this version enforcing the `item` namespace. Applies to
+			// unchanged bones too, which point at the default model.
+			variantModel.item_model = variantModel.item_model.replace(':blueprint/', ':')
 			if (variantModel.custom_model_data !== -1) continue
 			const exportPath = variant.is_default
 				? PathModule.join(correctedModelExportFolder, bone.name + '.json')
 				: PathModule.join(correctedModelExportFolder, variant.name, bone.name + '.json')
-			// Hacky workaround for this version enforcing the `item` namespace.
 			if (variantModel.model?.parent) {
 				variantModel.model.parent = variantModel.model.parent.replace(
 					':blueprint/',
 					':item/'
 				)
 			}
-			variantModel.item_model = variantModel.item_model.replace(':blueprint/', ':')
 			console.log('Exporting model', variantModel.model, 'to', exportPath)
 			versionedFiles.set(PathModule.join(exportPath), {
 				content: autoStringify(variantModel.model),
