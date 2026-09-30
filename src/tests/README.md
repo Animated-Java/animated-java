@@ -46,7 +46,7 @@ can reach them: `renderRig`, `renderProjectAnimations`, `hashRig`,
 - `rig-renderer.test.ts` — outliner → `IRenderedRig`: node-type mapping, `includes_custom_models`, texture collection, `hashRig` change detection
 - `animation-renderer.test.ts` — keyframe baking to `IRenderedAnimation`: per-tick frame count, per-node transforms, animated-channel change, `hashAnimations`
 - `molang-baking.test.ts` — a Molang expression keyframe bakes identically to its literal; `animation_variable_placeholders` round-trip
-- `export-pipeline.test.ts` — `exportProject` writes a real data pack + resource pack; runs across three target versions (1.20.4 / 1.21.5 / 26.2, one per `getMCBFilesByVersion` branch)
+- `export-pipeline.test.ts` — `exportProject` writes a real data pack + resource pack; runs across five target versions (1.20.4 / 1.21.2 / 1.21.5 / 26.2 / 26.3, one per `getMCBFilesByVersion` branch)
 - `export-contents.test.ts` — inspects a real `player` export: `pack.mcmeta` pack_format, `summon` function body, a function per animation, scoreboard setup, block atlas, bone model JSON (geometry + textures), item model definitions, texture PNGs
 - `ajmeta-incremental.test.ts` — delete a bone from an exported project, re-export, assert the stale model file + ajmeta entry are removed
 - `plugin-mode-export.test.ts` — plugin-mode single-JSON export (`pluginCompiler`) shape
