@@ -189,6 +189,7 @@ namespace TAGS {
 	export const TRANSFORMS_ONLY = () => 'aj.transforms_only'
 	export const OUTDATED_RIG_TEXT_DISPLAY = () => 'aj.outdated_rig_text_display'
 	export const INTERACTING_PLAYER = () => 'aj.interacting_player'
+	export const PAUSE_AFTER_TWEEN = () => 'aj.pause_after_tween'
 }
 
 export default TAGS

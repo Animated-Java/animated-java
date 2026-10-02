@@ -296,6 +296,15 @@ IF (has_animations) {
 					execute on passengers store result entity @s interpolation_duration int 1 run scoreboard players get #this <%OBJECTIVES.I()%>
 				}
 
+				function tween_paused {
+					# Same as the tween function, except it does not play the animation afterwards
+					#ARGS: {duration: int, to_frame: int}
+					debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
+
+					tag @s add <%TAGS.PAUSE_AFTER_TWEEN()%>
+					$function ./tween {duration: $(duration), to_frame: $(to_frame)}
+				}
+
 				dir zzz {
 					function on_tick {
 						# Tweening logic
