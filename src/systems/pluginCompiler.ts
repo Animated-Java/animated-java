@@ -150,6 +150,20 @@ interface TransformationKeyframe {
 	interpolation: TransformationKeyframeInterpolation
 }
 
+interface MatrixKeyframe {
+	value: number[]
+	interpolation: TransformationKeyframeInterpolation
+}
+
+interface DecomposedKeyframe {
+	value: {
+		translation: ArrayVector3
+		left_rotation: ArrayVector4
+		scale: ArrayVector3
+	}
+	interpolation: TransformationKeyframeInterpolation
+}
+
 interface PluginAnimation {
 	loop_mode: LoopMode
 	length: number
@@ -162,6 +176,8 @@ interface PluginAnimation {
 	node_keyframes?: Record<
 		string,
 		{
+			matrix?: Record<string, MatrixKeyframe>
+			decomposed?: Record<string, DecomposedKeyframe>
 			position?: Record<string, TransformationKeyframe>
 			rotation?: Record<string, TransformationKeyframe>
 			scale?: Record<string, TransformationKeyframe>
@@ -637,10 +653,24 @@ function serializeBakedAnimation(options: {
 					: { type: 'linear', easing: 'linear' }
 
 			const channels = (node_keyframes[nodeId] ??= {})
+			const matrix = (channels.matrix ??= {})
+			const decomposed = (channels.decomposed ??= {})
 			const position = (channels.position ??= {})
 			const rotation = (channels.rotation ??= {})
 			const scale = (channels.scale ??= {})
 
+			matrix[timeKey] = {
+				value: transform.matrix.elements.slice(),
+				interpolation,
+			}
+			decomposed[timeKey] = {
+				value: {
+					translation: transform.decomposed.translation.toArray() as ArrayVector3,
+					left_rotation: transform.decomposed.left_rotation.toArray() as ArrayVector4,
+					scale: transform.decomposed.scale.toArray() as ArrayVector3,
+				},
+				interpolation,
+			}
 			position[timeKey] = {
 				value: transform.pos.map(toMolangNumber) as StringVector3,
 				interpolation,
