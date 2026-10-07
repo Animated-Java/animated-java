@@ -277,13 +277,17 @@ interface FrameEffects {
 	texture_slots: Array<{ slot: string; texture: string }>
 	/** The texture slot keyframe's execute condition followed by a space, or nothing. */
 	texture_slots_condition: string
+	/** The root function keyframe's commands, run after the Variants and texture slots. */
+	function?: string
+	/** The function keyframe's execute condition followed by a space, or nothing. */
+	function_condition: string
 }
 
 const FRAME_EFFECTS_CACHE = new WeakMap<IRenderedAnimation, FrameEffects[]>()
 
 /**
- * The Variants and texture slots each frame of `animation` changes, for frames that change any.
- * Slots and textures that didn't make it into the rig are skipped.
+ * The Variants, texture slots and root function each frame of `animation` applies, for frames that
+ * apply any. Slots and textures that didn't make it into the rig are skipped.
  */
 function getFrameEffects(rig: IRenderedRig, animation: IRenderedAnimation): FrameEffects[] {
 	const cached = FRAME_EFFECTS_CACHE.get(animation)
@@ -308,7 +312,7 @@ function getFrameEffects(rig: IRenderedRig, animation: IRenderedAnimation): Fram
 			if (slot && texture) textureSlots.push({ slot: slot.name, texture: texture.name })
 		}
 
-		if (!variants.length && !textureSlots.length) continue
+		if (!variants.length && !textureSlots.length && !frame.function) continue
 		result.push({
 			frame: frameIndex,
 			variants,
@@ -318,6 +322,10 @@ function getFrameEffects(rig: IRenderedRig, animation: IRenderedAnimation): Fram
 			texture_slots: textureSlots,
 			texture_slots_condition: frame.texture_slots_execute_condition
 				? frame.texture_slots_execute_condition + ' '
+				: '',
+			function: frame.function,
+			function_condition: frame.function_execute_condition
+				? frame.function_execute_condition + ' '
 				: '',
 		})
 	}

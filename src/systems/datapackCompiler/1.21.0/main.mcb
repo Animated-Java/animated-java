@@ -423,7 +423,7 @@ IF (has_animations) {
 									node => node.type === 'locator' && global.frame.node_transforms[node.uuid]
 								)
 							%%>
-							IF (global.modified_effect_nodes.length > 0 || global.frame.function || getFrameEffects(animation).some(effects => effects.frame === animation.frames.length - 1)) {
+							IF (global.modified_effect_nodes.length > 0 || getFrameEffects(animation).some(effects => effects.frame === animation.frames.length - 1)) {
 								function last_frame_effects {
 									REPEAT(global.modified_effect_nodes) as node {
 										<%%
@@ -459,12 +459,6 @@ IF (has_animations) {
 										function ../frame_effects/<%animation.frames.length - 1%>
 									}
 
-									IF (global.frame.function) {
-										execute <%global.frame.function_execute_condition ? global.frame.function_execute_condition + ' ' : ''%>run \
-											block <%animation.duration%>_function_keyframe {
-												<%global.frame.function%>
-											}
-									}
 								}
 							}
 
@@ -614,12 +608,6 @@ IF (has_animations) {
 										;hasFunction = true
 									}
 
-									// Root function keyframes.
-									if (frame.function) {
-										const execute_condition = frame.function_execute_condition ? frame.function_execute_condition + ' ' : ''
-										frameFuncEnd += `\nexecute unless entity @s[tag=${TAGS.TRANSFORMS_ONLY()}] at @s ${execute_condition}run block ${frameIndex}_root_function%NEWLINE_PATCH%{\n${frame.function}\n}`
-										;hasFunction = true
-									}
 									frameFunc += frameFuncEnd;
 									if (frameFunc.length > 0) {
 										frameFunc = `function ${frameIndex}%NEWLINE_PATCH%{${frameFunc}\n}`
@@ -654,6 +642,13 @@ IF (has_animations) {
 									} ELSE {
 										REPEAT (effects.texture_slots) as slot {
 											function <%blueprint_id%>/texture_slots/<%slot.slot%>/<%slot.texture%>
+										}
+									}
+									IF (effects.function) {
+										execute at @s <%effects.function_condition%>run {
+											<%%
+												emit.mcb(effects.function)
+											%%>
 										}
 									}
 								}

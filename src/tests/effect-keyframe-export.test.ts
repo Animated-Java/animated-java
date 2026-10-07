@@ -11,7 +11,8 @@ import { type ExportRun, relFiles, runFixtureExport } from './helpers/export'
 
 /**
  * Adds a looping `effects` animation to the `Dummy` fixture: a `color1` + `color2` stack on frame
- * 0, a texture slot keyframe on frame 10, and another on the last frame.
+ * 0, a texture slot keyframe and a function keyframe on frame 10, and another texture slot
+ * keyframe on the last frame.
  */
 function addEffectKeyframes(aj: any) {
 	const g = globalThis as any
@@ -34,6 +35,10 @@ function addEffectKeyframes(aj: any) {
 
 	const last = fx.addKeyframe({ channel: 'texture_slot', time: 1, data_points: [{}] })
 	last.texture_slots = { [slot.uuid]: textures[1].uuid }
+
+	const fn = fx.addKeyframe({ channel: 'function', time: 0.5, data_points: [{}] })
+	fn.function = 'tag @s add gametest.function_keyframe'
+	fn.execute_condition = 'if entity @s[tag=fn]'
 }
 
 function readFiles(run: ExportRun, files: string[]) {
@@ -106,6 +111,22 @@ describe.each([
 		const color2 = effects.indexOf('variants/color2/apply')
 		expect(color1).toBeGreaterThan(-1)
 		expect(color2).toBeGreaterThan(color1)
+	})
+
+	it('runs root function keyframes from frame effects, once, after the texture slots', () => {
+		const effects = readFiles(run, effectFiles())
+		expect(effects).toMatch(/execute at @s if entity @s\[tag=fn\] run function/)
+		expect(effects).toContain('tag @s add gametest.function_keyframe')
+		const frame10 = readFiles(
+			run,
+			dpFiles.filter(f => f.endsWith('/animations/effects/zzz/frame_effects/10.mcfunction'))
+		)
+		expect(frame10.indexOf('tag=swap')).toBeLessThan(frame10.indexOf('tag=fn'))
+		const everywhere = readFiles(
+			run,
+			dpFiles.filter(f => f.includes('/animations/effects/'))
+		)
+		expect(everywhere.split('tag @s add gametest.function_keyframe').length - 1).toBe(1)
 	})
 
 	it('switches texture slots behind their condition', () => {
