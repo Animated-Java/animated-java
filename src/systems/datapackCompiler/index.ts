@@ -267,6 +267,64 @@ function getVariantSlotTextures(rig: IRenderedRig, variant: IRenderedVariant, bo
 	return result
 }
 
+interface FrameEffects {
+	frame: number
+	/** Names of the Variants to apply, in order. */
+	variants: string[]
+	/** The variant keyframe's execute condition followed by a space, or nothing. */
+	variants_condition: string
+	/** Slot and texture names of the `texture_slots/<slot>/<texture>` functions to run. */
+	texture_slots: Array<{ slot: string; texture: string }>
+	/** The texture slot keyframe's execute condition followed by a space, or nothing. */
+	texture_slots_condition: string
+}
+
+const FRAME_EFFECTS_CACHE = new WeakMap<IRenderedAnimation, FrameEffects[]>()
+
+/**
+ * The Variants and texture slots each frame of `animation` changes, for frames that change any.
+ * Slots and textures that didn't make it into the rig are skipped.
+ */
+function getFrameEffects(rig: IRenderedRig, animation: IRenderedAnimation): FrameEffects[] {
+	const cached = FRAME_EFFECTS_CACHE.get(animation)
+	if (cached) return cached
+
+	const result: FrameEffects[] = []
+	for (const [frameIndex, frame] of animation.frames.entries()) {
+		const variants = (frame.variants ?? []).map(uuid => {
+			const variant = rig.variants[uuid]
+			if (!variant) {
+				throw new Error(
+					`Could not find Variant with uuid "${uuid}" while generating frame "${frameIndex}" of animation "${animation.name}".`
+				)
+			}
+			return variant.name
+		})
+
+		const textureSlots: FrameEffects['texture_slots'] = []
+		for (const [slotUuid, textureUuid] of Object.entries(frame.texture_slots ?? {})) {
+			const slot = rig.texture_slots[slotUuid]
+			const texture = slot?.textures.find(t => rig.textures[t.id]?.uuid === textureUuid)
+			if (slot && texture) textureSlots.push({ slot: slot.name, texture: texture.name })
+		}
+
+		if (!variants.length && !textureSlots.length) continue
+		result.push({
+			frame: frameIndex,
+			variants,
+			variants_condition: frame.variants_execute_condition
+				? frame.variants_execute_condition + ' '
+				: '',
+			texture_slots: textureSlots,
+			texture_slots_condition: frame.texture_slots_execute_condition
+				? frame.texture_slots_execute_condition + ' '
+				: '',
+		})
+	}
+	FRAME_EFFECTS_CACHE.set(animation, result)
+	return result
+}
+
 async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAnimation[]) {
 	setExportProgressPhase('Creating Animation Storage...', animations.length)
 	const dataCommands: string[] = []
@@ -274,6 +332,7 @@ async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAn
 
 	for (const animation of animations) {
 		setExportProgressSubTask(animation.name, animation.frames.length)
+		const effectFrames = new Set(getFrameEffects(rig, animation).map(effects => effects.frame))
 		let frames = new NbtCompound()
 		const addFrameDataCommand = () => {
 			const str = `data modify storage ${
@@ -312,22 +371,8 @@ async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAn
 					)
 				}
 			}
-			if (frame.variants?.length) {
-				const uuid = frame.variants[0]
-				thisFrame.set(
-					'variant',
-					new NbtCompound()
-						.set('name', new NbtString(rig.variants[uuid].name))
-						.set(
-							'condition',
-							new NbtString(
-								frame.variants_execute_condition
-									? `${frame.variants_execute_condition} `
-									: ''
-							)
-						)
-				)
-			}
+			// Marks frames with a `zzz/frame_effects/<frame>` function to run.
+			if (effectFrames.has(i)) thisFrame.set('effects', new NbtByte(1))
 			if (frames.toString().length > 1000000) {
 				addFrameDataCommand()
 			}
@@ -628,6 +673,7 @@ const dataPackCompiler: DataPackCompiler = async ({
 		getNodeTags,
 		getVariantSlotTextures: (variant: IRenderedVariant, boneUuid: string) =>
 			getVariantSlotTextures(rig, variant, boneUuid),
+		getFrameEffects: (animation: IRenderedAnimation) => getFrameEffects(rig, animation),
 		BONE_TYPES,
 		project_storage: `${aj.blueprint_id}`,
 		temp_storage: `animated_java:temp`,

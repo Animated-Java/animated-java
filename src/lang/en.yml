@@ -844,9 +844,7 @@ animated_java:
       slot_textures:
         title: Texture Slots
         description: The texture each Texture Slot switches to when this Variant is applied. Slots not listed here are left unchanged.
-        add_slot: Add Texture Slot
         no_slots: This Variant doesn't change any Texture Slots.
-        all_slots_added: Every Texture Slot is already listed.
       bone_lists:
         description: |-
           Specify which nodes the Variant should affect.
@@ -915,6 +913,14 @@ animated_java:
         description: A list of nodes to include in the animation. Only these nodes will be modified by the animation.
       swap_columns_button:
         tooltip: Swap Lists
+      preview_variants:
+        title: Preview Variants
+        description: The Variants shown when previewing this animation starts, applied in order. Set these to match the rig's expected in-game state when the animation plays. Only affects the editor.
+        empty: The default Variant.
+      preview_texture_slots:
+        title: Preview Texture Slots
+        description: The textures Texture Slots show when previewing this animation starts, after the Preview Variants. Only affects the editor.
+        empty: Texture Slots show what the Preview Variants set.
     export_progress:
       title: Exporting...
     blueprint_loading:
@@ -933,9 +939,15 @@ animated_java:
         cannot_delete_default_variant: Cannot delete the default variant!
     keyframe:
       keyframe_title: Keyframe (%s)
+      remove: Remove
       variant:
-        title: Variant
-        description: The Variant to apply to the keyframe.
+        title: Variants
+        description: The Variants to apply, in order. Later Variants override earlier ones on the nodes they change.
+        empty: This keyframe doesn't apply any Variants.
+      texture_slot:
+        title: Texture Slots
+        description: The texture each Texture Slot switches to, on every node with faces in that slot. Applied after Variant keyframes on the same frame. Slots not listed here are left unchanged.
+        empty: This keyframe doesn't change any Texture Slots.
       function:
         title: Function
         description: |-
@@ -1039,12 +1051,25 @@ animated_java:
     excluded_nodes: Excluded Nodes
     invert_excluded_nodes: Invert Excluded Nodes
 
+  slot_textures_editor:
+    add_slot: Add Texture Slot
+    all_slots_added: Every Texture Slot is already listed.
+
+  variant_stack_editor:
+    add_variant: Add Variant
+    all_variants_added: Every Variant is already listed.
+    move_up: Move Up
+    move_down: Move Down
+    missing_variant: Missing Variant
+
   effect_animator:
     timeline:
       variant: Variant
+      texture_slot: Texture Slots
       function: Function
     keyframe_data_point:
-      variant: Variant
+      variant: Variants
+      texture_slots: Texture Slots
       function: Function
       execute_condition: Execute Condition
       repeat: Repeat
@@ -1122,6 +1147,10 @@ animated_java:
           If you want to rotate a cube on multiple axes, put it in a bone and rotate the bone instead.
 
           All of the invalid cubes are outlined in red in the editor. Please fix them before exporting.
+      texture_slot_keyframes_old_version:
+        message: |-
+          The animation "%s" has Texture Slot keyframes, which aren't supported in Minecraft %s.
+          Remove them, or target Minecraft %s or newer.
       unsupported_tint_source:
         message: |-
           The bone "%s" uses a %s tint, which is not supported in Minecraft %s.

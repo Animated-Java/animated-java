@@ -317,7 +317,13 @@ IF (has_animations) {
 							# Makes sure function keyframes in the last frame of the animation are activated.
 							execute if score @s <%OBJECTIVES.FRAME(blueprint_id, animation.storage_name)%> matches -1 run \
 								block function_keyframe_loop_patch {
-									function ./frames/last_frame_effects with storage <%temp_storage%> entry.data.uuids_by_name
+									IF (use_storage_for_animation) {
+										IF (getFrameEffects(animation).some(effects => effects.frame === animation.frames.length - 1)) {
+											function ./frame_effects/<%animation.frames.length - 1%>
+										}
+									} ELSE {
+										function ./frames/last_frame_effects with storage <%temp_storage%> entry.data.uuids_by_name
+									}
 									scoreboard players add @s <%OBJECTIVES.FRAME(blueprint_id, animation.storage_name)%> 1
 								}
 						}
@@ -377,14 +383,11 @@ IF (has_animations) {
 								}
 							}
 
-							IF (animation.frames.some(anim => anim.variant)) {
+							IF (getFrameEffects(animation).length > 0) {
 								$execute \
-									if data storage <%project_storage%>/animations <%animation.storage_name%>.$(frame).variant \
+									if data storage <%project_storage%>/animations <%animation.storage_name%>.$(frame).effects \
 									unless entity @s[tag=<%TAGS.TRANSFORMS_ONLY()%>] \
-								run { with storage <%project_storage%>/animations <%animation.storage_name%>.$(frame).variant
-									#ARGS: {name: string, condition: string}
-									$execute $(condition)run function <%blueprint_id%>/variants/$(name)/apply
-								}
+								run function ./frame_effects/$(frame)
 							}
 
 							return 1
@@ -418,7 +421,7 @@ IF (has_animations) {
 									node => node.type === 'locator' && global.frame.node_transforms[node.uuid]
 								)
 							%%>
-							IF(Object.keys(global.modified_effect_nodes).length > 0) {
+							IF (global.modified_effect_nodes.length > 0 || global.frame.function || getFrameEffects(animation).some(effects => effects.frame === animation.frames.length - 1)) {
 								function last_frame_effects {
 									REPEAT(global.modified_effect_nodes) as node {
 										<%%
@@ -450,9 +453,8 @@ IF (has_animations) {
 										}
 									}
 
-									IF (global.frame.variants?.length > 0) {
-										execute <%global.frame.variants_execute_condition ? global.frame.variants_execute_condition + ' ' : ''%>run \
-											function <%blueprint_id%>/variants/<%global.frame.variants[0].name%>/apply
+									IF (getFrameEffects(animation).some(effects => effects.frame === animation.frames.length - 1)) {
+										function ../frame_effects/<%animation.frames.length - 1%>
 									}
 
 									IF (global.frame.function) {
@@ -470,6 +472,7 @@ IF (has_animations) {
 								// Only used for step keyframe interpolation.
 								let hasFunction = false
 								const lastActiveFrame = {}
+								const effectFrames = new Set(getFrameEffects(animation).map(effects => effects.frame))
 								const modifiedNodes = Object.values(animation.modified_nodes).filter(n => n.type !== 'struct').sort(nodeSorter);
 								for (const [frameIndex, frame] of animation.frames.entries()) {
 									const toMerge = {cameras: {}, locators: {}, interactions: {}}
@@ -604,13 +607,8 @@ IF (has_animations) {
 										hasFunction = true
 									}
 
-									if (frame.variants?.length) {
-										const variant = rig.variants[frame.variants[0]]
-										if (!variant) {
-											throw new Error(`Could not find Variant with uuid "${frame.variants[0]}" while generating frame "${frameIndex}" of animation "${animation.name}".`)
-										}
-										const execute_condition = frame.variants_execute_condition ? frame.variants_execute_condition + ' ' : ''
-										frameFuncEnd += `\nexecute unless entity @s[tag=${TAGS.TRANSFORMS_ONLY()}] ${execute_condition}run function ${blueprint_id}/variants/${variant.name}/apply`
+									if (effectFrames.has(frameIndex)) {
+										frameFuncEnd += `\nexecute unless entity @s[tag=${TAGS.TRANSFORMS_ONLY()}] run function ${blueprint_id}/animations/${animation.storage_name}/zzz/frame_effects/${frameIndex}`
 										;hasFunction = true
 									}
 
@@ -627,6 +625,37 @@ IF (has_animations) {
 									}
 								}
 							%%>
+						}
+					}
+
+					IF (getFrameEffects(animation).length > 0) {
+						dir frame_effects {
+							REPEAT (getFrameEffects(animation)) as effects {
+								function <%effects.frame%> {
+									IF (effects.variants_condition) {
+										execute <%effects.variants_condition%>run {
+											REPEAT (effects.variants) as variant {
+												function <%blueprint_id%>/variants/<%variant%>/apply
+											}
+										}
+									} ELSE {
+										REPEAT (effects.variants) as variant {
+											function <%blueprint_id%>/variants/<%variant%>/apply
+										}
+									}
+									IF (effects.texture_slots_condition) {
+										execute <%effects.texture_slots_condition%>run {
+											REPEAT (effects.texture_slots) as slot {
+												function <%blueprint_id%>/texture_slots/<%slot.slot%>/<%slot.texture%>
+											}
+										}
+									} ELSE {
+										REPEAT (effects.texture_slots) as slot {
+											function <%blueprint_id%>/texture_slots/<%slot.slot%>/<%slot.texture%>
+										}
+									}
+								}
+							}
 						}
 					}
 				}

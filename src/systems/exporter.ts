@@ -137,6 +137,24 @@ async function actuallyExportProject({
 			}
 		}
 
+		if (!projectTargetVersionIsAtLeast(TEXTURE_SLOT_COMMANDS_MIN_VERSION)) {
+			const animation = Project!.animations.find(animation =>
+				(animation.animators.effects?.texture_slot as _Keyframe[] | undefined)?.some(
+					kf => Object.keys(kf.texture_slots ?? {}).length > 0
+				)
+			)
+			if (animation) {
+				throw new IntentionalExportError(
+					translate(
+						'misc.failed_to_export.texture_slot_keyframes_old_version.message',
+						animation.name,
+						aj.target_minecraft_version,
+						TEXTURE_SLOT_COMMANDS_MIN_VERSION
+					)
+				)
+			}
+		}
+
 		const {
 			resourcePackFolder,
 			dataPackFolder,

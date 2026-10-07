@@ -1,6 +1,7 @@
 import { registerDeletableHandlerPatch, registerPatch } from 'blockbench-patch-manager'
 import { observable } from 'svelte-observable-store'
 import { PACKAGE } from '../constants'
+import { getPreviewVariant } from '../animationPreview'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint/index'
 import { applyEnchantmentGlintToMesh } from '../shaders/enchantmentGlint'
 import { getItemModel } from '../systems/minecraft/itemModelManager'
@@ -9,7 +10,6 @@ import EVENTS from '../util/events'
 import { localize as translate } from '../util/lang'
 import { validateItem } from '../util/minecraftUtil'
 import { DeepClonedObjectProperty, fixClassPropertyInheritance } from '../util/property'
-import { Variant } from '../variants'
 import {
 	applyPivotOffset,
 	getPivotedGeometryWorldCenter,
@@ -243,8 +243,9 @@ export const PREVIEW_CONTROLLER: NodePreviewController = new NodePreviewControll
 					mesh.outline.visible = el.selected
 					resetPivotOffsetTracking(mesh.geometry, result.mesh, result.outline)
 
-					if (Variant.selected) {
-						const config = Variant.selected.getDisplayEntityConfig(el)
+					const variant = getPreviewVariant(el)
+					if (variant) {
+						const config = variant.getDisplayEntityConfig(el)
 						if (config.enchanted) {
 							for (const child of result.mesh.children) {
 								if (!(child instanceof THREE.Mesh)) continue

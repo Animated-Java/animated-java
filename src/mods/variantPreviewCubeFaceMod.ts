@@ -1,12 +1,7 @@
 import { registerPatch } from 'blockbench-patch-manager'
+import { getPreviewSlotTexture } from '../animationPreview'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
-import {
-	getSlotDefaultTexture,
-	getSlotPreviewTexture,
-	getTextureSlot,
-	shouldResolveSlots,
-} from '../textureSlots'
-import { Variant } from '../variants'
+import { getTextureSlot, shouldResolveSlots } from '../textureSlots'
 
 registerPatch({
 	id: `animated_java:variant-preview-cube-face`,
@@ -23,14 +18,8 @@ registerPatch({
 			) {
 				const slot = getTextureSlot(this.texture)
 				if (slot) {
-					const variant = Variant.selected
-					const excluded =
-						this.cube.parent instanceof Group &&
-						variant?.excludedNodes.has(this.cube.parent.uuid) &&
-						variant.slotTextures.has(slot.uuid)
-					const texture = excluded
-						? getSlotDefaultTexture(slot)
-						: getSlotPreviewTexture(slot)
+					const bone = this.cube.parent instanceof Group ? this.cube.parent : undefined
+					const texture = getPreviewSlotTexture(slot, bone)
 					if (texture) return texture
 				}
 			}

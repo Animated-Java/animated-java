@@ -17,7 +17,11 @@ import v1_0_0_pre8 from './versions/1.0.0-pre8'
 import v1_10_0_beta_1 from './versions/1.10.0-beta.1'
 import v1_10_0_beta_4 from './versions/1.10.0-beta.4'
 import v1_10_0_beta_7 from './versions/1.10.0-beta.7'
-import v1_11_0, { needsTextureSlotUpgrade } from './versions/1.11.0'
+import v1_11_0, {
+	needsTextureSlotUpgrade,
+	needsVariantKeyframeUpgrade,
+	upgradeVariantKeyframes,
+} from './versions/1.11.0'
 import v1_4_0 from './versions/1.4.0'
 import v1_6_3 from './versions/1.6.3'
 import v1_6_5 from './versions/1.6.5'
@@ -33,8 +37,8 @@ export function upgradeAnimatedJavaBlueprint(model: any): IBlueprintFormatJSON {
 		let needsUpgrade = model.meta.format_version.length === 3
 		needsUpgrade =
 			needsUpgrade || VersionUtil.compare(PACKAGE.version, '>', model.meta.format_version)
-		// Blueprints saved by 1.11.0 dev builds can still hold an older slot format
-		needsUpgrade ||= needsTextureSlotUpgrade(model)
+		// Blueprints saved by 1.11.0 dev builds can still hold an older slot or keyframe format
+		needsUpgrade ||= needsTextureSlotUpgrade(model) || needsVariantKeyframeUpgrade(model)
 		if (!needsUpgrade) return model
 
 		console.groupCollapsed(
@@ -107,6 +111,7 @@ export function upgradeAnimatedJavaBlueprint(model: any): IBlueprintFormatJSON {
 				model = v1_10_0_beta_7(model)
 		}
 		if (needsTextureSlotUpgrade(model)) model = v1_11_0(model)
+		if (needsVariantKeyframeUpgrade(model)) model = upgradeVariantKeyframes(model)
 
 		// Remove unknown blueprint settings
 		const defaultSettings = getDefaultProjectSettings()

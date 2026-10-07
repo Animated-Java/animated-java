@@ -39,6 +39,13 @@ export interface ExportOptions {
 	/** Repo-relative fixture path, e.g. `test_blueprints/player.ajblueprint`. */
 	fixture: string
 	targetVersion?: string
+	/** Blueprint settings to override after loading, e.g. `{ use_storage_for_animation: true }`. */
+	settings?: Record<string, unknown>
+	/**
+	 * Runs in Blockbench after the fixture loads, with the `AnimatedJava` API. It's shipped as
+	 * source, so it can't close over anything.
+	 */
+	setup?: (aj: any) => void
 }
 
 /**
@@ -68,6 +75,8 @@ export async function runFixtureExport(options: ExportOptions): Promise<ExportRu
 			dataPackFolder: string
 			resourcePackFolder: string
 			targetVersion?: string
+			settings?: Record<string, unknown>
+			setup?: string
 		}) => {
 			const aj = (window as any).AnimatedJava
 			const codec = aj.BLUEPRINT_CODEC.get()
@@ -89,6 +98,8 @@ export async function runFixtureExport(options: ExportOptions): Promise<ExportRu
 			settings.data_pack = args.dataPackFolder
 			settings.resource_pack = args.resourcePackFolder
 			if (args.targetVersion) settings.target_minecraft_version = args.targetVersion
+			Object.assign(settings, args.settings)
+			if (args.setup) new Function(`return ${args.setup}`)()(aj)
 
 			const ok = await aj.exportProject()
 			return {
@@ -104,6 +115,8 @@ export async function runFixtureExport(options: ExportOptions): Promise<ExportRu
 			dataPackFolder,
 			resourcePackFolder,
 			targetVersion: options.targetVersion,
+			settings: options.settings,
+			setup: options.setup?.toString(),
 		}
 	)
 

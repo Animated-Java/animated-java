@@ -1,6 +1,7 @@
 <script lang="ts" module>
 	import CustomCodeJar from '../../svelteComponents/customCodeJar.svelte'
 	import { localize as translate } from '../../util/lang'
+	import { editKeyframe, keyframeTextEdit } from './keyframeEdit'
 </script>
 
 <script lang="ts">
@@ -14,12 +15,16 @@
 	$: {
 		keyframe.function = func
 		keyframe.execute_condition = executeCondition
-		keyframe.repeat = repeat
 		keyframe.repeat_frequency = repeatFrequency
+	}
+
+	function setRepeat(event: Event) {
+		repeat = (event.currentTarget as HTMLInputElement).checked
+		editKeyframe(keyframe, () => (keyframe.repeat = repeat))
 	}
 </script>
 
-<div class="bar flex custom-bar">
+<div class="bar flex custom-bar" use:keyframeTextEdit={keyframe}>
 	<label
 		for="commands_input"
 		class="undefined"
@@ -31,7 +36,7 @@
 	<CustomCodeJar bind:value={func} placeholder={'say Hello, World!'} syntax="mcfunction" />
 </div>
 
-<div class="bar flex custom-bar">
+<div class="bar flex custom-bar" use:keyframeTextEdit={keyframe}>
 	<label
 		for="execute_condition"
 		class="undefined"
@@ -60,12 +65,13 @@
 		id="repeat_input"
 		class="dark_bordered tab_target"
 		type="checkbox"
-		bind:checked={repeat}
+		checked={repeat}
+		on:change={setRepeat}
 	/>
 </div>
 
-{#if keyframe?.repeat}
-	<div class="bar flex">
+{#if repeat}
+	<div class="bar flex" use:keyframeTextEdit={keyframe}>
 		<label
 			for="repeat_frequency_input"
 			class="undefined"

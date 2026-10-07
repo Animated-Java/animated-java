@@ -14,7 +14,7 @@ import {
 } from '../shaders/enchantmentGlint'
 import { isCubeValid } from '../systems/util'
 import { localize as translate } from '../util/lang'
-import { Variant } from '../variants'
+import { getPreviewVariant } from '../animationPreview'
 
 declare global {
 	// @ts-expect-error - Broken BB types
@@ -144,10 +144,11 @@ registerPropertyOverridePatch({
 				const parent = instance.parent
 				let config: IBlueprintDisplayEntityConfigJSON
 				if (parent instanceof Group) {
-					if (!Variant.selected || Variant.selected.isDefault) {
+					const variant = getPreviewVariant(parent)
+					if (!variant || variant.isDefault) {
 						config = parent.configs.default
 					} else {
-						config = parent.configs.variants[Variant.selected.uuid]
+						config = parent.configs.variants[variant.uuid]
 					}
 
 					if (config?.enchanted) {

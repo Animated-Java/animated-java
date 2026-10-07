@@ -104,3 +104,31 @@ export default function upgrade(model: any): IBlueprintFormatJSON {
 
 	return fixed
 }
+
+function getVariantKeyframeDataPoints(model: any): any[] {
+	return (model?.animations ?? [])
+		.flatMap((animation: any) => Object.values(animation?.animators ?? {}))
+		.flatMap((animator: any) => animator?.keyframes ?? [])
+		.filter((keyframe: any) => keyframe?.channel === 'variant')
+		.flatMap((keyframe: any) => keyframe.data_points ?? [])
+}
+
+/**
+ * Whether any variant keyframe still holds a single `variant` instead of a `variants` list.
+ */
+export function needsVariantKeyframeUpgrade(model: any): boolean {
+	return getVariantKeyframeDataPoints(model).some(dataPoint => 'variant' in dataPoint)
+}
+
+/**
+ * Turns each variant keyframe's single `variant` into a `variants` list.
+ */
+export function upgradeVariantKeyframes(model: any): IBlueprintFormatJSON {
+	const fixed: any = JSON.parse(JSON.stringify(model))
+	for (const dataPoint of getVariantKeyframeDataPoints(fixed)) {
+		if (!('variant' in dataPoint)) continue
+		dataPoint.variants ??= dataPoint.variant ? [dataPoint.variant] : []
+		delete dataPoint.variant
+	}
+	return fixed
+}

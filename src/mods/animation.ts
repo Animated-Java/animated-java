@@ -8,14 +8,22 @@ declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface _Animation {
 		excluded_nodes: CollectionItem[]
+		/** Variant UUIDs applied, in order, before previewing the animation. Editor only. */
+		preview_variants: string[]
+		/** Slot UUID -> texture UUID set before previewing the animation. Editor only. */
+		preview_texture_slots: Record<string, string>
 	}
 
 	interface AnimationUndoCopy {
 		excluded_nodes: string[]
+		preview_variants: string[]
+		preview_texture_slots: Record<string, string>
 	}
 
 	interface AnimationOptions {
 		excluded_nodes: string[]
+		preview_variants: string[]
+		preview_texture_slots: Record<string, string>
 	}
 }
 
@@ -102,11 +110,33 @@ registerPatch({
 			}
 		)
 
-		return { excludedNodesProperty }
+		const previewVariantsProperty = new Property(
+			Blockbench.Animation,
+			'array',
+			'preview_variants',
+			{
+				condition: () => activeProjectIsBlueprintFormat(),
+				default: [],
+			}
+		)
+
+		const previewTextureSlotsProperty = new Property(
+			Blockbench.Animation,
+			'object',
+			'preview_texture_slots',
+			{
+				condition: () => activeProjectIsBlueprintFormat(),
+				default: {},
+			}
+		)
+
+		return { excludedNodesProperty, previewVariantsProperty, previewTextureSlotsProperty }
 	},
 
-	revert: ({ excludedNodesProperty }) => {
+	revert: ({ excludedNodesProperty, previewVariantsProperty, previewTextureSlotsProperty }) => {
 		excludedNodesProperty.delete()
+		previewVariantsProperty.delete()
+		previewTextureSlotsProperty.delete()
 	},
 })
 

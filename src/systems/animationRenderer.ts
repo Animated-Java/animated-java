@@ -119,10 +119,14 @@ export interface INodeTransform {
 export interface IRenderedFrame {
 	time: number
 	node_transforms: Record<string, INodeTransform>
-	/** A list of Variants (by UUID) to apply this frame */
+	/** Variants (by UUID) to apply this frame, in order */
 	variants?: string[]
 	/** The condition to check before applying variants */
 	variants_execute_condition?: string
+	/** Slot UUID -> texture UUID to switch each slot to this frame, after {@link variants} */
+	texture_slots?: Record<string, string>
+	/** The condition to check before switching texture slots */
+	texture_slots_execute_condition?: string
 	/** A mcfunction to run as the root on this frame. (Supports MCB syntax) */
 	function?: string
 	/** The condition to check before running the function */
@@ -173,6 +177,7 @@ export class AnimationSampler {
 	/** Node UUID -> ancestor UUIDs, nearest first, `root` excluded. */
 	private readonly parentChains = new Map<string, string[]>()
 	private readonly variantKeyframesByTick = new Map<number, _Keyframe>()
+	private readonly textureSlotKeyframesByTick = new Map<number, _Keyframe>()
 	private readonly functionKeyframesByTick = new Map<number, _Keyframe>()
 	private readonly lastFrameCache = new Map<string, LastFrameCacheItem>()
 
@@ -248,6 +253,9 @@ export class AnimationSampler {
 		const effects = animation.animators.effects
 		for (const kf of (effects?.variant as _Keyframe[] | undefined) ?? []) {
 			this.variantKeyframesByTick.set(Math.round(kf.time * TICK_RATE), kf)
+		}
+		for (const kf of (effects?.texture_slot as _Keyframe[] | undefined) ?? []) {
+			this.textureSlotKeyframesByTick.set(Math.round(kf.time * TICK_RATE), kf)
 		}
 		for (const kf of (effects?.function as _Keyframe[] | undefined) ?? []) {
 			this.functionKeyframesByTick.set(Math.round(kf.time * TICK_RATE), kf)
@@ -337,12 +345,23 @@ export class AnimationSampler {
 		tick: number
 	): Pick<IRenderedFrame, 'variants' | 'variants_execute_condition'> {
 		const kf = this.variantKeyframesByTick.get(tick)
-		// REVIEW - Variant keyframes do not support multiple variants yet.
-		const variant = kf?.variant?.uuid
-		if (!variant) return {}
+		const variants = kf?.variants?.map(variant => variant.uuid)
+		if (!variants?.length) return {}
 		return scrubUndefined({
-			variants: [variant],
+			variants,
 			variants_execute_condition: kf!.execute_condition?.trim(),
+		})
+	}
+
+	private getTextureSlotFrame(
+		tick: number
+	): Pick<IRenderedFrame, 'texture_slots' | 'texture_slots_execute_condition'> {
+		const kf = this.textureSlotKeyframesByTick.get(tick)
+		const textureSlots = kf?.texture_slots
+		if (!textureSlots || !Object.keys(textureSlots).length) return {}
+		return scrubUndefined({
+			texture_slots: { ...textureSlots },
+			texture_slots_execute_condition: kf!.execute_condition?.trim(),
 		})
 	}
 
@@ -393,6 +412,7 @@ export class AnimationSampler {
 			time,
 			node_transforms: {},
 			...this.getVariantFrame(tick),
+			...this.getTextureSlotFrame(tick),
 			...this.getFunctionFrame(tick),
 		}
 
@@ -690,6 +710,12 @@ export function hashAnimations(animations: IRenderedAnimation[]) {
 			if (frame.variants) {
 				s += ';' + frame.variants
 				if (frame.variants_execute_condition) s += ';' + frame.variants_execute_condition
+			}
+			if (frame.texture_slots) {
+				s += ';' + JSON.stringify(frame.texture_slots)
+				if (frame.texture_slots_execute_condition) {
+					s += ';' + frame.texture_slots_execute_condition
+				}
 			}
 			if (frame.function) s += ';' + frame.function
 			if (frame.function_execute_condition) s += ';' + frame.function_execute_condition

@@ -62,7 +62,7 @@ describe('Plugin-mode export', () => {
 		}
 	}, 120_000)
 
-	it('exports Texture Slots, slot faces and Variant keyframes', async () => {
+	it('exports Texture Slots, Variants, and their keyframes', async () => {
 		const workDir = fs.mkdtempSync(path.join(os.tmpdir(), 'aj-plugin-'))
 		const jsonFile = path.join(workDir, 'blueprint.json')
 
@@ -83,8 +83,15 @@ describe('Plugin-mode export', () => {
 					const slot = aj.textureSlots.createTextureSlot([red, blue])
 					slot.name = 'shirt'
 					cube.faces.north.texture = slot.uuid
+					const other = new Group({ name: 'other' }).init()
+					new Cube({ from: [0, 0, 0], to: [4, 4, 4] }).addTo(other).init()
+					for (const face of Object.values(other.children[0].faces) as any[]) {
+						face.texture = slot.uuid
+					}
 					const variant = new aj.Variant('Blue')
 					variant.slotTextures.set(slot.uuid, blue.uuid)
+					variant.excludedNodes.add(other.uuid)
+					bone.configs.variants[variant.uuid] = { glowing: true }
 
 					const anim = new Blockbench.Animation({ name: 'swap' })
 					anim.add()
@@ -95,13 +102,19 @@ describe('Plugin-mode export', () => {
 						time: 0.5,
 						data_points: [{}],
 					})
-					toBlue.variant = variant
-					const toDefault = anim.animators.effects.addKeyframe({
+					toBlue.variants = [variant]
+					const toRed = anim.animators.effects.addKeyframe({
+						channel: 'texture_slot',
+						time: 0.5,
+						data_points: [{}],
+					})
+					toRed.texture_slots = { [slot.uuid]: red.uuid }
+					const stack = anim.animators.effects.addKeyframe({
 						channel: 'variant',
 						time: 1,
 						data_points: [{}],
 					})
-					toDefault.variant = aj.Variant.getDefault()
+					stack.variants = [aj.Variant.getDefault(), variant]
 
 					const settings = Project.animated_java
 					settings.blueprint_id = 'test:slots'
@@ -124,9 +137,22 @@ describe('Plugin-mode export', () => {
 				texture_slot: 'shirt',
 			})
 			expect(faces.south.texture_provider).toEqual({ type: 'texture', texture: 'red' })
-			expect(json.animations.swap.global_keyframes.texture_slot).toEqual({
-				'0.5': { shirt: 'blue' },
-				'1.0': { shirt: 'red' },
+			expect(json.variants).toEqual({
+				default: {
+					is_default: true,
+					texture_slots: { shirt: 'red' },
+					excluded_nodes: [],
+					entity_properties: {},
+				},
+				blue: {
+					texture_slots: { shirt: 'blue' },
+					excluded_nodes: ['other'],
+					entity_properties: { bone: { is_glowing: true } },
+				},
+			})
+			expect(json.animations.swap.global_keyframes).toEqual({
+				variant: { '0.5': ['blue'], '1.0': ['default', 'blue'] },
+				texture_slot: { '0.5': { shirt: 'red' } },
 			})
 		} finally {
 			fs.rmSync(workDir, { recursive: true, force: true })

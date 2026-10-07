@@ -1,14 +1,8 @@
 <script lang="ts" module>
 	import { type Observable } from 'svelte-observable-store'
-	import MissingTexture from '../../assets/missing_texture.png'
 	import Checkbox from '../../svelteComponents/dialogItems/checkbox.svelte'
 	import LineInput from '../../svelteComponents/dialogItems/lineInput.svelte'
-	import {
-		getSlotDefaultTexture,
-		getSlotTextures,
-		getTextureSlot,
-		getTextureSlots,
-	} from '../../textureSlots'
+	import SlotTexturesEditor from '../../svelteComponents/slotTexturesEditor.svelte'
 	import { localize as translate } from '../../util/lang'
 	import { Variant } from '../../variants'
 </script>
@@ -17,7 +11,6 @@
 	import { observable } from 'svelte-observable-store'
 	import CodeInput from '../../svelteComponents/dialogItems/codeInput.svelte'
 	import Collection from '../../svelteComponents/dialogItems/collection.svelte'
-	import TextureSelect from '../../svelteComponents/textureSelect.svelte'
 	import {
 		fromCollectionItems,
 		getAvailableNodes,
@@ -44,7 +37,7 @@
 		excludeEmptyGroups: true,
 	})
 
-	let slotTexturesUpdated = 0
+	let slotTextureRecord = Object.fromEntries(slotTextures)
 
 	displayName.subscribe(value => {
 		if ($generateNameFromDisplayName) {
@@ -57,36 +50,12 @@
 		name.set(Variant.makeNameUnique(variant, $displayName))
 	})
 
-	function openAddSlotMenu(e: MouseEvent) {
-		const available = getTextureSlots().filter(
-			slot => !slotTextures.has(slot.uuid) && getSlotDefaultTexture(slot)
-		)
-		if (!available.length) {
-			Blockbench.showQuickMessage(
-				translate('dialog.variant_config.slot_textures.all_slots_added')
-			)
-			return
+	function setSlotTextures(value: Record<string, string>) {
+		slotTextureRecord = value
+		slotTextures.clear()
+		for (const [slotUuid, textureUuid] of Object.entries(value)) {
+			slotTextures.set(slotUuid, textureUuid)
 		}
-		new Menu(
-			available.map(slot => ({
-				name: slot.name,
-				icon: 'style',
-				click: () => {
-					slotTextures.set(slot.uuid, getSlotDefaultTexture(slot)!.uuid)
-					slotTexturesUpdated++
-				},
-			}))
-		).open(e)
-	}
-
-	function setSlotTexture(slotUuid: string, textureUuid: string) {
-		slotTextures.set(slotUuid, textureUuid)
-		slotTexturesUpdated++
-	}
-
-	function removeSlot(slotUuid: string) {
-		slotTextures.delete(slotUuid)
-		slotTexturesUpdated++
 	}
 </script>
 
@@ -125,55 +94,13 @@
 	/>
 
 	{#if !variant.isDefault}
-		<div class="toolbar" style="margin: 8px 16px 8px; width: -webkit-fill-available;">
-			<div>
-				{translate('dialog.variant_config.slot_textures.title')}
-			</div>
-			<div class="spacer"></div>
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<div
-				class="tool"
-				title={translate('dialog.variant_config.slot_textures.add_slot')}
-				onclick={e => openAddSlotMenu(e)}
-			>
-				<i class="material-icons icon">add</i>
-			</div>
-		</div>
-		<div class="texture-map-description">
-			{@html translate('dialog.variant_config.slot_textures.description')}
-		</div>
-
-		{#key slotTexturesUpdated}
-			<ul class="texture-map-container">
-				{#each [...slotTextures.entries()] as [slotUuid, textureUuid] (slotUuid)}
-					{@const slot = getTextureSlot(slotUuid)}
-					{#if slot}
-						<li class="texture-mapping-item">
-							<div class="slot-name">{slot.name}</div>
-
-							<i class="material-icons icon">east</i>
-
-							<TextureSelect
-								textures={getSlotTextures(slot)}
-								value={textureUuid}
-								missingSrc={MissingTexture}
-								onchange={uuid => setSlotTexture(slotUuid, uuid)}
-							/>
-
-							<!-- svelte-ignore a11y_click_events_have_key_events -->
-							<i
-								class="material-icons icon tool trash"
-								onclick={() => removeSlot(slotUuid)}>delete</i
-							>
-						</li>
-					{/if}
-				{:else}
-					<div class="no-mappings">
-						{translate('dialog.variant_config.slot_textures.no_slots')}
-					</div>
-				{/each}
-			</ul>
-		{/key}
+		<SlotTexturesEditor
+			title={translate('dialog.variant_config.slot_textures.title')}
+			description={translate('dialog.variant_config.slot_textures.description')}
+			emptyText={translate('dialog.variant_config.slot_textures.no_slots')}
+			value={slotTextureRecord}
+			onchange={setSlotTextures}
+		/>
 
 		<Collection
 			label={translate('dialog.variant_config.excluded_nodes.title')}
@@ -220,57 +147,5 @@
 		text-align: center;
 		font-size: 14px;
 		user-select: all;
-	}
-	.no-mappings {
-		color: var(--color-subtle_text);
-		font-style: italic;
-		text-align: center;
-	}
-	.texture-mapping-item {
-		display: grid;
-		grid-template-columns: 1fr auto 1fr auto;
-		align-items: center;
-		gap: 16px;
-		padding-right: 16px;
-	}
-	.slot-name {
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-	.texture-map-container {
-		display: flex;
-		flex-direction: column;
-		align-items: stretch;
-		justify-content: flex-start;
-		margin: 8px 16px 8px;
-		margin-top: -4px;
-		padding: 8px;
-		gap: 8px;
-		overflow-y: auto;
-		max-height: 600px;
-		min-height: fit-content;
-		width: auto;
-		background: var(--color-back);
-		border-radius: 6px;
-	}
-	.spacer {
-		flex-grow: 1;
-	}
-	.toolbar {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-	}
-	.texture-map-description {
-		font-size: 0.9em;
-		color: var(--color-subtle_text);
-		margin-top: -6px;
-		margin-bottom: 16px;
-		max-width: 80%;
-		margin-left: calc(16px + 0.75rem);
-	}
-	.trash {
-		height: unset;
 	}
 </style>

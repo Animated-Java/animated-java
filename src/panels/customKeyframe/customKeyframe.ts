@@ -4,6 +4,7 @@ import { EFFECT_ANIMATOR_CHANNELS } from '../../mods/customKeyframes'
 import EVENTS from '../../util/events'
 import { localize as translate } from '../../util/lang'
 import CommandsKeyframePanel from './commandsKeyframe.svelte'
+import TextureSlotKeyframePanel from './textureSlotKeyframe.svelte'
 import VariantKeyframePanel from './variantKeyframe.svelte'
 
 let unmountCallback: (() => Promise<void>) | null = null
@@ -27,6 +28,10 @@ const updatePanel = () => {
 			switch (keyframe.channel) {
 				case EFFECT_ANIMATOR_CHANNELS.VARIANT:
 					component = VariantKeyframePanel
+					break
+
+				case EFFECT_ANIMATOR_CHANNELS.TEXTURE_SLOT:
+					component = TextureSlotKeyframePanel
 					break
 
 				case EFFECT_ANIMATOR_CHANNELS.FUNCTION:
@@ -64,6 +69,8 @@ registerPatch({
 		// @ts-expect-error - Broken BB types
 		Language.data['timeline.variant'] = translate('effect_animator.timeline.variant')
 		// @ts-expect-error - Broken BB types
+		Language.data['timeline.texture_slot'] = translate('effect_animator.timeline.texture_slot')
+		// @ts-expect-error - Broken BB types
 		Language.data['timeline.function'] = translate('effect_animator.timeline.function')
 
 		const unsubs = [
@@ -77,6 +84,8 @@ registerPatch({
 	revert: async ({ unsubs }) => {
 		// @ts-expect-error - Broken BB types
 		delete Language.data['timeline.variant']
+		// @ts-expect-error - Broken BB types
+		delete Language.data['timeline.texture_slot']
 		// @ts-expect-error - Broken BB types
 		delete Language.data['timeline.function']
 

@@ -7,7 +7,10 @@ declare global {
 	// @ts-expect-error - Broken BB types
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface _Keyframe {
-		variant?: Variant
+		/** Variants to apply, in order. */
+		variants?: Variant[]
+		/** Slot UUID -> texture UUID. Slots left out are unchanged. */
+		texture_slots?: Record<string, string>
 		function?: string
 		execute_condition?: string
 		repeat?: boolean
@@ -21,10 +24,13 @@ export enum LOCATOR_CHANNELS {
 
 export enum EFFECT_ANIMATOR_CHANNELS {
 	VARIANT = 'variant',
+	TEXTURE_SLOT = 'texture_slot',
 	FUNCTION = 'function',
 }
 
 export enum KEYFRAME_DATA_POINTS {
+	VARIANTS = 'variants',
+	TEXTURE_SLOTS = 'texture_slots',
 	EXECUTE_CONDITION = 'execute_condition',
 	REPEAT = 'repeat',
 	REPEAT_FREQUENCY = 'repeat_frequency',
@@ -35,27 +41,48 @@ export function isCustomKeyframeChannel(channel: string) {
 }
 
 registerPropertyOverridePatch({
-	id: `animated_java:keyframe/data-point/variant`,
+	id: `animated_java:keyframe/data-point/variants`,
 	target: Blockbench.Keyframe.prototype,
-	key: EFFECT_ANIMATOR_CHANNELS.VARIANT,
+	key: KEYFRAME_DATA_POINTS.VARIANTS,
 
 	condition: () => activeProjectIsBlueprintFormat(),
 
 	get(this: _Keyframe) {
-		const uuid = this.data_points.at(0)?.[EFFECT_ANIMATOR_CHANNELS.VARIANT] as
-			| string
-			| undefined
-		if (uuid) return Variant.getByUUID(uuid)
-		console.error('Keyframe variant', uuid, 'not found!')
+		const uuids = (this.data_points.at(0)?.[KEYFRAME_DATA_POINTS.VARIANTS] ?? []) as string[]
+		return uuids.map(uuid => Variant.getByUUID(uuid)).filter((v): v is Variant => !!v)
 	},
 
-	set(this: _Keyframe, value: Variant | undefined) {
+	set(this: _Keyframe, value: Variant[]) {
 		const dataPoint = this.data_points.at(0)
 		if (dataPoint) {
-			dataPoint[EFFECT_ANIMATOR_CHANNELS.VARIANT] = value?.uuid
+			dataPoint[KEYFRAME_DATA_POINTS.VARIANTS] = value.map(variant => variant.uuid)
 			return value
 		}
-		return undefined
+		return undefined!
+	},
+})
+
+registerPropertyOverridePatch({
+	id: `animated_java:keyframe/data-point/texture-slots`,
+	target: Blockbench.Keyframe.prototype,
+	key: KEYFRAME_DATA_POINTS.TEXTURE_SLOTS,
+
+	condition: () => activeProjectIsBlueprintFormat(),
+
+	get(this: _Keyframe) {
+		return (this.data_points.at(0)?.[KEYFRAME_DATA_POINTS.TEXTURE_SLOTS] ?? {}) as Record<
+			string,
+			string
+		>
+	},
+
+	set(this: _Keyframe, value: Record<string, string>) {
+		const dataPoint = this.data_points.at(0)
+		if (dataPoint) {
+			dataPoint[KEYFRAME_DATA_POINTS.TEXTURE_SLOTS] = { ...value }
+			return value
+		}
+		return undefined!
 	},
 })
 
@@ -157,6 +184,11 @@ registerProjectPatch({
 			mutable: true,
 			max_data_points: 1,
 		})
+		EffectAnimator.addChannel(EFFECT_ANIMATOR_CHANNELS.TEXTURE_SLOT, {
+			name: translate('effect_animator.timeline.texture_slot'),
+			mutable: true,
+			max_data_points: 1,
+		})
 		EffectAnimator.addChannel(EFFECT_ANIMATOR_CHANNELS.FUNCTION, {
 			name: translate('effect_animator.timeline.function'),
 			mutable: true,
@@ -165,12 +197,20 @@ registerProjectPatch({
 
 		// Add custom keyframe properties to the KeyframeDataPoint class
 		const properties = [
-			new Property(KeyframeDataPoint, 'string', EFFECT_ANIMATOR_CHANNELS.VARIANT, {
+			new Property(KeyframeDataPoint, 'array', KEYFRAME_DATA_POINTS.VARIANTS, {
 				label: translate('effect_animator.keyframe_data_point.variant'),
 				condition: datapoint =>
 					datapoint.keyframe.channel === EFFECT_ANIMATOR_CHANNELS.VARIANT,
 				exposed: false,
-				default: () => Variant.getDefault().uuid,
+				default: () => [Variant.getDefault().uuid],
+			}),
+
+			new Property(KeyframeDataPoint, 'object', KEYFRAME_DATA_POINTS.TEXTURE_SLOTS, {
+				label: translate('effect_animator.keyframe_data_point.texture_slots'),
+				condition: datapoint =>
+					datapoint.keyframe.channel === EFFECT_ANIMATOR_CHANNELS.TEXTURE_SLOT,
+				exposed: false,
+				default: {},
 			}),
 
 			new Property(KeyframeDataPoint, 'string', EFFECT_ANIMATOR_CHANNELS.FUNCTION, {
@@ -211,41 +251,13 @@ registerProjectPatch({
 			delete EffectAnimator.prototype.channels[channel]
 		}
 
-		// Modify the displayFrame method to handle custom keyframes
+		// Only keep Blockbench's sound keyframe handling. Variant and texture slot keyframes are
+		// previewed by `updateAnimationPreview`.
 		const defaultEffectDisplayFrame = EffectAnimator.prototype.displayFrame
 		EffectAnimator.prototype.displayFrame = function (this: EffectAnimator, inLoop: boolean) {
 			this.muted.particle = true
 			this.muted.timeline = true
-			// Default Blockbench Sound keyframe handling
 			defaultEffectDisplayFrame.call(this, inLoop)
-
-			if (!(Project && activeProjectIsBlueprintFormat())) return
-			if (!this.muted[EFFECT_ANIMATOR_CHANNELS.VARIANT]) {
-				let after, before, result: _Keyframe | undefined
-
-				for (const kf of this[EFFECT_ANIMATOR_CHANNELS.VARIANT] as _Keyframe[]) {
-					if (kf.time < this.animation.time) {
-						if (!before || kf.time > before.time) {
-							before = kf
-						}
-					} else {
-						if (!after || kf.time < after.time) {
-							after = kf
-						}
-					}
-				}
-
-				if (after && after.time === this.animation.time) {
-					result = after
-				} else if (before) {
-					result = before
-				} else if (after) {
-					result = this[EFFECT_ANIMATOR_CHANNELS.VARIANT].at(-1)
-				}
-
-				result?.variant?.select()
-			}
-
 			this.last_displayed_time = this.animation.time
 		}
 
