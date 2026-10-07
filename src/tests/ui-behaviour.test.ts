@@ -146,4 +146,30 @@ describe('UI behaviour', () => {
 			expect(await blockbench.dialog().isOpen()).toBe(false)
 		})
 	})
+
+	describe('code editors', () => {
+		it('Enter starts a new line in the On-Summon Function editor', async () => {
+			await blockbench.newProject(BLUEPRINT_FORMAT_ID)
+			await blockbench.action('animated_java:action/blueprint-settings').trigger()
+			await blockbench.evaluate(() => {
+				;(globalThis as any).Dialog.open.sidebar.setPage('eventFunctions')
+			})
+			await blockbench.waitFor(() => document.querySelector('.dialog pre[contenteditable]'))
+			await blockbench.page.click('.dialog pre[contenteditable]')
+
+			const { keyboard } = blockbench.page
+			await keyboard.type('tag @s add a')
+			await keyboard.press('Enter')
+			await keyboard.type('tag @s add b')
+			await keyboard.press('Enter')
+			await keyboard.type('say hi')
+			await blockbench.dialog().cancel()
+
+			expect(
+				await blockbench.evaluate(
+					() => (globalThis as any).Project.animated_java.on_summon_function
+				)
+			).toBe('tag @s add a\ntag @s add b\nsay hi')
+		})
+	})
 })
