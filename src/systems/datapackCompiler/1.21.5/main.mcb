@@ -249,6 +249,7 @@ IF (has_animations) {
 
 					data_manager prep read
 
+					tag @s remove <%TAGS.PAUSE_AFTER_TWEEN()%>
 					tag @s add <%TAGS.ANIMATION_PLAYING(blueprint_id, animation.storage_name)%>
 					scoreboard players set @s <%OBJECTIVES.FRAME(blueprint_id, animation.storage_name)%> 0
 					tag @s add <%TAGS.TRANSFORMS_ONLY()%>
@@ -359,12 +360,13 @@ IF (has_animations) {
 				}
 
 				function tween_paused {
-					# Same as the tween function, except it does not play the animation afterwards
+					# Same as the tween function, except the animation stays paused on to_frame once the tween finishes
 					#ARGS: {duration: int, to_frame: int}
 					debug assert executed_as_root_entity <%TAGS.PROJECT_ROOT(blueprint_id)%>
 
-					tag @s add <%TAGS.PAUSE_AFTER_TWEEN()%>
 					$function ./tween {duration: $(duration), to_frame: $(to_frame)}
+					# Added after tween, since tween clears it through pause_all
+					tag @s add <%TAGS.PAUSE_AFTER_TWEEN()%>
 				}
 
 				dir zzz {
@@ -382,6 +384,15 @@ IF (has_animations) {
 										$data modify entity $(<%node.storage_name%>) interpolation_duration set value <%interpolation_duration%>
 									}
 								}
+						}
+
+						# Pause instead of playing once a tween started by tween_paused finishes
+						execute \
+							if score @s <%OBJECTIVES.TWEEN_DURATION()%> matches ..0 \
+							if entity @s[tag=<%TAGS.PAUSE_AFTER_TWEEN()%>] \
+						run return run block pause_after_tween {
+							tag @s remove <%TAGS.PAUSE_AFTER_TWEEN()%>
+							tag @s remove <%TAGS.ANIMATION_PLAYING(blueprint_id, animation.storage_name)%>
 						}
 
 						# Animation logic
@@ -753,6 +764,7 @@ IF (has_animations) {
 			REPEAT (animations) as animation {
 				tag @s remove <%TAGS.ANIMATION_PLAYING(blueprint_id, animation.storage_name)%>
 			}
+			tag @s remove <%TAGS.PAUSE_AFTER_TWEEN()%>
 		}
 	}
 }
