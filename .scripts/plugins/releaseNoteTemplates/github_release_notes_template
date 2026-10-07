@@ -2,8 +2,6 @@
 
 {categories}
 
-## How to Install
+## [How to Install](https://animated-java.dev/docs/getting-started/installing)
 
-Download `animated_java.js` from the [release page](https://github.com/Animated-Java/animated-java/releases/tag/v1.10.2), then [Follow this tutorial](https://animated-java.dev/docs/getting-started/installing#advanced-installation-url)
-
-Once [this PR](https://github.com/JannisX11/blockbench-plugins/pull/930) has been merged, you can install the latest release of AJ directly from the Blockbench plugin list.
+It can take a while for new releases to appear in the Blockbench plugin list, so to get this one right away, either download `animated_java.js` below or [install it via URL](https://animated-java.dev/docs/getting-started/installing#advanced-installation-url).

@@ -5,6 +5,12 @@ import { basename, join } from 'node:path'
 import { sveltePreprocess } from 'svelte-preprocess'
 // @ts-expect-error - Types are broken in nodenext for this package, but it works fine.
 import { typescript } from 'svelte-preprocess-esbuild'
+import {
+	type Changelog,
+	type ChangelogEntry,
+	getChangelogEntry,
+	renderReleaseNotes,
+} from '../release/releaseNotes'
 import type { CompileOptions, CompileResult } from 'svelte/compiler'
 import { compile, preprocess } from 'svelte/compiler'
 import { render } from 'svelte/server'
@@ -19,12 +25,6 @@ const DIST_PATH = './dist/'
 const DIST_PACKAGE_PATH = './dist/pluginPackage/'
 const CHANGELOG_PATH = './src/pluginPackage/changelog.json'
 const RELEASE_NOTES_TEMPLATES = './.scripts/plugins/releaseNoteTemplates/'
-const URL_REGEX =
-	/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{1,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gm
-
-function replaceTemplateVars(str: string, items: Record<string, string>) {
-	return str.replace(/\{(.+?)\}/g, str => items[str.replace(/[\{\}]/g, '')] ?? str)
-}
 
 /**
  * Convert a warning or error emitted from the svelte compiler for esbuild.
@@ -143,41 +143,25 @@ function plugin(): Plugin {
 
 				if (process.env.NODE_ENV === 'production') {
 					console.log('📝 Creating changelogs...')
-					const rawChangelog = fs.readFileSync(CHANGELOG_PATH, 'utf-8')
-					const changelog = JSON.parse(rawChangelog)
+					const changelog = JSON.parse(
+						fs.readFileSync(CHANGELOG_PATH, 'utf-8')
+					) as Changelog
+					let entry: ChangelogEntry
+					try {
+						entry = getChangelogEntry(changelog, PACKAGE.version)
+					} catch (e: any) {
+						console.warn(`⚠️  ${e.message} in ${CHANGELOG_PATH}`)
+						return
+					}
 					for (const file of fs.readdirSync(RELEASE_NOTES_TEMPLATES)) {
-						let content = fs.readFileSync(join(RELEASE_NOTES_TEMPLATES, file), 'utf-8')
-
-						const versionChangelog = changelog[PACKAGE.version]
-						if (!versionChangelog) {
-							console.warn(
-								`⚠️  No changelog found for version ${PACKAGE.version} in ${CHANGELOG_PATH}`
-							)
-							return
-						}
-
-						let categories = ''
-						for (const category of versionChangelog.categories) {
-							categories +=
-								`\n\n### ${category.title}\n\n` +
-								category.list
-									.map((v: string) => '- ' + v)
-									.join('\n')
-									.replaceAll('[BREAKING]', '⚠️ **BREAKING** —')
-						}
-
-						content = replaceTemplateVars(content, {
-							version: PACKAGE.version,
-							categories: categories.trim(),
-						})
-
-						if (content.includes('[[ESCAPE_URLS]]')) {
-							content = content
-								.replace('[[ESCAPE_URLS]]', '')
-								.replaceAll(URL_REGEX, (match: string) => '<' + match + '>')
-						}
-
-						fs.writeFileSync(join(DIST_PATH, file), content)
+						const template = fs.readFileSync(
+							join(RELEASE_NOTES_TEMPLATES, file),
+							'utf-8'
+						)
+						fs.writeFileSync(
+							join(DIST_PATH, file),
+							renderReleaseNotes(template, PACKAGE.version, entry)
+						)
 					}
 
 					// if (fs.existsSync(PLUGIN_REPO_PATH)) {

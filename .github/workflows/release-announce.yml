@@ -1,0 +1,44 @@
+name: Announce Release
+
+on:
+  release:
+    types: [published]
+
+  # Re-run a preview (or the live post) by hand, e.g. after fixing the notes.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag (e.g. v1.11.0)
+        required: true
+      target:
+        description: Where to post
+        type: choice
+        options: [test, live]
+        default: test
+
+jobs:
+  announce:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    env:
+      TAG: ${{ inputs.tag || github.event.release.tag_name }}
+      LIVE: ${{ github.event_name == 'release' || inputs.target == 'live' }}
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ env.TAG }}
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Post announcement
+        run: bun .scripts/release/announce.ts "${TAG#v}" $([ "$LIVE" = true ] && echo --live)
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_CHANNEL_ID: ${{ env.LIVE == 'true' && vars.DISCORD_CHANNEL_ID || vars.DISCORD_TEST_CHANNEL_ID }}
+          DISCORD_ROLE_PRERELEASE: ${{ vars.DISCORD_ROLE_PRERELEASE }}
+          DISCORD_ROLE_MINOR: ${{ vars.DISCORD_ROLE_MINOR }}
+          DISCORD_ROLE_PATCH: ${{ vars.DISCORD_ROLE_PATCH }}
+          DISCORD_ROLE_BREAKING: ${{ vars.DISCORD_ROLE_BREAKING }}
