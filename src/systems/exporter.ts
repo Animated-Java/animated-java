@@ -22,6 +22,7 @@ import { Variant } from '../variants'
 import { hashAnimations, renderProjectAnimations } from './animationRenderer'
 import compileDataPack from './datapackCompiler'
 import { IntentionalExportError } from './errors'
+import { isTintSourceTypeAvailable, TINT_SOURCES_MIN_VERSION } from './minecraft/tintSources'
 import { exportPluginBlueprint } from './pluginCompiler'
 import resourcepackCompiler from './resourcepackCompiler'
 import { hashRig, renderRig } from './rigRenderer'
@@ -114,6 +115,24 @@ async function actuallyExportProject({
 			if (Texture.all.some(t => t !== texture && t.name === texture.name)) {
 				throw new IntentionalExportError(
 					`Texture name "${texture.name}" is used more than once. Please make sure all textures have unique names.`
+				)
+			}
+		}
+
+		if (!aj.enable_plugin_mode && projectTargetVersionIsAtLeast(TINT_SOURCES_MIN_VERSION)) {
+			for (const group of Group.all) {
+				if (!group.children.some(child => child instanceof Cube)) continue
+				const tint = group.itemModelProperties?.tints.find(
+					tint => !isTintSourceTypeAvailable(tint.type, aj.target_minecraft_version)
+				)
+				if (!tint) continue
+				throw new IntentionalExportError(
+					translate(
+						'misc.failed_to_export.unsupported_tint_source.message',
+						group.name,
+						tint.type,
+						aj.target_minecraft_version
+					)
 				)
 			}
 		}

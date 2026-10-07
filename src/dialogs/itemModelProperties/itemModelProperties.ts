@@ -5,6 +5,7 @@ import {
 	activeProjectIsBlueprintFormat,
 	projectTargetVersionIsAtLeast,
 } from '../../formats/blueprint'
+import { TINT_SOURCES_MIN_VERSION } from '../../systems/minecraft/tintSources'
 import { localize } from '../../util/lang'
 import ItemModelProperties from './itemModelProperties.svelte'
 
@@ -18,6 +19,7 @@ export function openItemPropertiesDialog(group: Group) {
 		component: ItemModelProperties,
 		props: {
 			itemTints,
+			targetVersion: Project!.animated_java.target_minecraft_version,
 		} as any,
 		disableKeybinds: true,
 		onConfirm() {
@@ -43,7 +45,7 @@ registerDeletableHandlerPatch({
 			name: localize('action.open_item_model_properties.name'),
 			condition: () =>
 				activeProjectIsBlueprintFormat() &&
-				projectTargetVersionIsAtLeast('1.21.4') &&
+				projectTargetVersionIsAtLeast(TINT_SOURCES_MIN_VERSION) &&
 				Group.first_selected?.children.some(child => child instanceof Cube),
 			click: () => {
 				const group = Group.first_selected

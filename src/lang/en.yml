@@ -109,14 +109,54 @@ animated_java:
       title: Animated Java Changelog
     item_properties:
       title: Item Model Properties
-      tint_constants: Tint Constants
-      description: |-
-        [Markdown]
-        Constant tints apply fixed color values to an item's tint layers, so the model always uses the same tint colors in-game.
+      description: Tints color this bone's faces by tint index. Expand a tint to see what it does.
+      target: Target
+      column:
+        type: Type
+        value: Value
       add_tint: Add Tint
-      empty_state: No tint constants configured. Add a tint to start.
-      tint_label: Tint Index %s
-      remove_tint: Remove
+      empty_state: No tints configured. The bone uses a white Dye tint by default.
+      expand_tint: Show details
+      collapse_tint: Hide details
+      remove_tint: Remove tint
+      color: Color
+      default_color: Default Color
+      index: Index
+      temperature: Temperature
+      downfall: Downfall
+      alpha_tooltip: Alpha only works on Dye and Firework tints, through a vanilla bug (MC-278626). It may stop working in a future Minecraft version.
+      alpha_note: Alpha only works on Dye and Firework tints, through a vanilla bug (MC-278626). With cutout textures, faces below ~10% alpha disappear and the rest render opaque.
+      unsupported_type: '%s is not supported in Minecraft %s. Change the type or remove this tint before exporting.'
+      tint_types:
+        constant: Constant
+        dye: Dye
+        firework: Firework
+        potion: Potion
+        map_color: Map Color
+        team: Team
+        grass: Grass
+        custom_model_data: Custom Model Data
+      tint_type_descriptions:
+        constant: Always applies the same color.
+        dye: Uses the item's dyed color component.
+        firework: Uses the colors of the item's firework explosion component.
+        potion: Uses the color of the item's potion contents.
+        map_color: Uses the item's map color component.
+        team: Uses the team color of the entity displaying the item.
+        grass: Samples the grass colormap at a temperature and downfall.
+        custom_model_data: Uses a color from the item's custom model data component.
+      field_descriptions:
+        color: The color applied to this tint index.
+        temperature: Grass colormap temperature, from 0 to 1.
+        downfall: Grass colormap downfall, from 0 to 1.
+        index: Which entry of the custom model data component's colors list to use.
+        default_color:
+          dye: Used when the item has no dyed color component.
+          firework: Used when the item has no firework explosion component.
+          potion: Used when the item has no potion contents, or they have no effects and no custom color.
+          map_color: Used when the item has no map color component.
+          team: Used when there is no entity, or it isn't on a team with a color.
+          custom_model_data: Used when the item's custom model data has no color at this index.
     unexpected_error:
       title: An Unexpected Error Occurred!
       close_button: Close
@@ -1082,6 +1122,10 @@ animated_java:
           If you want to rotate a cube on multiple axes, put it in a bone and rotate the bone instead.
 
           All of the invalid cubes are outlined in red in the editor. Please fix them before exporting.
+      unsupported_tint_source:
+        message: |-
+          The bone "%s" uses a %s tint, which is not supported in Minecraft %s.
+          Change or remove it in the bone's Item Model Properties before exporting.
       rig_has_textures_but_no_custom_models:
         message: |-
           You have textures applied to your model, but have no custom models (Cubes) to use them!
