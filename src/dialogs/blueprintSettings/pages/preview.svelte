@@ -173,8 +173,8 @@
 
 	.list-hint {
 		color: var(--color-subtle_text);
-		font-size: 0.95em;
 		margin: 4px 0 12px;
+		font-size: 0.9rem;
 	}
 
 	.empty-state {
