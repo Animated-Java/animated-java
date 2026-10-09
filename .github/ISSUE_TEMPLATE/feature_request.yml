@@ -9,35 +9,35 @@ body:
   - type: markdown
     attributes:
       value: >-
-        # 👋 Thank You for Opening a Feature Request!
+        # 👋 Thanks for the Suggestion!
 
-        Please fill out the following information to the best of your ability.
-        Providing clear, and concise information will greatly improve the
-        chances of your request getting implemented!
+        Fill out what you can below — clear, specific requests are much more
+        likely to get picked up and implemented.
 
   - type: checkboxes
     id: confirmations
     attributes:
-      label: 🛑 Before you Start
+      label: 🛑 Quick Checklist
       description: >-
-        Please confirm you have taken the following steps *before* creating a
-        new issue!
+        A few quick checks before you post — these help us avoid duplicate
+        requests and wasted back-and-forth.
       options:
         - label: >-
-            I have searched [existing
-            feature requests](https://github.com/Animated-Java/animated-java/labels/%E2%9C%A8%20Enhancement) for
-            my feature.
+            I searched [existing feature
+            requests](https://github.com/Animated-Java/animated-java/labels/%E2%9C%A8%20Enhancement)
+            and didn't find mine.
           required: true
         - label: >-
-            I have read [the documentation](https://animated-java.dev/docs/), and I am sure this feature is not already implemented.
+            I checked [the documentation](https://animated-java.dev/docs/)
+            and this isn't already possible.
           required: true
         - label: >-
-            I am using the [latest
+            I'm using the [latest
             version](https://builds.animated-java.dev/latest) of Animated Java.
           required: true
         - label: >-
-            I will only request a single feature in this request. If I have multiple
-            feature requests, I will create a separate request for each one.
+            This request is about a single feature. (If I have more than one
+            idea, I'll file a separate request for each.)
           required: true
 
   - type: markdown
@@ -47,8 +47,10 @@ body:
   - type: textarea
     id: description
     attributes:
-      label: 📝 Description
-      description: A clear and concise description of the problem or missing capability.
+      label: 📝 What's the problem, or what's missing?
+      description: >-
+        Describe what you're trying to do, and where Animated Java gets in
+        the way or falls short.
       placeholder: My lawnmower doesn't work on mars.
     validations:
       required: true
@@ -56,8 +58,8 @@ body:
   - type: textarea
     id: solution
     attributes:
-      label: 💡 Describe the solution you'd like
-      description: If you have a solution in mind, please describe it.
+      label: 💡 What would you like to see?
+      description: If you already have an idea for how this could work, describe it here.
       placeholder: >-
         Combustion engines don't work without enough oxygen, so maybe we could
         use an electric engine instead?
@@ -67,5 +69,7 @@ body:
   - type: textarea
     id: alternatives
     attributes:
-      label: 🧪 Describe alternatives you've considered
-      description: Have you considered any alternative solutions or workarounds?
+      label: 🧪 Tried anything else?
+      description: >-
+        Any workarounds or alternative approaches you've already tried, and
+        why they didn't quite do the job.

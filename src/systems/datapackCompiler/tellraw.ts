@@ -4,6 +4,7 @@ import { toSmallCaps } from '../../util/minecraftUtil'
 import { type IRenderedAnimation } from '../animationRenderer'
 import { type IRenderedVariant } from '../rigRenderer'
 import OBJECTIVES from './objectives'
+import TAGS from './tags'
 
 const TELLRAW_PREFIX = () =>
 	new TextComponent([
@@ -407,6 +408,21 @@ namespace TELLRAW {
 			{ text: alternative, color: 'aqua' },
 			' instead.',
 		])
+
+	/** Shared by every blueprint, so it doesn't name one like {@link TELLRAW_PREFIX} does. */
+	export const INTERACTION_FUNCTION_FAILED = (direction: 'interaction' | 'attack') => {
+		const functionPath = `data.animated_java.on_${direction === 'interaction' ? 'interact' : 'attack'}_function`
+		return new TextComponent([
+			{ text: '', color: 'red' },
+			{ text: toSmallCaps('Interactions'), color: 'light_purple' },
+			`\n→ ${toSmallCaps('error')}:\n Failed to handle ${direction === 'interaction' ? 'right' : 'left'} click interaction from `,
+			{ selector: `@p[tag=${TAGS.INTERACTING_PLAYER()}]`, color: 'gold' },
+			':\n  Invalid command: ',
+			{ nbt: functionPath, entity: '@s', color: 'aqua' },
+			'\n  from ',
+			{ text: functionPath, color: 'yellow' },
+		])
+	}
 }
 
 export default TELLRAW

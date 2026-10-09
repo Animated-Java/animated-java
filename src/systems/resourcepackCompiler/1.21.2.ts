@@ -1,6 +1,6 @@
 import type { ResourcePackCompiler } from '.'
 import { getFsModule } from '../../constants'
-import { PROGRESS_DESCRIPTION } from '../../dialogs/exportProgress/exportProgress'
+import { setExportProgressPhase } from '../../dialogs/exportProgress/exportProgress'
 import { isResourcePackPath, sanitizeStorageKey } from '../../util/minecraftUtil'
 import { type ITextureAtlas } from '../minecraft/textureAtlas'
 import type { IRenderedNodes } from '../rigRenderer'
@@ -9,6 +9,7 @@ const compileResourcePack: ResourcePackCompiler = async ({
 	coreFiles,
 	versionedFiles,
 	rig,
+	resourcePackPath,
 	textureExportFolder,
 	modelExportFolder,
 }) => {
@@ -17,7 +18,7 @@ const compileResourcePack: ResourcePackCompiler = async ({
 		'$1item$2'
 	)
 
-	PROGRESS_DESCRIPTION.set('Compiling Resource Pack...')
+	setExportProgressPhase('Compiling Resource Pack...')
 	console.log('Compiling resource pack...', {
 		rig,
 		textureExportFolder,
@@ -28,8 +29,11 @@ const compileResourcePack: ResourcePackCompiler = async ({
 	const { readFile } = promises
 
 	// Texture atlas
-	const blockAtlasPath = PathModule.join('assets/minecraft/atlases/blocks.json')
-	const blockAtlas: ITextureAtlas = await readFile(blockAtlasPath, 'utf-8')
+	const blockAtlasPath = 'assets/minecraft/atlases/blocks.json'
+	const blockAtlas: ITextureAtlas = await readFile(
+		PathModule.join(resourcePackPath, blockAtlasPath),
+		'utf-8'
+	)
 		.catch(() => {
 			console.log('Creating new block atlas...')
 			return JSON.stringify({ sources: [] })
@@ -108,18 +112,19 @@ const compileResourcePack: ResourcePackCompiler = async ({
 	for (const variant of Object.values(rig.variants)) {
 		for (const [boneUuid, variantModel] of Object.entries(variant.models)) {
 			const bone = rig.nodes[boneUuid] as IRenderedNodes['Bone']
+			// Hacky workaround for this version enforcing the `item` namespace. Applies to
+			// unchanged bones too, which point at the default model.
+			variantModel.item_model = variantModel.item_model.replace(':blueprint/', ':')
 			if (variantModel.custom_model_data !== -1) continue
 			const exportPath = variant.is_default
 				? PathModule.join(correctedModelExportFolder, bone.name + '.json')
 				: PathModule.join(correctedModelExportFolder, variant.name, bone.name + '.json')
-			// Hacky workaround for this version enforcing the `item` namespace.
 			if (variantModel.model?.parent) {
 				variantModel.model.parent = variantModel.model.parent.replace(
 					':blueprint/',
 					':item/'
 				)
 			}
-			variantModel.item_model = variantModel.item_model.replace(':blueprint/', ':')
 			console.log('Exporting model', variantModel.model, 'to', exportPath)
 			versionedFiles.set(PathModule.join(exportPath), {
 				content: autoStringify(variantModel.model),

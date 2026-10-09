@@ -98,9 +98,9 @@ export interface IBlueprintVariantJSON {
 	 */
 	uuid: string
 	/**
-	 * The texture map for the Variant
+	 * Slot UUID -> texture UUID. Slots left out are unchanged when the Variant is applied.
 	 */
-	texture_map: Record<string, string>
+	slot_textures: Record<string, string>
 	/**
 	 * The list of bones that should be ignored when applying the Variant
 	 */
@@ -162,6 +162,7 @@ export interface IBlueprintFormatJSON {
 
 	elements?: any[]
 	groups?: any[]
+	texture_groups?: any[]
 	outliner?: any[]
 	textures?: Texture[]
 	animations?: AnimationOptions[]
@@ -350,10 +351,8 @@ export const BLUEPRINT_FORMAT = registerDeletableHandlerPatch({
 						fixCubeRotation(cube)
 					}
 
-					requestAnimationFrame(() => {
-						Variant.selectDefault()
-						Canvas.updateAll()
-					})
+					Variant.selectDefault()
+					Canvas.updateAll()
 				})
 			},
 
@@ -459,13 +458,11 @@ export function updateRotationConstraints() {
 		return
 	}
 
-	if (!projectTargetVersionIsAtLeast('1.21.11')) {
-		// Rotation is limited to one axis, and between -45 and 45 degrees on versions before 1.21.11
-		format.rotation_limit = !hasNonElementSelection()
-	} else if (!projectTargetVersionIsAtLeast('1.21.6') /* < 1.21.6 */) {
-		// Rotation is snapped to 22.5 degree increments on versions before 1.21.6
-		format.rotation_snap = format.rotation_limit
-	}
+	// Rotation is limited to one axis, and between -45 and 45 degrees on versions before 1.21.11
+	format.rotation_limit = !projectTargetVersionIsAtLeast('1.21.11') && !hasNonElementSelection()
+
+	// Rotation is snapped to 22.5 degree increments on versions before 1.21.6
+	format.rotation_snap = !projectTargetVersionIsAtLeast('1.21.6')
 }
 
 EVENTS.SELECT_PROJECT.subscribe(project => {

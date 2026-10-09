@@ -21,20 +21,23 @@ export function arrayToNbtFloatArray(array: number[]) {
 	return new NbtList(array.map(v => new NbtFloat(v)))
 }
 
-export function matrixToNbtFloatArray(matrix: THREE.Matrix4) {
+export function matrixToNbtFloatArray(matrix: number[] | THREE.Matrix4) {
+	const elements = matrix instanceof THREE.Matrix4 ? matrix.elements : matrix
 	const matrixArray = new THREE.Matrix4()
-		.copy(matrix)
+		.fromArray(elements)
 		.transpose()
 		.toArray()
 		.map(v => roundTo(v, 4))
 	return arrayToNbtFloatArray(matrixArray)
 }
 
-export function transformationToNbt(transformation: INodeTransform['decomposed']): NbtCompound {
+export function transformationToNbt(
+	transformation: NonNullable<INodeTransform['decomposed']>
+): NbtCompound {
 	const compound = new NbtCompound()
-	compound.set('translation', arrayToNbtFloatArray(transformation.translation.toArray()))
-	compound.set('left_rotation', arrayToNbtFloatArray(transformation.left_rotation.toArray()))
-	compound.set('scale', arrayToNbtFloatArray(transformation.scale.toArray()))
+	compound.set('translation', arrayToNbtFloatArray(transformation.translation))
+	compound.set('left_rotation', arrayToNbtFloatArray(transformation.left_rotation))
+	compound.set('scale', arrayToNbtFloatArray(transformation.scale))
 	return compound
 }
 
@@ -93,36 +96,29 @@ export const unzip = (data: Uint8Array, options: AsyncUnzipOptions) => {
 }
 
 export function isCubeValid(cube: Cube): '1.21.6+' | 'valid' | 'invalid' {
-	if (projectTargetVersionIsAtLeast('1.21.11')) {
-		// Rotations are unrestricted on 1.21.11+
-		return 'valid'
-	}
+	// Rotations are unrestricted on 1.21.11+
+	if (projectTargetVersionIsAtLeast('1.21.11')) return 'valid'
 
-	const totalRotation = cube.rotation[0] + cube.rotation[1] + cube.rotation[2]
+	const nonZeroRotations = cube.rotation.filter(v => v !== 0)
+	if (nonZeroRotations.length === 0) return 'valid'
+	// Multiple axes of rotation are not allowed on versions before 1.21.11
+	if (nonZeroRotations.length > 1) return 'invalid'
 
-	if (totalRotation === 0) return 'valid'
+	const rotation = nonZeroRotations[0]
 
-	const isSingleAxisRotation =
-		totalRotation === cube.rotation[0] ||
-		totalRotation === cube.rotation[1] ||
-		totalRotation === cube.rotation[2]
-
-	if (isSingleAxisRotation && projectTargetVersionIsAtLeast('1.21.6')) {
+	if (projectTargetVersionIsAtLeast('1.21.6')) {
 		// Rotation values still need to be within -45 and 45 degrees
-		if (totalRotation <= 45 && totalRotation >= -45) return '1.21.6+'
-		else return 'invalid'
+		return rotation <= 45 && rotation >= -45 ? '1.21.6+' : 'invalid'
 	}
 
 	const isRotationInAllowedSteps =
-		totalRotation === -45 ||
-		totalRotation === -22.5 ||
-		totalRotation === 0 ||
-		totalRotation === 22.5 ||
-		totalRotation === 45
+		rotation === -45 ||
+		rotation === -22.5 ||
+		rotation === 0 ||
+		rotation === 22.5 ||
+		rotation === 45
 
-	if (isSingleAxisRotation && isRotationInAllowedSteps) return 'valid'
-
-	return 'invalid'
+	return isRotationInAllowedSteps ? 'valid' : 'invalid'
 }
 
 export async function sleepForAnimationFrame() {

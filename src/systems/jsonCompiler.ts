@@ -72,7 +72,10 @@ interface ExportedKeyframe {
 				type: 'step'
 		  }
 	commands?: string
-	variant?: string
+	/** Variant UUIDs to apply, in order. */
+	variants?: string[]
+	/** Slot UUID -> texture UUID. */
+	texture_slots?: Record<string, string>
 	execute_condition?: string
 	repeat?: boolean
 	repeat_frequency?: number
@@ -146,7 +149,8 @@ function serailizeKeyframe(kf: _Keyframe): ExportedKeyframe {
 		time: kf.time,
 		channel: kf.channel,
 		commands: kf.function,
-		variant: kf.variant?.uuid,
+		variants: kf.channel === 'variant' ? kf.variants?.map(variant => variant.uuid) : undefined,
+		texture_slots: kf.channel === 'texture_slot' ? kf.texture_slots : undefined,
 		execute_condition: kf.execute_condition,
 		repeat: kf.repeat,
 		repeat_frequency: kf.repeat_frequency,
@@ -154,6 +158,7 @@ function serailizeKeyframe(kf: _Keyframe): ExportedKeyframe {
 
 	switch (json.channel) {
 		case 'variant':
+		case 'texture_slot':
 		case 'commands':
 			break
 		default: {
@@ -320,12 +325,18 @@ export function exportJSON(options: {
 
 function serailizeNodeTransform(node: INodeTransform): ExportedNodetransform {
 	const json: ExportedNodetransform = {
-		matrix: node.matrix.elements,
-		decomposed: {
-			translation: node.decomposed.translation.toArray(),
-			left_rotation: node.decomposed.left_rotation.toArray() as ArrayVector4,
-			scale: node.decomposed.scale.toArray(),
-		},
+		matrix: node.matrix ? Array.from(node.matrix) : [],
+		decomposed: node.decomposed
+			? {
+					translation: node.decomposed.translation,
+					left_rotation: node.decomposed.left_rotation,
+					scale: node.decomposed.scale,
+				}
+			: {
+					translation: [0, 0, 0] as ArrayVector3,
+					left_rotation: [0, 0, 0, 1] as ArrayVector4,
+					scale: [1, 1, 1] as ArrayVector3,
+				},
 		pos: node.pos,
 		rot: node.rot,
 		head_rot: node.head_rot,

@@ -3,12 +3,17 @@ import { TextComponent, TextComponentParser, type TextElement } from 'book-and-q
 import { observable } from 'svelte-observable-store'
 import { PACKAGE } from '../constants'
 import { activeProjectIsBlueprintFormat } from '../formats/blueprint'
-import { MinecraftFont } from '../systems/minecraft/fontManager'
+import { generateTextDisplayMesh, type TextDisplayMesh } from '../systems/minecraft/fontRenderer'
 import { type IDisplayEntityConfigs } from '../systems/rigRenderer'
 import EVENTS from '../util/events'
 import { localize as translate } from '../util/lang'
 import { DeepClonedObjectProperty, fixClassPropertyInheritance } from '../util/property'
-import { ResizableOutlinerElement } from './resizableOutlinerElement'
+import {
+	applyPivotOffset,
+	getPivotedGeometryWorldCenter,
+	ResizableOutlinerElement,
+	resetPivotOffsetTracking,
+} from './resizableOutlinerElement'
 import { sanitizeOutlinerElementName } from './util'
 
 interface TextDisplayOptions {
@@ -16,6 +21,7 @@ interface TextDisplayOptions {
 	text?: string
 	position?: ArrayVector3
 	rotation?: ArrayVector3
+	pivotOffset?: ArrayVector3
 	scale?: ArrayVector3
 	lineLength?: number
 	backgroundColor?: string
@@ -33,6 +39,11 @@ export class TextDisplay extends ResizableOutlinerElement {
 	static all: TextDisplay[] = []
 	static invalidJsonText: TextElement = { text: 'Invalid JSON Text!', color: 'red' }
 
+	static behavior = {
+		...ResizableOutlinerElement.behavior,
+		has_pivot: true,
+	}
+
 	type = TextDisplay.type
 	icon = TextDisplay.icon
 	needsUniqueName = true
@@ -48,7 +59,11 @@ export class TextDisplay extends ResizableOutlinerElement {
 
 	needsMeshUpdate = false
 
-	private __pendingMeshUpdate?: ReturnType<MinecraftFont['generateTextDisplayMesh']>
+	private __pendingMeshUpdate?: Promise<TextDisplayMesh>
+	/** Cached parse of `this.text`, keyed by `text \0 minecraftVersion`, so
+	 * option-only mesh rebuilds don't re-parse an unchanged (and possibly huge)
+	 * component. `component` is undefined when the text failed to parse. */
+	private __parsed?: { key: string; component?: TextComponent; error?: string }
 	private __text = observable('Hello World!')
 	private __lineWidth = TextDisplay.properties.lineWidth.default as number
 	private __backgroundColor = TextDisplay.properties.backgroundColor.default as string
@@ -73,6 +88,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 
 	static forceUpdateAll() {
 		for (const textDisplay of TextDisplay.all) {
+			textDisplay.needsMeshUpdate = true
 			textDisplay.preview_controller.updateAll(textDisplay)
 		}
 	}
@@ -80,6 +96,10 @@ export class TextDisplay extends ResizableOutlinerElement {
 	sanitizeName(): string {
 		this.name = sanitizeOutlinerElementName(this.name, this.uuid)
 		return this.name
+	}
+
+	getWorldCenter(): THREE.Vector3 {
+		return getPivotedGeometryWorldCenter(this)
 	}
 
 	get text() {
@@ -194,7 +214,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 		return this
 	}
 
-	unselect(unselectParent?: boolean) {
+	unselect(_unselectParent?: boolean) {
 		if (!this.selected) return this
 		if (
 			Animator.open &&
@@ -212,49 +232,52 @@ export class TextDisplay extends ResizableOutlinerElement {
 	}
 
 	updateTextMesh() {
-		let result: TextComponent | undefined
-		try {
-			const parser = new TextComponentParser({
-				minecraftVersion: Project!.animated_java.target_minecraft_version,
-			})
-			parser.enabledFeatures &= ~(
-				TextComponentParser.FEATURES.CLICK_EVENTS |
-				TextComponentParser.FEATURES.HOVER_EVENTS
-			)
-			result = new TextComponent(parser.parse(this.text))
-			this.textError.set('')
-		} catch (e: any) {
-			console.error(e)
-			if (e.name === 'SyntaxPointerError') {
-				this.textError.set(e.getOriginErrorMessage())
-			} else {
-				this.textError.set(e.message as string)
+		const parseKey = this.text + '\0' + Project!.animated_java.target_minecraft_version
+		if (this.__parsed?.key !== parseKey) {
+			this.__parsed = { key: parseKey }
+			try {
+				const parser = new TextComponentParser({
+					minecraftVersion: Project!.animated_java.target_minecraft_version,
+				})
+				parser.enabledFeatures &= ~(
+					TextComponentParser.FEATURES.CLICK_EVENTS |
+					TextComponentParser.FEATURES.HOVER_EVENTS
+				)
+				this.__parsed.component = new TextComponent(parser.parse(this.text))
+			} catch (e: any) {
+				console.error(e)
+				this.__parsed.error =
+					e.name === 'SyntaxPointerError'
+						? e.getOriginErrorMessage()
+						: (e.message as string)
 			}
 		}
-		result ??= new TextComponent({ text: 'Invalid JSON Text!', color: 'red' })
-		void this.renderTextMesh(result).then(({ mesh, hitbox, outline }) => {
+		this.textError.set(this.__parsed.error ?? '')
+
+		const jsonText =
+			this.__parsed.component ??
+			new TextComponent({ text: 'Invalid JSON Text!', color: 'red' })
+		const cacheKey = this.__parsed.component ? this.text : '\0invalid'
+		void this.renderTextMesh(jsonText, cacheKey).then(({ mesh, hitbox, outline }) => {
 			this.applyTextMesh(mesh, hitbox, outline)
 		})
 	}
 
-	private renderTextMesh(jsonText: TextComponent) {
-		const promise = MinecraftFont.getById('minecraft:default')
-			.then(font => {
-				return font.generateTextDisplayMesh({
-					jsonText,
-					maxLineWidth: this.lineWidth,
-					backgroundColor: tinycolor(this.backgroundColor),
-					shadow: this.shadow,
-					alignment: this.align,
-				})
-			})
-			.then(result => {
-				if (this.__pendingMeshUpdate === promise) {
-					this.__pendingMeshUpdate = undefined
-					return result
-				}
-				return this.__pendingMeshUpdate
-			}) as ReturnType<MinecraftFont['generateTextDisplayMesh']>
+	private renderTextMesh(jsonText: TextComponent, cacheKey: string) {
+		const promise = generateTextDisplayMesh({
+			jsonText,
+			cacheKey,
+			maxLineWidth: this.lineWidth,
+			backgroundColor: tinycolor(this.backgroundColor),
+			shadow: this.shadow,
+			alignment: this.align,
+		}).then(result => {
+			if (this.__pendingMeshUpdate === promise) {
+				this.__pendingMeshUpdate = undefined
+				return result
+			}
+			return this.__pendingMeshUpdate
+		}) as Promise<TextDisplayMesh>
 
 		this.__pendingMeshUpdate = promise
 		return promise
@@ -278,7 +301,8 @@ export class TextDisplay extends ResizableOutlinerElement {
 		delete mesh.sprite
 		mesh.name = this.uuid
 		mesh.material = Canvas.transparentMaterial
-		mesh.geometry = hitbox
+		// The background mesh shares `hitbox`, and pivot offsets translate it in place
+		mesh.geometry = hitbox.clone()
 		mesh.add(text)
 
 		outline.name = this.uuid + '_outline'
@@ -286,6 +310,7 @@ export class TextDisplay extends ResizableOutlinerElement {
 		mesh.outline = outline
 		mesh.add(outline)
 		mesh.visible = this.visibility
+		resetPivotOffsetTracking(mesh.geometry, text, outline)
 
 		// Dispatch view update without actually doing anything
 		Canvas.updateView({ elements: [], element_aspects: {} })
@@ -344,6 +369,9 @@ export const PREVIEW_CONTROLLER: NodePreviewController = new NodePreviewControll
 
 	updateTransform(el: TextDisplay) {
 		ResizableOutlinerElement.prototype.preview_controller.updateTransform(el)
+		if (el.mesh.outline) {
+			applyPivotOffset(el, el.mesh.geometry, el.mesh.children[0], el.mesh.outline)
+		}
 	},
 })
 
@@ -420,12 +448,12 @@ class TextDisplayAnimator extends BoneAnimator {
 					new THREE.Quaternion().fromArray(arr),
 					'ZYX'
 				)
-				bone.rotation.x -= addedRotation.x * multiplier
-				bone.rotation.y -= addedRotation.y * multiplier
+				bone.rotation.x += addedRotation.x * multiplier
+				bone.rotation.y += addedRotation.y * multiplier
 				bone.rotation.z += addedRotation.z * multiplier
 			} else {
-				bone.rotation.x -= Math.degToRad(arr[0]) * multiplier
-				bone.rotation.y -= Math.degToRad(arr[1]) * multiplier
+				bone.rotation.x += Math.degToRad(arr[0]) * multiplier
+				bone.rotation.y += Math.degToRad(arr[1]) * multiplier
 				bone.rotation.z += Math.degToRad(arr[2]) * multiplier
 			}
 		}
@@ -444,7 +472,7 @@ class TextDisplayAnimator extends BoneAnimator {
 			bone.position.copy(bone.fix_position as THREE.Vector3)
 		}
 		if (arr) {
-			bone.position.x -= arr[0] * multiplier
+			bone.position.x += arr[0] * multiplier
 			bone.position.y += arr[1] * multiplier
 			bone.position.z += arr[2] * multiplier
 		}

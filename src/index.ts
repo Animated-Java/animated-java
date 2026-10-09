@@ -21,17 +21,22 @@ import datapackCompiler from './systems/datapackCompiler'
 import './systems/minecraft/assetManager'
 import './systems/minecraft/blockstateManager'
 import './systems/minecraft/fontManager'
+import './systems/minecraft/fontRenderer'
 import './systems/minecraft/registryManager'
 import './systems/minecraft/versionManager'
 // Shaders
 import 'import_folder_recursive:./shaders'
 // Misc imports
 import { openChangelogDialog } from './dialogs/changelog/changelog'
-import { openExportProgressDialog } from './dialogs/exportProgress/exportProgress'
+import {
+	debugExportProgressDialog,
+	openExportProgressDialog,
+} from './dialogs/exportProgress/exportProgress'
 import { openUnexpectedErrorDialog } from './dialogs/unexpectedError/unexpectedError'
 import { BLUEPRINT_FORMAT } from './formats/blueprint'
 import { BLUEPRINT_CODEC } from './formats/blueprint/codec'
 import { exportAll } from './interface/animatedJavaBarItem'
+import { Interaction } from './outliner/interaction'
 import { TextDisplay } from './outliner/textDisplay'
 import { debugBlockState, VanillaBlockDisplay } from './outliner/vanillaBlockDisplay'
 import { VanillaItemDisplay } from './outliner/vanillaItemDisplay'
@@ -42,6 +47,7 @@ import {
 	applyEnchantmentGlintToMesh,
 	removeEnchantmentGlintFromMesh,
 } from './shaders/enchantmentGlint'
+import { hashAnimations, renderProjectAnimations } from './systems/animationRenderer'
 import { cleanupExportedFiles } from './systems/cleaner'
 import TELLRAW from './systems/datapackCompiler/tellraw'
 import { exportProject } from './systems/exporter'
@@ -50,14 +56,18 @@ import * as blockModelManager from './systems/minecraft/blockModelManager'
 import { BLOCKSTATE_REGISTRY, getBlockState } from './systems/minecraft/blockstateManager'
 import { MinecraftFont } from './systems/minecraft/fontManager'
 import * as itemModelManager from './systems/minecraft/itemModelManager'
+import * as previewResourcePack from './systems/minecraft/previewResourcePack'
 import './systems/minecraft/registryManager'
 import resourcepackCompiler from './systems/resourcepackCompiler'
+import { hashRig, renderRig } from './systems/rigRenderer'
 import {
 	isDataPackPath,
 	isResourcePackPath,
 	parseResourcePackPath,
 	toSmallCaps,
 } from './util/minecraftUtil'
+import * as textureSlots from './textureSlots'
+import * as animationPreview from './animationPreview'
 import { Variant } from './variants'
 
 declare global {
@@ -73,7 +83,10 @@ const AnimatedJavaApi = {
 	datapackCompiler,
 	resourcepackCompiler,
 	Variant,
+	textureSlots,
+	animationPreview,
 	openExportProgressDialog,
+	debugExportProgressDialog,
 	isResourcePackPath,
 	isDataPackPath,
 	openUnexpectedErrorDialog,
@@ -84,11 +97,18 @@ const AnimatedJavaApi = {
 	assetManager,
 	itemModelManager,
 	blockModelManager,
+	previewResourcePack,
 	VanillaItemDisplay,
 	VanillaBlockDisplay,
+	Interaction,
 	debugBlockState,
 	BLOCKSTATE_REGISTRY,
 	exportProject,
+	// Export-pipeline stages, exposed for the test suite.
+	renderRig,
+	hashRig,
+	renderProjectAnimations,
+	hashAnimations,
 	openInstallPopup,
 	exportAll,
 	removeCubesAssociatedWithTexture(texture: Texture) {

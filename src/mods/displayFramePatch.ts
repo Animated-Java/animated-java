@@ -5,7 +5,7 @@ registerPropertyOverridePatch({
 	target: BoneAnimator.prototype,
 	key: 'displayFrame',
 
-	get: original => {
+	get: _original => {
 		return function (this: BoneAnimator, multiplier?: number) {
 			if (!this.doRender()) return
 			this.getGroup()

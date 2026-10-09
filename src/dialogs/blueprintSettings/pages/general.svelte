@@ -12,6 +12,9 @@
 	import BoxSelect from '../../../svelteComponents/sidebarDialogItems/boxSelect.svelte'
 	import LineEdit from '../../../svelteComponents/sidebarDialogItems/lineEdit.svelte'
 	import Vector2 from '../../../svelteComponents/sidebarDialogItems/vector2.svelte'
+	import { createScopedTranslator } from '../../../util/lang'
+
+	const translate = createScopedTranslator('dialog.blueprint_settings')
 
 	const DEFAULT_SETTINGS = getDefaultProjectSettings()
 
@@ -37,17 +40,17 @@
 
 <div class="dialog-page-container">
 	<BoxSelect
-		label="Target Environment"
-		description="What system you'll be using to animate your Blueprint in-game."
+		label={translate('target_environment.title')}
+		description={translate('target_environment.description')}
 		options={{
 			datapack: {
 				type: 'image',
-				label: 'Datapack',
+				label: translate('target_environment.options.datapack'),
 				src: DataPackIcon,
 			},
 			plugin: {
 				type: 'image',
-				label: 'Plugin',
+				label: translate('target_environment.options.plugin'),
 				src: PluginIcon,
 			},
 		}}
@@ -55,15 +58,15 @@
 	></BoxSelect>
 
 	<LineEdit
-		label="Blueprint Name"
-		description="The name of your Blueprint. Used for the exported file name and in-game display name."
+		label={translate('blueprint_name.title')}
+		description={translate('blueprint_name.description')}
 		bind:value={blueprintName}
 		defaultValue={'My Blueprint'}
 	></LineEdit>
 
 	<LineEdit
-		label="Blueprint ID"
-		description="The unique identifier for your Blueprint."
+		label={translate('blueprint_id.title')}
+		description={translate('blueprint_id.description')}
 		bind:value={blueprintId}
 		defaultValue={DEFAULT_SETTINGS.blueprint_id}
 		checkValue={validateBlueprintId}
@@ -71,8 +74,8 @@
 	></LineEdit>
 
 	<LineEdit
-		label="Target Minecraft Version"
-		description="The Minecraft version you're targeting. Affects which features you can use and how the export is structured."
+		label={translate('target_minecraft_version.title')}
+		description={translate('target_minecraft_version.description')}
 		bind:value={targetMinecraftVersion}
 		defaultValue={DEFAULT_SETTINGS.target_minecraft_version}
 		checkValue={validateTargetMinecraftVersion}
@@ -80,8 +83,8 @@
 	></LineEdit>
 
 	<Vector2
-		label="Texture Size"
-		description="The width and height of the texture used for the Blueprint's animations. Must be a power of 2."
+		label={translate('texture_size.title')}
+		description={translate('texture_size.description')}
 		step={1}
 		bind:valueX={textureSizeX}
 		bind:valueY={textureSizeY}

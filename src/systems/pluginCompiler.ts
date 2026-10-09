@@ -19,6 +19,7 @@ import type {
 	IRenderedModel,
 	IRenderedRig,
 } from './rigRenderer'
+import { getSlotTextureKey } from './rigRenderer'
 
 type StringVector3 = [string, string, string]
 
@@ -49,14 +50,24 @@ type PluginTexture =
 			resource_location: string
 	  }
 
-interface TexturePalette {
-	active_state: string
-	states: Record<string, { texture: string }>
+interface PluginTextureSlot {
+	default_texture: string
+	textures: string[]
+}
+
+/** Slot key -> texture key. Slots left out are unchanged. */
+type TextureSlotChanges = Record<string, string>
+
+interface PluginVariant {
+	is_default?: true
+	texture_slots: TextureSlotChanges
+	excluded_nodes: string[]
+	entity_properties: Record<string, Record<string, unknown>>
 }
 
 type TextureProvider =
 	| { type: 'texture'; texture: string }
-	| { type: 'texture_palette'; texture_palette: string }
+	| { type: 'texture_slot'; texture_slot: string }
 
 interface BoneElementFace {
 	uv: ArrayVector4
@@ -113,6 +124,7 @@ type NodeType =
 	| 'item_display'
 	| 'block_display'
 	| 'text_display'
+	| 'interaction'
 	| 'structure'
 	| 'camera'
 	| 'locator'
@@ -120,14 +132,16 @@ type NodeType =
 type PluginNode =
 	| {
 			type: 'bone'
+			parent?: string
 			default_transformation?: NodeTransformation
-			display_properties?: Record<string, unknown>
+			entity_properties?: Record<string, unknown>
 			elements: BoneElement[]
 	  }
 	| {
 			type: Exclude<NodeType, 'bone'>
+			parent?: string
 			default_transformation?: NodeTransformation
-			display_properties?: Record<string, unknown>
+			entity_properties?: Record<string, unknown>
 	  }
 
 type LoopMode = { type: 'once' } | { type: 'hold' } | { type: 'loop'; loop_delay?: string }
@@ -156,7 +170,8 @@ interface PluginAnimation {
 	blend_weight?: string
 	start_delay?: string
 	global_keyframes?: {
-		texture?: Record<string, Record<string, string>>
+		variant?: Record<string, string[]>
+		texture_slot?: Record<string, TextureSlotChanges>
 		event?: Record<string, { events: string[] }>
 	}
 	node_keyframes?: Record<
@@ -169,6 +184,20 @@ interface PluginAnimation {
 	>
 }
 
+/**
+ * Schema version of the Plugin JSON. Bump this (and note the change in the
+ * changelog) whenever the shape of {@link PluginBlueprintJson} changes in a
+ * release, so consumers can branch on it. It is independent of the Animated
+ * Java plugin version and only moves when this file format does.
+ *
+ * 2: `display_properties` renamed to `entity_properties`, added node `parent`,
+ *    `settings.id` is now the raw blueprint id (no `animated_java:` prefix).
+ * 3: `texture_palettes` replaced by `texture_slots`, the `texture_palette` texture provider by
+ *    `texture_slot`, and the `texture` global keyframe by `texture_slot`. Added `variants` and the
+ *    `variant` global keyframe.
+ */
+export const PLUGIN_JSON_FORMAT_VERSION = 3
+
 export interface PluginBlueprintJson {
 	$schema?: string
 	format_version: number
@@ -176,7 +205,8 @@ export interface PluginBlueprintJson {
 		id: string
 	}
 	textures?: Record<string, PluginTexture>
-	texture_palettes?: Record<string, TexturePalette>
+	texture_slots?: Record<string, PluginTextureSlot>
+	variants?: Record<string, PluginVariant>
 	nodes?: Record<string, PluginNode>
 	animations?: Record<string, PluginAnimation>
 }
@@ -213,40 +243,16 @@ function parseDataUrl(dataUrl: string): { mimeType: string; base64: string } {
 	return { mimeType, base64 }
 }
 
-function readTextureAnimation(texture: Texture): TextureAnimation | undefined {
-	if (!texture.path) return undefined
-	const mcmetaPath = texture.path + '.mcmeta'
-
-	const { existsSync, readFileSync } = getFsModule()
-
-	if (!existsSync(mcmetaPath)) return undefined
-	try {
-		const parsed = JSON.parse(readFileSync(mcmetaPath, 'utf-8')) as {
-			animation?: Record<string, unknown>
-		}
-		const anim = parsed.animation as any
-		if (!anim) return undefined
-		return scrubUndefined({
-			interpolate: anim.interpolate,
-			width: anim.width,
-			height: anim.height,
-			frametime: anim.frametime,
-			frames: anim.frames,
-		} satisfies TextureAnimation)
-	} catch (e) {
-		console.warn(`Failed to parse texture animation mcmeta for ${texture.name}:`, e)
-		return undefined
-	}
-}
-
 function serializeNodeTransformation(transform: INodeTransform): NodeTransformation {
 	return scrubUndefined({
-		matrix: transform.matrix.elements.slice(),
-		decomposed: {
-			translation: transform.decomposed.translation.toArray() as ArrayVector3,
-			left_rotation: transform.decomposed.left_rotation.toArray() as ArrayVector4,
-			scale: transform.decomposed.scale.toArray() as ArrayVector3,
-		},
+		matrix: transform.matrix ? Array.from(transform.matrix) : undefined,
+		decomposed: transform.decomposed
+			? {
+					translation: transform.decomposed.translation,
+					left_rotation: transform.decomposed.left_rotation,
+					scale: transform.decomposed.scale,
+				}
+			: undefined,
 		position: transform.pos,
 		rotation: transform.rot,
 		head_rotation: transform.head_rot,
@@ -297,14 +303,14 @@ function intFromHex8(hex: string): number {
 function serializeTextureProvider(options: {
 	textureId: string
 	textureIdToKey: Map<string, string>
-	textureKeyToPaletteId: Map<string, string>
+	slotVariableToKey: Map<string, string>
 }): TextureProvider {
+	const slotKey = options.slotVariableToKey.get(options.textureId)
+	if (slotKey) return { type: 'texture_slot', texture_slot: slotKey }
+
 	const textureKey = options.textureIdToKey.get(options.textureId)
 	if (!textureKey)
 		throw new Error(`Missing texture mapping for texture id '${options.textureId}'`)
-
-	const paletteId = options.textureKeyToPaletteId.get(textureKey)
-	if (paletteId) return { type: 'texture_palette', texture_palette: paletteId }
 
 	return { type: 'texture', texture: textureKey }
 }
@@ -313,7 +319,7 @@ function serializeFace(
 	face: IRenderedFace,
 	options: {
 		textureIdToKey: Map<string, string>
-		textureKeyToPaletteId: Map<string, string>
+		slotVariableToKey: Map<string, string>
 	}
 ): BoneElementFace | undefined {
 	if (!face.uv) return undefined
@@ -327,7 +333,7 @@ function serializeFace(
 		texture_provider: serializeTextureProvider({
 			textureId,
 			textureIdToKey: options.textureIdToKey,
-			textureKeyToPaletteId: options.textureKeyToPaletteId,
+			slotVariableToKey: options.slotVariableToKey,
 		}),
 	} satisfies BoneElementFace)
 }
@@ -336,7 +342,7 @@ function serializeBoneElements(
 	model: IRenderedModel,
 	options: {
 		textureIdToKey: Map<string, string>
-		textureKeyToPaletteId: Map<string, string>
+		slotVariableToKey: Map<string, string>
 	}
 ): BoneElement[] {
 	const elements = model.elements ?? []
@@ -365,12 +371,14 @@ function serializeBoneElements(
 function serializeNode(
 	node: AnyRenderedNode,
 	options: {
+		parent?: string
 		defaultVariantModels: Record<string, { model: IRenderedModel | null }>
 		textureIdToKey: Map<string, string>
-		textureKeyToPaletteId: Map<string, string>
+		slotVariableToKey: Map<string, string>
 	}
 ): PluginNode {
 	const base = {
+		parent: options.parent,
 		default_transformation: serializeNodeTransformation(node.default_transform),
 	} as const
 
@@ -386,10 +394,10 @@ function serializeNode(
 			return scrubUndefined({
 				type: 'bone',
 				...base,
-				display_properties: displayProps,
+				entity_properties: displayProps,
 				elements: serializeBoneElements(model, {
 					textureIdToKey: options.textureIdToKey,
-					textureKeyToPaletteId: options.textureKeyToPaletteId,
+					slotVariableToKey: options.slotVariableToKey,
 				}),
 			} satisfies PluginNode)
 		}
@@ -397,7 +405,7 @@ function serializeNode(
 			return scrubUndefined({
 				type: 'item_display',
 				...base,
-				display_properties: scrubUndefined({
+				entity_properties: scrubUndefined({
 					...displayProps,
 					item: (node as any).item,
 					item_display: (node as any).item_display,
@@ -408,7 +416,7 @@ function serializeNode(
 			return scrubUndefined({
 				type: 'block_display',
 				...base,
-				display_properties: scrubUndefined({
+				entity_properties: scrubUndefined({
 					...displayProps,
 					block_state: (node as any).block,
 				}),
@@ -419,7 +427,7 @@ function serializeNode(
 			return scrubUndefined({
 				type: 'text_display',
 				...base,
-				display_properties: scrubUndefined({
+				entity_properties: scrubUndefined({
 					...displayProps,
 					alignment: (node as any).align,
 					background_color: argb,
@@ -431,6 +439,15 @@ function serializeNode(
 				}),
 			} satisfies PluginNode)
 		}
+		case 'interaction':
+			return scrubUndefined({
+				type: 'interaction',
+				...base,
+				entity_properties: {
+					width: node.width,
+					height: node.height,
+				},
+			})
 		case 'struct':
 			return { type: 'structure', ...base }
 		case 'camera':
@@ -442,52 +459,130 @@ function serializeNode(
 	}
 }
 
-function buildPalettes(options: {
-	textures: Record<string, PluginTexture>
+function buildTextureSlots(options: { rig: IRenderedRig; textureIdToKey: Map<string, string> }) {
+	const usedSlotKeys = new Set<string>()
+	const slots: Record<string, PluginTextureSlot> = {}
+	const slotUuidToKey = new Map<string, string>()
+	const slotVariableToKey = new Map<string, string>()
+
+	for (const [uuid, slot] of Object.entries(options.rig.texture_slots)) {
+		const textures = slot.textures
+			.map(texture => options.textureIdToKey.get(texture.id))
+			.filter(key => key !== undefined)
+		if (!textures.length) continue
+
+		const key = ensureUniqueKey(slot.name, usedSlotKeys)
+		slots[key] = { default_texture: textures[0], textures }
+		slotUuidToKey.set(uuid, key)
+		slotVariableToKey.set(getSlotTextureKey(slot.name), key)
+	}
+
+	return { slots, slotUuidToKey, slotVariableToKey }
+}
+
+/**
+ * Converts slot UUID -> texture UUID pairs to slot key -> texture key, skipping slots and textures
+ * that aren't exported.
+ */
+function toTextureSlotChanges(
+	entries: Iterable<[string, string]>,
+	options: { slotUuidToKey: Map<string, string>; textureIdToKey: Map<string, string> }
+): TextureSlotChanges {
+	const changes: TextureSlotChanges = {}
+	for (const [slotUuid, textureUuid] of entries) {
+		const slotKey = options.slotUuidToKey.get(slotUuid)
+		const texture = Texture.all.find(t => t.uuid === textureUuid)
+		const textureKey = texture && options.textureIdToKey.get(texture.id)
+		if (slotKey && textureKey) changes[slotKey] = textureKey
+	}
+	return changes
+}
+
+function buildVariants(options: {
+	rig: IRenderedRig
+	slots: Record<string, PluginTextureSlot>
+	slotUuidToKey: Map<string, string>
 	textureIdToKey: Map<string, string>
-}): { palettes: Record<string, TexturePalette>; textureKeyToPaletteId: Map<string, string> } {
-	const variants = Variant.allExcludingDefault()
-	if (variants.length === 0) {
-		return { palettes: {}, textureKeyToPaletteId: new Map() }
+	nodeUuidToId: Map<string, string>
+}) {
+	const { rig, nodeUuidToId } = options
+	const variants: Record<string, PluginVariant> = {}
+	const variantUuidToKey = new Map<string, string>()
+	const usedVariantKeys = new Set<string>()
+
+	for (const [uuid, variant] of Object.entries(rig.variants)) {
+		const key = ensureUniqueKey(variant.name, usedVariantKeys)
+		variantUuidToKey.set(uuid, key)
+
+		// eslint-disable-next-line @typescript-eslint/naming-convention
+		const texture_slots = variant.is_default
+			? Object.fromEntries(
+					Object.entries(options.slots).map(([slotKey, slot]) => [
+						slotKey,
+						slot.default_texture,
+					])
+				)
+			: toTextureSlotChanges(Object.entries(variant.slot_textures), options)
+
+		// eslint-disable-next-line @typescript-eslint/naming-convention
+		const entity_properties: PluginVariant['entity_properties'] = {}
+		for (const [nodeUuid, node] of Object.entries(rig.nodes)) {
+			const nodeId = nodeUuidToId.get(nodeUuid)
+			if (!nodeId || variant.excluded_nodes.includes(nodeUuid)) continue
+			const configs = (node as any).configs as
+				| {
+						default?: IBlueprintDisplayEntityConfigJSON
+						variants?: Record<string, IBlueprintDisplayEntityConfigJSON>
+				  }
+				| undefined
+			const config = variant.is_default ? configs?.default : configs?.variants?.[uuid]
+			const props = config && serializeDisplayProperties(node, config)
+			if (props) entity_properties[nodeId] = props
+		}
+
+		variants[key] = scrubUndefined({
+			is_default: variant.is_default ? (true as const) : undefined,
+			texture_slots,
+			excluded_nodes: variant.excluded_nodes
+				.map(nodeUuid => nodeUuidToId.get(nodeUuid))
+				.filter(id => id !== undefined),
+			entity_properties,
+		} satisfies PluginVariant)
 	}
 
-	const usedPaletteKeys = new Set<string>()
-	const palettes: Record<string, TexturePalette> = {}
-	const textureKeyToPaletteId = new Map<string, string>()
+	return { variants, variantUuidToKey }
+}
 
-	for (const texture of Object.values(Texture.all)) {
-		// only exported textures
-		const textureKey = options.textureIdToKey.get(texture.id)
-		if (!textureKey) continue
-		if (!options.textures[textureKey]) continue
-
-		const states: Record<string, { texture: string }> = {
-			default: { texture: textureKey },
-		}
-
-		let hasAnyAlternative = false
-		for (const variant of variants) {
-			const mapped = variant.textureMap.getMappedTexture(texture.uuid)
-			let mappedKey: string = textureKey
-			if (mapped) {
-				const key = options.textureIdToKey.get(mapped.id)
-				if (key) mappedKey = key
-			}
-			states[variant.name] = { texture: mappedKey }
-			if (mappedKey !== textureKey) hasAnyAlternative = true
-		}
-
-		if (!hasAnyAlternative) continue
-
-		const paletteId = ensureUniqueKey(`${textureKey}_palette`, usedPaletteKeys)
-		palettes[paletteId] = {
-			active_state: 'default',
-			states,
-		}
-		textureKeyToPaletteId.set(textureKey, paletteId)
+/**
+ * The `variant` and `texture_slot` global keyframes of `animation`, from its rendered frames.
+ */
+function serializeGlobalKeyframes(
+	animation: IRenderedAnimation,
+	options: {
+		variantUuidToKey: Map<string, string>
+		slotUuidToKey: Map<string, string>
+		textureIdToKey: Map<string, string>
 	}
+): PluginAnimation['global_keyframes'] {
+	let keyframes: PluginAnimation['global_keyframes']
+	for (const frame of animation.frames) {
+		const timeKey = formatTimestamp(frame.time)
 
-	return { palettes, textureKeyToPaletteId }
+		const variants = (frame.variants ?? [])
+			.map(uuid => options.variantUuidToKey.get(uuid))
+			.filter(key => key !== undefined)
+		if (variants.length) {
+			keyframes ??= {}
+			;(keyframes.variant ??= {})[timeKey] = variants
+		}
+
+		const changes = toTextureSlotChanges(Object.entries(frame.texture_slots ?? {}), options)
+		if (Object.keys(changes).length) {
+			keyframes ??= {}
+			;(keyframes.texture_slot ??= {})[timeKey] = changes
+		}
+	}
+	return keyframes
 }
 
 function serializeTexture(texture: Texture): PluginTexture {
@@ -507,7 +602,7 @@ function serializeTexture(texture: Texture): PluginTexture {
 		type: 'custom',
 		base64_string: base64,
 		mime_type: mimeType,
-		animation: readTextureAnimation(texture),
+		animation: texture.getMCMetaContent()?.animation,
 	} satisfies PluginTexture)
 }
 
@@ -558,9 +653,9 @@ function keyframeDataPoint(kf: _Keyframe, index: number): StringVector3 {
 function serializeRawAnimation(options: {
 	animation: IRenderedAnimation
 	nodeUuidToId: Map<string, string>
-	paletteIds: string[]
+	globalKeyframes: PluginAnimation['global_keyframes']
 }): PluginAnimation {
-	const { animation, nodeUuidToId, paletteIds } = options
+	const { animation, nodeUuidToId } = options
 	const bbAnimation = Blockbench.Animation.all.find(a => a.uuid === animation.uuid)
 	if (!bbAnimation) {
 		throw new IntentionalExportError(
@@ -570,8 +665,6 @@ function serializeRawAnimation(options: {
 
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	const node_keyframes: NonNullable<PluginAnimation['node_keyframes']> = {}
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	let global_keyframes: PluginAnimation['global_keyframes']
 
 	for (const [animatorUuid, animator] of Object.entries(bbAnimation.animators)) {
 		// @ts-expect-error - broken bb types
@@ -593,11 +686,6 @@ function serializeRawAnimation(options: {
 				}
 				if (kf.data_points.length === 2) entry.post = keyframeDataPoint(kf, 1)
 				bucket[timeKey] = entry
-			} else if (kf.channel === 'variant' && paletteIds.length && kf.variant) {
-				global_keyframes ??= {}
-				const texture = (global_keyframes.texture ??= {})
-				const slot = (texture[timeKey] ??= {})
-				for (const paletteId of paletteIds) slot[paletteId] = kf.variant.name
 			}
 		}
 	}
@@ -607,7 +695,7 @@ function serializeRawAnimation(options: {
 		blend_weight: '1',
 		start_delay: '0',
 		length: bbAnimation.length,
-		global_keyframes,
+		global_keyframes: options.globalKeyframes,
 		node_keyframes,
 	} satisfies PluginAnimation)
 }
@@ -615,14 +703,12 @@ function serializeRawAnimation(options: {
 function serializeBakedAnimation(options: {
 	animation: IRenderedAnimation
 	nodeUuidToId: Map<string, string>
-	paletteIds: string[]
+	globalKeyframes: PluginAnimation['global_keyframes']
 }): PluginAnimation {
-	const { animation, nodeUuidToId, paletteIds } = options
+	const { animation, nodeUuidToId } = options
 
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	const node_keyframes: NonNullable<PluginAnimation['node_keyframes']> = {}
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	let global_keyframes: PluginAnimation['global_keyframes']
 
 	for (const frame of animation.frames) {
 		const timeKey = formatTimestamp(frame.time)
@@ -654,16 +740,6 @@ function serializeBakedAnimation(options: {
 				interpolation,
 			}
 		}
-
-		if (paletteIds.length && frame.variants?.length) {
-			const variant = Variant.getByUUID(frame.variants[0])
-			if (variant) {
-				global_keyframes ??= {}
-				const texture = (global_keyframes.texture ??= {})
-				const slot = (texture[timeKey] ??= {})
-				for (const paletteId of paletteIds) slot[paletteId] = variant.name
-			}
-		}
 	}
 
 	return scrubUndefined({
@@ -671,7 +747,7 @@ function serializeBakedAnimation(options: {
 		blend_weight: '1',
 		start_delay: '0',
 		length: animation.frames.at(-1)?.time ?? 0,
-		global_keyframes,
+		global_keyframes: options.globalKeyframes,
 		node_keyframes,
 	} satisfies PluginAnimation)
 }
@@ -687,20 +763,30 @@ export function exportPluginBlueprint(options: {
 	const textureIdToKey = new Map<string, string>()
 
 	for (const texture of Object.values(options.rig.textures)) {
-		const baseKey = texture.name.replace(/\\.png$/i, '')
+		const baseKey = texture.name.replace(/\.png$/i, '')
 		const key = ensureUniqueKey(baseKey, usedTextureKeys)
 		textureIdToKey.set(texture.id, key)
 		textures[key] = serializeTexture(texture)
 	}
 
-	const { palettes, textureKeyToPaletteId } = buildPalettes({ textures, textureIdToKey })
-	const paletteIds = Object.keys(palettes)
+	const { slots, slotUuidToKey, slotVariableToKey } = buildTextureSlots({
+		rig: options.rig,
+		textureIdToKey,
+	})
 
 	const usedNodeKeys = new Set<string>()
 	const nodeUuidToId = new Map<string, string>()
 	for (const [uuid, node] of Object.entries(options.rig.nodes)) {
 		nodeUuidToId.set(uuid, ensureUniqueKey(node.storage_name, usedNodeKeys))
 	}
+
+	const { variants, variantUuidToKey } = buildVariants({
+		rig: options.rig,
+		slots,
+		slotUuidToKey,
+		textureIdToKey,
+		nodeUuidToId,
+	})
 
 	const defaultVariant = Variant.getDefault()
 	const defaultVariantModels = options.rig.variants[defaultVariant.uuid]?.models ?? {}
@@ -710,9 +796,10 @@ export function exportPluginBlueprint(options: {
 		const nodeId = nodeUuidToId.get(uuid)
 		if (!nodeId) continue
 		nodes[nodeId] = serializeNode(node, {
+			parent: node.parent ? nodeUuidToId.get(node.parent) : undefined,
 			defaultVariantModels,
 			textureIdToKey,
-			textureKeyToPaletteId,
+			slotVariableToKey,
 		})
 	}
 
@@ -721,16 +808,22 @@ export function exportPluginBlueprint(options: {
 	const serialize = aj.baked_animations ? serializeBakedAnimation : serializeRawAnimation
 	for (const animation of options.animations) {
 		const key = ensureUniqueKey(animation.storage_name, usedAnimationKeys)
-		animations[key] = serialize({ animation, nodeUuidToId, paletteIds })
+		const globalKeyframes = serializeGlobalKeyframes(animation, {
+			variantUuidToKey,
+			slotUuidToKey,
+			textureIdToKey,
+		})
+		animations[key] = serialize({ animation, nodeUuidToId, globalKeyframes })
 	}
 
 	const blueprint: PluginBlueprintJson = scrubUndefined({
-		format_version: 1,
+		format_version: PLUGIN_JSON_FORMAT_VERSION,
 		settings: {
-			id: `animated_java:${aj.blueprint_id}`,
+			id: aj.blueprint_id,
 		},
 		textures,
-		texture_palettes: palettes,
+		texture_slots: slots,
+		variants,
 		nodes,
 		animations,
 	})

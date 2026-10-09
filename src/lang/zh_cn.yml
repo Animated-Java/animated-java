@@ -808,11 +808,6 @@ animated_java:
       generate_name_from_display_name.description: 是否根据显示名称自动生成名称。
       variant_name: 名称
       variant_name.description: 用于在导出的资源包和数据包中识别变体。
-      texture_map:
-        title: 纹理映射
-        description: 应用该变体时所使用的贴图。
-        create_new_mapping: 创建新的映射
-        no_mappings: 变体不存在映射的纹理。
       bone_lists:
         description: 包含或排除在变体的节点列表。包含的节点将会被变体修改，排除的节点则会被节点忽略。
       excluded_nodes:
@@ -871,7 +866,6 @@ animated_java:
         variant_visible: 已选择变体
         variant_not_visible: 未选择变体
         cannot_delete_default_variant: 不可删除默认变体！
-        cannot_edit_default_variant: 不能编辑默认变体！
     keyframe:
       keyframe_title: 关键帧 (%s)
       variant:

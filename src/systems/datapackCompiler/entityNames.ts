@@ -1,24 +1,18 @@
-import { TextComponent } from 'book-and-quill'
-import { makeTagSafe } from './tags'
-
+/**
+ * `CustomName` values for the entities a rig summons.
+ *
+ * These are deliberately empty (`""` — an empty SNBT/JSON text component). Giving
+ * every bone, locator, camera and interaction a descriptive `CustomName` measurably
+ * hurt tick performance on large rigs (see commit "Reduce entity names to empty
+ * strings to improve performance"), and the names were only ever cosmetic in F3+B.
+ *
+ * The parameters are kept so callers stay self-documenting and so real names can be
+ * restored here (behind a debug toggle) without touching the `.mcb` templates.
+ */
 namespace ENTITY_NAMES {
-	export const ROOT = (exportNamespace: string) =>
-		new TextComponent([
-			'',
-			{ text: makeTagSafe(exportNamespace), color: '#00aced' },
-			'.',
-			{ text: 'root', color: 'light_purple' },
-		]).toString(true)
+	export const ROOT = (_exportNamespace: string) => '""'
 
-	export const NODE = (exportNamespace: string, type: string, name: string) =>
-		new TextComponent([
-			'',
-			{ text: makeTagSafe(exportNamespace), color: '#00aced' },
-			'.',
-			{ text: type, color: 'light_purple' },
-			'.',
-			{ text: name, color: 'gold' },
-		]).toString(true)
+	export const NODE = (_exportNamespace: string, _type: string, _name: string) => '""'
 }
 
 export default ENTITY_NAMES

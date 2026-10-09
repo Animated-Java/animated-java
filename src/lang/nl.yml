@@ -320,11 +320,6 @@ animated_java.dialog.variant_config.generate_name_from_display_name.description:
 animated_java.dialog.variant_config.variant_name: Naam
 animated_java.dialog.variant_config.variant_name.description: Wordt gebruikt om de variant in de geëxporteerde Resource Pack en Data Pack te identificeren.
 
-animated_java.dialog.variant_config.texture_map.title: Textuur Map
-animated_java.dialog.variant_config.texture_map.description: Een map van welke texturen moeten worden verwisseld bij het toepassen van deze variant.
-animated_java.dialog.variant_config.texture_map.create_new_mapping: Nieuwe Mapping Maken
-animated_java.dialog.variant_config.texture_map.no_mappings: Variant heeft geen in kaart gebrachte texturen.
-
 animated_java.dialog.variant_config.bone_lists.description: Een lijst met nodes die wel of niet worden meegenomen in de Variant. Alleen nodes in de geïncludeerde lijst worden gewijzigd door de Variant, en nodes in de uitgesloten lijst worden genegeerd.
 animated_java.dialog.variant_config.excluded_nodes.title: Uitgelosten Nodes
 animated_java.dialog.variant_config.excluded_nodes.description: Een lijst met nodes die uitgesloten moeten worden van de Variant. Deze nodes worden niet gewijzigd door de Variant.

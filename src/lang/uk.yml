@@ -485,11 +485,6 @@ animated_java.dialog.variant_config.generate_name_from_display_name.description:
 animated_java.dialog.variant_config.variant_name: Назва
 animated_java.dialog.variant_config.variant_name.description: Використовується в датапаку та ресурспаку.
 
-animated_java.dialog.variant_config.texture_map.title: Текстурна карта
-animated_java.dialog.variant_config.texture_map.description: Карта текстур, які будуть замінені при застосуванні цього варіанту.
-animated_java.dialog.variant_config.texture_map.create_new_mapping: Створити нове зіставлення
-animated_java.dialog.variant_config.texture_map.no_mappings: У цього варіанту немає замінних текстур.
-
 animated_java.dialog.variant_config.bone_lists.description: |-
   Вкажіть ноди, які мають бути змінені при застосуванні цього варіанту.
 
@@ -561,7 +556,6 @@ animated_java.panel.variants.tool.delete_selected_variant: Видалити ви
 animated_java.panel.variants.tool.variant_visible: Варіант обрано
 animated_java.panel.variants.tool.variant_not_visible: Варіант не обрано
 animated_java.panel.variants.tool.cannot_delete_default_variant: Не можна видалити варіант за замовчуванням!
-animated_java.panel.variants.tool.cannot_edit_default_variant: Не вдалося змінити варіант за замовчуванням!
 
 animated_java.action.variants.create: Створити варіант
 animated_java.action.variants.duplicate: Дублювати варіант

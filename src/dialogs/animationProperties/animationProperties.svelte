@@ -9,6 +9,8 @@
 <script lang="ts">
 	import Collection from '../../svelteComponents/dialogItems/collection.svelte'
 	import Select from '../../svelteComponents/dialogItems/select.svelte'
+	import SlotTexturesEditor from '../../svelteComponents/slotTexturesEditor.svelte'
+	import VariantStackEditor from '../../svelteComponents/variantStackEditor.svelte'
 	import { getAvailableNodes } from '../../util/excludedNodes'
 
 	interface Props {
@@ -16,6 +18,8 @@
 		loopMode: Observable<string>
 		loopDelay: Observable<number>
 		excludedNodes: Observable<Array<{ name: string; value: string }>>
+		previewVariants: Observable<string[]>
+		previewTextureSlots: Observable<Record<string, string>>
 	}
 
 	let {
@@ -23,6 +27,8 @@
 		loopMode = $bindable(),
 		loopDelay = $bindable(),
 		excludedNodes = $bindable(),
+		previewVariants,
+		previewTextureSlots,
 	}: Props = $props()
 
 	const AVAILABLE_BONES = getAvailableNodes(excludedNodes.get())
@@ -92,7 +98,27 @@
 		availableItems={AVAILABLE_BONES}
 		bind:includedItems={excludedNodes}
 	/>
+
+	<VariantStackEditor
+		title={translate('dialog.animation_properties.preview_variants.title')}
+		description={translate('dialog.animation_properties.preview_variants.description')}
+		emptyText={translate('dialog.animation_properties.preview_variants.empty')}
+		value={$previewVariants}
+		onchange={value => previewVariants.set(value)}
+	/>
+
+	<SlotTexturesEditor
+		title={translate('dialog.animation_properties.preview_texture_slots.title')}
+		description={translate('dialog.animation_properties.preview_texture_slots.description')}
+		emptyText={translate('dialog.animation_properties.preview_texture_slots.empty')}
+		value={$previewTextureSlots}
+		onchange={value => previewTextureSlots.set(value)}
+	/>
 </div>
 
 <style>
+	div {
+		overflow-y: auto;
+		max-height: 75vh;
+	}
 </style>

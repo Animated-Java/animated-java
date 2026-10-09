@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { CodeJar } from '@novacbn/svelte-codejar'
+	import { insertLineBreakAsText } from '../util/codeJar'
 
 	interface Props {
 		value: string
@@ -55,7 +56,7 @@
 	})
 </script>
 
-<div class="content codejar-container" onkeydown={onKeydown}>
+<div class="content codejar-container" onkeydown={onKeydown} onbeforeinput={insertLineBreakAsText}>
 	<CodeJar
 		bind:element={codeJarElement}
 		{syntax}

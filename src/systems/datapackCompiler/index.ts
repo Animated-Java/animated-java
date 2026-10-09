@@ -3,9 +3,11 @@ import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deep
 import type { AsyncZippable } from 'fflate/browser'
 import { getFsModule } from '../../constants'
 import {
-	MAX_PROGRESS,
 	PROGRESS,
-	PROGRESS_DESCRIPTION,
+	PROGRESS_DETAIL,
+	setExportProgressPhase,
+	setExportProgressSubTask,
+	SUB_PROGRESS,
 } from '../../dialogs/exportProgress/exportProgress'
 import { projectTargetVersionIsAtLeast } from '../../formats/blueprint'
 import { DisplayEntityConfig } from '../../nodeConfigs'
@@ -25,7 +27,7 @@ import { getMCBFilesByVersion } from '../datapackCompiler/mcbFiles'
 import { IntentionalExportError } from '../errors'
 import { AJMeta, PackMeta } from '../global'
 import { getMisodeVersion } from '../minecraft/versionManager'
-import type { AnyRenderedNode, IRenderedRig } from '../rigRenderer'
+import type { AnyRenderedNode, IRenderedRig, IRenderedVariant } from '../rigRenderer'
 import {
 	arrayToNbtFloatArray,
 	type ExportedFile,
@@ -84,18 +86,17 @@ async function generateRootEntityPassengers(version: string, rig: IRenderedRig) 
 				}
 
 				if (!compareVersions('1.21.4', version) /* >= 1.21.4 */) {
-					item.set(
-						'components',
-						new NbtCompound()
-							.set('minecraft:item_model', new NbtString(variantModel.item_model))
-							.set(
-								'minecraft:custom_model_data',
-								new NbtCompound().set(
-									'strings',
-									new NbtList([new NbtString('default')])
-								)
-							)
+					const components = new NbtCompound().set(
+						'minecraft:item_model',
+						new NbtString(variantModel.item_model)
 					)
+					if (Object.values(rig.texture_slots).some(slot => slot.bones.includes(uuid))) {
+						components.set(
+							'minecraft:custom_model_data',
+							new NbtCompound().set('strings', getDefaultSlotStrings(rig))
+						)
+					}
+					item.set('components', components)
 				} else if (!compareVersions('1.21.2', version) /* >= 1.21.2 */) {
 					item.set(
 						'components',
@@ -237,17 +238,109 @@ async function generateRootEntityPassengers(version: string, rig: IRenderedRig) 
 	return result
 }
 
+/**
+ * Every Texture Slot's default texture name, in slot index order.
+ */
+function getDefaultSlotStrings(rig: IRenderedRig) {
+	const strings = new NbtList<NbtString>()
+	for (const slot of Object.values(rig.texture_slots).sort((a, b) => a.index - b.index)) {
+		strings.add(new NbtString(slot.textures[0].name))
+	}
+	return strings
+}
+
+/**
+ * The slot textures `variant` sets on a bone, as indexes into its `custom_model_data` strings.
+ * The default Variant resets every slot.
+ */
+function getVariantSlotTextures(rig: IRenderedRig, variant: IRenderedVariant, boneUuid: string) {
+	const result: Array<{ index: number; texture: string }> = []
+	for (const [slotUuid, slot] of Object.entries(rig.texture_slots)) {
+		if (!slot.bones.includes(boneUuid)) continue
+		const textureUuid = variant.is_default ? undefined : variant.slot_textures[slotUuid]
+		if (!variant.is_default && !textureUuid) continue
+		const texture = textureUuid
+			? slot.textures.find(t => rig.textures[t.id]?.uuid === textureUuid)
+			: slot.textures[0]
+		if (texture) result.push({ index: slot.index, texture: texture.name })
+	}
+	return result
+}
+
+interface FrameEffects {
+	frame: number
+	/** Names of the Variants to apply, in order. */
+	variants: string[]
+	/** The variant keyframe's execute condition followed by a space, or nothing. */
+	variants_condition: string
+	/** Slot and texture names of the `texture_slots/<slot>/<texture>` functions to run. */
+	texture_slots: Array<{ slot: string; texture: string }>
+	/** The texture slot keyframe's execute condition followed by a space, or nothing. */
+	texture_slots_condition: string
+	/** The root function keyframe's commands, run after the Variants and texture slots. */
+	function?: string
+	/** The function keyframe's execute condition followed by a space, or nothing. */
+	function_condition: string
+}
+
+const FRAME_EFFECTS_CACHE = new WeakMap<IRenderedAnimation, FrameEffects[]>()
+
+/**
+ * The Variants, texture slots and root function each frame of `animation` applies, for frames that
+ * apply any. Slots and textures that didn't make it into the rig are skipped.
+ */
+function getFrameEffects(rig: IRenderedRig, animation: IRenderedAnimation): FrameEffects[] {
+	const cached = FRAME_EFFECTS_CACHE.get(animation)
+	if (cached) return cached
+
+	const result: FrameEffects[] = []
+	for (const [frameIndex, frame] of animation.frames.entries()) {
+		const variants = (frame.variants ?? []).map(uuid => {
+			const variant = rig.variants[uuid]
+			if (!variant) {
+				throw new Error(
+					`Could not find Variant with uuid "${uuid}" while generating frame "${frameIndex}" of animation "${animation.name}".`
+				)
+			}
+			return variant.name
+		})
+
+		const textureSlots: FrameEffects['texture_slots'] = []
+		for (const [slotUuid, textureUuid] of Object.entries(frame.texture_slots ?? {})) {
+			const slot = rig.texture_slots[slotUuid]
+			const texture = slot?.textures.find(t => rig.textures[t.id]?.uuid === textureUuid)
+			if (slot && texture) textureSlots.push({ slot: slot.name, texture: texture.name })
+		}
+
+		if (!variants.length && !textureSlots.length && !frame.function) continue
+		result.push({
+			frame: frameIndex,
+			variants,
+			variants_condition: frame.variants_execute_condition
+				? frame.variants_execute_condition + ' '
+				: '',
+			texture_slots: textureSlots,
+			texture_slots_condition: frame.texture_slots_execute_condition
+				? frame.texture_slots_execute_condition + ' '
+				: '',
+			function: frame.function,
+			function_condition: frame.function_execute_condition
+				? frame.function_execute_condition + ' '
+				: '',
+		})
+	}
+	FRAME_EFFECTS_CACHE.set(animation, result)
+	return result
+}
+
 async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAnimation[]) {
-	PROGRESS_DESCRIPTION.set('Creating Animation Storage...')
-	PROGRESS.set(0)
-	MAX_PROGRESS.set(
-		animations.length + animations.reduce((acc, anim) => acc + anim.frames.length, 0)
-	)
+	setExportProgressPhase('Creating Animation Storage...', animations.length)
 	const dataCommands: string[] = []
 	const limiter = new MSLimiter(16)
 
 	for (const animation of animations) {
-		PROGRESS_DESCRIPTION.set(`Creating Animation Storage for '${animation.storage_name}'`)
+		setExportProgressSubTask(animation.name, animation.frames.length)
+		const effectFrames = new Set(getFrameEffects(rig, animation).map(effects => effects.frame))
 		let frames = new NbtCompound()
 		const addFrameDataCommand = () => {
 			const str = `data modify storage ${
@@ -271,7 +364,7 @@ async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAn
 					thisFrame.set(
 						node.storage_name,
 						new NbtCompound()
-							.set('transformation', matrixToNbtFloatArray(transform.matrix))
+							.set('transformation', matrixToNbtFloatArray(transform.matrix!))
 							.set('start_interpolation', new NbtInt(0))
 					)
 				} else {
@@ -286,26 +379,12 @@ async function createAnimationStorage(rig: IRenderedRig, animations: IRenderedAn
 					)
 				}
 			}
-			if (frame.variants?.length) {
-				const uuid = frame.variants[0]
-				thisFrame.set(
-					'variant',
-					new NbtCompound()
-						.set('name', new NbtString(rig.variants[uuid].name))
-						.set(
-							'condition',
-							new NbtString(
-								frame.variants_execute_condition
-									? `${frame.variants_execute_condition} `
-									: ''
-							)
-						)
-				)
-			}
+			// Marks frames with a `zzz/frame_effects/<frame>` function to run.
+			if (effectFrames.has(i)) thisFrame.set('effects', new NbtByte(1))
 			if (frames.toString().length > 1000000) {
 				addFrameDataCommand()
 			}
-			PROGRESS.set(PROGRESS.get() + 1)
+			SUB_PROGRESS.set(i + 1)
 			await limiter.sync()
 		}
 		addFrameDataCommand()
@@ -474,11 +553,13 @@ async function removeFiles(ajmeta: AJMeta) {
 	const { rm, writeFile, mkdir, copyFile, unlink, readFile } = promises
 
 	if (aj.data_pack_export_mode === 'folder') {
-		PROGRESS_DESCRIPTION.set('Removing Old Data Pack Files...')
-		PROGRESS.set(0)
-		MAX_PROGRESS.set(ajmeta.previousVersionedFiles.size)
+		setExportProgressPhase(
+			'Removing Old Data Pack Files...',
+			ajmeta.previousVersionedFiles.size
+		)
 		const removedFolders = new Set<string>()
 		for (const file of ajmeta.previousVersionedFiles) {
+			PROGRESS_DETAIL.set(PathModule.basename(file))
 			if (isFunctionTagPath(file) && existsSync(file)) {
 				if (aj.blueprint_id !== Project!.last_used_blueprint_id) {
 					const resourceLocation = parseDataPackPath(file)!.resourceLocation
@@ -509,8 +590,8 @@ async function removeFiles(ajmeta: AJMeta) {
 				content.values = content.values.filter(
 					v =>
 						typeof v === 'string' &&
-						(!v.startsWith(`${aj.blueprint_id}/`) ||
-							!v.startsWith(`${Project!.last_used_blueprint_id}/`))
+						!v.startsWith(`${aj.blueprint_id}/`) &&
+						!v.startsWith(`${Project!.last_used_blueprint_id}/`)
 				)
 				await writeFile(file, autoStringify(content))
 			} else {
@@ -559,6 +640,8 @@ const dataPackCompiler: DataPackCompiler = async ({
 		blueprint_id: aj.blueprint_id,
 		interpolation_duration: aj.interpolation_duration,
 		teleportation_duration: aj.teleportation_duration,
+		shadow_radius: aj.shadow_radius,
+		shadow_strength: aj.shadow_strength,
 		display_item: aj.display_item,
 		rig,
 		animations,
@@ -596,6 +679,9 @@ const dataPackCompiler: DataPackCompiler = async ({
 		has_cameras: Object.values(rig.nodes).filter(n => n.type === 'camera').length > 0,
 		has_animations: animations.length > 0,
 		getNodeTags,
+		getVariantSlotTextures: (variant: IRenderedVariant, boneUuid: string) =>
+			getVariantSlotTextures(rig, variant, boneUuid),
+		getFrameEffects: (animation: IRenderedAnimation) => getFrameEffects(rig, animation),
 		BONE_TYPES,
 		project_storage: `${aj.blueprint_id}`,
 		temp_storage: `animated_java:temp`,
@@ -624,9 +710,7 @@ const dataPackCompiler: DataPackCompiler = async ({
 }
 
 async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFolder: string) {
-	PROGRESS_DESCRIPTION.set('Writing Data Pack...')
-	PROGRESS.set(0)
-	MAX_PROGRESS.set(exportedFiles.size)
+	setExportProgressPhase('Writing Data Pack...', exportedFiles.size)
 	const aj = Project!.animated_java
 	const lastNamespace = Project!.last_used_blueprint_id
 	const createdFolderCache = new Set<string>()
@@ -657,6 +741,7 @@ async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFold
 				)
 			)
 		}
+		PROGRESS_DETAIL.set(PathModule.basename(path))
 		PROGRESS.set(PROGRESS.get() + 1)
 	}
 
@@ -675,10 +760,9 @@ async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFold
 	}
 	await Promise.all(writeQueue.values())
 
-	PROGRESS_DESCRIPTION.set('Merging Function Tags...')
-	MAX_PROGRESS.set(functionTagQueue.size)
-	PROGRESS.set(0)
+	setExportProgressPhase('Merging Function Tags...', functionTagQueue.size)
 	for (const [path, file] of functionTagQueue.entries()) {
+		PROGRESS_DETAIL.set(PathModule.basename(path))
 		const oldTag = DataPackTag.fromJSON(JSON.parse((await readFile(path)).toString()))
 		const merged = oldTag.merge(DataPackTag.fromJSON(JSON.parse(file.content.toString())))
 

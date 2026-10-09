@@ -27,12 +27,21 @@
 				}
 			}
 		},
-		"texture_palettes": {
+		"texture_slots": {
 			"type": "object",
 			"default": {},
 			"patternProperties": {
 				"^[a-z0-9_]+$": {
-					"$ref": "#/definitions/texture_palette"
+					"$ref": "#/definitions/texture_slot"
+				}
+			}
+		},
+		"variants": {
+			"type": "object",
+			"default": {},
+			"patternProperties": {
+				"^[a-z0-9_]+$": {
+					"$ref": "#/definitions/variant"
 				}
 			}
 		},
@@ -128,30 +137,57 @@
 				}
 			]
 		},
-		"texture_palette": {
+		"texture_slot": {
 			"type": "object",
-			"required": ["active_state", "states"],
+			"description": "A group of faces that can be switched to any of the slot's textures.",
+			"required": ["default_texture", "textures"],
 			"properties": {
-				"active_state": {
+				"default_texture": {
 					"type": "string",
-					"description": "The name of the currently active state. This value must match one of the keys defined in the 'states' map.",
+					"description": "The key of the texture the slot starts with. Must be one of 'textures'.",
 					"pattern": "^[a-z0-9_]+$"
 				},
-				"states": {
+				"textures": {
+					"type": "array",
+					"description": "Keys of the textures the slot can switch to, from the 'textures' section.",
+					"minItems": 1,
+					"items": {
+						"type": "string",
+						"pattern": "^[a-z0-9_]+$"
+					}
+				}
+			}
+		},
+		"variant": {
+			"type": "object",
+			"description": "A named set of changes to the rig. Applying a Variant changes every node it doesn't exclude.",
+			"required": ["texture_slots", "excluded_nodes", "entity_properties"],
+			"properties": {
+				"is_default": {
+					"type": "boolean",
+					"default": false,
+					"description": "Whether this is the default Variant. Exactly one Variant is the default."
+				},
+				"texture_slots": {
+					"$ref": "#/definitions/texture_slot_changes",
+					"description": "The texture each slot switches to, on nodes this Variant doesn't exclude. Slots not listed are unchanged. The default Variant lists every slot with its default texture."
+				},
+				"excluded_nodes": {
+					"type": "array",
+					"default": [],
+					"description": "Keys from the 'nodes' section this Variant leaves unchanged, including their texture slots.",
+					"items": {
+						"type": "string",
+						"pattern": "^[a-z0-9_]+$"
+					}
+				},
+				"entity_properties": {
 					"type": "object",
-					"description": "A map that links state names to objects representing individual states.",
-					"minProperties": 1,
+					"default": {},
+					"description": "Entity properties this Variant merges onto nodes, by key from the 'nodes' section. Each value has the same shape as that node's 'entity_properties'. For the default Variant, these are the nodes' default properties.",
 					"patternProperties": {
 						"^[a-z0-9_]+$": {
-							"type": "object",
-							"required": ["texture"],
-							"properties": {
-								"texture": {
-									"type": "string",
-									"description": "The key of the texture used for this state, referencing an entry from the 'textures' section.",
-									"pattern": "^[a-z0-9_]+$"
-								}
-							}
+							"type": "object"
 						}
 					}
 				}
@@ -163,6 +199,10 @@
 			"properties": {
 				"type": {
 					"type": "string"
+				},
+				"parent": {
+					"type": "string",
+					"pattern": "^[a-z0-9_]+$"
 				},
 				"default_transformation": {
 					"$ref": "#/definitions/node_transformation"
@@ -179,7 +219,7 @@
 						"type": "object",
 						"required": ["elements"],
 						"properties": {
-							"display_properties": {
+							"entity_properties": {
 								"$ref": "#/definitions/bone_display_properties"
 							},
 							"elements": {
@@ -200,7 +240,7 @@
 					"then": {
 						"type": "object",
 						"properties": {
-							"display_properties": {
+							"entity_properties": {
 								"$ref": "#/definitions/item_display_properties"
 							}
 						}
@@ -215,7 +255,7 @@
 					"then": {
 						"type": "object",
 						"properties": {
-							"display_properties": {
+							"entity_properties": {
 								"$ref": "#/definitions/block_display_properties"
 							}
 						}
@@ -230,8 +270,23 @@
 					"then": {
 						"type": "object",
 						"properties": {
-							"display_properties": {
+							"entity_properties": {
 								"$ref": "#/definitions/text_display_properties"
+							}
+						}
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": { "const": "interaction" }
+						}
+					},
+					"then": {
+						"type": "object",
+						"properties": {
+							"entity_properties": {
+								"$ref": "#/definitions/interaction_entity_properties"
 							}
 						}
 					}
@@ -419,14 +474,14 @@
 							}
 						},
 						{
-							"required": ["type", "texture_palette"],
+							"required": ["type", "texture_slot"],
 							"properties": {
 								"type": {
-									"const": "texture_palette"
+									"const": "texture_slot"
 								},
-								"texture_palette": {
+								"texture_slot": {
 									"type": "string",
-									"description": "A valid key from the 'texture_palettes' section."
+									"description": "A valid key from the 'texture_slots' section."
 								}
 							}
 						}
@@ -605,6 +660,20 @@
 				}
 			]
 		},
+		"interaction_entity_properties": {
+			"type": "object",
+			"default": {},
+			"properties": {
+				"width": {
+					"type": "number",
+					"default": 1
+				},
+				"height": {
+					"type": "number",
+					"default": 1
+				}
+			}
+		},
 		"dynamic_animation": {
 			"type": "object",
 			"required": ["loop_mode", "length"],
@@ -649,14 +718,25 @@
 				"global_keyframes": {
 					"type": "object",
 					"default": {},
+					"description": "Keyframes that aren't tied to a node. When a 'variant' and a 'texture_slot' keyframe share a timestamp, the Variants apply first.",
 					"properties": {
-						"texture": {
+						"variant": {
 							"type": "object",
 							"default": {},
-							"description": "A collection of texture keyframes, identified by a floating-point timestamp.",
+							"description": "A collection of variant keyframes, identified by a floating-point timestamp.",
 							"patternProperties": {
 								"^\\d+\\.\\d+$": {
-									"$ref": "#/definitions/texture_keyframe"
+									"$ref": "#/definitions/variant_keyframe"
+								}
+							}
+						},
+						"texture_slot": {
+							"type": "object",
+							"default": {},
+							"description": "A collection of texture slot keyframes, identified by a floating-point timestamp. Each one changes every node with faces in the listed slots, regardless of Variant exclusions.",
+							"patternProperties": {
+								"^\\d+\\.\\d+$": {
+									"$ref": "#/definitions/texture_slot_changes"
 								}
 							}
 						},
@@ -726,10 +806,19 @@
 			"minItems": 3,
 			"maxItems": 3
 		},
-		"texture_keyframe": {
+		"variant_keyframe": {
+			"type": "array",
+			"description": "Keys from the 'variants' section, applied in order. Later Variants override earlier ones on the nodes they change.",
+			"minItems": 1,
+			"items": {
+				"type": "string",
+				"pattern": "^[a-z0-9_]+$"
+			}
+		},
+		"texture_slot_changes": {
 			"type": "object",
 			"default": {},
-			"description": "Maps texture palettes to active states. Each key corresponds to a valid texture palette key from the 'texture_palette' section, and the value defines its active state.",
+			"description": "Maps keys from the 'texture_slots' section to the key of the texture each slot switches to. Slots not listed are unchanged.",
 			"patternProperties": {
 				"^[a-z0-9_]+$": {
 					"type": "string",

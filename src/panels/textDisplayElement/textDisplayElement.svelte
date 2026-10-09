@@ -1,6 +1,7 @@
 <script lang="ts" module>
 	import { CodeJar } from '@novacbn/svelte-codejar'
 	import { TextDisplay } from '../../outliner/textDisplay'
+	import { insertLineBreakAsText } from '../../util/codeJar'
 	import { localize as translate } from '../../util/lang'
 	import { Stopwatch } from '../../util/stopwatch'
 	import {
@@ -117,7 +118,11 @@
 	class="toolbar text-display-text-toolbar"
 	style={!!selected ? 'margin-bottom: 16px;' : 'visibility:hidden; height: 0px;'}
 >
-	<div class="content codejar-container" on:keydown={onKeydown}>
+	<div
+		class="content codejar-container"
+		on:keydown={onKeydown}
+		on:beforeinput={insertLineBreakAsText}
+	>
 		<CodeJar
 			bind:element={codeJarElement}
 			syntax="snbtTextComponent"

@@ -9,10 +9,13 @@ type DisplayContext =
 	| 'ground'
 	| 'fixed'
 
+/** A packed RGB (or, for dye/firework, ARGB) int, or an RGB float array in 0..1. */
+type TintColor = number | [number, number, number]
+
 type TintSource =
 	| {
 			type: 'minecraft:constant'
-			value: number | [number, number, number]
+			value: TintColor
 	  }
 	| {
 			type:
@@ -20,8 +23,8 @@ type TintSource =
 				| 'minecraft:firework'
 				| 'minecraft:potion'
 				| 'minecraft:map_color'
-				| 'team'
-			default: [number, number, number]
+				| 'minecraft:team'
+			default: TintColor
 	  }
 	| {
 			type: 'minecraft:grass'
@@ -31,7 +34,7 @@ type TintSource =
 	| {
 			type: 'minecraft:custom_model_data'
 			index?: number
-			default: [number, number, number]
+			default: TintColor
 	  }
 
 type ItemModel =

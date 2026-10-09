@@ -900,5 +900,81 @@
 				]
 			}
 		]
+	},
+
+	"1.11.0": {
+		"title": "v1.11.0",
+		"author": "Titus Evans (SnaveSutit)",
+		"date": "2026-10-07",
+		"categories": [
+			{
+				"title": "Changes",
+				"list": [
+					"[BREAKING] On Minecraft 1.21.4 and newer, bone items' `custom_model_data` strings now hold each Texture Slot's current texture instead of the applied Variant's name.",
+					"[BREAKING] Animation frame objectives now include the Blueprint ID (`aj.<animation>.frame` -> `<blueprint_id>.<animation>.frame`), so rigs with the same animation names no longer clash.",
+					"[BREAKING] Plugin JSON format version 3: `display_properties` is renamed to `entity_properties`, `settings.id` no longer has an `animated_java:` prefix, `texture_palettes` is replaced by `texture_slots`, texture keys no longer end in `_png`, and Variants are exported in a new `variants` section with `variant` keyframes instead of being flattened into `texture_slot` keyframes.",
+
+					"Added support for Minecraft 26.3.",
+					"Added Texture Slots. Assign faces to a slot, then switch every face in it to any of the slot's textures. On Minecraft 1.21.4 and newer, each slot can be switched on its own with `function <blueprint_id>/texture_slots/<slot>/<texture>`.",
+					"Variants now pick a texture for each Texture Slot instead of mapping textures, and leave slots they don't set unchanged. Existing Blueprints are migrated automatically.",
+					"The default Variant can now be renamed.",
+					"Variant keyframes can now apply several Variants, in order.",
+					"Added Texture Slot keyframes, which switch Texture Slots to any of their textures during an animation. Requires Minecraft 1.21.4 or newer.",
+					"Variant and Texture Slot keyframes now only change the editor preview in Animate mode, and each bone shows what the animation has applied to it. Previews start from the default Variant, or from the new Preview Variants and Preview Texture Slots in Animation Properties.",
+					"Added a `tween_paused` function that tweens into an animation without playing it. ([#382](https://github.com/Animated-Java/animated-java/issues/382))",
+					"Item, Block, and Text Displays can now rotate and scale around a custom pivot point.",
+					"Added blockstate dropdowns to the Block Display panel.",
+					"Item Model Properties now support every vanilla tint type, not just constant tints.",
+					"Added `Shadow Radius` and `Shadow Strength` options to the Rig page of Blueprint Settings. ([#414](https://github.com/Animated-Java/animated-java/issues/414))",
+					"Added a Preview page to Blueprint Settings that loads resource packs into the editor, so custom fonts, models, and textures show up in previews. Preview packs are never exported.",
+					"Vanilla Item and Block Display previews are now more accurate, using the `block-model-renderer` library. Thanks Ewan!",
+
+					"Exports are now much faster.",
+					"Faster in-game entity UUID lookups on Minecraft 1.21.5 and newer.",
+					"Removed entity display names to improve in-game performance.",
+					"The export progress dialog now shows what's being exported, with a second progress bar for each step.",
+
+					"Textures now show a link icon when linked from a resource pack, and a box icon when stored inside the Blueprint.",
+					"Internal texture names are now automatically cleaned up and kept unique. ([#337](https://github.com/Animated-Java/animated-java/issues/337))",
+					"Texture dropdowns in the Variant config now show texture thumbnails.",
+					"Exported models now include a credit to Animated Java. ([#319](https://github.com/Animated-Java/animated-java/issues/319))",
+					"Moved `Auto Update Rig Orientation` to the Rig page of Blueprint Settings.",
+					"Changed the default target Minecraft version to 26.2.",
+					"Plugin mode exports now include Interactions and each node's parent, and no longer build a resource pack.",
+					"Improved the About page."
+				]
+			},
+			{
+				"title": "Fixes",
+				"list": [
+					"Fixed custom changes to the resource pack's block atlas being wiped on export. ([#470](https://github.com/Animated-Java/animated-java/issues/470))",
+					"Fixed Resource Pack `.zip` export following the Data Pack's export mode setting.",
+					"Fixed old rig entries never being removed from function tags.",
+					"Fixed Variants not swapping models on Minecraft 1.21.0 and 1.21.1. ([#528](https://github.com/Animated-Java/animated-java/issues/528))",
+					"Fixed Variants breaking bones they don't change on Minecraft 1.21.2.",
+					"Fixed texture groups disappearing after reopening a Blueprint. ([#407](https://github.com/Animated-Java/animated-java/issues/407))",
+					"Fixed cameras breaking when a keyframe position was very close to zero. ([#518](https://github.com/Animated-Java/animated-java/issues/518))",
+					"Fixed child bones ignoring a parent's Step interpolation if they were more than one level deep. ([#396](https://github.com/Animated-Java/animated-java/issues/396))",
+					"Fixed invalid commands in keyframes or settings showing up as a crash instead of a clear error. ([#315](https://github.com/Animated-Java/animated-java/issues/315))",
+					"Fixed Plugin mode requiring Resource Pack and Data Pack folders. ([#524](https://github.com/Animated-Java/animated-java/issues/524))",
+					"Fixed texture animations missing from Plugin mode exports.",
+					"Fixed the General, Resource Pack, and Misc pages of Blueprint Settings not being translated. ([#525](https://github.com/Animated-Java/animated-java/issues/525))",
+					"Fixed the Variants list scrolling forever after dragging a Variant. ([#408](https://github.com/Animated-Java/animated-java/issues/408))",
+					"Fixed the selected Variant carrying over between open projects.",
+					"Fixed Interaction functions failing to load on versions before Minecraft 1.21.5.",
+					"Fixed `set_default_pose` and `apply_default_pose` not saving floating entity positions on versions before Minecraft 1.21.5.",
+					"Fixed a blank `Custom Rig Entity Tags` setting adding an empty tag to every rig entity.",
+					"Fixed constant log spam when Unjank is installed.",
+					"Fixed cubes rotated on more than one axis sometimes passing rotation checks on versions before Minecraft 1.21.11.",
+					"Fixed rotation snapping not applying on versions before Minecraft 1.21.6.",
+					"Fixed animated Item Displays having flipped rotation and position.",
+					"Fixed vanilla blockstate data not loading until Blockbench was restarted after an update.",
+					"Fixed the `.ajmodel` importer failing to load. ([#532](https://github.com/Animated-Java/animated-java/issues/532))",
+					"Fixed Variant and function keyframes never running with the Storage Animation System.",
+					"Fixed Variant and function keyframes on the last frame of a looping animation only running if a Locator also moved on that frame.",
+					"Fixed Enter not starting a new line in code editors on Blockbench 5.2. ([#535](https://github.com/Animated-Java/animated-java/issues/535))"
+				]
+			}
+		]
 	}
 }

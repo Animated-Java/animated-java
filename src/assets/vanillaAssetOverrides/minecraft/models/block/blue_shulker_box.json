@@ -1,6 +1,0 @@
-{
-	"parent": "block/shulker_box",
-	"textures": {
-		"0": "entity/shulker/shulker_blue"
-	}
-}

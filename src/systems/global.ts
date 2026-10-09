@@ -72,6 +72,12 @@ export class AJMeta {
 			for (const file of lastNamespaceData.versionedFiles) {
 				this.previousVersionedFiles.add(PathModule.join(this.rootFolder, file))
 			}
+
+			if (!Array.isArray(lastNamespaceData.coreFiles)) lastNamespaceData.coreFiles = []
+			for (const file of lastNamespaceData.coreFiles) {
+				this.previousCoreFiles.add(PathModule.join(this.rootFolder, file))
+			}
+
 			delete this.previousAJMeta.rigs[this.lastUsedBlueprintId]
 		}
 

@@ -1,9 +1,9 @@
 import type { AsyncZippable } from 'fflate/browser'
 import { getFsModule } from '../../constants'
 import {
-	MAX_PROGRESS,
 	PROGRESS,
-	PROGRESS_DESCRIPTION,
+	PROGRESS_DETAIL,
+	setExportProgressPhase,
 } from '../../dialogs/exportProgress/exportProgress'
 import { IntentionalExportError } from '../errors'
 import { AJMeta, PackMeta } from '../global'
@@ -135,17 +135,16 @@ export default async function compileResourcePack(
 	const { existsSync, promises } = getFsModule()
 	const { writeFile, mkdir, rm, readdir, unlink } = promises
 
-	if (aj.enable_plugin_mode) {
-		// Do nothing
-		console.log('Plugin mode enabled. Skipping resource pack export.')
-	} else if (aj.resource_pack_export_mode === 'folder') {
+	if (aj.resource_pack_export_mode === 'folder') {
 		// Clean up old files
-		PROGRESS_DESCRIPTION.set('Removing Old Resource Pack Files...')
-		PROGRESS.set(0)
-		MAX_PROGRESS.set(ajmeta.previousVersionedFiles.size)
+		setExportProgressPhase(
+			'Removing Old Resource Pack Files...',
+			ajmeta.previousVersionedFiles.size
+		)
 
 		const removedFolders = new Set<string>()
 		for (const file of ajmeta.previousVersionedFiles) {
+			PROGRESS_DETAIL.set(PathModule.basename(file))
 			if (existsSync(file)) await unlink(file)
 			let folder = PathModule.dirname(file)
 			while (
@@ -170,12 +169,11 @@ export default async function compileResourcePack(
 			...globalVersionSpecificFiles,
 		])
 
-		PROGRESS_DESCRIPTION.set('Writing Resource Pack...')
-		PROGRESS.set(0)
-		MAX_PROGRESS.set(exportedFiles.size)
+		setExportProgressPhase('Writing Resource Pack...', exportedFiles.size)
 		const createdFolderCache = new Set<string>()
 
 		for (const [path, file] of exportedFiles) {
+			PROGRESS_DETAIL.set(PathModule.basename(path))
 			const folder = PathModule.dirname(path)
 			if (!createdFolderCache.has(folder)) {
 				await mkdir(folder, { recursive: true })
@@ -193,7 +191,7 @@ export default async function compileResourcePack(
 			}
 			PROGRESS.set(PROGRESS.get() + 1)
 		}
-	} else if (aj.data_pack_export_mode === 'zip') {
+	} else if (aj.resource_pack_export_mode === 'zip') {
 		const data: AsyncZippable = {}
 
 		for (const [path, file] of coreFiles.entries()) {

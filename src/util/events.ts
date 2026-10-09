@@ -1,5 +1,5 @@
 import { subscribable } from 'simple-subpub'
-import { Variant } from '../variants'
+import type { Variant } from '../variants'
 
 // Plugin Events
 const EVENTS = {

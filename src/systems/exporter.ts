@@ -1,20 +1,28 @@
 import { getFsModule } from '../constants'
 import {
-	PROGRESS_DESCRIPTION,
+	closeExportProgressDialog,
 	openExportProgressDialog,
+	setExportProgressPhase,
 } from '../dialogs/exportProgress/exportProgress'
 import { openUnexpectedErrorDialog } from '../dialogs/unexpectedError/unexpectedError'
-import { projectTargetVersionIsAtLeast, saveBlueprint } from '../formats/blueprint'
+import { projectTargetVersionIsAtLeast } from '../formats/blueprint'
 import { validateThisProjectsBlueprintSettings } from '../formats/blueprint/settings'
 import { resolvePath } from '../util/fileUtil'
 import { localize as translate } from '../util/lang'
 import { isResourcePackPath, parseResourceLocation } from '../util/minecraftUtil'
 import { scrubUndefined } from '../util/misc'
+import {
+	getTextureSlots,
+	savePreviews,
+	TEXTURE_SLOT_COMMANDS_MIN_VERSION,
+	verifySlotTextures,
+} from '../textureSlots'
 import { Stopwatch } from '../util/stopwatch'
 import { Variant } from '../variants'
 import { hashAnimations, renderProjectAnimations } from './animationRenderer'
 import compileDataPack from './datapackCompiler'
 import { IntentionalExportError } from './errors'
+import { isTintSourceTypeAvailable, TINT_SOURCES_MIN_VERSION } from './minecraft/tintSources'
 import { exportPluginBlueprint } from './pluginCompiler'
 import resourcepackCompiler from './resourcepackCompiler'
 import { hashRig, renderRig } from './rigRenderer'
@@ -57,26 +65,46 @@ export function getExportPaths() {
 	}
 }
 
+const PROJECTS_SHOWN_SLOT_NOTICE = new WeakSet<ModelProject>()
+
+/**
+ * Explains, once per project per session, that Texture Slots only swap through Variants on this version.
+ */
+function showOldVersionTextureSlotsNotice() {
+	if (!Project || PROJECTS_SHOWN_SLOT_NOTICE.has(Project)) return
+	PROJECTS_SHOWN_SLOT_NOTICE.add(Project)
+	Blockbench.showToastNotification({
+		text: translate(
+			'toast.texture_slots_old_version',
+			Project.animated_java.target_minecraft_version,
+			TEXTURE_SLOT_COMMANDS_MIN_VERSION
+		),
+		icon: 'info',
+		expire: 15000,
+	})
+}
+
 interface ExportProjectOptions {
-	forceSave?: boolean
 	debugMode?: boolean
 }
 
 async function actuallyExportProject({
-	forceSave = true,
 	debugMode = false,
 }: ExportProjectOptions = {}): Promise<boolean> {
 	const aj = Project!.animated_java
-	const dialog = openExportProgressDialog()
+	openExportProgressDialog()
 	// Wait for the dialog to open
 	await new Promise(resolve => requestAnimationFrame(resolve))
 	const selectedVariant = Variant.selected
+	const restoreSlotPreviews = savePreviews()
 	Variant.getDefault().select()
 	const stopwatch = new Stopwatch('Project Export').start()
 	try {
-		// Verify that all variant texture maps are valid
+		for (const slot of getTextureSlots()) {
+			verifySlotTextures(slot)
+		}
 		for (const variant of Variant.all) {
-			variant.verifyTextureMap()
+			variant.verifySlotTextures()
 		}
 
 		// Verify that all non-external textures have unique names
@@ -91,6 +119,42 @@ async function actuallyExportProject({
 			}
 		}
 
+		if (!aj.enable_plugin_mode && projectTargetVersionIsAtLeast(TINT_SOURCES_MIN_VERSION)) {
+			for (const group of Group.all) {
+				if (!group.children.some(child => child instanceof Cube)) continue
+				const tint = group.itemModelProperties?.tints.find(
+					tint => !isTintSourceTypeAvailable(tint.type, aj.target_minecraft_version)
+				)
+				if (!tint) continue
+				throw new IntentionalExportError(
+					translate(
+						'misc.failed_to_export.unsupported_tint_source.message',
+						group.name,
+						tint.type,
+						aj.target_minecraft_version
+					)
+				)
+			}
+		}
+
+		if (!projectTargetVersionIsAtLeast(TEXTURE_SLOT_COMMANDS_MIN_VERSION)) {
+			const animation = Project!.animations.find(animation =>
+				(animation.animators.effects?.texture_slot as _Keyframe[] | undefined)?.some(
+					kf => Object.keys(kf.texture_slots ?? {}).length > 0
+				)
+			)
+			if (animation) {
+				throw new IntentionalExportError(
+					translate(
+						'misc.failed_to_export.texture_slot_keyframes_old_version.message',
+						animation.name,
+						aj.target_minecraft_version,
+						TEXTURE_SLOT_COMMANDS_MIN_VERSION
+					)
+				)
+			}
+		}
+
 		const {
 			resourcePackFolder,
 			dataPackFolder,
@@ -99,7 +163,7 @@ async function actuallyExportProject({
 			displayItemPath,
 		} = getExportPaths()
 
-		PROGRESS_DESCRIPTION.set('Rendering Rig...')
+		setExportProgressPhase('Rendering Rig...')
 		const rig = renderRig(modelExportFolder, textureExportFolder)
 
 		if (!rig.includes_custom_models && Texture.all.length !== 0) {
@@ -116,31 +180,31 @@ async function actuallyExportProject({
 			Project!.animated_java.resource_pack_export_mode === 'none' &&
 			rig.includes_custom_models
 		) {
+			closeExportProgressDialog()
 			Blockbench.showMessageBox({
 				title: translate('misc.failed_to_export.title'),
 				message: translate('misc.failed_to_export.custom_models.message'),
 				buttons: [translate('misc.failed_to_export.button')],
 			})
-			dialog.close(0)
 			return false
 		}
 
 		const animations = await renderProjectAnimations(Project!, rig)
 
-		PROGRESS_DESCRIPTION.set('Hashing Rendered Objects...')
+		setExportProgressPhase('Hashing Rendered Objects...')
 		const rigHash = hashRig(rig)
 		const animationHash = hashAnimations(animations)
 
-		// TODO - Plugin mode should run without the resource pack compiler
-		// Always run the resource pack compiler because it calculates custom model data.
-		await resourcepackCompiler(aj.target_minecraft_version, {
-			rig,
-			displayItemPath,
-			resourcePackFolder,
-			textureExportFolder,
-			modelExportFolder,
-			debugMode,
-		})
+		if (!aj.enable_plugin_mode) {
+			await resourcepackCompiler(aj.target_minecraft_version, {
+				rig,
+				displayItemPath,
+				resourcePackFolder,
+				textureExportFolder,
+				modelExportFolder,
+				debugMode,
+			})
+		}
 
 		if (!aj.enable_plugin_mode && aj.data_pack_export_mode !== 'none') {
 			await compileDataPack(aj.target_minecraft_version, {
@@ -154,18 +218,26 @@ async function actuallyExportProject({
 		}
 
 		if (aj.enable_plugin_mode) {
-			PROGRESS_DESCRIPTION.set('Exporting Plugin JSON...')
+			setExportProgressPhase('Exporting Plugin JSON...')
 			exportPluginBlueprint({ rig, animations })
 		}
 
 		Project!.last_used_blueprint_id = aj.blueprint_id
 
-		if (forceSave) saveBlueprint()
 		Blockbench.showQuickMessage('Project exported successfully!', 2000)
+
+		if (
+			!aj.enable_plugin_mode &&
+			Object.keys(rig.texture_slots).length &&
+			!projectTargetVersionIsAtLeast(TEXTURE_SLOT_COMMANDS_MIN_VERSION)
+		) {
+			showOldVersionTextureSlotsNotice()
+		}
 
 		return true
 	} catch (e: any) {
 		console.error(e)
+		closeExportProgressDialog()
 		if (e instanceof IntentionalExportError) {
 			Blockbench.showMessageBox(
 				{
@@ -181,7 +253,8 @@ async function actuallyExportProject({
 		openUnexpectedErrorDialog(e as Error)
 	} finally {
 		selectedVariant?.select()
-		dialog.close(0)
+		restoreSlotPreviews()
+		closeExportProgressDialog()
 		stopwatch.debug()
 	}
 	return false

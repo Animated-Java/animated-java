@@ -11,6 +11,8 @@ export function openAnimationPropertiesDialog(animation: _Animation) {
 	const loopMode = observable(animation.loop as string)
 	const loopDelay = observable(Number(animation.loop_delay) || 0)
 	const excludedNodes = observable(animation.excluded_nodes)
+	const previewVariants = observable([...animation.preview_variants])
+	const previewTextureSlots = observable({ ...animation.preview_texture_slots })
 
 	new SvelteDialog({
 		id: DIALOG_ID,
@@ -22,6 +24,8 @@ export function openAnimationPropertiesDialog(animation: _Animation) {
 			loopMode,
 			loopDelay,
 			excludedNodes,
+			previewVariants,
+			previewTextureSlots,
 		},
 		disableKeybinds: true,
 		onConfirm() {
@@ -30,6 +34,9 @@ export function openAnimationPropertiesDialog(animation: _Animation) {
 			animation.loop = loopMode.get() as any
 			animation.loop_delay = loopDelay.get().toString()
 			animation.excluded_nodes = excludedNodes.get()
+			animation.preview_variants = previewVariants.get()
+			animation.preview_texture_slots = previewTextureSlots.get()
+			Animator.preview()
 
 			Project!.saved = false
 		},

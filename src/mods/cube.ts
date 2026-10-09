@@ -14,7 +14,7 @@ import {
 } from '../shaders/enchantmentGlint'
 import { isCubeValid } from '../systems/util'
 import { localize as translate } from '../util/lang'
-import { Variant } from '../variants'
+import { getPreviewVariant } from '../animationPreview'
 
 declare global {
 	// @ts-expect-error - Broken BB types
@@ -26,16 +26,43 @@ declare global {
 const ERROR_OUTLINE_MATERIAL = Canvas.outlineMaterial.clone()
 ERROR_OUTLINE_MATERIAL.color.set('#ff0000')
 
-export function updateAllCubeOutlines() {
-	for (const cube of Cube.all) {
-		Cube.preview_controller.updateTransform(cube)
+export const updateAllCubeOutlines = () => {
+	if (activeProjectIsBlueprintFormat()) {
+		for (const cube of Cube.all) {
+			const validity = isCubeValid(cube)
+
+			switch (validity) {
+				case 'valid': {
+					updateCubeValidity(cube, true)
+					break
+				}
+				case '1.21.6+': {
+					if (projectTargetVersionIsAtLeast('1.21.6')) {
+						updateCubeValidity(cube, true)
+						break
+					}
+					// Fallthrough to invalid if the target version is below 1.21.6
+				}
+				case 'invalid': {
+					updateCubeValidity(cube, false)
+					showToastNotification()
+					break
+				}
+			}
+		}
 	}
 }
 
 function updateCubeValidity(cube: Cube, isValid: boolean) {
 	if (cube.isRotationValid === isValid) return
-	cube.mesh.outline.material = isValid ? Canvas.outlineMaterial : ERROR_OUTLINE_MATERIAL
 	cube.isRotationValid = isValid
+	if (isValid && cube.mesh.outline.material === ERROR_OUTLINE_MATERIAL) {
+		cube.mesh.outline.material = Canvas.outlineMaterial
+		if (!cube.selected) cube.mesh.outline.visible = false
+	} else if (!isValid && cube.mesh.outline.material !== ERROR_OUTLINE_MATERIAL) {
+		cube.mesh.outline.material = ERROR_OUTLINE_MATERIAL
+		cube.mesh.outline.visible = true
+	}
 }
 
 let toastNotification: Deletable | null = null
@@ -69,32 +96,9 @@ registerPatch({
 	id: `animated_java:cube-outline-mod`,
 
 	apply: () => {
-		const originalUpdateTransform = Cube.preview_controller.updateTransform
-		Cube.preview_controller.updateTransform = function (cube: Cube) {
-			if (activeProjectIsBlueprintFormat()) {
-				const validity = isCubeValid(cube)
-
-				switch (validity) {
-					case 'valid': {
-						updateCubeValidity(cube, true)
-						break
-					}
-					case '1.21.6+': {
-						if (projectTargetVersionIsAtLeast('1.21.6')) {
-							updateCubeValidity(cube, true)
-							break
-						}
-						// Fallthrough to invalid if the target version is below 1.21.6
-					}
-					case 'invalid': {
-						updateCubeValidity(cube, false)
-						showToastNotification()
-						break
-					}
-				}
-			}
-			originalUpdateTransform.call(this, cube)
-		}
+		Blockbench.on('finish_edit', updateAllCubeOutlines)
+		Blockbench.on('undo', updateAllCubeOutlines)
+		Blockbench.on('redo', updateAllCubeOutlines)
 
 		const originalInit = Cube.prototype.init
 		Cube.prototype.init = function (this: Cube) {
@@ -114,11 +118,13 @@ registerPatch({
 			return cube
 		}
 
-		return { originalUpdateTransform, originalInit }
+		return { originalInit }
 	},
 
-	revert: ({ originalUpdateTransform, originalInit }) => {
-		Cube.preview_controller.updateTransform = originalUpdateTransform
+	revert: ({ originalInit }) => {
+		Blockbench.removeListener('finish_edit', updateAllCubeOutlines)
+		Blockbench.removeListener('undo', updateAllCubeOutlines)
+		Blockbench.removeListener('redo', updateAllCubeOutlines)
 		Cube.prototype.init = originalInit
 	},
 })
@@ -138,16 +144,17 @@ registerPropertyOverridePatch({
 				const parent = instance.parent
 				let config: IBlueprintDisplayEntityConfigJSON
 				if (parent instanceof Group) {
-					if (!Variant.selected || Variant.selected.isDefault) {
+					const variant = getPreviewVariant(parent)
+					if (!variant || variant.isDefault) {
 						config = parent.configs.default
 					} else {
-						config = parent.configs.variants[Variant.selected.uuid]
+						config = parent.configs.variants[variant.uuid]
 					}
-
-					removeEnchantmentGlintFromMesh(instance.mesh)
 
 					if (config?.enchanted) {
 						applyEnchantmentGlintToMesh(instance.mesh)
+					} else {
+						removeEnchantmentGlintFromMesh(instance.mesh)
 					}
 				}
 			}

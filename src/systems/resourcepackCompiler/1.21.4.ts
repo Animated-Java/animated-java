@@ -1,26 +1,38 @@
 import type { ResourcePackCompiler } from '.'
 import { getFsModule } from '../../constants'
-import { PROGRESS_DESCRIPTION } from '../../dialogs/exportProgress/exportProgress'
+import { setExportProgressPhase } from '../../dialogs/exportProgress/exportProgress'
 import {
 	isResourcePackPath,
 	parseResourceLocation,
+	parseResourcePackPath,
 	sanitizeStorageKey,
 } from '../../util/minecraftUtil'
 import { Variant } from '../../variants'
 import type { IItemDefinition, TintSource } from '../minecraft/itemDefinitions'
 import { type ITextureAtlas } from '../minecraft/textureAtlas'
-import type { IRenderedNodes, IRenderedRig, IRenderedVariantModel } from '../rigRenderer'
+import {
+	getSlotTextureKey,
+	getTextureResourceLocation,
+	type IRenderedNodes,
+	MODEL_CREDIT,
+} from '../rigRenderer'
+import {
+	createTextureSlotItemDefinition,
+	type ISlotItemModel,
+	splitModelByTextureSlot,
+} from './textureSlotModels'
 
 const compileResourcePack: ResourcePackCompiler = async ({
 	coreFiles,
 	versionedFiles,
 	rig,
+	resourcePackPath,
 	textureExportFolder,
 	modelExportFolder,
 }) => {
 	const aj = Project!.animated_java
 
-	PROGRESS_DESCRIPTION.set('Compiling Resource Pack...')
+	setExportProgressPhase('Compiling Resource Pack...')
 	console.log('Compiling resource pack...', {
 		rig,
 		textureExportFolder,
@@ -40,8 +52,11 @@ const compileResourcePack: ResourcePackCompiler = async ({
 	const { readFile } = promises
 
 	// Texture atlas
-	const blockAtlasPath = PathModule.join('assets/minecraft/atlases/blocks.json')
-	const blockAtlas: ITextureAtlas = await readFile(blockAtlasPath, 'utf-8')
+	const blockAtlasPath = 'assets/minecraft/atlases/blocks.json'
+	const blockAtlas: ITextureAtlas = await readFile(
+		PathModule.join(resourcePackPath, blockAtlasPath),
+		'utf-8'
+	)
 		.catch(() => {
 			console.log('Creating new block atlas...')
 			return '{ "sources": [] }'
@@ -109,41 +124,65 @@ const compileResourcePack: ResourcePackCompiler = async ({
 			})
 	}
 
-	// Item Model Definitions
-	const defaultVariant = Variant.getDefault()
-
-	for (const [boneUuid, model] of Object.entries(rig.variants[defaultVariant.uuid].models)) {
-		const bone = rig.nodes[boneUuid] as IRenderedNodes['Bone']
-		const exportPath = PathModule.join(itemModelDefinitionsFolder, bone.name + '.json')
-
-		let itemDefinition: IItemDefinition
-
-		if (Object.values(rig.variants).length === 1) {
-			itemDefinition = createSingleVariantItemDefinition(model, bone.itemModelProperties)
-		} else {
-			itemDefinition = createMultiVariantItemDefinition(
-				boneUuid,
-				model,
-				rig,
-				bone.itemModelProperties
-			)
-		}
-
-		versionedFiles.set(exportPath, { content: autoStringify(itemDefinition) })
+	// Bone models and item definitions. Variants only switch Texture Slots here, so they don't
+	// need models of their own.
+	const writeModel = (path: string, model: object) => {
+		versionedFiles.set(path, { content: autoStringify(model) })
+		const parsed = parseResourcePackPath(path)
+		if (!parsed) throw new Error(`Invalid model path: '${path}'`)
+		return parsed.resourceLocation
 	}
 
-	// Variant Models
-	for (const variant of Object.values(rig.variants)) {
-		for (const [boneUuid, variantModel] of Object.entries(variant.models)) {
-			const bone = rig.nodes[boneUuid] as IRenderedNodes['Bone']
-			if (variantModel.custom_model_data !== -1) continue
-			const exportPath = variant.is_default
-				? PathModule.join(modelExportFolder, bone.name + '.json')
-				: PathModule.join(modelExportFolder, variant.name, bone.name + '.json')
-			versionedFiles.set(PathModule.join(exportPath), {
-				content: autoStringify(variantModel.model),
-			})
+	const defaultModels = rig.variants[Variant.getDefault().uuid].models
+	for (const [boneUuid, boneModel] of Object.entries(defaultModels)) {
+		const bone = rig.nodes[boneUuid] as IRenderedNodes['Bone']
+		const tints = getTints(bone.itemModelProperties)
+		const basePath = PathModule.join(modelExportFolder, bone.name + '.json')
+		const itemDefinitionPath = PathModule.join(itemModelDefinitionsFolder, bone.name + '.json')
+
+		const boneSlots = Object.values(rig.texture_slots)
+			.filter(slot => slot.bones.includes(boneUuid))
+			.sort((a, b) => a.index - b.index)
+
+		if (!boneSlots.length) {
+			const model = writeModel(basePath, boneModel.model!)
+			const itemDefinition: IItemDefinition = {
+				model: { type: 'minecraft:model', model, tints },
+			}
+			versionedFiles.set(itemDefinitionPath, { content: autoStringify(itemDefinition) })
+			continue
 		}
+
+		const split = splitModelByTextureSlot(
+			boneModel.model!,
+			new Set(boneSlots.map(slot => getSlotTextureKey(slot.name)))
+		)
+		const baseModel = split.base && writeModel(basePath, split.base)
+
+		const slots: ISlotItemModel[] = boneSlots.map(slot => {
+			const key = getSlotTextureKey(slot.name)
+			const slotFolder = PathModule.join(modelExportFolder, bone.name, slot.name)
+			const defaultModel = writeModel(slotFolder + '.json', split.slots[key])
+
+			const textureModels: Record<string, string> = {}
+			for (const texture of slot.textures.slice(1)) {
+				textureModels[texture.name] = writeModel(
+					PathModule.join(slotFolder, texture.name + '.json'),
+					{
+						credit: MODEL_CREDIT,
+						parent: defaultModel,
+						textures: {
+							[key]: getTextureResourceLocation(rig.textures[texture.id], rig)
+								.resourceLocation,
+						},
+					}
+				)
+			}
+			return { index: slot.index, defaultModel, textureModels }
+		})
+
+		const itemDefinition = createTextureSlotItemDefinition({ baseModel, slots, tints })
+		versionedFiles.set(itemDefinitionPath, { content: autoStringify(itemDefinition) })
 	}
 
 	console.log('Resource pack compiled!')
@@ -151,75 +190,7 @@ const compileResourcePack: ResourcePackCompiler = async ({
 
 export default compileResourcePack
 
-function createSingleVariantItemDefinition(
-	model: IRenderedVariantModel,
-	itemModelProperties?: { tints: TintSource[] }
-): IItemDefinition {
-	let tints: TintSource[]
-	if (itemModelProperties?.tints.length) {
-		tints = itemModelProperties.tints
-	} else {
-		tints = [new oneLiner({ type: 'minecraft:dye', default: [1, 1, 1] })]
-	}
-
-	return {
-		model: {
-			type: 'minecraft:model',
-			model: model.resource_location,
-			tints,
-		},
-	}
-}
-
-function createMultiVariantItemDefinition(
-	boneUUID: string,
-	model: IRenderedVariantModel,
-	rig: IRenderedRig,
-	itemModelProperties?: { tints: TintSource[] }
-): IItemDefinition {
-	let tints: TintSource[]
-	if (itemModelProperties?.tints.length) {
-		tints = itemModelProperties.tints
-	} else {
-		tints = [new oneLiner({ type: 'minecraft:dye', default: [1, 1, 1] })]
-	}
-
-	const itemDefinition: IItemDefinition & {
-		model: { type: 'minecraft:select'; property: 'minecraft:custom_model_data' }
-	} = {
-		model: {
-			type: 'minecraft:select',
-			property: 'minecraft:custom_model_data',
-			cases: [
-				{
-					when: 'AJ_INTERNAL_EMPTY',
-					model: { type: 'minecraft:empty' },
-				},
-			],
-			fallback: {
-				type: 'minecraft:model',
-				model: model.resource_location,
-				tints,
-			},
-		},
-	}
-
-	for (const variant of Object.values(rig.variants)) {
-		const variantModel = variant.models[boneUUID]
-		if (!variantModel || variant.is_default) continue
-		itemDefinition.model.cases.push({
-			when: variant.name,
-			model: {
-				type: 'minecraft:model',
-				model: variantModel.resource_location,
-				tints,
-			},
-		} as (typeof itemDefinition.model.cases)[0])
-	}
-
-	if (itemDefinition.model.cases.length === 0) {
-		return createSingleVariantItemDefinition(model, itemModelProperties)
-	}
-
-	return itemDefinition
+function getTints(itemModelProperties?: { tints: TintSource[] }): TintSource[] {
+	if (itemModelProperties?.tints.length) return itemModelProperties.tints
+	return [new oneLiner({ type: 'minecraft:dye', default: [1, 1, 1] })]
 }

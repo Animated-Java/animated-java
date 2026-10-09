@@ -1,21 +1,4 @@
-// FIXME - Figure out how to import these files dynamically and generate the MCB_FILES object automatically.
-import GLOBAL_1_20_4 from './1.20.4/global.mcb'
-import GLOBAL_TEMPLATES_1_20_4 from './1.20.4/global.mcbt'
-import MAIN_1_20_4 from './1.20.4/main.mcb'
-
-import MAIN_1_20_5 from './1.20.5/main.mcb'
-
-import GLOBAL_1_21_0 from './1.21.0/global.mcb'
-import MAIN_1_21_0 from './1.21.0/main.mcb'
-
-import MAIN_1_21_2 from './1.21.2/main.mcb'
-
-import MAIN_1_21_4 from './1.21.4/main.mcb'
-
-import GLOBAL_1_21_5 from './1.21.5/global.mcb'
-import MAIN_1_21_5 from './1.21.5/main.mcb'
-
-import GLOBAL_26_2 from './26.2/global.mcb'
+import MCB_SOURCES from 'mcb-sources:./'
 
 // The core is content that always goes in the `data` folder directly,
 // while other files are in the `animated_java/data` folder to be overlayed when the correct version is loaded.
@@ -26,89 +9,42 @@ interface MCBFiles {
 	globalTemplates: string
 }
 
+const MCB_FIELDS = ['main', 'global', 'globalTemplates'] as const
+
+/**
+ * Resolves the MC-Build source files for a target Minecraft version.
+ *
+ * Every version directory under `src/systems/datapackCompiler/` is discovered
+ * automatically (see `mcbCompressionPlugin`). Each field is resolved on its own
+ * to the newest directory that is `<=` the target version and actually provides
+ * that file, so a new version only needs a directory containing what changed.
+ */
 export function getMCBFilesByVersion(version: string): MCBFiles {
-	switch (true) {
-		case VersionUtil.compare(version, '>=', '26.2'): {
-			return {
-				main: MAIN_1_21_5,
-				global: GLOBAL_26_2,
-				globalTemplates: GLOBAL_TEMPLATES_1_20_4,
-			}
-		}
+	const candidates = Object.keys(MCB_SOURCES)
+		.filter(sourceVersion => VersionUtil.compare(sourceVersion, '<=', version))
+		.sort((a, b) => VersionUtil.compare(a, b))
 
-		case VersionUtil.compare(version, '>=', '1.21.11'): {
-			return {
-				main: MAIN_1_21_5,
-				global: GLOBAL_1_21_5,
-				globalTemplates: GLOBAL_TEMPLATES_1_20_4,
-			}
-		}
-
-		case VersionUtil.compare(version, '>=', '1.21.9'): {
-			return {
-				main: MAIN_1_21_5,
-				global: GLOBAL_1_21_5,
-				globalTemplates: GLOBAL_TEMPLATES_1_20_4,
-			}
-		}
-
-		case VersionUtil.compare(version, '>=', '1.21.6'): {
-			return {
-				main: MAIN_1_21_5,
-				global: GLOBAL_1_21_5,
-				globalTemplates: GLOBAL_TEMPLATES_1_20_4,
-			}
-		}
-
-		case VersionUtil.compare(version, '>=', '1.21.5'): {
-			return {
-				main: MAIN_1_21_5,
-				global: GLOBAL_1_21_5,
-				globalTemplates: GLOBAL_TEMPLATES_1_20_4,
-			}
-		}
-
-		case VersionUtil.compare(version, '>=', '1.21.4'): {
-			return {
-				main: MAIN_1_21_4,
-				global: GLOBAL_1_21_0,
-				globalTemplates: GLOBAL_TEMPLATES_1_20_4,
-			}
-		}
-
-		case VersionUtil.compare(version, '>=', '1.21.2'): {
-			return {
-				main: MAIN_1_21_2,
-				global: GLOBAL_1_21_0,
-				globalTemplates: GLOBAL_TEMPLATES_1_20_4,
-			}
-		}
-
-		case VersionUtil.compare(version, '>=', '1.21.0'): {
-			return {
-				main: MAIN_1_21_0,
-				global: GLOBAL_1_21_0,
-				globalTemplates: GLOBAL_TEMPLATES_1_20_4,
-			}
-		}
-
-		case VersionUtil.compare(version, '>=', '1.20.5'): {
-			return {
-				main: MAIN_1_20_5,
-				global: GLOBAL_1_20_4,
-				globalTemplates: GLOBAL_TEMPLATES_1_20_4,
-			}
-		}
-
-		case VersionUtil.compare(version, '>=', '1.20.4'): {
-			return {
-				main: MAIN_1_20_4,
-				global: GLOBAL_1_20_4,
-				globalTemplates: GLOBAL_TEMPLATES_1_20_4,
-			}
-		}
-
-		default:
-			throw new Error(`Unsupported Minecraft version: ${version}`)
+	if (candidates.length === 0) {
+		throw new Error(`Unsupported Minecraft version: ${version}`)
 	}
+
+	const resolved = {} as MCBFiles
+
+	for (const field of MCB_FIELDS) {
+		for (let i = candidates.length - 1; i >= 0; i--) {
+			const content = MCB_SOURCES[candidates[i]][field]
+			if (content !== undefined) {
+				resolved[field] = content
+				break
+			}
+		}
+
+		if (resolved[field] === undefined) {
+			throw new Error(
+				`No "${field}" MC-Build source available for Minecraft version ${version}`
+			)
+		}
+	}
+
+	return resolved
 }

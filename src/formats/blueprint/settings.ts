@@ -26,6 +26,9 @@ export interface BlueprintSettings {
 	custom_model_data_offset: number
 	enable_advanced_resource_pack_settings: boolean
 	resource_pack: string
+	// Preview Settings
+	/** Editor-only resource pack overlays, highest priority first. */
+	preview_resource_packs: string[]
 	// Data Pack Settings
 	enable_advanced_data_pack_settings: boolean
 	data_pack: string
@@ -35,6 +38,8 @@ export interface BlueprintSettings {
 	on_post_tick_function: string
 	interpolation_duration: number
 	teleportation_duration: number
+	shadow_radius: number
+	shadow_strength: number
 	custom_rig_entity_tags: string
 	auto_update_rig_orientation: boolean
 	use_storage_for_animation: boolean
@@ -55,13 +60,16 @@ export const defaultValues: BlueprintSettings = {
 	enable_plugin_mode: false,
 	resource_pack_export_mode: 'folder' as ExportMode,
 	data_pack_export_mode: 'folder' as ExportMode,
-	target_minecraft_version: '26.1.2',
+	target_minecraft_version: '26.2',
 
 	// Resource Pack Settings
 	display_item: 'minecraft:white_dye',
 	custom_model_data_offset: 0,
 	enable_advanced_resource_pack_settings: false,
 	resource_pack: '',
+
+	// Preview Settings
+	preview_resource_packs: [],
 
 	// Data Pack Settings
 	enable_advanced_data_pack_settings: false,
@@ -74,6 +82,8 @@ export const defaultValues: BlueprintSettings = {
 
 	interpolation_duration: 1,
 	teleportation_duration: 1,
+	shadow_radius: 0,
+	shadow_strength: 1,
 
 	custom_rig_entity_tags: '',
 	auto_update_rig_orientation: true,
@@ -237,6 +247,66 @@ export function validateResourcePackFolder(value: string): ValueCheckResult {
 	}
 }
 
+/**
+ * Validates the optional preview resource pack path. An empty value is fine (the
+ * feature is simply off). A `.zip` path is treated as a zipped pack; anything
+ * else is treated as an unzipped pack folder.
+ */
+export function validatePreviewResourcePack(value: string): ValueCheckResult {
+	if (value === '') return
+
+	let path: string
+	try {
+		path = resolvePath(value)
+	} catch (error: any) {
+		console.error(error)
+		return {
+			type: 'error',
+			message: localize('resource_pack.folder.error.invalid_path', error.message),
+		}
+	}
+
+	const { existsSync, statSync } = getFsModule()
+
+	if (!existsSync(path)) {
+		return {
+			type: 'error',
+			message: localize('resource_pack.folder.error.does_not_exist'),
+		}
+	}
+
+	if (/\.zip$/i.test(path)) {
+		if (statSync(path).isDirectory()) {
+			return {
+				type: 'error',
+				message: localize('preview.error.zip_is_a_dir'),
+			}
+		}
+		return
+	}
+
+	if (!statSync(path).isDirectory()) {
+		return {
+			type: 'error',
+			message: localize('resource_pack.folder.error.not_a_dir'),
+		}
+	}
+
+	if (!existsSync(join(path, 'pack.mcmeta'))) {
+		return {
+			type: 'error',
+			message: localize('resource_pack.folder.error.no_pack_mcmeta'),
+		}
+	}
+
+	if (!existsSync(join(path, 'assets'))) {
+		return {
+			type: 'warning',
+			message: localize('resource_pack.folder.warning.no_assets'),
+		}
+	}
+}
+
 export function validateDataPackFolder(value: string): ValueCheckResult {
 	if (value === '') {
 		return {
@@ -326,17 +396,46 @@ export async function validateThisProjectsBlueprintSettings(): Promise<
 			Project.animated_java.render_box[0],
 			Project.animated_java.render_box[1]
 		),
+		// Plugin mode exports a JSON file, not a resource/data pack, so the pack
+		// folders are irrelevant and must not block the export.
 		resource_pack_folder:
+			!Project.animated_java.enable_plugin_mode &&
 			Project.animated_java.resource_pack_export_mode === 'folder'
 				? validateResourcePackFolder(Project.animated_java.resource_pack)
 				: undefined,
 		data_pack_folder:
+			!Project.animated_java.enable_plugin_mode &&
 			Project.animated_java.data_pack_export_mode === 'folder'
 				? validateDataPackFolder(Project.animated_java.data_pack)
 				: undefined,
 		data_pack_zip:
+			!Project.animated_java.enable_plugin_mode &&
 			Project.animated_java.data_pack_export_mode === 'zip'
 				? validateZipPath(Project.animated_java.data_pack)
 				: undefined,
+		preview_resource_packs: validatePreviewResourcePacks(
+			Project.animated_java.preview_resource_packs
+		),
 	}
+}
+
+/** Reports the first error (or, failing that, warning) among the preview pack overlays. */
+export function validatePreviewResourcePacks(values: string[]): ValueCheckResult {
+	let firstWarning: ValueCheckResult | undefined
+	for (const [index, value] of values.entries()) {
+		const result = validatePreviewResourcePack(value)
+		if (result?.type === 'error') {
+			return {
+				type: 'error',
+				message: localize('preview.list.error.entry', String(index + 1), result.message),
+			}
+		}
+		if (result?.type === 'warning') {
+			firstWarning ??= {
+				type: 'warning',
+				message: localize('preview.list.warning.entry', String(index + 1), result.message),
+			}
+		}
+	}
+	return firstWarning
 }

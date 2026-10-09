@@ -1,6 +1,6 @@
 import type { ResourcePackCompiler } from '.'
 import { getFsModule } from '../../constants'
-import { PROGRESS_DESCRIPTION } from '../../dialogs/exportProgress/exportProgress'
+import { setExportProgressPhase } from '../../dialogs/exportProgress/exportProgress'
 import { isResourcePackPath, sanitizeStorageKey } from '../../util/minecraftUtil'
 import type { ITextureAtlas } from '../minecraft/textureAtlas'
 import type { IRenderedNodes } from '../rigRenderer'
@@ -143,7 +143,7 @@ const compileResourcePack: ResourcePackCompiler = async ({
 	const { existsSync, promises } = getFsModule()
 	const { readFile } = promises
 
-	PROGRESS_DESCRIPTION.set('Compiling Resource Pack...')
+	setExportProgressPhase('Compiling Resource Pack...')
 	console.log('Compiling resource pack...', {
 		rig,
 		displayItemPath,
@@ -213,8 +213,11 @@ const compileResourcePack: ResourcePackCompiler = async ({
 	}
 
 	// Texture atlas
-	const blockAtlasPath = PathModule.join('assets/minecraft/atlases/blocks.json')
-	const blockAtlas: ITextureAtlas = await readFile(blockAtlasPath, 'utf-8')
+	const blockAtlasPath = 'assets/minecraft/atlases/blocks.json'
+	const blockAtlas: ITextureAtlas = await readFile(
+		PathModule.join(resourcePackPath, blockAtlasPath),
+		'utf-8'
+	)
 		.catch(() => {
 			console.log('Creating new block atlas...')
 			return '{ "sources": [] }'

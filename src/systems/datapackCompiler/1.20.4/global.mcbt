@@ -1,3 +1,6 @@
+# global.mcbt — MCB templates shared by main.mcb and global.mcb (imported by both).
+# Defines the `debug` assertion helper and the `data_manager` init/prep/read/write macro.
+
 template debug {
 	with assert:literal executed_as_root_entity:literal root_tag:js {
 		IF (debug_mode) {

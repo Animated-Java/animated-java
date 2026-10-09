@@ -55,7 +55,7 @@ export const OPEN_VARIANT_CONFIG_ACTION = registerDeletableHandlerPatch({
 		return new Blockbench.Action(`animated_java:action/open-variant-config`, {
 			name: translate('action.variants.open_config'),
 			icon: 'settings',
-			condition: () => !!Variant.selected && !Variant.selected.isDefault,
+			condition: () => !!Variant.selected,
 			click() {
 				if (!Variant.selected) return
 				openVariantConfigDialog(Variant.selected)

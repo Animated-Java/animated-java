@@ -1,6 +1,6 @@
 {
 	"$schema": "./plugin-blueprint.schema.json",
-	"format_version": 1,
+	"format_version": 3,
 	"settings": {
 		"id": "animated_java:blueprint"
 	},
@@ -19,13 +19,10 @@
 			"resource_location": "minecraft:block/stone"
 		}
 	},
-	"texture_palettes": {
-		"default_palette": {
-			"active_state": "default",
-			"states": {
-				"default": { "texture": "custom_texture" },
-				"alternative": { "texture": "reference_texture" }
-			}
+	"texture_slots": {
+		"body": {
+			"default_texture": "custom_texture",
+			"textures": ["custom_texture", "reference_texture"]
 		}
 	},
 	"nodes": {
@@ -39,7 +36,7 @@
 				"rotation": [5, 180, 0],
 				"head_rotation": [5, 180]
 			},
-			"display_properties": {
+			"entity_properties": {
 				"billboard": "vertical",
 				"custom_brightness": 10,
 				"custom_name": "'Bone Node'",
@@ -90,8 +87,8 @@
 						"down": {
 							"uv": [0, 0, 16, 16],
 							"texture_provider": {
-								"type": "texture_palette",
-								"texture_palette": "default_palette"
+								"type": "texture_slot",
+								"texture_slot": "body"
 							}
 						}
 					},
@@ -138,8 +135,8 @@
 						"down": {
 							"uv": [0, 0, 16, 16],
 							"texture_provider": {
-								"type": "texture_palette",
-								"texture_palette": "default_palette"
+								"type": "texture_slot",
+								"texture_slot": "body"
 							}
 						}
 					},
@@ -180,8 +177,8 @@
 						"down": {
 							"uv": [0, 0, 16, 16],
 							"texture_provider": {
-								"type": "texture_palette",
-								"texture_palette": "default_palette"
+								"type": "texture_slot",
+								"texture_slot": "body"
 							}
 						}
 					},
@@ -198,7 +195,7 @@
 				},
 				"position": [0, 1.625, 0]
 			},
-			"display_properties": {
+			"entity_properties": {
 				"billboard": "vertical",
 				"is_glowing": true,
 				"shadow_radius": 3.0,
@@ -224,7 +221,7 @@
 				"head_rotation": [4.61854, 202.57734],
 				"scale": [1.0625, 1.125, 1]
 			},
-			"display_properties": {
+			"entity_properties": {
 				"billboard": "horizontal",
 				"custom_brightness": 15,
 				"custom_name": "'Block Display Node'",
@@ -235,7 +232,7 @@
 		},
 		"text_display_node": {
 			"type": "text_display",
-			"display_properties": {
+			"entity_properties": {
 				"custom_brightness": 5,
 				"is_custom_brightness_enabled": true,
 				"is_glowing": true,
@@ -260,9 +257,9 @@
 			"start_delay": "0.0",
 			"length": 3.0,
 			"global_keyframes": {
-				"texture": {
-					"0.0": { "default_palette": "default" },
-					"1.5": { "default_palette": "alternative" }
+				"texture_slot": {
+					"0.0": { "body": "custom_texture" },
+					"1.5": { "body": "reference_texture" }
 				},
 				"event": {
 					"1.5": { "events": ["event_1", "event_2"] },

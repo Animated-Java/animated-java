@@ -668,11 +668,6 @@ animated_java:
       generate_name_from_display_name.description: 라벨에서 이름을 자동 생성할지 여부입니다.
       variant_name: 이름
       variant_name.description: 내보낸 리소스 팩과 데이터 팩에서 배리언트를 식별하는 데 사용됩니다.
-      texture_map:
-        title: 텍스처 맵
-        description: 이 배리언트를 적용할 때 교체할 텍스처들의 맵입니다.
-        create_new_mapping: 새 매핑 생성
-        no_mappings: 배리언트에 매핑된 텍스처가 없습니다.
       bone_lists:
         description: |-
           배리언트가 영향을 줄 노드를 지정합니다.
@@ -746,7 +741,6 @@ animated_java:
         variant_visible: 배리언트 선택됨
         variant_not_visible: 배리언트 선택되지 않음
         cannot_delete_default_variant: 기본 배리언트는 삭제할 수 없습니다!
-        cannot_edit_default_variant: 기본 배리언트는 편집할 수 없습니다!
     keyframe:
       keyframe_title: 키프레임 (%s)
       variant:

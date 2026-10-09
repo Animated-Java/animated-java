@@ -1,36 +1,43 @@
 <script lang="ts" module>
 	import { type Observable } from 'svelte-observable-store'
-	import MissingTexture from '../../assets/missing_texture.png'
 	import Checkbox from '../../svelteComponents/dialogItems/checkbox.svelte'
 	import LineInput from '../../svelteComponents/dialogItems/lineInput.svelte'
+	import SlotTexturesEditor from '../../svelteComponents/slotTexturesEditor.svelte'
 	import { localize as translate } from '../../util/lang'
-	import { TextureMap, Variant } from '../../variants'
+	import { Variant } from '../../variants'
 </script>
 
 <script lang="ts">
+	import { observable } from 'svelte-observable-store'
 	import CodeInput from '../../svelteComponents/dialogItems/codeInput.svelte'
 	import Collection from '../../svelteComponents/dialogItems/collection.svelte'
-	import { getAvailableNodes } from '../../util/excludedNodes'
+	import {
+		fromCollectionItems,
+		getAvailableNodes,
+		toCollectionItems,
+	} from '../../util/excludedNodes'
 
 	export let variant: Variant
 	export let displayName: Observable<string>
 	export let name: Observable<string>
 	export let uuid: Observable<string>
-	export let textureMap: TextureMap
+	export let slotTextures: Map<string, string>
 	export let generateNameFromDisplayName: Observable<boolean>
-	export let excludedNodes: Observable<CollectionItem[]>
+	export let excludedNodes: Observable<string[]>
 	export let onApplyFunction: Observable<string>
 
-	const AVAILABLE_TEXTURES = [...Texture.all]
-	const PRIMARY_TEXTURES = [...Texture.all]
-	const SECONDARY_TEXTURES = AVAILABLE_TEXTURES
+	// `variant.excludedNodes` is stored as a Set of node UUIDs, but the Collection
+	// component works in `CollectionItem`s. Bridge the two with a local store that
+	// writes the UUIDs back into the dialog's observable on every change.
+	let excludedNodeItems = observable(toCollectionItems(excludedNodes.get()))
+	excludedNodeItems.subscribe(items => excludedNodes.set(fromCollectionItems(items)))
 
-	const AVAILABLE_BONES = getAvailableNodes(excludedNodes.get(), {
+	const AVAILABLE_BONES = getAvailableNodes(excludedNodeItems.get(), {
 		groupsOnly: true,
 		excludeEmptyGroups: true,
 	})
 
-	let textureMapUpdated = 0
+	let slotTextureRecord = Object.fromEntries(slotTextures)
 
 	displayName.subscribe(value => {
 		if ($generateNameFromDisplayName) {
@@ -43,57 +50,12 @@
 		name.set(Variant.makeNameUnique(variant, $displayName))
 	})
 
-	function createTextureMapping() {
-		const texture = getUnusedPrimaryTextures()[0]
-		if (!texture) return
-		textureMap.add(texture.uuid, texture.uuid)
-		textureMapUpdated++
-	}
-
-	function deleteTextureMapping(uuid: string) {
-		textureMap.delete(uuid)
-		textureMapUpdated++
-	}
-
-	function getTextureSrc(uuid: string) {
-		const texture = AVAILABLE_TEXTURES.find(t => t.uuid === uuid)
-		if (!texture) return MissingTexture
-		return texture.img.src
-	}
-
-	function selectNewPrimaryTexture(e: Event, oldPrimaryUUID: string) {
-		const select = e.target as HTMLSelectElement
-		const textureName = select.value.trim()
-		const newPrimaryUUID = PRIMARY_TEXTURES.find(t => t.name === textureName)?.uuid
-		if (!newPrimaryUUID) {
-			console.error(`Failed to find new primary texture with the name: ${textureName}`)
-			return
+	function setSlotTextures(value: Record<string, string>) {
+		slotTextureRecord = value
+		slotTextures.clear()
+		for (const [slotUuid, textureUuid] of Object.entries(value)) {
+			slotTextures.set(slotUuid, textureUuid)
 		}
-		const secondaryUuid = textureMap.get(oldPrimaryUUID)
-		if (!secondaryUuid) {
-			console.error(`Failed to find secondary texture with the uuid: ${oldPrimaryUUID}`)
-			return
-		}
-		textureMap.delete(oldPrimaryUUID)
-		textureMap.add(newPrimaryUUID, secondaryUuid)
-		textureMapUpdated++
-	}
-
-	function selectNewSecondaryTexture(e: Event, primaryUUID: string) {
-		const select = e.target as HTMLSelectElement
-		const textureName = select.value.trim()
-		const newSecondaryUUID = SECONDARY_TEXTURES.find(t => t.name === textureName)?.uuid
-		if (!newSecondaryUUID) {
-			console.error(`Failed to find new secondary texture with the name: ${textureName}`)
-			return
-		}
-		textureMap.add(primaryUUID, newSecondaryUUID)
-		textureMapUpdated++
-	}
-
-	function getUnusedPrimaryTextures() {
-		const usedTextures = [...textureMap.map.keys()]
-		return PRIMARY_TEXTURES.filter(t => !usedTextures.includes(t.uuid))
 	}
 </script>
 
@@ -132,78 +94,13 @@
 	/>
 
 	{#if !variant.isDefault}
-		<div class="toolbar" style="margin: 8px 0;">
-			<div>
-				{translate('dialog.variant_config.texture_map.title')}
-			</div>
-			<div class="spacer"></div>
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<div
-				class="tool"
-				title={translate('dialog.variant_config.texture_map.create_new_mapping')}
-				onclick={() => createTextureMapping()}
-			>
-				<i class="material-icons icon">add</i>
-			</div>
-		</div>
-		{#key textureMapUpdated}
-			<ul
-				class="texture-map-container"
-				style={[...textureMap.map.entries()].length === 0 ? 'min-height: 2rem;' : ''}
-			>
-				{#each [...textureMap.map.entries()] as entry}
-					<div class="texture-mapping-item"></div>
-					<li class="texture-mapping-item">
-						<div class="texture-mapping-item-dropdown-container">
-							<div class="img-container">
-								<img src={getTextureSrc(entry[0])} alt="" />
-							</div>
-							<select
-								class="texture-mapping-item-dropdown"
-								onchange={e => selectNewPrimaryTexture(e, entry[0])}
-							>
-								{#each PRIMARY_TEXTURES as texture}
-									<option selected={texture.uuid === entry[0]}>
-										{texture.name}
-									</option>
-								{/each}
-							</select>
-						</div>
-
-						<i class="material-icons icon">east</i>
-
-						<div class="texture-mapping-item-dropdown-container">
-							<div class="img-container">
-								<img src={getTextureSrc(entry[1])} alt="" />
-							</div>
-							<select
-								class="texture-mapping-item-dropdown"
-								onchange={e => selectNewSecondaryTexture(e, entry[0])}
-							>
-								{#each SECONDARY_TEXTURES as texture}
-									<option selected={texture.uuid === entry[1]}>
-										{texture.name}
-									</option>
-								{/each}
-							</select>
-						</div>
-
-						<!-- svelte-ignore a11y_click_events_have_key_events -->
-						<i
-							class="material-icons icon tool"
-							onclick={() => deleteTextureMapping(entry[0])}>delete</i
-						>
-					</li>
-				{:else}
-					<div class="no-mappings">
-						{translate('dialog.variant_config.texture_map.no_mappings')}
-					</div>
-				{/each}
-			</ul>
-		{/key}
-		<div class="texture-map-description">
-			{@html translate('dialog.variant_config.texture_map.description')}
-		</div>
+		<SlotTexturesEditor
+			title={translate('dialog.variant_config.slot_textures.title')}
+			description={translate('dialog.variant_config.slot_textures.description')}
+			emptyText={translate('dialog.variant_config.slot_textures.no_slots')}
+			value={slotTextureRecord}
+			onchange={setSlotTextures}
+		/>
 
 		<Collection
 			label={translate('dialog.variant_config.excluded_nodes.title')}
@@ -220,7 +117,7 @@
 				'dialog.variant_config.swap_columns_button.tooltip'
 			)}
 			availableItems={AVAILABLE_BONES}
-			bind:includedItems={excludedNodes}
+			bind:includedItems={excludedNodeItems}
 		/>
 	{/if}
 
@@ -250,70 +147,5 @@
 		text-align: center;
 		font-size: 14px;
 		user-select: all;
-	}
-	.no-mappings {
-		color: var(--color-subtle_text);
-		font-style: italic;
-		text-align: center;
-	}
-	.img-container {
-		display: flex;
-		align-items: flex-start;
-		width: 128px;
-		height: 128px;
-		pointer-events: none;
-		background: repeating-conic-gradient(var(--color-dark) 0% 25%, transparent 0% 50%) 50% /
-			16px 16px;
-	}
-	img {
-		width: 128px;
-		pointer-events: none;
-	}
-	.texture-mapping-item {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-	}
-	.texture-mapping-item-dropdown-container {
-		position: relative;
-		flex-grow: 1;
-		height: 164px;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-	}
-	.texture-mapping-item-dropdown {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		max-width: 128px;
-	}
-	.texture-map-container {
-		display: flex;
-		flex-direction: column;
-		border: 1px solid var(--color-border);
-		background-color: var(--color-back);
-		padding: 4px;
-		overflow-y: auto;
-		max-height: 600px;
-		overflow-y: auto;
-		max-height: 16rem;
-		min-height: 12rem;
-	}
-	.spacer {
-		flex-grow: 1;
-	}
-	.toolbar {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-	}
-	.texture-map-description {
-		font-size: 0.9em;
-		color: var(--color-subtle_text);
-		margin-top: 4px;
-		margin-bottom: 16px;
-		max-width: 80%;
 	}
 </style>

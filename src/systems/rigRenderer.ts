@@ -1,6 +1,6 @@
 import { TextComponent } from 'book-and-quill'
 import * as crypto from 'node:crypto'
-import { getFsModule } from '../constants'
+import { getFsModule, PACKAGE } from '../constants'
 import type {
 	IBlueprintDisplayEntityConfigJSON,
 	IBlueprintInteractionConfigJSON,
@@ -12,14 +12,22 @@ import { type Alignment, TextDisplay } from '../outliner/textDisplay'
 import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
 import { type ItemDisplayMode, VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
 import {
+	getSlotDefaultTexture,
+	getSlotTextures,
+	getTextureSlot,
+	TEXTURE_SLOT_COMMANDS_MIN_VERSION,
+} from '../textureSlots'
+import { makeUniqueName } from '../util/uniqueName'
+import {
 	type IMinecraftResourceLocation,
 	parseResourcePackPath,
 	sanitizeStorageKey,
 } from '../util/minecraftUtil'
 import { Variant } from '../variants'
 import {
+	AnimationSampler,
 	correctSceneAngle,
-	getFrame,
+	getAnimatableNodes,
 	type INodeTransform,
 	restoreSceneAngle,
 	updatePreview,
@@ -58,10 +66,14 @@ export interface IRenderedElement {
 	light_emission?: number
 }
 
+/** Written verbatim into the `credit` field of every generated model file. */
+export const MODEL_CREDIT = `Made with Animated Java (${PACKAGE.repository.url}) via Blockbench`
+
 /**
  * An actual Minecraft model
  */
 export interface IRenderedModel {
+	credit?: string
 	parent?: string
 	textures: Record<string, string>
 	elements?: IRenderedElement[]
@@ -190,11 +202,28 @@ export type IRenderedVariant = Omit<IBlueprintVariantJSON, 'uuid'> & {
 	models: Record<string, IRenderedVariantModel>
 }
 
+export interface IRenderedTextureSlot {
+	name: string
+	/** Where this slot's texture name sits in each bone item's `custom_model_data` strings. */
+	index: number
+	/**
+	 * The first one is the default. `id` is a key of {@link IRenderedRig.textures}, and `name`
+	 * is unique within the slot.
+	 */
+	textures: Array<{ id: string; name: string }>
+	/** UUIDs of the bones with faces in this slot. */
+	bones: string[]
+}
+
 export interface IRenderedRig {
 	/**
 	 * A map of outliner node UUIDs to rendered bones
 	 */
 	nodes: Record<string, AnyRenderedNode>
+	/**
+	 * A map of Texture Slot UUID -> slot, for slots used by an exported face
+	 */
+	texture_slots: Record<string, IRenderedTextureSlot>
 	/**
 	 * A map of Variant UUID -> IRenderedVariant
 	 */
@@ -287,7 +316,21 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 				.map((v, i) => (v * 16) / UVEditor.getResolution(i % 2))
 		}
 		if (data.rotation) renderedFace.rotation = data.rotation
-		if (data.texture) {
+		const slot = typeof data.texture === 'string' ? getTextureSlot(data.texture) : undefined
+		if (slot) {
+			const slotDefault = getSlotDefaultTexture(slot)
+			if (!slotDefault) {
+				throw new IntentionalExportError(
+					`Texture Slot '${slot.name}' is used by '${cube.name}' but has no textures.`
+				)
+			}
+			const renderedSlot = renderTextureSlot(slot, rig)
+			const key = getSlotTextureKey(renderedSlot.name)
+			renderedFace.texture = '#' + key
+			model.textures[key] = getTextureResourceLocation(slotDefault, rig).resourceLocation
+			const bone = (cube.parent as Group).uuid
+			if (!renderedSlot.bones.includes(bone)) renderedSlot.bones.push(bone)
+		} else if (data.texture) {
 			const texture = data.getTexture()
 			if (!texture) throw new Error('Texture not found')
 			renderedFace.texture = '#' + texture.id
@@ -302,14 +345,44 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 
 	if (Object.keys(element.faces).length === 0) return
 
-	// @ts-expect-error - Broken BB types
 	if (cube.light_emission) {
-		// @ts-expect-error - Broken BB types
 		element.light_emission = cube.light_emission
 	}
 
 	model.elements ??= []
 	model.elements.push(element)
+}
+
+/**
+ * The model texture variable a Texture Slot's faces use.
+ */
+export function getSlotTextureKey(slotName: string) {
+	return 'slot_' + slotName
+}
+
+function renderTextureSlot(slot: Texture, rig: IRenderedRig): IRenderedTextureSlot {
+	const existing = rig.texture_slots[slot.uuid]
+	if (existing) return existing
+
+	const textures: IRenderedTextureSlot['textures'] = []
+	for (const texture of getSlotTextures(slot)) {
+		rig.textures[texture.id] = texture
+		const name = makeUniqueName(sanitizeStorageKey(texture.name.replace(/\.png$/i, '')), n =>
+			textures.some(t => t.name === n)
+		)
+		textures.push({ id: texture.id, name })
+	}
+
+	const rendered: IRenderedTextureSlot = {
+		name: makeUniqueName(sanitizeStorageKey(slot.name.replace(/\.png$/i, '')), n =>
+			Object.values(rig.texture_slots).some(s => s.name === n)
+		),
+		index: Object.keys(rig.texture_slots).length,
+		textures,
+		bones: [],
+	}
+	rig.texture_slots[slot.uuid] = rendered
+	return rendered
 }
 
 const TEXTURE_RESOURCE_LOCATION_CACHE = new Map<string, IMinecraftResourceLocation>()
@@ -346,20 +419,22 @@ export function getTextureResourceLocation(texture: Texture, rig: IRenderedRig) 
 	throw new Error(`Invalid texture path: ${path}`)
 }
 
+const BOUNDING_BOX_POINT_SCRATCH = new THREE.Vector3()
 function getNodeBoundingBox(node: Group | TextDisplay | VanillaItemDisplay | VanillaBlockDisplay) {
 	const box = new THREE.Box3()
+	const point = BOUNDING_BOX_POINT_SCRATCH
 	if (node instanceof Group) {
-		const children = node.children.filter(e => e instanceof Cube) as Cube[]
-		for (const child of children) {
+		for (const child of node.children) {
+			if (!(child instanceof Cube)) continue
 			box.expandByPoint(
-				new THREE.Vector3(
+				point.set(
 					child.from[0] - child.inflate,
 					child.from[1] - child.inflate,
 					child.from[2] - child.inflate
 				)
 			)
 			box.expandByPoint(
-				new THREE.Vector3(
+				point.set(
 					child.to[0] + child.inflate,
 					child.to[1] + child.inflate,
 					child.to[2] + child.inflate
@@ -373,7 +448,7 @@ function getNodeBoundingBox(node: Group | TextDisplay | VanillaItemDisplay | Van
 	) {
 		box.setFromObject(node.mesh)
 	}
-	box.expandByPoint(new THREE.Vector3(node.origin[0], node.origin[1], node.origin[2]))
+	box.expandByPoint(point.set(node.origin[0], node.origin[1], node.origin[2]))
 	return box
 }
 
@@ -390,131 +465,133 @@ function renderNullObject(nullObject: NullObject, rig: IRenderedRig) {
 	rig.nodes[nullObject.uuid] = renderedNullObject
 }
 
-function renderGroup(
-	group: Group,
-	rig: IRenderedRig,
-	defaultVariant: IRenderedVariant
-): INodeStructure | undefined {
-	if (!group.export) return
-	const parentId = group.parent instanceof Group ? group.parent.uuid : undefined
+function renderGroup(rootGroup: Group, rig: IRenderedRig, defaultVariant: IRenderedVariant): void {
+	const stack: Group[] = [rootGroup]
 
-	const path = PathModule.join(rig.model_export_folder, group.name + `.json`)
-	const parsed = parseResourcePackPath(path)
+	while (stack.length > 0) {
+		const group = stack.pop()!
+		if (!group.export) continue
+		const parentId = group.parent instanceof Group ? group.parent.uuid : undefined
 
-	if (!parsed) {
-		console.error(group)
-		throw new Error(`Invalid bone path: ${group.name} -> ${path}`)
-	}
+		const path = PathModule.join(rig.model_export_folder, group.name + `.json`)
+		const parsed = parseResourcePackPath(path)
 
-	const renderedBone: IRenderedNodes['Bone'] = {
-		type: 'bone',
-		name: group.name,
-		storage_name: sanitizeStorageKey(group.name),
-		uuid: group.uuid,
-		parent: parentId,
-		bounding_box: getNodeBoundingBox(group),
-		base_scale: 1,
-		configs: structuredClone(group.configs),
-		on_summon_function: group.onSummonFunction?.trim(),
-		itemModelProperties: group.itemModelProperties
-			? structuredClone(group.itemModelProperties)
-			: undefined,
-		// This is a placeholder value that will be updated later once the animation renderer is run.
-		default_transform: {} as INodeTransform,
-	}
-	let groupModel = defaultVariant.models[group.uuid]
-	if (!groupModel) {
-		groupModel = defaultVariant.models[group.uuid] = {
-			model: {
-				textures: {
-					particle: 'minecraft:item/pufferfish',
-				},
-				display: { head: { rotation: [0, 180, 0] } },
-			},
-			custom_model_data: -1, // This is calculated when constructing the resource pack.
-			resource_location: parsed.resourceLocation,
-			item_model: parsed.resourceLocation,
+		if (!parsed) {
+			console.error(group)
+			throw new Error(`Invalid bone path: ${group.name} -> ${path}`)
 		}
-	}
 
-	for (const node of group.children) {
-		if (!node.export) continue
-		switch (true) {
-			case node instanceof Group: {
-				renderGroup(node, rig, defaultVariant)
-				break
-			}
-			case node instanceof Locator: {
-				renderLocator(node, rig)
-				break
-			}
-			case node instanceof TextDisplay: {
-				renderTextDisplay(node, rig)
-				break
-			}
-			case OutlinerElement.types.camera && node instanceof OutlinerElement.types.camera: {
-				renderCamera(node as ICamera, rig)
-				break
-			}
-			case node instanceof VanillaItemDisplay: {
-				renderItemDisplay(node, rig)
-				break
-			}
-			case node instanceof VanillaBlockDisplay: {
-				renderBlockDisplay(node, rig)
-				break
-			}
-			case node instanceof Interaction: {
-				renderInteraction(node, rig)
-				break
-			}
-			case node instanceof Cube: {
-				renderCube(node, rig, groupModel.model!)
-				rig.includes_custom_models = true
-				break
-			}
-			case node instanceof NullObject: {
-				renderNullObject(node, rig)
-				break
-			}
-			default:
-				console.warn(`Encountered unknown node type:`, node)
-		}
-	}
-
-	// Export a struct instead of a bone if no elements are present
-	if (!groupModel.model?.elements || groupModel.model.elements.length === 0) {
-		delete defaultVariant.models[group.uuid]
-		const struct: IRenderedNodes['Struct'] = {
-			type: 'struct',
+		const renderedBone: IRenderedNodes['Bone'] = {
+			type: 'bone',
 			name: group.name,
 			storage_name: sanitizeStorageKey(group.name),
 			uuid: group.uuid,
 			parent: parentId,
+			bounding_box: getNodeBoundingBox(group),
+			base_scale: 1,
+			configs: structuredClone(group.configs),
+			on_summon_function: group.onSummonFunction?.trim(),
+			itemModelProperties: group.itemModelProperties
+				? structuredClone(group.itemModelProperties)
+				: undefined,
 			default_transform: {} as INodeTransform,
 		}
-		rig.nodes[group.uuid] = struct
-		return
-	}
-
-	const diff = new THREE.Vector3().subVectors(
-		renderedBone.bounding_box.max,
-		renderedBone.bounding_box.min
-	)
-	const max = Math.max(diff.x, diff.y, diff.z)
-	const scale = Math.min(1, 24 / max)
-	for (const element of groupModel.model.elements) {
-		element.from = element.from.map(v => v * scale + 8)
-		element.to = element.to.map(v => v * scale + 8)
-		if (element.rotation && !Array.isArray(element.rotation)) {
-			element.rotation.origin = element.rotation.origin.map(
-				v => v * scale + 8
-			) as ArrayVector3
+		let groupModel = defaultVariant.models[group.uuid]
+		if (!groupModel) {
+			groupModel = defaultVariant.models[group.uuid] = {
+				model: {
+					credit: MODEL_CREDIT,
+					textures: {
+						particle: 'minecraft:item/pufferfish',
+					},
+					display: { head: { rotation: [0, 180, 0] } },
+				},
+				custom_model_data: -1,
+				resource_location: parsed.resourceLocation,
+				item_model: parsed.resourceLocation,
+			}
 		}
-	}
 
-	renderedBone.base_scale = 1 / scale
-	rig.nodes[group.uuid] = renderedBone
+		const childGroups: Group[] = []
+		for (const node of group.children) {
+			if (!node.export) continue
+			switch (true) {
+				case node instanceof Group: {
+					childGroups.push(node)
+					break
+				}
+				case node instanceof Locator: {
+					renderLocator(node, rig)
+					break
+				}
+				case node instanceof TextDisplay: {
+					renderTextDisplay(node, rig)
+					break
+				}
+				case OutlinerElement.types.camera && node instanceof OutlinerElement.types.camera: {
+					renderCamera(node as ICamera, rig)
+					break
+				}
+				case node instanceof VanillaItemDisplay: {
+					renderItemDisplay(node, rig)
+					break
+				}
+				case node instanceof VanillaBlockDisplay: {
+					renderBlockDisplay(node, rig)
+					break
+				}
+				case node instanceof Interaction: {
+					renderInteraction(node, rig)
+					break
+				}
+				case node instanceof Cube: {
+					renderCube(node, rig, groupModel.model!)
+					rig.includes_custom_models = true
+					break
+				}
+				case node instanceof NullObject: {
+					renderNullObject(node, rig)
+					break
+				}
+				default:
+					console.warn(`Encountered unknown node type:`, node)
+			}
+		}
+		for (let i = childGroups.length - 1; i >= 0; i--) stack.push(childGroups[i])
+
+		if (!groupModel.model?.elements || groupModel.model.elements.length === 0) {
+			delete defaultVariant.models[group.uuid]
+			const struct: IRenderedNodes['Struct'] = {
+				type: 'struct',
+				name: group.name,
+				storage_name: sanitizeStorageKey(group.name),
+				uuid: group.uuid,
+				parent: parentId,
+				default_transform: {} as INodeTransform,
+			}
+			rig.nodes[group.uuid] = struct
+			continue
+		}
+
+		const diff = new THREE.Vector3().subVectors(
+			renderedBone.bounding_box.max,
+			renderedBone.bounding_box.min
+		)
+		const max = Math.max(diff.x, diff.y, diff.z)
+		const scale = Math.min(1, 24 / max)
+		for (const element of groupModel.model.elements) {
+			element.from = element.from.map(v => v * scale + 8)
+			element.to = element.to.map(v => v * scale + 8)
+			if (element.rotation && !Array.isArray(element.rotation)) {
+				element.rotation.origin = element.rotation.origin.map(
+					v => v * scale + 8
+				) as ArrayVector3
+			}
+		}
+
+		renderedBone.base_scale = 1 / scale
+		rig.nodes[group.uuid] = renderedBone
+	}
 }
 
 function renderItemDisplay(display: VanillaItemDisplay, rig: IRenderedRig) {
@@ -680,38 +757,36 @@ function renderCamera(camera: ICamera, rig: IRenderedRig) {
 
 function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 	const models: Record<string, IRenderedVariantModel> = {}
-
-	const defaultVariant = Variant.getDefault()
-	const defaultModels = rig.variants[defaultVariant.uuid].models
+	const texturesByUuid = new Map(Texture.all.map(t => [t.uuid, t]))
+	const defaultModels = rig.variants[Variant.getDefault().uuid].models
 
 	for (const [uuid, bone] of Object.entries(rig.nodes)) {
 		if (bone.type !== 'bone') continue
-		if (variant.excludedNodes.find(v => v.value === uuid)) continue
+		if (variant.excludedNodes.has(uuid)) continue
+		const boneTextures = defaultModels[uuid]?.model?.textures ?? {}
 		const textures: IRenderedModel['textures'] = {}
 
-		let isOnlyTransparent = true
-		const unreplacedTextures = new Set<string>(Object.keys(defaultModels[uuid].model!.textures))
-
-		for (const [fromUUID, toUUID] of variant.textureMap.map.entries()) {
-			const fromTexture = Texture.all.find(t => t.uuid === fromUUID)
-			if (!fromTexture) throw new Error(`From texture not found: ${fromUUID}`)
-			const toTexture = Texture.all.find(t => t.uuid === toUUID)
-			if (!toTexture) throw new Error(`To texture not found: ${toUUID}`)
-			textures[fromTexture.id] = getTextureResourceLocation(toTexture, rig).resourceLocation
-			rig.textures[toTexture.id] = toTexture
-			isOnlyTransparent = false
+		for (const [slotUuid, textureUuid] of variant.slotTextures) {
+			const slot = rig.texture_slots[slotUuid]
+			const texture = texturesByUuid.get(textureUuid)
+			if (!slot || !texture) continue
+			const key = getSlotTextureKey(slot.name)
+			if (!boneTextures[key]) continue
+			textures[key] = getTextureResourceLocation(texture, rig).resourceLocation
 		}
 
-		// Don't export models without any texture changes
-		if (Object.keys(textures).length === 0) continue
-
-		// Use empty model if all textures are transparent
-		if (isOnlyTransparent && unreplacedTextures.size === 0) {
+		// Use the default model if the variant doesn't change any of this bone's slots
+		if (Object.keys(textures).length === 0) {
+			const path = PathModule.join(rig.model_export_folder, bone.storage_name + '.json')
+			const parsed = parseResourcePackPath(path)
+			if (!parsed) {
+				throw new Error(`Invalid Bone Name: '${bone.storage_name}' -> '${path}'`)
+			}
 			models[uuid] = {
 				model: null,
 				custom_model_data: 1,
-				resource_location: 'animated_java:empty',
-				item_model: 'animated_java:empty',
+				resource_location: parsed.resourceLocation,
+				item_model: parsed.resourceLocation,
 			}
 			continue
 		}
@@ -732,6 +807,7 @@ function renderVariantModels(variant: Variant, rig: IRenderedRig) {
 
 		models[uuid] = {
 			model: {
+				credit: MODEL_CREDIT,
 				parent: parsed.resourceLocation,
 				textures,
 			},
@@ -750,11 +826,17 @@ export function hashRig(rig: IRenderedRig) {
 		hash.update('node;')
 		hash.update(nodeUuid)
 		hash.update(node.name)
-		hash.update(node.default_transform.matrix.elements.toString())
+		hash.update(Array.from(node.default_transform.matrix ?? []).toString())
 		switch (node.type) {
 			case 'bone': {
 				hash.update(
-					';' + JSON.stringify(rig.variants[Variant.getDefault().uuid].models[nodeUuid])
+					';' +
+						// `credit` is a constant string, not rig data - keep it out of
+						// the hash so it doesn't invalidate every existing rig.
+						JSON.stringify(
+							rig.variants[Variant.getDefault().uuid].models[nodeUuid],
+							(key, value) => (key === 'credit' ? undefined : value)
+						)
 				)
 				if (node.configs) hash.update(';' + JSON.stringify(node.configs))
 				break
@@ -796,17 +878,22 @@ export function hashRig(rig: IRenderedRig) {
 function renderVariant(variant: Variant, rig: IRenderedRig): IRenderedVariant {
 	return {
 		...variant.toJSON(),
-		models: renderVariantModels(variant, rig),
+		// 1.21.4+ Variants switch Texture Slots instead of whole models
+		models: compareVersions(TEXTURE_SLOT_COMMANDS_MIN_VERSION, rig.target_minecraft_version)
+			? renderVariantModels(variant, rig)
+			: {},
 	}
 }
 
 function getDefaultTransforms(rig: IRenderedRig) {
 	// @ts-expect-error - Broken BB types
 	const anim = new Blockbench.Animation()
+	const animatableNodes = getAnimatableNodes()
 	correctSceneAngle()
-	updatePreview(anim, 0)
-	updatePreview(anim, 0) // IK doesn't work unless I call this twice for some reason...
-	const transforms = getFrame(anim, rig.nodes, 0).node_transforms
+	updatePreview(anim, 0, animatableNodes)
+	updatePreview(anim, 0, animatableNodes) // IK doesn't work unless I call this twice for some reason...
+	const sampler = new AnimationSampler(anim, rig.nodes, animatableNodes)
+	const transforms = sampler.sample(0).node_transforms
 	restoreSceneAngle()
 	return transforms
 }
@@ -819,6 +906,7 @@ export function renderRig(modelExportFolder: string, textureExportFolder: string
 
 	const rig: IRenderedRig = {
 		nodes: {},
+		texture_slots: {},
 		variants: {},
 		textures: {},
 		model_export_folder: modelExportFolder,

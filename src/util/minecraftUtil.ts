@@ -323,6 +323,22 @@ export async function parseBlock(block: string): Promise<IParsedBlock | undefine
 	}
 }
 
+/**
+ * Serialize a block resource location and its states back into a
+ * `namespace:block[key=value,...]` string. States equal to the block's default
+ * are omitted; when nothing remains the bare resource location is returned.
+ */
+export function stringifyBlock(
+	resourceLocation: string,
+	states: Record<string, BlockStateValue>,
+	defaultStates: Record<string, BlockStateValue> = {}
+): string {
+	const parts = Object.entries(states)
+		.filter(([key, value]) => String(value) !== String(defaultStates[key]))
+		.map(([key, value]) => `${key}=${String(value)}`)
+	return parts.length > 0 ? `${resourceLocation}[${parts.join(',')}]` : resourceLocation
+}
+
 export function sortMCVersions(versions: string[]): string[] {
 	return versions.sort((a, b) => {
 		return compareVersions(a, b) ? -1 : 1

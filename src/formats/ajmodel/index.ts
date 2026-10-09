@@ -13,14 +13,22 @@ let waitingForAJModel = false
 export async function openAJModel() {
 	if (waitingForAJModel) return
 	waitingForAJModel = true
-	const result = await electron.dialog.showOpenDialog({
-		properties: ['openFile'],
-		filters: [{ name: '.ajmodel', extensions: ['ajmodel'] }],
-		message: translate('action.upgrade_old_aj_model_loader.select_file'),
-	})
+	const result = (
+		await new Promise<Filesystem.FileResult[]>(resolve => {
+			Filesystem.importFile(
+				{
+					type: 'json',
+					extensions: ['ajmodel'],
+					multiple: false,
+					title: translate('action.upgrade_old_aj_model_loader.select_file'),
+				},
+				v => resolve(v)
+			)
+		})
+	)[0]
 	waitingForAJModel = false
-	if (result.canceled) return
-	convertAJModelToBlueprint(result.filePaths[0])
+	if (!result) return
+	convertAJModelToBlueprint(result.path)
 }
 
 export function convertAJModelToBlueprint(path: string) {
