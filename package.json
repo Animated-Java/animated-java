@@ -85,7 +85,7 @@
 	"devDependencies": {
 		"@jest/globals": "^30.5.1",
 		"@novacbn/svelte-codejar": "^0.1.2",
-		"@snavesutit/jestbench": "^0.2.0",
+		"@snavesutit/jestbench": "^0.2.1",
 		"@swc/core": "^1.16.1",
 		"@swc/jest": "^0.2.39",
 		"@types/download": "^8.0.5",

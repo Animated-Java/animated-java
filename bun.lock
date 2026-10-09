@@ -19,7 +19,7 @@
       "devDependencies": {
         "@jest/globals": "^30.5.1",
         "@novacbn/svelte-codejar": "^0.1.2",
-        "@snavesutit/jestbench": "^0.2.0",
+        "@snavesutit/jestbench": "^0.2.1",
         "@swc/core": "^1.16.1",
         "@swc/jest": "^0.2.39",
         "@types/download": "^8.0.5",
@@ -556,7 +556,7 @@
 
     "@sinonjs/fake-timers": ["@sinonjs/fake-timers@15.4.0", "", { "dependencies": { "@sinonjs/commons": "^3.0.1" } }, "sha512-DsG+8/LscQIQg68J6Ef3dv10u6nVyetYn923s3/sus5eaGfTo1of5WMZSLf0UJc9KDuKPilPH0UDJCjvNbDNCA=="],
 
-    "@snavesutit/jestbench": ["@snavesutit/jestbench@0.2.0", "", { "dependencies": { "envbench": "^4.1.0", "jest-environment-node": ">=29 <31", "jiti": "^2.7.0", "puppeteer-core": "^23.11.1" }, "peerDependencies": { "jest": ">=29 <31" } }, "sha512-Iq+7Z1blL7PSUJag5rRrq/d/D2H389mClgFgeWsTmGqiwOknr99E5cOB6S7rGNxmLkZeqoBzCir3zdgMCOpa5A=="],
+    "@snavesutit/jestbench": ["@snavesutit/jestbench@0.2.1", "", { "dependencies": { "envbench": "^4.1.0", "jest-environment-node": ">=29 <31", "jiti": "^2.7.0", "puppeteer-core": "^23.11.1" }, "peerDependencies": { "jest": ">=29 <31" } }, "sha512-qLiX6r2GP7gSHz1S/RfykVR/0BzJPqE+7F9F524rz5zvaFm0hzblwj7xcv37Dssen9qDqM9WQJLSnpz9pmjeQQ=="],
 
     "@sveltejs/acorn-typescript": ["@sveltejs/acorn-typescript@1.0.9", "", {}, "sha512-lVJX6qEgs/4DOcRTpo56tmKzVPtoWAaVbL4hfO7t7NVwl9AAXzQR6cihesW1BmNMPl+bK6dreu2sOKBP2Q9CIA=="],
 
