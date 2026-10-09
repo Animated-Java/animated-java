@@ -10,25 +10,18 @@
  * `DISCORD_ROLE_MINOR`, `DISCORD_ROLE_PATCH`, `DISCORD_ROLE_BREAKING`.
  */
 import { readFileSync } from 'node:fs'
+import { buildAnnouncement } from './announcement'
 import {
 	type Changelog,
 	type ReleasePing,
 	getChangelogEntry,
 	getReleasePings,
-	getReleaseUrl,
-	renderReleaseNotes,
 } from './releaseNotes'
 
 const DISCORD_API = 'https://discord.com/api/v10'
 const USER_AGENT = 'DiscordBot (https://github.com/Animated-Java/animated-java, 1.0)'
-const TEMPLATE_PATH = './.scripts/plugins/releaseNoteTemplates/discord_release_notes_template'
 const CHANGELOG_PATH = './src/pluginPackage/changelog.json'
 const IS_COMPONENTS_V2 = 1 << 15
-// Shared by every text display in a Components V2 message.
-const MAX_TEXT_LENGTH = 4000
-const ACCENT_COLOR = 0x00aced
-const BREAKING_LABEL =
-	'<:BreakingEmoji0:1432852678903463976><:BreakingEmoji1:1432852680404893818><:BreakingEmoji2:1432852682091270144><:BreakingEmoji3:1432852683534110790>'
 const ROLE_ENV_VARS: Record<ReleasePing, string> = {
 	prerelease: 'DISCORD_ROLE_PRERELEASE',
 	minor: 'DISCORD_ROLE_MINOR',
@@ -69,35 +62,11 @@ async function main() {
 	const changelog = JSON.parse(readFileSync(CHANGELOG_PATH, 'utf-8')) as Changelog
 	const entry = getChangelogEntry(changelog, version)
 	const roleIds = getReleasePings(version, entry).map(ping => requireEnv(ROLE_ENV_VARS[ping]))
-	const notes = renderReleaseNotes(readFileSync(TEMPLATE_PATH, 'utf-8'), version, entry, {
-		vars: { pings: roleIds.map(id => `<@&${id}>`).join(' ') },
-		maxLength: MAX_TEXT_LENGTH,
-		breakingLabel: BREAKING_LABEL,
-	})
 
 	const message = await discordPost(`/channels/${channelId}/messages`, {
 		flags: IS_COMPONENTS_V2,
 		allowed_mentions: { parse: [], roles: live ? roleIds : [] },
-		components: [
-			{
-				type: 17, // Container
-				accent_color: ACCENT_COLOR,
-				components: [
-					{ type: 10, content: notes }, // Text Display
-					{
-						type: 1, // Action Row
-						components: [
-							{
-								type: 2,
-								style: 5,
-								label: 'View on GitHub',
-								url: getReleaseUrl(version),
-							},
-						],
-					},
-				],
-			},
-		],
+		components: buildAnnouncement(version, entry, roleIds),
 	})
 	console.log(`Posted v${version} announcement (message ${message.id}) to channel ${channelId}`)
 
