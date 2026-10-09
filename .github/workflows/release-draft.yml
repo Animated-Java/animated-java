@@ -54,6 +54,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y xvfb
 
       - name: Run tests
+        timeout-minutes: 20
         run: bun run test:only
 
       - name: Create draft release
