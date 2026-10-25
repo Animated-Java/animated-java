@@ -394,9 +394,18 @@ IF (has_animations) {
 								global.modifiedBones = Object.values(animation.modified_nodes)
 									.filter(node => BONE_TYPES.includes(node.type))
 									.sort(nodeSorter)
+								global.boneDispatch = renderBoneDispatch(
+									'apply_frame_to_bone',
+									`${blueprint_id}/animations/${animation.storage_name}/zzz/`,
+									global.modifiedBones.map(node => ({
+										uuid: node.uuid,
+										tag: TAGS.PROJECT_NODE_NAMED(blueprint_id, node.storage_name),
+										command: `data modify entity @s {} merge from storage ${temp_storage} frame.${node.storage_name}`,
+									}))
+								)
 							%%>
 							IF (global.modifiedBones.length > 0) {
-								execute on passengers run function ./apply_frame_to_bone
+								execute on passengers run function <%global.boneDispatch.entry%>
 							}
 							REPEAT (Object.values(animation.modified_nodes).filter(node => node.type === 'locator' || node.type === 'camera').sort(nodeSorter)) as node {
 								data modify storage <%temp_storage%> entry.data.uuids_by_name.<%node.storage_name%> merge from \
@@ -414,13 +423,10 @@ IF (has_animations) {
 						}
 
 						IF (global.modifiedBones.length > 0) {
-							function apply_frame_to_bone {
-								# Runs as each bone. Plain, so it's only parsed once.
-								REPEAT (global.modifiedBones) as node {
-									execute if entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(blueprint_id, node.storage_name)%>] run return run \
-										data modify entity @s {} merge from storage <%temp_storage%> frame.<%node.storage_name%>
-								}
-							}
+							# Runs as each bone. Plain, so it's only parsed once.
+							<%%
+								emit.mcb(global.boneDispatch.mcb)
+							%%>
 						}
 					} ELSE {
 						function set_frame {
@@ -523,9 +529,10 @@ IF (has_animations) {
 												lastActiveFrame[node.uuid] = transform
 
 												boneMerges.push({
-													node,
-													command: `execute if entity @s[tag=${TAGS.PROJECT_NODE_NAMED(blueprint_id, node.storage_name)}] run return run `
-														+ `data merge entity @s%NEWLINE_PATCH%{`
+													uuid: node.uuid,
+													storageName: node.storage_name,
+													tag: TAGS.PROJECT_NODE_NAMED(blueprint_id, node.storage_name),
+													command: `data merge entity @s%NEWLINE_PATCH%{`
 															+ `transformation: ${matrixToNbtFloatArray(transform.matrix).toString()},`
 															+ `start_interpolation: ${isStepInterpolation ? -1 : 0},`
 															+ `interpolation_duration: ${isStepInterpolation ? 0 : interpolation_duration}`
@@ -614,9 +621,13 @@ IF (has_animations) {
 									}
 
 									if (boneMerges.length > 0) {
-										const bonesFunction = `${blueprint_id}/animations/${animation.storage_name}/zzz/frames/${frameIndex}_bones`
-										emit.mcb(`function ${frameIndex}_bones {\n${boneMerges.map(m => m.command).join('\n')}\n}`.replaceAll(/%NEWLINE_PATCH%\n?/g, ' '))
-										frameFunc += `\nexecute on passengers run function ${bonesFunction}`
+										const dispatch = renderBoneDispatch(
+											`${frameIndex}_bones`,
+											`${blueprint_id}/animations/${animation.storage_name}/zzz/frames/`,
+											boneMerges
+										)
+										emit.mcb(dispatch.mcb.replaceAll(/%NEWLINE_PATCH%\n?/g, ' '))
+										frameFunc += `\nexecute on passengers run function ${dispatch.entry}`
 										hasFunction = true
 									}
 

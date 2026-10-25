@@ -44,6 +44,8 @@ export interface BlueprintSettings {
 	auto_update_rig_orientation: boolean
 	use_storage_for_animation: boolean
 	use_entity_stacking: boolean
+	/** Bones per dispatch group, or 0 for about √bones. See `boneDispatch.ts`. */
+	bone_group_size: number
 	// Plugin Settings
 	baked_animations: boolean
 	json_file: string
@@ -89,6 +91,7 @@ export const defaultValues: BlueprintSettings = {
 	auto_update_rig_orientation: true,
 	use_storage_for_animation: false,
 	use_entity_stacking: true,
+	bone_group_size: 0,
 	// Plugin Settings
 	baked_animations: true,
 	json_file: '',

@@ -15,6 +15,7 @@
 	let shadowStrength = $state(Project.animated_java.shadow_strength)
 	let autoUpdateRigOrientation = $state(Project.animated_java.auto_update_rig_orientation)
 	let useEntityStacking = $state(Project.animated_java.use_entity_stacking)
+	let boneGroupSize = $state(Project.animated_java.bone_group_size)
 
 	onDestroy(() => {
 		Project.animated_java.custom_rig_entity_tags = customRigEntityTags
@@ -24,6 +25,7 @@
 		Project.animated_java.shadow_strength = shadowStrength
 		Project.animated_java.auto_update_rig_orientation = autoUpdateRigOrientation
 		Project.animated_java.use_entity_stacking = useEntityStacking
+		Project.animated_java.bone_group_size = boneGroupSize
 	})
 </script>
 
@@ -82,6 +84,17 @@
 		description={localize('use_entity_stacking.description')}
 		bind:value={useEntityStacking}
 	/>
+
+	{#if dataPackExportFormat !== 'none'}
+		<NumberSlider
+			label={localize('bone_group_size.title')}
+			description={localize('bone_group_size.description')}
+			bind:value={boneGroupSize}
+			step={1}
+			min={0}
+			max={1024}
+		/>
+	{/if}
 </div>
 
 <style>

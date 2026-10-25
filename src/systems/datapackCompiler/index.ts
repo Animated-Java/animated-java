@@ -38,12 +38,11 @@ import {
 } from '../util'
 import ENTITY_NAMES from './entityNames'
 import { compileMcbProject } from './mcbCompiler'
+import { BONE_TYPES, type BoneCommand, getRigBoneGroups, renderBoneDispatch } from './boneDispatch'
 import OBJECTIVES from './objectives'
 import { getProjectId } from './projectId'
 import TAGS, { getNodeTags, getRootEntityTags } from './tags'
 import TELLRAW from './tellraw'
-
-const BONE_TYPES = ['bone', 'text_display', 'item_display', 'block_display']
 
 async function generateRootEntityPassengers(version: string, rig: IRenderedRig) {
 	const aj = Project!.animated_java
@@ -663,6 +662,8 @@ const dataPackCompiler: DataPackCompiler = async ({
 		.map(() => '..')
 		.join('/')
 
+	const boneGroups = getRigBoneGroups(rig, aj.bone_group_size)
+
 	const variables = {
 		relativePathToSrc,
 		blueprint_id: aj.blueprint_id,
@@ -715,6 +716,11 @@ const dataPackCompiler: DataPackCompiler = async ({
 			),
 		has_animations: animations.length > 0,
 		getNodeTags,
+		/** See {@link renderBoneDispatch}: `path` is the directory the functions are emitted in. */
+		renderBoneDispatch: (name: string, path: string, commands: BoneCommand[]) =>
+			renderBoneDispatch(name, path, commands, boneGroups, group =>
+				TAGS.PROJECT_NODE_GROUP(aj.blueprint_id, group)
+			),
 		getVariantSlotTextures: (variant: IRenderedVariant, boneUuid: string) =>
 			getVariantSlotTextures(rig, variant, boneUuid),
 		getFrameEffects: (animation: IRenderedAnimation) => getFrameEffects(rig, animation),

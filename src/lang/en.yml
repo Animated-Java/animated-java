@@ -484,6 +484,16 @@ animated_java:
           - Bone rotations will be *much* more precise, enabling much smoother movement when teleporting the rig around.
           - Bone entities cannot be selected via `on passengers`, but can still be accessed via `as_node`.
 
+      bone_group_size:
+        title: Bone Group Size
+        description: |-
+          [Markdown]
+          How many bones share a group when the data pack finds which bone an animation frame's transform belongs to.
+
+          Each bone checks its group first, then the bones in that group, so rigs with many bones apply frames faster.
+
+          `0` picks a size automatically: about the square root of the bone count, and no groups for rigs with fewer than 10 bones.
+
       auto_update_rig_orientation:
         title: Auto Update Rig Orientation
         description: |-

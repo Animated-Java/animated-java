@@ -1,5 +1,6 @@
 import { NbtList, NbtString } from 'deepslate/lib/nbt'
 import { IntentionalExportError } from '../errors'
+import { getRigBoneGroups } from './boneDispatch'
 import type { AnyRenderedNode, IRenderedRig } from '../rigRenderer'
 
 export function makeTagSafe(value: string) {
@@ -124,6 +125,9 @@ namespace TAGS {
 
 	export const PROJECT_NODE_NAMED = (blueprintId: string, nodeName: string) =>
 		`${makeTagSafe(blueprintId)}.node.${nodeName}`
+	/** Bones are dispatched to by group first. See `boneDispatch.ts`. */
+	export const PROJECT_NODE_GROUP = (blueprintId: string, group: number) =>
+		`${makeTagSafe(blueprintId)}.node_group.${group}`
 	export const PROJECT_BONE_NAMED = (blueprintId: string, boneName: string) =>
 		`${makeTagSafe(blueprintId)}.bone.${boneName}`
 	export const PROJECT_DISPLAY_NODE_NAMED = (blueprintId: string, nodeName: string) =>
@@ -256,6 +260,10 @@ export function getNodeTags(node: AnyRenderedNode, rig: IRenderedRig): NbtList {
 
 	if (!hasParent) {
 		tags.push(TAGS.GLOBAL_ROOT_CHILD())
+	}
+	const group = getRigBoneGroups(rig, aj.bone_group_size).get(node.uuid)
+	if (group !== undefined) {
+		tags.push(TAGS.PROJECT_NODE_GROUP(aj.blueprint_id, group))
 	}
 	switch (node.type) {
 		case 'bone': {
