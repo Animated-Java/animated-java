@@ -7,6 +7,7 @@ namespace OBJECTIVES {
 		`${makeTagSafe(blueprintId)}.${animationName}.frame`
 	export const IS_RIG_LOADED = () => 'aj.is_rig_loaded'
 	export const TWEEN_DURATION = () => 'aj.tween_duration'
+	export const PROJECT_ID = () => 'aj.project_id'
 }
 
 export default OBJECTIVES

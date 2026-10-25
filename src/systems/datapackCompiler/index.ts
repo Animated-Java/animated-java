@@ -39,6 +39,7 @@ import {
 import ENTITY_NAMES from './entityNames'
 import { compileMcbProject } from './mcbCompiler'
 import OBJECTIVES from './objectives'
+import { getProjectId } from './projectId'
 import TAGS, { getNodeTags, getRootEntityTags } from './tags'
 import TELLRAW from './tellraw'
 
@@ -438,6 +439,7 @@ export default async function compileDataPack(version: string, options: CompileD
 
 	if (aj.data_pack_export_mode === 'folder') {
 		ajmeta.read()
+		await assertProjectIdIsFree(options.dataPackFolder, aj.blueprint_id)
 	}
 
 	const globalCoreFiles = new Map<string, ExportedFile>()
@@ -546,6 +548,32 @@ export default async function compileDataPack(version: string, options: CompileD
 	console.timeEnd('Data Pack Compilation took')
 }
 
+/**
+ * Rigs tick through `animated_java:global/root/projects/<project id>`, so refuse to overwrite
+ * another blueprint's, in the unlikely case their IDs collide.
+ */
+async function assertProjectIdIsFree(dataPackFolder: string, blueprintId: string) {
+	const { existsSync, promises } = getFsModule()
+	const projectId = getProjectId(blueprintId)
+	// Function folders are singular from 1.21 on.
+	for (const functions of ['function', 'functions']) {
+		const path = PathModule.join(
+			dataPackFolder,
+			'data/animated_java',
+			functions,
+			'global/root/projects',
+			`${projectId}.mcfunction`
+		)
+		if (!existsSync(path)) continue
+		const content = (await promises.readFile(path)).toString()
+		if (!content.includes(`function ${blueprintId}/root/on_tick`)) {
+			throw new IntentionalExportError(
+				`Another blueprint in this data pack has the same project ID as '${blueprintId}' (${path}). Please change this blueprint's ID.`
+			)
+		}
+	}
+}
+
 async function removeFiles(ajmeta: AJMeta) {
 	console.time('Removing Files took')
 	const aj = Project!.animated_java
@@ -638,6 +666,7 @@ const dataPackCompiler: DataPackCompiler = async ({
 	const variables = {
 		relativePathToSrc,
 		blueprint_id: aj.blueprint_id,
+		project_id: getProjectId(aj.blueprint_id),
 		interpolation_duration: aj.interpolation_duration,
 		teleportation_duration: aj.teleportation_duration,
 		shadow_radius: aj.shadow_radius,
@@ -677,6 +706,13 @@ const dataPackCompiler: DataPackCompiler = async ({
 			Object.values(rig.nodes).filter(n => n.type === 'locator' && n.config?.on_tick_function)
 				.length > 0,
 		has_cameras: Object.values(rig.nodes).filter(n => n.type === 'camera').length > 0,
+		// Whether ticking needs the rig's per-entity data (node UUIDs, locator transforms).
+		// Without it, ticks skip the data manager read. Before 1.21.4, bones are always stacked.
+		uses_entity_data:
+			(!aj.use_entity_stacking && !compareVersions('1.21.4', version)) /* >= 1.21.4 */ ||
+			Object.values(rig.nodes).some(n =>
+				['locator', 'camera', 'interaction'].includes(n.type)
+			),
 		has_animations: animations.length > 0,
 		getNodeTags,
 		getVariantSlotTextures: (variant: IRenderedVariant, boneUuid: string) =>

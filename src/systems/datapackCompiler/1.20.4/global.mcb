@@ -13,6 +13,7 @@ dir global {
 		scoreboard objectives add <%OBJECTIVES.ID()%> dummy
 		scoreboard objectives add <%OBJECTIVES.IS_RIG_LOADED()%> dummy
 		scoreboard objectives add <%OBJECTIVES.TWEEN_DURATION()%> dummy
+		scoreboard objectives add <%OBJECTIVES.PROJECT_ID()%> dummy
 
 		scoreboard players add aj.last_id <%OBJECTIVES.ID()%> 0
 
@@ -37,11 +38,29 @@ dir global {
 
 	dir root {
 		function on_tick {
+			# Rigs dispatch to their project's tick by its ID, without reading their data.
+			# Rigs from projects exported by an older Animated Java don't have one.
+			execute if score @s <%OBJECTIVES.PROJECT_ID()%> matches -2147483648.. run return run \
+				function *global/root/tick_project
 			data_manager prep read
 			IF (debug_mode) {
 				execute unless score @s <%OBJECTIVES.IS_RIG_LOADED()%> matches 1 run function *global/root/on_load
 			}
 			function *global/root/run_project_tick with storage <%temp_storage%> entry.data
+		}
+
+		function tick_project {
+			execute store result storage <%temp_storage%> args.project int 1 run \
+				scoreboard players get @s <%OBJECTIVES.PROJECT_ID()%>
+			block { with storage <%temp_storage%> args
+				$function animated_java:global/root/projects/$(project)
+			}
+		}
+
+		dir projects {
+			function <%project_id%> {
+				function <%blueprint_id%>/root/on_tick
+			}
 		}
 
 		function run_project_tick {

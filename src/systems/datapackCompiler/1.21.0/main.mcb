@@ -41,6 +41,14 @@ dir zzz {
 
 dir root {
 	function on_tick {
+		# Runs from animated_java:global/root/on_tick, as the root.
+		IF (debug_mode) {
+			execute unless score @s <%OBJECTIVES.IS_RIG_LOADED()%> matches 1 run function animated_java:global/root/on_load
+		}
+		IF (uses_entity_data) {
+			data_manager prep read
+		}
+
 		# Custom pre-tick function
 		IF (on_pre_tick_function) {
 			<%%
@@ -49,9 +57,6 @@ dir root {
 		}
 
 		IF (has_animations) {
-			# animated_java:global/root/on_tick already runs this right before calling this function.
-			# data_manager prep read
-
 			# Once we have more than 8 animations, calling a function only if at least one animation is playing is more efficient.
 			IF (animations.length > 8) {
 				# If no animations are playing, we can skip all animation logic.
@@ -334,13 +339,14 @@ IF (has_animations) {
 										IF (getFrameEffects(animation).some(effects => effects.frame === animation.frames.length - 1)) {
 											function ./frame_effects/<%animation.frames.length - 1%>
 										}
-									} ELSE {
+									} ELSE IF (uses_entity_data) {
 										function ./frames/last_frame_effects with storage <%temp_storage%> entry.data.uuids_by_name
+									} ELSE {
+										function ./frames/last_frame_effects
 									}
 									scoreboard players add @s <%OBJECTIVES.FRAME(blueprint_id, animation.storage_name)%> 1
 								}
 						}
-						data remove storage <%temp_storage%> args
 						execute store result storage <%temp_storage%> args.frame int 1 run \
 							scoreboard players get @s <%OBJECTIVES.FRAME(blueprint_id, animation.storage_name)%>
 						function ./apply_frame with storage <%temp_storage%> args
@@ -385,15 +391,18 @@ IF (has_animations) {
 
 						function apply_frame {
 							#ARGS: {frame: int}
-							REPEAT (Object.values(animation.modified_nodes).sort(nodeSorter)) as node {
-								IF (BONE_TYPES.includes(node.type)) {
-									$execute on passengers if entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(blueprint_id, node.storage_name)%>] run \
-										data modify entity @s {} merge from \
-											storage <%project_storage%>/animations <%animation.storage_name%>.$(frame).<%node.storage_name%>
-								} ELSE IF (node.type === 'locator' || node.type === 'camera') {
-									$data modify storage <%temp_storage%> entry.data.uuids_by_name.<%node.storage_name%> merge from \
-											storage <%project_storage%>/animations <%animation.storage_name%>.$(frame).<%node.storage_name%>
-								}
+							$data modify storage <%temp_storage%> frame set from storage <%project_storage%>/animations <%animation.storage_name%>.$(frame)
+							<%%
+								global.modifiedBones = Object.values(animation.modified_nodes)
+									.filter(node => BONE_TYPES.includes(node.type))
+									.sort(nodeSorter)
+							%%>
+							IF (global.modifiedBones.length > 0) {
+								execute on passengers run function ./apply_frame_to_bone
+							}
+							REPEAT (Object.values(animation.modified_nodes).filter(node => node.type === 'locator' || node.type === 'camera').sort(nodeSorter)) as node {
+								data modify storage <%temp_storage%> entry.data.uuids_by_name.<%node.storage_name%> merge from \
+									storage <%temp_storage%> frame.<%node.storage_name%>
 							}
 
 							IF (getFrameEffects(animation).length > 0) {
@@ -405,12 +414,26 @@ IF (has_animations) {
 
 							return 1
 						}
+
+						IF (global.modifiedBones.length > 0) {
+							function apply_frame_to_bone {
+								# Runs as each bone. Plain, so it's only parsed once.
+								REPEAT (global.modifiedBones) as node {
+									execute if entity @s[tag=<%TAGS.PROJECT_NODE_NAMED(blueprint_id, node.storage_name)%>] run return run \
+										data modify entity @s {} merge from storage <%temp_storage%> frame.<%node.storage_name%>
+								}
+							}
+						}
 					} ELSE {
 						function set_frame {
 							# Sets the frame without interpolation
 							#ARGS: {frame: int}
 
-							$function ./frames/$(frame) with storage <%temp_storage%> entry.data.uuids_by_name
+							IF (uses_entity_data) {
+								$function ./frames/$(frame) with storage <%temp_storage%> entry.data.uuids_by_name
+							} ELSE {
+								$function ./frames/$(frame)
+							}
 
 							execute on passengers run \
 								data modify entity @s start_interpolation set value -1
@@ -420,9 +443,11 @@ IF (has_animations) {
 
 						function apply_frame {
 							#ARGS: {frame: int}
-
-							$function ./frames/$(frame) with storage <%temp_storage%> entry.data.uuids_by_name
-
+							IF (uses_entity_data) {
+								$function ./frames/$(frame) with storage <%temp_storage%> entry.data.uuids_by_name
+							} ELSE {
+								$function ./frames/$(frame)
+							}
 							return 1
 						}
 
@@ -483,6 +508,7 @@ IF (has_animations) {
 								const modifiedNodes = Object.values(animation.modified_nodes).filter(n => n.type !== 'struct').sort(nodeSorter);
 								for (const [frameIndex, frame] of animation.frames.entries()) {
 									const toMerge = {cameras: {}, locators: {}, interactions: {}}
+									const boneMerges = []
 									let frameFunc = ``;
 									let frameFuncEnd = ``;
 									for (const node of modifiedNodes) {
@@ -498,23 +524,15 @@ IF (has_animations) {
 												const isStepInterpolation = !!(lastFrame?.interpolation === 'step')
 												lastActiveFrame[node.uuid] = transform
 
-												if (transform.interpolation === 'pre-post' || isStepInterpolation) {
-													frameFunc +=
-														`\n$data merge entity $(${node.storage_name})%NEWLINE_PATCH%{`
+												boneMerges.push({
+													node,
+													command: `execute if entity @s[tag=${TAGS.PROJECT_NODE_NAMED(blueprint_id, node.storage_name)}] run return run `
+														+ `data merge entity @s%NEWLINE_PATCH%{`
 															+ `transformation: ${matrixToNbtFloatArray(transform.matrix).toString()},`
 															+ `start_interpolation: ${isStepInterpolation ? -1 : 0},`
 															+ `interpolation_duration: ${isStepInterpolation ? 0 : interpolation_duration}`
 														+ `}`
-												} else {
-													frameFunc +=
-														`\n$data merge entity $(${node.storage_name})%NEWLINE_PATCH%{`
-															+ `transformation: ${matrixToNbtFloatArray(transform.matrix).toString()},`
-															+ `start_interpolation: 0,`
-															+ `interpolation_duration: ${interpolation_duration}`
-														+ `}`
-												}
-
-												;hasFunction = true
+												})
 												break
 											}
 											case 'locator': {
@@ -595,6 +613,13 @@ IF (has_animations) {
 												;break
 											}
 										}
+									}
+
+									if (boneMerges.length > 0) {
+										const bonesFunction = `${blueprint_id}/animations/${animation.storage_name}/zzz/frames/${frameIndex}_bones`
+										emit.mcb(`function ${frameIndex}_bones {\n${boneMerges.map(m => m.command).join('\n')}\n}`.replaceAll(/%NEWLINE_PATCH%\n?/g, ' '))
+										frameFunc += `\nexecute on passengers run function ${bonesFunction}`
+										hasFunction = true
 									}
 
 									const updatedLocators = Object.keys(toMerge.locators).length > 0;
@@ -710,6 +735,7 @@ function summon {
 		distance=..0.01 \
 	] run block zzz/summon/as_root_entity {
 		execute store result score @s <%OBJECTIVES.ID()%> run scoreboard players add aj.last_id <%OBJECTIVES.ID()%> 1
+		scoreboard players set @s <%OBJECTIVES.PROJECT_ID()%> <%project_id%>
 
 		data_manager init prep read
 		# Data manager init runs gu:get_entity_uuid_string. So we don't need to call it again here.
