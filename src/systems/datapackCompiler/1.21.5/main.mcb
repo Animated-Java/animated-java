@@ -85,10 +85,20 @@ dir root {
 			IF (use_entity_stacking) {
 				execute on passengers run rotate @s ~ ~
 			} ELSE {
-				block { with storage <%temp_storage%> entry.data.uuids_by_name
-					REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
-						$execute as $(<%node.storage_name%>) run function <%blueprint_id%>/root/zzz/orient_node
+				# Only move the bones when the root moved or turned since they last followed it.
+				execute store success score #aj.moved <%OBJECTIVES.I()%> run \
+					data modify storage <%temp_storage%> entry.data.root_pos set from entity @s Pos
+				execute store success score #aj.turned <%OBJECTIVES.I()%> run \
+					data modify storage <%temp_storage%> entry.data.root_rotation set from entity @s Rotation
+				scoreboard players operation #aj.moved <%OBJECTIVES.I()%> += #aj.turned <%OBJECTIVES.I()%>
+				execute if score #aj.moved <%OBJECTIVES.I()%> matches 1.. run block follow_root {
+					block { with storage <%temp_storage%> entry.data.uuids_by_name
+						REPEAT (Object.values(rig.nodes).filter(node => BONE_TYPES.includes(node.type))) as node {
+							$execute as $(<%node.storage_name%>) run function <%blueprint_id%>/root/zzz/orient_node
+						}
 					}
+					# Remember the pose the bones now follow.
+					data_manager prep write
 				}
 			}
 		} ELSE IF (has_ticking_locators) {
