@@ -1761,7 +1761,7 @@ IF (Object.keys(rig.variants).length > 1) {
 	}
 }
 
-IF (has_locators || has_cameras) {
+IF (has_locators || has_cameras || has_interactions) {
 	dir zzz {
 		function reset_floating_entities {
 			REPEAT (Object.values(rig.nodes).filter(node => node.type === 'locator')) as locator {
