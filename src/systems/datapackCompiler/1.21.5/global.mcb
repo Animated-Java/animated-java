@@ -145,6 +145,31 @@ dir global {
 		}
 	}
 
+	function as_root {
+		# Executes a command as the root entity of the rig.
+		execute unless score @s <%OBJECTIVES.ID()%> matches <%-(2**31)%>..<%(2**31)-1%> run return run \
+			tellraw @a <%TELLRAW.FUNCTION_NOT_EXECUTED_AS_ENTITY_WITH_ID_SCORE(context.functions.at(-1))%>
+
+		data_manager prep read
+
+		$data modify storage <%temp_storage%> args.command set value '$(command)'
+		data modify storage <%temp_storage%> args.root_uuid set from storage <%temp_storage%> entry.data.root_uuid
+
+		IF (debug_mode) {
+			scoreboard players set #aj.check <%OBJECTIVES.I()%> 0
+		}
+		block as_root_entity { with storage <%temp_storage%> args
+			$execute as $(root_uuid) run $(command)
+			IF (debug_mode) {
+				# If the function successfully instantiated, the provided command is valid.
+				scoreboard players set #aj.check <%OBJECTIVES.I()%> 1
+			}
+		}
+		IF (debug_mode) {
+			execute if score #aj.check <%OBJECTIVES.I()%> matches 0 run tellraw @a <%TELLRAW.ROOT_COMMAND_FAILED_TO_EXECUTE()%>
+		}
+	}
+
 	dir remove {
 		# Removes every entity related to Animated Java.
 		function everything {
