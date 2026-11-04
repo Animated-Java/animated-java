@@ -1594,7 +1594,6 @@ function as_root {
 	IF (debug_mode) {
 		execute if score #aj.check <%OBJECTIVES.I()%> matches 0 run tellraw @a <%TELLRAW.ROOT_COMMAND_FAILED_TO_EXECUTE()%>
 	}
-
 }
 
 dir remove {
