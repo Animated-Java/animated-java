@@ -19,6 +19,13 @@ import { Variant } from '../../variants'
 import { upgradeAnimatedJavaBlueprint } from './dfu'
 import * as blueprintSettings from './settings'
 
+let parsingBlueprint = false
+
+/** Whether a Blueprint is being parsed into the active project, so its changes aren't user edits. */
+export function isParsingBlueprint() {
+	return parsingBlueprint
+}
+
 // region Codec
 export const BLUEPRINT_CODEC = registerDeletableHandlerPatch({
 	id: 'animated_java:codec/blueprint',
@@ -44,7 +51,12 @@ export const BLUEPRINT_CODEC = registerDeletableHandlerPatch({
 				setupProject(format, model.meta?.uuid)
 				if (!Project) throw new Error('Failed to load Animated Java Blueprint')
 
-				this.parse!(model, file.path)
+				parsingBlueprint = true
+				try {
+					this.parse!(model, file.path)
+				} finally {
+					parsingBlueprint = false
+				}
 
 				const name = pathToName(file.path, true)
 				if (file.path && isApp && !file.no_file) {

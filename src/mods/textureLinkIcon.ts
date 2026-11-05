@@ -1,5 +1,6 @@
 import { registerProjectPatch, registerPropertyOverridePatch } from 'blockbench-patch-manager'
 import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from '../formats/blueprint'
+import { isParsingBlueprint } from '../formats/blueprint/codec'
 import { localize } from '../util/lang'
 import { isTextureSlot } from '../textureSlots'
 import { isResourcePackPath } from '../util/minecraftUtil'
@@ -64,7 +65,8 @@ registerPropertyOverridePatch({
 
 // `fromPath` is where a "Save As" (or a relink) turns an internal texture into a
 // file-backed one. No event is fired for it, so refresh the icon here, and mark
-// the Blueprint dirty since the texture's stored path just changed.
+// the Blueprint dirty since the texture's stored path just changed. Loading a
+// Blueprint links its textures the same way, but that isn't an edit.
 registerPropertyOverridePatch({
 	id: `animated_java:texture/refresh-icon-on-from-path`,
 	target: Texture.prototype,
@@ -75,7 +77,9 @@ registerPropertyOverridePatch({
 			const wasInternal = !!this.internal
 			const result = original.call(this, path, externalDataLoader)
 			requestAnimationFrame(() => updateTextureIcon(this))
-			if (wasInternal && !this.internal && Project) Project.saved = false
+			if (wasInternal && !this.internal && Project && !isParsingBlueprint()) {
+				Project.saved = false
+			}
 			return result
 		}
 	},

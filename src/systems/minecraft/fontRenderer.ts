@@ -8,7 +8,6 @@ import {
 	type TextComponentStyle,
 } from 'book-and-quill'
 import type { Alignment } from '../../outliner/textDisplay'
-import { Stopwatch } from '../../util/stopwatch'
 import { getJSONAsset, getPreviewResourcePackKey } from './assetManager'
 import { MinecraftFont, preloadReferencedFonts, type CachedChar } from './fontManager'
 
@@ -352,8 +351,6 @@ export async function generateTextDisplayMesh({
 	shadow = false,
 	alignment = DEFAULT_ALIGNMENT,
 }: TextDisplayMeshOptions): Promise<TextDisplayMesh> {
-	const stopwatch = new Stopwatch('Generate Text Display Mesh').start()
-
 	const version = Project.animated_java.target_minecraft_version
 	// Scope every glyph/layout cache entry to the active preview resource pack so a
 	// text-mesh build that started before an overlay swap (e.g. project-load renders
@@ -568,6 +565,5 @@ export async function generateTextDisplayMesh({
 	outline.renderOrder = 2
 	outline.frustumCulled = false
 
-	stopwatch.debug({ mesh, hitbox: backgroundGeo, outline })
 	return { mesh, hitbox: backgroundGeo, outline }
 }
