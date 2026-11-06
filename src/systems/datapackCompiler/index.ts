@@ -1,6 +1,6 @@
 import { TextComponent } from 'book-and-quill'
 import { NbtByte, NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from 'deepslate/lib/nbt'
-import type { AsyncZippable } from 'fflate/browser'
+import type { Zippable } from 'fflate/browser'
 import { getFsModule } from '../../constants'
 import {
 	PROGRESS,
@@ -517,7 +517,7 @@ export default async function compileDataPack(version: string, options: CompileD
 		await writeFiles(exportedFiles, options.dataPackFolder)
 		console.timeEnd('Writing DataPack Files took')
 	} else if (aj.data_pack_export_mode === 'zip') {
-		const data: AsyncZippable = {}
+		const data: Zippable = {}
 
 		for (const [path, file] of coreFiles.entries()) {
 			const content = Uint8Array.from(

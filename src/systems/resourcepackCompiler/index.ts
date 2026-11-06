@@ -1,4 +1,4 @@
-import type { AsyncZippable } from 'fflate/browser'
+import type { Zippable } from 'fflate/browser'
 import { getFsModule } from '../../constants'
 import {
 	PROGRESS,
@@ -196,7 +196,7 @@ export default async function compileResourcePack(
 			PROGRESS.set(PROGRESS.get() + 1)
 		}
 	} else if (aj.resource_pack_export_mode === 'zip') {
-		const data: AsyncZippable = {}
+		const data: Zippable = {}
 
 		for (const [path, file] of coreFiles.entries()) {
 			const content = Uint8Array.from(

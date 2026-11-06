@@ -1,11 +1,11 @@
 import { NbtCompound, NbtFloat, NbtList } from 'deepslate/lib/nbt'
 import {
 	unzipSync,
-	zip as cbZip,
-	type AsyncZipOptions,
-	type AsyncZippable,
+	zipSync,
 	type Unzipped,
 	type UnzipOptions,
+	type ZipOptions,
+	type Zippable,
 } from 'fflate/browser'
 import { projectTargetVersionIsAtLeast } from '../formats/blueprint'
 import { roundTo } from '../util/misc'
@@ -69,17 +69,12 @@ export function debounce(func: () => void, timeout = 300) {
 	}
 }
 
-// promisify didn't work 😔
-export const zip = (data: AsyncZippable, options: AsyncZipOptions) => {
-	return new Promise<Uint8Array>((resolve, reject) => {
-		cbZip(data, options, (err, result) => {
-			if (err) {
-				reject(err)
-			} else {
-				resolve(result)
-			}
-		})
-	})
+/**
+ * Zips on the main thread. fflate's async `zip` compresses files over 160KB in a worker, which
+ * breaks under esbuild's `keepNames` the same way as {@link unzip}.
+ */
+export const zip = (data: Zippable, options: ZipOptions) => {
+	return new Promise<Uint8Array>(resolve => resolve(zipSync(data, options)))
 }
 
 /**
