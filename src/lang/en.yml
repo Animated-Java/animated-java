@@ -1165,6 +1165,16 @@ animated_java:
         message: |-
           The bone "%s" uses a %s tint, which is not supported in Minecraft %s.
           Change or remove it in the bone's Item Model Properties before exporting.
+      item_model_atlases:
+        message: |-
+          Some bones use textures Minecraft can't draw on their item models.
+
+          %s
+        bone: The bone "%s"
+        slot: The Texture Slot "%s" on the bone "%s"
+        outside: "%s uses textures that aren't in an atlas item models can use (%s), so they would render as missing: %s"
+        mixed: '%s mixes textures from more than one atlas: %s. Minecraft %s draws each item model from a single atlas, so use textures from one atlas on this bone, or move some of its cubes into another bone.'
+        preview_pack_hint: If another resource pack adds these textures to an atlas, add it as a Preview resource pack in the Blueprint Settings so Animated Java can see it.
       rig_has_textures_but_no_custom_models:
         message: |-
           You have textures applied to your model, but have no custom models (Cubes) to use them!

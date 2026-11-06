@@ -14,6 +14,7 @@ import { zip, type ExportedFile } from '../util'
 import EXPORT_1_20_4 from './1.20.4'
 import EXPORT_1_21_2 from './1.21.2'
 import EXPORT_1_21_4 from './1.21.4'
+import { checkItemModelAtlases } from './itemModelAtlases'
 
 function getResourcePackCompilerForVersion(version: string): ResourcePackCompiler {
 	switch (true) {
@@ -81,6 +82,9 @@ export default async function compileResourcePack(
 	const versionedFiles = new Map<string, ExportedFile>()
 
 	const resourcePackCompiler = getResourcePackCompilerForVersion(version)
+	if (options.rig.includes_custom_models) {
+		await checkItemModelAtlases(options.rig, options.resourcePackFolder)
+	}
 	await resourcePackCompiler({
 		...options,
 		resourcePackPath: options.resourcePackFolder,
