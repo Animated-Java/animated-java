@@ -7,6 +7,14 @@ import {
 import { openTextureSlotDialog } from '../dialogs/textureSlotConfig/textureSlotConfig'
 import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from '../formats/blueprint'
 import {
+	applyTextureRemoval,
+	getCubesUsing,
+	getPaintTarget,
+	getProtectedRecolors,
+	getRemovalUndoAspects,
+	planTextureRemoval,
+} from '../palettes/sets'
+import {
 	createTextureSlot,
 	getSlotDefaultTexture,
 	getSlotPreviewTexture,
@@ -139,7 +147,8 @@ registerPropertyOverridePatch({
 	get: original => {
 		return function (this: typeof Painter, texture: Texture) {
 			if (isTextureSlot(texture)) texture = getSlotPreviewTexture(texture) ?? texture
-			return original.call(this, texture)
+			// A slot showing a Permutation Set's recolor paints the recolor's base.
+			return original.call(this, getPaintTarget(texture))
 		}
 	},
 })
@@ -159,12 +168,16 @@ registerPatch({
 			run() {
 				const textures = Texture.all.filter(t => t.selected || t.multi_selected)
 				const slots = textures.filter(isTextureSlot)
-				const uuids = new Set(slots.map(slot => slot.uuid))
-				const cubes = Cube.all.filter(cube =>
-					Object.values(cube.faces).some(face => uuids.has(face.texture as string))
-				)
+				if (getProtectedRecolors(textures).length) {
+					Blockbench.showQuickMessage(translate('palettes.delete_recolor'), 4000)
+					return
+				}
+				// Removing a Permutation Set's base also removes its recolors.
+				const removal = planTextureRemoval(textures)
+				const cubes = getCubesUsing(removal.removed)
+				const aspects = getRemovalUndoAspects(removal, cubes)
 
-				Undo.initEdit({ textures, elements: cubes, uv_only: true })
+				Undo.initEdit(aspects.before)
 				for (const slot of slots) {
 					const fallback = getSlotDefaultTexture(slot)?.uuid ?? false
 					for (const cube of cubes) {
@@ -173,12 +186,13 @@ registerPatch({
 						}
 					}
 				}
-				for (const texture of textures) texture.remove(true)
+				// Faces whose slot default is also being removed are handled here too.
+				applyTextureRemoval(removal, cubes)
 				Canvas.updateAllFaces()
 				TextureAnimator.updateButton()
 				UVEditor.vue.updateTexture()
 				BARS.updateConditions()
-				Undo.finishEdit('Remove texture', { textures: [], elements: cubes, uv_only: true })
+				Undo.finishEdit('Remove texture', aspects.after)
 			},
 		})
 		return { handler }

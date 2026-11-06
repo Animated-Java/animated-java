@@ -66,6 +66,7 @@ import {
 	parseResourcePackPath,
 	toSmallCaps,
 } from './util/minecraftUtil'
+import * as palettes from './palettes'
 import * as textureSlots from './textureSlots'
 import * as animationPreview from './animationPreview'
 import { Variant } from './variants'
@@ -84,6 +85,7 @@ const AnimatedJavaApi = {
 	resourcepackCompiler,
 	Variant,
 	textureSlots,
+	palettes,
 	animationPreview,
 	openExportProgressDialog,
 	debugExportProgressDialog,

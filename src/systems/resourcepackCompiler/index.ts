@@ -12,6 +12,7 @@ import EXPORT_1_20_4 from './1.20.4'
 import EXPORT_1_21_2 from './1.21.2'
 import EXPORT_1_21_4 from './1.21.4'
 import { checkItemModelAtlases } from './itemModelAtlases'
+import { buildPaletteExport, type IPaletteExport } from './palettes'
 
 function getResourcePackCompilerForVersion(version: string): ResourcePackCompiler {
 	switch (true) {
@@ -40,6 +41,8 @@ interface ResourcePackCompilerOptions {
 	textureExportFolder: string
 	modelExportFolder: string
 	debugMode: boolean
+	/** Atlas sources and palette images for the rig's Permutation Sets. */
+	paletteExport: IPaletteExport
 }
 
 export type ResourcePackCompiler = (options: ResourcePackCompilerOptions) => Promise<void>
@@ -79,11 +82,13 @@ export default async function compileResourcePack(
 	const versionedFiles = new Map<string, ExportedFile>()
 
 	const resourcePackCompiler = getResourcePackCompilerForVersion(version)
+	const paletteExport = buildPaletteExport(options.rig, options.textureExportFolder)
 	if (options.rig.includes_custom_models) {
-		await checkItemModelAtlases(options.rig, options.resourcePackFolder)
+		await checkItemModelAtlases(options.rig, options.resourcePackFolder, paletteExport)
 	}
 	await resourcePackCompiler({
 		...options,
+		paletteExport,
 		resourcePackPath: options.resourcePackFolder,
 		ajmeta,
 		coreFiles,

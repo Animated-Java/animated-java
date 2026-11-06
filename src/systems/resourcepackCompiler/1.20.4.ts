@@ -1,10 +1,12 @@
 import type { ResourcePackCompiler } from '.'
+import { isPaletteTexture } from '../../palettes'
 import { getFsModule } from '../../constants'
 import { setExportProgressPhase } from '../../dialogs/exportProgress/exportProgress'
 import { isResourcePackPath, sanitizeStorageKey } from '../../util/minecraftUtil'
 import type { ITextureAtlas } from '../minecraft/textureAtlas'
 import type { IRenderedNodes } from '../rigRenderer'
 import { sortObjectKeys } from '../util'
+import { applyPaletteExport } from './palettes'
 
 interface IPredicateItemModel {
 	parent?: string
@@ -131,8 +133,10 @@ class PredicateItemModel {
 }
 
 const compileResourcePack: ResourcePackCompiler = async ({
+	ajmeta,
 	coreFiles,
 	versionedFiles,
+	paletteExport,
 	rig,
 	resourcePackPath,
 	displayItemPath,
@@ -172,6 +176,8 @@ const compileResourcePack: ResourcePackCompiler = async ({
 
 	// Textures
 	for (const texture of Object.values(rig.textures)) {
+		// A Permutation Set's recolors are built by the atlas from their base's image.
+		if (isPaletteTexture(texture)) continue
 		let image: Buffer | undefined
 		let mcmeta: Buffer | undefined
 		let optifineEmissive: Buffer | undefined
@@ -241,6 +247,13 @@ const compileResourcePack: ResourcePackCompiler = async ({
 			prefix: 'blueprint/',
 		})
 	}
+	applyPaletteExport({
+		atlasName: 'blocks',
+		atlas: blockAtlas,
+		paletteExport,
+		ajmeta,
+		versionedFiles,
+	})
 	coreFiles.set(blockAtlasPath, {
 		content: autoStringify(blockAtlas),
 	})

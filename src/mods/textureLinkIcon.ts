@@ -1,6 +1,7 @@
 import { registerProjectPatch, registerPropertyOverridePatch } from 'blockbench-patch-manager'
 import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from '../formats/blueprint'
 import { isParsingBlueprint } from '../formats/blueprint/codec'
+import { getBaseLabel, getGeneratedSource, isGeneratedTexture } from '../palettes/sets'
 import { localize } from '../util/lang'
 import { isTextureSlot } from '../textureSlots'
 import { isResourcePackPath } from '../util/minecraftUtil'
@@ -10,38 +11,62 @@ function isManagedByBlueprint(texture: Texture): boolean {
 	return !!texture.internal || (!!texture.path && isResourcePackPath(texture.path))
 }
 
+/**
+ * Sets an element's text only when it differs, so re-applying icons after Blockbench re-renders a
+ * row doesn't cause another round of DOM mutations.
+ */
+function setText(element: HTMLElement, text: string) {
+	if (element.textContent !== text) element.textContent = text
+}
+
 export function updateTextureIcon(texture: Texture) {
 	const saveIcon = document.querySelector<HTMLElement>(
 		`li[texid="${texture.uuid}"] .texture_save_icon`
 	)
 	if (!saveIcon) return
 
-	if (isTextureSlot(texture)) {
-		saveIcon.textContent = 'style'
+	const description = saveIcon.closest('li.texture')?.querySelector<HTMLElement>('.texture_res')
+	const generated = getGeneratedSource(texture)
+
+	if (isGeneratedTexture(texture)) {
+		setText(saveIcon, 'colorize')
+		saveIcon.setAttribute('title', localize('panel.textures.palette_generated_icon'))
+		saveIcon.classList.remove('clickable')
+		if (description) {
+			setText(
+				description,
+				generated
+					? localize(
+							'panel.textures.palette_generated_description',
+							getBaseLabel(generated.set, generated.base),
+							generated.permutation.suffix
+						)
+					: localize('panel.textures.palette_generated_orphaned')
+			)
+		}
+	} else if (isTextureSlot(texture)) {
+		setText(saveIcon, 'style')
 		saveIcon.setAttribute('title', localize('panel.textures.slot_icon'))
 		saveIcon.classList.remove('clickable')
-		const description = saveIcon
-			.closest('li.texture')
-			?.querySelector<HTMLElement>('.texture_res')
 		if (description) {
-			description.textContent = localize(
-				'panel.textures.slot_description',
-				String(texture.slot_textures.length)
+			setText(
+				description,
+				localize('panel.textures.slot_description', String(texture.slot_textures.length))
 			)
 		}
 	} else if (texture.path && isResourcePackPath(texture.path)) {
 		// Referenced from a resource pack by resource location.
-		saveIcon.textContent = 'link'
+		setText(saveIcon, 'link')
 		saveIcon.setAttribute('title', localize('panel.textures.linked_icon'))
 		saveIcon.classList.remove('clickable')
 	} else if (texture.internal) {
 		// Embedded in the Blueprint - there is nothing to save to disk.
-		saveIcon.textContent = 'box'
+		setText(saveIcon, 'box')
 		saveIcon.setAttribute('title', localize('panel.textures.internal_icon'))
 		saveIcon.classList.remove('clickable')
 	} else {
 		// A file on disk - restore Blockbench's own save state.
-		saveIcon.textContent = texture.saved ? 'check_circle' : 'save'
+		setText(saveIcon, texture.saved ? 'check_circle' : 'save')
 		saveIcon.setAttribute('title', '')
 		saveIcon.classList.toggle('clickable', !texture.saved)
 	}
@@ -98,6 +123,25 @@ registerProjectPatch({
 		}
 		requestAnimationFrame(refreshAll)
 
+		// Blockbench re-renders rows when a texture group unfolds or an image changes, which puts
+		// its own icon and resolution text back. Re-apply ours on the next frame after any change.
+		let queued = false
+		const observer = new MutationObserver(() => {
+			if (queued) return
+			queued = true
+			requestAnimationFrame(() => {
+				queued = false
+				refreshAll()
+			})
+		})
+		const observe = () => {
+			const list = document.getElementById('texture_list')
+			if (list)
+				observer.observe(list, { childList: true, subtree: true, characterData: true })
+			else requestAnimationFrame(observe)
+		}
+		observe()
+
 		const onTextureChange = ({ texture }: BlockbenchEventMap['change_texture_path']) =>
 			updateTextureIcon(texture)
 		// `change_texture_path` only fires on "Reopen"; catch every other path
@@ -111,10 +155,11 @@ registerProjectPatch({
 		Blockbench.on('select_texture', onTextureChange)
 		Blockbench.on('finished_edit', onFinishedEdit)
 
-		return { onTextureChange, onFinishedEdit }
+		return { onTextureChange, onFinishedEdit, observer }
 	},
 
-	revert({ onTextureChange, onFinishedEdit }) {
+	revert({ onTextureChange, onFinishedEdit, observer }) {
+		observer.disconnect()
 		Blockbench.removeListener('change_texture_path', onTextureChange)
 		Blockbench.removeListener('add_texture', onTextureChange)
 		Blockbench.removeListener('select_texture', onTextureChange)

@@ -1,4 +1,5 @@
 import type { ResourcePackCompiler } from '.'
+import { isPaletteTexture } from '../../palettes'
 import { getFsModule } from '../../constants'
 import { setExportProgressPhase } from '../../dialogs/exportProgress/exportProgress'
 import {
@@ -21,10 +22,13 @@ import {
 	type ISlotItemModel,
 	splitModelByTextureSlot,
 } from './textureSlotModels'
+import { applyPaletteExport } from './palettes'
 
 const compileResourcePack: ResourcePackCompiler = async ({
+	ajmeta,
 	coreFiles,
 	versionedFiles,
+	paletteExport,
 	rig,
 	resourcePackPath,
 	textureExportFolder,
@@ -80,12 +84,21 @@ const compileResourcePack: ResourcePackCompiler = async ({
 			prefix: 'blueprint/',
 		})
 	}
+	applyPaletteExport({
+		atlasName: 'blocks',
+		atlas: blockAtlas,
+		paletteExport,
+		ajmeta,
+		versionedFiles,
+	})
 	coreFiles.set(blockAtlasPath, {
 		content: autoStringify(blockAtlas),
 	})
 
 	// Textures
 	for (const texture of Object.values(rig.textures)) {
+		// A Permutation Set's recolors are built by the atlas from their base's image.
+		if (isPaletteTexture(texture)) continue
 		let image: Buffer | undefined
 		let mcmeta: Buffer | undefined
 		let optifineEmissive: Buffer | undefined

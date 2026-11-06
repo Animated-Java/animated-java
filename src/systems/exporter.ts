@@ -12,6 +12,12 @@ import { localize as translate } from '../util/lang'
 import { isResourcePackPath, parseResourceLocation } from '../util/minecraftUtil'
 import { scrubUndefined } from '../util/misc'
 import {
+	findPaletteExportErrors,
+	getGeneratedSource,
+	isPaletteTexture,
+	regenerateAllSets,
+} from '../palettes'
+import {
 	getTextureSlots,
 	savePreviews,
 	TEXTURE_SLOT_COMMANDS_MIN_VERSION,
@@ -112,6 +118,8 @@ async function actuallyExportProject({
 		for (const texture of Texture.all) {
 			if (texture.path && isResourcePackPath(texture.path) && existsSync(texture.path))
 				continue
+			// Permutation Sets and their recolors aren't written as files.
+			if (isPaletteTexture(texture)) continue
 			if (Texture.all.some(t => t !== texture && t.name === texture.name)) {
 				throw new IntentionalExportError(
 					`Texture name "${texture.name}" is used more than once. Please make sure all textures have unique names.`
@@ -163,8 +171,24 @@ async function actuallyExportProject({
 			displayItemPath,
 		} = getExportPaths()
 
+		// Generated textures' images are baked into plugin mode exports, so they must be current.
+		await regenerateAllSets()
+
 		setExportProgressPhase('Rendering Rig...')
 		const rig = renderRig(modelExportFolder, textureExportFolder)
+
+		const usedSets = new Set(
+			Object.values(rig.textures).flatMap(texture => getGeneratedSource(texture)?.set ?? [])
+		)
+		const paletteErrors = await findPaletteExportErrors([...usedSets])
+		if (paletteErrors.length) {
+			throw new IntentionalExportError(
+				translate(
+					'misc.failed_to_export.palette_errors.message',
+					paletteErrors.join('\n\n')
+				)
+			)
+		}
 
 		if (!rig.includes_custom_models && Texture.all.length !== 0) {
 			throw new IntentionalExportError(

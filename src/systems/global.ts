@@ -17,6 +17,8 @@ interface SerializedAJMeta {
 		{
 			coreFiles?: string[]
 			versionedFiles?: string[]
+			/** Atlas name -> the sources this rig added to that atlas file. */
+			atlasSources?: Record<string, unknown[]>
 		}
 	>
 }
@@ -27,6 +29,11 @@ export class AJMeta {
 
 	versionedFiles = new Set<string>()
 	previousVersionedFiles = new Set<string>()
+
+	/** Atlas name -> the sources this export adds to that atlas file. */
+	atlasSources: Record<string, unknown[]> = {}
+	/** Atlas name -> the sources the previous export of this rig added, to remove before adding. */
+	previousAtlasSources: Record<string, unknown[]> = {}
 
 	private previousAJMeta: SerializedAJMeta = {}
 
@@ -77,6 +84,7 @@ export class AJMeta {
 			for (const file of lastNamespaceData.coreFiles) {
 				this.previousCoreFiles.add(PathModule.join(this.rootFolder, file))
 			}
+			this.addPreviousAtlasSources(lastNamespaceData.atlasSources)
 
 			delete this.previousAJMeta.rigs[this.lastUsedBlueprintId]
 		}
@@ -87,12 +95,24 @@ export class AJMeta {
 			for (const file of namespaceData.versionedFiles) {
 				this.previousVersionedFiles.add(PathModule.join(this.rootFolder, file))
 			}
+			this.addPreviousAtlasSources(namespaceData.atlasSources)
 			delete this.previousAJMeta.rigs[this.blueprintId]
+		}
+	}
+
+	private addPreviousAtlasSources(atlasSources: Record<string, unknown[]> | undefined) {
+		if (!atlasSources || typeof atlasSources !== 'object') return
+		for (const [atlas, sources] of Object.entries(atlasSources)) {
+			if (!Array.isArray(sources)) continue
+			;(this.previousAtlasSources[atlas] ??= []).push(...sources)
 		}
 	}
 
 	write() {
 		const resourcePackFolder = PathModule.dirname(this.path)
+		const atlasSources = Object.fromEntries(
+			Object.entries(this.atlasSources).filter(([, sources]) => sources.length)
+		)
 		const content: SerializedAJMeta = {
 			formatVersion: '1.0.0',
 			rigs: sortObjectKeys({
@@ -104,6 +124,7 @@ export class AJMeta {
 					versionedFiles: Array.from(this.versionedFiles)
 						.map(v => normalizePath(PathModule.relative(resourcePackFolder, v)))
 						.sort(),
+					...(Object.keys(atlasSources).length ? { atlasSources } : {}),
 				},
 			}),
 		}

@@ -16,6 +16,7 @@ import {
 	type IRenderedNodes,
 	type IRenderedRig,
 } from '../rigRenderer'
+import type { IPaletteExport } from './palettes'
 
 /** First version whose compiler gives each Texture Slot its own model, see `1.21.4.ts`. */
 const SPLIT_SLOT_MODELS_MIN_VERSION = '1.21.4'
@@ -31,7 +32,11 @@ const BLUEPRINT_ATLAS_SOURCE: TextureAtlasEntry = {
  * Each atlas item models can use, built from the vanilla jar, the Preview resource packs, and the
  * pack being exported to, lowest priority first.
  */
-async function loadItemModelAtlases(version: string, resourcePackFolder: string) {
+async function loadItemModelAtlases(
+	version: string,
+	resourcePackFolder: string,
+	paletteExport: IPaletteExport
+) {
 	const { readFile } = getFsModule().promises
 	const atlases = new Map<string, TextureAtlasEntry[]>()
 	for (const name of getItemModelAtlases(version)) {
@@ -42,6 +47,11 @@ async function loadItemModelAtlases(version: string, resourcePackFolder: string)
 			.catch(() => undefined)
 		const sources = [...layers, exportPack].flatMap(atlas => atlas?.sources ?? [])
 		if (name === 'blocks') sources.push(BLUEPRINT_ATLAS_SOURCE)
+		// Reference sets are trusted to exist in some pack the player loads.
+		sources.push(
+			...(paletteExport.written[name] ?? []),
+			...(paletteExport.referenced[name] ?? [])
+		)
 		atlases.set(name, sources)
 	}
 	return atlases
@@ -121,9 +131,13 @@ function describeProblem(problem: ItemModelAtlasProblem, version: string) {
  * Fails the export if any bone's item model uses textures Minecraft would render as missing, or,
  * from 1.21.11, mixes textures from the blocks and items atlases.
  */
-export async function checkItemModelAtlases(rig: IRenderedRig, resourcePackFolder: string) {
+export async function checkItemModelAtlases(
+	rig: IRenderedRig,
+	resourcePackFolder: string,
+	paletteExport: IPaletteExport
+) {
 	const version = rig.target_minecraft_version
-	const atlases = await loadItemModelAtlases(version, resourcePackFolder)
+	const atlases = await loadItemModelAtlases(version, resourcePackFolder, paletteExport)
 	const problems = findItemModelAtlasProblems(getItemModelTextures(rig), atlases, version)
 	if (!problems.length) return
 

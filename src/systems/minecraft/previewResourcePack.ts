@@ -1,6 +1,7 @@
 import { TextDisplay } from '../../outliner/textDisplay'
 import { VanillaBlockDisplay } from '../../outliner/vanillaBlockDisplay'
 import { VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
+import { clearPalettePreviewCache, regenerateAllSets } from '../../palettes/preview'
 import EVENTS from '../../util/events'
 import { getPreviewResourcePackKey, setPreviewResourcePacks } from './assetManager'
 import { clearBlockModelCache } from './blockModelManager'
@@ -15,6 +16,7 @@ function getConfiguredPreviewResourcePacks(): string[] {
 }
 
 function invalidateCaches() {
+	clearPalettePreviewCache()
 	clearPreparedAssetsCache()
 	clearItemModelCache()
 	clearBlockModelCache()
@@ -27,6 +29,7 @@ function refreshDisplays() {
 	VanillaBlockDisplay.forceUpdateAll()
 	TextDisplay.forceUpdateAll()
 	Canvas.updateAll()
+	void regenerateAllSets()
 }
 
 /**

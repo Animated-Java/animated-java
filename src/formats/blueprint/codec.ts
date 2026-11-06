@@ -9,6 +9,7 @@ import {
 import { PACKAGE, getFsModule } from '../../constants'
 import { localize as translate } from '../../util/lang'
 import { sanitizeStorageKey } from '../../util/minecraftUtil'
+import { isPaletteTexture } from '../../palettes/sets'
 import {
 	isTextureSlot,
 	savePreviews,
@@ -359,8 +360,9 @@ export const BLUEPRINT_CODEC = registerDeletableHandlerPatch({
 						save.internal = true
 					}
 					if (options.absolute_paths == false) delete save.path
-					if (isTextureSlot(texture)) {
-						// A slot's image only mirrors one of its textures
+					if (isTextureSlot(texture) || isPaletteTexture(texture)) {
+						// A slot's image only mirrors one of its textures, and a Permutation
+						// Set's images are drawn from its bases and palettes
 						const slotSave: Partial<Texture> = save
 						delete slotSave.source
 						delete slotSave.path

@@ -21,6 +21,11 @@ export interface IPaletteReference {
 	file?: string
 	/** {@link file}, relative to the blueprint when it was picked. Used if `file` goes missing. */
 	relative_file?: string
+	/**
+	 * Asset path -> PNG data URL of each image the set used from {@link file}'s pack, saved when it
+	 * was picked. Previews fall back to these if the pack can't be found.
+	 */
+	images?: Record<string, string>
 }
 
 /**

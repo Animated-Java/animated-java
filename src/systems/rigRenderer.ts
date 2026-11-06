@@ -11,12 +11,15 @@ import { Interaction } from '../outliner/interaction'
 import { type Alignment, TextDisplay } from '../outliner/textDisplay'
 import { VanillaBlockDisplay } from '../outliner/vanillaBlockDisplay'
 import { type ItemDisplayMode, VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
+import { getSpriteId } from '../palettes/atlas'
+import { getGeneratedSource, isGeneratedTexture } from '../palettes/sets'
 import {
 	getSlotDefaultTexture,
 	getSlotTextures,
 	getTextureSlot,
 	TEXTURE_SLOT_COMMANDS_MIN_VERSION,
 } from '../textureSlots'
+import { localize as translate } from '../util/lang'
 import { makeUniqueName } from '../util/uniqueName'
 import {
 	type IMinecraftResourceLocation,
@@ -334,7 +337,7 @@ function renderCube(cube: Cube, rig: IRenderedRig, model: IRenderedModel) {
 			const texture = data.getTexture()
 			if (!texture) throw new Error('Texture not found')
 			renderedFace.texture = '#' + texture.id
-			rig.textures[texture.id] = texture
+			addRigTexture(texture, rig)
 			const resourceLocation = getTextureResourceLocation(texture, rig).resourceLocation
 			if (resourceLocation) model.textures[texture.id] = resourceLocation
 		}
@@ -366,7 +369,7 @@ function renderTextureSlot(slot: Texture, rig: IRenderedRig): IRenderedTextureSl
 
 	const textures: IRenderedTextureSlot['textures'] = []
 	for (const texture of getSlotTextures(slot)) {
-		rig.textures[texture.id] = texture
+		addRigTexture(texture, rig)
 		const name = makeUniqueName(sanitizeStorageKey(texture.name.replace(/\.png$/i, '')), n =>
 			textures.some(t => t.name === n)
 		)
@@ -385,12 +388,66 @@ function renderTextureSlot(slot: Texture, rig: IRenderedRig): IRenderedTextureSl
 	return rendered
 }
 
+/**
+ * Adds a texture a face or slot uses to the rig. A generated texture also brings its project base,
+ * since the atlas builds the recolor from the base's exported image.
+ */
+function addRigTexture(texture: Texture, rig: IRenderedRig) {
+	rig.textures[texture.id] = texture
+	if (!isGeneratedTexture(texture)) return
+	const source = getGeneratedSource(texture)
+	if (!source) {
+		throw new IntentionalExportError(
+			translate('misc.failed_to_export.palette_texture_orphaned.message', texture.name)
+		)
+	}
+	// Plugin mode exports each texture's own image, so it doesn't need the base.
+	if (source.baseTexture && !Project!.animated_java.enable_plugin_mode) {
+		rig.textures[source.baseTexture.id] = source.baseTexture
+	}
+}
+
+/** A generated texture's atlas sprite: its base's id, the set's separator, and the suffix. */
+function getGeneratedResourceLocation(
+	texture: Texture,
+	rig: IRenderedRig
+): IMinecraftResourceLocation | undefined {
+	const source = getGeneratedSource(texture)
+	if (!source) return undefined
+	const baseId = source.baseTexture
+		? getTextureResourceLocation(source.baseTexture, rig).resourceLocation
+		: source.base
+	const id = getSpriteId(baseId, source.set.palette_set.separator, source.permutation.suffix)
+	const [namespace, path] = id.includes(':') ? id.split(':', 2) : ['minecraft', id]
+	return {
+		packRoot: '',
+		namespace,
+		resourcePath: PathModule.dirname(path),
+		resourceLocation: `${namespace}:${path}`,
+		subtypelessPath: path,
+		fileName: PathModule.basename(path),
+		fileExtension: '.png',
+		type: 'textures',
+	}
+}
+
 const TEXTURE_RESOURCE_LOCATION_CACHE = new Map<string, IMinecraftResourceLocation>()
 export function getTextureResourceLocation(texture: Texture, rig: IRenderedRig) {
 	const { existsSync, statSync } = getFsModule()
 
 	if (TEXTURE_RESOURCE_LOCATION_CACHE.has(texture.uuid)) {
 		return TEXTURE_RESOURCE_LOCATION_CACHE.get(texture.uuid)!
+	}
+
+	if (isGeneratedTexture(texture)) {
+		const generated = getGeneratedResourceLocation(texture, rig)
+		if (!generated) {
+			throw new IntentionalExportError(
+				translate('misc.failed_to_export.palette_texture_orphaned.message', texture.name)
+			)
+		}
+		TEXTURE_RESOURCE_LOCATION_CACHE.set(texture.uuid, generated)
+		return generated
 	}
 
 	let textureName = texture.name.replace(/\.png$/, '')
