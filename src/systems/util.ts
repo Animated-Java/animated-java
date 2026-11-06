@@ -1,11 +1,11 @@
 import { NbtCompound, NbtFloat, NbtList } from 'deepslate/lib/nbt'
 import {
-	unzip as cbUnzip,
+	unzipSync,
 	zip as cbZip,
-	type AsyncUnzipOptions,
 	type AsyncZipOptions,
 	type AsyncZippable,
 	type Unzipped,
+	type UnzipOptions,
 } from 'fflate/browser'
 import { projectTargetVersionIsAtLeast } from '../formats/blueprint'
 import { roundTo } from '../util/misc'
@@ -82,17 +82,15 @@ export const zip = (data: AsyncZippable, options: AsyncZipOptions) => {
 	})
 }
 
-// promisify didn't work 😔
-export const unzip = (data: Uint8Array, options: AsyncUnzipOptions) => {
-	return new Promise<Unzipped>((resolve, reject) => {
-		cbUnzip(data, options, (err, result) => {
-			if (err) {
-				reject(err)
-			} else {
-				resolve(result)
-			}
-		})
-	})
+/**
+ * Unzips on the main thread. fflate's async `unzip` already inflates entries under 512KB there, and
+ * hands bigger ones (like 26.3's `en_us.json`) to a worker built from its own function source,
+ * which breaks under esbuild's `keepNames`: the injected `__name` helper doesn't exist in the
+ * worker.
+ */
+export const unzip = (data: Uint8Array, options: UnzipOptions) => {
+	// The executor turns a throw from unzipSync into a rejection, like the async version.
+	return new Promise<Unzipped>(resolve => resolve(unzipSync(data, options)))
 }
 
 export function isCubeValid(cube: Cube): '1.21.6+' | 'valid' | 'invalid' {

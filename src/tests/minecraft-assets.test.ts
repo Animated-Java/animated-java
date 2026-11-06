@@ -15,6 +15,20 @@ const BLUEPRINT_FORMAT_ID = 'animated-java:format/blueprint'
  * CDP protocol timeout.
  */
 describe('minecraft asset systems', () => {
+	// 26.3's en_us.json is the first jar entry big enough for fflate's async unzip to hand to a
+	// worker, which the production build's `keepNames` breaks.
+	it('loads a client jar with entries over 512KB', async () => {
+		const result = await blockbench.evaluate(async () => {
+			const aj = (window as any).AnimatedJava
+			const lang = await aj.assetManager.getJSONAsset(
+				'26.3',
+				'assets/minecraft/lang/en_us.json'
+			)
+			return Object.keys(lang).length
+		})
+		expect(result).toBeGreaterThan(1000)
+	}, 180_000)
+
 	it('assetManager resolves and rejects vanilla asset paths', async () => {
 		const result = await blockbench.evaluate(async (formatId: string) => {
 			const aj = (window as any).AnimatedJava
