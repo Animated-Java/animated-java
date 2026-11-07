@@ -44,6 +44,58 @@ function getMainPreview() {
 	return Preview.all.find(p => p.id === 'main')
 }
 
+/** Nulls that drive an IK chain. */
+function getIKNulls() {
+	return NullObject.all.filter(nullObject => nullObject.ik_target)
+}
+
+/**
+ * The nodes a null's IK can move, walked the way Blockbench's `displayIK` walks them: the target
+ * and its ancestors up to the IK source, which is included when it's set explicitly.
+ */
+function getIKChain(nullObject: NullObject): OutlinerNode[] {
+	const target = OutlinerNode.uuids[nullObject.ik_target]
+	const source = nullObject.ik_source
+		? OutlinerNode.uuids[nullObject.ik_source]
+		: nullObject.parent
+	if (!target || !source) return []
+	const chain: OutlinerNode[] = []
+	let current: OutlinerNode | 'root' | undefined = target
+	while (current !== source) {
+		// The target isn't under the source, so Blockbench skips this chain.
+		if (!current || current === 'root') return []
+		chain.push(current)
+		current = current.parent as OutlinerNode | 'root' | undefined
+	}
+	if (source !== 'root' && nullObject.ik_source) chain.push(source)
+	return chain
+}
+
+const SCENE_ROTATION_SCRATCH = new THREE.Quaternion()
+
+/**
+ * Solves every IK chain for the current pose. Blockbench solves IK in its own pass after every
+ * node's `displayFrame`, so null objects are posed before any chain uses one as a pole.
+ *
+ * Blockbench places a root-level null's IK target in world space without the scene's rotation,
+ * so it solves with the scene at its usual angle, undoing {@link correctSceneAngle} for the
+ * pass. Solving refreshes world matrices along each chain, static ancestors included, so the
+ * whole rig is refreshed once the angle is back.
+ */
+function displayIK(animation: _Animation, ikNulls: NullObject[]) {
+	if (!ikNulls.length) return
+	SCENE_ROTATION_SCRATCH.copy(Canvas.scene.quaternion)
+	Canvas.scene.quaternion.identity()
+	for (const nullObject of ikNulls) {
+		const animator = animation.getBoneAnimator(nullObject) as unknown as
+			| NullObjectAnimator
+			| undefined
+		animator?.displayIK()
+	}
+	Canvas.scene.quaternion.copy(SCENE_ROTATION_SCRATCH)
+	Project!.model_3d.updateWorldMatrix(true, true)
+}
+
 export function correctSceneAngle() {
 	getMainPreview()?.controls.rotateLeft(Math.PI)
 	Canvas.scene.setRotationFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI)
@@ -194,13 +246,23 @@ export class AnimationSampler {
 
 	/**
 	 * Entries whose transform can never change after the first frame - no
-	 * keyframed ancestor or self - so they only need sampling on tick 0. Only
+	 * keyframed or IK-driven ancestor or self - so they only need sampling on
+	 * tick 0. Only
 	 * covers node types that already skip unchanged frames (bone / display /
 	 * null_object / camera / struct); locators and interactions always emit.
 	 */
 	private readonly dynamicEntries: Array<[string, AnyRenderedNode]>
 	/** Nodes this animation keyframes + their animators, ancestors-first. */
 	readonly poseTargets: Array<{ node: OutlinerElement; animator: BoneAnimator }>
+	/** Nulls with an IK target, solved after every pose. */
+	readonly ikNulls: NullObject[]
+	/**
+	 * Nodes an IK chain moves, keyframed or not. Reset to rest before every pose, so each tick
+	 * solves from the same start as Blockbench's preview, and sampled like keyframed nodes.
+	 */
+	readonly ikDrivenNodes: OutlinerNode[]
+	/** UUIDs of the nodes that move by themselves: keyframed, or driven by IK. */
+	private readonly movingNodes = new Set<string>()
 	/**
 	 * Flat, ancestors-first list of rig-node meshes under an animated root - the
 	 * ones whose `matrixWorld` a moving parent invalidates each tick. Built once;
@@ -279,6 +341,17 @@ export class AnimationSampler {
 			(effects?.function as _Keyframe[] | undefined) ?? []
 		)
 
+		this.ikNulls = getIKNulls()
+		this.ikDrivenNodes = [...new Set(this.ikNulls.flatMap(getIKChain))].sort(
+			(a, b) =>
+				(this.parentChains.get(a.uuid)?.length ?? 0) -
+				(this.parentChains.get(b.uuid)?.length ?? 0)
+		)
+		for (const [uuid, keyframes] of this.keyframesByNode) {
+			if (keyframes.size > 0) this.movingNodes.add(uuid)
+		}
+		for (const node of this.ikDrivenNodes) this.movingNodes.add(node.uuid)
+
 		this.dynamicEntries = this.nodeEntries.filter(([uuid, node]) =>
 			this.isDynamicEntry(uuid, node)
 		)
@@ -287,8 +360,9 @@ export class AnimationSampler {
 		// The nodes this animation actually keyframes, paired with their resolved
 		// animator and ordered ancestors-first. Posing only these is equivalent
 		// to posing the whole rig: a node with no keyframes contributes nothing
-		// in `displayFrame`, and parent-driven motion still flows through the
-		// world-matrix sweep below. (The warm-up pass in `renderAnimation` has
+		// in `displayFrame`, parent-driven motion still flows through the
+		// world-matrix sweep below, and IK chains are reset and re-solved
+		// separately (see `ikDrivenNodes`). (The warm-up pass in `renderAnimation` has
 		// already resolved every animator, so `getBoneAnimator` is a cache hit.)
 		this.poseTargets = animatableNodes
 			.filter(node => (this.keyframesByNode.get(node.uuid)?.size ?? 0) > 0)
@@ -300,14 +374,14 @@ export class AnimationSampler {
 			.map(node => ({ node, animator: animation.getBoneAnimator(node)! }))
 			.filter(t => !!t.animator)
 
-		// Flat, ancestors-first list of the rig-node meshes sitting under an
-		// animated root - exactly the ones whose `matrixWorld` a moving parent
-		// invalidates each tick. Cube and helper leaves are excluded: nothing
+		// Flat, ancestors-first list of the rig-node meshes sitting under a
+		// moving root (keyframed or IK-driven) - exactly the ones whose
+		// `matrixWorld` a moving parent invalidates each tick. Cube and helper leaves are excluded: nothing
 		// samples them and they have no sampled descendants. Each mesh's parent
 		// is either `model_3d`, an earlier entry, or a never-moving static
 		// ancestor, so a single parent-first `multiplyMatrices` sweep is exact.
 		this.worldRefreshMeshes = this.nodeEntries
-			.filter(([uuid]) => this.hasKeyframedSelfOrAncestor(uuid))
+			.filter(([uuid]) => this.hasMovingSelfOrAncestor(uuid))
 			.sort(
 				(a, b) =>
 					(this.parentChains.get(a[0])?.length ?? 0) -
@@ -317,18 +391,15 @@ export class AnimationSampler {
 			.filter((mesh): mesh is THREE.Object3D => !!mesh)
 	}
 
-	/** True if this node or any ancestor is keyframed by this animation. */
-	private hasKeyframedSelfOrAncestor(uuid: string): boolean {
-		if ((this.keyframesByNode.get(uuid)?.size ?? 0) > 0) return true
-		for (const ancestorUuid of this.parentChains.get(uuid) ?? []) {
-			if ((this.keyframesByNode.get(ancestorUuid)?.size ?? 0) > 0) return true
-		}
-		return false
+	/** True if this node or any ancestor moves: keyframed by this animation, or driven by IK. */
+	private hasMovingSelfOrAncestor(uuid: string): boolean {
+		if (this.movingNodes.has(uuid)) return true
+		return (this.parentChains.get(uuid) ?? []).some(ancestor => this.movingNodes.has(ancestor))
 	}
 
 	private isDynamicEntry(uuid: string, node: AnyRenderedNode): boolean {
 		if (!SKIPPABLE_NODE_TYPES.has(node.type)) return true
-		return this.hasKeyframedSelfOrAncestor(uuid)
+		return this.hasMovingSelfOrAncestor(uuid)
 	}
 
 	/**
@@ -437,14 +508,14 @@ export class AnimationSampler {
 		const prePostNodes = this.prePostByTick.get(tick)
 		this.prePostMatrices.clear()
 		if (prePostNodes) {
-			updatePreviewFast(animation, time + 0.001, this.poseTargets, this.worldRefreshMeshes)
+			updatePreviewFast(animation, time + 0.001, this)
 			for (const { uuid, scale, node } of prePostNodes) {
 				this.prePostMatrices.set(uuid, getNodeMatrix(node, scale))
 			}
-			updatePreviewFast(animation, time, this.poseTargets, this.worldRefreshMeshes)
+			updatePreviewFast(animation, time, this)
 		}
 
-		// Static subtrees (no keyframed ancestor) can't move after frame 0.
+		// Static subtrees (no keyframed or IK-driven ancestor) can't move after frame 0.
 		const entries = tick === 0 ? this.nodeEntries : this.dynamicEntries
 		for (const [uuid, node] of entries) {
 			const outlinerNode = this.outlinerNodes.get(uuid)
@@ -576,6 +647,7 @@ export function updatePreview(
 	// outline meshes and the rest of `Canvas.scene`. `updateWorldMatrix(true, ...)`
 	// still refreshes the scene ancestor so `correctSceneAngle` is respected.
 	Project!.model_3d.updateWorldMatrix(true, true)
+	displayIK(animation, getIKNulls())
 	if (animation.effects) animation.effects.displayFrame()
 }
 
@@ -596,22 +668,25 @@ function resetNodePose(node: OutlinerNode) {
 
 /**
  * Like {@link updatePreview}, but only touches the nodes this animation
- * actually keyframes. Valid for every tick after a full-scene
+ * keyframes or drives by IK. Valid for every tick after a full-scene
  * {@link updatePreview} has run for the animation (see `renderAnimation`'s
  * warm-up): nothing else in the rig moves, so resetting and re-posing only
- * these nodes, then sweeping `matrixWorld` for just the animated subtree, is
- * equivalent to the full pass but proportional to the animated subtree instead
+ * these nodes, then sweeping `matrixWorld` for just the moving subtree, is
+ * equivalent to the full pass but proportional to the moving subtree instead
  * of the whole model.
- *
- * `poseTargets` and `worldRefreshMeshes` must both be ordered ancestors-first.
  */
 export function updatePreviewFast(
 	animation: _Animation,
 	time: number,
-	poseTargets: AnimationSampler['poseTargets'],
-	worldRefreshMeshes: THREE.Object3D[]
+	{
+		poseTargets,
+		ikNulls,
+		ikDrivenNodes,
+		worldRefreshMeshes,
+	}: Pick<AnimationSampler, 'poseTargets' | 'ikNulls' | 'ikDrivenNodes' | 'worldRefreshMeshes'>
 ) {
 	Timeline.time = time
+	for (const node of ikDrivenNodes) resetNodePose(node)
 	for (const { node } of poseTargets) resetNodePose(node)
 	for (const { animator } of poseTargets) {
 		Animator.resetLastValues()
@@ -622,10 +697,12 @@ export function updatePreviewFast(
 	// sweep world matrices down the animated subtree in parent-first order -
 	// far cheaper than THREE re-composing every static descendant.
 	Project!.model_3d.updateWorldMatrix(true, false)
+	for (const node of ikDrivenNodes) node.mesh.updateMatrix()
 	for (const { node } of poseTargets) node.mesh.updateMatrix()
 	for (const mesh of worldRefreshMeshes) {
 		mesh.matrixWorld.multiplyMatrices(mesh.parent!.matrixWorld, mesh.matrix)
 	}
+	displayIK(animation, ikNulls)
 	if (animation.effects) animation.effects.displayFrame()
 }
 
@@ -665,8 +742,7 @@ async function renderAnimation(
 		const time = tick / TICK_RATE
 		// Tick 0's scene is already posed by the warm-up above; later ticks only
 		// need the animated subtree re-posed.
-		if (tick > 0)
-			updatePreviewFast(animation, time, sampler.poseTargets, sampler.worldRefreshMeshes)
+		if (tick > 0) updatePreviewFast(animation, time, sampler)
 		const frame = sampler.sample(tick)
 		for (const uuid in frame.node_transforms) includedNodes.add(uuid)
 		rendered.frames.push(frame)

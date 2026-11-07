@@ -27,6 +27,11 @@ declare global {
 		}
 	}
 
+	interface NullObject {
+		/** UUID of the bone the IK chain starts at. Empty means the null's parent. */
+		ik_source: string
+	}
+
 	namespace StartScreen {
 		/** Reloads the recent-projects thumbnails, or only those of the given project paths. */
 		function updateThumbnails(paths?: string[]): void

@@ -948,7 +948,6 @@ function getDefaultTransforms(rig: IRenderedRig) {
 	const animatableNodes = getAnimatableNodes()
 	correctSceneAngle()
 	updatePreview(anim, 0, animatableNodes)
-	updatePreview(anim, 0, animatableNodes) // IK doesn't work unless I call this twice for some reason...
 	const sampler = new AnimationSampler(anim, rig.nodes, animatableNodes)
 	const transforms = sampler.sample(0).node_transforms
 	restoreSceneAngle()

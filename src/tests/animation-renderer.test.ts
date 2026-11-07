@@ -179,4 +179,109 @@ describe('animationRenderer.renderProjectAnimations', () => {
 		expect(result.stillEmitCount).toBe(1)
 		expect(Array.isArray(result.stillMatrix)).toBe(true)
 	})
+
+	// Blockbench solves IK in a pass after every node's `displayFrame`, and an IK chain moves
+	// bones the animation never keyframes. Both have to make it into the export.
+	it("exports IK chains as Blockbench's preview poses them", async () => {
+		const result = await blockbench.evaluate(async (formatId: string) => {
+			const aj = (window as any).AnimatedJava
+			const g = globalThis as any
+			g.newProject(g.Formats[formatId])
+
+			const body = new Group({ name: 'body', origin: [0, 16, 0] }).init()
+			const shoulder = new Group({ name: 'shoulder', origin: [0, 16, 0] }).addTo(body).init()
+			const upper = new Group({ name: 'upper', origin: [0, 8, 0] }).addTo(shoulder).init()
+			const hand = new Locator({ name: 'hand', position: [0, 0, 0] }).addTo(upper).init()
+			const ik = new NullObject({ name: 'ik', position: [4, 4, 4], ik_target: hand.uuid })
+			ik.init()
+			ik.ik_source = shoulder.uuid
+
+			const animation = new Blockbench.Animation({ name: 'reach' })
+			animation.add()
+			animation.loop = 'loop'
+			animation.length = 1
+			const animator = animation.getBoneAnimator(ik)
+			animator.addKeyframe({
+				channel: 'position',
+				time: 0,
+				data_points: [{ x: 0, y: 0, z: 0 }],
+			})
+			animator.addKeyframe({
+				channel: 'position',
+				time: 1,
+				data_points: [{ x: -8, y: 4, z: -4 }],
+			})
+
+			const rig = aj.renderRig(
+				'assets/aj/models/blueprint/x',
+				'assets/aj/textures/blueprint/x'
+			)
+			const [rendered] = await aj.renderProjectAnimations(Project, rig)
+
+			/** A node's exported world rotation at `tick`: its latest emitted frame. */
+			const exportedRotation = (uuid: string, tick: number) => {
+				const frame = rendered.frames
+					.slice(0, tick + 1)
+					.findLast((f: any) => f.node_transforms[uuid])
+				const matrix = new THREE.Matrix4().fromArray(frame.node_transforms[uuid].matrix)
+				const rotation = new THREE.Quaternion()
+				matrix.decompose(new THREE.Vector3(), rotation, new THREE.Vector3())
+				return rotation
+			}
+			/** Rotation relative to the parent; immune to the export's scene correction. */
+			const exportedLocal = (node: Group, parent: Group, tick: number) =>
+				exportedRotation(parent.uuid, tick)
+					.invert()
+					.multiply(exportedRotation(node.uuid, tick))
+
+			const errors: number[] = []
+			animation.select()
+			for (const tick of [0, 5, 10, 20]) {
+				Timeline.setTime(tick / 20)
+				Animator.preview()
+				for (const [node, parent] of [
+					[shoulder, body],
+					[upper, shoulder],
+				]) {
+					errors.push(exportedLocal(node, parent, tick).angleTo(node.mesh.quaternion))
+				}
+			}
+
+			// The default pose renders an empty animation, so it has to match Blockbench's
+			// preview of one, IK pass included.
+			const restRig = aj.renderRig(
+				'assets/aj/models/blueprint/x',
+				'assets/aj/textures/blueprint/x'
+			)
+			const defaultRotation = (uuid: string) => {
+				const matrix = new THREE.Matrix4().fromArray(
+					restRig.nodes[uuid].default_transform.matrix
+				)
+				const rotation = new THREE.Quaternion()
+				matrix.decompose(new THREE.Vector3(), rotation, new THREE.Vector3())
+				return rotation
+			}
+			const exportedRest = defaultRotation(shoulder.uuid)
+				.invert()
+				.multiply(defaultRotation(upper.uuid))
+			const empty = new Blockbench.Animation({ name: 'empty' })
+			empty.add()
+			empty.select()
+			Timeline.setTime(0)
+			Animator.preview()
+			const restError = exportedRest.angleTo(upper.mesh.quaternion)
+
+			return {
+				maxError: Math.max(...errors),
+				upperFrames: rendered.frames.filter((f: any) => f.node_transforms[upper.uuid])
+					.length,
+				restError,
+			}
+		}, BLUEPRINT_FORMAT_ID)
+
+		// IK ran: the unkeyframed chain bone moved on most ticks, not just the first.
+		expect(result.upperFrames).toBeGreaterThan(10)
+		expect(result.maxError).toBeLessThan(1e-4)
+		expect(result.restError).toBeLessThan(1e-4)
+	})
 })
