@@ -61,6 +61,13 @@
 
 <script lang="ts">
 	import { onMount, untrack } from 'svelte'
+	import {
+		dndzone,
+		SHADOW_ITEM_MARKER_PROPERTY_NAME,
+		type DndEvent,
+		type TransformDraggedElementFunction,
+	} from 'svelte-dnd-action'
+	import { flip } from 'svelte/animate'
 	import SwatchPopover from './swatchPopover.svelte'
 
 	interface Props {
@@ -589,6 +596,193 @@
 			},
 		]).open(event)
 	}
+
+	// region Drag to reorder
+
+	const FLIP_DURATION = 150
+
+	/** A swatch in a drag zone. `id` is its index in the strip when the drag started. */
+	interface ISwatchItem {
+		id: string
+		color: string
+		/** Marks the placeholder the zone shows where a dragged swatch would land. */
+		[SHADOW_ITEM_MARKER_PROPERTY_NAME]?: boolean
+	}
+
+	const toSwatchItems = (colors: PaletteColors): ISwatchItem[] =>
+		colors.map((color, i) => ({ id: String(i), color }))
+
+	/** The original indices of `items`, in their new order, or undefined if nothing moved. */
+	function getNewOrder(items: ISwatchItem[]) {
+		const order = items.map(item => Number(item.id))
+		return order.some((from, to) => from !== to) ? order : undefined
+	}
+
+	/**
+	 * A drag-to-reorder zone over a list in the set. Mid-drag it shows the library's working order;
+	 * on drop it hands the final order to `reorder` and goes back to showing the set.
+	 */
+	class SortableZone<T extends { id: string }> {
+		dragged = $state.raw<T[]>()
+
+		constructor(
+			private readonly source: () => T[],
+			private readonly reorder: (items: T[]) => void
+		) {}
+
+		get items() {
+			return this.dragged ?? this.source()
+		}
+
+		consider = (event: CustomEvent<DndEvent<T>>) => {
+			// The popover's anchor and index don't follow a drag.
+			swatchEdit = undefined
+			this.dragged = event.detail.items
+		}
+
+		finalize = (event: CustomEvent<DndEvent<T>>) => {
+			this.dragged = undefined
+			this.reorder(event.detail.items)
+		}
+	}
+
+	/**
+	 * Reorders the key, and each stored palette that lines up with it, so every key color keeps its
+	 * palette color. Same rule as `removeKeyColor`.
+	 */
+	function reorderKey(items: ISwatchItem[]) {
+		const order = getNewOrder(items)
+		const colors = data.key.colors
+		if (!order || !colors) return
+		for (const permutation of data.permutations) {
+			const palette = permutation.strip.colors
+			if (palette?.length === colors.length)
+				permutation.strip.colors = order.map(i => palette[i])
+		}
+		data.key.colors = order.map(i => colors[i])
+	}
+
+	/** Reorders only the selected palette, remapping its colors onto different key colors. */
+	function reorderPalette(items: ISwatchItem[]) {
+		const order = getNewOrder(items)
+		const strip = selected?.strip
+		const colors = strip?.colors
+		if (!order || !strip || !colors) return
+		strip.colors = order.map(i => colors[i])
+	}
+
+	const keyEditable = $derived(!isReference && !!data.key.colors)
+	const paletteEditable = $derived(!isReference && !!selected?.strip.colors)
+
+	/** One key zone's working order, for the other key zone to mirror without the placeholder. */
+	const mirror = (items: ISwatchItem[] | undefined): ISwatchItem[] | undefined =>
+		items?.map(({ id, color }) => ({ id, color }))
+
+	const keyChipZone = new SortableZone<ISwatchItem>(
+		(): ISwatchItem[] => mirror(keyLineupZone.dragged) ?? toSwatchItems(key),
+		reorderKey
+	)
+	const keyLineupZone = new SortableZone<ISwatchItem>(
+		(): ISwatchItem[] => mirror(keyChipZone.dragged) ?? toSwatchItems(key),
+		reorderKey
+	)
+
+	/** The key's working order while either key zone is mid-drag. */
+	const keyDrag = $derived(keyLineupZone.dragged ?? keyChipZone.dragged)
+	/** Where the dragged key color would land, and its id, mid-drag. */
+	const keyDropIndex = $derived(
+		keyDrag?.findIndex(item => item[SHADOW_ITEM_MARKER_PROPERTY_NAME]) ?? -1
+	)
+	const draggedKeyId = $derived(keyDrag?.[keyDropIndex]?.id)
+
+	/**
+	 * Whether the selected palette moves with its key colors: only when `reorderKey` would move it,
+	 * as a stored palette that lines up with the key.
+	 */
+	const paletteLinesUp = $derived(
+		!!selected?.strip.colors && selected.strip.colors.length === key.length
+	)
+	/** Lineup drags lift the whole column; chip drags highlight it, as it's out of reach. */
+	const columnLifted = $derived(paletteLinesUp && !!keyLineupZone.dragged)
+	const columnHighlighted = $derived(paletteLinesUp && !!keyChipZone.dragged)
+
+	function paletteItems(): ISwatchItem[] {
+		const colors = selected ? colorsOf(selected) : []
+		if (!keyDrag || !paletteLinesUp) return toSwatchItems(colors)
+		return keyDrag.map(({ id }) => ({ id, color: colors[Number(id)] }))
+	}
+
+	let lineupElement = $state<HTMLElement>()
+
+	/**
+	 * Grows the lineup's dragged key swatch into its whole column, so the arrow and palette color
+	 * under it travel with the cursor. The zone calls this on every move; it builds once.
+	 */
+	const liftColumn: TransformDraggedElementFunction = (element, item) => {
+		if (!element || !item || !paletteLinesUp || element.dataset.column) return
+		const arrow = lineupElement?.querySelector('.arrow')
+		const palette = lineupElement?.querySelector(`.palette-swatch[data-id="${item.id}"]`)
+		if (!arrow || !palette) return
+		element.dataset.column = 'true'
+		Object.assign(element.style, { flexDirection: 'column', gap: '2px', height: 'auto' })
+		for (const original of [arrow, palette]) {
+			const clone = original.cloneNode(true) as HTMLElement
+			clone.classList.remove('lifted', 'following', 'editing')
+			element.append(clone)
+		}
+	}
+
+	const paletteZone = new SortableZone(paletteItems, reorderPalette)
+	const baseZone = new SortableZone(
+		() => data.bases.map(base => ({ id: base })),
+		items => {
+			if (items.some((item, i) => item.id !== data.bases[i])) {
+				data.bases = items.map(item => item.id)
+			}
+		}
+	)
+	const permutationZone = new SortableZone(
+		() => data.permutations.map(permutation => ({ id: permutation.uuid, permutation })),
+		items => {
+			if (items.some((item, i) => item.id !== data.permutations[i].uuid)) {
+				data.permutations = items.map(item => item.permutation)
+			}
+		}
+	)
+
+	/**
+	 * Lets Enter and Space click a `role="button"` element inside a drag zone. Draggables can't be
+	 * real buttons: the zone won't start a drag from an element with a `value`, which buttons have.
+	 * Bind it with `onkeydowncapture`: Svelte delegates plain `onkeydown` to the root, which the
+	 * zone's own key handler would reach first, claiming the keys for keyboard dragging.
+	 */
+	function clickOnKey(event: KeyboardEvent) {
+		if (event.key !== 'Enter' && event.key !== ' ') return
+		event.preventDefault()
+		event.stopPropagation()
+		;(event.currentTarget as HTMLElement).click()
+	}
+
+	/** Options shared by the swatch zones, whose wrappers aren't tab stops; their swatches are. */
+	const swatchZoneOptions = (
+		zone: SortableZone<ISwatchItem>,
+		type: string,
+		enabled: boolean,
+		transformDraggedElement?: TransformDraggedElementFunction
+	) => ({
+		items: zone.items,
+		type,
+		dragDisabled: !enabled,
+		dropTargetStyle: {},
+		zoneTabIndex: -1,
+		zoneItemTabIndex: -1,
+		// Swatches are all one size, and morphing would undo the lifted column's height.
+		morphDisabled: true,
+		// A lifted column's centre sits below the key row, so place it by the cursor instead.
+		useCursorForDetection: true,
+		transformDraggedElement,
+	})
+	// endregion
 </script>
 
 <div class="dialog-container">
@@ -641,15 +835,34 @@
 				{/if}
 				<div class="chips">
 					<div class="key-swatches">
-						{#each key as color, i (i)}
-							<button
-								class="swatch key-swatch"
-								class:editing={swatchEdit?.kind === 'key' && swatchEdit.index === i}
-								style:background={color}
-								title={translate('dialog.set.key_color', color)}
-								onclick={event => openSwatch(event, 'key', i)}
-							></button>
-						{/each}
+						<div
+							class="swatch-zone"
+							use:dndzone={swatchZoneOptions(
+								keyChipZone,
+								'palette-key-chips',
+								keyEditable
+							)}
+							onconsider={keyChipZone.consider}
+							onfinalize={keyChipZone.finalize}
+						>
+							{#each keyChipZone.items as item (item.id)}
+								<span class="swatch-item">
+									<span
+										class="swatch key-swatch"
+										role="button"
+										tabindex="0"
+										onkeydowncapture={clickOnKey}
+										class:editing={swatchEdit?.kind === 'key' &&
+											swatchEdit.index === Number(item.id)}
+										class:following={!!keyLineupZone.dragged &&
+											item.id === draggedKeyId}
+										style:background={item.color}
+										title={translate('dialog.set.key_color', item.color)}
+										onclick={event => openSwatch(event, 'key', Number(item.id))}
+									></span>
+								</span>
+							{/each}
+						</div>
 						<button
 							class="swatch add"
 							class:locked={isReference}
@@ -696,9 +909,19 @@
 					<i class="material-icons icon">add</i>
 				</button>
 			</div>
-			<ul class="list bases">
-				{#each data.bases as base (base)}
-					<li class="row static">
+			<ul
+				class="list bases"
+				use:dndzone={{
+					items: baseZone.items,
+					type: 'palette-bases',
+					flipDurationMs: FLIP_DURATION,
+					dropTargetStyle: {},
+				}}
+				onconsider={baseZone.consider}
+				onfinalize={baseZone.finalize}
+			>
+				{#each baseZone.items as { id: base } (base)}
+					<li class="row static" animate:flip={{ duration: FLIP_DURATION }}>
 						{#if baseThumbnail(base)}
 							<img class="thumbnail" src={baseThumbnail(base)} alt="" />
 						{:else}
@@ -735,13 +958,27 @@
 					<i class="material-icons icon">add</i>
 				</button>
 			</div>
-			<ul class="list permutations">
-				{#each data.permutations as permutation (permutation.uuid)}
-					<li>
-						<button
+			<ul
+				class="list permutations"
+				use:dndzone={{
+					items: permutationZone.items,
+					type: 'palette-permutations',
+					flipDurationMs: FLIP_DURATION,
+					dropTargetStyle: {},
+					zoneItemTabIndex: -1,
+				}}
+				onconsider={permutationZone.consider}
+				onfinalize={permutationZone.finalize}
+			>
+				{#each permutationZone.items as { id, permutation } (id)}
+					<li animate:flip={{ duration: FLIP_DURATION }}>
+						<div
 							class="row permutation"
 							class:selected={selected?.uuid === permutation.uuid}
+							role="button"
+							tabindex="0"
 							onclick={() => (selectedUuid = permutation.uuid)}
+							onkeydowncapture={clickOnKey}
 						>
 							{#if data.bases[0] && previewOf(data.bases[0], permutation, true)}
 								<img
@@ -758,7 +995,7 @@
 									<span style:background={color}></span>
 								{/each}
 							</span>
-						</button>
+						</div>
 					</li>
 				{:else}
 					<div class="empty">{translate('dialog.set.no_permutations')}</div>
@@ -800,62 +1037,110 @@
 				</div>
 
 				<div class="lineup-wrap">
-					<div
-						class="lineup"
-						style:grid-template-columns="72px repeat({lineup.length + 1}, 28px)"
-					>
-						<span class="lineup-label">{translate('dialog.set.key')}</span>
-						{#each lineup as pair, i (i)}
-							{#if pair.key}
-								<button
-									class="swatch key-swatch"
-									class:editing={swatchEdit?.kind === 'key' &&
-										swatchEdit.index === i}
-									style:background={pair.key}
-									title={translate('dialog.set.key_color', pair.key)}
-									onclick={event => openSwatch(event, 'key', i)}
-								></button>
-							{:else}
+					<div class="lineup" bind:this={lineupElement}>
+						<div class="lineup-row">
+							<span class="lineup-label">{translate('dialog.set.key')}</span>
+							<div
+								class="swatch-zone"
+								use:dndzone={swatchZoneOptions(
+									keyLineupZone,
+									'palette-key-lineup',
+									keyEditable,
+									liftColumn
+								)}
+								onconsider={keyLineupZone.consider}
+								onfinalize={keyLineupZone.finalize}
+							>
+								{#each keyLineupZone.items as item (item.id)}
+									<span class="swatch-item">
+										<span
+											class="swatch key-swatch"
+											role="button"
+											tabindex="0"
+											onkeydowncapture={clickOnKey}
+											class:editing={swatchEdit?.kind === 'key' &&
+												swatchEdit.index === Number(item.id)}
+											class:following={!!keyChipZone.dragged &&
+												item.id === draggedKeyId}
+											style:background={item.color}
+											title={translate('dialog.set.key_color', item.color)}
+											onclick={event =>
+												openSwatch(event, 'key', Number(item.id))}
+										></span>
+									</span>
+								{/each}
+							</div>
+							{#each lineup.slice(key.length) as _, offset (offset)}
 								<span class="swatch missing"></span>
-							{/if}
-						{/each}
-						<button
-							class="swatch add"
-							class:locked={isReference}
-							class:editing={swatchEdit?.adding}
-							title={translate('dialog.set.add_key_color')}
-							onclick={unlessReference(addKeyColor)}
-						>
-							<i class="material-icons">add</i>
-						</button>
-						<span></span>
-						{#each lineup as _, i (i)}
-							<span class="arrow"><i class="material-icons">south</i></span>
-						{/each}
-						<span></span>
-						<span class="lineup-label mono">{selected.suffix}</span>
-						{#each lineup as pair, i (i)}
-							{#if pair.palette}
-								<button
-									class="swatch palette-swatch"
-									class:editing={swatchEdit?.kind === 'palette' &&
-										swatchEdit.index === i}
-									class:extra={!pair.key}
-									style:background={pair.palette}
-									title={translate('dialog.set.palette_color', pair.palette)}
-									onclick={event => openSwatch(event, 'palette', i)}
-								></button>
-							{:else}
+							{/each}
+							<button
+								class="swatch add"
+								class:locked={isReference}
+								class:editing={swatchEdit?.adding}
+								title={translate('dialog.set.add_key_color')}
+								onclick={unlessReference(addKeyColor)}
+							>
+								<i class="material-icons">add</i>
+							</button>
+						</div>
+						<div class="lineup-row">
+							<span class="lineup-label"></span>
+							{#each lineup as _, i (i)}
+								<span
+									class="arrow"
+									class:lifted={columnLifted && i === keyDropIndex}
+									><i class="material-icons">south</i></span
+								>
+							{/each}
+						</div>
+						<div class="lineup-row">
+							<span class="lineup-label mono">{selected.suffix}</span>
+							<div
+								class="swatch-zone"
+								use:dndzone={swatchZoneOptions(
+									paletteZone,
+									'palette-palette-lineup',
+									paletteEditable
+								)}
+								onconsider={paletteZone.consider}
+								onfinalize={paletteZone.finalize}
+							>
+								{#each paletteZone.items as item, position (item.id)}
+									<span class="swatch-item">
+										<span
+											class="swatch palette-swatch"
+											role="button"
+											tabindex="0"
+											onkeydowncapture={clickOnKey}
+											class:editing={swatchEdit?.kind === 'palette' &&
+												swatchEdit.index === Number(item.id)}
+											class:extra={position >= key.length}
+											class:lifted={columnLifted && item.id === draggedKeyId}
+											class:following={columnHighlighted &&
+												item.id === draggedKeyId}
+											data-id={item.id}
+											style:background={item.color}
+											title={translate(
+												'dialog.set.palette_color',
+												item.color
+											)}
+											onclick={event =>
+												openSwatch(event, 'palette', Number(item.id))}
+										></span>
+									</span>
+								{/each}
+							</div>
+							{#each lineup.slice(paletteZone.items.length) as _, offset (offset)}
+								{@const index = paletteZone.items.length + offset}
 								<button
 									class="swatch missing"
 									class:editing={swatchEdit?.kind === 'palette' &&
-										swatchEdit.index === i}
+										swatchEdit.index === index}
 									title={translate('dialog.set.palette_color_missing')}
-									onclick={event => openSwatch(event, 'palette', i)}
+									onclick={event => openSwatch(event, 'palette', index)}
 								></button>
-							{/if}
-						{/each}
-						<span></span>
+							{/each}
+						</div>
 					</div>
 				</div>
 
@@ -1036,8 +1321,7 @@
 	input[readonly] {
 		cursor: default;
 	}
-	/* Undo Blockbench's global dialog button style for list rows */
-	button.row {
+	.row.permutation {
 		display: flex;
 		align-items: center;
 		gap: 8px;
@@ -1054,15 +1338,19 @@
 		font: inherit;
 		cursor: pointer;
 	}
-	button.row:hover {
+	.row.permutation:focus-visible {
+		outline: 2px solid var(--color-accent);
+		outline-offset: -2px;
+	}
+	.row.permutation:hover {
 		background: var(--color-button);
 	}
-	button.row.selected {
+	.row.permutation.selected {
 		position: relative;
 		background: var(--color-accent);
 		color: var(--color-accent_text);
 	}
-	button.row.selected .strip {
+	.row.permutation.selected .strip {
 		outline: 1px solid color-mix(in srgb, var(--color-accent_text) 50%, transparent);
 	}
 	.detail {
@@ -1106,7 +1394,17 @@
 		min-width: 0;
 		overflow-x: auto;
 	}
-	.key-swatches .swatch {
+	.swatch-zone {
+		display: flex;
+		flex: none;
+		gap: 3px;
+	}
+	/* An empty zone would still take a gap, pushing its row out of line with the others */
+	.swatch-zone:empty {
+		display: none;
+	}
+	.swatch-item {
+		display: flex;
 		flex: none;
 	}
 	.suffix {
@@ -1149,12 +1447,19 @@
 		flex: none;
 	}
 	.lineup {
-		display: grid;
-		gap: 2px 3px;
-		align-items: center;
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
 		width: max-content;
 	}
+	.lineup-row {
+		display: flex;
+		align-items: center;
+		gap: 3px;
+	}
 	.lineup-label {
+		width: 72px;
+		flex: none;
 		color: var(--color-subtle_text);
 		font-size: 0.85em;
 		overflow: hidden;
@@ -1164,6 +1469,8 @@
 	}
 	.arrow {
 		display: flex;
+		flex: none;
+		width: 28px;
 		justify-content: center;
 		color: var(--color-subtle_text);
 	}
@@ -1171,7 +1478,9 @@
 		font-size: 14px;
 	}
 	.swatch {
+		display: block;
 		width: 28px;
+		flex: none;
 		min-width: 0;
 		height: 26px;
 		margin: 0;
@@ -1182,7 +1491,9 @@
 		cursor: pointer;
 	}
 	.swatch.editing,
-	.swatch:hover:not(:disabled) {
+	.swatch.following,
+	.swatch:hover:not(:disabled),
+	.swatch:focus-visible {
 		outline: 2px solid var(--color-accent);
 		outline-offset: -2px;
 	}
@@ -1206,6 +1517,10 @@
 		border: 1px dashed var(--color-subtle_text);
 	}
 	/* Palette colors past the end of the key make Minecraft skip the palette */
+	/* Travelling with a dragged key swatch, so the column's real cells leave a gap */
+	.lifted {
+		visibility: hidden;
+	}
 	.swatch.extra {
 		outline: 2px solid var(--color-error, #ff5252);
 		outline-offset: -2px;

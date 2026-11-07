@@ -15,7 +15,6 @@ import {
 	createPaletteSet,
 	createSetData,
 	getGeneratedSource,
-	getPaintTarget,
 	getPaletteSet,
 	getProtectedRecolors,
 	isGeneratedTexture,
@@ -219,78 +218,6 @@ function deleteSet(set: PaletteSet) {
 	UVEditor.vue.updateTexture()
 	BARS.updateConditions()
 }
-
-registerPropertyOverridePatch({
-	id: 'animated_java:palettes/painter-target',
-	target: Painter as typeof Painter & { getTextureToEdit(texture: Texture): Texture },
-	key: 'getTextureToEdit',
-	condition: () => isEnabled(),
-	get: original => {
-		return function (this: typeof Painter, texture: Texture) {
-			return original.call(this, getPaintTarget(texture))
-		}
-	},
-})
-
-/**
- * Whether a paint stroke on `texture` must be stopped: a reference set's recolors are redrawn from
- * the pack, so paint on them would be lost. Picking colors from them is fine.
- */
-function blocksPainting(texture: Texture | undefined | null | false): boolean {
-	if (!isGeneratedTexture(texture) || Toolbox.selected?.id === 'color_picker') return false
-	if (getPaintTarget(texture) !== texture) return false
-	Blockbench.showQuickMessage(translate('paint_reference'), 3000)
-	return true
-}
-
-registerPropertyOverridePatch({
-	id: 'animated_java:palettes/block-reference-paint-canvas',
-	target: Painter as typeof Painter & { startPaintToolCanvas(data: any, event: Event): unknown },
-	key: 'startPaintToolCanvas',
-	condition: () => isEnabled(),
-	get: original => {
-		return function (this: typeof Painter, data: any, event: Event) {
-			const face = data?.element?.faces?.[data.face] as CubeFace | undefined
-			if (blocksPainting(face?.getTexture())) return
-			return original.call(this, data, event)
-		}
-	},
-})
-
-registerPropertyOverridePatch({
-	id: 'animated_java:palettes/block-reference-paint-uv',
-	target: UVEditor as typeof UVEditor & { startPaintTool(event: Event): unknown },
-	key: 'startPaintTool',
-	condition: () => isEnabled(),
-	get: original => {
-		return function (this: typeof UVEditor, event: Event) {
-			if (blocksPainting(UVEditor.getTexture() as Texture | undefined)) return
-			return original.call(this, event)
-		}
-	},
-})
-
-// The UV editor paints the texture it shows, so show a project recolor's base, which is what
-// painting the recolor edits.
-registerPatch({
-	id: 'animated_java:palettes/uv-editor-base',
-
-	apply: () => {
-		const vue = UVEditor.vue as unknown as { texture: Texture | null; updateTexture(): void }
-		const original = vue.updateTexture
-		vue.updateTexture = function (this: typeof vue) {
-			original.call(this)
-			if (!isEnabled() || !this.texture) return
-			const target = getPaintTarget(this.texture)
-			if (target !== this.texture) this.texture = target
-		}
-		return { vue, original }
-	},
-
-	revert: ({ vue, original }) => {
-		vue.updateTexture = original
-	},
-})
 
 // Removing a set, generated texture or base also removes what depends on it, in one undo step.
 registerPatch({

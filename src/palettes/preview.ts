@@ -249,6 +249,39 @@ async function regenerateSet(set: PaletteSet) {
 	}
 }
 
+/**
+ * Redraws `base`'s recolors from its canvas, which painting changes before its image, so a stroke
+ * shows on the recolors while it's being painted. The usual redraw still runs once it ends.
+ */
+export async function redrawRecolorsOf(base: Texture) {
+	const { width, height } = base.canvas
+	if (!width || !height) return
+	const pixels = { width, height, data: base.ctx.getImageData(0, 0, width, height).data }
+	for (const set of getPaletteSets()) {
+		const data = set.palette_set
+		if (data.reference || !data.bases.includes(base.uuid)) continue
+		const key = await getStripColors(data, data.key)
+		if (!key) continue
+		for (const texture of getGeneratedTextures(set)) {
+			if (texture.palette_generated.base !== base.uuid) continue
+			if (texture.canvas.width !== width || texture.canvas.height !== height) continue
+			const permutation = data.permutations.find(
+				p => p.uuid === texture.palette_generated.permutation
+			)
+			const palette = permutation && (await getStripColors(data, permutation.strip))
+			if (!palette) continue
+			const recolored = renderRecolor(pixels, key, palette)
+			const image = new ImageData(new Uint8ClampedArray(recolored.data), width, height)
+			texture.ctx.putImageData(image, 0, 0)
+			// Blockbench's texture materials draw from the texture's canvas through `map`.
+			const material = texture.getOwnMaterial() as THREE.ShaderMaterial & {
+				map: THREE.Texture
+			}
+			material.map.needsUpdate = true
+		}
+	}
+}
+
 let pending: Promise<void> | undefined
 let queued = false
 

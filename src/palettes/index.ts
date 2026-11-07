@@ -6,6 +6,7 @@
  * exported here.
  */
 import './mods'
+import './paint'
 
 export { buildAtlasSource, getPaletteId, getSpriteId, supportsSeparator } from './atlas'
 export { checkPaletteSet, type IPaletteIssue } from './checks'

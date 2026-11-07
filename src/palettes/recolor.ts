@@ -77,6 +77,33 @@ export function recolor(
 	return out
 }
 
+const rgbOfHex = (hex: string) => {
+	const [r, g, b] = parseHex(hex)
+	return (r << 16) | (g << 8) | b
+}
+
+/**
+ * Translates a paint color into the color to write into a base. A color from `palette` becomes the
+ * key color at the same position, so it recolors back into that palette color. A key color stays
+ * as it is. Anything else stays too, but `inKey` is false since it won't recolor.
+ *
+ * Returns `#rrggbb`. `palette` is undefined when painting a base directly.
+ */
+export function mapToKey(
+	color: string,
+	key: PaletteColors,
+	palette: PaletteColors | undefined
+): { color: string; inKey: boolean } {
+	const rgb = rgbOfHex(color)
+	const hex = (value: number) =>
+		toHex((value >> 16) & 255, (value >> 8) & 255, value & 255).slice(0, 7)
+	if (palette?.length === key.length) {
+		const index = palette.findIndex((c, i) => rgbOfHex(c) === rgb && parseHex(key[i])[3] > 0)
+		if (index !== -1) return { color: hex(rgbOfHex(key[index])), inKey: true }
+	}
+	return { color: hex(rgb), inKey: keyLookup(key).has(rgb) }
+}
+
 const luminance = (rgb: number) =>
 	0.2126 * ((rgb >> 16) & 255) + 0.7152 * ((rgb >> 8) & 255) + 0.0722 * (rgb & 255)
 

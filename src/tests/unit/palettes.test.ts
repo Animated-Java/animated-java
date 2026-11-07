@@ -12,6 +12,7 @@ import {
 	colorsFromPixels,
 	extractKey,
 	findDuplicateKeyColors,
+	mapToKey,
 	mergeKey,
 	parseHex,
 	pixelsFromColors,
@@ -110,6 +111,32 @@ describe('key analysis', () => {
 		expect(
 			findDuplicateKeyColors(['#808080ff', '#80808000', '#808080aa', '#101010ff'])
 		).toEqual(['#808080'])
+	})
+})
+
+describe('mapToKey', () => {
+	const key = ['#e0e0e0ff', '#808080ff', '#20202000']
+	const gold = ['#ffff00ff', '#aa8800ff', '#553300ff']
+
+	it('maps a palette color to the key color at its position', () => {
+		expect(mapToKey('#aa8800', key, gold)).toEqual({ color: '#808080', inKey: true })
+	})
+
+	it('keeps key colors as they are', () => {
+		expect(mapToKey('#e0e0e0', key, gold)).toEqual({ color: '#e0e0e0', inKey: true })
+		expect(mapToKey('#808080', key, undefined)).toEqual({ color: '#808080', inKey: true })
+	})
+
+	it('flags colors outside the key and palette, keeping them as they are', () => {
+		expect(mapToKey('#3ad0ff', key, gold)).toEqual({ color: '#3ad0ff', inKey: false })
+	})
+
+	it("skips transparent key positions, which Minecraft doesn't recolor", () => {
+		expect(mapToKey('#553300', key, gold)).toEqual({ color: '#553300', inKey: false })
+	})
+
+	it("ignores a palette that doesn't fit the key", () => {
+		expect(mapToKey('#ffff00', key, ['#ffff00ff'])).toEqual({ color: '#ffff00', inKey: false })
 	})
 })
 
