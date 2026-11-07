@@ -35,6 +35,14 @@ import {
 import { openUnexpectedErrorDialog } from './dialogs/unexpectedError/unexpectedError'
 import { BLUEPRINT_FORMAT } from './formats/blueprint'
 import { BLUEPRINT_CODEC } from './formats/blueprint/codec'
+import { getCollection, saveCollection } from './collections'
+import { exportCollection } from './collections/exportCollection'
+import {
+	COLLECTION_CODEC,
+	exportActiveCollectionTab,
+	openCollection,
+	saveCollectionProject,
+} from './formats/collection'
 import { exportAll } from './interface/animatedJavaBarItem'
 import { Interaction } from './outliner/interaction'
 import { TextDisplay } from './outliner/textDisplay'
@@ -113,6 +121,14 @@ const AnimatedJavaApi = {
 	hashAnimations,
 	openInstallPopup,
 	exportAll,
+	// Blueprint Collections, exposed for the test suite.
+	getCollection,
+	saveCollection,
+	exportCollection,
+	COLLECTION_CODEC,
+	openCollection,
+	saveCollectionProject,
+	exportActiveCollectionTab,
 	removeCubesAssociatedWithTexture(texture: Texture) {
 		const cubes = Cube.all.filter(cube =>
 			Object.values(cube.faces).some(face => face.texture === texture.uuid)

@@ -10,6 +10,7 @@
 		value: string
 		defaultValue?: string
 		required?: boolean
+		disabled?: boolean
 		checkValue?: (value: string) => Promise<ValueCheckResult> | ValueCheckResult
 	}
 
@@ -19,6 +20,7 @@
 		value = $bindable(),
 		defaultValue,
 		required,
+		disabled,
 		checkValue,
 	}: Props = $props()
 
@@ -63,7 +65,7 @@
 	}
 </script>
 
-<BaseSidebarDialogItem {label} {description} {required} {error} {warning}>
+<BaseSidebarDialogItem {label} {description} {required} {disabled} {error} {warning}>
 	{#snippet children(id)}
 		<input
 			type="text"

@@ -9,10 +9,18 @@
 		description?: string
 		value: string
 		required?: boolean
+		disabled?: boolean
 		checkValue?: (value: string) => Promise<ValueCheckResult> | ValueCheckResult
 	}
 
-	let { label, description, value = $bindable(), required, checkValue }: Props = $props()
+	let {
+		label,
+		description,
+		value = $bindable(),
+		required,
+		disabled,
+		checkValue,
+	}: Props = $props()
 
 	let error = $state<string | undefined>()
 	let warning = $state<string | undefined>()
@@ -62,7 +70,7 @@
 	})
 </script>
 
-<BaseSidebarDialogItem {label} {description} {required} {error} {warning}>
+<BaseSidebarDialogItem {label} {description} {required} {disabled} {error} {warning}>
 	{#snippet children(id)}
 		<input
 			type="text"

@@ -1,3 +1,4 @@
+import { trySyncWithLinkedCollection } from '../collections'
 import { getFsModule } from '../constants'
 import {
 	closeExportProgressDialog,
@@ -92,10 +93,16 @@ function showOldVersionTextureSlotsNotice() {
 
 interface ExportProjectOptions {
 	debugMode?: boolean
+	/**
+	 * Set by a collection export, which applies the collection's settings itself. Otherwise the
+	 * project's linked collection, if any, is synced before exporting.
+	 */
+	collectionUuid?: string
 }
 
 async function actuallyExportProject({
 	debugMode = false,
+	collectionUuid,
 }: ExportProjectOptions = {}): Promise<boolean> {
 	const aj = Project!.animated_java
 	openExportProgressDialog()
@@ -227,6 +234,7 @@ async function actuallyExportProject({
 				textureExportFolder,
 				modelExportFolder,
 				debugMode,
+				collectionUuid,
 			})
 		}
 
@@ -238,6 +246,7 @@ async function actuallyExportProject({
 				rigHash,
 				animationHash,
 				debugMode,
+				collectionUuid,
 			})
 		}
 
@@ -284,8 +293,13 @@ async function actuallyExportProject({
 	return false
 }
 
-export async function exportProject(options?: ExportProjectOptions): Promise<boolean> {
+export async function exportProject(options: ExportProjectOptions = {}): Promise<boolean> {
 	if (!Project) return false // TODO: Handle this error better
+
+	if (options.collectionUuid === undefined) {
+		const collection = trySyncWithLinkedCollection(Project)
+		options = { ...options, collectionUuid: collection?.file.uuid }
+	}
 
 	if (Cube.all.some(cube => isCubeValid(cube) === 'invalid')) {
 		Blockbench.showMessageBox({

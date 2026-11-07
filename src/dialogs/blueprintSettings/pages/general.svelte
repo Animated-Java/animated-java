@@ -12,11 +12,14 @@
 	import BoxSelect from '../../../svelteComponents/sidebarDialogItems/boxSelect.svelte'
 	import LineEdit from '../../../svelteComponents/sidebarDialogItems/lineEdit.svelte'
 	import Vector2 from '../../../svelteComponents/sidebarDialogItems/vector2.svelte'
+	import { getManagingCollection } from '../../../collections'
 	import { createScopedTranslator } from '../../../util/lang'
+	import CollectionNotice from '../collectionNotice.svelte'
 
 	const translate = createScopedTranslator('dialog.blueprint_settings')
 
 	const DEFAULT_SETTINGS = getDefaultProjectSettings()
+	const collection = getManagingCollection(Project)
 
 	let targetEnvironment = $state(Project.animated_java.enable_plugin_mode ? 'plugin' : 'datapack')
 	let blueprintName = $state(Project.name)
@@ -33,7 +36,7 @@
 		UVSizeUtil.adjustProjectResolution(textureSizeX, textureSizeY)
 		Project.name = blueprintName
 		Project.animated_java.blueprint_id = blueprintId
-		Project.animated_java.target_minecraft_version = targetMinecraftVersion
+		if (!collection) Project.animated_java.target_minecraft_version = targetMinecraftVersion
 		Project.animated_java.enable_plugin_mode = targetEnvironment === 'plugin'
 	})
 </script>
@@ -80,7 +83,12 @@
 		defaultValue={DEFAULT_SETTINGS.target_minecraft_version}
 		checkValue={validateTargetMinecraftVersion}
 		required
+		disabled={!!collection}
 	></LineEdit>
+
+	{#if collection}
+		<CollectionNotice {collection} />
+	{/if}
 
 	<Vector2
 		label={translate('texture_size.title')}

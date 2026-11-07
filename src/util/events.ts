@@ -37,6 +37,9 @@ const EVENTS = {
 	DELETE_VARIANT: subscribable<Variant>(),
 	SELECT_VARIANT: subscribable<Variant>(),
 
+	/** A collection tab's settings or members changed. */
+	UPDATE_COLLECTION: subscribable<ModelProject>(),
+
 	UPDATE_KEYFRAME_SELECTION: subscribable<void>(),
 
 	UPDATE_SELECTION: subscribable<void>(),

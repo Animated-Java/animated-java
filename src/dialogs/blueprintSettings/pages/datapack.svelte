@@ -1,12 +1,15 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte'
+	import { getManagingCollection } from '../../../collections'
 	import { validateDataPackFolder, validateZipPath } from '../../../formats/blueprint/settings'
 	import BoxSelect from '../../../svelteComponents/sidebarDialogItems/boxSelect.svelte'
 	import SelectFile from '../../../svelteComponents/sidebarDialogItems/selectFile.svelte'
 	import SelectFolder from '../../../svelteComponents/sidebarDialogItems/selectFolder.svelte'
 	import { createScopedTranslator } from '../../../util/lang'
+	import CollectionNotice from '../collectionNotice.svelte'
 
 	const translate = createScopedTranslator('dialog.blueprint_settings')
+	const collection = getManagingCollection(Project)
 
 	let dataPackExportFormat = $state(Project.animated_java.data_pack_export_mode)
 	let dataPackLocation = $state(Project.animated_java.data_pack)
@@ -15,8 +18,10 @@
 	)
 
 	onDestroy(() => {
-		Project.animated_java.data_pack_export_mode = dataPackExportFormat
-		Project.animated_java.data_pack = dataPackLocation
+		if (!collection) {
+			Project.animated_java.data_pack_export_mode = dataPackExportFormat
+			Project.animated_java.data_pack = dataPackLocation
+		}
 		Project.animated_java.use_storage_for_animation = animationSystem === 'storage'
 	})
 </script>
@@ -41,6 +46,7 @@
 				description: translate('data_pack_export_mode.options.none.description'),
 			},
 		}}
+		disabled={!!collection}
 		bind:selected={dataPackExportFormat}
 	></BoxSelect>
 
@@ -51,6 +57,7 @@
 			bind:value={dataPackLocation}
 			checkValue={validateDataPackFolder}
 			required
+			disabled={!!collection}
 		></SelectFolder>
 	{:else if dataPackExportFormat === 'zip'}
 		<SelectFile
@@ -59,7 +66,12 @@
 			bind:value={dataPackLocation}
 			checkValue={validateZipPath}
 			required
+			disabled={!!collection}
 		></SelectFile>
+	{/if}
+
+	{#if collection}
+		<CollectionNotice {collection} />
 	{/if}
 
 	{#if dataPackExportFormat !== 'none'}

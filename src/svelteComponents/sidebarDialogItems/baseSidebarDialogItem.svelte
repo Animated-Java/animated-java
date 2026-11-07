@@ -11,6 +11,7 @@
 		label?: string
 		description?: string
 		required?: boolean
+		disabled?: boolean
 		inlineChildren?: Snippet<ChildProps>
 		children?: Snippet<ChildProps>
 		error?: string
@@ -21,6 +22,7 @@
 		label,
 		description,
 		required,
+		disabled,
 		inlineChildren,
 		children,
 		error = $bindable(),
@@ -30,7 +32,7 @@
 	const ID = guid()
 </script>
 
-<div class="base-sidebar-dialog-item">
+<div class="base-sidebar-dialog-item" class:disabled inert={disabled}>
 	<div class="inline-container">
 		<div class="label">
 			{#if label}
@@ -66,6 +68,10 @@
 <style>
 	.base-sidebar-dialog-item {
 		margin-bottom: 24px;
+	}
+
+	.base-sidebar-dialog-item.disabled {
+		opacity: 0.5;
 	}
 
 	.slot-container {

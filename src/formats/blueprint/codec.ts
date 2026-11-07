@@ -6,6 +6,7 @@ import {
 	type IBlueprintFormatJSON,
 	type ICollectionJSON,
 } from '.'
+import { trySyncWithLinkedCollection } from '../../collections'
 import { PACKAGE, getFsModule } from '../../constants'
 import { localize as translate } from '../../util/lang'
 import { sanitizeStorageKey } from '../../util/minecraftUtil'
@@ -58,6 +59,8 @@ export const BLUEPRINT_CODEC = registerDeletableHandlerPatch({
 				} finally {
 					parsingBlueprint = false
 				}
+
+				trySyncWithLinkedCollection(Project)
 
 				const name = pathToName(file.path, true)
 				if (file.path && isApp && !file.no_file) {

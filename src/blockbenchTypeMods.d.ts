@@ -26,6 +26,11 @@ declare global {
 			)
 		}
 	}
+
+	namespace StartScreen {
+		/** Reloads the recent-projects thumbnails, or only those of the given project paths. */
+		function updateThumbnails(paths?: string[]): void
+	}
 }
 
 export {}

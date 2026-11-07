@@ -54,6 +54,8 @@ export interface CompileResourcePackOptions {
 	textureExportFolder: string
 	modelExportFolder: string
 	debugMode: boolean
+	/** UUID of the Blueprint Collection the project belongs to, to tag its rig in the `.ajmeta`. */
+	collectionUuid?: string
 }
 
 export default async function compileResourcePack(
@@ -68,6 +70,7 @@ export default async function compileResourcePack(
 		Project!.last_used_blueprint_id,
 		options.resourcePackFolder
 	)
+	ajmeta.collection = options.collectionUuid
 
 	if (aj.resource_pack_export_mode === 'folder') {
 		ajmeta.read()

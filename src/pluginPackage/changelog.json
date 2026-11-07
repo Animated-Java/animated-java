@@ -976,5 +976,27 @@
 				]
 			}
 		]
+	},
+	"1.12.0": {
+		"title": "v1.12.0",
+		"author": "Titus Evans (SnaveSutit)",
+		"date": "2026-11-07",
+		"categories": [
+			{
+				"title": "Changes",
+				"list": [
+					"[BREAKING] Repeating function keyframes now count their Frequency from the keyframe's own frame instead of the start of the animation. A keyframe on frame 3 repeating every 5 frames now runs on 3, 8, 13 instead of 3, 5, 10.",
+					"Added a Duration option to repeating function keyframes, to stop repeating after a set number of ticks. Leave it at 0 to repeat until the next function keyframe or the end of the animation, like before.",
+					"Repeating function keyframes now show a bar on the timeline marking every repeat, with a yellow stop where the next keyframe cuts them short. The Keyframe panel shows how many times it runs, and warns when it's cut short or runs past the end of the animation.",
+					"Function keyframes on a looping animation that repeat from the first frame no longer also run on the last frame, which played in the same tick as the first."
+				]
+			},
+			{
+				"title": "Fixes",
+				"list": [
+					"Fixed the Repeat option doing nothing on function keyframes in the Effects row."
+				]
+			}
+		]
 	}
 }

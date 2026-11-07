@@ -423,6 +423,8 @@ interface CompileDataPackOptions {
 	rigHash: string
 	animationHash: string
 	debugMode: boolean
+	/** UUID of the Blueprint Collection the project belongs to, to tag its rig in the `.ajmeta`. */
+	collectionUuid?: string
 }
 
 export default async function compileDataPack(version: string, options: CompileDataPackOptions) {
@@ -436,6 +438,7 @@ export default async function compileDataPack(version: string, options: CompileD
 		Project!.last_used_blueprint_id,
 		options.dataPackFolder
 	)
+	ajmeta.collection = options.collectionUuid
 
 	if (aj.data_pack_export_mode === 'folder') {
 		ajmeta.read()

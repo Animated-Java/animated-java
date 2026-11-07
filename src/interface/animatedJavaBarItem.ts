@@ -3,7 +3,17 @@ import AnimatedJavaIcon from '../assets/animated_java_icon.svg'
 import { openAboutDialog } from '../dialogs/about/about'
 import { openBlueprintSettings } from '../dialogs/blueprintSettings/blueprintSettings'
 import { openChangelogDialog } from '../dialogs/changelog/changelog'
+import { CollectionError, getLinkedCollection, getLinkedCollectionPath } from '../collections'
+import { COLLECTION_EXTENSION } from '../collections/collectionFile'
+import { exportCollection } from '../collections/exportCollection'
 import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from '../formats/blueprint'
+import {
+	activeProjectIsCollectionFormat,
+	COLLECTION_FORMAT,
+	exportActiveCollectionTab,
+	openCollection,
+	saveCollectionBeforeExport,
+} from '../formats/collection'
 import { cleanupExportedFiles } from '../systems/cleaner'
 import { exportProject } from '../systems/exporter'
 import { localize as translate } from '../util/lang'
@@ -122,6 +132,112 @@ const EXPORT_ALL = registerDeletableHandlerPatch({
 	},
 })
 
+function showCollectionError(e: unknown) {
+	if (!(e instanceof CollectionError)) throw e
+	Blockbench.showMessageBox({
+		title: translate('collection.error.title'),
+		message: e.message,
+		buttons: [tl('dialog.ok')],
+	})
+}
+
+function projectHasCollection() {
+	return activeProjectIsBlueprintFormat() && !!Project && !!getLinkedCollectionPath(Project)
+}
+
+/** Opens the collection's tab, closing any dialog it was opened from. */
+export function openCollectionFile(path: string) {
+	Dialog.open?.close()
+	openCollection(path)
+}
+
+/** Exports the collection the active Blueprint belongs to, saving its open tab first. */
+export async function exportActiveCollection(debugMode: boolean) {
+	try {
+		const path = getLinkedCollectionPath(Project!)
+		if (!path || !saveCollectionBeforeExport(path)) return
+		const collection = getLinkedCollection(Project!)
+		if (collection) await exportCollection(collection, debugMode)
+	} catch (e) {
+		showCollectionError(e)
+	}
+}
+
+const NEW_COLLECTION = registerDeletableHandlerPatch({
+	id: 'animated_java:action/new-collection',
+	create() {
+		return new Blockbench.Action(`animated_java:action/new-collection`, {
+			icon: 'library_add',
+			category: 'animated_java',
+			name: translate('action.new_collection.name'),
+			description: translate('action.new_collection.description'),
+			condition: () => isApp,
+			click() {
+				newProject(COLLECTION_FORMAT.get()!)
+			},
+		})
+	},
+})
+
+const OPEN_COLLECTION = registerDeletableHandlerPatch({
+	id: 'animated_java:action/open-collection',
+	create() {
+		return new Blockbench.Action(`animated_java:action/open-collection`, {
+			icon: 'collections_bookmark',
+			category: 'animated_java',
+			name: translate('action.open_collection.name'),
+			description: translate('action.open_collection.description'),
+			condition: () => isApp,
+			click() {
+				Blockbench.import(
+					{
+						resource_id: 'animated_java:collection',
+						type: translate('collection.file_type'),
+						extensions: [COLLECTION_EXTENSION],
+						readtype: 'none',
+						multiple: false,
+					},
+					files => {
+						if (files[0]) openCollection(files[0].path)
+					}
+				)
+			},
+		})
+	},
+})
+
+const EXPORT_COLLECTION_DEBUG = registerDeletableHandlerPatch({
+	id: 'animated_java:action/export-collection-debug',
+	create() {
+		return new Blockbench.Action(`animated_java:action/export-collection-debug`, {
+			icon: 'bug_report',
+			category: 'animated_java',
+			name: translate('action.export_collection_debug.name'),
+			description: translate('action.export_collection_debug.description'),
+			condition: projectHasCollection,
+			click() {
+				void exportActiveCollection(true)
+			},
+		})
+	},
+})
+
+const EXPORT_COLLECTION = registerDeletableHandlerPatch({
+	id: 'animated_java:action/export-collection',
+	create() {
+		return new Blockbench.Action(`animated_java:action/export-collection`, {
+			icon: 'insert_drive_file',
+			category: 'animated_java',
+			name: translate('action.export_collection.name'),
+			description: translate('action.export_collection.description'),
+			condition: projectHasCollection,
+			click() {
+				void exportActiveCollection(false)
+			},
+		})
+	},
+})
+
 const OPEN_BLUEPRINT_SETTINGS = registerDeletableHandlerPatch({
 	id: 'animated_java:action/blueprint-settings',
 	create() {
@@ -159,9 +275,10 @@ export const EXPORT_DEBUG = registerDeletableHandlerPatch({
 			icon: 'bug_report',
 			category: 'animated_java',
 			name: translate('action.export_debug.name'),
-			condition: activeProjectIsBlueprintFormat,
+			condition: () => activeProjectIsBlueprintFormat() || activeProjectIsCollectionFormat(),
 			click() {
-				void exportProject({ debugMode: true })
+				if (activeProjectIsCollectionFormat()) void exportActiveCollectionTab(true)
+				else void exportProject({ debugMode: true })
 			},
 			keybind: new Keybind({ ctrl: true, key: 69 /* E */ }),
 		})
@@ -175,9 +292,10 @@ export const EXPORT = registerDeletableHandlerPatch({
 			icon: 'insert_drive_file',
 			category: 'animated_java',
 			name: translate('action.export.name'),
-			condition: activeProjectIsBlueprintFormat,
+			condition: () => activeProjectIsBlueprintFormat() || activeProjectIsCollectionFormat(),
 			click() {
-				void exportProject()
+				if (activeProjectIsCollectionFormat()) void exportActiveCollectionTab(false)
+				else void exportProject()
 			},
 			keybind: new Keybind({ ctrl: true, shift: true, key: 69 /* E */ }),
 		})
@@ -192,6 +310,10 @@ registerDeletableHandlerPatch({
 		`animated_java:action/changelog`,
 		`animated_java:action/export-all-debug`,
 		`animated_java:action/export-all`,
+		`animated_java:action/new-collection`,
+		`animated_java:action/open-collection`,
+		`animated_java:action/export-collection-debug`,
+		`animated_java:action/export-collection`,
 		`animated_java:action/blueprint-settings`,
 		`animated_java:action/extract`,
 		`animated_java:action/export-debug`,
@@ -207,6 +329,20 @@ registerDeletableHandlerPatch({
 				SEPARATOR_A,
 				EXPORT_ALL_DEBUG.get()!,
 				EXPORT_ALL.get()!,
+				{
+					id: 'animated_java:submenu/collection',
+					name: translate('action.collection_menu.name'),
+					icon: 'collections_bookmark',
+					searchable: false,
+					children: [
+						NEW_COLLECTION.get()!,
+						OPEN_COLLECTION.get()!,
+						'_',
+						EXPORT_COLLECTION_DEBUG.get()!,
+						EXPORT_COLLECTION.get()!,
+					],
+					condition: () => isApp,
+				},
 				SEPARATOR_B,
 				OPEN_BLUEPRINT_SETTINGS.get()!,
 				{

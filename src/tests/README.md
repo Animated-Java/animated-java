@@ -12,6 +12,7 @@ pure-logic modules that don't touch host globals.
 - `unit/stopwatch.test.ts` — start/stop contract, `Stopwatch.function`
 - `unit/minecraftUtil.test.ts` — resource-location / data-pack / resource-pack path parsing, `toSmallCaps`, `sanitizeStorageKey`, `resolveBlockstateValueType`
 - `unit/fileUtil.test.ts` — path normalisation, env-var expansion, `swapPathRoot`, tag-path detection
+- `unit/collectionFile.test.ts` — `.bpcollection` parsing/validation, member and pack path resolution relative to the collection
 
 `unit/setup.ts` binds the `PathModule` global to `node:path`; `unit/__stubs__/`
 replaces host-dependent sibling imports (fs accessor, block/registry lookups)
@@ -50,6 +51,7 @@ can reach them: `renderRig`, `renderProjectAnimations`, `hashRig`,
 - `export-contents.test.ts` — inspects a real `player` export: `pack.mcmeta` pack_format, `summon` function body, a function per animation, scoreboard setup, block atlas, bone model JSON (geometry + textures), item model definitions, texture PNGs
 - `ajmeta-incremental.test.ts` — delete a bone from an exported project, re-export, assert the stale model file + ajmeta entry are removed
 - `plugin-mode-export.test.ts` — plugin-mode single-JSON export (`pluginCompiler`) shape
+- `blueprint-collection.test.ts` — Blueprint Collections: the `.bpcollection` tab (format, mode, page cards, drag-reorder and remove), saving links/unlinks members and relinks on Save As, folder and zip collection exports, saving unsaved tab edits before exporting, members exporting with the open tab's settings, removing rigs of members that left (but not rigs exported outside the collection), duplicate-ID and plugin-mode refusals
 
 **Minecraft asset systems**
 

@@ -13,6 +13,7 @@ import { VanillaItemDisplay } from '../../outliner/vanillaItemDisplay'
 import { createScopedTranslator } from '../../util/lang'
 import AdsComponent from './blueprintSettingsAds.svelte'
 import FooterComponent from './footer.svelte'
+import CollectionComponent from './pages/collection.svelte'
 import DatapackComponent from './pages/datapack.svelte'
 import EventFunctionsComponent from './pages/eventFunctions.svelte'
 import GeneralComponent from './pages/general.svelte'
@@ -33,6 +34,12 @@ export function openBlueprintSettings() {
 				component: GeneralComponent,
 				label: localize('pages.general.title'),
 				icon: 'settings',
+			},
+			collection: {
+				component: CollectionComponent,
+				condition: () => !!Project.animated_java.collection,
+				label: localize('pages.collection.title'),
+				icon: 'collections_bookmark',
 			},
 			resourcepack: {
 				component: ResourcepackComponent,

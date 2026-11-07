@@ -11,6 +11,7 @@
 		extensions?: string[]
 		readtype?: Parameters<typeof Filesystem.importFile>[0]['readtype']
 		required?: boolean
+		disabled?: boolean
 		checkValue?: (value: string) => Promise<ValueCheckResult> | ValueCheckResult
 	}
 
@@ -21,6 +22,7 @@
 		extensions,
 		readtype,
 		required,
+		disabled,
 		checkValue,
 	}: Props = $props()
 
@@ -78,7 +80,7 @@
 	})
 </script>
 
-<BaseSidebarDialogItem {label} {description} {required} {error} {warning}>
+<BaseSidebarDialogItem {label} {description} {required} {disabled} {error} {warning}>
 	{#snippet children(id)}
 		<input
 			type="text"

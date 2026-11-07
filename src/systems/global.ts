@@ -10,7 +10,7 @@ type OldSerializedAJMeta = Record<
 	}
 >
 
-interface SerializedAJMeta {
+export interface SerializedAJMeta {
 	formatVersion?: string
 	rigs?: Record<
 		string,
@@ -19,6 +19,8 @@ interface SerializedAJMeta {
 			versionedFiles?: string[]
 			/** Atlas name -> the sources this rig added to that atlas file. */
 			atlasSources?: Record<string, unknown[]>
+			/** UUID of the Blueprint Collection that exported this rig. */
+			collection?: string
 		}
 	>
 }
@@ -34,6 +36,9 @@ export class AJMeta {
 	atlasSources: Record<string, unknown[]> = {}
 	/** Atlas name -> the sources the previous export of this rig added, to remove before adding. */
 	previousAtlasSources: Record<string, unknown[]> = {}
+
+	/** UUID of the Blueprint Collection this export belongs to, if any. */
+	collection?: string
 
 	private previousAJMeta: SerializedAJMeta = {}
 
@@ -125,6 +130,7 @@ export class AJMeta {
 						.map(v => normalizePath(PathModule.relative(resourcePackFolder, v)))
 						.sort(),
 					...(Object.keys(atlasSources).length ? { atlasSources } : {}),
+					...(this.collection ? { collection: this.collection } : {}),
 				},
 			}),
 		}

@@ -12,6 +12,8 @@ export type ExportMode = 'folder' | 'zip' | 'none'
 
 export interface BlueprintSettings {
 	blueprint_id: string
+	/** Path to the `.bpcollection` this Blueprint belongs to, relative to the Blueprint, or ''. */
+	collection: string
 
 	show_render_box: boolean
 	auto_render_box: boolean
@@ -53,6 +55,7 @@ export interface BlueprintSettings {
 
 export const defaultValues: BlueprintSettings = {
 	blueprint_id: 'aj:my_blueprint',
+	collection: '',
 
 	show_render_box: false,
 	auto_render_box: true,

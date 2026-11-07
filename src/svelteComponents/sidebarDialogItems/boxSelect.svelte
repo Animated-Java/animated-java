@@ -22,16 +22,17 @@
 		description?: string
 		options: Record<string, BoxItem>
 		selected: string
+		disabled?: boolean
 	}
 
-	let { label, description, options, selected = $bindable() }: Props = $props()
+	let { label, description, options, selected = $bindable(), disabled }: Props = $props()
 
 	function onItemClick(key: string) {
 		selected = key
 	}
 </script>
 
-<BaseSidebarDialogItem {label} {description}>
+<BaseSidebarDialogItem {label} {description} {disabled}>
 	{#snippet children()}
 		<div class="box-select-container">
 			{#each Object.entries(options) as [key, option]}
@@ -65,6 +66,7 @@
 		overflow: hidden;
 		outline: 0px solid var(--color-back);
 		transition: outline 0.1s cubic-bezier(0.25, 0.68, 0.53, 1.3);
+		cursor: pointer;
 	}
 	.box-select-item.selected {
 		color: var(--color-text);
@@ -72,6 +74,7 @@
 	}
 	.box-select-item:hover {
 		color: var(--color-light);
+		background-color: var(--color-button);
 	}
 	.box-select-item:hover .box-select-image {
 		filter: brightness(1.2);
@@ -85,6 +88,7 @@
 		margin: 0px 14px;
 		font-size: small;
 		color: var(--color-subtle_text);
+		cursor: pointer;
 	}
 	.box-select-image {
 		width: 110px;
@@ -96,5 +100,6 @@
 		transform: translate(0px, 0px) rotate(345deg);
 		transition: transform 0.1s cubic-bezier(0.25, 0.68, 0.53, 1.3);
 		image-rendering: auto;
+		cursor: pointer;
 	}
 </style>

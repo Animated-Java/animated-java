@@ -8,17 +8,22 @@
 	import LineEdit from '../../../svelteComponents/sidebarDialogItems/lineEdit.svelte'
 	import SelectFile from '../../../svelteComponents/sidebarDialogItems/selectFile.svelte'
 	import SelectFolder from '../../../svelteComponents/sidebarDialogItems/selectFolder.svelte'
+	import { getManagingCollection } from '../../../collections'
 	import { createScopedTranslator } from '../../../util/lang'
+	import CollectionNotice from '../collectionNotice.svelte'
 
 	const translate = createScopedTranslator('dialog.blueprint_settings')
+	const collection = getManagingCollection(Project)
 
 	let resourcePackExportFormat = $state(Project.animated_java.resource_pack_export_mode)
 	let resourcePackLocation = $state(Project.animated_java.resource_pack)
 	let displayItem = $state(Project.animated_java.display_item)
 
 	onDestroy(() => {
-		Project.animated_java.resource_pack_export_mode = resourcePackExportFormat
-		Project.animated_java.resource_pack = resourcePackLocation
+		if (!collection) {
+			Project.animated_java.resource_pack_export_mode = resourcePackExportFormat
+			Project.animated_java.resource_pack = resourcePackLocation
+		}
 		Project.animated_java.display_item = displayItem
 	})
 </script>
@@ -43,6 +48,7 @@
 				description: translate('resource_pack_export_mode.options.none.description'),
 			},
 		}}
+		disabled={!!collection}
 		bind:selected={resourcePackExportFormat}
 	></BoxSelect>
 
@@ -53,6 +59,7 @@
 			bind:value={resourcePackLocation}
 			checkValue={validateResourcePackFolder}
 			required
+			disabled={!!collection}
 		></SelectFolder>
 	{:else if resourcePackExportFormat === 'zip'}
 		<SelectFile
@@ -61,7 +68,12 @@
 			bind:value={resourcePackLocation}
 			checkValue={validateZipPath}
 			required
+			disabled={!!collection}
 		></SelectFile>
+	{/if}
+
+	{#if collection}
+		<CollectionNotice {collection} />
 	{/if}
 
 	{#if resourcePackExportFormat !== 'none'}

@@ -44,6 +44,24 @@ animated_java:
       name: Export All (Debug)
       description: |-
         Export all open Blueprint projects in debug mode.
+    collection_menu:
+      name: Blueprint Collection
+    new_collection:
+      name: New Collection
+      description: |-
+        Create a Blueprint Collection: a set of Blueprints that export into the same packs with shared settings.
+    open_collection:
+      name: Open Collection
+      description: |-
+        Open a Blueprint Collection to edit its settings and members.
+    export_collection:
+      name: Export Collection
+      description: |-
+        Export every Blueprint in this Blueprint's collection.
+    export_collection_debug:
+      name: Export Collection (Debug)
+      description: |-
+        Export every Blueprint in this Blueprint's collection in debug mode.
     extract:
       name: Extract
       confirm: Confirm Extraction
@@ -188,6 +206,7 @@ animated_java:
 
       pages:
         general.title: General
+        collection.title: Collection
         resource_pack.title: Resource Pack
         datapack.title: Data Pack
         rig.title: Rig
@@ -195,6 +214,20 @@ animated_java:
         plugin.title: Plugin
         preview.title: Preview
         misc.title: Misc
+
+      collection:
+        managed: Managed by the "%s" Blueprint Collection.
+        open: Open Collection
+        not_linked: This Blueprint isn't in a Blueprint Collection.
+        broken: 'The collection link is broken, so this Blueprint uses its own settings: %s'
+        description: This Blueprint exports with the collection's settings below.
+        leave: Remove from Collection
+        settings:
+          target_minecraft_version: Target Minecraft Version
+          resource_pack_export_mode: Resource Pack Export Mode
+          data_pack_export_mode: Data Pack Export Mode
+          resource_pack: Resource Pack
+          data_pack: Data Pack
 
       project_settings:
         title: Project
@@ -335,11 +368,11 @@ animated_java:
           The root folder of a Resource Pack to export the project to.
 
           The targeted Resource Pack must contain a `pack.mcmeta` file.
-        warning:
-          no_assets: Selected folder does not contain an assets folder.
         folder:
           title: Resource Pack Folder
           description: The folder to export the Resource Pack to.
+          warning:
+            no_assets: Selected folder does not contain an assets folder.
           error:
             empty: Resource Pack folder is required.
             invalid_path: 'Failed to resolve path: %s'
@@ -1230,6 +1263,55 @@ animated_java:
       Cubes can only be rotated on a single axis at a time when targeting Minecraft 1.21.6 or later.
 
       All cubes with invalid rotations are outlined in red.
+
+  collection:
+    file_type: Blueprint Collection
+    format_description: A set of Blueprints that export into the same data pack and resource pack, with shared export settings.
+    mode: Collection
+    page:
+      already_member: '%s is already in this collection.'
+      relative_path_unsaved: Save the collection first. Relative paths are relative to the collection file.
+      settings:
+        title: Shared Settings
+        resource_pack: Resource Pack
+        data_pack: Data Pack
+        relative_paths: Paths starting with ./ or ../ are relative to the collection file.
+      members:
+        add: Add Blueprints
+        open: Open
+        locate: Locate…
+        remove: Remove from Collection
+        change_id: Change Blueprint ID
+        duplicate_id: Another Blueprint in this collection already uses this ID.
+        missing: File not found
+        removal_note: Removed Blueprints keep their files in the packs until the next collection export.
+      status:
+        open: Open
+        unsaved: Unsaved
+        closed: Closed
+        missing: Missing
+    export:
+      success: Exported %s Blueprints!
+    toast:
+      broken_link: |-
+        "%s" can't use its Blueprint Collection, so it's using its own export settings.
+
+        %s
+    error:
+      title: Blueprint Collection Error
+      missing_file: The collection file '%s' doesn't exist.
+      invalid_file: "The collection file '%s' couldn't be read: %s"
+      not_listed: The collection '%s' doesn't list this Blueprint. Add it again from the collection, or remove the link in Blueprint Settings.
+      missing_blueprint: The Blueprint '%s' doesn't exist.
+      invalid_blueprint: "The Blueprint '%s' couldn't be read: %s"
+      outdated_blueprint: The Blueprint '%s' uses an old format. Open and save it once to upgrade it, then try again.
+      plugin_mode: The Blueprint '%s' uses plugin mode. Plugin mode Blueprints export a JSON file instead of packs, so they can't be in a collection.
+      other_collection: The Blueprint '%s' is already in the collection '%s'. Remove it from that collection first.
+      no_members: This collection has no Blueprints to export.
+      save_before_export: Save the collection before exporting it, so its Blueprints can be linked to it.
+      duplicate_member: The Blueprint '%s' is listed in this collection more than once.
+      not_linked: The Blueprint '%s' isn't linked to this collection. Remove it and add it again.
+      duplicate_blueprint_id: "The Blueprint ID '%s' is used by both '%s' and '%s'. Every Blueprint in a collection needs a unique ID."
 
   format_category:
     animated_java: Animated Java

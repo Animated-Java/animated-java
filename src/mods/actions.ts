@@ -3,6 +3,7 @@ import { getFsModule } from '../constants'
 import { openBlueprintSettings } from '../dialogs/blueprintSettings/blueprintSettings'
 import { activeProjectIsBlueprintFormat, saveBlueprint } from '../formats/blueprint'
 import { BLUEPRINT_CODEC } from '../formats/blueprint/codec'
+import { activeProjectIsCollectionFormat, saveActiveCollection } from '../formats/collection'
 
 registerPropertyOverridePatch({
 	id: `animated_java:action-click-override/save-project`,
@@ -72,5 +73,47 @@ registerPropertyOverridePatch({
 				codec.export()
 			}
 		}
+	},
+})
+
+registerPropertyOverridePatch({
+	id: `animated_java:action-click-override/save-collection`,
+	target: BarItems.save_project as Action,
+	key: 'click',
+
+	getCondition: () => activeProjectIsCollectionFormat(),
+
+	get: () => () => saveActiveCollection(),
+})
+
+registerPropertyOverridePatch({
+	id: `animated_java:action-click-override/save-collection-as`,
+	target: BarItems.save_project_as as Action,
+	key: 'click',
+
+	getCondition: () => activeProjectIsCollectionFormat(),
+
+	get: () => () => saveActiveCollection(true),
+})
+
+registerPropertyOverridePatch({
+	id: `animated_java:action-click-override/export-collection`,
+	target: BarItems.export_over as Action,
+	key: 'click',
+
+	getCondition: () => activeProjectIsCollectionFormat(),
+
+	get: () => () => saveActiveCollection(),
+})
+
+registerPropertyOverridePatch({
+	id: `animated_java:action-click-override/collection-project-window`,
+	target: BarItems.project_window as Action,
+	key: 'click',
+
+	getCondition: () => activeProjectIsCollectionFormat(),
+
+	get: () => () => {
+		// A collection has no project settings to show; its page holds them all.
 	},
 })
