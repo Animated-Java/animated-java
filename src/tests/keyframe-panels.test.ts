@@ -158,7 +158,60 @@ describe('Keyframe panels', () => {
 		expect(result.repeatToggle).toEqual({ unsaved: true, undoSteps: 1 })
 		expect(result.repeat).toBe(true)
 
+		expect(result.durationPlaceholder).toBe('Until next keyframe')
+		expect(result.durationEdit).toEqual({ unsaved: true, undoSteps: 1 })
+		expect(result.duration).toBe(10)
+		expect(result.overrun).toMatch(/ at 1\.$/)
+		expect(result.cutoff).toMatch(/ at 1\.25\.$/)
+		expect(result.runs).toBe('Runs 5 times')
+
 		expect(result.focusOnly).toEqual({ unsaved: false, undoSteps: 0 })
 		expect(result.typed).toEqual({ unsaved: true, undoSteps: 1 })
+	})
+
+	it('draws repeat bars on the timeline, with a stop where a keyframe cuts one short', async () => {
+		const bars = await blockbench.evaluate(async (formatId: string) => {
+			const g = globalThis as any
+			const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+			g.newProject(g.Formats[formatId])
+
+			const anim = new Blockbench.Animation({ name: 'repeats' }).add()
+			anim.length = 2
+			;(Modes as any).options.animate.select()
+			anim.select()
+			anim.animators.effects ??= new g.EffectAnimator(anim)
+			const fx = anim.animators.effects
+			const repeating = (time: number, freq: number, dur: number) => {
+				const kf = fx.addKeyframe({ channel: 'function', time, data_points: [{}] })
+				kf.repeat = true
+				kf.repeat_frequency = freq
+				kf.repeat_duration = dur
+				return kf
+			}
+			// Ticks 0, 5 and 10, then cut short by the keyframe at tick 15.
+			repeating(0, 5, 20)
+			// Ticks 15, 19, 23 and 27, until the next keyframe.
+			repeating(0.75, 4, 0)
+			// A plain keyframe at tick 30 draws no bar.
+			fx.addKeyframe({ channel: 'function', time: 1.5, data_points: [{}] })
+			fx.select()
+			Timeline.vue.$forceUpdate()
+			await sleep(200)
+
+			// Pixels per tick, so the test doesn't depend on the timeline's zoom.
+			const tick = (Timeline.vue.size as number) / 20
+			return [...document.querySelectorAll('#panel_timeline .aj_repeat_bar')].map(bar => ({
+				// How far short of its last tick the bar stops, in pixels.
+				gap: Math.round(15 * tick - Number(bar.getAttribute('width'))),
+				marks: bar.querySelectorAll('.aj_repeat_mark').length,
+				cut: !!bar.querySelector('.aj_repeat_cut'),
+			}))
+		}, BLUEPRINT_FORMAT_ID)
+
+		expect(bars).toEqual([
+			// Stops short of the keyframe at tick 15, so the stop clears its icon.
+			{ gap: 7, marks: 2, cut: true },
+			{ gap: 0, marks: 3, cut: false },
+		])
 	})
 })
